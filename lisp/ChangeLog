@@ -1,3 +1,8 @@
+2000-11-12 23:36:45  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-inews-mark-gcc-as-read): New variable.
+	(gnus-inews-do-gcc): Use it.
+
 2000-11-12 21:35:04  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2231.el (rfc2231-encode-string): Insert semi-colon and

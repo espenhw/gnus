@@ -101,6 +101,9 @@ the second with the current group name.")
 (defvar gnus-posting-styles nil
   "*Alist of styles to use when posting.")
 
+(defvar gnus-inews-mark-gcc-as-read nil
+  "If non-nil, automatically mark Gcc articles as read.")
+
 (defcustom gnus-group-posting-charset-alist
   '(("^\\(no\\|fr\\|dk\\)\\.[^,]*\\(,[ \t\n]*\\(no\\|fr\\|dk\\)\\.[^,]*\\)*$" iso-8859-1 (iso-8859-1))
     ("^\\(fido7\\|relcom\\)\\.[^,]*\\(,[ \t\n]*\\(fido7\\|relcom\\)\\.[^,]*\\)*$" koi8-r (koi8-r))
@@ -1067,7 +1070,7 @@ this is a reply."
 	(message-narrow-to-headers)
 	(let ((gcc (or gcc (mail-fetch-field "gcc" nil t)))
 	      (cur (current-buffer))
-	      groups group method)
+	      groups group method group-art)
 	  (when gcc
 	    (message-remove-header "gcc")
 	    (widen)
@@ -1095,10 +1098,19 @@ this is a reply."
 		       (concat "^" (regexp-quote mail-header-separator) "$")
 		       nil t)
 		  (replace-match "" t t ))
-		(unless (gnus-request-accept-article group method t t)
+		(unless (setq group-art 
+			      (gnus-request-accept-article group method t t))
 		  (gnus-message 1 "Couldn't store article in group %s: %s"
 				group (gnus-status-message method))
 		  (sit-for 2))
+		(when gnus-inews-mark-gcc-as-read
+		  (let ((active (gnus-active group)))
+		    (when active
+		      (if (< (cdr active) (cdr group-art))
+			  (gnus-set-active group (cons (car active) 
+						       (cdr group-art))))
+		      (gnus-group-make-articles-read group 
+						     (list (cdr group-art))))))
 		(kill-buffer (current-buffer))))))))))
 
 (defun gnus-inews-insert-gcc ()
