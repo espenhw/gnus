@@ -4777,7 +4777,8 @@ regexp varstr."
 	(when lines
 	  (insert lines))
 	(setq content-type-p
-	      (re-search-backward "^Content-Type:" nil t)))
+	      (or mml-boundary
+		  (re-search-backward "^Content-Type:" nil t))))
       (save-restriction
 	(message-narrow-to-headers-or-head)
 	(message-remove-first-header "Content-Type")
