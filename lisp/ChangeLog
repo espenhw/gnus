@@ -1,3 +1,10 @@
+2003-04-27  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-mime-display-multipart-as-mixed) 
+	(gnus-mime-display-multipart-alternative-as-mixed) 
+	(gnus-mime-display-multipart-related-as-mixed): Added doc-strings,
+	allow customization.
+
 2003-04-27  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* dgnushack.el (dgnushack-compile-verbosely): New function.  Not
