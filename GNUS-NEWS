@@ -51,7 +51,8 @@ variables should change those regexps accordingly. For example:
 
    ("^han\\>" euc-kr) -> ("\\(^\\|:\\)han\\>" euc-kr)
 
-** Gnus now supports PGP-MIME (RFC2015) and SMIME.
+** Gnus now supports PGP (RFC 1991), PGP-MIME (RFC 2015/3156) and
+SMIME.
 
 ** Gnus inlines external parts (message/external).
 
