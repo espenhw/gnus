@@ -2932,10 +2932,13 @@ to find out how to use this."
      (goto-char (point-min))
      (re-search-forward
       (concat "^" (regexp-quote mail-header-separator) "$"))
+     (forward-line 1)
      (while (and
-	     (progn
-	       (end-of-line)
-	       (< (current-column) 80))
+	     (or (looking-at 
+		  "<#\\(/\\)?\\(multipart\\|part\\|external\\|mml\\)")
+		 (let ((p (point)))
+		   (end-of-line)
+		   (< (- (point) p) 80)))
 	     (zerop (forward-line 1))))
      (or (bolp)
 	 (eobp)

@@ -1,3 +1,7 @@
+2001-02-13 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-check-news-body-syntax): Don't check mml lines.
+
 2001-02-12 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-topic.el (gnus-subscribe-topics): Return nil if not
