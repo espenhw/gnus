@@ -200,7 +200,7 @@ Thank you for your help in stamping out bugs.
 	 (setq gnus-message-buffer (current-buffer))
 	 (set (make-local-variable 'gnus-message-group-art)
 	      (cons ,group ,article))
-	 (make-local-variable 'gnus-newsgroup-name)
+	 (set (make-local-variable 'gnus-newsgroup-name) ,group)
 	 (gnus-run-hooks 'gnus-message-setup-hook))
        (gnus-add-buffer)
        (gnus-configure-windows ,config t)
@@ -233,15 +233,24 @@ Thank you for your help in stamping out bugs.
 If ARG, use the group under the point to find a posting style.
 If ARG is 1, prompt for a group name to find the posting style."
   (interactive "P")
-  (let ((gnus-newsgroup-name
-	 (if arg
-	     (if (= 1 (prefix-numeric-value arg))
-		 (completing-read "Use posting style of group: "
-				  gnus-active-hashtb nil
-				  (gnus-read-active-file-p))
-	       (gnus-group-group-name))
-	   "")))
-    (gnus-setup-message 'message (message-mail))))
+  ;; We can't `let' gnus-newsgroup-name here, since that leads
+  ;; to local variables leaking.
+  (let ((group gnus-newsgroup-name)
+	(buffer (current-buffer)))
+    (unwind-protect
+	(progn
+	  (setq gnus-newsgroup-name
+		(if arg
+		    (if (= 1 (prefix-numeric-value arg))
+			(completing-read "Use posting style of group: "
+					 gnus-active-hashtb nil
+					 (gnus-read-active-file-p))
+		      (gnus-group-group-name))
+		  ""))
+	  (gnus-setup-message 'message (message-mail)))
+      (save-excursion
+	(set-buffer buffer)
+	(setq gnus-newsgroup-name group)))))
 
 (defun gnus-group-post-news (&optional arg)
   "Start composing a news message.
@@ -1061,30 +1070,31 @@ this is a reply."
       ;; If the group has a posting-style parameter, add it at the end with a
       ;; regexp matching everything, to be sure it takes precedence over all
       ;; the others.
-      (unless (eq 0 (length gnus-newsgroup-name))
-	(let ((tmp-style (gnus-group-find-parameter gnus-newsgroup-name 
-						    'posting-style t)))
-	  (and tmp-style
-	       (setq styles (append styles (list (cons ".*" tmp-style)))))
-	  ))
+      (unless (zerop (length gnus-newsgroup-name))
+	(let ((tmp-style (gnus-group-find-parameter
+			  gnus-newsgroup-name 'posting-style t)))
+	  (when tmp-style
+	    (setq styles (append styles (list (cons ".*" tmp-style)))))))
       ;; Go through all styles and look for matches.
       (while styles
 	(setq style (pop styles)
 	      match (pop style))
-	(when (cond ((stringp match)
-		     ;; Regexp string match on the group name.
-		     (string-match match gnus-newsgroup-name))
-		    ((or (symbolp match)
-			 (gnus-functionp match))
-		     (cond ((gnus-functionp match)
-			    ;; Function to be called.
-			    (funcall match))
-			   ((boundp match)
-			    ;; Variable to be checked.
-			    (symbol-value match))))
-		    ((listp match)
-		     ;; This is a form to be evaled.
-		     (eval match)))
+	(when (cond
+	       ((stringp match)
+		;; Regexp string match on the group name.
+		(string-match match gnus-newsgroup-name))
+	       ((or (symbolp match)
+		    (gnus-functionp match))
+		(cond
+		 ((gnus-functionp match)
+		  ;; Function to be called.
+		  (funcall match))
+		 ((boundp match)
+		  ;; Variable to be checked.
+		  (symbol-value match))))
+	       ((listp match)
+		;; This is a form to be evaled.
+		(eval match)))
 	  ;; We have a match, so we set the variables.
 	  (while style
 	    (setq attribute (pop style)
@@ -1099,16 +1109,17 @@ this is a reply."
 		(message "Couldn't find attribute %s" (car attribute))
 	      ;; We get the value.
 	      (setq value-value
-		    (cond ((stringp value)
-			   value)
-			  ((or (symbolp value)
-			       (gnus-functionp value))
-			   (cond ((gnus-functionp value)
-				  (funcall value))
-				 ((boundp value)
-				  (symbol-value value))))
-			  ((listp value)
-			   (eval value))))
+		    (cond
+		     ((stringp value)
+		      value)
+		     ((or (symbolp value)
+			  (gnus-functionp value))
+		      (cond ((gnus-functionp value)
+			     (funcall value))
+			    ((boundp value)
+			     (symbol-value value))))
+		     ((listp value)
+		      (eval value))))
 	      (if variable
 		  ;; This is an ordinary variable.
 		  (set (make-local-variable variable) value-value)
@@ -1137,7 +1148,7 @@ this is a reply."
       (while (setq val (pop gnus-message-style-insertions))
 	(when (cdr val)
 	  (insert (car val) ": " (cdr val) "\n"))
-	(gnus-pull (car val) gnus-message-style-insertions)))))
+	(gnus-pull (car val) gnus-message-style-insertions t)))))
 
 ;;; Allow redefinition of functions.
 

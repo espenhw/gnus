@@ -1,3 +1,62 @@
+Sat Dec  5 18:35:42 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.64 is released.
+
+1998-12-05 18:51:13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-view.el (mm-setup-w3): Don't load.
+
+	* gnus-msg.el (gnus-setup-message): Set group name.
+	(gnus-group-mail): Avoid leaking local vars.
+
+	* message.el (message-attach-file): Renamed.
+	(message-mime-attach-file): Renamed again.
+
+1998-12-05  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-art.el (article-decode-encoded-words): Bind
+	rfc2047-default-charset here.
+
+	* gnus-art.el (gnus-insert-mime-button): Nix slashes in file name.
+
+1998-12-05 18:33:27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-picon.el (gnus-picons-setup-buffer): Run picons hook.
+	(gnus-picons-setup-hook): New hook.	
+
+1998-12-05  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* mailcap.el (mailcap-mime-data): Remove "*" from documentation
+	string. 
+	(mailcap-mime-extensions): Ditto.  Made first sentense fit a
+	line. 
+
+1998-12-05 17:11:04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-prepare-display): Setup w3.
+	(gnus-mime-view-part): Ditto.
+	(gnus-mime-inline-part): Dotii.
+	(gnus-mime-externalize-part): Daddo.
+	(gnus-mime-internalize-part): Tutti frutti.
+	(gnus-widget-press-button): Da da do.
+
+	* mm-view.el (mm-setup-w3): Require url-vars.
+
+Fri Dec  4 12:13:12 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-draft-coding-system): Fix for XEmacs-NT.
+	* mm-util.el (mm-find-charset-region): Ditto.
+
+1998-12-05 16:30:01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-send): Don't encode here.
+	(message-send-mail): But here.
+	(message-send-news): And here.
+
+1998-12-04 15:29:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-message-insert-stylings): Don't insert twice. 
+
 Fri Dec  4 04:09:15 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.63 is released.

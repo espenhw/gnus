@@ -249,7 +249,8 @@ See also `with-temp-file' and `with-output-to-string'."
   "Return a list of charsets in the region."
   (cond
    ((and (boundp 'enable-multibyte-characters)
-	 enable-multibyte-characters)
+	 enable-multibyte-characters
+	 (fboundp 'find-charset-region))
     (find-charset-region b e))
    ((not (boundp 'current-language-environment))
     (save-excursion

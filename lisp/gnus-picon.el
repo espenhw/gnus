@@ -148,6 +148,11 @@ please tell me so that we can list it."
   "Face to show xbm picons in."
   :group 'picons)
 
+(defcustom gnus-picons-setup-hook nil
+  "Hook run in Picons buffers."
+  :group 'picons
+  :type 'hook)
+
 ;;; Internal variables:
 
 (defvar gnus-picons-processes-alist nil
@@ -184,9 +189,9 @@ arguments necessary for the job.")
 
 (defun gnus-get-buffer-name (variable)
   "Returns the buffer name associated with the contents of a variable."
-  (let ((buf (gnus-get-buffer-create (gnus-window-to-buffer-helper
-				 (cdr 
-				  (assq variable gnus-window-to-buffer))))))
+  (let ((buf (gnus-get-buffer-create
+	      (gnus-window-to-buffer-helper
+	       (cdr (assq variable gnus-window-to-buffer))))))
     (and buf
 	 (buffer-name buf))))
 
@@ -203,8 +208,8 @@ arguments necessary for the job.")
 
 (defun gnus-picons-kill-buffer ()
   (let ((buf (get-buffer (gnus-picons-buffer-name))))
-    (if (buffer-live-p buf)
-	(kill-buffer buf))))
+    (when (buffer-live-p buf)
+      (kill-buffer buf))))
 
 (defun gnus-picons-setup-buffer ()
   (let ((name (gnus-picons-buffer-name)))
@@ -214,6 +219,7 @@ arguments necessary for the job.")
 	(set-buffer (gnus-get-buffer-create name))
 	(buffer-disable-undo)
 	(setq buffer-read-only t)
+	(run-hooks 'gnus-picons-setup-hook)
 	(add-hook 'gnus-summary-prepare-exit-hook 'gnus-picons-kill-buffer))
       (current-buffer))))
 

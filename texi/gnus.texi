@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.63 Manual
+@settitle Pterodactyl Gnus 0.64 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.63 Manual
+@title Pterodactyl Gnus 0.64 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.63.
+This manual corresponds to Pterodactyl Gnus 0.64.
 
 @end ifinfo
 
@@ -6599,7 +6599,9 @@ Treat overstrike (@code{gnus-article-treat-overstrike}).
 @cindex Latin 1
 Treat M******** sm*rtq**t*s according to
 @code{gnus-article-dumbquotes-map}
-(@code{gnus-article-treat-dumbquotes}).
+(@code{gnus-article-treat-dumbquotes}).  Note that this function guesses
+whether a character is a sm*rtq**t* or not, so it should only be used
+interactively.
 
 @item W w
 @kindex W w (Summary)
@@ -15592,6 +15594,10 @@ Defaults to @code{t}.
 @vindex gnus-picons-file-suffixes
 Ordered list of suffixes on picon file names to try.  Defaults to
 @code{("xpm" "gif" "xbm")} minus those not builtin your XEmacs.
+
+@item gnus-picons-setup-hook
+@vindex gnus-picons-setup-hook
+Hook run in the picon buffer, if that is displayed.
 
 @item gnus-picons-display-article-move-p
 @vindex gnus-picons-display-article-move-p

@@ -210,7 +210,7 @@
       (viewer . tar-mode)
       (type . "archive/tar")
       (test . (fboundp 'tar-mode)))))
-     "*The mailcap structure is an assoc list of assoc lists.
+     "The mailcap structure is an assoc list of assoc lists.
 1st assoc list is keyed on the major content-type
 2nd assoc list is keyed on the minor content-type (which can be a regexp)
 
@@ -755,8 +755,7 @@ this type is returned."
     (".ai"       . "application/postscript")
     (".jpe"      . "image/jpeg")
     (".jpeg"     . "image/jpeg"))
-  "*An assoc list of file extensions and the MIME content-types they
-correspond to.")
+  "An assoc list of file extensions and corresponding MIME content-types.")
 
 (defun mailcap-parse-mimetypes (&optional path)
   ;; Parse out all the mimetypes specified in a unix-style path string PATH

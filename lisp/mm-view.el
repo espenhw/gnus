@@ -45,9 +45,7 @@
     (w3-do-setup)
     (require 'url)
     (require 'w3-vars)
-    (condition-case ()
-	(load "url-misc.el")
-      (error nil))
+    (require 'url-vars)
     (setq mm-w3-setup t)))
 
 (defun mm-inline-text (handle)
