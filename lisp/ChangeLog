@@ -1,5 +1,9 @@
 2003-03-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-registry.el (gnus-registry-translate-to-alist): Make a
+	valid lambda.
+	(gnus-registry-translate-from-alist): Ditto.
+
 	* gnus-start.el (gnus-gnus-to-quick-newsrc-format): Bind
 	print-length to nil.
 

@@ -52,10 +52,10 @@
     ;; alias puthash is missing from Emacs 20 cl-extra.el
     (defalias 'puthash 'cl-puthash)))
 
-(defun gnus-registry-translate-to-alist
+(defun gnus-registry-translate-to-alist ()
   (setq gnus-registry-alist (hashtable-to-alist gnus-registry-hashtb)))
 
-(defun gnus-registry-translate-from-alist
+(defun gnus-registry-translate-from-alist ()
   (setq gnus-registry-hashtb (alist-to-hashtable gnus-registry-alist)))
 
 (defun alist-to-hashtable (alist)

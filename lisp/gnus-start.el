@@ -2615,10 +2615,9 @@ If FORCE is non-nil, the .newsrc file is read."
 
               (unwind-protect
                   (progn
-                    (gnus-with-output-to-file
-                     working-file
-                     (gnus-gnus-to-quick-newsrc-format)
-                     (gnus-run-hooks 'gnus-save-quick-newsrc-hook))
+                    (gnus-with-output-to-file working-file
+		      (gnus-gnus-to-quick-newsrc-format)
+		      (gnus-run-hooks 'gnus-save-quick-newsrc-hook))
 
                     ;; These bindings will mislead the current buffer
                     ;; into thinking that it is visiting the startup
