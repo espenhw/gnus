@@ -142,7 +142,9 @@ GLYPH can be either a glyph or a string."
     (gnus-put-image glyph)))
 
 (defun gnus-picon-create-glyph (file)
-  (gnus-create-image file))
+  (or (cdr (assoc file gnus-picon-glyph-alist))
+      (cdar (push (cons file (gnus-create-image file))
+		  gnus-picon-glyph-alist))))
 
 ;;; Functions that does picon transformations:
 

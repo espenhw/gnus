@@ -1,5 +1,7 @@
 2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-picon.el (gnus-picon-create-glyph): Cache glyphs.
+
 	* gnus-art.el (gnus-treat-newsgroups-picon): New variable. 
 
 	* gnus-picon.el (gnus-treat-newsgroups-picon): New function.
