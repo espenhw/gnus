@@ -25,10 +25,16 @@
 
 (eval-when-compile (require 'cl))
 (require 'ietf-drums)
+(require 'rfc2047)
 
 (defun rfc2231-get-value (ct attribute)
   "Return the value of ATTRIBUTE from CT."
   (cdr (assq attribute (cdr ct))))
+
+(defun rfc2231-parse-qp-string (string)
+  "Parse QP-encoded string using `rfc2231-parse-string'.
+N.B.  This is in violation with RFC2047, but it seem to be in common use."
+  (rfc2231-parse-string (rfc2047-decode-string string)))
 
 (defun rfc2231-parse-string (string)
   "Parse STRING and return a list.
