@@ -9723,7 +9723,7 @@ will not be hidden."
 		  (gnus-map-articles
 		   predicate (gnus-summary-article-children)))
 	    (gnus-summary-hide-thread))
-	(setq end (zerop (gnus-summary-next-thread 1 t))))))
+	(setq end (not (zerop (gnus-summary-next-thread 1 t)))))))
   (gnus-summary-position-point))
 
 (defun gnus-summary-hide-thread ()
