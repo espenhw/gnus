@@ -185,6 +185,8 @@ Possible values in this list are:
   'empty       Headers with no content.
   'newsgroups  Newsgroup identical to Gnus group.
   'to-address  To identical to To-address.
+  'to-list     To identical to To-list.
+  'cc-list     CC identical to To-list.
   'followup-to Followup-to identical to Newsgroups.
   'reply-to    Reply-to identical to From.
   'date        Date less than four days old.
@@ -193,6 +195,8 @@ Possible values in this list are:
   :type '(set (const :tag "Headers with no content." empty)
 	      (const :tag "Newsgroups identical to Gnus group." newsgroups)
 	      (const :tag "To identical to To-address." to-address)
+	      (const :tag "To identical to To-list." to-list)
+	      (const :tag "CC identical to To-list." cc-list)
 	      (const :tag "Followup-to identical to Newsgroups." followup-to)
 	      (const :tag "Reply-to identical to From." reply-to)
 	      (const :tag "Date less than four days old." date)
@@ -1613,6 +1617,32 @@ always hide."
 			      (nth 1 (mail-extract-address-components to))
 			      to-address)))
 		  (gnus-article-hide-header "to"))))
+	     ((eq elem 'to-list)
+	      (let ((to (message-fetch-field "to"))
+		    (to-list
+		     (gnus-parameter-to-list
+		      (if (boundp 'gnus-newsgroup-name)
+			  gnus-newsgroup-name ""))))
+		(when (and to to-list
+			   (ignore-errors
+			     (gnus-string-equal
+			      ;; only one address in To
+			      (nth 1 (mail-extract-address-components to))
+			      to-list)))
+		  (gnus-article-hide-header "to"))))
+	     ((eq elem 'cc-list)
+	      (let ((cc (message-fetch-field "cc"))
+		    (to-list
+		     (gnus-parameter-to-list
+		      (if (boundp 'gnus-newsgroup-name)
+			  gnus-newsgroup-name ""))))
+		(when (and cc to-list
+			   (ignore-errors
+			     (gnus-string-equal
+			      ;; only one address in CC
+			      (nth 1 (mail-extract-address-components cc))
+			      to-list)))
+		  (gnus-article-hide-header "cc"))))
 	     ((eq elem 'followup-to)
 	      (when (gnus-string-equal
 		     (message-fetch-field "followup-to")
