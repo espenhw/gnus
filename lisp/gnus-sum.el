@@ -2963,19 +2963,21 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 	  (erase-buffer)))
       (kill-buffer (current-buffer)))
     ;; Sort over trustworthiness.
-    (mapc #'(lambda (relation)
-	      (when (gnus-dependencies-add-header
-		     (make-full-mail-header gnus-reffed-article-number
-					    (cadddr relation)
-					    "" "" (cadr relation)
-					    (or (caddr relation) "") 0 0 "")
-		     gnus-newsgroup-dependencies nil)
-		(push gnus-reffed-article-number gnus-newsgroup-limit)
-		(push gnus-reffed-article-number gnus-newsgroup-sparse)
-		(push (cons gnus-reffed-article-number gnus-sparse-mark)
-		      gnus-newsgroup-reads)
-		(decf gnus-reffed-article-number)))
-	  (sort relations 'car-less-than-car))
+    (mapcar
+     (lambda (relation)
+       (when (gnus-dependencies-add-header
+	      (make-full-mail-header
+	       gnus-reffed-article-number
+	       (cadddr relation) "" (mail-header-date header)
+	       (cadr relation)
+	       (or (caddr relation) "") 0 0 "")
+	      gnus-newsgroup-dependencies nil)
+	 (push gnus-reffed-article-number gnus-newsgroup-limit)
+	 (push gnus-reffed-article-number gnus-newsgroup-sparse)
+	 (push (cons gnus-reffed-article-number gnus-sparse-mark)
+	       gnus-newsgroup-reads)
+	 (decf gnus-reffed-article-number)))
+     (sort relations 'car-less-than-car))
     (gnus-message 7 "Making sparse threads...done")))
 
 (defun gnus-build-old-threads ()
@@ -2997,6 +2999,60 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 			 (not (car (gnus-id-to-thread id)))))
 	     (setq heads nil)))))
      gnus-newsgroup-dependencies)))
+
+;; The following macros and functions were written by Felix Lee
+;; <flee@cse.psu.edu>.
+
+(defmacro gnus-nov-read-integer ()
+  '(prog1
+       (if (= (following-char) ?\t)
+	   0
+	 (let ((num (ignore-errors (read buffer))))
+	   (if (numberp num) num 0)))
+     (unless (eobp)
+       (search-forward "\t" eol 'move))))
+
+(defmacro gnus-nov-skip-field ()
+  '(search-forward "\t" eol 'move))
+
+(defmacro gnus-nov-field ()
+  '(buffer-substring (point) (if (gnus-nov-skip-field) (1- (point)) eol)))
+
+;; This function has to be called with point after the article number
+;; on the beginning of the line.
+(defsubst gnus-nov-parse-line (number dependencies &optional force-new)
+  (let ((eol (gnus-point-at-eol))
+	(buffer (current-buffer))
+	header)
+
+    ;; overview: [num subject from date id refs chars lines misc]
+    (unwind-protect
+	(progn
+	  (narrow-to-region (point) eol)
+	  (unless (eobp)
+	    (forward-char))
+
+	  (setq header
+		(make-full-mail-header
+		 number			; number
+		 (funcall
+		  gnus-unstructured-field-decoder (gnus-nov-field)) ; subject
+		 (funcall
+		  gnus-structured-field-decoder (gnus-nov-field)) ; from
+		 (gnus-nov-field)	; date
+		 (or (gnus-nov-field)
+		     (nnheader-generate-fake-message-id)) ; id
+		 (gnus-nov-field)	; refs
+		 (gnus-nov-read-integer) ; chars
+		 (gnus-nov-read-integer) ; lines
+		 (unless (= (following-char) ?\n)
+		   (gnus-nov-field)))))	; misc
+
+      (widen))
+
+    (when gnus-alter-header-function
+      (funcall gnus-alter-header-function header))
+    (gnus-dependencies-add-header header dependencies force-new)))
 
 (defun gnus-build-get-header (id)
   ;; Look through the buffer of NOV lines and find the header to
@@ -4399,60 +4455,6 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	  (goto-char (point-max))
 	  (widen))
 	(nreverse headers)))))
-
-;; The following macros and functions were written by Felix Lee
-;; <flee@cse.psu.edu>.
-
-(defmacro gnus-nov-read-integer ()
-  '(prog1
-       (if (= (following-char) ?\t)
-	   0
-	 (let ((num (ignore-errors (read buffer))))
-	   (if (numberp num) num 0)))
-     (unless (eobp)
-       (search-forward "\t" eol 'move))))
-
-(defmacro gnus-nov-skip-field ()
-  '(search-forward "\t" eol 'move))
-
-(defmacro gnus-nov-field ()
-  '(buffer-substring (point) (if (gnus-nov-skip-field) (1- (point)) eol)))
-
-;; This function has to be called with point after the article number
-;; on the beginning of the line.
-(defsubst gnus-nov-parse-line (number dependencies &optional force-new)
-  (let ((eol (gnus-point-at-eol))
-	(buffer (current-buffer))
-	header)
-
-    ;; overview: [num subject from date id refs chars lines misc]
-    (unwind-protect
-	(progn
-	  (narrow-to-region (point) eol)
-	  (unless (eobp)
-	    (forward-char))
-
-	  (setq header
-		(make-full-mail-header
-		 number			; number
-		 (funcall
-		  gnus-unstructured-field-decoder (gnus-nov-field)) ; subject
-		 (funcall
-		  gnus-structured-field-decoder (gnus-nov-field)) ; from
-		 (gnus-nov-field)	; date
-		 (or (gnus-nov-field)
-		     (nnheader-generate-fake-message-id)) ; id
-		 (gnus-nov-field)	; refs
-		 (gnus-nov-read-integer) ; chars
-		 (gnus-nov-read-integer) ; lines
-		 (unless (= (following-char) ?\n)
-		   (gnus-nov-field)))))	; misc
-
-      (widen))
-
-    (when gnus-alter-header-function
-      (funcall gnus-alter-header-function header))
-    (gnus-dependencies-add-header header dependencies force-new)))
 
 ;; Goes through the xover lines and returns a list of vectors
 (defun gnus-get-newsgroup-headers-xover (sequence &optional

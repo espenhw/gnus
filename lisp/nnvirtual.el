@@ -399,7 +399,7 @@ to virtual article number.")
       (replace-match "" t t))
     (goto-char (point-min))
     (when (re-search-forward
-	   (concat (gnus-group-real-name group) ":[0-9]+")
+	   (concat (regexp-quote (gnus-group-real-name group)) ":[0-9]+")
 	   nil t)
       (replace-match "" t t))
     (unless (= (point) (point-max))

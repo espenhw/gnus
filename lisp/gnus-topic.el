@@ -326,7 +326,7 @@ If TOPIC, start with that topic."
 
 (defun gnus-group-topic-parameters (group)
   "Compute the group parameters for GROUP taking into account inheritance from topics."
-  (let ((params-list (list (gnus-group-get-parameter group))))
+  (let ((params-list (copy-sequence (gnus-group-get-parameter group))))
     (save-excursion
       (gnus-group-goto-group group)
       (nconc params-list
@@ -1267,6 +1267,10 @@ If COPYP, copy the groups instead."
   ;; Check whether the new name exists.
   (when (gnus-topic-find-topology new-name)
     (error "Topic '%s' already exists"))
+  ;; "nil" is an invalid name, for reasons I'd rather not go
+  ;; into here.  Trust me.
+  (when (equal new-name "nil")
+    (error "Invalid name: %s" nil))
   ;; Do the renaming.
   (let ((top (gnus-topic-find-topology old-name))
 	(entry (assoc old-name gnus-topic-alist)))

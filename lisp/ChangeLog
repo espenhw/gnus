@@ -1,3 +1,23 @@
+Wed Jun 24 07:52:30 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.13 is released.
+
+Wed Jun 24 07:47:04 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-rename): Disallow "nil".
+
+Wed Jun 24 07:33:17 1998  Vladimir Alexiev  <vladimir@cs.ualberta.ca>
+
+	* nnvirtual.el (nnvirtual-update-xref-header): Regexp-quote group
+	name. 
+
+Wed Jun 24 06:15:27 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-build-sparse-threads): Give all the sparse
+	articles the date of the current child.  
+
+	* gnus-topic.el (gnus-group-topic-parameters): Didn't compute.
+
 Wed Jun 24 03:27:44 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.12 is released.
