@@ -757,6 +757,7 @@ Gnus Unplugged
 * Agent Basics::                How it all is supposed to work.
 * Agent Categories::            How to tell the Gnus Agent what to download.
 * Agent Commands::              New commands for all the buffers.
+* Agent Visuals::               Ways that the agent may effect your summary buffer.
 * Agent as Cache::              The Agent is a big cache too.
 * Agent Expiry::                How to make old articles go away.
 * Agent Regeneration::          How to recover from lost connections and other accidents.
@@ -17240,6 +17241,7 @@ Of course, to use it as such, you have to learn a few new commands.
 * Agent Basics::                How it all is supposed to work.
 * Agent Categories::            How to tell the Gnus Agent what to download.
 * Agent Commands::              New commands for all the buffers.
+* Agent Visuals::               Ways that the agent may effect your summary buffer.
 * Agent as Cache::              The Agent is a big cache too.
 * Agent Expiry::                How to make old articles go away.
 * Agent Regeneration::          How to recover from lost connections and other accidents.
@@ -17978,6 +17980,68 @@ Agent (@code{gnus-agent-remove-server}).
 
 @end table
 
+
+@node Agent Visuals
+@subsection Agent Visuals
+
+If you open a summary while unplugged and, Gnus knows from the group's
+active range that there are more articles than the headers currently
+stored in the Agent, you may see some articles whose subject looks
+something like @samp{[Undownloaded article #####]}.  These are
+placeholders for the missing headers.  Aside from setting a mark,
+there is not much that can be done with one of these placeholders.
+When Gnus finally gets a chance to fetch the group's headers, the
+placeholders will automatically be replaced by the actual headers.
+You can configure the summary buffer's maneuvering to skip over the
+placeholders if you care (See @code{gnus-auto-goto-ignores}).
+
+While it may be obvious to all, the only headers and articles
+available while unplugged are those headers and articles that were
+fetched into the Agent while previously plugged.  To put it another
+way, "If you forget to fetch something while plugged, you might have a
+less than satisfying unplugged session".  For this reason, the Agent
+adds two visual effects to your summary buffer.  These effects display
+the download status of each article so that you always know which
+articles will be available when unplugged.
+
+The first visual effect is the @samp{%O} spec.  If you customize
+gnus-summary-line-format to include this specifier, you will add a
+single character field that indicates an article's download status.
+Articles that have been fetched into either the Agent or the Cache,
+will display @code{gnus-downloaded-mark} (defaults to @samp{+}).  All
+other articles will display @code{gnus-undownloaded-mark} (defaults to
+@samp{-}).  If you open a group that has not been agentized, a space
+(@samp{ }) will be displayed.
+
+The second visual effect are the undownloaded faces.  The faces, there
+are three indicating the article's score (low, normal, high), seem to
+result in a love/hate response from many Gnus users.  The problem is
+that the face selection is controlled by a list of condition tests and
+face names (See @code{gnus-summary-highlight}).  Each condition is
+tested in the order in which it appears in the list so early
+conditions have precedence over later conditions.  All of this means
+that, if you tick an undownloaded article, the article will continue
+to be displayed in the undownloaded face rather than the ticked face.
+
+If you use the Agent as a cache (to avoid downloading the same article
+each time you visit it or to minimize your connection time), the
+undownloaded face will probably seem like a good idea.  The reason
+being that you do all of our work (marking, reading, deleting) with
+downloaded articles so the normal faces always appear.
+
+For occasional Agent users, the undownloaded faces may appear to be an
+absolutely horrible idea.  The issue being that, since most of their
+articles have not been fetched into the Agent, most of the normal
+faces will be obscured by the undownloaded faces.  If this is your
+situation, you have two choices available.  First, you can completely
+disable the undownload faces by customizing
+@code{gnus-summary-highlight} to delete the three cons-cells that
+refer to the gnus-summary*-undownloaded-face faces.  Second, if you
+prefer to take a more fine-grained approach, you may set the
+@code{agent-disable-undownloaded-faces} group parameter to t.  This
+parameter, like all other agent parameters, may be set on an Agent
+Category (@pxref{Agent Categories}), a Group Topic (@pxref{Topic
+Parameters}), or an individual group (@pxref{Group Parameters}).
 
 @node Agent as Cache
 @subsection Agent as Cache
