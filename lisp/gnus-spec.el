@@ -257,12 +257,20 @@
 (defun gnus-spec-tab (column)
   (if (> column 0)
       `(insert (make-string (max (- ,column (current-column)) 0) ? ))
-    `(progn
-       (if (> (current-column) ,(abs column))
-	   (delete-region (point)
-			  (- (point) (- (current-column) ,(abs column))))
-	 (insert (make-string (max (- ,(abs column) (current-column)) 0)
-			      ? ))))))
+    (let ((column (abs column)))
+      (if gnus-use-correct-string-widths
+	  `(progn
+	     (if (> (current-column) ,column)
+		 (while (progn
+			  (delete-backward-char 1)
+			  (> (current-column) ,column))))
+	     (insert (make-string (max (- ,column (current-column)) 0) ? )))
+	`(progn
+	   (if (> (current-column) ,column)
+	       (delete-region (point)
+			      (- (point) (- (current-column) ,column)))
+	     (insert (make-string (max (- ,column (current-column)) 0)
+				  ? ))))))))
 
 (defun gnus-correct-length (string)
   "Return the correct width of STRING."
