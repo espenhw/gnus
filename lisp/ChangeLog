@@ -1,7 +1,11 @@
 2003-10-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-summary-enter-digest-group): ogroup, nor
+	group. 
+
 	* gnus-msg.el (gnus-inews-insert-archive-gcc): Use the parent
 	name for gcc-self.
+	(gnus-inews-insert-archive-gcc): Paren mistake.
 
 	* gnus-sum.el (gnus-summary-enter-digest-group): Add
 	parent-group. 

@@ -1785,12 +1785,12 @@ this is a reply."
 		       gcc-self-val)
 		   ;; In nndoc groups, we use the parent group name
 		   ;; instead of the current group.
-		   ((let ((group (or (gnus-group-find-parameter
-				      gnus-newsgroup-name 'parent-group)
-				     group)))
-		      (if (string-match " " group)
-			  (concat "\"" group "\"")
-			group)))))
+		   (let ((group (or (gnus-group-find-parameter
+				     gnus-newsgroup-name 'parent-group)
+				    group)))
+		     (if (string-match " " group)
+			 (concat "\"" group "\"")
+		       group))))
 		(if (not (eq gcc-self-val 'none))
 		    (insert "\n")
 		  (gnus-delete-line)))
