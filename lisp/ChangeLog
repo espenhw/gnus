@@ -1,3 +1,9 @@
+2003-10-03  Jesper Harder  <harder@ifa.au.dk>
+
+	* mm-decode.el (mm-file-name-delete-control)
+	(mm-file-name-delete-gotchas): New functions.
+	(mm-file-name-rewrite-functions): Use them.
+
 2003-10-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* spam.el (spam-install-hooks-function): Added Autoload cookie.

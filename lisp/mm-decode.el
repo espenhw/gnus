@@ -323,11 +323,14 @@ to:
   :type 'boolean
   :group 'mime-display)
 
-(defvar mm-file-name-rewrite-functions nil
+(defvar mm-file-name-rewrite-functions
+  '(mm-file-name-delete-control mm-file-name-delete-gotchas)
   "*List of functions used for rewriting file names of MIME parts.
 Each function takes a file name as input and returns a file name.
 
 Ready-made functions include
+`mm-file-name-delete-control'
+`mm-file-name-delete-gotchas'
 `mm-file-name-delete-whitespace',
 `mm-file-name-trim-whitespace',
 `mm-file-name-collapse-whitespace',
@@ -1018,6 +1021,15 @@ string if you do not like underscores."
     (while (string-match "\\s-" file-name)
       (setq file-name (replace-match s t t file-name))))
   file-name)
+
+(defun mm-file-name-delete-control (filename)
+  "Delete control characters from FILENAME."
+  (gnus-replace-in-string filename "[\x00-\x1f\x7f]" ""))
+
+(defun mm-file-name-delete-gotchas (filename)
+  "Delete shell gotchas from FILENAME."
+  (setq filename (gnus-replace-in-string filename "[<>|]" ""))
+  (gnus-replace-in-string filename "^[.-]*" ""))
 
 (defun mm-save-part (handle)
   "Write HANDLE to a file."
