@@ -11831,6 +11831,14 @@ groups.  (Note that the default subscription method is to subscribe new
 groups as zombies.  Other methods are available (@pxref{Subscription
 Methods}).
 
+When following up to @code{nnslashdot} comments (or posting new
+comments), some light @sc{html}izations will be performed.  In
+particular, text quoted with @samp{> } will be quoted with
+@code{blockquote} instead, and signatures will have @code{br} added to
+the end of each line.  Other than that, you can just write @sc{html}
+directly into the message buffer.  Note that Slashdot filters out some
+@sc{html} forms.
+
 The following variables can be altered to change its behavior:
 
 @table @code
