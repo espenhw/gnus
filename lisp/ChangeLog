@@ -1,3 +1,8 @@
+2000-10-04  Dave Love  <fx@gnu.org>
+
+	* gnus-ems.el (gnus-article-display-xface)
+	[gnus-article-compface-xbm]: Fix.
+
 2000-10-04 11:45:04  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-mime-inline-part): Use prefix argument only
@@ -259,8 +264,8 @@
 	* mail-source.el (mail-source-imap-file-coding-system): New variable.
 	(mail-source-fetch-imap): Use it.
 
-        * rfc2104.el (rfc2104-hexstring-to-bitstring): New function.
-        (rfc2104-hash): Use it.
+	* rfc2104.el (rfc2104-hexstring-to-bitstring): New function.
+	(rfc2104-hash): Use it.
 
 	* imap.el (imap-starttls-p): Check for starttls binary.
 	(imap-starttls-open): More verbose.
