@@ -1,5 +1,7 @@
 2005-02-19  Miles Bader  <miles@gnu.org>
 
+	* etc/Makefile.in (install): Create $(etcdir)/images/gnus dir.
+
 	* etc/Makefile.in (install, uninstall): Fix installed image dirs.
 
 	* etc/Makefile.in (install): Put gnus-tut.txt in the right place.

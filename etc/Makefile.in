@@ -20,7 +20,7 @@ install:
 	  echo " $(INSTALL_DATA) $$p $(etcdir)/$$p"; \
 	  $(INSTALL_DATA) $$p $(etcdir)/$$p; \
 	done
-	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/gnus
+	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/images/gnus
 	cd $(srcdir) \
 	&& for p in images/gnus/*.xpm images/gnus/*.pbm images/gnus/*.xbm images/gnus/x-splash; do \
 	  echo " $(INSTALL_DATA) $$p $(etcdir)/$$p"; \
