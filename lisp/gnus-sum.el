@@ -1137,6 +1137,7 @@ type of files to save."
 This is mostly relevant for slow back ends where the user may
 wish to widen the summary buffer to include all headers
 that were fetched.  Say, for nnultimate groups."
+  :version "21.4"
   :group 'gnus-summary
   :type '(choice boolean regexp))
 
