@@ -348,6 +348,7 @@ external if displayed external."
 			 (mm-handle-media-type handle) t))
 	     (needsterm (or (assoc "needsterm" mime-info)
 			    (assoc "needsterminal" mime-info)))
+	     (copiousoutput (assoc "copiousoutput" mime-info))
 	     process file buffer)
 	;; We create a private sub-directory where we store our files.
 	(make-directory dir)
@@ -361,18 +362,29 @@ external if displayed external."
 	(message "Viewing with %s" method)
 	(unwind-protect
 	    (setq process
-		  (if needsterm
-		      (start-process "*display*" nil
-				     "xterm"
-				     "-e" shell-file-name "-c"
-				     (mm-mailcap-command
-				      method file (mm-handle-type handle)))
-		    (start-process "*display*"
-				   (setq buffer (generate-new-buffer "*mm*"))
-				   shell-file-name
-				   "-c"
-				   (mm-mailcap-command
-				    method file (mm-handle-type handle)))))
+		  (cond (needsterm
+			 (start-process "*display*" nil
+					"xterm"
+					"-e" shell-file-name "-c"
+					(mm-mailcap-command
+					 method file (mm-handle-type handle))))
+			(copiousoutput
+			 (start-process "*display*"
+					(setq buffer 
+					      (generate-new-buffer "*mm*"))
+					shell-file-name
+					"-c"
+					(mm-mailcap-command
+					 method file (mm-handle-type handle)))
+			 (switch-to-buffer buffer))
+			(t
+			 (start-process "*display*"
+					(setq buffer
+					      (generate-new-buffer "*mm*"))
+					shell-file-name
+					"-c"
+					(mm-mailcap-command
+					 method file (mm-handle-type handle))))))
 	  (mm-handle-set-undisplayer handle (cons file buffer)))
 	(message "Displaying %s..." (format method file))))))
 
