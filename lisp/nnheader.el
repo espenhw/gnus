@@ -633,8 +633,7 @@ the line could be found."
 (defun nnheader-remove-body ()
   "Remove the body from an article in this current buffer."
   (goto-char (point-min))
-  (when (or (search-forward "\n\n" nil t)
-	    (search-forward "\n\r\n" nil t))
+  (when (re-search-forward "\n\r?\n" nil t)
     (delete-region (point) (point-max))))
 
 (defun nnheader-set-temp-buffer (name &optional noerase)

@@ -1,12 +1,18 @@
+2002-10-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* nnheader.el (nnheader-remove-body): Fix an error of detecting
+	boundary between headers and body.
+	* nnml.el (nnml-parse-head): Ditto.
+
 2002-10-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnslashdot.el (nnslashdot-generate-active): Ignore any bogus
-	entries. 
+	entries.
 
 	* gnus-group.el (gnus-fetch-group): Allow an optional
 	specification of the articles to select.
 
-	* gnus-srvr.el (gnus-server-prepare): Removed superfluous cdr. 
+	* gnus-srvr.el (gnus-server-prepare): Removed superfluous cdr.
 
 2002-10-20  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -38,7 +44,7 @@
 
 2002-10-18  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
-	* gnus-spec.el (gnus-make-format-preserve-properties) 
+	* gnus-spec.el (gnus-make-format-preserve-properties)
 	(gnus-xmas-format, gnus-parse-simple-format): Preserve text
 	properties also on XEmacs.  `gnus-xmas-format' is like format but
 	preserves text properties on XEmacs (though it only understands
@@ -81,7 +87,7 @@
 	(spam-display-buffer-contents): Remove.
 	(spam-bogofilter-score): Merge spam-display-buffer-contents.
 
-2002-10-17  Ted Zlatanov <tzz@lifelogs.com>
+2002-10-17  Ted Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-display-buffer-contents): New function.
 	(spam-bogofilter-score): use spam-display-buffer-contents, patch
