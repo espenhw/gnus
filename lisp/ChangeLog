@@ -1,3 +1,9 @@
+2001-10-17 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-line-format-alist): user-date entry.
+	* gnus-util.el (gnus-user-date): New function. 
+	From Frank Schmitt <usenet@Frank-Schmitt.net>.
+	
 2001-10-17  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* message.el (message-check-news-header-syntax): Special case

@@ -1081,7 +1081,9 @@ that were fetched.  Say, for nnultimate groups."
 	?c)
     (?u gnus-tmp-user-defined ?s)
     (?P (gnus-pick-line-number) ?d)
-    (?B gnus-tmp-thread-tree-header-string ?s))
+    (?B gnus-tmp-thread-tree-header-string ?s)
+    (user-date (gnus-user-date 
+		,(macroexpand '(mail-header-date gnus-tmp-header))) ?s))
   "An alist of format specifications that can appear in summary lines.
 These are paired with what variables they correspond with, along with
 the type of the variable (string, integer, character, etc).")

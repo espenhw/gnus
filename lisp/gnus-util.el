@@ -299,6 +299,70 @@
       (yes-or-no-p prompt)
     (message "")))
 
+;; By Frank Schmitt <ich@Frank-Schmitt.net>. Allows to have
+;; age-depending date representations. (e.g. just the time if it's
+;; from today, the day of the week if it's within the last 7 days and
+;; the full date if it's older)
+(defun gnus-seconds-today ()
+  "Returns the number of seconds passed today"
+  (let ((now (decode-time (current-time))))
+    (+ (car now) (* (car (cdr now)) 60) (* (car (nthcdr 2 now)) 3600))))
+
+(defun gnus-seconds-month ()
+  "Returns the number of seconds passed this month"
+  (let ((now (decode-time (current-time))))
+    (+ (car now) (* (car (cdr now)) 60) (* (car (nthcdr 2 now)) 3600) 
+       (* (- (car (nthcdr 3 now)) 1) 3600 24))))
+
+(defun gnus-seconds-year ()
+  "Returns the number of seconds passed this year"
+  (let ((now (decode-time (current-time)))
+	(days (format-time-string "%j" (current-time))))
+    (+ (car now) (* (car (cdr now)) 60) (* (car (nthcdr 2 now)) 3600) 
+       (* (- (string-to-number days) 1) 3600 24))))
+
+(defvar gnus-user-date-format-alist
+  '(((gnus-seconds-today) . "%k:%M")
+    (604800 . "%a %k:%M")                   ;;that's one week
+    ((gnus-seconds-month) . "%a %d")
+    ((gnus-seconds-year) . "%b %d")
+    (t . "%b %m '%y"))                      ;;this one is used when no other does match
+  "Alist of time in seconds and format specification used to display dates not older.
+The first element must be a number or a function returning a
+number. The second element is a format-specification as described in
+the documentation for format-time-string.  The list must be ordered
+smallest number up. When there is an element, which is not a number,
+the corresponding format-specification will be used, disregarding any
+following elements.  You can use the functions gnus-seconds-today,
+gnus-seconds-month, gnus-seconds-year which will return the number of
+seconds which passed today/this month/this year.")
+
+(defun gnus-user-date (messy-date)
+  "Format the messy-date acording to gnus-user-date-format-alist.
+Returns \"  ?  \" if there's bad input or if an other error occurs.
+Input should look like this: \"Sun, 14 Oct 2001 13:34:39 +0200\"."
+  (condition-case ()
+      (let* ((messy-date (safe-date-to-time messy-date))
+	     (now (current-time))
+	     ;;If we don't find something suitable we'll use this one
+	     (my-format "%b %m '%y") 
+	     (high (lsh (- (car now) (car messy-date)) 16)))
+	(if (and (> high -1) (= (logand high 65535) 0))  
+	    ;;overflow and bad input
+	    (let* ((difference (+ high (- (car (cdr now)) 
+					  (car (cdr messy-date)))))
+		   (templist gnus-user-date-format-alist)
+		   (top (eval (caar templist))))
+	      (while (if (numberp top) (< top difference) (not top))
+		(progn
+		  (setq templist (cdr templist))
+		  (setq top (eval (caar templist)))))
+	      (if (stringp (cdr (car templist)))
+		  (setq my-format (cdr (car templist))))))
+	(format-time-string (eval my-format) messy-date))
+    (error "  ?   ")))
+;;end of Frank's code
+
 (defun gnus-dd-mmm (messy-date)
   "Return a string like DD-MMM from a big messy string."
   (condition-case ()
