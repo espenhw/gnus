@@ -487,13 +487,26 @@ nn*-request-list should have been called before calling this function."
     (save-excursion
       (set-buffer nntp-server-buffer)
       (goto-char (point-min))
-      (while (re-search-forward
-	      "^\\([^ \t]+\\)[ \t]+\\([0-9]+\\)[ \t]+\\([0-9]+\\)" nil t)
-	;; We create an alist with `(GROUP (LOW . HIGH))' elements.
-	(push (list (match-string 1)
-		    (cons (string-to-int (match-string 3))
-			  (string-to-int (match-string 2))))
-	      group-assoc)))
+      (unless (re-search-forward "[\\\"]" nil t)
+	(goto-char (point-max))
+	(while (re-search-backward "[][';?()#]" nil t)
+	  (insert ?\\)))
+      (goto-char (point-min))
+      (let (group max min)
+	(while (not (eobp))
+	  (condition-case err
+	      (progn
+		(narrow-to-region (point) (gnus-point-at-eol))
+		(setq group (read nntp-server-buffer))
+		(unless (stringp group)
+		  (setq group (symbol-name group)))
+		(if (and (numberp (setq max (read nntp-server-buffer)))
+			 (numberp (setq min (read nntp-server-buffer))))
+		    (push (list group (cons min max))
+			  group-assoc)))
+	    (error nil))
+	  (widen)
+	  (forward-line 1))))
     group-assoc))
 
 (defvar nnmail-active-file-coding-system 'raw-text
@@ -511,8 +524,11 @@ nn*-request-list should have been called before calling this function."
   (erase-buffer)
   (let (group)
     (while (setq group (pop alist))
-      (insert (format "%s %d %d y\n" (car group) (cdadr group)
-		      (caadr group))))))
+      (insert (format "%S %d %d y\n" (intern (car group)) (cdadr group)
+		      (caadr group))))
+    (goto-char (point-max))
+    (while (search-backward "\\." nil t)
+      (delete-char 1))))
 
 (defun nnmail-get-split-group (file source)
   "Find out whether this FILE is to be split into GROUP only.
