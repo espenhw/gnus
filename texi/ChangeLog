@@ -1,3 +1,7 @@
+2002-11-18  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Article Washing): Add morse.
+
 2002-11-17  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Expiring in IMAP): Add.

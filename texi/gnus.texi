@@ -8208,6 +8208,12 @@ positions in the alphabet, e. g. @samp{B} (letter #2) -> @samp{O} (letter
 #15).  It is sometimes referred to as ``Caesar rotate'' because Caesar
 is rumored to have employed this form of, uh, somewhat weak encryption.
 
+@item W m
+@kindex W m (Summary)
+@findex gnus-summary-morse-message
+@c @icon{gnus-summary-morse-message}
+Morse decode the article buffer (@code{gnus-summary-morse-message}).
+
 @item W t
 @item t
 @kindex W t (Summary)
