@@ -787,9 +787,10 @@ Optional arg ALL, if non-nil, means to fetch all articles."
 This can be added to `gnus-select-article-hook' or
 `gnus-mark-article-hook'."
   (let ((gnus-command-method gnus-current-select-method))
-    (gnus-agent-fetch-articles
-     gnus-newsgroup-name
-     (list gnus-current-article))))
+    (when (gnus-agent-method-p gnus-command-method)
+      (gnus-agent-fetch-articles
+       gnus-newsgroup-name
+       (list gnus-current-article)))))
 
 ;;;
 ;;; Internal functions
