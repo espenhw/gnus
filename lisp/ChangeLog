@@ -1,3 +1,9 @@
+2001-05-03  Florian Weimer  <fw@deneb.enyo.de>
+
+	* message.el (message-dont-reply-to-names): Fix documentation.
+	(message-get-reply-headers): Use Mail-Followup-To only for wide
+	replies.
+
 2001-05-03 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnrss.el (nnrss-request-expire-articles): Calculate # of days

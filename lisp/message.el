@@ -714,8 +714,8 @@ If nil, you might be asked to input the charset."
 
 (defcustom message-dont-reply-to-names
   (and (boundp 'rmail-dont-reply-to-names) rmail-dont-reply-to-names)
-  "*A regexp specifying names to prune when doing wide replies.
-A value of nil means exclude your own name only."
+  "*A regexp specifying addresses to prune when doing wide replies.
+A value of nil means exclude your own user name only."
   :version "21.1"
   :group 'message
   :type '(choice (const :tag "Yourself" nil)
@@ -3980,6 +3980,7 @@ OTHER-HEADERS is an alist of header/value pairs."
 	  (message-set-work-buffer)
           (if (and mft
                    message-use-followup-to
+                   wide
                    (or (not (eq message-use-followup-to 'ask))
                        (message-y-or-n-p
 		        (concat "Obey Mail-Followup-To? ") t "\
