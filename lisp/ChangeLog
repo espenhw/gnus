@@ -2,6 +2,10 @@
 
 	* nnfolder.el (nnfolder-request-move-article): For empty article,
 	search till (point-max).
+	(nnfolder-retrieve-headers): Ditto.
+	(nnfolder-request-accept-article): Ditto.
+	(nnfolder-save-mail): Ditto.
+	(nnfolder-insert-newsgroup-line): Ditto.
 
 1999-10-05  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
