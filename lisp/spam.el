@@ -551,7 +551,7 @@ spamoracle database."
 (defun spam-mark-spam-as-expired-and-move-routine (&rest groups)
   (gnus-summary-kill-process-mark)
   (let ((articles gnus-newsgroup-articles)
-	article tomove todelete)
+	article tomove deletep)
     (dolist (article articles)
       (when (eq (gnus-summary-article-mark article) gnus-spam-mark)
 	(gnus-summary-mark-article article gnus-expirable-mark)
@@ -564,22 +564,26 @@ spamoracle database."
 	(dolist (article tomove)
 	  (gnus-summary-set-process-mark article))
 	(when tomove
-	  (gnus-summary-copy-article nil group)
-	  (setq todelete t))))
+	  (if (> (length groups) 1)
+	      (progn 
+		(gnus-summary-copy-article nil group)
+		(setq deletep t))
+	    (gnus-summary-move-article nil group)))))
     
     ;; now delete the articles, if there was a copy done
-    (when todelete
+    (when deletep
       (dolist (article tomove)
 	(gnus-summary-set-process-mark article))
       (when tomove
-	(gnus-summary-delete-article nil)))
+	(let ((gnus-novice-user nil))	; don't ask me if I'm sure
+	  (gnus-summary-delete-article nil))))
     
     (gnus-summary-yank-process-mark)))
  
 (defun spam-ham-copy-or-move-routine (copy groups)
   (gnus-summary-kill-process-mark)
   (let ((articles gnus-newsgroup-articles)
-	article mark todo todelete)
+	article mark todo deletep)
     (dolist (article articles)
       (when (spam-group-ham-mark-p gnus-newsgroup-name
 				   (gnus-summary-article-mark article))
@@ -592,16 +596,22 @@ spamoracle database."
 	  (when spam-mark-ham-unread-before-move-from-spam-group
 	    (gnus-summary-mark-article article gnus-unread-mark))
 	  (gnus-summary-set-process-mark article))
-	(gnus-summary-copy-article nil group)
-	(setq todelete t)))
+
+	(if (> (length groups) 1)
+	    (progn 
+	      (gnus-summary-copy-article nil group)
+	      (setq deletep t))
+	  (gnus-summary-move-article nil group))))
   
-    ;; now delete the articles, unless copy is t, and when there was a copy done
+    ;; now delete the articles, unless a) copy is t, and when there was a copy done
+    ;;                                 b) a move was done to a single group
     (unless copy
-      (when todelete
+      (when deletep
 	(dolist (article todo)
 	  (gnus-summary-set-process-mark article))
 	(when todo
-	  (gnus-summary-delete-article nil)))))
+	  (let ((gnus-novice-user nil))	; don't ask me if I'm sure
+	    (gnus-summary-delete-article nil))))))
   
   (gnus-summary-yank-process-mark))
  
