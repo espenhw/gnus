@@ -166,9 +166,11 @@ See Info node `(gnus)Formatting Variables'."
    (list (completing-read "Go to topic: "
 			  (mapcar 'list (gnus-topic-list))
 			  nil t)))
-  (dolist (topic (gnus-current-topics topic))
-    (gnus-topic-goto-topic topic)
-    (gnus-topic-fold t))
+  (let ((buffer-read-only nil))
+    (dolist (topic (gnus-current-topics topic))
+      (unless (gnus-topic-goto-topic topic)
+	(gnus-topic-goto-missing-topic topic)
+	(gnus-topic-display-missing-topic topic))))
   (gnus-topic-goto-topic topic))
 
 (defun gnus-current-topic ()

@@ -1,5 +1,7 @@
 2004-05-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-topic.el (gnus-topic-jump-to-topic): Goto missing topic.
+
 	* assistant.el (assistant-render-node): Fix up rendering and
 	read-only text. 
 	(assistant-render-node): Reset.
