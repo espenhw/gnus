@@ -107,7 +107,7 @@ The function is called with one parameter, which is the generated part.")
 
 (defun mml-parse-1 ()
   "Parse the current buffer as an MML document."
-  (let (struct tag point contents charsets warn use-ascii no-markup-p)
+  (let (struct tag point contents charsets warn use-ascii no-markup-p raw)
     (while (and (not (eobp))
 		(not (looking-at "<#/multipart")))
       (cond
@@ -124,10 +124,15 @@ The function is called with one parameter, which is the generated part.")
 	  (setq tag (list 'part '(type . "text/plain"))
 		no-markup-p t
 		warn t))
-	(setq point (point)
-	      contents (mml-read-part (eq 'mml (car tag)))
-	      charsets (mm-find-mime-charset-region point (point)))
-	(when (memq nil charsets)
+	(setq raw (cdr (assq 'raw tag))
+	      point (point)
+	      contents (if raw
+			   (mm-with-unibyte-current-buffer
+			     (mml-read-part (eq 'mml (car tag))))
+			 (mml-read-part (eq 'mml (car tag))))
+	      charsets (if raw nil 
+			 (mm-find-mime-charset-region point (point))))
+	(when (and (not raw) (memq nil charsets))
 	  (if (or (memq 'unknown-encoding mml-confirmation-set)
 		  (y-or-n-p
 		   "Warning: You message contains characters with unknown encoding. Really send?"))
@@ -137,7 +142,8 @@ The function is called with one parameter, which is the generated part.")
 		  (setq charsets (delq nil charsets))
 		(setq warn nil))
 	    (error "Edit your message to remove those characters")))
-	(if (or (eq 'mml (car tag))
+	(if (or raw
+		(eq 'mml (car tag))
 		(< (length charsets) 2))
 	    (if (or (not no-markup-p)
 		    (string-match "[^ \t\r\n]" contents))
@@ -290,9 +296,11 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	(funcall mml-generate-mime-preprocess-function cont))
     (cond
      ((or (eq (car cont) 'part) (eq (car cont) 'mml))
-      (let (coded encoding charset filename type)
+      (let ((raw (cdr (assq 'raw cont)))
+	    coded encoding charset filename type)
 	(setq type (or (cdr (assq 'type cont)) "text/plain"))
-	(if (member (car (split-string type "/")) '("text" "message"))
+	(if (and (not raw)
+		 (member (car (split-string type "/")) '("text" "message")))
 	    (with-temp-buffer
 	      (cond
 	       ((cdr (assq 'buffer cont))
@@ -344,7 +352,8 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 		  coded (buffer-string))))
 	(mml-insert-mime-headers cont type charset encoding)
 	(insert "\n")
-	(insert coded)))
+	(mm-with-unibyte-current-buffer
+	  (insert coded))))
      ((eq (car cont) 'external)
       (insert "Content-Type: message/external-body")
       (let ((parameters (mml-parameter-string

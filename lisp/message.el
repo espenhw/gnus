@@ -4053,8 +4053,7 @@ Optional DIGEST will use digest to forward."
 	    (insert "\n<#multipart type=digest>\n")
 	  (if message-forward-show-mml
 	      (insert "\n\n<#mml type=message/rfc822 disposition=inline>\n")
-	    (insert "\n\n<#part type=message/rfc822 disposition=inline"
-		    " buffer=\"" (buffer-name cur) "\">\n")))
+	    (insert "\n\n<#part type=message/rfc822 disposition=inline raw=t>\n")))
       (insert "\n-------------------- Start of forwarded message --------------------\n"))
     (let ((b (point)) e)
       (if digest
@@ -4063,7 +4062,7 @@ Optional DIGEST will use digest to forward."
 	    (mml-insert-buffer cur))
 	(if message-forward-show-mml
 	    (insert-buffer-substring cur)
-	  (unless message-forward-as-mime
+	  (mm-with-unibyte-current-buffer
 	    (mml-insert-buffer cur))))
       (setq e (point))
       (if message-forward-as-mime
