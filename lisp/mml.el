@@ -755,10 +755,12 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
       (insert "<#/multipart>\n"))
      (textp
       (let ((charset (mail-content-type-get
-		      (mm-handle-type handle) 'charset)))
+		      (mm-handle-type handle) 'charset))
+	    (start (point)))
 	(if (eq charset 'gnus-decoded)
 	    (mm-insert-part handle)
-	  (insert (mm-decode-string (mm-get-part handle) charset))))
+	  (insert (mm-decode-string (mm-get-part handle) charset)))
+	(mml-quote-region start (point)))
       (goto-char (point-max)))
      (t
       (insert "<#/part>\n")))))

@@ -1,3 +1,7 @@
+2003-10-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-insert-mime): Quote mml.
+
 2003-10-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-remove-odd-characters): Use
