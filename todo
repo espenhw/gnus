@@ -3,6 +3,8 @@
 
 * Emphasis delimiters show when `W W c'.
 
+  [Fixed]
+
 * Parsing of the common list confirmation requests so that Gnus can
    prepare the response with a single command.  Including LISTSERV
    periodic ping messages and the like.
@@ -1432,6 +1434,8 @@ exceeding lisp nesting on huge groups.
  buffer, the citations are revealed, but the [+] buttons don't turn
  into [-] buttons.  (If I click on one of the [+] buttons, it does
  turn into a [-] button.)
+
+ [fixed]
 
 * Perhaps there should be a command to "attach" a buffer of comments
  to a message?  That is, `B WHATEVER', you're popped into a buffer,
