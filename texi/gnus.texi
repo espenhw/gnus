@@ -11960,6 +11960,9 @@ groups.  (Note that the default subscription method is to subscribe new
 groups as zombies.  Other methods are available (@pxref{Subscription
 Methods}).
 
+If you want to remove an old @code{nnslashdot} group, the @kbd{G DEL}
+command is the most handy tool (@pxref{Foreign Groups}).
+
 When following up to @code{nnslashdot} comments (or posting new
 comments), some light @sc{html}izations will be performed.  In
 particular, text quoted with @samp{> } will be quoted with
