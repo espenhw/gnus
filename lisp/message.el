@@ -648,6 +648,12 @@ and respond with new To and Cc headers."
   :link '(custom-manual "(message)Followup")
   :type '(choice function (const nil)))
 
+(defcustom message-extra-wide-headers nil
+  "If non-nil, a list of additional address headers.
+These are used when composing a wide reply."
+  :group 'message-sending
+  :type '(repeat string))
+
 (defcustom message-use-followup-to 'ask
   "*Specifies what to do with Followup-To header.
 If nil, always ignore the header.  If it is t, use its value, but
@@ -5690,6 +5696,11 @@ OTHER-HEADERS is an alist of header/value pairs."
 			      return t)
 			(message-fetch-field "original-to")))
 	    cc (message-fetch-field "cc")
+	    extra (when message-extra-wide-headers
+		    (mapconcat 'identity
+			       (mapcar 'message-fetch-field
+				       message-extra-wide-headers)
+			       ", "))
 	    mct (message-fetch-field "mail-copies-to")
 	    author (or (message-fetch-field "mail-reply-to")
 		       (message-fetch-field "reply-to")
@@ -5749,8 +5760,9 @@ responses here are directed to other addresses.")))
 	(if mct (setq recipients (concat recipients ", " mct))))
        (t
 	(setq recipients (if never-mct "" (concat ", " author)))
-	(if to  (setq recipients (concat recipients ", " to)))
-	(if cc  (setq recipients (concat recipients ", " cc)))
+	(if to (setq recipients (concat recipients ", " to)))
+	(if cc (setq recipients (concat recipients ", " cc)))
+	(if extra (setq recipients (concat recipients ", " extra)))
 	(if mct (setq recipients (concat recipients ", " mct)))))
       (if (>= (length recipients) 2)
 	  ;; Strip the leading ", ".

@@ -1,3 +1,8 @@
+2004-12-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-extra-wide-headers): New variable.
+	(message-get-reply-headers): Use it.
+
 2004-12-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-agent.el (gnus-agent-group-path): Decode group name.
