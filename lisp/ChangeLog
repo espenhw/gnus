@@ -1,3 +1,8 @@
+2002-06-16  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-cache.el (gnus-cache-remove-article): n is &optional.  From
+	Reiner Steib <4uce.02.r.steib@gmx.net>.
+
 2002-06-15  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnheader.el (nnheader-file-name-translation-alist): Set the

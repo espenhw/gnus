@@ -337,7 +337,7 @@ Returns the list of articles entered."
     (gnus-summary-position-point)
     (nreverse out)))
 
-(defun gnus-cache-remove-article (n)
+(defun gnus-cache-remove-article (&optional n)
   "Remove the next N articles from the cache.
 If not given a prefix, use the process marked articles instead.
 Returns the list of articles removed."
