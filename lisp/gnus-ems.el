@@ -520,8 +520,6 @@ call it with the value of the `gnus-data' text property."
       (setq gnus-summary-mode-hook
 	    (cons
 	     '(lambda ()
-	       (easy-menu-add gnus-summary-mark-menu)
-	       (easy-menu-add gnus-summary-move-menu)
 	       (easy-menu-add gnus-summary-article-menu)
 	       (easy-menu-add gnus-summary-thread-menu)
 	       (easy-menu-add gnus-summary-misc-menu)

@@ -213,7 +213,7 @@ A buffer may be modified in several ways after reading into the buffer due
 to advanced Emacs features, such as file-name-handlers, format decoding,
 find-file-hooks, etc.
   This function ensures that none of these modifications will take place."
-  (let ((file-name-handler-alist nil)
+  (let (; (file-name-handler-alist nil)
 	(format-alist nil)
 	(after-insert-file-functions nil)
 	(find-buffer-file-type-function 

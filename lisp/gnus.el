@@ -1310,7 +1310,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.13"
+(defconst gnus-version "(ding) Gnus v0.99.14"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -5774,11 +5774,7 @@ article number."
 	  (if (and (consp thread) (cdr thread))
 	      (apply
 	       '+ 1 (mapcar
-		     (function
-		      (lambda (arg)
-			(if (memq (header-number (car arg)) gnus-tmp-gathered)
-			    0
-			  (gnus-summary-number-of-articles-in-thread arg))))
+		     'gnus-summary-number-of-articles-in-thread 
 		     (cdr thread)))
 	    1)))
     (if char 
@@ -12806,7 +12802,8 @@ Returns whether the updating was successful."
 		      (setq gnus-moderated-list 
 			    (cons (symbol-name group) gnus-moderated-list))))
 	      (error 
-	       (set group nil)))
+	       (and (symbolp group)
+		    (set group nil))))
 	    (widen)
 	    (forward-line 1)))
       ;; And if we do not care about moderation, we use this loop,
@@ -12831,7 +12828,8 @@ Returns whether the updating was successful."
 		  (set group nil)))
 	    (error 
 	     (progn 
-	       (set group nil)
+	       (and (symbolp group)
+		    (set group nil))
 	       (if ignore-errors
 		   ()
 		 (gnus-message 3 "Warning - illegal active: %s"

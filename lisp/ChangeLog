@@ -1,4 +1,15 @@
-Sun Aug 20 01:04:45 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+Sun Aug 20 16:04:20 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-summary-number-of-articles-in-thread): Include
+	adopted articles in the count.
+	(gnus-active-to-gnus-format): Would bug out on non-symbol stuff. 
+
+	* nnheader.el (nnheader-insert-file-contents-literally): Don't
+	bind `file-name-handler-list' to nil.
+
+Sun Aug 20 01:04:45 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.99.13 is released.
 
 	* gnus-ems.el (gnus-ems-redefine): One entry too many; XEmacs
 	bugout. 
@@ -6,7 +17,7 @@ Sun Aug 20 01:04:45 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
 Sat Aug 19 22:41:22 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
 
 	* gnus.el (gnus-article-treat-overstrike): Make overstrikes
-	invisible instead of deleitng them.
+	invisible instead of deleting them.
 	(gnus-summary-mode-map): Changed the "M p" and "M s" keymaps.
 	(gnus-update-active-hashtb-from-killed): New function.
 	(gnus-setup-news): Use it.

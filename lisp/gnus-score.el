@@ -114,10 +114,18 @@ of the last successful match.")
 ;; functions are written by Per Abrahamsen <amanda@iesd.auc.dk>.
 
 (defun gnus-summary-lower-score (&optional score)
+  "Make a score entry based on the current article.
+The user will be prompted for header to score on, match type,
+permanence, and the string to be used.  The numerical prefix will be
+used as score."
   (interactive "P")
   (gnus-summary-increase-score (- (gnus-score-default score))))
 
 (defun gnus-summary-increase-score (&optional score)
+  "Make a score entry based on the current article.
+The user will be prompted for header to score on, match type,
+permanence, and the string to be used.  The numerical prefix will be
+used as score."
   (interactive "P")
   (gnus-set-global-variables)
   (let* ((nscore (gnus-score-default score))
