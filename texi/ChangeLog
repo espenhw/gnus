@@ -1,3 +1,8 @@
+2000-09-20 John H. Palmieri  <palmieri@math.washington.edu>
+
+	* gnus.texi (Mail Source Customization): Document of
+	mail-source-incoming-file-prefix.
+
 2000-09-20  Simon Josefsson  <simon@josefsson.org>
 
 	* gnus.texi (IMAP): Add examples.
