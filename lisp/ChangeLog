@@ -1,3 +1,7 @@
+2004-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-decode.el (mm-copy-to-buffer): Don't use set-buffer-multibyte.
+
 2004-09-26  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-dup.el (gnus-dup-open): Use mapc.
