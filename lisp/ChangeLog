@@ -1,3 +1,14 @@
+2000-11-28 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-shoot-gnksa-feet): New variable.
+	(message-gnksa-enable-p): New function.
+	(message-send): Use it.
+	(message-check-news-body-syntax): Ditto.
+
+2000-11-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-make-message-id): Remove the redundancy.
+
 2000-11-22 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-setup): Discourage using mc-install-*-mode.
