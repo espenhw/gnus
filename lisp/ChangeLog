@@ -1,4 +1,12 @@
+2002-04-27  Katsumi Yamaoka <yamaoka@jpl.org>
+	
+	* dns.el (dns-make-network-process): New macro.
+	(query-dns): Use it.
+
 2002-04-27  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	
+	* gnus-msg.el (gnus-summary-reply): Remove unbound variable
+	article-buffer.
 
 	* mm-url.el (mm-url-package-name): New variable.
 	(mm-url-package-version): New variable.

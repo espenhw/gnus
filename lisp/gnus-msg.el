@@ -1013,7 +1013,7 @@ If VERY-WIDE, make a very wide reply."
       (when (or gnus-message-replysign gnus-message-replyencrypt)
 	(let (signed encrypted)
 	  (save-excursion
-	    (set-buffer (or gnus-article-buffer article-buffer))
+	    (set-buffer gnus-article-buffer)
 	    (setq signed (memq 'signed gnus-article-wash-types))
 	    (setq encrypted (memq 'encrypted gnus-article-wash-types)))
 	  (cond ((and gnus-message-replysign signed)

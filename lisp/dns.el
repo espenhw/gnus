@@ -280,6 +280,24 @@ If TCP-P, the first two bytes of the package with be the length field."
 
 ;;; Interface functions.
 
+(defmacro dns-make-network-process (server)
+  (if (featurep 'xemacs)
+      `(let ((coding-system-for-read 'binary)
+	     (coding-system-for-write 'binary))
+	 (open-network-stream "dns" (current-buffer) ,server "domain" 'udp))
+    `(let ((server ,server)
+	   (coding-system-for-read 'binary)
+	   (coding-system-for-write 'binary))
+       (if (fboundp 'make-network-process)
+	   (make-network-process
+	    :name "dns"
+	    :coding 'binary
+	    :buffer (current-buffer)
+	    :host server
+	    :service "domain"
+	    :type 'datagram)
+	 (open-network-stream "dns" (current-buffer) server "domain")))))
+
 (defun query-dns (name &optional type fullp)
   "Query a DNS server for NAME of TYPE.
 If FULLP, return the entire record returned."
@@ -289,53 +307,36 @@ If FULLP, return the entire record returned."
     (unless dns-servers
       (error "No DNS server configuration found")))
   (mm-with-unibyte-buffer
-    (let ((coding-system-for-read 'binary) 
-	  (coding-system-for-write 'binary)
-	  (tcp-p (and (not (fboundp 'open-network-stream))
-		      (not (featurep 'xemacs)))))
-      (let ((process
- 	     (cond
-	      ((featurep 'xemacs)
-	       (open-network-stream
-		"dns" (current-buffer) (car dns-servers) "domain" 'udp))
-	      (tcp-p
-	       (open-network-stream
-		"dns" (current-buffer) (car dns-servers) "domain"))
-	      (t
-	       (make-network-process
-		:name "dns"
-		:coding 'binary
-		:buffer (current-buffer)
-		:host (car dns-servers)
-		:service "domain"
-		:type 'datagram))))
-	    (step 100)
-	    (times (* dns-timeout 1000))
-	    (id (random 65000)))
-	(process-send-string
-	 process
-	 (dns-write `((id ,id)
-		      (opcode query)
-		      (queries ((,name (type ,type))))
-		      (recursion-desired-p t))
-		    tcp-p))
-	(while (and (zerop (buffer-size))
-		    (> times 0))
-	  (accept-process-output process 0 step)
-	  (decf times step))
-	(ignore-errors
-	  (delete-process process))
-	(when tcp-p
-	  (goto-char (point-min))
-	  (delete-region (point) (+ (point) 2)))
-	(unless (zerop (buffer-size))
-	  (let ((result (dns-read (buffer-string))))
-	    (if fullp
-		result
-	      (let ((answer (car (dns-get 'answers result))))
-		(when (eq type (dns-get 'type answer))
-		  (dns-get 'data answer))))))))))
-    
+    (let ((process (dns-make-network-process (car dns-servers)))
+	  (tcp-p (and (not (fboundp 'make-network-process))
+		      (not (featurep 'xemacs))))
+	  (step 100)
+	  (times (* dns-timeout 1000))
+	  (id (random 65000)))
+      (process-send-string
+       process
+       (dns-write `((id ,id)
+		    (opcode query)
+		    (queries ((,name (type ,type))))
+		    (recursion-desired-p t))
+		  tcp-p))
+      (while (and (zerop (buffer-size))
+		  (> times 0))
+	(accept-process-output process 0 step)
+	(decf times step))
+      (ignore-errors
+	(delete-process process))
+      (when tcp-p
+	(goto-char (point-min))
+	(delete-region (point) (+ (point) 2)))
+      (unless (zerop (buffer-size))
+	(let ((result (dns-read (buffer-string))))
+	  (if fullp
+	      result
+	    (let ((answer (car (dns-get 'answers result))))
+	      (when (eq type (dns-get 'type answer))
+		(dns-get 'data answer)))))))))
+
 (provide 'dns)
 
 ;;; dns.el ends here
