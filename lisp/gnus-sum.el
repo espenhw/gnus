@@ -11000,6 +11000,8 @@ If REVERSE, save parts that do not match TYPE."
 		     (or
 		      (mail-content-type-get
 		       (mm-handle-disposition handle) 'filename)
+		      (mail-content-type-get
+		       (mm-handle-type handle) 'name)
 		      (concat gnus-newsgroup-name
 			      "." (number-to-string
 				   (cdr gnus-article-current))))))

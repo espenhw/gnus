@@ -1,3 +1,8 @@
+2003-12-08  Joel Ray Holveck <joelh@piquan.org>  (tiny change)
+
+	* gnus-sum.el (gnus-summary-save-parts-1): Consider the "name"
+	parameter of Content-Type.
+
 2003-12-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-util.el: Revert 2003-12-03 change, instead, provide the
