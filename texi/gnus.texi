@@ -7060,9 +7060,10 @@ Signature}.
 @kindex W W l (Summary)
 @findex gnus-article-hide-list-identifiers
 @vindex gnus-list-identifiers
-Hide list identifiers specified in @code{gnus-list-identifiers}.  These
-are strings some list servers add to the beginning of all @code{Subject}
-headers---for example, @samp{[zebra 4711]}.
+Strip list identifiers specified in @code{gnus-list-identifiers}.
+These are strings some mailing list servers add to the beginning of
+all @code{Subject} headers---for example, @samp{[zebra 4711]}.  Any
+leading @samp{Re: } is skipped before stripping.
 
 @table @code
 
