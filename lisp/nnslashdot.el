@@ -398,7 +398,7 @@
 	      (re-search-forward "<url>\\([^<]+\\)</url>")
 	      (setq sid (match-string 1))
 	      (string-match "/\\([0-9/]+\\)\\(.shtml\\|$\\)" sid)
-	      (setq sid (concat "00/" (match-string 1 sid)))
+	      (setq sid (concat "01/" (match-string 1 sid)))
 	      (re-search-forward "<comments>\\([^<]+\\)</comments>")
 	      (setq articles (string-to-number (match-string 1)))
 	      (setq gname (concat description " (" sid ")"))

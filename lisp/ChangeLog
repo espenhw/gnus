@@ -1,3 +1,10 @@
+2001-01-02 06:28:28  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-expire-articles): Don't save
+	excursion. 
+
+	* nnslashdot.el (nnslashdot-request-list): Get the right year.
+
 2001-01-01 00:52:44  Ed L. Cashin  <ecashin@coe.uga.edu>
 
 	* gnus-sum.el (gnus-summary-expire-articles): Save excursion.

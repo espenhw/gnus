@@ -7927,32 +7927,31 @@ This will be the case if the article has both been mailed and posted."
       (when expirable
 	;; There are expirable articles in this group, so we run them
 	;; through the expiry process.
+	(gnus-message 6 "Expiring articles...")
+	(unless (gnus-check-group gnus-newsgroup-name)
+	  (error "Can't open server for %s" gnus-newsgroup-name))
+	;; The list of articles that weren't expired is returned.
 	(save-excursion
-	  (gnus-message 6 "Expiring articles...")
-	  (unless (gnus-check-group gnus-newsgroup-name)
-	    (error "Can't open server for %s" gnus-newsgroup-name))
-	  ;; The list of articles that weren't expired is returned.
-	  (save-excursion
-	    (if expiry-wait
-		(let ((nnmail-expiry-wait-function nil)
-		      (nnmail-expiry-wait expiry-wait))
-		  (setq es (gnus-request-expire-articles
-			    expirable gnus-newsgroup-name)))
-	      (setq es (gnus-request-expire-articles
-			expirable gnus-newsgroup-name)))
-	    (unless total
-	      (setq gnus-newsgroup-expirable es))
-	    ;; We go through the old list of expirable, and mark all
-	    ;; really expired articles as nonexistent.
-	    (unless (eq es expirable)	;If nothing was expired, we don't mark.
-	      (let ((gnus-use-cache nil))
-		(while expirable
-		  (unless (memq (car expirable) es)
-		    (when (gnus-data-find (car expirable))
-		      (gnus-summary-mark-article
-		       (car expirable) gnus-canceled-mark)))
-		  (setq expirable (cdr expirable))))))
-	  (gnus-message 6 "Expiring articles...done"))))))
+	  (if expiry-wait
+	      (let ((nnmail-expiry-wait-function nil)
+		    (nnmail-expiry-wait expiry-wait))
+		(setq es (gnus-request-expire-articles
+			  expirable gnus-newsgroup-name)))
+	    (setq es (gnus-request-expire-articles
+		      expirable gnus-newsgroup-name)))
+	  (unless total
+	    (setq gnus-newsgroup-expirable es))
+	  ;; We go through the old list of expirable, and mark all
+	  ;; really expired articles as nonexistent.
+	  (unless (eq es expirable)	;If nothing was expired, we don't mark.
+	    (let ((gnus-use-cache nil))
+	      (while expirable
+		(unless (memq (car expirable) es)
+		  (when (gnus-data-find (car expirable))
+		    (gnus-summary-mark-article
+		     (car expirable) gnus-canceled-mark)))
+		(setq expirable (cdr expirable))))))
+	(gnus-message 6 "Expiring articles...done")))))
 
 (defun gnus-summary-expire-articles-now ()
   "Expunge all expirable articles in the current group.
