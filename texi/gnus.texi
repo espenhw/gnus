@@ -7436,7 +7436,7 @@ Here's an example setting that will first try the current method, and
 then ask Deja if that fails:
 
 @lisp
-(setq gnus-article-refer-method
+(setq gnus-refer-article-method
       '(current
         (nnweb "refer" (nnweb-type dejanews))))
 @end lisp

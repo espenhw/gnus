@@ -1004,7 +1004,15 @@ list, Gnus will try all the methods in the list until it finds a match."
   :group 'gnus-server
   :type '(choice (const :tag "default" nil)
 		 (const :tag "DejaNews" (nnweb "refer" (nnweb-type dejanews)))
-		 gnus-select-method))
+		 gnus-select-method
+		 (repeat :menu-tag "Try multiple" 
+			 :tag "Multiple"
+			 :value (current (nnweb "refer" (nnweb-type dejanews)))
+			 (choice :tag "Method"
+				 (const current)
+				 (const :tag "DejaNews" 
+					(nnweb "refer" (nnweb-type dejanews)))
+				 gnus-select-method))))
 
 (defcustom gnus-group-faq-directory
   '("/ftp@mirrors.aol.com:/pub/rtfm/usenet/"

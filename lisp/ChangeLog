@@ -1,3 +1,8 @@
+1999-11-17  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el (gnus-refer-article-method): Made list value
+	customizable. 
+
 1999-11-17 13:09:37  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-recenter): set-window-start with
@@ -120,7 +125,7 @@
 
 	* gnus-cus.el (gnus-group-parameters): Changed from `defcustom' to
 	`defconst'. 
-	mention that it is both for group and topic parameters. 
+	Mention that it is both for group and topic parameters. 
 	(gnus-extra-topic-parameters): New constant, including `subscribe'
 	parameter. 
 	(gnus-extra-group-parameters): New constant.
