@@ -1,3 +1,7 @@
+2000-09-20  Simon Josefsson  <simon@josefsson.org>
+
+	* gnus.texi (IMAP): Add examples.
+
 2000-09-19  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (IMAP): Add pointer to description of ~/.authinfo file

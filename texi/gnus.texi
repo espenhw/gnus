@@ -13587,6 +13587,13 @@ server name if not specified.
 @vindex nnimap-server-port
 Port on server to contact.  Defaults to port 143, or 993 for SSL.
 
+Note that this should be a integer, example server specification:
+
+@lisp
+(nnimap "mail.server.com"
+        (nnimap-server-port 4711))
+@end lisp
+
 @item nnimap-list-pattern
 @vindex nnimap-list-pattern
 String or list of strings of mailboxes to limit available groups to.
@@ -13600,10 +13607,12 @@ REFERENCE is used for is server specific, but on the University of
 Washington server it's a directory that will be concatenated with the
 mailbox.
 
-Example:
+Example server specification:
 
 @lisp
-("INBOX" "Mail/*" "alt.sex.*" ("~friend/Mail/" . "list/*"))
+(nnimap "mail.server.com"
+        (nnimap-list-pattern ("INBOX" "Mail/*" "alt.sex.*" 
+                               ("~friend/Mail/" . "list/*"))))
 @end lisp
 
 @item nnimap-stream
@@ -13612,6 +13621,15 @@ The type of stream used to connect to your server.  By default, nnimap
 will detect and automatically use all of the below, with the exception
 of SSL. (SSL is being replaced by STARTTLS, which can be automatically
 detected, but it's not widely deployed yet).
+
+Example server specification:
+
+@lisp
+(nnimap "mail.server.com"
+        (nnimap-stream ssl))
+@end lisp
+
+Please note that the value of @code{nnimap-stream} is a symbol!
 
 @itemize @bullet
 @item
@@ -13657,6 +13675,15 @@ For IMAP connections using the @code{shell} stream, the variable
 
 The authenticator used to connect to the server.  By default, nnimap
 will use the most secure authenticator your server is capable of.
+
+Example server specification:
+
+@lisp
+(nnimap "mail.server.com"
+        (nnimap-authenticator anonymous))
+@end lisp
+
+Please note that the value of @code{nnimap-authenticator} is a symbol!
 
 @itemize @bullet
 @item
