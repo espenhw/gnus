@@ -2,6 +2,7 @@
 
 	* gnus-group.el (gnus-group-make-web-group): Pass the select
 	method on to group-create.
+	(gnus-group-line-format-alist): %U is an integer.
 
 	* gnus-sum.el (gnus-summary-exit-no-update): Don't update
 	ephemeral groups.
