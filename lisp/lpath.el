@@ -26,6 +26,7 @@
 	       mail-aliases-setup mm-copy-tree
 	       mule-write-region-no-coding-system put-image
 	       ring-elements
+	       gnus-get-predicate
 	       charsetp sort-coding-systems
 	       coding-system-p coding-system-list
 	       propertize make-mode-line-mouse2-map
@@ -50,6 +51,7 @@
 	      display-time-mail-function imap-password mail-mode-hook
 	      filladapt-mode
 	      mc-pgp-always-sign
+	      gnus-message-group-art
 	      gpg-unabbrev-trust-alist
 	      nnoo-definition-alist
 	      current-language-environment

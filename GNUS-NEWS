@@ -8,6 +8,18 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** gnus-posting-styles
+
+Add a new format of match like
+
+        ((header "to" "larsi.*org")
+         (Organization "Somewhere, Inc."))
+
+The old format like the lines below is obsolete.
+
+        (header "to" "larsi.*org"
+         (Organization "Somewhere, Inc."))
+
 ** message-ignored-news-headers and message-ignored-mail-headers
 
 X-Draft-From and X-Gnus-Agent-Meta-Information have been added into
