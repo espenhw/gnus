@@ -1,3 +1,8 @@
+2000-10-25 18:51:12  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-q-encode-region): Don't break if a QP-word
+	could be fitted in one line.
+
 2000-10-25  Dirk Meyer <dischi@tzi.de>
 
 	* gnus-demon.el (gnus-demon-time-to-step): theHour was set to

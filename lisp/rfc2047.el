@@ -372,22 +372,28 @@ Should be called narrowed to the head of the message."
   (save-excursion
     (save-restriction
       (narrow-to-region (goto-char b) e)
-      (let ((alist rfc2047-q-encoding-alist))
+      (let ((alist rfc2047-q-encoding-alist)
+	    (bol (save-restriction
+		   (widen)
+		   (gnus-point-at-bol))))
 	(while alist
 	  (when (looking-at (caar alist))
 	    (quoted-printable-encode-region b e nil (cdar alist))
 	    (subst-char-in-region (point-min) (point-max) ?  ?_)
 	    (setq alist nil))
 	  (pop alist))
-	(goto-char (1+ (point-min)))
-	(while (and (not (bobp)) (not (eobp)))
-	  (goto-char (min (point-max) (save-restriction
-					(widen)
-					;; THe QP encapsulation is about 20. 
-					(+ 56 (gnus-point-at-bol)))))
-	  (search-backward "=" (- (point) 2) t)
-	  (unless (or (bobp) (eobp))
-	    (insert "\n")))))))
+	;; The size of QP encapsulation is about 20, so set limit to
+	;; 56=76-20.
+	(unless (< (- (point-max) (point-min)) 56)
+	  ;; Don't break if it could fit in one line.
+	  ;; Let rfc2047-encode-region break it later.
+	  (goto-char (1+ (point-min)))
+	  (while (and (not (bobp)) (not (eobp)))
+	    (goto-char (min (point-max) (+ 56 bol)))
+	    (search-backward "=" (- (point) 2) t)
+	    (unless (or (bobp) (eobp))
+	      (insert "\n")
+	      (setq bol (point)))))))))
 
 ;;;
 ;;; Functions for decoding RFC2047 messages
