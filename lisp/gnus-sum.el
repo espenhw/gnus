@@ -1225,6 +1225,7 @@ the type of the variable (string, integer, character, etc).")
 (defvar gnus-newsgroup-data-reverse nil)
 (defvar gnus-newsgroup-limit nil)
 (defvar gnus-newsgroup-limits nil)
+(defvar gnus-summary-use-undownloaded-faces nil)
 
 (defvar gnus-newsgroup-unreads nil
   "Sorted list of unread articles in the current newsgroup.")
@@ -1365,7 +1366,9 @@ This list will always be a subset of gnus-newsgroup-undownloaded.")
     gnus-cache-removable-articles gnus-newsgroup-cached
     gnus-newsgroup-data gnus-newsgroup-data-reverse
     gnus-newsgroup-limit gnus-newsgroup-limits
-    gnus-newsgroup-charset gnus-newsgroup-display)
+    gnus-newsgroup-charset gnus-newsgroup-display
+    gnus-summary-use-undownloaded-faces
+)
   "Variables that are buffer-local to the summary buffers.")
 
 (defvar gnus-newsgroup-variables nil
@@ -5024,7 +5027,12 @@ If SELECT-ARTICLES, only select those articles from GROUP."
              (active (gnus-active group)))
         (if (and (car alist)
                  (< (caar alist) (car active)))
-            (gnus-set-active group (cons (caar alist) (cdr active))))))
+            (gnus-set-active group (cons (caar alist) (cdr active)))))
+
+      (setq gnus-summary-use-undownloaded-faces
+            (not (gnus-agent-find-parameter 
+                  group
+                  'agent-disable-undownloaded-faces))))
 
     (setq gnus-newsgroup-name group
 	  gnus-newsgroup-unselected nil
@@ -11203,8 +11211,8 @@ If REVERSE, save parts that do not match TYPE."
 	 (default gnus-summary-default-score)
 	 (default-high gnus-summary-default-high-score)
 	 (default-low gnus-summary-default-low-score)
-	 (uncached (memq article gnus-newsgroup-undownloaded))
-	 (downloaded (not uncached)))
+	 (uncached (and gnus-summary-use-undownloaded-faces
+                        (memq article gnus-newsgroup-undownloaded))))
     (let ((face (funcall (gnus-summary-highlight-line-0))))
       (unless (eq face (get-text-property beg 'face))
 	(gnus-put-text-property-excluding-characters-with-faces
