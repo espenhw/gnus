@@ -1,3 +1,8 @@
+2001-01-18 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-read-group-1): Don't test dead
+	non-native groups.
+
 2001-01-18 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-yank-original): Understand
