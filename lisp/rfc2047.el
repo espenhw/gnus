@@ -292,7 +292,7 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 				"[^\000-\177]+\\|=\\?"
 			      "[^\000-\177]+"))
 	  start				; start of current token
-	  end begin
+	  end begin csyntax
 	  ;; Whether there's an encoded word before the current token,
 	  ;; either immediately or separated by space.
 	  last-encoded
@@ -330,7 +330,7 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 		(cond
 		 ((not (char-after)))	; eob
 		 ;; else token start
-		 ((eq ?\" (char-syntax (char-after)))
+		 ((eq ?\" (setq csyntax (char-syntax (char-after))))
 		  ;; Quoted word.
 		  (forward-sexp)
 		  (setq end (point))
@@ -357,14 +357,14 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 			(rfc2047-encode start (- end 2))
 			(setq last-encoded t)) ; record that it was encoded
 		    (setq last-encoded  nil)))
-		 ((eq ?. (char-syntax (char-after)))
+		 ((eq ?. csyntax)
 		  ;; Skip other delimiters, but record that they've
 		  ;; potentially separated quoted words.
 		  (forward-char)
 		  (setq last-encoded nil))
-		 ((eq ?\) (char-syntax (char-after)))
+		 ((eq ?\) csyntax)
 		  (error "Unbalanced parentheses"))
-		 ((eq ?\( (char-syntax (char-after)))
+		 ((eq ?\( csyntax)
 		  ;; Look for the end of parentheses.
 		  (forward-list)
 		  ;; Encode text as an unstructured field.
@@ -380,7 +380,13 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 		    (when (looking-at "[\000-\177]+")
 		      (setq begin (point)
 			    end (match-end 0))
-		      (if (re-search-forward "[ \t\n]\\|\\Sw" end 'move)
+		      (if (progn
+			    (while (and (re-search-forward "[ \t\n]\\|\\Sw"
+							   end 'move)
+					(eq ?\\ (char-syntax (char-before))))
+			      ;; Skip backslash-quoted characters.
+			      (forward-char))
+			    (< (point) end))
 			  (progn
 			    (setq end (match-beginning 0))
 			    (if rfc2047-encode-encoded-words

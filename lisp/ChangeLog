@@ -1,3 +1,8 @@
+2004-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-encode-region): Treat backslash-quoted
+	characters as non-special.
+
 2004-07-09  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-agent.el (gnus-agent-synchronize-flags): Revert to ask.
