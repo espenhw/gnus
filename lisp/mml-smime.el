@@ -112,8 +112,9 @@
   ;; todo: try dns/ldap automatically first, before prompting user
   (let (certs done)
     (while (not done)
-      (ecase (read (gnus-completing-read "dns" "Fetch certificate from"
-					 '(("dns") ("file")) nil t))
+      (ecase (read (gnus-completing-read-with-default
+		    "dns" "Fetch certificate from"
+		    '(("dns") ("file")) nil t))
 	(dns (setq certs (append certs
 				 (mml-smime-get-dns-cert))))
 	(file (setq certs (append certs

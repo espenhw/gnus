@@ -643,7 +643,7 @@ used as score."
 	  (and gnus-extra-headers
 	       (equal (nth 1 entry) "extra")
 	       (intern			; need symbol
-		(gnus-completing-read
+		(gnus-completing-read-with-default
 		 (symbol-name (car gnus-extra-headers))	; default response
 		 "Score extra header:"	; prompt
 		 (mapcar (lambda (x)	; completion list

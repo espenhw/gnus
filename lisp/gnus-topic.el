@@ -1254,7 +1254,8 @@ When used interactively, PARENT will be the topic under point."
 If COPYP, copy the groups instead."
   (interactive
    (list current-prefix-arg
-	 (completing-read "Move to topic: " gnus-topic-alist nil t)))
+	 (gnus-completing-read "Move to topic" gnus-topic-alist nil t
+			       'gnus-topic-history)))
   (let ((use-marked (and (not n) (not (gnus-region-active-p))
 			 gnus-group-marked t))
 	(groups (gnus-group-process-prefix n))

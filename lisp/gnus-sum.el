@@ -6448,6 +6448,8 @@ If optional argument UNREAD is non-nil, only unread article is selected."
   "Go the subject line of ARTICLE.
 If FORCE, also allow jumping to articles not currently shown."
   (interactive "nArticle number: ")
+  (unless (numberp article)
+    (error "Article %s is not a number" article))
   (let ((b (point))
 	(data (gnus-data-find article)))
     ;; We read in the article if we have to.
@@ -7061,7 +7063,7 @@ articles that are younger than AGE days."
   (interactive
    (let ((header
 	  (intern
-	   (gnus-completing-read
+	   (gnus-completing-read-with-default
 	    (symbol-name (car gnus-extra-headers))
 	    (if current-prefix-arg
 		"Exclude extra header:"
@@ -8456,7 +8458,7 @@ latter case, they will be copied into the relevant groups."
 				  (car (gnus-find-method-for-group
 					gnus-newsgroup-name)))))
 		(method
-		 (gnus-completing-read
+		 (gnus-completing-read-with-default
 		  methname "What backend do you want to use when respooling?"
 		  methods nil t nil 'gnus-mail-method-history))
 		ms)
@@ -10203,23 +10205,26 @@ save those articles instead."
 	 (to-newsgroup
 	  (cond
 	   ((null split-name)
-	    (gnus-completing-read default prom
-				  gnus-active-hashtb
-				  'gnus-valid-move-group-p
-				  nil prefix
-				  'gnus-group-history))
+	    (gnus-completing-read-with-default
+	     default prom
+	     gnus-active-hashtb
+	     'gnus-valid-move-group-p
+	     nil prefix
+	     'gnus-group-history))
 	   ((= 1 (length split-name))
-	    (gnus-completing-read (car split-name) prom
-				  gnus-active-hashtb
-				  'gnus-valid-move-group-p
-				  nil nil
-				  'gnus-group-history))
+	    (gnus-completing-read-with-default
+	     (car split-name) prom
+	     gnus-active-hashtb
+	     'gnus-valid-move-group-p
+	     nil nil
+	     'gnus-group-history))
 	   (t
-	    (gnus-completing-read nil prom
-				  (mapcar (lambda (el) (list el))
-					  (nreverse split-name))
-				  nil nil nil
-				  'gnus-group-history))))
+	    (gnus-completing-read-with-default
+	     nil prom
+	     (mapcar (lambda (el) (list el))
+		     (nreverse split-name))
+	     nil nil nil
+	     'gnus-group-history))))
 	 (to-method (gnus-server-to-method (gnus-group-method to-newsgroup))))
     (when to-newsgroup
       (if (or (string= to-newsgroup "")

@@ -1409,7 +1409,7 @@ The following commands are available:
     (gnus-category-position-point)))
 
 (defun gnus-category-name ()
-  (or (get-text-property (gnus-point-at-bol) 'gnus-category)
+  (or (intern (get-text-property (gnus-point-at-bol) 'gnus-category))
       (error "No category on the current line")))
 
 (defun gnus-category-read ()

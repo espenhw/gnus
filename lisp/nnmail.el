@@ -1071,13 +1071,11 @@ FUNC will be called with the group name to determine the article number."
 				  (funcall func (car method)))))))))
 	;; Produce a trace if non-empty.
 	(when (and trace nnmail-split-trace)
-	  (let ((trace (nreverse nnmail-split-trace))
-		(restore (current-buffer)))
+	  (let ((restore (current-buffer)))
 	    (nnheader-set-temp-buffer "*Split Trace*")
 	    (gnus-add-buffer)
-	    (while trace
-	      (insert (car trace) "\n")
-	      (setq trace (cdr trace)))
+	    (dolist (trace (nreverse nnmail-split-trace))
+	      (insert trace "\n"))
 	    (goto-char (point-min))
 	    (gnus-configure-windows 'split-trace)
 	    (set-buffer restore)))
