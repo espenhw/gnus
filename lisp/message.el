@@ -1050,7 +1050,7 @@ If REGEXP, HEADER is a regular expression.
 If FIRST, only remove the first instance of the header.
 Return the number of headers removed."
   (goto-char (point-min))
-  (let ((regexp (if is-regexp header (concat "^" header ":")))
+  (let ((regexp (if is-regexp header (concat "^" (regexp-quote header) ":")))
 	(number 0)
 	(case-fold-search t)
 	last)
@@ -3204,7 +3204,7 @@ Headers already prepared in the buffer are not modified."
 		     (Subject . ,(or subject ""))))))
 
 ;;;###autoload
-(defun message-reply (&optional to-address wide ignore-reply-to)
+(defun message-reply (&optional to-address wide)
   "Start editing a reply to the article in the current buffer."
   (interactive)
   (let ((cur (current-buffer))
@@ -3231,7 +3231,7 @@ Headers already prepared in the buffer are not modified."
 	    to (message-fetch-field "to")
 	    cc (message-fetch-field "cc")
 	    mct (message-fetch-field "mail-copies-to")
-	    reply-to (unless ignore-reply-to (message-fetch-field "reply-to"))
+	    reply-to (message-fetch-field "reply-to")
 	    references (message-fetch-field "references")
 	    message-id (message-fetch-field "message-id" t))
       ;; Remove any (buggy) Re:'s that are present and make a
@@ -3311,10 +3311,10 @@ Headers already prepared in the buffer are not modified."
      cur)))
 
 ;;;###autoload
-(defun message-wide-reply (&optional to-address ignore-reply-to)
+(defun message-wide-reply (&optional to-address)
   "Make a \"wide\" reply to the message in the current buffer."
   (interactive)
-  (message-reply to-address t ignore-reply-to))
+  (message-reply to-address t))
 
 ;;;###autoload
 (defun message-followup (&optional to-newsgroups)

@@ -405,7 +405,8 @@ Returns the list of articles removed."
 
 (defun gnus-cache-update-article (group article)
   "If ARTICLE is in the cache, remove it and re-enter it."
-  (when (gnus-cache-possibly-remove-article article nil nil nil t)
+  (gnus-cache-change-buffer group)
+  (when (gnus-cache-possibly-remove-article article nil nil nil t)    
     (let ((gnus-use-cache nil))
       (gnus-cache-possibly-enter-article
        gnus-newsgroup-name article (gnus-summary-article-header article)

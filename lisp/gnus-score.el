@@ -454,7 +454,6 @@ of the last successful match.")
 
 (gnus-define-keys (gnus-summary-score-map "V" gnus-summary-mode-map)
   "s" gnus-summary-set-score
-  "a" gnus-summary-score-entry
   "S" gnus-summary-current-score
   "c" gnus-score-change-score-file
   "C" gnus-score-customize
@@ -752,20 +751,6 @@ SCORE is the score to add.
 DATE is the expire date, or nil for no expire, or 'now for immediate expire.
 If optional argument `PROMPT' is non-nil, allow user to edit match.
 If optional argument `SILENT' is nil, show effect of score entry."
-  (interactive
-   (list (completing-read "Header: "
-			  gnus-header-index
-			  (lambda (x) (fboundp (nth 2 x)))
-			  t)
-	 (read-string "Match: ")
-	 (if (y-or-n-p "Use regexp match? ") 'r 's)
-	 (and current-prefix-arg
-	      (prefix-numeric-value current-prefix-arg))
-	 (cond ((not (y-or-n-p "Add to score file? "))
-		'now)
-	       ((y-or-n-p "Expire kill? ")
-		(current-time-string))
-	       (t nil))))
   ;; Regexp is the default type.
   (when (eq type t)
     (setq type 'r))

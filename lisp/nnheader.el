@@ -773,7 +773,9 @@ find-file-hooks, etc.
   (let ((format-alist nil)
 	(auto-mode-alist (nnheader-auto-mode-alist))
 	(default-major-mode 'fundamental-mode)
+	(enable-local-variables nil)
         (after-insert-file-functions nil)
+	(find-file-hooks nil)
 	(coding-system-for-read nnheader-file-coding-system))
     (insert-file-contents filename visit beg end replace)))
 

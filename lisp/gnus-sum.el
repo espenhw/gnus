@@ -5888,8 +5888,8 @@ articles that are younger than AGE days."
 			      (nnmail-time-since (nnmail-date-to-time date))
 			      cutoff))
 	    (when (if younger-p
-		      (not is-younger)
-		    is-younger)
+		      is-younger
+		    (not is-younger))
 	      (push (gnus-data-number d) articles))))
 	(gnus-summary-limit (nreverse articles)))
     (gnus-summary-position-point)))
@@ -7212,7 +7212,7 @@ delete these instead."
 				       gnus-newsgroup-name)
     (error "The current newsgroup does not support article deletion"))
   ;; Compute the list of articles to delete.
-  (let ((articles (gnus-summary-work-articles n))
+  (let ((articles (sort (copy-sequence (gnus-summary-work-articles n)) '<))
 	not-deleted)
     (if (and gnus-novice-user
 	     (not (gnus-yes-or-no-p

@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.6.14"
+(defconst gnus-version-number "5.6.15"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -2476,7 +2476,10 @@ If SCORE is nil, add 1 to the score of GROUP."
   "Collapse GROUP name LEVELS.
 Select methods are stripped and any remote host name is stripped down to
 just the host name."
-  (let* ((name "") (foreign "") (depth -1) (skip 1)
+  (let* ((name "")
+	 (foreign "")
+	 (depth 0)
+	 (skip 1)
 	 (levels (or levels
 		     (progn
 		       (while (string-match "\\." group skip)

@@ -1,3 +1,7 @@
+Thu Jun 25 11:24:14 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Summary Score Commands): Deletia.
+
 Wed Jun 24 00:37:32 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Auto Save): Addition.

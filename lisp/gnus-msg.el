@@ -424,11 +424,18 @@ header line with the old Message-ID."
 		  (push (list 'gnus-inews-add-to-address pgroup)
 			message-send-actions)))
 	    (set-buffer gnus-article-copy)
-	    (message-wide-reply to-address
-				(gnus-group-find-parameter
-				 gnus-newsgroup-name 'broken-reply-to))))
+	    (gnus-msg-treat-broken-reply-to)
+	    (message-wide-reply to-address)))
 	(when yank
 	  (gnus-inews-yank-articles yank))))))
+
+(defun gnus-msg-treat-broken-reply-to ()
+  "Remove the Reply-to header iff broken-reply-to."
+  (when (gnus-group-find-parameter
+	 gnus-newsgroup-name 'broken-reply-to)
+    (save-restriction
+      (message-narrow-to-head)
+      (message-remove-header "reply-to"))))
 
 (defun gnus-post-method (arg group &optional silent)
   "Return the posting method based on GROUP and ARG.
@@ -582,8 +589,8 @@ automatically."
     (gnus-setup-message (if yank 'reply-yank 'reply)
       (gnus-summary-select-article)
       (set-buffer (gnus-copy-article-buffer))
-      (message-reply nil wide (gnus-group-find-parameter
-			       gnus-newsgroup-name 'broken-reply-to))
+      (gnus-msg-treat-broken-reply-to)
+      (message-reply nil wide)
       (when yank
 	(gnus-inews-yank-articles yank)))))
 
