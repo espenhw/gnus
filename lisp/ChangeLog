@@ -1,5 +1,9 @@
 2002-03-25  Simon Josefsson  <jas@extundo.com>
 
+	* message.el (message-mode): Fix doc.
+
+2002-03-25  Simon Josefsson  <jas@extundo.com>
+
 	* message.el (message-subject-re-regexp): Skip Re[42]: junk.  From
 	Matthieu Moy <Matthieu.Moy@imag.fr>.
 
