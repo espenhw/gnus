@@ -1,3 +1,8 @@
+2002-08-15  Jesper harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Group Line Specification): Add %C.
+	(Group Parameters): Comments can be displayed in the group line.
+
 2002-08-07  Jesper harder  <harder@ifa.au.dk>
 
 	* emacs-mime.texi (Non-MIME): Add yenc.

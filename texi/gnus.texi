@@ -1789,6 +1789,10 @@ Full group name.
 @item G
 Group name.
 
+@item C
+Group comment (@pxref{Group Parameters}) or group name if there is no
+comment element in the group parameters.
+
 @item D
 Newsgroup description.
 
@@ -2834,10 +2838,9 @@ command (@pxref{Limiting}).
 
 @item comment
 @cindex comment
-Elements that look like @code{(comment . "This is a comment")}
-are arbitrary comments on the group.  They are currently ignored by
-Gnus, but provide a place for you to store information on particular
-groups.
+Elements that look like @code{(comment . "This is a comment")} are
+arbitrary comments on the group.  You can display comments in the
+group line (@pxref{Group Line Specification}).
 
 @item charset
 @cindex charset
