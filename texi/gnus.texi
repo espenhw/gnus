@@ -5059,12 +5059,13 @@ or, if you have come to the end of the current article, will choose the
 next article (@code{gnus-summary-next-page}).
 
 @vindex gnus-article-boring-faces
-If the rest of the article consists only of citations and signature,
-then it will be skipped; the next article will be shown instead.  You
-can customize what is considered uninteresting with
-@code{gnus-article-boring-faces}, or set it to @code{nil} to disable
-this feature.  You can manually view the article's pages, no matter how
-boring, using @kbd{C-v} in the article buffer.
+@vindex gnus-article-skip-boring
+If @code{gnus-article-skip-boring} is non-@code{nil} and the rest of
+the article consists only of citations and signature, then it will be
+skipped; the next article will be shown instead.  You can customize
+what is considered uninteresting with
+@code{gnus-article-boring-faces}.  You can manually view the article's
+pages, no matter how boring, using @kbd{C-M-v}.
 
 @item DEL
 @kindex DEL (Summary)
