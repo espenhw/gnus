@@ -31,7 +31,8 @@
 ;; paragraph and we let `fill-region' fill the long line into several
 ;; lines with the quote prefix as `fill-prefix'.
 
-;; Todo: encoding
+;; Todo: encoding, implement basic `fill-region' (Emacs and XEmacs
+;;       implementations differ..)
 
 ;; History:
 
@@ -39,6 +40,8 @@
 ;; 2000-02-19  use `point-at-{b,e}ol' in XEmacs
 ;; 2000-03-11  no compile warnings for point-at-bol stuff
 ;; 2000-03-26  commited to gnus cvs
+;; 2000-10-23  don't flow "-- " lines, make "quote-depth wins" rule
+;;             work when first line is at level 0.
 
 ;;; Code:
 
@@ -47,8 +50,8 @@
 	(if (fboundp 'point-at-bol)
 	    'point-at-bol
 	  'line-beginning-position))
-  
-  (defalias 'fill-flowed-point-at-eol
+
+   (defalias 'fill-flowed-point-at-eol
 	(if (fboundp 'point-at-eol)
 	    'point-at-eol
 	  'line-end-position)))
@@ -61,7 +64,7 @@
       (when (save-excursion
 	      (beginning-of-line)
 	      (looking-at "^\\(>*\\)\\( ?\\)"))
-	(let ((quote (match-string 1)))
+	(let ((quote (match-string 1)) sig)
 	  (if (string= quote "")
 	      (setq quote nil))
 	  (when (and quote (string= (match-string 2) ""))
@@ -71,23 +74,23 @@
 	      (when (> (skip-chars-forward ">") 0)
 		(insert " "))))
 	  (while (and (save-excursion
-			(backward-char 3)
+			(ignore-errors (backward-char 3))
+			(setq sig (looking-at "-- "))
 			(looking-at "[^-][^-] "))
 		      (save-excursion
 			(unless (eobp)
 			  (forward-char 1)
-			  (if quote
-			      (looking-at (format "^\\(%s\\)\\([^>]\\)" quote))
-			    (looking-at "^ ?")))))
+			  (looking-at (format "^\\(%s\\)\\([^>]\\)" (or quote " ?"))))))
 	    (save-excursion
 	      (replace-match (if (string= (match-string 2) " ")
 				 "" "\\2")))
 	    (backward-delete-char -1)
 	    (end-of-line))
-	  (let ((fill-prefix (when quote (concat quote " "))))
-	    (fill-region (fill-flowed-point-at-bol)
-			 (fill-flowed-point-at-eol)
-			 'left 'nosqueeze)))))))
+	  (unless sig
+	    (let ((fill-prefix (when quote (concat quote " "))))
+	      (fill-region (fill-flowed-point-at-bol)
+			   (fill-flowed-point-at-eol)
+			   'left 'nosqueeze))))))))
 
 (provide 'flow-fill)
 
