@@ -46,7 +46,8 @@
 
 (defun pgg-gpg-process-region (start end passphrase program args)
   (let* ((output-file-name
-	  (concat pgg-temporary-file-directory (make-temp-name "pgg-output")))
+	  (expand-file-name (make-temp-name "pgg-output") 
+			    pgg-temporary-file-directory))
 	 (args
 	  `("--status-fd" "2"
 	    ,@(if passphrase '("--passphrase-fd" "0"))

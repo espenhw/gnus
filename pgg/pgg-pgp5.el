@@ -72,8 +72,8 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
 
 (defun pgg-pgp5-process-region (start end passphrase program args)
   (let* ((errors-file-name
-	  (concat pgg-temporary-file-directory
-		  (make-temp-name "pgg-errors")))
+	  (expand-file-name (make-temp-name "pgg-errors")  
+			    pgg-temporary-file-directory))
 	 (args
 	  (append args
 		  pgg-pgp5-extra-args

@@ -1,3 +1,10 @@
+2002-10-01  Simon Josefsson  <jas@extundo.com>
+
+	* pgg-gpg.el (pgg-gpg-process-region): Use expand-file-name
+	instead of concat.
+
+	* pgg-pgp5.el (pgg-pgp5-process-region): Ditto.
+
 2002-09-29  Simon Josefsson  <jas@extundo.com>
 
 	* pgg-parse.el (pgg-char-int, pgg-string-as-unibyte): Prevent byte
