@@ -1,3 +1,13 @@
+2003-01-16  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.el (message-mode-menu): Use it.
+	(message-mode-menu): Deactivate "Yank Original" if there's no
+	reply buffer.
+
+	* messagexmas.el (message-xmas-redefine): Redefine in XEmacs.
+
+	* message.el (message-mark-active-p): New function.
+
 2003-01-15  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-use-bogofilter-headers, spam-bogofilter-header) 
