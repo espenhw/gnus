@@ -1,3 +1,8 @@
+2002-07-08  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-art.el (article-unsplit-urls): Only display MIME when this
+	function is called interactively.  From Niklas Morberg.
+
 2002-07-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-topic.el (gnus-topic-indent, gnus-topic-unindent): Change
