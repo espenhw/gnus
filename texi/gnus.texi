@@ -969,7 +969,8 @@ If you want to read directly from the local spool, say:
 @end lisp
 
 If you can use a local spool, you probably should, as it will almost
-certainly be much faster.
+certainly be much faster.  But do not use the local spool if your
+server is running Leafnode; in this case, use @code{(nntp "localhost")}.
 
 @vindex gnus-nntpserver-file
 @cindex NNTPSERVER
