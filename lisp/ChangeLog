@@ -2,6 +2,12 @@
 
 	* gnus-agent.el (gnus-agent-fetch-articles): More debugging
 	output.
+	(gnus-agent-consider-all-articles): New variable.
+	(gnus-agent-get-undownloaded-list): Comment that marks todo item.
+	(gnus-agent-fetch-headers): Depending on
+	gnus-agent-consider-all-articles, maybe get all articles.
+	(gnus-category-predicate-alist, gnus-agent-read-p): New predicate
+	`read'.
 
 2002-10-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 

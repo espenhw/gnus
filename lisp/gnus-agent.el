@@ -140,6 +140,12 @@ If this is `ask' the hook will query the user."
   :type '(repeat (symbol :tag "Mark"))
   :group 'gnus-agent)
 
+(defcustom gnus-agent-consider-all-articles nil
+  "If non-nil, consider also the read articles for downloading."
+  :version "21.4"
+  :type 'boolean
+  :group 'gnus-agent)
+
 ;;; Internal variables
 
 (defvar gnus-agent-history-buffers nil)
@@ -724,6 +730,7 @@ the actual number of articles toggled is returned."
 	       (gnus-agent-method-p gnus-command-method))
       (gnus-agent-load-alist gnus-newsgroup-name)
       ;; First mark all undownloaded articles as undownloaded.
+      ;; CCC kaig: Maybe change here to consider all headers.
       (let ((articles (mapcar (lambda (header) (mail-header-number header))
 			      gnus-newsgroup-headers))
 	    (agent-articles gnus-agent-article-alist)
@@ -1086,7 +1093,10 @@ This can be added to `gnus-select-article-hook' or
       (pop gnus-agent-group-alist))))
 
 (defun gnus-agent-fetch-headers (group &optional force)
-  (let ((articles (gnus-list-of-unread-articles group))
+  (let ((articles
+	 (if gnus-agent-consider-all-articles
+	     (gnus-uncompress-range (gnus-active group))
+	   (gnus-list-of-unread-articles group)))
 	(gnus-decode-encoded-word-function 'identity)
 	(file (gnus-agent-article-name ".overview" group))
 	gnus-agent-cache)
@@ -1598,6 +1608,7 @@ The following commands are available:
     (long . gnus-agent-long-p)
     (low . gnus-agent-low-scored-p)
     (high . gnus-agent-high-scored-p)
+    (read . gnus-agent-read-p)
     (true . gnus-agent-true)
     (false . gnus-agent-false))
   "Mapping from short score predicate symbols to predicate functions.")
@@ -1628,6 +1639,11 @@ The following commands are available:
 (defun gnus-agent-high-scored-p ()
   "Say whether an article has a high score or not."
   (> gnus-score gnus-agent-high-score))
+
+(defun gnus-agent-read-p ()
+  "Say whether an article is read or not."
+  (gnus-member-of-range (mail-header-number gnus-headers)
+			(gnus-info-read (gnus-get-info gnus-newsgroup-name))))
 
 (defun gnus-category-make-function (cat)
   "Make a function from category CAT."
