@@ -1,3 +1,25 @@
+2004-01-02  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Top): updated menu with new manual nodes
+	(The problem of spam): more ranting
+	(Anti-Spam Basics): "spammers are wise to [filtering on From:]"
+	(SpamAssassin): mention spam.el
+	(Hashcash): do not a sentence end proposition with
+	(Filtering Spam Using The Spam ELisp Package): more and better
+	explanation, took lots of information out into subsections
+	(Spam ELisp Package Sequence of Events)
+	(Spam ELisp Package Filtering of Incoming Mail)
+	(Spam ELisp Package Global Variables): new or updated content all
+	around
+	(Spam ELisp Package Configuration Examples): promised new
+	section, empty for now
+	(Blacklists and Whitelists, BBDB Whitelists)
+	(Gmane Spam Reporting, Bogofilter, spam-stat spam filtering)
+	(SpamOracle): mention that spam/ham processor variables are being
+	obsoleted 
+	(Extending the Spam ELisp package): add some new documentation
+	for adding a new backend to spam.el
+
 2004-01-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Foreign Groups): Add `gnus-group-read-ephemeral-group'.
