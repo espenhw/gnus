@@ -166,10 +166,16 @@
 		    datel nil))
 	    (pop datel))
 	  (setq date (delete "" (split-string date "[- \n\t\r    ]")))
-	  (setq date (format "%s %s %s %s"
-			     (car (rassq (string-to-number (nth 1 date))
-					 parse-time-months))
-			     (nth 0 date) (nth 2 date) (nth 3 date)))
+	  (if (or (member "AM" date)
+		  (member "PM" date))
+	      (setq date (format "%s %s %s %s"
+				 (car (rassq (string-to-number (nth 0 date))
+					     parse-time-months))
+				 (nth 1 date) (nth 2 date) (nth 3 date)))
+	    (setq date (format "%s %s %s %s"
+			       (car (rassq (string-to-number (nth 1 date))
+					   parse-time-months))
+			       (nth 0 date) (nth 2 date) (nth 3 date))))
 	  (push
 	   (cons
 	    article
@@ -387,15 +393,6 @@
   "Initialize buffers and such."
   (unless (file-exists-p nnultimate-directory)
     (gnus-make-directory nnultimate-directory)))
-
-(defun nnultimate-date-to-date (sdate)
-  (let ((elem (split-string sdate)))
-    (concat (substring (nth 0 elem) 0 3) " "
-	    (substring (nth 1 elem) 0 3) " "
-	    (substring (nth 2 elem) 0 2) " "
-	    (substring (nth 3 elem) 1 6) " "
-	    (format-time-string "%Y") " "
-	    (nth 4 elem))))
 
 (defun nnultimate-generate-active ()
   (save-excursion
