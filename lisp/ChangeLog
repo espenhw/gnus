@@ -1,5 +1,7 @@
 2002-01-26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-util.el (gnus-parse-without-error): Correct the loop. 
+
 	* gnus-sum.el (gnus-dependencies-add-header): Use in-reply-to if
 	there are no references.
 	(gnus-extract-message-id-from-in-reply-to): New function.

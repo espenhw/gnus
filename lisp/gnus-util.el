@@ -1267,7 +1267,8 @@ SPEC is a predicate specifier that contains stuff like `or', `and',
   `(while (not (eobp))
      (condition-case ()
 	 (progn
-	   ,@body)
+	   ,@body
+	   (goto-char (point-max)))
        (error
 	(gnus-error 4 "Invalid data on line %d"
 		    (count-lines (point-min) (point)))
