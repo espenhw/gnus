@@ -249,10 +249,12 @@ Thank you for your help in stamping out bugs.
 (defun gnus-msg-mail (&rest args)
   "Start editing a mail message to be sent.
 Like `message-mail', but with Gnus paraphernalia, particularly the
-the Gcc: header for archiving purposes."
+Gcc: header for archiving purposes."
   (interactive)
   (gnus-setup-message 'message
-    (apply 'message-mail args)))
+    (apply 'message-mail args))
+  ;; COMPOSEFUNC should return t if succeed.  Undocumented ???
+  t)
 
 ;;;###autoload
 (define-mail-user-agent 'gnus-user-agent

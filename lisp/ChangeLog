@@ -1,3 +1,8 @@
+2000-12-04 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-msg-mail): COMPOSEFUNC should return t if
+	succeed.
+
 2000-12-04 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-win.el (gnus-configure-windows): Make sure
