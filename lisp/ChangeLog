@@ -1,3 +1,8 @@
+2002-10-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-agent.el (gnus-agent-fetch-headers): Remove articles that
+	are known to be downloaded already.
+
 2002-10-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mm-view.el (mm-text-html-renderer-alist): Add w3m-standalone. 
