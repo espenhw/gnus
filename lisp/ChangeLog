@@ -1,3 +1,8 @@
+2002-04-18  Josh Huber  <huber@alum.wpi.edu>
+
+	* message.el (message-gen-unsubscribed-mft): accept a prefix
+	argument so CC can be included with C-u C-c C-f C-a
+
 2002-04-17  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Ted Zlatanov <teodor.zlatanov@divine.com>.
 

@@ -1954,7 +1954,7 @@ in the current mail buffer, and appends the current user-mail-address.
 If the optional argument `include-cc' is non-nil, the addresses in the
 Cc: header are also put into the MFT."
 
-  (interactive)
+  (interactive "P")
   (message-remove-header "Mail-Followup-To")
   (let* ((cc (and include-cc (message-fetch-field "Cc")))
 	 (tos (if cc
