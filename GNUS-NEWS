@@ -8,7 +8,20 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Gnus supports Cancel Locks in News.
+
+This means a header "Cancel-Lock" is inserted in news posting. It is
+used to determine if you wrote a article or not (for
+cancelling/superseding).  The behaviour can be changed by customizing
+`message-insert-canlock'.
+
 ** Gnus supports server-side mail filtering using Sieve.
+
+Sieve rules can be added as Group Parameters for groups, and the
+complete Sieve script is generated using `D g' from the Group buffer,
+and then uploaded to the server using `C-c C-l' in the generated Sieve
+buffer.  Search the online Gnus manual for "sieve", and see the new
+Sieve manual, for more information.
 
 ** Extended format specs.
 
@@ -35,15 +48,21 @@ This is supposedly what USEFOR wants to migrate to.  See
 This makes it possible to take backup of nnml/nnfolder servers/groups
 separately of .newsrc.eld, while preserving marks.  It also makes it
 possible to share articles and marks between users (without sharing
-.newsrc.eld) within e.g. a department.
+the .newsrc.eld file) within e.g. a department.  It works by storing
+the marks stored in .newsrc.eld in a per-group file ".marks" (for
+nnml) and "groupname.mrk" (for nnfolder, named "groupname").  If the
+nnml/nnfolder is moved to another machine, Gnus will automatically use
+the .marks or .mrk file instead of the information in .newsrc.eld.
+The new server variables `nnml-marks-is-evil' and
+`nnfolder-marks-is-evil' can be used to disable this feature.
 
 ** The menu bar (in Group and Summary buffer) named "Misc" has been
-   renamed to "Gnus".
+renamed to "Gnus".
 
 ** The menu bar (in Message mode) named "MML" has been renamed to
-   "Attachments".
+"Attachments".
 
-** gnus-group-charset-alist and gnus-group-ignored-charsets-alist
+** gnus-group-charset-alist and gnus-group-ignored-charsets-alist.
 
 The regexps in these variables are compared with full group names
 instead of real group names in 5.8.  Users who customize these
@@ -51,7 +70,7 @@ variables should change those regexps accordingly. For example:
 
    ("^han\\>" euc-kr) -> ("\\(^\\|:\\)han\\>" euc-kr)
 
-** Gnus now supports PGP (RFC 1991), PGP-MIME (RFC 2015/3156) and
+** Gnus supports PGP (RFC 1991/2440), PGP-MIME (RFC 2015/3156) and
 SMIME.
 
 ** Gnus inlines external parts (message/external).
