@@ -7149,7 +7149,7 @@ groupings will be hidden.)  The fourth is the face used for
 highlighting.
 
 @lisp
-(setq gnus-article-emphasis
+(setq gnus-emphasis-alist
       '(("_\\(\\w+\\)_" 0 1 gnus-emphasis-underline)
         ("\\*\\(\\w+\\)\\*" 0 1 gnus-emphasis-bold)))
 @end lisp

@@ -1,3 +1,8 @@
+2001-02-25 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From Michael Totschnig <michaelt@supernet.ca>.
+
+	* gnus.texi (Article Fontisizing): Fix.
+
 2001-02-23  Simon Josefsson  <simon@josefsson.org>
 
 	* gnus.texi (Posting Server): Fix, due to change of default value
