@@ -93,11 +93,7 @@
 	      (widen)
 	      (split-window-vertically)
 	      (gnus-post-news 'post))
-	  (progn
-	    (pop-to-buffer gnus-article-buffer)
-	    (widen)
-	    (delete-other-windows)
-	    (gnus-post-news 'post)))
+	  (gnus-post-news 'post nil nil gnus-article-buffer))
       (or (and (eq (current-buffer) (get-buffer gnus-post-news-buffer))
 	       (not (zerop (buffer-size))))
 	  ;; Restore last window configuration.
@@ -978,7 +974,7 @@ domain is undefined, the domain name is got from it."
   "Generate unique ID from user name and current time."
   (concat (downcase (gnus-inews-login-name))
 	  (mapconcat 
-	   (lambda (num) (gnus-number-base31 num 3))
+	   (lambda (num) (gnus-number-base31 num 4))
 	   (current-time) "")))
 
 

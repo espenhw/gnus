@@ -6,5 +6,5 @@ elc:
 	cd lisp; make EMACS=$(EMACS) elc
 
 info:
-	cd texi; makeinfo gnus.texi
+	cd texi; makeinfo -o gnus gnus.texi
 

@@ -1,8 +1,26 @@
-Fri Apr 28 00:24:34 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
+Sat Apr 29 00:35:17 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus-score.el (gnus-score-add-followups): Did not work.
+
+	* nntp.el (nntp-request-article): Would fetch articles even if
+	async-fetched.
+	(nntp-async-fetch-articles): Would re-fetch the first article.
+
+Fri Apr 28 00:24:34 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el (gnus-set-mode-line): Would bug out on nil max-lens. 
 	(gnus-summary-read-group): Did not properly configure windows on
 	breaks. 
+	(gnus-summary-select-article): Would not configure windows
+	properly. 
+	(gnus-summary-exit-no-update): Would go to next group, not next
+	unread group.
+	(gnus-summary-enter-digest-group): End gracefully if executed on
+	something that is not a digest.
+	(gnus-server-read-server): New command.
+	(gnus-nov-field): Would not grab the last char on the line.
+
+	* gnus.el: 0.61 is released
 
 Wed Apr 26 19:48:36 1995  Scott Byer  <byer@mv.us.adobe.com>
 

@@ -301,7 +301,10 @@ DATE is the expire date."
 	       (or (and (numberp (nth 2 elem)) (numberp (nth 2 new)))
 		   (and (not (nth 2 elem)) (not (nth 2 new)))))
 	  ;; Yup, we just add this new score to the old elem.
-	  (setcar (cdr elem) (+ (nth 1 elem) (nth 1 new)))
+	  (setcar (cdr elem) (+ (or (nth 1 elem) 
+				    gnus-score-interactive-default-score)
+				(or (nth 1 new)
+				    gnus-score-interactive-default-score)))
 	;; Nope, we have to add a new elem.
 	(gnus-score-set header (if old (cons new old) (list new)))))
     (gnus-score-set 'touched '(t))))
@@ -435,8 +438,9 @@ See `gnus-score-expiry-days'."
 (defun gnus-summary-lower-followups-to-author (level)
   "Lower score by LEVEL for all followups to the current author."
   (interactive "P")
-  (gnus-summary-score-entry "followup" (gnus-summary-header "from")
-			    nil level (current-time-string) t t))
+  (gnus-summary-score-entry 
+   "followup" (gnus-summary-header "from")
+   nil (gnus-score-default level) (current-time-string) t t))
 
 (defun gnus-summary-temporarily-raise-by-subject (level)
   "Temporarily raise score by LEVEL for current subject.
@@ -513,8 +517,9 @@ See `gnus-score-expiry-days'."
 (defun gnus-summary-raise-followups-to-author (level)
   "Raise score by LEVEL for all followups to the current author."
   (interactive "P")
-  (gnus-summary-score-entry "followup" (gnus-summary-header "from")
-			    nil level (current-time-string) t t))
+  (gnus-summary-score-entry 
+   "followup" (gnus-summary-header "from")
+   nil (gnus-score-default level) (current-time-string) t t))
 
 
 
@@ -1190,7 +1195,7 @@ See `gnus-score-expiry-days'."
 		       (while arts
 			 (setq art (car arts)
 			       arts (cdr arts))
-			 (gnus-score-add-followups (car art))))))
+			 (gnus-score-add-followups (car art) score)))))
 	    (while (funcall search-func match nil t)
 	      (end-of-line)
 	      (setq found (setq arts (get-text-property (point) 'articles)))
@@ -1198,7 +1203,7 @@ See `gnus-score-expiry-days'."
 	      (while arts
 		(setq art (car arts)
 		      arts (cdr arts))
-		(gnus-score-add-followups (car art)))))
+		(gnus-score-add-followups (car art) score))))
 	  ;; Update expire date
 	  (cond ((null date))		;Permanent entry.
 		(found			;Match, update date.
@@ -1210,12 +1215,12 @@ See `gnus-score-expiry-days'."
 		 (setq rest entries)))
 	  (setq entries rest))))))
 
-(defun gnus-score-add-followups (article)
+(defun gnus-score-add-followups (header score)
   (save-excursion
     (set-buffer gnus-summary-buffer)
     (gnus-summary-score-entry 
-     "references" (gnus-get-header-by-number article) 'e nil
-     (current-time-string) nil)))
+     "references" (header-id header) 'e score 
+     (current-time-string) nil t)))
 
 
 (defun gnus-score-string (scores header now expire)
@@ -1284,7 +1289,8 @@ See `gnus-score-expiry-days'."
 	       arts art)
 	  (goto-char (point-min))
 	  (if (= dmt ?e)
-	      (while (and (not (eobp)) (funcall search-func match nil t))
+	      (while (and (not (eobp)) 
+			  (funcall search-func match nil t))
 		(and (= (progn (beginning-of-line) (point))
 			(match-beginning 0))
 		     (= (progn (end-of-line) (point))
@@ -1296,8 +1302,8 @@ See `gnus-score-expiry-days'."
 		       (while arts
 			 (setq art (car arts)
 			       arts (cdr arts))
-			 (setcdr art (+ score (cdr art))))
-		       (forward-line 1))))
+			 (setcdr art (+ score (cdr art))))))
+		(forward-line 1))
 	    (and (string= match "") (setq match "\n"))
 	    (while (funcall search-func match nil t)
 	      (end-of-line)

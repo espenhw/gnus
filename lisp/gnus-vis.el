@@ -444,7 +444,7 @@ To check for marks, e.g. to underline replied articles, use
 	 (end (progn (end-of-line) (point)))
 	 ;; now find out where the line starts and leave point there.
 	 (beg (progn (beginning-of-line) (point)))
-	 (score (or (cdr (assq (or (get-text-property beg 'gnus-number)
+	 (score (or (cdr (assq (or (car (get-text-property beg 'gnus))
 				   gnus-current-article)
 			       gnus-newsgroup-scored))
 		    gnus-summary-default-score 0))

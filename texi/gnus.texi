@@ -1958,11 +1958,11 @@ might take a while to complete.
 makes it easier to write procmail scripts for.
 
 @table @code
-@item nnml-directory
+@item nnmh-directory
 All @code{nnmh} directories will be located under this directory.
 
 @item nnmh-get-new-mail
-If non-@code{nil}, @code{nnml} will read incoming mail.
+If non-@code{nil}, @code{nnmh} will read incoming mail.
 @end table
 
 @node nnfolder
