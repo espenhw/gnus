@@ -1642,7 +1642,7 @@ newsgroup."
 
     (while newsrc
       (setq active (gnus-active (setq group (gnus-info-group
-					     (setq info (pop newsrc))))))
+						  (setq info (pop newsrc))))))
 
       ;; Check newsgroups.  If the user doesn't want to check them, or
       ;; they can't be checked (for instance, if the news server can't
@@ -1665,61 +1665,60 @@ newsgroup."
       (when (and method
 		 (not (setq method-type (cdr (assoc method type-cache)))))
 	(setq method-type
-	      (cond
-	       ((gnus-secondary-method-p method)
-		'secondary)
-	       ((inline (gnus-server-equal gnus-select-method method))
-		'primary)
-	       (t
-		'foreign)))
+		   (cond
+		    ((gnus-secondary-method-p method)
+		     'secondary)
+		    ((inline (gnus-server-equal gnus-select-method method))
+		     'primary)
+		    (t
+		     'foreign)))
 	(push (cons method method-type) type-cache))
-      (if (and method
-	       (eq method-type 'foreign))
-	  ;; These groups are foreign.  Check the level.
-	  (when (and (<= (gnus-info-level info) foreign-level)
-		     (setq active (gnus-activate-group group 'scan)))
-	    ;; Let the Gnus agent save the active file.
-	    (when (and gnus-agent active (gnus-online method))
-	      (gnus-agent-save-group-info
-	       method (gnus-group-real-name group) active))
-	    (unless (inline (gnus-virtual-group-p group))
-	      (inline (gnus-close-group group)))
-	    (when (fboundp (intern (concat (symbol-name (car method))
-					   "-request-update-info")))
-	      (inline (gnus-request-update-info info method))))
-	;; These groups are native or secondary.
-	(cond
-	 ;; We don't want these groups.
-	 ((> (gnus-info-level info) level)
-	  (setq active 'ignore))
-	 ;; Activate groups.
-	 ((not gnus-read-active-file)
-	  (if (gnus-check-backend-function 'retrieve-groups group)
-	      ;; if server support gnus-retrieve-groups we push
-	      ;; the group onto retrievegroups for later checking
-	      (if (assoc method retrieve-groups)
-		  (setcdr (assoc method retrieve-groups)
-			  (cons group (cdr (assoc method retrieve-groups))))
-		(push (list method group) retrieve-groups))
-	    ;; hack: `nnmail-get-new-mail' changes the mail-source depending
-	    ;; on the group, so we must perform a scan for every group
-	    ;; if the users has any directory mail sources.
-	    ;; hack: if `nnmail-scan-directory-mail-source-once' is non-nil,
-	    ;; for it scan all spool files even when the groups are
-	    ;; not required.
-	    (if (and
-		 (or nnmail-scan-directory-mail-source-once
-		     (null (assq 'directory
-				 (or mail-sources
-				     (if (listp nnmail-spool-file)
-					 nnmail-spool-file
-				       (list nnmail-spool-file))))))
-		 (member method scanned-methods))
-		(setq active (gnus-activate-group group))
-	      (setq active (gnus-activate-group group 'scan))
-	      (push method scanned-methods))
-	    (when active
-	      (gnus-close-group group))))))
+
+      (cond ((eq method-type 'foreign)
+	     ;; These groups are foreign.  Check the level.
+	     (when (and (<= (gnus-info-level info) foreign-level)
+			(setq active (gnus-activate-group group 'scan)))
+	       ;; Let the Gnus agent save the active file.
+	       (when (and gnus-agent active (gnus-online method))
+		 (gnus-agent-save-group-info
+		  method (gnus-group-real-name group) active))
+	       (unless (inline (gnus-virtual-group-p group))
+		 (inline (gnus-close-group group)))
+	       (when (fboundp (intern (concat (symbol-name (car method))
+					      "-request-update-info")))
+		 (inline (gnus-request-update-info info method)))))
+	    ;; These groups are native or secondary.
+	    ((> (gnus-info-level info) level)
+	     ;; We don't want these groups.
+	     (setq active 'ignore))
+	    ;; Activate groups.
+	    ((not gnus-read-active-file)
+	     (if (gnus-check-backend-function 'retrieve-groups group)
+		 ;; if server support gnus-retrieve-groups we push
+		 ;; the group onto retrievegroups for later checking
+		 (if (assoc method retrieve-groups)
+		     (setcdr (assoc method retrieve-groups)
+			     (cons group (cdr (assoc method retrieve-groups))))
+		   (push (list method group) retrieve-groups))
+	       ;; hack: `nnmail-get-new-mail' changes the mail-source depending
+	       ;; on the group, so we must perform a scan for every group
+	       ;; if the users has any directory mail sources.
+	       ;; hack: if `nnmail-scan-directory-mail-source-once' is non-nil,
+	       ;; for it scan all spool files even when the groups are
+	       ;; not required.
+	       (if (and
+		    (or nnmail-scan-directory-mail-source-once
+			(null (assq 'directory
+				    (or mail-sources
+					(if (listp nnmail-spool-file)
+					    nnmail-spool-file
+					  (list nnmail-spool-file))))))
+		    (member method scanned-methods))
+		   (setq active (gnus-activate-group group))
+		 (setq active (gnus-activate-group group 'scan))
+		 (push method scanned-methods))
+	       (when active
+		 (gnus-close-group group)))))
 
       ;; Get the number of unread articles in the group.
       (cond
@@ -1746,8 +1745,8 @@ newsgroup."
 	  (when (gnus-check-backend-function 'request-scan (car method))
 	    (gnus-request-scan nil method))
 	  (gnus-read-active-file-2
-	   (mapcar (lambda (group) (gnus-group-real-name group)) groups)
-	   method)
+		(mapcar (lambda (group) (gnus-group-real-name group)) groups)
+		method)
 	  (dolist (group groups)
 	    (cond
 	     ((setq active (gnus-active (gnus-info-group
@@ -1991,10 +1990,10 @@ newsgroup."
 	  (while (setq info (pop newsrc))
 	    (when (inline
 		    (gnus-server-equal
-		     (inline
-		       (gnus-find-method-for-group
-			(gnus-info-group info) info))
-		     gmethod))
+			  (inline
+			    (gnus-find-method-for-group
+				  (gnus-info-group info) info))
+			  gmethod))
 	      (push (gnus-group-real-name (gnus-info-group info))
 		    groups)))
 	  (gnus-read-active-file-2 groups method)))
