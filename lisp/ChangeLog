@@ -1,5 +1,13 @@
 2000-11-30  Simon Josefsson  <sj@extundo.com>
 
+	* mm-decode.el (mm-security-from): New variable.
+	(mm-possibly-verify-or-decrypt): Use it rather than `from'.
+
+	* mml-smime.el (mml-smime-verify): Use `mm-security-from' rather
+	than `from'.
+
+2000-11-30  Simon Josefsson  <sj@extundo.com>
+
 	* mml-smime.el (mml-smime-verify): Verify that certificate mail
 	address match sender address.
 

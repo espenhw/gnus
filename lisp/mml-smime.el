@@ -135,10 +135,11 @@
 		   (smime-pkcs7-certificates-region (point-min) (point-max)))
 	  (with-temp-buffer
 	    (insert-buffer-substring (mm-handle-multipart-original-buffer ctl))
-	    (if (not (member from (and (smime-pkcs7-email-region
-					(point-min) (point-max))
-				       (smime-buffer-as-string-region
-					(point-min) (point-max)))))
+	    (if (not (member mm-security-from
+			     (and (smime-pkcs7-email-region
+				   (point-min) (point-max))
+				  (smime-buffer-as-string-region
+				   (point-min) (point-max)))))
 		(progn
 		  (mm-set-handle-multipart-parameter 
 		   mm-security-handle 'gnus-info "Sender forged")
