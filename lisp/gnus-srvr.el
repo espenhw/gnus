@@ -728,7 +728,7 @@ buffer.
       (when (re-search-forward ": \\(.*\\)$" (gnus-point-at-eol) t)
 	(gnus-group-prefixed-name
 	 (or name
-	     (format "%s" (match-string 1)))
+	     (match-string-no-properties 1))
 	 gnus-browse-current-method)))))
 
 (defun gnus-browse-unsubscribe-group ()
