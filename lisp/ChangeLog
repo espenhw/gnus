@@ -1,3 +1,12 @@
+2000-12-21 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-ml.el (gnus-mailing-list-mode-map): Use C-c C-n prefix.
+
+	* mml.el (gnus-ems): Don't require.
+
+	* gnus.el (gnus-decode-rfc1522): Removed.
+	(gnus-set-text-properties): Define.
+
 2000-12-21 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-mime-*): handle may be nil.

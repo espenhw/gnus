@@ -277,6 +277,9 @@ be set in `.emacs' instead."
 (unless (fboundp 'gnus-group-remove-excess-properties)
   (defalias 'gnus-group-remove-excess-properties 'ignore))
 
+(unless (fboundp 'gnus-set-text-properties)
+  (defalias 'gnus-set-text-properties 'set-text-properties))
+
 (unless (featurep 'gnus-xmas)
   (defalias 'gnus-make-overlay 'make-overlay)
   (defalias 'gnus-delete-overlay 'delete-overlay)
@@ -287,7 +290,6 @@ be set in `.emacs' instead."
   (defalias 'gnus-overlay-end 'overlay-end)
   (defalias 'gnus-extent-detached-p 'ignore)
   (defalias 'gnus-extent-start-open 'ignore)
-  (defalias 'gnus-set-text-properties 'set-text-properties)
   (defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
   (defalias 'gnus-mail-strip-quoted-names 'mail-strip-quoted-names)
   (defalias 'gnus-character-to-event 'identity)
@@ -319,7 +321,8 @@ be set in `.emacs' instead."
   (defalias 'gnus-deactivate-mark 'deactivate-mark)
   (defalias 'gnus-window-edges 'window-edges)
   (defalias 'gnus-key-press-event-p 'numberp)
-  (defalias 'gnus-decode-rfc1522 'ignore))
+  ;;(defalias 'gnus-decode-rfc1522 'ignore)
+  )
 
 ;; We define these group faces here to avoid the display
 ;; update forced when creating new faces.

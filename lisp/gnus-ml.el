@@ -45,12 +45,12 @@
   (setq gnus-mailing-list-mode-map (make-sparse-keymap))
 
   (gnus-define-keys gnus-mailing-list-mode-map
-    "\C-nh" gnus-mailing-list-help
-    "\C-ns" gnus-mailing-list-subscribe
-    "\C-nu" gnus-mailing-list-unsubscribe
-    "\C-np" gnus-mailing-list-post
-    "\C-no" gnus-mailing-list-owner
-    "\C-na" gnus-mailing-list-archive
+    "\C-c\C-nh" gnus-mailing-list-help
+    "\C-c\C-ns" gnus-mailing-list-subscribe
+    "\C-c\C-nu" gnus-mailing-list-unsubscribe
+    "\C-c\C-np" gnus-mailing-list-post
+    "\C-c\C-no" gnus-mailing-list-owner
+    "\C-c\C-na" gnus-mailing-list-archive
     ))
 
 (defun gnus-mailing-list-make-menu-bar ()
