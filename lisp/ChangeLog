@@ -1,3 +1,8 @@
+2000-10-13 12:01:15  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-send-mail-partially): Replace the header
+	 delimiter with a blank line.
+
 2000-10-13  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-sum.el (gnus-get-split-value): Use first match only (Ed L

@@ -2206,6 +2206,12 @@ It should typically alter the sending method in some way or other."
 
 (defun message-send-mail-partially ()
   "Sendmail as message/partial."
+  ;; replace the header delimiter with a blank line
+  (goto-char (point-min))
+  (re-search-forward
+   (concat "^" (regexp-quote mail-header-separator) "\n"))
+  (replace-match "\n")
+  (run-hooks 'message-send-mail-hook)
   (let ((p (goto-char (point-min)))
 	(tembuf (message-generate-new-buffer-clone-locals " message temp"))
 	(curbuf (current-buffer))
