@@ -1,6 +1,16 @@
 ;; Also know as the "wish list".  Some are done. For the others, no
 ;; promise when to be implemented.
 
+* Speed up sorting in summary buffer if there is a limit.
+  
+  Suggested by Daniel Ortmann <ortmann@isl.net>.
+
+* Investigate the memory usage of Gnus. 
+
+  But it does seem strange that Gnus would use some 15meg for this.  I
+  think that is worth investigating.  I suspect that bugs or bad
+  design are causing waste; they could be in Gnus, or in Emacs. -- RMS
+
 * Google group digest
   
   The result of Google group search return a thread. Is it a digest
