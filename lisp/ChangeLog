@@ -1,5 +1,8 @@
 2001-10-07  Per Abrahamsen  <abraham@dina.kvl.dk>
 
+	* message.el (message-send-news): Don't encode Followups-To when
+	gnus-group-name-charset-method-alist is ".*".  [Yuck]
+
 	* gnus-util.el (gnus-decode-newsgroups): No space in newsgroup
 	header. 
 
