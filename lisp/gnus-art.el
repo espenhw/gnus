@@ -3694,12 +3694,9 @@ If no internal viewer is available, use an external viewer."
 
 (defun gnus-insert-mime-button (handle gnus-tmp-id &optional displayed)
   (let ((gnus-tmp-name
-	 (or (mail-content-type-get (mm-handle-type handle)
-				    'name)
-	     (mail-content-type-get (mm-handle-disposition handle)
-				    'filename)
-	     (mail-content-type-get (mm-handle-type handle)
-				    'url)
+	 (or (mail-content-type-get (mm-handle-type handle) 'name)
+	     (mail-content-type-get (mm-handle-disposition handle) 'filename)
+	     (mail-content-type-get (mm-handle-type handle) 'url)
 	     ""))
 	(gnus-tmp-type (mm-handle-media-type handle))
 	(gnus-tmp-description
@@ -3717,8 +3714,8 @@ If no internal viewer is available, use an external viewer."
     (setq gnus-tmp-type-long (concat gnus-tmp-type
 				     (and (not (equal gnus-tmp-name ""))
 					  (concat "; " gnus-tmp-name))))
-    (or (equal gnus-tmp-description "")
-	(setq gnus-tmp-type-long (concat " --- " gnus-tmp-type-long)))
+    (unless (equal gnus-tmp-description "")
+      (setq gnus-tmp-type-long (concat " --- " gnus-tmp-type-long)))
     (unless (bolp)
       (insert "\n"))
     (setq b (point))
@@ -5597,13 +5594,15 @@ For example:
 (defun gnus-mime-display-security (handle)
   (save-restriction
     (narrow-to-region (point) (point))
-    (gnus-insert-mime-security-button handle)
+    (unless (gnus-unbuttonized-mime-type-p (car handle))
+      (gnus-insert-mime-security-button handle))
     (gnus-mime-display-mixed (cdr handle))
     (unless (bolp)
       (insert "\n"))
-    (let ((gnus-mime-security-button-line-format
-	   gnus-mime-security-button-end-line-format))
-      (gnus-insert-mime-security-button handle))
+    (unless (gnus-unbuttonized-mime-type-p (car handle))
+      (let ((gnus-mime-security-button-line-format
+	     gnus-mime-security-button-end-line-format))
+	(gnus-insert-mime-security-button handle)))
     (mm-set-handle-multipart-parameter
      handle 'gnus-region
      (cons (set-marker (make-marker) (point-min))

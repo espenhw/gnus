@@ -434,7 +434,7 @@ this variable specifies group names."
   :group 'gnus-summary-marks
   :type 'character)
 
-(defcustom gnus-forwarded-mark ?O
+(defcustom gnus-forwarded-mark ?F
   "*Mark used for articles that have been forwarded."
   :group 'gnus-summary-marks
   :type 'character)

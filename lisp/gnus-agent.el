@@ -279,6 +279,7 @@ If this is `ask' the hook will query the user."
 (defvar gnus-agent-summary-mode-map (make-sparse-keymap))
 (gnus-define-keys gnus-agent-summary-mode-map
   "Jj" gnus-agent-toggle-plugged
+  "Ju" gnus-agent-summary-fetch-group
   "J#" gnus-agent-mark-article
   "J\M-#" gnus-agent-unmark-article
   "@" gnus-agent-toggle-mark
@@ -293,6 +294,7 @@ If this is `ask' the hook will query the user."
        ["Mark as downloadable" gnus-agent-mark-article t]
        ["Unmark as downloadable" gnus-agent-unmark-article t]
        ["Toggle mark" gnus-agent-toggle-mark t]
+       ["Fetch downloadable" gnus-aget-summary-fetch-group t]
        ["Catchup undownloaded" gnus-agent-catchup t]))))
 
 (defvar gnus-agent-server-mode-map (make-sparse-keymap))
@@ -464,14 +466,20 @@ be a select method."
 (defun gnus-agent-fetch-group (group)
   "Put all new articles in GROUP into the Agent."
   (interactive (list (gnus-group-group-name)))
-  (unless gnus-plugged
-    (error "Groups can't be fetched when Gnus is unplugged"))
-  (unless group
-    (error "No group on the current line"))
-  (let ((gnus-command-method (gnus-find-method-for-group group)))
-    (gnus-agent-with-fetch
-      (gnus-agent-fetch-group-1 group gnus-command-method)
-      (gnus-message 5 "Fetching %s...done" group))))
+  (let ((state gnus-plugged))
+    (unwind-protect
+	(progn
+	  (unless state
+	    (gnus-agent-toggle-plugged gnus-plugged)
+	    (unless group
+	      (error "No group on the current line"))
+	    (let ((gnus-command-method (gnus-find-method-for-group group)))
+	      (gnus-agent-with-fetch
+		(gnus-agent-fetch-group-1 group gnus-command-method)
+		(gnus-message 5 "Fetching %s...done" group)))))
+      (when (and (not state)
+		 gnus-plugged)
+	(gnus-agent-toggle-plugged gnus-plugged)))))
 
 (defun gnus-agent-add-group (category arg)
   "Add the current group to an agent category."
@@ -677,6 +685,29 @@ the actual number of articles toggled is returned."
       (gnus-summary-mark-article
        (pop gnus-newsgroup-undownloaded) gnus-catchup-mark)))
   (gnus-summary-position-point))
+
+(defun gnus-agent-summary-fetch-group ()
+  "Fetch the downloadable articles in the group."
+  (interactive)
+  (let ((articles gnus-newsgroup-downloadable)
+	(gnus-command-method (gnus-find-method-for-group gnus-newsgroup-name))
+	(state gnus-plugged))
+    (unwind-protect
+	(progn
+	  (unless state
+	    (gnus-agent-toggle-plugged t))
+	  (unless articles
+	    (error "No articles to download"))
+	  (gnus-agent-with-fetch
+	    (gnus-agent-fetch-articles gnus-newsgroup-name articles))
+	  (save-excursion
+	    (dolist (article articles)
+	      (setq gnus-newsgroup-downloadable
+		    (delq article gnus-newsgroup-downloadable))
+	      (gnus-summary-mark-article article gnus-unread-mark))))
+      (when (and (not state)
+		 gnus-plugged)
+	(gnus-agent-toggle-plugged nil)))))
 
 ;;;
 ;;; Internal functions
@@ -1141,7 +1172,8 @@ the actual number of articles toggled is returned."
     (unless (gnus-check-group group)
       (error "Can't open server for %s" group))
     ;; Fetch headers.
-    (when (and (or (gnus-active group) (gnus-activate-group group))
+    (when (and (or (gnus-active group)
+		   (gnus-activate-group group))
 	       (setq articles (gnus-agent-fetch-headers group))
 	       (let ((nntp-server-buffer gnus-agent-overview-buffer))
 		 ;; Parse them and see which articles we want to fetch.
@@ -1160,8 +1192,7 @@ the actual number of articles toggled is returned."
 		 (cadr category))))
       (if (memq predicate '(gnus-agent-true gnus-agent-false))
 	  ;; Simple implementation
-	  (setq arts
-		(and (eq predicate 'gnus-agent-true) articles))
+	  (setq arts (and (eq predicate 'gnus-agent-true) articles))
 	(setq arts nil)
 	(setq score-param
 	      (or (gnus-group-get-parameter group 'agent-score t)

@@ -1,5 +1,12 @@
 2001-08-17 10:41:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-agent.el (gnus-agent-fetch-group): Go online if offline. 
+	(gnus-agent-summary-fetch-group): New command and keystroke.
+
+	* gnus-art.el (gnus-insert-mime-button): Tiny clean-up.
+	(gnus-mime-display-security): Make it respect
+	gnus-unbuttonized-mime-type-p. 
+
 	* gnus-sum.el (gnus-articles-to-read): Comments.
 	(gnus-article-marked-p): New function.
 	(gnus-summary-display-make-predicate): New function.
