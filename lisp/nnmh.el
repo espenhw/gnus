@@ -173,11 +173,14 @@
 	       '<))
 	  (cond
 	   (dir
+	    (setq nnmh-group-alist
+		  (delq (assoc group nnmh-group-alist) nnmh-group-alist))
+	    (push (list group (cons (car dir) (car (last dir))))
+		  nnmh-group-alist)
 	    (nnheader-report 'nnmh "Selected group %s" group)
 	    (nnheader-insert
 	     "211 %d %d %d %s\n" (length dir) (car dir)
-	     (progn (while (cdr dir) (setq dir (cdr dir))) (car dir))
-	     group))
+	     (car (last dir)) group))
 	   (t
 	    (nnheader-report 'nnmh "Empty group %s" group)
 	    (nnheader-insert (format "211 0 1 0 %s\n" group))))))))))

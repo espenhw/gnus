@@ -186,6 +186,7 @@ used as the line break code type of the coding system."
 (defsubst mm-enable-multibyte ()
   "Enable multibyte in the current buffer."
   (when (and (fboundp 'set-buffer-multibyte)
+             (boundp 'enable-multibyte-characters)
 	     (default-value 'enable-multibyte-characters))
     (set-buffer-multibyte t)))
 

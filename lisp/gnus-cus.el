@@ -1,6 +1,6 @@
 ;;; gnus-cus.el --- customization commands for Gnus
 ;;
-;; Copyright (C) 1996 Free Software Foundation, Inc.
+;; Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: news
@@ -56,7 +56,7 @@ if that value is non-nil."
 
 ;;; Group Customization:
 
-(defconst gnus-group-parameters
+(defcustom gnus-group-parameters
   '((to-address (gnus-email-address :tag "To Address") "\
 This will be used when doing followups and posts.
 
@@ -71,14 +71,63 @@ not.  Let's say there's a group on the server that is called
 `fa.4ad-l'.  This is a real newsgroup, but the server has gotten the
 articles from a mail-to-news gateway.  Posting directly to this group
 is therefore impossible--you have to send mail to the mailing list
-address instead.")
+address instead.
+
+The gnus-group-split mail splitting mechanism will behave as if this
+address was listed in gnus-group-split Addresses (see below).")
 
     (to-list (gnus-email-address :tag "To List") "\
 This address will be used when doing a `a' in the group.
 
 It is totally ignored when doing a followup--except that if it is
 present in a news group, you'll get mail group semantics when doing
-`f'.")
+`f'.
+
+The gnus-group-split mail splitting mechanism will behave as if this
+address was listed in gnus-group-split Addresses (see below).")
+
+    (extra-aliases (choice
+		    :tag "Extra Aliases"
+		    (list
+		     :tag "List"
+		     (editable-list
+		      :inline t
+		      (gnus-email-address :tag "Address")))
+		    (gnus-email-address :tag "Address")) "\
+Store messages posted from or to this address in this group.
+
+You must be using gnus-group-split for this to work.  The VALUE of the
+nnmail-split-fancy SPLIT generated for this group will match these
+addresses.")
+
+    (split-regexp (regexp :tag "gnus-group-split Regular Expression") "\
+Like gnus-group-split Address, but expects a regular expression.")
+
+    (split-exclude (list :tag "gnus-group-split Restricts"
+			 (editable-list
+			  :inline t (regexp :tag "Restrict"))) "\
+Regular expression that cancels gnus-group-split matches.
+
+Each entry is added to the nnmail-split-fancy SPLIT as a separate
+RESTRICT clause.")
+
+    (split-spec (choice :tag "gnus-group-split Overrider"
+			(sexp :tag "Fancy Split")
+			(const :tag "Catch All" catch-all)
+			(const :tag "Ignore" nil)) "\
+Override all other gnus-group-split fields.
+
+In `Fancy Split', you can enter any nnmail-split-fancy SPLIT.  Note
+that the name of this group won't be automatically assumed, you have
+to add it to the SPLITs yourself.  This means you can use such splits
+to split messages to other groups too.
+
+If you select `Catch All', this group will get postings for any
+messages not matched in any other group.  It overrides the variable
+gnus-group-split-default-catch-all-group.
+
+Selecting `Ignore' forces no SPLIT to be generated for this group,
+disabling all other gnus-group-split fields.")
 
     (broken-reply-to (const :tag "Broken Reply To" t) "\
 Ignore `Reply-To' headers in this group.

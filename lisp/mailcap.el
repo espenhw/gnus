@@ -384,6 +384,11 @@ If FORCE, re-parse even if already parsed."
 	(skip-chars-forward "; \t\n")
 	(setq save-pos (point))
 	(skip-chars-forward "^;\n")
+	;;; skip \;
+	(while (eq (char-before) ?\\)
+	  (backward-delete-char 1)
+	  (skip-chars-forward ";")
+	  (skip-chars-forward "^;\n"))
 	(if (eq (or (char-after save-pos) 0) ?')
 	    (setq viewer (progn
 			   (narrow-to-region (1+ save-pos) (point))
@@ -419,14 +424,13 @@ If FORCE, re-parse even if already parsed."
       (skip-chars-forward " \n\t;")
       (while (not (eobp))
 	(setq done nil)
-	(skip-chars-forward " \";\n\t")
 	(setq name-pos (point))
-	(skip-chars-forward "^ \n\t=")
+	(skip-chars-forward "^ \n\t=;")
 	(downcase-region name-pos (point))
 	(setq name (buffer-substring name-pos (point)))
 	(skip-chars-forward " \t\n")
 	(if (not (eq (char-after (point)) ?=)) ; There is no value
-	    (setq value nil)
+	    (setq value t)
 	  (skip-chars-forward " \t\n=")
 	  (setq val-pos (point))
 	  (if (memq (char-after val-pos) '(?\" ?'))
@@ -445,7 +449,8 @@ If FORCE, re-parse even if already parsed."
 		    (skip-chars-forward ";"))
 		(setq done t))))
 	  (setq	value (buffer-substring val-pos (point))))
-	(setq results (cons (cons name value) results)))
+	(setq results (cons (cons name value) results))
+	(skip-chars-forward " \";\n\t"))
       results)))
 
 (defun mailcap-mailcap-entry-passes-test (info)
@@ -456,6 +461,7 @@ If FORCE, re-parse even if already parsed."
 	)
     (setq status (and test (split-string (cdr test) " ")))
     (if (and (or (assoc "needsterm" info)
+		 (assoc "needsterminal" info)
 		 (assoc "needsx11" info))
 	     (not (getenv "DISPLAY")))
 	(setq status nil)
@@ -740,7 +746,7 @@ this type is returned."
     (".nc"       . "application/x-netcdf")
     (".nc"       . "application/x-netcdf")
     (".oda"      . "application/oda")
-    (".patch"    . "application/x-patch")
+    (".patch"    . "text/x-patch")
     (".pbm"      . "image/x-portable-bitmap")
     (".pdf"      . "application/pdf")
     (".pgm"      . "image/portable-graymap")
@@ -871,6 +877,10 @@ The path of COMMAND will be returned iff COMMAND is a command."
 				    dir)))
 		       (not (file-directory-p file)))
 	      (throw 'found file))))))))
+
+(defun mailcap-mime-types ()
+  "Return a list of MIME media types."
+  (delete-duplicates (mapcar 'cdr mailcap-mime-extensions)))
 
 (provide 'mailcap)
 

@@ -1,7 +1,7 @@
 @c \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.93 Manual
+@settitle Pterodactyl Gnus 0.94 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -319,7 +319,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.93 Manual
+@title Pterodactyl Gnus 0.94 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -355,7 +355,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.93.
+This manual corresponds to Pterodactyl Gnus 0.94.
 
 @end ifinfo
 
@@ -8346,6 +8346,11 @@ Prompt for a file name, and then save the @sc{mime} object
 @item c (Article)
 Copy the @sc{mime} object to a fresh buffer and display this buffer
 (@code{gnus-mime-copy-part}).
+
+@findex gnus-mime-view-part-as-type
+@item t (Article)
+View the @sc{mime} object as if it were a different @sc{mime} media type
+(@code{gnus-mime-view-part-as-type}. 
 
 @findex gnus-mime-pipe-part
 @item | (Article)

@@ -450,7 +450,9 @@ If NIL, NNFOLDER-FILE-CODING-SYSTEM is used.")
 	 (ignore-errors
 	   (rename-file
 	    buffer-file-name
-	    (nnfolder-group-pathname new-name))
+	    (let ((new-file (nnfolder-group-pathname new-name)))
+	      (gnus-make-directory (file-name-directory new-file))
+	      new-file))
 	   t)
 	 ;; That went ok, so we change the internal structures.
 	 (let ((entry (assoc group nnfolder-group-alist)))

@@ -725,7 +725,6 @@ ticked: The number of ticked articles."
 	["Pack packet" gnus-soup-pack-packet (fboundp 'gnus-soup-pack-packet)]
 	["Save areas" gnus-soup-save-areas (fboundp 'gnus-soup-pack-packet)]
 	["Brew SOUP" gnus-group-brew-soup (fboundp 'gnus-soup-pack-packet)])
-       ["Send a bug report" gnus-bug t]
        ["Send a mail" gnus-group-mail t]
        ["Post an article..." gnus-group-post-news t]
        ["Check for new news" gnus-group-get-new-news t]

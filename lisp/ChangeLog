@@ -1,6 +1,109 @@
+Fri Jul  9 19:28:29 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.94 is released.
+
+1999-07-09 21:19:23  Stainless Steel Rat  <ratinox@peorth.gweep.net>
+
+	* pop3.el: New version.
+
+1999-07-09 20:01:44  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-encode.el (mm-qp-or-base64): New function.
+	(mm-content-transfer-encoding): Use it.
+
+	* gnus-util.el (gnus-parse-netrc): Allow quoted names.
+
+1999-07-08  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-display-external): Fix typo and use 'non-viewer.
+
+	* mailcap.el (mailcap-mailcap-entry-passes-test): Add needsterminal.
+
+1999-07-09 18:52:22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-view-part-as-media): New command and
+	keystroke. 
+
+	* mailcap.el (mailcap-mime-types): New function.
+
+	* nnmh.el (nnmh-request-group): Update nnmh-group-alist.
+
+	* message.el (message-goto-eoh): Really go to the end.
+
+1999-07-09 18:40:23  Puneet Goel  <puneet@computer.org>
+
+	* message.el (message-make-date): Do the right thing in with
+	sub-hour time zones.
+
+1999-07-09 18:36:21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-make-menu-bar): Removed double bug
+	report. 
+
+1999-07-08  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnfolder.el (nnfolder-request-rename-group): Create directory.
+
+1999-07-08  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mailcap.el (mailcap-parse-mailcap): Skip \;.
+	(mailcap-parse-mailcap-extras): Fix "nonterminal;" and empty name,
+ 	and use t as default value.
+
+Wed Jul  7 18:40:30 1999  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-get-newsgroup-headers): Don't assume
+ 	gnus-summary-buffer is live.
+
+1999-07-09 17:44:03  Robert Pluim  <rpluim@nortelnetworks.com>
+
+	* mm-util.el (mm-enable-multibyte): Check whether var bound.
+
+1999-07-09 17:31:39  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-bounce): Do MIME bounces MIMEy.
+
+	* gnus-sum.el (gnus-summary-read-group-1): Update mark positions.
+
+1999-07-08 08:41:10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mailcap.el (mailcap-mime-extensions): Changed patch to
+	text/x-patch. 
+
+	* mm-decode.el (mm-display-external): Wrong placement of paren.
+
 Wed Jul  7 13:09:51 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.93 is released.
+
+1999-07-08  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+        * gnus-cus.el (gnus-group-parameters): New entries for
+        gnus-group-split.
+
+        * gnus-mlspl.el: Renamed functions and variables so as to
+        start with gnus-group-split.
+        * gnus.el: Adjust autoload entries.
+
+1999-07-07 ??:??:??  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* gnus-mlspl.el: Removed trailing t from comment and provide.
+	Renamed functions and variables to start with gnus-mlsplit.
+	Added autoload comments.
+	* gnus.el: Added autoload entries.
+
+1999-07-06 05:37:46  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* nnmail.el (nnmail-split-it): Search the regexp multiple times,
+	so that matches excluded by RESTRICTs do not cause the whole split
+	to be ignored.  This also fixes a long-standing bug in which a
+	split with \N substitutions wouldn't cause cross-posting as
+	expected.
+
+	* nnmail.el (nnmail-split-fancy): Document RESTRICT clauses.
+	(nnmail-split-it): Implement them.
+
+	* nnmail.el (nnmail-split-fancy): Document ! splits.
 
 1999-07-07 10:41:11  Stainless Steel Rat  <ratinox@peorth.gweep.net>
 

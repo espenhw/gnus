@@ -2792,6 +2792,7 @@ If NO-DISPLAY, don't generate a summary buffer."
       (gnus-summary-set-local-parameters gnus-newsgroup-name)
       (gnus-update-format-specifications
        nil 'summary 'summary-mode 'summary-dummy)
+      (gnus-update-summary-mark-positions)
       ;; Do score processing.
       (when gnus-use-scoring
 	(gnus-possibly-score-headers))
@@ -4569,7 +4570,9 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	headers id end ref
 	(mail-parse-charset gnus-newsgroup-charset)
 	(mail-parse-ignored-charsets 
-	     (save-excursion (set-buffer gnus-summary-buffer)
+	     (save-excursion (condition-case nil
+				 (set-buffer gnus-summary-buffer)
+			       (error))
 			     gnus-newsgroup-ignored-charsets)))
     (save-excursion
       (set-buffer nntp-server-buffer)

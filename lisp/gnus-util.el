@@ -816,9 +816,12 @@ ARG is passed to the first function."
 	    (if (eq (char-after) ?#)
 		(goto-char (point-max))
 	      (unless (eobp)
-		(setq elem (buffer-substring
-			    (point) (progn (skip-chars-forward "^\t ")
-					   (point))))
+		(setq elem
+		      (if (= (following-char) ?\")
+			  (read (current-buffer))
+			(buffer-substring
+			 (point) (progn (skip-chars-forward "^\t ")
+					(point)))))
 		(cond
 		 ((equal elem "macdef")
 		  ;; We skip past the macro definition.

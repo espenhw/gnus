@@ -260,7 +260,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.93"
+(defconst gnus-version-number "0.94"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -1761,8 +1761,9 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
       gnus-summary-save-article-vm)
      ("gnus-draft" :interactive t gnus-draft-mode gnus-group-send-drafts)
-     ("gnus-mlspl" gnus-mlsplit gnus-mlsplit-fancy)
-     ("gnus-mlspl" :interactive t gnus-mlsplit-setup gnus-mlsplit-update))))
+     ("gnus-mlspl" gnus-group-split gnus-group-split-fancy)
+     ("gnus-mlspl" :interactive t gnus-group-split-setup
+      gnus-group-split-update))))
 
 ;;; gnus-sum.el thingies
 

@@ -317,7 +317,7 @@ external if displayed external."
 	  (let ((mm (current-buffer))
 		(non-viewer (assoc "non-viewer"
 				   (mailcap-mime-info
-				    (mm-handle-media-type handle)) t)))
+				    (mm-handle-media-type handle) t))))
 	    (unwind-protect
 		(if method
 		    (funcall method)
@@ -330,9 +330,10 @@ external if displayed external."
       (let* ((dir (make-temp-name (expand-file-name "emm." mm-tmp-directory)))
 	     (filename (mail-content-type-get
 			(mm-handle-disposition handle) 'filename))
-	     (needsterm (assoc "needsterm"
-			       (mailcap-mime-info
-				(mm-handle-media-type handle)) t))
+	     (mime-info (mailcap-mime-info
+			 (mm-handle-media-type handle) t))
+	     (needsterm (or (assoc "needsterm" mime-info)
+			    (assoc "needsterminal" mime-info)))
 	     process file buffer)
 	;; We create a private sub-directory where we store our files.
 	(make-directory dir)

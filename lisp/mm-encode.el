@@ -28,12 +28,15 @@
 (require 'mailcap)
 
 (defvar mm-content-transfer-encoding-defaults
-  '(("text/.*" quoted-printable)
+  '(("text/x-patch" 8bit)
+    ("text/.*" qp-or-base64)
     ("message/rfc822" 8bit)
     ("application/emacs-lisp" 8bit)
     ("application/x-patch" 8bit)
-    (".*" base64))
-  "Alist of regexps that match MIME types and their encodings.")
+    (".*" qp-or-base64))
+  "Alist of regexps that match MIME types and their encodings.
+If the encoding is `qp-or-base64', then either quoted-printable
+or base64 will be used, depending on what is more efficient.")
 
 (defun mm-insert-rfc822-headers (charset encoding)
   "Insert text/plain headers with CHARSET and ENCODING."
@@ -110,13 +113,37 @@ The encoding used is returned."
   (insert "\n"))
 
 (defun mm-content-transfer-encoding (type)
-  "Return a CTE suitable for TYPE."
+  "Return a CTE suitable for TYPE to encode the current buffer."
   (let ((rules mm-content-transfer-encoding-defaults))
     (catch 'found
       (while rules
 	(when (string-match (caar rules) type)
-	  (throw 'found (cadar rules)))
+	  (throw 'found
+		 (if (eq (cadar rules) 'qp-or-base64)
+		     (mm-qp-or-base64)
+		   (cadar rules))))
 	(pop rules)))))
+
+(defun mm-qp-or-base64 ()
+  (save-excursion
+    (save-restriction
+      (narrow-to-region (point-min) (min (+ (point-min) 1000) (point-max)))
+      (goto-char (point-min))
+      (let ((8bit 0))
+	(cond
+	 ((not (featurep 'mule))
+	  (while (re-search-forward "[^\x00-\x7f]" nil t)
+	    (incf 8bit)))
+	 (t
+	  ;; Mule version
+	  (while (not (eobp))
+	    (skip-chars-forward "\0-\177")
+	    (unless (eobp)
+	      (forward-char 1)
+	      (incf 8bit)))))
+	(if (> (/ (* 8bit 1.0) (buffer-size)) 0.2)
+	    'quoted-base64
+	  'printable)))))
 
 (provide 'mm-encode)
 

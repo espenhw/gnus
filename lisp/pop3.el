@@ -4,7 +4,7 @@
 
 ;; Author: Richard L. Pieri <ratinox@peorth.gweep.net>
 ;; Keywords: mail, pop3
-;; Version: 1.3r
+;; Version: 1.3s
 
 ;; This file is part of GNU Emacs.
 
@@ -37,7 +37,7 @@
 (require 'mail-utils)
 (provide 'pop3)
 
-(defconst pop3-version "1.3r")
+(defconst pop3-version "1.3s")
 
 (defvar pop3-maildrop (or (user-login-name) (getenv "LOGNAME") (getenv "USER") nil)
   "*POP3 maildrop.")
@@ -146,8 +146,7 @@ Returns the process associated with the connection."
 ;;      (insert command "\r\n"))
     (setq pop3-read-point (point))
     (goto-char (point-max))
-    (process-send-string process command)
-    (process-send-string process "\r\n")
+    (process-send-string process (concat command "\r\n"))
     )
 
 (defun pop3-read-response (process &optional return)
@@ -253,7 +252,7 @@ Return the response string if optional second argument is non-nil."
 	    (let ((size (- (point-max) (point-min))))
 	      (goto-char (point-min))
 	      (widen)
-	      (forward-line -2)
+	      (forward-line -1)
 	      (insert (format "Content-Length: %s\n" size)))
 	    )))))
 

@@ -1520,7 +1520,7 @@ C-c C-a  mml-attach-file (attach a file as MIME)."
   "Move point to the end of the headers."
   (interactive)
   (message-goto-body)
-  (forward-line -2))
+  (forward-line -1))
 
 (defun message-goto-signature ()
   "Move point to the beginning of the message signature.
@@ -2701,7 +2701,7 @@ If NOW, use that time instead."
 				      parse-time-months))))
      (format-time-string "%Y %H:%M:%S " now)
      ;; We do all of this because XEmacs doesn't have the %z spec.
-     (format "%s%02d%02d" sign (/ zone 3600) (% zone 3600)))))
+     (format "%s%02d%02d" sign (/ zone 3600) (/ (% zone 3600) 60)))))
 
 (defun message-make-message-id ()
   "Make a unique Message-ID."
@@ -3861,33 +3861,27 @@ This only makes sense if the current message is a bounce message than
 contains some mail you have written which has been bounced back to
 you."
   (interactive)
-  (let ((cur (current-buffer))
+  (let ((handles (mm-dissect-buffer))
 	boundary)
     (message-pop-to-buffer (message-buffer-name "bounce"))
-    (insert-buffer-substring cur)
-    (undo-boundary)
-    (message-narrow-to-head)
-    (if (and (message-fetch-field "Mime-Version")
-	     (setq boundary (message-fetch-field "Content-Type")))
-	(if (string-match "boundary=\"\\([^\"]+\\)\"" boundary)
-	    (setq boundary (concat (match-string 1 boundary) " *\n"
-				   "Content-Type: message/rfc822"))
-	  (setq boundary nil)))
-    (widen)
-    (goto-char (point-min))
-    (search-forward "\n\n" nil t)
-    (or (and boundary
-	     (re-search-forward boundary nil t)
-	     (forward-line 2))
-	(and (re-search-forward message-unsent-separator nil t)
-	     (forward-line 1))
-	(re-search-forward "^Return-Path:.*\n" nil t))
-    ;; We remove everything before the bounced mail.
-    (delete-region
-     (point-min)
-     (if (re-search-forward "^[^ \n\t]+:" nil t)
-	 (match-beginning 0)
-       (point)))
+    (if (stringp (car handles))
+	;; This is a MIME bounce.
+	(mm-insert-part (car (last handles)))
+      ;; This is a non-MIME bounce, so we try to remove things
+      ;; manually.
+      (mm-insert-part (car (last handles)))
+      (undo-boundary)
+      (goto-char (point-min))
+      (search-forward "\n\n" nil t)
+      (or (and (re-search-forward message-unsent-separator nil t)
+	       (forward-line 1))
+	  (re-search-forward "^Return-Path:.*\n" nil t))
+      ;; We remove everything before the bounced mail.
+      (delete-region
+       (point-min)
+       (if (re-search-forward "^[^ \n\t]+:" nil t)
+	   (match-beginning 0)
+	 (point))))
     (save-restriction
       (message-narrow-to-head)
       (message-remove-header message-ignored-bounced-headers t)
