@@ -1,3 +1,67 @@
+Thu Aug 27 09:29:53 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.40 is released.
+
+1998-08-27 09:19:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-agent.el (gnus-agent-mode): Only toggle plugged in group
+	mode. 
+
+1998-08-27 07:25:47  Lars Balker Rasmussen  <gnort@daimi.aau.dk>
+
+	* message.el (message-supersede): Check the right headers. 
+
+1998-08-26 13:51:18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-sort-threads): Changed level.
+
+1998-08-26  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-sum.el (gnus-build-all-threads): `save-excursion' and
+ 	`set-buffer' back to `gnus-summary-buffer' in order to access
+ 	buffer-local variables.
+
+1998-08-26 06:00:44  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-data-compute-positions): More and faster. 
+
+1998-08-26 05:41:15  Matt Pharr  <mmp@Graphics.Stanford.EDU>
+
+	* message.el (message-wash-subject): Remove more.
+
+1998-08-25 11:33:28  Tatsuya Ichikawa  <ichikawa@hv.epson.co.jp>
+
+	* gnus-cache.el (gnus-cache-overview-coding-system): New
+	variable. 
+
+1998-08-25 08:23:05  Albert L. Ting  <alt@artisan.com>
+
+	* gnus-group.el (gnus-fetch-group-other-frame): New command.
+
+1998-08-25 07:24:51  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-uu.el (gnus-uu-grab-articles): Check for pseudos.
+
+	* gnus-art.el (gnus-ignored-headers): More headers.
+
+	* gnus-sum.el (gnus-summary-move-article): Update the right
+	group. 
+
+1998-08-23 14:31:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-ignored-headers): More headers.
+
+1998-08-23  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-agent.el (gnus-agent-copy-nov-line): Return to beginning of 
+	line before next read.
+	(gnus-agent-braid-nov): Remove redundant `let'. 
+
+1998-08-22 10:40:54  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-display-x-face): Allow multiple X-Faces
+	under XEmacs.
+
 Sat Aug 22 10:28:25 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.39 is released.

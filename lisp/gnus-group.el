@@ -1152,7 +1152,8 @@ already."
 	    found buffer-read-only)
 	;; Enter the current status into the dribble buffer.
 	(let ((entry (gnus-gethash group gnus-newsrc-hashtb)))
-	  (when (and entry (not (gnus-ephemeral-group-p group)))
+	  (when (and entry
+		     (not (gnus-ephemeral-group-p group)))
 	    (gnus-dribble-enter
 	     (concat "(gnus-group-set-info '"
 		     (gnus-prin1-to-string (nth 2 entry))
@@ -1566,6 +1567,19 @@ Returns whether the fetching was successful or not."
   (unless (get-buffer gnus-group-buffer)
     (gnus-no-server))
   (gnus-group-read-group nil nil group))
+
+;;;###autoload
+(defun gnus-fetch-group-other-frame (group)
+  "Pop up a frame and enter GROUP."
+  (interactive "P")
+  (let ((window (get-buffer-window gnus-group-buffer)))
+    (cond (window
+	   (select-frame (window-frame window)))
+	  ((= (length (frame-list)) 1)
+	   (select-frame (make-frame)))
+	  (t
+	   (other-frame 1))))
+  (gnus-fetch-group group))
 
 (defvar gnus-ephemeral-group-server 0)
 
@@ -2392,7 +2406,7 @@ If REVERSE, sort in reverse order."
 	(when (gnus-group-native-p (gnus-info-group info))
 	  (gnus-info-clear-data info)))
       (gnus-get-unread-articles)
-      (gnus-dribble-enter "")
+      (gnus-dribble-touch)
       (when (gnus-y-or-n-p
 	     "Move the cache away to avoid problems in the future? ")
 	(call-interactively 'gnus-cache-move-cache)))))

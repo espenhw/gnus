@@ -287,7 +287,7 @@ The following commands are available:
       (error "No server on the current line")))
   (unless (assoc server gnus-server-alist)
     (error "Read-only server %s" server))
-  (gnus-dribble-enter "")
+  (gnus-dribble-touch)
   (let ((buffer-read-only nil))
     (gnus-delete-line))
   (push (assoc server gnus-server-alist) gnus-server-killed-servers)

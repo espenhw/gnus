@@ -98,12 +98,18 @@
     "^X-MimeOLE:" "^X-MSMail-Priority:" "^X-Priority:" "^X-Loop:"
     "^X-Authentication-Warning:" "^X-MIME-Autoconverted:" "^X-Face:"
     "^X-Attribution:" "^X-Originating-IP:" "^Delivered-To:"
-    "^NNTP-[-A-Za-z]*:" "^Distribution:" "^X-no-archive:" "^X-Trace:"
+    "^NNTP-[-A-Za-z]+:" "^Distribution:" "^X-no-archive:" "^X-Trace:"
     "^X-Complaints-To:" "^X-NNTP-Posting-Host:" "^X-Orig.*:"
     "^Abuse-Reports-To:" "^Cache-Post-Path:" "^X-Article-Creation-Date:"
     "^X-Poster:" "^X-Mail2News-Path:" "^X-Server-Date:" "^X-Cache:"
     "^Originator:" "^X-Problems-To:" "^X-Auth-User:" "^X-Post-Time:" 
-    "^X-Admin:" "^X-UID:")
+    "^X-Admin:" "^X-UID:" "^Resent-[-A-Za-z]+:" "^X-Mailing-List:"
+    "^Precedence:" "^Original-[-A-Za-z]+:" "^X-filename:" "^X-Orcpt:"
+    "^Old-Received:" "^X-Pgp-Fingerprint:" "^X-Pgp-Key-Id:"
+    "^X-Pgp-Public-Key-Url:" "^X-Auth:" "^X-From-Line:"
+    "^X-Gnus-Article-Number:" "^X-Majordomo:" "^X-Url:" "^X-Sender:"
+    "^X-Mailing-List:" "^MBOX-Line" "^Priority:" "^X-Pgp" "^X400-[-A-Za-z]+:"
+    "^Status:")
   "*All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."
@@ -899,24 +905,27 @@ characters to translate to."
       (delete-process "article-x-face"))
     (let ((inhibit-point-motion-hooks t)
 	  (case-fold-search t)
-	  from)
+	  from last)
       (save-restriction
 	(nnheader-narrow-to-headers)
 	(setq from (message-fetch-field "from"))
 	(goto-char (point-min))
-	;; This used to try to do multiple faces (`while' instead of
-	;; `when' below), but (a) sending multiple EOFs to xv doesn't
-	;; work (b) it can crash some versions of Emacs (c) are
-	;; multiple faces really something to encourage?
-	(when (and gnus-article-x-face-command
-		   (or force
-		       ;; Check whether this face is censored.
-		       (not gnus-article-x-face-too-ugly)
-		       (and gnus-article-x-face-too-ugly from
-			    (not (string-match gnus-article-x-face-too-ugly
-					       from))))
-		   ;; Has to be present.
-		   (re-search-forward "^X-Face: " nil t))
+	(while (and gnus-article-x-face-command
+		    (not last)
+		    (or force
+			;; Check whether this face is censored.
+			(not gnus-article-x-face-too-ugly)
+			(and gnus-article-x-face-too-ugly from
+			     (not (string-match gnus-article-x-face-too-ugly
+						from))))
+		    ;; Has to be present.
+		    (re-search-forward "^X-Face: " nil t))
+	  ;; This used to try to do multiple faces (`while' instead of
+	  ;; `when' above), but (a) sending multiple EOFs to xv doesn't
+	  ;; work (b) it can crash some versions of Emacs (c) are
+	  ;; multiple faces really something to encourage?
+	  (when (stringp gnus-article-x-face-command)
+	    (setq last t))
 	  ;; We now have the area of the buffer where the X-Face is stored.
 	  (save-excursion
 	    (let ((beg (point))

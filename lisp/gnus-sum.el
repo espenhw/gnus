@@ -2037,12 +2037,14 @@ The following commands are available:
   (setq gnus-newsgroup-data-reverse nil)
   (let ((data gnus-newsgroup-data)
 	pos)
-    (while data
-      (when (setq pos (text-property-any
-		       (point-min) (point-max)
-		       'gnus-number (gnus-data-number (car data))))
-	(gnus-data-set-pos (car data) (+ pos 3)))
-      (setq data (cdr data)))))
+    (save-excursion
+      (goto-char (point-min))
+      (while data
+	(while (get-text-property (point) 'gnus-intangible)
+	  (forward-line 1))
+	(gnus-data-set-pos (car data) (+ (point) 3))
+	(setq data (cdr data))
+	(forward-line 1)))))
 
 (defun gnus-summary-article-pseudo-p (article)
   "Say whether this article is a pseudo article or not."
@@ -3129,14 +3131,16 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 		  header (gnus-nov-parse-line
 			  article dependencies)))
 	  (when header
-	    (push header gnus-newsgroup-headers)
-	    (if (memq (setq article (mail-header-number header))
-		      gnus-newsgroup-unselected)
-		(progn
-		  (push article gnus-newsgroup-unreads)
-		  (setq gnus-newsgroup-unselected
-			(delq article gnus-newsgroup-unselected)))
-	      (push article gnus-newsgroup-ancient))
+	    (save-excursion
+	      (set-buffer gnus-summary-buffer)
+	      (push header gnus-newsgroup-headers)
+	      (if (memq (setq article (mail-header-number header))
+			gnus-newsgroup-unselected)
+		  (progn
+		    (push article gnus-newsgroup-unreads)
+		    (setq gnus-newsgroup-unselected
+			  (delq article gnus-newsgroup-unselected)))
+		(push article gnus-newsgroup-ancient)))
 	    (forward-line 1)))))))
 
 (defun gnus-summary-update-article-line (article header)
@@ -3410,10 +3414,10 @@ If LINE, insert the rebuilt thread starting on line LINE."
   "Sort THREADS."
   (if (not gnus-thread-sort-functions)
       threads
-    (gnus-message 7 "Sorting threads...")
+    (gnus-message 8 "Sorting threads...")
     (prog1
 	(sort threads (gnus-make-sort-function gnus-thread-sort-functions))
-      (gnus-message 7 "Sorting threads...done"))))
+      (gnus-message 8 "Sorting threads...done"))))
 
 (defun gnus-sort-articles (articles)
   "Sort ARTICLES."
@@ -6986,15 +6990,10 @@ and `request-accept' functions."
 	(gnus-summary-mark-article article gnus-canceled-mark)
 	(gnus-message 4 "Deleted article %s" article))
        (t
-	(let* ((entry
-		(or
-		 (gnus-gethash (car art-group) gnus-newsrc-hashtb)
-		 (gnus-gethash
-		  (gnus-group-prefixed-name
-		   (car art-group)
-		   (or select-method
-		       (gnus-find-method-for-group to-newsgroup)))
-		  gnus-newsrc-hashtb)))
+	(let* ((pto-group (gnus-group-prefixed-name
+			   (car art-group) to-method))
+	       (entry
+		(gnus-gethash pto-group gnus-newsrc-hashtb))
 	       (info (nth 2 entry))
 	       (to-group (gnus-info-group info)))
 	  ;; Update the group that has been moved to.

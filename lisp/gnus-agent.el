@@ -203,7 +203,8 @@ If nil, only read articles will be expired."
       (push (cons mode (symbol-value (intern (format "gnus-agent-%s-mode-map"
 						     buffer))))
 	    minor-mode-map-alist))
-    (gnus-agent-toggle-plugged gnus-plugged)
+    (when (eq major-mode 'gnus-group-mode)
+      (gnus-agent-toggle-plugged gnus-plugged))
     (gnus-run-hooks 'gnus-agent-mode-hook
 		    (intern (format "gnus-agent-%s-mode-hook" buffer)))))
 
@@ -643,7 +644,7 @@ the actual number of articles toggled is returned."
     ;; Prune off articles that we have already fetched.
     (while (and articles
 		(cdr (assq (car articles) gnus-agent-article-alist)))
-      (pop articles))
+     (pop articles))
     (let ((arts articles))
       (while (cdr arts)
 	(if (cdr (assq (cadr arts) gnus-agent-article-alist))
@@ -782,7 +783,7 @@ the actual number of articles toggled is returned."
 	  (gnus-agent-enter-history "last-header-fetched-for-session"
 				    (list (cons group (nth (- (length  articles) 1) articles)))
 				    (gnus-time-to-day (current-time)))
-	t)))))
+	  t)))))
 
 (defsubst gnus-agent-copy-nov-line (article)
   (let (b e)
@@ -790,47 +791,48 @@ the actual number of articles toggled is returned."
     (setq b (point))
     (if (eq article (read (current-buffer)))
 	(setq e (progn (forward-line 1) (point)))
-      (setq e b))
+      (progn
+	(beginning-of-line)
+	(setq e b)))
     (set-buffer nntp-server-buffer)
     (insert-buffer-substring gnus-agent-overview-buffer b e)))
 
 (defun gnus-agent-braid-nov (group articles file)
-  (let (beg end)
-    (set-buffer gnus-agent-overview-buffer)
-    (goto-char (point-min))
-    (set-buffer nntp-server-buffer)
-    (erase-buffer)
-    (insert-file-contents file)
-    (goto-char (point-max))
-    (if (or (= (point-min) (point-max))
-	    (progn
-	      (forward-line -1)
-	      (< (read (current-buffer)) (car articles))))
-	;; We have only headers that are after the older headers,
-	;; so we just append them.
-	(progn
-	  (goto-char (point-max))
-	  (insert-buffer-substring gnus-agent-overview-buffer))
-      ;; We do it the hard way.
-      (nnheader-find-nov-line (car articles))
-      (gnus-agent-copy-nov-line (car articles))
-      (pop articles)
-      (while (and articles
-		  (not (eobp)))
-	(while (and (not (eobp))
-		    (< (read (current-buffer)) (car articles)))
-	  (forward-line 1))
-	(beginning-of-line)
-	(unless (eobp)
-	  (gnus-agent-copy-nov-line (car articles))
-	  (setq articles (cdr articles))))
-      (when articles
-	(let (b e)
-	  (set-buffer gnus-agent-overview-buffer)
-	  (setq b (point)
-		e (point-max))
-	  (set-buffer nntp-server-buffer)
-	  (insert-buffer-substring gnus-agent-overview-buffer b e))))))
+  (set-buffer gnus-agent-overview-buffer)
+  (goto-char (point-min))
+  (set-buffer nntp-server-buffer)
+  (erase-buffer)
+  (insert-file-contents file)
+  (goto-char (point-max))
+  (if (or (= (point-min) (point-max))
+	  (progn
+	    (forward-line -1)
+	    (< (read (current-buffer)) (car articles))))
+      ;; We have only headers that are after the older headers,
+      ;; so we just append them.
+      (progn
+	(goto-char (point-max))
+	(insert-buffer-substring gnus-agent-overview-buffer))
+    ;; We do it the hard way.
+    (nnheader-find-nov-line (car articles))
+    (gnus-agent-copy-nov-line (car articles))
+    (pop articles)
+    (while (and articles
+		(not (eobp)))
+      (while (and (not (eobp))
+		  (< (read (current-buffer)) (car articles)))
+	(forward-line 1))
+      (beginning-of-line)
+      (unless (eobp)
+	(gnus-agent-copy-nov-line (car articles))
+	(setq articles (cdr articles))))
+    (when articles
+      (let (b e)
+	(set-buffer gnus-agent-overview-buffer)
+	(setq b (point)
+	      e (point-max))
+	(set-buffer nntp-server-buffer)
+	(insert-buffer-substring gnus-agent-overview-buffer b e)))))
 
 (defun gnus-agent-load-alist (group &optional dir)
   "Load the article-state alist for GROUP."

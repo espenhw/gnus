@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.6.33 Manual
+@settitle Gnus 5.6.40 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.6.33 Manual
+@title Gnus 5.6.40 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.6.33.
+This manual corresponds to Gnus 5.6.40.
 
 @end ifinfo
 
@@ -8406,6 +8406,14 @@ The attribute value can be a string (used verbatim), a function (the
 return value will be used), a variable (its value will be used) or a
 list (it will be @code{eval}ed and the return value will be used).
 
+If you wish to check whether the message you are about to compose is
+meant to be a news article or a mail message, you can check the values
+of the two dynamically bound variables @code{message-this-is-news} and
+@code{message-this-is-mail}.
+
+@vindex message-this-is-mail
+@vindex message-this-is-news
+
 So here's a new example:
 
 @lisp
@@ -8419,6 +8427,8 @@ So here's a new example:
          (signature my-funny-signature-randomizer))
         ((equal (system-name) "gnarly")
          (signature my-quote-randomizer))
+        (message-this-is-new
+         (signature my-news-signature))
         (posting-from-work-p
          (signature-file "~/.work-signature")
          (address "user@@bar.foo")
@@ -10393,7 +10403,24 @@ The name of the group descriptions file.  @xref{Newsgroups File Format}.
 @item nnfolder-get-new-mail
 @vindex nnfolder-get-new-mail
 If non-@code{nil}, @code{nnfolder} will read incoming mail.
+
+@item nnfolder-save-buffer-hook
+@vindex nnfolder-save-buffer-hook
+@cindex backup files
+Hook run before saving the folders.  Note that Emacs does the normal
+backup renaming of files even with the @code{nnfolder} buffers.  If you
+wish to switch this off, you could say something like the following in
+your @file{.emacs} file:
+
+@lisp
+(defun turn-off-backup ()
+  (set (make-local-variable 'backup-inhibited) t))
+
+(add-hook 'nnfolder-save-buffer-hook 'turn-off-backup)
+@end lisp
+
 @end table
+
 
 @findex nnfolder-generate-active-file
 @kindex M-x nnfolder-generate-active-file
@@ -11255,6 +11282,18 @@ effect if you have two virtual groups that have a component group in
 common.  If that's the case, you should set this variable to @code{t}.
 Or you can just tap @code{M-g} on the virtual group every time before
 you enter it---it'll have much the same effect.
+
+@code{nnvirtual} can have both mail and news groups as component groups.
+When responding to articles in @code{nnvirtual} groups, @code{nnvirtual}
+has to ask the backend of the component group the article comes from
+whether it is a news or mail backend.  However, when you do a @kbd{^},
+there is typically no sure way for the component backend to know this,
+and in that case @code{nnvirtual} tells Gnus that the article came from a
+not-news backend.  (Just to be on the safe side.)
+
+@kbd{C-c C-t} in the message buffer will insert the @code{Newsgroups}
+line from the article you respond to in these cases.
+
 
 
 @node Kibozed Groups
@@ -15954,7 +15993,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
-* Quassia Gnus::       Two times two is four, or Gnus 5.6.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6/5.7.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -17811,6 +17850,13 @@ Implement gnus-batch-brew-soup.
 @item
 Group parameters and summary commands for un/subscribing to mailing
 lists. 
+
+@item
+Introduce nnmail-home-directory.
+
+@item
+gnus-fetch-group and friends should exit Gnus when the user
+exits the group.
 
 @item
 Solve the halting problem.

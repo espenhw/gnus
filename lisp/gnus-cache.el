@@ -74,6 +74,9 @@ it's not cached."
   :type '(choice (const :tag "off" nil)
 		 regexp))
 
+(defvar gnus-cache-overview-coding-system 'raw-text
+  "Coding system used on Gnus cache files.")
+
 
 
 ;;; Internal variables.
@@ -121,7 +124,9 @@ it's not cached."
 	  (set-buffer buffer)
 	  (if (> (buffer-size) 0)
 	      ;; Non-empty overview, write it to a file.
-	      (gnus-write-buffer overview-file)
+	      (let ((coding-system-for-write
+		     gnus-cache-overview-coding-system))
+		(gnus-write-buffer overview-file))
 	    ;; Empty overview file, remove it
 	    (when (file-exists-p overview-file)
 	      (delete-file overview-file))

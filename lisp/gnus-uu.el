@@ -1212,120 +1212,121 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 		    (not (memq 'end process-state))))
 
       (setq article (pop articles))
-      (push article article-series)
+      (when (vectorp (gnus-summary-article-header article))
+	(push article article-series)
 
-      (unless articles
-	(if (eq state 'first)
-	    (setq state 'first-and-last)
-	  (setq state 'last)))
+	(unless articles
+	  (if (eq state 'first)
+	      (setq state 'first-and-last)
+	    (setq state 'last)))
 
-      (let ((part (gnus-uu-part-number article)))
-	(gnus-message 6 "Getting article %d%s..."
-		      article (if (string= part "") "" (concat ", " part))))
-      (gnus-summary-display-article article)
+	(let ((part (gnus-uu-part-number article)))
+	  (gnus-message 6 "Getting article %d%s..."
+			article (if (string= part "") "" (concat ", " part))))
+	(gnus-summary-display-article article)
 
-      ;; Push the article to the processing function.
-      (save-excursion
-	(set-buffer gnus-original-article-buffer)
-	(let ((buffer-read-only nil))
-	  (save-excursion
-	    (set-buffer gnus-summary-buffer)
-	    (setq process-state
-		  (funcall process-function
-			   gnus-original-article-buffer state)))))
+	;; Push the article to the processing function.
+	(save-excursion
+	  (set-buffer gnus-original-article-buffer)
+	  (let ((buffer-read-only nil))
+	    (save-excursion
+	      (set-buffer gnus-summary-buffer)
+	      (setq process-state
+		    (funcall process-function
+			     gnus-original-article-buffer state)))))
 
-      (gnus-summary-remove-process-mark article)
+	(gnus-summary-remove-process-mark article)
 
-      ;; If this is the beginning of a decoded file, we push it
-      ;; on to a list.
-      (when (or (memq 'begin process-state)
-		(and (or (eq state 'first)
-			 (eq state 'first-and-last))
-		     (memq 'ok process-state)))
-	(when has-been-begin
-	  ;; If there is a `result-file' here, that means that the
-	  ;; file was unsuccessfully decoded, so we delete it.
-	  (when (and result-file
-		     (file-exists-p result-file)
-		     (not gnus-uu-be-dangerous)
-		     (or (eq gnus-uu-be-dangerous t)
-			 (gnus-y-or-n-p
-			  (format "Delete unsuccessfully decoded file %s"
-				  result-file))))
-	    (delete-file result-file)))
-	(when (memq 'begin process-state)
-	  (setq result-file (car process-state)))
-	(setq has-been-begin t))
+	;; If this is the beginning of a decoded file, we push it
+	;; on to a list.
+	(when (or (memq 'begin process-state)
+		  (and (or (eq state 'first)
+			   (eq state 'first-and-last))
+		       (memq 'ok process-state)))
+	  (when has-been-begin
+	    ;; If there is a `result-file' here, that means that the
+	    ;; file was unsuccessfully decoded, so we delete it.
+	    (when (and result-file
+		       (file-exists-p result-file)
+		       (not gnus-uu-be-dangerous)
+		       (or (eq gnus-uu-be-dangerous t)
+			   (gnus-y-or-n-p
+			    (format "Delete unsuccessfully decoded file %s"
+				    result-file))))
+	      (delete-file result-file)))
+	  (when (memq 'begin process-state)
+	    (setq result-file (car process-state)))
+	  (setq has-been-begin t))
 
-      ;; Check whether we have decoded one complete file.
-      (when (memq 'end process-state)
-	(setq article-series nil)
-	(setq has-been-begin nil)
-	(if (stringp result-file)
-	    (setq files (list result-file))
-	  (setq files result-file))
-	(setq result-file (car files))
-	(while files
-	  (push (list (cons 'name (pop files))
-		      (cons 'article article))
-		result-files))
-	;; Allow user-defined functions to be run on this file.
-	(when gnus-uu-grabbed-file-functions
-	  (let ((funcs gnus-uu-grabbed-file-functions))
-	    (unless (listp funcs)
-	      (setq funcs (list funcs)))
-	    (while funcs
-	      (funcall (pop funcs) result-file))))
-	(setq result-file nil)
-	;; Check whether we have decoded enough articles.
-	(and limit (= (length result-files) limit)
-	     (setq articles nil)))
+	;; Check whether we have decoded one complete file.
+	(when (memq 'end process-state)
+	  (setq article-series nil)
+	  (setq has-been-begin nil)
+	  (if (stringp result-file)
+	      (setq files (list result-file))
+	    (setq files result-file))
+	  (setq result-file (car files))
+	  (while files
+	    (push (list (cons 'name (pop files))
+			(cons 'article article))
+		  result-files))
+	  ;; Allow user-defined functions to be run on this file.
+	  (when gnus-uu-grabbed-file-functions
+	    (let ((funcs gnus-uu-grabbed-file-functions))
+	      (unless (listp funcs)
+		(setq funcs (list funcs)))
+	      (while funcs
+		(funcall (pop funcs) result-file))))
+	  (setq result-file nil)
+	  ;; Check whether we have decoded enough articles.
+	  (and limit (= (length result-files) limit)
+	       (setq articles nil)))
 
-      ;; If this is the last article to be decoded, and
-      ;; we still haven't reached the end, then we delete
-      ;; the partially decoded file.
-      (and (or (eq state 'last) (eq state 'first-and-last))
-	   (not (memq 'end process-state))
-	   result-file
-	   (file-exists-p result-file)
-	   (not gnus-uu-be-dangerous)
-	   (or (eq gnus-uu-be-dangerous t)
-	       (gnus-y-or-n-p
-		(format "Delete incomplete file %s? " result-file)))
-	   (delete-file result-file))
+	;; If this is the last article to be decoded, and
+	;; we still haven't reached the end, then we delete
+	;; the partially decoded file.
+	(and (or (eq state 'last) (eq state 'first-and-last))
+	     (not (memq 'end process-state))
+	     result-file
+	     (file-exists-p result-file)
+	     (not gnus-uu-be-dangerous)
+	     (or (eq gnus-uu-be-dangerous t)
+		 (gnus-y-or-n-p
+		  (format "Delete incomplete file %s? " result-file)))
+	     (delete-file result-file))
 
-      ;; If this was a file of the wrong sort, then
-      (when (and (or (memq 'wrong-type process-state)
-		     (memq 'error process-state))
-		 gnus-uu-unmark-articles-not-decoded)
-	(gnus-summary-tick-article article t))
+	;; If this was a file of the wrong sort, then
+	(when (and (or (memq 'wrong-type process-state)
+		       (memq 'error process-state))
+		   gnus-uu-unmark-articles-not-decoded)
+	  (gnus-summary-tick-article article t))
 
-      ;; Set the new series state.
-      (if (and (not has-been-begin)
-	       (not sloppy)
-	       (or (memq 'end process-state)
-		   (memq 'middle process-state)))
-	  (progn
-	    (setq process-state (list 'error))
-	    (gnus-message 2 "No begin part at the beginning")
-	    (sleep-for 2))
-	(setq state 'middle)))
+	;; Set the new series state.
+	(if (and (not has-been-begin)
+		 (not sloppy)
+		 (or (memq 'end process-state)
+		     (memq 'middle process-state)))
+	    (progn
+	      (setq process-state (list 'error))
+	      (gnus-message 2 "No begin part at the beginning")
+	      (sleep-for 2))
+	  (setq state 'middle)))
 
-    ;; When there are no result-files, then something must be wrong.
-    (if result-files
-	(message "")
-      (cond
-       ((not has-been-begin)
-	(gnus-message 2 "Wrong type file"))
-       ((memq 'error process-state)
-	(gnus-message 2 "An error occurred during decoding"))
-       ((not (or (memq 'ok process-state)
-		 (memq 'end process-state)))
-	(gnus-message 2 "End of articles reached before end of file")))
-      ;; Make unsuccessfully decoded articles unread.
-      (when gnus-uu-unmark-articles-not-decoded
-	(while article-series
-	  (gnus-summary-tick-article (pop article-series) t))))
+      ;; When there are no result-files, then something must be wrong.
+      (if result-files
+	  (message "")
+	(cond
+	 ((not has-been-begin)
+	  (gnus-message 2 "Wrong type file"))
+	 ((memq 'error process-state)
+	  (gnus-message 2 "An error occurred during decoding"))
+	 ((not (or (memq 'ok process-state)
+		   (memq 'end process-state)))
+	  (gnus-message 2 "End of articles reached before end of file")))
+	;; Make unsuccessfully decoded articles unread.
+	(when gnus-uu-unmark-articles-not-decoded
+	  (while article-series
+	    (gnus-summary-tick-article (pop article-series) t)))))
 
     result-files))
 

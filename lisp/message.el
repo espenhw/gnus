@@ -3532,13 +3532,18 @@ responses here are directed to other newsgroups."))
 This is done simply by taking the old article and adding a Supersedes
 header line with the old Message-ID."
   (interactive)
-  (let ((cur (current-buffer)))
+  (let ((cur (current-buffer))
+	(sender (message-fetch-field "sender"))
+	(from (message-fetch-field "from")))
     ;; Check whether the user owns the article that is to be superseded.
-    (unless (string-equal
-	     (downcase (or (message-fetch-field "sender")
-			   (cadr (mail-extract-address-components
-				  (message-fetch-field "from")))))
-	     (downcase (message-make-sender)))
+    (unless (or (and sender
+		     (string-equal
+		      (downcase sender)
+		      (downcase (message-make-sender))))
+		(string-equal
+		 (downcase (cadr (mail-extract-address-components from)))
+		 (downcase (cadr (mail-extract-address-components
+				  (message-make-from))))))
       (error "This article is not yours"))
     ;; Get a normal message buffer.
     (message-pop-to-buffer (message-buffer-name "supersede"))
@@ -3583,7 +3588,7 @@ header line with the old Message-ID."
     (goto-char (point-min))
     ;; strip Re/Fwd stuff off the beginning
     (while (re-search-forward
-	    "\\([Rr][Ee]:\\|[Ff][Ww][Dd]:\\|[Ff][Ww]:\\)" nil t)
+	    "\\([Rr][Ee]:\\|[Ff][Ww][Dd]\\(\\[[0-9]*\\]\\)?:\\|[Ff][Ww]:\\)" nil t)
       (replace-match ""))
 
     ;; and gnus-style forwards [foo@bar.com] subject

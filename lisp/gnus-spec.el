@@ -526,7 +526,7 @@ If PROPS, insert the result."
 
       (push (cons 'version emacs-version) gnus-format-specs)
       ;; Mark the .newsrc.eld file as "dirty".
-      (gnus-dribble-enter " ")
+      (gnus-dribble-touch)
       (gnus-message 7 "Compiling user specs...done"))))
 
 (defun gnus-set-format (type &optional insertable)
