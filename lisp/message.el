@@ -2816,9 +2816,19 @@ to find out how to use this."
 	(while (setq file (message-fetch-field "fcc"))
 	  (push file list)
 	  (message-remove-header "fcc" nil t)))
+      (message-encode-message-body)
+      (save-restriction
+	(message-narrow-to-headers)
+	(let ((mail-parse-charset message-default-charset)
+	      (rfc2047-header-encoding-alist
+	       (cons '("Newsgroups" . default)
+		     rfc2047-header-encoding-alist)))
+	  (mail-encode-encoded-word-buffer)))
       (goto-char (point-min))
-      (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
-      (replace-match "" t t)
+      (when (re-search-forward
+	     (concat "^" (regexp-quote mail-header-separator) "$")
+	     nil t)
+	(replace-match "" t t ))
       ;; Process FCC operations.
       (while list
 	(setq file (pop list))
@@ -2838,7 +2848,6 @@ to find out how to use this."
 		(rmail-output file 1 nil t)
 	      (let ((mail-use-rfc822 t))
 		(rmail-output file 1 t t))))))
-
       (kill-buffer (current-buffer)))))
 
 (defun message-output (filename)
