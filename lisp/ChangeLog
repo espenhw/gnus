@@ -1,3 +1,15 @@
+2001-12-13 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* uudecode.el (uudecode-use-external): New.
+	(uudecode-decode-region): Automatically detect external program.
+
+	* binhex.el (binhex-use-external): New.
+	(binhex-decode-region-internal): New.
+	(binhex-decode-region): Automatically detect external program.
+	
+	* mm-uu.el (mm-uu-decode-function): 
+	(mm-uu-binhex-decode-function): Use them.
+
 2001-12-12  Simon Josefsson  <jas@extundo.com>
 
 	* nnvirtual.el (nnvirtual-always-rescan) 

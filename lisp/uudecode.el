@@ -1,6 +1,6 @@
 ;;; uudecode.el -- elisp native uudecode
 
-;; Copyright (c) 1998, 1999, 2000 Free Software Foundation, Inc.
+;; Copyright (c) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Keywords: uudecode news
@@ -24,19 +24,14 @@
 
 ;;; Commentary:
 
-;;     Lots of codes are stolen from mm-decode.el, gnus-uu.el and
-;;     base64.el
-
 ;; This looks as though it could be made rather more efficient for
 ;; internal working.  Encoding could use a lookup table and decoding
 ;; should presumably use a vector or list buffer for partial results
 ;; rather than with-current-buffer.  -- fx
 
-;; Only `uudecode-decode-region' should be advertised, and whether or
-;; not that uses a program should be customizable, but I guess it's
-;; too late now.  -- fx
-
 ;;; Code:
+
+(autoload 'executable-find "executable")
 
 (eval-when-compile (require 'cl))
 
@@ -65,6 +60,12 @@ input and write the converted data to its standard output."
   "*List of command line flags passed to `uudecode-decoder-program'."
   :group 'gnus-extract
   :type '(repeat string))
+
+(defcustom uudecode-use-external 
+  (executable-find uudecode-decoder-program)
+  "*Use external uudecode program."
+  :group 'gnus-extract
+  :type 'boolean)
 
 (defconst uudecode-alphabet "\040-\140")
 
@@ -135,7 +136,7 @@ used is specified by `uudecode-decoder-program'."
       (ignore-errors (or file-name (delete-file tempfile))))))
 
 ;;;###autoload
-(defun uudecode-decode-region (start end &optional file-name)
+(defun uudecode-decode-region-internal (start end &optional file-name)
   "Uudecode region between START and END without using an external program.
 If FILE-NAME is non-nil, save the result to FILE-NAME."
   (interactive "r\nP")
@@ -215,6 +216,14 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 	      (insert-buffer-substring work-buffer)
 	      (delete-region (point) end))))
       (and work-buffer (kill-buffer work-buffer)))))
+
+;;;###autoload
+(defun uudecode-decode-region (start end &optional file-name)
+  "Uudecode region between START and END.
+If FILE-NAME is non-nil, save the result to FILE-NAME."
+  (if uudecode-use-external 
+      (uudecode-decode-region-external start end file-name)
+    (uudecode-decode-region-internal start end file-name)))
 
 (provide 'uudecode)
 

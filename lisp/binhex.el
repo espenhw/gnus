@@ -1,5 +1,5 @@
 ;;; binhex.el --- elisp native binhex decode
-;; Copyright (c) 1998, 1999, 2000 Free Software Foundation, Inc.
+;; Copyright (c) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Keywords: binhex news
@@ -25,6 +25,8 @@
 
 ;;; Code:
 
+(autoload 'executable-find "executable")
+
 (eval-when-compile (require 'cl))
 
 (eval-and-compile
@@ -33,13 +35,23 @@
 	'char-int
       'identity)))
 
-(defvar binhex-decoder-program "hexbin"
+(defcustom binhex-decoder-program "hexbin"
   "*Non-nil value should be a string that names a uu decoder.
 The program should expect to read binhex data on its standard
-input and write the converted data to its standard output.")
+input and write the converted data to its standard output."
+  :type 'string
+  :group 'gnus-extract)
 
-(defvar binhex-decoder-switches '("-d")
-  "*List of command line flags passed to the command named by binhex-decoder-program.")
+(defcustom binhex-decoder-switches '("-d")
+  "*List of command line flags passed to the command named by binhex-decoder-program."
+  :group 'gnus-extract
+  :type '(repeat string))
+
+(defcustom binhex-use-external 
+  (executable-find binhex-decoder-program)
+  "*Use external binhex program."
+  :group 'gnus-extract
+  :type 'boolean)
 
 (defconst binhex-alphabet-decoding-alist
   '(( ?\! . 0) ( ?\" . 1) ( ?\# . 2) ( ?\$ . 3) ( ?\% . 4) ( ?\& . 5)
@@ -184,8 +196,9 @@ input and write the converted data to its standard output.")
    (t
     (binhex-insert-char (setq binhex-last-char char) 1 ignored buffer))))
 
-(defun binhex-decode-region (start end &optional header-only)
-  "Binhex decode region between START and END.
+;;;###autoload
+(defun binhex-decode-region-internal (start end &optional header-only)
+  "Binhex decode region between START and END without using an external program.
 If HEADER-ONLY is non-nil only decode header and return filename."
   (interactive "r")
   (let ((work-buffer nil)
@@ -258,12 +271,14 @@ If HEADER-ONLY is non-nil only decode header and return filename."
       (and work-buffer (kill-buffer work-buffer)))
     (if header (aref header 1))))
 
+;;;###autoload
 (defun binhex-decode-region-external (start end)
   "Binhex decode region between START and END using external decoder."
   (interactive "r")
   (let ((cbuf (current-buffer)) firstline work-buffer status
 	(file-name (expand-file-name
-		    (concat (binhex-decode-region start end t) ".data")
+		    (concat (binhex-decode-region-internal start end t) 
+			    ".data")
 		    binhex-temporary-file-directory)))
     (save-excursion
       (goto-char start)
@@ -295,6 +310,14 @@ If HEADER-ONLY is non-nil only decode header and return filename."
       (and work-buffer (kill-buffer work-buffer))
       (ignore-errors
 	(if file-name (delete-file file-name))))))
+
+;;;###autoload
+(defun binhex-decode-region (start end)
+  "Binhex decode region between START and END."
+  (interactive "r")
+  (if binhex-use-external 
+      (binhex-decode-region-external start end)
+    (binhex-decode-region-internal start end)))
 
 (provide 'binhex)
 
