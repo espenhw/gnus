@@ -137,9 +137,9 @@
 	  (when maybe-emacs-mule-p
 	    (goto-char (point-min))
 	    (if (re-search-forward "[^\000-\177]" nil t)
-		;; Consider the file has been saved using `emacs-mule'.
+		;; Consider the file has been saved as `emacs-mule'.
 		(mm-decode-coding-region (point-min) (point-max)
-					 'emacs-mule)
+					 mm-auto-save-coding-system)
 	      (mm-decode-coding-region (point-min) (point-max)
 				       message-draft-coding-system)))
 	  (goto-char (point-min))

@@ -1,5 +1,8 @@
 2002-11-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* nndraft.el (nndraft-request-article): Replace emacs-mule with
+	mm-auto-save-coding-system.
+
 	* message.el (message-draft-coding-system): Default to
 	iso-2022-7bit.
 
