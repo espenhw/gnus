@@ -1,5 +1,5 @@
 ;;; nnrss.el --- interfacing with RSS
-;; Copyright (C) 2001  Free Software Foundation, Inc.
+;; Copyright (C) 2001, 2002  Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Keywords: RSS
@@ -39,7 +39,6 @@
 (eval-when-compile
   (ignore-errors
     (require 'xml)))
-;; Report failure to find w3 at load time if appropriate.
 (eval '(require 'xml))
 
 (nnoo-declare nnrss)

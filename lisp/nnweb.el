@@ -1,5 +1,5 @@
 ;;; nnweb.el --- retrieving articles via web search engines
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -37,7 +37,9 @@
 (require 'nnmail)
 (require 'mm-util)
 (require 'mm-url)
-(require 'url)
+(eval-and-compile
+  (ignore-errors
+    (require 'url)))
 (autoload 'w3-parse-buffer "w3-parse")
 
 (nnoo-declare nnweb)

@@ -1,3 +1,9 @@
+2002-01-24  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnweb.el (url): Ignore errors when request url.
+	
+	* nnrss.el: Clean up the comments.
+
 2002-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Fbind `w3m-region'; bind `w3m-mode-map'.
