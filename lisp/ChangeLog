@@ -1,3 +1,8 @@
+2002-03-01  Paul Jarc  <prj@po.cwru.edu>
+
+	* message.el (message-get-reply-headers): downcase email addresses
+	for comaparisons for duplicate removal.
+
 2002-03-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-view.el (mm-view-pkcs7-verify): New function. A bogus
@@ -29,7 +34,7 @@
 
 	* html2text.el (html2text-clean-anchor): If there is no HREF,
 	insert nothing.
-	
+
 	* mml.el (mml-generate-mime-1): Add cdr.
 	From: andre@slamdunknetworks.com
 
@@ -47,7 +52,7 @@
 	* gnus-sum.el: Add gnus-article-outlook-deuglify-article.
 
 	* deuglify.el: Change copy right. Add autoload. Add coding-system.
-	
+
 	* deuglify.el: New file. The original file name is
 	gnus-outlook-deuglify.el from Raymond Scholz <rscholz@zonix.de>.
 

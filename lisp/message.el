@@ -4550,11 +4550,11 @@ responses here are directed to other addresses.")))
       ;; Perhaps "Mail-Copies-To: never" removed the only address?
       (if (string-equal recipients "")
 	  (setq recipients author))
-      ;; Convert string to a list of (("foo@bar" . "Name <foo@bar>") ...).
+      ;; Convert string to a list of (("foo@bar" . "Name <Foo@BAR>") ...).
       (setq recipients
 	    (mapcar
 	     (lambda (addr)
-	       (cons (mail-strip-quoted-names addr) addr))
+	       (cons (downcase (mail-strip-quoted-names addr)) addr))
 	     (message-tokenize-header recipients)))
       ;; Remove first duplicates.  (Why not all duplicates?  Is this a bug?)
       (let ((s recipients))
