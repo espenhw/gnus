@@ -1019,7 +1019,6 @@ variable (string, integer, character, etc).")
 (defvar gnus-last-article nil)
 (defvar gnus-newsgroup-history nil)
 (defvar gnus-newsgroup-charset nil)
-(defvar gnus-newsgroup-emphasis-alist nil)
 
 (defconst gnus-summary-local-variables
   '(gnus-newsgroup-name
@@ -1053,7 +1052,7 @@ variable (string, integer, character, etc).")
     gnus-cache-removable-articles gnus-newsgroup-cached
     gnus-newsgroup-data gnus-newsgroup-data-reverse
     gnus-newsgroup-limit gnus-newsgroup-limits
-    gnus-newsgroup-charset gnus-newsgroup-emphasis-alist)
+    gnus-newsgroup-charset)
   "Variables that are buffer-local to the summary buffers.")
 
 ;; Byte-compiler warning.
@@ -2439,8 +2438,7 @@ marks of articles."
 	  (gac gnus-article-current)
 	  (reffed gnus-reffed-article-number)
 	  (score-file gnus-current-score-file)
-	  (default-charset gnus-newsgroup-charset)
-	  (emphasis-alist gnus-newsgroup-emphasis-alist))
+	  (default-charset gnus-newsgroup-charset))
       (save-excursion
 	(set-buffer gnus-group-buffer)
 	(setq gnus-newsgroup-name name
@@ -2454,8 +2452,7 @@ marks of articles."
 	      gnus-original-article-buffer original
 	      gnus-reffed-article-number reffed
 	      gnus-current-score-file score-file
-	      gnus-newsgroup-charset default-charset
-	      gnus-newsgroup-emphasis-alist emphasis-alist)
+	      gnus-newsgroup-charset default-charset)
 	;; The article buffer also has local variables.
 	(when (gnus-buffer-live-p gnus-article-buffer)
 	  (set-buffer gnus-article-buffer)
@@ -4036,7 +4033,6 @@ If SELECT-ARTICLES, only select those articles from GROUP."
     (setq gnus-newsgroup-unselected nil)
     (setq gnus-newsgroup-unreads (gnus-list-of-unread-articles group))
     (gnus-summary-setup-default-charset)
-    (gnus-summary-setup-highlight-words)
 
     ;; Adjust and set lists of article marks.
     (when info
@@ -9423,25 +9419,6 @@ returned."
     (gnus-summary-position-point)
     (gnus-set-mode-line 'summary)
     n))
-
-;; Added by Shenghuo Zhu <zsh@cs.rochester.edu>
-(defun gnus-summary-setup-highlight-words (&optional highlight-words)
-  "Setup newsgroup emphasis alist."
-  (let ((name (and gnus-newsgroup-name
-		   (gnus-group-real-name gnus-newsgroup-name))))
-    (setq gnus-newsgroup-emphasis-alist 
-	  (nconc 
-	   (let ((alist gnus-group-highlight-words-alist) elem highlight)
-	     (while (setq elem (pop alist))
-	       (when (and name (string-match (car elem) name))
-		 (setq alist nil
-		       highlight (copy-list (cdr elem)))))
-	     highlight)
-	   (copy-list highlight-words)
-	   (if gnus-newsgroup-name
-	       (copy-list (gnus-group-find-parameter 
-			   gnus-newsgroup-name 'highlight-words t)))
-	   gnus-emphasis-alist))))
 
 (gnus-summary-make-all-marking-commands)
 

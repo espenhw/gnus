@@ -892,6 +892,7 @@ See the manual for details."
 
 (defvar article-goto-body-goes-to-point-min-p nil)
 (defvar gnus-article-wash-types nil)
+(defvar gnus-article-emphasis-alist nil)
 
 (defvar gnus-article-mime-handle-alist-1 nil)
 (defvar gnus-treatment-function-alist
@@ -1996,7 +1997,7 @@ This format is defined by the `gnus-article-time-format' variable."
   (interactive (gnus-article-hidden-arg))
   (unless (gnus-article-check-hidden-text 'emphasis arg)
     (save-excursion
-      (let ((alist (or gnus-newsgroup-emphasis-alist gnus-emphasis-alist))
+      (let ((alist (or gnus-article-emphasis-alist gnus-emphasis-alist))
 	    (buffer-read-only nil)
 	    (props (append '(article-type emphasis)
 			   gnus-hidden-properties))
@@ -2018,6 +2019,26 @@ This format is defined by the `gnus-article-time-format' variable."
  	      (gnus-put-text-property-excluding-newlines
  	       (match-beginning visible) (match-end visible) 'face face)
  	      (goto-char (match-end invisible)))))))))
+
+(defun gnus-article-setup-highlight-words (&optional highlight-words)
+  "Setup newsgroup emphasis alist."
+  (unless gnus-article-emphasis-alist
+    (let ((name (and gnus-newsgroup-name
+		     (gnus-group-real-name gnus-newsgroup-name))))
+      (make-local-variable 'gnus-article-emphasis-alist)
+      (setq gnus-article-emphasis-alist 
+	    (nconc 
+	     (let ((alist gnus-group-highlight-words-alist) elem highlight)
+	       (while (setq elem (pop alist))
+		 (when (and name (string-match (car elem) name))
+		   (setq alist nil
+			 highlight (copy-list (cdr elem)))))
+	       highlight)
+	     (copy-list highlight-words)
+	     (if gnus-newsgroup-name
+		 (copy-list (gnus-group-find-parameter 
+			     gnus-newsgroup-name 'highlight-words t)))
+	     gnus-emphasis-alist)))))
 
 (defvar gnus-summary-article-menu)
 (defvar gnus-summary-post-menu)
@@ -2484,6 +2505,7 @@ commands:
 	(setq gnus-article-buffer name)
 	(setq gnus-original-article-buffer original)
 	(gnus-set-global-variables)))
+    (gnus-article-setup-highlight-words)
     ;; Init original article buffer.
     (save-excursion
       (set-buffer (gnus-get-buffer-create gnus-original-article-buffer))

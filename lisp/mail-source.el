@@ -69,6 +69,7 @@ This variable is a list of mail source specifiers."
   (defvar mail-source-keyword-map
     '((file
        (:prescript)
+       (:prescript-delay)
        (:postscript)
        (:path (or (getenv "MAIL")
 		  (concat "/usr/spool/mail/" (user-login-name)))))
@@ -78,6 +79,7 @@ This variable is a list of mail source specifiers."
        (:predicate identity))
       (pop
        (:prescript)
+       (:prescript-delay)
        (:postscript)
        (:server (getenv "MAILHOST"))
        (:port 110)
@@ -302,6 +304,16 @@ If ARGS, PROMPT is used as an argument to `format'."
   (zerop (call-process shell-file-name nil nil nil
 		       shell-command-switch program)))
 
+(defun mail-source-run-script (script spec &optional delay)
+  (when script
+    (if (and (symbolp script) (fboundp script))
+	(funcall script)
+      (mail-source-call-script
+       (format-spec
+	script spec))))
+  (when delay
+    (sleep-for delay)))
+
 (defun mail-source-call-script (script)
   (let ((background nil))
     (when (string-match "& *$" script)
@@ -317,22 +329,15 @@ If ARGS, PROMPT is used as an argument to `format'."
 (defun mail-source-fetch-file (source callback)
   "Fetcher for single-file sources."
   (mail-source-bind (file source)
-    (when prescript
-      (if (and (symbolp prescript) (fboundp prescript))
-	  (funcall prescript)
-	(mail-source-call-script
-	 (format-spec
-	  prescript (format-spec-make ?t mail-source-crash-box)))))
+    (mail-source-run-script
+     prescript (format-spec-make ?t mail-source-crash-box)
+     prescript-delay)
     (let ((mail-source-string (format "file:%s" path)))
       (if (mail-source-movemail path mail-source-crash-box)
 	  (prog1
 	      (mail-source-callback callback path)
-	    (when prescript
-	      (if (and (symbolp prescript) (fboundp prescript))
-		  (funcall prescript)
-		(mail-source-call-script 
-		 (format-spec
-		  postscript (format-spec-make ?t mail-source-crash-box))))))
+	    (mail-source-run-script
+	     postscript (format-spec-make ?t mail-source-crash-box)))
 	0))))
 
 (defun mail-source-fetch-directory (source callback)
@@ -351,14 +356,11 @@ If ARGS, PROMPT is used as an argument to `format'."
 (defun mail-source-fetch-pop (source callback)
   "Fetcher for single-file sources."
   (mail-source-bind (pop source)
-    (when prescript
-      (if (and (symbolp prescript)
-	       (fboundp prescript))
-	  (funcall prescript)
-	(mail-source-call-script 
-	 (format-spec
-	  prescript (format-spec-make ?p password ?t mail-source-crash-box
-				      ?s server ?P port ?u user)))))
+    (mail-source-run-script
+     prescript
+     (format-spec-make ?p password ?t mail-source-crash-box
+				      ?s server ?P port ?u user)
+     prescript-delay)
     (let ((from (format "%s:%s:%s" server user port))
 	  (mail-source-string (format "pop:%s@%s" user server))
 	  result)
@@ -394,15 +396,11 @@ If ARGS, PROMPT is used as an argument to `format'."
       (if result
 	  (prog1
 	      (mail-source-callback callback server)
-	    (when postscript
-	      (if (and (symbolp postscript)
-		       (fboundp postscript))
-		  (funcall postscript)
-		(mail-source-call-script 
-		 (format-spec
-		  postscript (format-spec-make
+	    (mail-source-run-script
+	     postscript
+	     (format-spec-make
 			      ?p password ?t mail-source-crash-box
-			      ?s server ?P port ?u user))))))
+			      ?s server ?P port ?u user)))
 	;; We nix out the password in case the error
 	;; was because of a wrong password being given.
 	(setq mail-source-password-cache

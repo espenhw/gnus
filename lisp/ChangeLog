@@ -1,3 +1,17 @@
+Mon Jun 14 01:15:59 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.87 is released.
+
+1999-06-14 02:46:05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-source.el (mail-source-fetch-file): Use prescript-delay. 
+	(mail-source-run-script): New function.
+	(mail-source-fetch-pop): Use it.
+
+1999-06-13 09:52:11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-setup-highlight-words): Moved here. 
+
 Sun Jun 13 07:30:40 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.86 is released.
