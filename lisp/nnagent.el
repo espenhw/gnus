@@ -214,10 +214,10 @@
 			(list (nnagent-server server))))
 
 (deffoo nnagent-request-move-article
-    (article group server accept-form &optional last)
+    (article group server accept-form &optional last move-is-internal)
   (nnoo-parent-function 'nnagent 'nnml-request-move-article
 			(list article group (nnagent-server server)
-			      accept-form last)))
+			      accept-form last move-is-internal)))
 
 (deffoo nnagent-request-rename-group (group new-name &optional server)
   (nnoo-parent-function 'nnagent 'nnml-request-rename-group

@@ -196,8 +196,8 @@
 			'nnmh-request-group
 			(list group server dont-check)))
 
-(deffoo nndraft-request-move-article (article group server
-					      accept-form &optional last)
+(deffoo nndraft-request-move-article (article group server accept-form 
+				      &optional last move-is-internal)
   (nndraft-possibly-change-group group)
   (let ((buf (get-buffer-create " *nndraft move*"))
 	result)

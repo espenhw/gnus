@@ -1504,8 +1504,8 @@ function is generally only called when Gnus is shutting down."
   ;; return articles not deleted
   articles)
 
-(deffoo nnimap-request-move-article (article group server
-					     accept-form &optional last)
+(deffoo nnimap-request-move-article (article group server accept-form 
+					     &optional last move-is-internal)
   (when (nnimap-possibly-change-server server)
     (save-excursion
       (let ((buf (get-buffer-create " *nnimap move*"))
@@ -1513,12 +1513,12 @@ function is generally only called when Gnus is shutting down."
 	    (nnimap-current-move-group group)
 	    (nnimap-current-move-server nnimap-current-server)
 	    result)
-	(gnus-message 9 "nnimap-request-move-article: this is an %s move"
-		      (if gnus-sum-hint-move-is-internal
+	(gnus-message 10 "nnimap-request-move-article: this is an %s move"
+		      (if move-is-internal
 			  "internal"
 			"external"))
 	;; request the article only when the move is NOT internal
-	(and (or gnus-sum-hint-move-is-internal
+	(and (or move-is-internal
 		 (nnimap-request-article article group server))
 	     (save-excursion
 	       (set-buffer buf)

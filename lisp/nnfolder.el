@@ -467,8 +467,8 @@ the group.  Then the marks file will be regenerated properly by Gnus.")
       (nnfolder-save-active nnfolder-group-alist nnfolder-active-file)
       (gnus-sorted-difference articles (nreverse deleted-articles)))))
 
-(deffoo nnfolder-request-move-article (article group server
-					       accept-form &optional last)
+(deffoo nnfolder-request-move-article (article group server accept-form 
+					       &optional last move-is-internal)
   (save-excursion
     (let ((buf (get-buffer-create " *nnfolder move*"))
 	  result)

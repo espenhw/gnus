@@ -724,7 +724,7 @@ all.  This may very well take some time.")
     (nconc rest articles)))
 
 (deffoo nndiary-request-move-article
-    (article group server accept-form &optional last)
+    (article group server accept-form &optional last move-is-internal)
   (let ((buf (get-buffer-create " *nndiary move*"))
 	result)
     (nndiary-possibly-change-directory group server)

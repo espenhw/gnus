@@ -288,8 +288,8 @@ as unread by Gnus.")
 (deffoo nnmh-close-group (group &optional server)
   t)
 
-(deffoo nnmh-request-move-article (article group server
-					   accept-form &optional last)
+(deffoo nnmh-request-move-article (article group server accept-form 
+					   &optional last move-is-internal)
   (let ((buf (get-buffer-create " *nnmh move*"))
 	result)
     (and

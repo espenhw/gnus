@@ -9067,7 +9067,7 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 		 (crosspost "Crosspost" "Crossposting")))
 	(copy-buf (save-excursion
 		    (nnheader-set-temp-buffer " *copy article*")))
-	art-group to-method new-xref article to-groups)
+	art-group to-method new-xref article to-groups articles-to-update-marks)
     (unless (assq action names)
       (error "Unknown action %s" action))
     ;; Read the newsgroup name.
@@ -9116,7 +9116,7 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 			      gnus-newsgroup-name))
 		(to-method (gnus-find-method-for-group
 			    to-newsgroup))
-		(gnus-sum-hint-move-is-internal (gnus-method-equal from-method to-method)))
+		(move-is-internal (gnus-method-equal from-method to-method)))
 	 (gnus-request-move-article
 	  article			; Article to move
 	  gnus-newsgroup-name		; From newsgroup
@@ -9125,7 +9125,8 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 	  (list 'gnus-request-accept-article
 		to-newsgroup (list 'quote select-method)
 		(not articles) t)	; Accept form
-	  (not articles))))		; Only save nov last time
+	  (not articles)		; Only save nov last time
+	  move-is-internal)))		; is this move internal?
 	;; Copy the article.
 	((eq action 'copy)
 	 (save-excursion
@@ -9275,17 +9276,19 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 
 	;;;!!!Why is this necessary?
 	(set-buffer gnus-summary-buffer)
-
+	
 	(gnus-summary-goto-subject article)
 	(when (eq action 'move)
 	  (gnus-summary-mark-article article gnus-canceled-mark))))
-      (gnus-summary-remove-process-mark article))
+      (push article articles-to-update-marks))
+
+    (apply 'gnus-summary-remove-process-mark articles-to-update-marks)
     ;; Re-activate all groups that have been moved to.
     (save-excursion
       (set-buffer gnus-group-buffer)
       (let ((gnus-group-marked to-groups))
 	(gnus-group-get-new-news-this-group nil t)))
-
+    
     (gnus-kill-buffer copy-buf)
     (gnus-summary-position-point)
     (gnus-set-mode-line 'summary)))
@@ -9975,13 +9978,14 @@ the actual number of articles marked is returned."
     (gnus-summary-goto-subject article)
     (gnus-summary-update-secondary-mark article)))
 
-(defun gnus-summary-remove-process-mark (article)
-  "Remove the process mark from ARTICLE and update the summary line."
-  (setq gnus-newsgroup-processable (delq article gnus-newsgroup-processable))
-  (when (gnus-summary-goto-subject article)
-    (gnus-summary-show-thread)
-    (gnus-summary-goto-subject article)
-    (gnus-summary-update-secondary-mark article)))
+(defun gnus-summary-remove-process-mark (&rest articles)
+  "Remove the process mark from ARTICLES and update the summary line."
+  (dolist (article articles)
+    (setq gnus-newsgroup-processable (delq article gnus-newsgroup-processable))
+    (when (gnus-summary-goto-subject article)
+      (gnus-summary-show-thread)
+      (gnus-summary-goto-subject article)
+      (gnus-summary-update-secondary-mark article))))
 
 (defun gnus-summary-set-saved-mark (article)
   "Set the process mark on ARTICLE and update the summary line."

@@ -335,7 +335,7 @@ marks file will be regenerated properly by Gnus.")
     (nconc rest articles)))
 
 (deffoo nnml-request-move-article
-    (article group server accept-form &optional last)
+    (article group server accept-form &optional last move-is-internal)
   (let ((buf (get-buffer-create " *nnml move*"))
 	result)
     (nnml-possibly-change-directory group server)

@@ -562,12 +562,12 @@ If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
     not-deleted))
 
 (defun gnus-request-move-article (article group server accept-function
-					  &optional last)
+					  &optional last move-is-internal)
   (let* ((gnus-command-method (gnus-find-method-for-group group))
 	 (result (funcall (gnus-get-function gnus-command-method
 					     'request-move-article)
 			  article (gnus-group-real-name group)
-			  (nth 1 gnus-command-method) accept-function last)))
+			  (nth 1 gnus-command-method) accept-function last move-is-internal)))
     (when (and result gnus-agent
 	       (gnus-agent-method-p gnus-command-method))
       (gnus-agent-unfetch-articles group (list article)))

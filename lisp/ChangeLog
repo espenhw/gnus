@@ -1,3 +1,37 @@
+2005-03-03  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-sum.el (gnus-summary-move-article): pass move-is-internal
+	parameter to invoked gnus-request-move-article; remove the
+	redundant gnus-sum-hint-move-is-internal variable; apply the marks
+	all at once instead of once per article
+	(gnus-summary-remove-process-mark): accept a list of articles as
+	well as a single article for processing
+
+	* gnus-int.el (gnus-request-move-article): add move-is-internal parameter
+
+	* nnml.el (nnml-request-move-article): add move-is-internal parameter
+
+	* nnmh.el (nnmh-request-move-article): add move-is-internal parameter
+
+	* nnmbox.el (nnmbox-request-move-article): add move-is-internal parameter
+
+	* nnmaildir.el (nnmaildir-request-move-article): add move-is-internal parameter
+
+	* nnimap.el (nnimap-request-move-article): add move-is-internal
+	parameter and remove the gnus-sum-hint-move-is-internal variable
+
+	* nnfolder.el (nnfolder-request-move-article): add move-is-internal parameter
+
+	* nndraft.el (nndraft-request-move-article): add move-is-internal parameter
+
+	* nndiary.el (nndiary-request-move-article): add move-is-internal parameter
+
+	* nndb.el (nndb-request-move-article): add move-is-internal parameter
+
+	* nnbabyl.el (nnbabyl-request-move-article): add move-is-internal parameter
+
+	* nnagent.el (nnagent-request-move-article): add move-is-internal parameter
+
 2005-03-01  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* gnus-sum.el (gnus-summary-exit): Undo last change and fix it in

@@ -1305,7 +1305,7 @@ by nnmaildir-request-article.")
       t)))
 
 (defun nnmaildir-request-move-article (article gname server accept-form
-					       &optional last)
+					       &optional last move-is-internal)
   (let ((group (nnmaildir--prepare server gname))
 	pgname suffix result nnmaildir--file deactivate-mark)
     (catch 'return
