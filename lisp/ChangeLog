@@ -1,5 +1,9 @@
 2002-09-13  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* rfc2047.el (message-posting-charset): Defvar it.
+	(rfc2047-charset-encoding-alist): Use B for iso-8859-7 and iso-8859-8. Fix doc.
+	Suggested by Dave Love <fx@gnu.org>.
+
 	* mail-source.el (mail-source-fetch): Hide password.
 
 	* gnus-sum.el (gnus-summary-next-group): Semi-exit only when needed.
