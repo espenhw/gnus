@@ -1,5 +1,5 @@
 ;;; gnus-score.el --- scoring code for Gnus
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Per Abrahamsen <amanda@iesd.auc.dk>
@@ -1484,7 +1484,7 @@ EXTRA is the possible non-standard header."
 		(with-current-buffer gnus-summary-buffer
 		  (setq gnus-newsgroup-scored scored))))
 	    ;; Remove the buffer.
-	    (kill-buffer (current-buffer)))
+	    (gnus-kill-buffer (current-buffer)))
 
 	  ;; Add articles to `gnus-newsgroup-scored'.
 	  (while gnus-scores-articles
@@ -2633,7 +2633,7 @@ GROUP using BNews sys file syntax."
 			 (ignore-errors (string-match regexp group-trans))))
 	    (push (car sfiles) ofiles)))
 	(setq sfiles (cdr sfiles)))
-      (kill-buffer (current-buffer))
+      (gnus-kill-buffer (current-buffer))
       ;; Slight kludge here - the last score file returned should be
       ;; the local score file, whether it exists or not.  This is so
       ;; that any score commands the user enters will go to the right

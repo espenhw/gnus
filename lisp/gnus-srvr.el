@@ -445,7 +445,7 @@ The following commands are available:
   "Return to the group buffer."
   (interactive)
   (gnus-run-hooks 'gnus-server-exit-hook)
-  (kill-buffer (current-buffer))
+  (gnus-kill-buffer (current-buffer))
   (gnus-configure-windows 'group t))
 
 (defun gnus-server-list-servers ()
@@ -926,7 +926,7 @@ buffer.
   "Quit browsing and return to the group buffer."
   (interactive)
   (when (eq major-mode 'gnus-browse-mode)
-    (kill-buffer (current-buffer)))
+    (gnus-kill-buffer (current-buffer)))
   ;; Insert the newly subscribed groups in the group buffer.
   (save-excursion
     (set-buffer gnus-group-buffer)

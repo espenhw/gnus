@@ -1,5 +1,5 @@
 ;;; gnus-util.el --- utility functions for Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -127,6 +127,7 @@
 (defmacro gnus-kill-buffer (buffer)
   `(let ((buf ,buffer))
      (when (gnus-buffer-exists-p buf)
+       (setq gnus-buffers (delete buf gnus-buffers))
        (kill-buffer buf))))
 
 (defalias 'gnus-point-at-bol

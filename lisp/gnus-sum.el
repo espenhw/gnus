@@ -4928,13 +4928,13 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	(gnus-activate-group group)	; Or we can activate it...
 	(progn				; Or we bug out.
 	  (when (equal major-mode 'gnus-summary-mode)
-	    (kill-buffer (current-buffer)))
+	    (gnus-kill-buffer (current-buffer)))
 	  (error "Couldn't activate group %s: %s"
 		 group (gnus-status-message group))))
 
     (unless (gnus-request-group group t)
       (when (equal major-mode 'gnus-summary-mode)
-	(kill-buffer (current-buffer)))
+	(gnus-kill-buffer (current-buffer)))
       (error "Couldn't request group %s: %s"
 	     group (gnus-status-message group)))
 

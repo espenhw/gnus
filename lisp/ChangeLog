@@ -1,3 +1,18 @@
+2003-01-27  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-util.el (gnus-kill-buffer): Remove buffer from gnus-buffers
+	as well.
+	
+	* gnus-sum.el (gnus-select-newsgroup): Use gnus-kill-buffer.
+	
+	* gnus-score.el (gnus-score-headers, gnus-score-find-bnews): do.
+	
+	* gnus-start.el (gnus-save-newsrc-file, gnus-clear-system): do.
+	
+	* gnus-bcklg.el (gnus-backlog-shutdown): do.
+	
+	* gnus-srvr.el (gnus-server-exit, gnus-browse-exit): do.
+
 2003-01-26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Added M-& to marks. 

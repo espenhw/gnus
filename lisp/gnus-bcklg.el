@@ -1,5 +1,5 @@
 ;;; gnus-bcklg.el --- backlog functions for Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2003
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -58,7 +58,7 @@
   "Clear all backlog variables and buffers."
   (interactive)
   (when (get-buffer gnus-backlog-buffer)
-    (kill-buffer gnus-backlog-buffer))
+    (gnus-kill-buffer gnus-backlog-buffer))
   (setq gnus-backlog-hashtb nil
 	gnus-backlog-articles nil))
 
