@@ -395,8 +395,13 @@ Thank you for your help in stamping out bugs.
        ;; added an optional argument to `gnus-configure-posting-styles' to
        ;; make sure that the correct value for the group name is used. -- drv
        (add-hook 'message-mode-hook
-		 (lambda ()
-		   (gnus-configure-posting-styles ,group)))
+		 (if (memq ,config '(reply-yank reply))
+		     (lambda ()
+		       (gnus-configure-posting-styles ,group))
+		   (lambda ()
+		     ;; There may be an old " *gnus article copy*" buffer.
+		     (let (gnus-article-copy)
+		       (gnus-configure-posting-styles ,group)))))
        (gnus-pull ',(intern gnus-draft-meta-information-header)
 		  message-required-headers)
        (when (and ,group

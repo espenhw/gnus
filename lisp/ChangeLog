@@ -1,5 +1,8 @@
 2004-02-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-msg.el (gnus-setup-message): Ignore an article copy while
+	parsing gnus-posting-styles when the message is not for replying.
+
 	* dgnushack.el: Autoload sgml-mode for XEmacs.
 
 	* nnrss.el (nnrss-opml-export): Use
