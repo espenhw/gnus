@@ -89,7 +89,16 @@ This variable is a list of mail source specifiers."
        (:password)
        (:authentication password))
       (maildir
-       (:path "~/Maildir/new/")))
+       (:path "~/Maildir/new/"))
+      (imap
+       (:server (getenv "MAILHOST"))
+       (:port)
+       (:stream)
+       (:authentication)
+       (:user (or (user-login-name) (getenv "LOGNAME") (getenv "USER")))
+       (:password)
+       (:mailbox "INBOX")
+       (:predicate "UNSEEN UNDELETED")))
     "Mapping from keywords to default values.
 All keywords that can be used must be listed here."))
 
@@ -97,7 +106,8 @@ All keywords that can be used must be listed here."))
   '((file mail-source-fetch-file)
     (directory mail-source-fetch-directory)
     (pop mail-source-fetch-pop)
-    (maildir mail-source-fetch-maildir))
+    (maildir mail-source-fetch-maildir)
+    (imap mail-source-fetch-imap))
   "A mapping from source type to fetcher function.")
 
 (defvar mail-source-password-cache nil)
@@ -417,6 +427,46 @@ If ARGS, PROMPT is used as an argument to `format'."
 	(when (and (file-regular-p file)
 		   (not (rename-file file mail-source-crash-box)))
 	  (incf found (mail-source-callback callback file))))
+      found)))
+
+(eval-and-compile
+  (autoload 'imap-open "imap")
+  (autoload 'imap-authenticate "imap")
+  (autoload 'imap-mailbox-select "imap")
+  (autoload 'imap-search "imap")
+  (autoload 'imap-fetch "imap")
+  (autoload 'imap-mailbox-unselect "imap")
+  (autoload 'imap-close "imap")
+  (autoload 'imap-error-text "imap")
+  (autoload 'nnheader-ms-strip-cr "nnheader"))
+
+(defun mail-source-fetch-imap (source callback)
+  "Fetcher for imap sources."
+  (mail-source-bind (imap source)
+    (let ((found 0)
+	  (buf (get-buffer-create (generate-new-buffer-name " *imap source*")))
+	  (mail-source-string (format "imap:%s:%s" server mailbox)))
+      (if (and (imap-open server port stream authentication buf)
+	       (imap-authenticate user password buf)
+	       (imap-mailbox-select mailbox nil buf))
+	  (let (str (coding-system-for-write 'binary))
+	    (with-temp-file mail-source-crash-box
+	      ;; if predicate is nil, use all uids
+	      (dolist (uid (imap-search (or predicate "1:*") buf))
+		(when (setq str (imap-fetch uid "RFC822" 'RFC822 nil buf))
+		  (insert "From imap " (current-time-string) "\n")
+		  (save-excursion
+		    (insert str "\n\n"))
+		  (while (re-search-forward "^From " nil t)
+		    (replace-match ">From "))
+		  (goto-char (point-max))))
+	      (nnheader-ms-strip-cr))
+	    (incf found (mail-source-callback callback server))
+	    (imap-mailbox-unselect buf)
+	    (imap-close buf))
+	(imap-close buf)
+	(error (imap-error-text buf)))
+      (kill-buffer buf)
       found)))
 
 (provide 'mail-source)
