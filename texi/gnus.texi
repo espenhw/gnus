@@ -23235,7 +23235,7 @@ released version of Gnus and snuggle up to that instead.
 
 In addition to the versions of Gnus which have had their releases
 coordinated by Lars, one major development has been Semi-gnus from
-Japan.  It's based on a library called @sc{semi}, which provides
+Japan.  It's based on a library called @acronym{SEMI}, which provides
 @acronym{MIME} capabilities.
 
 These Gnusae are based mainly on Gnus 5.6 and Pterodactyl Gnus.
