@@ -1194,11 +1194,6 @@ following hook:
 It is meant to be used for highlighting the article in some way.  It
 is not run if `gnus-visual' is nil.")
 
-(defvar gnus-prepare-article-hook (list 'gnus-inews-insert-signature)
-  "*A hook called after preparing body, but before preparing header headers.
-The default hook (`gnus-inews-insert-signature') inserts a signature
-file specified by the variable `gnus-signature-file'.")
-
 (defvar gnus-exit-group-hook nil
   "*A hook called when exiting (not quitting) summary mode.")
 
@@ -1354,7 +1349,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "Gnus v5.0.3"
+(defconst gnus-version "Gnus v5.0.4"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2758,6 +2753,13 @@ If nothing is specified, use the variable gnus-overload-functions."
 	(and (= (car fdate) (car date))
 	     (> (nth 1 fdate) (nth 1 date))))))
 
+(defun gnus-group-read-only-p (&optional group)
+  "Check whether GROUP supports editing or not.
+If GROUP is nil, `gnus-newsgroup-name' will be checked instead.  Note
+that that variable is buffer-local to the summary buffers."
+  (let ((group (or group gnus-newsgroup-name)))
+    (not (gnus-check-backend-function 'request-replace-article group))))
+
 ;; Two silly functions to ensure that all `y-or-n-p' questions clear
 ;; the echo area.
 (defun gnus-y-or-n-p (prompt)
@@ -3582,10 +3584,7 @@ If REGEXP, only list groups matching REGEXP."
 	     (prin1-to-string (car (nth 4 info)))
 	     (nth 1 (nth 4 info)))
 	  ;; It's a native group.
-	  (gnus-group-make-group
-	   (car info)
-	   (prin1-to-string (car gnus-select-method))
-	   (nth 1 gnus-select-method)))
+	  (gnus-group-make-group (car info)))
 	(gnus-message 6 "Note: New group created")
 	(setq entry 
 	      (gnus-gethash (gnus-group-prefixed-name 
@@ -4094,7 +4093,7 @@ If EXCLUDE-GROUP, do not go to that group."
   (gnus-configure-windows 'server)
   (gnus-server-prepare))
 
-(defun gnus-group-make-group (name method &optional address)
+(defun gnus-group-make-group (name &optional method address)
   "Add a new newsgroup.
 The user will be prompted for a NAME, for a select METHOD, and an
 ADDRESS."
@@ -4113,8 +4112,8 @@ ADDRESS."
 		  ""))
 	(list method nil)))))
   
-  (let* ((meth (if address (list (intern method) address) method))
-	 (nname (gnus-group-prefixed-name name meth))
+  (let* ((meth (and method (if address (list (intern method) address) method)))
+	 (nname (if method (gnus-group-prefixed-name name meth) name))
 	 info)
     (and (gnus-gethash nname gnus-newsrc-hashtb)
 	 (error "Group %s already exists" nname))
@@ -4692,9 +4691,7 @@ specify which levels you are interested in re-scanning."
       (progn
 	(gnus-read-active-file)
 	(gnus-get-unread-articles (or arg (1+ gnus-level-subscribed))))
-    (let ((gnus-read-active-file (not arg))
-	  (gnus-have-read-active-file 
-	   (and (not arg) gnus-have-read-active-file)))
+    (let ((gnus-read-active-file (if arg nil gnus-read-active-file)))
       (gnus-get-unread-articles (or arg (1+ gnus-level-subscribed)))))
   (gnus-group-list-groups))
 
@@ -7543,6 +7540,7 @@ searched for."
 	(progn (goto-char beg) nil)
       (prog1
 	  (get-text-property (point) 'gnus-number)
+	(gnus-summary-show-thread)
 	(gnus-summary-position-cursor)))))
 
 (defun gnus-summary-pseudo-article ()
@@ -9099,12 +9097,14 @@ delete these instead."
     (gnus-summary-position-cursor)
     not-deleted))
 
-(defun gnus-summary-edit-article ()
+(defun gnus-summary-edit-article (&optional force)
   "Enter into a buffer and edit the current article.
-This will have permanent effect only in mail groups."
-  (interactive)
-  (or (gnus-check-backend-function 
-       'request-replace-article gnus-newsgroup-name)
+This will have permanent effect only in mail groups.
+If FORCE is non-nil, allow editing of articles even in read-only
+groups."
+  (interactive "P")
+  (or force
+      (not (gnus-group-read-only-p))
       (error "The current newsgroup does not support article editing."))
   (gnus-summary-select-article t)
   (gnus-configure-windows 'article)
@@ -9122,19 +9122,24 @@ This will have permanent effect only in mail groups."
 (defun gnus-summary-edit-article-done ()
   "Make edits to the current article permanent."
   (interactive)
-  (let ((buf (buffer-substring-no-properties (point-min) (point-max))))
-    (erase-buffer)
-    (insert buf)
-    (if (not (gnus-request-replace-article 
-	      (cdr gnus-article-current) (car gnus-article-current) 
-	      (current-buffer)))
-	(error "Couldn't replace article.")
-      (gnus-article-mode)
-      (use-local-map gnus-article-mode-map)
-      (setq buffer-read-only t)
-      (buffer-disable-undo (current-buffer))
-      (gnus-configure-windows 'summary))
-    (and gnus-visual (run-hooks 'gnus-visual-mark-article-hook))))
+  (if (gnus-group-read-only-p)
+      (progn
+	(gnus-summary-edit-article-postpone)
+	(message "The current newsgroup does not support article editing.")
+	(ding))
+    (let ((buf (buffer-substring-no-properties (point-min) (point-max))))
+      (erase-buffer)
+      (insert buf)
+      (if (not (gnus-request-replace-article 
+		(cdr gnus-article-current) (car gnus-article-current) 
+		(current-buffer)))
+	  (error "Couldn't replace article.")
+	(gnus-article-mode)
+	(use-local-map gnus-article-mode-map)
+	(setq buffer-read-only t)
+	(buffer-disable-undo (current-buffer))
+	(gnus-configure-windows 'summary))
+      (and gnus-visual (run-hooks 'gnus-visual-mark-article-hook)))))
 
 (defun gnus-summary-edit-article-postpone ()
   "Postpone changes to the current article."
@@ -13943,6 +13948,13 @@ GROUP using BNews sys file syntax."
 	(goto-char (point-min))
 	(while (re-search-forward "[/:]" nil t)
 	  (replace-match "." t t))
+	;; Cludge to get rid of "nntp+" problems.
+	(goto-char (point-min))
+	(and (looking-at "nn[a-z]+\\+")
+	     (progn
+	       (search-forward "+")
+	       (forward-char -1)
+	       (insert "\\")))
 	;; Translate "all" to ".*".
 	(while (search-forward "all" nil t)
 	  (replace-match ".*" t t))

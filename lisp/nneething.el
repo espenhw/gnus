@@ -90,7 +90,7 @@
 	  (setq file (nneething-file-name article))
 
 	  (if (and (file-exists-p file)
-		   (> (nth 7 (file-attributes file)) 0))
+		   (not (zerop (nth 7 (file-attributes file)))))
 	      (progn
 		(insert (format "221 %d Article retrieved.\n" article))
 		(nneething-insert-head file)

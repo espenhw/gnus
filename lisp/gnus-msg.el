@@ -33,6 +33,11 @@
 (defvar gnus-organization-file "/usr/lib/news/organization"
   "*Local news organization file.")
 
+(defvar gnus-prepare-article-hook (list 'gnus-inews-insert-signature)
+  "*A hook called after preparing body, but before preparing header headers.
+The default hook (`gnus-inews-insert-signature') inserts a signature
+file specified by the variable `gnus-signature-file'.")
+
 (defvar gnus-post-prepare-function nil
   "*Function that is run after a post buffer has been prepared.
 It is called with the name of the newsgroup that is posted to. It
@@ -478,13 +483,12 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 				   (gnus-fetch-field "reply-to"))
 				 from)))))
 	    (if to
-		(progn
-		  (if (mail-fetch-field "To")
-		      (progn
-			(beginning-of-line)
-			(insert "Cc: " to "\n"))
-		    (mail-position-on-field "To")
-		    (insert to)))))
+		(if (mail-fetch-field "To")
+		    (progn
+		      (beginning-of-line)
+		      (insert "Cc: " to "\n"))
+		  (mail-position-on-field "To")
+		  (insert to))))
 	  ;; Handle author copy using BCC field.
 	  (if (and gnus-mail-self-blind
 		   (not (mail-fetch-field "bcc")))
@@ -995,7 +999,11 @@ will attempt to use the foreign server to post the article."
 	 (concat "^" (regexp-quote mail-header-separator) "$"))
 	(replace-match "" t t)
 	;; This hook may insert a signature.
-	(run-hooks 'gnus-prepare-article-hook)
+	(save-excursion
+	  (goto-char (point-min))
+	  (let ((gnus-newsgroup-name (or (mail-fetch-field "newsgroups")
+					 gnus-newsgroup-name)))
+	    (run-hooks 'gnus-prepare-article-hook)))
 	;; Run final inews hooks.  This hook may do FCC.
 	;; The article must be saved before being posted because
 	;; `gnus-request-post' modifies the buffer.
@@ -1142,7 +1150,8 @@ string is used instead of the variable `gnus-signature-file'.
 In either case, if the string is a file name, this file is
 inserted. If the string is not a file name, the string itself is
 inserted. 
-If you never want any signature inserted, set both those variables to
+
+If you never want any signature inserted, set both of these variables to
 nil."
   (save-excursion
     (let ((signature 

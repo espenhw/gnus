@@ -643,8 +643,8 @@ post to this group instead.  If RESPECT-POSTER, heed the special
 		      (string-equal "poster" followup-to);Poster
 		      (and (eq respect-poster 'ask)
 			   followup-to
-			   (y-or-n-p (concat "Followup to " 
-					     followup-to "? "))))
+			   (not (y-or-n-p (concat "Followup to " 
+						  followup-to "? ")))))
 		  (setq followup-to nil))
 	      (setq newsgroups
 		    (or follow-to followup-to (mail-fetch-field "newsgroups")))

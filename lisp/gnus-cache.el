@@ -141,8 +141,13 @@
 	  (set-buffer (cdr gnus-cache-buffer))
 	  (goto-char (point-max))
 	  (forward-line -1)
-	  (while (and (not (bobp))
-		      (> (read (current-buffer)) number))
+	  (while (condition-case ()
+		     (and (not (bobp))
+			  (> (read (current-buffer)) number))
+		   (error
+		    ;; The line was malformed, so we just remove it!!
+		    (gnus-delete-line)
+		    t))
 	    (forward-line -1))
 	  (if (bobp) 
 	      (if (not (eobp))
