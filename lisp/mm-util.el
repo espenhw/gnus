@@ -92,6 +92,14 @@
      ((fboundp 'char-valid-p) 'char-valid-p)
      (t 'identity))))
 
+;; Fixme:  This seems always to be used to read a MIME charset, so it
+;; should be re-named and fixed (in Emacs) to offer completion only on
+;; proper charset names (base coding systems which have a
+;; mime-charset defined).  XEmacs doesn't believe in mime-charset;
+;; test with
+;;   `(or (coding-system-get 'iso-8859-1 'mime-charset)
+;;        (coding-system-get 'iso-8859-1 :mime-charset))'
+;; Actually, there should be an `mm-coding-system-mime-charset'.
 (eval-and-compile
   (defalias 'mm-read-coding-system
     (cond
@@ -113,11 +121,15 @@
   (or mm-coding-system-list
       (setq mm-coding-system-list (mm-coding-system-list))))
 
-(defun mm-coding-system-p (sym)
-  "Return non-nil if SYM is a coding system."
-  (if (fboundp 'coding-system-p)
-      (coding-system-p sym)
-    (memq sym (mm-get-coding-system-list))))
+(defun mm-coding-system-p (cs)
+  "Return non-nil if CS is a symbol naming a coding system.
+In XEmacs, also return non-nil if CS is a coding system object."
+  (if (fboundp 'find-coding-system)
+      (find-coding-system cs)
+    (if (fboundp 'coding-system-p)
+	(coding-system-p cs)
+      ;; Is this branch ever actually useful?
+      (memq cs (mm-get-coding-system-list)))))
 
 (defvar mm-charset-synonym-alist
   `(
@@ -480,6 +492,8 @@ If the charset is `composition', return the actual one."
       (setq result (cons head result)))
     (nreverse result)))
 
+;; Fixme:  This is used in places when it should be testing the
+;; default multibyteness.  See mm-default-multibyte-p.
 (eval-and-compile
   (if (and (not (featurep 'xemacs))
 	   (boundp 'enable-multibyte-characters))
@@ -487,6 +501,14 @@ If the charset is `composition', return the actual one."
 	"Non-nil if multibyte is enabled in the current buffer."
 	enable-multibyte-characters)
     (defun mm-multibyte-p () (featurep 'mule))))
+
+(defun mm-default-multibyte-p ()
+  "Return non-nil if the session is multibyte.
+This affects whether coding conversion should be attempted generally."
+  (if (featurep 'mule)
+      (if (boundp 'default-enable-multibyte-characters)
+	  default-enable-multibyte-characters
+	t)))
 
 (defun mm-iso-8859-x-to-15-region (&optional b e)
   (if (fboundp 'char-charset)
