@@ -1,3 +1,10 @@
+2003-12-09  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-check-bogofilter): run in the correct buffer.
+	From lorentey@elte.hu (L,Bu(Brentey K,Ba(Broly).
+	(spam-bogofilter-database-directory): correct customization
+	group.  From Xavier Maillard <zedek@gnu-rox.org>.
+
 2003-12-09  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* nnmail.el (nnmail-lazy, nnmail-split-fancy): New widgets.

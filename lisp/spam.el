@@ -374,7 +374,7 @@ your main source of newsgroup names."
   :type '(choice (directory 
 		  :tag "Location of the Bogofilter database directory")
 		 (const :tag "Use the default"))
-  :group 'spam-ifile)
+  :group 'spam-bogofilter)
 
 (defgroup spam-spamoracle nil
   "Spam spamoracle configuration."
@@ -1539,8 +1539,8 @@ REMOVE not nil, remove the ADDRESSES."
 		 (point-min) (point-max) 
 		 spam-bogofilter-path
 		 nil temp-buffer-name nil
-		 (if db `("-d" ,db "-v") `("-v")))
-	  (setq return (spam-check-bogofilter-headers score)))))
+		 (if db `("-d" ,db "-v") `("-v"))))
+	(setq return (spam-check-bogofilter-headers score))))
     return))
 
 (defun spam-bogofilter-register-with-bogofilter (articles 
