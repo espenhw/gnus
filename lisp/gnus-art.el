@@ -198,6 +198,8 @@ regexp.  If it matches, the text in question is not a signature."
   :type 'sexp
   :group 'gnus-article-hiding)
 
+;; Fixme: This isn't the right thing for mixed graphical and and
+;; non-graphical frames in a session.
 (defcustom gnus-article-x-face-command
   (if (and (fboundp 'image-type-available-p)
 	   (image-type-available-p 'xbm))
@@ -3547,10 +3549,6 @@ Argument LINES specifies lines to be scrolled up."
   (move-to-window-line -1)
   (if (save-excursion
 	(end-of-line)
-	;; Redisplay before the visibility test; else we don't DTRT
-	;; with Emacs 21 images, for instance.
-	;; Actually, the redisplay is annoying.  Fixme some other way.
-	;;(sit-for 0)
 	(and (pos-visible-in-window-p)	;Not continuation line.
 	     (eobp)))
       ;; Nothing in this page.
