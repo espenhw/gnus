@@ -1,5 +1,8 @@
 2005-01-15  Simon Josefsson  <jas@extundo.com>
 
+	* message.el (message-idna-to-ascii-rhs): Decode Reply-To too.
+	Suggested by Raymond Scholz <ray-2005@zonix.de>.
+
 	* gnus-sum.el (gnus-summary-wash-map): Bind "W i" to
 	gnus-summary-idna-message.
 	(gnus-summary-make-menu-bar): Add De-IDNA menu entry.
