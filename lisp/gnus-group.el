@@ -481,7 +481,6 @@ For example:
 
 
 (defvar gnus-group-icon-cache nil)
-(defvar gnus-group-running-xemacs (string-match "XEmacs" emacs-version))
 
 ;;;
 ;;; Gnus group mode
