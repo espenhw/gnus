@@ -66,11 +66,9 @@
     ("image/tiff" mm-inline-image
      (and window-system (featurep 'tiff) (mm-image-fit-p handle)))
     ("image/xbm" mm-inline-image
-     (and window-system (fboundp 'device-type)
-	  (eq (device-type) 'x)))
+     (and window-system (fboundp 'device-type) (eq (device-type) 'x)))
     ("image/x-xbitmap" mm-inline-image
-     (and window-system (fboundp 'device-type)
-	  (eq (device-type) 'x)))
+     (and window-system (fboundp 'device-type) (eq (device-type) 'x)))
     ("image/xpm" mm-inline-image
      (and window-system (featurep 'xpm)))
     ("image/x-pixmap" mm-inline-image
@@ -601,16 +599,24 @@ This overrides entries in the mailcap file."
 	  (prog1
 	      (setq spec
 		    (ignore-errors
-		      (make-glyph
-		       (cond
-			((equal type "xbm")
-			 (let ((height 32)
-			       (width 32))
-			   (forward-line 2)
-			   (vector 'xbm :data (list height width
-						    (buffer-substring
-						     (point) (point-max))))))
-			(t
+		      (cond
+		       ((equal type "xbm")
+			;; xbm images require special handling, since
+			;; the only way to create glyphs from these
+			;; (without a ton of work) is to write them
+			;; out to a file, and then create a file
+			;; specifier.
+			(let ((file (make-temp-name
+				     (expand-file-name "emm.xbm"
+							mm-tmp-directory))))
+			  (unwind-protect
+			      (progn
+				(write-region (point-min) (point-max) file)
+				(make-glyph (list (cons 'x file))))
+			    (ignore-errors
+			      (delete-file file)))))
+		       (t
+			(make-glyph
 			 (vector (intern type) :data (buffer-string)))))))
 	    (mm-handle-set-cache handle spec))))))
 

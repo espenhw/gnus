@@ -366,7 +366,7 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
   "Dissect the article buffer looking for cited text."
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (gnus-cite-parse-maybe)
+    (gnus-cite-parse-maybe nil t)
     (let ((alist gnus-cite-prefix-alist)
 	  prefix numbers number marks m)
       ;; Loop through citation prefixes.
@@ -613,7 +613,6 @@ See also the documentation for `gnus-article-highlight-citation'."
 
 ;;; Internal functions:
 
-
 (defun gnus-cite-parse-maybe (&optional force no-overlay)
   "Always parse the buffer."
   (gnus-cite-localize)
@@ -641,14 +640,15 @@ See also the documentation for `gnus-article-highlight-citation'."
       (gnus-delete-overlay overlay))))
 
 (defun gnus-cite-parse-wrapper ()
-  ;; Wrap chopped gnus-cite-parse
+  ;; Wrap chopped gnus-cite-parse.
   (article-goto-body)
-  (save-excursion
-    (gnus-cite-parse-attributions))
-  (save-excursion
-    (gnus-cite-parse))
-  (save-excursion
-    (gnus-cite-connect-attributions)))
+  (let ((inhibit-point-motion-hooks t))
+    (save-excursion
+      (gnus-cite-parse-attributions))
+    (save-excursion
+      (gnus-cite-parse))
+    (save-excursion
+      (gnus-cite-connect-attributions))))
 
 (defun gnus-cite-parse ()
   ;; Parse and connect citation prefixes and attribution lines.

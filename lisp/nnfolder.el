@@ -407,7 +407,7 @@ time saver for large mailboxes.")
       (goto-char (point-min))
       (if xfrom
 	  (insert "From " xfrom "\n")
-	(unless (looking-at message-unix-mail-delimiter)
+	(unless (looking-at "From ")
 	  (insert "From nobody " (current-time-string) "\n"))))
     (nnfolder-normalize-buffer)
     (set-buffer nnfolder-current-buffer)
@@ -589,10 +589,10 @@ deleted.  Point is left where the deleted region was."
   (let* (save-list group-art)
     (goto-char (point-min))
     ;; The From line may have been quoted by movemail.
-    (when (looking-at (concat ">" message-unix-mail-delimiter))
+    (when (looking-at ">From")
       (delete-char 1))
     ;; This might come from somewhere else.
-    (unless (looking-at message-unix-mail-delimiter)
+    (unless (looking-at "From ")
       (insert "From nobody " (current-time-string) "\n")
       (goto-char (point-min)))
     ;; Quote all "From " lines in the article.
@@ -703,7 +703,7 @@ deleted.  Point is left where the deleted region was."
       (save-excursion
 	(nnmail-activate 'nnfolder)
 	;; Read in the file.
-	(let ((delim (concat "^" message-unix-mail-delimiter))
+	(let ((delim "^From ")
 	      (marker (concat "\n" nnfolder-article-marker))
 	      (number "[0-9]+")
 	      (active (or (cadr (assoc group nnfolder-group-alist))

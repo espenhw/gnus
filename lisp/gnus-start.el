@@ -222,12 +222,12 @@ not match this regexp will be removed before saving the list."
   :type 'boolean)
 
 (defcustom gnus-ignored-newsgroups
-  (purecopy (mapconcat 'identity
-		       '("^to\\."	; not "real" groups
-			 "^[0-9. \t]+ " ; all digits in name
-			 "[][\"#'()]"	; bogus characters
-			 )
-		       "\\|"))
+ (mapconcat 'identity
+	    '("^to\\."			; not "real" groups
+	      "^[0-9. \t]+ "		; all digits in name
+	      "[][\"#'()]"		; bogus characters
+	      )
+	    "\\|")
   "*A regexp to match uninteresting newsgroups in the active file.
 Any lines in the active file matching this regular expression are
 removed from the newsgroup list before anything else is done to it,
@@ -381,7 +381,7 @@ Can be used to turn version control on or off."
   :type 'hook)
 
 (defcustom gnus-always-read-dribble-file nil
-  "Uncoditionally read the dribble file."
+  "Unconditionally read the dribble file."
   :group 'gnus-newsrc
   :type 'boolean)
 

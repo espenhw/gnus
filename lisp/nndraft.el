@@ -110,7 +110,9 @@
 	   (nntp-server-buffer (or buffer nntp-server-buffer)))
       (when (and (file-exists-p newest)
 		 (let ((nnmail-file-coding-system
-			message-draft-coding-system))
+			(if (file-newer-than-file-p file auto)
+			    'binary
+			  message-draft-coding-system)))
 		   (nnmail-find-file newest)))
 	(save-excursion
 	  (set-buffer nntp-server-buffer)

@@ -62,6 +62,8 @@
 (eval-and-compile
   (defvar mail-source-keyword-map
     '((file
+       (:prescript)
+       (:postscript)
        (:path (or (getenv "MAIL")
 		  (concat "/usr/spool/mail/" (user-login-name)))))
       (directory
@@ -294,9 +296,26 @@ If ARGS, PROMPT is used as an argument to `format'."
 (defun mail-source-fetch-file (source callback)
   "Fetcher for single-file sources."
   (mail-source-bind (file source)
+    (when prescript
+      (if (and (symbolp prescript) (fboundp prescript))
+	  (funcall prescript)
+	(call-process shell-file-name nil nil nil
+		      shell-command-switch 
+		      (format-spec
+		       prescript
+		       (format-spec-make ?t mail-source-crash-box)))))
     (let ((mail-source-string (format "file:%s" path)))
       (if (mail-source-movemail path mail-source-crash-box)
+	  (progn
 	  (mail-source-callback callback path)
+	    (when prescript
+	      (if (and (symbolp prescript) (fboundp prescript))
+		  (funcall prescript)
+		(call-process shell-file-name nil nil nil
+			      shell-command-switch 
+			      (format-spec
+			       postscript
+			       (format-spec-make ?t mail-source-crash-box))))))
 	0))))
 
 (defun mail-source-fetch-directory (source callback)
@@ -316,7 +335,8 @@ If ARGS, PROMPT is used as an argument to `format'."
   "Fetcher for single-file sources."
   (mail-source-bind (pop source)
     (when prescript
-      (if (fboundp prescript)
+      (if (and (symbolp prescript)
+	       (fboundp prescript))
 	  (funcall prescript)
 	(call-process shell-file-name nil nil nil
 		      shell-command-switch 
@@ -360,7 +380,8 @@ If ARGS, PROMPT is used as an argument to `format'."
 	  (prog1
 	      (mail-source-callback callback server)
 	    (when prescript
-	      (if (fboundp prescript)
+	      (if (and (symbolp postscript)
+		       (fboundp postscript))
 		  (funcall prescript)
 		(call-process shell-file-name nil nil nil
 			      shell-command-switch 

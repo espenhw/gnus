@@ -120,7 +120,7 @@
     "^X-Pgp-Public-Key-Url:" "^X-Auth:" "^X-From-Line:"
     "^X-Gnus-Article-Number:" "^X-Majordomo:" "^X-Url:" "^X-Sender:"
     "^X-Mailing-List:" "^MBOX-Line" "^Priority:" "^X-Pgp" "^X400-[-A-Za-z]+:"
-    "^Status:" "^X-Gnus-Mail-Source:")
+    "^Status:" "^X-Gnus-Mail-Source:" "^Cancel-Lock:")
   "*All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."
@@ -773,6 +773,13 @@ See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
+(defcustom gnus-treat-strip-headers-in-body t
+  "Strip the X-No-Archive header line from the beginning of the body.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
+  :group 'gnus-article-treat
+  :type gnus-article-treat-custom)
+
 (defcustom gnus-treat-strip-trailing-blank-lines nil
   "Strip trailing blank lines.
 Valid values are nil, t, `head', `last', an integer or a predicate.
@@ -865,11 +872,13 @@ See the manual for details."
 (defvar gnus-article-mime-handle-alist-1 nil)
 (defvar gnus-treatment-function-alist
   '((gnus-treat-strip-banner gnus-article-strip-banner)
+    (gnus-treat-strip-headers-in-body gnus-article-strip-headers-in-body)
     (gnus-treat-highlight-signature gnus-article-highlight-signature)
     (gnus-treat-buttonize gnus-article-add-buttons)
     (gnus-treat-fill-article gnus-article-fill-cited-article)
     (gnus-treat-fill-long-lines gnus-article-fill-long-lines)
     (gnus-treat-strip-cr gnus-article-remove-cr)
+    (gnus-treat-emphasize gnus-article-emphasize)
     (gnus-treat-hide-headers gnus-article-hide-headers)
     (gnus-treat-hide-boring-headers gnus-article-hide-boring-headers)
     (gnus-treat-hide-signature gnus-article-hide-signature)
@@ -879,7 +888,6 @@ See the manual for details."
     (gnus-treat-highlight-headers gnus-article-highlight-headers)
     (gnus-treat-highlight-citation gnus-article-highlight-citation)
     (gnus-treat-highlight-signature gnus-article-highlight-signature)
-    (gnus-treat-emphasize gnus-article-emphasize)
     (gnus-treat-date-ut gnus-article-date-ut)
     (gnus-treat-date-local gnus-article-date-local)
     (gnus-treat-date-lapsed gnus-article-date-lapsed)
@@ -1089,7 +1097,7 @@ always hide."
 	    (cond
 	     ;; Hide empty headers.
 	     ((eq elem 'empty)
-	      (while (re-search-forward "^[^:]+:[ \t]*\n[^ \t]" nil t)
+	      (while (re-search-forward "^[^: \t]+:[ \t]*\n[^ \t]" nil t)
 		(forward-line -1)
 		(gnus-article-hide-text-type
 		 (progn (beginning-of-line) (point))
@@ -1528,6 +1536,15 @@ always hide."
 	  (when (gnus-article-narrow-to-signature)
 	    (gnus-article-hide-text-type
 	     (point-min) (point-max) 'signature)))))))
+
+(defun article-strip-headers-in-body ()
+  "Strip offensive headers from bodies."
+  (interactive)
+  (save-excursion
+    (article-goto-body)
+    (let ((case-fold-search t))
+      (when (looking-at "x-no-archive:")
+	(gnus-delete-line)))))
 
 (defun article-strip-leading-blank-lines ()
   "Remove all blank lines from the beginning of the article."
@@ -2274,6 +2291,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-strip-banner
      article-hide-pem
      article-hide-signature
+     article-strip-headers-in-body
      article-remove-trailing-blank-lines
      article-strip-leading-blank-lines
      article-strip-multiple-blank-lines

@@ -1,3 +1,11 @@
+1999-04-07 06:13:08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Gnus Development): New.
+
+1999-03-06 20:12:50  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Generic Marking Commands): New.
+
 1999-03-01 16:41:42  Rob Browning  <rlb@cs.utexas.edu>
 
 	* gnus.texi (Score Variables): Clarify.

@@ -273,7 +273,8 @@ form, but who cares?"
 			   :tag "Method"
 			   :value (gnus-info-method info))))
     (use-local-map widget-keymap)
-    (widget-setup)))
+    (widget-setup)
+    (goto-char (point-min))))
 
 (defun gnus-group-customize-done (&rest ignore)
   "Apply changes and bury the buffer."

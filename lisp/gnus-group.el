@@ -2680,10 +2680,11 @@ N and the number of steps taken is returned."
 (defun gnus-group-kill-all-zombies ()
   "Kill all zombie newsgroups."
   (interactive)
-  (setq gnus-killed-list (nconc gnus-zombie-list gnus-killed-list))
-  (setq gnus-zombie-list nil)
-  (gnus-dribble-touch)
-  (gnus-group-list-groups))
+  (when (gnus-yes-or-no-p "Really kill all zombies? ")
+    (setq gnus-killed-list (nconc gnus-zombie-list gnus-killed-list))
+    (setq gnus-zombie-list nil)
+    (gnus-dribble-touch)
+    (gnus-group-list-groups)))
 
 (defun gnus-group-kill-region (begin end)
   "Kill newsgroups in current region (excluding current point).

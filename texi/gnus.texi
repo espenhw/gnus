@@ -1,7 +1,8 @@
+
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.80 Manual
+@settitle Pterodactyl Gnus 0.81 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +319,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.80 Manual
+@title Pterodactyl Gnus 0.81 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +355,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.80.
+This manual corresponds to Pterodactyl Gnus 0.81.
 
 @end ifinfo
 
@@ -4188,8 +4189,9 @@ There's a plethora of commands for manipulating these marks:
 @end ifinfo
 
 @menu
-* Setting Marks::           How to set and remove marks.
-* Setting Process Marks::   How to mark articles for later processing.
+* Setting Marks::             How to set and remove marks.
+* Generic Marking Commands::  How to customize the marking.
+* Setting Process Marks::     How to mark articles for later processing.
 @end menu
 
 
@@ -4505,6 +4507,44 @@ one line up or down.  As a special case, if this variable is
 @code{never}, all the marking commands as well as other commands (like
 @kbd{SPACE}) will move to the next article, whether it is unread or not.
 The default is @code{t}.
+
+
+@node Generic Marking Commands
+@subsection Generic Marking Commands
+
+Some people would like the command that ticks an article (@kbd{!}) go to
+the next article.  Others would like it to go to the next unread
+article.  Yet others would like it to stay on the current article.  And
+even though I haven't heard of anybody wanting it to go the the
+previous (unread) article, I'm sure there are people that want that as
+well.
+
+Multiply these five behaviours with five different marking commands, and
+you get a potentially complex set of variable to control what each
+command should do.
+
+To sidestep that mess, Gnus provides commands that do all these
+different things.  They can be found on the @kbd{M M} map in the summary
+buffer.  Type @kbd{M M C-h} to see them all---there are too many of them
+to list in this manual.
+
+While you can use these commands directly, most users would prefer
+altering the summary mode keymap.  For instance, if you would like the
+@kbd{!} command to go the the next article instead of the next unread
+article, you could say something like:
+
+@lisp
+(add-hook 'gnus-summary-mode-hook 'my-alter-summary-map)
+(defun my-alter-summary-map ()
+  (local-set-key "!" 'gnus-summary-put-mark-as-ticked-next))
+@end lisp
+
+or
+
+@lisp
+(defun my-alter-summary-map ()
+  (local-set-key "!" "MM!n"))
+@end lisp
 
 
 @node Setting Process Marks
@@ -6475,7 +6515,7 @@ annoying banners and/or signatures that some mailing lists and moderated
 groups adds to all the messages.  The way to use this function is to add
 the @code{banner} group parameter (@pxref{Group Parameters}) to the
 group you want banners stripped from.  The parameter either be a string,
-which will be interpreted as a regulax expression matching text to be
+which will be interpreted as a regular expression matching text to be
 removed, or the symbol @code{signature}, meaning that the (last)
 signature should be removed.
 
@@ -6695,6 +6735,12 @@ Add clickable buttons to the article (@code{gnus-article-add-buttons}).
 @findex gnus-article-add-buttons-to-head
 Add clickable buttons to the article headers
 (@code{gnus-article-add-buttons-to-head}).
+
+@item W W H
+@kindex W W H (Summary)
+@findex gnus-article-strip-headers-from-body
+Strip headers like the @code{X-No-Archive} header from the beginning of
+article bodies (@code{gnus-article-strip-headers-from-body}).
 
 @item W E l
 @kindex W E l (Summary)
@@ -8347,6 +8393,7 @@ group.
 @item gnus-treat-date-local
 @item gnus-treat-date-lapsed
 @item gnus-treat-date-original
+@item gnus-treat-strip-headers-in-body
 @item gnus-treat-strip-trailing-blank-lines
 @item gnus-treat-strip-leading-blank-lines
 @item gnus-treat-strip-multiple-blank-lines
@@ -9911,12 +9958,6 @@ links.  If that's the case for you, set
 @code{nnmail-crosspost-link-function} to @code{copy-file}.  (This
 variable is @code{add-name-to-file} by default.)
 
-@findex nnmail-split-header-length-limit
-Header lines may be arbitrarily long.  However, the longer a line is,
-the longer it takes to match them.  Very long lines may lead to Gnus
-taking forever to split the mail, so Gnus excludes lines that are longer
-than @code{nnmail-split-header-length-limit} (which defaults to 1024).
-
 @kindex M-x nnmail-split-history
 @kindex nnmail-split-history
 If you wish to see where the previous mail split put the messages, you
@@ -10014,6 +10055,10 @@ Only files that have this predicate return non-@code{nil} are returned.
 The default is @code{identity}.  This is used as an additional
 filter---only files that have the right suffix @emph{and} satisfy this
 predicate are considered.
+
+@item :prescript
+@itemx :postscript
+Script run before/after fetching mail.
 
 @end table
 
@@ -10193,6 +10238,7 @@ All new mail files will get this file mode.  The default is 384.
 @node Fetching Mail
 @subsubsection Fetching Mail
 
+@vindex nnmail-spool-file
 The way to actually tell Gnus where to get new mail from is to set
 @code{nnmail-spool-file} to a list of mail source specifiers
 (@pxref{Mail Source Specifiers}).
@@ -12632,12 +12678,11 @@ setup, you may be able to use something like the following as your
 @lisp
 ;;; Define how Gnus is to fetch news.  We do this over NNTP
 ;;; from your ISP's server.
-(setq gnus-select-method '(nntp "nntp.your-isp.com"))
+(setq gnus-select-method '(nntp "news.your-isp.com"))
 
 ;;; Define how Gnus is to read your mail.  We read mail from
 ;;; your ISP's POP server.
-(setenv "MAILHOST" "pop.your-isp.com")
-(setq nnmail-spool-file "po:username")
+(setq nnmail-spool-file '((pop :server "pop.your-isp.com")))
 
 ;;; Say how Gnus is to store the mail.  We use nnml groups.
 (setq gnus-secondary-select-methods '((nnml "")))
@@ -16335,6 +16380,7 @@ to that instead.
 * Compatibility::       Just how compatible is Gnus with @sc{gnus}?
 * Conformity::          Gnus tries to conform to all standards.
 * Emacsen::             Gnus can be run on a few modern Emacsen.
+* Gnus Development::    How Gnus is developed.
 * Contributors::        Oodles of people.
 * New Features::        Pointers to some of the new stuff in Gnus.
 * Newest Features::     Features so new that they haven't been written yet.
@@ -16514,6 +16560,44 @@ There are some vague differences between Gnus on the various
 platforms---XEmacs features more graphics (a logo and a toolbar)---but
 other than that, things should look pretty much the same under all
 Emacsen.
+
+
+@node Gnus Development
+@subsection Gnus Development
+
+Gnus is developed in a two-phased cycle.  The first phase involves much
+discussion on the @samp{ding@@gnus.org} mailing list, where people
+propose changes and new features, post patches and new backends.  This
+phase is called the @dfn{alpha} phase, since the Gnusae released in this 
+phase are @dfn{alpha releases}, or (perhaps more commonly in other
+circles) @dfn{snapshots}.  During this phase, Gnus is assumed to be
+unstable and should not be used by casual users.  Gnus alpha releases
+have names like ``Red Gnus'' and ``Quassia Gnus''.
+
+After futzing around for 50-100 alpha releases, Gnus is declared
+@dfn{frozen}, and only bug fixes are applied.  Gnus loses the prefix,
+and is called things like ``Gnus 5.6.32'' instead.  Normal people are
+supposed to be able to use these, and these are mostly discussed on the
+@samp{gnu.emacs.gnus} newsgroup.
+
+@cindex Incoming*
+@vindex nnmail-delete-incoming
+Some variable defaults differ between alpha Gnusae and released Gnusae.
+In particular, @code{nnmail-delete-incoming} defaults to @code{nil} in
+alpha Gnusae and @code{t} in released Gnusae.  This is to prevent
+lossage of mail if an alpha release hiccups while handling the mail.
+
+The division of discussion between the ding mailing list and the Gnus
+newsgroup is not purely based on publicity concerns.  It's true that
+having people write about the horrible things that an alpha Gnus release 
+can do (sometimes) in a public forum may scare people off, but more
+importantly, talking about new experimental features that have been
+introduced may confuse casual users.  New features are frequently
+introduced, fiddled with, and judged to be found wanting, and then
+either discarded or totally rewritten.  People reading the mailing list
+usually keep up with these rapid changes, whille people on the newsgroup 
+can't be assumed to do so.
+
 
 
 @node Contributors
@@ -18681,10 +18765,6 @@ If point is on a group that appears multiple times in topics, and
 you press `l', point will move to the first instance of the group.
 
 @item
-The documentation should mention pop3.el, fetchmail, smtpmail and why
-po:username often fails.
-
-@item
 Fetch by Message-ID from dejanews.
 
 <URL:http://search.dejanews.com/msgid.xp?MID=%3C62h9l9$hm4@@basement.replay.com%3E&fmt=raw>
@@ -18700,6 +18780,18 @@ timeout for all commands.
 @item
 When stading on a topic line and `t'-ing, point goes to the last line.
 It should go somewhere else.
+
+@item
+I'm having trouble accessing a newsgroup with a "+" in its name with
+Gnus.  There is a new newsgroup on msnews.microsoft.com named
+"microsoft.public.multimedia.directx.html+time" that I'm trying to
+access as
+"nntp+msnews.microsoft.com:microsoft.public.multimedia.directx.html+time"
+but it gives an error that it cant access the group.
+
+Is the "+" character illegal in newsgroup names?  Is there any way in
+Gnus to work around this?  (gnus 5.6.45 - XEmacs 20.4)
+
 
 @item
 Solve the halting problem.

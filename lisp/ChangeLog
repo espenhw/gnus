@@ -1,3 +1,132 @@
+Sat Apr 17 05:40:45 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.81 is released.
+
+1999-04-16 15:54:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-get-split-value): Reverse result.
+
+1999-04-03 00:17:24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-start.el (gnus-always-read-dribble-file): Doc fix.
+
+1999-04-02 15:33:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-insert-tag): Insert concluding part.
+
+	* message.el (message-send-mail): Encode later.
+	(message-send-news): Ditto.
+
+	* nnfolder.el: Don't use mail delim.
+
+1999-03-28 19:14:27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-cus.el (gnus-group-customize): Put point at min.
+
+	* mm-view.el (mm-inline-text): Allow toggling html.
+
+1999-03-28 17:11:15  William M. Perry  <wmperry@aventail.com>
+
+	* mail-source.el: Added prescript and postscript to file.
+
+1999-03-28 13:46:00  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnmail.el: Reverted.
+
+	* gnus-msg.el (gnus-setup-posting-charset): Didn't work.
+	(gnus-setup-posting-charset): Did work.
+
+1999-03-28 13:19:50  Jae-you Chung  <jay@pllab.kaist.ac.kr>
+
+	* gnus.el (gnus-short-group-name): Use
+	gnus-group-uncollapsed-levels. 
+
+1999-03-28 13:11:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-cite.el (gnus-dissect-cited-text): Don't remove overlays.
+
+1999-03-26 13:18:45  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-treat-strip-headers-in-body): New variable.
+	(article-strip-headers-from-body): New command and keystroke.
+
+1999-03-14 16:09:10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-source.el (mail-source-fetch-pop): Check for symbol first. 
+
+	* nnheader.el (nnheader-insert-file-contents): Bind
+	enable-local-eval to nil.
+	(nnheader-find-file-noselect): Ditto.
+
+	* nnmail.el (nnmail-article-group): Don't remove long lines.
+	(nnmail-remove-long-lines): New function.
+	(nnmail-split-header-length-limit): Removed.
+
+	* mml.el (mml-generate-mime-1): Use unibyte buffers.
+
+	* gnus-group.el (gnus-group-kill-all-zombies): Query user.
+
+1999-03-06 07:20:05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-generic-mark): New function.
+
+	* nnmail.el (nnmail-split-header-length-limit): Increased.
+	(nnmail-article-group): Allow nil.
+
+	* gnus-cite.el (gnus-cite-parse-wrapper): Inhibit point-motion. 
+
+	* nndoc.el (nndoc-generate-mime-parts-head): Insert real headers
+	first. 
+
+	* mml.el (mml-minibuffer-read-type): Include types from
+	mailcap-mime-data. 
+
+	* nndraft.el (nndraft-request-article): Would clobber Japanese. 
+
+1999-03-05  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* mml.el (mml-insert-tag): New function.
+	(mml-read-file): Renamed to mml-minibuffer-read-file to avoid
+ 	confusion with functions like `mml-read-tag'.
+	(mml-read-type): Ditto with `mml-minibuffer-read-type'.
+	(mml-minibuffer-read-description): Ditto with
+ 	`mml-minibuffer-read-description'.
+	(mml-attach-buffer): New function.
+	(mml-mode-map): New entry for /.
+	(mml-minibuffer-read-type): Accept DEFAULT.
+
+	* mml.el (mml-quote-region): Narrow the region.
+
+	* message.el (message-mode-menu): message-mime-attach-file is now
+ 	mml-attach-file.
+
+1999-03-05 21:24:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-treatment-function-alist): Do emphasis earlier.
+
+1999-03-05 21:08:10  Robert Bihlmeyer  <robbe@orcus.priv.at>
+
+	* mml.el (mml-attach-buffer): New command.
+
+1999-02-27  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-sum.el (gnus-update-marks): Call gnus-remove-from-range
+	with a proper range. Compress range.
+
+	* gnus-range.el (gnus-remove-from-range): Protect arguments.
+
+1999-03-05 20:59:54  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-get-image): Create a temporary file for xbms.
+
+1999-03-04 04:20:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-picon.el (gnus-picons-x-face-file-name): Removed.
+	(gnus-picons-convert-x-face): Removed.
+	(gnus-picons-article-display-x-face): Removed.
+	(gnus-picons-x-face-sentinel): Ditto. 
+	(gnus-picons-display-x-face): Ditto.
+
 Thu Mar  4 01:38:00 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.80 is released.
@@ -62,6 +191,11 @@ Thu Mar  4 01:38:00 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* nnmail.el (nnmail-get-new-mail): honor suffix for spool-files of 
 	type directory.
+
+1999-03-04  Robert Bihlmeyer  <robbe@orcus.priv.at>
+
+	* gnus-art.el (article-hide-boring-headers): Field names must not
+	contain whitespace.
 
 Fri Feb 26 18:54:16 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 

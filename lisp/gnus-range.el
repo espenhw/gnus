@@ -228,13 +228,15 @@ Note: LIST has to be sorted over `<'."
   "Return a range that has all articles from RANGE2 removed from
 RANGE1. The returned range is always a list. RANGE2 can also be a
 unsorted list of articles."
-  (if (listp (cdr range2))
-      (setq range2 (sort range2 (lambda (e1 e2)
-                                 (< (if (consp e1) (car e1) e1)
-                                    (if (consp e2) (car e2) e2))))))
   (if (or (null range1) (null range2))
       range1
-    (let (out r1 r2 r1_min r1_max r2_min r2_max)
+    (let (out r1 r2 r1_min r1_max r2_min r2_max
+	      (range1 range1)
+	      (range2 (if (listp (cdr range2))
+			  (sort range2 (lambda (e1 e2)
+					 (< (if (consp e1) (car e1) e1)
+					    (if (consp e2) (car e2) e2))))
+			range2)))
       (setq range1 (if (listp (cdr range1)) range1 (list range1))
 	    range2 (if (listp (cdr range2)) range2 (list range2))
 	    r1 (car range1)
@@ -296,7 +298,7 @@ unsorted list of articles."
 	  (push (cons r1_min r1_max) out))
 	(pop range1))
       (while range1
-        (push (pop range1) out))
+	(push (pop range1) out))
       (nreverse out))))
 
 (defun gnus-member-of-range (number ranges)

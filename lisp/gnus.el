@@ -260,7 +260,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.80"
+(defconst gnus-version-number "0.81"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -2561,7 +2561,6 @@ If SCORE is nil, add 1 to the score of GROUP."
     (when info
       (gnus-info-set-score info (+ (gnus-info-score info) (or score 1))))))
 
-;; Function written by Stainless Steel Rat <ratinox@peorth.gweep.net>
 (defun gnus-short-group-name (group &optional levels)
   "Collapse GROUP name LEVELS.
 Select methods are stripped and any remote host name is stripped down to
@@ -2571,6 +2570,7 @@ just the host name."
 	 (depth 0)
 	 (skip 1)
 	 (levels (or levels
+		     gnus-group-uncollapsed-levels
 		     (progn
 		       (while (string-match "\\." group skip)
 			 (setq skip (match-end 0)

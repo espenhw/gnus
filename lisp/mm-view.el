@@ -74,15 +74,17 @@
 	      (let ((w3-strict-width width)
 		    (url-standalone-mode t))
 		(w3-region (point-min) (point-max)))))
+	  (narrow-to-region (1+ (point-min)) (point-max))
 	  (mm-handle-set-undisplayer
 	   handle
 	   `(lambda ()
 	      (let (buffer-read-only)
-              (mapc (lambda (prop)
-		      (remove-specifier
-		       (face-property 'default prop) (current-buffer)))
-                    '(background background-pixmap foreground))
-		(delete-region ,(point-min-marker) ,(point-max-marker))))))))
+		(mapc (lambda (prop)
+			(remove-specifier
+			 (face-property 'default prop) (current-buffer)))
+			'(background background-pixmap foreground))
+		(delete-region ,(point-min-marker)
+			       ,(point-max-marker))))))))
      ((or (equal type "enriched")
 	  (equal type "richtext"))
       (save-excursion

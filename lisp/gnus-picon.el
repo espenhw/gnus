@@ -87,17 +87,6 @@ Some people may want to add \"unknown\" to this list."
   :type 'regexp
   :group 'picons)
 
-(defcustom gnus-picons-x-face-file-name
-  (format "/tmp/picon-xface.%s.xbm" (user-login-name))
-  "*The name of the file in which to store the converted X-face header."
-  :type 'string
-  :group 'picons)
-
-(defcustom gnus-picons-convert-x-face (format "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | pbmtoxbm > %s" gnus-picons-x-face-file-name)
-  "*Command to convert the x-face header into a xbm file."
-  :type 'string
-  :group 'picons)
-
 (defcustom gnus-picons-display-as-address t
   "*If t display textual email addresses along with pictures."
   :type 'boolean
@@ -257,48 +246,6 @@ arguments necessary for the job.")
     (set-extent-property annot 'gnus-picon t)
     (set-extent-property annot 'duplicable t)
     annot))
-
-(defun gnus-picons-article-display-x-face ()
-  "Display the x-face header bitmap in the 'gnus-picons-display-where buffer."
-  (let ((gnus-article-x-face-command 'gnus-picons-display-x-face))
-    (gnus-article-display-x-face)))
-
-(defun gnus-picons-x-face-sentinel (process event)
-  (when (memq process gnus-picons-processes-alist)
-    (setq gnus-picons-processes-alist
-	  (delq process gnus-picons-processes-alist))
-    (gnus-picons-set-buffer)
-    (gnus-picons-make-annotation
-     (make-glyph gnus-picons-x-face-file-name) nil 'text)
-    (when (file-exists-p gnus-picons-x-face-file-name)
-      (delete-file gnus-picons-x-face-file-name))))
-
-(defun gnus-picons-display-x-face (beg end)
-  "Function to display the x-face header in the picons window.
-To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
-  (interactive)
-  (if (featurep 'xface)
-      ;; Use builtin support
-      (save-excursion
-	;; Don't remove this binding, it is really needed: when
-	;; `gnus-picons-set-buffer' changes buffer (like when it is
-	;; set to display picons outside of the article buffer), BEG
-	;; and END still refer the buffer current now !
-	(let ((buf (current-buffer)))
-	  (gnus-picons-set-buffer)
-	  (gnus-picons-make-annotation
-	   (vector 'xface
-		   :data (concat "X-Face: " (buffer-substring beg end buf)))
-	   nil 'text nil nil nil t)))
-    ;; convert the x-face header to a .xbm file
-    (let* ((process-connection-type nil)
-	   (process (start-process-shell-command
-		     "gnus-x-face" nil gnus-picons-convert-x-face)))
-      (push process gnus-picons-processes-alist)
-      (process-kill-without-query process)
-      (set-process-sentinel process 'gnus-picons-x-face-sentinel)
-      (process-send-region process beg end)
-      (process-send-eof process))))
 
 (defun gnus-article-display-picons ()
   "Display faces for an author and her domain in gnus-picons-display-where."

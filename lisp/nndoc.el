@@ -463,10 +463,13 @@ from the document.")
 (defun nndoc-generate-mime-parts-head (article)
   (let* ((entry (cdr (assq article nndoc-dissection-alist)))
 	 (headers (nth 6 entry)))
+    (save-restriction
+      (narrow-to-region (point) (point))
+      (insert-buffer-substring
+       nndoc-current-buffer (car entry) (nth 1 entry))
+      (goto-char (point-max)))
     (when headers
-      (insert headers))
-    (insert-buffer-substring
-     nndoc-current-buffer (car entry) (nth 1 entry))))
+      (insert headers))))
 
 (defun nndoc-clari-briefs-type-p ()
   (when (let ((case-fold-search nil))
