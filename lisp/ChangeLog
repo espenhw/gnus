@@ -1,3 +1,14 @@
+2000-04-10 20:35:46  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mail-source.el (mail-source-fetch-webmail): Use the default
+	password provided in mail-sources; use webmail:subtype:user as
+	the key.
+	
+2000-04-10 20:35:46  John Wiegley <johnw@gnu.org>
+
+	* mail-source.el (mail-source-fetch-webmail): Use
+	mail-source-password-cache.
+
 2000-04-09 18:13:47  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* webmail.el: Add netscape mail and fix HotMail mail.

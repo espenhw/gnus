@@ -690,8 +690,15 @@ This only works when `display-time' is enabled."
       (when (eq authentication 'password)
 	(setq password
 	      (or password
+		  (cdr (assoc (format "webmail:%s:%s" subtype user) 
+			      mail-source-password-cache))
 		  (mail-source-read-passwd
-		   (format "Password for %s at %s: " user subtype)))))
+		   (format "Password for %s at %s: " user subtype))))
+	(when (and password
+		   (not (assoc (format "webmail:%s:%s" subtype user) 
+			       mail-source-password-cache)))
+	  (push (cons (format "webmail:%s:%s" subtype user) password) 
+		mail-source-password-cache)))
       (webmail-fetch mail-source-crash-box subtype user password)
       (mail-source-callback callback (symbol-name subtype)))))
 
