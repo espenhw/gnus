@@ -29,9 +29,28 @@
 
 ;;; Code:
 
-(setq byte-compile-warnings '(free-vars unresolved callargs redefine))
-
 (setq load-path (cons "." load-path))
+
+(defun dgnushack-compile ()
+  (let ((files (directory-files "." nil ".el$"))
+	(xemacs (string-match "XEmacs" emacs-version))
+	byte-compile-warnings file)
+    (while files
+      (setq file (car files)
+	    files (cdr files))
+      (cond 
+       ((or (string= file "custom.el") (string= file "browse-url.el"))
+	(setq byte-compile-warnings nil))
+       (xemacs
+	(setq byte-compile-warnings 
+	      '(free-vars unresolved callargs redefine)))
+       (t
+	(setq byte-compile-warnings 
+	      '(free-vars unresolved callargs redefine obsolete))))
+      (and (or (and (not (string= file "gnus-xmas.el"))
+		    (not (string= file "x-easymenu.el")))
+	       xemacs)
+	   (byte-compile-file file)))))
 
 (defun dgnushack-recompile ()
   (byte-recompile-directory "." 0))

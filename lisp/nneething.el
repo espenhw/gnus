@@ -206,7 +206,7 @@
 	  nneething-group nneething-map-file))
 
 (defun nneething-create-mapping ()
-  ;; Read nneething-active and nneething-map
+  ;; Read nneething-active and nneething-map.
   (let ((map-file (nneething-map-file))
 	(files (directory-files nneething-directory))
 	touched)
@@ -242,7 +242,8 @@
 	    (setq touched t)
 	    (setcdr nneething-active (1+ (cdr nneething-active)))
 	    (setq nneething-map
-		  (cons (cons (car files) (cdr nneething-active)) nneething-map))))
+		  (cons (cons (car files) (cdr nneething-active))
+			nneething-map))))
       (setq files (cdr files)))
     (if (or (not touched) nneething-read-only)
 	()

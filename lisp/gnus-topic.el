@@ -27,7 +27,7 @@
 
 (require 'gnus)
 
-(defvar gnus-group-topic-face 'underline
+(defvar gnus-group-topic-face 'bold
   "*Face used to highlight topic headers.")
 
 (defvar gnus-group-topics '(("misc" "." nil))

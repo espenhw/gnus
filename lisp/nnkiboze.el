@@ -37,6 +37,12 @@
   (expand-file-name (or gnus-article-save-directory "~/News/"))
   "nnkiboze will put its files in this directory.")
 
+(defvar nnkiboze-level 9
+  "*The maximum level to be searched for articles.")
+
+(defvar nnkiboze-remove-read-articles t
+  "*If non-nil, nnkiboze will remove read articles from the kiboze group.")
+
 
 
 (defconst nnkiboze-version "nnkiboze 1.0"
@@ -145,7 +151,8 @@ If the stream is opened, return T, otherwise return NIL."
 (defun nnkiboze-close-group (group &optional server)
   (nnkiboze-possibly-change-newsgroups group)
   ;; Remove NOV lines of articles that are marked as read.
-  (if (not (file-exists-p (nnkiboze-nov-file-name)))
+  (if (or (not (file-exists-p (nnkiboze-nov-file-name)))
+	  (not nnkiboze-remove-read-articles))
       ()
     (save-excursion
       (let ((unreads gnus-newsgroup-unreads)
@@ -202,9 +209,15 @@ Finds out what articles are to be part of the nnkiboze groups."
 	(gnus-expert-user t))
     (gnus))
   (let* ((gnus-newsrc-alist (gnus-copy-sequence gnus-newsrc-alist))
-	 (newsrc gnus-newsrc-alist))
+	 (newsrc gnus-newsrc-alist)
+	 gnus-newsrc-hashtb)
+    (gnus-make-hashtable-from-newsrc-alist)
+    ;; We have copied all the newsrc alist info over to local copies
+    ;; so that we can mess all we want with these lists.
     (while newsrc
       (if (string-match "nnkiboze" (car (car newsrc)))
+	  ;; For each kiboze group, we call this function to generate
+	  ;; it.  
 	  (nnkiboze-generate-group (car (car newsrc))))
       (setq newsrc (cdr newsrc)))))
 
@@ -225,10 +238,12 @@ Finds out what articles are to be part of the nnkiboze groups."
 	 gnus-thread-sort-functions gnus-show-threads 
 	 gnus-visual
 	 method nnkiboze-newsrc nov-buffer gname newsrc active
-	 ginfo lowest)
+	 ginfo lowest glevel)
     (setq nnkiboze-current-score-group group)
     (or info (error "No such group: %s" group))
+    ;; Load the kiboze newsrc file for this group.
     (and (file-exists-p newsrc-file) (load newsrc-file))
+    ;; We also load the nov file for this group.
     (save-excursion
       (set-buffer (setq nov-buffer (find-file-noselect nov-file)))
       (buffer-disable-undo (current-buffer)))
@@ -236,37 +251,59 @@ Finds out what articles are to be part of the nnkiboze groups."
     ;; kiboze regexp.
     (mapatoms
      (lambda (group)
-       (if (and (string-match regexp (setq gname (symbol-name group))) ; Match
-		(not (assoc gname nnkiboze-newsrc)) ; It isn't registered
-		(numberp (car (symbol-value group))) ; It is active
-		(not (string-match "^nnkiboze:" gname))) ; Exclude kibozes
-	   (setq nnkiboze-newsrc 
-		 (cons (cons gname (1- (car (symbol-value group))))
-		       nnkiboze-newsrc))))
+       (and (string-match regexp (setq gname (symbol-name group))) ; Match
+	    (not (assoc gname nnkiboze-newsrc)) ; It isn't registered
+	    (numberp (car (symbol-value group))) ; It is active
+	    (or (> nnkiboze-level 7)
+		(and (setq glevel (nth 1 (nth 2 (gnus-gethash
+						 gname gnus-newsrc-hashtb))))
+		     (>= nnkiboze-level glevel)))
+	    (not (string-match "^nnkiboze:" gname)) ; Exclude kibozes
+	    (setq nnkiboze-newsrc 
+		  (cons (cons gname (1- (car (symbol-value group))))
+			nnkiboze-newsrc))))
      gnus-active-hashtb)
+    ;; `newsrc' is set to the list of groups that possibly are
+    ;; component groups to this kiboze group.  This list has elements
+    ;; on the form `(GROUP . NUMBER)', where NUMBER is the highest
+    ;; number that has been kibozed in GROUP in this kiboze group.
     (setq newsrc nnkiboze-newsrc)
     (while newsrc
       (if (not (setq active (gnus-gethash 
 			     (car (car newsrc)) gnus-active-hashtb)))
+	  ;; This group isn't active after all, so we remove it from
+	  ;; the list of component groups.
 	  (setq nnkiboze-newsrc (delq (car newsrc) nnkiboze-newsrc))
+	(setq lowest (cdr (car newsrc)))
+	;; Ok, we have a valid component group, so we jump to it. 
 	(switch-to-buffer gnus-group-buffer)
 	(gnus-group-jump-to-group (car (car newsrc)))
-	(if (and (setq ginfo (nth 2 (gnus-gethash (gnus-group-group-name) 
-						  gnus-newsrc-hashtb)))
-		 (nth 3 ginfo))
-	    (setcar (nthcdr 3 ginfo) nil))
+	;; We set all list of article marks to nil.  Since we operate
+	;; on copies of the real lists, we can destroy anything we
+	;; want here.
+	(and (setq ginfo (nth 2 (gnus-gethash (gnus-group-group-name)
+					      gnus-newsrc-hashtb)))
+	     (nth 3 ginfo)
+	     (setcar (nthcdr 3 ginfo) nil))
+	;; We set the list of read articles to be what we expect for
+	;; this kiboze group -- either nil or `(1 . LOWEST)'. 
+	(and ginfo (setcar (nthcdr 2 ginfo)
+			   (and (not (= lowest 1)) (cons 1 lowest))))
 	(if (not (and (or (not ginfo)
 			  (> (length (gnus-list-of-unread-articles 
 				      (car ginfo))) 0))
 		      (progn
 			(gnus-group-select-group nil)
 			(eq major-mode 'gnus-summary-mode))))
-	    ()
-	  (setq lowest (cdr (car newsrc)))
+	    () ; No unread articles, or we couldn't enter this group.
+	  ;; We are now in the group where we want to be.
 	  (setq method (gnus-find-method-for-group gnus-newsgroup-name))
 	  (and (eq method gnus-select-method) (setq method nil))
+	  ;; We go through the list of scored articles.
 	  (while gnus-newsgroup-scored
 	    (if (> (car (car gnus-newsgroup-scored)) lowest)
+		;; If it has a good score, then we enter this article
+		;; into the kiboze group.
 		(nnkiboze-enter-nov 
 		 nov-buffer
 		 (gnus-summary-article-header 
@@ -275,12 +312,15 @@ Finds out what articles are to be part of the nnkiboze groups."
 		     (gnus-group-prefixed-name gnus-newsgroup-name method)
 		   gnus-newsgroup-name)))
 	    (setq gnus-newsgroup-scored (cdr gnus-newsgroup-scored)))
-	  (gnus-summary-quit)))
+	  ;; That's it.  We exit this group.
+	  (gnus-summary-exit-no-update)))
       (setcdr (car newsrc) (car active))
       (setq newsrc (cdr newsrc)))
+    ;; We save the nov file.
     (set-buffer nov-buffer)
     (save-buffer)
     (kill-buffer (current-buffer))
+    ;; We save the kiboze newsrc for this group.
     (set-buffer (get-buffer-create "*nnkiboze work*"))
     (buffer-disable-undo (current-buffer))
     (erase-buffer)

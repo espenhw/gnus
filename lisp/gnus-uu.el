@@ -3,7 +3,6 @@
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Created: 2 Oct 1993
-;; Version: v3.0
 ;; Keyword: news
 
 ;; This file is part of GNU Emacs.
@@ -1797,7 +1796,7 @@ If no file has been included, the user will be asked for a file."
 				(get-buffer-create uuencode-buffer-name)))
 	      (erase-buffer)
 	      (funcall gnus-uu-post-encode-method file-path file-name))
-	    (insert-buffer uubuf)
+	    (insert-buffer-substring uubuf)
 	  (error "Encoding unsuccessful"))
       (kill-buffer uubuf))
     file-name))

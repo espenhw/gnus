@@ -338,7 +338,7 @@
        (goto-char (point-max))
        (search-backward "\n\^_")
        (goto-char (match-end 0))
-       (insert-buffer buf)
+       (insert-buffer-substring buf)
        (and last (progn 
 		   (save-buffer)
 		   (nnmail-save-active

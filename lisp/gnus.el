@@ -1450,7 +1450,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.4"
+(defconst gnus-version "September Gnus v0.5"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -3508,12 +3508,21 @@ prompt the user for the name of an NNTP server to use."
 	   (unload-feature feature 'force))
       (setq history (cdr history)))))
 
+(defun gnus-indent-rigidly (start end arg)
+  (save-excursion
+    (save-restriction
+      (narrow-to-region start end)
+      (indent-rigidly start end arg)
+      (goto-char (point-min))
+      (while (search-forward "\t" nil t)
+	(replace-match "        " t t)))))
+
 (defun gnus-group-startup-message (&optional x y)
   "Insert startup message in current buffer."
   ;; Insert the message.
   (erase-buffer)
   (insert
-   (format "
+   (format "              %s
           _    ___ _             _      
           _ ___ __ ___  __    _ ___     
           __   _     ___    __  ___     
@@ -3532,27 +3541,21 @@ prompt the user for the name of an NNTP server to use."
             _                         
           __                             
 
-
-%s * A newsreader for Emacsen
-     A Praxis release * larsi@ifi.uio.no
 " 
 	   gnus-version))
   ;; And then hack it.
-  ;; 18 is the longest line.
-  (indent-rigidly (point-min) (point-max) 
-		  (/ (max (- (window-width) (or x 46)) 0) 2))
+  (gnus-indent-rigidly (point-min) (point-max) 
+		       (/ (max (- (window-width) (or x 46)) 0) 2))
   (goto-char (point-min))
+  (forward-line 1)
   (let* ((pheight (count-lines (point-min) (point-max)))
 	 (wheight (window-height))
 	 (rest (- wheight  pheight)))
     (insert (make-string (max 0 (* 2 (/ rest 3))) ?\n)))
-    
-    
-
   ;; Fontify some.
   (goto-char (point-min))
-  (search-forward "Praxis")
-  (put-text-property (match-beginning 0) (match-end 0) 'face 'bold)
+  (and (search-forward "Praxis" nil t)
+       (put-text-property (match-beginning 0) (match-end 0) 'face 'bold))
   (goto-char (point-min)))
 
 (defun gnus-group-startup-message-old (&optional x y)
@@ -4539,7 +4542,8 @@ of the Earth\".  There is no undo."
      (list 'nndoc name
 	   (list 'nndoc-address 
 		 (concat (file-name-as-directory (car path)) "doc.txt"))
-	   (list 'nndoc-article-type 'mbox))))
+	   (list 'nndoc-article-type 'mbox)))
+    (forward-line -1))
   (gnus-group-position-point))
 
 (defun gnus-group-make-doc-group (file type)
@@ -4564,7 +4568,9 @@ of the Earth\".  There is no undo."
      (gnus-group-real-name name)
      (list 'nndoc name
 	   (list 'nndoc-address file)
-	   (list 'nndoc-article-type type)))))
+	   (list 'nndoc-article-type type)))
+    (forward-line -1)
+    (gnus-group-position-point)))
 
 (defun gnus-group-make-archive-group (&optional all)
   "Create the (ding) Gnus archive group of the most recent articles.
@@ -4576,9 +4582,11 @@ Given a prefix, create a full group."
 	 (error "Archive group already exists"))
     (gnus-group-make-group
      (gnus-group-real-name group)
-     "nndir" 
-     (if all gnus-group-archive-directory 
-       gnus-group-recent-archive-directory)))
+     (list 'nndir (if all "hpc" "edu")
+	   (list 'nndir-directory  
+		 (if all gnus-group-archive-directory 
+		   gnus-group-recent-archive-directory)))))
+  (forward-line -1)
   (gnus-group-position-point))
 
 (defun gnus-group-make-directory-group (dir)
@@ -4591,6 +4599,7 @@ mail messages or news articles in files that have numeric names."
   (or (file-exists-p dir) (error "No such directory"))
   (or (file-directory-p dir) (error "Not a directory"))
   (gnus-group-make-group dir "nndir" dir)
+  (forward-line -1)
   (gnus-group-position-point))
 
 (defun gnus-group-make-kiboze-group (group address scores)
@@ -4603,7 +4612,8 @@ score file entries for articles to include in the group."
     (read-string "Source groups (regexp): ")
     (let ((headers (mapcar (lambda (group) (list group))
 			   '("subject" "from" "number" "date" "message-id"
-			     "references" "chars" "lines" "xref")))
+			     "references" "chars" "lines" "xref"
+			     "followup" "all" "body" "head")))
 	  scores header regexp regexps)
       (while (not (equal "" (setq header (completing-read 
 					  "Match on header: " headers nil t))))
@@ -4620,8 +4630,8 @@ score file entries for articles to include in the group."
     (let (emacs-lisp-mode-hook)
       (pp scores (current-buffer)))
     (write-region (point-min) (point-max) 
-		  (concat (or gnus-kill-files-directory "~/News")
-			  "nnkiboze:" group "." gnus-score-file-suffix)))
+		  (gnus-score-file-name (concat "nnkiboze:" group))))
+  (forward-line -1)
   (gnus-group-position-point))
 
 (defun gnus-group-add-to-virtual (n vgroup)
@@ -5865,6 +5875,7 @@ buffer.
   (define-key gnus-summary-wash-hide-map "h" 'gnus-article-hide-headers)
   (define-key gnus-summary-wash-hide-map "s" 'gnus-article-hide-signature)
   (define-key gnus-summary-wash-hide-map "c" 'gnus-article-hide-citation)
+  (define-key gnus-summary-wash-hide-map "p" 'gnus-article-hide-pgp)
   (define-key gnus-summary-wash-hide-map 
     "\C-c" 'gnus-article-hide-citation-maybe)
 
@@ -6813,6 +6824,8 @@ or a straight list of headers."
       (while (or threads stack new-adopts new-roots)
 
 	(if (and (= level 0)
+		 (or (not stack)
+		     (= (car (car stack)) 0))
 		 (not gnus-tmp-false-parent)
 		 (or new-adopts new-roots))
 	    (progn
@@ -6849,18 +6862,14 @@ or a straight list of headers."
 	      (cond 
 	       ((eq gnus-summary-make-false-root 'adopt)
 		;; We let the first article adopt the rest.
-		(let ((th (car (cdr (car thread)))))
-		  (while (cdr th)
-		    (setq th (cdr th)))
-		  ;(setcdr th (cdr (cdr (car thread))))
-		  (setq new-adopts (nconc new-adopts
-					  (cdr (cdr (car thread)))))
-		  (setq gnus-tmp-gathered 
-			(nconc (mapcar
-				(lambda (h) (mail-header-number (car h)))
-				(cdr (cdr (car thread))))
-			       gnus-tmp-gathered))
-		  (setcdr (cdr (car thread)) nil))
+		(setq new-adopts (nconc new-adopts
+					(cdr (cdr (car thread)))))
+		(setq gnus-tmp-gathered 
+		      (nconc (mapcar
+			      (lambda (h) (mail-header-number (car h)))
+			      (cdr (cdr (car thread))))
+			     gnus-tmp-gathered))
+		(setcdr (cdr (car thread)) nil)
 		(setq level -1
 		      gnus-tmp-false-parent t))
 	       ((eq gnus-summary-make-false-root 'empty)
@@ -6983,8 +6992,6 @@ or a straight list of headers."
 
       ;; We may have to root out some bad articles...
       (cond 
-       ((memq (setq number (mail-header-number header))
-	      gnus-newsgroup-dormant))
        ((and gnus-summary-expunge-below
 	     (< (or (cdr (assq number gnus-newsgroup-scored))
 		    gnus-summary-default-score 0)
@@ -8375,7 +8382,6 @@ If optional argument UNREAD is non-nil, only unread article is selected."
       (if (not data)
 	  (message "Can't find article %d" article)
 	(goto-char (gnus-data-pos data))
-	(gnus-summary-show-thread)
 	;; Skip dummy articles. 
 	(if (eq (gnus-summary-article-mark) gnus-dummy-mark)
 	    (gnus-summary-find-next))
@@ -8795,9 +8801,9 @@ Returns how many articles were removed."
 	      (marks (append marks nil)) ; Transform to list.
 	      articles)
 	  (while data
-	    (or (if reverse (not (memq (gnus-data-mark (car data)) marks))
-		  (memq (gnus-data-mark (car data)) marks))
-		(setq articles (cons (gnus-data-number (car data)) articles)))
+	    (and (if reverse (not (memq (gnus-data-mark (car data)) marks))
+		   (memq (gnus-data-mark (car data)) marks))
+		 (setq articles (cons (gnus-data-number (car data)) articles)))
 	    (setq data (cdr data)))
 	  (gnus-summary-limit articles)))
     (gnus-summary-position-point)))
@@ -8906,8 +8912,9 @@ The difference between N and the number of articles fetched is returned."
        (let ((ref (mail-header-references (gnus-summary-article-header))))
 	 (if (and ref (not (equal ref ""))
 		  (string-match "<[^<>]*>[ \t]*$" ref))
-	     (gnus-summary-refer-article 
-	      (substring ref (match-beginning 0) (match-end 0)))
+	     (or (gnus-summary-refer-article 
+		  (substring ref (match-beginning 0) (match-end 0)))
+		 (gnus-message 1 "Couldn't find parent"))
 	   (gnus-message 1 "No references in article %d"
 			 (gnus-summary-article-number))
 	   nil)))
@@ -9505,9 +9512,7 @@ functions. (Ie. mail newsgroups at present.)"
   (if (not (gnus-check-backend-function 
 	    'request-expire-articles gnus-newsgroup-name))
       ()
-    (let* ((info (nth 2 (gnus-gethash gnus-newsgroup-name 
-				      gnus-newsrc-hashtb)))
-	   (total (gnus-group-total-expirable-p gnus-newsgroup-name))
+    (let* ((total (gnus-group-total-expirable-p gnus-newsgroup-name))
 	   (expirable (if total
 			  (gnus-list-of-read-articles gnus-newsgroup-name)
 			(setq gnus-newsgroup-expirable
@@ -10466,39 +10471,37 @@ Returns nil if no threads were there to be hidden."
   (gnus-set-global-variables)
   (let ((buffer-read-only nil)
 	(start (point))
-	(level (gnus-summary-thread-level))
 	(article (gnus-summary-article-number))
 	(end (point)))
     ;; Go forward until either the buffer ends or the subthread
     ;; ends. 
     (if (eobp)
 	()
-      (while (and (gnus-summary-find-next)
-		  (> (gnus-summary-thread-level) level))
-	(setq end (point)))
-      (prog1
-	  (save-excursion
-	    (goto-char end)
-	    (search-backward "\n" start t))
-	(subst-char-in-region start end ?\n ?\^M)
-	(gnus-summary-goto-subject article)
-	(gnus-summary-position-point)))))
+      (if (not (zerop (gnus-summary-next-thread 1)))
+	  ()
+	(gnus-summary-find-prev)
+	(prog1
+	    (save-excursion
+	      (search-backward "\n" start t))
+	  (subst-char-in-region start (point) ?\n ?\^M)
+	  (gnus-summary-goto-subject article)
+	  (gnus-summary-position-point))))))
 
 (defun gnus-summary-go-to-next-thread (&optional previous)
   "Go to the same level (or less) next thread.
 If PREVIOUS is non-nil, go to previous thread instead.
 Return the article number moved to, or nil if moving was impossible."
-  (let ((level (gnus-summary-thread-level))
-	(article (gnus-summary-article-number)))
-    (if previous 
-	(while (and (gnus-summary-find-prev)
-		    (> (gnus-summary-thread-level) level)))
-      (while (and (gnus-summary-find-next)
-		  (> (gnus-summary-thread-level) level))))
-    (gnus-summary-recenter)
-    (gnus-summary-position-point)
-    (let ((oart (gnus-summary-article-number)))
-      (and (/= oart article) oart))))
+  (let* ((level (gnus-summary-thread-level))
+	 (article (gnus-summary-article-number))
+	 (data (cdr (gnus-data-find-list article (gnus-data-list previous))))
+	 oart)
+    (while data
+      (if (<= (gnus-data-level (car data)) level)
+	  (setq oart (gnus-data-number (car data))
+		data nil)
+	(setq data (cdr data))))
+    (and oart 
+	 (gnus-summary-goto-subject oart))))
 
 (defun gnus-summary-next-thread (n)
   "Go to the same level next N'th thread.
@@ -11108,8 +11111,6 @@ is initialized from the SAVEDIR environment variable."
 
 (put 'gnus-article-mode 'mode-class 'special)
 
-(defvar gnus-boogaboo nil)
-
 (if gnus-article-mode-map
     nil
   (setq gnus-article-mode-map (make-keymap))
@@ -11153,7 +11154,7 @@ is initialized from the SAVEDIR environment variable."
 ;;	  "Of" "Oh" "Ov" "Op" "Vu" "V\C-s" "V\C-r" "Vr" "V&" "VT" "Ve"
 ;;	  "VD" "Vk" "VK" "Vsn" "Vsa" "Vss" "Vsd" "Vsi"
 	  )))
-    (while (and gnus-boogaboo commands) ; disabled
+    (while commands
       (define-key gnus-article-mode-map (car commands) 
 	'gnus-article-summary-command)
       (setq commands (cdr commands))))
@@ -11161,7 +11162,7 @@ is initialized from the SAVEDIR environment variable."
   (let ((commands (list "q" "Q"  "c" "r" "R" "\C-c\C-f" "m"  "a" "f" "F"
 ;;			"Zc" "ZC" "ZE" "ZQ" "ZZ" "Zn" "ZR" "ZG" "ZN" "ZP" 
 			 "=" "n"  "^" "\M-^")))
-    (while (and gnus-boogaboo commands) ; disabled
+    (while commands
       (define-key gnus-article-mode-map (car commands) 
 	'gnus-article-summary-command-nosave)
       (setq commands (cdr commands)))))
@@ -11308,8 +11309,9 @@ The following commands are available:
 	 ;; It was a pseudo.
 	 (t article)))
     (setq gnus-original-article (cons group article))
-    (erase-buffer)
-    (insert-buffer gnus-original-article-buffer)))
+    (let (buffer-read-only)
+      (erase-buffer)
+      (insert-buffer-substring gnus-original-article-buffer))))
 
 (defun gnus-read-header (id)
   "Read the headers of article ID and enter them into the Gnus system."
@@ -11576,7 +11578,9 @@ Provided for backwards compatability."
   (interactive)
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (let ((buffer-read-only nil))
+    (let ((buffer-read-only nil)
+	  p)
+      (widen)
       (goto-char (point-min))
       (search-forward "\n\n" nil t)
       (end-of-line 1)
@@ -11675,6 +11679,29 @@ or not."
 	    ((looking-at "=")
 	     (delete-char 1))
 	    ((gnus-message 3 "Malformed MIME quoted-printable message"))))))
+
+(defun gnus-article-hide-pgp ()
+  "Hide any PGP headers and signatures in the current article."
+  (interactive)
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (let (buffer-read-only)
+      (goto-char (point-min))
+      ;; Hide the "header".
+      (and (search-forward "\n-----BEGIN PGP SIGNED MESSAGE-----\n" nil t)
+	   (add-text-properties (match-beginning 0) (match-end 0)
+				gnus-hidden-properties))
+      ;; Hide the actual signature.
+      (and (search-forward "\n-----BEGIN PGP SIGNATURE-----\n" nil t)
+	   (add-text-properties 
+	    (match-beginning 0)
+	    (if (search-forward "\n-----END PGP SIGNATURE-----\n" nil t)
+		(match-end 0)
+	      ;; Perhaps we shouldn't hide to the end of the buffer
+	      ;; if there is no end to the signature?
+	      (point-max))
+	    gnus-hidden-properties)))))
+      
 
 (defvar gnus-article-time-units
   (list (cons 'year (* 365.25 24 60 60))
@@ -13525,7 +13552,9 @@ If FORCE is non-nil, the .newsrc file is read."
     (let (gnus-newsrc-assoc)
       (condition-case nil
 	  (load ding-file t t t)
-	(error nil))
+	(error
+	 (gnus-message 1 "Error in %s" ding-file)
+	 (ding)))
       (and gnus-newsrc-assoc (setq gnus-newsrc-alist gnus-newsrc-assoc)))
     (let ((inhibit-quit t))
       (gnus-uncompress-newsrc-alist))

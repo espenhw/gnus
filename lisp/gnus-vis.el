@@ -235,14 +235,15 @@ variable it the real callback function.")
 
 (defvar gnus-header-button-alist 
   '(("^\\(References\\|Message-ID\\):" "<[^>]+>" 0 t gnus-button-message-id 0)
-    ("^\\(From\\|Reply-To\\): " ".*" 0 t gnus-button-reply 0)
-    ("^\\(Cc\\|To\\):" "[^ \t]+@[^ \t]+\\|<[^>]+>" 0 t gnus-button-mailto 0))
+    ("^\\(From\\|Reply-To\\): " ": *\\(.+\\)$" 1 t gnus-button-reply 0)
+    ("^\\(Cc\\|To\\):" "[^ \t\n<>,()\"]+@[^ \t\n<>,()\"]+" 
+     0 t gnus-button-mailto 0))
   "Alist of headers and regexps to match buttons in article heads.
 
 This alist is very similar to `gnus-button-alist', except that each
 alist has an additional HEADER element first in each entry:
 
-(HEADER REGEXP BUTTON FORM CALLBACK PAR)
+\(HEADER REGEXP BUTTON FORM CALLBACK PAR)
 
 HEADER is a regexp to match a header.  For a fuller explanation, see
 `gnus-button-alist'.")
@@ -655,7 +656,8 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 	 ["All" gnus-article-hide t]
 	 ["Headers" gnus-article-hide-headers t]
 	 ["Signature" gnus-article-hide-signature t]
-	 ["Citation" gnus-article-hide-citation t])
+	 ["Citation" gnus-article-hide-citation t]
+	 ["PGP" gnus-article-hide-pgp t])
 	("Highlight"
 	 ["All" gnus-article-highlight t]
 	 ["Headers" gnus-article-highlight-headers t]
@@ -982,7 +984,7 @@ If nil, the user will be asked for a duration.")
     (while (and list (not (eval (car (car list)))))
       (setq list (cdr list)))
     (let ((face (and list (cdr (car list)))))
-      (or (eobp)
+      (or (null mark)
 	  (eq face (get-text-property beg 'face))
 	  (put-text-property beg end 'face 
 			     (if (boundp face) (symbol-value face) face))))
@@ -1364,15 +1366,19 @@ specified by `gnus-button-alist'."
 	  entry beg end)
       (gnus-narrow-to-headers)
       (while alist
+	;; Each alist entry.
+	(setq entry (car alist)
+	      alist (cdr alist))
 	(goto-char (point-min))
-	(if (not (re-search-forward (car (setq entry (car alist))) nil t))
-	    ()				; That header isn't here.
+	(while (re-search-forward (car entry) nil t)
+	  ;; Each header matching the entry.
 	  (setq beg (match-beginning 0))
 	  (setq end (or (and (re-search-forward "^[^ \t]" nil t)
 			     (match-beginning 0))
 			(point-max)))
 	  (goto-char beg)
 	  (while (re-search-forward (nth 1 entry) end t)
+	    ;; Each match within a header.
 	    (let* ((from (match-beginning 0))
 		   (entry (cdr entry))
 		   (start (match-beginning (nth 1 entry)))
@@ -1383,9 +1389,8 @@ specified by `gnus-button-alist'."
 		   (gnus-article-add-button 
 		    start end (nth 3 entry)
 		    (buffer-substring (match-beginning (nth 4 entry))
-				      (match-end (nth 4 entry))))))))
-	(goto-char end)
-	(setq alist (cdr alist))))
+				      (match-end (nth 4 entry)))))))
+	  (goto-char end))))
     (widen)))
 
 (defun gnus-netscape-open-url (url)
@@ -1412,10 +1417,10 @@ specified by `gnus-button-alist'."
 			 'face gnus-article-button-face))
   (add-text-properties 
    from to
-   (append (and gnus-article-mouse-face
-		(list 'mouse-face gnus-article-mouse-face))
-	   (list 'gnus-callback fun)
-	   (and data (list 'gnus-data data)))))
+   (nconc (and gnus-article-mouse-face
+	       (list 'mouse-face gnus-article-mouse-face))
+	  (list 'gnus-callback fun)
+	  (and data (list 'gnus-data data)))))
 
 ;;; Internal functions:
 

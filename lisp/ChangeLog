@@ -1,4 +1,79 @@
-Tue Sep 26 01:36:17 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
+Sat Sep 30 05:05:57 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus-msg.el (gnus-news-followup): Insert signature before
+	composing. 
+
+Fri Sep 29 05:33:01 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus.el (gnus-article-mode-map): Took out boogaboo.
+
+Thu Sep 28 05:12:00 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-xmas.el: New file for XEmacs functions.
+	(gnus-xmas-find-glyph-directory): New function.
+	(gnus-xmas-glyph-directory): New variable.
+
+	* nnkiboze.el (nnkiboze-generate-group): Also search read
+	articles.  Would destroy mark lists. 
+	(nnkiboze-level): New variable.
+	(nnkiboze-generate-group): Use it.
+	(nnkiboze-remove-read-articles): New variable.
+	(nnkiboze-close-group): Use it.
+
+	* gnus.el (gnus-article-hide-pgp): New command and keystroke.
+	(gnus-group-make-kiboze-group): Didn't allow scoring on "all",
+	etc. 
+	(gnus-group-make-kiboze-group): Ignored
+	`gnus-use-long-file-name'. 
+
+Wed Sep 27 06:44:57 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus.el (gnus-summary-hide-thread): Didn't work.
+	(gnus-summary-go-to-next-thread): New implementation.
+
+	* gnus-topic.el (gnus-group-topic-face): Changed to bold.
+
+Tue Sep 26 20:06:13 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-vis.el (gnus-header-button-alist): Fixed regexps.  Doc
+	cleanup. 
+	(gnus-article-add-buttons-to-head): Allow multiple headers to be
+	match by the same `gnus-header-button-alist' entry.
+
+Wed Sep 27 04:19:55 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus.el (gnus-group-make-doc-group): Move point to the group
+	that was created.
+
+	* gnus-msg.el (gnus-news-followup): Would configure to `reply'
+	config. 
+
+	* gnus.el (gnus-summary-limit-to-marks): Did the opposite of what
+	it was supposed to do.
+	(gnus-summary-prepare-unthreaded): Would never allow
+	seeing dormant articles
+
+	* nnml.el (nnml-find-id): Inserted dir instead of nov file. 
+
+	* gnus-msg.el (gnus-required-mail-headers): Make In-Reply-To a
+	required header, when it is optional.
+
+	* nndir.el: Didn't work for the archive groups.
+
+	* gnus.el (gnus-group-make-archive-group): Create a more sensible
+	server name.
+	(gnus-request-article-this-buffer): Used `insert-buffer'.
+
+Tue Sep 26 02:54:56 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
+
+	* gnus.el (gnus-summary-prepare-threads): Would thread incorrectly
+		when using 'adopt, sometimes.
+	(gnus-read-newsrc-el-file): Give an error message when the .eld
+		file bugs out.
+
+Tue Sep 26 01:36:17 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: 0.4 is released.
 
 	* gnus.el (gnus-summary-prepare-threads): New roots would be
 		ignored. 

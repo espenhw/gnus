@@ -103,13 +103,6 @@ luck.
 @sc{gnus} was written by Masanobu UMEDA.  When autumn crept up in '94,
 Lars Magne Ingebrigtsen grew bored and decided to rewrite Gnus.
 
-The recommended pronunciation of the name this program is "ding
-guh-noose", with "ding" being half-sung in a loud, high-pitched voice,
-and "guh-noose" being grumbled and a disaffected fashion.  Any
-irritation and/or damage this name may cause you is not the
-responsibility of the author, even though you might like to strangle him
-for the stupid idea.
-
 If you want to investigate the person responsible for this outrage, you
 can point your (feh!) web browser to
 @file{http://www.ifi.uio.no/~larsi/}.  This is also the primary
@@ -229,11 +222,6 @@ Overall, a casual user who hasn't written much code that depends on
 @sc{gnus} internals should suffer no problems.  If problems occur,
 please let me know (@kbd{M-x gnus-bug}).
 
-Problems specific to GNU XEmacs can be reported to popineau@@ese-metz.fr
-(Fabrice Popineau).  I will just forward any such questions to him,
-anyway, so you might have to wait longer if you mail XEmacs questions to
-me.
-
 
 @node Conformity
 @section Conformity
@@ -289,7 +277,24 @@ don't hesitate to drop a note to Gnus Towers and let us know.
 @cindex Mule
 @cindex Emacs
 
-Gnus should work on Emacs 19.26 and up, XEmacs 19.12 and up and Mule.
+Gnus should work on :
+
+@itemize @bullet 
+
+@item
+Emacs 19.26 and up.
+
+@item
+XEmacs 19.12 and up.
+
+@item 
+Mule versions based on Emacs 19.26 and up.
+
+@end itemize
+
+Gnus will absolutely not work on any Emacsen older than that.  Not
+reliably, at least. 
+
 There are some vague differences in what Gnus does, though:
 
 @itemize @bullet
@@ -807,7 +812,7 @@ if you're in a hurry as well.
 @section Slave Gnusii
 @cindex slave
 
-You might with to run more than one Emacs with more than one Gnus at the
+You might want to run more than one Emacs with more than one Gnus at the
 same time.  If you are using different @file{.newsrc} files (eg., if you
 are using the two different Gnusii to read from two different servers),
 that is no problem whatsoever.  You just do it.
@@ -816,12 +821,12 @@ The problem appears when you want to run two Gnusii that uses the same
 @code{.newsrc} file.  
 
 To work around that problem some, we here at the Think-Tank at the Gnus
-Towers have come up with a new concept: @dfn{Master} and
-@dfn{servants}.  (We have applied for a patent on this concept, and have
-taken out a copyright on those words.  If you wish to use those words in
-conjunction with each other, you have to send ¢1 per usage to me.  Usage
-of the patent (@dfn{Master/Slave Relationships In Computer
-Applications}), that will be much more expensive, of course.)
+Towers have come up with a new concept: @dfn{Master} and @dfn{servants}.
+(We have applied for a patent on this concept, and have taken out a
+copyright on those words.  If you wish to use those words in conjunction
+with each other, you have to send ¢1 per usage to me.  Usage of the
+patent (@dfn{Master/Slave Relationships In Computer Applications}) will
+be much more expensive, of course.)
 
 Anyways, you start one Gnus up the normal way with @kbd{M-x gnus} (or
 however you do it).  Each subsequent slave Gnusii should be started with
@@ -941,7 +946,7 @@ cheaper.  This also means that you can get rid of the list of killed
 groups altogether, so you may set @code{gnus-save-killed-list} to
 @code{nil}, which will save time both at startup, at exit, and all over.
 Saves disk space, too.  Why isn't this the default, then?
-Unfortunately, not all servers support this function.
+Unfortunately, not all servers support this function. 
 
 This variable can also be a list of select methods.  If so, Gnus will
 issue an @code{ask-server} command to each of the select methods, and
@@ -2857,7 +2862,7 @@ Sort the groups according to the function given by the
 @code{gnus-group-sort-function} variable
 (@code{gnus-group-sort-groups}).  Available sorting functions include:
 
-@table 
+@table @code
 
 @item gnus-group-sort-by-level
 @findex gnus-group-sort-by-level
@@ -3891,6 +3896,9 @@ you want to insert a funny quote, you could enter something like
 @code{(X-Yow . yow)} into the list.  The function @code{yow} will then
 be called without any arguments. 
 
+The list contains a cons where the car of the cons is @code{optional},
+the cdr of this cons will only be inserted if it is non-@code{nil}.
+
 Other variables for customizing outgoing articles:
 
 @table @code
@@ -4215,12 +4223,12 @@ day, and send it when you feel its finished.
 @kindex C-c C-d (Mail)
 @kindex C-c C-d (Post)
 @findex gnus-enter-into-draft-group
-@vindex gnus-group-draft-directory
+@vindex gnus-draft-group-directory
 What you then do is simply push @kbd{C-c C-d}
 (@code{gnus-enter-into-draft-group}).  This will put the current
 (unfinished) message in a special draft group (which is implemented as
 an @code{nndir} group, if you absolutely have to know) called
-@samp{nndir:drafts}.  The variable @code{gnus-group-draft-directory}
+@samp{nndir:drafts}.  The variable @code{gnus-draft-group-directory}
 controls both the name of the group and the location -- the leaf element
 in the path will be used as the name of the group.
 
@@ -4378,14 +4386,14 @@ all yet.
 All the following marks mark articles as read.
 
 @table @samp
-@item D
+@item r
 Articles that are marked as read.  They have a @samp{r}
 (@code{gnus-del-mark}) in the first column.  These are articles that the
 user has marked as read more or less manually.
-@item d
+@item R
 Articles that are actually read are marked with @samp{R}
 (@code{gnus-read-mark}). 
-@item A
+@item O
 Articles that were marked as read in previous sessions are now
 @dfn{old} and marked with @samp{O} (@code{gnus-ancient-mark}). 
 @item K
@@ -4492,11 +4500,13 @@ Mark all articles that have the same subject as the current one as read
 @item M C
 @kindex M C (Summary)
 @findex gnus-summary-catchup
-Catchup the current group (@code{gnus-summary-catchup}).
+Mark all unread articles in the group as read
+(@code{gnus-summary-catchup}).
 @item M C-c
 @kindex M C-c (Summary)
 @findex gnus-summary-catchup-all
-Catchup all articles in the current group (@code{gnus-summary-catchup-all}).
+Mark all articles in the group as read - even the ticked and dormant
+articles (@code{gnus-summary-catchup-all}).
 @item M H
 @kindex M H (Summary)
 @findex gnus-summary-catchup-to-here
@@ -5699,7 +5709,7 @@ these articles easier.
 @cindex highlight
 
 Not only do you want your article buffer to look like fruit salad, but
-you want it to look like techicolor fruit salad.
+you want it to look like technicolor fruit salad.
 
 @table @kbd
 
@@ -5754,8 +5764,8 @@ Regexp matching mangled SuperCite attribution lines.
 Minimum number of identical prefixes we have to see before we believe
 that it's a citation.
 
-@item gnus-cire-attribution-prefix
-@vindex gnus-cire-attribution-prefix
+@item gnus-cite-attribution-prefix
+@vindex gnus-cite-attribution-prefix
 Regexp matching the beginning of an attribution line.
 
 @item gnus-cite-addtribution-suffix
@@ -5805,6 +5815,11 @@ Headers}.
 @kindex W W s (Summary)
 @findex gnus-article-hide-signature
 Hide signature (@code{gnus-article-hide-signature}).
+
+@item W W p
+@kindex W W p (Summary)
+@findex gnus-article-hide-pgp
+Hide @sc{pgp} signatures (@code{gnus-article-hide-pgp}). 
 
 @item W W c
 @kindex W W c (Summary)
@@ -6201,9 +6216,10 @@ editing and make the changes permanent, type @kbd{C-c C-c}
 
 @item B q
 @kindex B q (Summary)
-@findex gnus-summary-fancy-query
-If you are using fancy splitting, this command will tell you where an
-article would go (@code{gnus-summary-fancy-query}). 
+@findex gnus-summary-respool-query
+If you want to respool an article, you might be curious as to what group
+the article will end up in before you do the respooling.  This command
+will tell you (@code{gnus-summary-fancy-query}). 
 @end table
 
 @node Various Summary Stuff
@@ -6419,6 +6435,7 @@ rather stupid.)
 
 Any similarity to real events and people is purely coincidental.  Ahem.
 
+
 @node Customizing Articles
 @section Customizing Articles
 @cindex article customization
@@ -6426,46 +6443,21 @@ Any similarity to real events and people is purely coincidental.  Ahem.
 @vindex gnus-article-display-hook
 The @code{gnus-article-display-hook} is called after the article has
 been inserted into the article buffer.  It is meant to handle all
-treatment of the article before it is displayed.  By default it contains
-@code{gnus-article-hide-headers}, which hides unwanted headers.
+treatment of the article before it is displayed. 
 
-@findex gnus-article-subcite
-@findex gnus-article-hide-signature
-@findex gnus-article-hide-citation
-Other useful functions you might add to this hook is:
-
-@table @code
-
-@item gnus-article-hide-citation
-Hide all cited text.
-
-@item gnus-article-hide-signature
-Umn, hides the signature.
-
-@item gnus-article-treat-overstrike
-Treat @samp{^H_} in a reasonable manner.
-
-@item gnus-article-maybe-highlight
-Do some fancy article highlighting.
-
-@item gnus-article-highlight
-Do lots of article highlighting.
-
-@item gnus-article-remove-cr
-Removes trailing carriage returns.
-
-@item gnus-article-de-quoted-unreadable
-Do naive decoding of articles encoded with Quoted-Printable.
-
-@item gnus-article-display-x-face
-Displays any @code{X-Face} headers.
-@end table
+By default it contains @code{gnus-article-hide-headers},
+@code{gnus-article-treat-overstrike}, and
+@code{gnus-article-maybe-highlight}, but there are thousands, nay
+millions, of functions you can put in this hook.  For an overview of
+functions @xref{Article Highlighting}, @xref{Article Hiding},
+@xref{Article Washing}, @xref{Article Buttons} and @xref{Article Date}. 
 
 You can, of course, write your own functions.  The functions are called
 from the article buffer, and you can do anything you like, pretty much.
 There is no information that you have to keep in the buffer - you can
 change everything.  However, you shouldn't delete any headers.  Instead
 make them invisible if you want to make them go away.
+
 
 @node Article Keymap
 @section Article Keymap
@@ -6564,6 +6556,9 @@ queried for @sc{nov} headers and has a buggy select.  Ahem.  Anyways, if
 you had to specify that for each group that used this server, that would
 be too much work, so Gnus offers a way of putting names to methods,
 which is what you do in the server buffer.
+
+To enter the server buffer, user the @kbd{^}
+(@code{gnus-group-enter-server-mode}) command in the group buffer.
 
 @menu
 * Server Buffer Format::   You can customize the look of this buffer.
@@ -6738,42 +6733,56 @@ General score commands that don't actually change the score file:
 @kindex V s (Summary)
 @findex gnus-summary-set-score
 Set the score of the current article (@code{gnus-summary-set-score}).  
+
 @item V S
 @kindex V S (Summary)
 @findex gnus-summary-current-score
 Display the score of the current article
 (@code{gnus-summary-current-score}).   
+
 @item V t
 @kindex V t (Summary)
 @findex gnus-score-find-trace
 Display all score rules that have been used on the current article
 (@code{gnus-score-find-trace}).   
+
 @item V a
 @kindex V a (Summary)
 @findex gnus-summary-score-entry
 Add a new score entry, and allow specifying all elements 
 (@code{gnus-summary-score-entry}).
+
 @item V c
 @kindex V c (Summary)
 @findex gnus-score-change-score-file
 Make a different score file the current
 (@code{gnus-score-change-score-file}). 
+
 @item V e
 @kindex V e (Summary)
 @findex gnus-score-edit-alist
 Edit the current score file (@code{gnus-score-edit-alist}).  You will be
 popped into a @code{gnus-score-mode} buffer (@pxref{Score File
 Editing}).
+
 @item V f
 @kindex V f (Summary)
 @findex gnus-score-edit-file
 Edit a score file and make this score file the current one
 (@code{gnus-score-edit-file}).
+
+@item V C
+@kindex V C (Summary)
+@findex gnus-score-customize
+Customize a score file in a visually pleasing manner
+(@code{gnus-score-customize}). 
+
 @item I C-i
 @kindex I C-i (Summary)
 @findex gnus-summary-raise-score
 Increase the score of the current article
 (@code{gnus-summary-raise-score}).
+
 @item L C-l
 @kindex L C-l (Summary)
 @findex gnus-summary-lower-score
@@ -7074,7 +7083,10 @@ article and do the match on larger parts of the article: @samp{Body}
 will perform the match on the body of the article, @samp{Head} will
 perform the match on the head of the article, and @samp{All} will
 perform the match on the entire article.  Note that using any of these
-last three keys will slow down group entry @emph{considerably}.  
+last three keys will slow down group entry @emph{considerably}.  The
+final "header" you can score on is @samp{Followup}.  These score entries
+will result in new score entries being added for all follow-ups to
+articles that matches these score entries.
 
 Following this key is a random number of score entries, where each score
 entry has one to four elements.
@@ -7404,8 +7416,8 @@ holding our breath yet?
 @cindex kill files
 
 Gnus still supports those pesky old kill files.  In fact, the kill file
-entries can now be expiring, which is something I wrote before Per
-thought of doing score files, so I've left the code in there.
+entries can now be expiring, which is something I wrote before Daniel
+Quinlan thought of doing score files, so I've left the code in there.
 
 In short, kill processing is a lot slower (and I do mean @emph{a lot})
 than score processing, so it might be a good idea to rewrite your kill
@@ -8491,7 +8503,7 @@ required-atom    = mark / expunge / mark-and-expunge / files /
                    exclude-files / read-only / touched
 optional-atom    = adapt / local / eval 
 mark             = "mark" space nil-or-number
-nil-or-t         = "nil" / <integer>
+nil-or-number    = "nil" / <integer>
 expunge          = "expunge" space nil-or-number
 mark-and-expunge = "mark-and-expunge" space nil-or-number
 files            = "files" *[ space <string> ]

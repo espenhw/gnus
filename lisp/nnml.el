@@ -180,10 +180,10 @@ all. This may very well take some time.")
 	 (file
 	  (and number
 	       (concat 
-		nnml-current-directory
-		(if (numberp id) 
-		    (int-to-string number)
-		  (car group-num)))))
+		(if (numberp id)
+		    nnml-current-directory
+		  (nnmail-article-pathname (car group-num) nnml-directory))
+		(int-to-string number))))
 	 (nntp-server-buffer (or buffer nntp-server-buffer)))
     (and file
 	 (file-exists-p file)
@@ -457,7 +457,7 @@ all. This may very well take some time.")
       ;; start with the one in the current directory.  It seems most
       ;; likely that the article we are looking for is in that group. 
       (if (setq number (nnml-find-id nnml-current-group id))
-	  (cons nnml-current-group id)
+	  (cons nnml-current-group number)
 	;; It wasn't there, so we look through the other groups as well.
 	(while (and (not number)
 		    alist)
@@ -470,7 +470,9 @@ all. This may very well take some time.")
 
 (defun nnml-find-id (group id)
   (erase-buffer)
-  (insert-file-contents (nnmail-article-pathname group nnml-directory))
+  (insert-file-contents 
+   (concat (nnmail-article-pathname group nnml-directory)
+	   nnml-nov-file-name))
   (let (number found)
     (while (and (not found) 
 		(search-forward id nil t)) ; We find the ID.

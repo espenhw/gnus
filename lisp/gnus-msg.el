@@ -174,7 +174,7 @@ optional.  If you want Gnus not to insert some header, remove it from
 this list.")
 
 (defvar gnus-required-mail-headers 
-  '(From Date To Subject In-Reply-To Message-ID Organization Lines)
+  '(From Date To Subject (optional . In-Reply-To) Message-ID Organization Lines)
   "*Headers to be generated or prompted for when mailing a message.
 RFC822 required that From, Date, To, Subject and Message-ID be
 included.  Organization, Lines and X-Mailer are optional.")
@@ -402,7 +402,7 @@ header line with the old Message-ID."
   (if (gnus-post-news 'post gnus-newsgroup-name)
       (progn
 	(erase-buffer)
-	(insert-buffer gnus-article-buffer)
+	(insert-buffer-substring gnus-article-buffer)
 	(if (search-forward "\n\n" nil t)
 	    (forward-char -1)
 	  (goto-char (point-max)))
@@ -451,8 +451,9 @@ Type \\[describe-mode] in the buffer to get a list of commands."
   (interactive (list t))
   (let* ((group (or group gnus-newsgroup-name))
 	 (to-address 
-	  (assq 'to-address 
-		(nth 5 (nth 2 (gnus-gethash group gnus-newsrc-hashtb))))))
+	  (cdr (assq 
+		'to-address 
+		(nth 5 (nth 2 (gnus-gethash group gnus-newsrc-hashtb)))))))
     (if (and (gnus-member-of-valid 'post (or group gnus-newsgroup-name))
 	     (not to-address))
 	(if post
@@ -460,14 +461,14 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 	  (gnus-news-followup yank group))
       (if post
 	  (progn
-	    (gnus-new-mail)
+	    (gnus-new-mail to-address)
 	    ;; Arrange for mail groups that have no `to-address' to
 	    ;; get that when the user sends off the mail.
 	    (or to-address
 		(progn
 		  (make-local-variable 'gnus-add-to-address)
 		  (setq gnus-add-to-address group))))
-	(gnus-mail-reply yank (and to-address (cdr to-address)) 'followup)))))
+	(gnus-mail-reply yank to-address 'followup)))))
 
 (defun gnus-inews-news (&optional use-group-method)
   "Send a news message.
@@ -546,7 +547,7 @@ will attempt to use the foreign server to post the article."
 	  ;; We copy the article over to a temp buffer since we are
 	  ;; going to modify it a little.  
 	  (nnheader-set-temp-buffer " *Gnus-mailing*")
-	  (insert-buffer buffer)
+	  (insert-buffer-substring buffer)
 	  ;; We remove Fcc, because we don't want the mailer to see
 	  ;; that header.  
 	  (gnus-inews-narrow-to-headers)
@@ -1029,35 +1030,47 @@ Headers in `gnus-required-headers' will be generated."
 		(looking-at "[ \t]*$")))
 	  ;; So we find out what value we should insert.
 	  (progn
- 	    (setq value 
-		  (or (if (consp elem)
-			  ;; The element is a cons.  Either the cdr is
-			  ;; a string to be inserted verbatim, or it
-			  ;; is a function, and we insert the value
-			  ;; returned from this function.
-			  (or (and (stringp (cdr elem)) (cdr elem))
-			      (and (fboundp (cdr elem)) (funcall (cdr elem))))
-			;; The element is a symbol.  We insert the
-			;; value of this symbol, if any.
-			(and (boundp header) (symbol-value header)))
-		      ;; We couldn't generate a value for this header,
-		      ;; so we just ask the user.
-		      (read-from-minibuffer
-		       (format "Empty header for %s; enter value: " header))))
+ 	    (setq value
+		  (cond 
+		   ((and (consp elem) (eq (car elem) 'optional))
+		    ;; This is an optional header.  If the cdr of this
+		    ;; is something that is nil, then we do not insert
+		    ;; this header.
+		    (setq header (cdr elem))
+		    (or (and (fboundp (cdr elem)) (funcall (cdr elem)))
+			(and (boundp (cdr elem)) (symbol-value (cdr elem)))))
+		   ((consp elem)
+		    ;; The element is a cons.  Either the cdr is a
+		    ;; string to be inserted verbatim, or it is a
+		    ;; function, and we insert the value returned from
+		    ;; this function.
+		    (or (and (stringp (cdr elem)) (cdr elem))
+			(and (fboundp (cdr elem)) (funcall (cdr elem)))))
+		   ((and (boundp header) (symbol-value header))
+		    ;; The element is a symbol.  We insert the value
+		    ;; of this symbol, if any.
+		    (symbol-value header))
+		   (t
+		    ;; We couldn't generate a value for this header,
+		    ;; so we just ask the user.
+		    (read-from-minibuffer
+		     (format "Empty header for %s; enter value: " header)))))
 	    ;; Finally insert the header.
-	    (save-excursion
-	      (if (bolp)
-		  (progn
-		    (goto-char (point-max))
-		    (insert (symbol-name header) ": " value "\n")
-		    (forward-line -1))
-		(replace-match value t t))
-	      ;; Add the deletable property to the headers that require it.
-	      (and (memq header gnus-deletable-headers)
-		   (progn (beginning-of-line) (looking-at "[^:]+: "))
-		   (add-text-properties 
-		    (point) (match-end 0)
-		    '(gnus-deletable t face italic) (current-buffer))))))
+	    (if (not value)
+		()
+	      (save-excursion
+		(if (bolp)
+		    (progn
+		      (goto-char (point-max))
+		      (insert (symbol-name header) ": " value "\n")
+		      (forward-line -1))
+		  (replace-match value t t))
+		;; Add the deletable property to the headers that require it.
+		(and (memq header gnus-deletable-headers)
+		     (progn (beginning-of-line) (looking-at "[^:]+: "))
+		     (add-text-properties 
+		      (point) (match-end 0)
+		      '(gnus-deletable t face italic) (current-buffer)))))))
       (setq headers (cdr headers)))
     ;; Insert new Sender if the From is strange. 
     (let ((from (mail-fetch-field "from"))
@@ -1241,8 +1254,10 @@ domain is undefined, the domain name is got from it."
 		  gnus-local-domain
 		  ;; Function `system-name' may return full internet name.
 		  ;; Suggested by Mike DeCorte <mrd@sun.soe.clarkson.edu>.
-		  (if (string-match "\\." system-name)
-		      (substring system-name (match-end 0)))
+		  (if (string-match "\\.." system-name)
+		      ;; Some machines return "name.", and that's not
+		      ;; very nice. 
+		      (substring system-name (1- (match-end 0))))
 		  (read-string "Domain name (no host): ")))
 	     (host (or (if (string-match "\\." system-name)
 			   (substring system-name 0 (match-beginning 0)))
@@ -1585,6 +1600,7 @@ mailer."
     (erase-buffer)
     (news-reply-mode)
     (news-setup nil subject nil group nil)
+    (gnus-inews-insert-signature)
     (make-local-variable 'gnus-prev-winconf)
     (setq gnus-prev-winconf winconf)
     (local-set-key "\C-c\C-c" 'gnus-inews-news)))
@@ -1678,6 +1694,7 @@ mailer."
 	  (make-local-variable 'gnus-in-reply-to)
 	  (setq gnus-in-reply-to message-of)
 
+	  (gnus-inews-insert-signature)
 
 	  (auto-save-mode auto-save-default)
 	  (gnus-inews-modify-mail-mode-map)
@@ -1739,7 +1756,7 @@ mailer."
 	   (concat "^" (regexp-quote mail-header-separator) "$"))
 	  (forward-line 1)
 	  (if (not yank)
-	      (gnus-configure-windows 'reply 'force)
+	      (gnus-configure-windows 'followup 'force)
 	    (let ((last (point))
 		  end)
 	      (if (not (listp yank))
@@ -1762,7 +1779,7 @@ mailer."
 		  (goto-char end)
 		  (setq yank (cdr yank))))
 	      (goto-char last))
-	    (gnus-configure-windows 'reply-yank 'force))
+	    (gnus-configure-windows 'followup-yank 'force))
 	
 	  (make-local-variable 'gnus-article-check-size)
 	  (setq gnus-article-check-size
@@ -1854,7 +1871,7 @@ mailer."
 (defun gnus-forward-insert-buffer (buffer)
   (let ((beg (goto-char (point-max))))
     (insert "------- Start of forwarded message -------\n")
-    (insert-buffer buffer)
+    (insert-buffer-substring buffer)
     (goto-char (point-max))
     (insert "------- End of forwarded message -------\n")
     ;; Suggested by Sudish Joseph <joseph@cis.ohio-state.edu>. 
@@ -2030,7 +2047,7 @@ this is a reply."
   ;; Create a mail buffer.
   (gnus-new-mail)
   (erase-buffer)
-  (insert-buffer gnus-article-buffer)
+  (insert-buffer-substring gnus-article-buffer)
   (goto-char (point-min))
   (search-forward "\n\n")
   ;; We remove everything before the bounced mail.
@@ -2194,7 +2211,7 @@ Headers will be generated before sending."
     (widen)
     (save-excursion
       (nnheader-set-temp-buffer " *enter-draft*")
-      (insert-buffer buf)
+      (insert-buffer-substring buf)
       (save-restriction
 	(widen)
 	(gnus-inews-narrow-to-headers)
@@ -2257,7 +2274,7 @@ Headers will be generated before sending."
 	       (, (list (cdr gnus-article-current)))
 	       (, gnus-newsgroup-name) t)))))
     ;; Insert the draft.
-    (insert-buffer gnus-article-buffer)
+    (insert-buffer-substring gnus-article-buffer)
     ;; Insert the separator.
     (goto-char (point-min))
     (search-forward "\n\n")

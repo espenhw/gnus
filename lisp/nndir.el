@@ -61,7 +61,7 @@
 (defun nndir-retrieve-headers (sequence &optional group server fetch-old)
   (nndir-execute-nnml-command
    (` (nnml-retrieve-headers 
-       (quote (, sequence)) (, group) (, server) (, fetch-old)))))
+       (quote (, sequence)) group (, server) (, fetch-old)))))
 
 (defun nndir-open-server (server &optional defs)
   (nnheader-init-server-buffer)
@@ -96,11 +96,11 @@
 
 (defun nndir-request-article (id &optional group server buffer)
   (nndir-execute-nnmh-command
-   (` (nnmh-request-article (, id) (, group) (, server) (, buffer)))))
+   (` (nnmh-request-article (, id) group (, server) (, buffer)))))
 
 (defun nndir-request-group (group &optional server dont-check)
   (nndir-execute-nnmh-command
-   (` (nnmh-request-group (, group) "" (, dont-check)))))
+   (` (nnmh-request-group group "" (, dont-check)))))
 
 (defun nndir-request-list (&optional server dir)
   (nndir-execute-nnmh-command
@@ -116,12 +116,12 @@
 (defun nndir-request-expire-articles 
   (articles group &optional server force)
   (nndir-execute-nnmh-command
-   (` (nnmh-request-expire-articles (, articles) (, group) 
+   (` (nnmh-request-expire-articles (, articles) group
 				    (, server) (, force)))))
 
 (defun nndir-request-accept-article (group &optional last)
   (nndir-execute-nnmh-command
-   (` (nnmh-request-accept-article (, group) (, last)))))
+   (` (nnmh-request-accept-article group (, last)))))
 
 (defun nndir-close-group (group &optional server)
   t)
@@ -146,7 +146,7 @@
 	 (setq dir (substring dir 0 (match-beginning 0))))
     (string-match "/[^/]+$" dir)
     (let ((group (substring dir (1+ (match-beginning 0))))
-	  (nnmh-directory (substring dir 0 (1+ (match-beginning 0))))
+          (nnmh-directory (substring dir 0 (1+ (match-beginning 0))))
 	  (nnmh-get-new-mail nil))
       (eval command))))
 
@@ -156,7 +156,7 @@
 	 (setq dir (substring dir 0 (match-beginning 0))))
     (string-match "/[^/]+$" dir)
     (let ((group (substring dir (1+ (match-beginning 0))))
-	  (nnml-directory (substring dir 0 (1+ (match-beginning 0))))
+          (nnml-directory (substring dir 0 (1+ (match-beginning 0))))
 	  (nnml-nov-is-evil nndir-nov-is-evil)
 	  (nnml-get-new-mail nil))
       (eval command))))
