@@ -1,3 +1,13 @@
+2000-10-06  Dave Love  <fx@gnu.org>
+
+	* gnus-audio.el: Don't require cl.
+	(gnus-audio): New custom group.
+	(gnus-audio-inline-sound): Change to work with Emacs.
+	(gnus-audio-directory, gnus-audio-directory) 
+	(gnus-audio-au-player):  Customize.
+	(gnus-audio-play): Try external player if play-sound-file fails.
+	Use file-name-extension, not string-match.
+
 2000-10-06 17:38:03  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-article-prepare): Configure it again.
