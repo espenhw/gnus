@@ -381,7 +381,7 @@ the line could be found."
 (defun nnheader-init-server-buffer ()
   "Initialize the Gnus-backend communication buffer."
   (save-excursion
-    (unless (buffer-live-p nntp-server-buffer)
+    (unless (gnus-buffer-live-p nntp-server-buffer)
       (setq nntp-server-buffer (get-buffer-create " *nntpd*")))
     (set-buffer nntp-server-buffer)
     (buffer-disable-undo (current-buffer))

@@ -715,31 +715,6 @@ mark:    The articles mark."
 
 (defvar gnus-scores-exclude-files nil)
 
-(defvar gnus-summary-display-table
-  ;; Change the display table.	Odd characters have a tendency to mess
-  ;; up nicely formatted displays - we make all possible glyphs
-  ;; display only a single character.
-
-  ;; We start from the standard display table, if any.
-  (let ((table (or (copy-sequence standard-display-table)
-		   (make-display-table)))
-	;; Nix out all the control chars...
-	(i 32))
-    (while (>= (setq i (1- i)) 0)
-      (aset table i [??]))
-    ;; ... but not newline and cr, of course.  (cr is necessary for the
-    ;; selective display).
-    (aset table ?\n nil)
-    (aset table ?\r nil)
-    ;; We nix out any glyphs over 126 that are not set already.
-    (let ((i 256))
-      (while (>= (setq i (1- i)) 127)
-	;; Only modify if the entry is nil.
-	(or (aref table i)
-	    (aset table i [??]))))
-    table)
-  "Display table used in summary mode buffers.")
-
 (defvar gnus-original-article nil)
 (defvar gnus-article-internal-prepare-hook nil)
 (defvar gnus-newsgroup-process-stack nil)
@@ -1872,7 +1847,7 @@ The following commands are available:
   (setq truncate-lines t)
   (setq selective-display t)
   (setq selective-display-ellipses t)	;Display `...'
-  (setq buffer-display-table gnus-summary-display-table)
+  (gnus-summary-set-display-table)
   (gnus-set-default-directory)
   (setq gnus-newsgroup-name group)
   (make-local-variable 'gnus-summary-line-format)
@@ -2210,6 +2185,30 @@ This is all marks except unread, ticked, dormant, and expirable."
   (mouse-set-point e)
   (gnus-summary-next-page nil t))
 
+(defun gnus-summary-set-display-table ()
+  ;; Change the display table.  Odd characters have a tendency to mess
+  ;; up nicely formatted displays - we make all possible glyphs
+  ;; display only a single character.
+
+  ;; We start from the standard display table, if any.
+  (let ((table (or (copy-sequence standard-display-table)
+		   (make-display-table)))
+	;; Nix out all the control chars...
+	(i 32))
+    (while (>= (setq i (1- i)) 0)
+      (aset table i [??]))
+    ;; ... but not newline and cr, of course.  (cr is necessary for the
+    ;; selective display).
+    (aset table ?\n nil)
+    (aset table ?\r nil)
+    ;; We nix out any glyphs over 126 that are not set already.
+    (let ((i 256))
+      (while (>= (setq i (1- i)) 127)
+	;; Only modify if the entry is nil.
+	(or (aref table i)
+	    (aset table i [??]))))
+    (setq buffer-display-table table)))
+
 (defun gnus-summary-setup-buffer (group)
   "Initialize summary buffer."
   (let ((buffer (concat "*Summary " group "*")))
@@ -2262,7 +2261,7 @@ This is all marks except unread, ticked, dormant, and expirable."
 	(setq gnus-reffed-article-number reffed)
 	(setq gnus-current-score-file score-file)
 	;; The article buffer also has local variables.
-	(when (buffer-live-p gnus-article-buffer)
+	(when (gnus-buffer-live-p gnus-article-buffer)
 	  (set-buffer gnus-article-buffer)
 	  (setq gnus-summary-buffer summary))))))
 
@@ -4961,7 +4960,7 @@ which existed when entering the ephemeral is reset."
              ;; The `gnus-summary-buffer' variable may point
              ;; to the old summary buffer when using a single
              ;; article buffer.
-             (unless (buffer-live-p gnus-summary-buffer)
+             (unless (gnus-buffer-live-p gnus-summary-buffer)
                (set-buffer gnus-group-buffer))
              (set-buffer gnus-summary-buffer)
              (gnus-set-global-variables))))

@@ -126,7 +126,7 @@ It should return non-nil if the article is to be prefetched."
 
 (defun gnus-async-prefetch-next (group article summary)
   "Possibly prefetch several articles starting with the article after ARTICLE."
-  (when (and (buffer-live-p summary)
+  (when (and (gnus-buffer-live-p summary)
 	     gnus-asynchronous
 	     (gnus-group-asynchronous-p group))
     (save-excursion
@@ -143,7 +143,7 @@ It should return non-nil if the article is to be prefetched."
 
 (defun gnus-async-prefetch-article (group article summary &optional next)
   "Possibly prefetch several articles starting with ARTICLE."
-  (if (not (buffer-live-p summary))
+  (if (not (gnus-buffer-live-p summary))
       (gnus-async-with-semaphore
        (setq gnus-async-fetch-list nil))
     (when (and gnus-asynchronous
@@ -154,7 +154,7 @@ It should return non-nil if the article is to be prefetched."
       (let ((do-fetch next)
 	    (do-message t)) ;(eq major-mode 'gnus-summary-mode)))
 	(when (and (gnus-group-asynchronous-p group)
-		   (buffer-live-p summary)
+		   (gnus-buffer-live-p summary)
 		   (or (not next)
 		       gnus-async-fetch-list))
 	  (gnus-async-with-semaphore
@@ -211,7 +211,7 @@ It should return non-nil if the article is to be prefetched."
 		      ,mark (set-marker (make-marker) (point-max))
 		      ,group ,article)
 		gnus-async-article-alist)))
-       (if (not (buffer-live-p ,summary))
+       (if (not (gnus-buffer-live-p ,summary))
 	   (gnus-async-with-semaphore
 	    (setq gnus-async-fetch-list nil))
 	 (gnus-async-prefetch-article ,group ,next ,summary t)))))

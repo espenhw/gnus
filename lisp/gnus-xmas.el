@@ -181,6 +181,26 @@ displayed, no centering will be performed."
 	  (gnus-horizontal-recenter)
 	  (select-window selected))))))
 
+(defun gnus-xmas-summary-set-display-table ()
+  ;; Setup the display table -- like gnus-summary-setup-display-table,
+  ;; but done in an XEmacsish way.
+  (let ((table (make-display-table))
+	;; Nix out all the control chars...
+	(i 32))
+    (while (>= (setq i (1- i)) 0)
+      (aset table i [??]))
+    ;; ... but not newline and cr, of course.  (cr is necessary for the
+    ;; selective display).
+    (aset table ?\n nil)
+    (aset table ?\r nil)
+    ;; We nix out any glyphs over 126 that are not set already.
+    (let ((i 256))
+      (while (>= (setq i (1- i)) 127)
+	;; Only modify if the entry is nil.
+	(or (aref table i)
+	    (aset table i [??]))))
+    (add-spec-to-specifier current-display-table table (current-buffer) nil)))
+
 (defun gnus-xmas-add-hook (hook function &optional append local)
   (add-hook hook function))
 
@@ -442,7 +462,7 @@ call it with the value of the `gnus-data' text property."
 
 (defun gnus-xmas-redefine ()
   "Redefine lots of Gnus functions for XEmacs."
-  (fset 'gnus-summary-make-display-table 'ignore)
+  (fset 'gnus-summary-set-display-table 'gnus-xmas-summary-set-display-table)
   (fset 'gnus-visual-turn-off-edit-menu 'identity)
   (fset 'gnus-summary-recenter 'gnus-xmas-summary-recenter)
   (fset 'gnus-extent-start-open 'gnus-xmas-extent-start-open)

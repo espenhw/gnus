@@ -598,7 +598,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
   "Say whether a connection to SERVER has been opened."
   (and (nnoo-current-server-p 'nntp server)
        nntp-server-buffer
-       (buffer-live-p nntp-server-buffer)
+       (gnus-buffer-live-p nntp-server-buffer)
        (nntp-find-connection nntp-server-buffer)))
 
 (deffoo nntp-open-server (server &optional defs connectionless)

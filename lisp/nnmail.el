@@ -1416,7 +1416,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 
 (defun nnmail-cache-insert (id)
   (when nnmail-treat-duplicates
-    (unless (buffer-live-p nnmail-cache-buffer)
+    (unless (gnus-buffer-live-p nnmail-cache-buffer)
       (nnmail-cache-open))
     (save-excursion
       (set-buffer nnmail-cache-buffer)

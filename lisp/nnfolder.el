@@ -225,7 +225,7 @@ time saver for large mailboxes.")
        (let ((bufs nnfolder-buffer-alist))
 	 (save-excursion
 	   (while bufs
-	     (if (not (buffer-live-p (nth 1 (car bufs))))
+	     (if (not (gnus-buffer-live-p (nth 1 (car bufs))))
 		 (setq nnfolder-buffer-alist
 		       (delq (car bufs) nnfolder-buffer-alist))
 	       (set-buffer (nth 1 (car bufs)))
@@ -492,7 +492,7 @@ time saver for large mailboxes.")
   (when (and server
 	     (not (nnfolder-server-opened server)))
     (nnfolder-open-server server))
-  (unless (buffer-live-p nnfolder-current-buffer)
+  (unless (gnus-buffer-live-p nnfolder-current-buffer)
     (setq nnfolder-current-buffer nil
 	  nnfolder-current-group nil))
   ;; Change group.
@@ -519,7 +519,7 @@ time saver for large mailboxes.")
 	;; is live, verify that nobody else has touched the file since last
 	;; time.
 	(when (and nnfolder-current-buffer
-		   (not (buffer-live-p nnfolder-current-buffer)))
+		   (not (gnus-buffer-live-p nnfolder-current-buffer)))
 	  (setq nnfolder-buffer-alist (delq inf nnfolder-buffer-alist)
 		nnfolder-current-buffer nil))
 
@@ -611,7 +611,7 @@ time saver for large mailboxes.")
 (defun nnfolder-possibly-change-folder (group)
   (let ((inf (assoc group nnfolder-buffer-alist)))
     (if (and inf
-	     (buffer-live-p (cadr inf)))
+	     (gnus-buffer-live-p (cadr inf)))
 	(set-buffer (cadr inf))
       (when inf
 	(setq nnfolder-buffer-alist (delq inf nnfolder-buffer-alist)))

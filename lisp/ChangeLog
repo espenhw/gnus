@@ -1,3 +1,21 @@
+Mon Mar 24 16:57:26 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.37 is released.
+
+Mon Mar 24 01:16:15 1997  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-xmas.el (gnus-xmas-redefine): Use it.
+
+	* gnus-xmas.el (gnus-xmas-summary-set-display-table): New function.
+
+	* gnus-sum.el (gnus-summary-mode): Use it.
+
+	* gnus-sum.el (gnus-summary-set-display-table): New function.
+
+Mon Mar 24 16:27:46 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-util.el (gnus-buffer-live-p): Reinstated.
+
 Mon Mar 24 01:24:27 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.36 is released.
