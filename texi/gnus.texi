@@ -2507,7 +2507,7 @@ consulted.
 @cindex making groups
 Make a new group (@code{gnus-group-make-group}).  Gnus will prompt you
 for a name, a method and possibly an @dfn{address}.  For an easier way
-to subscribe to @acronym{NNTP} groups, @pxref{Browse Foreign Server}.
+to subscribe to @acronym{NNTP} groups (@pxref{Browse Foreign Server}).
 
 @item G r
 @kindex G r (Group)
@@ -3601,9 +3601,9 @@ Yank the previously killed group or topic
 before all groups.
 
 So, to move a topic to the beginning of the list of topics, just hit
-@kbd{C-k} on it.  This is like the `cut' part of cut and paste.  Then,
-move the cursor to the beginning of the buffer (just below the `Gnus'
-topic) and hit @kbd{C-y}.  This is like the `paste' part of cut and
+@kbd{C-k} on it.  This is like the ``cut'' part of cut and paste.  Then,
+move the cursor to the beginning of the buffer (just below the ``Gnus''
+topic) and hit @kbd{C-y}.  This is like the ``paste'' part of cut and
 paste.  Like I said -- E-Z.
 
 You can use @kbd{C-k} and @kbd{C-y} on groups as well as on topics.  So
@@ -4951,7 +4951,7 @@ unread article (@code{gnus-summary-next-page}).
 
 If you have an article window open already and you press @kbd{SPACE}
 again, the article will be scrolled.  This lets you conveniently
-@kbd{SPACE} through an entire newsgroup.  @pxref{Paging the Article}.
+@kbd{SPACE} through an entire newsgroup.  @xref{Paging the Article}.
 
 @item G n
 @itemx n
@@ -5817,7 +5817,7 @@ Compare with @code{gnus-recent-mark}.
 
 @item
 @vindex gnus-downloaded-mark
-When using the Gnus agent @pxref{Agent Basics}, articles may be
+When using the Gnus agent (@pxref{Agent Basics}), articles may be
 downloaded for unplugged (offline) viewing.  If you are using the
 @samp{%O} spec, these articles get the @samp{+} mark in that spec.
 (The variable @code{gnus-downloaded-mark} controls which character to
@@ -5825,7 +5825,7 @@ use.)
 
 @item
 @vindex gnus-undownloaded-mark
-When using the Gnus agent @pxref{Agent Basics}, some articles might
+When using the Gnus agent (@pxref{Agent Basics}), some articles might
 not have been downloaded.  Such articles cannot be viewed while you
 are unplugged (offline).  If you are using the @samp{%O} spec, these
 articles get the @samp{-} mark in that spec.  (The variable
@@ -5833,7 +5833,7 @@ articles get the @samp{-} mark in that spec.  (The variable
 
 @item
 @vindex gnus-downloadable-mark
-The Gnus agent @pxref{Agent Basics} downloads some articles
+The Gnus agent (@pxref{Agent Basics}) downloads some articles
 automatically, but it is also possible to explicitly mark articles for
 download, even if they would not be downloaded automatically.  Such
 explicitly-marked articles get the @samp{%} mark in the first column.
@@ -6180,7 +6180,7 @@ Push the current process mark set onto the stack
 
 @end table
 
-Also see the @kbd{&} command in @pxref{Searching for Articles} for how to
+Also see the @kbd{&} command in @ref{Searching for Articles}, for how to
 set process marks based on article body contents.
 
 
@@ -6276,8 +6276,8 @@ score (@code{gnus-summary-limit-to-score}).
 @findex gnus-summary-limit-to-display-predicate
 Limit the summary buffer to articles that satisfy the @code{display}
 group parameter predicate
-(@code{gnus-summary-limit-to-display-predicate}).  See @pxref{Group
-Parameters} for more on this predicate.
+(@code{gnus-summary-limit-to-display-predicate}).  @xref{Group
+Parameters}, for more on this predicate.
 
 @item / E
 @itemx M S
@@ -6358,7 +6358,7 @@ trees, but unfortunately, the @code{References} header is often broken
 or simply missing.  Weird news propagation exacerbates the problem,
 so one has to employ other heuristics to get pleasing results.  A
 plethora of approaches exists, as detailed in horrible detail in
-@pxref{Customizing Threading}.
+@ref{Customizing Threading}.
 
 First, a quick overview of the concepts:
 
@@ -10887,7 +10887,7 @@ Insert the contents of the @acronym{MIME} object into the buffer
 (@code{gnus-mime-inline-part}) as text/plain.  If given a prefix, insert
 the raw contents without decoding.  If given a numerical prefix, you can
 do semi-manual charset stuff (see
-@code{gnus-summary-show-article-charset-alist} in @pxref{Paging the
+@code{gnus-summary-show-article-charset-alist} in @ref{Paging the
 Article}).
 
 @findex gnus-mime-view-part-internally
@@ -10932,7 +10932,7 @@ to look at you disdainfully, and you'll feel rather stupid.)
 
 Any similarity to real events and people is purely coincidental.  Ahem.
 
-Also see @pxref{MIME Commands}.
+Also @pxref{MIME Commands}.
 
 
 @node Customizing Articles
@@ -11319,7 +11319,7 @@ on your setup (@pxref{Posting Server}).
 * Signing and encrypting::      How to compose secure messages.
 @end menu
 
-Also see @pxref{Canceling and Superseding} for information on how to
+Also @pxref{Canceling and Superseding} for information on how to
 remove articles you shouldn't have posted.
 
 
@@ -12968,7 +12968,7 @@ deleted?  How awful!
 But, no, it means that old messages are @dfn{expired} according to some
 scheme or other.  For news messages, the expire process is controlled by
 the news administrator; for mail, the expire process is controlled by
-you.  The expire process for mail is covered in depth in @pxref{Expiring
+you.  The expire process for mail is covered in depth in @ref{Expiring
 Mail}.
 
 What many Gnus users find, after using it a while for both news and
@@ -13141,7 +13141,7 @@ useful if you want to match articles based on the raw header data.
 @vindex nnmail-resplit-incoming
 By default, splitting is performed on all incoming messages.  If you
 specify a @code{directory} entry for the variable @code{mail-sources}
-@pxref{Mail Source Specifiers}, however, then splitting does
+(@pxref{Mail Source Specifiers}), however, then splitting does
 @emph{not} happen by default.  You can set the variable
 @code{nnmail-resplit-incoming} to a non-@code{nil} value to make
 splitting happen even in this case.  (This variable has no effect on
@@ -13995,10 +13995,10 @@ messages goes into the new group.
 
 Also see the variable @code{nnmail-cache-ignore-groups} if you don't
 want certain groups to be recorded in the cache.  For example, if all
-outgoing messages are written to an `outgoing' group, you could set
+outgoing messages are written to an ``outgoing'' group, you could set
 @code{nnmail-cache-ignore-groups} to match that group name.
 Otherwise, answers to all your messages would end up in the
-`outgoing' group.
+``outgoing'' group.
 
 
 @node Group Mail Splitting
@@ -14208,9 +14208,9 @@ repeating one more time, with some spurious capitalizations: IF you do
 NOT mark articles as EXPIRABLE, Gnus will NEVER delete those ARTICLES.
 
 You do not have to mark articles as expirable by hand.  Gnus provides
-two features, called `auto-expire' and `total-expire', that can help you
-with this.  In a nutshell, `auto-expire' means that Gnus hits @kbd{E}
-for you when you select an article.  And `total-expire' means that Gnus
+two features, called ``auto-expire'' and ``total-expire'', that can help you
+with this.  In a nutshell, ``auto-expire'' means that Gnus hits @kbd{E}
+for you when you select an article.  And ``total-expire'' means that Gnus
 considers all articles as expirable that are read.  So, in addition to
 the articles marked @samp{E}, also the articles marked @samp{r},
 @samp{R}, @samp{O}, @samp{K}, @samp{Y} and so on are considered
@@ -14228,8 +14228,8 @@ advantage of auto-expire is that you get more marks to work with: for
 the articles that are supposed to stick around, you can still choose
 between tick and dormant and read marks.  But with total-expire, you
 only have dormant and ticked to choose from.  The advantage of
-total-expire is that it works well with adaptive scoring @pxref{Adaptive
-Scoring}.  Auto-expire works with normal scoring but not with adaptive
+total-expire is that it works well with adaptive scoring (@pxref{Adaptive
+Scoring}).  Auto-expire works with normal scoring but not with adaptive
 scoring.
 
 @vindex gnus-auto-expirable-newsgroups
@@ -14832,7 +14832,7 @@ maildirs or symlinks to maildirs (and nothing else; do not choose a
 directory already used for other purposes).  Each maildir will be
 represented in Gnus as a newsgroup on that server; the filename of the
 symlink will be the name of the group.  Any filenames in the directory
-starting with `.' are ignored.  The directory is scanned when you
+starting with @samp{.} are ignored.  The directory is scanned when you
 first start Gnus, and each time you type @kbd{g} in the group buffer;
 if any maildirs have been removed or added, nnmaildir notices at these
 times.
@@ -15964,7 +15964,7 @@ external library @code{digest-md5.el}.
 @item
 @dfn{login:} Plain-text username/password via LOGIN.
 @item
-@dfn{anonymous:} Login as `anonymous', supplying your email address as password.
+@dfn{anonymous:} Login as ``anonymous'', supplying your email address as password.
 @end itemize
 
 @item nnimap-expunge-on-close
@@ -16134,7 +16134,7 @@ This will put all articles from the nnimap mailing list into mailbox
 INBOX.nnimap, all articles containing MAKE MONEY in the Subject: line
 into INBOX.junk and everything else in INBOX.private.
 
-The first string may contain `\\1' forms, like the ones used by
+The first string may contain @samp{\\1} forms, like the ones used by
 replace-match to insert sub-expressions from the matched text.  For
 instance:
 
@@ -17966,7 +17966,7 @@ Mark all articles as read (@code{gnus-agent-catchup}) that are neither cached, d
 @item J S
 @kindex J S (Agent Summary)
 @findex gnus-agent-fetch-group
-Download all eligible (See @pxref{Agent Categories}) articles in this group.
+Download all eligible (@pxref{Agent Categories}) articles in this group.
 (@code{gnus-agent-fetch-group}).
 
 @item J s
@@ -18942,8 +18942,8 @@ Anyway, if you'd like to dig into it yourself, here's an example:
  (eval (ding)))
 @end lisp
 
-This example demonstrates most score file elements.  For a different
-approach, see @pxref{Advanced Scoring}.
+This example demonstrates most score file elements.  @xref{Advanced
+Scoring}, for a different approach.
 
 Even though this looks much like Lisp code, nothing here is actually
 @code{eval}ed.  The Lisp reader is used to read this form, though, so it
@@ -19556,10 +19556,10 @@ that Gnus has to request every single article from the back end to find
 matches.  This takes a long time in big groups.
 
 Now, there's not much you can do about this for news groups, but for
-mail groups, you have greater control.  In the @pxref{To From
-Newsgroups} section of the manual, it's explained in greater detail what
-this mechanism does, but here's a cookbook example for @code{nnml} on
-how to allow scoring on the @samp{To} and @samp{Cc} headers.
+mail groups, you have greater control.  In @ref{To From Newsgroups},
+it's explained in greater detail what this mechanism does, but here's
+a cookbook example for @code{nnml} on how to allow scoring on the
+@samp{To} and @samp{Cc} headers.
 
 Put the following in your @file{~/.gnus.el} file.
 
@@ -22983,7 +22983,7 @@ messages.
   (spam-process
    (gnus-group-spam-exit-processor-spamoracle)))
 @end example
-For this group the `gnus-group-spam-exit-processor-spamoracle' is
+For this group the @code{gnus-group-spam-exit-processor-spamoracle} is
 installed.  If the group contains spam message (e.g. because SpamOracle
 has not had enough sample messages yet) and the user marks some
 messages as spam messages, these messages will be processed by
@@ -24733,11 +24733,11 @@ New features in Gnus 5.6:
 
 @item
 New functionality for using Gnus as an offline newsreader has been
-added.  A plethora of new commands and modes have been added.  See
-@pxref{Gnus Unplugged} for the full story.
+added.  A plethora of new commands and modes have been added.
+@xref{Gnus Unplugged}, for the full story.
 
 @item
- The @code{nndraft} back end has returned, but works differently than
+The @code{nndraft} back end has returned, but works differently than
 before.  All Message buffers are now also articles in the @code{nndraft}
 group, which is created automatically.
 
@@ -24746,110 +24746,110 @@ group, which is created automatically.
 values.
 
 @item
- @code{gnus-summary-goto-article} now accept Message-ID's.
+@code{gnus-summary-goto-article} now accept Message-ID's.
 
 @item
- A new Message command for deleting text in the body of a message
+A new Message command for deleting text in the body of a message
 outside the region: @kbd{C-c C-v}.
 
 @item
- You can now post to component group in @code{nnvirtual} groups with
+You can now post to component group in @code{nnvirtual} groups with
 @kbd{C-u C-c C-c}.
 
 @item
  @code{nntp-rlogin-program}---new variable to ease customization.
 
 @item
- @code{C-u C-c C-c} in @code{gnus-article-edit-mode} will now inhibit
+@code{C-u C-c C-c} in @code{gnus-article-edit-mode} will now inhibit
 re-highlighting of the article buffer.
 
 @item
  New element in @code{gnus-boring-article-headers}---@code{long-to}.
 
 @item
- @kbd{M-i} symbolic prefix command.  See the section ``Symbolic
+@kbd{M-i} symbolic prefix command.  See the section ``Symbolic
 Prefixes'' in the Gnus manual for details.
 
 @item
- @kbd{L} and @kbd{I} in the summary buffer now take the symbolic prefix
+@kbd{L} and @kbd{I} in the summary buffer now take the symbolic prefix
 @kbd{a} to add the score rule to the @file{all.SCORE} file.
 
 @item
- @code{gnus-simplify-subject-functions} variable to allow greater
+@code{gnus-simplify-subject-functions} variable to allow greater
 control over simplification.
 
 @item
- @kbd{A T}---new command for fetching the current thread.
+@kbd{A T}---new command for fetching the current thread.
 
 @item
- @kbd{/ T}---new command for including the current thread in the
+@kbd{/ T}---new command for including the current thread in the
 limit.
 
 @item
- @kbd{M-RET} is a new Message command for breaking cited text.
+@kbd{M-RET} is a new Message command for breaking cited text.
 
 @item
- @samp{\\1}-expressions are now valid in @code{nnmail-split-methods}.
+@samp{\\1}-expressions are now valid in @code{nnmail-split-methods}.
 
 @item
- The @code{custom-face-lookup} function has been removed.
+The @code{custom-face-lookup} function has been removed.
 If you used this function in your initialization files, you must
 rewrite them to use @code{face-spec-set} instead.
 
 @item
- Canceling now uses the current select method.  Symbolic prefix
+Canceling now uses the current select method.  Symbolic prefix
 @kbd{a} forces normal posting method.
 
 @item
- New command to translate M******** sm*rtq**t*s into proper
+New command to translate M******** sm*rtq**t*s into proper
 text---@kbd{W d}.
 
 @item
- For easier debugging of @code{nntp}, you can set
+For easier debugging of @code{nntp}, you can set
 @code{nntp-record-commands} to a non-@code{nil} value.
 
 @item
- @code{nntp} now uses @file{~/.authinfo}, a @file{.netrc}-like file, for
+@code{nntp} now uses @file{~/.authinfo}, a @file{.netrc}-like file, for
 controlling where and how to send @sc{authinfo} to @acronym{NNTP} servers.
 
 @item
- A command for editing group parameters from the summary buffer
+A command for editing group parameters from the summary buffer
 has been added.
 
 @item
- A history of where mails have been split is available.
+A history of where mails have been split is available.
 
 @item
- A new article date command has been added---@code{article-date-iso8601}.
+A new article date command has been added---@code{article-date-iso8601}.
 
 @item
- Subjects can be simplified when threading by setting
+Subjects can be simplified when threading by setting
 @code{gnus-score-thread-simplify}.
 
 @item
- A new function for citing in Message has been
+A new function for citing in Message has been
 added---@code{message-cite-original-without-signature}.
 
 @item
- @code{article-strip-all-blank-lines}---new article command.
+@code{article-strip-all-blank-lines}---new article command.
 
 @item
- A new Message command to kill to the end of the article has
+A new Message command to kill to the end of the article has
 been added.
 
 @item
- A minimum adaptive score can be specified by using the
+A minimum adaptive score can be specified by using the
 @code{gnus-adaptive-word-minimum} variable.
 
 @item
- The ``lapsed date'' article header can be kept continually
+The ``lapsed date'' article header can be kept continually
 updated by the @code{gnus-start-date-timer} command.
 
 @item
- Web listserv archives can be read with the @code{nnlistserv} back end.
+Web listserv archives can be read with the @code{nnlistserv} back end.
 
 @item
- Old dejanews archives can now be read by @code{nnweb}.
+Old dejanews archives can now be read by @code{nnweb}.
 
 @end itemize
 
@@ -25592,10 +25592,10 @@ Gnus considers mail and news to be mostly the same, really.  The only
 difference is how to access the actual articles.  News articles are
 commonly fetched via the protocol @acronym{NNTP}, whereas mail
 messages could be read from a file on the local disk.  The internal
-architecture of Gnus thus comprises a `front end' and a number of
-`back ends'.  Internally, when you enter a group (by hitting
+architecture of Gnus thus comprises a ``front end'' and a number of
+``back ends''.  Internally, when you enter a group (by hitting
 @key{RET}, say), you thereby invoke a function in the front end in
-Gnus.  The front end then `talks' to a back end and says things like
+Gnus.  The front end then ``talks'' to a back end and says things like
 ``Give me the list of articles in the foo group'' or ``Show me article
 number 4711''.
 
@@ -25603,16 +25603,16 @@ So a back end mainly defines either a protocol (the @code{nntp} back
 end accesses news via @acronym{NNTP}, the @code{nnimap} back end
 accesses mail via @acronym{IMAP}) or a file format and directory
 layout (the @code{nnspool} back end accesses news via the common
-`spool directory' format, the @code{nnml} back end access mail via a
+``spool directory'' format, the @code{nnml} back end access mail via a
 file format and directory layout that's quite similar).
 
 Gnus does not handle the underlying media, so to speak---this is all
 done by the back ends.  A back end is a collection of functions to
 access the articles.
 
-However, sometimes the term `back end' is also used where `server'
-would have been more appropriate.  And then there is the term `select
-method' which can mean either.  The Gnus terminology can be quite
+However, sometimes the term ``back end'' is also used where ``server''
+would have been more appropriate.  And then there is the term ``select
+method'' which can mean either.  The Gnus terminology can be quite
 confusing.
 
 @item native
@@ -26231,7 +26231,7 @@ more.
 Gnus identifies each message by way of group name and article number.  A
 few remarks about these article numbers might be useful.  First of all,
 the numbers are positive integers.  Secondly, it is normally not
-possible for later articles to `re-use' older article numbers without
+possible for later articles to ``re-use'' older article numbers without
 confusing Gnus.  That is, if a group has ever contained a message
 numbered 42, then no other message may get that number, or Gnus will get
 mightily confused.@footnote{See the function
@@ -26239,15 +26239,15 @@ mightily confused.@footnote{See the function
 Third, article numbers must be assigned in order of arrival in the
 group; this is not necessarily the same as the date of the message.
 
-The previous paragraph already mentions all the `hard' restrictions that
+The previous paragraph already mentions all the ``hard'' restrictions that
 article numbers must fulfill.  But it seems that it might be useful to
 assign @emph{consecutive} article numbers, for Gnus gets quite confused
 if there are holes in the article numbering sequence.  However, due to
-the `no-reuse' restriction, holes cannot be avoided altogether.  It's
+the ``no-reuse'' restriction, holes cannot be avoided altogether.  It's
 also useful for the article numbers to start at 1 to avoid running out
 of numbers as long as possible.
 
-Note that by convention, backends are named @code{nnsomething}, but
+Note that by convention, back ends are named @code{nnsomething}, but
 Gnus also comes with some @code{nnnotbackends}, such as
 @file{nnheader.el}, @file{nnmail.el} and @file{nnoo.el}.
 
@@ -26639,7 +26639,7 @@ created after @samp{date}, which is in normal human-readable date format
 the function @code{message-make-date} by default).  The data should be
 in the active buffer format.
 
-It is okay for this function to return `too many' groups; some back ends
+It is okay for this function to return ``too many'' groups; some back ends
 might find it cheaper to return the full list of groups, rather than
 just the new groups.  But don't do this for back ends with many groups.
 Normally, if the user creates the groups herself, there won't be too
@@ -26701,7 +26701,7 @@ this function in short order.
 The function should return a cons where the @code{car} is the group name and
 the @code{cdr} is the article number that the article was entered as.
 
-The group should exist before the backend is asked to accept the
+The group should exist before the back end is asked to accept the
 article for that group.
 
 There should be no data returned.
