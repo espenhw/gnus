@@ -1,3 +1,8 @@
+2000-05-04 17:13:04  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-with-unibyte-current-buffer): Set the default
+	value of enable-multibyte-characters.
+
 2000-05-04 10:31:24  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-show-article): En/disable multibyte.
