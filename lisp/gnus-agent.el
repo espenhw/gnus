@@ -2075,7 +2075,7 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
 ;; Logically equivalent to: (gnus-sorted-difference articles (mapcar 'car gnus-agent-article-alist))
 ;; Functionally, I don't need to construct a temp list using mapcar.
 
-  (when (gnus-agent-load-alist group)
+  (if (gnus-agent-load-alist group)
     (let* ((ref gnus-agent-article-alist)
            (arts articles)
            (uncached (list nil))
@@ -2095,7 +2095,9 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
                  (pop ref)))))
       (while arts
         (setq tail (setcdr tail (list (pop arts)))))
-      (cdr uncached))))
+      (cdr uncached))
+    ;; if gnus-agent-load-alist fails, no articles are cached.
+    articles))
 
 (defun gnus-agent-retrieve-headers (articles group &optional fetch-old)
   (save-excursion
