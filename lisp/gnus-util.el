@@ -224,7 +224,7 @@
 (defun gnus-text-with-property (prop)
   "Return a list of all points where the text has PROP."
   (let ((points nil)
-	(point 1))
+	(point (point-min)))
     (save-excursion
       (while (< point (point-max))
 	(when (get-text-property point prop)

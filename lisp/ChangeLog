@@ -1,5 +1,8 @@
 2001-12-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-util.el (gnus-text-with-property): The smallest point is
+	point-min. 
+
 	* smiley-ems.el (smiley-region): Return images.
 	(gnus-smiley-display): Allow toggling.
 	(smiley-region): Use text properties, not overlays.
