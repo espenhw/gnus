@@ -30,6 +30,10 @@
 (defvar dns-timeout 5
   "How many seconds to wait when doing DNS queries.")
 
+(defvar dns-servers nil
+  "Which DNS servers to query.
+If nil, /etc/resolv.conf will be consulted.")
+
 ;;; Internal code:
 
 (defvar dns-query-types
@@ -126,8 +130,9 @@
 	  (concat (mapconcat 'identity (nreverse name) ".") "." ended))
       (mapconcat 'identity (nreverse name) "."))))
 
-(defun dns-write (spec)
-  "Write a DNS packet according to SPEC."
+(defun dns-write (spec &optional tcp-p)
+  "Write a DNS packet according to SPEC.
+If TCP-P, the first two bytes of the package with be the length field."
   (with-temp-buffer
     (dns-write-bytes (dns-get 'id spec) 2)
     (dns-write-bytes
@@ -172,6 +177,9 @@
       (dns-write-bytes (dns-get 'ttl resource) 4)
       (dns-write-bytes (length (dns-get 'data resource)) 2)
       (insert (dns-get 'data resource))))
+    (when tcp-p
+      (goto-char (point-min))
+      (dns-write-bytes (buffer-size) 2))
     (buffer-string)))
 
 (defun dns-read (packet)
@@ -261,23 +269,41 @@
 	   (t string)))
       (goto-char point))))
 
+(defun dns-parse-resolv-conf ()
+  (when (file-exists-p "/etc/resolv.conf")
+    (with-temp-buffer
+      (insert-file-contents "/etc/resolv.conf")
+      (goto-char (point-min))
+      (while (re-search-forward "^nameserver[\t ]+\\([^ \t\n]+\\)" nil t)
+	(push (match-string 1) dns-servers))
+      (setq dns-servers (nreverse dns-servers)))))
+
 ;;; Interface functions.
 
 (defun query-dns (name &optional type fullp)
   "Query a DNS server for NAME of TYPE.
 If FULLP, return the entire record returned."
   (setq type (or type 'A))
+  (unless dns-servers
+    (dns-parse-resolv-conf)
+    (unless dns-servers
+      (error "No DNS server configuration found")))
   (mm-with-unibyte-buffer
     (let ((coding-system-for-read 'binary) 
-	  (coding-system-for-write 'binary))
+	  (coding-system-for-write 'binary)
+	  (tcp-p (not (fboundp 'open-network-stream))))
       (let ((process
-	     (make-network-process
-	      :name "dns"
-	      :coding 'binary
-	      :buffer (current-buffer)
-	      :host "ns2.netfonds.no"
-	      :service "domain"
-	      :type 'datagram))
+	     (if tcp-p
+		 (open-network-stream
+		  "dns" (current-buffer)
+		  (car dns-servers) "domain")
+	       (make-network-process
+		:name "dns"
+		:coding 'binary
+		:buffer (current-buffer)
+		:host (car dns-servers)
+		:service "domain"
+		:type 'datagram)))
 	    (step 100)
 	    (times (* dns-timeout 1000))
 	    (id (random 65000)))
@@ -286,19 +312,24 @@ If FULLP, return the entire record returned."
 	 (dns-write `((id ,id)
 		      (opcode query)
 		      (queries ((,name (type ,type))))
-		      (recursion-desired-p t))))
+		      (recursion-desired-p t))
+		    tcp-p))
 	(while (and (zerop (buffer-size))
 		    (> times 0))
 	  (accept-process-output process 0 step)
 	  (decf times step))
 	(ignore-errors
 	  (delete-process process))
-	(let ((result (dns-read (buffer-string))))
-	  (if fullp
-	      result
-	    (let ((answer (car (dns-get 'answers result))))
-	      (when (eq type (dns-get 'type answer))
-		(dns-get 'data answer)))))))))
+	(when tcp-p
+	  (goto-char (point-min))
+	  (delete-region (point) (+ (point) 2)))
+	(unless (zerop (buffer-size))
+	  (let ((result (dns-read (buffer-string))))
+	    (if fullp
+		result
+	      (let ((answer (car (dns-get 'answers result))))
+		(when (eq type (dns-get 'type answer))
+		  (dns-get 'data answer))))))))))
     
 (provide 'dns)
 

@@ -40,7 +40,8 @@
     (with-temp-buffer
       (insert headers)
       (goto-char (point-min))
-      (while (re-search-forward "\\[\\([0-9]+.[0-9]+.[0-9]+.[0-9]+\\)\\]" nil t)
+      (while (re-search-forward
+	      "\\[\\([0-9]+.[0-9]+.[0-9]+.[0-9]+\\)\\]" nil t)
 	(push (mapconcat 'identity
 			 (nreverse (split-string (match-string 1) "\\."))
 			 ".")

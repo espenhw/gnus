@@ -1,5 +1,11 @@
 2002-03-31  Lars Magne Ingebrigtsen  <larsi@quimbies.gnus.org>
 
+	* dns.el (query-dns): Use TCP when make-network-process isn't
+	available. 
+	(dns-servers): New variable.
+	(dns-parse-resolv-conf): New function.
+	(query-dns): Use it.
+
 	* spam.el: New file.
 
 	* dns.el (query-dns): Test.
