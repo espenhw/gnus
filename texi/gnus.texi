@@ -9,7 +9,9 @@
 @direntry
 * Gnus: (gnus).         The newsreader Gnus.
 @end direntry
+@iflatex
 @documentencoding ISO-8859-1
+@end iflatex
 @iftex
 @finalout
 @end iftex
@@ -17431,7 +17433,8 @@ functionality up to the newsreader makes sense if you're the only person
 reading news on a machine.
 
 Setting up Gnus as an ``offline'' newsreader is quite simple.  In
-fact, you don't even have to configure anything.
+fact, you don't have to configure anything as the agent is now enabled
+by default (@xref{Agent Variables, gnus-agent}).
 
 Of course, to use it as such, you have to learn a few new commands.
 
@@ -18419,6 +18422,17 @@ ask you to confirm your action (see
 @subsection Agent Variables
 
 @table @code
+@item gnus-agent
+@vindex gnus-agent
+Is the agent enabled?  The default is @code{t}.  When first enabled,
+the agent will use @code{gnus-agent-auto-agentize-methods} to
+automatically mark some backends as agentized.  You may change which
+backends are agentized using the agent commands in the server buffer.
+
+To enter the server buffer, use the @kbd{^}
+(@code{gnus-group-enter-server-mode}) command in the group buffer.
+
+
 @item gnus-agent-directory
 @vindex gnus-agent-directory
 Where the Gnus Agent will store its files.  The default is
@@ -28256,5 +28270,5 @@ former).  The manual is unambiguous, but it can be confusing.
 
 @c Local Variables:
 @c mode: texinfo
-@c coding: iso-8859-1
+@c coding: utf-8
 @c End:
