@@ -1,3 +1,19 @@
+2004-05-20  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-list-of-processors, spam-registration-functions):
+	add spam-use-resend
+	(spam-group-spam-processor-report-resend-p): utility wrapper
+	(spam-report-articles-gmane): doc fix
+	(spam-report-articles-resend,
+	spam-report-resend-register-routine): wrappers around
+	spam-report-resend-to
+
+	* spam-report.el (spam-report-resend-to, spam-report-resend):
+	support for resending spam
+	(spam-report-gmane): line length >80 fix
+
+	* gnus.el (spam-process): add spam-use-resend
+
 2004-05-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* spam.el (spam-mark-spam-as-expired-and-move-routine): Return the

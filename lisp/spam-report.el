@@ -79,11 +79,35 @@ The function must accept the arguments `host' and `report'."
   :type 'file
   :group 'spam-report)
 
+(defcustom spam-report-resend-to (or 
+				  (when (length user-mail-address) 
+				    user-mail-address)
+				  "nonexistent-user-please-fix@invalid.domain")
+  "Email address that spam articles are resent to when reporting."
+  :type 'string
+  :group 'spam-report)
+
 (defvar spam-report-url-ping-temp-agent-function nil
   "Internal variable for `spam-report-agentize' and `spam-report-deagentize'.
 This variable will store the value of `spam-report-url-ping-function' from
 before `spam-report-agentize' was run, so that `spam-report-deagentize' can
 undo that change.")
+
+(defun spam-report-resend (&rest articles)
+  "Report an article as spam by resending via email."
+  (dolist (article articles)
+    (gnus-message 6 
+		  "Reporting spam article %d to <%s>..." 
+		  article spam-report-resend-to)
+    ;; This is ganked from the `gnus-summary-resend-message' function.
+    ;; It involves rendering the SPAM, which is undesirable, but there does
+    ;; not seem to be a nicer way to achieve this.
+    ;; select this particular article
+    (gnus-summary-select-article nil nil nil article)
+    ;; resend it to the destination address
+    (save-excursion
+      (set-buffer gnus-original-article-buffer)
+      (message-resend spam-report-resend-to))))
 
 (defun spam-report-gmane (&rest articles)
   "Report an article as spam through Gmane"
@@ -93,10 +117,11 @@ undo that change.")
 		   (string-match spam-report-gmane-regex gnus-newsgroup-name)))
       (gnus-message 6 "Reporting spam article %d to spam.gmane.org..." article)
       (if spam-report-gmane-use-article-number
-	  (spam-report-url-ping "spam.gmane.org"
-				(format "/%s:%d"
-					(gnus-group-real-name gnus-newsgroup-name)
-					article))
+	  (spam-report-url-ping 
+	   "spam.gmane.org"
+	   (format "/%s:%d"
+		   (gnus-group-real-name gnus-newsgroup-name)
+		   article))
 	(with-current-buffer nntp-server-buffer
 	  (gnus-request-head article gnus-newsgroup-name)
 	  (goto-char (point-min))

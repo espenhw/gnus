@@ -55,7 +55,8 @@
 
 ;; autoload spam-report
 (eval-and-compile
-  (autoload 'spam-report-gmane "spam-report"))
+  (autoload 'spam-report-gmane "spam-report")
+  (autoload 'spam-report-resend "spam-report"))
 
 ;; autoload gnus-registry
 (eval-and-compile
@@ -659,7 +660,9 @@ finds ham or spam.")
     nil))
 
 (defvar spam-list-of-processors
+  ;; note the resend and gmane processors are not defined in gnus.el
   '((gnus-group-spam-exit-processor-report-gmane spam spam-use-gmane)
+    (gnus-group-spam-exit-processor-report-resend spam spam-use-resend)
     (gnus-group-spam-exit-processor-bogofilter   spam spam-use-bogofilter)
     (gnus-group-spam-exit-processor-bsfilter	 spam spam-use-bsfilter)
     (gnus-group-spam-exit-processor-blacklist    spam spam-use-blacklist)
@@ -705,6 +708,9 @@ variable with a classification and a spam-use-* variable.")
 (defun spam-group-spam-processor-report-gmane-p (group)
   (spam-group-processor-p group 'gnus-group-spam-exit-processor-report-gmane))
 
+(defun spam-group-spam-processor-report-resend-p (group)
+  (spam-group-processor-p group 'gnus-group-spam-exit-processor-report-resend))
+
 (defun spam-group-spam-processor-bogofilter-p (group)
   (spam-group-processor-p group 'gnus-group-spam-exit-processor-bogofilter))
 
@@ -742,12 +748,22 @@ variable with a classification and a spam-use-* variable.")
   (spam-group-processor-p group 'gnus-group-ham-exit-processor-spamoracle))
 
 (defun spam-report-articles-gmane (n)
-  "Report the current message as spam.
+  "Report the current message as spam via Gmane.
 Respects the process/prefix convention."
   (interactive "P")
   (dolist (article (gnus-summary-work-articles n))
     (gnus-summary-remove-process-mark article)
     (spam-report-gmane article)))
+
+(defun spam-report-articles-resend (n)
+  "Report the current message as spam by resending it.
+Respects the process/prefix convention.  Also see
+`spam-report-resend-to'."
+  (interactive "P")
+  (let ((articles (gnus-summary-work-articles n)))
+    (spam-report-resend articles)
+    (dolist (article articles)
+      (gnus-summary-remove-process-mark article))))
 
 (defun spam-necessary-extra-headers ()
   "Return the extra headers spam.el thinks are necessary."
@@ -1325,10 +1341,14 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 			 spam-stat-register-spam-routine
 			 spam-stat-unregister-ham-routine
 			 spam-stat-unregister-spam-routine)
-    ;; note that spam-use-gmane is not a legitimate check
+    ;; note that spam-use-gmane and spam-use-resend are not legitimate checks
     (spam-use-gmane      nil
 			 spam-report-gmane-register-routine
 			 ;; does Gmane support unregistration?
+			 nil
+			 nil)
+    (spam-use-resend     nil
+			 spam-report-resend-register-routine
 			 nil
 			 nil)
     (spam-use-spamassassin spam-spamassassin-register-ham-routine
@@ -2057,6 +2077,9 @@ REMOVE not nil, remove the ADDRESSES."
 (defun spam-report-gmane-register-routine (articles)
   (when articles
     (apply 'spam-report-gmane articles)))
+
+(defun spam-report-resend-register-routine (articles)
+  (spam-report-resend articles))
 
 
 ;;;; Bogofilter
