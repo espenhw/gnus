@@ -3714,8 +3714,14 @@ Disallow invalid group names."
 	     (setq group (read-string (concat prefix prompt)
 				      (cons (or default "") 0)
 				      'gnus-group-history)))
-	(setq prefix (format "Invalid group name: \"%s\".  " group)
-	      group nil)))
+	(let ((match (match-string 0 group)))
+	  (unless (y-or-n-p
+		   (format
+		    "Name \"%s\" contain forbidden \"%s\" (see "
+		    "gnus-invalid-group-regexp).  Proceed? "
+		    group match))
+	    (setq prefix (format "Invalid group name: \"%s\".  " group)
+		  group nil)))))
     group))
 
 (defun gnus-read-method (prompt)

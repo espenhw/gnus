@@ -1,3 +1,11 @@
+2003-08-20  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.el (gnus-read-group): Added check to ask confirmation if
+	Group name contains invalid character. You can use '/' in IMAP,
+	but not in filenames. G m cannot know what the user is creating,
+	so let user decide. See thread m2oeysiev3.fsf@naima.lensflare.org.
+	Tiny patch from letters@hotpop.com (Jari Aalto+mail.linux).
+
 2003-08-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-score.el (gnus-summary-score-effect): Fix interactive use.
