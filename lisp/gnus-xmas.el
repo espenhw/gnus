@@ -711,7 +711,7 @@ XEmacs compatibility workaround."
 	     (let ((cur (current-buffer)))
 	       (save-excursion
 		 (gnus-set-work-buffer)
-		 (insert (format "%s" (buffer-substring beg end cur)))
+		 (insert-buffer-substring cur beg end)
 		 (gnus-xmas-call-region "uncompface")
 		 (goto-char (point-min))
 		 (insert "/* Width=48, Height=48 */\n")
