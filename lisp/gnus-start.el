@@ -2374,6 +2374,7 @@ If FORCE is non-nil, the .newsrc file is read."
   "Insert Gnus variables such as gnus-newsrc-alist in lisp format."
   (let ((print-quoted t)
 	(print-escape-newlines t))
+
     (insert ";; -*- emacs-lisp -*-\n")
     (insert ";; Gnus startup file.\n")
     (insert "\
