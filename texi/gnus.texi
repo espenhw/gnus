@@ -10634,6 +10634,7 @@ possible but those listed are probably sufficient for most people.
 @item gnus-treat-strip-pgp (t, last, integer)
 @item gnus-treat-strip-trailing-blank-lines (t, last, integer)
 @item gnus-treat-unsplit-urls (t, integer)
+@item gnus-treat-wash-html (t, integer)
 
 @xref{Article Washing}.
 
