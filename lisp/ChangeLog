@@ -1,3 +1,9 @@
+2004-06-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* rfc2047.el (rfc2047-encode-message-header): Disabled header
+	folding -- not all headers can be folded, and this should be done
+	by the message composition mode.  Probably.  I think. 
+
 2004-06-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-util.el (gnus-remove-text-with-property): Make it slightly

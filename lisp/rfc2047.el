@@ -159,24 +159,25 @@ Should be called narrowed to the head of the message."
 	  (rfc2047-narrow-to-field)
 	  (if (not (rfc2047-encodable-p))
 	      (prog1
-		(if (and (eq (mm-body-7-or-8) '8bit)
-			 (mm-multibyte-p)
-			 (mm-coding-system-p
-			  (car message-posting-charset)))
-		    ;; 8 bit must be decoded.
-		    (mm-encode-coding-region
-		     (point-min) (point-max)
-		     (mm-charset-to-coding-system
-		      (car message-posting-charset))))
+		  (if (and (eq (mm-body-7-or-8) '8bit)
+			   (mm-multibyte-p)
+			   (mm-coding-system-p
+			    (car message-posting-charset)))
+		      ;; 8 bit must be decoded.
+		      (mm-encode-coding-region
+		       (point-min) (point-max)
+		       (mm-charset-to-coding-system
+			(car message-posting-charset))))
 		;; No encoding necessary, but folding is nice
-		(rfc2047-fold-region
-		 (save-excursion
-		   (goto-char (point-min))
-		   (skip-chars-forward "^:")
-		   (when (looking-at ": ")
-		     (forward-char 2))
-		   (point))
-		 (point-max)))
+		(when nil
+		  (rfc2047-fold-region
+		   (save-excursion
+		     (goto-char (point-min))
+		     (skip-chars-forward "^:")
+		     (when (looking-at ": ")
+		       (forward-char 2))
+		     (point))
+		   (point-max))))
 	    ;; We found something that may perhaps be encoded.
 	    (setq method nil
 		  alist rfc2047-header-encoding-alist)
