@@ -3671,6 +3671,8 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	headers id id-dep ref-dep end ref)
     (save-excursion
       (set-buffer nntp-server-buffer)
+      ;; Translate all TAB characters into SPACE characters.
+      (subst-char-in-region (point-min) (point-max) ?\t ?  t)
       (run-hooks 'gnus-parse-headers-hook)
       (let ((case-fold-search t)
 	    in-reply-to header p lines)

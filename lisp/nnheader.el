@@ -52,7 +52,8 @@ on your system, you could say something like:
 (eval-and-compile
  (autoload 'nnmail-message-id "nnmail")
  (autoload 'mail-position-on-field "sendmail")
- (autoload 'message-remove-header "message"))
+ (autoload 'message-remove-header "message")
+ (autoload 'cancel-function-timers "timers"))
 
 ;;; Header access macros.
 

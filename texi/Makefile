@@ -20,7 +20,7 @@ dvi: gnus.texi
 	$(PERL) -n -e 'if (/\@iflatex/) { $$latex=1; } if (!$$latex) { print; } if (/\@end iflatex/) { $$latex=0; }' gnus.texi > gnus.tmptexi
 	$(TEXI2DVI) gnus.tmptexi
 
-refcard.dvi: refcard.tex
+refcard.dvi: refcard.tex gnuslogo.refcard gnusref.tex
 	$(LATEX) refcard.tex
 
 clean:

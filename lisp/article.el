@@ -458,6 +458,10 @@ or not."
 	(search-forward "\n\n" nil 'move)
 	(article-mime-decode-quoted-printable (point) (point-max))))))
 
+(defun article-mime-decode-quoted-printable-buffer ()
+  "Decode Quoted-Printable in the current buffer."
+  (article-mime-decode-quoted-printable (point-min) (point-max)))
+  
 (defun article-mime-decode-quoted-printable (from to)
   "Decode Quoted-Printable in the region between FROM and TO."
   (interactive "r")

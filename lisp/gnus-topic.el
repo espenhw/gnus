@@ -721,7 +721,7 @@ articles in the topic and its subtopics."
     (if (gnus-group-goto-group group)
 	t
       ;; The group is no longer visible.
-      (let* ((list (assoc (gnus-current-topic) gnus-topic-alist))
+      (let* ((list (assoc (gnus-group-topic group) gnus-topic-alist))
 	     (after (cdr (member group (cdr list)))))
 	;; First try to put point on a group after the current one.
 	(while (and after
@@ -975,19 +975,23 @@ If COPYP, copy the groups instead."
 	 (completing-read "Move to topic: " gnus-topic-alist nil t)))
   (let ((groups (gnus-group-process-prefix n))
 	(topicl (assoc topic gnus-topic-alist))
+	(start-group (progn (forward-line 1) (gnus-group-group-name)))
+	(start-topic (gnus-group-topic-name))
 	entry)
-    (mapcar (lambda (g) 
-	      (gnus-group-remove-mark g)
-	      (when (and
-		     (setq entry (assoc (gnus-current-topic)
-					gnus-topic-alist))
-		     (not copyp))
-		(setcdr entry (gnus-delete-first g (cdr entry))))
-	      (nconc topicl (list g)))
-	    groups)
-    (gnus-group-position-point))
-  (gnus-topic-enter-dribble)
-  (gnus-group-list-groups))
+    (mapcar 
+     (lambda (g) 
+       (gnus-group-remove-mark g)
+       (when (and
+	      (setq entry (assoc (gnus-current-topic) gnus-topic-alist))
+	      (not copyp))
+	 (setcdr entry (gnus-delete-first g (cdr entry))))
+       (nconc topicl (list g)))
+     groups)
+    (gnus-topic-enter-dribble)
+    (if start-group
+	(gnus-group-goto-group start-group)
+      (gnus-topic-goto-topic start-topic))
+    (gnus-group-list-groups)))
 
 (defun gnus-topic-remove-group ()
   "Remove the current group from the topic."

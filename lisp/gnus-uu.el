@@ -1392,7 +1392,9 @@ The headers will be included in the sequence they are matched.")
 	(call-process-region 
 	 start-char (point-max) shell-file-name nil 
 	 (get-buffer-create gnus-uu-output-buffer-name) nil 
-	 shell-command-switch (concat "cd " gnus-uu-work-dir " ; sh"))))
+	 shell-command-switch 
+	 (concat "cd " gnus-uu-work-dir " " 
+		 gnus-shell-command-separator  " sh"))))
     state))
 
 ;; Returns the name of what the shar file is going to unpack.

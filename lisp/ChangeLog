@@ -1,3 +1,42 @@
+Sat Aug 31 02:54:39 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-goto-next-group): Go to the proper
+	group when listing.
+
+	* gnus-start.el (gnus-get-killed-groups): Mark .newsrc as needing
+	saving. 
+
+	* nnmail.el (nnmail-remove-tabs): New function.
+
+Fri Aug 30 06:26:37 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-start.el (gnus-set-default-directory): Set to directory
+	file name.
+
+	* nnmail.el (nnmail-remove-list-identifiers): New function.
+	(nnmail-list-identifiers): New variable.
+	(nnmail-prepare-incoming-message-hook): New variable.
+	(nnmail-move-inbox): Allow nnmail-movemail-program to be a
+	function. 
+
+	* article.el (article-mime-decode-quoted-printable-buffer): New
+	function.
+
+	* nnmail.el (nnmail-prepare-incoming-header-hook): New variable.
+	(nnmail-clean-whitespace-from-headers): New function.
+
+	* nntp.el (nntp-connection-alist): New variable.
+	(nntp-open-connection): Use it.
+	(nntp-request-close): New function.
+
+	* gnus-demon.el (timer): Required.
+
+	* message.el (message-reply): Bugged out on wide replies.
+
+Fri Aug 30 03:51:39 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.20 is released.
+
 Fri Aug 30 01:36:10 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
 
 	* gnus-msg.el (gnus-inews-insert-archive-gcc): Use

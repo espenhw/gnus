@@ -138,7 +138,11 @@ links, you could set this variable to `copy-file' instead.")
 
 (defvar nnmail-movemail-program "movemail"
   "*A command to be executed to move mail from the inbox.
-The default is \"movemail\".")
+The default is \"movemail\".
+
+This can also be a function.  In that case, the function will be
+called with two parameters -- the name of the INBOX file, and the file
+to be moved to.")
 
 (defvar nnmail-pop-password-required nil
   "*Non-nil if a password is required when reading mail using POP.")
@@ -177,6 +181,18 @@ If you use `display-time', you could use something like this:
 (defvar nnmail-prepare-incoming-hook nil
   "*Hook called before treating incoming mail.
 The hook is run in a buffer with all the new, incoming mail.")
+
+(defvar nnmail-prepare-incoming-header-hook nil
+  "*Hook called narrowed to the headers of each message.
+This can be used to remove excessive spaces (and stuff like
+that) from the headers before splitting and saving the messages.")
+
+(defvar nnmail-prepare-incoming-message-hook nil
+  "*Hook called narrowed to each message.")
+
+(defvar nnmail-list-identifiers nil
+  "Regexp that match list identifiers to be removed.
+This can also be a list of regexps.")
 
 (defvar nnmail-pre-get-new-mail-hook nil
   "Hook called just before starting to handle new incoming mail.")
@@ -429,14 +445,16 @@ parameter.  It should return nil, `warn' or `delete'.")
 	      (setq errors (generate-new-buffer " *nnmail loss*"))
 	      (buffer-disable-undo errors)
 	      (let ((default-directory "/"))
-		(apply 
-		 'call-process
-		 (append
-		  (list
-		   (expand-file-name nnmail-movemail-program exec-directory)
-		   nil errors nil inbox tofile)
-		  (when nnmail-internal-password
-		    (list nnmail-internal-password)))))
+		(if (nnheader-functionp nnmail-movemail-program)
+		    (funcall nnmail-movemail-program inbox tofile)
+		  (apply 
+		   'call-process
+		   (append
+		    (list
+		     (expand-file-name nnmail-movemail-program exec-directory)
+		     nil errors nil inbox tofile)
+		    (when nnmail-internal-password
+		      (list nnmail-internal-password))))))
 	      (if (not (buffer-modified-p errors))
 		  ;; No output => movemail won
 		  (progn
@@ -538,11 +556,16 @@ is a spool.  If not using procmail, return GROUP."
        "\n0, *unseen,+\n\\(\\*\\*\\* EOOH \\*\\*\\*\n\\)?" nil t)
       (goto-char (match-end 0))
       (delete-region (match-beginning 0) (match-end 0))
-      (setq start (point))
-      ;; Skip all the headers in case there are more "From "s...
-      (or (search-forward "\n\n" nil t)
-	  (search-forward-regexp "^[^:]*\\( .*\\|\\)$" nil t)
-	  (search-forward ""))
+      (narrow-to-region
+       (setq start (point))
+       (progn
+	 ;; Skip all the headers in case there are more "From "s...
+	 (or (search-forward "\n\n" nil t)
+	     (search-forward-regexp "^[^:]*\\( .*\\|\\)$" nil t)
+	     (search-forward ""))
+	 (point)))
+      (run-hooks 'nnmail-prepare-incoming-header-hook)
+      (widen)
       ;; Find the Message-ID header.
       (save-excursion
 	(if (re-search-backward "^Message-ID:[ \t]*\\(<[^>]*>\\)" nil t)
@@ -580,10 +603,10 @@ is a spool.  If not using procmail, return GROUP."
 	  (setq do-search t)))
       ;; Go to the beginning of the next article - or to the end
       ;; of the buffer.  
-      (if do-search
-	  (if (re-search-forward "^" nil t)
-	      (goto-char (match-beginning 0))
-	    (goto-char (1- (point-max)))))
+      (when do-search
+	(if (re-search-forward "^" nil t)
+	    (goto-char (match-beginning 0))
+	  (goto-char (1- (point-max)))))
       (delete-char 1)			; delete ^_
       (save-excursion
 	(save-restriction
@@ -654,6 +677,7 @@ is a spool.  If not using procmail, return GROUP."
 	  ;; having a (possibly) faulty header.
 	  (beginning-of-line)
 	  (insert "X-"))
+	(run-hooks 'nnmail-prepare-incoming-header-hook)
 	;; Find the end of this article.
 	(goto-char (point-max))
 	(widen)
@@ -727,6 +751,7 @@ is a spool.  If not using procmail, return GROUP."
 	      (insert "Original-")))
 	  (forward-line 1)
 	  (insert "Message-ID: " (setq message-id (nnmail-message-id)) "\n"))
+	(run-hooks 'nnmail-prepare-incoming-header-hook)
 	;; Find the end of this article.
 	(goto-char (point-max))
 	(widen)
@@ -880,6 +905,31 @@ Return the number of characters in the body."
 	(insert (format " %s:%d" (caar group-alist) (cdar group-alist)))
 	(setq group-alist (cdr group-alist)))
       (insert "\n"))))
+
+;;; Message washing functions
+
+(defun nnmail-remove-leading-whitespace ()
+  "Remove excessive whitespace from all headers."
+  (goto-char (point-min))
+  (while (re-search-forward "^\\([^ :]+: \\) +" nil t)
+    (replace-match "\\1" t t)))
+
+(defun nnmail-remove-list-identifiers ()
+  "Remove list identifiers from Subject headers."
+  (let ((regexp (if (stringp nnmail-list-identifiers) nnmail-list-identifiers
+		  (mapconcat 'identity nnmail-list-identifiers "\\|"))))
+    (when regexp
+      (goto-char (point-min))
+      (when (re-search-forward
+	     (concat "Subject: +\\(Re: +\\)?\\(" regexp "\\) *")
+	     nil t)
+	(delete-region (match-beginning 2) (match-end 0))))))
+
+(defun nnmail-remove-tabs ()
+  "Translate TAB characters into SPACE characters."
+  (subst-char-in-region (point-min) (point-max) ?\t ?  t))
+
+;;; Utility functions
 
 ;; Written by byer@mv.us.adobe.com (Scott Byer).
 (defun nnmail-make-complex-temp-name (prefix)
@@ -1088,6 +1138,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (search-backward id nil t))))
 
 (defun nnmail-check-duplication (message-id func artnum-func)
+  (run-hooks 'nnmail-prepare-incoming-message-hook)
   ;; If this is a duplicate message, then we do not save it.
   (let* ((duplication (nnmail-cache-id-exists-p message-id))
 	 (action (when duplication

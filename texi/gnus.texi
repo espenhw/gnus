@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.20 Manual
+@settitle Red Gnus 0.21 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -230,7 +230,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.20 Manual
+@title Red Gnus 0.21 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -7938,6 +7938,7 @@ course.
 * Mail and Procmail::            Reading mail groups that procmail create.
 * Incorporating Old Mail::       What about the old mail you have?
 * Expiring Mail::                Getting rid of unwanted mail.
+* Washing Mail::                 Removing gruft from the mail you get.
 * Duplicates::                   Dealing with duplicated mail.
 * Not Reading Mail::             Using mail backends for reading other files.
 * Choosing a Mail Backend::      Gnus can read a variety of mail formats.
@@ -8159,6 +8160,10 @@ it will be used instead.
 This program is executed to move mail from the user's inbox to her home
 directory.  The default is @samp{movemail}.
 
+This can also be a function.  In that case, the function will be called
+with two parameters -- the name of the inbox, and the file to be moved
+to.
+
 @item nnmail-delete-incoming
 @vindex nnmail-delete-incoming
 @cindex incoming mail files
@@ -8228,29 +8233,32 @@ This variable has the format of a @dfn{split}.  A split is a (possibly)
 recursive structure where each split may contain other splits.  Here are
 the five possible split syntaxes:
 
-@table @dfn
+@enumerate
 
-@item GROUP 
-If the split is a string, that will be taken as a group name. 
+@item 
+@samp{group}: If the split is a string, that will be taken as a group name. 
 
-@item (FIELD VALUE SPLIT)
-If the split is a list, and the first element is a string, then that
-means that if header FIELD (a regexp) contains VALUE (also a regexp),
-then store the message as specified by SPLIT.
+@item
+@code{(FIELD VALUE SPLIT)}: If the split is a list, and the first
+element is a string, then that means that if header FIELD (a regexp)
+contains VALUE (also a regexp), then store the message as specified by
+SPLIT.
 
-@item (| SPLIT...)
-If the split is a list, and the first element is @code{|} (vertical
-bar), then process each SPLIT until one of them matches.  A SPLIT is
-said to match if it will cause the mail message to be stored in one or
-more groups.
+@item
+@code{(| SPLIT...)}: If the split is a list, and the first element is
+@code{|} (vertical bar), then process each SPLIT until one of them
+matches.  A SPLIT is said to match if it will cause the mail message to
+be stored in one or more groups.
 
-@item (& SPLIT...)
-If the split is a list, and the first element is @code{&}, then process
-all SPLITs in the list.
+@item
+@code{(& SPLIT...)}: If the split is a list, and the first element is
+@code{&}, then process all SPLITs in the list.
 
-@item junk
-Junk this article.
-@end table
+@item 
+@code{junk}: If the split is the symbol @code{junk}, then don't save
+this message anywhere.
+
+@end enumerate
 
 In these splits, FIELD must match a complete field name.  VALUE must
 match a complete word according to the fundamental mode syntax table.
@@ -8478,6 +8486,90 @@ wrong group and all your important mail has disappeared.  Be a
 with!  So there!
 
 
+@node Washing Mail
+@subsection Washing Mail
+@cindex mail washing
+@cindex list server brain damage
+@cindex incoming mail treatment
+
+Mailers and list servers are notorious for doing all sorts of really,
+really stupid things with mail.  ``Hey, RFC822 doesn't explicitly
+prohibit us from adding the string @code{wE aRe ElItE!!!!!1!!} to the
+end of all lines passing through our server, so let's do that!!!!1!''
+Yes, but RFC822 wasn't designed to be read by morons.  Things that were
+considered to be self-evident were not discussed.  So.  Here we are.
+
+Case in point:  The German version of Microsoft Exchange adds @samp{AW:
+} to the subjects of replies instead of @samp{Re: }.  I could pretend to
+be shocked and dismayed by this, but I haven't got the energy.  It is to
+laugh.
+
+Gnus provides a plethora of functions for washing articles while
+displaying them, but it might be nicer to do the filtering before
+storing the mail to disc.  For that purpose, we have three hooks and
+various functions that can be put in these hooks.
+
+@table @code
+@item nnmail-prepare-incoming-hook
+@vindex nnmail-prepare-incoming-hook
+This hook is called before doing anything with the mail and is meant for
+grand, sweeping gestures.  Functions to be used include:
+
+@table @code
+@item nnheader-ms-strip-cr
+@findex nnheader-ms-strip-cr
+Remove trailing carriage returns from each line.  This is default on
+Emacs running on MS machines.
+
+@end table
+
+@item nnmail-prepare-incoming-header-hook
+@vindex nnmail-prepare-incoming-header-hook
+This hook is called narrowed to each header.  It can be used when
+cleaning up the headers.  Functions that can be used include:
+
+@table @code
+@item nnmail-remove-leading-whitespace
+@findex nnmail-remove-leading-whitespace
+Clear leading white space that ``helpful'' listservs have added to the
+headers too make them look nice.  Aaah.  
+
+@item nnmail-remove-list-identifiers
+@findex nnmail-remove-list-identifiers
+Some list servers add an identifier---for example, @samp{(idm)}---to the
+beginning of all @code{Subject} headers.  I'm sure that's nice for
+people who use stone age mail readers.  This function will remove
+strings that match the @code{nnmail-list-identifiers} regexp, which can
+also be a list of regexp.
+
+For instance, if you want to remove the @samp{(idm)} and the
+@samp{nagnagnag} identifiers:
+
+@lisp
+(setq nnmail-list-identifiers
+      '("(idm)" "nagnagnag"))
+@end lisp
+
+@item nnmail-remove-tabs
+@findex nnmail-remove-tabs
+Translate all @samp{TAB} characters into @samp{SPACE} characters. 
+
+@end table
+
+@item nnmail-prepare-incoming-message-hook
+@vindex nnmail-prepare-incoming-message-hook
+This hook is called narrowed to each message.  Functions to be used
+include: 
+
+@table @code
+@item article-de-quoted-unreadable
+@findex article-de-quoted-unreadable
+Decode Quoted Readable encoding.
+
+@end table
+@end table
+
+
 @node Duplicates
 @subsection Duplicates
 
@@ -8488,7 +8580,7 @@ with!  So there!
 If you are a member of a couple of mailing list, you will sometime
 receive two copies of the same mail.  This can be quite annoying, so
 @code{nnmail} checks for and treats any duplicates it might find.  To do
-this, it keeps a cache of old @code{Message-ID}s -
+this, it keeps a cache of old @code{Message-ID}s---
 @code{nnmail-message-id-cache-file}, which is @file{~/.nnmail-cache} by
 default.  The approximate maximum number of @code{Message-ID}s stored
 there is controlled by the @code{nnmail-message-id-cache-length}

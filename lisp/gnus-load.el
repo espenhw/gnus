@@ -696,6 +696,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-dup-unsuppress-article)
      ("gnus-async" gnus-async-request-fetched-article gnus-async-prefetch-next
       gnus-async-prefetch-article gnus-async-prefetch-remove-group)
+     ("article" article-decode-rfc1522)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
       gnus-summary-save-article-vm))))
 

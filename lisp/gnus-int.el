@@ -390,12 +390,11 @@ If GROUP is nil, all groups on METHOD are scanned."
 (defun gnus-close-backends ()
   ;; Send a close request to all backends that support such a request.
   (let ((methods gnus-valid-select-methods)
-	func)
-    (while methods
-      (if (fboundp (setq func (intern (concat (caar methods)
-					      "-request-close"))))
-	  (funcall func))
-      (setq methods (cdr methods)))))
+	func method)
+    (while (setq method (pop methods))
+      (when (fboundp (setq func (intern
+				 (concat (car method) "-request-close"))))
+	(funcall func)))))
 
 (defun gnus-asynchronous-p (method)
   (let ((func (gnus-get-function method 'asynchronous-p t)))

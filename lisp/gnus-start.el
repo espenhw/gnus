@@ -1421,7 +1421,8 @@ newsgroup."
 	     (setq gnus-killed-list
 		   (cons group gnus-killed-list))
 	     (gnus-sethash group group gnus-killed-hashtb))))))
-   gnus-active-hashtb))
+   gnus-active-hashtb)
+  (gnus-dribble-enter ""))
 
 ;; Get the active file(s) from the backend(s).
 (defun gnus-read-active-file ()
@@ -2332,7 +2333,7 @@ If this variable is nil, don't do anything."
   (setq default-directory 
 	(if (and gnus-default-directory
 		 (file-exists-p gnus-default-directory))
-	    (expand-file-name gnus-default-directory)
+	    (file-name-as-directory (expand-file-name gnus-default-directory))
 	  default-directory)))
 
 (provide 'gnus-start)

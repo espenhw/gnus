@@ -29,6 +29,7 @@
 (require 'gnus-int)
 (require 'nnheader)
 (require 'gnus)
+(require 'timer)
 
 (defvar gnus-demon-handlers nil
   "Alist of daemonic handlers to be run at intervals.

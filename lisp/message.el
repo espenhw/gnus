@@ -2594,8 +2594,8 @@ Headers already prepared in the buffer are not modified."
 	    (when ccalist
 	      (let ((ccs (cons 'Cc (mapconcat 
 				    (lambda (addr) (cdr addr)) ccalist ", "))))
-		(when (string-match "^ +" ccs)
-		  (setq ccs (substring ccs (match-end 0))))
+		(when (string-match "^ +" (cdr ccs))
+		  (setcdr ccs (substring (cdr ccs) (match-end 0))))
 	      (push ccs follow-to))))))
       (widen))
 

@@ -150,6 +150,8 @@ server there that you can connect to. See also `nntp-open-connection-function'")
 (defvar nntp-process-start-point nil)
 (defvar nntp-inside-change-function nil)
 
+(defvar nntp-connection-list nil)
+
 (defvoo nntp-server-type nil)
 (defvoo nntp-connection-alist nil)
 (defvoo nntp-status-string "")
@@ -381,6 +383,15 @@ server there that you can connect to. See also `nntp-open-connection-function'")
 	(kill-buffer (process-buffer process))))
     (nnoo-close-server 'nntp)))
 
+(deffoo nntp-request-close ()
+  (let (process)
+    (while (setq process (pop nntp-connection-list))
+      (when (memq (process-status process) '(open run))
+	(set-process-sentinel process nil)
+	(nntp-send-string process "QUIT"))
+      (when (buffer-name (process-buffer process))
+	(kill-buffer (process-buffer process))))))
+
 (deffoo nntp-request-list (&optional server)
   (nntp-possibly-change-group nil server)
   (nntp-send-command-and-decode "\r?\n\\.\r?\n" "LIST"))
@@ -562,6 +573,7 @@ It will prompt for a password."
 	  (prog1
 	      (caar (push (list process buffer nil) 
 			  nntp-connection-alist))
+	    (push process nntp-connection-list)
 	    (nntp-read-server-type)
 	    (run-hooks 'nntp-server-opened-hook))
 	(when (buffer-name (process-buffer process))

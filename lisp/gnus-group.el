@@ -308,7 +308,6 @@ variable.")
     "V" gnus-version
     "s" gnus-group-save-newsrc
     "z" gnus-group-suspend
-					;    "Z" gnus-group-clear-dribble
     "q" gnus-group-exit
     "Q" gnus-group-quit
     "?" gnus-group-describe-briefly
