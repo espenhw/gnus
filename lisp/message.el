@@ -170,7 +170,8 @@ long-lines control-chars size new-text redirected-followup signature
 approved sender empty empty-headers message-id from subject
 shorten-followup-to existing-newsgroups buffer-file-name unchanged
 newsgroups."
-  :group 'message-news)
+  :group 'message-news
+  :type '(repeat sexp))
 
 (defcustom message-required-news-headers
   '(From Newsgroups Subject Date Message-ID

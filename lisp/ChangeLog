@@ -1,3 +1,7 @@
+2000-06-08 12:27:55  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-syntax-checks): Add type.
+
 2000-06-07  Dave Love  <fx@gnu.org>
 
 	* mm-view.el (mm-inline-image-emacs): Don't specify string for
