@@ -640,19 +640,7 @@ external if displayed external."
     (save-excursion
       (if (member (mm-handle-media-supertype handle) '("text" "message"))
 	  (with-temp-buffer
-	    (if (eq (or (mm-handle-encoding handle)
-			(with-current-buffer (mm-handle-buffer handle)
-			  (mm-body-7-or-8)))
-		    '8bit)
-		;; Emacs MULE can not handle some 8bit characters in 
-		;; multibyte character!!
-		(let ((text (with-current-buffer 
-				(mm-handle-buffer handle)
-			      (mm-with-unibyte-current-buffer
-				(buffer-string)))))
-		  (mm-with-unibyte-current-buffer
-		    (insert text)))
-	      (insert-buffer-substring (mm-handle-buffer handle)))
+ 	    (insert-buffer-substring (mm-handle-buffer handle))
 	    (mm-decode-content-transfer-encoding
 	     (mm-handle-encoding handle)
 	     (mm-handle-media-type handle))
