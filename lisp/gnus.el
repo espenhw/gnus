@@ -2137,9 +2137,10 @@ face."
   "Whether Gnus is plugged or not.")
 
 (defcustom gnus-agent-cache t
-  "Controls use of the agent cache while plugged.  When set, Gnus will prefer
-using the locally stored content rather than re-fetching it from the server.
-You also need to enable `gnus-agent' for this to have any affect."
+  "Controls use of the agent cache while plugged.
+When set, Gnus will prefer using the locally stored content rather
+than re-fetching it from the server.  You also need to enable
+`gnus-agent' for this to have any affect."
   :version "21.3"
   :group 'gnus-agent
   :type 'boolean)
@@ -2152,6 +2153,7 @@ covered by that variable."
   :type 'symbol
   :group 'gnus-charset)
 
+;; Fixme: Doc reference to agent.
 (defcustom gnus-agent t
   "Whether we want to use the Gnus agent or not.
 
@@ -3815,11 +3817,11 @@ current display is used."
 	  (switch-to-buffer gnus-group-buffer)
 	(funcall gnus-other-frame-function arg)
 	(add-hook 'gnus-exit-gnus-hook
-		  (lambda nil
-		    (when (and (frame-live-p gnus-other-frame-object)
-			       (cdr (frame-list)))
-		      (delete-frame gnus-other-frame-object))
-		    (setq gnus-other-frame-object nil)))))))
+		  '(lambda nil
+		     (when (and (frame-live-p gnus-other-frame-object)
+				(cdr (frame-list)))
+		       (delete-frame gnus-other-frame-object))
+		     (setq gnus-other-frame-object nil)))))))
 
 ;;(setq thing ?				; this is a comment
 ;;      more 'yes)
