@@ -1,3 +1,7 @@
+1999-10-05  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* qp.el (quoted-printable-encode-region): Check eobp.
+
 1999-10-03  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nntp.el (nntp-retrieve-headers-with-xover): Fix hanging problem.

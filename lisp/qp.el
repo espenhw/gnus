@@ -99,11 +99,12 @@ matched by that regexp."
 	  (end-of-line)
 	  (while (> (current-column) 72)
 	    (beginning-of-line)
-	    (forward-char 72)
+	    (forward-char 71) ;; 71 char plus an "="
 	    (search-backward "=" (- (point) 2) t)
 	    (insert "=\n")
 	    (end-of-line))
-	  (forward-line))))))
+	  (unless (eobp)
+	    (forward-line)))))))
 
 (defun quoted-printable-encode-string (string)
  "QP-encode STRING and return the results."
