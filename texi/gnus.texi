@@ -22226,8 +22226,8 @@ server or when you sort through incoming mail.  If you get 200 spam
 messages per day from @samp{random-address@@vmadmin.com}, you block
 @samp{vmadmin.com}.  If you get 200 messages about @samp{VIAGRA}, you
 discard all messages with @samp{VIAGRA} in the message.  If you get
-lots of spam from China, for example, you try to filter all mail from
-Chinese IPs.
+lots of spam from Elbonia, for example, you try to filter all mail
+from Elbonian IPs.
 
 This, unfortunately, is a great way to discard legitimate e-mail.  For
 instance, the very informative and useful RISKS digest has been

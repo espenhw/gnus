@@ -1,3 +1,9 @@
+2004-01-11  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (The problem of spam): Fix, reported by Cheng Gao
+	<chenggao@cyberhut.org> and suggested by Richard Hoskins
+	<rmh@apk.net> (tiny change).
+
 2004-01-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* dir: Add SASL.
