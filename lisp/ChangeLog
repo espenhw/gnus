@@ -1,3 +1,8 @@
+2002-06-14  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* message.el (message-beginning-of-line): Keep the region active
+	in XEmacs.  Suggested by TAKAHASHI Kaoru <kaoru@kaisei.org>.
+
 2002-06-13  Josh Huber  <huber@alum.wpi.edu>
 
 	* gnus-msg.el (gnus-summary-followup): Use g-s-handle-replysign.

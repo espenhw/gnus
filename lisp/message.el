@@ -4286,6 +4286,9 @@ than 988 characters long, and if they are not, trim them until they are."
 (defun message-beginning-of-line (&optional n)
   "Move point to beginning of header value or to beginning of line."
   (interactive "p")
+  (let ((zrs 'zmacs-region-stays))
+    (when (and (interactive-p) (boundp zrs))
+      (set zrs t)))
   (if (message-point-in-header-p)
       (let* ((here (point))
 	     (bol (progn (beginning-of-line n) (point)))
