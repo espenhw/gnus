@@ -824,7 +824,7 @@ Optional arg ALL, if non-nil, means to fetch all articles."
                                            (setq fetched-articles (gnus-agent-fetch-articles gnus-newsgroup-name articles)))))
 	  (save-excursion
 
-(dolist (article articles)
+            (dolist (article articles)
 	      (setq gnus-newsgroup-downloadable
 		    (delq article gnus-newsgroup-downloadable))
               (if gnus-agent-mark-unread-after-downloaded
@@ -1122,11 +1122,24 @@ This can be added to `gnus-select-article-hook' or
         (gnus-agent-check-overview-buffer))
       (pop crosses))))
 
+(defun gnus-agent-backup-overview-buffer ()
+  (when gnus-newsgroup-name
+    (let ((root (gnus-agent-article-name ".overview" gnus-newsgroup-name))
+          (cnt 0)
+          name)
+      (while (file-exists-p (setq name (concat root "~" (int-to-string (setq cnt (1+ cnt))) "~"))))
+      (write-region (point-min) (point-max) name nil 'no-msg)
+      (gnus-message 1 "Created backup copy of overview in %s." name)
+      )
+    )
+  t)
+
 (defun gnus-agent-check-overview-buffer (&optional buffer)
   "Check the overview file given for sanity.
 In particular, checks that the file is sorted by article number
 and that there are no duplicates."
-  (let ((prev-num -1))
+  (let ((prev-num -1)
+        (backed-up nil))
     (save-excursion
       (when buffer
 	(set-buffer buffer))
@@ -1142,22 +1155,30 @@ and that there are no duplicates."
 	    (cond
 	     ((or (not (integerp cur))
 		  (not (eq (char-after) ?\t)))
+              (or backed-up
+                  (setq backed-up (gnus-agent-backup-overview-buffer)))
 	      (gnus-message 1
 			    "Overview buffer contains garbage '%s'."
 			    (buffer-substring
 			     p (gnus-point-at-eol))))
 	     ((= cur prev-num)
-	      (gnus-message 1
+	      (or backed-up
+                  (setq backed-up (gnus-agent-backup-overview-buffer)))
+              (gnus-message 1
 			    "Duplicate overview line for %d" cur)
 	      (delete-region (point) (progn (forward-line 1) (point))))
 	     ((< cur 0)
-	      (gnus-message 1 "Junk article number %d" cur)
+	      (or backed-up
+                  (setq backed-up (gnus-agent-backup-overview-buffer)))
+              (gnus-message 1 "Junk article number %d" cur)
 	      (delete-region (point) (progn (forward-line 1) (point))))
 	     ((< cur prev-num)
 	      (sort-numeric-fields 1 (point-min) (point-max))
 	      (goto-char (point-min))
 	      (setq prev-num -1)
-	      (gnus-message 1 "Overview buffer not sorted!"))
+	      (or backed-up
+                  (setq backed-up (gnus-agent-backup-overview-buffer)))
+              (gnus-message 1 "Overview buffer not sorted!"))
 	     (t
 	      (setq prev-num cur)))
 	    (forward-line 1)))))))
@@ -1591,51 +1612,47 @@ of FILE placing the combined headers in nntp-server-buffer."
 
           (unless (and (eq predicate 'gnus-agent-false)
                        (not marked-articles))
-            (let* ((arts (list nil))
-                   (arts-tail arts)
-                   (alist (gnus-agent-load-alist group))
-                   (chunk-size 0)
-                   (marked-articles marked-articles)
-                   fetched-articles)
-              (while (setq gnus-headers (pop gnus-newsgroup-headers))
-                (let ((num (mail-header-number gnus-headers)))
-                  ;; Determine if this article is already in the cache
-                  (while (and alist
-                              (> num (caar alist)))
-                    (setq alist (cdr alist)))
+            (let ((arts (list nil)))
+              (let ((arts-tail arts)
+                    (alist (gnus-agent-load-alist group))
+                    (marked-articles marked-articles))
+                (while (setq gnus-headers (pop gnus-newsgroup-headers))
+                  (let ((num (mail-header-number gnus-headers)))
+                    ;; Determine if this article is already in the cache
+                    (while (and alist
+                                (> num (caar alist)))
+                      (setq alist (cdr alist)))
 
-                  (unless (and (eq num (caar alist))
-                               (cdar alist))
+                    (unless (and (eq num (caar alist))
+                                 (cdar alist))
 
-                    ;; Determine if this article was marked for download.
-                    (while (and marked-articles
-                                (> num (car marked-articles)))
-                      (setq marked-articles
-                            (cdr marked-articles)))
+                      ;; Determine if this article was marked for download.
+                      (while (and marked-articles
+                                  (> num (car marked-articles)))
+                        (setq marked-articles
+                              (cdr marked-articles)))
 
-                    ;; When this article is marked, or selected by the
-                    ;; predicate, add it to the download list
-                    (when (or (eq num (car marked-articles))
-                              (let ((gnus-score
-                                     (or (cdr (assq num gnus-newsgroup-scored))
-                                         gnus-summary-default-score)))
-                                (funcall predicate)))
-                      (gnus-agent-append-to-list arts-tail num)))))
+                      ;; When this article is marked, or selected by the
+                      ;; predicate, add it to the download list
+                      (when (or (eq num (car marked-articles))
+                                (let ((gnus-score
+                                       (or (cdr (assq num gnus-newsgroup-scored))
+                                           gnus-summary-default-score)))
+                                  (funcall predicate)))
+                        (gnus-agent-append-to-list arts-tail num))))))
 
-              ;; Fetch all selected articles
-              (when (cdr arts)
+              (let (fetched-articles)
+                ;; Fetch all selected articles
                 (setq gnus-newsgroup-undownloaded
                       (gnus-sorted-ndifference gnus-newsgroup-undownloaded
-                                               (setq fetched-articles (gnus-agent-fetch-articles group (cdr arts)))))
+                                               (setq fetched-articles (if (cdr arts) (gnus-agent-fetch-articles group (cdr arts)) nil))))
 
                 (let ((unfetched-articles (gnus-sorted-ndifference (cdr arts) fetched-articles)))
                   (if gnus-newsgroup-active
                       (progn
-                        (dolist (article (cdr arts))
-                          (setq gnus-newsgroup-downloadable
-                                (delq article gnus-newsgroup-downloadable))
+                        (dolist (article marked-articles)
                           (when (gnus-summary-goto-subject article nil t)
-                            (gnus-summary-update-download-mark article)))
+                            (gnus-summary-set-agent-mark article t)))
                         (dolist (article fetched-articles)
                           (if gnus-agent-mark-unread-after-downloaded
                               (gnus-summary-mark-article article gnus-unread-mark)))
