@@ -12,19 +12,21 @@ INSTALL_DATA = @INSTALL_DATA@
 SHELL = /bin/sh
 VPATH = @srcdir@
 W3DIR = @W3@
+URLDIR = @URL@
+EMACS_COMP = URLDIR=$(URLDIR) W3DIR=$(W3DIR) lispdir=$(lispdir) srcdir=$(srcdir) $(EMACS) $(FLAGS)
 
 all total:
 	rm -f *.elc
-	W3DIR=$(W3DIR) lispdir=$(lispdir) srcdir=$(srcdir) $(EMACS) $(FLAGS) -f dgnushack-compile
+	$(EMACS_COMP) -f dgnushack-compile
 
 warn:
 	rm -f *.elc
-	W3DIR=$(W3DIR) lispdir=$(lispdir) srcdir=$(srcdir) $(EMACS) $(FLAGS) --eval '(dgnushack-compile t)' 2>&1 | egrep -v "variable G|inhibit-point-motion-hooks|coding-system|temp-results|variable gnus|variable nn|scroll-in-place|deactivate-mark|filladapt-mode|byte-code-function-p|print-quoted|ps-right-header|ps-left-header|article-inhibit|print-escape|ssl-program-arguments|message-log-max"
+	$(EMACS_COMP) --eval '(dgnushack-compile t)' 2>&1 | egrep -v "variable G|inhibit-point-motion-hooks|coding-system|temp-results|variable gnus|variable nn|scroll-in-place|deactivate-mark|filladapt-mode|byte-code-function-p|print-quoted|ps-right-header|ps-left-header|article-inhibit|print-escape|ssl-program-arguments|message-log-max"
 
 # The "clever" rule is unsafe, since redefined macros are loaded from
 # .elc files, and not the .el file.
 clever some:
-	W3DIR=$(W3DIR) lispdir=$(lispdir) srcdir=$(srcdir) $(EMACS) $(FLAGS) -f dgnushack-compile
+	$(EMACS_COMP) -f dgnushack-compile
 
 install: clever
 	rm -f dgnushack.elc

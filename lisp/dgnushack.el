@@ -33,11 +33,17 @@
 
 (defvar srcdir (or (getenv "srcdir") "."))
 
-(push (or (getenv "lispdir")
-	  "/usr/share/emacs/site-lisp")
+(defun my-getenv (str)
+  (let ((val (getenv "lispdir")))
+    (if (equal val "no") nil val)))
+
+(if (my-getenv "lispdir")
+    (push (my-getenv "lispdir") load-path))
+
+(push (or (my-getenv "URLDIR") (expand-file-name "../../url/lisp/" srcdir))
       load-path)
 
-(push (or (getenv "W3DIR") (expand-file-name "../../w3/lisp/" srcdir))
+(push (or (my-getenv "W3DIR") (expand-file-name "../../w3/lisp/" srcdir))
       load-path)
 
 (push "/usr/share/emacs/site-lisp" load-path)

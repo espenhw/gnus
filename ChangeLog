@@ -1,3 +1,9 @@
+2001-02-09 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* aclocal.m4 (AC_CHECK_URL): Add.
+
+	* configure.in: Use it.
+
 2001-01-15  Jesper Harder <harder@ifa.au.dk>
 
 	* make.bat: Fix doc.

@@ -1,3 +1,9 @@
+2001-02-09 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* dgnushack.el : Add URLDIR.
+	
+	* Makefile.in (EMACS_COMP): Ditto.
+
 2001-02-09 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-cus.el (gnus-score-customize): Error on no score file.
