@@ -1,3 +1,9 @@
+1999-12-12  Dave Love  <fx@gnu.org>
+
+	* gnus-agent.el (gnus-category-edit-groups)
+	(gnus-category-edit-score, gnus-category-edit-predicate): Replace
+	expansion of setf, fixed.
+	
 1999-12-12 12:50:30  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el: Revoke last Dave Love's patch, because of
