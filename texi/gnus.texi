@@ -14604,7 +14604,7 @@ wherever.  (Note: this would have to be at a point *after*
 @code{gnus-agent} has been loaded via @code{(gnus-agentize)})
 
 @lisp
-(defvar  gnus-category-predicate-alist
+(setq  gnus-category-predicate-alist
   (append gnus-category-predicate-alist
 	 '((old . my-article-old-p))))
 @end lisp
@@ -15993,7 +15993,7 @@ the @code{gnus-default-adaptive-score-alist} variable.  For instance, it
 might look something like this:
 
 @lisp
-(defvar gnus-default-adaptive-score-alist
+(setq gnus-default-adaptive-score-alist
   '((gnus-unread-mark)
     (gnus-ticked-mark (from 4))
     (gnus-dormant-mark (from 5))

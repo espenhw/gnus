@@ -1,3 +1,8 @@
+2000-12-22 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Adaptive Scoring): Use setq by Thomas Seck
+	<tmseck@web.de>.
+
 2000-12-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Article Washing): Doc addition by Paul Stevenson
