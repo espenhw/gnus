@@ -1,7 +1,7 @@
-2002-12-19  Paul Jarc  <prj@po.cwru.edu>
+2002-12-20  Jesper Harder  <harder@ifa.au.dk>
 
-	* gnus.texi (Optional Back End Functions):
-	nnchoke-request-update-info need not return the info object.
+	* message.texi (Message Headers): Add message-allow-no-recipients.
+	(Various Commands): Add TAB and message-tab-body-function.
 
 2002-12-15  Jesper Harder  <harder@ifa.au.dk>
 
