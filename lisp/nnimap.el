@@ -69,7 +69,6 @@
 (require 'gnus-range)
 (require 'gnus-start)
 (require 'gnus-int)
-(require 'parse-time)
 
 (eval-when-compile (require 'cl))
 
@@ -1445,6 +1444,8 @@ function is generally only called when Gnus is shutting down."
 
 (defun nnimap-date-days-ago (daysago)
   "Return date, in format \"3-Aug-1998\", for DAYSAGO days ago."
+  (require 'parse-time)
+  (defvar parse-time-months)
   (let* ((time (nnimap-time-substract (current-time) (days-to-time daysago)))
 	 (date (format-time-string
 		(format "%%d-%s-%%Y"

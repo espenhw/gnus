@@ -1,5 +1,16 @@
 005-04-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-make-date): Revert previous change.
+
+	* nnimap.el (nnimap-date-days-ago): Revert previous change and add
+	defvars in order to silence the byte compiler inside the defun
+
+	* gnus-demon.el (parse-time-string): Added autoload.
+
+	* gnus-delay.el (parse-time-string): Added autoload.
+
+	* gnus-art.el (parse-time-string): Added autoload.
+
 	* message.el (parse-time): Require for `parse-time-string'.
 
 	* nnimap.el (parse-time): Require for `parse-time-string'.
@@ -33,6 +44,17 @@
 2005-03-25  Werner Lemberg  <wl@gnu.org>
 
 	* nnmaildir.el: Replace `illegal' with `invalid'.
+
+2005-03-23  Lute Kamstra  <lute@gnu.org>
+
+	* time-date.el: Add comment on time value formats.
+	Don't require parse-time.
+	(with-decoded-time-value): New macro.
+	(encode-time-value): New function.
+	(time-to-seconds, time-less-p, time-subtract, time-add): Use them.
+	(days-to-time): Return a valid time value when arg is huge.
+	(time-since): Use time-subtract.
+	(time-to-number-of-days): Use time-to-seconds.
 
 2005-03-22  Stefan Monnier  <monnier@iro.umontreal.ca>
 
