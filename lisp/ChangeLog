@@ -1,8 +1,8 @@
 2003-09-01  Simon Josefsson  <jas@extundo.com>
 
 	* mml.el (mml-insert-mime-headers-always): New variable.
-	(mml-insert-mime-headers): Use it.  Based on patch from Lars
-	Balker Rasmussen <lars@balker.org>.
+	(mml-insert-mime-headers): Use it.  Based on (tiny) patch from
+	Lars Balker Rasmussen <lars@balker.org>.
 
 2003-08-30  Simon Josefsson  <jas@extundo.com>
 
