@@ -1,3 +1,7 @@
+2003-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-version-number): Bumped version.
+
 2003-01-12 22:02:49 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
 
 	* gnus.el: Oort Gnus v0.12 is released.
