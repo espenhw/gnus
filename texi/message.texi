@@ -1038,8 +1038,8 @@ so take care in handling it.  Storing encrypted keys on the disk are
 supported, and Gnus will ask you for a passphrase before invoking
 OpenSSL.  Read the OpenSSL documentation for how to achieve this.  If
 you use unencrypted keys (e.g., if they are on a secure storage, or if
-you are on secure single user machine) simply press @code{RET} at the
-passphrase prompt.
+you are on a secure single user machine) simply press @code{RET} at
+the passphrase prompt.
 
 @subsection Using PGP/MIME
 
