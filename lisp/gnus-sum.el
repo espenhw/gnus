@@ -33,6 +33,7 @@
 (require 'gnus-range)
 (require 'gnus-int)
 (require 'gnus-undo)
+(require 'gnus-util)
 (autoload 'gnus-summary-limit-include-cached "gnus-cache" nil t)
 
 (defcustom gnus-kill-summary-on-exit t
@@ -2924,7 +2925,6 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 	    ;; Yuk!  This is a reference loop.  Make the article be a
 	    ;; root article.
 	    (progn
-	      (debug)
 	      (mail-header-set-references (car (symbol-value id-dep)) "none")
 	      (setq ref nil))
 	  (setq ref (gnus-parent-id (mail-header-references ref-header)))))

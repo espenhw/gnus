@@ -1,3 +1,22 @@
+Mon Jun 29 22:49:49 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.22 is released.
+
+Mon Jun 29 21:22:46 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-salt.el (gnus-pick-mode-map): Remove gnus-mouse.
+
+	* gnus-sum.el (gnus-dependencies-add-header): `debug' left in.
+	Eh.  Eh.
+
+	* gnus-salt.el (gnus-summary-pick-line-format): Missing %.-
+
+	* gnus-topic.el (gnus-topic-rename): Fix error message.
+
+Sun Jun 28 14:32:08 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-spec.el (gnus-face-face-function): Double quoting removed. 
+
 Sun Jun 28 09:54:52 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.21 is released.

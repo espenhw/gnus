@@ -1267,7 +1267,7 @@ If COPYP, copy the groups instead."
 	   (read-string (format "Rename %s to: " topic)))))
   ;; Check whether the new name exists.
   (when (gnus-topic-find-topology new-name)
-    (error "Topic '%s' already exists"))
+    (error "Topic '%s' already exists" new-name))
   ;; "nil" is an invalid name, for reasons I'd rather not go
   ;; into here.  Trust me.
   (when (equal new-name "nil")
@@ -1281,7 +1281,8 @@ If COPYP, copy the groups instead."
       (setcar entry new-name))
     (forward-line -1)
     (gnus-dribble-touch)
-    (gnus-group-list-groups)))
+    (gnus-group-list-groups)
+    (forward-line 1)))
 
 (defun gnus-topic-indent (&optional unindent)
   "Indent a topic -- make it a sub-topic of the previous topic.

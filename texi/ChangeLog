@@ -1,3 +1,11 @@
+Mon Jun 29 21:46:13 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Article Keymap): Typo.
+
+Sun Jun 28 17:41:10 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Formatting Fonts): Typo fix.
+
 Sat Jun 27 04:37:14 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Mail-To-News Gateways): Addition.
