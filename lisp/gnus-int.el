@@ -459,6 +459,7 @@ If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
     (insert "\n"))
   (unless no-encode
     (let ((message-options message-options))
+      (message-options-set-recipient)
       (save-restriction
 	(message-narrow-to-head)
 	(let ((mail-parse-charset message-default-charset))
@@ -474,6 +475,7 @@ If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
 (defun gnus-request-replace-article (article group buffer &optional no-encode)
   (unless no-encode
     (let ((message-options message-options))
+      (message-options-set-recipient)
       (save-restriction
 	(message-narrow-to-head)
 	(let ((mail-parse-charset message-default-charset))

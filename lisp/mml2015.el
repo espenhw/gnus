@@ -37,6 +37,8 @@
 
 (defvar mml2015-decrypt-function 'mailcrypt-decrypt)
 (defvar mml2015-verify-function 'mailcrypt-verify)
+(defvar mml2015-encrypt-function 'mml2015-mailcrypt-encrypt)
+(defvar mml2015-sign-function 'mml2015-mailcrypt-sign)
 
 ;;;###autoload
 (defun mml2015-decrypt (handle)
@@ -64,10 +66,10 @@
 	  (error "Corrupted pgp-encrypted part.")
 	(gnus-mime-display-mixed (cdr handle)))))))
 
-;; FIXME: mm-dissect-buffer loses information of micalg and the
-;; original header of signed part.
-
+;;;###autoload
 (defun mml2015-verify (handle)
+  ;; FIXME: mm-dissect-buffer loses information of micalg and the
+  ;; original header of signed part.
   (if (y-or-n-p "Verify signed part?" )
       (let (child result hash)
 	(with-temp-buffer
@@ -93,7 +95,6 @@
 
 (defvar mml2015-mailcrypt-prefix 0)
 
-;;;###autoload
 (defun mml2015-mailcrypt-sign (cont)
   (mailcrypt-sign mml2015-mailcrypt-prefix)
   (let ((boundary 
@@ -131,11 +132,13 @@
     (insert (format "--%s--\n" boundary))
     (goto-char (point-max))))
 
-;;;###autoload
 (defun mml2015-mailcrypt-encrypt (cont)
-  ;; FIXME:
-  ;; You have to input the receiptant.
-  (mailcrypt-encrypt mml2015-mailcrypt-prefix)
+  (require 'mc-toplev)
+  (mc-encrypt-generic 
+   (or (message-options-get 'message-recipients)
+       (message-options-set 'message-recipients
+			    (mc-cleanup-recipient-headers 
+			     (read-string "Recipients: ")))))
   (let ((boundary 
 	 (funcall mml-boundary-function (incf mml-multipart-number))))
     (goto-char (point-min))
@@ -152,10 +155,16 @@
     (goto-char (point-max))))
 
 ;;;###autoload
+(defun mml2015-encrypt (cont)
+  (funcall mml2015-encrypt-function cont))
+
+;;;###autoload
+(defun mml2015-sign (cont)
+  (funcall mml2015-sign-function cont))
+
+;;;###autoload
 (defun mml2015-setup ()
-  (setq mml-generate-mime-postprocess-function 'mml-postprocess)
-;  (push '("multipart/signed" . mml2015-verify)
-;  	gnus-mime-multipart-functions)
+  ;;(push '("multipart/signed" . mml2015-verify) gnus-mime-multipart-functions)
   (push '("multipart/encrypted" . mml2015-decrypt)
 	gnus-mime-multipart-functions))
 

@@ -1,3 +1,17 @@
+2000-10-28 16:54:45  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (mml-generate-mime-postprocess-function): Set to
+	mml-postprocess.
+	(autoload): Autoload mml2015 and mml-smime.
+	(mml-postprocess-alist): Use mml2015-sign and mml2015-encrypt.
+	* mml2015.el (mml2015-encrypt): New function.
+	(mml2015-sign): New function.
+	(mml2015-encrypt-function): New variable.
+	(mml2015-sign-function): New variable.
+	(mml2015-mailcrypt-encrypt): Use message-recipients.
+	(mml2015-setup): Don't set mml-generate-mime-postprocess-function.
+	* mml-smime.el (mml-smime-setup): Ditto.
+
 2000-10-28  Simon Josefsson  <sj@extundo.com>
 
 	* imap.el (imap-parse-resp-text-code): Workaround bug in Stalker
@@ -18,11 +32,12 @@
 2000-10-28 10:09:41  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-options): New variable.
-	(message-send): Use it.
-	* gnus-int.el (gnus-request-replace-article): Use it.
+	(message-options-set-recipient): New function.
+	(message-send): Use them.
+	* gnus-int.el (gnus-request-replace-article): Use them.
 	(gnus-request-accept-article): Ditto.
-	* mml.el (mml-preview): Use it.
-	* gnus-sum.el (gnus-summary-edit-article): Use it.
+	* mml.el (mml-preview): Use them.
+	* gnus-sum.el (gnus-summary-edit-article): Use them.
 	
 	* message.el (message-options-get): New function.
 	(message-options-get): New function.

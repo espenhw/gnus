@@ -62,7 +62,7 @@
 
 ;;;###autoload
 (defun mml-smime-setup ()
-  (setq mml-generate-mime-postprocess-function 'mml-postprocess))
+  )
 
 (provide 'mml-smime)
 

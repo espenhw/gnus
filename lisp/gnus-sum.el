@@ -7853,6 +7853,7 @@ groups."
 	 `(lambda (no-highlight)
 	    (let ((mail-parse-charset ',gnus-newsgroup-charset)
 		  (message-options message-options)
+		  (message-options-set-recipient)
 		  (mail-parse-ignored-charsets 
 		   ',gnus-newsgroup-ignored-charsets))
 	      ,(if (not raw) '(progn 

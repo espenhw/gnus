@@ -78,13 +78,18 @@ one charsets.")
 The function is called with one parameter, which is the part to be 
 generated.")
 
-(defvar mml-generate-mime-postprocess-function nil
+(defvar mml-generate-mime-postprocess-function 'mml-postprocess
   "A function called after generating a mime part.
 The function is called with one parameter, which is the generated part.")
 
+(autoload 'mml2015-sign "mml2015")
+(autoload 'mml2015-encrypt "mml2015")
+(autoload 'mml-smime-encrypt "mml-smime")
+(autoload 'mml-smime-sign "mml-smime")
+
 (defvar mml-postprocess-alist
-  '(("pgp-sign" . mml2015-mailcrypt-sign)
-    ("pgp-encrypt" . mml2015-mailcrypt-encrypt)
+  '(("pgp-sign" . mml2015-sign)
+    ("pgp-encrypt" . mml2015-encrypt)
     ("smime-sign" . mml-smime-sign)
     ("smime-encrypt" . mml-smime-encrypt))
   "Alist of postprocess functions.")
@@ -850,6 +855,7 @@ If RAW, don't highlight the article."
 					(message-narrow-to-headers-or-head)
 					(message-fetch-field "Newsgroups")))
 				     message-posting-charset)))
+    (message-options-set-recipient)
     (switch-to-buffer (generate-new-buffer
 		       (concat (if raw "*Raw MIME preview of "
 				 "*MIME preview of ") (buffer-name))))

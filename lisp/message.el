@@ -2129,6 +2129,7 @@ It should typically alter the sending method in some way or other."
 	(success t)
 	elem sent
 	(message-options message-options))
+    (message-options-set-recipient)
     (while (and success
 		(setq elem (pop alist)))
       (when (funcall (cadr elem))
@@ -4576,6 +4577,16 @@ regexp varstr."
       (and value
 	   (push (cons symbol value) message-options))))
   value)
+
+(defun message-options-set-recipient ()
+  (save-restriction
+    (message-narrow-to-headers-or-head)
+    (message-options-set 'message-sender
+			 (mail-strip-quoted-names 
+			  (message-fetch-field "from")))
+    (message-options-set 'message-recipients
+			  (mail-strip-quoted-names 
+			   (message-fetch-field "to")))))
 
 (provide 'message)
 
