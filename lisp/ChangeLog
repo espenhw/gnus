@@ -1,3 +1,37 @@
+Sun Sep 14 21:17:34 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.3 is released.
+
+Sun Sep 14 01:51:45 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-agent.el (gnus-agent-short-article): New variables.
+
+	* message.el (message-set-auto-save-file-name): Use drafts.
+
+	* nndraft.el (nndraft-request-expire-articles): Use it.
+
+	* nnmh.el (nnmh-deletable-article-p): Change.
+	(nnmh-allow-delete-final): New variable.
+
+	* gnus-msg.el (gnus-summary-send-draft): Removed.
+
+	* gnus.el (gnus-article-mark-lists): Save unsendable marks.
+
+	* gnus-sum.el (gnus-newsgroup-unsendable): New variable.
+
+	* gnus-draft.el: New file.
+
+	* gnus-sum.el (gnus-unsendable-mark): New variable.
+
+	* nndraft.el (nndraft-execute-nnmh-command): Cleanup.
+
+	* message.el (message-send-news): Use `gnus-request-post'.
+
+	* gnus-agent.el (gnus-agentize): New command.
+
+	* gnus-bcklg.el (gnus-backlog-remove-article): Remove the ident
+	from the list.
+
 Sun Sep 14 00:26:47 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.2 is released.

@@ -194,8 +194,6 @@ all.  This may very well take some time.")
 	    (string-to-int (file-name-nondirectory path)))))))
 
 (deffoo nnml-request-group (group &optional server dont-check)
-  ;; 1997/8/12 by MORIOKA Tomohiko
-  ;;	for XEmacs/mule.
   (let ((pathname-coding-system 'binary))
     (cond
      ((not (nnml-possibly-change-directory group server))

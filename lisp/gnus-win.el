@@ -137,9 +137,6 @@
      (vertical 1.0
 	       (article 0.5)
 	       (message 1.0 point)))
-    (draft
-     (vertical 1.0
-	       (draft 1.0 point)))
     (pipe
      (vertical 1.0
 	       (summary 0.25 point)

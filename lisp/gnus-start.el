@@ -690,12 +690,22 @@ prompt the user for the name of an NNTP server to use."
 
 	  ;; Do the actual startup.
 	  (gnus-setup-news nil level dont-connect)
+	  (gnus-draft-setup)
 	  ;; Generate the group buffer.
 	  (gnus-group-list-groups level)
 	  (gnus-group-first-unread-group)
 	  (gnus-configure-windows 'group)
 	  (gnus-group-set-mode-line)
 	  (run-hooks 'gnus-started-hook))))))
+
+(defun gnus-draft-setup ()
+  "Make sure the draft group exists."
+  (unless (gnus-gethash "nndraft:draft" gnus-newsrc-hashtb)
+    (gnus-request-create-group "draft" '(nndraft ""))
+    (let ((gnus-level-default-subscribed 1))
+      (gnus-subscribe-group "nndraft:draft" nil '(nndraft "")))
+    (gnus-group-set-parameter
+     "nndraft:draft" 'gnus-dummy '((gnus-draft-mode)))))
 
 ;;;###autoload
 (defun gnus-unload ()

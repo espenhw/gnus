@@ -23,14 +23,13 @@
 
 ;;; Commentary:
 
-;; (add-hook 'gnus-before-startup-hook 'gnus-open-agent)
-
 ;;; Code:
 
 (require 'gnus)
 (require 'gnus-cache)
 (require 'nnvirtual)
 (require 'gnus-sum)
+(eval-when-compile (require 'cl))
 
 (defcustom gnus-agent-directory (nnheader-concat gnus-directory "agent/")
   "Where the Gnus agent will store its files."
@@ -61,6 +60,7 @@
 (defvar gnus-category-group-cache nil)
 (defvar gnus-agent-spam-hashtb nil)
 (defvar gnus-agent-file-name nil)
+(defvar gnus-agent-send-mail-function nil)
 
 (defvar gnus-plugged t
   "Whether Gnus is plugged or not.")
@@ -226,6 +226,31 @@
   (interactive)
   (setq gnus-plugged nil)
   (gnus))
+
+;;;###autoload
+(defun gnus-agentize ()
+  "Allow Gnus to be an offline newsreader.
+The normal usage of this command is to put the following as the
+last form in your `.gnus.el' file:
+
+\(gnus-agentize)
+
+This will modify the `gnus-before-startup-hook', `gnus-post-method',
+and `message-send-mail-function' variables, and install the Gnus
+agent minor mode in all Gnus buffers."
+  (interactive)
+  (add-hook 'gnus-before-startup-hook 'gnus-open-agent)
+  (setq gnus-agent-send-mail-function message-send-mail-function
+	message-send-mail-function 'gnus-agent-send-mail))
+
+(defun gnus-agent-send-mail ()
+  (if gnus-plugged
+      (funcall gnus-agent-send-mail-function)
+    (goto-char (point-min))
+    (re-search-forward
+     (concat "^" (regexp-quote mail-header-separator) "\n"))
+    (replace-match "\n")
+    (gnus-request-accept-article "nndraft:drafts")))
 
 ;;;
 ;;; Group mode commands
@@ -793,6 +818,19 @@ the actual number of articles toggled is returned."
 (defvar gnus-category-mode-line-format "Gnus: %%b"
   "The format specification for the category mode line.")
 
+(defvar gnus-agent-short-article 100
+  "Articles that have fewer lines than this are short.")
+
+(defvar gnus-agent-long-article 200
+  "Articles that have more lines than this are long.")
+
+(defvar gnus-agent-low-score 0
+  "Articles that have a score lower than this have a low score.")
+
+(defvar gnus-agent-high-score 0
+  "Articles that have a score higher than this have a high score.")
+
+
 ;;; Internal variables.
 
 (defvar gnus-category-buffer "*Agent Category*")
@@ -1027,20 +1065,20 @@ The following commands are available:
 	(gnus-sethash string t gnus-agent-spam-hashtb)))))
 
 (defun gnus-agent-short-p ()
-  "Say whether an article is short (less than 100 lines) or not."
-  (< (mail-header-lines gnus-headers) 100))
+  "Say whether an article is short or not."
+  (< (mail-header-lines gnus-headers) gnus-agent-short-article))
 
 (defun gnus-agent-long-p ()
-  "Say whether an article is long (more than 200 lines) or not."
-  (> (mail-header-lines gnus-headers) 200))
+  "Say whether an article is long or not."
+  (> (mail-header-lines gnus-headers) gnus-agent-long-article))
 
 (defun gnus-agent-low-scored-p ()
   "Say whether an article has a low score or not."
-  (< gnus-score gnus-summary-default-score))
+  (< gnus-score gnus-agent-low-score))
 
 (defun gnus-agent-high-scored-p ()
   "Say whether an article has a high score or not."
-  (> gnus-score gnus-summary-default-score))
+  (> gnus-score gnus-agent-low-score))
 
 (defun gnus-category-make-function (cat)
   "Make a function from category CAT."

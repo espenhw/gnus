@@ -12,7 +12,7 @@ clever:
 	$(EMACS) $(FLAGS) -f dgnushack-compile
 
 some:
-	$(EMACS) $(FLAGS) -f dgnushack-recompile
+	$(EMACS) $(FLAGS) -f dgnushack-compile
 
 tags:
 	etags *.el

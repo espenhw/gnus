@@ -423,6 +423,11 @@ It uses the same syntax as the `gnus-split-methods' variable."
   :group 'gnus-summary-marks
   :type 'character)
 
+(defcustom gnus-unsendable-mark ?=
+  "*Mark used for articles that won't be sent."
+  :group 'gnus-summary-marks
+  :type 'character)
+
 (defcustom gnus-score-over-mark ?+
   "*Score mark used for articles with high scores."
   :group 'gnus-summary-marks
@@ -886,6 +891,9 @@ variable (string, integer, character, etc).")
 (defvar gnus-newsgroup-undownloaded nil
   "List of articles in the current newsgroup that haven't been downloaded..")
 
+(defvar gnus-newsgroup-unsendable nil
+  "List of articles in the current newsgroup that won't be sent.")
+
 (defvar gnus-newsgroup-bookmarks nil
   "List of articles in the current newsgroup that have bookmarks.")
 
@@ -926,6 +934,7 @@ variable (string, integer, character, etc).")
     gnus-newsgroup-replied gnus-newsgroup-expirable
     gnus-newsgroup-processable gnus-newsgroup-killed
     gnus-newsgroup-downloadable gnus-newsgroup-undownloaded
+    gnus-newsgroup-unsendable
     gnus-newsgroup-bookmarks gnus-newsgroup-dormant
     gnus-newsgroup-headers gnus-newsgroup-threads
     gnus-newsgroup-prepared gnus-summary-highlight-line-function
@@ -2170,6 +2179,7 @@ This is all marks except unread, ticked, dormant, and expirable."
 
 (defmacro gnus-article-mark (number)
   `(cond
+    ((memq ,number gnus-newsgroup-unsendable) gnus-unsendable-mark)
     ((memq ,number gnus-newsgroup-undownloaded) gnus-undownloaded-mark)
     ((memq ,number gnus-newsgroup-downloadable) gnus-downloadable-mark)
     ((memq ,number gnus-newsgroup-unreads) gnus-unread-mark)

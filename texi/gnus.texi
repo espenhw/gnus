@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.2 Manual
+@settitle Quassia Gnus 0.3 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -309,7 +309,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.2 Manual
+@title Quassia Gnus 0.3 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -345,7 +345,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.2.
+This manual corresponds to Quassia Gnus 0.3.
 
 @end ifinfo
 
@@ -7689,9 +7689,8 @@ to make Gnus try to post using the foreign server.
 * Posting Server::       What server should you post via?
 * Mail and Post::        Mailing and posting at the same time.
 * Archived Messages::    Where Gnus stores the messages you've sent.
-@c * Posting Styles::       An easier way to configure some key elements.
-@c * Drafts::               Postponing messages and rejected messages.
-@c * Rejected Articles::    What happens if the server doesn't like your article?
+* Drafts::               Postponing messages and rejected messages.
+* Rejected Articles::    What happens if the server doesn't like your article?
 @end menu
 
 Also see @pxref{Canceling and Superseding} for information on how to
@@ -8015,90 +8014,90 @@ but the latter is the preferred method.
 @c           (signature . "~/.mail-signature"))))
 @c @end lisp
 
-@c @node Drafts
-@c @section Drafts
-@c @cindex drafts
-@c 
-@c If you are writing a message (mail or news) and suddenly remember that
-@c you have a steak in the oven (or some pesto in the food processor, you
-@c craazy vegetarians), you'll probably wish there was a method to save the
-@c message you are writing so that you can continue editing it some other
-@c day, and send it when you feel its finished.
-@c 
-@c Well, don't worry about it.  Whenever you start composing a message of
-@c some sort using the Gnus mail and post commands, the buffer you get will
-@c automatically associate to an article in a special @dfn{draft} group.
-@c If you save the buffer the normal way (@kbd{C-x C-s}, for instance), the
-@c article will be saved there.  (Auto-save files also go to the draft
-@c group.) 
-@c 
-@c @cindex nndraft
-@c @vindex gnus-draft-group-directory
-@c The draft group is a special group (which is implemented as an
-@c @code{nndraft} group, if you absolutely have to know) called
-@c @samp{nndraft:drafts}.  The variable @code{gnus-draft-group-directory}
-@c controls both the name of the group and the location---the leaf element
-@c in the path will be used as the name of the group.  What makes this
-@c group special is that you can't tick any articles in it or mark any
-@c articles as read---all articles in the group are permanently unread.
-@c 
-@c If the group doesn't exist, it will be created and you'll be subscribed
-@c to it.
-@c 
-@c @findex gnus-dissociate-buffer-from-draft
-@c @kindex C-c M-d (Mail)
-@c @kindex C-c M-d (Post)
-@c @findex gnus-associate-buffer-with-draft
-@c @kindex C-c C-d (Mail)
-@c @kindex C-c C-d (Post)
-@c If you're writing some super-secret message that you later want to
-@c encode with PGP before sending, you may wish to turn the auto-saving
-@c (and association with the draft group) off.  You never know who might be
-@c interested in reading all your extremely valuable and terribly horrible
-@c and interesting secrets.  The @kbd{C-c M-d}
-@c (@code{gnus-dissociate-buffer-from-draft}) command does that for you.
-@c If you change your mind and want to turn the auto-saving back on again,
-@c @kbd{C-c C-d} (@code{gnus-associate-buffer-with-draft} does that.
-@c 
-@c @vindex gnus-use-draft
-@c To leave association with the draft group off by default, set
-@c @code{gnus-use-draft} to @code{nil}.  It is @code{t} by default. 
-@c 
-@c @findex gnus-summary-send-draft
-@c @kindex S D c (Summary)
-@c When you want to continue editing the article, you simply enter the
-@c draft group and push @kbd{S D c} (@code{gnus-summary-send-draft}) to do
-@c that.  You will be placed in a buffer where you left off.
-@c 
-@c Rejected articles will also be put in this draft group (@pxref{Rejected
-@c Articles}).
-@c 
-@c @findex gnus-summary-send-all-drafts
-@c If you have lots of rejected messages you want to post (or mail) without
-@c doing further editing, you can use the @kbd{S D a} command
-@c (@code{gnus-summary-send-all-drafts}).  This command understands the
-@c process/prefix convention (@pxref{Process/Prefix}).  
-@c 
-@c 
-@c @node Rejected Articles
-@c @section Rejected Articles
-@c @cindex rejected articles
-@c 
-@c Sometimes a news server will reject an article.  Perhaps the server
-@c doesn't like your face.  Perhaps it just feels miserable.  Perhaps
-@c @emph{there be demons}.  Perhaps you have included too much cited text.
-@c Perhaps the disk is full.  Perhaps the server is down.
-@c 
-@c These situations are, of course, totally beyond the control of Gnus.
-@c (Gnus, of course, loves the way you look, always feels great, has angels
-@c fluttering around inside of it, doesn't care about how much cited text
-@c you include, never runs full and never goes down.)  So Gnus saves these
-@c articles until some later time when the server feels better.
-@c 
-@c The rejected articles will automatically be put in a special draft group
-@c (@pxref{Drafts}).  When the server comes back up again, you'd then
-@c typically enter that group and send all the articles off.
-@c 
+@node Drafts
+@section Drafts
+@cindex drafts
+
+If you are writing a message (mail or news) and suddenly remember that
+you have a steak in the oven (or some pesto in the food processor, you
+craazy vegetarians), you'll probably wish there was a method to save the
+message you are writing so that you can continue editing it some other
+day, and send it when you feel its finished.
+
+Well, don't worry about it.  Whenever you start composing a message of
+some sort using the Gnus mail and post commands, the buffer you get will
+automatically associate to an article in a special @dfn{draft} group.
+If you save the buffer the normal way (@kbd{C-x C-s}, for instance), the
+article will be saved there.  (Auto-save files also go to the draft
+group.) 
+
+@cindex nndraft
+@vindex gnus-draft-group-directory
+The draft group is a special group (which is implemented as an
+@code{nndraft} group, if you absolutely have to know) called
+@samp{nndraft:drafts}.  The variable @code{gnus-draft-group-directory}
+controls both the name of the group and the location---the leaf element
+in the path will be used as the name of the group.  What makes this
+group special is that you can't tick any articles in it or mark any
+articles as read---all articles in the group are permanently unread.
+
+If the group doesn't exist, it will be created and you'll be subscribed
+to it.
+
+@findex gnus-dissociate-buffer-from-draft
+@kindex C-c M-d (Mail)
+@kindex C-c M-d (Post)
+@findex gnus-associate-buffer-with-draft
+@kindex C-c C-d (Mail)
+@kindex C-c C-d (Post)
+If you're writing some super-secret message that you later want to
+encode with PGP before sending, you may wish to turn the auto-saving
+(and association with the draft group) off.  You never know who might be
+interested in reading all your extremely valuable and terribly horrible
+and interesting secrets.  The @kbd{C-c M-d}
+(@code{gnus-dissociate-buffer-from-draft}) command does that for you.
+If you change your mind and want to turn the auto-saving back on again,
+@kbd{C-c C-d} (@code{gnus-associate-buffer-with-draft} does that.
+
+@vindex gnus-use-draft
+To leave association with the draft group off by default, set
+@code{gnus-use-draft} to @code{nil}.  It is @code{t} by default. 
+
+@findex gnus-summary-send-draft
+@kindex S D c (Summary)
+When you want to continue editing the article, you simply enter the
+draft group and push @kbd{S D c} (@code{gnus-summary-send-draft}) to do
+that.  You will be placed in a buffer where you left off.
+
+Rejected articles will also be put in this draft group (@pxref{Rejected
+Articles}).
+
+@findex gnus-summary-send-all-drafts
+If you have lots of rejected messages you want to post (or mail) without
+doing further editing, you can use the @kbd{S D a} command
+(@code{gnus-summary-send-all-drafts}).  This command understands the
+process/prefix convention (@pxref{Process/Prefix}).  
+
+
+@node Rejected Articles
+@section Rejected Articles
+@cindex rejected articles
+
+Sometimes a news server will reject an article.  Perhaps the server
+doesn't like your face.  Perhaps it just feels miserable.  Perhaps
+@emph{there be demons}.  Perhaps you have included too much cited text.
+Perhaps the disk is full.  Perhaps the server is down.
+
+These situations are, of course, totally beyond the control of Gnus.
+(Gnus, of course, loves the way you look, always feels great, has angels
+fluttering around inside of it, doesn't care about how much cited text
+you include, never runs full and never goes down.)  So Gnus saves these
+articles until some later time when the server feels better.
+
+The rejected articles will automatically be put in a special draft group
+(@pxref{Drafts}).  When the server comes back up again, you'd then
+typically enter that group and send all the articles off.
+
 
 @node Select Methods
 @chapter Select Methods
@@ -8137,6 +8136,7 @@ The different methods all have their peculiarities, of course.
 * Getting Mail::          Reading your personal mail with Gnus.
 * Other Sources::         Reading directories, files, SOUP packets.
 * Combined Groups::       Combining groups into one group.
+* Gnus Unplugged::        Reading news and mail offline.
 @end menu
 
 
@@ -10714,6 +10714,434 @@ on what groups have been searched through to find component articles.
 
 Articles marked as read in the @code{nnkiboze} group will have
 their @sc{nov} lines removed from the @sc{nov} file.
+
+
+@node Gnus Unplugged
+@section Gnus Unplugged
+@cindex offline
+@cindex unplugged
+@cindex Agent
+@cindex Gnus Agent
+@cindex Gnus Unplugged
+
+In olden times (ca. February '88), people used to run their newsreaders
+on big machines with permanent connections to the net.  News transport
+was dealt with by news servers, and all the newsreaders had to do was to
+read news.  Believe it or not.
+
+Nowadays most people read news and mail at home, and use some sort of
+modem to connect to the net.  To avoid running up huge phone bills, it
+would be nice to have a way to slurp down all the news and mail, hang up
+the phone, read for several hours, and then upload any responses you
+have to make.  And then you repeat the procedure.
+
+Of course, you can use news servers for doing this as well.  I've used
+@code{inn} together with @code{slurp}, @code{pop} and @code{sendmail}
+for some years, but doing that's a bore.  Moving the news server
+functionality up to the newsreader makes sense if you're the only person
+reading news on a machine.
+
+Using Gnus as an ``offline'' newsreader is quite simple.
+
+@itemize @bullet
+@item
+First, set ut Gnus as you would do if you were running it on a machine
+that has full connection to the net.  Go ahead.  I'll still be waiting
+here.
+
+@item
+Then, put the following magical incantation at the end of your
+@file{.gnus.el} file:
+
+@lisp
+(gnus-agentize)
+@end lisp
+@end itemize
+
+That's it.  Gnus is now an ``offline'' newsreader.
+
+Of course, to use it as such, you have to learn a few new commands.
+
+@menu
+* Agent Basics::           How it all is supposed to work.
+* Agent Categories::       How to tell the Gnus Agent what to download.
+* Agent Commands::         New commands for all the buffers.
+* Agent Variables::        Customizing is fun.
+@end menu
+
+
+@node Agent Basics
+@subsection Agent Basics
+
+First, let's get some terminilogy out of the way.
+
+The Gnus Agent is said to be @dfn{unplugged} when you have severed the
+connection to the net (and notified the Agent that this is the case).
+When the connection to the net is up again (and Gnus knows this), the
+Agent is @dfn{plugged}.
+
+The @dfn{local} machine is the one you're running on, and which isn't
+connected to the net continously.
+
+@dfn{Downloading} means fetching things from the net to your local
+machine.  @dfn{Uploading} is doing the opposite.
+
+Let's take a typical Gnus session using the Agent.
+
+@itemize @bullet
+
+@item
+You start Gnus with @code{gnus-unplugged}.  This brings up the Gnus
+Agent in a disconnected state.  You can read all the news that you have
+already fetched while in this mode.
+
+@item
+You then decide to see whether any new news has arrived.  You connect
+your machine to the net (using PPP or whatever), and then hit @kbd{J j}
+to make Gnus become @dfn{plugged}.
+
+@item
+You can then read the new news immediately, or you can download the news
+onto your local machine.  If you want to do the latter, you press @kbd{J
+s} to fetch all the eligible articles in all the groups.  (To let Gnus
+know which articles you want to download, @pxref{Agent Categories}.)
+
+@item
+After fetching the articles, you press @kbd{J j} to make Gnus become
+unplugged again, and you shut down the PPP thing (or whatever).  And
+then you read the news offline.
+
+@item
+And then you go to step 2.
+@end itemize
+
+
+@node Agent Categories
+@subsection Agent Categories
+
+On of the main reasons to integrate the news transport layer into the
+newsreader is to allow greater control over what articles to download.
+There's not much point in downloading huge amounts of articles, just to
+find out that you're not interested in reading any of them.  It's better
+to be somewhat more conservative in choosing what to download, and then
+mark the articles for downloading manually if it should turn out that
+you're interested in the articles anyway.
+
+The main way to control what is to be downloaded is to create a
+@dfn{category} and then assign some (or all) groups to this category. 
+Gnus has its own buffer for creating and managing categories.
+
+@menu
+* Category Syntax::       What a category looks like.
+* The Category Buffer::   A buffer for maintaining categories.
+* Category Variables::    Customize'r'Us.
+@end menu
+
+
+@node Category Syntax
+@subsubsection Category Syntax
+
+A category consists of two things.
+
+@enumerate
+@item
+A predicate which (generally) gives a rough outline of which articles
+are eligible for downloading; and
+
+@item
+a score rule which (generally) gives you a finer granularity when
+deciding what articles to download.  (Note that this @dfn{download
+score} is wholly unrelated to normal scores.)
+@end enumerate
+
+A predicate consists of predicates with logical operators sprinkled in
+between.
+
+Perhaps some examples are in order.
+
+Here's a simple predicate.  (It's the default predicate, in fact, used
+for all groups that don't belong to any other category.)
+
+@lisp
+short
+@end lisp
+
+Quite simple, eh?  This predicate is true if and only if the article is
+short (for some value of ``short'').
+
+Here's a more complex predicate:
+
+@lisp
+(or high
+    (and
+     (not low)
+     (not long)))
+@end lisp
+
+This means that an article should be downloaded if it has a high score,
+or if the score is not low and the article is not long.  You get the
+drift.
+
+The available logical operators are @code{or}, @code{and} and
+@code{not}.  (If you prefer, you can use the more ``C''-ish operators
+@samp{|}, @code{&} and @code{!} instead.)
+
+The following predicates are pre-defined, but if none of these fit what
+you want to do, you can write your own.
+
+@table @code
+@item short
+True iff the article is shorter than @code{gnus-agent-short-article}
+lines; default 100.
+
+@item long
+True iff the article is longer than @code{gnus-agent-long-article}
+lines; default 200.
+
+@item low
+True iff the article has a download score less than
+@code{gnus-agent-low-score}; default 0.
+
+@item high
+True iff the article has a download score greater than
+@code{gnus-agent-high-score}; default 0.
+
+@item spam
+True iff the Gnus Agent guesses that the article is spam.  The
+heuristics may change over time, but at present it just computes a
+checksum and see whether articles match.
+
+@item true
+Always true.
+
+@item false
+Always false.
+@end table
+
+If you want to create your own predicate function, here's what you have
+to know:  The functions are called with no parameters, but the
+@code{gnus-headers} and @code{gnus-score} dynamic variables are bound to
+useful values.
+
+Now, the syntax of the download score is the same as the syntax of
+normal score files, except that all elements that require actually
+seeing the article itself is verboten.  This means that only the
+following headers can be scored on: @code{From}, @code{Subject},
+@code{Date}, @code{Xref}, @code{Lines}, @code{Chars}, @code{Message-ID},
+and @code{References}.
+
+
+@node The Category Buffer
+@subsubsection The Category Buffer
+
+You'd normally do all category maintenance from the category buffer.
+When you enter it for the first time (with the @kbd{J c} command from
+the group buffer), you'll only see the @code{default} category.
+
+The following commands are available in this buffer:
+
+@table @kbd
+@item q
+@kindex q (Category)
+@findex gnus-category-exit
+Return to the group buffer (@code{gnus-category-exit}).
+
+@item k
+@kindex k (Category)
+@findex gnus-category-kill
+Kill the current category (@code{gnus-category-kill}).
+
+@item c
+@kindex c (Category)
+@findex gnus-category-copy
+Copy the current category (@code{gnus-category-copy}).
+
+@item a
+@kindex a (Category)
+@findex gnus-category-add
+Add a new category (@code{gnus-category-add}).
+
+@item p
+@kindex p (Category)
+@findex gnus-category-edit-predicate
+Edit the predicate of the current category
+(@code{gnus-category-edit-predicate}).
+
+@item g
+@kindex g (Category)
+@findex gnus-category-edit-groups
+Edit the list of groups belonging to the current category
+(@code{gnus-category-edit-groups}).
+
+@item s
+@kindex s (Category)
+@findex gnus-category-edit-score
+Edit the download score rule of the current category
+(@code{gnus-category-edit-score}).
+
+@item l
+@kindex l (Category)
+@findex gnus-category-list
+List all the categories (@code{gnus-category-list}).
+@end table
+
+
+@node Category Variables
+@subsubsection Category Variables
+
+@table @code
+@item gnus-category-mode-hook
+@vindex gnus-category-mode-hook
+Hook run in category buffers.
+
+@item gnus-category-line-format
+@vindex gnus-category-line-format
+Format of the lines in the category buffer (@pxref{Formatting
+Variables}).  Legal elements are:
+
+@table @samp
+@item c
+The name of the category.
+
+@item g
+The number of groups in the category.
+@end table
+
+@item gnus-category-mode-line-format
+@vindex gnus-category-mode-line-format
+Format of the category mode line.
+
+@item gnus-agent-short-article 
+@vindex gnus-agent-short-article 
+Articles that have fewer lines than this are short.  Default 100.
+
+@item gnus-agent-long-article 
+@vindex gnus-agent-long-article 
+Articles that have more lines than this are long.  Default 200.
+
+@item gnus-agent-low-score 
+@vindex gnus-agent-low-score 
+Articles that have a score lower than this have a low score.  Default
+0. 
+
+@item gnus-agent-high-score 
+@vindex gnus-agent-high-score 
+Articles that have a score higher than this have a high score.  Default
+0. 
+
+@end table
+
+
+@node Agent Commands
+@subsection Agent Commands
+
+All the Gnus Agent commands is on the @kbd{J} submap.  The @kbd{J j}
+(@code{gnus-agent-toggle-plugged} command works in all modes, and
+toggles the plugged/unplugged state of the Gnus Agent.
+
+
+@menu
+* Group Agent Commands::
+* Summary Agent Commands::
+* Server Agent Commands::
+@end menu
+
+
+@node Group Agent Commands
+@subsubsection Group Agent Commands
+
+@table @kbd
+@item J u 
+@kindex J u (Agent Group)
+@findex gnus-agent-fetch-group
+Fetch all eligible articles in the current group
+(@code{gnus-agent-fetch-group}).
+
+@item J c
+@kindex J c (Agent Group)
+@findex gnus-enter-category-buffer
+Enter the Agent category buffer (@code{gnus-enter-category-buffer}).
+
+@item J s
+@kindex J s (Agent Group)
+@findex gnus-agent-fetch-session
+Fetch all eligible articles in all groups
+(@code{gnus-agent-fetch-session}).
+
+@item J a
+@kindex J a (Agent Group)
+@findex gnus-agent-add-group
+Add the current group to an Agent category
+(@code{gnus-agent-add-group}).
+
+@end table
+
+
+@node Summary Agent Commands
+@subsubsection Summary Agent Commands
+
+@table @kbd
+@item J #
+@kindex J # (Agent Summary)
+@findex gnus-agent-mark-article
+Mark the article for downloading (@code{gnus-agent-mark-article}).
+
+@item J M-#
+@kindex J M-# (Agent Summary)
+@findex gnus-agent-unmark-article
+Remove the downloading mark from the article
+(@code{gnus-agent-unmark-article}).
+
+@item @@
+@kindex @@ (Agent Summary)
+@findex gnus-agent-toggle-mark
+Toggle whether to download the article (@code{gnus-agent-toggle-mark}).
+
+@item J c
+@kindex J c (Agent Summary)
+@findex gnus-agent-catchup
+Mark all undownloaded articles as read (@code{gnus-agent-catchup}).
+
+@end table
+
+
+@node Server Agent Commands
+@subsubsection Server Agent Commands
+
+@table @kbd
+@item J a
+@kindex J a (Agent Server)
+@findex gnus-agent-add-server
+Add the current server to the list of servers covered by the Gnus Agent
+(@code{gnus-agent-add-server}).
+
+@item J r
+@kindex J r (Agent Server)
+@findex gnus-agent-remove-server
+Remove the current server from the list of servers covered by the Gnus
+Agent (@code{gnus-agent-remove-server}).
+
+@end table
+
+
+@node Agent Variables
+@subsection Agent Variables
+
+@table @code
+@item gnus-agent-directory
+@vindex gnus-agent-directory
+Where the Gnus Agent will store its files.  The default is
+@file{~/News/agent/}.
+
+@item gnus-agent-plugged-hook
+@vindex gnus-agent-plugged-hook
+Hook run when connecting to the network.
+
+@item gnus-agent-unplugged-hook
+@vindex gnus-agent-unplugged-hook
+Hook run when disconnecting from the network.
+
+@end table
 
 
 @node Scoring

@@ -26,28 +26,54 @@
 ;;; Code:
 
 (require 'nnheader)
+(require 'nnmail)
+(require 'gnus-start)
 (require 'nnmh)
 (require 'nnoo)
-(eval-and-compile (require 'cl))
+(eval-when-compile (require 'cl))
 
-(nnoo-declare nndraft)
+(nnoo-declare nndraft
+  nnmh)
 
-(eval-and-compile
-  (autoload 'mail-send-and-exit "sendmail"))
-
-(defvoo nndraft-directory nil
-  "Where nndraft will store its directory.")
+(defvoo nndraft-directory (nnheader-concat message-directory "drafts/")
+  "Where nndraft will store its files."
+  nnmh-current-directory)
 
 
 
+(defvoo nndraft-current-group "" nil nnmh-current-group)
+(defvoo nndraft-top-directory nil nil nnmh-directory)
+(defvoo nndraft-get-new-mail nil nil nnmh-get-new-mail)
+
 (defconst nndraft-version "nndraft 1.0")
-(defvoo nndraft-status-string "")
+(defvoo nndraft-status-string "" nnmh-status-string)
 
 
 
 ;;; Interface functions.
 
 (nnoo-define-basics nndraft)
+
+(deffoo nndraft-open-server (server &optional defs)
+  (push `(nndraft-current-group
+	  ,(file-name-nondirectory (directory-file-name nndraft-directory)))
+	defs)
+  (push `(nndraft-top-directory
+	  ,(file-name-directory (directory-file-name nndraft-directory)))
+	defs)
+  (nnoo-change-server 'nndraft server defs)
+  (cond
+   ((not (file-exists-p nndraft-directory))
+    (nndraft-close-server)
+    (nnheader-report 'nndraft "No such file or directory: %s"
+		     nndraft-directory))
+   ((not (file-directory-p (file-truename nndraft-directory)))
+    (nndraft-close-server)
+    (nnheader-report 'nndraft "Not a directory: %s" nndraft-directory))
+   (t
+    (nnheader-report 'nndraft "Opened server %s using directory %s"
+		     server nndraft-directory)
+    t)))
 
 (deffoo nndraft-retrieve-headers (articles &optional group server fetch-old)
   (save-excursion
@@ -79,23 +105,6 @@
 	(nnheader-fold-continuation-lines)
 	'headers))))
 
-(deffoo nndraft-open-server (server &optional defs)
-  (nnoo-change-server 'nndraft server defs)
-  (unless (assq 'nndraft-directory defs)
-    (setq nndraft-directory server))
-  (cond
-   ((not (file-exists-p nndraft-directory))
-    (nndraft-close-server)
-    (nnheader-report 'nndraft "No such file or directory: %s"
-		     nndraft-directory))
-   ((not (file-directory-p (file-truename nndraft-directory)))
-    (nndraft-close-server)
-    (nnheader-report 'nndraft "Not a directory: %s" nndraft-directory))
-   (t
-    (nnheader-report 'nndraft "Opened server %s using directory %s"
-		     server nndraft-directory)
-    t)))
-
 (deffoo nndraft-request-article (id &optional group server buffer)
   (when (numberp id)
     ;; We get the newest file of the auto-saved file and the
@@ -118,90 +127,55 @@
 
 (deffoo nndraft-request-restore-buffer (article &optional group server)
   "Request a new buffer that is restored to the state of ARTICLE."
-  (let ((file (nndraft-article-filename article ".state"))
-	nndraft-point nndraft-mode nndraft-buffer-name)
-    (when (file-exists-p file)
-      (load file t t t)
-      (when nndraft-buffer-name
-	(set-buffer (get-buffer-create
-		     (generate-new-buffer-name nndraft-buffer-name)))
-	(nndraft-request-article article group server (current-buffer))
-	(funcall nndraft-mode)
-	(let ((gnus-verbose-backends nil))
-	  (nndraft-request-expire-articles (list article) group server t))
-	(goto-char nndraft-point))
-      nndraft-buffer-name)))
+  (when (nndraft-request-article article group server (current-buffer))
+    (let ((gnus-verbose-backends nil))
+      (nndraft-request-expire-articles (list article) group server t))
+    t))
 
 (deffoo nndraft-request-update-info (group info &optional server)
   (setcar (cddr info) nil)
-  (when (nth 3 info)
-    (setcar (nthcdr 3 info) nil))
+  (let (marks)
+    (when (setq marks (nth 3 info))
+      (setcar (nthcdr 3 info)
+	      (if (assq 'unsend marks)
+		  (list (assq 'unsend marks))
+		nil))))
   t)
 
 (deffoo nndraft-request-associate-buffer (group)
   "Associate the current buffer with some article in the draft group."
-  (let* ((gnus-verbose-backends nil)
-	 (article (cdr (nndraft-request-accept-article
-			group (nnoo-current-server 'nndraft) t 'noinsert)))
-	 (file (nndraft-article-filename article)))
+  (let ((gnus-verbose-backends nil)
+	(buf (current-buffer))
+	 article file)
+    (nnheader-temp-write nil
+      (insert-buffer buf)
+      (setq article (cdr (nndraft-request-accept-article
+			  group (nnoo-current-server 'nndraft) t 'noinsert)))
+      (setq file (nndraft-article-filename article)))
     (setq buffer-file-name file)
     (setq buffer-auto-save-file-name (make-auto-save-file-name))
     (clear-visited-file-modtime)
     article))
 
-(deffoo nndraft-request-group (group &optional server dont-check)
-  (prog1
-      (nndraft-execute-nnmh-command
-       `(nnmh-request-group group "" ,dont-check))
-    (nnheader-report 'nndraft nnmh-status-string)))
-
-(deffoo nndraft-request-list (&optional server dir)
-  (nndraft-execute-nnmh-command
-   `(nnmh-request-list nil ,dir)))
-
-(deffoo nndraft-request-newgroups (date &optional server)
-  (nndraft-execute-nnmh-command
-   `(nnmh-request-newgroups ,date ,server)))
-
-(deffoo nndraft-request-expire-articles
-  (articles group &optional server force)
-  (let ((res (nndraft-execute-nnmh-command
-	      `(nnmh-request-expire-articles
-		',articles group ,server ,force)))
-	article)
+(deffoo nndraft-request-expire-articles (articles group &optional server force)
+  (let* ((nnmh-allow-delete-final t)
+	 (res (nndraft-execute-nnmh-command
+	       `(nnmh-request-expire-articles
+		 ',articles group ,server ,force)))
+	 article)
     ;; Delete all the "state" files of articles that have been expired.
     (while articles
       (unless (memq (setq article (pop articles)) res)
-	(let ((file (nndraft-article-filename article ".state"))
-	      (auto (nndraft-auto-save-file-name
+	(let ((auto (nndraft-auto-save-file-name
 		     (nndraft-article-filename article))))
-	  (when (file-exists-p file)
-	    (funcall nnmail-delete-file-function file))
 	  (when (file-exists-p auto)
 	    (funcall nnmail-delete-file-function auto)))))
     res))
 
 (deffoo nndraft-request-accept-article (group &optional server last noinsert)
-  (let* ((point (point))
-	 (mode major-mode)
-	 (name (buffer-name))
-	 (gnus-verbose-backends nil)
-	 (gart (nndraft-execute-nnmh-command
-		`(nnmh-request-accept-article group ,server ,last noinsert)))
-	 (state
-	  (nndraft-article-filename (cdr gart) ".state")))
-    ;; Write the "state" file.
-    (save-excursion
-      (nnheader-set-temp-buffer " *draft state*")
-      (insert (format "%S\n" `(setq nndraft-mode (quote ,mode)
-				    nndraft-point ,point
-				    nndraft-buffer-name ,name)))
-      (write-region (point-min) (point-max) state nil 'silent)
-      (kill-buffer (current-buffer)))
-    gart))
-
-(deffoo nndraft-close-group (group &optional server)
-  t)
+  (let ((gnus-verbose-backends nil))
+    (nndraft-execute-nnmh-command
+     `(nnmh-request-accept-article group ,server ,last noinsert))))
 
 (deffoo nndraft-request-create-group (group &optional server args)
   (if (file-exists-p nndraft-directory)
@@ -218,15 +192,12 @@
 ;;; Low-Level Interface
 
 (defun nndraft-execute-nnmh-command (command)
-  (let ((dir (expand-file-name nndraft-directory)))
-    (when (string-match "/$" dir)
-      (setq dir (substring dir 0 (match-beginning 0))))
-    (string-match "/[^/]+$" dir)
-    (let ((group (substring dir (1+ (match-beginning 0))))
-          (nnmh-directory (substring dir 0 (1+ (match-beginning 0))))
-	  (nnmail-keep-last-article nil)
-	  (nnmh-get-new-mail nil))
-      (eval command))))
+  (let* ((dir (directory-file-name (expand-file-name nndraft-directory)))
+	 (group (file-name-nondirectory dir))
+	 (nnmh-directory (file-name-directory dir))
+	 (nnmail-keep-last-article nil)
+	 (nnmh-get-new-mail nil))
+    (eval command)))
 
 (defun nndraft-article-filename (article &rest args)
   (apply 'concat
@@ -242,6 +213,13 @@
 	  (setq buffer-file-name file)
 	  (make-auto-save-file-name))
       (kill-buffer (current-buffer)))))
+
+(nnoo-map-functions nndraft
+  (nnmh-retrieve-headers 0 nndraft-current-group 0 0)
+  (nnmh-request-group nndraft-current-group 0 0)
+  (nnmh-close-group nndraft-current-group 0)
+  (nnmh-request-list (nnoo-current-server 'nndraft) nndraft-directory)
+  (nnmh-request-newsgroups (nnoo-current-server 'nndraft) nndraft-directory))
 
 (provide 'nndraft)
 

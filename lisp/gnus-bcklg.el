@@ -122,7 +122,8 @@
 		     (1+ beg) 'gnus-backlog (current-buffer) (point-max)))
 	      (delete-region beg end)
 	      ;; Return success.
-	      t)))))))
+	      t))
+	  (setq gnus-backlog-articles (delq ident gnus-backlog-articles)))))))
 
 (defun gnus-backlog-request-article (group number buffer)
   (when (numberp number)

@@ -60,6 +60,7 @@
 
 (defvoo nnmh-status-string "")
 (defvoo nnmh-group-alist nil)
+(defvoo nnmh-allow-delete-final nil)
 
 
 
@@ -76,8 +77,6 @@
 	   (large (and (numberp nnmail-large-newsgroup)
 		       (> number nnmail-large-newsgroup)))
 	   (count 0)
-	   ;; 1997/8/12 by MORIOKA Tomohiko
-	   ;;	for XEmacs/mule.
 	   (pathname-coding-system 'binary)
 	   beg article)
       (nnmh-possibly-change-directory newsgroup server)
@@ -137,8 +136,6 @@
   (let ((file (if (stringp id)
 		  nil
 		(concat nnmh-current-directory (int-to-string id))))
-	;; 1997/8/12 by MORIOKA Tomohiko
-	;;	for XEmacs/mule.
 	(pathname-coding-system 'binary)
 	(nntp-server-buffer (or buffer nntp-server-buffer)))
     (and (stringp file)
@@ -149,8 +146,6 @@
 
 (deffoo nnmh-request-group (group &optional server dont-check)
   (let ((pathname (nnmail-group-pathname group nnmh-directory))
-	;; 1997/8/12 by MORIOKA Tomohiko
-	;;	for XEmacs/mule.
 	(pathname-coding-system 'binary)
 	dir)
     (cond
@@ -409,8 +404,6 @@
     (nnmh-open-server server))
   (when newsgroup
     (let ((pathname (nnmail-group-pathname newsgroup nnmh-directory))
-	  ;; 1997/8/12 by MORIOKA Tomohiko
-	  ;;	for XEmacs/mule.
 	  (pathname-coding-system 'binary))
       (if (file-directory-p pathname)
 	  (setq nnmh-current-directory pathname)
@@ -556,9 +549,12 @@
   (let ((path (concat nnmh-current-directory (int-to-string article))))
     ;; Writable.
     (and (file-writable-p path)
-	 ;; We can never delete the last article in the group.
-	 (not (eq (cdr (nth 1 (assoc group nnmh-group-alist)))
-		  article)))))
+	 (or
+	  ;; We can never delete the last article in the group.
+	  (not (eq (cdr (nth 1 (assoc group nnmh-group-alist)))
+		   article))
+	  ;; Well, we can.
+	  nnmh-allow-delete-final))))
 
 (provide 'nnmh)
 

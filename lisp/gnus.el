@@ -244,7 +244,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number  "0.2"
+(defconst gnus-version-number "0.3"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Quassia Gnus v%s" gnus-version-number)
@@ -1445,7 +1445,8 @@ want."
     (expirable . expire) (killed . killed)
     (bookmarks . bookmark) (dormant . dormant)
     (scored . score) (saved . save)
-    (cached . cache) (downloadable . download)))
+    (cached . cache) (downloadable . download)
+    (unsendable . unsend)))
 
 (defvar gnus-headers-retrieved-by nil)
 (defvar gnus-article-reply nil)
@@ -1696,11 +1697,12 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-async-prefetch-article gnus-async-prefetch-remove-group
       gnus-async-halt-prefetch)
      ("gnus-agent" gnus-open-agent gnus-agent-get-function
-      gnus-agent-save-groups gnus-agent-save-active)
+      gnus-agent-save-groups gnus-agent-save-active gnus-agent-method-p)
      ("gnus-agent" :interactive t
       gnus-unplugged)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
-      gnus-summary-save-article-vm))))
+      gnus-summary-save-article-vm)
+     ("gnus-draft" :interactive t gnus-draft-mode))))
 
 ;;; gnus-sum.el thingies
 

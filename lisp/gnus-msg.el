@@ -1046,27 +1046,6 @@ this is a reply."
 		(insert " ")))
 	    (insert "\n")))))))
 
-(defun gnus-summary-send-draft ()
-  "Enter a mail/post buffer to edit and send the draft."
-  (interactive)
-  (gnus-set-global-variables)
-  (let (buf)
-    (if (not (setq buf (gnus-request-restore-buffer
-			(gnus-summary-article-number) gnus-newsgroup-name)))
-	(error "Couldn't restore the article")
-      (switch-to-buffer buf)
-      (when (eq major-mode 'news-reply-mode)
-	(local-set-key "\C-c\C-c" 'gnus-inews-news))
-      ;; Insert the separator.
-      (goto-char (point-min))
-      (search-forward "\n\n")
-      (forward-char -1)
-      (insert mail-header-separator)
-      ;; Configure windows.
-      (let ((gnus-draft-buffer (current-buffer)))
-	(gnus-configure-windows 'draft t)
-	(goto-char (point))))))
-
 (gnus-add-shutdown 'gnus-inews-close 'gnus)
 
 (defun gnus-inews-close ()

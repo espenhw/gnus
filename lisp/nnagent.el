@@ -104,6 +104,9 @@
 (deffoo nnagent-request-newgroups (date server)
   nil)
 
+(deffoo nnagent-request-post (&optional server)
+  (gnus-request-accept-article "nndraft:draft"))
+
 ;; Use nnml functions for just about everything.
 (nnoo-import nnagent
   (nnml))

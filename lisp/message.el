@@ -268,10 +268,10 @@ If t, use `message-user-organization-file'."
   :type 'file
   :group 'message-headers)
 
-(defcustom message-autosave-directory "~/"
-  ; (concat (file-name-as-directory message-directory) "drafts/")
-  "*Directory where message autosaves buffers.
-If nil, message won't autosave."
+(defcustom message-autosave-directory
+  (nnheader-concat message-directory "drafts/")
+  "*Directory where Message autosaves buffers.
+If nil, Message won't autosave."
   :group 'message-buffers
   :type 'directory)
 
@@ -805,6 +805,7 @@ The cdr of ech entry is a function for applying the face to a region.")
 (defvar message-buffer-list nil)
 (defvar message-this-is-news nil)
 (defvar message-this-is-mail nil)
+(defvar message-draft-article nil)
 
 ;; Byte-compiler warning
 (defvar gnus-active-hashtb)
@@ -1238,6 +1239,7 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (make-local-variable 'message-exit-actions) 
   (make-local-variable 'message-kill-actions)
   (make-local-variable 'message-postpone-actions)
+  (make-local-variable 'message-draft-article)
   (set-syntax-table message-mode-syntax-table)
   (use-local-map message-mode-map)
   (setq local-abbrev-table message-mode-abbrev-table)
@@ -1286,6 +1288,7 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
     (if (fboundp 'mail-abbrevs-setup)
 	(mail-abbrevs-setup)
       (funcall (intern "mail-aliases-setup"))))
+  (message-set-auto-save-file-name)
   (run-hooks 'text-mode-hook 'message-mode-hook))
 
 
@@ -1777,10 +1780,10 @@ the user from the mailer."
 	;; (mail-hist-put-headers-into-history))
 	(run-hooks 'message-sent-hook)
 	(message "Sending...done")
-	;; If buffer has no file, mark it as unmodified and delete autosave.
-	(unless buffer-file-name
-	  (set-buffer-modified-p nil)
-	  (delete-auto-save-file-if-necessary t))
+	;; Mark the buffer as unmodified and delete autosave.
+	(set-buffer-modified-p nil)
+	(delete-auto-save-file-if-necessary t)
+	(message-disassociate-draft)
 	;; Delete other mail buffers and stuff.
 	(message-do-send-housekeeping)
 	(message-do-actions message-send-actions)
@@ -2040,12 +2043,14 @@ to find out how to use this."
 	      (replace-match "\n")
 	      (backward-char 1))
 	    (run-hooks 'message-send-news-hook)
-	    (require (car method))
-	    (funcall (intern (format "%s-open-server" (car method)))
-		     (cadr method) (cddr method))
-	    (setq result
-		  (funcall (intern (format "%s-request-post" (car method)))
-			   (cadr method))))
+	    ;;(require (car method))
+	    ;;(funcall (intern (format "%s-open-server" (car method)))
+	    ;;(cadr method) (cddr method))
+	    ;;(setq result
+	    ;;	  (funcall (intern (format "%s-request-post" (car method)))
+	    ;;		   (cadr method)))
+	    (gnus-open-server method)
+	    (setq result (gnus-request-post method)))
 	(kill-buffer tembuf))
       (set-buffer messbuf)
       (if result
@@ -2998,7 +3003,6 @@ Headers already prepared in the buffer are not modified."
 		   (copy-sequence message-required-mail-headers))))))
   (run-hooks 'message-signature-setup-hook)
   (message-insert-signature)
-  (message-set-auto-save-file-name)
   (save-restriction
     (message-narrow-to-headers)
     (run-hooks 'message-header-setup-hook))
@@ -3011,25 +3015,13 @@ Headers already prepared in the buffer are not modified."
 (defun message-set-auto-save-file-name ()
   "Associate the message buffer with a file in the drafts directory."
   (when message-autosave-directory
-    (unless (file-exists-p message-autosave-directory)
-      (make-directory message-autosave-directory t))
-    (let ((name (make-temp-name
-		 (expand-file-name
-		  (concat (file-name-as-directory message-autosave-directory)
-			  "msg."
-			  (nnheader-replace-chars-in-string
-			   (nnheader-replace-chars-in-string
-			    (buffer-name) ?* ?.)
-			   ?/ ?-))))))
-      (setq buffer-auto-save-file-name
-	    (save-excursion
-	      (prog1
-		  (progn
-		    (set-buffer (get-buffer-create " *draft tmp*"))
-		    (setq buffer-file-name name)
-		    (make-auto-save-file-name))
-		(kill-buffer (current-buffer)))))
-      (clear-visited-file-modtime))))
+    (setq message-draft-article (nndraft-request-associate-buffer "drafts"))
+    (clear-visited-file-modtime)))
+
+(defun message-disassociate-draft ()
+  "Disassociate the message buffer from the drafts directory."
+  (nndraft-request-expire-articles
+   (list message-draft-article) "drafts" nil t))
 
 
 
@@ -3702,7 +3694,8 @@ regexp varstr."
 	(regexp "^gnus\\|^nn\\|^message"))
     (mapcar
      (lambda (local)
-       (when (and (car local)
+       (when (and (consp local)
+		  (car local)
 		  (string-match regexp (symbol-name (car local))))
 	 (ignore-errors
 	   (set (make-local-variable (car local))
