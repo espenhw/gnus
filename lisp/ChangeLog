@@ -1,3 +1,13 @@
+2001-07-30 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	Originally from Andreas Fuchs <asf@void.at>
+
+	* mml2015.el (mml2015-trust-boundaries-alist)
+	(mml2015-gpg-pretty-print-fpr): New.
+	(mml2015-gpg-extract-signature-details): More details, rename from
+	`m-g-e-from'.
+	(mml2015-gpg-verify): Use them.
+	(mml2015-gpg-clear-verify): Use them.
+
 2001-07-31  Simon Josefsson  <jas@extundo.com>
 
 	* mml-smime.el (mml-smime-sign, mml-smime-encrypt): Goto end of

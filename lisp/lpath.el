@@ -37,6 +37,7 @@
 	      display-time-mail-function imap-password mail-mode-hook
 	      filladapt-mode
 	      mc-pgp-always-sign
+	      gpg-unabbrev-trust-alist
 	      nnoo-definition-alist
 	      url-current-callback-func url-be-asynchronous
 	      url-current-callback-data url-working-buffer

@@ -60,6 +60,18 @@
 
 (defvar mml2015-result-buffer nil)
 
+(defvar mml2015-trust-boundaries-alist
+  '((trust-undefined . nil)
+    (trust-none      . nil)
+    (trust-marginal  . t)
+    (trust-fully     . t)
+    (trust-ultimate  . t))
+  "Trust boundaries for a signer's GnuPG key.
+This alist contains pairs of the form (trust-symbol . boolean), with
+symbols that are contained in `gpg-unabbrev-trust-alist'. The boolean
+specifies whether the given trust value is good enough to be trusted
+by you.")
+
 ;;; mailcrypt wrapper
 
 (eval-and-compile
@@ -369,15 +381,54 @@
       (mm-set-handle-multipart-parameter
        mm-security-handle 'gnus-info "Failed"))))
 
-(defun mml2015-gpg-extract-from ()
+(defun mml2015-gpg-pretty-print-fpr (fingerprint)
+  (let* ((result "")
+         (fpr-length (string-width fingerprint))
+         (n-slice 0)
+         slice)
+    (setq fingerprint (string-to-list fingerprint))
+    (while fingerprint
+      (setq fpr-length (- fpr-length 4))
+      (setq slice (butlast fingerprint fpr-length))
+      (setq fingerprint (nthcdr 4 fingerprint))
+      (setq n-slice (1+ n-slice))
+      (setq result
+            (concat
+             result
+             (case n-slice
+               (1  slice)
+               (otherwise (concat " " slice))))))
+    result))
+          
+(defun mml2015-gpg-extract-signature-details ()
   (goto-char (point-min))
-  (if (re-search-forward "^gpg: Good signature from \"\\(.*\\)\"$" nil t)
-      (match-string 1)
-    "From unknown user"))
+  (if (boundp 'gpg-unabbrev-trust-alist)
+      (let* ((signer (and (re-search-forward
+			   "^\\[GNUPG:\\] GOODSIG [0-9A-Za-z]* \\(.*\\)$"
+			   nil t)
+			  (match-string 1)))
+         (fprint (and (re-search-forward
+		       "^\\[GNUPG:\\] VALIDSIG \\([0-9a-zA-Z]*\\) "
+		       nil t)
+                      (match-string 1)))
+         (trust  (and (re-search-forward "^\\[GNUPG:\\] \\(TRUST_.*\\)$" nil t)
+                      (match-string 1)))
+         (trust-good-enough-p
+	  (cdr (assoc (cdr (assoc trust gpg-unabbrev-trust-alist))
+		      mml2015-trust-boundaries-alist))))
+	(if (and signer trust fprint)
+	    (concat signer
+		    (unless trust-good-enough-p
+		      (concat "\nUntrusted, Fingerprint: "
+			      (mml2015-gpg-pretty-print-fpr fprint))))
+	  (error "From unknown user")))
+    (if (re-search-forward "^gpg: Good signature from \"\\(.*\\)\"$" nil t)
+	(match-string 1)
+      "From unknown user")))
 
 (defun mml2015-gpg-verify (handle ctl)
   (catch 'error
-    (let (part message signature)
+    (let (part message signature info-is-set-p)
       (unless (setq part (mm-find-raw-part-by-type
 			  ctl (or (mm-handle-multipart-ctl-parameter
 				   ctl 'protocol)
@@ -407,18 +458,25 @@
 		    (error
 		     (mm-set-handle-multipart-parameter
 		      mm-security-handle 'gnus-details (mml2015-format-error err))
+                     (mm-set-handle-multipart-parameter
+                      mm-security-handle 'gnus-info "Error.")
+                     (setq info-is-set-p t)
 		     nil)
 		    (quit
 		     (mm-set-handle-multipart-parameter
 		      mm-security-handle 'gnus-details "Quit.")
+                     (mm-set-handle-multipart-parameter
+                      mm-security-handle 'gnus-info "Quit.")
+                     (setq info-is-set-p t)
 		     nil))
-	    (mm-set-handle-multipart-parameter
-	     mm-security-handle 'gnus-info "Failed")
+            (unless info-is-set-p
+              (mm-set-handle-multipart-parameter
+               mm-security-handle 'gnus-info "Failed"))
 	    (throw 'error handle)))
 	(mm-set-handle-multipart-parameter
 	 mm-security-handle 'gnus-info
 	 (with-current-buffer mml2015-result-buffer
-	   (mml2015-gpg-extract-from))))
+	   (mml2015-gpg-extract-signature-details))))
       handle)))
 
 (defun mml2015-gpg-clear-verify ()
@@ -440,7 +498,7 @@
       (mm-set-handle-multipart-parameter
        mm-security-handle 'gnus-info
        (with-current-buffer mml2015-result-buffer
-	 (mml2015-gpg-extract-from)))
+	 (mml2015-gpg-extract-signature-details)))
     (mm-set-handle-multipart-parameter
      mm-security-handle 'gnus-info "Failed")))
 
