@@ -110,9 +110,8 @@ The following commands are available:
   (setq buffer-read-only t)
   (run-hooks 'gnus-server-mode-hook))
 
-(defun gnus-server-insert-server-line (sformat name method)
-  (let* ((sformat (or sformat gnus-server-line-format-spec))
-	 (how (car method))
+(defun gnus-server-insert-server-line (name method)
+  (let* ((how (car method))
 	 (where (nth 1 method))
 	 (elem (assoc method gnus-opened-servers))
 	 (status (cond ((eq (nth 1 elem) 'denied)
@@ -121,13 +120,14 @@ The following commands are available:
 			    (eq (nth 1 elem) 'ok))
 			"(open)")
 		       (t
-			"(closed)")))
-	 b)
+			"(closed)"))))
     (beginning-of-line)
-    (setq b (point))
-    ;; Insert the text.
-    (eval sformat)
-    (add-text-properties b (1+ b) (list 'gnus-server (intern name)))))
+    (add-text-properties
+     (point)
+     (prog1 (1+ (point))
+       ;; Insert the text.
+       (eval gnus-server-line-format-spec))
+     (list 'gnus-server (intern name)))))
 
 (defun gnus-enter-server-buffer ()
   "Set up the server buffer."
@@ -159,14 +159,14 @@ The following commands are available:
     ;; First we do the real list of servers.
     (while alist
       (push (cdr (setq server (pop alist))) done)
-      (gnus-server-insert-server-line nil (car server) (cdr server)))
+      (when server
+	(gnus-server-insert-server-line (car server) (cdr server))))
     ;; Then we insert the list of servers that have been opened in
     ;; this session.
     (while opened 
       (unless (member (car (car opened)) done)
 	(gnus-server-insert-server-line 
-	 nil (format "%s:%s" (car (car (car opened))) 
-		     (nth 1 (car (car opened))))
+	 (format "%s:%s" (car (car (car opened))) (nth 1 (car (car opened))))
 	 (car (car opened))))
       (setq opened (cdr opened))))
   (goto-char (point-min))
@@ -195,7 +195,7 @@ The following commands are available:
 	    (delete-region (progn (beginning-of-line) (point))
 			   (progn (forward-line 1) (point))))
 	(let ((entry (assoc server gnus-server-alist)))
-	  (gnus-server-insert-server-line nil (car entry) (cdr entry))
+	  (gnus-server-insert-server-line (car entry) (cdr entry))
 	  (gnus-server-position-point))))))
 
 (defun gnus-server-set-info (server info)

@@ -233,7 +233,7 @@ used as score."
 	  (list (list ?t (current-time-string) "temporary") 
 		'(?p perm "permanent") '(?i now "immediate")))
 	 (mimic gnus-score-mimic-keymap)
-	 hchar entry temporary tchar pchar end type)
+	 hchar entry temporary tchar pchar end type match)
     ;; First we read the header to score.
     (while (not hchar)
       (if mimic
@@ -340,10 +340,20 @@ used as score."
     ;; We have all the data, so we enter this score.
     (if end
 	()
+      (setq match (if (string= (nth 2 entry) "") ""
+		    (gnus-summary-header (or (nth 2 entry) (nth 1 entry)))))
+      
+      ;; Modify the match, perhaps.
+      (cond 
+       ((equal (nth 1 entry) "xref")
+	(when (string-match "^Xref: *" match)
+	  (setq match (substring match (match-end 0))))
+	(when (string-match "^[^:]* +" match)
+	  (setq match (substring match (match-end 0))))))
+
       (gnus-summary-score-entry
        (nth 1 entry)			; Header
-       (if (string= (nth 2 entry) "") ""
-	 (gnus-summary-header (or (nth 2 entry) (nth 1 entry)))) ; Match
+       match				; Match
        type				; Type
        (if (eq 's score) nil score)     ; Score
        (if (eq 'perm temporary)         ; Temp

@@ -113,13 +113,14 @@ variable to \"^nnml\".")
 
 (defun gnus-cache-file-name (group article)
   (concat (file-name-as-directory gnus-cache-directory)
-	  (if (gnus-use-long-file-name 'not-cache)
-	      group 
-	    (let ((group (concat group "")))
-	      (if (string-match ":" group)
-		  (aset group (match-beginning 0) ?/))
-	      (gnus-replace-chars-in-string group ?. ?/)))
-	  "/" (if (stringp article) article (int-to-string article))))
+	  (file-name-as-directory
+	   (if (gnus-use-long-file-name 'not-cache)
+	       group 
+	     (let ((group (concat group "")))
+	       (if (string-match ":" group)
+		   (aset group (match-beginning 0) ?/))
+	       (gnus-replace-chars-in-string group ?. ?/))))
+	  (if (stringp article) article (int-to-string article))))
 
 (defun gnus-cache-possibly-enter-article 
   (group article headers ticked dormant unread)

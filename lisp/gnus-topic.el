@@ -370,9 +370,12 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 	 (entries (gnus-topic-find-groups (car type)))
 	 (visiblep (eq (nth 1 type) 'visible)))
     ;; Insert the topic line.
-    (gnus-delete-line)
-    (gnus-topic-insert-topic-line 
-     (car type) visiblep (not (eq (nth 2 type) 'hidden)) level entries)))
+    (if topic
+	(progn
+	  (gnus-delete-line)
+	  (gnus-topic-insert-topic-line 
+	   (car type) visiblep
+	   (not (eq (nth 2 type) 'hidden)) level entries)))))
 
 ;;; Topic mode, commands and keymap.
 
@@ -402,7 +405,7 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
   (define-key gnus-group-topic-map "r" 'gnus-topic-rename)
   (define-key gnus-group-topic-map "\177" 'gnus-topic-delete)
 
-  (define-key gnus-group-topic-map gnus-mouse-2 'gnus-mouse-pick-topic)
+  (define-key gnus-topic-mode-map gnus-mouse-2 'gnus-mouse-pick-topic)
   )
 
 ;;;###autoload
@@ -551,9 +554,9 @@ group."
 (defun gnus-topic-mark-topic (topic)
   "Mark all groups in the topic with the process mark."
   (interactive (list (gnus-group-parent-topic)))
-  (let ((groups (gnus-topic-find-groups topic)))
+  (let ((groups (cdr (gnus-topic-find-groups topic))))
     (while groups
-      (gnus-group-set-mark (pop groups)))))
+      (gnus-group-set-mark (gnus-info-group (nth 2 (pop groups)))))))
 
 (defun gnus-topic-get-new-news-this-topic (&optional n)
   "Check for new news in the current topic."
@@ -639,5 +642,7 @@ If UNINDENT, remove an indentation."
       (gnus-topic-goto-topic topic)
       (gnus-topic-kill-group)
       (gnus-topic-create-topic topic grandparent))))
+
+(provide 'gnus-topic)
 
 ;;; gnus-topic.el ends here

@@ -277,6 +277,7 @@ headers.")
 (defvar gnus-post-news-buffer "*post-news*")
 (defvar gnus-mail-buffer "*mail*")
 (defvar gnus-summary-send-map nil)
+(defvar gnus-send-bounce-map nil)
 (defvar gnus-article-copy nil)
 (defvar gnus-reply-subject nil)
 (defvar gnus-add-to-address nil)
@@ -305,13 +306,17 @@ headers.")
 (define-key gnus-summary-send-map "r" 'gnus-summary-reply)
 (define-key gnus-summary-send-map "R" 'gnus-summary-reply-with-original)
 (define-key gnus-summary-send-map "m" 'gnus-summary-mail-other-window)
-(define-key gnus-summary-send-map "Db" 'gnus-summary-resend-bounced-mail)
-(define-key gnus-summary-send-map "Dc" 'gnus-summary-send-draft)
 (define-key gnus-summary-send-map "u" 'gnus-uu-post-news)
 (define-key gnus-summary-send-map "om" 'gnus-summary-mail-forward)
 (define-key gnus-summary-send-map "op" 'gnus-summary-post-forward)
 (define-key gnus-summary-send-map "Om" 'gnus-uu-digest-mail-forward)
 (define-key gnus-summary-send-map "Op" 'gnus-uu-digest-post-forward)
+
+(define-prefix-command 'gnus-send-bounce-map)
+(define-key gnus-summary-send-map "D" 'gnus-send-bounce-map)
+(define-key gnus-send-bounce-map "b" 'gnus-summary-resend-bounced-mail)
+(define-key gnus-send-bounce-map "c" 'gnus-summary-send-draft)
+(define-key gnus-send-bounce-map "r" 'gnus-summary-resend-message)
 
 ;;; Internal functions.
 
@@ -1041,7 +1046,28 @@ called."
 	   (delete-region (progn (beginning-of-line) (point))
 			  (progn (forward-line 1) (point))))
       (setq headers (cdr headers)))))
-  
+
+;;; Since the X-Newsreader/X-Mailer are ``vanity'' headers, they might
+;;; as well include the Emacs version as well.
+;;; The following function works with later GNU Emacs, and XEmacs.
+(defun gnus-extended-version ()
+  "Stringified Gnus version and Emacs version"
+  (interactive)
+  (concat
+   gnus-version
+   "/"
+   (cond
+    ((string-match "^\\([0-9]+\\.[0-9]+\\)\\.[.0-9]+$" emacs-version)
+     (concat "Emacs " (substring emacs-version
+				 (match-beginning 1)
+				 (match-end 1))))
+    ((string-match "\\([A-Z]*[Mm][Aa][Cc][Ss]\\)" emacs-version)
+     (concat (substring emacs-version
+			(match-beginning 1)
+			(match-end 1))
+	     (format " %d.%d" emacs-major-version emacs-minor-version)))
+    (t emacs-version))))
+
 (defun gnus-inews-insert-headers (&optional headers)
   "Prepare article headers.
 Headers already prepared in the buffer are not modified.
@@ -1057,8 +1083,8 @@ Headers in `gnus-required-headers' will be generated."
 	(To nil)
 	(Distribution nil)
 	(Lines (gnus-inews-lines))
-	(X-Newsreader gnus-version)
-	(X-Mailer gnus-version)
+	(X-Newsreader (gnus-extended-version))
+	(X-Mailer (gnus-extended-version))
 	(headers (or headers gnus-required-headers))
 	(case-fold-search t)
 	header value elem)
@@ -1142,7 +1168,7 @@ Headers in `gnus-required-headers' will be generated."
 		  (forward-line -1))
 	      ;; The value of this header was empty, so we clear
 	      ;; totally and insert the new value.
-	      (delete-region (point) (gnus-point-at-bol))
+	      (delete-region (point) (gnus-point-at-eol))
 	      (insert value))
 	    ;; Add the deletable property to the headers that require it.
 	    (and (memq header gnus-deletable-headers)
@@ -1478,6 +1504,35 @@ Customize the variable gnus-mail-forward-method to use another mailer."
       (gnus-forward-using-post gnus-article-copy)
     (gnus-mail-forward gnus-article-copy)))
 
+(defun gnus-summary-resend-message (address)
+  "Resend the current article to ADDRESS."
+  (interactive "sResend message to: ")
+  (gnus-summary-select-article)
+  (save-excursion
+    (let (resent)
+      ;; We first set up a normal mail buffer.
+      (nnheader-set-temp-buffer " *Gnus resend*")
+      (gnus-mail-setup 'new address)
+      ;; Insert our usual headers.
+      (gnus-inews-narrow-to-headers)
+      (let ((headers '(From Date To Message-ID Organization)))
+	(gnus-inews-insert-headers headers))
+      (goto-char (point-min))
+      ;; Rename them all to "Resent-*".
+      (while (re-search-forward "^" nil t)
+	(insert "Resent-"))
+      (widen)
+      (delete-region (point) (point-max))
+      ;; Insert the message to be resent.
+      (insert-buffer-substring gnus-original-article-buffer)
+      (goto-char (point-min))
+      (search-forward "\n\n")
+      (forward-char -1)
+      (insert mail-header-separator)
+      ;; Send it.
+      (mail-send)
+      (kill-buffer (current-buffer)))))
+
 (defun gnus-summary-post-forward ()
   "Forward the current article to a newsgroup."
   (interactive)
@@ -1506,7 +1561,12 @@ Customize the variable `gnus-mail-other-window-method' to use another
 mailer."
   (interactive)
   (gnus-set-global-variables)
-  (gnus-new-mail))
+  (gnus-new-mail
+   ;; We might want to prompt here.
+   (when (and gnus-interactive-post
+	      (not gnus-expert-user))
+     (read-string "To: ")))
+  (gnus-configure-windows 'summary-mail 'force))
 
 (defun gnus-new-mail (&optional to)
   (let (subject)

@@ -658,7 +658,7 @@ thus making them effectively non-existent.")
   "*All headers that match this regexp will be hidden.
 If `gnus-visible-headers' is non-nil, this variable will be ignored.")
 
-(defvar gnus-visible-headers "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copy-To:"
+(defvar gnus-visible-headers "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Resent-"
   "*All headers that do not match this regexp will be hidden.
 If this variable is non-nil, `gnus-ignored-headers' will be ignored.")
 
@@ -1435,7 +1435,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.17"
+(defconst gnus-version "September Gnus v0.18"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -3704,9 +3704,14 @@ The following commands are available:
    (t
     (or level gnus-group-default-list-level gnus-level-subscribed))))
   
+;;;###autoload
+(defun gnus-slave-no-server (&optional arg)
+  "Read network news as a slave, without connecting to local server"
+  (interactive "P")
+  (gnus-no-server arg t))
 
 ;;;###autoload
-(defun gnus-no-server (&optional arg)
+(defun gnus-no-server (&optional arg slave)
   "Read network news.
 If ARG is a positive number, Gnus will use that as the
 startup level.  If ARG is nil, Gnus will be started at level 2. 
@@ -3716,7 +3721,7 @@ As opposed to `gnus', this command will not connect to the local server."
   (interactive "P")
   (make-local-variable 'gnus-group-use-permanent-levels)
   (setq gnus-group-use-permanent-levels t)
-  (gnus (or arg (1- gnus-level-default-subscribed)) t))
+  (gnus (or arg (1- gnus-level-default-subscribed)) t slave))
 
 ;;;###autoload
 (defun gnus-slave (&optional arg)
@@ -4267,7 +4272,7 @@ increase the score of each group you read."
 (defalias 'gnus-group-remove-excess-properties 'ignore)
 
 (defun gnus-group-insert-group-line 
-  (gnus-tmp-group gnus-tmp-level gnus-tmp-marked gnus-tmp-number
+  (gnus-tmp-group gnus-tmp-level gnus-tmp-marked number
 		  gnus-tmp-method)
   "Insert a group line in the group buffer."
   (let* ((gnus-tmp-active (gnus-active gnus-tmp-group))
@@ -4276,11 +4281,11 @@ increase the score of each group you read."
 	      (1+ (- (cdr gnus-tmp-active) (car gnus-tmp-active)))
 	    0))
 	 (gnus-tmp-number-of-unread 
-	  (if (numberp gnus-tmp-number) (int-to-string (max 0 gnus-tmp-number))
+	  (if (numberp number) (int-to-string (max 0 number))
 	    "*"))
 	 (gnus-tmp-number-of-read
-	  (if (numberp gnus-tmp-number)
-	      (max 0 (- gnus-tmp-number-total gnus-tmp-number))
+	  (if (numberp number)
+	      (max 0 (- gnus-tmp-number-total number))
 	    "*"))
 	 (gnus-tmp-subscribed
 	  (cond ((<= gnus-tmp-level gnus-level-subscribed) ? )
@@ -4305,14 +4310,14 @@ increase the score of each group you read."
 	      (format "(%s:%s)" (car gnus-tmp-method)
 		      (car (cdr gnus-tmp-method))) ""))
 	 (gnus-tmp-marked 
-	  (if (and (numberp gnus-tmp-number) 
-		   (zerop gnus-tmp-number)
+	  (if (and (numberp number) 
+		   (zerop number)
 		   (cdr (assq 'tick gnus-tmp-marked)))
 	      ?* ? ))
 	 (gnus-tmp-number
-	  (cond ((eq gnus-tmp-number t) "*" )
-		((numberp gnus-tmp-number) (int-to-string gnus-tmp-number))
-		(t gnus-tmp-number)))
+	  (cond ((eq number t) "*" )
+		((numberp number) (int-to-string number))
+		(t number)))
 	 (gnus-tmp-process-marked
 	  (if (member gnus-tmp-group gnus-group-marked)
 	      gnus-process-mark ? ))
@@ -4325,7 +4330,7 @@ increase the score of each group you read."
        ;; Insert the text.
        (eval gnus-group-line-format-spec))
      `(gnus-group ,(gnus-intern-safe gnus-tmp-group gnus-active-hashtb)
-       gnus-unread ,(if (numberp gnus-tmp-number)
+       gnus-unread ,(if (numberp number)
 			(string-to-int gnus-tmp-number-of-unread)
 		      t)
        gnus-marked ,gnus-tmp-marked
@@ -4435,9 +4440,7 @@ If FIRST-TOO, the current line is also eligible as a target."
 			     (and
 			      (let ((unread 
 				     (get-text-property (point) 'gnus-unread)))
-				;(and unread
-				     (or (eq unread t)
-					 (and unread (> unread 0))));)
+				(and (numberp unread) (> unread 0)))
 			      (setq lev (get-text-property (point)
 							   'gnus-level))
 			      (<= lev gnus-level-subscribed)))
@@ -4677,10 +4680,11 @@ Returns whether the fetching was successful or not."
 
 (defun gnus-group-goto-group (group)
   "Goto to newsgroup GROUP."
-  (let ((b (text-property-any (point-min) (point-max) 
-			      'gnus-group (gnus-intern-safe
-					   group gnus-active-hashtb))))
-    (and b (goto-char b))))
+  (when group
+    (let ((b (text-property-any (point-min) (point-max) 
+				'gnus-group (gnus-intern-safe
+					     group gnus-active-hashtb))))
+      (and b (goto-char b)))))
 
 (defun gnus-group-next-group (n)
   "Go to next N'th newsgroup.
@@ -5642,7 +5646,8 @@ If N is negative, this group and the N-1 previous groups will be checked."
   (when (and group (gnus-activate-group group 'scan))
     (gnus-get-unread-articles-in-group 
      (gnus-get-info group) (gnus-active group))
-    (gnus-group-update-group-line)
+    (when (gnus-group-goto-group group)
+      (gnus-group-update-group-line))
     t))
 
 (defun gnus-group-fetch-faq (group &optional faq-dir)
@@ -7187,19 +7192,17 @@ If NO-DISPLAY, don't generate a summary buffer."
   (let (id heads)
     (mapatoms
      (lambda (refs)
-       (if (not (car (symbol-value refs)))
-	   (progn
-	     (setq heads (cdr (symbol-value refs)))
-	     (while heads
-	       (if (not (memq (mail-header-number (car (car heads)))
-			      gnus-newsgroup-dormant))
-		   (progn
-		     (setq id (symbol-name refs))
-		     (while (and (setq id (gnus-build-get-header id))
-				 (not (car (gnus-gethash 
-					    id gnus-newsgroup-dependencies)))))
-		     (setq heads nil))
-		 (setq heads (cdr heads)))))))
+       (when (car (symbol-value refs))
+	 (setq heads (cdr (symbol-value refs)))
+	 (while heads
+	   (if (memq (mail-header-number (car (car heads)))
+		     gnus-newsgroup-dormant)
+	       (setq heads (cdr heads))
+	     (setq id (symbol-name refs))
+	     (while (and (setq id (gnus-build-get-header id))
+			 (not (car (gnus-gethash 
+				    id gnus-newsgroup-dependencies)))))
+	     (setq heads nil)))))
      gnus-newsgroup-dependencies)))
 
 (defun gnus-build-get-header (id)
@@ -7226,9 +7229,10 @@ If NO-DISPLAY, don't generate a summary buffer."
 			     (read (current-buffer)) deps))
 	       (gnus-parent-id (mail-header-references header))))))
       (when header
-	(setq gnus-newsgroup-headers (cons header gnus-newsgroup-headers)
-	      gnus-newsgroup-ancient (cons (mail-header-number header)
-					   gnus-newsgroup-ancient))))))
+	(let ((number (mail-header-number header)))
+	  (push number gnus-newsgroup-limit)
+	  (push header gnus-newsgroup-headers)
+	  (push number gnus-newsgroup-ancient))))))
 
 (defun gnus-rebuild-thread (id)
   "Rebuild the thread containing ID."
@@ -10093,15 +10097,13 @@ and `request-accept' functions. (Ie. mail newsgroups at present.)"
 		    gnus-newsrc-hashtb)))
 		 (info (nth 2 entry))
 		 (article (car articles)))
-	    (gnus-summary-goto-subject article)
-	    (gnus-summary-mark-article article gnus-canceled-mark)
 	    ;; Update the group that has been moved to.
 	    (if (not info)
 		()			; This group does not exist yet.
-	      (if (not (memq article gnus-newsgroup-unreads))
-		  (gnus-info-set-read 
-		   info (gnus-add-to-range (gnus-info-read info) 
-					   (list (cdr art-group)))))
+	      (unless (memq article gnus-newsgroup-unreads)
+		(gnus-info-set-read 
+		 info (gnus-add-to-range (gnus-info-read info) 
+					 (list (cdr art-group)))))
 
 	      ;; Copy any marks over to the new group.
 	      (let ((marks '((tick . gnus-newsgroup-marked)
@@ -10129,14 +10131,8 @@ and `request-accept' functions. (Ie. mail newsgroups at present.)"
 		       (gnus-info-group info) (car (car marks))
 		       (list to-article) info))
 		  (setq marks (cdr marks)))))
-	    ;; Update marks.
-	    (setq gnus-newsgroup-marked (delq article gnus-newsgroup-marked))
-	    (setq gnus-newsgroup-unreads (delq article gnus-newsgroup-unreads))
-	    (setq gnus-newsgroup-dormant
-		  (delq article gnus-newsgroup-dormant))
-	    (setq gnus-newsgroup-reads
-		  (cons (cons article gnus-canceled-mark)
-			gnus-newsgroup-reads)))
+	    (gnus-summary-goto-subject article)
+	    (gnus-summary-mark-article article gnus-canceled-mark))
 	(gnus-message 1 "Couldn't move article %s" (car articles)))
       (gnus-summary-remove-process-mark (car articles))
       (setq articles (cdr articles)))
@@ -13147,6 +13143,8 @@ If it is down, start it up (again)."
 (defun gnus-get-function (method function)
   "Return a function symbol based on METHOD and FUNCTION."
   ;; Translate server names into methods.
+  (unless method
+    (error "Attempted use of a nil select method"))
   (when (stringp method)
     (setq method (gnus-server-to-method method)))
   (let ((func (intern (format "%s-%s" (car method) function))))

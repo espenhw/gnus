@@ -477,10 +477,11 @@ nn*-request-list should have been called before calling this function."
 (defun nnmail-process-unix-mail-format (func)
   (let ((delim (concat "^" rmail-unix-mail-delimiter))
 	start message-id content-length end skip head-end)
+    (goto-char (point-min))
     (if (not (and (re-search-forward delim nil t)
 		  (goto-char (match-beginning 0))))
 	;; Possibly wrong format?
-	(error "Found no mail!") 
+	()
       ;; Carry on until the bitter end.
       (while (not (eobp))
 	(setq start (point)
@@ -550,10 +551,11 @@ nn*-request-list should have been called before calling this function."
 (defun nnmail-process-mmfd-mail-format (func)
   (let ((delim "^\^A\^A\^A\^A$")
 	start message-id end)
+    (goto-char (point-min))
     (if (not (and (re-search-forward delim nil t)
 		  (forward-line 1)))
 	;; Possibly wrong format?
-	(error "Found no mail!") 
+	()
       ;; Carry on until the bitter end.
       (while (not (eobp))
 	(setq start (point))

@@ -799,15 +799,15 @@ if you're in a hurry as well.
 
 
 @node Slave Gnusii
-@section Slave Gnusii
+@section Slave Gnusiï
 @cindex slave
 
 You might want to run more than one Emacs with more than one Gnus at the
 same time.  If you are using different @file{.newsrc} files (eg., if you
-are using the two different Gnusii to read from two different servers),
+are using the two different Gnusiï to read from two different servers),
 that is no problem whatsoever.  You just do it.
 
-The problem appears when you want to run two Gnusii that use the same
+The problem appears when you want to run two Gnusiï that use the same
 @code{.newsrc} file.
 
 To work around that problem some, we here at the Think-Tank at the Gnus
@@ -819,7 +819,7 @@ me.  Usage of the patent (@dfn{Master/Slave Relationships In Computer
 Applications}) will be much more expensive, of course.)
 
 Anyways, you start one Gnus up the normal way with @kbd{M-x gnus} (or
-however you do it).  Each subsequent slave Gnusii should be started with
+however you do it).  Each subsequent slave Gnusiï should be started with
 @kbd{M-x gnus-slave}.  These slaves won't save normal @file{.newsrc}
 files, but some slave files that contains information only on what
 groups have been read in the slave session.  When a master Gnus starts,
@@ -4229,6 +4229,7 @@ server.
 Commands for composing a mail message:
 
 @table @kbd
+
 @item S r
 @itemx r
 @kindex S r (Summary)
@@ -4236,6 +4237,7 @@ Commands for composing a mail message:
 @findex gnus-summary-reply
 Mail a reply to the author of the current article
 (@code{gnus-summary-reply}). 
+
 @item S R
 @itemx R
 @kindex R (Summary)
@@ -4244,16 +4246,19 @@ Mail a reply to the author of the current article
 Mail a reply to the author of the current article and include the
 original message (@code{gnus-summary-reply-with-original}).  This
 command uses the process/prefix convention.
+
 @item S o m
 @kindex S o m (Summary)
 @findex gnus-summary-mail-forward
 Forward the current article to some other person
 (@code{gnus-summary-mail-forward}). 
+
 @item S o p
 @kindex S o p (Summary)
 @findex gnus-summary-post-forward
 Forward the current article to a newsgroup
 (@code{gnus-summary-post-forward}).
+
 @item S m
 @itemx m
 @kindex m (Summary)
@@ -4261,6 +4266,7 @@ Forward the current article to a newsgroup
 @findex gnus-summary-mail-other-window
 Send a mail to some other person
 (@code{gnus-summary-mail-other-window}).
+
 @item S D b
 @kindex S D b (Summary)
 @findex gnus-summary-resend-bounced-mail
@@ -4274,12 +4280,32 @@ automatically deleted first.  If you give a prefix to this command, and
 the bounced mail is a reply to some other mail, Gnus will try to fetch
 that mail and display it for easy perusal of its headers.  This might
 very well fail, though.
+
+@item S D r
+@kindex S D r (Summary)
+@findex gnus-summary-resend-message
+Not to be confused with the previous command,
+@code{gnus-summary-resend-message} will prompt you for an address to
+send the current message off to, and then send it to that place.  The
+headers of the message won't be altered---but lots of headers that say
+@samp{Resent-To}, @samp{Resent-From} and so on will be added.  This
+means that you actually send a mail to someone that has a @samp{To}
+header that (proabbly) points to yourself.  This will confuse people.
+So, natcherly you'll only do that if you're really eVIl.  
+
+This command is mainly used if you have several accounts and want to
+ship a mail to a different account of yours.  (If you're both
+@samp{root} and @samp{postmaster} and get a mail for @samp{postmaster}
+to the @samp{root} account, you may want to resend it to
+@samp{postmaster}.  Ordnung muss sein!
+
 @item S O m
 @kindex S O m (Summary)
 @findex gnus-uu-digest-mail-forward
 Digest the current series and forward the result using mail
 (@code{gnus-uu-digest-mail-forward}).  This command uses the
 process/prefix convention (@pxref{Process/Prefix}). 
+
 @item S O p
 @kindex S O p (Summary)
 @findex gnus-uu-digest-post-forward
@@ -4979,7 +5005,7 @@ If the group doesn't exist, it will be created and you'll be subscribed
 to it.
 
 @findex gnus-summary-send-draft
-@kindex S D c S (Summary)
+@kindex S D c (Summary)
 When you want to continue editing the article, you simply enter the
 draft group and push @kbd{S D c} (@code{gnus-summary-send-draft}) to do
 that.  You will be placed in a buffer where you left off.
@@ -10046,11 +10072,7 @@ So be careful not to mix up strings (the latter) with symbols (the
 former).  The manual is unambiguous, but it can be confusing.
 
 
-
-@node Frequently Asked Questions
-@section Frequently Asked Questions
-
-
+@include gnus-faq.texi
 
 @node Index
 @chapter Index

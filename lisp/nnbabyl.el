@@ -57,6 +57,8 @@
 (defvar nnbabyl-group-alist nil)
 (defvar nnbabyl-active-timestamp nil)
 
+(defvar nnbabyl-previous-buffer-mode nil)
+
 
 
 (defvar nnbabyl-current-server nil)
@@ -68,6 +70,7 @@
    (list 'nnbabyl-get-new-mail nnbabyl-get-new-mail)
    '(nnbabyl-current-group nil)
    '(nnbabyl-status-string "")
+   '(nnbabyl-previous-buffer-mode nil)
    '(nnbabyl-group-alist nil)))
 
 
@@ -139,7 +142,17 @@
     (setq nnbabyl-current-server server)))
 
 (defun nnbabyl-close-server (&optional server)
-  (setq nnbabyl-current-server nil)
+  ;; Restore buffer mode.
+  (when (and (nnbabyl-server-opened)
+	     nnbabyl-previous-buffer-mode)
+    (save-excursion
+      (set-buffer nnbabyl-mbox-buffer)
+      (narrow-to-region
+       (car (car nnbabyl-previous-buffer-mode))
+       (cdr (car nnbabyl-previous-buffer-mode)))
+      (funcall (cdr nnbabyl-previous-buffer-mode))))
+  (setq nnbabyl-current-server nil
+	nnbabyl-mbox-buffer nil)
   t)
 
 (defun nnbabyl-server-opened (&optional server)
@@ -558,6 +571,11 @@
 	(set-buffer (setq nnbabyl-mbox-buffer 
 			  (nnheader-find-file-noselect 
 			   nnbabyl-mbox-file nil 'raw)))
+	;; Save buffer mode.
+	(setq nnbabyl-previous-buffer-mode 
+	      (cons (cons (point-min) (point-max))
+		    major-mode))
+
 	(buffer-disable-undo (current-buffer))
 	(widen)
 	(setq buffer-read-only nil)
