@@ -1,4 +1,18 @@
+Sat Oct 14 02:07:39 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el (gnus-summary-refer-parent-article): Take a look at the
+	actual References header.
+
+	* gnus-msg.el (gnus-bug): Wrong number of arguments for
+	`mail-setup'. 
+
+Fri Oct 13 10:25:49 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-mail-reply): Would ignore To headers. 
+
 Fri Oct 13 05:58:15 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el: 0.8 is released.
 
 	* gnus.el (gnus-parse-format): Would totally bug out.
 

@@ -1476,7 +1476,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.8"
+(defconst gnus-version "September Gnus v0.9"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -3683,7 +3683,6 @@ This will also compile the user-defined format specs."
 
 	(insert "(setq gnus-old-specs '" (prin1-to-string fs) "\n")
 
-	(debug)
 	(write-region (point-min) (point-max) file nil 'silent)
 	(byte-compile-file file)
 	(rename-file
@@ -9160,8 +9159,26 @@ The difference between N and the number of articles fetched is returned."
   (while 
       (and 
        (> n 0)
-       (let ((ref (gnus-parent-id 
-		   (mail-header-references (gnus-summary-article-header)))))
+       (let* ((header (gnus-summary-article-header))
+	      (ref 
+	       ;; If we try to find the parent of the currently
+	       ;; displayed article, then we take a look at the actual
+	       ;; References header, since this is slightly more
+	       ;; reliable than the References field we got from the
+	       ;; server. 
+	       (if (and (eq (mail-header-number header) 
+			    (cdr gnus-article-current))
+			(equal gnus-newsgroup-name 
+			       (car gnus-article-current)))
+		   (save-excursion
+		     (set-buffer gnus-original-article-buffer)
+		     (gnus-narrow-to-headers)
+		     (prog1
+			 (mail-fetch-field "references")
+		       (widen)))
+		 ;; It's not the current article, so we take a bet on
+		 ;; the value we got from the server. 
+		 (mail-header-references header))))
 	 (if ref
 	     (or (gnus-summary-refer-article ref)
 		 (gnus-message 1 "Couldn't find parent"))
@@ -9211,8 +9228,7 @@ Return how many articles were fetched."
 	      number tmp-buf)
 	  (and gnus-refer-article-method
 	       (gnus-check-server gnus-refer-article-method))
-	  (when (setq number
-		      (gnus-summary-insert-subject message-id))
+	  (when (setq number (gnus-summary-insert-subject message-id))
 	    (gnus-summary-select-article nil nil nil number)))))))
 
 (defun gnus-summary-enter-digest-group ()

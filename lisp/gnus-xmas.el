@@ -350,7 +350,8 @@ pounce directly on the real variables themselves.")
 		     (file-name-directory (directory-file-name (car path)))
 		     "etc/"))
 	  (if (and (file-exists-p dir)
-		   (file-directory-p dir))
+		   (file-directory-p dir)
+		   (file-exists-p (concat dir "gnus-group-exit-icon-up.xpm")))
 	      (setq gnus-xmas-glyph-directory dir
 		    path nil)
 	    (setq path (cdr path))))
@@ -454,7 +455,7 @@ If it is non-nil, it must be a toolbar.  The five legal values are
   "The summary buffer toolbar.")
 
 (defun gnus-xmas-setup-toolbar (bar &optional force)
-  (let ((dir (file-name-as-directory (gnus-xmas-find-glyph-directory)))
+  (let ((dir (gnus-xmas-find-glyph-directory))
 	icon up down disabled name)
     (if (not dir)
 	()

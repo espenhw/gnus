@@ -28,6 +28,7 @@
 (require 'rmail)
 (require 'timezone)
 (require 'sendmail)
+(eval-when-compile (require 'cl))
 
 (defvar nnmail-split-methods
   '(("mail.misc" ""))

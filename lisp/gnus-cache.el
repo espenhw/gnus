@@ -38,7 +38,7 @@
 (defvar gnus-uncacheable-groups "^nnvirtual"
   "*Groups that match this regexp will not be cached.
 
-If you want to avoid caching on your nnml groups, you could set this 
+If you want to avoid caching your nnml groups, you could set this
 variable to \"^nnml\".")
 
 
