@@ -42,10 +42,10 @@
 ;;; Main parameters.
 
 (defvar spam-use-blacklist t
-  "True if blacklist should be used.")
+  "True if the blacklist should be used.")
 
 (defvar spam-use-whitelist t
-  "True if blacklist should be used.")
+  "True if the whitelist should be used.")
 
 (defvar spam-use-blackholes nil
   ;; FIXME!  Turned off for now.  The DNS routines are said to be flaky.
