@@ -10832,6 +10832,8 @@ is controlled by @code{gnus-body-boundary-delimiter}.
 @item gnus-treat-hide-citation-maybe (t, integer)
 @item gnus-treat-hide-headers (head)
 @item gnus-treat-hide-signature (t, last)
+@item gnus-treat-strip-banner (t, last)
+@item gnus-treat-strip-list-identifiers (head)
 
 @xref{Article Hiding}.
 
