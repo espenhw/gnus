@@ -1554,10 +1554,6 @@ be permanent."
 	 gnus-summary-mode-hook gnus-select-group-hook
 	 (group (gnus-group-group-name))
 	 (method (gnus-find-method-for-group group)))
-    (setq method
-	  `(,(car method) ,(concat (cadr method) "-ephemeral")
-	    (,(intern (format "%s-address" (car method))) ,(cadr method))
-	    ,@(cddr method)))
     (gnus-group-read-ephemeral-group
      (gnus-group-prefixed-name group method) method)))
 
@@ -1588,6 +1584,10 @@ Return the name of the group is selection was successful."
   ;; Transform the select method into a unique server.
   (when (stringp method)
     (setq method (gnus-server-to-method method)))
+  (setq method
+	`(,(car method) ,(concat (cadr method) "-ephemeral")
+	  (,(intern (format "%s-address" (car method))) ,(cadr method))
+	  ,@(cddr method)))
   (let ((group (if (gnus-group-foreign-p group) group
 		 (gnus-group-prefixed-name group method))))
     (gnus-sethash

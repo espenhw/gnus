@@ -1,3 +1,33 @@
+Tue Aug  4 05:25:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.28 is released.
+
+1998-08-03 22:00:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nndoc.el (nndoc-set-delims): Removed article-end.
+	(nndoc-dissect-buffer): Use eobp.
+
+1998-08-03 19:59:36  Trung Tran-Duc  <trung.tranduc@prague.ixoskillspam.cz>
+
+	* nntp.el (nntp-open-connection): Bind coding-system-for-write.
+
+1998-07-31 16:45:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-read-ephemeral-group): Make the server
+	unique.
+
+1998-07-28  François Pinard  <pinard@iro.umontreal.ca>
+
+	* gnus-uu.el (gnus-uu-reginize-string): Consider the number of
+	parts as part of the fixed subject, instead of a wild quantity.
+
+1998-07-30 21:47:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-cache.el (gnus-summary-insert-cached-articles): Sort
+	articles. 
+
+	* nndir.el (nndir): Use nnml functions.
+
 Mon Jul 27 03:26:00 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.27 is released.
@@ -39,9 +69,10 @@ Mon Jul 27 03:26:00 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* gnus-sum.el (gnus-summary-update-article): Don't pass along
 	iheader to regeneration routine.
 
-1998-07-26 17:33:03  KOSEKI Yoshinori  <kose@yk.NetLaputa.ne.jp>
+1998-07-27  KOSEKI Yoshinori  <kose@yk.NetLaputa.ne.jp>
 
-	* nnmail.el (nnmail-move-inbox): Nix out password on errors.
+	* nnmail.el (nnmail-move-inbox): Clear nnmail-internal-password,
+	when supplied Password is incorrect.
 
 Sat Jul 25 19:31:36 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 

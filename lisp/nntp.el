@@ -832,7 +832,8 @@ password contained in '~/.nntp-authinfo'."
   (let* ((pbuffer (nntp-make-process-buffer buffer))
 	 (process
 	  (condition-case ()
-	      (let ((coding-system-for-read nntp-coding-system-for-read))
+	      (let ((coding-system-for-read nntp-coding-system-for-read)
+                    (coding-system-for-write nntp-coding-system-for-write))
 		(funcall nntp-open-connection-function pbuffer))
 	    (error nil)
 	    (quit nil))))

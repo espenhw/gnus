@@ -1020,9 +1020,9 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 
 (defun gnus-uu-reginize-string (string)
   ;; Takes a string and puts a \ in front of every special character;
-  ;; replaces the last thing that looks like "2/3" with "[0-9]+/[0-9]+"
+  ;; replaces the last thing that looks like "2/3" with "[0-9]+/3"
   ;; or, if it can't find something like that, tries "2 of 3", then
-  ;; finally just replaces the last two numbers with "[0-9]+".
+  ;; finally just replaces the next to last number with "[0-9]+".
   (let ((count 2))
     (save-excursion
       (set-buffer (get-buffer-create gnus-uu-output-buffer-name))
@@ -1033,12 +1033,13 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
       (setq case-fold-search nil)
 
       (end-of-line)
-      (if (re-search-backward "\\([^0-9]\\)[0-9]+/[0-9]+" nil t)
-	  (replace-match "\\1[0-9]+/[0-9]+")
+      (if (re-search-backward "\\([^0-9]\\)[0-9]+/\\([0-9]+\\)" nil t)
+	  (replace-match "\\1[0-9]+/\\2")
 
 	(end-of-line)
-	(if (re-search-backward "\\([^0-9]\\)[0-9]+[ \t]*of[ \t]*[0-9]+" nil t)
-	    (replace-match "\\1[0-9]+ of [0-9]+")
+	(if (re-search-backward "\\([^0-9]\\)[0-9]+[ \t]*of[ \t]*\\([0-9]+\\)"
+				nil t)
+	    (replace-match "\\1[0-9]+ of \\2")
 
 	  (end-of-line)
           (if (re-search-backward "\\([^0-9]\\)[0-9]+\\([^0-9]+\\)[0-9]+"

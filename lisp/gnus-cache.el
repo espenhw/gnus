@@ -347,7 +347,7 @@ Returns the list of articles removed."
 (defun gnus-summary-insert-cached-articles ()
   "Insert all the articles cached for this group into the current buffer."
   (interactive)
-  (let ((cached gnus-newsgroup-cached)
+  (let ((cached (sort (copy-sequence gnus-newsgroup-cached) '<))
 	(gnus-verbose (max 6 gnus-verbose)))
     (unless cached
       (gnus-message 3 "No cached articles for this group"))

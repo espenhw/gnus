@@ -131,7 +131,6 @@ from the document.")
 
 (defvoo nndoc-file-begin nil)
 (defvoo nndoc-first-article nil)
-(defvoo nndoc-article-end nil)
 (defvoo nndoc-article-begin nil)
 (defvoo nndoc-head-begin nil)
 (defvoo nndoc-head-end nil)
@@ -307,7 +306,8 @@ from the document.")
   "Set the nndoc delimiter variables according to the type of the document."
   (let ((vars '(nndoc-file-begin
 		nndoc-first-article
-		nndoc-article-end nndoc-head-begin nndoc-head-end
+		nndoc-article-begin-function
+		nndoc-head-begin nndoc-head-end
 		nndoc-file-end nndoc-article-begin
 		nndoc-body-begin nndoc-body-end-function nndoc-body-end
 		nndoc-prepare-body-function nndoc-article-transform-function
@@ -572,7 +572,7 @@ from the document.")
 	       (funcall nndoc-head-begin-function))
 	      (nndoc-head-begin
 	       (nndoc-search nndoc-head-begin)))
- 	(if (or (>= (point) (point-max))
+ 	(if (or (eobp)
 		(and nndoc-file-end
 		     (looking-at nndoc-file-end)))
 	    (goto-char (point-max))
