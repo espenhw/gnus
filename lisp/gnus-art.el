@@ -5291,8 +5291,9 @@ guessing."
 		 (const mail)))
 
 (defcustom gnus-button-guessed-mid-regexp
-  (concat "^<?\\(slrn\\|Pine\\)\\."
-	  "\\|\\.fsf@\\|@4ax\\.com\\|@ID-[0-9]+\\.[a-zA-Z]+\\.dfncis\\.de"
+  (concat
+   "^<?\\(slrn\\|Pine\\.\\)"
+   "\\|\\.fsf@\\|\\.ln@\\|@4ax\\.com\\|@ID-[0-9]+\\.[a-zA-Z]+\\.dfncis\\.de"
 	  "\\|^<?.*[0-9].*[0-9].*[0-9].*[0-9].*[0-9].*[0-9].*@")
   "Regular expression that matches message IDs and not mail addresses."
   ;; TODO: Incorporate more matches from
@@ -5430,11 +5431,13 @@ positves are possible."
     ;; Raw URLs.
     (gnus-button-url-regexp 0 t browse-url 0)
     ;; man pages
-    ("\\b\\([a-z][a-z]+\\)([0-9])\\W" 0 (>= gnus-button-man-level 1)
+    ("\\b\\([a-z][a-z]+\\)([0-9])\\W" 0
+     (and (>= gnus-button-man-level 1) (< gnus-button-man-level 3))
      gnus-button-handle-man 1)
     ;; more man pages: resolv.conf(5), iso_8859-1(7), xterm(1x)
-    ("\\b\\([a-zA-Z][-_.a-zA-Z0-9]+\\)([0-9]x?)\\W" 0
-     (>= gnus-button-man-level 3) gnus-button-handle-man 3)
+    ("\\b\\([a-zA-Z][-_.a-zA-Z0-9]+\\)([0-9])\\W" 0
+     (and (>= gnus-button-man-level 3) (< gnus-button-man-level 5))
+     gnus-button-handle-man 1)
     ;; even more: Apache::PerlRun(3pm), PDL::IO::FastRaw(3pm), SoWWWAnchor(3iv)
     ("\\b\\([a-zA-Z][-_.:a-zA-Z0-9]+\\)([0-9][a-z]*)\\W" 0
      (>= gnus-button-man-level 5) gnus-button-handle-man 1)
@@ -5443,7 +5446,7 @@ positves are possible."
     ;; at least one dot.  TLD must contain two or three chars or be a know TLD
     ;; (info|name|...).  Put this entry near the _end_ of `gnus-button-alist'
     ;; so that non-ambiguous entries (see above) match first.
-    ("\\b\\(<?[a-zA-Z0-9][^>)!;:,{}\n\t ]*@[a-zA-Z0-9][-.a-zA-Z0-9]+\\.\\([a-zA-Z][a-zA-Z]\\([a-zA-Z]\\)?\\|[Ii][Nn][Ff][Oo]\\|[Nn][Aa][Mm][Ee]\\)>?\\)\\b"
+    ("\\b\\(<?[a-zA-Z0-9][^<>\")!;:,{}\n\t ]*@[a-zA-Z0-9][-.a-zA-Z0-9]+\\.\\([a-zA-Z][a-zA-Z]\\([a-zA-Z]\\)?\\|[Ii][Nn][Ff][Oo]\\|[Nn][Aa][Mm][Ee]\\)>?\\)\\b"
      0 (>= gnus-button-mail-level 5) gnus-button-handle-mid-or-mail 1))
   "*Alist of regexps matching buttons in article bodies.
 

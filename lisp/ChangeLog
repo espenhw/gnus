@@ -1,3 +1,11 @@
+2002-09-23  Kai Gro,b_(Bjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+
+	* gnus-art.el (gnus-button-guessed-mid-regexp): Improved regexp.
+	(gnus-button-alist): Improved regexp for
+	gnus-button-handle-mid-or-mail (false positives), fixed
+	gnus-button-handle-man entries.
+	From Reiner Steib.
+
 2002-09-23  Paul Jarc  <prj@po.cwru.edu>
 	From Josh Huber.
 
