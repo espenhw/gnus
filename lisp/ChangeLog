@@ -1,5 +1,10 @@
 2001-09-08  Simon Josefsson  <jas@extundo.com>
 
+	* nnfolder.el (nnfolder-marks-modtime): New variable.
+	(nnfolder-marks-changed-p): New function.
+	(nnfolder-save-marks, nnfolder-open-marks): Save modtime.
+	(nnfolder-request-update-info): Don't update if marks didn't change.
+
 	* nnml.el (nnml-marks-modtime): New variable.
 	(nnml-marks-changed-p): New function.
 	(nnml-save-marks, nnml-open-marks): Save modtime.
