@@ -57,7 +57,7 @@
       (let ((start 0) tail)
 	(while (string-match regexp string start)
 	  (setq tail (- (length string) (match-end 0)))
-	  (setq string (replace-match newtext t t string))
+	  (setq string (replace-match newtext nil literal string))
 	  (setq start (- (length string) tail))))
       string))))
 

@@ -1,3 +1,10 @@
+2001-12-07 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-print-truncate-and-quote): New.
+	(gnus-summary-print-article): Use it.
+	
+	* gnus-util.el (gnus-replace-in-string): Typo.
+
 2001-12-06 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnweb.el (nnweb-replace-in-string): Removed.
