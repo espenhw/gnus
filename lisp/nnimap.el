@@ -92,7 +92,7 @@ If nil, the first match found will be used.")
   "*Name of mailbox to split mail from.
 
 Mail is read from this mailbox and split according to rules in
-`nnimap-split-rules'.
+`nnimap-split-rule'.
 
 This can be a string or a list of strings.")
 
