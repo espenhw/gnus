@@ -1541,8 +1541,8 @@ is used by default."
 
 (defun message-fetch-field (header &optional not-all)
   "The same as `mail-fetch-field', only remove all newlines.
-Note that the buffer should be narrowed to the headers; see
-function `message-narrow-to-headers-or-head'."
+The buffer is expected to be narrowed to just the header of the message;
+see `message-narrow-to-headers-or-head'."
   (let* ((inhibit-point-motion-hooks t)
 	 (case-fold-search t)
 	 (value (mail-fetch-field header nil (not not-all))))
@@ -1667,7 +1667,10 @@ Leading \"Re: \" is not stripped by this function.  Use the function
 		       (zerop (string-width new-subject))
 		       (string-match "^[ \t]*$" new-subject))))
 	 (save-excursion
-	   (let ((old-subject (message-fetch-field "Subject")))
+	   (let ((old-subject
+		  (save-restriction
+		    (message-narrow-to-headers)
+		    (message-fetch-field "Subject"))))
 	     (cond ((not old-subject)
 		    (error "No current subject"))
 		   ((not (string-match
@@ -1853,19 +1856,26 @@ With prefix-argument just set Follow-Up, don't cross-post."
 (defun message-reduce-to-to-cc ()
  "Replace contents of To: header with contents of Cc: or Bcc: header."
  (interactive)
- (let ((cc-content (message-fetch-field "cc"))
+ (let ((cc-content
+	(save-restriction (message-narrow-to-headers)
+			  (message-fetch-field "cc")))
        (bcc nil))
    (if (and (not cc-content)
-	    (setq cc-content (message-fetch-field "bcc")))
+	    (setq cc-content
+		  (save-restriction
+		    (message-narrow-to-headers)
+		    (message-fetch-field "bcc"))))
        (setq bcc t))
    (cond (cc-content
 	  (save-excursion
 	    (message-goto-to)
 	    (message-delete-line)
 	    (insert (concat "To: " cc-content "\n"))
-	    (message-remove-header (if bcc
-				       "bcc"
-				     "cc")))))))
+	    (save-restriction
+	      (message-narrow-to-headers)
+	      (message-remove-header (if bcc
+					 "bcc"
+				       "cc"))))))))
 
 ;;; End of functions adopted from `message-utils.el'.
 
@@ -2516,11 +2526,14 @@ If the optional argument INCLUDE-CC is non-nil, the addresses in the
 Cc: header are also put into the MFT."
 
   (interactive "P")
-  (message-remove-header "Mail-Followup-To")
-  (let* ((cc (and include-cc (message-fetch-field "Cc")))
-	 (tos (if cc
-		  (concat (message-fetch-field "To") "," cc)
-		(message-fetch-field "To"))))
+  (let* (cc tos)
+    (save-restriction
+      (message-narrow-to-headers)
+      (message-remove-header "Mail-Followup-To")
+      (setq cc (and include-cc (message-fetch-field "Cc")))
+      (setq tos (if cc
+		    (concat (message-fetch-field "To") "," cc)
+		  (message-fetch-field "To"))))
     (message-goto-mail-followup-to)
     (insert (concat tos ", " user-mail-address))))
 
@@ -2783,7 +2796,9 @@ Prefix arg means justify as well."
   "Insert header to mark message as important."
   (interactive)
   (save-excursion
-    (message-remove-header "Importance")
+    (save-restriction
+      (message-narrow-to-headers)
+      (message-remove-header "Importance"))
     (message-goto-eoh)
     (insert "Importance: high\n")))
 
@@ -2791,7 +2806,9 @@ Prefix arg means justify as well."
   "Insert header to mark message as unimportant."
   (interactive)
   (save-excursion
-    (message-remove-header "Importance")
+    (save-restriction
+      (message-narrow-to-headers)
+      (message-remove-header "Importance"))
     (message-goto-eoh)
     (insert "Importance: low\n")))
 
@@ -2804,14 +2821,16 @@ and `low'."
     (let ((valid '("high" "normal" "low"))
 	  (new "high")
 	  cur)
-      (when (setq cur (message-fetch-field "Importance"))
-	(message-remove-header "Importance")
-	(setq new (cond ((string= cur "high")
-			 "low")
-			((string= cur "low")
-			 "normal")
-			(t
-			 "high"))))
+      (save-restriction
+	(message-narrow-to-headers)
+	(when (setq cur (message-fetch-field "Importance"))
+	  (message-remove-header "Importance")
+	  (setq new (cond ((string= cur "high")
+			   "low")
+			  ((string= cur "low")
+			   "normal")
+			  (t
+			   "high")))))
       (message-goto-eoh)
       (insert (format "Importance: %s\n" new)))))
 
@@ -2820,10 +2839,16 @@ and `low'."
 Note that this should not be used in newsgroups."
   (interactive)
   (save-excursion
-    (message-remove-header "Disposition-Notification-To")
+    (save-restriction
+      (message-narrow-to-headers)
+      (message-remove-header "Disposition-Notification-To"))
     (message-goto-eoh)
     (insert (format "Disposition-Notification-To: %s\n"
-		    (or (message-fetch-field "From") (message-make-from))))))
+		    (or (save-excursion
+			  (save-restriction
+			    (message-narrow-to-headers)
+			    (message-fetch-field "From")))
+			(message-make-from))))))
 
 (defun message-elide-region (b e)
   "Elide the text in the region.

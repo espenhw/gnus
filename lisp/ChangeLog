@@ -1,3 +1,15 @@
+2003-06-06  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
+	From Benjamin Rutt <rutt+news@cis.ohio-state.edu>.
+
+	* message.el (message-fetch-field): Augment documentation to state
+	the narrowed-to-headers restriction.
+	(message-change-subject, message-reduce-to-to-cc)
+	(message-generate-unsubscribed-mail-followup-to)
+	(message-insert-importance-high, message-insert-importance-low)
+	(message-insert-or-toggle-importance)
+	(message-insert-disposition-notification-to): Narrow to headers
+	before calling message-fetch-field or message-remove-header.
+
 2003-06-06  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-trim): fix for when
