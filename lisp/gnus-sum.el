@@ -6812,8 +6812,14 @@ to guess what the document format is."
 			   (list (cons 'save-article-group ogroup))))
 	   (case-fold-search t)
 	   (buf (current-buffer))
-	   dig)
+	   dig to-address)
       (save-excursion
+	(set-buffer gnus-original-article-buffer)
+	;; Have the digest group inherit the main mail address of
+	;; the parent article.
+	(when (setq to-address (or (message-fetch-field "reply-to")
+				   (message-fetch-field "from")))
+	  (setq params (append (list (cons 'to-address to-address)))))
 	(setq dig (nnheader-set-temp-buffer " *gnus digest buffer*"))
 	(insert-buffer-substring gnus-original-article-buffer)
 	;; Remove lines that may lead nndoc to misinterpret the
