@@ -1154,7 +1154,10 @@ function is generally only called when Gnus is shutting down."
 	      (goto-char (point-min))
 	      (when (and (if (stringp regexp)
 			     (progn
-			       (setq regrepp (string-match "\\\\[0-9&]" group))
+			       (if (not (stringp group))
+				   (setq group (eval group))
+				 (setq regrepp
+				       (string-match "\\\\[0-9&]" group)))
 			       (re-search-forward regexp nil t))
 			   (funcall regexp group))
 			 ;; Don't enter the article into the same group twice.

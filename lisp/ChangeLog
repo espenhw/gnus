@@ -1,3 +1,8 @@
+2002-07-10  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-split-to-groups): Allow group string to be a
+	function.  From KANEMATSU Daiji <kdaiji@bea.com>.
+
 2002-07-09  Nevin Kapur  <Nevin Kapur <nevin@jhu.edu>
 
 	* gnus-sum.el (gnus-summary-delete-article): Respect group
