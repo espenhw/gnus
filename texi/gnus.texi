@@ -21451,8 +21451,9 @@ To use moderation mode in these two groups, say:
 @node Image Enhancements
 @section Image Enhancements
 
-XEmacs, as well as Emacs 21, is able to display pictures and stuff, so
-Gnus has taken advantage of that.
+XEmacs, as well as Emacs 21@footnote{Emacs 21 on MS Windows doesn't
+support images yet.}, is able to display pictures and stuff, so Gnus has
+taken advantage of that.
 
 @menu
 * Picons::                      How to display pictures of what you're reading.

@@ -1,6 +1,12 @@
+2003-04-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Image Enhancements): Mention missing images support
+	of Emacs on MS Windows.
+
 2003-04-30  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus.texi (Filtering Spam Using The Spam ELisp Package): revised documentation
+	* gnus.texi (Filtering Spam Using The Spam ELisp Package): revised
+	documentation
 	(Gmane Spam Reporting, Anti-spam Hashcash Payments): new sections
 
 2003-04-30  Reiner Steib  <Reiner.Steib@gmx.de>
