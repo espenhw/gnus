@@ -78,7 +78,24 @@
   (define-compiler-macro remove (&whole form item seq)
     (if (>= emacs-major-version 21)
 	form
-      `(delete ,item (copy-sequence ,seq)))))
+      `(delete ,item (copy-sequence ,seq))))
+
+  (define-compiler-macro mapc (&whole form fn seq &rest rest)
+    (if (>= emacs-major-version 21)
+	form
+      (if rest
+	  `(let* ((fn ,fn)
+		  (seq ,seq)
+		  (args (list seq ,@rest))
+		  (m (apply (function min) (mapcar (function length) args)))
+		  (n 0))
+	     (while (< n m)
+	       (apply fn (mapcar (function (lambda (arg) (nth n arg))) args))
+	       (setq n (1+ n)))
+	     seq)
+	`(let ((seq ,seq))
+	   (mapcar ,fn seq)
+	   seq)))))
 
 ;; If we are building w3 in a different directory than the source
 ;; directory, we must read *.el from source directory and write *.elc
