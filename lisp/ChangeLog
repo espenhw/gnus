@@ -1,3 +1,9 @@
+2004-04-15  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+		
+	* legacy-gnus-agent.el
+	(gnus-agent-convert-to-compressed-agentview): Fixed typos with
+	help from Florian Weimer <fw@deneb.enyo.de>
+
 2004-04-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnmail.el (nnmail-cache-insert): Revert last change.

@@ -10,7 +10,7 @@
   "Iterates over all agentview files to ensure that they have been
 converted to the compressed format."
 
-  (let ((search-in '(gnus-agent-directory))
+  (let ((search-in (list gnus-agent-directory))
         here
         members
         member
@@ -18,8 +18,10 @@ converted to the compressed format."
     (while (setq here (pop search-in))
       (setq members (directory-files here t))
       (while (setq member (pop members))
-        (cond ((file-directory-p member)
-               (push member search-in))
+        (cond ((string-match "/\\.\\.?$" member)
+	       nil)
+	      ((file-directory-p member)
+	       (push member search-in))
               ((equal (file-name-nondirectory member) ".agentview")
                (setq converted-something 
                      (or (gnus-agent-convert-agentview member)
