@@ -1,3 +1,7 @@
+2000-04-20 16:35:41  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el (mm-uu-dissect): Check forwarded message.
+
 2000-04-20 21:17:48  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-request-article-this-buffer): Allow

@@ -165,10 +165,16 @@ To disable dissecting shar codes, for instance, add
 	  (setq end-char-1 (match-beginning 0))
 	  (forward-line)
 	  (setq end-char (point))
-	  (when (or (not (eq type 'binhex))
-		    (setq file-name
-			  (ignore-errors
-			    (binhex-decode-region start-char end-char t))))
+	  (when (cond 
+		 ((eq type 'binhex)
+		  (setq file-name
+			(ignore-errors
+			  (binhex-decode-region start-char end-char t))))
+		 ((eq type 'forward)
+		  (save-excursion
+		    (goto-char start-char-1)
+		    (looking-at "[\r\n]*[a-zA-Z][a-zA-Z0-9-]*:")))
+		 (t t))
 	    (if (> start-char text-start)
 		(push
 		 (mm-make-handle (mm-uu-copy-to-buffer text-start start-char)
