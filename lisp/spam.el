@@ -64,7 +64,7 @@
   "The location of the whitelist.
 The file format is one regular expression per line.
 The regular expression is matched against the address.")
-					 
+
 (defvar spam-blacklist (expand-file-name "blacklist" spam-directory)
   "The location of the blacklist.
 The file format is one regular expression per line.
@@ -94,6 +94,11 @@ Optional arg BLACKLIST, if non-nil, means to enter in the blacklist instead."
   (interactive "sAddress: ")
   (spam-enter-whitelist address t))
 
+(eval-and-compile
+  (defalias 'spam-point-at-eol (if (fboundp 'point-at-eol)
+				   'point-at-eol
+				 'line-end-position)))
+
 (defun spam-parse-whitelist (&optional blacklist)
   (let ((file (if blacklist spam-blacklist spam-whitelist))
 	contents address)
@@ -101,7 +106,7 @@ Optional arg BLACKLIST, if non-nil, means to enter in the blacklist instead."
       (with-temp-buffer
 	(insert-file-contents file)
 	(while (not (eobp))
-	  (setq address (buffer-substring (point) (point-at-eol)))
+	  (setq address (buffer-substring (point) (spam-point-at-eol)))
 	  (forward-line 1)
 	  (unless (zerop (length address))
 	    (setq address (regexp-quote address))

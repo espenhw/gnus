@@ -1,3 +1,8 @@
+2002-06-04  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* spam.el (spam-point-at-eol): New alias.
+	(spam-parse-whitelist): Use it.
+
 2002-06-03  Simon Josefsson  <jas@extundo.com>
 
 	* nnmail.el (nnmail-mail-splitting-decodes): New variable.
