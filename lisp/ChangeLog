@@ -1,3 +1,12 @@
+2002-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-version-number): Update version.
+
+	* message.el (message-text-with-property): Renamed and moved
+	here. 
+	(message-fix-before-sending): Highlight invisible text and place
+	point there. 
+
 2002-01-01 02:32:53 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
 
 	* gnus.el: Oort Gnus v0.04 is released. 

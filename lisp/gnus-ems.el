@@ -1,5 +1,5 @@
 ;;; gnus-ems.el --- functions for making Gnus work under different Emacsen
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -302,7 +302,7 @@ for XEmacs."
   (insert-image glyph string))
 
 (defun gnus-remove-image (image)
-  (dolist (position (gnus-text-with-property 'display))
+  (dolist (position (message-text-with-property 'display))
     (when (equal (get-text-property position 'display) image)
       (put-text-property position (1+ position) 'display nil))))
 

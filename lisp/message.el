@@ -1,5 +1,5 @@
 ;;; message.el --- composing mail and news messages
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -2600,6 +2600,17 @@ It should typically alter the sending method in some way or other."
 (put 'message-check 'lisp-indent-function 1)
 (put 'message-check 'edebug-form-spec '(form body))
 
+(defun message-text-with-property (prop)
+  "Return a list of all points where the text has PROP."
+  (let ((points nil)
+	(point (point-min)))
+    (save-excursion
+      (while (< point (point-max))
+	(when (get-text-property point prop)
+	  (push point points))
+	(incf point)))
+    (nreverse points)))
+
 (defun message-fix-before-sending ()
   "Do various things to make the message nice before sending it."
   ;; Make sure there's a newline at the end of the message.
@@ -2608,11 +2619,15 @@ It should typically alter the sending method in some way or other."
     (insert "\n"))
   ;; Delete all invisible text.
   (message-check 'invisible-text
-    (when (text-property-any (point-min) (point-max) 'invisible t)
-      (put-text-property (point-min) (point-max) 'invisible nil)
-      (unless (yes-or-no-p
-	       "Invisible text found and made visible; continue posting? ")
-	(error "Invisible text found and made visible")))))
+    (let ((points (message-text-with-property 'invisible)))
+      (when points
+	(goto-char (car point))
+	(dolist (point points)
+	  (add-text-properties point (1+ point)
+			       '(invisible nil highlight t)))
+	(unless (yes-or-no-p
+		 "Invisible text found and made visible; continue posting? ")
+	  (error "Invisible text found and made visible"))))))
 
 (defun message-add-action (action &rest types)
   "Add ACTION to be performed when doing an exit of type TYPES."

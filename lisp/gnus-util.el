@@ -1,5 +1,5 @@
 ;;; gnus-util.el --- utility functions for Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -220,17 +220,6 @@
       (while (get-text-property (point) prop)
 	(delete-char 1))
       (goto-char (next-single-property-change (point) prop nil (point-max))))))
-
-(defun gnus-text-with-property (prop)
-  "Return a list of all points where the text has PROP."
-  (let ((points nil)
-	(point (point-min)))
-    (save-excursion
-      (while (< point (point-max))
-	(when (get-text-property point prop)
-	  (push point points))
-	(incf point)))
-    (nreverse points)))
 
 (require 'nnheader)
 (defun gnus-newsgroup-directory-form (newsgroup)
