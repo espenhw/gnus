@@ -1,3 +1,7 @@
+2001-02-16 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-range.el (gnus-range-normalize): New function.
+
 2001-02-15  NAGY Andras <nagya@inf.elte.hu>
 
 	* imap.el (imap-gssapi-open): Set imap-c-l-s-first.

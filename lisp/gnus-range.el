@@ -30,6 +30,11 @@
 
 ;;; List and range functions
 
+(defsubst gnus-range-normalize (range)
+  "Normalize RANGE.
+If RANGE is a single range, return (RANGE). Otherwise, return RANGE."
+  (if (listp (cdr range)) (list range) range))
+
 (defun gnus-last-element (list)
   "Return last element of LIST."
   (while (cdr list)
