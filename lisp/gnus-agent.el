@@ -29,6 +29,7 @@
 (require 'nnvirtual)
 (require 'gnus-sum)
 (require 'gnus-score)
+(require 'gnus-srvr)
 (eval-when-compile
   (if (featurep 'xemacs)
       (require 'itimer)
@@ -277,7 +278,8 @@ If this is `ask' the hook will query the user."
   "JY" gnus-agent-synchronize-flags
   "JS" gnus-group-send-queue
   "Ja" gnus-agent-add-group
-  "Jr" gnus-agent-remove-group)
+  "Jr" gnus-agent-remove-group
+  "Jo" gnus-agent-toggle-group-plugged)
 
 (defun gnus-agent-group-make-menu-bar ()
   (unless (boundp 'gnus-agent-group-menu)
@@ -285,6 +287,7 @@ If this is `ask' the hook will query the user."
      gnus-agent-group-menu gnus-agent-group-mode-map ""
      '("Agent"
        ["Toggle plugged" gnus-agent-toggle-plugged t]
+       ["Toggle group plugged" gnus-agent-toggle-group-plugged t]
        ["List categories" gnus-enter-category-buffer t]
        ["Send queue" gnus-group-send-queue gnus-plugged]
        ("Fetch"
@@ -2085,6 +2088,19 @@ If CLEAN, don't read existing active and agentview files."
 		       (caar server) (cadar server)))
 	    force)
 	  (setcar (nthcdr 1 server) 'close)))))
+
+(defun gnus-agent-toggle-group-plugged (group)
+  "Toggle the status of the server of the current group."
+  (interactive (list (gnus-group-group-name)))
+  (let* ((method (gnus-find-method-for-group group))
+	 (status (cadr (assoc method gnus-opened-servers))))
+    (if (eq status 'offline)
+	(gnus-server-set-status method 'closed)
+      (gnus-close-server method)
+      (gnus-server-set-status method 'offline))
+    (message "Turn %s:%s from %s to %s." (car method) (cadr method)
+	     (if (eq status 'offline) 'offline 'online)
+	     (if (eq status 'offline) 'online 'offline))))
 
 (provide 'gnus-agent)
 
