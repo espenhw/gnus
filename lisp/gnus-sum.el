@@ -9408,8 +9408,8 @@ If REVERSE, save parts that do not match TYPE."
 					 (string-match (car elem) name))
 				(setq alist nil
 				      charsets (cdr elem))))
-			    charsets))))
-		gnus-newsgroup-ignored-charsets)))
+			    charsets)))
+		 gnus-newsgroup-ignored-charsets))))
       (setq gnus-newsgroup-charset
 	    (or gnus-newsgroup-ephemeral-charset
 		(and gnus-newsgroup-name
