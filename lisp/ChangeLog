@@ -1,5 +1,11 @@
 2004-09-26  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus-dup.el (gnus-dup-open): Use mapc.
+	(gnus-dup-enter-articles, gnus-dup-suppress-articles): Use dolist.
+	
+	(gnus-dup-enter-articles): Remove excess ID's from gnus-dup-hashtb.
+	Reported by Stefan Wiens <s.wi@gmx.net>.
+
 	* gnus.el (gnus-shutdown): Use dolist.
 
 	* gnus-undo.el (gnus-undo): Use mapc.

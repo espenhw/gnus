@@ -1,5 +1,5 @@
 ;;; gnus-dup.el --- suppression of duplicate articles in Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2004
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -84,10 +84,8 @@ seen in the same session."
     (setq gnus-dup-list nil))
   (setq gnus-dup-hashtb (gnus-make-hashtable gnus-duplicate-list-length))
   ;; Enter all Message-IDs into the hash table.
-  (let ((list gnus-dup-list)
-	(obarray gnus-dup-hashtb))
-    (while list
-      (intern (pop list)))))
+  (let ((obarray gnus-dup-hashtb))
+    (mapc 'intern gnus-dup-list)))
 
 (defun gnus-dup-read ()
   "Read the duplicate suppression list."
@@ -112,11 +110,10 @@ seen in the same session."
   (unless gnus-dup-list
     (gnus-dup-open))
   (setq gnus-dup-list-dirty t)		; mark list for saving
-  (let ((data gnus-newsgroup-data)
-	datum msgid)
+  (let (msgid)
     ;; Enter the Message-IDs of all read articles into the list
     ;; and hash table.
-    (while (setq datum (pop data))
+    (dolist (datum gnus-newsgroup-data)
       (when (and (not (gnus-data-pseudo-p datum))
 		 (> (gnus-data-number datum) 0)
 		 (not (memq (gnus-data-number datum) gnus-newsgroup-unreads))
@@ -129,6 +126,7 @@ seen in the same session."
   ;; Chop off excess Message-IDs from the list.
   (let ((end (nthcdr gnus-duplicate-list-length gnus-dup-list)))
     (when end
+      (mapc (lambda (id) (unintern id gnus-dup-hashtb)) (cdr end))
       (setcdr end nil))))
 
 (defun gnus-dup-suppress-articles ()
@@ -136,11 +134,10 @@ seen in the same session."
   (unless gnus-dup-list
     (gnus-dup-open))
   (gnus-message 6 "Suppressing duplicates...")
-  (let ((headers gnus-newsgroup-headers)
-	(auto (and gnus-newsgroup-auto-expire
+  (let ((auto (and gnus-newsgroup-auto-expire
 		   (memq gnus-duplicate-mark gnus-auto-expirable-marks)))
-	number header)
-    (while (setq header (pop headers))
+	number)
+    (dolist (header gnus-newsgroup-headers)
       (when (and (intern-soft (mail-header-id header) gnus-dup-hashtb)
 		 (gnus-summary-article-unread-p (mail-header-number header)))
 	(setq gnus-newsgroup-unreads
