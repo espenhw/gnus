@@ -54,16 +54,20 @@ this list.")
 Possible values in this list are `empty', `newsgroups', `followup-to',
 `reply-to', and `date'.")
 
-(defvar gnus-signature-separator "^-- *$"
-  "Regexp matching signature separator.")
+(defvar gnus-signature-separator '("^-- $" "^-- *$")
+  "Regexp matching signature separator.
+This can also be a list of regexps.  In that case, it will be checked
+from head to tail looking for a separator.  Searches will be done from
+the end of the buffer.")
 
 (defvar gnus-signature-limit nil
   "Provide a limit to what is considered a signature.
 If it is a number, no signature may not be longer (in characters) than
-that number.  If it is a function, the function will be called without
-any parameters, and if it returns nil, there is no signature in the
-buffer.  If it is a string, it will be used as a regexp.  If it
-matches, the text in question is not a signature.")
+that number.  If it is a floating point number, no signature may be
+longer (in lines) than that number.  If it is a function, the function
+will be called without any parameters, and if it returns nil, there is
+no signature in the buffer.  If it is a string, it will be used as a
+regexp.  If it matches, the text in question is not a signature.")
 
 (defvar gnus-hidden-properties '(invisible t intangible t)
   "Property list to use for hiding text.")
@@ -540,26 +544,54 @@ always hide."
 (defun article-narrow-to-signature ()
   "Narrow to the signature."
   (widen)
-  (if (and (boundp 'mime::preview/content-list)
-	   mime::preview/content-list)
-      (let ((pcinfo (car (last mime::preview/content-list))))
-	(condition-case ()
-	    (narrow-to-region
-	     (funcall (intern "mime::preview-content-info/point-min") pcinfo)
-	     (point-max))
-	  (error nil))))
-  (goto-char (point-max))
-  (when (re-search-backward gnus-signature-separator nil t)
+  (when (and (boundp 'mime::preview/content-list)
+	     mime::preview/content-list)
+    ;; We have a MIMEish article, so we use the MIME data to narrow.
+    (let ((pcinfo (car (last mime::preview/content-list))))
+      (condition-case ()
+	  (narrow-to-region
+	   (funcall (intern "mime::preview-content-info/point-min") pcinfo)
+	   (point-max))
+	(error nil))))
+  
+  (when (article-search-signature)
     (forward-line 1)
-    (when (or (null gnus-signature-limit)
-	      (and (numberp gnus-signature-limit)
-		   (< (- (point-max) (point)) gnus-signature-limit))
-	      (and (gnus-functionp gnus-signature-limit)
-		   (funcall gnus-signature-limit))
-	      (and (stringp gnus-signature-limit)
-		   (not (re-search-forward gnus-signature-limit nil t))))
-      (narrow-to-region (point) (point-max))
-      t)))
+    ;; Check whether we have some limits to what we consider
+    ;; to be a signature.
+    (let ((limits (if (listp gnus-signature-limit) gnus-signature-limit
+		   (list gnus-signature-limit)))
+	  limit limited)
+      (while (setq limit (pop limits))
+	(if (or (and (integerp limit)
+		     (< (- (point-max) (point)) limit))
+		(and (floatp limit)
+		     (< (count-lines (point) (point-max)) limit))
+		(and (gnus-functionp limit)
+		     (funcall limit))
+		(and (stringp limit)
+		     (not (re-search-forward limit nil t))))
+	    () ; This limit did not succeed.
+	  (setq limited t
+		limits nil)))
+      (unless limited
+	(narrow-to-region (point) (point-max))
+	t))))
+
+(defun article-search-signature ()
+  "Search the current buffer for the signature separator.
+Put point at the beginning of the signature separator."
+  (let ((cur (point)))
+    (goto-char (point-max))
+    (if (if (stringp gnus-signature-separator)
+	    (re-search-backward gnus-signature-separator nil t)
+	  (let ((seps gnus-signature-separator))
+	    (while (and seps
+			(not (re-search-backward (car seps) nil t)))
+	      (pop seps))
+	    seps))
+	t
+      (goto-char cur)
+      nil)))
 
 (defun article-hidden-arg ()
   "Return the current prefix arg as a number, or 0 if no prefix."

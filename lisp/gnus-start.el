@@ -33,16 +33,6 @@
 (require 'gnus-range)
 (require 'message)
 
-(defvar gnus-secondary-servers nil
-  "*List of NNTP servers that the user can choose between interactively.
-To make Gnus query you for a server, you have to give `gnus' a
-non-numeric prefix - `C-u M-x gnus', in short.")
-
-(defvar gnus-nntp-server nil
-  "*The name of the host running the NNTP server.
-This variable is semi-obsolete.	 Use the `gnus-select-method'
-variable instead.")
-
 (defvar gnus-startup-file "~/.newsrc"
   "*Your `.newsrc' file.
 `.newsrc-SERVER' will be used instead if that exists.")
@@ -1347,61 +1337,22 @@ newsgroup."
 	   t)
 	 (condition-case ()
 	     (gnus-request-group group dont-check method)
-	;   (error nil)
+					;   (error nil)
 	   (quit nil))
-	 (save-excursion
-	   (set-buffer nntp-server-buffer)
-	   (goto-char (point-min))
-	   ;; Parse the result we got from `gnus-request-group'.
-	   (and (looking-at "[0-9]+ [0-9]+ \\([0-9]+\\) [0-9]+")
-		(progn
-		  (goto-char (match-beginning 1))
-		  (gnus-set-active
-		   group (setq active (cons (read (current-buffer))
-					    (read (current-buffer)))))
-		  ;; Return the new active info.
-		  active))))))
+	 (gnus-set-active group (setq active (gnus-parse-active)))
+	 ;; Return the new active info.
+	 active)))
 
-(defun gnus-update-read-articles (group unread)
-  "Update the list of read and ticked articles in GROUP using the
-UNREAD and TICKED lists.
-Note: UNSELECTED has to be sorted over `<'.
-Returns whether the updating was successful."
-  (let* ((active (or gnus-newsgroup-active (gnus-active group)))
-	 (entry (gnus-gethash group gnus-newsrc-hashtb))
-	 (info (nth 2 entry))
-	 (prev 1)
-	 (unread (sort (copy-sequence unread) '<))
-	 read)
-    (if (or (not info) (not active))
-	;; There is no info on this group if it was, in fact,
-	;; killed.  Gnus stores no information on killed groups, so
-	;; there's nothing to be done.
-	;; One could store the information somewhere temporarily,
-	;; perhaps...  Hmmm...
-	()
-      ;; Remove any negative articles numbers.
-      (while (and unread (< (car unread) 0))
-	(setq unread (cdr unread)))
-      ;; Remove any expired article numbers
-      (while (and unread (< (car unread) (car active)))
-	(setq unread (cdr unread)))
-      ;; Compute the ranges of read articles by looking at the list of
-      ;; unread articles.
-      (while unread
-	(if (/= (car unread) prev)
-	    (setq read (cons (if (= prev (1- (car unread))) prev
-			       (cons prev (1- (car unread)))) read)))
-	(setq prev (1+ (car unread)))
-	(setq unread (cdr unread)))
-      (when (<= prev (cdr active))
-	(setq read (cons (cons prev (cdr active)) read)))
-      ;; Enter this list into the group info.
-      (gnus-info-set-read
-       info (if (> (length read) 1) (nreverse read) read))
-      ;; Set the number of unread articles in gnus-newsrc-hashtb.
-      (gnus-get-unread-articles-in-group info (gnus-active group))
-      t)))
+(defun gnus-parse-active ()
+  "Parse active info in the nntp server buffer."
+  (save-excursion
+    (set-buffer nntp-server-buffer)
+    (goto-char (point-min))
+    ;; Parse the result we got from `gnus-request-group'.
+    (when (looking-at "[0-9]+ [0-9]+ \\([0-9]+\\) [0-9]+")
+      (goto-char (match-beginning 1))
+      (cons (read (current-buffer))
+	    (read (current-buffer))))))
 
 (defun gnus-make-articles-unread (group articles)
   "Mark ARTICLES in GROUP as unread."

@@ -339,6 +339,7 @@ variables.
 * Startup Files::       Those pesky startup files---@file{.newsrc}.
 * Auto Save::           Recovering from a crash.
 * The Active File::     Reading the active file over a slow line Takes Time.
+* Changing Servers::    You may want to move from one server to another.
 * Startup Variables::   Other variables you might change.
 @end menu
 
@@ -647,6 +648,44 @@ subscribe them (or not) using the normal methods.  This might be handy
 if you are monitoring a few servers for new groups.  A side effect is
 that startup will take much longer, so you can meditate while waiting.
 Use the mantra ``dingnusdingnusdingnus'' to achieve permanent bliss.
+
+
+@node Changing Servers
+@section Changing Servers
+
+Sometimes it is necessary to move from one @sc{nntp} server to another.
+This happens very rarely, but perhaps you change jobs, or one server is
+very flake and you want to use another.  
+
+Changing the server is pretty easy, right?  You just change
+@code{gnus-select-method} to point to the new server?  
+
+@emph{Wrong!}
+
+Article numbers are not (in any way) kept synchronized between different
+@sc{nntp} servers, and the only way Gnus keeps track of what articles
+you have read is by keeping track of article numbers.  So when you
+change @code{gnus-select-method}, your @file{.newsrc} file becomes
+worthless.  
+
+Gnus provides a few functions to attempt to translate a @file{.newsrc}
+file from one server to another.  They all have one thing in
+common---they take a looong time to run.  You don't want to use these
+functions more than absolutely necessary.
+
+@kindex M-x gnus-change-server
+@findex gnus-change-server
+If you have access to both servers, Gnus can request the headers for all
+the articles you have read and compare @code{Message-ID}s and map
+reads and article marks.  The @kbd{M-x gnus-change-server} command will
+do this for all your native groups.  It will prompt for the method you
+want to move to.
+
+@kindex M-x gnus-group-move-group-to-server
+@findex gnus-group-move-group-to-server
+You can also move individual groups with the @kbd{M-x
+gnus-group-move-group-to-server} command.  This is useful if you want to
+move a (foreign) group from one server to another.
 
 
 @node Startup Files
@@ -2156,58 +2195,58 @@ definitions slightly.
 @table @kbd
 
 @item T n
-@kindex T n (Group)
+@kindex T n (Topic)
 @findex gnus-topic-create-topic
 Prompt for a new topic name and create it 
 (@code{gnus-topic-create-topic}). 
 
 @item T m
-@kindex T m (Group)
+@kindex T m (Topic)
 @findex gnus-topic-move-group
 Move the current group to some other topic
 (@code{gnus-topic-move-group}).  This command understands the
 process/prefix convention (@pxref{Process/Prefix}).
 
 @item T c
-@kindex T c (Group)
+@kindex T c (Topic)
 @findex gnus-topic-copy-group
 Copy the current group to some other topic
 (@code{gnus-topic-copy-group}).  This command understands the
 process/prefix convention (@pxref{Process/Prefix}).
 
 @item T D
-@kindex T D (Group)
+@kindex T D (Topic)
 @findex gnus-topic-remove-group
 Remove a group from the current topic (@code{gnus-topic-remove-group}).
 This command understands the process/prefix convention
 (@pxref{Process/Prefix}).
 
 @item T M
-@kindex T M (Group)
+@kindex T M (Topic)
 @findex gnus-topic-move-matching
 Move all groups that match some regular expression to a topic
 (@code{gnus-topic-move-matching}). 
 
 @item T C
-@kindex T C (Group)
+@kindex T C (Topic)
 @findex gnus-topic-copy-matching
 Copy all groups that match some regular expression to a topic
 (@code{gnus-topic-copy-matching}). 
 
 @item T #
-@kindex T # (Group)
+@kindex T # (Topic)
 @findex gnus-topic-mark-topic
 Mark all groups in the current topic with the process mark
 (@code{gnus-topic-mark-topic}). 
 
 @item T M-#
-@kindex T M-# (Group)
+@kindex T M-# (Topic)
 @findex gnus-topic-unmark-topic
 Remove the process mark from all groups in the current topic
 (@code{gnus-topic-unmark-topic}). 
 
 @item RET
-@kindex RET (Group)
+@kindex RET (Topic)
 @findex gnus-topic-select-group
 @itemx SPACE
 Either select a group or fold a topic (@code{gnus-topic-select-group}).
@@ -2218,38 +2257,50 @@ toggling command on topics.  In addition, if you give a numerical
 prefix, group on that level (and lower) will be displayed.
 
 @item T TAB
-@kindex T TAB (Group)
+@kindex T TAB (Topic)
 @findex gnus-topic-indent
 ``Indent'' the current topic so that it becomes a sub-topic of the
 previous topic (@code{gnus-topic-indent}).  If given a prefix,
 ``un-indent'' the topic instead.
 
 @item C-k
-@kindex C-k (Group)
+@kindex C-k (Topic)
 @findex gnus-topic-kill-group
 Kill a group or topic (@code{gnus-topic-kill-group}).  
 
 @item C-y
-@kindex C-y (Group)
+@kindex C-y (Topic)
 @findex gnus-topic-yank-group
 Yank the previously killed group or topic (@code{gnus-topic-yank-group}).
 Note that all topics will be yanked before all groups.
 
 @item T r
-@kindex T r (Group)
+@kindex T r (Topic)
 @findex gnus-topic-rename
 Rename a topic (@code{gnus-topic-rename}). 
 
 @item T DEL
-@kindex T DEL (Group)
+@kindex T DEL (Topic)
 @findex gnus-topic-delete
 Delete an empty topic (@code{gnus-topic-delete}). 
 
 @item A T
-@kindex A T (Group)
+@kindex A T (Topic)
 @findex gnus-topic-list-active
 List all groups that Gnus knows about in a topics-ified way
 (@code{gnus-topic-list-active}).
+
+@item G p
+@kindex G p (Topic)
+@findex gnus-topic-edit-parameters
+@cindex group parameters
+@cindex topic parameters
+@cindex parameters
+Edit the topic parameters (@code{gnus-topic-edit-parameters}).  All
+groups in the topic will inherit group parameters from the parent (and
+ancestor) topic parameters.  Group parameters (of course) override topic
+parameters, and topic parameters in sub-topics override topic parameters
+in super-topics.  You know.  Normal inheretance rules.
 
 @end table
 
@@ -2511,6 +2562,8 @@ move around, read articles, post articles and reply to articles.
 * Mail Group Commands::         Some commands can only be used in mail groups.
 * Various Summary Stuff::       What didn't fit anywhere else.
 * Exiting the Summary Buffer::  Returning to the Group buffer.
+* Crosspost Handling::          How crossposted articles are dealt with.
+* Duplicate Suppression::       An alternative when crosspost handling fails.
 @end menu
 
 
@@ -2619,6 +2672,8 @@ Number of articles in the current sub-thread.  Using this spec will slow
 down summary buffer generation somewhat.
 @item e
 A single character will be displayed if the article has any children. 
+@item P
+The line number.
 @item u
 User defined specifier.  The next character in the format string should
 be a letter.  @sc{gnus} will call the function
@@ -4927,6 +4982,7 @@ these articles easier.
 * Article Washing::         Lots of way-neat functions to make life better.
 * Article Buttons::         Click on URLs, Message-IDs, addresses and the like.
 * Article Date::            Grumble, UT!
+* Article Signature::       What is a signature?
 @end menu
 
 
@@ -5021,9 +5077,10 @@ cited text belonging to the attribution.
 @vindex gnus-signature-face
 @findex gnus-article-highlight-signature
 Highlight the signature (@code{gnus-article-highlight-signature}).
-Everything after @code{gnus-signature-separator} in an article will be
-considered a signature and will be highlighted with
-@code{gnus-signature-face}, which is @code{italic} by default. 
+Everything after @code{gnus-signature-separator} (@pxref{Article
+Signature}) in an article will be considered a signature and will be
+highlighted with @code{gnus-signature-face}, which is @code{italic} by
+default.
 
 @end table
 
@@ -5057,7 +5114,8 @@ Hide headers that aren't particularly interesting
 @item W W s
 @kindex W W s (Summary)
 @findex gnus-article-hide-signature
-Hide signature (@code{gnus-article-hide-signature}).
+Hide signature (@code{gnus-article-hide-signature}).  @xref{Article
+Signature}. 
 
 @item W W p
 @kindex W W p (Summary)
@@ -5125,14 +5183,6 @@ hidden.  If you give a positive prefix, they will always hide.
 
 Also @pxref{Article Highlighting} for further variables for
 citation customization.
-
-@vindex gnus-signature-limit
-@code{gnus-signature-limit} provides a limit to what is considered a
-signature.  If it is a number, no signature may not be longer (in
-characters) than that number.  If it is a function, the function will be
-called without any parameters, and if it returns @code{nil}, there is no
-signature in the buffer.  If it is a string, it will be used as a
-regexp.  If it matches, the text in question is not a signature.
 
 
 @node Article Washing
@@ -5365,6 +5415,58 @@ that the article was posted in 1854.  Although something like that is
 @end table
 
 
+@node Article Signature
+@subsection Article Signature
+@cindex signatures
+@cindex article signature
+
+@vindex gnus-signature-separator
+Each article is divided into two parts---the head and the body.  The
+body can be divided into a signature part and a text part.  The variable
+that says what is to be considered a signature is
+@code{gnus-signature-separator}.  This is normally the standard
+@samp{"^-- $"} as mandated by son-of-RFC 1036.  However, many people use
+non-standard signature separators, so this variable can also be a list
+of regular expressions to be tested, one by one.  (Searches are done
+from the end of the body towards the beginning.)  One likely value is:
+
+@lisp
+(setq gnus-signature-separator
+      '("^-- $"         ; The standard
+        "^-- *$"        ; A common mangling
+        "^-------*$"    ; Many people just use a looong 
+                        ; line of dashes.  Shame!
+        "^ *--------*$" ; Double-shame!
+        "^________*$"   ; Underscores are also popular
+        "^========*$")) ; Pervert!
+@end lisp
+
+The more permissive you are, the more likely it is that you'll get false
+positives.
+
+@vindex gnus-signature-limit
+@code{gnus-signature-limit} provides a limit to what is considered a
+signature. 
+
+@enumerate
+@item 
+If it is an integer, no signature may be longer (in characters) than
+that integer.
+@item 
+If it is a floating point number, no signature may be longer (in lines)
+than that number.
+@item 
+If it is a function, the function will be called without any parameters,
+and if it returns @code{nil}, there is no signature in the buffer.
+@item
+If it is a string, it will be used as a regexp.  If it matches, the text
+in question is not a signature.
+@end enumerate
+
+This variable can also be a list where the elements may be of the types
+listed above.  
+
+
 @node Summary Sorting
 @section Summary Sorting
 @cindex summary sorting
@@ -5487,10 +5589,19 @@ available.
 Here are the available keystrokes when using pick mode:
 
 @table @kbd
+@item .
+@kindex . (Pick)
+@findex gnus-summary-mark-as-processable
+Pick the article on the current line
+(@code{gnus-summary-mark-as-processable}).  If given a numerical prefix,
+go to the article on that line and pick that article.  (The line number
+is normally displayed on the beginning of the summary pick lines.)
+
 @item SPACE
 @kindex SPACE (Pick)
-@findex gnus-summary-mark-as-processable
-Pick the article (@code{gnus-summary-mark-as-processable}). 
+@findex gnus-pick-next-page
+Scroll the summary buffer up one page (@code{gnus-pick-next-page}).  If
+at the end of the buffer, start reading the picked articles.
 
 @item u
 @kindex u (Pick)
@@ -5561,6 +5672,18 @@ If this sounds like a good idea to you, you could say:
 
 @vindex gnus-pick-mode-hook
 @code{gnus-pick-mode-hook} is run in pick minor mode buffers.
+
+@vindex gnus-mark-unpicked-articles-as-read
+If @code{gnus-mark-unpicked-articles-as-read} is non-@code{nil}, mark
+all unpicked articles as read.  The default is @code{nil}.
+
+@vindex gnus-summary-pick-line-format
+The summary line format in pick mode is slightly different than the
+standard format.  At the beginning of each line the line number is
+displayed.  The pick mode line format is controlled by the
+@code{gnus-summary-pick-line-format} variable (@pxref{Formatting
+Variables}).  It accepts the same format specs that
+@code{gnus-summary-line-format} does (@pxref{Summary Buffer Lines}). 
 
 
 @node Binary Groups
@@ -6034,7 +6157,11 @@ summary buffer.  If the @code{gnus-use-cross-reference} variable is
 this group and are marked as read, will also be marked as read in the
 other subscribed groups they were cross-posted to.  If this variable is
 neither @code{nil} nor @code{t}, the article will be marked as read in
-both subscribed and unsubscribed groups.
+both subscribed and unsubscribed groups (@pxref{Crosspost Handling}).
+
+
+@node Crosspost Handling
+@section Crosspost Handling
 
 @cindex velveeta
 @cindex spamming
@@ -6043,11 +6170,12 @@ read the same article more than once.  Unless, of course, somebody has
 posted it to several groups separately.  Posting the same article to
 several groups (not cross-posting) is called @dfn{spamming}, and you are
 by law required to send nasty-grams to anyone who perpetrates such a
-heinous crime.
+heinous crime.  You may want to try NoCeM handling to filter out spam
+(@pxref{NoCeM}). 
 
 Remember: Cross-posting is kinda ok, but posting the same article
 separately to several groups is not.  Massive cross-posting (aka.
-@dfn{velveeta}) is to be avoided.  
+@dfn{velveeta}) is to be avoided at all costs.
 
 @cindex cross-posting
 @cindex Xref
@@ -6079,6 +6207,78 @@ set @code{gnus-nov-is-evil} to @code{t}, which slows things down
 considerably.
 
 C'est la vie.
+
+For an alternative approach, @xref{Duplicate Suppression}.
+
+
+@node Duplicate Suppression
+@section Duplicate Suppression
+
+By default, Gnus tries to make sure that you don't have to read the same
+article more than once by utilizing the crossposing mechanism
+(@pxref{Crosspost Handling}).  However, that simple and efficient
+approach may not work satisfactorily for some users for various
+reasons.  
+
+@enumerate
+@item 
+The @sc{nntp} server may fail to generate the @code{Xref} header.  This
+is evil and not very common.
+
+@item 
+The @sc{nntp} server may fail to include the @code{Xref} header in the
+@file{.overview} data bases.  This is evil and all too common, alas.
+
+@item
+You may be reading the same group (or several related groups) from
+different @sc{nntp} servers.
+
+@item
+You may be getting mail that duplicates articles posted to groups.
+@end enumerate
+
+I'm sure there are other situations that @code{Xref} handling fails as
+well, but these four are the most common situations.
+
+If, and only if, @code{Xref} handling fails for you, then you may
+consider switching on @dfn{duplicate suppression}.  If you do so, Gnus
+will remember the @code{Message-ID}s of all articles you have read or
+otherwise marked as read, and then, as if by magic, mark them as read
+all subsequent times you see them---in @emph{all} groups.  Using this
+mechanism is quite likely to be somewhat inefficient, but not overly
+so.  It's certainly preferrable to reading the same articles more than
+once.
+
+@table @code
+@item gnus-suppress-duplicates
+@vindex gnus-suppress-duplicates
+If non-@code{nil}, suppress duplicates.
+
+@item gnus-save-duplicate-list
+@vindex gnus-save-duplicate-list
+If non-@code{nil}, save the list of duplicates to a file.  This will
+make startup and shutdown take longer, so the default is @code{nil}.
+However, this means that only duplicate articles that is read in a
+single Gnus session are suppressed.  
+
+@item gnus-duplicate-list-length
+@vindex gnus-duplicate-list-length
+This variables says how many @code{Message-ID}s to keep in the duplicate
+suppression list.  The default is 10000.  
+
+@item gnus-duplicate-file
+@vindex gnus-duplicate-file
+The name of the file to store the duplicate suppression list.  The
+default is @file{~/News/suppression}.
+@end table
+
+If you have a tendency to stop and start Gnus often, setting
+@code{gnus-save-duplicate-list} to @code{t} is probably a good idea.  If
+you leave Gnus running for weeks on end, you may have it @code{nil}.  On
+the other hand, saving the list makes startup and shutdown much slower,
+so that means that if you stop and start Gnus often, you should set
+@code{gnus-save-duplicate-list} to @code{nil}.  Uhm.  I'll leave this up
+to you to figure out, I think.
 
 
 @node The Article Buffer
@@ -7637,7 +7837,7 @@ directory.  The default is @samp{movemail}.
 @cindex incoming mail files
 @cindex deleting incoming files
 If non-@code{nil}, the mail backends will delete the temporary incoming
-file after splitting mail into the proper groups.  This is @code{nil} by
+file after splitting mail into the proper groups.  This is @code{t} by
 default for reasons of security.
 
 @item nnmail-use-long-file-names
@@ -10504,7 +10704,8 @@ Currently Gnus uses the following formatting variables:
 @code{gnus-group-mode-line-format},
 @code{gnus-summary-mode-line-format},
 @code{gnus-article-mode-line-format},
-@code{gnus-server-mode-line-format}. 
+@code{gnus-server-mode-line-format}, and
+@code{gnus-summary-pick-line-format}.
 
 Note that the @samp{%(} specs (and friends) do not make any sense on the
 mode-line variables.
@@ -10700,10 +10901,25 @@ Here's a list of all possible keys for
 @code{gnus-buffer-configuration}:
 
 @code{group}, @code{summary}, @code{article}, @code{server},
-@code{browse}, @code{group-mail}, @code{summary-mail},
-@code{summary-reply}, @code{info}, @code{summary-faq},
-@code{edit-group}, @code{edit-server}, @code{reply}, @code{reply-yank},
-@code{followup}, @code{followup-yank}, @code{edit-score}.  
+@code{browse}, @code{message}, @code{pick}, @code{info},
+@code{summary-faq}, @code{edit-group}, @code{edit-server},
+@code{edit-score}, @code{post}, @code{reply}, @code{forward},
+@code{reply-yank}, @code{mail-bounce}, @code{draft},
+@code{pipe}, @code{bug}, @code{compose-bounce}.  
+
+Note that the @code{message} key is used for both
+@code{gnus-group-mail} and @code{gnus-summary-mail-other-window}.  If
+it is desireable to distinguish between the two, something like this
+might be used:
+
+@lisp
+(message (horizontal 1.0
+		     (vertical 1.0 (message 1.0 point))
+		     (vertical 0.24
+			       (if (buffer-live-p gnus-summary-buffer)
+				   '(summary 0.5))
+			       (group 1.0)))))
+@end lisp
 
 @findex gnus-add-configuration
 Since the @code{gnus-buffer-configuration} variable is so long and

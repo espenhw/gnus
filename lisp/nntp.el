@@ -150,6 +150,9 @@ server there that you can connect to.")
 (defvoo nntp-server-xover 'try)
 (defvoo nntp-server-list-active-group 'try)
 
+(eval-and-compile
+  (autoload 'nnmail-read-passwd "nnmail"))
+
 
 
 ;;; Interface functions.
@@ -286,13 +289,11 @@ server there that you can connect to.")
 
 (deffoo nntp-request-list (&optional server)
   (nntp-possibly-change-group nil server)
-  (prog1 (nntp-send-command "\r\n\\.\r\n" "LIST")
-    (nntp-decode-text t)))
+  (nntp-send-command-and-decode "\r\n\\.\r\n" "LIST"))
 
 (deffoo nntp-request-list-newsgroups (&optional server)
   (nntp-possibly-change-group nil server)
-  (prog1 (nntp-send-command "\r\n\\.\r\n" "LIST NEWSGROUPS")
-    (nntp-decode-text t)))
+  (nntp-send-command "\r\n\\.\r\n" "LIST NEWSGROUPS"))
 
 (deffoo nntp-request-newgroups (date &optional server)
   (nntp-possibly-change-group nil server)
@@ -475,6 +476,7 @@ It will prompt for a password."
        (nntp-process-filter proc string))))
 
 (defun nntp-process-filter (proc string)
+  "Process filter used for waiting a calling back."
   (let ((old-buffer (current-buffer)))
     (unwind-protect
 	(let (point)
@@ -495,6 +497,7 @@ It will prompt for a password."
 		  (if (buffer-name (get-buffer nntp-tmp-buffer))
 		      (save-excursion
 			(set-buffer (get-buffer nntp-tmp-buffer))
+			(goto-char (point-max))
 			(insert-buffer-substring (process-buffer proc))))
 		  (set-process-filter proc nil)
 		  (erase-buffer)
@@ -714,7 +717,6 @@ It will prompt for a password."
 (defun nntp-send-xover-command (beg end &optional wait-for-reply)
   "Send the XOVER command to the server."
   (let ((range (format "%d-%d" beg end))
-	(curbuf (current-buffer))
 	(nntp-inhibit-erase t))
     (if (stringp nntp-server-xover)
 	;; If `nntp-server-xover' is a string, then we just send this

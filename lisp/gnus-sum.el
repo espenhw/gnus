@@ -258,6 +258,8 @@ It uses the same syntax as the `gnus-split-methods' variable.")
   "*Mark used for sparsely reffed articles.")
 (defvar gnus-canceled-mark ?G
   "*Mark used for canceled articles.")
+(defvar gnus-duplicate-mark ?M
+  "*Mark used for duplicate articles.")
 (defvar gnus-score-over-mark ?+
   "*Score mark used for articles with high scores.")
 (defvar gnus-score-below-mark ?-
@@ -282,63 +284,6 @@ list of parameters to that command.")
 
 (defvar gnus-insert-pseudo-articles t
   "*If non-nil, insert pseudo-articles when decoding articles.")
-
-(defvar gnus-summary-line-format "%U\%R\%z\%I\%(%[%4L: %-20,20n%]%) %s\n"
-  "*The format specification of the lines in the summary buffer.
-
-It works along the same lines as a normal formatting string,
-with some simple extensions.
-
-%N   Article number, left padded with spaces (string)
-%S   Subject (string)
-%s   Subject if it is at the root of a thread, and \"\" otherwise (string)
-%n   Name of the poster (string)
-%a   Extracted name of the poster (string)
-%A   Extracted address of the poster (string)
-%F   Contents of the From: header (string)
-%x   Contents of the Xref: header (string)
-%D   Date of the article (string)
-%d   Date of the article (string) in DD-MMM format
-%M   Message-id of the article (string)
-%r   References of the article (string)
-%c   Number of characters in the article (integer)
-%L   Number of lines in the article (integer)
-%I   Indentation based on thread level (a string of spaces)
-%T   A string with two possible values: 80 spaces if the article
-     is on thread level two or larger and 0 spaces on level one
-%R   \"A\" if this article has been replied to, \" \" otherwise (character)
-%U   Status of this article (character, \"R\", \"K\", \"-\" or \" \")
-%[   Opening bracket (character, \"[\" or \"<\")
-%]   Closing bracket (character, \"]\" or \">\")
-%>   Spaces of length thread-level (string)
-%<   Spaces of length (- 20 thread-level) (string)
-%i   Article score (number)
-%z   Article zcore (character)
-%t   Number of articles under the current thread (number).
-%e   Whether the thread is empty or not (character).
-%l   GroupLens score (string).
-%u   User defined specifier.  The next character in the format string should
-     be a letter.  Gnus will call the function gnus-user-format-function-X,
-     where X is the letter following %u.  The function will be passed the
-     current header as argument.  The function should return a string, which
-     will be inserted into the summary just like information from any other
-     summary specifier.
-
-Text between %( and %) will be highlighted with `gnus-mouse-face'
-when the mouse point is placed inside the area.	 There can only be one
-such area.
-
-The %U (status), %R (replied) and %z (zcore) specs have to be handled
-with care.  For reasons of efficiency, Gnus will compute what column
-these characters will end up in, and \"hard-code\" that.  This means that
-it is illegal to have these specs after a variable-length spec.	 Well,
-you might not be arrested, but your summary buffer will look strange,
-which is bad enough.
-
-The smart choice is to have these specs as for to the left as
-possible.
-
-This restriction may disappear in later versions of Gnus.")
 
 (defvar gnus-summary-dummy-line-format
   "*  %(:                          :%) %S\n"
@@ -556,7 +501,8 @@ automatically when it is selected.")
     (?e (gnus-summary-number-of-articles-in-thread
 	 (and (boundp 'thread) (car thread)) gnus-tmp-level t)
 	?c)
-    (?u gnus-tmp-user-defined ?s))
+    (?u gnus-tmp-user-defined ?s)
+    (?P (gnus-pick-line-number) ?d))
   "An alist of format specifications that can appear in summary lines,
 and what variables they correspond with, along with the type of the
 variable (string, integer, character, etc).")
@@ -1234,6 +1180,9 @@ The following commands are available:
 
 (defmacro gnus-data-unread-p (data)
   `(= (nth 1 ,data) gnus-unread-mark))
+
+(defmacro gnus-data-read-p (data)
+  `(/= (nth 1 ,data) gnus-unread-mark))
 
 (defmacro gnus-data-pseudo-p (data)
   `(consp (nth 3 ,data)))
@@ -2809,6 +2758,10 @@ If READ-ALL is non-nil, all articles in the group are selected."
       (when cached
 	(setq gnus-newsgroup-cached cached))
 
+      ;; Suppress duplicates?
+      (when gnus-suppress-duplicates
+	(gnus-dup-suppress-articles))
+
       ;; Set the initial limit.
       (setq gnus-newsgroup-limit (copy-sequence articles))
       ;; Remove canceled articles from the list of unread articles.
@@ -3008,33 +2961,6 @@ If READ-ALL is non-nil, all articles in the group are selected."
 		    (not (nth i info)))
 	  (when (nthcdr (decf i) info)
 	    (setcdr (nthcdr i info) nil)))))))
-
-(defun gnus-add-marked-articles (group type articles &optional info force)
-  ;; Add ARTICLES of TYPE to the info of GROUP.
-  ;; If INFO is non-nil, use that info.	 If FORCE is non-nil, don't
-  ;; add, but replace marked articles of TYPE with ARTICLES.
-  (let ((info (or info (gnus-get-info group)))
-	(uncompressed '(score bookmark killed))
-	marked m)
-    (or (not info)
-	(and (not (setq marked (nthcdr 3 info)))
-	     (or (null articles)
-		 (setcdr (nthcdr 2 info)
-			 (list (list (cons type (gnus-compress-sequence
-						 articles t)))))))
-	(and (not (setq m (assq type (car marked))))
-	     (or (null articles)
-		 (setcar marked
-			 (cons (cons type (gnus-compress-sequence articles t) )
-			       (car marked)))))
-	(if force
-	    (if (null articles)
-		(setcar (nthcdr 3 info)
-			(delq (assq type (car marked)) (car marked)))
-	      (setcdr m (gnus-compress-sequence articles t)))
-	  (setcdr m (gnus-compress-sequence
-		     (sort (nconc (gnus-uncompress-range (cdr m))
-				  (copy-sequence articles)) '<) t))))))
 
 (defun gnus-set-mode-line (where)
   "This function sets the mode line of the article or summary buffers.
@@ -3848,7 +3774,7 @@ The prefix argument ALL means to select all articles."
   (gnus-summary-reselect-current-group all t))
 
 (defun gnus-summary-update-info ()
-  (let* ((group gnus-newsgroup-name))
+  (let ((group gnus-newsgroup-name))
     (when gnus-newsgroup-kill-headers
       (setq gnus-newsgroup-killed
 	    (gnus-compress-sequence
@@ -3902,6 +3828,8 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
       (gnus-cache-possibly-remove-articles)
       (gnus-cache-save-buffers))
     (gnus-async-prefetch-remove-group group)
+    (when gnus-suppress-duplicates
+      (gnus-dup-enter-articles))
     (when gnus-use-trees
       (gnus-tree-close group))
     ;; Make all changes in this group permanent.
@@ -4687,7 +4615,8 @@ If ALL is non-nil, limit strictly to unread articles."
      (list gnus-del-mark gnus-read-mark gnus-ancient-mark
 	   gnus-killed-mark gnus-kill-file-mark
 	   gnus-low-score-mark gnus-expirable-mark
-	   gnus-canceled-mark gnus-catchup-mark gnus-sparse-mark)
+	   gnus-canceled-mark gnus-catchup-mark gnus-sparse-mark
+	   gnus-duplicate-mark)
      'reverse)))
 
 (defalias 'gnus-summary-delete-marked-with 'gnus-summary-limit-to-marks)
@@ -6095,7 +6024,8 @@ returned."
 	       (or (= mark gnus-killed-mark) (= mark gnus-del-mark)
 		   (= mark gnus-catchup-mark) (= mark gnus-low-score-mark)
 		   (= mark gnus-ancient-mark)
-		   (= mark gnus-read-mark) (= mark gnus-souped-mark)))
+		   (= mark gnus-read-mark) (= mark gnus-souped-mark)
+		   (= mark gnus-duplicate-mark)))
       (setq mark gnus-expirable-mark)
       (push article gnus-newsgroup-expirable))
     ;; Set the mark in the buffer.
@@ -6152,7 +6082,8 @@ marked."
 	   (and (numberp mark)
 		(or (= mark gnus-killed-mark) (= mark gnus-del-mark)
 		    (= mark gnus-catchup-mark) (= mark gnus-low-score-mark)
-		    (= mark gnus-read-mark) (= mark gnus-souped-mark))))
+		    (= mark gnus-read-mark) (= mark gnus-souped-mark)
+		    (= mark gnus-duplicate-mark))))
        (setq mark gnus-expirable-mark))
   (let* ((mark (or mark gnus-del-mark))
 	 (article (or article (gnus-summary-article-number))))
@@ -6199,20 +6130,21 @@ marked."
   t)
 
 (defun gnus-summary-update-mark (mark type)
-  (beginning-of-line)
   (let ((forward (cdr (assq type gnus-summary-mark-positions)))
-	(buffer-read-only nil))
+        (buffer-read-only nil))
+    (re-search-backward "[\n\r]" (gnus-point-at-bol) 'move-to-limit)
+    (and (looking-at "\r") (setq forward (1+ forward)))
     (when (and forward
-	       (<= (+ forward (point)) (point-max)))
+               (<= (+ forward (point)) (point-max)))
       ;; Go to the right position on the line.
       (goto-char (+ forward (point)))
       ;; Replace the old mark with the new mark.
       (subst-char-in-region (point) (1+ (point)) (following-char) mark)
       ;; Optionally update the marks by some user rule.
       (when (eq type 'unread)
-	(gnus-data-set-mark
-	 (gnus-data-find (gnus-summary-article-number)) mark)
-	(gnus-summary-update-line (eq mark gnus-unread-mark))))))
+        (gnus-data-set-mark
+         (gnus-data-find (gnus-summary-article-number)) mark)
+        (gnus-summary-update-line (eq mark gnus-unread-mark))))))
 
 (defun gnus-mark-article-as-read (article &optional mark)
   "Enter ARTICLE in the pertinent lists and remove it from others."

@@ -506,7 +506,7 @@ Timezone package is used."
 	   (and (not (,(car funs) t2 t1))
 		,(gnus-make-sort-function (cdr funs))))
     `(,(car funs) t1 t2)))
-		 
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

@@ -169,7 +169,9 @@ the head of the outgoing mail.
 
 @findex message-wide-reply
 The @code{message-wide-reply} pops up a message buffer that's a wide
-reply to the message in the current buffer.
+reply to the message in the current buffer.  A @dfn{wide reply} is a
+reply that goes out to all people listed in the @code{To}, @code{From}
+and @code{Cc} headers.
 
 @vindex message-wide-reply-to-function
 Message uses the normal methods to determine where wide replies are to go,
@@ -277,7 +279,9 @@ be removed before sending the message.  The default is
 @findex message-bounce
 The @code{message-bounce} command will, if the current buffer contains a
 bounced mail message, pop up a message buffer stripped of the bounce
-information.
+information.  A @dfn{bounced message} is typically a mail you've sent
+out that has been returned by some @code{mailer-daemon} as
+undeliverable. 
 
 @vindex message-ignored-bounced-headers
 Headers that match the @code{message-ignored-bounced-headers} regexp

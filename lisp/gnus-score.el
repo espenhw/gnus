@@ -554,18 +554,19 @@ If optional argument `SILENT' is nil, show effect of score entry."
   (let ((score (gnus-score-default score))
 	(header (format "%s" (downcase header)))
 	new)
-    (and prompt (setq match (read-string 
-			     (format "Match %s on %s, %s: " 
-				     (cond ((eq date 'now)
-					    "now")
-					   ((stringp date)
-					    "temp")
-					   (t "permanent"))
-				     header
-				     (if (< score 0) "lower" "raise"))
-			     (if (numberp match)
-				 (int-to-string match)
-			       match))))
+    (when prompt
+      (setq match (read-string 
+		   (format "Match %s on %s, %s: " 
+			   (cond ((eq date 'now)
+				  "now")
+				 ((stringp date)
+				  "temp")
+				 (t "permanent"))
+			   header
+			   (if (< score 0) "lower" "raise"))
+		   (if (numberp match)
+		       (int-to-string match)
+		     match))))
 
     ;; Get rid of string props.
     (setq match (format "%s" match))
@@ -1062,48 +1063,49 @@ SCORE is the score to add."
   
 (defun gnus-score-save ()
   ;; Save all score information.
-  (let ((cache gnus-score-cache))
+  (let ((cache gnus-score-cache)
+	entry score file)
     (save-excursion
       (setq gnus-score-alist nil)
-      (set-buffer (get-buffer-create "*Score*"))
-      (buffer-disable-undo (current-buffer))
-      (let (entry score file)
-	(while cache
-	  (setq entry (car cache)
-		cache (cdr cache)
-		file (car entry)
-		score (cdr entry))
-	  (if (or (not (equal (gnus-score-get 'touched score) '(t)))
-		  (gnus-score-get 'read-only score)
-		  (and (file-exists-p file)
-		       (not (file-writable-p file))))
-	      ()
-	    (setq score (setcdr entry (delq (assq 'touched score) score)))
-	    (erase-buffer)
-	    (let (emacs-lisp-mode-hook)
-	      (if (string-match 
-		   (concat (regexp-quote gnus-adaptive-file-suffix)
-			   "$") file)
-		  ;; This is an adaptive score file, so we do not run
-		  ;; it through `pp'.  These files can get huge, and
-		  ;; are not meant to be edited by human hands.
-		  (prin1 score (current-buffer))
-		;; This is a normal score file, so we print it very
-		;; prettily. 
-		(pp score (current-buffer))))
-	    (if (not (make-directory (file-name-directory file) t))
-		()
-	      ;; If the score file is empty, we delete it.
-	      (if (zerop (buffer-size))
-		  (delete-file file)
-		;; There are scores, so we write the file. 
- 		(when (file-writable-p file)
-		  (write-region (point-min) (point-max) file nil 'silent)
-		  (and gnus-score-after-write-file-function
-		       (funcall gnus-score-after-write-file-function file)))))
-	    (and gnus-score-uncacheable-files
-		 (string-match gnus-score-uncacheable-files file)
-		 (gnus-score-remove-from-cache file)))))
+      (nnheader-set-temp-buffer "*Score*")
+      (while cache
+	(current-buffer)
+	(setq entry (pop cache)
+	      file (car entry)
+	      score (cdr entry))
+	(if (or (not (equal (gnus-score-get 'touched score) '(t)))
+		(gnus-score-get 'read-only score)
+		(and (file-exists-p file)
+		     (not (file-writable-p file))))
+	    ()
+	  (setq score (setcdr entry (delq (assq 'touched score) score)))
+	  (erase-buffer)
+	  (let (emacs-lisp-mode-hook)
+	    (if (string-match 
+		 (concat (regexp-quote gnus-adaptive-file-suffix)
+			 "$") file)
+		;; This is an adaptive score file, so we do not run
+		;; it through `pp'.  These files can get huge, and
+		;; are not meant to be edited by human hands.
+		(prin1 score (current-buffer))
+	      ;; This is a normal score file, so we print it very
+	      ;; prettily. 
+	      (pp score (current-buffer))))
+	  (if (and (not (file-exists-p (file-name-directory file)))
+		   (make-directory (file-name-directory file) t))
+	      (gnus-error 1 "Can't create directory %s"
+			  (file-name-directory file))
+	    ;; If the score file is empty, we delete it.
+	    (if (zerop (buffer-size))
+		(delete-file file)
+	      ;; There are scores, so we write the file. 
+	      (when (file-writable-p file)
+		(write-region (point-min) (point-max) file nil 'silent)
+		(when gnus-score-after-write-file-function
+		  (funcall gnus-score-after-write-file-function file)))))
+	  (and gnus-score-uncacheable-files
+	       (string-match gnus-score-uncacheable-files file)
+	       (gnus-score-remove-from-cache file))))
       (kill-buffer (current-buffer)))))
   
 (defun gnus-score-headers (score-files &optional trace)

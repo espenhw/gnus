@@ -28,7 +28,7 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
-(defconst gnus-version-number "0.3"
+(defconst gnus-version-number "0.4"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -150,7 +150,10 @@
 (defun gnus-alive-p ()
   "Say whether Gnus is running or not."
   (and gnus-group-buffer
-       (get-buffer gnus-group-buffer)))
+       (get-buffer gnus-group-buffer)
+       (save-excursion
+	 (set-buffer gnus-group-buffer)
+	 (eq major-mode 'gnus-group-mode))))
 
 ;; Info access macros.
 
@@ -182,12 +185,25 @@
   `(setcar (nthcdr 1 ,info) ,rank))
 (defmacro gnus-info-set-read (info read)
   `(setcar (nthcdr 2 ,info) ,read))
-(defmacro gnus-info-set-marks (info marks)
-  `(setcar (nthcdr 3 ,info) ,marks))
-(defmacro gnus-info-set-method (info method)
-  `(setcar (nthcdr 4 ,info) ,method))
-(defmacro gnus-info-set-params (info params)
-  `(setcar (nthcdr 5 ,info) ,params))
+(defmacro gnus-info-set-marks (info marks &optional extend)
+  (if extend
+      `(gnus-info-set-entry ,info ,marks 3)
+    `(setcar (nthcdr 3 ,info) ,marks)))
+(defmacro gnus-info-set-method (info method &optional extend)
+  (if extend
+      `(gnus-info-set-entry ,info ,method 4)
+    `(setcar (nthcdr 4 ,info) ,method)))
+(defmacro gnus-info-set-params (info params &optional extend)
+  (if extend
+      `(gnus-info-set-entry ,info ,params 5)
+    `(setcar (nthcdr 5 ,info) ,params)))
+
+(defun gnus-info-set-entry (info entry number)
+  ;; Extend the info until we have enough elements.
+  (while (< (length info) number)
+    (nconc info (list nil)))
+  ;; Set the entry.
+  (setcar (nthcdr number info) entry))
 
 (defmacro gnus-info-set-level (info level)
   `(let ((rank (cdr ,info)))
@@ -203,6 +219,8 @@
 (defmacro gnus-get-info (group)
   `(nth 2 (gnus-gethash ,group gnus-newsrc-hashtb)))
 
+;; Byte-compiler warning.
+(defvar gnus-visual)
 ;; Find out whether the gnus-visual TYPE is wanted.
 (defun gnus-visual-p (&optional type class)
   (and gnus-visual			; Has to be non-nil, at least.
@@ -732,6 +750,27 @@ If NEWSGROUP is nil, return the global kill file name instead."
 	  (setq outs (cons (car valids) outs)))
       (setq valids (cdr valids)))
     outs))
+
+(defun gnus-read-method (prompt)
+  "Prompt the user for a method.
+Allow completion over sensible values."
+  (let ((method
+	 (completing-read
+	  prompt (append gnus-valid-select-methods gnus-server-alist)
+	  nil t nil 'gnus-method-history)))
+    (cond 
+     ((equal method "")
+      (setq method gnus-select-method))
+     ((assoc method gnus-valid-select-methods)
+      (list method
+	    (if (memq 'prompt-address
+		      (assoc method gnus-valid-select-methods))
+		(read-string "Address: ")
+	      "")))
+     ((assoc method gnus-server-alist)
+      (list method))
+     (t
+      (list method "")))))
 
 ;;; User-level commands.
 

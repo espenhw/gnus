@@ -29,6 +29,7 @@
 (require 'gnus-load)
 (require 'gnus-art)
 (require 'message)
+(require 'gnus-msg)
 
 ;; Default viewing action rules
 

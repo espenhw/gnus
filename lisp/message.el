@@ -415,6 +415,9 @@ The cdr of ech entry is a function for applying the face to a region.")
 
 (defvar message-buffer-list nil)
 
+;; Byte-compiler warning
+(defvar gnus-active-hashtb)
+
 ;;; Regexp matching the delimiter of messages in UNIX mail format
 ;;; (UNIX From lines), minus the initial ^.  
 (defvar message-unix-mail-delimiter

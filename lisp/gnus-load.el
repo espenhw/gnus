@@ -137,6 +137,16 @@ However, you may wish to store the message on some other server.  In
 that case, just return a fully prefixed name of the group --
 \"nnml+private:mail.misc\", for instance.")
 
+(defvar gnus-secondary-servers nil
+  "*List of NNTP servers that the user can choose between interactively.
+To make Gnus query you for a server, you have to give `gnus' a
+non-numeric prefix - `C-u M-x gnus', in short.")
+
+(defvar gnus-nntp-server nil
+  "*The name of the host running the NNTP server.
+This variable is semi-obsolete.	 Use the `gnus-select-method'
+variable instead.")
+
 (defvar gnus-secondary-select-methods nil
   "*A list of secondary methods that will be used for reading news.
 This is a list where each element is a complete select method (see
@@ -278,6 +288,9 @@ articles.  This is not a good idea.")
 (defvar gnus-use-nocem nil
   "*If non-nil, Gnus will read NoCeM cancel messages.")
 
+(defvar gnus-suppress-duplicates nil
+  "*If non-nil, Gnus will mark duplicate copies of the same article as read.")
+
 (defvar gnus-use-demon nil
   "If non-nil, Gnus might use some demons.")
 
@@ -370,6 +383,9 @@ course.)")
 
 (defvar gnus-group-uncollapsed-levels 1
   "Number of group name elements to leave alone when making a short group name.")
+
+(defvar gnus-group-use-permanent-levels nil
+  "*If non-nil, once you set a level, Gnus will use this level.")
 
 ;; Hooks.
 
@@ -537,7 +553,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("pp" pp pp-to-string pp-eval-expression)
      ("mail-extr" mail-extract-address-components)
      ("nnmail" nnmail-split-fancy nnmail-article-group)
-     ("nnvirtual" nnvirtual-catchup-group)
+     ("nnvirtual" nnvirtual-catchup-group nnvirtual-convert-headers)
      ("timezone" timezone-make-date-arpa-standard timezone-fix-time
       timezone-make-sortable-date timezone-make-time-string)
      ("rmailout" rmail-output)
@@ -645,7 +661,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-group" gnus-group-insert-group-line gnus-group-quit
       gnus-group-list-groups gnus-group-first-unread-group
       gnus-group-set-mode-line gnus-group-set-info gnus-group-save-newsrc
-      gnus-group-setup-buffer gnus-group-get-new-news)
+      gnus-group-setup-buffer gnus-group-get-new-news
+      gnus-group-make-help-group gnus-group-update-group)
      ("gnus-bcklg" gnus-backlog-request-article gnus-backlog-enter-article
       gnus-backlog-remove-article) 
      ("gnus-art" gnus-article-read-summary-keys gnus-article-save
@@ -662,16 +679,83 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-article-hide-pem gnus-article-hide-signature
       gnus-article-strip-leading-blank-lines gnus-article-date-local
       gnus-article-date-original gnus-article-date-lapsed
-      gnus-decode-rfc1522 gnus-article-show-all-headers)
+      gnus-decode-rfc1522 gnus-article-show-all-headers
+      gnus-article-edit-mode)
      ("gnus-int" gnus-request-type)
-     ("gnus-start" gnus-newsrc-parse-options gnus-1 gnus-no-server-1)
+     ("gnus-start" gnus-newsrc-parse-options gnus-1 gnus-no-server-1
+      gnus-dribble-enter)
+     ("gnus-dup" gnus-dup-suppress-articles gnus-dup-enter-articles)
      ("gnus-range" gnus-copy-sequence)
      ("gnus-vm" gnus-vm-mail-setup)
+     ("gnus-eform" gnus-edit-form)
+     ("gnus-move" :interactive t
+      gnus-group-move-group-to-server gnus-change-server)
      ("gnus-logic" gnus-score-advanced)
      ("gnus-async" gnus-async-request-fetched-article gnus-async-prefetch-next
       gnus-async-prefetch-article gnus-async-prefetch-remove-group)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
       gnus-summary-save-article-vm))))
+
+;;; gnus-sum.el thingies
+
+
+(defvar gnus-summary-line-format "%U\%R\%z\%I\%(%[%4L: %-20,20n%]%) %s\n"
+  "*The format specification of the lines in the summary buffer.
+
+It works along the same lines as a normal formatting string,
+with some simple extensions.
+
+%N   Article number, left padded with spaces (string)
+%S   Subject (string)
+%s   Subject if it is at the root of a thread, and \"\" otherwise (string)
+%n   Name of the poster (string)
+%a   Extracted name of the poster (string)
+%A   Extracted address of the poster (string)
+%F   Contents of the From: header (string)
+%x   Contents of the Xref: header (string)
+%D   Date of the article (string)
+%d   Date of the article (string) in DD-MMM format
+%M   Message-id of the article (string)
+%r   References of the article (string)
+%c   Number of characters in the article (integer)
+%L   Number of lines in the article (integer)
+%I   Indentation based on thread level (a string of spaces)
+%T   A string with two possible values: 80 spaces if the article
+     is on thread level two or larger and 0 spaces on level one
+%R   \"A\" if this article has been replied to, \" \" otherwise (character)
+%U   Status of this article (character, \"R\", \"K\", \"-\" or \" \")
+%[   Opening bracket (character, \"[\" or \"<\")
+%]   Closing bracket (character, \"]\" or \">\")
+%>   Spaces of length thread-level (string)
+%<   Spaces of length (- 20 thread-level) (string)
+%i   Article score (number)
+%z   Article zcore (character)
+%t   Number of articles under the current thread (number).
+%e   Whether the thread is empty or not (character).
+%l   GroupLens score (string).
+%P   The line number (number).
+%u   User defined specifier.  The next character in the format string should
+     be a letter.  Gnus will call the function gnus-user-format-function-X,
+     where X is the letter following %u.  The function will be passed the
+     current header as argument.  The function should return a string, which
+     will be inserted into the summary just like information from any other
+     summary specifier.
+
+Text between %( and %) will be highlighted with `gnus-mouse-face'
+when the mouse point is placed inside the area.	 There can only be one
+such area.
+
+The %U (status), %R (replied) and %z (zcore) specs have to be handled
+with care.  For reasons of efficiency, Gnus will compute what column
+these characters will end up in, and \"hard-code\" that.  This means that
+it is illegal to have these specs after a variable-length spec.	 Well,
+you might not be arrested, but your summary buffer will look strange,
+which is bad enough.
+
+The smart choice is to have these specs as for to the left as
+possible.
+
+This restriction may disappear in later versions of Gnus.")
 
 ;;;
 ;;; Skeleton keymaps

@@ -1361,7 +1361,7 @@ It does this by highlighting everything after
 	  (gnus-overlay-put (gnus-make-overlay (point-min) (point-max))
 			    'face gnus-signature-face)
 	  (widen)
-	  (re-search-backward gnus-signature-separator nil t)
+	  (article-search-signature)
 	  (let ((start (match-beginning 0))
 		(end (set-marker (make-marker) (1+ (match-end 0)))))
 	    (gnus-article-add-button start (1- end) 'gnus-signature-toggle
@@ -1522,7 +1522,7 @@ specified by `gnus-button-alist'."
 
 (defun gnus-button-url (address)
   "Browse ADDRESS."
-  (funcall browse-url-browser-function address))
+  (funcall browse-url-browser-function address browse-url-new-window-p))
 
 ;;; Next/prev buttons in the article buffer.
 

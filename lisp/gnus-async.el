@@ -41,11 +41,16 @@ articles are removed as they are read, and `exit', which means
 that all articles belonging to a group are removed on exit
 from that group.")
 
+(defvar gnus-use-header-prefetch nil
+  "*If non-nil, prefetch the headers to the next group.")
+
 ;;; Internal variables.
 
+(defvar gnus-async-prefetch-article-buffer " *Async Prefetch Article*")
 (defvar gnus-async-article-alist nil)
 
-(defvar gnus-async-prefetch-article-buffer " *Async Prefetch Article*")
+(defvar gnus-async-prefetch-headers-buffer " *Async Prefetch Headers*")
+(defvar gnus-asynch-header-prefetched nil)
 
 ;;; Utility functions.
 
@@ -53,19 +58,16 @@ from that group.")
   "Say whether GROUP is fetched from a server that supports asynchronocity."
   (gnus-asynchronous-p (gnus-find-method-for-group group)))
 
+;;;
 ;;; Article prefetch
+;;;
 
 (gnus-add-shutdown 'gnus-async-close 'gnus)
 (defun gnus-async-close ()
   (gnus-kill-buffer gnus-async-prefetch-article-buffer)
-  (setq gnus-async-article-alist nil))
-
-(defun gnus-async-set-prefetch-buffer ()
-  (if (get-buffer gnus-async-prefetch-article-buffer)
-      (set-buffer gnus-async-prefetch-article-buffer)
-    (set-buffer (get-buffer-create gnus-async-prefetch-article-buffer))
-    (buffer-disable-undo (current-buffer))
-    (gnus-add-current-to-buffer-list)))
+  (gnus-kill-buffer gnus-async-prefetch-headers-buffer)
+  (setq gnus-async-article-alist nil
+	gnus-asynch-header-prefetched nil))
 
 (defun gnus-async-prefetch-next (group article summary)
   "Possibly prefetch several articles starting with the article after ARTICLE."
@@ -94,13 +96,14 @@ from that group.")
 	(set-buffer summary)
 	(let ((next (caadr (gnus-data-find-list article)))
 	      mark)
-	  (gnus-async-set-prefetch-buffer)
+	  (nnheader-set-temp-buffer gnus-async-prefetch-article-buffer t)
 	  (goto-char (point-max))
 	  (setq mark (point-marker))
 	  (let ((nnheader-callback-function
 		 `(lambda (arg)
 		    (save-excursion
-		      (gnus-async-set-prefetch-buffer)
+		      (nnheader-set-temp-buffer
+		       gnus-async-prefetch-article-buffer t)
 		      (push (list ',(intern (format "%s-%d" group article))
 				  ,mark (set-marker (make-marker) (point-max))
 				  ,group ,article)
@@ -117,21 +120,22 @@ from that group.")
 
 (defun gnus-async-request-fetched-article (group article buffer)
   "See whether we have ARTICLE from GROUP and put it in BUFFER."
-  (let ((entry (gnus-async-prefetched-article-entry group article)))
-    (when entry
-      (save-excursion
-	(gnus-async-set-prefetch-buffer)
-	(copy-to-buffer buffer (cadr entry) (caddr entry))
-	;; Remove the read article from the prefetch buffer.
-	(when (memq 'read gnus-prefetched-article-deletion-strategy)
-	  (gnus-asynch-delete-prefected-entry entry))
-	;; Decode the article.  Perhaps this shouldn't be done
-	;; here?
-	(set-buffer buffer)
-	(nntp-decode-text)
-	(goto-char (point-min))
-	(gnus-delete-line)
-	t))))
+  (when (numberp article)
+    (let ((entry (gnus-async-prefetched-article-entry group article)))
+      (when entry
+	(save-excursion
+	  (nnheader-set-temp-buffer gnus-async-prefetch-article-buffer t)
+	  (copy-to-buffer buffer (cadr entry) (caddr entry))
+	  ;; Remove the read article from the prefetch buffer.
+	  (when (memq 'read gnus-prefetched-article-deletion-strategy)
+	    (gnus-asynch-delete-prefected-entry entry))
+	  ;; Decode the article.  Perhaps this shouldn't be done
+	  ;; here?
+	  (set-buffer buffer)
+	  (nntp-decode-text)
+	  (goto-char (point-min))
+	  (gnus-delete-line)
+	  t)))))
 
 (defun gnus-asynch-delete-prefected-entry (entry)
   "Delete ENTRY from buffer and alist."
@@ -147,7 +151,7 @@ from that group.")
 	     (memq 'exit gnus-prefetched-article-deletion-strategy))
     (let ((alist gnus-async-article-alist))
       (save-excursion
-	(gnus-async-set-prefetch-buffer)
+	(nnheader-set-temp-buffer gnus-async-prefetch-article-buffer t)
 	(while alist
 	  (when (equal group (nth 3 (car alist)))
 	    (gnus-asynch-delete-prefected-entry (car alist)))
@@ -158,6 +162,44 @@ from that group.")
   (assq (intern (format "%s-%d" group article))
 	gnus-async-article-alist))
 
+;;;
+;;; Header prefetch
+;;;
+
+(defun gnus-async-prefetch-headers (group)
+  "Prefetch the headers for group GROUP."
+  (save-excursion
+    (let (unread)
+      (when (and gnus-use-header-prefetch
+		 (gnus-group-asynchronous-p group)
+		 (listp gnus-asynch-header-prefetched)
+		 (setq unread (gnus-list-of-unread-articles group)))
+	;; Mark that a fetch is in progress.
+	(setq gnus-asynch-header-prefetched t)
+	(nnheader-set-temp-buffer gnus-async-prefetch-headers-buffer t)
+	(erase-buffer)
+	(let ((nntp-server-buffer (current-buffer))
+	      (nnheader-callback-function
+	       `(lambda (arg)
+		  (setq gnus-asynch-header-prefetched
+			,(cons group unread)))))
+	  (gnus-retrieve-headers unread group gnus-fetch-old-headers))))))
+
+(defun gnus-asynch-retrieve-fetched-headers (articles group)
+  "See whether we have prefetched headers."
+  (when (and gnus-use-header-prefetch
+	     (gnus-group-asynchronous-p group)
+	     (listp gnus-asynch-header-prefetched)
+	     (equal group (car gnus-asynch-header-prefetched))
+	     (equal articles (cdr gnus-asynch-header-prefetched)))
+    (save-excursion
+      (nnheader-set-temp-buffer gnus-async-prefetch-headers-buffer t)
+      (nntp-decode-text)
+      (copy-to-buffer nntp-server-buffer (point-min) (point-max))
+      (erase-buffer)
+      (setq gnus-asynch-header-prefetched nil)
+      t)))
+  
 (provide 'gnus-async)
 
 ;;; gnus-async.el ends here

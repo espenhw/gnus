@@ -91,14 +91,10 @@
      (vertical 1.0
 	       (summary 0.25)
 	       (faq 1.0 point)))
-    (edit-group
+    (edit-form
      (vertical 1.0
 	       (group 0.5)
-	       (edit-group 1.0 point)))
-    (edit-server
-     (vertical 1.0
-	       (server 0.5)
-	       (edit-server 1.0 point)))
+	       (edit-form 1.0 point)))
     (edit-score
      (vertical 1.0
 	       (summary 0.25)
@@ -158,6 +154,7 @@ buffer configuration.")
     (server . gnus-server-buffer)
     (browse . "*Gnus Browse Server*")
     (edit-group . gnus-group-edit-buffer)
+    (edit-group . gnus-edit-form-buffer)
     (edit-server . gnus-server-edit-buffer)
     (group-carpal . gnus-carpal-group-buffer)
     (summary-carpal . gnus-carpal-summary-buffer)

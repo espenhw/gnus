@@ -1,3 +1,27 @@
+Wed Jul 31 15:34:12 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (are): Fix.
+
+Wed Jul 31 15:32:57 1996  David S. Goldberg  <dsg@linus.mitre.org>
+
+	* gnus.texi (buffer-name): Addition.
+
+Fri Aug  2 00:32:39 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Pick and Read): Addition.
+	(Article Hiding): Addition.
+	(Article Signature): Made into own node.
+
+Thu Aug  1 00:25:41 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.texi (Wide Reply): Addition.
+	(Bouncing): Addition.
+
+	* gnus.texi (Crosspost Handling): Made into own node.
+	(Duplicate Suppression): New.
+	(Document Server Internals): New.
+	(Changing Servers): New.
+
 Wed Jul 31 15:37:44 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi: Fix

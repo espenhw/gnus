@@ -1,3 +1,137 @@
+Wed Jul 31 15:23:54 1996  Ken Olstad  <ken@mn.cheyenne.com>
+
+	* gnus-xmas.el (gnus-xmas-redefine): Disbale XFace when running
+	under tty.
+
+Wed Jul 31 14:21:38 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-read-group): Use `gnus-range-length' instead
+	of `length'.
+
+Fri Aug  2 21:48:17 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-dup.el (gnus-dup-suppress-articles): Wouldn't mark articles
+	properly.
+
+Fri Aug  2 21:40:33 1996  Glenn Coombs  <glenn@prl.research.philips.com>
+
+	* gnus-vis.el (gnus-button-url): New definition.
+
+Fri Aug  2 19:08:55 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-update-read-articles): Moved here.
+
+	* gnus-sum.el (gnus-update-read-articles): Moved here.
+
+	* gnus-async.el (gnus-async-request-fetched-article): Would bug
+	out on Message-IDs.
+
+	* gnus-score.el (gnus-score-save): Would kill wrong buffer.
+
+	* nntp.el (nntp-process-filter): Insert at point-max.
+
+	* nnheader.el (nnheader-set-temp-buffer): Accept a noerase param.
+
+Fri Aug  2 00:14:16 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-topic.el (gnus-topic-edit-parameters): New command.
+	(gnus-group-topic-parameters): New function.
+	(gnus-topic-set-parameters): New function.
+	(gnus-topic-parameters): New function.
+
+	* gnus-group.el (gnus-group-edit-group-done): Newish definition.
+
+	* gnus-srvr.el (gnus-server-edit-server): Use new edit function.
+	(gnus-server-edit-server-done): Removed.
+
+	* gnus-group.el: Use new edit function.
+
+	* gnus-eform.el (gnus-eform): New file.
+
+	* gnus-group.el (gnus-group-goto-group): Tippy-toe around some
+	more to find the most likely instance of the group.
+	(gnus-edit-form): New function.
+	(gnus-edit-form-mode): New command.
+	(gnus-edit-form-make-menu-bar): New function.
+	(gnus-edit-form-mode-hook): New variable.
+	(gnus-edit-form-exit): New command and keystroke.
+	(gnus-edit-form-done): Ditto.
+
+	* gnus-topic.el: Moved functions around.
+	(gnus-current-topic): Renamed.
+	(gnus-current-topics): New function.
+	(gnus-group-parent-topic): New function.
+
+	* article.el (gnus-signature-separator): New default.
+	(gnus-signature-limit): Extended value.
+	(article-narrow-to-signature): Use it.
+
+	* gnus-cite.el (gnus-cite-parse): Use new signature functions.
+
+	* article.el (article-search-signature): New function.
+	(gnus-signature-separator): Allow wider syntax.
+
+	* gnus-async.el (gnus-use-header-prefetch): New variable.
+	(gnus-async-set-article-buffer): Removed.
+	(gnus-async-prefetch-headers): New function.
+	(gnus-asynch-retrieve-fetched-headers): New function.
+	(gnus-async-prefetch-header-buffer): New variable.
+
+	* gnus-salt.el (gnus-summary-pick-line-format): New variable.
+	(gnus-pick-mode): Use it.
+	(gnus-pick-line-number): New function.
+	(gnus-pick-article): New command and keystroke.
+	(gnus-pick-mode-map): Changed " " to `gnus-pick-next-page'.
+	(gnus-pick-next-page): New command and keystroke.
+	(gnus-mark-unpicked-articles-as-read): New variable.
+	(gnus-pick-start-reading): Use it.
+
+	* gnus-sum.el (gnus-summary-line-format-alist): Add pick line
+	number. 
+
+Thu Aug  1 23:32:15 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nntp.el (nntp-request-list): Decode.
+	(nntp-request-list-newsgroups): Ditto.
+
+	* gnus-gl.el (gnus-grouplens-mode): Update summary line specs. 
+
+	* gnus-msg.el (gnus-debug): Would bug out.
+
+Thu Aug  1 23:24:48 1996  Glenn Coombs  <glenn@prl.research.philips.com>
+
+	* gnus-sum.el (gnus-summary-update-mark): Work on hidden threads.
+
+Thu Aug  1 00:00:16 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-score-save): Wouldn't save scores.
+
+	* gnus-load.el (gnus-summary-line-format): Moved here.
+
+	* gnus.el (gnus-alive-p): More thorough definition.
+	(gnus-info-set-entry): New macro.
+
+	* gnus-move.el: New file.
+	(gnus-move-group-to-server): New function.
+	(gnus-change-server): New command.
+	(gnus-group-move-group-to-server): New command.
+
+	* gnus-start.el (gnus-parse-active): New function.
+
+	* gnus.el (gnus-read-method): Mew function.
+	* gnus-group.el: Use it.
+
+	* gnus-load.el (gnus-suppress-duplicates): New variable.
+
+	* gnus-dup.el: New file.
+
+	* gnus-sum.el (gnus-data-read-p): New macro.
+	(gnus-duplicate-mark): New variable.
+
+Wed Jul 31 23:09:35 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.3 is released.
+
 Wed Jul 31 21:38:08 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nntp.el (nntp-retrieve-headers-with-xover): Didn't work.

@@ -43,44 +43,45 @@ If CONFIRM is non-nil, the user will be asked for an NNTP server."
 	;; Stream is already opened.
 	nil
       ;; Open NNTP server.
-      (if (null gnus-nntp-service) (setq gnus-nntp-server nil))
-      (if confirm
-	  (progn
-	    ;; Read server name with completion.
-	    (setq gnus-nntp-server
-		  (completing-read "NNTP server: "
-				   (mapcar (lambda (server) (list server))
-					   (cons (list gnus-nntp-server)
-						 gnus-secondary-servers))
-				   nil nil gnus-nntp-server))))
+      (unless gnus-nntp-service
+	(setq gnus-nntp-server nil))
+      (when confirm
+	;; Read server name with completion.
+	(setq gnus-nntp-server
+	      (completing-read "NNTP server: "
+			       (mapcar (lambda (server) (list server))
+				       (cons (list gnus-nntp-server)
+					     gnus-secondary-servers))
+			       nil nil gnus-nntp-server)))
 
-      (if (and gnus-nntp-server
-	       (stringp gnus-nntp-server)
-	       (not (string= gnus-nntp-server "")))
-	  (setq gnus-select-method
-		(cond ((or (string= gnus-nntp-server "")
-			   (string= gnus-nntp-server "::"))
-		       (list 'nnspool (system-name)))
-		      ((string-match "^:" gnus-nntp-server)
-		       (list 'nnmh gnus-nntp-server
-			     (list 'nnmh-directory
-				   (file-name-as-directory
-				    (expand-file-name
-				     (concat "~/" (substring
-						   gnus-nntp-server 1)))))
-			     (list 'nnmh-get-new-mail nil)))
-		      (t
-		       (list 'nntp gnus-nntp-server)))))
+      (when (and gnus-nntp-server
+		 (stringp gnus-nntp-server)
+		 (not (string= gnus-nntp-server "")))
+	(setq gnus-select-method
+	      (cond ((or (string= gnus-nntp-server "")
+			 (string= gnus-nntp-server "::"))
+		     (list 'nnspool (system-name)))
+		    ((string-match "^:" gnus-nntp-server)
+		     (list 'nnmh gnus-nntp-server
+			   (list 'nnmh-directory
+				 (file-name-as-directory
+				  (expand-file-name
+				   (concat "~/" (substring
+						 gnus-nntp-server 1)))))
+			   (list 'nnmh-get-new-mail nil)))
+		    (t
+		     (list 'nntp gnus-nntp-server)))))
 
       (setq how (car gnus-select-method))
-      (cond ((eq how 'nnspool)
-	     (require 'nnspool)
-	     (gnus-message 5 "Looking up local news spool..."))
-	    ((eq how 'nnmh)
-	     (require 'nnmh)
-	     (gnus-message 5 "Looking up mh spool..."))
-	    (t
-	     (require 'nntp)))
+      (cond
+       ((eq how 'nnspool)
+	(require 'nnspool)
+	(gnus-message 5 "Looking up local news spool..."))
+       ((eq how 'nnmh)
+	(require 'nnmh)
+	(gnus-message 5 "Looking up mh spool..."))
+       (t
+	(require 'nntp)))
       (setq gnus-current-select-method gnus-select-method)
       (run-hooks 'gnus-open-server-hook)
       (or

@@ -77,9 +77,6 @@ If nil, only list groups that have unread articles.")
   "*Default listing level.
 Ignored if `gnus-group-use-permanent-levels' is non-nil.")
 
-(defvar gnus-group-use-permanent-levels nil
-  "*If non-nil, once you set a level, Gnus will use this level.")
-
 (defvar gnus-group-list-inactive-groups t
   "*If non-nil, inactive groups will be listed.")
 
@@ -200,6 +197,7 @@ variable.")
   "Function to override finding the next group after listing groups.")
 
 (defvar gnus-group-edit-buffer nil)
+(defvar gnus-edit-form-buffer nil)
 
 (defvar gnus-group-line-format-alist
   `((?M gnus-tmp-marked-mark ?c)
@@ -1048,8 +1046,10 @@ group."
 		 (- (1+ (cdr active)) (car active)))))
     (gnus-summary-read-group
      group (or all (and (numberp number)
-			(zerop (+ number (length (cdr (assq 'tick marked)))
-				  (length (cdr (assq 'dormant marked)))))))
+			(zerop (+ number (gnus-range-length 
+					  (cdr (assq 'tick marked)))
+				  (gnus-range-length
+				   (cdr (assq 'dormant marked)))))))
      no-article)))
 
 (defun gnus-group-select-group (&optional all)
@@ -1146,18 +1146,32 @@ Returns whether the fetching was successful or not."
 (defun gnus-group-goto-group (group)
   "Goto to newsgroup GROUP."
   (when group
-    ;; It's quite likely that we are on the right line, so
-    ;; we check the current line first.
     (beginning-of-line)
-    (if (eq (get-text-property (point) 'gnus-group)
-	    (gnus-intern-safe group gnus-active-hashtb))
-	(point)
+    (cond
+     ;; It's quite likely that we are on the right line, so
+     ;; we check the current line first.
+     ((eq (get-text-property (point) 'gnus-group)
+	  (gnus-intern-safe group gnus-active-hashtb))
+      (point))
+     ;; Previous and next line are also likely, so we check them as well.
+     ((save-excursion
+	(forward-line -1)
+	(eq (get-text-property (point) 'gnus-group)
+	    (gnus-intern-safe group gnus-active-hashtb)))
+      (forward-line -1)
+      (point))
+     ((save-excursion
+	(forward-line 1)
+	(eq (get-text-property (point) 'gnus-group)
+	    (gnus-intern-safe group gnus-active-hashtb)))
+      (forward-line 1)
+      (point))
+     (t
       ;; Search through the entire buffer.
-      (let ((b (text-property-any 
-		(point-min) (point-max)
-		'gnus-group (gnus-intern-safe group gnus-active-hashtb))))
-	(when b 
-	  (goto-char b))))))
+      (gnus-goto-char
+       (text-property-any 
+	(point-min) (point-max)
+	'gnus-group (gnus-intern-safe group gnus-active-hashtb)))))))
 
 (defun gnus-group-next-group (n &optional silent)
   "Go to next N'th newsgroup.
@@ -1269,25 +1283,9 @@ If EXCLUDE-GROUP, do not go to that group."
 The user will be prompted for a NAME, for a select METHOD, and an
 ADDRESS."
   (interactive
-   (cons
+   (list
     (read-string "Group name: ")
-    (let ((method
-	   (completing-read
-	    "Method: " (append gnus-valid-select-methods gnus-server-alist)
-	    nil t nil 'gnus-method-history)))
-      (cond 
-       ((equal method "")
-	(setq method gnus-select-method))
-       ((assoc method gnus-valid-select-methods)
-	(list method
-	      (if (memq 'prompt-address
-			(assoc method gnus-valid-select-methods))
-		  (read-string "Address: ")
-		"")))
-       ((assoc method gnus-server-alist)
-	(list method))
-       (t
-	(list method ""))))))
+    (gnus-read-server "From method: ")))
 
   (let* ((meth (when (and method
 			  (not (gnus-server-equal method gnus-select-method)))
@@ -1405,44 +1403,28 @@ and NEW-NAME will be prompted for."
 (defun gnus-group-edit-group (group &optional part)
   "Edit the group on the current line."
   (interactive (list (gnus-group-group-name)))
-  (let* ((part (or part 'info))
-	 (done-func `(lambda ()
-		       "Exit editing mode and update the information."
-		       (interactive)
-		       (gnus-group-edit-group-done ',part ,group)))
-	 (winconf (current-window-configuration))
-	 info)
-    (or group (error "No group on current line"))
-    (or (setq info (gnus-get-info group))
-	(error "Killed group; can't be edited"))
-    (set-buffer (setq gnus-group-edit-buffer 
-		      (get-buffer-create
-		       (format "*Gnus edit %s*" group))))
-    (gnus-configure-windows 'edit-group)
-    (gnus-add-current-to-buffer-list)
-    (emacs-lisp-mode)
-    ;; Suggested by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>.
-    (use-local-map (copy-keymap emacs-lisp-mode-map))
-    (local-set-key "\C-c\C-c" done-func)
-    (make-local-variable 'gnus-prev-winconf)
-    (setq gnus-prev-winconf winconf)
-    (erase-buffer)
-    (insert
-     (cond
-      ((eq part 'method)
-       ";; Type `C-c C-c' after editing the select method.\n\n")
-      ((eq part 'params)
-       ";; Type `C-c C-c' after editing the group parameters.\n\n")
-      ((eq part 'info)
-       ";; Type `C-c C-c' after editing the group info.\n\n")))
-    (insert
-     (pp-to-string
-      (cond ((eq part 'method)
-	     (or (gnus-info-method info) "native"))
-	    ((eq part 'params)
-	     (gnus-info-params info))
-	    (t info)))
-     "\n")))
+  (let ((part (or part 'info))
+	info)
+    (unless group
+      (error "No group on current line"))
+    (unless (setq info (gnus-get-info group))
+      (error "Killed group; can't be edited"))
+    (gnus-edit-form
+     ;; Find the proper form to edit.
+     (cond ((eq part 'method)
+	    (or (gnus-info-method info) "native"))
+	   ((eq part 'params)
+	    (gnus-info-params info))
+	   (t info))
+     ;; The proper documentation.
+     (format
+      "Editing the %s."
+      (cond
+       ((eq part 'method) "select method")
+       ((eq part 'params) "group parameters")
+       (t "group info")))
+     `(lambda (form)
+	(gnus-group-edit-group-done ',part ,group form)))))
 
 (defun gnus-group-edit-group-method (group)
   "Edit the select method of GROUP."
@@ -1454,51 +1436,41 @@ and NEW-NAME will be prompted for."
   (interactive (list (gnus-group-group-name)))
   (gnus-group-edit-group group 'params))
 
-(defun gnus-group-edit-group-done (part group)
-  "Get info from buffer, update variables and jump to the group buffer."
-  (when (and gnus-group-edit-buffer
-	     (buffer-name gnus-group-edit-buffer))
-    (set-buffer gnus-group-edit-buffer)
-    (goto-char (point-min))
-    (let* ((form (read (current-buffer)))
-	   (winconf gnus-prev-winconf)
-	   (method (cond ((eq part 'info) (nth 4 form))
-			 ((eq part 'method) form)
-			 (t nil)))
-	   (info (cond ((eq part 'info) form)
-		       ((eq part 'method) (gnus-get-info group))
+(defun gnus-group-edit-group-done (part group form)
+  "Update variables."
+  (let* ((method (cond ((eq part 'info) (nth 4 form))
+		       ((eq part 'method) form)
 		       (t nil)))
-	   (new-group (if info
-			  (if (or (not method)
-				  (gnus-server-equal
-				   gnus-select-method method))
-			      (gnus-group-real-name (car info))
-			    (gnus-group-prefixed-name
-			     (gnus-group-real-name (car info)) method))
-			nil)))
-      (when (and new-group
-		 (not (equal new-group group)))
-	(when (gnus-group-goto-group group)
-	  (gnus-group-kill-group 1))
-	(gnus-activate-group new-group))
-      ;; Set the info.
-      (if (and info new-group)
-	  (progn
-	    (setq info (gnus-copy-sequence info))
-	    (setcar info new-group)
-	    (unless (gnus-server-equal method "native")
-	      (unless (nthcdr 3 info)
-		(nconc info (list nil nil)))
-	      (unless (nthcdr 4 info)
-		(nconc info (list nil)))
-	      (gnus-info-set-method info method))
-	    (gnus-group-set-info info))
-	(gnus-group-set-info form (or new-group group) part))
-      (kill-buffer (current-buffer))
-      (and winconf (set-window-configuration winconf))
-      (set-buffer gnus-group-buffer)
-      (gnus-group-update-group (or new-group group))
-      (gnus-group-position-point))))
+	 (info (cond ((eq part 'info) form)
+		     ((eq part 'method) (gnus-get-info group))
+		     (t nil)))
+	 (new-group (if info
+			(if (or (not method)
+				(gnus-server-equal
+				 gnus-select-method method))
+			    (gnus-group-real-name (car info))
+			  (gnus-group-prefixed-name
+			   (gnus-group-real-name (car info)) method))
+		      nil)))
+    (when (and new-group
+	       (not (equal new-group group)))
+      (when (gnus-group-goto-group group)
+	(gnus-group-kill-group 1))
+      (gnus-activate-group new-group))
+    ;; Set the info.
+    (if (not (and info new-group))
+	(gnus-group-set-info form (or new-group group) part)
+      (setq info (gnus-copy-sequence info))
+      (setcar info new-group)
+      (unless (gnus-server-equal method "native")
+	(unless (nthcdr 3 info)
+	  (nconc info (list nil nil)))
+	(unless (nthcdr 4 info)
+	  (nconc info (list nil)))
+	(gnus-info-set-method info method))
+      (gnus-group-set-info info))
+    (gnus-group-update-group (or new-group group))
+    (gnus-group-position-point)))
 
 (defun gnus-group-make-help-group ()
   "Create the Gnus documentation group."
@@ -2609,6 +2581,74 @@ and the second element is the address."
 
 (defun gnus-group-set-params-info (group params)
   (gnus-group-set-info params group 'params))
+
+(defun gnus-add-marked-articles (group type articles &optional info force)
+  ;; Add ARTICLES of TYPE to the info of GROUP.
+  ;; If INFO is non-nil, use that info.	 If FORCE is non-nil, don't
+  ;; add, but replace marked articles of TYPE with ARTICLES.
+  (let ((info (or info (gnus-get-info group)))
+	(uncompressed '(score bookmark killed))
+	marked m)
+    (or (not info)
+	(and (not (setq marked (nthcdr 3 info)))
+	     (or (null articles)
+		 (setcdr (nthcdr 2 info)
+			 (list (list (cons type (gnus-compress-sequence
+						 articles t)))))))
+	(and (not (setq m (assq type (car marked))))
+	     (or (null articles)
+		 (setcar marked
+			 (cons (cons type (gnus-compress-sequence articles t) )
+			       (car marked)))))
+	(if force
+	    (if (null articles)
+		(setcar (nthcdr 3 info)
+			(delq (assq type (car marked)) (car marked)))
+	      (setcdr m (gnus-compress-sequence articles t)))
+	  (setcdr m (gnus-compress-sequence
+		     (sort (nconc (gnus-uncompress-range (cdr m))
+				  (copy-sequence articles)) '<) t))))))
+
+(defun gnus-update-read-articles (group unread)
+  "Update the list of read and ticked articles in GROUP using the
+UNREAD and TICKED lists.
+Note: UNSELECTED has to be sorted over `<'.
+Returns whether the updating was successful."
+  (let* ((active (or gnus-newsgroup-active (gnus-active group)))
+	 (entry (gnus-gethash group gnus-newsrc-hashtb))
+	 (info (nth 2 entry))
+	 (prev 1)
+	 (unread (sort (copy-sequence unread) '<))
+	 read)
+    (if (or (not info) (not active))
+	;; There is no info on this group if it was, in fact,
+	;; killed.  Gnus stores no information on killed groups, so
+	;; there's nothing to be done.
+	;; One could store the information somewhere temporarily,
+	;; perhaps...  Hmmm...
+	()
+      ;; Remove any negative articles numbers.
+      (while (and unread (< (car unread) 0))
+	(setq unread (cdr unread)))
+      ;; Remove any expired article numbers
+      (while (and unread (< (car unread) (car active)))
+	(setq unread (cdr unread)))
+      ;; Compute the ranges of read articles by looking at the list of
+      ;; unread articles.
+      (while unread
+	(if (/= (car unread) prev)
+	    (setq read (cons (if (= prev (1- (car unread))) prev
+			       (cons prev (1- (car unread)))) read)))
+	(setq prev (1+ (car unread)))
+	(setq unread (cdr unread)))
+      (when (<= prev (cdr active))
+	(setq read (cons (cons prev (cdr active)) read)))
+      ;; Enter this list into the group info.
+      (gnus-info-set-read
+       info (if (> (length read) 1) (nreverse read) read))
+      ;; Set the number of unread articles in gnus-newsrc-hashtb.
+      (gnus-get-unread-articles-in-group info (gnus-active group))
+      t)))
 
 (provide 'gnus-group)
 

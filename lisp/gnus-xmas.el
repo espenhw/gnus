@@ -498,6 +498,7 @@ pounce directly on the real variables themselves.")
 
   (when (and (<= emacs-major-version 19)
 	     (<= emacs-minor-version 13))
+    (setq gnus-article-x-face-too-ugly (if (eq (device-type) 'tty) "."))
     (fset 'gnus-highlight-selected-summary
 	  'gnus-xmas-highlight-selected-summary)
     (fset 'gnus-group-remove-excess-properties

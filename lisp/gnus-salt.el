@@ -40,6 +40,14 @@
 (defvar gnus-pick-mode-hook nil
   "Hook run in summary pick mode buffers.")
 
+(defvar gnus-mark-unpicked-articles-as-read nil
+  "*If non-nil, mark all unpicked articles as read.")
+
+(defvar gnus-summary-pick-line-format
+  "%-5p %U\%R\%z\%I\%(%[%4L: %-20,20n%]%) %s\n"
+  "*The format specification of the lines in pick buffers.
+It accepts the same format specs that `gnus-summary-line-format' does.")
+
 ;;; Internal variables.
 
 (defvar gnus-pick-mode-map nil)
@@ -51,7 +59,7 @@
    gnus-pick-mode-map
    "t" gnus-uu-mark-thread
    "T" gnus-uu-unmark-thread
-   " " gnus-summary-mark-as-processable
+   " " gnus-pick-next-page
    "u" gnus-summary-unmark-as-processable
    "U" gnus-summary-unmark-all-processable
    "v" gnus-uu-mark-over
@@ -61,6 +69,7 @@
    "E" gnus-uu-mark-by-regexp
    "b" gnus-uu-mark-buffer
    "B" gnus-uu-unmark-buffer
+   "." gnus-pick-article
    "\r" gnus-pick-start-reading))
 
 (defun gnus-pick-make-menu-bar ()
@@ -97,6 +106,14 @@
       ;; Make sure that we don't select any articles upon group entry.
       (make-local-variable 'gnus-auto-select-first)
       (setq gnus-auto-select-first nil)
+      ;; Change line format.
+      (make-local-variable 'gnus-summary-line-format)
+      (setq gnus-summary-line-format 
+	    gnus-summary-pick-line-format)
+      (make-local-variable 'gnus-summary-line-format-spec)
+      (setq gnus-summary-line-format nil)
+      (gnus-update-format-specifications nil 'summary)
+      (gnus-update-summary-mark-positions)
       ;; Set up the menu.
       (when (and menu-bar-mode
 		 (gnus-visual-p 'pick-menu 'menu))
@@ -108,6 +125,13 @@
 	      minor-mode-map-alist))
       (run-hooks 'gnus-pick-mode-hook))))
 
+(defvar gnus-pick-line-number 1)
+(defun gnus-pick-line-number ()
+  "Return the current line number."
+  (if (bobp)
+      (setq gnus-pick-line-number 1)
+    (incf gnus-pick-line-number)))
+
 (defun gnus-pick-start-reading (&optional catch-up)
   "Start reading the picked articles.
 If given a prefix, mark all unpicked articles as read."
@@ -115,11 +139,32 @@ If given a prefix, mark all unpicked articles as read."
   (unless gnus-newsgroup-processable
     (error "No articles have been picked"))
   (gnus-summary-limit-to-articles nil)
-  (when catch-up
+  (when (or catch-up gnus-mark-unpicked-articles-as-read)
     (gnus-summary-limit-mark-excluded-as-read))
   (gnus-summary-first-unread-article)
   (gnus-configure-windows (if gnus-pick-display-summary 'article 'pick) t))
 
+(defun gnus-pick-article (&optional arg)
+  "Pick the article on the current line.
+If ARG, pick the article on that line instead."
+  (interactive "P")
+  (when arg
+    (let (pos)
+      (save-excursion
+	(goto-char (point-min))
+	(when (zerop (forward-line (1- (prefix-numeric-value arg))))
+	  (setq pos (point))))
+      (if (not pos)
+	  (gnus-error 2 "No such line: %s" arg)
+	(goto-char pos))))
+  (gnus-summary-mark-as-processable 1))
+
+(defun gnus-pick-next-page ()
+  "Go to the next page.  If at the end of the buffer, start reading articles."
+  (interactive)
+  (condition-case ()
+      (scroll-up)
+    (gnus-pick-start-reading)))
 
 ;;;
 ;;; gnus-binary-mode

@@ -38,7 +38,6 @@
 ;;; Code:
 
 (require 'mail-utils)
-(eval-when-compile (require 'cl))
 
 (defvar nnheader-max-head-length 4096
   "*Max length of the head of articles.")
@@ -49,6 +48,11 @@ For instance, if \":\" is illegal as a file character in file names
 on your system, you could say something like:
 
 \(setq nnheader-file-name-translation-alist '((?: . ?_)))")
+
+(eval-and-compile
+ (autoload 'nnmail-message-id "nnmail")
+ (autoload 'mail-position-on-field "sendmail")
+ (autoload 'message-remove-header "message"))
 
 ;;; Header access macros.
 
@@ -359,11 +363,12 @@ on your system, you could say something like:
      (point-max)))
   (goto-char (point-min)))
 
-(defun nnheader-set-temp-buffer (name)
+(defun nnheader-set-temp-buffer (name &optional noerase)
   "Set-buffer to an empty (possibly new) buffer called NAME with undo disabled."
   (set-buffer (get-buffer-create name))
   (buffer-disable-undo (current-buffer))
-  (erase-buffer)
+  (unless noerase
+    (erase-buffer))
   (current-buffer))
 
 (defmacro nnheader-temp-write (file &rest forms)

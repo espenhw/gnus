@@ -28,6 +28,8 @@
 (require 'gnus-load)
 (require 'gnus-int)
 (require 'gnus-range)
+(require 'gnus-sum)
+(require 'gnus-start)
 (require 'gnus)
 
 (defvar gnus-cache-directory

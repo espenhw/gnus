@@ -855,7 +855,9 @@ recommend using both scores and grouplens predictions together."
       (setq gnus-summary-line-format 
 	    gnus-summary-grouplens-line-format)
       (make-local-variable 'gnus-summary-line-format-spec)
-      (setq gnus-summary-line-format-spec nil)
+      (setq gnus-summary-line-format nil)
+      (gnus-update-format-specifications nil 'summary)
+      (gnus-update-summary-mark-positions)
 
       ;; Set up the menu.
       (when (and menu-bar-mode

@@ -710,8 +710,10 @@ If YANK is non-nil, include the original article."
   "Attemps to go through the Gnus source file and report what variables have been changed.
 The source file has to be in the Emacs load path."
   (interactive)
-  (let ((files '("gnus.el" "gnus-msg.el" "gnus-score.el" "nnmail.el"
-		 "message.el"))
+  (let ((files '("gnus-sum.el" "gnus-group.el"
+		 "gnus-art.el" "gnus-start.el"
+		 "gnus-msg.el" "gnus-score.el"
+		 "nnmail.el" "message.el"))
 	file dirs expr olist sym)
     (gnus-message 4 "Please wait while we snoop your variables...")
     (sit-for 0)
