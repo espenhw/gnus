@@ -1,3 +1,8 @@
+2003-04-29  Simon Josefsson  <jas@extundo.com>
+
+	* canlock.el (mail-fetch-field): Autoload it (fix xemacs compile
+	warnings).
+
 2003-04-28  Dave Love  <fx@gnu.org>
 
 	* gnus-util.el (nnheader): Don't require.

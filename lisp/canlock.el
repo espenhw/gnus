@@ -1,6 +1,6 @@
 ;;; canlock.el --- functions for Cancel-Lock feature
 
-;; Copyright (C) 1998, 1999, 2001, 2002 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news, cancel-lock, hmac, sha1, rfc2104
@@ -45,6 +45,7 @@
 
 (autoload 'sha1-binary "sha1-el")
 (autoload 'base64-encode-string "base64")
+(autoload 'mail-fetch-field "mail-utils")
 
 (defgroup canlock nil
   "The Cancel-Lock feature."
