@@ -1,3 +1,7 @@
+2000-06-19  Dave Love  <fx@gnu.org>
+
+	* mm-uu.el Don't require message.  Require cl when compiling.
+
 2000-06-17 18:58:46  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-local-variables): gnus-orphan-score is
