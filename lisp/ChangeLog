@@ -1,8 +1,13 @@
 2002-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-summary-first-subject): Really go to unseen
+	articles. 
+
 	* gnus-picon.el (gnus-picon-find-face): Search MISC for all types.
 	(gnus-picon-transform-address): Search for unknown faces as well. 
 	(gnus-picon-find-face): Don't search "news" for MISC.
+	(gnus-picon-user-directories): Changed default back to exclude
+	"unknown". 
 
 	* gnus-sum.el (gnus-summary-hide-all-threads): Reversed logic. 
 

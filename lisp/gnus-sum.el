@@ -6340,9 +6340,12 @@ Returns the article selected or nil if there are no unread articles."
 		      (and (not (and undownloaded
 				     (eq gnus-undownloaded-mark
 					 (gnus-data-mark (car data)))))
-			   (not (and unseen
-				     (memq (car data) gnus-newsgroup-unseen)))
-			   (not (gnus-data-unread-p (car data)))))
+			   (if unseen
+			       (or (not (memq
+					 (gnus-data-number (car data))
+					 gnus-newsgroup-unseen))
+				   (not (gnus-data-unread-p (car data))))
+			     (not (gnus-data-unread-p (car data))))))
 	    (setq data (cdr data)))
 	  (when data
 	    (goto-char (gnus-data-pos (car data)))

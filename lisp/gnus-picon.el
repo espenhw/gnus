@@ -1,6 +1,6 @@
 ;;; gnus-picon.el --- displaying pretty icons in Gnus
 
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 ;;      Free Software Foundation, Inc.
 
 ;; Author: Wes Hardaker <hardaker@ece.ucdavis.edu>
@@ -60,8 +60,7 @@ see http://www.cs.indiana.edu/picons/ftp/index.html"
   :type '(repeat string)
   :group 'picon)
 
-(defcustom gnus-picon-user-directories '("users" "usenix" "local"
-					 "misc" "unknown")
+(defcustom gnus-picon-user-directories '("users" "usenix" "local" "misc")
   "*List of directories to search for user faces."
   :type '(repeat string)
   :group 'picon)
