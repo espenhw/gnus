@@ -73,7 +73,7 @@
 (defgroup spam nil
   "Spam configuration.")
 
-(defcustom spam-directory "~/News/spam/"
+(defcustom spam-directory (nnheader-concat gnus-directory "spam/")
   "Directory for spam whitelists and blacklists."
   :type 'directory
   :group 'spam)

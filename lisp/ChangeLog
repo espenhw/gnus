@@ -1,3 +1,14 @@
+2004-02-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* spam.el (spam-directory): Derive from `gnus-directory'.
+
+	* spam-report.el (spam-report-url-to-file)
+	(spam-report-requests-file): New function and variable for offline
+	reporting.
+	(spam-report-url-ping-function): Add `spam-report-url-to-file'
+	and user defined function.
+	(spam-report-url-ping-mm-url): Remove doubled slash.
+
 2004-02-03  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-list-of-processors): fixed spamassassin variable names

@@ -59,12 +59,24 @@ instead."
 
 (defcustom spam-report-url-ping-function
   'spam-report-url-ping-plain
-  "Function to use for url ping spam reporting."
+  "Function to use for url ping spam reporting.
+The function must accept the arguments `host' and `report'."
   :type '(choice
 	  (const :tag "Connect directly"
 		 spam-report-url-ping-plain)
 	  (const :tag "Use the external program specified in `mm-url-program'"
-		 spam-report-url-ping-mm-url))
+		 spam-report-url-ping-mm-url)
+	  (const :tag "Store request URLs in `spam-report-requests-file'"
+		 spam-report-url-to-file)
+	  (function :tag "User defined function" nil))
+  :group 'spam-report)
+
+(defcustom spam-report-requests-file
+  (nnheader-concat gnus-directory "spam/" "spam-report-requests.url")
+  ;; Is there a convention for the extension of such a file?
+  ;; Should we use `spam-directory'?
+  "File where spam report request are stored."
+  :type 'file
   :group 'spam-report)
 
 (defun spam-report-gmane (&rest articles)
@@ -118,8 +130,20 @@ the function specified by `spam-report-url-ping-function'."
 the external program specified in `mm-url-program' to connect to
 server."
   (with-temp-buffer
-    (let ((url (concat "http://" host "/" report)))
+    (let ((url (concat "http://" host report)))
       (mm-url-insert url t))))
+
+(defun spam-report-url-to-file (host report)
+  "Collect spam report requests in `spam-report-requests-file'.
+Customize `spam-report-url-ping-function' to use this function."
+  (let ((url (concat "http://" host report))
+	(file spam-report-requests-file))
+    (gnus-make-directory (file-name-directory file))
+    (gnus-message 9 "Writing URL `%s' to file `%s'" url file)
+    (with-temp-buffer
+      (insert url)
+      (newline)
+      (append-to-file (point-min) (point-max) file))))
 
 (provide 'spam-report)
 
