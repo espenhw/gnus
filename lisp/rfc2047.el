@@ -422,7 +422,9 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 			      ;; to be encoded so that MTAs may parse
 			      ;; them safely.
 			      (cond ((= end (point)))
-				    ((looking-at encodable-regexp)
+				    ((looking-at (concat "\\sw*\\("
+							 encodable-regexp
+							 "\\)"))
 				     (setq end nil))
 				    (t
 				     (goto-char (1- (match-end 0)))
@@ -442,12 +444,20 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 		  (goto-char start)
 		  (if (re-search-forward encodable-regexp end 'move)
 		      (progn
-			(goto-char start)
-			(unless (memq (char-before) '(nil ?\t ? ))
-			  ;; Separate encodable text and delimiter.
-			  (insert " ")
-			  (setq end (1+ end)))
-			(rfc2047-encode (point) end)
+			(unless (memq (char-before start) '(nil ?\t ? ))
+			  (if (progn
+				(goto-char start)
+				(skip-chars-backward "^ \t\n")
+				(and (looking-at "\\Sw+")
+				     (= (match-end 0) start)))
+			      ;; Also encode bogus delimiters.
+			      (setq start (point))
+			    ;; Separate encodable text and delimiter.
+			    (goto-char start)
+			    (insert " ")
+			    (setq start (1+ start)
+				  end (1+ end))))
+			(rfc2047-encode start end)
 			(setq last-encoded t))
 		    (setq last-encoded nil)))))
 	    (error

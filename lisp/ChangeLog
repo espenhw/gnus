@@ -1,3 +1,7 @@
+2004-11-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-encode-region): Encode bogus delimiters.
+
 2004-11-15  Jesper Harder  <harder@ifa.au.dk>
 
 	* pop3.el (pop3-leave-mail-on-server): Don't quote nil in
