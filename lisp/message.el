@@ -3971,7 +3971,7 @@ than 988 characters long, and if they are not, trim them until they are."
 	     (bol (progn (beginning-of-line n) (point)))
 	     (eol (gnus-point-at-eol))
 	     (eoh (re-search-forward ": *" eol t)))
-	(if (equal here eoh)
+	(if (or (not eoh) (equal here eoh))
 	    (goto-char bol)
 	  (goto-char eoh)))
     (beginning-of-line n)))
