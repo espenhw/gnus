@@ -1,3 +1,19 @@
+2000-08-18  Dave Love  <fx@gnu.org>
+
+	* gnus-score.el (gnus-score-find-score-files-function): Fix doc,
+	custom type.
+
+	* gnus-xmas.el (gnus-group-icon-create-glyph): Don't test
+	gnus-group-running-xemacs.
+
+	* nnheader.el (nnheader-replace-chars-in-string): Use
+	subst-char-in-string if available.
+
+	* gnus-art.el (gnus-read-save-file-name, gnus-plain-save-name) 
+	(gnus-request-article-this-buffer): Use expand-file-name.
+	(gnus-mime-view-part-as-type): Simplify interactive spec.
+	(gnus-mime-button-map): Define it all in defvar.
+
 2000-08-17  Dave Love  <fx@gnu.org>
 
 	* gnus-group.el (gnus-group-running-xemacs): Deleted.
