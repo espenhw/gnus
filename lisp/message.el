@@ -354,10 +354,10 @@ and respond with new To and Cc headers."
 
 (defcustom message-use-followup-to 'ask
   "*Specifies what to do with Followup-To header.
-If nil, ignore the header.  If it is t, use its value, but query before
-using the \"poster\" value.  If it is the symbol `ask', query the user
-whether to ignore the \"poster\" value.  If it is the symbol `use',
-always use the value."
+If nil, always ignore the header.  If it is t, use its value, but
+query before using the \"poster\" value.  If it is the symbol `ask',
+always query the user whether to use the value.  If it is the symbol
+`use', always use the value."
   :group 'message-interface
   :type '(choice (const :tag "ignore" nil)
 		 (const use)

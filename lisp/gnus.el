@@ -1548,7 +1548,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-gl" bbb-login bbb-logout bbb-grouplens-group-p 
       gnus-grouplens-mode)
      ("smiley" :interactive t gnus-smiley-display)
-     ("gnus-win" gnus-configure-windows)
+     ("gnus-win" gnus-configure-windows gnus-add-configuration)
      ("gnus-sum" gnus-summary-insert-line gnus-summary-read-group
       gnus-list-of-unread-articles gnus-list-of-read-articles
       gnus-offer-save-summaries gnus-make-thread-indent-array

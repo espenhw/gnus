@@ -392,8 +392,15 @@ The SOUP packet file name will be inserted at the %s.")
 (defun nnsoup-file-name (dir file)
   "Return the full path of FILE (in any case) in DIR."
   (let* ((case-fold-search t)
-	 (files (directory-files dir t (concat (regexp-quote file) "$"))))
-    (car files)))
+	 (files (directory-files dir t))
+	 (regexp (concat (regexp-quote file) "$")))
+    (car (delq nil
+	       (mapcar
+		(lambda (file)
+		  (if (string-match regexp file)
+		      file
+		    nil))
+		files)))))
 
 (defun nnsoup-read-areas ()
   (let ((areas-file (nnsoup-file-name nnsoup-tmp-directory "areas")))

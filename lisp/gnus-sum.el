@@ -563,7 +563,8 @@ This hook is run before any variables are set in the summary buffer."
   :type 'hook)
 
 (defcustom gnus-summary-exit-hook nil
-  "*A hook called on exit from the summary buffer."
+  "*A hook called on exit from the summary buffer.
+It will be called with point in the group buffer."
   :group 'gnus-summary-exit
   :type 'hook)
 

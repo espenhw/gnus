@@ -98,6 +98,7 @@
 	    minor-mode-map-alist))
     (gnus-make-local-hook 'post-command-hook)
     (gnus-add-hook 'post-command-hook 'gnus-undo-boundary nil t)
+    (add-hook 'gnus-summary-exit-hook 'gnus-undo-boundary)
     (run-hooks 'gnus-undo-mode-hook)))
 
 ;;; Interface functions.

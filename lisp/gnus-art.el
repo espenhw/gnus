@@ -2208,10 +2208,10 @@ Argument LINES specifies lines to be scrolled down."
 	  (switch-to-buffer gnus-summary-buffer 'norecord))
 	(setq in-buffer (current-buffer))
 	;; We disable the pick minor mode commands.
-	(let (gnus-pick-mode)
-	  (if (setq func (lookup-key (current-local-map) keys))
-	      (call-interactively func)
-	    (ding)))
+	(if (setq func (let (gnus-pick-mode)
+			 (lookup-key (current-local-map) keys)))
+	    (call-interactively func)
+	  (ding))
 	(when (eq in-buffer (current-buffer))
 	  (set-buffer obuf)
 	  (unless not-restore-window
