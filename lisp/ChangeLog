@@ -1,3 +1,17 @@
+2001-07-16 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From:  Stefan Monnier  <monnier@cs.yale.edu>
+
+	* message.el (message-mode): Use define-derived-mode.
+	(message-tab): message-completion-alist.
+
+	* imap.el (imap-interactive-login): Use make-local-variable.
+	(imap-open): Ditto.
+	(imap-authenticate): Ditto.
+
+	* gnus-msg.el (gnus-setup-message): Change-major-mode-hook.
+
+	* gnus-art.el (gnus-article-edit-mode): Use define-derived-mode.
+
 2001-07-16  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* message.el (message-citation-line-function): Refer to

@@ -771,10 +771,6 @@ candidates:
     table)
   "Syntax table used while in Message mode.")
 
-(defvar message-mode-abbrev-table text-mode-abbrev-table
-  "Abbrev table used in Message mode buffers.
-Defaults to `text-mode-abbrev-table'.")
-
 (defface message-header-to-face
   '((((class color)
       (background dark))
@@ -1555,7 +1551,7 @@ Point is left at the beginning of the narrowed-to region."
   (defvar facemenu-remove-face-function))
 
 ;;;###autoload
-(defun message-mode ()
+(define-derived-mode message-mode text-mode "Message"
   "Major mode for editing mail and news to be sent.
 Like Text Mode but with these additional commands:\\<message-mode-map>
 C-c C-s  `message-send' (send the message)  C-c C-c  `message-send-and-exit'
@@ -1580,35 +1576,22 @@ C-c C-z  `message-kill-to-signature' (kill the text up to the signature).
 C-c C-r  `message-caesar-buffer-body' (rot13 the message body).
 C-c C-a  `mml-attach-file' (attach a file as MIME).
 M-RET    `message-newline-and-reformat' (break the line and reformat)."
-  (interactive)
-  (if (local-variable-p 'mml-buffer-list (current-buffer))
-      (mml-destroy-buffers))
-  (kill-all-local-variables)
   (set (make-local-variable 'message-reply-buffer) nil)
   (make-local-variable 'message-send-actions)
   (make-local-variable 'message-exit-actions)
   (make-local-variable 'message-kill-actions)
   (make-local-variable 'message-postpone-actions)
   (make-local-variable 'message-draft-article)
-  (make-local-hook 'kill-buffer-hook)
-  (set-syntax-table message-mode-syntax-table)
-  (use-local-map message-mode-map)
-  (setq local-abbrev-table message-mode-abbrev-table)
-  (setq major-mode 'message-mode)
-  (setq mode-name "Message")
   (setq buffer-offer-save t)
-  (make-local-variable 'facemenu-add-face-function)
-  (make-local-variable 'facemenu-remove-face-function)
-  (setq facemenu-add-face-function
-	(lambda (face end)
-	  (let ((face-fun (cdr (assq face message-face-alist))))
-	    (if face-fun
-		(funcall face-fun (point) end)
-	      (error "Face %s not configured for %s mode" face mode-name)))
-	  "")
-	facemenu-remove-face-function t)
-  (make-local-variable 'message-reply-headers)
-  (setq message-reply-headers nil)
+  (set (make-local-variable 'facemenu-add-face-function)
+       (lambda (face end)
+	 (let ((face-fun (cdr (assq face message-face-alist))))
+	   (if face-fun
+	       (funcall face-fun (point) end)
+	     (error "Face %s not configured for %s mode" face mode-name)))
+	 ""))
+  (set (make-local-variable 'facemenu-remove-face-function) t)
+  (set (make-local-variable 'message-reply-headers) nil)
   (make-local-variable 'message-newsreader)
   (make-local-variable 'message-mailer)
   (make-local-variable 'message-post-method)
@@ -1633,10 +1616,8 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
       (mail-aliases-setup)))
   (message-set-auto-save-file-name)
   (mm-enable-multibyte)
-  (make-local-variable 'indent-tabs-mode) ;Turn off tabs for indentation.
-  (setq indent-tabs-mode nil)
-  (mml-mode)
-  (run-hooks 'text-mode-hook 'message-mode-hook))
+  (set (make-local-variable 'indent-tabs-mode) nil) ;No tabs for indentation.
+  (mml-mode))
 
 (defun message-setup-fill-variables ()
   "Setup message fill variables."
@@ -4803,14 +4784,21 @@ which specify the range to operate on."
   "^\\(Newsgroups\\|Followup-To\\|Posted-To\\|Gcc\\):"
   "Regexp that match headers that lists groups.")
 
+(defvar message-completion-alist
+  (list (cons message-newgroups-header-regexp 'message-expand-group)
+	'("^\\(Resent-\\)?\\(To\\|B?Cc\\):" . message-expand-name))
+  "Alist of (RE . FUN).  Use FUN for completion on header lines matching RE.")
+
 (defun message-tab ()
   "Expand group names in Newsgroups and Followup-To headers.
 Do a `tab-to-tab-stop' if not in those headers."
   (interactive)
-  (if (let ((mail-abbrev-mode-regexp message-newgroups-header-regexp))
-	(mail-abbrev-in-expansion-header-p))
-      (message-expand-group)
-    (tab-to-tab-stop)))
+  (let ((alist message-completion-alist))
+    (while (and alist
+		(let ((mail-abbrev-mode-regexp (caar alist)))
+		  (not (mail-abbrev-in-expansion-header-p))))
+      (setq alist (cdr alist)))
+    (funcall (or (cdar alist) (default-value 'indent-line-function)))))
 
 (defun message-expand-group ()
   "Expand the group name under point."
@@ -4853,6 +4841,11 @@ Do a `tab-to-tab-stop' if not in those headers."
 	      (display-completion-list (sort completions 'string<)))
 	    (goto-char (point-min))
 	    (delete-region (point) (progn (forward-line 3) (point))))))))))
+
+(defun message-expand-name ()
+  (if (fboundp 'bbdb-complete-name)
+      (bbdb-complete-name)
+    (expand-abbrev)))
 
 ;;; Help stuff.
 
