@@ -251,6 +251,8 @@ latest version of gnus or some explanation on where to find it.
 
 *  http://www.sonicnet.com/feature/ari3/
 
+   [N/A]
+
 *  facep is not declared.
 
 * Include a section in the manual on why the number of articles isn't
@@ -259,13 +261,15 @@ the same in the group buffer and on the SPC prompt.
 *  Interacting with rmail fcc isn't easy.
 
 *       Hypermail:
-      <URL:http://www.falch.no/people/pepper/DSSSL-Lite/archives/>
-      <URL:http://www.eit.com/software/hypermail/hypermail.html>
-      <URL:http://homer.ncm.com/>
-      <URL:http://www.yahoo.com/Computers_and_Internet/Internet/World_Wide_Web/HTML_Converters/>
+      [N/A]<URL:http://www.falch.no/people/pepper/DSSSL-Lite/archives/>
+      [N/A]<URL:http://www.eit.com/software/hypermail/hypermail.html>
+      [N/A]<URL:http://homer.ncm.com/>
+      [N/A]<URL:http://www.yahoo.com/Computers_and_Internet/Internet/World_Wide_Web/HTML_Converters/>
       http://www.uwsg.indiana.edu/hypermail/linux/kernel/9610/index.html
-      <URL:http://union.ncsa.uiuc.edu/HyperNews/get/www/html/converters.html>
-      http://www.miranova.com/gnus-list/
+      [N/A]<URL:http://union.ncsa.uiuc.edu/HyperNews/get/www/html/converters.html>
+      [N/A]http://www.miranova.com/gnus-list/
+
+   [w3 or nnwarchive?]
 
 * `^-- ' is made into - in LaTeX.
 
@@ -457,249 +461,6 @@ exceeding lisp nesting on huge groups.
 
 *  `nnfolder-generate-active-file' should look at the folders it
  finds and generate proper active ranges.
-
-* Support for zipped folders for all backends this makes sense for.
-  Most likely using jka-compr. (It has been suggested that this do
-  work but I think it should be verified for all backends.)
-
-* Support for RFC2015, PGP-MIME. Probably has to involve the people in
-  the Mailcrypt project.
-
-* Agent (Can someone write some subtopics here? I don't use it myself
-  so I don't know what is lacking.)
-
-* Support for encrypted folders. Even if the mail arrives unencrypted
-  Gnus should be able to encrypt the *folder* for added safety. This
-  should go for both Gnus' own folders and the folders Gnus reads from
-  (e.g. /var/spool/mail/${USER}). All backends this makes sense for.
-
-* The stuff on "Newest Features" in the manual should be implemented
-  and the node updated (it maybe is?).
-
-* Splitting .newsrc.eld so the history is in one file and the
-  configuration is in another. To help those that reads at two
-  locations (e.g. work and home) and want to have the same
-  configuration.
-
-* gnus-uu-decode should complain if one or more parts of a series post
-  (ie, "part N of X") is missing, and optionally tick what parts are
-  there for decoding in a later session.
-
-* Additional article marking, and an ability to affect marks placed
-  during e.g. mail acquisition.  I want to be able to notice the
-  subject "fast money" or "web traffic", automatically mark it with a
-  `$', and score it into oblivion.  (But I fear that wanting to change
-  marks with mail-source-* and nnmail-* functions will represent a
-  philosophical conflict with the rest of Gnus' management of article
-  marks.  mail-source-* and nnmail-* currently hack around with files
-  under ~/Mail and leave traces in ~/Mail/active, but don't affect
-  things stored in .newsrc.eld.)
-
-* A much better interface to nnmail-split-methods.  I don't know how
-  I'd like this done, but I know that the current method of manually
-  hacking regexps is pretty untenable for new users.  My boss, who is
-  tenured faculty at CMU and CEO & CTO at JPRC, and whose research
-  work has involved Lisp for the last 25 years, is trying to implant
-  himself in a Gnus mail environment, and this is a big sticking point
-  even for him.
-
-* PGP-supported encryption of entire nnml & nnmh groups.  There are
-  people with whom I exchange mail routinely who don't send w/PGP, but
-  I'd really rather that the content not be left lying around
-  unencrypted.  Hook into article acquisition the way jka-compr
-  supposedly does, to auto-decrypt every message read.
-
-* Baby's First Mail In Gnus.  Some set of functions that the
-  new-to-mail-in-Gnus user can invoke which will query the user
-  appropriately for the basic information required to establish mail
-  handling, leaving the appropriate traces in .gnus.  Perhaps a
-  customize buffer would be appropriate.
-  - Where does your mail come from?
-  - If some server, what is your POP/IMAP protocol identity?
-  - What is your identity when sending mail, as opposed to posting to
-    Usenet?
-  - Here are some basic concepts of mail groups (list a few:
-    personal mail, company-wide mail, mailing lists, garbage dumps,
-    receptacles for outbound copies of what one sends; which ones do
-    you want to instantiate, and what mail should land in each?
-    [/viz./ problem of nnmail-split-methods interface.]
-
-* Full integration of nnir into Gnus.  Generic hooks for adding new
-  external nnir sources.  I use a couple experimental, in-house tools
-  (JPRC is a research lab, occupied with document analysis and machine
-  learning) and adding new search engines to nnir by hacking the main
-  nnir.el module is rather clunky.
-
-* Manual ordering of articles in an nnml folder.
-
-  That is, keystrokes to move articles (or whole threads) up or down
-  in the *Summary* buffer relative to the other articles.  The order
-  would be persistent (e.g., across gnus sessions).
-
-  With this ability, an nnml folder would make for a good to-do list.
-
-* Since many uses Gnus to store to do lists I think it is time for an
-  nntodo. (I know Kai already written one, maybe use that for a start?)
-
-* nnsql backend, which would allow messages or folders to be imported
-  in a local (My|Postgre|?)SQL RDBMS.
-
-* "posting profiles" ideally accessible from a popup menu; allowing
-  choice between predefined profiles of
-  from,name,organization,etc. Example: I'm at home, but need to reply
-  to a work mail; i can hit 'R', then use this command to switch to my
-  'work' profile for purposes of this one reply. (This might already
-  be possible with current Gnus, but I don't think so.)
-
-* Better handling of the mail retrieving / splitting feature:
-  - the variables <backend>-get-new-mail should not exist anymore. Mail
-    retrieving should be a separate matter.
-  - we should be able to split mails to groups AND backends at the same time.
-  - meanwhile, we should still be able to associate certain mail sources with
-    certain backends.
-
-* A better interface to the agent download scoring rules, like the one
-  for the other scoring rules.
-
-* Editing of messages in the agents cache.
-
-* More article marks (like '!' or '?').
-  Maybe user defined marks that can be displayed as any choosen charakter,
-  so one could do things like limiting on, to do whatever one likes with
-  these articles.
-
-* A possibility to add notes to messages. If thouse could include links
-  to other (stored) messages this would be very practical.
-
-* A nnfolder like backend with .overview files.
-  This would not only speed up things, but also allow nnir to work on it.
-
-* Allow article editing in groups which do not support it, but
-  emulating it via deleting the old article and entering the new one
-  into the group.  This would be very useful to support `T ^' (say) in
-  nnimap groups.
-
-* Allow user to specify which kinds of groups should be displayed.
-  For example, I want to display all the groups that are displayed
-  now, plus those which have cached messages in them.  (Gnus does
-  display those with ticked messages but not those with
-  cached-but-unticked ones.)  This would become even more important
-  when we allow labels.
-
-* Go through the todo list and remove items already done.
-
-* Create new data type `article identifier' and use that instead of
-  article numbers.  A first implementation could offer something like
-  (num . 4711) but this could be extended.  This would be useful for
-  using servers with *really* large numbers -- there we could have a
-  bignum type.  It might also be useful for the nnweb and nnultimate
-  thingies where article identifiers are not really numbers.
-
-* Allow use of digests to keep related articles.  Normally, you use
-  groups to group together articles which are thematically related.
-  But sometimes, you have so many themes that this becomes
-  impractical.  WIBNI I could have digests in a group, and there was a
-  way to add a new article to one of the digests in that group?
-
-  Or maybe what I really want is a way to tell Gnus that a specific
-  thread should always be hidden (as in `T h') by default, while most
-  other threads are not hidden by default.  Hm.
-
-* New backend between nnfolder and nnml: have more than one article
-  per file, but more than one file per group.  With .overview files.
-
-* .overview files for nnfolder?
-
-* New backend nnbabylfolder.  There is also nnbabyl which is like
-  nnmbox but uses babyl format, but there is no babyl format
-  equivalent of nnfolder.
-
-* Make movement commands in summary buffer independent of `move after
-  mark' behavior when marking articles.  Currently, if you don't want
-  `E' to move to the next unread article, you have to set
-  gnus-summary-goto-unread to nil, and then there is no way to move to
-  the next or previous unread article.
-
-  This one has two sub-tasks.  Providing the commands is one thing,
-  finding out useful key bindings for them is another.  I think we
-  could provide the commands first while not changing the behavior of
-  the key bindings; then different people can experiment with
-  different key binding schemes until we find something which suits
-  many people.
-
-* `Move to next/previous/first article' is a misnomer, since ticked
-  articles are also unread but not moved to by these commands.  Should
-  the terminology be fixed or the documentation, or what?
-
-* Allow sorting of threads by newest article rather than by root of
-  thread.  Consider the following thread structure:
-
-    root1       Jan 1
-      leaf1     Jan 4
-    root2       Jan 2
-      leaf2     Jan 3
-
-  These two threads are sorted this way because root1 is older than
-  root2.  I want an option to sort them the other way round because
-  leaf1 is newer than leaf2.
-
-* Improve editing of MIME messages.  I would like to use html-mode to
-  edit the body of a text/html message, and enriched-mode for
-  text/enriched messages, and so on.  This should go for multipart
-  messages as well.  This is probably a hard one since Emacs currently
-  does not allow several major modes per buffer.  But maybe it would
-  be nice to hack Emacs to provide this infrastructure so that Gnus
-  can make use of it?  This would also make it possible to provide
-  nifty commands for editing the headers, for example, rather than
-  relying on commands which do the same thing everywhere.
-  message-x.el is really just a half-assed attempt at doing it, and
-  while it is useful, that's not the way it should be done.
-
-  I think Francisco Potort,Al(B already did something like this?
-
-* Provide commands for editing MML tags.  For example, there could be
-  a command mml-add-tag-attribute which prompts me for an attribute
-  name (with completion, from the set filename, type, ...), and then
-  for a value.  (This is like `C-c +' in psgml.)  Or there could be a
-  command which showed me all the attributes in an MML tag and allows
-  me to use TAB to move between them, and then to edit each attribute
-  value.  (This is like `C-c C-a' in psgml.)
-
-* Have Gnus automagically set group parameters for mailing list
-  groups.  For example, if I have a splitting rule that automatically
-  sorts ding@gnus.org into mail.ding, then Gnus should clue in, set
-  the to-list parameter to 'ding@gnus.org', and set total-expire.
-  (This is probably Hard (TM).  And of course the user should be able
-  to configure what parameters exactly get set.)
-
-* Along the same lines, automagically detect broken reply-to's.  (But
-  don't auto-detect users legitimately setting a reply-to header that
-  points back to the list.)
-
-* Make it easier to change parameters on a set of groups,
-  e.g. set/clear gcc-self on process-marked groups.
-
-* Make it easier/possible to migrate between primary select-methods,
-  if that concept is going to be kept.  Right now I have only one
-  group on my primary server, and I'd kind of like to change from nntp
-  to nnml, but apparently this doesn't work well.
-
-* Make it possible to refer to uniquely-named groups without
-  select-method prefix (e.g. mail.misc instead of nnml:mail.misc).
-
-* Allow a user-defined picons directory for personal groups.
-
-* Annotations as discussed last autumn. Be able to make comments to
-  articles for all bakends. The comments amybe should go into a
-  seperate "backend", like nndraft.
-
-* Catchup on a topic and all its subtopics. I.e. do "c y" when on a
-  topic line in *Group*.
-
-* Better/more advanced subject washing in *Summary*, see my
-  js-gnus-simplify-subject-function I posted earlier this winter.
-
-;; The following come from newest features, but some are not implemented.
 
 *  nneething-look-in-files-for-article-heads variable to control
  whether nneething should sniff all files in the directories.
@@ -1000,6 +761,8 @@ exceeding lisp nesting on huge groups.
 *  nndoc should understand "Content-Type: message/rfc822" forwarded
  messages.
 
+ [done]
+
 *  it should be possible to score "thread" on the From header.
 
 *  hitting RET on a "gnus-uu-archive" pseudo article should unpack
@@ -1024,6 +787,8 @@ exceeding lisp nesting on huge groups.
  way to say "ignore the nntp connection; just read from the cache."
 
 *  `X u' should decode base64 articles.
+
+   [`X m' does so.]
 
 *  a way to hide all "inner" cited text, leaving just the most
  recently cited text.
@@ -1544,6 +1309,8 @@ exceeding lisp nesting on huge groups.
 
 * Bouncing articles should do MIME.
 
+  [done]
+
 * Crossposted articles should "inherit" the % or  mark from the other
  groups it has been crossposted to, or something.  (Agent.)
 
@@ -1581,6 +1348,8 @@ exceeding lisp nesting on huge groups.
       > bar 1
 
 * Allow "orphan" scores in the Agent scoring.
+
+  [done?]
 
 *          - Edit article's summary line.
 	  - End edit
