@@ -11035,7 +11035,7 @@ Or using the default path:
 @end lisp
 
 If the mail spool file is not located on the local machine, it's best to 
-use POP or @sc{imap} or the like to fetch the mail.  You can not you ange-ftp 
+use POP or @sc{imap} or the like to fetch the mail.  You can not use ange-ftp 
 file names here---it has no way to lock the mail spool while moving the
 mail.
 
@@ -13638,6 +13638,14 @@ manually, @xref{Expunging mailboxes}.
 @item ask
 When closing mailboxes, nnimap will ask if you wish to expunge deleted
 articles or not.
+
+@item nnimap-authinfo-file
+@vindex nnimap-authinfo-file
+
+A file containing credentials used to log in on servers.  The format
+is (almost) the same as the @code{ftp} @file{~/.netrc} file.  See
+`nntp-authinfo-file' for exact syntax.
+
 @end table
 
 @end table
@@ -18316,6 +18324,17 @@ some headers.  I don't see why you'd want that, though.
 @item gnus-shell-command-separator
 @vindex gnus-shell-command-separator
 String used to separate two shell commands.  The default is @samp{;}.
+
+@item gnus-invalid-group-regexp
+@vindex gnus-invalid-group-regexp
+
+Regexp to match ``invalid'' group names when querying user for a group
+name.  The default value catches some @strong{really} invalid group
+names who could possibly mess up Gnus internally (like allowing
+@samp{:} in a group name, which is normally used to delimit method and
+group).
+
+IMAP users might want to allow @samp{/} in group names though.
 
 
 @end table
