@@ -322,7 +322,7 @@
 	    (when (numberp article)
 	      (if (= article 1)
 		  (progn
-		    (re-search-forward "Posted by <[^>]+>[^>]*<[^>]+> on ")
+		    (re-search-forward "Posted by *<[^>]+>[^>]*<[^>]+> *on ")
 		    (search-forward "<BR>")
 		    (setq contents
 			  (buffer-substring
