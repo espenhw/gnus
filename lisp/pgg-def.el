@@ -27,7 +27,8 @@
 
 (defgroup pgg ()
   "Glue for the various PGP implementations."
-  :group 'mime)
+  :group 'mime
+  :version "21.4")
 
 (defcustom pgg-default-scheme 'gpg
   "Default PGP scheme."
