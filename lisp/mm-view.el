@@ -296,6 +296,7 @@
 	    (buffer-disable-undo)
 	    (mm-insert-part handle)
 	    (funcall mode)
+	    (require 'font-lock)
 	    (let ((font-lock-verbose nil))
 	      ;; I find font-lock a bit too verbose.
 	      (font-lock-fontify-buffer))

@@ -1,5 +1,8 @@
 2002-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* mm-view.el (mm-display-inline-fontify): Require font-lock to
+	avoid unbinding shadowed variables.
+
 	* gnus-art.el (gnus-picon-databases): Moved here.
 	(gnus-picons-installed-p): Moved here.
 	(gnus-article-reply-with-original): Use `mark'.
