@@ -1,3 +1,9 @@
+2004-08-30  Simon Josefsson  <jas@extundo.com>
+
+	* ietf-drums.el (ietf-drums-syntax-table): Set syntax of ?* ?\;
+	and ?\' to symbol instead of whitespace (tiny patch).  From
+	Andreas Schwab <schwab@suse.de>.
+
 2004-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-agent.el (gnus-agent-restore-gcc): Use ^ and regexp-quote.
