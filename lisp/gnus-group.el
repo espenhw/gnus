@@ -2334,6 +2334,9 @@ and NEW-NAME will be prompted for."
 	   (gnus-group-real-name new-name)
 	   (gnus-info-method (gnus-get-info group)))))
 
+  (when (gnus-active new-name)
+    (error "The group %s already exists" new-name))
+
   (gnus-message 6 "Renaming group %s to %s..." group new-name)
   (prog1
       (if (progn
