@@ -2754,10 +2754,6 @@ then a @code{to-list} group parameter will be added automatically upon
 sending the message if @code{gnus-add-to-list} is set to @code{t}.
 @vindex gnus-add-to-list
 
-If you do an @kbd{a} command in a mail group and you don't have a
-@code{to-list} group parameter, one will be added automatically upon
-sending the message.
-
 @findex gnus-mailing-list-mode
 @cindex mail list groups
 If this variable is set, @code{gnus-mailing-list-mode} is turned on when
@@ -2769,16 +2765,21 @@ See also @code{gnus-parameter-to-list-alist}.
 @item subscribed
 @cindex subscribed
 @cindex Mail-Followup-To
+@findex gnus-find-subscribed-addresses
 If this parameter is set to @code{t}, Gnus will consider the
 to-address and to-list parameters for this group as addresses of
 mailing lists you are subscribed to.  Giving Gnus this information is
 (only) a first step in getting it to generate correct Mail-Followup-To
-headers for your posts to these lists.  @xref{Mailing Lists, ,Mailing
-Lists, message, The Message Manual}, for a complete treatment of
-available MFT support.
+headers for your posts to these lists.  The second step is to put the
+following in your @file{.gnus.el}
 
-See also @code{gnus-find-subscribed-addresses}, the function that
-directly uses this group parameter.
+@lisp
+(setq message-subscribed-address-functions
+      '(gnus-find-subscribed-addresses))
+@end lisp
+
+@xref{Mailing Lists, ,Mailing Lists, message, The Message Manual}, for
+a complete treatment of available MFT support.
 
 @item visible
 @cindex visible

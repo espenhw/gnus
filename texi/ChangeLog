@@ -1,3 +1,7 @@
+2003-12-15  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Group Parameters): Clarify.
+
 2003-12-11  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus.texi (Agent Parameters): Added references in Topic and
