@@ -1,5 +1,8 @@
 2002-03-13  Simon Josefsson  <jas@extundo.com>
 
+	* pop3.el (pop3-open-server): Revert multibyte change.  From
+	Pavel@Janik.cz (Pavel Jan,Bm(Bk).
+
 	* message.el (message-send-mail-with-qmail): Make it work.  From
 	Pavel@Janik.cz (Pavel Jan,Bm(Bk).
 
