@@ -1,3 +1,7 @@
+2004-01-15  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-sum.el (gnus-pick-line-number): Add autoload.
+
 2004-01-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-decoce.el (mm-multiple-handles): Recognize a string as a mime

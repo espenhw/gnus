@@ -44,6 +44,7 @@
 (autoload 'gnus-cache-write-active "gnus-cache")
 (autoload 'gnus-mailing-list-insinuate "gnus-ml" nil t)
 (autoload 'turn-on-gnus-mailing-list-mode "gnus-ml" nil t)
+(autoload 'gnus-pick-line-number "gnus-salt" nil t)
 (autoload 'mm-uu-dissect "mm-uu")
 (autoload 'gnus-article-outlook-deuglify-article "deuglify"
   "Deuglify broken Outlook (Express) articles and redisplay."
