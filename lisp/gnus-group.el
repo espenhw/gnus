@@ -2073,7 +2073,7 @@ If EXCLUDE-GROUP, do not go to that group."
       (forward-line 1))
     (when best-point
       (goto-char best-point))
-    (gnus-summary-position-point)
+    (gnus-group-position-point)
     (and best-point (gnus-group-group-name))))
 
 (defun gnus-group-first-unread-group ()

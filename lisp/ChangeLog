@@ -1,5 +1,16 @@
 2002-01-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnfolder.el (nnfolder-request-accept-article): Unfold
+	x-from-line. 
+	(nnfolder-request-replace-article): Ditto.
+
+2002-01-20  Nevin Kapur  <nevin@jhu.edu>
+
+	* gnus-group.el (gnus-group-best-unread-group): Use the right
+	positioning function.
+
+2002-01-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
 	* smiley-ems.el (smiley-region): Use new function.
 	(smiley-update-cache): Use general image functions.
 	(smiley-region): Use general functions.
