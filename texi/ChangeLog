@@ -1,3 +1,11 @@
+2000-01-05 15:58:48  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Mail Group Commands): Addition.
+
+2000-01-03 01:31:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (MIME Commands): Fix.
+
 2000-01-03  Karl Kleinpaste <karl@justresearch.com>
 
 	* gnus.texi (Splitting in IMAP): Add '.' after @xref.
@@ -5,6 +13,7 @@
 2000-01-02 08:39:18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi: Closing paren.
+	Doc fix.
 
 1999-12-28  Simon Josefsson  <jas@pdc.kth.se>
 

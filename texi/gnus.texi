@@ -7219,9 +7219,11 @@ Make all the @sc{mime} parts have buttons in from of them.
 
 @item K m
 @kindex K m (Summary)
+@findex gnus-summary-repair-multipart
 Some multipart messages are transmitted with missing or faulty headers.
 This command will attempt to ``repair'' these messages so that they can
-be viewed in a more pleasant manner.
+be viewed in a more pleasant manner
+(@code{gnus-summary-repair-multipart}).
 
 @item X m
 @kindex X m (Summary)
@@ -7835,8 +7837,10 @@ disk forever and ever, never to return again.'' Use with caution.
 @kindex B m (Summary)
 @cindex move mail
 @findex gnus-summary-move-article
+@vindex gnus-preserve-marks
 Move the article from one mail group to another
-(@code{gnus-summary-move-article}).
+(@code{gnus-summary-move-article}).  Marks will be preserved if
+@var{gnus-preserve-marks} is non-@code{nil} (which is the default). 
 
 @item B c
 @kindex B c (Summary)
@@ -7844,7 +7848,8 @@ Move the article from one mail group to another
 @findex gnus-summary-copy-article
 @c @icon{gnus-summary-mail-copy}
 Copy the article from one group (mail group or not) to a mail group
-(@code{gnus-summary-copy-article}).
+(@code{gnus-summary-copy-article}).  Marks will be preserved if
+@var{gnus-preserve-marks} is non-@code{nil} (which is the default).
 
 @item B B
 @kindex B B (Summary)
@@ -7869,6 +7874,8 @@ Respool the mail article (@code{gnus-summary-respool-article}).
 @code{gnus-summary-respool-default-method} will be used as the default
 select method when respooling.  This variable is @code{nil} by default,
 which means that the current group select method will be used instead.
+Marks will be preserved if @var{gnus-preserve-marks} is non-@code{nil}
+(which is the default).
 
 @item B w
 @itemx e
@@ -8112,8 +8119,8 @@ If given a prefix, force an @code{article} window configuration.
 Edit the group parameters (@pxref{Group Parameters}) of the current
 group (@code{gnus-summary-edit-parameters}).
 
-@item M-C-g
-@kindex M-C-g (Summary)
+@item M-C-a
+@kindex M-C-a (Summary)
 @findex gnus-summary-customize-parameters
 Customize the group parameters (@pxref{Group Parameters}) of the current
 group (@code{gnus-summary-customize-parameters}).
@@ -8563,6 +8570,12 @@ View the @sc{mime} object as if it were a different @sc{mime} media type
 @findex gnus-mime-pipe-part
 @item | (Article)
 Output the @sc{mime} object to a process (@code{gnus-mime-pipe-part}).
+
+@findex gnus-mime-inline-part
+@item i (Article)
+Insert the raw contents of the @sc{mime} object into the buffer
+(@code{gnus-mime-inline-part}).
+
 @end table
 
 Gnus will display some @sc{mime} objects automatically.  The way Gnus
@@ -8795,8 +8808,8 @@ Syntax table used in article buffers.  It is initialized from
 @item gnus-article-mode-line-format
 This variable is a format string along the same lines as
 @code{gnus-summary-mode-line-format} (@pxref{Mode Line Formatting}).  It
-accepts the same format specifications as that variable, with one
-extension:
+accepts the same format specifications as that variable, with two
+extensions:
 
 @table @samp
 @item w
@@ -10889,14 +10902,14 @@ name.  Normal regexp match expansion will be done.  See below for
 examples.
 
 @item
-@code{(@var{field} @var{value} @code{[-} @var{restrict} @code{[-} @var{restrict} @code{[@dots{}]}@code{]]} 
-@var{split})}: If the split is a list, the first element of which is a
-string, then store the message as specified by @var{split}, if header
-@var{field} (a regexp) contains @var{value} (also a regexp).  If
-@var{restrict} (yet another regexp) matches some string after
-@var{field} and before the end of the matched @var{value}, the
-@var{split} is ignored.  If none of the @var{restrict} clauses match,
-@var{split} is processed.
+@code{(@var{field} @var{value} @code{[-} @var{restrict}
+@code{[@dots{}]}@code{]} @var{split})}: If the split is a list, the
+first element of which is a string, then store the message as
+specified by @var{split}, if header @var{field} (a regexp) contains
+@var{value} (also a regexp).  If @var{restrict} (yet another regexp)
+matches some string after @var{field} and before the end of the
+matched @var{value}, the @var{split} is ignored.  If none of the
+@var{restrict} clauses match, @var{split} is processed.
 
 @item
 @code{(| @var{split}@dots{})}: If the split is a list, and the first
@@ -17926,6 +17939,9 @@ well as numerous other things).
 Luis Fernandes---design and graphics.
 
 @item
+Justin Sheehy--the FAQ maintainer.
+
+@item
 Erik Naggum---help, ideas, support, code and stuff.
 
 @item
@@ -18158,7 +18174,6 @@ Ralph Schleicher,
 Philippe Schnoebelen,
 Andreas Schwab,
 Randal L. Schwartz,
-Justin Sheehy,
 Danny Siu,
 Matt Simmons,
 Paul D. Smith,
