@@ -3956,10 +3956,10 @@ If given a prefix, show the hidden text instead."
 				gnus-refer-article-method))
 		  result
 		  (buffer-read-only nil))
-	      (setq methods
-		    (if (listp methods)
-			methods
-		      (list methods)))
+	      (if (or (not (listp methods))
+		      (and (symbolp (car methods))
+			   (assq (car methods) nnoo-definition-alist)))
+		  (setq methods (list methods)))
 	      (when (and (null gnus-override-method)
 			 methods)
 		(setq gnus-override-method (pop methods)))
