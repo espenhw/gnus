@@ -196,6 +196,13 @@
 			'nnmh-request-group
 			(list group server dont-check)))
 
+(deffoo nndraft-request-move-article (article group server
+					      accept-form &optional last)
+  (nndraft-possibly-change-group group)
+  (let ((nnmh-allow-delete-final t))
+    (nnoo-parent-function 'nndraft 'nndraft-request-move-article
+			  (list article group server accept-form last))))
+
 (deffoo nndraft-request-expire-articles (articles group &optional server force)
   (nndraft-possibly-change-group group)
   (let* ((nnmh-allow-delete-final t)
@@ -286,8 +293,7 @@
    nnmh-request-group
    nnmh-close-group
    nnmh-request-list
-   nnmh-request-newsgroups
-   nnmh-request-move-article))
+   nnmh-request-newsgroups))
 
 (provide 'nndraft)
 
