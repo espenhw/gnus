@@ -28,7 +28,8 @@ most: texi2latex.elc latex latexps
 
 .texi:
 	if test "x$(MAKEINFO)" != "xno" ; then \
-	  $(MAKEINFO) -I $(srcdir) --enable-encoding -o $* $<; \
+	  LANG=C; export LANG; \
+	    $(MAKEINFO) -I $(srcdir) --enable-encoding -o $* $<; \
 	else \
 	  rm -f $@; \
 	  $(EMACSINFO) $<; \
@@ -96,8 +97,8 @@ clean:
 	thumbdta.tex xface.tex *.tpt gnus-manual-*.pdf gnus-manual-*.ps.gz
 
 makeinfo:
-	makeinfo --enable-encoding -o gnus gnus.texi
-	makeinfo --enable-encoding -o message message.texi
+	LANG=C; export LANG; makeinfo --enable-encoding -o gnus gnus.texi
+	LANG=C; export LANG; makeinfo --enable-encoding -o message message.texi
 
 texi2latex.elc: texi2latex.el
 	srcdir=$(srcdir)/../lisp $(EMACSCOMP) -l $(srcdir)/../lisp/dgnushack.el --eval '(byte-compile-file "$(srcdir)/texi2latex.el")'

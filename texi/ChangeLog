@@ -1,3 +1,8 @@
+2004-12-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (.texi): Set LANG=C to avoid NLS translations.
+	(makeinfo): Ditto.
+
 2004-12-08  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnusref.tex: Mention `gnus-summary-limit-to-recipient' and 
