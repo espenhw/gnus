@@ -8506,7 +8506,7 @@ article.  If BACKWARD (the prefix) is non-nil, search backward instead."
   (gnus-eval-in-buffer-window gnus-article-buffer
     (widen)
     (goto-char (point-min))
-    (when gnus-page-broken
+    (when gnus-break-pages
       (gnus-narrow-to-page))))
 
 (defun gnus-summary-end-of-article ()
@@ -8518,7 +8518,9 @@ article.  If BACKWARD (the prefix) is non-nil, search backward instead."
     (widen)
     (goto-char (point-max))
     (recenter -3)
-    (when gnus-page-broken
+    (when gnus-break-pages
+      (when (re-search-backward page-delimiter nil t)
+	(narrow-to-region (match-end 0) (point-max)))
       (gnus-narrow-to-page))))
 
 (defun gnus-summary-print-truncate-and-quote (string &optional len)
@@ -8708,10 +8710,12 @@ If ARG is a negative number, hide the unwanted header lines."
 	(widen)
 	(if window
 	    (set-window-start window (goto-char (point-min))))
-	(setq gnus-page-broken
-	      (when gnus-break-pages
-		(gnus-narrow-to-page)
-		t))
+	(if gnus-break-pages
+	    (gnus-narrow-to-page)
+	  (when (gnus-visual-p 'page-marker)
+	    (let ((buffer-read-only nil))
+	      (gnus-remove-text-with-property 'gnus-prev)
+	      (gnus-remove-text-with-property 'gnus-next))))
 	(gnus-set-mode-line 'article)))))
 
 (defun gnus-summary-show-all-headers ()

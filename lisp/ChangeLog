@@ -1,3 +1,16 @@
+2003-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-narrow-to-page): Clear as well as set the
+	value for gnus-page-broken.
+
+	* gnus-sum.el (gnus-summary-beginning-of-article): Use
+	gnus-break-pages instead of gnus-page-broken.
+	(gnus-summary-end-of-article): Use gnus-break-pages instead of
+	gnus-page-broken; narrow to the end of a page beforehand.
+	(gnus-summary-toggle-header): Use gnus-break-pages instead of
+	gnus-page-broken; remove delimiter buttons unless gnus-break-pages
+	is non-nil.
+
 2003-10-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-picon.el (gnus-picon-transform-address): Protect against

@@ -4933,13 +4933,16 @@ If given a numerical ARG, move forward ARG pages."
       (let ((buffer-read-only nil))
 	(gnus-remove-text-with-property 'gnus-prev)
 	(gnus-remove-text-with-property 'gnus-next)))
-    (when
+    (if
 	(cond ((< arg 0)
 	       (re-search-backward page-delimiter nil 'move (1+ (abs arg))))
 	      ((> arg 0)
 	       (re-search-forward page-delimiter nil 'move arg)))
-      (setq gnus-page-broken t)
-      (goto-char (match-end 0)))
+	(goto-char (match-end 0))
+      (save-excursion
+	(goto-char (point-min))
+	(setq gnus-page-broken
+	      (and (re-search-forward page-delimiter nil t) t))))
     (when gnus-page-broken
       (narrow-to-region
        (point)
