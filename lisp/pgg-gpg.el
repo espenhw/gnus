@@ -123,11 +123,13 @@
 				     (progn (end-of-line)(point)))
 		   ":")) 8)))))
 
-(defun pgg-gpg-encrypt-region (start end recipients)
-  "Encrypt the current region between START and END."
+(defun pgg-gpg-encrypt-region (start end recipients &optional sign)
+  "Encrypt the current region between START and END.
+If optional argument SIGN is non-nil, do a combined sign and encrypt."
   (let* ((pgg-gpg-user-id (or pgg-gpg-user-id pgg-default-user-id))
 	 (args
-	  `("--batch" "--armor" "--always-trust" "--encrypt"
+	  `("--batch" "--armor" "--always-trust"
+	    (if sign "--sign --encrypt" "--encrypt")
 	    ,@(if recipients
 		  (apply #'nconc
 			 (mapcar (lambda (rcpt)

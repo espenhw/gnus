@@ -153,15 +153,16 @@
 ;;;
 
 ;;;###autoload
-(defun pgg-encrypt-region (start end rcpts)
-  "Encrypt the current region between START and END for RCPTS."
+(defun pgg-encrypt-region (start end rcpts &optional sign)
+  "Encrypt the current region between START and END for RCPTS.
+If optional argument SIGN is non-nil, do a combined sign and encrypt."
   (interactive
    (list (region-beginning)(region-end)
 	 (split-string (read-string "Recipients: ") "[ \t,]+")))
   (let ((status
 	 (pgg-save-coding-system start end
 	   (pgg-invoke "encrypt-region" (or pgg-scheme pgg-default-scheme)
-		       (point-min) (point-max) rcpts))))
+		       (point-min) (point-max) rcpts sign))))
     (when (interactive-p)
       (pgg-display-output-buffer start end status))
     status))

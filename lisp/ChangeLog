@@ -1,5 +1,11 @@
 2002-10-04  Simon Josefsson  <jas@extundo.com>
 
+	* pgg.el (pgg-encrypt-region): Support sign.
+
+	* pgg-gpg.el (pgg-gpg-encrypt-region): Ditto.
+
+	* mml2015.el (mml2015-pgg-encrypt): Ditto.
+
 	* pgg.el, pgg-def.el, pgg-parse.el, pgg-gpg.el, pgg-pgp5.el,
 	pgg-pgp6.el: Moved from ../pgg/.  Modifications compared to EMIKO
 	branch where PGG was taken from in the ChangeLog entries below.
