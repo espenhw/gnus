@@ -1,3 +1,27 @@
+2004-08-22  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-mlspl.el (gnus-group-split-update): Fix docstring.
+
+2004-08-22  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* gnus-art.el: Use inhibit-read-only instead of buffer-read-only.
+	(gnus-narrow-to-page): Don't assume point-min == 1.
+	(gnus-article-edit-mode): Derive from message-mode.
+
+	* gnus-score.el (gnus-score-find-bnews): Simplify and don't assume
+	point-min == 1.
+
+	* imap.el (imap-parse-address-list, imap-parse-body-ext):
+	Disable incorrect use of `assert'.
+
+	* message.el (message-mode): Set comment-start-skip.
+
+
+2004-08-22  Sam Steingold  <sds@gnu.org>
+
+	* pop3.el (pop3-leave-mail-on-server): New user variable.
+	(pop3-movemail): Delete mail only when it is nil.
+
 2004-08-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nntp.el (nntp-marks-is-evil): Fix typo in docstring.
