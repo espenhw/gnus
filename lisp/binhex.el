@@ -36,7 +36,7 @@
       'identity)))
 
 (defcustom binhex-decoder-program "hexbin"
-  "*Non-nil value should be a string that names a uu decoder.
+  "*Non-nil value should be a string that names a binhex decoder.
 The program should expect to read binhex data on its standard
 input and write the converted data to its standard output."
   :type 'string

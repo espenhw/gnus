@@ -1,3 +1,7 @@
+2002-12-22  Jesper Harder  <harder@ifa.au.dk>
+
+	* binhex.el (binhex-decoder-program): Fix docstring.
+
 2002-12-21  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* mm-decode.el (mm-mailcap-command): Do not backslash-quote
