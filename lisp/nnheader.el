@@ -70,14 +70,14 @@ Integer values will in effect be rounded up to the nearest multiple of
 (defvar nnheader-head-chop-length 2048
   "*Length of each read operation when trying to fetch HEAD headers.")
 
-(defvar nnheader-file-name-translation-alist 
+(defvar nnheader-file-name-translation-alist
   (let ((case-fold-search t))
     (cond
-     ((string-match "windows-nt\\|os/2\\|emx\\|cygwin32"
+     ((string-match "windows-nt\\|os/2\\|emx\\|cygwin"
 		    (symbol-name system-type))
       (append (mapcar (lambda (c) (cons c ?_))
 		      '(?: ?* ?\" ?< ?> ??))
-	      (if (string-match "windows-nt\\|cygwin32"
+	      (if (string-match "windows-nt\\|cygwin"
 				(symbol-name system-type))
 		  nil
 		'((?+ . ?-)))))

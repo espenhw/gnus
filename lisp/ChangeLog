@@ -1,3 +1,10 @@
+2002-08-20  Katsumi Yamaoka <yamaoka@jpl.org>
+	From 小関 吉則 (KOSEKI Yoshinori) <kose@meadowy.org>.
+
+	* message.el (message-set-auto-save-file-name): Add support for
+	the Cygwin Emacs; the system-type is `cygwin'.
+	* nnheader.el (nnheader-file-name-translation-alist): Ditto.
+
 2002-08-20  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-button-url-regexp): Use POSIX regexp if possible.

@@ -4527,7 +4527,7 @@ than 988 characters long, and if they are not, trim them until they are."
       (setq buffer-file-name (expand-file-name
 			      (if (memq system-type
 					'(ms-dos ms-windows windows-nt
-						 cygwin32 win32 w32
+						 cygwin cygwin32 win32 w32
 						 mswindows))
 				  "message"
 				"*message*")
