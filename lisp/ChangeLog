@@ -1,3 +1,8 @@
+2003-04-05  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-audio.el (gnus-audio-au-player, gnus-audio-wav-player):
+	Fix customization type.
+
 2003-04-04  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-start.el (gnus-gnus-to-quick-newsrc-format): Bound

@@ -50,12 +50,12 @@
 (defcustom gnus-audio-au-player (executable-find "play")
   "Executable program for playing sun AU format sound files."
   :group 'gnus-audio
-  :type 'string)
+  :type '(choice file (const nil)))
 
 (defcustom gnus-audio-wav-player (executable-find "play")
   "Executable program for playing WAV files."
   :group 'gnus-audio
-  :type 'string)
+  :type '(choice file (const nil)))
 
 ;;; The following isn't implemented yet.  Wait for Millennium Gnus.
 ;;(defvar gnus-audio-effects-enabled t
