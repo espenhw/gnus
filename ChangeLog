@@ -1,7 +1,8 @@
 2003-04-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* GNUS-NEWS: Added Article Buttons.  Added Upgrading (from Simon
-	Josefsson).
+	Josefsson).  Add gnus-mime-delete-part, markup fixes and some
+	other corrections.
 
 2003-04-30  Jesper Harder  <harder@ifa.au.dk>
 
