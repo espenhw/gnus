@@ -54,25 +54,27 @@
   (nnkiboze-possibly-change-newsgroups group)
   (if (or gnus-nov-is-evil)
       nil
-    (let ((first (car articles))
-	  (last (progn (while (cdr articles) (setq articles (cdr articles)))
-		       (car articles)))
-	  (nov (nnkiboze-nov-file-name)))
-      (if (file-exists-p nov)
-	  (save-excursion
-	    (set-buffer nntp-server-buffer)
-	    (erase-buffer)
-	    (insert-file-contents nov)
-	    (goto-char (point-min))
-	    (while (and (not (eobp)) (< first (read (current-buffer))))
-	      (forward-line 1))
-	    (beginning-of-line)
-	    (if (not (eobp)) (delete-region 1 (point)))
-	    (while (and (not (eobp)) (>= last (read (current-buffer))))
-	      (forward-line 1))
-	    (beginning-of-line)
-	    (if (not (eobp)) (delete-region (point) (point-max)))
-	    'nov)))))
+    (if (stringp (car articles))
+	'headers
+      (let ((first (car articles))
+	    (last (progn (while (cdr articles) (setq articles (cdr articles)))
+			 (car articles)))
+	    (nov (nnkiboze-nov-file-name)))
+	(if (file-exists-p nov)
+	    (save-excursion
+	      (set-buffer nntp-server-buffer)
+	      (erase-buffer)
+	      (insert-file-contents nov)
+	      (goto-char (point-min))
+	      (while (and (not (eobp)) (< first (read (current-buffer))))
+		(forward-line 1))
+	      (beginning-of-line)
+	      (if (not (eobp)) (delete-region 1 (point)))
+	      (while (and (not (eobp)) (>= last (read (current-buffer))))
+		(forward-line 1))
+	      (beginning-of-line)
+	      (if (not (eobp)) (delete-region (point) (point-max)))
+	      'nov))))))
 
 (defun nnkiboze-open-server (newsgroups &optional something)
   "Open a virtual newsgroup that contains NEWSGROUPS."
@@ -83,7 +85,7 @@
   "Close news server."
   t)
 
-(fset 'nnkiboze-request-quit (symbol-function 'nnkiboze-close-server))
+(defalias 'nnkiboze-request-quit (symbol-function 'nnkiboze-close-server))
 
 (defun nnkiboze-server-opened (&optional server)
   "Return server process status, T or NIL.
@@ -176,9 +178,9 @@ If the stream is opened, return T, otherwise return NIL."
   (setq nnkiboze-status-string "nnkiboze: LIST NEWSGROUPS is not implemented.")
   nil)
 
-(fset 'nnkiboze-request-post 'nntp-request-post)
+(defalias 'nnkiboze-request-post 'nntp-request-post)
 
-(fset 'nnkiboze-request-post-buffer 'nntp-request-post-buffer)
+(defalias 'nnkiboze-request-post-buffer 'nntp-request-post-buffer)
 
 
 ;;; Internal functions.

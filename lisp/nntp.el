@@ -254,7 +254,7 @@ instead call function `nntp-status-message' to get status message.")
 	      (nntp-accept-response)))
 	(and (numberp nntp-large-newsgroup)
 	     (> number nntp-large-newsgroup)
-	     (message "NNTP: Receiving headers... done"))
+	     (message "NNTP: Receiving headers...done"))
 
 	;; Now all of replies are received.
 	(setq received number)
@@ -371,7 +371,7 @@ instead call function `nntp-status-message' to get status message.")
 	    (nntp-send-command nil "QUIT")))
     (nntp-close-server-internal server)))
 
-(fset 'nntp-request-quit (symbol-function 'nntp-close-server))
+(defalias 'nntp-request-quit (symbol-function 'nntp-close-server))
 
 (defun nntp-request-close ()
   "Close all server connections."

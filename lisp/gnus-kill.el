@@ -319,7 +319,11 @@ If NEWSGROUP is nil, return the global kill file instead."
 				   "/" gnus-kill-file-name)
 			   (or gnus-kill-files-directory "~/News")))))
 
-(defalias 'gnus-expunge 'gnus-summary-remove-lines-marked-with)
+(defun gnus-expunge (marks)
+  "Remove lines marked with MARKS."
+  (save-excursion
+    (set-buffer gnus-summary-buffer)
+    (gnus-summary-remove-lines-marked-with marks)))
 
 (defun gnus-apply-kill-file-internal ()
   "Apply a kill file to the current newsgroup.

@@ -101,45 +101,47 @@ all. This may very well take some time.")
 	  (number (length sequence))
 	  (count 0)
 	  beg article)
-      (nnml-possibly-change-directory newsgroup)
-      (if (nnml-retrieve-headers-with-nov sequence)
-	  'nov
-	(while sequence
-	  (setq article (car sequence))
-	  (setq file
-		(concat nnml-current-directory (prin1-to-string article)))
-	  (if (and (file-exists-p file)
-		   (not (file-directory-p file)))
-	      (progn
-		(insert (format "221 %d Article retrieved.\n" article))
-		(setq beg (point))
-		(nnheader-insert-head file)
-		(goto-char beg)
-		(if (search-forward "\n\n" nil t)
-		    (forward-char -1)
-		  (goto-char (point-max))
-		  (insert "\n\n"))
-		(insert ".\n")
-		(delete-region (point) (point-max))))
-	  (setq sequence (cdr sequence))
-	  (setq count (1+ count))
+      (if (stringp (car sequence))
+	  'headers
+	(nnml-possibly-change-directory newsgroup)
+	(if (nnml-retrieve-headers-with-nov sequence)
+	    'nov
+	  (while sequence
+	    (setq article (car sequence))
+	    (setq file
+		  (concat nnml-current-directory (int-to-string article)))
+	    (if (and (file-exists-p file)
+		     (not (file-directory-p file)))
+		(progn
+		  (insert (format "221 %d Article retrieved.\n" article))
+		  (setq beg (point))
+		  (nnheader-insert-head file)
+		  (goto-char beg)
+		  (if (search-forward "\n\n" nil t)
+		      (forward-char -1)
+		    (goto-char (point-max))
+		    (insert "\n\n"))
+		  (insert ".\n")
+		  (delete-region (point) (point-max))))
+	    (setq sequence (cdr sequence))
+	    (setq count (1+ count))
+	    (and (numberp nnmail-large-newsgroup)
+		 (> number nnmail-large-newsgroup)
+		 (zerop (% count 20))
+		 gnus-verbose-backends
+		 (message "nnml: Receiving headers... %d%%"
+			  (/ (* count 100) number))))
+
 	  (and (numberp nnmail-large-newsgroup)
 	       (> number nnmail-large-newsgroup)
-	       (zerop (% count 20))
 	       gnus-verbose-backends
-	       (message "nnml: Receiving headers... %d%%"
-			(/ (* count 100) number))))
+	       (message "nnml: Receiving headers...done"))
 
-	(and (numberp nnmail-large-newsgroup)
-	     (> number nnmail-large-newsgroup)
-	     gnus-verbose-backends
-	     (message "nnml: Receiving headers... done"))
-
-	;; Fold continuation lines.
-	(goto-char (point-min))
-	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	  (replace-match " " t t))
-	'headers))))
+	  ;; Fold continuation lines.
+	  (goto-char (point-min))
+	  (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+	    (replace-match " " t t))
+	  'headers)))))
 
 (defun nnml-open-server (server &optional defs)
   (nnheader-init-server-buffer)
@@ -173,7 +175,7 @@ all. This may very well take some time.")
   (nnml-possibly-change-directory newsgroup)
   (let ((file (if (stringp id)
 		  nil
-		(concat nnml-current-directory (prin1-to-string id))))
+		(concat nnml-current-directory (int-to-string id))))
 	(nntp-server-buffer (or buffer nntp-server-buffer)))
     (if (and (stringp file)
 	     (file-exists-p file)
@@ -253,7 +255,7 @@ all. This may very well take some time.")
 (defun nnml-request-post (&optional server)
   (mail-send-and-exit nil))
 
-(fset 'nnml-request-post-buffer 'nnmail-request-post-buffer)
+(defalias 'nnml-request-post-buffer 'nnmail-request-post-buffer)
 
 (defun nnml-request-expire-articles (articles newsgroup &optional server force)
   (nnml-possibly-change-directory newsgroup)
@@ -481,8 +483,10 @@ all. This may very well take some time.")
     (if (or (not nnml-get-new-mail) (not nnmail-spool-file))
 	()
       ;; We first activate all the groups.
-      (nnml-request-list)
-      (setq nnml-group-alist (nnmail-get-active))
+      (if (or (not group) (not nnml-group-alist))
+	  (progn
+	    (nnml-request-list)
+	    (setq nnml-group-alist (nnmail-get-active))))
       ;; The we go through all the existing spool files and split the
       ;; mail from each.
       (while spools

@@ -150,7 +150,7 @@ Newsgroup must be selected before calling this function."
 		 (message "NNSPOOL: Receiving headers... %d%%"
 			  (/ (* count 100) number))))
 	  
-	  (and do-message (message "NNSPOOL: Receiving headers... done"))
+	  (and do-message (message "NNSPOOL: Receiving headers...done"))
 	  
 	  ;; Fold continuation lines.
 	  (goto-char (point-min))
@@ -334,14 +334,15 @@ Newsgroup must be selected before calling this function."
     (goto-char (point-min))
     (if (or (zerop (buffer-size))
 	    (search-forward "spooled" nil t))
-	()
+	(kill-buffer (current-buffer))
       ;; Make status message by unfolding lines.
       (subst-char-in-region (point-min) (point-max) ?\n ?\\ 'noundo)
       (setq nnspool-status-string (buffer-string))
       (message "nnspool: %s" nnspool-status-string)
-      (kill-buffer (current-buffer)))))
+      ;(kill-buffer (current-buffer))
+      )))
 
-(fset 'nnspool-request-post-buffer 'nntp-request-post-buffer)
+(defalias 'nnspool-request-post-buffer 'nntp-request-post-buffer)
 
 
 ;;; Internal functions.
@@ -349,7 +350,7 @@ Newsgroup must be selected before calling this function."
 (defun nnspool-retrieve-headers-with-nov (articles)
   (if (or gnus-nov-is-evil nnspool-nov-is-evil)
       nil
-    (let ((nov (concat nnspool-nov-directory
+    (let ((nov (concat (file-name-as-directory nnspool-nov-directory)
 		       (nnspool-replace-chars-in-string
 			nnspool-current-group ?. ?/)
 		       "/.overview"))

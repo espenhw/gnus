@@ -38,6 +38,11 @@ might be used, for instance, for inserting signatures based on the
 newsgroup name. (In that case, `gnus-signature-file' and
 `mail-signature' should both be set to nil).")
 
+(defvar gnus-post-prepare-hook nil
+  "*Hook that is run after a post buffer has been prepared.
+If you want to insert the signature, you might put
+`gnus-inews-insert-signature' in this hook.")
+
 (defvar gnus-use-followup-to 'use
   "*Specifies what to do with Followup-To header.
 If nil, ignore the header. If it is t, use its value, but ignore 
@@ -485,9 +490,10 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 		      (gnus-summary-remove-process-mark (car yank)))
 		    (let ((mail-reply-buffer gnus-article-copy))
 		      (news-reply-yank-original nil))
-		    (setq yank (cdr yank))))))
-	    (if gnus-post-prepare-function
-		(funcall gnus-post-prepare-function group)))
+		    (setq yank (cdr yank)))))))
+	  (if gnus-post-prepare-function
+	      (funcall gnus-post-prepare-function group))
+	  (run-hooks 'gnus-post-prepare-hook)
 	  (make-local-variable 'gnus-prev-winconf)
 	  (setq gnus-prev-winconf winconf))))
   (setq gnus-article-check-size (cons (buffer-size) (gnus-article-checksum)))
@@ -630,7 +636,7 @@ will attempt to use the foreign server to post the article."
 			(replace-match "" t t))
 		    (funcall gnus-mail-send-method))
 
-		  (gnus-message 5 "Sending via mail... done")
+		  (gnus-message 5 "Sending via mail...done")
 		      
 		  (goto-char (point-min))
 		  (narrow-to-region
@@ -648,7 +654,7 @@ will attempt to use the foreign server to post the article."
       (gnus-message 5 "Posting to USENET...")
       (if (gnus-inews-article use-group-method)
 	  (progn
-	    (gnus-message 5 "Posting to USENET... done")
+	    (gnus-message 5 "Posting to USENET...done")
 	    (if (gnus-buffer-exists-p (car-safe reply))
 		(progn
 		  (save-excursion
@@ -845,7 +851,7 @@ will attempt to use the foreign server to post the article."
 	    ;; Send the control article to NNTP server.
 	    (gnus-message 5 "Canceling your article...")
 	    (if (gnus-inews-article)
-		(gnus-message 5 "Canceling your article... done")
+		(gnus-message 5 "Canceling your article...done")
 	      (ding) 
 	      (gnus-message 1 "Cancel failed; %s" 
 			    (gnus-status-message gnus-newsgroup-name)))

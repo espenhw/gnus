@@ -112,9 +112,8 @@ save those articles instead."
   
 (defun gnus-mail-forward-using-vm (&optional buffer)
   "Forward the current message to another user using vm."
-  (let ((gnus-buffer (or buffer (current-buffer)))
-	(subject (concat "[" gnus-newsgroup-name "] "
-			 (or (gnus-fetch-field "Subject") ""))))
+  (let* ((gnus-buffer (or buffer (current-buffer)))
+	 (subject (gnus-forward-make-subject gnus-buffer)))
     (or (featurep 'win-vm)
 	(if gnus-use-full-window
 	    (pop-to-buffer gnus-article-buffer)

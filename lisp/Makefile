@@ -14,9 +14,10 @@ SUBSETS		=gnus nntp virtual nnmbox nnml nnmh nnspool mh
 
 DGNUS.el	=gnus-cache.el gnus-cite.el gnus-ems.el \
 		gnus-kill.el gnus-mh.el gnus-msg.el gnus-score.el gnus-uu.el \
-		gnus-vis.el gnus-vm.el gnus.el nnbabyl.el nndigest.el nndir.el \
-		nndoc.el nnfolder.el nnheader.el nnkiboze.el nnmail.el nnmbox.el \
-		nnmh.el nnml.el nnspool.el nntp.el nnvirtual.el
+		gnus-vis.el gnus-vm.el gnus.el nnbabyl.el nndigest.el \
+		nndir.el nndoc.el nnfolder.el nnheader.el nnkiboze.el \
+		nnmail.el nnmbox.el nnmh.el nnml.el nnspool.el nntp.el \
+		nnvirtual.el nneething.el
 
 DGNUS.elc	=$(DGNUS.el:.el=.elc)
 
@@ -61,7 +62,6 @@ gnus-msg.elc:	gnus.el
 gnus-score.elc:	gnus.el
 gnus-uu.elc:	gnus-msg.el
 gnus-uu.elc:	gnus.el
-#gnus-vis.elc:	gnus-easymenu.el
 gnus-vis.elc:	gnus.el
 gnus-vm.elc:	gnus-msg.el
 gnus-vm.elc:	gnus.el
@@ -76,6 +76,8 @@ nndigest.elc:	nnheader.el
 nndir.elc:	nnheader.el
 nndir.elc:	nnmh.el
 nndir.elc:	nnml.el
+nneething.elc:  nnheader.el
+nneething.elc:  nnmail.el
 nndoc.elc:	nnheader.el
 nndoc.elc:	nnmail.el
 nnfolder.elc:	gnus.el

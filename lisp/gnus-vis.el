@@ -180,6 +180,7 @@ highlight-headers-follow-url-netscape:
       ["Make a kiboze group" gnus-group-make-kiboze-group t]
       ["Make a virtual group" gnus-group-make-empty-virtual t]
       ["Add a group to a virtual" gnus-group-add-to-virtual t])
+     ["Read a directory as a group" gnus-group-enter-directory t]
      ["Jump to group" gnus-group-jump-to-group t]
      ["Best unread group" gnus-group-best-unread-group t]
      ))
@@ -596,7 +597,7 @@ highlight-headers-follow-url-netscape:
     ("cancel" . gnus-summary-cancel-article)
     "misc"
     ("exit" . gnus-summary-exit)
-    ("fed up" . gnus-summary-catchup-and-goto-next)))
+    ("fed up" . gnus-summary-catchup-and-goto-next-group)))
 
 (defvar gnus-carpal-server-buffer-buttons 
   '(("add" . gnus-server-add-server)

@@ -73,7 +73,7 @@
 
 ;;; Interface functions
 
-(defun nnbabyl-retrieve-headers (sequence &optional newsgroup server)
+(defun nnbabyl-retrieqve-headers (sequence &optional newsgroup server)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -82,43 +82,45 @@
 	  (count 0)
 	  article art-string start stop)
       (nnbabyl-possibly-change-newsgroup newsgroup)
-      (while sequence
-	(setq article (car sequence))
-	(setq art-string (nnbabyl-article-string article))
-	(set-buffer nnbabyl-mbox-buffer)
-	(if (or (search-forward art-string nil t)
-		(search-backward art-string nil t))
-	    (progn
-	      (re-search-backward (concat "^" nnbabyl-mail-delimiter) nil t)
-	      (while (and (not (looking-at ".+:"))
-			  (zerop (forward-line 1))))
-	      (setq start (point))
-	      (search-forward "\n\n" nil t)
-	      (setq stop (1- (point)))
-	      (set-buffer nntp-server-buffer)
-	      (insert "221 " (int-to-string article) " Article retrieved.\n")
-	      (insert-buffer-substring nnbabyl-mbox-buffer start stop)
-	      (goto-char (point-max))
-	      (insert ".\n")))
-	(setq sequence (cdr sequence))
-	(setq count (1+ count))
+      (if (stringp (car sequence))
+	  'headers
+	(while sequence
+	  (setq article (car sequence))
+	  (setq art-string (nnbabyl-article-string article))
+	  (set-buffer nnbabyl-mbox-buffer)
+	  (if (or (search-forward art-string nil t)
+		  (search-backward art-string nil t))
+	      (progn
+		(re-search-backward (concat "^" nnbabyl-mail-delimiter) nil t)
+		(while (and (not (looking-at ".+:"))
+			    (zerop (forward-line 1))))
+		(setq start (point))
+		(search-forward "\n\n" nil t)
+		(setq stop (1- (point)))
+		(set-buffer nntp-server-buffer)
+		(insert "221 " (int-to-string article) " Article retrieved.\n")
+		(insert-buffer-substring nnbabyl-mbox-buffer start stop)
+		(goto-char (point-max))
+		(insert ".\n")))
+	  (setq sequence (cdr sequence))
+	  (setq count (1+ count))
+	  (and (numberp nnmail-large-newsgroup)
+	       (> number nnmail-large-newsgroup)
+	       (zerop (% count 20))
+	       gnus-verbose-backends
+	       (message "nnbabyl: Receiving headers... %d%%"
+			(/ (* count 100) number))))
+
 	(and (numberp nnmail-large-newsgroup)
 	     (> number nnmail-large-newsgroup)
-	     (zerop (% count 20))
 	     gnus-verbose-backends
-	     (message "nnbabyl: Receiving headers... %d%%"
-		      (/ (* count 100) number))))
+	     (message "nnbabyl: Receiving headers...done"))
 
-      (and (numberp nnmail-large-newsgroup)
-	   (> number nnmail-large-newsgroup)
-	   gnus-verbose-backends
-	   (message "nnbabyl: Receiving headers... done"))
-
-      ;; Fold continuation lines.
-      (goto-char (point-min))
-      (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	(replace-match " " t t))
-      'headers)))
+	;; Fold continuation lines.
+	(goto-char (point-min))
+	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+	  (replace-match " " t t))
+	'headers))))
 
 (defun nnbabyl-open-server (server &optional defs)
   (nnheader-init-server-buffer)
@@ -218,7 +220,7 @@
 (defun nnbabyl-request-post (&optional server)
   (mail-send-and-exit nil))
 
-(fset 'nnbabyl-request-post-buffer 'nnmail-request-post-buffer)
+(defalias 'nnbabyl-request-post-buffer 'nnmail-request-post-buffer)
 
 (defun nnbabyl-request-expire-articles (articles newsgroup &optional server force)
   (nnbabyl-possibly-change-newsgroup newsgroup)

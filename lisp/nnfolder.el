@@ -117,35 +117,37 @@ such things as moving mail.  All buffers always get killed upon server close.")
       (nnfolder-possibly-change-group newsgroup)
       (set-buffer nnfolder-current-buffer)
       (goto-char (point-min))
-      (while sequence
-	(setq article (car sequence))
-	(setq art-string (nnfolder-article-string article))
-	(set-buffer nnfolder-current-buffer)
-	(if (or (search-forward art-string nil t)
-		;; Don't search the whole file twice!  Also, articles
-		;; probably have some locality by number, so searching
-		;; backwards will be faster.  Especially if we're at the
-		;; beginning of the buffer :-). -SLB
-		(search-backward art-string nil t))
-	    (progn
-	      (setq start (or (re-search-backward delim-string nil t)
-			      (point)))
-	      (search-forward "\n\n" nil t)
-	      (setq stop (1- (point)))
-	      (set-buffer nntp-server-buffer)
-	      (insert (format "221 %d Article retrieved.\n" article))
-	      (setq beg (point))
-	      (insert-buffer-substring nnfolder-current-buffer start stop)
-	      (goto-char (point-max))
-	      (insert ".\n")))
-	(setq sequence (cdr sequence)))
+      (if (stringp (car sequence))
+	  'headers
+	(while sequence
+	  (setq article (car sequence))
+	  (setq art-string (nnfolder-article-string article))
+	  (set-buffer nnfolder-current-buffer)
+	  (if (or (search-forward art-string nil t)
+		  ;; Don't search the whole file twice!  Also, articles
+		  ;; probably have some locality by number, so searching
+		  ;; backwards will be faster.  Especially if we're at the
+		  ;; beginning of the buffer :-). -SLB
+		  (search-backward art-string nil t))
+	      (progn
+		(setq start (or (re-search-backward delim-string nil t)
+				(point)))
+		(search-forward "\n\n" nil t)
+		(setq stop (1- (point)))
+		(set-buffer nntp-server-buffer)
+		(insert (format "221 %d Article retrieved.\n" article))
+		(setq beg (point))
+		(insert-buffer-substring nnfolder-current-buffer start stop)
+		(goto-char (point-max))
+		(insert ".\n")))
+	  (setq sequence (cdr sequence)))
 
-      ;; Fold continuation lines.
-      (set-buffer nntp-server-buffer)
-      (goto-char (point-min))
-      (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	(replace-match " " t t))
-      'headers)))
+	;; Fold continuation lines.
+	(set-buffer nntp-server-buffer)
+	(goto-char (point-min))
+	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+	  (replace-match " " t t))
+	'headers))))
 
 (defun nnfolder-open-server (server &optional defs)
   (nnheader-init-server-buffer)
@@ -282,7 +284,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 (defun nnfolder-request-post (&optional server)
   (mail-send-and-exit nil))
 
-(fset 'nnfolder-request-post-buffer 'nnmail-request-post-buffer)
+(defalias 'nnfolder-request-post-buffer 'nnmail-request-post-buffer)
 
 (defun nnfolder-request-expire-articles (articles newsgroup &optional server force)
   (nnfolder-possibly-change-group newsgroup)

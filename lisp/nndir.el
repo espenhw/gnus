@@ -94,7 +94,7 @@ If the stream is opened, return T, otherwise return NIL."
   "Post a new news in current buffer."
   (mail-send-and-exit nil))
 
-(fset 'nndir-request-post-buffer 'nnmail-request-post-buffer)
+(defalias 'nndir-request-post-buffer 'nnmail-request-post-buffer)
 
 (defun nndir-request-expire-articles (articles newsgroup &optional server force)
   "Expire all articles in the ARTICLES list in group GROUP."

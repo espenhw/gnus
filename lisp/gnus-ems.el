@@ -104,8 +104,13 @@
       (while funcs
 	(or (fboundp (car funcs))
 	    (fset (car funcs) 'gnus-dummy-func))
-	(setq funcs (cdr funcs)))))
-   ))
+	(setq funcs (cdr funcs))))))
+  (or (fboundp 'file-regular-p)
+      (defun file-regular-p (file)
+	(and (not (file-directory-p file))
+	     (not (file-symlink-p file))
+	     (file-exists-p file))))
+  )
 
 (defun gnus-ems-redefine ()
   (cond 

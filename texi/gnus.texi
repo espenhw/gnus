@@ -1282,6 +1282,7 @@ The different methods all have their peculiarities, of course.
 * nnvirtual::        Combining articles from many groups.
 * nnkiboze::         Looking through parts of the newsfeed for articles.
 * nndir::            You can read a directory as if it was a newsgroup.
+* nneething::          Dired? Who needs dired?
 * nndoc::            Single files can be the basis of a group.
 * nndigest::         Digests can be undigested and treated as a group.
 * Reading Mail::     Reading your personal mail with Gnus.
@@ -1610,6 +1611,63 @@ directory name, ange-ftp will actually allow you to read this directory
 over at @samp{sina} as a newsgroup.  Distributed news ahoy!
 
 nndir will use @sc{nov} files if they are present.
+
+@node nneething
+@subsection nneething
+@cindex nneething
+
+From the @code{nndir} backend (which reads a single spool-like
+directory), it's just a hop and a skip to @code{nneething}, which
+pretends that any random directory is a newsgroup. Strange, but true.
+
+When @code{nneething} is presented with a directory, it will scan this
+directory and assign article numbers to each file. When you enter such a
+group, @code{nneething} must create "headers" that Gnus can use. After
+all, Gnus is a newsreader, in case you're forgetting. @code{nneething}
+does this in a two-step process. First, it snoops each file in question.
+If the file looks like an article (ie. the first few lines look like
+headers), it will use this as the head. If this is just some random file
+without a head (eg. a C source file), @code{nneething} will cobble up a
+header out of thin air. It will use file ownership, name and date and do
+whatever it can with these elements.
+
+All this should happen automatically for you, and you will be presented
+with something that looks very much like a newsgroup. Totally like a
+newsgroup, to be precise. If you select an article, it will be displayed
+in the article buffer, just as usual.
+
+If you select a line that represents a directory, Gnus will pop you into
+a new summary buffer for this @code{nneething} group. And so on. You can
+traverse the entire disk this way, if you feel like, but remember that
+Gnus is not dired, really, and does not intend to be, either.
+
+There are two overall modes to this action - ephemeral or solid. When
+doing the ephemeral thing (ie. @kbd{G D} from the group buffer), Gnus
+will not store information on what files you have read, and what files
+are new, and so on. If you create a solid @code{nneething} group the
+normal way with @kbd{G m}, Gnus will store a mapping table between
+article numbers and file names, and you can treat this group like any
+other groups. When you activate a solid @code{nneething} group, you will
+be told how many unread articles it contains, etc., etc.
+
+Some variables:
+
+@table @code
+@item nneething-map-file-directory
+@vindex nneething-map-file-directory
+All the mapping files for solid @code{nneething} groups will be stored
+in this directory, which defaults to @file{~/.nneething/}.
+
+@item nneething-exclude-files
+@vindex nneething-exclude-files
+All files that match this regexp will be ignored. Nice to use to exclude
+auto-save files and the like, which is what it does by default.
+
+@item nneething-map-file
+@vindex nneething-map-file
+Name of the map files.
+@end table
+
 
 @node nndoc
 @subsection nndoc
@@ -3196,6 +3254,12 @@ instead.
 This function is called with the name of the current group after the
 post buffer has been initialized, and can be used for inserting a
 signature.  Nice if you use different signatures in different groups.
+
+@item gnus-post-prepapare-hook
+@vindex gnus-post-prepapare-hook
+This hook is called after a post buffer has been prepared. If you want
+to insert a signature at this point, you could put
+@code{gnus-inews-insert-signature} into this hook.
 
 @item news-reply-header-hook
 @vindex news-reply-header-hook

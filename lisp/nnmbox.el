@@ -84,46 +84,48 @@
 	  (count 0)
 	  beg article art-string start stop)
       (nnmbox-possibly-change-newsgroup newsgroup)
-      (while sequence
-	(setq article (car sequence))
-	(setq art-string (nnmbox-article-string article))
-	(set-buffer nnmbox-mbox-buffer)
-	(if (or (search-forward art-string nil t)
-		(progn (goto-char (point-min))
-		       (search-forward art-string nil t)))
-	    (progn
-	      (setq start 
-		    (save-excursion
-		      (re-search-backward 
-		       (concat "^" rmail-unix-mail-delimiter) nil t)
-		      (point)))
-	      (search-forward "\n\n" nil t)
-	      (setq stop (1- (point)))
-	      (set-buffer nntp-server-buffer)
-	      (insert (format "221 %d Article retrieved.\n" article))
-	      (setq beg (point))
-	      (insert-buffer-substring nnmbox-mbox-buffer start stop)
-	      (goto-char (point-max))
-	      (insert ".\n")))
-	(setq sequence (cdr sequence))
-	(setq count (1+ count))
+      (if (stringp (car sequence))
+	  'headers
+	(while sequence
+	  (setq article (car sequence))
+	  (setq art-string (nnmbox-article-string article))
+	  (set-buffer nnmbox-mbox-buffer)
+	  (if (or (search-forward art-string nil t)
+		  (progn (goto-char (point-min))
+			 (search-forward art-string nil t)))
+	      (progn
+		(setq start 
+		      (save-excursion
+			(re-search-backward 
+			 (concat "^" rmail-unix-mail-delimiter) nil t)
+			(point)))
+		(search-forward "\n\n" nil t)
+		(setq stop (1- (point)))
+		(set-buffer nntp-server-buffer)
+		(insert (format "221 %d Article retrieved.\n" article))
+		(setq beg (point))
+		(insert-buffer-substring nnmbox-mbox-buffer start stop)
+		(goto-char (point-max))
+		(insert ".\n")))
+	  (setq sequence (cdr sequence))
+	  (setq count (1+ count))
+	  (and (numberp nnmail-large-newsgroup)
+	       (> number nnmail-large-newsgroup)
+	       (zerop (% count 20))
+	       gnus-verbose-backends
+	       (message "nnmbox: Receiving headers... %d%%"
+			(/ (* count 100) number))))
+
 	(and (numberp nnmail-large-newsgroup)
 	     (> number nnmail-large-newsgroup)
-	     (zerop (% count 20))
 	     gnus-verbose-backends
-	     (message "nnmbox: Receiving headers... %d%%"
-		      (/ (* count 100) number))))
+	     (message "nnmbox: Receiving headers...done"))
 
-      (and (numberp nnmail-large-newsgroup)
-	   (> number nnmail-large-newsgroup)
-	   gnus-verbose-backends
-	   (message "nnmbox: Receiving headers... done"))
-
-      ;; Fold continuation lines.
-      (goto-char (point-min))
-      (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	(replace-match " " t t))
-      'headers)))
+	;; Fold continuation lines.
+	(goto-char (point-min))
+	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+	  (replace-match " " t t))
+	'headers))))
 
 (defun nnmbox-open-server (server &optional defs)
   (nnheader-init-server-buffer)
@@ -221,7 +223,7 @@
 (defun nnmbox-request-post (&optional server)
   (mail-send-and-exit nil))
 
-(fset 'nnmbox-request-post-buffer 'nnmail-request-post-buffer)
+(defalias 'nnmbox-request-post-buffer 'nnmail-request-post-buffer)
 
 (defun nnmbox-request-expire-articles 
   (articles newsgroup &optional server force)

@@ -77,46 +77,47 @@
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
-    (let ((file nil)
-	  (number (length sequence))
-	  (count 0)
-	  beg article)
+    (let* ((file nil)
+	   (number (length sequence))
+	   (large (and (numberp nnmail-large-newsgroup)
+		       (> number nnmail-large-newsgroup)))
+	   (count 0)
+	   beg article)
       (nnmh-possibly-change-directory newsgroup)
-      (while sequence
-	(setq article (car sequence))
-	(setq file
-	      (concat nnmh-current-directory (prin1-to-string article)))
-	(if (and (file-exists-p file)
-		 (not (file-directory-p file)))
-	    (progn
-	      (insert (format "221 %d Article retrieved.\n" article))
-	      (setq beg (point))
-	      (nnheader-insert-head file)
-	      (goto-char beg)
-	      (if (search-forward "\n\n" nil t)
-		  (forward-char -1)
-		(goto-char (point-max))
-		(insert "\n\n"))
-	      (insert (format "Lines: %d\n" (count-lines (point) (point-max))))
-	      (insert ".\n")
-	      (delete-region (point) (point-max))))
-	(setq sequence (cdr sequence))
-	(setq count (1+ count))
-	(and (numberp nnmail-large-newsgroup)
-	     (> number nnmail-large-newsgroup)
-	     (zerop (% count 20))
-	     (message "nnmh: Receiving headers... %d%%"
-		      (/ (* count 100) number))))
+      (if (stringp (car sequence))
+	  'headers
+	(while sequence
+	  (setq article (car sequence))
+	  (setq file
+		(concat nnmh-current-directory (int-to-string article)))
+	  (if (and (file-exists-p file)
+		   (not (file-directory-p file)))
+	      (progn
+		(insert (format "221 %d Article retrieved.\n" article))
+		(setq beg (point))
+		(nnheader-insert-head file)
+		(goto-char beg)
+		(if (search-forward "\n\n" nil t)
+		    (forward-char -1)
+		  (goto-char (point-max))
+		  (insert "\n\n"))
+		(insert ".\n")
+		(delete-region (point) (point-max))))
+	  (setq sequence (cdr sequence))
+	  (setq count (1+ count))
 
-      (and (numberp nnmail-large-newsgroup)
-	   (> number nnmail-large-newsgroup)
-	   (message "nnmh: Receiving headers... done"))
+	  (and large
+	       (zerop (% count 20))
+	       (message "nnmh: Receiving headers... %d%%"
+			(/ (* count 100) number))))
 
-      ;; Fold continuation lines.
-      (goto-char (point-min))
-      (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	(replace-match " " t t))
-      'headers)))
+	(and large (message "nnmh: Receiving headers...done"))
+
+	;; Fold continuation lines.
+	(goto-char (point-min))
+	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+	  (replace-match " " t t))
+	'headers))))
 
 (defun nnmh-open-server (server &optional defs)
   (nnheader-init-server-buffer)
@@ -150,13 +151,12 @@
   (nnmh-possibly-change-directory newsgroup)
   (let ((file (if (stringp id)
 		  nil
-		(concat nnmh-current-directory (prin1-to-string id))))
+		(concat nnmh-current-directory (int-to-string id))))
 	(nntp-server-buffer (or buffer nntp-server-buffer)))
-    (if (and (stringp file)
-	     (file-exists-p file)
-	     (not (file-directory-p file)))
-	(save-excursion
-	  (nnmail-find-file file)))))
+    (and (stringp file)
+	 (file-exists-p file)
+	 (not (file-directory-p file))
+	 (save-excursion (nnmail-find-file file)))))
 
 (defun nnmh-request-group (group &optional server dont-check)
   (and nnmh-get-new-mail (or dont-check (nnmh-get-new-mail group)))
@@ -236,7 +236,7 @@
 (defun nnmh-request-post (&optional server)
   (mail-send-and-exit nil))
 
-(fset 'nnmh-request-post-buffer 'nnmail-request-post-buffer)
+(defalias 'nnmh-request-post-buffer 'nnmail-request-post-buffer)
 
 (defun nnmh-request-expire-articles (articles newsgroup &optional server force)
   (nnmh-possibly-change-directory newsgroup)
@@ -392,8 +392,10 @@
     (if (or (not nnmh-get-new-mail) (not nnmail-spool-file))
 	()
       ;; We first activate all the groups.
-      (nnmh-request-list)
-      (setq nnmh-group-alist (nnmail-get-active))
+      (if (or (not group) (not nnmh-group-alist))
+	  (progn
+	    (nnmh-request-list)
+	    (setq nnmh-group-alist (nnmail-get-active))))
       ;; The we go through all the existing spool files and split the
       ;; mail from each.
       (while spools

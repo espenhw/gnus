@@ -58,77 +58,79 @@
     (set-buffer (get-buffer-create "*virtual headers*"))
     (buffer-disable-undo (current-buffer))
     (erase-buffer)
-    (let ((map nnvirtual-current-mapping)
-	  (offset 0)
-	  articles beg group active top article result prefix)
-      (while sequence
-	(while (< (car (car map)) (car sequence))
-	  (setq offset (car (car map)))
-	  (setq map (cdr map)))
-	(setq top (car (car map)))
-	(setq group (nth 1 (car map)))
-	(setq prefix (gnus-group-real-prefix group))
-	(setq active (nth 2 (car map)))
-	(setq articles nil)
-	(while (and sequence (<= (car sequence) top))
-	  (setq articles (cons (- (+ active (car sequence)) offset) articles))
-	  (setq sequence (cdr sequence)))
-	(setq articles (nreverse articles))
-	(if (and articles
-		 (setq result (gnus-retrieve-headers articles group)))
+    (if (stringp (car sequence))
+	'headers
+      (let ((map nnvirtual-current-mapping)
+	    (offset 0)
+	    articles beg group active top article result prefix)
+	(while sequence
+	  (while (< (car (car map)) (car sequence))
+	    (setq offset (car (car map)))
+	    (setq map (cdr map)))
+	  (setq top (car (car map)))
+	  (setq group (nth 1 (car map)))
+	  (setq prefix (gnus-group-real-prefix group))
+	  (setq active (nth 2 (car map)))
+	  (setq articles nil)
+	  (while (and sequence (<= (car sequence) top))
+	    (setq articles (cons (- (+ active (car sequence)) offset) articles))
+	    (setq sequence (cdr sequence)))
+	  (setq articles (nreverse articles))
+	  (if (and articles
+		   (setq result (gnus-retrieve-headers articles group)))
+	      (save-excursion
+		(set-buffer nntp-server-buffer)
+		;; If we got HEAD headers, we convert them into NOV
+		;; headers. This is slow, inefficient and, come to think
+		;; of it, downright evil. So sue me. I couldn't be
+		;; bothered to write a header parse routine that could
+		;; parse a mixed HEAD/NOV buffer.
+		(and (eq result 'headers) (nnvirtual-convert-headers))
+		(goto-char (point-min))
+		(while (not (eobp))
+		  (setq beg (point))
+		  (setq article (read nntp-server-buffer))
+		  (delete-region beg (point))
+		  (insert (int-to-string (+ (- article active) offset)))
+		  (beginning-of-line)
+		  (looking-at "[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t")
+		  (goto-char (match-end 0))
+		  (or (search-forward 
+		       "\t" (save-excursion (end-of-line) (point)) t)
+		      (end-of-line))
+		  (while (= (char-after (1- (point))) ? )
+		    (forward-char -1)
+		    (delete-char 1))
+		  (if (eolp)
+		      (progn
+			(end-of-line)
+			(or (= (char-after (1- (point))) ?\t)
+			    (insert ?\t))
+			(insert (format "Xref: %s %s:%d\t" (system-name) 
+					group article)))
+		    (if (not (string= "" prefix))
+			(while (re-search-forward 
+				"[^ ]+:[0-9]+"
+				(save-excursion (end-of-line) (point)) t)
+			  (save-excursion
+			    (goto-char (match-beginning 0))
+			    (insert prefix))))
+		    (end-of-line)
+		    (or (= (char-after (1- (point))) ?\t)
+			(insert ?\t)))
+		  (forward-line 1))))
+	  (goto-char (point-max))
+	  (insert-buffer-substring nntp-server-buffer))
+	;; The headers are ready for reading, so they are inserted into
+	;; the nntp-server-buffer, which is where Gnus expects to find
+	;; them.
+	(prog1
 	    (save-excursion
 	      (set-buffer nntp-server-buffer)
-	      ;; If we got HEAD headers, we convert them into NOV
-	      ;; headers. This is slow, inefficient and, come to think
-	      ;; of it, downright evil. So sue me. I couldn't be
-	      ;; bothered to write a header parse routine that could
-	      ;; parse a mixed HEAD/NOV buffer.
-	      (and (eq result 'headers) (nnvirtual-convert-headers))
-	      (goto-char (point-min))
-	      (while (not (eobp))
-		(setq beg (point))
-		(setq article (read nntp-server-buffer))
-		(delete-region beg (point))
-		(insert (int-to-string (+ (- article active) offset)))
-		(beginning-of-line)
-		(looking-at "[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t")
-		(goto-char (match-end 0))
-		(or (search-forward 
-		     "\t" (save-excursion (end-of-line) (point)) t)
-		    (end-of-line))
-		(while (= (char-after (1- (point))) ? )
-		  (forward-char -1)
-		  (delete-char 1))
-		(if (eolp)
-		    (progn
-		      (end-of-line)
-		      (or (= (char-after (1- (point))) ?\t)
-			  (insert ?\t))
-		      (insert (format "Xref: %s %s:%d\t" (system-name) 
-				      group article)))
-		  (if (not (string= "" prefix))
-		      (while (re-search-forward 
-			      "[^ ]+:[0-9]+"
-			      (save-excursion (end-of-line) (point)) t)
-			(save-excursion
-			  (goto-char (match-beginning 0))
-			  (insert prefix))))
-		  (end-of-line)
-		  (or (= (char-after (1- (point))) ?\t)
-		      (insert ?\t)))
-		(forward-line 1))))
-	(goto-char (point-max))
-	(insert-buffer-substring nntp-server-buffer))
-      ;; The headers are ready for reading, so they are inserted into
-      ;; the nntp-server-buffer, which is where Gnus expects to find
-      ;; them.
-      (prog1
-	  (save-excursion
-	    (set-buffer nntp-server-buffer)
-	    (erase-buffer)
-	    (insert-buffer-substring "*virtual headers*")
-	    'nov)
-	(kill-buffer (current-buffer))))))
+	      (erase-buffer)
+	      (insert-buffer-substring "*virtual headers*")
+	      'nov)
+	  (kill-buffer (current-buffer)))))))
 
 (defun nnvirtual-open-server (newsgroups &optional something)
   "Open a virtual newsgroup that contains NEWSGROUPS."
@@ -204,7 +206,7 @@ If the stream is opened, return T, otherwise return NIL."
 	"nnvirtual: LIST NEWSGROUPS is not implemented.")
   nil)
 
-(fset 'nnvirtual-request-post 'nntp-request-post)
+(defalias 'nnvirtual-request-post 'nntp-request-post)
 
 (defun nnvirtual-request-post-buffer 
   (post group subject header article-buffer info follow-to respect-poster)

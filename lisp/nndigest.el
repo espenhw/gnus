@@ -61,29 +61,31 @@
 	  range
 	  beg article)
       (nndigest-possibly-change-buffer newsgroup)
-      (while sequence
-	(setq article (car sequence))
-	(if (setq range (nndigest-narrow-to-article article))
-	    (progn
-	      (insert (format "221 %d Article retrieved.\n" article))
-	      (setq beg (point))
-	      (insert-buffer-substring nndigest-current-buffer 
-				       (car range) (cdr range))
-	      (goto-char beg)
-	      (if (search-forward "\n\n" nil t)
-		  (forward-char -1)
-		(goto-char (point-max))
-		(insert "\n\n"))
-	      (insert (format "Lines: %d\n" (count-lines (point) (point-max))))
-	      (insert ".\n")
-	      (delete-region (point) (point-max))))
-	(setq sequence (cdr sequence)))
+      (if (stringp (car sequence))
+	  'headers
+	(while sequence
+	  (setq article (car sequence))
+	  (if (setq range (nndigest-narrow-to-article article))
+	      (progn
+		(insert (format "221 %d Article retrieved.\n" article))
+		(setq beg (point))
+		(insert-buffer-substring nndigest-current-buffer 
+					 (car range) (cdr range))
+		(goto-char beg)
+		(if (search-forward "\n\n" nil t)
+		    (forward-char -1)
+		  (goto-char (point-max))
+		  (insert "\n\n"))
+		(insert (format "Lines: %d\n" (count-lines (point) (point-max))))
+		(insert ".\n")
+		(delete-region (point) (point-max))))
+	  (setq sequence (cdr sequence)))
 
-      ;; Fold continuation lines.
-      (goto-char (point-min))
-      (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	(replace-match " " t t))
-      'headers)))
+	;; Fold continuation lines.
+	(goto-char (point-min))
+	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+	  (replace-match " " t t))
+	'headers))))
 
 (defun nndigest-open-server (host &optional service)
   (setq nndigest-status-string "")
@@ -164,7 +166,7 @@
 (defun nndigest-request-post (&optional server)
   (mail-send-and-exit nil))
 
-(fset 'nndigest-request-post-buffer 'nnmail-request-post-buffer)
+(defalias 'nndigest-request-post-buffer 'nnmail-request-post-buffer)
 
 
 

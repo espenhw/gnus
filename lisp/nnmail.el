@@ -506,7 +506,7 @@ FUNC will be called with the group name to determine the article number."
 	(obuf (current-buffer))
 	(beg (point-min))
 	end found group-art)
-    (if (= (length methods) 1)
+    (if (and (sequencep methods) (= (length methods) 1))
 	;; If there is only just one group to put everything in, we
 	;; just return a list with just this one method in.
 	(setq group-art

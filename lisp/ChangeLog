@@ -1,4 +1,51 @@
+Thu May 25 05:34:16 1995  Lars Magne Ingebrigtsen  <larsi@bera.ifi.uio.no>
+
+	* gnus.el (gnus-article-date-ut): Ignore missing dates. 
+	(gnus-group-enter-directory): New command and keystroke.
+
+	* nnspool.el (nnspool-retrieve-headers-with-nov): Don't be picky
+	on dirs. 
+
+	* gnus-mh.el (gnus-mail-forward-using-mhe): Make better Subject. 
+
+	* gnus.el (gnus-score-find-alist): New function.
+	(gnus-score-score-files): ADAPT files would nix out all other
+	files. 
+	(gnus-score-score-files): Would not find any when short names were
+	used. 
+
+Sat May 20 06:45:04 1995  Sudish Joseph <joseph@cis.ohio-state.edu>
+
+	* gnus-score.el (gnus-score-find-alist): New function.
+	(gnus-possibly-score-headers): Use it.
+
+	* gnus.el (gnus-score-file-(single|multiple)-match-alist): New
+	  variables.
+
+Thu May 25 03:44:53 1995  Lars Magne Ingebrigtsen  <larsi@bera.ifi.uio.no>
+
+	* gnus-kill.el (gnus-expunge): Would infloop.
+
+	* nnspool.el (nnspool-inews-sentinel): Did not kill the error
+	buffer.
+
+	* nnmail.el (nnmail-article-group): Would but out on function in
+	the split method.
+
+	* nnmh.el (nnmh-get-new-mail): Don't rescan if already scanned. 
+
+	* nnml.el (nnml-get-new-mail): Ditto.
+
+	* gnus.el (gnus-start-news-server): Don't let the nnmh backend
+	fetch new mail. 
+
+Wed May 24 07:59:39 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nneething.el: New backend.
+
 Wed May 24 02:35:49 1995  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* gnus.el: 0.76 is released.
 
 	* nnfolder.el (nnfolder-close-group): New version. Don't close if
 	already closed.
