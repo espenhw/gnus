@@ -161,7 +161,7 @@
 					 (point-min) (point)) addresses)))
 	      (delete-region (point-min) (point)))
 	    (setq addresses (mapcar 'downcase addresses))))
-	(if (not (member (downcase mm-security-from) addresses))
+	(if (not (member (downcase (or (mm-handle-multipart-from ctl) "")) addresses))
 	    (mm-set-handle-multipart-parameter 
 	     mm-security-handle 'gnus-info "Sender address forged")
 	  (if good-certificate
@@ -171,7 +171,7 @@
 	     mm-security-handle 'gnus-info "Integrity OK (sender unknown)")))
 	(mm-set-handle-multipart-parameter
 	 mm-security-handle 'gnus-details 
-	 (concat "Sender clamed to be: " mm-security-from "\n"
+	 (concat "Sender clamed to be: " (mm-handle-multipart-from ctl) "\n"
 		 (if addresses
 		     (concat "Addresses in certificate: " 
 			     (mapconcat 'identity addresses ", "))

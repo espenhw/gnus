@@ -1,5 +1,15 @@
 2001-01-20  Simon Josefsson  <sj@extundo.com>
 
+	* mm-decode.el (mm-handle-multipart-from): Add.
+	(mm-dissect-buffer): Save From: header value.
+	(mm-security-from): Remove.
+	(mm-possibly-verify-or-decrypt): Don't set mm-security-from.
+
+	* mml-smime.el (mml-smime-verify): Use `mm-handle-multipart-from'
+	instead of `mml-security-from'.  Protect null from value.
+
+2001-01-20  Simon Josefsson  <sj@extundo.com>
+
 	* mailcap.el (mailcap-mime-data): Run `gnumeric' on
 	application/vnd.ms-excel attachments.
 

@@ -81,6 +81,8 @@
   `(nth 7 ,handle))
 (defmacro mm-handle-multipart-original-buffer (handle)
   `(get-text-property 0 'buffer (car ,handle)))
+(defmacro mm-handle-multipart-from (handle)
+  `(get-text-property 0 'from (car ,handle)))
 (defmacro mm-handle-multipart-ctl-parameter (handle parameter)
   `(get-text-property 0 ,parameter (car ,handle)))
 
@@ -325,7 +327,7 @@ The original alist is not modified.  See also `destructive-alist-to-plist'."
 (defun mm-dissect-buffer (&optional no-strict-mime)
   "Dissect the current buffer and return a list of MIME handles."
   (save-excursion
-    (let (ct ctl type subtype cte cd description id result)
+    (let (ct ctl type subtype cte cd description id result from)
       (save-restriction
 	(mail-narrow-to-head)
 	(when (or no-strict-mime
@@ -335,6 +337,8 @@ The original alist is not modified.  See also `destructive-alist-to-plist'."
 		cte (mail-fetch-field "content-transfer-encoding")
 		cd (mail-fetch-field "content-disposition")
 		description (mail-fetch-field "content-description")
+		from (cadr (mail-extract-address-components 
+			    (or (mail-fetch-field "from") "")))
 		id (mail-fetch-field "content-id"))))
       (when cte
 	(setq cte (mail-header-strip cte)))
@@ -368,6 +372,9 @@ The original alist is not modified.  See also `destructive-alist-to-plist'."
 	     ;; name as a text property of the "multipart/whatever" string.
              (add-text-properties 0 (length (car ctl))
 				  (list 'buffer (mm-copy-to-buffer))
+                                  (car ctl))
+             (add-text-properties 0 (length (car ctl))
+				  (list 'from from)
                                   (car ctl))
 	     (cons (car ctl) (mm-dissect-multipart ctl))))
 	  (t
@@ -1025,7 +1032,6 @@ If RECURSIVE, search recursively."
     result))
 
 (defvar mm-security-handle nil)
-(defvar mm-security-from nil)
 
 (defsubst mm-set-handle-multipart-parameter (handle parameter value)
   ;; HANDLE could be a CTL.
@@ -1036,11 +1042,6 @@ If RECURSIVE, search recursively."
 (defun mm-possibly-verify-or-decrypt (parts ctl)
   (let ((subtype (cadr (split-string (car ctl) "/")))
 	(mm-security-handle ctl) ;; (car CTL) is the type.
-	(mm-security-from
-	 (save-restriction
-	   (mail-narrow-to-head)
-	   (cadr (mail-extract-address-components 
-		  (or (mail-fetch-field "from") "")))))
 	protocol func functest)
     (cond 
      ((equal subtype "signed")
