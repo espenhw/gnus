@@ -54,7 +54,7 @@
   "Default encryption method.")
 
 (defcustom mml-signencrypt-style-alist
-  '(("smime"   combined)
+  '(("smime"   separate)
     ("pgp"     combined)
     ("pgpauto" combined)
     ("pgpmime" combined))
