@@ -31,6 +31,8 @@
 
 (require 'cl)
 
+(defvar srcdir (or (getenv "srcdir") "."))
+
 (push (or (getenv "lispdir") 
 	  "/usr/share/emacs/site-lisp")
       load-path)
@@ -131,8 +133,6 @@
 	(t (concat filename ".elc"))))
 
 (require 'bytecomp)
-
-(defvar srcdir (or (getenv "srcdir") "."))
 
 (push srcdir load-path)
 ;(push "/usr/share/emacs/site-lisp" load-path)

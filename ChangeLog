@@ -1,3 +1,7 @@
+2000-07-13 10:09:52  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_CHECK_W3): Fix typo.
+
 2000-07-12 15:47:06  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* aclocal.m4: Stolen macros from w3.
