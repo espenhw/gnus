@@ -1831,6 +1831,7 @@ increase the score of each group you read."
 
   (gnus-define-keys (gnus-summary-wash-display-map "D" gnus-summary-wash-map)
     "x" gnus-article-display-x-face
+    "d" gnus-article-display-face
     "s" gnus-treat-smiley
     "D" gnus-article-remove-images
     "f" gnus-treat-from-picon

@@ -256,7 +256,22 @@ See also the `mml-default-encrypt-method' variable."
 (defcustom gnus-confirm-mail-reply-to-news nil
   "If non-nil, Gnus requests confirmation when replying to news.
 This is done because new users often reply by mistake when reading
-news."
+news.
+This can also be a function which should return non-nil iff a
+confirmation is needed, or a regexp, in which case a confirmation is
+asked if the group name matches the regexp."
+  :group 'gnus-message
+  :type '(choice (const :tag "No" nil)
+		 (const :tag "Yes" nil)
+		 (regexp :tag "Iff group matches regexp")
+		 (function :tag "Iff function evaluates to non-nil")))
+
+(defcustom gnus-confirm-treat-mail-like-news
+  nil
+  "If non-nil, Gnus will treat mail like news with regard to confirmation
+when replying by mail.  See the `gnus-confirm-mail-reply-to-news' variable
+for fine-tuning this.
+If nil, Gnus will never ask for confirmation if replying to mail."
   :group 'gnus-message
   :type 'boolean)
 
@@ -1038,9 +1053,15 @@ If VERY-WIDE, make a very wide reply."
    (list (and current-prefix-arg
 	      (gnus-summary-work-articles 1))))
   ;; Allow user to require confirmation before replying by mail to the
-  ;; author of a news article.
-  (when (or (not (gnus-news-group-p gnus-newsgroup-name))
-	    (not gnus-confirm-mail-reply-to-news)
+  ;; author of a news article (or mail message).
+  (when (or 
+	    (not (or (gnus-news-group-p gnus-newsgroup-name)
+		     gnus-confirm-treat-mail-like-news))
+	    (not (cond ((stringp gnus-confirm-mail-reply-to-news)
+			(string-match gnus-confirm-mail-reply-to-news gnus-newsgroup-name))
+		       ((functionp gnus-confirm-mail-reply-to-news)
+			(funcall gnus-confirm-mail-reply-to-news))
+		       (t gnus-confirm-mail-reply-to-news)))
 	    (y-or-n-p "Really reply by mail to article author? "))
     (let* ((article
 	    (if (listp (car yank))

@@ -1,5 +1,8 @@
 2003-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-art.el (gnus-ignored-headers): Don't include the ^ and :
+	in every string.
+
 	* gnus.el (gnus-version-number): Bumped version number.
 
 2003-01-12 13:46:20 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
