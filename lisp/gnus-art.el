@@ -5314,14 +5314,11 @@ groups."
   :group 'gnus-article-buttons
   :type 'regexp)
 
-(defcustom gnus-button-man-handler (if (featurep 'xemacs)
-				       'manual-entry
-				     'man)
+(defcustom gnus-button-man-handler 'manual-entry
   "Function to use for displaying man pages.
 The function must take at least one argument with a string naming the
 man page."
-  :type '(choice (function-item :tag "Man (Emacs)" man)
-	         (function-item :tag "Man (XEmacs)" manual-entry)
+  :type '(choice (function-item :tag "Man" manual-entry)
 		 (function-item :tag "Woman" woman)
 		 (function :tag "Other"))
   :group 'gnus-article-buttons)

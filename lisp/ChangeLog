@@ -1,3 +1,10 @@
+2002-10-18  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-art.el (gnus-button-man-handler): Change default to
+	`manual-entry' (defined in both emacsen).
+	(gnus-button-man-handler): Remove emacsen difference and use
+	`manual-entry'.
+
 2002-10-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* spam.el: Wrap autoload settings for bbdb-records,
