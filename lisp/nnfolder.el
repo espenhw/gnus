@@ -636,17 +636,13 @@ deleted.  Point is left where the deleted region was."
     (setq nnfolder-current-buffer nil
 	  nnfolder-current-group nil))
   ;; Change group.
-  (when (and group
-	     (not (equal group nnfolder-current-group)))
-    (let ((file-name-coding-system nnmail-pathname-coding-system))
-      (nnmail-activate 'nnfolder)
-      (when (and (not (assoc group nnfolder-group-alist))
-		 (not (file-exists-p
-		       (nnfolder-group-pathname group))))
-	;; The group doesn't exist, so we create a new entry for it.
-	(push (list group (cons 1 0)) nnfolder-group-alist)
-	(nnfolder-save-active nnfolder-group-alist nnfolder-active-file))
-
+  (let ((file-name-coding-system nnmail-pathname-coding-system))
+    (when (and group
+               (not (equal group nnfolder-current-group))
+               (progn
+                 (nnmail-activate 'nnfolder)
+                 (and (assoc group nnfolder-group-alist)
+                      (file-exists-p (nnfolder-group-pathname group)))))
       (if dont-check
 	  (setq nnfolder-current-group group
 		nnfolder-current-buffer nil)
