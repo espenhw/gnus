@@ -1,3 +1,7 @@
+Mon May  1 15:09:46 2000  Lars Magne Ingebrigtsen  <lmi@quimbies.gnus.org>
+
+	* gnus.el: Gnus v5.8.6 is released.
+
 2000-05-01 07:45:43  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml.el (mml-parse-1): Set no-markup-p and warn to nil.
