@@ -1,3 +1,9 @@
+2001-10-30 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* canlock.el, sha1-el.el, hex-util.el: Move from contrib
+	directory. Thanks to Katsumi Yamaoka <yamaoka@jpl.org> and Shuhei
+	KOBAYASHI <shuhei@aqua.ocn.ne.jp>.
+	
 2001-10-30 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (article-display-x-face): Nix buffer-read-only
