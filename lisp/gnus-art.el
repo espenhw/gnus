@@ -3385,6 +3385,14 @@ In no internal viewer is available, use an external viewer."
     ;;;!!!to the first part.
     (gnus-mime-display-part (cadr handle)))
    ;; Other multiparts are handled like multipart/mixed.
+   ((equal (car handle) "multipart/signed")
+    (or (memq 'signed gnus-article-wash-types)
+	(push 'signed gnus-article-wash-types))
+    (gnus-mime-display-mixed (cdr handle)))
+   ((equal (car handle) "multipart/encrypted")
+    (or (memq 'encrypted gnus-article-wash-types)
+	(push 'encrypted gnus-article-wash-types))
+    (gnus-mime-display-mixed (cdr handle)))
    (t
     (gnus-mime-display-mixed (cdr handle)))))
 
@@ -3576,13 +3584,15 @@ In no internal viewer is available, use an external viewer."
 	  (boring (memq 'boring-headers gnus-article-wash-types))
 	  (pgp (memq 'pgp gnus-article-wash-types))
 	  (pem (memq 'pem gnus-article-wash-types))
+	  (signed (memq 'signed gnus-article-wash-types))
+	  (encrypted (memq 'encrypted gnus-article-wash-types))
 	  (signature (memq 'signature gnus-article-wash-types))
 	  (overstrike (memq 'overstrike gnus-article-wash-types))
 	  (emphasis (memq 'emphasis gnus-article-wash-types)))
       (format "%c%c%c%c%c%c"
 	      (if cite ?c ? )
 	      (if (or headers boring) ?h ? )
-	      (if (or pgp pem) ?p ? )
+	      (if (or pgp pem signed encrypted) ?p ? )
 	      (if signature ?s ? )
 	      (if overstrike ?o ? )
 	      (if emphasis ?e ? )))))

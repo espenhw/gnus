@@ -1,3 +1,9 @@
+2000-11-01 10:07:13  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-display-part): Add to signed or encrypted.
+	gnus-article-wash-types.
+	* gnus-art.el (gnus-article-wash-status): Use them.
+
 2000-11-01 08:54:11  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml.el (mml-read-tag): Remove spaces and LF.
