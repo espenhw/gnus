@@ -2431,14 +2431,14 @@ score file entries for articles to include in the group."
    l - lookup (mailbox is visible to LIST/LSUB commands)
    r - read (SELECT the mailbox, perform CHECK, FETCH, PARTIAL,
        SEARCH, COPY from mailbox)
-   s - keep seen/unseen information across sessions (STORE \SEEN flag)
-   w - write (STORE flags other than \SEEN and \DELETED)
+   s - keep seen/unseen information across sessions (STORE \\SEEN flag)
+   w - write (STORE flags other than \\SEEN and \\DELETED)
    i - insert (perform APPEND, COPY into mailbox)
    p - post (send mail to submission address for mailbox,
        not enforced by IMAP4 itself)
    c - create and delete mailbox (CREATE new sub-mailboxes in any
        implementation-defined hierarchy, RENAME or DELETE mailbox)
-   d - delete messages (STORE \DELETED flag, perform EXPUNGE)
+   d - delete messages (STORE \\DELETED flag, perform EXPUNGE)
    a - administer (perform SETACL)" group)
 		    `(lambda (form)
 		       (nnimap-acl-edit
