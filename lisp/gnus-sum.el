@@ -3036,10 +3036,6 @@ display only a single character."
 					       (point)
 					       (current-buffer))))))
 
-(defun gnus-summary-buffer-name (group)
-  "Return the summary buffer name of GROUP."
-  (concat "*Summary " (gnus-group-decoded-name group) "*"))
-
 (defun gnus-summary-setup-buffer (group)
   "Initialize summary buffer."
   (let ((buffer (gnus-summary-buffer-name group))

@@ -3152,6 +3152,10 @@ native."
       (substring group 0 (match-end 0))
     ""))
 
+(defun gnus-summary-buffer-name (group)
+  "Return the summary buffer name of GROUP."
+  (concat "*Summary " (gnus-group-decoded-name group) "*"))
+
 (defun gnus-group-method (group)
   "Return the server or method used for selecting GROUP.
 You should probably use `gnus-find-method-for-group' instead."

@@ -41,6 +41,13 @@
   :group 'gnus-start
   :type 'file)
 
+(defcustom gnus-backup-startup-file 'never
+  "Whether to create backup files.
+This variable takes the same values as the `version-control'
+variable."
+  :group 'gnus-start
+  :type 'boolean)
+
 (defcustom gnus-init-file (nnheader-concat gnus-home-directory ".gnus")
   "Your Gnus Emacs-Lisp startup file name.
 If a file with the `.el' or `.elc' suffixes exists, it will be read instead."
@@ -2541,7 +2548,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	  ;; Save .newsrc.eld.
 	  (set-buffer (gnus-get-buffer-create " *Gnus-newsrc*"))
 	  (make-local-variable 'version-control)
-	  (setq version-control 'never)
+	  (setq version-control gnus-backup-startup-file)
 	  (setq buffer-file-name
 		(concat gnus-current-startup-file ".eld"))
 	  (setq default-directory (file-name-directory buffer-file-name))

@@ -1,4 +1,23 @@
+2003-02-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-button-url-regexp): Removed `.
+
+2003-02-23  Max Froumentin  <mf@w3.org>
+
+	* gnus-art.el (gnus-button-url-regexp): Remove `, enter '.
+
+2003-02-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-action-on-part): Require a match
+	interactively. 
+
+	* gnus-start.el (gnus-save-newsrc-file): Use
+	gnus-backup-startup-file. 
+	(gnus-backup-startup-file): New variable.
+
 2003-02-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-summary-buffer-name): Moved function here. 
 
 	* gnus-draft.el (defun): Remove debug.
 
