@@ -1,3 +1,7 @@
+2001-12-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Using MIME): Addition.
+
 2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (X-Face): Made into own node.
