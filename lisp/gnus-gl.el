@@ -850,7 +850,7 @@ If prefix argument ALL is non-nil, all articles are marked as read."
       (when (and menu-bar-mode
 		 (gnus-visual-p 'grouplens-menu 'menu))
 	(gnus-grouplens-make-menu-bar))
-      (gnus-add-minor-mode
+      (add-minor-mode
        'gnus-grouplens-mode " GroupLens" gnus-grouplens-mode-map)
       (gnus-run-hooks 'gnus-grouplens-mode-hook))))
 

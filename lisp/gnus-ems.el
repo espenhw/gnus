@@ -153,16 +153,6 @@
   "Non-nil means the mark and region are currently active in this buffer."
   mark-active) ; aliased to region-exists-p in XEmacs.
 
-(if (fboundp 'add-minor-mode)
-    (defalias 'gnus-add-minor-mode 'add-minor-mode)
-  (defun gnus-add-minor-mode (mode name map &rest rest)
-    (set (make-local-variable mode) t)
-    (unless (assq mode minor-mode-alist)
-      (push `(,mode ,name) minor-mode-alist))
-    (unless (assq mode minor-mode-map-alist)
-      (push (cons mode map)
-	    minor-mode-map-alist))))
-
 (defun gnus-x-splash ()
   "Show a splash screen using a pixmap in the current buffer."
   (let ((dir (nnheader-find-etc-directory "gnus"))

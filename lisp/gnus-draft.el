@@ -74,7 +74,7 @@
       ;; Set up the menu.
       (when (gnus-visual-p 'draft-menu 'menu)
 	(gnus-draft-make-menu-bar))
-      (gnus-add-minor-mode 'gnus-draft-mode " Draft" gnus-draft-mode-map)
+      (add-minor-mode 'gnus-draft-mode " Draft" gnus-draft-mode-map)
       (mml-mode)
       (gnus-run-hooks 'gnus-draft-mode-hook))))
 

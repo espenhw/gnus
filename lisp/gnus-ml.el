@@ -102,7 +102,7 @@ If FORCE is non-nil, replace the old ones."
       ;; Set up the menu.
       (when (gnus-visual-p 'mailing-list-menu 'menu)
 	(gnus-mailing-list-make-menu-bar))
-      (gnus-add-minor-mode 'gnus-mailing-list-mode " Mailing-List" gnus-mailing-list-mode-map)
+      (add-minor-mode 'gnus-mailing-list-mode " Mailing-List" gnus-mailing-list-mode-map)
       (gnus-run-hooks 'gnus-mailing-list-mode-hook))))
 
 ;;; Commands

@@ -128,7 +128,7 @@ It accepts the same format specs that `gnus-summary-line-format' does."
       ;; Set up the menu.
       (when (gnus-visual-p 'pick-menu 'menu)
 	(gnus-pick-make-menu-bar))
-      (gnus-add-minor-mode 'gnus-pick-mode " Pick" gnus-pick-mode-map
+      (add-minor-mode 'gnus-pick-mode " Pick" gnus-pick-mode-map
 			   nil 'gnus-pick-mode)
       (gnus-run-hooks 'gnus-pick-mode-hook))))
 
@@ -361,7 +361,7 @@ This must be bound to a button-down mouse event."
       ;; Set up the menu.
       (when (gnus-visual-p 'binary-menu 'menu)
 	(gnus-binary-make-menu-bar))
-      (gnus-add-minor-mode 'gnus-binary-mode " Binary"
+      (add-minor-mode 'gnus-binary-mode " Binary"
 			   gnus-binary-mode-map nil 'gnus-binary-mode)
       (gnus-run-hooks 'gnus-binary-mode-hook))))
 

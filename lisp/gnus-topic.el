@@ -1136,7 +1136,7 @@ articles in the topic and its subtopics."
       (when (gnus-visual-p 'topic-menu 'menu)
 	(gnus-topic-make-menu-bar))
       (gnus-set-format 'topic t)
-      (gnus-add-minor-mode 'gnus-topic-mode " Topic"
+      (add-minor-mode 'gnus-topic-mode " Topic"
 			   gnus-topic-mode-map nil (lambda (&rest junk)
 						     (interactive)
 						     (gnus-topic-mode nil t)))

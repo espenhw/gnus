@@ -1,5 +1,33 @@
 2004-01-05  Jesper Harder  <harder@ifa.au.dk>
 
+	* mml.el (mml-mode): Replace gnus-add-minor-mode with
+	add-minor-mode.
+
+	* gnus-undo.el (gnus-undo-mode): do.
+
+	* gnus-topic.el (gnus-topic-mode): do.
+
+	* gnus-sum.el (gnus-dead-summary-mode): do.
+
+	* gnus-start.el (gnus-slave-mode): do.
+
+	* gnus-salt.el (gnus-binary-mode, gnus-pick-mode): do.
+
+	* gnus-ml.el (gnus-mailing-list-mode): do.
+
+	* gnus-gl.el (gnus-grouplens-mode): do.
+
+	* gnus-draft.el (gnus-draft-mode): do.
+
+	* gnus-dired.el (gnus-dired-mode): do.
+
+	* gnus-ems.el (gnus-add-minor-mode): Remove.
+
+	* gnus-spec.el (gnus-correct-length, gnus-correct-substring):
+	Replace gnus-char-width with char-width.
+
+	* gnus-ems.el (gnus-char-width): Remove.
+
 	* gnus-spec.el (gnus-correct-length, gnus-correct-substring):
 	Replace gnus-char-width with char-width.
 

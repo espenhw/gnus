@@ -6690,7 +6690,7 @@ The state which existed when entering the ephemeral is reset."
 	  (if (null arg) (not gnus-dead-summary-mode)
 	    (> (prefix-numeric-value arg) 0)))
     (when gnus-dead-summary-mode
-      (gnus-add-minor-mode
+      (add-minor-mode
        'gnus-dead-summary-mode " Dead" gnus-dead-summary-mode-map))))
 
 (defun gnus-deaden-summary ()

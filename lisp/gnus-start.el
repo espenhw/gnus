@@ -2793,7 +2793,7 @@ If FORCE is non-nil, the .newsrc file is read."
 
 (defun gnus-slave-mode ()
   "Minor mode for slave Gnusae."
-  (gnus-add-minor-mode 'gnus-slave-mode " Slave" (make-sparse-keymap))
+  (add-minor-mode 'gnus-slave-mode " Slave" (make-sparse-keymap))
   (gnus-run-hooks 'gnus-slave-mode-hook))
 
 (defun gnus-slave-save-newsrc ()

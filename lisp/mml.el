@@ -34,7 +34,6 @@
 (eval-and-compile
   (autoload 'message-make-message-id "message")
   (autoload 'gnus-setup-posting-charset "gnus-msg")
-  (autoload 'gnus-add-minor-mode "gnus-ems")
   (autoload 'gnus-make-local-hook "gnus-util")
   (autoload 'message-fetch-field "message")
   (autoload 'fill-flowed-encode "flow-fill")
@@ -892,7 +891,7 @@ See Info node `(emacs-mime)Composing'.
   (when (set (make-local-variable 'mml-mode)
 	     (if (null arg) (not mml-mode)
 	       (> (prefix-numeric-value arg) 0)))
-    (gnus-add-minor-mode 'mml-mode " MML" mml-mode-map)
+    (add-minor-mode 'mml-mode " MML" mml-mode-map)
     (easy-menu-add mml-menu mml-mode-map)
     (run-hooks 'mml-mode-hook)))
 
