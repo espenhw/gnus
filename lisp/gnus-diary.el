@@ -153,7 +153,7 @@ There are currently two built-in format functions:
   (if (null delay)
       "maintenant!"
     ;; Keep only a precision of two degrees
-    (and (> (length delay) 1) (setf (nthcdr 2 delay) nil))
+    (and (> (length delay) 1) (setcdr (cdr delay) nil))
     (concat (if past "il y a " "dans ")
 	    (let ((str "")
 		  del)
@@ -183,7 +183,7 @@ There are currently two built-in format functions:
   (if (null delay)
       "now!"
     ;; Keep only a precision of two degrees
-    (and (> (length delay) 1) (setf (nthcdr 2 delay) nil))
+    (and (> (length delay) 1) (setcdr (cdr delay) nil))
     (concat (unless past "in ")
 	    (let ((str "")
 		  del)
