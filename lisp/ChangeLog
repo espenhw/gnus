@@ -1,3 +1,8 @@
+2001-01-18 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-yank-original): Understand
+	universal-argument.
+
 2001-01-18 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-boring-article-headers): Add to-address.

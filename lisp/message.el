@@ -2073,7 +2073,8 @@ prefix, and don't delete any headers."
 	       message-cite-function)
       (delete-windows-on message-reply-buffer t)
       (insert-buffer message-reply-buffer)
-      (funcall message-cite-function)
+      (unless arg
+	(funcall message-cite-function))
       (message-exchange-point-and-mark)
       (unless (bolp)
 	(insert ?\n))
