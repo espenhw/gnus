@@ -315,8 +315,7 @@ and resend the message in the current buffer to that address.
 
 @vindex message-ignored-resent-headers
 Headers that match the @code{message-ignored-resent-headers} regexp will
-be removed before sending the message.  The default is
-@samp{^Return-receipt}.
+be removed before sending the message.
 
 
 @node Bouncing

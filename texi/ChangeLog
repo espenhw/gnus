@@ -1,5 +1,15 @@
 2004-10-15  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus.texi (New Features): Add 5.11.
+
+	* message.texi (Resending): Remove wrong default value.
+
+	* gnus.texi (Mail Source Specifiers): Describe possible problems
+	of `pop3-leave-mail-on-server'.  Add `pop3-movemail' and
+	`pop3-leave-mail-on-server' to the index.
+
+2004-10-15  Reiner Steib  <Reiner.Steib@gmx.de>
+
 	* gnus.texi (Adaptive Scoring): Added gnus-adaptive-pretty-print.
 
 2004-10-15  Katsumi Yamaoka  <yamaoka@jpl.org>

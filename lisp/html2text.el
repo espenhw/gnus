@@ -116,10 +116,6 @@ formatting, and then moved afterward.")
 ;; <Utility functions>
 ;;
 
-(defun html2text-buffer-head ()
-  (if (string= mode-name "Article")
-      (beginning-of-buffer)
-    (beginning-of-buffer)))
 
 (defun html2text-replace-string (from-string to-string p1 p2)
   (goto-char p1)
@@ -321,11 +317,11 @@ formatting, and then moved afterward.")
   "This _tries_ to fix up the paragraphs - this is done in quite a ad-hook
 fashion, quite close to pure guess-work. It does work in some cases though."
   (interactive)
-  (html2text-buffer-head)
+  (goto-char (point-min))
   (replace-regexp "^<br>$" "")
   ;; Removing lonely <br> on a single line, if they are left intact we
   ;; dont have any paragraphs at all.
-  (html2text-buffer-head)
+  (goto-char (point-min))
   (while (not (eobp))
     (let ((p1 (point)))
       (forward-paragraph 1)
@@ -351,8 +347,8 @@ fashion, quite close to pure guess-work. It does work in some cases though."
 See the documentation for that variable."
   (interactive)
   (dolist (tag tag-list)
-    (html2text-buffer-head)
-    (while (re-search-forward (format "</?%s[^>]*>" tag) (point-max) t)
+    (goto-char (point-min))
+    (while (re-search-forward (format "\\(</?%s[^>]*>\\)" tag) (point-max) t)
       (delete-region (match-beginning 0) (match-end 0)))))
 
 (defun html2text-format-tags ()
@@ -361,8 +357,8 @@ See the documentation for that variable."
   (dolist (tag-and-function html2text-format-tag-list)
     (let ((tag      (car tag-and-function))
 	  (function (cdr tag-and-function)))
-      (html2text-buffer-head)
-      (while (re-search-forward (format "<%s\\( [^>]*\\)?>" tag)
+      (goto-char (point-min))
+      (while (re-search-forward (format "\\(<%s\\( [^>]*\\)?>\\)" tag)
 				(point-max) t)
 	(let ((p1)
 	      (p2 (point))
@@ -382,7 +378,7 @@ See the documentation for that variable."
   "See the variable \"html2text-replace-list\" for documentation"
   (interactive)
   (dolist (e html2text-replace-list)
-    (html2text-buffer-head)
+    (goto-char (point-min))
     (let ((old-string (car e))
 	  (new-string (cdr e)))
       (html2text-replace-string old-string new-string (point-min) (point-max)))
@@ -394,8 +390,8 @@ See the documentation for that variable."
   (dolist (tag-and-function html2text-format-single-element-list)
     (let ((tag      (car tag-and-function))
 	  (function (cdr tag-and-function)))
-      (html2text-buffer-head)
-      (while (re-search-forward (format "<%s\\( [^>]*\\)?>" tag)
+      (goto-char (point-min))
+      (while (re-search-forward (format "\\(<%s\\( [^>]*\\)?>\\)" tag)
 				(point-max) t)
 	(let ((p1)
 	      (p2 (point)))

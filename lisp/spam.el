@@ -2867,6 +2867,8 @@ installed through spam-necessary-extra-headers."
   (remove-hook 'gnus-get-new-news-hook 'spam-setup-widening)
   (remove-hook 'gnus-summary-prepare-hook 'spam-find-spam))
 
+(add-hook 'spam-unload-hook 'spam-unload-hook)
+
 (when spam-install-hooks
   (spam-initialize))
 ;;}}}
