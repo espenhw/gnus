@@ -21,6 +21,9 @@
 
 2000-10-27  Dave Love  <fx@gnu.org>
 
+	* mm-decode.el (mm-valid-and-fit-image-p): Don't test
+	window-system here.
+
 	* gnus-art.el (gnus-article-x-face-command): Check
 	gnus-article-compface-xbm.
 	(gnus-treat-display-xface): Check for uncompface.
