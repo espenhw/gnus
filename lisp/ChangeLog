@@ -1,3 +1,8 @@
+2003-04-30  Simon Josefsson  <jas@extundo.com>
+
+	* mm-util.el (mm-charset-to-coding-system): Use user specified
+	charset unless coding-system-get is fboundp.
+
 2003-04-30  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-cat-defaccessor, gnus-agent-cat-name):

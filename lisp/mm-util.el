@@ -341,7 +341,8 @@ used as the line break code type of the coding system."
    ((null charset)
     charset)
    ;; Running in a non-MULE environment.
-   ((null (mm-get-coding-system-list))
+   ((or (null (mm-get-coding-system-list))
+	(not (fboundp 'coding-system-get)))
     charset)
    ;; ascii
    ((eq charset 'us-ascii)
