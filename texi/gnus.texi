@@ -10842,6 +10842,10 @@ store the messages.  If you want to disable this completely, the
 @code{gnus-message-archive-group} variable should be @code{nil}, which
 is the default.
 
+For archiving interesting messages in a group you read, see the
+@kbd{B c} (@code{gnus-summary-copy-article}) command (@pxref{Mail
+Group Commands}).
+
 @vindex gnus-message-archive-method
 @code{gnus-message-archive-method} says what virtual server Gnus is to
 use to store sent messages.  The default is:
