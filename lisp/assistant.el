@@ -254,6 +254,7 @@
 	end)
     (while (setq end (text-property-any start (point-max) 'not-read-only t))
       (put-text-property start end 'read-only t)
+      (put-text-property start end 'rear-nonsticky t)
       (while (get-text-property end 'not-read-only)
 	(incf end))
       (setq start end))
