@@ -1,3 +1,7 @@
+2003-12-03  Simon Josefsson  <jas@extundo.com>
+
+	* emacs-mime.texi (Flowed text): Fix.
+
 2003-12-02  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Agent Variables): Fix.
