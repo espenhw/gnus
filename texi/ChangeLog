@@ -1,6 +1,7 @@
 1999-11-16 10:09:44  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi: Addition.
+	(present): Addition.
 
 1999-11-13  Simon Josefsson  <jas@pdc.kth.se>
 

@@ -11842,6 +11842,14 @@ threaded display is not required, @code{nnslashdot} will only retrieve
 the comments that are actually wanted by the user.  Threading is nicer,
 but much, much slower than untreaded.
 
+@item nnslashdot-login-name
+@vindex nnslashdot-login-name
+The login name to use when posting.
+
+@item nnslashdot-password
+@vindex nnslashdot-password
+The password to use when posting.
+
 @item nnslashdot-directory
 @vindex nnslashdot-directory
 Where @code{nnslashdot} will store its files.  The default value is
