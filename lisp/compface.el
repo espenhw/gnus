@@ -72,10 +72,10 @@ are available.  Note that the measurement may never be exact."
 
 (defun uncompface (face)
   "Convert FACE to pbm.
-If `uncompface-use-external' is non-nil, it requires the external
-programs `uncompface', and `icontopbm'.  On a GNU/Linux system these
-might be in packages with names like `compface' or `faces-xface' and
-`netpbm' or `libgr-progs', for instance."
+If `uncompface-use-external' is t, it requires the external programs
+`uncompface', and `icontopbm'.  On a GNU/Linux system these might be
+in packages with names like `compface' or `faces-xface' and `netpbm'
+or `libgr-progs', for instance."
   (cond ((eq uncompface-use-external nil)
 	 (uncompface-internal face))
 	((eq uncompface-use-external t)
