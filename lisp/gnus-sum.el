@@ -2212,8 +2212,12 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	      ["Crosspost article..." gnus-summary-crosspost-article
 	       (gnus-check-backend-function
 		'request-replace-article gnus-newsgroup-name)]
-	      ["Import file..." gnus-summary-import-article t]
-	      ["Create article..." gnus-summary-create-article t]
+	      ["Import file..." gnus-summary-import-article
+	       (gnus-check-backend-function
+		'request-accept-article gnus-newsgroup-name)]
+	      ["Create article..." gnus-summary-create-article
+	       (gnus-check-backend-function
+		'request-accept-article gnus-newsgroup-name)]
 	      ["Check if posted" gnus-summary-article-posted-p t]
 	      ["Edit article" gnus-summary-edit-article
 	       (not (gnus-group-read-only-p))]
