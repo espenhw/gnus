@@ -7303,7 +7303,10 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 		    'request-replace-article gnus-newsgroup-name)))
 	 (error "The current group does not support article editing")))
   (let ((articles (gnus-summary-work-articles n))
-	(prefix (gnus-group-real-prefix gnus-newsgroup-name))
+	(prefix (if (gnus-check-backend-function
+		    'request-move-article gnus-newsgroup-name)
+		    (gnus-group-real-prefix gnus-newsgroup-name)
+		  ""))
 	(names '((move "Move" "Moving")
 		 (copy "Copy" "Copying")
 		 (crosspost "Crosspost" "Crossposting")))

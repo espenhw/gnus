@@ -82,7 +82,8 @@
       (while (and (setq article (car articles))
 		  map)
 	(while (and map
-		    (> article (caar map)))
+		    (or (> article (caar map))
+			(< (cadar map) (caar map))))
 	  (pop map))
 	(when (setq mmap (car map))
 	  (setq farticle -1)
@@ -124,7 +125,8 @@
 				      "-" (number-to-string current-page)
 				      (match-string 0 href))))
 	      (goto-char (point-min))
-	      (setq contents (w3-parse-buffer (current-buffer)))
+	      (setq contents
+		    (ignore-errors (w3-parse-buffer (current-buffer))))
 	      (setq table (nnultimate-find-forum-table contents))
 	      (setq string (mapconcat 'identity (nnweb-text table) ""))
 	      (when (string-match "topic is \\([0-9]\\) pages" string)
@@ -337,25 +339,26 @@
 		(setq art (1+ (string-to-number (car artlist)))))
 	      (pop artlist))
 	    (setq garticles art))
-	  (string-match "/\\([0-9]+\\).html" href)
-	  (setq topic (string-to-number (match-string 1 href)))
-	  (if (setq tinfo (assq topic topics))
-	      (progn
-		(setq old-max (cadr tinfo))
-		(setcar (cdr tinfo) garticles))
-	    (setq old-max 0)
-	    (push (list topic garticles subject href) topics)
-	    (setcar (nthcdr 4 entry) topics))
-	  (when (not (= old-max garticles))
-	    (setq inc (- garticles old-max))
-	    (setq mapping (nconc mapping
-				 (list
-				  (list
-				   old-total (1- (incf old-total inc))
-				   topic (1+ old-max)))))
-	    (incf old-max inc)
-	    (setcar (nthcdr 5 entry) mapping)
-	    (setcar (nthcdr 6 entry) old-total)))))
+	  (when garticles
+	    (string-match "/\\([0-9]+\\).html" href)
+	    (setq topic (string-to-number (match-string 1 href)))
+	    (if (setq tinfo (assq topic topics))
+		(progn
+		  (setq old-max (cadr tinfo))
+		  (setcar (cdr tinfo) garticles))
+	      (setq old-max 0)
+	      (push (list topic garticles subject href) topics)
+	      (setcar (nthcdr 4 entry) topics))
+	    (when (not (= old-max garticles))
+	      (setq inc (- garticles old-max))
+	      (setq mapping (nconc mapping
+				   (list
+				    (list
+				     old-total (1- (incf old-total inc))
+				     topic (1+ old-max)))))
+	      (incf old-max inc)
+	      (setcar (nthcdr 5 entry) mapping)
+	      (setcar (nthcdr 6 entry) old-total))))))
     (setcar (nthcdr 7 entry) current-time)
     (setcar (nthcdr 1 entry) (1- old-total))
     (nnultimate-write-groups)

@@ -1439,6 +1439,8 @@ If PROMPT (the prefix), prompt for a coding system to use."
 		      (mm-read-coding-system "Charset to decode: "))
 		     (ctl
 		      (mail-content-type-get ctl 'charset))))
+      (when cte
+	(setq cte (mail-header-strip cte)))
       (if (and ctl (not (string-match "/" (car ctl)))) 
 	  (setq ctl nil))
       (goto-char (point-max)))

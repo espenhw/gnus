@@ -150,15 +150,16 @@ If no encoding was done, nil is returned."
 	   ((eq encoding 'quoted-printable)
 	    (quoted-printable-decode-region (point-min) (point-max)))
 	   ((eq encoding 'base64)
-	    (base64-decode-region (point-min)
-				  ;; Some mailers insert whitespace
-				  ;; junk at the end which
-				  ;; base64-decode-region dislikes.
-				  (save-excursion
-				    (goto-char (point-max))
-				    (skip-chars-backward "\n\t ")
-				    (delete-region (point) (point-max))
-				    (point))))
+	    (base64-decode-region
+	     (point-min)
+	     ;; Some mailers insert whitespace
+	     ;; junk at the end which
+	     ;; base64-decode-region dislikes.
+	     (save-excursion
+	       (goto-char (point-max))
+	       (skip-chars-backward "\n\t ")
+	       (delete-region (point) (point-max))
+	       (point))))
 	   ((memq encoding '(7bit 8bit binary))
 	    ;; Do nothing.
 	    )

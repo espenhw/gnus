@@ -1,3 +1,18 @@
+2000-03-01 09:55:26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnultimate.el (nnultimate-retrieve-headers): Ignore errors. 
+
+2000-02-13 13:53:08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-dissect-buffer): Ditto.
+
+	* gnus-art.el (article-decode-charset): Strip CTE.
+
+	* ietf-drums.el (ietf-drums-strip): New function.
+
+	* gnus-sum.el (gnus-summary-move-article): Don't use the prefix
+	when prompting in read-only groups.
+
 2000-02-23  Simon Josefsson  <jas@pdc.kth.se>
 
 	* imap.el (imap-send-command): Change EOL-chars when

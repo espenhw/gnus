@@ -220,6 +220,8 @@ to:
 		cd (mail-fetch-field "content-disposition")
 		description (mail-fetch-field "content-description")
 		id (mail-fetch-field "content-id"))))
+      (when cte
+	(setq cte (mail-header-strip cte)))
       (if (or (not ctl)
 	      (not (string-match "/" (car ctl))))
 	  (mm-dissect-singlepart
