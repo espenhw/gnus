@@ -616,6 +616,22 @@ be added below it (otherwise)."
   :group 'gnus-article-headers
   :type 'boolean)
 
+(defcustom gnus-article-mime-match-handle-function 'undisplayed-alternative
+  "Function called with a MIME handle as the argument.
+This is meant for people who want to view first matched part.
+For `undisplayed-alternative' (default), the first undisplayed 
+part or alternative part is used. For `undisplayed', the first 
+undisplayed part is used. For a function, the first part which 
+the function return `t' is used. For `nil', the first part is
+used."
+  :group 'gnus-article-mime
+  :type '(choice 
+	  (item :tag "first" :value nil)
+	  (item :tag "undisplayed" :value undisplayed)
+	  (item :tag "undisplayed or alternative" 
+		:value undisplayed-alternative)
+	  (function)))
+
 ;;;
 ;;; The treatment variables
 ;;;
@@ -2923,11 +2939,33 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (interactive "p")
   (gnus-article-part-wrapper n 'gnus-mime-inline-part))
 
-(defun gnus-article-view-part (n)
+(defun gnus-article-mime-match-handle-first (condition)
+  (if condition
+      (let ((alist gnus-article-mime-handle-alist) ihandle n)
+	(while (setq ihandle (pop alist))
+	  (if (and (cond 
+		    ((functionp condition)
+		     (funcall condition (cdr ihandle)))
+		    ((eq condition 'undisplayed) 
+		     (not (or (mm-handle-undisplayer (cdr ihandle))
+			      (equal (mm-handle-media-type (cdr ihandle))
+				 "multipart/alternative"))))
+		    ((eq condition 'undisplayed-alternative)
+		     (not (mm-handle-undisplayer (cdr ihandle))))
+		    (t t))
+		   (gnus-article-goto-part (car ihandle))
+		   (or (not n) (< (car ihandle) n)))
+	      (setq n (car ihandle))))
+	(or n 1))
+    1))
+
+(defun gnus-article-view-part (&optional n)
   "View MIME part N, which is the numerical prefix."
-  (interactive "p")
+  (interactive "P")
   (save-current-buffer
     (set-buffer gnus-article-buffer)
+    (or (numberp n) (setq n (gnus-article-mime-match-handle-first 
+			     gnus-article-mime-match-handle-function)))
     (when (> n (length gnus-article-mime-handle-alist))
       (error "No such part"))
     (let ((handle (cdr (assq n gnus-article-mime-handle-alist))))

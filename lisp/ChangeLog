@@ -1,3 +1,9 @@
+1999-10-31 21:24:59  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-article-mime-match-handle-first): New function.
+	(gnus-article-mime-match-handle-function): New variable.
+	(gnus-article-view-part): Make `b' customizable.
+
 1999-10-29 14:30:07  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-article-get-xrefs): Test eobp.
