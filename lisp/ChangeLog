@@ -1,3 +1,16 @@
+2002-04-17  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	From Ted Zlatanov <teodor.zlatanov@divine.com>.
+
+	* spam.el (spam-whitelist, spam-blacklist, spam-enter-whitelist):
+	Improve docstring.
+	(spam-enter-blacklist): New command.
+
+	* gnus-sum.el (gnus-spam-mark): New mark.
+	(gnus-auto-expirable-marks): Add gnus-spam-mark.
+	(gnus-summary-make-tool-bar): Correct conditional.
+	(gnus-summary-limit-to-unread): Add gnus-spam-mark.
+	(gnus-summary-mark-as-spam): New command.
+
 2002-04-13  Josh Huber  <huber@alum.wpi.edu>
 
 	* mml-sec.el (mml-secure-message): changed to support arbritrary

@@ -420,6 +420,11 @@ this variable specifies group names."
   :group 'gnus-summary-marks
   :type 'character)
 
+(defcustom gnus-spam-mark ?H
+  "*Mark used for spam articles."
+  :group 'gnus-summary-marks
+  :type 'character)
+
 (defcustom gnus-souped-mark ?F
   "*Mark used for souped articles."
   :group 'gnus-summary-marks
@@ -536,7 +541,7 @@ this variable specifies group names."
   :type 'boolean)
 
 (defcustom gnus-auto-expirable-marks
-  (list gnus-killed-mark gnus-del-mark gnus-catchup-mark
+  (list gnus-spam-mark gnus-killed-mark gnus-del-mark gnus-catchup-mark
 	gnus-low-score-mark gnus-ancient-mark gnus-read-mark
 	gnus-souped-mark gnus-duplicate-mark)
   "*The list of marks converted into expiration if a group is auto-expirable."
@@ -2326,15 +2331,10 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 (defvar gnus-summary-tool-bar-map nil)
 
 ;; Emacs 21 tool bar.  Should be no-op otherwise.
-;; NB: A new function tool-bar-local-item-from-menu is added in Emacs
-;; 21.2.50+.  Considering many users use Emacs 21, use
-;; tool-bar-add-item-from-menu here.
 (defun gnus-summary-make-tool-bar ()
-  (if (and
-       (condition-case nil (require 'tool-bar) (error nil))
-       (fboundp 'tool-bar-add-item-from-menu)
-       (default-value 'tool-bar-mode)
-       (not gnus-summary-tool-bar-map))
+  (if (and (fboundp 'tool-bar-add-item-from-menu)
+	   (default-value 'tool-bar-mode)
+	   (not gnus-summary-tool-bar-map))
       (setq gnus-summary-tool-bar-map
 	    (let ((tool-bar-map (make-sparse-keymap))
 		  (load-path (mm-image-load-path)))
@@ -7253,7 +7253,7 @@ If ALL is non-nil, limit strictly to unread articles."
      ;; Concat all the marks that say that an article is read and have
      ;; those removed.
      (list gnus-del-mark gnus-read-mark gnus-ancient-mark
-	   gnus-killed-mark gnus-kill-file-mark
+	   gnus-killed-mark gnus-spam-mark gnus-kill-file-mark
 	   gnus-low-score-mark gnus-expirable-mark
 	   gnus-canceled-mark gnus-catchup-mark gnus-sparse-mark
 	   gnus-duplicate-mark gnus-souped-mark)
@@ -9137,6 +9137,13 @@ If N is negative, mark backward instead.  The difference between N and
 the actual number of articles marked is returned."
   (interactive "p")
   (gnus-summary-mark-forward n gnus-expirable-mark))
+
+(defun gnus-summary-mark-as-spam (n)
+  "Mark N articles forward as spam.
+If N is negative, mark backward instead.  The difference between N and
+the actual number of articles marked is returned."
+  (interactive "p")
+  (gnus-summary-mark-forward n gnus-spam-mark))
 
 (defun gnus-summary-mark-article-as-replied (article)
   "Mark ARTICLE as replied to and update the summary line.

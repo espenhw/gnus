@@ -61,16 +61,21 @@
   "When spam files are kept.")
 
 (defvar spam-whitelist (expand-file-name "whitelist" spam-directory)
-  "The location of the whitelist.")
+  "The location of the whitelist.
+The file format is one regular expression per line.
+The regular expression is matched against the address.")
 					 
 (defvar spam-blacklist (expand-file-name "blacklist" spam-directory)
-  "The location of the whitelist.")
+  "The location of the blacklist.
+The file format is one regular expression per line.
+The regular expression is matched against the address.")
 
 (defvar spam-whitelist-cache nil)
 (defvar spam-blacklist-cache nil)
 
 (defun spam-enter-whitelist (address &optional blacklist)
-  "Enter ADDRESS into the whitelist."
+  "Enter ADDRESS into the whitelist.
+Optional arg BLACKLIST, if non-nil, means to enter in the blacklist instead."
   (interactive "sAddress: ")
   (let ((file (if blacklist spam-blacklist spam-whitelist)))
     (unless (file-exists-p (file-name-directory file))
@@ -83,6 +88,11 @@
 	(insert "\n"))
       (insert address "\n")
       (save-buffer))))
+
+(defun spam-enter-blacklist (address)
+  "Enter ADDRESS into the blacklist."
+  (interactive "sAddress: ")
+  (spam-enter-whitelist address t))
 
 (defun spam-parse-whitelist (&optional blacklist)
   (let ((file (if blacklist spam-blacklist spam-whitelist))
