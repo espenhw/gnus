@@ -1,3 +1,9 @@
+2002-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+	From TSUCHIYA Masatoshi <tsuchiya@namazu.org>.
+
+	* gnus-art.el (article-strip-banner): Check for the existence of
+	from header.
+
 2002-09-23  Kai Gro,b_(Bjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
 
 	* gnus-art.el (gnus-button-guessed-mid-regexp): Improved regexp.

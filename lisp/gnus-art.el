@@ -2279,12 +2279,14 @@ always hide."
 		(let ((from (save-restriction
 			      (widen)
 			      (article-narrow-to-head)
-			      (caar (mail-header-parse-addresses
-				     (mail-fetch-field "from"))))))
-		  (catch 'found
-		    (dolist (pair gnus-article-address-banner-alist)
-		      (when (string-match (car pair) from)
-			(throw 'found (cdr pair))))))))
+			      (mail-fetch-field "from"))))
+		  (when (and from
+			     (setq from
+				   (caar (mail-header-parse-addresses from))))
+		    (catch 'found
+		      (dolist (pair gnus-article-address-banner-alist)
+			(when (string-match (car pair) from)
+			  (throw 'found (cdr pair)))))))))
 	(when banner
 	  (article-goto-body)
 	  (cond
