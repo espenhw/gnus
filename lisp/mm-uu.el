@@ -110,7 +110,13 @@ This can be either \"inline\" or \"attachment\".")
      "^-----END PGP MESSAGE-----"
      mm-uu-pgp-encrypted-extract
      nil
-     mm-uu-pgp-encrypted-test)))
+     mm-uu-pgp-encrypted-test)
+    (pgp-key
+     "^-----BEGIN PGP PUBLIC KEY BLOCK-----"
+     "^-----END PGP PUBLIC KEY BLOCK-----"
+     mm-uu-pgp-key-extract
+     nil
+     mm-uu-pgp-key-test)))
 
 (defcustom mm-uu-configure-list nil
   "A list of mm-uu configuration.
@@ -292,6 +298,23 @@ To disable dissecting shar codes, for instance, add
 	   (error "Decrypt failure.")))))
     (mm-make-handle buf
 		    '("text/plain"  (charset . gnus-decoded)))))
+
+(defun mm-uu-pgp-key-test ()
+  (and
+   mml2015-use
+   (mml2015-clear-snarf-function)
+   (cond
+    ((eq mm-snarf-option 'never) nil)
+    ((eq mm-snarf-option 'always) t)
+    ((eq mm-snarf-option 'known) t)
+    (t (y-or-n-p "Snarf pgp signed part?")))))
+
+(defun mm-uu-pgp-key-extract ()
+  (let ((buf (mm-uu-copy-to-buffer start-point end-point)))
+    (with-current-buffer buf
+      (funcall (mml2015-clear-snarf-function)))
+    (mm-make-handle buf
+		    '("application/x-pgp-key"))))
 
 ;;;### autoload
 (defun mm-uu-dissect ()

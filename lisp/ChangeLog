@@ -2,6 +2,7 @@
 
 	* mml2015.el (mml2015-function-alist): Clear verify and decrypt.
 	* mm-uu.el: Reorganized.  Add gnatsweb, pgp-signed, pgp-encrypted.
+	* mm-decode.el (mm-snarf-option): New.
 
 2000-11-04 13:08:02  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
