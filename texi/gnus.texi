@@ -8145,8 +8145,9 @@ functions you can use include:
 Use w3 (this is the default).
 
 @item gnus-article-wash-html-with-w3m
-@item gnus-article-wash-html-with-w3m
-Use the external @samp{w3m} program.
+@findex gnus-article-wash-html-with-w3m
+Use the external @samp{w3m} program.  See
+@uref{http://w3m.sourceforge.net/} for more information.
 @end table
 
 @item W b
