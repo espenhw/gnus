@@ -176,7 +176,7 @@ Should be called narrowed to the head of the message."
 			    (y-or-n-p
 			     "Some texts are not encoded. Encode anyway?")))
 		       (rfc2047-encode-region (point-min) (point-max))
-		     (error "Cannot send unencoded text."))))
+		     (error "Cannot send unencoded text"))))
 	     ((mm-coding-system-p method)
 	      (if (and (featurep 'mule)
 		       (if (boundp 'default-enable-multibyte-characters)

@@ -313,7 +313,7 @@ nil."
 		     (if smime-CA-directory
 			 (list "-CApath"
 			       (expand-file-name smime-CA-directory))))))
-    (unless CAs (error "No CA configured."))
+    (unless CAs (error "No CA configured"))
     (with-current-buffer buffer
       (erase-buffer))
     (if (apply 'smime-call-openssl-region b e buffer "smime" "-verify"

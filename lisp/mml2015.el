@@ -251,14 +251,14 @@
 	hash point)
     (goto-char (point-min))
     (unless (re-search-forward "^-----BEGIN PGP SIGNED MESSAGE-----\r?$" nil t)
-      (error "Cannot find signed begin line." ))
+      (error "Cannot find signed begin line"))
     (goto-char (match-beginning 0))
     (forward-line 1)
     (unless (looking-at "Hash:[ \t]*\\([a-zA-Z0-9]+\\)")
-      (error "Cannot not find PGP hash." ))
+      (error "Cannot not find PGP hash"))
     (setq hash (match-string 1))
     (unless (re-search-forward "^$" nil t)
-      (error "Cannot not find PGP message." ))
+      (error "Cannot not find PGP message"))
     (forward-line 1)
     (delete-region (point-min) (point))
     (insert (format "Content-Type: multipart/signed; boundary=\"%s\";\n"
@@ -269,12 +269,12 @@
     (setq point (point))
     (goto-char (point-max))
     (unless (re-search-backward "^-----END PGP SIGNATURE-----\r?$" nil t)
-      (error "Cannot find signature part." ))
+      (error "Cannot find signature part"))
     (replace-match "-----END PGP MESSAGE-----" t t)
     (goto-char (match-beginning 0))
     (unless (re-search-backward "^-----BEGIN PGP SIGNATURE-----\r?$"
 				nil t)
-      (error "Cannot find signature part." ))
+      (error "Cannot find signature part"))
     (replace-match "-----BEGIN PGP MESSAGE-----" t t)
     (goto-char (match-beginning 0))
     (save-restriction
@@ -308,7 +308,7 @@
        (message-options-get 'message-sender))))
   (goto-char (point-min))
   (unless (looking-at "-----BEGIN PGP MESSAGE-----")
-    (error "Fail to encrypt the message."))
+    (error "Fail to encrypt the message"))
   (let ((boundary
 	 (funcall mml-boundary-function (incf mml-multipart-number))))
     (insert (format "Content-Type: multipart/encrypted; boundary=\"%s\";\n"
@@ -459,7 +459,7 @@
 				 t t) ; armor & textmode
 	(unless (> (point-max) (point-min))
 	  (pop-to-buffer mml2015-result-buffer)
-	  (error "Sign error.")))
+	  (error "Sign error")))
       (goto-char (point-min))
       (while (re-search-forward "\r+$" nil t)
 	(replace-match "" t t))
@@ -499,7 +499,7 @@
 		 t t) ; armor & textmode
 	  (unless (> (point-max) (point-min))
 	    (pop-to-buffer mml2015-result-buffer)
-	    (error "Encrypt error.")))
+	    (error "Encrypt error")))
 	(goto-char (point-min))
 	(while (re-search-forward "\r+$" nil t)
 	  (replace-match "" t t))
@@ -565,7 +565,7 @@
   (let ((func (nth 2 (assq mml2015-use mml2015-function-alist))))
     (if func
 	(funcall func cont)
-      (error "Cannot find encrypt function."))))
+      (error "Cannot find encrypt function"))))
 
 ;;;###autoload
 (defun mml2015-sign (cont)
@@ -573,7 +573,7 @@
   (let ((func (nth 1 (assq mml2015-use mml2015-function-alist))))
     (if func
 	(funcall func cont)
-      (error "Cannot find sign function."))))
+      (error "Cannot find sign function"))))
 
 ;;;###autoload
 (defun mml2015-self-encrypt ()

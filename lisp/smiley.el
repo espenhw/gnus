@@ -229,8 +229,7 @@ above them."
   "Toggle smiley at given point.
 Note -- this function hasn't been implemented yet."
   (interactive "e")
-  (error "This function hasn't been implemented yet.")
-)
+  (error "This function hasn't been implemented yet"))
 
 (defun smiley-toggle-extents (e)
   (interactive "e")
@@ -251,8 +250,7 @@ Note -- this function hasn't been implemented yet."
 ;; FIXME::
 (defun smiley-toggle-extents-ems (e)
   (interactive "e")
-  (error "This function hasn't been implemented yet.")
-)
+  (error "This function hasn't been implemented yet"))
 
 ;;;###autoload
 (defun smiley-buffer (&optional buffer st nd)

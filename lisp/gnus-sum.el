@@ -3716,7 +3716,7 @@ If LINE, insert the rebuilt thread starting on line LINE."
       (setq thread (gnus-remove-thread id)))
     (setq old-pos (gnus-point-at-bol))
     (setq current (save-excursion
-		    (and (zerop (forward-line -1))
+		    (and (re-search-backward "[\r\n]" nil t)
 			 (gnus-summary-article-number))))
     ;; If this is a gathered thread, we have to go some re-gathering.
     (when (stringp (car thread))
@@ -8228,7 +8228,7 @@ groups."
 				  (setq gnus-article-mime-handles nil))))))
      (t (setq force t)))
     (if (and raw (not force) (equal gnus-newsgroup-name "nndraft:drafts"))
-	(error "Can't edit the raw article in group nndraft:drafts."))
+	(error "Can't edit the raw article in group nndraft:drafts"))
     (save-excursion
       (set-buffer gnus-summary-buffer)
       (let ((mail-parse-charset gnus-newsgroup-charset)

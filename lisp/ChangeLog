@@ -1,3 +1,16 @@
+2001-07-15  Pavel Jan,Bm(Bk <Pavel@Janik.cz>
+
+	* gnus-art.el,...: Error convention changes.
+
+2001-07-13 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-rebuild-thread): Count hidden lines too.
+
+2001-07-13 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnrss.el (nnrss-read-group-data): Nuke emacs-lisp-mode-hook.
+	(nnrss-read-server-data): Ditto.
+
 2001-07-13 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	
 	* gnus-setup.el (gnus-use-installed-gnus): Typo.

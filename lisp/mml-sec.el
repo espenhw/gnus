@@ -85,7 +85,7 @@
 	     (goto-char (match-end 0))
 	     (apply 'mml-insert-tag 'part (cons (if sign 'sign 'encrypt)
 						(cons method tags))))
-	    (t (error "The message is corrupted. No mail header separator."))))))
+	    (t (error "The message is corrupted. No mail header separator"))))))
 
 (defun mml-secure-sign-pgpmime ()
   "Add MML tags to PGP/MIME sign this MML part."

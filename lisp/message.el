@@ -2351,7 +2351,7 @@ It should typically alter the sending method in some way or other."
 			    (format
 			     "Already sent message via %s; resend? "
 			     (car elem)))
-			 (error "Denied posting -- multiple copies.")))
+			 (error "Denied posting -- multiple copies")))
 		   (setq success (funcall (caddr elem) arg)))
 	  (setq sent t))))
     (unless (or sent (not success))

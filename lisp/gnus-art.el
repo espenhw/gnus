@@ -2716,7 +2716,7 @@ The directory to save in defaults to `gnus-article-save-directory'."
   (when (string-equal command "")
     (if gnus-last-shell-command
 	(setq command gnus-last-shell-command)
-      (error "A command is required.")))
+      (error "A command is required")))
   (gnus-eval-in-buffer-window gnus-article-buffer
     (save-restriction
       (widen)
@@ -3320,7 +3320,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (let* ((data (get-text-property (point) 'gnus-data))
 	 file param)
     (if (mm-multiple-handles gnus-article-mime-handles)
-	(error "This function is not implemented."))
+	(error "This function is not implemented"))
     (setq file (and data (mm-save-part data)))
     (when file
       (with-current-buffer (mm-handle-buffer data)
@@ -5378,9 +5378,9 @@ For example:
     (unless func
       (error (format "Can't find the encrypt protocol %s" protocol)))
     (if (equal gnus-newsgroup-name "nndraft:drafts")
-	(error "Can't encrypt the article in group nndraft:drafts."))
+	(error "Can't encrypt the article in group nndraft:drafts"))
     (if (equal gnus-newsgroup-name "nndraft:queue")
-	(error "Don't encrypt the article in group nndraft:queue."))
+	(error "Don't encrypt the article in group nndraft:queue"))
     (gnus-summary-iterate n
       (save-excursion
 	(set-buffer gnus-summary-buffer)
