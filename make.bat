@@ -70,6 +70,7 @@ goto lisp
 :lisp
 set EMACSBATCH=call %1\%EMACS% %EMACS_ARGS%
 cd lisp
+attrib -r gnus-load.el
 if exist gnus-load.el del gnus-load.el
 echo.
 echo Stand by while generating autoloads.
@@ -97,7 +98,9 @@ goto infotest
 
 :infotest
 cd ..\texi
+attrib -r sieve
 if exist sieve del sieve
+
 makeinfo sieve.texi
 if exist sieve goto minfo
 REM It seems that makeinfo isn't available
