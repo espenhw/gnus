@@ -7111,7 +7111,7 @@ Translate the article from one language to another
 The following commands all understand the numerical prefix.  For
 instance, @kbd{3 b} means ``view the third @sc{mime} part''.
 
-@table @kdb
+@table @kbd
 @item b
 @itemx K b
 @kindex b (Summary)

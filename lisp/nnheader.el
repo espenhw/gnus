@@ -360,6 +360,17 @@ on your system, you could say something like:
         (pop extra))))
   (insert "\n"))
 
+(defun nnheader-insert-header (header)
+  (insert
+   "Subject: " (or (mail-header-subject header) "(none)") "\n"
+   "From: " (or (mail-header-from header) "(nobody)") "\n"
+   "Date: " (or (mail-header-date header) "") "\n"
+   "Message-ID: " (or (mail-header-id header) (nnmail-message-id)) "\n"
+   "References: " (or (mail-header-references header) "") "\n"
+   "Lines: ")
+  (princ (or (mail-header-lines header) 0) (current-buffer))
+  (insert "\n\n"))
+
 (defun nnheader-insert-article-line (article)
   (goto-char (point-min))
   (insert "220 ")
