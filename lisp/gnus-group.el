@@ -705,19 +705,23 @@ in the minibuffer prompt."
        ["See old articles" (gnus-group-select-group 'all)
 	:keys "C-u SPC" :active (gnus-group-group-name)]
        ["Catch up" gnus-group-catchup-current :active (gnus-group-group-name)
-	:help "Mark unread articles in the current group as read"]
+	;;:help "Mark unread articles in the current group as read"
+	]
        ["Catch up all articles" gnus-group-catchup-current-all
 	(gnus-group-group-name)]
        ["Check for new articles" gnus-group-get-new-news-this-group
 	:active (gnus-group-group-name)
-	:help "Check for new messages in current group"]
+	;;:help "Check for new messages in current group"
+	]
        ["Toggle subscription" gnus-group-unsubscribe-current-group
 	(gnus-group-group-name)]
        ["Kill" gnus-group-kill-group :active (gnus-group-group-name)
-	:help "Kill (remove) current group"]
+	;;:help "Kill (remove) current group"
+	]
        ["Yank" gnus-group-yank-group gnus-list-of-killed-groups]
        ["Describe" gnus-group-describe-group :active (gnus-group-group-name)
-	:help "Display description of the current group"]
+	;;:help "Display description of the current group"
+	]
        ["Fetch FAQ" gnus-group-fetch-faq (gnus-group-group-name)]
        ;; Actually one should check, if any of the marked groups gives t for
        ;; (gnus-check-backend-function 'request-expire-articles ...)
@@ -844,7 +848,8 @@ in the minibuffer prompt."
        ["Send a mail" gnus-group-mail t]
        ["Post an article..." gnus-group-post-news t]
        ["Check for new news" gnus-group-get-new-news
-	:help "Get newly arrived articles"]
+	;;:help "Get newly arrived articles"
+	]
        ["Activate all groups" gnus-activate-all-groups t]
        ["Restart Gnus" gnus-group-restart t]
        ["Read init file" gnus-group-read-init-file t]
@@ -861,7 +866,8 @@ in the minibuffer prompt."
        ["Toggle topics" gnus-topic-mode t]
        ["Send a bug report" gnus-bug t]
        ["Exit from Gnus" gnus-group-exit
-	:help "Quit reading news"]
+	;;:help "Quit reading news"
+	]
        ["Exit without saving" gnus-group-quit t]))
 
     (gnus-run-hooks 'gnus-group-menu-hook)))

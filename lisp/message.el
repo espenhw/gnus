@@ -1424,16 +1424,21 @@ Point is left at the beginning of the narrowed-to region."
    ["Newline and Reformat" message-newline-and-reformat t]
    ["Rename buffer" message-rename-buffer t]
    ["Spellcheck" ispell-message
-    :help "Spellcheck this message"]
+    ;;:help "Spellcheck this message"
+    ]
    ["Attach file as MIME" mml-attach-file
-    :help "Attach a file at point"]
+    ;;:help "Attach a file at point"
+    ]
    "----"
    ["Send Message" message-send-and-exit
-    :help "Send this message"]
+    ;;:help "Send this message"
+    ]
    ["Abort Message" message-dont-send
-    :help "File this draft message and exit"]
+    ;;:help "File this draft message and exit"
+    ]
    ["Kill Message" message-kill-buffer
-    :help "Delete this message without sending"]))
+    ;;:help "Delete this message without sending"
+    ]))
 
 (easy-menu-define
  message-mode-field-menu message-mode-map ""

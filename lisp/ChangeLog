@@ -1,5 +1,8 @@
 2000-12-19 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-group.el, gnus-sum.el, message.el: Comment out :help in
+	easymenu, because XEmacs doesn't understand :help.
+
 	* mm-uu.el: Require binhex.
 
 2000-12-19 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
