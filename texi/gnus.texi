@@ -601,6 +601,7 @@ Composing Messages
 * Posting Styles::       An easier way to specify who you are.
 * Drafts::               Postponing messages and rejected messages.
 * Rejected Articles::    What happens if the server doesn't like your article?
+* Using GPG::            How to use GPG and MML to sign and encrypt messages
 
 Select Methods
 

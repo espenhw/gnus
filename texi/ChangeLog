@@ -1,3 +1,7 @@
+2001-02-06 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Top): Add Using GPG.
+
 2001-02-02  David Masterson <dmasters@Rational.Com>
 
 	* gnus.texi (The Server is Down): Add link to Group Levels.
