@@ -1,3 +1,10 @@
+2004-08-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-encode-region): Assume the close parenthesis
+	may be included in the encoded word.
+	(rfc2047-encode): Don't append a space if the encoded word
+	includes close parenthesis.
+
 2004-08-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-encode-1, rfc2047-encode): Improve encoding

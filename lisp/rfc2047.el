@@ -369,8 +369,8 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 		  (forward-list)
 		  ;; Encode text as an unstructured field.
 		  (let ((rfc2047-encoding-type 'mime))
-		    (rfc2047-encode-region (1+ start) (1- (point)))
-		    (forward-char)))
+		    (rfc2047-encode-region (1+ start) (1- (point))))
+		  (skip-chars-forward ")"))
 		 (t		    ; normal token/whitespace sequence
 		  ;; Find the end.
 		  ;; Skip one ASCII word, or encode continuous words
@@ -607,7 +607,9 @@ Point moves to the end of the region."
 	     (insert eword)
 	     (set-marker b nil)
 	     (set-marker e nil)
-	     (unless (looking-at "[ \t\n)]")
+	     (unless (or (/= 0 (length tail))
+			 (eobp)
+			 (looking-at "[ \t\n)]"))
 	       (insert " "))))
 	  (t
 	   (goto-char e)))))
