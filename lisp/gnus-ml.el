@@ -72,6 +72,25 @@
     (gnus-mailing-list-mode 1)))
 
 ;;;###autoload
+(defun gnus-mailing-list-insinuate (&optional force)
+  "Setup group parameters from List-Post header.
+If FORCE is non-nil, replace the old ones."
+  (interactive "P")
+  (let ((list-post 
+	 (with-current-buffer gnus-original-article-buffer
+	   (gnus-fetch-field "list-post"))))
+    (if list-post
+	(if (and (not force)
+		 (gnus-group-get-parameter gnus-newsgroup-name 'to-list))
+	    (gnus-message 1 "to-list is non-nil.")
+	  (if (string-match "<mailto:\\([^>]*\\)>" list-post)
+	      (setq list-post (match-string 1 list-post)))
+	  (gnus-group-add-parameter gnus-newsgroup-name 
+				    (cons 'to-list list-post))
+	  (gnus-mailing-list-mode 1))
+      (gnus-message 1 "no list-post in this message."))))
+
+;;;###autoload
 (defun gnus-mailing-list-mode (&optional arg)
   "Minor mode for providing mailing-list commands.
 

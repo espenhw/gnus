@@ -30,6 +30,7 @@
 	      adaptive-fill-regexp babel-history babel-translations
 	      display-time-mail-function imap-password mail-mode-hook
 	      mc-pgp-always-sign
+	      nnoo-definition-alist
 	      url-current-callback-func url-be-asynchronous 
 	      url-current-callback-data url-working-buffer
 	      url-current-mime-headers w3-meta-charset-content-type-regexp
