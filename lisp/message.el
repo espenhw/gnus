@@ -1343,6 +1343,7 @@ Point is left at the beginning of the narrowed-to region."
    ["Newline and Reformat" message-newline-and-reformat t]
    ["Rename buffer" message-rename-buffer t]
    ["Spellcheck" ispell-message t]
+   ["Attach file as MIME" message-mime-attach-file t]
    "----"
    ["Send Message" message-send-and-exit t]
    ["Abort Message" message-dont-send t]
@@ -1391,7 +1392,8 @@ C-c C-q  message-fill-yanked-message (fill what was yanked).
 C-c C-e  message-elide-region (elide the text between point and mark).
 C-c C-v  message-delete-not-region (remove the text outside the region).
 C-c C-z  message-kill-to-signature (kill the text up to the signature).
-C-c C-r  message-caesar-buffer-body (rot13 the message body)."
+C-c C-r  message-caesar-buffer-body (rot13 the message body).
+C-c C-a  message-mime-attach-file (attach a file as MIME)."
   (interactive)
   (kill-all-local-variables)
   (set (make-local-variable 'message-reply-buffer) nil)
@@ -4192,8 +4194,9 @@ description of the attachment."
 	  (description (message-mime-query-description)))
      (list file type description)))
   (insert (format
-	   "<#part type=%s filename=%s%s disposition=attachment><#/part>\n"
-	   type (prin1-to-string file)
+	   "<#part type=%s name=%s filename=%s%s disposition=attachment><#/part>\n"
+	   type (prin1-to-string (file-name-nondirectory file))
+	   (prin1-to-string file)
 	   (if description
 	       (format " description=%s" (prin1-to-string description))
 	     ""))))

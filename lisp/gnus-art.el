@@ -413,8 +413,7 @@ The following additional specs are available:
   :group 'gnus-article-various)
 
 (defcustom gnus-article-prepare-hook nil
-  "*A hook called after an article has been prepared in the article buffer.
-If you want to run a special decoding program like nkf, use this hook."
+  "*A hook called after an article has been prepared in the article buffer."
   :type 'hook
   :group 'gnus-article-various)
 
@@ -615,7 +614,7 @@ on parts -- for instance, adding Vcard info to a database."
 (defvar gnus-inhibit-treatment nil
   "Whether to inhibit treatment.")
 
-(defcustom gnus-treat-highlight-signature 'last
+(defcustom gnus-treat-highlight-signature '(or last (typep "text/x-vcard"))
   "Highlight the signature."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
@@ -757,7 +756,6 @@ on parts -- for instance, adding Vcard info to a database."
   '((gnus-treat-highlight-signature gnus-article-highlight-signature)
     (gnus-treat-buttonize gnus-article-add-buttons)
     (gnus-treat-buttonize-head gnus-article-add-buttons-to-head)
-    (gnus-treat-emphasize gnus-article-emphasize)
     (gnus-treat-fill-article gnus-article-fill-cited-article)
     (gnus-treat-strip-cr gnus-article-remove-cr)
     (gnus-treat-hide-headers gnus-article-hide-headers)
@@ -769,6 +767,7 @@ on parts -- for instance, adding Vcard info to a database."
     (gnus-treat-highlight-headers gnus-article-highlight-headers)
     (gnus-treat-highlight-citation gnus-article-highlight-citation)
     (gnus-treat-highlight-signature gnus-article-highlight-signature)
+    (gnus-treat-emphasize gnus-article-emphasize)
     (gnus-treat-date-ut gnus-article-date-ut)
     (gnus-treat-date-local gnus-article-date-local)
     (gnus-treat-date-lapsed gnus-article-date-lapsed)
@@ -1163,22 +1162,24 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
 	      (put-text-property
 	       (point) (1+ (point)) 'face 'underline)))))))))
 
-(defun article-fill ()
-  "Format too long lines."
+(defun article-fill-long-lines ()
+  "Fill lines that are wider than the window width."
   (interactive)
   (save-excursion
-    (let ((buffer-read-only nil))
-      (widen)
-      (article-goto-body)
-      (end-of-line 1)
-      (let ((paragraph-start "^[>|#:<;* ]*[ \t]*$")
-	    (adaptive-fill-regexp "[ \t]*\\([|#:<;>*]+ *\\)?")
-	    (adaptive-fill-mode t))
-	(while (not (eobp))
-	  (and (>= (current-column) (min fill-column (window-width)))
-	       (/= (preceding-char) ?:)
-	       (fill-paragraph nil))
-	  (end-of-line 2))))))
+    (let ((buffer-read-only nil)
+	  (width (window-width (get-buffer-window (current-buffer)))))
+      (save-restriction
+	(widen)
+	(article-goto-body)
+	(let ((adaptive-fill-mode nil))
+	  (while (not (eobp))
+	    (end-of-line)
+	    (when (>= (current-column) (min fill-column width))
+	      (narrow-to-region (point) (gnus-point-at-bol))
+	      (fill-paragraph nil)
+	      (goto-char (point-max))
+	      (widen))
+	    (forward-line 1)))))))
 
 (defun article-remove-cr ()
   "Translate CRLF pairs into LF, and then CR into LF.."
@@ -2165,7 +2166,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
    '(article-hide-headers
      article-hide-boring-headers
      article-treat-overstrike
-     (article-fill . gnus-article-word-wrap)
+     article-fill-long-lines
      article-remove-cr
      article-display-x-face
      article-de-quoted-unreadable
@@ -2867,7 +2868,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	(if (and (setq not-attachment
 		       (or (not (mm-handle-disposition handle))
 			   (equal (car (mm-handle-disposition handle))
-				  "inline")))
+				  "inline")
+			   (mm-attachment-override-p type)))
 		 (mm-automatic-display-p type)
 		 (or (mm-inlinable-part-p type)
 		     (mm-automatic-external-display-p type)))
@@ -4169,33 +4171,58 @@ For example:
   (let ((length (- (point-max) (point-min)))
 	(alist gnus-treatment-function-alist)
 	(article-goto-body-goes-to-point-min-p t)
+	(treated-type
+	 (or (not type)
+	     (catch 'found
+	       (let ((list gnus-article-treat-types))
+		 (while list
+		   (when (string-match (pop list) type)
+		     (throw 'found t)))))))
 	val elem)
-    (when (and (gnus-visual-p 'article-highlight 'highlight)
-	       (or (not type)
-		   (catch 'found
-		     (let ((list gnus-article-treat-types))
-		       (while list
-			 (when (string-match (pop list) type)
-			   (throw 'found t)))))))
+    (when (gnus-visual-p 'article-highlight 'highlight)
       (gnus-run-hooks 'gnus-part-display-hook)
       (while (setq elem (pop alist))
 	(setq val (symbol-value (car elem)))
-	(when (cond
-	       (condition
-		(eq condition val))
-	       ((null val)
-		nil)
-	       ((eq val t)
-		t)
-	       ((eq val 'head)
-		nil)
-	       ((eq val 'last)
-		(eq part-number total-parts))
-	       ((numberp val)
-		(< length val))
-	       (t
-		(eval val)))
+	(when (and (or (consp val)
+		       treated-type)
+		   (gnus-treat-predicate val))
 	  (funcall (cadr elem)))))))
+
+;; Dynamic variables.
+(defvar part-number)
+(defvar total-parts)
+(defvar type)
+(defvar condition)
+(defvar length)
+(defun gnus-treat-predicate (val)
+  (cond
+   (condition
+    (eq condition val))
+   ((null val)
+    nil)
+   ((eq val t)
+    t)
+   ((eq val 'head)
+    nil)
+   ((eq val 'last)
+    (eq part-number total-parts))
+   ((numberp val)
+    (< length val))
+   ((listp val)
+    (let ((pred (pop val)))
+      (cond
+       ((eq pred 'or)
+	(apply 'gnus-or (mapcar 'gnus-treat-predicate val)))
+       ((eq pred 'and)
+	(apply 'gnus-and (mapcar 'gnus-tread-predicate val)))
+       ((eq pred 'not)
+	(not (gnus-treat-predicate val)))
+       ((eq pred 'typep)
+	(equal (cadr val) type))
+       (t
+	(error "%S is not a valid predicate" pred)))))
+   (t
+    (error "%S is not a valid value" val))))
 
 (gnus-ems-redefine)
 

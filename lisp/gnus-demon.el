@@ -273,7 +273,6 @@ minutes, the connection is closed."
   (save-window-excursion
     (let ((servers gnus-opened-servers)
 	  server)
-      (gnus-clear-inboxes-moved)
       (while (setq server (car (pop servers)))
 	(and (gnus-check-backend-function 'request-scan (car server))
 	     (or (gnus-server-opened server)

@@ -17,7 +17,7 @@
 
 This file documents the Emacs MIME interface functionality.
 
-Copyright (C) 1996 Free Software Foundation, Inc.
+Copyright (C) 1998,99 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -48,7 +48,7 @@ into another language, under the above conditions for modified versions.
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1998 Free Software Foundation, Inc. 
+Copyright @copyright{} 1998,99 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -198,9 +198,9 @@ and comments is preserved.
 Return the last comment in a header.
 
 @example
-(mail-header-get-comment 
+(mail-header-get-comment
  "Gnus/5.070027 (Pterodactyl Gnus v0.27) (Finnish Landrace)")
-@result{} "Finnish Landrace" 
+@result{} "Finnish Landrace"
 @end example
 
 @item mail-header-parse-address
@@ -352,7 +352,7 @@ elements.
 
 @example
 (rfc2231-parse-string
- "application/x-stuff; 
+ "application/x-stuff;
  title*0*=us-ascii'en'This%20is%20even%20more%20;
  title*1*=%2A%2A%2Afun%2A%2A%2A%20;
  title*2=\"isn't it!\"")
@@ -368,7 +368,7 @@ the value of the specified attribute.
 @item rfc2231-encode-string
 @findex rfc2231-encode-string
 Encode a parameter in headers likes @code{Content-Type} and
-@code{Content-Disposition}. 
+@code{Content-Disposition}.
 
 @end table
 
@@ -459,11 +459,11 @@ This is an alist of encoding / function pairs.  The encodings are
 The @code{Q} encoding isn't quite the same for all headers.  Some
 headers allow a narrower range of characters, and that is what this
 variable is for.  It's an alist of header regexps / allowable character
-ranges. 
+ranges.
 
 @item rfc2047-encoded-word-regexp
 @vindex rfc2047-encoded-word-regexp
-When decoding words, this library looks for matches to this regexp. 
+When decoding words, this library looks for matches to this regexp.
 
 @end table
 
@@ -851,7 +851,7 @@ Prompt for a mailcap method to use to view the part.
 @cindex MIME Meta Language
 
 Creating a @sc{mime} message is boring and non-trivial.  Therefore, a
-library called @code{mml} has been defined that parses a language called 
+library called @code{mml} has been defined that parses a language called
 MML (@sc{mime} Meta Language) and generates @sc{mime} messages.
 
 @findex mml-generate-mime
@@ -939,7 +939,7 @@ The contents of the body of the part are to be encoded in the character
 set speficied (@code{Content-Type}).
 
 @item name
-Might be used to suggest a file name if the part is to be saved 
+Might be used to suggest a file name if the part is to be saved
 to a file (@code{Content-Type}).
 
 @item disposition
@@ -1001,7 +1001,7 @@ Valid values are @samp{read} and @samp{read-write}
 @section Advanced MML Example
 
 Here's a complex multipart message.  It's a @samp{multipart/mixed} that
-contains many parts, one of which is a @samp{multipart/alternative}. 
+contains many parts, one of which is a @samp{multipart/alternative}.
 
 @example
 <#multipart type=mixed>
@@ -1139,8 +1139,8 @@ Communicating Presentation Information in Internet Messages: The
 Content-Disposition Header Field
 
 @end table
- 
- 
+
+
 @node Index
 @chapter Index
 @printindex cp

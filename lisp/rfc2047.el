@@ -134,9 +134,10 @@ Should be called narrowed to the head of the message."
 
 (defun rfc2047-encodable-p ()
   "Say whether the current (narrowed) buffer contains characters that need encoding."
-  (let ((charsets (mapcar
-		   'mm-mule-charset-to-mime-charset
-		   (mm-find-charset-region (point-min) (point-max))))
+  (let ((charsets
+	 (mapcar
+	  'mm-mime-charset
+	  (mm-find-charset-region (point-min) (point-max))))
 	(cs (list 'us-ascii mail-parse-charset))
 	found)
     (while charsets
@@ -183,10 +184,9 @@ Should be called narrowed to the head of the message."
 
 (defun rfc2047-encode (b e charset)
   "Encode the word in the region with CHARSET."
-  (let* ((mime-charset
-	  (mm-mime-charset charset b e))
+  (let* ((mime-charset (mm-mime-charset charset))
 	 (encoding (or (cdr (assq mime-charset
-			      rfc2047-charset-encoding-alist))
+				  rfc2047-charset-encoding-alist))
 		       'B))
 	 (start (concat
 		 "=?" (downcase (symbol-name mime-charset)) "?"
@@ -266,7 +266,8 @@ Should be called narrowed to the head of the message."
 		   (prog1
 		       (match-string 0)
 		     (delete-region (match-beginning 0) (match-end 0)))))
-	  (when (and (mm-multibyte-p) mail-parse-charset)
+	  (when (and (mm-multibyte-p)
+		     mail-parse-charset)
 	    (mm-decode-coding-region b e mail-parse-charset))
 	  (setq b (point)))
 	(when (and (mm-multibyte-p)

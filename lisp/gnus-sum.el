@@ -1444,6 +1444,7 @@ increase the score of each group you read."
     "o" gnus-article-treat-overstrike
     "e" gnus-article-emphasize
     "w" gnus-article-fill-cited-article
+    "Q" gnus-article-fill-long-lines
     "c" gnus-article-remove-cr
     "q" gnus-article-de-quoted-unreadable
     "f" gnus-article-display-x-face
@@ -1612,6 +1613,7 @@ increase the score of each group you read."
               ["Dumb quotes" gnus-article-treat-dumbquotes t]
               ["Emphasis" gnus-article-emphasize t]
               ["Word wrap" gnus-article-fill-cited-article t]
+	      ["Fill long lines" gnus-article-fill-long-lines t]
               ["CR" gnus-article-remove-cr t]
               ["Show X-Face" gnus-article-display-x-face t]
               ["Quoted-Printable" gnus-article-de-quoted-unreadable t]
@@ -1981,8 +1983,6 @@ The following commands are available:
   (make-local-variable 'gnus-summary-dummy-line-format)
   (make-local-variable 'gnus-summary-dummy-line-format-spec)
   (make-local-variable 'gnus-summary-mark-positions)
-  (make-local-hook 'post-command-hook)
-  (add-hook 'post-command-hook 'gnus-clear-inboxes-moved nil t)
   (make-local-hook 'pre-command-hook)
   (add-hook 'pre-command-hook 'gnus-set-global-variables nil t)
   (gnus-run-hooks 'gnus-summary-mode-hook)
@@ -5720,7 +5720,9 @@ be displayed."
 	      ;; The requested article is different from the current article.
 	      (prog1
 		  (gnus-summary-display-article article all-headers)
-		(setq did article))
+		(setq did article)
+		(when (or all-headers gnus-show-all-headers)
+		  (gnus-article-show-all-headers)))
 	    (when (or all-headers gnus-show-all-headers)
 	      (gnus-article-show-all-headers))
 	    'old))

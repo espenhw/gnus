@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Pterodactyl Message 0.73 Manual
+@settitle Pterodactyl Message 0.74 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -17,7 +17,7 @@
 
 This file documents Message, the Emacs message composition mode.
 
-Copyright (C) 1996,97,98 Free Software Foundation, Inc.
+Copyright (C) 1996,97,98,99 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -42,13 +42,13 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Message 0.73 Manual
+@title Pterodactyl Message 0.74 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1996 Free Software Foundation, Inc. 
+Copyright @copyright{} 1996,97,98,99 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -83,7 +83,7 @@ Message mode buffers.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Pterodactyl Message 0.73.  Message is
+This manual corresponds to Pterodactyl Message 0.74.  Message is
 distributed with the Gnus distribution bearing the same version number
 as this manual.
 
@@ -116,7 +116,7 @@ sending it.
 @section New Mail Message
 
 @findex message-mail
-The @code{message-mail} command pops up a new message buffer.  
+The @code{message-mail} command pops up a new message buffer.
 
 Two optional parameters are accepted: The first will be used as the
 @code{To} header and the second as the @code{Subject} header.  If these
@@ -127,7 +127,7 @@ are @code{nil}, those two headers will be empty.
 @section New News Message
 
 @findex message-news
-The @code{message-news} command pops up a new message buffer.  
+The @code{message-news} command pops up a new message buffer.
 
 This function accepts two optional parameters.  The first will be used
 as the @code{Newsgroups} header and the second as the @code{Subject}
@@ -153,8 +153,8 @@ If you want the replies to go to the @code{Sender} instead of the
 (setq message-reply-to-function
       (lambda ()
        (cond ((equal (mail-fetch-field "from") "somebody")
-               (mail-fetch-field "sender"))     
-             (t 
+               (mail-fetch-field "sender"))
+             (t
               nil))))
 @end lisp
 
@@ -170,7 +170,7 @@ This function can also return a list.  In that case, each list element
 should be a cons, where the car should be the name of an header
 (eg. @code{Cc}) and the cdr should be the header value
 (eg. @samp{larsi@@ifi.uio.no}).  All these headers will be inserted into
-the head of the outgoing mail. 
+the head of the outgoing mail.
 
 
 @node Wide Reply
@@ -186,7 +186,7 @@ reply that goes out to all people listed in the @code{To}, @code{From}
 Message uses the normal methods to determine where wide replies are to go,
 but you can change the behavior to suit your needs by fiddling with the
 @code{message-wide-reply-to-function}.  It is used in the same way as
-@code{message-reply-to-function} (@pxref{Reply}). 
+@code{message-reply-to-function} (@pxref{Reply}).
 
 @findex rmail-dont-reply-to-names
 Addresses that match the @code{rmail-dont-reply-to-names} regular
@@ -249,13 +249,13 @@ news.
 @item message-forward-start-separator
 @vindex message-forward-start-separator
 Delimiter inserted before forwarded messages.  The default is@*
-@samp{------- Start of forwarded message -------\n}. 
+@samp{------- Start of forwarded message -------\n}.
 
 @vindex message-forward-end-separator
 @item message-forward-end-separator
 @vindex message-forward-end-separator
 Delimiter inserted after forwarded messages.  The default is@*
-@samp{------- End of forwarded message -------\n}. 
+@samp{------- End of forwarded message -------\n}.
 
 @item message-signature-before-forwarded-message
 @vindex message-signature-before-forwarded-message
@@ -265,7 +265,7 @@ forwarded message will be inserted first in the new mail.
 
 @item message-included-forward-headers
 @vindex message-included-forward-headers
-Regexp matching header lines to be included in forwarded messages.  
+Regexp matching header lines to be included in forwarded messages.
 
 @item message-make-forward-subject-function
 @vindex message-make-forward-subject-function
@@ -288,7 +288,7 @@ Subject of article with @samp{Fwd:} prepended to it.
 @item message-wash-forwarded-subjects
 @vindex message-wash-forwarded-subjects
 If this variable is @code{t}, the subjects of forwarded messages have
-the evidence of previous forwards (such as @samp{Fwd:}, @samp{Re:}, 
+the evidence of previous forwards (such as @samp{Fwd:}, @samp{Re:},
 @samp{(fwd)}) removed before the new subject is
 constructed.  The default value is @code{nil}.
 
@@ -305,7 +305,7 @@ and resend the message in the current buffer to that address.
 @vindex message-ignored-resent-headers
 Headers that match the @code{message-ignored-resent-headers} regexp will
 be removed before sending the message.  The default is
-@samp{^Return-receipt}. 
+@samp{^Return-receipt}.
 
 
 @node Bouncing
@@ -316,7 +316,7 @@ The @code{message-bounce} command will, if the current buffer contains a
 bounced mail message, pop up a message buffer stripped of the bounce
 information.  A @dfn{bounced message} is typically a mail you've sent
 out that has been returned by some @code{mailer-daemon} as
-undeliverable. 
+undeliverable.
 
 @vindex message-ignored-bounced-headers
 Headers that match the @code{message-ignored-bounced-headers} regexp
@@ -331,6 +331,7 @@ will be removed before popping up the buffer.  The default is
 * Header Commands::     Commands for moving to headers.
 * Movement::            Moving around in message buffers.
 * Insertion::           Inserting things into message buffers.
+* MIME::                @sc{mime} considerations.
 * Various Commands::    Various things.
 * Sending::             Actually sending the message.
 * Mail Aliases::        How to use mail aliases.
@@ -351,57 +352,57 @@ it will be inserted.
 Describe the message mode.
 
 @item C-c C-f C-t
-@kindex C-c C-f C-t 
+@kindex C-c C-f C-t
 @findex message-goto-to
 Go to the @code{To} header (@code{message-goto-to}).
 
 @item C-c C-f C-b
-@kindex C-c C-f C-b 
+@kindex C-c C-f C-b
 @findex message-goto-bcc
 Go to the @code{Bcc} header (@code{message-goto-bcc}).
 
 @item C-c C-f C-f
-@kindex C-c C-f C-f 
+@kindex C-c C-f C-f
 @findex message-goto-fcc
 Go to the @code{Fcc} header (@code{message-goto-fcc}).
 
 @item C-c C-f C-c
-@kindex C-c C-f C-c 
+@kindex C-c C-f C-c
 @findex message-goto-cc
 Go to the @code{Cc} header (@code{message-goto-cc}).
 
 @item C-c C-f C-s
-@kindex C-c C-f C-s 
+@kindex C-c C-f C-s
 @findex message-goto-subject
 Go to the @code{Subject} header (@code{message-goto-subject}).
 
 @item C-c C-f C-r
-@kindex C-c C-f C-r 
+@kindex C-c C-f C-r
 @findex message-goto-reply-to
 Go to the @code{Reply-To} header (@code{message-goto-reply-to}).
 
 @item C-c C-f C-n
-@kindex C-c C-f C-n 
+@kindex C-c C-f C-n
 @findex message-goto-newsgroups
 Go to the @code{Newsgroups} header (@code{message-goto-newsgroups}).
 
 @item C-c C-f C-d
-@kindex C-c C-f C-d 
+@kindex C-c C-f C-d
 @findex message-goto-distribution
 Go to the @code{Distribution} header (@code{message-goto-distribution}).
 
 @item C-c C-f C-o
-@kindex C-c C-f C-o 
+@kindex C-c C-f C-o
 @findex message-goto-followup-to
 Go to the @code{Followup-To} header (@code{message-goto-followup-to}).
 
 @item C-c C-f C-k
-@kindex C-c C-f C-k 
+@kindex C-c C-f C-k
 @findex message-goto-keywords
 Go to the @code{Keywords} header (@code{message-goto-keywords}).
 
 @item C-c C-f C-u
-@kindex C-c C-f C-u 
+@kindex C-c C-f C-u
 @findex message-goto-summary
 Go to the @code{Summary} header (@code{message-goto-summary}).
 
@@ -413,13 +414,13 @@ Go to the @code{Summary} header (@code{message-goto-summary}).
 
 @table @kbd
 @item C-c C-b
-@kindex C-c C-b 
+@kindex C-c C-b
 @findex message-goto-body
 Move to the beginning of the body of the message
-(@code{message-goto-body}). 
+(@code{message-goto-body}).
 
 @item C-c C-i
-@kindex C-c C-i 
+@kindex C-c C-i
 @findex message-goto-signature
 Move to the signature of the message (@code{message-goto-signature}).
 
@@ -432,13 +433,13 @@ Move to the signature of the message (@code{message-goto-signature}).
 @table @kbd
 
 @item C-c C-y
-@kindex C-c C-y 
+@kindex C-c C-y
 @findex message-yank-original
 Yank the message that's being replied to into the message buffer
-(@code{message-yank-original}). 
+(@code{message-yank-original}).
 
 @item C-c C-q
-@kindex C-c C-q 
+@kindex C-c C-q
 @findex message-fill-yanked-message
 Fill the yanked message (@code{message-fill-yanked-message}).  Warning:
 Can severely mess up the yanked text if its quoting conventions are
@@ -447,10 +448,10 @@ just remember that @kbd{C-x u} (@code{undo}) is available and you'll be
 all right.
 
 @item C-c C-w
-@kindex C-c C-w 
+@kindex C-c C-w
 @findex message-insert-signature
 Insert a signature at the end of the buffer
-(@code{message-insert-signature}).  
+(@code{message-insert-signature}).
 
 @item C-c M-h
 @kindex C-c M-h
@@ -538,6 +539,27 @@ Including ASCII graphics is an efficient way to get everybody to believe
 that you are silly and have nothing important to say.
 
 
+@node MIME
+@section MIME
+@cindex MML
+@cindex MIME
+@cindex multipart
+@cindex attachment
+
+Message is a @sc{mime}-compliant posting agent.  The user generally
+doesn't have to do anything to make the @sc{mime} happen---Message will
+automatically add the @code{Content-Type} and
+@code{Content-Transfer-Encoding} headers.
+
+The most typical thing users want to use the multipart things in
+@sc{mime} for is to add ``attachments'' to mail they send out.  This can
+be done with the @code{C-c C-a} command, which will prompt for a file
+name and a @sc{mime} type.
+
+You can also create arbitrarily complex multiparts using the MML
+language (@pxref{Composing, , Composing, emacs-mime, The Emacs MIME
+Manual}).
+
 
 @node Various Commands
 @section Various Commands
@@ -545,7 +567,7 @@ that you are silly and have nothing important to say.
 @table @kbd
 
 @item C-c C-r
-@kindex C-c C-r 
+@kindex C-c C-r
 @findex message-caesar-buffer-body
 Caesar rotate (aka. rot13) the current message
 (@code{message-caesar-buffer-body}).  If narrowing is in effect, just
@@ -592,17 +614,17 @@ If point is before @samp{And} and you press @kbd{M-RET}, you'll get:
 > And here's more quoted text.
 @end example
 
-@samp{*} says where point will be placed.  
+@samp{*} says where point will be placed.
 
 @item C-c C-t
-@kindex C-c C-t 
+@kindex C-c C-t
 @findex message-insert-to
 Insert a @code{To} header that contains the @code{Reply-To} or
 @code{From} header of the message you're following up
-(@code{message-insert-to}). 
+(@code{message-insert-to}).
 
 @item C-c C-n
-@kindex C-c C-n 
+@kindex C-c C-n
 @findex message-insert-newsgroups
 Insert a @code{Newsgroups} header that reflects the @code{Followup-To}
 or @code{Newsgroups} header of the article you're replying to
@@ -622,15 +644,15 @@ prompt for a new buffer name.
 
 @table @kbd
 @item C-c C-c
-@kindex C-c C-c 
+@kindex C-c C-c
 @findex message-send-and-exit
 Send the message and bury the current buffer
-(@code{message-send-and-exit}). 
+(@code{message-send-and-exit}).
 
 @item C-c C-s
-@kindex C-c C-s 
+@kindex C-c C-s
 @findex message-send
-Send the message (@code{message-send}). 
+Send the message (@code{message-send}).
 
 @item C-c C-d
 @kindex C-c C-d
@@ -704,7 +726,7 @@ look sufficiently similar.
 @item message-generate-headers-first
 @vindex message-generate-headers-first
 If non-@code{nil}, generate all headers before starting to compose the
-message.  
+message.
 
 @item message-from-style
 @vindex message-from-style
@@ -738,7 +760,7 @@ ship it off again.  By default, this variable makes sure that the old
 generated @code{Message-ID} is deleted, and a new one generated.  If
 this isn't done, the entire empire would probably crumble, anarchy would
 prevail, and cats would start walking on two legs and rule the world.
-Allegedly.  
+Allegedly.
 
 @item message-default-headers
 @vindex message-default-headers
@@ -784,7 +806,7 @@ buffers that are initialized as mail.
 
 
 @node Mail Variables
-@section Mail Variables 
+@section Mail Variables
 
 @table @code
 @item message-send-mail-function
@@ -825,7 +847,7 @@ This required header will be filled out with the result of the
 
 @item Subject
 @cindex Subject
-This required header will be prompted for if not present already. 
+This required header will be prompted for if not present already.
 
 @item Newsgroups
 @cindex Newsgroups
@@ -928,21 +950,21 @@ to this list.
 Valid checks are:
 
 @table @code
-@item subject-cmsg 
+@item subject-cmsg
 Check the subject for commands.
 @item sender
 @cindex Sender
-Insert a new @code{Sender} header if the @code{From} header looks odd. 
-@item multiple-headers 
+Insert a new @code{Sender} header if the @code{From} header looks odd.
+@item multiple-headers
 Check for the existence of multiple equal headers.
-@item sendsys 
+@item sendsys
 @cindex sendsys
 Check for the existence of version and sendsys commands.
 @item message-id
 Check whether the @code{Message-ID} looks ok.
 @item from
 Check whether the @code{From} header seems nice.
-@item long-lines 
+@item long-lines
 @cindex long lines
 Check for too long lines.
 @item control-chars
@@ -964,7 +986,7 @@ Check whether there is any invisible text in the buffer.
 @item empty-headers
 Check whether any of the headers are empty.
 @item existing-newsgroups
-Check whether the newsgroups mentioned in the @code{Newsgroups} and 
+Check whether the newsgroups mentioned in the @code{Newsgroups} and
 @code{Followup-To} headers exist.
 @item valid-newsgroups
 Check whether the @code{Newsgroups} and @code{Followup-to} headers
@@ -999,7 +1021,7 @@ buffers that are initialized as news.
 @item message-send-news-function
 @vindex message-send-news-function
 Function used to send the current buffer as news.  The default is
-@code{message-send-news}. 
+@code{message-send-news}.
 
 @item message-post-method
 @vindex message-post-method
@@ -1016,7 +1038,7 @@ posting a prepared news message.
 @item message-signature-separator
 @vindex message-signature-separator
 Regexp matching the signature separator.  It is @samp{^-- *$} by
-default. 
+default.
 
 @item mail-header-separator
 @vindex mail-header-separator
@@ -1025,12 +1047,12 @@ follows this line--} by default.
 
 @item message-directory
 @vindex message-directory
-Directory used by many mailey things.  The default is @file{~/Mail/}. 
+Directory used by many mailey things.  The default is @file{~/Mail/}.
 
 @item message-signature-setup-hook
 @vindex message-signature-setup-hook
 Hook run when initializing the message buffer.  It is run after the
-headers have been inserted but before the signature has been inserted. 
+headers have been inserted but before the signature has been inserted.
 
 @item message-setup-hook
 @vindex message-setup-hook
@@ -1039,7 +1061,7 @@ but before yanked text is inserted.
 
 @item message-header-setup-hook
 @vindex message-header-setup-hook
-Hook called narrowed to the headers after initializing the headers. 
+Hook called narrowed to the headers after initializing the headers.
 
 For instance, if you're running Gnus and wish to insert a
 @samp{Mail-Copies-To} header in all your news articles and all messages
@@ -1069,9 +1091,8 @@ If you want to add certain headers before sending, you can use the
 (add-hook 'message-send-hook 'my-message-add-content)
 (defun my-message-add-content ()
   (message-add-header
-   "Mime-Version: 1.0"
-   "Content-Type: text/plain"
-   "Content-Transfer-Encoding: 7bit"))
+   "X-In-No-Sense: Nonsense"
+   "X-Whatever: no"))
 @end lisp
 
 This function won't add the header if the header is already present.
@@ -1130,8 +1151,8 @@ A function to be called if @var{predicate} returns non-@code{nil}.
 
 @table @code
 
-@item message-fcc-handler-function 
-@vindex message-fcc-handler-function 
+@item message-fcc-handler-function
+@vindex message-fcc-handler-function
 A function called to save outgoing articles.  This function will be
 called with the name of the file to store the article in. The default
 function is @code{message-output} which saves in Unix mailbox format.
@@ -1143,7 +1164,7 @@ the mailed copy.  If the string contains the format spec @samp{%s}, the
 newsgroups the article has been posted to will be inserted there.  If
 this variable is @code{nil}, no such courtesy message will be added.
 The default value is @samp{"The following message is a courtesy copy of
-an article\nthat has been posted to %s as well.\n\n"}. 
+an article\nthat has been posted to %s as well.\n\n"}.
 
 @end table
 
@@ -1196,7 +1217,7 @@ If non-@code{nil}, kill the buffer immediately on exit.
 When Message is being used from a news/mail reader, the reader is likely
 to want to perform some task after the message has been sent.  Perhaps
 return to the previous window configuration or mark an article as
-replied.  
+replied.
 
 @vindex message-kill-actions
 @vindex message-postpone-actions
@@ -1209,7 +1230,7 @@ C-d} which postpones the message editing and buries the message buffer,
 and @kbd{C-c C-k} which kills the message buffer.  Each of these actions
 have lists associated with them that contains actions to be executed:
 @code{message-send-actions}, @code{message-exit-actions},
-@code{message-postpone-actions}, and @code{message-kill-actions}.  
+@code{message-postpone-actions}, and @code{message-kill-actions}.
 
 Message provides a function to interface with these lists:
 @code{message-add-action}.  The first parameter is the action to be

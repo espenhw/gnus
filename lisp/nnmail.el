@@ -507,8 +507,8 @@ nn*-request-list should have been called before calling this function."
 If SOURCE is a directory spec, try to return the group name component."
   (if (eq (car source) 'directory)
       (let ((file (file-name-nondirectory file)))
-	(mail-source-bind directory source
-	  (if (string-match (concat (regexp-quote suffix "$") file))
+	(mail-source-bind (directory source)
+	  (if (string-match (concat (regexp-quote suffix) "$") file)
 	      (substring file 0 (match-beginning 0))
 	    nil)))
     nil))
@@ -1245,6 +1245,13 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 		    (t
 		     nnmail-treat-duplicates))))
 	 group-art)
+    ;; We insert a line that says what the mail source is.
+    (let ((case-fold-search t))
+      (goto-char (point-min))
+      (re-search-forward "^message-id[ \t]*:" nil t)
+      (beginning-of-line)
+      (insert (format "X-Gnus-Mail-Source: %s\n" mail-source-string)))
+
     ;; Let the backend save the article (or not).
     (cond
      ((not duplication)
@@ -1307,7 +1314,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 		  (list 'directory :path source))
 		 (t
 		  (list 'file :path source)))))
-	(nnheader-message 3 "%s: Reading incoming mail %S..." method source)
+	(nnheader-message 4 "%s: Reading incoming mail from %s..."
+			  method (car source))
 	(when (mail-source-fetch
 	       source
 	       `(lambda (file orig-file)
@@ -1324,7 +1332,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	(when exit-func
 	  (funcall exit-func))
 	(run-hooks 'nnmail-read-incoming-hook)
-	(nnheader-message 3 "%s: Reading incoming mail...done" method))
+	(nnheader-message 4 "%s: Reading incoming mail...done" method))
       ;; Close the message-id cache.
       (nnmail-cache-close)
       ;; Allow the user to hook.

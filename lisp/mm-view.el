@@ -28,6 +28,11 @@
 (require 'mm-bodies)
 (require 'mm-decode)
 
+(eval-and-compile
+  (autoload 'gnus-article-prepare-display "gnus-art")
+  (autoload 'vcard-parse-string "vcard")
+  (autoload 'vcard-format-string "vcard"))
+
 ;;;
 ;;; Functions for displaying various formats inline
 ;;;
@@ -86,6 +91,13 @@
 	    (enriched-decode (point-min) (point-max))
 	    (setq text (buffer-string)))))
       (mm-insert-inline handle text))
+     ((equal type "x-vcard")
+      (mm-insert-inline
+       handle
+       (concat "\n-- \n"
+	       (vcard-format-string
+		(vcard-parse-string (mm-get-part handle)
+				    'vcard-standard-filter)))))
      (t
       (setq text (mm-get-part handle))
       (let ((b (point))
@@ -122,9 +134,6 @@
 (defun mm-w3-prepare-buffer ()
   (require 'w3)
   (w3-prepare-buffer))
-
-(eval-and-compile
-  (autoload 'gnus-article-prepare-display "gnus-art"))
 
 (defun mm-view-message ()
   (gnus-article-prepare-display)

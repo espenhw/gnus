@@ -222,15 +222,16 @@ Thank you for your help in stamping out bugs.
 (defun gnus-setup-posting-charset (group)
   (let ((alist gnus-group-posting-charset-alist)
 	elem)
-    (catch 'found
-      (while (setq elem (pop alist))
-	(when (or (and (stringp (car elem))
-		       (string-match (car elem) group))
-		  (and (gnus-functionp (car elem))
-		       (funcall (car elem) group))
-		  (and (symbolp (car elem))
-		       (symbol-value (car elem))))
-	  (throw 'found (cadr elem)))))))
+    (when group
+      (catch 'found
+	(while (setq elem (pop alist))
+	  (when (or (and (stringp (car elem))
+			 (string-match (car elem) group))
+		    (and (gnus-functionp (car elem))
+			 (funcall (car elem) group))
+		    (and (symbolp (car elem))
+			 (symbol-value (car elem))))
+	    (throw 'found (cadr elem))))))))
 
 (defun gnus-inews-add-send-actions (winconf buffer article)
   (make-local-hook 'message-sent-hook)

@@ -375,7 +375,8 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 		   (match-beginning 0) (match-end 0)
 		   'invisible t)
 		(article-goto-body)
-		(backward-char 1))))
+		(unless (bobp)
+		  (backward-char 1)))))
 	  (if (null gnus-picons-piconsearch-url)
 	      (gnus-picons-display-pairs
 	       (gnus-picons-lookup-pairs

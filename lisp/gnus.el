@@ -259,7 +259,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.73"
+(defconst gnus-version-number "0.74"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -1716,8 +1716,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-group-set-mode-line gnus-group-set-info gnus-group-save-newsrc
       gnus-group-setup-buffer gnus-group-get-new-news
       gnus-group-make-help-group gnus-group-update-group
-      gnus-clear-inboxes-moved gnus-group-iterate
-      gnus-group-group-name)
+      gnus-group-iterate gnus-group-group-name)
      ("gnus-bcklg" gnus-backlog-request-article gnus-backlog-enter-article
       gnus-backlog-remove-article)
      ("gnus-art" gnus-article-read-summary-keys gnus-article-save

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.73 Manual
+@settitle Pterodactyl Gnus 0.74 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -270,7 +270,7 @@
 
 \thispagestyle{empty}
 
-Copyright \copyright{} 1995,96,97,98 Free Software Foundation, Inc.
+Copyright \copyright{} 1995,96,97,98,99 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -293,7 +293,7 @@ into another language, under the above conditions for modified versions.
 
 This file documents Gnus, the GNU Emacs newsreader.
 
-Copyright (C) 1995,96 Free Software Foundation, Inc.
+Copyright (C) 1995,96,97,98,99 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -318,13 +318,13 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.73 Manual
+@title Pterodactyl Gnus 0.74 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1995,96,97 Free Software Foundation, Inc.
+Copyright @copyright{} 1995,96,97,98,99 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.73.
+This manual corresponds to Pterodactyl Gnus 0.74.
 
 @end ifinfo
 
@@ -6607,6 +6607,11 @@ Do word wrap (@code{gnus-article-fill-cited-article}).
 You can give the command a numerical prefix to specify the width to use
 when filling.
 
+@item W q
+@kindex W q (Summary)
+@findex gnus-article-fill-long-lines
+Fill long lines (@code{gnus-article-fill-long-lines}).
+
 @item W c
 @kindex W c (Summary)
 @findex gnus-article-remove-cr
@@ -8227,8 +8232,16 @@ An integer: Do this treatment on all body parts that have a length less
 than this number.
 
 @item
-A sexp: Do this treatment on all body parts where the sexp evals to a
-non-@code{nil} value.
+A list:
+
+The list is evaluated recursively.  The first element of the list is a
+predicate.  The following predicates are recognized: @code{or},
+@code{and}, @code{not} and @code{typep}.  Here's an example:
+
+@lisp
+(or last
+    (typep "text/x-vcard"))
+@end lisp
 
 @end enumerate
 
@@ -8242,7 +8255,8 @@ Are the treatments applied to all sorts of multipart parts?  Yes, if you
 want to, but by default, only @samp{text/plain} parts are given the
 treatment.  This is controlled by the @code{gnus-article-treat-types}
 variable, which is a list of regular expressions that are matched to the
-type of the part.
+type of the part.  This variable is ignored if the value of the
+controlling variable is a predicate list, as described above.
 
 The following treatment options are available.  The easiest way to
 customize this is to examine the @code{gnus-article-treat} customization
@@ -9714,9 +9728,9 @@ course.
 @menu
 * Getting Started Reading Mail:: A simple cookbook example.
 * Splitting Mail::               How to create mail groups.
+* Mail Sources::                 How to tell Gnus where to get mail from.
 * Mail Backend Variables::       Variables for customizing mail handling.
 * Fancy Mail Splitting::         Gnus can do hairy splitting of incoming mail.
-* Mail and Procmail::            Reading mail groups that procmail create.
 * Incorporating Old Mail::       What about the old mail you have?
 * Expiring Mail::                Getting rid of unwanted mail.
 * Washing Mail::                 Removing gruft from the mail you get.
@@ -9854,6 +9868,200 @@ you really should be out collecting empty bottles to save up for next
 month's rent money.
 
 
+@node Mail Sources
+@subsection Mail Sources
+
+Mail can be gotten from many different sources---the mail spool, from a
+POP mail server, or from a procmail directory, for instance.
+
+@menu
+* Mail Source Specifiers::       How to specify what a mail source is.
+* Mail Source Customization::    Some variables that influence things.
+* Fetching Mail::                Using the mail source specifiers.
+@end menu
+
+
+@node Mail Source Specifiers
+@subsubsection Mail Source Specifiers
+@cindex POP
+@cindex mail server
+@cindex procmail
+@cindex mail spool
+@cindex mail source
+
+You tell Gnus how to fetch mail by creating a @dfn{mail source
+specifier}.
+
+Here's an example:
+
+@lisp
+(pop :server "pop3.mailserver.com" :user "myname")
+@end lisp
+
+As can be observed, a mail source specifier is a list where the first
+element is a @dfn{mail source type}, followed by an arbitrary number of
+@dfn{keywords}.  Keywords that are not explicitly specified are given
+default values.
+
+The following mail source types are available:
+
+@table @code
+@item file
+Get mail from a single file; typically from the mail spool.
+
+Keywords:
+
+@table @code
+@item :path
+The path of the file.  Defaults to the value of the @code{MAIL}
+environment variable or @file{/usr/mail/spool/user-name}.
+@end table
+
+An example file mail source:
+
+@lisp
+(file :path "/usr/spool/mail/user-name")
+@end lisp
+
+Or using the default path:
+
+@lisp
+(file)
+@end lisp
+
+@item directory
+Get mail from several files in a directory.  This is typically used when
+you have procmail split the incoming mail into several files.
+
+Keywords:
+
+@table @code
+@item :path
+The path of the directory where the files are.  There is no default
+value.
+
+@item :suffix
+Only files ending with this suffix are used.  The default is
+@samp{.spool}.
+@end table
+
+An example directory mail source:
+
+@lisp
+(directory :path "/home/user-name/procmail-dir/"
+           :suffix ".prcml")
+@end lisp
+
+@item pop
+Get mail from a POP server.
+
+Keywords:
+
+@table @code
+@item :server
+The name of the POP server.  The default is taken from the
+@code{MAILHOST} environment variable.
+
+@item :port
+The port number of the POP server.  The default is @samp{pop3}.
+
+@item :user
+The user name to give to the POP server.  The default is the login
+name.
+
+@item :password
+The password to give to the POP server.  If not specified, the user is
+prompted.
+@end table
+
+@end table
+
+
+@node Mail Source Customization
+@subsubsection Mail Source Customization
+
+The following is a list of variables that influence how the mail is
+fetched.  You would normally not need to set or change any of these
+variables.
+
+@table @code
+@item mail-source-movemail-program
+@vindex mail-source-movemail-program
+A command to be executed to move mail from the inbox.  The default is
+@samp{movemail}.
+
+This can also be a function.  In that case, the function will be
+called with two parameters -- the name of the INBOX file, and the file
+to be moved to.
+
+@item mail-source-movemail-args
+@vindex mail-source-movemail-args
+Extra arguments to give to the command described above.
+
+@item mail-source-crash-box
+@vindex mail-source-crash-box
+File where mail will be stored while processing it.  The default is
+@file{~/.emacs-mail-crash-box}.
+
+@item mail-source-delete-incoming
+@vindex mail-source-delete-incoming
+If non-@code{nil}, delete incoming files after handling them.
+
+@item mail-source-directory
+@vindex mail-source-directory
+Directory where files (if any) will be stored.  The default is
+@file{~/Mail/}.  At present, the only thing this is used for is to say
+where the incoming files will be stored if the previous variable is
+@code{nil}.
+
+@item mail-source-default-file-modes
+@vindex mail-source-default-file-modes
+All new mail files will get this file mode.  The default is 384.
+
+@end table
+
+
+@node Fetching Mail
+@subsubsection Fetching Mail
+
+The way to actually tell Gnus where to get new mail from is to set
+@code{nnmail-spool-file} to a list of mail source specifiers
+(@pxref{Mail Source Specifiers}).
+
+If this variable is @code{nil}, the mail backends will never attempt to
+fetch mail by themselves.
+
+If you want to fetch mail both from your local spool as well as a POP
+mail server, you'd say something like:
+
+@lisp
+(setq mail-spool-file
+      '((file)
+        (pop :server "pop3.mail.server"
+             :password "secret")))
+@end lisp
+
+Or, if you don't want to use any of the keyword defaults:
+
+@lisp
+(setq mail-spool-file
+      '((file :path "/var/spool/mail/user-name")
+        (pop :server "pop3.mail.server"
+             :user "user-name"
+             :port "pop3"
+             :password "secret")))
+@end lisp
+
+
+When you use a mail backend, Gnus will slurp all your mail from your
+inbox and plonk it down in your home directory.  Gnus doesn't move any
+mail if you're not using a mail backend---you have to do a lot of magic
+invocations first.  At the time when you have finished drawing the
+pentagram, lightened the candles, and sacrificed the goat, you really
+shouldn't be too surprised when Gnus moves your mail.
+
+
+
 @node Mail Backend Variables
 @subsection Mail Backend Variables
 
@@ -9865,56 +10073,6 @@ mail backends.
 @item nnmail-read-incoming-hook
 The mail backends all call this hook after reading new mail.  You can
 use this hook to notify any mail watch programs, if you want to.
-
-@vindex nnmail-spool-file
-@item nnmail-spool-file
-@cindex POP mail
-@cindex MAILHOST
-@cindex movemail
-@vindex nnmail-pop-password
-@vindex nnmail-pop-password-required
-The backends will look for new mail in this file.  If this variable is
-@code{nil}, the mail backends will never attempt to fetch mail by
-themselves.  If you are using a POP mail server and your name is
-@samp{larsi}, you should set this variable to @samp{po:larsi}.  If
-your name is not @samp{larsi}, you should probably modify that
-slightly, but you may have guessed that already, you smart & handsome
-devil!  You can also set this variable to @code{pop}, and Gnus will try
-to figure out the POP mail string by itself.  In any case, Gnus will
-call @code{movemail} which will contact the POP server named in the
-@code{MAILHOST} environment variable.  If the POP server needs a
-password, you can either set @code{nnmail-pop-password-required} to
-@code{t} and be prompted for the password, or set
-@code{nnmail-pop-password} to the password itself.
-
-@code{nnmail-spool-file} can also be a list of mailboxes.
-
-Your Emacs has to have been configured with @samp{--with-pop} before
-compilation.  This is the default, but some installations have it
-switched off.
-
-When you use a mail backend, Gnus will slurp all your mail from your
-inbox and plonk it down in your home directory.  Gnus doesn't move any
-mail if you're not using a mail backend---you have to do a lot of magic
-invocations first.  At the time when you have finished drawing the
-pentagram, lightened the candles, and sacrificed the goat, you really
-shouldn't be too surprised when Gnus moves your mail.
-
-@vindex nnmail-use-procmail
-@vindex nnmail-procmail-suffix
-@item nnmail-use-procmail
-If non-@code{nil}, the mail backends will look in
-@code{nnmail-procmail-directory} for incoming mail.  All the files in
-that directory that have names ending in @code{nnmail-procmail-suffix}
-will be considered incoming mailboxes, and will be searched for new
-mail.
-
-@vindex nnmail-crash-box
-@item nnmail-crash-box
-When a mail backend reads a spool file, mail is first moved to this
-file, which is @file{~/.gnus-crash-box} by default.  If this file
-already exists, it will always be read (and incorporated) before any
-other spool files.
 
 @vindex nnmail-split-hook
 @item nnmail-split-hook
@@ -9947,42 +10105,6 @@ default file modes the new mail files get:
 (add-hook 'gnus-post-get-new-mail-hook
           (lambda () (set-default-file-modes 551)))
 @end lisp
-
-@item nnmail-tmp-directory
-@vindex nnmail-tmp-directory
-This variable says where to move incoming mail to -- while processing
-it.  This is usually done in the same directory that the mail backend
-inhabits (e.g., @file{~/Mail/}), but if this variable is non-@code{nil},
-it will be used instead.
-
-@item nnmail-movemail-program
-@vindex nnmail-movemail-program
-This program is executed to move mail from the user's inbox to her home
-directory.  The default is @samp{movemail}.
-
-This can also be a function.  In that case, the function will be called
-with two parameters -- the name of the inbox, and the file to be moved
-to.
-
-@item nnmail-delete-incoming
-@vindex nnmail-delete-incoming
-@cindex incoming mail files
-@cindex deleting incoming files
-If non-@code{nil}, the mail backends will delete the temporary incoming
-file after splitting mail into the proper groups.  This is @code{t} by
-default.
-
-@c This is @code{nil} by
-@c default for reasons of security.
-
-@c Since Red Gnus is an alpha release, it is to be expected to lose mail.
-(No Gnus release since (ding) Gnus 0.10 (or something like that) have
-lost mail, I think, but that's not the point.  (Except certain versions
-of Red Gnus.))  By not deleting the Incoming* files, one can be sure not
-to lose mail -- if Gnus totally whacks out, one can always recover what
-was lost.
-
-You may delete the @file{Incoming*} files at will.
 
 @item nnmail-use-long-file-names
 @vindex nnmail-use-long-file-names
@@ -10110,92 +10232,6 @@ If the string contains the element @samp{\&}, then the previously
 matched string will be substituted.  Similarly, the elements @samp{\\1}
 up to @samp{\\9} will be substituted with the text matched by the
 groupings 1 through 9.
-
-
-@node Mail and Procmail
-@subsection Mail and Procmail
-@cindex procmail
-
-@cindex slocal
-@cindex elm
-Many people use @code{procmail} (or some other mail filter program or
-external delivery agent---@code{slocal}, @code{elm}, etc) to split
-incoming mail into groups.  If you do that, you should set
-@code{nnmail-spool-file} to @code{procmail} to ensure that the mail
-backends never ever try to fetch mail by themselves.
-
-If you have a combined @code{procmail}/POP/mailbox setup, you can do
-something like the following:
-
-@vindex nnmail-use-procmail
-@lisp
-(setq nnmail-use-procmail t)
-(setq nnmail-spool-file
-      '("/usr/spool/mail/my-name" "po:my-name"))
-@end lisp
-
-This also means that you probably don't want to set
-@code{nnmail-split-methods} either, which has some, perhaps, unexpected
-side effects.
-
-When a mail backend is queried for what groups it carries, it replies
-with the contents of that variable, along with any groups it has figured
-out that it carries by other means.  None of the backends, except
-@code{nnmh}, actually go out to the disk and check what groups actually
-exist.  (It's not trivial to distinguish between what the user thinks is
-a basis for a newsgroup and what is just a plain old file or directory.)
-
-This means that you have to tell Gnus (and the backends) by hand what
-groups exist.
-
-Let's take the @code{nnmh} backend as an example:
-
-The folders are located in @code{nnmh-directory}, say, @file{~/Mail/}.
-There are three folders, @file{foo}, @file{bar} and @file{mail.baz}.
-
-Go to the group buffer and type @kbd{G m}.  When prompted, answer
-@samp{foo} for the name and @samp{nnmh} for the method.  Repeat
-twice for the two other groups, @samp{bar} and @samp{mail.baz}.  Be sure
-to include all your mail groups.
-
-That's it.  You are now set to read your mail.  An active file for this
-method will be created automatically.
-
-@vindex nnmail-procmail-suffix
-@vindex nnmail-procmail-directory
-If you use @code{nnfolder} or any other backend that store more than a
-single article in each file, you should never have procmail add mails to
-the file that Gnus sees.  Instead, procmail should put all incoming mail
-in @code{nnmail-procmail-directory}.  To arrive at the file name to put
-the incoming mail in, append @code{nnmail-procmail-suffix} to the group
-name.  The mail backends will read the mail from these files.
-
-@vindex nnmail-resplit-incoming
-When Gnus reads a file called @file{mail.misc.spool}, this mail will be
-put in the @code{mail.misc}, as one would expect.  However, if you want
-Gnus to split the mail the normal way, you could set
-@code{nnmail-resplit-incoming} to @code{t}.
-
-@vindex nnmail-keep-last-article
-If you use @code{procmail} to split things directly into an @code{nnmh}
-directory (which you shouldn't do), you should set
-@code{nnmail-keep-last-article} to non-@code{nil} to prevent Gnus from
-ever expiring the final article (i.e., the article with the highest
-article number) in a mail newsgroup.  This is quite, quite important.
-
-Here's an example setup:  The incoming spools are located in
-@file{~/incoming/} and have @samp{""} as suffixes (i.e., the incoming
-spool files have the same names as the equivalent groups).  The
-@code{nnfolder} backend is to be used as the mail interface, and the
-@code{nnfolder} directory is @file{~/fMail/}.
-
-@lisp
-(setq nnfolder-directory "~/fMail/")
-(setq nnmail-spool-file 'procmail)
-(setq nnmail-procmail-directory "~/incoming/")
-(setq gnus-secondary-select-methods '((nnfolder "")))
-(setq nnmail-procmail-suffix "")
-@end lisp
 
 
 @node Incorporating Old Mail

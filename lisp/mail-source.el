@@ -73,6 +73,9 @@ The default is nil."
 
 ;;; Internal variables.
 
+(defvar mail-source-string ""
+  "A dynamically bound string that says what the current mail source is.")
+
 (eval-and-compile
   (defvar mail-source-keyword-map
     '((file
@@ -80,8 +83,7 @@ The default is nil."
 		  (concat "/usr/spool/mail/" (user-login-name)))))
       (directory
        (:path)
-       (:suffix ".spool")
-       (:match))
+       (:suffix ".spool"))
       (pop
        (:server (getenv "MAILHOST"))
        (:port "pop3")
@@ -108,7 +110,7 @@ All keywords that can be used must be listed here."))
   "Strip the leading colon off the KEYWORD."
   (intern (substring (symbol-name keyword) 1))))
 
-(eval-when-compile
+(eval-and-compile
   (defun mail-source-bind-1 (type)
     (let* ((defaults (cdr (assq type mail-source-keyword-map)))
 	   default bind)
@@ -118,14 +120,20 @@ All keywords that can be used must be listed here."))
 	      bind))
       bind)))
 
-(defmacro mail-source-bind (type source &rest body)
-  "Bind all variables in SOURCE."
-  `(let ,(mail-source-bind-1 type)
-     (mail-source-set-1 source)
+(defmacro mail-source-bind (type-source &rest body)
+  "Return a `let' form that binds all variables in source TYPE.
+At run time, the mail source specifier SOURCE will be inspected,
+and the variables will be set according to it.  Variables not
+specified will be given default values.
+
+After this is done, BODY will be executed in the scope
+of the `let' form."
+  `(let ,(mail-source-bind-1 (car type-source))
+     (mail-source-set-1 ,(cadr type-source))
      ,@body))
 
-(put 'mail-source-bind 'lisp-indent-function 2)
-(put 'mail-source-bind 'edebug-form-spec '(form form body))
+(put 'mail-source-bind 'lisp-indent-function 1)
+(put 'mail-source-bind 'edebug-form-spec '(form body))
 
 (defun mail-source-set-1 (source)
   (let* ((type (pop source))
@@ -185,11 +193,13 @@ Pass INFO on to CALLBACK."
   (if (or (not (file-exists-p mail-source-crash-box))
 	  (zerop (nth 7 (file-attributes mail-source-crash-box))))
       (progn
-	(delete-file mail-source-crash-box)
+	(when (file-exists-p mail-source-crash-box)
+	  (delete-file mail-source-crash-box))
 	0)
     (funcall callback mail-source-crash-box info)
     (if mail-source-delete-incoming
-	(delete-file mail-source-crash-box)
+	(when (file-exists-p mail-source-crash-box)
+	  (delete-file mail-source-crash-box))
       (let ((incoming
 	     (mail-source-make-complex-temp-name
 	      (expand-file-name
@@ -215,6 +225,9 @@ Pass INFO on to CALLBACK."
 	t)
        ((not (file-exists-p from))
 	;; There is no inbox.
+	(setq to nil))
+       ((zerop (nth 7 (file-attributes from)))
+	;; Empty file.
 	(setq to nil))
        (t
 	;; If getting from mail spool directory, use movemail to move
@@ -270,7 +283,8 @@ Pass INFO on to CALLBACK."
 				   (buffer-string) result))
 		    (error "%s" (buffer-string)))
 		  (setq to nil)))))))
-      (when (buffer-name errors)
+      (when (and errors
+		 (buffer-name errors))
 	(kill-buffer errors))
       ;; Return whether we moved successfully or not.
       to)))
@@ -293,18 +307,20 @@ If ARGS, PROMPT is used as an argument to `format'."
 
 (defun mail-source-fetch-file (source callback)
   "Fetcher for single-file sources."
-  (mail-source-bind file source
-    (if (mail-source-movemail path mail-source-crash-box)
-	(mail-source-callback callback path)
-      0)))
+  (mail-source-bind (file source)
+    (let ((mail-source-string (format "file:%s" path)))
+      (if (mail-source-movemail path mail-source-crash-box)
+	  (mail-source-callback callback path)
+	0))))
 
 (defun mail-source-fetch-directory (source callback)
   "Fetcher for directory sources."
-  (mail-source-bind directory source
+  (mail-source-bind (directory source)
     (let ((files (directory-files
 		  path t
-		  (or match (concat (regexp-quote suffix) "$"))))
+		  (concat (regexp-quote suffix) "$")))
 	  (found 0)
+	  (mail-source-string (format "directory:%s" path))
 	  file)
       (while (setq file (pop files))
 	(when (mail-source-movemail file mail-source-crash-box)
@@ -313,8 +329,9 @@ If ARGS, PROMPT is used as an argument to `format'."
 
 (defun mail-source-fetch-pop (source callback)
   "Fetcher for single-file sources."
-  (mail-source-bind pop source
-    (let ((from (format "%s:%s:%s" server user port)))
+  (mail-source-bind (pop source)
+    (let ((from (format "%s:%s:%s" server user port))
+	  (mail-source-string (format "pop:%s@%s" user server)))
       (setq password
 	    (or password
 		(cdr (assoc from mail-source-password-cache))

@@ -1,3 +1,97 @@
+Wed Jan 27 05:24:53 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.74 is released.
+
+1999-01-27 05:56:29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-fill-long-lines): Renamed.
+	(article-fill-long-lines): New keystroke.
+
+1999-01-26 06:35:07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-setup-posting-charset): Check for group.
+
+	* gnus-group.el (gnus-group-catchup-current): Skip groups now
+	displayed.
+	(gnus-group-catchup-current): Be more robus.
+
+	* gnus-sum.el (gnus-summary-select-article): Reselect for showing
+	headers.
+
+1999-01-25  Dave Love  <fx@gnu.org>
+
+	* message.el (message-mode-menu): Add message-mime-attach-file.
+	(message-mode): Doc fix.
+
+1999-01-26 05:24:19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnmail.el (nnmail-check-duplication): Insert the mail source
+	string.
+
+	* mail-source.el (mail-source-fetch-pop): Bind mail-source-string.
+	(mail-source-fetch-directory): Ditto.
+	(mail-source-fetch-file): Ditto.
+	(mail-source-string): New variable.
+
+	* gnus-start.el (gnus-get-unread-articles): Nix out groups over
+	the level.
+
+	* rfc2047.el (rfc2047-encodable-p): Convert to MIME charsets
+	before handling.
+
+	* mm-util.el (mm-mime-charset): Use the parameters.
+	(mm-mime-charset): Removed region paremeters.
+
+	* nnmail.el (nnmail-get-new-mail): Don't message the entire
+	source.
+
+1999-01-25 12:05:16  Lloyd Zusman  <ljz@asfast.com>
+
+	* nnmail.el (nnmail-get-split-group): Quote right.
+
+1999-01-25 05:55:41  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-source.el (mail-source-movemail): Would kill an arbitrary
+	buffer.
+
+1999-01-24 03:02:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-clear-inboxes-moved): Removed.
+	(gnus-group-mode): Don't hook.
+
+	* mail-source.el (mail-source-bind): Doc fix.
+	(mail-source-bind): Take only one param.
+
+	* gnus-art.el (gnus-treat-highlight-signature): typep.
+
+	* mail-source.el (mail-source-movemail): Ignore empty file.
+	(mail-source-callback): Check before deleting.
+
+	* message.el (message-mime-attach-file): Include name.
+
+1999-01-23 17:01:12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-util.el (mm-read-charset): Return a symbol.
+
+	* mm-view.el (mm-inline-text): Insert signature separator.
+
+	* gnus-art.el (gnus-treat-predicate): New function.
+	(gnus-treat-article): Allow all types to be checked.
+
+	* gnus-util.el (gnus-or): New function.
+	(gnus-and): Ditto.
+
+	* gnus-art.el (gnus-mime-display-single): Use override.
+
+	* mm-decode.el (mm-attachment-override-types): New variable.
+	(mm-attachment-override-p): New function.
+
+	* gnus-picon.el (gnus-group-display-picons): Don't go backward.
+
+1999-01-23 16:45:06  Andrew J. Cosgriff  <ajc@bing.wattle.id.au>
+
+	* mm-view.el (mm-inline-text): Do vcards.
+
 Sat Jan 23 14:23:27 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.73 is released.

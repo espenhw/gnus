@@ -1519,10 +1519,14 @@ newsgroup."
 					   "-request-update-info")))
 	      (inline (gnus-request-update-info info method))))
 	;; These groups are native or secondary.
-	(when (and (<= (gnus-info-level info) level)
-		   (not gnus-read-active-file))
+	(cond
+	 ;; We don't want these groups.
+	 ((> (gnus-info-level info) level)
+	  (setq active nil))
+	 ;; Activate groups.
+	 ((not gnus-read-active-file)
 	  (setq active (gnus-activate-group group 'scan))
-	  (inline (gnus-close-group group))))
+	  (inline (gnus-close-group group)))))
 
       ;; Get the number of unread articles in the group.
       (if active

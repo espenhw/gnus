@@ -69,8 +69,7 @@ If no encoding was done, nil is returned."
 	  charsets)
 	 ;; We encode.
 	 (t
-	  (let ((mime-charset
-		 (mm-mime-charset (car charsets) (point-min) (point-max)))
+	  (let ((mime-charset (mm-mime-charset (car charsets)))
 		start)
 	    (when (or t
 		      ;; We always decode.

@@ -939,6 +939,21 @@ ARG is passed to the first function."
       (eq (cadr (memq 'gnus-undeletable (text-properties-at b))) t)
     (text-property-any b e 'gnus-undeletable t)))
 
+(defun gnus-or (&rest elems)
+  "Return non-nil if any of the elements are non-nil."
+  (catch 'found
+    (while elems
+      (when (pop elems)
+	(throw 'found t)))))
+
+(defun gnus-and (&rest elems)
+  "Return non-nil if all of the elements are non-nil."
+  (catch 'found
+    (while elems
+      (unless (pop elems)
+	(throw 'found nil)))
+    t))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

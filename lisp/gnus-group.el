@@ -782,8 +782,6 @@ The following commands are available:
   (gnus-set-default-directory)
   (gnus-update-format-specifications nil 'group 'group-mode)
   (gnus-update-group-mark-positions)
-  (make-local-hook 'post-command-hook)
-  (add-hook 'post-command-hook 'gnus-clear-inboxes-moved nil t)
   (when gnus-use-undo
     (gnus-undo-mode 1))
   (when gnus-slave
@@ -803,9 +801,6 @@ The following commands are available:
       (setq gnus-group-mark-positions
 	    (list (cons 'process (and (search-forward "\200" nil t)
 				      (- (point) 2))))))))
-
-(defun gnus-clear-inboxes-moved ()
-  (setq nnmail-moved-inboxes nil))
 
 (defun gnus-mouse-pick-group (e)
   "Enter the group under the mouse pointer."
@@ -851,8 +846,6 @@ Also see the `gnus-group-use-permanent-levels' variable."
 	    (gnus-group-default-level nil t)
 	    gnus-group-default-list-level
 	    gnus-level-subscribed))))
-  ;; Just do this here, for no particular good reason.
-  (gnus-clear-inboxes-moved)
   (unless level
     (setq level (car gnus-group-list-mode)
 	  unread (cdr gnus-group-list-mode)))
@@ -2453,7 +2446,8 @@ The number of newsgroups that this function was unable to catch
 up is returned."
   (interactive "P")
   (let ((groups (gnus-group-process-prefix n))
-	(ret 0))
+	(ret 0)
+	group)
     (unless groups (error "No groups selected"))
     (if (not
 	 (or (not gnus-interactive-catchup) ;Without confirmation?
@@ -2467,21 +2461,20 @@ up is returned."
 		   (car groups)
 		 (format "these %d groups" (length groups)))))))
 	n
-      (while groups
+      (while (setq groups (pop groups))
 	;; Virtual groups have to be given special treatment.
-	(let ((method (gnus-find-method-for-group (car groups))))
+	(let ((method (gnus-find-method-for-group group)))
 	  (when (eq 'nnvirtual (car method))
 	    (nnvirtual-catchup-group
-	     (gnus-group-real-name (car groups)) (nth 1 method) all)))
-	(gnus-group-remove-mark (car groups))
-	(if (>= (gnus-group-group-level) gnus-level-zombie)
+	     (gnus-group-real-name group) (nth 1 method) all)))
+	(if (>= (gnus-info-level (gnus-get-info group))
+		gnus-level-zombie)
 	    (gnus-message 2 "Dead groups can't be caught up")
 	  (if (prog1
-		  (gnus-group-goto-group (car groups))
-		(gnus-group-catchup (car groups) all))
+		  (gnus-group-goto-group group)
+		(gnus-group-catchup group all))
 	      (gnus-group-update-group-line)
-	    (setq ret (1+ ret))))
-	(setq groups (cdr groups)))
+	    (setq ret (1+ ret)))))
       (gnus-group-next-unread-group 1)
       ret)))
 

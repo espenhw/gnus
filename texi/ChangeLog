@@ -1,6 +1,16 @@
+1999-01-25 04:24:01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.texi (MIME): New.
+
+	* gnus.texi (Mail Sources): New.
+	(Mail Source Specifiers): New.
+	(Mail Source Customization): New.
+	(Fetching Mail): New.
+
 1999-01-23 09:47:16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Article Washing): Removed.
+	(Customizing Articles): Addition.
 
 1999-01-16 20:36:48  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

@@ -81,6 +81,7 @@
     ("text/enriched" mm-inline-text t)
     ("text/richtext" mm-inline-text t)
     ("text/html" mm-inline-text (locate-library "w3"))
+    ("text/x-vcard" mm-inline-text (locate-library "vcard"))
     ("message/delivery-status" mm-inline-text t)
     ("text/.*" mm-inline-text t)
     ("audio/wav" mm-inline-audio
@@ -101,7 +102,11 @@
 
 (defvar mm-user-automatic-display
   '("text/plain" "text/enriched" "text/richtext" "text/html"
-    "image/.*" "message/delivery-status" "multipart/.*"))
+    "text/x-vcard" "image/.*" "message/delivery-status" "multipart/.*"))
+
+(defvar mm-attachment-override-types
+  '("text/plain" "text/x-vcard")
+  "Types that should have \"attachment\" ignored if they can be displayed inline.")
 
 (defvar mm-user-automatic-external-display nil
   "List of MIME type regexps that will be displayed externally automatically.")
@@ -429,6 +434,16 @@ external if displayed external."
 	(setq result t
 	      methods nil)))
     result))
+
+(defun mm-attachment-override-p (type)
+  "Say whether TYPE should have attachment behavior overridden."
+  (let ((types mm-attachment-override-types)
+	ty)
+    (catch 'found
+      (while (setq ty (pop types))
+	(when (and (string-match ty type)
+		   (mm-inlinable-p type))
+	  (throw 'found t))))))
 
 (defun mm-automatic-external-display-p (type)
   "Return the user-defined method for TYPE."

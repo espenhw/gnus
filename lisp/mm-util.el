@@ -189,14 +189,19 @@ used as the line break code type of the coding system."
   (when (fboundp 'set-buffer-multibyte)
     (set-buffer-multibyte nil)))
 
-(defun mm-mime-charset (charset b e)
+(defun mm-mime-charset (charset)
+  "Return the MIME charset corresponding to the MULE CHARSET."
   (if (fboundp 'coding-system-get)
+      ;; This exists in Emacs 20.
       (or
-       (coding-system-get
-	(get-charset-property charset 'prefered-coding-system)
-	'mime-charset)
-       (car (memq charset (find-coding-systems-region
-			   (point-min) (point-max)))))
+       (and (get-charset-property charset 'prefered-coding-system)
+	    (coding-system-get
+	     (get-charset-property charset 'prefered-coding-system)
+	     'mime-charset))
+       (and (eq charset 'ascii)
+	    'us-ascii)
+       (get-charset-property charset 'prefered-coding-system))
+    ;; This is for XEmacs.
     (mm-mule-charset-to-mime-charset charset)))
 
 (defsubst mm-multibyte-p ()
@@ -261,11 +266,12 @@ See also `with-temp-file' and `with-output-to-string'."
 
 (defun mm-read-charset (prompt)
   "Return a charset."
-  (completing-read
-   prompt
-   (mapcar (lambda (e) (list (symbol-name (car e))))
-	   mm-mime-mule-charset-alist)
-   nil t))
+  (intern
+   (completing-read
+    prompt
+    (mapcar (lambda (e) (list (symbol-name (car e))))
+	    mm-mime-mule-charset-alist)
+    nil t)))
 
 (provide 'mm-util)
 
