@@ -6737,7 +6737,7 @@ If optional argument UNREAD is non-nil, only unread article is selected."
   "Insert the subject header for ARTICLES in the current buffer."
   (save-excursion
     (dolist (article articles)
-      (gnus-summary-goto-subject articles t)))
+      (gnus-summary-goto-subject article t)))
   (gnus-summary-limit (append articles gnus-newsgroup-limit))
   (gnus-summary-position-point))
   
