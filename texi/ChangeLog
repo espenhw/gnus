@@ -1,3 +1,9 @@
+2003-07-11  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Splitting in IMAP): Typos, tiny patch from Matthias
+	Andree <ma@dt.e-technik.uni-dortmund.de>.
+	(Splitting in IMAP): Mention Sieve.
+
 2003-07-10  Simon Josefsson  <jas@extundo.com>
 
 	* message.texi (Security): Discuss the PGP 2.x compatibility

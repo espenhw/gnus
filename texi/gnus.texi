@@ -16072,13 +16072,17 @@ Courier 1.7.1 did.
 @subsection Splitting in IMAP
 @cindex splitting imap mail
 
-Splitting is something Gnus users has loved and used for years, and now
+Splitting is something Gnus users have loved and used for years, and now
 the rest of the world is catching up.  Yeah, dream on, not many
-@acronym{IMAP} server has server side splitting and those that have splitting
-seem to use some non-standard protocol.  This means that @acronym{IMAP}
-support for Gnus has to do its own splitting.
+@acronym{IMAP} servers have server side splitting and those that have
+splitting seem to use some non-standard protocol.  This means that
+@acronym{IMAP} support for Gnus has to do its own splitting.
 
 And it does.
+
+(Incidentally, people seem to have been dreaming on, and Sieve has
+gaining a market share and is supported by several IMAP servers.
+Fortunately, Gnus support it too, @xref{Sieve Commands}.)
 
 Here are the variables of interest:
 
