@@ -51,60 +51,61 @@ Valid encodings are `7bit', `8bit', `quoted-printable' and `base64'."
 			       (const base64))))
   :group 'mime)
 
-(defun mm-encode-body ()
+(defun mm-encode-body (&optional charset)
   "Encode a body.
 Should be called narrowed to the body that is to be encoded.
 If there is more than one non-ASCII MULE charset, then list of found
 MULE charsets are returned.
+If CHARSET is non-nil, it is used.
 If successful, the MIME charset is returned.
 If no encoding was done, nil is returned."
   (if (not (mm-multibyte-p))
       ;; In the non-Mule case, we search for non-ASCII chars and
       ;; return the value of `mail-parse-charset' if any are found.
-      (save-excursion
-	(goto-char (point-min))
-	(if (re-search-forward "[^\x0-\x7f]" nil t)
-	    (or mail-parse-charset
-		(message-options-get 'mm-encody-body-charset)
-		(message-options-set 
-		 'mm-encody-body-charset
-		 (mm-read-charset "Charset used in the article: ")))
-	  ;; The logic in `mml-generate-mime-1' confirms that it's OK
-	  ;; to return nil here.
-	  nil))
+      (or charset
+	  (save-excursion
+	    (goto-char (point-min))
+	    (if (re-search-forward "[^\x0-\x7f]" nil t)
+		(or mail-parse-charset
+		    (message-options-get 'mm-encody-body-charset)
+		    (message-options-set 
+		     'mm-encody-body-charset
+		     (mm-read-charset "Charset used in the article: ")))
+	      ;; The logic in `mml-generate-mime-1' confirms that it's OK
+	      ;; to return nil here.
+	      nil)))
     (save-excursion
-      (goto-char (point-min))
-      (let ((charsets (mm-find-mime-charset-region (point-min) (point-max)))
+      (if charset
+	  (progn
+	    (mm-encode-coding-region (point-min) (point-max) charset)
 	    charset)
-	(cond
-	 ;; No encoding.
-	 ((null charsets)
-	  nil)
-	 ;; Too many charsets.
-	 ((> (length charsets) 1)
-	  charsets)
-	 ;; We encode.
-	 (t
-	  (let ((charset (car charsets))
-		start)
-	    (when (or t
-		      ;; We always decode.
-		      (not (mm-coding-system-equal
-			    charset buffer-file-coding-system)))
-	      (while (not (eobp))
-		(if (eq (mm-charset-after) 'ascii)
-		    (when start
-		      (save-restriction
-			(narrow-to-region start (point))
-			(mm-encode-coding-region start (point) charset)
-			(goto-char (point-max)))
-		      (setq start nil))
-		  (unless start
-		    (setq start (point))))
-		(forward-char 1))
-	      (when start
-		(mm-encode-coding-region start (point) charset)
-		(setq start nil)))
+	(goto-char (point-min))
+	(let ((charsets (mm-find-mime-charset-region (point-min) (point-max)))
+	      start)
+	  (cond
+	   ;; No encoding.
+	   ((null charsets)
+	    nil)
+	   ;; Too many charsets.
+	   ((> (length charsets) 1)
+	    charsets)
+	   ;; We encode.
+	   (t
+	    (setq charset (car charsets))
+	    (while (not (eobp))
+	      (if (eq (mm-charset-after) 'ascii)
+		  (when start
+		    (save-restriction
+		      (narrow-to-region start (point))
+		      (mm-encode-coding-region start (point) charset)
+		      (goto-char (point-max)))
+		    (setq start nil))
+		(unless start
+		  (setq start (point))))
+	      (forward-char 1))
+	    (when start
+	      (mm-encode-coding-region start (point) charset)
+	      (setq start nil))
 	    charset)))))))
 
 (defun mm-body-encoding (charset &optional encoding)

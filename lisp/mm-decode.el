@@ -740,7 +740,12 @@ external if displayed external."
 (defun mm-get-part (handle)
   "Return the contents of HANDLE as a string."
   (mm-with-unibyte-buffer
-    (mm-insert-part handle)
+    (insert (with-current-buffer (mm-handle-buffer handle)
+	      (mm-with-unibyte-current-buffer-mule4
+		(buffer-string))))
+    (mm-decode-content-transfer-encoding
+     (mm-handle-encoding handle)
+     (mm-handle-media-type handle))
     (buffer-string)))
 
 (defun mm-insert-part (handle)

@@ -292,12 +292,15 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	  (if (and (not raw)
 		   (member (car (split-string type "/")) '("text" "message")))
 	      (with-temp-buffer
+		(setq charset (mm-charset-to-coding-system 
+			       (cdr (assq 'charset cont))))
 		(cond
 		 ((cdr (assq 'buffer cont))
 		  (insert-buffer-substring (cdr (assq 'buffer cont))))
 		 ((and (setq filename (cdr (assq 'filename cont)))
 		       (not (equal (cdr (assq 'nofile cont)) "yes")))
-		  (mm-insert-file-contents filename))
+		  (let ((coding-system-for-read charset))
+		    (mm-insert-file-contents filename)))
 		 ((eq 'mml (car cont))
 		  (insert (cdr (assq 'contents cont))))
 		 (t
@@ -324,7 +327,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 		    ;; ignore 0x1b, it is part of iso-2022-jp
 		    (setq encoding (mm-body-7-or-8))))
 		 (t 
-		  (setq charset (mm-encode-body))
+		  (setq charset (mm-encode-body charset))
 		  (setq encoding (mm-body-encoding
 				  charset (cdr (assq 'encoding cont))))))
 		(setq coded (buffer-string)))

@@ -1,3 +1,10 @@
+2000-11-13 20:43:37  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-get-part): Don't call mm-insert-part.
+	* mml.el (mml-generate-mime-1): Use charset attribute.
+	* mm-bodies.el (mm-encode-body): Add parameter charset.
+	* mm-util.el (mm-mime-charset): Show error when find 8-bit characters.
+
 2000-11-13 16:09:09  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml2015.el (mml2015-mailcrypt-decrypt): Handle quit.
