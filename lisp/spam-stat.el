@@ -1,6 +1,6 @@
 ;;; spam-stat.el --- detecting spam based on statistics
 
-;; Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+;; Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Alex Schroeder <alex@gnu.org>
 ;; Keywords: network
@@ -171,6 +171,14 @@ effect when spam-stat is invoked through spam.el."
   "Spam score threshhold in spam-stat-split-fancy."
   :type 'number
   :group 'spam-stat)
+
+(defcustom spam-stat-process-directory-age 90
+  "Max. age of files to be processed in directory, in days.
+When using `spam-stat-process-spam-directory' or
+`spam-stat-process-non-spam-directory', only files that have
+been touched in this many days will be considered.  Without
+this filter, re-training spam-stat with several thousand messages
+will start to take a very long time.")
 
 (defvar spam-stat-syntax-table
   (let ((table (copy-syntax-table text-mode-syntax-table)))
@@ -487,7 +495,9 @@ check the variable `spam-stat-score-data'."
       (dolist (f files)
 	(when (and (file-readable-p f)
 		   (file-regular-p f)
-                   (> (nth 7 (file-attributes f)) 0))
+                   (> (nth 7 (file-attributes f)) 0)
+		   (< (time-to-number-of-days (time-since (nth 5 (file-attributes f))))
+		      spam-stat-process-directory-age))
 	  (setq count (1+ count))
 	  (message "Reading %s: %.2f%%" dir (/ count max))
 	  (insert-file-contents f)
