@@ -56,7 +56,7 @@ if that value is non-nil."
 
 ;;; Group Customization:
 
-(defcustom gnus-group-parameters
+(defconst gnus-group-parameters
   '((to-address (gnus-email-address :tag "To Address") "\
 This will be used when doing followups and posts.
 
@@ -238,12 +238,29 @@ default charset will be used instead.")
 				   gnus-emphasis-highlight-words))))
   "highlight regexps.
 See gnus-emphasis-alist."))
-  "Alist of valid group parameters.
+  "Alist of valid group or topic parameters.
 
 Each entry has the form (NAME TYPE DOC), where NAME is the parameter
 itself (a symbol), TYPE is the parameters type (a sexp widget), and
 DOC is a documentation string for the parameter.")
 
+(defconst gnus-extra-topic-parameters
+  '((subscribe (regexp :tag "Subscribe") "\
+If `gnus-subscribe-newsgroup-method' is set to
+`gnus-subscribe-topics', new groups that matches this regexp will
+automatically be subscribed to this topic")) 
+  "Alist of topic parameters that are not also group parameters.
+
+Each entry has the form (NAME TYPE DOC), where NAME is the parameter
+itself (a symbol), TYPE is the parameters type (a sexp widget), and
+DOC is a documentation string for the parameter.")
+
+(defconst gnus-extra-group-parameters nil
+  "Alist of group parameters that are not also topic parameters.
+
+Each entry has the form (NAME TYPE DOC), where NAME is the parameter
+itself (a symbol), TYPE is the parameters type (a sexp widget), and
+DOC is a documentation string for the parameter.")
 (defvar gnus-custom-params)
 (defvar gnus-custom-method)
 (defvar gnus-custom-group)
@@ -258,7 +275,10 @@ DOC is a documentation string for the parameter.")
 				:doc ,(nth 2 entry)
 				(const :format "" ,(nth 0 entry))
 				,(nth 1 entry)))
-		       gnus-group-parameters)))
+		       (append gnus-group-parameters 
+			       (if group
+				   gnus-extra-group-parameters
+				 gnus-extra-topic-parameters)))))
     (unless (or group topic)
       (error "No group on current line"))
     (when (and group topic)

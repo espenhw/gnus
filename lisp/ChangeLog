@@ -1,3 +1,20 @@
+1999-11-12  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-start.el (gnus-level-subscribed, gnus-level-unsubscribed,
+	gnus-level-zombie, gnus-level-killed): Changed from `defcustom' to
+	`defconst'.
+
+	* gnus-cus.el (gnus-group-parameters): Changed from `defcustom' to
+	`defconst'. 
+	mention that it is both for group and topic parameters. 
+	(gnus-extra-topic-parameters): New constant, including `subscribe'
+	parameter. 
+	(gnus-extra-group-parameters): New constant.
+	(gnus-group-customize): Use them.
+
+	* gnus.el (gnus-select-method): Added default value and tag.
+	(gnus-refer-article-method): Added `DejaNews' customization option.
+
 1999-11-12 05:04:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-int.el (gnus-server-opened): Ignore denied servers.

@@ -141,27 +141,19 @@ properly with all servers."
 		 (const some)
 		 (const t)))
 
-(defcustom gnus-level-subscribed 5
-  "*Groups with levels less than or equal to this variable are subscribed."
-  :group 'gnus-group-levels
-  :type 'integer)
+(defconst gnus-level-subscribed 5
+  "Groups with levels less than or equal to this variable are subscribed.")
 
-(defcustom gnus-level-unsubscribed 7
-  "*Groups with levels less than or equal to this variable are unsubscribed.
+(defconst gnus-level-unsubscribed 7
+  "Groups with levels less than or equal to this variable are unsubscribed.
 Groups with levels less than `gnus-level-subscribed', which should be
-less than this variable, are subscribed."
-  :group 'gnus-group-levels
-  :type 'integer)
+less than this variable, are subscribed.")
 
-(defcustom gnus-level-zombie 8
-  "*Groups with this level are zombie groups."
-  :group 'gnus-group-levels
-  :type 'integer)
+(defconst gnus-level-zombie 8
+  "Groups with this level are zombie groups.")
 
-(defcustom gnus-level-killed 9
-  "*Groups with this level are killed."
-  :group 'gnus-group-levels
-  :type 'integer)
+(defconst gnus-level-killed 9
+  "Groups with this level are killed.")
 
 (defcustom gnus-level-default-subscribed 3
   "*New subscribed groups will be subscribed at this level."

@@ -10304,7 +10304,7 @@ The @samp{getmail} script would look something like the following:
 @example
 #!/bin/sh
 #  getmail - move mail from spool to stdout
-#  flu@iki.fi
+#  flu@@iki.fi
 
 MOVEMAIL=/usr/lib/emacs/20.3/i386-redhat-linux/movemail
 TMP=~/Mail/tmp

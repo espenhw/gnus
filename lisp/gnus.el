@@ -999,6 +999,7 @@ The value of this variable must be a valid select method as discussed
 in the documentation of `gnus-select-method'."
   :group 'gnus-server
   :type '(choice (const :tag "default" nil)
+		 (const :tag "DejaNews" (nnweb "refer" (nnweb-type dejanews)))
 		 gnus-select-method))
 
 (defcustom gnus-group-faq-directory
@@ -1261,6 +1262,8 @@ this variable.	I think."
 
 (define-widget 'gnus-select-method 'list
   "Widget for entering a select method."
+  :value '(nntp "")
+  :tag "Select Method"
   :args `((choice :tag "Method"
 		  ,@(mapcar (lambda (entry)
 			      (list 'const :format "%v\n"
