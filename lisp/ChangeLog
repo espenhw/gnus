@@ -14,6 +14,16 @@
 	mm-xemacs-find-mime-charset-1 if we have the mule feature
 	available at runtime.
 
+2005-03-25  Werner Lemberg  <wl@gnu.org>
+
+	* nnmaildir.el: Replace `illegal' with `invalid'.
+
+2005-03-22  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* gnus-start.el (gnus-display-time-event-handler):
+	Check display-time-timer at runtime rather than only at load time
+	in case display-time-mode is turned off in the mean time.
+
 2005-03-16  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnimap.el (nnimap-open-connection): Print which authinfo file is
@@ -27,8 +37,8 @@
 
 2005-03-15  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* nnmaildir.el (nnmaildir-request-accept-article): Use
-	`nnheader-cancel-timer' for compatibility with current XEmacs.
+	* nnmaildir.el (nnmaildir-request-accept-article):
+	Use `nnheader-cancel-timer' for compatibility with current XEmacs.
 
 2005-03-13  Steve Youngs  <steve@sxemacs.org>
 
@@ -47,8 +57,7 @@
 
 2005-03-10  Arne J,Ax(Brgensen <arne@arnested.dk>  (tiny change)
 
-	* nnimap.el (nnimap-retrieve-headers-from-server): Fix off-by-one
-	flaw.
+	* nnimap.el (nnimap-retrieve-headers-from-server): Fix off-by-one flaw.
 
 2005-03-09  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
