@@ -1,5 +1,10 @@
 2004-04-27  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* gnus-registry.el (gnus-registry-cache-whitespace)
+	(gnus-registry-action, gnus-registry-spool-action)
+	(gnus-registry-split-fancy-with-parent): changed message levels
+	from 5 to 3 or 7, as needed
+
 	* spam.el (spam-summary-prepare-exit)
 	(spam-mark-junk-as-spam-routine, spam-fetch-field-fast)
 	(spam-split, spam-find-spam, spam-log-undo-registration)

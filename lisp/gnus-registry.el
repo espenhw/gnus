@@ -213,7 +213,7 @@ way."
 ;; Idea from Dan Christensen <jdc@chow.mat.jhu.edu>
 ;; Save the gnus-registry file with extra line breaks.
 (defun gnus-registry-cache-whitespace (filename)
-  (gnus-message 5 "Adding whitespace to %s" filename)
+  (gnus-message 7 "Adding whitespace to %s" filename)
   (save-excursion
     (goto-char (point-min))
     (while (re-search-forward "^(\\|(\\\"" nil t)
@@ -316,7 +316,7 @@ way."
 	 (to (if to (gnus-group-guess-full-name-from-command-method to) nil))
 	 (to-name (if to to "the Bit Bucket"))
 	 (old-entry (gethash id gnus-registry-hashtb)))
-    (gnus-message 5 "Registry: article %s %s from %s to %s"
+    (gnus-message 7 "Registry: article %s %s from %s to %s"
 		  id
 		  (if method "respooling" "going")
 		  from
@@ -334,7 +334,7 @@ way."
   (let ((group (gnus-group-guess-full-name-from-command-method group)))
     (when (and (stringp id) (string-match "\r$" id))
       (setq id (substring id 0 -1)))
-    (gnus-message 5 "Registry: article %s spooled to %s"
+    (gnus-message 7 "Registry: article %s spooled to %s"
 		  id
 		  group)
     (gnus-registry-add-group id group subject sender)))
@@ -399,7 +399,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		 (when (and sender res)
 		   (gnus-message
 		    ;; raise level of messaging if gnus-registry-track-extra
-		    (if gnus-registry-track-extra 5 9)
+		    (if gnus-registry-track-extra 7 9)
 		    "%s (extra tracking) traced sender %s to group %s"
 		    "gnus-registry-split-fancy-with-parent"
 		    sender
@@ -423,7 +423,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		 (when (and subject res)
 		   (gnus-message
 		    ;; raise level of messaging if gnus-registry-track-extra
-		    (if gnus-registry-track-extra 5 9)
+		    (if gnus-registry-track-extra 7 9)
 		    "%s (extra tracking) traced subject %s to group %s"
 		    "gnus-registry-split-fancy-with-parent"
 		    subject
@@ -431,7 +431,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	   gnus-registry-hashtb))
 	(unless single-match
 	  (gnus-message
-	   5
+	   3
 	   "gnus-registry-split-fancy-with-parent: too many extra matches for %s"
 	   refstr)
 	  (setq res nil))))
@@ -456,7 +456,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	    (setq res short-res))
 	;; else...
 	(gnus-message
-	 5 
+	 7
 	 "gnus-registry-split-fancy-with-parent ignored foreign group %s"
 	 res)
 	(setq res nil))))
