@@ -1,3 +1,8 @@
+2002-10-24  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* nnimap.el (nnimap-request-article-part): Include group name in
+	debugging output.
+
 2002-10-24  Paul Jarc  <prj@po.cwru.edu>
 
 	* gnus-agent.el (gnus-agent-fetch-headers):  Add some comments.
