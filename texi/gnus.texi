@@ -9827,7 +9827,7 @@ So here's a new example:
          (signature my-quote-randomizer))
         ((message-news-p)
          (signature my-news-signature))
-        (header "From.*To" "larsi.*org"
+        (header "From\\|To" "larsi.*org"
          (Organization "Somewhere, Inc."))
         ((posting-from-work-p)
          (signature-file "~/.work-signature")
