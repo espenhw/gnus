@@ -57,10 +57,6 @@
 	   "lynx" "-dump" "-force_html" "-stdin"))
   "The attributes of washer types for text/html.")
 
-(defvar mm-application-msword-renderer-alist
-  '((catdoc  mm-inline-render-with-stdin nil "catdoc"))
-  "The attributes of renderer types.")
-
 ;;; Internal variables.
 
 ;;;
@@ -591,18 +587,6 @@ will not be substituted.")
 		       smime-keys nil nil
 		       (and (listp (car-safe smime-keys))
 			    (caar smime-keys)))))))
-
-(defun mm-inline-application-msword (handle)
-  (let* ((func mm-application-msword-renderer)
-	 (entry (assq func mm-application-msword-renderer-alist))
-	 buffer-read-only)
-    (if entry
-	(setq func (cdr entry)))
-    (cond
-     ((gnus-functionp func)
-      (funcall func handle))
-     (t
-      (apply (car func) handle (cdr func))))))
 
 (provide 'mm-view)
 

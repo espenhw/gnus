@@ -107,22 +107,13 @@ The defined renderer types are:
 `w3'   : using Emacs/W3;
 `w3m'  : using emacs-w3m;
 `links': using links;
-`lynx' : using lynx."
+`lynx' : using lynx;
+`nil'  : using external viewer."
   :type '(choice (symbol w3)
 		 (symbol w3m)
 		 (symbol links)
 		 (symbol lynx)
-		 (function))
-  :version "21.3"
-  :group 'mime-display)
-
-(defcustom mm-application-msword-renderer
-  (cond ((executable-find "catdoc") 'catdoc))
-  "Render of application/msword contents.
-It is one of defined renderer types, or a rendering function.
-The defined renderer types are:
-`catdoc' : using catdoc."
-  :type '(choice (symbol catdoc)
+		 (symbol nil)
 		 (function))
   :version "21.3"
   :group 'mime-display)
@@ -205,10 +196,6 @@ images, however this behavior may be changed in the future."
      (lambda (handle)
        (or (featurep 'vcard)
 	   (locate-library "vcard"))))
-    ("application/msword"
-     mm-inline-application-msword
-     (lambda (handle)
-       mm-application-msword-renderer))
     ("message/delivery-status" mm-inline-text identity)
     ("message/rfc822" mm-inline-message identity)
     ("message/partial" mm-inline-partial identity)
@@ -247,7 +234,7 @@ images, however this behavior may be changed in the future."
     "message/partial" "message/external-body" "application/emacs-lisp"
     "application/pgp-signature" "application/x-pkcs7-signature"
     "application/pkcs7-signature" "application/x-pkcs7-mime"
-    "application/pkcs7-mime" "application/msword")
+    "application/pkcs7-mime")
   "List of media types that are to be displayed inline.
 See also `mm-inline-media-tests', which says how to display a media
 type inline."

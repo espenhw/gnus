@@ -1,14 +1,8 @@
 2002-02-18  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* mm-decode.el (mm-application-msword-renderer): New variable.
-	(mm-inline-media-tests): Use it.
-	(mm-inlined-types): Add application/msword.
-
 	* mm-view.el (mm-inline-render-with-file): With unibyte buffer.
 	(mm-inline-render-with-stdin): Ditto.
 	(mm-inline-render-with-function): Ditto.
-	(mm-application-msword-renderer-alist): New variable.
-	(mm-inline-application-msword): New function.
 	(mm-inline-wash-with-file): Bind coding-system-for-write.
 	(mm-inline-wash-with-stdin): Ditto.
 
