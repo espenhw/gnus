@@ -1,3 +1,22 @@
+2003-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nndraft.el (nndraft-generate-headers): New function.
+	(nndraft-request-associate-buffer): Use it to write headers on
+	buffer save.
+
+	* message.el (message-generate-headers): Let the function be a
+	lambda form.
+	(message-draft-headers): New variable.
+
+	* gnus-msg.el (gnus-inews-make-draft-meta-information): New
+	function. 
+	(gnus-setup-message): Use it.
+
+	* message.el (message-generate-headers-first): Doc fix.
+	(message-setup-1): Use new function for getting which headers to
+	generate. 
+	(message-headers-to-generate): New function.
+
 2003-01-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-save-alist): Make directory.

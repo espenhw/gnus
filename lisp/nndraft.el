@@ -152,6 +152,11 @@
 		nil))))
   t)
 
+(defun nndraft-generate-headers ()
+  (message-generate-headers
+   (message-headers-to-generate
+    message-required-headers message-draft-headers nil)))
+
 (deffoo nndraft-request-associate-buffer (group)
   "Associate the current buffer with some article in the draft group."
   (nndraft-open-server "")
@@ -168,6 +173,7 @@
     (setq buffer-file-name (expand-file-name file)
 	  buffer-auto-save-file-name (make-auto-save-file-name))
     (clear-visited-file-modtime)
+    (push 'nndraft-generate-headers write-contents-hooks)
     article))
 
 (deffoo nndraft-request-group (group &optional server dont-check)

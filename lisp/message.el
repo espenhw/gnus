@@ -200,6 +200,12 @@ Also see `message-required-news-headers' and
   :group 'message-headers
   :type '(repeat sexp))
 
+(defcustom message-draft-headers '(References)
+  "*Headers to be generated when saving a draft message."
+  :group 'message-news
+  :group 'message-headers
+  :type '(repeat sexp))
+
 (defcustom message-required-news-headers
   '(From Newsgroups Subject Date Message-ID
 	 (optional . Organization)
@@ -676,6 +682,8 @@ variable isn't used."
   "*If non-nil, generate all required headers before composing.
 The variables `message-required-news-headers' and
 `message-required-mail-headers' specify which headers to generate.
+This can also be a list of headers that should be generated before
+composing.
 
 Note that the variable `message-deletable-headers' specifies headers which
 are to be deleted and then re-generated before sending, so this variable
@@ -4558,21 +4566,27 @@ Headers already prepared in the buffer are not modified."
 	  ;; So we find out what value we should insert.
 	  (setq value
 		(cond
-		 ((and (consp elem) (eq (car elem) 'optional))
+		 ((and (consp elem)
+		       (eq (car elem) 'optional))
 		  ;; This is an optional header.  If the cdr of this
 		  ;; is something that is nil, then we do not insert
 		  ;; this header.
 		  (setq header (cdr elem))
-		  (or (and (fboundp (cdr elem)) (funcall (cdr elem)))
-		      (and (boundp (cdr elem)) (symbol-value (cdr elem)))))
+		  (or (and (message-functionp (cdr elem))
+			   (funcall (cdr elem)))
+		      (and (boundp (cdr elem))
+			   (symbol-value (cdr elem)))))
 		 ((consp elem)
 		  ;; The element is a cons.  Either the cdr is a
 		  ;; string to be inserted verbatim, or it is a
 		  ;; function, and we insert the value returned from
 		  ;; this function.
-		  (or (and (stringp (cdr elem)) (cdr elem))
-		      (and (fboundp (cdr elem)) (funcall (cdr elem)))))
-		 ((and (boundp header) (symbol-value header))
+		  (or (and (stringp (cdr elem))
+			   (cdr elem))
+		      (and (message-functionp (cdr elem))
+			   (funcall (cdr elem)))))
+		 ((and (boundp header)
+		       (symbol-value header))
 		  ;; The element is a symbol.  We insert the value
 		  ;; of this symbol, if any.
 		  (symbol-value header))
@@ -4929,6 +4943,31 @@ than 988 characters long, and if they are not, trim them until they are."
 			      headers)
 		      nil switch-function yank-action actions)))))
 
+(defun message-headers-to-generate (headers included-headers excluded-headers)
+  "Return a list that includes all headers from HEADERS.
+If INCLUDED-HEADERS is a list, just include those headers.  If if is
+t, include all headers.  In any case, headers from EXCLUDED-HEADERS
+are not included."
+  (let ((result nil)
+	header-name)
+    (dolist (header headers)
+      (setq header-name (cond
+			 ((and (consp header)
+			       (eq (car header) 'optional))
+			  ;; On the form (optional . Header)
+			  (cdr header))
+			 ((consp header)
+			  ;; On the form (Header . function)
+			  (car header))
+			 (t
+			  ;; Just a Header.
+			  header)))
+      (when (and (not (memq header-name excluded-headers))
+		 (or (eq included-headers t)
+		     (memq header-name included-headers)))
+	(push header result)))
+    (nreverse result)))
+
 (defun message-setup-1 (headers &optional replybuffer actions)
   (dolist (action actions)
     (condition-case nil
@@ -4963,18 +5002,22 @@ than 988 characters long, and if they are not, trim them until they are."
       (or (bolp) (insert ?\n)))
     (when message-generate-headers-first
       (message-generate-headers
-       (delq 'Lines
-	     (delq 'Subject
-		   (copy-sequence message-required-news-headers))))))
+       (message-headers-to-generate
+	(append message-required-news-headers
+		message-required-headers)
+	message-generate-headers-first
+	'(Lines Subject)))))
   (when (message-mail-p)
     (when message-default-mail-headers
       (insert message-default-mail-headers)
       (or (bolp) (insert ?\n)))
     (when message-generate-headers-first
       (message-generate-headers
-       (delq 'Lines
-	     (delq 'Subject
-		   (copy-sequence message-required-mail-headers))))))
+       (message-headers-to-generate
+	(append message-required-mail-headers
+		message-required-headers)
+	message-generate-headers-first
+	'(Lines Subject)))))
   (run-hooks 'message-signature-setup-hook)
   (message-insert-signature)
   (save-restriction

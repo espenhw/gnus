@@ -377,12 +377,20 @@ Thank you for your help in stamping out bugs.
        (add-hook 'message-mode-hook
 		 (lambda ()
 		   (gnus-configure-posting-styles ,group)))
+       (gnus-pull ',(intern gnus-draft-meta-information-header)
+		  message-required-headers)
+       (when (and ,group
+		  (not (string= ,group "")))
+	 (push '(,(intern gnus-draft-meta-information-header)
+		 . (lambda ()
+		     (gnus-inews-make-draft-meta-information
+		      ,gnus-newsgroup-name ,gnus-article-reply)))
+	       message-required-headers))
        (unwind-protect
 	   (progn
 	     ,@forms)
 	 (gnus-inews-add-send-actions ,winconf ,buffer ,article ,config
 				      ,yanked)
-	 (gnus-inews-insert-draft-meta-information ,group ,article)
 	 (setq gnus-message-buffer (current-buffer))
 	 (set (make-local-variable 'gnus-message-group-art)
 	      (cons ,group ,article))
@@ -405,18 +413,13 @@ Thank you for your help in stamping out bugs.
        (run-hooks 'post-command-hook)
        (set-buffer-modified-p nil))))
 
-(defun gnus-inews-insert-draft-meta-information (group article)
-  (save-excursion
-    (when (and group
-	       (not (string= group ""))
-	       (not (message-fetch-field gnus-draft-meta-information-header)))
-      (goto-char (point-min))
-      (insert gnus-draft-meta-information-header ": (\"" group "\" "
-	      (if article (number-to-string
-			   (if (listp article)
-			       (car article)
-			     article)) "\"\"")
-	      ")\n"))))
+(defun gnus-inews-make-draft-meta-information (group article)
+  (concat "(\"" group "\" "
+	  (if article (number-to-string
+		       (if (listp article)
+			   (car article)
+			 article)) "\"\"")
+	  ")"))
 
 ;;;###autoload
 (defun gnus-msg-mail (&optional to subject other-headers continue
