@@ -10931,13 +10931,14 @@ value, then the style is said to @dfn{match}.
 Each style may contain an arbitrary amount of @dfn{attributes}.  Each
 attribute consists of a @code{(@var{name} @var{value})} pair.  The
 attribute name can be one of @code{signature}, @code{signature-file},
-@code{address} (overriding @code{user-mail-address}), @code{name}
-(overriding @code{(user-full-name)}) or @code{body}.  The attribute name
-can also be a string or a symbol.  In that case, this will be used as a
-header name, and the value will be inserted in the headers of the
-article; if the value is @code{nil}, the header name will be removed.
-If the attribute name is @code{eval}, the form is evaluated, and the
-result is thrown away.
+@code{x-face-file}, @code{address} (overriding
+@code{user-mail-address}), @code{name} (overriding
+@code{(user-full-name)}) or @code{body}.  The attribute name can also
+be a string or a symbol.  In that case, this will be used as a header
+name, and the value will be inserted in the headers of the article; if
+the value is @code{nil}, the header name will be removed.  If the
+attribute name is @code{eval}, the form is evaluated, and the result
+is thrown away.
 
 The attribute value can be a string (used verbatim), a function with
 zero arguments (the return value will be used), a variable (its value
