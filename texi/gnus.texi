@@ -19438,7 +19438,8 @@ symbols naming functions that return a string.  When the mouse passes
 over text with this property set, a balloon window will appear and
 display the string.  Please refer to @ref{(emacs)Help Echo} (in GNU
 Emacs) or the doc string of @code{balloon-help-mode} (in XEmacs) for
-more information on this.
+more information on this.  (For technical reasons, the guillemets have
+been approximated as @samp{<<} and @samp{>>} in this paragraph.)
 
 Here's an alternative recipe for the group buffer:
 
