@@ -471,12 +471,12 @@ the line could be found."
   (when (file-exists-p file)
     (if (eq nnheader-max-head-length t)
 	;; Just read the entire file.
-	(nnheader-insert-file-contents file)
+	(mm-insert-file-contents file)
       ;; Read 1K blocks until we find a separator.
       (let ((beg 0)
 	    format-alist)
 	(while (and (eq nnheader-head-chop-length
-			(nth 1 (nnheader-insert-file-contents
+			(nth 1 (mm-insert-file-contents
 				file nil beg
 				(incf beg nnheader-head-chop-length))))
 		    (prog1 (not (search-forward "\n\n" nil t))
@@ -765,7 +765,7 @@ If FILE, find the \".../etc/PACKAGE\" file instead."
 (defvar nnheader-file-coding-system 'raw-text
   "Coding system used in file backends of Gnus.")
 
-(defun nnheader-insert-file-contents (filename &optional visit beg end replace)
+(defun mm-insert-file-contents (filename &optional visit beg end replace)
   "Like `insert-file-contents', q.v., but only reads in the file.
 A buffer may be modified in several ways after reading into the buffer due
 to advanced Emacs features, such as file-name-handlers, format decoding,

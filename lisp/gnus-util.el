@@ -936,6 +936,16 @@ ARG is passed to the first function."
 	(throw 'found nil)))
     t))
 
+(defun gnus-write-active-file (file hashtb)
+  (with-temp-file file
+    (mapatoms
+     (lambda (sym)
+       (when (and sym (boundp sym))
+	 (insert (format "%s %d %d y\n"
+			 (symbol-name sym) (cdr (symbol-value sym))
+			 (car (symbol-value sym))))))
+     hashtb)))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

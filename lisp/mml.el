@@ -208,7 +208,7 @@
 	     ((cdr (assq 'buffer cont))
 	      (insert-buffer-substring (cdr (assq 'buffer cont))))
 	     ((setq filename (cdr (assq 'filename cont)))
-	      (insert-file-contents filename))
+	      (mm-insert-file-contents filename))
 	     (t
 	      (save-restriction
 		(narrow-to-region (point) (point))
@@ -227,7 +227,7 @@
 	   ((cdr (assq 'buffer cont))
 	    (insert-buffer-substring (cdr (assq 'buffer cont))))
 	   ((setq filename (cdr (assq 'filename cont)))
-	    (insert-file-contents filename))
+	    (mm-insert-file-contents filename))
 	   (t
 	    (insert (cdr (assq 'contents cont)))))
 	  (setq encoding (mm-encode-buffer type)
@@ -300,7 +300,7 @@
 	 ((cdr (assq 'buffer cont))
 	  (insert-buffer-substring (cdr (assq 'buffer cont))))
 	 ((setq filename (cdr (assq 'filename cont)))
-	  (insert-file-contents filename))
+	  (mm-insert-file-contents filename))
 	 (t
 	  (insert (cdr (assq 'contents cont)))))
 	(goto-char (point-min))

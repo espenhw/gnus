@@ -1,7 +1,7 @@
 @c \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.90 Manual
+@settitle Pterodactyl Gnus 0.91 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -319,7 +319,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.90 Manual
+@title Pterodactyl Gnus 0.91 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -355,7 +355,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.90.
+This manual corresponds to Pterodactyl Gnus 0.91.
 
 @end ifinfo
 
@@ -8947,11 +8947,10 @@ list (it will be @code{eval}ed and the return value will be used).
 
 If you wish to check whether the message you are about to compose is
 meant to be a news article or a mail message, you can check the values
-of the two dynamically bound variables @code{message-this-is-news} and
-@code{message-this-is-mail}.
+of the @code{message-news-p} and @code{message-mail-p} functions.
 
-@vindex message-this-is-mail
-@vindex message-this-is-news
+@findex message-mail-p
+@findex message-news-p
 
 So here's a new example:
 
@@ -8966,9 +8965,9 @@ So here's a new example:
          (signature my-funny-signature-randomizer))
         ((equal (system-name) "gnarly")
          (signature my-quote-randomizer))
-        (message-this-is-news
+        ((message-news-p)
          (signature my-news-signature))
-        (posting-from-work-p
+        ((posting-from-work-p)
          (signature-file "~/.work-signature")
          (address "user@@bar.foo")
          (body "You are fired.\n\nSincerely, your boss.")
@@ -9906,6 +9905,7 @@ Reading mail with a newsreader---isn't that just plain WeIrD? But of
 course.
 
 @menu
+* Mail in a Newsreader::         Important introductory notes.  
 * Getting Started Reading Mail:: A simple cookbook example.
 * Splitting Mail::               How to create mail groups.
 * Mail Sources::                 How to tell Gnus where to get mail from.
@@ -9918,6 +9918,61 @@ course.
 * Not Reading Mail::             Using mail backends for reading other files.
 * Choosing a Mail Backend::      Gnus can read a variety of mail formats.
 @end menu
+
+
+@node Mail in a Newsreader
+@subsection Mail in a Newsreader
+
+If you are used to traditional mail readers, but have decided to switch 
+to reading mail with Gnus, you may find yourself experiencing something
+of a culture shock.
+
+Gnus does not behave like traditional mail readers.  If you want to make 
+it behave that way, you can, but it's an uphill battle.
+
+Gnus, by default, handles all its group using the same approach.  This
+approach is very newsreaderly---you enter a group, see the new/unread
+messages, and when you read the messages, they get marked as read, and
+you don't see them any more.  (Unless you explicitly ask for them.)
+
+In particular, you do not do anything explicitly to delete messages.
+
+Does this mean that all the messages that have been marked as read are
+deleted?  How awful!
+
+But, no, it means that old messages are @dfn{expired} according to some
+scheme or other.  For news messages, the expire process is controlled by 
+the news administrator; for mail, the expire process is controlled by
+you.  The expire process for mail is covered in depth in @pxref{Expiring
+Mail}.
+
+What many Gnus users find, after using it a while for both news and
+mail, is that the transport becomes more and more irrelevant.  What
+becomes important is the size of the receiving audience.
+
+Many people subscribe to several mailing lists.  These are transported
+via SMTP, and are therefore mail.  Some people have local news groups
+which have only a handful of readers.  These are transported via NNTP,
+and are therefore news.
+
+The important distinction turns out to be not the transport mechanism,
+but whether the messages are @dfn{personal} or @dfn{public}.  Many users
+then subtly alter the behavior of Gnus according to these two
+categories.
+
+Some users never get comfortable using the Gnus (ahem) paradigm and wish
+that Gnus should grow up and be a male, er, mail reader.  It is possible
+to whip Gnus into a more mailreaderly being, but, as said before, it's
+not easy.  People who prefer proper mail readers should try @sc{vm}
+instead, which is an excellent, and proper, mail reader.
+
+I don't mean to scare anybody off, but I want to make it clear that you
+may be required to learn a new way of thinking about messages.  After
+you've been subjected to The Gnus Way, you will come to love it.  I can
+guarantee it.  (At least the guy who sold me the Emacs Subliminal
+Brain-Washing Functions that I've put into Gnus did guarantee it.  You
+Will Be Assimilated.  You Love Gnus.  You Love The Gnus Mail Way.
+You Do.)
 
 
 @node Getting Started Reading Mail
@@ -19010,6 +19065,9 @@ Under the subject "foo", you wrote on 01.01.1999:
 Under the subject "foo1", you wrote on 01.01.1999:
 > bar 1
 @end example
+
+@item
+Allow "orphan" scores in the Agent scoring.
 
 @item
 Solve the halting problem.

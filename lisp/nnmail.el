@@ -835,7 +835,7 @@ FUNC will be called with the buffer narrowed to each mail."
       (set-buffer (get-buffer-create " *nnmail incoming*"))
       (erase-buffer)
       (let ((nnheader-file-coding-system nnmail-incoming-coding-system))
-	(nnheader-insert-file-contents incoming))
+	(mm-insert-file-contents incoming))
       (prog1
 	  (if (zerop (buffer-size))
 	      0
@@ -1235,7 +1235,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
        (setq nnmail-cache-buffer
 	     (get-buffer-create " *nnmail message-id cache*")))
       (when (file-exists-p nnmail-message-id-cache-file)
-	(nnheader-insert-file-contents nnmail-message-id-cache-file))
+	(mm-insert-file-contents nnmail-message-id-cache-file))
       (set-buffer-modified-p nil)
       (current-buffer))))
 

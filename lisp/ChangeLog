@@ -1,3 +1,57 @@
+Sun Jul  4 06:31:01 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.91 is released.
+
+1999-07-04 04:35:28  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-agent.el (gnus-agent-save-active-1): New function.
+	(gnus-agent-save-active): use it.
+	(gnus-agent-save-groups): Ditto.
+
+	* gnus-cache.el (gnus-cache-write-active): Use it.
+
+	* gnus-agent.el (gnus-agent-write-active): Use it.
+
+	* gnus-util.el (gnus-write-active-file): New function.
+
+	* gnus-agent.el (gnus-agent-write-active): New function to keep
+	lower boundaries and canceled groups.
+	(gnus-agent-save-groups): Use it.
+	(gnus-agent-save-active): Use it.
+	(gnus-agent-save-group-info): Only write active files.
+	(gnus-agent-expire): Update active file.
+
+	* mm-decode.el (mm-inlinable-part-p): Removed.
+	(mm-user-display-methods): Default to nil.
+	(mm-user-display-methods): Removed.
+	(add-mime-display-method): Removed.
+	(mm-automatic-display): Renamed.
+	(mm-automatic-display-p): Use it.
+	(mm-inlined-types): New variable.
+	(mm-inlined-p): New function.
+
+	* message.el (message-reply): Bind message-this-is-mail.
+
+1999-07-03 13:16:31  Michael Klingbeil  <mklingbeil@knuut.de>
+
+	* smiley.el (smiley-buffer): Fix for NT.
+
+1999-07-03 11:26:47  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-encode.el (mm-encode-buffer): Check whether we have 7bit.
+
+	* message.el (message-check-news-header-syntax): Protect against
+	nil froms.
+
+	* mm-util.el (mm-auto-mode-alist): New.
+
+	* mml.el (mml-generate-mime-1): Ditto.
+
+	* gnus.el: Use mm-insert-file-contents throughout instead of
+	nnheader. 
+
+	* mm-util.el (mm-insert-file-contents): New function.
+
 Sat Jul  3 07:35:35 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.90 is released.

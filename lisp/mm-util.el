@@ -290,6 +290,31 @@ See also `with-temp-file' and `with-output-to-string'."
         arg
       (apply 'concat (nconc (nreverse accum) (list (substring arg pos)))))))
 
+(defun mm-auto-mode-alist ()
+  "Return an `auto-mode-alist' with only the .gz (etc) thingies."
+  (let ((alist auto-mode-alist)
+	out)
+    (while alist
+      (when (listp (cdar alist))
+	(push (car alist) out))
+      (pop alist))
+    (nreverse out)))
+
+(defun mm-insert-file-contents (filename &optional visit beg end replace)
+  "Like `insert-file-contents', q.v., but only reads in the file.
+A buffer may be modified in several ways after reading into the buffer due
+to advanced Emacs features, such as file-name-handlers, format decoding,
+find-file-hooks, etc.
+  This function ensures that none of these modifications will take place."
+  (let ((format-alist nil)
+	(auto-mode-alist (mm-auto-mode-alist))
+	(default-major-mode 'fundamental-mode)
+	(enable-local-variables nil)
+        (after-insert-file-functions nil)
+	(enable-local-eval nil)
+	(find-file-hooks nil))
+    (insert-file-contents filename visit beg end replace)))
+
 (provide 'mm-util)
 
 ;;; mm-util.el ends here

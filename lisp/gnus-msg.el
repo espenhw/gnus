@@ -1154,8 +1154,7 @@ this is a reply."
 			(insert-file-contents v)
 			(buffer-string))))
 	    (setq results (delq (assoc element results) results))
-	    (push (cons element
-			v) results))))
+	    (push (cons element v) results))))
       ;; Now we have all the styles, so we insert them.
       (setq name (assq 'name results)
 	    address (assq 'address results))

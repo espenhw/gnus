@@ -85,26 +85,25 @@
     ("multipart/related" ignore t))
   "Alist of media types/test that say whether the media types can be displayed inline.")
 
-(defvar mm-user-display-methods
-  '(("image/.*" . inline)
-    ("text/.*" . inline)
-    ("message/delivery-status" . inline)
-    ("message/rfc822" . inline)))
-
-(defvar mm-user-automatic-display
+(defvar mm-inlined-types
+  '("image/.*" "text/.*" "message/delivery-status" "message/rfc822")
+  "List of media types that are to be displayed inline.")
+  
+(defvar mm-automatic-display
   '("text/plain" "text/enriched" "text/richtext" "text/html"
     "text/x-vcard" "image/.*" "message/delivery-status" "multipart/.*"
-    "message/rfc822"))
+    "message/rfc822")
+  "A list of MIME types to be displayed automatically.")
 
 (defvar mm-attachment-override-types
   '("text/plain" "text/x-vcard")
   "Types that should have \"attachment\" ignored if they can be displayed inline.")
 
-(defvar mm-user-automatic-external-display nil
+(defvar mm-automatic-external-display nil
   "List of MIME type regexps that will be displayed externally automatically.")
 
 (defvar mm-discouraged-alternatives nil
-  "List of MIME types that are discouraged when viewing multiapart/alternative.
+  "List of MIME types that are discouraged when viewing multipart/alternative.
 Viewing agents are supposed to view the last possible part of a message,
 as that is supposed to be the richest.  However, users may prefer other
 types instead, and this list says what types are most unwanted.  If,
@@ -226,10 +225,6 @@ to:
       (insert-buffer-substring obuf beg)
       (current-buffer))))
 
-(defun mm-inlinable-part-p (type)
-  "Say whether TYPE can be displayed inline."
-  (eq (mm-user-method type) 'inline))
-
 (defun mm-display-part (handle &optional no-default)
   "Display the MIME part represented by HANDLE.
 Returns nil if the part is removed; inline if displayed inline;
@@ -239,26 +234,22 @@ external if displayed external."
     (if (mm-handle-displayed-p handle)
 	(mm-remove-part handle)
       (let* ((type (car (mm-handle-type handle)))
-	     (method (mailcap-mime-info type))
-	     (user-method (mm-user-method type)))
-	(if (eq user-method 'inline)
+	     (method (mailcap-mime-info type)))
+	(if (mm-inlined-p type)
 	    (progn
 	      (forward-line 1)
 	      (mm-display-inline handle)
 	      'inline)
-	  (when (or user-method
-		    method
+	  (when (or method
 		    (not no-default))
-	    (if (and (not user-method)
-		     (not method)
+	    (if (and (not method)
 		     (equal "text" (car (split-string type))))
 		(progn
 		  (forward-line 1)
 		  (mm-insert-inline handle (mm-get-part handle))
 		  'inline)
 	      (mm-display-external
-	       handle (or user-method method
-			  'mailcap-save-binary-file))
+	       handle (or method 'mailcap-save-binary-file))
 	      'external)))))))
 
 (defun mm-display-external (handle method)
@@ -397,21 +388,20 @@ external if displayed external."
       (pop alist))
     test))
 
-(defun mm-user-method (type)
-  "Return the user-defined method for TYPE."
-  (let ((methods mm-user-display-methods)
+(defun mm-automatic-display-p (type)
+  "Say whether the user wants TYPE to be displayed automatically."
+  (let ((methods mm-automatic-display)
 	method result)
     (while (setq method (pop methods))
-      (when (string-match (car method) type)
-	(when (or (not (eq (cdr method) 'inline))
-		  (mm-inlinable-p type))
-	  (setq result (cdr method)
-		methods nil))))
+      (when (and (string-match method type)
+		 (mm-inlinable-p type))
+	(setq result t
+	      methods nil)))
     result))
 
-(defun mm-automatic-display-p (type)
-  "Return the user-defined method for TYPE."
-  (let ((methods mm-user-automatic-display)
+(defun mm-inlined-p (type)
+  "Say whether the user wants TYPE to be displayed automatically."
+  (let ((methods mm-inlined-types)
 	method result)
     (while (setq method (pop methods))
       (when (and (string-match method type)
@@ -432,18 +422,13 @@ external if displayed external."
 
 (defun mm-automatic-external-display-p (type)
   "Return the user-defined method for TYPE."
-  (let ((methods mm-user-automatic-external-display)
+  (let ((methods mm-automatic-external-display)
 	method result)
     (while (setq method (pop methods))
       (when (string-match method type)
 	(setq result t
 	      methods nil)))
     result))
-
-(defun add-mime-display-method (type method)
-  "Make parts of TYPE be displayed with METHOD.
-This overrides entries in the mailcap file."
-  (push (cons type method) mm-user-display-methods))
 
 (defun mm-destroy-part (handle)
   "Destroy the data structures connected to HANDLE."

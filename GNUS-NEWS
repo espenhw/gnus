@@ -1,9 +1,17 @@
 ** Gnus changes.
 
+The Gnus NEWS entries are short, but they reflect sweeping changes in
+four areas: Article display treatment, MIME treatment,
+internationalization and mail-fetching.
+
 *** The mail-fetching functions have changed.  See the manual for the
 many details.  In particular, all procmail fetching variables are gone.
 
-*** Gnus is now a MIME-capable reader.  See the manual for details. 
+*** Gnus is now a MIME-capable reader.  This affects many parts of
+Gnus, and adds a slew of new commands.  See the manual for details.
+
+*** Gnus has also been multilingualized.  This also affects too
+many parts of Gnus to summarize here, and adds many new variables.
 
 *** gnus-auto-select-first can now be a function to be
 called to position point.
@@ -12,5 +20,8 @@ called to position point.
 summary buffers and NOV files.
 
 *** `gnus-article-display-hook' has been removed.  Instead, a number
-of variables starting with `gnus-treat-'.
+of variables starting with `gnus-treat-' have been added.
+
+*** The Gnus posting styles have been redone again and now works in a
+subtly different manner.
 

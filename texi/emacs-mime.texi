@@ -742,9 +742,10 @@ other programs to do things based on the list of @dfn{handles} that are
 returned as a result of this analysis.
 
 @menu
-* Dissection::  Analyzing a @sc{mime} message.
-* Handles::     Handle manipulations.
-* Display::     Displaying handles.
+* Dissection::     Analyzing a @sc{mime} message.
+* Handles::        Handle manipulations.
+* Display::        Displaying handles.
+* Customization::  Variables that affect display.
 @end menu
 
 
@@ -841,6 +842,58 @@ Offer to pipe the part to some process.
 Prompt for a mailcap method to use to view the part.
 
 @end table
+
+
+@node Customization
+@section Customization
+
+@table @code
+
+@item mm-inline-media-tests
+This is an alist where the key is a @sc{mime} type, the second element
+is a function to display the part @dfn{inline} (i.e., inside Emacs), and 
+the third element is a form to be @code{eval}ed to say whether the part
+can be displayed inline.
+
+This variable specifies whether a part @emph{can} be displayed inline,
+and, if so, how to do it.  It does not say whether parts are
+@emph{actually} displayed inline.
+
+@item mm-inlines-types
+This, on the other hand, says what types are to be displayed inline, if
+they satisfy the conditions set by the variable above.  It's a list of
+@sc{mime} media types.
+
+@item mm-automatic-display
+This is a list of types that are to be displayed ``automatically'', but
+only if the above variable allows it.  That is, only inlinable parts are 
+usually displayed automatically, but in the end, this is up to the
+display agent that's using the @sc{mime} library.
+
+@item mm-attachment-override-types
+Some @sc{mime} agents create parts that have a content-disposition of
+@samp{attachment}.  This variable allows overriding that disposition and 
+displaying the part inline.
+
+@item mm-discouraged-alternatives
+List of @sc{mime} types that are discouraged when viewing
+@samp{multipart/alternative}.  Viewing agents are supposed to view the
+last possible part of a message, as that is supposed to be the richest.
+However, users may prefer other types instead, and this list says what
+types are most unwanted.  If, for instance, @samp{text/html} parts are
+very unwanted, and @samp{text/richtech} parts are somewhat unwanted,
+then the value of this variable should be set to:
+
+@lisp
+("text/html" "text/richtext")
+@end lisp
+
+@item mm-all-images-fit
+If non-@code{nil}, all images will be deemed to fit into the buffer,
+even when they don't.
+
+@end table
+
 
 
 @node Composing

@@ -804,8 +804,8 @@ prompt the user for the name of an NNTP server to use."
 	  ;; Load whichever file is newest -- the auto save file
 	  ;; or the "real" file.
 	  (if (file-newer-than-file-p auto dribble-file)
-	      (nnheader-insert-file-contents auto)
-	    (nnheader-insert-file-contents dribble-file))
+	      (mm-insert-file-contents auto)
+	    (mm-insert-file-contents dribble-file))
 	  (unless (zerop (buffer-size))
 	    (set-buffer-modified-p t))
 	  ;; Set the file modes to reflect the .newsrc file modes.
@@ -1828,39 +1828,41 @@ newsgroup."
 		     (gnus-group-prefixed-name "" method))))
 
     ;; Let the Gnus agent save the active file.
-    (when (and gnus-agent real-active)
-      (gnus-agent-save-groups method))
+    (if (and gnus-agent real-active)
+	(progn
+	  (gnus-agent-save-groups method)
+	  (gnus-active-to-gnus-format method hashtb nil real-active))
 
-    (goto-char (point-min))
-    ;; We split this into to separate loops, one with the prefix
-    ;; and one without to speed the reading up somewhat.
-    (if prefix
-	(let (min max opoint group)
+      (goto-char (point-min))
+      ;; We split this into to separate loops, one with the prefix
+      ;; and one without to speed the reading up somewhat.
+      (if prefix
+	  (let (min max opoint group)
+	    (while (not (eobp))
+	      (condition-case ()
+		  (progn
+		    (read cur) (read cur)
+		    (setq min (read cur)
+			  max (read cur)
+			  opoint (point))
+		    (skip-chars-forward " \t")
+		    (insert prefix)
+		    (goto-char opoint)
+		    (set (let ((obarray hashtb)) (read cur))
+			 (cons min max)))
+		(error (and group (symbolp group) (set group nil))))
+	      (forward-line 1)))
+	(let (min max group)
 	  (while (not (eobp))
 	    (condition-case ()
-		(progn
+		(when (eq (char-after) ?2)
 		  (read cur) (read cur)
 		  (setq min (read cur)
-			max (read cur)
-			opoint (point))
-		  (skip-chars-forward " \t")
-		  (insert prefix)
-		  (goto-char opoint)
-		  (set (let ((obarray hashtb)) (read cur))
+			max (read cur))
+		  (set (setq group (let ((obarray hashtb)) (read cur)))
 		       (cons min max)))
 	      (error (and group (symbolp group) (set group nil))))
-	    (forward-line 1)))
-      (let (min max group)
-	(while (not (eobp))
-	  (condition-case ()
-	      (when (eq (char-after) ?2)
-		(read cur) (read cur)
-		(setq min (read cur)
-		      max (read cur))
-		(set (setq group (let ((obarray hashtb)) (read cur)))
-		     (cons min max)))
-	    (error (and group (symbolp group) (set group nil))))
-	  (forward-line 1))))))
+	    (forward-line 1)))))))
 
 (defun gnus-read-newsrc-file (&optional force)
   "Read startup file.

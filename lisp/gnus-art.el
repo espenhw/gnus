@@ -3100,7 +3100,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 				  "inline")
 			   (mm-attachment-override-p type)))
 		 (mm-automatic-display-p type)
-		 (or (mm-inlinable-part-p type)
+		 (or (mm-inlined-p type)
 		     (mm-automatic-external-display-p type)))
 	    (setq display t)
 	  (when (equal (car (split-string type "/"))

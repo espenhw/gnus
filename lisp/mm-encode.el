@@ -87,7 +87,12 @@ The encoding used is returned."
 	 (encoding
 	  (or (and (listp type)
 		   (cadr (assq 'encoding type)))
-	      (mm-content-transfer-encoding mime-type))))
+	      (mm-content-transfer-encoding mime-type)))
+	 (bits (mm-body-7-or-8)))
+    ;; We force buffers that are 7bit to be unencoded, no matter
+    ;; what the preferred encoding is.
+    (when (eq bits '7bit)
+      (setq encoding bits))
     (mm-encode-content-transfer-encoding encoding mime-type)
     encoding))
 

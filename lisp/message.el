@@ -1036,7 +1036,7 @@ The cdr of ech entry is a function for applying the face to a region.")
 	     (file-readable-p file)
 	     (file-regular-p file))
     (with-temp-buffer
-      (nnheader-insert-file-contents file)
+      (mm-insert-file-contents file)
       (goto-char (point-min))
       (looking-at message-unix-mail-delimiter))))
 
@@ -2510,12 +2510,15 @@ to find out how to use this."
    (message-check 'from
      (let* ((case-fold-search t)
 	    (from (message-fetch-field "from"))
-	    (ad (nth 1 (mail-extract-address-components from))))
+	    ad)
        (cond
 	((not from)
 	 (message "There is no From line.  Posting is denied.")
 	 nil)
-	((or (not (string-match "@[^\\.]*\\." ad)) ;larsi@ifi
+	((or (not (string-match
+		   "@[^\\.]*\\."
+		   (setq ad (nth 1 (mail-extract-address-components
+				    from))))) ;larsi@ifi
 	     (string-match "\\.\\." ad) ;larsi@ifi..uio
 	     (string-match "@\\." ad)	;larsi@.ifi.uio
 	     (string-match "\\.$" ad)	;larsi@ifi.uio.
@@ -3384,6 +3387,7 @@ OTHER-HEADERS is an alist of header/value pairs."
 	from subject date reply-to to cc
 	references message-id follow-to
 	(inhibit-point-motion-hooks t)
+	(message-this-is-mail t)
 	mct never-mct gnus-warning)
     (save-restriction
       (message-narrow-to-head)

@@ -1,3 +1,8 @@
+1999-07-04 04:33:50  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Posting Styles): Fix.
+	(Mail in a Newsreader): New.
+
 1999-06-13 02:29:22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (MIME Commands): Addition.

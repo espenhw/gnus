@@ -135,6 +135,9 @@ The following specs are understood:
     "D" gnus-server-deny-server
     "R" gnus-server-remove-denials
 
+    "n" next-line
+    "p" previous-line
+    
     "g" gnus-server-regenerate-server
 
     "\C-c\C-i" gnus-info-find-node

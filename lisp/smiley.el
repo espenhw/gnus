@@ -180,6 +180,8 @@ above them."
 	   (glyph (make-glyph
 		   (list
 		    (cons 'x (expand-file-name pixmap smiley-data-directory))
+		    (cons 'mswindows
+			  (expand-file-name pixmap smiley-data-directory))
 		    (cons 'tty smiley)))))
       (setq smiley-glyph-cache (cons (cons pixmap glyph) smiley-glyph-cache))
       (set-glyph-face glyph 'default)
@@ -228,7 +230,7 @@ above them."
 ;;;###autoload
 (defun smiley-buffer (&optional buffer st nd)
   (interactive)
-  (when (featurep 'x)
+  (when (featurep '(or x mswindows))
     (save-excursion
       (when buffer
 	(set-buffer buffer))

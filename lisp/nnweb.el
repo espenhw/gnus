@@ -35,6 +35,7 @@
 (require 'gnus-util)
 (require 'gnus)
 (require 'nnmail)
+(require 'mm-util)
 (eval-when-compile
   (ignore-errors
     (require 'w3)
@@ -227,7 +228,7 @@ and `altavista'.")
   "Read the overview of GROUP and build the map."
   (when (file-exists-p (nnweb-overview-file group))
     (with-temp-buffer
-      (nnheader-insert-file-contents (nnweb-overview-file group))
+      (mm-insert-file-contents (nnweb-overview-file group))
       (goto-char (point-min))
       (let (header)
 	(while (not (eobp))
