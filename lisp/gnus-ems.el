@@ -230,26 +230,15 @@ pounce directly on the real variables themselves.")
   )
 
 (defun gnus-highlight-selected-summary-xemacs ()
-  ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
   ;; Highlight selected article in summary buffer
   (if gnus-summary-selected-face
-      (save-excursion
-	(let* ((beg (progn (beginning-of-line) (point)))
-	       (end (progn (end-of-line) (point)))
-	       (to (max 1 (1- (or (previous-single-property-change
-				   end 'mouse-face nil beg) end))))
-	       (from (1+ (or (next-single-property-change 
-			      beg 'mouse-face nil end) beg))))
-	  (if (< to beg)
-	      (progn
-		(setq from beg)
-		(setq to end)))
-	  (if gnus-newsgroup-selected-overlay
-	      (delete-extent gnus-newsgroup-selected-overlay))
-	  (setq gnus-newsgroup-selected-overlay
-		(make-extent from to))
-	  (set-extent-face gnus-newsgroup-selected-overlay
-			   gnus-summary-selected-face)))))
+      (progn
+	(if gnus-newsgroup-selected-overlay
+	    (delete-extent gnus-newsgroup-selected-overlay))
+	(setq gnus-newsgroup-selected-overlay 
+	      (make-extent (gnus-point-at-bol) (gnus-point-at-eol)))
+	(set-extent-face gnus-newsgroup-selected-overlay
+			 gnus-summary-selected-face))))
 
 (defun gnus-summary-recenter-xemacs ()
   (let* ((top (cond ((< (window-height) 4) 0)
@@ -474,7 +463,7 @@ call it with the value of the `gnus-data' text property."
       (gnus-summary-prepare-threads (list thread) 0)
       (save-excursion
 	(while (and (>= (point) beg)
-		    (not (eobp)))
+		    (not (bobp)))
 	  (remove-text-properties
 	   (1+ (gnus-point-at-bol)) (1+ (gnus-point-at-eol))
 	   '(gnus-number nil gnus-mark nil gnus-level nil))
@@ -495,6 +484,8 @@ call it with the value of the `gnus-data' text property."
 			(and data (list 'gnus-data data))
 			(list 'highlight t))))
 
+(defun gnus-window-left-corner-xemacs (&optional window)
+  (nth 1 (window-pixel-edges window)))
 
 (defun gnus-ems-redefine ()
   (cond 
@@ -514,6 +505,7 @@ call it with the value of the `gnus-data' text property."
     (fset 'gnus-article-push-button 'gnus-article-push-button-xemacs)
     (fset 'gnus-rebuild-thread 'gnus-rebuild-thread-xemacs)
     (fset 'gnus-article-add-button 'gnus-article-add-button-xemacs)
+    (fset 'gnus-window-left-corner 'gnus-window-left-corner-xemacs)
 
     (if (not gnus-visual)
 	()
@@ -522,7 +514,6 @@ call it with the value of the `gnus-data' text property."
 	     '(lambda ()
 	       (easy-menu-add gnus-group-reading-menu)
 	       (easy-menu-add gnus-group-group-menu)
-	       (easy-menu-add gnus-group-post-menu)
 	       (easy-menu-add gnus-group-misc-menu)
 	       (gnus-install-mouse-tracker)) 
 	     gnus-group-mode-hook))

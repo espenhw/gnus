@@ -1310,7 +1310,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.12"
+(defconst gnus-version "(ding) Gnus v0.99.13"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2562,7 +2562,9 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
 	(setq hor (cdr hor))))
     (and (not invisible) jump-buffer)))
 
-      
+(defun gnus-window-left-corner (&optional window)
+  (nth 1 (window-edges window)))
+
 (defun gnus-remove-some-windows ()
   (let ((buffers gnus-window-to-buffer)
 	(lowest (frame-height))
@@ -2578,9 +2580,9 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
 	     (progn
 	       (setq bufs (cons buf bufs))
 	       (pop-to-buffer buf)
-	       (if (< (nth 1 (window-edges)) lowest)
+	       (if (< (gnus-window-left-corner) lowest)
 		   (progn
-		     (setq lowest (nth 1 (window-edges)))
+		     (setq lowest (gnus-window-left-corner))
 		     (setq lowest-buf buf)))))
 	(setq buffers (cdr buffers)))
       ;; Remove windows on *all* summary buffers.
@@ -2592,10 +2594,10 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
 	     (progn
 	       (setq bufs (cons buf bufs))
 	       (pop-to-buffer buf)
-	       (if (< (nth 1 (window-edges)) lowest)
+	       (if (< (gnus-window-left-corner) lowest)
 		   (progn
 		     (setq lowest-buf buf)
-		     (setq lowest (nth 1 (window-edges)))))))))))
+		     (setq lowest (gnus-window-left-corner))))))))))
       (and lowest-buf 
 	   (progn
 	     (pop-to-buffer lowest-buf)
@@ -5282,13 +5284,13 @@ buffer.
   (define-key gnus-summary-mark-map "K" 'gnus-summary-kill-same-subject)
 
   (define-prefix-command 'gnus-summary-mscore-map)
-  (define-key gnus-summary-mark-map "s" 'gnus-summary-mscore-map)
+  (define-key gnus-summary-mark-map "V" 'gnus-summary-mscore-map)
   (define-key gnus-summary-mscore-map "c" 'gnus-summary-clear-above)
   (define-key gnus-summary-mscore-map "u" 'gnus-summary-tick-above)
   (define-key gnus-summary-mscore-map "m" 'gnus-summary-mark-above)
   (define-key gnus-summary-mscore-map "k" 'gnus-summary-kill-below)
 
-  (define-key gnus-summary-mark-map "p" 'gnus-uu-mark-map)
+  (define-key gnus-summary-mark-map "P" 'gnus-uu-mark-map)
   
   (define-key gnus-summary-mode-map "S" 'gnus-summary-send-map)
   
@@ -10919,15 +10921,18 @@ Provided for backwards compatability."
 	(let ((next (following-char))
 	      (previous (char-after (- (point) 2))))
 	  (cond ((eq next previous)
-		 (delete-region (- (point) 2) (point))
+		 (put-text-property (- (point) 2) (point)
+				    'invisible t)
 		 (put-text-property (point) (1+ (point))
 				    'face 'bold))
 		((eq next ?_)
-		 (delete-region (1- (point)) (1+ (point)))
+		 (put-text-property (1- (point)) (1+ (point))
+				    'invisible t)
 		 (put-text-property (1- (point)) (point)
 				    'face 'underline))
 		((eq previous ?_)
-		 (delete-region (- (point) 2) (point))
+		 (put-text-property (- (point) 2) (point)
+				    'invisible t)
 		 (put-text-property (point) (1+ (point))
 				    'face 'underline))))))))
 
@@ -11976,14 +11981,19 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
     ;; Read the newsrc file and create `gnus-newsrc-hashtb'.
     (if init (gnus-read-newsrc-file rawfile))
 
+    ;; If we don't read the complete active file, we fill in the
+    ;; hashtb here. 
+    (if (or (null gnus-read-active-file)
+	    (eq gnus-read-active-file 'some))
+	(gnus-update-active-hashtb-from-killed))
+
     ;; Read the active file and create `gnus-active-hashtb'.
     ;; If `gnus-read-active-file' is nil, then we just create an empty
     ;; hash table. The partial filling out of the hash table will be
     ;; done in `gnus-get-unread-articles'.
-    (if (and gnus-read-active-file 
-	     (not level))
-	(gnus-read-active-file)
-      (setq gnus-active-hashtb (make-vector 4095 0)))
+    (and gnus-read-active-file 
+	 (not level)
+	 (gnus-read-active-file))
 
     ;; Possibly eval the dribble file.
     (and init gnus-use-dribble-file (gnus-dribble-eval-file))
@@ -12656,6 +12666,18 @@ Returns whether the updating was successful."
 	      (gnus-remove-from-range (nth 2 info) (nreverse news)))
       (gnus-group-update-group group t))))
 
+;; Enter all dead groups into the hashtb.
+(defun gnus-update-active-hashtb-from-killed ()
+  (let ((hashtb (setq gnus-active-hashtb (make-vector 4095 0)))
+	(lists (list gnus-killed-list gnus-zombie-list))
+	killed)
+    (while lists
+      (setq killed (car lists))
+      (while killed
+	(gnus-sethash (car killed) nil hashtb)
+	(setq killed (cdr killed)))
+      (setq lists (cdr lists)))))
+
 ;; Get the active file(s) from the backend(s).
 (defun gnus-read-active-file ()
   (gnus-group-set-mode-line)
@@ -12701,9 +12723,9 @@ Returns whether the updating was successful."
 		     (ding)
 		     (sit-for 2))
 		    ((eq list-type 'active)
-		     (gnus-active-to-gnus-format method))
+		     (gnus-active-to-gnus-format method gnus-active-hashtb))
 		    (t
-		     (gnus-groups-to-gnus-format method)))))
+		     (gnus-groups-to-gnus-format method gnus-active-hashtb)))))
 	   (t
 	    (if (not (gnus-request-list method))
 		(progn

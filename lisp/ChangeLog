@@ -1,7 +1,31 @@
+Sun Aug 20 01:04:45 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus-ems.el (gnus-ems-redefine): One entry too many; XEmacs
+	bugout. 
+
+Sat Aug 19 22:41:22 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-article-treat-overstrike): Make overstrikes
+	invisible instead of deleitng them.
+	(gnus-summary-mode-map): Changed the "M p" and "M s" keymaps.
+	(gnus-update-active-hashtb-from-killed): New function.
+	(gnus-setup-news): Use it.
+
+Sat Aug 19 22:03:14 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-window-left-corner): New function.
+	* gnus-ems.el (gnus-window-left-corner-xemacs): Redefine it.
+
+	* gnus-ems.el (gnus-rebuild-thread-xemacs): Would infloop.
+	(gnus-highlight-selected-summary-xemacs): Did not work on the
+	first line in a group.
+
 Sat Aug 19 16:37:58 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
 
-	* nnbabyl.el (nnbabyl-read-mbox): Would create ghost articles. 
+	* gnus.el: 0.99.12 is released.
 
+	* nnbabyl.el (nnbabyl-read-mbox): Would create ghost articles. 
+	
 	* gnus.el (gnus-summary-move-article): Would barf on respooling to
 	(as-yet) non-existant groups.
 	(gnus-summary-best-unread-article): Really go to the best article.

@@ -3898,23 +3898,23 @@ Display all dormant articles (@code{gnus-summary-show-all-dormant}).
 @kindex M M-D (Summary)
 @findex gnus-summary-hide-all-dormant
 Hide all dormant articles (@code{gnus-summary-hide-all-dormant}).
-@item M s k
-@kindex M s k (Summary)
+@item M V k
+@kindex M V k (Summary)
 @findex gnus-summary-kill-below
 Kill all articles with scores below the default score (or below the
 numeric prefix) (@code{gnus-summary-kill-below}).
-@item M s c
-@kindex M s c (Summary)
+@item M V c
+@kindex M V c (Summary)
 @findex gnus-summary-clear-above
 Clear all marks from articles with scores over the default score (or
 over the numeric prefix) (@code{gnus-summary-clear-above}).
-@item M s u
-@kindex M s u (Summary)
+@item M V u
+@kindex M V u (Summary)
 @findex gnus-summary-tick-above
 Tick all articles with scores over the default score (or over the
 numeric prefix) (@code{gnus-summary-tick-above}).
-@item M s m
-@kindex M s m (Summary)
+@item M V m
+@kindex M V m (Summary)
 @findex gnus-summary-mark-above
 Prompt for a mark, and mark all articles with scores over the default
 score (or over the numeric prefix) with this mark
@@ -3932,49 +3932,49 @@ one line up or down.
 @cindex setting process marks
 
 @table @kbd
-@item M p p
+@item M P p
 @itemx #
 @kindex # (Summary)
-@kindex M p p (Summary)
+@kindex M P p (Summary)
 @findex gnus-summary-mark-as-processable
 Mark the current article with the process mark
 (@code{gnus-summary-mark-as-processable}). 
 @findex gnus-summary-unmark-as-processable
-@item M p u 
+@item M P u 
 @itemx M-#
-@kindex M p u (Summary)
+@kindex M P u (Summary)
 @kindex M-# (Summary)
 Remove the process mark, if any, from the current article
 (@code{gnus-summary-unmark-as-processable}).
-@item M p U
-@kindex M p U (Summary)
+@item M P U
+@kindex M P U (Summary)
 @findex gnus-summary-unmark-all-processable
 Remove the process mark from all articles
 (@code{gnus-summary-unmark-all-processable}). 
-@item M p R
-@kindex M p R (Summary)
+@item M P R
+@kindex M P R (Summary)
 @findex gnus-uu-mark-by-regexp
 Mark articles by a regular expression (@code{gnus-uu-mark-by-regexp}). 
-@item M p r
-@kindex M p r (Summary)
+@item M P r
+@kindex M P r (Summary)
 @findex gnus-uu-mark-region
 Mark articles in region (@code{gnus-uu-mark-region}).
-@item M p t
-@kindex M p t (Summary)
+@item M P t
+@kindex M P t (Summary)
 @findex gnus-uu-mark-thread
 Mark all articles in the current (sub)thread
 (@code{gnus-uu-mark-thread}).
-@item M p s
-@kindex M p s (Summary)
+@item M P s
+@kindex M P s (Summary)
 @findex gnus-uu-mark-series
 Mark all articles in the current series (@code{gnus-uu-mark-series}).
-@item M p S
-@kindex M p S (Summary)
+@item M P S
+@kindex M P S (Summary)
 @findex gnus-uu-mark-sparse
 Mark all series that have already had some articles marked
 (@code{gnus-uu-mark-sparse}).
-@item M p a
-@kindex M p a (Summary)
+@item M P a
+@kindex M P a (Summary)
 @findex gnus-uu-mark-all
 Mark all articles in series order (@code{gnus-uu-mark-series}).
 @end table
@@ -4609,7 +4609,7 @@ Uudecodes, views and saves the current series
 
 Remember that these all react to the presence of articles marked with
 the process mark.  If, for instance, you'd like to uncode and save an
-entire newsgroup, you'd typically do @kbd{M p a}
+entire newsgroup, you'd typically do @kbd{M P a}
 (@code{gnus-uu-mark-all}) and then @kbd{X U}
 (@code{gnus-uu-decode-uu-and-save}).
 
