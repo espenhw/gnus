@@ -1,3 +1,9 @@
+2000-11-15  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-group.el (gnus-group-jump-to-group-prompt): New variable by
+	Stein Arild Str,Ax(Bmme.
+	(gnus-group-jump-to-group): Use it.
+
 2000-11-14 10:32:42  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mailcap.el (mailcap-possible-viewers): Match the entire string.
