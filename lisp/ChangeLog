@@ -1,3 +1,10 @@
+2000-06-28  Simon Josefsson  <simon@josefsson.org>
+
+	* nnimap.el (nnimap-open-connection): Use port stuff.
+
+	* gnus-util.el (gnus-netrc-machine): Add defaultport parameter,
+	document port and defaultport.
+
 2000-06-27  Paul Stodghill <stodghil@CS.Cornell.EDU>
 
 	* gnus-agent.el (gnus-agent-synchronize): Kill flags buffer.

@@ -859,8 +859,10 @@ ARG is passed to the first function."
 	  (forward-line 1))
 	(nreverse result)))))
 
-(defun gnus-netrc-machine (list machine &optional port)
-  "Return the netrc values from LIST for MACHINE or for the default entry."
+(defun gnus-netrc-machine (list machine &optional port defaultport)
+  "Return the netrc values from LIST for MACHINE or for the default entry.
+If PORT specified, only return entries with matching port tokens.
+Entries without port tokens default to DEFAULTPORT."
   (let ((rest list)
 	result)
     (while list
@@ -876,9 +878,9 @@ ARG is passed to the first function."
     (when result
       (setq result (nreverse result))
       (while (and result
-		  (not (equal (or port "nntp")
+		  (not (equal (or port defaultport "nntp")
 			      (or (gnus-netrc-get (car result) "port")
-				  "nntp"))))
+				  defaultport "nntp"))))
 	(pop result))
       (car result))))
 

@@ -523,15 +523,14 @@ If EXAMINE is non-nil the group is selected read-only."
 		(imap-capability 'IMAP4rev1 nnimap-server-buffer))
       (imap-close nnimap-server-buffer)
       (nnheader-report 'nnimap "Server %s is not IMAP4 compliant" server))
-    (let (list alist user passwd)
-      (and (fboundp 'gnus-parse-netrc)
-	   (setq list (gnus-parse-netrc nnimap-authinfo-file)
-		 alist (or (and (gnus-netrc-get
-				 (gnus-netrc-machine list server) "machine")
-				(gnus-netrc-machine list server))
-			   (gnus-netrc-machine list nnimap-address))
-		 user (gnus-netrc-get alist "login")
-		 passwd (gnus-netrc-get alist "password")))
+    (let* ((list (gnus-parse-netrc nnimap-authinfo-file))
+	   (port (if nnimap-server-port
+		     (int-to-string nnimap-server-port)
+		   "imap"))
+	   (alist (or (gnus-netrc-machine list server port "imap")
+		      (gnus-netrc-machine list nnimap-address port "imap")))
+	   (user (gnus-netrc-get alist "login"))
+	   (passwd (gnus-netrc-get alist "password")))
       (if (imap-authenticate user passwd nnimap-server-buffer)
 	  (prog1
 	      (push (list server nnimap-server-buffer)
