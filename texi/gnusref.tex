@@ -1,7 +1,7 @@
 %% include file for the Gnus refcard and booklet
 
 \def\progver{5.10}\def\refver{5.10-1} % program and refcard versions
-\def\date{Jan, 2003}
+\def\date{May, 2003}
 \def\author{Gnus Bugfixing Girls + Boys $<$bugs@gnus.org$>$}
 
 %%
@@ -146,6 +146,7 @@
       ?   & (?, M ?) Dormant (only followups are interesting).\\
       E   & (E, M e, M x) {\bf Expirable}. Only has effect in mail groups.\\
       G   & (C, B DEL) Canceled article (or deleted in mailgroups).\\
+      \$  & (M-d, M s x, S x).  Marked as spam.\\
       \hline\hline
       \multicolumn{2}{|p{\markdblcolwidth}|}
       {The marks below mean that the article
@@ -171,6 +172,7 @@
       \#  & (\#, M \#, M P p) Processable (will be affected by the next operation).
       [2]\\
       A   & {\bf Answered} (followed-up or replied). [2]\\
+      F   & Forwarded. [2]\\
       $\ast$  & Cached. [2]\\
       S   & Saved. [2]\\
       N   & Recently arrived. [2]\\
@@ -688,7 +690,8 @@
         RET     & (BUTTON-2) Toggle display of the MIME object.\\
         v       & Prompt for a method and then view object using this method.\\
         o       & Prompt for a filename and save the MIME object.\\
-        C-o       & Prompt for a filename to save the MIME object to and remove it.\\
+        C-o     & Prompt for a filename to save the MIME object to and remove it.\\
+        d       & {\bf Delete} the MIME object.\\
         c       & {\bf Copy} the MIME object to a new buffer and display this buffer.\\
         i       & Display the MIME object in this buffer.\\
         C       & Copy the MIME object to a new buffer and display this buffer using {\bf Charset} \\
