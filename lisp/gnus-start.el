@@ -46,7 +46,9 @@
 This variable takes the same values as the `version-control'
 variable."
   :group 'gnus-start
-  :type 'boolean)
+  :type '(choice (const :tag "Never" never)
+		 (const :tag "If existing" nil)
+		 (other :tag "Always" t)))
 
 (defcustom gnus-init-file (nnheader-concat gnus-home-directory ".gnus")
   "Your Gnus Emacs-Lisp startup file name.

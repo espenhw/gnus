@@ -1,3 +1,7 @@
+2003-02-24  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-start.el (gnus-backup-startup-file): Fixed custom type.
+
 2003-02-24  Ted Zlatanov <tzz@lifelogs.com>
 	From Michael Shields  <shields@msrl.com>
 
