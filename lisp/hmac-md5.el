@@ -67,23 +67,14 @@
 (require 'hex-util)			; (decode-hex-string STRING)
 (require 'md5)				; expects (md5 STRING)
 
-;; To share *.elc files between Emacs w/ and w/o DL patch,
-;; this check must be done at load-time.
-(cond
- ((fboundp 'md5-binary)
-  ;; do nothing.
-  )
- ((condition-case nil
-       ;; `md5' of v21 takes 4th arg CODING (and 5th arg NOERROR).
-       (md5 "" nil nil 'binary)		; => "d41d8cd98f00b204e9800998ecf8427e"
-     (wrong-number-of-arguments nil))
-  (defun md5-binary (string)
-    "Return the MD5 of STRING in binary form."
-   (decode-hex-string (md5 string nil nil 'binary))))
- (t
-  (defun md5-binary (string)
-    "Return the MD5 of STRING in binary form."
-   (decode-hex-string (md5 string)))))
+(defun md5-binary (string)
+  "Return the MD5 of STRING in binary form."
+  (if (condition-case nil
+	  ;; `md5' of v21 takes 4th arg CODING (and 5th arg NOERROR).
+	  (md5 "" nil nil 'binary)	; => "d41d8cd98f00b204e9800998ecf8427e"
+	(wrong-number-of-arguments nil))
+      (decode-hex-string (md5 string nil nil 'binary))
+    (decode-hex-string (md5 string))))
 
 (define-hmac-function hmac-md5 md5-binary 64 16) ; => (hmac-md5 TEXT KEY)
 (define-hmac-function hmac-md5-96 md5-binary 64 16 96)
