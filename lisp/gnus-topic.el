@@ -384,11 +384,12 @@ If RECURSIVE is t, return groups in its subtopics too."
 
 ;;; Generating group buffers
 
-(defun gnus-group-prepare-topics (level &optional all lowest
+(defun gnus-group-prepare-topics (level &optional predicate lowest
 					regexp list-topic topic-level)
   "List all newsgroups with unread articles of level LEVEL or lower.
 Use the `gnus-group-topics' to sort the groups.
-If ALL is non-nil, list groups that have no unread articles.
+If PREDICTE is a function, list groups that the function returns non-nil;
+if it is t, list groups that have no unread articles.
 If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
   (set-buffer gnus-group-buffer)
   (let ((buffer-read-only nil)
@@ -402,14 +403,17 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
       (erase-buffer))
 
     ;; List dead groups?
-    (when (and (>= level gnus-level-zombie)
-	       (<= lowest gnus-level-zombie))
+    (when (or gnus-group-listed-groups
+	      (and (>= level gnus-level-zombie)
+		   (<= lowest gnus-level-zombie)))
       (gnus-group-prepare-flat-list-dead
        (setq gnus-zombie-list (sort gnus-zombie-list 'string<))
        gnus-level-zombie ?Z
        regexp))
 
-    (when (and (>= level gnus-level-killed) (<= lowest gnus-level-killed))
+    (when (or gnus-group-listed-groups
+	       (and (>= level gnus-level-killed) 
+		    (<= lowest gnus-level-killed)))
       (gnus-group-prepare-flat-list-dead
        (setq gnus-killed-list (sort gnus-killed-list 'string<))
        gnus-level-killed ?K
@@ -417,33 +421,37 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 
     ;; Use topics.
     (prog1
-	(when (< lowest gnus-level-zombie)
+	(when (or (< lowest gnus-level-zombie)
+		  gnus-group-listed-groups)
 	  (if list-topic
 	      (let ((top (gnus-topic-find-topology list-topic)))
 		(gnus-topic-prepare-topic (cdr top) (car top)
-					  (or topic-level level) all
-					  nil lowest))
+					  (or topic-level level) predicate
+					  nil lowest regexp))
 	    (gnus-topic-prepare-topic gnus-topic-topology 0
-				      (or topic-level level) all
-				      nil lowest)))
-
+				      (or topic-level level) predicate
+				      nil lowest regexp)))
       (gnus-group-set-mode-line)
-      (setq gnus-group-list-mode (cons level all))
+      (setq gnus-group-list-mode (cons level predicate))
       (gnus-run-hooks 'gnus-group-prepare-hook))))
 
-(defun gnus-topic-prepare-topic (topicl level &optional list-level all silent
-					lowest)
+(defun gnus-topic-prepare-topic (topicl level &optional list-level 
+					predicate silent
+					lowest regexp)
   "Insert TOPIC into the group buffer.
 If SILENT, don't insert anything.  Return the number of unread
 articles in the topic and its subtopics."
   (let* ((type (pop topicl))
 	 (entries (gnus-topic-find-groups
-		   (car type) list-level
-		   (or all
+		   (car type) 
+		   (if gnus-group-listed-groups 
+		       gnus-level-killed
+		     list-level)
+		   (or predicate gnus-group-listed-groups
 		       (cdr (assq 'visible
 				  (gnus-topic-hierarchical-parameters
 				   (car type)))))
-		   lowest))
+		   (if gnus-group-listed-groups 0 lowest)))
 	 (visiblep (and (eq (nth 1 type) 'visible) (not silent)))
 	 (gnus-group-indentation
 	  (make-string (* gnus-topic-indent-level level) ? ))
@@ -458,32 +466,61 @@ articles in the topic and its subtopics."
     (while topicl
       (incf unread
 	    (gnus-topic-prepare-topic
-	     (pop topicl) (1+ level) list-level all
-	     (not visiblep) lowest)))
+	     (pop topicl) (1+ level) list-level predicate
+	     (not visiblep) lowest regexp)))
     (setq end (point))
     (goto-char beg)
     ;; Insert all the groups that belong in this topic.
     (while (setq entry (pop entries))
-      (when visiblep
-	(if (stringp entry)
-	    ;; Dead groups.
-	    (gnus-group-insert-group-line
-	     entry (if (member entry gnus-zombie-list)
-		       gnus-level-zombie gnus-level-killed)
-	     nil (- (1+ (cdr (setq active (gnus-active entry))))
-		    (car active))
-	     nil)
-	  ;; Living groups.
-	  (when (setq info (nth 2 entry))
-	    (gnus-group-insert-group-line
-	     (gnus-info-group info)
-	     (gnus-info-level info) (gnus-info-marks info)
-	     (car entry) (gnus-info-method info)))))
-      (when (and (listp entry)
-		 (numberp (car entry)))
-	(incf unread (car entry)))
-      (when (listp entry)
-	(setq tick t)))
+      (when (if (stringp entry)
+		(gnus-group-prepare-logic 
+		 entry
+		 (and
+		  (or (not gnus-group-listed-groups)
+		      (if (< list-level gnus-level-zombie) nil
+			(let ((entry-level
+			       (if (member entry gnus-zombie-list)
+				   gnus-level-zombie gnus-level-killed)))
+			  (and (<= entry-level list-level)
+			       (>= entry-level lowest)))))
+		  (cond 
+		   ((stringp regexp)
+		    (string-match regexp entry))
+		   ((functionp regexp)
+		    (funcall regexp entry))
+		   ((null regexp) t)
+		   (t nil))))
+	      (setq info (nth 2 entry))
+	      (gnus-group-prepare-logic 
+	       (gnus-info-group info)
+	       (and (or (not gnus-group-listed-groups)
+			(let ((entry-level (gnus-info-level info)))
+			  (and (<= entry-level list-level)
+			       (>= entry-level lowest))))
+		    (or (not (functionp predicate))
+			(funcall predicate info))
+		    (or (not (stringp regexp))
+			(string-match regexp (gnus-info-group info))))))
+	(when visiblep
+	  (if (stringp entry)
+	      ;; Dead groups.
+	      (gnus-group-insert-group-line
+	       entry (if (member entry gnus-zombie-list)
+			 gnus-level-zombie gnus-level-killed)
+	       nil (- (1+ (cdr (setq active (gnus-active entry))))
+		      (car active))
+	       nil)
+	    ;; Living groups.
+	    (when (setq info (nth 2 entry))
+	      (gnus-group-insert-group-line
+	       (gnus-info-group info)
+	       (gnus-info-level info) (gnus-info-marks info)
+	       (car entry) (gnus-info-method info)))))
+	(when (and (listp entry)
+		   (numberp (car entry)))
+	  (incf unread (car entry)))
+	(when (listp entry)
+	  (setq tick t))))
     (goto-char beg)
     ;; Insert the topic line.
     (when (and (not silent)

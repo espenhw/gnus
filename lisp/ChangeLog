@@ -1,3 +1,24 @@
+2000-10-28 02:40:46  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-group.el (gnus-group-listed-groups): New variable.
+	(gnus-group-list-option): New variable.
+	(gnus-group-list-limit-map): New keymap.
+	(gnus-group-list-flush-map): New keymap.
+	(gnus-group-list-plus-map): New keymap.
+	(gnus-group-prepare-logic): New function.
+	(gnus-group-prepare-flat): Merge with
+	gnus-group-prepare-flat-predicate. Use gnus-group-listed-groups.
+	(gnus-group-prepare-flat-list-dead): Ditto.
+	(gnus-group-list-matching): Use gnus-group-prepare-function.
+	(gnus-group-list-dormant): Ditto.
+	(gnus-group-list-cached): Ditto.
+	(gnus-group-listed-groups): New function.
+	(gnus-group-list-limit): New function.
+	(gnus-group-list-flush): New function.
+	(gnus-group-list-plus): New function.
+	* gnus-topic.el (gnus-group-prepare-topics): Accept predicate.
+	(gnus-topic-prepare-topic): Ditto.
+
 2000-10-27  Paul Jarc <prj@po.cwru.edu>
 
 	* message.el (message-insert-to, message-get-reply-headers):

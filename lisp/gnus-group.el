@@ -482,6 +482,9 @@ For example:
 
 (defvar gnus-group-icon-cache nil)
 
+(defvar gnus-group-listed-groups nil)
+(defvar gnus-group-list-option nil)
+
 ;;;
 ;;; Gnus group mode
 ;;;
@@ -625,6 +628,42 @@ For example:
     "l" gnus-group-list-level
     "c" gnus-group-list-cached
     "?" gnus-group-list-dormant)
+
+  (gnus-define-keys (gnus-group-list-limit-map "/" gnus-group-list-map)
+    "k"  gnus-group-list-limit
+    "z"  gnus-group-list-limit
+    "s"  gnus-group-list-limit
+    "u"  gnus-group-list-limit
+    "A"  gnus-group-list-limit
+    "m"  gnus-group-list-limit
+    "M"  gnus-group-list-limit
+    "l"  gnus-group-list-limit
+    "c"  gnus-group-list-limit
+    "?"  gnus-group-list-limit)
+
+  (gnus-define-keys (gnus-group-list-flush-map "f" gnus-group-list-map)
+    "k"  gnus-group-list-flush
+    "z"  gnus-group-list-flush
+    "s"  gnus-group-list-flush
+    "u"  gnus-group-list-flush
+    "A"  gnus-group-list-flush
+    "m"  gnus-group-list-flush
+    "M"  gnus-group-list-flush
+    "l"  gnus-group-list-flush
+    "c"  gnus-group-list-flush
+    "?"  gnus-group-list-flush)
+
+  (gnus-define-keys (gnus-group-list-plus-map "p" gnus-group-list-map)
+    "k"  gnus-group-list-plus
+    "z"  gnus-group-list-plus
+    "s"  gnus-group-list-plus
+    "u"  gnus-group-list-plus
+    "A"  gnus-group-list-plus
+    "m"  gnus-group-list-plus
+    "M"  gnus-group-list-plus
+    "l"  gnus-group-list-plus
+    "c"  gnus-group-list-plus
+    "?"  gnus-group-list-plus)
 
   (gnus-define-keys (gnus-group-score-map "W" gnus-group-mode-map)
     "f" gnus-score-flush-cache)
@@ -990,18 +1029,33 @@ If ALL (the prefix), also list groups that have no unread articles."
   (interactive "nList groups on level: \nP")
   (gnus-group-list-groups level all level))
 
-(defun gnus-group-prepare-flat (level &optional all lowest regexp)
+(defun gnus-group-prepare-logic (group test)
+  (or (and gnus-group-listed-groups
+	   (null gnus-group-list-option)
+	   (member group gnus-group-listed-groups))
+      (cond 
+       ((null gnus-group-listed-groups) test)
+       ((null gnus-group-list-option) test)
+       (t (and (member group gnus-group-listed-groups)
+	       (if (eq gnus-group-list-option 'flush)
+		   (not test)
+		 test))))))
+
+(defun gnus-group-prepare-flat (level &optional predicate lowest regexp)
   "List all newsgroups with unread articles of level LEVEL or lower.
-If ALL is non-nil, list groups that have no unread articles.
+If PREDICATE is a function, list groups that the function returns non-nil;
+if it is t, list groups that have no unread articles.
 If LOWEST is non-nil, list all newsgroups of level LOWEST or higher.
-If REGEXP, only list groups matching REGEXP."
+If REGEXP is a function, list dead groups that the function returns non-nil;
+if it is a string, only list groups matching REGEXP."
   (set-buffer gnus-group-buffer)
   (let ((buffer-read-only nil)
 	(newsrc (cdr gnus-newsrc-alist))
 	(lowest (or lowest 1))
 	info clevel unread group params)
     (erase-buffer)
-    (when (< lowest gnus-level-zombie)
+    (when (or (< lowest gnus-level-zombie)
+	      gnus-group-listed-groups)
       ;; List living groups.
       (while newsrc
 	(setq info (car newsrc)
@@ -1009,41 +1063,53 @@ If REGEXP, only list groups matching REGEXP."
 	      params (gnus-info-params info)
 	      newsrc (cdr newsrc)
 	      unread (car (gnus-gethash group gnus-newsrc-hashtb)))
-	(and unread			; This group might be unchecked
-	     (or (not regexp)
-		 (string-match regexp group))
-	     (<= (setq clevel (gnus-info-level info)) level)
-	     (>= clevel lowest)
-	     (or all			; We list all groups?
-		 (if (eq unread t)	; Unactivated?
-		     gnus-group-list-inactive-groups ; We list unactivated
-		   (> unread 0))	; We list groups with unread articles
-		 (and gnus-list-groups-with-ticked-articles
-		      (cdr (assq 'tick (gnus-info-marks info))))
+	(and 
+	 (gnus-group-prepare-logic 
+	  group
+	  (and unread		; This group might be unchecked
+	       (or (not (stringp regexp))
+		   (string-match regexp group))
+	       (<= (setq clevel (gnus-info-level info)) level)
+	       (>= clevel lowest)
+	       (cond
+		((functionp predicate)
+		 (funcall predicate info))
+		(predicate t)		; We list all groups?
+		(t
+		 (or
+		  (if (eq unread t)	; Unactivated?
+		      gnus-group-list-inactive-groups 
+					; We list unactivated
+		    (> unread 0))	
+					; We list groups with unread articles
+		  (and gnus-list-groups-with-ticked-articles
+		       (cdr (assq 'tick (gnus-info-marks info))))
 					; And groups with tickeds
-		 ;; Check for permanent visibility.
-		 (and gnus-permanently-visible-groups
-		      (string-match gnus-permanently-visible-groups
-				    group))
-		 (memq 'visible params)
-		 (cdr (assq 'visible params)))
-	     (gnus-group-insert-group-line
-	      group (gnus-info-level info)
-	      (gnus-info-marks info) unread (gnus-info-method info)))))
-
+		  ;; Check for permanent visibility.
+		  (and gnus-permanently-visible-groups
+		       (string-match gnus-permanently-visible-groups group))
+		  (memq 'visible params)
+		  (cdr (assq 'visible params)))))))
+	 (gnus-group-insert-group-line
+	  group (gnus-info-level info)
+	  (gnus-info-marks info) unread (gnus-info-method info)))))
+      
     ;; List dead groups.
-    (and (>= level gnus-level-zombie) (<= lowest gnus-level-zombie)
-	 (gnus-group-prepare-flat-list-dead
-	  (setq gnus-zombie-list (sort gnus-zombie-list 'string<))
-	  gnus-level-zombie ?Z
-	  regexp))
-    (and (>= level gnus-level-killed) (<= lowest gnus-level-killed)
-	 (gnus-group-prepare-flat-list-dead
-	  (setq gnus-killed-list (sort gnus-killed-list 'string<))
-	  gnus-level-killed ?K regexp))
+    (if (or gnus-group-listed-groups
+	    (and (>= level gnus-level-zombie) 
+		 (<= lowest gnus-level-zombie)))
+	(gnus-group-prepare-flat-list-dead
+	 (setq gnus-zombie-list (sort gnus-zombie-list 'string<))
+	 gnus-level-zombie ?Z
+	 regexp))
+    (if (or gnus-group-listed-groups
+	    (and (>= level gnus-level-killed) (<= lowest gnus-level-killed)))
+	(gnus-group-prepare-flat-list-dead
+	 (setq gnus-killed-list (sort gnus-killed-list 'string<))
+	 gnus-level-killed ?K regexp))
 
     (gnus-group-set-mode-line)
-    (setq gnus-group-list-mode (cons level all))
+    (setq gnus-group-list-mode (cons level predicate))
     (gnus-run-hooks 'gnus-group-prepare-hook)
     t))
 
@@ -1052,25 +1118,13 @@ If REGEXP, only list groups matching REGEXP."
   ;; suggested by Jack Vinson <vinson@unagi.cis.upenn.edu>.  It does
   ;; this by ignoring the group format specification altogether.
   (let (group)
-    (if regexp
-	;; This loop is used when listing groups that match some
-	;; regexp.
-	(while groups
-	  (setq group (pop groups))
-	  (when (string-match regexp group)
-	    (gnus-add-text-properties
-	     (point) (prog1 (1+ (point))
-		       (insert " " mark "     *: "
-			       (gnus-group-name-decode group 
-						       (gnus-group-name-charset
-							nil group)) 
-			       "\n"))
-	     (list 'gnus-group (gnus-intern-safe group gnus-active-hashtb)
-		   'gnus-unread t
-		   'gnus-level level))))
-      ;; This loop is used when listing all groups.
-      (while groups
-	(setq group (pop groups))
+    (while groups
+      (setq group (pop groups))
+      (when (gnus-group-prepare-logic 
+	     group
+	     (or (not regexp)
+		 (and (stringp regexp) (string-match regexp group))
+		 (and (functionp regexp) (funcall regexp group))))
 	(gnus-add-text-properties
 	 (point) (prog1 (1+ (point))
 		   (insert " " mark "     *: "
@@ -3379,8 +3433,8 @@ This command may read the active file."
   (when (and level
 	     (> (prefix-numeric-value level) gnus-level-killed))
     (gnus-get-killed-groups))
-  (gnus-group-prepare-flat
-   (or level gnus-level-subscribed) all (or lowest 1) regexp)
+  (funcall gnus-group-prepare-function
+   (or level gnus-level-subscribed) (and all t) (or lowest 1) regexp)
   (goto-char (point-min))
   (gnus-group-position-point))
 
@@ -3671,68 +3725,6 @@ or `gnus-group-catchup-group-hook'."
 	""
       (gnus-time-iso8601 time))))
 
-(defun gnus-group-prepare-flat-list-dead-predicate 
-  (groups level mark predicate)
-  (let (group)
-    (if predicate
-	;; This loop is used when listing groups that match some
-	;; regexp.
-	(while (setq group (pop groups))
-	  (when (funcall predicate group)
-	    (gnus-add-text-properties
-	     (point) (prog1 (1+ (point))
-		       (insert " " mark "     *: " 
-			       (gnus-group-name-decode group 
-						       (gnus-group-name-charset
-							nil group))
-			       "\n"))
-	     (list 'gnus-group (gnus-intern-safe group gnus-active-hashtb)
-		   'gnus-unread t
-		   'gnus-level level)))))))
-
-(defun gnus-group-prepare-flat-predicate (level predicate &optional lowest
-						dead-predicate)
-  "List all newsgroups with unread articles of level LEVEL or lower.
-If LOWEST is non-nil, list all newsgroups of level LOWEST or higher.
-If PREDICATE, only list groups which PREDICATE returns non-nil.
-If DEAD-PREDICATE, list dead groups which DEAD-PREDICATE returns non-nil."
-  (set-buffer gnus-group-buffer)
-  (let ((buffer-read-only nil)
-	(newsrc (cdr gnus-newsrc-alist))
-	(lowest (or lowest 1))
-	info clevel unread group params)
-    (erase-buffer)
-    ;; List living groups.
-    (while newsrc
-      (setq info (car newsrc)
-	    group (gnus-info-group info)
-	    params (gnus-info-params info)
-	    newsrc (cdr newsrc)
-	    unread (car (gnus-gethash group gnus-newsrc-hashtb)))
-      (and unread			; This group might be unchecked
-	   (funcall predicate info)
-	   (<= (setq clevel (gnus-info-level info)) level)
-	   (>= clevel lowest)
-	   (gnus-group-insert-group-line
-	    group (gnus-info-level info)
-	    (gnus-info-marks info) unread (gnus-info-method info))))
-
-    ;; List dead groups.
-    (and (>= level gnus-level-zombie) (<= lowest gnus-level-zombie)
-	 (gnus-group-prepare-flat-list-dead-predicate
-	  (setq gnus-zombie-list (sort gnus-zombie-list 'string<))
-	  gnus-level-zombie ?Z
-	  dead-predicate))
-    (and (>= level gnus-level-killed) (<= lowest gnus-level-killed)
-	 (gnus-group-prepare-flat-list-dead-predicate
-	  (setq gnus-killed-list (sort gnus-killed-list 'string<))
-	  gnus-level-killed ?K dead-predicate))
-
-    (gnus-group-set-mode-line)
-    (setq gnus-group-list-mode (cons level t))
-    (gnus-run-hooks 'gnus-group-prepare-hook)
-    t))
-
 (defun gnus-group-list-cached (level &optional lowest)
   "List all groups with cached articles.
 If the prefix LEVEL is non-nil, it should be a number that says which
@@ -3745,21 +3737,22 @@ This command may read the active file."
     (setq level (prefix-numeric-value level)))
   (when (or (not level) (>= level gnus-level-zombie))
     (gnus-cache-open))
-  (gnus-group-prepare-flat-predicate (or level gnus-level-subscribed)
-				#'(lambda (info)
-				    (let ((marks (gnus-info-marks info)))
-				      (assq 'cache marks)))
-				lowest
-				#'(lambda (group)
-				    (or (gnus-gethash group 
-						      gnus-cache-active-hashtb)
-					;; Cache active file might use "." 
-					;; instead of ":".
-					(gnus-gethash 
-					 (mapconcat 'identity
-						    (split-string group ":")
-						    ".")
-					 gnus-cache-active-hashtb))))
+  (funcall gnus-group-prepare-function 
+	   (or level gnus-level-subscribed)
+	   #'(lambda (info)
+	       (let ((marks (gnus-info-marks info)))
+		 (assq 'cache marks)))
+	   lowest
+	   #'(lambda (group)
+	       (or (gnus-gethash group 
+				 gnus-cache-active-hashtb)
+		   ;; Cache active file might use "." 
+		   ;; instead of ":".
+		   (gnus-gethash 
+		    (mapconcat 'identity
+			       (split-string group ":")
+			       ".")
+		    gnus-cache-active-hashtb))))
   (goto-char (point-min))
   (gnus-group-position-point))
 
@@ -3775,13 +3768,56 @@ This command may read the active file."
     (setq level (prefix-numeric-value level)))
   (when (or (not level) (>= level gnus-level-zombie))
     (gnus-cache-open))
-  (gnus-group-prepare-flat-predicate (or level gnus-level-subscribed)
-				#'(lambda (info)
-				    (let ((marks (gnus-info-marks info)))
-				      (assq 'dormant marks)))
-				lowest)
+  (funcall gnus-group-prepare-function 
+	   (or level gnus-level-subscribed)
+	   #'(lambda (info)
+	       (let ((marks (gnus-info-marks info)))
+		 (assq 'dormant marks)))
+	   lowest
+	   'ignore)
   (goto-char (point-min))
   (gnus-group-position-point))
+
+(defun gnus-group-listed-groups ()
+  "Return a list of listed groups."
+  (let (point groups)
+    (goto-char (point-min))
+    (while (setq point (text-property-not-all (point) (point-max) 
+					      'gnus-group nil))
+      (goto-char point)
+      (push (symbol-name (get-text-property point 'gnus-group)) groups)
+      (forward-char 1))
+    groups))
+
+(defun gnus-group-list-plus (&optional args)
+  "List groups plus the current selection."
+  (interactive "P")
+  (let ((gnus-group-listed-groups (gnus-group-listed-groups))
+	(gnus-group-list-mode gnus-group-list-mode) ;; Save it.
+	func)
+    (push last-command-event unread-command-events)
+    (push ?A unread-command-events)
+    (let (gnus-pick-mode keys)
+      (setq keys (if (featurep 'xemacs)
+		     (events-to-keys (read-key-sequence nil))
+		   (read-key-sequence nil)))
+      (setq func (lookup-key (current-local-map) keys)))
+    (if (or (not func)
+	    (numberp func))
+	(ding)
+      (call-interactively func))))
+
+(defun gnus-group-list-flush (&optional args)
+  "Flush groups from the current selection."
+  (interactive "P")
+  (let ((gnus-group-list-option 'flush))
+    (gnus-group-list-plus args)))
+
+(defun gnus-group-list-limit (&optional args)
+  "Flush groups from the current selection."
+  (interactive "P")
+  (let ((gnus-group-list-option 'limit))
+    (gnus-group-list-plus args)))
 
 (provide 'gnus-group)
 
