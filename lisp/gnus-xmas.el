@@ -34,7 +34,7 @@
   :group 'gnus)
 
 (defcustom gnus-xmas-glyph-directory nil
-  "*Directory where Gnus logos and icons are located.
+  "Directory where Gnus logos and icons are located.
 If this variable is nil, Gnus will try to locate the directory
 automatically."
   :type '(choice (const :tag "autodetect" nil)

@@ -41,7 +41,7 @@
   :group 'gnus)
 
 (defcustom gnus-demon-handlers nil
-  "*Alist of daemonic handlers to be run at intervals.
+  "Alist of daemonic handlers to be run at intervals.
 Each handler is a list on the form
 
 \(FUNCTION TIME IDLE)

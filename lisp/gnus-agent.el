@@ -30,22 +30,22 @@
 (eval-when-compile (require 'cl))
 
 (defcustom gnus-agent-directory (nnheader-concat gnus-directory "agent/")
-  "*Where the Gnus agent will store its files."
+  "Where the Gnus agent will store its files."
   :group 'gnus-agent
   :type 'directory)
 
 (defcustom gnus-agent-plugged-hook nil
-  "*Hook run when plugging into the network."
+  "Hook run when plugging into the network."
   :group 'gnus-agent
   :type 'hook)
 
 (defcustom gnus-agent-unplugged-hook nil
-  "*Hook run when unplugging from the network."
+  "Hook run when unplugging from the network."
   :group 'gnus-agent
   :type 'hook)
 
 (defcustom gnus-agent-handle-level gnus-level-subscribed
-  "*Groups on levels higher than this variable will be ignored by the Agent."
+  "Groups on levels higher than this variable will be ignored by the Agent."
   :group 'gnus-agent
   :type 'integer)
 

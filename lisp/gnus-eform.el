@@ -37,12 +37,12 @@
   :group 'gnus)
 
 (defcustom gnus-edit-form-mode-hook nil
-  "*Hook run in `gnus-edit-form-mode' buffers."
+  "Hook run in `gnus-edit-form-mode' buffers."
   :group 'gnus-edit-form
   :type 'hook)
 
 (defcustom gnus-edit-form-menu-hook nil
-  "*Hook run when creating menus in `gnus-edit-form-mode' buffers."
+  "Hook run when creating menus in `gnus-edit-form-mode' buffers."
   :group 'gnus-edit-form
   :type 'hook)
 

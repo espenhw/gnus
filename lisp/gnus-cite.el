@@ -47,37 +47,37 @@ article has citations."
   :type 'string)
 
 (defcustom gnus-cite-always-check nil
-  "*Check article always for citations. Set it t to check all articles."
+  "Check article always for citations. Set it t to check all articles."
   :group 'gnus-cite
   :type '(choice (const :tag "no" nil)
 		  (const :tag "yes" t)))
 
 (defcustom gnus-cited-text-button-line-format "%(%{[...]%}%)\n"
-  "*Format of cited text buttons."
+  "Format of cited text buttons."
   :group 'gnus-cite
   :type 'string)
 
 (defcustom gnus-cited-lines-visible nil
-  "*The number of lines of hidden cited text to remain visible."
+  "The number of lines of hidden cited text to remain visible."
   :group 'gnus-cite
   :type '(choice (const :tag "none" nil)
 		 integer))
 
 (defcustom gnus-cite-parse-max-size 25000
-  "*Maximum article size (in bytes) where parsing citations is allowed.
+  "Maximum article size (in bytes) where parsing citations is allowed.
 Set it to nil to parse all articles."
   :group 'gnus-cite
   :type '(choice (const :tag "all" nil)
 		 integer))
 
 (defcustom gnus-cite-prefix-regexp
-    "^[]>|:}+ ]*[]>|:}+]\\(.*>\\)?\\|^.*>"
+  "^[]>|:}+ ]*[]>|:}+]\\(.*>\\)?\\|^.*>"
   "*Regexp matching the longest possible citation prefix on a line."
   :group 'gnus-cite
   :type 'regexp)
 
 (defcustom gnus-cite-max-prefix 20
-  "*Maximum possible length for a citation prefix."
+  "Maximum possible length for a citation prefix."
   :group 'gnus-cite
   :type 'integer)
 
@@ -90,18 +90,18 @@ The first grouping must match prefixes added by other packages."
   :type 'regexp)
 
 (defcustom gnus-supercite-secondary-regexp "^.*\"\\([^\"\n]+\\)\" +=="
-  "*Regexp matching mangled Supercite attribution lines.
+  "Regexp matching mangled Supercite attribution lines.
 The first regexp group should match the Supercite attribution."
   :group 'gnus-cite
   :type 'regexp)
 
 (defcustom gnus-cite-minimum-match-count 2
-  "*Minimum number of identical prefixes before we believe it's a citation."
+  "Minimum number of identical prefixes before we believe it's a citation."
   :group 'gnus-cite
   :type 'integer)
 
 (defcustom gnus-cite-attribution-prefix 
-  "in article\\|in <\\|On \\(Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\|Sun\\),"
+  "In article\\|in <\\|On \\(Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\|Sun\\),"
   "*Regexp matching the beginning of an attribution line."
   :group 'gnus-cite
   :type 'regexp)
@@ -118,7 +118,7 @@ The text matching the first grouping will be used as a button."
   "Face used for attribution lines.")
 
 (defcustom gnus-cite-attribution-face 'gnus-cite-attribution-face
-  "*Face used for attribution lines.
+  "Face used for attribution lines.
 It is merged with the face for the cited text belonging to the attribution."
   :group 'gnus-cite
   :type 'face)
@@ -246,12 +246,12 @@ This should make it easier to see who wrote what."
   :type '(repeat face))
 
 (defcustom gnus-cite-hide-percentage 50
-  "*Only hide excess citation if above this percentage of the body."
+  "Only hide excess citation if above this percentage of the body."
   :group 'gnus-cite
   :type 'number)
 
 (defcustom gnus-cite-hide-absolute 10
-  "*Only hide excess citation if above this number of lines in the body."
+  "Only hide excess citation if above this number of lines in the body."
   :group 'gnus-cite
   :type 'integer)
 
@@ -495,7 +495,11 @@ always hide."
 	       (gnus-article-add-button
 		(point)
 		(progn (eval gnus-cited-text-button-line-format-spec) (point))
-		`gnus-article-toggle-cited-text (cons beg end))
+		`gnus-article-toggle-cited-text
+		;; We use markers for the end-points to facilitate later
+		;; wrapping and mangling of text.
+		(cons (set-marker (make-marker) beg)
+		      (set-marker (make-marker) end)))
 	       (point))
 	     'article-type 'annotation)
 	    (set-marker beg (point)))))))))

@@ -37,13 +37,13 @@
 (require 'gnus-undo)
 
 (defcustom gnus-group-archive-directory
-  "/ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/"
+  "*ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/"
   "*The address of the (ding) archives."
   :group 'gnus-group-foreign
   :type 'directory)
 
 (defcustom gnus-group-recent-archive-directory
-  "/ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list-recent/"
+  "*ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list-recent/"
   "*The address of the most recent (ding) articles."
   :group 'gnus-group-foreign
   :type 'directory)
@@ -196,24 +196,24 @@ with some simple extensions:
   :type 'string)
 
 (defcustom gnus-group-mode-hook nil
-  "*Hook for Gnus group mode."
+  "Hook for Gnus group mode."
   :group 'gnus-group-various
   :options '(gnus-topic-mode)
   :type 'hook)
 
 (defcustom gnus-group-menu-hook nil
-  "*Hook run after the creation of the group mode menu."
+  "Hook run after the creation of the group mode menu."
   :group 'gnus-group-various
   :type 'hook)
 
 (defcustom gnus-group-catchup-group-hook nil
-  "*Hook run when catching up a group from the group buffer."
+  "Hook run when catching up a group from the group buffer."
   :group 'gnus-group-various
   :link '(custom-manual "(gnus)Group Data")
   :type 'hook)
 
 (defcustom gnus-group-update-group-hook nil
-  "*Hook called when updating group lines."
+  "Hook called when updating group lines."
   :group 'gnus-group-visual
   :type 'hook)
 
@@ -230,28 +230,28 @@ The only current function implemented is `gnus-group-prepare-flat'."
   :type 'function)
 
 (defcustom gnus-group-prepare-hook nil
-  "*Hook called after the group buffer has been generated.
+  "Hook called after the group buffer has been generated.
 If you want to modify the group buffer, you can use this hook."
   :group 'gnus-group-listing
   :type 'hook)
 
 (defcustom gnus-suspend-gnus-hook nil
-  "*Hook called when suspending (not exiting) Gnus."
+  "Hook called when suspending (not exiting) Gnus."
   :group 'gnus-exit
   :type 'hook)
 
 (defcustom gnus-exit-gnus-hook nil
-  "*Hook called when exiting Gnus."
+  "Hook called when exiting Gnus."
   :group 'gnus-exit
   :type 'hook)
 
 (defcustom gnus-after-exiting-gnus-hook nil
-  "*Hook called after exiting Gnus."
+  "Hook called after exiting Gnus."
   :group 'gnus-exit
   :type 'hook)
 
 (defcustom gnus-group-update-hook '(gnus-group-highlight-line)
-  "*Hook called when a group line is changed.
+  "Hook called when a group line is changed.
 The hook will not be called if `gnus-visual' is nil.
 
 The default function `gnus-group-highlight-line' will
@@ -261,7 +261,7 @@ variable."
   :type 'hook)
 
 (defcustom gnus-useful-groups
-  `(("(ding) mailing list mirrored at sunsite.auc.dk"
+  '(("(ding) mailing list mirrored at sunsite.auc.dk"
      "emacs.ding"
      (nntp "sunsite.auc.dk"
 	   (nntp-address "sunsite.auc.dk")))
@@ -343,7 +343,7 @@ ticked: The number of ticked articles."
   :type '(repeat (cons (sexp :tag "Form") face)))
 
 (defcustom gnus-new-mail-mark ?%
-  "*Mark used for groups with new mail."
+  "Mark used for groups with new mail."
   :group 'gnus-group-visual
   :type 'character)
 

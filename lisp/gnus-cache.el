@@ -51,12 +51,12 @@
   :type 'file)
 
 (defcustom gnus-cache-enter-articles '(ticked dormant)
-  "*Classes of articles to enter into the cache."
+  "Classes of articles to enter into the cache."
   :group 'gnus-cache
   :type '(set (const ticked) (const dormant) (const unread) (const read)))
 
 (defcustom gnus-cache-remove-articles '(read)
-  "*Classes of articles to remove from the cache."
+  "Classes of articles to remove from the cache."
   :group 'gnus-cache
   :type '(set (const ticked) (const dormant) (const unread) (const read)))
 

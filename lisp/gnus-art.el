@@ -104,7 +104,7 @@ If `gnus-visible-headers' is non-nil, this variable will be ignored."
   :group 'gnus-article-hiding)
 
 (defcustom gnus-visible-headers
-  "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-From:\\|X-Sent:"
+  "From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-From:\\|X-Sent:"
   "*All headers that do not match this regexp will be hidden.
 This variable can also be a list of regexp of headers to remain visible.
 If this variable is non-nil, `gnus-ignored-headers' will be ignored."
@@ -127,7 +127,7 @@ this list."
   :group 'gnus-article-hiding)
 
 (defcustom gnus-boring-article-headers '(empty followup-to reply-to)
-  "*Headers that are only to be displayed if they have interesting data.
+  "Headers that are only to be displayed if they have interesting data.
 Possible values in this list are `empty', `newsgroups', `followup-to',
 `reply-to', `date', `long-to', and `many-to'."
   :type '(set (const :tag "Headers with no content." empty)
@@ -140,7 +140,7 @@ Possible values in this list are `empty', `newsgroups', `followup-to',
   :group 'gnus-article-hiding)
 
 (defcustom gnus-signature-separator '("^-- $" "^-- *$")
-  "*Regexp matching signature separator.
+  "Regexp matching signature separator.
 This can also be a list of regexps.  In that case, it will be checked
 from head to tail looking for a separator.  Searches will be done from
 the end of the buffer."
@@ -148,7 +148,7 @@ the end of the buffer."
   :group 'gnus-article-signature)
 
 (defcustom gnus-signature-limit nil
-   "*Provide a limit to what is considered a signature.
+   "Provide a limit to what is considered a signature.
 If it is a number, no signature may not be longer (in characters) than
 that number.  If it is a floating point number, no signature may be
 longer (in lines) than that number.  If it is a function, the function
@@ -162,12 +162,12 @@ regexp.  If it matches, the text in question is not a signature."
   :group 'gnus-article-signature)
 
 (defcustom gnus-hidden-properties '(invisible t intangible t)
-  "*Property list to use for hiding text."
+  "Property list to use for hiding text."
   :type 'sexp
   :group 'gnus-article-hiding)
 
 (defcustom gnus-article-x-face-command
-  "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -"
+  " echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -"
   "*String or function to be executed to display an X-Face header.
 If it is a string, the command will be executed in a sub-shell
 asynchronously.	 The compressed face will be piped to this command."
@@ -175,7 +175,7 @@ asynchronously.	 The compressed face will be piped to this command."
   :group 'gnus-article-washing)
 
 (defcustom gnus-article-x-face-too-ugly nil
-  "*Regexp matching posters whose face shouldn't be shown automatically."
+  "Regexp matching posters whose face shouldn't be shown automatically."
   :type '(choice regexp (const nil))
   :group 'gnus-article-washing)
 
@@ -246,7 +246,7 @@ Esample: (_/*word*/_)."
   :group 'gnus-article-emphasis)
 
 (defcustom gnus-article-time-format "%a, %b %d %Y %T %Z"
-  "*Format for display of Date headers in article bodies.
+  "Format for display of Date headers in article bodies.
 See `format-time-string' for the possible values.
 
 The variable can also be function, which should return a complete Date
@@ -280,7 +280,7 @@ each invocation of the saving commands."
 		 (sexp :tag "once" :format "%t\n" :value t)))
 
 (defcustom gnus-saved-headers gnus-visible-headers
-  "*Headers to keep if `gnus-save-all-headers' is nil.
+  "Headers to keep if `gnus-save-all-headers' is nil.
 If `gnus-save-all-headers' is non-nil, this variable will be ignored.
 If that variable is nil, however, all headers that match this regexp
 will be kept while the rest will be deleted before saving."
@@ -288,7 +288,7 @@ will be kept while the rest will be deleted before saving."
   :type 'regexp)
 
 (defcustom gnus-default-article-saver 'gnus-summary-save-in-rmail
-  "*A function to save articles in your favourite format.
+  "A function to save articles in your favourite format.
 The function must be interactively callable (in other words, it must
 be an Emacs command).
 
@@ -309,25 +309,25 @@ Gnus provides the following functions:
 		(function-item gnus-summary-write-to-file)))
 
 (defcustom gnus-rmail-save-name 'gnus-plain-save-name
-  "*A function generating a file name to save articles in Rmail format.
+  "A function generating a file name to save articles in Rmail format.
 The function is called with NEWSGROUP, HEADERS, and optional LAST-FILE."
   :group 'gnus-article-saving
   :type 'function)
 
 (defcustom gnus-mail-save-name 'gnus-plain-save-name
-  "*A function generating a file name to save articles in Unix mail format.
+  "A function generating a file name to save articles in Unix mail format.
 The function is called with NEWSGROUP, HEADERS, and optional LAST-FILE."
   :group 'gnus-article-saving
   :type 'function)
 
 (defcustom gnus-folder-save-name 'gnus-folder-save-name
-  "*A function generating a file name to save articles in MH folder.
+  "A function generating a file name to save articles in MH folder.
 The function is called with NEWSGROUP, HEADERS, and optional LAST-FOLDER."
   :group 'gnus-article-saving
   :type 'function)
 
 (defcustom gnus-file-save-name 'gnus-numeric-save-name
-  "*A function generating a file name to save articles in article format.
+  "A function generating a file name to save articles in article format.
 The function is called with NEWSGROUP, HEADERS, and optional
 LAST-FILE."
   :group 'gnus-article-saving
@@ -366,7 +366,7 @@ be used as possible file names."
   :type 'boolean)
 
 (defcustom gnus-show-mime-method 'metamail-buffer
-  "*Function to process a MIME message.
+  "Function to process a MIME message.
 The function is called from the article buffer."
   :group 'gnus-article-mime
   :type 'function)
@@ -412,7 +412,7 @@ If you want to run a special decoding program like nkf, use this hook."
   :group 'gnus-article-various)
 
 (defcustom gnus-article-button-face 'bold
-  "*Face used for highlighting buttons in the article buffer.
+  "Face used for highlighting buttons in the article buffer.
 
 An article button is a piece of text that you can activate by pressing
 `RET' or `mouse-2' above it."
@@ -420,7 +420,7 @@ An article button is a piece of text that you can activate by pressing
   :group 'gnus-article-buttons)
 
 (defcustom gnus-article-mouse-face 'highlight
-  "*Face used for mouse highlighting in the article buffer.
+  "Face used for mouse highlighting in the article buffer.
 
 Article buttons will be displayed in this face when the cursor is
 above them."
@@ -428,7 +428,7 @@ above them."
   :group 'gnus-article-buttons)
 
 (defcustom gnus-signature-face 'gnus-signature-face
-  "*Face used for highlighting a signature in the article buffer.
+  "Face used for highlighting a signature in the article buffer.
 Obsolete; use the face `gnus-signature-face' for customizations instead."
   :type 'face
   :group 'gnus-article-highlight
@@ -2552,7 +2552,7 @@ If given a prefix, show the hidden text instead."
 ;;;
 
 (defcustom gnus-article-edit-mode-hook nil
-  "*Hook run in article edit mode buffers."
+  "Hook run in article edit mode buffers."
   :group 'gnus-article-various
   :type 'hook)
 
@@ -2702,7 +2702,7 @@ groups."
 ;;; Internal Variables:
 
 (defcustom gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?\\([-a-zA-Z0-9_=!?#$@~`%&*+|\\/:;.,]\\|\\w\\)+\\([-a-zA-Z0-9_=#$@~`%&*+|\\/]\\|\\w\\)"
-  "*Regular expression that matches URLs."
+  "Regular expression that matches URLs."
   :group 'gnus-article-buttons
   :type 'regexp)
 

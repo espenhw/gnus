@@ -43,7 +43,7 @@
   :group 'gnus-summary-pick)
 
 (defcustom gnus-pick-mode-hook nil
-  "*Hook run in summary pick mode buffers."
+  "Hook run in summary pick mode buffers."
   :type 'hook
   :group 'gnus-summary-pick)
 
@@ -53,12 +53,12 @@
   :group 'gnus-summary-pick)
 
 (defcustom gnus-pick-elegant-flow t
-  "*If non-nil, gnus-pick-start-reading will run gnus-summary-next-group when no articles have been picked."
+  "If non-nil, gnus-pick-start-reading will run gnus-summary-next-group when no articles have been picked."
   :type 'boolean
   :group 'gnus-summary-pick)
 
 (defcustom gnus-summary-pick-line-format
-  "%-5P %U\%R\%z\%I\%(%[%4L: %-20,20n%]%) %s\n"
+  "-5P %U\%R\%z\%I\%(%[%4L: %-20,20n%]%) %s\n"
   "*The format specification of the lines in pick buffers.
 It accepts the same format specs that `gnus-summary-line-format' does."
   :type 'string
@@ -355,12 +355,12 @@ This must be bound to a button-down mouse event."
 ;;;
 
 (defcustom gnus-tree-line-format "%(%[%3,3n%]%)"
-  "*Format of tree elements."
+  "Format of tree elements."
   :type 'string
   :group 'gnus-summary-tree)
 
 (defcustom gnus-tree-minimize-window t
-  "*If non-nil, minimize the tree buffer window.
+  "If non-nil, minimize the tree buffer window.
 If a number, never let the tree buffer grow taller than that number of
 lines."
   :type 'boolean

@@ -40,12 +40,12 @@
   "Minor mode for Gnus group buffers.")
 
 (defcustom gnus-topic-mode-hook nil
-  "*Hook run in topic mode buffers."
+  "Hook run in topic mode buffers."
   :type 'hook
   :group 'gnus-topic)
 
 (defcustom gnus-topic-line-format "%i[ %(%{%n%}%) -- %A ]%v\n"
-  "*Format of topic lines.
+  "Format of topic lines.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
 

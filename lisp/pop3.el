@@ -1,10 +1,10 @@
 ;;; pop3.el --- Post Office Protocol (RFC 1460) interface
 
-;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
+;; Copyright (C) 1996,1997 Free Software Foundation, Inc.
 
 ;; Author: Richard L. Pieri <ratinox@peorth.gweep.net>
 ;; Keywords: mail, pop3
-;; Version: 1.3k
+;; Version: 1.3l
 
 ;; This file is part of GNU Emacs.
 
@@ -37,9 +37,9 @@
 (require 'mail-utils)
 (provide 'pop3)
 
-(defconst pop3-version "1.3k")
+(defconst pop3-version "1.3l")
 
-(defvar pop3-maildrop (or user-login-name (getenv "LOGNAME") (getenv "USER") nil)
+(defvar pop3-maildrop (or (user-login-name) (getenv "LOGNAME") (getenv "USER") nil)
   "*POP3 maildrop.")
 (defvar pop3-mailhost (or (getenv "MAILHOST") nil)
   "*POP3 mailhost.")

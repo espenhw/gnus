@@ -35,13 +35,13 @@
 (eval-when-compile (require 'cl))
 
 (defcustom gnus-startup-file (nnheader-concat gnus-home-directory ".newsrc")
-  "*Your `.newsrc' file.
+  "Your `.newsrc' file.
 `.newsrc-SERVER' will be used instead if that exists."
   :group 'gnus-start
   :type 'file)
 
 (defcustom gnus-init-file (nnheader-concat gnus-home-directory ".gnus")
-  "*Your Gnus Emacs-Lisp startup file name.
+  "Your Gnus Emacs-Lisp startup file name.
 If a file with the `.el' or `.elc' suffixes exists, it will be read instead."
   :group 'gnus-start
   :type 'file)
@@ -58,7 +58,7 @@ If a file with the `.el' or `.elc' suffixes exists, it will be read instead."
   :type '(choice file (const nil)))
 
 (defcustom gnus-default-subscribed-newsgroups nil
-  "*List of newsgroups to subscribe, when a user runs Gnus the first time.
+  "List of newsgroups to subscribe, when a user runs Gnus the first time.
 The value should be a list of strings.
 If it is t, Gnus will not do anything special the first time it is
 started; it'll just use the normal newsgroups subscription methods."
@@ -289,7 +289,7 @@ hierarchy in its entirety."
   :type 'boolean)
 
 (defcustom gnus-auto-subscribed-groups
-  "^nnml\\|^nnfolder\\|^nnmbox\\|^nnmh\\|^nnbabyl"
+  "nnml\\|^nnfolder\\|^nnmbox\\|^nnmh\\|^nnbabyl"
   "*All new groups that match this regexp will be subscribed automatically.
 Note that this variable only deals with new groups.  It has no effect
 whatsoever on old groups.
@@ -328,34 +328,34 @@ disc."
   :type 'boolean)
 
 (defcustom gnus-check-bogus-groups-hook nil
-  "*A hook run after removing bogus groups."
+  "A hook run after removing bogus groups."
   :group 'gnus-start-server
   :type 'hook)
 
 (defcustom gnus-startup-hook nil
-  "*A hook called at startup.
+  "A hook called at startup.
 This hook is called after Gnus is connected to the NNTP server."
   :group 'gnus-start
   :type 'hook)
 
 (defcustom gnus-before-startup-hook nil
-  "*A hook called at before startup.
+  "A hook called at before startup.
 This hook is called as the first thing when Gnus is started."
   :group 'gnus-start
   :type 'hook)
 
 (defcustom gnus-started-hook nil
-  "*A hook called as the last thing after startup."
+  "A hook called as the last thing after startup."
   :group 'gnus-start
   :type 'hook)
 
 (defcustom gnus-setup-news-hook nil
-  "*A hook after reading the .newsrc file, but before generating the buffer."
+  "A hook after reading the .newsrc file, but before generating the buffer."
   :group 'gnus-start
   :type 'hook)
 
 (defcustom gnus-get-new-news-hook nil
-  "*A hook run just before Gnus checks for new news."
+  "A hook run just before Gnus checks for new news."
   :group 'gnus-group-new
   :type 'hook)
 
@@ -367,18 +367,18 @@ This hook is called as the first thing when Gnus is started."
   :type 'hook)
 
 (defcustom gnus-save-newsrc-hook nil
-  "*A hook called before saving any of the newsrc files."
+  "A hook called before saving any of the newsrc files."
   :group 'gnus-newsrc
   :type 'hook)
 
 (defcustom gnus-save-quick-newsrc-hook nil
-  "*A hook called just before saving the quick newsrc file.
+  "A hook called just before saving the quick newsrc file.
 Can be used to turn version control on or off."
   :group 'gnus-newsrc
   :type 'hook)
 
 (defcustom gnus-save-standard-newsrc-hook nil
-  "*A hook called just before saving the standard newsrc file.
+  "A hook called just before saving the standard newsrc file.
 Can be used to turn version control on or off."
   :group 'gnus-newsrc
   :type 'hook)

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.30 Manual
+@settitle Quassia Gnus 0.31 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -313,7 +313,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.30 Manual
+@title Quassia Gnus 0.31 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -349,7 +349,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.30.
+This manual corresponds to Quassia Gnus 0.31.
 
 @end ifinfo
 
@@ -12293,7 +12293,9 @@ ignored when handling global score files.
 
 @item read-only
 Read-only score files will not be updated or saved.  Global score files
-should feature this atom (@pxref{Global Score Files}).
+should feature this atom (@pxref{Global Score Files}).  (Note:
+@dfn{Global} here really means @dfn{global}; not just your personal
+apply-to-all-groups score files.)
 
 @item orphan
 The value of this entry should be a number.  Articles that do not have
@@ -17286,6 +17288,9 @@ expired, e.g. (read), (age > 14 days), or the more interesting (read
 @item
 New limit command---limit to articles that have a certain string
 in the head or body.
+
+@item
+Allow breaking lengthy NNTP commands.
 
 @item
 Solve the halting problem.

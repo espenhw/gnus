@@ -103,7 +103,7 @@ match."
   :type '(repeat (group regexp (string :tag "Command"))))
 
 (defcustom gnus-uu-user-view-rules nil
-  "*What actions are to be taken to view a file.
+  "What actions are to be taken to view a file.
 See the documentation on the `gnus-uu-default-view-rules' variable for
 details."
   :group 'gnus-extract-view
@@ -137,7 +137,7 @@ details."
   (list "uncompress" "gunzip"))
 
 (defcustom gnus-uu-user-archive-rules nil
-  "*A list that can be set to override the default archive unpacking commands.
+  "A list that can be set to override the default archive unpacking commands.
 To use, for instance, 'untar' to unpack tar files and 'zip -x' to
 unpack zip files, say the following:
   (setq gnus-uu-user-archive-rules
@@ -234,7 +234,7 @@ Only the user viewing rules will be consulted.  Default is nil."
   :type 'boolean)
 
 (defcustom gnus-uu-grabbed-file-functions nil
-  "*Functions run on each file after successful decoding.
+  "Functions run on each file after successful decoding.
 They will be called with the name of the file as the argument.
 Likely functions you can use in this list are `gnus-uu-grab-view'
 and `gnus-uu-grab-move'."
@@ -284,7 +284,7 @@ so I simply dropped them."
   :type 'boolean)
 
 (defcustom gnus-uu-pre-uudecode-hook nil
-  "*Hook run before sending a message to uudecode."
+  "Hook run before sending a message to uudecode."
   :group 'gnus-extract
   :type 'hook)
 
@@ -1749,7 +1749,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 ;; and "spiral.jpg", respectively.) The function should return nil if
 ;; the encoding wasn't successful.
 (defcustom gnus-uu-post-encode-method 'gnus-uu-post-encode-uuencode
-  "*Function used for encoding binary files.
+  "Function used for encoding binary files.
 There are three functions supplied with gnus-uu for encoding files:
 `gnus-uu-post-encode-uuencode', which does straight uuencoding;
 `gnus-uu-post-encode-mime', which encodes with base64 and adds MIME
@@ -1762,21 +1762,21 @@ uuencode and adds MIME headers."
 		(function :tag "Other")))
 
 (defcustom gnus-uu-post-include-before-composing nil
-  "*Non-nil means that gnus-uu will ask for a file to encode before you compose the article.
+  "Non-nil means that gnus-uu will ask for a file to encode before you compose the article.
 If this variable is t, you can either include an encoded file with
 \\[gnus-uu-post-insert-binary-in-article] or have one included for you when you post the article."
   :group 'gnus-extract-post
   :type 'boolean)
 
 (defcustom gnus-uu-post-length 990
-  "*Maximum length of an article.
+  "Maximum length of an article.
 The encoded file will be split into how many articles it takes to
 post the entire file."
   :group 'gnus-extract-post
   :type 'integer)
 
 (defcustom gnus-uu-post-threaded nil
-  "*Non-nil means that gnus-uu will post the encoded file in a thread.
+  "Non-nil means that gnus-uu will post the encoded file in a thread.
 This may not be smart, as no other decoder I have seen are able to
 follow threads when collecting uuencoded articles.  (Well, I have seen
 one package that does that - gnus-uu, but somehow, I don't think that
@@ -1785,7 +1785,7 @@ counts...)  The default is nil."
   :type 'boolean)
 
 (defcustom gnus-uu-post-separate-description t
-  "*Non-nil means that the description will be posted in a separate article.
+  "Non-nil means that the description will be posted in a separate article.
 The first article will typically be numbered (0/x).  If this variable
 is nil, the description the user enters will be included at the
 beginning of the first article, which will be numbered (1/x).  Default

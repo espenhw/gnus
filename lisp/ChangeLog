@@ -1,3 +1,28 @@
+Sun Feb 22 04:21:15 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.31 is released.
+
+Sun Feb 22 02:09:35 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-highlight): Give undownloaded marks a
+	better face.
+
+	* gnus-score.el (gnus-score-set): Take optional "warn".
+	(gnus-summary-score-entry): Use it.
+
+	* gnus.el: Removed spurious * in defcustoms.
+
+	* gnus-score.el (gnus-score-load-file): Reverse logic.
+
+	* gnus-cite.el (gnus-article-hide-citation): Use markers to make
+	things work when wrapping.
+
+	* gnus-sum.el (gnus-summary-exit): Stop prefetch.
+
+Sat Feb 21 02:12:42 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-get-newsgroup-headers): Buggy regexp.
+
 Sat Feb 21 00:51:22 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.30 is released.

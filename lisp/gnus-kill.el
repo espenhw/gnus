@@ -33,7 +33,7 @@
 (require 'gnus-range)
 
 (defcustom gnus-kill-file-mode-hook nil
-  "*Hook for Gnus kill file mode."
+  "Hook for Gnus kill file mode."
   :group 'gnus-score-kill
   :type 'hook)
 
@@ -49,7 +49,7 @@
   :type 'boolean)
 
 (defcustom gnus-winconf-kill-file nil
-  "*What does this do, Lars?"
+  "What does this do, Lars?"
   :group 'gnus-score-kill
   :type 'sexp)
 

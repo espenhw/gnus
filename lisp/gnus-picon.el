@@ -43,13 +43,13 @@ also add gnus-article-display-picons to gnus-article-display-hook."
   :group 'gnus-visual)
 
 (defcustom gnus-picons-display-where 'picons
-  "*Where to display the group and article icons.
+  "Where to display the group and article icons.
 Legal values are `article' and `picons'."
   :type '(choice symbol string)
   :group 'picons)
 
 (defcustom gnus-picons-has-modeline-p t
-  "*Wether the picons window should have a modeline.
+  "*Whether the picons window should have a modeline.
 This is only useful if `gnus-picons-display-where' is `picons'."
   :type 'boolean
   :group 'picons)
@@ -90,7 +90,7 @@ Some people may want to add \"unknown\" to this list."
   :group 'picons)
 
 (defcustom gnus-picons-x-face-file-name
-  (format "/tmp/picon-xface.%s.xbm" (user-login-name))
+  '(format "/tmp/picon-xface.%s.xbm" (user-login-name))
   "*The name of the file in which to store the converted X-face header."
   :type 'string
   :group 'picons)

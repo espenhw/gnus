@@ -106,14 +106,14 @@ This variable can also have a function as its value."
 
 ;; Suggested by Erik Selberg <speed@cs.washington.edu>.
 (defcustom nnmail-crosspost t
-  "*If non-nil, do crossposting if several split methods match the mail.
+  "If non-nil, do crossposting if several split methods match the mail.
 If nil, the first match found will be used."
   :group 'nnmail-split
   :type 'boolean)
 
 ;; Added by gord@enci.ucalgary.ca (Gordon Matzigkeit).
 (defcustom nnmail-keep-last-article nil
-  "*If non-nil, nnmail will never delete/move a group's last article.
+  "If non-nil, nnmail will never delete/move a group's last article.
 It can be marked expirable, so it will be deleted when it is no longer last.
 
 You may need to set this variable if other programs are putting
@@ -123,14 +123,14 @@ new mail into folder numbers that Gnus has marked as expired."
   :type 'boolean)
 
 (defcustom nnmail-use-long-file-names nil
-  "*If non-nil the mail backends will use long file and directory names.
+  "If non-nil the mail backends will use long file and directory names.
 If nil, groups like \"mail.misc\" will end up in directories like
 \"mail/misc/\"."
   :group 'nnmail-files
   :type 'boolean)
 
 (defcustom nnmail-default-file-modes 384
-  "*Set the mode bits of all new mail files to this integer."
+  "Set the mode bits of all new mail files to this integer."
   :group 'nnmail-files
   :type 'integer)
 
@@ -145,7 +145,7 @@ can also be `immediate' and `never'."
 		 (const never)))
 
 (defcustom nnmail-expiry-wait-function nil
-  "*Variable that holds function to specify how old articles should be before they are expired.
+  "Variable that holds function to specify how old articles should be before they are expired.
   The function will be called with the name of the group that the
 expiry is to be performed in, and it should return an integer that
 says how many days an article can be stored before it is considered
@@ -164,7 +164,7 @@ Eg.:
 		 (function :format "%v" nnmail-)))
 
 (defcustom nnmail-cache-accepted-message-ids nil
-  "*If non-nil, put Message-IDs of Gcc'd articles into the duplicate cache."
+  "If non-nil, put Message-IDs of Gcc'd articles into the duplicate cache."
   :group 'nnmail
   :type 'boolean)
 
@@ -182,7 +182,7 @@ treat all files in that directory as incoming spool files."
   :type 'file)
 
 (defcustom nnmail-crash-box "~/.gnus-crash-box"
-  "*File where Gnus will store mail while processing it."
+  "File where Gnus will store mail while processing it."
   :group 'nnmail-files
   :type 'file)
 
@@ -211,7 +211,7 @@ several files - eg. \".spool[0-9]*\"."
   :type 'boolean)
 
 (defcustom nnmail-delete-file-function 'delete-file
-  "*Function called to delete files in some mail backends."
+  "Function called to delete files in some mail backends."
   :group 'nnmail-files
   :type 'function)
 
@@ -278,25 +278,25 @@ If you use `display-time', you could use something like this:
 
 ;; Suggested by Erik Selberg <speed@cs.washington.edu>.
 (defcustom nnmail-prepare-incoming-hook nil
-  "*Hook called before treating incoming mail.
+  "Hook called before treating incoming mail.
 The hook is run in a buffer with all the new, incoming mail."
   :group 'nnmail-prepare
   :type 'hook)
 
 (defcustom nnmail-prepare-incoming-header-hook nil
-  "*Hook called narrowed to the headers of each message.
+  "Hook called narrowed to the headers of each message.
 This can be used to remove excessive spaces (and stuff like
 that) from the headers before splitting and saving the messages."
   :group 'nnmail-prepare
   :type 'hook)
 
 (defcustom nnmail-prepare-incoming-message-hook nil
-  "*Hook called narrowed to each message."
+  "Hook called narrowed to each message."
   :group 'nnmail-prepare
   :type 'hook)
 
 (defcustom nnmail-list-identifiers nil
-  "*Regexp that matches list identifiers to be removed.
+  "Regexp that matches list identifiers to be removed.
 This can also be a list of regexps."
   :group 'nnmail-prepare
   :type '(choice (const :tag "none" nil)
@@ -304,17 +304,17 @@ This can also be a list of regexps."
 		 (repeat :value (".*") regexp)))
 
 (defcustom nnmail-pre-get-new-mail-hook nil
-  "*Hook called just before starting to handle new incoming mail."
+  "Hook called just before starting to handle new incoming mail."
   :group 'nnmail-retrieve
   :type 'hook)
 
 (defcustom nnmail-post-get-new-mail-hook nil
-  "*Hook called just after finishing handling new incoming mail."
+  "Hook called just after finishing handling new incoming mail."
   :group 'nnmail-retrieve
   :type 'hook)
 
 (defcustom nnmail-split-hook nil
-  "*Hook called before deciding where to split an article.
+  "Hook called before deciding where to split an article.
 The functions in this hook are free to modify the buffer
 contents in any way they choose -- the buffer contents are
 discarded after running the split process."
@@ -338,7 +338,7 @@ messages will be shown to indicate the current status."
   :type 'integer)
 
 (defcustom nnmail-split-fancy "mail.misc"
-  "*Incoming mail can be split according to this fancy variable.
+  "Incoming mail can be split according to this fancy variable.
 To enable this, set `nnmail-split-methods' to `nnmail-split-fancy'.
 
 The format is this variable is SPLIT, where SPLIT can be one of

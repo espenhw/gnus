@@ -45,7 +45,7 @@
   :group 'earcon)
 
 (defcustom earcon-suffix "**"
-  "*String denoting the end of an earcon."
+  "String denoting the end of an earcon."
   :type 'string
   :group 'earcon)
 
@@ -71,7 +71,6 @@
 		       (integer :tag "Match")
 		       (string :tag "Sound")))
   :group 'earcon)
-
 (defvar earcon-button-marker-list nil)
 (make-variable-buffer-local 'earcon-button-marker-list)
 

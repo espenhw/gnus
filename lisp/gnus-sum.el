@@ -121,7 +121,7 @@ comparing subjects."
 		 (sexp :menu-tag "on" t)))
 
 (defcustom gnus-simplify-subject-functions nil
-  "*List of functions taking a string argument that simplify subjects.
+  "List of functions taking a string argument that simplify subjects.
 The functions are applied recursively."
   :group 'gnus-thread
   :type '(repeat (list function)))
@@ -489,7 +489,7 @@ list of parameters to that command."
   :type 'boolean)
 
 (defcustom gnus-summary-dummy-line-format
-  "*  %(:                          :%) %S\n"
+  "  %(:                          :%) %S\n"
   "*The format specification for the dummy roots in the summary buffer.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
@@ -572,14 +572,14 @@ Some functions you can use are `+', `max', or `min'."
   :type 'function)
 
 (defcustom gnus-summary-expunge-below nil
-  "*All articles that have a score less than this variable will be expunged.
+  "All articles that have a score less than this variable will be expunged.
 This variable is local to the summary buffers."
   :group 'gnus-score-default
   :type '(choice (const :tag "off" nil)
 		 integer))
 
 (defcustom gnus-thread-expunge-below nil
-  "*All threads that have a total score less than this variable will be expunged.
+  "All threads that have a total score less than this variable will be expunged.
 See `gnus-thread-score-function' for en explanation of what a
 \"thread score\" is.
 
@@ -657,12 +657,12 @@ is not run if `gnus-visual' is nil."
   :type 'hook)
 
 (defcustom gnus-structured-field-decoder 'identity
-  "*Function to decode non-ASCII characters in structured field for summary."
+  "Function to decode non-ASCII characters in structured field for summary."
   :group 'gnus-various
   :type 'function)
 
 (defcustom gnus-unstructured-field-decoder 'identity
-  "*Function to decode non-ASCII characters in unstructured field for summary."
+  "Function to decode non-ASCII characters in unstructured field for summary."
   :group 'gnus-various
   :type 'function)
 
@@ -706,7 +706,7 @@ automatically when it is selected."
   :type 'hook)
 
 (defcustom gnus-summary-selected-face 'gnus-summary-selected-face
-  "*Face used for highlighting the current article in the summary buffer."
+  "Face used for highlighting the current article in the summary buffer."
   :group 'gnus-summary-visual
   :type 'face)
 
@@ -734,8 +734,15 @@ automatically when it is selected."
      . gnus-summary-high-unread-face)
     ((and (< score default) (= mark gnus-unread-mark))
      . gnus-summary-low-unread-face)
-    ((memq mark (list gnus-unread-mark gnus-downloadable-mark
-		      gnus-undownloaded-mark))
+    ((= mark gnus-unread-mark)
+     . gnus-summary-normal-unread-face)
+    ((and (> score default) (memq mark (list gnus-downloadable-mark
+					     gnus-undownloaded-mark)))
+     . gnus-summary-high-unread-face)
+    ((and (< score default) (memq mark (list gnus-downloadable-mark
+					     gnus-undownloaded-mark)))
+     . gnus-summary-low-unread-face)
+    ((memq mark (list gnus-downloadable-mark gnus-undownloaded-mark))
      . gnus-summary-normal-unread-face)
     ((> score default)
      . gnus-summary-high-read-face)
@@ -761,7 +768,7 @@ mark:    The articles mark."
 		       face)))
 
 (defcustom gnus-alter-header-function nil
-  "*Function called to allow alteration of article header structures.
+  "Function called to allow alteration of article header structures.
 The function is called with one parameter, the article header vector,
 which it may alter in any way.")
 
@@ -4346,11 +4353,11 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (progn
 	      (goto-char p)
 	      (setq id (if (re-search-forward
-			    "^message-id: *\\(<[^\n\t> ]>\\)" nil t)
+			    "^message-id: *\\(<[^\n\t> ]+>\\)" nil t)
 			   ;; We do it this way to make sure the Message-ID
 			   ;; is (somewhat) syntactically valid.
-			   (buffer-substring (match-beginning 0)
-					     (match-end 0))
+			   (buffer-substring (match-beginning 1)
+					     (match-end 1))
 			 ;; If there was no message-id, we just fake one
 			 ;; to make subsequent routines simpler.
 			 (nnheader-generate-fake-message-id))))
@@ -5072,6 +5079,7 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
   (interactive)
   (gnus-set-global-variables)
   (gnus-kill-save-kill-buffer)
+  (gnus-async-halt-prefetch)
   (let* ((group gnus-newsgroup-name)
 	 (quit-config (gnus-group-quit-config gnus-newsgroup-name))
 	 (mode major-mode)
@@ -5157,6 +5165,7 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
     (when (or no-questions
 	      gnus-expert-user
 	      (gnus-y-or-n-p "Discard changes to this group and exit? "))
+      (gnus-async-halt-prefetch)
       ;; If we have several article buffers, we kill them at exit.
       (unless gnus-single-article-buffer
 	(gnus-kill-buffer gnus-article-buffer)
@@ -7097,7 +7106,7 @@ re-spool using this method."
   (gnus-summary-move-article n nil nil 'crosspost))
 
 (defcustom gnus-summary-respool-default-method nil
-  "*Default method for respooling an article.
+  "Default method for respooling an article.
 If nil, use to the current newsgroup method."
   :type `(choice (gnus-select-method :value (nnml ""))
 		 (const nil))

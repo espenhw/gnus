@@ -30,7 +30,7 @@
 (require 'gnus)
 
 (defcustom gnus-open-server-hook nil
-  "*Hook called just before opening connection to the news server."
+  "Hook called just before opening connection to the news server."
   :group 'gnus-start
   :type 'hook)
 
