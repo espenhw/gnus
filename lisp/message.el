@@ -953,6 +953,7 @@ The cdr of ech entry is a function for applying the face to a region.")
 	  "^ *---+ +Original message +---+ *$\\|"
 	  "^ *--+ +begin message +--+ *$\\|"
 	  "^ *---+ +Original message follows +---+ *$\\|"
+	  "^ *---+ +Undelivered message follows +---+ *$\\|"
 	  "^|? *---+ +Message text follows: +---+ *|?$")
   "A regexp that matches the separator before the text of a failed message.")
 

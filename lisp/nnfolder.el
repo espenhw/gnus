@@ -681,9 +681,10 @@ deleted.  Point is left where the deleted region was."
 (defun nnfolder-insert-newsgroup-line (group-art)
   (save-excursion
     (goto-char (point-min))
-    (if (search-forward "\n\n" nil t)
-	(forward-char -1)
-      (goto-char (point-max)))
+    (unless (search-forward "\n\n" nil t)
+      (goto-char (point-max))
+      (insert "\n"))
+    (forward-char -1)
     (insert (format (concat nnfolder-article-marker "%d   %s\n")
 		    (cdr group-art) (current-time-string)))))
 
