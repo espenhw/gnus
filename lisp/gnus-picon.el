@@ -74,6 +74,15 @@ Some people may want to add \"unknown\" to this list."
   :type '(repeat string)
   :group 'gnus-picon)
 
+(defcustom gnus-picon-style 'inline
+  "How should picons be displayed.
+If `inline', the textual representation is replaced.  If `right', picons are
+added right to the textual representation."
+  ;; FIXME: `right' needs improvement for XEmacs.
+  :type '(choice (const inline)
+		 (const right))
+  :group 'gnus-picon)
+
 (defface gnus-picon-xbm-face '((t (:foreground "black" :background "white")))
   "Face to show xbm picon in."
   :group 'gnus-picon)
@@ -135,14 +144,17 @@ List of pairs (KEY . GLYPH) where KEY is either a filename or an URL.")
 	file
       nil)))
 
-(defun gnus-picon-insert-glyph (glyph category)
+(defun gnus-picon-insert-glyph (glyph category &optional nostring)
   "Insert GLYPH into the buffer.
-GLYPH can be either a glyph or a string."
+GLYPH can be either a glyph or a string.  When NOSTRING, no textual
+replacement is added."
+  ;; Using NOSTRING prevents wrong BBDB entries with `gnus-picon-style' set to
+  ;; 'right.
   (if (stringp glyph)
       (insert glyph)
     (gnus-add-wash-type category)
     (gnus-add-image category (car glyph))
-    (gnus-put-image (car glyph) (cdr glyph) category)))
+    (gnus-put-image (car glyph) (unless nostring (cdr glyph)) category)))
 
 (defun gnus-picon-create-glyph (file)
   (or (cdr (assoc file gnus-picon-glyph-alist))
@@ -162,7 +174,7 @@ GLYPH can be either a glyph or a string."
 	       (mail-encode-encoded-word-string
 		(or (mail-fetch-field header) "")))
 	     (mail-fetch-field header))))
-	  spec file point cache)
+	  spec file point cache len)
       (dolist (address addresses)
 	(setq address (car address))
 	(when (and (stringp address)
@@ -193,16 +205,37 @@ GLYPH can be either a glyph or a string."
 
 	  (gnus-article-goto-header header)
 	  (mail-header-narrow-to-field)
-	  (when (search-forward address nil t)
-	    (delete-region (match-beginning 0) (match-end 0))
-	    (setq point (point))
-	    (while spec
-	      (goto-char point)
-	      (if (> (length spec) 2)
-		  (insert ".")
-		(if (= (length spec) 2)
-		  (insert "@")))
-	      (gnus-picon-insert-glyph (pop spec) category))))))))
+	  (case gnus-picon-style
+	    (right
+	     (when (= (length addresses) 1)
+	       (setq len (apply '+ (mapcar (lambda (x)
+					     (condition-case nil
+						 (car (image-size (car x)))
+					       (error 0))) spec)))
+	       (when (> len 0)
+		 (goto-char (point-at-eol))
+		 (insert (propertize
+			  " " 'display
+			  (cons 'space
+				(list :align-to (- (window-width) 1 len))))))
+	       (goto-char (point-at-eol))
+	       (setq point (point-at-eol))
+	       (dolist (image spec)
+		 (unless (stringp image)
+		   (goto-char point)
+		   (gnus-picon-insert-glyph image category 'nostring)))))
+	    (inline
+	      (when (search-forward address nil t)
+		(delete-region (match-beginning 0) (match-end 0))
+		(setq point (point))
+		(while spec
+		  (goto-char point)
+		  (if (> (length spec) 2)
+		      (insert ".")
+		    (if (= (length spec) 2)
+			(insert "@")))
+		  (gnus-picon-insert-glyph (pop spec) category)))))
+	      )))))
 
 (defun gnus-picon-transform-newsgroups (header)
   (interactive)

@@ -1,7 +1,14 @@
+2004-05-18  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-picon.el (gnus-picon-style): New variable.
+	(gnus-picon-insert-glyph): Added optional `nostring' argument.
+	(gnus-picon-transform-address): Support `gnus-picon-style'.  From
+	Jesper Harder <harder@ifa.au.dk>.	
+
 2004-05-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-start.el (gnus-get-unread-articles-in-group): Don't do
-	stuff for non-living group.s
+	stuff for non-living groups.
 
 2004-05-18  Jesper Harder  <harder@ifa.au.dk>
 
@@ -194,7 +201,7 @@
 	(spam-bsfilter-unregister-spam-routine)
 	(spam-bsfilter-register-ham-routine)
 	(spam-bsfilter-unregister-ham-routine): New functions.
-	(spam-generic-score): Supprt bsfilter; Accept an optional argument
+	(spam-generic-score): Support bsfilter; Accept an optional argument
 	to recalcurate spam score even if scoring header has already been
 	added.
 	(spam-bogofilter-score, spam-spamassassin-score): Accept an
