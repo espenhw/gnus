@@ -104,7 +104,8 @@ The last element should always have \"\" as the regexp.
 
 This variable can also have a function as its value."
   :group 'nnmail-split
-  :type '(choice (repeat :tag "Alist" (group (string :tag "Name") regexp))
+  :type '(choice (repeat :tag "Alist" (group (string :tag "Name")
+					     (choice regexp function)))
 		 (function-item nnmail-split-fancy)
 		 (function :tag "Other")))
 

@@ -1,3 +1,7 @@
+2002-07-02  Didier Verna  <didier@xemacs.org>
+
+	* nnmail.el (nnmail-split-methods): fix custom type.
+
 2002-07-02  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-art.el (article-unsplit-urls): Keep URL buttonized after
