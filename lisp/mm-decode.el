@@ -73,7 +73,7 @@
 
 (defvar mm-user-automatic-display
   '("text/plain" "text/enriched" "text/richtext" "text/html" "image/gif"
-    "message/delivery-status"))
+    "message/delivery-status" "multipart/.*"))
 
 (defvar mm-alternative-precedence
   '("text/plain" "text/enriched" "text/richtext" "text/html")
@@ -114,7 +114,7 @@
 	 result
 	 (cond
 	  ((equal type "multipart")
-	   (mm-dissect-multipart ctl))
+	   (cons (car ctl) (mm-dissect-multipart ctl)))
 	  (t
 	   (mm-dissect-singlepart
 	    ctl
@@ -132,7 +132,7 @@
 (defun mm-dissect-singlepart (ctl cte &optional force cdl description)
   (when (or force
 	    (not (equal "text/plain" (car ctl))))
-    (let ((res (list (list (mm-copy-to-buffer) ctl cte nil cdl description))))
+    (let ((res (list (mm-copy-to-buffer) ctl cte nil cdl description)))
       (push (car res) mm-dissection-list)
       res)))
 
@@ -158,14 +158,14 @@
 	(save-excursion
 	  (save-restriction
 	    (narrow-to-region start (point))
-	    (setq parts (nconc (mm-dissect-buffer t) parts)))))
+	    (setq parts (nconc (list (mm-dissect-buffer t)) parts)))))
       (forward-line 2)
       (setq start (point)))
     (when start
       (save-excursion
 	(save-restriction
 	  (narrow-to-region start end)
-	  (setq parts (nconc (mm-dissect-buffer t) parts)))))
+	  (setq parts (nconc (list (mm-dissect-buffer t)) parts)))))
     (nreverse parts)))
 
 (defun mm-copy-to-buffer ()
@@ -213,7 +213,9 @@
 	(let ((cur (current-buffer)))
 	  (if (eq method 'mailcap-save-binary-file)
 	      (set-buffer (generate-new-buffer "*mm*"))
-	    (select-window (get-buffer-window cur t))
+	    (let ((win (get-buffer-window cur t)))
+	      (when win
+		(select-window win)))
 	    (switch-to-buffer (generate-new-buffer "*mm*")))
 	  (buffer-disable-undo)
 	  (mm-set-buffer-file-coding-system 'no-conversion)
@@ -250,34 +252,67 @@
 	(mm-handle-set-undisplayer handle (cons file process))
 	(message "Displaying %s..." (format method file))))))
 
+(defun mm-remove-parts (handles)
+  "Remove the displayed MIME parts represented by HANDLE."
+  (if (and (listp handles)
+	   (bufferp (car handles)))
+      (mm-remove-part handles)
+    (let (handle)
+      (while (setq handle (pop handles))
+	(cond
+	 ((stringp handle)
+	  )
+	 ((and (listp handle)
+	       (stringp (car handle)))
+	  (mm-remove-parts (cdr handle)))
+	 (t
+	  (mm-remove-part handle)))))))
+
+(defun mm-destroy-parts (handles)
+  "Remove the displayed MIME parts represented by HANDLE."
+  (if (and (listp handles)
+	   (bufferp (car handles)))
+      (mm-destroy-part handles)
+    (let (handle)
+      (while (setq handle (pop handles))
+	(cond
+	 ((stringp handle)
+	  )
+	 ((and (listp handle)
+	       (stringp (car handle)))
+	  (mm-destroy-parts (cdr handle)))
+	 (t
+	  (mm-destroy-part handle)))))))
+
 (defun mm-remove-part (handle)
   "Remove the displayed MIME part represented by HANDLE."
-  (let ((object (mm-handle-undisplayer handle)))
-    (condition-case ()
-	(cond
-	 ;; Internally displayed part.
-	 ((mm-annotationp object)
-	  (delete-annotation object))
-	 ((or (functionp object)
-	      (and (listp object)
-		   (eq (car object) 'lambda)))
-	  (funcall object))
-	 ;; Externally displayed part.
-	 ((consp object)
-	  (condition-case ()
-	      (delete-file (car object))
-	    (error nil))
-	  (condition-case ()
-	      (delete-directory (file-name-directory (car object)))
-	    (error nil))
-	  (condition-case ()
-	      (kill-process (cdr object))
-	    (error nil)))
-	 ((bufferp object)
-	  (when (buffer-live-p object)
-	    (kill-buffer object))))
-      (error nil))
-    (mm-handle-set-undisplayer handle nil)))
+  (when (listp handle)
+    (let ((object (mm-handle-undisplayer handle)))
+      (condition-case ()
+	  (cond
+	   ;; Internally displayed part.
+	   ((mm-annotationp object)
+	    (delete-annotation object))
+	   ((or (functionp object)
+		(and (listp object)
+		     (eq (car object) 'lambda)))
+	    (funcall object))
+	   ;; Externally displayed part.
+	   ((consp object)
+	    (condition-case ()
+		(delete-file (car object))
+	      (error nil))
+	    (condition-case ()
+		(delete-directory (file-name-directory (car object)))
+	      (error nil))
+	    (condition-case ()
+		(kill-process (cdr object))
+	      (error nil)))
+	   ((bufferp object)
+	    (when (buffer-live-p object)
+	      (kill-buffer object))))
+	(error nil))
+      (mm-handle-set-undisplayer handle nil))))
 
 (defun mm-display-inline (handle)
   (let* ((type (car (mm-handle-type handle)))
@@ -326,9 +361,10 @@ This overrides entries in the mailcap file."
 
 (defun mm-destroy-part (handle)
   "Destroy the data structures connected to HANDLE."
-  (mm-remove-part handle)
-  (when (buffer-live-p (mm-handle-buffer handle))
-    (kill-buffer (mm-handle-buffer handle))))
+  (when (listp handle)
+    (mm-remove-part handle)
+    (when (buffer-live-p (mm-handle-buffer handle))
+      (kill-buffer (mm-handle-buffer handle)))))
 
 (defun mm-handle-displayed-p (handle)
   "Say whether HANDLE is displayed or not."
@@ -414,10 +450,14 @@ This overrides entries in the mailcap file."
     (while (setq p (pop prec))
       (setq h handles)
       (while h
-	(setq type (car (mm-handle-type (car h))))
+	(setq type
+	      (if (stringp (caar h))
+		  (caar h)
+		(car (mm-handle-type (car h)))))
 	(when (and (equal p type)
 		   (mm-automatic-display-p type)
-		   (or (not (mm-handle-disposition (car h)))
+		   (or (stringp (caar h))
+		       (not (mm-handle-disposition (car h)))
 		       (equal (car (mm-handle-disposition (car h)))
 			      "inline")))
 	  (setq result (car h)

@@ -116,6 +116,10 @@ If no encoding was done, nil is returned."
     (condition-case ()
 	(uudecode-decode-region (point-min) (point-max))
       (error nil)))
+   ((functionp encoding)
+    (condition-case ()
+	(funcall encoding (point-min) (point-max))
+      (error nil)))
    (t
     (error "Can't decode encoding %s" encoding))))
 

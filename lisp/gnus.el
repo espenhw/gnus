@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.35"
+(defconst gnus-version-number "0.36"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -359,6 +359,72 @@ be set in `.emacs' instead."
     (t
      ()))
   "Level 3 empty newsgroup face.")
+
+(defface gnus-group-news-4-face
+  '((((class color)
+      (background dark))
+     (:bold t))
+    (((class color)
+      (background light))
+     (:bold t))
+    (t
+     ()))
+  "Level 4 newsgroup face.")
+
+(defface gnus-group-news-4-empty-face
+  '((((class color)
+      (background dark))
+     ())
+    (((class color)
+      (background light))
+     ())
+    (t
+     ()))
+  "Level 4 empty newsgroup face.")
+
+(defface gnus-group-news-5-face
+  '((((class color)
+      (background dark))
+     (:bold t))
+    (((class color)
+      (background light))
+     (:bold t))
+    (t
+     ()))
+  "Level 5 newsgroup face.")
+
+(defface gnus-group-news-5-empty-face
+  '((((class color)
+      (background dark))
+     ())
+    (((class color)
+      (background light))
+     ())
+    (t
+     ()))
+  "Level 5 empty newsgroup face.")
+
+(defface gnus-group-news-6-face
+  '((((class color)
+      (background dark))
+     (:bold t))
+    (((class color)
+      (background light))
+     (:bold t))
+    (t
+     ()))
+  "Level 6 newsgroup face.")
+
+(defface gnus-group-news-6-empty-face
+  '((((class color)
+      (background dark))
+     ())
+    (((class color)
+      (background light))
+     ())
+    (t
+     ()))
+  "Level 6 empty newsgroup face.")
 
 (defface gnus-group-news-low-face
   '((((class color)

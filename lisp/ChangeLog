@@ -1,3 +1,36 @@
+Tue Oct 20 20:25:03 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.36 is released.
+
+1998-10-20 18:13:08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-translate-strings): 
+	(gnus-article-dumbquotes-map): Don't dot.
+
+	* pop3.el (pop3-open-server): Set point right.
+
+	* mm-decode.el (mm-dissect-multipart): Dissect hierarchically. 
+	(mm-dissect-buffer): Ditto.
+	(mm-destroy-part): Ignore non-handles.
+	(mm-remove-part): Ditto.
+	(mm-destroy-parts): New function.
+	(mm-remove-parts): Ditto.
+
+	* gnus-art.el (gnus-mm-display-part): Don't move point.
+
+Tue Oct 20 02:16:36 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el : New file.
+	
+	* gnus-art.el (gnus-display-mime): Dissect uu stuffs.
+	
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Encoding as
+	a function.
+
+1998-10-20 00:35:05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-display-external): Check before selecting.
+
 Tue Oct 20 00:24:16 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.35 is released.

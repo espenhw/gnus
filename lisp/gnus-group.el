@@ -299,6 +299,18 @@ variable."
      gnus-group-news-3-empty-face)
     ((and (not mailp) (eq level 3)) .
      gnus-group-news-3-face)
+    ((and (= unread 0) (not mailp) (eq level 4)) .
+     gnus-group-news-4-empty-face)
+    ((and (not mailp) (eq level 4)) .
+     gnus-group-news-4-face)
+    ((and (= unread 0) (not mailp) (eq level 5)) .
+     gnus-group-news-5-empty-face)
+    ((and (not mailp) (eq level 5)) .
+     gnus-group-news-5-face)
+    ((and (= unread 0) (not mailp) (eq level 6)) .
+     gnus-group-news-6-empty-face)
+    ((and (not mailp) (eq level 6)) .
+     gnus-group-news-6-face)
     ((and (= unread 0) (not mailp)) .
      gnus-group-news-low-empty-face)
     ((and (not mailp)) .
