@@ -36,21 +36,22 @@
 ;; The smilies were drawn by Joe Reiss <joe@jreiss.async.vt.edu>. 
 
 (require 'annotations)
+(require 'messagexmas)
 (eval-when-compile (require 'cl))
 
 (defvar smiley-data-directory (message-xmas-find-glyph-directory "smilies")
   "Location of the smiley faces files.")
 
 (defvar smiley-regexp-alist
-  '(("\\s-\\(:-*\\]\\)" 1 "FaceGrinning.xpm")
-    ("\\s-\\(:-*[oO]\\)" 1 "FaceStartled.xpm")
+  '(("\\s-\\(:-*\\]\\)\\W" 1 "FaceGrinning.xpm")
+    ("\\s-\\(:-*[oO]\\)\\W" 1 "FaceStartled.xpm")
     ("\\s-\\(:-*[)>]\\)" 1 "FaceHappy.xpm")
     ("\\s-\\(;-*[>)]\\)" 1 "FaceWinking.xpm")
     ("\\s-\\(:-[/\\]\\)" 1 "FaceIronic.xpm")
     ("\\s-\\(:-*|\\)" 1 "FaceStraight.xpm")
     ("\\s-\\(:-*<\\)" 1 "FaceAngry.xpm")
-    ("\\s-\\(:-*d\\)" 1 "FaceTasty.xpm")
-    ("\\s-\\(:-*[pP]\\)" 1 "FaceYukky.xpm")
+    ("\\s-\\(:-*d\\)\\W" 1 "FaceTasty.xpm")
+    ("\\s-\\(:-*[pP]\\)\\W" 1 "FaceYukky.xpm")
     ("\\s-\\(8-*|\\)" 1 "FaceKOed.xpm")
     ("\\s-\\(:-*(\\)" 1 "FaceAngry.xpm"))
   "A list of regexps to map smilies to real images.")
@@ -89,13 +90,13 @@
       (set-glyph-face glyph 'default)
       glyph))))
 
-;;;###interactive
+;;;###autoload
 (defun smiley-region (beg end)
   "Smilify the region between point and mark."
   (interactive "r")
   (smiley-buffer (current-buffer) beg end))
 
-;;;###interactive
+;;;###autoload
 (defun smiley-buffer (&optional buffer st nd)
   (interactive)
   (save-excursion

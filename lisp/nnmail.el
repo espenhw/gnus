@@ -937,8 +937,11 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
        crash
        (cond ((and group
 		   (or (eq nnmail-spool-file 'procmail)
-		       nnmail-use-procmail))
+		       nnmail-use-procmail)
+		   procmails)
 	      procmails)
+	     ((eq nnmail-spool-file 'procmail)
+	      nil)
 	     ((listp nnmail-spool-file)
 	      (append nnmail-spool-file procmails))
 	     ((stringp nnmail-spool-file)

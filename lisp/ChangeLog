@@ -1,3 +1,55 @@
+Wed Jun 26 20:40:39 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el (gnus-summary-edit-article-done): Don't beep after a
+	`C-u e'. 
+
+	* message.el (message-autosave-directory): New default value.
+
+	* gnus-cache.el (gnus-cache-open): Don't create cache things
+	unconditionally. 
+
+	* gnus.el (gnus-server-status): New function.
+	(gnus-group-get-new-news-this-group): Better error message.
+	(gnus-clear-system): Clear state alist.
+	(gnus-error): Doc fix.
+
+	* nnmail.el (nnmail-get-spool-files): Use the spool file even when
+	using procmail.
+
+Wed Jun 26 20:36:40 1996  Philippe Troin  <ptroin@compass-da.com>
+
+	* gnus.el (gnus-thread-total-score-1): New version.
+
+Wed Jun 26 20:31:25 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* nnspool.el (nnspool-find-id): Quote the Message-ID.
+
+	* message.el (message-check-news-syntax): Would respond to
+	i-have-a-mi-etc in References.
+
+Wed Jun 26 19:59:27 1996  Nat Makarevitch  <nat@nataa.fr.eu.org>
+
+	* smiley.el (smiley-regexp-alist): New definition.
+
+Wed Jun 26 17:45:00 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* message.el (message-reply): Name the message buffer "wide
+	reply..." if following up on a mail group.
+
+	* gnus.el (gnus-auto-subscribed-groups): Doc fix.
+	(gnus-options-subscribe): Doc fix.
+
+	* smiley.el (smiley-buffer): Autoload.
+	(messagexmas): Required.
+
+	* gnus.el (gnus-message-archive-group): Moved here.
+	(gnus-archive-server-wanted-p): New function used throughout.
+	(gnus-message-archive-group): Default to nil.
+
+Tue Jun 25 21:15:41 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: Gnus v5.3 is released.
+
 Tue Jun 25 21:13:37 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
 
 	* gnus.el: Gnus v5.2.26 is released.
