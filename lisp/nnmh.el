@@ -189,7 +189,9 @@
 					     (car dir))
 				      group))
 		    (insert (format "211 0 1 0 %s\n" group))))))
-	  t))))
+	  t)
+      (setq nnmh-status-string "No such group")
+      nil)))
 
 (defun nnmh-request-list (&optional server dir)
   (or dir
@@ -381,6 +383,12 @@
 (defun nnmh-active-number (group)
   "Compute the next article number in GROUP."
   (let ((active (car (cdr (assoc group nnmh-group-alist)))))
+    ;; The group wasn't known to nnmh, so we just create an active
+    ;; entry for it.   
+    (or active
+	(progn
+	  (setq active (cons 1 0))
+	  (setq nnmh-group-alist (cons (list group active) nnmh-group-alist))))
     (setcdr active (1+ (cdr active)))
     (while (file-exists-p
 	    (concat (nnmh-article-pathname group nnmh-directory)
@@ -426,7 +434,9 @@
       (if incoming 
 	  (message "nnmh: Reading incoming mail...done"))
       (while incomings
+	(setq incoming (car incomings))
 	(and nnmail-delete-incoming
+	     (file-exists-p incoming)
 	     (file-writable-p incoming)
 	     (delete-file incoming))
 	(setq incomings (cdr incomings))))))

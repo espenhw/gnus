@@ -26,6 +26,7 @@
 
 (require 'gnus)
 (require 'gnus-msg)
+(require 'gnus-ems)
 
 (eval-and-compile
   (autoload 'gnus-article-add-button "gnus-vis")
@@ -141,10 +142,10 @@ Lines matching `gnus-cite-attribution-postfix' and perhaps
   ;; Create dark or light faces if necessary.
   (cond ((eq gnus-cite-face-list 'light)
 	 (setq gnus-cite-face-list
-	     (mapcar 'gnus-make-face gnus-face-light-name-list)))
+	       (mapcar 'gnus-make-face gnus-face-light-name-list)))
 	((eq gnus-cite-face-list 'dark)
 	 (setq gnus-cite-face-list
-	     (mapcar 'gnus-make-face gnus-face-dark-name-list))))
+	       (mapcar 'gnus-make-face gnus-face-dark-name-list))))
   (save-excursion
     (set-buffer gnus-article-buffer)
     (gnus-cite-parse-maybe)
@@ -278,7 +279,8 @@ See also the documentation for `gnus-article-highlight-citation'."
         gnus-cite-loose-attribution-alist nil)
   ;; Parse current buffer searching for citation prefixes.
   (goto-char (point-min))
-  (search-forward "\n\n")
+  (or (search-forward "\n\n" nil t)
+      (goto-char (point-max)))
   (let ((line (1+ (count-lines (point-min) (point))))
 	(case-fold-search t)
 	(max (save-excursion
@@ -519,7 +521,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	(skip-chars-backward " \t")
 	(setq to (point))
 	(if (< from to)
-	    (overlay-put (make-overlay from to) 'face face)))))
+	    (gnus-overlay-put (gnus-make-overlay from to) 'face face)))))
 
 (defun gnus-cite-toggle (prefix)
   (save-excursion

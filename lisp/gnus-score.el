@@ -115,11 +115,11 @@ of the last successful match.")
 ;; Much modification of the kill (ahem, score) code and lots of the
 ;; functions are written by Per Abrahamsen <amanda@iesd.auc.dk>.
 
-(defun gnus-summary-lower-score (score)
+(defun gnus-summary-lower-score (&optional score)
   (interactive "P")
   (gnus-summary-increase-score (- (gnus-score-default score))))
 
-(defun gnus-summary-increase-score (score)
+(defun gnus-summary-increase-score (&optional score)
   (interactive "P")
   (gnus-set-global-variables)
   (let* ((nscore (gnus-score-default score))
@@ -279,8 +279,8 @@ of the last successful match.")
     (insert string ":\n\n")
     (while alist
       (insert (format " %c: %s\n" (car (car alist)) (nth idx (car alist))))
-      (setq alist (cdr alist)))
-    (select-window (get-buffer-window gnus-summary-buffer))))
+      (setq alist (cdr alist))))
+  (select-window (get-buffer-window gnus-summary-buffer)))
 
 (defun gnus-summary-header (header)
   ;; Return HEADER for current articles, or error.
@@ -1290,6 +1290,7 @@ SCORE is the score to add."
 		  (forward-line 1))
 	      (and (string= match "") (setq match "\n"))
 	      (while (funcall search-func match nil t)
+		(goto-char (match-beginning 0))
 		(end-of-line)
 		(setq found (setq arts (get-text-property (point) 'articles)))
 		;; Found a match, update scores.
@@ -1304,7 +1305,8 @@ SCORE is the score to add."
 		  (while arts
 		    (setq art (car arts)
 			  arts (cdr arts))
-		    (setcdr art (+ score (cdr art)))))))
+		    (setcdr art (+ score (cdr art)))))
+		(forward-line 1)))
 	    ;; Update expire date
 	    (cond ((null date))		;Permanent entry.
 		  (found		;Match, update date.

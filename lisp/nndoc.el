@@ -32,6 +32,13 @@
 (defvar nndoc-article-type 'mbox
   "*Type of the file - one of `mbox', `babyl' or `digest'.")
 
+(defvar nndoc-digest-type 'traditional
+  "Type of the last digest.  Auto-detected from the article header.
+Possible values:
+  `traditional' -- the \"lots of dashes\" (30+) rules used;
+                   we currently also do unconditional RFC 934 unquoting.
+  `rfc1341' -- RFC 1341 digest (MIME, unique boundary, no quoting).")
+
 (defconst nndoc-type-to-regexp
   (list (list 'mbox 
 	      (concat "^" rmail-unix-mail-delimiter)
@@ -187,7 +194,8 @@
 	  nil
 	(nndoc-insert-article article)
 	;; Unquote quoted non-separators in digests.
-	(if (eq nndoc-article-type 'digest)
+	(if (and (eq nndoc-article-type 'digest)
+		 (eq nndoc-digest-type 'traditional))
 	    (progn
 	      (goto-char (point-min))
 	      (while (re-search-forward "^- -"nil t)
@@ -281,20 +289,22 @@
       (save-excursion
 	(set-buffer nndoc-current-buffer)
 	(goto-char (point-min))
-	(and
-	 (re-search-forward
-	  (concat "\n\n\\|^Content-Type: multipart/digest;[ \t\n]*[ \t]"
-		  "boundary=\"\\([^\"\n]*[^\" \t\n]\\)\"")
-	  nil t)
-	 (match-beginning 1)
-	 (setq boundary-id (buffer-substring-no-properties (match-beginning 1)
-							   (match-end 1))
-	       b-delimiter       (concat "\n--" boundary-id "[\n \t]+")
-	       nndoc-article-begin b-delimiter ; Too strict: "[ \t]*$"
-	       nndoc-article-end (concat "\n--" boundary-id
-					 "\\(--\\)?[\n \t]+")
-	       nndoc-first-article b-delimiter ; ^end-of-file ends article too.
-	       nndoc-end-of-file (concat "\n--" boundary-id "--[ \t]*$")))))))
+	(if (and
+	     (re-search-forward
+	      (concat "\n\n\\|^Content-Type: multipart/digest;[ \t\n]*[ \t]"
+		      "boundary=\"\\([^\"\n]*[^\" \t\n]\\)\"")
+	      nil t)
+	     (match-beginning 1))
+	    (setq nndoc-digest-type 'rfc1341
+		  boundary-id (buffer-substring-no-properties
+			       (match-beginning 1) (match-end 1))
+		  b-delimiter       (concat "\n--" boundary-id "[\n \t]+")
+		  nndoc-article-begin b-delimiter ; Too strict: "[ \t]*$"
+		  nndoc-article-end (concat "\n--" boundary-id
+					    "\\(--\\)?[\n \t]+")
+		  nndoc-first-article b-delimiter ; ^eof ends article too.
+		  nndoc-end-of-file (concat "\n--" boundary-id "--[ \t]*$"))
+	  (setq nndoc-digest-type 'traditional))))))
 
 (defun nndoc-forward-article (n)
   (while (and (> n 0)

@@ -250,6 +250,8 @@ by Per Abrahamsen.
 @item
 Innumerable bug fixes were written by Sudish Joseph.
 @item
+The refcard was written by Vladimir Alexiev.
+@item
 I stole some pieces from the XGnus distribution by Felix Lee and JWZ.
 @item 
 nnfolder has been much enhanced by Scott Byer.
@@ -1176,19 +1178,19 @@ and then execute the command.
 @table @kbd
 @item #
 @kindex # (Group)
-@item G m
-@kindex G m (Group)
+@item M m
+@kindex M m (Group)
 @findex gnus-group-mark-group
 Set the mark on the current group (@code{gnus-group-mark-group}). 
 @item M-#
 @kindex M-# (Group)
-@item G u
-@kindex G u (Group)
+@item < u
+@kindex M u (Group)
 @findex gnus-group-unmark-group
 Remove the mark from the current group
 (@code{gnus-group-unmark-group}). 
-@item G w
-@kindex G w (Group)
+@item M w
+@kindex M w (Group)
 @findex gnus-group-mark-region
 Mark all groups between point and mark (@code{gnus-group-mark-region}). 
 @end table
@@ -1385,26 +1387,26 @@ no timeouts are done.
 This hook is run as the last step when connecting to an @sc{nntp}
 server.
 
-@findex nntp-open-rlogin
-@findex nntp-open-network-stream
-@item nntp-open-server-function
-@vindex nntp-open-server-function
-This function is used to connect to the remote system.  Two pre-made
-functions are @code{nntp-open-network-stream}, which is the default, and
-simply connects to some port or other on the remote system.  The other
-is @code{nntp-open-rlogin}, which does an rlogin on the remote system,
-and then does a telnet to the @sc{nntp} server available there.
-
-@item nntp-rlogin-parameters
-@vindex nntp-rlogin-parameters
-If you use @code{nntp-open-rlogin} as the
-@code{nntp-open-server-function}, this list will be used as the
-parameter list given to @code{rsh}.
-
-@item nntp-rlogin-user-name
-@vindex nntp-rlogin-user-name
-User name on the remote system when using the @code{rlogin} connect
-function. 
+@c @findex nntp-open-rlogin
+@c @findex nntp-open-network-stream
+@c @item nntp-open-server-function
+@c @vindex nntp-open-server-function
+@c This function is used to connect to the remote system.  Two pre-made
+@c functions are @code{nntp-open-network-stream}, which is the default, and
+@c simply connects to some port or other on the remote system.  The other
+@c is @code{nntp-open-rlogin}, which does an rlogin on the remote system,
+@c and then does a telnet to the @sc{nntp} server available there.
+@c 
+@c @item nntp-rlogin-parameters
+@c @vindex nntp-rlogin-parameters
+@c If you use @code{nntp-open-rlogin} as the
+@c @code{nntp-open-server-function}, this list will be used as the
+@c parameter list given to @code{rsh}.
+@c 
+@c @item nntp-rlogin-user-name
+@c @vindex nntp-rlogin-user-name
+@c User name on the remote system when using the @code{rlogin} connect
+@c function. 
 
 @item nntp-address
 @vindex nntp-address
@@ -1785,6 +1787,28 @@ non-@code{nil}, it will be used instead.
 If @code{nnmail-delete-incoming} is non-@code{nil}, the mail backends
 will delete the temporary incoming file after splitting mail into the
 proper groups.  This is @code{nil} by default for reasons of security. 
+
+@vindex nnmail-message-id-cache-length
+@vindex nnmail-message-id-cache-file
+@vindex nnmail-delete-duplicates
+@cindex duplicate mails
+If you are a member of a couple of mailing list, you will sometime
+receive two copies of the same mail. This can be quite annoying, so
+@code{nnmail} checks for and discards any duplicates it might find. To
+do this, it keeps a cache of old @code{Message-ID}s -
+@code{nnmail-message-id-cache-file}, which is @file{~/.nnmail-cache} by
+default. The approximate maximum number of @code{Message-ID}s stored
+there is controlled by the @code{nnmail-message-id-cache-length}
+variable, which is 1000 by default. (So 1000 @code{Message-ID}s will be
+stored.) If all this sounds scary to you, you can set
+@code{nnmail-delete-duplicates} to @code{nil} (which is what it is by
+default), and @code{nnmail} won't do any duplicate checking.
+
+Here's a neat feature: If you know that the recipient reads her mail
+with Gnus, and that she has @code{nnmail-delete-duplicates} set to
+@code{t}, you can send her as many insults as you like, just by using a
+@code{Message-ID} of a mail that you know that she's already received.
+Think of all the fun! She'll never see any of it! Whee!
 
 Gnus gives you all the opportunity you could possibly want for shooting
 yourself in the foot.  Let's say you create a group that will contain
@@ -4254,10 +4278,14 @@ group and return you to the group buffer.
 @kindex Z Z (Summary)
 @kindex q (Summary)
 @findex gnus-summary-exit
+@vindex gnus-summary-exit-hook
+@vindex gnus-summary-prepare-exit-hook
 Exit the current group and update all information on the group
-(@code{gnus-summary-exit}).  @code{gnus-summary-exit-hook} is called
-before doing much of the exiting, and calls
+(@code{gnus-summary-exit}). @code{gnus-summary-prepare-exit-hook} is
+called before doing much of the exiting, and calls
 @code{gnus-summary-expire-articles} by default.
+@code{gnus-summary-exit-hook} is called after finishing the exiting
+process. 
 @item Z E
 @itemx Q
 @kindex Z E (Summary)
@@ -4895,8 +4923,8 @@ Treat overstrike (@code{gnus-article-treat-overstrike}).
 @kindex W w (Summary)
 @findex gnus-article-word-wrap
 Do word wrap (@code{gnus-article-word-wrap}).
-@item W d
-@kindex W d (Summary)
+@item W m
+@kindex W m (Summary)
 @findex gnus-article-remove-cr
 Remove CR (@code{gnus-article-remove-cr}).
 @item W q
@@ -4946,7 +4974,7 @@ Sort by date (@code{gnus-summary-sort-by-date}).
 @item V s i
 @kindex V s i (Summary)
 @findex gnus-summary-sort-by-score
-Sort by date (@code{gnus-summary-sort-by-score}).
+Sort by score (@code{gnus-summary-sort-by-score}).
 @end table
 
 These functions will work both when you use threading and when you don't
@@ -5007,9 +5035,9 @@ files.  Articles that have a score lower than
 Gnus will read any @dfn{score files} that apply to the current group
 before generating the summary buffer.
 
-There are several commands in the summary buffer that inserts score
-entries based on the current article.  You can, for instance, ask Gnus
-to lower or increase the score of all articles with a certain subject.
+There are several commands in the summary buffer that insert score
+entries based on the current article. You can, for instance, ask Gnus to
+lower or increase the score of all articles with a certain subject.
 
 There are two sorts of scoring entries: Permanent and temporary.
 Temporary score entries are self-expiring entries.  Any entries that are
@@ -5408,9 +5436,9 @@ it.
 @cindex local variables
 The value of this entry should be a list of @code{(VAR VALUE)} pairs.
 Each @var{var} will be made buffer-local to the current summary buffer,
-and set to the value specified.  This is a convenient, if albeit
-strange, way of setting variables in some groups, and you don't like
-hooks much.
+and set to the value specified. This is a convenient, if somewhat
+strange, way of setting variables in some groups if you don't like hooks
+much.
 @end table
 
 @node Score File Editing

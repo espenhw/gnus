@@ -1,4 +1,203 @@
-Sat Jul 22 00:26:49 1995  Lars INGEBRIGTSEN UiO  <lingebri@sunsci4.cern.ch>
+Sun Jul 30 00:00:26 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-active-to-gnus-format): Ignore groups that have
+	flags that are not y, n or m.
+	(gnus-summary-expire-articles): Turn off the cache.
+	(gnus-setup-news): Read the dribble file before everything.
+	(gnus-dribble-eval-file): New function.
+
+	* gnus-ems.el (gnus-make-overlay): Use some indirection.
+
+	* gnus.el (gnus-make-threads): Would chop off threads that changed
+	subject on re-generation.
+	(gnus-make-threads-and-expunge): Ditto.
+
+	* gnus-vis.el (gnus-button-alist): Match URLS with periods
+	following. 
+
+Sat Jul 29 21:31:15 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: Added &optional to all `(interactive "P")' functions. 
+	(gnus-summary-prepare-exit-hook): Changed name.
+	(gnus-summary-exit-hook): New hook.
+
+	* nnkiboze.el (nnkiboze-generate-group): Don't bug out on
+	non-active groups. 
+
+Sat Jul 29 19:40:51 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.98.6 is released.
+
+	* gnus.el (gnus-get-unread-articles): Would doubly activate native
+	groups. 
+	(gnus-summary-prepare-threads): Always removed dormant articles.
+	(gnus-summary-show-all-dormant): Did not show dormants.
+	(gnus-summary-show-all-expunged): Ditto for expunged.
+
+	* nntp.el (nntp-async-request-group): Would pretend to close down
+	async connections.
+
+Sat Jul 29 02:06:26 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.98.5. is released.
+	
+	* nntp.el (nntp-open-server-semi-internal): Define servers that we
+	can't reach as unreachable.
+
+	* nnvirtual.el (nnvirtual-create-mapping): Don't ding so much.
+
+	* nneething.el (nneething-map-file): Make sure that the .neething
+	dir exists. 
+
+Fri Jul 21 14:52:06 1995  Ulrik Dickow  <dickow@nbi.dk>
+
+	* nndoc.el (nndoc-digest-type): New variable.
+	(nndoc-set-header-dependent-regexps): Set it.
+	(nndoc-request-article): Use it -- don't unquote MIME digests.
+
+Sat Jul 29 00:54:09 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* nntp.el (nntp-request-close): Kill all async connections.
+
+	* gnus-uu.el (gnus-uu-decode-binhex): Bugged out.
+
+Fri Jul 28 20:35:34 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus-msg.el (gnus-group-mail): Don't call `gnus-mail-hook'. 
+
+	* gnus.el (gnus-summary-mode-map): Changed `W d' to `W m'.
+	(gnus-summary-mark-unread-as-read): Would sometimes mark the wrong
+	article as read.
+	(gnus-summary-toggle-header): Wouldn't toggle headers after
+	miming. 
+	(gnus-summary-next-article): Would offer to go to the next group
+	when happening upon canceled articles.
+	(gnus-summary-insert-pseudos): Did not properly note that
+	extracetd articles were unread.
+	(gnus-summary-sort-by-number): Protect against macroism.
+	(gnus-summary-verbose-headers): Didn't turn on/off verbose
+	headers. 
+
+	* gnus-score.el (gnus-score-string): Mis-scored when matching on
+	"". 
+
+	* gnus-ems.el (gnus-ems-redefine): Remove long-lines and
+	control-chars checking for Mule.
+
+	* gnus.el (gnus-summary-prepare-unthreaded): Cull unwanted
+	articles.
+	(gnus-group-jump-to-group): If we haven't read the active file,
+	don't require a match.
+
+Thu Jul 27 13:32:12 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* nnml.el (nnml-request-group): Didn't split mail.
+
+	* nnmh.el (nnmh-active-number): Create new groups at the drop of a
+	hat. 
+
+	* nnmail.el (nnmail-get-active): Don't activate any groups just
+	because they're mentioned in `nnmail-split-methods'.
+
+	* nnml.el (nnml-get-new-mail): Would bug out on multiple spool
+	files. 
+	* nnmbox.el (nnmbox-get-new-mail): Ditto.
+	* nnbabyl.el (nnbabyl-get-new-mail): Ditto.
+	* nnfolder.el (nnfolder-get-new-mail): Ditto.
+	(nnfolder-active-number): Don't try to switch to a group before it
+	has been "created".
+
+	* nnmh.el (nnmh-get-new-mail): Ditto.
+
+Wed Jul 26 17:18:50 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus-ems.el (gnus-ems-redefine): Would bug out on rebuiling
+	(referred) threads in XEmacs.
+
+	* gnus-msg.el (gnus-inews-insert-signature): Would insert one \n
+	too many. 
+
+Wed Jul 26 09:38:36 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.98.4 is released.
+
+	* gnus-msg.el (gnus-deletable-headers): Make Date a deletable
+	header. 
+
+	* nnmail.el (nnmail-split-incoming): Treat Content-length headers
+	more sanely.
+	(nnmail-split-incoming): Would totally by out.
+
+	* nnmh.el (nnmh-request-group): Give a better error message.
+
+	* gnus.el (gnus-article-date-ut): Allow futurity
+
+	* gnus-msg.el (gnus-inews-user-address): New function.
+	(gnus-inews-news): Give better error messages.
+
+	* nnml.el (nnml-request-group): Don't check so much.
+	* nnmail.el (nnmail-activate): Check everything.
+
+	* gnus-msg.el (gnus-inews-check-post): Didn't match properly on
+	from. 
+	(gnus-check-before-posting): Didn't actually check anything before
+	posting.
+
+Tue Jul 25 13:35:01 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.98.3 is released.
+
+	* nnml.el (nnml-request-replace-article): Would kill a random
+	buffer. 
+
+	* gnus.el (gnus-group-read-group): Doc fix.
+	(gnus-update-format-specifications): New implementation.
+	(gnus-summary-read-group): Update format specs.
+	(gnus-summary-catchup): Expose threads before catching up. Would
+	infloop. 
+	(gnus-summary-save-article): Would change window config.
+	(gnus-group-archive-directory): Changed address.
+
+	* nnmail.el (nnmail-get-split-group): Make sure that
+	nnmail-procmail-directory is a directory.
+
+Sun Jul 23 22:27:25 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-summary-mark-article): Would bug out on string
+	marks. 
+
+Sun Jul 23 16:49:38 1995  Lars INGEBRIGTSEN UiO  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.98.2 is released.
+
+	* nnmail.el (nnmail-split-incoming): Ignore duplicate messages,
+	but create new message-ids for messages that do not have one. 
+
+	* gnus.el (gnus-thread-sort-by-score): Totally bombed out.
+
+	* gnus-score.el (gnus-score-insert-help): Do the `select-window'
+	outside the `save-excursion'.
+
+	* gnus.el (gnus-article-mode-map): Remove the summary `s' binding.
+
+	* gnus-uu.el (gnus-uu-grab-articles): Wouldn't mark some articles
+	as read. 
+	(gnus-uu-save-files): Don't ask twice whether to overwrite a file.
+
+	* gnus.el (gnus-summary-show-thread): Avoid `save-excursion'.
+	(gnus-summary-mark-same-subject): Did not expose hidden threads,
+	and would infloop.
+
+Sat Jul 22 04:34:25 1995  Lars INGEBRIGTSEN UiO  <lingebri@sunsci4.cern.ch>
+
+	* gnus-cache.el (gnus-cache-file-name): Also translate :'s. 
+
+	* gnus.el (gnus-dribble-file-name): Use the current startup file
+	name as the basis.
+
+Sat Jul 22 00:26:49 1995  Lars INGEBRIGTSEN UiO  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.98.1 is released.
 
 	* gnus.el (gnus-summary-mark-unread-as-read): Don't mark already
 	marked articles.

@@ -172,9 +172,9 @@ will be used.")
      gnus-button-message-id 3)
     ;; This is how URLs _should_ be embedded in text...
     ("<URL:\\([^\n\r>]*\\)>" 0 t gnus-button-url 1)
-    ;; Next regexp stolen from highlight-headers.el
-    ("\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-a-zA-Z0-9_=?#$@~`%&*+|\\/.,]+" 0 t
-     gnus-button-url 0))
+    ;; Next regexp stolen from highlight-headers.el.
+    ;; Modified by Vladimir Alexiev.
+    ("\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-a-zA-Z0-9_=?#$@~`%&*+|\\/.,]*[-a-zA-Z0-9_=#$@~`%&*+|\\/]" 0 t gnus-button-url 0))
   "Alist of regexps matching buttons in an article.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
@@ -689,11 +689,11 @@ gnus-netscape-start-url:
 		(setq from beg)
 		(setq to end)))
 	  (if gnus-newsgroup-selected-overlay
-	      (move-overlay gnus-newsgroup-selected-overlay 
-			    from to (current-buffer))
-	    (setq gnus-newsgroup-selected-overlay (make-overlay from to))
-	    (overlay-put gnus-newsgroup-selected-overlay 'face 
-			 gnus-summary-selected-face))))))
+	      (gnus-move-overlay gnus-newsgroup-selected-overlay 
+				 from to (current-buffer))
+	    (setq gnus-newsgroup-selected-overlay (gnus-make-overlay from to))
+	    (gnus-overlay-put gnus-newsgroup-selected-overlay 'face 
+			      gnus-summary-selected-face))))))
 
 ;; New implementation by Christian Limpach <Christian.Limpach@nice.ch>.
 (defun gnus-summary-highlight-line ()
@@ -1021,8 +1021,8 @@ It does this by highlighting everything after
 	   (let ((start (match-beginning 0))
 		 (end (match-end 0)))
 	     (gnus-article-add-button start end 'gnus-signature-toggle end)
-	     (overlay-put (make-overlay end (point-max))
-			  'face gnus-signature-face))))))
+	     (gnus-overlay-put (gnus-make-overlay end (point-max))
+			       'face gnus-signature-face))))))
 
 (defun gnus-article-hide-signature ()
   "Hide the signature in an article.
@@ -1091,7 +1091,8 @@ External references are things like message-ids and URLs, as specified by
 (defun gnus-article-add-button (from to fun &optional data)
   "Create a button between FROM and TO with callback FUN and data DATA."
   (and gnus-article-button-face
-       (overlay-put (make-overlay from to) 'face gnus-article-button-face))
+       (gnus-overlay-put (gnus-make-overlay from to)
+			 'face gnus-article-button-face))
   (add-text-properties from to
 		       (append (and gnus-article-mouse-face
 				    (list 'mouse-face gnus-article-mouse-face))

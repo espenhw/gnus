@@ -194,6 +194,17 @@ Example:
   "*If non-nil, the mail backends will delete incoming files after splitting.
 This is nil by default for reasons of security.")
 
+(defvar nnmail-message-id-cache-length 1000
+  "*The approximate number of Message-IDs nnmail will keep in its cache.
+If this variable is nil, no checking on duplicate messages will be
+perfomed.")
+
+(defvar nnmail-message-id-cache-file "~/.nnmail-cache"
+  "*The file name of the nnmail Message-ID cache.")
+
+(defvar nnmail-delete-duplicates nil
+  "*If non-nil, nnmail will delete any duplicate mails it sees.")
+
 
 
 (defconst nnmail-version "nnml 0.0"
@@ -423,15 +434,17 @@ nn*-request-list should have been called before calling this function."
 				 (buffer-substring (match-beginning 2)
 						   (match-end 2)))))
 		    group-assoc))))
-    ;; In addition, add all groups mentioned in `nnmail-split-methods'.
-    (let ((methods (and (not (symbolp nnmail-split-methods))
-			nnmail-split-methods)))
-      (while methods
-	(if (not (assoc (car (car methods)) group-assoc))
-	    (setq group-assoc
-		  (cons (list (car (car methods)) (cons 1 0)) 
-			group-assoc)))
-	(setq methods (cdr methods))))
+
+;;    ;; In addition, add all groups mentioned in `nnmail-split-methods'.
+;;    (let ((methods (and (not (symbolp nnmail-split-methods))
+;;			nnmail-split-methods)))
+;;      (while methods
+;;	(if (not (assoc (car (car methods)) group-assoc))
+;;	    (setq group-assoc
+;;		  (cons (list (car (car methods)) (cons 1 0)) 
+;;			group-assoc)))
+;;	(setq methods (cdr methods)))
+    
     group-assoc))
 
 (defun nnmail-save-active (group-assoc file-name)
@@ -475,8 +488,11 @@ FUNC will be called with the buffer narrowed to each mail."
 				       (not nnmail-resplit-incoming))
 				  (list (list group ""))
 				nnmail-split-methods))
-	start end content-length do-search)
+	start end content-length do-search message-id)
     (save-excursion
+      ;; Open the message-id cache.
+      (nnmail-cache-open)
+      ;; Insert the incoming file.
       (set-buffer (get-buffer-create " *nnmail incoming*"))
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
@@ -492,6 +508,15 @@ FUNC will be called with the buffer narrowed to each mail."
 	    ;; Skip all the headers in case there are more "From "s...
 	    (if (not (search-forward "\n\n" nil t))
 		(forward-line 1))
+	    ;; Find the Message-ID header.
+	    (save-excursion
+	      (if (re-search-backward "^Message-ID:[ \t]*\\(<[^>]*>\\)" nil t)
+		  (setq message-id (buffer-substring (match-beginning 1)
+						     (match-end 1)))
+		;; There is no Message-ID here, so we create one.
+		(forward-line -1)
+		(insert "Message-ID: " (setq message-id (nnmail-message-id))
+			"\n")))
 	    ;; Look for a Content-Length header.
 	    (if (not (save-excursion
 		       (and (re-search-backward 
@@ -506,13 +531,12 @@ FUNC will be called with the buffer narrowed to each mail."
 			    ;; a (possibly) faulty header.
 			    (progn (insert "X-") t))))
 		(setq do-search t)
-	      (if (save-excursion
-		    (condition-case nil
-			(forward-char content-length)
-		      (end-of-buffer nil))
-		    (looking-at delim))
+	      (if (or (= (+ (point) content-length) (point-max))
+		      (save-excursion
+			(goto-char (+ (point) content-length))
+			(looking-at delim)))
 		  (progn
-		    (forward-char content-length)
+		    (goto-char (+ (point) content-length))
 		    (setq do-search nil))
 		(setq do-search t)))
 	    ;; Go to the beginning of the next article - or to the end
@@ -525,9 +549,15 @@ FUNC will be called with the buffer narrowed to each mail."
 	      (save-restriction
 		(narrow-to-region start (point))
 		(goto-char (point-min))
-		(funcall func)
+		;; If this is a duplicate message, then we do not save it.
+		(if (nnmail-cache-id-exists-p message-id)
+		    (delete-region (point-min) (point-max))
+		  (nnmail-cache-insert message-id)
+		  (funcall func))
 		(setq end (point-max))))
 	    (goto-char end)))
+      ;; Close the message-id cache.
+      (nnmail-cache-close)
       (if dont-kill
 	  (current-buffer)
 	(kill-buffer (current-buffer))))))
@@ -716,12 +746,115 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 ;; If FORCE, re-read the active file even if the backend is 
 ;; already activated.
 (defun nnmail-activate (backend &optional force)
-  (if (or (not (symbol-value (intern (format "%s-group-alist" backend))))
-	  force)
-      (save-excursion
-	(funcall (intern (format "%s-request-list" backend)))
-	(set (intern (format "%s-group-alist" backend)) (nnmail-get-active))))
-  t)
+  (let (file timestamp file-time)
+    (if (or (not (symbol-value (intern (format "%s-group-alist" backend))))
+	    force
+	    (and (setq file (condition-case ()
+				(symbol-value (intern (format "%s-active-file" 
+							      backend)))
+			      (error nil)))
+		 (setq file-time (nth 5 (file-attributes file)))
+		 (or (not
+		      (setq timestamp
+			    (condition-case ()
+				(symbol-value (intern
+					       (format "%s-active-timestamp" 
+						       backend)))
+			      (error 'none))))
+		     (not (consp timestamp))
+		     (equal timestamp '(0 0))
+		     (> (nth 0 file-time) (nth 0 timestamp))
+		     (and (= (nth 0 file-time) (nth 0 timestamp))
+			  (> (nth 1 file-time) (nth 1 timestamp))))))
+	(save-excursion
+	  (or (eq timestamp 'none)
+	      (set (intern (format "%s-active-timestamp" backend)) file-time))
+	  (funcall (intern (format "%s-request-list" backend)))
+	  (set (intern (format "%s-group-alist" backend)) 
+	       (nnmail-get-active))))
+    t))
+
+(defun nnmail-message-id ()
+  (concat "<" (nnmail-unique-id) "@totally-fudged-out-message-id>"))
+
+(defvar nnmail-unique-id-char nil)
+
+(defun nnmail-number-base36 (num len)
+  (if (if (< len 0) (<= num 0) (= len 0))
+      ""
+    (concat (nnmail-number-base36 (/ num 36) (1- len))
+	    (char-to-string (aref "zyxwvutsrqponmlkjihgfedcba9876543210"
+				  (% num 36))))))
+
+(defun nnmail-unique-id ()
+  (setq nnmail-unique-id-char
+	(% (1+ (or nnmail-unique-id-char (logand (random t) (1- (lsh 1 20)))))
+	   ;; (current-time) returns 16-bit ints,
+	   ;; and 2^16*25 just fits into 4 digits i base 36.
+	   (* 25 25)))
+  (let ((tm (if (fboundp 'current-time)
+		(current-time) '(12191 46742 287898))))
+    (concat
+     (nnmail-number-base36 (+ (car   tm) 
+			      (lsh (% nnmail-unique-id-char 25) 16)) 4)
+     (nnmail-number-base36 (+ (nth 1 tm) 
+			      (lsh (/ nnmail-unique-id-char 25) 16)) 4))))
+
+;;;
+;;; nnmail duplicate handling
+;;;
+
+(defvar nnmail-cache-buffer nil)
+
+(defun nnmail-cache-open ()
+  (if (or (not nnmail-delete-duplicates)
+	  (and nnmail-cache-buffer
+	       (buffer-name nnmail-cache-buffer)))
+      () ; The buffer is open.
+    (save-excursion
+      (set-buffer 
+       (setq nnmail-cache-buffer 
+	     (get-buffer-create " *nnmail message-id cache*")))
+      (buffer-disable-undo (current-buffer))
+      (and (file-exists-p nnmail-message-id-cache-file)
+	   (insert-file-contents nnmail-message-id-cache-file))
+      (current-buffer))))
+
+(defun nnmail-cache-close ()
+  (if (or (not nnmail-cache-buffer)
+	  (not nnmail-delete-duplicates)
+	  (not (buffer-name nnmail-cache-buffer))
+	  (not (buffer-modified-p nnmail-cache-buffer)))
+      () ; The buffer is closed.
+    (save-excursion
+      (set-buffer nnmail-cache-buffer)
+      ;; Weed out the excess number of Message-IDs.
+      (goto-char (point-max))
+      (and (search-backward "\n" nil t nnmail-message-id-cache-length)
+	   (progn
+	     (beginning-of-line)
+	     (delete-region (point-min) (point))))
+      ;; Save the buffer.
+      (or (file-exists-p (file-name-directory nnmail-message-id-cache-file))
+	  (make-directory (file-name-directory nnmail-message-id-cache-file)
+			  t))
+      (write-region (point-min) (point-max)
+		    nnmail-message-id-cache-file nil 'silent)
+      (set-buffer-modified-p nil))))
+
+(defun nnmail-cache-insert (id)
+  (and nnmail-delete-duplicates
+       (save-excursion
+	 (set-buffer nnmail-cache-buffer)
+	 (goto-char (point-max))
+	 (insert id "\n"))))
+
+(defun nnmail-cache-id-exists-p (id)
+  (and nnmail-delete-duplicates
+       (save-excursion
+	 (set-buffer nnmail-cache-buffer)
+	 (goto-char (point-max))
+	 (search-backward id nil t))))
 
 
 (provide 'nnmail)

@@ -280,7 +280,8 @@ such things as moving mail.  All buffers always get killed upon server close.")
   (or (assoc group nnfolder-group-alist)
       (let (active)
 	(setq nnfolder-group-alist 
-	      (cons (list group (setq active (cons 0 0))) nnfolder-group-alist))
+	      (cons (list group (setq active (cons 0 0)))
+		    nnfolder-group-alist))
 	(nnfolder-possibly-change-group group)
 	(nnmail-save-active nnfolder-group-alist nnfolder-active-file)))
   t)
@@ -290,13 +291,6 @@ such things as moving mail.  All buffers always get killed upon server close.")
   (save-excursion
     (nnmail-find-file nnfolder-active-file)
     (setq nnfolder-group-alist (nnmail-get-active))))
-
-;;    (or nnfolder-group-alist
-;;	(nnmail-find-file nnfolder-active-file)
-;;	(progn
-;;	  (setq nnfolder-group-alist (nnmail-get-active))
-;;	  (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
-;;	  (nnmail-find-file nnfolder-active-file)))))
 
 (defun nnfolder-request-newgroups (date &optional server)
   (nnfolder-request-list server))
@@ -550,15 +544,13 @@ such things as moving mail.  All buffers always get killed upon server close.")
 (defun nnfolder-possibly-activate-groups (&optional group)
   (save-excursion
     ;; If we're looking for the activation of a specific group, find out
-    ;; it's real name and switch to it.
+    ;; its real name and switch to it.
     (if group (nnfolder-possibly-change-group group))
     ;; If the group alist isn't active, activate it now.
-    (or nnfolder-group-alist
-	(nnmail-activate 'nnfolder))))
+    (nnmail-activate 'nnfolder)))
 
 (defun nnfolder-active-number (group)
   (save-excursion 
-    (nnfolder-possibly-activate-groups group)
     ;; Find the next article number in GROUP.
     (let ((active (car (cdr (assoc group nnfolder-group-alist)))))
       (if active
@@ -568,7 +560,9 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	;; a hat, but I don't know...
 	(setq nnfolder-group-alist (cons (list group (setq active (cons 1 1)))
 					 nnfolder-group-alist)))
-      (cdr active))))
+      (cdr active))
+    (nnfolder-possibly-activate-groups group)))
+
 
 ;; This method has a problem if you've accidentally let the active list get
 ;; out of sync with the files.  This could happen, say, if you've
@@ -696,9 +690,11 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	      (and (buffer-modified-p) (save-buffer)))
 	    (setq bufs (cdr bufs)))))
       (while incomings
+	(setq incoming (car incomings))
 	(and 
 	 nnmail-delete-incoming
 	 (file-writable-p incoming)
+	 (file-exists-p incoming)
 	 (delete-file incoming))
 	(setq incomings (cdr incomings))))))
 

@@ -199,7 +199,6 @@ instead call function `nntp-status-message' to get status message.")
    '(nntp-status-string nil)
    '(nntp-server-xover try)
    '(nntp-server-list-active-group try)
-   '(nntp-timeout-servers nil)
    '(nntp-current-group "")))
 
 
@@ -372,7 +371,8 @@ instead call function `nntp-status-message' to get status message.")
 	;; We cannot send QUIT command unless the process is running.
 	(if (nntp-server-opened)
 	    (nntp-send-command nil "QUIT")))
-    (nntp-close-server-internal server)))
+    (nntp-close-server-internal server)
+    (setq nntp-timeout-servers (delete server nntp-timeout-servers))))
 
 (defalias 'nntp-request-quit (symbol-function 'nntp-close-server))
 
@@ -384,6 +384,10 @@ instead call function `nntp-status-message' to get status message.")
 	   (delete-process nntp-async-process)
 	   (and (get-buffer nntp-async-buffer)
 		(kill-buffer nntp-async-buffer))))
+    (while nntp-async-group-alist
+      (and (nth 3 (car nntp-async-group-alist))
+	   (delete-process (nth 3 (car nntp-async-group-alist))))
+      (setq nntp-async-group-alist (cdr nntp-async-group-alist)))
     (while nntp-server-alist
       (and 
        (setq proc (nth 1 (assq 'nntp-server-process (car nntp-server-alist))))
@@ -529,6 +533,7 @@ instead call function `nntp-status-message' to get status message.")
 	(nntp-decode-text))))
 
 (defun nntp-close-group (group &optional server)
+  (setq nntp-current-group nil)
   t)
 
 (defun nntp-request-list (&optional server)
@@ -1037,7 +1042,9 @@ If SERVICE, this this as the port number."
 		  ;; Added by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>
 		  (run-hooks 'nntp-server-opened-hook))))
 	  ((null server)
-	   (setq nntp-status-string "NNTP server is not specified.")))
+	   (setq nntp-status-string "NNTP server is not specified."))
+	  (t ; We couldn't open the server.
+	   (setq nntp-timeout-servers (cons server nntp-timeout-servers))))
     (and timer (cancel-timer timer))
     (message "")
     (or status
@@ -1201,20 +1208,22 @@ defining this function as macro."
     (process-send-string nntp-async-process cmd)))
 
 (defun nntp-async-request-group (group)
-  (if (string= group nntp-current-group)
+  (if (equal group nntp-current-group)
       ()
     (let ((asyncs (assoc group nntp-async-group-alist)))
       ;; A new group has been selected, so we push the current state
       ;; of async articles on an alist, and pull the old state off.
       (setq nntp-async-group-alist 
 	    (cons (list nntp-current-group
-			nntp-async-articles nntp-async-fetched)
+			nntp-async-articles nntp-async-fetched
+			nntp-async-process)
 		  (delq asyncs nntp-async-group-alist)))
       (setq nntp-current-group group)
-      (or asyncs
-	  (progn
-	    (setq nntp-async-articles (nth 1 asyncs))
-	    (setq nntp-async-fetched (nth 2 asyncs)))))))
+      (and asyncs
+	   (progn
+	     (setq nntp-async-articles (nth 1 asyncs))
+	     (setq nntp-async-fetched (nth 2 asyncs))
+	     (setq nntp-async-process (nth 3 asyncs)))))))
 
 (provide 'nntp)
 

@@ -234,10 +234,14 @@ Finds out what articles are to be part of the nnkiboze groups."
     (save-excursion
       (set-buffer (setq nov-buffer (find-file-noselect nov-file)))
       (buffer-disable-undo (current-buffer)))
+    ;; Go through the active hashtb and add new all groups that match the 
+    ;; kiboze regexp.
     (mapatoms
      (lambda (group)
-       (if (and (string-match regexp (setq gname (symbol-name group)))
-		(not (assoc gname nnkiboze-newsrc)))
+       (if (and (string-match regexp (setq gname (symbol-name group))) ; Match
+		(not (assoc gname nnkiboze-newsrc)) ; It isn't registered
+		(numberp (car (symbol-value group))) ; It is active
+		(not (string-match "^nnkiboze:" gname))) ; Exclude kibozes
 	   (setq nnkiboze-newsrc 
 		 (cons (cons gname (1- (car (symbol-value group))))
 		       nnkiboze-newsrc))))

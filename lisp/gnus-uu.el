@@ -255,6 +255,7 @@ The headers will be included in the sequence they are matched.")
 
 (defvar gnus-uu-file-name nil)
 (defconst gnus-uu-uudecode-process nil)
+(defvar gnus-uu-binhex-article-name nil)
 
 (defvar gnus-uu-generated-file-list nil)
 (defvar gnus-uu-work-dir nil)
@@ -366,7 +367,9 @@ The headers will be included in the sequence they are matched.")
 	 (file-name-as-directory
 	  (read-file-name "Unbinhex and save in dir: "
 			  gnus-uu-default-dir
-			  gnus-uu-default-dir t))))
+			  gnus-uu-default-dir))))
+  (setq gnus-uu-binhex-article-name 
+	(make-temp-name (concat gnus-uu-work-dir "binhex")))
   (gnus-uu-decode-with-method 'gnus-uu-binhex-article n dir))
 
 (defun gnus-uu-decode-uu-view (n)
@@ -418,6 +421,8 @@ The headers will be included in the sequence they are matched.")
    (list current-prefix-arg
 	 (read-file-name "Unbinhex, view and save in dir: "
 			 gnus-uu-default-dir gnus-uu-default-dir)))
+  (setq gnus-uu-binhex-article-name 
+	(make-temp-name (concat gnus-uu-work-dir "binhex")))
   (let ((gnus-view-pseudos (or gnus-view-pseudos 'automatic)))
     (gnus-uu-decode-binhex n file)))
 
@@ -621,7 +626,7 @@ The headers will be included in the sequence they are matched.")
 	     (and (or (not (file-exists-p to-file))
 		      (gnus-y-or-n-p (format "%s exists; overwrite? "
 					     to-file)))
-		  (copy-file file to-file 1 t))))
+		  (copy-file file to-file t t))))
       (setq files (cdr files)))
     (message "Saved %d file%s" len (if (> len 1) "s" ""))))
 
@@ -731,7 +736,6 @@ The headers will be included in the sequence they are matched.")
   "^:...............................................................$")
 (defconst gnus-uu-binhex-end-line
   ":$")
-(defvar gnus-uu-binhex-article-name nil)
 
 (defun gnus-uu-binhex-article (buffer in-state)
   (let (state start-char)
@@ -1073,9 +1077,9 @@ The headers will be included in the sequence they are matched.")
 
       (buffer-disable-undo article-buffer)
       ;; Mark article as read.
-      (run-hooks 'gnus-mark-article-hook)
       (and (memq article gnus-newsgroup-processable)
 	   (gnus-summary-remove-process-mark article))
+      (run-hooks 'gnus-mark-article-hook)
 
       (setq process-state (funcall process-function article-buffer state))
 

@@ -73,7 +73,7 @@ Has to be set before gnus-vm is loaded.")
     (vm-mode)
     tmp-folder))
   
-(defun gnus-summary-save-article-vm (arg)
+(defun gnus-summary-save-article-vm (&optional arg)
   "Append the current article to a vm folder.
 If N is a positive number, save the N next articles.
 If N is a negative number, save the N previous articles.
@@ -134,6 +134,7 @@ save those articles instead."
 			     (replace-match (concat "\\1" subject))))))))
 	  (vm-forward-message)
 	  (gnus-vm-init-reply-buffer gnus-buffer)
+	  (run-hooks 'gnus-mail-hook)
 	  (kill-buffer vm-folder))))))
 
 (defun gnus-vm-init-reply-buffer (buffer)
@@ -162,14 +163,16 @@ The command \\[vm-yank-message] yank the original message into current buffer."
 	       (gnus-yank-article nil))
 	  (kill-buffer vm-folder))))
     (if (featurep 'win-vm) nil
-      (pop-to-buffer gnus-buffer))))
+      (pop-to-buffer gnus-buffer))
+    (run-hooks 'gnus-mail-hook)))
 
 (defun gnus-mail-other-window-using-vm ()
   "Compose mail in the other window using VM."
   (interactive)
   (let ((gnus-buffer (current-buffer)))
     (vm-mail)
-    (gnus-vm-init-reply-buffer gnus-buffer)))
+    (gnus-vm-init-reply-buffer gnus-buffer))
+  (run-hooks 'gnus-mail-hook))
 
 (defun gnus-yank-article (article &optional prefix)
   ;; Based on vm-yank-message by Kyle Jones.

@@ -150,7 +150,7 @@ RFC977 and RFC1036 require From, Date, Newsgroups, Subject,
 Message-ID.  Organization, Lines and X-Newsreader are optional.  If
 you want Gnus not to insert some header, remove it from this list.")
 
-(defvar gnus-deletable-headers '(Message-ID)
+(defvar gnus-deletable-headers '(Message-ID Date)
   "*Headers to be deleted if they already exists.")
 
 (defvar gnus-check-before-posting 
@@ -263,8 +263,7 @@ headers.")
 (defun gnus-group-mail ()
   "Start composing a mail."
   (interactive)
-  (funcall gnus-mail-other-window-method)
-  (run-hooks 'gnus-mail-hook))
+  (funcall gnus-mail-other-window-method))
 
 (defun gnus-group-post-news ()
   "Post an article."
@@ -531,7 +530,7 @@ will attempt to use the foreign server to post the article."
   (let* ((case-fold-search nil)
 	 (server-running (gnus-server-opened gnus-select-method))
 	 (reply gnus-article-reply)
-	 error)
+	 error post-result)
     (save-excursion
       ;; Connect to default NNTP server if necessary.
       ;; Suggested by yuki@flab.fujitsu.junet.
@@ -683,20 +682,25 @@ will attempt to use the foreign server to post the article."
 
       ;; Send to server. 
       (gnus-message 5 "Posting to USENET...")
-      (if (funcall gnus-inews-article-function use-group-method)
-	  (progn
-	    (gnus-message 5 "Posting to USENET...done")
-	    (if (gnus-buffer-exists-p (car-safe reply))
-		(progn
-		  (save-excursion
-		    (set-buffer gnus-summary-buffer)
-		    (gnus-summary-mark-article-as-replied 
-		     (cdr reply))))))
-	;; We cannot signal an error.
-	(setq error t)
-	(ding) (gnus-message 1 "Article rejected: %s" 
-			     (gnus-status-message gnus-select-method)))
-      (set-buffer-modified-p nil))
+      (setq post-result (funcall gnus-inews-article-function use-group-method))
+      (cond ((eq post-result 'illegal)
+	     (setq error t)
+	     (ding))
+	    (post-result
+	     (gnus-message 5 "Posting to USENET...done")
+	     (if (gnus-buffer-exists-p (car-safe reply))
+		 (progn
+		   (save-excursion
+		     (set-buffer gnus-summary-buffer)
+		     (gnus-summary-mark-article-as-replied 
+		      (cdr reply)))))
+	     (set-buffer-modified-p nil))
+	    (t
+	     ;; We cannot signal an error.
+	     (setq error t)
+	     (ding)
+	     (gnus-message 1 "Article rejected: %s" 
+			   (gnus-status-message gnus-select-method)))))
     ;; If NNTP server is opened by gnus-inews-news, close it by myself.
     (or server-running
 	(gnus-close-server (gnus-find-method-for-group gnus-newsgroup-name)))
@@ -718,22 +722,26 @@ will attempt to use the foreign server to post the article."
 	(goto-char (point-min))
 	(narrow-to-region 
 	 (point) 
-	 (re-search-forward 
-	  (concat "^" (regexp-quote mail-header-separator) "$")))
+	 (progn
+	   (re-search-forward 
+	    (concat "^" (regexp-quote mail-header-separator) "$"))
+	   (match-beginning 0)))
 	(goto-char (point-min))
 	(and 
 	 ;; Check for commands in Subject.
-	 (or (gnus-check-before-posting 'subject-cmsg)
-	     (save-excursion
-	       (if (string-match "^cmsg " (mail-fetch-field "subject"))
-		   (gnus-y-or-n-p
-		    "The control code \"cmsg \" is in the subject. Really post? ")
-		 t)))
+	 (or 
+	  (gnus-check-before-posting 'subject-cmsg)
+	  (save-excursion
+	    (if (string-match "^cmsg " (mail-fetch-field "subject"))
+		(gnus-y-or-n-p
+		 "The control code \"cmsg \" is in the subject. Really post? ")
+	      t)))
 	 ;; Check for multiple identical headers.
 	 (or (gnus-check-before-posting 'multiple-headers)
 	     (save-excursion
 	       (let (found)
-		 (while (and (not found) (re-search-forward "^[^ \t:]+: " nil t))
+		 (while (and (not found) (re-search-forward "^[^ \t:]+: "
+							    nil t))
 		   (save-excursion
 		     (or (re-search-forward 
 			  (concat "^" (setq found
@@ -779,11 +787,12 @@ will attempt to use the foreign server to post the article."
 		   (gnus-yes-or-no-p
 		    (format 
 		     "The address looks strange: \"%s\". Really post? " from)))
-		  ((string-match "(.*).*(.*)")
+		  ((string-match "(.*).*(.*)" from)
 		   (gnus-yes-or-no-p
 		    (format
 		     "The From header looks strange: \"%s\". Really post? " 
-		     from)))))))
+		     from)))
+		  (t t)))))
 	 )))
     ;; Check for long lines.
     (or (gnus-check-before-posting 'long-lines)
@@ -817,12 +826,13 @@ will attempt to use the foreign server to post the article."
 	  t))
     ;; Use the (size . checksum) variable to see whether the
     ;; article is empty or has only quoted text.
-    (or (gnus-check-before-posting 'new-text)
-	(if (and (= (buffer-size) (car gnus-article-check-size))
-		 (= (gnus-article-checksum) (cdr gnus-article-check-size)))
-	    (gnus-yes-or-no-p
-	     "It looks like there's no new text in your article. Really post? ")
-	  t))
+    (or
+     (gnus-check-before-posting 'new-text)
+     (if (and (= (buffer-size) (car gnus-article-check-size))
+	      (= (gnus-article-checksum) (cdr gnus-article-check-size)))
+	 (gnus-yes-or-no-p
+	  "It looks like there's no new text in your article. Really post? ")
+       t))
     ;; Check the length of the signature.
     (or (gnus-check-before-posting 'signature)
 	(progn
@@ -845,10 +855,11 @@ will attempt to use the foreign server to post the article."
 
 ;; Returns non-nil if this type is not to be checked.
 (defun gnus-check-before-posting (type)
-  (or (not gnus-check-before-posting)
-      (if (listp gnus-check-before-posting)
-	  (memq type gnus-check-before-posting)
-	t)))
+  (not 
+   (or (not gnus-check-before-posting)
+       (if (listp gnus-check-before-posting)
+	   (memq type gnus-check-before-posting)
+	 t))))
 
 (defun gnus-cancel-news ()
   "Cancel an article you posted."
@@ -937,7 +948,7 @@ will attempt to use the foreign server to post the article."
     (if (and gnus-article-check-size
 	     (not (gnus-inews-check-post)))
 	;; Aber nein!
-	()
+	'illegal
       ;; Looks ok, so we do the nasty.
       (save-excursion
 	(set-buffer tmpbuf)
@@ -1003,15 +1014,6 @@ Headers in `gnus-required-headers' will be generated."
 	     (get-text-property (1+ (match-beginning 0)) 'gnus-deletable)
 	     (gnus-delete-line))
 	(setq headers (cdr headers))))
-    ;; Insert new Sender if the From is strange. 
-    (let ((from (mail-fetch-field "from")))
-      (if (and from (not (string= (downcase from) (downcase From))))
-	  (progn
-	    (goto-char (point-min))    
-	    (and (re-search-forward "^Sender:" nil t)
-		 (delete-region (progn (beginning-of-line) (point))
-				(progn (forward-line 1) (point))))
-	    (insert "Sender: " From "\n"))))
     ;; If there are References, and no "Re: ", then the thread has
     ;; changed name. See Son-of-1036.
     (if (and (mail-fetch-field "references")
@@ -1072,7 +1074,20 @@ Headers in `gnus-required-headers' will be generated."
 		   (add-text-properties 
 		    (point) (match-end 0)
 		    '(gnus-deletable t face italic) (current-buffer))))))
-      (setq headers (cdr headers)))))
+      (setq headers (cdr headers)))
+    ;; Insert new Sender if the From is strange. 
+    (let ((from (mail-fetch-field "from")))
+      (if (and from (not (string=
+			  (downcase (car (gnus-extract-address-components 
+					  from)))
+			  (downcase (gnus-inews-real-user-address)))))
+	  (progn
+	    (goto-char (point-min))    
+	    (and (re-search-forward "^Sender:" nil t)
+		 (delete-region (progn (beginning-of-line) (point))
+				(progn (forward-line 1) (point))))
+	    (insert "Sender: " (gnus-inews-real-user-address) "\n"))))))
+
 
 (defun gnus-inews-insert-signature ()
   "Insert a signature file.
@@ -1099,8 +1114,9 @@ nil."
 		()
 	      ;; Delete any previous signatures.
 	      (if (search-backward "\n-- \n" nil t)
-		  (delete-region (1+ (point)) (point-max)))
-	      (insert "\n-- \n")
+		  (delete-region (point) (point-max)))
+	      (or (eolp) (insert "\n"))
+	      (insert "-- \n")
 	      (if (file-exists-p signature)
 		  (insert-file-contents signature)
 		(insert signature))
@@ -1200,6 +1216,12 @@ a program specified by the rest of the value."
 		       (concat " (" (user-login-name) ")"))
 		      (t
 		       (concat " (" full-name ")")))))))
+
+(defun gnus-inews-real-user-address ()
+  "Return the \"real\" user address.
+This function tries to ignore all user modifications, and 
+give as trustworthy answer as possible."
+  (concat (user-login-name) "@" (gnus-inews-full-address)))
 
 (defun gnus-inews-login-name ()
   "Return login name."

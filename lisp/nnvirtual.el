@@ -319,8 +319,7 @@ If the stream is opened, return T, otherwise return NIL."
 		  (gnus-get-unread-articles-in-group
 		   info (gnus-gethash igroup gnus-active-hashtb))
 		  (setq active (gnus-gethash igroup gnus-active-hashtb)))
-	      (message "Couldn't open component group %s" igroup)
-	      (ding)))
+	      (message "Couldn't open component group %s" igroup)))
 	(if (null active)
 	    ()
 	  ;; And then we do the mapping for this component group. If

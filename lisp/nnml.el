@@ -191,23 +191,17 @@ all. This may very well take some time.")
     (if dont-check 
 	t
       (nnml-get-new-mail group)
-      (let ((timestamp (nth 5 (file-attributes nnml-active-file))))
-	(if (or (not nnml-active-timestamp)
-		(> (nth 0 timestamp) (nth 0 nnml-active-timestamp))
-		(> (nth 1 timestamp) (nth 1 nnml-active-timestamp)))
-	    (progn
-	      (setq nnml-active-timestamp timestamp)
-	      (nnmail-activate 'nnml 'force)))
-	(let ((active (nth 1 (assoc group nnml-group-alist))))
-	  (save-excursion
-	    (set-buffer nntp-server-buffer)
-	    (erase-buffer)
-	    (if (not active)
-		()
-	      (insert (format "211 %d %d %d %s\n" 
-			      (max (1+ (- (cdr active) (car active))) 0)
-			      (car active) (cdr active) group))
-	      t)))))))
+      (nnmail-activate 'nnml)
+      (let ((active (nth 1 (assoc group nnml-group-alist))))
+	(save-excursion
+	  (set-buffer nntp-server-buffer)
+	  (erase-buffer)
+	  (if (not active)
+	      ()
+	    (insert (format "211 %d %d %d %s\n" 
+			    (max (1+ (- (cdr active) (car active))) 0)
+			    (car active) (cdr active) group))
+	    t))))))
 
 (defun nnml-close-group (group &optional server)
   t)
@@ -476,6 +470,8 @@ all. This may very well take some time.")
 (defun nnml-active-number (group)
   "Compute the next article number in GROUP."
   (let ((active (car (cdr (assoc group nnml-group-alist)))))
+    ;; The group wasn't known to nnml, so we just create an active
+    ;; entry for it.   
     (or active
 	(progn
 	  (setq active (cons 1 0))
@@ -495,8 +491,7 @@ all. This may very well take some time.")
     (if (or (not nnml-get-new-mail) (not nnmail-spool-file))
 	()
       ;; We first activate all the groups.
-      (if (or (not group) (not nnml-group-alist))
-	  (nnmail-activate 'nnml))
+      (if (not group) (nnmail-activate 'nnml))
       ;; The we go through all the existing spool files and split the
       ;; mail from each.
       (while spools
@@ -522,7 +517,9 @@ all. This may very well take some time.")
 	    (and gnus-verbose-backends
 		 (message "nnml: Reading incoming mail...done"))))
       (while incomings
+	(setq incoming (car incomings))
 	(and nnmail-delete-incoming
+	     (file-exists-p incoming)
 	     (file-writable-p incoming)
 	     (delete-file incoming))
 	(setq incomings (cdr incomings))))))

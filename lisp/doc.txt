@@ -355,7 +355,7 @@ Save the file, and go to a shell window.
 
 Type:
 
-$ emacs -batch -l nnkiboze -f nnkiboze-generate-groups
+$ emacs -batch -l ~/.emacs -l nnkiboze -f nnkiboze-generate-groups
 
 Wait a few hours, and all articles from me, or articles about Gnus,
 will appear, as if by magic, in the nnkiboze group. You really want

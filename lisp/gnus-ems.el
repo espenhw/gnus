@@ -30,6 +30,10 @@
 (defvar gnus-summary-mode-hook ())
 (defvar gnus-article-mode-hook ())
 
+(defalias 'gnus-make-overlay 'make-overlay)
+(defalias 'gnus-overlay-put 'overlay-put)
+(defalias 'gnus-move-overlay 'move-overlay)
+
 ;; We do not byte-compile this file, because error messages are such a
 ;; bore.  
 
@@ -104,11 +108,11 @@ pounce directly on the real variables themselves."))
 		      (setq props (nthcdr 2 props)))
 		  (remove-text-properties start end ())))))
 
-      (or (fboundp 'make-overlay) (fset 'make-overlay 'make-extent))
-      (or (fboundp 'overlay-put) (fset 'overlay-put 'set-extent-property))
-      (or (fboundp 'move-overlay) 
-	  (defun move-overlay (extent start end &optional buffer)
-	    (set-extent-endpoints extent start end)))
+      (defalias 'gnus-make-overlay 'make-extent)
+      (defalias 'gnus-overlay-put 'set-extent-property)
+      (defun gnus-move-overlay (extent start end &optional buffer)
+	(set-extent-endpoints extent start end))
+
       (or (boundp 'standard-display-table) (setq standard-display-table nil))
       (or (boundp 'read-event) (fset 'read-event 'next-command-event))
 
@@ -438,7 +442,8 @@ call it with the value of the `gnus-data' text property."
 	(let ((beg (point)))
 	  (gnus-summary-prepare-threads (list thread) 0)
 	  (save-excursion
-	    (while (>= (point) beg)
+	    (while (and (>= (point) beg)
+			(not (eobp)))
 	      (remove-text-properties
 	       (1+ (gnus-point-at-bol)) (1+ (gnus-point-at-eol))
 	       '(gnus-number nil gnus-mark nil gnus-level nil))
@@ -592,6 +597,12 @@ call it with the value of the `gnus-data' text property."
 	     valstr))))
 
     (fset 'gnus-summary-make-display-table (lambda () nil))
+    
+    (if (boundp 'gnus-check-before-posting)
+	(setq gnus-check-before-posting
+	      (delq 'long-lines
+		    (delq 'control-chars gnus-check-before-posting)))
+      )
     )
    ))
 

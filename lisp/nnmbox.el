@@ -57,6 +57,7 @@
 (defvar nnmbox-status-string "")
 
 (defvar nnmbox-group-alist nil)
+(defvar nnmbox-active-timestamp nil)
 
 
 
@@ -489,7 +490,9 @@
 	     (save-buffer)))
       (if incomings (run-hooks 'nnmail-read-incoming-hook))
       (while incomings
+	(setq incoming (car incomings))
 	(and nnmail-delete-incoming
+	     (file-exists-p incoming) 
 	     (file-writable-p incoming) 
 	     (delete-file incoming))
 	(setq incomings (cdr incomings))))))

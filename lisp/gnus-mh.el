@@ -37,7 +37,7 @@
 (require 'gnus)
 (require 'gnus-msg)
 
-(defun gnus-summary-save-article-folder (arg)
+(defun gnus-summary-save-article-folder (&optional arg)
   "Append the current article to an mh folder.
 If N is a positive number, save the N next articles.
 If N is a negative number, save the N previous articles.
@@ -141,14 +141,16 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
     (setq mh-sent-from-folder buffer)
     (setq mh-sent-from-msg 1)
     (setq mh-show-buffer buffer)
-    (setq mh-previous-window-config config)
-    )
+    (setq mh-previous-window-config config))
 
   ;; Then, yank original article if requested.
   (if yank
       (let ((last (point)))
 	(mh-yank-cur-msg)
-	(goto-char last)))) 
+	(goto-char last)))
+
+  (run-hooks 'gnus-mail-hook))
+
 
 ;; gnus-mail-forward-using-mhe is contributed by Jun-ichiro Itoh
 ;; <itojun@ingram.mt.cs.keio.ac.jp>
@@ -181,6 +183,7 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
       (setq mh-sent-from-folder buffer)
       (setq mh-sent-from-msg 1)
       (setq mh-previous-window-config config)
+      (run-hooks 'gnus-mail-hook)
       )))
 
 (defun gnus-mail-other-window-using-mhe ()
@@ -193,7 +196,8 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
     (mh-find-path)
     (mh-send-other-window to cc subject)
     (setq mh-sent-from-folder (current-buffer))
-    (setq mh-sent-from-msg 1)))
+    (setq mh-sent-from-msg 1)
+    (run-hooks 'gnus-mail-hook)))
 
 (defun gnus-Folder-save-name (newsgroup headers &optional last-folder)
   "Generate folder name from NEWSGROUP, HEADERS, and optional LAST-FOLDER.

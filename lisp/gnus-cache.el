@@ -107,7 +107,11 @@
 (defun gnus-cache-file-name (group article)
   (concat (file-name-as-directory gnus-cache-directory)
 	  (if (gnus-use-long-file-name 'not-cache)
-	      group (gnus-replace-chars-in-string group ?. ?/))
+	      group 
+	    (let ((group (concat group "")))
+	      (if (string-match ":" group)
+		  (aset group (match-beginning 0) ?/))
+	      (gnus-replace-chars-in-string group ?. ?/)))
 	  "/" (if (stringp article) article (int-to-string article))))
 
 (defun gnus-cache-possibly-enter-article 
