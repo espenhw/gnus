@@ -30,7 +30,11 @@ installation, and it will realize what articles you have read and
 marked.  The data in `~/News/marks' has priority over the same data
 in `~/.newsrc.eld'.
 
+** Picons can be displayed right from the textual address, see
+`gnus-picon-style'
+
 ** You can import and export your RSS subscriptions from OPML files.
+*Note RSS::.
 
 ** The option `mm-fill-flowed' can be used to disable treatment of
 format=flowed messages.  Also, flowed text is disabled when sending
