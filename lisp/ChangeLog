@@ -1,3 +1,8 @@
+2004-01-27  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-spamassassin-register-ham-routine)
+	(spam-spamassassin-register-spam-routine): fixed function names
+
 2004-01-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.el (gnus-tmp-grouplens): Remove.
