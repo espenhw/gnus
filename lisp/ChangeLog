@@ -1,3 +1,8 @@
+2001-01-11 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml2015.el (mml2015-gpg-encrypt): Remove CR.
+	(mml2015-gpg-sign): Ditto.
+
 2001-01-10 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el: Sync with EMACS_PRETEST_21_0_95.

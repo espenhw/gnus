@@ -415,6 +415,9 @@
 	(unless (> (point-max) (point-min))
 	  (pop-to-buffer mml2015-result-buffer)
 	  (error "Sign error.")))
+      (goto-char (point-min))
+      (while (re-search-forward "\r+$" nil t)
+	(replace-match "" t t))
       (set-buffer text)
       (goto-char (point-min))
       (insert (format "Content-Type: multipart/signed; boundary=\"%s\";\n"
@@ -452,6 +455,9 @@
 	  (unless (> (point-max) (point-min))
 	    (pop-to-buffer mml2015-result-buffer)
 	    (error "Encrypt error.")))
+	(goto-char (point-min))
+	(while (re-search-forward "\r+$" nil t)
+	  (replace-match "" t t))
 	(set-buffer text)
 	(delete-region (point-min) (point-max))
 	(insert (format "Content-Type: multipart/encrypted; boundary=\"%s\";\n"
