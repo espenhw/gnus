@@ -489,6 +489,7 @@ Misc Group Stuff
 * Group Information::           Information and help on groups and Gnus.
 * Group Timestamp::             Making Gnus keep track of when you last read a group.
 * File Commands::               Reading and writing the Gnus files.
+* Sieve Commands::              Managing Sieve scripts.
 
 Summary Buffer
 
@@ -2847,6 +2848,27 @@ that matches the regular expression "regex" to be stripped. Instead of
 last signature or any of the elements of the alist
 @code{gnus-article-banner-alist}.
 
+@item sieve
+@cindex sieve
+This parameter contains a Sieve test that should match incoming mail
+that should be placed in this group.  From this group parameter, a
+Sieve @samp{IF} control structure is generated, having the test as the
+condition and @samp{fileinto "group.name";} as the body.
+
+For example, if the INBOX.list.sieve group has the @code{(sieve
+address "sender" "sieve-admin@@extundo.com")} group parameter, when
+translating the group parameter into a Sieve script (@pxref{Sieve
+Commands}) the following Sieve code is generated:
+
+@example
+  if address \"sender\" \"sieve-admin@@extundo.com\" @{
+          fileinto \"INBOX.list.sieve\";
+  @}
+@end example
+
+The Sieve language is described in RFC 3028.  @xref{Top, , Top, sieve,
+Emacs Sieve}.
+
 @item (@var{variable} @var{form})
 You can use the group parameters to set variables local to the group you
 are entering.  If you want to turn threading off in @samp{news.answers},
@@ -3807,6 +3829,7 @@ happens.  You just have to be careful if you do stuff like that.
 * Group Information::           Information and help on groups and Gnus.
 * Group Timestamp::             Making Gnus keep track of when you last read a group.
 * File Commands::               Reading and writing the Gnus files.
+* Sieve Commands::              Managing Sieve scripts.
 @end menu
 
 @table @kbd
@@ -4062,6 +4085,50 @@ file(s) whether Gnus thinks it is necessary or not.
 @c @kindex Z (Group)
 @c @findex gnus-group-clear-dribble
 @c Clear the dribble buffer (@code{gnus-group-clear-dribble}).
+
+@end table
+
+
+@node Sieve Commands
+@subsection Sieve Commands
+@cindex group sieve commands
+
+Sieve is a server-side mail filtering language.  In Gnus you can use
+the @code{sieve} group parameter (@pxref{Group Parameters}) to specify
+sieve rules that should apply to each group.  Gnus provides two
+commands to translate all these group parameters into a proper Sieve
+script that can be transfered to the server somehow.
+
+@vindex gnus-sieve-file
+@vindex gnus-sieve-region-start
+@vindex gnus-sieve-region-end
+The generated Sieve script is placed in @code{gnus-sieve-file} (by
+default @file{~/.sieve}).  The code Gnus generates is placed between
+two delimiters, @code{gnus-sieve-region-start} and
+@code{gnus-sieve-region-end}, so you may write additional Sieve code
+outside these delimiters that will not be removed the next time you
+regenerate the Sieve script.
+
+@xref{Top, ,Top, sieve, Emacs Sieve}.
+
+@table @kbd
+
+@item D g
+@kindex D g (Group)
+@findex gnus-sieve-generate
+@vindex gnus-sieve-file
+@cindex generating sieve script
+Regenerate a Sieve script from the @code{sieve} group parameters and
+put you into the @code{gnus-sieve-file} without saving it.
+
+@item D u
+@kindex D u (Group)
+@findex gnus-sieve-update
+@vindex gnus-sieve-file
+@cindex updating sieve script
+Regenerates the Gnus managed part of @code{gnus-sieve-file} using the
+@code{sieve} group parameters, save the file and upload it to the
+server using the @code{sieveshell} program.
 
 @end table
 
@@ -18023,6 +18090,8 @@ four days, Gnus will decay the scores four times, for instance.
 @include message.texi
 @chapter Emacs MIME
 @include emacs-mime.texi
+@chapter Sieve
+@include sieve.texi
 @end iflatex
 @end iftex
 

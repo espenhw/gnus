@@ -1,3 +1,11 @@
+2001-11-01  Simon Josefsson  <jas@extundo.com>
+
+	* Makefile.in: Add sieve.
+
+	* gnus.texi (Misc Group Stuff): 
+	(Group Parameters): Add Sieve Commands.
+	(top-level): Include Sieve manual after Emacs MIME.
+
 2001-10-31  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Group Parameters): Add integer `display'.
