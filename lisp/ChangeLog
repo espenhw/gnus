@@ -3,6 +3,7 @@
 	* gnus-agent.el (gnus-agent-retrieve-headers): Use correct buffer.
 	(gnus-agent-braid-nov): Switch back to nntp-server-buffer. Remove
 	duplications.
+	(gnus-agent-batch): Bind gnus-agent-confirmation-function.
 
 2002-01-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

@@ -1795,8 +1795,9 @@ The following commands are available:
   (let ((init-file-user "")
 	(gnus-always-read-dribble-file t))
     (gnus))
-  (gnus-group-send-queue)
-  (gnus-agent-fetch-session))
+  (let ((gnus-agent-confirmation-function 'gnus-agent-batch-confirmation))
+    (gnus-group-send-queue)
+    (gnus-agent-fetch-session)))
 
 (defun gnus-agent-retrieve-headers (articles group &optional fetch-old)
   (save-excursion
