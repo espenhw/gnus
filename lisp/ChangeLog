@@ -1,3 +1,8 @@
+2002-01-29  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-range.el (gnus-list-range-intersection): Correct the logic.
+	(gnus-inverse-list-range-intersection): Ditto.
+
 2002-01-29  Karl Kleinpaste  <karl@charcoal.com>
 
 	* mm-uu.el (mm-uu-type-alist): Add optional leading `0'.

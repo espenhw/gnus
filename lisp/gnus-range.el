@@ -1,6 +1,6 @@
 ;;; gnus-range.el --- range and sequence functions for Gnus
 
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -338,7 +338,8 @@ LIST is a sorted list."
       (when (and ranges
 		 (if (numberp (car ranges))
 		      (= (car ranges) number)
-		    (< number (cdar ranges))))
+		   ;; (caar ranges) <= number <= (cdar ranges)
+		   (>= number (caar ranges))))  
 	(push number result)))
     (nreverse result)))
 
@@ -355,7 +356,8 @@ LIST is a sorted list."
       (when (or (not ranges)
 		(if (numberp (car ranges))
 		    (not (= (car ranges) number))
-		  (not (<= number (cdar ranges)))))
+		  ;; not ((caar ranges) <= number <= (cdar ranges))
+		  (< number (caar ranges))))
 	(push number result)))
     (nreverse result)))
 
