@@ -329,9 +329,9 @@ external if displayed external."
 	  (insert-buffer-substring cur)
 	  (message "Viewing with %s" method)
 	  (let ((mm (current-buffer))
-		(non-viewer (assoc "non-viewer"
-				   (mailcap-mime-info
-				    (mm-handle-media-type handle) t))))
+		(non-viewer (assq 'non-viewer
+				  (mailcap-mime-info
+				   (mm-handle-media-type handle) t))))
 	    (unwind-protect
 		(if method
 		    (funcall method)
