@@ -681,7 +681,7 @@ buffer.
     (if (or (not (gnus-get-info group))
 	    (gnus-ephemeral-group-p group))
 	(unless (gnus-group-read-ephemeral-group
-		 group gnus-browse-current-method nil
+		 (gnus-group-real-name group) gnus-browse-current-method nil
 		 (cons (current-buffer) 'browse))
 	  (error "Couldn't enter %s" group))
       (unless (gnus-group-read-group nil no-article group)
