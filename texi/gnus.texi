@@ -10889,7 +10889,8 @@ Variables for customizing outgoing mail:
 @item gnus-uu-digest-headers
 @vindex gnus-uu-digest-headers
 List of regexps to match headers included in digested messages.  The
-headers will be included in the sequence they are matched.
+headers will be included in the sequence they are matched.  If
+@code{nil} include all headers.
 
 @item gnus-add-to-list
 @vindex gnus-add-to-list
