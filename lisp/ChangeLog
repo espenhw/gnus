@@ -1,3 +1,12 @@
+2002-01-29  Karl Kleinpaste  <karl@charcoal.com>
+
+	* mm-uu.el (mm-uu-type-alist): Add optional leading `0'.
+
+	* gnus-uu.el (gnus-uu-shar-name-marker): Add optional leading `0'
+	and permit `:' and `\' in order to handle full Windows pathnames.
+	(gnus-uu-begin-string): Add optional leading `0'.  Leading `0' is
+	technically not correct per standard, but seems to have common use.
+
 2002-01-29  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-uu.el (gnus-uu-expand-numbers): Ignore errors when
