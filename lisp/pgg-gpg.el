@@ -129,7 +129,7 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
   (let* ((pgg-gpg-user-id (or pgg-gpg-user-id pgg-default-user-id))
 	 (args
 	  `("--batch" "--armor" "--always-trust"
-	    (if sign "--sign --encrypt" "--encrypt")
+	    ,(if sign "--sign --encrypt" "--encrypt")
 	    ,@(if recipients
 		  (apply #'nconc
 			 (mapcar (lambda (rcpt)
