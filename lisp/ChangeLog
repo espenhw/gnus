@@ -1,3 +1,8 @@
+2002-02-22  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-display-external): Use
+	mm-file-name-rewrite-functions.  From <andre@slamdunknetworks.com>
+
 2002-02-22  Paul Jarc  <prj@po.cwru.edu>
 
 	* nnmaildir.el (nnmaildir-request-list): Report the highest

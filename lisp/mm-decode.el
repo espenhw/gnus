@@ -679,8 +679,10 @@ external if displayed external."
 	  (make-directory dir)
 	  (set-file-modes dir 448)
 	  (if filename
-	      (setq file (expand-file-name (file-name-nondirectory filename)
-					   dir))
+	      (setq file (expand-file-name 
+			  (gnus-map-function mm-file-name-rewrite-functions
+                                             (file-name-nondirectory filename))
+			  dir))
 	    (setq file (make-temp-name (expand-file-name "mm." dir))))
 	  (let ((coding-system-for-write mm-binary-coding-system))
 	    (write-region (point-min) (point-max) file nil 'nomesg))
