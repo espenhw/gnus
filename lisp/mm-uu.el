@@ -141,7 +141,7 @@ This can be either \"inline\" or \"attachment\".")
      nil
      mm-uu-emacs-sources-test)))
 
-(defcustom mm-uu-configure-list nil
+(defcustom mm-uu-configure-list '((shar . disabled))
   "A list of mm-uu configuration.
 To disable dissecting shar codes, for instance, add
 `(shar . disabled)' to this list."

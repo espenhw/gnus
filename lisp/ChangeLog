@@ -1,3 +1,28 @@
+2002-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-pipe-output): Clean up.
+	(gnus-summary-pipe-output): Take a symbolic prefix to save all
+	headers. 
+
+	* mm-uu.el (mm-uu-configure-list): Default to (shar . disabled). 
+
+2002-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-completion-alist): Added "Mail-Followup-To"
+	and "Mail-Copies-To".
+
+2002-07-21  Jesper harder  <harder@ifa.au.dk>
+
+	* gnus-group.el: Add key bindings for
+	gnus-group-sort-groups-by-real-name and
+	gnus-group-sort-selected-groups-by-real-name.
+
+2002-07-21  Jesper harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Sorting Groups): Add key bindings for
+	gnus-group-sort-groups-by-real-name and
+	gnus-group-sort-selected-groups-by-real-name.
+
 2002-12-30  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-use-dig): new variable for blackhole checking

@@ -638,7 +638,8 @@ simple manner.")
     "l" gnus-group-sort-groups-by-level
     "v" gnus-group-sort-groups-by-score
     "r" gnus-group-sort-groups-by-rank
-    "m" gnus-group-sort-groups-by-method)
+    "m" gnus-group-sort-groups-by-method
+    "n" gnus-group-sort-groups-by-real-name)
 
   (gnus-define-keys (gnus-group-sort-selected-map "P" gnus-group-group-map)
     "s" gnus-group-sort-selected-groups
@@ -647,7 +648,8 @@ simple manner.")
     "l" gnus-group-sort-selected-groups-by-level
     "v" gnus-group-sort-selected-groups-by-score
     "r" gnus-group-sort-selected-groups-by-rank
-    "m" gnus-group-sort-selected-groups-by-method)
+    "m" gnus-group-sort-selected-groups-by-method
+    "n" gnus-group-sort-selected-groups-by-real-name)
 
   (gnus-define-keys (gnus-group-list-map "A" gnus-group-mode-map)
     "k" gnus-group-list-killed
