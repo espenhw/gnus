@@ -4096,7 +4096,8 @@ Unscored articles will be counted as having a score of zero."
   "With %B spec, used for the root of a thread.
 If nil, use subject instead.")
 (defvar gnus-sum-thread-tree-single-indent ""
-  "With %B spec, used for a thread with just one message.")
+  "With %B spec, used for a thread with just one message.
+If nil, use subject instead.")
 (defvar gnus-sum-thread-tree-vertical "| "
   "With %B spec, used for drawing a vertical line.")
 (defvar gnus-sum-thread-tree-indent "  "
@@ -4338,7 +4339,7 @@ or a straight list of headers."
 	      ((zerop gnus-tmp-level)
 	       (if (cdar thread) 
 		   (or gnus-sum-thread-tree-root subject)
-		 gnus-sum-thread-tree-single-indent))
+		 (or gnus-sum-thread-tree-single-indent subject)))
 	      (t
 	       (concat (apply 'concat
 			      (mapcar (lambda (item) 

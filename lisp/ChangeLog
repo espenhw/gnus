@@ -9,6 +9,7 @@
 	(gnus-sum-thread-tree-vertical, gnus-sum-thread-tree-indent) 
 	(gnus-sum-thread-tree-leaf-with-other) 
 	(gnus-sum-thread-tree-single-leaf): Documentation.
+	(gnus-sum-thread-tree-single-indent): Allow nil.
 
 2001-07-28 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
