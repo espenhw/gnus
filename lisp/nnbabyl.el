@@ -144,6 +144,8 @@
 
 (defun nnbabyl-server-opened (&optional server)
   (and (equal server nnbabyl-current-server)
+       nnbabyl-mbox-buffer
+       (buffer-name nnbabyl-mbox-buffer)
        nntp-server-buffer
        (buffer-name nntp-server-buffer)))
 
@@ -445,8 +447,8 @@
 	(setq buffer-file-name nnbabyl-mbox-file)
 	(insert "BABYL OPTIONS:\n\n\^_")
 	(write-region (point-min) (point-max) nnbabyl-mbox-file t 'nomesg)))
+
   (if (and nnbabyl-mbox-buffer
-	   (get-buffer nnbabyl-mbox-buffer)
 	   (buffer-name nnbabyl-mbox-buffer)
 	   (save-excursion
 	     (set-buffer nnbabyl-mbox-buffer)
@@ -526,12 +528,9 @@
 	     (set-buffer nnbabyl-mbox-buffer)
 	     (save-buffer)))
       (while incomings
-	;; The following has been commented away, just to make sure
-	;; that nobody ever loses any mail. If you feel safe that
-	;; nnfolder will never do anything strange, just remove those
-	;; two semicolons, and avoid having lots of "Incoming*"
-	;; files. 
-	;; (and (file-writable-p incoming) (delete-file incoming))
+	(and nnmail-delete-incoming
+	     (file-writable-p incoming) 
+	     (delete-file incoming))
 	(setq incomings (cdr incomings))))))
 
 (provide 'nnbabyl)

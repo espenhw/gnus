@@ -119,6 +119,7 @@ of the last succesful match.")
 
 (defun gnus-summary-increase-score (score)
   (interactive "P")
+  (gnus-set-global-variables)
   (let* ((nscore (gnus-score-default score))
 	 (prefix (if (< nscore 0) ?L ?I))
 	 (increase (> nscore 0))
@@ -134,19 +135,34 @@ of the last succesful match.")
 	    (?d "date")
 	    (?f "followup")))
 	 (char-to-type
-	  '((?e e) (?f f) (?s s) (?r r) (?b before)
-	    (?a at) (?n now) (?< <) (?> >) (?= =)))
+	  '((?s s "substring") (?e e "exact string") (?f f "fuzzy string")
+	    (?r r "regexp string")
+	    (?b before "before date") (?a at "at date") (?n now "this date")
+	    (?< < "less than number") (?> > "greater than number") 
+	    (?= = "equal to number")))
 	 (char-to-perm
-	  (list (list ?t (current-time-string)) '(?p perm) '(?i now)))
+	  (list (list ?t (current-time-string) "temporary") 
+		'(?p perm "permanent") '(?i now "immediate")))
 	 (mimic gnus-score-mimic-keymap)
 	 hchar entry temporary tchar pchar end type)
     ;; First we read the header to score.
-    (if mimic
-	(message "%c-" prefix)
-      (message "%s header (%s): " (if increase "Increase" "Lower")
-	       (mapconcat (lambda (s) (char-to-string (car s)))
-			  char-to-header "")))
-    (setq hchar (read-char))
+    (while (not hchar)
+      (if mimic
+	  (message "%c-" prefix)
+	(message "%s header (%s?): " (if increase "Increase" "Lower")
+		 (mapconcat (lambda (s) (char-to-string (car s)))
+			    char-to-header "")))
+      (setq hchar (read-char))
+      (if (not (= hchar ??))
+	  ()
+	(setq hchar nil)
+	(gnus-score-insert-help "Match on header" char-to-header 1)))
+
+    (and (get-buffer "*Score Help*")
+	 (progn
+	   (delete-windows-on "*Score Help*")
+	   (kill-buffer "*Score Help*")))
+
     (or (setq entry (assq (downcase hchar) char-to-header))
 	(progn
 	  (ding)
@@ -158,15 +174,27 @@ of the last succesful match.")
 	  (if mimic (message "%c %c" prefix hchar) (message ""))
 	  (setq type nil
 		temporary (current-time-string)))
+
       ;; We continue reading - the type.
-      (if mimic
-	  (message "%c %c-" prefix hchar)
-	(message "%s header '%s' with match type (%s): "
-		 (if increase "Increase" "Lower")
-		 (nth 1 entry)
-		 (mapconcat (lambda (s) (char-to-string (car s)))
-			    char-to-type "")))
-      (setq tchar (read-char))
+      (while (not tchar)
+	(if mimic
+	    (message "%c %c-" prefix hchar)
+	  (message "%s header '%s' with match type (%s?): "
+		   (if increase "Increase" "Lower")
+		   (nth 1 entry)
+		   (mapconcat (lambda (s) (char-to-string (car s)))
+			      char-to-type "")))
+	(setq tchar (read-char))
+	(if (not (= tchar ??))
+	    ()
+	  (setq tchar nil)
+	  (gnus-score-insert-help "Match type" char-to-type 2)))
+
+      (and (get-buffer "*Score Help*")
+	   (progn
+	     (delete-windows-on "*Score Help*")
+	     (kill-buffer "*Score Help*")))
+      
       (or (setq type (nth 1 (assq (downcase tchar) char-to-type)))
 	  (progn
 	    (ding)
@@ -178,13 +206,25 @@ of the last succesful match.")
 	    (if mimic (message "%c %c %c" prefix hchar tchar)
 	      (message ""))
 	    (setq temporary (current-time-string)))
+
 	;; We continue reading.
-	(if mimic
-	    (message "%c %c %c-" prefix hchar tchar)
-	  (message "%s permanence (%s): " (if increase "Increase" "Lower")
-		   (mapconcat (lambda (s) (char-to-string (car s)))
-			      char-to-perm "")))
-	(setq pchar (read-char))
+	(while (not pchar)
+	  (if mimic
+	      (message "%c %c %c-" prefix hchar tchar)
+	    (message "%s permanence (%s?): " (if increase "Increase" "Lower")
+		     (mapconcat (lambda (s) (char-to-string (car s)))
+				char-to-perm "")))
+	  (setq pchar (read-char))
+	  (if (not (= pchar ??))
+	      ()
+	    (setq pchar nil)
+	    (gnus-score-insert-help "Match permanence" char-to-perm 2)))
+
+	(and (get-buffer "*Score Help*")
+	     (progn
+	       (delete-windows-on "*Score Help*")
+	       (kill-buffer "*Score Help*")))
+
 	(if mimic (message "%c %c %c" prefix hchar tchar pchar)
 	  (message ""))
 	(if (setq temporary (nth 1 (assq pchar char-to-perm)))
@@ -207,6 +247,16 @@ of the last succesful match.")
          temporary)
        (not (nth 3 entry)))		; Prompt
       )))
+
+(defun gnus-score-insert-help (string alist idx)
+  (save-excursion
+    (pop-to-buffer "*Score Help*")
+    (buffer-disable-undo (current-buffer))
+    (erase-buffer)
+    (insert string ":\n\n")
+    (while alist
+      (insert (format " %c: %s\n" (car (car alist)) (nth idx (car alist))))
+      (setq alist (cdr alist)))))
 
 (defun gnus-summary-header (header)
   ;; Return HEADER for current articles, or error.
@@ -1343,7 +1393,7 @@ SCORE is the score to add."
 	    ()
 	  (setq headers (gnus-get-header-by-number 
 			 (gnus-summary-article-number)))
-	  (while elem
+	  (while (and elem headers)
 	    (setq match (funcall (car (car elem)) headers))
 	    (gnus-summary-score-entry 
 	     (nth 1 (car elem)) match
@@ -1361,6 +1411,7 @@ SCORE is the score to add."
     (let* ((malist (gnus-copy-sequence gnus-adaptive-score-alist))
 	   (alist malist)
 	   (date (current-time-string)) 
+	   (cur-score gnus-current-score-file)
 	   elem headers match)
       ;; First we transform the adaptive rule alist into something
       ;; that's faster to process.
@@ -1400,7 +1451,9 @@ SCORE is the score to add."
 		 'e 's) 
 	     (nth 2 (car elem)) date nil t)
 	    (setq elem (cdr elem))))
-	(delete-region (point) (progn (forward-line 1) (point)))))))
+	(delete-region (point) (progn (forward-line 1) (point))))
+      ;; Switch back to the old score file.
+      (gnus-score-load-file cur-score))))
 
 ;;;
 ;;; Score mode.

@@ -1411,7 +1411,8 @@ mailer."
 		(progn
 		  (save-excursion
 		    (mail-yank-original nil))
-		  (run-hooks 'news-reply-header-hook))
+		  (or mail-yank-hooks mail-citation-hook
+		      (run-hooks 'news-reply-header-hook)))
 	      (while yank
 		(save-window-excursion
 		  (set-buffer gnus-summary-buffer)
@@ -1421,7 +1422,8 @@ mailer."
 		  (gnus-copy-article-buffer)
 		  (mail-yank-original nil)
 		  (setq end (point)))
-		(run-hooks 'news-reply-header-hook)
+		(or mail-yank-hooks mail-citation-hook
+		    (run-hooks 'news-reply-header-hook))
 		(goto-char end)
 		(setq yank (cdr yank))))
 	    (goto-char last))
@@ -1432,7 +1434,8 @@ mailer."
   (interactive)
   (save-excursion
    (mail-yank-original nil))
-  (run-hooks 'news-reply-header-hook))
+  (or mail-yank-hooks mail-citation-hook
+      (run-hooks 'news-reply-header-hook)))
 
 (defun gnus-mail-send-and-exit ()
   (interactive)

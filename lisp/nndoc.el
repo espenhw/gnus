@@ -36,13 +36,14 @@
   (list (list 'mbox 
 	      (concat "^" rmail-unix-mail-delimiter)
 	      (concat "^" rmail-unix-mail-delimiter)
-	      nil "^$" nil)
-	(list 'babyl "\^_\^L *\n" "\^_" nil "^$" nil)
+	      nil "^$" nil nil)
+	(list 'babyl "\^_\^L *\n" "\^_" nil "^$" nil nil)
 	(list 'digest
 	      "^------------------------------[\n \t]+"
 	      "^------------------------------[\n \t]+"
 	      nil "^$"   
-	      "^------------------------------*[\n \t]*\n[^ ]+: "))
+	      "^------------------------------*[\n \t]*\n[^ ]+: "
+	      "End of"))
   "Regular expressions for articles of the various types.")
 
 
@@ -52,6 +53,7 @@
 (defvar nndoc-head-begin nil)
 (defvar nndoc-head-end nil)
 (defvar nndoc-first-article nil)
+(defvar nndoc-end-of-file nil)
 
 (defvar nndoc-current-server nil)
 (defvar nndoc-server-alist nil)
@@ -65,6 +67,7 @@
    '(nndoc-first-article nil)
    '(nndoc-current-buffer nil)
    '(nndoc-group-alist nil)
+   '(nndoc-end-of-file nil)
    '(nndoc-address nil)))
 
 (defconst nndoc-version "nndoc 0.1"
@@ -152,7 +155,8 @@
       (setq nndoc-article-end (nth 1 defs))
       (setq nndoc-head-begin (nth 2 defs))
       (setq nndoc-head-end (nth 3 defs))
-      (setq nndoc-first-article (nth 4 defs)))
+      (setq nndoc-first-article (nth 4 defs))
+      (setq nndoc-end-of-file (nth 5 defs)))
     t))
 
 (defun nndoc-close-server (&optional server)
@@ -271,6 +275,8 @@
     (goto-char (point-min))
     (let ((num 0))
       (while (and (re-search-forward nndoc-article-begin nil t)
+		  (or (not nndoc-end-of-file)
+		      (not (looking-at nndoc-end-of-file)))
 		  (or (not nndoc-head-begin)
 		      (re-search-forward nndoc-head-begin nil t))
 		  (re-search-forward nndoc-head-end nil t))

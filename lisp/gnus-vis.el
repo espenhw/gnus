@@ -362,6 +362,7 @@ highlight-headers-follow-url-netscape:
       ["Respool article" gnus-summary-respool-article t]
       ["Move article" gnus-summary-move-article t]
       ["Copy article" gnus-summary-copy-article t]
+      ["Import file" gnus-summary-import-article t]
       ["Edit article" gnus-summary-edit-article t]
       ["Delete article" gnus-summary-delete-article t])
      ))

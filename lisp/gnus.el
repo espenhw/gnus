@@ -1272,7 +1272,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls & Boys)"
   "The mail address of the Gnus maintainer.")
 
-(defconst gnus-version "(ding) Gnus v0.78"
+(defconst gnus-version "(ding) Gnus v0.79"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1725,11 +1725,19 @@ Thank you for your help in stamping out bugs.
 
 (defun gnus-extract-address-components (from)
   (let (name address)
+    ;; First find the address - the thing with the @ in it.  This may
+    ;; not be accurate in mail addresses, but does the trick most of
+    ;; the time in news messages.
     (if (string-match "\\b[^@ \t<>]+[!@][^@ \t<>]+\\b" from)
 	(setq address (substring from (match-beginning 0) (match-end 0))))
+    ;; Then we check whether the "name <address>" format is used.
     (and address
 	 (string-match (concat "<" (regexp-quote address) ">") from)
-	 (setq name (substring from 0 (1- (match-beginning 0)))))
+	 (and (setq name (substring from 0 (1- (match-beginning 0))))
+	      ;; Strip any quotes from the name.
+	      (string-match "\".*\"" name)
+	      (setq name (substring name 1 (1- (match-end 0))))))
+    ;; If not, then "address (name)" is used.
     (or name
 	(and (string-match "(.+)" from)
 	     (setq name (substring from (1+ (match-beginning 0)) 
@@ -1913,6 +1921,7 @@ Thank you for your help in stamping out bugs.
 	(set-buffer gnus-work-buffer)
 	(erase-buffer))
     (set-buffer (get-buffer-create gnus-work-buffer))
+    (kill-all-local-variables)
     (buffer-disable-undo (current-buffer))
     (gnus-add-current-to-buffer-list)))
 
@@ -3911,19 +3920,22 @@ ADDRESS."
 (defun gnus-group-make-help-group ()
   "Create the (ding) Gnus documentation group."
   (interactive)
-  (and (gnus-gethash (gnus-group-prefixed-name "gnus-help" '(nndoc ""))
-		     gnus-newsrc-hashtb)
-       (error "Documentation group already exists"))
   (let ((path load-path))
+    (and (gnus-gethash (setq name (gnus-group-prefixed-name
+				   "gnus-help" '(nndoc "gnus-help")))
+		       gnus-newsrc-hashtb)
+	 (error "Documentation group already exists"))
     (while (and path
 		(not (file-exists-p (concat (file-name-as-directory (car path))
 					    "doc.txt"))))
       (setq path (cdr path)))
     (or path (error "Couldn't find doc group"))
     (gnus-group-make-group 
-     "gnus-help" "nndoc" 
-     (concat (file-name-as-directory (car path)) "doc.txt"))
-    (gnus-group-position-cursor)))
+     (gnus-group-real-name name)
+     (list 'nndoc name
+	   (list 'nndoc-address (concat (file-name-as-directory (car path)) "doc.txt"))
+	   (list 'nndoc-article-type 'mbox))))
+  (gnus-group-position-cursor))
 
 (defun gnus-group-make-doc-group (file type)
   "Create a group that uses a single file as the source."
@@ -4351,11 +4363,10 @@ specify which levels you are interested in re-scanning."
   (run-hooks 'gnus-get-new-news-hook)
   (let ((level arg))
     (if gnus-group-use-permanent-levels
-	(progn
-	  (if level
-	      (setq gnus-group-default-list-level level)
-	    (setq level (or gnus-group-default-list-level 
-			    gnus-level-subscribed)))))
+	(if level
+	    (setq gnus-group-default-list-level level)
+	  (setq level (or gnus-group-default-list-level 
+			  gnus-level-subscribed))))
     (if (and gnus-read-active-file (not level))
 	(progn
 	  (gnus-read-active-file)
@@ -4363,6 +4374,7 @@ specify which levels you are interested in re-scanning."
       (let ((gnus-read-active-file nil))
 	(gnus-get-unread-articles (or level (1+ gnus-level-subscribed)))))
     (gnus-group-list-groups (or (and gnus-group-use-permanent-levels level)
+				gnus-group-default-list-level
 				gnus-level-subscribed)
 			    gnus-have-all-newsgroups)))
 
@@ -4603,6 +4615,7 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
       (progn
 	(run-hooks 'gnus-exit-gnus-hook)
 	(gnus-save-newsrc-file)
+	(gnus-offer-save-summaries)
 	(gnus-close-backends)
 	(gnus-clear-system))))
 
@@ -4631,7 +4644,6 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
       (progn
 	(run-hooks 'gnus-exit-gnus-hook)
 	(gnus-dribble-save)
-	(gnus-offer-save-summaries)
 	(gnus-close-backends)
 	(gnus-clear-system))))
 
@@ -4645,10 +4657,10 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
 	 (progn
 	   (set-buffer (car buffers))
 	   ;; We check that this is, indeed, a summary buffer.
-	   (eq 'major-mode 'gnus-summary-mode)) 
+	   (eq major-mode 'gnus-summary-mode)) 
 	 ;; We ask the user whether she wants to save the info.
-	 (not (gnus-y-or-n-p
-	       (format "Discard summary buffer %s? " (buffer-name))))
+	 (gnus-y-or-n-p
+	       (format "Update summary buffer %s? " (buffer-name)))
 	 ;; We do it by simply exiting.
 	 (gnus-summary-exit))
 	(setq buffers (cdr buffers))))))
@@ -5485,10 +5497,10 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 	    (gnus-message 6 "No unread news")
 	    (gnus-kill-buffer kill-buffer)
 	    nil)
-	(save-excursion
-	  (if kill-buffer
-	      (let ((gnus-summary-buffer kill-buffer))
-		(gnus-configure-windows 'group))))
+	;;(save-excursion
+	;;  (if kill-buffer
+	;;      (let ((gnus-summary-buffer kill-buffer))
+	;;	(gnus-configure-windows 'group))))
 	;; Hide conversation thread subtrees.  We cannot do this in
 	;; gnus-summary-prepare-hook since kill processing may not
 	;; work with hidden articles.
@@ -5500,7 +5512,7 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 	(if (and (not no-article)
 		 gnus-auto-select-first
 		 (gnus-summary-first-unread-article))
-	    (gnus-configure-windows 'article)
+	    ()
 	  (gnus-configure-windows 'summary))
 	(gnus-set-mode-line 'summary)
 	(gnus-summary-position-cursor)
@@ -5514,7 +5526,14 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 		  (funcall gnus-asynchronous-article-function
 			   gnus-newsgroup-threads)
 		gnus-newsgroup-threads)))
-	(gnus-kill-buffer kill-buffer))
+	(gnus-kill-buffer kill-buffer)
+	(if (not (get-buffer-window gnus-group-buffer))
+	    ()
+	  (let ((obuf (current-buffer)))
+	    (set-buffer gnus-group-buffer)
+	    (and (gnus-group-goto-group group)
+		 (recenter))
+	    (set-buffer obuf))))
       t))))
 
 (defun gnus-summary-prepare ()
@@ -7568,6 +7587,7 @@ current article."
   (gnus-set-global-variables)
   (let ((article (gnus-summary-article-number))
 	(endp nil))
+    (gnus-configure-windows 'article)
     (if (or (null gnus-current-article)
 	    (null gnus-article-current)
 	    (/= article (cdr gnus-article-current))
@@ -7584,10 +7604,8 @@ current article."
  		 (gnus-message 3 "End of message"))
  		((null lines)
  		 (gnus-summary-next-unread-article)))))
-    (gnus-configure-windows 'article)
     (gnus-summary-recenter)
     (gnus-summary-position-cursor)))
-
 
 (defun gnus-summary-prev-page (lines)
   "Show previous page of selected article.
@@ -7595,6 +7613,7 @@ Argument LINES specifies lines to be scrolled down."
   (interactive "P")
   (gnus-set-global-variables)
   (let ((article (gnus-summary-article-number)))
+    (gnus-configure-windows 'article)
     (if (or (null gnus-current-article)
 	    (null gnus-article-current)
 	    (/= article (cdr gnus-article-current))
@@ -7604,7 +7623,6 @@ Argument LINES specifies lines to be scrolled down."
       (gnus-summary-recenter)
       (gnus-eval-in-buffer-window gnus-article-buffer
 	(gnus-article-prev-page lines))))
-  (gnus-configure-windows 'article)
   (gnus-summary-position-cursor))
 
 (defun gnus-summary-scroll-up (lines)
@@ -7739,7 +7757,7 @@ The difference between N and the number of articles fetched is returned."
     
 (defun gnus-summary-refer-article (message-id)
   "Refer article specified by MESSAGE-ID.
-NOTE: This command only works with newsgroup that use NNTP."
+NOTE: This command only works with newsgroups that use real or simulated NNTP."
   (interactive "sMessage-ID: ")
   (if (or (not (stringp message-id))
 	  (zerop (length message-id)))
@@ -8232,7 +8250,7 @@ functions. (Ie. mail newsgroups at present.)"
   "Import a random file into a mail newsgroup."
   (interactive "fImport file: ")
   (let ((group gnus-newsgroup-name)
-	attrib)
+	atts)
     (or (gnus-check-backend-function 'request-accept-article group)
 	(error "%s does not support article importing" group))
     (or (file-readable-p file)
@@ -8244,9 +8262,15 @@ functions. (Ie. mail newsgroups at present.)"
       (erase-buffer)
       (insert-file-contents file)
       (goto-char (point-min))
-      (setq attrib (file-attributes file))
-      (insert "From: " (read-string "From: ")))))
-
+      (if (nnheader-article-p)
+	  ()
+	(setq atts (file-attributes file))
+	(insert "From: " (read-string "From: ") "\n"
+		"Subject: " (read-string "Subject: ") "\n"
+		"Date: " (current-time-string (nth 5 atts)) "\n"
+		"Chars: " (int-to-string (nth 7 atts)) "\n\n"))
+      (gnus-request-accept-article group t)
+      (kill-buffer (current-buffer)))))
 
 (defun gnus-summary-expire-articles ()
   "Expire all articles that are marked as expirable in the current group."
@@ -8706,7 +8730,8 @@ marked."
       (delete-char 1)
       (insert mark)
       (and plist (add-text-properties (1- (point)) (point) plist))
-      (add-text-properties (1- (point)) (point) (list 'gnus-mark mark))
+      (and (eq type 'unread)
+	   (add-text-properties (1- (point)) (point) (list 'gnus-mark mark)))
       (gnus-summary-update-line (eq mark gnus-unread-mark)))))
   
 (defun gnus-mark-article-as-read (article &optional mark)
@@ -9046,6 +9071,7 @@ If ALL is non-nil, also mark ticked and dormant articles as read."
   (interactive)
   (beginning-of-line)
   (gnus-summary-catchup all t (point))
+  (gnus-set-mode-line 'summary)
   (gnus-summary-position-cursor))
 
 (defun gnus-summary-catchup-all (&optional quietly)
@@ -10094,7 +10120,7 @@ Provided for backwards compatability."
       (end-of-line 1)
       (let ((paragraph-start "^\\W"))
 	(while (not (eobp))
-	  (and (>= (current-column) (window-width))
+	  (and (>= (current-column) (min fill-column (window-width)))
 	       (/= (preceding-char) ?:)
 	       (fill-paragraph nil))
 	  (end-of-line 2))))))
@@ -10959,6 +10985,7 @@ is returned insted of the status string."
 
 (defun gnus-request-group (group &optional dont-check)
   (let ((method (gnus-find-method-for-group group)))
+;    (and t (message "%s GROUP %s" (car method) group))
     (funcall (gnus-get-function method 'request-group) 
 	     (gnus-group-real-name group) (nth 1 method) dont-check)))
 

@@ -356,38 +356,26 @@ Returns the number of articles marked as read."
 				  gnus-newsgroup-kill-headers)))
 		  (setq headers (cdr headers))))
 	      (setq files nil))
-	  (setq files (cdr files)))))
-    (if gnus-newsgroup-kill-headers
-	(save-excursion
-	  (while kill-files
-	    (if (file-exists-p (car kill-files))
-		(progn
-		  (message "Processing kill file %s..." (car kill-files))
-		  (find-file (car kill-files))
-		  (gnus-kill-file-mode)
-		  (gnus-add-current-to-buffer-list)
-		  (goto-char (point-min))
-		  (while (progn
-			   (setq beg (point))
-			   (setq form (condition-case nil 
-					  (read (current-buffer)) 
-					(error nil))))
-		    (or (listp form)
-			(error 
-			 "Illegal kill entry (possibly rn kill file?): %s"
-			 form))
-		    (if (or (eq (car form) 'gnus-kill)
-			    (eq (car form) 'gnus-raise)
-			    (eq (car form) 'gnus-lower))
-			(progn
-			  (delete-region beg (point))
-			  (insert (or (eval form) "")))
-		      (condition-case ()
-			  (eval form)
-			(error nil))))
-		  (and (buffer-modified-p) (save-buffer))
-		  (message "Processing kill file %s...done" (car kill-files))))
-	    (setq kill-files (cdr kill-files)))))
+ 	  (setq files (cdr files)))))
+    (if (not gnus-newsgroup-kill-headers)
+	()
+      (save-excursion
+	(while kill-files
+	  (if (not (file-exists-p (car kill-files)))
+	      ()
+	    (message "Processing kill file %s..." (car kill-files))
+	    (find-file (car kill-files))
+	    (gnus-add-current-to-buffer-list)
+	    (goto-char (point-min))
+
+	    (if (consp (condition-case nil (read (current-buffer)) 
+			 (error nil)))
+		(gnus-kill-parse-gnus-kill-file)
+	      (gnus-kill-parse-rn-kill-file))
+	    
+	    (message "Processing kill file %s...done" (car kill-files)))
+	  (setq kill-files (cdr kill-files)))))
+
     (if beg
 	(let ((nunreads (- unreads (length gnus-newsgroup-unreads))))
 	  (or (eq nunreads 0)
@@ -395,9 +383,77 @@ Returns the number of articles marked as read."
 	  nunreads)
       0)))
 
+;; Parse a Gnus killfile.
+(defun gnus-score-insert-help (string alist idx)
+  (save-excursion
+    (pop-to-buffer "*Score Help*")
+    (buffer-disable-undo (current-buffer))
+    (erase-buffer)
+    (insert string ":\n\n")
+    (while alist
+      (insert (format " %c: %s\n" (car (car alist)) (nth idx (car alist))))
+      (setq alist (cdr alist)))))
+
+(defun gnus-kill-parse-gnus-kill-file ()
+  (goto-char (point-min))
+  (gnus-kill-file-mode)
+  (let (beg form)
+    (while (progn 
+	     (setq beg (point))
+	     (setq form (condition-case () (read (current-buffer))
+			  (error nil))))
+      (or (listp form)
+	  (error "Illegal kill entry (possibly rn kill file?): %s" form))
+      (if (or (eq (car form) 'gnus-kill)
+	      (eq (car form) 'gnus-raise)
+	      (eq (car form) 'gnus-lower))
+	  (progn
+	    (delete-region beg (point))
+	    (insert (or (eval form) "")))
+	(condition-case () (eval form) (error nil))))
+    (and (buffer-modified-p) (save-buffer))))
+
+;; Parse an rn killfile.
+(defun gnus-kill-parse-rn-kill-file ()
+  (goto-char (point-min))
+  (gnus-kill-file-mode)
+  (let ((mod-to-header
+	 '((?a . "")
+	   (?h . "")
+	   (?f . "from")
+	   (?: . "subject")))
+	(com-to-com
+	 '((?m . " ")
+	   (?j . "X")))
+	pattern modifier commands)
+  (while (not (eobp))
+    (if (not (looking-at "[ \t]*/\\([^/]*\\)/\\([ahfcH]\\)?:\\([a-z=:]*\\)"))
+	()
+      (setq pattern (buffer-substring (match-beginning 1) (match-end 1)))
+      (setq modifier (if (match-beginning 2) (char-after (match-beginning 2))
+		       ?s))
+      (setq commands (buffer-substring (match-beginning 3) (match-end 3)))
+
+      ;; The "f:+" command marks everything *but* the matches as read,
+      ;; so we simply first match everything as read, and then unmark
+      ;; PATTERN later. 
+      (and (string-match "\\+" commands)
+	   (progn
+	     (gnus-kill "from" ".")
+	     (setq commands "m")))
+
+      (gnus-kill 
+       (or (cdr (assq modifier mod-to-header)) "subject")
+       pattern 
+       (if (string-match "m" commands) 
+	   '(gnus-summary-mark-as-unread nil " ")
+	 '(gnus-summary-mark-as-read nil "X")) 
+       nil t))
+    (forward-line 1))))
+
 ;; Kill changes and new format by suggested by JWZ and Sudish Joseph
 ;; <joseph@cis.ohio-state.edu>.  
-(defun gnus-kill (field regexp &optional exe-command all)
+(defun gnus-kill (field regexp &optional exe-command all silent)
   "If FIELD of an article matches REGEXP, execute COMMAND.
 Optional 1st argument COMMAND is default to
 	(gnus-summary-mark-as-read nil \"X\").
@@ -447,7 +503,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 		(setq prev kill-list)
 		(setq kill-list (cdr kill-list))))
 	  (gnus-execute field kill-list command nil (not all))))))
-  (if (and (eq major-mode 'gnus-kill-file-mode) regexp)
+  (if (and (eq major-mode 'gnus-kill-file-mode) regexp (not silent))
       (gnus-pp-gnus-kill
        (nconc (list 'gnus-kill field 
 		    (if (consp regexp) (list 'quote regexp) regexp))
