@@ -124,7 +124,10 @@ If it is non-nil, it must be a toolbar.  The five valid values are
     'region-exists-p)
   (when (>= emacs-major-version 20)
     (defalias 'message-make-caesar-translation-table
-      'message-xmas-make-caesar-translation-table)))
+      'message-xmas-make-caesar-translation-table))
+  (defalias 'message-make-overlay 'make-extent)
+  (defalias 'message-delete-overlay 'delete-extent)
+  (defalias 'message-overlay-put 'set-extent-property))
 
 (message-xmas-redefine)
 

@@ -4677,12 +4677,13 @@ I.e., calling it on a Subject: header is useless."
 		     (if (eq message-use-idna 'ask)
 			 (unwind-protect
 			     (progn
-			       (setq ovl (make-overlay startpos endpos))
-			       (overlay-put ovl 'face 'highlight)
+			       (setq ovl (message-make-overlay startpos
+							       endpos))
+			       (message-overlay-put ovl 'face 'highlight)
 			       (y-or-n-p
 				(format "Replace with `%s'? " ace)))
 			   (message "")
-			   (delete-overlay ovl))
+			   (message-delete-overlay ovl))
 		       message-use-idna)))
 	  (replace-match (concat "@" ace)))))))
 
@@ -6137,6 +6138,9 @@ which specify the range to operate on."
 	    (delete-char -2))))))
 
 (defalias 'message-exchange-point-and-mark 'exchange-point-and-mark)
+(defalias 'message-make-overlay 'make-overlay)
+(defalias 'message-delete-overlay 'delete-overlay)
+(defalias 'message-overlay-put 'overlay-put)
 
 ;; Support for toolbar
 (eval-when-compile
