@@ -1,3 +1,7 @@
+2004-06-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-ignored-supersedes-headers): Add Approved. 
+
 2004-06-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-encode-message-header): Remove useless
