@@ -1,3 +1,8 @@
+2001-10-17 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-spec.el (gnus-parse-simple-format): Support extended spec
+	%&foo;.
+
 2001-10-17 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnml.el (nnml-request-expire-articles): Make sure it is back to
