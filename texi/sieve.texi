@@ -83,6 +83,8 @@ Sieve is a language for server-side filtering of mail.  The language
 is documented in RFC 3028.  This manual does not attempt to document
 the language, so keep RFC 3028 around.
 
+A good online Sieve resources is @uref{http://www.cyrusoft.com/sieve/}.
+
 @menu
 * Installation::          Getting ready to use the package.
 * Sieve Mode::            Editing Sieve scripts.
