@@ -7,7 +7,7 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-15
 
-;; $Id: gpg.el,v 1.12 2001/07/13 19:31:08 zsh Exp $
+;; $Id: gpg.el,v 1.13 2001/07/15 20:36:39 zsh Exp $
 
 ;; This file is NOT (yet?) part of GNU Emacs.
 
@@ -302,7 +302,7 @@ indicate that it should read the passphrase from standard input."
 ;;; Customization: Variables: GnuPG Commands:
 
 (defcustom gpg-command-verify
-  '(gpg . ("--batch" "--verbose" "--verify" signature-file message-file))
+  '(gpg . ("--status-fd" "1" "--batch" "--verbose" "--verify" signature-file message-file))
   "Command to verify a detached signature.
 The invoked program has to read the signed message and the signature
 from the given files.  It should write human-readable information to
@@ -323,7 +323,7 @@ charsets or line endings; the input data shall be treated as binary."
   :group 'gpg-commands)
 
 (defcustom gpg-command-verify-cleartext
-  '(gpg . ("--batch" "--verbose" "--verify" message-file))
+  '(gpg . ("--status-fd" "1" "--batch" "--verbose" "--verify" message-file))
   "Command to verify a message.
 The invoked program has to read the signed message from the given
 file.  It should write human-readable information to standard output
@@ -1174,6 +1174,14 @@ documentation for details)."
     (?f . trust-full)
     (?u . trust-ultimate))
   "Alist mapping GnuPG trust value short forms to long symbols.")
+
+(defconst gpg-unabbrev-trust-alist
+  '(("TRUST_UNDEFINED" . trust-undefined)
+    ("TRUST_NEVER"     . trust-none)
+    ("TRUST_MARGINAL"  . trust-marginal)
+    ("TRUST_FULLY"     . trust-full)
+    ("TRUST_ULTIMATE"  . trust-ultimate))
+  "Alist mapping capitalized GnuPG trust values to long symbols.")
 
 (defmacro gpg-key-list-keys-in-buffer-store ()
   '(when primary-user-id

@@ -1,3 +1,9 @@
+2001-07-30 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From Andreas Fuchs <asf@void.at>
+
+	* gpg.el (gpg-command-verify): --status-fd 1
+	(gpg-unabbrev-trust-alist): New.
+
 2001-01-18  Colin Marquardt <colin.marquardt@usa.alcatel.com>
 
 	* gpg.el (gpg-make-temp-file): Error info.
