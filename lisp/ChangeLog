@@ -1,3 +1,15 @@
+2001-08-23 18:43:05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-spec.el: Add the Gnus version.
+	(gnus-update-format-specifications): If the Gnus version changes,
+	nix out the format spec cache.
+
+	* gnus.el (gnus-continuum-version): Made into a command and
+	optionalize the VERSION.
+
+	* gnus-spec.el (gnus-parse-complex-format): Remove %C specs from
+	the start of the lines.
+
 2001-08-22 00:06:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-visual-p): Define function before use of

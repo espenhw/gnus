@@ -125,6 +125,7 @@
 
 (defvar gnus-format-specs
   `((version . ,emacs-version)
+    (gnus-version . ,(gnus-continuum-version)
     (group "%M\%S\%p\%P\%5y: %(%g%)%l\n" ,gnus-group-line-format-spec)
     (summary-dummy "*  %(:                          :%) %S\n"
 		   ,gnus-summary-dummy-line-format-spec)
@@ -174,6 +175,8 @@
   ;; Make the indentation array.
   ;; See whether all the stored info needs to be flushed.
   (when (or force
+	    (not (equal (gnus-continuum-version)
+			(cdr (assq 'gnus-version gnus-format-specs))))
 	    (not (equal emacs-version
 			(cdr (assq 'version gnus-format-specs)))))
     (setq gnus-format-specs nil))
@@ -181,8 +184,8 @@
   ;; Go through all the formats and see whether they need updating.
   (let (new-format entry type val)
     (while (setq type (pop types))
-      ;; Jump to the proper buffer to find out the value of
-      ;; the variable, if possible.  (It may be buffer-local.)
+      ;; Jump to the proper buffer to find out the value of the
+      ;; variable, if possible.  (It may be buffer-local.)
       (save-excursion
 	(let ((buffer (intern (format "gnus-%s-buffer" type)))
 	      val)
@@ -419,6 +422,9 @@
     ;; Convert the buffer into the spec.
     (goto-char (point-min))
     (let ((form (read (current-buffer))))
+      ;; If the first element is '(point), we just remove it.
+      (when (equalp (car form) '(point))
+	(pop form))
       (cons 'progn (gnus-complex-form-to-spec form spec-alist)))))
 
 (defun gnus-complex-form-to-spec (form spec-alist)

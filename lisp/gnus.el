@@ -2323,8 +2323,11 @@ If ARG, insert string at point."
       (insert (message gnus-version))
     (message gnus-version)))
 
-(defun gnus-continuum-version (version)
+(defun gnus-continuum-version (&optional version)
   "Return VERSION as a floating point number."
+  (interactive)
+  (unless version
+    (setq version gnus-version))
   (when (or (string-match "^\\([^ ]+\\)? ?Gnus v?\\([0-9.]+\\)$" version)
 	    (string-match "^\\(.?\\)gnus-\\([0-9.]+\\)$" version))
     (let ((alpha (and (match-beginning 1) (match-string 1 version)))
