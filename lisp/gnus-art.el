@@ -4046,6 +4046,8 @@ Deleting parts may malfunction or destroy the article; continue? ")
 	    (or (mail-content-type-get (mm-handle-disposition data) 'filename)
 		none))
 	   (type (mm-handle-media-type data)))
+      (unless data
+	(error "No MIME part under point"))
       (with-current-buffer (mm-handle-buffer data)
 	(let ((bsize (format "%s" (buffer-size))))
 	  (erase-buffer)

@@ -3764,7 +3764,7 @@ entry of article %s deleted." l1))
 	(when regenerated
 	    (gnus-agent-update-files-total-fetched-for group nil)))
 
-      (gnus-message 5 nil)
+      (gnus-message 5 "")
       regenerated)))
 
 ;;;###autoload

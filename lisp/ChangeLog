@@ -1,6 +1,10 @@
 2004-05-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-art.el (gnus-mime-delete-part): Error message when no MIME
+	part under point.
+
 	* gnus-agent.el (gnus-agent-synchronize-flags): Default to nil. 
+	(gnus-agent-regenerate-group): Using nil messages aren't valid. 
 
 2004-05-15  Teodor Zlatanov  <tzz@lifelogs.com>
 
