@@ -25151,7 +25151,7 @@ out other articles.
 
 If @kbd{C-u} is used on subject, author or extra headers, i.e., @kbd{/
 s'}, @kbd{/ a}, and @kbd{/ x}
-(@code{gnus-summary-limit-to-{subject,author,extra}}) respectively, the
+(@code{gnus-summary-limit-to-@{subject,author,extra@}}) respectively, the
 result will be to display all articles that do not match the expression.
 
 @item
