@@ -1,3 +1,8 @@
+2001-08-29 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-move-article): Only update marks of
+	type 'list.
+
 2001-08-29 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* flow-fill.el (fill-flowed): eol might be point-max.

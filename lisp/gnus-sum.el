@@ -8124,21 +8124,22 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 		  (setcdr gnus-newsgroup-active to-article))
 
 		(while marks
-		  (when (memq article (symbol-value
-				       (intern (format "gnus-newsgroup-%s"
-						       (caar marks)))))
-		    (push (cdar marks) to-marks)
-		    ;; If the other group is the same as this group,
-		    ;; then we have to add the mark to the list.
-		    (when (equal to-group gnus-newsgroup-name)
-		      (set (intern (format "gnus-newsgroup-%s" (caar marks)))
-			   (cons to-article
-				 (symbol-value
-				  (intern (format "gnus-newsgroup-%s"
-						  (caar marks)))))))
-		    ;; Copy the marks to other group.
-		    (gnus-add-marked-articles
-		     to-group (cdar marks) (list to-article) info))
+		  (when (eq (gnus-article-mark-to-type (cdar marks)) 'list)
+		    (when (memq article (symbol-value
+					 (intern (format "gnus-newsgroup-%s"
+							 (caar marks)))))
+		      (push (cdar marks) to-marks)
+		      ;; If the other group is the same as this group,
+		      ;; then we have to add the mark to the list.
+		      (when (equal to-group gnus-newsgroup-name)
+			(set (intern (format "gnus-newsgroup-%s" (caar marks)))
+			     (cons to-article
+				   (symbol-value
+				    (intern (format "gnus-newsgroup-%s"
+						    (caar marks)))))))
+		      ;; Copy the marks to other group.
+		      (gnus-add-marked-articles
+		       to-group (cdar marks) (list to-article) info)))
 		  (setq marks (cdr marks)))
 
 		(gnus-request-set-mark to-group (list (list (list to-article)
