@@ -1715,7 +1715,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.81"
+(defconst gnus-version "September Gnus v0.82"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -3766,7 +3766,7 @@ simple-first is t, first argument is already simplified."
 (defun gnus-parent-id (references)
   "Return the last Message-ID in REFERENCES."
   (when (and references
-	     (string-match "\\(<[^<>]+>\\)[ \t\n]*\\'" references))
+	     (string-match "\\(<[^\n<>]+>\\)[ \t\n]*\\'" references))
     (substring references (match-beginning 1) (match-end 1))))
 
 (defun gnus-split-references (references)
@@ -8020,7 +8020,8 @@ If NO-DISPLAY, don't generate a summary buffer."
 (defun gnus-id-to-article (id)
   "Return the article number of ID."
   (let ((thread (gnus-id-to-thread id)))
-    (when thread
+    (when (and thread
+	       (car thread))
       (mail-header-number (car thread)))))
 
 (defun gnus-id-to-header (id)
@@ -8030,15 +8031,16 @@ If NO-DISPLAY, don't generate a summary buffer."
 (defun gnus-article-displayed-root-p (article)
   "Say whether ARTICLE is a root(ish) article."
   (let ((level (gnus-summary-thread-level article))
+	(refs (mail-header-references  (gnus-summary-article-header article)))
 	particle)
     (cond 
      ((null level) nil)
      ((zerop level) t)
+     ((null refs) t)
+     ((null(gnus-parent-id refs)) t)
      ((and (= 1 level)
 	   (null (setq particle (gnus-id-to-article
-				 (gnus-parent-id 
-				  (mail-header-references 
-				   (gnus-summary-article-header article))))))
+				 (gnus-parent-id refs))))
 	   (null (gnus-summary-thread-level particle)))))))
 
 (defun gnus-root-id (id)
@@ -14126,7 +14128,8 @@ how much time has lapsed since DATE."
 	    (if (re-search-forward date-regexp nil t)
 		(progn
 		  (setq bface (get-text-property (gnus-point-at-bol) 'face)
-			eface (get-text-property (gnus-point-at-eol) 'face))
+			eface (get-text-property (1- (gnus-point-at-eol))
+						 'face))
 		  (message-remove-header date-regexp t)
 		  (beginning-of-line))
 	      (goto-char (point-max)))
@@ -14202,9 +14205,9 @@ how much time has lapsed since DATE."
 	      (t
 	       (error "Unknown conversion type: %s" type)))))
 	  ;; Do highlighting.
-	  (beginning-of-line)
-	  (when (and highlight (gnus-visual-p 'article-highlight 'highlight)
-		     (looking-at "\\([^:]\\): *\\(.*\\)$"))
+	  (forward-line -1)
+	  (when (and (gnus-visual-p 'article-highlight 'highlight)
+		     (looking-at "\\([^:]+\\): *\\(.*\\)$"))
 	    (put-text-property (match-beginning 1) (match-end 1)
 			       'face bface)
 	    (put-text-property (match-beginning 2) (match-end 2)

@@ -264,7 +264,17 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 	  (setq omarks (cdr omarks)))
 	(when (car omarks)
 	  (push (car omarks) marks))
-	(nreverse marks)))))
+	(setq marks (setq m (nreverse marks)))
+	(while (cddr m)
+	  (if (and (equal (cdadr m) "")
+		   (equal (cdar m) (cdaddr m))
+		   (goto-char (caadr m))
+		   (forward-line 1)
+		   (= (point) (caaddr m)))
+	      (setcdr m (cdddr m))
+	    (setq m (cdr m))))
+	marks))))
+	    
 
 (defun gnus-article-fill-cited-article (&optional force)
   "Do word wrapping in the current article."
@@ -325,12 +335,14 @@ always hide."
 	      (setq beg (point))))
 	  (when (and beg end)
 	    (add-text-properties beg end props)
-	    (goto-char (1- beg))
-	    (put-text-property beg end 'gnus-type 'cite)
+	    (goto-char beg)
+	    (unless (save-excursion (search-backward "\n\n" nil t))
+	      (insert "\n"))
 	    (gnus-article-add-button
 	     (point)
 	     (progn (eval gnus-cited-text-button-line-format-spec) (point))
-	     `gnus-article-toggle-cited-text (cons beg end))))))))
+	     `gnus-article-toggle-cited-text (cons beg end))
+	    (set-marker beg (point))))))))
 
 (defun gnus-article-toggle-cited-text (region)
   "Toggle hiding the text in REGION."
@@ -397,8 +409,7 @@ See also the documentation for `gnus-article-highlight-citation'."
     (let ((article (cdr gnus-article-current)))
       (unless (save-excursion
 		(set-buffer gnus-summary-buffer)
-		(gnus-root-id (mail-header-references
-			       (gnus-summary-article-header article))))
+		(gnus-article-displayed-root-p article))
 	(gnus-article-hide-citation)))))
 
 ;;; Internal functions:

@@ -1,4 +1,22 @@
+Mon May  6 20:51:43 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-cite.el (gnus-dissect-cited-text): Sift single empty
+	lines. 
+
+	* gnus.el (gnus-id-to-article): Would bug out once in a while.
+
+	* gnus-cite.el (gnus-article-hide-citation-in-followups): Really
+	hide citations in un-root articles. 
+	(gnus-article-hide-citation): Place [...] consistently.  
+
+	* gnus.el (gnus-article-date-ut): Preserve faces.
+
+	* gnus-cite.el (gnus-article-hide-citation): Would mess up
+	headers. 
+
 Mon May  6 00:23:09 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: 0.81 is released.
 
 	* message-xmas.el (message-mode-menu): Moved to this file.
 
