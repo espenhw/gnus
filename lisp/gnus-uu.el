@@ -265,7 +265,6 @@ The headers will be included in the sequence they are matched.")
 (defconst gnus-uu-uudecode-process nil)
 (defvar gnus-uu-binhex-article-name nil)
 
-(defvar gnus-uu-generated-file-list nil)
 (defvar gnus-uu-work-dir nil)
 
 (defconst gnus-uu-output-buffer-name " *Gnus UU Output*")
@@ -362,9 +361,7 @@ The headers will be included in the sequence they are matched.")
 	  gnus-uu-default-dir
 	  gnus-uu-default-dir)))
   (setq gnus-uu-saved-article-name file)
-  (gnus-uu-decode-with-method 'gnus-uu-save-article n nil t)
-  (setq gnus-uu-generated-file-list 
-	(delete file gnus-uu-generated-file-list)))
+  (gnus-uu-decode-with-method 'gnus-uu-save-article n nil t))
 
 (defun gnus-uu-decode-binhex (n dir)
   "Unbinhexes the current article."
@@ -443,7 +440,6 @@ The headers will be included in the sequence they are matched.")
 	buf subject from)
     (setq gnus-uu-digest-from-subject nil)
     (gnus-uu-decode-save n file)
-    (gnus-uu-add-file file)
     (setq buf (switch-to-buffer (get-buffer-create " *gnus-uu-forward*")))
     (gnus-add-current-to-buffer-list)
     (erase-buffer)
@@ -672,7 +668,6 @@ The headers will be included in the sequence they are matched.")
     (and save (gnus-uu-save-files files save))
     (if (eq gnus-uu-do-not-unpack-archives nil)
       (setq files (gnus-uu-unpack-files files)))
-    (gnus-uu-add-file (mapcar (lambda (file) (cdr (assq 'name file))) files))
     (setq files (nreverse (gnus-uu-get-actions files)))
     (or not-insert (not gnus-insert-pseudo-articles)
 	(gnus-summary-insert-pseudos files save))))
@@ -1328,8 +1323,7 @@ The headers will be included in the sequence they are matched.")
 	  (set-process-sentinel 
 	   gnus-uu-uudecode-process 'gnus-uu-uudecode-sentinel)
 	  (setq state (list 'begin))
-	  (push (concat gnus-uu-work-dir gnus-uu-file-name) files)
-	  (gnus-uu-add-file (car files)))
+	  (push (concat gnus-uu-work-dir gnus-uu-file-name) files))
 	
 	;; We look for the end of the thing to be decoded.
 	(if (re-search-forward gnus-uu-end-string nil t)
@@ -1479,7 +1473,6 @@ The headers will be included in the sequence they are matched.")
   (let* ((totfiles (gnus-uu-ls-r gnus-uu-work-dir))
 	 (ofiles files)
 	 file did-unpack)
-    (gnus-uu-add-file totfiles) 
     (while files
       (setq file (cdr (assq 'name (car files))))
       (if (and (not (member file ignore))
@@ -1491,7 +1484,6 @@ The headers will be included in the sequence they are matched.")
 		(gnus-message 2 "Error during unpacking of %s" file))
 	    (let* ((newfiles (gnus-uu-ls-r gnus-uu-work-dir))
 		   (nfiles newfiles))
-	      (gnus-uu-add-file newfiles)
 	      (while nfiles
 		(or (member (car nfiles) totfiles)
 		    (setq ofiles (cons (list (cons 'name (car nfiles))
@@ -1582,7 +1574,6 @@ The headers will be included in the sequence they are matched.")
 
       (setq gnus-uu-work-dir 
 	    (make-temp-name (concat gnus-uu-tmp-dir "gnus")))
-      (gnus-uu-add-file gnus-uu-work-dir)
       (if (not (file-directory-p gnus-uu-work-dir)) 
 	  (gnus-make-directory gnus-uu-work-dir))
       (set-file-modes gnus-uu-work-dir 448)
@@ -1595,37 +1586,11 @@ The headers will be included in the sequence they are matched.")
 (defun gnus-uu-clean-up ()
   (let (buf pst)
     (and gnus-uu-uudecode-process
-	 (setq pst (process-status (or gnus-uu-uudecode-process "nevair")))
-	 (if (or (eq pst 'stop) (eq pst 'run))
-	     (delete-process gnus-uu-uudecode-process)))
+	 (memq (process-status (or gnus-uu-uudecode-process "nevair"))
+	       '(stop run))
+	 (delete-process gnus-uu-uudecode-process))
     (and (setq buf (get-buffer gnus-uu-output-buffer-name))
 	 (kill-buffer buf))))
-
-;; `gnus-uu-check-for-generated-files' deletes any generated files that
-;; hasn't been deleted, if, for instance, the user terminated decoding
-;; with `C-g'.
-(defun gnus-uu-check-for-generated-files ()
-  (let (file dirs)
-    ;; First delete the generated files.
-    (while (setq file (pop gnus-uu-generated-file-list))
-      (unless (string-match "/\\.[\\.]?$" file)
-	(if (file-directory-p file)
-	    (push file dirs)
-	  (when (file-exists-p file)
-	    (delete-file file)))))
-    ;; Then delete the directories.
-    (setq dirs (nreverse dirs))
-    (while (setq file (pop dirs))
-      (delete-directory (directory-file-name file)))))
-
-;; Add a file (or a list of files) to be checked (and deleted if it/they
-;; still exists upon exiting the newsgroup).
-(defun gnus-uu-add-file (file)
-  (if (stringp file)
-      (setq gnus-uu-generated-file-list 
-	    (cons file gnus-uu-generated-file-list))
-    (setq gnus-uu-generated-file-list 
-	  (append file gnus-uu-generated-file-list))))
 
 ;; Inputs an action and a file and returns a full command, putting
 ;; quotes round the file name and escaping any quotes in the file name.
@@ -1642,11 +1607,28 @@ The headers will be included in the sequence they are matched.")
 	(format action ofile)
       (concat action " " ofile))))
 
+(defun gnus-uu-delete-work-dir (&optional dir)
+  "Delete recursively all files and directories under `gnus-uu-work-dir'."
+  (unless dir
+    (setq dir gnus-uu-work-dir))
+  (gnus-message 7 "Deleting directory %s..." dir)
+  (when (and dir
+	     (file-exists-p dir))
+    (let ((files (directory-files dir t nil t))
+	  file)
+      (while (setq file (pop files))
+	(unless (string-match "/\\.\\.?$" file)
+	  (if (file-directory-p file)
+	      (gnus-uu-delete-work-dir file)
+	    (gnus-message 9 "Deleting file %s..." file)
+	    (delete-file file))))
+      (delete-directory dir)))
+  (gnus-message 7 ""))
 
 ;; Initializing
 
 (add-hook 'gnus-exit-group-hook 'gnus-uu-clean-up)
-(add-hook 'gnus-exit-group-hook	'gnus-uu-check-for-generated-files)
+(add-hook 'gnus-exit-group-hook	'gnus-uu-delete-work-dir)
 
 
 

@@ -366,19 +366,19 @@ ticked: The number of ticked articles in the group.
 	 ["List active file" gnus-group-list-active t])
 	("Sort"
 	 ["Default sort" gnus-group-sort-groups
-	  (not gnus-topic-mode)]
+	  (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
 	 ["Sort by method" gnus-group-sort-groups-by-method
-	  (not gnus-topic-mode)]
+	  (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
 	 ["Sort by rank" gnus-group-sort-groups-by-rank
-	  (not gnus-topic-mode)]
+	  (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
 	 ["Sort by score" gnus-group-sort-groups-by-score
-	  (not gnus-topic-mode)]
+	  (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
 	 ["Sort by level" gnus-group-sort-groups-by-level
-	  (not gnus-topic-mode)]
+	  (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
 	 ["Sort by unread" gnus-group-sort-groups-by-unread
-	  (not gnus-topic-mode)]
+	  (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
 	 ["Sort by name" gnus-group-sort-groups-by-alphabet
-	  (not gnus-topic-mode)])
+	  (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))])
 	("Mark"
 	 ["Mark group" gnus-group-mark-group
 	  (and (gnus-group-group-name)
@@ -1530,7 +1530,7 @@ specified by `gnus-button-alist'."
 
 (defun gnus-button-reply (address)
   ;; Reply to ADDRESS.
-  (message-reply t address))
+  (message-reply))
 
 (defun gnus-button-url (address)
   "Browse ADDRESS."

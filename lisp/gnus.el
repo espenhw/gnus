@@ -1533,6 +1533,11 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
 
 ;; Internal variables
 
+(defvar gnus-thread-indent-array nil)
+(defvar gnus-thread-indent-array-level gnus-thread-indent-level)
+
+(defvar gnus-newsrc-file-version nil)
+
 (defvar gnus-method-history nil)
 ;; Variable holding the user answers to all method prompts.
 
@@ -1702,7 +1707,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.77"
+(defconst gnus-version "September Gnus v0.78"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -4771,16 +4776,18 @@ increase the score of each group you read."
 	(setq method (gnus-info-method info))
 	(when (gnus-server-equal method "native")
 	  (setq method nil))
-	(if method
-	    ;; It's a foreign group...
-	    (gnus-group-make-group
-	     (gnus-group-real-name (gnus-info-group info))
-	     (if (stringp method) method
-	       (prin1-to-string (car method)))
-	     (and (consp method)
-		  (nth 1 (gnus-info-method info))))
-	  ;; It's a native group.
-	  (gnus-group-make-group (gnus-info-group info)))
+	(save-excursion
+	  (set-buffer gnus-group-buffer)
+	  (if method
+	      ;; It's a foreign group...
+	      (gnus-group-make-group
+	       (gnus-group-real-name (gnus-info-group info))
+	       (if (stringp method) method
+		 (prin1-to-string (car method)))
+	       (and (consp method)
+		    (nth 1 (gnus-info-method info))))
+	    ;; It's a native group.
+	    (gnus-group-make-group (gnus-info-group info))))
 	(gnus-message 6 "Note: New group created")
 	(setq entry
 	      (gnus-gethash (gnus-group-prefixed-name
@@ -4823,6 +4830,7 @@ increase the score of each group you read."
   "Insert GROUP on the current line."
   (let ((entry (gnus-gethash group gnus-newsrc-hashtb))
 	active info)
+    (setq gnus-group-indentation (gnus-group-group-indentation))
     (if entry
 	(progn
 	  ;; (Un)subscribed group.
@@ -5436,35 +5444,40 @@ ADDRESS."
 	    (t
 	     (list method ""))))))
 
-  (save-excursion
-    (set-buffer gnus-group-buffer)
-    (let* ((meth (and method (if address (list (intern method) address)
-			       method)))
-	   (nname (if method (gnus-group-prefixed-name name meth) name))
-	   backend info)
-      (and (gnus-gethash nname gnus-newsrc-hashtb)
-	   (error "Group %s already exists" nname))
-      (gnus-group-change-level
-       (setq info (list t nname gnus-level-default-subscribed nil nil meth))
-       gnus-level-default-subscribed gnus-level-killed
-       (and (gnus-group-group-name)
-	    (gnus-gethash (gnus-group-group-name)
-			  gnus-newsrc-hashtb))
-       t)
-      (gnus-set-active nname (cons 1 0))
-      (or (gnus-ephemeral-group-p name)
-	  (gnus-dribble-enter
-	   (concat "(gnus-group-set-info '" (prin1-to-string (cdr info)) ")")))
-      (gnus-group-insert-group-line-info nname)
+  (let* ((meth (and method (if address (list (intern method) address)
+			     method)))
+	 (nname (if method (gnus-group-prefixed-name name meth) name))
+	 backend info)
+    (when (gnus-gethash nname gnus-newsrc-hashtb)
+      (error "Group %s already exists" nname))
+    ;; Subscribe to the new group.
+    (gnus-group-change-level
+     (setq info (list t nname gnus-level-default-subscribed nil nil meth))
+     gnus-level-default-subscribed gnus-level-killed
+     (and (gnus-group-group-name)
+	  (gnus-gethash (gnus-group-group-name)
+			gnus-newsrc-hashtb))
+     t)
+    ;; Make it active.
+    (gnus-set-active nname (cons 1 0))
+    (or (gnus-ephemeral-group-p name)
+	(gnus-dribble-enter
+	 (concat "(gnus-group-set-info '" (prin1-to-string (cdr info)) ")")))
+    ;; Insert the line.
+    (gnus-group-insert-group-line-info nname)
+    (forward-line -1)
+    (gnus-group-position-point)
 
-      (when (assoc (symbol-name (setq backend (car (gnus-server-get-method
-						    nil meth))))
-		   gnus-valid-select-methods)
-	(require backend))
-      (gnus-check-server meth)
-      (and (gnus-check-backend-function 'request-create-group nname)
-	   (gnus-request-create-group nname))
-      t)))
+    ;; Load the backend and try to make the backend create
+    ;; the group as well.
+    (when (assoc (symbol-name (setq backend (car (gnus-server-get-method
+						  nil meth))))
+		 gnus-valid-select-methods)
+      (require backend))
+    (gnus-check-server meth)
+    (and (gnus-check-backend-function 'request-create-group nname)
+	 (gnus-request-create-group nname))
+    t))
 
 (defun gnus-group-delete-group (group &optional force)
   "Delete the current group.
@@ -5680,9 +5693,7 @@ of the Earth\".	 There is no undo."
      (gnus-group-real-name name)
      (list 'nndoc (file-name-nondirectory file)
 	   (list 'nndoc-address file)
-	   (list 'nndoc-article-type (or type 'guess))))
-    (forward-line -1)
-    (gnus-group-position-point)))
+	   (list 'nndoc-article-type (or type 'guess))))))
 
 (defun gnus-group-make-archive-group (&optional all)
   "Create the (ding) Gnus archive group of the most recent articles.
@@ -5697,9 +5708,7 @@ Given a prefix, create a full group."
      (list 'nndir (if all "hpc" "edu")
 	   (list 'nndir-directory
 		 (if all gnus-group-archive-directory
-		   gnus-group-recent-archive-directory)))))
-  (forward-line -1)
-  (gnus-group-position-point))
+		   gnus-group-recent-archive-directory))))))
 
 (defun gnus-group-make-directory-group (dir)
   "Create an nndir group.
@@ -5722,9 +5731,7 @@ mail messages or news articles in files that have numeric names."
       (setq ext (format "<%d>" (setq i (1+ i)))))
     (gnus-group-make-group
      (gnus-group-real-name group)
-     (list 'nndir group (list 'nndir-directory dir))))
-  (forward-line -1)
-  (gnus-group-position-point))
+     (list 'nndir group (list 'nndir-directory dir)))))
 
 (defun gnus-group-make-kiboze-group (group address scores)
   "Create an nnkiboze group.
@@ -5749,14 +5756,9 @@ score file entries for articles to include in the group."
 	(setq scores (cons (cons header regexps) scores)))
       scores)))
   (gnus-group-make-group group "nnkiboze" address)
-  (save-excursion
-    (gnus-set-work-buffer)
+  (nnheader-temp-write (gnus-score-file-name (concat "nnkiboze:" group))
     (let (emacs-lisp-mode-hook)
-      (pp scores (current-buffer)))
-    (write-region (point-min) (point-max)
-		  (gnus-score-file-name (concat "nnkiboze:" group))))
-  (forward-line -1)
-  (gnus-group-position-point))
+      (pp scores (current-buffer)))))
 
 (defun gnus-group-add-to-virtual (n vgroup)
   "Add the current group to a virtual group."
@@ -5946,11 +5948,13 @@ caught up is returned."
 	      (nnvirtual-catchup-group
 	       (gnus-group-real-name (car groups)) (nth 1 method) all)))
 	(gnus-group-remove-mark (car groups))
-	(if (prog1
-		(gnus-group-goto-group (car groups))
-	      (gnus-group-catchup (car groups) all))
-	    (gnus-group-update-group-line)
-	  (setq ret (1+ ret)))
+	(if (>= (gnus-group-group-level) gnus-level-zombie)
+	    (gnus-message 2 "Dead groups can't be caught up")
+	  (if (prog1
+		  (gnus-group-goto-group (car groups))
+		(gnus-group-catchup (car groups) all))
+	      (gnus-group-update-group-line)
+	    (setq ret (1+ ret))))
 	(setq groups (cdr groups)))
       (gnus-group-next-unread-group 1)
       ret)))
@@ -7388,8 +7392,6 @@ This is all marks except unread, ticked, dormant, and expirable."
    (point) (progn (eval gnus-summary-dummy-line-format-spec) (point))
    (list 'gnus-number gnus-tmp-number 'gnus-intangible gnus-tmp-number)))
 
-(defvar gnus-thread-indent-array nil)
-(defvar gnus-thread-indent-array-level gnus-thread-indent-level)
 (defun gnus-make-thread-indent-array ()
   (let ((n 200))
     (unless (and gnus-thread-indent-array
@@ -7978,7 +7980,7 @@ If NO-DISPLAY, don't generate a summary buffer."
     (let (threads)
       ;; We then insert this thread into the summary buffer.
       (let (gnus-newsgroup-data gnus-newsgroup-threads)
-	(gnus-summary-prepare-threads (list thread))
+	(gnus-summary-prepare-threads (gnus-cut-threads (list thread)))
 	(setq data (nreverse gnus-newsgroup-data))
 	(setq threads gnus-newsgroup-threads))
       ;; We splice the new data into the data structure.
@@ -9015,6 +9017,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	headers id id-dep ref-dep end ref)
     (save-excursion
       (set-buffer nntp-server-buffer)
+      (run-hooks 'gnus-parse-headers-hook)
       (let ((case-fold-search t)
 	    in-reply-to header p lines)
 	(goto-char (point-min))
@@ -13430,6 +13433,9 @@ The following commands are available:
 (defun gnus-read-header (id &optional header)
   "Read the headers of article ID and enter them into the Gnus system."
   (let ((group gnus-newsgroup-name)
+	(gnus-override-method 
+	 (and (gnus-news-group-p gnus-newsgroup-name)
+	      gnus-refer-article-method))	
 	where)
     ;; First we check to see whether the header in question is already
     ;; fetched.
@@ -13904,6 +13910,7 @@ or not."
 
 (defun gnus-mime-decode-quoted-printable (from to)
   "Decode Quoted-Printable in the region between FROM and TO."
+  (interactive "r")
   (goto-char from)
   (while (search-forward "=" to t)
     (cond ((eq (following-char) ?\n)
@@ -15108,7 +15115,9 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
 	(gnus-find-new-newsgroups))
 
     ;; We might read in new NoCeM messages here.
-    (when gnus-use-nocem 
+    (when (and gnus-use-nocem 
+	       (not level)
+	       (not dont-connect))
       (gnus-nocem-scan-groups))
 
     ;; Find the number of unread articles in each non-dead group.
@@ -16030,8 +16039,55 @@ If FORCE is non-nil, the .newsrc file is read."
 	    (gnus-message 5 "Reading %s...done" newsrc-file)))
 
       ;; Read any slave files.
-      (or gnus-slave
-	  (gnus-master-read-slave-newsrc)))))
+      (unless gnus-slave
+	(gnus-master-read-slave-newsrc))
+      
+      ;; Convert old to new.
+      (gnus-convert-old-newsrc))))
+
+(defun gnus-continuum-version (version)
+  "Return VERSION as a floating point number."
+  (when (string-match "^\\([^ ]+\\)? ?Gnus v?\\([0-9.]+\\)$" version)
+    (let* ((alpha (and (match-beginning 1) (match-string 1 version)))
+	   (number (match-string 2 version))
+	   major minor least)
+      (string-match "\\([0-9]\\)\\.\\([0-9]+\\)\\.?\\([0-9]+\\)?" number)
+      (setq major (string-to-number (match-string 1 number)))
+      (setq minor (string-to-number (match-string 2 number)))
+      (setq least (if (match-beginning 3)
+		      (string-to-number (match-string 3 number))
+		    0))
+      (string-to-number
+       (if (zerop major)
+	   (format "%s00%02d%02d"
+		   (cond 
+		    ((string= alpha "(ding)") "4.99")
+		    ((string= alpha "September") "5.01")
+		    ((string= alpha "Red") "5.03"))
+		   minor least)
+	 (format "%d.%02d%20d" major minor least))))))
+
+(defun gnus-convert-old-newsrc ()
+  "Convert old newsrc into the new format, if needed."
+  (let ((fcv (gnus-continuum-version gnus-newsrc-file-version)))
+    (cond
+     ((< fcv (gnus-continuum-version "September Gnus v0.1"))
+      (gnus-convert-old-ticks)))))
+
+(defun gnus-convert-old-ticks ()
+  (let ((newsrc (cdr gnus-newsrc-alist))
+	marks info dormant ticked)
+    (while (setq info (pop newsrc))
+      (when (setq marks (gnus-info-marks info))
+	(setq dormant (cdr (assq 'dormant marks))
+	      ticked (cdr (assq 'tick marks)))
+	(when (or dormant ticked)
+	  (gnus-info-set-read
+	   info
+	   (gnus-add-to-range
+	    (gnus-info-read info)
+	    (nconc (gnus-uncompress-range dormant)
+		   (gnus-uncompress-range ticked)))))))))
 
 (defun gnus-read-newsrc-el-file (file)
   (let ((ding-file (concat file "d")))

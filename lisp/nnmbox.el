@@ -173,9 +173,8 @@
 (deffoo nnmbox-request-group (group &optional server dont-check)
   (let ((active (cadr (assoc group nnmbox-group-alist))))
     (cond 
-     ((null active)
-      (nnheader-report 'nnmbox "No such group: %s" group))
-     ((null (nnmbox-possibly-change-newsgroup group server))
+     ((or (null active)
+	  (null (nnmbox-possibly-change-newsgroup group server)))
       (nnheader-report 'nnmbox "No such group: %s" group))
      (dont-check
       (nnheader-report 'nnmbox "Selected group %s" group)
@@ -184,8 +183,7 @@
       (nnheader-report 'nnmbox "Selected group %s" group)
       (nnheader-insert "211 %d %d %d %s\n" 
 		       (1+ (- (cdr active) (car active)))
-		       (car active) (cdr active) group)
-      t))))
+		       (car active) (cdr active) group)))))
 
 (deffoo nnmbox-request-scan (&optional group server)
   (nnmbox-read-mbox)
@@ -201,18 +199,16 @@
        (let ((in-buf (current-buffer)))
 	 (set-buffer nnmbox-mbox-buffer)
 	 (goto-char (point-max))
-	 (insert-buffer-substring in-buf))))))
+	 (insert-buffer-substring in-buf)))
+     (nnmail-save-active nnmbox-group-alist nnmbox-active-file))))
 
 (deffoo nnmbox-close-group (group &optional server)
   t)
 
 (deffoo nnmbox-request-list (&optional server)
   (save-excursion
-    (or (nnmail-find-file nnmbox-active-file)
-	(progn
-	  (setq nnmbox-group-alist (nnmail-get-active))
-	  (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
-	  (nnmail-find-file nnmbox-active-file)))))
+    (nnmail-find-file nnmbox-active-file)
+    (setq nnmbox-group-alist (nnmail-get-active))))
 
 (deffoo nnmbox-request-newgroups (date &optional server)
   (nnmbox-request-list server))
@@ -490,11 +486,28 @@
       ()
     (save-excursion
       (let ((delim (concat "^" rmail-unix-mail-delimiter))
-	    start end)
+	    (alist nnmbox-group-alist)
+	    start end number)
 	(set-buffer (setq nnmbox-mbox-buffer 
 			  (nnheader-find-file-noselect
 			   nnmbox-mbox-file nil 'raw)))
 	(buffer-disable-undo (current-buffer))
+
+	;; Go through the group alist and compare against
+	;; the mbox file.
+	(while alist
+	  (goto-char (point-max))
+	  (when (and (re-search-backward
+		      (format "^X-Gnus-Newsgroup: %s:\\([0-9]+\\) "
+			      (caar alist)) nil t)
+		     (>= (setq number
+			       (string-to-number 
+				(buffer-substring
+				 (match-beginning 1) (match-end 1))))
+			 (cdadar alist)))
+	    (setcdr (cadar alist) (1+ number)))
+	  (setq alist (cdr alist)))
+	
 	(goto-char (point-min))
 	(while (re-search-forward delim nil t)
 	  (setq start (match-beginning 0))

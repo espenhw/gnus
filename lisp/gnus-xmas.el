@@ -375,15 +375,18 @@ pounce directly on the real variables themselves.")
 	     (make-color-instance color)))))
     
   (defvar gnus-background-mode 
-    (let ((bg-resource 
-	   (condition-case ()
-	       (x-get-resource ".backgroundMode" "BackgroundMode" 'string)
-	     (error nil)))
-	  (params (frame-parameters)))
+    (let* ((bg-resource 
+	    (condition-case ()
+		(x-get-resource ".backgroundMode" "BackgroundMode" 'string)
+	      (error nil)))
+	   (params (frame-parameters))
+	   (color (or (assq 'background-color params)
+		      (color-instance-name
+		       (specifier-instance
+			(face-background 'default))))))
       (cond (bg-resource (intern (downcase bg-resource)))
-	    ((and (assq 'background-color params)
-		  (< (apply '+ (gnus-x-color-values
-				(cdr (assq 'background-color params))))
+	    ((and color
+		  (< (apply '+ (gnus-x-color-values color))
 		     (/ (apply '+ (gnus-x-color-values "white")) 3)))
 	     'dark)
 	    (t 'light)))
@@ -448,10 +451,12 @@ pounce directly on the real variables themselves.")
 	;; We try to find the dir by looking at the load path,
 	;; stripping away the last component and adding "etc/".
 	(while path
-	  (setq dir (concat
-		     (file-name-directory (directory-file-name (car path)))
-		     "etc/gnus/"))
-	  (if (and (file-exists-p dir)
+	  (if (and (car path)
+		   (file-exists-p
+		    (setq dir (concat
+			       (file-name-directory
+				(directory-file-name (car path)))
+			       "etc/gnus/")))
 		   (file-directory-p dir)
 		   (file-exists-p (concat dir "gnus-group-exit-icon-up.xpm")))
 	      (setq gnus-xmas-glyph-directory dir

@@ -665,7 +665,7 @@ in an Xterm window."
   (interactive (browse-url-interactive-arg "Lynx URL: "))
   (start-process (concat "lynx" url) nil "xterm" "-e" "lynx" url))
 
-(eval-when-compile (require 'term))
+;(eval-when-compile (require 'term))
 
 (defun browse-url-lynx-emacs (url)
   "Ask the Lynx WWW browser to load URL.

@@ -304,6 +304,7 @@ all. This may very well take some time.")
        (kill-buffer (current-buffer))
        result)
      (progn
+       (nnml-possibly-change-directory group server)
        (condition-case ()
 	   (funcall nnmail-delete-file-function
 		    (concat nnml-current-directory 

@@ -67,14 +67,16 @@ Otherwise, most addresses look like `angles', but they look like
 `parens' if `angles' would need quoting and `parens' would not.")
 
 ;;;###autoload
-(defvar message-syntax-checks
-  '(subject-cmsg multiple-headers sendsys message-id from
-		 long-lines control-chars size new-text
-		 redirected-followup signature approved sender 
-		 empty empty-headers message-id from subject)
-  "In non-nil, message will attempt to run some checks on outgoing posts.
-If this variable is t, message will check everything it can.  If it is
-a list, then those elements in that list will be checked.")
+(defvar message-syntax-checks nil
+  "Controls what syntax checks should not be performed on outgoing posts.
+To disable checking of long signatures, for instance, add
+ `(signature . disable)' to this list.
+
+Don't touch this variable unless you really know what you're doing.
+
+Checks include subject-cmsg multiple-headers sendsys message-id from
+long-lines control-chars size new-text redirected-followup signature
+approved sender empty empty-headers message-id from subject.")
 
 ;;;###autoload
 (defvar message-required-news-headers
@@ -213,7 +215,8 @@ always use the value.")
 (defvar gnus-select-method)
 ;;;###autoload
 (defvar message-post-method 
-  (cond ((boundp 'gnus-post-method)
+  (cond ((and (boundp 'gnus-post-method)
+	      gnus-post-method)
 	 gnus-post-method)
 	((boundp 'gnus-select-method)
 	 gnus-select-method)
@@ -606,9 +609,11 @@ Return the number of headers removed."
   (define-key message-mode-map "\C-c\C-q" 'message-fill-yanked-message)
   (define-key message-mode-map "\C-c\C-w" 'message-insert-signature)
   (define-key message-mode-map "\C-c\C-r" 'message-caesar-buffer-body)
+  (define-key message-mode-map "\C-c\C-h" 'message-sort-headers)
 
   (define-key message-mode-map "\C-c\C-c" 'message-send-and-exit)
-  (define-key message-mode-map "\C-c\C-s" 'message-send))
+  (define-key message-mode-map "\C-c\C-s" 'message-send)
+  (define-key message-mode-map "\C-c\C-k" 'message-dont-send))
 
 (defun message-make-menu-bar ()
   (unless (boundp 'message-menu)
@@ -871,10 +876,8 @@ Numeric argument means justify as well."
   (save-excursion
     (goto-char (point-min))
     (search-forward (concat "\n" mail-header-separator "\n") nil t)
-    (fill-individual-paragraphs (point)
-				(point-max)
-				justifyp
-				t)))
+    (let ((fill-prefix message-yank-prefix))
+      (fill-individual-paragraphs (point) (point-max) justifyp t))))
 
 (defun message-indent-citation ()
   "Modify text just inserted from a message to be cited.
@@ -1213,188 +1216,185 @@ the user from the mailer."
 
 (defun message-check-news-syntax ()
   "Check the syntax of the message."
-  (or
-   (not message-syntax-checks)
-   (and 
-    ;; We narrow to the headers and check them first.
-    (save-excursion
-      (save-restriction
-	(message-narrow-to-headers)
-	(and 
-	 ;; Check for commands in Subject.
-	 (or 
-	  (message-check-element 'subject-cmsg)
-	  (save-excursion
-	    (if (string-match "^cmsg " (mail-fetch-field "subject"))
-		(y-or-n-p
-		 "The control code \"cmsg \" is in the subject. Really post? ")
-	      t)))
-	 ;; Check for multiple identical headers.
-	 (or (message-check-element 'multiple-headers)
-	     (save-excursion
-	       (let (found)
-		 (while (and (not found) 
-			     (re-search-forward "^[^ \t:]+: " nil t))
-		   (save-excursion
-		     (or (re-search-forward 
-			  (concat "^" (setq found
-					    (buffer-substring 
-					     (match-beginning 0) 
-					     (- (match-end 0) 2))))
-			  nil t)
-			 (setq found nil))))
-		 (if found
-		     (y-or-n-p 
-		      (format "Multiple %s headers. Really post? " found))
-		   t))))
-	 ;; Check for Version and Sendsys.
-	 (or (message-check-element 'sendsys)
-	     (save-excursion
-	       (if (re-search-forward "^Sendsys:\\|^Version:" nil t)
-		   (y-or-n-p
-		    (format "The article contains a %s command. Really post? "
-			    (buffer-substring (match-beginning 0) 
-					      (1- (match-end 0)))))
-		 t)))
-	 ;; See whether we can shorten Followup-To.
-	 (or (message-check-element 'shorten-followup-to)
-	     (let ((newsgroups (mail-fetch-field "newsgroups"))
-		   (followup-to (mail-fetch-field "followup-to"))
-		   to)
-	       (when (and newsgroups (string-match "," newsgroups)
-			  (not followup-to)
-			  (not
-			   (zerop
-			    (length
-			     (setq to (completing-read 
-				       "Followups to: (default all groups) " 
-				       (mapcar (lambda (g) (list g))
-					       (cons "poster" 
-						     (message-tokenize-header 
-						      newsgroups)))))))))
-		 (goto-char (point-min))
-		 (insert "Followup-To: " to "\n"))))
+  (and 
+   ;; We narrow to the headers and check them first.
+   (save-excursion
+     (save-restriction
+       (message-narrow-to-headers)
+       (and 
+	;; Check for commands in Subject.
+	(or 
+	 (message-check-element 'subject-cmsg)
+	 (save-excursion
+	   (if (string-match "^cmsg " (mail-fetch-field "subject"))
+	       (y-or-n-p
+		"The control code \"cmsg \" is in the subject. Really post? ")
+	     t)))
+	;; Check for multiple identical headers.
+	(or (message-check-element 'multiple-headers)
+	    (save-excursion
+	      (let (found)
+		(while (and (not found) 
+			    (re-search-forward "^[^ \t:]+: " nil t))
+		  (save-excursion
+		    (or (re-search-forward 
+			 (concat "^" (setq found
+					   (buffer-substring 
+					    (match-beginning 0) 
+					    (- (match-end 0) 2))))
+			 nil t)
+			(setq found nil))))
+		(if found
+		    (y-or-n-p 
+		     (format "Multiple %s headers. Really post? " found))
+		  t))))
+	;; Check for Version and Sendsys.
+	(or (message-check-element 'sendsys)
+	    (save-excursion
+	      (if (re-search-forward "^Sendsys:\\|^Version:" nil t)
+		  (y-or-n-p
+		   (format "The article contains a %s command. Really post? "
+			   (buffer-substring (match-beginning 0) 
+					     (1- (match-end 0)))))
+		t)))
+	;; See whether we can shorten Followup-To.
+	(or (message-check-element 'shorten-followup-to)
+	    (let ((newsgroups (mail-fetch-field "newsgroups"))
+		  (followup-to (mail-fetch-field "followup-to"))
+		  to)
+	      (when (and newsgroups (string-match "," newsgroups)
+			 (not followup-to)
+			 (not
+			  (zerop
+			   (length
+			    (setq to (completing-read 
+				      "Followups to: (default all groups) " 
+				      (mapcar (lambda (g) (list g))
+					      (cons "poster" 
+						    (message-tokenize-header 
+						     newsgroups)))))))))
+		(goto-char (point-min))
+		(insert "Followup-To: " to "\n"))
+	      t))
 
-	 ;; Check for Approved.
-	 (or (message-check-element 'approved)
-	     (save-excursion
-	       (if (re-search-forward "^Approved:" nil t)
-		   (y-or-n-p
-		    "The article contains an Approved header. Really post? ")
-		 t)))
-	 ;; Check the Message-Id header.
-	 (or (message-check-element 'message-id)
-	     (save-excursion
-	       (let* ((case-fold-search t)
-		      (message-id (mail-fetch-field "message-id")))
-		 (or (not message-id)
-		     (and (string-match "@" message-id)
-			  (string-match "@[^\\.]*\\." message-id))
-		     (y-or-n-p
-		      (format 
-		       "The Message-ID looks strange: \"%s\". Really post? "
-		       message-id))))))
-	 ;; Check the Subject header.
-	 (or 
-	  (message-check-element 'subject)
-	  (save-excursion
-	    (let* ((case-fold-search t)
-		   (subject (mail-fetch-field "subject")))
-	      (or
-	       (and subject
-		    (not (string-match "\\`[ \t]*\\'" subject)))
-	       (progn
-		 (message 
-		  "The subject field is empty or missing.  Posting is denied.")
-		 nil)))))
-	 ;; Check the From header.
-	 (or (message-check-element 'from)
-	     (save-excursion
-	       (let* ((case-fold-search t)
-		      (from (mail-fetch-field "from")))
-		 (cond
-		  ((not from)
-		   (message "There is no From line.  Posting is denied.")
-		   nil)
-		  ((not (string-match "@[^\\.]*\\." from))
-		   (message
-		    "Denied posting -- the From looks strange: \"%s\"." from)
-		   nil)
-		  ((string-match "@[^@]*@" from)
-		   (message 
-		    "Denied posting -- two \"@\"'s in the From header: %s."
-		    from)
-		   nil)
-		  ((string-match "(.*).*(.*)" from)
-		   (message
-		    "Denied posting -- the From header looks strange: \"%s\"." 
-		    from)
-		   nil)
-		  (t t))))))))
-    ;; Check for long lines.
-    (or (message-check-element 'long-lines)
-	(save-excursion
-	  (goto-char (point-min))
-	  (re-search-forward
-	   (concat "^" (regexp-quote mail-header-separator) "$"))
-	  (while (and
-		  (progn
-		    (end-of-line)
-		    (< (current-column) 80))
-		  (zerop (forward-line 1))))
-	  (or (bolp)
-	      (eobp)
-	      (y-or-n-p
-	       "You have lines longer than 79 characters.  Really post? "))))
-    ;; Check whether the article is empty.
-    (or (message-check-element 'empty)
-	(save-excursion
-	  (goto-char (point-min))
-	  (re-search-forward
-	   (concat "^" (regexp-quote mail-header-separator) "$"))
-	  (forward-line 1)
-	  (or (re-search-forward "[^ \n\t]" nil t)
-	      (y-or-n-p "Empty article.  Really post?"))))
-    ;; Check for control characters.
-    (or (message-check-element 'control-chars)
-	(save-excursion
-	  (if (re-search-forward "[\000-\007\013\015-\037\200-\237]" nil t)
-	      (y-or-n-p 
-	       "The article contains control characters. Really post? ")
-	    t)))
-    ;; Check excessive size.
-    (or (message-check-element 'size)
-	(if (> (buffer-size) 60000)
-	    (y-or-n-p
-	     (format "The article is %d octets long. Really post? "
-		     (buffer-size)))
-	  t))
-    ;; Check whether any new text has been added.
-    (or (message-check-element 'new-text)
-	(not message-checksum)
-	(not (eq (message-checksum) message-checksum))
-	(y-or-n-p
-	 "It looks like no new text has been added.  Really post? "))
-    ;; Check the length of the signature.
-    (or (message-check-element 'signature)
-	(progn
-	  (goto-char (point-max))
-	  (if (not (re-search-backward "^-- $" nil t))
-	      t
-	    (if (> (count-lines (point) (point-max)) 5)
-		(y-or-n-p
-		 (format
-		  "Your .sig is %d lines; it should be max 4.  Really post? "
-		  (count-lines (point) (point-max))))
-	      t)))))))
+	;; Check for Approved.
+	(or (message-check-element 'approved)
+	    (save-excursion
+	      (if (re-search-forward "^Approved:" nil t)
+		  (y-or-n-p
+		   "The article contains an Approved header. Really post? ")
+		t)))
+	;; Check the Message-Id header.
+	(or (message-check-element 'message-id)
+	    (save-excursion
+	      (let* ((case-fold-search t)
+		     (message-id (mail-fetch-field "message-id")))
+		(or (not message-id)
+		    (and (string-match "@" message-id)
+			 (string-match "@[^\\.]*\\." message-id))
+		    (y-or-n-p
+		     (format 
+		      "The Message-ID looks strange: \"%s\". Really post? "
+		      message-id))))))
+	;; Check the Subject header.
+	(or 
+	 (message-check-element 'subject)
+	 (save-excursion
+	   (let* ((case-fold-search t)
+		  (subject (mail-fetch-field "subject")))
+	     (or
+	      (and subject
+		   (not (string-match "\\`[ \t]*\\'" subject)))
+	      (progn
+		(message 
+		 "The subject field is empty or missing.  Posting is denied.")
+		nil)))))
+	;; Check the From header.
+	(or (message-check-element 'from)
+	    (save-excursion
+	      (let* ((case-fold-search t)
+		     (from (mail-fetch-field "from")))
+		(cond
+		 ((not from)
+		  (message "There is no From line.  Posting is denied.")
+		  nil)
+		 ((not (string-match "@[^\\.]*\\." from))
+		  (message
+		   "Denied posting -- the From looks strange: \"%s\"." from)
+		  nil)
+		 ((string-match "@[^@]*@" from)
+		  (message 
+		   "Denied posting -- two \"@\"'s in the From header: %s."
+		   from)
+		  nil)
+		 ((string-match "(.*).*(.*)" from)
+		  (message
+		   "Denied posting -- the From header looks strange: \"%s\"." 
+		   from)
+		  nil)
+		 (t t))))))))
+   ;; Check for long lines.
+   (or (message-check-element 'long-lines)
+       (save-excursion
+	 (goto-char (point-min))
+	 (re-search-forward
+	  (concat "^" (regexp-quote mail-header-separator) "$"))
+	 (while (and
+		 (progn
+		   (end-of-line)
+		   (< (current-column) 80))
+		 (zerop (forward-line 1))))
+	 (or (bolp)
+	     (eobp)
+	     (y-or-n-p
+	      "You have lines longer than 79 characters.  Really post? "))))
+   ;; Check whether the article is empty.
+   (or (message-check-element 'empty)
+       (save-excursion
+	 (goto-char (point-min))
+	 (re-search-forward
+	  (concat "^" (regexp-quote mail-header-separator) "$"))
+	 (forward-line 1)
+	 (or (re-search-forward "[^ \n\t]" nil t)
+	     (y-or-n-p "Empty article.  Really post?"))))
+   ;; Check for control characters.
+   (or (message-check-element 'control-chars)
+       (save-excursion
+	 (if (re-search-forward "[\000-\007\013\015-\037\200-\237]" nil t)
+	     (y-or-n-p 
+	      "The article contains control characters. Really post? ")
+	   t)))
+   ;; Check excessive size.
+   (or (message-check-element 'size)
+       (if (> (buffer-size) 60000)
+	   (y-or-n-p
+	    (format "The article is %d octets long. Really post? "
+		    (buffer-size)))
+	 t))
+   ;; Check whether any new text has been added.
+   (or (message-check-element 'new-text)
+       (not message-checksum)
+       (not (eq (message-checksum) message-checksum))
+       (y-or-n-p
+	"It looks like no new text has been added.  Really post? "))
+   ;; Check the length of the signature.
+   (or (message-check-element 'signature)
+       (progn
+	 (goto-char (point-max))
+	 (if (not (re-search-backward "^-- $" nil t))
+	     t
+	   (if (> (count-lines (point) (point-max)) 5)
+	       (y-or-n-p
+		(format
+		 "Your .sig is %d lines; it should be max 4.  Really post? "
+		 (count-lines (point) (point-max))))
+	     t))))))
 
-;; Returns non-nil if this type is not to be checked.
 (defun message-check-element (type)
-  (not 
-   (or (not message-syntax-checks)
-       (if (listp message-syntax-checks)
-	   (memq type message-syntax-checks)
-	 t))))
+  "Returns non-nil if this type is not to be checked."
+  (let ((able (assq type message-syntax-checks)))
+    (and (consp able)
+	 (eq (cdr able) 'disabled))))
 
 (defun message-checksum ()
   "Return a \"checksum\" for the current buffer."

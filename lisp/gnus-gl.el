@@ -174,11 +174,13 @@ GroupLens predictions with scores calculated by other score methods.")
   "This variable allows the user to magnify the effect of GroupLens scores. 
 The scale factor is applied after the offset.")
 
-(defvar gnus-grouplens-override-scoring t
+(defvar gnus-grouplens-override-scoring 'override
   "Tell Grouplens to override the normal Gnus scoring mechanism.  
-If this variable is non-nill than Grouplens will completely override
-the normal scoring mechanism of Gnus.  When nil, GroupLens will not
-override the normal scoring mechanism so both can be used at once.")
+GroupLens scores can be combined with gnus scores in one of three ways.
+'override -- just use grouplens predictions for grouplens groups
+'combine  -- combine grouplens scores with gnus scores
+'separate -- treat grouplens scores completely separate from gnus")
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Program global variables
@@ -434,11 +436,11 @@ recommend using both scores and grouplens predictions together."
   (buffer-substring (match-beginning 1) (match-end 1)))
 
 (defun bbb-get-pred ()
-  (let ((tpred (round (string-to-int (buffer-substring  
+  (let ((tpred (string-to-number (buffer-substring  
 				      (match-beginning 2) 
-				      (match-end 2))))))
+				      (match-end 2)))))
     (if (> tpred 0)
-	(* grouplens-score-scale-factor (+ grouplens-score-offset  tpred))
+	(round (* grouplens-score-scale-factor (+ grouplens-score-offset  tpred)))
       1)))
 
 (defun bbb-get-confl ()
@@ -457,7 +459,7 @@ recommend using both scores and grouplens predictions together."
 
 (defvar gnus-tmp-score)
 (defun bbb-grouplens-score (header)
-  (if (null gnus-grouplens-override-scoring)
+  (if (eq gnus-grouplens-override-scoring 'separate)
       (bbb-grouplens-other-score header)
     (let* ((rate-string (make-string 12 ? ))
 	   (mid (aref header (nth 1 (assoc "message-id" gnus-header-index))))
@@ -828,12 +830,24 @@ recommend using both scores and grouplens predictions together."
 	(make-local-hook 'gnus-exit-group-hook)
 	(add-hook 'gnus-exit-group-hook 'bbb-put-ratings nil 'local))
       (make-local-variable 'gnus-score-find-score-files-function)
-      (if gnus-grouplens-override-scoring
-          (setq gnus-score-find-score-files-function 
-                'bbb-build-mid-scores-alist)
-        (add-hook 'gnus-select-group-hook 
-                  '(lambda() 
-                     (bbb-build-mid-scores-alist gnus-newsgroup-name))))
+      (cond ((eq gnus-grouplens-override-scoring 'combine)
+	     ;; either add bbb-buld-mid-scores-alist to a list
+             ;; or make a list
+	     (if (listp gnus-score-find-score-files-function)
+		 (setq gnus-score-find-score-files-function 
+		   (append 'bbb-build-mid-scores-alist      
+			   gnus-score-find-score-files-function ))
+	       (setq gnus-score-find-score-files-function 
+		     (list gnus-score-find-score-files-function 
+			   'bbb-build-mid-scores-alist))))
+	     ;; leave the gnus-score-find-score-files variable alone
+	    ((eq gnus-grouplens-override-scoring 'separate)
+	     (add-hook 'gnus-select-group-hook 
+		       '(lambda() 
+			  (bbb-build-mid-scores-alist gnus-newsgroup-name))))
+	    ;; default is to override
+	    (t (setq gnus-score-find-score-files-function 
+		     'bbb-build-mid-scores-alist)))
       (make-local-variable 'gnus-summary-line-format)
       (setq gnus-summary-line-format 
 	    gnus-summary-grouplens-line-format)
