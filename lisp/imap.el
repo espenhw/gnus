@@ -1992,6 +1992,9 @@ Return nil if no complete line has arrived."
 ;;   resp-text-atom  = 1*<any ATOM-CHAR except "]">
 
 (defun imap-parse-resp-text-code ()
+  ;; xxx next line for stalker communigate pro 3.3.1 bug
+  (when (looking-at " \\[")
+    (imap-forward))
   (when (eq (char-after) ?\[)
     (imap-forward)
     (cond ((search-forward "PERMANENTFLAGS " nil t)
