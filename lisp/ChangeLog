@@ -1,3 +1,9 @@
+2001-01-24  Simon Josefsson  <sj@extundo.com>
+
+	* mail-source.el (mail-sources): Add :program specifier to IMAP
+	mail source.
+	(mail-source-fetch-imap): Map :program to `imap-shell-program'.
+
 2001-01-24 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-score.el (gnus-score-lower-thread): Fix a doc typo.

@@ -161,6 +161,9 @@ See Info node `(gnus)Mail Source Specifiers'."
 						  :value network
 						  ,@mail-source-imap-streams))
 				   (group :inline t
+					  (const :format "" :value :program)
+					  (string :tag "Program"))
+				   (group :inline t
 					  (const :format ""
 						 :value :authenticator)
 					  (choice :tag "Authenticator"
@@ -299,6 +302,7 @@ Common keywords should be listed here.")
        (:server (getenv "MAILHOST"))
        (:port)
        (:stream)
+       (:program)
        (:authentication)
        (:user (or (user-login-name) (getenv "LOGNAME") (getenv "USER")))
        (:password)
@@ -864,6 +868,7 @@ This only works when `display-time' is enabled."
 	  (found 0)
 	  (buf (get-buffer-create (generate-new-buffer-name " *imap source*")))
 	  (mail-source-string (format "imap:%s:%s" server mailbox))
+	  (imap-shell-program (or (list program) imap-shell-program))
 	  remove)
       (if (and (imap-open server port stream authentication buf)
 	       (imap-authenticate
