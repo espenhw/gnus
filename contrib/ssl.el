@@ -1,7 +1,4 @@
 ;;; ssl.el --- ssl functions for emacsen without them builtin
-;; Author: $Author: larsi $
-;; Created: $Date: 2004/01/04 21:50:49 $
-;; Version: $Revision: 7.1 $
 ;; Keywords: comm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

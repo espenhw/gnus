@@ -4,8 +4,6 @@
 # Created: 1993-05-16
 # Public domain
 
-# $Id: mkinstalldirs,v 7.1 2004/01/04 21:50:48 larsi Exp $
-
 errstatus=0
 
 for file

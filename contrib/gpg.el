@@ -7,8 +7,6 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-15
 
-;; $Id: gpg.el,v 7.1 2004/01/04 21:50:49 larsi Exp $
-
 ;; This file is NOT (yet?) part of GNU Emacs.
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify

@@ -298,9 +298,6 @@
 
 ;;; Setup Code:
 
-(defconst nnir-version "$Id: nnir.el,v 7.4 2004/04/05 14:20:07 rsteib Exp $"
-  "Version of NNIR.")
-
 (require 'cl)
 (require 'nnoo)
 (require 'gnus-group)
