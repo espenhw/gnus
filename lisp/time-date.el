@@ -28,16 +28,11 @@
 
 (require 'parse-time)
 
-(autoload 'timezone-make-date-arpa-standard "timezone")
-
 ;;;###autoload
 (defun date-to-time (date)
   "Convert DATE into time."
   (condition-case ()
-      ;; `timezone-make-date-arpa-standard' makes this more robust,
-      ;; e.g. against the crop of year 100 dates in Jan 2000.
-      (apply 'encode-time (parse-time-string
-			   (timezone-make-date-arpa-standard date)))
+      (apply 'encode-time (parse-time-string date))
     (error (error "Invalid date: %s" date))))
 
 (defun time-to-seconds (time)

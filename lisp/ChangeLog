@@ -1,3 +1,10 @@
+2000-01-06 13:41:11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* parse-time.el (parse-time-rules): Allow 100-110 to be
+	2000-2010. 
+
+	* time-date.el (date-to-time): Don't use timezone.
+
 2000-01-06  Dave Love  <fx@gnu.org>
 
 	* time-date.el: Add keywords.
