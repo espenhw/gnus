@@ -1,3 +1,17 @@
+2000-12-20 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-mail-user-agent): New variable.
+	(message-setup): Renamed to message-setup-1. Support
+	mail-user-agent.
+	(message-mail-user-agent): New function.
+	(message-mail): Use it.
+	(message-reply): Use it.
+	(message-resend): Use it.
+	(message-mail-other-window): Use it.
+	(message-mail-other-frame): Use it.
+
+	* gnus-msg.el (gnus-bug): Support mail-user-agent.
+
 2000-12-20 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-tool-bar-map): Simplify.

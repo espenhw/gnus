@@ -935,6 +935,25 @@ The first matched address (not primary one) is used in the From field."
   :type '(choice (const :tag "Always use primary" nil)
 		 regexp))
 
+(defcustom message-mail-user-agent nil
+  "Like `mail-user-agent'.
+Except if it is `nil', use Gnus native MUA; if it is t, use
+`mail-user-agent'."
+  :type '(radio (const :tag "Gnus native"
+		       :format "%t\n"
+		       nil)
+		(const :tag "`mail-user-agent'"
+		       :format "%t\n"
+		       t)
+		(function-item :tag "Default Emacs mail"
+			       :format "%t\n"
+			       sendmail-user-agent)
+		(function-item :tag "Emacs interface to MH"
+			       :format "%t\n"
+			       mh-e-user-agent)
+		(function :tag "Other"))
+  :group 'message)
+
 ;;; Internal variables.
 
 (defvar message-sending-message "Sending...")
@@ -3660,8 +3679,42 @@ than 988 characters long, and if they are not, trim them until they are."
     (setq message-buffer-list
 	  (nconc message-buffer-list (list (current-buffer))))))
 
+(defun message-mail-user-agent ()
+  (let ((mua (cond
+	      ((not message-mail-user-agent) nil)
+	      ((eq message-mail-user-agent t) mail-user-agent)
+	      (t message-mail-user-agent))))
+    (if (memq mua '(message-user-agent gnus-user-agent))
+	nil
+      mua)))
+
+(defun message-setup (headers &optional replybuffer actions switch-function)
+  (let ((mua (message-mail-user-agent))
+	subject to field yank-action)
+    (if (not (and message-this-is-mail mua))
+	(message-setup-1 headers replybuffer actions)
+      (if replybuffer
+	  (setq yank-action (list 'insert-buffer replybuffer)))
+      (setq headers (copy-sequence headers))
+      (setq field (assq 'Subject headers))
+      (when field
+	(setq subject (cdr field))
+	(setq headers (delq field headers)))
+      (setq field (assq 'To headers))
+      (when field
+	(setq to (cdr field))
+	(setq headers (delq field headers)))
+      (let ((mail-user-agent mua))
+	(compose-mail to subject 
+		      (mapcar (lambda (item)
+				(cons
+				 (format "%s" (car item))
+				 (cdr item)))
+			      headers)
+		      nil switch-function yank-action actions))))) 
+
 ;;;(defvar mc-modes-alist)
-(defun message-setup (headers &optional replybuffer actions)
+(defun message-setup-1 (headers &optional replybuffer actions)
 ;;;   (when (and (boundp 'mc-modes-alist)
 ;;; 	     (not (assq 'message-mode mc-modes-alist)))
 ;;;     (push '(message-mode (encrypt . mc-encrypt-message)
@@ -3775,7 +3828,8 @@ than 988 characters long, and if they are not, trim them until they are."
 OTHER-HEADERS is an alist of header/value pairs."
   (interactive)
   (let ((message-this-is-mail t))
-    (message-pop-to-buffer (message-buffer-name "mail" to))
+    (unless (message-mail-user-agent)
+      (message-pop-to-buffer (message-buffer-name "mail" to)))
     (message-setup
      (nconc
       `((To . ,(or to "")) (Subject . ,(or subject "")))
@@ -3915,10 +3969,11 @@ responses here are directed to other addresses.")))
     (unless follow-to
       (setq follow-to (message-get-reply-headers wide to-address))))
 
-    (message-pop-to-buffer
-     (message-buffer-name
-      (if wide "wide reply" "reply") from
-      (if wide to-address nil)))
+    (unless (message-mail-user-agent)
+      (message-pop-to-buffer
+       (message-buffer-name
+	(if wide "wide reply" "reply") from
+	(if wide to-address nil))))
 
     (setq message-reply-headers
 	  (vector 0 subject from date message-id references 0 0 ""))
@@ -4322,9 +4377,11 @@ Optional DIGEST will use digest to forward."
     (let ((cur (current-buffer))
 	  beg)
       ;; We first set up a normal mail buffer.
-      (set-buffer (get-buffer-create " *message resend*"))
-      (erase-buffer)
-      (message-setup `((To . ,address)))
+      (unless (message-mail-user-agent)
+	(set-buffer (get-buffer-create " *message resend*"))
+	(erase-buffer))
+      (let ((message-this-is-mail t))
+	(message-setup `((To . ,address))))
       ;; Insert our usual headers.
       (message-generate-headers '(From Date To))
       (message-narrow-to-headers)
@@ -4406,27 +4463,31 @@ you."
 (defun message-mail-other-window (&optional to subject)
   "Like `message-mail' command, but display mail buffer in another window."
   (interactive)
-  (let ((pop-up-windows t)
-	(special-display-buffer-names nil)
-	(special-display-regexps nil)
-	(same-window-buffer-names nil)
-	(same-window-regexps nil))
-    (message-pop-to-buffer (message-buffer-name "mail" to)))
+  (unless (message-mail-user-agent)
+    (let ((pop-up-windows t)
+	  (special-display-buffer-names nil)
+	  (special-display-regexps nil)
+	  (same-window-buffer-names nil)
+	  (same-window-regexps nil))
+      (message-pop-to-buffer (message-buffer-name "mail" to))))
   (let ((message-this-is-mail t))
-    (message-setup `((To . ,(or to "")) (Subject . ,(or subject ""))))))
+    (message-setup `((To . ,(or to "")) (Subject . ,(or subject "")))
+		   nil nil 'switch-to-buffer-other-window)))
 
 ;;;###autoload
 (defun message-mail-other-frame (&optional to subject)
   "Like `message-mail' command, but display mail buffer in another frame."
   (interactive)
-  (let ((pop-up-frames t)
-	(special-display-buffer-names nil)
-	(special-display-regexps nil)
-	(same-window-buffer-names nil)
-	(same-window-regexps nil))
-    (message-pop-to-buffer (message-buffer-name "mail" to)))
+  (unless (message-mail-user-agent)
+    (let ((pop-up-frames t)
+	  (special-display-buffer-names nil)
+	  (special-display-regexps nil)
+	  (same-window-buffer-names nil)
+	  (same-window-regexps nil))
+      (message-pop-to-buffer (message-buffer-name "mail" to))))
   (let ((message-this-is-mail t))
-    (message-setup `((To . ,(or to "")) (Subject . ,(or subject ""))))))
+    (message-setup `((To . ,(or to "")) (Subject . ,(or subject "")))
+		   nil nil 'switch-to-buffer-other-frame)))
 
 ;;;###autoload
 (defun message-news-other-window (&optional newsgroups subject)
