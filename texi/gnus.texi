@@ -2533,7 +2533,7 @@ The following group parameters can be used:
 Address used by when doing followups and new posts.
 
 @example
-(to-address .  "some@@where.com")
+(to-address . "some@@where.com")
 @end example
 
 This is primarily useful in mail groups that represent closed mailing
@@ -2886,6 +2886,10 @@ Sort by number of unread articles.
 @item gnus-group-sort-by-method
 @findex gnus-group-sort-by-method
 Sort alphabetically on the select method.
+
+@item gnus-group-sort-by-server
+@findex gnus-group-sort-by-server
+Sort alphabetically on the Gnus server name.
 
 
 @end table
@@ -7668,6 +7672,12 @@ Display the date in international format, aka. ISO 8601
 @findex gnus-article-date-local
 Display the date in the local timezone (@code{gnus-article-date-local}).
 
+@item W T p
+@kindex W T p (Summary)
+@findex gnus-article-date-english
+Display the date in a format that's easily pronounceable in English
+(@code{gnus-article-date-english}).
+
 @item W T s
 @kindex W T s (Summary)
 @vindex gnus-article-time-format
@@ -9396,6 +9406,7 @@ possible but those listed are probably sufficient for most people.
 @item gnus-treat-highlight-signature (t, last, integer)
 @item gnus-treat-date-ut (head)
 @item gnus-treat-date-local (head)
+@item gnus-treat-date-english (head)
 @item gnus-treat-date-lapsed (head)
 @item gnus-treat-date-original (head)
 @item gnus-treat-date-iso8601 (head)
