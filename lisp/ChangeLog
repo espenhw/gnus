@@ -1,3 +1,8 @@
+2001-07-26 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-readable-p): New.
+	(mm-inline-media-tests): Fix the default testers.
+
 2001-07-26  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-version): Bump version number.

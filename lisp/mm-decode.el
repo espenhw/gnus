@@ -180,8 +180,11 @@
     ("multipart/alternative" ignore identity)
     ("multipart/mixed" ignore identity)
     ("multipart/related" ignore identity)
+    ;; Disable audio and image
+    ("audio/.*" ignore ignore)
+    ("image/.*" ignore ignore)
     ;; Default to displaying as text
-    (".*" mm-inline-text identity))
+    (".*" mm-inline-text mm-readable-p))
   "Alist of media types/tests saying whether types can be displayed inline."
   :type '(repeat (list (string :tag "MIME type")
 		       (function :tag "Display function")
@@ -1256,6 +1259,14 @@ If RECURSIVE, search recursively."
    (if (listp (car handles2))
        handles2
      (list handles2))))
+
+(defun mm-readable-p (handle)
+  "Say whether the content of HANDLE is readable."
+  (and (< (buffer-size (mm-handle-buffer handle)) 10000)
+       (mm-with-unibyte-buffer
+	 (mm-insert-part handle)
+	 (and (eq (mm-body-7-or-8) '7bit)
+	      (not (mm-long-lines-p 76))))))
 
 (provide 'mm-decode)
 
