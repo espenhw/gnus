@@ -1295,29 +1295,25 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 	  (spam-stat-split-fancy)))
 
       (defun spam-stat-register-spam-routine (articles &optional unregister)
-	(spam-stat-load)	
 	(dolist (article articles)
 	  (let ((article-string (spam-get-article-as-string article)))
 	    (with-temp-buffer
 	      (insert article-string)
 	      (if unregister
 		  (spam-stat-buffer-change-to-non-spam)
-	      (spam-stat-buffer-is-spam)))))
-	(spam-stat-save))
+	      (spam-stat-buffer-is-spam))))))
 
       (defun spam-stat-unregister-spam-routine (articles)
 	(spam-stat-register-spam-routine articles t))
 
       (defun spam-stat-register-ham-routine (articles &optional unregister)
-	(spam-stat-load)	
 	(dolist (article articles)
 	  (let ((article-string (spam-get-article-as-string article)))
 	    (with-temp-buffer
 	      (insert article-string)
 	      (if unregister
 		  (spam-stat-buffer-change-to-spam)
-	      (spam-stat-buffer-is-non-spam)))))
-	(spam-stat-save))
+	      (spam-stat-buffer-is-non-spam))))))
 
       (defun spam-stat-unregister-ham-routine (articles)
 	(spam-stat-register-ham-routine articles t))
@@ -1340,8 +1336,6 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 		(defalias 'spam-stat-buffer-is-non-spam 'ignore)
 		(defalias 'spam-stat-buffer-change-to-non-spam 'ignore)
 		(defalias 'spam-stat-split-fancy 'ignore)
-		(defalias 'spam-stat-load 'ignore)
-		(defalias 'spam-stat-save 'ignore)
 		(defalias 'spam-check-stat 'ignore))))
 
 
@@ -1656,10 +1650,9 @@ REMOVE not nil, remove the ADDRESSES."
   (push '((eq mark gnus-spam-mark) . spam-face)
 	gnus-summary-highlight)
   ;; Add hooks for loading and saving the spam stats
-  (when spam-use-stat
-    (add-hook 'gnus-save-newsrc-hook 'spam-maybe-spam-stat-save)
-    (add-hook 'gnus-get-top-new-news-hook 'spam-maybe-spam-stat-load)
-    (add-hook 'gnus-startup-hook 'spam-maybe-spam-stat-load))
+  (add-hook 'gnus-save-newsrc-hook 'spam-maybe-spam-stat-save)
+  (add-hook 'gnus-get-top-new-news-hook 'spam-maybe-spam-stat-load)
+  (add-hook 'gnus-startup-hook 'spam-maybe-spam-stat-load)
   (add-hook 'gnus-summary-prepare-exit-hook 'spam-summary-prepare-exit)
   (add-hook 'gnus-summary-prepare-hook 'spam-summary-prepare)
   (add-hook 'gnus-get-new-news-hook 'spam-setup-widening))

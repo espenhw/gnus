@@ -47,6 +47,9 @@
 	bogofilter, spamoracle): rewrite registration/unregistration
 	functions to take a list of articles and the unregister option.
 	Much hilarity ensues.
+	(spam-initialize): spam-stat-maybe-{save,load} already respect spam-use-stat
+	(spam-stat-register-ham-routine, spam-stat-register-spam-routine):
+	don't load and save unnecessarily
 
 	* spam-stat.el (spam-stat-dirty): new variable, set when the stats
 	database is modified
