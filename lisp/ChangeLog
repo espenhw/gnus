@@ -1,3 +1,9 @@
+2004-02-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnrss.el (nnrss-opml-export): Use
+	mm-set-buffer-file-coding-system instead of
+	set-buffer-file-coding-system.
+
 2004-02-27  Jesper Harder  <harder@ifa.au.dk>
 
 	* nnrss.el (nnrss-opml-export): Turn on sgml-mode.
