@@ -1,3 +1,8 @@
+2001-02-26 11:27:27  Paul Jarc  <prj@po.cwru.edu>
+	Committed by ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-util.el (gnus-split-references): Handle malformed References:.
+
 2001-02-26 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-article-mime-part-status): 1 part.

@@ -382,7 +382,7 @@ jabbering all the time."
   "Return a list of Message-IDs in REFERENCES."
   (let ((beg 0)
 	ids)
-    (while (string-match "<[^>]+>" references beg)
+    (while (string-match "<[^> \t]+>" references beg)
       (push (substring references (match-beginning 0) (setq beg (match-end 0)))
 	    ids))
     (nreverse ids)))
