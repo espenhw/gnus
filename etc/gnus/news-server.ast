@@ -1,4 +1,6 @@
 @title Configuring Gnus for reading news
+
+
 @node Setting up the news server name and port number
 @variable server :string (gnus-getenv-nntpserver)
 @variable port :number 119
@@ -10,5 +12,26 @@ server.  If you don't know the name of this server, contact your ISP.
 
 As a guess, the name of the server might be news.yourisp.com.
 
-The server name is @variable{server}; port number @variable{port}.
+Server name: @variable{server}
+Port number: @variable{port}
+@end text
+@next t "User name and password"
+
+@node User name and password
+@variable user-name :string (user-login-name)
+@variable password :password (or (assistant-authinfo-data server port 'password) "")
+@validate "... lots of code ..."
+@result ... er... put stuff in .authinfo, I guess
+@text
+Some news servers require that you enter a user name and
+a password.
+
+@if (password-required-p)
+It looks like your news server is one of those.
+@else
+It doesn't look like your news server requires passwords.
+@endif
+
+User name: @variable{user-name}
+Password: @variable{password}
 @end text
