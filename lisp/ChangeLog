@@ -1,5 +1,9 @@
 2002-01-26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnmail.el (nnmail-article-group): Decode headers before running
+	split rules over them.
+	(nnmail-mail-splitting-charset): New variable.
+
 	* smiley.el: Replaced with smiley-ems.el.
 
 2002-01-26  ShengHuo ZHU  <zsh@cs.rochester.edu>
