@@ -1,3 +1,8 @@
+2001-08-24  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-request-set-mark): Don't propagate seen flags
+	to server.
+
 2001-08-23 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-util.el (gnus-create-info-command): Return an interactive

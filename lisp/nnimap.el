@@ -955,6 +955,8 @@ function is generally only called when Gnus is shutting down."
 		marks)
 	    ;; cache flags are pointless on the server
 	    (setq cmdmarks (delq 'cache cmdmarks))
+	    ;; seen flags are local to each gnus
+	    (setq cmdmarks (delq 'seen cmdmarks))
 	    ;; recent marks can't be set
 	    (setq cmdmarks (delq 'recent cmdmarks))
 	    (when nnimap-importantize-dormant
