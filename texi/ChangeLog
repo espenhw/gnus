@@ -1,3 +1,8 @@
+2001-08-11  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Summary Mail Commands): Remove duplicate explanation
+	of `S W'.  Reported by Norbert Koch.
+
 2001-08-09 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Benjamin Rutt <brutt@bloomington.in.us>
 
