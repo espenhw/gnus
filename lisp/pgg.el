@@ -33,6 +33,7 @@
 (require 'pgg-parse)
 
 (eval-when-compile
+  (require 'cl)
   (ignore-errors
     (require 'w3)
     (require 'url)))
