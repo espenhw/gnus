@@ -1,3 +1,11 @@
+Thu Nov 21 05:33:24 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnoo.el (nnoo-change-server): Protect against void vars.
+
+Thu Nov 21 00:00:29 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.67 is released.
+
 Wed Nov 20 22:54:34 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* message.el (message-mode-field-menu): Separated.

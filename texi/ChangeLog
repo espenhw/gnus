@@ -1,3 +1,7 @@
+Thu Nov 21 17:45:57 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Canceling and Superseding): Fix.
+
 Wed Nov 20 15:42:36 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (New Groups): Addition.
