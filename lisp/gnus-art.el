@@ -2409,10 +2409,10 @@ If READ-CHARSET, ask for a coding system."
 (defun gnus-article-wash-html-with-w3m ()
   "Wash the current buffer with emacs-w3m."
   (mm-setup-w3m)
-  (set (make-local-variable 'w3m-safe-url-regexp) mm-w3m-safe-url-regexp)
   (save-restriction
     (narrow-to-region (point) (point-max))
-    (let (w3m-force-redisplay)
+    (let ((w3m-safe-url-regexp mm-w3m-safe-url-regexp)
+	  w3m-force-redisplay)
       (w3m-region (point-min) (point-max)))
     (when (and mm-inline-text-html-with-w3m-keymap
 	       (boundp 'w3m-minor-mode-map)

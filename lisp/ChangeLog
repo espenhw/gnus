@@ -1,3 +1,12 @@
+2004-03-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* lpath.el: Don't bind w3m-safe-url-regexp.
+
+	* gnus-art.el (gnus-article-wash-html-with-w3m): Don't make the
+	w3m-safe-url-regexp variable buffer-local.
+
+	* mm-view.el (mm-inline-text-html-render-with-w3m): Ditto.
+
 2004-02-27  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-sum.el (gnus-move-group-prefix-function): Add, default to
