@@ -1,3 +1,8 @@
+2000-04-25 22:46:36  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (mml-preview): Set up posting-charset.
+	* gnus-msg.el (gnus-group-posting-charset-alist): Add koi8-r.
+
 2000-04-25 21:23:54  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* webmail.el: Fix yahoo mail.

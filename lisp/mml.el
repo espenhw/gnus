@@ -29,7 +29,10 @@
 (require 'mm-decode)
 
 (eval-and-compile
-  (autoload 'message-make-message-id "message"))
+  (autoload 'message-make-message-id "message")
+  (autoload 'gnus-setup-posting-charset "gnus-msg")
+  (audoload 'message-fetch-field "message")
+  (autoload 'message-posting-charset "message"))
 
 (defvar mml-generate-multipart-alist nil
   "*Alist of multipart generation functions.
@@ -751,7 +754,10 @@ TYPE is the MIME type to use."
   "Display current buffer with Gnus, in a new buffer.
 If RAW, don't highlight the article."
   (interactive "P")
-  (let ((buf (current-buffer)))
+  (let ((buf (current-buffer))
+	(message-posting-charset (or (gnus-setup-posting-charset 
+				      (message-fetch-field "Newsgroups"))
+				     message-posting-charset)))
     (switch-to-buffer (get-buffer-create 
 		       (concat (if raw "*Raw MIME preview of "
 				 "*MIME preview of ") (buffer-name))))
