@@ -30,7 +30,7 @@ most: texi2latex.elc latex latexps
 
 .texi:
 	if test "x$(MAKEINFO)" != "xno" ; then \
-	  makeinfo -o $* $<; \
+	  makeinfo -I $(srcdir) -o $* $<; \
 	else \
 	  $(EMACSINFO) -eval '(find-file "$<")' $(EMACSINFOHACK) $(XINFOSWI); \
 	fi

@@ -1,3 +1,8 @@
+2000-12-10  Jim Meyering  <meyering@lucent.com>
+
+	* Makefile.in (.texi): Use `-I $(srcdir)' with `makeinfo' so that
+	non-srcdir builds work.
+
 2000-11-29 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Fancy Mail Splitting): Add.
