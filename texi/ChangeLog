@@ -1,3 +1,8 @@
+2001-10-25  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Mail Source Specifiers): More info on SSL, kerberos etc.
+	(IMAP): Ditto.  Suggested by Martin Blais <blais@discreet.com>.
+
 2001-10-23  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus.texi (Posting Server): Use `native' instead of `nil' for

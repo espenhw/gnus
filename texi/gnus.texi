@@ -12122,6 +12122,9 @@ some reason or other, Gnus let you treat it similar to a POP server
 and fetches articles from a given @sc{imap} mailbox.  @xref{IMAP}, for
 more information.
 
+Note that for the Kerberos, GSSAPI, SSL/TLS and STARTTLS support you
+may need external programs and libraries, @xref{IMAP}.
+
 Keywords:
 
 @table @code
@@ -12131,7 +12134,7 @@ The name of the @sc{imap} server.  The default is taken from the
 
 @item :port
 The port number of the @sc{imap} server.  The default is @samp{143}, or
-@samp{993} for SSL connections.
+@samp{993} for SSL/TLS connections.
 
 @item :user
 The user name to give to the @sc{imap} server.  The default is the login
@@ -14055,6 +14058,9 @@ might look something like this:
                 (nnimap-stream ssl))))
 @end lisp
 
+(Note that for SSL/TLS to work, you need the external library
+@samp{ssl.el}, see below.)
+
 The following variables can be used to create a virtual @code{nnimap}
 server:
 
@@ -14102,8 +14108,8 @@ Example server specification:
 @vindex nnimap-stream
 The type of stream used to connect to your server.  By default, nnimap
 will detect and automatically use all of the below, with the exception
-of SSL. (SSL is being replaced by STARTTLS, which can be automatically
-detected, but it's not widely deployed yet).
+of SSL/TLS. (IMAP over SSL/TLS is being replaced by STARTTLS, which
+can be automatically detected, but it's not widely deployed yet.)
 
 Example server specification:
 
@@ -14125,8 +14131,9 @@ Please note that the value of @code{nnimap-stream} is a symbol!
 SSL). Requires the external library @samp{starttls.el} and program
 @samp{starttls}.
 @item
-@dfn{ssl:} Connect through SSL. Requires OpenSSL (the
-program @samp{openssl}) or SSLeay (@samp{s_client}).
+@dfn{ssl:} Connect through SSL. Requires OpenSSL (the program
+@samp{openssl}) or SSLeay (@samp{s_client}) as well as the external
+library @samp{ssl.el}.
 @item
 @dfn{shell:} Use a shell command to start @sc{imap} connection.
 @item
@@ -14151,7 +14158,8 @@ and nnimap support it too - altough the most recent versions of
 SSLeay, 0.9.x, are known to have serious bugs making it
 useless. Earlier versions, especially 0.8.x, of SSLeay are known to
 work. The variable @code{imap-ssl-program} contain parameters to pass
-to OpenSSL/SSLeay.
+to OpenSSL/SSLeay.  You also need @samp{ssl.el} (from the W3
+distribution, for instance).
 
 @vindex imap-shell-program
 @vindex imap-shell-host
