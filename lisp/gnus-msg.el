@@ -1320,8 +1320,8 @@ composing a new message."
 	(goto-char (point-max))
 	(insert mail-header-separator)
 	(goto-char (point-min))
-	(re-search-forward "^To:\\|^Newsgroups:" nil 'move)
-	(forward-char 1)
+	(when (re-search-forward "^To:\\|^Newsgroups:" nil 'move)
+	  (forward-char 1))
 	(widen)))))
 
 (defun gnus-summary-post-forward (&optional arg)

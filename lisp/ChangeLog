@@ -1,3 +1,8 @@
+2003-10-18  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-msg.el (gnus-summary-resend-message-edit): Avoid error when
+	fields aren't found.
+
 2003-10-18  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-forward-make-body-plain)
