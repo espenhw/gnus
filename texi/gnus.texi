@@ -2565,20 +2565,19 @@ Create one of the groups mentioned in @code{gnus-useful-groups}
 @item G w
 @kindex G w (Group)
 @findex gnus-group-make-web-group
-@cindex DejaNews
-@cindex Alta Vista
-@cindex InReference
+@cindex Google
 @cindex nnweb
+@cindex gmane
 Make an ephemeral group based on a web search
 (@code{gnus-group-make-web-group}).  If you give a prefix to this
 command, make a solid group instead.  You will be prompted for the
 search engine type and the search string.  Valid search engine types
-include @code{dejanews}, @code{altavista} and @code{reference}.
+include @code{google}, @code{dejanews}, and @code{gmane}.
 @xref{Web Searches}.
 
-If you use the @code{dejanews} search engine, you can limit the search
+If you use the @code{google} search engine, you can limit the search
 to a particular group by using a match string like
-@samp{~g alt.sysadmin.recovery shaving}.
+@samp{shaving group:alt.sysadmin.recovery}.
 
 @item G DEL
 @kindex G DEL (Group)
@@ -9093,12 +9092,12 @@ is a list, Gnus will try all the methods in the list until it finds a
 match.
 
 Here's an example setting that will first try the current method, and
-then ask Deja if that fails:
+then ask Google if that fails:
 
 @lisp
 (setq gnus-refer-article-method
       '(current
-        (nnweb "refer" (nnweb-type dejanews))))
+        (nnweb "refer" (nnweb-type google))))
 @end lisp
 
 Most of the mail back ends support fetching by @code{Message-ID}, but
@@ -12855,15 +12854,12 @@ An example @sc{imap} mail source:
 @item webmail
 Get mail from a webmail server, such as @uref{www.hotmail.com},
 @uref{webmail.netscape.com}, @uref{www.netaddress.com},
-@uref{www.my-deja.com}.
-
-NOTE: Now @uref{mail.yahoo.com} provides POP3 service, so @sc{pop} mail source
-is suggested.
+@uref{mail.yahoo..com}.
 
 NOTE: Webmail largely depends cookies. A "one-line-cookie" patch is
 required for url "4.0pre.46".
 
-WARNING: Mails may lost.  NO WARRANTY.
+WARNING: Mails may be lost.  NO WARRANTY.
 
 Keywords:
 
@@ -14436,9 +14432,8 @@ is unnecessary in that case.
 @subsection Web Searches
 @cindex nnweb
 @cindex Google
-@cindex DejaNews
-@cindex Alta Vista
-@cindex InReference
+@cindex dejanews
+@cindex gmane
 @cindex Usenet searches
 @cindex searching the Usenet
 
@@ -14461,7 +14456,7 @@ pattern), you are likely to get the articles ordered in a different
 manner.  Not even using duplicate suppression (@pxref{Duplicate
 Suppression}) will help, since @code{nnweb} doesn't even know the
 @code{Message-ID} of the articles before reading them using some search
-engines (DejaNews, for instance).  The only possible way to keep track
+engines (Google, for instance).  The only possible way to keep track
 of which articles you've read is by scoring on the @code{Date}
 header---mark all articles posted before the last date you read the
 group as read.
@@ -14482,8 +14477,8 @@ Virtual server variables:
 @item nnweb-type
 @vindex nnweb-type
 What search engine type is being used.  The currently supported types
-are @code{google}, @code{dejanews}, @code{altavista} and
-@code{reference}.
+are @code{google}, @code{dejanews}, and @code{gmane}. Note that
+@code{dejanews} is an alias to @code{google}.
 
 @item nnweb-search
 @vindex nnweb-search
@@ -14492,7 +14487,7 @@ The search string to feed to the search engine.
 @item nnweb-max-hits
 @vindex nnweb-max-hits
 Advisory maximum number of hits per search to display.  The default is
-100.
+999.
 
 @item nnweb-type-definition
 @vindex nnweb-type-definition

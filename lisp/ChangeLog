@@ -1,3 +1,12 @@
+2002-07-28  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	From Niklas Morberg <niklas.morberg@axis.com>.
+
+	* nnweb.el (nnweb-type, nnweb-type-definition)
+	(nnweb-gmane-create-mapping, nnweb-gmane-wash-article)
+	(nnweb-gmane-search, nnweb-gmane-identity): Added gmane
+	functionality.
+	* nnweb.el: Removed old non-functioning search engines.
+
 2002-07-27  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-forward-make-body): Don't use

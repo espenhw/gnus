@@ -1,3 +1,9 @@
+2002-07-28  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Web Searches): Added gmane and removed old
+	non-functioning search engines.  From Niklas Morberg
+	<niklas.morberg@axis.com>.
+
 2002-05-14  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Summary Buffer Lines): Fix typo.
