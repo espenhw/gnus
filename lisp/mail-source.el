@@ -1,5 +1,5 @@
 ;;; mail-source.el --- functions for fetching mail
-;; Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004
+;; Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -1017,7 +1017,8 @@ This only works when `display-time' is enabled."
 		  (insert "From imap " (current-time-string) "\n")
 		  (save-excursion
 		    (insert str "\n\n"))
-		  (while (re-search-forward "^From " nil t)
+		  (while (let ((case-fold-search nil))
+			   (re-search-forward "^From " nil t))
 		    (replace-match ">From "))
 		  (goto-char (point-max))))
 	      (nnheader-ms-strip-cr))
