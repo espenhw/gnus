@@ -1849,13 +1849,12 @@ unfolded."
 		      (if (match-beginning 2)
 			  (progn
 			    (setq grey t)
-			    (push (cons (string-to-number (match-string 2))
+			    (push (cons (- (string-to-number (match-string 2)))
 					(mail-header-field-value))
 				  x-faces))
 			(push (cons 0 (mail-header-field-value)) x-faces)))
 		    (dolist (x-face (prog1
-					(nreverse (sort x-faces
-							'car-less-than-car))
+					(sort x-faces 'car-less-than-car)
 				      (setq x-faces nil)))
 		      (push (cdr x-face) x-faces)))
 		(while (gnus-article-goto-header "X-Face")
