@@ -1762,14 +1762,21 @@ If PROMPT (the prefix), prompt for a coding system to use."
 	(method (gnus-find-method-for-group gnus-newsgroup-name)))
     (when (and (or gnus-group-name-charset-method-alist
 		   gnus-group-name-charset-group-alist)
-	       (gnus-buffer-live-p gnus-original-article-buffer)
-	       (mail-fetch-field "Newsgroups"))
-      (nnheader-replace-header "Newsgroups"
-			       (gnus-decode-newsgroups
-				(with-current-buffer
-				    gnus-original-article-buffer
-				  (mail-fetch-field "Newsgroups"))
-				gnus-newsgroup-name method)))))
+	       (gnus-buffer-live-p gnus-original-article-buffer))
+      (when (mail-fetch-field "Newsgroups")
+	(nnheader-replace-header "Newsgroups"
+				 (gnus-decode-newsgroups
+				  (with-current-buffer
+				      gnus-original-article-buffer
+				    (mail-fetch-field "Newsgroups"))
+				  gnus-newsgroup-name method)))
+      (when (mail-fetch-field "Followup-To")
+	(nnheader-replace-header "Followup-To"
+				 (gnus-decode-newsgroups
+				  (with-current-buffer
+				      gnus-original-article-buffer
+				    (mail-fetch-field "Followup-To"))
+				  gnus-newsgroup-name method))))))
 
 (defun article-de-quoted-unreadable (&optional force read-charset)
   "Translate a quoted-printable-encoded article.

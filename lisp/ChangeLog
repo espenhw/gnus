@@ -1,5 +1,11 @@
 2001-10-07  Per Abrahamsen  <abraham@dina.kvl.dk>
 
+	* gnus-util.el (gnus-decode-newsgroups): No space in newsgroup
+	header. 
+
+	* gnus-art.el (article-decode-group-name): Also decode
+	"Followup-To". 
+
 	* rfc2047.el (rfc2047-encode-message-header): Encode without
 	asking for null methods.
 
