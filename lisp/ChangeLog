@@ -1,3 +1,7 @@
+2002-05-28  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-group.el (gnus-group-line-format): Doc fix.
+
 2002-05-28  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-msg.el (gnus-inews-yank-articles): Unfold headers of

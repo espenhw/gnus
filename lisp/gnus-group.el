@@ -174,10 +174,10 @@ with some simple extensions.
 %E    Icon as defined by `gnus-group-icon-list'.
 %u    User defined specifier.  The next character in the format string should
       be a letter.  Gnus will call the function gnus-user-format-function-X,
-      where X is the letter following %u.  The function will be passed the
-      current header as argument.  The function should return a string, which
-      will be inserted into the buffer just like information from any other
-      group specifier.
+      where X is the letter following %u.  The function will be passed a 
+      single dummy parameter as argument..  The function should return a
+      string, which will be inserted into the buffer just like information
+      from any other group specifier.
 
 Note that this format specification is not always respected.  For
 reasons of efficiency, when listing killed groups, this specification
