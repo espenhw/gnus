@@ -1,5 +1,16 @@
 2004-10-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* mm-uu.el (mm-uu-dissect): Allow optional arg.
+	(mm-uu-dissect-text-parts): New function.
+
+	* gnus-art.el (gnus-display-mime): Use mm-uu-dissect-text-parts to
+	dissect text parts.
+
+	* gnus-sum.el (gnus-summary-force-verify-and-decrypt): Revert
+	2004-08-18 change.
+
+	* mm-decode.el (mm-dissect-singlepart): Revert 2004-08-18 change.
+
 	* gnus-topic.el (gnus-topic-hierarchical-parameters): Use
 	gnus-current-topics instead of gnus-current-topic.
 

@@ -1,5 +1,6 @@
 ;;; mm-uu.el --- Return uu stuff as mm handles
-;; Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+;; Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2004
+;;        Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Keywords: postscript uudecode binhex shar forward gnatsweb pgp
@@ -430,14 +431,16 @@ Return that buffer."
 		    '("application/pgp-keys"))))
 
 ;;;###autoload
-(defun mm-uu-dissect ()
-  "Dissect the current buffer and return a list of uu handles."
+(defun mm-uu-dissect (&optional noheader)
+  "Dissect the current buffer and return a list of uu handles.
+The optional NOHEADER means there's no header in the buffer."
   (let ((case-fold-search t)
 	text-start start-point end-point file-name result
 	text-plain-type entry func)
     (save-excursion
       (goto-char (point-min))
       (cond
+       (noheader)
        ((looking-at "\n")
 	(forward-line))
        ((search-forward "\n\n" nil t)
@@ -492,6 +495,22 @@ Return that buffer."
 	     result))
 	(setq result (cons "multipart/mixed" (nreverse result))))
       result)))
+
+(defun mm-uu-dissect-text-parts (handle)
+  "Dissect text parts and put uu handles into HANDLE."
+  (let ((buffer (mm-handle-buffer handle))
+	children)
+    (cond ((stringp buffer)
+	   (mapc 'mm-uu-dissect-text-parts (cdr handle)))
+	  ((bufferp buffer)
+	   (when (and (equal "text/plain" (mm-handle-media-type handle))
+		      (with-current-buffer buffer
+			(setq children (mm-uu-dissect t))))
+	     (kill-buffer buffer)
+	     (setcar handle (car children))
+	     (setcdr handle (cdr children))))
+	  (t
+	   (mapc 'mm-uu-dissect-text-parts handle)))))
 
 (provide 'mm-uu)
 

@@ -579,11 +579,7 @@ Postpone undisplaying of viewers for types in
 (defun mm-dissect-singlepart (ctl cte &optional force cdl description id)
   (when (or force
 	    (if (equal "text/plain" (car ctl))
-		;; FIXME: This is a kludge.  Proper fix is to make
-		;; gnus-display-mime invoke mm-uu-dissect on all
-		;; textual MIME parts, and stop using mm-fill-flowed
-		;; here.
-		(and mm-fill-flowed (assoc 'format ctl))
+		(assoc 'format ctl)
 	      t))
     (mm-make-handle
      (mm-copy-to-buffer) ctl cte nil cdl description nil id)))

@@ -4540,11 +4540,15 @@ N is the numerical prefix."
 	  ;; We have to do this since selecting the window
 	  ;; may change the point.  So we set the window point.
 	  (set-window-point window point)))
-      (let* ((handles (or ihandles
-			  (mm-dissect-buffer nil gnus-article-loose-mime)
-			  (and gnus-article-emulate-mime
-			       (mm-uu-dissect))))
-	     (inhibit-read-only t) handle name type b e display)
+      (let ((handles ihandles)
+	    (inhibit-read-only t)
+	    handle name type b e display)
+	(cond (handles)
+	      ((setq handles (mm-dissect-buffer nil gnus-article-loose-mime))
+	       (when gnus-article-emulate-mime
+		 (mm-uu-dissect-text-parts handles)))
+	      (gnus-article-emulate-mime
+	       (setq handles (mm-uu-dissect))))
 	(when (and (not ihandles)
 		   (not gnus-displaying-mime))
 	  ;; Top-level call; we clean up.
