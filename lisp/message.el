@@ -4976,16 +4976,19 @@ Optional DIGEST will use digest to forward."
 	       (not message-forward-decoded-p))
 	  (insert
 	   (with-temp-buffer
-	     (mm-disable-multibyte-mule4) ;; Must copy buffer in unibyte mode
+	     (if (with-current-buffer forward-buffer
+		   (mm-multibyte-p))
+		 (insert-buffer-substring forward-buffer)
+	       (mm-disable-multibyte-mule4)
 	       (insert
 		(with-current-buffer forward-buffer
 		  (mm-string-as-unibyte (buffer-string))))
-	       (mm-enable-multibyte-mule4)
-	       (mime-to-mml)
-	       (goto-char (point-min))
-	       (when (looking-at "From ")
-		 (replace-match "X-From-Line: "))
-	       (buffer-string)))
+	       (mm-enable-multibyte-mule4))
+	     (mime-to-mml)
+	     (goto-char (point-min))
+	     (when (looking-at "From ")
+	       (replace-match "X-From-Line: "))
+	     (buffer-string)))
 	(save-restriction
 	  (narrow-to-region (point) (point))
 	  (mml-insert-buffer forward-buffer)

@@ -1070,7 +1070,11 @@ For the `inline' alternatives, also see the variable
         (let ((gnus-article-reply (gnus-summary-article-number)))
           (gnus-setup-message 'forward
             (gnus-summary-select-article)
-            (let ((mail-parse-charset gnus-newsgroup-charset)
+            (let ((mail-parse-charset
+		   (or (and (gnus-buffer-live-p gnus-article-buffer)
+			    (with-current-buffer gnus-article-buffer
+			      gnus-article-charset))
+		       gnus-newsgroup-charset))
                   (mail-parse-ignored-charsets gnus-newsgroup-ignored-charsets))
               (set-buffer gnus-original-article-buffer)
               (message-forward post)))))

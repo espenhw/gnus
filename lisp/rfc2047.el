@@ -522,6 +522,7 @@ The buffer may be narrowed."
 		     (delete-region (match-beginning 0) (match-end 0)))))
 	  (when (and (mm-multibyte-p)
 		     mail-parse-charset
+		     (not (eq mail-parse-charset 'us-ascii))
 		     (not (eq mail-parse-charset 'gnus-decoded)))
 	    (mm-decode-coding-region b e mail-parse-charset))
 	  (setq b (point)))

@@ -1,3 +1,12 @@
+2002-02-04  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-summary-mail-forward): Use gnus-article-charset.
+
+	* message.el (message-forward-make-body): Correctly copy
+	forward-buffer.
+
+	* rfc2047.el (rfc2047-decode-region): Don't decode us-ascii characters.
+	
 2002-02-04  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-art.el (gnus-article-followup-with-original): Mark with
