@@ -1134,6 +1134,8 @@ no, only reply back to the author."
   (autoload 'gnus-alive-p "gnus-util")
   (autoload 'gnus-server-string "gnus")
   (autoload 'gnus-group-name-charset "gnus-group")
+  (autoload 'gnus-group-name-decode "gnus-group")
+  (autoload 'gnus-groups-from-server "gnus")
   (autoload 'rmail-output "rmailout"))
 
 
@@ -1930,7 +1932,7 @@ Prefix arg means justify as well."
 
 (defun message-do-auto-fill ()
   "Like `do-auto-fill', but don't fill in message header."
-  (unless (text-property-any (line-beginning-position) (point) 'field 'header)
+  (unless (text-property-any (gnus-point-at-bol) (point) 'field 'header)
     (do-auto-fill)))
 
 (defun message-insert-signature (&optional force)
