@@ -1410,7 +1410,7 @@ all.  This may very well take some time.")
 		      (nth 6 date-elts))))
 	 reminder res)
     ;; remove the DOW and DST entries
-    (setf (nthcdr 6 date-elts) (nthcdr 8 date-elts))
+    (setcdr (nthcdr 5 date-elts) (nthcdr 8 date-elts))
     (while (setq reminder (pop reminders))
       (push
        (cond ((eq (cdr reminder) 'minute)
