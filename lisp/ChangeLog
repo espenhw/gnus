@@ -1,8 +1,28 @@
+2001-07-04  Didier Verna  <didier@lrde.epita.fr>
+
+	* nntp.el (nntp-open-connection-function): doc update.
+	* nntp.el (nntp-pre-command): New.
+	* nntp.el (nntp-via-rlogin-command): New.
+	* nntp.el (nntp-via-telnet-command): New.
+	* nntp.el (nntp-via-telnet-switches): New.
+	* nntp.el (nntp-via-user-name): New.
+	* nntp.el (nntp-via-user-password): New.
+	* nntp.el (nntp-via-address): New.
+	* nntp.el (nntp-via-envuser): New.
+	* nntp.el (nntp-via-shell-prompt): New.
+	* nntp.el (nntp-open-telnet-stream): New.
+	* nntp.el (nntp-open-via-rlogin-and-telnet): New.
+	* nntp.el (nntp-open-via-telnet-and-telnet): New.
+	* nntp.el (nntp-wait-for): check for possibly echo'ed commands.
+	* nntp.el (nntp-send-command): ditto.
+	* nntp.el (nntp-send-command-nodelete): ditto.
+	* nntp.el (nntp-send-command-and-decode): ditto.
+
 2001-06-30  YAGI Tatsuya  <yagi@is.titech.ac.jp>
 
 	* gnus-start.el (gnus-check-first-time-used): Use `if' instead of
 	`when'.
-	
+
 2001-07-03  Simon Josefsson  <jas@extundo.com>
 	From Nuutti Kotivuori <nuutti.kotivuori@smarttrust.com>
 
@@ -22,7 +42,7 @@
 	* mml2015.el (mml2015-format-error): New function.
 	(mml2015-mailcrypt-decrypt, mml2015-mailcrypt-clear-decrypt)
 	(mml2015-mailcrypt-verify, mml2015-gpg-clear-verify)
-	(mml2015-mailcrypt-clear-verify, mml2015-gpg-verify): Use it. 
+	(mml2015-mailcrypt-clear-verify, mml2015-gpg-verify): Use it.
 
 2001-06-26 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
@@ -38,7 +58,7 @@
 
 	* nnrss.el (nnrss-save-server-data): Bind print-level and print-length.
 	(nnrss-save-group-data): Ditto.
-	
+
 	* gnus-agent.el (gnus-agent-save-alist): Ditto.
 
 2001-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
@@ -100,7 +120,7 @@
 
 2001-06-21 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* message.el (message-make-date): Add week day. 
+	* message.el (message-make-date): Add week day.
 	Suggested by Jason R. Mastaler <jason@mastaler.com>.
 
 2001-06-19  Simon Josefsson  <jas@extundo.com>
@@ -178,7 +198,7 @@
 
 	* gnus.el (gnus-define-group-parameter): Don't quote the defcustom
 	specs.
-	
+
 2001-06-13 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el (gnus-email-address): Move it here.
@@ -199,16 +219,16 @@
 
 2001-06-12 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-art.el (gnus-plain-save-name): Use file-relative-name. 
+	* gnus-art.el (gnus-plain-save-name): Use file-relative-name.
 	From Marc Lefranc <Marc.Lefranc@univ-lille1.fr>.
-	
+
 	* nnrss.el (nnrss-node-text): Node might be nil.
 
 2001-06-11 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-uu.el (gnus-uu-save-article): Use mml tag instead of
 	part. From Katsumi Yamaoka <yamaoka@jpl.org>.
-	
+
 	* nnrss.el (nnrss-group-alist): More items.
 
 2001-06-09 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -216,21 +236,21 @@
 	* nnrss.el (nnrss-node-text): Use cddr instead xml-node-children.
 
 2001-06-03  Dale Hagglund  <rdh@best.com>
-	
+
        * gnus-mlspl.el (gnus-group-split-fancy): Fix generation of split
        restrict clauses.
 
 2001-06-07 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
-	
+
 	From Benjamin Rutt <brutt+news@bloomington.in.us>
-	
+
 	* message.el (message-wide-reply-confirm-recipients): New variable.
 
 2001-06-06  Mark Thomas  <mthomas@edrc.cmu.edu>
 
 	* nnmail.el (nnmail-fix-eudora-headers): Change the In-Reply-To
 	fix so it works with XEmacs.
-	
+
 2001-06-07 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnrss.el (nnrss-retrieve-headers): Support description as extra
@@ -259,7 +279,7 @@
 
 2001-06-02  Simon Josefsson  <simon@josefsson.org>
 
-	* imap.el (imap-kerberos4-open): 
+	* imap.el (imap-kerberos4-open):
 	(imap-gssapi-open):
 	(imap-ssl-open):
 	(imap-network-open):
@@ -285,7 +305,7 @@
 2001-05-28  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	From Jaap-Henk Hoepman (jhh@xs4all.nl).
-	
+
 	* mm-decode.el (mm-keep-viewer-alive-types): New variable.
 	(mm-keep-viewer-alive-p, mm-handle-set-external-undisplayer,
 	mm-destroy-postponed-undisplay-list): New functions.

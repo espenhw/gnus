@@ -65,57 +65,70 @@ You probably don't want to do that, though.")
 
 (defvoo nntp-open-connection-function 'nntp-open-network-stream
   "*Function used for connecting to a remote system.
-It will be called with the buffer to output in.
+It will be called with the buffer to output in as argument.
 
-Two pre-made functions are `nntp-open-network-stream', which is the
-default, and simply connects to some port or other on the remote
-system (see nntp-port-number).  The other are `nntp-open-rlogin',
-which does an rlogin on the remote system, and then does a telnet to
-the NNTP server available there (see nntp-rlogin-parameters) and
-`nntp-open-telnet' which telnets to a remote system, logs in and does
-the same.")
+Currently, five such functions are provided (please refer to their
+respective doc string for more information), three of them establishing
+direct connections to the nntp server, and two of them using an indirect
+host.
 
-(defvoo nntp-rlogin-program "rsh"
-  "*Program used to log in on remote machines.
-The default is \"rsh\", but \"ssh\" is a popular alternative.")
+Direct connections:
+- `nntp-open-network-stream' (the default),
+- `nntp-open-ssl-stream',
+- `nntp-open-telnet-stream'.
 
-(defvoo nntp-rlogin-parameters '("telnet" "-8" "${NNTPSERVER:=news}" "nntp")
-  "*Parameters to `nntp-open-rlogin'.
-That function may be used as `nntp-open-connection-function'.  In that
-case, this list will be used as the parameter list given to rsh.")
+Indirect connections:
+- `nntp-open-via-rlogin-and-telnet',
+- `nntp-open-via-telnet-and-telnet'.")
 
-(defvoo nntp-rlogin-user-name nil
-  "*User name on remote system when using the rlogin connect method.")
-
-(defvoo nntp-telnet-parameters
-    '("exec" "telnet" "-8" "${NNTPSERVER:=news}" "nntp")
-  "*Parameters to `nntp-open-telnet'.
-That function may be used as `nntp-open-connection-function'.  In that
-case, this list will be executed as a command after logging in
-via telnet.")
-
-(defvoo nntp-telnet-user-name nil
-  "User name to log in via telnet with.")
-
-(defvoo nntp-telnet-passwd nil
-  "Password to use to log in via telnet with.")
-
-(defvoo nntp-open-telnet-envuser nil
-  "*If non-nil, telnet session (client and server both) will support the ENVIRON option and not prompt for login name.")
-
-(defvoo nntp-telnet-shell-prompt "bash\\|\$ *\r?$\\|> *\r?"
-  "*Regular expression to match the shell prompt on the remote machine.")
+(defvoo nntp-pre-command nil
+  "*Pre-command to use with the various nntp-open-via-* methods.
+This is where you would put \"runsocks\" or stuff like that.")
 
 (defvoo nntp-telnet-command "telnet"
-  "Command used to start telnet.")
+  "*Telnet command used to connect to the nntp server.
+This command is used by the various nntp-open-via-* methods.")
 
 (defvoo nntp-telnet-switches '("-8")
-  "Switches given to the telnet command.")
+  "*Switches given to the telnet command `nntp-telnet-command'.")
 
 (defvoo nntp-end-of-line "\r\n"
-  "String to use on the end of lines when talking to the NNTP server.
+  "*String to use on the end of lines when talking to the NNTP server.
 This is \"\\r\\n\" by default, but should be \"\\n\" when
-using rlogin or telnet to communicate with the server.")
+using and indirect connection method (nntp-open-via-*).")
+
+(defvoo nntp-via-rlogin-command "rsh"
+  "*Rlogin command used to connect to an intermediate host.
+This command is used by the `nntp-open-via-rlogin-and-telnet' method.
+The default is \"rsh\", but \"ssh\" is a popular alternative.")
+
+(defvoo nntp-via-telnet-command "telnet"
+  "*Telnet command used to connect to an intermediate host.
+This command is used by the `nntp-open-via-telnet-and-telnet' method.")
+
+(defvoo nntp-via-telnet-switches '("-8")
+  "*Switches given to the telnet command `nntp-via-telnet-command'.")
+
+(defvoo nntp-via-user-name nil
+  "*User name to log in on an intermediate host with.
+This variable is used by the `nntp-open-via-telnet-and-telnet' method.")
+
+(defvoo nntp-via-user-password nil
+  "*Password to use to log in on an intermediate host with.
+This variable is used by the `nntp-open-via-telnet-and-telnet' method.")
+
+(defvoo nntp-via-address nil
+  "*Address of an intermediate host to connect to.
+This variable is used by the `nntp-open-via-rlogin-and-telnet' and
+`nntp-open-via-telnet-and-telnet' methods.")
+
+(defvoo nntp-via-envuser nil
+  "*Whether both telnet client and server support the ENVIRON option.
+If non-nil, there will be no prompt for a login name.")
+
+(defvoo nntp-via-shell-prompt "bash\\|\$ *\r?$\\|> *\r?"
+  "*Regular expression to match the shell prompt on an intermediate host.
+This variable is used by the `nntp-open-via-telnet-and-telnet' method.")
 
 (defvoo nntp-large-newsgroup 50
   "*The number of the articles which indicates a large newsgroup.
@@ -262,6 +275,8 @@ noticing asynchronous data.")
 		(memq (process-status process) '(open run)))
       (when (looking-at "480")
 	(nntp-handle-authinfo process))
+      (when (looking-at "^.*\n")
+	(delete-region (point) (progn (forward-line 1) (point))))
       (nntp-accept-process-output process)
       (goto-char (point-min)))
     (prog1
@@ -365,17 +380,43 @@ noticing asynchronous data.")
     (save-excursion
       (set-buffer nntp-server-buffer)
       (erase-buffer)))
-  (nntp-retrieve-data
-   (mapconcat 'identity strings " ")
-   nntp-address nntp-port-number nntp-server-buffer
-   wait-for nnheader-callback-function))
+  (let* ((command (mapconcat 'identity strings " "))
+	 (buffer (process-buffer (nntp-find-connection nntp-server-buffer)))
+	 (pos (point buffer)))
+    (prog1
+	(nntp-retrieve-data command
+			    nntp-address nntp-port-number nntp-server-buffer
+			    wait-for nnheader-callback-function)
+      ;; If nothing to wait for, still remove possibly echo'ed commands
+      (unless wait-for
+	(nntp-accept-response)
+	(save-excursion
+	  (set-buffer buffer)
+	  (goto-char pos)
+	  (if (looking-at (regexp-quote command))
+	      (delete-region pos (progn (forward-line 1) (point-at-bol))))
+	  )))
+    ))
 
 (defun nntp-send-command-nodelete (wait-for &rest strings)
   "Send STRINGS to server and wait until WAIT-FOR returns."
-  (nntp-retrieve-data
-   (mapconcat 'identity strings " ")
-   nntp-address nntp-port-number nntp-server-buffer
-   wait-for nnheader-callback-function))
+  (let* ((command (mapconcat 'identity strings " "))
+	 (buffer (process-buffer (nntp-find-connection nntp-server-buffer)))
+	 (pos (point buffer)))
+    (prog1
+	(nntp-retrieve-data command
+			    nntp-address nntp-port-number nntp-server-buffer
+			    wait-for nnheader-callback-function)
+      ;; If nothing to wait for, still remove possibly echo'ed commands
+      (unless wait-for
+	(nntp-accept-response)
+	(save-excursion
+	  (set-buffer buffer)
+	  (goto-char pos)
+	  (if (looking-at (regexp-quote command))
+	      (delete-region pos (progn (forward-line 1) (point-at-bol))))
+	  )))
+    ))
 
 (defun nntp-send-command-and-decode (wait-for &rest strings)
   "Send STRINGS to server and wait until WAIT-FOR returns."
@@ -384,10 +425,24 @@ noticing asynchronous data.")
     (save-excursion
       (set-buffer nntp-server-buffer)
       (erase-buffer)))
-  (nntp-retrieve-data
-   (mapconcat 'identity strings " ")
-   nntp-address nntp-port-number nntp-server-buffer
-   wait-for nnheader-callback-function t))
+  (let* ((command (mapconcat 'identity strings " "))
+	 (buffer (process-buffer (nntp-find-connection nntp-server-buffer)))
+	 (pos (point buffer)))
+    (prog1
+	(nntp-retrieve-data command
+			    nntp-address nntp-port-number nntp-server-buffer
+			    wait-for nnheader-callback-function t)
+      ;; If nothing to wait for, still remove possibly echo'ed commands
+      (unless wait-for
+	(nntp-accept-response)
+	(save-excursion
+	  (set-buffer buffer)
+	  (goto-char pos)
+	  (if (looking-at (regexp-quote command))
+	      (delete-region pos (progn (forward-line 1) (point-at-bol))))
+	  )))
+    ))
+
 
 (defun nntp-send-buffer (wait-for)
   "Send the current buffer to server and wait until WAIT-FOR returns."
@@ -531,7 +586,7 @@ noticing asynchronous data.")
 			    (setq last-point (point))
 			    (< received count)))
 		(nntp-accept-response))))
-	  
+
 	  ;; Wait for the reply from the final command.
 	  (unless (gnus-buffer-live-p buf)
 	    (nnheader-report 'nntp "Connection to %s is closed." server)
@@ -549,7 +604,7 @@ noticing asynchronous data.")
 			    (not (re-search-backward "^\\.\r?\n"
 						     (- (point) 4) t)))))
 	      (nntp-accept-response)))
-	  
+
 	  ;; Now all replies are received.  We remove CRs.
 	  (unless (gnus-buffer-live-p buf)
 	    (nnheader-report 'nntp "Connection to %s is closed." server)
@@ -558,7 +613,7 @@ noticing asynchronous data.")
 	  (goto-char (point-min))
 	  (while (search-forward "\r" nil t)
 	    (replace-match "" t t))
-	  
+
 	  (if (not nntp-server-list-active-group)
 	      (progn
 		(copy-to-buffer nntp-server-buffer (point-min) (point-max))
@@ -571,7 +626,7 @@ noticing asynchronous data.")
 			     (progn (forward-line 1) (point))))
 	    (copy-to-buffer nntp-server-buffer (point-min) (point-max))
 	    'active))))))
-  
+
 (deffoo nntp-retrieve-articles (articles &optional group server)
   (nntp-possibly-change-group group server)
   (save-excursion
@@ -1174,11 +1229,11 @@ password contained in '~/.nntp-authinfo'."
 	(while (and (cdr articles)
 		    (< (- (nth 1 articles) (car articles)) nntp-nov-gap))
 	  (setq articles (cdr articles)))
-	
+
 	(setq in-process-buffer-p (stringp nntp-server-xover))
 	(nntp-send-xover-command first (car articles))
 	(setq articles (cdr articles))
-	
+
 	(when (and nntp-server-xover in-process-buffer-p)
 	  ;; Don't count tried request.
 	  (setq count (1+ count))
@@ -1275,7 +1330,44 @@ password contained in '~/.nntp-authinfo'."
 	    (setq nntp-server-xover nil)))
 	nntp-server-xover))))
 
-;;; Alternative connection methods.
+(defun nntp-find-group-and-number ()
+  (save-excursion
+    (save-restriction
+      (set-buffer nntp-server-buffer)
+      (narrow-to-region (goto-char (point-min))
+			(or (search-forward "\n\n" nil t) (point-max)))
+      (goto-char (point-min))
+      ;; We first find the number by looking at the status line.
+      (let ((number (and (looking-at "2[0-9][0-9] +\\([0-9]+\\) ")
+			 (string-to-int
+			  (buffer-substring (match-beginning 1)
+					    (match-end 1)))))
+	    group newsgroups xref)
+	(and number (zerop number) (setq number nil))
+	;; Then we find the group name.
+	(setq group
+	      (cond
+	       ;; If there is only one group in the Newsgroups header,
+	       ;; then it seems quite likely that this article comes
+	       ;; from that group, I'd say.
+	       ((and (setq newsgroups (mail-fetch-field "newsgroups"))
+		     (not (string-match "," newsgroups)))
+		newsgroups)
+	       ;; If there is more than one group in the Newsgroups
+	       ;; header, then the Xref header should be filled out.
+	       ;; We hazard a guess that the group that has this
+	       ;; article number in the Xref header is the one we are
+	       ;; looking for.  This might very well be wrong if this
+	       ;; article happens to have the same number in several
+	       ;; groups, but that's life.
+	       ((and (setq xref (mail-fetch-field "xref"))
+		     number
+		     (string-match (format "\\([^ :]+\\):%d" number) xref))
+		(substring xref (match-beginning 1) (match-end 1)))
+	       (t "")))
+	(when (string-match "\r" group)
+	  (setq group (substring group 0 (match-beginning 0))))
+	(cons group number)))))
 
 (defun nntp-wait-for-string (regexp)
   "Wait until string arrives in the buffer."
@@ -1285,6 +1377,42 @@ password contained in '~/.nntp-authinfo'."
       (accept-process-output (nntp-find-connection nntp-server-buffer))
       (set-buffer buf)
       (goto-char (point-min)))))
+
+
+;; ==========================================================================
+;; Obsolete nntp-open-* connection methods -- drv
+;; ==========================================================================
+
+(defvoo nntp-open-telnet-envuser nil
+  "*If non-nil, telnet session (client and server both) will support the ENVIRON option and not prompt for login name.")
+
+(defvoo nntp-telnet-shell-prompt "bash\\|\$ *\r?$\\|> *\r?"
+  "*Regular expression to match the shell prompt on the remote machine.")
+
+(defvoo nntp-rlogin-program "rsh"
+  "*Program used to log in on remote machines.
+The default is \"rsh\", but \"ssh\" is a popular alternative.")
+
+(defvoo nntp-rlogin-parameters '("telnet" "-8" "${NNTPSERVER:=news}" "nntp")
+  "*Parameters to `nntp-open-rlogin'.
+That function may be used as `nntp-open-connection-function'.  In that
+case, this list will be used as the parameter list given to rsh.")
+
+(defvoo nntp-rlogin-user-name nil
+  "*User name on remote system when using the rlogin connect method.")
+
+(defvoo nntp-telnet-parameters
+    '("exec" "telnet" "-8" "${NNTPSERVER:=news}" "nntp")
+  "*Parameters to `nntp-open-telnet'.
+That function may be used as `nntp-open-connection-function'.  In that
+case, this list will be executed as a command after logging in
+via telnet.")
+
+(defvoo nntp-telnet-user-name nil
+  "User name to log in via telnet with.")
+
+(defvoo nntp-telnet-passwd nil
+  "Password to use to log in via telnet with.")
 
 (defun nntp-open-telnet (buffer)
   (save-excursion
@@ -1351,44 +1479,143 @@ password contained in '~/.nntp-authinfo'."
       (delete-region (point-min) (point))
       proc)))
 
-(defun nntp-find-group-and-number ()
+
+;; ==========================================================================
+;; Replacements for the nntp-open-* functions -- drv
+;; ==========================================================================
+
+(defun nntp-open-telnet-stream (buffer)
+  "Open a nntp connection by telnet'ing the news server.
+
+Please refer to the following variables to customize the connection:
+- `nntp-pre-command',
+- `nntp-telnet-command',
+- `nntp-telnet-switches',
+- `nntp-address',
+- `nntp-port-number',
+- `nntp-end-of-line'."
+  (let ((command `(,nntp-telnet-command
+		   ,@nntp-telnet-switches
+		   ,nntp-address ,nntp-port-number))
+	proc)
+    (and nntp-pre-command
+	 (push nntp-pre-command command))
+    (setq proc (apply 'start-process "nntpd" buffer command))
+    (save-excursion
+      (set-buffer buffer)
+      (nntp-wait-for-string "^\r*20[01]")
+      (beginning-of-line)
+      (delete-region (point-min) (point))
+      proc)))
+
+(defun nntp-open-via-rlogin-and-telnet (buffer)
+  "Open a connection to an nntp server through an intermediate host.
+First rlogin to the remote host, and then telnet the real news server
+from there.
+
+Please refer to the following variables to customize the connection:
+- `nntp-pre-command',
+- `nntp-via-rlogin-command',
+- `nntp-via-user-name',
+- `nntp-via-address',
+- `nntp-telnet-command',
+- `nntp-telnet-switches',
+- `nntp-address',
+- `nntp-port-number',
+- `nntp-end-of-line'."
+  (let ((command `(,nntp-via-address
+		   ,nntp-telnet-command
+		   ,@nntp-telnet-switches
+		   ,nntp-address ,nntp-port-number))
+	proc)
+    (and nntp-via-user-name
+	 (setq command `("-l" ,nntp-via-user-name ,@command)))
+    (push nntp-via-rlogin-command command)
+    (and nntp-pre-command
+	 (push nntp-pre-command command))
+    (setq proc (apply 'start-process "nntpd" buffer command))
+    (save-excursion
+      (set-buffer buffer)
+      (nntp-wait-for-string "^\r*20[01]")
+      (beginning-of-line)
+      (delete-region (point-min) (point))
+      proc)))
+
+(defun nntp-open-via-telnet-and-telnet (buffer)
+  "Open a connection to an nntp server through an intermediate host.
+First telnet the remote host, and then telnet the real news server
+from there.
+
+Please refer to the following variables to customize the connection:
+- `nntp-pre-command',
+- `nntp-via-telnet-command',
+- `nntp-via-telnet-switches',
+- `nntp-via-address',
+- `nntp-via-envuser',
+- `nntp-via-user-name',
+- `nntp-via-user-password',
+- `nntp-via-shell-prompt',
+- `nntp-telnet-command',
+- `nntp-telnet-switches',
+- `nntp-address',
+- `nntp-port-number',
+- `nntp-end-of-line'."
   (save-excursion
-    (save-restriction
-      (set-buffer nntp-server-buffer)
-      (narrow-to-region (goto-char (point-min))
-			(or (search-forward "\n\n" nil t) (point-max)))
-      (goto-char (point-min))
-      ;; We first find the number by looking at the status line.
-      (let ((number (and (looking-at "2[0-9][0-9] +\\([0-9]+\\) ")
-			 (string-to-int
-			  (buffer-substring (match-beginning 1)
-					    (match-end 1)))))
-	    group newsgroups xref)
-	(and number (zerop number) (setq number nil))
-	;; Then we find the group name.
-	(setq group
-	      (cond
-	       ;; If there is only one group in the Newsgroups header,
-	       ;; then it seems quite likely that this article comes
-	       ;; from that group, I'd say.
-	       ((and (setq newsgroups (mail-fetch-field "newsgroups"))
-		     (not (string-match "," newsgroups)))
-		newsgroups)
-	       ;; If there is more than one group in the Newsgroups
-	       ;; header, then the Xref header should be filled out.
-	       ;; We hazard a guess that the group that has this
-	       ;; article number in the Xref header is the one we are
-	       ;; looking for.  This might very well be wrong if this
-	       ;; article happens to have the same number in several
-	       ;; groups, but that's life.
-	       ((and (setq xref (mail-fetch-field "xref"))
-		     number
-		     (string-match (format "\\([^ :]+\\):%d" number) xref))
-		(substring xref (match-beginning 1) (match-end 1)))
-	       (t "")))
-	(when (string-match "\r" group)
-	  (setq group (substring group 0 (match-beginning 0))))
-	(cons group number)))))
+    (set-buffer buffer)
+    (erase-buffer)
+    (let ((command `(,nntp-via-telnet-command ,@nntp-via-telnet-switches))
+	  (case-fold-search t)
+	  proc)
+      (and nntp-pre-command (push nntp-pre-command command))
+      (setq proc (apply 'start-process "nntpd" buffer command))
+      (when (memq (process-status proc) '(open run))
+	(nntp-wait-for-string "^r?telnet")
+	(process-send-string proc "set escape \^X\n")
+	(cond
+	 ((and nntp-via-envuser nntp-via-user-name)
+	  (process-send-string proc (concat "open " "-l" nntp-via-user-name
+					    nntp-via-address "\n")))
+	 (t
+	  (process-send-string proc (concat "open " nntp-via-address
+					    "\n"))))
+	(when (not nntp-via-envuser)
+	  (nntp-wait-for-string "^\r*.?login:")
+	  (process-send-string proc
+			       (concat
+				(or nntp-via-user-name
+				    (setq nntp-via-user-name
+					  (read-string "login: ")))
+				"\n")))
+	(nntp-wait-for-string "^\r*.?password:")
+	(process-send-string proc
+			     (concat
+			      (or nntp-via-user-password
+				  (setq nntp-via-user-password
+					(mail-source-read-passwd
+					 "Password: ")))
+			      "\n"))
+	(nntp-wait-for-string nntp-via-shell-prompt)
+	(let ((real-telnet-command `("exec"
+				     ,nntp-telnet-command
+				     ,@nntp-telnet-switches
+				     ,nntp-address
+				     ,nntp-port-number)))
+	  (process-send-string proc
+			       (concat (mapconcat 'identity
+						  real-telnet-command " ")
+				       "\n")))
+	(nntp-wait-for-string "^\r*20[01]")
+	(beginning-of-line)
+	(delete-region (point-min) (point))
+	(process-send-string proc "\^]")
+	(nntp-wait-for-string "^r?telnet")
+	(process-send-string proc "mode character\n")
+	(accept-process-output proc 1)
+	(sit-for 1)
+	(goto-char (point-min))
+	(forward-line 1)
+	(delete-region (point) (point-max)))
+      proc)))
 
 (provide 'nntp)
 

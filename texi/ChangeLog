@@ -1,3 +1,12 @@
+2001-07-04  Didier Verna  <didier@lrde.epita.fr>
+
+	* gnus.texi (Example Methods): use the new nntp-open-connection
+	methods in the examples.
+	* gnus.texi (NNTP): update for the new nntp-open-connection methods.
+	* gnus.texi (Direct Functions): new node.
+	* gnus.texi (Indirect Functions): new node.
+	* gnus.texi (Common Variables): new node.
+
 2001-06-27  Simon Josefsson  <jas@extundo.com>
 	From Ralph Schleicher <rs@nunatak.allgaeu.org>
 
@@ -157,7 +166,7 @@
 2001-03-11  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* message.texi (Message Headers): Update doc for
-	`message-generate-headers-first'. 
+	`message-generate-headers-first'.
 
 2001-03-14 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Nevin Kapur <nevin@jhu.edu>
@@ -183,13 +192,13 @@
 
 	* gnus.texi (Posting Server): Fix, due to change of default value
 	of `gnus-post-method' to `current'.
-	
+
 2001-02-23 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi: Remove double words. From Gerd Moellmann.
 
 	* infohack.el (batch-makeinfo): New.
-	
+
 	* Makefile.in (EMACSINFO): Use it.
 
 2001-02-17 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -242,7 +251,7 @@
 2001-02-06 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Using GPG): Key binding.
-	
+
 	* message.texi (Security): Ditto.
 
 2001-02-06 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -267,7 +276,7 @@
 
 	* message.texi (message-ignored-news-headers): Add "X-Draft-From:".
 	(message-ignored-mail-headers): Ditto.
-	
+
 2001-01-21  Raymond Scholz <ray-2001@zonix.de>
 
 	* message.texi: Rename X-Mailer and X-Newsreader to User-Agent.
@@ -305,7 +314,7 @@
 
 2001-01-10 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus.texi (Article Washing): makeinfo 1.69 doesn't grok `anchor'. 
+	* gnus.texi (Article Washing): makeinfo 1.69 doesn't grok `anchor'.
 
 2001-01-07 18:18:53  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -339,7 +348,7 @@
 2001-01-03  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Article Washing): Mention `C-u g' as a sort of
-	anti-washing. 
+	anti-washing.
 
 2001-01-01 11:40:34  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -478,7 +487,7 @@
 
 	* gnus.texi (Archived Messages): Explain what happens when group
 	names mentioned in `gnus-message-archive-group' contain a select
-	method. 
+	method.
 
 2000-10-28  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -628,7 +637,7 @@
 
 2000-07-03 00:24:55  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus.texi (Splitting Mail): Mention gnus-summary-respool-trace. 
+	* gnus.texi (Splitting Mail): Mention gnus-summary-respool-trace.
 	(Searching for Articles): Fix.
 	(Newest Features): Fix.
 
@@ -683,7 +692,7 @@
 
 2000-04-26 02:30:06  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus.texi (Posting Styles): Addition. 
+	* gnus.texi (Posting Styles): Addition.
 
 2000-04-24 17:09:17  Felix Natter  <f.natter@ndh.net>
 
@@ -1303,7 +1312,7 @@ Thu Feb 25 00:28:49 1999  Shenghuo ZHU  <zsh@cs.rochester.edu>
 1998-08-27 07:29:17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Mail Folders): Addition.
-	
+
 ;; Local Variables:
 ;; coding: iso-2022-7bit
 ;; End:
