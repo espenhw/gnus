@@ -47,7 +47,10 @@ If you are using Cnews, you probably should set this variable to nil.")
 (defvoo nnspool-nov-directory (concat nnspool-spool-directory "over.view/")
   "Local news nov directory.")
 
-(defvoo nnspool-lib-dir "/usr/lib/news/"
+(defvoo nnspool-lib-dir 
+    (if (file-exists-p "/usr/lib/news/active")
+	"/usr/lib/news/"
+      "/var/lib/news/")
   "Where the local news library files are stored.")
 
 (defvoo nnspool-active-file (concat nnspool-lib-dir "active")
