@@ -80,7 +80,7 @@ Populated by spam-install-backend-super.")
 
 (defgroup spam nil
   "Spam configuration."
-  :version "21.4")
+  :version "22.1")
 
 (defcustom spam-summary-exit-behavior 'default
   "Exit behavior at the time of summary exit.

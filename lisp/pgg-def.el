@@ -28,7 +28,7 @@
 (defgroup pgg ()
   "Glue for the various PGP implementations."
   :group 'mime
-  :version "21.4")
+  :version "22.1")
 
 (defcustom pgg-default-scheme 'gpg
   "Default PGP scheme."
@@ -49,7 +49,7 @@
 
 (defcustom pgg-query-keyserver nil
   "Whether PGG queries keyservers for missing keys when verifying messages."
-  :version "21.4"
+  :version "22.1"
   :group 'pgg
   :type 'boolean)
 

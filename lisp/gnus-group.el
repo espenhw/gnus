@@ -448,7 +448,7 @@ nnml:\" in the minibuffer prompt.
 If it is an alist, it must consist of \(NUMBER .  PROMPT\) pairs, for example:
 \((1 .  \"\") (2 .  \"nnfolder+archive:\")).  The element with number 0 is
 used when no prefix argument is given to `gnus-group-jump-to-group'."
-  :version "21.4"
+  :version "22.1"
   :group 'gnus-group-various
   :type '(choice (string :tag "Prompt string")
 		 (const :tag "Empty" nil)
@@ -1996,14 +1996,14 @@ Same as `gnus-large-newsgroup', but only used for ephemeral newsgroups.
 If the number of articles in a newsgroup is greater than this value,
 confirmation is required for selecting the newsgroup.  If it is nil, no
 confirmation is required."
-  :version "21.4"
+  :version "22.1"
   :group 'gnus-group-select
   :type '(choice (const :tag "No limit" nil)
 		 integer))
 
 (defcustom gnus-fetch-old-ephemeral-headers nil
   "Same as `gnus-fetch-old-headers', but only used for ephemeral newsgroups."
-  :version "21.4"
+  :version "22.1"
   :group 'gnus-thread
   :type '(choice (const :tag "off" nil)
 		 (const some)

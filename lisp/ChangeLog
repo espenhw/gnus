@@ -1,3 +1,8 @@
+2005-02-09  Kim F. Storm  <storm@cua.dk>
+
+	Change Emacs release version from 21.4 to 22.1 throughout.
+	Change Emacs development version from 21.3.50 to 22.0.50.
+
 2005-02-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-mime-copy-part): Don't decode compressed parts.
@@ -4246,7 +4251,7 @@
 	* pgg-gpg.el (pgg-gpg-lookup-all-secret-keys)
 	(pgg-gpg-lookup-key): Use regexp match instead of
 	split-string (split-string is different between emacs 21.2 and
-	21.4).  Reported by ultrasoul@ultrasoul.com (David D. Smith).
+	22.1).  Reported by ultrasoul@ultrasoul.com (David D. Smith).
 
 2004-01-08  Jesper Harder  <harder@ifa.au.dk>
 
