@@ -522,10 +522,11 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	(if (not (eobp))
 	    (setq category (buffer-substring (point) (spam-point-at-eol))))
 	(when (not (zerop (length category))) ; we need a category here
-	  (unless spam-ifile-all-categories
+	  (if spam-ifile-all-categories
+	      (setq return category)
+	    ;; else, if spam-ifile-all-categories is not set...
 	    (when (string-equal spam-ifile-spam-category category)
-	      (setq return spam-split-group))
-	    (setq return category)))))	; always accept the ifile category
+	      (setq return spam-split-group))))))	; always accept the ifile category
     return))
 
 (defun spam-ifile-register-with-ifile (article-string category)

@@ -1,3 +1,8 @@
+2003-01-07  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-check-ifile): fixed the spma-ifile-all-categories
+	logic, finally
+
 2003-01-08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-spec.el (gnus-parse-format): %C is a complex format.
