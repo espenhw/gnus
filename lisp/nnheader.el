@@ -140,7 +140,8 @@ on your system, you could say something like:
 
 (defun nnheader-parse-head ()
   (let ((case-fold-search t)
-	end ref in-reply-to lines p cur)
+	(cur (current-buffer))
+	end ref in-reply-to lines p)
     (goto-char (point-min))
     ;; Search to the beginning of the next header. Error messages
     ;; do not begin with 2 or 3.
@@ -529,7 +530,10 @@ without formatting."
       (and (listp form) (eq (car form) 'lambda))))
 
 (fset 'nnheader-find-file-noselect 'find-file-noselect)
+(fset 'nnheader-insert-raw-file-contents 'insert-file-contents)
 
 (provide 'nnheader)
+
+(run-hooks 'nnheader-load-hook)
 
 ;;; nnheader.el ends here

@@ -1713,7 +1713,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.79"
+(defconst gnus-version "September Gnus v0.80"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2021,7 +2021,8 @@ Thank you for your help in stamping out bugs.
      ("gnus-srvr" gnus-browse-foreign-server)
      ("gnus-cite" :interactive t
       gnus-article-highlight-citation gnus-article-hide-citation-maybe
-      gnus-article-hide-citation gnus-article-fill-cited-article)
+      gnus-article-hide-citation gnus-article-fill-cited-article
+      gnus-article-hide-citation-in-followups)
      ("gnus-kill" gnus-kill gnus-apply-kill-file-internal
       gnus-kill-file-edit-file gnus-kill-file-raise-followups-to-author
       gnus-execute gnus-expunge)
@@ -2554,20 +2555,22 @@ Thank you for your help in stamping out bugs.
 	  (gnus-visual nil)
 	  (spec gnus-summary-line-format-spec)
 	  pos)
-      (gnus-set-work-buffer)
-      (let ((gnus-summary-line-format-spec spec))
-	(gnus-summary-insert-line
-	 [0 "" "" "" "" "" 0 0 ""]  0 nil 128 t nil "" nil 1)
-	(goto-char (point-min))
-	(setq pos (list (cons 'unread (and (search-forward "\200" nil t)
-					   (- (point) 2)))))
-	(goto-char (point-min))
-	(push (cons 'replied (and (search-forward "\201" nil t) (- (point) 2)))
-	      pos)
-	(goto-char (point-min))
-	(push (cons 'score (and (search-forward "\202" nil t) (- (point) 2)))
-	      pos)
-	(setq gnus-summary-mark-positions pos)))))
+      (save-excursion
+	(gnus-set-work-buffer)
+	(let ((gnus-summary-line-format-spec spec))
+	  (gnus-summary-insert-line
+	   [0 "" "" "" "" "" 0 0 ""]  0 nil 128 t nil "" nil 1)
+	  (goto-char (point-min))
+	  (setq pos (list (cons 'unread (and (search-forward "\200" nil t)
+					     (- (point) 2)))))
+	  (goto-char (point-min))
+	  (push (cons 'replied (and (search-forward "\201" nil t) 
+				    (- (point) 2)))
+		pos)
+	  (goto-char (point-min))
+	  (push (cons 'score (and (search-forward "\202" nil t) (- (point) 2)))
+		pos)))
+      (setq gnus-summary-mark-positions pos))))
 
 (defun gnus-update-group-mark-positions ()
   (save-excursion
@@ -5922,7 +5925,7 @@ If REVERSE, sort in reverse order."
 	(level2 (gnus-info-level info2)))
     (or (< level1 level2)
 	(and (= level1 level2)
-	     (< (gnus-info-score info1) (gnus-info-score info2))))))
+	     (> (gnus-info-score info1) (gnus-info-score info2))))))
 
 ;; Group catching up.
 
@@ -7082,6 +7085,7 @@ The following commands are available:
   (setq gnus-newsgroup-name group)
   (make-local-variable 'gnus-summary-line-format)
   (make-local-variable 'gnus-summary-line-format-spec)
+  (make-local-variable 'gnus-summary-mark-positions)
   (run-hooks 'gnus-summary-mode-hook))
 
 (defun gnus-summary-make-display-table ()
@@ -11233,9 +11237,9 @@ and `request-accept' functions."
 	 (error "The current group does not support article editing")))
   (let ((articles (gnus-summary-work-articles n))
 	(prefix (gnus-group-real-prefix gnus-newsgroup-name))
-	(names '((move "move" "Moving")
-		 (copy "copy" "Copying")
-		 (crosspost "crosspost" "Crossposting")))
+	(names '((move "Move" "Moving")
+		 (copy "Copy" "Copying")
+		 (crosspost "Crosspost" "Crossposting")))
 	(copy-buf (save-excursion
 		    (nnheader-set-temp-buffer " *copy article*")))
 	art-group to-method new-xref article to-groups)
@@ -11247,7 +11251,8 @@ and `request-accept' functions."
       (setq to-newsgroup
 	    (gnus-read-move-group-name
 	     (cadr (assq action names))
-	     gnus-current-move-group articles prefix))
+	     (symbol-value (intern (format "gnus-current-%s-group" action)))
+	     articles prefix))
       (set (intern (format "gnus-current-%s-group" action)) to-newsgroup))
     (setq to-method (or select-method 
 			(gnus-find-method-for-group to-newsgroup)))
@@ -12887,8 +12892,20 @@ save those articles instead."
 (defun gnus-read-move-group-name (prompt default articles prefix)
   "Read a group name."
   (let* ((split-name (gnus-get-split-value gnus-move-split-methods))
+	 group-map
+	 (dum (mapatoms
+	       (lambda (g) 
+		 (and (boundp g)
+		      (symbol-name g)
+		      (memq 'respool
+			    (assoc (symbol-name
+				    (car (gnus-find-method-for-group
+					  (symbol-name g))))
+				   gnus-valid-select-methods))
+		      (push (list (symbol-name g)) group-map)))
+	       gnus-active-hashtb))
 	 (prom
-	  (format "Where do you want to %s %s?"
+	  (format "%s %s to:"
 		  prompt
 		  (if (> (length articles) 1)
 		      (format "these %d articles" (length articles))
@@ -12897,10 +12914,10 @@ save those articles instead."
 	  (cond
 	   ((null split-name)
 	    (gnus-completing-read default prom
-				  gnus-active-hashtb nil nil prefix
+				  group-map nil nil prefix
 				  'gnus-group-history))
 	   ((= 1 (length split-name))
-	    (gnus-completing-read (car split-name) prom gnus-active-hashtb
+	    (gnus-completing-read (car split-name) prom group-map
 				  nil nil nil
 				  'gnus-group-history))
 	   (t
@@ -12938,14 +12955,15 @@ save those articles instead."
 	     (concat gnus-article-save-directory (car split-name))))
 	   ;; A list of splits was found.
 	   (t
-	    (setq split-name (mapcar (lambda (el) (list el))
-				     (nreverse split-name)))
-	    (let ((result (completing-read
-			   (concat prompt " ") split-name nil nil)))
-	      (concat gnus-article-save-directory
-		      (if (string= result "")
-			  (caar split-name)
-			result)))))))
+	    (setq split-name (nreverse split-name))
+	    (let (result)
+	      (let ((file-name-history (nconc split-name file-name-history)))
+		(setq result
+		      (read-file-name
+		       (concat prompt " (`M-p' for defaults) ")
+		       gnus-article-save-directory
+		       (car split-name))))
+	      (car (push result file-name-history)))))))
     ;; If we have read a directory, we append the default file name.
     (when (file-directory-p file)
       (setq file (concat (file-name-as-directory file)

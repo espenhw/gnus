@@ -33,7 +33,7 @@
 (require 'nnheader)
 (require 'nnmail)
 (require 'nnoo)
-(eval-when-compile (require 'cl))
+(require 'cl)
 
 (nnoo-declare nnml)
 
@@ -544,6 +544,7 @@ all. This may very well take some time.")
 	chars nov-line)
     (setq chars (nnmail-insert-lines))
     (nnmail-insert-xref group-art)
+    (run-hooks 'nnmail-prepare-save-mail-hook)
     (run-hooks 'nnml-prepare-save-mail-hook)
     (goto-char (point-min))
     (while (looking-at "From ")
@@ -584,6 +585,7 @@ all. This may very well take some time.")
     (unless active
       ;; Perhaps the active file was corrupt?  See whether
       ;; there are any articles in this group.
+      (nnml-possibly-change-directory group)
       (unless nnml-article-file-alist
 	(setq nnml-article-file-alist
 	      (sort
@@ -592,7 +594,7 @@ all. This may very well take some time.")
       (setq active
 	    (if nnml-article-file-alist
 		(cons (caar nnml-article-file-alist)
-		      (car (last nnml-article-file-alist)))
+		      (caar (last nnml-article-file-alist)))
 	      (cons 1 0)))
       (setq nnml-group-alist (cons (list group active) nnml-group-alist)))
     (setcdr active (1+ (cdr active)))

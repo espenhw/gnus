@@ -1126,6 +1126,7 @@ The headers will be included in the sequence they are matched.")
   (articles process-function &optional sloppy limit no-errors)
   (let ((state 'first) 
 	has-been-begin article result-file result-files process-state
+	gnus-summary-display-article-function
 	article-series files)
  
     (while (and articles 
@@ -1260,10 +1261,11 @@ The headers will be included in the sequence they are matched.")
 	(make-symbolic-link to-file file)))))
 
 (defun gnus-uu-part-number (article)
-  (let ((subject (mail-header-subject (gnus-summary-article-header article))))
-    (if (string-match "[0-9]+ */[0-9]+\\|[0-9]+ * of *[0-9]+"
-		      subject)
-	(substring subject (match-beginning 0) (match-end 0))
+  (let* ((header (gnus-summary-article-header article))
+	 (subject (and header (mail-header-subject header))))
+    (if (and subject 
+	     (string-match "[0-9]+ */[0-9]+\\|[0-9]+ * of *[0-9]+" subject))
+	(match-string 0 subject)
       "")))
 
 (defun gnus-uu-uudecode-sentinel (process event)

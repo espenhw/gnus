@@ -601,6 +601,11 @@ The SOUP packet file name will be inserted at the %s.")
 	(mailbuf (current-buffer)))
     (unwind-protect
 	(save-excursion
+	  (save-restriction
+	    (message-narrow-to-headers)
+	    (if (equal kind "mail")
+		(message-generate-headers message-required-mail-headers)
+	      (message-generate-headers message-required-news-headers)))
 	  (set-buffer tembuf)
 	  (erase-buffer)
 	  (insert-buffer-substring mailbuf)
@@ -608,10 +613,7 @@ The SOUP packet file name will be inserted at the %s.")
 	  (save-restriction
 	    (message-narrow-to-headers)
 	    ;; Remove some headers.
-	    (message-remove-header message-ignored-mail-headers t)
-	    (if (equal kind "mail")
-		(message-generate-headers message-required-mail-headers)
-	      (message-generate-headers message-required-news-headers)))
+	    (message-remove-header message-ignored-mail-headers t))
 	  (goto-char (point-max))
 	  ;; require one newline at the end.
 	  (or (= (preceding-char) ?\n)

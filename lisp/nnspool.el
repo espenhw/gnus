@@ -466,7 +466,7 @@ there.")
   (set-buffer nntp-server-buffer)
   (erase-buffer)
   (condition-case ()
-      (progn (insert-file-contents file) t)
+      (progn (nnheader-insert-raw-file-contents file) t)
     (file-error nil)))
 
 (defun nnspool-possibly-change-directory (group)

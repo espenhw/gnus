@@ -397,7 +397,7 @@ See also the documentation for `gnus-article-highlight-citation'."
     (let ((article (cdr gnus-article-current)))
       (unless (save-excursion
 		(set-buffer gnus-summary-buffer)
-		(gnus-root-id (mail-header-id 
+		(gnus-root-id (mail-header-references
 			       (gnus-summary-article-header article))))
 	(gnus-article-hide-citation)))))
 

@@ -265,6 +265,9 @@ parameter.  It should return nil, `warn' or `delete'.")
   (copy-syntax-table (standard-syntax-table))
   "Syntax table used by `nnmail-split-fancy'.")
 
+(defvar nnmail-prepare-save-mail-hook nil
+  "Hook called before saving mail.")
+
 
 
 (defconst nnmail-version "nnmail 1.0"
@@ -280,7 +283,7 @@ parameter.  It should return nil, `warn' or `delete'.")
   (set-buffer nntp-server-buffer)
   (erase-buffer)
   (condition-case ()
-      (progn (insert-file-contents file) t)
+      (progn (nnheader-insert-raw-file-contents file) t)
     (file-error nil)))
 
 (defun nnmail-group-pathname (group dir &optional file)
@@ -692,7 +695,7 @@ FUNC will be called with the buffer narrowed to each mail."
       (set-buffer (get-buffer-create " *nnmail incoming*"))
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
-      (insert-file-contents incoming)
+      (nnheader-insert-raw-file-contents incoming)
       (unless (zerop (buffer-size))
 	(goto-char (point-min))
 	(save-excursion (run-hooks 'nnmail-prepare-incoming-hook))

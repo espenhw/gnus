@@ -534,6 +534,7 @@ it.")
     (setq save-list group-art-list)
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art-list)
+    (run-hooks 'nnmail-prepare-save-mail-hook)
     (run-hooks 'nnfolder-prepare-save-mail-hook)
 
     ;; Insert the mail into each of the destination groups.

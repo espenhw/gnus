@@ -49,7 +49,7 @@ mailbox format.")
 If this variable is nil, no such courtesy message will be added.")
 
 ;;;###autoload
-(defvar message-ignored-bounced-headers "^\\(Received\\):"
+(defvar message-ignored-bounced-headers "^\\(Received\\|Return-Path\\):"
   "*Regexp that matches headers to be removed in resent bounced mail.")
 
 ;;;###autoload
@@ -342,7 +342,7 @@ actually occur.")
 (defvar message-font-lock-keywords
   (let* ((cite-prefix "A-Za-z") (cite-suffix (concat cite-prefix "0-9_.@-")))
     (list '("^To:" . font-lock-function-name-face)
-	  '("^B?CC:\\|^Reply-To:" . font-lock-keyword-face)
+          '("^[GBF]?[Cc][Cc]:\\|^Reply-To:" . font-lock-keyword-face)
 	  '("^\\(Subject:\\)[ \t]*\\(.+\\)?"
 	    (1 font-lock-comment-face) (2 font-lock-type-face nil t))
 	  (list (concat "^\\(" (regexp-quote mail-header-separator) "\\)$")
@@ -1404,8 +1404,12 @@ the user from the mailer."
 	 (re-search-forward
 	  (concat "^" (regexp-quote mail-header-separator) "$"))
 	 (forward-line 1)
-	 (or (re-search-forward "[^ \n\t]" nil t)
-	     (y-or-n-p "Empty article.  Really post?"))))
+	 (let ((b (point)))
+	   (or (re-search-forward message-signature-separator nil t)
+	       (goto-char (point-max)))
+	   (beginning-of-line)
+	   (or (re-search-backward "[^ \n\t]" b t)
+	       (y-or-n-p "Empty article.  Really post? ")))))
    ;; Check for control characters.
    (or (message-check-element 'control-chars)
        (save-excursion
@@ -1451,6 +1455,9 @@ the user from the mailer."
   "Return a \"checksum\" for the current buffer."
   (let ((sum 0))
     (save-excursion
+      (goto-char (point-min))
+      (re-search-forward
+       (concat "^" (regexp-quote mail-header-separator) "$"))
       (while (not (eobp))
 	(setq sum (logxor sum (following-char)))
 	(forward-char 1)))

@@ -102,6 +102,14 @@ see http://www.cs.indiana.edu/picons/ftp/index.html" )
 Some people may want to add \"unknown\" to this list."
 )
 
+(defvar gnus-picons-x-face-file-name 
+  (format "/tmp/picon-xface.%s.xbm" (user-login-name))
+  "The name of the file in which to store the converted X-face header.")
+
+(defvar gnus-picons-convert-x-face (format "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | pbmtoxbm > %s" gnus-picons-x-face-file-name)
+  "Command to convert the x-face header into a xbm file."
+)
+       
 (defvar gnus-group-annotations nil)
 (defvar gnus-article-annotations nil)
 (defvar gnus-x-face-annotations nil)
@@ -137,14 +145,6 @@ Some people may want to add \"unknown\" to this list."
         ((stringp variable)
          variable)))
 
-(defvar gnus-picons-x-face-file-name 
-  (format "/tmp/picon-xface.%s.xbm" (user-login-name))
-  "The name of the file in which to store the converted X-face header.")
-
-(defvar gnus-picons-convert-x-face (format "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | pbmtoxbm > %s" gnus-picons-x-face-file-name)
-  "Command to convert the x-face header into a xbm file."
-)
-       
 (defun gnus-picons-article-display-x-face ()
   "Display the x-face header bitmap in the 'gnus-picons-display-where buffer."
   ;; delete any old ones.

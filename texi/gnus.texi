@@ -6710,6 +6710,7 @@ String to be inserted at the end of the message buffer.  If @code{t}
 (which is the default), the @code{message-signature-file} file will be
 inserted instead.  If a function, the result from the function will be
 used instead.  If a form, the result from the form will be used instead.
+If this variable is @code{nil}, no signature will be inserted at all.
 
 @item message-signature-file
 File containing the signature to be inserted at the end of the buffer.
@@ -7228,7 +7229,8 @@ spell-checking via the @code{ispell} package:
 
 Gnus provides a few different methods for storing the mail you send.
 The default method is to use the @dfn{archive virtual server} to store
-the mail.
+the mail.  If you want to disable this completely, you should set
+@code{gnus-message-archive-group} to @code{nil}.
 
 @vindex gnus-message-archive-method
 @code{gnus-message-archive-method} says what virtual server Gnus is to

@@ -1,4 +1,61 @@
+Mon Apr 29 02:24:14 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* message.el (message-check-news-syntax): Better `empty' check.
+	(message-checksum): Better checksums.
+
+Sun Apr 28 14:40:04 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-ignored-bounced-headers): New default.
+
+	* nnsoup.el (nnsoup-store-reply): Generate in mail buffer.
+
+Sun Apr 28 13:12:48 1996  Wes Hardaker  <hardaker@ece.ucdavis.edu>
+
+	* gnus-picon.el: Moved variables.
+
+Sun Apr 28 11:58:51 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnml.el (nnml-active-number): Change group.
+
+	* gnus.el (gnus-group-sort-by-rank): Reverse logic.
+
+	* message.el (message-font-lock-keywords): New default.
+
+	* gnus-cite.el (gnus-article-hide-citation-in-followups): Didn't
+	work. 
+
+	* gnus.el: Autoload gnus-article-hide-citation-in-followups.
+
+	* nnml.el (nnml-active-number): Bugged out.
+
+	* gnus-uu.el (gnus-uu-grab-articles): Override
+	`gnus-summary-display-article-function'. 
+
+	* gnus.el (gnus-summary-move-article): Didn't use proper defaults
+	when copying.
+
+Sun Apr 28 11:40:44 1996  ISO-2022-JP  <morioka@jaist.ac.jp>
+
+	* nnheader.el (nnheader-insert-raw-file-contents): Ner alias. 
+
+Sun Apr 28 11:19:58 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-read-save-file-name): Use different prompt when
+	mulitple matches.
+
+Wed Apr 24 23:21:21 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-mode): Make gnus-summary-mark-positions
+	local. 
+
+	* gnus-vis.el (gnus-header-button-alist): Buttonize urls in
+	headers. 
+
+	* gnus-uu.el (gnus-uu-part-number): Check more.
+
 Wed Apr 24 04:04:54 1996  Lars Magne Ingebrigtsen  <larsi@trym.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.79 is released.
 
 	* message.el (message-syntax-checks): Doc fix. 
 
