@@ -133,11 +133,13 @@ RFC 2646 suggests 66 characters for readability."
 	    (backward-delete-char -1)
 	    (end-of-line))
 	  (unless sig
-	    (let ((fill-prefix (when quote (concat quote " ")))
-		  (fill-column (eval fill-flowed-display-column)))
-	      (fill-region (fill-flowed-point-at-bol)
-			   (min (1+ (fill-flowed-point-at-eol)) (point-max))
-			   'left 'nosqueeze))))))))
+	    (condition-case nil
+		(let ((fill-prefix (when quote (concat quote " ")))
+		      (fill-column (eval fill-flowed-display-column)))
+		  (fill-region (fill-flowed-point-at-bol)
+			       (min (1+ (fill-flowed-point-at-eol)) (point-max))
+			       'left 'nosqueeze))
+	      (error nil))))))))
 
 (provide 'flow-fill)
 
