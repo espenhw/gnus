@@ -35,6 +35,9 @@
 (require 'mm-util)
 (require 'nnheader)
 
+;; For backward compatibility with old .newsrc.eld files.
+(defvar gnus-tmp-grouplens "")  
+
 (defgroup gnus nil
   "The coffee-brewing, all singing, all dancing, kitchen sink newsreader."
   :group 'news
