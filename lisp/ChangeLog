@@ -1,3 +1,27 @@
+Sun May  7 01:12:04 1995  Lars Magne Ingebrigtsen  <larsi@bera.ifi.uio.no>
+
+	* gnus.el (gnus-get-unread-articles): Would not activate some
+	native groups. 
+
+	* nndigest.el (nndigest-first-article-separator): New variable.
+	(nndigest-narrow-to-article): Use it.
+	(nndigest-request-group): Would be one off in counting messages. 
+
+	* gnus.el (gnus-summary-setup-buffer): Don't create the buffer if
+	it already exists.
+	(gnus-summary-read-group): If the summary buffer exists, just
+	switch to it.
+	(gnus-summary-subject-string): Would bug out on pseudo-articles.
+
+	* gnus-vm.el: New file.
+
+	* gnus-msg.el (gnus-mail-reply-using-mail): In-reply-to was
+	possibly not correct.
+
+	* gnus-uu.el: Undefined keymaps.
+
+	* gnus.el (gnus-article-date-ut): `lapsed' was some hours off.
+
 Sat May  6 01:48:06 1995  Lars Magne Ingebrigtsen  <larsi@bera.ifi.uio.no>
 
 	* gnus.el (gnus-article-de-quoted-unreadable): Did not set
@@ -22,6 +46,8 @@ Sat May  6 01:48:06 1995  Lars Magne Ingebrigtsen  <larsi@bera.ifi.uio.no>
 	(gnus-summary-goto-subject): Skip dummy articles.
 	(gnus-group-first-unread-group): Went to the first group, not the
 	first unread group.
+
+	* gnus.el: 0.64 is released.
 
 Mon May  1 01:51:25 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
