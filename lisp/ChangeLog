@@ -1,3 +1,7 @@
+2002-10-01  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-required-mail-headers): Remove Lines:.
+
 2002-10-03  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Jesper Harder.
 

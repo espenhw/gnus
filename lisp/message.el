@@ -206,11 +206,11 @@ header, remove it from this list."
   :type '(repeat sexp))
 
 (defcustom message-required-mail-headers
-  '(From Subject Date (optional . In-Reply-To) Message-ID Lines
+  '(From Subject Date (optional . In-Reply-To) Message-ID
 	 (optional . User-Agent))
   "*Headers to be generated or prompted for when mailing a message.
 It is recommended that From, Date, To, Subject and Message-ID be
-included.  Organization, Lines and User-Agent are optional."
+included.  Organization and User-Agent are optional."
   :group 'message-mail
   :group 'message-headers
   :type '(repeat sexp))
