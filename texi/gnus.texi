@@ -805,7 +805,7 @@ Various
 * NoCeM::                       How to avoid spam and other fatty foods.
 * Undo::                        Some actions can be undone.
 * Moderation::                  What to do if you're a moderator.
-* XEmacs Enhancements::         There are more pictures and stuff under XEmacs.
+* Image Enhancements::          There are more pictures and stuff under XEmacs.
 * Fuzzy Matching::              What's the big fuzz?
 * Thwarting Email Spam::        A how-to on avoiding unsolicited commercial email.
 * Various Various::             Things that are really various.
@@ -7547,14 +7547,15 @@ writing, so there are tons of functions and variables to make reading
 these articles easier.
 
 @menu
-* Article Highlighting::        You want to make the article look like fruit salad.
-* Article Fontisizing::         Making emphasized text look nice.
-* Article Hiding::              You also want to make certain info go away.
-* Article Washing::             Lots of way-neat functions to make life better.
-* Article Buttons::             Click on URLs, Message-IDs, addresses and the like.
-* Article Date::                Grumble, UT!
-* Article Signature::           What is a signature?
-* Article Miscellania::         Various other stuff.
+* Article Highlighting::    You want to make the article look like fruit salad.
+* Article Fontisizing::     Making emphasized text look nice.
+* Article Hiding::          You also want to make certain info go away.
+* Article Washing::         Lots of way-neat functions to make life better.
+* Article Buttons::         Click on URLs, Message-IDs, addresses and the like.
+* Article Date::            Grumble, UT!
+* Article Display::         Display various stuff---X-Face, Picons, Smileys
+* Article Signature::       What is a signature?
+* Article Miscellania::     Various other stuff.
 @end menu
 
 
@@ -8049,41 +8050,6 @@ in question has a @code{Content-Type} header that says that this type
 has been done.
 If a prefix is given, a charset will be asked for.
 
-@item W f
-@kindex W f (Summary)
-@cindex x-face
-@findex gnus-article-display-x-face
-@findex gnus-article-x-face-command
-@vindex gnus-article-x-face-command
-@vindex gnus-article-x-face-too-ugly
-@iftex
-@iflatex
-\include{xface}
-@end iflatex
-@end iftex
-@c @anchor{X-Face}
-Look for and display any X-Face headers
-(@code{gnus-article-display-x-face}).  The command executed by this
-function is given by the @code{gnus-article-x-face-command} variable.
-If this variable is a string, this string will be executed in a
-sub-shell.  If it is a function, this function will be called with the
-face as the argument.  If the @code{gnus-article-x-face-too-ugly} (which
-is a regexp) matches the @code{From} header, the face will not be shown.
-The default action under Emacs is to fork off the @code{display}
-program@footnote{@code{display} is from the ImageMagick package.  For
-the @code{uncompface} and @code{icontopbm} programs look for a package
-like `compface' or `faces-xface' on a GNU/Linux system.}  to view the
-face.  Under XEmacs or Emacs 21+ with suitable image support, the
-default action is to display the face before the @code{From} header.
-(It's nicer if XEmacs has been compiled with X-Face support---that will
-make display somewhat faster.  If there's no native X-Face support, Gnus
-will try to convert the @code{X-Face} header using external programs
-from the @code{pbmplus} package and friends.@footnote{On a GNU/Linux
-system look for packages with names like @code{netpbm} or
-@code{libgr-progs}.})  If you want to have this function in the display
-hook, it should probably come last.
-(NOTE: @code{x-face} is used in the variable/function names, not @code{xface}).
-
 @item W b
 @kindex W b (Summary)
 @findex gnus-article-add-buttons
@@ -8116,6 +8082,12 @@ Verify a signed (PGP, PGP/MIME or S/MIME) message
 @kindex W u (Summary)
 @findex gnus-article-treat-unfold-headers
 Unfold folded header lines (@code{gnus-article-treat-unfold-headers}).
+
+@item W n
+@kindex W n (Summary)
+@findex gnus-article-treat-fold-newsgroups
+Fold the @code{Newsgroups} and @code{Followup-To} headers
+(@code{gnus-article-treat-fold-newsgroups}).
 
 @item W W H
 @kindex W W H (Summary)
@@ -8343,6 +8315,58 @@ that the article was posted in 1854.  Although something like that is
 
 @xref{Customizing Articles}, for how to display the date in your
 preferred format automatically.
+
+
+@node Article Display
+@subsection Article Display
+@cindex picons
+@cindex x-face
+@cindex smileys
+
+These commands add various frivolous display gimmics to the article
+buffer in Emacs versions that support them.
+
+@code{X-Face} headers are small black-and-white images supplied by the
+message headers (@pxref{X-Face}).
+
+Picons, on the other hand, reside on your own system, and Gnus will
+try to match the headers to what you have (@pxref{Picons}).
+
+Smileys are those little @samp{:-)} symbols that people like to litter
+their messages with (@pxref{Smileys}).
+
+@table @kbd
+@item W D x
+@kindex W D x (Summary)
+@findex gnus-article-display-x-face
+Display an @code{X-Face} in the @code{From} header.
+(@code{gnus-article-display-x-face}).
+
+@item W D s
+@kindex W D s (Summary)
+@findex gnus-article-toggle-smiley
+Toggle whether to display smileys
+(@code{gnus-article-toggle-smiley}).
+
+@item W D f
+@kindex W D f (Summary)
+@findex gnus-treat-from-picon
+Piconify the @code{From} header (@code{gnus-treat-from-picon}).
+
+@item W D m
+@kindex W D m (Summary)
+@findex gnus-treat-mail-picon
+Piconify all mail headers (i. e., @code{Cc}, @code{To})
+(@code{gnus-treat-mail-picon}).
+
+@item W D n
+@kindex W D n (Summary)
+@findex gnus-treat-newsgroups-picon
+Piconify all news headers (i. e., @code{Newsgroups} and
+@code{Followup-To}) (@code{gnus-treat-from-picon}).
+
+@end table
+
 
 
 @node Article Signature
@@ -10203,6 +10227,12 @@ possible but those listed are probably sufficient for most people.
 @item gnus-treat-strip-trailing-blank-lines (t, last, integer)
 @item gnus-treat-translate
 @item gnus-treat-x-pgp-sig (head)
+@item gnus-treat-from-picon (head)
+@item gnus-treat-mail-picon (head)
+@item gnus-treat-newsgroups-picon (head)
+@item gnus-treat-unfold-headers (head)
+@item gnus-treat-fold-newsgroups (head)
+@item gnus-treat-body-boundary (head)
 @end table
 
 @vindex gnus-part-display-hook
@@ -18222,24 +18252,24 @@ four days, Gnus will decay the scores four times, for instance.
 @chapter Various
 
 @menu
-* Process/Prefix::              A convention used by many treatment commands.
-* Interactive::                 Making Gnus ask you many questions.
-* Symbolic Prefixes::           How to supply some Gnus functions with options.
-* Formatting Variables::        You can specify what buffers should look like.
-* Window Layout::               Configuring the Gnus buffer windows.
-* Faces and Fonts::             How to change how faces look.
-* Compilation::                 How to speed Gnus up.
-* Mode Lines::                  Displaying information in the mode lines.
-* Highlighting and Menus::      Making buffers look all nice and cozy.
-* Buttons::                     Get tendinitis in ten easy steps!
-* Daemons::                     Gnus can do things behind your back.
-* NoCeM::                       How to avoid spam and other fatty foods.
-* Undo::                        Some actions can be undone.
-* Moderation::                  What to do if you're a moderator.
-* XEmacs Enhancements::         There are more pictures and stuff under XEmacs.
-* Fuzzy Matching::              What's the big fuzz?
-* Thwarting Email Spam::        A how-to on avoiding unsolicited commercial email.
-* Various Various::             Things that are really various.
+* Process/Prefix::          A convention used by many treatment commands.
+* Interactive::             Making Gnus ask you many questions.
+* Symbolic Prefixes::       How to supply some Gnus functions with options.
+* Formatting Variables::    You can specify what buffers should look like.
+* Window Layout::           Configuring the Gnus buffer windows.
+* Faces and Fonts::         How to change how faces look.
+* Compilation::             How to speed Gnus up.
+* Mode Lines::              Displaying information in the mode lines.
+* Highlighting and Menus::  Making buffers look all nice and cozy.
+* Buttons::                 Get tendinitis in ten easy steps!
+* Daemons::                 Gnus can do things behind your back.
+* NoCeM::                   How to avoid spam and other fatty foods.
+* Undo::                    Some actions can be undone.
+* Moderation::              What to do if you're a moderator.
+* Image Enhancements::      Modern versions of Emacs/XEmacs can display images.
+* Fuzzy Matching::          What's the big fuzz?
+* Thwarting Email Spam::    A how-to on avoiding unsolicited commercial email.
+* Various Various::         Things that are really various.
 @end menu
 
 
@@ -19459,18 +19489,18 @@ To use moderation mode in these two groups, say:
 @end lisp
 
 
-@node XEmacs Enhancements
-@section XEmacs Enhancements
-@cindex XEmacs
+@node Image Enhancements
+@section Image Enhancements
 
-XEmacs is able to display pictures and stuff, so Gnus has taken
-advantage of that.
+XEmacs, as well as Emacs 21, is able to display pictures and stuff, so
+Gnus has taken advantage of that.
 
 @menu
-* Picons::                      How to display pictures of what your reading.
-* Smileys::                     Show all those happy faces the way they were meant to be shown.
-* Toolbar::                     Click'n'drool.
-* XVarious::                    Other XEmacsy Gnusey variables.
+* Picons::     How to display pictures of what you're reading.
+* Smileys::    Show all those happy faces the way they were meant to be shown.
+* X-Face::     Display a funky, teensy black-and-white image.
+* Toolbar::    Click'n'drool.
+* XVarious::   Other XEmacsy Gnusey variables.
 @end menu
 
 
@@ -19809,6 +19839,57 @@ Color of the circle around the face.  The default is @samp{black}.
 Face used for mouse highlighting over the smiley face.
 
 @end table
+
+
+@node X-Face
+@subsection X-Face
+@cindex x-face
+
+@code{X-Face} headers describe a 48x48 pixel black-and-white image
+that's supposed to represent the author of the message.  It seems to
+be supported by an ever-growing number of mail and news readers.
+
+@cindex x-face
+@findex gnus-article-display-x-face
+@findex gnus-article-x-face-command
+@vindex gnus-article-x-face-command
+@vindex gnus-article-x-face-too-ugly
+@iftex
+@iflatex
+\include{xface}
+@end iflatex
+@end iftex
+@c @anchor{X-Face}
+
+Decoding an @code{X-Face} header either requires an Emacs that has
+@samp{compface} support (which most XEmacs versions has), or that you
+have @samp{compface} installed on your system.  If either is true,
+Gnus will default to displaying @code{X-Face} headers.
+
+The variable that controls this is the
+@code{gnus-article-x-face-command} variable.  If this variable is a
+string, this string will be executed in a sub-shell.  If it is a
+function, this function will be called with the face as the argument.
+If the @code{gnus-article-x-face-too-ugly} (which is a regexp) matches
+the @code{From} header, the face will not be shown.
+
+The default action under Emacs 20 is to fork off the @code{display}
+program@footnote{@code{display} is from the ImageMagick package.  For
+the @code{uncompface} and @code{icontopbm} programs look for a package
+like `compface' or `faces-xface' on a GNU/Linux system.}  to view the
+face.
+
+Under XEmacs or Emacs 21+ with suitable image support, the default
+action is to display the face before the @code{From} header.  (It's
+nicer if XEmacs has been compiled with @code{X-Face} support---that
+will make display somewhat faster.  If there's no native @code{X-Face}
+support, Gnus will try to convert the @code{X-Face} header using
+external programs from the @code{pbmplus} package and
+friends.@footnote{On a GNU/Linux system look for packages with names
+like @code{netpbm}, @code{libgr-progs} and @code{compface}.})
+
+(NOTE: @code{x-face} is used in the variable/function names, not
+@code{xface}).
 
 
 @node Toolbar

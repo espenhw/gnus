@@ -1,5 +1,8 @@
 2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus.texi (X-Face): Made into own node.
+	(Article Display): New.
+
 	* emacs-mime.texi (Interface Functions): Addition.
 
 	* message.texi (Message Headers): Addition.
