@@ -1,3 +1,11 @@
+2002-09-29  Simon Josefsson  <jas@extundo.com>
+
+	* alist.el, calist.el: Removed.
+
+2002-09-29  Daiki Ueno <ueno@unixuser.org>
+
+	* pgg.el: Remove dependency on calist.el.
+
 2002-09-28  Simon Josefsson  <jas@extundo.com>
 
 	* pgg.el (pgg-temporary-file-directory): New variable.

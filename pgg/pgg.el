@@ -29,8 +29,6 @@
 
 ;;; Code:
 
-(require 'calist)
-
 (eval-and-compile (require 'luna))
 
 (require 'pgg-def)
@@ -45,71 +43,6 @@
   (cond ((fboundp 'temp-directory) (temp-directory))
 	((boundp 'temporary-file-directory) temporary-file-directory)
 	("/tmp/")))
-
-(in-calist-package 'pgg)
-
-(defun pgg-field-match-method-with-containment
-  (calist field-type field-value)
-  (let ((s-field (assq field-type calist)))
-    (cond ((null s-field)
-	   (cons (cons field-type field-value) calist))
-	  ((memq (cdr s-field) field-value)
-	   calist))))
-
-(define-calist-field-match-method 'signature-version
-  #'pgg-field-match-method-with-containment)
-
-(define-calist-field-match-method 'symmetric-key-algorithm
-  #'pgg-field-match-method-with-containment)
-
-(define-calist-field-match-method 'public-key-algorithm
-  #'pgg-field-match-method-with-containment)
-
-(define-calist-field-match-method 'hash-algorithm
-  #'pgg-field-match-method-with-containment)
-
-(defvar pgg-verify-condition nil
-  "Condition-tree about which PGP implementation is used for verifying.")
-
-(defvar pgg-decrypt-condition nil
-  "Condition-tree about which PGP implementation is used for decrypting.")
-
-(ctree-set-calist-strictly
- 'pgg-verify-condition
- '((signature-version 3)(public-key-algorithm RSA)(hash-algorithm MD5)
-   (scheme . pgp)))
-
-(ctree-set-calist-strictly
- 'pgg-decrypt-condition
- '((public-key-algorithm RSA)(symmetric-key-algorithm IDEA)
-   (scheme . pgp)))
-
-(ctree-set-calist-strictly
- 'pgg-verify-condition
- '((signature-version 3 4)
-   (public-key-algorithm RSA ELG DSA)
-   (hash-algorithm MD5 SHA1 RIPEMD160)
-   (scheme . pgp5)))
-
-(ctree-set-calist-strictly
- 'pgg-decrypt-condition
- '((public-key-algorithm RSA ELG DSA)
-   (symmetric-key-algorithm 3DES CAST5 IDEA)
-   (scheme . pgp5)))
-
-(ctree-set-calist-strictly
- 'pgg-verify-condition
- '((signature-version 3 4)
-   (public-key-algorithm ELG-E DSA ELG)
-   (hash-algorithm MD5 SHA1 RIPEMD160)
-   (scheme . gpg)))
-
-(ctree-set-calist-strictly
- 'pgg-decrypt-condition
- '((public-key-algorithm ELG-E DSA ELG)
-   (symmetric-key-algorithm
-    3DES CAST5 BLOWFISH RIJNDAEL RIJNDAEL192 RIJNDAEL256 TWOFISH)
-   (scheme . gpg)))
 
 ;;; @ definition of the implementation scheme
 ;;;
@@ -274,11 +207,6 @@
   (let* ((packet (cdr (assq 1 (pgg-parse-armor-region start end))))
 	 (scheme
 	  (or pgg-scheme
-	      (cdr (assq 'scheme
-			 (progn
-			   (in-calist-package 'pgg)
-			   (ctree-match-calist pgg-decrypt-condition
-					       packet))))
 	      pgg-default-scheme))
 	 (entity (pgg-make-scheme scheme))
 	 (status
@@ -322,11 +250,6 @@ signer's public key from `pgg-default-keyserver-address'."
 			    (point-min)(point-max)))))))
 	 (scheme
 	  (or pgg-scheme
-	      (cdr (assq 'scheme
-			 (progn
-			   (in-calist-package 'pgg)
-			   (ctree-match-calist pgg-verify-condition
-					       packet))))
 	      pgg-default-scheme))
 	 (entity (pgg-make-scheme scheme))
 	 (key (cdr (assq 'key-identifier packet)))
