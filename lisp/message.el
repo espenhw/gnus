@@ -5370,10 +5370,10 @@ outside the message header or if the option `message-beginning-of-line'
 is nil.
 
 If point is in the message header and on a (non-continued) header
-line, move point to the beginning of the header value.  If point
-is already there, move point to beginning of line.  Therefore,
-repeated calls will toggle point between beginning of field and
-beginning of line."
+line, move point to the beginning of the header value or the beginning of line,
+whichever is closer.  If point is already at beginning of line, move point to
+beginning of header value.  Therefore, repeated calls will toggle point
+between beginning of field and beginning of line."
   (interactive "p")
   (let ((zrs 'zmacs-region-stays))
     (when (and (interactive-p) (boundp zrs))
@@ -5384,9 +5384,9 @@ beginning of line."
 	     (bol (progn (beginning-of-line n) (point)))
 	     (eol (point-at-eol))
 	     (eoh (re-search-forward ": *" eol t)))
-	(if (or (not eoh) (equal here eoh))
-	    (goto-char bol)
-	  (goto-char eoh)))
+	(goto-char
+	 (if (and eoh (or (< eoh here) (= bol here)))
+	     eoh bol)))
     (beginning-of-line n)))
 
 (defun message-buffer-name (type &optional to group)
@@ -6978,5 +6978,5 @@ regexp VARSTR."
 ;; coding: iso-8859-1
 ;; End:
 
-;;; arch-tag: 94b32cac-4504-4b6c-8181-030ebf380ee0
+;; arch-tag: 94b32cac-4504-4b6c-8181-030ebf380ee0
 ;;; message.el ends here
