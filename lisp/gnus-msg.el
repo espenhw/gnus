@@ -1038,13 +1038,6 @@ If SILENT, don't prompt the user."
 
 
 
-;; Dummies to avoid byte-compile warning.
-(eval-when-compile
-  (defvar nnspool-rejected-article-hook)
-  (defvar xemacs-codename))
-
-
-
 (defun gnus-extended-version ()
   "Stringified Gnus version and Emacs version.
 See the variable `gnus-user-agent'."
