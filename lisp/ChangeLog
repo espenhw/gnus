@@ -1,3 +1,7 @@
+2004-04-03  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.el (gnus-getenv-nntpserver): Strip whitespace.
+
 2004-04-02  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-set-difference): new function to replace
