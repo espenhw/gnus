@@ -112,6 +112,9 @@ List of pairs (KEY . GLYPH) where KEY is either a filename or an URL.")
       (while (and (not found)
 		  (setq directory (pop directories)))
 	(setq base (expand-file-name directory database))
+	;; Kludge to search misc/MISC for users.
+	(when (string= directory "misc")
+	  (setq address '("MISC")))
 	(while (and (not found)
 		    address)
 	  (setq found (gnus-picon-find-image

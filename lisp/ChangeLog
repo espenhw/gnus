@@ -1,5 +1,11 @@
 2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-art.el (gnus-body-separator-face): New variable.
+	(gnus-article-treat-body-boundary): Use a blank, colored line. 
+
+	* gnus-picon.el (gnus-picon-find-face): Look into misc/MISC as
+	well. 
+
 	* gnus-art.el (gnus-treat-body-boundary): New variable.
 	(gnus-article-treat-unfold-headers): Use helper macro.
 	(gnus-article-treat-body-boundary): New command.

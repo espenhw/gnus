@@ -362,6 +362,19 @@ Esample: (_/*word*/_)."
   "Face used for displaying highlighted words."
   :group 'gnus-article-emphasis)
 
+(defface gnus-body-separator-face
+  '((((class color)
+      (background dark))
+     (:background "white")
+     (:foreground "black"))
+    (((class color)
+      (background light))
+     (:background "black")
+     (:foreground "white"))
+    (t
+     ()))
+  "Face for the body separator.")
+
 (defcustom gnus-article-time-format "%a, %b %d %Y %T %Z"
   "Format for display of Date headers in article bodies.
 See `format-time-string' for the possible values.
@@ -1607,8 +1620,10 @@ unfolded."
   (interactive)
   (gnus-with-article-headers
     (goto-char (point-max))
-    (insert (make-string (1- (window-width)) ?_)
-	    "\n")))
+    (insert (make-string (1- (window-width)) ? )
+	    "\n")
+    (put-text-property (point) (progn (forward-line -1) (point))
+		       'face 'gnus-body-separator-face)))
 
 (defun article-fill-long-lines ()
   "Fill lines that are wider than the window width."
