@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.6.35"
+(defconst gnus-version-number "5.6.36"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -600,6 +600,33 @@ be set in `.emacs' instead."
   "Face used for normal interest read articles.")
 
 
+;;;
+;;; Gnus buffers
+;;;
+
+(defvar gnus-buffers nil)
+
+(defun gnus-get-buffer-create (name)
+  "Do the same as `get-buffer-create', but store the created buffer."
+  (or (get-buffer name)
+      (car (push (get-buffer-create name) gnus-buffers))))
+
+(defun gnus-add-buffer ()
+  "Add the current buffer to the list of Gnus buffers."
+  (push (current-buffer) gnus-buffers))
+
+(defun gnus-buffers ()
+  "Return a list of live Gnus buffers."
+  (while (and gnus-buffers
+	      (not (buffer-name (car gnus-buffers))))
+    (pop gnus-buffers))
+  (let ((buffers gnus-buffers))
+    (while (cdr buffers)
+      (if (buffer-name (cadr buffers))
+	  (pop buffers)
+	(setcdr buffers (cddr buffers)))))
+  gnus-buffers)
+
 ;;; Splash screen.
 
 (defvar gnus-group-buffer "*Group*")
@@ -691,7 +718,7 @@ be set in `.emacs' instead."
     (if (and (string-match "gnus" command)
 	     (not (string-match "gnus-other-frame" command)))
 	(gnus-splash)
-      (get-buffer-create gnus-group-buffer))))
+      (gnus-get-buffer-create gnus-group-buffer))))
 
 ;;; Do the rest.
 
@@ -1924,33 +1951,6 @@ This restriction may disappear in later versions of Gnus."
     (while (setq entry (pop alist))
       (when (memq symbol (cdr entry))
 	(funcall (car entry))))))
-
-;;;
-;;; Gnus buffers
-;;;
-
-(defvar gnus-buffers nil)
-
-(defun gnus-get-buffer-create (name)
-  "Do the same as `get-buffer-create', but store the created buffer."
-  (or (get-buffer name)
-      (car (push (get-buffer-create name) gnus-buffers))))
-
-(defun gnus-add-buffer ()
-  "Add the current buffer to the list of Gnus buffers."
-  (push (current-buffer) gnus-buffers))
-
-(defun gnus-buffers ()
-  "Return a list of live Gnus buffers."
-  (while (and gnus-buffers
-	      (not (buffer-name (car gnus-buffers))))
-    (pop gnus-buffers))
-  (let ((buffers gnus-buffers))
-    (while (cdr buffers)
-      (if (buffer-name (cadr buffers))
-	  (pop buffers)
-	(setcdr buffers (cddr buffers)))))
-  gnus-buffers)
 
 
 ;;;

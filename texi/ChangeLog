@@ -1,3 +1,7 @@
+1998-08-14 01:31:36  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus.texi (Posting Styles): New 'body style.
+
 1998-08-13 21:17:00  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Paging the Article): Addition.

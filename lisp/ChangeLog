@@ -1,3 +1,14 @@
+Fri Aug 14 23:03:51 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.36 is released.
+
+1998-08-14 21:49:22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (load): Push onto list.
+
+	* gnus-group.el (gnus-group-get-new-news-this-group): Store active
+	info. 
+
 Fri Aug 14 21:41:59 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.35 is released.

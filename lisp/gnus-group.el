@@ -2913,17 +2913,19 @@ If N is negative, this group and the N-1 previous groups will be checked."
 	 (ret (if (numberp n) (- n (length groups)) 0))
 	 (beg (unless n
 		(point)))
-	 group)
+	 group method)
     (while (setq group (pop groups))
       (gnus-group-remove-mark group)
       ;; Bypass any previous denials from the server.
-      (gnus-remove-denial (gnus-find-method-for-group group))
+      (gnus-remove-denial (setq method (gnus-find-method-for-group group)))
       (if (gnus-activate-group group (if dont-scan nil 'scan))
 	  (progn
 	    (gnus-get-unread-articles-in-group
 	     (gnus-get-info group) (gnus-active group) t)
 	    (unless (gnus-virtual-group-p group)
 	      (gnus-close-group group))
+	    (gnus-agent-save-group-info
+	     method (gnus-group-real-name group) (gnus-active group))
 	    (gnus-group-update-group group))
 	(if (eq (gnus-server-status (gnus-find-method-for-group group))
 		'denied)

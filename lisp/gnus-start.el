@@ -664,8 +664,8 @@ prompt the user for the name of an NNTP server to use."
 	      (> arg 0)
 	      (max (car gnus-group-list-mode) arg))))
 
-    (gnus-splash)
     (gnus-clear-system)
+    (gnus-splash)
     (gnus-run-hooks 'gnus-before-startup-hook)
     (nnheader-init-server-buffer)
     (setq gnus-slave slave)
