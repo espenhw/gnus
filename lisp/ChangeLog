@@ -1,3 +1,9 @@
+1999-12-04  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-start.el (gnus-site-init-file): Use `condition-case'
+	instead of `ignore-errors', since cl may not be loaded when the
+	form is evaluated.
+
 1999-12-04 11:34:22  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-bodies.el (mm-8bit-char-regexps): Removed.

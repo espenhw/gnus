@@ -47,11 +47,12 @@ If a file with the `.el' or `.elc' suffixes exists, it will be read instead."
   :type 'file)
 
 (defcustom gnus-site-init-file
-  (ignore-errors
-    (concat (file-name-directory
-	     (directory-file-name installation-directory))
-	    "site-lisp/gnus-init"))
-  "*The site-wide Gnus Emacs-Lisp startup file name, or nil if none.
+  (condition-case nil
+      (concat (file-name-directory
+	       (directory-file-name installation-directory))
+	      "site-lisp/gnus-init")
+    (error nil))
+  "The site-wide Gnus Emacs-Lisp startup file name, or nil if none.
 If a file with the `.el' or `.elc' suffixes exists, it will be read instead."
   :group 'gnus-start
   :type '(choice file (const nil)))
