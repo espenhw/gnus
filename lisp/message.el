@@ -975,11 +975,11 @@ The text will also be indented the normal way."
 ;;; Sending messages
 ;;;
 
-(defun message-send-and-exit ()
+(defun message-send-and-exit (&optional arg)
   "Send message like `message-send', then, if no errors, exit from mail buffer."
-  (interactive)
+  (interactive "P")
   (let ((buf (current-buffer)))
-    (when (message-send)
+    (when (message-send arg)
       (bury-buffer buf)
       (when (eq buf (current-buffer))
 	(message-bury buf)))))
@@ -1645,8 +1645,11 @@ give as trustworthy answer as possible."
       ;; `system-name' returned the right result.
       system-name)
      ;; We try `user-mail-address' as a backup.
-     ((string-match "@\\(\\W+\\)\\(\\'\\|\\W\\)" user-mail-address)
+     ((string-match "@\\([^\\s-]+\\)\\(\\'\\|\\W\\)" user-mail-address)
       (match-string 1 user-mail-address))
+     ;; Try `mail-host-address'.
+     (mail-host-address mail-host-address)
+     ;; Default to this bogus thing.
      (t
       (concat system-name ".i-have-a-misconfigured-system-so-shoot-me")))))
 
@@ -1678,7 +1681,8 @@ Headers already prepared in the buffer are not modified."
 	   (Distribution (message-make-distribution))
 	   (Lines (message-make-lines))
 	   (X-Newsreader message-newsreader)
-	   (X-Mailer message-mailer)
+	   (X-Mailer (and (not (mail-fetch-field "X-Newsreader"))
+			  message-mailer))
 	   (Expires (message-make-expires))
 	   (case-fold-search t)
 	   header value elem)
@@ -1812,7 +1816,7 @@ Headers already prepared in the buffer are not modified."
       (fill-region-as-paragraph begin (point))
       ;; Tapdance around looong Message-IDs.
       (forward-line -1)
-      (when (eolp)
+      (when (looking-at "[ \t]*$")
 	(message-delete-line))
       (goto-char begin)
       (re-search-forward ":" nil t)
@@ -2110,7 +2114,12 @@ Headers already prepared in the buffer are not modified."
 	   (list (cons 'Cc (if (equal (downcase mct) "always")
 			       (or reply-to from "")
 			     mct)))))
-     cur)))
+
+     cur)
+
+    (setq message-reply-headers
+	  (vector 0 subject from date message-id references 0 0 ""))))
+
 
 ;;;###autoload
 (defun message-cancel-news ()
@@ -2147,7 +2156,8 @@ Headers already prepared in the buffer are not modified."
 	      mail-header-separator "\n"
 	      "This is a cancel message from " from ".\n")
       (message "Canceling your article...")
-      (funcall message-send-news-function)
+      (let (message-syntax-checks)
+	(funcall message-send-news-function))
       (message "Canceling your article...done")
       (kill-buffer buf))))
 

@@ -1695,7 +1695,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.64"
+(defconst gnus-version "September Gnus v0.65"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -7353,7 +7353,7 @@ This is all marks except unread, ticked, dormant, and expirable."
   "Return whether ARTICLE is the last article in the buffer."
   (if (not (setq article (or article (gnus-summary-article-number))))
       t ; All non-existant numbers are the last article. :-)
-    (cdr (gnus-data-find-list article))))
+    (not (cdr (gnus-data-find-list article)))))
 
 (defun gnus-summary-insert-dummy-line (gnus-tmp-subject gnus-tmp-number)
   "Insert a dummy root in the summary buffer."
@@ -15596,13 +15596,14 @@ newsgroup."
 	  ;; These groups are foreign.  Check the level.
 	  (when (<= (gnus-info-level info) foreign-level)
 	    (setq active (gnus-activate-group group 'scan))
-	    (gnus-close-group group))
+	    (unless (inline (gnus-virtual-group-p group))
+	      (inline (gnus-close-group group))))
 
 	;; These groups are native or secondary.
 	(when (and (<= (gnus-info-level info) level)
 		   (not gnus-read-active-file))
 	  (setq active (gnus-activate-group group 'scan))
-	  (gnus-close-group group)))
+	  (inline (gnus-close-group group))))
 
       (if active
 	  (inline (gnus-get-unread-articles-in-group 

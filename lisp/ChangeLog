@@ -1,4 +1,26 @@
+Sat Apr  6 19:03:10 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* nnvirtual.el (nnvirtual-close-group): Don't update component
+	groups so much.
+
+	* message.el (message-make-fqdm): Wouldn't pick out the address
+	from `user-mail-address'.
+	(message-generate-headers): Don't insert X-Mailer if there is an
+	X-Newsreader. 
+	(message-followup): Set `message-reply-headers'.
+	(message-send-and-exit): Pass prefix argument.
+	(message-cancel-news): Don't check syntax.
+
+Sat Apr  6 03:04:58 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-last-article-p): Reverse logic.
+
+	* message.el (message-make-fqdm): Try mail-host-address.
+	(message-fill-header): Would insert blank lines.
+
 Fri Apr  5 23:51:17 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no (Lars Magne Ingebrigtsen)>
+
+	* gnus.el: September Gnus v0.64 is released.
 
 	* message.el (message-send-and-exit): Don't bury buffer on
 	unsucessful sending.
