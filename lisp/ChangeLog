@@ -1,3 +1,9 @@
+2000-11-21 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml2015.el (mml2015-mailcrypt-encrypt): Ensure the part is encrypted.
+	(mml2015-mailcrypt-encrypt): Use unibyte-buffer.
+	(mml2015-gpg-encrypt): Ditto.
+
 2000-11-21 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-verify-option): Default value.

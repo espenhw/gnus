@@ -262,16 +262,19 @@
 			(or (y-or-n-p "Sign the message? ")
 			    'not))))
 	     'never)))
-    (mc-encrypt-generic 
-     (or (message-options-get 'message-recipients)
-	 (message-options-set 'message-recipients
+    (mm-with-unibyte-current-buffer-mule4
+      (mc-encrypt-generic 
+       (or (message-options-get 'message-recipients)
+	   (message-options-set 'message-recipients
 			      (mc-cleanup-recipient-headers 
 			       (read-string "Recipients: "))))
-     nil nil nil
-     (message-options-get 'message-sender)))
+       nil nil nil
+       (message-options-get 'message-sender))))
+  (goto-char (point-min))
+  (unless (looking-at "-----BEGIN PGP MESSAGE-----")
+    (error "Fail to encrypt the message."))
   (let ((boundary 
 	 (funcall mml-boundary-function (incf mml-multipart-number))))
-    (goto-char (point-min))
     (insert (format "Content-Type: multipart/encrypted; boundary=\"%s\";\n"
 		    boundary))
     (insert "\tprotocol=\"application/pgp-encrypted\"\n\n")
@@ -424,36 +427,37 @@
 	 (funcall mml-boundary-function (incf mml-multipart-number)))
 	(text (current-buffer))
 	cipher)
-    (with-temp-buffer
-      (unless (gpg-sign-encrypt 
-	       text (setq cipher (current-buffer))
-	       mml2015-result-buffer 
-	       (split-string
-		(or 
-		 (message-options-get 'message-recipients)
-		 (message-options-set 'message-recipients
-				      (read-string "Recipients: ")))
-		"[ \f\t\n\r\v,]+")
-	       nil
-  	       (message-options-get 'message-sender)
-	       t t) ; armor & textmode
-	(unless (> (point-max) (point-min))
-	  (pop-to-buffer mml2015-result-buffer)
-	  (error "Encrypt error.")))
-      (set-buffer text)
-      (delete-region (point-min) (point-max))
-      (insert (format "Content-Type: multipart/encrypted; boundary=\"%s\";\n"
-		      boundary))
-      (insert "\tprotocol=\"application/pgp-encrypted\"\n\n")
-      (insert (format "--%s\n" boundary))
-      (insert "Content-Type: application/pgp-encrypted\n\n")
-      (insert "Version: 1\n\n")
-      (insert (format "--%s\n" boundary))
-      (insert "Content-Type: application/octet-stream\n\n")
-      (insert-buffer cipher)
-      (goto-char (point-max))
-      (insert (format "--%s--\n" boundary))
-      (goto-char (point-max)))))
+    (mm-with-unibyte-current-buffer-mule4
+      (with-temp-buffer
+	(unless (gpg-sign-encrypt 
+		 text (setq cipher (current-buffer))
+		 mml2015-result-buffer 
+		 (split-string
+		  (or 
+		   (message-options-get 'message-recipients)
+		   (message-options-set 'message-recipients
+					(read-string "Recipients: ")))
+		  "[ \f\t\n\r\v,]+")
+		 nil
+		 (message-options-get 'message-sender)
+		 t t) ; armor & textmode
+	  (unless (> (point-max) (point-min))
+	    (pop-to-buffer mml2015-result-buffer)
+	    (error "Encrypt error.")))
+	(set-buffer text)
+	(delete-region (point-min) (point-max))
+	(insert (format "Content-Type: multipart/encrypted; boundary=\"%s\";\n"
+			boundary))
+	(insert "\tprotocol=\"application/pgp-encrypted\"\n\n")
+	(insert (format "--%s\n" boundary))
+	(insert "Content-Type: application/pgp-encrypted\n\n")
+	(insert "Version: 1\n\n")
+	(insert (format "--%s\n" boundary))
+	(insert "Content-Type: application/octet-stream\n\n")
+	(insert-buffer cipher)
+	(goto-char (point-max))
+	(insert (format "--%s--\n" boundary))
+	(goto-char (point-max))))))
 
 ;;; General wrapper
 
