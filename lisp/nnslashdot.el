@@ -210,7 +210,7 @@
 	(when (looking-at "<a[^>]+>\\([^<]+\\)")
 	  (setq from (nnweb-decode-entities-string (match-string 1))))
 	(search-forward " on ")
-	(setq date (nnslashdot-date-to-dat
+	(setq date (nnslashdot-date-to-date
 		    (buffer-substring (point) (1- (search-forward "<")))))
 	(forward-line 2)
 	(setq lines (count-lines (point)
