@@ -44,7 +44,7 @@
 		     find-coding-systems-for-charsets sc-cite-regexp
 		     vcard-pretty-print image-type-available-p
 		     put-image create-image  display-graphic-p
-		     find-image insert-image
+		     find-image insert-image image-size
 		     make-overlay overlay-put))
       (maybe-bind '(global-face-data
 		    mark-active transient-mark-mode mouse-selection-click-count
@@ -98,7 +98,7 @@
 		 url-generic-parse-url valid-image-instantiator-format-p
 		 babel-fetch babel-wash babel-as-string sc-cite-regexp
 		 put-image create-image display-graphic-p
-		 find-image insert-image
+		 find-image insert-image image-size
 		 vcard-pretty-print image-type-available-p)))
 
 (setq load-path (cons "." load-path))
