@@ -1,3 +1,45 @@
+Wed Nov 18 02:22:23 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.49 is released.
+
+1998-11-18 00:37:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-view.el (mm-inline-text): Require w3-vars.
+
+	* gnus-setup.el (gnus-use-tm): Removed.
+
+	* gnus-art.el (gnus-article-goto-part): Don't beep.
+	(gnus-article-view-part): Check return value.
+	(gnus-mime-display-alternative): Don't display when there is
+	nothing to display.
+
+	* mml.el (mml-generate-mime-1): Don't use a unibyte buffer.
+	(mml-generate-mime-1): Use unibyte for binaries.
+
+	* gnus-art.el (gnus-display-mime): Call
+	gnus-article-mime-part-function. 
+	(gnus-mime-part-function): New function.
+	(gnus-article-mime-part-function): New function.
+
+	* mml.el (mml-generate-mime-1): Don't insert so many newlines. 
+
+1998-11-16 06:44:19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-generate-mime-1): Do it in unibyte buffers.
+
+	* message.el (message-font-lock-keywords): Highlight MML. 
+	(message-mml-face): New font.
+
+Mon Nov 16 23:34:12 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-display-mime): Clean up even when no handles.
+	(gnus-mm-display-part): Do not select-window if the article window
+ 	is not found.
+
+Mon Nov 16 02:26:40 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-move-article): Use no-encode for B m.
+
 Mon Nov 16 02:00:05 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.48 is released.

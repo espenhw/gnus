@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.48 Manual
+@settitle Pterodactyl Gnus 0.49 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.48 Manual
+@title Pterodactyl Gnus 0.49 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.48.
+This manual corresponds to Pterodactyl Gnus 0.49.
 
 @end ifinfo
 
@@ -6933,6 +6933,27 @@ To have all Vcards be ignored, you'd say something like this:
 @lisp
 (setq gnus-ignored-mime-types
       '("text/x-vcard"))
+@end lisp
+
+@item gnus-article-mime-part-function
+@vindex gnus-article-mime-part-function
+For each @sc{mime} part, this function will be called with the @sc{mime} 
+handle as the parameter.  The function is meant to be used to allow
+users to gather information from the article (e. g., add Vcard info to
+the bbdb database) or to do actions based on parts (e. g., automatically 
+save all jpegs into some directory).
+
+Here's an example function the does the latter:
+
+@lisp
+(defun my-save-all-jpeg-parts (handle)
+  (when (equal (car (mm-handle-type handle)) "image/jpeg")
+    (with-temp-buffer
+      (insert (mm-get-part handle))
+      (write-region (point-min) (point-max)
+                    (read-file-name "Save jpeg to: ")))))
+(setq gnus-article-mime-part-function
+      'my-save-all-jpeg-parts)
 @end lisp
 
 @end table

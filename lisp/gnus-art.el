@@ -582,6 +582,11 @@ displayed by the first non-nil matching CONTENT face."
 		 (integer :tag "Less")
 		 (sexp :tag "Predicate")))
 
+(defcustom gnus-article-mime-part-function nil
+  "Function called with a MIME handle as the argument."
+  :group 'gnus-article
+  :type 'function)
+
 ;;; Internal variables
 
 (defvar gnus-treatment-function-alist 
@@ -2317,11 +2322,11 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (when (> n (length gnus-article-mime-handle-alist))
       (error "No such part"))
     (let ((handle (cdr (assq n gnus-article-mime-handle-alist))))
-      (gnus-article-goto-part n)
-      (if (equal (car handle) "multipart/alternative")
-	  (gnus-article-press-button)
-	(when (eq (gnus-mm-display-part handle) 'internal)
-	  (gnus-set-window-start))))))
+      (when (gnus-article-goto-part n)
+	(if (equal (car handle) "multipart/alternative")
+	    (gnus-article-press-button)
+	  (when (eq (gnus-mm-display-part handle) 'internal)
+	    (gnus-set-window-start)))))))
 
 (defun gnus-mm-display-part (handle)
   "Display HANDLE and fix MIME button."
@@ -2335,8 +2340,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	(let ((window (selected-window)))
 	  (save-excursion
 	    (unwind-protect
-		(progn
-		  (select-window (get-buffer-window (current-buffer) t))
+		(let ((win (get-buffer-window (current-buffer) t)))
+		  (if win
+		      (select-window win))
 		  (goto-char point)
 		  (forward-line)
 		  (mm-display-part handle))
@@ -2345,7 +2351,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 
 (defun gnus-article-goto-part (n)
   "Go to MIME part N."
-  (goto-char (text-property-any (point-min) (point-max) 'gnus-part n)))
+  (let ((point (text-property-any (point-min) (point-max) 'gnus-part n)))
+    (when point
+      (goto-char point))))
 
 (defun gnus-insert-mime-button (handle gnus-tmp-id &optional displayed)
   (let ((gnus-tmp-name (mail-content-type-get (mm-handle-type handle) 'name))
@@ -2391,12 +2399,19 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   "Insert MIME buttons in the buffer."
   (let* ((handles (or ihandles (mm-dissect-buffer) (mm-uu-dissect)))
 	 handle name type b e display)
-    (when handles
+    (unless ihandles
+      ;; Top-level call; we clean up.
+      (mm-destroy-parts gnus-article-mime-handles)
+      (setq gnus-article-mime-handles handles
+	    gnus-article-mime-handle-alist nil)
+      ;; We allow users to glean info from the handles.
+      (when gnus-article-mime-part-function
+	(gnus-mime-part-function handles)))
+    (when (and handles
+	       (or (not (stringp (car handles)))
+		   (cdr handles)))
       (unless ihandles
-	;; Top-level call; we clean up.
-	(mm-destroy-parts gnus-article-mime-handles)
-	(setq gnus-article-mime-handles handles
-	      gnus-article-mime-handle-alist nil)
+	;; Clean up for mime parts.
 	(goto-char (point-min))
 	(search-forward "\n\n" nil t)
 	(delete-region (point) (point-max)))
@@ -2407,6 +2422,11 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		(gnus-mime-display-alternative (cdr handles) nil nil id))
 	    (gnus-mime-display-mixed (cdr handles)))
 	(gnus-mime-display-single handles)))))
+
+(defun gnus-mime-part-function (handles)
+  (if (stringp (car handles))
+      (mapcar 'gnus-mime-part-function (cdr handles))
+    (funcall gnus-article-mime-part-function handles)))
 
 (defun gnus-mime-display-mixed (handles)
   (let (handle)
@@ -2453,57 +2473,29 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	  (goto-char (point-max))))))))
 
 (defun gnus-mime-display-alternative (handles &optional preferred ibegend id)
-  (let* ((preferred (mm-preferred-alternative handles preferred))
+  (let* ((preferred (or preferred (mm-preferred-alternative handles)))
 	 (ihandles handles)
 	 (point (point))
 	 handle buffer-read-only from props begend not-pref)
-    (save-restriction
-      (when ibegend
-	(narrow-to-region (car ibegend) (cdr ibegend))
-	(delete-region (point-min) (point-max))
-	(mm-remove-parts handles))
-      (setq begend (list (point-marker)))
-      ;; Do the toggle.
-      (unless (setq not-pref (cadr (member preferred ihandles)))
-	(setq not-pref (car ihandles)))
-      (gnus-add-text-properties
-       (setq from (point))
-       (progn
-	 (insert (format "%d.  " id))
-	 (point))
-       `(gnus-callback
-	 (lambda (handles)
-	   (gnus-mime-display-alternative
-	    ',ihandles ,(if (stringp (car not-pref))
-			    (car not-pref)
-			  (car (mm-handle-type not-pref)))
-	    ',begend ,id))
-	 local-map ,gnus-mime-button-map
-	 ,gnus-mouse-face-prop ,gnus-article-mouse-face
-	 face ,gnus-article-button-face
-	 keymap ,gnus-mime-button-map
-	 gnus-part ,id
-	 gnus-data ,handle))
-      (widget-convert-button 'link from (point)
-			     :action 'gnus-widget-press-button
-			     :button-keymap gnus-widget-button-keymap)
-      ;; Do the handles
-      (while (setq handle (pop handles))
+    (when preferred
+      (save-restriction
+	(when ibegend
+	  (narrow-to-region (car ibegend) (cdr ibegend))
+	  (delete-region (point-min) (point-max))
+	  (mm-remove-parts handles))
+	(setq begend (list (point-marker)))
+	;; Do the toggle.
+	(unless (setq not-pref (cadr (member preferred ihandles)))
+	  (setq not-pref (car ihandles)))
 	(gnus-add-text-properties
 	 (setq from (point))
 	 (progn
-	   (insert (format "[%c] %-18s"
-			   (if (equal handle preferred) ?* ? )
-			   (if (stringp (car handle))
-			       (car handle)
-			     (car (mm-handle-type handle)))))
+	   (insert (format "%d.  " id))
 	   (point))
 	 `(gnus-callback
 	   (lambda (handles)
 	     (gnus-mime-display-alternative
-	      ',ihandles ,(if (stringp (car handle))
-			      (car handle)
-			    (car (mm-handle-type handle)))
+	      ',ihandles ',not-pref
 	      ',begend ,id))
 	   local-map ,gnus-mime-button-map
 	   ,gnus-mouse-face-prop ,gnus-article-mouse-face
@@ -2514,16 +2506,41 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	(widget-convert-button 'link from (point)
 			       :action 'gnus-widget-press-button
 			       :button-keymap gnus-widget-button-keymap)
-	(insert "  "))
-      (insert "\n\n")
-      (when preferred
-	(if (stringp (car preferred))
-	    (gnus-display-mime preferred)
-	  (mm-display-part preferred)
-	  (goto-char (point-max))
-	  (setcdr begend (point-marker)))))
-    (when ibegend
-      (goto-char point))))
+	;; Do the handles
+	(while (setq handle (pop handles))
+	  (gnus-add-text-properties
+	   (setq from (point))
+	   (progn
+	     (insert (format "[%c] %-18s"
+			     (if (equal handle preferred) ?* ? )
+			     (if (stringp (car handle))
+				 (car handle)
+			       (car (mm-handle-type handle)))))
+	     (point))
+	   `(gnus-callback
+	     (lambda (handles)
+	       (gnus-mime-display-alternative
+		',ihandles ',handle
+		',begend ,id))
+	     local-map ,gnus-mime-button-map
+	     ,gnus-mouse-face-prop ,gnus-article-mouse-face
+	     face ,gnus-article-button-face
+	     keymap ,gnus-mime-button-map
+	     gnus-part ,id
+	     gnus-data ,handle))
+	  (widget-convert-button 'link from (point)
+				 :action 'gnus-widget-press-button
+				 :button-keymap gnus-widget-button-keymap)
+	  (insert "  "))
+	(insert "\n\n")
+	(when preferred
+	  (if (stringp (car preferred))
+	      (gnus-display-mime preferred)
+	    (mm-display-part preferred)
+	    (goto-char (point-max))
+	    (setcdr begend (point-marker)))))
+      (when ibegend
+	(goto-char point)))))
 
 (defun gnus-article-wash-status ()
   "Return a string which display status of article washing."

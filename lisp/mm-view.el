@@ -84,6 +84,7 @@
 	     (car (mm-handle-type handle)))
 	    (require 'url)
 	    (save-window-excursion
+	      (require 'w3-vars)
 	      (let ((w3-strict-width width))
 		(w3-region (point-min) (point-max)))
 	      (setq text (buffer-string))))))

@@ -84,11 +84,16 @@
 (defun mml-read-part ()
   "Return the buffer up till the next part, multipart or closing part or multipart."
   (let ((beg (point)))
+    ;; If the tag ended at the end of the line, we go to the next line.
+    (when (looking-at "[ \t]*\n")
+      (forward-line 1))
     (if (re-search-forward "<#/?\\(multi\\)?part." nil t)
 	(prog1
 	    (buffer-substring beg (match-beginning 0))
-	  (unless (equal (match-string 0) "<#/part>")
-	    (goto-char (match-beginning 0))))
+	  (if (not (equal (match-string 0) "<#/part>"))
+	      (goto-char (match-beginning 0))
+	    (when (looking-at "[ \t]*\n")
+	      (forward-line 1))))
       (buffer-substring beg (goto-char (point-max))))))
 
 (defvar mml-boundary nil)
@@ -110,27 +115,32 @@
    ((eq (car cont) 'part)
     (let (coded encoding charset filename type)
       (setq type (or (cdr (assq 'type cont)) "text/plain"))
-      (with-temp-buffer
-	(if (setq filename (cdr (assq 'filename cont)))
-	    (insert-file-contents-literally filename)
-	  (save-restriction
-	    (narrow-to-region (point) (point))
-	    (insert (cdr (assq 'contents cont)))
-	    (goto-char (point-min))
-	    (while (re-search-forward "<#!+\\(part\\|multipart\\)" nil t)
-	      (delete-region (+ (match-beginning 0) 2)
-			     (+ (match-beginning 0) 3)))))
-	(if (equal (car (split-string type "/")) "text")
+      (if (equal (car (split-string type "/")) "text")
+	  (with-temp-buffer
+	    (if (setq filename (cdr (assq 'filename cont)))
+		(insert-file-contents-literally filename)
+	      (save-restriction
+		(narrow-to-region (point) (point))
+		(insert (cdr (assq 'contents cont)))
+		;; Remove quotes from quoted tags.
+		(goto-char (point-min))
+		(while (re-search-forward "<#!+\\(part\\|multipart\\)" nil t)
+		  (delete-region (+ (match-beginning 0) 2)
+				 (+ (match-beginning 0) 3)))))
 	    (setq charset (mm-encode-body)
 		  encoding (mm-body-encoding))
-	  (setq encoding (mm-encode-buffer type)))
-	(setq coded (buffer-string)))
+	    (setq coded (buffer-string)))
+	(mm-with-unibyte-buffer
+	  (if (setq filename (cdr (assq 'filename cont)))
+	      (insert-file-contents-literally filename)
+	    (insert (cdr (assq 'contents cont))))
+	  (setq coded (buffer-string))))
       (when (or charset
 		(not (equal type "text/plain")))
-	(insert "Content-Type: " type))
-      (when charset
-	(insert (format "; charset=\"%s\"" charset)))
-      (insert "\n")
+	(insert "Content-Type: " type)
+	(when charset
+	  (insert (format "; charset=\"%s\"" charset)))
+	(insert "\n"))
       (unless (eq encoding '7bit)
 	(insert (format "Content-Transfer-Encoding: %s\n" encoding)))
       (insert "\n")
@@ -143,8 +153,12 @@
       (insert "\n")
       (setq cont (cddr cont))
       (while cont
+	(unless (bolp)
+	  (insert "\n"))
 	(insert "--" mml-boundary "\n")
 	(mml-generate-mime-1 (pop cont)))
+      (unless (bolp)
+	(insert "\n"))
       (insert "--" mml-boundary "--\n")))
    (t
     (error "Invalid element: %S" cont))))

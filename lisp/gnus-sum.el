@@ -7072,7 +7072,7 @@ and `request-accept' functions."
 		  gnus-newsgroup-name)) ; Server
 	  (list 'gnus-request-accept-article
 		to-newsgroup (list 'quote select-method)
-		(not articles))		; Accept form
+		(not articles) t)		; Accept form
 	  (not articles)))		; Only save nov last time
 	;; Copy the article.
 	((eq action 'copy)
