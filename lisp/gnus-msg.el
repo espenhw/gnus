@@ -599,7 +599,9 @@ If SILENT, don't prompt the user."
 	(setq method-alist
 	      (mapcar
 	       (lambda (m)
-		 (list (concat (cadr m) " (" (symbol-name (car m)) ")") m))
+		 (if (equal (cadr m) "")
+		     (list (symbol-name (car m)) m)
+		   (list (concat (cadr m) " (" (symbol-name (car m)) ")") m)))
 	       post-methods))
 	;; Query the user.
 	(cadr

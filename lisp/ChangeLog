@@ -1,3 +1,8 @@
+2000-12-13 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-post-method): Use backend name when the
+	address is "".
+
 2000-12-08 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (article-verify-x-pgp-sig): Don't test
