@@ -1,5 +1,12 @@
 1999-12-02 00:27:46  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnslashdot.el (nnslashdot-read-groups): Unibyte.
+
+	* nnultimate.el (nnultimate-request-list): Use unibyte.
+
+	* gnus-uu.el (gnus-uu-grab-articles): Bind
+	gnus-display-mime-function to nil.
+
 	* message.el (message-send-mail-with-sendmail): Use the
 	user-mail-address variable.
 

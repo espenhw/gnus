@@ -370,7 +370,7 @@
 	sid elem description articles gname)
     (condition-case why
         ;; First we do the Ultramode to get info on all the latest groups.
-        (with-temp-buffer
+        (mm-with-unibyte-buffer
           (nnweb-insert "http://slashdot.org/slashdot.xml")
           (goto-char (point-min))
           (while (search-forward "<story>" nil t)
@@ -392,7 +392,7 @@
             (widen)))
       ;; Then do the older groups.
       (while (> (- nnslashdot-group-number number) 0)
-        (with-temp-buffer
+        (mm-with-unibyte-buffer
           (let ((case-fold-search t))
             (nnweb-insert (format nnslashdot-active-url number))
             (goto-char (point-min))
@@ -482,7 +482,7 @@
 (defun nnslashdot-read-groups ()
   (let ((file (expand-file-name "groups" nnslashdot-directory)))
     (when (file-exists-p file)
-      (with-temp-buffer
+      (mm-with-unibyte-buffer
 	(insert-file-contents file)
 	(goto-char (point-min))
 	(setq nnslashdot-groups (read (current-buffer)))))))
