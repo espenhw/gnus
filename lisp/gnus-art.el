@@ -1282,8 +1282,8 @@ It is a string, such as \"PGP\". If nil, ask user."
   (let ((table (copy-syntax-table text-mode-syntax-table)))
     ;; This causes the citation match run O(2^n).
     ;; (modify-syntax-entry ?- "w" table)
-    (modify-syntax-entry ?> ")" table)
-    (modify-syntax-entry ?< "(" table)
+    (modify-syntax-entry ?> ")<" table)
+    (modify-syntax-entry ?< "(>" table)
     table)
   "Syntax table used in article mode buffers.
 Initialized from `text-mode-syntax-table.")
