@@ -1503,9 +1503,8 @@ or not."
 	(quoted-printable-decode-region (point) (point-max) charset)))))
 
 (defun article-de-base64-unreadable (&optional force)
-  "Translate a quoted-printable-encoded article.
-If FORCE, decode the article whether it is marked as quoted-printable
-or not."
+  "Translate a base64 article.
+If FORCE, decode the article whether it is marked as base64 not."
   (interactive (list 'force))
   (save-excursion
     (let ((buffer-read-only nil)
@@ -1530,6 +1529,23 @@ or not."
   (save-excursion
     (let ((buffer-read-only nil))
       (rfc1843-decode-region (point-min) (point-max)))))
+
+(defun article-wash-html ()
+  "Format an html article."
+  (interactive)
+  (save-excursion
+    (let ((buffer-read-only nil)
+	  (charset gnus-newsgroup-charset))
+      (article-goto-body)
+      (save-window-excursion
+	(save-restriction
+	  (narrow-to-region (point) (point-max))
+	  (mm-setup-w3)
+	  (let ((w3-strict-width (window-width))
+		(url-standalone-mode t))
+	    (condition-case var
+		(w3-region (point-min) (point-max))
+	      (error))))))))
 
 (defun article-hide-list-identifiers ()
   "Remove list identifies from the Subject header.
@@ -2464,6 +2480,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-de-quoted-unreadable
      article-de-base64-unreadable
      article-decode-HZ
+     article-wash-html
      article-mime-decode-quoted-printable
      article-hide-list-identifiers
      article-hide-pgp
@@ -2549,6 +2566,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
        ["Remove carriage return" gnus-article-remove-cr t]
        ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]
        ["Remove base64" gnus-article-de-base64-unreadable t]
+       ["Treat html" gnus-article-wash-html t]
        ["Decode HZ" gnus-article-decode-HZ t]))
 
     ;; Note "Commands" menu is defined in gnus-sum.el for consistency

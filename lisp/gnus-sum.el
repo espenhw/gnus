@@ -1533,6 +1533,7 @@ increase the score of each group you read."
     "q" gnus-article-de-quoted-unreadable
     "6" gnus-article-de-base64-unreadable
     "Z" gnus-article-decode-HZ
+    "h" gnus-article-wash-html
     "f" gnus-article-display-x-face
     "l" gnus-summary-stop-page-breaking
     "r" gnus-summary-caesar-message
@@ -1718,6 +1719,7 @@ increase the score of each group you read."
               ["Stop page breaking" gnus-summary-stop-page-breaking t]
               ["Verbose header" gnus-summary-verbose-headers t]
               ["Toggle header" gnus-summary-toggle-header t]
+	      ["Html" gnus-article-wash-html t]
 	      ["HZ" gnus-article-decode-HZ t])
              ("Output"
               ["Save in default format" gnus-summary-save-article t]

@@ -1,3 +1,12 @@
+2000-05-06 17:40:20  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (article-wash-html): New function.
+	(gnus-article-wash-html): Bind.
+	(gnus-article-make-menu-bar): Menu item.
+	* gnus-sum.el (gnus-summary-wash-map): Bind 'h'.
+	(gnus-summary-make-menu-bar): Menu item.
+	* gnus.el: Autoload.
+
 2000-05-06  Florian Weimer  <fw@deneb.cygnus.argh.org>
 
 	* gnus-uu.el (gnus-uu-unshar-warning): New variable.
