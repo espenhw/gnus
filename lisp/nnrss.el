@@ -159,9 +159,10 @@
     ("Kuro5hin"
      "http://www.kuro5hin.org/backend.rdf"
      "Technology and culture, from the trenches.")
-    ("JabberCentral"
-     "http://www.jabbercentral.com/rss.php"
-     "News around the Jabber instant messaging system.")))
+    ("Jabber Software Foundation News"
+     "http://www.jabber.org/news/rss.xml"
+     "News and announcements from the Jabber Software Foundation.")
+    ))
 
 (defvar nnrss-use-local nil)
 

@@ -1,3 +1,7 @@
+2002-11-26  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnrss.el (nnrss-group-alist): Update links for Jabber.
+
 2002-11-26  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-sum.el (gnus-summary-insert-old-articles): Remove
