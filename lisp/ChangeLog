@@ -1,3 +1,69 @@
+2002-11-23  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+	From Kevin Greiner <kgreiner@xpediantsolutions.com>.
+
+	* gnus-agent.el (gnus-agent-downloaded-article-face): New face,
+	used for showing which articles have been downloaded.
+	(gnus-agent-article-alist): Format change.  Add documentation.
+	(gnus-agent-summary-mode-map): New keybinding `J s' for fetching
+	process-marked articles.
+	(gnus-agent-summary-fetch-series): Command for `J s'.
+	(gnus-agent-synchronize-flags-server, gnus-agent-add-server): Use
+	gnus-message instead of message.
+	(gnus-agent-read-servers): Use file lib/methods instead of
+	lib/servers.  TODO: Why?
+	(gnus-summary-set-agent-mark): Adapt to new agent-alist format.
+	(gnus-agent-get-undownloaded-list): Remove articles that appear to
+	come from the agent.  This means that they are not downloaded.
+	TODO: Correct?
+	(gnus-agent-fetch-selected-article): Don't use history.
+	(gnus-agent-save-history, gnus-agent-enter-history)
+	(gnus-agent-article-in-history-p, gnus-agent-history-path):
+	Removed function; history is not used anymore.
+	(gnus-agent-fetch-articles): Fix handling of crossposted articles.
+	(gnus-agent-crosspost): TODO: What happened here?
+	(gnus-agent-check-overview-buffer): Some sanity checks on the
+	agent overview buffer.  This is a safety net used during
+	development.
+	(gnus-agent-flush-cache): The gnus-agent-article-alist format has
+	changed, write a number to the file indicating this.
+	(gnus-agent-fetch-headers): Rewrite to respect
+	gnus-agent-consider-all-articles without relying on the
+	`.fetched' files.  Make it fast.
+	(gnus-agent-braid-nov): Change resulting from
+	gnus-agent-fetch-headers change.
+	(gnus-agent-load-alist, gnus-agent-save-alist): Don't use
+	`.fetched' files.
+	(gnus-agent-read-agentview): New function, used by
+	gnus-agent-load-alist.
+	(gnus-agent-load-fetched-headers): Remove.
+	(gnus-agent-save-alist): Rewrite to accomodate new format.
+	(gnus-agent-fetch-group-1): Make sure list of articles is in the
+	same order as in gnus-newsgroup-headers.
+	(gnus-agent-expire): Document and implement extra args ARTICLES,
+	GROUP, FORCE.  Do not restrict usage.
+	(gnus-agent-uncached-articles): New function.
+	(gnus-agent-retrieve-headers): Use it.
+	(gnus-agent-regenerate-group): Rewrite.  TODO: Why?
+	(gnus-agent-regenerate): Ditto.  TODO: Why?
+
+	* gnus-start.el (gnus-make-ascending-articles-unread): New
+	function, for efficient mass-marking.
+
+	* gnus-sum.el (gnus-summary-highlight): Use new face for
+	downloaded articles.
+	(gnus-article-mark): Prefer to indicate read/unread status over
+	downloaded status.
+	(gnus-summary-highlight-line-0): New function, maybe rehighlights
+	line.
+	(gnus-summary-highlight-line): Use new face for downloaded
+	articles.
+	(gnus-summary-insert-old-articles): TODO: What does this change
+	do?
+
+2002-11-18  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus-agent.el (gnus-category-mode): Typo in doc string.
+
 2002-11-21  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el:

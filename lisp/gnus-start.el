@@ -1742,8 +1742,82 @@ newsgroup."
 	     (setq article (pop articles)) ranges)
 	(push article news)))
     (when news
+      ;; Enter this list into the group info.
       (gnus-info-set-read
        info (gnus-remove-from-range (gnus-info-read info) (nreverse news)))
+
+      ;; Set the number of unread articles in gnus-newsrc-hashtb.
+      (gnus-get-unread-articles-in-group info (gnus-active group))
+
+      ;; Insert the change into the group buffer and the dribble file.
+      (gnus-group-update-group group t))))
+
+(defun gnus-make-ascending-articles-unread (group articles)
+  "Mark ascending ARTICLES in GROUP as unread."
+  (let* ((entry (or (gnus-gethash group gnus-newsrc-hashtb)
+                    (gnus-gethash (gnus-group-real-name group)
+                                  gnus-newsrc-hashtb)))
+         (info (nth 2 entry))
+	 (ranges (gnus-info-read info))
+         (r ranges)
+	 modified)
+
+    (while articles
+      (let ((article (pop articles))) ; get the next article to remove from ranges
+        (while (let ((range (car ranges))) ; note the current range
+                 (if (atom range)       ; single value range
+                     (cond ((not range)
+                            ;; the articles extend past the end of the ranges
+                            ;; OK - I'm done
+                            (setq articles nil))
+                           ((< range article)
+                            ;; this range preceeds the article. Leave the range unmodified.
+                            (pop ranges)
+                            ranges)
+                           ((= range article)
+                            ;; this range exactly matches the article; REMOVE THE RANGE.
+                            ;; NOTE: When the range being removed is the last range, the list is corrupted by inserting null at its end.
+                            (setcar ranges (cadr ranges))
+                            (setcdr ranges (cddr ranges))
+                            (setq modified (if (car ranges) t 'remove-null))
+                            nil))
+                   (let ((min (car range))
+                         (max (cdr range)))
+                     ;; I have a min/max range to consider
+                     (cond ((> min max) ; invalid range introduced by splitter
+                            (setcar ranges (cadr ranges))
+                            (setcdr ranges (cddr ranges))
+                            (setq modified (if (car ranges) t 'remove-null))
+                            ranges)
+                           ((= min max)
+                            ;; replace min/max range with a single-value range
+                            (setcar ranges min)
+                            ranges)
+                           ((< max article)
+                            ;; this range preceeds the article. Leave the range unmodified.
+                            (pop ranges)
+                            ranges)
+                           ((< article min)
+                            ;; this article preceeds the range.  Return null to move to the
+                            ;; next article
+                            nil)
+                           (t
+                            ;; this article splits the range into two parts
+                            (setcdr ranges (cons (cons (1+ article) max) (cdr ranges)))
+                            (setcdr range (1- article))
+                            (setq modified t)
+                            ranges))))))))
+                  
+    (when modified
+      (when (eq modified 'remove-null)
+        (setq r (delq nil r)))
+      ;; Enter this list into the group info.
+      (gnus-info-set-read info r)
+
+      ;; Set the number of unread articles in gnus-newsrc-hashtb.
+      (gnus-get-unread-articles-in-group info (gnus-active group))
+
+      ;; Insert the change into the group buffer and the dribble file.
       (gnus-group-update-group group t))))
 
 ;; Enter all dead groups into the hashtb.
@@ -2778,3 +2852,5 @@ If this variable is nil, don't do anything."
 (provide 'gnus-start)
 
 ;;; gnus-start.el ends here
+
+

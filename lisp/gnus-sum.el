@@ -866,6 +866,8 @@ automatically when it is selected."
      . gnus-summary-low-ancient-face)
     ((eq mark gnus-ancient-mark)
      . gnus-summary-normal-ancient-face)
+    (downloaded
+     . gnus-agent-downloaded-article-face)
     ((and (> score default-high) (eq mark gnus-unread-mark))
      . gnus-summary-high-unread-face)
     ((and (< score default-low) (eq mark gnus-unread-mark))
@@ -2855,7 +2857,7 @@ time; i.e., when generating the summary lines.  After that,
 marks of articles."
   `(cond
     ((memq ,number gnus-newsgroup-unsendable) gnus-unsendable-mark)
-    ((memq ,number gnus-newsgroup-undownloaded) gnus-undownloaded-mark)
+;;;;    ((memq ,number gnus-newsgroup-undownloaded) gnus-undownloaded-mark)
     ((memq ,number gnus-newsgroup-downloadable) gnus-downloadable-mark)
     ((memq ,number gnus-newsgroup-unreads) gnus-unread-mark)
     ((memq ,number gnus-newsgroup-marked) gnus-ticked-mark)
@@ -4900,7 +4902,6 @@ If SELECT-ARTICLES, only select those articles from GROUP."
     ;; Adjust and set lists of article marks.
     (when info
       (gnus-adjust-marked-articles info))
-
     (if (setq articles select-articles)
 	(setq gnus-newsgroup-unselected
 	      (gnus-sorted-difference gnus-newsgroup-unreads articles))
@@ -4917,6 +4918,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	    (gnus-make-hashtable (length articles)))
       (gnus-set-global-variables)
       ;; Retrieve the headers and read them in.
+
       (setq gnus-newsgroup-headers (gnus-fetch-headers articles))
 
       ;; Kludge to avoid having cached articles nixed out in virtual groups.
@@ -10835,6 +10837,27 @@ If REVERSE, save parts that do not match TYPE."
 	   (setq gnus-newsgroup-selected-overlay (gnus-make-overlay from to))
 	   'face gnus-summary-selected-face))))))
 
+(defvar gnus-summary-highlight-line-cached nil)
+(defvar gnus-summary-highlight-line-trigger nil)
+(defun gnus-summary-highlight-line-0 ()
+  (if (and (eq gnus-summary-highlight-line-trigger 
+               gnus-summary-highlight)
+           gnus-summary-highlight-line-cached)
+      gnus-summary-highlight-line-cached
+    (setq gnus-summary-highlight-line-trigger gnus-summary-highlight
+          gnus-summary-highlight-line-cached
+          (let* ((cond (list 'cond))
+                 (c cond)
+                 (list gnus-summary-highlight))
+            (while list
+              (setcdr c (cons (list (caar list) (list 'quote (cdar list))) nil))
+              (setq c (cdr c)
+                    list (cdr list)))
+            (gnus-byte-compile (list 'lambda nil cond))))))
+
+(defvar gnus-summary-highlight-line-downloaded-alist nil)
+(defvar gnus-summary-highlight-line-downloaded-cached nil)
+
 ;; New implementation by Christian Limpach <Christian.Limpach@nice.ch>.
 (defun gnus-summary-highlight-line ()
   "Highlight current line according to `gnus-summary-highlight'."
@@ -10848,12 +10871,23 @@ If REVERSE, save parts that do not match TYPE."
 	 (inhibit-read-only t)
 	 (default gnus-summary-default-score)
 	 (default-high gnus-summary-default-high-score)
-	 (default-low gnus-summary-default-low-score))
-    ;; Eval the cars of the lists until we find a match.
-    (while (and list
-		(not (eval (caar list))))
-      (setq list (cdr list)))
-    (let ((face (cdar list)))
+	 (default-low gnus-summary-default-low-score)
+         (downloaded (and (boundp 'gnus-agent-article-alist)
+                          gnus-agent-article-alist
+                          ;; Optimized for when gnus-summary-highlight-line is called multiple times for articles in ascending order (i.e. initial generation of summary buffer).
+                          (progn 
+                            (if (and (eq gnus-summary-highlight-line-downloaded-alist gnus-agent-article-alist)
+                                     (<= (caar gnus-summary-highlight-line-downloaded-cached) article))
+                                nil
+                              (setq gnus-summary-highlight-line-downloaded-alist  gnus-agent-article-alist
+                                    gnus-summary-highlight-line-downloaded-cached gnus-agent-article-alist))
+                            (let (n)
+                              (while (and (< (caar gnus-summary-highlight-line-downloaded-cached) article)
+                                          (setq n (cdr gnus-summary-highlight-line-downloaded-cached)))
+                                (setq gnus-summary-highlight-line-downloaded-cached n)))
+                            (and (eq (caar gnus-summary-highlight-line-downloaded-cached) article)
+                                 (cdar gnus-summary-highlight-line-downloaded-cached))))))
+    (let ((face (funcall (gnus-summary-highlight-line-0))))
       (unless (eq face (get-text-property beg 'face))
 	(gnus-put-text-property-excluding-characters-with-faces
 	 beg (gnus-point-at-eol) 'face
@@ -11140,15 +11174,30 @@ If ALL is a number, fetch this number of articles."
       (let ((old (sort (mapcar 'car gnus-newsgroup-data) '<))
 	    older len)
 	(setq older
-	      (gnus-sorted-difference
-	       (gnus-uncompress-range (list gnus-newsgroup-active))
-	       old))
-	(setq len (length older))
+;;; Some nntp servers lie about their active range.  When this happens, the active range can be in the millions.  
+;;;	      (gnus-sorted-difference
+;;;	       (gnus-uncompress-range (list gnus-newsgroup-active))
+;;;	       old)
+              (gnus-range-difference (list gnus-newsgroup-active) old)
+)
+	(setq len (gnus-range-length older))
 	(cond
 	 ((null older) nil)
 	 ((numberp all)
 	  (if (< all len)
-	      (setq older (last older all))))
+              (let ((older-range (nreverse older)))
+                (setq older nil)
+
+                (while (> all 0)
+                  (let* ((r (pop older-range))
+                         (min (if (numberp r) r (car r)))
+                         (max (if (numberp r) r (cdr r))))
+                    (while (and (<= min max)
+                                (> all 0))
+                      (push max older)
+                      (setq all (1- all)
+                            max (1- max))))))
+            (setq older (gnus-uncompress-range older))))
 	 (all nil)
 	 (t
 	  (if (and (numberp gnus-large-newsgroup)
@@ -11170,7 +11219,19 @@ If ALL is a number, fetch this number of articles."
 		(unless (string-match "^[ \t]*$" input)
 		  (setq all (string-to-number input))
 		  (if (< all len)
-		      (setq older (last older all))))))))
+                      (let ((older-range (nreverse older)))
+                        (setq older nil)
+
+                        (while (> all 0)
+                          (let* ((r (pop older-range))
+                                 (min (if (numberp r) r (car r)))
+                                 (max (if (numberp r) r (cdr r))))
+                            (while (and (<= min max)
+                                        (> all 0))
+                              (push max older)
+                              (setq all (1- all)
+                                    max (1- max))))))
+                    (setq older (gnus-uncompress-range older))))))))
 	(if (not older)
 	    (message "No old news.")
 	  (gnus-summary-insert-articles older)
