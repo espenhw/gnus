@@ -7,7 +7,7 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-15
 
-;; $Id: gpg.el,v 1.2 2000/11/18 20:57:13 jas Exp $
+;; $Id: gpg.el,v 1.3 2000/11/22 22:55:47 zsh Exp $
 
 ;; This file is NOT (yet?) part of GNU Emacs.
 
@@ -108,13 +108,16 @@
 
 ;;;; Code:
 
-(require 'timer)
 (eval-when-compile 
+  (if (featurep 'xemacs)
+      (require 'itimer)
+    (require 'timer))
   (require 'cl))
 
-
-(if (featurep 'xemacs)
-	  (defalias 'line-end-position 'point-at-eol))
+(defalias 'gpg-point-at-eol
+  (if (fboundp 'point-at-eol)
+      'point-at-eol
+    'line-end-position))
 
 ;;;; Customization:
 
@@ -600,12 +603,15 @@ adjust according to `gpg-command-passphrase-env'."
 	 (when gpg-command-passphrase-env
 	   ;; This will clear the variable if it wasn't set before.
 	   (setenv (car gpg-command-passphrase-env) ,env-value))))))
+(put 'gpg-with-passphrase-env 'lisp-indent-function 0)
+(put 'gpg-with-passphrase-env 'edebug-form-spec '(body))
 
 ;;; Temporary files:
 
 (defun gpg-make-temp-file ()
   "Create a temporary file in a safe way"
-  (let ((name (concat gpg-temp-directory "/gnupg")))
+  (let ((name  ;; User may use "~/"
+	 (expand-file-name "gnupg" gpg-temp-directory)))
     (if (fboundp 'make-temp-file)
 	;; If we've got make-temp-file, we are on the save side.
 	(make-temp-file name)
@@ -653,6 +659,8 @@ arguments."
 	    (gpg-with-temp-files-create ,count)
 	    ,@body)
 	(gpg-with-temp-files-delete))))
+(put 'gpg-with-temp-files 'lisp-indent-function 1)
+(put 'gpg-with-temp-files 'edebug-form-spec '(body))
 
 ;;;  Making subprocesses:
 
@@ -707,7 +715,7 @@ to this file."
 		 (apply 'call-process-region (point-min) (point-max) cpr-args)
 		 ;; Wipe out passphrase.
 		 (goto-char (point-min))
-		 (translate-region (point) (line-end-position)
+		 (translate-region (point) (gpg-point-at-eol)
 				   (make-string 256 ? )))
 	     (if (listp stdin)
 		 (with-current-buffer (car stdin)
@@ -755,6 +763,8 @@ evaluates BODY, like `progn'.  If BODY evaluates to `nil' (or
      (unwind-protect
 	 (gpg-show-result-buffer ,always-show (progn ,@body))
        (kill-buffer gpg-result-buffer))))
+(put 'gpg-show-result 'lisp-indent-function 1)
+(put 'gpg-show-result 'edebug-form-spec '(body))
 
 ;;; Passphrase handling:
 
@@ -1108,7 +1118,7 @@ documentation for details)."
 
 (defun gpg-key-list-keys-parse-line ()
   "Parse the line in the current buffer and return a vector of fields."
-  (let* ((eol (line-end-position))
+  (let* ((eol (gpg-point-at-eol))
 	 (v (if (eolp)
 		nil
 	      (vector

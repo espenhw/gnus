@@ -1,3 +1,14 @@
+2000-11-30 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gpg.el: Use itimer if xemacs.
+	(gpg-make-temp-file): Use expand-file-name.
+	(gpg-point-at-eol): New function.
+	(gpg-call-process): Use it.
+	(gpg-key-list-keys-parse-line): Ditto.
+	(gpg-with-passphrase-env): edebug-form-spec.
+	(gpg-with-temp-files): Ditto.
+	(gpg-show-result): Ditto.
+
 2000-11-08  Bj,Av(Brn Torkelsson  <torkel@hpc2n.umu.se>
 
 	* gpg.el: In Xemacs it is called point-at-eol, not
@@ -10,6 +21,11 @@
 
 	* gpg.el (gpg-command-verify-cleartext): New variable.
 	(gpg-verify-cleartext): New function.
+	
+2000-10-31 17:32:02  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gpg.el (gpg-verify): The last argument of apply is a list.
+	(gpg-encrypt): Add passphrase as a parameter.
 	
 ;; Local Variables:
 ;; coding: iso-2022-7bit
