@@ -1,3 +1,92 @@
+Sat Feb 20 21:34:28 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.77 is released.
+
+1999-02-20 17:32:17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-displaying-mime): New variable.
+	(article-narrow-to-head): New function.
+
+	* mail-source.el (mail-source-fetch-pop): Include pre/postscript. 
+	Default to pop instead of pop3.
+
+1999-02-19 16:16:04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-hide-pgp): Goto body.
+
+	* gnus-uu.el (gnus-uu-digest-mail-forward): Don't kill buffer. 
+
+	* gnus-cite.el: Don't use goto-line.
+
+	* gnus-art.el (gnus-article-treat-html): Removed.
+	(gnus-treat-article): Save restriction.
+
+1999-02-17  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* message.el (message-send-mail): Don't untabify.
+	(message-mode): Don't use tabs for indentation.
+
+1999-02-19 14:54:13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-send-mail): Don't untabify.
+
+	* nnml.el (nnml-save-mail): Typo fix.
+
+1999-02-19  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* message.el (message-cite-function): Add
+	`message-cite-original-without-signature' customization option.
+
+1999-02-18  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* nnmail.el (nnmail-fix-eudora-headers): Mark as option to
+	`nnmail-prepare-incoming-header-hook'.
+
+1999-02-19 14:41:43  Justin Sheehy  <justin@linus.mitre.org>
+
+	* gnus-util.el (gnus-make-sort-function-1): Typo fix.
+
+1999-02-19 14:40:37  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-get-new-news): Require nnmail. 
+
+1999-02-18  Michael Cook  <cook@sightpath.com>
+
+	* Recognize Microsoft Outlook's cite attribution conventions.
+
+1999-02-19 14:33:11  James H. Cloos, Jr.  <cloos@jhcloos.com>
+
+	* gnus-sum.el: Bind M.
+
+1999-02-19 14:31:29  Neil Crellin  <neilc@wallaby.cc>
+
+	* mail-source.el (mail-source-fetch-pop): Bind pop3-port.
+
+1999-02-15  Didier Verna  <verna@inf.enst.fr>
+
+	* gnus-picon.el (gnus-group-display-picons): ensures that
+	`article-goto-body' really goes to the article body.
+
+1999-02-19 12:57:19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-view.el (mm-inline-text): Bind url-standalone-mode.
+
+	* gnus-msg.el (gnus-summary-mail-forward): Create unique names.
+
+	* mm-view.el (mm-view-message): Enable multibyte.
+
+1999-02-11 18:37:15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnmail.el (nnmail-get-new-mail): Message later.
+
+	* mm-util.el (mm-find-charset-region): Revert to checking
+	multibyte.
+
+1999-02-11  Matt Pharr  <mmp@graphics.stanford.edu>
+
+      * gnus-msg.el (gnus-bug): Encode environment info as a MIME
+      attachment. 
+
 Thu Feb 11 04:58:51 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.76 is released.

@@ -655,7 +655,8 @@ If POST, post instead of mail."
       (save-excursion
 	(set-buffer gnus-original-article-buffer)
 	(setq text (buffer-string)))
-      (set-buffer (gnus-get-buffer-create " *Gnus forward*"))
+      (set-buffer (gnus-get-buffer-create
+		   (generate-new-buffer-name " *Gnus forward*")))
       (erase-buffer)
       (insert text)
       (run-hooks 'gnus-article-decode-hook)
@@ -849,7 +850,10 @@ If YANK is non-nil, include the original article."
 	       (stringp nntp-server-type))
       (insert nntp-server-type))
     (insert "\n\n\n\n\n")
-    (gnus-debug)
+    (save-excursion
+      (set-buffer (gnus-get-buffer-create " *gnus environment info*"))
+      (gnus-debug))
+    (insert "<#part type=application/emacs-lisp buffer=\" *gnus environment info*\" disposition=inline><#/part>")
     (goto-char (point-min))
     (search-forward "Subject: " nil t)
     (message "")))

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.76 Manual
+@settitle Pterodactyl Gnus 0.77 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.76 Manual
+@title Pterodactyl Gnus 0.77 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.76.
+This manual corresponds to Pterodactyl Gnus 0.77.
 
 @end ifinfo
 
@@ -4709,6 +4709,11 @@ Include all cached articles in the limit
 @findex gnus-summary-limit-exclude-dormant
 Exclude all dormant articles from the limit
 (@code{gnus-summary-limit-exclude-dormant}).
+
+@item / M
+@kindex / M (Summary)
+@findex gnus-summary-limit-exclude-marks
+Exclude all marked articles (@code{gnus-summary-limit-exclude-marks}). 
 
 @item / T
 @kindex / T (Summary)
@@ -10058,6 +10063,14 @@ The password to use.
 The values used for these specs are taken from the values you give the
 corresponding keywords.
 
+@item :prescript
+A script to be run before fetching the mail.  The syntax is the same as
+the @code{:program} keyword.  This can also be a function to be run.
+
+@item :postscript
+A script to be run after fetching the mail.  The syntax is the same as
+the @code{:program} keyword.  This can also be a function to be run.
+
 @item :function
 The function to use to fetch mail from the POP server.  The function is
 called with one parameter---the name of the file where the mail should
@@ -10092,6 +10105,30 @@ Use @samp{movemail} to move the mail:
 @lisp
 (pop :program "movemail"
      :args (format "po:%s %s %s" user mail-source-crash-box password))
+@end lisp
+
+@item maildir
+Get mail from a maildir. This is a type of mailbox currently only
+supported by qmail, where each file in a special directory contains
+exactly one mail.
+
+Keywords:
+
+@table @code
+@item :path
+The path of the directory where the mails are stored.  The default is 
+@samp{~/Maildir/new}.
+
+If you sometimes look at your mail through a pop3 daemon before fetching
+them with Gnus, you may also have to fetch your mails from the
+@code{cur} directory inside the maildir, like in the following example.
+
+@end table
+
+An example maildir mail source:
+
+@lisp
+(maildir :path "/home/user-name/Maildir/cur")
 @end lisp
 
 @end table

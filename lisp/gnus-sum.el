@@ -1366,6 +1366,7 @@ increase the score of each group you read."
     "a" gnus-summary-limit-to-author
     "u" gnus-summary-limit-to-unread
     "m" gnus-summary-limit-to-marks
+    "M" gnus-summary-limit-exclude-marks
     "v" gnus-summary-limit-to-score
     "*" gnus-summary-limit-include-cached
     "D" gnus-summary-limit-include-dormant
@@ -1782,6 +1783,7 @@ increase the score of each group you read."
 	["Hide childless dormant"
 	 gnus-summary-limit-exclude-childless-dormant t]
 	;;["Hide thread" gnus-summary-limit-exclude-thread t]
+	["Hide marked" gnus-summary-limit-exclude-marks t]
 	["Show expunged" gnus-summary-show-all-expunged t])
        ("Process Mark"
 	["Set mark" gnus-summary-mark-as-processable t]

@@ -83,6 +83,7 @@
     ("text/html" mm-inline-text (locate-library "w3"))
     ("text/x-vcard" mm-inline-text (locate-library "vcard"))
     ("message/delivery-status" mm-inline-text t)
+    ("message/rfc822" mm-inline-message t)
     ("text/.*" mm-inline-text t)
     ("audio/wav" mm-inline-audio
      (and (or (featurep 'nas-sound) (featurep 'native-sound))
@@ -98,11 +99,13 @@
 (defvar mm-user-display-methods
   '(("image/.*" . inline)
     ("text/.*" . inline)
-    ("message/delivery-status" . inline)))
+    ("message/delivery-status" . inline)
+    ("message/rfc822" . inline)))
 
 (defvar mm-user-automatic-display
   '("text/plain" "text/enriched" "text/richtext" "text/html"
-    "text/x-vcard" "image/.*" "message/delivery-status" "multipart/.*"))
+    "text/x-vcard" "image/.*" "message/delivery-status" "multipart/.*"
+    "message/rfc822"))
 
 (defvar mm-attachment-override-types
   '("text/plain" "text/x-vcard")

@@ -2901,6 +2901,7 @@ If ARG is a number, it specifies which levels you are interested in
 re-scanning.  If ARG is non-nil and not a number, this will force
 \"hard\" re-reading of the active files from all servers."
   (interactive "P")
+  (require 'nnmail)
   (let ((gnus-inhibit-demon t)
 	;; Binding this variable will inhibit multiple fetchings
 	;; of the same mail source.

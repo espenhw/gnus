@@ -506,7 +506,7 @@ If N, return the Nth ancestor instead."
        ((gnus-functionp function)
 	)
        (t
-	(error "Invalid sort spec: %s" function))))if
+	(error "Invalid sort spec: %s" function))))
     (if (cdr funs)
 	`(or (,function ,first ,last)
 	     (and (not (,function ,last ,first))

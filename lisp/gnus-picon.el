@@ -374,7 +374,8 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 		  (gnus-put-text-property
 		   (match-beginning 0) (match-end 0)
 		   'invisible t)
-		(article-goto-body)
+		(let ((article-goto-body-goes-to-point-min-p nil))
+		  (article-goto-body))
 		(unless (bobp)
 		  (backward-char 1)))))
 	  (if (null gnus-picons-piconsearch-url)

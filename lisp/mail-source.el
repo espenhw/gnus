@@ -69,8 +69,10 @@
        (:suffix ".spool")
        (:predicate identity))
       (pop
+       (:prescript)
+       (:postscript)
        (:server (getenv "MAILHOST"))
-       (:port "pop3")
+       (:port "pop")
        (:user (or (user-login-name) (getenv "LOGNAME") (getenv "USER")))
        (:program)
        (:function)
@@ -308,8 +310,18 @@ If ARGS, PROMPT is used as an argument to `format'."
 (defun mail-source-fetch-pop (source callback)
   "Fetcher for single-file sources."
   (mail-source-bind (pop source)
+    (when prescript
+      (if (fboundp prescript)
+	  (funcall prescript)
+	(call-process shell-file-name nil nil nil
+		      shell-command-switch 
+		      (format-spec
+		       prescript
+		       (format-spec-make ?p password ?t mail-source-crash-box
+					 ?s server ?P port ?u user)))))
     (let ((from (format "%s:%s:%s" server user port))
-	  (mail-source-string (format "pop:%s@%s" user server)))
+	  (mail-source-string (format "pop:%s@%s" user server))
+	  result)
       (when (and (not (eq authentication 'apop))
 		 (not program))
 	(setq password
@@ -321,24 +333,38 @@ If ARGS, PROMPT is used as an argument to `format'."
 	  (push (cons from password) mail-source-password-cache)))
       (when server
 	(setenv "MAILHOST" server))
-      (if (cond
-	   (program
-	    (mail-source-fetch-with-program
-	     (format-spec
-	      program
-	      (format-spec-make ?p password ?t mail-source-crash-box
-				?s server ?P port ?u user))))
-	   (function
-	    (funcall function mail-source-crash-box))
-	   ;; The default is to use pop3.el.
-	   (t
-	    (let ((pop3-password password)
-		  (pop3-maildrop user)
-		  (pop3-mailhost server)
-		  (pop3-authentication-scheme
-		   (if (eq authentication 'apop) 'apop 'pass)))
-	      (save-excursion (pop3-movemail mail-source-crash-box)))))
-	  (mail-source-callback callback server)
+      (setq result
+	    (cond
+	     (program
+	      (mail-source-fetch-with-program
+	       (format-spec
+		program
+		(format-spec-make ?p password ?t mail-source-crash-box
+				  ?s server ?P port ?u user))))
+	     (function
+	      (funcall function mail-source-crash-box))
+	     ;; The default is to use pop3.el.
+	     (t
+	      (let ((pop3-password password)
+		    (pop3-maildrop user)
+		    (pop3-mailhost server)
+		    (pop3-port port)
+		    (pop3-authentication-scheme
+		     (if (eq authentication 'apop) 'apop 'pass)))
+		(save-excursion (pop3-movemail mail-source-crash-box))))))
+      (if result
+	  (progn
+	    (mail-source-callback callback server)
+	    (when prescript
+	      (if (fboundp prescript)
+		  (funcall prescript)
+		(call-process shell-file-name nil nil nil
+			      shell-command-switch 
+			      (format-spec
+			       postscript
+			       (format-spec-make
+				?p password ?t mail-source-crash-box
+				?s server ?P port ?u user))))))
 	;; We nix out the password in case the error
 	;; was because of a wrong password being given.
 	(setq mail-source-password-cache

@@ -45,7 +45,7 @@
     (iso-8859-3 . quoted-printable)
     (iso-8859-4 . quoted-printable)
     (iso-8859-5 . base64)
-    (koi8-r . base64)
+    (koi8-r . 8bit)
     (iso-8859-7 . quoted-printable)
     (iso-8859-8 . quoted-printable)
     (iso-8859-9 . quoted-printable)
@@ -122,7 +122,7 @@ If no encoding was done, nil is returned."
      ((eq charset mail-parse-charset)
       bits)
      (t
-      (let ((encoding (or (cdr (assq charset mm-body-charset-encoding-alist ))
+      (let ((encoding (or (cdr (assq charset mm-body-charset-encoding-alist))
 			  'quoted-printable)))
 	(mm-encode-content-transfer-encoding encoding "text/plain")
 	encoding)))))

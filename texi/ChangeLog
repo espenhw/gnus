@@ -1,3 +1,11 @@
+1999-02-20 17:33:55  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Mail Source Specifiers): Addition.
+
+1999-02-11 19:19:02  Carsten Leonhardt  <leo@arioch.oche.de>
+
+	* gnus.texi (Mail Source Specifiers): Document maildir.
+
 1999-02-09 16:21:35  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Charsets): New.

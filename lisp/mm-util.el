@@ -252,7 +252,9 @@ See also `with-temp-file' and `with-output-to-string'."
 (defun mm-find-charset-region (b e)
   "Return a list of charsets in the region."
   (cond
-   ((fboundp 'find-charset-region)
+   ((and (boundp 'enable-multibyte-characters)
+ 	 enable-multibyte-characters
+ 	 (fboundp 'find-charset-region))
     (find-charset-region b e))
    ((not (boundp 'current-language-environment))
     (save-excursion

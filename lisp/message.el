@@ -477,6 +477,7 @@ Predefined functions include `message-cite-original' and
 `message-cite-original-without-signature'.
 Note that `message-cite-original' uses `mail-citation-hook' if that is non-nil."
   :type '(radio (function-item message-cite-original)
+		(function-item message-cite-original-without-signature)
 		(function-item sc-cite-original)
 		(function :tag "Other"))
   :group 'message-insertion)
@@ -1218,6 +1219,7 @@ Point is left at the beginning of the narrowed-to region."
 (defun message-sort-headers-1 ()
   "Sort the buffer as headers using `message-rank' text props."
   (goto-char (point-min))
+  (require 'sort)
   (sort-subr
    nil 'message-next-header
    (lambda ()
@@ -1444,6 +1446,8 @@ C-c C-a  message-mime-attach-file (attach a file as MIME)."
 	(concat "[ \t]*[-a-z0-9A-Z]*>+[ \t]*\\|"
 		adaptive-fill-first-line-regexp))
   (mm-enable-multibyte)
+  (make-local-variable 'indent-tabs-mode) ;Turn off tabs for indentation.
+  (setq indent-tabs-mode nil)
   (run-hooks 'text-mode-hook 'message-mode-hook))
 
 
@@ -2093,7 +2097,6 @@ the user from the mailer."
       (let ((message-deletable-headers
 	     (if news nil message-deletable-headers)))
 	(message-generate-headers message-required-mail-headers))
-      (untabify (point-min) (point-max))
       (let ((mail-parse-charset message-posting-charset))
 	(mail-encode-encoded-word-buffer))
       ;; Let the user do all of the above.
@@ -2269,7 +2272,6 @@ to find out how to use this."
 	(message-narrow-to-headers)
 	;; Insert some headers.
 	(message-generate-headers message-required-news-headers)
-	(untabify (point-min) (point-max))
 	(let ((mail-parse-charset message-posting-charset))
 	  (mail-encode-encoded-word-buffer))
 	;; Let the user do all of the above.

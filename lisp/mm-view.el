@@ -71,7 +71,8 @@
 	  (save-restriction
 	    (narrow-to-region b (point))
 	    (save-window-excursion
-	      (let ((w3-strict-width width))
+	      (let ((w3-strict-width width)
+		    (url-standalone-mode t))
 		(w3-region (point-min) (point-max)))))
 	  (mm-handle-set-undisplayer
 	   handle
@@ -133,13 +134,33 @@
 
 (defun mm-w3-prepare-buffer ()
   (require 'w3)
-  (w3-prepare-buffer))
+  (let ((url-standalone-mode t))
+    (w3-prepare-buffer)))
 
 (defun mm-view-message ()
+  (mm-enable-multibyte)
   (gnus-article-prepare-display)
   (run-hooks 'gnus-article-decode-hook)
   (fundamental-mode)
   (goto-char (point-min)))
+
+(defun mm-inline-message (handle)
+  (let ((b (point)))
+    (save-excursion
+      (mm-insert-part handle)
+      (save-restriction
+	(narrow-to-region b (point))
+	(run-hooks 'gnus-article-decode-hook)
+	(gnus-article-prepare-display)
+	(mm-handle-set-undisplayer
+	 handle
+	 `(lambda ()
+	    (let (buffer-read-only)
+	      (mapc (lambda (prop)
+		      (remove-specifier
+		       (face-property 'default prop) (current-buffer)))
+		    '(background background-pixmap foreground))
+	      (delete-region ,(point-min-marker) ,(point-max-marker)))))))))
 
 (provide 'mm-view)
 

@@ -854,6 +854,7 @@ prompt the user for the name of an NNTP server to use."
   "Setup news information.
 If RAWFILE is non-nil, the .newsrc file will also be read.
 If LEVEL is non-nil, the news will be set up at level LEVEL."
+  (require 'nnmail)
   (let ((init (not (and gnus-newsrc-alist gnus-active-hashtb (not rawfile))))
 	;; Binding this variable will inhibit multiple fetchings
 	;; of the same mail source.

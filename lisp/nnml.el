@@ -591,7 +591,7 @@ all.  This may very well take some time.")
 	(let ((file (concat (nnmail-group-pathname
 			     (caar ga) nnml-directory)
 			    (int-to-string (cdar ga)))))
-z	  (if first
+	  (if first
 	      ;; It was already saved, so we just make a hard link.
 	      (funcall nnmail-crosspost-link-function first file t)
 	    ;; Save the article.

@@ -793,7 +793,7 @@ If SOURCE is a directory spec, try to return the group name component."
     (goto-char (point-min))
     ;; Find the end of the head.
     (narrow-to-region
-     (point-min) 
+     (point-min)
      (if (search-forward "\n\n" nil t)
 	 (1- (point))
        ;; This will never happen, but just to be on the safe side --
@@ -1044,6 +1044,9 @@ Return the number of characters in the body."
     (when (re-search-forward "^References:" nil t)
       (beginning-of-line)
       (insert "X-Gnus-Broken-Eudora-"))))
+
+(custom-add-option 'nnmail-prepare-incoming-header-hook
+		   'nnmail-fix-eudora-headers)
 
 ;;; Utility functions
 
@@ -1365,8 +1368,6 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	 ((eq source 'procmail)
 	  (message "Invalid value for nnmail-spool-file: `procmail'")
 	  nil))
-	(nnheader-message 4 "%s: Reading incoming mail from %s..."
-			  method (car source))
 	;; Hack to only fetch the contents of a single group's spool file.
 	(when (and (eq (car source) 'directory)
 		   group)
@@ -1379,15 +1380,17 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	  (if (member source nnmail-fetched-sources)
 	      (setq source nil)
 	    (push source nnmail-fetched-sources)))
-	(when (and source
-		   (mail-source-fetch
-		    source
-		    `(lambda (file orig-file)
-		       (nnmail-split-incoming
-			file ',(intern (format "%s-save-mail" method))
-			',spool-func (nnmail-get-split-group orig-file source)
-			',(intern (format "%s-active-number" method))))))
-	  (incf i)))
+	(when source
+	  (nnheader-message 4 "%s: Reading incoming mail from %s..."
+			    method (car source))
+	  (when (mail-source-fetch
+		 source
+		 `(lambda (file orig-file)
+		    (nnmail-split-incoming
+		     file ',(intern (format "%s-save-mail" method))
+		     ',spool-func (nnmail-get-split-group orig-file source)
+		     ',(intern (format "%s-active-number" method)))))
+	    (incf i))))
       ;; If we did indeed read any incoming spools, we save all info.
       (unless (zerop i)
 	(nnmail-save-active

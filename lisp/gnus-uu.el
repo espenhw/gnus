@@ -556,8 +556,6 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 	(delete-region (point) (gnus-point-at-eol))
 	(insert from))
       (message-forward post))
-    (delete-file file)
-    (kill-buffer buf)
     (setq gnus-uu-digest-from-subject nil)))
 
 (defun gnus-uu-digest-post-forward (&optional n)
