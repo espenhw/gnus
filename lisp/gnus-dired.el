@@ -96,7 +96,7 @@ filenames."
   (let ((destination nil)
 	(files-str nil)
 	(bufs nil))
-    ;; warn if user tries to attach without any files marked 
+    ;; warn if user tries to attach without any files marked
     (if (null files-to-attach)
 	(error "No files to attach")
       (setq files-str
@@ -104,7 +104,7 @@ filenames."
 	     (lambda (f) (file-name-nondirectory f))
 	     files-to-attach ", "))
       (setq bufs (message-buffers))
-    
+
       ;; set up destination message buffer
       (if (and bufs
 	       (y-or-n-p "Attach files to existing message buffer? "))
@@ -146,12 +146,12 @@ If ARG is non-nil, open it in a new buffer."
 		 (not (file-directory-p file-name))
 		 (string-match "\\.[^\\.]+$" file-name)
 		 (setq mime-type
-		       (mailcap-extension-to-mime 
+		       (mailcap-extension-to-mime
 			(match-string 0 file-name)))
-		 (stringp 
+		 (stringp
 		  (setq method
-			(cdr (assoc 'viewer 
-				    (car (mailcap-mime-info mime-type 
+			(cdr (assoc 'viewer
+				    (car (mailcap-mime-info mime-type
 							    'all)))))))
 	    (let ((view-command (mm-mailcap-command method file-name nil)))
 	      (message "viewing via %s" view-command)
@@ -177,16 +177,16 @@ file to save in."
 		(file-name-sans-versions (dired-get-filename) t)
 		(ps-print-preprint current-prefix-arg)))
   (mailcap-parse-mailcaps)
-  (cond 
+  (cond
    ((file-directory-p file-name)
     (error "Can't print a directory"))
    ((file-exists-p file-name)
     (let (mime-type method)
       (if (and (string-match "\\.[^\\.]+$" file-name)
 	       (setq mime-type
-		     (mailcap-extension-to-mime 
+		     (mailcap-extension-to-mime
 		      (match-string 0 file-name)))
-	       (stringp 
+	       (stringp
 		(setq method (mailcap-mime-info mime-type "print"))))
 	  (call-process shell-file-name nil
 			(generate-new-buffer " *mm*")

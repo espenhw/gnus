@@ -140,7 +140,7 @@ A list of images is returned."
 With arg, turn displaying on if and only if arg is positive."
   (interactive "P")
   (gnus-with-article-buffer
-    (if (if (numberp arg) 
+    (if (if (numberp arg)
 	    (> arg 0)
 	  (not (memq 'smiley gnus-article-wash-types)))
 	(smiley-region (point-min) (point-max))

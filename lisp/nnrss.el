@@ -176,7 +176,7 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 (defvar nnrss-content-function nil
   "A function which is called in `nnrss-request-article'.
 The arguments are (ENTRY GROUP ARTICLE).
-ENTRY is the record of the current headline. GROUP is the group name. 
+ENTRY is the record of the current headline. GROUP is the group name.
 ARTICLE is the article number of the current headline.")
 
 (nnoo-define-basics nnrss)
@@ -271,7 +271,7 @@ ARTICLE is the article number of the current headline.")
 		(fill-region point (point))))
 	  (if (nth 2 e)
 	      (insert (nth 2 e) "\n"))
-	  (if nnrss-content-function 
+	  (if nnrss-content-function
 	      (funcall nnrss-content-function e group article)))))
     (cond
      (err

@@ -170,7 +170,7 @@ The Gregorian date Sunday, December 31, 1bce is imaginary."
 	 (month (nth 4 tim))
 	 (day (nth 3 tim))
 	 (year (nth 5 tim)))
-    (+ (time-to-day-in-year time)	; 	Days this year
+    (+ (time-to-day-in-year time)	;	Days this year
        (* 365 (1- year))		;	+ Days in prior years
        (/ (1- year) 4)			;	+ Julian leap years
        (- (/ (1- year) 100))		;	- century years

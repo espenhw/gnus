@@ -6,7 +6,7 @@
 ;;      ShengHuo Zhu <zsh@cs.rochester.edu> (adding NOV)
 ;;      Scott Byer <byer@mv.us.adobe.com>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>
-;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
+;;	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: mail
 
 ;; This file is part of GNU Emacs.
@@ -1214,7 +1214,7 @@ This command does not work if you use short group names."
     (if (file-exists-p file)
 	(condition-case err
 	    (with-temp-buffer
-	      (gnus-sethash file (nth 5 (file-attributes file)) 
+	      (gnus-sethash file (nth 5 (file-attributes file))
 			    nnfolder-marks-modtime)
 	      (nnheader-insert-file-contents file)
 	      (setq nnfolder-marks (read (current-buffer)))

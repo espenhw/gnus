@@ -48,7 +48,7 @@ input and write the converted data to its standard output."
   :group 'gnus-extract
   :type '(repeat string))
 
-(defcustom uudecode-use-external 
+(defcustom uudecode-use-external
   (executable-find uudecode-decoder-program)
   "*Use external uudecode program."
   :group 'gnus-extract
@@ -166,8 +166,8 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 	      (setq counter (1+ counter)
 		    inputpos (1+ inputpos))
 	      (cond ((= counter 4)
-		     (setq result (cons 
-				   (concat 
+		     (setq result (cons
+				   (concat
 				    (char-to-string (lsh bits -16))
 				    (char-to-string (logand (lsh bits -8) 255))
 				    (char-to-string (logand bits 255)))
@@ -183,13 +183,13 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 	    ;;(error "uucode ends unexpectly")
 	    (setq done t))
 	   ((= counter 3)
-	    (setq result (cons 
-			  (concat 
+	    (setq result (cons
+			  (concat
 			   (char-to-string (logand (lsh bits -16) 255))
 			   (char-to-string (logand (lsh bits -8) 255)))
 			  result)))
 	   ((= counter 2)
-	    (setq result (cons 
+	    (setq result (cons
 			  (char-to-string (logand (lsh bits -10) 255))
 			  result))))
 	  (skip-chars-forward non-data-chars end))
@@ -206,7 +206,7 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 (defun uudecode-decode-region (start end &optional file-name)
   "Uudecode region between START and END.
 If FILE-NAME is non-nil, save the result to FILE-NAME."
-  (if uudecode-use-external 
+  (if uudecode-use-external
       (uudecode-decode-region-external start end file-name)
     (uudecode-decode-region-internal start end file-name)))
 

@@ -91,7 +91,7 @@
 	 (entry (assoc group nnslashdot-groups))
 	 (sid (nth 2 entry))
 	 (first-comments t)
-	 headers article subject score from date lines parent point cid 
+	 headers article subject score from date lines parent point cid
 	 s startats changed)
     (save-excursion
       (set-buffer nnslashdot-buffer)
@@ -189,7 +189,7 @@
 	    (while (and articles (<= (car articles) article))
 	      (pop articles))
 	    (setq article (1+ article)))
-	  (if nnslashdot-threaded 
+	  (if nnslashdot-threaded
 	      (progn
 		(setq start (pop startats))
 		(if start (setq start (+ start 2))))
@@ -244,7 +244,7 @@
 	    (when (numberp article)
 	      (if (= article 1)
 		  (progn
-		    (re-search-forward 
+		    (re-search-forward
 		     "Posted by")
 		    (search-forward "<BR>")
 		    (setq contents
@@ -254,7 +254,7 @@
 			     (re-search-forward
 			      "&lt;&nbsp;[ \t\r\n]*<A HREF=\"\\(\\(http:\\)?//slashdot\\.org\\)?/article")
 			     (match-beginning 0)))))
-		(setq cid (cdr (assq article 
+		(setq cid (cdr (assq article
 				     (nth 4 (assoc group nnslashdot-groups)))))
 		(search-forward (format "<a name=\"%s\">" cid))
 		(setq contents

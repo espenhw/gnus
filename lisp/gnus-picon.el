@@ -168,7 +168,7 @@ GLYPH can be either a glyph or a string."
 				  gnus-picon-user-directories)))
 	      (setcar spec (cons (gnus-picon-create-glyph file)
 				 (car spec))))
-	      
+
 	    (dotimes (i (1- (length spec)))
 	      (when (setq file (gnus-picon-find-face
 				(concat "unknown@"
@@ -180,7 +180,7 @@ GLYPH can be either a glyph or a string."
 			      (nth (1+ i) spec)))))
 	    (setq spec (nreverse spec))
 	    (push (cons address spec) gnus-picon-cache))
-	  
+
 	  (gnus-article-goto-header header)
 	  (mail-header-narrow-to-field)
 	  (when (search-forward address nil t)

@@ -66,7 +66,7 @@ current newsgroup name and then returns a suitable group name (or list
 of names)."
   :group 'gnus-message
   :type '(choice (string :tag "Group")
-                 (function)))
+		 (function)))
 
 (defcustom gnus-mailing-list-groups nil
   "*Regexp matching groups that are really mailing lists.
@@ -146,7 +146,7 @@ See Info node `(gnus)Posting Styles'."
 (defvar gnus-inews-mark-gcc-as-read nil
   "Obsolete variable. Use `gnus-gcc-mark-as-read' instead.")
 
-(make-obsolete-variable 'gnus-inews-mark-gcc-as-read 
+(make-obsolete-variable 'gnus-inews-mark-gcc-as-read
 			'gnus-gcc-mark-as-read)
 
 (defcustom gnus-gcc-externalize-attachments nil
@@ -203,15 +203,15 @@ use this option with care."
   :group 'gnus-message
   :type '(repeat (string :tag "File")))
 
-(defcustom gnus-debug-exclude-variables 
-  '(mm-mime-mule-charset-alist 
+(defcustom gnus-debug-exclude-variables
+  '(mm-mime-mule-charset-alist
     nnmail-split-fancy message-minibuffer-local-map)
   "Variables that should not be reported in `gnus-bug'."
   :version "21.1"
   :group 'gnus-message
   :type '(repeat (symbol :tab "Variable")))
 
-(defcustom gnus-discouraged-post-methods 
+(defcustom gnus-discouraged-post-methods
   '(nndraft nnml nnimap nnmaildir nnmh nnfolder nndir)
   "A list of back ends that are not used in \"real\" newsgroups.
 This variable is used only when `gnus-post-method' is `current'."
@@ -1060,40 +1060,40 @@ For the `inline' alternatives, also see the variable
   (interactive "P")
   (if (null (cdr (gnus-summary-work-articles nil)))
       (let ((message-forward-as-mime message-forward-as-mime)
-            (message-forward-show-mml message-forward-show-mml))
-        (cond
-         ((null arg))
-         ((eq arg 1)
-          (setq message-forward-as-mime nil
-                message-forward-show-mml t))
-         ((eq arg 2)
-          (setq message-forward-as-mime t
-                message-forward-show-mml nil))
-         ((eq arg 3)
-          (setq message-forward-as-mime t
-                message-forward-show-mml t))
-         ((eq arg 4)
-          (setq message-forward-as-mime nil
-                message-forward-show-mml nil))
-         (t
-          (setq message-forward-as-mime (not message-forward-as-mime))))
-        (let ((gnus-article-reply (gnus-summary-article-number)))
-          (gnus-setup-message 'forward
-            (gnus-summary-select-article)
-            (let ((mail-parse-charset
+	    (message-forward-show-mml message-forward-show-mml))
+	(cond
+	 ((null arg))
+	 ((eq arg 1)
+	  (setq message-forward-as-mime nil
+		message-forward-show-mml t))
+	 ((eq arg 2)
+	  (setq message-forward-as-mime t
+		message-forward-show-mml nil))
+	 ((eq arg 3)
+	  (setq message-forward-as-mime t
+		message-forward-show-mml t))
+	 ((eq arg 4)
+	  (setq message-forward-as-mime nil
+		message-forward-show-mml nil))
+	 (t
+	  (setq message-forward-as-mime (not message-forward-as-mime))))
+	(let ((gnus-article-reply (gnus-summary-article-number)))
+	  (gnus-setup-message 'forward
+	    (gnus-summary-select-article)
+	    (let ((mail-parse-charset
 		   (or (and (gnus-buffer-live-p gnus-article-buffer)
 			    (with-current-buffer gnus-article-buffer
 			      gnus-article-charset))
 		       gnus-newsgroup-charset))
-                  (mail-parse-ignored-charsets gnus-newsgroup-ignored-charsets))
-              (set-buffer gnus-original-article-buffer)
-              (message-forward post)))))
+		  (mail-parse-ignored-charsets gnus-newsgroup-ignored-charsets))
+	      (set-buffer gnus-original-article-buffer)
+	      (message-forward post)))))
     (gnus-uu-digest-mail-forward arg post)))
 
 (defun gnus-summary-resend-message (address n)
   "Resend the current article to ADDRESS."
   (interactive
-   (list (message-read-from-minibuffer 
+   (list (message-read-from-minibuffer
 	  "Resend message(s) to: "
 	  (when (gnus-buffer-live-p gnus-original-article-buffer)
 	    ;; If some other article is currently selected, the
@@ -1474,7 +1474,7 @@ this is a reply."
 		(gnus-message 1 "Couldn't store article in group %s: %s"
 			      group (gnus-status-message method))
 		(sit-for 2))
-	      (when (and group-art 
+	      (when (and group-art
 			 (or gnus-gcc-mark-as-read
 			     gnus-inews-mark-gcc-as-read))
 		(gnus-group-mark-article-read group (cdr group-art)))

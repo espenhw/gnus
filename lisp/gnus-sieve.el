@@ -219,7 +219,7 @@ This is returned as a string."
   (let* ((newsrc (cdr gnus-newsrc-alist))
 	 script)
     (dolist (info newsrc)
-      (when (or (not method) 
+      (when (or (not method)
 		(gnus-server-equal method (gnus-info-method info)))
 	(let* ((group (gnus-info-group info))
 	       (spec (gnus-group-find-parameter group 'sieve t)))

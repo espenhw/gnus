@@ -4,7 +4,7 @@
 
 ;; Author: Simon Josefsson <simon@josefsson.org> (adding MARKS)
 ;;      Lars Magne Ingebrigtsen <larsi@gnus.org>
-;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
+;;	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: news, mail
 
 ;; This file is part of GNU Emacs.
@@ -522,7 +522,7 @@ marks file will be regenerated properly by Gnus.")
 	(expand-file-name file nnml-current-directory)
       (when (not nnheader-directory-files-is-safe)
 	;; Just to make sure nothing went wrong when reading over NFS --
- 	;; check once more.
+	;; check once more.
 	(when (file-exists-p
 	       (setq file (expand-file-name (number-to-string article)
 					    nnml-current-directory)))
@@ -893,7 +893,7 @@ Use the nov database for that directory if available."
 (defun nnml-current-group-article-to-file-alist ()
   "Return an alist of article/file pairs in the current group.
 Use the nov database for the current group if available."
-  (if (or gnus-nov-is-evil 
+  (if (or gnus-nov-is-evil
 	  nnml-nov-is-evil
 	  (not (file-exists-p
 		(expand-file-name nnml-nov-file-name
@@ -985,8 +985,8 @@ Use the nov database for the current group if available."
 		 (error "Cannot write to %s (%s)" err))))))
 
 (defun nnml-open-marks (group server)
-  (let ((file (expand-file-name 
-	       nnml-marks-file-name 
+  (let ((file (expand-file-name
+	       nnml-marks-file-name
 	       (nnmail-group-pathname group nnml-directory))))
     (if (file-exists-p file)
 	(condition-case err

@@ -357,7 +357,7 @@ If this is `ask' the hook will query the user."
       (progn
 	(setq gnus-plugged plugged)
 	(gnus-run-hooks 'gnus-agent-plugged-hook)
-	(setcar (cdr gnus-agent-mode-status) 
+	(setcar (cdr gnus-agent-mode-status)
 		(gnus-agent-make-mode-line-string " Plugged"
 						  'mouse-2
 						  'gnus-agent-toggle-plugged))
@@ -366,7 +366,7 @@ If this is `ask' the hook will query the user."
     (gnus-agent-close-connections)
     (setq gnus-plugged plugged)
     (gnus-run-hooks 'gnus-agent-unplugged-hook)
-    (setcar (cdr gnus-agent-mode-status) 
+    (setcar (cdr gnus-agent-mode-status)
 	    (gnus-agent-make-mode-line-string " Unplugged"
 					      'mouse-2
 					      'gnus-agent-toggle-plugged)))
@@ -821,7 +821,7 @@ the actual number of articles toggled is returned."
 	(goto-char (point-min))
 	(when (re-search-forward
 	       (concat "^" (regexp-quote group) " ") nil t)
-          (save-excursion
+	  (save-excursion
 	    (read (current-buffer))                      ;; max
 	    (setq oactive-min (read (current-buffer))))  ;; min
 	  (gnus-delete-line))
@@ -981,7 +981,7 @@ the actual number of articles toggled is returned."
 		    (goto-char (match-end 0)))
 		  (gnus-agent-crosspost crosses (caar pos))))
 	      (goto-char (point-min))
-	      (if (not (re-search-forward 
+	      (if (not (re-search-forward
 			"^Message-ID: *<\\([^>\n]+\\)>" nil t))
 		  (setq id "No-Message-ID-in-article")
 		(setq id (buffer-substring (match-beginning 1) (match-end 1))))
@@ -1054,7 +1054,7 @@ the actual number of articles toggled is returned."
     (setq articles (sort (gnus-uncompress-sequence articles) '<))
     ;; Remove known articles.
     (when (gnus-agent-load-alist group)
-      (setq articles (gnus-list-range-intersection 
+      (setq articles (gnus-list-range-intersection
 		      articles
 		      (list
 		       (cons (1+ (caar (last gnus-agent-article-alist)))
@@ -1065,11 +1065,11 @@ the actual number of articles toggled is returned."
     (when articles
       (gnus-message 7 "Fetching headers for %s..." group)
       (save-excursion
- 	(set-buffer nntp-server-buffer)
- 	(unless (eq 'nov (gnus-retrieve-headers articles group))
- 	  (nnvirtual-convert-headers))
- 	;; Save these headers for later processing.
- 	(copy-to-buffer gnus-agent-overview-buffer (point-min) (point-max))
+	(set-buffer nntp-server-buffer)
+	(unless (eq 'nov (gnus-retrieve-headers articles group))
+	  (nnvirtual-convert-headers))
+	;; Save these headers for later processing.
+	(copy-to-buffer gnus-agent-overview-buffer (point-min) (point-max))
 	(when (file-exists-p file)
 	  (gnus-agent-braid-nov group articles file))
 	(let ((coding-system-for-write
@@ -1869,14 +1869,14 @@ The following commands are available:
 	      (push (read (current-buffer)) cached-articles))
 	    (forward-line 1))
 	  (setq cached-articles (nreverse cached-articles))))
-      (if (setq uncached-articles 
+      (if (setq uncached-articles
 		(gnus-sorted-difference articles cached-articles))
 	  (progn
 	    (set-buffer nntp-server-buffer)
 	    (erase-buffer)
 	    (let (gnus-agent-cache)
-	      (unless (eq 'nov 
-			  (gnus-retrieve-headers 
+	      (unless (eq 'nov
+			  (gnus-retrieve-headers
 			   uncached-articles group fetch-old))
 		(nnvirtual-convert-headers)))
 	    (set-buffer gnus-agent-overview-buffer)
@@ -1945,7 +1945,7 @@ The following commands are available:
 	  (let ((nnheader-file-coding-system
 		 gnus-agent-file-coding-system))
 	    (nnheader-insert-file-contents file)))
-      (goto-char (point-min)) 
+      (goto-char (point-min))
       (while (not (eobp))
 	(while (not (or (eobp) (looking-at "[0-9]")))
 	  (setq point (point))
@@ -1958,7 +1958,7 @@ The following commands are available:
 	    (while (and arts (> n (car arts)))
 	      (message "Regenerating NOV %s %d..." group (car arts))
 	      (mm-with-unibyte-buffer
-		(nnheader-insert-file-contents 
+		(nnheader-insert-file-contents
 		 (concat dir (number-to-string (car arts))))
 		(goto-char (point-min))
 		(if (search-forward "\n\n" nil t)
@@ -1983,15 +1983,15 @@ The following commands are available:
     (unless clean
       (gnus-agent-load-alist group))
     (setq alist (sort alist 'car-less-than-car))
-    (setq gnus-agent-article-alist (sort gnus-agent-article-alist 
+    (setq gnus-agent-article-alist (sort gnus-agent-article-alist
 					 'car-less-than-car))
     (while (and alist gnus-agent-article-alist)
-      (cond 
+      (cond
        ((< (caar alist) (caar gnus-agent-article-alist))
 	(push (pop alist) new-alist))
        ((> (caar alist) (caar gnus-agent-article-alist))
 	(push (list (car (pop gnus-agent-article-alist))) new-alist))
-       (t 
+       (t
 	(pop gnus-agent-article-alist)
 	(while (and gnus-agent-article-alist
 		    (= (caar alist) (caar gnus-agent-article-alist)))
@@ -2015,8 +2015,8 @@ The following commands are available:
       (if (not (re-search-forward "^Message-ID: *<\\([^>\n]+\\)>" nil t))
 	  (setq id "No-Message-ID-in-article")
 	(setq id (buffer-substring (match-beginning 1) (match-end 1))))
-      (gnus-agent-enter-history 
-       id (list (cons group article)) 
+      (gnus-agent-enter-history
+       id (list (cons group article))
        (time-to-days (nth 5 (file-attributes file)))))))
 
 ;;;###autoload
@@ -2027,7 +2027,7 @@ If CLEAN, don't read existing active and agentview files."
   (message "Regenerating Gnus agent files...")
   (dolist (gnus-command-method gnus-agent-covered-methods)
     (let ((active-file (gnus-agent-lib-file "active"))
-	  history-hashtb active-hashtb active-changed 
+	  history-hashtb active-hashtb active-changed
 	  history-changed point)
       (gnus-make-directory (file-name-directory active-file))
       (if clean
@@ -2049,12 +2049,12 @@ If CLEAN, don't read existing active and agentview files."
 	(goto-char (point-min))
 	(forward-line 1)
 	(while (not (eobp))
-	  (if (looking-at 
+	  (if (looking-at
 	       "\\([^\t\n]+\\)\t[0-9]+\t\\([^ \n]+\\) \\([0-9]+\\)")
 	      (progn
-		(unless (string= (match-string 1) 
+		(unless (string= (match-string 1)
 				 "last-header-fetched-for-session")
-		  (gnus-sethash (match-string 2) 
+		  (gnus-sethash (match-string 2)
 				(cons (string-to-number (match-string 3))
 				      (gnus-gethash-safe (match-string 2)
 							 history-hashtb))
@@ -2085,14 +2085,14 @@ If CLEAN, don't read existing active and agentview files."
 	      n)
 	  (gnus-sethash group arts history-hashtb)
 	  (while (and arts gnus-agent-article-alist)
-	    (cond 
+	    (cond
 	     ((> (car arts) (caar gnus-agent-article-alist))
 	      (when (cdar gnus-agent-article-alist)
-		(gnus-agent-regenerate-history 
+		(gnus-agent-regenerate-history
 		 group (caar gnus-agent-article-alist))
 		(setq history-changed t))
 	      (setq n (car (pop gnus-agent-article-alist)))
-	      (while (and gnus-agent-article-alist 
+	      (while (and gnus-agent-article-alist
 			  (= n (caar gnus-agent-article-alist)))
 		(pop gnus-agent-article-alist)))
 	     ((< (car arts) (caar gnus-agent-article-alist))
@@ -2101,7 +2101,7 @@ If CLEAN, don't read existing active and agentview files."
 		(pop arts)))
 	     (t
 	      (setq n (car (pop gnus-agent-article-alist)))
-	      (while (and gnus-agent-article-alist 
+	      (while (and gnus-agent-article-alist
 			  (= n (caar gnus-agent-article-alist)))
 		(pop gnus-agent-article-alist))
 	      (setq n (pop arts))
@@ -2109,18 +2109,18 @@ If CLEAN, don't read existing active and agentview files."
 		(pop arts)))))
 	  (while gnus-agent-article-alist
 	    (when (cdar gnus-agent-article-alist)
-	      (gnus-agent-regenerate-history 
+	      (gnus-agent-regenerate-history
 	       group (caar gnus-agent-article-alist))
 	      (setq history-changed t))
 	    (pop gnus-agent-article-alist))))
       (when history-changed
-	(message "Regenerate the history file of %s:%s" 
+	(message "Regenerate the history file of %s:%s"
 		 (car gnus-command-method)
 		 (cadr gnus-command-method))
 	(gnus-agent-save-history))
       (gnus-agent-close-history)
       (when active-changed
-	(message "Regenerate %s" active-file) 
+	(message "Regenerate %s" active-file)
 	(let ((nnmail-active-file-coding-system gnus-agent-file-coding-system))
 	  (gnus-write-active-file active-file active-hashtb)))))
   (message "Regenerating Gnus agent files...done"))
@@ -2130,8 +2130,8 @@ If CLEAN, don't read existing active and agentview files."
   (interactive (list t))
   (dolist (server gnus-opened-servers)
     (when (eq (nth 1 server) 'offline)
-      (if (if (eq force 'ask) 
-	      (gnus-y-or-n-p 
+      (if (if (eq force 'ask)
+	      (gnus-y-or-n-p
 	       (format "Switch %s:%s into online status? "
 		       (caar server) (cadar server)))
 	    force)

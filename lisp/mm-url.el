@@ -54,7 +54,7 @@
     (lynx "lynx" "-source")
     (curl "curl")))
 
-(defcustom mm-url-program 
+(defcustom mm-url-program
   (cond
    ((executable-find "wget") 'wget)
    ((executable-find "w3m") 'w3m)
@@ -62,7 +62,7 @@
    ((executable-find "curl") 'curl)
    (t "GET"))
   "The url grab program."
-  :type '(choice 
+  :type '(choice
 	  (symbol :tag "wget" wget)
 	  (symbol :tag "w3m" w3m)
 	  (symbol :tag "lynx" lynx)

@@ -40,7 +40,7 @@
 (defvar mm-text-html-renderer-alist
   '((w3  . mm-inline-text-html-render-with-w3)
     (w3m . mm-inline-text-html-render-with-w3m)
-    (links mm-inline-render-with-file 
+    (links mm-inline-render-with-file
 	   mm-links-remove-leading-blank
 	   "links" "-dump" file)
     (lynx  mm-inline-render-with-stdin nil
@@ -50,7 +50,7 @@
 (defvar mm-text-html-washer-alist
   '((w3  . gnus-article-wash-html-with-w3)
     (w3m . gnus-article-wash-html-with-w3m)
-    (links mm-inline-wash-with-file 
+    (links mm-inline-wash-with-file
 	   mm-links-remove-leading-blank
 	   "links" "-dump" file)
     (lynx  mm-inline-wash-with-stdin nil
@@ -108,7 +108,7 @@
   (let ((text (mm-get-part handle))
 	(b (point))
 	(url-standalone-mode t)
- 	(url-gateway-unplugged t)
+	(url-gateway-unplugged t)
 	(w3-honor-stylesheets nil)
 	(url-current-object
 	 (url-generic-parse-url (format "cid:%s" (mm-handle-id handle))))
@@ -308,7 +308,7 @@ will not be substituted.")
     (delete-region (match-beginning 0) (match-end 0))))
 
 (defun mm-inline-wash-with-file (post-func cmd &rest args)
-  (let ((file (make-temp-name 
+  (let ((file (make-temp-name
 	       (expand-file-name "mm" mm-tmp-directory))))
     (let ((coding-system-for-write 'binary))
       (write-region (point-min) (point-max) file nil 'silent))
@@ -335,8 +335,8 @@ will not be substituted.")
 
 (defun mm-inline-render-with-stdin (handle post-func cmd &rest args)
   (let ((source (mm-get-part handle)))
-    (mm-insert-inline 
-     handle 
+    (mm-insert-inline
+     handle
      (mm-with-unibyte-buffer
        (insert source)
        (apply 'mm-inline-wash-with-stdin post-func cmd args)
@@ -344,8 +344,8 @@ will not be substituted.")
 
 (defun mm-inline-render-with-function (handle func &rest args)
   (let ((source (mm-get-part handle)))
-    (mm-insert-inline 
-     handle 
+    (mm-insert-inline
+     handle
      (mm-with-unibyte-buffer
        (insert source)
        (apply func args)
@@ -431,7 +431,7 @@ will not be substituted.")
 (defun mm-w3-prepare-buffer ()
   (require 'w3)
   (let ((url-standalone-mode t)
- 	(url-gateway-unplugged t)
+	(url-gateway-unplugged t)
 	(w3-honor-stylesheets nil))
     (w3-prepare-buffer)))
 
@@ -544,7 +544,7 @@ will not be substituted.")
 			?\x7c ?\x82 ?\x2e ?\x2e ?\x5c ?\x7c ?\x83 ?\x2e ?\x2e
 			?\x2e ?\x5c ?\x29 ?\x06 ?\x09 ?\x5c ?\x2a ?\x86 ?\x48
 			?\x86 ?\xf7 ?\x0d ?\x01 ?\x07 ?\x02)))))
-  
+
 ;;      id-envelopedData OBJECT IDENTIFIER ::= { iso(1) member-body(2)
 ;;          us(840) rsadsi(113549) pkcs(1) pkcs7(7) 3 }
 (defvar mm-pkcs7-enveloped-magic
@@ -555,7 +555,7 @@ will not be substituted.")
 			?\x7c ?\x82 ?\x2e ?\x2e ?\x5c ?\x7c ?\x83 ?\x2e ?\x2e
 			?\x2e ?\x5c ?\x29 ?\x06 ?\x09 ?\x5c ?\x2a ?\x86 ?\x48
 			?\x86 ?\xf7 ?\x0d ?\x01 ?\x07 ?\x03)))))
-  
+
 (defun mm-view-pkcs7-get-type (handle)
   (mm-with-unibyte-buffer
     (mm-insert-part handle)

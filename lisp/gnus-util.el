@@ -1223,7 +1223,7 @@ forbidden in URL encoding."
 SPEC is a predicate specifier that contains stuff like `or', `and',
 `not', lists and functions.  The functions all take one parameter."
   `(lambda (elem) ,(gnus-make-predicate-1 spec)))
-  
+
 (defun gnus-make-predicate-1 (spec)
   (cond
    ((symbolp spec)

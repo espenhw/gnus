@@ -71,7 +71,7 @@ If this variable is set to nil, use internal function only.")
   "*Name of program to compute SHA1.
 It must be a string \(program name\) or list of strings \(name and its args\).")
 
-(defvar sha1-use-external 
+(defvar sha1-use-external
   (executable-find (car sha1-program))
   "*Use external sh1 program.
 If this variable is set to nil, use internal function only.")

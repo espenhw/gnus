@@ -3,7 +3,7 @@
 ;; Copyright (C) 2002 Free Software Foundation, Inc.
 
 ;; Author: Holger Schauer <Holger.Schauer@gmx.de>
-;; Keywords: utils message 
+;; Keywords: utils message
 
 ;; This file is part of GNU Emacs.
 
@@ -25,7 +25,7 @@
 ;;; Commentary:
 
 ;; This file contains some small additions to message mode:
-;;    * inserting files in a message and explicit marking it 
+;;    * inserting files in a message and explicit marking it
 ;;      as something somebody else has created,
 ;;    * change Subject: header and add (was: <old subject>)
 ;;    * strip (was: <old subject>) from Subject: headers
@@ -49,7 +49,7 @@
 ;; (autoload 'message-reduce-to-to-cc "message-utils" nil t)
 ;; as well as some keybindings like
 ;; (define-key message-mode-map '[(control c) m] 'message-mark-inserted-region)
-;; (define-key message-mode-map '[(control c) f] 'message-mark-insert-file) 
+;; (define-key message-mode-map '[(control c) f] 'message-mark-insert-file)
 ;; (define-key message-mode-map '[(control c) x] 'message-xpost-fup2)
 ;; (define-key message-mode-map '[(control c) s] 'message-change-subject)
 ;; (define-key message-mode-map '[(control c) a] 'message-add-archive-header)
@@ -63,13 +63,13 @@
 ;;   ["Insert Region Marked" message-mark-inserted-region t] "Spellcheck")
 ;;  (easy-menu-add-item nil '("Message")
 ;;   ["Insert File Marked" message-mark-insert-file t] "Spellcheck")
-;;  (easy-menu-add-item nil '("Field")  
+;;  (easy-menu-add-item nil '("Field")
 ;;   ["Crosspost / Followup" message-xpost-fup2 t] "----")
 ;;  (easy-menu-add-item nil '("Field")
 ;;   ["New Subject" message-change-subject t] "----")
 ;;  (easy-menu-add-item nil '("Field")
 ;;   ["Reduce To: to Cc:" message-reduce-to-to-cc t] "----")
-;;  (easy-menu-add-item nil '("Field") 
+;;  (easy-menu-add-item nil '("Field")
 ;;   [ "X-No-Archive:" message-add-archive-header t ]))
 ;; (add-hook 'message-mode-hook 'message-utils-setup)
 
@@ -122,12 +122,12 @@ See `message-begin-inserted-text-mark' and `message-end-inserted-text-mark'."
 ;;; **************
 ;;; Subject mangling
 
-(defcustom message-subject-was-regexp 
+(defcustom message-subject-was-regexp
   "[ \t]*\\((*[Ww][Aa][SsRr]:[ \t]*.*)\\)"
   "*Regexp matching \"(was: <old subject>)\" in the subject line."
   :group 'message-various
   :type 'regexp)
-  
+
 ;;;###autoload
 (defun message-strip-subject-was ()
   "Remove trailing \"(Was: <old subject>)\" from subject lines."
@@ -139,7 +139,7 @@ See `message-begin-inserted-text-mark' and `message-end-inserted-text-mark'."
 	   (cond ((> pos 0)
 		  (message-goto-subject)
 		  (message-delete-line)
-		  (insert (concat "Subject: " 
+		  (insert (concat "Subject: "
 				  (substring subject 0 pos) "\n")))))))
     (widen))
 
@@ -148,24 +148,24 @@ See `message-begin-inserted-text-mark' and `message-end-inserted-text-mark'."
 (defun message-change-subject (new-subject)
   "Ask for new Subject: header, append (was: <Old Subject>)."
   (interactive
-   (list 
+   (list
     (read-from-minibuffer "New subject: ")))
   (cond ((and (not (or (null new-subject) ; new subject not empty
 		       (zerop (string-width new-subject))
 		       (string-match "^[ \t]*$" new-subject))))
 	 (save-excursion
 	   (let ((old-subject (message-fetch-field "Subject")))
-	     (cond ((not (string-match 
-			  (concat "^[ \t]*" 
-				  (regexp-quote new-subject) 
+	     (cond ((not (string-match
+			  (concat "^[ \t]*"
+				  (regexp-quote new-subject)
 				  " \t]*$")
 			  old-subject))  ; yes, it really is a new subject
 		    ;; delete eventual Re: prefix
-		    (setq old-subject 
+		    (setq old-subject
 			  (message-strip-subject-re old-subject))
 		    (message-goto-subject)
 		    (message-delete-line)
-		    (insert (concat "Subject: " 
+		    (insert (concat "Subject: "
 				    new-subject
 				    " (was: "
 				    old-subject ")\n")))))))))
@@ -201,7 +201,7 @@ When called with a prefix argument, ask for a text to insert."
     (message-sort-headers)))
 
 ;;; **************
-;;; Crossposts and Followups      
+;;; Crossposts and Followups
 
 ; inspired by JoH-followup-to by Jochem Huhman <joh  at gmx.de>
 ; new suggestions by R. Weikusat <rw at another.de>
@@ -226,7 +226,7 @@ With prefix-argument just set Follow-Up, don't cross-post."
     (completing-read "Follwup To: "
 		     (if (boundp 'gnus-newsrc-alist)
 			 gnus-newsrc-alist)
-		     nil nil '("poster" . 0) 
+		     nil nil '("poster" . 0)
 		     (if (boundp 'gnus-group-history)
 			 'gnus-group-history))))
   (message-remove-header "Follow[Uu]p-[Tt]o" t)
@@ -234,7 +234,7 @@ With prefix-argument just set Follow-Up, don't cross-post."
   (beginning-of-line)
   ;; if we already did a crosspost before, kill old target
   (if (and message-xpost-old-target
-	   (re-search-forward 
+	   (re-search-forward
 	    (regexp-quote (concat "," message-xpost-old-target))
 	    nil t))
       (replace-match ""))
@@ -244,15 +244,15 @@ With prefix-argument just set Follow-Up, don't cross-post."
   (cond ((and (or (and message-xpost-default (not current-prefix-arg))  ; def: xpost, req:no
 		  (and (not message-xpost-default) current-prefix-arg)) ; def: no-xpost, req:yes
 	      (not (string-match "poster" target-group))
-	      (not (string-match (regexp-quote target-group) 
+	      (not (string-match (regexp-quote target-group)
 				 (message-fetch-field "Newsgroups"))))
 	 (end-of-line)
 	 (insert-string (concat "," target-group))))
   (end-of-line) ; ensure Followup: comes after Newsgroups:
   ;; unless new followup would be identical to Newsgroups line
   ;; make a new Followup-To line
-  (if (not (string-match (concat "^[ \t]*" 
-				 target-group 
+  (if (not (string-match (concat "^[ \t]*"
+				 target-group
 				 "[ \t]*$")
 			 (message-fetch-field "Newsgroups")))
       (insert (concat "\nFollowup-To: " target-group)))
@@ -280,16 +280,16 @@ OLD-GROUPS. OLD-GROUPS lists the old-groups the posting would have
 been made to before the user asked for a Crosspost."
   ;; start scanning body for previous uses
   (message-goto-signature)
-  (let ((head (re-search-backward 
-	       (concat "^" mail-header-separator) 
+  (let ((head (re-search-backward
+	       (concat "^" mail-header-separator)
 	       nil t))) ; just search in body
     (message-goto-signature)
-    (while (re-search-backward 
+    (while (re-search-backward
 	    (concat "^" (regexp-quote message-xpost-note) ".*")
 	    head t)
       (message-delete-line))
     (message-goto-signature)
-    (while (re-search-backward 
+    (while (re-search-backward
 	    (concat "^" (regexp-quote message-fup2-note) ".*")
 	    head t)
       (message-delete-line))
@@ -306,8 +306,8 @@ been made to before the user asked for a Crosspost."
 (defcustom message-xpost-note-function
   'message-xpost-insert-note
   "Function to use to insert note about Crosspost or Followup-To.
-The function will be called with four arguments. The function should not 
-only insert a note, but also ensure old notes are deleted. See the 
+The function will be called with four arguments. The function should not
+only insert a note, but also ensure old notes are deleted. See the
 documentation for `message-xpost-insert-note'. "
   :type 'function
   :group 'message-various)
@@ -321,7 +321,7 @@ With prefix-argument just set Follow-Up, don't cross-post."
     (completing-read "Follwup To: "
 		     (if (boundp 'gnus-newsrc-alist)
 			 gnus-newsrc-alist)
-		     nil nil '("poster" . 0) 
+		     nil nil '("poster" . 0)
 		     (if (boundp 'gnus-group-history)
 			 'gnus-group-history))))
   (cond ((not (or (null target-group) ; new subject not empty
@@ -329,11 +329,11 @@ With prefix-argument just set Follow-Up, don't cross-post."
 		  (string-match "^[ \t]*$" target-group)))
 	 (save-excursion
 	   (let* ((old-groups (message-fetch-field "Newsgroups"))
-		  (in-old (string-match 
+		  (in-old (string-match
 			   (regexp-quote target-group) old-groups)))
 	     ;; check whether target exactly matches old Newsgroups
-	     (cond ((or (not in-old)       
-			(not (string-match 
+	     (cond ((or (not in-old)
+			(not (string-match
 			      (concat "^[ \t]*"
 				      (regexp-quote target-group)
 				      "[ \t]*$")
@@ -342,7 +342,7 @@ With prefix-argument just set Follow-Up, don't cross-post."
 		    (message-xpost-fup2-header target-group)
 		    ;; insert note whether we do xpost or fup2
 		    (funcall message-xpost-note-function
-			     target-group 
+			     target-group
 			     (if (or (and message-xpost-default (not current-prefix-arg))
 				     (and (not message-xpost-default) current-prefix-arg))
 				 t)
@@ -365,10 +365,10 @@ With prefix-argument just set Follow-Up, don't cross-post."
 	    (message-goto-to)
 	    (message-delete-line)
 	    (insert (concat "To: " cc-content "\n"))
-	    (message-remove-header (if bcc 
+	    (message-remove-header (if bcc
 				       "bcc"
 				     "cc")))))))
- 
+
 ;;; provide ourself
 (provide 'message-utils)
 

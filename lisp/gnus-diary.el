@@ -265,7 +265,7 @@ There are currently two built-in format functions:
 	 (o1 (nndiary-next-occurence s1 now))
 	 (o2 (nndiary-next-occurence s2 now)))
     (if (and (= (car o1) (car o2)) (= (cadr o1) (cadr o2)))
-        (< (mail-header-number h1) (mail-header-number h2))
+	(< (mail-header-number h1) (mail-header-number h2))
       (time-less-p o1 o2))))
 
 

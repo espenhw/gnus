@@ -221,7 +221,7 @@
 	   ((eq c ?,)
 	    (setq address
 		  (condition-case nil
-		      (ietf-drums-parse-address 
+		      (ietf-drums-parse-address
 		       (buffer-substring beg (point)))
 		    (error nil)))
 	    (if address (push address pairs))
@@ -231,7 +231,7 @@
 	    (forward-char 1))))
 	(setq address
 	      (condition-case nil
-		  (ietf-drums-parse-address 
+		  (ietf-drums-parse-address
 		   (buffer-substring beg (point)))
 		(error nil)))
 	(if address (push address pairs))

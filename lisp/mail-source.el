@@ -593,7 +593,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 
 (defun mail-source-fetch-with-program (program)
   (zerop (call-process shell-file-name nil nil nil
- 		       shell-command-switch program)))
+		       shell-command-switch program)))
 
 (defun mail-source-run-script (script spec &optional delay)
   (when script
@@ -862,13 +862,13 @@ This only works when `display-time' is enabled."
 				(with-temp-file mail-source-crash-box
 				  (insert-file-contents file)
 				  (goto-char (point-min))
-;;;                               ;; Unix mail format
-;;; 				  (unless (looking-at "\n*From ")
-;;; 				    (insert "From maildir "
-;;; 					    (current-time-string) "\n"))
-;;; 				  (while (re-search-forward "^From " nil t)
-;;; 				    (replace-match ">From "))
-;;;                               (goto-char (point-max))
+;;;				  ;; Unix mail format
+;;;				  (unless (looking-at "\n*From ")
+;;;				    (insert "From maildir "
+;;;					    (current-time-string) "\n"))
+;;;				  (while (re-search-forward "^From " nil t)
+;;;				    (replace-match ">From "))
+;;;				  (goto-char (point-max))
 ;;;				  (insert "\n\n")
 				  ;; MMDF mail format
 				  (insert "\001\001\001\001\n"))

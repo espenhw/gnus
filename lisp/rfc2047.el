@@ -184,7 +184,7 @@ Should be called narrowed to the head of the message."
 	     ;; left the old code commented out below.
 	     ;; -- Per Abrahamsen <abraham@dina.kvl.dk> Date: 2001-10-07.
 	     ((null method)
-	      (when (delq 'ascii 
+	      (when (delq 'ascii
 			  (mm-find-charset-region (point-min) (point-max)))
 		(rfc2047-encode-region (point-min) (point-max))))
 ;;;	     ((null method)
@@ -540,7 +540,7 @@ The buffer may be narrowed."
 	  (inline
 	    (rfc2047-decode-region (point-min) (point-max)))
 	  (buffer-string))
-      (if (and m 
+      (if (and m
 	       mail-parse-charset
 	       (not (eq mail-parse-charset 'us-ascii))
 	       (not (eq mail-parse-charset 'gnus-decoded)))

@@ -65,7 +65,7 @@ NAME is a string containing the name of the TWEAK parameter in the MML
 handle.  FUNCTION is a Lisp function which is called with the MML
 handle to tweak the part.")
 
-(defvar mml-tweak-sexp-alist 
+(defvar mml-tweak-sexp-alist
   '((mml-externalize-attachments . mml-tweak-externalize-attachments))
   "A list of (SEXP . FUNCTION) for tweaking MML parts.
 SEXP is a s-expression. If the evaluation of SEXP is non-nil, FUNCTION
@@ -191,7 +191,7 @@ one charsets.")
 			 (list
 			  (intern (downcase (cdr (assq 'charset tag))))))
 			(t
-			 (mm-find-mime-charset-region point (point) 
+			 (mm-find-mime-charset-region point (point)
 						      mm-hack-charsets))))
 	(when (and (not raw) (memq nil charsets))
 	  (if (or (memq 'unknown-encoding mml-confirmation-set)
@@ -1046,7 +1046,7 @@ If RAW, don't highlight the article."
 (defun mml-tweak-externalize-attachments (cont)
   "Tweak attached files as external parts."
   (let (filename-cons)
-    (when (and (eq (car cont) 'part) 
+    (when (and (eq (car cont) 'part)
 	       (not (cdr (assq 'buffer cont)))
 	       (and (setq filename-cons (assq 'filename cont))
 		    (not (equal (cdr (assq 'nofile cont)) "yes"))))

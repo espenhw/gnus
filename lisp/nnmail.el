@@ -189,7 +189,7 @@ The return value should be `delete' or a group name (a string)."
 		 (function :format "%v" nnmail-)
 		 string))
 
-(defcustom nnmail-fancy-expiry-targets nil 
+(defcustom nnmail-fancy-expiry-targets nil
   "Determine expiry target based on articles using fancy techniques.
 
 This is a list of (\"HEADER\" \"REGEXP\" \"TARGET\") entries.  If
@@ -219,8 +219,8 @@ everything else will be expired to \"nnfolder:Archive-YYYY\"."
   :type '(repeat (list (choice :tag "Match against"
 			       (string :tag "Header")
 			       (const to-from))
-                       regexp
-                       (string :tag "Target group format string"))))
+		       regexp
+		       (string :tag "Target group format string"))))
 
 (defcustom nnmail-cache-accepted-message-ids nil
   "If non-nil, put Message-IDs of Gcc'd articles into the duplicate cache.
@@ -381,8 +381,8 @@ GROUP: Mail will be stored in GROUP (a string).
 junk: Mail will be deleted.  Use with care!  Do not submerge in water!
   Example:
   (setq nnmail-split-fancy
-        '(| (\"Subject\" \"MAKE MONEY FAST\" junk)
-            ...other.rules.omitted...))
+	'(| (\"Subject\" \"MAKE MONEY FAST\" junk)
+	    ...other.rules.omitted...))
 
 FIELD must match a complete field name.  VALUE must match a complete
 word according to the `nnmail-split-fancy-syntax-table' syntax table.

@@ -42,7 +42,7 @@
 	  (gnus-request-article-this-buffer (aref header 0)
 					    gnus-newsgroup-name)
 	  (when (search-forward id nil t)
-	    (let ((nhandles (mm-dissect-buffer 
+	    (let ((nhandles (mm-dissect-buffer
 			     nil gnus-article-loose-mime)) nid)
 	      (if (consp (car nhandles))
 		  (mm-destroy-parts nhandles)

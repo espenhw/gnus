@@ -61,7 +61,7 @@ with some simple extensions.
 %a  Number of unread articles in the groups in the topic.
 %A  Number of unread articles in the groups in the topic and its subtopics.
 
-General format specifiers can also be used.  
+General format specifiers can also be used.
 See (gnus)Formatting Variables."
   :link '(custom-manual "(gnus)Formatting Variables")
   :type 'string
@@ -1134,7 +1134,7 @@ articles in the topic and its subtopics."
       (setq gnus-group-change-level-function 'gnus-topic-change-level)
       (setq gnus-goto-missing-group-function 'gnus-topic-goto-missing-group)
       (make-local-hook 'gnus-check-bogus-groups-hook)
-      (add-hook 'gnus-check-bogus-groups-hook 'gnus-topic-clean-alist 
+      (add-hook 'gnus-check-bogus-groups-hook 'gnus-topic-clean-alist
 		nil 'local)
       (setq gnus-topology-checked-p nil)
       ;; We check the topology.

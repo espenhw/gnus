@@ -576,7 +576,7 @@ with some simple extensions.
 
 %S  The subject
 
-General format specifiers can also be used.  
+General format specifiers can also be used.
 See (gnus)Formatting Variables."
   :link '(custom-manual "(gnus)Formatting Variables")
   :group 'gnus-threading
@@ -2086,10 +2086,10 @@ increase the score of each group you read."
 	["Wide reply and yank" gnus-summary-wide-reply-with-original
 	 ,@(if (featurep 'xemacs) '(t)
 	     '(:help "Mail a reply, quoting this article"))]
-        ["Very wide reply" gnus-summary-very-wide-reply t]
-        ["Very wide reply and yank" gnus-summary-very-wide-reply-with-original
- 	,@(if (featurep 'xemacs) '(t)
- 	    '(:help "Mail a very wide reply, quoting this article"))]
+	["Very wide reply" gnus-summary-very-wide-reply t]
+	["Very wide reply and yank" gnus-summary-very-wide-reply-with-original
+	 ,@(if (featurep 'xemacs) '(t)
+	     '(:help "Mail a very wide reply, quoting this article"))]
 	["Mail forward" gnus-summary-mail-forward t]
 	["Post forward" gnus-summary-post-forward t]
 	["Digest and mail" gnus-uu-digest-mail-forward t]
@@ -4425,7 +4425,7 @@ or a straight list of headers."
 		  (delq number gnus-newsgroup-unreads))
 	    (if gnus-newsgroup-auto-expire
 		(setq gnus-newsgroup-expirable
-		      (gnus-add-to-sorted-list 
+		      (gnus-add-to-sorted-list
 		       gnus-newsgroup-expirable number))
 	      (push (cons number gnus-low-score-mark)
 		    gnus-newsgroup-reads))))
@@ -4884,7 +4884,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	       (gnus-uncompress-range (gnus-active group))
 	       (gnus-cache-articles-in-group group))
 	    ;; Select only the "normal" subset of articles.
-	    (gnus-sorted-nunion  
+	    (gnus-sorted-nunion
 	     (gnus-sorted-union gnus-newsgroup-dormant gnus-newsgroup-marked)
 	     gnus-newsgroup-unreads)))
 	 (scored-list (gnus-killed-articles gnus-newsgroup-killed articles))
@@ -6018,7 +6018,7 @@ The prefix argument ALL means to select all articles."
 	    (set-buffer gnus-group-buffer)
 	    (gnus-undo-force-boundary))
 	  (gnus-update-read-articles
-	   group (gnus-sorted-union 
+	   group (gnus-sorted-union
 		  gnus-newsgroup-unreads gnus-newsgroup-unselected))
 	  ;; Set the current article marks.
 	  (let ((gnus-newsgroup-scored
@@ -7073,10 +7073,10 @@ articles that are younger than AGE days."
        (when (> (length days) 0)
 	 (setq days (read days)))
        (if (numberp days)
-	   (progn 
+	   (progn
 	     (setq days-got t)
 	     (if (< days 0)
-		 (progn 
+		 (progn
 		   (setq younger (not younger))
 		   (setq days (* days -1)))))
 	 (message "Please enter a number.")
@@ -8076,7 +8076,7 @@ If ARG (the prefix) is a number, show the article with the charset
 defined in `gnus-summary-show-article-charset-alist', or the charset
 input.
 If ARG (the prefix) is non-nil and not a number, show the raw article
-without any article massaging functions being run.  Normally, the key strokes 
+without any article massaging functions being run.  Normally, the key strokes
 are `C-u g'."
   (interactive "P")
   (cond
@@ -8173,19 +8173,19 @@ If ARG is a negative number, hide the unwanted header lines."
       (let* ((buffer-read-only nil)
 	     (inhibit-point-motion-hooks t)
 	     hidden e)
-        (save-restriction
-          (article-narrow-to-head)
-          (setq e (point-max)
-                hidden (if (numberp arg)
-                           (>= arg 0)
-                         (gnus-article-hidden-text-p 'headers))))
-        (delete-region (point-min) e)
+	(save-restriction
+	  (article-narrow-to-head)
+	  (setq e (point-max)
+		hidden (if (numberp arg)
+			   (>= arg 0)
+			 (gnus-article-hidden-text-p 'headers))))
+	(delete-region (point-min) e)
 	(goto-char (point-min))
 	(save-excursion
 	  (set-buffer gnus-original-article-buffer)
 	  (goto-char (point-min))
-          (setq e (search-forward "\n\n" nil t)
-                e (if e (1- e) (point-max))))
+	  (setq e (search-forward "\n\n" nil t)
+		e (if e (1- e) (point-max))))
 	(insert-buffer-substring gnus-original-article-buffer 1 e)
 	(save-restriction
 	  (narrow-to-region (point-min) (point))
@@ -9204,15 +9204,15 @@ Iff NO-EXPIRE, auto-expiry will be inhibited."
 	(setq gnus-newsgroup-reads (delq article gnus-newsgroup-reads))
 	(cond ((= mark gnus-ticked-mark)
 	       (setq gnus-newsgroup-marked
-		     (gnus-add-to-sorted-list gnus-newsgroup-marked 
+		     (gnus-add-to-sorted-list gnus-newsgroup-marked
 					      article)))
 	      ((= mark gnus-dormant-mark)
 	       (setq gnus-newsgroup-dormant
-		     (gnus-add-to-sorted-list gnus-newsgroup-dormant 
+		     (gnus-add-to-sorted-list gnus-newsgroup-dormant
 					      article)))
 	      (t
 	       (setq gnus-newsgroup-unreads
-		     (gnus-add-to-sorted-list gnus-newsgroup-unreads 
+		     (gnus-add-to-sorted-list gnus-newsgroup-unreads
 					      article))))
 	(gnus-pull article gnus-newsgroup-reads)
 
@@ -10836,7 +10836,7 @@ returned."
 (defun gnus-summary-insert-articles (articles)
   (when (setq articles
 	      (gnus-sorted-difference articles
-				      (mapcar (lambda (h) 
+				      (mapcar (lambda (h)
 						(mail-header-number h))
 					      gnus-newsgroup-headers)))
     (setq gnus-newsgroup-headers

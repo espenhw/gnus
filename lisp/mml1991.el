@@ -24,7 +24,7 @@
 
 ;;; Commentary:
 
-;; RCS: $Id: mml1991.el,v 6.4 2001/12/18 06:26:40 zsh Exp $
+;; RCS: $Id: mml1991.el,v 6.5 2001/12/18 16:14:19 huber Exp $
 
 ;;; Code:
 
@@ -48,15 +48,15 @@
 
 (defun mml1991-mailcrypt-sign (cont)
   (let ((text (current-buffer))
-        headers signature
-        (result-buffer (get-buffer-create "*GPG Result*")))
+	headers signature
+	(result-buffer (get-buffer-create "*GPG Result*")))
     ;; Save MIME Content[^ ]+: headers from signing
     (goto-char (point-min))
     (while (looking-at "^Content[^ ]+:") (forward-line))
     (if (> (point) (point-min))
-        (progn
-          (setq headers (buffer-substring (point-min) (point)))
-          (kill-region (point-min) (point))))
+	(progn
+	  (setq headers (buffer-substring (point-min) (point)))
+	  (kill-region (point-min) (point))))
     (goto-char (point-max))
     (unless (bolp)
       (insert "\n"))
@@ -83,13 +83,13 @@
 (defun mml1991-mailcrypt-encrypt (cont)
   (let ((text (current-buffer))
 	cipher
-        (result-buffer (get-buffer-create "*GPG Result*")))
+	(result-buffer (get-buffer-create "*GPG Result*")))
     ;; Strip MIME Content[^ ]: headers since it will be ASCII ARMOURED
     (goto-char (point-min))
     (while (looking-at "^Content[^ ]+:") (forward-line))
     (if (> (point) (point-min))
-        (progn
-          (kill-region (point-min) (point))))
+	(progn
+	  (kill-region (point-min) (point))))
     (mm-with-unibyte-current-buffer-mule4
       (with-temp-buffer
 	(setq cipher (current-buffer))
@@ -110,10 +110,10 @@
 	(while (re-search-forward "\r+$" nil t)
 	  (replace-match "" t t))
 	(set-buffer text)
-        (kill-region (point-min) (point-max))
+	(kill-region (point-min) (point-max))
 	;;(insert "Content-Type: application/pgp-encrypted\n\n")
 	;;(insert "Version: 1\n\n")
-        (insert "\n")
+	(insert "\n")
 	(insert-buffer cipher)
 	(goto-char (point-max))))))
 
@@ -124,24 +124,24 @@
 
 (defun mml1991-gpg-sign (cont)
   (let ((text (current-buffer))
-        headers signature
-        (result-buffer (get-buffer-create "*GPG Result*")))
+	headers signature
+	(result-buffer (get-buffer-create "*GPG Result*")))
     ;; Save MIME Content[^ ]+: headers from signing
     (goto-char (point-min))
     (while (looking-at "^Content[^ ]+:") (forward-line))
     (if (> (point) (point-min))
-        (progn
-          (setq headers (buffer-substring (point-min) (point)))
-          (kill-region (point-min) (point))))
+	(progn
+	  (setq headers (buffer-substring (point-min) (point)))
+	  (kill-region (point-min) (point))))
     (goto-char (point-max))
     (unless (bolp)
       (insert "\n"))
     (quoted-printable-decode-region (point-min) (point-max))
     (with-temp-buffer
       (unless (gpg-sign-cleartext text (setq signature (current-buffer))
-                                  result-buffer
-                                  nil
-                                  (message-options-get 'message-sender))
+				  result-buffer
+				  nil
+				  (message-options-get 'message-sender))
 	(unless (> (point-max) (point-min))
 	  (pop-to-buffer result-buffer)
 	  (error "Sign error")))
@@ -159,13 +159,13 @@
 (defun mml1991-gpg-encrypt (cont)
   (let ((text (current-buffer))
 	cipher
-        (result-buffer (get-buffer-create "*GPG Result*")))
+	(result-buffer (get-buffer-create "*GPG Result*")))
     ;; Strip MIME Content[^ ]: headers since it will be ASCII ARMOURED
     (goto-char (point-min))
     (while (looking-at "^Content[^ ]+:") (forward-line))
     (if (> (point) (point-min))
-        (progn
-          (kill-region (point-min) (point))))
+	(progn
+	  (kill-region (point-min) (point))))
     (mm-with-unibyte-current-buffer-mule4
       (with-temp-buffer
 	(unless (gpg-sign-encrypt
@@ -187,10 +187,10 @@
 	(while (re-search-forward "\r+$" nil t)
 	  (replace-match "" t t))
 	(set-buffer text)
-        (kill-region (point-min) (point-max))
+	(kill-region (point-min) (point-max))
 	;;(insert "Content-Type: application/pgp-encrypted\n\n")
 	;;(insert "Version: 1\n\n")
-        (insert "\n")
+	(insert "\n")
 	(insert-buffer cipher)
 	(goto-char (point-max))))))
 

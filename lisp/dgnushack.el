@@ -257,7 +257,7 @@ Modify to suit your needs."))
        (setq files (delete "nnrss.el" files))))
     (dolist (file
 	     (if (featurep 'xemacs)
-                '("md5.el")
+		 '("md5.el")
 	       '("gnus-xmas.el" "messagexmas.el" "nnheaderxm.el")))
       (setq files (delete file files)))
 

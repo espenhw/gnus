@@ -640,18 +640,18 @@ to supply to the test."
 	(setq mailcap-mime-data
 	      (cons (cons major (list (cons minor info)))
 		    mailcap-mime-data))
-       (let ((cur-minor (assoc minor old-major)))
- 	(cond
- 	 ((or (null cur-minor)		; New minor area, or
- 	      (assq 'test info))	; Has a test, insert at beginning
- 	  (setcdr old-major (cons (cons minor info) (cdr old-major))))
- 	 ((and (not (assq 'test info))	; No test info, replace completely
- 	       (not (assq 'test cur-minor))
+      (let ((cur-minor (assoc minor old-major)))
+	(cond
+	 ((or (null cur-minor)		; New minor area, or
+	      (assq 'test info))	; Has a test, insert at beginning
+	  (setcdr old-major (cons (cons minor info) (cdr old-major))))
+	 ((and (not (assq 'test info))	; No test info, replace completely
+	       (not (assq 'test cur-minor))
 	       (equal (assq 'viewer info)  ; Keep alternative viewer
 		      (assq 'viewer cur-minor)))
- 	  (setcdr cur-minor info))
- 	 (t
- 	  (setcdr old-major (cons (cons minor info) (cdr old-major))))))
+	  (setcdr cur-minor info))
+	 (t
+	  (setcdr old-major (cons (cons minor info) (cdr old-major))))))
       )))
 
 (defun mailcap-add (type viewer &optional test)

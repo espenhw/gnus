@@ -259,7 +259,7 @@ If NOW, use that time instead."
 	    ;; Tue Jul 9 09:04:21 1996
 	    (setq date
 		  (cond ((not date)
-                        "Tue Jan 1 00:00:0 1900")
+			 "Tue Jan 1 00:00:0 1900")
 			((string-match "[A-Z]" (nth 0 date))
 			 (format "%s %s %s %s %s"
 				 (nth 0 date) (nth 2 date) (nth 1 date)

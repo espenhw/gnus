@@ -662,11 +662,11 @@ external if displayed external."
 	(mm-insert-part handle)
 	(let* ((dir (make-temp-name
 		     (expand-file-name "emm." mm-tmp-directory)))
-	       (filename (or 
+	       (filename (or
 			  (mail-content-type-get
 			   (mm-handle-disposition handle) 'filename)
- 			  (mail-content-type-get
- 			   (mm-handle-type handle) 'name)))
+			  (mail-content-type-get
+			   (mm-handle-type handle) 'name)))
 	       (mime-info (mailcap-mime-info
 			   (mm-handle-media-type handle) t))
 	       (needsterm (or (assoc "needsterm" mime-info)
@@ -1145,7 +1145,7 @@ be determined."
 		      ;; Avoid testing `make-glyph' since W3 may define
 		      ;; a bogus version of it.
 		      (if (fboundp 'create-image)
-			  (create-image (buffer-string) 
+			  (create-image (buffer-string)
 					(or (mm-image-type-from-buffer)
 					    (intern type))
 					'data-p)
@@ -1171,11 +1171,11 @@ be determined."
 	  (delete-file file)))))
    (t
     (make-glyph
-     (vector 
+     (vector
       (or (mm-image-type-from-buffer)
 	  (intern type))
       :data (buffer-string))))))
-  
+
 (defun mm-image-fit-p (handle)
   "Say whether the image in HANDLE will fit the current window."
   (let ((image (mm-get-image handle)))

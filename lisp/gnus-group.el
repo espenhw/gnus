@@ -190,7 +190,7 @@ Also note that if you change the format specification to include any
 of these specs, you must probably re-start Gnus to see them go into
 effect.
 
-General format specifiers can also be used.  
+General format specifiers can also be used.
 See (gnus)Formatting Variables."
   :link '(custom-manual "(gnus)Formatting Variables")
   :group 'gnus-group-visual
@@ -1888,14 +1888,14 @@ Return the name of the group if selection was successful."
 	  (,(intern (format "%s-address" (car method))) ,(cadr method))
 	  ,@(cddr method)))
   (let ((group (if (gnus-group-foreign-p group) group
-		 (gnus-group-prefixed-name (gnus-group-real-name group) 
+		 (gnus-group-prefixed-name (gnus-group-real-name group)
 					   method))))
     (gnus-sethash
      group
      `(-1 nil (,group
 	       ,gnus-level-default-subscribed nil nil ,method
 	       ,(cons
-		 (if quit-config 
+		 (if quit-config
 		     (cons 'quit-config quit-config)
 		   (cons 'quit-config
 			 (cons gnus-summary-buffer
@@ -3696,10 +3696,10 @@ The hook gnus-suspend-gnus-hook is called before actually suspending."
   (let ((group-buf (get-buffer gnus-group-buffer)))
     (mapcar (lambda (buf)
 	      (unless (or (member buf (list group-buf gnus-dribble-buffer))
-                          (progn
+			  (progn
 			    (save-excursion
-                              (set-buffer buf)
-                              (eq major-mode 'message-mode))))
+			      (set-buffer buf)
+			      (eq major-mode 'message-mode))))
 		(gnus-kill-buffer buf)))
 	    (gnus-buffers))
     (gnus-kill-gnus-frames)
@@ -4023,7 +4023,7 @@ This command may read the active file."
 	(mark gnus-read-mark)
 	active n)
     (if (get-buffer buffer)
-	(with-current-buffer buffer 
+	(with-current-buffer buffer
 	  (setq active gnus-newsgroup-active)
 	  (gnus-activate-group group)
 	  (when gnus-newsgroup-prepared
@@ -4040,7 +4040,7 @@ This command may read the active file."
 		(unless (eq n article)
 		  (push n gnus-newsgroup-unselected))
 		(setq n (1+ n)))
-	      (setq gnus-newsgroup-unselected 
+	      (setq gnus-newsgroup-unselected
 		    (nreverse gnus-newsgroup-unselected)))))
       (gnus-activate-group group)
       (gnus-group-make-articles-read group

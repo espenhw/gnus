@@ -172,7 +172,7 @@ group/function elements."
 			 (nnimap-strict-function :tag "User-defined function"))
 		 (repeat :menu-tag "Multi-server (extended)"
 			 :tag "Multi-server list"
-			 (list (regexp :tag "Server regexp") 
+			 (list (regexp :tag "Server regexp")
 			       (list (regexp :tag "Incoming Mailbox regexp")
 				     (repeat :tag "Rules for matching server(s) and mailbox(es)"
 					     (list (string :tag "Destination mailbox")
@@ -936,7 +936,7 @@ function is generally only called when Gnus is shutting down."
 	(or (member "\\NoSelect"
 		    (imap-mailbox-get 'list-flags group nnimap-server-buffer))
 	    (let ((info (nnimap-find-minmax-uid group 'examine)))
-	      (when (> (or (imap-mailbox-get 'recent group 
+	      (when (> (or (imap-mailbox-get 'recent group
 					     nnimap-server-buffer) 0)
 		       0)
 		(push (list (cons group 0)) nnmail-split-history))

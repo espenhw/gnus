@@ -57,7 +57,7 @@ The following specs are understood:
 %s status
 %a agent covered
 
-General format specifiers can also be used.  
+General format specifiers can also be used.
 See (gnus)Formatting Variables."
   :link '(custom-manual "(gnus)Formatting Variables")
   :group 'gnus-server-visual
@@ -262,24 +262,24 @@ The following commands are available:
   (if (featurep 'xemacs)
       (put 'gnus-server-mode 'font-lock-defaults '(gnus-server-font-lock-keywords t))
     (set (make-local-variable 'font-lock-defaults)
-         '(gnus-server-font-lock-keywords t)))
+	 '(gnus-server-font-lock-keywords t)))
   (gnus-run-hooks 'gnus-server-mode-hook))
 
 (defun gnus-server-insert-server-line (gnus-tmp-name method)
   (let* ((gnus-tmp-how (car method))
 	 (gnus-tmp-where (nth 1 method))
 	 (elem (assoc method gnus-opened-servers))
- 	 (gnus-tmp-status
- 	  (cond 
+	 (gnus-tmp-status
+	  (cond
 	   ((eq (nth 1 elem) 'denied) "(denied)")
 	   ((eq (nth 1 elem) 'offline) "(offline)")
 	   (t
- 	    (condition-case nil
- 		(if (or (gnus-server-opened method)
- 			(eq (nth 1 elem) 'ok))
+	    (condition-case nil
+		(if (or (gnus-server-opened method)
+			(eq (nth 1 elem) 'ok))
 		    "(opened)"
- 		  "(closed)")
- 	      ((error) "(error)")))))
+		  "(closed)")
+	      ((error) "(error)")))))
 	 (gnus-tmp-agent (if (and gnus-agent
 				  (member method
 					  gnus-agent-covered-methods))
@@ -432,7 +432,7 @@ The following commands are available:
 	  (setq alist (cdr alist)))
 	(if alist
 	    (setcdr alist (cons killed (cdr alist)))
- 	  (setq gnus-server-alist (list killed)))))
+	  (setq gnus-server-alist (list killed)))))
     (gnus-server-update-server (car killed))
     (setq gnus-server-killed-servers (cdr gnus-server-killed-servers))
     (gnus-server-position-point)))

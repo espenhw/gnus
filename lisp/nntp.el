@@ -395,7 +395,7 @@ noticing asynchronous data.")
     (if process
 	(prog1
 	    (nntp-retrieve-data command
-				nntp-address nntp-port-number 
+				nntp-address nntp-port-number
 				nntp-server-buffer
 				wait-for nnheader-callback-function)
 	  ;; If nothing to wait for, still remove possibly echo'ed commands
@@ -420,7 +420,7 @@ noticing asynchronous data.")
     (if process
 	(prog1
 	    (nntp-retrieve-data command
-				nntp-address nntp-port-number 
+				nntp-address nntp-port-number
 				nntp-server-buffer
 				wait-for nnheader-callback-function)
 	  ;; If nothing to wait for, still remove possibly echo'ed commands
@@ -450,7 +450,7 @@ noticing asynchronous data.")
     (if process
 	(prog1
 	    (nntp-retrieve-data command
-				nntp-address nntp-port-number 
+				nntp-address nntp-port-number
 				nntp-server-buffer
 				wait-for nnheader-callback-function t)
 	  ;; If nothing to wait for, still remove possibly echo'ed commands
@@ -1412,7 +1412,7 @@ password contained in '~/.nntp-authinfo'."
 		   ;; If there is only one group in the Newsgroups
 		   ;; header, then it seems quite likely that this
 		   ;; article comes from that group, I'd say.
-		   ((and (setq newsgroups 
+		   ((and (setq newsgroups
 			       (mail-fetch-field "newsgroups"))
 			 (not (string-match "," newsgroups)))
 		    newsgroups)
@@ -1426,20 +1426,20 @@ password contained in '~/.nntp-authinfo'."
 		   ;; life.
 		   ((and (setq xref (mail-fetch-field "xref"))
 			 number
-			 (string-match 
+			 (string-match
 			  (format "\\([^ :]+\\):%d" number) xref))
 		    (match-string 1 xref))
 		   (t "")))
 	  (cond
 	   ((and (setq xref (mail-fetch-field "xref"))
-		 (string-match 
+		 (string-match
 		  (if group
 		      (concat "\\(" (regexp-quote group) "\\):\\([0-9]+\\)")
 		    "\\([^ :]+\\):\\([0-9]+\\)")
 		  xref))
 	    (setq group (match-string 1 xref)
 		  number (string-to-int (match-string 2 xref))))
-	   ((and (setq newsgroups 
+	   ((and (setq newsgroups
 		       (mail-fetch-field "newsgroups"))
 		 (not (string-match "," newsgroups)))
 	    (setq group newsgroups))

@@ -433,7 +433,7 @@ LIST is a sorted list."
 		 (if (numberp (car ranges))
 		      (= (car ranges) number)
 		   ;; (caar ranges) <= number <= (cdar ranges)
-		   (>= number (caar ranges))))  
+		   (>= number (caar ranges))))
 	(push number result)))
     (nreverse result)))
 

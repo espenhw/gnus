@@ -133,7 +133,7 @@
 	arts n)
     (save-excursion
       (gnus-agent-load-alist group)
-      (setq arts (gnus-sorted-difference 
+      (setq arts (gnus-sorted-difference
 		  articles (mapcar 'car gnus-agent-article-alist)))
       (set-buffer nntp-server-buffer)
       (erase-buffer)
@@ -145,7 +145,7 @@
 	  (when (> n (car arts))
 	    (beginning-of-line))
 	  (while (and arts (> n (car arts)))
-	    (insert (format 
+	    (insert (format
 		     "%d\t[Undownloaded article %d]\tGnus Agent\t\t\t\n"
 		     (car arts) (car arts)))
 	    (pop arts))

@@ -47,7 +47,7 @@ input and write the converted data to its standard output."
   :group 'gnus-extract
   :type '(repeat string))
 
-(defcustom binhex-use-external 
+(defcustom binhex-use-external
   (executable-find binhex-decoder-program)
   "*Use external binhex program."
   :group 'gnus-extract
@@ -277,7 +277,7 @@ If HEADER-ONLY is non-nil only decode header and return filename."
   (interactive "r")
   (let ((cbuf (current-buffer)) firstline work-buffer status
 	(file-name (expand-file-name
-		    (concat (binhex-decode-region-internal start end t) 
+		    (concat (binhex-decode-region-internal start end t)
 			    ".data")
 		    binhex-temporary-file-directory)))
     (save-excursion
@@ -315,7 +315,7 @@ If HEADER-ONLY is non-nil only decode header and return filename."
 (defun binhex-decode-region (start end)
   "Binhex decode region between START and END."
   (interactive "r")
-  (if binhex-use-external 
+  (if binhex-use-external
       (binhex-decode-region-external start end)
     (binhex-decode-region-internal start end)))
 

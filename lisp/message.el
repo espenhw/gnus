@@ -361,7 +361,7 @@ The provided functions are:
       (set-syntax-table old-table)
       (if (equal non-word-constituents "")
 	  "\\([ \t]*\\(\\w\\)+>+\\|[ \t]*[]>»|:}+]\\)+"
-	(concat "\\([ \t]*\\(\\w\\|[" 
+	(concat "\\([ \t]*\\(\\w\\|["
 		non-word-constituents
 		"]\\)+>+\\|[ \t]*[]>»|:}+]\\)+"))))
   "*Regexp matching the longest possible citation prefix on a line."
@@ -1116,7 +1116,7 @@ no, only reply back to the author."
      ;; can be removed, e.g.
      ;;		From: joe@y.z (Joe	K
      ;;			User)
-     ;; can yield `From joe@y.z (Joe 	K Fri Mar 22 08:11:15 1996', and
+     ;; can yield `From joe@y.z (Joe	K Fri Mar 22 08:11:15 1996', and
      ;;		From: Joe User
      ;;			<joe@y.z>
      ;; can yield `From Joe User Fri Mar 22 08:11:15 1996'.
@@ -1577,7 +1577,7 @@ Point is left at the beginning of the narrowed-to region."
   ;;(define-key message-mode-map "\M-q" 'message-fill-paragraph)
 
   (define-key message-mode-map "\C-c\C-a" 'mml-attach-file)
-  
+
   (define-key message-mode-map "\C-a" 'message-beginning-of-line)
   (define-key message-mode-map "\t" 'message-tab)
   (define-key message-mode-map "\M-;" 'comment-region))
@@ -1602,7 +1602,7 @@ Point is left at the beginning of the narrowed-to region."
     ["Flag As Unimportant" message-insert-importance-low
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Mark this message as unimportant"))]
-    ["Request Receipt" 
+    ["Request Receipt"
      message-insert-disposition-notification-to
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Request a Disposition Notification of this article"))]
@@ -1653,7 +1653,7 @@ Point is left at the beginning of the narrowed-to region."
 ;;
 ;; We use `after-change-functions' to keep special text properties
 ;; that interfer with the normal function of message mode out of the
-;; buffer. 
+;; buffer.
 
 (defcustom message-strip-special-text-properties t
   "Strip special properties from the message buffer.
@@ -1667,13 +1667,13 @@ message composition doesn't break too bad."
   :group 'message-various
   :type 'boolean)
 
-(defconst message-forbidden-properties 
+(defconst message-forbidden-properties
   ;; No reason this should be clutter up customize.  We make it a
   ;; property list (rather than a list of property symbols), to be
   ;; directly useful for `remove-text-properties'.
-  '(field nil read-only nil intangible nil invisible nil 
+  '(field nil read-only nil intangible nil invisible nil
 	  mouse-face nil modification-hooks nil insert-in-front-hooks nil
-	  insert-behind-hooks nil point-entered nil point-left nil) 
+	  insert-behind-hooks nil point-entered nil point-left nil)
   ;; Other special properties:
   ;; category, face, display: probably doesn't do any harm.
   ;; fontified: is used by font-lock.
@@ -1769,10 +1769,10 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
   (easy-menu-add message-mode-menu message-mode-map)
   (easy-menu-add message-mode-field-menu message-mode-map)
   ;; make-local-hook is harmless though obsolete in Emacs 21.
-  ;; Emacs 20 and XEmacs need make-local-hook. 
+  ;; Emacs 20 and XEmacs need make-local-hook.
   (make-local-hook 'after-change-functions)
   ;; Mmmm... Forbidden properties...
-  (add-hook 'after-change-functions 'message-strip-forbidden-properties 
+  (add-hook 'after-change-functions 'message-strip-forbidden-properties
 	    nil 'local)
   ;; Allow mail alias things.
   (when (eq message-mail-alias-type 'abbrev)
@@ -1939,7 +1939,7 @@ in the current mail buffer, and appends the current user-mail-address.
 
 If the optional argument `include-cc' is non-nil, the addresses in the
 Cc: header are also put into the MFT."
-  
+
   (interactive)
   (message-remove-header "Mail-Followup-To")
   (let* ((cc (and include-cc (message-fetch-field "Cc")))
@@ -2376,8 +2376,8 @@ However, if `message-yank-prefix' is non-nil, insert that prefix on each line."
 	(while (< (point) (mark t))
 	  (if (or (looking-at ">") (looking-at "^$"))
 	      (insert message-yank-cited-prefix)
- 	    (insert message-yank-prefix))
- 	  (forward-line 1))))
+	    (insert message-yank-prefix))
+	  (forward-line 1))))
     (goto-char start)))
 
 (defun message-yank-original (&optional arg)
@@ -3044,7 +3044,7 @@ Otherwise, generate and save a value for `canlock-password' first."
 	 ;; -- Per Abrahamsen <abraham@dina.kvl.dk> 2001-10-08.
 	 (group-field-charset
 	  (gnus-group-name-charset method newsgroups-field))
-	 (followup-field-charset 
+	 (followup-field-charset
 	  (gnus-group-name-charset method (or followup-field "")))
 	 (rfc2047-header-encoding-alist
 	  (append (when group-field-charset
@@ -3264,7 +3264,7 @@ Otherwise, generate and save a value for `canlock-password' first."
 	    ;; KLUDGE to handle nnvirtual groups.  Doing this right
 	    ;; would probably involve a new nnoo function.
 	    ;; -- Per Abrahamsen <abraham@dina.kvl.dk>, 2001-10-17.
-	    (method (if (and (consp post-method) 
+	    (method (if (and (consp post-method)
 			     (eq (car post-method) 'nnvirtual)
 			     gnus-message-group-art)
 			(let ((group (car (nnvirtual-find-group-art
@@ -3274,7 +3274,7 @@ Otherwise, generate and save a value for `canlock-password' first."
 		      post-method))
 	    (known-groups
 	     (mapcar (lambda (n)
-		       (gnus-group-name-decode 
+		       (gnus-group-name-decode
 			(gnus-group-real-name n)
 			(gnus-group-name-charset method n)))
 		     (gnus-groups-from-server method)))
@@ -4385,9 +4385,9 @@ than 988 characters long, and if they are not, trim them until they are."
 	(setq message-draft-article
 	      (nndraft-request-associate-buffer "drafts"))
       (setq buffer-file-name (expand-file-name
-			      (if (memq system-type 
-					'(ms-dos ms-windows windows-nt 
-						 cygwin32 win32 w32 
+			      (if (memq system-type
+					'(ms-dos ms-windows windows-nt
+						 cygwin32 win32 w32
 						 mswindows))
 				  "message"
 				"*message*")
@@ -5061,7 +5061,7 @@ Optional DIGEST will use digest to forward."
   "Let RMAIL uses message to forward."
   (interactive)
   (setq rmail-enable-mime-composing t)
-  (setq rmail-insert-mime-forwarded-message-function 
+  (setq rmail-insert-mime-forwarded-message-function
 	'message-forward-rmail-make-body))
 
 ;;;###autoload

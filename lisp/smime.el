@@ -459,7 +459,7 @@ in the buffer specified by `smime-details-buffer'."
   "Get email addresses contained in certificate between points B and E.
 A string or a list of strings is returned."
   (smime-new-details-buffer)
-  (when (smime-call-openssl-region 
+  (when (smime-call-openssl-region
 	 b e smime-details-buffer "x509" "-email" "-noout")
     (delete-region b e)
     (insert-buffer-substring smime-details-buffer)

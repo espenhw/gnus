@@ -49,7 +49,7 @@
       (aset dst idx (+ (* (hex-char-to-num (aref string pos)) 16)
 		       (hex-char-to-num (aref string (1+ pos)))))
       (setq idx (1+ idx)
-            pos (+ 2 pos)))
+	    pos (+ 2 pos)))
     dst))
 
 (defun encode-hex-string (string)
@@ -65,7 +65,7 @@
 ;;;  (aset dst idx (num-to-hex-char (logand (aref string pos) 15)))
       (aset dst idx (num-to-hex-char (% (aref string pos) 16)))
       (setq idx (1+ idx)
-            pos (1+ pos)))
+	    pos (1+ pos)))
     dst))
 
 (provide 'hex-util)

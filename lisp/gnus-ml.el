@@ -177,7 +177,7 @@ If FORCE is non-nil, replace the old ones."
     (cond
      ((string-match "<mailto:\\([^>]*\\)>" address)
       (let ((args (match-string 1 address)))
-	(cond    				; with param
+	(cond				; with param
 	 ((string-match "\\(.*\\)\\?\\(.*\\)" args)
 	  (setq mailto (match-string 1 args))
 	  (let ((param (match-string 2 args)))
@@ -188,7 +188,7 @@ If FORCE is non-nil, replace the old ones."
 	    (if (string-match "to=\\([^&]*\\)" param)
 		(push (match-string 1 param) to))
 	    ))
-	 (t (setq mailto args)))))			; without param
+	 (t (setq mailto args)))))	; without param
 
      ; other case <http://... to be done.
      (t nil))

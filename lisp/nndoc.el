@@ -3,7 +3,7 @@
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
-;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
+;;	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: news
 
 ;; This file is part of GNU Emacs.
@@ -234,7 +234,7 @@ from the document.")
       (set-buffer buffer)
       (erase-buffer)
       (when entry
-	(cond 
+	(cond
 	 ((stringp article) nil)
 	 (nndoc-generate-article-function
 	  (funcall nndoc-generate-article-function article))
@@ -607,25 +607,25 @@ from the document.")
 
 (defun nndoc-generate-lanl-gov-head (article)
   (let ((entry (cdr (assq article nndoc-dissection-alist)))
- 	(e-mail "no address given")
- 	subject from)
+	(e-mail "no address given")
+	subject from)
     (save-excursion
       (set-buffer nndoc-current-buffer)
       (save-restriction
- 	(narrow-to-region (car entry) (nth 1 entry))
- 	(goto-char (point-min))
- 	(when (looking-at "^Paper.*: \\([a-z-]+/[0-9]+\\)")
- 	  (setq subject (concat " (" (match-string 1) ")"))
- 	  (when (re-search-forward "^From: \\([^ ]+\\)" nil t)
- 	    (setq e-mail (match-string 1)))
- 	  (when (re-search-forward "^Title: \\([^\f]*\\)\nAuthors?: \\(.*\\)"
- 				   nil t)
- 	    (setq subject (concat (match-string 1) subject))
- 	    (setq from (concat (match-string 2) " <" e-mail ">"))))))
+	(narrow-to-region (car entry) (nth 1 entry))
+	(goto-char (point-min))
+	(when (looking-at "^Paper.*: \\([a-z-]+/[0-9]+\\)")
+	  (setq subject (concat " (" (match-string 1) ")"))
+	  (when (re-search-forward "^From: \\([^ ]+\\)" nil t)
+	    (setq e-mail (match-string 1)))
+	  (when (re-search-forward "^Title: \\([^\f]*\\)\nAuthors?: \\(.*\\)"
+				   nil t)
+	    (setq subject (concat (match-string 1) subject))
+	    (setq from (concat (match-string 2) " <" e-mail ">"))))))
     (while (and from (string-match "(\[^)\]*)" from))
       (setq from (replace-match "" t t from)))
     (insert "From: "  (or from "unknown")
- 	    "\nSubject: " (or subject "(no subject)") "\n")))
+	    "\nSubject: " (or subject "(no subject)") "\n")))
 
 (defun nndoc-nsmail-type-p ()
   (when (looking-at "From - ")

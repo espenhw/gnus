@@ -45,7 +45,7 @@
 ;;                        added keymap and menubar to hook into sieve-manage
 ;; 2001-10-31 version 1.2 committed to Oort Gnus
 ;;
-;; $Id: sieve-mode.el,v 6.1 2001/11/01 00:50:22 jas Exp $
+;; $Id: sieve-mode.el,v 6.2 2001/11/07 22:50:17 jas Exp $
 
 ;;; Code:
 
@@ -69,7 +69,7 @@
 (defvar sieve-control-commands-face 'sieve-control-commands-face
   "Face name used for Sieve Control Commands.")
 
-(defface sieve-control-commands-face 
+(defface sieve-control-commands-face
   '((((type tty) (class color)) (:foreground "blue" :weight light))
     (((class grayscale) (background light)) (:foreground "LightGray" :bold t))
     (((class grayscale) (background dark)) (:foreground "DimGray" :bold t))
@@ -91,7 +91,7 @@
 (defvar sieve-test-commands-face 'sieve-test-commands-face
   "Face name used for Sieve Test Commands.")
 
-(defface sieve-test-commands-face 
+(defface sieve-test-commands-face
   '((((type tty) (class color)) (:foreground "magenta"))
     (((class grayscale) (background light))
      (:foreground "LightGray" :bold t :underline t))
@@ -128,7 +128,7 @@
      (cons (regexp-opt '("address" "allof" "anyof" "exists" "false"
 			 "true" "header" "not" "size" "envelope"))
 	   'sieve-test-commands-face)
-     (cons "\\Sw+:\\sw+" 
+     (cons "\\Sw+:\\sw+"
 	   'sieve-tagged-arguments-face))))
 
 ;; Syntax table
@@ -158,7 +158,7 @@
 
 ;; Key map definition
 
-(defvar sieve-mode-map 
+(defvar sieve-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-c\C-l" 'sieve-upload)
     (define-key map "\C-c\C-m" 'sieve-manage)
@@ -188,7 +188,7 @@ Turning on Sieve mode runs `sieve-mode-hook'."
   (set (make-local-variable 'comment-start-skip) "#+ *")
   (unless (featurep 'xemacs)
     (set (make-local-variable 'font-lock-defaults)
-         '(sieve-font-lock-keywords nil nil ((?_ . "w")))))
+	 '(sieve-font-lock-keywords nil nil ((?_ . "w")))))
   (easy-menu-add-item nil nil sieve-mode-menu))
 
 ;; Menu

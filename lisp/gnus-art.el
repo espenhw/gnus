@@ -2111,7 +2111,7 @@ If READ-CHARSET, ask for a coding system."
   (mm-setup-w3)
   (let ((w3-strict-width (window-width))
 	(url-standalone-mode t)
- 	(url-gateway-unplugged t)
+	(url-gateway-unplugged t)
 	(w3-honor-stylesheets nil))
     (condition-case var
 	(w3-region (point-min) (point-max))
@@ -4120,7 +4120,7 @@ If no internal viewer is available, use an external viewer."
 	  ;; We have to do this since selecting the window
 	  ;; may change the point.  So we set the window point.
 	  (set-window-point window point)))
-      (let* ((handles (or ihandles (mm-dissect-buffer 
+      (let* ((handles (or ihandles (mm-dissect-buffer
 				    nil gnus-article-loose-mime)
 			  (mm-uu-dissect)))
 	     buffer-read-only handle name type b e display)

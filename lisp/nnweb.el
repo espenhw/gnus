@@ -734,7 +734,7 @@ and `altavista'.")
     (while (re-search-forward
 	    "a href=/groups\\(\\?[^ \">]*selm=\\([^ &\">]+\\)\\)" nil t)
       (setq mid (match-string 2)
-	    url (format 
+	    url (format
 		 "http://groups.google.com/groups?selm=%s&output=gplain" mid))
       (narrow-to-region (search-forward ">" nil t)
 			(search-forward "</a>" nil t))

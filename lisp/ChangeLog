@@ -1,3 +1,8 @@
+2002-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* many files: Remove trailing whitespaces, replace spc+tab with
+	tab, replace leading whitespaces with tabs.
+
 2002-02-19  Paul Jarc  <prj@po.cwru.edu>
 
 	* gnus-sum.el (gnus-summary-toggle-header): Fix handling of

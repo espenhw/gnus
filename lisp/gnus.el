@@ -2213,7 +2213,7 @@ possible.
 
 This restriction may disappear in later versions of Gnus.
 
-General format specifiers can also be used.  
+General format specifiers can also be used.
 See (gnus)Formatting Variables."
   :link '(custom-manual "(gnus)Formatting Variables")
   :type 'string

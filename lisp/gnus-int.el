@@ -202,16 +202,16 @@ If it is down, start it up (again)."
 	  (setq elem (list gnus-command-method nil)
 		gnus-opened-servers (cons elem gnus-opened-servers)))
 	;; Set the status of this server.
-	(setcar (cdr elem) 
-		(if result 
+	(setcar (cdr elem)
+		(if result
 		    (if (eq (cadr elem) 'offline)
 			'offline
 		      'ok)
-		  (if (and gnus-agent 
+		  (if (and gnus-agent
 			   (not (eq (cadr elem) 'offline))
 			   (gnus-agent-method-p gnus-command-method))
 		      (or gnus-server-unopen-status
-			  (if (gnus-y-or-n-p 
+			  (if (gnus-y-or-n-p
 			       (format "Unable to open %s:%s, go offline? "
 				       (car gnus-command-method)
 				       (cadr gnus-command-method)))

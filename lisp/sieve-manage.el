@@ -65,7 +65,7 @@
 ;;
 ;; 2001-10-31 Committed to Oort Gnus.
 ;;
-;; $Id: sieve-manage.el,v 6.2 2001/11/01 01:18:11 zsh Exp $
+;; $Id: sieve-manage.el,v 6.3 2001/11/28 16:52:53 zsh Exp $
 
 ;;; Code:
 
@@ -116,7 +116,7 @@ stream.")
 (defcustom sieve-manage-authenticators '(cram-md5 plain)
   "Priority of authenticators to consider when authenticating to server.")
 
-(defcustom sieve-manage-authenticator-alist 
+(defcustom sieve-manage-authenticator-alist
   '((cram-md5   sieve-manage-cram-md5-p       sieve-manage-cram-md5-auth)
     (plain      sieve-manage-plain-p          sieve-manage-plain-auth))
   "Definition of authenticators.
@@ -196,13 +196,13 @@ Returns t if login was successful, nil otherwise."
       ;;      (condition-case ()
       (while (or (not user) (not passwd))
 	(setq user (or sieve-manage-username
-		       (read-from-minibuffer 
+		       (read-from-minibuffer
 			(concat "Managesieve username for "
 				sieve-manage-server ": ")
 			(or user sieve-manage-default-user))))
 	(setq passwd (or sieve-manage-password
 			 (sieve-manage-read-passwd
-			  (concat "Managesieve password for " user "@" 
+			  (concat "Managesieve password for " user "@"
 				  sieve-manage-server ": "))))
 	(when (and user passwd)
 	  (if (funcall loginfunc user passwd)
@@ -319,7 +319,7 @@ Returns t if login was successful, nil otherwise."
 		  (sieve-manage-send (concat "AUTHENTICATE \"PLAIN\" \""
 					     (base64-encode-string
 					      (concat (char-to-string 0)
-						      user 
+						      user
 						      (char-to-string 0)
 						      passwd))
 					     "\""))
@@ -395,7 +395,7 @@ to work in."
 		(if (funcall (nth 1 (assq stream
 					  sieve-manage-stream-alist)) buffer)
 		    (setq stream-changed
-			  (not (eq (or sieve-manage-stream 
+			  (not (eq (or sieve-manage-stream
 				       sieve-manage-default-stream)
 				   stream))
 			  sieve-manage-stream stream
@@ -409,14 +409,14 @@ to work in."
 	    (if (sieve-manage-open-1 buffer)
 		(message "sieve: Reconnecting with stream `%s'...done"
 			 sieve-manage-stream)
-	      (message "sieve: Reconnecting with stream `%s'...failed" 
+	      (message "sieve: Reconnecting with stream `%s'...failed"
 		       sieve-manage-stream))
 	    (setq sieve-manage-capability nil))
 	  (if (sieve-manage-opened buffer)
 	      ;; Choose authenticator
 	      (when (and (null sieve-manage-auth)
 			 (not (eq sieve-manage-state 'auth)))
-		(let ((auths sieve-manage-authenticators))		      
+		(let ((auths sieve-manage-authenticators))
 		  (while (setq auth (pop auths))
 		    (if (funcall (nth 1 (assq
 					 auth

@@ -394,9 +394,9 @@ by you.")
 
 (defun mml2015-gpg-pretty-print-fpr (fingerprint)
   (let* ((result "")
-         (fpr-length (string-width fingerprint))
-         (n-slice 0)
-         slice)
+	 (fpr-length (string-width fingerprint))
+	 (n-slice 0)
+	 slice)
     (setq fingerprint (string-to-list fingerprint))
     (while fingerprint
       (setq fpr-length (- fpr-length 4))
@@ -404,13 +404,13 @@ by you.")
       (setq fingerprint (nthcdr 4 fingerprint))
       (setq n-slice (1+ n-slice))
       (setq result
-            (concat
-             result
-             (case n-slice
-               (1  slice)
-               (otherwise (concat " " slice))))))
+	    (concat
+	     result
+	     (case n-slice
+	       (1  slice)
+	       (otherwise (concat " " slice))))))
     result))
-          
+
 (defun mml2015-gpg-extract-signature-details ()
   (goto-char (point-min))
   (if (boundp 'gpg-unabbrev-trust-alist)
@@ -418,15 +418,17 @@ by you.")
 			   "^\\[GNUPG:\\] GOODSIG [0-9A-Za-z]* \\(.*\\)$"
 			   nil t)
 			  (match-string 1)))
-         (fprint (and (re-search-forward
-		       "^\\[GNUPG:\\] VALIDSIG \\([0-9a-zA-Z]*\\) "
-		       nil t)
-                      (match-string 1)))
-         (trust  (and (re-search-forward "^\\[GNUPG:\\] \\(TRUST_.*\\)$" nil t)
-                      (match-string 1)))
-         (trust-good-enough-p
-	  (cdr (assoc (cdr (assoc trust gpg-unabbrev-trust-alist))
-		      mml2015-trust-boundaries-alist))))
+	     (fprint (and (re-search-forward
+			   "^\\[GNUPG:\\] VALIDSIG \\([0-9a-zA-Z]*\\) "
+			   nil t)
+			  (match-string 1)))
+	     (trust  (and (re-search-forward
+			   "^\\[GNUPG:\\] \\(TRUST_.*\\)$"
+			   nil t)
+			  (match-string 1)))
+	     (trust-good-enough-p
+	      (cdr (assoc (cdr (assoc trust gpg-unabbrev-trust-alist))
+			  mml2015-trust-boundaries-alist))))
 	(if (and signer trust fprint)
 	    (concat signer
 		    (unless trust-good-enough-p
@@ -479,20 +481,20 @@ by you.")
 		    (error
 		     (mm-set-handle-multipart-parameter
 		      mm-security-handle 'gnus-details (mml2015-format-error err))
-                     (mm-set-handle-multipart-parameter
-                      mm-security-handle 'gnus-info "Error.")
-                     (setq info-is-set-p t)
+		     (mm-set-handle-multipart-parameter
+		      mm-security-handle 'gnus-info "Error.")
+		     (setq info-is-set-p t)
 		     nil)
 		    (quit
 		     (mm-set-handle-multipart-parameter
 		      mm-security-handle 'gnus-details "Quit.")
-                     (mm-set-handle-multipart-parameter
-                      mm-security-handle 'gnus-info "Quit.")
-                     (setq info-is-set-p t)
+		     (mm-set-handle-multipart-parameter
+		      mm-security-handle 'gnus-info "Quit.")
+		     (setq info-is-set-p t)
 		     nil))
-            (unless info-is-set-p
-              (mm-set-handle-multipart-parameter
-               mm-security-handle 'gnus-info "Failed"))
+	    (unless info-is-set-p
+	      (mm-set-handle-multipart-parameter
+	       mm-security-handle 'gnus-info "Failed"))
 	    (throw 'error handle)))
 	(mm-set-handle-multipart-parameter
 	 mm-security-handle 'gnus-info

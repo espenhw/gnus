@@ -555,7 +555,7 @@ Return whether the unpacking was successful."
 		      result)
 		  (run-hooks 'message-send-news-hook)
 		  (gnus-open-server method)
-		  (message "Sending news via %s..." 
+		  (message "Sending news via %s..."
 			   (gnus-server-string method))
 		  (unless (let ((mail-header-separator ""))
 			    (gnus-request-post method))

@@ -557,7 +557,7 @@ should have point."
 	      (delq lowest-buf bufs)))))
 
 (eval-and-compile
-  (cond 
+  (cond
    ((fboundp 'frames-on-display-list)
     (defalias 'gnus-frames-on-display-list 'frames-on-display-list))
    ((and (featurep 'xemacs) (fboundp 'frame-device))
@@ -569,9 +569,9 @@ should have point."
 (defun gnus-get-buffer-window (buffer &optional frame)
   (cond ((and (null gnus-use-frames-on-any-display)
 	      (memq frame '(t 0 visible)))
-	 (car 
+	 (car
 	  (let ((frames (gnus-frames-on-display-list)))
-	    (gnus-delete-if (lambda (win) (not (memq (window-frame win) 
+	    (gnus-delete-if (lambda (win) (not (memq (window-frame win)
 						     frames)))
 			    (get-buffer-window-list buffer nil frame)))))
 	(t

@@ -377,10 +377,10 @@ Returns the list of articles removed."
   (interactive)
   (let ((gnus-verbose (max 6 gnus-verbose)))
     (if gnus-newsgroup-cached
-        (progn
-          (gnus-summary-limit gnus-newsgroup-cached)
-          (gnus-summary-position-point))
-        (gnus-message 3 "No cached articles for this group"))))
+	(progn
+	  (gnus-summary-limit gnus-newsgroup-cached)
+	  (gnus-summary-position-point))
+      (gnus-message 3 "No cached articles for this group"))))
 
 ;;; Internal functions.
 
@@ -720,7 +720,6 @@ If GROUP is non-nil, also cater to `gnus-cacheable-groups' and
 		  (string-match gnus-cacheable-groups group))
 	      (or (not gnus-uncacheable-groups)
 		  (not (string-match gnus-uncacheable-groups group)))))))
-       
 
 (provide 'gnus-cache)
 

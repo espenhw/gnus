@@ -291,7 +291,7 @@
 	(wseek 0)
 	(seek 0)
 	(length (length string))
-	(string (concat string "\0"))) 
+	(string (concat string "\0")))
     ;; Find the start position.
     (while (and (< seek length)
 		(< wseek start))
@@ -455,7 +455,7 @@ characters when given a pad value."
 	    `(let (gnus-position)
 	       ,@(gnus-complex-form-to-spec form spec-alist)
 	       (if gnus-position
-		   (gnus-put-text-property gnus-position (1+ gnus-position) 
+		   (gnus-put-text-property gnus-position (1+ gnus-position)
 					   'gnus-position t)))
 	  `(progn
 	     ,@(gnus-complex-form-to-spec form spec-alist)))))))
@@ -538,7 +538,7 @@ characters when given a pad value."
 	      t)
 	     (t
 	      nil)))
-	(cond 
+	(cond
 	 ;; User-defined spec -- find the spec name.
 	 ((eq (setq spec (char-after)) ?u)
 	  (forward-char 1)
@@ -567,7 +567,7 @@ characters when given a pad value."
 	   (user-defined
 	    (setq elem
 		  (list
-		   (list (intern (format 
+		   (list (intern (format
 				  (if (stringp user-defined)
 				      "gnus-user-format-function-%s"
 				    "gnus-user-format-function-%c")

@@ -223,7 +223,7 @@
 (defun gnus-put-image (glyph &optional string)
   (insert-image glyph (or string " "))
   (unless string
-    (put-text-property (1- (point)) (point) 
+    (put-text-property (1- (point)) (point)
 		       'gnus-image-text-deletable t))
   glyph)
 
