@@ -9219,6 +9219,7 @@ The different methods all have their peculiarities, of course.
 * The Server Buffer::     Making and editing virtual servers.
 * Getting News::          Reading USENET news with Gnus.
 * Getting Mail::          Reading your personal mail with Gnus.
+* Browsing the Web::      Getting messages from a plethora of Web sources.
 * Other Sources::         Reading directories, files, SOUP packets.
 * Combined Groups::       Combining groups into one group.
 * Gnus Unplugged::        Reading news and mail offline.
@@ -11615,6 +11616,228 @@ friendly mail backend all over.
 @end table
 
 
+@node Browsing the Web
+@section Browsing the Web
+@cindex web
+@cindex browsing the web
+@cindex www
+@cindex http
+
+Web-based discussion forums are getting more and more popular.  On many
+subjects, the web-based forums have become the most important forums,
+eclipsing the importance of mailing lists and news groups.  The reason
+is easy to understand---they are friendly to new users; you just point
+and click, and there's the discussion.  With mailing lists, you have to
+go through a cumbersome subscription procedure, and most people don't
+even know what a news group is.
+
+The problem with this scenario is that web browsers are not very good at 
+being newsreaders.  They do not keep track of what articles you've read; 
+they do not allow you to score on subjects you're interested in; they do 
+not allow off-line browsing; they require you to click around and drive
+you mad in the end.
+
+So---if web browsers suck at reading discussion forums, why not use Gnus 
+to do it instead?
+
+Gnus has been getting quite a collection of backends for providing
+interfaces to these sources.
+
+@menu
+* Web Searches::          Creating groups from articles that match a string.
+* Slashdot::              Reading the Slashdot comments.
+* Ultimate::              The Ultimate Bulletin Board systems.
+@end menu
+
+The main caveat with all these web sources is that they probably won't
+work for a very long time.  Gleaning information from the @sc{html} data 
+is guesswork at best, and when the layout is altered, the Gnus backend
+will fail.  If you have reasonably new versions of these backends,
+though, you should be ok.
+
+One thing all these Web methods have in common is that the Web sources
+are often down, unavailable or just plain too slow to be fun.  In those
+cases, it makes a lot of sense to let the Gnus Agent (@pxref{Gnus
+Unplugged}) handle downloading articles, and then you can read them at
+leisure from your local disk.  No more World Wide Wait for you.
+
+
+@node Web Searches
+@subsection Web Searches
+@cindex nnweb
+@cindex DejaNews
+@cindex Alta Vista
+@cindex InReference
+@cindex Usenet searches
+@cindex searching the Usenet
+
+It's, like, too neat to search the Usenet for articles that match a
+string, but it, like, totally @emph{sucks}, like, totally, to use one of
+those, like, Web browsers, and you, like, have to, rilly, like, look at
+the commercials, so, like, with Gnus you can do @emph{rad}, rilly,
+searches without having to use a browser.
+
+The @code{nnweb} backend allows an easy interface to the mighty search
+engine.  You create an @code{nnweb} group, enter a search pattern, and
+then enter the group and read the articles like you would any normal
+group.  The @kbd{G w} command in the group buffer (@pxref{Foreign
+Groups}) will do this in an easy-to-use fashion.
+
+@code{nnweb} groups don't really lend themselves to being solid
+groups---they have a very fleeting idea of article numbers.  In fact,
+each time you enter an @code{nnweb} group (not even changing the search
+pattern), you are likely to get the articles ordered in a different
+manner.  Not even using duplicate suppression (@pxref{Duplicate
+Suppression}) will help, since @code{nnweb} doesn't even know the
+@code{Message-ID} of the articles before reading them using some search
+engines (DejaNews, for instance).  The only possible way to keep track
+of which articles you've read is by scoring on the @code{Date}
+header---mark all articles posted before the last date you read the
+group as read.
+
+If the search engine changes its output substantially, @code{nnweb}
+won't be able to parse it and will fail.  One could hardly fault the Web
+providers if they were to do this---their @emph{raison d'être} is to
+make money off of advertisements, not to provide services to the
+community.  Since @code{nnweb} washes the ads off all the articles, one
+might think that the providers might be somewhat miffed.  We'll see.
+
+You must have the @code{url} and @code{w3} package installed to be able
+to use @code{nnweb}.
+
+Virtual server variables:
+
+@table @code
+@item nnweb-type
+@vindex nnweb-type
+What search engine type is being used.  The currently supported types
+are @code{dejanews}, @code{dejanewsold}, @code{altavista} and
+@code{reference}.
+
+@item nnweb-search
+@vindex nnweb-search
+The search string to feed to the search engine.
+
+@item nnweb-max-hits
+@vindex nnweb-max-hits
+Advisory maximum number of hits per search to display.  The default is
+100.
+
+@item nnweb-type-definition
+@vindex nnweb-type-definition
+Type-to-definition alist.  This alist says what @code{nnweb} should do
+with the various search engine types.  The following elements must be
+present:
+
+@table @code
+@item article
+Function to decode the article and provide something that Gnus
+understands.
+
+@item map
+Function to create an article number to message header and URL alist.
+
+@item search
+Function to send the search string to the search engine.
+
+@item address
+The address the aforementioned function should send the search string
+to.
+
+@item id
+Format string URL to fetch an article by @code{Message-ID}.
+@end table
+
+@end table
+
+
+@node Slashdot
+@subsection Slashdot
+@cindex Slashdot
+@cindex nnslashdot
+
+Slashdot (@file{http://slashdot.org/}) is a popular news site, with
+lively discussion following the news articles.  @code{nnslashdot} will
+let you read this forum in a convenient manner.
+
+The easiest way to read this source is to put something like the
+following in your @file{.gnus.el} file:
+
+@lisp
+(setq gnus-secondary-select-methods
+      '((nnslashdot "")))
+@end lisp
+
+This will make Gnus query the @code{nnslashdot} backend for new comments 
+and groups.  The @kbd{F} command will subscribe each new news article as 
+a new Gnus group, and you can read the comments by entering these
+groups.
+
+The following variables can be altered to change its behavior:
+
+@table @code
+@item nnslashdot-directory
+@vindex nnslashdot-directory
+Where @code{nnslashdot} will store its files.  The default value is
+@samp{~/News/slashdot/}.
+
+@item nnslashdot-active-url
+@vindex nnslashdot-active-url
+The @sc{url} format string that will be used to fetch the information on 
+news articles and comments.  The default is
+@samp{http://slashdot.org/search.pl?section=&min=%d}.
+
+@item nnslashdot-comments-url
+@vindex nnslashdot-comments-url
+The @sc{url} format string that will be used to fetch comments.  The
+default is
+@samp{http://slashdot.org/comments.pl?sid=%s&threshold=%d&commentsort=4&mode=flat&startat=%d}.
+
+@item nnslashdot-article-url
+@vindex nnslashdot-article-url
+The @sc{url} format string that will be used to fetch the news article.  The
+default is
+@samp{http://slashdot.org/article.pl?sid=%s&mode=nocomment}.
+
+@item nnslashdot-threshold
+@vindex nnslashdot-threshold
+The score threshold.  The default is -1.
+
+@item nnslashdot-group-number
+@vindex nnslashdot-group-number
+The number of groups to keep updated.  The default is 30.
+
+@end table
+
+
+
+@node Ultimate
+@subsection Ultimate
+@cindex nnultimate
+@cindex Ultimate Bulletin Board
+
+The Ultimate Bulletin Board (@file{http://www.ultimatebb.com/}) is
+probably the most popular Web bulletin board system used.  It has a
+quite regular and nice interface, and it's possible to get the
+information Gnus needs to keep groups updated.
+
+The easiest way to get started with @code{nnultimate} is to say
+something like the following in the group buffer:  @kbd{B nnultimate RET 
+http://www.tcj.com/messboard/ubbcgi/ RET}.  (Substitute the @sc{url}
+(not including @samp{Ultimate.cgi} or the like at the end) for a forum
+you're interested in; there's quite a list of them on the Ultimate web
+site.)  Then subscribe to the groups you're interested in from the
+server buffer, and read them from the group buffer.
+
+The following @code{nnultimate} variables can be altered:
+
+@table @code
+@item nnultimate-directory
+@vindex nnultimate-directory
+The directory where @code{nnultimate} stores its files.  The default is
+@samp{~/News/ultimate/}.
+@end table
+
 
 @node Other Sources
 @section Other Sources
@@ -11628,7 +11851,6 @@ newsgroups.
 * Anything Groups::       Dired?  Who needs dired?
 * Document Groups::       Single files can be the basis of a group.
 * SOUP::                  Reading @sc{SOUP} packets ``offline''.
-* Web Searches::          Creating groups from articles that match a string.
 * Mail-To-News Gateways:: Posting articles via mail-to-news gateways.
 * IMAP::                  Using Gnus as a IMAP client.
 @end menu
@@ -12220,96 +12442,6 @@ In specific, this is what it does:
 And that's it, really.  If you only want news to go into the @sc{soup}
 system you just use the first line.  If you only want mail to be
 @sc{soup}ed you use the second.
-
-
-@node Web Searches
-@subsection Web Searches
-@cindex nnweb
-@cindex DejaNews
-@cindex Alta Vista
-@cindex InReference
-@cindex Usenet searches
-@cindex searching the Usenet
-
-It's, like, too neat to search the Usenet for articles that match a
-string, but it, like, totally @emph{sucks}, like, totally, to use one of
-those, like, Web browsers, and you, like, have to, rilly, like, look at
-the commercials, so, like, with Gnus you can do @emph{rad}, rilly,
-searches without having to use a browser.
-
-The @code{nnweb} backend allows an easy interface to the mighty search
-engine.  You create an @code{nnweb} group, enter a search pattern, and
-then enter the group and read the articles like you would any normal
-group.  The @kbd{G w} command in the group buffer (@pxref{Foreign
-Groups}) will do this in an easy-to-use fashion.
-
-@code{nnweb} groups don't really lend themselves to being solid
-groups---they have a very fleeting idea of article numbers.  In fact,
-each time you enter an @code{nnweb} group (not even changing the search
-pattern), you are likely to get the articles ordered in a different
-manner.  Not even using duplicate suppression (@pxref{Duplicate
-Suppression}) will help, since @code{nnweb} doesn't even know the
-@code{Message-ID} of the articles before reading them using some search
-engines (DejaNews, for instance).  The only possible way to keep track
-of which articles you've read is by scoring on the @code{Date}
-header---mark all articles posted before the last date you read the
-group as read.
-
-If the search engine changes its output substantially, @code{nnweb}
-won't be able to parse it and will fail.  One could hardly fault the Web
-providers if they were to do this---their @emph{raison d'être} is to
-make money off of advertisements, not to provide services to the
-community.  Since @code{nnweb} washes the ads off all the articles, one
-might think that the providers might be somewhat miffed.  We'll see.
-
-You must have the @code{url} and @code{w3} package installed to be able
-to use @code{nnweb}.
-
-Virtual server variables:
-
-@table @code
-@item nnweb-type
-@vindex nnweb-type
-What search engine type is being used.  The currently supported types
-are @code{dejanews}, @code{dejanewsold}, @code{altavista} and
-@code{reference}.
-
-@item nnweb-search
-@vindex nnweb-search
-The search string to feed to the search engine.
-
-@item nnweb-max-hits
-@vindex nnweb-max-hits
-Advisory maximum number of hits per search to display.  The default is
-100.
-
-@item nnweb-type-definition
-@vindex nnweb-type-definition
-Type-to-definition alist.  This alist says what @code{nnweb} should do
-with the various search engine types.  The following elements must be
-present:
-
-@table @code
-@item article
-Function to decode the article and provide something that Gnus
-understands.
-
-@item map
-Function to create an article number to message header and URL alist.
-
-@item search
-Function to send the search string to the search engine.
-
-@item address
-The address the aforementioned function should send the search string
-to.
-
-@item id
-Format string URL to fetch an article by @code{Message-ID}.
-@end table
-
-@end table
-
 
 
 @node Mail-To-News Gateways

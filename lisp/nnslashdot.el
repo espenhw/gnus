@@ -63,7 +63,7 @@
     "http://slashdot.org/article.pl?sid=%s&mode=nocomment"
   "Where nnslashdot will fetch the article from.")
 
-(defvoo nnslashdot-threshold 0
+(defvoo nnslashdot-threshold -1
   "The article threshold.")
 
 (defvoo nnslashdot-group-number 30

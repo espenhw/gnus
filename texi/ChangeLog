@@ -1,3 +1,9 @@
+1999-11-11 04:32:57  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Browsing the Web): New.
+	(Slashdot): New.
+	(Ultimate): New.
+
 1999-11-10 11:32:00  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Archived Messages): Fix.
