@@ -1876,6 +1876,8 @@ If the group is opened, just switch the summary buffer.
 If ALL is non-nil, already read articles become readable.
 If ALL is a number, fetch this number of articles."
   (interactive "P")
+  (when (and (eobp) (not gnus-group-group-name))
+    (forward-line -1))
   (gnus-group-read-group all t))
 
 (defun gnus-group-quick-select-group (&optional all)

@@ -1,3 +1,10 @@
+2003-02-24  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+	From Martin Thornquist <martint@ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-select-group): Select last group if
+	after last group.
+	* gnus-group.el (gnus-group-select-group): Ditto.
+
 2003-02-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (popup-menu): Compiler macro for Emacs 20.
