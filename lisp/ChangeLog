@@ -1,3 +1,8 @@
+2001-07-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* nnml.el (nnml-request-post): New function.  Can be used for
+	annotations in nnml groups.
+
 2001-07-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nntp.el (nntp-request-newgroups): Use UTC date for NEWGROUPS
