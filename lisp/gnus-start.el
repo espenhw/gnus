@@ -33,6 +33,7 @@
 (require 'gnus-range)
 (require 'gnus-util)
 (autoload 'message-make-date "message")
+(autoload 'gnus-agent-read-servers-validate "gnus-agent")
 (eval-when-compile (require 'cl))
 
 (defcustom gnus-startup-file (nnheader-concat gnus-home-directory ".newsrc")
@@ -658,6 +659,7 @@ the first newsgroup."
   ;; Clear other internal variables.
   (setq gnus-list-of-killed-groups nil
 	gnus-have-read-active-file nil
+        gnus-agent-covered-methods nil
 	gnus-newsrc-alist nil
 	gnus-newsrc-hashtb nil
 	gnus-killed-list nil
@@ -951,6 +953,15 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
     (when (or (null gnus-read-active-file)
 	      (eq gnus-read-active-file 'some))
       (gnus-update-active-hashtb-from-killed))
+
+    ;; Validate agent covered methods now that gnus-server-alist has
+    ;; been initialized.
+    ;; NOTE: This is here for one purpose only.  By validating the
+    ;; agentized server's, it converts the old 5.10.3, and earlier,
+    ;; format to the current format.  That enables the agent code
+    ;; within gnus-read-active-file to function correctly.
+    (if gnus-agent
+        (gnus-agent-read-servers-validate))
 
     ;; Read the active file and create `gnus-active-hashtb'.
     ;; If `gnus-read-active-file' is nil, then we just create an empty
