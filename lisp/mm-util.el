@@ -340,7 +340,8 @@ See also `with-temp-file' and `with-output-to-string'."
   "Evaluate FORMS there like `progn' in current buffer."
   (let ((multibyte (make-symbol "multibyte")))
     `(if (or (featurep 'xemacs)
-	     (not (fboundp 'set-buffer-multibyte)))
+	     (not (fboundp 'set-buffer-multibyte))
+	     (charsetp 'eight-bit-control))
 	 (progn
 	   ,@forms)
        (let ((,multibyte (default-value 'enable-multibyte-characters)))

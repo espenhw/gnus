@@ -1,3 +1,8 @@
+2000-10-06 10:01:08  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-with-unibyte-current-buffer): Don't set unibyte
+	if eight-bit-control is a charset, e.g. Mule 5.0 in Emacs 21.
+
 2000-10-06 09:38:54  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* qp.el (quoted-printable-encode-region): Use
