@@ -1,3 +1,11 @@
+2002-01-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (article-display-x-face): Use the current buffer
+	unless `W f'. Otherwise, X-Face may be shown in the header of a
+	forwarded part.
+	(gnus-treatment-function-alist): Treat xface before hiding
+	headers.
+
 2002-01-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-group.el (gnus-group-read-ephemeral-group): Fix

@@ -1202,6 +1202,7 @@ It is a string, such as \"PGP\". If nil, ask user."
     (gnus-treat-date-original gnus-article-date-original)
     (gnus-treat-date-user-defined gnus-article-date-user)
     (gnus-treat-date-iso8601 gnus-article-date-iso8601)
+    (gnus-treat-display-xface gnus-article-display-x-face)
     (gnus-treat-hide-headers gnus-article-maybe-hide-headers)
     (gnus-treat-hide-boring-headers gnus-article-hide-boring-headers)
     (gnus-treat-hide-signature gnus-article-hide-signature)
@@ -1231,7 +1232,6 @@ It is a string, such as \"PGP\". If nil, ask user."
     (gnus-treat-display-smileys gnus-treat-smiley)
     (gnus-treat-capitalize-sentences gnus-article-capitalize-sentences)
     (gnus-treat-emphasize gnus-article-emphasize)
-    (gnus-treat-display-xface gnus-article-display-x-face)
     (gnus-treat-body-boundary gnus-article-treat-body-boundary)
     (gnus-treat-play-sounds gnus-earcon-display)))
 
@@ -1777,64 +1777,74 @@ unfolded."
 (defun article-display-x-face (&optional force)
   "Look for an X-Face header and display it if present."
   (interactive (list 'force))
-  (gnus-with-article-headers
-    ;; Delete the old process, if any.
-    (when (process-status "article-x-face")
-      (delete-process "article-x-face"))
-    (if (memq 'xface gnus-article-wash-types)
-	;; We have already displayed X-Faces, so we remove them
-	;; instead.
-	(gnus-delete-images 'xface)
-      ;; Display X-Faces.
-      (let (x-faces from face grey)
-	(save-excursion
-	  (set-buffer gnus-original-article-buffer)
-	  (save-restriction
-	    (mail-narrow-to-head)
-	    (while (gnus-article-goto-header "x-face\\(-[0-9]+\\)?")
-	      (when (match-beginning 2)
-		(setq grey t))
-	      (push (mail-header-field-value) x-faces))
-	    (setq from (message-fetch-field "from"))))
-	(if grey
-	    (let ((xpm (gnus-convert-gray-x-face-to-xpm x-faces))
-		  image)
-	      (when xpm
-		(setq image (gnus-create-image xpm 'xpm t))
-		(gnus-article-goto-header "from")
-		(gnus-add-wash-type 'xface)
-		(gnus-add-image 'xface image)
-		(gnus-put-image image)))
-	  ;; Sending multiple EOFs to xv doesn't work, so we only do a
-	  ;; single external face.
-	  (when (stringp gnus-article-x-face-command)
-	    (setq x-faces (list (car x-faces))))
-	  (while (and (setq face (pop x-faces))
-		      gnus-article-x-face-command
-		      (or force
-			  ;; Check whether this face is censored.
-			  (not gnus-article-x-face-too-ugly)
-			  (and gnus-article-x-face-too-ugly from
-			       (not (string-match gnus-article-x-face-too-ugly
-						  from)))))
-	    ;; We display the face.
-	    (if (symbolp gnus-article-x-face-command)
-		;; The command is a lisp function, so we call it.
-		(if (gnus-functionp gnus-article-x-face-command)
-		    (funcall gnus-article-x-face-command face)
-		  (error "%s is not a function" gnus-article-x-face-command))
-	      ;; The command is a string, so we interpret the command
-	      ;; as a, well, command, and fork it off.
-	      (let ((process-connection-type nil))
-		(process-kill-without-query
-		 (start-process
-		  "article-x-face" nil shell-file-name shell-command-switch
-		  gnus-article-x-face-command))
-		(with-temp-buffer
-		  (insert face)
-		  (process-send-region "article-x-face"
-				       (point-min) (point-max)))
-		(process-send-eof "article-x-face")))))))))
+  (let ((wash-face-p buffer-read-only))	;; When type `W f'
+    (gnus-with-article-headers
+      ;; Delete the old process, if any.
+      (when (process-status "article-x-face")
+	(delete-process "article-x-face"))
+      (if (memq 'xface gnus-article-wash-types)
+	  ;; We have already displayed X-Faces, so we remove them
+	  ;; instead.
+	  (gnus-delete-images 'xface)
+	;; Display X-Faces.
+	(let (x-faces from face grey)
+	  (save-excursion
+	    (when (and wash-face-p
+		       (progn
+			 (goto-char (point-min))
+			 (not (re-search-forward 
+			       "^X-Face\\(-[0-9]+\\)?:[\t ]*" nil t)))
+		       (gnus-buffer-live-p gnus-original-article-buffer))
+	      ;; If type `W f', use gnus-original-article-buffer,
+	      ;; otherwise use the current buffer because displaying
+	      ;; RFC822 parts calls this function too.
+	      (set-buffer gnus-original-article-buffer))
+	    (save-restriction
+	      (mail-narrow-to-head)
+	      (while (gnus-article-goto-header "x-face\\(-[0-9]+\\)?")
+		(when (match-beginning 2)
+		  (setq grey t))
+		(push (mail-header-field-value) x-faces))
+	      (setq from (message-fetch-field "from"))))
+	  (if grey
+	      (let ((xpm (gnus-convert-gray-x-face-to-xpm x-faces))
+		    image)
+		(when xpm
+		  (setq image (gnus-create-image xpm 'xpm t))
+		  (gnus-article-goto-header "from")
+		  (gnus-add-wash-type 'xface)
+		  (gnus-add-image 'xface image)
+		  (gnus-put-image image)))
+	    ;; Sending multiple EOFs to xv doesn't work, so we only do a
+	    ;; single external face.
+	    (when (stringp gnus-article-x-face-command)
+	      (setq x-faces (list (car x-faces))))
+	    (while (and (setq face (pop x-faces))
+			gnus-article-x-face-command
+			(or force
+			    ;; Check whether this face is censored.
+			    (not gnus-article-x-face-too-ugly)
+			    (and gnus-article-x-face-too-ugly from
+				 (not (string-match gnus-article-x-face-too-ugly
+						    from)))))
+	      ;; We display the face.
+	      (if (symbolp gnus-article-x-face-command)
+		  ;; The command is a lisp function, so we call it.
+		  (if (gnus-functionp gnus-article-x-face-command)
+		      (funcall gnus-article-x-face-command face)
+		    (error "%s is not a function" gnus-article-x-face-command))
+		;; The command is a string, so we interpret the command
+		;; as a, well, command, and fork it off.
+		(let ((process-connection-type nil))
+		  (process-kill-without-query
+		   (start-process
+		    "article-x-face" nil shell-file-name shell-command-switch
+		    gnus-article-x-face-command))
+		  (with-temp-buffer
+		    (insert face)
+		    (process-send-region "article-x-face"
+					 (point-min) (point-max)))
+		  (process-send-eof "article-x-face"))))))))))
 
 (defun article-decode-mime-words ()
   "Decode all MIME-encoded words in the article."
