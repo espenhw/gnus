@@ -2079,6 +2079,7 @@ the user from the mailer."
 	(case-fold-search nil)
 	(news (message-news-p))
 	(mailbuf (current-buffer)))
+    (message-encode-message-body)
     (save-restriction
       (message-narrow-to-headers)
       ;; Insert some headers.
@@ -2088,7 +2089,6 @@ the user from the mailer."
       (mail-encode-encoded-word-buffer)
       ;; Let the user do all of the above.
       (run-hooks 'message-header-hook))
-    (message-encode-message-body)
     (unwind-protect
 	(save-excursion
 	  (set-buffer tembuf)
@@ -2253,6 +2253,7 @@ to find out how to use this."
 		   message-syntax-checks)
 	   message-syntax-checks))
 	result)
+    (message-encode-message-body)
     (save-restriction
       (message-narrow-to-headers)
       ;; Insert some headers.
@@ -2263,7 +2264,6 @@ to find out how to use this."
     (message-cleanup-headers)
     (if (not (message-check-news-syntax))
 	nil
-      (message-encode-message-body)
       (unwind-protect
 	  (save-excursion
 	    (set-buffer tembuf)
@@ -4144,8 +4144,8 @@ regexp varstr."
       (insert "This is a MIME multipart message.  If you are reading\n")
       (insert "this, you shouldn't.\n"))))
 
-(run-hooks 'message-load-hook)
-
 (provide 'message)
+
+(run-hooks 'message-load-hook)
 
 ;;; message.el ends here

@@ -129,7 +129,10 @@ Should be called narrowed to the head of the message."
 		  (rfc2047-encode-region (point-min) (point-max)))
 		 ;; Hm.
 		 (t))))
-	    (goto-char (point-max))))))))
+	    (goto-char (point-max)))))
+      (when rfc2047-default-charset
+	(encode-coding-region (point-min) (point-max)
+			      rfc2047-default-charset)))))
 
 (defun rfc2047-encodable-p ()
   "Say whether the current (narrowed) buffer contains characters that need encoding."

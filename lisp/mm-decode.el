@@ -73,11 +73,11 @@
     ("message/delivery-status" . inline)))
 
 (defvar mm-user-automatic-display
-  '("text/plain" "text/enriched" "text/richtext" "text/html" "image/gif"
-    "image/jpeg" "message/delivery-status" "multipart/.*"))
+  '("text/plain" "text/enriched" "text/richtext" "text/html" 
+    "image/.*" "message/delivery-status" "multipart/.*"))
 
 (defvar mm-alternative-precedence
-  '("text/plain" "text/enriched" "text/richtext" "text/html")
+  '("text/html" "text/enriched" "text/richtext" "text/plain")
   "List that describes the precedence of alternative parts.")
 
 (defvar mm-tmp-directory "/tmp/"
@@ -107,7 +107,8 @@
 		description (mail-fetch-field "content-description")
 		id (mail-fetch-field "content-id"))))
       (if (not ctl)
-	  (mm-dissect-singlepart '("text/plain") nil no-strict-mime nil nil)
+	  (mm-dissect-singlepart
+	   '("text/plain") nil no-strict-mime nil description)
 	(setq type (split-string (car ctl) "/"))
 	(setq subtype (cadr type)
 	      type (pop type))
@@ -125,7 +126,8 @@
 	    no-strict-mime
 	    (and cd (condition-case ()
 			(mail-header-parse-content-disposition cd)
-		      (error nil)))))))
+		      (error nil)))
+	    description))))
 	(when id
 	  (push (cons id result) mm-content-id-alist))
 	result))))
@@ -369,7 +371,8 @@ external if displayed external."
   (let ((methods mm-user-automatic-display)
 	method result)
     (while (setq method (pop methods))
-      (when (string-match method type)
+      (when (and (string-match method type)
+		 (mm-inlinable-p type))
 	(setq result t
 	      methods nil)))
     result))
@@ -394,7 +397,7 @@ This overrides entries in the mailcap file."
   "Return a version of ARG that is safe to evaluate in a shell."
   (let ((pos 0) new-pos accum)
     ;; *** bug: we don't handle newline characters properly
-    (while (setq new-pos (string-match "[!`\"$\\& \t{} ]" arg pos))
+    (while (setq new-pos (string-match "[;!`\"$\\& \t{} ]" arg pos))
       (push (substring arg pos new-pos) accum)
       (push "\\" accum)
       (push (list (aref arg new-pos)) accum)

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.51 Manual
+@settitle Pterodactyl Gnus 0.52 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.51 Manual
+@title Pterodactyl Gnus 0.52 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.51.
+This manual corresponds to Pterodactyl Gnus 0.52.
 
 @end ifinfo
 
@@ -481,11 +481,15 @@ If @code{gnus-nntp-server} is set, this variable will override
 @code{gnus-nntp-server} to @code{nil}, which is what it is by default.
 
 @vindex gnus-secondary-servers
+@vindex gnus-nntp-server
 You can also make Gnus prompt you interactively for the name of an
 @sc{nntp} server.  If you give a non-numerical prefix to @code{gnus}
 (i.e., @kbd{C-u M-x gnus}), Gnus will let you choose between the servers
 in the @code{gnus-secondary-servers} list (if any).  You can also just
-type in the name of any server you feel like visiting.
+type in the name of any server you feel like visiting.  (Note that this
+will set @code{gnus-nntp-server}, which means that if you then @kbd{M-x
+gnus} later in the same Emacs session, Gnus will contact the same
+server.)
 
 @findex gnus-group-browse-foreign-server
 @kindex B (Group)
@@ -6940,6 +6944,12 @@ To have all Vcards be ignored, you'd say something like this:
 (setq gnus-ignored-mime-types
       '("text/x-vcard"))
 @end lisp
+
+@item gnus-unbuttonized-mime-types
+@vindex gnus-unbuttonized-mime-types
+This is a list of regexps.  @sc{mime} types that match a regexp from
+this list won't have @sc{mime} buttons inserted unless they aren't
+displayed.  The default value is @code{(".*/.*")}.
 
 @item gnus-article-mime-part-function
 @vindex gnus-article-mime-part-function

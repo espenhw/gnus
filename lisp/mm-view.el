@@ -43,9 +43,9 @@
       (setq image (make-image-specifier
 		   (vector (intern type) :data (buffer-string)))))
     (let ((annot (make-annotation image nil 'text)))
+      (mm-insert-inline handle ".\n")
       (set-extent-property annot 'mm t)
-      (set-extent-property annot 'duplicable t)
-      (mm-insert-inline handle " \n"))))
+      (set-extent-property annot 'duplicable t))))
 
 (defun mm-inline-text (handle)
   (let ((type (cadr (split-string (car (mm-handle-type handle)) "/")))

@@ -483,7 +483,7 @@ It uses the same syntax as the `gnus-split-methods' variable."
   :group 'gnus-summary
   :type '(repeat character))
 
-(defcustom gnus-inhibit-user-auto-expire nil
+(defcustom gnus-inhibit-user-auto-expire t
   "*If non-nil, user marking commands will not mark an article as expirable, even if the group has auto-expire turned on."
   :group 'gnus-summary
   :type 'boolean)
@@ -6932,6 +6932,10 @@ article massaging functions being run."
   (if (not arg)
       ;; Select the article the normal way.
       (gnus-summary-select-article nil 'force)
+    ;; We have to require this here to make sure that the following
+    ;; dynamic binding isn't shadowed by autoloading.
+    (require 'gnus-async)
+    (require 'gnus-art)
     ;; Bind the article treatment functions to nil.
     (let ((gnus-have-all-headers t)
 	  gnus-article-display-hook

@@ -541,7 +541,7 @@ displayed by the first non-nil matching CONTENT face."
 
 (defcustom gnus-display-mime-function 'gnus-display-mime
   "Function to display MIME articles."
-  :group 'gnus-article-headers
+  :group 'gnus-article-mime
   :type 'function)
 
 (defvar gnus-decode-header-function 'mail-decode-encoded-word-region
@@ -570,7 +570,12 @@ displayed by the first non-nil matching CONTENT face."
 
 (defcustom gnus-ignored-mime-types nil
   "List of MIME types that should be ignored by Gnus."
-  :group 'gnus-mime
+  :group 'gnus-article-mime
+  :type '(repeat regexp))
+
+(defcustom gnus-unbuttonized-mime-types '(".*/.*")
+  "List of MIME types that should not be given buttons when rendered."
+  :group 'gnus-article-mime
   :type '(repeat regexp))
 
 (defcustom gnus-treat-body-highlight-signature t
@@ -584,7 +589,7 @@ displayed by the first non-nil matching CONTENT face."
 
 (defcustom gnus-article-mime-part-function nil
   "Function called with a MIME handle as the argument."
-  :group 'gnus-article
+  :group 'gnus-article-mime
   :type 'function)
 
 ;;; Internal variables
@@ -2231,6 +2236,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (gnus-mime-save-part	"o"	"Save...")
     (gnus-mime-copy-part	"c"	"View In Buffer")
     (gnus-mime-inline-part	"i"	"View Inline")
+    (gnus-mime-externalize-part	"e"	"View Externally")
     (gnus-mime-pipe-part	"|"	"Pipe To Command...")))
 
 (defvar gnus-mime-button-map nil)
@@ -2246,6 +2252,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 (defun gnus-mime-button-menu (event)
   "Construct a context-sensitive menu of MIME commands."
   (interactive "e")
+  (gnus-article-check-buffer)
   (let ((response (x-popup-menu 
                   t `("MIME Part" 
                       ("" ,@(mapcar (lambda (c)
@@ -2260,6 +2267,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 (defun gnus-mime-view-all-parts ()
   "View all the MIME parts."
   (interactive)
+  (gnus-article-check-buffer)
   (let ((handles gnus-article-mime-handles))
     (while handles
       (mm-display-part (pop handles)))))
@@ -2267,18 +2275,21 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 (defun gnus-mime-save-part ()
   "Save the MIME part under point."
   (interactive)
+  (gnus-article-check-buffer)
   (let ((data (get-text-property (point) 'gnus-data)))
     (mm-save-part data)))
 
 (defun gnus-mime-pipe-part ()
   "Pipe the MIME part under point to a process."
   (interactive)
+  (gnus-article-check-buffer)
   (let ((data (get-text-property (point) 'gnus-data)))
     (mm-pipe-part data)))
 
 (defun gnus-mime-view-part ()
   "Interactively choose a view method for the MIME part under point."
   (interactive)
+  (gnus-article-check-buffer)
   (let ((data (get-text-property (point) 'gnus-data))
 	(url-standalone-mode (not gnus-plugged)))
     (mm-interactively-view-part data)))
@@ -2286,6 +2297,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 (defun gnus-mime-copy-part ()
   "Put the the MIME part under point into a new buffer."
   (interactive)
+  (gnus-article-check-buffer)
   (let* ((handle (get-text-property (point) 'gnus-data))
 	 (contents (mm-get-part handle))
 	 (buffer (generate-new-buffer
@@ -2303,6 +2315,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 (defun gnus-mime-inline-part ()
   "Insert the MIME part under point into the current buffer."
   (interactive)
+  (gnus-article-check-buffer)
   (let* ((data (get-text-property (point) 'gnus-data))
 	 (contents (mm-get-part data))
 	 (url-standalone-mode (not gnus-plugged))
@@ -2313,6 +2326,17 @@ If ALL-HEADERS is non-nil, no headers are hidden."
       (forward-line 2)
       (mm-insert-inline data contents)
       (goto-char b))))
+
+(defun gnus-mime-externalize-part ()
+  "Insert the MIME part under point into the current buffer."
+  (interactive)
+  (gnus-article-check-buffer)
+  (let* ((handle (get-text-property (point) 'gnus-data))
+	 (url-standalone-mode (not gnus-plugged))
+	 (mm-user-display-methods nil))
+    (if (mm-handle-undisplayer handle)
+	(mm-remove-part handle)
+      (mm-display-part handle))))
 
 (defun gnus-article-view-part (n)
   "View MIME part N, which is the numerical prefix."
@@ -2442,6 +2466,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 (defun gnus-mime-display-single (handle)
   (let ((type (car (mm-handle-type handle)))
 	(ignored gnus-ignored-mime-types)
+	(not-attachment t)
 	display text)
     (catch 'ignored
       (progn
@@ -2449,24 +2474,33 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	  (when (string-match (pop ignored) type)
 	    (throw 'ignored nil)))
 	(if (and (mm-automatic-display-p type)
-		   (mm-inlinable-part-p type)
-		   (or (not (mm-handle-disposition handle))
-		       (equal (car (mm-handle-disposition handle))
-			      "inline")))
+		 (mm-inlinable-part-p type)
+		 (setq not-attachment
+		       (or (not (mm-handle-disposition handle))
+			   (equal (car (mm-handle-disposition handle))
+				  "inline"))))
 	    (setq display t)
 	  (when (equal (car (split-string type "/"))
 		       "text")
 	    (setq text t)))
 	(let ((id (1+ (length gnus-article-mime-handle-alist))))
 	  (push (cons id handle) gnus-article-mime-handle-alist)
-	  (gnus-insert-mime-button handle id (list (or display text))))
+	  (when (or (not display)
+		    (not (catch 'found
+			   (let ((types gnus-unbuttonized-mime-types))
+			     (while types
+			       (when (string-match (pop types) type)
+				 (throw 'found t)))))))
+	    (gnus-insert-mime-button
+	     handle id (list (or display
+				 (and (not not-attachment) text))))))
 	(insert "\n\n")
 	(cond
 	 (display
 	  (forward-line -2)
 	  (mm-display-part handle t)
 	  (goto-char (point-max)))
-	 (text
+	 ((and text not-attachment)
 	  (forward-line -2)
 	  (insert "\n")
 	  (mm-insert-inline handle (mm-get-part handle))
@@ -2493,9 +2527,11 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	 (point))
        `(gnus-callback
 	 (lambda (handles)
+	   (unless ,(not ibegend)
+	     (setq gnus-article-mime-handle-alist
+		   ',gnus-article-mime-handle-alist))
 	   (gnus-mime-display-alternative
-	    ',ihandles ',not-pref
-	    ',begend ,id))
+	    ',ihandles ',not-pref ',begend ,id))
 	 local-map ,gnus-mime-button-map
 	 ,gnus-mouse-face-prop ,gnus-article-mouse-face
 	 face ,gnus-article-button-face
@@ -2518,9 +2554,10 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	   (point))
 	 `(gnus-callback
 	   (lambda (handles)
-	     (gnus-mime-display-alternative
-	      ',ihandles ',handle
-	      ',begend ,id))
+	     (unless ,(not ibegend)
+	       (setq gnus-article-mime-handle-alist
+		     ',gnus-article-mime-handle-alist))
+	     (gnus-mime-display-alternative ',ihandles ',handle ',begend ,id))
 	   local-map ,gnus-mime-button-map
 	   ,gnus-mouse-face-prop ,gnus-article-mouse-face
 	   face ,gnus-article-button-face
@@ -2536,7 +2573,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	(if (stringp (car preferred))
 	    (gnus-display-mime preferred)
 	  (mm-display-part preferred)
-	  (goto-char (point-max)))
+	    (goto-char (point-max)))
 	(setcdr begend (point-marker))))
     (when ibegend
       (goto-char point))))
@@ -2733,9 +2770,15 @@ Argument LINES specifies lines to be scrolled down."
     (setq func (lookup-key (current-local-map) (this-command-keys)))
     (call-interactively func)))
 
+(defun gnus-article-check-buffer ()
+  "Beep if not in an article buffer."
+  (unless (equal major-mode 'gnus-article-mode)
+    (error "Command invoked outside of a Gnus article buffer")))
+
 (defun gnus-article-read-summary-keys (&optional arg key not-restore-window)
   "Read a summary buffer key sequence and execute it from the article buffer."
   (interactive "P")
+  (gnus-article-check-buffer)
   (let ((nosaves
          '("q" "Q"  "c" "r" "R" "\C-c\C-f" "m"  "a" "f" "F"
            "Zc" "ZC" "ZE" "ZQ" "ZZ" "Zn" "ZR" "ZG" "ZN" "ZP"

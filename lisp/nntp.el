@@ -905,39 +905,46 @@ password contained in '~/.nntp-authinfo'."
 	  (funcall (cadr entry)))))))
 
 (defun nntp-after-change-function-callback (beg end len)
-  (when nntp-process-callback
-    (save-match-data
-      (if (and (= beg (point-min))
-	       (memq (char-after beg) '(?4 ?5)))
-	  ;; Report back error messages.
-	  (save-excursion
-	    (goto-char beg)
-	    (if (looking-at "480")
-		(nntp-handle-authinfo nntp-process-to-buffer)
-	      (nntp-snarf-error-message)
-	      (funcall nntp-process-callback nil)))
-	(goto-char end)
-	(when (and (> (point) nntp-process-start-point)
-		   (re-search-backward nntp-process-wait-for
-				       nntp-process-start-point t))
-	  (when (gnus-buffer-exists-p nntp-process-to-buffer)
-	    (let ((cur (current-buffer))
-		  (start nntp-process-start-point))
+  (unwind-protect
+      (when nntp-process-callback
+	(save-match-data
+	  (if (and (= beg (point-min))
+		   (memq (char-after beg) '(?4 ?5)))
+	      ;; Report back error messages.
 	      (save-excursion
-		(set-buffer nntp-process-to-buffer)
-		(goto-char (point-max))
-		(let ((b (point)))
-		  (insert-buffer-substring cur start)
-		  (narrow-to-region b (point-max))
-		  (nntp-decode-text)
-		  (widen)))))
-	  (goto-char end)
-	  (let ((callback nntp-process-callback)
-		(nntp-inside-change-function t))
-	    (setq nntp-process-callback nil)
-	    (save-excursion
-	      (funcall callback (buffer-name
-				 (get-buffer nntp-process-to-buffer))))))))))
+		(goto-char beg)
+		(if (looking-at "480")
+		    (nntp-handle-authinfo nntp-process-to-buffer)
+		  (nntp-snarf-error-message)
+		  (funcall nntp-process-callback nil)))
+	    (goto-char end)
+	    (when (and (> (point) nntp-process-start-point)
+		       (re-search-backward nntp-process-wait-for
+					   nntp-process-start-point t))
+	      (when (gnus-buffer-exists-p nntp-process-to-buffer)
+		(let ((cur (current-buffer))
+		      (start nntp-process-start-point))
+		  (save-excursion
+		    (set-buffer nntp-process-to-buffer)
+		    (goto-char (point-max))
+		    (let ((b (point)))
+		      (insert-buffer-substring cur start)
+		      (narrow-to-region b (point-max))
+		      (nntp-decode-text)
+		      (widen)))))
+	      (goto-char end)
+	      (let ((callback nntp-process-callback)
+		    (nntp-inside-change-function t))
+		(setq nntp-process-callback nil)
+		(save-excursion
+		  (funcall callback (buffer-name
+				     (get-buffer nntp-process-to-buffer)))))))))
+
+    ;; any throw from after-change-functions will leave it
+    ;; set to nil.  so we reset it here, if necessary.
+    (when quit-flag
+      (setq after-change-functions
+	    (list 'nntp-after-change-function-callback)))))
 
 (defun nntp-snarf-error-message ()
   "Save the error message in the current buffer."

@@ -1248,14 +1248,14 @@ for new groups, and subscribe the new groups as zombies."
 	    (setq active (gnus-active group))
 	    (setq num
 		  (if active (- (1+ (cdr active)) (car active)) t))
-	    ;; Check whether the group is foreign.  If so, the
-	    ;; foreign select method has to be entered into the
-	    ;; info.
-	    (let ((method (or gnus-override-subscribe-method
-			      (gnus-group-method group))))
-	      (if (eq method gnus-select-method)
-		  (setq info (list group level nil))
-		(setq info (list group level nil nil method)))))
+           ;; Shorten the select method if possible, if we need to
+           ;; store it at all (native groups).
+           (let ((method (gnus-method-simplify 
+                          (or gnus-override-subscribe-method
+                              (gnus-group-method group)))))
+             (if method
+                 (setq info (list group level nil nil method))
+               (setq info (list group level nil)))))
 	  (unless previous
 	    (setq previous
 		  (let ((p gnus-newsrc-alist))

@@ -1,3 +1,74 @@
+Fri Nov 20 05:30:26 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.52 is released.
+
+1998-11-20 04:32:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* rfc2047.el (rfc2047-encode-message-header): Encode the default
+	encoding. 
+
+	* gnus-art.el (gnus-mime-display-single): Insert buttons for
+	undisplayed text types.
+
+	* mm-decode.el (mm-automatic-display-p): Only prefer inlinable
+	types. 
+
+1998-11-19  Felix Lee  <flee@cygnus.com>
+
+	* nntp.el (nntp-after-change-function-callback): recover from C-g.
+
+1998-11-19  Felix Lee  <flee@cygnus.com>
+
+	* gnus-async.el (gnus-asynch-obarray): rename to
+	gnus-async-hashtb, and don't buffer-local it.
+
+	(gnus-async-article-callback): new function.
+	(gnus-make-async-article-function): use it.
+
+	(gnus-async-current-prefetch-group): new var.
+	(gnus-async-current-prefetch-article): new var.
+	(gnus-async-request-fetched-article): are we fetching it already?
+
+	(gnus-async-delete-prefected-entry): s/prefected/prefetched/
+
+1998-11-20 02:49:21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-show-article): Require.
+
+	* message.el: Provide before hooks.
+	(message-send-news): Do MIME before headers.
+
+	* gnus-art.el (gnus-article-check-buffer): New function.
+	(gnus-article-read-summary-keys): Use it.
+
+	* mm-decode.el (mm-user-automatic-display): Display all inline
+	images. 
+
+	* gnus-art.el (gnus-mime-display-single): Don't buttonize so
+	much. 
+	(gnus-unbuttonized-mime-types): New variable.
+
+1998-11-19 06:29:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-inhibit-user-auto-expire): Changed to t. 
+
+	* mm-decode.el (mm-quote-arg): Quote semicolons.
+
+	* gnus-art.el (gnus-mime-display-single): Don't display
+	attachments.
+	(gnus-mime-externalize-part): New command and keystroke.
+
+	* mm-decode.el (mm-dissect-buffer): Pass on the description info. 
+	(mm-alternative-precedence): Changed order.
+
+1998-11-07 17:41:47  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus.el (gnus-method-simplify): New function.
+	(gnus-native-method-p): New function.
+	(gnus-secondary-method-p): Use gnus-method-equal.
+
+	* gnus-start.el (gnus-group-change-level): Shorten select method.
+
 Thu Nov 19 04:48:42 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.51 is released.
