@@ -137,6 +137,8 @@
 		      (error nil)))
 	    description))))
 	(when id
+	  (when (string-match " *<\\(.*\\)> *" id)
+	    (setq id (match-string 1 id)))
 	  (push (cons id result) mm-content-id-alist))
 	result))))
 
@@ -241,7 +243,7 @@ external if displayed external."
 		(select-window win)))
 	    (switch-to-buffer (generate-new-buffer "*mm*")))
 	  (buffer-disable-undo)
-	  (mm-set-buffer-file-coding-system 'binary)
+	  (mm-set-buffer-file-coding-system mm-binary-coding-system)
 	  (insert-buffer-substring cur)
 	  (message "Viewing with %s" method)
 	  (let ((mm (current-buffer)))
@@ -264,8 +266,7 @@ external if displayed external."
 	    (setq file (expand-file-name (file-name-nondirectory filename)
 					 dir))
 	  (setq file (make-temp-name (expand-file-name "mm." dir))))
-	(write-region (point-min) (point-max)
-		      file nil 'nomesg nil 'binary)
+	(write-region (point-min) (point-max) file nil 'nomesg)
 	(message "Viewing with %s" method)
 	(unwind-protect
 	    (setq process
@@ -451,6 +452,8 @@ This overrides entries in the mailcap file."
       (when (or (not (file-exists-p file))
 		(yes-or-no-p (format "File %s already exists; overwrite? "
 				     file)))
+	;; Now every coding system is 100% binary within mm-with-unibyte-buffer
+	;; Is text still special?
       (let ((coding-system-for-write
              (if (equal "text" (car (split-string
                                      (car (mm-handle-type handle)) "/")))
@@ -525,6 +528,30 @@ This overrides entries in the mailcap file."
 	    (window-pixel-width))
 	 (< (glyph-height (annotation-glyph image))
 	    (window-pixel-height)))))
+
+(defun url-cid (url)
+  (set-buffer (get-buffer-create url-working-buffer))
+  (let ((content-type nil)
+	(encoding nil)
+	(part nil)
+	(data nil))
+    (if (not (string-match "^cid:\\(.*\\)" url))
+	(message "Malformed CID URL: %s" url)
+      (setq url (url-unhex-string (match-string 1 url))
+	    part (mm-get-content-id url))
+      (if (not part)
+	  (message "Unknown CID encounterred: %s" url)
+	(setq data (buffer-string nil nil (mm-handle-buffer part))
+	      content-type (mm-handle-type part)
+	      encoding (symbol-name (mm-handle-encoding part)))
+	(if (= 0 (length content-type)) (setq content-type "text/plain"))
+	(if (= 0 (length encoding)) (setq encoding "8bit"))
+	(setq url-current-content-length (length data)
+	      url-current-mime-type content-type
+	      url-current-mime-encoding encoding
+	      url-current-mime-headers (list (cons "content-type" content-type)
+					     (cons "content-encoding" encoding)))
+	(and data (insert data))))))
 
 (provide 'mm-decode)
 

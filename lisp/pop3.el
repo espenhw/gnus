@@ -163,7 +163,7 @@ Return the response string if optional second argument is non-nil."
       (setq match-end (point))
       (goto-char pop3-read-point)
       (if (looking-at "-ERR")
-	  (error (buffer-substring (point) (- match-end 2)))
+	  (signal 'error (list (buffer-substring (point) (- match-end 2))))
 	(if (not (looking-at "+OK"))
 	    (progn (setq pop3-read-point match-end) nil)
 	  (setq pop3-read-point match-end)

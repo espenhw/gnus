@@ -1,3 +1,57 @@
+Fri Nov 27 12:26:10 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.55 is released.
+
+1998-11-27 12:38:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-view.el (mm-setup-w3): New function.
+
+	* mm-decode.el (mm-content-id-get-contents): New function.
+	(mm-content-id-get-type): Ditto.
+	(mm-content-id-get-encoding): Ditto.
+	(mm-get-handle-by-content-id): Removed.
+
+1998-11-25  Colin Rafferty  <colin@xemacs.org>
+
+	* message.el (message-generate-new-buffers): Fix tag.
+
+1998-11-25 10:43:28  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-buffer-name): Check for unique first.
+
+	* gnus-art.el (gnus-unbuttonized-mime-type-p): use
+	gnus-inhibit-mime-unbuttonizing. 
+
+	* gnus-sum.el (t): Bind M-t.
+	(gnus-inhibit-unbuttonizing): New variable.
+	(gnus-summary-toggle-display-buttonized): New command.
+
+	* gnus-art.el (gnus-display-mime): Select article window.
+	(article-strip-trailing-space): New command and keystroke.
+
+	* nneething.el (nneething-include-files): New variable.
+	(nneething-create-mapping): Use it.
+
+	* nntp.el (nntp-possibly-change-group): Use nntp-send-command. 
+
+	* nnvirtual.el (nnvirtual-request-update-mark): Only yodate
+	ayto-expirable marks.
+
+1998-11-24 21:00:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-view-all-parts): Set buffer.
+
+	* gnus-sum.el (gnus-summary-display-buttonized): Don't pass on
+	ARG. 
+
+	* gnus-art.el (gnus-article-mode-line-format): Doc fix.
+
+Tue Nov 24 14:57:41 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-binary-coding-system): New variable.
+	(mm-with-unibyte-buffer): Use mm-binary-coding-system.
+	* mm-decode.el (mm-display-external): Ditto.
+
 Tue Nov 24 10:43:06 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.54 is released.

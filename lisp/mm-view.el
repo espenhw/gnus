@@ -39,17 +39,21 @@
     (set-extent-property annot 'mm t)
     (set-extent-property annot 'duplicable t)))
 
+(defvar mm-w3-setup nil)
+(defun mm-setup-w3 ()
+  (unless mm-w3-setup
+    (w3-do-setup)
+    (require 'url)
+    (require 'w3-vars)
+    (url-register-protocol 'cid nil 'url-identity-expander)
+    (setq mm-w3-setup t)))
+
 (defun mm-inline-text (handle)
   (let ((type (cadr (split-string (car (mm-handle-type handle)) "/")))
 	text buffer-read-only)
     (cond
      ((equal type "plain")
-      (with-temp-buffer
-	(insert-buffer-substring (mm-handle-buffer handle))
-	(mm-decode-content-transfer-encoding
-	 (mm-handle-encoding handle)
-	 (car (mm-handle-type handle)))
-	(setq text (buffer-string)))
+      (setq text (mm-get-part handle))
       (let ((b (point)))
 	(insert text)
 	(save-restriction
@@ -65,21 +69,24 @@
 		 ,(set-marker (make-marker) (point-min))
 		 ,(set-marker (make-marker) (point-max)))))))))
      ((equal type "html")
-      (let ((width (window-width)))
+      (mm-setup-w3)
+      (setq text (mm-get-part handle))
+      (let ((b (point))
+	    (width (window-width)))
 	(save-excursion
-	  (w3-do-setup)
-	  (mm-with-unibyte-buffer
-	    (insert-buffer-substring (mm-handle-buffer handle))
-	    (mm-decode-content-transfer-encoding
-	     (mm-handle-encoding handle)
-	     (car (mm-handle-type handle)))
-	    (require 'url)
+	  (insert text)
+	  (save-restriction
+	    (narrow-to-region b (point))
 	    (save-window-excursion
-	      (require 'w3-vars)
 	      (let ((w3-strict-width width))
-		(w3-region (point-min) (point-max)))
-	      (setq text (buffer-string))))))
-      (mm-insert-inline handle text))
+		(w3-region (point-min) (point-max)))))
+	  (mm-handle-set-undisplayer
+	   handle
+	   `(lambda ()
+	      (let (buffer-read-only)
+		(delete-region
+		 ,(set-marker (make-marker) (point-min))
+		 ,(set-marker (make-marker) (point-max)))))))))
      ((or (equal type "enriched")
 	  (equal type "richtext"))
       (save-excursion

@@ -55,6 +55,8 @@
 		adaptive-fill-first-line-regexp adaptive-fill-regexp
 		url-current-mime-headers))
   (maybe-fbind '(color-instance-rgb-components
+		 glyph-width annotation-glyph window-pixel-width glyph-height
+		 window-pixel-height
 		 make-color-instance color-instance-name specifier-instance
 		 device-type device-class get-popup-menu-response event-object
 		 x-defined-colors read-color add-submenu set-font-family

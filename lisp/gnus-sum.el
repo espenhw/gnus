@@ -819,6 +819,7 @@ which it may alter in any way.")
 (defvar gnus-article-decoded-p nil)
 (defvar gnus-scores-exclude-files nil)
 (defvar gnus-page-broken nil)
+(defvar gnus-inhibit-mime-unbuttonizing nil)
 
 (defvar gnus-original-article nil)
 (defvar gnus-article-internal-prepare-hook nil)
@@ -1317,7 +1318,9 @@ increase the score of each group you read."
     "L" gnus-summary-lower-score
     "\M-i" gnus-symbolic-argument
     "h" gnus-summary-select-article-buffer
+
     "b" gnus-article-view-part
+    "\M-t" gnus-summary-toggle-display-buttonized
     
     "V" gnus-summary-score-map
     "X" gnus-uu-extract-map
@@ -1496,7 +1499,8 @@ increase the score of each group you read."
     "m" gnus-article-strip-multiple-blank-lines
     "a" gnus-article-strip-blank-lines
     "A" gnus-article-strip-all-blank-lines
-    "s" gnus-article-strip-leading-space)
+    "s" gnus-article-strip-leading-space
+    "e" gnus-article-strip-trailing-space)
 
   (gnus-define-keys (gnus-summary-help-map "H" gnus-summary-mode-map)
     "v" gnus-version
@@ -1608,7 +1612,8 @@ increase the score of each group you read."
                ["Trailing" gnus-article-remove-trailing-blank-lines t]
                ["All of the above" gnus-article-strip-blank-lines t]
                ["All" gnus-article-strip-all-blank-lines t]
-               ["Leading space" gnus-article-strip-leading-space t])
+               ["Leading space" gnus-article-strip-leading-space t]
+	       ["Trailing space" gnus-article-strip-trailing-space t])
               ["Overstrike" gnus-article-treat-overstrike t]
               ["Dumb quotes" gnus-article-treat-dumbquotes t]
               ["Emphasis" gnus-article-emphasize t]
@@ -9190,12 +9195,22 @@ save those articles instead."
 ;;; MIME Commands
 ;;;
 
-(defun gnus-summary-display-buttonized (&optional arg)
-  "Display the current buffer fully MIME-buttonized."
-  (interactive "P")
+(defun gnus-summary-display-buttonized ()
+  "Display the current article buffer fully MIME-buttonized."
+  (interactive)
   (require 'gnus-art)
   (let ((gnus-unbuttonized-mime-types nil))
-    (gnus-summary-show-article arg)))
+    (gnus-summary-show-article)))
+    
+(defun gnus-summary-toggle-display-buttonized ()
+  "Toggle the buttonizing of the article buffer."
+  (interactive)
+  (require 'gnus-art)
+  (if (setq gnus-inhibit-mime-unbuttonizing
+	    (not gnus-inhibit-mime-unbuttonizing))
+      (let ((gnus-unbuttonized-mime-types nil))
+	(gnus-summary-show-article))
+    (gnus-summary-show-article)))
     
 (gnus-ems-redefine)
 

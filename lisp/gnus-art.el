@@ -388,7 +388,12 @@ beginning of a line."
 
 (defcustom gnus-article-mode-line-format "Gnus: %g %S%m"
   "*The format specification for the article mode line.
-See `gnus-summary-mode-line-format' for a closer description."
+See `gnus-summary-mode-line-format' for a closer description.
+
+The following additional specs are available:
+
+%w  The article washing status.
+%m  The number of MIME parts in the article."
   :type 'string
   :group 'gnus-article-various)
 
@@ -1215,6 +1220,16 @@ always hide."
       (while (re-search-forward "^[ \t]+" nil t)
 	(replace-match "" t t)))))
 
+(defun article-strip-trailing-space ()
+  "Remove all white space from the end of the lines in the article."
+  (interactive)
+  (save-excursion
+    (let ((inhibit-point-motion-hooks t)
+	  buffer-read-only)
+      (article-goto-body)
+      (while (re-search-forward "[ \t]+$" nil t)
+	(replace-match "" t t)))))
+
 (defun article-strip-blank-lines ()
   "Strip leading, trailing and multiple blank lines."
   (interactive)
@@ -1919,6 +1934,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-strip-leading-blank-lines
      article-strip-multiple-blank-lines
      article-strip-leading-space
+     article-strip-trailing-space
      article-strip-blank-lines
      article-strip-all-blank-lines
      article-date-local
@@ -2211,8 +2227,10 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (gnus-run-hooks 'gnus-tmp-internal-hook)
     (gnus-run-hooks 'gnus-article-prepare-hook)
     (when gnus-display-mime-function
-      (let ((url-standalone-mode (not gnus-plugged)))
-	(funcall gnus-display-mime-function)))
+      ;(let ((url-standalone-mode (not gnus-plugged)))
+	(funcall gnus-display-mime-function)
+	)
+    ;)
     ;; Perform the article display hooks.
     (gnus-run-hooks 'gnus-article-display-hook)))
 
@@ -2280,12 +2298,13 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 (defun gnus-mime-view-all-parts ()
   "View all the MIME parts."
   (interactive)
-  (gnus-article-check-buffer)
-  (let ((handles gnus-article-mime-handles)
-	(rfc2047-default-charset gnus-newsgroup-default-charset)
-	(mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
-    (while handles
-      (mm-display-part (pop handles)))))
+  (save-current-buffer
+    (set-buffer gnus-article-buffer)
+    (let ((handles gnus-article-mime-handles)
+	  (rfc2047-default-charset gnus-newsgroup-default-charset)
+	  (mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
+      (while handles
+	(mm-display-part (pop handles))))))
 
 (defun gnus-mime-save-part ()
   "Save the MIME part under point."
@@ -2306,7 +2325,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (interactive)
   (gnus-article-check-buffer)
   (let ((data (get-text-property (point) 'gnus-data))
-	(url-standalone-mode (not gnus-plugged)))
+	;(url-standalone-mode (not gnus-plugged))
+	)
     (mm-interactively-view-part data)))
 
 (defun gnus-mime-copy-part (&optional handle)
@@ -2333,7 +2353,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (gnus-article-check-buffer)
   (let* ((data (get-text-property (point) 'gnus-data))
 	 (contents (mm-get-part data))
-	 (url-standalone-mode (not gnus-plugged))
+	 ;(url-standalone-mode (not gnus-plugged))
 	 (b (point))
 	 buffer-read-only)
     (if (mm-handle-undisplayer data)
@@ -2351,7 +2371,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (interactive)
   (gnus-article-check-buffer)
   (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
-	 (url-standalone-mode (not gnus-plugged))
+	 ;(url-standalone-mode (not gnus-plugged))
 	 (mm-user-display-methods nil)
 	 (rfc2047-default-charset gnus-newsgroup-default-charset)
 	 (mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
@@ -2477,30 +2497,34 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 
 (defun gnus-display-mime (&optional ihandles)
   "Insert MIME buttons in the buffer."
-  (let* ((handles (or ihandles (mm-dissect-buffer) (mm-uu-dissect)))
-	 handle name type b e display)
-    (unless ihandles
-      ;; Top-level call; we clean up.
-      (mm-destroy-parts gnus-article-mime-handles)
-      (setq gnus-article-mime-handles handles
-	    gnus-article-mime-handle-alist nil)
-      ;; We allow users to glean info from the handles.
-      (when gnus-article-mime-part-function
-	(gnus-mime-part-function handles)))
-    (when (and handles
-	       (or (not (stringp (car handles)))
-		   (cdr handles)))
+  (save-selected-window
+    (let ((window (get-buffer-window gnus-article-buffer)))
+      (when window
+	(select-window window)))
+    (let* ((handles (or ihandles (mm-dissect-buffer) (mm-uu-dissect)))
+	   handle name type b e display)
       (unless ihandles
-	;; Clean up for mime parts.
-	(article-goto-body)
-	(delete-region (point) (point-max)))
-      (if (stringp (car handles))
-	  (if (equal (car handles) "multipart/alternative")
-	      (let ((id (1+ (length gnus-article-mime-handle-alist))))
-		(push (cons id handles) gnus-article-mime-handle-alist)
-		(gnus-mime-display-alternative (cdr handles) nil nil id))
-	    (gnus-mime-display-mixed (cdr handles)))
-	(gnus-mime-display-single handles)))))
+	;; Top-level call; we clean up.
+	(mm-destroy-parts gnus-article-mime-handles)
+	(setq gnus-article-mime-handles handles
+	      gnus-article-mime-handle-alist nil)
+	;; We allow users to glean info from the handles.
+	(when gnus-article-mime-part-function
+	  (gnus-mime-part-function handles)))
+      (when (and handles
+		 (or (not (stringp (car handles)))
+		     (cdr handles)))
+	(unless ihandles
+	  ;; Clean up for mime parts.
+	  (article-goto-body)
+	  (delete-region (point) (point-max)))
+	(if (stringp (car handles))
+	    (if (equal (car handles) "multipart/alternative")
+		(let ((id (1+ (length gnus-article-mime-handle-alist))))
+		  (push (cons id handles) gnus-article-mime-handle-alist)
+		  (gnus-mime-display-alternative (cdr handles) nil nil id))
+	      (gnus-mime-display-mixed (cdr handles)))
+	  (gnus-mime-display-single handles))))))
 
 (defun gnus-mime-part-function (handles)
   (if (stringp (car handles))
@@ -2564,11 +2588,12 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 
 (defun gnus-unbuttonized-mime-type-p (type)
   "Say whether TYPE is to be unbuttonized."
-  (catch 'found
-    (let ((types gnus-unbuttonized-mime-types))
-      (while types
-	(when (string-match (pop types) type)
-	  (throw 'found t))))))
+  (unless gnus-inhibit-mime-unbuttonizing
+    (catch 'found
+      (let ((types gnus-unbuttonized-mime-types))
+	(while types
+	  (when (string-match (pop types) type)
+	    (throw 'found t)))))))
 
 (defun gnus-article-insert-newline ()
   "Insert a newline, but mark it as undeletable."

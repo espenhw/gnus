@@ -45,6 +45,11 @@
   "Regexp saying what files to exclude from the group.
 If this variable is nil, no files will be excluded.")
 
+(defvoo nneething-include-files nil
+  "Regexp saying what files to include in the group.
+If this variable is non-nil, only files matching this regexp will be
+included.")
+
 
 
 ;;; Internal variables.
@@ -207,6 +212,16 @@ If this variable is nil, no files will be excluded.")
 	      prev)
 	  (while f
 	    (if (string-match nneething-exclude-files (car f))
+		(if prev (setcdr prev (cdr f))
+		  (setq files (cdr files)))
+	      (setq prev f))
+	    (setq f (cdr f)))))
+      ;; Remove files not matching the inclusion regexp.
+      (when nneething-include-files
+	(let ((f files)
+	      prev)
+	  (while f
+	    (if (not (string-match nneething-include-files (car f)))
 		(if prev (setcdr prev (cdr f))
 		  (setq files (cdr files)))
 	      (setq prev f))

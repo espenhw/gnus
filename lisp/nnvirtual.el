@@ -287,6 +287,7 @@ to virtual article number.")
 	 ;; The component group might be a virtual group.
 	 (nmark (gnus-request-update-mark cgroup (cdr nart) mark)))
     (when (and nart
+	       (memq mark gnus-auto-expirable-marks)
 	       (= mark nmark)
 	       (gnus-group-auto-expirable-p cgroup))
       (setq mark gnus-expirable-mark)))

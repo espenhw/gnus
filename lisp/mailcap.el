@@ -412,7 +412,7 @@ If FORCE, re-parse even if already parsed."
 	(downcase-region name-pos (point))
 	(setq name (buffer-substring name-pos (point)))
 	(skip-chars-forward " \t\n")
-	(if (not (eq (or (char-after (point)) 0) ?=)) ; There is no value
+	(if (not (eq (char-after (point)) ?=)) ; There is no value
 	    (setq value nil)
 	  (skip-chars-forward " \t\n=")
 	  (setq val-pos (point))
@@ -426,7 +426,7 @@ If FORCE, re-parse even if already parsed."
 		  (error (goto-char (point-max)))))
 	    (while (not done)
 	      (skip-chars-forward "^;")
-	      (if (eq (or (char-after (1- (point))) 0) ?\\ )
+	      (if (eq (char-after (1- (point))) ?\\ )
 		  (progn
 		    (subst-char-in-region (1- (point)) (point) ?\\ ? )
 		    (skip-chars-forward ";"))

@@ -937,11 +937,12 @@ password contained in '~/.nntp-authinfo'."
 		    (nntp-inside-change-function t))
 		(setq nntp-process-callback nil)
 		(save-excursion
-		  (funcall callback (buffer-name
-				     (get-buffer nntp-process-to-buffer)))))))))
+		  (funcall callback
+			   (buffer-name (get-buffer
+					 nntp-process-to-buffer)))))))))
 
-    ;; any throw from after-change-functions will leave it
-    ;; set to nil.  so we reset it here, if necessary.
+    ;; Any throw from after-change-functions will leave it
+    ;; set to nil.  So we reset it here, if necessary.
     (when quit-flag
       (setq after-change-functions
 	    (list 'nntp-after-change-function-callback)))))
@@ -986,10 +987,7 @@ password contained in '~/.nntp-authinfo'."
 	(save-excursion
 	  (set-buffer (process-buffer (car entry)))
 	  (erase-buffer)
-	  (nntp-send-string (car entry) (concat "GROUP " group))
-	  ;; allow for unexpected responses, since this can be called
-	  ;; from a timer with quit inhibited
-	  (nntp-wait-for-string "^[245].*\n")
+	  (nntp-send-command "^[245].*\n" "GROUP" group)
 	  (setcar (cddr entry) group)
 	  (erase-buffer))))))
 

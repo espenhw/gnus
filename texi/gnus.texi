@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.54 Manual
+@settitle Pterodactyl Gnus 0.55 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.54 Manual
+@title Pterodactyl Gnus 0.55 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.54.
+This manual corresponds to Pterodactyl Gnus 0.55.
 
 @end ifinfo
 
@@ -3470,6 +3470,17 @@ In summary, you'd typically do something like the following:
 (setq gnus-ignored-from-addresses
       "Your Name Here")
 @end lisp
+
+Now, this is mostly useful for mail groups, where you have control over
+the @sc{nov} files that are created.  However, if you can persuade your
+nntp admin to add:
+
+@example
+Newsgroups:full
+@end example
+
+to the end of her @file{overview.fmt} file, then you can use that just
+as you would the extra headers from the mail groups.
 
 
 @node Summary Buffer Mode Line
@@ -6677,6 +6688,12 @@ Remove all blank lines
 Remove all white space from the beginning of all lines of the article
 body (@code{gnus-article-strip-leading-space}).
 
+@item W E e
+@kindex W E e (Summary)
+@findex gnus-article-strip-trailing-space
+Remove all white space from the end of all lines of the article
+body (@code{gnus-article-strip-trailing-space}).
+
 @end table
 
 @xref{Customizing Articles} for how to wash articles automatically.
@@ -6905,6 +6922,12 @@ signature after all.
 @cindex MIME decoding
 
 @table @kbd
+@item M-tgnus-summary-display-buttonized
+@kindex M-t (Summary)
+@findex gnus-summary-display-buttonized
+Toggle the buttonized display of the article buffer
+(@code{gnus-summary-toggle-display-buttonized}).
+
 @item W M w
 @kindex W M w (Summary)
 Decode RFC2047-encoded words in the article headers
@@ -8301,6 +8324,8 @@ extension:
 The @dfn{wash status} of the article.  This is a short string with one
 character for each possible article wash operation that may have been
 performed.
+@item m
+The number of @sc{mime} parts in the article.
 @end table
 
 @vindex gnus-break-pages
@@ -10786,6 +10811,11 @@ in this directory, which defaults to @file{~/.nneething/}.
 @vindex nneething-exclude-files
 All files that match this regexp will be ignored.  Nice to use to exclude
 auto-save files and the like, which is what it does by default.
+
+@item nneething-include-files
+@vindex nneething-include-files
+Regexp saying what files to include in the group.  If this variable is
+non-@code{nil}, only files matching this regexp will be included.
 
 @item nneething-map-file
 @vindex nneething-map-file

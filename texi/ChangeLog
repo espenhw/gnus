@@ -1,3 +1,10 @@
+1998-11-25 10:56:08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (To From Newsgroups): Addition.
+	(Anything Groups): Addition.
+	(Article Washing): Addition.
+	(MIME Commands): Addition.
+
 1998-11-19 04:05:15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Really Various Summary Commands): Addition.

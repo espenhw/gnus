@@ -24,6 +24,11 @@
 
 ;;; Code:
 
+(defvar mm-binary-coding-system 
+    (if (string-match "XEmacs" emacs-version)
+	'binary 'no-conversion)
+    "100% binary coding system.")   
+
 (defvar mm-default-coding-system nil
   "The default coding system to use.")  
 
@@ -42,8 +47,9 @@
     (iso-8859-7 greek-iso8859-7)
     (iso-8859-8 hebrew-iso8859-8)
     (iso-8859-9 latin-iso8859-9)
+    (iso-2022-jp-2 japanese-jisx0208)
     (iso-2022-jp latin-jisx0201
-		 japanese-jisx0208-1978 japanese-jisx0208)
+		 japanese-jisx0208-1978)
     (euc-kr korean-ksc5601)
     (cn-gb-2312 chinese-gb2312)
     (cn-big5 chinese-big5-1 chinese-big5-2)
@@ -220,7 +226,9 @@ See also `with-temp-file' and `with-output-to-string'."
 		     (get-buffer-create (generate-new-buffer-name " *temp*")))
 	       (unwind-protect
 		   (with-current-buffer ,temp-buffer
-		     (let ((buffer-file-coding-system 'binary))
+		     (let ((buffer-file-coding-system mm-binary-coding-system)
+			   (coding-system-for-read mm-binary-coding-system)
+			   (coding-system-for-write mm-binary-coding-system))
 		       ,@forms))
 		 (and (buffer-name ,temp-buffer)
 		      (kill-buffer ,temp-buffer))))
