@@ -6,6 +6,16 @@
 
 2000-10-02  Dave Love  <fx@gnu.org>
 
+	* gnus-ems.el (gnus-smiley-display): Autoload.
+	(mouse-set-point, set-face-foreground, set-face-background)
+	(x-popup-menu): Don't clobber these.
+	(gnus-article-compface-xbm): New variable.
+	(gnus-article-display-xface): Move graphic test.  Use unibyte.
+	Obey gnus-article-compface-xbm.  Use pbm, not xbm.
+
+	* mml.el (require): Fix typo.
+	(mml-parse-1): Modify unknown encoding prompt.
+
 	* mail-source.el (mail-sources): Revert to nil.
 
 	* nnmail.el (nnmail-spool-file): Revert previous change.
