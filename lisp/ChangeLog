@@ -4,7 +4,7 @@
 	(gnus-summary-limit-map): Add it.
 	(gnus-summary-make-menu-bar): do.
 
-2004-01-06  Teodor Zlatanov  <tzz@bwh.harvard.edu>
+2004-01-06  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-cache-lookups, spam-caches, spam-clear-cache):
 	first attempt at some caching support (done for BBDB only now)
