@@ -279,8 +279,7 @@ Answer:
 @ifnottex
 @node [2.2], [2.3], [2.1], FAQ 2 - Startup / Group buffer
 @end ifnottex
-@subsection [2.2]
-Question: 2.2 
+@subheading Question: 2.2 
 
  Gnus doesn't remember which groups I'm subscribed to,
  what's this?
@@ -2635,4 +2634,4 @@ Answer:
  
 @end table
 
-@bye
+@c @bye

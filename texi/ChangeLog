@@ -2,6 +2,9 @@
 
 	* gnus-faq.texi: Make it compile in the LaTeX version.  Remove
 	redundant entries in @urefs.
+	(FAQ - Glossary): Remove the final @bye since it breaks the Gnus
+	manual.
+	([1.2]): @subsection -> @subheading.	
 
 	* texi2latex.el (latexi-translate-file): Support @r, @env,
 	@heading, @subheading, @TeX.
