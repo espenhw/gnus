@@ -1,3 +1,11 @@
+2001-08-21 23:28:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-adjust-marked-articles): Use new variable.
+	(gnus-article-mark-to-type): New function.
+	(gnus-update-missing-marks): Only update marks of type 'list.
+
+	* gnus.el (gnus-article-special-mark-lists): New variable.
+
 2001-08-21 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-limit-children): Check 'all.

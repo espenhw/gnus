@@ -1786,6 +1786,11 @@ covered by that variable."
     (unsendable . unsend) (forwarded . forward)
     (recent . recent) (seen . seen)))
 
+(defconst gnus-article-special-mark-lists
+  '((seen range)
+    (bookmark tuple)
+    (score tuple)))
+
 (defvar gnus-headers-retrieved-by nil)
 (defvar gnus-article-reply nil)
 (defvar gnus-override-method nil)

@@ -4791,6 +4791,11 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       (setq marks (cdr marks)))
     out))
 
+(defun gnus-article-mark-to-type (mark)
+  "Return the type of MARK."
+  (or (cadr (assq mark gnus-article-special-mark-lists))
+      'list))
+
 (defun gnus-adjust-marked-articles (info)
   "Set all article lists and remove all marks that are no longer valid."
   (let* ((marked-lists (gnus-info-marks info))
@@ -4798,56 +4803,53 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	 (min (car active))
 	 (max (cdr active))
 	 (types gnus-article-mark-lists)
-	 (uncompressed '(score bookmark killed))
-	 marks var articles article mark)
+	 marks var articles article mark mark-type)
 
     (dolist (marks marked-lists)
-      (setq mark (car marks))
-      (unless (eq mark 'seen)
-	;; Do the rest of the marks.
-	(set (setq var (intern (format "gnus-newsgroup-%s"
-				       (car (rassq mark types)))))
-	     (cond
-	      ((memq mark uncompressed)
-	       (cdr marks))
-	      (t
-	       (gnus-uncompress-range (cdr marks)))))
+      (setq mark (car marks)
+	    mark-type (gnus-article-mark-to-type mark)
+	    var (intern (format "gnus-newsgroup-%s" (car (rassq mark types)))))
 
-	(setq articles (symbol-value var))
-
-	;; All articles have to be subsets of the active articles.
-	(cond
-	 ;; Adjust "simple" lists.
-	 ((memq mark '(tick dormant expire reply save))
+      ;; We set the variable according to the type of the marks list,
+      ;; and then adjust the marks to a subset of the active articles.
+      (cond
+       ;; Adjust "simple" lists.
+       ((eq mark-type 'list)
+	(set var (setq articles (gnus-uncompress-range (cdr marks))))
+	(when (memq mark '(tick dormant expire reply save))
 	  (while articles
 	    (when (or (< (setq article (pop articles)) min) (> article max))
-	      (set var (delq article (symbol-value var))))))
-	 ;; Adjust assocs.
-	 ((memq mark uncompressed)
-	  (when (not (listp (cdr (symbol-value var))))
-	    (set var (list (symbol-value var))))
-	  (when (not (listp (cdr articles)))
-	    (setq articles (list articles)))
-	  (while articles
-	    (when (or (not (consp (setq article (pop articles))))
-		      (< (car article) min)
-		      (> (car article) max))
-	      (set var (delq article (symbol-value var)))))))))))
+	      (set var (delq article (symbol-value var)))))))
+       ;; Adjust assocs.
+       ((eq mark-type 'tuple)
+	(set var (setq articles (cdr marks)))
+	(when (not (listp (cdr (symbol-value var))))
+	  (set var (list (symbol-value var))))
+	(when (not (listp (cdr articles)))
+	  (setq articles (list articles)))
+	(while articles
+	  (when (or (not (consp (setq article (pop articles))))
+		    (< (car article) min)
+		    (> (car article) max))
+	    (set var (delq article (symbol-value var))))))
+       ((eq mark-type 'range)
+	(cond
+	 ((eq mark 'seen))))))))
 
 (defun gnus-update-missing-marks (missing)
   "Go through the list of MISSING articles and remove them from the mark lists."
   (when missing
-    (let ((types gnus-article-mark-lists)
-	  var m)
+    (let (var m)
       ;; Go through all types.
-      (while types
-	(setq var (intern (format "gnus-newsgroup-%s" (car (pop types)))))
-	(when (symbol-value var)
-	 ;; This list has articles.  So we delete all missing articles
-	  ;; from it.
-	  (setq m missing)
-	  (while m
-	    (set var (delq (pop m) (symbol-value var)))))))))
+      (dolist (elem gnus-article-mark-lists)
+	(when (eq (gnus-article-mark-to-type (cdr elem)) 'list)
+	  (setq var (intern (format "gnus-newsgroup-%s" (car elem))))
+	  (when (symbol-value var)
+	    ;; This list has articles.  So we delete all missing
+	    ;; articles from it.
+	    (setq m missing)
+	    (while m
+	      (set var (delq (pop m) (symbol-value var))))))))))
 
 (defun gnus-update-marks ()
   "Enter the various lists of marked articles into the newsgroup info list."
