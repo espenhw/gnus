@@ -1755,7 +1755,8 @@ increase the score of each group you read."
   "c" gnus-summary-limit-exclude-childless-dormant
   "C" gnus-summary-limit-mark-excluded-as-read
   "o" gnus-summary-insert-old-articles
-  "N" gnus-summary-insert-new-articles)
+  "N" gnus-summary-insert-new-articles
+  "r" gnus-summary-limit-to-replied)
 
 (gnus-define-keys (gnus-summary-goto-map "G" gnus-summary-mode-map)
   "n" gnus-summary-next-unread-article
@@ -2394,6 +2395,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	 ["Display Predicate" gnus-summary-limit-to-display-predicate t]
 	 ["Unread" gnus-summary-limit-to-unread t]
 	 ["Unseen" gnus-summary-limit-to-unseen t]
+	 ["Replied" gnus-summary-limit-to-replied t]
 	 ["Non-dormant" gnus-summary-limit-exclude-dormant t]
 	 ["Next articles" gnus-summary-limit-to-articles t]
 	 ["Pop limit" gnus-summary-pop-limit t]
@@ -7633,6 +7635,17 @@ If ALL is non-nil, limit strictly to unread articles."
 	   gnus-canceled-mark gnus-catchup-mark gnus-sparse-mark
 	   gnus-duplicate-mark gnus-souped-mark)
      'reverse)))
+
+(defun gnus-summary-limit-to-replied (&optional unreplied)
+  "Limit the summary buffer to replied articles.
+If UNREPLIED (the prefix), limit to unreplied articles."
+  (interactive "P")
+  (if unreplied
+      (gnus-summary-limit
+       (gnus-set-difference gnus-newsgroup-articles
+	gnus-newsgroup-replied))
+    (gnus-summary-limit gnus-newsgroup-replied))
+  (gnus-summary-position-point))
 
 (defalias 'gnus-summary-delete-marked-with 'gnus-summary-limit-exclude-marks)
 (make-obsolete 'gnus-summary-delete-marked-with
