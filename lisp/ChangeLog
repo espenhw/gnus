@@ -1,3 +1,13 @@
+2004-02-12  Jesper Harder  <harder@ifa.au.dk>
+
+	* nntp.el (nntp-erase-buffer): New function.
+	(nntp-retrieve-data, nntp-send-command)
+	(nntp-send-buffer, nntp-retrieve-groups, nntp-handle-authinfo)
+	(nntp-possibly-change-group): Use it.
+
+	* nnnil.el (nnnil-retrieve-headers, nnnil-request-list): Use
+	with-current-buffer.
+
 2004-02-12  TAKAI Kousuke  <tak@kmc.gr.jp>
 
 	* compface.el: Merge the ELisp-based uncompface program.
