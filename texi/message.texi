@@ -921,8 +921,11 @@ look sufficiently similar.
 
 @item message-generate-headers-first
 @vindex message-generate-headers-first
-If non-@code{nil}, generate all headers before starting to compose the
-message.
+If non-@code{nil}, generate all required headers before starting to
+compose the message.
+
+The variables @code{message-required-mail-headers} and
+@code{message-required-news-headers} specify which headers are required.
 
 @item message-from-style
 @vindex message-from-style

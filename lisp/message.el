@@ -458,7 +458,7 @@ variable isn't used."
   :type 'sexp)
 
 (defcustom message-generate-headers-first nil
-  "*If non-nil, generate all possible headers before composing."
+  "*If non-nil, generate all required headers before composing."
   :group 'message-headers
   :type 'boolean)
 
