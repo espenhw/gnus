@@ -132,6 +132,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 (defvoo nndoc-prepare-body-function nil)
 (defvoo nndoc-generate-head-function nil)
 (defvoo nndoc-article-transform-function nil)
+(defvoo nndoc-article-begin-function nil)
 
 (defvoo nndoc-status-string "")
 (defvoo nndoc-group-alist nil)
@@ -335,7 +336,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
     t))
 
 (defun nndoc-mbox-article-begin ()
-  (when (re-search-forward (concat "^" message-unix-mail-delimiter))
+  (when (re-search-forward (concat "^" message-unix-mail-delimiter) nil t)
     (goto-char (match-beginning 0))))
 
 (defun nndoc-mbox-body-end ()
@@ -343,7 +344,8 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	len end)
     (when
 	(save-excursion
-	  (and (re-search-backward nndoc-article-begin nil t)
+	  (and (re-search-backward 
+		(concat "^" message-unix-mail-delimiter) nil t)
 	       (setq end (point))
 	       (search-forward "\n\n" beg t)
 	       (re-search-backward
@@ -353,7 +355,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	       (or (= (setq len (+ (point) len)) (point-max))
 		   (and (< len (point-max))
 			(goto-char len)
-			(looking-at nndoc-article-begin)))))
+			(looking-at message-unix-mail-delimiter)))))
       (goto-char len))))
 
 (defun nndoc-mmdf-type-p ()
@@ -527,9 +529,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
       ;; Go through the file.
       (while (if (and first nndoc-first-article)
 		 (nndoc-search nndoc-first-article)
-	       (condition-case ()
-		   (nndoc-search nndoc-article-begin)
-		 (error nil)))
+	       (nndoc-article-begin))
 	(setq first nil)
 	(cond (nndoc-head-begin-function
 	       (funcall nndoc-head-begin-function))
@@ -550,9 +550,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 		   (funcall nndoc-body-end-function))
 	      (and nndoc-body-end
 		   (nndoc-search nndoc-body-end))
-	      (condition-case ()
-		  (nndoc-search nndoc-article-begin)
-		(error nil))
+	      (nndoc-article-begin)
 	      (progn
 		(goto-char (point-max))
 		(when nndoc-file-end
@@ -562,6 +560,13 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	  (push (list (incf i) head-begin head-end body-begin body-end
 		      (count-lines body-begin body-end))
 		nndoc-dissection-alist))))))
+
+(defun nndoc-article-begin ()
+  (if nndoc-article-begin-function
+      (funcall nndoc-article-begin-function)
+    (condition-case ()
+	(nndoc-search nndoc-article-begin)
+      (error nil))))
 
 (defun nndoc-unquote-dashes ()
   "Unquote quoted non-separators in digests."

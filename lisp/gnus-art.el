@@ -1325,6 +1325,8 @@ groups."
 (defvar gnus-button-alist 
   `(("\\bin\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2 
      t gnus-button-message-id 3)
+    ("\\(<?\\(url: ?\\)?news://\\([^>\n\t ]*\\)>?\\)" 1 t
+     gnus-button-fetch-group 3)
     ("\\(<?\\(url: ?\\)?news:\\([^>\n\t ]*\\)>?\\)" 1 t
      gnus-button-message-id 3)
     ("\\(<URL: *\\)?mailto: *\\([^> \n\t]+\\)>?" 0 t gnus-button-reply 2)
@@ -1656,6 +1658,17 @@ specified by `gnus-button-alist'."
   (save-excursion
     (set-buffer gnus-summary-buffer)
     (gnus-summary-refer-article message-id)))
+
+(defun gnus-button-fetch-group (address)
+  "Fetch GROUP specified by ADDRESS."
+  (if (not (string-match "^\\([^:/]+\\)\\(:\\([^/]+\\)\\)?/\\(.*\\)$" address))
+      (error "Can't parse %s" address)
+    (gnus-group-read-ephemeral-group
+     (match-string 4 address)
+     `(nntp ,(match-string 1 address) (nntp-address ,(match-string 1 address))
+	    (nntp-port-number ,(if (match-end 3)
+				   (match-string 3 address)
+				 "nntp"))))))
 
 (defun gnus-button-mailto (address)
   ;; Mail to ADDRESS.

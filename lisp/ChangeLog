@@ -1,3 +1,28 @@
+Sun Sep  8 13:26:36 1996  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* nndoc.el (nndoc-article-begin-function): Defvarred.
+
+	* gnus-srvr.el (gnus-browse-unsubscribe-group): Would sometimes be
+	somewhat tricky.
+
+	* gnus.el (gnus-kill-ephemeral-group): New function.
+
+	* gnus-art.el (gnus-button-alist): Recognize group-news urls.
+
+	* nndoc.el (nndoc-dissect-buffer): Wouldn't dissect an mbox
+	properly. 
+	(nndoc-article-begin): New function.
+	(nndoc-mbox-body-end): Use it.
+	(nndoc-mbox-article-begin): Would bug out.
+
+Sun Sep  8 13:10:28 1996  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus.el (gnus-other-frame): Always pop up a frame.
+
+Sun Sep  8 12:57:03 1996  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.29 is released.
+
 Sun Sep  8 12:24:11 1996  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
 
 	* nntp.el (nntp-accept-process-output): Don't message so

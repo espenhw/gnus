@@ -5627,17 +5627,22 @@ to guess what the document format is."
 	(delete-matching-lines "^\\(Path\\):\\|^From ")
 	(widen))
       (unwind-protect
-	  (if (gnus-group-read-ephemeral-group
-	       name `(nndoc ,name (nndoc-address ,(get-buffer dig))
-			    (nndoc-article-type ,(if force 'digest 'guess))) t)
-	      ;; Make all postings to this group go to the parent group.
-	      (nconc (gnus-info-params (gnus-get-info name))
-		     params)
-	    ;; Couldn't select this doc group.
-	    (switch-to-buffer buf)
-	    (gnus-set-global-variables)
-	    (gnus-configure-windows 'summary)
-	    (gnus-message 3 "Article couldn't be entered?"))
+	  (let ((gnus-current-window-configuration
+		 (if (and (boundp 'gnus-pick-mode)
+			  (symbol-value "gnus-pick-mode"))
+		     'pick 'summary)))
+	    (if (gnus-group-read-ephemeral-group
+		 name `(nndoc ,name (nndoc-address ,(get-buffer dig))
+			      (nndoc-article-type 
+			       ,(if force 'digest 'guess))) t)
+		;; Make all postings to this group go to the parent group.
+		(nconc (gnus-info-params (gnus-get-info name))
+		       params)
+	      ;; Couldn't select this doc group.
+	      (switch-to-buffer buf)
+	      (gnus-set-global-variables)
+	      (gnus-configure-windows 'summary)
+	      (gnus-message 3 "Article couldn't be entered?")))
 	(kill-buffer dig)))))
 
 (defun gnus-summary-read-document (n)

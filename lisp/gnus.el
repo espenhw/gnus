@@ -28,7 +28,7 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
-(defconst gnus-version-number "0.29"
+(defconst gnus-version-number "0.30"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -116,8 +116,10 @@
   (set-buffer-modified-p t))
 
 (eval-when (load)
-  (when (string-match "gnus" (format "%s" this-command))
-    (gnus-splash)))
+  (let ((command (format "%s" this-command)))
+    (when (and (string-match "gnus" command)
+	       (not (string-match "gnus-other-frame" command)))
+      (gnus-splash))))
 
 ;;; Do the rest.
 
@@ -410,6 +412,10 @@ that that variable is buffer-local to the summary buffers."
 (defun gnus-group-quit-config (group)
   "Return the quit-config of GROUP."
   (gnus-group-get-parameter group 'quit-config))
+
+(defun gnus-kill-ephemeral-group (group)
+  "Remove ephemeral GROUP from relevant structures."
+  (gnus-sethash group nil gnus-newsrc-hashtb))
 
 (defun gnus-simplify-mode-line ()
   "Make mode lines a bit simpler."
@@ -854,7 +860,7 @@ As opposed to `gnus', this command will not connect to the local server."
 (defun gnus-other-frame (&optional arg)
   "Pop up a frame to read news."
   (interactive "P")
-  (if (get-buffer gnus-group-buffer)
+  (if (gnus-alive-p)
       (let ((pop-up-frames t))
 	(gnus arg))
     (select-frame (make-frame))

@@ -1,4 +1,4 @@
-;; Copyright (C) 1987,88,89,90,92,93,94,95,96 Free Software Foundation, Inc.
+;;; Copyright (C) 1987,88,89,90,92,93,94,95,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
