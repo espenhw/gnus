@@ -1,3 +1,8 @@
+2000-10-28  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Group Levels): Explain meaning of subscribed,
+	unsubscribed, zombie, killed groups.
+
 2000-10-26  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Gnus Development): nnmail-delete-incoming -->

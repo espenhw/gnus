@@ -2178,6 +2178,27 @@ reasons of efficiency.
 It is recommended that you keep all your mail groups (if any) on quite
 low levels (e.g. 1 or 2).
 
+Maybe the following description of the default behavior of Gnus helps to
+understand what these levels are all about.  By default, Gnus shows you
+subscribed nonempty groups, but by hitting @kbd{L} you can have it show
+empty subscribed groups and unsubscribed groups, too.  Type @kbd{l} to
+go back to showing nonempty subscribed groups again.  Thus, unsubscribed
+groups are hidden, in a way.
+
+Zombie and killed groups are similar to unsubscribed groups in that they
+are hidden by default.  But they are different from subscribed and
+unsubscribed groups in that Gnus doesn't ask the news server for
+information (number of messages, number of unread messages) on zombie
+and killed groups.  Normally, you use @kbd{C-k} to kill the groups you
+aren't interested in.  If most groups are killed, Gnus is faster.
+
+Why does Gnus distinguish between zombie and killed groups?  Well, when
+a new group arrives on the server, Gnus by default makes it a zombie
+group.  This means that you are normally not bothered with new groups,
+but you can type @kbd{A z} to get a list of all new groups.  Subscribe
+the ones you like and kill the ones you don't want.  (@kbd{A k} shows a
+list of killed groups.)
+
 If you want to play with the level variables, you should show some care.
 Set them once, and don't touch them ever again.  Better yet, don't touch
 them at all unless you know exactly what you're doing.
