@@ -1,3 +1,10 @@
+2003-01-02  Jesper Harder  <harder@ifa.au.dk>
+
+	* lpath.el: Add url-http-file-exists-p.
+
+	* gnus-group.el (gnus-group-fetch-charter): Use
+	http://TLH.news-admin.org/charters/GROUPNAME as a fallback.
+
 2003-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-draft-headers): Also generate From to get a
