@@ -3840,7 +3840,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		   transient-mark-mode)
 	  (setq mark-active nil))
 	;; Editing of the article might not have been finished.
-	(when (local-variable-p 'after-change-functions)
+	(when (local-variable-p 'after-change-functions (current-buffer))
 	  (remove-hook 'after-change-functions
 		       'message-strip-forbidden-properties
 		       'local))
