@@ -50,6 +50,9 @@ to allow posting from the server.  Note that this is only necessary to
 do on servers that use strict access control.")  
 (add-hook 'nntp-server-opened-hook 'nntp-send-mode-reader)
 
+(defvoo nntp-authinfo-function 'nntp-send-authinfo
+  "Function used to send AUTHINFO to the server.")
+
 (defvoo nntp-server-action-alist 
   '(("nntpd 1\\.5\\.11t" 
      (remove-hook 'nntp-server-opened-hook 'nntp-send-mode-reader)))
@@ -586,9 +589,12 @@ It will prompt for a password."
       (if (and (= beg (point-min))
 	       (memq (char-after beg) '(?4 ?5)))
 	  ;; Report back error messages.
-	  (progn
-	    (nntp-snarf-error-message)
-	    (funcall nntp-process-callback nil))
+	  (save-excursion
+	    (goto-char beg)
+	    (if (looking-at "480")
+		(funcall nntp-authinfo-function)
+	      (nntp-snarf-error-message)
+	      (funcall nntp-process-callback nil)))
 	(goto-char end)
 	(when (and (> (point) nntp-process-start-point)
 		   (re-search-backward nntp-process-wait-for
@@ -654,7 +660,11 @@ It will prompt for a password."
   (save-excursion
     (set-buffer (process-buffer process))
     (goto-char (point-min))
-    (while (not (looking-at "[2345]"))
+    (while (or (not (memq (following-char) '(?2 ?3 ?4 ?5)))
+	       (looking-at "480"))
+      (when (looking-at "480")
+	(erase-buffer)
+	(funcall nntp-authinfo-function))
       (nntp-accept-process-output process)
       (goto-char (point-min)))
     (prog1

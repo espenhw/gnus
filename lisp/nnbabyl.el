@@ -205,6 +205,7 @@
 			 (car active) (cdr active) group))))))
 
 (deffoo nnbabyl-request-scan (&optional group server)
+  (nnbabyl-possibly-change-newsgroup group server)
   (nnbabyl-read-mbox)
   (nnmail-get-new-mail 
    'nnbabyl 
@@ -325,10 +326,10 @@
        (save-excursion
 	 (while (re-search-backward "^X-Gnus-Newsgroup: " beg t)
 	   (delete-region (point) (progn (forward-line 1) (point)))))
-       (let ((nnmail-split-methods
-	      (if (stringp group) (list (list group "")) 
-		nnmail-split-methods)))
-	 (setq result (car (nnbabyl-save-mail))))
+       (setq result (car (nnbabyl-save-mail
+			  (if (stringp group)
+			      (list (cons group (nnbabyl-active-number group)))
+			    (nnmail-article-group 'nnbabyl-active-number)))))
        (set-buffer nnbabyl-mbox-buffer)
        (goto-char (point-max))
        (search-backward "\n\^_")
@@ -478,14 +479,13 @@
 	(insert (format "Lines: %d\n" lines))
 	chars))))
 
-(defun nnbabyl-save-mail ()
+(defun nnbabyl-save-mail (group-art)
   ;; Called narrowed to an article.
-  (let ((group-art (nreverse (nnmail-article-group 'nnbabyl-active-number))))
-    (nnbabyl-insert-lines)
-    (nnmail-insert-xref group-art)
-    (nnbabyl-insert-newsgroup-line group-art)
-    (run-hooks 'nnbabyl-prepare-save-mail-hook)
-    group-art))
+  (nnbabyl-insert-lines)
+  (nnmail-insert-xref group-art)
+  (nnbabyl-insert-newsgroup-line group-art)
+  (run-hooks 'nnbabyl-prepare-save-mail-hook)
+  group-art)
 
 (defun nnbabyl-insert-newsgroup-line (group-art)
   (save-excursion
@@ -585,7 +585,8 @@
 	    (save-excursion
 	      (save-restriction
 		(narrow-to-region (goto-char start) end)
-		(nnbabyl-save-mail)
+		(nnbabyl-save-mail 
+		 (nnmail-article-group 'nnbabyl-active-number))
 		(setq end (point-max)))))
 	  (goto-char (setq start end)))
 	(when (buffer-modified-p (current-buffer))
@@ -614,7 +615,8 @@
 	      (delete-region (progn (beginning-of-line) (point))
 			     (progn (forward-line 1) (point)))
 	      (nnheader-message 7 "Moving %s..." id)
-	      (nnbabyl-save-mail))
+	      (nnbabyl-save-mail
+	       (nnmail-article-group 'nnbabyl-active-number)))
 	  (intern id idents)))
       (when (buffer-modified-p (current-buffer))
 	(save-buffer))

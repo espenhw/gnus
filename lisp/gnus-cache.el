@@ -144,8 +144,8 @@ variable to \"^nnml\".")
 		 (not (file-exists-p (setq file (gnus-cache-file-name
 						 group number)))))
 	;; Possibly create the cache directory.
-	(or (file-exists-p (setq dir (file-name-directory file)))
-	    (make-directory dir t))
+	(unless (file-exists-p (setq dir (file-name-directory file)))
+	  (make-directory dir t))
 	;; Save the article in the cache.
 	(if (file-exists-p file)
 	    t				; The article already is saved.
@@ -554,7 +554,8 @@ Returns the list of articles removed."
 			   (symbol-name sym) (cdr (symbol-value sym))
 			   (car (symbol-value sym))))))
        gnus-cache-active-hashtb)
-      (make-directory (file-name-directory gnus-cache-active-file) t)
+      (unless (file-exists-p (file-name-directory gnus-cache-active-file))
+	(make-directory (file-name-directory gnus-cache-active-file) t))
       (write-region 
        (point-min) (point-max) gnus-cache-active-file nil 'silent))
     ;; Mark the active hashtb as unaltered.

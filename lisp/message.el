@@ -1659,7 +1659,7 @@ the user from the mailer."
 	       (if (or
 		    (not 
 		     (string-match
-		      "\\`\\([-+_&.a-zA-Z0-9]+\\)?\\(,[-.a-zA-Z0-9]+\\)*\\'"
+		      "\\`\\([-+_&.a-zA-Z0-9]+\\)?\\(,[-+_&.a-zA-Z0-9]+\\)*\\'"
 		      header))
 		    (memq 
 		     nil (mapcar 

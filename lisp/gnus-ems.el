@@ -185,7 +185,8 @@ pounce directly on the real variables themselves."))
     ;; Mule definitions
     (defalias 'gnus-truncate-string 'truncate-string)
 
-    (fset 'gnus-summary-make-display-table (lambda () nil))
+    (defvar gnus-summary-display-table nil
+      "Display table used in summary mode buffers.")
     (fset 'gnus-cite-add-face 'gnus-mule-cite-add-face)
     (fset 'gnus-max-width-function 'gnus-mule-max-width-function)
     

@@ -165,7 +165,10 @@ This variable allows the same syntax as `gnus-home-score-file'.")
     (gnus-del-mark (from -2) (subject -15)))
 "*Alist of marks and scores.")
 
-(defvar gnus-ignored-adaptive-words
+(defvar gnus-ignored-adaptive-words nil
+  "*List of words to be ignored when doing adaptive word scoring.")
+
+(defvar gnus-default-ignored-adaptive-words
   '("a" "i" "the" "to" "of" "and" "in" "is" "it" "for" "that" "if" "you"
     "this" "be" "on" "with" "not" "have" "are" "or" "as" "from" "can"
     "but" "by" "at" "an" "will" "no" "all" "was" "do" "there" "my" "one"
@@ -179,9 +182,19 @@ This variable allows the same syntax as `gnus-home-score-file'.")
     "right" "before" "our" "without" "too" "those" "why" "must" "part"
     "being" "current" "back" "still" "go" "point" "value" "each" "did"
     "both" "true" "off" "say" "another" "state" "might" "under" "start"
-    "try")
-  "List of words to be ignored when doing adaptive word scoring.")
-  
+    "try"
+
+    "re")
+  "Default list of words to be ignored when doing adaptive word scoring.")
+
+(defvar gnus-adaptive-word-syntax-table
+  (let ((table (copy-syntax-table (standard-syntax-table)))
+	(numbers '(?0 ?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9)))
+    (while numbers
+      (modify-syntax-entry (pop numbers) " " table))
+    table)
+  "Syntax table used when doing adaptive word scoring.")
+
 (defvar gnus-default-adaptive-word-score-alist  
   `((,gnus-read-mark . 30)
     (,gnus-catchup-mark . -10)
@@ -591,8 +604,8 @@ used as score."
 		  gnus-score-alist
 		  (gnus-newsgroup-score-alist)))))
 
-(defun gnus-summary-score-entry 
-  (header match type score date &optional prompt silent)
+(defun gnus-summary-score-entry (header match type score date
+					&optional prompt silent)
   "Enter score file entry.
 HEADER is the header being scored.
 MATCH is the string we are looking for.
@@ -654,7 +667,11 @@ If optional argument `SILENT' is nil, show effect of score entry."
 	    elem)
 	(setq new
 	      (cond 
-	       (type (list match score (and date (gnus-day-number date)) type))
+	       (type
+		(list match score
+		      (and date (if (numberp date) date
+				  (gnus-day-number date)))
+		      type))
 	       (date (list match score (gnus-day-number date)))
 	       (score (list match score))
 	       (t (list match))))
@@ -1163,7 +1180,7 @@ SCORE is the score to add."
 		;; This is an adaptive score file, so we do not run
 		;; it through `pp'.  These files can get huge, and
 		;; are not meant to be edited by human hands.
-		(prin1 score (current-buffer))
+		(gnus-prin1 score)
 	      ;; This is a normal score file, so we print it very
 	      ;; prettily. 
 	      (pp score (current-buffer))))
@@ -1745,6 +1762,7 @@ SCORE is the score to add."
 	       (search-func 
 		(cond ((= dmt ?r) 're-search-forward)
 		      ((or (= dmt ?e) (= dmt ?s) (= dmt ?f)) 'search-forward)
+		      ((= dmt ?w) nil)
 		      (t (error "Illegal match type: %s" type)))))
 	  (cond
 	   ;; Fuzzy matches.  We save these for later.
@@ -1872,6 +1890,7 @@ SCORE is the score to add."
 		 (date (nth 2 kill))
 		 found)
 	    (when (setq arts (intern-soft (nth 0 kill) hashtb))
+	      (setq arts (symbol-value arts))
 	      (setq found t)
 	      (if trace
 		  (while (setq art (pop arts))
@@ -1895,23 +1914,32 @@ SCORE is the score to add."
 	     ((and expire (< date expire)) 
 	      (gnus-score-set 'touched '(t) alist)
 	      (setcdr (car words) (cddar words))))
-	    (setq fuzzies (cdr fuzzies))))))
+	    (setq words (cdr words))))))
     nil))
 
 (defun gnus-enter-score-words-into-hashtb (hashtb)
   ;; Find all the words in the buffer and enter them into
   ;; the hashtable.
-  (let (word)
+  (let ((syntab (syntax-table))
+	 word val)
     (goto-char (point-min))
-    (while (re-search-forward "\\b\\w+\\b" nil t)
-      (gnus-sethash
-       (setq word (downcase (buffer-substring
-			     (match-beginning 0) (match-end 0))))
-       (append (get-text-property (gnus-point-at-eol) 'articles)
-	       (gnus-gethash word hashtb))
-       hashtb))
+    (unwind-protect
+	(progn
+	  (set-syntax-table gnus-adaptive-word-syntax-table)
+	  (while (re-search-forward "\\b\\w+\\b" nil t)
+	    (setq val
+		  (gnus-gethash 
+		   (setq word (downcase (buffer-substring
+					 (match-beginning 0) (match-end 0))))
+		   hashtb))
+	    (gnus-sethash
+	     word
+	     (append (get-text-property (gnus-point-at-eol) 'articles) val)
+	     hashtb)))
+      (set-syntax-table syntab))
     ;; Make all the ignorable words ignored.
-    (let ((ignored gnus-ignored-adaptive-words))
+    (let ((ignored (append gnus-ignored-adaptive-words
+			   gnus-default-ignored-adaptive-words)))
       (while ignored
 	(gnus-sethash (pop ignored) nil hashtb)))))
 
@@ -2002,37 +2030,46 @@ SCORE is the score to add."
      ((memq 'word gnus-use-adaptive-scoring)
       (nnheader-temp-write nil
 	(let* ((hashtb (gnus-make-hashtable 1000))
-	       (date (current-time-string))
+	       (date (gnus-day-number (current-time-string)))
 	       (data gnus-newsgroup-data)
-	       word d score)
-	  ;; Go through all articles.
-	  (while (setq d (pop data))
-	    (when (setq score (cdr (assq 
+	       (syntab (syntax-table))
+	       word d score val)
+	  (unwind-protect
+	      (progn
+		(set-syntax-table syntab)
+		;; Go through all articles.
+		(while (setq d (pop data))
+		  (when (setq score
+			      (cdr (assq 
 				    (gnus-data-mark d)
 				    gnus-default-adaptive-word-score-alist)))
-	      ;; This article has a mark that should lead to
-	      ;; adaptive word rules, so we insert the subject
-	      ;; and find all words in that string.
-	      (insert (mail-header-subject (gnus-data-header d)))
-	      (downcase-region (point-min) (point-max))
-	      (goto-char (point-min))
-	      (while (re-search-forward "\\b\\w+\\b" nil t)
-		;; Put the word and score into the hashtb.
-		(gnus-sethash (setq word (match-string 0))
-			      (+ (or (gnus-gethash word hashtb) 0) score)
-			      hashtb))
-	      (erase-buffer)))
+		    ;; This article has a mark that should lead to
+		    ;; adaptive word rules, so we insert the subject
+		    ;; and find all words in that string.
+		    (insert (mail-header-subject (gnus-data-header d)))
+		    (downcase-region (point-min) (point-max))
+		    (goto-char (point-min))
+		    (while (re-search-forward "\\b\\w+\\b" nil t)
+		      ;; Put the word and score into the hashtb.
+		      (setq val (gnus-gethash (setq word (match-string 0))
+					      hashtb))
+		      (gnus-sethash word (+ (or val 0) score) hashtb))
+		    (erase-buffer))))
+	    (set-syntax-table syntab))
 	  ;; Make all the ignorable words ignored.
-	  (let ((ignored gnus-ignored-adaptive-words))
+	  (let ((ignored (append gnus-ignored-adaptive-words
+				 gnus-default-ignored-adaptive-words)))
 	    (while ignored
 	      (gnus-sethash (pop ignored) nil hashtb)))
 	  ;; Now we have all the words and scores, so we
 	  ;; add these rules to the ADAPT file.
+	  (set-buffer gnus-summary-buffer)
 	  (mapatoms
 	   (lambda (word)
-	     (gnus-summary-score-entry
-	      "subject" (symbol-name word) 'w (symbol-value word)
-	      date))
+	     (when (symbol-value word)
+	       (gnus-summary-score-entry
+		"subject" (symbol-name word) 'w (symbol-value word)
+		date nil t)))
 	   hashtb)))))))
 
 (defun gnus-score-edit-done ()

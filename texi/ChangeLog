@@ -3,6 +3,30 @@ Sat Aug 17 22:24:34 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 	* gnus.texi (Startup Files): Addition.
 	(Anything Groups): Addition.
 
+Thu Aug 22 17:27:31 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Adaptive Scoring): Addition.
+	(Adaptive Scoring): Addition.
+
+Mon Aug 19 00:30:07 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Fancy Mail Splitting): Addition.
+	(Splitting Mail): Addition.
+	(Group Parameters): Addition.
+	(Topic Variables): Addition.
+	(Mail Group Commands): Addition.
+	(Group Information): Addition.
+	(Article Washing): Addition.
+
+Sun Aug 18 18:06:49 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Web Searches): Change and addition.
+
+Sat Aug 17 22:24:34 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Startup Files): Addition.
+	(Anything Groups): Addition.
+
 Thu Aug 15 17:59:12 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Followups To Yourself): Addition.

@@ -369,11 +369,10 @@ The SOUP packet file name will be inserted at the %s.")
 		 nnsoup-group-alist-touched))
     (setq nnsoup-group-alist-touched nil)
     (nnheader-temp-write nnsoup-active-file
-      (let ((standard-output (current-buffer)))
-	(prin1 `(setq nnsoup-group-alist ',nnsoup-group-alist))
-	(insert "\n")
-	(prin1 `(setq nnsoup-current-prefix ,nnsoup-current-prefix))
-	(insert "\n")))))
+      (gnus-prin1 `(setq nnsoup-group-alist ',nnsoup-group-alist))
+      (insert "\n")
+      (gnus-prin1 `(setq nnsoup-current-prefix ,nnsoup-current-prefix))
+      (insert "\n"))))
 
 (defun nnsoup-next-prefix ()
   "Return the next free prefix."

@@ -552,7 +552,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 	  (not (consp (cdr (nth 2 object))))
 	  (and (eq 'quote (car (nth 2 object)))
 	       (not (consp (cdadr (nth 2 object))))))
-      (concat "\n" (prin1-to-string object))
+      (concat "\n" (gnus-prin1-to-string object))
     (save-excursion
       (set-buffer (get-buffer-create "*Gnus PP*"))
       (buffer-disable-undo (current-buffer))
@@ -562,7 +562,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 	    (first t))
 	(while klist
 	  (insert (if first (progn (setq first nil) "")  "\n    ")
-		  (prin1-to-string (car klist)))
+		  (gnus-prin1-to-string (car klist)))
 	  (setq klist (cdr klist))))
       (insert ")")
       (and (nth 3 object)
@@ -570,7 +570,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 		   (if (and (consp (nth 3 object))
 			    (not (eq 'quote (car (nth 3 object))))) 
 		       "'" "")
-		   (prin1-to-string (nth 3 object))))
+		   (gnus-prin1-to-string (nth 3 object))))
       (and (nth 4 object)
 	   (insert "\n  t"))
       (insert ")")
@@ -591,7 +591,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 		     (setq value (funcall function header))
 		     ;; Number (Lines:) or symbol must be converted to string.
 		     (or (stringp value)
-			 (setq value (prin1-to-string value)))
+			 (setq value (gnus-prin1-to-string value)))
 		     (setq did-kill (string-match regexp value)))
 		   (cond ((stringp form)	;Keyboard macro.
 			  (execute-kbd-macro form))
@@ -648,7 +648,7 @@ marked as read or ticked are ignored."
 	      ;; Find later articles.
 	      (setq article 
 		    (gnus-summary-search-forward 
-		     (not ignore-marked) nil backward)))
+		     ignore-marked nil backward)))
 	(and (or (null gnus-newsgroup-kill-headers)
 		 (memq article gnus-newsgroup-kill-headers))
 	     (vectorp (setq header (gnus-summary-article-header article)))

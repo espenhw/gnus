@@ -407,11 +407,11 @@ jabbering all the time.")
 	(sit-for duration))))
   nil)
 
-(defun gnus-parent-id (references)
-  "Return the last Message-ID in REFERENCES."
-  (when (and references
-	     (string-match "\\(<[^\n<>]+>\\)[ \t\n]*\\'" references))
-    (substring references (match-beginning 1) (match-end 1))))
+(defun gnus-parent-id (references &optional n)
+  "Return the last Message-ID in REFERENCES.
+If N, return the Nth ancestor instead."
+  (let ((ids (gnus-split-references references)))
+    (car (last ids (or n 1)))))
 
 (defun gnus-split-references (references)
   "Return a list of Message-IDs in REFERENCES."
@@ -524,6 +524,16 @@ Timezone package is used."
   "Turn off edit meny in `gnus-TYPE-mode-map'."
   (define-key (symbol-value (intern (format "gnus-%s-mode-map" type)))
     [menu-bar edit] 'undefined))
+
+(defun gnus-prin1 (form)
+  "Use `prin1' on FORM in the current buffer.
+Bind `print-quoted' to t while printing."
+  (let ((print-quoted t))
+    (prin1 form (current-buffer))))
+
+(defun gnus-prin1-to-string (form)
+  "The same as `prin1', but but `print-quoted' to t."
+  (prin1-to-string form))
  
 (provide 'gnus-util)
 

@@ -539,6 +539,27 @@ always hide."
 	(while (looking-at "[ \t]$")
 	  (gnus-delete-line))))))
 
+(defun article-strip-multiple-blank-lines ()
+  "Replace consequtive blank lines with one empty line."
+  (interactive)
+  (save-excursion
+    (let (buffer-read-only)
+      ;; First make all blank lines empty.
+      (goto-char (point-min))
+      (while (re-search-forward "^[ \t]+$" nil t)
+	(replace-match "" nil t))
+      ;; Then replace multiple empty lines with a single empty line.
+      (goto-char (point-min))
+      (while (re-search-forward "\n\n+" nil t)
+	(replace-match "\n" nil t)))))
+
+(defun article-strip-blank-lines ()
+  "Strip leading, trailing and multiple blank lines."
+  (interactive)
+  (article-strip-leading-blank-lines)
+  (article-remove-trailing-blank-lines)
+  (article-strip-multiple-blank-lines))
+
 (defvar mime::preview/content-list)
 (defvar mime::preview-content-info/point-min)
 (defun article-narrow-to-signature ()

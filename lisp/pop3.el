@@ -253,6 +253,9 @@ Return the response string if optional second argument is non-nil."
 		(pop3-quit process)))))
     ))
 
+(eval-and-compile
+  (if (not (fboundp 'md5)) (autoload 'md5 "md5")))
+
 (defun pop3-apop (process user)
   "Send alternate authentication information to the server."
   (if (not (fboundp 'md5)) (autoload 'md5 "md5"))

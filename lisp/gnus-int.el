@@ -402,6 +402,16 @@ If GROUP is nil, all groups on METHOD are scanned."
     (when (fboundp func)
       (funcall func))))
 
+(defun gnus-remove-denial (method)
+  (when (stringp method)
+    (setq method (gnus-server-to-method method)))
+  (let* ((elem (assoc method gnus-opened-servers))
+	 (status (cadr elem)))
+    ;; If this hasn't been opened before, we add it to the list.
+    (when (eq status 'denied)
+      ;; Set the status of this server.
+      (setcar (cdr elem) 'closed))))
+
 (provide 'gnus-int)
 
 ;;; gnus-int.el ends here

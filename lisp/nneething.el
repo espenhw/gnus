@@ -245,13 +245,12 @@ If this variable is nil, no files will be excluded.")
       (setq files (cdr files)))
     (when (and touched 
 	       (not nneething-read-only))
-      (save-excursion
-	(nnheader-set-temp-buffer " *nneething map*")
-	(insert "(setq nneething-map '" (prin1-to-string nneething-map) ")\n"
-		"(setq nneething-active '" (prin1-to-string nneething-active)
-		")\n")
-	(write-region (point-min) (point-max) map-file nil 'nomesg)
-	(kill-buffer (current-buffer))))))
+      (nnheader-temp-write map-file
+	(insert "(setq nneething-map '")
+	(gnus-prin1 nneething-map)
+	(insert ")\n(setq nneething-active '")
+	(gnus-prin1 nneething-active)
+	(insert ")\n")))))
 
 (defun nneething-insert-head (file)
   "Insert the head of FILE."

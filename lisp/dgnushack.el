@@ -42,6 +42,9 @@
   (let ((files (directory-files "." nil ".el$"))
 	(xemacs (string-match "XEmacs" emacs-version))
 	byte-compile-warnings file)
+    (condition-case ()
+	(require 'w3-forms)
+      (error (setq files (delete "nnweb.el" files))))
     (while files
       (setq file (car files)
 	    files (cdr files))

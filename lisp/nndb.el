@@ -139,7 +139,7 @@
 If FORCE, delete regardless of exiration date, otherwise use normal
 expiry mechanism."
   (let (msg art)
-    (nntp-possibly-change-server group server) ;;-
+    (nntp-possibly-change-group group server) ;;-
     (while articles
       (setq art (pop articles))
       (nntp-send-command "^\\([23]\\|^423\\).*\n" "DATE" art)
@@ -183,15 +183,12 @@ Optional LAST is ignored."
   
 (deffoo nndb-request-accept-article (group server &optional last)
   "The article in the current buffer is put into GROUP."
-  (nntp-possibly-change-server group server) ;;-
+  (nntp-possibly-change-group group server) ;;-
   (let (art statmsg)
     (when (nntp-send-command "^[23].*\r?\n" "ACCEPT" group)
       (nnheader-insert "")
       (nntp-encode-text)
-      (nntp-send-region-to-server (point-min) (point-max))
-      ;; 1.2a NNTP's post command is buggy. "^M" (\r) is not
-      ;;  appended to end of the status message.
-      (nntp-wait-for-response "^[23].*\n")
+      (nntp-send-buffer "^[23].*\n")
       (setq statmsg (nntp-status-message))
       (or (string-match "^\\([0-9]+\\)" statmsg)
           (error "nndb: %s" statmsg))
@@ -209,10 +206,7 @@ with the contents of the BUFFER."
     (when (nntp-send-command "^[23].*\r?\n" "REPLACE" (int-to-string article))
       (nnheader-insert "")
       (nntp-encode-text)
-      (nntp-send-region-to-server (point-min) (point-max))
-      ;; 1.2a NNTP's post command is buggy. "^M" (\r) is not
-      ;;  appended to end of the status message.
-      (nntp-wait-for-response "^[23].*\n")
+      (nntp-send-buffer "^[23].*\n")
 ;      (setq statmsg (nntp-status-message))
 ;      (or (string-match "^\\([0-9]+\\)" statmsg)
 ;          (error "nndb: %s" statmsg))

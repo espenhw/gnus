@@ -346,7 +346,7 @@ variable.")
     "V" gnus-group-make-empty-virtual
     "D" gnus-group-enter-directory
     "f" gnus-group-make-doc-group
-    "n" gnus-group-make-dejagnus-group
+    "n" gnus-group-make-web-group
     "r" gnus-group-rename-group
     "\177" gnus-group-delete-group
     [delete] gnus-group-delete-group)
@@ -650,15 +650,16 @@ The following commands are available:
 Default is all subscribed groups.
 If argument UNREAD is non-nil, groups with no unread articles are also
 listed."
-  (interactive (list (if current-prefix-arg
-			 (prefix-numeric-value current-prefix-arg)
-		       (or
-			(gnus-group-default-level nil t)
-			gnus-group-default-list-level
-			gnus-level-subscribed))))
-  (or level
-      (setq level (car gnus-group-list-mode)
-	    unread (cdr gnus-group-list-mode)))
+  (interactive
+   (list (if current-prefix-arg
+	     (prefix-numeric-value current-prefix-arg)
+	   (or
+	    (gnus-group-default-level nil t)
+	    gnus-group-default-list-level
+	    gnus-level-subscribed))))
+  (unless level
+    (setq level (car gnus-group-list-mode)
+	  unread (cdr gnus-group-list-mode)))
   (setq level (gnus-group-default-level level))
   (gnus-group-setup-buffer)		;May call from out of group buffer
   (gnus-update-format-specifications)
@@ -680,20 +681,22 @@ listed."
 	  ;; has disappeared in the new listing, try to find the next
 	  ;; one.	 If no next one can be found, just leave point at the
 	  ;; first newsgroup in the buffer.
-	  (if (not (gnus-goto-char
-		    (text-property-any
-		     (point-min) (point-max)
-		     'gnus-group (gnus-intern-safe group gnus-active-hashtb))))
-	      (let ((newsrc (cdddr (gnus-gethash group gnus-newsrc-hashtb))))
-		(while (and newsrc
-			    (not (gnus-goto-char
-				  (text-property-any
-				   (point-min) (point-max) 'gnus-group
-				   (gnus-intern-safe
-				    (caar newsrc) gnus-active-hashtb)))))
-		  (setq newsrc (cdr newsrc)))
-		(or newsrc (progn (goto-char (point-max))
-				  (forward-line -1)))))))
+	  (when (not (gnus-goto-char
+		      (text-property-any
+		       (point-min) (point-max)
+		       'gnus-group (gnus-intern-safe
+				    group gnus-active-hashtb))))
+	    (let ((newsrc (cdddr (gnus-gethash group gnus-newsrc-hashtb))))
+	      (while (and newsrc
+			  (not (gnus-goto-char
+				(text-property-any
+				 (point-min) (point-max) 'gnus-group
+				 (gnus-intern-safe
+				  (caar newsrc) gnus-active-hashtb)))))
+		(setq newsrc (cdr newsrc)))
+	      (unless newsrc
+		(goto-char (point-max))
+		(forward-line -1))))))
       ;; Adjust cursor point.
       (gnus-group-position-point))))
 
@@ -797,7 +800,7 @@ If REGEXP, only list groups matching REGEXP."
 	   (not (gnus-ephemeral-group-p group))
 	   (gnus-dribble-enter
 	    (concat "(gnus-group-set-info '"
-		    (prin1-to-string (nth 2 entry)) ")")))
+		    (gnus-prin1-to-string (nth 2 entry)) ")")))
       (setq gnus-group-indentation (gnus-group-group-indentation))
       (gnus-delete-line)
       (gnus-group-insert-group-line-info group)
@@ -946,7 +949,8 @@ already."
 	(let ((entry (gnus-gethash group gnus-newsrc-hashtb)))
 	  (if (and entry (not (gnus-ephemeral-group-p group)))
 	      (gnus-dribble-enter
-	       (concat "(gnus-group-set-info '" (prin1-to-string (nth 2 entry))
+	       (concat "(gnus-group-set-info '" 
+		       (gnus-prin1-to-string (nth 2 entry))
 		       ")"))))
 	;; Find all group instances.  If topics are in use, each group
 	;; may be listed in more than once.
@@ -1533,7 +1537,8 @@ ADDRESS."
     (gnus-set-active nname (cons 1 0))
     (or (gnus-ephemeral-group-p name)
 	(gnus-dribble-enter
-	 (concat "(gnus-group-set-info '" (prin1-to-string (cdr info)) ")")))
+	 (concat "(gnus-group-set-info '" 
+		 (gnus-prin1-to-string (cdr info)) ")")))
     ;; Insert the line.
     (gnus-group-insert-group-line-info nname)
     (forward-line -1)
@@ -1754,16 +1759,33 @@ and NEW-NAME will be prompted for."
 	   (list 'nndoc-address file)
 	   (list 'nndoc-article-type (or type 'guess))))))
 
-(defun gnus-group-make-dejagnus-group (&optional solid)
-  "Create an ephemeral nndejagnus group.
+(defvar nnweb-type-definition)
+(defvar gnus-group-web-type-history nil)
+(defvar gnus-group-web-search-history nil)
+(defun gnus-group-make-web-group (&optional solid)
+  "Create an ephemeral nnweb group.
 If SOLID (the prefix), create a solid group."
   (interactive "P")
+  (require 'nnweb)
   (let* ((group
 	  (if solid (read-string "Group name: ") (message-unique-id)))
+	 (type
+	  (completing-read
+	   "Search engine type: "
+	   (mapcar (lambda (elem) (list (symbol-name (car elem))))
+		   nnweb-type-definition)
+	   nil t (cons (or (car gnus-group-web-type-history)
+			   (symbol-name (caar nnweb-type-definition)))
+		       0)
+	   'gnus-group-web-type-history))
 	 (search
-	  (read-string "Search string: "))
+	  (read-string 
+	   "Search string: " 
+	   (cons (or (car gnus-group-web-search-history) "") 0)
+	   'gnus-group-web-search-history))
 	 (method
-	  `(nndejagnus ,group (nndejagnus-search ,search))))
+	  `(nnweb ,group (nnweb-search ,search)
+		  (nnweb-type ,(intern type)))))
     (if solid
 	(gnus-group-make-group group method)
       (gnus-group-read-ephemeral-group
@@ -1874,17 +1896,17 @@ score file entries for articles to include in the group."
 (defun gnus-group-enter-directory (dir)
   "Enter an ephemeral nneething group."
   (interactive "DDirectory to read: ")
-  (let* ((method (list 'nneething dir))
+  (let* ((method (list 'nneething dir '(nneething-read-only t)))
 	 (leaf (gnus-group-prefixed-name
 		(file-name-nondirectory (directory-file-name dir))
 		method))
 	 (name (gnus-generate-new-group-name leaf)))
-    (let ((nneething-read-only t))
-      (or (gnus-group-read-ephemeral-group
-	   name method t
-	   (cons (current-buffer) (if (eq major-mode 'gnus-summary-mode)
-				      'summary 'group)))
-	  (error "Couldn't enter %s" dir)))))
+    (unless (gnus-group-read-ephemeral-group
+	     name method t
+	     (cons (current-buffer)
+		   (if (eq major-mode 'gnus-summary-mode)
+		       'summary 'group)))
+      (error "Couldn't enter %s" dir))))
 
 ;; Group sorting commands
 ;; Suggested by Joe Hildebrand <hildjj@idaho.fuentez.com>.
@@ -2456,28 +2478,26 @@ If ARG is a number, it specifies which levels you are interested in
 re-scanning.  If ARG is non-nil and not a number, this will force
 \"hard\" re-reading of the active files from all servers."
   (interactive "P")
-  (save-excursion
-    (set-buffer gnus-group-buffer)
-    (run-hooks 'gnus-get-new-news-hook)
-    ;; We might read in new NoCeM messages here.
-    (when (and gnus-use-nocem 
-	       (null arg))
-      (gnus-nocem-scan-groups))
-    ;; If ARG is not a number, then we read the active file.
-    (when (and arg (not (numberp arg)))
-      (let ((gnus-read-active-file t))
-	(gnus-read-active-file))
-      (setq arg nil))
+  (run-hooks 'gnus-get-new-news-hook)
+  ;; We might read in new NoCeM messages here.
+  (when (and gnus-use-nocem 
+	     (null arg))
+    (gnus-nocem-scan-groups))
+  ;; If ARG is not a number, then we read the active file.
+  (when (and arg (not (numberp arg)))
+    (let ((gnus-read-active-file t))
+      (gnus-read-active-file))
+    (setq arg nil))
 
-    (setq arg (gnus-group-default-level arg t))
-    (if (and gnus-read-active-file (not arg))
-	(progn
-	  (gnus-read-active-file)
-	  (gnus-get-unread-articles arg))
-      (let ((gnus-read-active-file (if arg nil gnus-read-active-file)))
-	(gnus-get-unread-articles arg)))
-    (run-hooks 'gnus-after-getting-new-news-hook)
-    (gnus-group-list-groups)))
+  (setq arg (gnus-group-default-level arg t))
+  (if (and gnus-read-active-file (not arg))
+      (progn
+	(gnus-read-active-file)
+	(gnus-get-unread-articles arg))
+    (let ((gnus-read-active-file (if arg nil gnus-read-active-file)))
+      (gnus-get-unread-articles arg)))
+  (run-hooks 'gnus-after-getting-new-news-hook)
+  (gnus-group-list-groups))
 
 (defun gnus-group-get-new-news-this-group (&optional n)
   "Check for newly arrived news in the current group (and the N-1 next groups).
@@ -2490,6 +2510,8 @@ If N is negative, this group and the N-1 previous groups will be checked."
 	 group)
     (while (setq group (pop groups))
       (gnus-group-remove-mark group)
+      ;; Bypass any previous denials from the server.
+      (gnus-remove-denial (gnus-find-method-for-group group))
       (if (gnus-activate-group group 'scan)
 	  (progn
 	    (gnus-get-unread-articles-in-group
@@ -2508,26 +2530,31 @@ If N is negative, this group and the N-1 previous groups will be checked."
     ret))
 
 (defun gnus-group-fetch-faq (group &optional faq-dir)
-  "Fetch the FAQ for the current group."
+  "Fetch the FAQ for the current group.
+If given a prefix argument, prompt for the FAQ dir
+to use."
   (interactive
    (list
-    (and (gnus-group-group-name)
-	 (gnus-group-real-name (gnus-group-group-name)))
+    (gnus-group-group-name)
     (cond (current-prefix-arg
 	   (completing-read
 	    "Faq dir: " (and (listp gnus-group-faq-directory)
 			     (mapcar (lambda (file) (list file))
 				     gnus-group-faq-directory)))))))
-  (or faq-dir
-      (setq faq-dir (if (listp gnus-group-faq-directory)
-			(car gnus-group-faq-directory)
-		      gnus-group-faq-directory)))
-  (or group (error "No group name given"))
-  (let ((file (concat (file-name-as-directory faq-dir)
-		      (gnus-group-real-name group))))
-    (if (not (file-exists-p file))
-	(error "No such file: %s" file)
-      (find-file file))))
+  (unless group
+    (error "No group name given"))
+  (let ((dirs (or faq-dir gnus-group-faq-directory))
+	dir found file)
+    (unless (listp dirs)
+      (setq dirs (list dirs)))
+    (while (and (not found)
+		(setq dir (pop dirs)))
+      (setq file (concat (file-name-as-directory dir)
+			 (gnus-group-real-name group)))
+      (if (not (file-exists-p file))
+	  (gnus-message 1 "No such file: %s" file)
+	(find-file file)
+	(setq found t)))))
 
 (defun gnus-group-describe-group (force &optional group)
   "Display a description of the current newsgroup."
@@ -2662,8 +2689,7 @@ If FORCE, force saving whether it is necessary or not."
   "Force Gnus to read the .newsrc file."
   (interactive "P")
   (when (gnus-yes-or-no-p
-	 (format "Are you sure you want to read %s? "
-		 gnus-current-startup-file))
+	 (format "Are you sure you want to restart Gnus? "))
     (gnus-save-newsrc-file)
     (gnus-setup-news 'force)
     (gnus-group-list-groups arg)))

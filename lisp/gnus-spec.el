@@ -271,7 +271,7 @@
 	 (if (> (length val) ,cut)
 	     ,(if (< cut-width 0)
 		  `(substring val 0 (- (length val) ,cut))
-		`(substring val 0 ,cut))
+		`(substring val ,cut))
 	   val)))))
 
 (defun gnus-tilde-ignore-form (el ignore-value)
@@ -389,6 +389,7 @@
 	      t)
 	     (t
 	      nil)))
+	;; User-defined spec -- find the spec name.
 	(when (= (setq spec (following-char)) ?u)
 	  (forward-char 1)
 	  (setq user-defined (following-char)))

@@ -1650,12 +1650,16 @@ guess at the file type.  @xref{Document Groups}.
 
 @item G n
 @kindex G n (Group)
-@findex gnus-group-make-dejagnus-group
+@findex gnus-group-make-web-group
 @cindex DejaNews
-Make an ephemeral group based on a DejaNews search
-(@code{gnus-group-make-dejagnus-group}).  If you give a prefix to this
+@cindex Alta Vista
+@cindex InReference
+Make an ephemeral group based on a web search
+(@code{gnus-group-make-web-group}).  If you give a prefix to this
 command, make a solid group instead.  You will be prompted for the
-search.  @xref{DejaNews Searches}.
+search engine type and the search string.  Legal search engine types
+include @code{dejanews}, @code{altavista} and @code{reference}.
+@xref{Web Searches}.
 
 @item G DEL
 @kindex G DEL (Group)
@@ -1799,6 +1803,19 @@ When unsubscribing to a mailing list you should never send the
 unsubscription notice to the mailing list itself.  Instead, you'd send
 messages to the administrative address.  This parameter allows you to
 put the admin address somewhere convenient.
+
+@item display
+Elements that look like @code{(display . MODE)} says which articles to
+display on entering the group.  Legal values are:
+
+@table @code
+@item all
+Display all articles, both read and unread.
+
+@item default
+Display the default visible articles, which normally includes unread and
+ticked articles.
+@end table
 
 @item comment
 This parameter allows you to enter a arbitrary comment on the group.
@@ -2248,6 +2265,10 @@ The default is @code{2}.
 @vindex gnus-topic-mode-hook
 @code{gnus-topic-mode-hook} is called in topic minor mode buffers. 
 
+@vindex gnus-topic-display-empty-topics
+The @code{gnus-topic-display-empty-topics} says whether to display even
+topics that have no unread articles in them.  The default is @code{t}.
+
 
 @node Topic Commands
 @subsection Topic Commands
@@ -2571,12 +2592,19 @@ news.
 @item M-f
 @kindex M-f (Group)
 @findex gnus-group-fetch-faq
+@vindex gnus-group-faq-directory
 @cindex FAQ
 @cindex ange-ftp
 Try to fetch the FAQ for the current group
 (@code{gnus-group-fetch-faq}).  Gnus will try to get the FAQ from
 @code{gnus-group-faq-directory}, which is usually a directory on a
-remote machine.  @code{ange-ftp} will be used for fetching the file.
+remote machine.  This variable can also be a list of directories.  In
+that case, giving a prefix to this command will allow you to choose
+between the various sites.  @code{ange-ftp} will be used for fetching
+the file.  
+
+If fetching from the first site is unsuccessful, Gnus will attempt to go
+through @code{gnus-group-faq-directory} and try to open them one by one.
 
 @item D
 @kindex D (Group)
@@ -5413,12 +5441,6 @@ late and certainly after any highlighting.
 @findex gnus-article-remove-cr
 Remove CR (@code{gnus-article-remove-cr}).
 
-@item W L
-@kindex W L (Summary)
-@findex gnus-article-remove-trailing-blank-lines
-Remove all blank lines at the end of the article
-(@code{gnus-article-remove-trailing-blank-lines}).
-
 @item W q
 @kindex W q (Summary)
 @findex gnus-article-de-quoted-unreadable
@@ -5457,6 +5479,31 @@ Add clickable buttons to the article (@code{gnus-article-add-buttons}).
 @findex gnus-article-add-buttons-to-head
 Add clickable buttons to the article headers
 (@code{gnus-article-add-buttons-to-head}).  
+
+@item W E l
+@kindex W E l (Summary)
+@findex gnus-article-strip-leading-blank-lines
+Remove all blank lines from the beginning of the article
+(@code{gnus-article-strip-leading-blank-lines}).
+
+@item W E m
+@kindex W E m (Summary)
+@findex gnus-article-strip-multiple-blank-lines
+Replace all blank lines with empty lines and then all multiple empty
+lines with a single empty line.
+(@code{gnus-article-strip-multiple-blank-lines}).
+
+@item W E t
+@kindex W E t (Summary)
+@findex gnus-article-remove-trailing-blank-lines
+Remove all blank lines at the end of the article
+(@code{gnus-article-remove-trailing-blank-lines}).
+
+@item W E a
+@kindex W E a (Summary)
+@findex gnus-article-strip-blank-lines
+Do all the three commands above
+(@code{gnus-article-strip-blank-lines}).
 
 @end table
 
@@ -5692,6 +5739,13 @@ can just press @kbd{^} or @kbd{A r}
 (@code{gnus-summary-refer-parent-article}).  If everything goes well,
 you'll get the parent.  If the parent is already displayed in the
 summary buffer, point will just move to this article.
+
+If given a positive numerical prefix, fetch that many articles back into
+the ancestry.  If given a negative numerical prefix, fetch just that
+ancestor.  So if you say @kbd{3 ^}, Gnus will fetch the parent, the
+grandparent and the grandgrandparent of the current article.  If you say
+@kbd{-3 ^}, Gnus will only fetch the grandgrandparent of the current
+article. 
 
 @findex gnus-summary-refer-references
 @kindex A R (Summary)
@@ -6075,6 +6129,21 @@ editing and make the changes permanent, type @kbd{C-c C-c}
 If you want to re-spool an article, you might be curious as to what group
 the article will end up in before you do the re-spooling.  This command
 will tell you (@code{gnus-summary-respool-query}). 
+
+@item B p
+@kindex B p (Summary)
+@findex gnus-summary-article-posted-p
+Some people have a tendency to send you "courtesy" copies when they
+follow up to articles you have posted.  These usually have a
+@code{Newsgroups} header in them, but not always.  This command
+(@code{gnus-summary-article-posted-p}) will try to fetch the current
+article from your news server (or rather, from
+@code{gnus-refer-article-method} or @code{gnus-select-method}) and will
+report back whether it found the article or not.  Even if it says that
+it didn't find the article, it may have been posted anyway---mail
+propagation is much faster than news propagation, and the news copy may
+just not have arrived yet.
+
 @end table
 
 @vindex gnus-move-split-methods
@@ -7579,9 +7648,28 @@ server:
 @code{nntp-server-opened-hook} is run after a connection has been made.
 It can be used to send commands to the @sc{nntp} server after it has
 been contacted.  By default is sends the command @code{MODE READER} to
-the server with the @code{nntp-send-mode-reader} function.  Another
-popular function is @code{nntp-send-authinfo}, which will prompt you for
-an @sc{nntp} password and stuff.
+the server with the @code{nntp-send-mode-reader} function. 
+
+@item nntp-authinfo-function 
+@vindex nntp-authinfo-function 
+This function will be used to send @samp{AUTHINFO} to the @sc{nntp}
+server.  Available functions include:
+
+@table @code
+@item nntp-send-authinfo
+@findex nntp-send-authinfo
+This function will used you current login name as the user name and will
+prompt you for the password.  This is the default.
+
+@item nntp-send-nosy-authinfo
+@findex nntp-send-nosy-authinfo
+This function will prompt you for both user name and password.
+
+@item nntp-send-authinfo-from-file
+@findex nntp-send-authinfo-from-file
+This function will use your current login name as the user name and will
+read the @sc{nntp} password from @file{~/.nntp-authinfo}.
+@end table
 
 @item nntp-server-action-alist 
 @vindex nntp-server-action-alist 
@@ -7893,6 +7981,10 @@ something beginning with @samp{mail}, by the way), and the second
 element is a regular expression used on the header of each mail to
 determine if it belongs in this mail group.
 
+If the first element is the special symbol @code{junk}, then messages
+that match the regexp will disappear into the aether.  Use with
+extreme caution. 
+
 The second element can also be a function.  In that case, it will be
 called narrowed to the headers with the first element of the rule as the
 argument.  It should return a non-@code{nil} value if it thinks that the
@@ -8000,6 +8092,17 @@ other spool files.
 This is run in a buffer that holds all the new incoming mail, and can be
 used for, well, anything, really.
 
+@vindex nnmail-split-hook
+@item nnmail-split-hook
+@findex article-decode-rfc1522
+@findex RFC1522 decoding
+Hook run in the buffer where the mail headers of each message is kept
+just before the splitting based on these headers is done.  The hook is
+free to modify the buffer contents in any way it sees fit---the buffer
+is discarded after the splitting has been done, and no changes perfromed
+in the buffer will show up in any files.  @code{article-decode-rfc1522}
+is one likely function to add to this hook.
+
 @vindex nnmail-pre-get-new-mail-hook
 @vindex nnmail-post-get-new-mail-hook
 @item nnmail-pre-get-new-mail-hook
@@ -8072,7 +8175,7 @@ Function called to delete files.  It is @code{delete-file} by default.
 If the rather simple, standard method for specifying how to split mail
 doesn't allow you to do what you want, you can set
 @code{nnmail-split-methods} to @code{nnmail-split-fancy}.  Then you can
-play with the @code{nnmail-split-fancy} variable. 
+play with the @code{nnmail-split-fancy} variable.
 
 Let's look at an example value of this variable first:
 
@@ -8098,7 +8201,7 @@ Let's look at an example value of this variable first:
 
 This variable has the format of a @dfn{split}.  A split is a (possibly)
 recursive structure where each split may contain other splits.  Here are
-the four possible split syntaxes:
+the five possible split syntaxes:
 
 @table @dfn
 
@@ -8119,6 +8222,9 @@ more groups.
 @item (& SPLIT...)
 If the split is a list, and the first element is @code{&}, then process
 all SPLITs in the list.
+
+@item junk
+Junk this article.
 @end table
 
 In these splits, FIELD must match a complete field name.  VALUE must
@@ -8662,7 +8768,7 @@ newsgroups.
 * Anything Groups::       Dired?  Who needs dired?
 * Document Groups::       Single files can be the basis of a group.
 * SOUP::                  Reading @sc{SOUP} packets ``offline''.
-* DejaNews Searches::     Creating groups from articles that match a string.
+* Web Searches::          Creating groups from articles that match a string.
 * Mail-To-News Gateways:: Posting articles via mail-to-news gateways.
 @end menu
 
@@ -9210,10 +9316,12 @@ system you just use the first line.  If you only want mail to be
 @sc{soup}ed you use the second.
 
 
-@node DejaNews Searches
-@subsection DejaNews Searches
-@cindex nndejagnus
+@node Web Searches
+@subsection Web Searches
+@cindex nnweb
 @cindex DejaNews
+@cindex Alta Vista
+@cindex InReference
 @cindex Usenet searches
 @cindex searching the Usenet
 
@@ -9223,42 +9331,76 @@ those, like, Web browsers, and you, like, have to, rilly, like, look at
 the commercials, so, like, with Gnus you can do @emph{rad}, rilly,
 searches without having to use a browser.
 
-The @code{nndejagnus} (hey, I wonder if they're going to sue me over
-copyright infringement?) backend allows an easy interface to the mighty
-search engine.  You create an @code{nndejagnus} group, enter a search
-pattern, and then enter the group and read the articles like you would
-any normal group.  The @kbd{G n} command in the group buffer
-(@pxref{Foreign Groups}) will do this in an easy-to-use fashion.
+The @code{nnweb} backend allows an easy interface to the mighty search
+engine.  You create an @code{nnweb} group, enter a search pattern, and
+then enter the group and read the articles like you would any normal
+group.  The @kbd{G n} command in the group buffer (@pxref{Foreign
+Groups}) will do this in an easy-to-use fashion.
 
-@code{nndejagnus} groups don't really lend themselves to being solid
+@code{nnweb} groups don't really lend themselves to being solid
 groups---they have a very fleeting idea of article numbers.  In fact,
-each time you enter an @code{nndejagnus} group (not changing the search
+each time you enter an @code{nnweb} group (not even changing the search
 pattern), you are likely to get the articles ordered in a different
 manner.  Not even using duplicate suppression (@code{Duplicate
-Suppression}) will help, since @code{nndejagnus} doesn't even know the
-@code{Message-ID} of the articles before reading them.  The only
-possible way to keep track of which articles you've read is by scoring
-on the @code{Date} header---mark all articles that were posted before
-the last date you read the group as read.
+Suppression}) will help, since @code{nnweb} doesn't even know the
+@code{Message-ID} of the articles before reading them using some search
+engines (DejaNews, for instance).  The only possible way to keep track
+of which articles you've read is by scoring on the @code{Date}
+header---mark all articles that were posted before the last date you
+read the group as read.
+
+If the search engine changes its output substantially, @code{nnweb}
+won't be able to parse it and will fail.  One could hardly fault the Web
+providers if they were to do this---their @emph{raison d'etre} is to
+make money off of advertisements, not to provide services to the
+community.  Since @code{nnweb} washes the ads off all the articles, one
+might think that the providers might be somewhat miffed.  We'll see.
 
 You must have the @code{url} and @code{w3} package installed to be able
-to use @code{nndejagnus}.
+to use @code{nnweb}.
 
 Virtual server variables:
 
 @table @code
-@item nndejagnus-address
-@vindex nndejagnus-address
-The address of the DejaNews search engine.  The default is
-@samp{http://www.dejagnus.com}. 
+@item nnweb-type
+@vindex nnweb-type
+What search engine type is being used.  The currently supported types
+are @code{dejanews}, @code{altavista} and @code{reference}.
 
-@item nndejagnus-search
-@vindex nndejagnus-search
-The search string to feed to DejaNews.
+@item nnweb-search
+@vindex nnweb-search
+The search string to feed to the search engine.
 
-@item nndejagnus-max-hits
-@vindex nndejagnus-max-hits
-Maximum number of hits per search to display.  The default is 100.
+@item nnweb-max-hits
+@vindex nnweb-max-hits
+Advisory maximum number of hits per search to display.  The default is
+100.
+
+@item nnweb-type-definition
+@vindex nnweb-type-definition
+Type-to-definition alist.  This alist says what @code{nnweb} should do
+with the various search engine types.  The following elements must be
+present: 
+
+@table @code
+@item article
+Function to decode the article and provide something that Gnus
+understands. 
+
+@item map
+Function to create an article number to message header and URL alist. 
+
+@item search
+Function to send the search string to the search engine.
+
+@item address
+The address the aforementioned function should send the search string
+to. 
+
+@item id
+Format string URL to fetch an article by @code{Message-ID}.
+@end table
+
 @end table
 
 
@@ -10269,9 +10411,16 @@ word that appears in subjects of articles that are marked with
 @code{gnus-read-mark} will result in a score rule that increase the
 score with 30 points.
 
+@vindex gnus-default-ignored-adaptive-words
 @vindex gnus-ignored-adaptive-words
-Words that appear in the @code{gnus-ignored-adaptive-words} list will be
-ignored.
+Words that appear in the @code{gnus-default-ignored-adaptive-words} list
+will be ignored.  If you wish to add more words to be ignored, use the
+@code{gnus-ignored-adaptive-words} list instead.
+
+@vindex gnus-adaptive-word-syntax-table
+When the scoring is done, @code{gnus-adaptive-word-syntax-table} is the
+syntax table in effect.  It is similar to the standard syntax table, but
+it considers numbers to be non-word-consituant characters.
 
 After using this scheme for a while, it might be nice to write a
 @code{gnus-psychoanalyze-user} command to go through the rules and see

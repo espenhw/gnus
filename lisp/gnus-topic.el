@@ -53,6 +53,9 @@ with some simple extensions.
 (defvar gnus-topic-indent-level 2
   "*How much each subtopic should be indented.")
 
+(defvar gnus-topic-display-empty-topics t
+  "*If non-nil, display the topic lines even of topics that have no unread articles.")
+
 ;; Internal variables.
 
 (defvar gnus-topic-active-topology nil)
@@ -413,7 +416,9 @@ articles in the topic and its subtopics."
 	(incf unread (car entry))))
     (goto-char beg)
     ;; Insert the topic line.
-    (unless silent
+    (when (and (not silent)
+	       (or gnus-topic-display-empty-topics
+		   (not (zerop unread))))
       (gnus-extent-start-open (point))
       (gnus-topic-insert-topic-line 
        (car type) visiblep

@@ -324,13 +324,10 @@ Finds out what articles are to be part of the nnkiboze groups."
     (save-buffer)
     (kill-buffer (current-buffer))
     ;; We save the kiboze newsrc for this group.
-    (set-buffer (get-buffer-create "*nnkiboze work*"))
-    (buffer-disable-undo (current-buffer))
-    (erase-buffer)
-    (insert "(setq nnkiboze-newsrc '" (prin1-to-string nnkiboze-newsrc)
-	    ")\n")
-    (write-file newsrc-file)
-    (kill-buffer (current-buffer))
+    (nnheader-temp-write newsrc-file
+      (insert "(setq nnkiboze-newsrc '")
+      (gnus-prin1 nnkiboze-newsrc)
+      (insert ")\n"))
     (switch-to-buffer gnus-group-buffer)
     (gnus-group-list-groups 5 nil)))
     

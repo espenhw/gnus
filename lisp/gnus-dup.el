@@ -84,8 +84,7 @@ seen in the same session.")
 (defun gnus-dup-save ()
   "Save the duplicate suppression list."
   (nnheader-temp-write gnus-duplicate-file
-    (prin1 `(setq gnus-duplicate-file ',gnus-duplicate-file)
-	   (current-buffer))))
+    (gnus-prin1 `(setq gnus-duplicate-file ',gnus-duplicate-file))))
 
 ;;;
 ;;; Interface functions

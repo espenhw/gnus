@@ -824,14 +824,10 @@ recommend using both scores and grouplens predictions together."
 	  (if (null arg) (not gnus-grouplens-mode)
 	    (> (prefix-numeric-value arg) 0)))
     (when gnus-grouplens-mode
-      (if (not (fboundp 'make-local-hook))
-	  (add-hook 'gnus-select-article-hook 'grouplens-do-time)
-	(make-local-hook 'gnus-select-article-hook)
-	(add-hook 'gnus-select-article-hook 'grouplens-do-time nil 'local))
-      (if (not (fboundp 'make-local-hook))
-	  (add-hook 'gnus-exit-group-hook 'bbb-put-ratings)
-	(make-local-hook 'gnus-exit-group-hook)
-	(add-hook 'gnus-exit-group-hook 'bbb-put-ratings nil 'local))
+      (gnus-make-local-hook 'gnus-select-article-hook)
+      (gnus-add-hook 'gnus-select-article-hook 'grouplens-do-time nil 'local)
+      (gnus-make-local-hook 'gnus-exit-group-hook)
+      (gnus-add-hook 'gnus-exit-group-hook 'bbb-put-ratings nil 'local)
       (make-local-variable 'gnus-score-find-score-files-function)
       (cond ((eq gnus-grouplens-override-scoring 'combine)
 	     ;; either add bbb-buld-mid-scores-alist to a list
@@ -851,11 +847,12 @@ recommend using both scores and grouplens predictions together."
 	    ;; default is to override
 	    (t (setq gnus-score-find-score-files-function 
 		     'bbb-build-mid-scores-alist)))
+
+      ;; Change how summary lines look
       (make-local-variable 'gnus-summary-line-format)
-      (setq gnus-summary-line-format 
-	    gnus-summary-grouplens-line-format)
       (make-local-variable 'gnus-summary-line-format-spec)
-      (setq gnus-summary-line-format nil)
+      (setq gnus-summary-line-format gnus-summary-grouplens-line-format)
+      (setq gnus-summary-line-format-spec nil)
       (gnus-update-format-specifications nil 'summary)
       (gnus-update-summary-mark-positions)
 

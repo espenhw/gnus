@@ -179,14 +179,16 @@ If you want to run a special decoding program like nkf, use this hook.")
      article-treat-overstrike
      (article-fill . gnus-article-word-wrap)
      article-remove-cr
-     article-remove-trailing-blank-lines
      article-display-x-face
      article-de-quoted-unreadable
      article-mime-decode-quoted-printable
      article-hide-pgp
      article-hide-pem
      article-hide-signature
+     article-remove-trailing-blank-lines
      article-strip-leading-blank-lines
+     article-strip-multiple-blank-lines
+     article-strip-blank-lines
      article-date-local
      article-date-original
      article-date-lapsed
@@ -297,7 +299,8 @@ Directory to save to is default to `gnus-article-save-directory'."
 		   gnus-current-headers gnus-newsgroup-last-rmail)))
     (setq filename (gnus-read-save-file-name
 		    "Save %s in rmail file:" default-name filename))
-    (make-directory (file-name-directory filename) t)
+    (unless (file-exists-p (file-name-directory filename))
+      (make-directory (file-name-directory filename) t))
     (gnus-eval-in-buffer-window gnus-original-article-buffer
       (save-excursion
 	(save-restriction
@@ -321,7 +324,8 @@ Directory to save to is default to `gnus-article-save-directory'."
 	  (expand-file-name filename
 			    (and default-name
 				 (file-name-directory default-name))))
-    (make-directory (file-name-directory filename) t)
+    (unless (file-exists-p (file-name-directory filename))
+      (make-directory (file-name-directory filename) t))
     (gnus-eval-in-buffer-window gnus-original-article-buffer
       (save-excursion
 	(save-restriction
@@ -344,7 +348,8 @@ Directory to save to is default to `gnus-article-save-directory'."
 		   gnus-current-headers gnus-newsgroup-last-file)))
     (setq filename (gnus-read-save-file-name
 		    "Save %s in file:" default-name filename))
-    (make-directory (file-name-directory filename) t)
+    (unless (file-exists-p (file-name-directory filename))
+      (make-directory (file-name-directory filename) t))
     (gnus-eval-in-buffer-window gnus-original-article-buffer
       (save-excursion
 	(save-restriction
@@ -364,7 +369,8 @@ The directory to save in defaults to `gnus-article-save-directory'."
 		   gnus-current-headers gnus-newsgroup-last-file)))
     (setq filename (gnus-read-save-file-name
 		    "Save %s body in file:" default-name filename))
-    (make-directory (file-name-directory filename) t)
+    (unless (file-exists-p (file-name-directory filename))
+      (make-directory (file-name-directory filename) t))
     (gnus-eval-in-buffer-window gnus-original-article-buffer
       (save-excursion
 	(save-restriction

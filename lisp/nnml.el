@@ -322,16 +322,15 @@ all. This may very well take some time.")
     (if (stringp group)
 	(and 
 	 (nnmail-activate 'nnml)
-	 ;; We trick the choosing function into believing that only one
-	 ;; group is available.  
-	 (let ((nnmail-split-methods (list (list group ""))))
-	   (setq result (car (nnml-save-mail))))
+	 (setq result (car (nnml-save-mail 
+			    (list (cons group (nnml-active-number group))))))
 	 (progn
 	   (nnmail-save-active nnml-group-alist nnml-active-file)
 	   (and last (nnml-save-nov))))
       (and
        (nnmail-activate 'nnml)
-       (setq result (car (nnml-save-mail)))
+       (setq result (car (nnml-save-mail
+			  (nnmail-article-group 'nnml-active-number))))
        (progn
 	 (nnmail-save-active nnml-group-alist nnml-active-file)
 	 (and last (nnml-save-nov)))))
@@ -569,10 +568,9 @@ all. This may very well take some time.")
       (nnheader-message 5 "Creating mail directory %s" (car dirs))
       (setq dirs (cdr dirs)))))
 	     
-(defun nnml-save-mail ()
+(defun nnml-save-mail (group-art)
   "Called narrowed to an article."
-  (let ((group-art (nreverse (nnmail-article-group 'nnml-active-number)))
-	chars headers)
+  (let (chars headers)
     (setq chars (nnmail-insert-lines))
     (nnmail-insert-xref group-art)
     (run-hooks 'nnmail-prepare-save-mail-hook)

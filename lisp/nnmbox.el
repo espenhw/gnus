@@ -186,6 +186,7 @@
 		       (car active) (cdr active) group)))))
 
 (deffoo nnmbox-request-scan (&optional group server)
+  (nnmbox-possibly-change-newsgroup group server)
   (nnmbox-read-mbox)
   (nnmail-get-new-mail 
    'nnmbox 
@@ -301,7 +302,10 @@
        (forward-line -1)
        (while (re-search-backward "^X-Gnus-Newsgroup: " nil t)
 	 (delete-region (point) (progn (forward-line 1) (point))))
-       (setq result (nnmbox-save-mail (and (stringp group) group))))
+       (setq result (nnmbox-save-mail
+		     (if (stringp group)
+			 (list (cons group (nnmbox-active-number group)))
+		       (nnmail-article-group 'nnmbox-active-number)))))
      (save-excursion
        (set-buffer nnmbox-mbox-buffer)
        (goto-char (point-max))
@@ -431,12 +435,9 @@
 	       (string-to-int
 		(buffer-substring (match-beginning 2) (match-end 2)))))))
 
-(defun nnmbox-save-mail (&optional group)
+(defun nnmbox-save-mail (group-art)
   "Called narrowed to an article."
-  (let* ((nnmail-split-methods 
-	  (if group (list (list group "")) nnmail-split-methods))
-	 (group-art (nreverse (nnmail-article-group 'nnmbox-active-number)))
-	 (delim (concat "^" message-unix-mail-delimiter)))
+  (let ((delim (concat "^" message-unix-mail-delimiter)))
     (goto-char (point-min))
     ;; This might come from somewhere else.
     (unless (looking-at delim)
@@ -528,7 +529,8 @@
 	      (save-excursion
 		(save-restriction
 		  (narrow-to-region start end)
-		  (nnmbox-save-mail))))
+		  (nnmbox-save-mail 
+		   (nnmail-article-group 'nnmbox-active-number)))))
 	  (goto-char end))))))
 
 (provide 'nnmbox)

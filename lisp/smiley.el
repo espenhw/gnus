@@ -103,6 +103,11 @@ If this is a symbol, take its value.")
 (defvar smiley-glyph-cache nil)
 (defvar smiley-running-xemacs (string-match "XEmacs" emacs-version))
 
+(defvar smiley-map (make-sparse-keymap "smiley-keys")
+ "keymap to toggle smiley states")
+
+(define-key smiley-map [(button2)] 'smiley-toggle-extent)
+
 (defun smiley-create-glyph (smiley pixmap)
   (and
    smiley-running-xemacs
@@ -127,6 +132,23 @@ If this is a symbol, take its value.")
   "Smilify the region between point and mark."
   (interactive "r")
   (smiley-buffer (current-buffer) beg end))
+
+(defun smiley-toggle-extent (event)
+  "Toggle smiley at given point"
+  (interactive "e")
+  (let* ((ant (event-glyph-extent event))
+	 (pt (event-closest-point event))
+	 ext)
+    (if (annotationp ant)
+	(when (extentp (setq ext (extent-property ant 'smiley-extent)))
+	  (set-extent-property ext 'invisible nil)
+	  (hide-annotation ant))
+      (if pt
+	  (while (setq ext (extent-at pt (event-buffer event) nil ext 'at))
+	    (when (annotationp (setq ant 
+				     (extent-property ext 'smiley-annotation)))
+	      (reveal-annotation ant)
+	      (set-extent-property ext 'invisible t)))))))
 
 ;;;###autoload
 (defun smiley-buffer (&optional buffer st nd)
@@ -155,11 +177,20 @@ If this is a symbol, take its value.")
 					       file)))
 	      (when glyph
 		(mapcar 'delete-annotation (annotations-at end))
-		(let ((ext (make-extent start end)))
+		(let ((ext (make-extent start end))
+		      (ant (make-annotation glyph end 'text)))
+		  ;; set text extent params
 		  (set-extent-property ext 'invisible t)
 		  (set-extent-property ext 'end-open t)
-		  (set-extent-property ext 'intangible t))
-		(make-annotation glyph end 'text)
+		  (set-extent-property ext 'keymap smiley-map)
+		  (set-extent-property ext 'mouse-face gnus-article-mouse-face)
+;		  (set-extent-property ext 'intangible t)
+		  ;; set annotation params
+		  (set-extent-property ant 'mouse-face gnus-article-mouse-face)
+		  (set-extent-property ant 'keymap smiley-map)
+		  ;; remember each other
+		  (set-extent-property ant 'smiley-extent ext)
+		  (set-extent-property ext 'smiley-annotation ant))
 		(when (smiley-end-paren-p start end)
 		  (make-annotation ")" end 'text))
 		(goto-char end)))))))))

@@ -289,13 +289,13 @@
   (if (stringp group)
       (and 
        (nnmail-activate 'nnmh)
-       ;; We trick the choosing function into believing that only one
-       ;; group is available.  
-       (let ((nnmail-split-methods (list (list group ""))))
-	 (car (nnmh-save-mail noinsert))))
+       (car (nnmh-save-mail 
+	     (list (cons group (nnmh-active-number group)))
+	     noinsert)))
     (and
      (nnmail-activate 'nnmh)
-     (car (nnmh-save-mail noinsert)))))
+     (car (nnmh-save-mail (nnmail-article-group 'nnmh-active-number)
+			  noinsert)))))
 
 (deffoo nnmh-request-replace-article (article group buffer)
   (nnmh-possibly-change-directory group)
@@ -313,21 +313,20 @@
 
 (deffoo nnmh-request-create-group (group &optional server) 
   (nnmail-activate 'nnmh)
-  (or (assoc group nnmh-group-alist)
-      (let (active)
-	(setq nnmh-group-alist (cons (list group (setq active (cons 1 0)))
-				     nnmh-group-alist))
-	(nnmh-possibly-create-directory group)
-	(nnmh-possibly-change-directory group server)
-	(let ((articles (mapcar
-			 (lambda (file)
-			   (string-to-int file))
-			 (directory-files 
-			  nnmh-current-directory nil "^[0-9]+$"))))
-	  (and articles
-	       (progn
-		 (setcar active (apply 'min articles))
-		 (setcdr active (apply 'max articles)))))))
+  (unless (assoc group nnmh-group-alist)
+    (let (active)
+      (push (list group (setq active (cons 1 0)))
+	    nnmh-group-alist)
+      (nnmh-possibly-create-directory group)
+      (nnmh-possibly-change-directory group server)
+      (let ((articles (mapcar
+		       (lambda (file)
+			 (string-to-int file))
+		       (directory-files 
+			nnmh-current-directory nil "^[0-9]+$"))))
+	(when articles
+	  (setcar active (apply 'min articles))
+	  (setcdr active (apply 'max articles))))))
   t)
 
 (deffoo nnmh-request-delete-group (group &optional force server)
@@ -406,44 +405,53 @@
       (nnheader-message 5 "Creating mail directory %s" (car dirs))
       (setq dirs (cdr dirs)))))
 	     
-(defun nnmh-save-mail (&optional noinsert)
+(defun nnmh-save-mail (group-art &optional noinsert)
   "Called narrowed to an article."
-  (let ((group-art (nreverse (nnmail-article-group 'nnmh-active-number))))
-    (unless noinsert
-      (nnmail-insert-lines)
-      (nnmail-insert-xref group-art))
-    (run-hooks 'nnmail-prepare-save-mail-hook)
-    (run-hooks 'nnmh-prepare-save-mail-hook)
-    (goto-char (point-min))
-    (while (looking-at "From ")
-      (replace-match "X-From-Line: ")
-      (forward-line 1))
-    ;; We save the article in all the newsgroups it belongs in.
-    (let ((ga group-art)
-	  first)
-      (while ga
-	(nnmh-possibly-create-directory (caar ga))
-	(let ((file (concat (nnmail-group-pathname 
-			     (caar ga) nnmh-directory) 
-			    (int-to-string (cdar ga)))))
-	  (if first
-	      ;; It was already saved, so we just make a hard link.
-	      (funcall nnmail-crosspost-link-function first file t)
-	    ;; Save the article.
-	    (nnmail-write-region (point-min) (point-max) file nil nil)
-	    (setq first file)))
-	(setq ga (cdr ga))))
-    group-art))
+  (unless noinsert
+    (nnmail-insert-lines)
+    (nnmail-insert-xref group-art))
+  (run-hooks 'nnmail-prepare-save-mail-hook)
+  (run-hooks 'nnmh-prepare-save-mail-hook)
+  (goto-char (point-min))
+  (while (looking-at "From ")
+    (replace-match "X-From-Line: ")
+    (forward-line 1))
+  ;; We save the article in all the newsgroups it belongs in.
+  (let ((ga group-art)
+	first)
+    (while ga
+      (nnmh-possibly-create-directory (caar ga))
+      (let ((file (concat (nnmail-group-pathname 
+			   (caar ga) nnmh-directory) 
+			  (int-to-string (cdar ga)))))
+	(if first
+	    ;; It was already saved, so we just make a hard link.
+	    (funcall nnmail-crosspost-link-function first file t)
+	  ;; Save the article.
+	  (nnmail-write-region (point-min) (point-max) file nil nil)
+	  (setq first file)))
+      (setq ga (cdr ga))))
+  group-art)
 
 (defun nnmh-active-number (group)
   "Compute the next article number in GROUP."
   (let ((active (cadr (assoc group nnmh-group-alist))))
-    ;; The group wasn't known to nnmh, so we just create an active
-    ;; entry for it.   
-    (or active
-	(progn
-	  (setq active (cons 1 0))
-	  (setq nnmh-group-alist (cons (list group active) nnmh-group-alist))))
+    (unless active
+      ;; The group wasn't known to nnmh, so we just create an active
+      ;; entry for it.   
+      (setq active (cons 1 0))
+      (push (list group active) nnmh-group-alist)
+      ;; Find the highest number in the group.
+      (let ((files (sort
+		    (mapcar
+		     (lambda (f)
+		       (string-to-int f))
+		     (directory-files
+		      (nnmail-group-pathname group nnmh-directory)
+		      nil "^[0-9]+$")
+		     '>))))
+	(when files
+	  (setcdr active (car files)))))
     (setcdr active (1+ (cdr active)))
     (while (file-exists-p
 	    (concat (nnmail-group-pathname group nnmh-directory)
@@ -462,60 +470,58 @@
 	 (nnmh-file (concat dir ".nnmh-articles"))
 	 new articles)
     ;; Load the .nnmh-articles file.
-    (if (file-exists-p nnmh-file)
-	(setq articles 
-	      (let (nnmh-newsgroup-articles)
-		(condition-case nil (load nnmh-file nil t t) (error nil))
-		nnmh-newsgroup-articles)))
+    (when (file-exists-p nnmh-file)
+      (setq articles 
+	    (let (nnmh-newsgroup-articles)
+	      (condition-case nil (load nnmh-file nil t t) (error nil))
+	      nnmh-newsgroup-articles)))
     ;; Add all new articles to the `new' list.
     (let ((art files))
       (while art
-	(if (not (assq (car art) articles)) (setq new (cons (car art) new)))
+	(unless (assq (car art) articles)
+	  (setq new (cons (car art) new)))
 	(setq art (cdr art))))
     ;; Remove all deleted articles.
     (let ((art articles))
       (while art
-	(if (not (memq (caar art) files))
-	    (setq articles (delq (car art) articles)))
+	(unless (memq (caar art) files)
+	  (setq articles (delq (car art) articles)))
 	(setq art (cdr art))))
-    ;; Check whether the highest-numbered articles really are the ones
-    ;; that Gnus thinks they are by looking at the time-stamps.
-    (let ((art articles))
-      (while (and art 
-		  (not (equal 
-			(nth 5 (file-attributes 
-				(concat dir (int-to-string (caar art)))))
-			(cdar art))))
-	(setq articles (delq (car art) articles))
-	(setq new (cons (caar art) new))
-	(setq art (cdr art))))
+    ;; Check whether the articles really are the ones that Gnus thinks
+    ;; they are by looking at the time-stamps.
+    (let ((arts articles)
+	  art)
+      (while (setq art (pop arts))
+	(when (not (equal
+		    (nth 5 (file-attributes 
+			    (concat dir (int-to-string (car art)))))
+		    (cdr art)))
+	  (setq articles (delq art articles))
+	  (push (car art) new))))
     ;; Go through all the new articles and add them, and their
-    ;; time-stamps to the list.
-    (let ((n new))
-      (while n
-	(setq articles 
-	      (cons (cons 
-		     (car n)
-		     (nth 5 (file-attributes 
-			     (concat dir (int-to-string (car n))))))
-		    articles))
-	(setq n (cdr n))))
+    ;; time-stamps, to the list.
+    (setq articles
+	  (nconc articles
+		 (mapcar
+		  (lambda (art)
+		    (cons art
+			  (nth 5 (file-attributes
+				  (concat dir (int-to-string art))))))
+		  new)))
     ;; Make Gnus mark all new articles as unread.
-    (or (zerop (length new))
-	(gnus-make-articles-unread 
-	 (gnus-group-prefixed-name group (list 'nnmh ""))
-	 (setq new (sort new '<))))
+    (when new
+      (gnus-make-articles-unread 
+       (gnus-group-prefixed-name group (list 'nnmh ""))
+       (setq new (sort new '<))))
     ;; Sort the article list with highest numbers first.
     (setq articles (sort articles (lambda (art1 art2) 
 				    (> (car art1) (car art2)))))
     ;; Finally write this list back to the .nnmh-articles file.
-    (save-excursion
-      (set-buffer (get-buffer-create "*nnmh out*"))
+    (nnheader-temp-write nnmh-file
       (insert ";; Gnus article active file for " group "\n\n")
       (insert "(setq nnmh-newsgroup-articles '")
-      (insert (prin1-to-string articles) ")\n")
-      (nnmail-write-region (point-min) (point-max) nnmh-file nil 'nomesg)
-      (kill-buffer (current-buffer)))))
+      (gnus-prin1 articles)
+      (insert ")\n"))))
 
 (defun nnmh-deletable-article-p (group article)
   "Say whether ARTICLE in GROUP can be deleted."

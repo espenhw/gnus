@@ -721,9 +721,9 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
 
     ;; If we don't read the complete active file, we fill in the
     ;; hashtb here.
-    (if (or (null gnus-read-active-file)
-	    (eq gnus-read-active-file 'some))
-	(gnus-update-active-hashtb-from-killed))
+    (when (or (null gnus-read-active-file)
+	      (eq gnus-read-active-file 'some))
+      (gnus-update-active-hashtb-from-killed))
 
     ;; Read the active file and create `gnus-active-hashtb'.
     ;; If `gnus-read-active-file' is nil, then we just create an empty
@@ -733,8 +733,8 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
 	 (not level)
 	 (gnus-read-active-file))
 
-    (or gnus-active-hashtb
-	(setq gnus-active-hashtb (make-vector 4095 0)))
+    (unless gnus-active-hashtb
+      (setq gnus-active-hashtb (make-vector 4095 0)))
 
     ;; Initialize the cache.
     (when gnus-use-cache
@@ -750,16 +750,16 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
     (gnus-update-format-specifications)
 
     ;; See whether we need to read the description file.
-    (if (and (string-match "%[-,0-9]*D" gnus-group-line-format)
-	     (not gnus-description-hashtb)
-	     (not dont-connect)
-	     gnus-read-active-file)
-	(gnus-read-all-descriptions-files))
+    (when (and (string-match "%[-,0-9]*D" gnus-group-line-format)
+	       (not gnus-description-hashtb)
+	       (not dont-connect)
+	       gnus-read-active-file)
+      (gnus-read-all-descriptions-files))
 
     ;; Find new newsgroups and treat them.
-    (if (and init gnus-check-new-newsgroups (not level)
-	     (gnus-check-server gnus-select-method))
-	(gnus-find-new-newsgroups))
+    (when (and init gnus-check-new-newsgroups (not level)
+	       (gnus-check-server gnus-select-method))
+      (gnus-find-new-newsgroups))
 
     ;; We might read in new NoCeM messages here.
     (when (and gnus-use-nocem 
@@ -771,10 +771,10 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
     (let ((gnus-read-active-file (and (not level) gnus-read-active-file)))
       (gnus-get-unread-articles level))
 
-    (if (and init gnus-check-bogus-newsgroups
-	     gnus-read-active-file (not level)
-	     (gnus-server-opened gnus-select-method))
-	(gnus-check-bogus-newsgroups))))
+    (when (and init gnus-check-bogus-newsgroups
+	       gnus-read-active-file (not level)
+	       (gnus-server-opened gnus-select-method))
+      (gnus-check-bogus-newsgroups))))
 
 (defun gnus-find-new-newsgroups (&optional arg)
   "Search for new newsgroups and add them.
@@ -2087,31 +2087,33 @@ If FORCE is non-nil, the .newsrc file is read."
 
 (defun gnus-gnus-to-quick-newsrc-format ()
   "Insert Gnus variables such as gnus-newsrc-alist in lisp format."
-  (insert ";; Gnus startup file.\n")
-  (insert ";; Never delete this file - touch .newsrc instead to force Gnus\n")
-  (insert ";; to read .newsrc.\n")
-  (insert "(setq gnus-newsrc-file-version "
-	  (prin1-to-string gnus-version) ")\n")
-  (let* ((gnus-killed-list
-	  (if (and gnus-save-killed-list
-		   (stringp gnus-save-killed-list))
-	      (gnus-strip-killed-list)
-	    gnus-killed-list))
-	 (variables
-	  (if gnus-save-killed-list gnus-variable-list
-	    ;; Remove the `gnus-killed-list' from the list of variables
-	    ;; to be saved, if required.
-	    (delq 'gnus-killed-list (copy-sequence gnus-variable-list))))
-	 ;; Peel off the "dummy" group.
-	 (gnus-newsrc-alist (cdr gnus-newsrc-alist))
-	 variable)
-    ;; Insert the variables into the file.
-    (while variables
-      (when (and (boundp (setq variable (pop variables)))
-		 (symbol-value variable))
-	(insert "(setq " (symbol-name variable) " '")
-	(prin1 (symbol-value variable) (current-buffer))
-	(insert ")\n")))))
+  (let ((print-quoted t))
+    (insert ";; Gnus startup file.\n")
+    (insert
+     ";; Never delete this file - touch .newsrc instead to force Gnus\n")
+    (insert ";; to read .newsrc.\n")
+    (insert "(setq gnus-newsrc-file-version "
+	    (prin1-to-string gnus-version) ")\n")
+    (let* ((gnus-killed-list
+	    (if (and gnus-save-killed-list
+		     (stringp gnus-save-killed-list))
+		(gnus-strip-killed-list)
+	      gnus-killed-list))
+	   (variables
+	    (if gnus-save-killed-list gnus-variable-list
+	      ;; Remove the `gnus-killed-list' from the list of variables
+	      ;; to be saved, if required.
+	      (delq 'gnus-killed-list (copy-sequence gnus-variable-list))))
+	   ;; Peel off the "dummy" group.
+	   (gnus-newsrc-alist (cdr gnus-newsrc-alist))
+	   variable)
+      ;; Insert the variables into the file.
+      (while variables
+	(when (and (boundp (setq variable (pop variables)))
+		   (symbol-value variable))
+	  (insert "(setq " (symbol-name variable) " '")
+	  (prin1 (symbol-value variable) (current-buffer))
+	  (insert ")\n"))))))
 
 (defun gnus-strip-killed-list ()
   "Return the killed list minus the groups that match `gnus-save-killed-list'."

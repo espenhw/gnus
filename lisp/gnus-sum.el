@@ -1015,7 +1015,6 @@ increase the score of each group you read."
     "e" gnus-article-emphasize
     "w" gnus-article-fill-cited-article
     "c" gnus-article-remove-cr
-    "L" gnus-article-remove-trailing-blank-lines
     "q" gnus-article-de-quoted-unreadable
     "f" gnus-article-display-x-face
     "l" gnus-summary-stop-page-breaking
@@ -1047,6 +1046,12 @@ increase the score of each group you read."
     "e" gnus-article-date-lapsed
     "o" gnus-article-date-original)
 
+  (gnus-define-keys (gnus-summary-wash-empty-map "E" gnus-summary-wash-map)
+    "t" gnus-article-remove-trailing-blank-lines
+    "l" gnus-article-strip-leading-blank-lines
+    "m" gnus-article-strip-multiple-blank-lines
+    "a" gnus-article-strip-blank-lines)
+
   (gnus-define-keys (gnus-summary-help-map "H" gnus-summary-mode-map)
     "v" gnus-version
     "f" gnus-summary-fetch-faq
@@ -1065,7 +1070,8 @@ increase the score of each group you read."
     "c" gnus-summary-copy-article
     "B" gnus-summary-crosspost-article
     "q" gnus-summary-respool-query
-    "i" gnus-summary-import-article)
+    "i" gnus-summary-import-article
+    "p" gnus-summary-article-posted-p)
 
   (gnus-define-keys (gnus-summary-save-map "O" gnus-summary-mode-map)
     "o" gnus-summary-save-article
@@ -1076,8 +1082,7 @@ increase the score of each group you read."
     "h" gnus-summary-save-article-folder
     "v" gnus-summary-save-article-vm
     "p" gnus-summary-pipe-output
-    "s" gnus-soup-add-article)
-  )
+    "s" gnus-soup-add-article))
 
 (defun gnus-summary-make-menu-bar ()
   (gnus-turn-off-edit-menu 'summary)
@@ -1241,11 +1246,15 @@ increase the score of each group you read."
 	["Original" gnus-article-date-original t]
 	["Lapsed" gnus-article-date-lapsed t])
        ("Filter"
+	("Remove Blanks"
+	 ["Leading" gnus-article-strip-leading-blank-lines t]
+	 ["Multiple" gnus-article-strip-multiple-blank-lines t]
+	 ["Trailing" gnus-article-remove-trailing-blank-lines t]
+	 ["All of the above" gnus-article-strip-blank-lines t])
 	["Overstrike" gnus-article-treat-overstrike t]
 	["Emphasis" gnus-article-emphasize t]
 	["Word wrap" gnus-article-fill-cited-article t]
 	["CR" gnus-article-remove-cr t]
-	["Trailing blank lines" gnus-article-remove-trailing-blank-lines t]
 	["Show X-Face" gnus-article-display-x-face t]
 	["Quoted-Printable" gnus-article-de-quoted-unreadable t]
 	["Rot 13" gnus-summary-caesar-message t]
@@ -1275,6 +1284,7 @@ increase the score of each group you read."
 	 (gnus-check-backend-function
 	  'request-replace-article gnus-newsgroup-name)]
 	["Import file..." gnus-summary-import-article t]
+	["Chek if posted" gnus-summary-article-posted-p t]
 	["Edit article" gnus-summary-edit-article
 	 (not (gnus-group-read-only-p))]
 	["Delete article" gnus-summary-delete-article
@@ -3288,7 +3298,9 @@ If READ-ALL is non-nil, all articles in the group are selected."
 	  ;; are no unread articles.
 	  (if (or read-all
 		  (and (zerop (length gnus-newsgroup-marked))
-		       (zerop (length gnus-newsgroup-unreads))))
+		       (zerop (length gnus-newsgroup-unreads)))
+		  (eq (gnus-group-find-parameter group 'display)
+		      'all))
 	      (gnus-uncompress-range (gnus-active group))
 	    (sort (append gnus-newsgroup-dormant gnus-newsgroup-marked
 			  (copy-sequence gnus-newsgroup-unreads))
@@ -5383,43 +5395,47 @@ fetch-old-headers verbiage, and so on."
 	     0))
 	  (number (mail-header-number (car thread)))
 	  score)
-      (if (or
-	   ;; If this article is dormant and has absolutely no visible
-	   ;; children, then this article isn't visible.
-	   (and (memq number gnus-newsgroup-dormant)
-		(= children 0))
-	   ;; If this is "fetch-old-headered" and there is only one
-	   ;; visible child (or less), then we don't want this article.
-	   (and (eq gnus-fetch-old-headers 'some)
-		(memq number gnus-newsgroup-ancient)
-		(zerop children))
-	   ;; If this is a sparsely inserted article with no children,
-	   ;; we don't want it.
-	   (and (eq gnus-build-sparse-threads 'some)
-		(memq number gnus-newsgroup-sparse)
-		(zerop children))
-	   ;; If we use expunging, and this article is really
-	   ;; low-scored, then we don't want this article.
-	   (when (and gnus-summary-expunge-below
-		      (< (setq score
-			       (or (cdr (assq number gnus-newsgroup-scored))
-				   gnus-summary-default-score))
-			 gnus-summary-expunge-below))
-	     ;; We increase the expunge-tally here, but that has
-	     ;; nothing to do with the limits, really.
-	     (incf gnus-newsgroup-expunged-tally)
-	     ;; We also mark as read here, if that's wanted.
-	     (when (and gnus-summary-mark-below
-			(< score gnus-summary-mark-below))
-	       (setq gnus-newsgroup-unreads
-		     (delq number gnus-newsgroup-unreads))
-	       (if gnus-newsgroup-auto-expire
-		   (push number gnus-newsgroup-expirable)
-		 (push (cons number gnus-low-score-mark)
-		       gnus-newsgroup-reads)))
-	     t)
-	   (and gnus-use-nocem
-		(gnus-nocem-unwanted-article-p (mail-header-id (car thread)))))
+      (if (and
+	   (not (memq number gnus-newsgroup-marked))
+	   (or
+	    ;; If this article is dormant and has absolutely no visible
+	    ;; children, then this article isn't visible.
+	    (and (memq number gnus-newsgroup-dormant)
+		 (= children 0))
+	    ;; If this is "fetch-old-headered" and there is only one
+	    ;; visible child (or less), then we don't want this article.
+	    (and (eq gnus-fetch-old-headers 'some)
+		 (memq number gnus-newsgroup-ancient)
+		 (zerop children))
+	    ;; If this is a sparsely inserted article with no children,
+	    ;; we don't want it.
+	    (and (eq gnus-build-sparse-threads 'some)
+		 (memq number gnus-newsgroup-sparse)
+		 (zerop children))
+	    ;; If we use expunging, and this article is really
+	    ;; low-scored, then we don't want this article.
+	    (when (and gnus-summary-expunge-below
+		       (< (setq score
+				(or (cdr (assq number gnus-newsgroup-scored))
+				    gnus-summary-default-score))
+			  gnus-summary-expunge-below))
+	      ;; We increase the expunge-tally here, but that has
+	      ;; nothing to do with the limits, really.
+	      (incf gnus-newsgroup-expunged-tally)
+	      ;; We also mark as read here, if that's wanted.
+	      (when (and gnus-summary-mark-below
+			 (< score gnus-summary-mark-below))
+		(setq gnus-newsgroup-unreads
+		      (delq number gnus-newsgroup-unreads))
+		(if gnus-newsgroup-auto-expire
+		    (push number gnus-newsgroup-expirable)
+		  (push (cons number gnus-low-score-mark)
+			gnus-newsgroup-reads)))
+	      t)
+	    ;; Check NoCeM things.
+	    (and gnus-use-nocem
+		 (gnus-nocem-unwanted-article-p
+		  (mail-header-id (car thread))))))
 	  ;; Nope, invisible article.
 	  0
 	;; Ok, this article is to be visible, so we add it to the limit
@@ -5445,41 +5461,46 @@ fetch-old-headers verbiage, and so on."
 
 (defun gnus-summary-refer-parent-article (n)
   "Refer parent article N times.
+If N is negative, go to ancestor -N instead.
 The difference between N and the number of articles fetched is returned."
   (interactive "p")
   (gnus-set-global-variables)
-  (while
-      (and
-       (> n 0)
-       (let* ((header (gnus-summary-article-header))
-	      (ref
-	       ;; If we try to find the parent of the currently
-	       ;; displayed article, then we take a look at the actual
-	       ;; References header, since this is slightly more
-	       ;; reliable than the References field we got from the
-	       ;; server.
-	       (if (and (eq (mail-header-number header)
-			    (cdr gnus-article-current))
-			(equal gnus-newsgroup-name
-			       (car gnus-article-current)))
-		   (save-excursion
-		     (set-buffer gnus-original-article-buffer)
-		     (nnheader-narrow-to-headers)
-		     (prog1
-			 (message-fetch-field "references")
-		       (widen)))
-		 ;; It's not the current article, so we take a bet on
-		 ;; the value we got from the server.
-		 (mail-header-references header))))
-	 (if (setq ref (or ref (mail-header-references header)))
-	     (or (gnus-summary-refer-article (gnus-parent-id ref))
-		 (gnus-message 1 "Couldn't find parent"))
-	   (gnus-message 1 "No references in article %d"
-			 (gnus-summary-article-number))
-	   nil)))
-    (setq n (1- n)))
-  (gnus-summary-position-point)
-  n)
+  (let ((skip 1)
+	error header ref)
+    (when (not (natnump n))
+      (setq skip (abs n)
+	    n 1))
+    (while (and (> n 0)
+		(not error))
+      (setq header (gnus-summary-article-header))
+      (setq ref
+	    ;; If we try to find the parent of the currently
+	    ;; displayed article, then we take a look at the actual
+	    ;; References header, since this is slightly more
+	    ;; reliable than the References field we got from the
+	    ;; server.
+	    (if (and (eq (mail-header-number header)
+			 (cdr gnus-article-current))
+		     (equal gnus-newsgroup-name
+			    (car gnus-article-current)))
+		(save-excursion
+		  (set-buffer gnus-original-article-buffer)
+		  (nnheader-narrow-to-headers)
+		  (prog1
+		      (message-fetch-field "references")
+		    (widen)))
+	      ;; It's not the current article, so we take a bet on
+	      ;; the value we got from the server.
+	      (mail-header-references header)))
+      (if ref 
+	  (unless (gnus-summary-refer-article (gnus-parent-id ref skip))
+	    (gnus-message 1 "Couldn't find parent"))
+	(gnus-message 1 "No references in article %d"
+		      (gnus-summary-article-number))
+	(setq error t))
+      (decf n))
+    (gnus-summary-position-point)
+    n))
 
 (defun gnus-summary-refer-references ()
   "Fetch all articles mentioned in the References header.
@@ -5761,7 +5782,7 @@ article.  If BACKWARD (the prefix) is non-nil, search backward instead."
       (gnus-message 6 "Executing %s..." (key-description command))
       ;; We'd like to execute COMMAND interactively so as to give arguments.
       (gnus-execute header regexp
-		    `(lambda () (call-interactively ',(key-binding command)))
+		    `(call-interactively ',(key-binding command))
 		    backward)
       (gnus-message 6 "Executing %s...done" (key-description command)))))
 
@@ -6160,6 +6181,20 @@ latter case, they will be copied into the relevant groups."
 		"Chars: " (int-to-string (nth 7 atts)) "\n\n"))
       (gnus-request-accept-article group nil t)
       (kill-buffer (current-buffer)))))
+
+(defun gnus-summary-article-posted-p ()
+  "Say whether the current (mail) article is available from `gnus-select-method' as well.
+This will be the case if the article has both been mailed and posted."
+  (interactive)
+  (let ((id (mail-header-references (gnus-summary-article-header)))
+	(gnus-override-method
+	 (or gnus-refer-article-method gnus-select-method)))
+    (if (gnus-request-head id "")
+	(gnus-message 2 "The current message was found on %s"
+		      gnus-override-method)
+      (gnus-message 2 "The current message couldn't be found on %s"
+		    gnus-override-method)
+      nil)))
 
 (defun gnus-summary-expire-articles (&optional now)
   "Expire all articles that are marked as expirable in the current group."
@@ -6932,7 +6967,8 @@ The number of articles marked as read is returned."
 		   "Mark all unread articles as read? ")))
 	(if (and not-mark
 		 (not gnus-newsgroup-adaptive)
-		 (not gnus-newsgroup-auto-expire))
+		 (not gnus-newsgroup-auto-expire)
+		 (not gnus-suppress-duplicates))
 	    (progn
 	      (when all
 		(setq gnus-newsgroup-marked nil
@@ -7765,15 +7801,15 @@ save those articles instead."
 	     ;; Fix by Mike Dugan <dugan@bucrf16.bu.edu>.
 	     (from (if (get-text-property beg gnus-mouse-face-prop) 
 		       beg
-		     (1+ (or (next-single-property-change 
-			      beg gnus-mouse-face-prop nil end) 
-			     beg))))
+		     (or (next-single-property-change 
+			  beg gnus-mouse-face-prop nil end) 
+			 beg)))
 	     (to
 	      (if (= from end)
 		  (- from 2)
-		(1- (or (next-single-property-change
-			 from gnus-mouse-face-prop nil end)
-			end)))))
+		(or (next-single-property-change
+		     from gnus-mouse-face-prop nil end)
+		    end))))
 	;; If no mouse-face prop on line we will have to = from = end,
 	;; so we highlight the entire line instead.
 	(when (= (+ to 2) from)

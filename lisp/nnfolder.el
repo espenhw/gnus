@@ -388,7 +388,11 @@ time saver for large mailboxes.")
        (forward-line -1)
        (while (re-search-backward (concat "^" nnfolder-article-marker) nil t)
 	 (delete-region (point) (progn (forward-line 1) (point))))
-       (setq result (car (nnfolder-save-mail (and (stringp group) group)))))
+       (setq result
+	     (car (nnfolder-save-mail
+		   (if (stringp group)
+		       (list (cons group (nnfolder-active-number group)))
+		     (nnmail-article-group 'nnfolder-active-number))))))
      (save-excursion
        (set-buffer nnfolder-current-buffer)
        (and last (nnfolder-save-buffer))))
@@ -538,13 +542,9 @@ time saver for large mailboxes.")
 			    nnfolder-buffer-alist))))))))
     (setq nnfolder-current-group group)))
 
-(defun nnfolder-save-mail (&optional group)
+(defun nnfolder-save-mail (group-art-list)
   "Called narrowed to an article."
-  (let* ((nnmail-split-methods 
-	  (if group (list (list group "")) nnmail-split-methods))
-	 (group-art-list
-	  (nreverse (nnmail-article-group 'nnfolder-active-number)))
-	 (delim (concat "^" message-unix-mail-delimiter))
+  (let* ((delim (concat "^" message-unix-mail-delimiter))
 	 save-list group-art)
     (goto-char (point-min))
     ;; The From line may have been quoted by movemail.

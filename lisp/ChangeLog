@@ -1,3 +1,178 @@
+Sun Aug 25 00:16:44 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-util.el (gnus-prin1): New function.
+	(gnus-prin1-to-string): New function.
+
+	* gnus-sum.el (gnus-summary-refer-parent-article): Bugout.
+
+	* nndb.el (nndb-request-accept-article): Use new nntp functions.
+
+	* pop3.el: Make MD5 defined when compiling.
+
+	* article.el (article-strip-blank-lines): Called Gnus functions.
+
+	* nnweb.el (nnweb-init): Create a better buffer name.
+	(nnweb-altavista-search): Wasn't defined.
+	(nnweb-reference-search): Use advanced search.
+
+	* nnfolder.el (nnfolder-request-accept-article): Wrong params to
+	`save-mail'. 
+	* nnbabyl.el (nnbabyl-request-accept-article): Ditto.
+	* nnmbox.el (nnmbox-request-accept-article): Ditto.
+	* nnmh.el (nnmh-request-accept-article): Ditto.
+	* nnml.el (nnml-request-accept-article): Ditto.
+
+Sat Aug 24 23:53:32 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-get-new-mail): Tried calling nonexistsing
+	functions. 
+
+Sat Aug 24 23:30:07 1996  Lars Magne Ingebrigtsen  <larsi@nipling.ifi.uio.no>
+
+	* gnus-group.el (gnus-group-enter-directory): Temporarily bound
+	`nneething-read-only'. 
+
+Fri Aug 23 23:22:16 1996  Katsumi Yamaoka  <yamaoka@ga.sony.co.jp>
+
+	* gnus-ems.el (gnus-ems-redefine): Set
+	`gnus-summary-display-table' to nil.
+
+Fri Aug 23 22:55:09 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-art.el (gnus-summary-save-in-file): Didn't check before
+	creating dir.
+	(gnus-summary-save-in-rmail): Ditto.
+	(gnus-summary-save-body-in-file): Ditto.
+
+	* message.el (message-check-news-syntax): Faulty Newsgroups
+	regexp. 
+
+Thu Aug 22 20:47:48 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmail.el (nnmail-split-hook): New variable.
+
+	* nnmh.el (nnmh-update-gnus-unreads): cl-nged.
+	(nnmh-active-number): Find the largest article number.
+
+Thu Aug 22 20:39:10 1996  Sam Falkner  <sam@steel.central.sun.com>
+
+	* nnmh.el (nnmh-update-gnus-unreads): Check all articles.
+
+Thu Aug 22 16:49:35 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-kill.el (gnus-execute): Ignored read articles.
+
+	* gnus-sum.el (gnus-summary-execute-command): Give a form, not a
+	function. 
+
+	* gnus-kill.el (gnus-execute-1): Evaled functions instead of
+	calling them.
+
+	* nnmail.el (nnmail-move-inbox): Allow continuation after error. 
+
+	* gnus-score.el (gnus-adaptive-word-syntax-table): New variable. 
+	(gnus-score-adaptive): Use it.
+
+	* nnbabyl.el (nnbabyl-request-scan): Change group.
+
+	* nnmbox.el (nnmbox-request-scan): Change group.
+
+	* gnus-score.el (gnus-ignored-adaptive-words): Renamed.
+	(gnus-ignored-adaptive-words): New variable.
+	(gnus-score-adaptive): Use it.
+	(gnus-score-adaptive): Bugged out on undefined symbols.
+	(gnus-summary-score-entry): Accept numerical DATE.
+	(gnus-score-adaptive): Pos in wrong buf.
+	(gnus-score-string): Didn't accept word matches.
+	(gnus-enter-score-words-into-hashtb): Wrong sequence.
+	(gnus-score-string): Word matches inflooped.
+
+Wed Aug 21 15:06:47 1996    <Wesley.Hardaker@sphys.unil.ch>
+
+	* smiley.el (smiley-buffer): Added some additinal extent parameters.
+	(smiley-toggle-extent): rewrote to use above.
+
+Mon Aug 19 20:19:59 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-spec.el (gnus-tilde-cut-form): Cut off wrong part.
+
+Mon Aug 19 20:09:44 1996  Samuel Tardieu  <sam@inf.enst.fr>
+
+	* gnus-cache.el (gnus-cache-write-active): Would try to create
+	existing directory.
+
+Mon Aug 19 00:12:11 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* article.el (article-strip-multiple-blank-lines): New command and
+	keystroke.
+	(article-strip-blank-lines): New command and keystroke.
+
+	* nnmail.el (nnmail-move-inbox): Set file permissions on the
+	Incoming files.
+
+	* gnus-group.el (gnus-group-fetch-faq): Go through the FAQ dirs
+	until we manage to open one.
+
+	* nntp.el (nntp-send-authinfo-function): New variable.
+	(nntp-wait-for): Handle authinfo requests better.
+
+	* gnus-sum.el (gnus-summary-article-posted-p): New command and
+	keystroke. 
+
+	* gnus-topic.el (gnus-topic-display-empty-topics): New variable.
+
+	* gnus-msg.el (gnus-setup-message): Make `gnus-newsgroup-name'
+	local to the message buffers.
+
+	* gnus-int.el (gnus-remove-denial): New function.
+
+	* gnus-sum.el (gnus-summary-refer-parent-article): Allow negative
+	prefixes. 
+	(gnus-summary-refer-parent-article): Allow skipping past canceled
+	articles. 
+
+	* gnus-util.el (gnus-parent-id): Take an optional N ancestor
+	param. 
+
+	* gnus-async.el (gnus-async-prefetch-article): Don't clobber async
+	fetches already in progress.
+
+	* nnmail.el (nnmail-check-duplication): Allow /dev/null mail
+	filing. 
+
+	* gnus-sum.el (gnus-summary-catchup): Didn't do suppression.
+	(gnus-summary-limit-children): Never hide ticked articles.
+	(gnus-highlight-selected-summary): Selected face spans the entire
+	%(-%) area.
+
+Sun Aug 18 22:05:00 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-group.el (gnus-group-restart): Better prompt.
+
+	* gnus-async.el (gnus-async-prefetch-article): Don't try to fetch
+	old-fetched articles.
+
+Sun Aug 18 22:02:17 1996  Raja R. Harinath  <harinath@cs.umn.edu>
+
+	* gnus-gl.el (gnus-grouplens-mode): Make hooks local.
+
+Sun Aug 18 16:53:19 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-group.el (gnus-group-get-new-news): Don't move point.
+
+	* nnweb.el (nndejagnus): Renamed from nndejagnus.
+	(nnweb-remove-markup): New function.
+
+Sun Aug 18 14:53:55 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.13 is released.
+
+Tue Aug 20 17:30:00 1996    <Wesley.Hardaker@sphys.unil.ch>
+
+	* smiley.el (smiley-map): New keymap for smiley's.
+	(smiley-toggle-extent): New function to toggle smiley invisiblity.
+	(smiley-buffer): Use them.
+
 Sun Aug 18 12:46:12 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nnoo.el (nnoo-define-skeleton-1): Defined too many functions.

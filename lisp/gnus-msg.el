@@ -162,6 +162,7 @@ Thank you for your help in stamping out bugs.
        ,@forms
        (gnus-inews-add-send-actions ,winconf ,buffer ,article)
        (setq gnus-message-buffer (current-buffer))
+       (make-local-variable 'gnus-newsgroup-name)
        (gnus-configure-windows ,config t))))
     
 (defun gnus-inews-add-send-actions (winconf buffer article)
@@ -470,8 +471,7 @@ If SILENT, don't prompt the user."
 				  gnus-inews-sent-ids))
 	    (setcdr end nil))
 	  (nnheader-temp-write gnus-sent-message-ids-file
-	    (prin1 `(setq gnus-inews-sent-ids ',gnus-inews-sent-ids)
-		   (current-buffer)))
+	    (gnus-prin1 `(setq gnus-inews-sent-ids ',gnus-inews-sent-ids)))
 	  nil)))))
 
 
