@@ -13,6 +13,7 @@
 @ifinfo
 This file describes the PGG.
 
+Copyright (C) 2003 Free Software Foundation, Inc.
 Copyright (C) 2001 Daiki Ueno.
 
 Permission is granted to copy, distribute and/or modify this document
@@ -119,6 +120,7 @@ list autoload setting for desired functions as follows.
 * User Commands::               
 * Selecting an implementation::  
 * Caching passphrase::          
+* Default user identity::	
 @end menu
 
 @node User Commands
@@ -218,6 +220,36 @@ you could stop caching with setting it @code{nil}.
 
 @defvar pgg-passphrase-cache-expiry
 Elapsed time for expiration in seconds.
+@end defvar
+
+@node Default user identity
+@section Default user identity
+
+The PGP implementation is usually able to select the proper key to use
+for signing and decryption, but if you have more than one key, you may
+need to specify the key id to use.
+
+@defvar pgg-default-user-id
+User ID of your default identity.  It defaults to the value returned
+by @samp{(user-login-name)}.  You can customize this variable.
+@end defvar
+
+@defvar pgg-gpg-user-id
+User ID of the GnuPG default identity.  It defaults to @samp{nil}.
+This overrides @samp{pgg-default-user-id}.  You can customize this
+variable.
+@end defvar
+
+@defvar pgg-pgp-user-id
+User ID of the PGP 2.x/6.x default identity.  It defaults to
+@samp{nil}.  This overrides @samp{pgg-default-user-id}.  You can
+customize this variable.
+@end defvar
+
+@defvar pgg-pgp5-user-id
+User ID of the PGP 5.x default identity.  It defaults to @samp{nil}.
+This overrides @samp{pgg-default-user-id}.  You can customize this
+variable.
 @end defvar
 
 @node Architecture
