@@ -1,6 +1,6 @@
 ;;; gnus-uu.el --- extract (uu)encoded files in Gnus
 ;; Copyright (C) 1985, 1986, 1987, 1993, 1994, 1995, 1996, 1997, 1998, 2000,
-;;        2001 Free Software Foundation, Inc.
+;;        2001, 2002 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Created: 2 Oct 1993
@@ -1229,10 +1229,11 @@ When called interactively, prompt for REGEXP."
 	;; Expand numbers.
 	(goto-char (point-min))
 	(while (re-search-forward "[0-9]+" nil t)
-	  (replace-match
-	   (format "%06d"
-		   (string-to-int (buffer-substring
-				   (match-beginning 0) (match-end 0))))))
+	  (ignore-errors
+	    (replace-match
+	     (format "%06d"
+		     (string-to-int (buffer-substring
+				     (match-beginning 0) (match-end 0)))))))
 	(setq string (buffer-substring 1 (point-max)))
 	(setcar (car string-list) string)
 	(setq string-list (cdr string-list))))

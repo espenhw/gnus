@@ -1,3 +1,8 @@
+2002-01-29  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-uu.el (gnus-uu-expand-numbers): Ignore errors when
+	replacing numbers.
+
 2002-01-28  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-article-followup-with-original): Use (mark).
