@@ -2,6 +2,8 @@
 
 	* rfc2047.el (rfc2047-fold-region): The check to skip WSP
 	insertion when breaking lines looked for " \t" instead of "[ \t]".
+	(rfc2047-encode-message-header): Fold lines even if
+	no QP encoding is done.
 
 2001-06-23  Simon Josefsson  <jas@extundo.com>
 	From Samuel Tardieu <sam@inf.enst.fr>
