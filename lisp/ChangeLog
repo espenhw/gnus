@@ -1,5 +1,8 @@
 2002-01-24  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-agent.el (gnus-agent-request-article): Make sure it is not
+	empty file.
+
 	* nnweb.el (url): Ignore errors when request url.
 	
 	* nnrss.el: Clean up the comments.

@@ -1872,8 +1872,9 @@ The following commands are available:
 		  (gnus-agent-directory)
 		  (gnus-agent-group-path group) "/"
 		  (number-to-string article)))
-	(buffer-read-only nil))
-    (when (file-exists-p file)
+	 (buffer-read-only nil))
+    (when (and (file-exists-p file)
+	       (> (nth 7 (file-attributes file)) 0))
       (erase-buffer)
       (gnus-kill-all-overlays)
       (let ((coding-system-for-read gnus-cache-coding-system))
