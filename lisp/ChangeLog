@@ -1,3 +1,27 @@
+1999-12-18  Simon Josefsson  <jas@pdc.kth.se>
+
+	* imap.el: Don't autoload digest-md5.
+	(imap-starttls-open): Bind coding-system-for-{read,write}.
+	(imap-starttls-p): Check if we can find starttls.el.
+	(imap-digest-md5-p): Check if we can find digest-md5.el.
+
+1999-12-17   Daiki Ueno  <ueno@ueda.info.waseda.ac.jp>
+
+	* base64.el (base64-encode-string): Accept 2nd argument
+	`no-line-break'.
+
+	* imap.el: Require `digest-md5' when compiling; add autoload
+	settings for `digest-md5-parse-digest-challenge',
+	`digest-md5-digest-response', `starttls-open-stream' and
+	`starttls-negotiate'.
+	(imap-authenticators): Add `digest-md5'.
+	(imap-authenticator-alist): Setup for `digest-md5'.
+	(imap-digest-md5-p): New function.
+	(imap-digest-md5-auth): New function.
+	(imap-stream-alist): Add STARTTLS entry.
+	(imap-starttls-p): New function.
+	(imap-starttls-open): New function.
+
 1999-12-18 01:08:10  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-enter-history): Bad group name.

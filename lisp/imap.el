@@ -126,7 +126,10 @@
 ;;
 ;; Revision history:
 ;;
-;;  - this is unreleased software
+;;  - 19991218 added starttls/digest-md5 patch,
+;;             by Daiki Ueno <ueno@ueda.info.waseda.ac.jp>
+;;             NB! you need SLIM for starttls.el and digest-md5.el
+;;  - 19991023 commited to pgnus
 ;;
 
 ;;; Code:
@@ -136,6 +139,12 @@
   (autoload 'open-ssl-stream "ssl")
   (autoload 'base64-decode-string "base64")
   (autoload 'base64-encode-string "base64")
+  (autoload 'starttls-open-stream "starttls")
+  (autoload 'starttls-negotiate "starttls")
+  (autoload 'digest-md5-parse-digest-challenge "digest-md5")
+  (autoload 'digest-md5-digest-response "digest-md5")
+  (autoload 'digest-md5-digest-uri "digest-md5")
+  (autoload 'digest-md5-challenge "digest-md5")
   (autoload 'rfc2104-hash "rfc2104")
   (autoload 'md5 "md5")
   (autoload 'utf7-encode "utf7")
@@ -171,13 +180,14 @@ stdin and return responses to stdout.")
 (defvar imap-fetch-data-hook nil
   "Hooks called after receiving each FETCH response.")
 
-(defvar imap-streams '(kerberos4 ssl network)
+(defvar imap-streams '(kerberos4 starttls ssl network)
   "Priority of streams to consider when opening connection to server.")
 
 (defvar imap-stream-alist
   '((kerberos4 imap-kerberos4s-p imap-kerberos4-open)
     (ssl       imap-ssl-p        imap-ssl-open)
-    (network   imap-network-p    imap-network-open))
+    (network   imap-network-p    imap-network-open)
+    (starttls  imap-starttls-p   imap-starttls-open))
   "Definition of network streams.
 
 (NAME CHECK OPEN)
@@ -186,14 +196,15 @@ NAME names the stream, CHECK is a function returning non-nil if the
 server support the stream and OPEN is a function for opening the
 stream.")
 
-(defvar imap-authenticators '(kerberos4 cram-md5 login anonymous)
+(defvar imap-authenticators '(kerberos4 digest-md5 cram-md5 login anonymous)
   "Priority of authenticators to consider when authenticating to server.")
 
 (defvar imap-authenticator-alist 
-  '((kerberos4 imap-kerberos4a-p imap-kerberos4-auth)
-    (cram-md5  imap-cram-md5-p   imap-cram-md5-auth)
-    (login     imap-login-p      imap-login-auth)
-    (anonymous imap-anonymous-p  imap-anonymous-auth))
+  '((kerberos4  imap-kerberos4a-p imap-kerberos4-auth)
+    (cram-md5   imap-cram-md5-p   imap-cram-md5-auth)
+    (login      imap-login-p      imap-login-auth)
+    (anonymous  imap-anonymous-p  imap-anonymous-auth)
+    (digest-md5 imap-digest-md5-p imap-digest-md5-auth))
   "Definition of authenticators.
 
 (NAME CHECK AUTHENTICATE)
@@ -473,6 +484,39 @@ If ARGS, PROMPT is used as an argument to `format'."
 	     (insert-buffer-substring buffer)))
       (when (memq (process-status process) '(open run))
 	process))))
+
+(defun imap-starttls-p (buffer)
+  (and (condition-case ()
+	   (require 'starttls)
+	 (error nil))
+       (imap-capability 'STARTTLS buffer)))
+
+(defun imap-starttls-open (name buffer server port)
+  (let* ((port (or port imap-default-port))
+	 (coding-system-for-read imap-coding-system-for-read)
+	 (coding-system-for-write imap-coding-system-for-write)
+	 (process (starttls-open-stream name buffer server port)))
+    (when process
+      (while (and (memq (process-status process) '(open run))
+		  (goto-char (point-min))
+		  (not (imap-parse-greeting)))
+	(accept-process-output process 1)
+	(sit-for 1))
+      (and imap-log
+	   (with-current-buffer (get-buffer-create imap-log)
+	     (buffer-disable-undo)
+	     (goto-char (point-max))
+	     (insert-buffer-substring buffer)))
+      (let ((imap-process process))
+	(unwind-protect
+	    (progn
+	      (set-process-filter imap-process 'imap-arrival-filter)
+	      (when (and (eq imap-stream 'tls)
+			 (imap-ok-p (imap-send-command-wait "STARTTLS")))
+		(starttls-negotiate imap-process)))
+	  (set-process-filter imap-process nil)))
+      (when (memq (process-status process) '(open run))
+	process))))
   
 ;; Server functions; authenticator stuff:
 
@@ -558,6 +602,38 @@ Returns t if login was successful, nil otherwise."
     (imap-ok-p (imap-send-command-wait
 		(concat "LOGIN anonymous \"" (concat (user-login-name) "@" 
 						     (system-name)) "\"")))))
+
+(defun imap-digest-md5-p (buffer)
+  (and (condition-case ()
+	   (require 'digest-md5)
+	 (error nil))
+       (imap-capability 'AUTH=DIGEST-MD5 buffer)))
+
+(defun imap-digest-md5-auth (buffer)
+  "Login to server using the AUTH DIGEST-MD5 method."
+  (imap-interactive-login
+   buffer
+   (lambda (user passwd)
+     (let ((tag 
+	    (imap-send-command
+	     (list
+	      "AUTHENTICATE DIGEST-MD5"
+	      (lambda (challenge)
+		(digest-md5-parse-digest-challenge
+		 (base64-decode-string challenge))
+		(let* ((digest-uri
+			(digest-md5-digest-uri 
+			 "imap" (digest-md5-challenge 'realm)))
+		       (response
+			(digest-md5-digest-response 
+			 user passwd digest-uri)))
+		  (base64-encode-string response 'no-line-break))))
+	     )))
+       (if (not (eq (imap-wait-for-tag tag) 'INCOMPLETE))
+	   nil
+	 (setq imap-continuation nil)
+	 (imap-send-command-1 "")
+	 (imap-ok-p (imap-wait-for-tag tag)))))))
 
 ;; Server functions:
 

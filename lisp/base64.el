@@ -245,12 +245,12 @@ base64-encoder-program.")
       (and work-buffer (kill-buffer work-buffer))))
   (message "Encoding base64... done"))
 
-(defun base64-encode (string)
+(defun base64-encode (string &optional no-line-break)
   (save-excursion
     (set-buffer (get-buffer-create " *base64-encode*"))
     (erase-buffer)
     (insert string)
-    (base64-encode-region (point-min) (point-max))
+    (base64-encode-region (point-min) (point-max) no-line-break)
     (skip-chars-backward " \t\r\n")
     (delete-region (point-max) (point))
     (prog1
