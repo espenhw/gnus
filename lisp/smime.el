@@ -312,7 +312,7 @@ KEYFILE should contain a PEM encoded key and certificate."
      (point-min) (point-max)
      (if keyfile
 	 keyfile
-       (smime-get-key-by-email
+       (smime-get-key-with-certs-by-email
 	(completing-read
 	 (concat "Sign using which key? "
 		 (if smime-keys (concat "(default " (caar smime-keys) ") ")
@@ -604,6 +604,9 @@ The following commands are available:
 
 (defun smime-get-key-by-email (email)
   (cadr (assoc email smime-keys)))
+
+(defun smime-get-key-with-certs-by-email (email)
+  (cdr (assoc email smime-keys)))
 
 (provide 'smime)
 

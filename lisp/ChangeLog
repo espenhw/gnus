@@ -1,3 +1,9 @@
+2002-09-23  Simon Josefsson  <jas@extundo.com>
+	Trivial fix from beaker@iavmb.pl (Krzysztof J,Bj(Bdruczyk).
+
+	* smime.el (smime-sign-buffer): Get key and extra certs.
+	(smime-get-key-with-certs-by-email): Utility function.  
+
 2002-09-21  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	Trivial patch from Micha Wiedenmann <mw-u1@gmx.de>
 
