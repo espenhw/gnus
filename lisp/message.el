@@ -1309,6 +1309,7 @@ no, only reply back to the author."
 (defcustom message-use-idna (and (condition-case nil (require 'idna)
 				   (file-error))
 				 (mm-coding-system-p 'utf-8)
+				 (executable-find idna-program)
 				 'ask)
   "Whether to encode non-ASCII in domain names into ASCII according to IDNA."
   :group 'message-headers

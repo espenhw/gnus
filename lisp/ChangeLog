@@ -1,3 +1,9 @@
+2003-05-23  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-art.el (gnus-use-idna): Check if idna-program is installed.
+
+	* message.el (message-use-idna): Ditto.
+
 2003-05-20  Dave Love  <fx@gnu.org>
 
 	* rfc2047.el (rfc2047-q-encoding-alist): Deleted.
