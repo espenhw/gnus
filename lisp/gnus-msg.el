@@ -1312,7 +1312,6 @@ composing a new message."
 	;; Get a normal message buffer.
 	(message-pop-to-buffer (message-buffer-name "Resend" to))
 	(insert-buffer-substring cur)
-	(mime-to-mml)
 	(message-narrow-to-head-1)
 	;; Gnus will generate a new one when sending.
 	(message-remove-header "Message-ID")

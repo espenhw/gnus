@@ -467,7 +467,7 @@ Otherwise, directly inline the old message in the forwarded message."
   :group 'message-forwarding
   :type 'boolean)
 
-(defcustom message-forward-show-mml t
+(defcustom message-forward-show-mml nil
   "*Non-nil means show forwarded messages as mml.
 Otherwise, forwarded messages are unchanged."
   :version "21.1"
@@ -6150,7 +6150,6 @@ you."
 	(when (re-search-backward "^.?From .*\n" nil t)
 	  (delete-region (match-beginning 0) (match-end 0)))))
     (mm-enable-multibyte)
-    (mime-to-mml)
     (save-restriction
       (message-narrow-to-head-1)
       (message-remove-header message-ignored-bounced-headers t)
