@@ -1,4 +1,7 @@
 2003-04-21  Reiner Steib  <Reiner.Steib@gmx.de>
+		
+	* gnus-faq.texi: New, the Gnus FAQ from http://my.gnus.org/FAQ.
+	From Frank Schmitt <ich@frank-schmitt.net>.
 
 	* gnus.texi (Server Variables): Added server parameters and index.
 
