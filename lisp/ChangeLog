@@ -1,3 +1,10 @@
+2003-01-07  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-sieve.el (gnus-sieve-script): Use the crosspost argument to
+	gnus-sieve-script, instead of the global variable
+	gnus-sieve-crosspost.  One-line patch from Steinar Bang
+	<sb@dod.no>.
+
 2002-01-06  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus.el: Renamed gnus-summary-*-uncached-face as

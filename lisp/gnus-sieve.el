@@ -226,7 +226,7 @@ This is returned as a string."
 	  (when spec
 	    (push (concat "if " (gnus-sieve-test spec) " {\n"
 			  "\tfileinto \"" (gnus-group-real-name group) "\";\n"
-			  (if gnus-sieve-crosspost
+			  (if crosspost
 			      ""
 			    "\tstop;\n")
 			  "}")
