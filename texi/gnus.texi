@@ -68,6 +68,8 @@
 \newcommand{\gnusversion}[1]{{\small\textit{#1}}}
 \newcommand{\gnusauthor}[1]{{\large\textbf{#1}}}
 \newcommand{\gnusresult}[1]{\gnustt{=> #1}}
+\newcommand{\gnusacronym}[1]{\textit{#1}}
+\newcommand{\gnusemail}[1]{\textit{#1}}
 
 \newcommand{\gnusbullet}{{${\bullet}$}}
 \newcommand{\gnusdollar}{\$}
@@ -8285,7 +8287,6 @@ is rumored to have employed this form of, uh, somewhat weak encryption.
 @item W m
 @kindex W m (Summary)
 @findex gnus-summary-morse-message
-@c @icon{gnus-summary-morse-message}
 Morse decode the article buffer (@code{gnus-summary-morse-message}).
 
 @item W t
