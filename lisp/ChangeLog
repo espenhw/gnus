@@ -1,3 +1,8 @@
+2003-08-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (article-display-x-face): Make it possible to set
+	the gnus-article-x-face-command variable to the lambda form.
+
 2003-08-27  Simon Josefsson  <jas@extundo.com>
 
 	* mm-decode.el (mm-remove-part): Try to kill external displayers

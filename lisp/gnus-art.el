@@ -2077,23 +2077,25 @@ unfolded."
 			       (not (string-match gnus-article-x-face-too-ugly
 						  from)))))
 	    ;; We display the face.
-	    (if (symbolp gnus-article-x-face-command)
-		;; The command is a lisp function, so we call it.
-		(if (functionp gnus-article-x-face-command)
-		    (funcall gnus-article-x-face-command face)
-		  (error "%s is not a function" gnus-article-x-face-command))
-	      ;; The command is a string, so we interpret the command
-	      ;; as a, well, command, and fork it off.
-	      (let ((process-connection-type nil))
-		(process-kill-without-query
-		 (start-process
-		  "article-x-face" nil shell-file-name shell-command-switch
-		  gnus-article-x-face-command))
-		(with-temp-buffer
-		  (insert face)
-		  (process-send-region "article-x-face"
-				       (point-min) (point-max)))
-		(process-send-eof "article-x-face")))))))))
+	    (cond ((stringp gnus-article-x-face-command)
+		   ;; The command is a string, so we interpret the command
+		   ;; as a, well, command, and fork it off.
+		   (let ((process-connection-type nil))
+		     (process-kill-without-query
+		      (start-process
+		       "article-x-face" nil shell-file-name
+		       shell-command-switch gnus-article-x-face-command))
+		     (with-temp-buffer
+		       (insert face)
+		       (process-send-region "article-x-face"
+					    (point-min) (point-max)))
+		     (process-send-eof "article-x-face")))
+		  ((functionp gnus-article-x-face-command)
+		   ;; The command is a lisp function, so we call it.
+		   (funcall gnus-article-x-face-command face))
+		  (t
+		   (error "%s is not a function"
+			  gnus-article-x-face-command)))))))))
 
 (defun article-decode-mime-words ()
   "Decode all MIME-encoded words in the article."
