@@ -1,3 +1,7 @@
+2003-05-03  Vasily Korytov <deskpot@despammed.com>  (tiny change)
+
+	* gnus-util.el (gnus-multiple-choice): Add ", ?".
+
 2003-05-03  Dave Love  <fx@gnu.org>
 
 	* mm-encode.el (mm-long-lines-p): Autoload.

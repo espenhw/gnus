@@ -1301,8 +1301,9 @@ CHOICE is a list of the choice char and help message at IDX."
 	(while (not tchar)
 	  (message "%s (%s): "
 		   prompt
-		   (mapconcat (lambda (s) (char-to-string (car s)))
-			      choice ", "))
+		   (concat
+		    (mapconcat (lambda (s) (char-to-string (car s)))
+			       choice ", ") ", ?"))
 	  (setq tchar (read-char))
 	  (when (not (assq tchar choice))
 	    (setq tchar nil)
