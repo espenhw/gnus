@@ -10,10 +10,11 @@ For older news, see Gnus info node "New Features".
 
 ** Better handling of Microsoft citation styles
 
-Gnus now tries to recognize the mangled header block that some
-Microsoft mailers use to indicate that the rest of the message is a
-citation, even though it is not quoted in any way.  The variable
-`gnus-unsightly-citation-regexp' matches the start of these citations.
+Gnus now tries to recognize the mangled header block that some Microsoft
+mailers use to indicate that the rest of the message is a citation, even
+though it is not quoted in any way.  The variable
+`gnus-cite-unsightly-citation-regexp' matches the start of these
+citations.
 
 ** gnus-article-skip-boring
 

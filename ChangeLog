@@ -1,3 +1,8 @@
+2003-02-19  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* GNUS-NEWS: Renamed `gnus-unsightly-citation-regexp' to
+	`gnus-cite-unsightly-citation-regexp'.
+
 2003-02-18  Simon Josefsson  <jas@extundo.com>
 
 	* GNUS-NEWS: Talk about canlock more.
