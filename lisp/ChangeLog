@@ -1,3 +1,8 @@
+2001-07-03  Simon Josefsson  <jas@extundo.com>
+
+	* flow-fill.el (fill-flowed): If `fill-region' inserts empty line,
+	remove it (workaround XEmacs `fill-region' bug).
+
 2001-07-01  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-date-days-ago): Defeat locale.
