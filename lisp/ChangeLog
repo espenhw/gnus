@@ -1,3 +1,8 @@
+2002-03-05  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnnil.el: New file.
+	* gnus.el (gnus-valid-select-methods): Include nnnil.
+
 2002-03-05  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-syntax-checks): Because canlock is
@@ -18,7 +23,7 @@
 	* mml-smime.el (mml-smime-encrypt): Ditto.
 	* mm-view.el (mm-inline-wash-with-file): Ditto.
 	* mm-decode.el (mm-display-external, mm-create-image-xemacs): Ditto.
-	* gnus-uu.el (gnus-uu-decode-binhex, gnus-uu-decode-binhex-view) 
+	* gnus-uu.el (gnus-uu-decode-binhex, gnus-uu-decode-binhex-view)
 	(gnus-uu-digest-mail-forward, gnus-uu-initialize): Ditto.
 	* gnus-start.el (gnus-slave-save-newsrc): Ditto.
 	* gnus-fun.el (gnus-convert-image-to-gray-x-face): Ditto.
