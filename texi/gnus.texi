@@ -365,7 +365,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Oort Gnus v0.01.
+This manual corresponds to Oort Gnus v0.02.
 
 @end ifinfo
 
