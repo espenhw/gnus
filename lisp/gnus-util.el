@@ -520,6 +520,11 @@ Timezone package is used."
 		,(gnus-make-sort-function (cdr funs))))
     `(,(car funs) t1 t2)))
 
+(defun gnus-turn-off-edit-menu (type)
+  "Turn off edit meny in `gnus-TYPE-mode-map'."
+  (define-key (symbol-value (intern (format "gnus-%s-mode-map" type)))
+    [menu-bar edit] 'undefined))
+ 
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

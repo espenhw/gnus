@@ -127,6 +127,9 @@ See `gnus-summary-mode-line-format' for a closer description.")
 (defvar gnus-article-mode-hook nil
   "*A hook for Gnus article mode.")
 
+(defvar gnus-article-menu-hook nil
+  "*Hook run after the creation of the article mode menu.")
+
 (defvar gnus-article-prepare-hook nil
   "*A hook called after an article has been prepared in the article buffer.
 If you want to run a special decoding program like nkf, use this hook.")
@@ -487,6 +490,31 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 
   (substitute-key-definition
    'undefined 'gnus-article-read-summary-keys gnus-article-mode-map))
+
+(defun gnus-article-make-menu-bar ()
+  (gnus-turn-off-edit-menu 'article)
+  (unless (boundp 'gnus-article-article-menu)
+    (easy-menu-define
+     gnus-article-article-menu gnus-article-mode-map ""
+     '("Article"
+       ["Scroll forwards" gnus-article-goto-next-page t]
+       ["Scroll backwards" gnus-article-goto-prev-page t]
+       ["Show summary" gnus-article-show-summary t]
+       ["Fetch Message-ID at point" gnus-article-refer-article t]
+       ["Mail to address at point" gnus-article-mail t]
+       ))
+
+    (easy-menu-define
+     gnus-article-treatment-menu gnus-article-mode-map ""
+     '("Treatment"
+       ["Hide headers" gnus-article-hide-headers t]
+       ["Hide signature" gnus-article-hide-signature t]
+       ["Hide citation" gnus-article-hide-citation t]
+       ["Treat overstrike" gnus-article-treat-overstrike t]
+       ["Remove carriage return" gnus-article-remove-cr t]
+       ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]
+       ))
+    (run-hooks 'gnus-article-menu-hook)))
 
 (defun gnus-article-mode ()
   "Major mode for displaying an article.
@@ -1276,6 +1304,430 @@ groups."
     (search-forward-regexp "^$" nil t)
     (let ((case-fold-search nil))
       (query-replace-regexp "\\([.!?][])}]* \\)\\([[({A-Z]\\)" "\\1 \\2"))))
+
+;;; 
+;;; Article highlights
+;;;
+
+;; Written by Per Abrahamsen <abraham@iesd.auc.dk>.
+
+;;; Internal Variables:
+
+(defvar gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-\\wa-zA-Z0-9_=!?#$@~`%&*+|\\/.,]*[-\\wa-zA-Z0-9_=#$@~`%&*+|\\/]"
+  "*Regular expression that matches URLs.")
+
+(defvar gnus-button-alist 
+  `(("\\bin\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2 
+     t gnus-button-message-id 3)
+    ("\\(<?\\(url: ?\\)?news:\\([^>\n\t ]*\\)>?\\)" 1 t
+     gnus-button-message-id 3)
+    ("\\(<URL: *\\)?mailto: *\\([^> \n\t]+\\)>?" 0 t gnus-button-reply 2)
+    ;; This is how URLs _should_ be embedded in text...
+    ("<URL: *\\([^\n\r>]*\\)>" 0 t gnus-button-url 1)
+    ;; Next regexp stolen from highlight-headers.el.
+    ;; Modified by Vladimir Alexiev.
+    (,gnus-button-url-regexp 0 t gnus-button-url 0))
+  "Alist of regexps matching buttons in article bodies.
+
+Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
+REGEXP: is the string matching text around the button,
+BUTTON: is the number of the regexp grouping actually matching the button,
+FORM: is a lisp expression which must eval to true for the button to
+be added, 
+CALLBACK: is the function to call when the user push this button, and each
+PAR: is a number of a regexp grouping whose text will be passed to CALLBACK.
+
+CALLBACK can also be a variable, in that case the value of that
+variable it the real callback function.")
+
+(defvar gnus-header-button-alist 
+  `(("^\\(References\\|Message-I[Dd]\\):" "<[^>]+>"
+     0 t gnus-button-message-id 0)
+    ("^\\(From\\|Reply-To\\):" ": *\\(.+\\)$" 1 t gnus-button-reply 1)
+    ("^\\(Cc\\|To\\):" "[^ \t\n<>,()\"]+@[^ \t\n<>,()\"]+" 
+     0 t gnus-button-mailto 0)
+    ("^X-[Uu][Rr][Ll]:" ,gnus-button-url-regexp 0 t gnus-button-url 0)
+    ("^[^:]+:" ,gnus-button-url-regexp 0 t gnus-button-url 0)
+    ("^[^:]+:" "\\(<\\(url: \\)?news:\\([^>\n ]*\\)>\\)" 1 t
+     gnus-button-message-id 3))
+  "Alist of headers and regexps to match buttons in article heads.
+
+This alist is very similar to `gnus-button-alist', except that each
+alist has an additional HEADER element first in each entry:
+
+\(HEADER REGEXP BUTTON FORM CALLBACK PAR)
+
+HEADER is a regexp to match a header.  For a fuller explanation, see
+`gnus-button-alist'.")
+
+(defvar gnus-button-regexp nil)
+(defvar gnus-button-marker-list nil)
+;; Regexp matching any of the regexps from `gnus-button-alist'.
+
+(defvar gnus-button-last nil)
+;; The value of `gnus-button-alist' when `gnus-button-regexp' was build.
+
+;;; Commands:
+
+(defun gnus-article-push-button (event)
+  "Check text under the mouse pointer for a callback function.
+If the text under the mouse pointer has a `gnus-callback' property,
+call it with the value of the `gnus-data' text property."
+  (interactive "e")
+  (set-buffer (window-buffer (posn-window (event-start event))))
+  (let* ((pos (posn-point (event-start event)))
+         (data (get-text-property pos 'gnus-data))
+	 (fun (get-text-property pos 'gnus-callback)))
+    (if fun (funcall fun data))))
+
+(defun gnus-article-press-button ()
+  "Check text at point for a callback function.
+If the text at point has a `gnus-callback' property,
+call it with the value of the `gnus-data' text property."
+  (interactive)
+  (let* ((data (get-text-property (point) 'gnus-data))
+	 (fun (get-text-property (point) 'gnus-callback)))
+    (if fun (funcall fun data))))
+
+(defun gnus-article-prev-button (n)
+  "Move point to N buttons backward.
+If N is negative, move forward instead."
+  (interactive "p")
+  (gnus-article-next-button (- n)))
+
+(defun gnus-article-next-button (n)
+  "Move point to N buttons forward.
+If N is negative, move backward instead."
+  (interactive "p")
+  (let ((function (if (< n 0) 'previous-single-property-change
+		    'next-single-property-change))
+	(inhibit-point-motion-hooks t)
+	(backward (< n 0))
+	(limit (if (< n 0) (point-min) (point-max))))
+    (setq n (abs n))
+    (while (and (not (= limit (point)))
+		(> n 0))
+      ;; Skip past the current button.
+      (when (get-text-property (point) 'gnus-callback)
+	(goto-char (funcall function (point) 'gnus-callback nil limit)))
+      ;; Go to the next (or previous) button.
+      (gnus-goto-char (funcall function (point) 'gnus-callback nil limit))
+      ;; Put point at the start of the button.
+      (when (and backward (not (get-text-property (point) 'gnus-callback)))
+	(goto-char (funcall function (point) 'gnus-callback nil limit)))
+      ;; Skip past intangible buttons.
+      (when (get-text-property (point) 'intangible)
+	(incf n))
+      (decf n))
+    (unless (zerop n)
+      (gnus-message 5 "No more buttons"))
+    n))
+
+(defun gnus-article-highlight (&optional force)
+  "Highlight current article.
+This function calls `gnus-article-highlight-headers',
+`gnus-article-highlight-citation', 
+`gnus-article-highlight-signature', and `gnus-article-add-buttons' to
+do the highlighting.  See the documentation for those functions."
+  (interactive (list 'force))
+  (gnus-article-highlight-headers)
+  (gnus-article-highlight-citation force)
+  (gnus-article-highlight-signature)
+  (gnus-article-add-buttons force)
+  (gnus-article-add-buttons-to-head))
+
+(defun gnus-article-highlight-some (&optional force)
+  "Highlight current article.
+This function calls `gnus-article-highlight-headers',
+`gnus-article-highlight-signature', and `gnus-article-add-buttons' to
+do the highlighting.  See the documentation for those functions."
+  (interactive (list 'force))
+  (gnus-article-highlight-headers)
+  (gnus-article-highlight-signature)
+  (gnus-article-add-buttons))
+
+(defun gnus-article-highlight-headers ()
+  "Highlight article headers as specified by `gnus-header-face-alist'."
+  (interactive)
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (save-restriction
+      (let ((alist gnus-header-face-alist)
+	    (buffer-read-only nil)
+	    (case-fold-search t)
+	    (inhibit-point-motion-hooks t)
+	    entry regexp header-face field-face from hpoints fpoints)
+	(goto-char (point-min))
+	(when (search-forward "\n\n" nil t)
+	  (narrow-to-region (1- (point)) (point-min))
+	  (while (setq entry (pop alist))
+	    (goto-char (point-min))
+	    (setq regexp (concat "^\\("
+				 (if (string-equal "" (nth 0 entry))
+				     "[^\t ]"
+				   (nth 0 entry))
+				 "\\)")
+		  header-face (nth 1 entry)
+		  field-face (nth 2 entry))
+	    (while (and (re-search-forward regexp nil t)
+			(not (eobp)))
+	      (beginning-of-line)
+	      (setq from (point))
+	      (or (search-forward ":" nil t)
+		  (forward-char 1))
+	      (when (and header-face
+			 (not (memq (point) hpoints)))
+		(push (point) hpoints)
+		(gnus-put-text-property from (point) 'face header-face))
+	      (when (and field-face
+			 (not (memq (setq from (point)) fpoints)))
+		(push from fpoints)
+		(if (re-search-forward "^[^ \t]" nil t)
+		    (forward-char -2)
+		  (goto-char (point-max)))
+		(gnus-put-text-property from (point) 'face field-face)))))))))
+
+(defun gnus-article-highlight-signature ()
+  "Highlight the signature in an article.
+It does this by highlighting everything after
+`gnus-signature-separator' using `gnus-signature-face'." 
+  (interactive)
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (let ((buffer-read-only nil)
+	  (inhibit-point-motion-hooks t))
+      (save-restriction
+	(when (and gnus-signature-face
+		   (article-narrow-to-signature))
+	  (gnus-overlay-put (gnus-make-overlay (point-min) (point-max))
+			    'face gnus-signature-face)
+	  (widen)
+	  (article-search-signature)
+	  (let ((start (match-beginning 0))
+		(end (set-marker (make-marker) (1+ (match-end 0)))))
+	    (gnus-article-add-button start (1- end) 'gnus-signature-toggle
+				     end)))))))
+
+(defun gnus-article-add-buttons (&optional force)
+  "Find external references in the article and make buttons of them.
+\"External references\" are things like Message-IDs and URLs, as
+specified by `gnus-button-alist'."
+  (interactive (list 'force))
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    ;; Remove all old markers.
+    (while gnus-button-marker-list
+      (set-marker (pop gnus-button-marker-list) nil))
+    (let ((buffer-read-only nil)
+	  (inhibit-point-motion-hooks t)
+	  (case-fold-search t)
+	  (alist gnus-button-alist)
+	  beg entry regexp)
+      (goto-char (point-min))
+      ;; We skip the headers.
+      (unless (search-forward "\n\n" nil t)
+	(goto-char (point-max)))
+      (setq beg (point))
+      (while (setq entry (pop alist))
+	(setq regexp (car entry))
+	(goto-char beg)
+	(while (re-search-forward regexp nil t)
+	  (let* ((start (and entry (match-beginning (nth 1 entry))))
+		 (end (and entry (match-end (nth 1 entry))))
+		 (from (match-beginning 0)))
+	    (when (or (eq t (nth 1 entry))
+		      (eval (nth 1 entry)))
+	      ;; That optional form returned non-nil, so we add the
+	      ;; button. 
+	      (gnus-article-add-button 
+	       start end 'gnus-button-push 
+	       (car (push (set-marker (make-marker) from)
+			  gnus-button-marker-list))))))))))
+
+;; Add buttons to the head of an article.
+(defun gnus-article-add-buttons-to-head ()
+  "Add buttons to the head of the article."
+  (interactive)
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (let ((buffer-read-only nil)
+	  (inhibit-point-motion-hooks t)
+	  (case-fold-search t)
+	  (alist gnus-header-button-alist)
+	  entry beg end)
+      (nnheader-narrow-to-headers)
+      (while alist
+	;; Each alist entry.
+	(setq entry (car alist)
+	      alist (cdr alist))
+	(goto-char (point-min))
+	(while (re-search-forward (car entry) nil t)
+	  ;; Each header matching the entry.
+	  (setq beg (match-beginning 0))
+	  (setq end (or (and (re-search-forward "^[^ \t]" nil t)
+			     (match-beginning 0))
+			(point-max)))
+	  (goto-char beg)
+	  (while (re-search-forward (nth 1 entry) end t)
+	    ;; Each match within a header.
+	    (let* ((from (match-beginning 0))
+		   (entry (cdr entry))
+		   (start (match-beginning (nth 1 entry)))
+		   (end (match-end (nth 1 entry)))
+		   (form (nth 2 entry)))
+	      (goto-char (match-end 0))
+	      (and (eval form)
+		   (gnus-article-add-button 
+		    start end (nth 3 entry)
+		    (buffer-substring (match-beginning (nth 4 entry))
+				      (match-end (nth 4 entry)))))))
+	  (goto-char end))))
+    (widen)))
+
+;;; External functions:
+
+(defun gnus-article-add-button (from to fun &optional data)
+  "Create a button between FROM and TO with callback FUN and data DATA."
+  (and gnus-article-button-face
+       (gnus-overlay-put (gnus-make-overlay from to)
+			 'face gnus-article-button-face))
+  (gnus-add-text-properties 
+   from to
+   (nconc (and gnus-article-mouse-face
+	       (list gnus-mouse-face-prop gnus-article-mouse-face))
+	  (list 'gnus-callback fun)
+	  (and data (list 'gnus-data data)))))
+
+;;; Internal functions:
+
+(defun gnus-signature-toggle (end)
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (let ((buffer-read-only nil)
+	  (inhibit-point-motion-hooks t))
+      (if (get-text-property end 'invisible)
+	  (article-unhide-text end (point-max))
+	(article-hide-text end (point-max) gnus-hidden-properties)))))
+
+(defun gnus-button-entry ()
+  ;; Return the first entry in `gnus-button-alist' matching this place.
+  (let ((alist gnus-button-alist)
+	(entry nil))
+    (while alist
+      (setq entry (pop alist))
+      (if (looking-at (car entry))
+	  (setq alist nil)
+	(setq entry nil)))
+    entry))
+
+(defun gnus-button-push (marker)
+  ;; Push button starting at MARKER.
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (goto-char marker)
+    (let* ((entry (gnus-button-entry))
+	   (inhibit-point-motion-hooks t)
+	   (fun (nth 3 entry))
+	   (args (mapcar (lambda (group) 
+			   (let ((string (buffer-substring
+					  (match-beginning group)
+					  (match-end group))))
+			     (gnus-set-text-properties
+			      0 (length string) nil string)
+			     string))
+			 (nthcdr 4 entry))))
+      (cond
+       ((fboundp fun)
+	(apply fun args))
+       ((and (boundp fun)
+	     (fboundp (symbol-value fun)))
+	(apply (symbol-value fun) args))
+       (t
+	(gnus-message 1 "You must define `%S' to use this button"
+		      (cons fun args)))))))
+
+(defun gnus-button-message-id (message-id)
+  "Fetch MESSAGE-ID."
+  (save-excursion
+    (set-buffer gnus-summary-buffer)
+    (gnus-summary-refer-article message-id)))
+
+(defun gnus-button-mailto (address)
+  ;; Mail to ADDRESS.
+  (set-buffer (gnus-copy-article-buffer))
+  (message-reply address))
+
+(defun gnus-button-reply (address)
+  ;; Reply to ADDRESS.
+  (message-reply address))
+
+(defun gnus-button-url (address)
+  "Browse ADDRESS."
+  (funcall browse-url-browser-function address browse-url-new-window-p))
+
+;;; Next/prev buttons in the article buffer.
+
+(defvar gnus-next-page-line-format "%{%(Next page...%)%}\n")
+(defvar gnus-prev-page-line-format "%{%(Previous page...%)%}\n")
+
+(defvar gnus-prev-page-map nil)
+(unless gnus-prev-page-map
+  (setq gnus-prev-page-map (make-sparse-keymap))
+  (define-key gnus-prev-page-map gnus-mouse-2 'gnus-button-prev-page)
+  (define-key gnus-prev-page-map "\r" 'gnus-button-prev-page))
+
+(defun gnus-insert-prev-page-button ()
+  (let ((buffer-read-only nil))
+    (gnus-eval-format 
+     gnus-prev-page-line-format nil
+     `(gnus-prev t local-map ,gnus-prev-page-map
+		 gnus-callback gnus-article-button-prev-page))))
+
+(defvar gnus-next-page-map nil)
+(unless gnus-next-page-map
+  (setq gnus-next-page-map (make-keymap))
+  (suppress-keymap gnus-prev-page-map)
+  (define-key gnus-next-page-map gnus-mouse-2 'gnus-button-next-page)
+  (define-key gnus-next-page-map "\r" 'gnus-button-next-page))
+
+(defun gnus-button-next-page ()
+  "Go to the next page."
+  (interactive)
+  (let ((win (selected-window)))
+    (select-window (get-buffer-window gnus-article-buffer t))
+    (gnus-article-next-page)
+    (select-window win)))
+
+(defun gnus-button-prev-page ()
+  "Go to the prev page."
+  (interactive)
+  (let ((win (selected-window)))
+    (select-window (get-buffer-window gnus-article-buffer t))
+    (gnus-article-prev-page)
+    (select-window win)))
+
+(defun gnus-insert-next-page-button ()
+  (let ((buffer-read-only nil))
+    (gnus-eval-format gnus-next-page-line-format nil
+		      `(gnus-next t local-map ,gnus-next-page-map
+				  gnus-callback 
+				  gnus-article-button-next-page))))
+
+(defun gnus-article-button-next-page (arg)
+  "Go to the next page."
+  (interactive "P")
+  (let ((win (selected-window)))
+    (select-window (get-buffer-window gnus-article-buffer t))
+    (gnus-article-next-page)
+    (select-window win)))
+
+(defun gnus-article-button-prev-page (arg)
+  "Go to the prev page."
+  (interactive "P")
+  (let ((win (selected-window)))
+    (select-window (get-buffer-window gnus-article-buffer t))
+    (gnus-article-prev-page)
+    (select-window win)))
 
 (provide 'gnus-art)
 

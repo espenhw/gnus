@@ -129,7 +129,7 @@ less than this variable, are subscribed.")
 
 (defvar gnus-activate-level (1+ gnus-level-subscribed)
   "*Groups higher than this level won't be activated on startup.
-Setting this variable to something log might save lots of time when
+Setting this variable to something low might save lots of time when
 you have many groups that you aren't interested in.")
 
 (defvar gnus-activate-foreign-newsgroups 4

@@ -1,9 +1,18 @@
+Sun Aug 11 02:52:37 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (User-Defined Specs): Correction.
+	(Unavailable Servers): Addition.
+	(Moderation): New.
+	(Summary Mail Commands): Addition.
+	(Crosspost Handling): Addition.
+
 Sat Aug 10 00:13:39 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Summary Buffer Lines): Correction.
 	(Top): Name fix.
 	(Compilation ): Addition.
 	(Group Parameters): Addition.
+	(Troubleshooting): Addition.
 
 Fri Aug  9 07:17:59 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 

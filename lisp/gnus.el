@@ -28,7 +28,7 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
-(defconst gnus-version-number "0.10"
+(defconst gnus-version-number "0.11"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -794,15 +794,15 @@ Allow completion over sensible values."
      ((equal method "")
       (setq method gnus-select-method))
      ((assoc method gnus-valid-select-methods)
-      (list method
+      (list (intern method)
 	    (if (memq 'prompt-address
 		      (assoc method gnus-valid-select-methods))
 		(read-string "Address: ")
 	      "")))
      ((assoc method gnus-server-alist)
-      (list method))
+      (cdr (assoc method gnus-server-alist)))
      (t
-      (list method "")))))
+      (list (intern method) "")))))
 
 ;;; User-level commands.
 

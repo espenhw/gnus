@@ -213,13 +213,18 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	       (setq from (mail-fetch-field "from"))
 	       (setq from (downcase (or (cadr (mail-extract-address-components
 					       from))
-					""))
-		     at-idx (string-match "@" from)))
+					"")))
+	       (or (setq at-idx (string-match "@" from))
+		   (setq at-idx (length from))))
       (save-excursion
 	(let ((username (substring from 0 at-idx))
-	      (addrs (nreverse
-		      (message-tokenize-header (substring from (1+ at-idx))
-					       "."))))
+	      (addrs (if (eq at-idx (length from))
+			 (if gnus-local-domain
+			     (nreverse (message-tokenize-header
+					gnus-local-domain "."))
+			   '(""))
+		       (nreverse (message-tokenize-header 
+				  (substring from (1+ at-idx)) ".")))))
 	  (set-buffer (get-buffer-create
 		       (gnus-get-buffer-name gnus-picons-display-where)))
 	  (gnus-add-current-to-buffer-list)

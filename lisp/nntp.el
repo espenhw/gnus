@@ -141,6 +141,13 @@ server there that you can connect to. See also `nntp-open-connection-function'")
 
 ;;; Internal variables.
 
+(defvar nntp-process-wait-for nil)
+(defvar nntp-process-to-buffer nil)
+(defvar nntp-process-callback nil)
+(defvar nntp-process-decode nil)
+(defvar nntp-process-start-point nil)
+(defvar nntp-inside-change-function nil)
+
 (defvoo nntp-server-type nil)
 (defvoo nntp-connection-alist nil)
 (defvoo nntp-status-string "")
@@ -290,7 +297,6 @@ server there that you can connect to. See also `nntp-open-connection-function'")
     (while (setq process (car (pop nntp-connection-alist)))
       (when (memq (process-status process) '(open run))
 	(set-process-sentinel process nil)
-	(set-process-filter process nil)
 	(nntp-send-string process "QUIT"))
       (when (buffer-name (process-buffer process))
 	(kill-buffer (process-buffer process))))
@@ -317,9 +323,6 @@ server there that you can connect to. See also `nntp-open-connection-function'")
 	(nntp-send-command "^\\.\r?\n" "NEWGROUPS" time-string)
       (nntp-decode-text))))
 
-(deffoo nntp-asynchronous-p ()
-  t)
-
 (deffoo nntp-request-post (&optional server)
   (nntp-possibly-change-group nil server)
   (when (nntp-send-command "^[23].*\r?\n" "POST")
@@ -328,6 +331,9 @@ server there that you can connect to. See also `nntp-open-connection-function'")
 (deffoo nntp-request-type (group article)
   'news)
   
+(deffoo nntp-asynchronous-p ()
+  t)
+
 ;;; Hooky functions.
 
 (defun nntp-send-mode-reader ()
@@ -344,7 +350,7 @@ It will prompt for a password."
   (nntp-send-command "^.*\r?\n" "AUTHINFO USER"
 		     (read-string "NNTP user name: "))
   (nntp-send-command "^.*\r?\n" "AUTHINFO PASS" 
-		     (read-string "NNTP password: ")))
+		     (nnmail-read-passwd "NNTP password: ")))
 
 (defun nntp-send-authinfo ()
   "Send the AUTHINFO to the nntp server.
@@ -442,17 +448,27 @@ It will prompt for a password."
     (when process
       (process-buffer process))))
 
+(defun nntp-make-process-buffer (buffer)
+  "Create a new, fresh buffer usable for nntp process connections."
+  (save-excursion
+    (set-buffer 
+     (generate-new-buffer
+      (format " *server %s %s %s*"
+	      nntp-address nntp-port-number
+	      (buffer-name (get-buffer buffer)))))
+    (buffer-disable-undo (current-buffer))
+    (set (make-local-variable 'after-change-functions) nil)
+    (set (make-local-variable 'nntp-process-wait-for) nil)
+    (set (make-local-variable 'nntp-process-callback) nil)
+    (set (make-local-variable 'nntp-process-to-buffer) nil)
+    (set (make-local-variable 'nntp-process-start-point) nil)
+    (set (make-local-variable 'nntp-process-decode) nil)
+    (current-buffer)))
+
 (defun nntp-open-connection (buffer)
   "Open a connection to PORT on ADDRESS delivering output to BUFFER."
   (run-hooks 'nntp-prepare-server-hook)
-  (let* ((pbuffer (save-excursion
-		    (set-buffer 
-		     (generate-new-buffer
-		      (format " *server %s %s %s*"
-			      nntp-address nntp-port-number
-			      (buffer-name (get-buffer buffer)))))
-		    (buffer-disable-undo (current-buffer))
-		    (current-buffer)))
+  (let* ((pbuffer (nntp-make-process-buffer buffer))
 	 (process
 	  (condition-case ()
 	      (funcall
@@ -489,46 +505,36 @@ It will prompt for a password."
 	    (eval (cadr entry))
 	  (funcall (cadr entry)))))))
 
-(defvar nntp-tmp-first)
-(defvar nntp-tmp-wait-for)
-(defvar nntp-tmp-callback)
-(defvar nntp-tmp-buffer)
-
-(defun nntp-make-process-filter (wait-for callback buffer decode)
-  `(lambda (proc string)
-     (let ((nntp-tmp-wait-for ,wait-for)
-	   (nntp-tmp-callback ,callback)
-	   (nntp-tmp-buffer ,buffer))
-       (nntp-process-filter proc string))))
-
-(defun nntp-process-filter (proc string)
-  "Process filter used for waiting a calling back."
-  (let ((old-buffer (current-buffer)))
-    (unwind-protect
-	(let (point)
-	  (set-buffer (process-buffer proc))
-	  ;; Insert the text, moving the process-marker.
-	  (setq point (goto-char (process-mark proc)))
-	  (insert string)
-	  (set-marker (process-mark proc) (point))
-	  (if (and (= point (point-min))
-		   (string-match "^45" string))
-	      (progn
-		(nntp-snarf-error-message)
-		(set-process-filter proc nil)
-		(funcall nntp-tmp-callback nil))
-	    (setq nntp-tmp-first nil)
-	    (if (re-search-backward nntp-tmp-wait-for nil t)
-		(progn
-		  (if (buffer-name (get-buffer nntp-tmp-buffer))
-		      (save-excursion
-			(set-buffer (get-buffer nntp-tmp-buffer))
-			(goto-char (point-max))
-			(insert-buffer-substring (process-buffer proc))))
-		  (set-process-filter proc nil)
-		  (erase-buffer)
-		  (funcall nntp-tmp-callback t)))))
-      (set-buffer old-buffer))))
+(defun nntp-after-change-function (beg end len)
+  (when nntp-process-callback
+    (save-match-data
+      (if (and (= beg (point-min))
+	       (memq (char-after beg) '(?4 ?5)))
+	  ;; Report back error messages.
+	  (progn
+	    (nntp-snarf-error-message)
+	    (funcall nntp-process-callback nil))
+	(goto-char end)
+	(when (and (> (point) nntp-process-start-point)
+		   (re-search-backward nntp-process-wait-for
+				       nntp-process-start-point t))
+	  (when nntp-process-decode
+	    ;(nntp-decode-text)
+	    )
+	  (when (buffer-name (get-buffer nntp-process-to-buffer))
+	    (let ((cur (current-buffer))
+		  (start nntp-process-start-point))
+	      (save-excursion
+		(set-buffer (get-buffer nntp-process-to-buffer))
+		(goto-char (point-max))
+		(insert-buffer-substring cur start))))
+	  (goto-char end)
+	  ;(erase-buffer)
+	  (let ((callback nntp-process-callback)
+		(nntp-inside-change-function t))
+	    (setq nntp-process-callback nil)
+	    (save-excursion
+	      (funcall callback t))))))))
 
 (defun nntp-retrieve-data (command address port buffer
 				   &optional wait-for callback decode)
@@ -537,7 +543,7 @@ It will prompt for a password."
 		     (nntp-open-connection buffer))))
     (if (not process)
 	(nnheader-report 'nntp "Couldn't open connection to %a" address)
-      (unless nntp-inhibit-erase
+      (unless (or nntp-inhibit-erase nnheader-callback-function)
 	(save-excursion
 	  (set-buffer (process-buffer process))
 	  (erase-buffer)))
@@ -547,11 +553,18 @@ It will prompt for a password."
        ((eq callback 'ignore)
 	t)
        ((and callback wait-for)
-	(set-process-filter
-	 process (nntp-make-process-filter wait-for callback buffer decode))
+	(save-excursion
+	  (set-buffer (process-buffer process))
+	  (unless nntp-inside-change-function 
+	    (erase-buffer))
+	  (setq nntp-process-decode decode
+		nntp-process-to-buffer buffer
+		nntp-process-wait-for wait-for
+		nntp-process-callback callback
+		nntp-process-start-point (point-max)
+		after-change-functions (list 'nntp-after-change-function)))
 	t)
        (wait-for 
-	(set-process-filter process nil)
 	(nntp-wait-for process wait-for buffer decode))
        (t t)))))
 

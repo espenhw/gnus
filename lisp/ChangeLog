@@ -1,3 +1,88 @@
+Mon Aug 12 03:51:57 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-async.el (gnus-make-async-article-function): New function.
+	(gnus-async-prefetch-article): Use it.
+
+Sat Aug 10 07:16:29 1996  Greg Stark  <gsstark@mit.edu>
+
+	* gnus-start.el (gnus-activate-level): Doc fix.
+
+Sun Aug 11 03:33:02 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-summary-mail-crosspost-complaint): New command.
+	(gnus-crosspost-message): New variable.
+
+	* gnus-vis.el: Removed file -- functions spread out over
+	gnus-group.el, gnus-sum.el and gnus-art.el.
+
+	* gnus-util.el (gnus-turn-off-edit-menu): Renamed function.
+
+	* gnus-salt.el (gnus-carpal-mode): Moved to this file.
+
+	* gnus-vis.el (gnus-score-set-default): Removed.
+	(gnus-visual-score-map): Removed.
+
+	* nntp.el (nntp-send-nosy-authinfo): Don't echo password.
+
+	* gnus-srvr.el (gnus-server-open-all-servers): New command and
+	keystroke. 
+	(gnus-server-close-all-servers): Ditto.
+
+	* gnus-async.el (gnus-async-get-semaphore): New function.
+	(gnus-async-release-semaphore): New function.
+	(gnus-async-prefetch-article): Use them.
+
+	* nntp.el (nntp-make-process-buffer): New function.
+	(nntp-retrieve-data): Use after-change instead of filter.
+	(nntp-after-change-function): New function.
+
+	* gnus.el (gnus-read-method): Intern method.
+
+	* gnus-cache.el (gnus-cache-save-buffers): Didn't check before
+	making dir.
+
+Sat Aug 10 14:55:33 1996  Sudish Joseph  <sudish@mindspring.com>
+
+	* gnus-win.el (gnus-buffer-configuration): Don't create picon
+	frame if gnus-picons-display-where is 'article.
+
+Sun Aug 11 02:47:30 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-vis.el (gnus-highlight-selected-summary): Would bug out on
+	some lines. 
+
+	* gnus-spec.el (gnus-tilde-cut-form): Typo.
+	(gnus-parse-simple-format): Forgot to check `max-right' and
+	`max-left'.
+	(gnus-compile): Don't issue warnings.
+
+Fri Aug  2 14:53:02 1996  Christoph Wedler  <wedler@fmi.uni-passau.de>
+	
+	* smiley.el (smiley-buffer): `smiley-regexp-alist' can be a symbol
+	now.
+
+Sun Aug 11 02:37:57 1996  Greg Stark  <gsstark@mit.edu>
+
+	* gnus-msg.el (gnus-post-method): Tested the wrong variable. 
+
+Sun Aug 11 02:28:30 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-check-news-syntax): Messaged wrong number.
+
+Sat Aug 10 11:26:56 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-y-or-n-p): Moved to before usage.
+
+Fri Aug  9 16:42:52 1996  Danny Siu  <dsiu@adobe.com>
+
+	* gnus-picon.el (gnus-article-display-picons): display picon even if
+	From line doesn't have full domain name.
+
+Sat Aug 10 10:11:21 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-reply): Didn't narrow properly to the head.
+	(message-indent-citation): Remove all blank lines at the start. 
+
 Sat Aug 10 07:00:34 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.el: Red Gnus v0.9 is released.

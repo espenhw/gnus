@@ -71,7 +71,7 @@ with some simple extensions.")
   "*Hook run after the creation of the server mode menu.")
 
 (defun gnus-server-make-menu-bar ()
-  (gnus-visual-turn-off-edit-menu 'server)
+  (gnus-turn-off-edit-menu 'server)
   (unless (boundp 'gnus-server-server-menu)
     (easy-menu-define
      gnus-server-server-menu gnus-server-mode-map ""
@@ -92,7 +92,10 @@ with some simple extensions.")
        ["Open" gnus-server-open-server t]
        ["Close" gnus-server-close-server t]
        ["Deny" gnus-server-deny-server t]
-       ["Reset" gnus-server-remove-denials t]
+       "---"
+       ["Open All" gnus-server-open-all-servers t]
+       ["Close All" gnus-server-close-all-servers t]
+       ["Reset All" gnus-server-remove-denials t]
        ))
 
     (run-hooks 'gnus-server-menu-hook)))
@@ -118,7 +121,9 @@ with some simple extensions.")
    "e" gnus-server-edit-server
 
    "O" gnus-server-open-server
+   "M-o" gnus-server-open-all-servers
    "C" gnus-server-close-server
+   "M-c" gnus-server-close-all-servers
    "D" gnus-server-deny-server
    "R" gnus-server-remove-denials
 
@@ -341,6 +346,13 @@ The following commands are available:
       (gnus-server-update-server server)
       (gnus-server-position-point))))
 
+(defun gnus-server-open-all-servers ()
+  "Open all servers."
+  (interactive)
+  (let ((servers gnus-inserted-opened-servers))
+    (while servers
+      (gnus-server-open-server (car (pop servers))))))
+
 (defun gnus-server-close-server (server)
   "Close SERVER."
   (interactive (list (gnus-server-server-name)))
@@ -351,6 +363,13 @@ The following commands are available:
 	(gnus-close-server method)
       (gnus-server-update-server server)
       (gnus-server-position-point))))
+
+(defun gnus-server-close-all-servers ()
+  "Close all servers."
+  (interactive)
+  (let ((servers gnus-inserted-opened-servers))
+    (while servers
+      (gnus-server-close-server (car (pop servers))))))
 
 (defun gnus-server-deny-server (server)
   "Make sure SERVER will never be attempted opened."
@@ -481,21 +500,19 @@ The following commands are available:
    "\C-c\C-i" gnus-info-find-node))
 
 (defun gnus-browse-make-menu-bar ()
-  (gnus-visual-turn-off-edit-menu 'browse)
-  (or
-   (boundp 'gnus-browse-menu)
-   (progn
-     (easy-menu-define
-      gnus-browse-menu gnus-browse-mode-map ""
-      '("Browse"
-	["Subscribe" gnus-browse-unsubscribe-current-group t]
-	["Read" gnus-browse-read-group t]
-	["Select" gnus-browse-read-group t]
-	["Next" gnus-browse-next-group t]
-	["Prev" gnus-browse-next-group t]
-	["Exit" gnus-browse-exit t]
-	))
-      (run-hooks 'gnus-browse-menu-hook))))
+  (gnus-turn-off-edit-menu 'browse)
+  (unless (boundp 'gnus-browse-menu)
+    (easy-menu-define
+     gnus-browse-menu gnus-browse-mode-map ""
+     '("Browse"
+       ["Subscribe" gnus-browse-unsubscribe-current-group t]
+       ["Read" gnus-browse-read-group t]
+       ["Select" gnus-browse-read-group t]
+       ["Next" gnus-browse-next-group t]
+       ["Prev" gnus-browse-next-group t]
+       ["Exit" gnus-browse-exit t]
+       ))
+    (run-hooks 'gnus-browse-menu-hook)))
 
 (defvar gnus-browse-current-method nil)
 (defvar gnus-browse-return-buffer nil)

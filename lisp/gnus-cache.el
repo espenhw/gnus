@@ -102,7 +102,8 @@ variable to \"^nnml\".")
 	    (if (> (buffer-size) 0)
 		;; non-empty overview, write it out
 		(progn
-		  (make-directory (file-name-directory overview-file) t)
+		  (unless (file-exists-p (file-name-directory overview-file))
+		    (make-directory (file-name-directory overview-file) t))
 		  (write-region (point-min) (point-max)
 				overview-file nil 'quietly))
 	      ;; empty overview file, remove it

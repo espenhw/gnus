@@ -153,6 +153,9 @@ with some simple extensions:
 (defvar gnus-group-mode-hook nil
   "*A hook for Gnus group mode.")
 
+(defvar gnus-group-menu-hook nil
+  "*Hook run after the creation of the group mode menu.")
+
 (defvar gnus-group-catchup-group-hook nil
   "*A hook run when catching up a group from the group buffer.")
 
@@ -389,6 +392,170 @@ variable.")
     "w" gnus-group-kill-region
     "\C-k" gnus-group-kill-level
     "z" gnus-group-kill-all-zombies))
+
+
+(defun gnus-group-make-menu-bar ()
+  (gnus-turn-off-edit-menu 'group)
+  (unless (boundp 'gnus-group-reading-menu)
+
+    (easy-menu-define
+     gnus-group-reading-menu gnus-group-mode-map ""
+     '("Group"
+       ["Read" gnus-group-read-group (gnus-group-group-name)]
+       ["Select" gnus-group-select-group (gnus-group-group-name)]
+       ["See old articles" (gnus-group-select-group 'all)
+	:keys "C-u SPC" :active (gnus-group-group-name)]
+       ["Catch up" gnus-group-catchup-current (gnus-group-group-name)]
+       ["Catch up all articles" gnus-group-catchup-current-all
+	(gnus-group-group-name)]
+       ["Check for new articles" gnus-group-get-new-news-this-group
+	(gnus-group-group-name)]
+       ["Toggle subscription" gnus-group-unsubscribe-current-group
+	(gnus-group-group-name)]
+       ["Kill" gnus-group-kill-group (gnus-group-group-name)]
+       ["Yank" gnus-group-yank-group gnus-list-of-killed-groups]
+       ["Describe" gnus-group-describe-group (gnus-group-group-name)]
+       ["Fetch FAQ" gnus-group-fetch-faq (gnus-group-group-name)]
+       ["Edit kill file" gnus-group-edit-local-kill
+	(gnus-group-group-name)]
+       ;; Actually one should check, if any of the marked groups gives t for
+       ;; (gnus-check-backend-function 'request-expire-articles ...)
+       ["Expire articles" gnus-group-expire-articles
+	(or (and (gnus-group-group-name)
+		 (gnus-check-backend-function
+		  'request-expire-articles
+		  (gnus-group-group-name))) gnus-group-marked)]
+       ["Set group level" gnus-group-set-current-level
+	(gnus-group-group-name)]
+       ["Select quick" gnus-group-quick-select-group (gnus-group-group-name)]
+       ))
+  
+    (easy-menu-define
+     gnus-group-group-menu gnus-group-mode-map ""
+     '("Groups"
+       ("Listing"
+	["List unread subscribed groups" gnus-group-list-groups t]
+	["List (un)subscribed groups" gnus-group-list-all-groups t]
+	["List killed groups" gnus-group-list-killed gnus-killed-list]
+	["List zombie groups" gnus-group-list-zombies gnus-zombie-list]
+	["List level..." gnus-group-list-level t]
+	["Describe all groups" gnus-group-describe-all-groups t]
+	["Group apropos..." gnus-group-apropos t]
+	["Group and description apropos..." gnus-group-description-apropos t]
+	["List groups matching..." gnus-group-list-matching t]
+	["List all groups matching..." gnus-group-list-all-matching t]
+	["List active file" gnus-group-list-active t])
+       ("Sort"
+	["Default sort" gnus-group-sort-groups
+	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	["Sort by method" gnus-group-sort-groups-by-method
+	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	["Sort by rank" gnus-group-sort-groups-by-rank
+	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	["Sort by score" gnus-group-sort-groups-by-score
+	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	["Sort by level" gnus-group-sort-groups-by-level
+	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	["Sort by unread" gnus-group-sort-groups-by-unread
+	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	["Sort by name" gnus-group-sort-groups-by-alphabet
+	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))])
+       ("Mark"
+	["Mark group" gnus-group-mark-group
+	 (and (gnus-group-group-name)
+	      (not (memq (gnus-group-group-name) gnus-group-marked)))]
+	["Unmark group" gnus-group-unmark-group
+	 (and (gnus-group-group-name)
+	      (memq (gnus-group-group-name) gnus-group-marked))]
+	["Unmark all" gnus-group-unmark-all-groups gnus-group-marked]
+	["Mark regexp..." gnus-group-mark-regexp t]
+	["Mark region" gnus-group-mark-region t]
+	["Mark buffer" gnus-group-mark-buffer t]
+	["Execute command" gnus-group-universal-argument
+	 (or gnus-group-marked (gnus-group-group-name))])
+       ("Subscribe"
+	["Subscribe to a group" gnus-group-unsubscribe-group t]
+	["Kill all newsgroups in region" gnus-group-kill-region t]
+	["Kill all zombie groups" gnus-group-kill-all-zombies
+	 gnus-zombie-list]
+	["Kill all groups on level..." gnus-group-kill-level t])
+       ("Foreign groups"
+	["Make a foreign group" gnus-group-make-group t]
+	["Add a directory group" gnus-group-make-directory-group t]
+	["Add the help group" gnus-group-make-help-group t]
+	["Add the archive group" gnus-group-make-archive-group t]
+	["Make a doc group" gnus-group-make-doc-group t]
+	["Make a kiboze group" gnus-group-make-kiboze-group t]
+	["Make a virtual group" gnus-group-make-empty-virtual t]
+	["Add a group to a virtual" gnus-group-add-to-virtual t]
+	["Rename group" gnus-group-rename-group
+	 (gnus-check-backend-function
+	  'request-rename-group (gnus-group-group-name))]
+	["Delete group" gnus-group-delete-group
+	 (gnus-check-backend-function
+	  'request-delete-group (gnus-group-group-name))])
+       ("Editing groups"
+	["Parameters" gnus-group-edit-group-parameters
+	 (gnus-group-group-name)]
+	["Select method" gnus-group-edit-group-method
+	 (gnus-group-group-name)]
+	["Info" gnus-group-edit-group (gnus-group-group-name)])
+       ("Score file"
+	["Flush cache" gnus-score-flush-cache
+	 (or gnus-score-cache gnus-short-name-score-file-cache)])
+       ("Move"
+	["Next" gnus-group-next-group t]
+	["Previous" gnus-group-prev-group t]
+	["Next unread" gnus-group-next-unread-group t]
+	["Previous unread" gnus-group-prev-unread-group t]
+	["Next unread same level" gnus-group-next-unread-group-same-level t]
+	["Previous unread same level"
+	 gnus-group-previous-unread-group-same-level t]
+	["Jump to group" gnus-group-jump-to-group t]
+	["First unread group" gnus-group-first-unread-group t]
+	["Best unread group" gnus-group-best-unread-group t])
+       ["Transpose" gnus-group-transpose-groups
+	(gnus-group-group-name)]
+       ["Read a directory as a group..." gnus-group-enter-directory t]
+       ))
+
+    (easy-menu-define
+     gnus-group-misc-menu gnus-group-mode-map ""
+     '("Misc"
+       ["Send a bug report" gnus-bug t]
+       ["Send a mail" gnus-group-mail t]
+       ["Post an article..." gnus-group-post-news t]
+       ["Customize score file" gnus-score-customize t]
+       ["Check for new news" gnus-group-get-new-news t]     
+       ["Activate all groups" gnus-activate-all-groups t]
+       ["Delete bogus groups" gnus-group-check-bogus-groups t]
+       ["Find new newsgroups" gnus-find-new-newsgroups t]
+       ["Restart Gnus" gnus-group-restart t]
+       ["Read init file" gnus-group-read-init-file t]
+       ["Browse foreign server" gnus-group-browse-foreign-server t]
+       ["Enter server buffer" gnus-group-enter-server-mode t]
+       ["Expire all expirable articles" gnus-group-expire-all-groups t]
+       ["Generate any kiboze groups" nnkiboze-generate-groups t]
+       ["Gnus version" gnus-version t]
+       ["Save .newsrc files" gnus-group-save-newsrc t]
+       ["Suspend Gnus" gnus-group-suspend t]
+       ["Clear dribble buffer" gnus-group-clear-dribble t]
+       ["Edit global kill file" gnus-group-edit-global-kill t]
+       ["Read manual" gnus-info-find-node t]
+       ["Toggle topics" gnus-topic-mode t]
+       ("SOUP"
+	["Pack replies" nnsoup-pack-replies (fboundp 'nnsoup-request-group)]
+	["Send replies" gnus-soup-send-replies
+	 (fboundp 'gnus-soup-pack-packet)]
+	["Pack packet" gnus-soup-pack-packet (fboundp 'gnus-soup-pack-packet)]
+	["Save areas" gnus-soup-save-areas (fboundp 'gnus-soup-pack-packet)]
+	["Brew SOUP" gnus-soup-brew-soup (fboundp 'gnus-soup-pack-packet)])
+       ["Exit from Gnus" gnus-group-exit t]
+       ["Exit without saving" gnus-group-quit t]
+       ))
+
+    (run-hooks 'gnus-group-menu-hook)
+    ))
 
 (defun gnus-group-mode ()
   "Major mode for reading news.
@@ -726,6 +893,38 @@ If REGEXP, only list groups matching REGEXP."
       (forward-line))
     ;; Allow XEmacs to remove front-sticky text properties.
     (gnus-group-remove-excess-properties)))
+
+(defun gnus-group-highlight-line ()
+  "Highlight the current line according to `gnus-group-highlight'."
+  (let* ((list gnus-group-highlight)
+	 (p (point))
+	 (end (progn (end-of-line) (point)))
+	 ;; now find out where the line starts and leave point there.
+	 (beg (progn (beginning-of-line) (point)))
+	 (group (gnus-group-group-name))
+	 (entry (gnus-group-entry group))
+	 (unread (if (numberp (car entry)) (car entry) 0))
+	 (info (nth 2 entry))
+	 (method (gnus-server-get-method group (gnus-info-method info)))
+	 (marked (gnus-info-marks info))
+	 (mailp (memq 'mail (assoc (symbol-name
+				    (car (or method gnus-select-method)))
+				   gnus-valid-select-methods)))
+	 (level (or (gnus-info-level info) 9))
+	 (score (or (gnus-info-score info) 0))
+	 (ticked (gnus-range-length (cdr (assq 'tick marked))))
+	 (inhibit-read-only t))
+    ;; Eval the cars of the lists until we find a match.
+    (while (and list
+		(not (eval (caar list))))
+      (setq list (cdr list)))
+    (let ((face (cdar list)))
+      (unless (eq face (get-text-property beg 'face))
+	(gnus-put-text-property 
+	 beg end 'face 
+	 (setq face (if (boundp face) (symbol-value face) face)))
+	(gnus-extent-start-open beg)))
+    (goto-char p)))
 
 (defun gnus-group-update-group (group &optional visible-only)
   "Update all lines where GROUP appear.

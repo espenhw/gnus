@@ -462,11 +462,15 @@ groups, you'll find it difficult to actually do anything in the group
 buffer.  But, hey, that's your problem.  Blllrph!
 
 @findex gnus-no-server
+@kindex M-x gnus-no-server
 @c @head
 If you know that the server is definitely down, or you just want to read
 your mail without bothering with the server at all, you can use the
 @code{gnus-no-server} command to start Gnus.  That might come in handy
-if you're in a hurry as well.
+if you're in a hurry as well.  This command will not attempt to contact
+your primary server---instead, it will just activate all groups on level
+1 and 2.  (You should preferrably keep no native groups on those two
+levels.) 
 
 
 @node Slave Gnusii
@@ -3235,6 +3239,22 @@ process/prefix convention (@pxref{Process/Prefix}).
 @findex gnus-uu-digest-post-forward
 Digest the current series and forward the result to a newsgroup
 (@code{gnus-uu-digest-mail-forward}).  
+
+@item S M-c
+@kindex S M-c (Summary)
+@findex gnus-summary-mail-crosspost-complaint
+@cindex crossposting
+@cindex excessive crossposting
+Send a complaint about excessive crossposting to the author of the
+current article (@code{gnus-summary-mail-crosspost-complaint}).  
+
+@findex gnus-crosspost-complaint
+This command is provided as a way to fight back agains the current
+crossposting pandemic that's sweeping Usenet.  It will compose a reply
+using the @code{gnus-crosspost-complaint} variable as a preamble.  This
+command understands the process/prefix convention
+(@pxref{Process/Prefix}) and will prompt you before sending each mail.
+
 @end table
 
 
@@ -6291,7 +6311,9 @@ heinous crime.  You may want to try NoCeM handling to filter out spam
 
 Remember: Cross-posting is kinda ok, but posting the same article
 separately to several groups is not.  Massive cross-posting (aka.
-@dfn{velveeta}) is to be avoided at all costs.
+@dfn{velveeta}) is to be avoided at all costs, and you can even use the
+@code{gnus-summary-mail-crosspost-complaint} command to complain about
+excessive crossposting (@pxref{Summary Mail Commands}).
 
 @cindex cross-posting
 @cindex Xref
@@ -7438,6 +7460,18 @@ Close the connection (if any) to the server
 @findex gnus-server-deny-server
 Mark the current server as unreachable
 (@code{gnus-server-deny-server}). 
+
+@item M-o
+@kindex M-o (Server)
+@findex gnus-server-open-all-servers
+Open the connections to all servers in the buffer
+(@code{gnus-server-open-all-servers}). 
+
+@item M-c
+@kindex M-c (Server)
+@findex gnus-server-close-all-servers
+Close the connections to all servers in the buffer
+(@code{gnus-server-close-all-servers}). 
 
 @item R
 @kindex R (Server)
@@ -10866,6 +10900,7 @@ four days, Gnus will decay the scores four times, for instance.
 * Daemons::                    Gnus can do things behind your back.
 * NoCeM::                      How to avoid spam and other fatty foods.
 * Picons::                     How to display pictures of what your reading.
+* Moderation::                 What to do if you're a moderator.
 * Various Various::            Things that are really various.
 @end menu
 
@@ -11081,7 +11116,7 @@ should protect against that.
 
 You can also use tilde modifiers (@pxref{Advanced Formatting} to achieve
 much the same without defining new functions.  Here's an example:
-@samp{%~(form (count-lines (point-min) (point-max)))@@}.  The form
+@samp{%~(form (count-lines (point-min) (point)))@@}.  The form
 given here will be evaluated to yield the current line number, and then
 inserted.
 
@@ -11926,6 +11961,51 @@ The name of the buffer that @code{picons} points to.  Defaults to
 @samp{*Icon Buffer*}.
 
 @end table
+
+
+@node Moderation
+@section Moderation
+@cindex moderation
+
+If you are a moderator, you can use the @file{gnus-mdrtn.el} package.
+It is not included in the standard Gnus package.  Write a mail to
+@samp{larsi@@ifi.uio.no} and state what group you moderate, and you'll
+get a copy.
+
+The moderation package is implemented as a minor mode for summary
+buffers.  Put
+
+@lisp
+(add-hook 'gnus-summary-mode-hook 'gnus-moderate)
+@end lisp
+
+in your @file{.gnus.el} file.
+
+If you are the moderation of @samp{rec.zoofle}, this is how it's
+supposed to work:
+
+@enumerate
+@item 
+You split your incoming mail by matching on
+@samp{Newsgroups:.*rec.zoofle}, which will put all the to-be-posted
+articles in some mail group---@samp{nnml:rec.zoofle}, for instance.
+
+@item
+You enter that group once in a while and post articles using the @kbd{e}
+(edit-and-post) or @kbd{s} (just send unedited) commands.
+
+@item
+If, while reading the @samp{rec.zoofle} newsgroup, you happen upon some
+articles that weren't approved by you, you can cancel them with the
+@kbd{c} command.
+@end enumerate
+
+To use moderation mode in these two groups, say:
+
+@lisp
+(setq gnus-moderatated-groups 
+      "^nnml:rec.zoofle$\\|^rec.zoofle$")
+@end lisp
 
 
 @node Various Various
@@ -12804,6 +12884,13 @@ flee}, you have some old @file{.el} files lying around.  Delete these.
 @item
 Read the help group (@kbd{G h} in the group buffer) for a FAQ and a
 how-to. 
+
+@item
+@vindex max-lisp-eval-depth
+Gnus works on many recursive structures, and in some extreme (and very
+rare) cases Gnus may recurse down ``too deeply'' and Emacs will beep at
+you.  If this happens to you, set @code{max-lisp-eval-depth} to 500 or
+something like that.
 @end enumerate
 
 If all else fails, report the problem as a bug.
@@ -13203,7 +13290,8 @@ user is following up is news or mail.  This function should return
 @code{news} if @var{article} in @var{group} is news, @code{mail} if it
 is mail and @code{unknown} if the type can't be decided.  (The
 @var{article} parameter is necessary in @code{nnvirtual} groups which
-might very well combine mail groups and news groups.)
+might very well combine mail groups and news groups.)  Both @var{group}
+and @var{article} may be @code{nil}.
 
 There should be no result data from this function.
 

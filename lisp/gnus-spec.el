@@ -271,7 +271,7 @@
 	 (if (> (length val) ,cut)
 	     ,(if (< cut-width 0)
 		  `(substring val 0 (- (length val) ,cut))
-		`(substring va 0 ,cut))
+		`(substring val 0 ,cut))
 	   val)))))
 
 (defun gnus-tilde-ignore-form (el ignore-value)
@@ -334,8 +334,8 @@
   ;; SPEC-ALIST and returns a list that can be eval'ed to return a
   ;; string.
   (let ((max-width 0)
-	spec flist fstring newspec elem beg result dontinsert user-defined
-	type spec value pad-width spec-beg cut-width ignore-value
+	spec flist fstring elem result dontinsert user-defined
+	type value pad-width spec-beg cut-width ignore-value
 	tilde-form tilde elem-type)
     (save-excursion
       (gnus-set-work-buffer)
@@ -371,8 +371,10 @@
 		(setq pad-width value))
 	       ((eq type 'pad-right)
 		(setq pad-width (- value)))
-	       ((eq type 'max)
+	       ((memq type '(max-right max))
 		(setq max-width value))
+	       ((eq type 'max-left)
+		(setq max-width (- value)))
 	       ((memq type '(cut cut-left))
 		(setq cut-width value))
 	       ((eq type 'cut-right)
@@ -499,6 +501,7 @@ If PROPS, insert the result."
   "Byte-compile the user-defined format specs."
   (interactive)
   (let ((entries gnus-format-specs)
+	(byte-compile-warnings '(unresolved callargs redefine))
 	entry gnus-tmp-func)
     (save-excursion
       (gnus-message 7 "Compiling format specs...")
@@ -509,8 +512,7 @@ If PROPS, insert the result."
 	    (setq gnus-format-specs (delq entry gnus-format-specs))
 	  (when (and (listp (caddr entry))
 		     (not (eq 'byte-code (caaddr entry))))
-	    (fset 'gnus-tmp-func
-		  `(lambda () ,(caddr entry)))
+	    (fset 'gnus-tmp-func `(lambda () ,(caddr entry)))
 	    (byte-compile 'gnus-tmp-func)
 	    (setcar (cddr entry) (gnus-byte-code 'gnus-tmp-func)))))
 

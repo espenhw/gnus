@@ -512,6 +512,10 @@ The cdr of ech entry is a function for applying the face to a region.")
 	(point)
       (goto-char p))))
 
+(defmacro message-y-or-n-p (question show &rest text)
+  "Ask QUESTION, displaying the rest of the arguments in a temp. buffer if SHOW"
+  `(message-talkative-question 'y-or-n-p ,question ,show ,@text))
+
 ;; Delete the current line (and the next N lines.);
 (defmacro message-delete-line (&optional n)
   `(delete-region (progn (beginning-of-line) (point))
@@ -1085,7 +1089,19 @@ However, if `message-yank-prefix' is non-nil, insert that prefix on each line."
 	 (if (search-forward "\n\n" nil t)
 	     (1- (point))
 	   (point)))
-	(message-remove-header message-ignored-cited-headers t)))
+	(message-remove-header message-ignored-cited-headers t)
+	(goto-char (point-max))))
+    ;; Delete blank lines at the start of the buffer.
+    (while (and (point-min)
+		(eolp))
+      (message-delete-line))
+    ;; Delete blank lines at the end of the buffer.
+    (goto-char (point-max))
+    (unless (eolp)
+      (insert "\n"))
+    (while (and (zerop (forward-line -1))
+		(looking-at "$"))
+      (message-delete-line))
     ;; Do the indentation.
     (if (null message-yank-prefix)
 	(indent-rigidly start (mark t) message-indentation-spaces)
@@ -1119,7 +1135,8 @@ prefix, and don't delete any headers."
       (unless modified
 	(setq message-checksum (cons (message-checksum) (buffer-size)))))))
 
-(defun message-cite-original ()    
+(defun message-cite-original ()
+  "Cite function in the standard Message manner."
   (let ((start (point))
 	(functions 
 	 (when message-indent-citation-function
@@ -1731,7 +1748,7 @@ the user from the mailer."
 	    (y-or-n-p
 	     (format
 	      "Your .sig is %d lines; it should be max 4.  Really post? "
-	      (count-lines (point) (point-max))))
+	      (1- (count-lines (point) (point-max)))))
 	  t))))))
 
 (defun message-check-element (type)
@@ -2440,11 +2457,7 @@ Headers already prepared in the buffer are not modified."
 	(inhibit-point-motion-hooks t)
 	mct never-mct gnus-warning)
     (save-restriction
-      (narrow-to-region
-       (goto-char (point-min))
-       (if (search-forward "\n\n" nil t)
-	   (point)
-	 (point-max)))
+      (message-narrow-to-head)
       ;; Allow customizations to have their say.
       (if (not wide)
 	  ;; This is a regular reply.
@@ -2990,10 +3003,6 @@ Do a `tab-to-tab-stop' if not in those headers."
 	  (pop-to-buffer cur)))))))
 
 ;;; Help stuff.
-
-(defmacro message-y-or-n-p (question show &rest text)
-  "Ask QUESTION, displaying the rest of the arguments in a temp. buffer if SHOW"
-  `(message-talkative-question 'y-or-n-p ,question ,show ,@text))
 
 (defun message-talkative-question (ask question show &rest text)
   "Call FUNCTION with argument QUESTION, displaying the rest of the arguments in a temporary buffer if SHOW.  

@@ -85,7 +85,8 @@
   "A list of regexps to map smilies to real images.
 Defaults to the content of smiley-deformed-regexp-alist.
 An alternative smiley-nose-regexp-alist that
-matches less aggresively is available.")
+matches less aggresively is available.
+If this is a symbol, take its value.")
 
 (defvar smiley-flesh-color "yellow"
   "Flesh color.")
@@ -135,7 +136,9 @@ matches less aggresively is available.")
       (when buffer
 	(set-buffer buffer))
       (let ((buffer-read-only nil)
-	    (alist smiley-regexp-alist)
+	    (alist (if (symbolp smiley-regexp-alist)
+		       (symbol-value smiley-regexp-alist)
+		     smiley-regexp-alist))
 	    entry regexp beg group file)
 	(goto-char (or st (point-min)))
 	(setq beg (point))

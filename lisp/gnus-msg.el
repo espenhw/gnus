@@ -107,27 +107,26 @@ Thank you for your help in stamping out bugs.
 ;;; Gnus Posting Functions
 ;;;
 
-(gnus-define-keys 
- (gnus-summary-send-map "S" gnus-summary-mode-map)
- "p" gnus-summary-post-news
- "f" gnus-summary-followup
- "F" gnus-summary-followup-with-original
- "c" gnus-summary-cancel-article
- "s" gnus-summary-supersede-article
- "r" gnus-summary-reply
- "R" gnus-summary-reply-with-original
- "m" gnus-summary-mail-other-window
- "u" gnus-uu-post-news
- "om" gnus-summary-mail-forward
- "op" gnus-summary-post-forward
- "Om" gnus-uu-digest-mail-forward
- "Op" gnus-uu-digest-post-forward)
+(gnus-define-keys (gnus-summary-send-map "S" gnus-summary-mode-map)
+  "p" gnus-summary-post-news
+  "f" gnus-summary-followup
+  "F" gnus-summary-followup-with-original
+  "c" gnus-summary-cancel-article
+  "s" gnus-summary-supersede-article
+  "r" gnus-summary-reply
+  "R" gnus-summary-reply-with-original
+  "m" gnus-summary-mail-other-window
+  "u" gnus-uu-post-news
+  "\M-c" gnus-summary-mail-crosspost-complaint
+  "om" gnus-summary-mail-forward
+  "op" gnus-summary-post-forward
+  "Om" gnus-uu-digest-mail-forward
+  "Op" gnus-uu-digest-post-forward)
 
-(gnus-define-keys
- (gnus-send-bounce-map "D" gnus-summary-send-map)
- "b" gnus-summary-resend-bounced-mail
-; "c" gnus-summary-send-draft
- "r" gnus-summary-resend-message)
+(gnus-define-keys (gnus-send-bounce-map "D" gnus-summary-send-map)
+  "b" gnus-summary-resend-bounced-mail
+  ;; "c" gnus-summary-send-draft
+  "r" gnus-summary-resend-message)
 
 ;;; Internal functions.
 
@@ -250,8 +249,8 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
 	article)
     (while (setq article (pop articles))
       (when (gnus-summary-select-article t nil nil article)
-	(when (gnus-eval-in-buffer-window 
-	       gnus-original-article-buffer (message-cancel-news))
+	(when (gnus-eval-in-buffer-window gnus-original-article-buffer
+		(message-cancel-news))
 	  (gnus-summary-mark-as-read article gnus-canceled-mark)
 	  (gnus-cache-remove-article 1))
 	(gnus-article-hide-headers-if-wanted))
@@ -360,7 +359,7 @@ If SILENT, don't prompt the user."
     (cond 
      ;; If the group-method is nil (which shouldn't happen) we use 
      ;; the default method.
-     ((null arg)
+     ((null group-method)
       (or gnus-post-method gnus-select-method message-post-method))
      ;; We want this group's method.
      ((and arg (not (eq arg 0)))
@@ -484,7 +483,7 @@ If SILENT, don't prompt the user."
 	     (format " %d.%d" emacs-major-version emacs-minor-version)))
     (t emacs-version))))
 
-;; Written by "Mr. Per Persson" <pp@solace.mh.se>.
+;; Written by "Mr. Per Persson" <pp@gnu.ai.mit.edu>.
 (defun gnus-inews-insert-mime-headers ()
   (goto-char (point-min))
   (let ((mail-header-separator 
@@ -580,6 +579,47 @@ The current group name will be inserted at \"%s\".")
 	(set-buffer gnus-message-buffer)
 	(insert (format gnus-nastygram-message group))
 	(message-send-and-exit))))
+
+(defvar gnus-crosspost-complaint
+  "Hi,
+
+You posted the article below with the following Newsgroups header:
+
+Newsgroups: %s
+
+The %s group, at least, was an inappropriate recipient
+of this message.  Please trim your Newsgroups header to exclude this
+group before posting in the future.
+
+Thank you.
+"
+  "Format string to be inserted when complaining about crossposts.
+The first %s will be replaced by the Newsgroups header;
+the second with the current group name.")
+
+(defun gnus-summary-mail-crosspost-complaint (n)
+  "Send a complaint about crossposting to the current article(s)."
+  (interactive "P")
+  (let ((articles (gnus-summary-work-articles n))
+	article)
+    (while (setq article (pop articles))
+      (set-buffer gnus-summary-buffer)
+      (gnus-summary-goto-subject article)
+      (let ((group (gnus-group-real-name gnus-newsgroup-name))
+	    newsgroups)
+	(gnus-summary-select-article)
+	(set-buffer gnus-original-article-buffer)
+	(if (<= (length (message-tokenize-header
+			 (setq newsgroups (mail-fetch-field "newsgroups"))
+			 ", "))
+		1)
+	    (gnus-message 1 "Not a crossposted article")
+	  (set-buffer gnus-summary-buffer)
+	  (gnus-summary-reply-with-original 1)
+	  (set-buffer gnus-message-buffer)
+	  (insert (format gnus-crosspost-complaint newsgroups group))
+	  (when (gnus-y-or-n-p "Send this complaint? ")
+	    (message-send-and-exit)))))))
 
 (defun gnus-summary-mail-other-window ()
   "Compose mail in other window."
