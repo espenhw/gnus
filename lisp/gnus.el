@@ -218,7 +218,7 @@
 
 ;; Other
 (defgroup gnus-visual nil
-  "Options controling the visual fluff."
+  "Options controlling the visual fluff."
   :group 'gnus
   :group 'faces)
 
@@ -253,7 +253,7 @@
   :group 'gnus)
 
 (defgroup gnus-meta nil
-  "Meta variables controling major portions of Gnus.
+  "Meta variables controlling major portions of Gnus.
 In general, modifying these variables does not take affect until Gnus
 is restarted, and sometimes reloaded."
   :group 'gnus)

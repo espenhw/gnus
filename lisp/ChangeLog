@@ -1,3 +1,8 @@
+2002-09-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+	From John Paul Wallington <jpw@shootybangbang.com>.
+
+	* gnus.el (gnus-visual, gnus-meta): Fix typo.
+
 2002-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-address-banner-alist): Doc fix.
