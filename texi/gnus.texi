@@ -288,7 +288,8 @@
 
 \thispagestyle{empty}
 
-Copyright \copyright{} 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
+Copyright \copyright{} 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+2002, 2003
 Free Software Foundation, Inc.
 
 
@@ -317,7 +318,7 @@ license to the document, as described in section 6 of the license.
 
 This file documents Gnus, the GNU Emacs newsreader.
 
-Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
+Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
         Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
@@ -347,7 +348,8 @@ license to the document, as described in section 6 of the license.
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
+Copyright @copyright{} 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+2002, 2003
         Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
@@ -8374,10 +8376,10 @@ If a prefix is given, a charset will be asked for.
 
 @vindex gnus-article-wash-function
 The default is to use the function specified by
-@code{mm-inline-text-html-renderer} (@pxref{Customization, , , emacs-mime})
-to convert the @sc{html}, but this is controlled by the
-@code{gnus-article-wash-function} variable.  Pre-defined functions you
-can use include:
+@code{mm-text-html-renderer} (@pxref{(emacs-mime)Display
+Customization}) to convert the @sc{html}, but this is controlled by
+the @code{gnus-article-wash-function} variable.  Pre-defined functions
+you can use include:
 
 @table @code
 @item w3
@@ -9665,7 +9667,7 @@ will tell you (@code{gnus-summary-respool-query}).
 @kindex B t (Summary)
 @findex gnus-summary-respool-trace
 Similarly, this command will display all fancy splitting patterns used
-when repooling, if any (@code{gnus-summary-respool-trace}).
+when respooling, if any (@code{gnus-summary-respool-trace}).
 
 @item B p
 @kindex B p (Summary)
@@ -22037,8 +22039,8 @@ XEmacs is distributed as a collection of packages.  You should install
 whatever packages the Gnus XEmacs package requires.  The current
 requirements are @samp{gnus}, @samp{w3}, @samp{mh-e},
 @samp{mailcrypt}, @samp{rmail}, @samp{eterm}, @samp{mail-lib},
-@samp{xemacs-base}, and @samp{fsf-compat}.  The @samp{misc-games}
-package is required for Morse decoding.
+@samp{xemacs-base}, @samp{sh-script} and @samp{fsf-compat}.  The
+@samp{misc-games} package is required for Morse decoding.
 
 
 @node History
