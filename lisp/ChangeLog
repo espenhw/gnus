@@ -1,3 +1,10 @@
+2003-11-18  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-insert-to): Don't use `gnus-message'.
+	(message-header-synonyms): New variable.
+	(message-carefully-insert-headers): Use it (check for synonyms).
+	Added doc-string.  From Sam Steingold <sds@gnu.org>.
+
 2003-11-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* html2text.el (html2text-remove-tags): Remove the tag in a

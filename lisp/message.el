@@ -2582,8 +2582,7 @@ prefix FORCE is given."
                  (message-fetch-reply-field "reply-to")
                  (message-fetch-reply-field "from"))))
     (when (and dont to)
-      (gnus-message
-       3
+      (message
        (if force
 	   "Ignoring the user request not to have copies sent via mail"
 	 "Complying with the user request not to have copies sent via mail")))
@@ -2599,15 +2598,34 @@ prefix FORCE is given."
 		   (message-get-reply-headers t))))
     (message-carefully-insert-headers headers)))
 
+(defvar message-header-synonyms
+  '((To Cc Bcc))
+  "List of lists of header synonyms.
+E.g., if this list contains a member list with elements `Cc' and `To',
+then `message-carefully-insert-headers' will not insert a `To' header
+when the message is already `Cc'ed to the recipient.")
+
 (defun message-carefully-insert-headers (headers)
+  "Insert the HEADERS, an alist, into the message buffer.
+Does not insert the headers when they are already present there
+or in the synonym headers, defined by `message-header-synonyms'."
   (dolist (header headers)
-    (let ((header-name (symbol-name (car header))))
-      (when (and (message-position-on-field header-name)
-		 (mail-fetch-field header-name)
-		 (not (string-match "\\` *\\'"
-				    (mail-fetch-field header-name))))
-	(insert ", "))
-      (insert (cdr header)))))
+    (let* ((header-name (symbol-name (car header)))
+           (new-header (cdr header))
+           (synonyms (loop for synonym in message-header-synonyms
+			   when (memq (car header) synonym) return synonym))
+           (old-header
+            (loop for synonym in synonyms
+		  for old-header = (mail-fetch-field (symbol-name synonym))
+		  when (and old-header (string-match new-header old-header))
+		  return synonym)))
+      (if old-header
+          (message "already have `%s' in `%s'" new-header old-header)
+	(when (and (message-position-on-field header-name)
+                   (setq old-header (mail-fetch-field header-name))
+                   (not (string-match "\\` *\\'" old-header)))
+	  (insert ", "))
+        (insert new-header)))))
 
 (defun message-widen-reply ()
   "Widen the reply to include maximum recipients."
