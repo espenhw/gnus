@@ -1,5 +1,7 @@
 1999-11-12 05:04:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-int.el (gnus-server-opened): Ignore denied servers.
+
 	* gnus-ems.el (gnus-mule-max-width-function): New backquote
 	syntax. 
 

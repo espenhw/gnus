@@ -219,10 +219,12 @@ If it is down, start it up (again)."
 
 (defun gnus-server-opened (gnus-command-method)
   "Check whether a connection to GNUS-COMMAND-METHOD has been opened."
-  (when (stringp gnus-command-method)
-    (setq gnus-command-method (gnus-server-to-method gnus-command-method)))
-  (funcall (inline (gnus-get-function gnus-command-method 'server-opened))
-	   (nth 1 gnus-command-method)))
+  (unless (eq (gnus-server-status gnus-command-method)
+	      'denied)
+    (when (stringp gnus-command-method)
+      (setq gnus-command-method (gnus-server-to-method gnus-command-method)))
+    (funcall (inline (gnus-get-function gnus-command-method 'server-opened))
+	     (nth 1 gnus-command-method))))
 
 (defun gnus-status-message (gnus-command-method)
   "Return the status message from GNUS-COMMAND-METHOD.

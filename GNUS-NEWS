@@ -25,3 +25,6 @@ of variables starting with `gnus-treat-' have been added.
 *** The Gnus posting styles have been redone again and now works in a
 subtly different manner.
 
+*** New web-based backends have been added: nnslashdot, nnwarchive
+and nnultimate.  nnweb has been revamped, again, to keep up with
+ever-changing layouts.
