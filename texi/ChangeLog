@@ -1,3 +1,8 @@
+2001-06-27  Simon Josefsson  <jas@extundo.com>
+	From Ralph Schleicher <rs@nunatak.allgaeu.org>
+
+	* gnus.texi (MIME Commands): Add.
+
 2001-06-24  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Summary Score Commands): Say that some commands

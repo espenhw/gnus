@@ -8077,6 +8077,42 @@ Here's an example function the does the latter:
 @item gnus-mime-multipart-functions
 Alist of @sc{mime} multipart types and functions to handle them.
 
+@vindex mm-file-name-rewrite-functions
+@item mm-file-name-rewrite-functions
+List of functions used for rewriting file names of @sc{mime} parts.
+Each function takes a file name as input and returns a file name.
+
+Ready-made functions include@*
+@code{mm-file-name-delete-whitespace},
+@code{mm-file-name-trim-whitespace},
+@code{mm-file-name-collapse-whitespace}, and
+@code{mm-file-name-replace-whitespace}.  The later uses the value of
+the variable @code{mm-file-name-replace-whitespace} to replace each
+whitespace character in a file name with that string; default value
+is @code{"_"} (a single underscore).
+@findex mm-file-name-delete-whitespace
+@findex mm-file-name-trim-whitespace
+@findex mm-file-name-collapse-whitespace
+@findex mm-file-name-replace-whitespace
+@vindex mm-file-name-replace-whitespace
+
+The standard functions @code{capitalize}, @code{downcase},
+@code{upcase}, and @code{upcase-initials} may be useful, too.
+
+Everybody knows that whitespace characters in file names are evil,
+except those who don't know.  If you receive lots of attachments from
+such unenlightened users, you can make live easier by adding
+
+@lisp
+(setq mm-file-name-rewrite-functions
+      '(mm-file-name-trim-whitespace
+        mm-file-name-collapse-whitespace
+        mm-file-name-replace-whitespace))
+@end lisp
+
+@noindent
+to your @file{.gnus} file.
+
 @end table
 
 
