@@ -8548,7 +8548,9 @@ If you move (or copy) articles regularly, you might wish to have Gnus
 suggest where to put the articles.  @code{gnus-move-split-methods} is a
 variable that uses the same syntax as @code{gnus-split-methods}
 (@pxref{Saving Articles}).  You may customize that variable to create
-suggestions you find reasonable.
+suggestions you find reasonable.  (Note that
+@code{gnus-move-split-methods} uses group names where
+@code{gnus-split-methods} uses file names.)
 
 @lisp
 (setq gnus-move-split-methods

@@ -346,7 +346,9 @@ variable."
 
 (defcustom gnus-move-split-methods nil
   "*Variable used to suggest where articles are to be moved to.
-It uses the same syntax as the `gnus-split-methods' variable."
+It uses the same syntax as the `gnus-split-methods' variable.
+However, whereas `gnus-split-methods' specifies file names as targets,
+this variable specifies group names."
   :group 'gnus-summary-mail
   :type '(repeat (choice (list :value (fun) function)
 			 (cons :value ("" "") regexp (repeat string))

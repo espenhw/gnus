@@ -1,3 +1,9 @@
+2000-11-07  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Mail Group Commands): `gnus-move-split-methods' uses
+	group names as target, where `gnus-split-methods' uses file
+	names.  (Kudos to Nevin Kapur for pointing this out.)
+
 2000-11-07  Martin Buchholz <martin@xemacs.org>
 
 	* gnus.texi: Doc fix.

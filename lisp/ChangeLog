@@ -1,36 +1,8 @@
-2000-11-10 01:23:20  ShengHuo ZHU  <zsh@cs.rochester.edu>
+2000-11-07  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
-	* mm-partial.el (mm-inline-partial): Insert MIME-Version.
-
-2000-11-09 17:02:50  ShengHuo ZHU  <zsh@cs.rochester.edu>
-
-	* nnheader.el (nnheader-directory-files-is-safe): New variable.
-	(nnheader-directory-articles): Use it.
-	(nnheader-article-to-file-alist): Ditto.
-
-2000-11-09 16:20:37  ShengHuo ZHU  <zsh@cs.rochester.edu>
-
-	* rfc2047.el (rfc2047-pad-base64): New function.
-	(rfc2047-decode): Use it.
-
-2000-11-09 08:53:04  ShengHuo ZHU  <zsh@cs.rochester.edu>
-
-	* gnus-srvr.el (gnus-browse-foreign-server): Bind the original
-	select method.
-
-2000-11-08 19:58:58  ShengHuo ZHU  <zsh@cs.rochester.edu>
-
-	* mml2015.el (mml2015-gpg-decrypt-1): 
-	(mml2015-gpg-verify): buffer-string has no argument in Emacs.
-
-2000-11-08 16:37:02  ShengHuo ZHU  <zsh@cs.rochester.edu>
-
-	* gnus-cache.el (gnus-cache-generate-nov-databases): Reopen cache.
-
-2000-11-08 08:38:30  ShengHuo ZHU  <zsh@cs.rochester.edu>
-
-	* pop3.el (pop3-munge-message-separator): A message may have an
-	empty body.
+	* gnus-sum.el (gnus-move-split-methods): Say that
+	`gnus-split-methods' uses file names, whereas this uses group
+	names.  (Report from Nevin Kapur)
 
 2000-11-07 18:02:26  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
