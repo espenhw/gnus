@@ -1,6 +1,7 @@
 2003-04-25  Simon Josefsson  <jas@extundo.com>
 
 	* nnrss.el (nnrss-node-text): Don't use a star.
+	(nnrss-node-text): Use g-r-i-s, not g-r-r-i-s which doesn't exist.
 
 2003-04-24  Dave Love  <fx@gnu.org>
 
