@@ -192,7 +192,7 @@ echo *
 echo * (add-to-list 'load-path "/Path/to/gnus/lisp")
 echo * (if (featurep 'xemacs)
 echo *     (add-to-list 'Info-directory-list "c:/Path/to/gnus/texi/")
-echo *   (add-to-list 'Info-default-directory-list "c:/Path/to/gnus/texi/")
+echo *   (add-to-list 'Info-default-directory-list "c:/Path/to/gnus/texi/"))
 echo * (require 'gnus-load)
 echo *
 echo * Replace c:/Path/to/gnus with the Path where your new Gnus is (that's here

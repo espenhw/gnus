@@ -1,3 +1,8 @@
+2004-01-05  Jesper Harder  <harder@ifa.au.dk>
+
+	* make.bat: Add missing parens.  From Robert Marshall
+	<spam@chezmarshall.freeserve.co.uk>.
+
 2004-01-05  Simon Josefsson  <jas@extundo.com>
 
 	* GNUS-NEWS: Mention SASL, and that sieve-manage uses it.
