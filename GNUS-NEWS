@@ -34,6 +34,8 @@ customize it using `nnimap-id'.
 
 ** The "all.SCORE" file can now be edited from the group buffer using `W e'.
 
+** The prompt for creating new groups (`G m') now auto complete known groups.
+
 
 * For older news, see Gnus info node "New Features".
 
