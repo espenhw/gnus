@@ -426,7 +426,7 @@ spamoracle database."
   "Msx" gnus-summary-mark-as-spam
   "\M-d" gnus-summary-mark-as-spam)
 
-(defvar spam-cache-lookups nil
+(defvar spam-cache-lookups t
   "Whether spam.el will try to cache lookups using spam-caches.")
 
 (defvar spam-caches (make-hash-table
@@ -937,8 +937,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	 (first-method (nth 0 methods))
 	 (articles (if spam-autodetect-recheck-messages
 		       gnus-newsgroup-articles
-		     gnus-newsgroup-unseen))
-	 (spam-cache-lookups (< 2 (length articles))))
+		     gnus-newsgroup-unseen)))
 
     (when (and autodetect
 	       (not (equal first-method 'none)))
@@ -1557,7 +1556,8 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 With a non-nil REMOVE, remove them."
   (interactive "sAddress: ")
   (spam-enter-list address spam-whitelist remove)
-  (setq spam-whitelist-cache nil))
+  (setq spam-whitelist-cache nil)
+  (spam-clear-cache 'spam-use-whitelist))
 
 ;;; address can be a list, too
 (defun spam-enter-blacklist (address &optional remove)
@@ -1565,7 +1565,8 @@ With a non-nil REMOVE, remove them."
 With a non-nil REMOVE, remove them."
   (interactive "sAddress: ")
   (spam-enter-list address spam-blacklist remove)
-  (setq spam-blacklist-cache nil))
+  (setq spam-blacklist-cache nil)
+  (spam-clear-cache 'spam-use-whitelist))
 
 (defun spam-enter-list (addresses file &optional remove)
   "Enter ADDRESSES into the given FILE.
@@ -1594,6 +1595,32 @@ REMOVE not nil, remove the ADDRESSES."
 	      (insert a "\n")))))
       (save-buffer))))
 
+(defun spam-filelist-build-cache (type)
+  (let ((cache (if (eq type 'spam-use-blacklist)
+		   spam-blacklist-cache
+		 spam-whitelist-cache))
+	parsed-cache)
+    (unless (gethash type spam-caches)
+      (while cache
+	(let ((address (pop cache)))
+	  (unless (zerop (length address)) ; 0 for a nil address too
+	    (setq address (regexp-quote address))
+	    ;; fix regexp-quote's treatment of user-intended regexes
+	    (while (string-match "\\\\\\*" address)
+	      (setq address (replace-match ".*" t t address))))
+	  (push address parsed-cache)))
+      (puthash type parsed-cache spam-caches))))
+
+(defun spam-filelist-check-cache (type from)
+  (when (stringp from)
+    (spam-filelist-build-cache type)
+    (let (found)
+      (dolist (address (gethash type spam-caches))
+	(when (and address (string-match address from))
+	  (setq found t)
+	  (return)))
+      found)))
+
 ;;; returns t if the sender is in the whitelist, nil or
 ;;; spam-split-group otherwise
 (defun spam-check-whitelist ()
@@ -1603,7 +1630,7 @@ REMOVE not nil, remove the ADDRESSES."
 			    spam-split-group)))
     (unless spam-whitelist-cache
       (setq spam-whitelist-cache (spam-parse-list spam-whitelist)))
-    (if (spam-from-listed-p spam-whitelist-cache)
+    (if (spam-from-listed-p 'spam-use-whitelist)
 	t
       (if spam-use-whitelist-exclusive
 	  spam-split-group
@@ -1616,7 +1643,7 @@ REMOVE not nil, remove the ADDRESSES."
 			    spam-split-group)))
     (unless spam-blacklist-cache
       (setq spam-blacklist-cache (spam-parse-list spam-blacklist)))
-    (and (spam-from-listed-p spam-blacklist-cache) spam-split-group)))
+    (and (spam-from-listed-p 'spam-use-blacklist) spam-split-group)))
 
 (defun spam-parse-list (file)
   (when (file-readable-p file)
@@ -1632,20 +1659,10 @@ REMOVE not nil, remove the ADDRESSES."
 	      (push (or pure-address address) contents)))))
       (nreverse contents))))
 
-(defun spam-from-listed-p (cache)
+(defun spam-from-listed-p (type)
   (let ((from (nnmail-fetch-field "from"))
 	found)
-    (while cache
-      (let ((address (pop cache)))
-	(unless (zerop (length address)) ; 0 for a nil address too
-	  (setq address (regexp-quote address))
-	  ;; fix regexp-quote's treatment of user-intended regexes
-	  (while (string-match "\\\\\\*" address)
-	    (setq address (replace-match ".*" t t address))))
-	(when (and address (string-match address from))
-	  (setq found t
-		cache nil))))
-    found))
+    (spam-filelist-check-cache type from)))
 
 (defun spam-filelist-register-routine (articles blacklist &optional unregister)
   (let ((de-symbol (if blacklist 'spam-use-whitelist 'spam-use-blacklist))

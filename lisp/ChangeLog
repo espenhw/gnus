@@ -15,6 +15,15 @@
 	return nil if both 'spam and 'ham are found
 	(spam-check-BBDB): expand all the BBDB macros here so we can have
 	a reasonably fast local cache without the loading errors
+	(spam-cache-lookups): set to t by default
+	(spam-find-spam): don't try to guess spam-cache-lookups
+	(spam-enter-whitelist, spam-enter-blacklist): also clear the
+	spam-caches entry
+	(spam-filelist-build-cache, spam-filelist-check-cache): better
+	caching of whitelist/blacklist entries
+	(spam-check-whitelist, spam-check-blacklist): invoke
+	spam-from-listed-p with a type, not a cache variable
+	(spam-from-listed-p): wrap around spam-filelist-check-cache
 
 2004-01-07  Jesper Harder  <harder@ifa.au.dk>
 
