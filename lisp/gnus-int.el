@@ -569,7 +569,7 @@ If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
 			  (nth 1 gnus-command-method) accept-function last)))
     (when (and result gnus-agent
 	       (gnus-agent-method-p gnus-command-method))
-      (gnus-agent-expire (list article) group 'force))
+      (gnus-agent-unfetch-articles group (list article)))
     result))
     
 (defun gnus-request-accept-article (group &optional gnus-command-method last
