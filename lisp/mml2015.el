@@ -61,9 +61,10 @@
       (list handles))))
 
 (defun mml2015-fix-micalg (alg)
-  (if (and alg (string-match "^pgp-" alg))
-      (substring alg (match-end 0))
-    alg))
+  (upcase
+   (if (and alg (string-match "^pgp-" alg))
+       (substring alg (match-end 0))
+     alg)))
 
 ;;;###autoload
 (defun mml2015-verify (handle ctl)
@@ -77,10 +78,8 @@
 		      (or (mml2015-fix-micalg
 			   (mail-content-type-get ctl 'micalg))
 			  "SHA1")))
-      (insert part)
+      (insert part "\n")
       (goto-char (point-max))
-      (unless (bolp)
-	(insert "\n"))
       (unless (setq part (mm-find-part-by-type 
 			   (cdr handle) "application/pgp-signature"))
 	(error "Corrupted pgp-signature part."))
@@ -120,10 +119,10 @@
     (insert (format "Content-Type: multipart/signed; boundary=\"%s\";\n"
 		    boundary))
     (insert (format "\tmicalg=pgp-%s; protocol=\"application/pgp-signature\"\n"
-		    hash))
-    (insert "\n")
-    (insert (format "--%s\n" boundary))
-    (unless (re-search-forward (cdr (assq 'signed-end-line scheme-alist)))
+		    (downcase hash)))
+    (insert (format "\n--%s\n" boundary))
+    (goto-char (point-max))
+    (unless (re-search-backward (cdr (assq 'signed-end-line scheme-alist)))
       (error "Cannot find signature part." ))
     (goto-char (match-beginning 0))
     (unless (re-search-backward "^-+BEGIN" nil t)
@@ -134,7 +133,6 @@
     (goto-char (point-max))
     (insert (format "--%s--\n" boundary))
     (goto-char (point-max))))
-
 
 (defun mml2015-mailcrypt-encrypt (cont)
   (mc-encrypt-generic 

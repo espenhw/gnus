@@ -125,8 +125,10 @@ encode lines starting with \"From\"."
 	      ;; line.
 	      (when mm-use-ultra-safe-encoding
 		(beginning-of-line)
-		(when (looking-at "From ")
-		  (replace-match "From=20" nil t)))
+		(if (looking-at "From ")
+		    (replace-match "From=20" nil t)
+		  (if (looking-at "-")
+		      (replace-match "=2D" nil t))))
 	      (end-of-line)
 	      (while (> (current-column) 76);; tab-width must be 1.
 		(beginning-of-line)

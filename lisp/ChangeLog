@@ -1,3 +1,14 @@
+2000-10-30 23:37:07  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* qp.el (quoted-printable-encode-region): Replace leading - when
+	ultra safe.
+	* mml.el (mml-generate-mime-postprocess-function): Removed.
+	(mml-postprocess-alist): Removed.
+	(mml-generate-mime-1): Use ultra-safe when sign.
+	* mml2015.el (mml2015-fix-micalg): Uppercase.
+	(mml2015-verify): Insert LF.
+	(mml2015-mailcrypt-sign): Downcase; search backward.
+
 2000-10-16 11:36:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnultimate.el (nnultimate-forum-table-p): Be a bit more
