@@ -30,8 +30,14 @@
 
 (eval-when-compile (require 'cl))
 (require 'mm-decode)
+(require 'mm-util)
 
 (defvar mml2015-use (or
+		     (progn
+		       (ignore-errors
+			 (require 'pgg))
+		       (and (fboundp 'pgg-sign-region)
+			    'pgg))
 		     (progn
 		       (ignore-errors
 			 (require 'gpg))
@@ -58,7 +64,13 @@
 	 mml2015-gpg-verify
 	 mml2015-gpg-decrypt
 	 mml2015-gpg-clear-verify
-	 mml2015-gpg-clear-decrypt))
+	 mml2015-gpg-clear-decrypt)
+  (pgg mml2015-pgg-sign
+       mml2015-pgg-encrypt
+       mml2015-pgg-verify
+       mml2015-pgg-decrypt
+       mml2015-pgg-clear-verify
+       mml2015-pgg-clear-decrypt))
   "Alist of PGP/MIME functions.")
 
 (defvar mml2015-result-buffer nil)
@@ -415,7 +427,8 @@ by you.")
 
 (defun mml2015-gpg-extract-signature-details ()
   (goto-char (point-min))
-  (if (boundp 'gpg-unabbrev-trust-alist)
+  (if (and (eq mml2015-use 'gpg)
+	   (boundp 'gpg-unabbrev-trust-alist))
       (let* ((expired (re-search-forward
 		       "^\\[GNUPG:\\] SIGEXPIRED$"
 		       nil t))
@@ -444,8 +457,8 @@ by you.")
 			  (car signer)))))
 	      (t
 	       "From unknown user")))
-    (if (re-search-forward "^gpg: Good signature from \"\\(.*\\)\"$" nil t)
-	(match-string 1)
+    (if (re-search-forward "^\\(gpg: \\)?Good signature from \"\\(.*\\)\"$" nil t)
+	(match-string 2)
       "From unknown user")))
 
 (defun mml2015-gpg-verify (handle ctl)
@@ -621,6 +634,187 @@ by you.")
 	(goto-char (point-max))
 	(insert (format "--%s--\n" boundary))
 	(goto-char (point-max))))))
+
+;;; pgg wrapper
+
+(defun mml2015-pgg-decrypt (handle ctl)
+  (catch 'error
+    (let ((pgg-errors-buffer mml2015-result-buffer)
+	  child handles result decrypt-status)
+      (unless (setq child (mm-find-part-by-type
+			   (cdr handle)
+			   "application/octet-stream" nil t))
+	(mm-set-handle-multipart-parameter
+	 mm-security-handle 'gnus-info "Corrupted")
+	(throw 'error handle))
+      (with-temp-buffer
+	(mm-insert-part child)
+	(if (condition-case err
+		(prog1
+		    (pgg-decrypt-region (point-min) (point-max))
+		  (setq decrypt-status (with-current-buffer mml2015-result-buffer
+					 (buffer-string))))
+	      (error
+	       (mm-set-handle-multipart-parameter
+		mm-security-handle 'gnus-details (mml2015-format-error err))
+	       nil)
+	      (quit
+	       (mm-set-handle-multipart-parameter
+		mm-security-handle 'gnus-details "Quit.")
+	       nil))
+	    (with-current-buffer pgg-output-buffer
+	      (setq handles (mm-dissect-buffer t))
+	      (mm-destroy-parts handle)
+	      (mm-set-handle-multipart-parameter
+	       mm-security-handle 'gnus-info "OK")
+	      (mm-set-handle-multipart-parameter
+	       mm-security-handle 'gnus-details
+	       (concat decrypt-status "\n" (mm-handle-multipart-ctl-parameter handles 'gnus-details)))
+	      (if (listp (car handles))
+		  handles
+		(list handles)))
+	  (mm-set-handle-multipart-parameter
+	   mm-security-handle 'gnus-info "Failed"))))))
+
+(defun mml2015-pgg-clear-decrypt ()
+  (let ((pgg-errors-buffer mml2015-result-buffer))
+    (if (prog1
+	    (pgg-decrypt-region (point-min) (point-max))
+	  (mm-set-handle-multipart-parameter
+	   mm-security-handle 'gnus-details
+	   (with-current-buffer mml2015-result-buffer
+	     (buffer-string))))
+	(progn
+	  (erase-buffer)
+	  (insert-buffer pgg-output-buffer)
+	  (mm-set-handle-multipart-parameter
+	   mm-security-handle 'gnus-info "OK"))
+      (mm-set-handle-multipart-parameter
+       mm-security-handle 'gnus-info "Failed"))))
+
+(defun mml2015-pgg-verify (handle ctl)
+  (let ((pgg-errors-buffer mml2015-result-buffer)
+	signature-file part signature)
+    (if (or (null (setq part (mm-find-raw-part-by-type
+			      ctl (or (mm-handle-multipart-ctl-parameter
+				       ctl 'protocol)
+				      "application/pgp-signature")
+			      t)))
+	    (null (setq signature (mm-find-part-by-type
+				   (cdr handle) "application/pgp-signature" nil t))))
+	(progn
+	  (mm-set-handle-multipart-parameter
+	   mm-security-handle 'gnus-info "Corrupted")
+	  handle)
+      (with-temp-buffer
+	(insert part)
+	;; Convert <LF> to <CR><LF> in verify mode.  Sign and
+	;; clearsign use --textmode. The conversion is not necessary.
+	;; In clearverify, the conversion is not necessary either.
+	(goto-char (point-min))
+	(end-of-line)
+	(while (not (eobp))
+	  (unless (eq (char-before) ?\r)
+	    (insert "\r"))
+	  (forward-line)
+	  (end-of-line))
+	(with-temp-file (setq signature-file (mm-make-temp-file "pgg"))
+	  (mm-insert-part signature))
+	(if (condition-case err
+		(prog1
+		    (pgg-verify-region (point-min) (point-max) signature-file t)
+		  (mm-set-handle-multipart-parameter
+		   mm-security-handle 'gnus-details
+		   (with-current-buffer pgg-output-buffer
+		     (buffer-string))))
+	      (error
+	       (mm-set-handle-multipart-parameter
+		mm-security-handle 'gnus-details (mml2015-format-error err))
+	       nil)
+	      (quit
+	       (mm-set-handle-multipart-parameter
+		mm-security-handle 'gnus-details "Quit.")
+	       nil))
+	    (progn
+	      (delete-file signature-file)
+	      (mm-set-handle-multipart-parameter
+	       mm-security-handle 'gnus-info
+	       (with-current-buffer pgg-output-buffer
+		 (mml2015-gpg-extract-signature-details))))
+	  (delete-file signature-file)
+	  (mm-set-handle-multipart-parameter
+	   mm-security-handle 'gnus-info "Failed"))))))
+
+(defun mml2015-pgg-clear-verify ()
+  (let ((pgg-errors-buffer mml2015-result-buffer))
+    (if (condition-case err
+	    (prog1
+		(pgg-verify-region (point-min) (point-max) nil t)
+	      (mm-set-handle-multipart-parameter
+	       mm-security-handle 'gnus-details
+	       (with-current-buffer mml2015-result-buffer
+		 (buffer-string))))
+	  (error
+	   (mm-set-handle-multipart-parameter
+	    mm-security-handle 'gnus-details (mml2015-format-error err))
+	   nil)
+	  (quit
+	   (mm-set-handle-multipart-parameter
+	    mm-security-handle 'gnus-details "Quit.")
+	   nil))
+	(mm-set-handle-multipart-parameter
+	 mm-security-handle 'gnus-info
+	 (with-current-buffer pgg-output-buffer
+	   (mml2015-gpg-extract-signature-details)))
+      (mm-set-handle-multipart-parameter
+       mm-security-handle 'gnus-info "Failed"))))
+
+(defun mml2015-pgg-sign (cont)
+  (let ((pgg-errors-buffer mml2015-result-buffer)
+	(boundary (funcall mml-boundary-function (incf mml-multipart-number))))
+    (unless (pgg-sign-region (point-min) (point-max))
+      (pop-to-buffer mml2015-result-buffer)
+      (error "Sign error"))
+    (goto-char (point-min))
+    (insert (format "Content-Type: multipart/signed; boundary=\"%s\";\n"
+		    boundary))
+      ;;; FIXME: what is the micalg?
+    (insert "\tmicalg=pgp-sha1; protocol=\"application/pgp-signature\"\n")
+    (insert (format "\n--%s\n" boundary))
+    (goto-char (point-max))
+    (insert (format "\n--%s\n" boundary))
+    (insert "Content-Type: application/pgp-signature\n\n")
+    (insert-buffer pgg-output-buffer)
+    (goto-char (point-max))
+    (insert (format "--%s--\n" boundary))
+    (goto-char (point-max))))
+
+(defun mml2015-pgg-encrypt (cont &optional sign)
+  (let ((pgg-errors-buffer mml2015-result-buffer)
+	(boundary (funcall mml-boundary-function (incf mml-multipart-number))))
+    (unless (pgg-encrypt-region (point-min) (point-max)
+				(split-string
+				 (or
+				  (message-options-get 'message-recipients)
+				  (message-options-set 'message-recipients
+						       (read-string "Recipients: ")))
+				 "[ \f\t\n\r\v,]+"))
+      (pop-to-buffer mml2015-result-buffer)
+      (error "Encrypt error"))
+    (delete-region (point-min) (point-max))
+    (goto-char (point-min))
+    (insert (format "Content-Type: multipart/encrypted; boundary=\"%s\";\n"
+		    boundary))
+    (insert "\tprotocol=\"application/pgp-encrypted\"\n\n")
+    (insert (format "--%s\n" boundary))
+    (insert "Content-Type: application/pgp-encrypted\n\n")
+    (insert "Version: 1\n\n")
+    (insert (format "--%s\n" boundary))
+    (insert "Content-Type: application/octet-stream\n\n")
+    (insert-buffer pgg-output-buffer)
+    (goto-char (point-max))
+    (insert (format "--%s--\n" boundary))
+    (goto-char (point-max))))
 
 ;;; General wrapper
 
