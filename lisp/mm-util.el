@@ -481,7 +481,8 @@ If the charset is `composition', return the actual one."
 	      (setq inconvertible t)
 	      (forward-char))
 	     (t
-	      (insert (prog1 (+ c (car (cdr item))) (delete-char 1))))
+	      (insert-before-markers (prog1 (+ c (car (cdr item))) 
+				       (delete-char 1))))
 	    (skip-chars-forward "\0-\177"))))
 	(not inconvertible))))
 
