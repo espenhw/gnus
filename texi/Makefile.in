@@ -85,7 +85,7 @@ clean:
 	*.tmplatexi *.toc *.tp *.vr gnus.*.bak gnus.[cgk]ind gnus.idx	\
 	gnus.ilg gnus.ind gnus.latexi*~* gnus.out gnus.tmplatexi1	\
 	gnustmp.texi picons.tex smiley.tex texput.log thumb*.png	\
-	thumbdta.tex xface.tex
+	thumbdta.tex xface.tex *.tpt gnus-manual-*.pdf gnus-manual-*.ps.gz
 
 makeinfo:
 	makeinfo -o gnus gnus.texi
@@ -168,12 +168,8 @@ psout: latexboth out
 latexboth: gnus-manual-a4.ps.gz gnus-manual-standard.ps.gz
 
 out:
-	cp gnus-manual-standard.ps.gz \
-	gnus-manual-a4.ps.gz \
-	/local/ftp/pub/emacs/gnus/manual
-	mv gnus-manual-standard.ps.gz \
-	gnus-manual-a4.ps.gz \
-	/hom/larsi/www_docs/www.gnus.org/documents
+	scp gnus-manual-*.ps.gz gnus-manual-*.pdf 
+	www@quimby:html/gnus/documents
 
 veryclean: clean
 	rm -f gnus.dvi gnus.ps texi2latex.elc
