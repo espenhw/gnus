@@ -1,3 +1,19 @@
+2005-03-16  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnimap.el (nnimap-open-connection): Print which authinfo file is
+	used.
+
+	* nneething.el (nneething-map-file-directory): Derive from
+	`gnus-directory'.
+
+	* gnus-art.el (gnus-header-button-alist): Use `gnus-msg-mail' for
+	the To/Cc button.
+
+2005-03-15  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnmaildir.el (nnmaildir-request-accept-article): Use
+	`nnheader-cancel-timer' for compatibility with current XEmacs.
+
 2005-03-13  Steve Youngs  <steve@sxemacs.org>
 
 	* gnus-async.el: Require timer-funcs at compile time when in

@@ -1395,8 +1395,9 @@ by nnmaildir-request-article.")
 	 (write-region (point-min) (point-max) tmpfile nil 'no-message nil
 		       'excl)
 	 (unix-sync))) ;; no fsync :(
-      (cancel-timer 24h)
-      (condition-case err (add-name-to-file tmpfile curfile)
+      (nnheader-cancel-timer 24h)
+      (condition-case err
+	  (add-name-to-file tmpfile curfile)
 	(error
 	 (setf (nnmaildir--srv-error nnmaildir--cur-server)
 	       (concat "Error linking: " (prin1-to-string err)))
