@@ -1,3 +1,10 @@
+2004-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi: Enclose the iflatex section with iftex.
+	(Gnus Unplugged): Use pxref instead of xref.
+
+	* emacs-mime.texi: Enclose the iflatex section with iftex.
+
 2004-03-02  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* emacs-mime.texi: Wrapped documentencoding inside of iflatex as

@@ -9,10 +9,10 @@
 @direntry
 * Gnus: (gnus).         The newsreader Gnus.
 @end direntry
+@iftex
 @iflatex
 @documentencoding ISO-8859-1
 @end iflatex
-@iftex
 @finalout
 @end iftex
 @setchapternewpage odd
@@ -17434,7 +17434,7 @@ reading news on a machine.
 
 Setting up Gnus as an ``offline'' newsreader is quite simple.  In
 fact, you don't have to configure anything as the agent is now enabled
-by default (@xref{Agent Variables, gnus-agent}).
+by default (@pxref{Agent Variables, gnus-agent}).
 
 Of course, to use it as such, you have to learn a few new commands.
 
