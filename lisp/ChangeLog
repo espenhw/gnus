@@ -1,3 +1,8 @@
+2001-12-19 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-win.el (gnus-frames-on-display-list): New.
+	(gnus-get-buffer-window): Use it.
+
 2001-12-19 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnwarchive.el (nnwarchive-mail-archive-xover): Fix the regexp.

@@ -562,13 +562,24 @@ should have point."
       (mapcar (lambda (b) (delete-windows-on b t))
 	      (delq lowest-buf bufs)))))
 
+(eval-and-compile
+  (cond 
+   ((fboundp 'frames-on-display-list)
+    (defalias 'gnus-frames-on-display-list 'frames-on-display-list))
+   ((and (featurep 'xemacs) (fboundp 'frame-device))
+    (defun gnus-frames-on-display-list ()
+      (apply 'filtered-frame-list 'identity (list (frame-device nil)))))
+   (t
+    (defalias 'gnus-frames-on-display-list 'frame-list))))
+
 (defun gnus-get-buffer-window (buffer &optional frame)
   (cond ((and (null gnus-use-frames-on-any-display)
 	      (memq frame '(t 0 visible)))
-	 (car (gnus-delete-if (lambda (win) 
-				(not (member (window-frame win)
-					     (frames-on-display-list))))
-			      (get-buffer-window-list buffer nil frame))))
+	 (car 
+	  (let ((frames (gnus-frames-on-display-list)))
+	    (gnus-delete-if (lambda (win) (not (memq (window-frame win) 
+						     frames)))
+			    (get-buffer-window-list buffer nil frame)))))
 	(t
 	 (get-buffer-window buffer frame))))
 
