@@ -105,7 +105,8 @@
 	       (message "nnmh: Receiving headers... %d%%"
 			(/ (* count 100) number))))
 
-	(and large (message "nnmh: Receiving headers...done"))
+	(when large
+	  (message "nnmh: Receiving headers...done"))
 
 	(nnheader-fold-continuation-lines)
 	'headers))))
@@ -176,7 +177,7 @@
 	    (nnheader-insert (format "211 0 1 0 %s\n" group))))))))))
 
 (deffoo nnmh-request-scan (&optional group server)
-  (nnmail-get-new-mail 'nnmh nil nnmh-directory group))      
+  (nnmail-get-new-mail 'nnmh nil nnmh-directory group))
 
 (deffoo nnmh-request-list (&optional server dir)
   (nnheader-insert "")
@@ -216,10 +217,11 @@
 	      (string-match 
 	       (regexp-quote
 		(file-truename (file-name-as-directory 
-				(expand-file-name nnmh-toplev)))) dir)
+				(expand-file-name nnmh-toplev))))
+	       dir)
 	      (nnheader-replace-chars-in-string
 	       (substring dir (match-end 0)) ?/ ?.))
-	    (apply 'max files) 
+	    (apply 'max files)
 	    (apply 'min files)))))))
   t)
 
@@ -241,20 +243,20 @@
     (while (and articles is-old)
       (setq article (concat nnmh-current-directory 
 			    (int-to-string (car articles))))
-      (if (setq mod-time (nth 5 (file-attributes article)))
-	  (if (and (nnmh-deletable-article-p newsgroup (car articles))
-		   (setq is-old
-			 (nnmail-expired-article-p newsgroup mod-time force)))
-	      (progn
-		(nnheader-message 5 "Deleting article %s in %s..." 
-				  article newsgroup)
-		(condition-case ()
-		    (funcall nnmail-delete-file-function article)
-		  (file-error
-		   (nnheader-message 1 "Couldn't delete article %s in %s"
-				     article newsgroup)
-		   (setq rest (cons (car articles) rest)))))
-	    (setq rest (cons (car articles) rest))))
+      (when (setq mod-time (nth 5 (file-attributes article)))
+	(if (and (nnmh-deletable-article-p newsgroup (car articles))
+		 (setq is-old
+		       (nnmail-expired-article-p newsgroup mod-time force)))
+	    (progn
+	      (nnheader-message 5 "Deleting article %s in %s..." 
+				article newsgroup)
+	      (condition-case ()
+		  (funcall nnmail-delete-file-function article)
+		(file-error
+		 (nnheader-message 1 "Couldn't delete article %s in %s"
+				   article newsgroup)
+		 (push (car articles) rest))))
+	  (push (car articles) rest)))
       (setq articles (cdr articles)))
     (message "")
     (nconc rest articles)))
@@ -311,7 +313,7 @@
 	  t)
       (error nil))))
 
-(deffoo nnmh-request-create-group (group &optional server args) 
+(deffoo nnmh-request-create-group (group &optional server args)
   (nnmail-activate 'nnmh)
   (unless (assoc group nnmh-group-alist)
     (let (active)
@@ -336,11 +338,10 @@
       ()				; Don't delete the articles.
     (let ((articles (directory-files nnmh-current-directory t "^[0-9]+$")))
       (while articles 
-	(and (file-writable-p (car articles))
-	     (progn
-	       (nnheader-message 5 "Deleting article %s in %s..."
-				 (car articles) group)
-	       (funcall nnmail-delete-file-function (car articles))))
+	(when (file-writable-p (car articles))
+	  (nnheader-message 5 "Deleting article %s in %s..."
+			    (car articles) group)
+	  (funcall nnmail-delete-file-function (car articles)))
 	(setq articles (cdr articles))))
     ;; Try to delete the directory itself.
     (condition-case ()
@@ -376,7 +377,8 @@
 	  (error nil)))
       ;; That went ok, so we change the internal structures.
       (let ((entry (assoc group nnmh-group-alist)))
-	(and entry (setcar entry new-name))
+	(when entry
+	  (setcar entry new-name))
 	(setq nnmh-current-directory nil)
 	t))))
 
@@ -387,21 +389,21 @@
   (when (and server 
 	     (not (nnmh-server-opened server)))
     (nnmh-open-server server))
-  (if newsgroup
-      (let ((pathname (nnmail-group-pathname newsgroup nnmh-directory)))
-	(if (file-directory-p pathname)
-	    (setq nnmh-current-directory pathname)
-	  (error "No such newsgroup: %s" newsgroup)))))
+  (when newsgroup
+    (let ((pathname (nnmail-group-pathname newsgroup nnmh-directory)))
+      (if (file-directory-p pathname)
+	  (setq nnmh-current-directory pathname)
+	(error "No such newsgroup: %s" newsgroup)))))
 
 (defun nnmh-possibly-create-directory (group)
   (let (dir dirs)
     (setq dir (nnmail-group-pathname group nnmh-directory))
     (while (not (file-directory-p dir))
-      (setq dirs (cons dir dirs))
+      (push dir dirs)
       (setq dir (file-name-directory (directory-file-name dir))))
     (while dirs
-      (if (make-directory (directory-file-name (car dirs)))
-	  (error "Could not create directory %s" (car dirs)))
+      (when (make-directory (directory-file-name (car dirs)))
+	(error "Could not create directory %s" (car dirs)))
       (nnheader-message 5 "Creating mail directory %s" (car dirs))
       (setq dirs (cdr dirs)))))
 	     
@@ -422,7 +424,7 @@
     (while ga
       (nnmh-possibly-create-directory (caar ga))
       (let ((file (concat (nnmail-group-pathname 
-			   (caar ga) nnmh-directory) 
+			   (caar ga) nnmh-directory)
 			  (int-to-string (cdar ga)))))
 	(if first
 	    ;; It was already saved, so we just make a hard link.
@@ -466,7 +468,8 @@
   (let* ((dir nnmh-current-directory)
 	 (files (sort (mapcar (function (lambda (name) (string-to-int name)))
 			      (directory-files nnmh-current-directory 
-					       nil "^[0-9]+$" t)) '<))
+					       nil "^[0-9]+$" t))
+		      '<))
 	 (nnmh-file (concat dir ".nnmh-articles"))
 	 new articles)
     ;; Load the .nnmh-articles file.
@@ -479,7 +482,7 @@
     (let ((art files))
       (while art
 	(unless (assq (car art) articles)
-	  (setq new (cons (car art) new)))
+	  (push (car art) new))
 	(setq art (cdr art))))
     ;; Remove all deleted articles.
     (let ((art articles))
@@ -514,7 +517,7 @@
        (gnus-group-prefixed-name group (list 'nnmh ""))
        (setq new (sort new '<))))
     ;; Sort the article list with highest numbers first.
-    (setq articles (sort articles (lambda (art1 art2) 
+    (setq articles (sort articles (lambda (art1 art2)
 				    (> (car art1) (car art2)))))
     ;; Finally write this list back to the .nnmh-articles file.
     (nnheader-temp-write nnmh-file
@@ -526,10 +529,10 @@
 (defun nnmh-deletable-article-p (group article)
   "Say whether ARTICLE in GROUP can be deleted."
   (let ((path (concat nnmh-current-directory (int-to-string article))))
-    (and (file-writable-p path)
-	 (or (not nnmail-keep-last-article)
-	     (not (eq (cdr (nth 1 (assoc group nnmh-group-alist))) 
-		      article))))))
+    (when (file-writable-p path)
+      (or (not nnmail-keep-last-article)
+	  (not (eq (cdr (nth 1 (assoc group nnmh-group-alist)))
+		   article))))))
 
 (provide 'nnmh)
 

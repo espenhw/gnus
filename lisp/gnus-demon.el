@@ -59,7 +59,7 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's.")
 (defvar gnus-demon-idle-time 0)
 (defvar gnus-demon-handler-state nil)
 (defvar gnus-demon-is-idle nil)
-(defvar gnus-demon-last-keys nil) 
+(defvar gnus-demon-last-keys nil)
 
 (eval-and-compile
   (autoload 'timezone-parse-date "timezone")
@@ -80,7 +80,8 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's.")
   (setq gnus-demon-handlers 
 	(delq (assq function gnus-demon-handlers)
 	      gnus-demon-handlers))
-  (or no-init (gnus-demon-init)))
+  (unless no-init
+    (gnus-demon-init)))
 
 (defun gnus-demon-init ()
   "Initialize the Gnus daemon."
@@ -108,8 +109,8 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's.")
 (defun gnus-demon-cancel ()
   "Cancel any Gnus daemons."
   (interactive)
-  (and gnus-demon-timer
-       (nnheader-cancel-timer gnus-demon-timer))
+  (when gnus-demon-timer
+    (nnheader-cancel-timer gnus-demon-timer))
   (setq gnus-demon-timer nil
 	gnus-use-demon nil)
   (condition-case ()
@@ -145,7 +146,8 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's.")
       (round
        (/ (if (< nseconds 0)
 	      (+ nseconds (* 60 60 24))
-	    nseconds) gnus-demon-timestep)))))
+	    nseconds)
+	  gnus-demon-timestep)))))
 
 (defun gnus-demon ()
   "The Gnus daemon that takes care of running all Gnus handlers."
@@ -164,8 +166,8 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's.")
        ((numberp (setq time (nth 1 handler)))
 	;; These handlers use a regular timeout mechanism.  We decrease
 	;; the timer if it hasn't reached zero yet.
-	(or (zerop time)
-	    (setcar (nthcdr 1 handler) (decf time)))
+	(unless (zerop time)
+	  (setcar (nthcdr 1 handler) (decf time)))
 	(and (zerop time)		; If the timer now is zero...
 	     (or (not (setq idle (nth 2 handler))) ; Don't care about idle.
 		 (and (numberp idle)	; Numerical idle...

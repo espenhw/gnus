@@ -95,8 +95,8 @@ This has only an effect if `gnus-picons-display-where' hs value article.")
 (defun gnus-picons-remove (plist)
   (let ((listitem (car plist)))
     (while (setq listitem (car plist))
-      (if (annotationp listitem)
-          (delete-annotation listitem))
+      (when (annotationp listitem)
+	(delete-annotation listitem))
       (setq plist (cdr plist)))))
 
 (defun gnus-picons-remove-all ()
@@ -108,8 +108,8 @@ This has only an effect if `gnus-picons-display-where' hs value article.")
   (setq gnus-article-annotations nil
         gnus-group-annotations nil
 	gnus-x-face-annotations nil)
-  (if (bufferp gnus-picons-buffer)
-      (kill-buffer gnus-picons-buffer)))
+  (when (bufferp gnus-picons-buffer)
+    (kill-buffer gnus-picons-buffer)))
 
 (defun gnus-get-buffer-name (variable)
   "Returns the buffer name associated with the contents of a variable."
@@ -172,7 +172,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
     (sit-for 0))
   (let ((first t)
 	from at-idx databases)
-    (when (and (featurep 'xpm) 
+    (when (and (featurep 'xpm)
 	       (or (not (fboundp 'device-type)) (equal (device-type) 'x))
 	       (setq from (mail-fetch-field "from"))
 	       (setq from (downcase 
@@ -249,7 +249,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
   ;; let display catch up so far
   (when gnus-picons-refresh-before-display
     (sit-for 0))
-  (when (and (featurep 'xpm) 
+  (when (and (featurep 'xpm)
 	     (or (not (fboundp 'device-type)) (equal (device-type) 'x)))
     (save-excursion
       (set-buffer (get-buffer-create
@@ -258,14 +258,15 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
       (goto-char (point-min))
       (if (and (eq gnus-picons-display-where 'article)
 	       gnus-picons-display-article-move-p)
-	  (if (search-forward "\n\n" nil t)
-	      (forward-line -1))
+	  (when (search-forward "\n\n" nil t)
+	    (forward-line -1))
 	(unless (eolp)
 	  (push (make-annotation "\n" (point) 'text)
 		gnus-group-annotations)))
       (cond
        ((listp gnus-group-annotations)
-	(mapc #'(lambda (ext) (if (extent-live-p ext) (delete-annotation ext)))
+	(mapc #'(lambda (ext) (when (extent-live-p ext)
+				(delete-annotation ext)))
 	      gnus-group-annotations)
 	(setq gnus-group-annotations nil))
        ((annotationp gnus-group-annotations)
@@ -310,8 +311,8 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 		      database "/"))
 	(domainp (and gnus-picons-display-as-address dots))
 	picons found bar-ann cur first)
-    (if (string-match "/MISC" database)
-	(setq addrs '("")))
+    (when (string-match "/MISC" database)
+      (setq addrs '("")))
     (while (and addrs
 		(file-accessible-directory-p path))
       (setq cur (pop addrs)
@@ -328,14 +329,15 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	    (setq picons (nconc (when (and domainp first)
 				  (list (make-annotation
 					 "." (point) 'text 
-					 nil nil nil t) picons))
+					 nil nil nil t)
+					picons))
 				(gnus-picons-try-to-find-face 
 				 found nil (if domainp cur filename))
 				picons)))
 	(when domainp
 	  (setq picons 
 		(nconc (list (make-annotation (if first (concat cur ".") cur)
-					      (point) 'text nil nil nil t)) 
+					      (point) 'text nil nil nil t))
 		       picons))))
       (setq first t))
     (when (and addrs domainp)

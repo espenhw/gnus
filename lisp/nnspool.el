@@ -143,8 +143,8 @@ there.")
 		 (message "nnspool: Receiving headers... %d%%"
 			  (/ (* count 100) number))))
 	  
-	  (and do-message
-	       (message "nnspool: Receiving headers...done"))
+	  (when do-message
+	    (message "nnspool: Receiving headers...done"))
 	  
 	  ;; Fold continuation lines.
 	  (nnheader-fold-continuation-lines)
@@ -290,9 +290,9 @@ there.")
 			     (goto-char (match-end 1))
 			     (read (current-buffer)))
 			   seconds))
-		      (setq groups (cons (buffer-substring
+		      (push (buffer-substring
 					  (match-beginning 1) (match-end 1))
-					 groups))
+					 groups)
 		      (zerop (forward-line -1))))
 	  (erase-buffer)
 	  (while groups
@@ -426,8 +426,8 @@ there.")
       (error nil))
     (goto-char (point-min))
     (prog1
-	(if (looking-at "<[^>]+>[ \t]+[-0-9~]+[ \t]+\\([^ /\t\n]+\\)/\\([0-9]+\\)[ \t\n]")
-	    (cons (match-string 1) (string-to-int (match-string 2))))
+	(when (looking-at "<[^>]+>[ \t]+[-0-9~]+[ \t]+\\([^ /\t\n]+\\)/\\([0-9]+\\)[ \t\n]")
+	  (cons (match-string 1) (string-to-int (match-string 2))))
       (kill-buffer (current-buffer)))))
 
 (defun nnspool-find-file (file)
@@ -458,7 +458,7 @@ there.")
 			(timezone-parse-time
 			 (aref (timezone-parse-date date) 3))))
 	 (unix (encode-time (nth 2 ttime) (nth 1 ttime) (nth 0 ttime)
-			    (nth 2 tdate) (nth 1 tdate) (nth 0 tdate) 
+			    (nth 2 tdate) (nth 1 tdate) (nth 0 tdate)
 			    (nth 4 tdate))))
     (+ (* (car unix) 65536.0)
        (cadr unix))))

@@ -42,10 +42,10 @@
     ("subject" 1 gnus-advanced-string)
     ("from" 2 gnus-advanced-string)
     ("date" 3 gnus-advanced-date)
-    ("message-id" 4 gnus-advanced-string) 
-    ("references" 5 gnus-advanced-string) 
-    ("chars" 6 gnus-advanced-integer) 
-    ("lines" 7 gnus-advanced-integer) 
+    ("message-id" 4 gnus-advanced-string)
+    ("references" 5 gnus-advanced-string)
+    ("chars" 6 gnus-advanced-integer)
+    ("lines" 7 gnus-advanced-integer)
     ("xref" 8 gnus-advanced-string)
     ("head" nil gnus-advanced-body)
     ("body" nil gnus-advanced-body)
@@ -65,7 +65,7 @@
 	(if (setq score (assq (mail-header-number gnus-advanced-headers)
 			      gnus-newsgroup-scored))
 	    (setcdr score
-		    (+ (cdr score) 
+		    (+ (cdr score)
 		       (or (nth 1 rule)
 			   gnus-score-interactive-default-score)))
 	  (push (cons (mail-header-number gnus-advanced-headers)
@@ -200,14 +200,14 @@
 	;; If just parts of the article is to be searched and the
 	;; backend didn't support partial fetching, we just narrow
 	;; to the relevant parts.
-	(if ofunc
-	    (if (eq ofunc 'gnus-request-head)
-		(narrow-to-region
-		 (point)
-		 (or (search-forward "\n\n" nil t) (point-max)))
+	(when ofunc
+	  (if (eq ofunc 'gnus-request-head)
 	      (narrow-to-region
-	       (or (search-forward "\n\n" nil t) (point))
-	       (point-max))))
+	       (point)
+	       (or (search-forward "\n\n" nil t) (point-max)))
+	    (narrow-to-region
+	     (or (search-forward "\n\n" nil t) (point))
+	     (point-max))))
 	(let* ((case-fold-search (not (eq (downcase (symbol-name type))
 					  (symbol-name type))))
 	       (search-func 

@@ -52,7 +52,7 @@
 (put 'deffoo 'edebug-form-spec '(&define name lambda-list def-body))
 
 (defun nnoo-register-function (func)
-  (let ((funcs (nthcdr 3 (assoc (nnoo-backend func) 
+  (let ((funcs (nthcdr 3 (assoc (nnoo-backend func)
 				nnoo-definition-alist))))
     (unless funcs
       (error "%s belongs to a backend that hasn't been declared" func))
@@ -127,7 +127,7 @@
 	(incf i))
       (eval `(deffoo ,(nnoo-symbol backend (nnoo-rest-symbol (car m)))
 		 (&rest args)
-	       (nnoo-parent-function ',backend ',(car m) 
+	       (nnoo-parent-function ',backend ',(car m)
 				     ,(cons 'list (nreverse margs))))))))
   
 (defun nnoo-backend (symbol)
@@ -147,7 +147,7 @@
 	 (parents (nth 1 def)))
     (unless def
       (error "%s belongs to a backend that hasn't been declared." var))
-    (setcar (nthcdr 2 def) 
+    (setcar (nthcdr 2 def)
 	    (delq (assq var (nth 2 def)) (nth 2 def)))
     (setcar (nthcdr 2 def)
 	    (cons (cons var (symbol-value var))
@@ -240,7 +240,7 @@
 (defun nnoo-define-basics-1 (backend)
   (let ((functions '(close-server server-opened status-message)))
     (while functions
-      (eval `(deffoo ,(nnoo-symbol backend (car functions)) 
+      (eval `(deffoo ,(nnoo-symbol backend (car functions))
 		 (&optional server)
 	       (,(nnoo-symbol 'nnoo (pop functions)) ',backend server)))))
   (eval `(deffoo ,(nnoo-symbol backend 'open-server)

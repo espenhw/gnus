@@ -83,9 +83,9 @@ used to 899, you would say something along these lines:
    (list 'nntp (or (condition-case ()
 		       (gnus-getenv-nntpserver)
 		     (error nil))
-		   (if (and gnus-default-nntp-server
-			    (not (string= gnus-default-nntp-server "")))
-		       gnus-default-nntp-server)
+		   (when (and gnus-default-nntp-server
+			      (not (string= gnus-default-nntp-server "")))
+		     gnus-default-nntp-server)
 		   (system-name)))
    (if (or (null gnus-nntp-service)
 	   (equal gnus-nntp-service "nntp"))
@@ -651,6 +651,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("rmailout" rmail-output)
      ("rmail" rmail-insert-rmail-file-header rmail-count-new-messages
       rmail-show-message)
+     ("gnus-xmas" gnus-xmas-splash)
      ("gnus-soup" :interactive t
       gnus-group-brew-soup gnus-brew-soup gnus-soup-add-article
       gnus-soup-send-replies gnus-soup-save-areas gnus-soup-pack-packet)
@@ -744,7 +745,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-group-setup-buffer gnus-group-get-new-news
       gnus-group-make-help-group gnus-group-update-group)
      ("gnus-bcklg" gnus-backlog-request-article gnus-backlog-enter-article
-      gnus-backlog-remove-article) 
+      gnus-backlog-remove-article)
      ("gnus-art" gnus-article-read-summary-keys gnus-article-save
       gnus-article-prepare gnus-article-set-window-start
       gnus-article-show-all-headers gnus-article-next-page

@@ -86,14 +86,14 @@
 
 (defmacro gnus-buffer-exists-p (buffer)
   `(let ((buffer ,buffer))
-     (and buffer
-	  (funcall (if (stringp buffer) 'get-buffer 'buffer-name)
-		   buffer))))
+     (when buffer
+       (funcall (if (stringp buffer) 'get-buffer 'buffer-name)
+		buffer))))
 
 (defmacro gnus-kill-buffer (buffer)
   `(let ((buf ,buffer))
-     (if (gnus-buffer-exists-p buf)
-	 (kill-buffer buf))))
+     (when (gnus-buffer-exists-p buf)
+       (kill-buffer buf))))
 
 (defsubst gnus-point-at-bol ()
   "Return point at the beginning of the line."
@@ -142,8 +142,8 @@
     ;; First find the address - the thing with the @ in it.  This may
     ;; not be accurate in mail addresses, but does the trick most of
     ;; the time in news messages.
-    (if (string-match "\\b[^@ \t<>]+[!@][^@ \t<>]+\\b" from)
-	(setq address (substring from (match-beginning 0) (match-end 0))))
+    (when (string-match "\\b[^@ \t<>]+[!@][^@ \t<>]+\\b" from)
+      (setq address (substring from (match-beginning 0) (match-end 0))))
     ;; Then we check whether the "name <address>" format is used.
     (and address
 	 ;; Fix by MORIOKA Tomohiko <morioka@jaist.ac.jp>
@@ -202,8 +202,8 @@
       (setq idx 0))
     ;; Replace all occurrences of `.' with `/'.
     (while (< idx len)
-      (if (= (aref newsgroup idx) ?.)
-	  (aset newsgroup idx ?/))
+      (when (= (aref newsgroup idx) ?.)
+	(aset newsgroup idx ?/))
       (setq idx (1+ idx)))
     newsgroup))
 
@@ -331,7 +331,7 @@
 ;; it yet.  -erik selberg@cs.washington.edu
 (defun gnus-dd-mmm (messy-date)
   "Return a string like DD-MMM from a big messy string"
-  (let ((datevec (condition-case () (timezone-parse-date messy-date) 
+  (let ((datevec (condition-case () (timezone-parse-date messy-date)
 		   (error nil))))
     (if (not datevec)
 	"??-???"
@@ -438,7 +438,7 @@ If N, return the Nth ancestor instead."
 	   (max 0))
       ;; Find the longest line currently displayed in the window.
       (goto-char (window-start))
-      (while (and (not (eobp)) 
+      (while (and (not (eobp))
 		  (< (point) end))
 	(end-of-line)
 	(setq max (max max (current-column)))
@@ -479,10 +479,11 @@ Timezone package is used."
   (interactive
    (list (read-file-name "Copy file: " default-directory)
 	 (read-file-name "Copy file to: " default-directory)))
-  (or to (setq to (read-file-name "Copy file to: " default-directory)))
-  (and (file-directory-p to)
-       (setq to (concat (file-name-as-directory to)
-			(file-name-nondirectory file))))
+  (unless to
+    (setq to (read-file-name "Copy file to: " default-directory)))
+  (when (file-directory-p to)
+    (setq to (concat (file-name-as-directory to)
+		     (file-name-nondirectory file))))
   (copy-file file to))
 
 (defun gnus-kill-all-overlays ()
@@ -552,6 +553,13 @@ Bind `print-quoted' to t while printing."
   (when (not (file-exists-p directory))
     (make-directory directory t))
   t)
+
+(defun gnus-write-buffer (file)
+  "Write the current buffer's contents to FILE."
+  ;; Make sure the directory exists.
+  (gnus-make-directory (file-name-directory file))
+  ;; Write the buffer.
+  (write-region (point-min) (point-max) file nil 'quietly))
 
 (defmacro gnus-delete-assq (key list)
   `(let ((listval (eval ,list)))

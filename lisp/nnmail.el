@@ -158,7 +158,7 @@ running (\"xwatch\", etc.)
 Eg.
 
 \(add-hook 'nnmail-read-incoming-hook 
-	   (lambda () 
+	   (lambda ()
 	     (start-process \"mailsend\" nil 
 			    \"/local/bin/mailsend\" \"read\" \"mbox\")))
 
@@ -171,8 +171,8 @@ If you use `display-time', you could use something like this:
 	  (lambda ()
 	    ;; Update the displayed time, since that will clear out
 	    ;; the flag that says you have mail.
-	    (if (eq (process-status \"display-time\") 'run)
-		(display-time-filter display-time-process \"\"))))") 
+	    (when (eq (process-status \"display-time\") 'run)
+	      (display-time-filter display-time-process \"\"))))")
 
 (when (eq system-type 'windows-nt)
   (add-hook 'nnmail-prepare-incoming-hook 'nnheader-ms-strip-cr))
@@ -367,7 +367,7 @@ parameter.  It should return nil, `warn' or `delete'.")
   "Convert DAYS into time."
   (let* ((seconds (* 1.0 days 60 60 24))
 	 (rest (expt 2 16))
-	 (ms (condition-case nil (round (/ seconds rest)) 
+	 (ms (condition-case nil (round (/ seconds rest))
 	       (range-error (expt 2 16)))))
     (list ms (condition-case nil (round (- seconds (* ms rest)))
 	       (range-error (expt 2 16))))))
@@ -378,7 +378,8 @@ parameter.  It should return nil, `warn' or `delete'.")
     ;; Convert date strings to internal time.
     (setq time (nnmail-date-to-time time)))
   (let* ((current (current-time))
-	 (rest (if (< (nth 1 current) (nth 1 time)) (expt 2 16))))
+	 (rest (when (< (nth 1 current) (nth 1 time))
+		 (expt 2 16))))
     (list (- (+ (car current) (if rest -1 0)) (car time))
 	  (- (+ (or rest 0) (nth 1 current)) (nth 1 time)))))
 
@@ -522,7 +523,7 @@ nn*-request-list should have been called before calling this function."
   (erase-buffer)
   (let (group)
     (while (setq group (pop alist))
-      (insert (format "%s %d %d y\n" (car group) (cdadr group) 
+      (insert (format "%s %d %d y\n" (car group) (cdadr group)
 		      (caadr group))))))
 
 (defun nnmail-get-split-group (file group)
@@ -801,7 +802,8 @@ FUNC will be called with the buffer narrowed to each mail."
 	       (nnmail-process-mmdf-mail-format func artnum-func))
 	      (t
 	       (nnmail-process-unix-mail-format func artnum-func))))
-      (if exit-func (funcall exit-func))
+      (when exit-func
+	(funcall exit-func))
       (kill-buffer (current-buffer)))))
 
 ;; Mail crossposts suggested by Brian Edmonds <edmonds@cs.ubc.ca>. 
@@ -854,7 +856,7 @@ FUNC will be called with the group name to determine the article number."
 	    (if (or methods
 		    (not (equal "" (nth 1 method))))
 		(when (and
-		       (condition-case () 
+		       (condition-case ()
 			   (if (stringp (nth 1 method))
 			       (re-search-backward (cadr method) nil t)
 			     ;; Function to say whether this is a match.
@@ -863,13 +865,13 @@ FUNC will be called with the group name to determine the article number."
 		       ;; Don't enter the article into the same 
 		       ;; group twice.
 		       (not (assoc (car method) group-art)))
-		  (push (cons (car method) (funcall func (car method))) 
+		  (push (cons (car method) (funcall func (car method)))
 			group-art))
 	      ;; This is the final group, which is used as a 
 	      ;; catch-all.
 	      (unless group-art
 		(setq group-art 
-		      (list (cons (car method) 
+		      (list (cons (car method)
 				  (funcall func (car method)))))))))
 	;; See whether the split methods returned `junk'.
 	(if (equal group-art '(junk))
@@ -882,7 +884,7 @@ Return the number of characters in the body."
   (let (lines chars)
     (save-excursion
       (goto-char (point-min))
-      (when (search-forward "\n\n" nil t) 
+      (when (search-forward "\n\n" nil t)
 	(setq chars (- (point-max) (point)))
 	(setq lines (count-lines (point) (point-max)))
 	(forward-char -1)
@@ -897,10 +899,10 @@ Return the number of characters in the body."
   "Insert an Xref line based on the (group . article) alist."
   (save-excursion
     (goto-char (point-min))
-    (when (search-forward "\n\n" nil t) 
+    (when (search-forward "\n\n" nil t)
       (forward-char -1)
       (when (re-search-backward "^Xref: " nil t)
-	(delete-region (match-beginning 0) 
+	(delete-region (match-beginning 0)
 		       (progn (forward-line 1) (point))))
       (insert (format "Xref: %s" (system-name)))
       (while group-alist
@@ -977,8 +979,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
    ((assq split nnmail-split-cache)
     ;; A compiled match expression.
     (goto-char (point-max))
-    (if (re-search-backward (cdr (assq split nnmail-split-cache)) nil t)
-	(nnmail-split-it (nth 2 split))))
+    (when (re-search-backward (cdr (assq split nnmail-split-cache)) nil t)
+      (nnmail-split-it (nth 2 split))))
    (t
     ;; An uncompiled match.
     (let* ((field (nth 0 split))
@@ -992,11 +994,10 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 			       (cdr (assq value nnmail-split-abbrev-alist))
 			     value)
 			   "\\)\\>")))
-      (setq nnmail-split-cache 
-	    (cons (cons split regexp) nnmail-split-cache))
+      (push (cons split regexp) nnmail-split-cache)
       (goto-char (point-max))
-      (if (re-search-backward regexp nil t)
-	  (nnmail-split-it (nth 2 split)))))))
+      (when (re-search-backward regexp nil t)
+	(nnmail-split-it (nth 2 split)))))))
 
 ;; Get a list of spool files to read.
 (defun nnmail-get-spool-files (&optional group)
@@ -1016,7 +1017,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	   (p procmails)
 	   (crash (when (and (file-exists-p nnmail-crash-box)
 			     (> (nnheader-file-size
-				 (file-truename nnmail-crash-box)) 0))
+				 (file-truename nnmail-crash-box))
+				0))
 		    (list nnmail-crash-box))))
       ;; Remove any directories that inadvertently match the procmail
       ;; suffix, which might happen if the suffix is "". 
@@ -1049,32 +1051,32 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 ;; already activated.
 (defun nnmail-activate (backend &optional force)
   (let (file timestamp file-time)
-    (if (or (not (symbol-value (intern (format "%s-group-alist" backend))))
-	    force
-	    (and (setq file (condition-case ()
-				(symbol-value (intern (format "%s-active-file" 
-							      backend)))
-			      (error nil)))
-		 (setq file-time (nth 5 (file-attributes file)))
-		 (or (not
-		      (setq timestamp
-			    (condition-case ()
-				(symbol-value (intern
-					       (format "%s-active-timestamp" 
-						       backend)))
-			      (error 'none))))
-		     (not (consp timestamp))
-		     (equal timestamp '(0 0))
-		     (> (nth 0 file-time) (nth 0 timestamp))
-		     (and (= (nth 0 file-time) (nth 0 timestamp))
-			  (> (nth 1 file-time) (nth 1 timestamp))))))
-	(save-excursion
-	  (or (eq timestamp 'none)
-	      (set (intern (format "%s-active-timestamp" backend)) 
-		   (current-time)))
-	  (funcall (intern (format "%s-request-list" backend)))
-	  (set (intern (format "%s-group-alist" backend)) 
-	       (nnmail-get-active))))
+    (when (or (not (symbol-value (intern (format "%s-group-alist" backend))))
+	      force
+	      (and (setq file (condition-case ()
+				  (symbol-value (intern (format "%s-active-file" 
+								backend)))
+				(error nil)))
+		   (setq file-time (nth 5 (file-attributes file)))
+		   (or (not
+			(setq timestamp
+			      (condition-case ()
+				  (symbol-value (intern
+						 (format "%s-active-timestamp" 
+							 backend)))
+				(error 'none))))
+		       (not (consp timestamp))
+		       (equal timestamp '(0 0))
+		       (> (nth 0 file-time) (nth 0 timestamp))
+		       (and (= (nth 0 file-time) (nth 0 timestamp))
+			    (> (nth 1 file-time) (nth 1 timestamp))))))
+      (save-excursion
+	(or (eq timestamp 'none)
+	    (set (intern (format "%s-active-timestamp" backend))
+		 (current-time)))
+	(funcall (intern (format "%s-request-list" backend)))
+	(set (intern (format "%s-group-alist" backend))
+	     (nnmail-get-active))))
     t))
 
 (defun nnmail-message-id ()
@@ -1096,8 +1098,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
        (setq nnmail-cache-buffer 
 	     (get-buffer-create " *nnmail message-id cache*")))
       (buffer-disable-undo (current-buffer))
-      (and (file-exists-p nnmail-message-id-cache-file)
-	   (insert-file-contents nnmail-message-id-cache-file))
+      (when (file-exists-p nnmail-message-id-cache-file)
+	(insert-file-contents nnmail-message-id-cache-file))
       (set-buffer-modified-p nil)
       (current-buffer))))
 
@@ -1110,10 +1112,10 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (set-buffer nnmail-cache-buffer)
       ;; Weed out the excess number of Message-IDs.
       (goto-char (point-max))
-      (and (search-backward "\n" nil t nnmail-message-id-cache-length)
-	   (progn
-	     (beginning-of-line)
-	     (delete-region (point-min) (point))))
+      (when (search-backward "\n" nil t nnmail-message-id-cache-length)
+	(progn
+	  (beginning-of-line)
+	  (delete-region (point-min) (point))))
       ;; Save the buffer.
       (or (file-exists-p (file-name-directory nnmail-message-id-cache-file))
 	  (make-directory (file-name-directory nnmail-message-id-cache-file)
@@ -1225,7 +1227,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	    (setq group (nnmail-get-split-group spool group-in))
 	    ;; We split the mail
 	    (nnmail-split-incoming 
-	     nnmail-crash-box (intern (format "%s-save-mail" method)) 
+	     nnmail-crash-box (intern (format "%s-save-mail" method))
 	     spool-func group (intern (format "%s-active-number" method)))
 	    ;; Check whether the inbox is to be moved to the special tmp dir. 
 	    (setq incoming
@@ -1380,6 +1382,16 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 			 ", ")
 	      "\n"))
     (goto-char (point-min))))
+
+(defun nnmail-new-mail-p (group)
+  "Say whether GROUP has new mail."
+  (let ((his nnmail-split-history)
+	found)
+    (while his
+      (when (member group (pop his))
+	(setq found t
+	      his nil)))
+    found))
 	
 (run-hooks 'nnmail-load-hook)
 	    

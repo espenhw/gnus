@@ -378,7 +378,8 @@ buffer configuration.")
 		  (split-window window (cadar comp-subs)
 				(eq type 'horizontal))))
 	  (setq result (or (gnus-configure-frame
-			    (car comp-subs) window) result))
+			    (car comp-subs) window)
+			   result))
 	  (select-window new-win)
 	  (setq window new-win)
 	  (setq comp-subs (cdr comp-subs))))
@@ -493,39 +494,35 @@ should have point."
       ;; Remove windows on all known Gnus buffers.
       (while buffers
 	(setq buf (cdar buffers))
-	(if (symbolp buf)
-	    (setq buf (and (boundp buf) (symbol-value buf))))
+	(when (symbolp buf)
+	  (setq buf (and (boundp buf) (symbol-value buf))))
 	(and buf
 	     (get-buffer-window buf)
 	     (progn
-	       (setq bufs (cons buf bufs))
+	       (push buf bufs)
 	       (pop-to-buffer buf)
-	       (if (or (not lowest)
-		       (< (gnus-window-top-edge) lowest))
-		   (progn
-		     (setq lowest (gnus-window-top-edge))
-		     (setq lowest-buf buf)))))
+	       (when (or (not lowest)
+			 (< (gnus-window-top-edge) lowest))
+		 (setq lowest (gnus-window-top-edge))
+		 (setq lowest-buf buf))))
 	(setq buffers (cdr buffers)))
       ;; Remove windows on *all* summary buffers.
       (walk-windows
        (lambda (win)
 	 (let ((buf (window-buffer win)))
-	   (if (string-match	"^\\*Summary" (buffer-name buf))
-	       (progn
-		 (setq bufs (cons buf bufs))
-		 (pop-to-buffer buf)
-		 (if (or (not lowest)
-			 (< (gnus-window-top-edge) lowest))
-		     (progn
-		       (setq lowest-buf buf)
-		       (setq lowest (gnus-window-top-edge)))))))))
-      (and lowest-buf
-	   (progn
-	     (pop-to-buffer lowest-buf)
-	     (switch-to-buffer nntp-server-buffer)))
+	   (when (string-match	"^\\*Summary" (buffer-name buf))
+	     (push buf bufs)
+	     (pop-to-buffer buf)
+	     (when (or (not lowest)
+		       (< (gnus-window-top-edge) lowest))
+	       (setq lowest-buf buf)
+	       (setq lowest (gnus-window-top-edge)))))))
+      (when lowest-buf
+	(pop-to-buffer lowest-buf)
+	(switch-to-buffer nntp-server-buffer))
       (while bufs
-	(and (not (eq (car bufs) lowest-buf))
-	     (delete-windows-on (car bufs)))
+	(when (not (eq (car bufs) lowest-buf))
+	  (delete-windows-on (car bufs)))
 	(setq bufs (cdr bufs))))))
 
 (provide 'gnus-win)

@@ -231,7 +231,7 @@ The SOUP packet file name will be inserted at the %s.")
 	  (nnheader-report 'nnsoup "No such group: %s" group)
 	(nnheader-insert 
 	 "211 %d %d %d %s\n" 
-	 (max (1+ (- (cdr active) (car active))) 0) 
+	 (max (1+ (- (cdr active) (car active))) 0)
 	 (car active) (cdr active) group)))))
 
 (deffoo nnsoup-request-type (group &optional article)
@@ -470,7 +470,7 @@ The SOUP packet file name will be inserted at the %s.")
 		  nnsoup-packet-directory t nnsoup-packet-regexp))
 	packet)
     (while (setq packet (pop packets))
-      (message (format "nnsoup: unpacking %s..." packet))
+      (message "nnsoup: unpacking %s..." packet)
       (if (not (gnus-soup-unpack-packet 
 		nnsoup-tmp-directory nnsoup-unpacker packet))
 	  (message "Couldn't unpack %s" packet)
@@ -509,8 +509,8 @@ The SOUP packet file name will be inserted at the %s.")
 		(let ((format (gnus-soup-encoding-format
 			       (gnus-soup-area-encoding (nth 1 area)))))
 		  (goto-char end)
-		  (if (or (= format ?n) (= format ?m))
-		      (setq end (progn (forward-line -1) (point))))))
+		  (when (or (= format ?n) (= format ?m))
+		    (setq end (progn (forward-line -1) (point))))))
 	    (set-buffer msg-buf))
 	  (widen)
 	  (narrow-to-region beg (or end (point-max))))
@@ -657,15 +657,14 @@ The SOUP packet file name will be inserted at the %s.")
       (setq replies (cdr replies)))
     (if replies
 	(gnus-soup-reply-prefix (car replies))
-      (setq nnsoup-replies-list
-	    (cons (vector (gnus-soup-unique-prefix nnsoup-replies-directory)
-			  kind 
-			  (format "%c%c%c"
-				  nnsoup-replies-format-type
-				  nnsoup-replies-index-type
-				  (if (string= kind "news")
-				      ?n ?m)))
-		  nnsoup-replies-list))
+      (push (vector (gnus-soup-unique-prefix nnsoup-replies-directory)
+		    kind 
+		    (format "%c%c%c"
+			    nnsoup-replies-format-type
+			    nnsoup-replies-index-type
+			    (if (string= kind "news")
+				?n ?m)))
+	    nnsoup-replies-list)
       (gnus-soup-reply-prefix (car nnsoup-replies-list)))))
 
 (defun nnsoup-make-active ()
@@ -696,7 +695,7 @@ The SOUP packet file name will be inserted at the %s.")
 			  (match-end 1))))
       (if (not (setq elem (assoc group active)))
 	  (push (list group (cons 1 lines)
-		      (list (cons 1 lines) 
+		      (list (cons 1 lines)
 			    (vector ident group "ncm" "" lines)))
 		active)
 	(nconc elem

@@ -47,7 +47,7 @@ The default value is `nntp-send-mode-reader', which makes an innd
 server spawn an nnrpd server.  Another useful function to put in this
 hook might be `nntp-send-authinfo', which will prompt for a password
 to allow posting from the server.  Note that this is only necessary to
-do on servers that use strict access control.")  
+do on servers that use strict access control.")
 
 (defvoo nntp-authinfo-function 'nntp-send-authinfo
   "Function used to send AUTHINFO to the server.")
@@ -178,7 +178,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
   (save-excursion
     (set-buffer (nntp-find-connection-buffer nntp-server-buffer))
     (erase-buffer)
-    (if (and (not gnus-nov-is-evil) 
+    (if (and (not gnus-nov-is-evil)
 	     (not nntp-nov-is-evil)
 	     (nntp-retrieve-headers-with-xover articles fetch-old))
 	;; We successfully retrieved the headers via XOVER.
@@ -195,7 +195,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	(while articles
 	  (nntp-send-command 
 	   nil
-	   "HEAD" (if (numberp (car articles)) 
+	   "HEAD" (if (numberp (car articles))
 		      (int-to-string (car articles))
 		    ;; `articles' is either a list of article numbers
 		    ;; or a list of article IDs.
@@ -302,7 +302,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	;; superfluous gunk.
 	(goto-char (point-min))
 	(while (re-search-forward "^[.2-5]" nil t)
-	  (delete-region (match-beginning 0) 
+	  (delete-region (match-beginning 0)
 			 (progn (forward-line 1) (point))))
 	(copy-to-buffer nntp-server-buffer (point-min) (point-max))
 	'active))))
@@ -413,7 +413,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
     (let* ((date (timezone-parse-date date))
 	   (time-string
 	    (format "%s%02d%02d %s%s%s"
-		    (substring (aref date 0) 2) (string-to-int (aref date 1)) 
+		    (substring (aref date 0) 2) (string-to-int (aref date 1))
 		    (string-to-int (aref date 2)) (substring (aref date 3) 0 2)
 		    (substring 
 		     (aref date 3) 3 5) (substring (aref date 3) 6 8))))
@@ -484,14 +484,14 @@ It will prompt for a password."
       (set-buffer nntp-server-buffer)
       (erase-buffer)))
   (nntp-retrieve-data
-   (mapconcat 'identity strings " ") 
+   (mapconcat 'identity strings " ")
    nntp-address nntp-port-number nntp-server-buffer
    wait-for nnheader-callback-function))
 
 (defun nntp-send-command-nodelete (wait-for &rest strings)
   "Send STRINGS to server and wait until WAIT-FOR returns."
   (nntp-retrieve-data
-   (mapconcat 'identity strings " ") 
+   (mapconcat 'identity strings " ")
    nntp-address nntp-port-number nntp-server-buffer
    wait-for nnheader-callback-function))
 
@@ -502,7 +502,7 @@ It will prompt for a password."
       (set-buffer nntp-server-buffer)
       (erase-buffer)))
   (nntp-retrieve-data
-   (mapconcat 'identity strings " ") 
+   (mapconcat 'identity strings " ")
    nntp-address nntp-port-number nntp-server-buffer
    wait-for nnheader-callback-function t))
 
@@ -577,7 +577,7 @@ It will prompt for a password."
       (nntp-wait-for process "^.*\n" buffer)
       (if (memq (process-status process) '(open run))
 	  (prog1
-	      (caar (push (list process buffer nil) 
+	      (caar (push (list process buffer nil)
 			  nntp-connection-alist))
 	    (push process nntp-connection-list)
 	    (save-excursion
@@ -784,8 +784,8 @@ It will prompt for a password."
 	fetch-old)
     (nntp-send-xover-command 
      (if fetch-old
-	 (if (numberp fetch-old) 
-	     (max 1 (- (car articles) fetch-old)) 
+	 (if (numberp fetch-old)
+	     (max 1 (- (car articles) fetch-old))
 	   1)
        (car articles))
      (car (last articles)) 'wait)
@@ -819,7 +819,7 @@ It will prompt for a password."
 	(setq first (car articles))
 	;; Search forward until we find a gap, or until we run out of
 	;; articles. 
-	(while (and (cdr articles) 
+	(while (and (cdr articles)
 		    (< (- (nth 1 articles) (car articles)) nntp-nov-gap))
 	  (setq articles (cdr articles)))
 
@@ -836,7 +836,7 @@ It will prompt for a password."
 	    ;; a tendency to change the buffer.  Perhaps.  It's
 	    ;; quite difficult to reproduce, because it only
 	    ;; seems to happen once in a blue moon. 
-	    (set-buffer buf) 
+	    (set-buffer buf)
 	    (while (progn
 		     (goto-char last-point)
 		     ;; Count replies.
@@ -1010,7 +1010,7 @@ It will prompt for a password."
 		     (string-match (format "\\([^ :]+\\):%d" number) xref))
 		(substring xref (match-beginning 1) (match-end 1)))
 	       (t "")))
-	(when (string-match "\r" group) 
+	(when (string-match "\r" group)
 	  (setq group (substring group 0 (match-beginning 0))))
 	(cons group number)))))
 

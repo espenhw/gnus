@@ -70,13 +70,14 @@
       (and (numberp gnus-keep-backlog)
 	   (>= (length gnus-backlog-articles) gnus-keep-backlog)
 	   (gnus-backlog-remove-oldest-article))
-      (setq gnus-backlog-articles (cons ident gnus-backlog-articles))
+      (push ident gnus-backlog-articles)
       ;; Insert the new article.
       (save-excursion
 	(set-buffer (gnus-backlog-buffer))
 	(let (buffer-read-only)
 	  (goto-char (point-max))
-	  (or (bolp) (insert "\n"))
+	  (unless (bolp)
+	    (insert "\n"))
 	  (setq b (point))
 	  (insert-buffer-substring buffer)
 	  ;; Tag the beginning of the article with the ident.

@@ -203,7 +203,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 		  (concat (nnkiboze-prefixed-name nnkiboze-current-group)
 			  "." gnus-score-file-suffix))))))
 
-(defun nnkiboze-generate-group (group) 
+(defun nnkiboze-generate-group (group)
   (let* ((info (nth 2 (gnus-gethash group gnus-newsrc-hashtb)))
 	 (newsrc-file (concat nnkiboze-directory group ".newsrc"))
 	 (nov-file (concat nnkiboze-directory group ".nov"))
@@ -216,9 +216,11 @@ Finds out what articles are to be part of the nnkiboze groups."
 	 gnus-visual
 	 method nnkiboze-newsrc nov-buffer gname newsrc active
 	 ginfo lowest glevel)
-    (or info (error "No such group: %s" group))
+    (unless info
+      (error "No such group: %s" group))
     ;; Load the kiboze newsrc file for this group.
-    (and (file-exists-p newsrc-file) (load newsrc-file))
+    (when (file-exists-p newsrc-file)
+      (load newsrc-file))
     ;; We also load the nov file for this group.
     (save-excursion
       (set-buffer (setq nov-buffer (find-file-noselect nov-file)))
@@ -263,28 +265,31 @@ Finds out what articles are to be part of the nnkiboze groups."
 	     (setcar (nthcdr 3 ginfo) nil))
 	;; We set the list of read articles to be what we expect for
 	;; this kiboze group -- either nil or `(1 . LOWEST)'. 
-	(and ginfo (setcar (nthcdr 2 ginfo)
-			   (and (not (= lowest 1)) (cons 1 lowest))))
+	(when ginfo
+	  (setcar (nthcdr 2 ginfo)
+		  (and (not (= lowest 1)) (cons 1 lowest))))
 	(if (not (and (or (not ginfo)
 			  (> (length (gnus-list-of-unread-articles 
-				      (car ginfo))) 0))
+				      (car ginfo)))
+			     0))
 		      (progn
 			(gnus-group-select-group nil)
 			(eq major-mode 'gnus-summary-mode))))
 	    ()				; No unread articles, or we couldn't enter this group.
 	  ;; We are now in the group where we want to be.
 	  (setq method (gnus-find-method-for-group gnus-newsgroup-name))
-	  (and (eq method gnus-select-method) (setq method nil))
+	  (when (eq method gnus-select-method)
+	    (setq method nil))
 	  ;; We go through the list of scored articles.
 	  (while gnus-newsgroup-scored
-	    (if (> (caar gnus-newsgroup-scored) lowest)
-		;; If it has a good score, then we enter this article
-		;; into the kiboze group.
-		(nnkiboze-enter-nov 
-		 nov-buffer
-		 (gnus-summary-article-header 
-		  (caar gnus-newsgroup-scored))
-		 gnus-newsgroup-name))
+	    (when (> (caar gnus-newsgroup-scored) lowest)
+	      ;; If it has a good score, then we enter this article
+	      ;; into the kiboze group.
+	      (nnkiboze-enter-nov 
+	       nov-buffer
+	       (gnus-summary-article-header 
+		(caar gnus-newsgroup-scored))
+	       gnus-newsgroup-name))
 	    (setq gnus-newsgroup-scored (cdr gnus-newsgroup-scored)))
 	  ;; That's it.  We exit this group.
 	  (gnus-summary-exit-no-update)))
@@ -324,7 +329,7 @@ Finds out what articles are to be part of the nnkiboze groups."
       ;; really came for - this is the article nnkiboze
       ;; will request when it is asked for the article.
       (insert group ":" 
-	      (int-to-string (mail-header-number header)) " ")      
+	      (int-to-string (mail-header-number header)) " ")
       (while (re-search-forward " [^ ]+:[0-9]+" nil t)
 	(goto-char (1+ (match-beginning 0)))
 	(insert prefix)))))

@@ -36,8 +36,8 @@ If this variable is nil, Gnus will try to locate the directory
 automatically.")
 
 (defvar gnus-xmas-logo-color-alist
-  '((flame "#cc3300" "#ff2200") 
-    (pine "#c0cc93" "#f8ffb8") 
+  '((flame "#cc3300" "#ff2200")
+    (pine "#c0cc93" "#f8ffb8")
     (moss "#a1cc93" "#d2ffb8")
     (irish "#04cc90" "#05ff97")
     (sky "#049acc" "#05deff")
@@ -118,7 +118,7 @@ asynchronously.	 The compressed face will be piped to this command.")
 (defun gnus-xmas-set-text-properties (start end props &optional buffer)
   "You should NEVER use this function.  It is ideologically blasphemous.
 It is provided only to ease porting of broken FSF Emacs programs."
-  (if (stringp buffer) 
+  (if (stringp buffer)
       nil
     (map-extents (lambda (extent ignored)
 		   (remove-text-properties 
@@ -131,8 +131,8 @@ It is provided only to ease porting of broken FSF Emacs programs."
 (defun gnus-xmas-highlight-selected-summary ()
   ;; Highlight selected article in summary buffer
   (when gnus-summary-selected-face
-    (if gnus-newsgroup-selected-overlay
-	(delete-extent gnus-newsgroup-selected-overlay))
+    (when gnus-newsgroup-selected-overlay
+      (delete-extent gnus-newsgroup-selected-overlay))
     (setq gnus-newsgroup-selected-overlay 
 	  (make-extent (gnus-point-at-bol) (gnus-point-at-eol)))
     (set-extent-face gnus-newsgroup-selected-overlay
@@ -161,8 +161,7 @@ displayed, no centering will be performed."
 	;; possible valid number, or the second line from the top,
 	;; whichever is the least.
 	(set-window-start
-	 window (min bottom (save-excursion 
-			      (forward-line (- top)) (point)))))
+	 window (min bottom (save-excursion (forward-line (- top)) (point)))))
       ;; Do horizontal recentering while we're at it.
       (when (and (get-buffer-window (current-buffer) t)
 		 (not (eq gnus-auto-center-summary 'vertical)))
@@ -197,7 +196,8 @@ call it with the value of the `gnus-data' text property."
   (let* ((pos (event-closest-point event))
 	 (data (get-text-property pos 'gnus-data))
 	 (fun (get-text-property pos 'gnus-callback)))
-    (if fun (funcall fun data))))
+    (when fun
+      (funcall fun data))))
 
 (defun gnus-xmas-move-overlay (extent start end &optional buffer)
   (set-extent-endpoints extent start end))
@@ -205,9 +205,9 @@ call it with the value of the `gnus-data' text property."
 ;; Fixed by Christopher Davis <ckd@loiosh.kei.com>.
 (defun gnus-xmas-article-add-button (from to fun &optional data)
   "Create a button between FROM and TO with callback FUN and data DATA."
-  (and gnus-article-button-face
-       (gnus-overlay-put (gnus-make-overlay from to) 
-			 'face gnus-article-button-face))
+  (when gnus-article-button-face
+    (gnus-overlay-put (gnus-make-overlay from to)
+		      'face gnus-article-button-face))
   (gnus-add-text-properties 
    from to
    (nconc
@@ -249,16 +249,14 @@ call it with the value of the `gnus-data' text property."
              (next-bottom-edge (car (cdr (cdr (cdr 
                                                (window-pixel-edges 
 						this-window)))))))
-        (if (< bottom-edge next-bottom-edge)
-            (progn
-              (setq bottom-edge next-bottom-edge)
-              (setq lowest-window this-window)))
+        (when (< bottom-edge next-bottom-edge)
+	  (setq bottom-edge next-bottom-edge)
+	  (setq lowest-window this-window))
 
         (select-window this-window)
-        (if (eq last-window this-window)
-            (progn
-              (select-window lowest-window)
-              (setq window-search nil)))))))
+        (when (eq last-window this-window)
+	  (select-window lowest-window)
+	  (setq window-search nil))))))
 
 (defmacro gnus-xmas-menu-add (type &rest menus)
   `(gnus-xmas-menu-add-1 ',type ',menus))
@@ -318,9 +316,8 @@ call it with the value of the `gnus-data' text property."
   (let ((event (next-command-event)))
     ;; We junk all non-key events.  Is this naughty?
     (while (not (key-press-event-p event))
-      (setq event (next-event)))
+      (setq event (next-command-event)))
     (cons (and (key-press-event-p event) 
-					; (numberp (event-key event))
 	       (event-to-character event)) 
 	  event)))
 
@@ -365,14 +362,14 @@ call it with the value of the `gnus-data' text property."
 (defun gnus-xmas-define ()
   (setq gnus-mouse-2 [button2])
 
-  (or (memq 'underline (face-list))
-      (and (fboundp 'make-face)
-	   (funcall (intern "make-face") 'underline)))
+  (unless (memq 'underline (face-list))
+    (and (fboundp 'make-face)
+	 (funcall (intern "make-face") 'underline)))
   ;; Must avoid calling set-face-underline-p directly, because it
   ;; is a defsubst in emacs19, and will make the .elc files non
   ;; portable!
-  (or (face-differs-from-default-p 'underline)
-      (funcall (intern "set-face-underline-p") 'underline t))
+  (unless (face-differs-from-default-p 'underline)
+    (funcall (intern "set-face-underline-p") 'underline t))
 
   (fset 'gnus-make-overlay 'make-extent)
   (fset 'gnus-overlay-put 'set-extent-property)
@@ -383,10 +380,11 @@ call it with the value of the `gnus-data' text property."
   (fset 'gnus-put-text-property 'gnus-xmas-put-text-property)
       
   (require 'text-props)
-  (if (< emacs-minor-version 14)
-      (fset 'gnus-set-text-properties 'gnus-xmas-set-text-properties))
+  (when (< emacs-minor-version 14)
+    (fset 'gnus-set-text-properties 'gnus-xmas-set-text-properties))
 
-  (or (boundp 'standard-display-table) (setq standard-display-table nil))
+  (unless (boundp 'standard-display-table)
+    (setq standard-display-table nil))
 
   (defvar gnus-mouse-face-prop 'highlight)
 
@@ -498,7 +496,8 @@ pounce directly on the real variables themselves.")
 
   (when (and (<= emacs-major-version 19)
 	     (<= emacs-minor-version 13))
-    (setq gnus-article-x-face-too-ugly (if (eq (device-type) 'tty) "."))
+    (setq gnus-article-x-face-too-ugly (when (eq (device-type) 'tty)
+					 "."))
     (fset 'gnus-highlight-selected-summary
 	  'gnus-xmas-highlight-selected-summary)
     (fset 'gnus-group-remove-excess-properties
@@ -570,7 +569,7 @@ pounce directly on the real variables themselves.")
 " 
 	       ""))
       ;; And then hack it.
-      (gnus-indent-rigidly (point-min) (point-max) 
+      (gnus-indent-rigidly (point-min) (point-max)
 			   (/ (max (- (window-width) (or x 46)) 0) 2))
       (goto-char (point-min))
       (forward-line 1)
@@ -580,8 +579,8 @@ pounce directly on the real variables themselves.")
 	(insert (make-string (max 0 (* 2 (/ rest 3))) ?\n))))
     ;; Fontify some.
     (goto-char (point-min))
-    (and (search-forward "Praxis" nil t)
-	 (put-text-property (match-beginning 0) (match-end 0) 'face 'bold))
+    (when (search-forward "Praxis" nil t)
+      (put-text-property (match-beginning 0) (match-end 0) 'face 'bold))
     (goto-char (point-min))
     (setq modeline-buffer-identification 
 	  (list (concat gnus-version ": *Group*")))
@@ -799,6 +798,10 @@ If HIDE, hide the text instead."
 	     (cons gnus-xmas-modeline-left-extent gnus-xmas-modeline-glyph)
 	   (cons gnus-xmas-modeline-left-extent (substring line 0 chop)))
 	 (cons gnus-xmas-modeline-right-extent (substring line chop)))))))
+
+(defun gnus-xmas-splash ()
+  (when (eq (device-type) 'x)
+    (gnus-splash)))
 
 (provide 'gnus-xmas)
 

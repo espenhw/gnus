@@ -147,9 +147,9 @@ expiry mechanism."
       ;; CCC we shouldn't be using the variable nndb-status-string?
       (if (string-match "^423" (nnheader-get-report 'nndb))
           ()
-        (or (string-match "\\([0-9]+\\) \\([0-9]+\\)$" msg)
-            (error "Not a valid response for DATE command: %s"
-                   msg))
+        (unless (string-match "\\([0-9]+\\) \\([0-9]+\\)$" msg)
+	  (error "Not a valid response for DATE command: %s"
+		 msg))
         (if (nnmail-expired-article-p
              group
              (list (string-to-int
@@ -190,8 +190,8 @@ Optional LAST is ignored."
       (nntp-encode-text)
       (nntp-send-buffer "^[23].*\n")
       (setq statmsg (nntp-status-message))
-      (or (string-match "^\\([0-9]+\\)" statmsg)
-          (error "nndb: %s" statmsg))
+      (unless (string-match "^\\([0-9]+\\)" statmsg)
+	(error "nndb: %s" statmsg))
       (setq art (substring statmsg
                            (match-beginning 1)
                            (match-end 1)))

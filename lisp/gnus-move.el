@@ -56,7 +56,7 @@ Update the .newsrc.eld file to reflect the change of nntp server."
 	(when (gnus-group-native-p (gnus-info-group info))
 	  (gnus-move-group-to-server info from-server to-server))))))
 
-(defun gnus-move-group-to-server (info from-server to-server)	    
+(defun gnus-move-group-to-server (info from-server to-server)
   "Move group INFO from FROM-SERVER to TO-SERVER."
   (let ((group (gnus-info-group info))
 	to-active hashtb type mark marks

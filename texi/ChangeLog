@@ -1,3 +1,8 @@
+Tue Oct  1 01:34:45 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
+
+	* gnus.texi (Expiring Mail): Addition.
+	(Group Line Specification): Addition.
+
 Sat Sep 28 21:36:40 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus.texi (Foreign Groups): Addition.

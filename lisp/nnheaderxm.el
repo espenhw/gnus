@@ -54,21 +54,20 @@ The buffer is not selected, just returned to the caller."
 	   (truename (abbreviate-file-name (file-truename filename)))
 	   (number (nthcdr 10 (file-attributes truename)))
 	   ;; Find any buffer for a file which has same truename.
-	   (other (and (not buf) 
+	   (other (and (not buf)
 		       (get-file-buffer filename)))
 	   error)
       ;; Let user know if there is a buffer with the same truename.
-      (if other
-	  (progn
-	    (or nowarn
-		(string-equal filename (buffer-file-name other))
-		(message "%s and %s are the same file"
-			 filename (buffer-file-name other)))
-	    ;; Optionally also find that buffer.
-	    (if (or (and (boundp 'find-file-existing-other-name)
-			 find-file-existing-other-name)
-		    find-file-visit-truename)
-		(setq buf other))))
+      (when other
+	(or nowarn
+	    (string-equal filename (buffer-file-name other))
+	    (message "%s and %s are the same file"
+		     filename (buffer-file-name other)))
+	;; Optionally also find that buffer.
+	(when (or (and (boundp 'find-file-existing-other-name)
+		       find-file-existing-other-name)
+		  find-file-visit-truename)
+	  (setq buf other)))
       (if buf
 	  (or nowarn
 	      (verify-visited-file-modtime buf)
@@ -123,23 +122,22 @@ The buffer is not selected, just returned to the caller."
 	  ;; the file was found in.
 	  (and (eq system-type 'vax-vms)
 	       (let (logical)
-		 (if (string-match ":" (file-name-directory filename))
-		     (setq logical (substring (file-name-directory filename)
-					      0 (match-beginning 0))))
+		 (when (string-match ":" (file-name-directory filename))
+		   (setq logical (substring (file-name-directory filename)
+					    0 (match-beginning 0))))
 		 (not (member logical find-file-not-true-dirname-list)))
 	       (setq buffer-file-name buffer-file-truename))
-	  (if find-file-visit-truename
-	      (setq buffer-file-name
-		    (setq filename
-			  (expand-file-name buffer-file-truename))))
+	  (when find-file-visit-truename
+	    (setq buffer-file-name
+		  (setq filename
+			(expand-file-name buffer-file-truename))))
 	  ;; Set buffer's default directory to that of the file.
 	  (setq default-directory (file-name-directory filename))
 	  ;; Turn off backup files for certain file names.  Since
 	  ;; this is a permanent local, the major mode won't eliminate it.
-	  (and (not (funcall backup-enable-predicate buffer-file-name))
-	       (progn
-		 (make-local-variable 'backup-inhibited)
-		 (setq backup-inhibited t)))
+	  (when (not (funcall backup-enable-predicate buffer-file-name))
+	    (make-local-variable 'backup-inhibited)
+	    (setq backup-inhibited t))
 	  (if rawfile
 	      nil
 	    (after-find-file error (not nowarn)))))

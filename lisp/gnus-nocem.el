@@ -106,7 +106,7 @@ isn't bound, the message will be used unconditionally.")
 			       (setq articles
 				     (gnus-uncompress-range
 				      (cons 
-				       (if active (1+ (cdr active)) 
+				       (if active (1+ (cdr active))
 					 (car gactive))
 				       (cdr gactive))))
 			       group))
@@ -121,7 +121,7 @@ isn't bound, the message will be used unconditionally.")
 		    (gnus-nocem-check-article group (car headers)))
 		  (setq headers (cdr headers)))))))
 	(setq gnus-nocem-active
-	      (cons (list group gactive) 
+	      (cons (list group gactive)
 		    (delq (assoc group gnus-nocem-active)
 			  gnus-nocem-active)))))
     ;; Save the results, if any.
@@ -190,7 +190,7 @@ isn't bound, the message will be used unconditionally.")
       (when ncm
 	(setq gnus-nocem-touched-alist t)
 	(push (cons (let ((time (current-time))) (setcdr (cdr time) nil) time)
-		    ncm) 
+		    ncm)
 	      gnus-nocem-alist)))))
 
 (defun gnus-nocem-load-cache ()

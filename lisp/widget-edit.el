@@ -940,12 +940,12 @@ With optional ARG, move across that many fields."
 
 (defun widget-choice-convert-widget (widget)
   ;; Expand type args into widget objects.
-;  (widget-put widget :args (mapcar (lambda (child)
-;				     (if (widget-get child ':converted)
-;					 child
-;				       (widget-put child ':converted t)
-;				       (widget-convert child)))
-;				   (widget-get widget :args)))
+					;  (widget-put widget :args (mapcar (lambda (child)
+					;				     (if (widget-get child ':converted)
+					;					 child
+					;				       (widget-put child ':converted t)
+					;				       (widget-convert child)))
+					;				   (widget-get widget :args)))
   (widget-put widget :args (mapcar 'widget-convert (widget-get widget :args)))
   widget)
 
@@ -1460,7 +1460,7 @@ With optional ARG, move across that many fields."
 	(t 
 	 (widget-default-format-handler widget escape))))
 
-;(defun widget-editable-list-format-handler (widget escape)
+					;(defun widget-editable-list-format-handler (widget escape)
 ;  ;; We recognize the insert button.
 ;  (cond ((eq escape ?i)
 ;	 (insert " ")			

@@ -242,7 +242,7 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
 
 (defun gnus-inews-yank-articles (articles)
   (let (beg article)
-    (message-goto-body)      
+    (message-goto-body)
     (while (setq article (pop articles))
       (save-window-excursion
 	(set-buffer gnus-summary-buffer)
@@ -253,7 +253,8 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
 	    (message-reply-headers gnus-current-headers))
 	(message-yank-original)
 	(setq beg (or beg (mark t))))
-      (when articles (insert "\n")))
+      (when articles
+	(insert "\n")))
     (push-mark)
     (goto-char beg)))
 
@@ -301,7 +302,7 @@ header line with the old Message-ID."
   (setq gnus-article-copy (get-buffer-create " *gnus article copy*"))
   (buffer-disable-undo gnus-article-copy)
   (or (memq gnus-article-copy gnus-buffer-list)
-      (setq gnus-buffer-list (cons gnus-article-copy gnus-buffer-list)))
+      (push gnus-article-copy gnus-buffer-list))
   (let ((article-buffer (or article-buffer gnus-article-buffer))
 	end beg contents)
     (when (and (get-buffer article-buffer)
@@ -593,15 +594,15 @@ The current group name will be inserted at \"%s\".")
 (defun gnus-summary-mail-nastygram (n)
   "Send a nastygram to the author of the current article."
   (interactive "P")
-  (if (or gnus-expert-user
-	  (gnus-y-or-n-p 
-	   "Really send a nastygram to the author of the current article? "))
-      (let ((group gnus-newsgroup-name))
-	(gnus-summary-reply-with-original n)
-	(set-buffer gnus-message-buffer)
-	(message-goto-body)
-	(insert (format gnus-nastygram-message group))
-	(message-send-and-exit))))
+  (when (or gnus-expert-user
+	    (gnus-y-or-n-p 
+	     "Really send a nastygram to the author of the current article? "))
+    (let ((group gnus-newsgroup-name))
+      (gnus-summary-reply-with-original n)
+      (set-buffer gnus-message-buffer)
+      (message-goto-body)
+      (insert (format gnus-nastygram-message group))
+      (message-send-and-exit))))
 
 (defun gnus-summary-mail-crosspost-complaint (n)
   "Send a complaint about crossposting to the current article(s)."
@@ -658,13 +659,13 @@ The current group name will be inserted at \"%s\".")
 		    (logand (progn
 			      (while (search-forward "\"" nil t)
 				(incf i))
-			      (if (zerop i) 2 i)) 2)))))
+			      (if (zerop i) 2 i))
+			    2)))))
 	(skip-chars-forward ",")
 	(skip-chars-forward "^,"))
       (skip-chars-backward " ")
-      (setq accumulated
-	    (cons (buffer-substring beg (point))
-		  accumulated))
+      (push (buffer-substring beg (point))
+	    accumulated)
       (skip-chars-forward "^,")
       (skip-chars-forward ", "))
     accumulated))
@@ -687,8 +688,8 @@ The current group name will be inserted at \"%s\".")
     (or (and group (not (gnus-group-read-only-p group)))
 	(setq group (read-string "Put in group: " nil
 				 (gnus-writable-groups))))
-    (and (gnus-gethash group gnus-newsrc-hashtb)
-	 (error "No such group: %s" group))
+    (when (gnus-gethash group gnus-newsrc-hashtb)
+      (error "No such group: %s" group))
 
     (save-excursion
       (save-restriction
@@ -704,15 +705,14 @@ The current group name will be inserted at \"%s\".")
 
     (gnus-inews-do-gcc)
 
-    (if (get-buffer gnus-group-buffer)
-	(progn
-	  (if (gnus-buffer-exists-p (car-safe reply))
-	      (progn
-		(set-buffer (car reply))
-		(and (cdr reply)
-		     (gnus-summary-mark-article-as-replied 
-		      (cdr reply)))))
-	  (and winconf (set-window-configuration winconf))))))
+    (when (get-buffer gnus-group-buffer)
+      (when (gnus-buffer-exists-p (car-safe reply))
+	(set-buffer (car reply))
+	(and (cdr reply)
+	     (gnus-summary-mark-article-as-replied 
+	      (cdr reply))))
+      (when winconf
+	(set-window-configuration winconf)))))
 
 (defun gnus-article-mail (yank)
   "Send a reply to the address near point.
@@ -753,8 +753,8 @@ If YANK is non-nil, include the original article."
     (message "")))
 
 (defun gnus-bug-kill-buffer ()
-  (and (get-buffer "*Gnus Help Bug*")
-       (kill-buffer "*Gnus Help Bug*")))
+  (when (get-buffer "*Gnus Help Bug*")
+    (kill-buffer "*Gnus Help Bug*")))
 
 (defun gnus-debug ()
   "Attempts to go through the Gnus source file and report what variables have been changed.
@@ -780,7 +780,7 @@ The source file has to be in the Emacs load path."
 	      (gnus-message 4 "Malformed sources in file %s" file)
 	    (narrow-to-region (point-min) (point))
 	    (goto-char (point-min))
-	    (while (setq expr (condition-case () 
+	    (while (setq expr (condition-case ()
 				  (read (current-buffer)) (error nil)))
 	      (condition-case ()
 		  (and (eq (car expr) 'defvar)
@@ -810,7 +810,7 @@ The source file has to be in the Emacs load path."
       (setq olist (cdr olist)))
     (insert "\n\n")
     ;; Remove any null chars - they seem to cause trouble for some
-    ;; mailers.  (Byte-compiled output from the stuff above.) 
+    ;; mailers.  (Byte-compiled output from the stuff above.)
     (goto-char (point-min))
     (while (re-search-forward "[\000\200]" nil t)
       (replace-match "" t t))))
@@ -971,7 +971,8 @@ this is a reply."
 			  name
 			(gnus-group-prefixed-name 
 			 name gnus-message-archive-method)))
-	      (if groups (insert " ")))
+	      (when groups
+		(insert " ")))
 	    (insert "\n")))))))
 
 (defun gnus-summary-send-draft ()

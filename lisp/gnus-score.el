@@ -297,7 +297,7 @@ expunge: Automatically expunge articles below this.
 files:   List of other score files to load when loading this one.
 eval:    Sexp to be evaluated when the score file is loaded.
 
-String entries have the form (HEADER (MATCH TYPE SCORE DATE) ...) 
+String entries have the form (HEADER (MATCH TYPE SCORE DATE) ...)
 where HEADER is the header being scored, MATCH is the string we are
 looking for, TYPE is a flag indicating whether it should use regexp or
 substring matching, SCORE is the score to add and DATE is the date
@@ -314,10 +314,10 @@ of the last successful match.")
     ("subject" 1 gnus-score-string)
     ("from" 2 gnus-score-string)
     ("date" 3 gnus-score-date)
-    ("message-id" 4 gnus-score-string) 
-    ("references" 5 gnus-score-string) 
-    ("chars" 6 gnus-score-integer) 
-    ("lines" 7 gnus-score-integer) 
+    ("message-id" 4 gnus-score-string)
+    ("references" 5 gnus-score-string)
+    ("chars" 6 gnus-score-integer)
+    ("lines" 7 gnus-score-integer)
     ("xref" 8 gnus-score-string)
     ("head" -1 gnus-score-body)
     ("body" -1 gnus-score-body)
@@ -370,8 +370,8 @@ used as score."
 (defun gnus-score-kill-help-buffer ()
   (when (get-buffer "*Score Help*")
     (kill-buffer "*Score Help*")
-    (and gnus-score-help-winconf
-	 (set-window-configuration gnus-score-help-winconf))))
+    (when gnus-score-help-winconf
+      (set-window-configuration gnus-score-help-winconf))))
 
 (defun gnus-summary-increase-score (&optional score)
   "Make a score entry based on the current article.
@@ -403,13 +403,13 @@ used as score."
 	    (?z s "substring" body-string)
 	    (?p r "regexp string" body-string)
 	    (?b before "before date" date)
-	    (?a at "at date" date) 
+	    (?a at "at date" date)
 	    (?n now "this date" date)
 	    (?< < "less than number" number)
-	    (?> > "greater than number" number) 
+	    (?> > "greater than number" number)
 	    (?= = "equal to number" number)))
 	 (char-to-perm
-	  (list (list ?t (current-time-string) "temporary") 
+	  (list (list ?t (current-time-string) "temporary")
 		'(?p perm "permanent") '(?i now "immediate")))
 	 (mimic gnus-score-mimic-keymap)
 	 (hchar (and gnus-score-default-header 
@@ -455,8 +455,8 @@ used as score."
 	      (message "%s header '%s' with match type (%s?): "
 		       (if increase "Increase" "Lower")
 		       (nth 1 entry)
-		       (mapconcat (lambda (s) 
-				    (if (eq (nth 4 entry) 
+		       (mapconcat (lambda (s)
+				    (if (eq (nth 4 entry)
 					    (nth 3 s))
 					(char-to-string (car s))
 				      ""))
@@ -467,8 +467,8 @@ used as score."
 	      (gnus-score-insert-help
 	       "Match type"
 	       (delq nil
-		     (mapcar (lambda (s) 
-			       (if (eq (nth 4 entry) 
+		     (mapcar (lambda (s)
+			       (if (eq (nth 4 entry)
 				       (nth 3 s))
 				   s nil))
 			     char-to-type ))
@@ -548,8 +548,8 @@ used as score."
       ;; find the longest string to display
       (while list
 	(setq n (length (nth idx (car list))))
-	(or (> max n)
-	    (setq max n))
+	(unless (> max n)
+	  (setq max n))
 	(setq list (cdr list)))
       (setq max (+ max 4))		; %c, `:', SPACE, a SPACE at end
       (setq n (/ (1- (window-width)) max)) ; items per line
@@ -631,7 +631,8 @@ If optional argument `SILENT' is nil, show effect of score entry."
 		(current-time-string))
 	       (t nil))))
   ;; Regexp is the default type.
-  (if (eq type t) (setq type 'r))
+  (when (eq type t)
+    (setq type 'r))
   ;; Simplify matches...
   (cond ((or (eq type 'r) (eq type 's) (eq type nil))
 	 (setq match (if match (gnus-simplify-subject-re match) "")))
@@ -658,8 +659,8 @@ If optional argument `SILENT' is nil, show effect of score entry."
     (setq match (format "%s" match))
 
     ;; If this is an integer comparison, we transform from string to int. 
-    (and (eq (nth 2 (assoc header gnus-header-index)) 'gnus-score-integer)
-	 (setq match (string-to-int match)))
+    (when (eq (nth 2 (assoc header gnus-header-index)) 'gnus-score-integer)
+      (setq match (string-to-int match)))
 
     (unless (eq date 'now)
       ;; Add the score entry to the score file.
@@ -686,7 +687,7 @@ If optional argument `SILENT' is nil, show effect of score entry."
 		 (or (and (numberp (nth 2 elem)) (numberp (nth 2 new)))
 		     (and (not (nth 2 elem)) (not (nth 2 new)))))
 	    ;; Yup, we just add this new score to the old elem.
-	    (setcar (cdr elem) (+ (or (nth 1 elem) 
+	    (setcar (cdr elem) (+ (or (nth 1 elem)
 				      gnus-score-interactive-default-score)
 				  (or (nth 1 new)
 				      gnus-score-interactive-default-score)))
@@ -719,12 +720,12 @@ SCORE is the score to add."
 		     (y-or-n-p "Use regexp match? ")
 		     (prefix-numeric-value current-prefix-arg)))
   (save-excursion
-    (or (and (stringp match) (> (length match) 0))
-	(error "No match"))
+    (unless (and (stringp match) (> (length match) 0))
+      (error "No match"))
     (goto-char (point-min))
     (let ((regexp (cond ((eq type 'f)
 			 (gnus-simplify-subject-fuzzy match))
-			((eq type 'r) 
+			((eq type 'r)
 			 match)
 			((eq type 'e)
 			 (concat "\\`" (regexp-quote match) "\\'"))
@@ -734,11 +735,11 @@ SCORE is the score to add."
 	(let ((content (gnus-summary-header header 'noerr))
 	      (case-fold-search t))
 	  (and content
-	       (if (if (eq type 'f)
-		       (string-equal (gnus-simplify-subject-fuzzy content)
-				     regexp)
-		     (string-match regexp content))
-		   (gnus-summary-raise-score score))))
+	       (when (if (eq type 'f)
+			 (string-equal (gnus-simplify-subject-fuzzy content)
+				       regexp)
+		       (string-match regexp content))
+		 (gnus-summary-raise-score score))))
 	(beginning-of-line 2)))))
 
 (defun gnus-summary-score-crossposting (score date)
@@ -748,15 +749,16 @@ SCORE is the score to add."
   (let ((xref (gnus-summary-header "xref"))
 	(start 0)
 	group)
-    (or xref (error "This article is not crossposted"))
+    (unless xref
+      (error "This article is not crossposted"))
     (while (string-match " \\([^ \t]+\\):" xref start)
       (setq start (match-end 0))
-      (if (not (string= 
-		(setq group 
-		      (substring xref (match-beginning 1) (match-end 1)))
-		gnus-newsgroup-name))
-	  (gnus-summary-score-entry
-	   "xref" (concat " " group ":") nil score date t)))))
+      (when (not (string= 
+		  (setq group 
+			(substring xref (match-beginning 1) (match-end 1)))
+		  gnus-newsgroup-name))
+	(gnus-summary-score-entry
+	 "xref" (concat " " group ":") nil score date t)))))
 
 
 ;;;
@@ -861,7 +863,7 @@ SCORE is the score to add."
   "Raise the score of the current article by N."
   (interactive "p")
   (gnus-set-global-variables)
-  (gnus-summary-set-score (+ (gnus-summary-article-score) 
+  (gnus-summary-set-score (+ (gnus-summary-article-score)
 			     (or n gnus-score-interactive-default-score ))))
 
 (defun gnus-summary-set-score (n)
@@ -875,12 +877,12 @@ SCORE is the score to add."
       (gnus-summary-update-mark
        (if (= n (or gnus-summary-default-score 0)) ? 
 	 (if (< n (or gnus-summary-default-score 0))
-	     gnus-score-below-mark gnus-score-over-mark)) 'score))
+	     gnus-score-below-mark gnus-score-over-mark))
+       'score))
     (let* ((article (gnus-summary-article-number))
 	   (score (assq article gnus-newsgroup-scored)))
       (if score (setcdr score n)
-	(setq gnus-newsgroup-scored
-	      (cons (cons article n) gnus-newsgroup-scored))))
+	(push (cons article n) gnus-newsgroup-scored)))
     (gnus-summary-update-line)))
 
 (defun gnus-summary-current-score ()
@@ -901,7 +903,8 @@ SCORE is the score to add."
   "Edit the current score alist."
   (interactive (list gnus-current-score-file))
   (let ((winconf (current-window-configuration)))
-    (and (buffer-name gnus-summary-buffer) (gnus-score-save))
+    (when (buffer-name gnus-summary-buffer)
+      (gnus-score-save))
     (gnus-make-directory (file-name-directory file))
     (setq gnus-score-edit-buffer (find-file-noselect file))
     (gnus-configure-windows 'edit-score)
@@ -918,7 +921,8 @@ SCORE is the score to add."
   (interactive 
    (list (read-file-name "Edit score file: " gnus-kill-files-directory)))
   (gnus-make-directory (file-name-directory file))
-  (and (buffer-name gnus-summary-buffer) (gnus-score-save))
+  (when (buffer-name gnus-summary-buffer)
+    (gnus-score-save))
   (let ((winconf (current-window-configuration)))
     (setq gnus-score-edit-buffer (find-file-noselect file))
     (gnus-configure-windows 'edit-score)
@@ -935,7 +939,7 @@ SCORE is the score to add."
   (let* ((file (expand-file-name 
 		(or (and (string-match
 			  (concat "^" (expand-file-name
-				       gnus-kill-files-directory)) 
+				       gnus-kill-files-directory))
 			  (expand-file-name file))
 			 file)
 		    (concat (file-name-as-directory gnus-kill-files-directory)
@@ -951,13 +955,13 @@ SCORE is the score to add."
       (setq alist (gnus-score-load-score-alist file))
       ;; We add '(touched) to the alist to signify that it hasn't been
       ;; touched (yet). 
-      (or (assq 'touched alist) (setq alist (cons (list 'touched nil) alist)))
+      (unless (assq 'touched alist)
+	(push (list 'touched nil) alist))
       ;; If it is a global score file, we make it read-only.
       (and global
 	   (not (assq 'read-only alist))
-	   (setq alist (cons (list 'read-only t) alist)))
-      (setq gnus-score-cache
-	    (cons (cons file alist) gnus-score-cache)))
+	   (push (list 'read-only t) alist))
+      (push (cons file alist) gnus-score-cache))
     (let ((a alist)
 	  found)
       (while a
@@ -995,7 +999,7 @@ SCORE is the score to add."
       (and files (not global)
 	   (setq lists (apply 'append lists
 			      (mapcar (lambda (file)
-					(gnus-score-load-file file)) 
+					(gnus-score-load-file file))
 				      (if adapt-file (cons adapt-file files)
 					files)))))
       (and eval (not global) (eval eval))
@@ -1003,9 +1007,10 @@ SCORE is the score to add."
       (setq gnus-scores-exclude-files 
 	    (nconc 
 	     (mapcar 
-	      (lambda (sfile) 
+	      (lambda (sfile)
 		(expand-file-name sfile (file-name-directory file)))
-	      exclude-files) gnus-scores-exclude-files))
+	      exclude-files)
+	     gnus-scores-exclude-files))
       (if (not local)
 	  ()
 	(save-excursion
@@ -1017,7 +1022,8 @@ SCORE is the score to add."
 		   (make-local-variable (caar local))
 		   (set (caar local) (nth 1 (car local)))))
 	    (setq local (cdr local)))))
-      (if orphan (setq gnus-orphan-score orphan))
+      (when orphan
+	(setq gnus-orphan-score orphan))
       (setq gnus-adaptive-score-alist
 	    (cond ((equal adapt '(t))
 		   (setq gnus-newsgroup-adaptive t)
@@ -1049,10 +1055,9 @@ SCORE is the score to add."
 	(setq gnus-score-alist (cdr cache))
       (setq gnus-score-alist nil)
       (gnus-score-load-score-alist file)
-      (or gnus-score-alist
-	  (setq gnus-score-alist (copy-alist '((touched nil)))))
-      (setq gnus-score-cache
-	    (cons (cons file gnus-score-alist) gnus-score-cache)))))
+      (unless gnus-score-alist
+	(setq gnus-score-alist (copy-alist '((touched nil)))))
+      (push (cons file gnus-score-alist) gnus-score-cache))))
 
 (defun gnus-score-remove-from-cache (file)
   (setq gnus-score-cache 
@@ -1131,18 +1136,18 @@ SCORE is the score to add."
 	    (gnus-message 3 err)
 	    (sit-for 2)
 	    nil)
-	alist)))))    
+	alist)))))
 
 (defun gnus-score-transform-old-to-new (alist)
   (let* ((alist (nth 2 alist))
 	 out entry)
-    (if (eq (car alist) 'quote)
-	(setq alist (nth 1 alist)))
+    (when (eq (car alist) 'quote)
+      (setq alist (nth 1 alist)))
     (while alist
       (setq entry (car alist))
       (if (stringp (car entry))
 	  (let ((scor (cdr entry)))
-	    (setq out (cons entry out))
+	    (push entry out)
 	    (while scor
 	      (setcar scor
 		      (list (caar scor) (nth 2 (car scor))
@@ -1150,10 +1155,10 @@ SCORE is the score to add."
 				 (gnus-day-number (nth 3 (car scor))))
 			    (if (nth 1 (car scor)) 'r 's)))
 	      (setq scor (cdr scor))))
-	(setq out (cons (if (not (listp (cdr entry))) 
-			    (list (car entry) (cdr entry))
-			  entry)
-			out)))
+	(push (if (not (listp (cdr entry)))
+		  (list (car entry) (cdr entry))
+		entry)
+	      out))
       (setq alist (cdr alist)))
     (cons (list 'touched t) (nreverse out))))
   
@@ -1179,7 +1184,8 @@ SCORE is the score to add."
 	  (let (emacs-lisp-mode-hook)
 	    (if (string-match 
 		 (concat (regexp-quote gnus-adaptive-file-suffix)
-			 "$") file)
+			 "$")
+		 file)
 		;; This is an adaptive score file, so we do not run
 		;; it through `pp'.  These files can get huge, and
 		;; are not meant to be edited by human hands.
@@ -1193,7 +1199,7 @@ SCORE is the score to add."
 	      (delete-file file)
 	    ;; There are scores, so we write the file. 
 	    (when (file-writable-p file)
-	      (write-region (point-min) (point-max) file nil 'silent)
+	      (gnus-write-buffer file)
 	      (when gnus-score-after-write-file-function
 		(funcall gnus-score-after-write-file-function file)))))
 	(and gnus-score-uncacheable-files
@@ -1253,10 +1259,10 @@ SCORE is the score to add."
 	    ;; WARNING: The assq makes the function O(N*S) while it could
 	    ;; be written as O(N+S), where N is (length gnus-newsgroup-headers)
 	    ;; and S is (length gnus-newsgroup-scored).
-	    (or (assq (mail-header-number header) gnus-newsgroup-scored)
-		(setq gnus-scores-articles ;Total of 2 * N cons-cells used.
-		      (cons (cons header (or gnus-summary-default-score 0))
-			    gnus-scores-articles))))
+	    (unless (assq (mail-header-number header) gnus-newsgroup-scored)
+	      (setq gnus-scores-articles ;Total of 2 * N cons-cells used.
+		    (cons (cons header (or gnus-summary-default-score 0))
+			  gnus-scores-articles))))
 
 	  (save-excursion
 	    (set-buffer (get-buffer-create "*Headers*"))
@@ -1314,8 +1320,8 @@ SCORE is the score to add."
             this (aref (car art) index)
             tref (aref (car art) refind)
             articles (cdr articles))
-      (if (string-equal tref "")        ;no references line
-          (setq id-list (cons this id-list))))
+      (when (string-equal tref "")	;no references line
+	(push this id-list)))
     id-list))
 
 ;; Orphan functions written by plm@atcmp.nl (Peter Mutsaers).
@@ -1333,24 +1339,22 @@ SCORE is the score to add."
             this (aref (car art) gnus-score-index)
             articles (cdr articles))
       ;;completely skip if this is empty (not a child, so not an orphan)
-      (if (not (string= this ""))
-          (if (equal last this)
-              ;; O(N*H) cons-cells used here, where H is the number of
-              ;; headers.
-              (setq alike (cons art alike))
-            (if last
-                (progn
-                  ;; Insert the line, with a text property on the
-                  ;; terminating newline referring to the articles with
-                  ;; this line.
-                  (insert last ?\n)
-                  (put-text-property (1- (point)) (point) 'articles alike)))
-            (setq alike (list art)
-                  last this))))
-    (and last                           ; Bwadr, duplicate code.
-         (progn
-           (insert last ?\n)                    
-           (put-text-property (1- (point)) (point) 'articles alike)))
+      (when (not (string= this ""))
+	(if (equal last this)
+	    ;; O(N*H) cons-cells used here, where H is the number of
+	    ;; headers.
+	    (push art alike)
+	  (when last
+	    ;; Insert the line, with a text property on the
+	    ;; terminating newline referring to the articles with
+	    ;; this line.
+	    (insert last ?\n)
+	    (put-text-property (1- (point)) (point) 'articles alike))
+	  (setq alike (list art)
+		last this))))
+    (when last				; Bwadr, duplicate code.
+      (insert last ?\n)
+      (put-text-property (1- (point)) (point) 'articles alike))
 
     ;; PLM: now delete those lines that contain an entry from new-thread-ids
     (while new-thread-ids
@@ -1385,7 +1389,7 @@ SCORE is the score to add."
 	    scores (cdr scores)
 	    entries (assoc header alist))
       (while (cdr entries)		;First entry is the header index.
-	(let* ((rest (cdr entries))		
+	(let* ((rest (cdr entries))
 	       (kill (car rest))
 	       (match (nth 0 kill))
 	       (type (or (nth 3 kill) '>))
@@ -1434,7 +1438,7 @@ SCORE is the score to add."
 	    scores (cdr scores)
 	    entries (assoc header alist))
       (while (cdr entries)		;First entry is the header index.
-	(let* ((rest (cdr entries))		
+	(let* ((rest (cdr entries))
 	       (kill (car rest))
 	       (type (or (nth 3 kill) 'before))
 	       (score (or (nth 1 kill) gnus-score-interactive-default-score))
@@ -1534,11 +1538,11 @@ SCORE is the score to add."
 		(setq alist (pop scores)
 		      entries (assoc header alist))
 		(while (cdr entries)	;First entry is the header index.
-		  (let* ((rest (cdr entries))		
+		  (let* ((rest (cdr entries))
 			 (kill (car rest))
 			 (match (nth 0 kill))
 			 (type (or (nth 3 kill) 's))
-			 (score (or (nth 1 kill) 
+			 (score (or (nth 1 kill)
 				    gnus-score-interactive-default-score))
 			 (date (nth 2 kill))
 			 (found nil)
@@ -1609,17 +1613,15 @@ SCORE is the score to add."
 	    this (aref (car art) gnus-score-index)
 	    articles (cdr articles))
       (if (equal last this)
-	  (setq alike (cons art alike))
-	(if last
-	    (progn
-	      (insert last ?\n)
-	      (put-text-property (1- (point)) (point) 'articles alike)))
+	  (push art alike)
+	(when last
+	  (insert last ?\n)
+	  (put-text-property (1- (point)) (point) 'articles alike))
 	(setq alike (list art)
 	      last this)))
-    (and last				; Bwadr, duplicate code.
-	 (progn
-	   (insert last ?\n)			
-	   (put-text-property (1- (point)) (point) 'articles alike)))
+    (when last				; Bwadr, duplicate code.
+      (insert last ?\n)
+      (put-text-property (1- (point)) (point) 'articles alike))
   
     ;; Find matches.
     (while scores
@@ -1627,7 +1629,7 @@ SCORE is the score to add."
 	    scores (cdr scores)
 	    entries (assoc header alist))
       (while (cdr entries)		;First entry is the header index.
-	(let* ((rest (cdr entries))		
+	(let* ((rest (cdr entries))
 	       (kill (car rest))
 	       (match (nth 0 kill))
 	       (type (or (nth 3 kill) 's))
@@ -1729,7 +1731,7 @@ SCORE is the score to add."
       (if (equal last this)
 	  ;; O(N*H) cons-cells used here, where H is the number of
 	  ;; headers.
-	  (setq alike (cons art alike))
+	  (push art alike)
 	(when last
 	  ;; Insert the line, with a text property on the
 	  ;; terminating newline referring to the articles with
@@ -1739,7 +1741,7 @@ SCORE is the score to add."
 	(setq alike (list art)
 	      last this)))
     (when last				; Bwadr, duplicate code.
-      (insert last ?\n)			
+      (insert last ?\n)
       (put-text-property (1- (point)) (point) 'articles alike))
 
     ;; Go through all the score alists and pick out the entries
@@ -1775,7 +1777,7 @@ SCORE is the score to add."
 	   ((= dmt ?e)
 	    ;; Do exact matching.
 	    (goto-char (point-min))
-	    (while (and (not (eobp)) 
+	    (while (and (not (eobp))
 			(funcall search-func match nil t))
 	      ;; Is it really exact?
 	      (and (eolp)
@@ -1848,7 +1850,7 @@ SCORE is the score to add."
 	       (case-fold-search (not (= mt ?F)))
 	       found)
 	  (goto-char (point-min))
-	  (while (and (not (eobp)) 
+	  (while (and (not (eobp))
 		      (search-forward match nil t))
 	    (when (and (= (gnus-point-at-bol) (match-beginning 0))
 		       (eolp))
@@ -1873,7 +1875,7 @@ SCORE is the score to add."
 	    (gnus-score-set 'touched '(t) alist)
 	    (setcar (nthcdr 2 kill) now))
 	   ;; Old entry, remove.
-	   ((and expire (< date expire)) 
+	   ((and expire (< date expire))
 	    (gnus-score-set 'touched '(t) alist)
 	    (setcdr (car fuzzies) (cddar fuzzies))))
 	  (setq fuzzies (cdr fuzzies)))))
@@ -1908,7 +1910,7 @@ SCORE is the score to add."
 	      (gnus-score-set 'touched '(t) alist)
 	      (setcar (nthcdr 2 kill) now))
 	     ;; Old entry, remove.
-	     ((and expire (< date expire)) 
+	     ((and expire (< date expire))
 	      (gnus-score-set 'touched '(t) alist)
 	      (setcdr (car words) (cddar words))))
 	    (setq words (cdr words))))))
@@ -1969,23 +1971,23 @@ SCORE is the score to add."
       (save-excursion
 	(let* ((malist (gnus-copy-sequence gnus-adaptive-score-alist))
 	       (alist malist)
-	       (date (current-time-string)) 
+	       (date (current-time-string))
 	       (data gnus-newsgroup-data)
 	       elem headers match)
 	  ;; First we transform the adaptive rule alist into something
 	  ;; that's faster to process.
 	  (while malist
 	    (setq elem (car malist))
-	    (if (symbolp (car elem))
-		(setcar elem (symbol-value (car elem))))
+	    (when (symbolp (car elem))
+	      (setcar elem (symbol-value (car elem))))
 	    (setq elem (cdr elem))
 	    (while elem
-	      (setcdr (car elem) 
+	      (setcdr (car elem)
 		      (cons (if (eq (caar elem) 'followup)
 				"references"
 			      (symbol-name (caar elem)))
 			    (cdar elem)))
-	      (setcar (car elem) 
+	      (setcar (car elem)
 		      `(lambda (h)
 			 (,(intern 
 			    (concat "mail-header-" 
@@ -2074,7 +2076,8 @@ SCORE is the score to add."
 (defun gnus-score-edit-done ()
   (let ((bufnam (buffer-file-name (current-buffer)))
 	(winconf gnus-prev-winconf))
-    (and winconf (set-window-configuration winconf))
+    (when winconf
+      (set-window-configuration winconf))
     (gnus-score-remove-from-cache bufnam)
     (gnus-score-load-file bufnam)))
 
@@ -2187,7 +2190,7 @@ SCORE is the score to add."
     (gnus-summary-next-subject 1 t)))
 
 (defun gnus-score-default (level)
-  (if level (prefix-numeric-value level) 
+  (if level (prefix-numeric-value level)
     gnus-score-interactive-default-score))
 
 (defun gnus-summary-raise-thread (&optional score)
@@ -2203,8 +2206,8 @@ SCORE is the score to add."
 	  (setq articles (cdr articles))))
       (setq e (point)))
     (let ((gnus-summary-check-current t))
-      (or (zerop (gnus-summary-next-subject 1 t))
-	  (goto-char e))))
+      (unless (zerop (gnus-summary-next-subject 1 t))
+	(goto-char e))))
   (gnus-summary-recenter)
   (gnus-summary-position-point)
   (gnus-set-mode-line 'summary))
@@ -2229,9 +2232,9 @@ SCORE is the score to add."
 (defun gnus-score-score-files (group)
   "Return a list of all possible score files."
   ;; Search and set any global score files.
-  (and gnus-global-score-files 
-       (or gnus-internal-global-score-files
-	   (gnus-score-search-global-directories gnus-global-score-files)))
+  (when gnus-global-score-files 
+    (unless gnus-internal-global-score-files
+      (gnus-score-search-global-directories gnus-global-score-files)))
   ;; Fix the kill-file dir variable.
   (setq gnus-kill-files-directory 
 	(file-name-as-directory gnus-kill-files-directory))
@@ -2312,7 +2315,7 @@ GROUP using BNews sys file syntax."
 	(goto-char (point-min))
 	;; First remove the suffix itself.
 	(when (re-search-forward (concat "." score-regexp) nil t)
-	  (replace-match "" t t) 
+	  (replace-match "" t t)
 	  (goto-char (point-min))
 	  (if (looking-at (regexp-quote kill-dir))
 	      ;; If the file name was just "SCORE", `klen' is one character
@@ -2329,11 +2332,11 @@ GROUP using BNews sys file syntax."
 	      (replace-match "." t t)))
 	  ;; Kludge to get rid of "nntp+" problems.
 	  (goto-char (point-min))
-	  (and (looking-at "nn[a-z]+\\+")
-	       (progn
-		 (search-forward "+")
-		 (forward-char -1)
-		 (insert "\\")))
+	  (when (looking-at "nn[a-z]+\\+")
+	    (progn
+	      (search-forward "+")
+	      (forward-char -1)
+	      (insert "\\")))
 	  ;; Kludge to deal with "++".
 	  (goto-char (point-min))
 	  (while (search-forward "++" nil t)
@@ -2353,11 +2356,11 @@ GROUP using BNews sys file syntax."
 	  ;; Finally - if this resulting regexp matches the group name,
 	  ;; we add this score file to the list of score files
 	  ;; applicable to this group.
-	  (if (or (and not-match
-		       (not (string-match regexp group)))
-		  (and (not not-match)
-		       (string-match regexp group)))
-	      (setq ofiles (cons (car sfiles) ofiles))))
+	  (when (or (and not-match
+			 (not (string-match regexp group)))
+		    (and (not not-match)
+			 (string-match regexp group)))
+	    (push (car sfiles) ofiles)))
 	(setq sfiles (cdr sfiles)))
       (kill-buffer (current-buffer))
       ;; Slight kludge here - the last score file returned should be
@@ -2381,8 +2384,8 @@ This includes the score file for the group and all its parents."
 	(start 0))
     (while (string-match "\\." group (1+ start))
       (setq start (match-beginning 0))
-      (setq all (cons (substring group 0 start) all)))
-    (setq all (cons group all))
+      (push (substring group 0 start) all))
+    (push group all)
     (nconc
      (mapcar (lambda (newsgroup)
 	       (gnus-score-file-name newsgroup gnus-adaptive-file-suffix))
@@ -2403,7 +2406,7 @@ Destroys the current buffer."
   (let ((beg (point))
 	elems)
     (while (re-search-forward "[./]" nil t)
-      (push (buffer-substring beg (1- (point))) 
+      (push (buffer-substring beg (1- (point)))
 	    elems))
     (erase-buffer)
     (setq elems (delete "all" elems))
@@ -2431,26 +2434,24 @@ The list is determined from the variable gnus-score-file-alist."
 	(cdr score-files)		;ensures caching groups with no matches
       ;; handle the multiple match alist
       (while alist
-	(and (string-match (caar alist) group)
-	     (setq score-files
-		   (nconc score-files (copy-sequence (cdar alist)))))
+	(when (string-match (caar alist) group)
+	  (setq score-files
+		(nconc score-files (copy-sequence (cdar alist)))))
 	(setq alist (cdr alist)))
       (setq alist gnus-score-file-single-match-alist)
       ;; handle the single match alist
       (while alist
-	(and (string-match (caar alist) group)
-	     ;; progn used just in case ("regexp") has no files
-	     ;; and score-files is still nil.  -sj
-	     ;; this can be construed as a "stop searching here" feature :>
-	     ;; and used to simplify regexps in the single-alist 
-	     (progn
-	       (setq score-files
-		     (nconc score-files (copy-sequence (cdar alist))))
-	       (setq alist nil)))
+	(when (string-match (caar alist) group)
+	  ;; progn used just in case ("regexp") has no files
+	  ;; and score-files is still nil.  -sj
+	  ;; this can be construed as a "stop searching here" feature :>
+	  ;; and used to simplify regexps in the single-alist 
+	  (setq score-files
+		(nconc score-files (copy-sequence (cdar alist))))
+	  (setq alist nil))
 	(setq alist (cdr alist)))
       ;; cache the score files
-      (setq gnus-score-file-alist-cache
-	    (cons (cons group score-files) gnus-score-file-alist-cache))
+      (push (cons group score-files) gnus-score-file-alist-cache)
       score-files)))
 
 (defun gnus-all-score-files ()
@@ -2493,7 +2494,9 @@ The list is determined from the variable gnus-score-file-alist."
     ;; Expand all files names.
     (let ((files score-files))
       (while files
-	(setcar files (expand-file-name (pop files)))))
+	(when (stringp (car files))
+	  (setcar files (expand-file-name (car files))))
+	(pop files)))
     ;; Remove any duplicate score files.
     (while (and score-files
 		(member (car score-files) (cdr score-files)))
@@ -2544,7 +2547,7 @@ The list is determined from the variable gnus-score-file-alist."
 	  (setq out (nconc (directory-files 
 			    (car files) t
 			    (concat (gnus-score-file-regexp) "$"))))
-	(setq out (cons (car files) out)))
+	(push (car files) out))
       (setq files (cdr files)))
     (setq gnus-internal-global-score-files out)))
 

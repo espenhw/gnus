@@ -182,11 +182,11 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 	      face (cdr (assoc prefix face-alist)))
 	;; Add attribution button.
 	(goto-line number)
-	(if (re-search-forward gnus-cite-attribution-suffix 
-			       (save-excursion (end-of-line 1) (point))
-			       t)
-	    (gnus-article-add-button (match-beginning 1) (match-end 1)
-				     'gnus-cite-toggle prefix))
+	(when (re-search-forward gnus-cite-attribution-suffix 
+				 (save-excursion (end-of-line 1) (point))
+				 t)
+	  (gnus-article-add-button (match-beginning 1) (match-end 1)
+				   'gnus-cite-toggle prefix))
 	;; Highlight attribution line.
 	(gnus-cite-add-face number skip face)
 	(gnus-cite-add-face number skip gnus-cite-attribution-face))
@@ -377,23 +377,22 @@ See also the documentation for `gnus-article-highlight-citation'."
 	  (setq hiden (+ hiden (length (cdr (assoc (cdar atts)
 						   gnus-cite-prefix-alist))))
 		atts (cdr atts)))
-	(if (or force
-		(and (> (* 100 hiden) (* gnus-cite-hide-percentage total))
-		     (> hiden gnus-cite-hide-absolute)))
-	    (progn
-	      (setq atts gnus-cite-attribution-alist)
-	      (while atts
-		(setq total (cdr (assoc (cdar atts) gnus-cite-prefix-alist))
-		      atts (cdr atts))
-		(while total
-		  (setq hiden (car total)
-			total (cdr total))
-		  (goto-line hiden)
-		  (or (assq hiden gnus-cite-attribution-alist)
-		      (gnus-add-text-properties 
-		       (point) (progn (forward-line 1) (point))
-		       (nconc (list 'article-type 'cite)
-			      gnus-hidden-properties)))))))))))
+	(when (or force
+		  (and (> (* 100 hiden) (* gnus-cite-hide-percentage total))
+		       (> hiden gnus-cite-hide-absolute)))
+	  (setq atts gnus-cite-attribution-alist)
+	  (while atts
+	    (setq total (cdr (assoc (cdar atts) gnus-cite-prefix-alist))
+		  atts (cdr atts))
+	    (while total
+	      (setq hiden (car total)
+		    total (cdr total))
+	      (goto-line hiden)
+	      (unless (assq hiden gnus-cite-attribution-alist)
+		(gnus-add-text-properties 
+		 (point) (progn (forward-line 1) (point))
+		 (nconc (list 'article-type 'cite)
+			gnus-hidden-properties))))))))))
 
 (defun gnus-article-hide-citation-in-followups ()
   "Hide cited text in non-root articles."
@@ -418,7 +417,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	  gnus-cite-loose-prefix-alist nil
 	  gnus-cite-loose-attribution-alist nil)
     ;; Parse if not too large.
-    (if (and (not force) 
+    (if (and (not force)
 	     gnus-cite-parse-max-size
 	     (> (buffer-size) gnus-cite-parse-max-size))
 	()
@@ -431,8 +430,8 @@ See also the documentation for `gnus-article-highlight-citation'."
   
   ;; Parse current buffer searching for citation prefixes.
   (goto-char (point-min))
-  (or (search-forward "\n\n" nil t)
-      (goto-char (point-max)))
+  (unless (search-forward "\n\n" nil t)
+    (goto-char (point-max)))
   (let ((line (1+ (count-lines (point-min) (point))))
 	(case-fold-search t)
 	(max (save-excursion
@@ -448,13 +447,13 @@ See also the documentation for `gnus-article-highlight-citation'."
 	    start end)
       (goto-char begin)
       ;; Ignore standard Supercite attribution prefix.
-      (if (looking-at gnus-supercite-regexp)
-	  (if (match-end 1)
-	      (setq end (1+ (match-end 1)))
-	    (setq end (1+ begin))))
+      (when (looking-at gnus-supercite-regexp)
+	(if (match-end 1)
+	    (setq end (1+ (match-end 1)))
+	  (setq end (1+ begin))))
       ;; Ignore very long prefixes.
-      (if (> end (+ (point) gnus-cite-max-prefix))
-	  (setq end (+ (point) gnus-cite-max-prefix)))
+      (when (> end (+ (point) gnus-cite-max-prefix))
+	(setq end (+ (point) gnus-cite-max-prefix)))
       (while (re-search-forward gnus-cite-prefix-regexp (1- end) t)
 	;; Each prefix.
 	(setq end (match-end 0)
@@ -463,7 +462,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	(setq entry (assoc prefix alist))
 	(if entry 
 	    (setcdr entry (cons line (cdr entry)))
-	  (setq alist (cons (list prefix line) alist)))
+	  (push (list prefix line) alist))
 	(goto-char begin))
       (goto-char start)
       (setq line (1+ line)))
@@ -487,11 +486,10 @@ See also the documentation for `gnus-article-highlight-citation'."
 	     ;; longer in case it is an exact match for an attribution
 	     ;; line, but we don't remove the line from other
 	     ;; prefixes. 
-	     (setq gnus-cite-prefix-alist
-		   (cons entry gnus-cite-prefix-alist)))
+	     (push entry gnus-cite-prefix-alist))
 	    (t
-	     (setq gnus-cite-prefix-alist (cons entry
-						gnus-cite-prefix-alist))
+	     (push entry
+		   gnus-cite-prefix-alist)
 	     ;; Remove articles from other prefixes.
 	     (let ((loop alist)
 		   current)
@@ -514,9 +512,9 @@ See also the documentation for `gnus-article-highlight-citation'."
 	   ;; Check previous line for an attribution leader.
 	   (tag (progn
 		  (beginning-of-line 1)
-		  (and (looking-at gnus-supercite-secondary-regexp)
-		       (buffer-substring (match-beginning 1)
-					 (match-end 1)))))
+		  (when (looking-at gnus-supercite-secondary-regexp)
+		    (buffer-substring (match-beginning 1)
+				      (match-end 1)))))
 	   (in (progn
 		 (goto-char start)
 		 (and (re-search-backward gnus-cite-attribution-prefix
@@ -527,31 +525,32 @@ See also the documentation for `gnus-article-highlight-citation'."
 		      (not (re-search-forward gnus-cite-attribution-suffix
 					      start t))
 		      (count-lines (point-min) (1+ (point)))))))
-      (if (eq wrote in)
-	  (setq in nil))
+      (when (eq wrote in)
+	(setq in nil))
       (goto-char end)
-      (setq gnus-cite-loose-attribution-alist
-	    (cons (list wrote in prefix tag)
-		  gnus-cite-loose-attribution-alist))))
+      (push (list wrote in prefix tag)
+	    gnus-cite-loose-attribution-alist)))
   ;; Find exact supercite citations.
   (gnus-cite-match-attributions 'small nil
 				(lambda (prefix tag)
-				  (if tag
-				      (concat "\\`" 
-					      (regexp-quote prefix) "[ \t]*" 
-					      (regexp-quote tag) ">"))))
+				  (when tag
+				    (concat "\\`" 
+					    (regexp-quote prefix) "[ \t]*" 
+					    (regexp-quote tag) ">"))))
   ;; Find loose supercite citations after attributions.
   (gnus-cite-match-attributions 'small t
 				(lambda (prefix tag)
-				  (if tag (concat "\\<"
-						  (regexp-quote tag)
-						  "\\>"))))
+				  (when tag
+				    (concat "\\<"
+					    (regexp-quote tag)
+					    "\\>"))))
   ;; Find loose supercite citations anywhere.
   (gnus-cite-match-attributions 'small nil
 				(lambda (prefix tag)
-				  (if tag (concat "\\<"
-						  (regexp-quote tag)
-						  "\\>"))))
+				  (when tag
+				    (concat "\\<"
+					    (regexp-quote tag)
+					    "\\>"))))
   ;; Find nested citations after attributions.
   (gnus-cite-match-attributions 'small-if-unique t
 				(lambda (prefix tag)
@@ -566,11 +565,11 @@ See also the documentation for `gnus-article-highlight-citation'."
     (while alist
       (setq entry (car alist)
 	    alist (cdr alist))
-      (if (< (length (cdr entry)) gnus-cite-minimum-match-count)
-	  (setq gnus-cite-prefix-alist
-		(delq entry gnus-cite-prefix-alist)
-		gnus-cite-loose-prefix-alist
-		(delq entry gnus-cite-loose-prefix-alist)))))
+      (when (< (length (cdr entry)) gnus-cite-minimum-match-count)
+	(setq gnus-cite-prefix-alist
+	      (delq entry gnus-cite-prefix-alist)
+	      gnus-cite-loose-prefix-alist
+	      (delq entry gnus-cite-loose-prefix-alist)))))
   ;; Find flat attributions.
   (gnus-cite-match-attributions 'first t nil)
   ;; Find any attributions (are we getting desperate yet?).
@@ -632,27 +631,25 @@ See also the documentation for `gnus-article-highlight-citation'."
 	  ()
 	(setq gnus-cite-loose-attribution-alist
 	      (delq att gnus-cite-loose-attribution-alist))
-	(setq gnus-cite-attribution-alist 
-	      (cons (cons wrote (car best)) gnus-cite-attribution-alist))
-	(if in
-	    (setq gnus-cite-attribution-alist 
-		  (cons (cons in (car best)) gnus-cite-attribution-alist)))
-	(if (memq best gnus-cite-loose-prefix-alist)
-	    (let ((loop gnus-cite-prefix-alist)
-		  (numbers (cdr best))
-		  current)
-	      (setq gnus-cite-loose-prefix-alist
-		    (delq best gnus-cite-loose-prefix-alist))
-	      (while loop
-		(setq current (car loop)
-		      loop (cdr loop))
-		(if (eq current best)
-		    ()
-		  (setcdr current (gnus-set-difference (cdr current) numbers))
-		  (if (null (cdr current))
-		      (setq gnus-cite-loose-prefix-alist
-			    (delq current gnus-cite-loose-prefix-alist)
-			    atts (delq current atts)))))))))))
+	(push (cons wrote (car best)) gnus-cite-attribution-alist)
+	(when in
+	  (push (cons in (car best)) gnus-cite-attribution-alist))
+	(when (memq best gnus-cite-loose-prefix-alist)
+	  (let ((loop gnus-cite-prefix-alist)
+		(numbers (cdr best))
+		current)
+	    (setq gnus-cite-loose-prefix-alist
+		  (delq best gnus-cite-loose-prefix-alist))
+	    (while loop
+	      (setq current (car loop)
+		    loop (cdr loop))
+	      (if (eq current best)
+		  ()
+		(setcdr current (gnus-set-difference (cdr current) numbers))
+		(when (null (cdr current))
+		  (setq gnus-cite-loose-prefix-alist
+			(delq current gnus-cite-loose-prefix-alist)
+			atts (delq current atts)))))))))))
 
 (defun gnus-cite-find-loose (prefix)
   ;; Return a list of loose attribution lines prefixed by PREFIX.
@@ -662,8 +659,8 @@ See also the documentation for `gnus-article-highlight-citation'."
       (setq att (car atts)
 	    line (car att)
 	    atts (cdr atts))
-      (if (string-equal (gnus-cite-find-prefix line) prefix)
-	  (setq lines (cons line lines))))
+      (when (string-equal (gnus-cite-find-prefix line) prefix)
+	(push line lines)))
     lines))
 
 (defun gnus-cite-add-face (number prefix face)
@@ -711,8 +708,8 @@ See also the documentation for `gnus-article-highlight-citation'."
     (while alist
       (setq entry (car alist)
 	    alist (cdr alist))
-      (if (memq line (cdr entry))
-	  (setq prefix (car entry))))
+      (when (memq line (cdr entry))
+	(setq prefix (car entry))))
     prefix))
 
 (gnus-add-shutdown 'gnus-cache-close 'gnus)

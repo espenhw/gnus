@@ -73,7 +73,7 @@ format.")
 (defvar gnus-soup-index-type ?c
   "*Soup index type.
 `n' means no index file and `c' means standard Cnews overview
-format.") 
+format.")
 
 (defvar gnus-soup-areas nil)
 (defvar gnus-soup-last-prefix nil)
@@ -119,8 +119,8 @@ format.")
   (let ((packets (directory-files
 		  gnus-soup-packet-directory t gnus-soup-packet-regexp)))
     (while packets
-      (and (gnus-soup-send-packet (car packets))
-	   (delete-file (car packets)))
+      (when (gnus-soup-send-packet (car packets))
+	(delete-file (car packets)))
       (setq packets (cdr packets)))))
 
 (defun gnus-soup-add-article (n)
@@ -185,8 +185,8 @@ Uses the process/prefix convention."
   (let ((level (or level gnus-level-subscribed))
 	(newsrc (cdr gnus-newsrc-alist)))
     (while newsrc
-      (and (<= (nth 1 (car newsrc)) level)
-	   (gnus-soup-group-brew (caar newsrc) t))
+      (when (<= (nth 1 (car newsrc)) level)
+	(gnus-soup-group-brew (caar newsrc) t))
       (setq newsrc (cdr newsrc)))
     (gnus-soup-save-areas)))
 
@@ -219,15 +219,14 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
 	 from head-line beg type)
     (setq gnus-soup-buffers (cons msg-buf (delq msg-buf gnus-soup-buffers)))
     (buffer-disable-undo msg-buf)
-    (and idx-buf 
-	 (progn
-	   (setq gnus-soup-buffers (cons idx-buf gnus-soup-buffers))
-	   (buffer-disable-undo idx-buf)))
+    (when idx-buf 
+      (push idx-buf gnus-soup-buffers)
+      (buffer-disable-undo idx-buf))
     (save-excursion
       ;; Make sure the last char in the buffer is a newline.
       (goto-char (point-max))
-      (or (= (current-column) 0)
-	  (insert "\n"))
+      (unless (= (current-column) 0)
+	(insert "\n"))
       ;; Find the "from".
       (goto-char (point-min))
       (setq from
@@ -302,7 +301,7 @@ If NOT-ALL, don't pack ticked articles."
 			(lambda (time) (int-to-string time))
 			(current-time) "-")))
 	   (or (mail-header-references header) "")
-	   (or (mail-header-chars header) 0) 
+	   (or (mail-header-chars header) 0)
 	   (or (mail-header-lines header) "0"))))
 
 (defun gnus-soup-save-areas ()
@@ -315,21 +314,20 @@ If NOT-ALL, don't pack ticked articles."
 	(if (not (buffer-name buf))
 	    ()
 	  (set-buffer buf)
-	  (and (buffer-modified-p) (save-buffer))
+	  (when (buffer-modified-p)
+	    (save-buffer))
 	  (kill-buffer (current-buffer)))))
     (gnus-soup-write-prefixes)))
 
 (defun gnus-soup-write-prefixes ()
-  (let ((prefix gnus-soup-last-prefix))
+  (let ((prefixes gnus-soup-last-prefix)
+	prefix)
     (save-excursion
-      (while prefix
-	(gnus-set-work-buffer)
-	(insert (format "(setq gnus-soup-prev-prefix %d)\n" (cdar prefix)))
-	(gnus-make-directory (caar prefix))
-	(write-region (point-min) (point-max)
-		      (concat (caar prefix) gnus-soup-prefix-file) 
-		      nil 'nomesg)
-	(setq prefix (cdr prefix))))))
+      (gnus-set-work-buffer)
+      (while (setq prefix (pop prefixes))
+	(erase-buffer)
+	(insert (format "(setq gnus-soup-prev-prefix %d)\n" (cdr prefix)))
+	(gnus-write-buffer (concat (car prefix) gnus-soup-prefix-file))))))
 
 (defun gnus-soup-pack (dir packer)
   (let* ((files (mapconcat 'identity
@@ -368,17 +366,16 @@ though the two last may be nil if they are missing."
       (buffer-disable-undo (current-buffer))
       (goto-char (point-min))
       (while (not (eobp))
-	(setq areas
-	      (cons (vector (gnus-soup-field) 
-			    (gnus-soup-field)
-			    (gnus-soup-field)
-			    (and (eq (preceding-char) ?\t)
-				 (gnus-soup-field))
-			    (and (eq (preceding-char) ?\t)
-				 (string-to-int (gnus-soup-field))))
-		    areas))
-	(if (eq (preceding-char) ?\t)
-	    (beginning-of-line 2)))
+	(push (vector (gnus-soup-field)
+		      (gnus-soup-field)
+		      (gnus-soup-field)
+		      (and (eq (preceding-char) ?\t)
+			   (gnus-soup-field))
+		      (and (eq (preceding-char) ?\t)
+			   (string-to-int (gnus-soup-field))))
+	      areas)
+	(when (eq (preceding-char) ?\t)
+	  (beginning-of-line 2)))
       (kill-buffer (current-buffer)))
     areas))
 
@@ -392,12 +389,11 @@ file.  The vector contain three strings, [prefix name encoding]."
       (buffer-disable-undo (current-buffer))
       (goto-char (point-min))
       (while (not (eobp))
-	(setq replies
-	      (cons (vector (gnus-soup-field) (gnus-soup-field)
-			    (gnus-soup-field))
-		    replies))
-	(if (eq (preceding-char) ?\t)
-	    (beginning-of-line 2)))
+	(push (vector (gnus-soup-field) (gnus-soup-field)
+		      (gnus-soup-field))
+	      replies)
+	(when (eq (preceding-char) ?\t)
+	  (beginning-of-line 2)))
       (kill-buffer (current-buffer)))
     replies))
 
@@ -423,9 +419,9 @@ file.  The vector contain three strings, [prefix name encoding]."
 	   (format 
 	    "%s\t%s\t%s%s\n"
 	    (gnus-soup-area-prefix area)
-	    (gnus-soup-area-name area) 
+	    (gnus-soup-area-name area)
 	    (gnus-soup-area-encoding area)
-	    (if (or (gnus-soup-area-description area) 
+	    (if (or (gnus-soup-area-description area)
 		    (gnus-soup-area-number area))
 		(concat "\t" (or (gnus-soup-area-description
 				  area) "")
@@ -441,7 +437,7 @@ file.  The vector contain three strings, [prefix name encoding]."
       (while (setq area (pop areas))
 	(insert (format "%s\t%s\t%s\n"
 			(gnus-soup-reply-prefix area)
-			(gnus-soup-reply-kind area) 
+			(gnus-soup-reply-kind area)
 			(gnus-soup-reply-encoding area)))))))
 
 (defun gnus-soup-area (group)
@@ -452,18 +448,18 @@ file.  The vector contain three strings, [prefix name encoding]."
     (while areas
       (setq area (car areas)
 	    areas (cdr areas))
-      (if (equal (gnus-soup-area-name area) real-group)
-	  (setq result area)))
-    (or result
-	(setq result
-	      (vector (gnus-soup-unique-prefix)
-		      real-group 
-		      (format "%c%c%c"
-			      gnus-soup-encoding-type
-			      gnus-soup-index-type
-			      (if (gnus-member-of-valid 'mail group) ?m ?n))
-		      nil nil)
-	      gnus-soup-areas (cons result gnus-soup-areas)))
+      (when (equal (gnus-soup-area-name area) real-group)
+	(setq result area)))
+    (unless result
+      (setq result
+	    (vector (gnus-soup-unique-prefix)
+		    real-group 
+		    (format "%c%c%c"
+			    gnus-soup-encoding-type
+			    gnus-soup-index-type
+			    (if (gnus-member-of-valid 'mail group) ?m ?n))
+		    nil nil)
+	    gnus-soup-areas (cons result gnus-soup-areas)))
     result))
 
 (defun gnus-soup-unique-prefix (&optional dir)
@@ -472,13 +468,12 @@ file.  The vector contain three strings, [prefix name encoding]."
 	 gnus-soup-prev-prefix)
     (if entry
 	()
-      (and (file-exists-p (concat dir gnus-soup-prefix-file))
-	   (condition-case nil
-	       (load (concat dir gnus-soup-prefix-file) nil t t)
-	     (error nil)))
-      (setq gnus-soup-last-prefix 
-	    (cons (setq entry (cons dir (or gnus-soup-prev-prefix 0)))
-		  gnus-soup-last-prefix)))
+      (when (file-exists-p (concat dir gnus-soup-prefix-file))
+	(condition-case nil
+	    (load (concat dir gnus-soup-prefix-file) nil t t)
+	  (error nil)))
+      (push (setq entry (cons dir (or gnus-soup-prev-prefix 0)))
+	    gnus-soup-last-prefix))
     (setcdr entry (1+ (cdr entry)))
     (gnus-soup-write-prefixes)
     (int-to-string (cdr entry))))
@@ -491,7 +486,7 @@ Return whether the unpacking was successful."
   (prog1
       (zerop (call-process
 	      shell-file-name nil nil nil shell-command-switch
-	      (format "cd %s ; %s" (expand-file-name dir) 
+	      (format "cd %s ; %s" (expand-file-name dir)
 		      (format unpacker packet))))
     (gnus-message 4 "Unpacking...done")))
 
@@ -511,7 +506,8 @@ Return whether the unpacking was successful."
 	       beg end)
 	  (cond 
 	   ((/= (gnus-soup-encoding-format 
-		 (gnus-soup-reply-encoding (car replies))) ?n)
+		 (gnus-soup-reply-encoding (car replies)))
+		?n)
 	    (error "Unsupported encoding"))
 	   ((null msg-buf)
 	    t)
@@ -521,8 +517,8 @@ Return whether the unpacking was successful."
 	    (set-buffer msg-buf)
 	    (goto-char (point-min))
 	    (while (not (eobp))
-	      (or (looking-at "#! *rnews +\\([0-9]+\\)")
-		  (error "Bad header."))
+	      (unless (looking-at "#! *rnews +\\([0-9]+\\)")
+		(error "Bad header."))
 	      (forward-line 1)
 	      (setq beg (point)
 		    end (+ (point) (string-to-int 

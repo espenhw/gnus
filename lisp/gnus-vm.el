@@ -49,12 +49,12 @@ Has to be set before gnus-vm is loaded.")
 
 (or gnus-vm-inhibit-window-system
     (condition-case nil
-	(if window-system
-	    (require 'win-vm))
+	(when window-system
+	  (require 'win-vm))
       (error nil)))
 
-(if (not (featurep 'vm))
-    (load "vm"))
+(when (not (featurep 'vm))
+  (load "vm"))
 
 (defun gnus-vm-make-folder (&optional buffer)
   (let ((article (or buffer (current-buffer)))

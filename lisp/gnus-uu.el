@@ -320,7 +320,7 @@ The headers will be included in the sequence they are matched.")
 
 (defun gnus-uu-decode-uu (&optional n)
   "Uudecodes the current article."
-  (interactive "P") 
+  (interactive "P")
   (gnus-uu-decode-with-method 'gnus-uu-uustrip-article n))
 
 (defun gnus-uu-decode-uu-and-save (n dir)
@@ -450,12 +450,12 @@ The headers will be included in the sequence they are matched.")
 	      fs (cdr fs))
 	(while (and fs (or from subject))
 	  (when from
-	    (or (string= from (caar fs))
-		(setq from nil)))
+	    (unless (string= from (caar fs))
+	      (setq from nil)))
 	  (when subject
-	    (or (string= (gnus-simplify-subject-fuzzy (cdar fs))
-			 subject)
-		(setq subject nil)))
+	    (unless (string= (gnus-simplify-subject-fuzzy (cdar fs))
+			     subject)
+	      (setq subject nil)))
 	  (setq fs (cdr fs))))
       (unless subject
 	(setq subject "Digested Articles"))
@@ -594,7 +594,8 @@ The headers will be included in the sequence they are matched.")
   (gnus-set-global-variables)
   (let ((marked (nreverse gnus-newsgroup-processable))
 	subject articles total headers)
-    (or marked (error "No articles marked with the process mark"))
+    (unless marked
+      (error "No articles marked with the process mark"))
     (setq gnus-newsgroup-processable nil)
     (save-excursion
       (while marked
@@ -669,7 +670,8 @@ The headers will be included in the sequence they are matched.")
 (defun gnus-uu-decode-with-method (method n &optional save not-insert 
 					  scan cdir)
   (gnus-uu-initialize scan)
-  (if save (setq gnus-uu-default-dir save))
+  (when save
+    (setq gnus-uu-default-dir save))
   ;; Create the directory we save to.
   (when (and scan cdir save
 	     (not (file-exists-p save)))
@@ -678,10 +680,12 @@ The headers will be included in the sequence they are matched.")
 	files)
     (setq files (gnus-uu-grab-articles articles method t))
     (let ((gnus-current-article (car articles)))
-      (and scan (setq files (gnus-uu-scan-directory gnus-uu-work-dir))))
-    (and save (gnus-uu-save-files files save))
-    (if (eq gnus-uu-do-not-unpack-archives nil)
-	(setq files (gnus-uu-unpack-files files)))
+      (when scan
+	(setq files (gnus-uu-scan-directory gnus-uu-work-dir))))
+    (when save
+      (gnus-uu-save-files files save))
+    (when (eq gnus-uu-do-not-unpack-archives nil)
+      (setq files (gnus-uu-unpack-files files)))
     (setq files (nreverse (gnus-uu-get-actions files)))
     (or not-insert (not gnus-insert-pseudo-articles)
 	(gnus-summary-insert-pseudos files save))))
@@ -727,8 +731,8 @@ The headers will be included in the sequence they are matched.")
    (gnus-uu-save-separate-articles
     (save-excursion
       (set-buffer buffer)
-      (write-region 1 (point-max) (concat gnus-uu-saved-article-name 
-					  gnus-current-article))
+      (gnus-write-buffer
+       (concat gnus-uu-saved-article-name gnus-current-article))
       (cond ((eq in-state 'first) (list gnus-uu-saved-article-name 'begin))
 	    ((eq in-state 'first-and-last) (list gnus-uu-saved-article-name 
 						 'begin 'end))
@@ -737,7 +741,7 @@ The headers will be included in the sequence they are matched.")
    ((not gnus-uu-save-in-digest)
     (save-excursion
       (set-buffer buffer)
-      (write-region 1 (point-max) gnus-uu-saved-article-name t)
+      (write-region (point-min) (point-max) gnus-uu-saved-article-name t)
       (cond ((eq in-state 'first) (list gnus-uu-saved-article-name 'begin))
 	    ((eq in-state 'first-and-last) (list gnus-uu-saved-article-name 
 						 'begin 'end))
@@ -745,14 +749,13 @@ The headers will be included in the sequence they are matched.")
 	    (t (list 'middle)))))
    (t
     (let ((header (gnus-summary-article-header)))
-      (setq gnus-uu-digest-from-subject
-	    (cons (cons (mail-header-from header)
-			(mail-header-subject header))
-		  gnus-uu-digest-from-subject)))
+      (push (cons (mail-header-from header)
+		  (mail-header-subject header))
+	    gnus-uu-digest-from-subject))
     (let ((name (file-name-nondirectory gnus-uu-saved-article-name))
 	  (delim (concat "^" (make-string 30 ?-) "$"))
 	  beg subj headers headline sorthead body end-string state)
-      (if (or (eq in-state 'first) 
+      (if (or (eq in-state 'first)
 	      (eq in-state 'first-and-last))
 	  (progn 
 	    (setq state (list 'begin))
@@ -764,8 +767,8 @@ The headers will be included in the sequence they are matched.")
 	      (insert (format 
 		       "Date: %s\nFrom: %s\nSubject: %s Digest\n\nTopics:\n"
 		       (current-time-string) name name))))
-	(if (not (eq in-state 'end))
-	    (setq state (list 'middle))))
+	(when (not (eq in-state 'end))
+	  (setq state (list 'middle))))
       (save-excursion
 	(set-buffer (get-buffer "*gnus-uu-body*"))
 	(goto-char (setq beg (point-max)))
@@ -806,30 +809,29 @@ The headers will be included in the sequence they are matched.")
 	(insert body) (goto-char (point-max))
 	(insert (concat "\n" (make-string 30 ?-) "\n\n"))
 	(goto-char beg)
-	(if (re-search-forward "^Subject: \\(.*\\)$" nil t)
-	    (progn
-	      (setq subj (buffer-substring (match-beginning 1) (match-end 1)))
-	      (save-excursion 
-		(set-buffer (get-buffer "*gnus-uu-pre*"))
-		(insert (format "   %s\n" subj))))))
-      (if (or (eq in-state 'last)
-	      (eq in-state 'first-and-last))
-	  (progn
-	    (save-excursion
-	      (set-buffer (get-buffer "*gnus-uu-pre*"))
-	      (insert (format "\n\n%s\n\n" (make-string 70 ?-)))
-	      (write-region 1 (point-max) gnus-uu-saved-article-name))
-	    (save-excursion
-	      (set-buffer (get-buffer "*gnus-uu-body*"))
-	      (goto-char (point-max))
-	      (insert 
-	       (concat (setq end-string (format "End of %s Digest" name)) 
-		       "\n"))
-	      (insert (concat (make-string (length end-string) ?*) "\n"))
-	      (write-region 1 (point-max) gnus-uu-saved-article-name t))
-	    (kill-buffer (get-buffer "*gnus-uu-pre*"))
-	    (kill-buffer (get-buffer "*gnus-uu-body*"))
-	    (setq state (cons 'end state))))
+	(when (re-search-forward "^Subject: \\(.*\\)$" nil t)
+	  (setq subj (buffer-substring (match-beginning 1) (match-end 1)))
+	  (save-excursion 
+	    (set-buffer (get-buffer "*gnus-uu-pre*"))
+	    (insert (format "   %s\n" subj)))))
+      (when (or (eq in-state 'last)
+		(eq in-state 'first-and-last))
+	(save-excursion
+	  (set-buffer (get-buffer "*gnus-uu-pre*"))
+	  (insert (format "\n\n%s\n\n" (make-string 70 ?-)))
+	  (gnus-write-buffer gnus-uu-saved-article-name))
+	(save-excursion
+	  (set-buffer (get-buffer "*gnus-uu-body*"))
+	  (goto-char (point-max))
+	  (insert 
+	   (concat (setq end-string (format "End of %s Digest" name))
+		   "\n"))
+	  (insert (concat (make-string (length end-string) ?*) "\n"))
+	  (write-region
+	   (point-min) (point-max) gnus-uu-saved-article-name t))
+	(kill-buffer (get-buffer "*gnus-uu-pre*"))
+	(kill-buffer (get-buffer "*gnus-uu-body*"))
+	(push 'end state))
       (if (memq 'begin state)
 	  (cons gnus-uu-saved-article-name state)
 	state)))))
@@ -849,9 +851,9 @@ The headers will be included in the sequence they are matched.")
       (set-buffer buffer)
       (widen)
       (goto-char (point-min))
-      (if (not (re-search-forward gnus-uu-binhex-begin-line nil t))
-	  (if (not (re-search-forward gnus-uu-binhex-body-line nil t))
-	      (setq state (list 'wrong-type))))
+      (when (not (re-search-forward gnus-uu-binhex-begin-line nil t))
+	(when (not (re-search-forward gnus-uu-binhex-body-line nil t))
+	  (setq state (list 'wrong-type))))
 
       (if (memq 'wrong-type state)
 	  ()
@@ -864,15 +866,16 @@ The headers will be included in the sequence they are matched.")
 	  (setq state (list 'middle)))
 	(goto-char (point-max))
 	(re-search-backward (concat gnus-uu-binhex-body-line "\\|" 
-				    gnus-uu-binhex-end-line) nil t)
-	(if (looking-at gnus-uu-binhex-end-line)
-	    (setq state (if (memq 'begin state)
-			    (cons 'end state)
-			  (list 'end))))
+				    gnus-uu-binhex-end-line)
+			    nil t)
+	(when (looking-at gnus-uu-binhex-end-line)
+	  (setq state (if (memq 'begin state)
+			  (cons 'end state)
+			(list 'end))))
 	(beginning-of-line)
 	(forward-line 1)
-	(if (file-exists-p gnus-uu-binhex-article-name)
-	    (append-to-file start-char (point) gnus-uu-binhex-article-name))))
+	(when (file-exists-p gnus-uu-binhex-article-name)
+	  (append-to-file start-char (point) gnus-uu-binhex-article-name))))
     (if (memq 'begin state)
 	(cons gnus-uu-binhex-article-name state)
       state)))
@@ -930,11 +933,11 @@ The headers will be included in the sequence they are matched.")
 		nil 
 	      gnus-uu-default-view-rules)
 	    gnus-uu-user-view-rules-end)))
-    (if (and (not (string= (or action "") "gnus-uu-archive")) 
-	     gnus-uu-view-with-metamail)
-	(if (setq action 
+    (when (and (not (string= (or action "") "gnus-uu-archive"))
+	       gnus-uu-view-with-metamail)
+      (when (setq action 
 		  (gnus-uu-choose-action file-name gnus-uu-ext-to-mime-list))
-	    (setq action (format "metamail -d -b -c \"%s\"" action))))
+	(setq action (format "metamail -d -b -c \"%s\"" action))))
     action))
 
 
@@ -959,10 +962,9 @@ The headers will be included in the sequence they are matched.")
 
       (setq case-fold-search nil)
       (goto-char (point-min))
-      (if (looking-at vernum)
-	  (progn
-	    (replace-match vernum t t)
-	    (setq beg (length vernum))))
+      (when (looking-at vernum)
+	(replace-match vernum t t)
+	(setq beg (length vernum)))
 
       (goto-char beg)
       (if (re-search-forward "[ \t]*[0-9]+/[0-9]+" nil t)
@@ -975,7 +977,7 @@ The headers will be included in the sequence they are matched.")
 	  (end-of-line)
 	  (while (and (re-search-backward "[0-9]" nil t) (> count 0))
             (while (and 
-		    (looking-at "[0-9]") 
+		    (looking-at "[0-9]")
 		    (< 1 (goto-char (1- (point))))))
             (re-search-forward "[0-9]+" nil t)
 	    (replace-match "[0-9]+")
@@ -1002,8 +1004,8 @@ The headers will be included in the sequence they are matched.")
 	    (n (abs n)))
 	(save-excursion
 	  (while (and (> n 0)
-		      (setq articles (cons (gnus-summary-article-number) 
-					   articles))
+		      (push (gnus-summary-article-number)
+			    articles)
 		      (gnus-summary-search-forward nil nil backward))
 	    (setq n (1- n))))
 	(nreverse articles)))
@@ -1041,16 +1043,15 @@ The headers will be included in the sequence they are matched.")
 		     (= mark gnus-dormant-mark))
 		 (setq subj (mail-header-subject (gnus-data-header d)))
 		 (string-match subject subj)
-		 (setq list-of-subjects 
-		       (cons (cons subj (gnus-data-number d))
-			     list-of-subjects)))))
+		 (push (cons subj (gnus-data-number d))
+		       list-of-subjects))))
 
 	;; Expand numbers, sort, and return the list of article
 	;; numbers.
-	(mapcar (lambda (sub) (cdr sub)) 
+	(mapcar (lambda (sub) (cdr sub))
 		(sort (gnus-uu-expand-numbers 
 		       list-of-subjects
-		       (not do-not-translate)) 
+		       (not do-not-translate))
 		      'gnus-uu-string<))))))
 
 (defun gnus-uu-expand-numbers (string-list &optional translate)
@@ -1073,9 +1074,9 @@ The headers will be included in the sequence they are matched.")
 	  (replace-match " "))
 	;; Translate all characters to "a".
 	(goto-char (point-min))
-	(if translate 
-	    (while (re-search-forward "[A-Za-z]" nil t)
-	      (replace-match "a" t t)))
+	(when translate 
+	  (while (re-search-forward "[A-Za-z]" nil t)
+	    (replace-match "a" t t)))
 	;; Expand numbers.
 	(goto-char (point-min))
 	(while (re-search-forward "[0-9]+" nil t)
@@ -1120,15 +1121,14 @@ The headers will be included in the sequence they are matched.")
     (if (not (and gnus-uu-has-been-grabbed
 		  gnus-uu-unmark-articles-not-decoded))
 	()
-      (if dont-unmark-last-article
-	  (progn
-	    (setq art (car gnus-uu-has-been-grabbed))
-	    (setq gnus-uu-has-been-grabbed (cdr gnus-uu-has-been-grabbed))))
+      (when dont-unmark-last-article
+	(setq art (car gnus-uu-has-been-grabbed))
+	(setq gnus-uu-has-been-grabbed (cdr gnus-uu-has-been-grabbed)))
       (while gnus-uu-has-been-grabbed
 	(gnus-summary-tick-article (car gnus-uu-has-been-grabbed) t)
 	(setq gnus-uu-has-been-grabbed (cdr gnus-uu-has-been-grabbed)))
-      (if dont-unmark-last-article
-	  (setq gnus-uu-has-been-grabbed (list art))))))
+      (when dont-unmark-last-article
+	(setq gnus-uu-has-been-grabbed (list art))))))
 
 ;; This function takes a list of articles and a function to apply to
 ;; each article grabbed. 
@@ -1137,7 +1137,7 @@ The headers will be included in the sequence they are matched.")
 ;; the process-function has been successful and nil otherwise.
 (defun gnus-uu-grab-articles (articles process-function 
 				       &optional sloppy limit no-errors)
-  (let ((state 'first) 
+  (let ((state 'first)
 	(gnus-asynchronous nil)
 	has-been-begin article result-file result-files process-state
 	gnus-summary-display-article-function
@@ -1177,18 +1177,18 @@ The headers will be included in the sequence they are matched.")
       ;; If this is the beginning of a decoded file, we push it 
       ;; on to a list.
       (when (or (memq 'begin process-state)
-		(and (or (eq state 'first) 
+		(and (or (eq state 'first)
 			 (eq state 'first-and-last))
 		     (memq 'ok process-state)))
-	(if has-been-begin
-	    ;; If there is a `result-file' here, that means that the
-	    ;; file was unsuccessfully decoded, so we delete it.
-	    (when (and result-file 
-		       (file-exists-p result-file)
-		       (gnus-y-or-n-p
-			(format "Delete unsuccessfully decoded file %s"
-				result-file)))
-	      (delete-file result-file)))
+	(when has-been-begin
+	  ;; If there is a `result-file' here, that means that the
+	  ;; file was unsuccessfully decoded, so we delete it.
+	  (when (and result-file 
+		     (file-exists-p result-file)
+		     (gnus-y-or-n-p
+		      (format "Delete unsuccessfully decoded file %s"
+			      result-file)))
+	    (delete-file result-file)))
 	(when (memq 'begin process-state)
 	  (setq result-file (car process-state)))
 	(setq has-been-begin t))
@@ -1252,7 +1252,7 @@ The headers will be included in the sequence they are matched.")
 	(gnus-message 2 "Wrong type file"))
        ((memq 'error process-state)
 	(gnus-message 2 "An error occurred during decoding"))
-       ((not (or (memq 'ok process-state) 
+       ((not (or (memq 'ok process-state)
 		 (memq 'end process-state)))
 	(gnus-message 2 "End of articles reached before end of file")))
       ;; Make unsuccessfully decoded articles unread.
@@ -1330,7 +1330,7 @@ The headers will be included in the sequence they are matched.")
 
 	  ;; If a process is running, we kill it.
 	  (when (and gnus-uu-uudecode-process
-		     (memq (process-status gnus-uu-uudecode-process) 
+		     (memq (process-status gnus-uu-uudecode-process)
 			   '(run stop)))
 	    (delete-process gnus-uu-uudecode-process)
 	    (gnus-uu-unmark-list-of-grabbed t))
@@ -1355,7 +1355,7 @@ The headers will be included in the sequence they are matched.")
 	
 	;; We look for the end of the thing to be decoded.
 	(if (re-search-forward gnus-uu-end-string nil t)
-	    (setq state (cons 'end state))
+	    (push 'end state)
 	  (goto-char (point-max))
 	  (re-search-backward gnus-uu-body-line nil t))
 	 
@@ -1420,8 +1420,8 @@ The headers will be included in the sequence they are matched.")
   (let ((oldpoint (point))
 	res)
     (goto-char (point-min))
-    (if (re-search-forward gnus-uu-shar-name-marker nil t)
-	(setq res (buffer-substring (match-beginning 1) (match-end 1))))
+    (when (re-search-forward gnus-uu-shar-name-marker nil t)
+      (setq res (buffer-substring (match-beginning 1) (match-end 1))))
     (goto-char oldpoint)
     res))
 
@@ -1433,21 +1433,21 @@ The headers will be included in the sequence they are matched.")
 	(case-fold-search t)
 	rule action)
     (and 
-     (or no-ignore 
-	 (and (not 
-	       (and gnus-uu-ignore-files-by-name
-		    (string-match gnus-uu-ignore-files-by-name file-name)))
-	      (not 
-	       (and gnus-uu-ignore-files-by-type
-		    (string-match gnus-uu-ignore-files-by-type 
-				  (or (gnus-uu-choose-action 
-				       file-name gnus-uu-ext-to-mime-list t) 
-				      ""))))))
+     (unless no-ignore 
+       (and (not 
+	     (and gnus-uu-ignore-files-by-name
+		  (string-match gnus-uu-ignore-files-by-name file-name)))
+	    (not 
+	     (and gnus-uu-ignore-files-by-type
+		  (string-match gnus-uu-ignore-files-by-type 
+				(or (gnus-uu-choose-action 
+				     file-name gnus-uu-ext-to-mime-list t)
+				    ""))))))
      (while (not (or (eq action-list ()) action))
        (setq rule (car action-list))
        (setq action-list (cdr action-list))
-       (if (string-match (car rule) file-name)
-	   (setq action (cadr rule)))))
+       (when (string-match (car rule) file-name)
+	 (setq action (cadr rule)))))
     action))
 
 (defun gnus-uu-treat-archive (file-path)
@@ -1460,13 +1460,14 @@ The headers will be included in the sequence they are matched.")
 					nil
 				      gnus-uu-default-archive-rules))))
 
-    (if (not action) (error "No unpackers for the file %s" file-path))
+    (when (not action)
+      (error "No unpackers for the file %s" file-path))
 
     (string-match "/[^/]*$" file-path)
     (setq dir (substring file-path 0 (match-beginning 0)))
 
-    (if (member action gnus-uu-destructive-archivers)
-	(copy-file file-path (concat file-path "~") t))
+    (when (member action gnus-uu-destructive-archivers)
+      (copy-file file-path (concat file-path "~") t))
 
     (setq command (format "cd %s ; %s" dir (gnus-uu-command action file-path)))
 
@@ -1483,8 +1484,8 @@ The headers will be included in the sequence they are matched.")
       (gnus-message 2 "Error during unpacking of archive")
       (setq did-unpack nil))
 
-    (if (member action gnus-uu-destructive-archivers)
-	(rename-file (concat file-path "~") file-path t))
+    (when (member action gnus-uu-destructive-archivers)
+      (rename-file (concat file-path "~") file-path t))
 
     did-unpack))
 
@@ -1494,7 +1495,7 @@ The headers will be included in the sequence they are matched.")
     (while dirs
       (if (file-directory-p (setq file (car dirs)))
 	  (setq files (append files (gnus-uu-dir-files file)))
-	(setq files (cons file files)))
+	(push file files))
       (setq dirs (cdr dirs)))
     files))
 
@@ -1505,22 +1506,21 @@ The headers will be included in the sequence they are matched.")
 	 file did-unpack)
     (while files
       (setq file (cdr (assq 'name (car files))))
-      (if (and (not (member file ignore))
-	       (equal (gnus-uu-get-action (file-name-nondirectory file))
-		      "gnus-uu-archive"))
-	  (progn
-	    (setq did-unpack (cons file did-unpack))
-	    (or (gnus-uu-treat-archive file)
-		(gnus-message 2 "Error during unpacking of %s" file))
-	    (let* ((newfiles (gnus-uu-ls-r gnus-uu-work-dir))
-		   (nfiles newfiles))
-	      (while nfiles
-		(or (member (car nfiles) totfiles)
-		    (setq ofiles (cons (list (cons 'name (car nfiles))
-					     (cons 'original file))
-				       ofiles)))
-		(setq nfiles (cdr nfiles)))
-	      (setq totfiles newfiles))))
+      (when (and (not (member file ignore))
+		 (equal (gnus-uu-get-action (file-name-nondirectory file))
+			"gnus-uu-archive"))
+	(push file did-unpack)
+	(unless (gnus-uu-treat-archive file)
+	  (gnus-message 2 "Error during unpacking of %s" file))
+	(let* ((newfiles (gnus-uu-ls-r gnus-uu-work-dir))
+	       (nfiles newfiles))
+	  (while nfiles
+	    (unless (member (car nfiles) totfiles)
+	      (push (list (cons 'name (car nfiles))
+			  (cons 'original file))
+		    ofiles))
+	    (setq nfiles (cdr nfiles)))
+	  (setq totfiles newfiles)))
       (setq files (cdr files)))
     (if did-unpack 
 	(gnus-uu-unpack-files ofiles (append did-unpack ignore))
@@ -1530,10 +1530,9 @@ The headers will be included in the sequence they are matched.")
   (let* ((files (gnus-uu-directory-files dir t))
 	 (ofiles files))
     (while files
-      (if (file-directory-p (car files))
-	  (progn
-	    (setq ofiles (delete (car files) ofiles))
-	    (setq ofiles (append ofiles (gnus-uu-ls-r (car files))))))
+      (when (file-directory-p (car files))
+	(setq ofiles (delete (car files) ofiles))
+	(setq ofiles (append ofiles (gnus-uu-ls-r (car files)))))
       (setq files (cdr files)))
     ofiles))
 
@@ -1545,8 +1544,8 @@ The headers will be included in the sequence they are matched.")
     (while files
       (setq file (car files))
       (setq files (cdr files))
-      (or (member (file-name-nondirectory file) '("." ".."))
-	  (setq out (cons file out))))
+      (unless (member (file-name-nondirectory file) '("." ".."))
+	(push file out)))
     (setq out (nreverse out))
     out))
 
@@ -1562,25 +1561,25 @@ The headers will be included in the sequence they are matched.")
 	      (goto-char start)
 	      (while (not (eobp))
 		(progn
-		  (if (looking-at "\n") (replace-match ""))
+		  (when (looking-at "\n")
+		    (replace-match ""))
 		  (forward-line 1))))
 	    
 	  (while (not (eobp))
 	    (if (looking-at (concat gnus-uu-begin-string "\\|" 
 				    gnus-uu-end-string))
 		()
-	      (if (not found)
-		  (progn
-		    (beginning-of-line)
-		    (setq beg (point))
-		    (end-of-line)
-		    (setq length (- (point) beg))))
+	      (when (not found)
+		(beginning-of-line)
+		(setq beg (point))
+		(end-of-line)
+		(setq length (- (point) beg)))
 	      (setq found t)
 	      (beginning-of-line)
 	      (setq beg (point))
 	      (end-of-line)
-	      (if (not (= length (- (point) beg)))
-		  (insert (make-string (- length (- (point) beg)) ? ))))
+	      (when (not (= length (- (point) beg)))
+		(insert (make-string (- length (- (point) beg)) ? ))))
 	    (forward-line 1)))))))
 
 (defvar gnus-uu-tmp-alist nil)
@@ -1588,27 +1587,27 @@ The headers will be included in the sequence they are matched.")
 (defun gnus-uu-initialize (&optional scan)
   (let (entry)
     (if (and (not scan)
-	     (if (setq entry (assoc gnus-newsgroup-name gnus-uu-tmp-alist))
-		 (if (file-exists-p (cdr entry))
-		     (setq gnus-uu-work-dir (cdr entry))
-		   (setq gnus-uu-tmp-alist (delq entry gnus-uu-tmp-alist))
-		   nil)))
+	     (when (setq entry (assoc gnus-newsgroup-name gnus-uu-tmp-alist))
+	       (if (file-exists-p (cdr entry))
+		   (setq gnus-uu-work-dir (cdr entry))
+		 (setq gnus-uu-tmp-alist (delq entry gnus-uu-tmp-alist))
+		 nil)))
 	t
       (setq gnus-uu-tmp-dir (file-name-as-directory 
 			     (expand-file-name gnus-uu-tmp-dir)))
       (if (not (file-directory-p gnus-uu-tmp-dir))
 	  (error "Temp directory %s doesn't exist" gnus-uu-tmp-dir)
-	(if (not (file-writable-p gnus-uu-tmp-dir))
-	    (error "Temp directory %s can't be written to" 
-		   gnus-uu-tmp-dir)))
+	(when (not (file-writable-p gnus-uu-tmp-dir))
+	  (error "Temp directory %s can't be written to" 
+		 gnus-uu-tmp-dir)))
 
       (setq gnus-uu-work-dir 
 	    (make-temp-name (concat gnus-uu-tmp-dir "gnus")))
       (gnus-make-directory gnus-uu-work-dir)
       (set-file-modes gnus-uu-work-dir 448)
       (setq gnus-uu-work-dir (file-name-as-directory gnus-uu-work-dir))
-      (setq gnus-uu-tmp-alist (cons (cons gnus-newsgroup-name gnus-uu-work-dir)
-				    gnus-uu-tmp-alist)))))
+      (push (cons gnus-newsgroup-name gnus-uu-work-dir)
+	    gnus-uu-tmp-alist))))
 
 
 ;; Kills the temporary uu buffers, kills any processes, etc.
@@ -1618,8 +1617,8 @@ The headers will be included in the sequence they are matched.")
 	 (memq (process-status (or gnus-uu-uudecode-process "nevair"))
 	       '(stop run))
 	 (delete-process gnus-uu-uudecode-process))
-    (and (setq buf (get-buffer gnus-uu-output-buffer-name))
-	 (kill-buffer buf))))
+    (when (setq buf (get-buffer gnus-uu-output-buffer-name))
+      (kill-buffer buf))))
 
 ;; Inputs an action and a file and returns a full command, putting
 ;; quotes round the file name and escaping any quotes in the file name.
@@ -1720,9 +1719,9 @@ is t.")
   (local-set-key "\C-c\C-s" 'gnus-uu-post-news-inews)
   (local-set-key "\C-c\C-i" 'gnus-uu-post-insert-binary-in-article)
       
-  (if gnus-uu-post-include-before-composing
-      (save-excursion (setq gnus-uu-post-inserted-file-name 
-			    (gnus-uu-post-insert-binary)))))
+  (when gnus-uu-post-include-before-composing
+    (save-excursion (setq gnus-uu-post-inserted-file-name 
+			  (gnus-uu-post-insert-binary)))))
 
 (defun gnus-uu-post-insert-binary-in-article ()
   "Inserts an encoded file in the buffer.
@@ -1733,33 +1732,30 @@ The user will be asked for a file name."
 
 ;; Encodes with uuencode and substitutes all spaces with backticks.
 (defun gnus-uu-post-encode-uuencode (path file-name)
-  (if (gnus-uu-post-encode-file "uuencode" path file-name)
-      (progn
-	(goto-char (point-min))
-	(forward-line 1)
-	(while (re-search-forward " " nil t)
-	  (replace-match "`"))
-	t)))
+  (when (gnus-uu-post-encode-file "uuencode" path file-name)
+    (goto-char (point-min))
+    (forward-line 1)
+    (while (re-search-forward " " nil t)
+      (replace-match "`"))
+    t))
 
 ;; Encodes with uuencode and adds MIME headers.
 (defun gnus-uu-post-encode-mime-uuencode (path file-name)
-  (if (gnus-uu-post-encode-uuencode path file-name)
-      (progn
-	(gnus-uu-post-make-mime file-name "x-uue")
-	t)))
+  (when (gnus-uu-post-encode-uuencode path file-name)
+    (gnus-uu-post-make-mime file-name "x-uue")
+    t))
 
 ;; Encodes with base64 and adds MIME headers
 (defun gnus-uu-post-encode-mime (path file-name)
-  (if (gnus-uu-post-encode-file "mmencode" path file-name)
-      (progn
-	(gnus-uu-post-make-mime file-name "base64")
-	t)))
+  (when (gnus-uu-post-encode-file "mmencode" path file-name)
+    (gnus-uu-post-make-mime file-name "base64")
+    t))
 
 ;; Adds MIME headers.
 (defun gnus-uu-post-make-mime (file-name encoding)
   (goto-char (point-min))
   (insert (format "Content-Type: %s; name=\"%s\"\n" 
-		  (gnus-uu-choose-action file-name gnus-uu-ext-to-mime-list) 
+		  (gnus-uu-choose-action file-name gnus-uu-ext-to-mime-list)
 		  file-name))
   (insert (format "Content-Transfer-Encoding: %s\n\n" encoding))
   (save-restriction
@@ -1768,10 +1764,9 @@ The user will be asked for a file name."
     (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
     (forward-line -1)
     (narrow-to-region 1 (point))
-    (or (mail-fetch-field "mime-version")
-	(progn
-	  (widen)
-	  (insert "MIME-Version: 1.0\n")))
+    (unless (mail-fetch-field "mime-version")
+      (widen)
+      (insert "MIME-Version: 1.0\n"))
     (widen)))
 
 ;; Encodes a file PATH with COMMAND, leaving the result in the
@@ -1801,22 +1796,21 @@ If no file has been included, the user will be asked for a file."
 	  (setq gnus-inews-article-hook (if (listp gnus-inews-article-hook)
 					    gnus-inews-article-hook
 					  (list gnus-inews-article-hook)))
-	  (setq gnus-inews-article-hook 
-		(cons
-		 '(lambda ()
-		    (save-excursion
-		      (goto-char (point-min))
-		      (if (re-search-forward "^Message-ID: \\(.*\\)$" nil t)
-			  (setq gnus-uu-post-message-id 
-				(buffer-substring 
-				 (match-beginning 1) (match-end 1)))
-			(setq gnus-uu-post-message-id nil))))
-		 gnus-inews-article-hook))
+	  (push
+	   '(lambda ()
+	      (save-excursion
+		(goto-char (point-min))
+		(if (re-search-forward "^Message-ID: \\(.*\\)$" nil t)
+		    (setq gnus-uu-post-message-id 
+			  (buffer-substring 
+			   (match-beginning 1) (match-end 1)))
+		  (setq gnus-uu-post-message-id nil))))
+	   gnus-inews-article-hook)
 	  (gnus-uu-post-encoded file-name t))
       (gnus-uu-post-encoded file-name nil)))
   (setq gnus-uu-post-inserted-file-name nil)
-  (and gnus-uu-winconf-post-news
-       (set-window-configuration gnus-uu-winconf-post-news)))
+  (when gnus-uu-winconf-post-news
+    (set-window-configuration gnus-uu-winconf-post-news)))
       
 ;; Asks for a file to encode, encodes it and inserts the result in
 ;; the current buffer.  Returns the file name the user gave.
@@ -1826,14 +1820,14 @@ If no file has been included, the user will be asked for a file."
 
     (setq file-path (read-file-name 
 		     "What file do you want to encode? "))
-    (if (not (file-exists-p file-path))
-	(error "%s: No such file" file-path))
+    (when (not (file-exists-p file-path))
+      (error "%s: No such file" file-path))
 
     (goto-char (point-max))
     (insert (format "\n%s\n" gnus-uu-post-binary-separator))
     
-    (if (string-match "^~/" file-path)
-	(setq file-path (concat "$HOME" (substring file-path 1))))
+    (when (string-match "^~/" file-path)
+      (setq file-path (concat "$HOME" (substring file-path 1))))
     (if (string-match "/[^/]*$" file-path)
 	(setq file-name (substring file-path (1+ (match-beginning 0))))
       (setq file-name file-path))
@@ -1861,12 +1855,13 @@ If no file has been included, the user will be asked for a file."
     (setq post-buf (current-buffer))
 
     (goto-char (point-min))
-    (if (not (re-search-forward 
-	      (if gnus-uu-post-separate-description 
-		  (concat "^" (regexp-quote gnus-uu-post-binary-separator)
-			  "$")
-		(concat "^" (regexp-quote mail-header-separator) "$")) nil t))
-	(error "Internal error: No binary/header separator"))
+    (when (not (re-search-forward 
+		(if gnus-uu-post-separate-description 
+		    (concat "^" (regexp-quote gnus-uu-post-binary-separator)
+			    "$")
+		  (concat "^" (regexp-quote mail-header-separator) "$"))
+		nil t))
+      (error "Internal error: No binary/header separator"))
     (beginning-of-line)
     (forward-line 1)
     (setq beg-binary (point))
@@ -1879,11 +1874,11 @@ If no file has been included, the user will be asked for a file."
       (goto-char (point-min))
       (setq length (count-lines 1 (point-max)))
       (setq parts (/ length gnus-uu-post-length))
-      (if (not (< (% length gnus-uu-post-length) 4))
-	  (setq parts (1+ parts))))
+      (when (not (< (% length gnus-uu-post-length) 4))
+	(setq parts (1+ parts))))
 
-    (if gnus-uu-post-separate-description
-	(forward-line -1))
+    (when gnus-uu-post-separate-description
+      (forward-line -1))
     (kill-region (point) (point-max))
 
     (goto-char (point-min))
@@ -1895,10 +1890,9 @@ If no file has been included, the user will be asked for a file."
     (goto-char (point-min))
     (if (not gnus-uu-post-separate-description)
 	()
-      (if (and (not threaded) (re-search-forward "^Subject: " nil t))
-	  (progn
-	    (end-of-line)
-	    (insert (format " (0/%d)" parts))))
+      (when (and (not threaded) (re-search-forward "^Subject: " nil t))
+	(end-of-line)
+	(insert (format " (0/%d)" parts)))
       (message-send))
 
     (save-excursion
@@ -1908,17 +1902,17 @@ If no file has been included, the user will be asked for a file."
 	(set-buffer (get-buffer-create send-buffer-name))
 	(erase-buffer)
 	(insert header)
-	(if (and threaded gnus-uu-post-message-id)
-	    (insert (format "References: %s\n" gnus-uu-post-message-id)))
+	(when (and threaded gnus-uu-post-message-id)
+	  (insert (format "References: %s\n" gnus-uu-post-message-id)))
 	(insert separator)
 	(setq whole-len
 	      (- 62 (length (format top-string "" file-name i parts ""))))
-	(if (> 1 (setq minlen (/ whole-len 2)))
-	    (setq minlen 1))
+	(when (> 1 (setq minlen (/ whole-len 2)))
+	  (setq minlen 1))
 	(setq 
 	 beg-line 
 	 (format top-string
-		 (make-string minlen ?-) 
+		 (make-string minlen ?-)
 		 file-name i parts
 		 (make-string 
 		  (if (= 0 (% whole-len 2)) (1- minlen) minlen) ?-)))
@@ -1930,9 +1924,9 @@ If no file has been included, the user will be asked for a file."
 	      (progn
 		(end-of-line)
 		(insert (format " (%d/%d)" i parts)))
-	    (if (or (and (= i 2) gnus-uu-post-separate-description)
-		    (and (= i 1) (not gnus-uu-post-separate-description)))
-		(replace-match "Subject: Re: "))))
+	    (when (or (and (= i 2) gnus-uu-post-separate-description)
+		      (and (= i 1) (not gnus-uu-post-separate-description)))
+	      (replace-match "Subject: Re: "))))
 		  
 	(goto-char (point-max))
 	(save-excursion
@@ -1941,8 +1935,8 @@ If no file has been included, the user will be asked for a file."
 	  (if (= i parts)
 	      (goto-char (point-max))
 	    (forward-line gnus-uu-post-length))
-	  (if (and (= (1+ i) parts) (< (count-lines (point) (point-max)) 4))
-	      (forward-line -4))
+	  (when (and (= (1+ i) parts) (< (count-lines (point) (point-max)) 4))
+	    (forward-line -4))
 	  (setq end (point)))
 	(insert-buffer-substring uubuf beg end)
 	(insert beg-line)
@@ -1954,26 +1948,25 @@ If no file has been included, the user will be asked for a file."
 	 (concat "^" (regexp-quote mail-header-separator) "$") nil t)
 	(beginning-of-line)
 	(forward-line 2)
-	(if (re-search-forward 
-	     (concat "^" (regexp-quote gnus-uu-post-binary-separator) "$")
-	     nil t)
-	    (progn 
-	      (replace-match "")
-	      (forward-line 1)))
+	(when (re-search-forward 
+	       (concat "^" (regexp-quote gnus-uu-post-binary-separator) "$")
+	       nil t)
+	  (replace-match "")
+	  (forward-line 1))
 	(insert beg-line)
 	(insert "\n")
 	(let (message-sent-message-via)
 	  (message-send))))
 
-    (and (setq buf (get-buffer send-buffer-name))
-	 (kill-buffer buf))
-    (and (setq buf (get-buffer encoded-buffer-name))
-	 (kill-buffer buf))
+    (when (setq buf (get-buffer send-buffer-name))
+      (kill-buffer buf))
+    (when (setq buf (get-buffer encoded-buffer-name))
+      (kill-buffer buf))
 
-    (if (not gnus-uu-post-separate-description)
-	(progn
-	  (set-buffer-modified-p nil)
-	  (and (fboundp 'bury-buffer) (bury-buffer))))))
+    (when (not gnus-uu-post-separate-description)
+      (set-buffer-modified-p nil)
+      (when (fboundp 'bury-buffer)
+	(bury-buffer)))))
 
 (provide 'gnus-uu)
 

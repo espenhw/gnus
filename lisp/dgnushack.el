@@ -36,7 +36,7 @@
 (defalias 'ange-ftp-re-read-dir 'ignore)
 
 (defun dgnushack-compile ()
-					;(setq byte-compile-dynamic t)
+  ;;(setq byte-compile-dynamic t)
   (let ((files (directory-files "." nil ".el$"))
 	(xemacs (string-match "XEmacs" emacs-version))
 	;;(byte-compile-generate-call-tree t)

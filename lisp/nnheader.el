@@ -281,14 +281,15 @@ on your system, you could say something like:
    (or (mail-header-subject header) "(none)") "\t"
    (or (mail-header-from header) "(nobody)") "\t"
    (or (mail-header-date header) "") "\t"
-   (or (mail-header-id header) 
-       (nnmail-message-id)) "\t"
+   (or (mail-header-id header)
+       (nnmail-message-id))
+   "\t"
    (or (mail-header-references header) "") "\t")
   (princ (or (mail-header-chars header) 0) (current-buffer))
   (insert "\t")
   (princ (or (mail-header-lines header) 0) (current-buffer))
   (insert "\t")
-  (when (mail-header-xref header) 
+  (when (mail-header-xref header)
     (insert "Xref: " (mail-header-xref header) "\t"))
   (insert "\n"))
 
@@ -404,7 +405,7 @@ the line could be found."
 			(nth 1 (nnheader-insert-file-contents-literally
 				file nil beg
 				(incf beg nnheader-head-chop-length))))
-		    (prog1 (not (search-forward "\n\n" nil t)) 
+		    (prog1 (not (search-forward "\n\n" nil t))
 		      (goto-char (point-max)))
 		    (or (null nnheader-max-head-length)
 			(< beg nnheader-max-head-length))))))
@@ -421,19 +422,22 @@ the line could be found."
       (goto-char (match-end 0)))
     (prog1
 	(eobp)
-      (widen))))    
+      (widen))))
 
 (defun nnheader-insert-references (references message-id)
   "Insert a References header based on REFERENCES and MESSAGE-ID."
-  (if (and (not references) (not message-id)) 
+  (if (and (not references) (not message-id))
       ()				; This is illegal, but not all articles have Message-IDs.
     (mail-position-on-field "References")
     (let ((begin (save-excursion (beginning-of-line) (point)))
 	  (fill-column 78)
 	  (fill-prefix "\t"))
-      (if references (insert references))
-      (if (and references message-id) (insert " "))
-      (if message-id (insert message-id))
+      (when references
+	(insert references))
+      (when (and references message-id)
+	(insert " "))
+      (when message-id
+	(insert message-id))
       ;; Fold long References lines to conform to RFC1036 (sort of).
       ;; The region must end with a newline to fill the region
       ;; without inserting extra newline.
@@ -640,8 +644,8 @@ without formatting."
 	(idx 0))
     ;; Replace all occurrences of FROM with TO.
     (while (< idx len)
-      (if (= (aref string idx) from)
-	  (aset string idx to))
+      (when (= (aref string idx) from)
+	(aset string idx to))
       (setq idx (1+ idx)))
     string))
 
@@ -731,9 +735,9 @@ If FILE, find the \".../etc/PACKAGE\" file instead."
   (if (and (fboundp 'efs-re-read-dir) (boundp 'efs-path-regexp))
       (when (string-match efs-path-regexp path)
 	(efs-re-read-dir path))
-    (if (and (fboundp 'ange-ftp-re-read-dir) (boundp 'ange-ftp-path-format))
-	(when (string-match (car ange-ftp-path-format) path)
-	  (ange-ftp-re-read-dir path)))))
+    (when (and (fboundp 'ange-ftp-re-read-dir) (boundp 'ange-ftp-path-format))
+      (when (string-match (car ange-ftp-path-format) path)
+	(ange-ftp-re-read-dir path)))))
 
 (defun nnheader-insert-file-contents-literally (filename &optional visit beg end replace)
   "Like `insert-file-contents', q.v., but only reads in the file.

@@ -1,3 +1,49 @@
+Tue Oct  1 03:41:17 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-picon.el (gnus-picons-glyph-hashtb): Made into hashtb.
+
+Tue Oct  1 01:50:10 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
+
+	* gnus-group.el (gnus-group-new-mail): New function.
+	(gnus-new-mail-mark): New variable.
+
+	* nnmail.el (nnmail-new-mail-p): New function.
+
+	* gnus-xmas.el (gnus-xmas-splash): New function.
+
+Tue Oct  1 01:36:17 1996  Raja R. Harinath  <harinath@cs.umn.edu>
+
+        * gnus-score.el (gnus-all-score-files): Didn't handle alist.
+
+        * gnus-gl.el: Dropped `bbb-alist'.  Changed cl-hashtable to obarray,
+        using gnus-{get,set}hash to access it.  Dropped a few temp. bindings
+        Changed (aref (assoc "message-id" ...) ...) to (mail-header-id ...).
+
+Mon Sep 30 00:02:13 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: General (and major) indentation, breaking,
+	if/when/unless/and/or, push revision.
+
+	* gnus-sum.el (gnus-read-header): Set buffer before changing
+	vars. 
+
+Sun Sep 29 23:20:26 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-util.el (gnus-write-buffer): New function.
+
+Sun Sep 29 23:05:33 1996  Kurt Swanson  <Kurt.Swanson@dna.lth.se>
+
+	* gnus-sum.el (gnus-handle-ephemeral-exit): New function.
+
+Sun Sep 29 22:41:01 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Allow making
+	articles persistent in uncacheable groups.
+
+Sun Sep 29 01:23:43 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.45 is released.
+
 Sun Sep 29 00:57:13 1996  Dave Disser  <disser@sdd.hp.com>
 
 	* gnus-sum.el (gnus-summary-display-article): Don't show tree

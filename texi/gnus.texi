@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.45 Manual
+@settitle Red Gnus 0.46 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.45 Manual
+@title Red Gnus 0.46 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -1118,6 +1118,12 @@ Short (collapsed) group name.  The @code{gnus-group-uncollapsed-levels}
 variable says how many levels to leave at the end of the group name.
 The default is 1---this will mean that group names like
 @samp{gnu.emacs.gnus} will be shortened to @samp{g.emacs.gnus}.
+
+@item m
+@vindex gnus-new-mail-mark
+@cindex %
+@samp{%} (@code{gnus-new-mail-mark}) if there has arrived new mail to
+the group lately.
 
 @item u
 User defined specifier.  The next character in the format string should
@@ -8732,6 +8738,12 @@ have all articles that you read marked as expirable automatically.  All
 articles that are marked as expirable have an @samp{E} in the first
 column in the summary buffer.
 
+Note that making a group auto-expirable don't mean that all read
+articles are expired---only the articles that are marked as expirable
+will be expired.  Also note the using the @kbd{d} command won't make
+groups expirable---only semi-automatic marking of articles as read will
+mark the articles as expirable in auto-expirable groups.
+
 Let's say you subscribe to a couple of mailing lists, and you want the
 articles you have read to disappear after a while:
 
@@ -8797,6 +8809,8 @@ crying to me when you discover that the regexp you used matched the
 wrong group and all your important mail has disappeared.  Be a
 @emph{man}!  Or a @emph{woman}!  Whatever you feel more comfortable
 with!  So there!
+
+Most people make most of their mail groups total-expirable, though. 
 
 
 @node Washing Mail

@@ -42,7 +42,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.45"
+(defconst gnus-version-number "0.46"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -182,8 +182,8 @@
     (insert (make-string (max 0 (* 2 (/ rest 3))) ?\n)))
   ;; Fontify some.
   (goto-char (point-min))
-  (and (search-forward "Praxis" nil t)
-       (put-text-property (match-beginning 0) (match-end 0) 'face 'bold))
+  (when (search-forward "Praxis" nil t)
+    (put-text-property (match-beginning 0) (match-end 0) 'face 'bold))
   (goto-char (point-min))
   (setq mode-line-buffer-identification gnus-version)
   (set-buffer-modified-p t))
@@ -351,7 +351,7 @@
 ;; Add the current buffer to the list of buffers to be killed on exit.
 (defun gnus-add-current-to-buffer-list ()
   (or (memq (current-buffer) gnus-buffer-list)
-      (setq gnus-buffer-list (cons (current-buffer) gnus-buffer-list))))
+      (push (current-buffer) gnus-buffer-list)))
 
 (defun gnus-version (&optional arg)
   "Version number of this version of Gnus.
@@ -594,13 +594,13 @@ that that variable is buffer-local to the summary buffers."
   (if (not method)
       group
     (concat (format "%s" (car method))
-	    (if (and
-		 (or (assoc (format "%s" (car method)) 
-			    (gnus-methods-using 'address))
-		     (gnus-server-equal method gnus-message-archive-method))
-		 (nth 1 method)
-		 (not (string= (nth 1 method) "")))
-		(concat "+" (nth 1 method)))
+	    (when (and
+		   (or (assoc (format "%s" (car method))
+			      (gnus-methods-using 'address))
+		       (gnus-server-equal method gnus-message-archive-method))
+		   (nth 1 method)
+		   (not (string= (nth 1 method) "")))
+	      (concat "+" (nth 1 method)))
 	    ":" group)))
 
 (defun gnus-group-real-prefix (group)
@@ -696,9 +696,9 @@ If SYMBOL, return the value of that symbol in the group parameters."
       (let ((old-params (gnus-info-params info))
 	    (new-params (list (cons name value))))
 	(while old-params
-	  (if (or (not (listp (car old-params)))
-		  (not (eq (caar old-params) name)))
-	      (setq new-params (append new-params (list (car old-params)))))
+	  (when (or (not (listp (car old-params)))
+		    (not (eq (caar old-params) name)))
+	    (setq new-params (append new-params (list (car old-params)))))
 	  (setq old-params (cdr old-params)))
 	(gnus-group-set-info new-params group 'params)))))
 
@@ -724,23 +724,24 @@ just the host name."
     ;; separate foreign select method from group name and collapse.
     ;; if method contains a server, collapse to non-domain server name,
     ;; otherwise collapse to select method
-    (if (string-match ":" group)
-	(cond ((string-match "+" group)
-	       (let* ((plus (string-match "+" group))
-		      (colon (string-match ":" group))
-		      (dot (string-match "\\." group)))
-		 (setq foreign (concat
-				(substring group (+ 1 plus)
-					   (cond ((null dot) colon)
-						 ((< colon dot) colon)
-						 ((< dot colon) dot))) ":")
-		       group (substring group (+ 1 colon))
-		       )))
-	      (t
-	       (let* ((colon (string-match ":" group)))
-		 (setq foreign (concat (substring group 0 (+ 1 colon)))
-		       group (substring group (+ 1 colon)))
-		 ))))
+    (when (string-match ":" group)
+      (cond ((string-match "+" group)
+	     (let* ((plus (string-match "+" group))
+		    (colon (string-match ":" group))
+		    (dot (string-match "\\." group)))
+	       (setq foreign (concat
+			      (substring group (+ 1 plus)
+					 (cond ((null dot) colon)
+					       ((< colon dot) colon)
+					       ((< dot colon) dot)))
+			      ":")
+		     group (substring group (+ 1 colon))
+		     )))
+	    (t
+	     (let* ((colon (string-match ":" group)))
+	       (setq foreign (concat (substring group 0 (+ 1 colon)))
+		     group (substring group (+ 1 colon)))
+	       ))))
     ;; collapse group name leaving LEVELS uncollapsed elements
     (while group
       (if (and (string-match "\\." group) (> levels 0))
@@ -771,7 +772,8 @@ Returns the number of articles marked as read."
     (when (get-file-buffer file)
       (save-excursion
 	(set-buffer (get-file-buffer file))
-	(and (buffer-modified-p) (save-buffer))
+	(when (buffer-modified-p)
+	  (save-buffer))
 	(kill-buffer (current-buffer))))))
 
 (defcustom gnus-kill-file-name "KILL"
@@ -878,8 +880,8 @@ If NEWSGROUP is nil, return the global kill file name instead."
   (let ((valids gnus-valid-select-methods)
 	outs)
     (while valids
-      (if (memq feature (car valids))
-	  (setq outs (cons (car valids) outs)))
+      (when (memq feature (car valids))
+	(push (car valids) outs))
       (setq valids (cdr valids)))
     outs))
 

@@ -45,20 +45,20 @@
 
 (defun gnus-mule-cite-add-face (number prefix face)
   ;; At line NUMBER, ignore PREFIX and add FACE to the rest of the line.
-  (if face
-      (let ((inhibit-point-motion-hooks t)
-	    from to)
-	(goto-line number)
-	(if (boundp 'MULE)
-	    (forward-char (chars-in-string prefix))
-	  (forward-char (length prefix)))
-	(skip-chars-forward " \t")
-	(setq from (point))
-	(end-of-line 1)
-	(skip-chars-backward " \t")
-	(setq to (point))
-	(if (< from to)
-	    (gnus-overlay-put (gnus-make-overlay from to) 'face face)))))
+  (when face
+    (let ((inhibit-point-motion-hooks t)
+	  from to)
+      (goto-line number)
+      (if (boundp 'MULE)
+	  (forward-char (chars-in-string prefix))
+	(forward-char (length prefix)))
+      (skip-chars-forward " \t")
+      (setq from (point))
+      (end-of-line 1)
+      (skip-chars-backward " \t")
+      (setq to (point))
+      (when (< from to)
+	(gnus-overlay-put (gnus-make-overlay from to) 'face face)))))
 
 (defun gnus-mule-max-width-function (el max-width)
   (` (let* ((val (eval (, el)))
@@ -131,14 +131,15 @@ pounce directly on the real variables themselves."))
    ((or (not (boundp 'emacs-minor-version))
 	(< emacs-minor-version 30))
     ;; Remove the `intangible' prop.
-    (let ((props (and (boundp 'gnus-hidden-properties) 
+    (let ((props (and (boundp 'gnus-hidden-properties)
 		      gnus-hidden-properties)))
       (while (and props (not (eq (car (cdr props)) 'intangible)))
 	(setq props (cdr props)))
-      (and props (setcdr props (cdr (cdr (cdr props))))))
-    (or (fboundp 'buffer-substring-no-properties)
-	(defun buffer-substring-no-properties (beg end)
-	  (format "%s" (buffer-substring beg end)))))
+      (when props
+	(setcdr props (cdr (cdr (cdr props))))))
+    (unless (fboundp 'buffer-substring-no-properties)
+      (defun buffer-substring-no-properties (beg end)
+	(format "%s" (buffer-substring beg end)))))
    
    ((boundp 'MULE)
     (provide 'gnusutil))))
@@ -150,16 +151,16 @@ pounce directly on the real variables themselves."))
     (let ((funcs '(mouse-set-point set-face-foreground
 				   set-face-background x-popup-menu)))
       (while funcs
-	(or (fboundp (car funcs))
-	    (fset (car funcs) 'gnus-dummy-func))
+	(unless (fboundp (car funcs))
+	  (fset (car funcs) 'gnus-dummy-func))
 	(setq funcs (cdr funcs))))))
-  (or (fboundp 'file-regular-p)
-      (defun file-regular-p (file)
-	(and (not (file-directory-p file))
-	     (not (file-symlink-p file))
-	     (file-exists-p file))))
-  (or (fboundp 'face-list)
-      (defun face-list (&rest args))))
+  (unless (fboundp 'file-regular-p)
+    (defun file-regular-p (file)
+      (and (not (file-directory-p file))
+	   (not (file-symlink-p file))
+	   (file-exists-p file))))
+  (unless (fboundp 'face-list)
+    (defun face-list (&rest args))))
 
 (eval-and-compile
   (let ((case-fold-search t))
@@ -194,10 +195,10 @@ pounce directly on the real variables themselves."))
     (fset 'gnus-cite-add-face 'gnus-mule-cite-add-face)
     (fset 'gnus-max-width-function 'gnus-mule-max-width-function)
     
-    (if (boundp 'gnus-check-before-posting)
-	(setq gnus-check-before-posting
-	      (delq 'long-lines
-		    (delq 'control-chars gnus-check-before-posting))))
+    (when (boundp 'gnus-check-before-posting)
+      (setq gnus-check-before-posting
+	    (delq 'long-lines
+		  (delq 'control-chars gnus-check-before-posting))))
 
     (defun gnus-summary-line-format-spec ()
       (insert gnus-tmp-unread gnus-tmp-replied 
@@ -209,8 +210,8 @@ pounce directly on the real variables themselves."))
 	  gnus-tmp-opening-bracket 
 	  (format "%4d: %-20s" 
 		  gnus-tmp-lines 
-		  (if (> (length gnus-tmp-name) 20) 
-		      (truncate-string gnus-tmp-name 20) 
+		  (if (> (length gnus-tmp-name) 20)
+		      (truncate-string gnus-tmp-name 20)
 		    gnus-tmp-name))
 	  gnus-tmp-closing-bracket)
 	 (point))

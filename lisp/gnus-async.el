@@ -147,7 +147,7 @@ It should return non-nil if the article is to be prefetched.")
 		   (data (gnus-data-find-list article))
 		   d)
 	       (while (and (setq d (pop data))
-			   (if (numberp n) 
+			   (if (numberp n)
 			       (natnump (decf n))
 			     n))
 		 (unless (or (gnus-async-prefetched-article-entry

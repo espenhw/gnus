@@ -112,19 +112,18 @@ all.  This may very well take some time.")
 		  (concat nnml-current-directory 
 			  (or (cdr (assq article nnml-article-file-alist))
 			      "")))
-	    (if (and (file-exists-p file)
-		     (not (file-directory-p file)))
-		(progn
-		  (insert (format "221 %d Article retrieved.\n" article))
-		  (setq beg (point))
-		  (nnheader-insert-head file)
-		  (goto-char beg)
-		  (if (search-forward "\n\n" nil t)
-		      (forward-char -1)
-		    (goto-char (point-max))
-		    (insert "\n\n"))
-		  (insert ".\n")
-		  (delete-region (point) (point-max))))
+	    (when (and (file-exists-p file)
+		       (not (file-directory-p file)))
+	      (insert (format "221 %d Article retrieved.\n" article))
+	      (setq beg (point))
+	      (nnheader-insert-head file)
+	      (goto-char beg)
+	      (if (search-forward "\n\n" nil t)
+		  (forward-char -1)
+		(goto-char (point-max))
+		(insert "\n\n"))
+	      (insert ".\n")
+	      (delete-region (point) (point-max)))
 	    (setq sequence (cdr sequence))
 	    (setq count (1+ count))
 	    (and (numberp nnmail-large-newsgroup)
@@ -165,11 +164,11 @@ all.  This may very well take some time.")
     (if (stringp id)
 	(when (and (setq group-num (nnml-find-group-number id))
 		   (cdr
-		    (assq (cdr group-num) 
+		    (assq (cdr group-num)
 			  (nnheader-article-to-file-alist
 			   (setq gpath
 				 (nnmail-group-pathname
-				  (car group-num) 
+				  (car group-num)
 				  nnml-directory))))))
 	  (setq path (concat gpath (int-to-string (cdr group-num)))))
       (setq path (nnml-article-to-file id)))
@@ -217,7 +216,7 @@ all.  This may very well take some time.")
   (setq nnml-article-file-alist nil)
   t)
 
-(deffoo nnml-request-create-group (group &optional server args) 
+(deffoo nnml-request-create-group (group &optional server args)
   (nnmail-activate 'nnml)
   (unless (assoc group nnml-group-alist)
     (let (active)
@@ -431,7 +430,8 @@ all.  This may very well take some time.")
 	  (error nil)))
       ;; That went ok, so we change the internal structures.
       (let ((entry (assoc group nnml-group-alist)))
-	(and entry (setcar entry new-name))
+	(when entry
+	  (setcar entry new-name))
 	(setq nnml-current-directory nil
 	      nnml-current-group nil)
 	;; Save the new group alist.
@@ -466,10 +466,10 @@ all.  This may very well take some time.")
   (let (file path)
     (when (setq file (cdr (assq article nnml-article-file-alist)))
       (setq path (concat nnml-current-directory file))
-      (and (file-writable-p path)
-	   (or (not nnmail-keep-last-article)
-	       (not (eq (cdr (nth 1 (assoc group nnml-group-alist))) 
-			article)))))))
+      (when (file-writable-p path)
+	(or (not nnmail-keep-last-article)
+	    (not (eq (cdr (nth 1 (assoc group nnml-group-alist)))
+		     article)))))))
 
 ;; Find an article number in the current group given the Message-ID. 
 (defun nnml-find-group-number (id)
@@ -500,19 +500,18 @@ all.  This may very well take some time.")
 	number found)
     (when (file-exists-p nov)
       (insert-file-contents nov)
-      (while (and (not found) 
+      (while (and (not found)
 		  (search-forward id nil t)) ; We find the ID.
 	;; And the id is in the fourth field.
-	(if (search-backward 
-	     "\t" (save-excursion (beginning-of-line) (point)) t 4)
-	    (progn
-	      (beginning-of-line)
-	      (setq found t)
-	      ;; We return the article number.
-	      (setq number
-		    (condition-case ()
-			(read (current-buffer))
-		      (error nil))))))
+	(when (search-backward 
+	       "\t" (save-excursion (beginning-of-line) (point)) t 4)
+	  (beginning-of-line)
+	  (setq found t)
+	  ;; We return the article number.
+	  (setq number
+		(condition-case ()
+		    (read (current-buffer))
+		  (error nil)))))
       number)))
 
 (defun nnml-retrieve-headers-with-nov (articles &optional fetch-old)
@@ -530,17 +529,19 @@ all.  This may very well take some time.")
 	  (if (and fetch-old
 		   (not (numberp fetch-old)))
 	      t				; Don't remove anything.
-	    (if fetch-old
-		(setq first (max 1 (- first fetch-old))))
+	    (when fetch-old
+	      (setq first (max 1 (- first fetch-old))))
 	    (goto-char (point-min))
 	    (while (and (not (eobp)) (> first (read (current-buffer))))
 	      (forward-line 1))
 	    (beginning-of-line)
-	    (if (not (eobp)) (delete-region 1 (point)))
+	    (when (not (eobp))
+	      (delete-region 1 (point)))
 	    (while (and (not (eobp)) (>= last (read (current-buffer))))
 	      (forward-line 1))
 	    (beginning-of-line)
-	    (if (not (eobp)) (delete-region (point) (point-max)))
+	    (when (not (eobp))
+	      (delete-region (point) (point-max)))
 	    t))))))
 
 (defun nnml-possibly-change-directory (group &optional server)
@@ -559,7 +560,7 @@ all.  This may very well take some time.")
   (let (dir dirs)
     (setq dir (nnmail-group-pathname group nnml-directory))
     (while (not (file-directory-p dir))
-      (setq dirs (cons dir dirs))
+      (push dir dirs)
       (setq dir (file-name-directory (directory-file-name dir))))
     (while dirs
       (make-directory (directory-file-name (car dirs)))
@@ -624,7 +625,7 @@ all.  This may very well take some time.")
 		(cons (caar nnml-article-file-alist)
 		      (caar (last nnml-article-file-alist)))
 	      (cons 1 0)))
-      (setq nnml-group-alist (cons (list group active) nnml-group-alist)))
+      (push (list group active) nnml-group-alist))
     (setcdr active (1+ (cdr active)))
     (while (file-exists-p
 	    (concat (nnmail-group-pathname group nnml-directory)
@@ -670,8 +671,7 @@ all.  This may very well take some time.")
 	(save-excursion
 	  (set-buffer buffer)
 	  (buffer-disable-undo (current-buffer)))
-	(setq nnml-nov-buffer-alist 
-	      (cons (cons group buffer) nnml-nov-buffer-alist))
+	(push (cons group buffer) nnml-nov-buffer-alist)
 	buffer)))
 
 (defun nnml-save-nov ()
@@ -778,8 +778,8 @@ all.  This may very well take some time.")
   (save-excursion
     (set-buffer (nnml-open-nov group))
     (goto-char (point-min))
-    (if (re-search-forward (concat "^" (int-to-string article) "\t") nil t)
-	(delete-region (match-beginning 0) (progn (forward-line 1) (point))))
+    (when (re-search-forward (concat "^" (int-to-string article) "\t") nil t)
+      (delete-region (match-beginning 0) (progn (forward-line 1) (point))))
     t))
 
 (provide 'nnml)

@@ -333,7 +333,7 @@ Can be used to turn version control on or off.")
 		       (concat "^" (substring (car groups) 0 (match-end 0))))
 		 (string-match prefix (cadr groups)))
 	    (progn
-	      (setq prefixes (cons prefix prefixes))
+	      (push prefix prefixes)
 	      (message "Descend hierarchy %s? ([y]nsq): "
 		       (substring prefix 1 (1- (length prefix))))
 	      (while (not (memq (setq ans (read-char)) '(?y ?\n ?n ?s ?q)))
@@ -344,8 +344,7 @@ Can be used to turn version control on or off.")
 		     (while (and groups
 				 (string-match prefix
 					       (setq group (car groups))))
-		       (setq gnus-killed-list
-			     (cons group gnus-killed-list))
+		       (push group gnus-killed-list)
 		       (gnus-sethash group group gnus-killed-hashtb)
 		       (setq groups (cdr groups)))
 		     (setq starts (cdr starts)))
@@ -360,7 +359,7 @@ Can be used to turn version control on or off.")
 		    ((= ans ?q)
 		     (while groups
 		       (setq group (car groups))
-		       (setq gnus-killed-list (cons group gnus-killed-list))
+		       (push group gnus-killed-list)
 		       (gnus-sethash group group gnus-killed-hashtb)
 		       (setq groups (cdr groups))))
 		    (t nil)))
@@ -375,11 +374,11 @@ Can be used to turn version control on or off.")
 		((= ans ?q)
 		 (while groups
 		   (setq group (car groups))
-		   (setq gnus-killed-list (cons group gnus-killed-list))
+		   (push group gnus-killed-list)
 		   (gnus-sethash group group gnus-killed-hashtb)
 		   (setq groups (cdr groups))))
 		(t
-		 (setq gnus-killed-list (cons group gnus-killed-list))
+		 (push group gnus-killed-list)
 		 (gnus-sethash group group gnus-killed-hashtb)))
 	  (setq groups (cdr groups)))))))
 
@@ -414,8 +413,8 @@ Can be used to turn version control on or off.")
 			(string< before newgroup)))))
 	;; Remove tail of newsgroup name (eg. a.b.c -> a.b)
 	(setq groupkey
-	      (if (string-match "^\\(.*\\)\\.[^.]+$" groupkey)
-		  (substring groupkey (match-beginning 1) (match-end 1)))))
+	      (when (string-match "^\\(.*\\)\\.[^.]+$" groupkey)
+		(substring groupkey (match-beginning 1) (match-end 1)))))
       (gnus-subscribe-newsgroup newgroup before))
     (kill-buffer (current-buffer))))
 
@@ -547,15 +546,15 @@ prompt the user for the name of an NNTP server to use."
     (setq gnus-slave slave)
 
     (when (string-match "XEmacs" (emacs-version))
-      (gnus-splash))
+      (gnus-xmas-splash))
 
     (let ((level (and (numberp arg) (> arg 0) arg))
 	  did-connect)
       (unwind-protect
 	  (progn
-	    (or dont-connect
-		(setq did-connect
-		      (gnus-start-news-server (and arg (not level))))))
+	    (unless dont-connect
+	      (setq did-connect
+		    (gnus-start-news-server (and arg (not level))))))
 	(if (and (not dont-connect)
 		 (not did-connect))
 	    (gnus-group-quit)
@@ -587,8 +586,8 @@ prompt the user for the name of an NNTP server to use."
 (defun gnus-unload ()
   "Unload all Gnus features."
   (interactive)
-  (or (boundp 'load-history)
-      (error "Sorry, `gnus-unload' is not implemented in this Emacs version."))
+  (unless (boundp 'load-history)
+    (error "Sorry, `gnus-unload' is not implemented in this Emacs version."))
   (let ((history load-history)
 	feature)
     (while history
@@ -616,15 +615,15 @@ prompt the user for the name of an NNTP server to use."
 
 (defun gnus-dribble-enter (string)
   "Enter STRING into the dribble buffer."
-  (if (and (not gnus-dribble-ignore)
-	   gnus-dribble-buffer
-	   (buffer-name gnus-dribble-buffer))
-      (let ((obuf (current-buffer)))
-	(set-buffer gnus-dribble-buffer)
-	(insert string "\n")
-	(set-window-point (get-buffer-window (current-buffer)) (point-max))
-	(bury-buffer gnus-dribble-buffer)
-	(set-buffer obuf))))
+  (when (and (not gnus-dribble-ignore)
+	     gnus-dribble-buffer
+	     (buffer-name gnus-dribble-buffer))
+    (let ((obuf (current-buffer)))
+      (set-buffer gnus-dribble-buffer)
+      (insert string "\n")
+      (set-window-point (get-buffer-window (current-buffer)) (point-max))
+      (bury-buffer gnus-dribble-buffer)
+      (set-buffer obuf))))
 
 (defun gnus-dribble-read-file ()
   "Read the dribble file from disk."
@@ -676,8 +675,8 @@ prompt the user for the name of an NNTP server to use."
     (save-excursion
       (set-buffer gnus-dribble-buffer)
       (let ((auto (make-auto-save-file-name)))
-	(if (file-exists-p auto)
-	    (delete-file auto))
+	(when (file-exists-p auto)
+	  (delete-file auto))
 	(erase-buffer)
 	(set-buffer-modified-p nil)))))
 
@@ -827,7 +826,7 @@ the server for new groups."
 		   (setq groups (1+ groups))
 		   (gnus-sethash group group gnus-killed-hashtb)
 		   (if gnus-subscribe-hierarchical-interactive
-		       (setq new-newsgroups (cons group new-newsgroups))
+		       (push group new-newsgroups)
 		     (funcall gnus-subscribe-newsgroup-method group)))))))
 	   gnus-active-hashtb)
 	  (when new-newsgroups
@@ -928,7 +927,8 @@ the server for new groups."
     (when (> groups 0)
       (gnus-message 6 "%d new newsgroup%s arrived."
 		    groups (if (> groups 1) "s have" " has")))
-    (and got-new (setq gnus-newsrc-last-checked-date new-date))
+    (when got-new
+      (setq gnus-newsrc-last-checked-date new-date))
     got-new))
 
 (defun gnus-check-first-time-used ()
@@ -958,16 +958,16 @@ the server for new groups."
 		((eq do-sub 'ignore)
 		 nil)
 		(t
-		 (setq gnus-killed-list (cons group gnus-killed-list)))))))
+		 (push group gnus-killed-list))))))
 	 gnus-active-hashtb)
 	(while groups
-	  (if (gnus-active (car groups))
-	      (gnus-group-change-level
-	       (car groups) gnus-level-default-subscribed gnus-level-killed))
+	  (when (gnus-active (car groups))
+	    (gnus-group-change-level
+	     (car groups) gnus-level-default-subscribed gnus-level-killed))
 	  (setq groups (cdr groups)))
 	(gnus-group-make-help-group)
-	(and gnus-novice-user
-	     (gnus-message 7 "`A k' to list killed groups"))))))
+	(when gnus-novice-user
+	  (gnus-message 7 "`A k' to list killed groups"))))))
 
 (defun gnus-subscribe-group (group previous &optional method)
   (gnus-group-change-level
@@ -1000,16 +1000,16 @@ the server for new groups."
 	(if fromkilled (setq group (nth 1 entry))
 	  (setq group (car (nth 2 entry))))
       (setq group entry))
-    (if (and (stringp entry)
-	     oldlevel
-	     (< oldlevel gnus-level-zombie))
-	(setq entry (gnus-gethash entry gnus-newsrc-hashtb)))
+    (when (and (stringp entry)
+	       oldlevel
+	       (< oldlevel gnus-level-zombie))
+      (setq entry (gnus-gethash entry gnus-newsrc-hashtb)))
     (if (and (not oldlevel)
 	     (consp entry))
 	(setq oldlevel (gnus-info-level (nth 2 entry)))
       (setq oldlevel (or oldlevel 9)))
-    (if (stringp previous)
-	(setq previous (gnus-gethash previous gnus-newsrc-hashtb)))
+    (when (stringp previous)
+      (setq previous (gnus-gethash previous gnus-newsrc-hashtb)))
 
     (if (and (>= oldlevel gnus-level-zombie)
 	     (gnus-gethash group gnus-newsrc-hashtb))
@@ -1017,10 +1017,10 @@ the server for new groups."
 	;; subscribed.
 	()				; Do nothing.
 
-      (or (gnus-ephemeral-group-p group)
-	  (gnus-dribble-enter
-	   (format "(gnus-group-change-level %S %S %S %S %S)"
-		   group level oldlevel (car (nth 2 previous)) fromkilled)))
+      (unless (gnus-ephemeral-group-p group)
+	(gnus-dribble-enter
+	 (format "(gnus-group-change-level %S %S %S %S %S)"
+		 group level oldlevel (car (nth 2 previous)) fromkilled)))
 
       ;; Then we remove the newgroup from any old structures, if needed.
       ;; If the group was killed, we remove it from the killed or zombie
@@ -1032,15 +1032,14 @@ the server for new groups."
 	    (setq gnus-zombie-list (delete group gnus-zombie-list))
 	  (setq gnus-killed-list (delete group gnus-killed-list))))
        (t
-	(if (and (>= level gnus-level-zombie)
-		 entry)
-	    (progn
-	      (gnus-sethash (car (nth 2 entry)) nil gnus-newsrc-hashtb)
-	      (if (nth 3 entry)
-		  (setcdr (gnus-gethash (car (nth 3 entry))
-					gnus-newsrc-hashtb)
-			  (cdr entry)))
-	      (setcdr (cdr entry) (cdddr entry))))))
+	(when (and (>= level gnus-level-zombie)
+		   entry)
+	  (gnus-sethash (car (nth 2 entry)) nil gnus-newsrc-hashtb)
+	  (when (nth 3 entry)
+	    (setcdr (gnus-gethash (car (nth 3 entry))
+				  gnus-newsrc-hashtb)
+		    (cdr entry)))
+	  (setcdr (cdr entry) (cdddr entry)))))
 
       ;; Finally we enter (if needed) the list where it is supposed to
       ;; go, and change the subscription level.  If it is to be killed,
@@ -1053,8 +1052,8 @@ the server for new groups."
 	;; groups.
 	(unless (gnus-group-foreign-p group)
 	  (if (= level gnus-level-zombie)
-	      (setq gnus-zombie-list (cons group gnus-zombie-list))
-	    (setq gnus-killed-list (cons group gnus-killed-list)))))
+	      (push group gnus-zombie-list)
+	    (push group gnus-killed-list))))
        (t
 	;; If the list is to be entered into the newsrc assoc, and
 	;; it was killed, we have to create an entry in the newsrc
@@ -1219,9 +1218,9 @@ newsgroup."
 			(cdadr range))))
 	  (setcdr range (cddr range)))
 	;; Adjust the first element to be the same as the lower limit.
-	(if (and (not (atom (car range)))
-		 (< (cdar range) (car active)))
-	    (setcdr (car range) (1- (car active))))
+	(when (and (not (atom (car range)))
+		   (< (cdar range) (car active)))
+	  (setcdr (car range) (1- (car active))))
 	;; Then we want to peel off any elements that are higher
 	;; than the upper active limit.
 	(let ((srange range))
@@ -1229,16 +1228,17 @@ newsgroup."
 	  (while (and (cdr srange)
 		      (<= (or (and (atom (cadr srange))
 				   (cadr srange))
-			      (caadr srange)) (cdr active)))
+			      (caadr srange))
+			  (cdr active)))
 	    (setq srange (cdr srange)))
-	  (if (cdr srange)
-	      ;; Nuke all remaining illegal elements.
-	      (setcdr srange nil))
+	  (when (cdr srange)
+	    ;; Nuke all remaining illegal elements.
+	    (setcdr srange nil))
 
 	  ;; Adjust the final element.
-	  (if (and (not (atom (car srange)))
-		   (> (cdar srange) (cdr active)))
-	      (setcdr (car srange) (cdr active))))
+	  (when (and (not (atom (car srange)))
+		     (> (cdar srange) (cdr active)))
+	    (setcdr (car srange) (cdr active))))
 	;; Compute the number of unread articles.
 	(while range
 	  (setq num (+ num (- (1+ (or (and (atom (car range)) (car range))
@@ -1384,7 +1384,7 @@ newsgroup."
     (while articles
       (when (gnus-member-of-range
 	     (setq article (pop articles)) ranges)
-	(setq news (cons article news))))
+	(push article news)))
     (when news
       (gnus-info-set-read
        info (gnus-remove-from-range (gnus-info-read info) (nreverse news)))
@@ -1408,7 +1408,8 @@ newsgroup."
   (unless (gnus-read-active-file-p)
     (let ((gnus-read-active-file t))
       (gnus-read-active-file)))
-  (or gnus-killed-hashtb (gnus-make-hashtable-from-killed))
+  (unless gnus-killed-hashtb
+    (gnus-make-hashtable-from-killed))
   ;; Go through all newsgroups that are known to Gnus - enlarge kill list.
   (mapatoms
    (lambda (sym)
@@ -1422,8 +1423,7 @@ newsgroup."
 	   (if (or (eq do-sub 'subscribe) (eq do-sub 'ignore))
 	       ()
 	     (setq groups (1+ groups))
-	     (setq gnus-killed-list
-		   (cons group gnus-killed-list))
+	     (push group gnus-killed-list)
 	     (gnus-sethash group group gnus-killed-hashtb))))))
    gnus-active-hashtb)
   (gnus-dribble-enter ""))
@@ -1458,8 +1458,8 @@ newsgroup."
 	  (gnus-message 5 mesg)
 	  (when (gnus-check-server method)
 	    ;; Request that the backend scan its incoming messages.
-	    (and (gnus-check-backend-function 'request-scan (car method))
-		 (gnus-request-scan nil method))
+	    (when (gnus-check-backend-function 'request-scan (car method))
+	      (gnus-request-scan nil method))
 	    (cond
 	     ((and (eq gnus-read-active-file 'some)
 		   (gnus-check-backend-function 'retrieve-groups (car method)))
@@ -1471,7 +1471,7 @@ newsgroup."
 			 (gnus-find-method-for-group 
 			  (gnus-info-group info) info)
 			 gmethod)
-		    (push (gnus-group-real-name (gnus-info-group info)) 
+		    (push (gnus-group-real-name (gnus-info-group info))
 			  groups)))
 		(when groups
 		  (gnus-check-server method)
@@ -1516,10 +1516,9 @@ newsgroup."
     (while (search-forward "\nto." nil t)
       (delete-region (1+ (match-beginning 0))
 		     (progn (forward-line 1) (point))))
-    (or (string= gnus-ignored-newsgroups "")
-	(progn
-	  (goto-char (point-min))
-	  (delete-matching-lines gnus-ignored-newsgroups)))
+    (unless (string= gnus-ignored-newsgroups "")
+      (goto-char (point-min))
+      (delete-matching-lines gnus-ignored-newsgroups))
     ;; Make the group names readable as a lisp expression even if they
     ;; contain special characters.
     ;; Fix by Luc Van Eycken <Luc.VanEycken@esat.kuleuven.ac.be>.
@@ -1561,9 +1560,8 @@ newsgroup."
 		      (set group (cons min max))
 		    (set group nil))
 		  ;; Enter moderated groups into a list.
-		  (if (eq (let ((obarray mod-hashtb)) (read cur)) m)
-		      (setq gnus-moderated-list
-			    (cons (symbol-name group) gnus-moderated-list))))
+		  (when (eq (let ((obarray mod-hashtb)) (read cur)) m)
+		    (push (symbol-name group) gnus-moderated-list)))
 	      (error
 	       (and group
 		    (symbolp group)
@@ -1595,10 +1593,10 @@ newsgroup."
 	       (and group
 		    (symbolp group)
 		    (set group nil))
-	       (or ignore-errors
-		   (gnus-message 3 "Warning - illegal active: %s"
-				 (buffer-substring
-				  (gnus-point-at-bol) (gnus-point-at-eol)))))))
+	       (unless ignore-errors
+		 (gnus-message 3 "Warning - illegal active: %s"
+			       (buffer-substring
+				(gnus-point-at-bol) (gnus-point-at-eol)))))))
 	  (widen)
 	  (forward-line 1))))))
 
@@ -1639,13 +1637,12 @@ newsgroup."
       (let (min max group)
 	(while (not (eobp))
 	  (condition-case ()
-	      (if (= (following-char) ?2)
-		  (progn
-		    (read cur) (read cur)
-		    (setq min (read cur)
-			  max (read cur))
-		    (set (setq group (let ((obarray hashtb)) (read cur)))
-			 (cons min max))))
+	      (when (= (following-char) ?2)
+		(read cur) (read cur)
+		(setq min (read cur)
+		      max (read cur))
+		(set (setq group (let ((obarray hashtb)) (read cur)))
+		     (cons min max)))
 	    (error (and group (symbolp group) (set group nil))))
 	  (forward-line 1))))))
 
@@ -1665,26 +1662,26 @@ If FORCE is non-nil, the .newsrc file is read."
       ;; file (ticked articles, killed groups, foreign methods, etc.)
       (gnus-read-newsrc-el-file quick-file)
 
-      (if (and (file-exists-p gnus-current-startup-file)
-	       (or force
-		   (and (file-newer-than-file-p newsrc-file quick-file)
-			(file-newer-than-file-p newsrc-file
-						(concat quick-file "d")))
-		   (not gnus-newsrc-alist)))
-	  ;; We read the .newsrc file.  Note that if there if a
-	  ;; .newsrc.eld file exists, it has already been read, and
-	  ;; the `gnus-newsrc-hashtb' has been created.  While reading
-	  ;; the .newsrc file, Gnus will only use the information it
-	  ;; can find there for changing the data already read -
-	  ;; i. e., reading the .newsrc file will not trash the data
-	  ;; already read (except for read articles).
-	  (save-excursion
-	    (gnus-message 5 "Reading %s..." newsrc-file)
-	    (set-buffer (find-file-noselect newsrc-file))
-	    (buffer-disable-undo (current-buffer))
-	    (gnus-newsrc-to-gnus-format)
-	    (kill-buffer (current-buffer))
-	    (gnus-message 5 "Reading %s...done" newsrc-file)))
+      (when (and (file-exists-p gnus-current-startup-file)
+		 (or force
+		     (and (file-newer-than-file-p newsrc-file quick-file)
+			  (file-newer-than-file-p newsrc-file
+						  (concat quick-file "d")))
+		     (not gnus-newsrc-alist)))
+	;; We read the .newsrc file.  Note that if there if a
+	;; .newsrc.eld file exists, it has already been read, and
+	;; the `gnus-newsrc-hashtb' has been created.  While reading
+	;; the .newsrc file, Gnus will only use the information it
+	;; can find there for changing the data already read -
+	;; i. e., reading the .newsrc file will not trash the data
+	;; already read (except for read articles).
+	(save-excursion
+	  (gnus-message 5 "Reading %s..." newsrc-file)
+	  (set-buffer (find-file-noselect newsrc-file))
+	  (buffer-disable-undo (current-buffer))
+	  (gnus-newsrc-to-gnus-format)
+	  (kill-buffer (current-buffer))
+	  (gnus-message 5 "Reading %s...done" newsrc-file)))
       
       ;; Convert old to new.
       (gnus-convert-old-newsrc))))
@@ -1755,7 +1752,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	      (gnus-info-set-level
 	       info (if (nth 1 group) gnus-level-default-subscribed
 		      gnus-level-default-unsubscribed))
-	      (setq gnus-newsrc-alist (cons info gnus-newsrc-alist)))
+	      (push info gnus-newsrc-alist))
 	  (push (setq info
 		      (list (car group)
 			    (if (nth 1 group) gnus-level-default-subscribed
@@ -1777,16 +1774,15 @@ If FORCE is non-nil, the .newsrc file is read."
     ;; The .el file version of this variable does not begin with
     ;; "options", while the .eld version does, so we just add it if it
     ;; isn't there.
-    (and
-     gnus-newsrc-options
-     (progn
-       (and (not (string-match "^ *options" gnus-newsrc-options))
-	    (setq gnus-newsrc-options (concat "options " gnus-newsrc-options)))
-       (and (not (string-match "\n$" gnus-newsrc-options))
-	    (setq gnus-newsrc-options (concat gnus-newsrc-options "\n")))
-       ;; Finally, if we read some options lines, we parse them.
-       (or (string= gnus-newsrc-options "")
-	   (gnus-newsrc-parse-options gnus-newsrc-options))))
+    (when
+	gnus-newsrc-options
+      (when (not (string-match "^ *options" gnus-newsrc-options))
+	(setq gnus-newsrc-options (concat "options " gnus-newsrc-options)))
+      (when (not (string-match "\n$" gnus-newsrc-options))
+	(setq gnus-newsrc-options (concat gnus-newsrc-options "\n")))
+      ;; Finally, if we read some options lines, we parse them.
+      (unless (string= gnus-newsrc-options "")
+	(gnus-newsrc-parse-options gnus-newsrc-options)))
 
     (setq gnus-newsrc-alist (nreverse gnus-newsrc-alist))
     (gnus-make-hashtable-from-newsrc-alist)))
@@ -1804,8 +1800,8 @@ If FORCE is non-nil, the .newsrc file is read."
   (setq gnus-newsrc-options "")
   (setq gnus-newsrc-options-n nil)
 
-  (or gnus-active-hashtb
-      (setq gnus-active-hashtb (make-vector 4095 0)))
+  (unless gnus-active-hashtb
+    (setq gnus-active-hashtb (make-vector 4095 0)))
   (let ((buf (current-buffer))
 	(already-read (> (length gnus-newsrc-alist) 1))
 	group subscribed options-symbol newsrc Options-symbol
@@ -1849,9 +1845,10 @@ If FORCE is non-nil, the .newsrc file is read."
 	(forward-line -1))
        (symbol
 	;; Group names can be just numbers.  
-	(when (numberp symbol) 
+	(when (numberp symbol)
 	  (setq symbol (intern (int-to-string symbol) gnus-active-hashtb)))
-	(or (boundp symbol) (set symbol nil))
+	(unless (boundp symbol)
+	  (set symbol nil))
 	;; It was a group name.
 	(setq subscribed (= (following-char) ?:)
 	      group (symbol-name symbol)
@@ -1885,19 +1882,18 @@ If FORCE is non-nil, the .newsrc file is read."
 			;; This is a buggy line, by we pretend that
 			;; it's kinda OK.  Perhaps the user should be
 			;; dinged?
-			(setq reads (cons num1 reads))
-		      (setq reads
-			    (cons
-			     (cons num1
-				   (progn
-				     (narrow-to-region (match-beginning 0)
-						       (match-end 0))
-				     (read buf)))
-			     reads))
+			(push num1 reads)
+		      (push
+		       (cons num1
+			     (progn
+			       (narrow-to-region (match-beginning 0)
+						 (match-end 0))
+			       (read buf)))
+		       reads)
 		      (widen)))
 		;; It was just a simple number, so we add it to the
 		;; list of ranges.
-		(setq reads (cons num1 reads)))
+		(push num1 reads))
 	      ;; If the next char in ?\n, then we have reached the end
 	      ;; of the line and return nil.
 	      (/= (following-char) ?\n))
@@ -1907,14 +1903,13 @@ If FORCE is non-nil, the .newsrc file is read."
 	     (t
 	      ;; Not numbers and not eol, so this might be a buggy
 	      ;; line...
-	      (or (eobp)
-		  ;; If it was eob instead of ?\n, we allow it.
-		  (progn
-		    ;; The line was buggy.
-		    (setq group nil)
-		    (gnus-error 3.1 "Mangled line: %s"
-				(buffer-substring (gnus-point-at-bol)
-						  (gnus-point-at-eol)))))
+	      (unless (eobp)
+		;; If it was eob instead of ?\n, we allow it.
+		;; The line was buggy.
+		(setq group nil)
+		(gnus-error 3.1 "Mangled line: %s"
+			    (buffer-substring (gnus-point-at-bol)
+					      (gnus-point-at-eol))))
 	      nil))
 	  ;; Skip past ", ".  Spaces are illegal in these ranges, but
 	  ;; we allow them, because it's a common mistake to put a
@@ -1951,7 +1946,7 @@ If FORCE is non-nil, the .newsrc file is read."
 				     (1+ gnus-level-subscribed)
 				   gnus-level-default-unsubscribed))
 			       (nreverse reads))))
-	    (setq newsrc (cons info newsrc))))))
+	    (push info newsrc)))))
       (forward-line 1))
 
     (setq newsrc (nreverse newsrc))
@@ -1972,7 +1967,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	      (if (setq entry (assoc (caar prev) newsrc))
 		  (setcdr (setq mentry (memq entry newsrc))
 			  (cons (car rc) (cdr mentry)))
-		(setq newsrc (cons (car rc) newsrc))))
+		(push (car rc) newsrc)))
 	  (setq prev rc
 		rc (cdr rc)))))
 
@@ -1981,8 +1976,8 @@ If FORCE is non-nil, the .newsrc file is read."
     (gnus-make-hashtable-from-newsrc-alist)
 
     ;; Finally, if we read some options lines, we parse them.
-    (or (string= gnus-newsrc-options "")
-	(gnus-newsrc-parse-options gnus-newsrc-options))))
+    (unless (string= gnus-newsrc-options "")
+      (gnus-newsrc-parse-options gnus-newsrc-options))))
 
 ;; Parse options lines to find "options -n !all rec.all" and stuff.
 ;; The return value will be a list on the form
@@ -2032,14 +2027,16 @@ If FORCE is non-nil, the .newsrc file is read."
 	      ;; If the word begins with a bang (!), this is a "not"
 	      ;; spec.  We put this spec (minus the bang) and the
 	      ;; symbol `ignore' into the list.
-	      (setq out (cons (cons (concat
-				     "^" (buffer-substring
-					  (1+ (match-beginning 0))
-					  (match-end 0)))
-				    'ignore) out))
+	      (push (cons (concat
+			   "^" (buffer-substring
+				(1+ (match-beginning 0))
+				(match-end 0)))
+			  'ignore)
+		    out)
 	    ;; There was no bang, so this is a "yes" spec.
-	    (setq out (cons (cons (concat "^" (match-string 0))
-				  'subscribe) out)))))
+	    (push (cons (concat "^" (match-string 0))
+			'subscribe)
+		  out))))
 
       (setq gnus-newsrc-options-n out))))
 
@@ -2138,7 +2135,8 @@ If FORCE is non-nil, the .newsrc file is read."
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
       ;; Write options.
-      (if gnus-newsrc-options (insert gnus-newsrc-options))
+      (when gnus-newsrc-options
+	(insert gnus-newsrc-options))
       ;; Write subscribed and unsubscribed.
       (while (setq info (pop newsrc))
 	;; Don't write foreign groups to .newsrc.
@@ -2162,7 +2160,8 @@ If FORCE is non-nil, the .newsrc file is read."
 		  (princ (car range))
 		  (insert "-")
 		  (princ (cdr range)))
-		(if ranges (insert ",")))))
+		(when ranges
+		  (insert ",")))))
 	  (insert "\n")))
       (make-local-variable 'version-control)
       (setq version-control 'never)
@@ -2190,7 +2189,7 @@ If FORCE is non-nil, the .newsrc file is read."
     (set-buffer gnus-dribble-buffer)
     (let ((slave-name
 	   (make-temp-name (concat gnus-current-startup-file "-slave-"))))
-      (write-region (point-min) (point-max) slave-name nil 'nomesg))))
+      (gnus-write-buffer slave-name))))
 
 (defun gnus-master-read-slave-newsrc ()
   (let ((slave-files
@@ -2220,17 +2219,17 @@ If FORCE is non-nil, the .newsrc file is read."
 	  (erase-buffer)
 	  (setq file (nth 1 (car slave-files)))
 	  (insert-file-contents file)
-	  (if (condition-case ()
-		  (progn
-		    (eval-buffer (current-buffer))
-		    t)
-		(error
-		 (gnus-error 3.2 "Possible error in %s" file)
-		 nil))
-	      (or gnus-slave		; Slaves shouldn't delete these files.
-		  (condition-case ()
-		      (delete-file file)
-		    (error nil))))
+	  (when (condition-case ()
+		    (progn
+		      (eval-buffer (current-buffer))
+		      t)
+		  (error
+		   (gnus-error 3.2 "Possible error in %s" file)
+		   nil))
+	    (unless gnus-slave		; Slaves shouldn't delete these files.
+	      (condition-case ()
+		  (delete-file file)
+		(error nil))))
 	  (setq slave-files (cdr slave-files))))
       (gnus-message 7 "Reading slave newsrcs...done"))))
 
@@ -2257,9 +2256,9 @@ If FORCE is non-nil, the .newsrc file is read."
       (setq method (gnus-server-to-method method)))
     ;; We create the hashtable whether we manage to read the desc file
     ;; to avoid trying to re-read after a failed read.
-    (or gnus-description-hashtb
-	(setq gnus-description-hashtb
-	      (gnus-make-hashtable (length gnus-active-hashtb))))
+    (unless gnus-description-hashtb
+      (setq gnus-description-hashtb
+	    (gnus-make-hashtable (length gnus-active-hashtb))))
     ;; Mark this method's desc file as read.
     (gnus-sethash (gnus-group-prefixed-name "" method) "Has read"
 		  gnus-description-hashtb)
@@ -2304,9 +2303,9 @@ If FORCE is non-nil, the .newsrc file is read."
 		    (error 0)))
 	    (skip-chars-forward " \t")
 	    ;; ...  which leads to this line being effectively ignored.
-	    (and (symbolp group)
-		 (set group (buffer-substring
-			     (point) (progn (end-of-line) (point)))))
+	    (when (symbolp group)
+	      (set group (buffer-substring
+			  (point) (progn (end-of-line) (point)))))
 	    (forward-line 1))))
       (gnus-message 5 "Reading descriptions file...done")
       t))))

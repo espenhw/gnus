@@ -411,7 +411,8 @@
 		  (list
 		   (list (intern (format "gnus-user-format-function-%c"
 					 user-defined))
-			 'gnus-tmp-header) ?s)))
+			 'gnus-tmp-header)
+		   ?s)))
 	   ;; Find the specification from `spec-alist'.
 	   ((setq elem (cdr (assq spec spec-alist))))
 	   (t

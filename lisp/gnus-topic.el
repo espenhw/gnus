@@ -189,7 +189,7 @@ with some simple extensions.
 		       (if (member group gnus-zombie-list) 8 9)))
       (and 
        unread				; nil means that the group is dead.
-       (<= clevel level) 
+       (<= clevel level)
        (>= clevel lowest)		; Is inside the level we want.
        (or all
 	   (if (eq unread t)
@@ -347,7 +347,7 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
     ;; List dead groups?
     (when (and (>= level gnus-level-zombie) (<= lowest gnus-level-zombie))
       (gnus-group-prepare-flat-list-dead 
-       (setq gnus-zombie-list (sort gnus-zombie-list 'string<)) 
+       (setq gnus-zombie-list (sort gnus-zombie-list 'string<))
        gnus-level-zombie ?Z
        regexp))
     
@@ -401,12 +401,13 @@ articles in the topic and its subtopics."
 	    (gnus-group-insert-group-line
 	     entry (if (member entry gnus-zombie-list) 8 9)
 	     nil (- (1+ (cdr (setq active (gnus-active entry))))
-		    (car active)) nil)
+		    (car active))
+	     nil)
 	  ;; Living groups.
 	  (when (setq info (nth 2 entry))
 	    (gnus-group-insert-group-line 
 	     (gnus-info-group info)
-	     (gnus-info-level info) (gnus-info-marks info) 
+	     (gnus-info-level info) (gnus-info-marks info)
 	     (car entry) (gnus-info-method info)))))
       (when (and (listp entry)
 		 (numberp (car entry))
@@ -453,7 +454,7 @@ articles in the topic and its subtopics."
   
 (defun gnus-topic-fold (&optional insert)
   "Remove/insert the current topic."
-  (let ((topic (gnus-group-topic-name))) 
+  (let ((topic (gnus-group-topic-name)))
     (when topic
       (save-excursion
 	(if (not (gnus-group-active-topic-p))
@@ -476,7 +477,7 @@ articles in the topic and its subtopics."
     ;; Insert the text.
     (gnus-add-text-properties 
      (point)
-     (prog1 (1+ (point)) 
+     (prog1 (1+ (point))
        (eval gnus-topic-line-format-spec)
        (gnus-topic-remove-excess-properties)1)
      (list 'gnus-topic (intern name)
@@ -514,7 +515,7 @@ articles in the topic and its subtopics."
 	(gnus-group-goto-group group)
 	(gnus-group-position-point)))))
 
-(defun gnus-topic-goto-missing-group (group) 
+(defun gnus-topic-goto-missing-group (group)
   "Place point where GROUP is supposed to be inserted."
   (let* ((topic (gnus-group-topic group))
 	 (groups (cdr (assoc topic gnus-topic-alist)))
@@ -573,7 +574,9 @@ articles in the topic and its subtopics."
       (or (save-excursion
 	    (forward-line -1)
 	    (gnus-topic-goto-topic (gnus-current-topic))
-	    (gnus-group-topic-level)) 0)) ? ))
+	    (gnus-group-topic-level))
+	  0))
+   ? ))
 
 ;;; Initialization
 
@@ -586,7 +589,7 @@ articles in the topic and its subtopics."
 	gnus-topic-tallied-groups nil
 	gnus-topology-checked-p nil))
 
-(defun gnus-topic-check-topology ()  
+(defun gnus-topic-check-topology ()
   ;; The first time we set the topology to whatever we have
   ;; gotten here, which can be rather random.
   (unless gnus-topic-alist
@@ -657,10 +660,10 @@ articles in the topic and its subtopics."
       (let ((topic-name (pop topic))
 	    group filtered-topic)
 	(while (setq group (pop topic))
-	  (if (and (or (gnus-gethash group gnus-active-hashtb)
-		       (gnus-info-method (gnus-get-info group)))
-		   (not (gnus-gethash group gnus-killed-hashtb)))
-	      (push group filtered-topic)))
+	  (when (and (or (gnus-gethash group gnus-active-hashtb)
+			 (gnus-info-method (gnus-get-info group)))
+		     (not (gnus-gethash group gnus-killed-hashtb)))
+	    (push group filtered-topic)))
 	(push (cons topic-name (nreverse filtered-topic)) result)))
     (setq gnus-topic-alist (nreverse result))))
 
@@ -688,7 +691,9 @@ articles in the topic and its subtopics."
 		 (* gnus-topic-indent-level
 		    (or (save-excursion
 			  (gnus-topic-goto-topic (gnus-current-topic))
-			  (gnus-group-topic-level)) 0)) ? ))
+			  (gnus-group-topic-level))
+			0))
+		 ? ))
 	       (yanked (list group))
 	       alist talist end)
 	  ;; Then we enter the yanked groups into the topics they belong
@@ -989,7 +994,7 @@ If COPYP, copy the groups instead."
 	(start-topic (gnus-group-topic-name))
 	entry)
     (mapcar 
-     (lambda (g) 
+     (lambda (g)
        (gnus-group-remove-mark g)
        (when (and
 	      (setq entry (assoc (gnus-current-topic) gnus-topic-alist))
@@ -1052,7 +1057,9 @@ If COPYP, copy the groups instead."
 	     (* gnus-topic-indent-level
 		(or (save-excursion
 		      (gnus-topic-goto-topic (gnus-current-topic))
-		      (gnus-group-topic-level)) 0)) ? ))
+		      (gnus-group-topic-level))
+		    0))
+	     ? ))
 	   yanked alist)
       ;; We first yank the groups the normal way...
       (setq yanked (gnus-group-yank-group arg))

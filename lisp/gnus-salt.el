@@ -145,7 +145,9 @@ If given a prefix, mark all unpicked articles as read."
         (gnus-configure-windows 
 	 (if gnus-pick-display-summary 'article 'pick) t))
     (if gnus-pick-elegant-flow
-        (gnus-summary-next-group)
+	(if (gnus-group-quit-config gnus-newsgroup-name)
+	    (gnus-summary-exit)
+	  (gnus-summary-next-group))
       (error "No articles have been picked"))))
 
 (defun gnus-pick-article (&optional arg)
@@ -192,8 +194,8 @@ This must be bound to a button-down mouse event."
     (mouse-set-point start-event)
     ;; In case the down click is in the middle of some intangible text,
     ;; use the end of that text, and put it in START-POINT.
-    (if (< (point) start-point)
-	(goto-char start-point))
+    (when (< (point) start-point)
+      (goto-char start-point))
     (gnus-pick-article)
     (setq start-point (point))
     ;; end-of-range is used only in the single-click case.
@@ -201,64 +203,64 @@ This must be bound to a button-down mouse event."
     ;; (but not outside the window where the drag started).
     (let (event end end-point last-end-point (end-of-range (point)))
       (track-mouse
-	(while (progn
-		 (setq event (read-event))
-		 (or (mouse-movement-p event)
-		     (eq (car-safe event) 'switch-frame)))
-	  (if (eq (car-safe event) 'switch-frame)
-	      nil
-	    (setq end (event-end event)
-		  end-point (posn-point end))
-	    (if end-point
-		(setq last-end-point end-point))
+       (while (progn
+		(setq event (read-event))
+		(or (mouse-movement-p event)
+		    (eq (car-safe event) 'switch-frame)))
+	 (if (eq (car-safe event) 'switch-frame)
+	     nil
+	   (setq end (event-end event)
+		 end-point (posn-point end))
+	   (when end-point
+	     (setq last-end-point end-point))
 
-	    (cond
-	     ;; Are we moving within the original window?
-	     ((and (eq (posn-window end) start-window)
-		   (integer-or-marker-p end-point))
-	      ;; Go to START-POINT first, so that when we move to END-POINT,
-	      ;; if it's in the middle of intangible text,
-	      ;; point jumps in the direction away from START-POINT.
-	      (goto-char start-point)
-	      (goto-char end-point)
-              (gnus-pick-article)
-              ;; In case the user moved his mouse really fast, pick
-              ;; articles on the line between this one and the last one.
-              (let* ((this-line (1+ (count-lines 1 end-point)))
-                     (min-line (min this-line start-line))
-                     (max-line (max this-line start-line)))
-                (while (< min-line max-line)
-                  (goto-line min-line)
-                  (gnus-pick-article)
-                  (setq min-line (1+ min-line)))
-                (setq start-line this-line))
-	      (if (zerop (% click-count 3))
-		  (setq end-of-range (point))))
-             (t
-	      (let ((mouse-row (cdr (cdr (mouse-position)))))
-		(cond
-		 ((null mouse-row))
-		 ((< mouse-row top)
-		  (mouse-scroll-subr start-window (- mouse-row top)))
-		 ((>= mouse-row bottom)
-		  (mouse-scroll-subr start-window
-                                     (1+ (- mouse-row bottom)))))))))))
-      (if (consp event)
-	  (let ((fun (key-binding (vector (car event)))))
-	    ;; Run the binding of the terminating up-event, if possible.
-	    ;; In the case of a multiple click, it gives the wrong results,
-	    ;; because it would fail to set up a region.
-	    (if nil ;; (and (= (mod mouse-selection-click-count 3) 0) (fboundp fun))
-		;; In this case, we can just let the up-event execute normally.
-		(let ((end (event-end event)))
-		  ;; Set the position in the event before we replay it,
-		  ;; because otherwise it may have a position in the wrong
-		  ;; buffer.
-		  (setcar (cdr end) end-of-range)
-		  ;; Delete the overlay before calling the function,
-		  ;; because delete-overlay increases buffer-modified-tick.
-		  (setq unread-command-events
-			(cons event unread-command-events)))))))))
+	   (cond
+	    ;; Are we moving within the original window?
+	    ((and (eq (posn-window end) start-window)
+		  (integer-or-marker-p end-point))
+	     ;; Go to START-POINT first, so that when we move to END-POINT,
+	     ;; if it's in the middle of intangible text,
+	     ;; point jumps in the direction away from START-POINT.
+	     (goto-char start-point)
+	     (goto-char end-point)
+	     (gnus-pick-article)
+	     ;; In case the user moved his mouse really fast, pick
+	     ;; articles on the line between this one and the last one.
+	     (let* ((this-line (1+ (count-lines 1 end-point)))
+		    (min-line (min this-line start-line))
+		    (max-line (max this-line start-line)))
+	       (while (< min-line max-line)
+		 (goto-line min-line)
+		 (gnus-pick-article)
+		 (setq min-line (1+ min-line)))
+	       (setq start-line this-line))
+	     (when (zerop (% click-count 3))
+	       (setq end-of-range (point))))
+	    (t
+	     (let ((mouse-row (cdr (cdr (mouse-position)))))
+	       (cond
+		((null mouse-row))
+		((< mouse-row top)
+		 (mouse-scroll-subr start-window (- mouse-row top)))
+		((>= mouse-row bottom)
+		 (mouse-scroll-subr start-window
+				    (1+ (- mouse-row bottom)))))))))))
+      (when (consp event)
+	(let ((fun (key-binding (vector (car event)))))
+	  ;; Run the binding of the terminating up-event, if possible.
+	  ;; In the case of a multiple click, it gives the wrong results,
+	  ;; because it would fail to set up a region.
+	  (when nil
+	    ;; (and (= (mod mouse-selection-click-count 3) 0) (fboundp fun))
+	    ;; In this case, we can just let the up-event execute normally.
+	    (let ((end (event-end event)))
+	      ;; Set the position in the event before we replay it,
+	      ;; because otherwise it may have a position in the wrong
+	      ;; buffer.
+	      (setcar (cdr end) end-of-range)
+	      ;; Delete the overlay before calling the function,
+	      ;; because delete-overlay increases buffer-modified-tick.
+	      (push event unread-command-events))))))))
 
 (defun gnus-pick-next-page ()
   "Go to the next page.  If at the end of the buffer, start reading articles."
@@ -485,7 +487,7 @@ Two predefined functions are available:
 	(goto-char (or (gnus-overlay-end gnus-selected-tree-overlay) 1)))
       (let* ((top (cond ((< (window-height) 4) 0)
 			((< (window-height) 7) 1)
-			(t 2))) 
+			(t 2)))
 	     (height (1- (window-height)))
 	     (bottom (save-excursion (goto-char (point-max))
 				     (forward-line (- height))
@@ -514,7 +516,7 @@ Two predefined functions are available:
 	  tot-win-height)
       (walk-windows (lambda (window) (incf windows)))
       (setq tot-win-height 
-	    (- (frame-height) 
+	    (- (frame-height)
 	       (* window-min-height (1- windows))
 	       2))
       (let* ((window-min-height 2)
@@ -562,7 +564,7 @@ Two predefined functions are available:
 	    "***")
 	   (t gnus-tmp-from)))
 	 (gnus-tmp-open-bracket
-	  (cond ((memq gnus-tmp-number sparse) 
+	  (cond ((memq gnus-tmp-number sparse)
 		 (caadr gnus-tree-brackets))
 		(dummy (caaddr gnus-tree-brackets))
 		(adopted (car (nth 3 gnus-tree-brackets)))
@@ -662,11 +664,11 @@ Two predefined functions are available:
       ;; Recurse downwards in all children of this article.
       (while thread
 	(gnus-generate-horizontal-tree
-	 (pop thread) (if do (1+ level) level) 
+	 (pop thread) (if do (1+ level) level)
 	 (or dummyp dummy) dummy)))))
 
 (defsubst gnus-tree-indent-vertical ()
-  (let ((len (- (* (1+ gnus-tree-node-length) gnus-tmp-indent) 
+  (let ((len (- (* (1+ gnus-tree-node-length) gnus-tmp-indent)
 		(- (point) (gnus-point-at-bol)))))
     (when (> len 0)
       (insert (make-string len ? )))))
@@ -723,7 +725,7 @@ Two predefined functions are available:
       ;; Recurse downwards in all children of this article.
       (while thread
 	(gnus-generate-vertical-tree
-	 (pop thread) (if do (1+ level) level) 
+	 (pop thread) (if do (1+ level) level)
 	 (or dummyp dummy) dummy)))))
 
 ;;; Interface functions.
@@ -741,7 +743,8 @@ Two predefined functions are available:
 		   (gnus-cut-thread
 		    (gnus-remove-thread 
 		     (mail-header-id 
-		      (gnus-summary-article-header article)) t))))
+		      (gnus-summary-article-header article))
+		     t))))
 	    (gnus-tmp-limit gnus-newsgroup-limit)
 	    (gnus-tmp-sparse gnus-newsgroup-sparse))
 	(when (or force
@@ -946,7 +949,7 @@ The following commands are available:
 		     gnus-mouse-face-prop 'highlight))))
 	  (let ((fill-column (- (window-width) 2)))
 	    (fill-region (point-min) (point-max)))
-	  (set-window-point (get-buffer-window (current-buffer)) 
+	  (set-window-point (get-buffer-window (current-buffer))
 			    (point-min)))))))
 
 (defun gnus-carpal-select ()

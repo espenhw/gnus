@@ -607,7 +607,7 @@ Optional EVENT is the location for the menu."
 	 (child (car (widget-get widget :children))))
     (unless (get symbol 'saved-face)
       (error "No saved value for this face")
-    (widget-value-set child (get symbol 'saved-face)))))
+      (widget-value-set child (get symbol 'saved-face)))))
 
 (defun custom-face-factory (widget)
   "Restore WIDGET to the face's factory settings."

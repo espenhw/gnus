@@ -315,7 +315,8 @@
    (function
     (lambda (data)
       (concat (w3-form-encode-xwfu (car data)) "="
-	      (w3-form-encode-xwfu (cdr data))))) pairs "&"))
+	      (w3-form-encode-xwfu (cdr data)))))
+   pairs "&"))
 
 (defun nnweb-fetch-form (url pairs)
   (let ((url-request-data (nnweb-encode-www-form-urlencoded pairs))
@@ -368,7 +369,7 @@
 	  (goto-char (point-min))
 	  (while (re-search-forward "^ +[0-9]+\\." nil t)
 	    (narrow-to-region 
-	     (point) 
+	     (point)
 	     (cond ((re-search-forward "^ +[0-9]+\\." nil t)
 		    (match-beginning 0))
 		   ((search-forward "\n\n" nil t)
@@ -471,7 +472,7 @@
 	  (goto-char (point-min))
 	  (while (re-search-forward "^ +[0-9]+\\." nil t)
 	    (narrow-to-region 
-	     (point) 
+	     (point)
 	     (if (re-search-forward "^$" nil t)
 		 (match-beginning 0)
 	       (point-max)))
@@ -656,7 +657,7 @@
 	(nnweb-encode-www-form-urlencoded 
 	 `(("pg" . "aq")
 	   ("what" . "news")
-	   ,@(if part `(("stq" . ,(int-to-string (* part 30)))))
+	   ,@(when part `(("stq" . ,(int-to-string (* part 30)))))
 	   ("fmt" . "d")
 	   ("q" . ,search)
 	   ("r" . "")

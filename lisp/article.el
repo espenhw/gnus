@@ -42,7 +42,9 @@
   "All headers that match this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `article-visible-headers' is non-nil, this variable will be ignored."
-  :type '(repeat string)		;Leave monster regexp to lisp.
+  :type '(choice :custom-show nil
+		 regexp
+		 (repeat regexp))
   :group 'article)
 
 (defcustom gnus-visible-headers 
@@ -53,7 +55,9 @@ If `article-visible-headers' is non-nil, this variable will be ignored."
   "All headers that do not match this regexp will be hidden.
 This variable can also be a list of regexp of headers to remain visible.
 If this variable is non-nil, `gnus-article-ignored-headers' will be ignored."
-  :type '(repeat string)		;Leave monster regexp to lisp.
+  :type '(choice :custom-show nil
+		 (repeat regexp)
+		 regexp)
   :group 'article)
 
 (defcustom gnus-sorted-header-list
@@ -63,18 +67,18 @@ If this variable is non-nil, `gnus-article-ignored-headers' will be ignored."
 If it is non-nil, headers that match the regular expressions will
 be placed first in the article buffer in the sequence specified by
 this list."
-  :type '(repeat string)
+  :type '(repeat regexp)
   :group 'article)
 
 (defcustom gnus-boring-article-headers '(empty followup-to reply-to)
   "Headers that are only to be displayed if they have interesting data.
 Possible values in this list are `empty', `newsgroups', `followup-to',
 `reply-to', and `date'."
-  :type '(set (item :tag "Headers with no content." empty)
-	      (item :tag "Newsgroups with only one group." newsgroups)
-	      (item :tag "Followup-to identical to newsgroups." followup-to)
-	      (item :tag "Reply-to identical to from." reply-to)
-	      (item :tag "Date less than four days old." date))
+  :type '(set (const :tag "Headers with no content." empty)
+	      (const :tag "Newsgroups with only one group." newsgroups)
+	      (const :tag "Followup-to identical to newsgroups." followup-to)
+	      (const :tag "Reply-to identical to from." reply-to)
+	      (const :tag "Date less than four days old." date))
   :group 'article)
 
 (defcustom gnus-signature-separator '("^-- $" "^-- *$")
@@ -93,7 +97,7 @@ longer (in lines) than that number.  If it is a function, the function
 will be called without any parameters, and if it returns nil, there is
 no signature in the buffer.  If it is a string, it will be used as a
 regexp.  If it matches, the text in question is not a signature."
-  :type '(choice integer number function string)
+  :type '(choice integer number function regexp)
   :group 'article)
 
 (defcustom gnus-hidden-properties '(invisible t intangible t)
@@ -476,8 +480,8 @@ always hide."
 						(point-max))
 	  (subst-char-in-region (point-min) (point-max) ?_ ? )
 	  (goto-char (point-max)))
-	(if (looking-at "\\([ \t\n]+\\)=\\?")
-	    (replace-match "" t t nil 1))
+	(when (looking-at "\\([ \t\n]+\\)=\\?")
+	  (replace-match "" t t nil 1))
 	(goto-char (point-min))))))
 
 (defun article-de-quoted-unreadable (&optional force)

@@ -361,9 +361,10 @@ displayed by the first non-nil matching CONTENT face."
 		nil)
 	       (t file)))
 	     (gnus-number-of-articles-to-be-saved
-	      (when (eq gnus-prompt-before-saving t) num))) ; Magic
+	      (when (eq gnus-prompt-before-saving t)
+		num)))			; Magic
 	(set-buffer gnus-summary-buffer)
-	(funcall gnus-default-article-saver filename)))))
+	(funcall gnus-default-article-saver filename))))) 
 
 (defun gnus-read-save-file-name (prompt default-name &optional filename)
   (cond
@@ -509,8 +510,8 @@ The directory to save in defaults to `gnus-article-save-directory'."
 	(save-restriction
 	  (widen)
 	  (goto-char (point-min))
-	  (and (search-forward "\n\n" nil t)
-	       (narrow-to-region (point) (point-max)))
+	  (when (search-forward "\n\n" nil t)
+	    (narrow-to-region (point) (point-max)))
 	  (gnus-output-to-file filename))))
     ;; Remember the directory name to save articles.
     (setq gnus-newsgroup-last-file filename)))
@@ -525,8 +526,8 @@ The directory to save in defaults to `gnus-article-save-directory'."
 	      (command command)
 	      (t (read-string "Shell command on article: "
 			      gnus-last-shell-command))))
-  (if (string-equal command "")
-      (setq command gnus-last-shell-command))
+  (when (string-equal command "")
+    (setq command gnus-last-shell-command))
   (gnus-eval-in-buffer-window gnus-article-buffer
     (save-restriction
       (widen)
@@ -537,9 +538,9 @@ The directory to save in defaults to `gnus-article-save-directory'."
 
 (defun gnus-capitalize-newsgroup (newsgroup)
   "Capitalize NEWSGROUP name."
-  (and (not (zerop (length newsgroup)))
-       (concat (char-to-string (upcase (aref newsgroup 0)))
-	       (substring newsgroup 1))))
+  (when (not (zerop (length newsgroup)))
+    (concat (char-to-string (upcase (aref newsgroup 0)))
+	    (substring newsgroup 1))))
 
 (defun gnus-Numeric-save-name (newsgroup headers &optional last-file)
   "Generate file name from NEWSGROUP, HEADERS, and optional LAST-FILE.
@@ -806,41 +807,41 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	    ;; The result from the `request' was an actual article -
 	    ;; or at least some text that is now displayed in the
 	    ;; article buffer.
-	    (if (and (numberp article)
-		     (not (eq article gnus-current-article)))
-		;; Seems like a new article has been selected.
-		;; `gnus-current-article' must be an article number.
-		(save-excursion
-		  (set-buffer summary-buffer)
-		  (setq gnus-last-article gnus-current-article
-			gnus-newsgroup-history (cons gnus-current-article
-						     gnus-newsgroup-history)
-			gnus-current-article article
-			gnus-current-headers
-			(gnus-summary-article-header gnus-current-article)
-			gnus-article-current
-			(cons gnus-newsgroup-name gnus-current-article))
-		  (unless (vectorp gnus-current-headers)
-		    (setq gnus-current-headers nil))
-		  (gnus-summary-show-thread)
-		  (run-hooks 'gnus-mark-article-hook)
-		  (gnus-set-mode-line 'summary)
-		  (and (gnus-visual-p 'article-highlight 'highlight)
-		       (run-hooks 'gnus-visual-mark-article-hook))
-		  ;; Set the global newsgroup variables here.
-		  ;; Suggested by Jim Sisolak
-		  ;; <sisolak@trans4.neep.wisc.edu>.
-		  (gnus-set-global-variables)
-		  (setq gnus-have-all-headers
-			(or all-headers gnus-show-all-headers))
-		  (and gnus-use-cache
-		       (vectorp (gnus-summary-article-header article))
-		       (gnus-cache-possibly-enter-article
-			group article
-			(gnus-summary-article-header article)
-			(memq article gnus-newsgroup-marked)
-			(memq article gnus-newsgroup-dormant)
-			(memq article gnus-newsgroup-unreads)))))
+	    (when (and (numberp article)
+		       (not (eq article gnus-current-article)))
+	      ;; Seems like a new article has been selected.
+	      ;; `gnus-current-article' must be an article number.
+	      (save-excursion
+		(set-buffer summary-buffer)
+		(setq gnus-last-article gnus-current-article
+		      gnus-newsgroup-history (cons gnus-current-article
+						   gnus-newsgroup-history)
+		      gnus-current-article article
+		      gnus-current-headers
+		      (gnus-summary-article-header gnus-current-article)
+		      gnus-article-current
+		      (cons gnus-newsgroup-name gnus-current-article))
+		(unless (vectorp gnus-current-headers)
+		  (setq gnus-current-headers nil))
+		(gnus-summary-show-thread)
+		(run-hooks 'gnus-mark-article-hook)
+		(gnus-set-mode-line 'summary)
+		(when (gnus-visual-p 'article-highlight 'highlight)
+		  (run-hooks 'gnus-visual-mark-article-hook))
+		;; Set the global newsgroup variables here.
+		;; Suggested by Jim Sisolak
+		;; <sisolak@trans4.neep.wisc.edu>.
+		(gnus-set-global-variables)
+		(setq gnus-have-all-headers
+		      (or all-headers gnus-show-all-headers))
+		(and gnus-use-cache
+		     (vectorp (gnus-summary-article-header article))
+		     (gnus-cache-possibly-enter-article
+		      group article
+		      (gnus-summary-article-header article)
+		      (memq article gnus-newsgroup-marked)
+		      (memq article gnus-newsgroup-dormant)
+		      (memq article gnus-newsgroup-unreads)))))
 	    (when (or (numberp article)
 		      (stringp article))
 	      ;; Hooks for getting information from the article.
@@ -849,16 +850,17 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		(run-hooks 'internal-hook)
 		(run-hooks 'gnus-article-prepare-hook)
 		;; Decode MIME message.
-		(if gnus-show-mime
-		    (if (or (not gnus-strict-mime)
-			    (gnus-fetch-field "Mime-Version"))
-			(funcall gnus-show-mime-method)
-		      (funcall gnus-decode-encoded-word-method)))
+		(when gnus-show-mime
+		  (if (or (not gnus-strict-mime)
+			  (gnus-fetch-field "Mime-Version"))
+		      (funcall gnus-show-mime-method)
+		    (funcall gnus-decode-encoded-word-method)))
 		;; Perform the article display hooks.
 		(run-hooks 'gnus-article-display-hook))
 	      ;; Do page break.
 	      (goto-char (point-min))
-	      (and gnus-break-pages (gnus-narrow-to-page)))
+	      (when gnus-break-pages
+		(gnus-narrow-to-page)))
 	    (gnus-set-mode-line 'article)
 	    (gnus-configure-windows 'article)
 	    (goto-char (point-min))
@@ -913,7 +915,7 @@ Provided for backwards compatibility."
 		  (set-buffer file-buffer)
 		  (rmail-insert-rmail-file-header)
 		  (let ((require-final-newline nil))
-		    (write-region (point-min) (point-max) file-name t 1)))
+		    (gnus-write-buffer file-name)))
 		(kill-buffer file-buffer))
 	    (error "Output file does not exist")))
       (set-buffer tmpbuf)
@@ -931,19 +933,18 @@ Provided for backwards compatibility."
 		(msg (and (boundp 'rmail-current-message)
 			  (symbol-value 'rmail-current-message))))
 	    ;; If MSG is non-nil, buffer is in RMAIL mode.
-	    (if msg
-		(progn (widen)
-		       (narrow-to-region (point-max) (point-max))))
+	    (when msg
+	      (widen)
+	      (narrow-to-region (point-max) (point-max)))
 	    (insert-buffer-substring tmpbuf)
-	    (if msg
-		(progn
-		  (goto-char (point-min))
-		  (widen)
-		  (search-backward "\^_")
-		  (narrow-to-region (point) (point-max))
-		  (goto-char (1+ (point-min)))
-		  (rmail-count-new-messages t)
-		  (rmail-show-message msg)))))))
+	    (when msg
+	      (goto-char (point-min))
+	      (widen)
+	      (search-backward "\^_")
+	      (narrow-to-region (point) (point-max))
+	      (goto-char (1+ (point-min)))
+	      (rmail-count-new-messages t)
+	      (rmail-show-message msg))))))
     (kill-buffer tmpbuf)))
 
 (defun gnus-output-to-file (file-name)
@@ -1173,8 +1174,8 @@ If given a prefix, show the hidden text instead."
 
 (defun gnus-article-maybe-highlight ()
   "Do some article highlighting if `article-visual' is non-nil."
-  (if (gnus-visual-p 'article-highlight 'highlight)
-      (gnus-article-highlight-some)))
+  (when (gnus-visual-p 'article-highlight 'highlight)
+    (gnus-article-highlight-some)))
 
 (defun gnus-request-article-this-buffer (article group)
   "Get an article and insert it into this buffer."
@@ -1208,23 +1209,23 @@ If given a prefix, show the hidden text instead."
 	    (save-excursion
 	      (set-buffer gnus-summary-buffer)
 	      (let ((header (gnus-summary-article-header article)))
-		(if (< article 0)
-		    (cond 
-		     ((memq article gnus-newsgroup-sparse)
-		      ;; This is a sparse gap article.
-		      (setq do-update-line article)
-		      (setq article (mail-header-id header))
-		      (let ((gnus-override-method gnus-refer-article-method))
-			(gnus-read-header article))
-		      (setq gnus-newsgroup-sparse
-			    (delq article gnus-newsgroup-sparse)))
-		     ((vectorp header)
-		      ;; It's a real article.
-		      (setq article (mail-header-id header)))
-		     (t
-		      ;; It is an extracted pseudo-article.
-		      (setq article 'pseudo)
-		      (gnus-request-pseudo-article header))))
+		(when (< article 0)
+		  (cond 
+		   ((memq article gnus-newsgroup-sparse)
+		    ;; This is a sparse gap article.
+		    (setq do-update-line article)
+		    (setq article (mail-header-id header))
+		    (let ((gnus-override-method gnus-refer-article-method))
+		      (gnus-read-header article))
+		    (setq gnus-newsgroup-sparse
+			  (delq article gnus-newsgroup-sparse)))
+		   ((vectorp header)
+		    ;; It's a real article.
+		    (setq article (mail-header-id header)))
+		   (t
+		    ;; It is an extracted pseudo-article.
+		    (setq article 'pseudo)
+		    (gnus-request-pseudo-article header))))
 		
 		(let ((method (gnus-find-method-for-group 
 			       gnus-newsgroup-name)))
@@ -1232,10 +1233,9 @@ If given a prefix, show the hidden text instead."
 		      ()
 		    (let ((dir (concat (file-name-as-directory (nth 1 method))
 				       (mail-header-subject header))))
-		      (if (file-directory-p dir)
-			  (progn
-			    (setq article 'nneething)
-			    (gnus-group-enter-directory dir)))))))))
+		      (when (file-directory-p dir)
+			(setq article 'nneething)
+			(gnus-group-enter-directory dir))))))))
 
 	  (cond
 	   ;; Refuse to select canceled articles.
@@ -1545,7 +1545,8 @@ call it with the value of the `gnus-data' text property."
   (let* ((pos (posn-point (event-start event)))
          (data (get-text-property pos 'gnus-data))
 	 (fun (get-text-property pos 'gnus-callback)))
-    (if fun (funcall fun data))))
+    (when fun
+      (funcall fun data))))
 
 (defun gnus-article-press-button ()
   "Check text at point for a callback function.
@@ -1554,7 +1555,8 @@ call it with the value of the `gnus-data' text property."
   (interactive)
   (let* ((data (get-text-property (point) 'gnus-data))
 	 (fun (get-text-property (point) 'gnus-callback)))
-    (if fun (funcall fun data))))
+    (when fun
+      (funcall fun data))))
 
 (defun gnus-article-prev-button (n)
   "Move point to N buttons backward.
@@ -1640,8 +1642,8 @@ do the highlighting.  See the documentation for those functions."
 			(not (eobp)))
 	      (beginning-of-line)
 	      (setq from (point))
-	      (or (search-forward ":" nil t)
-		  (forward-char 1))
+	      (unless (search-forward ":" nil t)
+		(forward-char 1))
 	      (when (and header-face
 			 (not (memq (point) hpoints)))
 		(push (point) hpoints)
@@ -1742,11 +1744,11 @@ specified by `gnus-button-alist'."
 		   (end (match-end (nth 1 entry)))
 		   (form (nth 2 entry)))
 	      (goto-char (match-end 0))
-	      (and (eval form)
-		   (gnus-article-add-button 
-		    start end (nth 3 entry)
-		    (buffer-substring (match-beginning (nth 4 entry))
-				      (match-end (nth 4 entry)))))))
+	      (when (eval form)
+		(gnus-article-add-button 
+		 start end (nth 3 entry)
+		 (buffer-substring (match-beginning (nth 4 entry))
+				   (match-end (nth 4 entry)))))))
 	  (goto-char end))))
     (widen)))
 
@@ -1754,9 +1756,9 @@ specified by `gnus-button-alist'."
 
 (defun gnus-article-add-button (from to fun &optional data)
   "Create a button between FROM and TO with callback FUN and data DATA."
-  (and gnus-article-button-face
-       (gnus-overlay-put (gnus-make-overlay from to)
-			 'face gnus-article-button-face))
+  (when gnus-article-button-face
+    (gnus-overlay-put (gnus-make-overlay from to)
+		      'face gnus-article-button-face))
   (gnus-add-text-properties 
    from to
    (nconc (and gnus-article-mouse-face
@@ -1794,7 +1796,7 @@ specified by `gnus-button-alist'."
     (let* ((entry (gnus-button-entry))
 	   (inhibit-point-motion-hooks t)
 	   (fun (nth 3 entry))
-	   (args (mapcar (lambda (group) 
+	   (args (mapcar (lambda (group)
 			   (let ((string (buffer-substring
 					  (match-beginning group)
 					  (match-end group))))
@@ -1904,7 +1906,7 @@ specified by `gnus-button-alist'."
   (let ((win (selected-window)))
     (select-window (get-buffer-window gnus-article-buffer t))
     (gnus-article-prev-page)
-    (select-window win)))
+    (select-window win))) 
 
 (provide 'gnus-art)
 

@@ -240,7 +240,8 @@ The following commands are available:
       (when entry
 	(gnus-dribble-enter 
 	 (concat "(gnus-server-set-info \"" server "\" '"
-		 (prin1-to-string (cdr entry)) ")")))
+		 (prin1-to-string (cdr entry)) ")
+")))
       (when (or entry oentry)
 	;; Buffer may be narrowed.
 	(save-restriction
@@ -279,8 +280,7 @@ The following commands are available:
   (gnus-dribble-enter "")
   (let ((buffer-read-only nil))
     (gnus-delete-line))
-  (setq gnus-server-killed-servers 
-	(cons (assoc server gnus-server-alist) gnus-server-killed-servers))
+  (push (assoc server gnus-server-alist) gnus-server-killed-servers)
   (setq gnus-server-alist (delq (car gnus-server-killed-servers)
 				gnus-server-alist))
   (gnus-server-position-point))
@@ -288,15 +288,15 @@ The following commands are available:
 (defun gnus-server-yank-server ()
   "Yank the previously killed server."
   (interactive)
-  (or gnus-server-killed-servers
-      (error "No killed servers to be yanked"))
+  (unless gnus-server-killed-servers
+    (error "No killed servers to be yanked"))
   (let ((alist gnus-server-alist)
 	(server (gnus-server-server-name))
 	(killed (car gnus-server-killed-servers)))
-    (if (not server) 
+    (if (not server)
 	(setq gnus-server-alist (nconc gnus-server-alist (list killed)))
       (if (string= server (caar gnus-server-alist))
-	  (setq gnus-server-alist (cons killed gnus-server-alist))
+	  (push killed gnus-server-alist)
 	(while (and (cdr alist)
 		    (not (string= server (caadr alist))))
 	  (setq alist (cdr alist)))
@@ -340,7 +340,8 @@ The following commands are available:
   "Force an open of SERVER."
   (interactive (list (gnus-server-server-name)))
   (let ((method (gnus-server-to-method server)))
-    (or method (error "No such server: %s" server))
+    (unless method
+      (error "No such server: %s" server))
     (gnus-server-set-status method 'ok)
     (prog1
 	(or (gnus-open-server method)
@@ -359,7 +360,8 @@ The following commands are available:
   "Close SERVER."
   (interactive (list (gnus-server-server-name)))
   (let ((method (gnus-server-to-method server)))
-    (or method (error "No such server: %s" server))
+    (unless method
+      (error "No such server: %s" server))
     (gnus-server-set-status method 'closed)
     (prog1
 	(gnus-close-server method)
@@ -377,7 +379,8 @@ The following commands are available:
   "Make sure SERVER will never be attempted opened."
   (interactive (list (gnus-server-server-name)))
   (let ((method (gnus-server-to-method server)))
-    (or method (error "No such server: %s" server))
+    (unless method
+      (error "No such server: %s" server))
     (gnus-server-set-status method 'denied))
   (gnus-server-update-server server)
   (gnus-server-position-point)
@@ -396,19 +399,21 @@ The following commands are available:
 (defun gnus-server-copy-server (from to)
   (interactive
    (list
-    (or (gnus-server-server-name)
-	(error "No server on the current line"))
+    (unless (gnus-server-server-name)
+      (error "No server on the current line"))
     (read-string "Copy to: ")))
-  (or from (error "No server on current line"))
-  (or (and to (not (string= to ""))) (error "No name to copy to"))
-  (and (assoc to gnus-server-alist) (error "%s already exists" to))
-  (or (assoc from gnus-server-alist) 
-      (error "%s: no such server" from))
+  (unless from
+    (error "No server on current line"))
+  (unless (and to (not (string= to "")))
+    (error "No name to copy to"))
+  (when (assoc to gnus-server-alist)
+    (error "%s already exists" to))
+  (unless (assoc from gnus-server-alist)
+    (error "%s: no such server" from))
   (let ((to-entry (gnus-copy-sequence (assoc from gnus-server-alist))))
     (setcar to-entry to)
     (setcar (nthcdr 2 to-entry) to)
-    (setq gnus-server-killed-servers 
-	  (cons to-entry gnus-server-killed-servers))
+    (push to-entry gnus-server-killed-servers)
     (gnus-server-yank-server)))
 
 (defun gnus-server-add-server (how where)
@@ -416,20 +421,18 @@ The following commands are available:
    (list (intern (completing-read "Server method: "
 				  gnus-valid-select-methods nil t))
 	 (read-string "Server name: ")))
-  (setq gnus-server-killed-servers 
-	(cons (list where how where) gnus-server-killed-servers))
+  (push (list where how where) gnus-server-killed-servers)
   (gnus-server-yank-server))
 
 (defun gnus-server-goto-server (server)
   "Jump to a server line."
   (interactive
    (list (completing-read "Goto server: " gnus-server-alist nil t)))
-  (let ((to (text-property-any (point-min) (point-max) 
+  (let ((to (text-property-any (point-min) (point-max)
 			       'gnus-server (intern server))))
-    (and to
-	 (progn
-	   (goto-char to) 
-	   (gnus-server-position-point)))))
+    (when to
+      (goto-char to)
+      (gnus-server-position-point))))
 
 (defun gnus-server-edit-server (server)
   "Edit the server on the current line."
@@ -547,7 +550,8 @@ The following commands are available:
      (t
       (get-buffer-create gnus-browse-buffer)
       (gnus-add-current-to-buffer-list)
-      (and gnus-carpal (gnus-carpal-setup-buffer 'browse))
+      (when gnus-carpal
+	(gnus-carpal-setup-buffer 'browse))
       (gnus-configure-windows 'browse)
       (buffer-disable-undo (current-buffer))
       (let ((buffer-read-only nil))
@@ -561,14 +565,14 @@ The following commands are available:
 	(set-buffer nntp-server-buffer)
 	(let ((cur (current-buffer)))
 	  (goto-char (point-min))
-	  (or (string= gnus-ignored-newsgroups "")
-	      (delete-matching-lines gnus-ignored-newsgroups))
+	  (unless (string= gnus-ignored-newsgroups "")
+	    (delete-matching-lines gnus-ignored-newsgroups))
 	  (while (re-search-forward
 		  "\\(^[^ \t]+\\)[ \t]+[0-9]+[ \t]+[0-9]+" nil t)
 	    (goto-char (match-end 1))
-	    (setq groups (cons (cons (match-string 1)
-				     (max 0 (- (1+ (read cur)) (read cur))))
-			       groups)))))
+	    (push (cons (match-string 1)
+			(max 0 (- (1+ (read cur)) (read cur))))
+		  groups))))
       (setq groups (sort groups
 			 (lambda (l1 l2)
 			   (string< (car l1) (car l2)))))
@@ -654,7 +658,8 @@ buffer.
 		(zerop (gnus-browse-next-group ward)))
       (decf arg))
     (gnus-group-position-point)
-    (if (/= 0 arg) (gnus-message 7 "No more newsgroups"))
+    (when (/= 0 arg)
+      (gnus-message 7 "No more newsgroups"))
     arg))
 
 (defun gnus-browse-group-name ()
@@ -671,7 +676,8 @@ buffer.
     (save-excursion
       (beginning-of-line)
       ;; If this group it killed, then we want to subscribe it.
-      (if (= (following-char) ?K) (setq sub t))
+      (when (= (following-char) ?K)
+	(setq sub t))
       (setq group (gnus-browse-group-name))
       ;; Make sure the group has been properly removed before we
       ;; subscribe to it.

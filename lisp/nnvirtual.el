@@ -131,13 +131,13 @@ virtual group.")
 		      (insert "Xref: " system-name " " cgroup ":")
 		      (princ (caddr article) (current-buffer))
 		      (insert " ")
-		      (if (not (string= "" prefix))
-			  (while (re-search-forward 
-				  "[^ ]+:[0-9]+"
-				  (save-excursion (end-of-line) (point)) t)
-			    (save-excursion
-			      (goto-char (match-beginning 0))
-			      (insert prefix))))
+		      (when (not (string= "" prefix))
+			(while (re-search-forward 
+				"[^ ]+:[0-9]+"
+				(save-excursion (end-of-line) (point)) t)
+			  (save-excursion
+			    (goto-char (match-beginning 0))
+			    (insert prefix))))
 		      (end-of-line)
 		      (or (= (char-after (1- (point))) ?\t)
 			  (insert ?\t)))
@@ -250,7 +250,7 @@ virtual group.")
     (nnvirtual-update-marked))
   t)
     
-(deffoo nnvirtual-request-list (&optional server) 
+(deffoo nnvirtual-request-list (&optional server)
   (nnheader-report 'nnvirtual "LIST is not implemented."))
 
 (deffoo nnvirtual-request-newgroups (date &optional server)
@@ -394,10 +394,10 @@ virtual group.")
 		     (when gnus-use-cache
 		       (push (cons 'cache (gnus-cache-articles-in-group g))
 			     marks))
-		     (setq div (/ (float (car active)) 
+		     (setq div (/ (float (car active))
 				  (if (zerop (cdr active))
 				      1 (cdr active))))
-		     (mapcar (lambda (n) 
+		     (mapcar (lambda (n)
 			       (list (* div (- n (car active)))
 				     g n (and (memq n unreads) t)
 				     (inline (nnvirtual-marks n marks))))

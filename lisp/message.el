@@ -92,7 +92,8 @@ Don't touch this variable unless you really know what you're doing.
 
 Checks include subject-cmsg multiple-headers sendsys message-id from
 long-lines control-chars size new-text redirected-followup signature
-approved sender empty empty-headers message-id from subject.")
+approved sender empty empty-headers message-id from subject
+shorten-followup-to existing-newsgroups.")
 
 ;;;###autoload
 (defvar message-required-news-headers

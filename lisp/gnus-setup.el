@@ -80,8 +80,8 @@
 (let ((gnus-directory (if gnus-use-september
 			  gnus-sgnus-lisp-directory
 			gnus-gnus-lisp-directory)))
-  (if (null (member gnus-directory load-path))
-      (setq load-path (cons gnus-directory load-path))))
+  (when (null (member gnus-directory load-path))
+    (push gnus-directory load-path)))
 
 ;;; We can't do this until we know where Gnus is.
 (require 'message)
@@ -90,80 +90,71 @@
 ;;; UMEDA Masanobu <umerin@mse.kyutech.ac.jp>
 ;;; MORIOKA Tomohiko <morioka@jaist.ac.jp>
 
-(if gnus-use-tm
-    (progn
-      (if (null (member gnus-tm-lisp-directory load-path))
- 	  (setq load-path (cons gnus-tm-lisp-directory load-path)))
-       (load "mime-setup")))
+(when gnus-use-tm
+  (when (null (member gnus-tm-lisp-directory load-path))
+    (setq load-path (cons gnus-tm-lisp-directory load-path)))
+  (load "mime-setup"))
 
 ;;; Mailcrypt by
 ;;; Jin Choi <jin@atype.com>
 ;;; Patrick LoPresti <patl@lcs.mit.edu>
 
-(if gnus-use-mailcrypt
-    (progn
-      (if (null (member gnus-mailcrypt-lisp-directory load-path))
- 	  (setq load-path (cons gnus-mailcrypt-lisp-directory load-path)))
-      (autoload 'mc-install-write-mode "mailcrypt" nil t)
-      (autoload 'mc-install-read-mode "mailcrypt" nil t)
-      (add-hook 'message-mode-hook 'mc-install-write-mode)
-      (add-hook 'gnus-summary-mode-hook 'mc-install-read-mode)
-      (if gnus-use-mhe
-	  (progn
-	    (add-hook 'mh-folder-mode-hook 'mc-install-read-mode)
- 	    (add-hook 'mh-letter-mode-hook 'mc-install-write-mode)))))
+(when gnus-use-mailcrypt
+  (when (null (member gnus-mailcrypt-lisp-directory load-path))
+    (setq load-path (cons gnus-mailcrypt-lisp-directory load-path)))
+  (autoload 'mc-install-write-mode "mailcrypt" nil t)
+  (autoload 'mc-install-read-mode "mailcrypt" nil t)
+  (add-hook 'message-mode-hook 'mc-install-write-mode)
+  (add-hook 'gnus-summary-mode-hook 'mc-install-read-mode)
+  (when gnus-use-mhe
+    (add-hook 'mh-folder-mode-hook 'mc-install-read-mode)
+    (add-hook 'mh-letter-mode-hook 'mc-install-write-mode)))
 
 ;;; BBDB by
 ;;; Jamie Zawinski <jwz@lucid.com>
 
-(if gnus-use-bbdb
-    (progn
-      (if (null (member gnus-bbdb-lisp-directory load-path))
- 	  (setq load-path (cons gnus-bbdb-lisp-directory load-path)))
-      (autoload 'bbdb "bbdb-com"
-	"Insidious Big Brother Database" t)
-      (autoload 'bbdb-name "bbdb-com"
-	"Insidious Big Brother Database" t)
-      (autoload 'bbdb-company "bbdb-com"
-	"Insidious Big Brother Database" t)
-      (autoload 'bbdb-net "bbdb-com"
-	"Insidious Big Brother Database" t)
-      (autoload 'bbdb-notes "bbdb-com"
-	"Insidious Big Brother Database" t)
+(when gnus-use-bbdb
+  (when (null (member gnus-bbdb-lisp-directory load-path))
+    (setq load-path (cons gnus-bbdb-lisp-directory load-path)))
+  (autoload 'bbdb "bbdb-com"
+    "Insidious Big Brother Database" t)
+  (autoload 'bbdb-name "bbdb-com"
+    "Insidious Big Brother Database" t)
+  (autoload 'bbdb-company "bbdb-com"
+    "Insidious Big Brother Database" t)
+  (autoload 'bbdb-net "bbdb-com"
+    "Insidious Big Brother Database" t)
+  (autoload 'bbdb-notes "bbdb-com"
+    "Insidious Big Brother Database" t)
 
-      (if gnus-use-vm
-	  (progn
-	    (autoload 'bbdb-insinuate-vm "bbdb-vm"
-	      "Hook BBDB into VM" t)))
+  (when gnus-use-vm
+    (autoload 'bbdb-insinuate-vm "bbdb-vm"
+      "Hook BBDB into VM" t))
 
-      (if gnus-use-rmail
-	  (progn
-	    (autoload 'bbdb-insinuate-rmail "bbdb-rmail"
-	      "Hook BBDB into RMAIL" t)
-	    (add-hook 'rmail-mode-hook 'bbdb-insinuate-rmail)))
+  (when gnus-use-rmail
+    (autoload 'bbdb-insinuate-rmail "bbdb-rmail"
+      "Hook BBDB into RMAIL" t)
+    (add-hook 'rmail-mode-hook 'bbdb-insinuate-rmail))
 
-      (if gnus-use-mhe
-	  (progn
-	    (autoload 'bbdb-insinuate-mh "bbdb-mh"
-	      "Hook BBDB into MH-E" t)
-	    (add-hook 'mh-folder-mode-hook 'bbdb-insinuate-mh)))
+  (when gnus-use-mhe
+    (autoload 'bbdb-insinuate-mh "bbdb-mh"
+      "Hook BBDB into MH-E" t)
+    (add-hook 'mh-folder-mode-hook 'bbdb-insinuate-mh))
 
-      (autoload 'bbdb-insinuate-gnus "bbdb-gnus"
-	"Hook BBDB into Gnus" t)
-      (add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
+  (autoload 'bbdb-insinuate-gnus "bbdb-gnus"
+    "Hook BBDB into Gnus" t)
+  (add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
 
-      (if gnus-use-sendmail
-	  (progn
-	    (autoload 'bbdb-insinuate-sendmail "bbdb"
-	      "Insidious Big Brother Database" t)
-	    (add-hook 'mail-setup-hook 'bbdb-insinuate-sendmail)
-	    (add-hook 'message-setup-hook 'bbdb-insinuate-sendmail)))))
+  (when gnus-use-sendmail
+    (autoload 'bbdb-insinuate-sendmail "bbdb"
+      "Insidious Big Brother Database" t)
+    (add-hook 'mail-setup-hook 'bbdb-insinuate-sendmail)
+    (add-hook 'message-setup-hook 'bbdb-insinuate-sendmail)))
 
-(if gnus-use-sc
-    (progn
-      (add-hook 'mail-citation-hook 'sc-cite-original)
-      (setq message-cite-function 'sc-cite-original)
-      (autoload 'sc-cite-original "supercite")))
+(when gnus-use-sc
+  (add-hook 'mail-citation-hook 'sc-cite-original)
+  (setq message-cite-function 'sc-cite-original)
+  (autoload 'sc-cite-original "supercite"))
 
 ;;;### (autoloads (gnus-batch-score gnus-fetch-group gnus gnus-slave gnus-no-server gnus-update-format) "gnus" "lisp/gnus.el" (12473 2137))
 ;;; Generated autoloads from lisp/gnus.el

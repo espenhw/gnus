@@ -219,8 +219,8 @@
 
 (defun nndraft-execute-nnmh-command (command)
   (let ((dir (expand-file-name nndraft-directory)))
-    (and (string-match "/$" dir)
-	 (setq dir (substring dir 0 (match-beginning 0))))
+    (when (string-match "/$" dir)
+      (setq dir (substring dir 0 (match-beginning 0))))
     (string-match "/[^/]+$" dir)
     (let ((group (substring dir (1+ (match-beginning 0))))
           (nnmh-directory (substring dir 0 (1+ (match-beginning 0))))
