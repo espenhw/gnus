@@ -1,3 +1,8 @@
+2004-02-10  Jesper Harder  <harder@ifa.au.dk>
+
+	* nnrss.el (nnrss-read-group-data): Initialize nnrss-group-hashtb
+	if necessary.
+
 2004-02-09  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam-report.el (spam-report-unplug-agent)
