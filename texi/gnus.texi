@@ -10548,15 +10548,17 @@ An example IMAP mail source:
 @end lisp
 
 @item webmail
-Get mail from a webmail server, such as www.hotmail.com and
-mail.yahoo.com.
+Get mail from a webmail server, such as www.hotmail.com, 
+mail.yahoo.com, and www.netaddress.com. 
+
+WARNING: Mails may lost. NO WARRANTY.
 
 Keywords:
 
 @table @code
 @item :subtype
 The type of the webmail server.  The default is @code{hotmail}. The
-alternative is @code{yahoo}.
+alternatives are @code{yahoo}, @code{netaddress}.
 
 @item :user
 The user name to give to the webmail server.  The default is the login

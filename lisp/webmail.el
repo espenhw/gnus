@@ -26,7 +26,7 @@
 ;; Note: You need to have `url' and `w3' installed for this backend to
 ;; work.
 
-;; Todo: To support more web mail.
+;; Todo: To support more web mail servers.
 
 ;; Known bugs: 
 ;; 1. In w3, there are two copies of url-maybe-relative.
@@ -35,9 +35,10 @@
 ;; 2. Hotmail only accept one line cookie, while w3 breaks cookies 
 ;;    into lines.
 ;;    Maybe fixed in w3 4.0pre47+?.
+;; 3. Net@ddress may corrupt `X-Face'.
 
 ;; Warning:
-;; webmail is an experimental function, which means NO WARRANTY.
+;; Webmail is an experimental function, which means NO WARRANTY.
 
 ;;; Code:
 
@@ -97,7 +98,26 @@
      (article-snarf . webmail-yahoo-article)
      (trash-url 
       "%s/ym/us/ShowFolder?YY=52107&inc=50&order=down&sort=date&pos=0&box=Inbox&DEL=Delete&destBox=&Mid=%s&destBox2="
-      webmail-aux id))))
+      webmail-aux id))
+    (netaddress
+     (paranoid cookie post)
+     (address . "www.netaddress.com")
+     (open-url "http://www.netaddress.com")
+     (open-snarf . webmail-netaddress-open)
+     (login-url ;; yahoo will not accept GET
+      content 
+      ("%s" webmail-aux)
+      "LoginState=2&SuccessfulLogin=%%2Ftpl&NewServerName=www.netaddress.com&JavaScript=JavaScript1.2&DomainID=4&NA31site=classic.netaddress.com&NA31port=80&UserID=%s&passwd=%s" 
+      user password)
+     (login-snarf . webmail-netaddress-login)
+     (list-url 
+      "http://www.netaddress.com/tpl/Mail/%s/List?FolderID=-4&SortUseCase=True"
+      webmail-session)
+     (list-snarf . webmail-netaddress-list)
+     (article-snarf . webmail-netaddress-article)
+     (trash-url 
+      "http://www.netaddress.com/tpl/Message/%s/Move?FolderID=-4&Q=%s&N=&Sort=Date&F=-1"
+      webmail-session id))))
 
 (defvar webmail-variables
   '(address article-snarf article-url list-snarf list-url 
@@ -117,6 +137,7 @@
 (defvar webmail-address nil)
 (defvar webmail-paranoid nil)
 (defvar webmail-aux nil)
+(defvar webmail-session nil)
 (defvar webmail-article-snarf nil)
 (defvar webmail-article-url nil)
 (defvar webmail-list-snarf nil)
@@ -247,6 +268,15 @@
     t)
    (t (error prompt))))
 
+(defun webmail-refresh-redirect ()
+  "Redirect refresh url in META."
+  (goto-char (point-min))
+  (while (re-search-forward "HTTP-EQUIV=\"Refresh\"[^>]*URL=\\([^\"]+\\)\""
+			   nil t)
+    (let ((url (match-string 1)))
+      (erase-buffer)
+      (nnweb-insert url))
+    (goto-char (point-min))))
 
 (defun webmail-fetch (file subtype user password)
   (save-excursion
@@ -267,6 +297,7 @@
 	  url-cookie-confirmation
 	  item id (n 0))
       (webmail-init)
+      (setq webmail-articles nil)
       (when webmail-open-url 
 	(erase-buffer)
 	(webmail-url webmail-open-url))
@@ -482,29 +513,29 @@
 
 (defun webmail-yahoo-article (file id)
   (let (p attachment)
-	(save-restriction
-	  (goto-char (point-min))
-	  (if (not (search-forward "value=\"Done\"" nil t))
-	      (error "Can't find start label (article@1)"))
-	  (if (not (search-forward "<table" nil t))
-	      (error "Can't find start label (article@2)"))
-	  (delete-region (point-min) (match-beginning 0)) 
-	  (if (not (search-forward "</table>" nil t))
-	      (error "Can't find start label (article@3)"))
-	  (narrow-to-region (point-min) (match-end 0))
-	  (while (search-forward "<a href=" nil t)
-	    (setq p (match-beginning 0))
-	    (search-forward "</a>" nil t)
-	    (delete-region p (match-end 0)))
-	  (webmail-remove-markup)
-	  (webmail-decode-entities)
-	  (goto-char (point-min))
-	  (delete-blank-lines)
-	  (goto-char (point-max))
-	  (widen)
-	  (insert "\n")
-	  (setq p (point))
-	  (while (re-search-forward "[^\"]*/ShowLetter/[^\?]+\?[^\"]*" nil t)
+    (save-restriction
+      (goto-char (point-min))
+      (if (not (search-forward "value=\"Done\"" nil t))
+	  (error "Can't find start label (article@1)"))
+      (if (not (search-forward "<table" nil t))
+	  (error "Can't find start label (article@2)"))
+      (delete-region (point-min) (match-beginning 0)) 
+      (if (not (search-forward "</table>" nil t))
+	  (error "Can't find start label (article@3)"))
+      (narrow-to-region (point-min) (match-end 0))
+      (while (search-forward "<a href=" nil t)
+	(setq p (match-beginning 0))
+	(search-forward "</a>" nil t)
+	(delete-region p (match-end 0)))
+      (webmail-remove-markup)
+      (webmail-decode-entities)
+      (goto-char (point-min))
+      (delete-blank-lines)
+      (goto-char (point-max))
+      (widen)
+      (insert "\n")
+      (setq p (point))
+      (while (re-search-forward "[^\"]*/ShowLetter/[^\?]+\?[^\"]*" nil t)
 	(setq attachment (match-string 0))
 	(let (bufname ct ctl cd description)
 	  (if (not (search-forward "<table" nil t))
@@ -556,6 +587,181 @@
 		(delete-region (point-min) (point-max))))
       (goto-char (point-min))
       (widen)
+      (let (case-fold-search)
+	(while (re-search-forward "^From " nil t)
+	  (beginning-of-line)
+	  (insert ">"))))
+    (mm-append-to-file (point-min) (point-max) file)))
+
+;;; netaddress
+
+(defun webmail-netaddress-open ()
+  (goto-char (point-min))
+  (if (re-search-forward "action=\"\\([^\"]+\\)\"" nil t)
+      (setq webmail-aux (concat (car webmail-open-url) (match-string 1)))
+    (error "Can't find login url (open@1)")))
+
+(defun webmail-netaddress-login ()
+  (webmail-refresh-redirect)
+  (goto-char (point-min))
+  (if (re-search-forward  "tpl/[^/]+/\\([^/]+\\)" nil t)
+      (setq webmail-session (match-string 1))
+    (error "Can't find login url (login@1)")))
+
+(defun webmail-netaddress-list ()
+  (let (item id)
+    (goto-char (point-min))
+    (when (re-search-forward 
+	   "(\\([0-9]+\\) unread, \\([0-9]+\\) total)" nil t) 
+      (message "Found %s mail(s), %s unread" 
+	       (match-string 2) (match-string 1)))
+    (goto-char (point-min))
+    (while (re-search-forward 
+	    "MR\\[i\\]\\.R='\\([^']*\\)'\\|MR\\[i\\]\\.Q='\\([^']+\\)'" nil t)
+      (if (setq id (match-string 2))
+	  (setq item 
+		(cons id 
+		      (format "%s/tpl/Message/%s/Read?Q=%s&FolderID=-4&SortUseCase=True&Sort=Date&Headers=True"
+			      (car webmail-open-url)
+			       webmail-session id)))
+	(if (or (not webmail-newmail-only)
+		(equal (match-string 1) "True"))
+	    (push item webmail-articles))))))
+
+(defun webmail-netaddress-single-part ()
+  (goto-char (point-min))
+  (cond 
+   ((looking-at "[\t\040\r\n]*<font face=[^>]+>[\t\040\r\n]*")
+    ;; text/plain
+    (replace-match "")
+    (while (re-search-forward "[\t\040\r\n]+" nil t)
+      (replace-match " "))
+    (goto-char (point-min))
+    (while (re-search-forward "<br>" nil t)
+	(replace-match "\n"))
+    (webmail-remove-markup)
+    (webmail-decode-entities) 
+    nil)
+   (t
+    (insert "<#part type=\"text/html\" disposition=inline>")
+    (goto-char (point-max))
+    (insert "<#/part>")
+    t)))
+
+(defun webmail-netaddress-article (file id)
+  (let (p p1 attachment count mime type)
+    (save-restriction
+      (goto-char (point-min))
+      (if (not (search-forward "Trash" nil t))
+	  (error "Can't find start label (article@1)"))
+      (if (not (search-forward "<form>" nil t))
+	  (error "Can't find start label (article@2)"))
+      (delete-region (point-min) (match-beginning 0)) 
+      (if (not (search-forward "</form>" nil t))
+	  (error "Can't find start label (article@3)"))
+      (narrow-to-region (point-min) (match-end 0))
+      (goto-char (point-min))
+      (while (re-search-forward "[\040\t\r\n]+" nil t)
+	(replace-match " "))
+      (goto-char (point-min))
+      (while (search-forward "<b>" nil t)
+	(replace-match "\n"))
+      (webmail-remove-markup)
+      (webmail-decode-entities)
+      (goto-char (point-min))
+      (delete-blank-lines)
+      (goto-char (point-min))
+      (while (re-search-forward "^\040+\\|\040+$" nil t)
+	(replace-match ""))
+      (goto-char (point-min))
+      (while (re-search-forward "\040+" nil t)
+	(replace-match " "))
+      (goto-char (point-max))
+      (widen)
+      (insert "\n\n")
+      (setq p (point))
+      (unless (search-forward "<!-- Data -->" nil t)
+	(error "Can't find start label (article@4)"))
+      (forward-line 14)
+      (delete-region p (point))
+      (goto-char (point-max))
+      (unless (re-search-backward 
+	       "[\040\t]*<br>[\040\t\r\n]*<br>[\040\t\r\n]*<form" p t)
+	(error "Can't find end label (article@5)"))
+      (delete-region (point) (point-max))
+      (goto-char p)
+      (while (search-forward
+	      "<TABLE border=\"0\" WIDTH=\"98%\" cellpadding=0 cellspacing=0>"
+	      nil t 2)
+	(setq mime t)
+	(unless (search-forward "</TABLE>" nil t)
+	  (error "Can't find end label (article@6)"))
+	(setq p1 (point))
+	(if (search-backward "<IMG " p t)
+	    (progn
+	      (unless (re-search-forward "HREF=\"\\(/tpl/Attachment/[^/]+/\\([^/]+/[^\?]+\\)[^\"]+\\)\"" p1 t)
+		(error "Can't find tag (article@7)"))
+	      (setq attachment (match-string 1))
+	      (setq type (match-string 2))
+	      (unless (search-forward "</TABLE>" nil t)
+		(error "Can't find end label (article@8)"))
+	      (delete-region p (point))
+	      (let (bufname) ;; Attachment
+		(save-excursion
+		  (set-buffer (generate-new-buffer " *webmail-att*"))
+		  (nnweb-insert (concat (car webmail-open-url) attachment))
+		  (push (current-buffer) webmail-buffer-list)
+		  (setq bufname (buffer-name)))
+		(insert "<#part type=" type)
+		(insert " buffer=\"" bufname "\"")
+		(insert " disposition=\"inline\"")
+		(insert "><#/part>\n")
+		(setq p (point))))
+	  (delete-region p p1)
+	  (narrow-to-region 
+	   p
+	   (if (search-forward 
+		"<TABLE border=\"0\" WIDTH=\"98%\" cellpadding=0 cellspacing=0>"
+		nil t)
+	       (match-beginning 0)
+	     (point-max)))
+	  (webmail-netaddress-single-part)
+	  (goto-char (point-max))
+	  (setq p (point))
+	  (widen)))
+      (unless mime
+	  (narrow-to-region p (point-max))
+	  (setq mime (webmail-netaddress-single-part))
+	  (widen))
+      (goto-char (point-min))
+      ;; Some blank line to seperate mails.
+      (insert "\n\nFrom nobody " (current-time-string) "\n")
+      (if id
+	  (insert "Message-ID: <" id "@usa.net>\n"))
+      (unless (looking-at "$") 
+	(search-forward "\n\n" nil t)
+	(forward-line -1))
+      (when mime
+	(narrow-to-region (point-min) (point))
+	(goto-char (point-min))
+	(while (not (eobp))
+	  (if (looking-at "MIME-Version\\|Content-Type")
+	      (delete-region (point) 
+			     (progn
+			       (forward-line 1)
+			       (if (re-search-forward "^[^ \t]" nil t)
+				   (goto-char (match-beginning 0))
+				 (point-max))))
+	    (forward-line 1)))
+	(goto-char (point-max))
+	(widen)
+	(narrow-to-region (point) (point-max))
+	(insert "MIME-Version: 1.0\n"
+		(prog1
+		    (mml-generate-mime)
+		  (delete-region (point-min) (point-max))))
+	(goto-char (point-min))
+	(widen))
       (let (case-fold-search)
 	(while (re-search-forward "^From " nil t)
 	  (beginning-of-line)
