@@ -1,3 +1,8 @@
+2000-08-19  Andreas Jaeger  <aj@suse.de>
+
+	* lpath.el ((string-match "XEmacs" emacs-version)): Remove
+	subst-char-in-string since we test elsewhere whether it's bound.
+	
 2000-08-18  Dave Love  <fx@gnu.org>
 
 	* gnus-score.el (gnus-score-find-score-files-function): Fix doc,
