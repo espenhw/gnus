@@ -4962,23 +4962,20 @@ or a straight list of headers."
 		  gnus-list-identifiers))
 	changed subject)
     (when regexp
+      (setq regexp (concat "^\\(?:R[Ee]: +\\)*\\(" regexp " *\\)"))
       (dolist (header gnus-newsgroup-headers)
 	(setq subject (mail-header-subject header)
 	      changed nil)
-	(while (string-match
-		(concat "^\\(R[Ee]: +\\)*\\(" regexp " *\\)")
-		subject)
-	  (setq subject
-		(concat (substring subject 0 (match-beginning 2))
-			(substring subject (match-end 0)))
-		changed t))
-	(when (and changed
-		   (string-match
-		    "^\\(\\(R[Ee]: +\\)+\\)R[Ee]: +" subject))
+	(while (string-match regexp subject)
 	  (setq subject
 		(concat (substring subject 0 (match-beginning 1))
-			(substring subject (match-end 1)))))
+			(substring subject (match-end 0)))
+		changed t))
 	(when changed
+	  (when (string-match "^\\(\\(?:R[Ee]: +\\)+\\)R[Ee]: +" subject)
+	    (setq subject
+		  (concat (substring subject 0 (match-beginning 1))
+			  (substring subject (match-end 1)))))
 	  (mail-header-set-subject header subject))))))
 
 (defun gnus-fetch-headers (articles)

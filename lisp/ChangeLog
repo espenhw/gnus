@@ -1,3 +1,8 @@
+2004-01-11  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-summary-remove-list-identifiers): Don't cons
+	a new string in every iteration.  Use shy groups.
+
 2004-01-10  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-start.el (gnus-subscribe-newsgroup, gnus-start-draft-setup)
