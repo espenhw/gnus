@@ -178,7 +178,9 @@
     ("application/pkcs7-signature" ignore identity)
     ("multipart/alternative" ignore identity)
     ("multipart/mixed" ignore identity)
-    ("multipart/related" ignore identity))
+    ("multipart/related" ignore identity)
+    ;; Default to displaying as text
+    (".*" mm-inline-text identity))
   "Alist of media types/tests saying whether types can be displayed inline."
   :type '(repeat (list (string :tag "MIME type")
 		       (function :tag "Display function")
@@ -192,8 +194,7 @@
     "application/pkcs7-signature")
   "List of media types that are to be displayed inline.
 See also `mm-inline-media-tests', which says how to display a media
-type inline.  If no media test is defined, the default is to treat the
-type as plain text."
+type inline."
   :type '(repeat string)
   :group 'mime-display)
 
@@ -541,7 +542,8 @@ external if displayed external."
 	(mm-remove-part handle)
       (let* ((type (mm-handle-media-type handle))
 	     (method (mailcap-mime-info type)))
-	(if (mm-inlined-p handle)
+	(if (and (mm-inlinable-p handle)
+		 (mm-inlined-p handle))
 	    (progn
 	      (forward-line 1)
 	      (mm-display-inline handle)
@@ -744,7 +746,7 @@ external if displayed external."
 (defun mm-display-inline (handle)
   (let* ((type (mm-handle-media-type handle))
 	 (function (cadr (mm-assoc-string-match mm-inline-media-tests type))))
-    (funcall (or function #'mm-inline-text) handle)
+    (funcall function handle)
     (goto-char (point-min))))
 
 (defun mm-assoc-string-match (alist type)
@@ -764,8 +766,21 @@ external if displayed external."
 	      methods nil)))
     result))
 
+(defun mm-inlinable-p (handle)
+  "Say whether HANDLE can be displayed inline."
+  (let ((alist mm-inline-media-tests)
+	(type (mm-handle-media-type handle))
+	test)
+    (while alist
+      (when (string-match (caar alist) type)
+	(setq test (caddar alist)
+	      alist nil)
+	(setq test (funcall test handle)))
+      (pop alist))
+    test))
+
 (defun mm-inlined-p (handle)
-  "Say whether the user wants HANDLE to be displayed automatically."
+  "Say whether the user wants HANDLE to be displayed inline."
   (let ((methods mm-inlined-types)
 	(type (mm-handle-media-type handle))
 	method result)
@@ -783,7 +798,8 @@ external if displayed external."
 	ty)
     (catch 'found
       (while (setq ty (pop types))
-	(when (string-match ty type)
+	(when (and (string-match ty type)
+		   (mm-inlinable-p ty))
 	  (throw 'found t))))))
 
 (defun mm-inline-override-p (handle)
