@@ -1,8 +1,8 @@
-;;; starttls.el --- TLSv1 functions
+;;; starttls.el --- STARTTLS functions
 
-;; Copyright (C) 1999 Daiki Ueno
+;; Copyright (C) 1999, 2000 Free Software Foundation, Inc.
 
-;; Author: Daiki Ueno <ueno@ueda.info.waseda.ac.jp>
+;; Author: Daiki Ueno <ueno@unixuser.org>
 ;; Created: 1999/11/20
 ;; Keywords: TLS, SSL, OpenSSL
 
@@ -25,11 +25,7 @@
 
 ;;; Commentary:
 
-;; This module defines some utility functions for TLSv1 functions.
-
-;; [RFC 2246] "The TLS Protocol Version 1.0"
-;;	by Christopher Allen <callen@certicom.com> and 
-;;	Tim Dierks <tdierks@certicom.com> (1999/01)
+;; This module defines some utility functions for STARTTLS profiles.
 
 ;; [RFC 2595] "Using TLS with IMAP, POP3 and ACAP"
 ;;	by Chris Newman <chris.newman@innosoft.com> (1999/06)
@@ -65,9 +61,8 @@ BUFFER is the buffer (or `buffer-name') to associate with the process.
 Third arg is name of the host to connect to, or its IP address.
 Fourth arg SERVICE is name of the service desired, or an integer
 specifying a port number to connect to."
-
   (let* ((process-connection-type nil)
-	 (process (apply #'start-process 
+	 (process (apply #'start-process
 			 name buffer starttls-program
 			 host (format "%s" service)
 			 starttls-extra-args)))
