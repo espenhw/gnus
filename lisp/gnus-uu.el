@@ -1314,12 +1314,18 @@ The headers will be included in the sequence they are matched.")
 	    (gnus-uu-unmark-list-of-grabbed t))
 
 	  ;; Start a new uudecoding process.
-	  (setq gnus-uu-uudecode-process
-		(start-process 
-		 "*uudecode*" 
-		 (get-buffer-create gnus-uu-output-buffer-name)
-		 shell-file-name shell-command-switch
-		 (format "cd %s ; uudecode" gnus-uu-work-dir)))
+	  (let ((cdir default-directory))
+	    (unwind-protect
+		(progn
+		  (cd gnus-uu-work-dir)
+		  (setq gnus-uu-uudecode-process
+			(start-process 
+			 "*uudecode*" 
+			 (get-buffer-create gnus-uu-output-buffer-name)
+			 shell-file-name shell-command-switch
+			 (format "cd %s %s uudecode" gnus-uu-work-dir
+				 gnus-shell-command-separator))))
+	      (cd cdir)))
 	  (set-process-sentinel 
 	   gnus-uu-uudecode-process 'gnus-uu-uudecode-sentinel)
 	  (setq state (list 'begin))

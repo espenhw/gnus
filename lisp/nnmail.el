@@ -238,7 +238,7 @@ Example:
 	  \"misc.misc\"))")
 
 (defvar nnmail-split-abbrev-alist
-  '((any . "from\\|to\\|cc\\|sender\\|apparently-to")
+  '((any . "from\\|to\\|cc\\|sender\\|apparently-to\\|resent-from\\|resent-to\\|resent-cc")
     (mail . "mailer-daemon\\|postmaster"))
   "*Alist of abbreviations allowed in `nnmail-split-fancy'.")
 
@@ -358,10 +358,8 @@ parameter.  It should return nil, `warn' or `delete'.")
 ;; Function rewritten from rmail.el.
 (defun nnmail-move-inbox (inbox)
   "Move INBOX to `nnmail-crash-box'."
-  (let ((inbox (file-truename
-		(expand-file-name (substitute-in-file-name inbox))))
-	(tofile (file-truename (expand-file-name 
-				(substitute-in-file-name nnmail-crash-box))))
+  (let ((inbox (file-truename (expand-file-name inbox)))
+	(tofile (file-truename (expand-file-name nnmail-crash-box)))
 	movemail popmail errors password)
     ;; If getting from mail spool directory,
     ;; use movemail to move rather than just renaming,

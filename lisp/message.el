@@ -376,6 +376,10 @@ actually occur.")
     table)
   "Syntax table used while in Message mode.")
 
+(defvar message-mode-abbrev-table text-mode-abbrev-table
+  "Abbrev table used in Message mode buffers.
+Defaults to `text-mode-abbrev-table'.")
+
 (defvar message-font-lock-keywords
   (let* ((cite-prefix "A-Za-z") (cite-suffix (concat cite-prefix "0-9_.@-")))
     (list '("^To:" . font-lock-function-name-face)
@@ -790,7 +794,7 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
   (make-local-variable 'message-postpone-actions)
   (set-syntax-table message-mode-syntax-table)
   (use-local-map message-mode-map)
-  (setq local-abbrev-table text-mode-abbrev-table)
+  (setq local-abbrev-table message-mode-abbrev-table)
   (setq major-mode 'message-mode)
   (setq mode-name "Message")
   (setq buffer-offer-save t)
@@ -825,8 +829,8 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
   (setq message-sent-message-via nil)
   (make-local-variable 'message-checksum)
   (setq message-checksum nil)
-  (when (fboundp 'mail-hist-define-keys)
-    (mail-hist-define-keys))
+  ;;(when (fboundp 'mail-hist-define-keys)
+  ;;  (mail-hist-define-keys))
   (when (string-match "XEmacs\\|Lucid" emacs-version)
     (message-setup-toolbar))
   (easy-menu-add message-mode-menu message-mode-map)
@@ -1258,8 +1262,8 @@ the user from the mailer."
 			     "Already sent message via mail; resend? "))
 			(message-send-mail arg))))
       (message-do-fcc)
-      (when (fboundp 'mail-hist-put-headers-into-history)
-	(mail-hist-put-headers-into-history))
+      ;;(when (fboundp 'mail-hist-put-headers-into-history)
+      ;; (mail-hist-put-headers-into-history))
       (run-hooks 'message-sent-hook)
       (message "Sending...done")
       ;; If buffer has no file, mark it as unmodified and delete autosave.

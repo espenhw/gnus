@@ -1,3 +1,17 @@
+Fri Jul 19 00:41:11 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Listing Groups): Fix.
+
+Thu Jul 18 00:05:03 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.texi (Various Various): Addition.
+	(Startup Files): Addition.
+
+Wed Jul 17 02:03:39 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.texi (Summary Score Commands): Fixed key def.
+	(Summary Score Commands): Fix.
+
 Thu Jul  4 05:45:32 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
 
 	* gnus.texi (Article Hiding): Addition.

@@ -25,6 +25,8 @@
 
 ;;; Code:
 
+(require 'nnheader)
+
 (defvar message-xmas-dont-activate-region nil
   "If t, don't activate region after yanking.")
 

@@ -1043,8 +1043,8 @@ hierarchy in its entirety.")
 This function will be called with group info entries as the arguments
 for the groups to be sorted.  Pre-made functions include
 `gnus-group-sort-by-alphabet', `gnus-group-sort-by-unread',
-`gnus-group-sort-by-level', `gnus-group-sort-by-score', and
-`gnus-group-sort-by-rank'.
+`gnus-group-sort-by-level', `gnus-group-sort-by-score',
+`gnus-group-sort-by-method', and `gnus-group-sort-by-rank'.
 
 This variable can also be a list of sorting functions.	In that case,
 the most significant sort function should be the last function in the
@@ -1096,6 +1096,9 @@ list.")
   "*There is no thread under the article.")
 (defvar gnus-not-empty-thread-mark ?=
   "*There is a thread under the article.")
+
+(defvar gnus-shell-command-separator ";"
+  "String used to separate to shell commands.")
 
 (defvar gnus-view-pseudo-asynchronously nil
   "*If non-nil, Gnus will view pseudo-articles asynchronously.")
@@ -1652,7 +1655,7 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
 
 (defvar gnus-newsgroup-dependencies nil)
 (defvar gnus-newsgroup-async nil)
-(defconst gnus-group-edit-buffer "*Gnus edit newsgroup*")
+(defvar gnus-group-edit-buffer nil)
 
 (defvar gnus-newsgroup-adaptive nil)
 
@@ -1771,7 +1774,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.36"
+(defconst gnus-version-number "5.2.37"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -3079,11 +3082,14 @@ it is killed."
   "Subscribe new NEWSGROUP.
 If NEXT is non-nil, it is inserted before NEXT.	 Otherwise it is made
 the first newsgroup."
-  ;; We subscribe the group by changing its level to `subscribed'.
-  (gnus-group-change-level
-   newsgroup gnus-level-default-subscribed
-   gnus-level-killed (gnus-gethash (or next "dummy.group") gnus-newsrc-hashtb))
-  (gnus-message 5 "Subscribe newsgroup: %s" newsgroup))
+  (save-excursion
+    (goto-char (point-min))
+    ;; We subscribe the group by changing its level to `subscribed'.
+    (gnus-group-change-level
+     newsgroup gnus-level-default-subscribed
+     gnus-level-killed (gnus-gethash (or next "dummy.group")
+				     gnus-newsrc-hashtb))
+    (gnus-message 5 "Subscribe newsgroup: %s" newsgroup)))
 
 ;; For directories
 
@@ -5520,10 +5526,18 @@ Returns whether the fetching was successful or not."
 (defun gnus-group-goto-group (group)
   "Goto to newsgroup GROUP."
   (when group
-    (let ((b (text-property-any (point-min) (point-max)
-				'gnus-group (gnus-intern-safe
-					     group gnus-active-hashtb))))
-      (and b (goto-char b)))))
+    ;; It's quite likely that we are on the right line, so
+    ;; we check the current line first.
+    (beginning-of-line)
+    (if (eq (get-text-property (point) 'gnus-group)
+	    (gnus-intern-safe group gnus-active-hashtb))
+	(point)
+      ;; Search through the entire buffer.
+      (let ((b (text-property-any 
+		(point-min) (point-max)
+		'gnus-group (gnus-intern-safe group gnus-active-hashtb))))
+	(when b 
+	  (goto-char b))))))
 
 (defun gnus-group-next-group (n &optional silent)
   "Go to next N'th newsgroup.
@@ -5767,7 +5781,9 @@ doing the deletion."
     (or group (error "No group on current line"))
     (or (setq info (gnus-get-info group))
 	(error "Killed group; can't be edited"))
-    (set-buffer (get-buffer-create gnus-group-edit-buffer))
+    (set-buffer (setq gnus-group-edit-buffer 
+		      (get-buffer-create
+		       (format "*Gnus edit %s*" group))))
     (gnus-configure-windows 'edit-group)
     (gnus-add-current-to-buffer-list)
     (emacs-lisp-mode)
@@ -5806,47 +5822,49 @@ doing the deletion."
 
 (defun gnus-group-edit-group-done (part group)
   "Get info from buffer, update variables and jump to the group buffer."
-  (set-buffer (get-buffer-create gnus-group-edit-buffer))
-  (goto-char (point-min))
-  (let* ((form (read (current-buffer)))
-	 (winconf gnus-prev-winconf)
-	 (method (cond ((eq part 'info) (nth 4 form))
-		       ((eq part 'method) form)
+  (when (and gnus-group-edit-buffer
+	     (buffer-name gnus-group-edit-buffer))
+    (set-buffer gnus-group-edit-buffer)
+    (goto-char (point-min))
+    (let* ((form (read (current-buffer)))
+	   (winconf gnus-prev-winconf)
+	   (method (cond ((eq part 'info) (nth 4 form))
+			 ((eq part 'method) form)
+			 (t nil)))
+	   (info (cond ((eq part 'info) form)
+		       ((eq part 'method) (gnus-get-info group))
 		       (t nil)))
-	 (info (cond ((eq part 'info) form)
-		     ((eq part 'method) (gnus-get-info group))
-		     (t nil)))
-	 (new-group (if info
-		      (if (or (not method)
-			      (gnus-server-equal
-			       gnus-select-method method))
-			  (gnus-group-real-name (car info))
-			(gnus-group-prefixed-name
-			 (gnus-group-real-name (car info)) method))
-		      nil)))
-    (when (and new-group
-	       (not (equal new-group group)))
-      (when (gnus-group-goto-group group)
-	(gnus-group-kill-group 1))
-      (gnus-activate-group new-group))
-    ;; Set the info.
-    (if (and info new-group)
-	(progn
-	  (setq info (gnus-copy-sequence info))
-	  (setcar info new-group)
-	  (unless (gnus-server-equal method "native")
-	    (unless (nthcdr 3 info)
-	      (nconc info (list nil nil)))
-	    (unless (nthcdr 4 info)
-	      (nconc info (list nil)))
-	    (gnus-info-set-method info method))
-	  (gnus-group-set-info info))
-      (gnus-group-set-info form (or new-group group) part))
-    (kill-buffer (current-buffer))
-    (and winconf (set-window-configuration winconf))
-    (set-buffer gnus-group-buffer)
-    (gnus-group-update-group (or new-group group))
-    (gnus-group-position-point)))
+	   (new-group (if info
+			  (if (or (not method)
+				  (gnus-server-equal
+				   gnus-select-method method))
+			      (gnus-group-real-name (car info))
+			    (gnus-group-prefixed-name
+			     (gnus-group-real-name (car info)) method))
+			nil)))
+      (when (and new-group
+		 (not (equal new-group group)))
+	(when (gnus-group-goto-group group)
+	  (gnus-group-kill-group 1))
+	(gnus-activate-group new-group))
+      ;; Set the info.
+      (if (and info new-group)
+	  (progn
+	    (setq info (gnus-copy-sequence info))
+	    (setcar info new-group)
+	    (unless (gnus-server-equal method "native")
+	      (unless (nthcdr 3 info)
+		(nconc info (list nil nil)))
+	      (unless (nthcdr 4 info)
+		(nconc info (list nil)))
+	      (gnus-info-set-method info method))
+	    (gnus-group-set-info info))
+	(gnus-group-set-info form (or new-group group) part))
+      (kill-buffer (current-buffer))
+      (and winconf (set-window-configuration winconf))
+      (set-buffer gnus-group-buffer)
+      (gnus-group-update-group (or new-group group))
+      (gnus-group-position-point))))
 
 (defun gnus-group-make-help-group ()
   "Create the Gnus documentation group."
@@ -5910,14 +5928,15 @@ Given a prefix, create a full group."
   (interactive "P")
   (let ((group (gnus-group-prefixed-name
 		(if all "ding.archives" "ding.recent") '(nndir ""))))
-    (and (gnus-gethash group gnus-newsrc-hashtb)
-	 (error "Archive group already exists"))
+    (when (gnus-gethash group gnus-newsrc-hashtb)
+      (error "Archive group already exists"))
     (gnus-group-make-group
      (gnus-group-real-name group)
      (list 'nndir (if all "hpc" "edu")
 	   (list 'nndir-directory
 		 (if all gnus-group-archive-directory
-		   gnus-group-recent-archive-directory))))))
+		   gnus-group-recent-archive-directory))))
+    (gnus-group-add-parameter group (cons 'to-address "ding@ifi.uio.no"))))
 
 (defun gnus-group-make-directory-group (dir)
   "Create an nndir group.

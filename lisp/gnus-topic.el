@@ -691,7 +691,9 @@ articles in the topic and its subtopics."
   "Select this newsgroup.
 No article is selected automatically.
 If ALL is non-nil, already read articles become readable.
-If ALL is a number, fetch this number of articles."
+If ALL is a number, fetch this number of articles.
+
+If performed over a topic line, toggle folding the topic."
   (interactive "P")
   (if (gnus-group-topic-p)
       (let ((gnus-group-list-mode 
@@ -711,7 +713,9 @@ If the prefix argument ALL is non-nil, already read articles become
 readable.  IF ALL is a number, fetch this number of articles.  If the
 optional argument NO-ARTICLE is non-nil, no article will be
 auto-selected upon group entry.  If GROUP is non-nil, fetch that
-group."
+group.
+
+If performed over a topic line, toggle folding the topic."
   (interactive "P")
   (if (gnus-group-topic-p)
       (let ((gnus-group-list-mode 
@@ -939,7 +943,7 @@ If COPYP, copy the groups instead."
     (gnus-topic-update-topic)))
 
 (defun gnus-topic-hide-topic ()
-  "Hide all subtopics under the current topic."
+  "Hide the current topic."
   (interactive)
   (when (gnus-group-parent-topic)
     (gnus-topic-goto-topic (gnus-group-parent-topic))
@@ -1023,6 +1027,7 @@ If COPYP, copy the groups instead."
       (setcar (cadr top) new-name))
     (when entry 
       (setcar entry new-name))
+    (forward-line -1)
     (gnus-group-list-groups)))
 
 (defun gnus-topic-indent (&optional unindent)

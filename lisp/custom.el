@@ -114,9 +114,13 @@
     string))
 
 ;; XEmacs and Emacs 19.29 facep does different things.
-(if (fboundp 'find-face)
-    (fset 'custom-facep 'find-face)
-  (fset 'custom-facep 'facep))
+(defalias 'custom-facep
+  (cond ((fboundp 'find-face)
+	 'find-face)
+	((fboundp 'facep)
+	 'facep)
+	(t
+	 'ignore)))
 
 (if (custom-facep 'underline)
     ()

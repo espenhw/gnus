@@ -712,7 +712,7 @@ SCORE is the score to add."
   "Automatically expunge articles with score below SCORE."
   (interactive 
    (list (or (and current-prefix-arg (prefix-numeric-value current-prefix-arg))
-	     (string-to-int (read-string "Expunge below: ")))))
+	     (string-to-int (read-string "Set expunge below: ")))))
   (setq score (or score gnus-summary-default-score 0))
   (gnus-score-set 'expunge (list score))
   (gnus-score-set 'touched '(t)))

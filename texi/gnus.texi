@@ -697,6 +697,11 @@ saving the @file{.newsrc.eld} file, and
 control on or off.  Version control is off by default when saving the
 startup files.
 
+@vindex gnus-init-file
+When Gnus starts, it will read the @code{gnus-init-file} file, which is
+@file{~/.gnus.el} by default.  This is a normal Emacs Lisp file and can
+be used to avoid cluttering your @file{.emacs} file with Gnus stuff.
+
 
 @node Auto Save
 @section Auto Save
@@ -1769,7 +1774,7 @@ List all zombie groups (@code{gnus-group-list-zombies}).
 @item A m
 @kindex A m (Group)
 @findex gnus-group-list-matching
-List all subscribed groups with unread articles that match a regexp
+List all unread, subscribed groups with names that match a regexp
 (@code{gnus-group-list-matching}). 
 
 @item A M
@@ -6550,6 +6555,8 @@ Messages will be saved in that group.
 Messages will be saved in all those groups.
 @item an alist of regexps, functions and forms
 When a key ``matches'', the result is used.
+@item @code{nil}
+No message archiving will take place.  This is the default.
 @end itemize
 
 Let's illustrate:
@@ -6579,8 +6586,6 @@ More complex stuff:
             "misc-news" 
           "misc-mail")))
 @end lisp       
-
-This is the default.
 
 How about storing all news messages in one file, but storing all mail
 messages in one file per month:
@@ -8926,11 +8931,12 @@ The rest of these commands modify the local score file.
 Prompt for a score, and mark all articles with a score below this as
 read (@code{gnus-score-set-mark-below}).
 
-@item V E
-@kindex V E (Summary)
+@item V x
+@kindex V x (Summary)
 @findex gnus-score-set-expunge-below
-Expunge all articles with a score below the default score (or the
-numeric prefix) (@code{gnus-score-set-expunge-below}).
+Prompt for a score, and add a score rule to the current score file to
+expunge all articles below this score
+(@code{gnus-score-set-expunge-below}).
 @end table
 
 The keystrokes for actually making score entries follow a very regular
@@ -11044,6 +11050,11 @@ makes invisible text invisible and intangible.
 A hook called before parsing headers.  It can be used, for instance, to
 gather statistics on the headers fetched, or perhaps you'd like to prune
 some headers.  I don't see why you'd want that, though.
+
+@item gnus-shell-command-separator
+@vindex gnus-shell-command-separator
+String used to separate to shell commands.  The default is @samp{;}. 
+
 
 @end table
 

@@ -1,3 +1,65 @@
+Fri Jul 19 00:31:22 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-subscribe-newsgroup): Add new groups to top-level
+	topic. 
+	(gnus-group-make-archive-group): Add a to-address group param.
+
+	* gnus-topic.el (gnus-topic-hide-topic): Doc fix.
+	(gnus-topic-select-group): Doc fix.
+	(gnus-topic-rename): Keep point nearby.
+
+	* gnus.el (gnus-group-goto-group): More efficient (and more
+	correct) implementation.
+	(gnus-group-sort-function): Doc fix.
+	(gnus-group-edit-buffer): Changed to defvar.
+	(gnus-group-edit-group-done): Use new name.
+	(gnus-group-edit-group): Include name of group in grup buffer
+	name. 
+
+	* nnfolder.el (nnfolder-save-mail): Handle babylish ">From"
+	lines. 
+	* nnmbox.el (nnmbox-request-accept-article): Ditto.
+
+Thu Jul 18 23:50:31 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-move-inbox): Don't substitute in command
+	name. 
+
+	* gnus-xmas.el (gnus-xmas-modeline-glyph): New variable.
+
+Thu Jul 18 16:35:22 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* custom.el (custom-facep): Didn't work under non-X Emacs.
+
+Thu Jul 18 00:02:32 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* nntp.el (nntp-open-telnet): Use more permissive regexps.
+
+	* gnus-uu.el (gnus-uu-uustrip-article): `cd' to make gnus-uu work
+	under NT.
+
+Mon Jul 15 18:11:13 1996  Jan Vroonhof  <vroonhof@math.ethz.ch (Jan Vroonhof)>
+
+	* smiley.el (smiley-regexp-alist): Don't match important parts of URLs
+	(smiley-nosey-regexp-alist): New variable.
+
+Wed Jul 17 23:48:50 1996  Mark Borges  <mdb@cdc.noaa.gov>
+
+	* messagexmas.el (nnheader): Required.
+
+Wed Jul 17 02:02:25 1996  Michael Cook  <mcook@cognex.com>
+
+	* nnmail.el (nnmail-split-abbrev-alist): New default.
+
+Wed Jul 17 00:27:13 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* message.el (message-mode-abbrev-table): New variable. 
+	(message-mode): New variable.
+
+Wed Jul 17 00:05:00 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.36 is released.
+
 Tue Jul 16 20:05:49 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
 
 	* message.el (message-send-mail): Bugged out under Emacs.

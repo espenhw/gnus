@@ -42,12 +42,14 @@
 (defvar smiley-data-directory (message-xmas-find-glyph-directory "smilies")
   "Location of the smiley faces files.")
 
-(defvar smiley-regexp-alist
+;; Notice the subtle differences in the regular expessions in the two alists below
+
+(defvar smiley-deformed-regexp-alist
   '(("\\(:-*[<«]+\\)\\W" 1 "FaceAngry.xpm")
     ("\\(:-+\\]+\\)\\W" 1 "FaceGoofy.xpm")
     ("\\(:-*D\\)\\W" 1 "FaceGrinning.xpm")
     ("\\(:-*[)>}»]+\\)\\W" 1 "FaceHappy.xpm")
-    ("\\(:-*[/\\\"]+\\)\\W" 1 "FaceIronic.xpm")
+    ("\\(:-*[/\\\"]\\)[^\\]" 1 "FaceIronic.xpm")
     ("\\([8|]-*[|Oo%]\\)\\W" 1 "FaceKOed.xpm")
     ("\\([:|]-*#+\\)\\W" 1 "FaceNyah.xpm")
     ("\\(:-*[({]+\\)\\W" 1 "FaceSad.xpm")
@@ -58,7 +60,32 @@
     ("\\(;-*[>)}»]+\\)\\W" 1 "FaceWinking.xpm")
     ("\\(:-*[Vvµ]\\)\\W" 1 "FaceWry.xpm")
     ("\\([:|]-*P\\)\\W" 1 "FaceYukky.xpm"))
-  "A list of regexps to map smilies to real images.")
+  "Normal and deformed faces for smilies.")
+
+(defvar smiley-nosey-regexp-alist
+  '(("\\(:-+[<«]+\\)\\W" 1 "FaceAngry.xpm")
+    ("\\(:-+\\]+\\)\\W" 1 "FaceGoofy.xpm")
+    ("\\(:-+D\\)\\W" 1 "FaceGrinning.xpm")
+    ("\\(:-+[}»]+\\)\\W" 1 "FaceHappy.xpm")
+    ("\\(:-*)+\\)\\W" 1 "FaceHappy.xpm") ;; The exception that confirms the rule
+    ("\\(:-+[/\\\"]+\\)\\W" 1 "FaceIronic.xpm")
+    ("\\([8|]-+[|Oo%]\\)\\W" 1 "FaceKOed.xpm")
+    ("\\([:|]-+#+\\)\\W" 1 "FaceNyah.xpm")
+    ("\\(:-+[({]+\\)\\W" 1 "FaceSad.xpm")
+    ("\\(:-+[Oo\*]\\)\\W" 1 "FaceStartled.xpm")
+    ("\\(:-+|\\)\\W" 1 "FaceStraight.xpm")
+    ("\\(:-+p\\)\\W" 1 "FaceTalking.xpm")
+    ("\\(:-+d\\)\\W" 1 "FaceTasty.xpm")
+    ("\\(;-+[>)}»]+\\)\\W" 1 "FaceWinking.xpm")
+    ("\\(:-+[Vvµ]\\)\\W" 1 "FaceWry.xpm")
+    ("\\([:|]-+P\\)\\W" 1 "FaceYukky.xpm"))
+  "Smileys with noses. These get less false matches.")
+
+(defvar smiley-regexp-alist smiley-deformed-regexp-alist
+  "A list of regexps to map smilies to real images.
+Defaults to the content of smiley-deformed-regexp-alist.
+An alternative smiley-nose-regexp-alist that
+matches less aggresively is available.")
 
 (defvar smiley-flesh-color "yellow"
   "Flesh color.")

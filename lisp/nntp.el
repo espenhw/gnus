@@ -1224,13 +1224,13 @@ If SERVICE, use this as the port number."
       (when (memq (process-status proc) '(open run))
 	(process-send-string proc "set escape \^X\n")
 	(process-send-string proc (concat "open " server "\n"))
-	(nntp-wait-for-string "^\r*login:")
+	(nntp-wait-for-string "^\r*.?login:")
 	(process-send-string
 	 proc (concat
 	       (or nntp-telnet-user-name
 		   (setq nntp-telnet-user-name (read-string "login: ")))
 	       "\n"))
-	(nntp-wait-for-string "^\r*password:")
+	(nntp-wait-for-string "^\r*.?password:")
 	(process-send-string
 	 proc (concat
 	       (or nntp-telnet-passwd
