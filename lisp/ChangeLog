@@ -1,3 +1,12 @@
+2000-01-06 00:06:40 Kim-Minh Kaplan <kmkaplan@vocatex.fr>
+
+        * mm-decode.el (mm-mailcap-command): handle "%%" and the case where
+        there is no "%s" in the method.
+
+2000-01-08 21:01:04  Kim-Minh Kaplan <kmkaplan@vocatex.fr>
+
+	* gnus-sum.el (gnus-summary-select-article): Return 'old.
+
 2000-01-06 13:41:11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* parse-time.el (parse-time-rules): Allow 100-110 to be

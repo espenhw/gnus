@@ -5796,38 +5796,34 @@ be displayed."
     (set-buffer gnus-summary-buffer))
   (let ((article (or article (gnus-summary-article-number)))
 	(all-headers (not (not all-headers))) ;Must be T or NIL.
-	gnus-summary-display-article-function
-	did)
+	gnus-summary-display-article-function)
     (and (not pseudo)
 	 (gnus-summary-article-pseudo-p article)
 	 (error "This is a pseudo-article"))
-    (prog1
-	(save-excursion
-	  (set-buffer gnus-summary-buffer)
-	  (if (or (and gnus-single-article-buffer
-		       (or (null gnus-current-article)
-			   (null gnus-article-current)
-			   (null (get-buffer gnus-article-buffer))
-			   (not (eq article (cdr gnus-article-current)))
-			   (not (equal (car gnus-article-current)
-				       gnus-newsgroup-name))))
-		  (and (not gnus-single-article-buffer)
-		       (or (null gnus-current-article)
-			   (not (eq gnus-current-article article))))
-		  force)
-	      ;; The requested article is different from the current article.
-	      (prog1
-		  (gnus-summary-display-article article all-headers)
-		(setq did article)
-		(when (or all-headers gnus-show-all-headers)
-		  (gnus-article-show-all-headers)))
+    (save-excursion
+      (set-buffer gnus-summary-buffer)
+      (if (or (and gnus-single-article-buffer
+		   (or (null gnus-current-article)
+		       (null gnus-article-current)
+		       (null (get-buffer gnus-article-buffer))
+		       (not (eq article (cdr gnus-article-current)))
+		       (not (equal (car gnus-article-current)
+				   gnus-newsgroup-name))))
+	      (and (not gnus-single-article-buffer)
+		   (or (null gnus-current-article)
+		       (not (eq gnus-current-article article))))
+	      force)
+	  ;; The requested article is different from the current article.
+	  (progn
+	    (gnus-summary-display-article article all-headers)
 	    (when (or all-headers gnus-show-all-headers)
 	      (gnus-article-show-all-headers))
-	    'old))
-      (when did
-	(gnus-article-set-window-start
-	 (cdr (assq article gnus-newsgroup-bookmarks)))))
-    did))
+	    (gnus-article-set-window-start
+	     (cdr (assq article gnus-newsgroup-bookmarks)))
+	    article)
+	(when (or all-headers gnus-show-all-headers)
+	  (gnus-article-show-all-headers))
+	'old))))
 
 (defun gnus-summary-set-current-mark (&optional current-mark)
   "Obsolete function."
