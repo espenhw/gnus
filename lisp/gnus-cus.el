@@ -1044,6 +1044,10 @@ articles in the thread.
       (gnus-agent-cat-prepare-category-field agent-enable-expiration)
       (gnus-agent-cat-prepare-category-field agent-days-until-old)
 
+      (widget-insert "\nVisual Settings ")
+
+      (gnus-agent-cat-prepare-category-field agent-disable-undownloaded-faces)
+
       (use-local-map widget-keymap)
       (widget-setup)
       (buffer-enable-undo))))
