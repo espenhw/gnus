@@ -1815,14 +1815,16 @@ The following commands are available:
 	  (setq cached-articles (sort cached-articles '<))))
       (when (setq uncached-articles 
 		  (gnus-set-difference articles cached-articles))
+	(set-buffer nntp-server-buffer)
+	(erase-buffer)
 	(let (gnus-agent-cache)
 	  (unless (eq 'nov 
 		      (gnus-retrieve-headers 
 		       uncached-articles group fetch-old))
 	    (nnvirtual-convert-headers)))
+	(set-buffer gnus-agent-overview-buffer)
+	(erase-buffer)
 	(set-buffer nntp-server-buffer)
-	(with-current-buffer gnus-agent-overview-buffer
-	  (erase-buffer))
 	(copy-to-buffer gnus-agent-overview-buffer (point-min) (point-max))
 	(when (and uncached-articles (file-exists-p file))
 	  (gnus-agent-braid-nov group uncached-articles file))

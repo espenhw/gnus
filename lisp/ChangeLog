@@ -1,3 +1,8 @@
+2002-01-12  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-retrieve-headers): Erase
+	nntp-server-buffer.
+
 2002-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mm-view.el (mm-display-inline-fontify): Require font-lock to
