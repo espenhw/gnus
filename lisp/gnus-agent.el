@@ -1075,11 +1075,14 @@ This can be added to `gnus-select-article-hook' or
 In particular, checks that the file is sorted by article number
 and that there are no duplicates."
   (let (prev-num)
+    (require 'thingatpt)
     (save-excursion
       (when buffer (set-buffer buffer))
       (save-excursion
         (save-restriction
-          (let ((deactivate-mark deactivate-mark))
+          (let ((deactivate-mark (if (boundp 'deactivate-mark)
+				     deactivate-mark
+				   nil)))
             (widen)
             (goto-char (point-min))
             (setq prev-num (number-at-point))

@@ -1,3 +1,9 @@
+2002-11-26  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus-agent.el (gnus-agent-check-overview-buffer): Explicitly
+	require thingatpt (for number-at-point) and protect against
+	deactivate-mark being unbound (on XEmacs).
+
 2002-11-25  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-agent.el (gnus-agent-check-overview-buffer): Make debugger
