@@ -584,7 +584,7 @@ $ emacs -batch -l ~/.emacs -l gnus -f gnus-jog-cache"
     ;; We simply read the active file.
     (save-excursion
       (gnus-set-work-buffer)
-      (insert-file-contents gnus-cache-active-file)
+      (nnheader-insert-file-contents gnus-cache-active-file)
       (gnus-active-to-gnus-format
        nil (setq gnus-cache-active-hashtb
 		 (gnus-make-hashtable

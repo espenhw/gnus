@@ -2532,7 +2532,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	(while slave-files
 	  (erase-buffer)
 	  (setq file (nth 1 (car slave-files)))
-	  (insert-file-contents file)
+	  (nnheader-insert-file-contents file)
 	  (when (condition-case ()
 		    (progn
 		      (eval-buffer (current-buffer))

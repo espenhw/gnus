@@ -7621,7 +7621,7 @@ latter case, they will be copied into the relevant groups."
     (save-excursion
       (set-buffer (gnus-get-buffer-create " *import file*"))
       (erase-buffer)
-      (insert-file-contents file)
+      (nnheader-insert-file-contents file)
       (goto-char (point-min))
       (unless (nnheader-article-p)
 	;; This doesn't look like an article, so we fudge some headers.

@@ -433,7 +433,7 @@ Currently sends flag setting requests, if any."
       (when (file-exists-p (gnus-agent-lib-file "flags"))
 	(set-buffer (get-buffer-create " *Gnus Agent flag synchronize*"))
 	(erase-buffer)
-	(insert-file-contents (gnus-agent-lib-file "flags"))
+	(nnheader-insert-file-contents (gnus-agent-lib-file "flags"))
 	(if (null (gnus-check-server gnus-command-method))
 	    (message "Couldn't open server %s" (nth 1 gnus-command-method))
 	  (while (not (eobp))
@@ -483,8 +483,10 @@ Currently sends flag setting requests, if any."
 (defun gnus-agent-write-servers ()
   "Write the alist of covered servers."
   (gnus-make-directory (nnheader-concat gnus-agent-directory "lib"))
-  (with-temp-file (nnheader-concat gnus-agent-directory "lib/servers")
-    (prin1 gnus-agent-covered-methods (current-buffer))))
+  (let ((coding-system-for-write nnheader-file-coding-system)
+	(file-name-coding-system nnmail-pathname-coding-system))
+    (with-temp-file (nnheader-concat gnus-agent-directory "lib/servers")
+      (prin1 gnus-agent-covered-methods (current-buffer)))))
 
 ;;;
 ;;; Summary commands
@@ -591,7 +593,7 @@ the actual number of articles toggled is returned."
       (funcall function nil new)
       (gnus-agent-write-active file new)
       (erase-buffer)
-      (insert-file-contents-literally file))))
+      (nnheader-insert-file-contents file))))
 
 (defun gnus-agent-write-active (file new)
   (let ((orig (gnus-make-hashtable (count-lines (point-min) (point-max))))
@@ -599,7 +601,7 @@ the actual number of articles toggled is returned."
 	elem osym)
     (when (file-exists-p file)
       (with-temp-buffer
-	(insert-file-contents file)
+	(nnheader-insert-file-contents file)
 	(gnus-active-to-gnus-format nil orig))
       (mapatoms
        (lambda (sym)
@@ -621,10 +623,14 @@ the actual number of articles toggled is returned."
 (defun gnus-agent-save-group-info (method group active)
   (when (gnus-agent-method-p method)
     (let* ((gnus-command-method method)
+	   (coding-system-for-write nnheader-file-coding-system)
+	   (file-name-coding-system nnmail-pathname-coding-system)
 	   (file (gnus-agent-lib-file "active"))
 	   oactive)
       (gnus-make-directory (file-name-directory file))
       (with-temp-file file
+	;; Emacs got problem to match non-ASCII group in multibyte buffer.
+	(mm-disable-multibyte) 
 	(when (file-exists-p file)
 	  (nnheader-insert-file-contents file))
 	(goto-char (point-min))
@@ -956,15 +962,16 @@ the actual number of articles toggled is returned."
 
 (defun gnus-agent-save-alist (group &optional articles state dir)
   "Save the article-state alist for GROUP."
-  (with-temp-file (if dir
-		      (concat dir ".agentview")
-		    (gnus-agent-article-name ".agentview" group))
-    (princ (setq gnus-agent-article-alist
-		 (nconc gnus-agent-article-alist
-			(mapcar (lambda (article) (cons article state))
-				articles)))
-	   (current-buffer))
-    (insert "\n")))
+  (let ((file-name-coding-system nnmail-pathname-coding-system))
+      (with-temp-file (if dir
+			  (concat dir ".agentview")
+			(gnus-agent-article-name ".agentview" group))
+	(princ (setq gnus-agent-article-alist
+		     (nconc gnus-agent-article-alist
+			    (mapcar (lambda (article) (cons article state))
+				    articles)))
+	       (current-buffer))
+	(insert "\n"))))
 
 (defun gnus-agent-article-name (article group)
   (concat (gnus-agent-directory) (gnus-agent-group-path group) "/"
@@ -1448,7 +1455,7 @@ The following commands are available:
       (while (setq gnus-command-method (pop methods))
 	(when (file-exists-p (gnus-agent-lib-file "active"))
 	  (with-temp-buffer
-	    (insert-file-contents (gnus-agent-lib-file "active"))
+	    (nnheader-insert-file-contents (gnus-agent-lib-file "active"))
 	    (gnus-active-to-gnus-format 
 	     gnus-command-method
 	     (setq orig (gnus-make-hashtable
