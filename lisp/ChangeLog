@@ -1,5 +1,7 @@
 2002-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* dns.el (query-dns): Protect against errors.
+
 	* gnus-msg.el (gnus-article-yanked-articles): New variable.
 	(gnus-inews-add-send-actions): Mark all answered messages as
 	answered. 

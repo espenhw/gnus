@@ -307,35 +307,41 @@ If FULLP, return the entire record returned."
     (unless dns-servers
       (error "No DNS server configuration found")))
   (mm-with-unibyte-buffer
-    (let ((process (dns-make-network-process (car dns-servers)))
+    (let ((process (condition-case ()
+		       (dns-make-network-process (car dns-servers))
+		     (error
+		      (message "dns: Got an error while trying to talk to %s"
+			       (car dns-servers))
+		      nil)))
 	  (tcp-p (and (not (fboundp 'make-network-process))
 		      (not (featurep 'xemacs))))
 	  (step 100)
 	  (times (* dns-timeout 1000))
 	  (id (random 65000)))
-      (process-send-string
-       process
-       (dns-write `((id ,id)
-		    (opcode query)
-		    (queries ((,name (type ,type))))
-		    (recursion-desired-p t))
-		  tcp-p))
-      (while (and (zerop (buffer-size))
-		  (> times 0))
-	(accept-process-output process 0 step)
-	(decf times step))
-      (ignore-errors
-	(delete-process process))
-      (when tcp-p
-	(goto-char (point-min))
-	(delete-region (point) (+ (point) 2)))
-      (unless (zerop (buffer-size))
-	(let ((result (dns-read (buffer-string))))
-	  (if fullp
-	      result
-	    (let ((answer (car (dns-get 'answers result))))
-	      (when (eq type (dns-get 'type answer))
-		(dns-get 'data answer)))))))))
+      (when process
+	(process-send-string
+	 process
+	 (dns-write `((id ,id)
+		      (opcode query)
+		      (queries ((,name (type ,type))))
+		      (recursion-desired-p t))
+		    tcp-p))
+	(while (and (zerop (buffer-size))
+		    (> times 0))
+	  (accept-process-output process 0 step)
+	  (decf times step))
+	(ignore-errors
+	  (delete-process process))
+	(when tcp-p
+	  (goto-char (point-min))
+	  (delete-region (point) (+ (point) 2)))
+	(unless (zerop (buffer-size))
+	  (let ((result (dns-read (buffer-string))))
+	    (if fullp
+		result
+	      (let ((answer (car (dns-get 'answers result))))
+		(when (eq type (dns-get 'type answer))
+		  (dns-get 'data answer))))))))))
 
 (provide 'dns)
 
