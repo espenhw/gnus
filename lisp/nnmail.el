@@ -943,7 +943,7 @@ FUNC will be called with the group name to determine the article number."
 		      (message 
 		       "Error in `nnmail-split-methods'; using `bogus' mail group")
 		      (sit-for 1)
-		      '("bogus")))))'
+		      '("bogus")))))
 	      (unless (equal group-art '(junk))
 		;; `nnmail-split-methods' is a function, so we just call 
 		;; this function here and use the result.

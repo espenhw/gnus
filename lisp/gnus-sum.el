@@ -8425,7 +8425,7 @@ save those articles instead."
 	`(progn
 	   (gnus-info-set-marks ',info ',(gnus-info-marks info))
 	   (gnus-info-set-read ',info ',(gnus-info-read info))
-	   (gnus-get-unread-articles-in-group ,info (gnus-active ,group))))
+	   (gnus-get-unread-articles-in-group ',info (gnus-active ,group))))
       ;; Enter this list into the group info.
       (gnus-info-set-read
        info (if (> (length read) 1) (nreverse read) read))

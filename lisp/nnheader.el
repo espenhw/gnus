@@ -743,13 +743,25 @@ to advanced Emacs features, such as file-name-handlers, format decoding,
 find-file-hooks, etc.
   This function ensures that none of these modifications will take place."
   (let ((format-alist nil)
+	(auto-mode-alist (nnheader-auto-mode-alist))
         (after-insert-file-functions nil))
     (insert-file-contents filename visit beg end replace)))
 
 (defun nnheader-find-file-noselect (&rest args)
   (let ((format-alist nil)
+	(auto-mode-alist (nnheader-auto-mode-alist))
         (after-insert-file-functions nil))
     (apply 'find-file-noselect args)))
+
+(defun nnheader-auto-mode-alist ()
+  "Return an `auto-mode-alist' with only the .gz (etc) thingies."
+  (let ((alist auto-mode-alist)
+	out)
+    (while alist
+      (when (listp (cdar alist))
+	(push (car alist) out))
+      (pop alist))
+    (nreverse out)))
 
 (defun nnheader-directory-regular-files (dir)
   "Return a list of all regular files in DIR."

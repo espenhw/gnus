@@ -1,3 +1,18 @@
+Wed Nov 20 01:57:31 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-article-group): Would lose mail when using
+	advanced splitting!
+
+	* gnus-sum.el (gnus-update-read-articles): Undo fix.
+
+Tue Nov 19 22:56:56 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnheader.el (nnheader-auto-mode-alist): New function.
+
+Tue Nov 19 21:57:29 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.65 is released.
+
 Tue Nov 19 17:41:17 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* message.el (message-do-fcc): Supply FROM-GNUS param to

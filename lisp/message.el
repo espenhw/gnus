@@ -3283,12 +3283,13 @@ The following arguments may contain lists of values."
 	(funcall ask question))
     (funcall ask question)))
 
-(defun message-flatten-list (&rest list)
-  (message-flatten-list-1 list))
+(defun message-flatten-list (list)
+  "Return a new, flat list that contains all elements of LIST.
 
-(defun message-flatten-list-1 (list)
+\(message-flatten-list '(1 (2 3 (4 5 (6))) 7))
+=> (1 2 3 4 5 6 7)"
   (cond ((consp list) 
-	 (apply 'append (mapcar 'message-flatten-list-1 list)))
+	 (apply 'append (mapcar 'message-flatten-list list)))
 	(list
 	 (list list))))
 
