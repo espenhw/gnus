@@ -72,7 +72,7 @@
   (let* ((last (car (last articles)))
 	 (did nil)
 	 (start 1)
-	 (entry (gnus-copy-sequence (assoc group nnultimate-groups)))
+	 (entry (assoc group nnultimate-groups))
 	 (sid (nth 2 entry))
 	 (topics (nth 4 entry))
 	 (mapping (nth 5 entry))
@@ -80,7 +80,7 @@
 	 (furl "forumdisplay.cgi?action=topics&number=%d&DaysPrune=1000")
 	 headers article subject score from date lines parent point
 	 contents tinfo fetchers map elem a href garticles topic old-max
-	 inc datel)
+	 inc datel table string)
     (with-temp-buffer
       (nnweb-insert (concat nnultimate-address (format furl sid)))
       (goto-char (point-min))
@@ -159,12 +159,14 @@
 	    (setq subject (nth 2 (assq (car elem) topics)))
 	    (nnweb-insert (nth 3 (assq (car elem) topics)))
 	    (goto-char (point-min))
-	    (setq a (w3-parse-buffer (current-buffer)))
-	    (setq contents
-		  (cdr
-		   (nth 2 (car (nth 2
-				    (nnultimate-find-forum-table
-				     (w3-parse-buffer (current-buffer))))))))
+	    (setq contents (w3-parse-buffer (current-buffer)))
+	    (setq table (nnultimate-find-forum-table contents))
+	    (setq string (mapconcat 'identity (nnweb-text table) ""))
+	    (when (string-match "topic is \\([0-9]\\) pages" string)
+	      (setq pages (string-to-number (match-string 1 string)))
+	      (setcdr table nil)
+	      (setq table (nnultimate-find-forum-table contents)))
+	    (setq contents (cdr (nth 2 (car (nth 2 table)))))
 	    (dolist (art (cdr elem))
 	      (push (list (car art)
 			  (nth (1- (cdr art)) contents)
@@ -216,6 +218,7 @@
 	  (erase-buffer)
 	  (dolist (header nnultimate-headers)
 	    (nnheader-insert-nov (cdr header))))))
+    (nnultimate-write-groups)
     'nov))
 
 (deffoo nnultimate-request-group (group &optional server dont-check)
