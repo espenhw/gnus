@@ -42,13 +42,6 @@
     (require 'w3)
     (require 'url)))
 
-;; Fixme: Avoid this and use mm-make-temp-file (especially for
-;; something sensitive like pgp).
-(defvar pgg-temporary-file-directory
-  (cond ((fboundp 'temp-directory) (temp-directory))
-	((boundp 'temporary-file-directory) temporary-file-directory)
-	("/tmp/")))
-
 ;;; @ utility functions
 ;;;
 
@@ -148,6 +141,19 @@
 (defmacro pgg-process-when-success (&rest body)
   `(with-current-buffer pgg-output-buffer
      (if (zerop (buffer-size)) nil ,@body t)))
+
+(defalias 'pgg-make-temp-file
+  (if (fboundp 'make-temp-file)
+      'make-temp-file
+    (lambda (prefix &optional dir-flag)
+      (let ((file (expand-file-name
+		   (make-temp-name prefix)
+		   (if (fboundp 'temp-directory)
+		       (temp-directory)
+		     temporary-file-directory))))
+	(if dir-flag
+	    (make-directory file))
+	file))))
 
 ;;; @ interface functions
 ;;;

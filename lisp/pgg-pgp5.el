@@ -73,9 +73,7 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
   "PGP 5.* ID of your default identity.")
 
 (defun pgg-pgp5-process-region (start end passphrase program args)
-  (let* ((errors-file-name
-	  (expand-file-name (make-temp-name "pgg-errors")  
-			    pgg-temporary-file-directory))
+  (let* ((errors-file-name (pgg-make-temp-file "pgg-errors"))
 	 (args
 	  (append args
 		  pgg-pgp5-extra-args
@@ -196,10 +194,9 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
 
 (defun pgg-pgp5-verify-region (start end &optional signature)
   "Verify region between START and END as the detached signature SIGNATURE."
-  (let* ((basename (expand-file-name "pgg" pgg-temporary-file-directory))
-	 (orig-file (make-temp-name basename))
-	 (args '("+verbose=1" "+batchmode=1" "+language=us"))
-	 (orig-mode (default-file-modes)))
+  (let ((orig-file (pgg-make-temp-file "pgg"))
+	(args '("+verbose=1" "+batchmode=1" "+language=us"))
+	(orig-mode (default-file-modes)))
     (unwind-protect
 	(progn
 	  (set-default-file-modes 448)
@@ -234,8 +231,7 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
 (defun pgg-pgp5-snarf-keys-region (start end)
   "Add all public keys in region between START and END to the keyring."
   (let* ((pgg-pgp5-user-id (or pgg-pgp5-user-id pgg-default-user-id))
-	 (basename (expand-file-name "pgg" pgg-temporary-file-directory))
-	 (key-file (make-temp-name basename))
+	 (key-file (pgg-make-temp-file "pgg"))
 	 (args
 	  (list "+verbose=1" "+batchmode=1" "+language=us" "-a"
 		key-file)))

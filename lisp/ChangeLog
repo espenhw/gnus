@@ -1,3 +1,11 @@
+2003-07-24  Jesper Harder  <harder@ifa.au.dk>
+
+	* pgg-gpg.el (pgg-gpg-process-region): Add "--yes" to options.
+
+	* pgg-gpg.el, pgg-pgp.el, pgg-pgp5.el, pgg.el: Reapply changes
+	from 2003-04-03 to fix security problem.  See
+	http://www.debian.org/security/2003/dsa-339
+
 2003-07-23  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.el (gnus-install-group-spam-parameters): add the
