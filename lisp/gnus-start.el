@@ -1550,6 +1550,7 @@ newsgroup."
 ;; Go though `gnus-newsrc-alist' and compare with `gnus-active-hashtb'
 ;; and compute how many unread articles there are in each group.
 (defun gnus-get-unread-articles (&optional level)
+  (setq gnus-server-method-cache nil)
   (let* ((newsrc (cdr gnus-newsrc-alist))
 	 (level (or level gnus-activate-level (1+ gnus-level-subscribed)))
 	 (foreign-level

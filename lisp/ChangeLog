@@ -1,5 +1,16 @@
 2002-01-25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-range.el (gnus-inverse-list-range-intersection): Off-by-one
+	error. 
+
+	* gnus.el (gnus-server-to-method): Made into subst.
+	(gnus-server-method-cache): New variable.
+	(gnus-server-to-method): Use it.
+	(gnus-group-method-cache): New variable.
+	(gnus-find-method-for-group-1): Renamed.
+	(gnus-find-method-for-group): New function.
+	(gnus-group-method-cache): Removed.
+
 	* gnus-sum.el (gnus-compute-unseen-list): Use new optimized
 	function. 
 

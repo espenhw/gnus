@@ -355,7 +355,7 @@ LIST is a sorted list."
       (when (or (not ranges)
 		(if (numberp (car ranges))
 		    (not (= (car ranges) number))
-		  (not (< number (cdar ranges)))))
+		  (not (<= number (cdar ranges)))))
 	(push number result)))
     (nreverse result)))
 

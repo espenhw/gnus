@@ -189,6 +189,12 @@
 	(t (concat filename ".elc"))))
 
 (require 'bytecomp)
+(require 'byte-opt)
+;; To avoid having defsubsts and inlines happen.
+;(defun byte-optimize-inline-handler (form)
+;  "byte-optimize-handler for the `inline' special-form."
+;  (cons 'progn (cdr form)))
+;(defalias 'byte-compile-file-form-defsubst 'byte-compile-file-form-defun)
 
 (push srcdir load-path)
 (load (expand-file-name "lpath.el" srcdir) nil t)

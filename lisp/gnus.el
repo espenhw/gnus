@@ -1786,6 +1786,7 @@ covered by that variable."
 (defvar gnus-original-article-buffer " *Original Article*")
 (defvar gnus-newsgroup-name nil)
 (defvar gnus-ephemeral-servers nil)
+(defvar gnus-server-method-cache nil)
 
 (defvar gnus-agent nil
   "Whether we want to use the Gnus agent or not.")
@@ -2680,32 +2681,35 @@ that that variable is buffer-local to the summary buffers."
 	(t
 	 (gnus-server-add-address method))))
 
-(defun gnus-server-to-method (server)
+(defsubst gnus-server-to-method (server)
   "Map virtual server names to select methods."
-  (or
-   ;; Is this a method, perhaps?
-   (and server (listp server) server)
-   ;; Perhaps this is the native server?
-   (and (equal server "native") gnus-select-method)
-   ;; It should be in the server alist.
-   (cdr (assoc server gnus-server-alist))
-   ;; It could be in the predefined server alist.
-   (cdr (assoc server gnus-predefined-server-alist))
-   ;; If not, we look through all the opened server
-   ;; to see whether we can find it there.
-   (let ((opened gnus-opened-servers))
-     (while (and opened
-		 (not (equal server (format "%s:%s" (caaar opened)
-					    (cadaar opened)))))
-       (pop opened))
-     (caar opened))
-   ;; It could be a named method, search all servers
-   (let ((servers gnus-secondary-select-methods))
-     (while (and servers
-		 (not (equal server (format "%s:%s" (caar servers)
-					    (cadar servers)))))
-       (pop servers))
-     (car servers))))
+  (or (and server (listp server) server)
+      (cdr (assoc server gnus-server-method-cache))
+      (let ((result
+	     (or
+	      ;; Perhaps this is the native server?
+	      (and (equal server "native") gnus-select-method)
+	      ;; It should be in the server alist.
+	      (cdr (assoc server gnus-server-alist))
+	      ;; It could be in the predefined server alist.
+	      (cdr (assoc server gnus-predefined-server-alist))
+	      ;; If not, we look through all the opened server
+	      ;; to see whether we can find it there.
+	      (let ((opened gnus-opened-servers))
+		(while (and opened
+			    (not (equal server (format "%s:%s" (caaar opened)
+						       (cadaar opened)))))
+		  (pop opened))
+		(caar opened))
+	      ;; It could be a named method, search all servers
+	      (let ((servers gnus-secondary-select-methods))
+		(while (and servers
+			    (not (equal server (format "%s:%s" (caar servers)
+						       (cadar servers)))))
+		  (pop servers))
+		(car servers)))))
+	(push (cons server result) gnus-server-method-cache)
+	result)))
 
 (defmacro gnus-method-equal (ss1 ss2)
   "Say whether two servers are equal."
