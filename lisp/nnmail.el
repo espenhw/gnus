@@ -1517,7 +1517,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (when (search-backward id nil t)
 	(beginning-of-line)
 	(skip-chars-forward "^\n\r\t")
-	(unless (eolp)
+	(unless (looking-at "[\r\n]")
 	  (forward-char 1)
 	  (buffer-substring (point)
 			    (progn (end-of-line) (point))))))))
