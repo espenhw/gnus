@@ -7774,7 +7774,7 @@ likely number is 30 seconds.
 
 @item nntp-retry-on-break
 @vindex nntp-retry-on-break
-If this variable is non-@code{nilp, you can also @kbd{C-g} if Gnus
+If this variable is non-@code{nil}, you can also @kbd{C-g} if Gnus
 hangs.  This will have much the same effect as the command timeout
 described above.
 

@@ -1708,7 +1708,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.47"
+(defconst gnus-version "September Gnus v0.48"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -15528,7 +15528,9 @@ Returns whether the updating was successful."
 	     ((and (eq gnus-read-active-file 'some)
 		   (gnus-check-backend-function 'retrieve-groups (car method)))
 	      (let ((newsrc (cdr gnus-newsrc-alist))
-		    (gmethod (gnus-server-get-method nil method))
+		    (gmethod (if (stringp method)
+				 (gnus-server-get-method nil method)
+			       method))
 		    groups info)
 		(while (setq info (pop newsrc))
 		  (when (gnus-server-equal

@@ -1,5 +1,11 @@
+Thu Feb 29 14:28:06 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el (gnus-read-active-file): Wouldn't work on `some'.
+
 Thu Feb 29 09:15:05 1996  Lars Ingebrigtsen  <lars@eyesore.no>
 
+	* gnus.el: 0.47 is released.
+	
 	* nnvirtual.el (nnvirtual-create-mapping): Copy article marks.
 
 	* gnus.el (gnus-add-marked-articles): Would corrupt the
