@@ -1,3 +1,7 @@
+2001-01-16  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* gnus-art.el (article-display-x-face): Fix.
+
 2001-01-15 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (article-display-x-face): Use
