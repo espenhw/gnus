@@ -124,7 +124,7 @@ veryclean:
 	rm -f gnus.dvi gnus.ps texi2latex.elc
 
 distclean:
-	make clean
+	make veryclean
 	rm -f *.orig *.rej *.elc *~ gnus-[0-9] gnus-[0-9][0-9] Makefile
 	rm -f message-[0-9]
 	rm -f $(INFO_DEPS)

@@ -4897,7 +4897,8 @@ command understands the process/prefix convention
 
 @end table
 
-Also @pxref{(message)Header Commands} for more information.
+Also @xref{Header Commands, ,Header Commands, message, The Message
+Manual} for more information.
 
 
 @node Summary Post Commands
@@ -4981,7 +4982,8 @@ Uuencode a file, split it into parts, and post it as a series
 (@code{gnus-uu-post-news}).  (@pxref{Uuencoding and Posting}).
 @end table
 
-Also @pxref{(message)Header Commands} for more information.
+Also @xref{Header Commands, ,Header Commands, message, The Message
+Manual} for more information.
 
 
 @node Summary Message Commands
@@ -21166,7 +21168,7 @@ again, to keep up with ever-changing layouts.
 @iftex
 
 @page
-@node History
+@node The Manual
 @section The Manual
 @cindex colophon
 @cindex manual

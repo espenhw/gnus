@@ -1,3 +1,14 @@
+2001-09-24  Simon Josefsson  <jas@extundo.com>
+
+	* etc/*, herds/*, misc/*, picons/*, screen/*, smilies/*, xface/*:
+	New files, from pspackage.tar.gz.
+
+	* Makefile.in (distclean): Make veryclean.
+
+	* gnus.texi (Summary Mail Commands): Fix.
+	(Summary Post Commands): Fix.
+	(The Manual): Fix.
+
 2001-09-23 02:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi: Use "back end".
