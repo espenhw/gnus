@@ -319,6 +319,58 @@
 (defun mm-display-elisp-inline (handle)
   (mm-display-inline-fontify handle 'emacs-lisp-mode))
 
+;;      id-signedData OBJECT IDENTIFIER ::= { iso(1) member-body(2)
+;;          us(840) rsadsi(113549) pkcs(1) pkcs7(7) 2 }
+(defvar mm-pkcs7-signed-magic 
+  (mm-string-as-unibyte
+   (apply 'concat
+	  (mapcar 'char-to-string
+		  (list ?\x30 ?\x82 ?\x01 ?\x91 ?\x06 ?\x09 ?\x2a ?\x86 ?\x48
+			?\x86 ?\xf7 ?\x0d ?\x01 ?\x07 ?\x02)))))
+  
+;;      id-envelopedData OBJECT IDENTIFIER ::= { iso(1) member-body(2)
+;;          us(840) rsadsi(113549) pkcs(1) pkcs7(7) 3 }
+(defvar mm-pkcs7-enveloped-magic 
+  (mm-string-as-unibyte
+   (apply 'concat
+	  (mapcar 'char-to-string
+		  (list ?\x30 ?\x82 ?\x01 ?\x91 ?\x06 ?\x09 ?\x2a ?\x86 ?\x48
+			?\x86 ?\xf7 ?\x0d ?\x01 ?\x07 ?\x03)))))
+  
+(defun mm-view-pkcs7-get-type (handle)
+  (with-temp-buffer
+    (mm-insert-part handle)
+    (cond ((looking-at (regexp-quote mm-pkcs7-enveloped-magic))
+	   'enveloped)
+	  ((looking-at (regexp-quote mm-pkcs7-signed-magic))
+	   'signed)
+	  (t
+	   (error "Could not identify PKCS#7 type")))))
+
+(defun mm-view-pkcs7 (handle)
+  (case (mm-view-pkcs7-get-type handle)
+    (enveloped (mm-view-pkcs7-decrypt handle))
+    (otherwise (error "Unknown or unimplemented PKCS#7 type"))))
+
+(defun mm-view-pkcs7-decrypt (handle)
+  (let (res)
+    (with-temp-buffer
+      (insert-buffer (mm-handle-buffer handle))
+      (goto-char (point-min))
+      (insert "MIME-Version: 1.0\n")
+      (mm-insert-headers "application/pkcs7-mime" "base64" "smime.p7m")
+      (smime-decrypt-region
+       (point-min) (point-max)
+       (if (= (length smime-keys) 1)
+	   (cadar smime-keys)
+	 (smime-get-key-by-email
+	  (completing-read "Decrypt this part with which key? "
+			   smime-keys nil nil
+			   (and (listp (car-safe smime-keys))
+				(caar smime-keys))))))
+      (setq res (buffer-string)))
+    (mm-insert-inline handle res)))
+
 (provide 'mm-view)
 
 ;;; mm-view.el ends here

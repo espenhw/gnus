@@ -339,7 +339,7 @@ nil."
 	(setenv "GNUS_SMIME_PASSPHRASE" passphrase))
     (when (apply 'smime-call-openssl-region
 		 b e buffer "smime" "-decrypt"
-		 "-recip" keyfile
+		 "-recip" (expand-file-name keyfile)
 		 (if passphrase
 		     (list "-passin" "env:GNUS_SMIME_PASSPHRASE" )))
       (delete-region b e)

@@ -1,5 +1,23 @@
 2001-07-29  Simon Josefsson  <jas@extundo.com>
 
+	Support S/MIME decryption.
+
+	* mm-decode.el (mm-inline-media-tests): 
+	(mm-inlined-types):
+	(mm-automatic-display):
+	(mm-attachment-override-types): Add application/{x-,}pkcs7-mime.
+
+	* mm-view.el (mm-pkcs7-signed-magic): 
+	(mm-pkcs7-enveloped-magic): New variables.
+	(mm-view-pkcs7-get-type): New function; identify PKCS#7 type.
+	(mm-view-pkcs7): New function; mm viewer for PKCS#7 blobs.
+	(mm-view-pkcs7-decrypt): New function; mm viewer for encrypted
+	PKCS#7 blobs.
+
+	* smime.el (smime-decrypt-region): Expand keyfile.
+
+2001-07-29  Simon Josefsson  <jas@extundo.com>
+
 	* nntp.el (nntp-open-ssl-stream): Don't mess with internal
 	`ssl.el' variables.
 

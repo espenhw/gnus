@@ -177,6 +177,8 @@
     ("application/pgp-signature" ignore identity)
     ("application/x-pkcs7-signature" ignore identity)
     ("application/pkcs7-signature" ignore identity)
+    ("application/x-pkcs7-mime" mm-view-pkcs7 identity)
+    ("application/pkcs7-mime" mm-view-pkcs7 identity)
     ("multipart/alternative" ignore identity)
     ("multipart/mixed" ignore identity)
     ("multipart/related" ignore identity)
@@ -195,7 +197,8 @@
   '("image/.*" "text/.*" "message/delivery-status" "message/rfc822"
     "message/partial" "message/external-body" "application/emacs-lisp"
     "application/pgp-signature" "application/x-pkcs7-signature"
-    "application/pkcs7-signature")
+    "application/pkcs7-signature" "application/x-pkcs7-mime"
+    "application/pkcs7-mime")
   "List of media types that are to be displayed inline.
 See also `mm-inline-media-tests', which says how to display a media
 type inline."
@@ -215,12 +218,15 @@ when selecting a different article."
     "text/x-vcard" "image/.*" "message/delivery-status" "multipart/.*"
     "message/rfc822" "text/x-patch" "application/pgp-signature"
     "application/emacs-lisp" "application/x-pkcs7-signature"
-    "application/pkcs7-signature")
+    "application/pkcs7-signature" "application/x-pkcs7-mime"
+    "application/pkcs7-mime")
   "A list of MIME types to be displayed automatically."
   :type '(repeat string)
   :group 'mime-display)
 
-(defcustom mm-attachment-override-types '("text/x-vcard")
+(defcustom mm-attachment-override-types '("text/x-vcard"
+					  "application/pkcs7-mime"
+					  "application/x-pkcs7-mime")
   "Types to have \"attachment\" ignored if they can be displayed inline."
   :type '(repeat string)
   :group 'mime-display)
