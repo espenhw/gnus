@@ -220,7 +220,13 @@ until a successful connection is made."
   :type '(repeat string))
 
 (defcustom imap-process-connection-type nil
-  "*Value for `process-connection-type' to use for Kerberos4 and GSSAPI."
+  "*Value for `process-connection-type' to use for Kerberos4, GSSAPI and SSL.
+The `process-connection-type' variable control type of device
+used to communicate with subprocesses.  Values are nil to use a
+pipe, or t or `pty' to use a pty.  The value has no effect if the
+system has no ptys or if all ptys are busy: then a pipe is used
+in any case.  The value takes effect when a IMAP server is
+opened, changing it after that has no effect.."
   :group 'imap
   :type 'boolean)
 

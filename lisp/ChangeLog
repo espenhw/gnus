@@ -2,6 +2,8 @@
 
 	* imap.el (imap-kerberos4-open): Ignore output from ATHENA imtest.
 	Tiny patch from Derek Atkins <warlord@MIT.EDU>.
+	(imap-process-connection-type): Improve docstring.  Suggested by
+	Derek Atkins <warlord@MIT.EDU>.
 
 2003-10-31  Teodor Zlatanov  <tzz@beld.net>
 
