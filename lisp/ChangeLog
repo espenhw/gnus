@@ -1,3 +1,9 @@
+2003-12-05  Jesper Harder  <harder@ifa.au.dk>
+
+	* mm-url.el (mm-url-predefined-programs): Add user-agent for wget.
+	(mm-url-insert-file-contents-external): Signal an error if program
+	fails.
+
 2003-12-04  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam-report.el (spam-report-gmane): iterate over articles
