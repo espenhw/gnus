@@ -24727,7 +24727,7 @@ appearance of all article buttons.  @xref{Article Button Levels}.
 Dired integration
 
 @code{gnus-dired-minor-mode} installs key bindings in dired buffers to send
-a file as an attachment (@kbd{C-c C-a}), open a file using the approriate
+a file as an attachment (@kbd{C-c C-a}), open a file using the appropriate
 mailcap entry (@kbd{C-c C-l}), and print a file using the mailcap entry
 (@kbd{C-c P}).  It is enabled with 
 @lisp
@@ -24914,7 +24914,7 @@ Gnus no longer generate the Sender: header automatically.
 
 Earlier it was generated iff the user configurable email address was
 different from the Gnus guessed default user address.  As the guessing
-algorithm is rarely correct these days, and (more controversally) the
+algorithm is rarely correct these days, and (more controversially) the
 only use of the Sender: header was to check if you are entitled to
 cancel/supersede news (which is now solved by Cancel Locks instead,
 see another entry), generation of the header has been disabled by
@@ -25187,7 +25187,7 @@ This is supposedly what USEFOR wanted to migrate to.  See
 @code{gnus-group-name-charset-method-alist} for customization.
 
 @item
-The nnml and nnfolder backends store marks for each groups.
+The nnml and nnfolder back ends store marks for each groups.
 
 This makes it possible to take backup of nnml/nnfolder servers/groups
 separately of @file{~/.newsrc.eld}, while preserving marks.  It also
