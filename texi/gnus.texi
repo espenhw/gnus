@@ -4542,7 +4542,8 @@ headers are used instead.
 A related variable is @code{nnmail-extra-headers}, which controls when
 to include extra headers when generating overview (@sc{nov}) files.  If
 you have old overview files, you should regenerate them after changing
-this variable.
+this variable, by entering the server buffer using `^', and then `g' on
+the appropriate mail server (e.g. nnml) to cause regeneration.
 
 @vindex gnus-summary-line-format
 You also have to instruct Gnus to display the data by changing the
@@ -4565,9 +4566,13 @@ In summary, you'd typically put something like the following in
 (The values listed above are the default values in Gnus.  Alter them
 to fit your needs.)
 
-Now, this is mostly useful for mail groups, where you have control over
+A note for news server administrators, or for users who wish to try to
+convince their news server administrator to provide some additional
+support:
+
+The above is mostly useful for mail groups, where you have control over
 the @sc{nov} files that are created.  However, if you can persuade your
-nntp admin to add:
+nntp admin to add (in the usual implementation, notably INN):
 
 @example
 Newsgroups:full

@@ -1,3 +1,9 @@
+2002-07-18  Karl Kleinpaste  <karl@charcoal.com>
+
+	* gnus.texi (To From Newsgroups): Additional text regarding how to
+	regenerate overviews via server buffer, and note to news admins
+	about overview.fmt.
+
 2002-07-14  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Posting Styles): Fix example (it was using the To
