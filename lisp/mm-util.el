@@ -227,6 +227,22 @@ used as the line break code type of the coding system."
   (when (fboundp 'set-buffer-multibyte)
     (set-buffer-multibyte nil)))
 
+(defsubst mm-enable-multibyte-mule4 ()
+  "Enable multibyte in the current buffer.
+Only used in Emacs Mule 4."
+  (when (and (fboundp 'set-buffer-multibyte)
+             (boundp 'enable-multibyte-characters)
+	     (default-value 'enable-multibyte-characters)
+	     (not (charsetp 'eight-bit-control)))
+    (set-buffer-multibyte t)))
+
+(defsubst mm-disable-multibyte-mule4 ()
+  "Disable multibyte in the current buffer.
+Only used in Emacs Mule 4."
+  (when (and (fboundp 'set-buffer-multibyte)
+	     (not (charsetp 'eight-bit-control)))
+    (set-buffer-multibyte nil)))
+
 (defun mm-preferred-coding-system (charset)
   ;; A typo in some Emacs versions.
   (or (get-charset-property charset 'prefered-coding-system)
@@ -341,7 +357,7 @@ See also `with-temp-file' and `with-output-to-string'."
   (let ((multibyte (make-symbol "multibyte")))
     `(if (or (featurep 'xemacs)
 	     (not (fboundp 'set-buffer-multibyte))
-	     (charsetp 'eight-bit-control))
+	     (charsetp 'eight-bit-control)) ;; For Emacs Mule 4 only.
 	 (progn
 	   ,@forms)
        (let ((,multibyte (default-value 'enable-multibyte-characters)))

@@ -145,7 +145,7 @@
   (let* ((type (or type 's))
 	 (case-fold-search (not (eq (downcase (symbol-name type))
 				    (symbol-name type))))
-	 (header (aref gnus-advanced-headers index)))
+	 (header (or (aref gnus-advanced-headers index) "")))
     (cond
      ((memq type '(r R regexp Regexp))
       (string-match match header))

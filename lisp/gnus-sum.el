@@ -2103,7 +2103,7 @@ The following commands are available:
   (make-local-hook 'pre-command-hook)
   (add-hook 'pre-command-hook 'gnus-set-global-variables nil t)
   (gnus-run-hooks 'gnus-summary-mode-hook)
-  (mm-enable-multibyte)
+  (mm-enable-multibyte-mule4)
   (gnus-update-format-specifications nil 'summary 'summary-mode 'summary-dummy)
   (gnus-update-summary-mark-positions))
 
@@ -5896,12 +5896,12 @@ be displayed."
 	  (progn
 	    (when (gnus-buffer-live-p gnus-article-buffer)
 	      (with-current-buffer gnus-article-buffer
-		(mm-enable-multibyte)))
+		(mm-enable-multibyte-mule4)))
 	    (gnus-summary-display-article article all-headers)
 	    (when (gnus-buffer-live-p gnus-article-buffer)
-	      (with-current-buffer gnus-article-buffer
+	       (with-current-buffer gnus-article-buffer
 		(if (not gnus-article-decoded-p) ;; a local variable
-		    (mm-disable-multibyte))))
+		    (mm-disable-multibyte-mule4))))
 	    (when (or all-headers gnus-show-all-headers)
 	      (gnus-article-show-all-headers))
 	    (gnus-article-set-window-start
@@ -6241,6 +6241,9 @@ is a number, it is the line the article is to be displayed on."
 	     gnus-newsgroup-limit))
     current-prefix-arg
     t))
+  (when (gnus-buffer-live-p gnus-article-buffer)
+    (with-current-buffer gnus-article-buffer
+      (mm-enable-multibyte-mule4)))
   (prog1
       (if (and (stringp article)
 	       (string-match "@" article))
@@ -7833,7 +7836,7 @@ groups."
 	(gnus-summary-show-article t)
 	(when (and (not raw) (gnus-buffer-live-p gnus-article-buffer))
 	  (with-current-buffer gnus-article-buffer
-	    (mm-enable-multibyte)))
+	    (mm-enable-multibyte-mule4)))
 	(if (equal gnus-newsgroup-name "nndraft:drafts")
 	    (setq raw t))
 	(gnus-article-edit-article

@@ -1,3 +1,16 @@
+2000-10-07 15:49:39  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-enable-multibyte-mule4): New.
+	(mm-disable-multibyte-mule4): New.
+	* gnus-sum.el (gnus-summary-mode): Use it.
+	(gnus-summary-select-article): Ditto.
+	(gnus-summary-goto-article): Use enable multibyte.
+	* rfc2047.el (rfc2047-decode): Use unibyte.
+
+2000-10-07 15:42:59  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-logic.el (gnus-advanced-string): Use "" if nil.
+
 2000-10-07 10:31:05  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2047.el (rfc2047-q-encode-region): Better calculation of

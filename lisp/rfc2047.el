@@ -294,8 +294,7 @@ Should be called narrowed to the head of the message."
       (while (not (eobp))
 	(cond
 	 ((memq (char-after) '(?  ?\t))
-	  ;; Break after LWSP.
-	  (setq break (1+ (point))))
+	  (setq break (point)))
 	 ((and (not break)
 	       (looking-at "=\\?"))
 	  (setq break (point)))
@@ -429,15 +428,17 @@ If your Emacs implementation can't decode CHARSET, it returns nil."
       (when (and (eq cs 'ascii)
 		 mail-parse-charset)
 	(setq cs mail-parse-charset))
-      (mm-decode-coding-string
-       (cond
-	((equal "B" encoding)
-	 (base64-decode-string string))
-	((equal "Q" encoding)
-	 (quoted-printable-decode-string
-	  (mm-replace-chars-in-string string ?_ ? )))
-	(t (error "Invalid encoding: %s" encoding)))
-       cs))))
+      (mm-with-unibyte-current-buffer 
+	;; In Emacs Mule 4, decoding UTF-8 should be in unibyte mode.
+	(mm-decode-coding-string
+	 (cond
+	  ((equal "B" encoding)
+	   (base64-decode-string string))
+	  ((equal "Q" encoding)
+	   (quoted-printable-decode-string
+	    (mm-replace-chars-in-string string ?_ ? )))
+	  (t (error "Invalid encoding: %s" encoding)))
+	 cs)))))
 
 (provide 'rfc2047)
 
