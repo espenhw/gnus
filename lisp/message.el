@@ -3716,9 +3716,25 @@ than 988 characters long, and if they are not, trim them until they are."
   ;; Rename the buffer.
   (if message-send-rename-function
       (funcall message-send-rename-function)
-    (when (string-match "\\`\\*\\(unsent \\)?" (buffer-name))
-      (rename-buffer
-       (concat "*sent " (substring (buffer-name) (match-end 0))) t)))
+    (when (string-match "\\`\\*\\(sent \\|unsent \\)?\\(.+\\)\\*[^\\*]*" 
+			(buffer-name))
+      (let ((name (match-string 2 (buffer-name)))
+	    to group)
+	(if (not (or (string-equal name "mail")
+		     (string-equal name "news")))
+	    (setq name (concat "*sent " name "*"))
+	  (setq to (message-fetch-field "to"))
+	  (setq group (message-fetch-field "newsgroups"))
+	  (setq name
+		(cond 
+		 (to (concat "*sent mail to "
+			     (or (car (mail-extract-address-components to))
+				 to) "*"))
+		 ((and group (not (string= group "")))
+		  (concat "*sent news on " group "*"))
+		 (t "*sent mail*"))))
+	(unless (string-equal name (buffer-name))
+	  (rename-buffer name t)))))
   ;; Push the current buffer onto the list.
   (when message-max-buffers
     (setq message-buffer-list
@@ -4330,7 +4346,7 @@ the message."
 	    (subject (message-fetch-field "Subject")))
 	(setq subject
 	      (if subject
-		  (if decoded 
+		  (if decoded
 		      subject
 		    (mail-decode-encoded-word-string subject))
 		""))
