@@ -1,5 +1,8 @@
 2002-01-13  Simon Josefsson  <jas@extundo.com>
 
+	* message.el (message-newline-and-reformat): Use `newline' instead
+	of inserting \n, so that the newline is marked as hard.
+
 	* gnus-spec.el (gnus-pad-form): Don't evaluate EL multiple times.
 	From Jesper Harder <harder@ifa.au.dk>.
 

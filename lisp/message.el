@@ -2064,10 +2064,14 @@ Prefix arg means justify as well."
       (if not-break
 	  (setq point nil)
 	(if bolp
-	    (insert "\n")
-	  (insert "\n\n"))
+	    (newline)
+	  (newline)
+	  (newline))
 	(setq point (point))
-	(insert "\n\n")
+	;; (newline 2) doesn't mark both newline's as hard, so call
+	;; newline twice. -jas
+	(newline)
+	(newline)
 	(delete-region (point) (re-search-forward "[ \t]*"))
 	(when (and quoted (not bolp))
 	  (insert quoted leading-space)))
