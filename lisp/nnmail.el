@@ -36,7 +36,8 @@
 (require 'mm-util)
 
 (eval-and-compile
-  (autoload 'gnus-add-buffer "gnus"))
+  (autoload 'gnus-add-buffer "gnus")
+  (autoload 'gnus-kill-buffer "gnus"))
 
 (defgroup nnmail nil
   "Reading mail with Gnus."

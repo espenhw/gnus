@@ -124,13 +124,6 @@
        (funcall (if (stringp buffer) 'get-buffer 'buffer-name)
 		buffer))))
 
-(defmacro gnus-kill-buffer (buffer)
-  `(let ((buf ,buffer))
-     (when (gnus-buffer-exists-p buf)
-       (when (boundp 'gnus-buffers)
-	 (setq gnus-buffers (delete (get-buffer buf) gnus-buffers)))
-       (kill-buffer buf))))
-
 (defalias 'gnus-point-at-bol
   (if (fboundp 'point-at-bol)
       'point-at-bol

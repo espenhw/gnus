@@ -771,6 +771,13 @@ be set in `.emacs' instead."
   "Add the current buffer to the list of Gnus buffers."
   (push (current-buffer) gnus-buffers))
 
+(defmacro gnus-kill-buffer (buffer)
+  "Kill BUFFER and remove from the list of Gnus buffers."
+  `(let ((buf ,buffer))
+     (when (gnus-buffer-exists-p buf)
+       (setq gnus-buffers (delete (get-buffer buf) gnus-buffers))
+       (kill-buffer buf))))
+
 (defun gnus-buffers ()
   "Return a list of live Gnus buffers."
   (while (and gnus-buffers
