@@ -4006,7 +4006,9 @@ lines as a normal @code{format} string, with some extensions
 (@pxref{Formatting Variables}).
 
 There should always be a colon on the line; the cursor always moves to
-the colon after performing an operation.
+the colon after performing an operation.  (Of course, Gnus wouldn't be
+Gnus if it wasn't possible to change this.  Just write a new function
+@code{gnus-goto-colon} which does whatever you like with the cursor.)
 
 The default string is @samp{%U%R%z%I%(%[%4L: %-20,20n%]%) %s\n}.
 
