@@ -1,5 +1,7 @@
 2003-05-07  Dave Love  <fx@gnu.org>
 
+	* rfc2047.el (rfc2047-encode-region): Skip \n as whitespace.
+
 	* mm-util.el (mm-find-mime-charset-region): Expurgate utf-16 from
 	possible values.
 
