@@ -430,6 +430,11 @@ this variable specifies group names."
   :group 'gnus-summary-marks
   :type 'character)
 
+(defcustom gnus-no-mark ?  ;Whitespace
+  "*Mark used for articles that have no other secondary mark."
+  :group 'gnus-summary-marks
+  :type 'character)
+
 (defcustom gnus-ancient-mark ?O
   "*Mark used for ancient articles."
   :group 'gnus-summary-marks
@@ -2795,7 +2800,7 @@ buffer that was in action when the last article was fetched."
 		(gnus-tmp-replied gnus-replied-mark)
 		((memq gnus-tmp-current gnus-newsgroup-saved)
 		 gnus-saved-mark)
-		(t gnus-unread-mark)))
+		(t gnus-no-mark)))
 	 (gnus-tmp-from (mail-header-from gnus-tmp-header))
 	 (gnus-tmp-name
 	  (cond
@@ -4163,7 +4168,7 @@ or a straight list of headers."
 		    gnus-replied-mark)
 		   ((memq number gnus-newsgroup-saved)
 		    gnus-saved-mark)
-		   (t gnus-unread-mark))
+		   (t gnus-no-mark))
 	     gnus-tmp-from (mail-header-from gnus-tmp-header)
 	     gnus-tmp-name
 	     (cond
@@ -8526,7 +8531,7 @@ Iff NO-EXPIRE, auto-expiry will be inhibited."
 	  gnus-replied-mark)
 	 ((memq article gnus-newsgroup-saved)
 	  gnus-saved-mark)
-	 (t gnus-unread-mark))
+	 (t gnus-no-mark))
    'replied)
   (when (gnus-visual-p 'summary-highlight 'highlight)
     (gnus-run-hooks 'gnus-summary-update-hook))
@@ -8669,6 +8674,11 @@ The difference between N and the number of marks cleared is returned."
     (when (or (gnus-unread-mark-p mark)
 	      (gnus-read-mark-p mark))
       (gnus-summary-mark-article gnus-current-article gnus-read-mark))))
+
+(defun gnus-summary-mark-unread-as-ticked ()
+   "Intended to be used by `gnus-summary-mark-article-hook'."
+  (when (memq gnus-current-article gnus-newsgroup-unreads)
+    (gnus-summary-mark-article gnus-current-article gnus-ticked-mark)))
 
 (defun gnus-summary-mark-region-as-read (point mark all)
   "Mark all unread articles between point and mark as read.

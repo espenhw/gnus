@@ -574,17 +574,40 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 
 ;; Process marking.
 
+(defun gnus-message-process-mark (unmarkp new-marked)
+  (let ((old (- (length gnus-newsgroup-processable) (length new-marked))))
+    (message "%d mark%s %s%s"
+	     (length new-marked)
+	     (if (= (length new-marked) 1) "" "s")
+	     (if unmarkp "removed" "added")
+	     (cond
+	      ((and (zerop old)
+		    (not unmarkp))
+	       "")
+	      (unmarkp
+	       (format ", %d remain marked"
+		       (length gnus-newsgroup-processable)))
+	      (t
+	       (format ", %d already marked" old))))))
+
+(defun gnus-new-processable (unmarkp articles)
+  (if unmarkp
+      (gnus-intersection gnus-newsgroup-processable articles)
+    (gnus-set-difference articles gnus-newsgroup-processable)))
+
 (defun gnus-uu-mark-by-regexp (regexp &optional unmark)
   "Set the process mark on articles whose subjects match REGEXP.
 When called interactively, prompt for REGEXP.
 Optional UNMARK non-nil means unmark instead of mark."
   (interactive "sMark (regexp): \nP")
-  (let ((articles (gnus-uu-find-articles-matching regexp)))
-    (while articles
-      (if unmark
-	  (gnus-summary-remove-process-mark (pop articles))
-	(gnus-summary-set-process-mark (pop articles))))
-    (message ""))
+  (save-excursion
+    (let* ((articles (gnus-uu-find-articles-matching regexp))
+	   (new-marked (gnus-new-processable unmark articles)))
+      (while articles
+	(if unmark
+	    (gnus-summary-remove-process-mark (pop articles))
+	  (gnus-summary-set-process-mark (pop articles))))
+      (gnus-message-process-mark unmark new-marked)))
   (gnus-summary-position-point))
 
 (defun gnus-uu-unmark-by-regexp (regexp)

@@ -190,22 +190,17 @@
 	(delete-char 1))
       (goto-char (next-single-property-change (point) prop nil (point-max))))))
 
+(require 'nnheader)
 (defun gnus-newsgroup-directory-form (newsgroup)
   "Make hierarchical directory name from NEWSGROUP name."
-  (let ((newsgroup (gnus-newsgroup-savable-name newsgroup))
-	(len (length newsgroup))
-	idx)
-    ;; If this is a foreign group, we don't want to translate the
-    ;; entire name.
-    (if (setq idx (string-match ":" newsgroup))
-	(aset newsgroup idx ?/)
-      (setq idx 0))
-    ;; Replace all occurrences of `.' with `/'.
-    (while (< idx len)
-      (when (= (aref newsgroup idx) ?.)
-	(aset newsgroup idx ?/))
-      (setq idx (1+ idx)))
-    newsgroup))
+  (let* ((newsgroup (gnus-newsgroup-savable-name newsgroup))
+	 (idx (string-match ":" newsgroup)))
+    (concat
+     (if idx (substring newsgroup 0 idx))
+     (if idx "/")
+     (nnheader-replace-chars-in-string
+      (if idx (substring newsgroup (1+ idx)) newsgroup)
+      ?. ?/))))
 
 (defun gnus-newsgroup-savable-name (group)
   ;; Replace any slashes in a group name (eg. an ange-ftp nndoc group)

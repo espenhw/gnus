@@ -1,3 +1,18 @@
+2000-12-28 19:44:56  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-uu.el (gnus-message-process-mark): New function.
+	(gnus-uu-mark-by-regexp): Use it.
+	(gnus-new-processable): New function.
+
+2000-12-28 19:21:57  Inge Frick  <inge@nada.kth.se>
+
+	* gnus-sum.el (gnus-no-mark): New variable.
+
+2000-11-01 01:12:29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnwfm.el (nnwfm-create-mapping): Remove quote marks and
+	backslashes. 
+
 2000-12-26  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-banner-alist): Remove duplicate

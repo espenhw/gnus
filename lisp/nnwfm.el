@@ -121,19 +121,23 @@
 		     (format "Item.asp?GroupID=%d&ThreadID=%d" sid
 			     thread-id)))
 	    (goto-char (point-min))
-	    (setq contents
-		  (ignore-errors (w3-parse-buffer (current-buffer))))
-	    (setq tables (caddar (caddar (cdr (caddar (caddar contents))))))
+	    (setq tables (caddar
+			  (caddar
+			   (cdr (caddar
+				 (caddar
+				  (ignore-errors
+				    (w3-parse-buffer (current-buffer)))))))))
 	    (setq tables (cdr (caddar (memq (assq 'div tables) tables))))
 	    (setq contents nil)
 	    (dolist (table tables)
-	      (setq table (caddar (caddar (caddr table)))
-		    hstuff (delete ":link" (nnweb-text (car table)))
-		    bstuff (car (caddar (cdr table)))
-		    from (car hstuff))
-	      (when (nth 2 hstuff)
-		(setq time (nnwfm-date-to-time (nth 2 hstuff)))
-		(push (list from time bstuff) contents)))
+	      (when (eq (car table) 'table)
+		(setq table (caddar (caddar (caddr table)))
+		      hstuff (delete ":link" (nnweb-text (car table)))
+		      bstuff (car (caddar (cdr table)))
+		      from (car hstuff))
+		(when (nth 2 hstuff)
+		  (setq time (nnwfm-date-to-time (nth 2 hstuff)))
+		  (push (list from time bstuff) contents))))
 	    (setq contents (nreverse contents))
 	    (dolist (art (cdr elem))
 		(push (list (car art)
@@ -280,11 +284,13 @@
 	(while (re-search-forward "  wr(" nil t)
 	  (forward-char -1)
 	  (setq elem (message-tokenize-header
-		      (buffer-substring
-		       (1+ (point))
-		       (progn
-			 (forward-sexp 1)
-			 (1- (point))))))
+		      (nnweb-replace-in-string
+		       (buffer-substring
+			(1+ (point))
+			(progn
+			  (forward-sexp 1)
+			  (1- (point))))
+		       "\\\\[\"\\\\]" "")))
 	  (push (list
 		 (string-to-number (nth 1 elem))
 		 (nnweb-replace-in-string (nth 2 elem) "\"" "")
