@@ -6856,7 +6856,7 @@ regexp VARSTR."
 
 (defun message-use-alternative-email-as-from ()
   (require 'mail-utils)
-  (let* ((fields '("To" "Cc"))
+  (let* ((fields '("To" "Cc" "From"))
 	 (emails
 	  (split-string
 	   (mail-strip-quoted-names
@@ -6870,7 +6870,8 @@ regexp VARSTR."
       (pop emails))
     (unless (or (not email) (equal email user-mail-address))
       (goto-char (point-max))
-      (insert "From: " email "\n"))))
+      (insert "From: " (let ((user-mail-address email)) (message-make-from))
+	      "\n"))))
 
 (defun message-options-get (symbol)
   (cdr (assq symbol message-options)))

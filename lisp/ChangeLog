@@ -1,3 +1,9 @@
+2004-11-11  ARISAWA Akihiro  <ari@mbf.ocn.ne.jp>  (tiny change)
+
+	* message.el (message-use-alternative-email-as-from): Examine the
+	From header as well; use message-make-from in order to include a
+	user's full name.
+
 2004-11-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-emphasis-alist): Don't hide asterisks by
