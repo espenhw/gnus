@@ -133,7 +133,7 @@
 (eval-and-compile
   (let ((case-fold-search t))
     (cond
-     ((string-match "windows-nt\\|os/2\\|emx" (format "%s" system-type))
+     ((string-match "windows-nt\\|os/2\\|emx" (symbol-name system-type))
       (setq nnheader-file-name-translation-alist
 	    (append nnheader-file-name-translation-alist
 		    '((?: . ?_)

@@ -466,7 +466,7 @@ none, and whose CDR is the corresponding element of DOMAINS."
 					    'text nil nil nil rightp))))))
 
 (defun gnus-picons-action-toggle (data)
-  "Toggle annotation"
+  "Toggle annotation."
   (interactive "e")
   (let* ((annot (car data))
 	 (glyph (annotation-glyph annot)))
@@ -474,7 +474,7 @@ none, and whose CDR is the corresponding element of DOMAINS."
     (set-annotation-data annot (cons annot glyph))))
 
 (defun gnus-picons-clear-cache ()
-  "Clear the picons cache"
+  "Clear the picons cache."
   (interactive)
   (setq gnus-picons-glyph-alist nil
 	gnus-picons-url-alist nil))
@@ -730,7 +730,7 @@ none, and whose CDR is the corresponding element of DOMAINS."
 		     (error "Unknown picon job tag %s" tag)))))))
 
 (defun gnus-picons-next-job ()
-  "Start processing the job queue if it is not in progress"
+  "Start processing the job queue if it is not in progress."
   (unless gnus-picons-job-already-running
     (gnus-picons-next-job-internal)))
 

@@ -192,7 +192,7 @@ above them."
   (smiley-buffer (current-buffer) beg end))
 
 (defun smiley-toggle-extent (event)
-  "Toggle smiley at given point"
+  "Toggle smiley at given point."
   (interactive "e")
   (let* ((ant (event-glyph-extent event))
 	 (pt (event-closest-point event))
@@ -303,7 +303,7 @@ Mouse button3 - menu"))
 (defvar gnus-article-buffer)
 ;;;###autoload
 (defun gnus-smiley-display ()
-  "Display \"smileys\" as small graphical icons." 
+  "Display \"smileys\" as small graphical icons."
   (interactive)
   (save-excursion
     (set-buffer gnus-article-buffer)

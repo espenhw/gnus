@@ -1,3 +1,63 @@
+Wed Jun  3 04:03:37 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.11 is released.
+
+Wed Jun  3 03:33:50 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Checked doc string syntax throughout.
+
+	* message.el (message-subject-re-regexp): Renamed.
+
+Wed Jun  3 03:33:05 1998  Simon Josefsson  <jas@pdc.kth.se>
+
+	* message.el (message-ignored-subject-re): New variable.
+
+Wed Jun  3 03:25:13 1998  Sam Steingold  <sds@usa.net>
+
+	* gnus-msg.el (gnus-bug-create-help-buffer): New variable.
+	(gnus-bug): Use it.
+
+1998-05-07  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* nnmail.el: (nnmail-get-split-group): Use `regexp-quote'
+	when file name is a part of pattern.
+
+	* nnmail.el (nnmail-crosspost-link-function): Ditto.
+
+	* gnus-ems.el: Use `symbol-name' instead of `(format "%s" ...)'.
+
+	* gnus-score.el (gnus-score-load-file): Use `regexp-quote'
+	when file name is a part of pattern.
+
+1998-05-06  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-cache.el (gnus-cache-generate-active): Use `regexp-quote'
+	when file name is a part of pattern.
+
+Wed Jun  3 03:13:34 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnfolder.el (nnfolder-delete-mail): Changed parameters.
+	(nnfolder-request-replace-article): Rename X-From-Line.
+
+Wed Jun  3 03:10:04 1998  Dan Christensen  <jdc@chow.mat.jhu.edu>
+
+	* nnfolder.el (nnfolder-adjust-min-active): Work.
+
+Mon Jun  1 05:27:28 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-limit-to-age): Reversed time and
+	almost collapsed space!
+
+	* nnmail.el (nnmail-days-to-time): Computed wrong time.
+
+Mon Jun  1 05:19:46 1998  Kim-Minh Kaplan  <KimMinh.Kaplan@utopia.eunet.fr>
+
+	* gnus-sum.el (gnus-dependencies-add-header): Break loops.
+
+Mon Jun  1 05:13:34 1998  Fabrice POPINEAU  <popineau@esemetz.ese-metz.fr>
+
+	* gnus-cache.el (gnus-cache-generate-active): Regexp-quote.
+
 Mon Jun  1 04:31:23 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.10 is released.

@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.6.10"
+(defconst gnus-version-number "5.6.11"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -2696,7 +2696,7 @@ Allow completion over sensible values."
 
 ;;;###autoload
 (defun gnus-slave-no-server (&optional arg)
-  "Read network news as a slave, without connecting to local server"
+  "Read network news as a slave, without connecting to local server."
   (interactive "P")
   (gnus-no-server arg t))
 

@@ -218,7 +218,7 @@ several files - eg. \".spool[0-9]*\"."
   :type 'function)
 
 (defcustom nnmail-crosspost-link-function
-  (if (string-match "windows-nt\\|emx" (format "%s" system-type))
+  (if (string-match "windows-nt\\|emx" (symbol-name system-type))
       'copy-file
     'add-name-to-file)
   "*Function called to create a copy of a file.
@@ -541,7 +541,7 @@ parameter.  It should return nil, `warn' or `delete'."
   "Convert DAYS into time."
   (let* ((seconds (* 1.0 days 60 60 24))
 	 (rest (expt 2 16))
-	 (ms (condition-case nil (round (/ seconds rest))
+	 (ms (condition-case nil (floor (/ seconds rest))
 	       (range-error (expt 2 16)))))
     (list ms (condition-case nil (round (- seconds (* ms rest)))
 	       (range-error (expt 2 16))))))
@@ -717,10 +717,12 @@ return nil if FILE is a spool file or the procmail group for which it
 is a spool.  If not using procmail, return GROUP."
   (if (or (eq nnmail-spool-file 'procmail)
 	  nnmail-use-procmail)
-      (if (string-match (concat "^" (expand-file-name
-				     (file-name-as-directory
-				      nnmail-procmail-directory))
-				"\\([^/]*\\)" nnmail-procmail-suffix "$")
+      (if (string-match (concat "^" (regexp-quote
+				     (expand-file-name
+				      (file-name-as-directory
+				       nnmail-procmail-directory)))
+				"\\([^/]*\\)"
+				(regexp-quote nnmail-procmail-suffix) "$")
 			(expand-file-name file))
 	  (let ((procmail-group (substring (expand-file-name file)
 					   (match-beginning 1)

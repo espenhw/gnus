@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Message 5.6.10 Manual
+@settitle Message 5.6.11 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -42,7 +42,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Message 5.6.10 Manual
+@title Message 5.6.11 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -83,7 +83,7 @@ Message mode buffers.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Message 5.6.10.  Message is distributed with
+This manual corresponds to Message 5.6.11.  Message is distributed with
 the Gnus distribution bearing the same version number as this manual
 has. 
 
@@ -716,6 +716,18 @@ Allegedly.
 @vindex message-default-headers
 This string is inserted at the end of the headers in all message
 buffers.
+
+@item message-subject-re-regexp
+@vindex message-subject-re-regexp
+Responses to messages have subjects that start with @samp{Re: }.  This
+is @emph{not} an abbreviation of the English word ``response'', but in
+Latin, and means ``in response to''.  Some illiterate nincompoops have
+failed to grasp this fact, and have ``internationalized'' their software
+to use abonimations like @samp{Aw: } (``antwort'') or @samp{Sv: }
+(``svar'') instead, which is meaningless and evil.  However, you may
+have to deal with users that use these evil tools, in which case you may
+set this variable to a regexp that matches these prefixes.  Myself, I
+just throw away non-compliant mail.
 
 @end table
 

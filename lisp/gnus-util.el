@@ -341,7 +341,7 @@
     (message "")))
 
 (defun gnus-dd-mmm (messy-date)
-  "Return a string like DD-MMM from a big messy string"
+  "Return a string like DD-MMM from a big messy string."
   (let ((datevec (ignore-errors (timezone-parse-date messy-date))))
     (if (or (not datevec)
 	    (string-equal "0" (aref datevec 1)))
@@ -376,7 +376,7 @@ Cache the result as a text property stored in DATE."
   (format-time-string "%Y%m%dT%H%M%S" time))
 
 (defun gnus-date-iso8601 (date)
-  "Convert the DATE to YYMMDDTHHMMSS"
+  "Convert the DATE to YYMMDDTHHMMSS."
   (condition-case ()
       (gnus-time-iso8601 (gnus-date-get-time date))
     (error "")))

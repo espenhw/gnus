@@ -182,7 +182,7 @@
 
 ;;;###autoload
 (defun nnkiboze-generate-groups ()
-  "Usage: emacs -batch -l nnkiboze -f nnkiboze-generate-groups
+  "\"Usage: emacs -batch -l nnkiboze -f nnkiboze-generate-groups\".
 Finds out what articles are to be part of the nnkiboze groups."
   (interactive)
   (let ((nnmail-spool-file nil)

@@ -396,12 +396,15 @@ time saver for large mailboxes.")
   (nnfolder-possibly-change-group group)
   (save-excursion
     (set-buffer buffer)
+    (goto-char (point-min))
+    (when (looking-at "X-From-Line: ")
+      (replace-match "From "))
     (nnfolder-normalize-buffer)
     (set-buffer nnfolder-current-buffer)
     (goto-char (point-min))
     (if (not (nnfolder-goto-article article))
 	nil
-      (nnfolder-delete-mail t t)
+      (nnfolder-delete-mail t)
       (insert-buffer-substring buffer)
       (nnfolder-save-buffer)
       t)))
@@ -463,10 +466,9 @@ time saver for large mailboxes.")
       (goto-char (point-min))
       (while (and (search-forward marker nil t)
 		  (re-search-forward number nil t))
-	(setq activemin (min activemin
-			     (string-to-number (buffer-substring
-						(match-beginning 0)
-						(match-end 0))))))
+	(let ((newnum (string-to-number (match-string 0))))
+	  (if (nnmail-within-headers-p)
+	      (setq activemin (min activemin newnum)))))
       (setcar active activemin))))
 
 (defun nnfolder-article-string (article)
@@ -498,19 +500,21 @@ Returns t if successful, nil otherwise."
     (when found
       (nnmail-search-unix-mail-delim-backward))))
 
-(defun nnfolder-delete-mail (&optional force leave-delim)
-  "Delete the message that point is in."
-  (save-excursion
-    (delete-region
-     (save-excursion
-       (nnmail-search-unix-mail-delim-backward)
-       (if leave-delim (progn (forward-line 1) (point))
-	 (point)))
-     (progn
-       (forward-line 1)
-       (if (nnmail-search-unix-mail-delim)
-	   (point)
-	 (point-max))))))
+(defun nnfolder-delete-mail (&optional leave-delim)
+  "Delete the message that point is in.
+If optional argument LEAVE-DELIM is t, then mailbox delimiter is not
+deleted.  Point is left where the deleted region was."
+  (delete-region
+   (save-excursion
+     (forward-line 1) ; in case point is at beginning of message already
+     (nnmail-search-unix-mail-delim-backward)
+     (if leave-delim (progn (forward-line 1) (point))
+       (point)))
+   (progn
+     (forward-line 1)
+     (if (nnmail-search-unix-mail-delim)
+	 (point)
+       (point-max)))))
 
 (defun nnfolder-possibly-change-group (group &optional server dont-check)
   ;; Change servers.

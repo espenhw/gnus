@@ -1075,8 +1075,9 @@ SCORE is the score to add."
   ;; Load score file FILE.  Returns a list a retrieved score-alists.
   (let* ((file (expand-file-name
 		(or (and (string-match
-			  (concat "^" (expand-file-name
-				       gnus-kill-files-directory))
+			  (concat "^" (regexp-quote
+				       (expand-file-name
+					gnus-kill-files-directory)))
 			  (expand-file-name file))
 			 file)
 		    (concat (file-name-as-directory gnus-kill-files-directory)
@@ -2739,6 +2740,7 @@ The list is determined from the variable gnus-score-file-alist."
   (interactive (list gnus-global-score-files))
   (let (out)
     (while files
+      ;; #### /$ Unix-specific?
       (if (string-match "/$" (car files))
 	  (setq out (nconc (directory-files
 			    (car files) t

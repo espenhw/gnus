@@ -108,8 +108,7 @@ matches an previously scanned and verified nocem message."
   "Real-name mappings of subscribed groups.")
 
 (defun gnus-fill-real-hashtb ()
-  "Fill up a hash table with the real-name mappings from the user's
-active file."
+  "Fill up a hash table with the real-name mappings from the user's active file."
   (setq gnus-nocem-real-group-hashtb (gnus-make-hashtable
 				      (length gnus-newsrc-alist)))
   (mapcar (lambda (group)

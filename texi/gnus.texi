@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.6.10 Manual
+@settitle Gnus 5.6.11 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.6.10 Manual
+@title Gnus 5.6.11 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.6.10.
+This manual corresponds to Gnus 5.6.11.
 
 @end ifinfo
 
@@ -15371,6 +15371,12 @@ Overall, a casual user who hasn't written much code that depends on
 @sc{gnus} internals should suffer no problems.  If problems occur,
 please let me know by issuing that magic command @kbd{M-x gnus-bug}.
 
+@vindex gnus-bug-create-help-buffer
+If you are in the habit of sending bug reports @emph{very} often, you
+may find the helpful help buffer annoying after a while.  If so, set
+@code{gnus-bug-create-help-buffer} to @code{nil} to avoid having it pop
+up at you.
+
 
 @node Conformity
 @subsection Conformity
@@ -15557,6 +15563,7 @@ Russ Allbery,
 Peter Arius,
 Matt Armstrong,
 Marc Auslander,
+Frank Bennett,
 Robert Bihlmeyer,
 Chris Bone,
 Mark Borges,
@@ -15564,6 +15571,7 @@ Mark Boyns,
 Lance A. Brown,
 Kees de Bruin,
 Martin Buchholz,
+Joe Buehler,
 Kevin Buhr,
 Alastair Burt,
 Joao Cachopo,
@@ -15598,6 +15606,8 @@ D. Hall,
 Magnus Hammerin,
 Kenichi Handa, @c Handa
 Raja R. Harinath,
+Yoshiki Hayashi, @c ?
+P. E. Jareth Hein,
 Hisashige Kenji, @c Hisashige
 Marc Horowitz,
 Gunnar Horrigmo,
@@ -15624,12 +15634,13 @@ James LewisMoss,
 Christian Limpach,
 Markus Linnala,
 Dave Love,
+Mike McEwan,
 Tonny Madsen,
 Shlomo Mahlab,
 Nat Makarevitch,
 Istvan Marko,
 David Martin,
-Jason R Mastaler,
+Jason R. Mastaler,
 Gordon Matzigkeit,
 Timo Metzemakers,
 Richard Mlynarik,
@@ -15649,6 +15660,8 @@ Stephen Peters,
 Jens-Ulrik Holger Petersen,
 Ulrich Pfeifer,
 John McClary Prevost,
+Mike Pullen,
+Jim Radford,
 Colin Rafferty,
 Lasse Rasinen,
 Lars Balker Rasmussen,
@@ -15658,6 +15671,7 @@ Roland B. Roberts,
 Bart Robinson,
 Christian von Roques,
 Jason Rumney,
+Wolfgang Rupprecht,
 Jay Sachs,
 Dewey M. Sasser,
 Loren Schall,
@@ -15714,7 +15728,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
-* Quassia Gnus::       Two times two is four, or Gnus 5.6.10.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6.11.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -16249,7 +16263,7 @@ Emphasized text can be properly fontisized:
 @node Quassia Gnus
 @subsubsection Quassia Gnus
 
-New features in Gnus 5.6.10:
+New features in Gnus 5.6.11:
 
 @itemize @bullet
 

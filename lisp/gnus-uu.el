@@ -648,7 +648,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
   (gnus-summary-position-point))
 
 (defun gnus-uu-mark-over (&optional score)
-  "Mark all articles with a score over SCORE (the prefix.)"
+  "Mark all articles with a score over SCORE (the prefix)."
   (interactive "P")
   (let ((score (gnus-score-default score))
 	(data gnus-newsgroup-data))
@@ -1901,8 +1901,10 @@ If no file has been included, the user will be asked for a file."
     (goto-char (point-max))
     (insert (format "\n%s\n" gnus-uu-post-binary-separator))
 
+    ;; #### Unix-specific?
     (when (string-match "^~/" file-path)
       (setq file-path (concat "$HOME" (substring file-path 1))))
+    ;; #### Unix-specific?
     (if (string-match "/[^/]*$" file-path)
 	(setq file-name (substring file-path (1+ (match-beginning 0))))
       (setq file-name file-path))

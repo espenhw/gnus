@@ -2856,11 +2856,90 @@ If NO-DISPLAY, don't generate a summary buffer."
 	      gnus-newsgroup-dependencies)))
     threads))
 
+;; Build the thread tree.
+(defun gnus-dependencies-add-header (header dependencies force-new)
+  "Enter HEADER into the DEPENDENCIES table if it is not already there.
+
+If FORCE-NEW is not NIL, enter HEADER into the DEPENDENCIES table even
+if it was already present.
+
+If `gnus-summary-ignore-duplicates' is NIL then duplicate Message-IDs
+will not be entered in the DEPENDENCIES table.  Otherwise duplicate
+Message-IDs will be renamed be renamed to a unique Message-ID before
+being entered.
+
+Returns HEADER if it was entered in the DEPENDENCIES. Returns NIL otherwise."
+
+  (let* ((id (mail-header-id header))
+	 (id-dep (and id (intern id dependencies)))
+	 ref ref-dep ref-header)
+    ;; Enter this `header' in the `dependencies' table
+    (cond
+     ((not id-dep)
+      (setq header nil))
+     ;; The first two cases do the normal part : enter a new `header'
+     ;; in the `dependencies' table,
+     ((not (boundp id-dep))
+      (set id-dep (list header)))
+     ((null (car (symbol-value id-dep)))
+      (setcar (symbol-value id-dep) header))
+
+     ;; From here the `header' was already present in the
+     ;; `dependencies' table.
+
+     (force-new
+      ;; Overrides an existing entry,
+      ;; Just set the header part of the entry.
+      (setcar (symbol-value id-dep) header))
+
+     ;; Renames the existing `header' to a unique Message-ID.
+     ((not gnus-summary-ignore-duplicates)
+      ;; An article with this Message-ID has already been seen.
+      ;; We rename the Message-ID.
+      (set (setq id-dep (intern (setq id (nnmail-message-id)) dependencies))
+	   (list header))
+      (mail-header-set-id header id))
+
+     ;;   - The last case ignores an existing entry, except it adds
+     ;;     any additional Xrefs (in case the two articles came from
+     ;;     different servers.
+     ;;     Also sets `header' to `nil' meaning that the
+     ;;     `dependencies' table was *not* modified.
+     (t
+      (mail-header-set-xref
+       (car (symbol-value id-dep))
+       (concat (or (mail-header-xref (car (symbol-value id-dep)))
+		   "")
+	       (or (mail-header-xref header) "")))
+      (setq header nil)))
+
+    (when header
+      ;; First check if that we are not creating a References loop.
+      (setq ref (gnus-parent-id (mail-header-references header)))
+      (while (and ref
+		  (setq ref-dep (intern-soft ref dependencies))
+		  (boundp ref-dep)
+		  (setq ref-header (car (symbol-value ref-dep))))
+	(if (string= id ref)
+	    ;; Yuk !  This is a reference loop.  Make the article be a
+	    ;; root article.
+	    (progn
+	      (mail-header-set-references (car (symbol-value id-dep)) "none")
+	      (setq ref nil))
+	  (setq ref (gnus-parent-id (mail-header-references ref-header)))))
+      (setq ref (gnus-parent-id (mail-header-references header)))
+      (setq ref-dep (intern (or ref "none") dependencies))
+      (if (boundp ref-dep)
+	  (setcdr (symbol-value ref-dep)
+		  (nconc (cdr (symbol-value ref-dep))
+			 (list (symbol-value id-dep))))
+	(set ref-dep (list nil (symbol-value id-dep)))))
+    header))
+
 (defun gnus-build-sparse-threads ()
   (let ((headers gnus-newsgroup-headers)
-	(deps gnus-newsgroup-dependencies)
 	header references generation relations
-	cthread subject child end pthread relation new-child children)
+	cthread subject child end pthread relation new-child)
     ;; First we create an alist of generations/relations, where
     ;; generations is how much we trust the relation, and the relation
     ;; is parent/child.
@@ -2876,51 +2955,28 @@ If NO-DISPLAY, don't generate a summary buffer."
 	  (setq generation 0)
 	  (while (search-backward ">" nil t)
 	    (setq end (1+ (point)))
-	    (when (search-backward "<" nil t)
-	      ;; This is a rather weak for of loop-checking, but if
-	      ;; an article contains the same Message-ID twice in
-	      ;; the References header, this will catch it.  I haven't
-	      ;; considered other forms of thread loop preventions,
-	      ;; though -- I think one should probably go through
-	      ;; the entire thread after building it and break
-	      ;; any loops that are found.
-	      (unless (member (setq new-child (buffer-substring (point) end))
-			       children)
+	    (if (search-backward "<" nil t)
 		(push (list (incf generation)
 			    child (setq child new-child)
 			    subject)
-		      relations)
-		(push child children))))
+		      relations)))
 	  (push (list (1+ generation) child nil subject) relations)
 	  (erase-buffer)))
       (kill-buffer (current-buffer)))
     ;; Sort over trustworthiness.
-    (setq relations (sort relations 'car-less-than-car))
-    (while (setq relation (pop relations))
-      (when (if (boundp (setq cthread (intern (cadr relation) deps)))
-		(unless (car (symbol-value cthread))
-		  ;; Make this article the parent of these threads.
-		  (setcar (symbol-value cthread)
-			  (vector gnus-reffed-article-number
-				  (cadddr relation)
-				  "" ""
-				  (cadr relation)
-				  (or (caddr relation) "") 0 0 "")))
-	      (set cthread (list (vector gnus-reffed-article-number
-					 (cadddr relation)
-					 "" "" (cadr relation)
-					 (or (caddr relation) "") 0 0 ""))))
-	(push gnus-reffed-article-number gnus-newsgroup-limit)
-	(push gnus-reffed-article-number gnus-newsgroup-sparse)
-	(push (cons gnus-reffed-article-number gnus-sparse-mark)
-	      gnus-newsgroup-reads)
-	(decf gnus-reffed-article-number)
-	;; Make this new thread the child of its parent.
-	(if (boundp (setq pthread (intern (or (caddr relation) "none") deps)))
-	    (setcdr (symbol-value pthread)
-		    (nconc (cdr (symbol-value pthread))
-			   (list (symbol-value cthread))))
-	  (set pthread (list nil (symbol-value cthread))))))
+    (mapc #'(lambda (relation)
+	      (when (gnus-dependencies-add-header
+		     (make-full-mail-header gnus-reffed-article-number
+					    (cadddr relation)
+					    "" "" (cadr relation)
+					    (or (caddr relation) "") 0 0 "")
+		     gnus-newsgroup-dependencies nil)
+		(push gnus-reffed-article-number gnus-newsgroup-limit)
+		(push gnus-reffed-article-number gnus-newsgroup-sparse)
+		(push (cons gnus-reffed-article-number gnus-sparse-mark)
+		      gnus-newsgroup-reads)
+		(decf gnus-reffed-article-number)))
+	  (sort relations 'car-less-than-car))
     (gnus-message 7 "Making sparse threads...done")))
 
 (defun gnus-build-old-threads ()
@@ -2939,8 +2995,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	       (setq heads (cdr heads))
 	     (setq id (symbol-name refs))
 	     (while (and (setq id (gnus-build-get-header id))
-			 (not (car (gnus-gethash
-				    id gnus-newsgroup-dependencies)))))
+			 (not (car (gnus-id-to-thread id)))))
 	     (setq heads nil)))))
      gnus-newsgroup-dependencies)))
 
@@ -2948,8 +3003,7 @@ If NO-DISPLAY, don't generate a summary buffer."
   ;; Look through the buffer of NOV lines and find the header to
   ;; ID.  Enter this line into the dependencies hash table, and return
   ;; the id of the parent article (if any).
-  (let ((deps gnus-newsgroup-dependencies)
-	found header)
+  (let (found header)
     (prog1
 	(save-excursion
 	  (set-buffer nntp-server-buffer)
@@ -2965,8 +3019,8 @@ If NO-DISPLAY, don't generate a summary buffer."
 	    (when found
 	      (beginning-of-line)
 	      (and
-	       (setq header (gnus-nov-parse-line
-			     (read (current-buffer)) deps))
+	       (setq header (gnus-nov-parse-line (read (current-buffer))
+						 gnus-newsgroup-dependencies))
 	       (gnus-parent-id (mail-header-references header))))))
       (when header
 	(let ((number (mail-header-number header)))
@@ -2981,8 +3035,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 
 (defun gnus-build-all-threads ()
   "Read all the headers."
-  (let ((deps gnus-newsgroup-dependencies)
-	(gnus-summary-ignore-duplicates t)
+  (let ((gnus-summary-ignore-duplicates t)
 	found header article)
     (save-excursion
       (set-buffer nntp-server-buffer)
@@ -2991,7 +3044,8 @@ If NO-DISPLAY, don't generate a summary buffer."
 	(while (not (eobp))
 	  (ignore-errors
 	    (setq article (read (current-buffer)))
-	    (setq header (gnus-nov-parse-line article deps)))
+	    (setq header (gnus-nov-parse-line article
+					      gnus-newsgroup-dependencies)))
 	  (when header
 	    (push header gnus-newsgroup-headers)
 	    (if (memq (setq article (mail-header-number header))
@@ -3177,8 +3231,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 (defun gnus-root-id (id)
   "Return the id of the root of the thread where ID appears."
   (let (last-id prev)
-    (while (and id (setq prev (car (gnus-gethash
-				    id gnus-newsgroup-dependencies))))
+    (while (and id (setq prev (car (gnus-id-to-thread id))))
       (setq last-id id
 	    id (gnus-parent-id (mail-header-references prev))))
     last-id))
@@ -3190,8 +3243,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 
 (defun gnus-remove-thread (id &optional dont-remove)
   "Remove the thread that has ID in it."
-  (let ((dep gnus-newsgroup-dependencies)
-	headers thread last-id)
+  (let (headers thread last-id)
     ;; First go up in this thread until we find the root.
     (setq last-id (gnus-root-id id))
     (setq headers (list (car (gnus-id-to-thread last-id))
@@ -3224,7 +3276,7 @@ If NO-DISPLAY, don't generate a summary buffer."
       (if thread
 	  (unless dont-remove
 	    (setq gnus-newsgroup-threads (delq thread gnus-newsgroup-threads)))
-	(setq thread (gnus-gethash last-id dep)))
+	(setq thread (gnus-id-to-thread last-id)))
       (when thread
 	(prog1
 	    thread			; We return this thread.
@@ -3389,8 +3441,7 @@ Unscored articles will be counted as having a score of zero."
   (apply gnus-thread-score-function
 	 (or (append
 	      (mapcar 'gnus-thread-total-score
-		      (cdr (gnus-gethash (mail-header-id root)
-					 gnus-newsgroup-dependencies)))
+		      (cdr (gnus-id-to-thread (mail-header-id root))))
 	      (when (> (mail-header-number root) 0)
 		(list (or (cdr (assq (mail-header-number root)
 				     gnus-newsgroup-scored))
@@ -4339,43 +4390,11 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (funcall gnus-alter-header-function header)
 	    (setq id (mail-header-id header)
 		  ref (gnus-parent-id (mail-header-references header))))
-    
-	  ;; We do the threading while we read the headers.  The
-	  ;; message-id and the last reference are both entered into
-	  ;; the same hash table.  Some tippy-toeing around has to be
-	  ;; done in case an article has arrived before the article
-	  ;; which it refers to.
-	  (if (boundp (setq id-dep (intern id dependencies)))
-	      (if (and (car (symbol-value id-dep))
-		       (not force-new))
-		  ;; An article with this Message-ID has already been seen.
-		  (if gnus-summary-ignore-duplicates
-		      ;; We ignore this one, except we add
-		      ;; any additional Xrefs (in case the two articles
-		      ;; came from different servers).
-		      (progn
-			(mail-header-set-xref
-			 (car (symbol-value id-dep))
-			 (concat (or (mail-header-xref
-				      (car (symbol-value id-dep)))
-				     "")
-				 (or (mail-header-xref header) "")))
-			(setq header nil))
-		    ;; We rename the Message-ID.
-		    (set
-		     (setq id-dep (intern (setq id (nnmail-message-id))
-					  dependencies))
-		     (list header))
-		    (mail-header-set-id header id))
-		(setcar (symbol-value id-dep) header))
-	    (set id-dep (list header)))
-	  (when header
-	    (if (boundp (setq ref-dep (intern (or ref "none") dependencies)))
-		(setcdr (symbol-value ref-dep)
-			(nconc (cdr (symbol-value ref-dep))
-			       (list (symbol-value id-dep))))
-	      (set ref-dep (list nil (symbol-value id-dep))))
-	    (push header headers))
+
+	  (setq header
+		(gnus-dependencies-add-header header dependencies force-new))
+	  (if header
+	      (push header headers))
 	  (goto-char (point-max))
 	  (widen))
 	(nreverse headers)))))
@@ -4415,73 +4434,31 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (forward-char))
 
 	  (setq header
-		(vector
+		(make-full-mail-header
 		 number			; number
 		 (funcall
 		  gnus-unstructured-field-decoder (gnus-nov-field)) ; subject
 		 (funcall
 		  gnus-structured-field-decoder (gnus-nov-field)) ; from
 		 (gnus-nov-field)	; date
-		 (setq id (or (gnus-nov-field)
-			      (nnheader-generate-fake-message-id))) ; id
-		 (progn
-		   (let ((beg (point)))
-		     (search-forward "\t" eol)
-		     (if (search-backward ">" beg t)
-			 (setq ref
-			       (buffer-substring
-				(1+ (point))
-				(or (search-backward "<" beg t) beg)))
-		       (setq ref nil))
-		     (goto-char beg))
-		   (gnus-nov-field))	; refs
+		 (or (gnus-nov-field)
+		     (nnheader-generate-fake-message-id)) ; id
+		 (gnus-nov-field)	; refs
 		 (gnus-nov-read-integer) ; chars
 		 (gnus-nov-read-integer) ; lines
-		 (if (= (following-char) ?\n)
-		     nil
+		 (unless (= (following-char) ?\n)
 		   (gnus-nov-field)))))	; misc
 
       (widen))
 
     (when gnus-alter-header-function
-      (funcall gnus-alter-header-function header)
-      (setq id (mail-header-id header)
-	    ref (gnus-parent-id (mail-header-references header))))
-    
-    ;; We build the thread tree.
-    (when (equal id ref)
-      ;; This article refers back to itself.  Naughty, naughty.
-      (setq ref nil))
-    (if (boundp (setq id-dep (intern id dependencies)))
-	(if (and (car (symbol-value id-dep))
-		 (not force-new))
-	    ;; An article with this Message-ID has already been seen.
-	    (if gnus-summary-ignore-duplicates
-		;; We ignore this one, except we add any additional
-		;; Xrefs (in case the two articles came from different
-		;; servers.
-		(progn
-		  (mail-header-set-xref
-		   (car (symbol-value id-dep))
-		   (concat (or (mail-header-xref
-				(car (symbol-value id-dep)))
-			       "")
-			   (or (mail-header-xref header) "")))
-		  (setq header nil))
-	      ;; We rename the Message-ID.
-	      (set
-	       (setq id-dep (intern (setq id (nnmail-message-id))
-				    dependencies))
-	       (list header))
-	      (mail-header-set-id header id))
-	  (setcar (symbol-value id-dep) header))
-      (set id-dep (list header)))
-    (when header
-      (if (boundp (setq ref-dep (intern (or ref "none") dependencies)))
-	  (setcdr (symbol-value ref-dep)
-		  (nconc (cdr (symbol-value ref-dep))
-			 (list (symbol-value id-dep))))
-	(set ref-dep (list nil (symbol-value id-dep)))))
+      (funcall gnus-alter-header-function header))
+
+    (setq id (mail-header-id header)
+	  ref (gnus-parent-id (mail-header-references header)))
+
+    (gnus-dependencies-add-header header dependencies force-new)
+
     header))
 
 ;; Goes through the xover lines and returns a list of vectors
@@ -4611,9 +4588,9 @@ This is meant to be called in `gnus-article-internal-prepare-hook'."
 ;;; Process/prefix in the summary buffer
 
 (defun gnus-summary-work-articles (n)
-  "Return a list of articles to be worked upon.	 The prefix argument,
-the list of process marked articles, and the current article will be
-taken into consideration."
+  "Return a list of articles to be worked upon.
+The prefix argument, the list of process marked articles, and the
+current article will be taken into consideration."
   (save-excursion
     (set-buffer gnus-summary-buffer)
     (cond
@@ -5129,8 +5106,8 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
         (gnus-handle-ephemeral-exit quit-config)))))
 
 (defun gnus-handle-ephemeral-exit (quit-config)
-  "Handle movement when leaving an ephemeral group.  The state
-which existed when entering the ephemeral is reset."
+  "Handle movement when leaving an ephemeral group.
+The state which existed when entering the ephemeral is reset."
   (if (not (buffer-name (car quit-config)))
       (gnus-configure-windows 'group 'force)
     (set-buffer (car quit-config))
@@ -5895,7 +5872,9 @@ articles that are younger than AGE days."
 	    (setq is-younger (nnmail-time-less
 			      (nnmail-time-since (nnmail-date-to-time date))
 			      cutoff))
-	    (when (if younger-p is-younger (not is-younger))
+	    (when (if younger-p
+		      (not is-younger)
+		    is-younger)
 	      (push (gnus-data-number d) articles))))
 	(gnus-summary-limit (nreverse articles)))
     (gnus-summary-position-point)))
@@ -8714,9 +8693,7 @@ save those articles instead."
       (when (and header
 		 (gnus-summary-article-sparse-p (mail-header-number header)))
 	(let* ((parent (gnus-parent-id (mail-header-references header)))
-	       (thread
-		(and parent
-		     (gnus-gethash parent gnus-newsgroup-dependencies))))
+	       (thread (and parent (gnus-id-to-thread parent))))
 	  (when thread
 	    (delq (assq header thread) thread))))
       ;; We have to really fetch the header to this article.

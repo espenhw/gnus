@@ -2736,11 +2736,10 @@ of groups killed."
     (if (< (length out) 2) (car out) (nreverse out))))
 
 (defun gnus-group-yank-group (&optional arg)
-  "Yank the last newsgroups killed with \\[gnus-group-kill-group],
-inserting it before the current newsgroup.  The numeric ARG specifies
-how many newsgroups are to be yanked.  The name of the newsgroup yanked
-is returned, or (if several groups are yanked) a list of yanked groups
-is returned."
+  "Yank the last newsgroups killed with \\[gnus-group-kill-group], inserting it before the current newsgroup.
+The numeric ARG specifies how many newsgroups are to be yanked.  The
+name of the newsgroup yanked is returned, or (if several groups are
+yanked) a list of yanked groups is returned."
   (interactive "p")
   (setq arg (or arg 1))
   (let (info group prev out)

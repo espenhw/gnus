@@ -1,3 +1,9 @@
+Wed Jun  3 03:30:47 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.texi (Message Headers): Addition.
+
+	* gnus.texi (Compatibility): Addition.
+
 Tue May 19 02:44:31 1998  Mike Pullen  <mpullen@midwest.net>
 
 	* gnus.texi.orig: Typo fixes.

@@ -607,8 +607,9 @@ If LOW, update the lower bound instead."
 	  (if top
 	      ""
 	    (string-match
-	     (concat "^" (file-name-as-directory
-			  (expand-file-name gnus-cache-directory)))
+	     (concat "^" (regexp-quote
+			  (file-name-as-directory
+			   (expand-file-name gnus-cache-directory))))
 	     (directory-file-name directory))
 	    (nnheader-replace-chars-in-string
 	     (substring (directory-file-name directory) (match-end 0))
