@@ -499,7 +499,7 @@ Summary Buffer
 * Choosing Articles::           Reading articles.
 * Paging the Article::          Scrolling the current article.
 * Reply Followup and Post::     Posting articles.
-* Delayed Articles::            
+* Delayed Articles::            Send articles at a later time.
 * Marking Articles::            Marking articles as read, expirable, etc.
 * Limiting::                    You can limit the summary buffer.
 * Threading::                   How threads are made.
@@ -4317,7 +4317,7 @@ You can have as many summary buffers open as you wish.
 * Choosing Articles::           Reading articles.
 * Paging the Article::          Scrolling the current article.
 * Reply Followup and Post::     Posting articles.
-* Delayed Articles::            
+* Delayed Articles::            Send articles at a later time.
 * Marking Articles::            Marking articles as read, expirable, etc.
 * Limiting::                    You can limit the summary buffer.
 * Threading::                   How threads are made.
