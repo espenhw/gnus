@@ -1354,29 +1354,36 @@ Return nil otherwise."
 
 (defmacro gnus-mapcar (function seq1 &rest seqs2_n)
   "Apply FUNCTION to each element of the sequences, and make a list of the results.
-If there are several sequences, FUNCTION is called with that many arguments, 
+If there are several sequences, FUNCTION is called with that many arguments,
 and mapping stops as soon as the shortest sequence runs out.  With just one
 sequence, this is like `mapcar'.  With several, it is like the Common Lisp
 `mapcar' function extended to arbitrary sequence types."
 
   (if seqs2_n
       (let* ((seqs (cons seq1 seqs2_n))
-             (cnt 0)
-             (heads (mapcar (lambda (seq) (make-symbol (concat "head" (int-to-string (setq cnt (1+ cnt)))))) seqs))
-             (result (make-symbol "result"))
-             (result-tail (make-symbol "result-tail")))
-        `(let* ,(let* ((bindings (cons nil nil))
-                       (heads heads))
-                  (nconc bindings (list (list result '(cons nil nil))))
-                  (nconc bindings (list (list result-tail result)))
-                  (while heads
-                    (nconc bindings (list (list (pop heads) (pop seqs)))))
-                  (cdr bindings))
-           (while (and ,@heads)
-             (setcdr ,result-tail (cons (funcall ,function ,@(mapcar (lambda (h) (list 'car h)) heads)) nil))
-             (setq ,result-tail (cdr ,result-tail)
-                   ,@(apply 'nconc (mapcar (lambda (h) (list h (list 'cdr h))) heads))))
-           (cdr ,result)))
+	     (cnt 0)
+	     (heads (mapcar (lambda (seq)
+			      (make-symbol (concat "head"
+						   (int-to-string
+						    (setq cnt (1+ cnt))))))
+			    seqs))
+	     (result (make-symbol "result"))
+	     (result-tail (make-symbol "result-tail")))
+	`(let* ,(let* ((bindings (cons nil nil))
+		       (heads heads))
+		  (nconc bindings (list (list result '(cons nil nil))))
+		  (nconc bindings (list (list result-tail result)))
+		  (while heads
+		    (nconc bindings (list (list (pop heads) (pop seqs)))))
+		  (cdr bindings))
+	   (while (and ,@heads)
+	     (setcdr ,result-tail (cons (funcall ,function
+						 ,@(mapcar (lambda (h) (list 'car h))
+							   heads))
+					nil))
+	     (setq ,result-tail (cdr ,result-tail)
+		   ,@(apply 'nconc (mapcar (lambda (h) (list h (list 'cdr h))) heads))))
+	   (cdr ,result)))
     `(mapcar ,function ,seq1)))
 
 ;;; gnus-util.el ends here
