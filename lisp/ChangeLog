@@ -1,4 +1,44 @@
+Tue Apr  2 15:05:14 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* nnfolder.el (nnfolder-possibly-change-group): Make sure the
+	directory exists before writing file.
+	(nnfolder-request-accept-article): Give a better error messae.
+
+Sat Mar 30 18:45:51 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-mode-map): Moved `goto-signature'.
+
+	* nnfolder.el (nnfolder-request-delete-group): Respect
+	nnmail-use-long-file-name. 
+	(nnfolder-request-rename-group): Ditto.
+	(nnfolder-possibly-change-group): Ditto.
+
+	* message.el (message-send-and-exit): Bury buffer.
+
+Fri Mar 29 15:11:19 1996  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
+
+	* message.el (message-from-style): New `default' value.
+	(message-make-from): Use it.
+
+Fri Mar 29 13:50:55 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-bug-kill-buffer): New function.
+	(gnus-bug): Use message.
+
+	* message.el (message-yank-original): Avoind `mark-marker'.
+
+	* gnus-setup.el (gnus-use-bbdb): `message' changes.
+	(gnus-use-sc): Ditto.
+
+	* message.el (message-user-organization): Use ORGANIZATION
+	environment variable.
+
+	* nnfolder.el (nnfolder-request-list-newsgroups): Would read the
+	wrong file.
+
 Fri Mar 29 07:38:59 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.61 is released.
 
 	* gnus.el (gnus-read-active-file): Activate secondary groups.
 

@@ -225,7 +225,8 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
 	(message-yank-original)
 	(setq beg (or beg (mark t))))
       (when articles (insert "\n")))
-    (set-marker (mark-marker) (point))
+    
+    (push-mark)
     (goto-char beg)))
 
 (defun gnus-summary-cancel-article (n)
@@ -656,14 +657,10 @@ If YANK is non-nil, include the original article."
     (erase-buffer)
     (insert gnus-bug-message)
     (goto-char (point-min))
-    (pop-to-buffer "*Gnus Bug*")
-    (erase-buffer)
-    (mail-mode)
-    (mail-setup gnus-maintainer nil nil nil nil nil)
-    (auto-save-mode auto-save-default)
-    (make-local-variable 'gnus-prev-winconf)
-    (setq gnus-prev-winconf winconf)
-    (local-set-key "\C-c\C-c" 'gnus-bug-mail-send-and-exit)
+    (gnus-setup-message 'bug
+      (message-pop-to-buffer "*Gnus Bug*")
+      (message-setup `((To . ,gnus-maintainer) (Subject . ""))))
+    (push `(gnus-bug-kill-buffer) message-send-actions)
     (goto-char (point-min))
     (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
     (forward-line 1)
@@ -675,15 +672,10 @@ If YANK is non-nil, include the original article."
     (search-forward "Subject: " nil t)
     (message "")))
 
-(defun gnus-bug-mail-send-and-exit ()
-  "Send the bug message and exit."
-  (interactive)
-  (let ((cur (current-buffer)))
-    (and (get-buffer "*Gnus Help Bug*")
-	 (kill-buffer "*Gnus Help Bug*"))
-    (message-send-and-exit)
-    (when (buffer-name cur)
-      (kill-buffer cur))))
+(defun gnus-bug-kill-buffer ()
+  (and (get-buffer "*Gnus Help Bug*")
+       (kill-buffer "*Gnus Help Bug*"))
+  (kill-buffer nil))
 
 (defun gnus-debug ()
   "Attemps to go through the Gnus source file and report what variables have been changed.

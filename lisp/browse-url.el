@@ -387,11 +387,11 @@ The URL is loaded according to the value of `browse-url-browser-function'."
 
 (or (fboundp 'event-buffer)
     (defmacro event-buffer (event)
-      (window-buffer (posn-window (event-start event)))))
+      `(window-buffer (posn-window (event-start ,event)))))
 
 (or (fboundp 'event-point)
     (defmacro event-point (event)
-      (posn-point (event-start event))))
+      `(posn-point (event-start ,event))))
 
 (defun browse-url-at-mouse (event)
   "Ask a WWW browser to load a URL clicked with the mouse.

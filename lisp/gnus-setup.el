@@ -155,11 +155,13 @@
 	  (progn
 	    (autoload 'bbdb-insinuate-sendmail "bbdb"
 	      "Insidious Big Brother Database" t)
-	    (add-hook 'mail-setup-hook 'bbdb-insinuate-sendmail)))))
+	    (add-hook 'mail-setup-hook 'bbdb-insinuate-sendmail)
+	    (add-hook 'message-setup-hook 'bbdb-insinuate-sendmail)))))
 
 (if gnus-use-sc
     (progn
-      (add-hook 'mail-citation-hook 'sc-cite-original)))
+      (add-hook 'mail-citation-hook 'sc-cite-original)
+      (setq message-cite-function 'sc-cite-original)))
 
 ;;;### (autoloads (gnus-batch-score gnus-fetch-group gnus gnus-slave gnus-no-server gnus-update-format) "gnus" "lisp/gnus.el" (12473 2137))
 ;;; Generated autoloads from lisp/gnus.el

@@ -52,7 +52,7 @@ If this variable is nil, no such courtesy message will be added.")
   "*Regexp that matches headers to be removed in resent bounced mail.")
 
 ;;;###autoload
-(defvar message-from-style 'angles 
+(defvar message-from-style 'default
   "*Specifies how \"From\" headers look.
 
 If `nil', they contain just the return address like:
@@ -60,7 +60,9 @@ If `nil', they contain just the return address like:
 If `parens', they look like:
 	king@grassland.com (Elvis Parsley)
 If `angles', they look like:
-	Elvis Parsley <king@grassland.com>")
+	Elvis Parsley <king@grassland.com>
+Otherwise, most addresses look like `angles', but they look like `parens'
+	if `angles' would need quoting and `parens' would not.")
 
 ;;;###autoload
 (defvar message-syntax-checks
@@ -123,8 +125,10 @@ nil means let mailer mail back a message to report errors.")
 (defvar gnus-local-organization)
 ;;;###autoload
 (defvar message-user-organization 
-  (if (boundp 'gnus-local-organization)
-      gnus-local-organization t)
+  (or (and (boundp 'gnus-local-organization)
+	   gnus-local-organization)
+      (getenv "ORGANIZATION")
+      t)
   "*String to be used as an Organization header.
 If t, use `message-user-organization-file'.")
 
@@ -167,7 +171,7 @@ If nil, message won't autosave.")
 (defvar message-send-mail-function 'message-send-mail 
   "Function to call to send the current buffer as mail.
 The headers should be delimited by a line whose contents match the
-variable `message-header-separator'.")
+variable `mail-header-separator'.")
 
 ;;;###autoload
 (defvar message-send-news-function 'message-send-news
@@ -270,10 +274,6 @@ point and mark around the citation text as modified.")
 
 (defvar message-abbrevs-loaded nil)
 
-(autoload 'build-mail-aliases "mailalias"
-  "Read mail aliases from user's personal aliases file and set `mail-aliases'."
-  nil)
-
 (autoload 'expand-mail-aliases "mailalias"
   "Expand all mail aliases in suitable header fields found between BEG and END.
 Suitable header fields are `To', `Cc' and `Bcc' and their `Resent-' variants.
@@ -362,7 +362,7 @@ actually occur.")
 	  '("^B?CC:\\|^Reply-To:" . font-lock-keyword-face)
 	  '("^\\(Subject:\\)[ \t]*\\(.+\\)?"
 	    (1 font-lock-comment-face) (2 font-lock-type-face nil t))
-	  (list (concat "^\\(" (regexp-quote message-header-separator) "\\)$")
+	  (list (concat "^\\(" (regexp-quote mail-header-separator) "\\)$")
 		1 'font-lock-comment-face)
 	  (cons (concat "^[ \t]*"
 			"\\([" cite-prefix "]+[" cite-suffix "]*\\)?"
@@ -507,7 +507,7 @@ Return the number of headers removed."
   (narrow-to-region
    (goto-char (point-min))
    (if (re-search-forward
-	(concat "^" (regexp-quote message-header-separator) "\n") nil t)
+	(concat "^" (regexp-quote mail-header-separator) "\n") nil t)
        (match-beginning 0)
      (point-max)))
   (goto-char (point-min)))
@@ -564,7 +564,7 @@ Return the number of headers removed."
   (define-key message-mode-map "\C-c\C-f\C-k" 'message-goto-keywords)
   (define-key message-mode-map "\C-c\C-f\C-u" 'message-goto-summary)
   (define-key message-mode-map "\C-c\C-b" 'message-goto-body)
-  (define-key message-mode-map "\C-c\C-s" 'message-goto-signature)
+  (define-key message-mode-map "\C-c\C-i" 'message-goto-signature)
 
   (define-key message-mode-map "\C-c\C-t" 'message-insert-to)
   (define-key message-mode-map "\C-c\C-n" 'message-insert-newsgroups)
@@ -599,7 +599,7 @@ C-c C-f  move to a header field (and create it if there isn't):
 C-c C-t  message-insert-to (add a To header to a news followup)
 C-c C-n  message-insert-newsgroups (add a Newsgroup header to a news reply)
 C-c C-b  message-goto-body (move to beginning of message text).
-C-c C-s  message-goto-signature (move to the beginning of the signature).
+C-c C-i  message-goto-signature (move to the beginning of the signature).
 C-c C-w  message-insert-signature (insert `message-signature-file' file).
 C-c C-y  message-yank-original (insert current message, if any).
 C-c C-q  message-fill-yanked-message (fill what was yanked).
@@ -619,10 +619,10 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
   (setq font-lock-defaults '(message-font-lock-keywords t))
   (make-local-variable 'paragraph-separate)
   (make-local-variable 'paragraph-start)
-  (setq paragraph-start (concat (regexp-quote message-header-separator)
+  (setq paragraph-start (concat (regexp-quote mail-header-separator)
 				"$\\|[ \t]*[-_][-_][-_]+$\\|"
 				paragraph-start))
-  (setq paragraph-separate (concat (regexp-quote message-header-separator)
+  (setq paragraph-separate (concat (regexp-quote mail-header-separator)
 				   "$\\|[ \t]*[-_][-_][-_]+$\\|"
 				   paragraph-separate))
   (make-local-variable 'message-reply-headers)
@@ -665,7 +665,7 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
   (message-position-on-field "Bcc" "Cc" "To"))
 
 (defun message-goto-fcc ()
-  "Move point to the Followup-To header."
+  "Move point to the Fcc header."
   (interactive)
   (message-position-on-field "Fcc" "To" "Newsgroups"))
 
@@ -703,7 +703,7 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
   "Move point to the beginning of the message body."
   (interactive)
   (goto-char (point-min))
-  (search-forward (concat "\n" message-header-separator "\n") nil t))
+  (search-forward (concat "\n" mail-header-separator "\n") nil t))
 
 (defun message-goto-signature ()
   "Move point to the beginning of the message signature, 
@@ -823,7 +823,7 @@ Numeric argument means justify as well."
   (interactive "P")
   (save-excursion
     (goto-char (point-min))
-    (search-forward (concat "\n" message-header-separator "\n") nil t)
+    (search-forward (concat "\n" mail-header-separator "\n") nil t)
     (fill-individual-paragraphs (point)
 				(point-max)
 				justifyp
@@ -871,11 +871,7 @@ prefix, and don't delete any headers."
       (delete-windows-on message-reply-buffer t)
       (insert-buffer message-reply-buffer)
       (funcall message-cite-function)
-      ;; This is like exchange-point-and-mark, but doesn't activate the mark.
-      ;; It is cleaner to avoid activation, even though the command
-      ;; loop would deactivate the mark because we inserted text.
-      (goto-char (prog1 (mark t)
-		   (set-marker (mark-marker) (point) (current-buffer))))
+      (exchange-point-and-mark)
       (unless (bolp)
 	(insert ?\n))
       (unless modified
@@ -888,13 +884,9 @@ prefix, and don't delete any headers."
 	   (if (listp message-indent-citation-function)
 	       message-indent-citation-function
 	     (list message-indent-citation-function)))))
-    (unless (consp arg)
-      (goto-char start)
-      (let ((message-indentation-spaces
-	     (if arg (prefix-numeric-value arg)
-	       message-indentation-spaces)))
-	(while functions
-	  (funcall (pop functions)))))
+    (goto-char start)
+    (while functions
+      (funcall (pop functions)))
     (when message-citation-line-function
       (unless (bolp)
 	(insert "\n"))
@@ -912,7 +904,7 @@ prefix, and don't delete any headers."
        (goto-char (point-min))
        (progn
 	 (re-search-forward 
-	  (concat "^" (regexp-quote message-header-separator) "$"))
+	  (concat "^" (regexp-quote mail-header-separator) "$"))
 	 (match-beginning 0)))
       (goto-char (point-min))
       (if (re-search-forward (concat "^" (regexp-quote header) ":") nil t)
@@ -967,7 +959,8 @@ This function can be used in `message-citation-hook', for instance."
 Prefix arg means don't delete this window."
   (interactive "P")
   (message-send)
-  ;(message-bury arg)
+  (bury-buffer (current-buffer))
+;  (message-bury arg)
   )
 
 (defun message-dont-send (&optional arg)
@@ -1068,7 +1061,7 @@ the user from the mailer."
 	    ;; Change header-delimiter to be what sendmail expects.
 	    (goto-char (point-min))
 	    (re-search-forward
-	     (concat "^" (regexp-quote message-header-separator) "\n"))
+	     (concat "^" (regexp-quote mail-header-separator) "\n"))
 	    (replace-match "\n")
 	    (backward-char 1)
 	    (setq delimline (point-marker))
@@ -1154,7 +1147,7 @@ the user from the mailer."
 	      ;; Remove the delimeter.
 	      (goto-char (point-min))
 	      (re-search-forward
-	       (concat "^" (regexp-quote message-header-separator) "\n"))
+	       (concat "^" (regexp-quote mail-header-separator) "\n"))
 	      (replace-match "\n")
 	      (backward-char 1))
 	    (require (car method))
@@ -1509,7 +1502,7 @@ the user from the mailer."
       (widen)
       (goto-char (point-min))
       (re-search-forward 
-       (concat "^" (regexp-quote message-header-separator) "$"))
+       (concat "^" (regexp-quote mail-header-separator) "$"))
       (forward-line 1)
       (int-to-string (count-lines (point) (point-max))))))
 
@@ -1563,7 +1556,19 @@ the user from the mailer."
     (save-excursion
       (message-set-work-buffer)
       (cond 
-       ((eq message-from-style 'angles)
+       ((or (null message-from-style)
+	    (equal fullname ""))
+	(insert login))
+       ((or (eq message-from-style 'angles)
+	    (and (not (eq message-from-style 'parens))
+		 ;; Use angles if no quoting is needed, or if parens would
+		 ;; need quoting too.
+		 (or (not (string-match "[^- !#-'*+/-9=?A-Z^-~]" fullname))
+		     (let ((tmp (concat fullname nil)))
+		       (while (string-match "([^()]*)" tmp)
+			 (aset tmp (match-beginning 0) ?-)
+			 (aset tmp (1- (match-end 0)) ?-))
+		       (string-match "[\\()]" tmp)))))
 	(insert fullname)
 	(goto-char (point-min))
 	;; Look for a character that cannot appear unquoted
@@ -1576,7 +1581,7 @@ the user from the mailer."
 	    (replace-match "\\\\\\&" t))
 	  (insert "\""))
 	(insert " <" login ">"))
-       ((eq message-from-style 'parens)
+       (t				; 'parens or default
 	(insert login " (")
 	(let ((fullname-start (point)))
 	  (insert fullname)
@@ -1594,9 +1599,7 @@ the user from the mailer."
 		    nil 1)
 	    (replace-match "\\1(\\3)" t)
 	    (goto-char fullname-start)))
-	(insert ")"))
-       ((null message-from-style)
-	(insert login "\n")))
+	(insert ")")))
       (buffer-string))))
 
 (defun message-make-sender ()
@@ -1822,11 +1825,6 @@ Headers already prepared in the buffer are not modified."
     (message-mode)))
 
 (defun message-setup (headers &optional replybuffer actions)
-  (sendmail-synch-aliases)
-  (when (eq message-aliases t)
-    (setq message-aliases nil)
-    (when (file-exists-p message-personal-alias-file)
-      (build-mail-aliases)))
   (setq message-send-actions actions)
   (setq message-reply-buffer replybuffer)
   (goto-char (point-min))
@@ -1853,7 +1851,7 @@ Headers already prepared in the buffer are not modified."
     (when message-generate-headers-first
       (message-generate-headers message-required-mail-headers))
     (insert message-default-mail-headers))
-  (insert message-header-separator "\n")
+  (insert mail-header-separator "\n")
   (message-insert-signature)
   (message-set-auto-save-file-name)
   (save-restriction
@@ -2109,7 +2107,7 @@ Headers already prepared in the buffer are not modified."
 	      (if distribution
 		  (concat "Distribution: " distribution "\n")
 		"")
-	      message-header-separator "\n"
+	      mail-header-separator "\n"
 	      "This is a cancel message from " from ".\n")
       (message "Canceling your article...")
       (funcall message-send-news-function)
@@ -2140,7 +2138,7 @@ header line with the old Message-ID."
 	(error "No Message-ID in this article")
       (replace-match "Supersedes: " t t))
     (goto-char (point-max))
-    (insert message-header-separator)
+    (insert mail-header-separator)
     (widen)
     (forward-line 1)))
 

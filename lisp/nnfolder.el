@@ -177,10 +177,12 @@ it.")
       (nnfolder-close-group (caar alist) nil t)
       (setq alist (cdr alist))))
   (setq nnfolder-buffer-alist nil
+	nnfolder-server-alist nil
 	nnfolder-current-server nil
 	nnfolder-group-alist nil))
 
 (defun nnfolder-status-message (&optional server)
+  (nnfolder-possibly-change-group nil server)
   nnfolder-status-string)
 
 (defun nnfolder-request-article (article &optional newsgroup server buffer)
@@ -283,6 +285,7 @@ it.")
   t)
 
 (defun nnfolder-request-create-group (group &optional server) 
+  (nnfolder-possibly-change-group nil server)
   (nnmail-activate 'nnfolder)
   (when group 
     (unless (assoc group nnfolder-group-alist)
@@ -291,14 +294,17 @@ it.")
   t)
 
 (defun nnfolder-request-list (&optional server)
+  (nnfolder-possibly-change-group nil server)
   (save-excursion
     (nnmail-find-file nnfolder-active-file)
     (setq nnfolder-group-alist (nnmail-get-active))))
 
 (defun nnfolder-request-newgroups (date &optional server)
+  (nnfolder-possibly-change-group nil server)
   (nnfolder-request-list server))
 
 (defun nnfolder-request-list-newsgroups (&optional server)
+  (nnfolder-possibly-change-group nil server)
   (save-excursion
     (nnmail-find-file nnfolder-newsgroups-file)))
 
@@ -396,6 +402,8 @@ it.")
        (set-buffer nnfolder-current-buffer)
        (and last (buffer-modified-p) (save-buffer))))
     (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
+    (unless result
+      (nnheader-report 'nnfolder "Couldn't store article"))
     result))
 
 (defun nnfolder-request-replace-article (article group buffer)
@@ -417,8 +425,8 @@ it.")
       ()				; Don't delete the articles.
     ;; Delete the file that holds the group.
     (condition-case nil
-	(delete-file (concat (file-name-as-directory nnfolder-directory)
-			     group))
+	(delete-file (directory-file-name 
+		      (nnmail-group-pathname group nnfolder-directory)))
       (error nil)))
   ;; Remove the group from all structures.
   (setq nnfolder-group-alist 
@@ -436,9 +444,10 @@ it.")
     (and (file-writable-p buffer-file-name)
 	 (condition-case ()
 	     (progn
-	       (rename-file buffer-file-name
-			    (concat (file-name-as-directory nnfolder-directory)
-				    new-name))
+	       (rename-file 
+		buffer-file-name
+		(directory-file-name
+		 (nnmail-group-pathname new-name nnfolder-directory)))
 	       t)
 	   (error nil))
 	 ;; That went ok, so we change the internal structures.
@@ -483,59 +492,63 @@ it.")
   (when (and server
 	     (not (nnfolder-server-opened server)))
     (nnfolder-open-server server))
-  (unless (file-exists-p nnfolder-directory)
-    (make-directory (directory-file-name nnfolder-directory) t))
-  (nnfolder-possibly-activate-groups nil)
-  (or (assoc group nnfolder-group-alist)
-      (not (file-exists-p (concat (file-name-as-directory nnfolder-directory)
-				  group)))
-      (progn
-	(setq nnfolder-group-alist 
-	      (cons (list group (cons 1 0)) nnfolder-group-alist))
-	(nnmail-save-active nnfolder-group-alist nnfolder-active-file)))
-  (let (inf file)
-    (if (and (equal group nnfolder-current-group)
-	     nnfolder-current-buffer
-	     (buffer-name nnfolder-current-buffer))
-	()
-      (setq nnfolder-current-group group)
-
-      ;; If we have to change groups, see if we don't already have the mbox
-      ;; in memory.  If we do, verify the modtime and destroy the mbox if
-      ;; needed so we can rescan it.
-      (if (setq inf (assoc group nnfolder-buffer-alist))
-	  (setq nnfolder-current-buffer (nth 1 inf)))
-
-      ;; If the buffer is not live, make sure it isn't in the alist.  If it
-      ;; is live, verify that nobody else has touched the file since last
-      ;; time.
-      (if (or (not (and nnfolder-current-buffer
-			(buffer-name nnfolder-current-buffer)))
-	      (not (and (bufferp nnfolder-current-buffer)
-			(verify-visited-file-modtime 
-			 nnfolder-current-buffer))))
-	  (progn
-	    (if (and nnfolder-current-buffer
-		     (buffer-name nnfolder-current-buffer)
-		     (bufferp nnfolder-current-buffer))
-		(kill-buffer nnfolder-current-buffer))
-	    (setq nnfolder-buffer-alist (delq inf nnfolder-buffer-alist))
-	    (setq inf nil)))
-      
-      (if inf
+  (when group
+    (unless (file-exists-p nnfolder-directory)
+      (make-directory (directory-file-name nnfolder-directory) t))
+    (nnfolder-possibly-activate-groups nil)
+    (or (assoc group nnfolder-group-alist)
+	(not (file-exists-p
+	      (directory-file-name
+	       (nnmail-group-pathname group nnfolder-directory))))
+	(progn
+	  (setq nnfolder-group-alist 
+		(cons (list group (cons 1 0)) nnfolder-group-alist))
+	  (nnmail-save-active nnfolder-group-alist nnfolder-active-file)))
+    (let (inf file)
+      (if (and (equal group nnfolder-current-group)
+	       nnfolder-current-buffer
+	       (buffer-name nnfolder-current-buffer))
 	  ()
-	(save-excursion
-	  (setq file (concat (file-name-as-directory nnfolder-directory)
-			     group))
-	  (if (file-directory-p (file-truename file))
-	      ()
-	    (if (not (file-exists-p file))
+	(setq nnfolder-current-group group)
+
+	;; If we have to change groups, see if we don't already have the mbox
+	;; in memory.  If we do, verify the modtime and destroy the mbox if
+	;; needed so we can rescan it.
+	(if (setq inf (assoc group nnfolder-buffer-alist))
+	    (setq nnfolder-current-buffer (nth 1 inf)))
+
+	;; If the buffer is not live, make sure it isn't in the alist.  If it
+	;; is live, verify that nobody else has touched the file since last
+	;; time.
+	(if (or (not (and nnfolder-current-buffer
+			  (buffer-name nnfolder-current-buffer)))
+		(not (and (bufferp nnfolder-current-buffer)
+			  (verify-visited-file-modtime 
+			   nnfolder-current-buffer))))
+	    (progn
+	      (if (and nnfolder-current-buffer
+		       (buffer-name nnfolder-current-buffer)
+		       (bufferp nnfolder-current-buffer))
+		  (kill-buffer nnfolder-current-buffer))
+	      (setq nnfolder-buffer-alist (delq inf nnfolder-buffer-alist))
+	      (setq inf nil)))
+      
+	(if inf
+	    ()
+	  (save-excursion
+	    (setq file (directory-file-name
+			(nnmail-group-pathname group nnfolder-directory)))
+	    (if (file-directory-p (file-truename file))
+		()
+	      (unless (file-exists-p file)
+		(unless (file-exists-p (file-name-directory file))
+		  (make-directory (file-name-directory file) t))
 		(write-region 1 1 file t 'nomesg))
-	    (setq nnfolder-current-buffer 
-		  (set-buffer (nnfolder-read-folder file)))
-	    (setq nnfolder-buffer-alist (cons (list group (current-buffer))
-					      nnfolder-buffer-alist)))))))
-  (setq nnfolder-current-group group))
+	      (setq nnfolder-current-buffer 
+		    (set-buffer (nnfolder-read-folder file)))
+	      (setq nnfolder-buffer-alist (cons (list group (current-buffer))
+						nnfolder-buffer-alist)))))))
+    (setq nnfolder-current-group group)))
 
 (defun nnfolder-save-mail (&optional group)
   "Called narrowed to an article."

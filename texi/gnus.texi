@@ -836,7 +836,7 @@ long as Gnus is active.
 * Listing Groups::         Gnus can list various subsets of the groups.
 * Sorting Groups::         Re-arrange the group order.
 * Group Maintenance::      Maintaining a tidy @file{.newsrc} file.
-* Browse Foreign Server::  You can browse a server.  See what if has to offer.
+* Browse Foreign Server::  You can browse a server.  See what it has to offer.
 * Exiting Gnus::           Stop reading news and get some work done.
 * Group Topics::           A folding group mode divided into topics.
 * Misc Group Stuff::       Other stuff that you can to do.
@@ -1508,7 +1508,7 @@ Set the mark on the current group (@code{gnus-group-mark-group}).
 
 @item M-#
 @kindex M-# (Group)
-@itemx < u
+@itemx M u
 @kindex M u (Group)
 @findex gnus-group-unmark-group
 Remove the mark from the current group
@@ -7095,10 +7095,10 @@ something like:
 
 @lisp
 (setq gnus-message-archive-method
-      '((nnfolder "archive" 
-                  (nnfolder-inhibit-expiry t)
-                  (nnfolder-active-file "~/Mail/sent-mail/active")
-                  (nnfolder-directory "~/News/sent-mail/"))))
+      '(nnfolder "archive" 
+                 (nnfolder-inhibit-expiry t)
+                 (nnfolder-active-file "~/Mail/sent-mail/active")
+                 (nnfolder-directory "~/News/sent-mail/")))
 @end lisp
 
 @vindex gnus-message-archive-group
