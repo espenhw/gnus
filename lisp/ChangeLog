@@ -1,3 +1,10 @@
+2002-11-21  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el:
+	added patch from Andreas Fuchs <asf@void.at> to prevent apply errors
+
+	* spam.el: added `M s t' and `M s x' key mappings
+
 2002-11-20  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-sum.el (gnus-summary-morse-message): Narrow to body.
