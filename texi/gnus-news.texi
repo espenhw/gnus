@@ -19,6 +19,7 @@
 @itemize @bullet
 
 @item The nntp back end store article marks in @file{~/News/marks}.
+
 The directory can be changed using the (customizable) variable
 @code{nntp-marks-directory}, and marks can be disabled using the
 (backend) variable @code{nntp-marks-is-evil}.  The advantage of this
