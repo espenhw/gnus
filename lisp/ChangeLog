@@ -1,3 +1,9 @@
+2003-12-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* dgnushack.el: Add an advice to byte-optimize-form-code-walker to
+	avoid the warning ``...called for effect'' for the pop form when
+	running Emacs 21.3.
+
 2003-12-26  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-bodies.el (mm-body-encoding): Don't use 7bit if the body

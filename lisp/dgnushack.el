@@ -125,6 +125,43 @@
 ;  (cons 'progn (cdr form)))
 ;(defalias 'byte-compile-file-form-defsubst 'byte-compile-file-form-defun)
 
+(when (and (not (featurep 'xemacs))
+	   (= emacs-major-version 21)
+	   (= emacs-minor-version 3)
+	   (condition-case code
+	       (let ((byte-compile-error-on-warn t))
+		 (byte-optimize-form (quote (pop x)) t)
+		 nil)
+	     (error (string-match "called for effect"
+				  (error-message-string code)))))
+  (defadvice byte-optimize-form-code-walker (around silence-warn-for-pop
+						    (form for-effect)
+						    activate)
+    "Silence the warning \"...called for effect\" for the `pop' form.
+It is effective only when the `pop' macro is defined by cl.el rather
+than subr.el."
+    (let (tmp)
+      (if (and (eq (car-safe form) 'car)
+	       for-effect
+	       (setq tmp (get 'car 'side-effect-free))
+	       (not byte-compile-delete-errors)
+	       (not (eq tmp 'error-free))
+	       (eq (car-safe (cadr form)) 'prog1)
+	       (let ((var (cadr (cadr form)))
+		     (last (nth 2 (cadr form))))
+		 (and (symbolp var)
+		      (null (nthcdr 3 (cadr form)))
+		      (eq (car-safe last) 'setq)
+		      (eq (cadr last) var)
+		      (eq (car-safe (nth 2 last)) 'cdr)
+		      (eq (cadr (nth 2 last)) var))))
+	  (progn
+	    (put 'car 'side-effect-free 'error-free)
+	    (unwind-protect
+		ad-do-it
+	      (put 'car 'side-effect-free tmp)))
+	ad-do-it))))
+
 (push srcdir load-path)
 (load (expand-file-name "lpath.el" srcdir) nil t)
 
