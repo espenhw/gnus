@@ -1,3 +1,7 @@
+2001-12-09  Nevin Kapur  <nevin@jhu.edu>
+
+	* gnus.texi (Expiring Mail): Add.
+
 2001-12-05  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Splitting in IMAP): Typo.  From Colin Marquardt

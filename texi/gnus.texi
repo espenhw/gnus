@@ -13073,6 +13073,26 @@ Here's an example for specifying a group name:
 (setq nnmail-expiry-target "nnml:expired")
 @end lisp
 
+@findex nnmail-fancy-expiry-target
+@vindex nnmail-fancy-expiry-targets
+Gnus provides a function @code{nnmail-fancy-expiry-target} which will
+expire mail to groups according to the variable
+@code{nnmail-fancy-expiry-targets}.  Here's an example:
+
+@lisp
+ (setq nnmail-expiry-target 'nnmail-fancy-expiry-target
+       nnmail-fancy-expiry-targets
+       '((to-from "boss" "nnfolder:Work")
+    	 ("subject" "IMPORTANT" "nnfolder:IMPORTANT.%Y.%b")
+         ("from" ".*" "nnfolder:Archive-%Y")))
+@end lisp
+
+With this setup, any mail that has @code{IMPORTANT} in its Subject
+header and was sent in the year @code{YYYY} and month @code{MMM}, will
+get expired to the group @code{nnfolder:IMPORTANT.YYYY.MMM}. If its
+From or To header contains the string @code{boss}, it will get expired
+to @code{nnfolder:Work}. All other mail will get expired to
+@code{nnfolder:Archive-YYYY}.
 
 @vindex nnmail-keep-last-article
 If @code{nnmail-keep-last-article} is non-@code{nil}, Gnus will never
