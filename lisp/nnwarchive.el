@@ -1,4 +1,4 @@
-;;; nnwarchive.el --- interfacing with web archives 
+;;; nnwarchive.el --- interfacing with web archives
 ;; Copyright (C) 1999 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
