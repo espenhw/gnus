@@ -20,9 +20,9 @@
 
 ;;; Commentary:
 
-;; nnnil is a Gnus backend that provides no groups or articles.  It's
-;; useful ass a primary select method when you want all your real
-;; select methods to be secondary or foreign.
+;; nnnil is a Gnus backend that provides no groups or articles.  It's useful
+;; as a primary select method when you want all your real select methods to
+;; be secondary or foreign.
 
 ;;; Code:
 
@@ -32,6 +32,9 @@
 (defvar nnnil-status-string "")
 
 (defun nnnil-retrieve-headers (articles &optional group server fetch-old)
+  (save-excursion
+    (set-buffer nntp-server-buffer)
+    (erase-buffer))
   'nov)
 
 (defun nnnil-open-server (server &optional definitions)
@@ -66,6 +69,9 @@
   t)
 
 (defun nnnil-request-list (&optional server)
+  (save-excursion
+    (set-buffer nntp-server-buffer)
+    (erase-buffer))
   t)
 
 (defun nnnil-request-post (&optional server)
