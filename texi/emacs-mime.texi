@@ -646,6 +646,16 @@ What technology to encrypt this MML part with (@code{smime},
 
 @end table
 
+Parameters for @samp{text/plain}:
+
+@table @samp
+@item format
+Formatting parameter for the text, valid values include @samp{fixed}
+(the default) and @samp{flowed}.  Normally you do not specify this
+manually, since it requires the textual body to be formatted in a
+special way described in RFC 2646.  @xref{Flowed text}.
+@end table
+
 Parameters for @samp{application/octet-stream}:
 
 @table @samp
