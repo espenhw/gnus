@@ -2756,7 +2756,7 @@ be inserted literally as a @code{gcc} header.  This parameter takes
 precedence over any default @code{Gcc} rules as described later
 (@pxref{Archived Messages}).  CAVEAT:: It yields an error putting
 @code{(gcc-self . t)} in groups of a @code{nntp} server or so, because
-a @code{nntp} server doesn't accept artciles.
+a @code{nntp} server doesn't accept articles.
 
 @item auto-expire
 @cindex auto-expire
@@ -6532,7 +6532,7 @@ If non-@code{nil}, all threads will be hidden when the summary buffer is
 generated.
 
 This can also be a predicate specifier (@pxref{Predicate Specifiers}).
-Avaliable predicates are @code{gnus-article-unread-p} and
+Available predicates are @code{gnus-article-unread-p} and
 @code{gnus-article-unseen-p}).
 
 Here's an example:
@@ -8683,7 +8683,7 @@ preferred format automatically.
 @cindex x-face
 @cindex smileys
 
-These commands add various frivolous display gimmics to the article
+These commands add various frivolous display gimmicks to the article
 buffer in Emacs versions that support them.
 
 @code{X-Face} headers are small black-and-white images supplied by the
@@ -8927,7 +8927,7 @@ To have all Vcards be ignored, you'd say something like this:
 @vindex gnus-unbuttonized-mime-types
 This is a list of regexps.  @sc{mime} types that match a regexp from
 this list won't have @sc{mime} buttons inserted unless they aren't
-displayed or this variable is overriden by
+displayed or this variable is overridden by
 @code{gnus-buttonized-mime-types}.  The default value is
 @code{(".*/.*")}.
 
@@ -10996,7 +10996,7 @@ To the thing similar to this, there is @code{message-smtpmail-send-it}.
 It is useful if your ISP requires the POP-before-SMTP authentication.
 See the documentation for the function @code{mail-source-touch-pop}.
 
-Other possible choises for @code{message-send-mail-function} includes
+Other possible choices for @code{message-send-mail-function} includes
 @code{message-send-mail-with-mh}, @code{message-send-mail-with-qmail},
 and @code{feedmail-send-it}.
 
@@ -13890,7 +13890,7 @@ laugh.
 
 Gnus provides a plethora of functions for washing articles while
 displaying them, but it might be nicer to do the filtering before
-storing the mail to disc.  For that purpose, we have three hooks and
+storing the mail to disk.  For that purpose, we have three hooks and
 various functions that can be put in these hooks.
 
 @table @code
@@ -14456,7 +14456,7 @@ headers/status bits stuff.  RMAIL itself still exists as well, of
 course, and is still maintained by Stallman.
 
 Both of the above forms leave your mail in a single file on your
-filesystem, and they must parse that entire file each time you take a
+file system, and they must parse that entire file each time you take a
 look at your mail.
 
 @item nnml
@@ -14477,10 +14477,10 @@ extremely fast on access because of what amounts to the indexing support
 provided by the active file and overviews.
 
 @code{nnml} costs @dfn{inodes} in a big way; that is, it soaks up the
-resource which defines available places in the filesystem to put new
+resource which defines available places in the file system to put new
 files.  Sysadmins take a dim view of heavy inode occupation within
-tight, shared filesystems.  But if you live on a personal machine where
-the filesystem is your own and space is not at a premium, @code{nnml}
+tight, shared file systems.  But if you live on a personal machine where
+the file system is your own and space is not at a premium, @code{nnml}
 wins big.
 
 It is also problematic using this back end if you are living in a
@@ -14524,7 +14524,7 @@ per article, so it uses about twice as many inodes as @code{nnml}.  (Use
 @code{df -i} to see how plentiful your inode supply is.)  If this slows
 you down or takes up very much space, consider switching to ReiserFS
 (@uref{http://www.namesys.com/}) or another non-block-structured
-filesystem.
+file system.
 
 Since maildirs don't require locking for delivery, the maildirs you use
 as groups can also be the maildirs your mail is directly delivered to.
@@ -14560,12 +14560,12 @@ parameters slightly different from those of other mail back ends.
 (It keeps in memory some of the things that @code{nnml} stores in files
 and that @code{nnmh} repeatedly parses out of message files.)  If this
 is a problem for you, you can set the @code{nov-cache-size} group
-parameter to somthing small (0 would probably not work, but 1 probably
+parameter to something small (0 would probably not work, but 1 probably
 would) to make it use less memory.
 
 Startup and shutdown are likely to be slower with @code{nnmaildir} than
 with other back ends.  Everything in between is likely to be faster,
-depending in part on your filesystem.
+depending in part on your file system.
 
 @code{nnmaildir} does not use @code{nnoo}, so you cannot use @code{nnoo}
 to write an @code{nnmaildir}-derived back end.
@@ -14644,7 +14644,7 @@ to shut down Gnus, so archiving may be invoked by @code{cron} or
 similar.  You restore the data by restoring the directory tree, and
 adding a server definition pointing to that directory in Gnus. The
 @ref{Article Backlog}, @ref{Asynchronous Fetching} and other things
-might interfer with overwriting data, so you may want to shut down Gnus
+might interfere with overwriting data, so you may want to shut down Gnus
 before you restore the data.
 
 It is also possible to archive individual @code{nnml},
@@ -14790,7 +14790,7 @@ default is @code{t}.  To be able to display threads, @code{nnslashdot}
 has to retrieve absolutely all comments in a group upon entry.  If a
 threaded display is not required, @code{nnslashdot} will only retrieve
 the comments that are actually wanted by the user.  Threading is nicer,
-but much, much slower than untreaded.
+but much, much slower than unthreaded.
 
 @item nnslashdot-login-name
 @vindex nnslashdot-login-name
@@ -15139,7 +15139,7 @@ program.
 @vindex imap-ssl-program
 For SSL connections, the OpenSSL program is available from
 @uref{http://www.openssl.org/}. OpenSSL was formerly known as SSLeay,
-and nnimap support it too - altough the most recent versions of
+and nnimap support it too - although the most recent versions of
 SSLeay, 0.9.x, are known to have serious bugs making it
 useless. Earlier versions, especially 0.8.x, of SSLeay are known to
 work. The variable @code{imap-ssl-program} contain parameters to pass
@@ -15181,7 +15181,7 @@ external library @code{digest-md5.el}.
 @item
 @dfn{login:} Plain-text username/password via LOGIN.
 @item
-@dfn{anonymous:} Login as `anonymous', supplying your emailadress as password.
+@dfn{anonymous:} Login as `anonymous', supplying your email address as password.
 @end itemize
 
 @item nnimap-expunge-on-close
@@ -18284,7 +18284,7 @@ will be ignored.  If you wish to add more words to be ignored, use the
 Some may feel that short words shouldn't count when doing adaptive
 scoring.  If so, you may set @code{gnus-adaptive-word-length-limit} to
 an integer.  Words shorter than this number will be ignored.  This
-variable defaults til @code{nil}.
+variable defaults to @code{nil}.
 
 @vindex gnus-adaptive-word-syntax-table
 When the scoring is done, @code{gnus-adaptive-word-syntax-table} is the
@@ -19632,12 +19632,12 @@ characters---most notable East Asian countries.
 
 The problem is that when formatting, Gnus assumes that if a string is 10
 characters wide, it'll be 10 Latin characters wide on the screen.  In
-these coutries, that's not true.
+these countries, that's not true.
 
 @vindex gnus-use-correct-string-widths
 To help fix this, you can set @code{gnus-use-correct-string-widths} to
 @code{t}.  This makes buffer generation slower, but the results will be
-prettieer.  The default value under XEmacs is @code{t} but @code{nil}
+prettier.  The default value under XEmacs is @code{t} but @code{nil}
 for Emacs.
 
 
@@ -20901,7 +20901,7 @@ converts the file to X-Face format by using the
 @code{gnus-convert-image-to-x-face-command} shell command.
 
 Here's how you would typically use the former function.  Put something
-like the folllowing in your @file{.gnus.el} file:
+like the following in your @file{.gnus.el} file:
 
 @lisp
 (setq message-required-news-headers
@@ -21269,7 +21269,7 @@ spam.  And here is the nifty function:
 A novel technique to fight spam is to require senders to do something
 costly for each message they send.  This has the obvious drawback that
 you cannot rely on that everyone in the world uses this technique,
-since it is not part of the internet standards, but it may be useful
+since it is not part of the Internet standards, but it may be useful
 in smaller communities.
 
 While the tools in the previous section work well in practice, they
@@ -22276,7 +22276,7 @@ format.  Gnus supports both encoding (signing and encryption) and
 decoding (verification and decryption).
 
 @item PGP/MIME - RFC 2015/3156
-RFC 2015 (superceded by 3156 which references RFC 2440 instead of RFC
+RFC 2015 (superseded by 3156 which references RFC 2440 instead of RFC
 1991) describes the @sc{mime}-wrapping around the RF 1991/2440 format.
 Gnus supports both encoding and decoding.
 
