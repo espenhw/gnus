@@ -1,3 +1,14 @@
+2001-11-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el: Always require canlock.
+	(message-ignored-supersedes-headers): Include Cancel-Lock and
+	Cancel-Key.
+	(message-insert-canlock): Don't require canlock.
+	(message-cancel-news): Don't check whether canlock is available.
+	(message-supersede): Support cancel-locks.
+
+	* gnus-art.el: Don't autoload canlock.
+
 2001-11-06 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mail-source.el (mail-source-fetch-imap): ASYNC param.

@@ -2900,8 +2900,6 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 		  (put-text-property (match-end 0) (point-max)
 				     'face eface)))))))))
 
-(autoload 'canlock-verify "canlock")
-
 (defun article-verify-cancel-lock ()
   "Verify Cancel-Lock header."
   (interactive)
