@@ -1340,7 +1340,7 @@ The following commands are available:
 (defalias 'gnus-category-position-point 'gnus-goto-colon)
 
 (defun gnus-category-insert-line (category)
-  (let* ((gnus-tmp-name (car category))
+  (let* ((gnus-tmp-name (format "%s" (car category)))
 	 (gnus-tmp-groups (length (cadddr category))))
     (beginning-of-line)
     (gnus-add-text-properties
