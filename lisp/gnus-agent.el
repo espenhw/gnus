@@ -1316,6 +1316,11 @@ This can be added to `gnus-select-article-hook' or
 		 (setq gnus-newsgroup-headers
 		       (gnus-get-newsgroup-headers-xover articles nil nil
 							 group))
+		 ;; Some articles may not exist, so update `articles'
+		 ;; from what was actually found.  -- kai
+		 (setq articles
+		       (mapcar (lambda (x) (aref x 0))
+			       gnus-newsgroup-headers))
 		 ;; `gnus-agent-overview-buffer' may be killed for
 		 ;; timeout reason.  If so, recreate it.
 		 (gnus-agent-create-buffer)))

@@ -1,3 +1,11 @@
+2002-10-20  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-agent.el (gnus-agent-fetch-group-1): After fetching
+	headers from the group, update variable `articles' to contain
+	only those numbers where headers exist.  (When fetching all
+	articles in a group, Gnus creates lots of numbers where there is
+	no articles.)
+
 2002-10-20  Steve Youngs  <youngs@xemacs.org>
 
 	* pgg-parse.el (pgg-parse-public-key-algorithm-alist): XEmacs
