@@ -164,21 +164,24 @@ The encoding used is returned."
 	(pop rules)))))
 
 (defun mm-qp-or-base64 ()
-  (save-excursion
-    (let ((limit (min (point-max) (+ 2000 (point-min))))
-	  (n8bit 0))
-      (goto-char (point-min))
-      (skip-chars-forward "\x20-\x7f\r\n\t" limit)
-      (while (< (point) limit)
-	(incf n8bit)
-	(forward-char 1)
-	(skip-chars-forward "\x20-\x7f\r\n\t" limit))
-      (if (or (< (* 6 n8bit) (- limit (point-min)))
-	      ;; Don't base64, say, a short line with a single
-	      ;; non-ASCII char when splitting parts by charset.
-	      (= n8bit 1))
-	  'quoted-printable
-	'base64))))
+  (if (equal mm-use-ultra-safe-encoding '(sign . "pgp"))
+      ;; perhaps not always accurate?
+      'quoted-printable
+    (save-excursion
+      (let ((limit (min (point-max) (+ 2000 (point-min))))
+	    (n8bit 0))
+	(goto-char (point-min))
+	(skip-chars-forward "\x20-\x7f\r\n\t" limit)
+	(while (< (point) limit)
+	  (incf n8bit)
+	  (forward-char 1)
+	  (skip-chars-forward "\x20-\x7f\r\n\t" limit))
+	(if (or (< (* 6 n8bit) (- limit (point-min)))
+		;; Don't base64, say, a short line with a single
+		;; non-ASCII char when splitting parts by charset.
+		(= n8bit 1))
+	    'quoted-printable
+	  'base64)))))
 
 (provide 'mm-encode)
 

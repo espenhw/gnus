@@ -1,5 +1,8 @@
 2003-01-25  Simon Josefsson  <jas@extundo.com>
 
+	* mm-encode.el (mm-qp-or-base64): Always QP iff
+	mm-use-ultra-safe-encoding and cleartext PGP.
+
 	* gnus-sum.el (gnus-summary-select-article): Inhibit
 	redisplay (mainly for secured messages).
 
