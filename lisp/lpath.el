@@ -13,13 +13,13 @@
 	       create-image display-graphic-p
 	       display-time-event-handler find-image image-size
 	       image-type-available-p insert-image
-	       make-mode-line-mouse-map make-temp-file propertize
-	       put-image replace-regexp-in-string rmail-msg-is-pruned
-	       rmail-msg-restore-non-pruned-header sort-coding-systems
-	       spam-BBDB-register-routine spam-enter-ham-BBDB
-	       tool-bar-add-item tool-bar-add-item-from-menu
-	       tool-bar-local-item-from-menu url-http-file-exists-p
-	       vcard-pretty-print w32-focus-frame
+	       make-mode-line-mouse-map make-temp-file open-ssl-stream
+	       propertize put-image replace-regexp-in-string
+	       rmail-msg-is-pruned rmail-msg-restore-non-pruned-header
+	       sort-coding-systems spam-BBDB-register-routine
+	       spam-enter-ham-BBDB tool-bar-add-item
+	       tool-bar-add-item-from-menu tool-bar-local-item-from-menu
+	       url-http-file-exists-p vcard-pretty-print w32-focus-frame
 	       w3m-charset-to-coding-system x-focus-frame))
 (maybe-bind '(filladapt-mode
 	      mc-pgp-always-sign mm-w3m-mode-map rmail-enable-mime-composing
@@ -48,8 +48,8 @@
 		    buffer-display-table buffer-file-coding-system
 		    current-language-environment
 		    default-enable-multibyte-characters
-		    enable-multibyte-characters language-info-alist
-		    mark-active mouse-selection-click-count
+		    enable-multibyte-characters gnus-agent-expire-current-dirs
+		    language-info-alist mark-active mouse-selection-click-count
 		    mouse-selection-click-count-buffer pgg-parse-crc24
 		    temporary-file-directory transient-mark-mode)))
   (maybe-fbind '(bbdb-complete-name
@@ -64,7 +64,8 @@
 		 w3-prepare-buffer w3-region w3m-region window-pixel-height
 		 window-pixel-width))
   (maybe-bind '(help-echo-owns-message
-		mail-mode-hook url-package-name url-package-version
+		mail-mode-hook
+		url-current-object url-package-name url-package-version
 		w3-meta-charset-content-type-regexp
 		w3-meta-content-type-charset-regexp)))
 
