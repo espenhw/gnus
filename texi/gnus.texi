@@ -15175,6 +15175,11 @@ need external programs and libraries, see below.)
                 (nnimap-stream ssl))))
 @end lisp
 
+After defining the new server, you can subscribe to groups on the
+server using normal Gnus commands such as @kbd{U} in the Group Buffer
+(@pxref{Subscription Commands}) or via the Server Buffer
+(@pxref{Server Buffer}).
+
 The following variables can be used to create a virtual @code{nnimap}
 server:
 
@@ -15577,16 +15582,17 @@ analyses the body to split the article.
 @subsection Expiring in IMAP
 @cindex expiring imap mail
 
-Even though @sc{nnimap} is not a proper @sc{nnmail} derived back end,
-it supports most features in regular expiring (@pxref{Expiring Mail}).
-Unlike splitting in IMAP (@pxref{Splitting in IMAP}) it do not clone
-the @sc{nnmail} variables (i.e., creating @var{nnimap-expiry-wait})
-but reuse the @sc{nnmail} variables.  What follows below are the
-variables used by the @sc{nnimap} expiry process.
+Even though @code{nnimap} is not a proper @code{nnmail} derived back
+end, it supports most features in regular expiring (@pxref{Expiring
+Mail}).  Unlike splitting in IMAP (@pxref{Splitting in IMAP}) it do
+not clone the @code{nnmail} variables (i.e., creating
+@var{nnimap-expiry-wait}) but reuse the @code{nnmail} variables.  What
+follows below are the variables used by the @code{nnimap} expiry
+process.
 
 A note on how the expire mark is stored on the @sc{imap} server is
 appropriate here as well.  The expire mark is translated into a
-@sc{imap} client specific mark, @code{gnus-expire}, and stored on the
+@code{imap} client specific mark, @code{gnus-expire}, and stored on the
 message.  This means that likely only Gnus will understand and treat
 the @code{gnus-expire} mark properly, although other clients may allow
 you to view client specific flags on the message.  It also means that
@@ -15604,7 +15610,7 @@ number, the symbol @var{immediate} or @var{never}.
 @item nnmail-expiry-target
 
 This variable is supported, and internally implemented by calling the
-@sc{nnmail} functions that handle this.  It contains an optimization
+@code{nnmail} functions that handle this.  It contains an optimization
 that if the destination is a IMAP group on the same server, the
 article is copied instead of appended (that is, uploaded again).
 

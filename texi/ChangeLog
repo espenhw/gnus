@@ -1,3 +1,8 @@
+2003-01-22  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (IMAP): Add.
+	(Expiring in IMAP): Typo fixes.
+
 2003-01-22  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus.texi (Agent Regeneration): New node.
