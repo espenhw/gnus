@@ -1,3 +1,10 @@
+2000-10-21 10:54:57  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-article-mime-total-parts): New function.
+	(gnus-mm-display-part): Use it.
+	(gnus-mime-display-single): Ditto.
+	(gnus-mime-display-alternative): Ditto.
+
 2000-10-21 09:38:27  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mailcap.el (mailcap-parse-mailcaps): Don't use parse-colon-path,
