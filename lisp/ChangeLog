@@ -1,9 +1,19 @@
 2003-10-23  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* gnus.el (spam-process-destination, ham-process-destination):
+	allow multiple groups as a choice
+
 	* spam.el (spam-check-blackholes): remove "[IP address]"
 	requirement, now just "IP address" is enough for detection for
 	blackhole checking
 	(spam-check-blackholes): oops, the dots were not escaped
+	(spam-mark-spam-as-expired-and-move-routine): added multiple group
+	support (multiple copies, then delete)
+	(spam-ham-copy-routine): new function
+	(spam-ham-move-routine): new function
+	(spam-ham-copy-or-move-routine): new function (used to be
+	spam-ham-move-routine), handle multiple groups
+	(spam-summary-prepare-exit): call the new functions
 
 2003-10-23  Simon Josefsson  <jas@extundo.com>
 

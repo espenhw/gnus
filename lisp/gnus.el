@@ -1885,25 +1885,27 @@ Only applicable to non-spam (unclassified and ham) groups.")
   (gnus-define-group-parameter
    spam-process
    :type list
-   :parameter-type '(choice :tag "Spam Summary Exit Processor"
-			    :value nil
-			    (list :tag "Spam Summary Exit Processor Choices"
-				  (set
-				   (variable-item gnus-group-spam-exit-processor-ifile)
-				   (variable-item gnus-group-spam-exit-processor-stat)
-				   (variable-item gnus-group-spam-exit-processor-bogofilter)
-				   (variable-item gnus-group-spam-exit-processor-blacklist)
-				   (variable-item gnus-group-spam-exit-processor-report-gmane)
-				   (variable-item gnus-group-spam-exit-processor-spamoracle)
-				   (variable-item gnus-group-ham-exit-processor-bogofilter)
-				   (variable-item gnus-group-ham-exit-processor-ifile)
-				   (variable-item gnus-group-ham-exit-processor-stat)
-				   (variable-item gnus-group-ham-exit-processor-whitelist)
-				   (variable-item gnus-group-ham-exit-processor-BBDB)
-				   (variable-item gnus-group-ham-exit-processor-copy)
-				   (variable-item gnus-group-ham-exit-processor-spamoracle))))
+   :parameter-type 
+   '(choice 
+     :tag "Spam Summary Exit Processor"
+     :value nil
+     (list :tag "Spam Summary Exit Processor Choices"
+	   (set
+	    (variable-item gnus-group-spam-exit-processor-ifile)
+	    (variable-item gnus-group-spam-exit-processor-stat)
+	    (variable-item gnus-group-spam-exit-processor-bogofilter)
+	    (variable-item gnus-group-spam-exit-processor-blacklist)
+	    (variable-item gnus-group-spam-exit-processor-report-gmane)
+	    (variable-item gnus-group-spam-exit-processor-spamoracle)
+	    (variable-item gnus-group-ham-exit-processor-bogofilter)
+	    (variable-item gnus-group-ham-exit-processor-ifile)
+	    (variable-item gnus-group-ham-exit-processor-stat)
+	    (variable-item gnus-group-ham-exit-processor-whitelist)
+	    (variable-item gnus-group-ham-exit-processor-BBDB)
+	    (variable-item gnus-group-ham-exit-processor-copy)
+	    (variable-item gnus-group-ham-exit-processor-spamoracle))))
    :function-document
-   "Which spam or ham processors will be applied to the GROUP articles at summary exit."
+   "Which spam or ham processors will be applied when the summary is exited."
    :variable gnus-spam-process-newsgroups
    :variable-default nil
    :variable-document
@@ -1912,29 +1914,34 @@ a backend on summary exit.  If non-nil, this should be a list of group
 name regexps that should match all groups in which to do automatic
 spam processing, associated with the appropriate processor."
    :variable-group spam
-   :variable-type '(repeat :tag "Spam/Ham Processors"
-			   (list :tag "Spam Summary Exit Processor Choices"
-				 (regexp :tag "Group Regexp")
-				 (set :tag "Spam/Ham Summary Exit Processor"
-				      (variable-item gnus-group-spam-exit-processor-ifile)
-				      (variable-item gnus-group-spam-exit-processor-stat)
-				      (variable-item gnus-group-spam-exit-processor-bogofilter)
-				      (variable-item gnus-group-spam-exit-processor-blacklist)
-				      (variable-item gnus-group-spam-exit-processor-report-gmane)
-				      (variable-item gnus-group-ham-exit-processor-bogofilter)
-				      (variable-item gnus-group-ham-exit-processor-ifile)
-				      (variable-item gnus-group-ham-exit-processor-stat)
-				      (variable-item gnus-group-ham-exit-processor-whitelist)
-				      (variable-item gnus-group-ham-exit-processor-BBDB)
-				      (variable-item gnus-group-ham-exit-processor-copy))))
+   :variable-type 
+   '(repeat :tag "Spam/Ham Processors"
+	    (list :tag "Spam Summary Exit Processor Choices"
+		  (regexp :tag "Group Regexp")
+		  (set 
+		   :tag "Spam/Ham Summary Exit Processor"
+		   (variable-item gnus-group-spam-exit-processor-ifile)
+		   (variable-item gnus-group-spam-exit-processor-stat)
+		   (variable-item gnus-group-spam-exit-processor-bogofilter)
+		   (variable-item gnus-group-spam-exit-processor-blacklist)
+		   (variable-item gnus-group-spam-exit-processor-report-gmane)
+		   (variable-item gnus-group-ham-exit-processor-bogofilter)
+		   (variable-item gnus-group-ham-exit-processor-ifile)
+		   (variable-item gnus-group-ham-exit-processor-stat)
+		   (variable-item gnus-group-ham-exit-processor-whitelist)
+		   (variable-item gnus-group-ham-exit-processor-BBDB)
+		   (variable-item gnus-group-ham-exit-processor-copy))))
    :parameter-document
-   "Which spam processors will be applied to the spam or ham GROUP articles at summary exit.")
+   "Which spam or ham processors will be appliedwhen the summary is exited.")
 
   (gnus-define-group-parameter
    spam-process-destination
-   :parameter-type '(choice :tag "Destination for spam-processed articles at summary exit"
-			    (string :tag "Move to a group")
-			    (const :tag "Expire" nil))
+   :parameter-type 
+   '(choice :tag "Destination for spam-processed articles at summary exit"
+	    (string :tag "Move to a group")
+	    (repeat :tag "Move to multiple groups"
+		    (string :tag "Destination group"))
+	    (const :tag "Expire" nil))
    :function-document
    "Where spam-processed articles will go at summary exit."
    :variable gnus-spam-process-destinations
@@ -1947,23 +1954,29 @@ to do spam-processed article moving, associated with the destination
 group or nil for explicit expiration.  This only makes sense for
 mail groups."
    :variable-group spam
-   :variable-type '(repeat
-		    :tag "Spam-processed articles destination"
-		    (list
-		     (regexp :tag "Group Regexp")
-		     (choice
-		      :tag "Destination for spam-processed articles at summary exit"
-		      (string :tag "Move to a group")
-		      (const :tag "Expire" nil))))
+   :variable-type 
+   '(repeat
+     :tag "Spam-processed articles destination"
+     (list
+      (regexp :tag "Group Regexp")
+      (choice
+       :tag "Destination for spam-processed articles at summary exit"
+       (string :tag "Move to a group")
+       (repeat :tag "Move to multiple groups"
+	       (string :tag "Destination group"))
+       (const :tag "Expire" nil))))
    :parameter-document
    "Where spam-processed articles will go at summary exit.")
-
+  
   (gnus-define-group-parameter
    ham-process-destination
-   :parameter-type '(choice
-		     :tag "Destination for ham articles at summary exit from a spam group"
-		     (string :tag "Move to a group")
-		     (const :tag "Do nothing" nil))
+   :parameter-type 
+   '(choice
+     :tag "Destination for ham articles at summary exit from a spam group"
+     (string :tag "Move to a group")
+     (repeat :tag "Move to multiple groups"
+	     (string :tag "Destination group"))
+     (const :tag "Do nothing" nil))
    :function-document
    "Where ham articles will go at summary exit from a spam group."
    :variable gnus-ham-process-destinations
@@ -1976,14 +1989,17 @@ to do ham article moving, associated with the destination
 group or nil for explicit ignoring.  This only makes sense for
 mail groups, and only works in spam groups."
    :variable-group spam
-   :variable-type '(repeat
-		    :tag "Ham articles destination"
-		    (list
-		     (regexp :tag "Group Regexp")
-		     (choice
-		      :tag "Destination for ham articles at summary exit from spam group"
-		      (string :tag "Move to a group")
-		      (const :tag "Expire" nil))))
+   :variable-type 
+   '(repeat
+     :tag "Ham articles destination"
+     (list
+      (regexp :tag "Group Regexp")
+      (choice
+       :tag "Destination for ham articles at summary exit from spam group"
+       (string :tag "Move to a group")
+       (repeat :tag "Move to multiple groups"
+	       (string :tag "Destination group"))
+       (const :tag "Expire" nil))))
    :parameter-document
    "Where ham articles will go at summary exit from a spam group.")
 

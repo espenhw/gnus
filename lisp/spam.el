@@ -525,8 +525,8 @@ spamoracle database."
 
     (when (spam-group-ham-processor-copy-p gnus-newsgroup-name)
       (gnus-message 5 "Copying ham")
-      (spam-ham-move-routine
-       (gnus-parameter-ham-process-destination gnus-newsgroup-name) t))
+      (spam-ham-copy-routine
+       (gnus-parameter-ham-process-destination gnus-newsgroup-name)))
 
     ;; now move all ham articles out of spam groups
     (when (spam-group-spam-contents-p gnus-newsgroup-name)
@@ -548,7 +548,7 @@ spamoracle database."
       (dolist (article articles)
 	(gnus-summary-mark-article article gnus-spam-mark)))))
 
-(defun spam-mark-spam-as-expired-and-move-routine (&optional group)
+(defun spam-mark-spam-as-expired-and-move-routine (&rest groups)
   (gnus-summary-kill-process-mark)
   (let ((articles gnus-newsgroup-articles)
 	article tomove)
@@ -557,35 +557,54 @@ spamoracle database."
 	(gnus-summary-mark-article article gnus-expirable-mark)
 	(push article tomove)))
 
-    ;; now do the actual move
-    (when (and tomove
-	       (stringp group))
-      (dolist (article tomove)
-	(gnus-summary-set-process-mark article))
-      (when tomove (gnus-summary-move-article nil group))))
+    ;; now do the actual copies
+    (dolist (group groups)
+      (when (and tomove
+		 (stringp group))
+	(dolist (article tomove)
+	  (gnus-summary-set-process-mark article))
+	(when tomove
+	  (gnus-summary-copy-article nil group))))
+
+    ;; now delete the articles
+    (dolist (article tomove)
+      (gnus-summary-set-process-mark article))
+    (when tomove
+      (gnus-summary-delete-article nil)))
+
   (gnus-summary-yank-process-mark))
  
-(defun spam-ham-move-routine (&optional group copy)
+(defun spam-ham-copy-or-move-routine (copy &rest groups)
   (gnus-summary-kill-process-mark)
   (let ((articles gnus-newsgroup-articles)
-	article mark tomove)
-    (when (stringp group)		; this routine will do nothing
-					; without a valid group
-      (dolist (article articles)
-	(when (spam-group-ham-mark-p gnus-newsgroup-name
-				     (gnus-summary-article-mark article))
-	  (push article tomove)))
+	article mark todo)
+    (dolist (article articles)
+      (when (spam-group-ham-mark-p gnus-newsgroup-name
+				   (gnus-summary-article-mark article))
+	(push article todo)))
 
-      ;; now do the actual move
-      (when tomove
-	(dolist (article tomove)
+    ;; now do the actual move
+    (dolist (group groups)
+      (when todo
+	(dolist (article todo)
 	  (when spam-mark-ham-unread-before-move-from-spam-group
-	    (gnus-summary-mark-article article gnus-unread-mark))	    
+	    (gnus-summary-mark-article article gnus-unread-mark))
 	  (gnus-summary-set-process-mark article))
-	(if copy
-	    (gnus-summary-copy-article nil group)
-	  (gnus-summary-move-article nil group)))))
+	(gnus-summary-copy-article nil group)))
+  
+    ;; now delete the articles
+    (dolist (article todo)
+      (gnus-summary-set-process-mark article))
+    (when todo
+      (gnus-summary-delete-article nil)))
+  
   (gnus-summary-yank-process-mark))
+ 
+(defun spam-ham-copy-routine (&rest groups)
+  (spam-ham-copy-or-move-routine t groups))
+ 
+(defun spam-ham-move-routine (&rest groups)
+  (spam-ham-copy-or-move-routine nil groups))
  
 (defun spam-generic-register-routine (spam-func ham-func)
   (let ((articles gnus-newsgroup-articles)
