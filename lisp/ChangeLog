@@ -1,3 +1,9 @@
+2001-05-04 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnrss.el (nnrss-check-group): Use nnheader-translate-file-chars.
+	(nnrss-group-alist): Add more resources.
+	(nnrss-check-group): Ignore errors.
+
 2001-05-04 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnrss.el (nnrss-request-expire-articles): Correct the return value.
