@@ -493,7 +493,8 @@ the signature is inserted."
 
 ;;;###autoload
 (defcustom message-yank-prefix "> "
-  "*Prefix inserted on the lines of yanked messages."
+  "*Prefix inserted on the lines of yanked messages.
+Fix `message-cite-prefix-regexp' if it is set to an abnormal value."
   :type 'string
   :group 'message-insertion)
 
@@ -1380,6 +1381,7 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-v" 'message-delete-not-region)
   (define-key message-mode-map "\C-c\C-z" 'message-kill-to-signature)
   (define-key message-mode-map "\M-\r" 'message-newline-and-reformat)
+  (define-key message-mode-map "\M-q" 'message-fill-paragraph)
 
   (define-key message-mode-map "\C-c\C-a" 'mml-attach-file)
 
@@ -1519,12 +1521,9 @@ M-RET    message-newline-and-reformat (break the line and reformat)."
   (make-local-variable 'adaptive-fill-first-line-regexp)
   (make-local-variable 'auto-fill-inhibit-regexp)
   (let ((quote-prefix-regexp
-         (concat
-	  "\\("
-	  (regexp-quote message-yank-prefix)  ; user's prefix
-	  "\\)?\\("
-	  message-cite-prefix-regexp    ; various prefix
-          "\\)[ \t]*")))                ; possible space after each prefix
+	 ;; User should change message-cite-prefix-regexp if
+	 ;; message-yank-prefix is set to an abnormal value.
+         (concat "\\(" message-cite-prefix-regexp "\\)[ \t]*")))      
     (setq paragraph-start
           (concat
            (regexp-quote mail-header-separator) "$\\|"
@@ -1711,40 +1710,89 @@ With the prefix argument FORCE, insert the header anyway."
     (unless (bolp)
       (insert "\n"))))
 
-(defun message-newline-and-reformat ()
+(defun message-newline-and-reformat (&optional not-break)
   "Insert four newlines, and then reformat if inside quoted text."
   (interactive)
-  (let (quoted point end leading-space)
-    (save-excursion
-      (beginning-of-line)
-      (while (and (not end) (looking-at message-cite-prefix-regexp))
-	(if quoted
-	    (unless (equal quoted (match-string 0))
-	      (setq end (point)))
-	  (setq quoted (match-string 0)))
-	(unless end
-	  (goto-char (match-end 0))
-	  (looking-at "[ \t]*")
-	  (if (or (not leading-space) 
-		  (> (length leading-space) (length (match-string 0))))
-	      (setq leading-space (match-string 0))))
-	(forward-line 1)))
-    (if (< (- (point) (gnus-point-at-bol)) (length quoted))
+  (let (quoted point beg end leading-space)
+    (setq point (point))
+    (beginning-of-line)
+    (setq beg (point))
+    ;; Find first line of the paragraph.
+    (if not-break
+	(while (and (not (eobp)) 
+		    (not (looking-at message-cite-prefix-regexp))
+		(looking-at paragraph-start))
+	  (forward-line 1)))
+    ;; Find the prefix
+    (when (looking-at message-cite-prefix-regexp)
+      (setq quoted (match-string 0))
+      (goto-char (match-end 0))
+      (looking-at "[ \t]*")
+      (setq leading-space (match-string 0)))
+    (if (and quoted
+	     (not not-break)
+	     (< (- point beg) (length quoted)))
 	;; break in the cite prefix.
 	(setq quoted nil
 	      end nil))
+    (if quoted
+	(progn
+	  (forward-line 1)
+	  (while (and (not (eobp))
+		      (not (looking-at paragraph-separate))
+		      (looking-at message-cite-prefix-regexp)
+		      (equal quoted (match-string 0)))
+	    (goto-char (match-end 0))
+	    (looking-at "[ \t]*")
+	    (if (> (length leading-space) (length (match-string 0)))
+		(setq leading-space (match-string 0)))
+	    (forward-line 1))
+	  (setq end (point))
+	  (goto-char beg)
+	  (while (and (if (bobp) nil (forward-line -1) t)
+		      (not (looking-at paragraph-start))
+		      (looking-at message-cite-prefix-regexp)
+		      (equal quoted (match-string 0)))
+	    (setq beg (point))
+	    (goto-char (match-end 0))
+	    (looking-at "[ \t]*")
+	    (if (> (length leading-space) (length (match-string 0)))
+		(setq leading-space (match-string 0)))))
+      (while (and (not (eobp))
+		  (not (looking-at paragraph-separate))
+		  (not (looking-at message-cite-prefix-regexp)))
+	(forward-line 1))
+      (setq end (point))
+      (goto-char beg)
+      (while (and (if (bobp) nil (forward-line -1) t)
+		  (not (looking-at paragraph-start))
+		  (not (looking-at message-cite-prefix-regexp))
+		  (equal quoted (match-string 0)))
+	(setq beg (point))))
+    (goto-char point)
     (save-restriction
-      (if end
-	  (narrow-to-region (point) end))
-      (insert "\n")
-      (setq point (point))
-      (insert "\n\n\n")
-      (delete-region (point) (re-search-forward "[ \t]*"))
-      (when quoted
-	(insert quoted (or leading-space "")))
-      (fill-paragraph nil)
-      (goto-char point)
-      (forward-line 1))))
+      (narrow-to-region beg end)
+      (if not-break
+	  (setq point nil)
+	(insert "\n\n")
+	(setq point (point))
+	(insert "\n\n")
+	(delete-region (point) (re-search-forward "[ \t]*"))
+	(when quoted
+	  (insert quoted leading-space)))
+      (if quoted
+	  (let* ((adaptive-fill-regexp 
+		 (regexp-quote (concat quoted leading-space)))
+		 (adaptive-fill-first-line-regexp 
+		  adaptive-fill-regexp ))
+	    (fill-paragraph nil))
+	(fill-paragraph nil))
+      (if point (goto-char point)))))
+
+(defun message-fill-paragraph ()
+  "Like `fill-paragraph'."
+  (interactive)
+  (message-newline-and-reformat t))
 
 (defun message-insert-signature (&optional force)
   "Insert a signature.  See documentation for the `message-signature' variable."

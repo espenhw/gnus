@@ -4,6 +4,7 @@
 	message-cite-prefix-regexp.
 	(message-newline-and-reformat): Check the end of citation, leading
 	WSP, break in the cite prefix.
+	(message-fill-paragraph): New function.
 
 2000-11-17 13:44  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
