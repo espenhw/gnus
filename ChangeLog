@@ -1,5 +1,5 @@
 2001-10-19  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
-	From Frank Schmitt <ich@Frank-Schmitt.net>.
+	From Frank Schmitt <ich@Frank-Schmitt.net>. 
 	
 	* make-x.bat: Use correct directory structure for XEmacs on Windows.
 
