@@ -712,19 +712,16 @@ If your Emacs implementation can't decode CHARSET, return nil."
       (when (and (eq cs 'ascii)
 		 mail-parse-charset)
 	(setq cs mail-parse-charset))
-      ;; Fixme: What's this for?  The following comment makes no sense. -- fx
-      (mm-with-unibyte-current-buffer
-	;; In Emacs Mule 4, decoding UTF-8 should be in unibyte mode.
-	(mm-decode-coding-string
-	 (cond
-	  ((equal "B" encoding)
-	   (base64-decode-string
-	    (rfc2047-pad-base64 string)))
-	  ((equal "Q" encoding)
-	   (quoted-printable-decode-string
-	    (mm-replace-chars-in-string string ?_ ? )))
-	  (t (error "Invalid encoding: %s" encoding)))
-	 cs)))))
+      (mm-decode-coding-string
+       (cond
+	((equal "B" encoding)
+	 (base64-decode-string
+	  (rfc2047-pad-base64 string)))
+	((equal "Q" encoding)
+	 (quoted-printable-decode-string
+	  (mm-replace-chars-in-string string ?_ ? )))
+	(t (error "Invalid encoding: %s" encoding)))
+       cs))))
 
 (provide 'rfc2047)
 
