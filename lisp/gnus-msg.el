@@ -748,9 +748,7 @@ If POST, post instead of mail."
 	(insert text)
 	(goto-char (point-min))
 	(when (looking-at "From ")
-	  (replace-match "X-From-Line: ") )
-	(when message-forward-show-mml
-	  (mime-to-mml))
+	  (replace-match "X-From-Line: "))
 	(message-forward post)))))
 
 (defun gnus-summary-resend-message (address n)

@@ -27,6 +27,7 @@
 (require 'mm-bodies)
 (require 'mm-encode)
 (require 'mm-decode)
+(require 'gnus-ems)
 (require 'mml-sec)
 (eval-when-compile (require 'cl))
 

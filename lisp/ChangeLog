@@ -1,3 +1,18 @@
+2000-12-20  Christoph Conrad <C.Conrad@cli.de>
+
+	* qp.el (quoted-printable-encode-region): Upcase QP.
+
+2000-12-20 03:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-possibly-verify-or-decrypt): Use
+	mail-extract-a-c instead. Don't depend on Gnus.
+
+	* mml.el (gnus-ems): Require it.
+
+	* gnus-msg.el (gnus-summary-mail-forward):
+	
+	* message.el (message-forward):  Move mime-to-mml here.
+
 2000-12-20 02:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-group.el, gnus-sum.el, message.el: Add :help unless Emacs.

@@ -1033,8 +1033,8 @@ If RECURSIVE, search recursively."
 	(mm-security-from
 	 (save-restriction
 	   (mail-narrow-to-head)
-	   (cadr (funcall gnus-extract-address-components 
-			  (or (mail-fetch-field "from") "")))))
+	   (cadr (mail-extract-address-components 
+		  (or (mail-fetch-field "from") "")))))
 	protocol func functest)
     (cond 
      ((equal subtype "signed")

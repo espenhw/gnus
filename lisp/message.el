@@ -4233,6 +4233,9 @@ the message."
 Optional NEWS will use news to forward instead of mail.
 Optional DIGEST will use digest to forward."
   (interactive "P")
+  (when (and message-forward-show-mml
+	     (not digest))
+    (mime-to-mml))
   (let* ((cur (current-buffer))
 	 (subject (if message-forward-show-mml
 		      (message-make-forward-subject)
