@@ -223,6 +223,18 @@ Enable this if you want Gnus to invoke Bogofilter on new messages."
   :type 'boolean
   :group 'spam)
 
+(defcustom spam-use-bsfilter-headers nil
+  "Whether bsfilter headers should be used by `spam-split'.
+Enable this if you pre-process messages with Bsfilter BEFORE Gnus sees them."
+  :type 'boolean
+  :group 'spam)
+
+(defcustom spam-use-bsfilter nil
+  "Whether bsfilter should be invoked by `spam-split'.
+Enable this if you want Gnus to invoke Bsfilter on new messages."
+  :type 'boolean
+  :group 'spam)
+
 (defcustom spam-use-BBDB nil
   "Whether BBDB should be used by `spam-split'."
   :type 'boolean
@@ -277,6 +289,8 @@ them."
 			       spam-use-bogofilter-headers
 			       spam-use-spamassassin
 			       spam-use-spamassassin-headers
+			       spam-use-bsfilter
+			       spam-use-bsfilter-headers
 			       spam-use-BBDB
 			       spam-use-BBDB-exclusive
 			       spam-use-ifile
@@ -433,6 +447,53 @@ your main source of newsgroup names."
 		  :tag "Location of the Bogofilter database directory")
 		 (const :tag "Use the default"))
   :group 'spam-bogofilter)
+
+(defgroup spam-bsfilter nil
+  "Spam bsfilter configuration."
+  :group 'spam)
+
+(defcustom spam-bsfilter-path (exec-installed-p "bsfilter")
+  "File path of the Bsfilter executable program."
+  :type '(choice (file :tag "Location of bsfilter")
+		 (const :tag "Bsfilter is not installed"))
+  :group 'spam-bsfilter)
+
+(defcustom spam-bsfilter-header "X-Spam-Flag"
+  "The header inserted by Bsfilter to flag spam."
+  :type 'string
+  :group 'spam-bsfilter)
+
+(defcustom spam-bsfilter-probability-header "X-Spam-Probability"
+  "The header that Bsfilter inserts in messages."
+  :type 'string
+  :group 'spam-bsfilter)
+
+(defcustom spam-bsfilter-spam-switch "--add-spam"
+  "The switch that Bsfilter uses to register spam messages."
+  :type 'string
+  :group 'spam-bsfilter)
+
+(defcustom spam-bsfilter-ham-switch "--add-ham"
+  "The switch that Bsfilter uses to register ham messages."
+  :type 'string
+  :group 'spam-bsfilter)
+
+(defcustom spam-bsfilter-spam-strong-switch "--sub-spam"
+  "The switch that Bsfilter uses to unregister ham messages."
+  :type 'string
+  :group 'spam-bsfilter)
+
+(defcustom spam-bsfilter-ham-strong-switch "--sub-clean"
+  "The switch that Bsfilter uses to unregister spam messages."
+  :type 'string
+  :group 'spam-bsfilter)
+
+(defcustom spam-bsfilter-database-directory nil
+  "Directory path of the Bsfilter databases."
+  :type '(choice (directory
+		  :tag "Location of the Bsfilter database directory")
+		 (const :tag "Use the default"))
+  :group 'spam-bsfilter)
 
 (defgroup spam-spamoracle nil
   "Spam spamoracle configuration."
@@ -600,6 +661,7 @@ finds ham or spam.")
 (defvar spam-list-of-processors
   '((gnus-group-spam-exit-processor-report-gmane spam spam-use-gmane)
     (gnus-group-spam-exit-processor-bogofilter   spam spam-use-bogofilter)
+    (gnus-group-spam-exit-processor-bsfilter	 spam spam-use-bsfilter)
     (gnus-group-spam-exit-processor-blacklist    spam spam-use-blacklist)
     (gnus-group-spam-exit-processor-ifile        spam spam-use-ifile)
     (gnus-group-spam-exit-processor-stat         spam spam-use-stat)
@@ -607,6 +669,7 @@ finds ham or spam.")
     (gnus-group-spam-exit-processor-spamassassin spam spam-use-spamassassin)
     (gnus-group-ham-exit-processor-ifile         ham spam-use-ifile)
     (gnus-group-ham-exit-processor-bogofilter    ham spam-use-bogofilter)
+    (gnus-group-ham-exit-processor-bsfilter      ham spam-use-bsfilter)
     (gnus-group-ham-exit-processor-stat          ham spam-use-stat)
     (gnus-group-ham-exit-processor-whitelist     ham spam-use-whitelist)
     (gnus-group-ham-exit-processor-BBDB          ham spam-use-BBDB)
@@ -736,14 +799,15 @@ Will not return a nil score."
 	(return)))
     (or score 0)))
 
-(defun spam-generic-score ()
+(defun spam-generic-score (&optional recheck)
   "Invoke whatever scoring method we can."
-  (interactive)
-  (if (or
-       spam-use-spamassassin
-       spam-use-spamassassin-headers)
-      (spam-spamassassin-score)
-    (spam-bogofilter-score)))
+  (interactive "P")
+  (cond
+   ((or spam-use-spamassassin spam-use-spamassassin-headers)
+    (spam-spamassassin-score recheck))
+   ((or spam-use-bsfilter spam-use-bsfilter-headers)
+    (spam-bsfilter-score recheck))
+   (t (spam-bogofilter-score recheck))))
 
 ;;; Summary entry and exit processing.
 
@@ -1057,7 +1121,9 @@ When either list is nil, the other is returned."
     (spam-use-spamassassin-headers 	. 	spam-check-spamassassin-headers)
     (spam-use-spamassassin 		. 	spam-check-spamassassin)
     (spam-use-bogofilter-headers 	. 	spam-check-bogofilter-headers)
-    (spam-use-bogofilter 	 	. 	spam-check-bogofilter))
+    (spam-use-bogofilter 	 	. 	spam-check-bogofilter)
+    (spam-use-bsfilter-headers		.	spam-check-bsfilter-headers)
+    (spam-use-bsfilter			.	spam-check-bsfilter))
   "The spam-list-of-checks list contains pairs associating a
 parameter variable with a spam checking function.  If the
 parameter variable is true, then the checking function is called,
@@ -1077,6 +1143,7 @@ definitely a spam.")
     spam-use-regex-body
     spam-use-stat
     spam-use-bogofilter
+    spam-use-bsfilter
     spam-use-blackholes
     spam-use-spamassassin
     spam-use-spamoracle)
@@ -1260,7 +1327,11 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
     (spam-use-bogofilter spam-bogofilter-register-ham-routine
 			 spam-bogofilter-register-spam-routine
 			 spam-bogofilter-unregister-ham-routine
-			 spam-bogofilter-unregister-spam-routine))
+			 spam-bogofilter-unregister-spam-routine)
+    (spam-use-bsfilter	 spam-bsfilter-register-ham-routine
+			 spam-bsfilter-register-spam-routine
+			 spam-bsfilter-unregister-ham-routine
+			 spam-bsfilter-unregister-spam-routine))
   "The spam-registration-functions list contains pairs
 associating a parameter variable with the ham and spam
 registration functions, and the ham and spam unregistration
@@ -1994,13 +2065,14 @@ REMOVE not nil, remove the ADDRESSES."
 	  spam-split-group)))))
 
 ;; return something sensible if the score can't be determined
-(defun spam-bogofilter-score ()
+(defun spam-bogofilter-score (&optional recheck)
   "Get the Bogofilter spamicity score"
-  (interactive)
+  (interactive "P")
   (save-window-excursion
     (gnus-summary-show-article t)
     (set-buffer gnus-article-buffer)
-    (let ((score (or (spam-check-bogofilter-headers t)
+    (let ((score (or (unless recheck
+		       (spam-check-bogofilter-headers t))
 		     (spam-check-bogofilter t))))
       (gnus-summary-show-article)
       (message "Spamicity score %s" score)
@@ -2159,13 +2231,14 @@ REMOVE not nil, remove the ADDRESSES."
 	(spam-check-spamassassin-headers score)))))
 
 ;; return something sensible if the score can't be determined
-(defun spam-spamassassin-score ()
+(defun spam-spamassassin-score (&optional recheck)
   "Get the SpamAssassin score"
-  (interactive)
+  (interactive "P")
   (save-window-excursion
     (gnus-summary-show-article t)
     (set-buffer gnus-article-buffer)
-    (let ((score (or (spam-check-spamassassin-headers t)
+    (let ((score (or (unless recheck
+		       (spam-check-spamassassin-headers t))
 		     (spam-check-spamassassin t))))
       (gnus-summary-show-article)
       (message "SpamAssassin score %s" score)
@@ -2212,6 +2285,94 @@ REMOVE not nil, remove the ADDRESSES."
 
 (defun spam-spamassassin-unregister-ham-routine (articles)
   (spam-spamassassin-register-with-sa-learn articles nil t))
+
+
+;;;; Bsfilter
+;;; based mostly on the bogofilter code
+(defun spam-check-bsfilter-headers (&optional score)
+  (if score
+      (or (nnmail-fetch-field spam-bsfilter-probability-header)
+	  "0")
+    (let ((header (nnmail-fetch-field spam-bsfilter-header))
+	  (spam-split-group (if spam-split-symbolic-return
+				'spam
+			      spam-split-group)))
+      (when header ; return nil when no header
+	(when (string-match "YES" header)
+	  spam-split-group)))))
+
+;; return something sensible if the score can't be determined
+(defun spam-bsfilter-score (&optional recheck)
+  "Get the Bsfilter spamicity score"
+  (interactive "P")
+  (save-window-excursion
+    (gnus-summary-show-article t)
+    (set-buffer gnus-article-buffer)
+    (let ((score (or (unless recheck
+		       (spam-check-bsfilter-headers t))
+		     (spam-check-bsfilter t))))
+      (gnus-summary-show-article)
+      (message "Spamicity score %s" score)
+      (or score "0"))))
+
+(defun spam-check-bsfilter (&optional score)
+  "Check the Bsfilter backend for the classification of this message"
+  (let ((article-buffer-name (buffer-name))
+	(dir spam-bsfilter-database-directory)
+	return)
+    (with-temp-buffer
+      (let ((temp-buffer-name (buffer-name)))
+	(save-excursion
+	  (set-buffer article-buffer-name)
+	  (apply 'call-process-region
+		 (point-min) (point-max)
+		 spam-bsfilter-path
+		 nil temp-buffer-name nil
+		 "--pipe"
+		 "--insert-flag"
+		 "--insert-probability"
+		 (when dir
+		   (list "--homedir" dir))))
+	(setq return (spam-check-bsfilter-headers score))))
+    return))
+
+(defun spam-bsfilter-register-with-bsfilter (articles
+					     spam
+					     &optional unregister)
+  "Register an article, given as a string, as spam or non-spam."
+  (dolist (article articles)
+    (let ((article-string (spam-get-article-as-string article))
+	  (switch (if unregister
+		      (if spam
+			  spam-bsfilter-spam-strong-switch
+			spam-bsfilter-ham-strong-switch)
+		    (if spam
+			spam-bsfilter-spam-switch
+		      spam-bsfilter-ham-switch))))
+      (when (stringp article-string)
+	(with-temp-buffer
+	  (insert article-string)
+	  (apply 'call-process-region
+		 (point-min) (point-max)
+		 spam-bsfilter-path
+		 nil nil nil switch
+		 "--update"
+		 (when spam-bsfilter-database-directory
+		   (list "--homedir"
+			 spam-bsfilter-database-directory))))))))
+
+(defun spam-bsfilter-register-spam-routine (articles &optional unregister)
+  (spam-bsfilter-register-with-bsfilter articles t unregister))
+
+(defun spam-bsfilter-unregister-spam-routine (articles)
+  (spam-bsfilter-register-spam-routine articles t))
+
+(defun spam-bsfilter-register-ham-routine (articles &optional unregister)
+  (spam-bsfilter-register-with-bsfilter articles nil unregister))
+
+(defun spam-bsfilter-unregister-ham-routine (articles)
+  (spam-bsfilter-register-ham-routine articles t))
+
 
 ;;;; Hooks
 

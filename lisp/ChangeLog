@@ -1,3 +1,31 @@
+2004-04-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* gnus.el (spam-process, spam-autodetect-methods): Add
+	bsfilter and bsfilter-headers.
+
+	* spam.el (spam-bsfilter): New customize group.
+	(spam-use-bsfilter, spam-use-bsfilter-headers, spam-bsfilter-path)
+	(spam-bsfilter-header, spam-bsfilter-probability-header)
+	(spam-bsfilter-spam-switch, spam-bsfilter-ham-switch)
+	(spam-bsfilter-spam-strong-switch, spam-bsfilter-ham-strong-switch)
+	(spam-bsfilter-database-directory): New options.
+	(spam-install-hooks, spam-list-of-processors, spam-list-of-checks)
+	(spam-list-of-statistical-checks, spam-registration-functions):
+	Add `spam-use-bsfilter' and `spam-use-bsfilter-headers'.
+	(spam-bsfilter-score): New command.
+	(spam-check-bsfilter-headers, spam-check-bsfilter)
+	(spam-bsfilter-register-with-bsfilter)
+	(spam-bsfilter-register-spam-routine)
+	(spam-bsfilter-unregister-spam-routine)
+	(spam-bsfilter-register-ham-routine)
+	(spam-bsfilter-unregister-ham-routine): New functions.
+	(spam-generic-score): Supprt bsfilter; Accept an optional argument
+	to recalcurate spam score even if scoring header has already been
+	added.
+	(spam-bogofilter-score, spam-spamassassin-score): Accept an
+	optional argument to recalcurate spam score even if scoring header
+	has already been added.
+
 2004-04-29  Jesper Harder  <harder@ifa.au.dk>
 
 	* nnrss.el (nnrss-get-namespace-prefix): Use string= to compare
