@@ -1,3 +1,7 @@
+2002-04-24  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* ucs-tables.el (featurep): Barf on XEmacs.
+
 2002-03-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* ucs-tables.el: Copy from Emacs 21.

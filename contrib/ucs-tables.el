@@ -54,6 +54,9 @@
 
 ;;; Code:
 
+(when (featurep 'xemacs)
+  (error "This file cannot be used with XEmacs.  For XEmacs, use latin-unity instead"))
+
 ;;; Define tables, to be populated later.
 
 (defvar ucs-mule-8859-to-ucs-table (make-translation-table)
