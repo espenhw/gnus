@@ -1,3 +1,8 @@
+2002-12-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-agent.el (gnus-close-agent): Don't blank out the list of
+	covered methods.
+
 2002-12-12  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* nntp.el (nntp-with-open-group-first-pass): Do not wrap in

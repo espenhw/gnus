@@ -211,8 +211,7 @@ node `(gnus)Server Buffer'.")
 (gnus-add-shutdown 'gnus-close-agent 'gnus)
 
 (defun gnus-close-agent ()
-  (setq gnus-agent-covered-methods nil
-	gnus-category-predicate-cache nil
+  (setq gnus-category-predicate-cache nil
 	gnus-category-group-cache nil
 	gnus-agent-spam-hashtb nil)
   (gnus-kill-buffer gnus-agent-overview-buffer))
