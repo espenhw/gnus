@@ -1,3 +1,12 @@
+2001-12-01 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-save-article): Nix
+	gnus-display-mime-function and gnus-article-prepare-hook.
+
+	* gnus-spec.el (gnus-parse-complex-format): Properly handle %C at
+	the beginning of lines.
+	(gnus-complex-form-to-spec): Ditto.
+
 2001-12-01 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-make-mft): Fix the m-s-a-file regexp.

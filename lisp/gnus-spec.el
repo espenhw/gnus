@@ -382,47 +382,53 @@ characters when given a pad value."
       (gnus-parse-simple-format format spec-alist insert))))
 
 (defun gnus-parse-complex-format (format spec-alist)
-  (save-excursion
-    (gnus-set-work-buffer)
-    (insert format)
-    (goto-char (point-min))
-    (while (re-search-forward "\"" nil t)
-      (replace-match "\\\"" nil t))
-    (goto-char (point-min))
-    (insert "(\"")
-    ;; Convert all font specs into font spec lists.
-    (while (re-search-forward "%\\([0-9]+\\)?\\([«»{}()]\\)" nil t)
-      (let ((number (if (match-beginning 1)
-			(match-string 1) "0"))
-	    (delim (aref (match-string 2) 0)))
-	(if (or (= delim ?\()
-		(= delim ?\{)
-		(= delim ?\«))
-	    (replace-match (concat "\"("
-				   (cond ((= delim ?\() "mouse")
-					 ((= delim ?\{) "face")
-					 (t "balloon"))
-				   " " number " \"")
-			   t t)
-	  (replace-match "\")\""))))
-    (goto-char (point-max))
-    (insert "\")")
-    ;; Convert point position commands.
-    (goto-char (point-min))
-    (let ((case-fold-search nil))
-      (while (re-search-forward "%\\([-0-9]+\\)?C" nil t)
-	(replace-match "\"(point)\"" t t)))
-    ;; Convert TAB commands.
-    (goto-char (point-min))
-    (while (re-search-forward "%\\([-0-9]+\\)=" nil t)
-      (replace-match (format "\"(tab %s)\"" (match-string 1)) t t))
-    ;; Convert the buffer into the spec.
-    (goto-char (point-min))
-    (let ((form (read (current-buffer))))
-      ;; If the first element is '(point), we just remove it.
-      (when (equal (car form) '(point))
-	(pop form))
-      (cons 'progn (gnus-complex-form-to-spec form spec-alist)))))
+  (let (found-C)
+    (save-excursion
+      (gnus-set-work-buffer)
+      (insert format)
+      (goto-char (point-min))
+      (while (re-search-forward "\"" nil t)
+	(replace-match "\\\"" nil t))
+      (goto-char (point-min))
+      (insert "(\"")
+      ;; Convert all font specs into font spec lists.
+      (while (re-search-forward "%\\([0-9]+\\)?\\([«»{}()]\\)" nil t)
+	(let ((number (if (match-beginning 1)
+			  (match-string 1) "0"))
+	      (delim (aref (match-string 2) 0)))
+	  (if (or (= delim ?\()
+		  (= delim ?\{)
+		  (= delim ?\«))
+	      (replace-match (concat "\"("
+				     (cond ((= delim ?\() "mouse")
+					   ((= delim ?\{) "face")
+					   (t "balloon"))
+				     " " number " \"")
+			     t t)
+	    (replace-match "\")\""))))
+      (goto-char (point-max))
+      (insert "\")")
+      ;; Convert point position commands.
+      (goto-char (point-min))
+      (let ((case-fold-search nil))
+	(while (re-search-forward "%\\([-0-9]+\\)?C" nil t)
+	  (replace-match "\"(point)\"" t t)
+	  (setq found-C t)))
+      ;; Convert TAB commands.
+      (goto-char (point-min))
+      (while (re-search-forward "%\\([-0-9]+\\)=" nil t)
+	(replace-match (format "\"(tab %s)\"" (match-string 1)) t t))
+      ;; Convert the buffer into the spec.
+      (goto-char (point-min))
+      (let ((form (read (current-buffer))))
+	(if found-C
+	    `(let (gnus-position)
+	       ,@(gnus-complex-form-to-spec form spec-alist)
+	       (if gnus-position
+		   (gnus-put-text-property gnus-position (1+ gnus-position) 
+					   'gnus-position t)))
+	  `(progn
+	     ,@(gnus-complex-form-to-spec form spec-alist)))))))
 
 (defun gnus-complex-form-to-spec (form spec-alist)
   (delq nil
@@ -432,7 +438,7 @@ characters when given a pad value."
 	    ((stringp sform)
 	     (gnus-parse-simple-format sform spec-alist t))
 	    ((eq (car sform) 'point)
-	     `(gnus-put-text-property (1- (point)) (point) 'gnus-position t))
+	     '(setq gnus-position (point)))
 	    ((eq (car sform) 'tab)
 	     (gnus-spec-tab (cadr sform)))
 	    (t
