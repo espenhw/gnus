@@ -3236,26 +3236,22 @@ Uses the process/prefix convention."
   "Toggle subscription of the current group.
 If given numerical prefix, toggle the N next groups."
   (interactive "P")
-  (let ((groups (gnus-group-process-prefix n))
-	group)
-    (while groups
-      (setq group (car groups)
-	    groups (cdr groups))
-      (gnus-group-remove-mark group)
-      (gnus-group-unsubscribe-group
-       group
-       (cond
-	((eq do-sub 'unsubscribe)
-	 gnus-level-default-unsubscribed)
-	((eq do-sub 'subscribe)
-	 gnus-level-default-subscribed)
-	((<= (gnus-group-group-level) gnus-level-subscribed)
-	 gnus-level-default-unsubscribed)
-	(t
-	 gnus-level-default-subscribed))
-       t)
-      (gnus-group-update-group-line))
-    (gnus-group-next-group 1)))
+  (dolist (group (gnus-group-process-prefix n))
+    (gnus-group-remove-mark group)
+    (gnus-group-unsubscribe-group
+     group
+     (cond
+      ((eq do-sub 'unsubscribe)
+       gnus-level-default-unsubscribed)
+      ((eq do-sub 'subscribe)
+       gnus-level-default-subscribed)
+      ((<= (gnus-group-group-level) gnus-level-subscribed)
+       gnus-level-default-unsubscribed)
+      (t
+       gnus-level-default-subscribed))
+     t)
+    (gnus-group-update-group-line))
+  (gnus-group-next-group 1))
 
 (defun gnus-group-unsubscribe-group (group &optional level silent)
   "Toggle subscription to GROUP.
