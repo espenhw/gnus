@@ -4208,13 +4208,19 @@ the message."
   "Return a Subject header suitable for the message in the current buffer."
   (save-excursion
     (save-restriction
-      (current-buffer)
-      (message-narrow-to-head)
+      (narrow-to-region
+       (goto-char (point-min))
+       (if (search-forward "\n\n" nil 1)
+	   (1- (point))
+	 (point-max)))
       (let ((funcs message-make-forward-subject-function)
-	    (subject (if message-wash-forwarded-subjects
-			 (message-wash-subject
-			  (or (message-fetch-field "Subject") ""))
-		       (or (message-fetch-field "Subject") ""))))
+	    (subject (message-fetch-field "Subject")))
+	(setq subject
+	      (if subject
+		  (mail-decode-encoded-word-string subject)
+		""))
+	(if message-wash-forwarded-subjects
+	    (setq subject (message-wash-subject subject)))
 	;; Make sure funcs is a list.
 	(and funcs
 	     (not (listp funcs))
@@ -4234,8 +4240,7 @@ Optional NEWS will use news to forward instead of mail.
 Optional DIGEST will use digest to forward."
   (interactive "P")
   (let* ((cur (current-buffer))
-	 (subject (mail-decode-encoded-word-string
-		   (message-make-forward-subject)))
+	 (subject (message-make-forward-subject))
 	 art-beg)
     (if news
 	(message-news nil subject)

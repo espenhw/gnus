@@ -1,3 +1,8 @@
+2000-12-20 04:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-make-forward-subject): Don't widen. Decode.
+	(message-forward): Don't decode subject.
+
 2000-12-20  Christoph Conrad <C.Conrad@cli.de>
 
 	* qp.el (quoted-printable-encode-region): Upcase QP.
