@@ -1219,9 +1219,9 @@ for new groups, and subscribe the new groups as zombies."
       ;; it from the newsrc hash table and assoc.
       (cond
        ((>= oldlevel gnus-level-zombie)
-	(if (= oldlevel gnus-level-zombie)
-	    (setq gnus-zombie-list (delete group gnus-zombie-list))
-	  (setq gnus-killed-list (delete group gnus-killed-list))))
+	;; oldlevel could be wrong.
+	(setq gnus-zombie-list (delete group gnus-zombie-list))
+	(setq gnus-killed-list (delete group gnus-killed-list)))
        (t
 	(when (and (>= level gnus-level-zombie)
 		   entry)

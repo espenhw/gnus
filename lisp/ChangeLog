@@ -1,3 +1,8 @@
+2001-02-04 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-start.el (gnus-group-change-level): Remove from both
+	gnus-zombie-list and gnus-killed-list.
+
 2001-02-04 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-start.el (gnus-subscribe-options-newsgroup-method): Add

@@ -2948,7 +2948,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
     
     (when (boundp 'gnus-summary-post-menu)
       (cond 
-       ((featurep 'xemacs)
+       ((not (keymapp gnus-summary-post-menu))
 	(setq gnus-article-post-menu gnus-summary-post-menu))
        ((not gnus-article-post-menu)
 	;; Don't share post menu.
