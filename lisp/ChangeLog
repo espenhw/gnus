@@ -1,3 +1,8 @@
+2002-02-07  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-dependencies-add-header): Fix typo.
+	From: Jesper Harder <harder@ifa.au.dk>
+
 2002-02-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-msg.el (gnus-posting-styles): Add x-face-file.

@@ -3543,8 +3543,8 @@ if it was already present.
 
 If `gnus-summary-ignore-duplicates' is nil then duplicate Message-IDs
 will not be entered in the DEPENDENCIES table.  Otherwise duplicate
-Message-IDs will be renamed be renamed to a unique Message-ID before
-being entered.
+Message-IDs will be renamed to a unique Message-ID before being
+entered.
 
 Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
   (let* ((id (mail-header-id header))
