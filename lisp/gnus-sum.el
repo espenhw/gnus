@@ -1234,6 +1234,9 @@ the type of the variable (string, integer, character, etc).")
 (defvar gnus-newsgroup-downloadable nil
   "Sorted list of articles in the current newsgroup that can be processed.")
 
+(defvar gnus-newsgroup-unfetched nil
+  "Sorted list of articles in the current newsgroup whose headers have not been fetched into the agent.")
+
 (defvar gnus-newsgroup-undownloaded nil
   "List of articles in the current newsgroup that haven't been downloaded..")
 
@@ -1297,6 +1300,7 @@ the type of the variable (string, integer, character, etc).")
     gnus-newsgroup-expirable
     gnus-newsgroup-processable gnus-newsgroup-killed
     gnus-newsgroup-downloadable gnus-newsgroup-undownloaded
+    gnus-newsgroup-unfetched
     gnus-newsgroup-unsendable gnus-newsgroup-unseen
     gnus-newsgroup-seen gnus-newsgroup-articles
     gnus-newsgroup-bookmarks gnus-newsgroup-dormant
@@ -3245,11 +3249,11 @@ buffer that was in action when the last article was fetched."
       (setq gnus-tmp-lines -1))
     (if (= gnus-tmp-lines -1)
 	(setq gnus-tmp-lines "?")
-      (setq gnus-tmp-lines (number-to-string gnus-tmp-lines)))
-    (gnus-put-text-property
+      (setq gnus-tmp-lines (number-to-string gnus-tmp-lines))) 
+      (gnus-put-text-property
      (point)
      (progn (eval gnus-summary-line-format-spec) (point))
-     'gnus-number gnus-tmp-number)
+       'gnus-number gnus-tmp-number)
     (when (gnus-visual-p 'summary-highlight 'highlight)
       (forward-line -1)
       (gnus-run-hooks 'gnus-summary-update-hook)
@@ -4783,10 +4787,10 @@ or a straight list of headers."
 	    (if (= gnus-tmp-lines -1)
 		(setq gnus-tmp-lines "?")
 	      (setq gnus-tmp-lines (number-to-string gnus-tmp-lines)))
-	    (gnus-put-text-property
+              (gnus-put-text-property
 	     (point)
 	     (progn (eval gnus-summary-line-format-spec) (point))
-	     'gnus-number number)
+               'gnus-number number)
 	    (when gnus-visual-p
 	      (forward-line -1)
 	      (gnus-run-hooks 'gnus-summary-update-hook)
@@ -5994,53 +5998,53 @@ If EXCLUDE-GROUP, do not go to this group."
     (save-excursion
       (gnus-group-best-unread-group exclude-group))))
 
-(defun gnus-summary-find-next (&optional unread article backward undownloaded)
+(defun gnus-summary-find-next (&optional unread article backward)
   (if backward (gnus-summary-find-prev)
     (let* ((dummy (gnus-summary-article-intangible-p))
 	   (article (or article (gnus-summary-article-number)))
-	   (arts (gnus-data-find-list article))
+	   (data (gnus-data-find-list article))
 	   result)
       (when (and (not dummy)
 		 (or (not gnus-summary-check-current)
 		     (not unread)
-		     (not (gnus-data-unread-p (car arts)))))
-	(setq arts (cdr arts)))
+		     (not (gnus-data-unread-p (car data)))))
+	(setq data (cdr data)))
       (when (setq result
 		  (if unread
 		      (progn
-			(while arts
-			  (when (or (and undownloaded
-					 (memq (car arts)
-					       gnus-newsgroup-undownloaded))
-				    (gnus-data-unread-p (car arts)))
-			    (setq result (car arts)
-				  arts nil))
-			  (setq arts (cdr arts)))
+			(while data
+                          (unless (memq (gnus-data-number (car data)) 
+                                        gnus-newsgroup-unfetched)
+                            (when (gnus-data-unread-p (car data))
+                              (setq result (car data)
+                                    data nil)))
+			  (setq data (cdr data)))
 			result)
-		    (car arts)))
+		    (car data)))
 	(goto-char (gnus-data-pos result))
 	(gnus-data-number result)))))
 
 (defun gnus-summary-find-prev (&optional unread article)
   (let* ((eobp (eobp))
 	 (article (or article (gnus-summary-article-number)))
-	 (arts (gnus-data-find-list article (gnus-data-list 'rev)))
+	 (data (gnus-data-find-list article (gnus-data-list 'rev)))
 	 result)
     (when (and (not eobp)
 	       (or (not gnus-summary-check-current)
 		   (not unread)
-		   (not (gnus-data-unread-p (car arts)))))
-      (setq arts (cdr arts)))
+		   (not (gnus-data-unread-p (car data)))))
+      (setq data (cdr data)))
     (when (setq result
 		(if unread
 		    (progn
-		      (while arts
-			(when (gnus-data-unread-p (car arts))
-			  (setq result (car arts)
-				arts nil))
-			(setq arts (cdr arts)))
+		      (while data
+                        (unless (memq (gnus-data-number (car data)) gnus-newsgroup-unfetched)
+                          (when (gnus-data-unread-p (car data))
+                            (setq result (car data)
+                                  data nil)))
+			(setq data (cdr data)))
 		      result)
-		  (car arts)))
+		  (car data)))
       (goto-char (gnus-data-pos result))
       (gnus-data-number result))))
 
@@ -6696,42 +6700,75 @@ If prefix argument NO-ARTICLE is non-nil, no article is selected initially."
 ;; Walking around summary lines.
 
 (defun gnus-summary-first-subject (&optional unread undownloaded unseen)
-  "Go to the first unread subject.
-If UNREAD is non-nil, go to the first unread article.
-Returns the article selected or nil if there are no unread articles."
+  "Go to the first subject satisfying any non-nil constraint.
+If UNREAD is non-nil, the article should be unread.
+If UNDOWNLOADED is non-nil, the article should be undownloaded.
+If UNSEED is non-nil, the article should be unseen.
+Returns the article selected or nil if there are no matching articles."
   (interactive "P")
-  (prog1
-      (cond
-       ;; Empty summary.
-       ((null gnus-newsgroup-data)
-	(gnus-message 3 "No articles in the group")
-	nil)
-       ;; Pick the first article.
-       ((not unread)
-	(goto-char (gnus-data-pos (car gnus-newsgroup-data)))
-	(gnus-data-number (car gnus-newsgroup-data)))
-       ;; No unread articles.
-       ((null gnus-newsgroup-unreads)
-	(gnus-message 3 "No more unread articles")
-	nil)
-       ;; Find the first unread article.
-       (t
-	(let ((data gnus-newsgroup-data))
-	  (while (and data
-		      (and (not (and undownloaded
-				     (memq (car data)
-					   gnus-newsgroup-undownloaded)))
-			   (if unseen
-			       (or (not (memq
-					 (gnus-data-number (car data))
-					 gnus-newsgroup-unseen))
-				   (not (gnus-data-unread-p (car data))))
-			     (not (gnus-data-unread-p (car data))))))
-	    (setq data (cdr data)))
-	  (when data
-	    (goto-char (gnus-data-pos (car data)))
-	    (gnus-data-number (car data))))))
-    (gnus-summary-position-point)))
+  (cond
+   ;; Empty summary.
+   ((null gnus-newsgroup-data)
+    (gnus-message 3 "No articles in the group")
+    nil)
+   ;; Pick the first article.
+   ((not (or unread undownloaded unseen))
+    (goto-char (gnus-data-pos (car gnus-newsgroup-data)))
+    (gnus-data-number (car gnus-newsgroup-data)))
+   ;; Find the first unread article.
+   (t
+    (let ((data gnus-newsgroup-data)
+          (gnus-newsgroup-unreads gnus-newsgroup-unreads)
+          (gnus-newsgroup-undownloaded gnus-newsgroup-undownloaded)
+          (gnus-newsgroup-unseen gnus-newsgroup-unseen)
+          (gnus-newsgroup-unfetched gnus-newsgroup-unfetched))
+      (while (and data
+                  (not (let ((num (gnus-data-number (car data)))
+                             (matched nil))
+                         (while (> num (or (car gnus-newsgroup-unfetched)
+                                           (1+ num)))
+                           (pop gnus-newsgroup-unfetched))
+                         (unless (eq num (car gnus-newsgroup-unfetched))
+                           (when unread
+                             (while (> num (or (car gnus-newsgroup-unreads)
+                                               (1+ num)))
+                               (pop gnus-newsgroup-unreads))
+                             (setq matched (eq num (car gnus-newsgroup-unreads))))
+                           (unless matched
+                             (when undownloaded
+                               (while (> num (or (car gnus-newsgroup-undownloaded)
+                                                 (1+ num)))
+                                 (pop gnus-newsgroup-undownloaded))
+                               (setq matched (eq num (car gnus-newsgroup-undownloaded))))
+                             (unless matched
+                               (when unseen
+                                 (while (> num (or (car gnus-newsgroup-unseen)
+                                                   (1+ num)))
+                                   (pop gnus-newsgroup-unseen))
+                                 (setq matched (eq num (car gnus-newsgroup-unseen)))))))
+                         matched)))
+        (setq data (cdr data)))
+      (prog1 
+          (if data
+              (progn
+                (goto-char (gnus-data-pos (car data)))
+                (gnus-data-number (car data)))
+            (gnus-message 3 "No more%s articles"
+                          (let* ((r (when unread " unread"))
+                                 (d (when undownloaded " undownloaded"))
+                                 (s (when unseen " unseen"))
+                                 (l (delq nil (list r d s))))
+                            (cond ((= 3 (length l))
+                                   (concat r "," d ", or" s))
+                                  ((= 2 (length l))
+                                   (concat (car l) ", or" (cadr l)))
+                                  ((= 1 (length l))
+                                   (car l))
+                                  (t
+                                   ""))))
+            nil
+            )
+        (gnus-summary-position-point))))))
 
 (defun gnus-summary-next-subject (n &optional unread dont-display)
   "Go to next N'th summary line.
@@ -7186,9 +7223,9 @@ Return nil if there are no unread articles."
 Return nil if there are no unseen articles."
   (interactive)
   (prog1
-      (when (gnus-summary-first-subject t t t)
+      (when (gnus-summary-first-subject nil nil t)
 	(gnus-summary-show-thread)
-	(gnus-summary-first-subject t t t))
+	(gnus-summary-first-subject nil nil t))
     (gnus-summary-position-point)))
 
 (defun gnus-summary-first-unseen-or-unread-subject ()
@@ -7196,9 +7233,9 @@ Return nil if there are no unseen articles."
 Return nil if there are no unseen articles."
   (interactive)
   (prog1
-      (unless (when (gnus-summary-first-subject t t t)
+      (unless (when (gnus-summary-first-subject t nil t)
 		(gnus-summary-show-thread)
-		(gnus-summary-first-subject t t t))
+		(gnus-summary-first-subject t nil t))
 	(when (gnus-summary-first-subject t)
 	  (gnus-summary-show-thread)
 	  (gnus-summary-first-subject t)))
@@ -9980,8 +10017,10 @@ The number of articles marked as read is returned."
 			gnus-newsgroup-spam-marked nil
 			gnus-newsgroup-dormant nil))
 		(setq gnus-newsgroup-unreads
-		      (gnus-intersection gnus-newsgroup-unreads
-					 gnus-newsgroup-downloadable)))
+		      (gnus-sorted-nunion
+                       (gnus-intersection gnus-newsgroup-unreads
+                                          gnus-newsgroup-downloadable)
+                       gnus-newsgroup-unfetched)))
 	    ;; We actually mark all articles as canceled, which we
 	    ;; have to do when using auto-expiry or adaptive scoring.
 	    (gnus-summary-show-all-threads)
@@ -9990,12 +10029,12 @@ The number of articles marked as read is returned."
 		  (goto-char to-here)
 		  (while (and
 			  (gnus-summary-mark-article-as-read gnus-catchup-mark)
-			  (gnus-summary-find-next (not all) nil nil t))))
-	      (when (gnus-summary-first-subject (not all) t)
+			  (gnus-summary-find-next (not all)))))
+	      (when (gnus-summary-first-subject (not all))
 		(while (and
 			(if to-here (< (point) to-here) t)
 			(gnus-summary-mark-article-as-read gnus-catchup-mark)
-			(gnus-summary-find-next (not all) nil nil t)))))
+			(gnus-summary-find-next (not all))))))
 	    (gnus-set-mode-line 'summary))
 	  t))
     (gnus-summary-position-point)))
