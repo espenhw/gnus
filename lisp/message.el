@@ -4110,33 +4110,40 @@ regexp varstr."
      (list file
 	   (completing-read
 	    (format "MIME type for %s: " file)
-	    (mapcar (lambda (m) (list (cdr m))) mailcap-mime-extensions)
+	    (delete-duplicates
+	     (mapcar (lambda (m) (list (cdr m))) mailcap-mime-extensions))
 	    nil nil type))))
   (insert (format "<#part type=%s filename=\"%s\"><#/part>\n"
 		  type file)))
 
 (defun message-encode-message-body ()
-  (message-goto-body)
-  (save-restriction
-    (narrow-to-region (point) (point-max))
-    (let ((new (mml-generate-mime)))
-      (delete-region (point-min) (point-max))
-      (insert new)
-      (goto-char (point-min))
-      (widen)
-      (forward-line -1)
-      (let ((beg (point))
-	    (line (buffer-substring (point) (progn (forward-line 1) (point)))))
-	(delete-region beg (point))
-	(insert "Mime-Version: 1.0\n")
-	(search-forward "\n\n")
-	(forward-char -1)
-	(insert line)
-	(when (save-excursion
-		(re-search-backward "^Content-Type: multipart/" nil t))
-	  (insert "This is a MIME multipart message.  If you are reading\n")
-	  (insert "this, you shouldn't.\n"))))))
-    
+  (let (lines multipart-p)
+    (message-goto-body)
+    (save-restriction
+      (narrow-to-region (point) (point-max))
+      (let ((new (mml-generate-mime)))
+	(delete-region (point-min) (point-max))
+	(insert new)
+	(goto-char (point-min))
+	(if (eq (aref new 0) ?\n)
+	    (delete-char 1)
+	  (search-forward "\n\n")
+	  (setq lines (buffer-substring (point-min) (1- (point))))
+	  (delete-region (point-min)  (point)))))
+    (save-restriction
+      (message-narrow-to-headers-or-head)
+      (message-remove-header "Mime-Version")
+      (goto-char (point-max))
+      (insert "Mime-Version: 1.0\n")
+      (when lines
+	(insert lines))
+      (setq multipart-p 
+	    (re-search-backward "^Content-Type: multipart/" nil t)))
+    (when multipart-p
+      (message-goto-body)
+      (insert "This is a MIME multipart message.  If you are reading\n")
+      (insert "this, you shouldn't.\n"))))
+
 (run-hooks 'message-load-hook)
 
 (provide 'message)

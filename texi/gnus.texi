@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.50 Manual
+@settitle Pterodactyl Gnus 0.51 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.50 Manual
+@title Pterodactyl Gnus 0.51 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.50.
+This manual corresponds to Pterodactyl Gnus 0.51.
 
 @end ifinfo
 
@@ -7682,6 +7682,12 @@ If given a prefix, force an @code{article} window configuration.
 @findex gnus-summary-edit-parameters
 Edit the group parameters (@pxref{Group Parameters}) of the current
 group (@code{gnus-summary-edit-parameters}).
+
+@item M-C-g
+@kindex M-C-g (Summary)
+@findex gnus-summary-customize-parameters
+Customize the group parameters (@pxref{Group Parameters}) of the current
+group (@code{gnus-summary-customize-parameters}).
 
 @end table
 

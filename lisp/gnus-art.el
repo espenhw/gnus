@@ -2477,25 +2477,49 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	 (ihandles handles)
 	 (point (point))
 	 handle buffer-read-only from props begend not-pref)
-    (when preferred
-      (save-restriction
-	(when ibegend
-	  (narrow-to-region (car ibegend) (cdr ibegend))
-	  (delete-region (point-min) (point-max))
-	  (mm-remove-parts handles))
-	(setq begend (list (point-marker)))
-	;; Do the toggle.
-	(unless (setq not-pref (cadr (member preferred ihandles)))
-	  (setq not-pref (car ihandles)))
+    (save-restriction
+      (when ibegend
+	(narrow-to-region (car ibegend) (cdr ibegend))
+	(delete-region (point-min) (point-max))
+	(mm-remove-parts handles))
+      (setq begend (list (point-marker)))
+      ;; Do the toggle.
+      (unless (setq not-pref (cadr (member preferred ihandles)))
+	(setq not-pref (car ihandles)))
+      (gnus-add-text-properties
+       (setq from (point))
+       (progn
+	 (insert (format "%d.  " id))
+	 (point))
+       `(gnus-callback
+	 (lambda (handles)
+	   (gnus-mime-display-alternative
+	    ',ihandles ',not-pref
+	    ',begend ,id))
+	 local-map ,gnus-mime-button-map
+	 ,gnus-mouse-face-prop ,gnus-article-mouse-face
+	 face ,gnus-article-button-face
+	 keymap ,gnus-mime-button-map
+	 gnus-part ,id
+	 gnus-data ,handle))
+      (widget-convert-button 'link from (point)
+			     :action 'gnus-widget-press-button
+			     :button-keymap gnus-widget-button-keymap)
+      ;; Do the handles
+      (while (setq handle (pop handles))
 	(gnus-add-text-properties
 	 (setq from (point))
 	 (progn
-	   (insert (format "%d.  " id))
+	   (insert (format "[%c] %-18s"
+			   (if (equal handle preferred) ?* ? )
+			   (if (stringp (car handle))
+			       (car handle)
+			     (car (mm-handle-type handle)))))
 	   (point))
 	 `(gnus-callback
 	   (lambda (handles)
 	     (gnus-mime-display-alternative
-	      ',ihandles ',not-pref
+	      ',ihandles ',handle
 	      ',begend ,id))
 	   local-map ,gnus-mime-button-map
 	   ,gnus-mouse-face-prop ,gnus-article-mouse-face
@@ -2506,41 +2530,16 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	(widget-convert-button 'link from (point)
 			       :action 'gnus-widget-press-button
 			       :button-keymap gnus-widget-button-keymap)
-	;; Do the handles
-	(while (setq handle (pop handles))
-	  (gnus-add-text-properties
-	   (setq from (point))
-	   (progn
-	     (insert (format "[%c] %-18s"
-			     (if (equal handle preferred) ?* ? )
-			     (if (stringp (car handle))
-				 (car handle)
-			       (car (mm-handle-type handle)))))
-	     (point))
-	   `(gnus-callback
-	     (lambda (handles)
-	       (gnus-mime-display-alternative
-		',ihandles ',handle
-		',begend ,id))
-	     local-map ,gnus-mime-button-map
-	     ,gnus-mouse-face-prop ,gnus-article-mouse-face
-	     face ,gnus-article-button-face
-	     keymap ,gnus-mime-button-map
-	     gnus-part ,id
-	     gnus-data ,handle))
-	  (widget-convert-button 'link from (point)
-				 :action 'gnus-widget-press-button
-				 :button-keymap gnus-widget-button-keymap)
-	  (insert "  "))
-	(insert "\n\n")
-	(when preferred
-	  (if (stringp (car preferred))
-	      (gnus-display-mime preferred)
-	    (mm-display-part preferred)
-	    (goto-char (point-max))
-	    (setcdr begend (point-marker)))))
-      (when ibegend
-	(goto-char point)))))
+	(insert "  "))
+      (insert "\n\n")
+      (when preferred
+	(if (stringp (car preferred))
+	    (gnus-display-mime preferred)
+	  (mm-display-part preferred)
+	  (goto-char (point-max)))
+	(setcdr begend (point-marker))))
+    (when ibegend
+      (goto-char point))))
 
 (defun gnus-article-wash-status ()
   "Return a string which display status of article washing."
@@ -3135,7 +3134,7 @@ groups."
   :type 'regexp)
 
 (defcustom gnus-button-alist
-  `(("<\\(url:[>\n\t ]*?\\)?news:[>\n\t ]*\\([^>\n\t ]*@[^)!;:,>\n\t ]*\\)>"
+  `(("<\\(url:[>\n\t ]*?\\)?news:[>\n\t ]*\\([^>\n\t ]*@[^>\n\t ]*\\)>"
      0 t gnus-button-message-id 2)
     ("\\bnews:\\([^>\n\t ]*@[^>)!;:,\n\t ]*\\)" 0 t gnus-button-message-id 1)
     ("\\(\\b<\\(url:[>\n\t ]*\\)?news:[>\n\t ]*\\(//\\)?\\([^>\n\t ]*\\)>\\)"

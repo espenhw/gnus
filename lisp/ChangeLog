@@ -1,3 +1,44 @@
+Thu Nov 19 04:48:42 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.51 is released.
+
+1998-11-19 04:02:34  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el: Applied patches from 5.6.45.
+
+	* gnus-score.el (gnus-score-find-trace): Print complete file
+	paths. 
+	(gnus-score-find-trace): Truncate lines.
+
+	* gnus.el (gnus-message-archive-group): Allow function.
+
+	* message.el (message-encode-message-body): Remove Mime-Version
+	before inserting.
+
+	* gnus-cus.el (gnus-group-customize): Optional topic.
+
+	* gnus-sum.el (gnus-summary-customize-parameters): New command and 
+	keystroke.
+
+Wed Nov 18 13:46:08 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-encode-message-body): Rewrite.
+
+1998-11-18 07:37:47  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-base-boundary): New variable.
+	(mml-make-boundary): New function.
+
+	* gnus-cache.el (gnus-cache-coding-system): New variable.
+	(gnus-cache-request-article): Use it.
+
+	* message.el (message-insert-mime-part): Delete duplicates.
+
+Wed Nov 18 11:52:19 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-display-alternative): Set end of
+	multipart and display even when nothing is preferred.
+
 Wed Nov 18 05:06:44 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.50 is released.

@@ -23,6 +23,10 @@
 
 ;;; Code:
 
+(require 'mm-util)
+(require 'mm-bodies)
+(require 'mm-encode)
+
 (defvar mml-syntax-table
   (let ((table (copy-syntax-table emacs-lisp-mode-syntax-table)))
     (modify-syntax-entry ?\\ "/" table)
@@ -50,7 +54,7 @@
   "Parse the current buffer as an MML document."
   (let (struct)
     (while (and (not (eobp))
-		(not (looking-at "</#multipart")))
+		(not (looking-at "<#/multipart")))
       (cond
        ((looking-at "<#multipart")
 	(push (nconc (mml-read-tag) (mml-parse-1)) struct))
@@ -97,11 +101,11 @@
       (buffer-substring beg (goto-char (point-max))))))
 
 (defvar mml-boundary nil)
+(defvar mml-base-boundary "=-=-=")
 (defvar mml-multipart-number 0)
 
 (defun mml-generate-mime ()
   "Generate a MIME message based on the current MML document."
-  (setq mml-boundary "-=-=")
   (let ((cont (mml-parse))
 	(mml-multipart-number 0))
     (with-temp-buffer
@@ -164,8 +168,7 @@
 
 (defun mml-compute-boundary (cont)
   "Return a unique boundary that does not exist in CONT."
-  (let ((mml-boundary (concat (make-string (incf mml-multipart-number) ?=)
-			      mml-boundary)))
+  (let ((mml-boundary (mml-make-boundary)))
     ;; This function tries again and again until it has found
     ;; a unique boundary.
     (while (not (catch 'not-unique
@@ -173,21 +176,33 @@
     mml-boundary))
 
 (defun mml-compute-boundary-1 (cont)
-  (cond
-   ((eq (car cont) 'part)
-    (with-temp-buffer
-      (if (setq filename (cdr (assq 'filename cont)))
-	  (insert-file-contents-literally filename)
-	(insert (cdr (assq 'contents cont))))
-      (goto-char (point-min))
-      (when (re-search-forward (concat "^--" mml-boundary) nil t)
-	(setq mml-boundary
-	      (concat (make-string (incf mml-multipart-number) ?=)
-			      mml-boundary))
-	(throw 'not-unique nil))))
-   ((eq (car cont) 'multipart)
-    (mapcar 'mml-compute-boundary-1 (cddr cont))))
-  t)
+  (let (filename)
+    (cond
+     ((eq (car cont) 'part)
+      (with-temp-buffer
+	(if (setq filename (cdr (assq 'filename cont)))
+	    (insert-file-contents-literally filename)
+	  (insert (cdr (assq 'contents cont))))
+	(goto-char (point-min))
+	(when (re-search-forward (concat "^--" mml-boundary) nil t)
+	  (setq mml-boundary (mml-make-boundary))
+	  (throw 'not-unique nil))))
+     ((eq (car cont) 'multipart)
+      (mapcar 'mml-compute-boundary-1 (cddr cont))))
+    t))
+
+(defun mml-make-boundary ()
+  (concat (mml-make-string (% (incf mml-multipart-number) 60) "=")
+	  (if (> mml-multipart-number 17)
+	      (format "%x" mml-multipart-number)
+	    "")
+	  mml-base-boundary))
+
+(defun mml-make-string (num string)
+  (let ((out ""))
+    (while (not (zerop (decf num)))
+      (setq out (concat out string)))
+    out))
 
 (provide 'mml)
 

@@ -3068,7 +3068,6 @@ to use."
       (mapatoms
        (lambda (group)
 	 (and (string-match regexp (symbol-value group))
-	      (gnus-active (symbol-name group))
 	      (push (symbol-name group) groups)))
        gnus-description-hashtb))
     (if (not groups)

@@ -1287,6 +1287,7 @@ increase the score of each group you read."
     "\C-d" gnus-summary-enter-digest-group
     "\M-\C-d" gnus-summary-read-document
     "\M-\C-e" gnus-summary-edit-parameters
+    "\M-\C-g" gnus-summary-customize-parameters
     "\C-c\C-b" gnus-bug
     "*" gnus-cache-enter-article
     "\M-*" gnus-cache-remove-article
@@ -1806,6 +1807,7 @@ increase the score of each group you read."
        ["Edit local kill file" gnus-summary-edit-local-kill t]
        ["Edit main kill file" gnus-summary-edit-global-kill t]
        ["Edit group parameters" gnus-summary-edit-parameters t]
+       ["Customize group parameters" gnus-summary-customize-parameters t]
        ["Send a bug report" gnus-bug t]
        ("Exit"
 	["Catchup and exit" gnus-summary-catchup-and-exit t]
@@ -6601,6 +6603,11 @@ or `gnus-select-method', no matter what backend the article comes from."
   "Edit the group parameters of the current group."
   (interactive)
   (gnus-group-edit-group gnus-newsgroup-name 'params))
+
+(defun gnus-summary-customize-parameters ()
+  "Customize the group parameters of the current group."
+  (interactive)
+  (gnus-group-customize gnus-newsgroup-name))
 
 (defun gnus-summary-enter-digest-group (&optional force)
   "Enter an nndoc group based on the current article.

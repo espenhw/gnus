@@ -254,7 +254,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.50"
+(defconst gnus-version-number "0.51"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -935,6 +935,7 @@ that case, just return a fully prefixed name of the group --
 \"nnml+private:mail.misc\", for instance."
   :group 'gnus-message
   :type '(choice (const :tag "none" nil)
+		 function
 		 sexp
 		 string))
 
@@ -1648,7 +1649,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("nnvirtual" nnvirtual-catchup-group nnvirtual-convert-headers)
      ("rmailout" rmail-output rmail-output-to-rmail-file)
      ("rmail" rmail-insert-rmail-file-header rmail-count-new-messages
-      rmail-show-message)
+      rmail-show-message rmail-summary-exists
+      rmail-select-summary rmail-update-summary)
      ("gnus-audio" :interactive t gnus-audio-play)
      ("gnus-xmas" gnus-xmas-splash)
      ("gnus-soup" :interactive t

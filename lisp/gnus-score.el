@@ -2341,11 +2341,10 @@ EXTRA is the possible non-standard header."
 	   1 "No score rules apply to the current article (default score %d)."
 	   gnus-summary-default-score)
 	(set-buffer "*Score Trace*")
+	(setq truncate-lines t)
 	(while trace
 	  (insert (format "%S  ->  %s\n" (cdar trace)
-			  (if (caar trace)
-			      (file-name-nondirectory (caar trace))
-			    "(non-file rule)")))
+			  (or (caar trace) "(non-file rule)")))
 	  (setq trace (cdr trace)))
 	(goto-char (point-min))
 	(gnus-configure-windows 'score-trace)))

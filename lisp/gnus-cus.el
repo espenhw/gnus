@@ -176,8 +176,8 @@ DOC is a documentation string for the parameter.")
 (defvar gnus-custom-group)
 (defvar gnus-custom-topic)
 
-(defun gnus-group-customize (group topic)
-  "Edit the group or topicon the current line."
+(defun gnus-group-customize (group &optional topic)
+  "Edit the group or topic on the current line."
   (interactive (list (gnus-group-group-name) (gnus-group-topic-name)))
   (let (info
 	(types (mapcar (lambda (entry)

@@ -653,7 +653,7 @@ If this variable is nil, which is the default, no timers are set.")
 
 (deffoo nntp-request-group (group &optional server dont-check)
   (nntp-possibly-change-group nil server)
-  (when (nntp-send-command "^21.*\n" "GROUP" group)
+  (when (nntp-send-command "^[245].*\n" "GROUP" group)
     (let ((entry (nntp-find-connection-entry nntp-server-buffer)))
       (setcar (cddr entry) group))))
 
@@ -980,7 +980,9 @@ password contained in '~/.nntp-authinfo'."
 	  (set-buffer (process-buffer (car entry)))
 	  (erase-buffer)
 	  (nntp-send-string (car entry) (concat "GROUP " group))
-	  (nntp-wait-for-string "^2.*\n")
+	  ;; allow for unexpected responses, since this can be called
+	  ;; from a timer with quit inhibited
+	  (nntp-wait-for-string "^[245].*\n")
 	  (setcar (cddr entry) group)
 	  (erase-buffer))))))
 
