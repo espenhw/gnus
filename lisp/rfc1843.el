@@ -132,7 +132,7 @@ ftp://ftp.math.psu.edu/pub/simpson/chinese/hzp/hzp.doc"
 (defun rfc1843-decode-article-body ()
    "Decode HZ encoded text in the article body."
    (if (string-match (concat "\\<\\(" rfc1843-newsgroups-regexp "\\)\\>")
-		     gnus-newsgroup-name)
+		     (or gnus-newsgroup-name ""))
        (save-excursion
 	 (save-restriction
 	   (message-narrow-to-head)

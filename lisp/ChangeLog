@@ -1,3 +1,8 @@
+1999-11-24 09:25:00  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (article-emphasize): Check group variable.
+	* rfc1843.el (rfc1843-decode-article-body): Ditto.
+
 1999-11-24 00:11:27  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-save-part-to-file): Inhibit jka-compr for any
