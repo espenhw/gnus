@@ -127,13 +127,19 @@
   "Statistical spam detection for Emacs.
 Use the functions to build a dictionary of words and their statistical
 distribution in spam and non-spam mails.  Then use a function to determine
-wether a buffer contains spam or not."
+whether a buffer contains spam or not."
   :group 'gnus)
 
 (defcustom spam-stat-file "~/.spam-stat.el"
   "File used to save and load the dictionary.
 See `spam-stat-to-hash-table' for the format of the file."
   :type 'file
+  :group 'spam-stat)
+
+(defcustom spam-stat-install-hooks t
+  "Whether spam-stat should install its hooks in Gnus.
+This is set to nil if you use spam-stat through spam.el."
+  :type 'boolean
   :group 'spam-stat)
 
 (defcustom spam-stat-unknown-word-score 0.2
@@ -155,8 +161,14 @@ This variable says how many characters this will be."
 
 (defcustom spam-stat-split-fancy-spam-group "mail.spam"
   "Name of the group where spam should be stored, if
-`spam-stat-split-fancy' is used in fancy splitting rules."
+`spam-stat-split-fancy' is used in fancy splitting rules.  Has no
+effect when spam-stat is invoked through spam.el."
   :type 'string
+  :group 'spam-stat)
+
+(defcustom spam-stat-split-fancy-spam-threshhold 0.9
+  "Spam score threshhold in spam-stat-split-fancy."
+  :type 'number
   :group 'spam-stat)
 
 (defvar spam-stat-syntax-table
@@ -226,10 +238,11 @@ This uses `gnus-article-buffer'."
     (set-buffer gnus-original-article-buffer)
     (spam-stat-store-current-buffer)))
 
-(add-hook 'nnmail-prepare-incoming-message-hook
-	  'spam-stat-store-current-buffer)
-(add-hook 'gnus-select-article-hook
-	  'spam-stat-store-gnus-article-buffer)
+(when spam-stat-install-hooks
+  (add-hook 'nnmail-prepare-incoming-message-hook
+	    'spam-stat-store-current-buffer)
+  (add-hook 'gnus-select-article-hook
+	    'spam-stat-store-gnus-article-buffer))
 
 ;; Data -- not using defstruct in order to save space and time
 
@@ -471,7 +484,7 @@ check the variable `spam-stat-score-data'."
       (progn
 	(set-buffer spam-stat-buffer)
 	(goto-char (point-min))
-	(when (> (spam-stat-score-buffer) 0.9)
+	(when (> (spam-stat-score-buffer) spam-stat-split-fancy-spam-threshhold)
 	  (when (boundp 'nnmail-split-trace)
 	    (mapc (lambda (entry)
 		    (push entry nnmail-split-trace))

@@ -1795,6 +1795,10 @@ When a spam group is entered, all unread articles are marked as spam.")
   "The ifile summary exit spam processor.
 Only applicable to spam groups.")
 
+(defvar gnus-group-spam-exit-processor-stat "stat"
+  "The spam-stat summary exit spam processor.
+Only applicable to spam groups.")
+
 (defvar gnus-group-spam-exit-processor-bogofilter "bogofilter"
   "The Bogofilter summary exit spam processor.
 Only applicable to spam groups.")
@@ -1805,6 +1809,10 @@ Only applicable to spam groups.")
 
 (defvar gnus-group-ham-exit-processor-ifile "ifile-ham"
   "The ifile summary exit ham processor.
+Only applicable to non-spam (unclassified and ham) groups.")
+
+(defvar gnus-group-ham-exit-processor-stat "stat-ham"
+  "The spam-stat summary exit ham processor.
 Only applicable to non-spam (unclassified and ham) groups.")
 
 (defvar gnus-group-ham-exit-processor-whitelist "whitelist"
@@ -1823,9 +1831,11 @@ Only applicable to non-spam (unclassified and ham) groups.")
 			  (list :tag "Spam Summary Exit Processor Choices"
 			   (set 
 			    (variable-item gnus-group-spam-exit-processor-ifile)
+			    (variable-item gnus-group-spam-exit-processor-stat)
 			    (variable-item gnus-group-spam-exit-processor-bogofilter)
 			    (variable-item gnus-group-spam-exit-processor-blacklist)
 			    (variable-item gnus-group-ham-exit-processor-ifile)
+			    (variable-item gnus-group-ham-exit-processor-stat)
 			    (variable-item gnus-group-ham-exit-processor-whitelist)
 			    (variable-item gnus-group-ham-exit-processor-BBDB))))
  :function-document
@@ -1844,9 +1854,11 @@ for mail groups."
 			  (regexp :tag "Group Regexp") 
 			  (set :tag "Spam/Ham Summary Exit Processor"
 			       (variable-item gnus-group-spam-exit-processor-ifile)
+			       (variable-item gnus-group-spam-exit-processor-stat)
 			       (variable-item gnus-group-spam-exit-processor-bogofilter)
 			       (variable-item gnus-group-spam-exit-processor-blacklist)
 			       (variable-item gnus-group-ham-exit-processor-ifile)
+			       (variable-item gnus-group-ham-exit-processor-stat)
 			       (variable-item gnus-group-ham-exit-processor-whitelist)
 			       (variable-item gnus-group-ham-exit-processor-BBDB))))
  :parameter-document

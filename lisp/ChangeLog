@@ -1,3 +1,24 @@
+2003-01-10  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-use-stat): new variable
+	(spam-group-spam-processor-stat-p) 
+	(spam-group-ham-processor-stat-p): new convenience functions
+	(spam-summary-prepare-exit): add spam/ham processors to sequence
+	(spam-list-of-checks): add spam-use-stat to list of checks
+	(spam-split): conditionally load the spam-stat tables
+	(spam-stat-register-spam-routine, spam-stat-register-ham-routine,
+	spam-check-ifile): new functions
+
+	* spam-stat.el (spam-stat): typo fix
+	(spam-stat-install-hooks): new variable
+	(spam-stat-split-fancy-spam-group): added documentation clarification
+	(spam-stat-split-fancy-spam-threshhold): new variable
+	(spam-stat-install-hooks): make hooks conditional
+	(spam-stat-split-fancy): use spam-stat-split-fancy-spam-threshhold
+
+	* gnus.el (gnus-group-ham-exit-processor-stat, spam-process): add
+	spam-stat ham/spam processor symbols
+
 2003-01-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-start.el (gnus-read-newsrc-el-file): Make sure the .eld

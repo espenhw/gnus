@@ -120,6 +120,11 @@ The regular expression is matched against the address."
   :type 'boolean
   :group 'spam)
 
+(defcustom spam-use-stat nil
+  "Whether spam-stat should be used by spam-split."
+  :type 'boolean
+  :group 'spam)
+
 (defcustom spam-split-group "spam"
   "Group name where incoming spam should be put by spam-split."
   :type 'string
@@ -279,6 +284,12 @@ articles before they get registered by Bogofilter."
 (defun spam-group-ham-processor-ifile-p (group)
   (spam-group-processor-p group 'gnus-group-ham-exit-processor-ifile))
 
+(defun spam-group-spam-processor-stat-p (group)
+  (spam-group-processor-p group 'gnus-group-spam-exit-processor-stat))
+
+(defun spam-group-ham-processor-stat-p (group)
+  (spam-group-processor-p group 'gnus-group-ham-exit-processor-stat))
+
 (defun spam-group-ham-processor-whitelist-p (group)
   (spam-group-processor-p group 'gnus-group-ham-exit-processor-whitelist))
 
@@ -302,6 +313,9 @@ articles before they get registered by Bogofilter."
 	     (spam-group-spam-processor-ifile-p gnus-newsgroup-name))
     (spam-ifile-register-spam-routine))
   
+  (when (spam-group-spam-processor-stat-p gnus-newsgroup-name)
+    (spam-stat-register-spam-routine))
+
   (when (spam-group-spam-processor-bogofilter-p gnus-newsgroup-name)
     (spam-blacklist-register-routine))
 
@@ -321,6 +335,8 @@ articles before they get registered by Bogofilter."
       (spam-whitelist-register-routine))
     (when (spam-group-ham-processor-ifile-p gnus-newsgroup-name)
       (spam-ifile-register-ham-routine))
+    (when (spam-group-ham-processor-stat-p gnus-newsgroup-name)
+      (spam-stat-register-ham-routine))
     (when (spam-group-ham-processor-BBDB-p gnus-newsgroup-name)
       (spam-BBDB-register-routine)))
 
@@ -432,6 +448,7 @@ articles before they get registered by Bogofilter."
     (spam-use-whitelist  . spam-check-whitelist)
     (spam-use-BBDB	 . spam-check-BBDB)
     (spam-use-ifile	 . spam-check-ifile)
+    (spam-use-stat	 . spam-check-stat)
     (spam-use-blackholes . spam-check-blackholes)
     (spam-use-bogofilter . spam-check-bogofilter))
 "The spam-list-of-checks list contains pairs associating a parameter
@@ -453,6 +470,9 @@ example like this: (: spam-split)
 
 See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (interactive)
+  
+  ;; load the spam-stat tables if needed
+  (when spam-use-stat (spam-stat-load))
 
   (let ((list-of-checks spam-list-of-checks)
 	decision)
@@ -580,7 +600,6 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	      (setq return category)
 	    ;; else, if spam-ifile-all-categories is not set...
 	    (when (string-equal spam-ifile-spam-category category)
-	      ;; always accept the ifile category
 	      (setq return spam-split-group))))))
     return))
 
@@ -615,6 +634,52 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
       (spam-get-article-as-string article) nil))))
 
 
+;;;; spam-stat
+
+(condition-case nil
+    (progn
+      (let ((spam-stat-install-hooks nil))
+	(require 'spam-stat))
+      
+      (defun spam-check-stat ()
+	"Check the spam-stat backend for the classification of this message"
+	(let ((spam-stat-split-fancy-spam-group spam-split-group) ; override
+	      (spam-stat-buffer (buffer-name)) ; stat the current buffer
+	      category return)
+	  (spam-stat-split-fancy)))
+
+      (defun spam-stat-register-spam-routine ()
+	(spam-generic-register-routine 
+	 (lambda (article)
+	   (let ((article-string (spam-get-article-as-string article)))
+	     (with-temp-buffer
+	       (insert-string article-string)
+	       (spam-stat-buffer-is-spam))))
+	 nil)
+	(spam-stat-save))
+
+      (defun spam-stat-register-ham-routine ()
+	(spam-generic-register-routine 
+	 nil
+	 (lambda (article)
+	   (let ((article-string (spam-get-article-as-string article)))
+	     (with-temp-buffer
+	       (insert-string article-string)
+	       (spam-stat-buffer-is-non-spam)))))
+	(spam-stat-save)))
+
+  (file-error (progn
+		(defalias 'spam-stat-register-ham-routine 'ignore)
+		(defalias 'spam-stat-register-spam-routine 'ignore)
+		(defalias 'spam-stat-buffer-is-spam 'ignore)
+		(defalias 'spam-stat-buffer-is-non-spam 'ignore)
+		(defalias 'spam-stat-split-fancy 'ignore)
+		(defalias 'spam-stat-load 'ignore)
+		(defalias 'spam-stat-save 'ignore)
+		(defalias 'spam-check-stat 'ignore))))
+
+
+
 ;;;; Blacklists and whitelists.
 
 (defvar spam-whitelist-cache nil)
