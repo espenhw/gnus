@@ -47,6 +47,9 @@
 (autoload 'base64-encode-string "base64")
 (autoload 'mail-fetch-field "mail-utils")
 
+(eval-when-compile
+  (defvar mail-header-separator))
+
 (defgroup canlock nil
   "The Cancel-Lock feature."
   :group 'applications)

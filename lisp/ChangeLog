@@ -1,3 +1,8 @@
+2003-04-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* canlock.el: Bind mail-header-separator when compiling (XEmacs
+	provides it in mail-lib/auto-autoloads.el).
+
 2003-04-29  Simon Josefsson  <jas@extundo.com>
 
 	* mml2015.el (mml2015-pgg-sign): Use mml-sender instead of
