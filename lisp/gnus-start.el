@@ -1564,6 +1564,7 @@ newsgroup."
       (let* ((mg (pop retrievegroups))
 	     (method (or (car mg) gnus-select-method))
 	     (groups (cdr mg)))
+	(gnus-check-server method)
 	;; Request that the backend scan its incoming messages.
 	(when (gnus-check-backend-function 'request-scan (car method))
 	  (gnus-request-scan nil method))
