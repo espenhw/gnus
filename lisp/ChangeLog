@@ -1,3 +1,7 @@
+2004-01-03  Romain FRANCOISE  <romain@orebokech.com>
+
+	* gnus-fun.el (gnus-face-from-file): Use gnus-message.
+
 2004-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-button-mid-or-mail-heuristic): Treat Gmane
