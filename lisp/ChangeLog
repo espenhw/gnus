@@ -1,3 +1,8 @@
+2003-02-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-msg.el (gnus-copy-article-buffer): Copy an article header
+	even if there's just a header.
+
 2003-02-19  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.el (message-fix-before-sending): Fix highlighting of

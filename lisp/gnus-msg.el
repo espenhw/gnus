@@ -852,7 +852,9 @@ header line with the old Message-ID."
 	      (forward-line 1))
 	    (let ((mail-header-separator ""))
 	      (setq beg (point)
-		    end (or (message-goto-body) beg)))
+		    end (or (message-goto-body)
+			    ;; There may be just a header.
+			    (point-max))))
 	    ;; Delete the headers from the displayed articles.
 	    (set-buffer gnus-article-copy)
 	    (let ((mail-header-separator ""))
