@@ -1,6 +1,6 @@
 @echo off
 
-rem Written by David Charlap <shamino@writeme.com>
+rem Written by David Charlap (shamino@writeme.com)
 rem
 rem There are two possible problems with this batch file.  The emacs.bat batch
 rem file may not exist in all distributions.  It is part of the GNU build of
@@ -36,13 +36,14 @@ copy *.el* %1\lisp\gnus
 
 :info
 cd ..\texi
-call %1\bin\emacs.bat -batch -q -no-site-file message.texi -l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
-call %1\bin\emacs.bat -batch -q -no-site-file emacs-mime.texi -l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
-call %1\bin\emacs.bat -batch -q -no-site-file gnus.texi -l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
+call %1\bin\emacs.bat -batch -q -no-site-file message.texi -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
+call %1\bin\emacs.bat -batch -q -no-site-file emacs-mime.texi -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
+call %1\bin\emacs.bat -batch -q -no-site-file gnus.texi -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
 if not "%2" == "copy" goto done
 copy gnus %1\info
 copy gnus-?? %1\info
 copy message %1\info
+copy emacs-mime %1\info
 
 :etc
 cd ..\etc
@@ -56,7 +57,7 @@ goto end
 echo Usage: make ^<emacs-dir^> [copy]
 echo.
 echo where: ^<emacs-dir^> is the directory you installed emacs in
-echo                    eg. d:\emacs\19.34
+echo                    eg. d:\emacs\20.4
 echo        copy indicates that the compiled files should be copied to your
 echo             emacs lisp, info, and etc directories
 
