@@ -1308,7 +1308,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.2"
+(defconst gnus-version "(ding) Gnus v0.99.3"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -3153,9 +3153,6 @@ prompt the user for the name of an NNTP server to use."
     (nnheader-init-server-buffer)
     (gnus-read-init-file)
 
-    ;; Read the dribble file.
-    (and gnus-use-dribble-file (gnus-dribble-read-file))
-
     (let ((level (and arg (numberp arg) (> arg 0) arg))
 	  did-connect)
       (unwind-protect
@@ -3169,6 +3166,9 @@ prompt the user for the name of an NNTP server to use."
 	    (gnus-group-quit)
 	  (run-hooks 'gnus-startup-hook)
 	  ;; NNTP server is successfully open. 
+	  ;; Read the dribble file.
+	  (and gnus-use-dribble-file (gnus-dribble-read-file))
+
 	  (gnus-update-format-specifications)
 	  (gnus-summary-make-display-table)
 	  (let ((buffer-read-only nil))
@@ -3178,7 +3178,6 @@ prompt the user for the name of an NNTP server to use."
 		  (gnus-group-startup-message)
 		  (sit-for 0))))
 	  (gnus-setup-news nil level)
-	  (and gnus-use-dribble-file (gnus-dribble-open))
 	  (gnus-group-list-groups level)
 	  (gnus-configure-windows 'group))))))
 
@@ -4071,7 +4070,7 @@ ADDRESS."
 	     (setq found (cond ((= (setq char (read-char)) ?m) 'mbox)
 			       ((= char ?b) 'babyl)
 			       ((= char ?d) 'digest)
-			       (t (setq err "%c unknown. " char)
+			       (t (setq err (format "%c unknown. " char))
 				  nil))))
 	   found)))
   (let* ((file (expand-file-name file))
@@ -4758,13 +4757,14 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
 	  gnus-expert-user
 	  (gnus-y-or-n-p "Are you sure you want to quit reading news? "))
       (progn
-	(if gnus-use-full-window
-	    (delete-other-windows)
-	  (gnus-remove-some-windows))
 	(run-hooks 'gnus-exit-gnus-hook)
+	;; Offer to save data from non-quitted summary buffers.
 	(gnus-offer-save-summaries)
+	;; Save the newsrc file(s).
 	(gnus-save-newsrc-file)
+	;; Kill-em-all.
 	(gnus-close-backends)
+	;; Reset everything.
 	(gnus-clear-system))))
 
 (defun gnus-close-backends ()
@@ -5679,14 +5679,17 @@ article number."
 
 (defun gnus-summary-number-of-articles-in-thread (thread &optional char)
   ;; Sum up all elements (and sub-elements) in a list.
-  (let* ((number 
-	  (if (and (consp thread) (cdr thread)
-		   (not (memq (header-number (car (car (cdr thread))))
-			      gnus-tmp-gathered))
-		   )
-	      (apply 
-	       '+ 1 (mapcar 'gnus-summary-number-of-articles-in-thread 
-			    (cdr thread)))
+  (let* ((number
+	  ;; Fix by Luc Van Eycken <Luc.VanEycken@esat.kuleuven.ac.be>.
+	  (if (and (consp thread) (cdr thread))
+	      (apply
+	       '+ 1 (mapcar
+		     (function
+		      (lambda (arg)
+			(if (memq (header-number (car arg)) gnus-tmp-gathered)
+			    0
+			  (gnus-summary-number-of-articles-in-thread arg))))
+		     (cdr thread)))
 	    1)))
     (if char 
 	(if (> number 1) gnus-not-empty-thread-mark
@@ -6299,7 +6302,7 @@ or a straight list of headers."
 	       (= level 0)
 	       (cond ((and (memq (setq number (header-number header))
 				 gnus-newsgroup-dormant)
-			   (null threads))
+			   (null thread))
 		      (setq header nil))
 		     ((and gnus-summary-expunge-below
 			   (< (or (cdr (assq number gnus-newsgroup-scored))
@@ -6431,12 +6434,20 @@ If READ-ALL is non-nil, all articles in the group are selected."
       (gnus-message 5 "Fetching headers...")
       (setq gnus-newsgroup-headers 
 	    (if (eq 'nov (setq gnus-headers-retrieved-by
-			       (gnus-retrieve-headers 
-				(if (and gnus-fetch-old-headers 
-					 (not (eq 1 (car articles))))
-				    (cons 1 articles)
-				  articles)
-				gnus-newsgroup-name)))
+			       ;; This is a naughty hack. To get the
+			       ;; retrieval of old headers to work, we
+			       ;; set `nntp-nov-gap' to nil (locally),
+			       ;; and then just retrieve the headers.
+			       ;; Mucho magic.
+			       (if gnus-fetch-old-headers
+				   (let (nntp-nov-gap)
+				     (gnus-retrieve-headers 
+				      (if (not (eq 1 (car articles)))
+					  (cons 1 articles)
+					articles)
+				      gnus-newsgroup-name))
+				 (gnus-retrieve-headers 
+				  articles gnus-newsgroup-name))))
 		(progn
 		  (gnus-get-newsgroup-headers-xover articles))
 	      ;; If we were to fetch old headers, but the backend didn't
@@ -11254,15 +11265,6 @@ If NEWSGROUP is nil, return the global kill file name instead."
 (defun gnus-dribble-file-name ()
   (concat gnus-current-startup-file "-dribble"))
 
-(defun gnus-dribble-open ()
-  (save-excursion 
-    (set-buffer 
-     (setq gnus-dribble-buffer (find-file-noselect (gnus-dribble-file-name))))
-    (buffer-disable-undo (current-buffer))
-    (bury-buffer gnus-dribble-buffer)
-    (auto-save-mode t)
-    (goto-char (point-max))))
-
 (defun gnus-dribble-enter (string)
   (if (and (not gnus-dribble-ignore)
 	   gnus-dribble-buffer
@@ -11830,8 +11832,8 @@ The `-n' option line from .newsrc is respected."
 	  ;; with `gnus-newsrc-hashtb' and `gnus-killed-hashtb'.
 	  (mapatoms
 	   (lambda (sym)
-	     (setq group (symbol-name sym))
-	     (if (or (gnus-gethash group gnus-killed-hashtb)
+	     (if (or (null (setq group (symbol-name sym)))
+		     (gnus-gethash group gnus-killed-hashtb)
 		     (gnus-gethash group gnus-newsrc-hashtb))
 		 ()
 	       (let ((do-sub (gnus-matches-options-n group)))
@@ -12017,83 +12019,89 @@ The `-n' option line from .newsrc is respected."
     (if (stringp previous)
 	(setq previous (gnus-gethash previous gnus-newsrc-hashtb)))
 
-    (gnus-dribble-enter
-     (format "(gnus-group-change-level %S %S %S %S %S)" 
-	     group level oldlevel (car (nth 2 previous)) fromkilled))
-    
-    ;; Then we remove the newgroup from any old structures, if needed.
-    ;; If the group was killed, we remove it from the killed or zombie
-    ;; list. If not, and it is in fact going to be killed, we remove
-    ;; it from the newsrc hash table and assoc.
-    (cond ((>= oldlevel gnus-level-zombie)
-	   (if (= oldlevel gnus-level-zombie)
-	       (setq gnus-zombie-list (delete group gnus-zombie-list))
-	     (setq gnus-killed-list (delete group gnus-killed-list))))
-	  (t
-	   (if (and (>= level gnus-level-zombie)
-		    entry)
-	       (progn
-		 (gnus-sethash (car (nth 2 entry)) nil gnus-newsrc-hashtb)
-		 (if (nth 3 entry)
-		     (setcdr (gnus-gethash (car (nth 3 entry))
-					   gnus-newsrc-hashtb)
-			     (cdr entry)))
-		 (setcdr (cdr entry) (cdr (cdr (cdr entry))))))))
+    (if (and (>= oldlevel gnus-level-zombie)
+	     (gnus-gethash group gnus-newsrc-hashtb))
+	;; We are trying to subscribe a group that is already
+	;; subscribed. 
+	() ; Do nothing. 
 
-    ;; Finally we enter (if needed) the list where it is supposed to
-    ;; go, and change the subscription level. If it is to be killed,
-    ;; we enter it into the killed or zombie list.
-    (cond ((>= level gnus-level-zombie)
-	   ;; Remove from the hash table.
-	   (gnus-sethash group nil gnus-newsrc-hashtb)
-	   (or (gnus-group-foreign-p group)
-	       ;; We do not enter foreign groups into the list of dead
-	       ;; groups.  
-	       (if (= level gnus-level-zombie)
-		   (setq gnus-zombie-list (cons group gnus-zombie-list))
-		 (setq gnus-killed-list (cons group gnus-killed-list)))))
-	  (t
-	   ;; If the list is to be entered into the newsrc assoc, and
-	   ;; it was killed, we have to create an entry in the newsrc
-	   ;; hashtb format and fix the pointers in the newsrc assoc.
-	   (if (>= oldlevel gnus-level-zombie)
-	       (progn
-		 (if (listp entry)
-		     (progn
-		       (setq info (cdr entry))
-		       (setq num (car entry)))
-		   (setq active (gnus-gethash group gnus-active-hashtb))
-		   (setq num (if active (- (1+ (cdr active)) (car active)) t))
-		   ;; Check whether the group is foreign. If so, the
-		   ;; foreign select method has to be entered into the
-		   ;; info. 
-		   (let ((method (gnus-group-method-name group)))
-		     (if (eq method gnus-select-method)
-			 (setq info (list group level nil))
-		       (setq info (list group level nil nil method)))))
-		 (or previous 
-		     (setq previous 
-			   (let ((p gnus-newsrc-alist))
-			     (while (cdr (cdr p))
-			       (setq p (cdr p)))
-			     p)))
-		 (setq entry (cons info (cdr (cdr previous))))
-		 (if (cdr previous)
-		     (progn
-		       (setcdr (cdr previous) entry)
-		       (gnus-sethash group (cons num (cdr previous)) 
-				     gnus-newsrc-hashtb))
-		   (setcdr previous entry)
-		   (gnus-sethash group (cons num previous)
-				 gnus-newsrc-hashtb))
-		 (if (cdr entry)
-		     (setcdr (gnus-gethash (car (car (cdr entry)))
-					   gnus-newsrc-hashtb)
-			     entry)))
-	     ;; It was alive, and it is going to stay alive, so we
-	     ;; just change the level and don't change any pointers or
-	     ;; hash table entries.
-	     (setcar (cdr (car (cdr (cdr entry)))) level))))))
+      (gnus-dribble-enter
+       (format "(gnus-group-change-level %S %S %S %S %S)" 
+	       group level oldlevel (car (nth 2 previous)) fromkilled))
+    
+      ;; Then we remove the newgroup from any old structures, if needed.
+      ;; If the group was killed, we remove it from the killed or zombie
+      ;; list. If not, and it is in fact going to be killed, we remove
+      ;; it from the newsrc hash table and assoc.
+      (cond ((>= oldlevel gnus-level-zombie)
+	     (if (= oldlevel gnus-level-zombie)
+		 (setq gnus-zombie-list (delete group gnus-zombie-list))
+	       (setq gnus-killed-list (delete group gnus-killed-list))))
+	    (t
+	     (if (and (>= level gnus-level-zombie)
+		      entry)
+		 (progn
+		   (gnus-sethash (car (nth 2 entry)) nil gnus-newsrc-hashtb)
+		   (if (nth 3 entry)
+		       (setcdr (gnus-gethash (car (nth 3 entry))
+					     gnus-newsrc-hashtb)
+			       (cdr entry)))
+		   (setcdr (cdr entry) (cdr (cdr (cdr entry))))))))
+
+      ;; Finally we enter (if needed) the list where it is supposed to
+      ;; go, and change the subscription level. If it is to be killed,
+      ;; we enter it into the killed or zombie list.
+      (cond ((>= level gnus-level-zombie)
+	     ;; Remove from the hash table.
+	     (gnus-sethash group nil gnus-newsrc-hashtb)
+	     (or (gnus-group-foreign-p group)
+		 ;; We do not enter foreign groups into the list of dead
+		 ;; groups.  
+		 (if (= level gnus-level-zombie)
+		     (setq gnus-zombie-list (cons group gnus-zombie-list))
+		   (setq gnus-killed-list (cons group gnus-killed-list)))))
+	    (t
+	     ;; If the list is to be entered into the newsrc assoc, and
+	     ;; it was killed, we have to create an entry in the newsrc
+	     ;; hashtb format and fix the pointers in the newsrc assoc.
+	     (if (>= oldlevel gnus-level-zombie)
+		 (progn
+		   (if (listp entry)
+		       (progn
+			 (setq info (cdr entry))
+			 (setq num (car entry)))
+		     (setq active (gnus-gethash group gnus-active-hashtb))
+		     (setq num (if active (- (1+ (cdr active)) (car active)) t))
+		     ;; Check whether the group is foreign. If so, the
+		     ;; foreign select method has to be entered into the
+		     ;; info. 
+		     (let ((method (gnus-group-method-name group)))
+		       (if (eq method gnus-select-method)
+			   (setq info (list group level nil))
+			 (setq info (list group level nil nil method)))))
+		   (or previous 
+		       (setq previous 
+			     (let ((p gnus-newsrc-alist))
+			       (while (cdr (cdr p))
+				 (setq p (cdr p)))
+			       p)))
+		   (setq entry (cons info (cdr (cdr previous))))
+		   (if (cdr previous)
+		       (progn
+			 (setcdr (cdr previous) entry)
+			 (gnus-sethash group (cons num (cdr previous)) 
+				       gnus-newsrc-hashtb))
+		     (setcdr previous entry)
+		     (gnus-sethash group (cons num previous)
+				   gnus-newsrc-hashtb))
+		   (if (cdr entry)
+		       (setcdr (gnus-gethash (car (car (cdr entry)))
+					     gnus-newsrc-hashtb)
+			       entry)))
+	       ;; It was alive, and it is going to stay alive, so we
+	       ;; just change the level and don't change any pointers or
+	       ;; hash table entries.
+	       (setcar (cdr (car (cdr (cdr entry)))) level)))))))
 
 (defun gnus-kill-newsgroup (newsgroup)
   "Obsolete function. Kills a newsgroup."
@@ -12554,7 +12562,7 @@ Returns whether the updating was successful."
 		  (if (and (numberp (setq max (read cur)))
 			   (numberp (setq min (read cur)))
 			   (progn 
-			     (skip-chars-forward " ")
+			     (skip-chars-forward " \t")
 			     (not
 			      (or (= (following-char) ?=)
 				  (= (following-char) ?x)
@@ -12581,7 +12589,7 @@ Returns whether the updating was successful."
 		(if (and (numberp (setq max (read cur)))
 			 (numberp (setq min (read cur)))
 			 (progn 
-			   (skip-chars-forward " ")
+			   (skip-chars-forward " \t")
 			   (not
 			    (or (= (following-char) ?=)
 				(= (following-char) ?x)
@@ -13046,11 +13054,12 @@ If FORCE is non-nil, the .newsrc file is read."
        (progn
 	 (run-hooks 'gnus-save-newsrc-hook)
 	 (save-excursion
-	   (if (or (not gnus-dribble-buffer)
-		   (not (buffer-name gnus-dribble-buffer))
-		   (zerop (save-excursion
-			    (set-buffer gnus-dribble-buffer)
-			    (buffer-size))))
+	   (if (and gnus-use-dribble-file
+		    (or (not gnus-dribble-buffer)
+			(not (buffer-name gnus-dribble-buffer))
+			(zerop (save-excursion
+				 (set-buffer gnus-dribble-buffer)
+				 (buffer-size)))))
 	       (gnus-message 4 "(No changes need to be saved)")
 	     (if gnus-save-newsrc-file
 		 (progn

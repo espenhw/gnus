@@ -1,3 +1,34 @@
+Wed Aug  2 15:08:10 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci7.cern.ch>
+
+	* gnus.el (gnus): Don't read the dribble file that early after
+	all. 
+	(gnus-active-to-gnus-format): Set group to nil anyway.
+	(gnus-find-new-newsgroups): Ignore null groups.
+
+	* nnml.el (nnml-get-new-mail): Didn't activate before splitting. 
+
+	* gnus-msg.el (gnus-forward-using-post): Make sure we post, even
+	if we are in a mail group.
+
+	* gnus.el (gnus-summary-prepare-threads): Always removed dormant
+	articles. 
+	(gnus-save-newsrc-file): Always save when you don't use the
+	dribble file. 
+	(gnus-group-make-doc-group): Would respond with "%c" on errs.
+
+	* gnus-msg.el (gnus-inews-check-post): Would bug out on long
+	.sigs. 
+
+	* gnus.el (gnus): Would open two dribble buffers.
+	(gnus-group-change-level): Refuse to subscribe to groups that are
+	already subscribed. 
+	(gnus-active-to-gnus-format): Don't `set' bogus group symbols to
+	nil - just ignore them.
+	(gnus-summary-number-of-articles-in-thread): Gave the wrong answer
+	on gathered articles.
+	(gnus-select-newsgroup): Bind nntp-nov-gap to nil when building
+	old threads. 
+
 Wed Aug  2 14:13:16 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
 
 	* gnus.el: 0.99.2 is released.

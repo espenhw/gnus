@@ -505,14 +505,25 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 	      (save-excursion 
 		(if (not (listp yank))
 		    (news-reply-yank-original nil)
+		  (setq yank (reverse yank))
 		  (while yank
-		    (save-window-excursion
-		      (set-buffer gnus-summary-buffer)
-		      (gnus-summary-select-article nil nil nil (car yank))
-		      (gnus-summary-remove-process-mark (car yank)))
-		    (let ((mail-reply-buffer gnus-article-copy))
-		      (news-reply-yank-original nil))
-		    (setq yank (cdr yank)))))))
+		    (save-excursion
+		      (save-window-excursion
+			(set-buffer gnus-summary-buffer)
+			(gnus-summary-select-article nil nil nil (car yank))
+			(gnus-summary-remove-process-mark (car yank)))
+		      (let ((mail-reply-buffer gnus-article-copy))
+			(gnus-copy-article-buffer)
+			(let ((news-reply-yank-message-id
+			       (save-excursion
+				 (set-buffer gnus-article-copy)
+				 (mail-fetch-field "message-id")))
+			      (news-reply-yank-from
+			       (save-excursion
+				 (set-buffer gnus-article-copy)
+				 (mail-fetch-field "from"))))
+			  (news-reply-yank-original nil))
+			(setq yank (cdr yank)))))))))
 	  (if gnus-post-prepare-function
 	      (funcall gnus-post-prepare-function group))
 	  (run-hooks 'gnus-post-prepare-hook)
@@ -842,7 +853,8 @@ will attempt to use the foreign server to post the article."
 	    (if (> (count-lines (point) (point-max)) 4)
 		(gnus-y-or-n-p
 		 (format
-		  "Your .sig is %d lines; it should be max 4.  Really post? "))
+		  "Your .sig is %d lines; it should be max 4.  Really post? "
+		  (count-lines (point) (point-max))))
 	      t)))))))
 
 (defun gnus-article-checksum ()
@@ -1611,13 +1623,15 @@ mailer."
     (run-hooks 'gnus-mail-hook)))
 
 (defun gnus-forward-using-post (&optional buffer)
-  (let* ((forward-buffer (or buffer (current-buffer))) 
-	 (subject (gnus-forward-make-subject forward-buffer)))
-    (gnus-post-news 'post nil nil nil nil subject)
-    (save-excursion
-      (gnus-forward-insert-buffer forward-buffer)
-      ;; You have a chance to arrange the message.
-      (run-hooks 'gnus-mail-forward-hook))))
+  (save-excursion
+    (let* ((forward-buffer (or buffer (current-buffer))) 
+	   (subject (gnus-forward-make-subject forward-buffer))
+	   (gnus-newsgroup-name nil))
+      (gnus-post-news 'post nil nil nil nil subject)
+      (save-excursion
+	(gnus-forward-insert-buffer forward-buffer)
+	;; You have a chance to arrange the message.
+	(run-hooks 'gnus-mail-forward-hook)))))
 
 (defun gnus-mail-other-window-using-mail ()
   "Compose mail other window using mail."

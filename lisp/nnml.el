@@ -491,7 +491,7 @@ all. This may very well take some time.")
     (if (or (not nnml-get-new-mail) (not nnmail-spool-file))
 	()
       ;; We first activate all the groups.
-      (if (not group) (nnmail-activate 'nnml))
+      (nnmail-activate 'nnml)
       ;; The we go through all the existing spool files and split the
       ;; mail from each.
       (while spools

@@ -4165,10 +4165,10 @@ Ascend the thread (@code{gnus-summary-up-thread}).
 @cindex asynchronous article fetching
 
 If you read your news from an @sc{nntp} server that's far away, the
-network latencies may make reading articles a chore.  You have to way
+network latencies may make reading articles a chore. You have to wait
 for a while after pressing @kbd{n} to go to the next article before the
-article appears.  Why can't Gnus just go ahead and fetch the article
-while you are reading the previous one?  Why not, indeed.
+article appears. Why can't Gnus just go ahead and fetch the article
+while you are reading the previous one? Why not, indeed.
 
 First, some caveats.  There are some pitfalls to using asynchronous
 article fetching, especially the way Gnus does it.  
