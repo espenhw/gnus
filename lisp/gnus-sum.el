@@ -3984,8 +3984,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
   "Translate STRING into something that doesn't contain weird characters."
   (mm-subst-char-in-string
    ?\r ?\-
-   (mm-subst-char-in-string
-    ?\n ?\- string)))
+   (mm-subst-char-in-string ?\n ?\- string t) t))
 
 ;; This function has to be called with point after the article number
 ;; on the beginning of the line.
