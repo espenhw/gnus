@@ -1,3 +1,10 @@
+2001-11-02  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-sieve.el (gnus-sieve-script): Use "stop" instead of "elsif"
+	for non-crossposting.
+	(gnus-sieve-crosspost): Default to t to be consistent with other
+	parts of Gnus.
+
 2001-11-01 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-iso-8859-15-compatible): Add inconvertible chars.

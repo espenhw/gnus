@@ -64,7 +64,7 @@ your Sieve script."
 For example: \"nnimap:mailbox\""
   :group 'gnus-sieve)
 
-(defcustom gnus-sieve-crosspost nil
+(defcustom gnus-sieve-crosspost t
   "Whether the generated Sieve script should do crossposting."
   :type 'bool
   :group 'gnus-sieve)
@@ -202,9 +202,8 @@ considered.  This parameter should contain an elisp test
 such group, a Sieve IF control structure is generated, having the
 test as the condition and { fileinto \"group.name\"; } as the body.
 
-If CROSSPOST is non-nil, concatenate these conditionals
-sequencially, otherwsie with `elsif', causing a match on one group the
-other tests to be skipped.
+If CROSSPOST is nil, each conditional body contains a \"stop\" command
+which stops execution after a match is found.
 
 For example: If the INBOX.list.sieve group has the
 
@@ -225,11 +224,14 @@ This is returned as a string."
 	(let* ((group (gnus-info-group info))
 	       (spec (gnus-group-find-parameter group 'sieve t)))
 	  (when spec
-	    (push (concat "if " (gnus-sieve-test spec) " {\n\t"
-			  "fileinto \"" (gnus-group-real-name group) 
-			  "\";\n}")
+	    (push (concat "if " (gnus-sieve-test spec) " {\n"
+			  "\tfileinto \"" (gnus-group-real-name group) "\";\n"
+			  (if gnus-sieve-crosspost
+			      ""
+			    "\tstop;\n")
+			  "}")
 		  script)))))
-    (mapconcat 'identity script (if crosspost "\n" "\nels"))))
+    (mapconcat 'identity script "\n")))
 
 (provide 'gnus-sieve)
 
