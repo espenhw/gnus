@@ -1,6 +1,6 @@
 ;;; pgg-pgp5.el --- PGP 5.* support for PGG.
 
-;; Copyright (C) 1999, 2000, 2003 Free Software Foundation, Inc.
+;; Copyright (C) 1999, 2000, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Daiki Ueno <ueno@unixuser.org>
 ;; Created: 1999/11/02
@@ -142,7 +142,7 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
 		 (buffer-substring (match-end 0)(progn (end-of-line)(point)))))
 	 2)))))
 
-(defun pgg-pgp5-encrypt-region (start end recipients)
+(defun pgg-pgp5-encrypt-region (start end recipients &optional sign)
   "Encrypt the current region between START and END."
   (let* ((pgg-pgp5-user-id (or pgg-pgp5-user-id pgg-default-user-id))
 	 (args

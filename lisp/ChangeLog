@@ -1,5 +1,8 @@
 2004-07-28  Simon Josefsson  <jas@extundo.com>
 
+	* pgg-pgp5.el (pgg-pgp5-encrypt-region): Accept sign
+	parameter (but don't use it, for now).
+
 	* imap.el (imap-ssl-open): Use imap-process-connection-type,
 	instead of hard coding to nil.
 
