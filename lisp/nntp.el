@@ -1460,7 +1460,8 @@ password contained in '~/.nntp-authinfo'."
   "Wait until string arrives in the buffer."
   (let ((buf (current-buffer)))
     (goto-char (point-min))
-    (while (not (re-search-forward regexp nil t))
+    (while (and (nntp-find-connection nntp-server-buffer)
+		(not (re-search-forward regexp nil t)))
       (accept-process-output (nntp-find-connection nntp-server-buffer))
       (set-buffer buf)
       (goto-char (point-min)))))

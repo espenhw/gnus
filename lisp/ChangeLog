@@ -1,5 +1,7 @@
 2002-09-03  Simon Josefsson  <jas@extundo.com>
 
+	* nntp.el (nntp-wait-for-string): Dont infloop if process died.
+
 	* gnus-agent.el (gnus-agent-batch): Add doc.
 
 2002-09-03  Josh Huber <huber@alum.wpi.edu>
