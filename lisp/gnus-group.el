@@ -2284,7 +2284,7 @@ ADDRESS."
 	 (nname (if method (gnus-group-prefixed-name name meth) name))
 	 backend info)
     (when (gnus-group-entry nname)
-      (error "Group %s already exists" nname))
+      (error "Group %s already exists" (gnus-group-decoded-name nname)))
     ;; Subscribe to the new group.
     (gnus-group-change-level
      (setq info (list t nname gnus-level-default-subscribed nil nil meth))
@@ -2638,12 +2638,11 @@ If there is, use Gnus to create an nnrss group"
 	    ;; Unify non-ASCII text.
 	    (setq title (mm-decode-coding-string
 			 (mm-encode-coding-string title 'utf-8) 'utf-8)))
-	  (push (list title href desc)
-		nnrss-group-alist)
 	  (gnus-group-make-group (if encodable
 				     (mm-encode-coding-string title 'utf-8)
 				   title)
 				 '(nnrss ""))
+	  (push (list title href desc) nnrss-group-alist)
 	  (nnrss-save-server-data nil))
       (error "No feeds found for %s" url))))
 

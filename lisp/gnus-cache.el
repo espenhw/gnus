@@ -422,6 +422,7 @@ Returns the list of articles removed."
       (and (not unread) (not ticked) (not dormant) (memq 'read class))))
 
 (defun gnus-cache-file-name (group article)
+  (setq group (gnus-group-decoded-name group))
   (expand-file-name
    (if (stringp article) article (int-to-string article))
    (file-name-as-directory
