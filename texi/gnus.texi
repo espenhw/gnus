@@ -10167,10 +10167,10 @@ to 700, for your own safety.
 If you want to benefit of PGP2.6 compatibility, you might create a script named
 @file{gpg-2comp} with these instructions:
 
-@code{
+@example
 #!/bin/sh
 exec gpg --rfc1991 "$@@"
-}
+@end example
 
 If you don't want to use such compatibility, you can add the following line to
 your @file{~/.emacs} or @file{~/.gnus}:
