@@ -6928,7 +6928,10 @@ to guess what the document format is."
 	;; the parent article.
 	(when (setq to-address (or (message-fetch-field "reply-to")
 				   (message-fetch-field "from")))
-	  (setq params (append (list (cons 'to-address to-address)))))
+	  (setq params (append 
+			(list (cons 'to-address 
+				    (funcall gnus-decode-encoded-word-function
+					     to-address))))))
 	(setq dig (nnheader-set-temp-buffer " *gnus digest buffer*"))
 	(insert-buffer-substring gnus-original-article-buffer)
 	;; Remove lines that may lead nndoc to misinterpret the

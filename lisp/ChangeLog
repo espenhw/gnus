@@ -1,3 +1,7 @@
+2000-09-29 09:14:08  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-enter-digest-group): Decode to-address.
+
 2000-09-28  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-art.el (article-strip-banner): elkin@tverd.astro.spbu.ru:
