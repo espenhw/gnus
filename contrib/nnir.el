@@ -298,7 +298,7 @@
 
 ;;; Setup Code:
 
-(defconst nnir-version "$Id: nnir.el,v 1.1 2003/09/30 21:19:01 kaig Exp $"
+(defconst nnir-version "$Id: nnir.el,v 1.2 2003/09/30 21:30:34 kaig Exp $"
   "Version of NNIR.")
 
 (require 'cl)
@@ -308,7 +308,8 @@
 (eval-and-compile
   (require 'gnus-util))
 (eval-when-compile
-  (require 'nnimap))
+  (require 'nnimap)
+  (autoload 'read-kbd-macro "edmacro" nil t))
 
 (nnoo-declare nnir)
 (nnoo-define-basics nnir)

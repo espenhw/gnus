@@ -1,3 +1,7 @@
+2003-10-24  Steve Youngs  <sryoungs@bigpond.net.au>
+
+	* nnir.el: Autoload `read-kbd-macro' at compile time.
+
 2003-09-30  Kai Grossjohann  <kai.grossjohann@gmx.net>
 	From Torsten Hilbrich <torsten.hilbrich@gmx.net>.
 
