@@ -1,3 +1,8 @@
+2003-06-15  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-sum.el (gnus-summary-force-verify-and-decrypt): Bind
+	`gnus-article-emulate-mime'.
+
 2003-06-15  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
 	From Tommi Vainikainen <thv+gnus@iki.fi>.
 
