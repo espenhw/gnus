@@ -32,68 +32,212 @@
 
 ;;; Customization:
 
-(defvar gnus-cited-text-button-line-format "%(%{[...]%}%)\n"
-  "Format of cited text buttons.")
+(defgroup gnus-cite nil
+  "Citation."
+  :group 'article)
+  
 
-(defvar gnus-cited-lines-visible nil
-  "The number of lines of hidden cited text to remain visible.")
+(defcustom gnus-cited-text-button-line-format "%(%{[...]%}%)\n"
+  "Format of cited text buttons."
+  :group 'gnus-cite
+  :type 'string)
 
-(defvar gnus-cite-parse-max-size 25000
+(defcustom gnus-cited-lines-visible nil
+  "The number of lines of hidden cited text to remain visible."
+  :group 'gnus-cite
+  :type '(choice (const :tag "none" nil)
+		 integer))
+
+(defcustom gnus-cite-parse-max-size 25000
   "Maximum article size (in bytes) where parsing citations is allowed.
-Set it to nil to parse all articles.")
+Set it to nil to parse all articles."
+  :group 'gnus-cite
+  :type '(choice (const :tag "all" nil)
+		 integer))
 
-(defvar gnus-cite-prefix-regexp 
+(defcustom gnus-cite-prefix-regexp 
     "^[]>|:}+ ]*[]>|:}+]\\(.*>\\)?\\|^.*>"
-  "Regexp matching the longest possible citation prefix on a line.")
+  "Regexp matching the longest possible citation prefix on a line."
+  :group 'gnus-cite
+  :type 'regexp)
 
-(defvar gnus-cite-max-prefix 20
-  "Maximum possible length for a citation prefix.")
+(defcustom gnus-cite-max-prefix 20
+  "Maximum possible length for a citation prefix."
+  :group 'gnus-cite
+  :type 'integer)
 
-(defvar gnus-supercite-regexp 
+(defcustom gnus-supercite-regexp 
   (concat "^\\(" gnus-cite-prefix-regexp "\\)? *"
 	  ">>>>> +\"\\([^\"\n]+\\)\" +==")
   "Regexp matching normal Supercite attribution lines.
-The first grouping must match prefixes added by other packages.")
+The first grouping must match prefixes added by other packages."
+  :group 'gnus-cite
+  :type 'regexp)
 
-(defvar gnus-supercite-secondary-regexp "^.*\"\\([^\"\n]+\\)\" +=="
+(defcustom gnus-supercite-secondary-regexp "^.*\"\\([^\"\n]+\\)\" +=="
   "Regexp matching mangled Supercite attribution lines.
-The first regexp group should match the Supercite attribution.")
+The first regexp group should match the Supercite attribution."
+  :group 'gnus-cite
+  :type 'regexp)
 
-(defvar gnus-cite-minimum-match-count 2
-  "Minimum number of identical prefixes before we believe it's a citation.")
+(defcustom gnus-cite-minimum-match-count 2
+  "Minimum number of identical prefixes before we believe it's a citation."
+  :group 'gnus-cite
+  :type 'integer)
 
-(defvar gnus-cite-attribution-prefix "in article\\|in <"
-  "Regexp matching the beginning of an attribution line.")
+(defcustom gnus-cite-attribution-prefix "in article\\|in <"
+  "Regexp matching the beginning of an attribution line."
+  :group 'gnus-cite
+  :type 'regexp)
 
-(defvar gnus-cite-attribution-suffix
+(defcustom gnus-cite-attribution-suffix
   "\\(wrote\\|writes\\|said\\|says\\):[ \t]*$"
   "Regexp matching the end of an attribution line.
-The text matching the first grouping will be used as a button.")
+The text matching the first grouping will be used as a button."
+  :group 'gnus-cite
+  :type 'regexp)
 
-(defvar gnus-cite-attribution-face 'underline
+(defface gnus-cite-attribution-face '((t 
+				       (:underline t)))
+  "Face used for attribution lines.")
+
+(defcustom gnus-cite-attribution-face 'gnus-cite-attribution-face
   "Face used for attribution lines.
-It is merged with the face for the cited text belonging to the attribution.")
+It is merged with the face for the cited text belonging to the attribution."
+  :group 'gnus-cite
+  :type 'face)
 
-(defvar gnus-cite-face-list 
-  (cond ((not (eq gnus-display-type 'color))
-	 '(italic))
-	((eq gnus-background-mode 'dark)
-	 (mapcar 'gnus-make-face 
-		 gnus-face-light-name-list))
-	(t 
-	 (mapcar 'gnus-make-face 
-		 gnus-face-dark-name-list)))
+(defface gnus-cite-face-1 '((((class color)
+			      (background dark))
+			     (:foreground "light blue"))
+			    (((class color)
+			      (background light))
+			     (:foreground "MidnightBlue"))
+			    (t 
+			     (:italic t)))
+  "Citation face.")
+
+(defface gnus-cite-face-2 '((((class color)
+			      (background dark))
+			     (:foreground "light cyan"))
+			    (((class color)
+			      (background light))
+			     (:foreground "firebrick"))
+			    (t 
+			     (:italic t)))
+  "Citation face.")
+
+(defface gnus-cite-face-3 '((((class color)
+			      (background dark))
+			     (:foreground "light yellow"))
+			    (((class color)
+			      (background light))
+			     (:foreground "dark green"))
+			    (t 
+			     (:italic t)))
+  "Citation face.")
+
+(defface gnus-cite-face-4 '((((class color)
+			      (background dark))
+			     (:foreground "light pink"))
+			    (((class color)
+			      (background light))
+			     (:foreground "OrangeRed"))
+			    (t 
+			     (:italic t)))
+  "Citation face.")
+
+(defface gnus-cite-face-5 '((((class color)
+			      (background dark))
+			     (:foreground "pale green"))
+			    (((class color)
+			      (background light))
+			     (:foreground "dark khaki"))
+			    (t 
+			     (:italic t)))
+  "Citation face.")
+
+(defface gnus-cite-face-6 '((((class color)
+			      (background dark))
+			     (:foreground "beige"))
+			    (((class color)
+			      (background light))
+			     (:foreground "dark violet"))
+			    (t 
+			     (:italic t)))
+  "Citation face.")
+
+(defface gnus-cite-face-7 '((((class color)
+			      (background dark))
+			     (:foreground "orange"))
+			    (((class color)
+			      (background light))
+			     (:foreground "SteelBlue4"))
+			    (t 
+			     (:italic t)))
+  "Citation face.")
+
+(defface gnus-cite-face-8 '((((class color)
+			      (background dark))
+			     (:foreground "magenta"))
+			    (((class color)
+			      (background light))
+			     (:foreground "magenta"))
+			    (t 
+			     (:italic t)))
+  "Citation face.")
+
+(defface gnus-cite-face-9 '((((class color)
+			      (background dark))
+			     (:foreground "violet"))
+			    (((class color)
+			      (background light))
+			     (:foreground "violet"))
+			    (t 
+			     (:italic t)))
+  "Citation face.")
+
+(defface gnus-cite-face-10 '((((class color)
+			       (background dark))
+			      (:foreground "medium purple"))
+			     (((class color)
+			       (background light))
+			      (:foreground "medium purple"))
+			     (t 
+			      (:italic t)))
+  "Citation face.")
+
+(defface gnus-cite-face-11 '((((class color)
+			       (background dark))
+			      (:foreground "turquoise"))
+			     (((class color)
+			       (background light))
+			      (:foreground "turquoise"))
+			     (t 
+			      (:italic t)))
+  "Citation face.")
+
+(defcustom gnus-cite-face-list 
+  '(gnus-cite-face-1 gnus-cite-face-2 gnus-cite-face-3 gnus-cite-face-4 
+    gnus-cite-face-5 gnus-cite-face-6 gnus-cite-face-7 gnus-cite-face-8 
+    gnus-cite-face-9 gnus-cite-face-10 gnus-cite-face-11)
   "List of faces used for highlighting citations. 
 
 When there are citations from multiple articles in the same message,
 Gnus will try to give each citation from each article its own face.
-This should make it easier to see who wrote what.")
+This should make it easier to see who wrote what."
+  :group 'gnus-cite
+  :type '(repeat face))
 
-(defvar gnus-cite-hide-percentage 50
-  "Only hide excess citation if above this percentage of the body.")
+(defcustom gnus-cite-hide-percentage 50
+  "Only hide excess citation if above this percentage of the body."
+  :group 'gnus-cite
+  :type 'number)
 
-(defvar gnus-cite-hide-absolute 10
-  "Only hide excess citation if above this number of lines in the body.")
+(defcustom gnus-cite-hide-absolute 10
+  "Only hide excess citation if above this number of lines in the body."
+  :group 'gnus-cite
+  :type 'integer)
 
 ;;; Internal Variables:
 
@@ -141,13 +285,6 @@ lines matches `gnus-cite-prefix-regexp' with the same prefix.
 Lines matching `gnus-cite-attribution-suffix' and perhaps
 `gnus-cite-attribution-prefix' are considered attribution lines."
   (interactive (list 'force))
-  ;; Create dark or light faces if necessary.
-  (cond ((eq gnus-cite-face-list 'light)
-	 (setq gnus-cite-face-list
-	       (mapcar 'gnus-make-face gnus-face-light-name-list)))
-	((eq gnus-cite-face-list 'dark)
-	 (setq gnus-cite-face-list
-	       (mapcar 'gnus-make-face gnus-face-dark-name-list))))
   (save-excursion
     (set-buffer gnus-article-buffer)
     (gnus-cite-parse-maybe force)

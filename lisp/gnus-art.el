@@ -1196,8 +1196,7 @@ If given a prefix, show the hidden text instead."
 
 	  ;; We only request an article by message-id when we do not have the
 	  ;; headers for it, so we'll have to get those.
-	  (when (and (not gnus-doing-request-article)
-		     (stringp article))
+	  (when (stringp article)
 	    (let ((gnus-override-method gnus-refer-article-method))
 	      (gnus-read-header article)))
 

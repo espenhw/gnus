@@ -32,25 +32,40 @@
 (require 'gnus-start)
 (require 'gnus)
 
-(defvar gnus-cache-directory
+(defgroup gnus-cache nil
+  "Cache interface."
+  :group 'gnus)
+
+(defcustom gnus-cache-directory
   (nnheader-concat gnus-directory "cache/")
-  "*The directory where cached articles will be stored.")
+  "*The directory where cached articles will be stored."
+  :group 'gnus-cache
+  :type 'directory)
 
-(defvar gnus-cache-active-file 
+(defcustom gnus-cache-active-file 
   (concat (file-name-as-directory gnus-cache-directory) "active")
-  "*The cache active file.")
+  "*The cache active file."
+  :group 'gnus-cache
+  :type 'file)
 
-(defvar gnus-cache-enter-articles '(ticked dormant)
-  "*Classes of articles to enter into the cache.")
+(defcustom gnus-cache-enter-articles '(ticked dormant)
+  "Classes of articles to enter into the cache."
+  :group 'gnus-cache
+  :type '(set (const ticked) (const dormant) (const unread) (const read)))
 
-(defvar gnus-cache-remove-articles '(read)
-  "*Classes of articles to remove from the cache.")
+(defcustom gnus-cache-remove-articles '(read)
+  "Classes of articles to remove from the cache."
+  :group 'gnus-cache
+  :type '(set (const ticked) (const dormant) (const unread) (const read)))
 
-(defvar gnus-uncacheable-groups nil
+(defcustom gnus-uncacheable-groups nil
   "*Groups that match this regexp will not be cached.
 
 If you want to avoid caching your nnml groups, you could set this
-variable to \"^nnml\".")
+variable to \"^nnml\"."
+  :group 'gnus-cache
+  :type '(choice (const :tag "off" nil)
+		 regexp))
 
 
 

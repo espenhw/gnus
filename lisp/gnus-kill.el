@@ -30,22 +30,33 @@
 (require 'gnus-art)
 (require 'gnus-range)
 
-(defvar gnus-kill-file-mode-hook nil
-  "*A hook for Gnus kill file mode.")
+(defcustom gnus-kill-file-mode-hook nil
+  "Hook for Gnus kill file mode."
+  :group 'gnus-score
+  :type 'hook)
 
-(defvar gnus-kill-expiry-days 7
-  "*Number of days before expiring unused kill file entries.")
+(defcustom gnus-kill-expiry-days 7
+  "*Number of days before expiring unused kill file entries."
+  :group 'gnus-score
+  :type 'integer)
 
-(defvar gnus-kill-save-kill-file nil
-  "*If non-nil, will save kill files after processing them.")
+(defcustom gnus-kill-save-kill-file nil
+  "*If non-nil, will save kill files after processing them."
+  :group 'gnus-score
+  :type 'boolean)
 
-(defvar gnus-winconf-kill-file nil)
+(defcustom gnus-winconf-kill-file nil
+  "What does this do, Lars?"
+  :group 'gnus-score
+  :type 'sexp)
 
-(defvar gnus-kill-killed t
+(defcustom gnus-kill-killed t
   "*If non-nil, Gnus will apply kill files to already killed articles.
 If it is nil, Gnus will never apply kill files to articles that have
 already been through the scoring process, which might very well save lots
-of time.")
+of time."
+  :group 'gnus-score
+  :type 'boolean)
 
 
 

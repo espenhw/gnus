@@ -432,23 +432,6 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
 
 ;;; Face thingies.
 
-;; The following is just helper functions and data, not meant to be set
-;; by the user.
-(defun gnus-make-face (color)
-  ;; Create entry for face with COLOR.
-  (custom-face-lookup color nil nil nil nil nil))
-
-(defvar gnus-face-light-name-list
-  '("light blue" "light cyan" "light yellow" "light pink"
-    "pale green" "beige" "orange" "magenta" "violet" "medium purple"
-    "turquoise"))
-
-(defvar gnus-face-dark-name-list
-  '("MidnightBlue" "firebrick" "dark green" "OrangeRed" 
-    "dark khaki" "dark violet" "SteelBlue4"))
-; CornflowerBlue SeaGreen OrangeRed SteelBlue4 DeepPink3
-; DarkOlviveGreen4 
-
 (defvar gnus-visual 
   '(summary-highlight group-highlight article-highlight 
 		      mouse-face

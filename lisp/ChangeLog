@@ -1,3 +1,33 @@
+Mon Oct  7 02:24:02 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-sum.el: Added customize support.
+
+Sat Oct  5 01:29:20 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-async.el: Added customize support.
+	* gnus-cache.el: Ditto.
+	* gnus-cite.el: Ditto.
+	* gnus-demon.el: Ditto.
+	* gnus-dup.el: Ditto.
+	* gnus-eform.el: Ditto.
+	* gnus-group.el: Ditto.
+	* gnus-int.el: Ditto.
+	* gnus-kill.el: Ditto.
+	* gnus-load.el (gnus-make-face, gnus-face-light-name-list,
+	gnus-face-dark-name-list): Removed.
+
+Fri Oct  4 07:17:09 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-start.el (gnus-setup-news): Slaves should read the slave
+	files. 
+
+	* gnus-art.el (gnus-request-article-this-buffer): Removed
+	reference to doing-request.
+
+Thu Oct  3 05:06:53 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.47 is released.
+
 Thu Oct  3 02:04:37 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus-int.el (gnus-request-head): Use the cache.

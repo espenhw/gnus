@@ -33,12 +33,18 @@
 (require 'gnus-undo)
 (require 'gnus)
 
-(defvar gnus-kill-summary-on-exit t
+(defgroup gnus-summary nil
+  "Summary buffers."
+  :group 'gnus)
+
+(defcustom gnus-kill-summary-on-exit t
   "*If non-nil, kill the summary buffer when you exit from it.
 If nil, the summary will become a \"*Dead Summary*\" buffer, and
-it will be killed sometime later.")
+it will be killed sometime later."
+  :group 'gnus-summary
+  :type 'boolean)
 
-(defvar gnus-fetch-old-headers nil
+(defcustom gnus-fetch-old-headers nil
   "*Non-nil means that Gnus will try to build threads by grabbing old headers.
 If an unread article in the group refers to an older, already read (or
 just marked as read) article, the old article will not normally be
@@ -49,9 +55,14 @@ headers to connect otherwise loose threads will be displayed.
 This variable can also be a number.  In that case, no more than that
 number of old headers will be fetched.
 
-The server has to support NOV for any of this to work.")
+The server has to support NOV for any of this to work."
+  :group 'gnus-summary
+  :type '(choice (const :tag "off" nil)
+		 (const some)
+		 number
+		 (sexp :menu-tag "other" t)))
 
-(defvar gnus-summary-make-false-root 'adopt
+(defcustom gnus-summary-make-false-root 'adopt
   "*nil means that Gnus won't gather loose threads.
 If the root of a thread has expired or been read in a previous
 session, the information necessary to build a complete thread has been
@@ -72,15 +83,23 @@ If this variable is `adopt', Gnus will make one of the \"children\"
 the parent and mark all the step-children as such.
 If this variable is `empty', the \"children\" are printed with empty
 subject fields.	 (Or rather, they will be printed with a string
-given by the `gnus-summary-same-subject' variable.)")
+given by the `gnus-summary-same-subject' variable.)"
+  :group 'gnus-summary
+  :type '(choice (const :tag "off" nil)
+		 (const none)
+		 (const dummy)
+		 (const adopt)
+		 (const empty)))
 
-(defvar gnus-summary-gather-exclude-subject "^ *$\\|^(none)$"
+(defcustom gnus-summary-gather-exclude-subject "^ *$\\|^(none)$"
   "*A regexp to match subjects to be excluded from loose thread gathering.
 As loose thread gathering is done on subjects only, that means that
 there can be many false gatherings performed.  By rooting out certain
-common subjects, gathering might become saner.")
+common subjects, gathering might become saner."
+  :group 'gnus-summary
+  :type 'regexp)
 
-(defvar gnus-summary-gather-subject-limit nil
+(defcustom gnus-summary-gather-subject-limit nil
   "*Maximum length of subject comparisons when gathering loose threads.
 Use nil to compare full subjects.  Setting this variable to a low
 number will help gather threads that have been corrupted by
@@ -89,68 +108,105 @@ unrelated articles that have subject that happen to begin with the
 same few characters will be incorrectly gathered.
 
 If this variable is `fuzzy', Gnus will use a fuzzy algorithm when
-comparing subjects.")
+comparing subjects."
+  :group 'gnus-summary
+  :type '(choice (const :tag "off" nil)
+		 (const fuzzy)
+		 (sexp :menu-tag "on" t)))
 
-(defvar gnus-simplify-ignored-prefixes nil
-  "*Regexp, matches for which are removed from subject lines when simplifying fuzzily.")
+(defcustom gnus-simplify-ignored-prefixes nil
+  "*Regexp, matches for which are removed from subject lines when simplifying fuzzily."
+  :group 'gnus-summary
+  :type '(choice (const :tag "off" nil)
+		 regexp))
 
-(defvar gnus-build-sparse-threads nil
+(defcustom gnus-build-sparse-threads nil
   "*If non-nil, fill in the gaps in threads.
 If `some', only fill in the gaps that are needed to tie loose threads
 together.  If `more', fill in all leaf nodes that Gnus can find.  If
-non-nil and non-`some', fill in all gaps that Gnus manages to guess.")
+non-nil and non-`some', fill in all gaps that Gnus manages to guess."
+  :group 'gnus-summary
+  :type '(choice (const :tag "off" nil)
+		 (const some)
+		 (const more)
+		 (sexp :menu-tag "all" t)))
 
-(defvar gnus-summary-thread-gathering-function 'gnus-gather-threads-by-subject
+(defcustom gnus-summary-thread-gathering-function 'gnus-gather-threads-by-subject
   "Function used for gathering loose threads.
 There are two pre-defined functions: `gnus-gather-threads-by-subject',
 which only takes Subjects into consideration; and
 `gnus-gather-threads-by-references', which compared the References
-headers of the articles to find matches.")
+headers of the articles to find matches."
+  :group 'gnus-summary
+  :type '(set (function-item gnus-gather-threads-by-subject)
+	      (function-item gnus-gather-threads-by-references)
+	      (function :tag "other")))
 
 ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
-(defvar gnus-summary-same-subject ""
+(defcustom gnus-summary-same-subject ""
   "*String indicating that the current article has the same subject as the previous.
 This variable will only be used if the value of
-`gnus-summary-make-false-root' is `empty'.")
+`gnus-summary-make-false-root' is `empty'."
+  :group 'gnus-summary
+  :type 'string)
 
-(defvar gnus-summary-goto-unread t
+(defcustom gnus-summary-goto-unread t
   "*If non-nil, marking commands will go to the next unread article.
 If `never', \\<gnus-summary-mode-map>\\[gnus-summary-next-page] will go to the next article,
-whether it is read or not.")
+whether it is read or not."
+  :group 'gnus-summary
+  :type '(choice (const :tag "off" nil)
+		 (const never)
+		 (sexp :menu-tag "on" t)))
 
-(defvar gnus-summary-default-score 0
+(defcustom gnus-summary-default-score 0
   "*Default article score level.
-If this variable is nil, scoring will be disabled.")
+If this variable is nil, scoring will be disabled."
+  :group 'gnus-summary
+  :type '(choice (const :tag "disable")
+		 integer))
 
-(defvar gnus-summary-zcore-fuzz 0
+(defcustom gnus-summary-zcore-fuzz 0
   "*Fuzziness factor for the zcore in the summary buffer.
 Articles with scores closer than this to `gnus-summary-default-score'
-will not be marked.")
+will not be marked."
+  :group 'gnus-summary
+  :type 'integer)
 
-(defvar gnus-simplify-subject-fuzzy-regexp nil
+(defcustom gnus-simplify-subject-fuzzy-regexp nil
   "*Strings to be removed when doing fuzzy matches.
 This can either be a regular expression or list of regular expressions
 that will be removed from subject strings if fuzzy subject
-simplification is selected.")
+simplification is selected."
+  :group 'gnus-summary
+  :type '(repeat regexp))
 
-(defvar gnus-show-threads t
-  "*If non-nil, display threads in summary mode.")
+(defcustom gnus-show-threads t
+  "*If non-nil, display threads in summary mode."
+  :group 'gnus-summary
+  :type 'boolean)
 
-(defvar gnus-thread-hide-subtree nil
+(defcustom gnus-thread-hide-subtree nil
   "*If non-nil, hide all threads initially.
 If threads are hidden, you have to run the command
 `gnus-summary-show-thread' by hand or use `gnus-select-article-hook'
-to expose hidden threads.")
+to expose hidden threads."
+  :group 'gnus-summary
+  :type 'boolean)
 
-(defvar gnus-thread-hide-killed t
-  "*If non-nil, hide killed threads automatically.")
+(defcustom gnus-thread-hide-killed t
+  "*If non-nil, hide killed threads automatically."
+  :group 'gnus-summary
+  :type 'boolean)
 
-(defvar gnus-thread-ignore-subject nil
+(defcustom gnus-thread-ignore-subject nil
   "*If non-nil, ignore subjects and do all threading based on the Reference header.
 If nil, which is the default, articles that have different subjects
-from their parents will start separate threads.")
+from their parents will start separate threads."
+  :group 'gnus-summary
+  :type 'boolean)
 
-(defvar gnus-thread-operation-ignore-subject t
+(defcustom gnus-thread-operation-ignore-subject t
   "*If non-nil, subjects will be ignored when doing thread commands.
 This affects commands like `gnus-summary-kill-thread' and
 `gnus-summary-lower-thread'.
@@ -158,15 +214,23 @@ This affects commands like `gnus-summary-kill-thread' and
 If this variable is nil, articles in the same thread with different
 subjects will not be included in the operation in question.  If this
 variable is `fuzzy', only articles that have subjects that are fuzzily
-equal will be included.")
+equal will be included."
+  :group 'gnus-summary
+  :type '(choice (const :tag "off" nil)
+		 (const fuzzy)
+		 (sexp :tag "on" t)))
 
-(defvar gnus-thread-indent-level 4
-  "*Number that says how much each sub-thread should be indented.")
+(defcustom gnus-thread-indent-level 4
+  "*Number that says how much each sub-thread should be indented."
+  :group 'gnus-summary
+  :type 'integer)
 
-(defvar gnus-auto-extend-newsgroup t
-  "*If non-nil, extend newsgroup forward and backward when requested.")
+(defcustom gnus-auto-extend-newsgroup t
+  "*If non-nil, extend newsgroup forward and backward when requested."
+  :group 'gnus-summary
+  :type 'boolean)
 
-(defvar gnus-auto-select-first t
+(defcustom gnus-auto-select-first t
   "*If nil, don't select the first unread article when entering a group.
 If this variable is `best', select the highest-scored unread article
 in the group.  If neither nil nor `best', select the first unread
@@ -174,9 +238,13 @@ article.
 
 If you want to prevent automatic selection of the first unread article
 in some newsgroups, set the variable to nil in
-`gnus-select-group-hook'.")
+`gnus-select-group-hook'."
+  :group 'gnus-summary
+  :type '(choice (const :tag "none" nil)
+		 (const best)
+		 (sexp :menu-tag "first" t)))
 
-(defvar gnus-auto-select-next t
+(defcustom gnus-auto-select-next t
   "*If non-nil, offer to go to the next group from the end of the previous.
 If the value is t and the next newsgroup is empty, Gnus will exit
 summary mode and go back to group mode.	 If the value is neither nil
@@ -186,114 +254,222 @@ newsgroup will be selected without any confirmation, and if it is
 `almost-quietly', the next group will be selected without any
 confirmation if you are located on the last article in the group.
 Finally, if this variable is `slightly-quietly', the `Z n' command
-will go to the next group without confirmation.")
+will go to the next group without confirmation."
+  :group 'gnus-summary
+  :type '(choice (const :tag "off" nil)
+		 (const quietly)
+		 (const almost-quietly)
+		 (const slightly-quietly)
+		 (sexp :menu-tag "on" t)))
 
-(defvar gnus-auto-select-same nil
-  "*If non-nil, select the next article with the same subject.")
+(defcustom gnus-auto-select-same nil
+  "*If non-nil, select the next article with the same subject."
+  :group 'gnus-summary
+  :type 'boolean)
 
-(defvar gnus-summary-check-current nil
+(defcustom gnus-summary-check-current nil
   "*If non-nil, consider the current article when moving.
 The \"unread\" movement commands will stay on the same line if the
-current article is unread.")
+current article is unread."
+  :group 'gnus-summary
+  :type 'boolean)
 
-(defvar gnus-auto-center-summary t
+(defcustom gnus-auto-center-summary t
   "*If non-nil, always center the current summary buffer.
 In particular, if `vertical' do only vertical recentering.  If non-nil
-and non-`vertical', do both horizontal and vertical recentering.")
+and non-`vertical', do both horizontal and vertical recentering."
+  :group 'gnus-summary
+  :type '(choice (const "none" nil)
+		 (const vertical)
+		 (sexp :menu-tag "both" t)))
 
-(defvar gnus-show-all-headers nil
-  "*If non-nil, don't hide any headers.")
+(defcustom gnus-show-all-headers nil
+  "*If non-nil, don't hide any headers."
+  :group 'gnus-summary
+  :type 'boolean)
 
-(defvar gnus-single-article-buffer t
+(defcustom gnus-single-article-buffer t
   "*If non-nil, display all articles in the same buffer.
-If nil, each group will get its own article buffer.")
+If nil, each group will get its own article buffer."
+  :group 'gnus-summary
+  :type 'boolean)
 
-(defvar gnus-break-pages t
+(defcustom gnus-break-pages t
   "*If non-nil, do page breaking on articles.
 The page delimiter is specified by the `gnus-page-delimiter'
-variable.")
+variable."
+  :group 'gnus-summary
+  :type 'boolean)
 
-(defvar gnus-show-mime nil
+(defcustom gnus-show-mime nil
   "*If non-nil, do mime processing of articles.
 The articles will simply be fed to the function given by
-`gnus-show-mime-method'.")
+`gnus-show-mime-method'."
+  :group 'gnus-summary
+  :type 'boolean)
 
-(defvar gnus-move-split-methods nil
+(defcustom gnus-move-split-methods nil
   "*Variable used to suggest where articles are to be moved to.
-It uses the same syntax as the `gnus-split-methods' variable.")
+It uses the same syntax as the `gnus-split-methods' variable."
+  :group 'gnus-summary
+  :type '(repeat (choice (list function)
+			 (cons regexp (repeat string))
+			 sexp)))
 
 ;; Mark variables suggested by Thomas Michanek
 ;; <Thomas.Michanek@telelogic.se>.
-(defvar gnus-unread-mark ? 
-  "*Mark used for unread articles.")
-(defvar gnus-ticked-mark ?!
-  "*Mark used for ticked articles.")
-(defvar gnus-dormant-mark ??
-  "*Mark used for dormant articles.")
-(defvar gnus-del-mark ?r
-  "*Mark used for del'd articles.")
-(defvar gnus-read-mark ?R
-  "*Mark used for read articles.")
-(defvar gnus-expirable-mark ?E
-  "*Mark used for expirable articles.")
-(defvar gnus-killed-mark ?K
-  "*Mark used for killed articles.")
-(defvar gnus-souped-mark ?F
-  "*Mark used for killed articles.")
-(defvar gnus-kill-file-mark ?X
-  "*Mark used for articles killed by kill files.")
-(defvar gnus-low-score-mark ?Y
-  "*Mark used for articles with a low score.")
-(defvar gnus-catchup-mark ?C
-  "*Mark used for articles that are caught up.")
-(defvar gnus-replied-mark ?A
-  "*Mark used for articles that have been replied to.")
-(defvar gnus-cached-mark ?*
-  "*Mark used for articles that are in the cache.")
-(defvar gnus-saved-mark ?S
-  "*Mark used for articles that have been saved to.")
-(defvar gnus-ancient-mark ?O
-  "*Mark used for ancient articles.")
-(defvar gnus-sparse-mark ?Q
-  "*Mark used for sparsely reffed articles.")
-(defvar gnus-canceled-mark ?G
-  "*Mark used for canceled articles.")
-(defvar gnus-duplicate-mark ?M
-  "*Mark used for duplicate articles.")
-(defvar gnus-score-over-mark ?+
-  "*Score mark used for articles with high scores.")
-(defvar gnus-score-below-mark ?-
-  "*Score mark used for articles with low scores.")
-(defvar gnus-empty-thread-mark ? 
-  "*There is no thread under the article.")
-(defvar gnus-not-empty-thread-mark ?=
-  "*There is a thread under the article.")
 
-(defvar gnus-view-pseudo-asynchronously nil
-  "*If non-nil, Gnus will view pseudo-articles asynchronously.")
+(defgroup gnus-summary-marks nil
+  "Marks used in summary buffers."
+  :group 'gnus-summary)
 
-(defvar gnus-view-pseudos nil
+(defcustom gnus-unread-mark ? 
+  "*Mark used for unread articles."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-ticked-mark ?!
+  "*Mark used for ticked articles."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-dormant-mark ??
+  "*Mark used for dormant articles."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-del-mark ?r
+  "*Mark used for del'd articles."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-read-mark ?R
+  "*Mark used for read articles."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-expirable-mark ?E
+  "*Mark used for expirable articles."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-killed-mark ?K
+  "*Mark used for killed articles."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-souped-mark ?F
+  "*Mark used for killed articles."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-kill-file-mark ?X
+  "*Mark used for articles killed by kill files."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-low-score-mark ?Y
+  "*Mark used for articles with a low score."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-catchup-mark ?C
+  "*Mark used for articles that are caught up."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-replied-mark ?A
+  "*Mark used for articles that have been replied to."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-cached-mark ?*
+  "*Mark used for articles that are in the cache."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-saved-mark ?S
+  "*Mark used for articles that have been saved to."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-ancient-mark ?O
+  "*Mark used for ancient articles."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-sparse-mark ?Q
+  "*Mark used for sparsely reffed articles."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-canceled-mark ?G
+  "*Mark used for canceled articles."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-duplicate-mark ?M
+  "*Mark used for duplicate articles."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-score-over-mark ?+
+  "*Score mark used for articles with high scores."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-score-below-mark ?-
+  "*Score mark used for articles with low scores."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-empty-thread-mark ? 
+  "*There is no thread under the article."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-not-empty-thread-mark ?=
+  "*There is a thread under the article."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-view-pseudo-asynchronously nil
+  "*If non-nil, Gnus will view pseudo-articles asynchronously."
+  :group 'gnus-summary
+  :type 'boolean)
+
+(defcustom gnus-view-pseudos nil
   "*If `automatic', pseudo-articles will be viewed automatically.
 If `not-confirm', pseudos will be viewed automatically, and the user
-will not be asked to confirm the command.")
+will not be asked to confirm the command."
+  :group 'gnus-summary
+  :type '(choice (const :tag "off" nil)
+		 (const automatic)
+		 (const not-confirm)))
 
-(defvar gnus-view-pseudos-separately t
+(defcustom gnus-view-pseudos-separately t
   "*If non-nil, one pseudo-article will be created for each file to be viewed.
 If nil, all files that use the same viewing command will be given as a
-list of parameters to that command.")
+list of parameters to that command."
+  :group 'gnus-summary
+  :type 'boolean)
 
-(defvar gnus-insert-pseudo-articles t
-  "*If non-nil, insert pseudo-articles when decoding articles.")
+(defcustom gnus-insert-pseudo-articles t
+  "*If non-nil, insert pseudo-articles when decoding articles."
+  :group 'gnus-summary
+  :type 'boolean)
 
-(defvar gnus-summary-dummy-line-format
+(defcustom gnus-summary-dummy-line-format
   "*  %(:                          :%) %S\n"
   "*The format specification for the dummy roots in the summary buffer.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
 
-%S  The subject")
+%S  The subject"
+  :group 'gnus-summary
+  :type 'string)
 
-(defvar gnus-summary-mode-line-format "Gnus: %%b [%A] %Z"
+(defcustom gnus-summary-mode-line-format "Gnus: %%b [%A] %Z"
   "*The format specification for the summary mode line.
 It works along the same lines as a normal formatting string,
 with some simple extensions:
@@ -311,18 +487,29 @@ with some simple extensions:
 %s  Current score file name
 %d  Number of dormant articles
 %r  Number of articles that have been marked as read in this session
-%E  Number of articles expunged by the score files")
+%E  Number of articles expunged by the score files"
+  :group 'gnus-summary
+  :type 'string)
 
-(defvar gnus-summary-mark-below 0
+(defcustom gnus-summary-mark-below 0
   "*Mark all articles with a score below this variable as read.
 This variable is local to each summary buffer and usually set by the
-score file.")
+score file."
+  :group 'gnus-summary
+  :type 'integer)
 
-(defvar gnus-article-sort-functions '(gnus-article-sort-by-number)
+(defcustom gnus-article-sort-functions '(gnus-article-sort-by-number)
   "*List of functions used for sorting articles in the summary buffer.
-This variable is only used when not using a threaded display.")
+This variable is only used when not using a threaded display."
+  :group 'gnus-summary
+  :type '(repeat (choice (function-item gnus-article-sort-by-number)
+			 (function-item gnus-article-sort-by-author)
+			 (function-item gnus-article-sort-by-subject)
+			 (function-item gnus-article-sort-by-date)
+			 (function-item gnus-article-sort-by-score)
+			 (function :tag "other"))))
 
-(defvar gnus-thread-sort-functions '(gnus-thread-sort-by-number)
+(defcustom gnus-thread-sort-functions '(gnus-thread-sort-by-number)
   "*List of functions used for sorting threads in the summary buffer.
 By default, threads are sorted by article number.
 
@@ -335,44 +522,70 @@ functions -- preferably first.
 Ready-made functions include `gnus-thread-sort-by-number',
 `gnus-thread-sort-by-author', `gnus-thread-sort-by-subject',
 `gnus-thread-sort-by-date', `gnus-thread-sort-by-score' and
-`gnus-thread-sort-by-total-score' (see `gnus-thread-score-function').")
+`gnus-thread-sort-by-total-score' (see `gnus-thread-score-function')."
+  :group 'gnus-summary
+  :type '(repeat (choice (function-item gnus-thread-sort-by-number)
+			 (function-item gnus-thread-sort-by-author)
+			 (function-item gnus-thread-sort-by-subject)
+			 (function-item gnus-thread-sort-by-date)
+			 (function-item gnus-thread-sort-by-score)
+			 (function-item gnus-thread-sort-by-total-score)
+			 (function :tag "other"))))
 
-(defvar gnus-thread-score-function '+
+(defcustom gnus-thread-score-function '+
   "*Function used for calculating the total score of a thread.
 
 The function is called with the scores of the article and each
 subthread and should then return the score of the thread.
 
-Some functions you can use are `+', `max', or `min'.")
+Some functions you can use are `+', `max', or `min'."
+  :group 'gnus-summary
+  :type 'function)
 
-(defvar gnus-summary-expunge-below nil
-  "All articles that have a score less than this variable will be expunged.")
+(defcustom gnus-summary-expunge-below nil
+  "All articles that have a score less than this variable will be expunged."
+  :group 'gnus-summary
+  :type '(choice (const :tag "off" nil)
+		 integer))
 
-(defvar gnus-thread-expunge-below nil
+(defcustom gnus-thread-expunge-below nil
   "All threads that have a total score less than this variable will be expunged.
 See `gnus-thread-score-function' for en explanation of what a
-\"thread score\" is.")
+\"thread score\" is."
+  :group 'gnus-summary
+  :type '(choice (const :tag "off" nil)
+		 integer))
 
-(defvar gnus-summary-mode-hook nil
+(defcustom gnus-summary-mode-hook nil
   "*A hook for Gnus summary mode.
-This hook is run before any variables are set in the summary buffer.")
+This hook is run before any variables are set in the summary buffer."
+  :group 'gnus-summary
+  :type 'hook)
 
-(defvar gnus-summary-menu-hook nil
-  "*Hook run after the creation of the summary mode menu.")
+(defcustom gnus-summary-menu-hook nil
+  "*Hook run after the creation of the summary mode menu."
+  :group 'gnus-summary
+  :type 'hook)
 
-(defvar gnus-summary-exit-hook nil
-  "*A hook called on exit from the summary buffer.")
+(defcustom gnus-summary-exit-hook nil
+  "*A hook called on exit from the summary buffer."
+  :group 'gnus-summary
+  :type 'hook)
 
-(defvar gnus-summary-prepare-hook nil
+(defcustom gnus-summary-prepare-hook nil
   "*A hook called after the summary buffer has been generated.
-If you want to modify the summary buffer, you can use this hook.")
+If you want to modify the summary buffer, you can use this hook."
+  :group 'gnus-summary
+  :type 'hook)
 
-(defvar gnus-summary-generate-hook nil
+(defcustom gnus-summary-generate-hook nil
   "*A hook run just before generating the summary buffer.
 This hook is commonly used to customize threading variables and the
-like.")
+like."
+  :group 'gnus-summary
+  :type 'hook)
 
-(defvar gnus-select-group-hook nil
+(defcustom gnus-select-group-hook nil
   "*A hook called when a newsgroup is selected.
 
 If you'd like to simplify subjects like the
@@ -387,157 +600,233 @@ following hook:
 		      header
 		      (gnus-simplify-subject
 		       (mail-header-subject header) 're-only)))
-		  gnus-newsgroup-headers))))")
+		  gnus-newsgroup-headers))))"
+  :group 'gnus-summary
+  :type 'hook)
 
-(defvar gnus-select-article-hook nil
-  "*A hook called when an article is selected.")
+(defcustom gnus-select-article-hook nil
+  "*A hook called when an article is selected."
+  :group 'gnus-summary
+  :type 'hook)
 
-(defvar gnus-visual-mark-article-hook
+(defcustom gnus-visual-mark-article-hook
   (list 'gnus-highlight-selected-summary)
   "*Hook run after selecting an article in the summary buffer.
 It is meant to be used for highlighting the article in some way.  It
-is not run if `gnus-visual' is nil.")
+is not run if `gnus-visual' is nil."
+  :group 'gnus-summary
+  :type 'hook)
 
-(defvar gnus-parse-headers-hook nil
-  "*A hook called before parsing the headers.")
-(add-hook 'gnus-parse-headers-hook 'gnus-decode-rfc1522)
+(defcustom gnus-parse-headers-hook 
+  (list 'gnus-decode-rfc1522)
+  "*A hook called before parsing the headers."
+  :group 'gnus-summary
+  :type 'hook)
 
-(defvar gnus-exit-group-hook nil
-  "*A hook called when exiting (not quitting) summary mode.")
+(defcustom gnus-exit-group-hook nil
+  "*A hook called when exiting (not quitting) summary mode."
+  :group 'gnus-summary
+  :type 'hook)
 
-(defvar gnus-summary-update-hook
+(defcustom gnus-summary-update-hook
   (list 'gnus-summary-highlight-line)
   "*A hook called when a summary line is changed.
 The hook will not be called if `gnus-visual' is nil.
 
 The default function `gnus-summary-highlight-line' will
 highlight the line according to the `gnus-summary-highlight'
-variable.")
+variable."
+  :group 'gnus-summary
+  :type 'hook)
 
-(defvar gnus-mark-article-hook '(gnus-summary-mark-read-and-unread-as-read)
+(defcustom gnus-mark-article-hook '(gnus-summary-mark-read-and-unread-as-read)
   "*A hook called when an article is selected for the first time.
 The hook is intended to mark an article as read (or unread)
-automatically when it is selected.")
+automatically when it is selected."
+  :group 'gnus-summary
+  :type 'hook)
 
-(defvar gnus-group-no-more-groups-hook nil
-  "*A hook run when returning to group mode having no more (unread) groups.")
+(defcustom gnus-group-no-more-groups-hook nil
+  "*A hook run when returning to group mode having no more (unread) groups."
+  :group 'gnus-summary
+  :type 'hook)
 
-(defvar gnus-summary-selected-face 'underline
-  "Face used for highlighting the current article in the summary buffer.")
+(defface gnus-summary-selected-face '((t 
+				       (:underline t)))
+  "Face used for selected articles.")
 
-(defvar gnus-summary-highlight 
-  (cond
-   ((not (eq gnus-display-type 'color))
-    '(((> score default) . bold)
-      ((< score default) . italic)))
-   ((eq gnus-background-mode 'dark)
-    (list
-     (cons 
-      '(= mark gnus-canceled-mark)
-      (custom-face-lookup "yellow" "black" nil
-			  nil nil nil))
-     (cons '(and (> score default)
-		 (or (= mark gnus-dormant-mark)
-		     (= mark gnus-ticked-mark)))
-	   (custom-face-lookup 
-	    "pink" nil nil t nil nil))
-     (cons '(and (< score default)
-		 (or (= mark gnus-dormant-mark)
-		     (= mark gnus-ticked-mark)))
-	   (custom-face-lookup "pink" nil nil 
-			       nil t nil))
-     (cons '(or (= mark gnus-dormant-mark)
-		(= mark gnus-ticked-mark))
-	   (custom-face-lookup 
-	    "pink" nil nil nil nil nil))
+(defcustom gnus-summary-selected-face 'gnus-summary-selected-face
+  "Face used for highlighting the current article in the summary buffer."
+  :group 'gnus-summary
+  :type 'face)
 
-     (cons
-      '(and (> score default) (= mark gnus-ancient-mark))
-      (custom-face-lookup "medium blue" nil nil t
-			  nil nil))
-     (cons 
-      '(and (< score default) (= mark gnus-ancient-mark))
-      (custom-face-lookup "SkyBlue" nil nil
-			  nil t nil))
-     (cons 
-      '(= mark gnus-ancient-mark)
-      (custom-face-lookup "SkyBlue" nil nil
-			  nil nil nil))
-     (cons '(and (> score default) (= mark gnus-unread-mark))
-	   (custom-face-lookup "white" nil nil t
-			       nil nil))
-     (cons '(and (< score default) (= mark gnus-unread-mark))
-	   (custom-face-lookup "white" nil nil
-			       nil t nil))
-     (cons '(= mark gnus-unread-mark)
-	   (custom-face-lookup
-	    "white" nil nil nil nil nil))
+(defface gnus-summary-cancelled-face 
+  '((((class color))
+     (:foreground "yellow" :background "black")))
+  "Face used for cancelled articles.")
 
-     (cons '(> score default) 'bold)
-     (cons '(< score default) 'italic)))
-   (t
-    (list
-     (cons
-      '(= mark gnus-canceled-mark)
-      (custom-face-lookup
-       "yellow" "black" nil nil nil nil))
-     (cons '(and (> score default)
-		 (or (= mark gnus-dormant-mark)
-		     (= mark gnus-ticked-mark)))
-	   (custom-face-lookup "firebrick" nil nil
-			       t nil nil))
-     (cons '(and (< score default)
-		 (or (= mark gnus-dormant-mark)
-		     (= mark gnus-ticked-mark)))
-	   (custom-face-lookup "firebrick" nil nil
-			       nil t nil))
-     (cons 
-      '(or (= mark gnus-dormant-mark)
-	   (= mark gnus-ticked-mark))
-      (custom-face-lookup 
-       "firebrick" nil nil nil nil nil))
+(defface gnus-summary-high-ticked-face
+  '((((class color)
+      (background dark))
+     (:foreground "pink" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "firebrick" :bold t))
+    (t 
+     (:bold t)))
+  "Face used for high interest ticked articles.")
 
-     (cons '(and (> score default) (= mark gnus-ancient-mark))
-	   (custom-face-lookup "RoyalBlue" nil nil
-			       t nil nil))
-     (cons '(and (< score default) (= mark gnus-ancient-mark))
-	   (custom-face-lookup "RoyalBlue" nil nil
-			       nil t nil))
-     (cons 
-      '(= mark gnus-ancient-mark)
-      (custom-face-lookup
-       "RoyalBlue" nil nil nil nil nil))
+(defface gnus-summary-low-ticked-face
+  '((((class color)
+      (background dark))
+     (:foreground "pink" :italic t))
+    (((class color)
+      (background light))
+     (:foreground "firebrick" :italic t))
+    (t 
+     (:italic t)))
+  "Face used for low interest ticked articles.")
 
-     (cons '(and (> score default) (/= mark gnus-unread-mark))
-	   (custom-face-lookup "DarkGreen" nil nil
-			       t nil nil))
-     (cons '(and (< score default) (/= mark gnus-unread-mark))
-	   (custom-face-lookup "DarkGreen" nil nil
-			       nil t nil))
-     (cons
-      '(/= mark gnus-unread-mark)
-      (custom-face-lookup "DarkGreen" nil nil 
-			  nil nil nil))
+(defface gnus-summary-normal-ticked-face
+  '((((class color)
+      (background dark))
+     (:foreground "pink"))
+    (((class color)
+      (background light))
+     (:foreground "firebrick"))
+    (t 
+     ()))
+  "Face used for normal interest ticked articles.")
+  
+(defface gnus-summary-high-ancient-face
+  '((((class color)
+      (background dark))
+     (:foreground "SkyBlue" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "RoyalBlue" :bold t))
+    (t 
+     (:bold t)))
+  "Face used for high interest ancient articles.")
 
-     (cons '(> score default) 'bold)
-     (cons '(< score default) 'italic))))
+(defface gnus-summary-low-ancient-face
+  '((((class color)
+      (background dark))
+     (:foreground "SkyBlue" :italic t))
+    (((class color)
+      (background light))
+     (:foreground "RoyalBlue" :italic t))
+    (t 
+     (:italic t)))
+  "Face used for low interest ancient articles.")
+
+(defface gnus-summary-normal-ancient-face
+  '((((class color)
+      (background dark))
+     (:foreground "SkyBlue"))
+    (((class color)
+      (background light))
+     (:foreground "RoyalBlue"))
+    (t 
+     ()))
+  "Face used for normal interest ancient articles.")
+  
+(defface gnus-summary-high-unread-face
+  '((((class color)
+      (background dark))
+     (:foreground "PaleGreen" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen" :bold t))
+    (t 
+     (:bold t)))
+  "Face used for high interest unread articles.")
+
+(defface gnus-summary-low-unread-face
+  '((((class color)
+      (background dark))
+     (:foreground "PaleGreen" :italic t))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen" :italic t))
+    (t 
+     (:italic t)))
+  "Face used for low interest unread articles.")
+
+(defface gnus-summary-normal-unread-face
+  '((((class color)
+      (background dark))
+     (:foreground "PaleGreen"))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen"))
+    (t 
+     ()))
+  "Face used for normal interest unread articles.")
+  
+(defface gnus-summary-high-read-face
+  '((t 
+     (:bold t)))
+  "Face used for high interest read articles.")
+
+(defface gnus-summary-low-read-face
+  '((t 
+     (:italic t)))
+  "Face used for low interest read articles.")
+
+(defface gnus-summary-normal-read-face
+  '((t 
+     ()))
+  "Face used for normal interest read articles.")
+
+(defcustom gnus-summary-highlight 
+  '(((= mark gnus-canceled-mark)
+     . gnus-summary-cancelled-face)
+    ((and (> score default)
+	  (or (= mark gnus-dormant-mark)
+	      (= mark gnus-ticked-mark)))
+     . gnus-summary-high-ticked-face)
+    ((and (< score default)
+	  (or (= mark gnus-dormant-mark)
+	      (= mark gnus-ticked-mark)))
+     . gnus-summary-low-ticked-face)
+    ((or (= mark gnus-dormant-mark)
+	 (= mark gnus-ticked-mark))
+     . gnus-summary-normal-ticked-face)
+    ((and (> score default) (= mark gnus-ancient-mark))
+     . gnus-summary-high-ancient-face)
+    ((and (< score default) (= mark gnus-ancient-mark))
+     . gnus-summary-low-ancient-face)
+    ((= mark gnus-ancient-mark)
+     . gnus-summary-normal-ancient-face)
+    ((and (> score default) (= mark gnus-unread-mark))
+     . gnus-summary-high-unread-face)
+    ((and (< score default) (= mark gnus-unread-mark))
+     . gnus-summary-low-unread-face)
+    ((and (= mark gnus-unread-mark))
+     . gnus-summary-normal-unread-face)
+    ((> score default) 
+     . gnus-summary-high-read-face)
+    ((< score default) 
+     . gnus-summary-low-read-face)
+    (t 
+     . gnus-summary-normal-read-face))
   "Controls the highlighting of summary buffer lines. 
 
-Below is a list of `Form'/`Face' pairs.  When deciding how a a
-particular summary line should be displayed, each form is
-evaluated.  The content of the face field after the first true form is
-used.  You can change how those summary lines are displayed, by
-editing the face field.  
+A list of (FORM . FACE) pairs.  When deciding how a a particular
+summary line should be displayed, each form is evaluated.  The content
+of the face field after the first true form is used.  You can change
+how those summary lines are displayed, by editing the face field.
 
-It is also possible to change and add form fields, but currently that
-requires an understanding of Lisp expressions.  Hopefully this will
-change in a future release.  For now, you can use the following
-variables in the Lisp expression:
+You can use the following variables in the FORM field.
 
-score:   The article's score
+score:   The articles score
 default: The default article score.
 below:   The score below which articles are automatically marked as read. 
-mark:    The article's mark.")
+mark:    The articles mark."
+  :group 'gnus-summary
+  :type '(repeat (cons (sexp :tag "Form" nil)
+		       face)))
 
 ;;; Internal variables
 

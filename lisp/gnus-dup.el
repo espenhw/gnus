@@ -34,16 +34,26 @@
 (require 'gnus-art)
 (require 'gnus)
 
-(defvar gnus-save-duplicate-list nil
+(defgroup gnus-duplicate nil
+  "Suppression of duplicate articles."
+  :group 'gnus)
+
+(defcustom gnus-save-duplicate-list nil
   "*If non-nil, save the duplicate list when shutting down Gnus.
 If nil, duplicate suppression will only work on duplicates
-seen in the same session.")
+seen in the same session."
+  :group 'gnus-duplicate
+  :type 'boolean)
 
-(defvar gnus-duplicate-list-length 10000
-  "*The number of Message-IDs to keep in the duplicate suppression list.")
+(defcustom gnus-duplicate-list-length 10000
+  "*The number of Message-IDs to keep in the duplicate suppression list."
+  :group 'gnus-duplicate
+  :type 'integer)
 
-(defvar gnus-duplicate-file (nnheader-concat gnus-directory "suppression")
-  "*The name of the file to store the duplicate suppression list.")
+(defcustom gnus-duplicate-file (nnheader-concat gnus-directory "suppression")
+  "*The name of the file to store the duplicate suppression list."
+  :group 'gnus-duplicate
+  :type 'file)
 
 ;;; Internal variables
 

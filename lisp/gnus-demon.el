@@ -34,7 +34,11 @@
       (require 'itimer)
     (require 'timer)))
 
-(defvar gnus-demon-handlers nil
+(defgroup gnus-demon nil
+  "Demonic behaviour."
+  :group 'gnus)
+
+(defcustom gnus-demon-handlers nil
   "Alist of daemonic handlers to be run at intervals.
 Each handler is a list on the form
 
@@ -47,10 +51,22 @@ If IDLE is t, only call if Emacs has been idle for a while.  If IDLE
 is a number, only call when Emacs has been idle more than this number
 of `gnus-demon-timestep's.  If IDLE is nil, don't care about
 idleness.  If IDLE is a number and TIME is nil, then call once each
-time Emacs has been idle for IDLE `gnus-demon-timestep's.")
+time Emacs has been idle for IDLE `gnus-demon-timestep's."
+  :group 'gnus-demon
+  :type '(repeat (list function 
+		       (choice :tag "Time" 
+			       (const :tag "never" nil)
+			       (const :tag "one" t)
+			       (integer :tag "steps" 1))
+		       (choice :tag "Idle"
+			       (const :tag "don't care" nil)
+			       (const :tag "for a while" t)
+			       (integer :tag "steps" 1)))))
 
-(defvar gnus-demon-timestep 60
-  "*Number of seconds in each demon timestep.")
+(defcustom gnus-demon-timestep 60
+  "*Number of seconds in each demon timestep."
+  :group 'gnus-demon
+  :type 'integer)
 
 ;;; Internal variables.
 

@@ -767,8 +767,7 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
       (gnus-nocem-scan-groups))
 
     ;; Read any slave files.
-    (unless gnus-slave
-      (gnus-master-read-slave-newsrc))
+    (gnus-master-read-slave-newsrc)
 
     ;; Find the number of unread articles in each non-dead group.
     (let ((gnus-read-active-file (and (not level) gnus-read-active-file)))

@@ -28,8 +28,10 @@
 (require 'gnus-load)
 (require 'gnus)
 
-(defvar gnus-open-server-hook nil
-  "*A hook called just before opening connection to the news server.")
+(defcustom gnus-open-server-hook nil
+  "Hook called just before opening connection to the news server."
+  :group 'gnus-start
+  :type 'hook)
 
 ;;;
 ;;; Server Communication

@@ -34,19 +34,29 @@
 (require 'gnus-win)
 (require 'gnus-undo)
 
-(defvar gnus-group-archive-directory
-  "/ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/"
-  "*The address of the (ding) archives.")
+(defgroup gnus-group nil
+  "Group buffers."
+  :group 'gnus)
 
-(defvar gnus-group-recent-archive-directory
+(defcustom gnus-group-archive-directory
+  "/ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/"
+  "*The address of the (ding) archives."
+  :group 'gnus-group
+  :type 'directory)
+
+(defcustom gnus-group-recent-archive-directory
   "/ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list-recent/"
-  "*The address of the most recent (ding) articles.")
+  "*The address of the most recent (ding) articles."
+  :group 'gnus-group
+  :type 'directory)
 
 ;; Suggested by Andrew Eskilsson <pi92ae@lelle.pt.hk-r.se>.
-(defvar gnus-no-groups-message "No news is horrible news"
-  "*Message displayed by Gnus when no groups are available.")
+(defcustom gnus-no-groups-message "No news is horrible news"
+  "*Message displayed by Gnus when no groups are available."
+  :group 'gnus-group
+  :type 'string)
 
-(defvar gnus-keep-same-level nil
+(defcustom gnus-keep-same-level nil
   "*Non-nil means that the next newsgroup after the current will be on the same level.
 When you type, for instance, `n' after reading the last article in the
 current newsgroup, you will go to the next newsgroup.  If this variable
@@ -57,31 +67,47 @@ next newsgroup with the same level, or, if no such newsgroup is
 available, the next newsgroup with the lowest possible level higher
 than the current level.
 If this variable is `best', Gnus will make the next newsgroup the one
-with the best level.")
+with the best level."
+  :group 'gnus-group
+  :type '(choice (const nil)
+		 (const best)
+		 (sexp :tag "other" t)))
 
-(defvar gnus-group-goto-unread t
-  "*If non-nil, movement commands will go to the next unread and subscribed group.")
+(defcustom gnus-group-goto-unread t
+  "*If non-nil, movement commands will go to the next unread and subscribed group."
+  :group 'gnus-group
+  :type 'boolean)
 
-(defvar gnus-goto-next-group-when-activating t
-  "*If non-nil, the \\<gnus-group-mode-map>\\[gnus-group-get-new-news-this-group] command will advance point to the next group.")
+(defcustom gnus-goto-next-group-when-activating t
+  "*If non-nil, the \\<gnus-group-mode-map>\\[gnus-group-get-new-news-this-group] command will advance point to the next group."
+  :group 'gnus-group
+  :type 'boolean)
 
-(defvar gnus-permanently-visible-groups nil
+(defcustom gnus-permanently-visible-groups nil
   "*Regexp to match groups that should always be listed in the group buffer.
 This means that they will still be listed when there are no unread
-articles in the groups.")
+articles in the groups."
+  :group 'gnus-group
+  :type 'regexp)
 
-(defvar gnus-list-groups-with-ticked-articles t
+(defcustom gnus-list-groups-with-ticked-articles t
   "*If non-nil, list groups that have only ticked articles.
-If nil, only list groups that have unread articles.")
+If nil, only list groups that have unread articles."
+  :group 'gnus-group
+  :type 'boolean)
 
-(defvar gnus-group-default-list-level gnus-level-subscribed
+(defcustom gnus-group-default-list-level gnus-level-subscribed
   "*Default listing level.
-Ignored if `gnus-group-use-permanent-levels' is non-nil.")
+Ignored if `gnus-group-use-permanent-levels' is non-nil."
+  :group 'gnus-group
+  :type 'integer)
 
-(defvar gnus-group-list-inactive-groups t
-  "*If non-nil, inactive groups will be listed.")
+(defcustom gnus-group-list-inactive-groups t
+  "*If non-nil, inactive groups will be listed."
+  :group 'gnus-group
+  :type 'boolean)
 
-(defvar gnus-group-sort-function 'gnus-group-sort-by-alphabet
+(defcustom gnus-group-sort-function 'gnus-group-sort-by-alphabet
   "*Function used for sorting the group buffer.
 This function will be called with group info entries as the arguments
 for the groups to be sorted.  Pre-made functions include
@@ -92,9 +118,18 @@ for the groups to be sorted.  Pre-made functions include
 
 This variable can also be a list of sorting functions.	In that case,
 the most significant sort function should be the last function in the
-list.")
+list."
+  :group 'gnus-group
+  :type '(radio (function-item gnus-group-sort-by-alphabet)
+		(function-item gnus-group-sort-by-real-name)
+		(function-item gnus-group-sort-by-unread)
+		(function-item gnus-group-sort-by-level)
+		(function-item gnus-group-sort-by-score)
+		(function-item gnus-group-sort-by-method)
+		(function-item gnus-group-sort-by-rank)
+		(function :tag "other" nil)))
 
-(defvar gnus-group-line-format "%M\%S\%p\%P\%5y: %(%g%)%l\n"
+(defcustom gnus-group-line-format "%M\%S\%p\%P\%5y: %(%g%)%l\n"
   "*Format of group lines.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
@@ -142,30 +177,42 @@ If you use %o or %O, reading the active file will be slower and quite
 a bit of extra memory will be used.  %D will also worsen performance.
 Also note that if you change the format specification to include any
 of these specs, you must probably re-start Gnus to see them go into
-effect.")
+effect."
+  :group 'gnus-group
+  :type 'string)
 
-(defvar gnus-group-mode-line-format "Gnus: %%b {%M\%:%S}"
+(defcustom gnus-group-mode-line-format "Gnus: %%b {%M\%:%S}"
   "*The format specification for the group mode line.
 It works along the same lines as a normal formatting string,
 with some simple extensions:
 
 %S   The native news server.
 %M   The native select method.
-%:   \":\" if %S isn't \"\".")
+%:   \":\" if %S isn't \"\"."
+  :group 'gnus-group
+  :type 'string)
 
-(defvar gnus-group-mode-hook nil
-  "*A hook for Gnus group mode.")
+(defcustom gnus-group-mode-hook nil
+  "Hook for Gnus group mode."
+  :group 'gnus-group
+  :type 'hook)
 
-(defvar gnus-group-menu-hook nil
-  "*Hook run after the creation of the group mode menu.")
+(defcustom gnus-group-menu-hook nil
+  "Hook run after the creation of the group mode menu."
+  :group 'gnus-group
+  :type 'hook)
 
-(defvar gnus-group-catchup-group-hook nil
-  "*A hook run when catching up a group from the group buffer.")
+(defcustom gnus-group-catchup-group-hook nil
+  "Hook run when catching up a group from the group buffer."
+  :group 'gnus-group
+  :type 'hook)
 
-(defvar gnus-group-update-group-hook nil
-  "*A hook called when updating group lines.")
+(defcustom gnus-group-update-group-hook nil
+  "Hook called when updating group lines."
+  :group 'gnus-group
+  :type 'hook)
 
-(defvar gnus-group-prepare-function 'gnus-group-prepare-flat
+(defcustom gnus-group-prepare-function 'gnus-group-prepare-flat
   "*A function that is called to generate the group buffer.
 The function is called with three arguments: The first is a number;
 all group with a level less or equal to that number should be listed,
@@ -173,30 +220,42 @@ if the second is non-nil, empty groups should also be displayed.  If
 the third is non-nil, it is a number.  No groups with a level lower
 than this number should be displayed.
 
-The only current function implemented is `gnus-group-prepare-flat'.")
+The only current function implemented is `gnus-group-prepare-flat'."
+  :group 'gnus-group
+  :type 'function)
 
-(defvar gnus-group-prepare-hook nil
-  "*A hook called after the group buffer has been generated.
-If you want to modify the group buffer, you can use this hook.")
+(defcustom gnus-group-prepare-hook nil
+  "Hook called after the group buffer has been generated.
+If you want to modify the group buffer, you can use this hook."
+  :group 'gnus-group
+  :type 'hook)
 
-(defvar gnus-suspend-gnus-hook nil
-  "*A hook called when suspending (not exiting) Gnus.")
+(defcustom gnus-suspend-gnus-hook nil
+  "Hook called when suspending (not exiting) Gnus."
+  :group 'gnus-group
+  :type 'hook)
 
-(defvar gnus-exit-gnus-hook nil
-  "*A hook called when exiting Gnus.")
+(defcustom gnus-exit-gnus-hook nil
+  "Hook called when exiting Gnus."
+  :group 'gnus-group
+  :type 'hook)
 
-(defvar gnus-after-exiting-gnus-hook nil
-  "*A hook called after exiting Gnus.")
+(defcustom gnus-after-exiting-gnus-hook nil
+  "Hook called after exiting Gnus."
+  :group 'gnus-group
+  :type 'hook)
 
-(defvar gnus-group-update-hook '(gnus-group-highlight-line)
-  "*A hook called when a group line is changed.
+(defcustom gnus-group-update-hook '(gnus-group-highlight-line)
+  "Hook called when a group line is changed.
 The hook will not be called if `gnus-visual' is nil.
 
 The default function `gnus-group-highlight-line' will
 highlight the line according to the `gnus-group-highlight'
-variable.")
+variable."
+  :group 'gnus-group
+  :type 'hook)
 
-(defvar gnus-useful-groups
+(defcustom gnus-useful-groups
   `(("(ding) mailing list mirrored at sunsite.auc.dk"
      "emacs.ding"
      (nntp "sunsite.auc.dk"
@@ -211,49 +270,223 @@ variable.")
 		       (unless file
 			 (error "Couldn't find doc group"))
 		       file))))))
-  "Alist of useful group-server pairs.")
+  "Alist of useful group-server pairs."
+  :group 'gnus-group
+  :type '(repeat (list (string :tag "Description")
+		       (string :tag "Name")
+		       (sexp :tag "Method"))))
 
-(defvar gnus-group-highlight
-  (cond 
-   ((not (eq gnus-display-type 'color))
-    '((mailp . bold)
-      ((= unread 0) . italic)))
-   ((eq gnus-background-mode 'dark)
-    `(((and (not mailp) (eq level 1)) .
-       ,(custom-face-lookup "PaleTurquoise" nil nil t))
-      ((and (not mailp) (eq level 2)) .
-       ,(custom-face-lookup "turquoise" nil nil t))
-      ((and (not mailp) (eq level 3)) .
-       ,(custom-face-lookup "MediumTurquoise" nil nil t))
-      ((and (not mailp) (>= level 4)) .
-       ,(custom-face-lookup "DarkTurquoise" nil nil t))
-      ((and mailp (eq level 1)) .
-       ,(custom-face-lookup "aquamarine1" nil nil t))
-      ((and mailp (eq level 2)) .
-       ,(custom-face-lookup "aquamarine2" nil nil t))
-      ((and mailp (eq level 3)) .
-       ,(custom-face-lookup "aquamarine3" nil nil t))
-      ((and mailp (>= level 4)) .
-       ,(custom-face-lookup "aquamarine4" nil nil t))
-      ))
-   (t
-    `(((and (not mailp) (<= level 3)) .
-       ,(custom-face-lookup "ForestGreen" nil nil t))
-      ((and (not mailp) (eq level 4)) .
-       ,(custom-face-lookup "DarkGreen" nil nil t))
-      ((and (not mailp) (eq level 5)) .
-       ,(custom-face-lookup "CadetBlue4" nil nil t))
-      ((and mailp (eq level 1)) .
-       ,(custom-face-lookup "DeepPink3" nil nil t))
-      ((and mailp (eq level 2)) .
-       ,(custom-face-lookup "HotPink3" nil nil t))
-      ((and mailp (eq level 3)) .
-       ,(custom-face-lookup "dark magenta" nil nil t))
-      ((and mailp (eq level 4)) .
-       ,(custom-face-lookup "DeepPink4" nil nil t))
-      ((and mailp (> level 4)) .
-       ,(custom-face-lookup "DarkOrchid4" nil nil t))
-      )))
+(defface gnus-group-news-1-face 
+  '((((class color)
+      (background dark))
+     (:foreground "PaleTurquoise"))
+    (((class color)
+      (background light))
+     (:foreground "ForestGreen"))
+    (t
+     ()))
+  "Level 1 newsgroup face.")
+
+(defface gnus-group-news-1-empty-face
+  '((((class color)
+      (background dark))
+     (:foreground "PaleTurquoise" :italic t))
+    (((class color)
+      (background light))
+     (:foreground "ForestGreen" :italic t))
+    (t
+     (:italic t)))
+  "Level 1 empty newsgroup face.")
+
+(defface gnus-group-news-2-face 
+  '((((class color)
+      (background dark))
+     (:foreground "turquoise"))
+    (((class color)
+      (background light))
+     (:foreground "CadetBlue4"))
+    (t
+     ()))
+  "Level 2 newsgroup face.")
+
+(defface gnus-group-news-2-empty-face
+  '((((class color)
+      (background dark))
+     (:foreground "turquoise" :italic t))
+    (((class color)
+      (background light))
+     (:foreground "CadetBlue4" :italic t))
+    (t
+     (:italic t)))
+  "Level 2 empty newsgroup face.")
+
+(defface gnus-group-news-3-face 
+  '((((class color)
+      (background dark))
+     ())
+    (((class color)
+      (background light))
+     ())
+    (t
+     ()))
+  "Level 3 newsgroup face.")
+
+(defface gnus-group-news-3-empty-face
+  '((((class color)
+      (background dark))
+     ( :italic t))
+    (((class color)
+      (background light))
+     ( :italic t))
+    (t
+     (:italic t)))
+  "Level 3 empty newsgroup face.")
+
+(defface gnus-group-news-low-face 
+  '((((class color)
+      (background dark))
+     (:foreground "DarkTurquoise"))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen"))
+    (t
+     ()))
+  "Low level newsgroup face.")
+
+(defface gnus-group-news-low-empty-face
+  '((((class color)
+      (background dark))
+     (:foreground "DarkTurquoise" :italic t))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen" :italic t))
+    (t
+     (:italic t)))
+  "Low level empty newsgroup face.")
+
+(defface gnus-group-mail-1-face 
+  '((((class color)
+      (background dark))
+     (:foreground "aquamarine1" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "DeepPink3" :bold t))
+    (t
+     (:bold t)))
+  "Level 1 mailgroup face.")
+
+(defface gnus-group-mail-1-empty-face
+  '((((class color)
+      (background dark))
+     (:foreground "aquamarine1" :bold t :italic t))
+    (((class color)
+      (background light))
+     (:foreground "DeepPink3" :bold t :italic t))
+    (t
+     (:italic t :bold t)))
+  "Level 1 empty mailgroup face.")
+
+(defface gnus-group-mail-2-face 
+  '((((class color)
+      (background dark))
+     (:foreground "aquamarine2" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "HotPink3" :bold t))
+    (t
+     (:bold t)))
+  "Level 2 mailgroup face.")
+
+(defface gnus-group-mail-2-empty-face
+  '((((class color)
+      (background dark))
+     (:foreground "aquamarine2" :bold t :italic t))
+    (((class color)
+      (background light))
+     (:foreground "HotPink3" :bold t :italic t))
+    (t
+     (:italic t :bold t)))
+  "Level 2 empty mailgroup face.")
+
+(defface gnus-group-mail-3-face 
+  '((((class color)
+      (background dark))
+     (:foreground "aquamarine3" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "dark magenta" :bold t))
+    (t
+     (:bold t)))
+  "Level 3 mailgroup face.")
+
+(defface gnus-group-mail-3-empty-face
+  '((((class color)
+      (background dark))
+     (:foreground "aquamarine3" :bold t :italic t))
+    (((class color)
+      (background light))
+     (:foreground "dark magenta" :bold t :italic t))
+    (t
+     (:italic t :bold t)))
+  "Level 3 empty mailgroup face.")
+
+(defface gnus-group-mail-low-face 
+  '((((class color)
+      (background dark))
+     (:foreground "aquamarine4" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "DeepPink4" :bold t))
+    (t
+     (:bold t)))
+  "Low level mailgroup face.")
+
+(defface gnus-group-mail-low-empty-face
+  '((((class color)
+      (background dark))
+     (:foreground "aquamarine4" :italic t :bold t))
+    (((class color)
+      (background light))
+     (:foreground "DeepPink4" :italic t :bold t))
+    (t
+     (:italic t :bold t)))
+  "Low level empty mailgroup face.")
+
+(defcustom gnus-group-highlight
+  '(;; News.
+    ((and (= unread 0) (not mailp) (eq level 1)) .
+     gnus-group-news-1-empty-face)
+    ((and (not mailp) (eq level 1)) .
+     gnus-group-news-1-face)
+    ((and (= unread 0) (not mailp) (eq level 2)) .
+     gnus-group-news-2-empty-face)
+    ((and (not mailp) (eq level 2)) .
+     gnus-group-news-2-face)
+    ((and (= unread 0) (not mailp) (eq level 3)) .
+     gnus-group-news-3-empty-face)
+    ((and (not mailp) (eq level 3)) .
+     gnus-group-news-3-face)
+    ((and (= unread 0) (not mailp)) .
+     gnus-group-news-low-empty-face)
+    ((and (not mailp)) .
+     gnus-group-news-low-face)
+    ;; Mail.
+    ((and (= unread 0) (eq level 1)) .
+     gnus-group-mail-1-empty-face)
+    ((and (eq level 1)) .
+     gnus-group-mail-1-face)
+    ((and (= unread 0) (eq level 2)) .
+     gnus-group-mail-2-empty-face)
+    ((and (eq level 2)) .
+     gnus-group-mail-2-face)
+    ((and (= unread 0) (eq level 3)) .
+     gnus-group-mail-3-empty-face)
+    ((and (eq level 3)) .
+     gnus-group-mail-3-face)
+    ((and (= unread 0)) .
+     gnus-group-mail-low-empty-face)
+    ((and) .
+     gnus-group-mail-low-face))
   "Controls the highlighting of group buffer lines. 
 
 Below is a list of `Form'/`Face' pairs.  When deciding how a a
@@ -273,10 +506,14 @@ method: The select method used.
 mailp: Whether it's a mail group or not.
 level: The level of the group.
 score: The score of the group.
-ticked: The number of ticked articles.")
+ticked: The number of ticked articles."
+  :group 'gnus-group
+  :type '(repeat (cons (sexp :tag "Form") face)))
 
-(defvar gnus-new-mail-mark ?%
-  "Mark used for groups with new mail.")
+(defcustom gnus-new-mail-mark ?%
+  "Mark used for groups with new mail."
+  :group 'gnus-group
+  :type 'character)
 
 ;;; Internal variables
 

@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 0.991
+;; Version: 0.992
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -174,7 +174,7 @@ minibuffer."
   (add-text-properties (1- from) from (list 'rear-nonsticky t
 					    'end-open t
 					    'invisible t))
-  (when (or (string-match ".%v" (widget-get widget :format))
+  (when (or (string-match "\\(.\\|\n\\)%v" (widget-get widget :format))
 	    (widget-get widget :hide-front-space))
     ;; WARNING: This is going to lose horrible if the character just
     ;; before the field can be modified (e.g. if it belongs to a
@@ -188,7 +188,7 @@ minibuffer."
 
   (when (widget-get widget :size)
     (put-text-property to (1+ to) 'invisible t)
-    (when (or (string-match "%v." (widget-get widget :format))
+    (when (or (string-match "%v\\(.\\|\n\\)" (widget-get widget :format))
 	      (widget-get widget :hide-rear-space))
       ;; WARNING: This is going to lose horrible if the character just
       ;; after the field can be modified (e.g. if it belongs to a
@@ -1833,6 +1833,23 @@ It will read a directory name from the minibuffer when activated."
   :value-to-internal (lambda (widget value)
 		       (if (integerp value) 
 			   (prin1-to-string value)
+			 value))
+  :match (lambda (widget value) (integerp value)))
+
+(define-widget 'character 'string
+  "An character."
+  :tag "Character"
+  :value 0
+  :size 1 
+  :format "%t: %v\n"
+  :type-error "This field should contain a character"
+  :value-to-internal (lambda (widget value)
+		       (if (integerp value) 
+			   (char-to-string value)
+			 value))
+  :value-to-external (lambda (widget value)
+		       (if (stringp value)
+			   (aref value 0)
 			 value))
   :match (lambda (widget value) (integerp value)))
 

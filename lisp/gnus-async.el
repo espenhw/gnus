@@ -29,29 +29,45 @@
 (require 'gnus-sum)
 (require 'nntp)
 
-(defvar gnus-asynchronous t
-  "*If nil, inhibit all Gnus asynchronicity.
-If non-nil, let the other asynch variables be heeded.")
+(defgroup gnus-asynchronous nil
+  "Support for asynchronous operations."
+  :group 'gnus)
 
-(defvar gnus-use-article-prefetch 30
+(defcustom gnus-asynchronous t
+  "*If nil, inhibit all Gnus asynchronicity.
+If non-nil, let the other asynch variables be heeded."
+  :group 'gnus-asynchronous
+  :type 'boolean)
+
+(defcustom gnus-use-article-prefetch 30
   "*If non-nil, prefetch articles in groups that allow this.
 If a number, prefetch only that many articles forward;
-if t, prefetch as many articles as possible.")
+if t, prefetch as many articles as possible."
+  :group 'gnus-asynchronous
+  :type '(choice (const :tag "off" nil)
+		 (const :tag "all" t)
+		 (integer :tag "some" 0)))
 
-(defvar gnus-prefetched-article-deletion-strategy '(read exit)
+(defcustom gnus-prefetched-article-deletion-strategy '(read exit)
   "List of symbols that say when to remove articles from the prefetch buffer.
 Possible values in this list are `read', which means that 
 articles are removed as they are read, and `exit', which means
 that all articles belonging to a group are removed on exit
-from that group.")
+from that group."
+  :group 'gnus-asynchronous
+  :type '(set (const read) (const exit)))
 
-(defvar gnus-use-header-prefetch nil
-  "*If non-nil, prefetch the headers to the next group.")
+(defcustom gnus-use-header-prefetch nil
+  "*If non-nil, prefetch the headers to the next group."
+  :group 'gnus-asynchronous
+  :type 'boolean)
 
-(defvar gnus-async-prefetch-article-p 'gnus-async-unread-p
-  "*Function called to say whether an article should be prefetched or not.
+(defcustom gnus-async-prefetch-article-p 'gnus-async-unread-p
+  "Function called to say whether an article should be prefetched or not.
 The function is called with one parameter -- the article data.
-It should return non-nil if the article is to be prefetched.")
+It should return non-nil if the article is to be prefetched."
+  :group 'gnus-asynchronous
+  :type 'function)
 
 ;;; Internal variables.
 

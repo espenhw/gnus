@@ -33,11 +33,19 @@
 ;;; Editing forms
 ;;;
 
-(defvar gnus-edit-form-mode-hook nil
-  "Hook run in `gnus-edit-form-mode' buffers.")
+(defgroup gnus-edit-form nil
+  "A mode for editing forms."
+  :group 'gnus)
 
-(defvar gnus-edit-form-menu-hook nil
-  "Hook run when creating menus in `gnus-edit-form-mode' buffers.")
+(defcustom gnus-edit-form-mode-hook nil
+  "Hook run in `gnus-edit-form-mode' buffers."
+  :group 'gnus-edit-form
+  :type 'hook)
+
+(defcustom gnus-edit-form-menu-hook nil
+  "Hook run when creating menus in `gnus-edit-form-mode' buffers."
+  :group 'gnus-edit-form
+  :type 'hook)
 
 ;;; Internal variables
 
