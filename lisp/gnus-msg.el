@@ -1,5 +1,5 @@
 ;;; gnus-msg.el --- mail and post interface for Gnus
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -136,6 +136,16 @@ See Info node `(gnus)Posting Styles'."
   "If non-nil, automatically mark Gcc articles as read."
   :group 'gnus-message
   :type 'boolean)
+
+(defcustom gnus-gcc-externalize-attachments nil
+  "Should local-file attachments be included as external parts?
+If it is `all', attach files as external parts;
+if a regexp and matches the Gcc group name, attach files as external parts;
+If nil, attach files as normal parts."
+  :group 'gnus-message
+  :type '(choice (const nil :tag "None")
+		 (const all :tag "Any")
+		 (string :tag "Regexp")))
 
 (defcustom gnus-group-posting-charset-alist
   '(("^\\(no\\|fr\\)\\.[^,]*\\(,[ \t\n]*\\(no\\|fr\\)\\.[^,]*\\)*$" iso-8859-1 (iso-8859-1))
@@ -1335,7 +1345,8 @@ this is a reply."
       (message-narrow-to-headers)
       (let ((gcc (or gcc (mail-fetch-field "gcc" nil t)))
 	    (cur (current-buffer))
-	    groups group method group-art)
+	    groups group method group-art
+	    mml-externalize-attachments)
 	(when gcc
 	  (message-remove-header "gcc")
 	  (widen)
@@ -1349,6 +1360,10 @@ this is a reply."
 					      (car method))))
 	    (unless (gnus-request-group group nil method)
 	      (gnus-request-create-group group method))
+	    (setq mml-externalize-attachments
+		  (if (stringp gnus-gcc-externalize-attachments)
+		      (string-match gnus-gcc-externalize-attachments group)
+		    gnus-gcc-externalize-attachments))
 	    (save-excursion
 	      (nnheader-set-temp-buffer " *acc*")
 	      (insert-buffer-substring cur)

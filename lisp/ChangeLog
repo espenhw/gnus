@@ -1,3 +1,13 @@
+2002-01-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-gcc-externalize-attachments): New variable.
+	(gnus-inews-do-gcc): Use it.
+
+	* mml.el (mml-tweak-sexp-alist): New variable.
+	(mml-externalize-attachments): New variable.
+	(mml-tweak-part): Use mml-tweak-sexp-alist.
+	(mml-tweak-externalize-attachments): New function.
+
 2002-01-01  Steve Youngs  <youngs@xemacs.org>
 
 	* gnus-xmas.el (gnus-xmas-article-display-xface): Uncomment

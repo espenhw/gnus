@@ -1,5 +1,5 @@
 ;;; mml.el --- A package for parsing and validating MML documents
-;; Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; This file is part of GNU Emacs.
@@ -63,6 +63,16 @@ the MML handle.")
 NAME is a string containing the name of the TWEAK parameter in the MML
 handle.  FUNCTION is a Lisp function which is called with the MML
 handle to tweak the part.")
+
+(defvar mml-tweak-sexp-alist 
+  '((mml-externalize-attachments . mml-tweak-externalize-attachments))
+  "A list of (SEXP . FUNCTION) for tweaking MML parts.
+SEXP is a s-expression. If the evaluation of SEXP is non-nil, FUNCTION
+is called.  FUNCTION is a Lisp function which is called with the MML
+handle to tweak the part.")
+
+(defvar mml-externalize-attachments nil
+  "*If non-nil, local-file attachments are generated as external parts.")
 
 (defvar mml-generate-multipart-alist nil
   "*Alist of multipart generation functions.
@@ -962,7 +972,23 @@ If RAW, don't highlight the article."
 	    (setq alist (cdr alist)))))))
     (if func
 	(funcall func cont)
-      cont)))
+      cont)
+    (let ((alist mml-tweak-sexp-alist))
+      (while alist
+	(if (eval (caar alist))
+	    (funcall (cdar alist) cont))
+	(setq alist (cdr alist)))))
+  cont)
+
+(defun mml-tweak-externalize-attachments (cont)
+  "Tweak attached files as external parts."
+  (let (filename-cons)
+    (when (and (eq (car cont) 'part) 
+	       (not (cdr (assq 'buffer cont)))
+	       (and (setq filename-cons (assq 'filename cont))
+		    (not (equal (cdr (assq 'nofile cont)) "yes"))))
+      (setcar cont 'external)
+      (setcar filename-cons 'name))))
 
 (provide 'mml)
 
