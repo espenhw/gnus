@@ -1,3 +1,8 @@
+2004-01-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Foreign Groups): Add `gnus-group-read-ephemeral-group'.
+	(Oort Gnus): Ditto.
+
 2004-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.texi (Key Index): Untabified.

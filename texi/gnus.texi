@@ -2532,6 +2532,12 @@ Make a new group (@code{gnus-group-make-group}).  Gnus will prompt you
 for a name, a method and possibly an @dfn{address}.  For an easier way
 to subscribe to @acronym{NNTP} groups (@pxref{Browse Foreign Server}).
 
+@item G M
+@kindex G M (Group)
+@findex gnus-group-read-ephemeral-group
+Make an ephemeral group (@code{gnus-group-read-ephemeral-group}).  Gnus
+will prompt you for a name, a method and an @dfn{address}.
+
 @item G r
 @kindex G r (Group)
 @findex gnus-group-rename-group
@@ -25158,6 +25164,10 @@ Gnus can now read @acronym{IMAP} mail via @code{nnimap}.
 New features in Gnus 5.10:
 
 @itemize @bullet
+
+@item
+@code{gnus-group-read-ephemeral-group} can be called interactively,
+using @kbd{G M}.
 
 @item
 In draft groups, @kbd{e} is now bound to @code{gnus-draft-edit-message}.
