@@ -54,7 +54,7 @@ method to use when posting."
 		 (const native)
 		 (sexp :tag "Methods" ,gnus-select-method)))
 
-(defvar gnus-outgoing-message-group nil
+(defcustom gnus-outgoing-message-group nil
   "*All outgoing messages will be put in this group.
 If you want to store all your outgoing mail and articles in the group
 \"nnml:archive\", you set this variable to that value.  This variable
@@ -63,18 +63,25 @@ can also be a list of group names.
 If you want to have greater control over what group to put each
 message in, you can set this variable to a function that checks the
 current newsgroup name and then returns a suitable group name (or list
-of names).")
+of names)."
+  :group 'gnus-message
+  :type '(choice (string :tag "Group")
+                 (function)))
 
-(defvar gnus-mailing-list-groups nil
+(defcustom gnus-mailing-list-groups nil
   "*Regexp matching groups that are really mailing lists.
 This is useful when you're reading a mailing list that has been
 gatewayed to a newsgroup, and you want to followup to an article in
-the group.")
+the group."
+  :group 'gnus-message
+  :type 'regexp)
 
-(defvar gnus-add-to-list nil
-  "*If non-nil, add a `to-list' parameter automatically.")
+(defcustom gnus-add-to-list nil
+  "*If non-nil, add a `to-list' parameter automatically."
+  :group 'gnus-message
+  :type 'boolean)
 
-(defvar gnus-crosspost-complaint
+(defcustom gnus-crosspost-complaint
   "Hi,
 
 You posted the article below with the following Newsgroups header:
@@ -90,19 +97,44 @@ Thank you.
 "
   "Format string to be inserted when complaining about crossposts.
 The first %s will be replaced by the Newsgroups header;
-the second with the current group name.")
+the second with the current group name."
+  :group 'gnus-message
+  :type 'string)
 
-(defvar gnus-message-setup-hook nil
-  "Hook run after setting up a message buffer.")
+(defcustom gnus-message-setup-hook nil
+  "Hook run after setting up a message buffer."
+  :group 'gnus-message
+  :type 'hook)
 
-(defvar gnus-bug-create-help-buffer t
-  "*Should we create the *Gnus Help Bug* buffer?")
+(defcustom gnus-bug-create-help-buffer t
+  "*Should we create the *Gnus Help Bug* buffer?"
+  :group 'gnus-message
+  :type 'boolean)
 
-(defvar gnus-posting-styles nil
-  "*Alist of styles to use when posting.")
+(defcustom gnus-posting-styles nil
+  "*Alist of styles to use when posting."
+  :group 'gnus-message
+  :type '(repeat (cons (choice (regexp)
+			       (function)
+			       (variable)
+			       (sexp))
+		       (repeat (list
+				(choice (const signature)
+					(const signature-file)
+					(const organization)
+					(const address)
+					(const name)
+					(const body)
+					(string :tag "Header"))
+				(choice (string)
+					(function)
+					(variable)
+					(sexp)))))))
 
-(defvar gnus-inews-mark-gcc-as-read nil
-  "If non-nil, automatically mark Gcc articles as read.")
+(defcustom gnus-inews-mark-gcc-as-read nil
+  "If non-nil, automatically mark Gcc articles as read."
+  :group 'gnus-message
+  :type 'boolean)
 
 (defcustom gnus-group-posting-charset-alist
   '(("^\\(no\\|fr\\)\\.[^,]*\\(,[ \t\n]*\\(no\\|fr\\)\\.[^,]*\\)*$" iso-8859-1 (iso-8859-1))
