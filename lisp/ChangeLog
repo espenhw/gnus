@@ -1,3 +1,9 @@
+2001-04-12  Jason Merrill  <jason_merrill@redhat.com>
+	Committed by Simon Josefsson  <simon@josefsson.org>
+
+	* imap.el (imap-shell-open): Erase the buffer *after* copying it into
+	the log.
+
 2001-04-14 01:14:42 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
 
 	*gnus.el: Oort Gnus v0.02 is released.
