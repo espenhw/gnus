@@ -112,10 +112,6 @@ element in each \"rule\" is the name of the IMAP mailbox, and the
 second is a regexp that nnimap will try to match on the header to find
 a fit.
 
-The first element can also be a list.  In that case, the first element
-is the server the second element is the group on that server in which
-the matching article will be stored.
-
 The second element can also be a function.  In that case, it will be
 called narrowed to the headers with the first element of the rule as
 the argument.  It should return a non-nil value if it thinks that the
@@ -123,7 +119,25 @@ mail belongs in that group.
 
 This variable can also have a function as its value, the function will
 be called with the headers narrowed and should return a group where it
-thinks the article should be splitted to.")
+thinks the article should be splitted to.  See `nnimap-split-fancy'.
+
+To allow for different split rules on different virtual servers, and
+even different split rules in different inboxes on the same server,
+the syntax of this variable have been extended along the lines of:
+
+(setq nnimap-split-rule
+      '((\"my1server\"    (\".*\"    ((\"ding\"    \"ding@gnus.org\")
+                                  (\"junk\"    \"From:.*Simon\")))
+        (\"my2server\"    (\"INBOX\" nnimap-split-fancy))
+        (\"my[34]server\" (\".*\"    ((\"private\" \"To:.*Simon\")
+                                  (\"junk\"    my-junk-func)))))
+
+The virtual server name is in fact a regexp, so that the same rules
+may apply to several servers.  In the example, the servers
+\"my3server\" and \"my4server\" both use the same rules.  Similarly,
+the inbox string is also a regexp.  The actual splitting rules are as
+before, either a function, or a list with group/regexp or
+group/function elements.")
 
 (defvar nnimap-split-predicate "UNSEEN UNDELETED"
   "The predicate used to find articles to split.
@@ -899,8 +913,19 @@ function is generally only called when Gnus is shutting down."
 		(or nnimap-split-crosspost
 		    (throw 'split-done to-groups))))))))))
   
+(defun nnimap-assoc-match (key alist)
+  (let (element)
+    (while (and alist (not element))
+      (if (string-match (car (car alist)) key)
+	  (setq element (car alist)))
+      (setq alist (cdr alist)))
+    element))
+
 (defun nnimap-split-find-rule (server inbox)
-  nnimap-split-rule)
+  (if (listp (cadar nnimap-split-rule)) ;; extended format?
+      (cadr (nnimap-assoc-match inbox (cdr (nnimap-assoc-match 
+					    server nnimap-split-rule))))
+    nnimap-split-rule))
 
 (defun nnimap-split-find-inbox (server)
   (if (listp nnimap-split-inbox)
