@@ -1,3 +1,13 @@
+2003-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-score.el (gnus-score-find-trace): Added comment on sync
+	with `gnus-score-edit-file-at-point'.
+
+	* gnus-logic.el (gnus-score-advanced): Ditto.
+
+	* gnus-score.el (gnus-score-edit-file-at-point): Fix for
+	advanced scoring.
+
 2003-12-30  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-score.el (gnus-score-edit-file-at-point): Use

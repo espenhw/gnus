@@ -77,6 +77,7 @@
 		gnus-newsgroup-scored)
 	  (when trace
 	    (push (cons "A file" rule)
+		  ;; Must be synced with `gnus-score-edit-file-at-point'.
 		  gnus-score-trace)))))))
 
 (defun gnus-advanced-score-rule (rule)

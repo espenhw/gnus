@@ -1122,7 +1122,8 @@ If FORMAT, also format the current score file."
 		     (buffer-substring (point) (gnus-point-at-eol))
 		   nil))))
     (if (or (not file)
-	    (string-match "non-file" file)
+	    (string-match "\\<\\(non-file rule\\|A file\\)\\>" file)
+	    ;; (see `gnus-score-find-trace' and `gnus-score-advanced')
 	    (string= "" file))
 	(gnus-error 3 "Can't find a score file in current line.")
       (gnus-score-edit-file file)
@@ -2401,6 +2402,8 @@ score in `gnus-newsgroup-scored' by SCORE."
 	(setq truncate-lines t)
 	(dolist (entry trace)
 	  (setq file (or (car entry)
+			 ;; Must be synced with
+			 ;; `gnus-score-edit-file-at-point':
 			 "(non-file rule)"))
 	  (insert
 	   (format frmt
