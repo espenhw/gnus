@@ -1914,6 +1914,28 @@ increase the score of each group you read."
 
 (defvar gnus-article-post-menu nil)
 
+(defun gnus-summary-menu-split (menu)
+  ;; If we have lots of elements, divide them into groups of 20
+  ;; and make a pane (or submenu) for each one.
+  (if (> (length menu) (/ (* mouse-buffer-menu-maxlen 3) 2))
+      (let ((menu menu) sublists next
+	    (i 1))
+	(while menu
+	  ;; Pull off the next mouse-buffer-menu-maxlen elements
+	  ;; and make them the next element of sublist.
+	  (setq next (nthcdr mouse-buffer-menu-maxlen menu))
+	  (if next
+	      (setcdr (nthcdr (1- mouse-buffer-menu-maxlen) menu)
+		      nil))
+	  (setq sublists (cons (cons (format "%s ... %s" (aref (car menu) 0)
+					     (aref (car (last menu)) 0)) menu)
+			       sublists))
+	  (setq i (1+ i))
+	  (setq menu next))
+	(nreverse sublists))
+    ;; Few elements--put them all in one pane.
+    menu))
+
 (defun gnus-summary-make-menu-bar ()
   (gnus-turn-off-edit-menu 'summary)
 
@@ -1988,26 +2010,27 @@ increase the score of each group you read."
 	      ["Show picons in mail headers" gnus-treat-mail-picon t]
 	      ["Show picons in news headers" gnus-treat-newsgroups-picon t]
 	      ("View as different encoding"
-	       ,@(mapcar
-		  (lambda (cs)
-		    ;; Since easymenu under FSF Emacs doesn't allow lambda
-		    ;; forms for menu commands, we should provide intern'ed
-		    ;; function symbols.
-		    (let ((command (intern (format "\
+	       ,@(gnus-summary-menu-split
+		  (mapcar
+		   (lambda (cs)
+		     ;; Since easymenu under FSF Emacs doesn't allow lambda
+		     ;; forms for menu commands, we should provide intern'ed
+		     ;; function symbols.
+		     (let ((command (intern (format "\
 gnus-summary-show-article-from-menu-as-charset-%s" cs))))
-		      (fset command
-			    `(lambda ()
-			       (interactive)
-			       (let ((gnus-summary-show-article-charset-alist
-				      '((1 . ,cs))))
-				 (gnus-summary-show-article 1))))
-		      `[,(symbol-name cs) ,command t]))
-		  (sort (if (fboundp 'coding-system-list)
-			    (coding-system-list)
-			  (mapcar 'car mm-mime-mule-charset-alist))
-			(lambda (a b)
-			  (string< (symbol-name a)
-				   (symbol-name b)))))))
+		       (fset command
+			     `(lambda ()
+				(interactive)
+				(let ((gnus-summary-show-article-charset-alist
+				       '((1 . ,cs))))
+				  (gnus-summary-show-article 1))))
+		       `[,(symbol-name cs) ,command t]))
+		   (sort (if (fboundp 'coding-system-list)
+			     (coding-system-list)
+			   (mapcar 'car mm-mime-mule-charset-alist))
+			 (lambda (a b)
+			   (string< (symbol-name a)
+				    (symbol-name b))))))))
 	     ("Washing"
 	      ("Remove Blanks"
 	       ["Leading" gnus-article-strip-leading-blank-lines t]
