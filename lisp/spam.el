@@ -87,6 +87,11 @@ spam groups."
   :type 'boolean
   :group 'spam)
 
+(defcustom spam-mark-new-messages-in-spam-group-as-spam t
+  "Whether new messages in a spam group should get the spam-mark."
+  :type 'boolean
+  :group 'spam)
+
 (defcustom spam-process-ham-in-nonham-groups nil
   "Whether ham should be processed in non-ham groups."
   :type 'boolean
@@ -970,8 +975,10 @@ When either list is nil, the other is returned."
     (let ((articles (if spam-mark-only-unseen-as-spam
 			gnus-newsgroup-unseen
 		      gnus-newsgroup-unreads)))
-      (dolist (article articles)
-	(gnus-summary-mark-article article gnus-spam-mark)))))
+      (if spam-mark-new-messages-in-spam-group-as-spam
+	  (dolist (article articles)
+	    (gnus-summary-mark-article article gnus-spam-mark))
+	(gnus-message 9 "Did not mark new messages as spam.")))))
 
 (defun spam-mark-spam-as-expired-and-move-routine (&rest groups)
   (if (and (car-safe groups) (listp (car-safe groups)))
