@@ -4949,11 +4949,16 @@ regexp varstr."
 			 (mail-strip-quoted-names
 			  (message-fetch-field "from")))
     (message-options-set 'message-recipients
-			 (mail-strip-quoted-names
-			  (concat
-			   (or (message-fetch-field "to") "") ", "
-			   (or (message-fetch-field "cc") "") ", "
-			   (or (message-fetch-field "bcc") ""))))))
+ 			 (mail-strip-quoted-names
+			  (let ((to (message-fetch-field "to"))
+				(cc (message-fetch-field "cc"))
+				(bcc (message-fetch-field "bcc")))
+			    (concat
+			     (or to "")
+			     (if (and to cc) ", ")
+			     (or cc "")
+			     (if (and (or to cc) bcc) ", ")
+			     (or bcc "")))))))
 
 (when (featurep 'xemacs)
   (require 'messagexmas)

@@ -1,3 +1,12 @@
+2001-06-12 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-options-set-recipient): Don't add ", "
+	unless necessary. Suggested by Josh Huber <huber@alum.wpi.edu>.
+
+2001-06-12 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnrss.el (nnrss-group-alist): Use |fr| instead of [fr].
+
 2001-06-12 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-plain-save-name): Use file-relative-name. 

@@ -149,17 +149,17 @@
     ;;("TNL.net newsletter" "http://www.tnl.net/newsletter/channel100.asp" "A newsletter about Internet technology and issues.")
     ("W3C" "http://www.w3.org/2000/08/w3c-synd/home.rss" "The latest news at the World Wide Web Consortium.")
     ;;("XML News: RSS Live Content" "http://www.xmlnews.org/RSS/content.html" "A listing of well-known RSS feeds.")
-    ("[fr] XMLfr" "http://xmlfr.org/actualites/general.rss10" 
+    ("|fr| XMLfr" "http://xmlfr.org/actualites/general.rss10" 
      "French speaking portal site dedicated to XML.")
     ("XMLhack" "http://xmlhack.com/rss10.php" 
      "Developer news from the XML community.")
     ("The Register" 
      "http://www.theregister.co.uk/tonys/slashdot.rdf" 
      "The Register -- Biting the hand that feeds IT.")
-    ("[de] Heise-Ticker" 
+    ("|de| Heise-Ticker" 
      "http://www.heise.de/newsticker/heise.rdf" 
      "German news ticker about technology.")
-    ("[de] Telepolis News" 
+    ("|de| Telepolis News" 
      "http://www.heise.de/tp/news.rdf" 
      "German background news about technology.")
     ("Kuro5hin" 
