@@ -21930,6 +21930,12 @@ the the group @samp{nnml:mail.spam}), and you would call
 @file{~/Mail/mail/misc} (this usually corresponds the the group
 @samp{nnml:mail.misc}).
 
+When you are using IMAP, you won't have the mails available locally,
+so that will not work.  One solution is to use the Gnus Agent to cache
+the articles.  Then you can use directories such as
+@file{"~/News/agent/nnimap/mail.yourisp.com/personal_spam"} for
+@code{spam-stat-process-spam-directory}.  @xref{Agent as Cache}.
+
 @defvar spam-stat
 This variable holds the hash-table with all the statistics -- the
 dictionary we have been talking about.  For every word in either
@@ -21980,10 +21986,14 @@ This will load the necessary Gnus code, and the dictionary you
 created.
 
 Next, you need to adapt your fancy splitting rules:  You need to
-determine how to use @code{spam-stat}.  In the simplest case, you only have
-two groups, @samp{mail.misc} and @samp{mail.spam}.  The following expression says
-that mail is either spam or it should go into @samp{mail.misc}.  If it is
-spam, then @code{spam-stat-split-fancy} will return @samp{mail.spam}.
+determine how to use @code{spam-stat}.  The following examples are for
+the nnml back end.  Using the nnimap back end works just as well.  Just
+use @code{nnimap-split-fancy} instead of @code{nnmail-split-fancy}.
+
+In the simplest case, you only have two groups, @samp{mail.misc} and
+@samp{mail.spam}.  The following expression says that mail is either
+spam or it should go into @samp{mail.misc}.  If it is spam, then
+@code{spam-stat-split-fancy} will return @samp{mail.spam}.
 
 @example
 (setq nnmail-split-fancy
