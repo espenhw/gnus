@@ -127,7 +127,7 @@ RFC 2646 suggests 66 characters for readability."
 		      (save-excursion
 			(unless (eobp)
 			  (forward-char 1)
-			  (looking-at (format "^\\(%s\\)\\([^>]\\)"
+			  (looking-at (format "^\\(%s\\)\\([^>\n\r]\\)"
 					      (or quote " ?"))))))
 	    (save-excursion
 	      (replace-match (if (string= (match-string 2) " ")

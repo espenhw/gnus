@@ -1,3 +1,9 @@
+2003-07-26  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
+
+	* flow-fill.el (fill-flowed): Empty lines separate paragraphs
+	even if the preceding line ends with a soft break.  Tiny patch
+	from Mark Thomas <swoon@bellatlantic.net>.
+
 2003-07-25  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-use-regex-body, spam-regex-body-spam) 
