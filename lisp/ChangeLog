@@ -3,6 +3,7 @@
 	* message.el (message-hidden-headers): New variable.
 	(message-hide-headers): New function.
 	(message-hide-header-p): New function.
+	(message-hide-header-p): Change logic.
 
 	* lpath.el (featurep): Bind Info-directory, Info-menu.
 

@@ -984,8 +984,8 @@ candidates:
 
 (defcustom message-hidden-headers nil
   "Regexp of headers to be hidden when composing new messages.
-This can also be a list of regexps to match headers.  Or, instead of
-regexps, the elements can be on the form `(not REGEXP)'."
+This can also be a list of regexps to match headers.  Or a list
+starting with `not' and followed by regexps.."
   :group 'message
   :type '(repeat regexp))
 
@@ -6493,18 +6493,17 @@ regexp varstr."
 					      message-hidden t))))))))
 
 (defun message-hide-header-p (regexps)
-  (let ((result nil))
+  (let ((result nil)
+	(reverse nil))
+    (when (eq (car regexps) 'not)
+      (setq reverse t)
+      (pop regexps))
     (dolist (regexp regexps)
       (setq result
 	    (or result
-		(cond
-		 ((stringp regexp)
-		  (looking-at regexp))
-		 ((and (consp regexp)
-		       (eq (car regexp) 'not))
-		  (not (looking-at (cadr regexp))))
-		 (t
-		  (error "Invalid header match: %s" regexp))))))
+		(if reverse
+		    (not (looking-at regexp))
+		  (looking-at regexp)))))
     result))
 
 (when (featurep 'xemacs)
