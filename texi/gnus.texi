@@ -24955,13 +24955,16 @@ valid-message  = "221 " <number> " Article retrieved." eol
 header         = <text> eol
 @end example
 
+@cindex BNF
+(The version of BNF used here is the one used in RFC822.)
+
 If the return value is @code{nov}, the data buffer should contain
 @dfn{network overview database} lines.  These are basically fields
 separated by tabs.
 
 @example
 nov-buffer = *nov-line
-nov-line   = 8*9 [ field <TAB> ] eol
+nov-line   = field 7*8[ <TAB> field ] eol
 field      = <text except TAB>
 @end example
 

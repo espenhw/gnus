@@ -1,3 +1,7 @@
+2003-03-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Required Back End Functions): Add.
+
 2003-03-17  Simon Josefsson  <jas@extundo.com>
 
 	* pgg.texi: Fix setfilename.  Tiny patch by Frank Haun
