@@ -152,18 +152,24 @@
 	      (setq subject (concat "Re: " (substring subject (match-end 0)))))
 	    (setq subject (mm-url-decode-entities-string subject))
 	    (search-forward "<BR>")
-	    (if (looking-at
-		 "by[ \t\n]+<a[^>]+>\\([^<]+\\)</a>[ \t\n]*(\\(<[^>]+>\\)*\\([^<>)]+\\))")
-		(progn
-		  (goto-char (- (match-end 0) 5))
-		  (setq from (concat
-			      (mm-url-decode-entities-string (match-string 1))
-			      " <" (match-string 3) ">")))
-	      (setq from "")
-	      (when (looking-at "by \\([^<>]*\\) on ")
-		(goto-char (- (match-end 0) 5))
-		(setq from (mm-url-decode-entities-string (match-string 1)))))
-	    (search-forward " on ")
+	    (cond 
+	     ((looking-at
+	       "by[ \t\n]+<a[^>]+>\\([^<]+\\)</a>[ \t\n]*(\\(<[^>]+>\\)*\\([^<>)]+\\))")
+	      (goto-char (- (match-end 0) 5))
+	      (setq from (concat
+			  (mm-url-decode-entities-string (match-string 1))
+			  " <" (match-string 3) ">")))
+	     ((looking-at "by[ \t\n]+<a[^>]+>\\([^<(]+\\) (\\([0-9]+\\))</a>")
+	      (goto-char (- (match-end 0) 5))
+	      (setq from (concat 
+			  (mm-url-decode-entities-string (match-string 1))
+			  " <" (match-string 2) ">")))
+	     ((looking-at "by \\([^<>]*\\)[\t\n\r ]+on ")
+	      (goto-char (- (match-end 0) 5))
+	      (setq from (mm-url-decode-entities-string (match-string 1))))
+	     (t
+	      (setq from "")))
+	    (search-forward "on ")
 	    (setq date
 		  (nnslashdot-date-to-date
 		   (buffer-substring (point) (progn (skip-chars-forward "^()<>\n\r") (point)))))
