@@ -308,7 +308,7 @@ The provided functions are:
   :group 'message-interface
   :type 'regexp)
 
-(defcustom message-forward-ignored-headers nil
+(defcustom message-forward-ignored-headers "Content-Transfer-Encoding"
   "*All headers that match this regexp will be deleted when forwarding a message."
   :group 'message-forwarding
   :type '(choice (const :tag "None" nil)
@@ -1462,6 +1462,8 @@ M-RET    message-newline-and-reformat (break the line and reformat)."
   (setq adaptive-fill-first-line-regexp
 	(concat "[ \t]*[-a-z0-9A-Z]*\\(>[ \t]*\\)+[ \t]*\\|"
 		adaptive-fill-first-line-regexp))
+  (make-local-variable 'auto-fill-inhibit-regexp)
+  (setq auto-fill-inhibit-regexp "^[A-Z][^: \n\t]+:")
   (mm-enable-multibyte)
   (make-local-variable 'indent-tabs-mode) ;Turn off tabs for indentation.
   (setq indent-tabs-mode nil)
@@ -1748,11 +1750,8 @@ Mail and USENET news headers are not rotated."
     (save-restriction
       (when (message-goto-body)
         (narrow-to-region (point) (point-max)))
-      (let ((body (buffer-substring (point-min) (point-max))))
-        (unless (equal 0 (call-process-region
-			  (point-min) (point-max) program t t))
-	  (insert body)
-	  (message "%s failed" program))))))
+      (shell-command-on-region
+       (point-min) (point-max) program nil t))))
 
 (defun message-rename-buffer (&optional enter-string)
   "Rename the *message* buffer to \"*message* RECIPIENT\".

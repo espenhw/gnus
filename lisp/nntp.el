@@ -776,7 +776,7 @@ and a password.
 If SEND-IF-FORCE, only send authinfo to the server if the
 .authinfo file has the FORCE token."
   (let* ((list (gnus-parse-netrc nntp-authinfo-file))
-	 (alist (gnus-netrc-machine list nntp-address))
+	 (alist (gnus-netrc-machine list nntp-address "nntp"))
 	 (force (gnus-netrc-get alist "force"))
 	 (user (or (gnus-netrc-get alist "login") nntp-authinfo-user))
 	 (passwd (gnus-netrc-get alist "password")))

@@ -805,7 +805,8 @@ ARG is passed to the first function."
   (when (file-exists-p file)
     (with-temp-buffer
       (let ((tokens '("machine" "default" "login"
-		      "password" "account" "macdef" "force"))
+		      "password" "account" "macdef" "force"
+		      "port"))
 	    alist elem result pair)
 	(insert-file-contents file)
 	(goto-char (point-min))
@@ -853,16 +854,27 @@ ARG is passed to the first function."
 	  (forward-line 1))
 	(nreverse result)))))
 
-(defun gnus-netrc-machine (list machine)
+(defun gnus-netrc-machine (list machine &optional port)
   "Return the netrc values from LIST for MACHINE or for the default entry."
-  (let ((rest list))
-    (while (and list
-		(not (equal (cdr (assoc "machine" (car list))) machine)))
+  (let ((rest list)
+	result)
+    (while list
+      (when (equal (cdr (assoc "machine" (car list))) machine)
+	(push (car list) result))
       (pop list))
-    (car (or list
-	     (progn (while (and rest (not (assoc "default" (car rest))))
-		      (pop rest))
-		    rest)))))
+    (unless result
+      ;; No machine name matches, so we look for default entries.
+      (while rest
+	(when (assoc "default" (car rest))
+	  (push (car rest) result))
+	(pop rest)))
+    (setq result (nreverse result))
+    (if (null result)
+	nil
+      (while (and result
+		  (not (equalp port (or (gnus-netrc-get result) "nntp"))))
+	(pop result))
+      result)))
 
 (defun gnus-netrc-get (alist type)
   "Return the value of token TYPE from ALIST."

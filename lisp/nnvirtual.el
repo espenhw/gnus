@@ -197,8 +197,9 @@ component group will show up when you enter the virtual group.")
 	  (save-excursion
 	    (when buffer
 	      (set-buffer buffer))
-	    (let ((method (gnus-find-method-for-group
-			   nnvirtual-last-accessed-component-group)))
+	    (let* ((gnus-override-method nil)
+		   (method (gnus-find-method-for-group
+			    nnvirtual-last-accessed-component-group)))
 	      (funcall (gnus-get-function method 'request-article)
 		       article nil (nth 1 method) buffer)))))
       ;; This is a fetch by number.
@@ -283,12 +284,11 @@ component group will show up when you enter the virtual group.")
 
 (deffoo nnvirtual-request-update-mark (group article mark)
   (let* ((nart (nnvirtual-map-article article))
-	 (cgroup (car nart))
-	 ;; The component group might be a virtual group.
-	 (nmark (gnus-request-update-mark cgroup (cdr nart) mark)))
+	 (cgroup (car nart)))
     (when (and nart
 	       (memq mark gnus-auto-expirable-marks)
-	       (= mark nmark)
+	       ;; The component group might be a virtual group.
+	       (= mark (gnus-request-update-mark cgroup (cdr nart) mark))
 	       (gnus-group-auto-expirable-p cgroup))
       (setq mark gnus-expirable-mark)))
   mark)

@@ -1,8 +1,34 @@
+2000-04-21 01:24:41  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* flow-fill.el: Renamed from fill-flowed.
+
+	* message.el (message-forward-ignored-headers): Default to
+	removing CTE.
+
+2000-04-21 00:48:48    <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* message.el (message-mode): Don't fill headers.
+
+2000-04-20 23:12:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-pipe-buffer-body): Use shell
+
+2000-02-21  Yoshiki Hayashi  <yoshiki@xemacs.org>
+
+	* nnvirtual.el (nnvirtual-request-article):
+	Bind gnus-override-method to nil.
+	(nnvirtual-request-update-mark): Don't update mark when
+	article is not there.
+
 2000-04-20 16:35:41  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-uu.el (mm-uu-dissect): Check forwarded message.
 
 2000-04-20 21:17:48  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-util.el (gnus-parse-netrc): Allow "port".
+	(gnus-netrc-machine): Take a port param.
+	(gnus-netrc-machine): 
 
 	* gnus-art.el (gnus-request-article-this-buffer): Allow
 	re-selecting referenced articles.

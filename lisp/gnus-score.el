@@ -2820,10 +2820,10 @@ If ADAPT, return the home adaptive file instead."
 	     ;; Function.
 	     ((gnus-functionp elem)
 	      (funcall elem group))
-	     ;; Regexp-file cons
+	     ;; Regexp-file cons.
 	     ((consp elem)
 	      (when (string-match (gnus-globalify-regexp (car elem)) group)
-		(replace-match (cadr elem) t nil group ))))))
+		(replace-match (cadr elem) t nil group))))))
     (when found
       (if (file-name-absolute-p found)
           found
