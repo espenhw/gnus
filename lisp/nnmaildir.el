@@ -454,10 +454,10 @@ by nnmaildir-request-article.")
 	count num min nlist nlist-cdr insert-nlist)
     (when nov
       (setq count (1+ (nnmaildir--grp-count group))
-	    min (nnmaildir--grp-min group)
-	    num (nnmaildir--art-num article))
-      (setq min (min min num))
-      (setq nlist (nnmaildir--grp-nlist group))
+	    num (nnmaildir--art-num article)
+	    min (if (= count 1) num
+		  (min num (nnmaildir--grp-min group)))
+	    nlist (nnmaildir--grp-nlist group))
       (if (or (null nlist) (> num (caar nlist)))
 	  (setq nlist (cons (cons num article) nlist))
 	(setq insert-nlist t
