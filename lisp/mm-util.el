@@ -126,7 +126,6 @@
 (defvar mm-charset-synonym-alist
   '((big5 . cn-big5)
     (gb2312 . cn-gb-2312)
-    (iso-2022-jp-2 . iso-2022-7bit-ss2)
     (x-ctext . ctext))
   "A mapping from invalid charset names to the real charset names.")
 

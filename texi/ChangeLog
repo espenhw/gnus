@@ -1,3 +1,11 @@
+1999-03-25  Erik Toubro Nielsen  <erik@ifad.dk>
+
+	* gnus.texi (gnus-thread-sort-functions). 'reverse' => 'not'
+
+1999-04-17 10:21:01  Jack Twilley  <jmt+usenet@nycap.rr.com>
+
+	* gnus.texi (Fancy Mail Splitting): Addition.
+
 1999-04-07 06:13:08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Gnus Development): New.

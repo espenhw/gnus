@@ -242,21 +242,23 @@
       (when name
 	(setq name (mml-parse-file-name name))
 	(if (stringp name)
-	    (insert ";\n " (mail-header-encode-parameter "name" name)
-		    "\";\n access-type=local-file")
-	  (insert
-	   (format ";\n "
-		   (mail-header-encode-parameter
-		    "name" (file-name-nondirectory (nth 2 name)))
-		   (mail-header-encode-parameter "site" (nth 1 name))
-		   (mail-header-encode-parameter
-		    "directory" (file-name-directory (nth 2 name)))))
-	  (insert ";\n access-type="
-		  (if (member (nth 0 name) '("ftp@" "anonymous@"))
-		      "anon-ftp"
-		    "ftp"))))
+	    (mml-insert-parameter
+	     (mail-header-encode-parameter "name" name)
+	     "access-type=local-file")
+	  (mml-insert-parameter
+	   (mail-header-encode-parameter
+	    "name" (file-name-nondirectory (nth 2 name)))
+	   (mail-header-encode-parameter "site" (nth 1 name))
+	   (mail-header-encode-parameter
+	    "directory" (file-name-directory (nth 2 name))))
+	  (mml-insert-parameter
+	   (concat "access-type="
+		   (if (member (nth 0 name) '("ftp@" "anonymous@"))
+		       "anon-ftp"
+		     "ftp")))))      
       (when parameters
-	(insert parameters)))
+	(mml-insert-parameter-string
+	 cont '(expiration size permission))))
     (insert "\n\n")
     (insert "Content-Type: " (cdr (assq 'type cont)) "\n")
     (insert "Content-ID: " (message-make-message-id) "\n")
@@ -338,7 +340,8 @@
 	(insert "; " (mail-header-encode-parameter
 		      "charset" (symbol-name charset))))
       (when parameters
-	(insert parameters))
+	(mml-insert-parameter-string
+	 cont '(name access-type expiration size permission)))
       (insert "\n"))
     (setq parameters
 	  (mml-parameter-string
@@ -347,7 +350,8 @@
 	      parameters)
       (insert "Content-Disposition: " (or disposition "inline"))
       (when parameters
-	(insert parameters))
+	(mml-insert-parameter-string
+	 cont '(filename creation-date modification-date read-date)))
       (insert "\n"))
     (unless (eq encoding '7bit)
       (insert (format "Content-Transfer-Encoding: %s\n" encoding)))
@@ -363,11 +367,22 @@
 	;; Strip directory component from the filename parameter.
 	(when (eq type 'filename)
 	  (setq value (file-name-nondirectory value)))
-	(setq string (concat string ";\n "
+	(setq string (concat string "; "
 			     (mail-header-encode-parameter
 			      (symbol-name type) value)))))
     (when (not (zerop (length string)))
       string)))
+
+(defun mml-insert-parameter-string (cont types)
+  (let (value type)
+    (while (setq type (pop types))
+      (when (setq value (cdr (assq type cont)))
+	;; Strip directory component from the filename parameter.
+	(when (eq type 'filename)
+	  (setq value (file-name-nondirectory value)))
+	(mml-insert-parameter
+	 (mail-header-encode-parameter
+	  (symbol-name type) value))))))
 
 (defvar ange-ftp-path-format)
 (defvar efs-path-regexp)
@@ -454,6 +469,17 @@
       (insert " description=\"" (mm-handle-description handle) "\""))
     (equal (split-string (car (mm-handle-type handle)) "/") "text")
     (insert ">\n")))
+
+(defun mml-insert-parameter (&rest parameters)
+  "Insert PARAMETERS in a nice way."
+  (dolist (param parameters)
+    (insert ";")
+    (let ((point (point)))
+      (insert " " param)
+      (when (> (current-column) 71)
+	(goto-char point)
+	(insert "\n ")
+	(end-of-line)))))
 
 ;;;
 ;;; Mode for inserting and editing MML forms
@@ -645,6 +671,25 @@ TYPE is the MIME type to use."
   (insert "<#/!multipart>\n")
   (forward-line -1))
 
+(defun mml-preview (&optional raw)
+ "Display current buffer with Gnus, in a new buffer.
+If RAW, don't highlight the article."
+ (interactive "P")
+ (let ((buf (current-buffer)))
+   (switch-to-buffer (get-buffer-create 
+                     (concat (if raw "*Raw MIME preview of "
+                               "*MIME preview of ") (buffer-name))))
+   (erase-buffer)
+   (insert-buffer buf)
+   (mml-to-mime)
+   (unless raw
+     (run-hooks 'gnus-article-decode-hook)
+     (let ((gnus-newsgroup-name "dummy"))
+      (gnus-article-prepare-display)))
+   (fundamental-mode)
+   (setq buffer-read-only t)
+   (goto-char (point-min))))
+ 
 (provide 'mml)
 
 ;;; mml.el ends here

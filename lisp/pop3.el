@@ -4,7 +4,7 @@
 
 ;; Author: Richard L. Pieri <ratinox@peorth.gweep.net>
 ;; Keywords: mail, pop3
-;; Version: 1.3q
+;; Version: 1.3r
 
 ;; This file is part of GNU Emacs.
 
@@ -37,7 +37,7 @@
 (require 'mail-utils)
 (provide 'pop3)
 
-(defconst pop3-version "1.3m")
+(defconst pop3-version "1.3r")
 
 (defvar pop3-maildrop (or (user-login-name) (getenv "LOGNAME") (getenv "USER") nil)
   "*POP3 maildrop.")
@@ -246,7 +246,15 @@ Return the response string if optional second argument is non-nil."
 	      (setq From_ (concat (substring From_ 0 (match-beginning 0))
 				  (substring From_ (match-end 0)))))
 	    (goto-char (point-min))
-	    (insert From_))))))
+	    (insert From_)
+	    (re-search-forward "\n\n")
+	    (narrow-to-region (point) (point-max))
+	    (let ((size (- (point-max) (point-min))))
+	      (goto-char (point-min))
+	      (widen)
+	      (forward-line -2)
+	      (insert (format "Content-Length: %s\n" size)))
+	    )))))
 
 ;; The Command Set
 

@@ -2,7 +2,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.81 Manual
+@settitle Pterodactyl Gnus 0.82 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -319,7 +319,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.81 Manual
+@title Pterodactyl Gnus 0.82 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -355,7 +355,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.81.
+This manual corresponds to Pterodactyl Gnus 0.82.
 
 @end ifinfo
 
@@ -5307,7 +5307,7 @@ by number, you could do something like:
 (setq gnus-thread-sort-functions
       '(gnus-thread-sort-by-number
         gnus-thread-sort-by-subject
-        (reverse gnus-thread-sort-by-total-score)))
+        (not gnus-thread-sort-by-total-score)))
 @end lisp
 
 The threads that have highest score will be displayed first in the
@@ -7093,6 +7093,10 @@ Here's an example function the does the latter:
 (setq gnus-article-mime-part-function
       'my-save-all-jpeg-parts)
 @end lisp
+
+@vindex gnus-mime-multipart-functions
+@item gnus-mime-multipart-functions
+Alist of @sc{mime} multipart types and functions to handle them.
 
 @end table
 
@@ -10238,19 +10242,21 @@ All new mail files will get this file mode.  The default is 384.
 @node Fetching Mail
 @subsubsection Fetching Mail
 
+@vindex mail-sources
 @vindex nnmail-spool-file
 The way to actually tell Gnus where to get new mail from is to set
-@code{nnmail-spool-file} to a list of mail source specifiers
+@code{mail-sources} to a list of mail source specifiers
 (@pxref{Mail Source Specifiers}).
 
-If this variable is @code{nil}, the mail backends will never attempt to
-fetch mail by themselves.
+If this variable (and the obsolescent @code{nnmail-spool-file}) is
+@code{nil}, the mail backends will never attempt to fetch mail by
+themselves.
 
 If you want to fetch mail both from your local spool as well as a POP
 mail server, you'd say something like:
 
 @lisp
-(setq nnmail-spool-file
+(setq mail-sources
       '((file)
         (pop :server "pop3.mail.server"
              :password "secret")))
@@ -10259,7 +10265,7 @@ mail server, you'd say something like:
 Or, if you don't want to use any of the keyword defaults:
 
 @lisp
-(setq nnmail-spool-file
+(setq mail-sources
       '((file :path "/var/spool/mail/user-name")
         (pop :server "pop3.mail.server"
              :user "user-name"
@@ -10447,6 +10453,9 @@ substitutions in the group names), you can say things like:
 @example
 (any "debian-\\b\\(\\w+\\)@@lists.debian.org" "mail.debian.\\1")
 @end example
+
+In this example, messages sent to @samp{debian-foo@@lists.debian.org}
+will be filed in @samp{mail.debian.foo}.
 
 If the string contains the element @samp{\&}, then the previously
 matched string will be substituted.  Similarly, the elements @samp{\\1}
@@ -10791,8 +10800,9 @@ If you start using any of the mail backends, they have the annoying
 habit of assuming that you want to read mail with them.  This might not
 be unreasonable, but it might not be what you want.
 
-If you set @code{nnmail-spool-file} to @code{nil}, none of the backends
-will ever attempt to read incoming mail, which should help.
+If you set @code{mail-sources} and @code{nnmail-spool-file} to
+@code{nil}, none of the backends will ever attempt to read incoming
+mail, which should help.
 
 @vindex nnbabyl-get-new-mail
 @vindex nnmbox-get-new-mail
@@ -12105,7 +12115,9 @@ you're interested in the articles anyway.
 
 The main way to control what is to be downloaded is to create a
 @dfn{category} and then assign some (or all) groups to this category.
-Gnus has its own buffer for creating and managing categories.
+Groups that do not belong in any other category belong to the
+@code{default} category. Gnus has its own buffer for creating and
+managing categories.
 
 @menu
 * Category Syntax::       What a category looks like.
@@ -12682,7 +12694,7 @@ setup, you may be able to use something like the following as your
 
 ;;; Define how Gnus is to read your mail.  We read mail from
 ;;; your ISP's POP server.
-(setq nnmail-spool-file '((pop :server "pop.your-isp.com")))
+(setq mail-sources '((pop :server "pop.your-isp.com")))
 
 ;;; Say how Gnus is to store the mail.  We use nnml groups.
 (setq gnus-secondary-select-methods '((nnml "")))

@@ -1,3 +1,78 @@
+Sat Apr 17 16:41:30 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.82 is released.
+
+1999-04-15  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-sum.el (gnus-group-charset-alist): Include Croatian groups
+	for iso8859-2.
+
+1999-04-17 18:23:50  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-util.el (mm-charset-synonym-alist): Remove iso-2022-jp-2 from 
+	synonym alist.
+
+1999-04-17 18:03:38  Adam P. Jenkins  <ajenkins@netway.com>
+
+	* gnus-sum.el (gnus-summary-local-variables): Mark as global.
+
+1999-04-17 18:02:05  Ettore Perazzoli  <ettore@comm2000.it>
+
+	* mail-source.el (mail-source-fetch): Ask before bugging out. 
+
+1999-03-19  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* uudecode.el (uudecode-decode-region-external): Don't assume
+	uudecode-temporary-file-directory ends with a slash.
+
+1999-03-18  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-sum.el (gnus-update-marks):
+	(gnus-update-read-articles): 
+	(gnus-summary-expire-articles): Check server.
+
+1999-03-16  Simon Josefsson  <jas@pdc.kth.se>
+
+	* mml.el (mml-preview): New function.
+
+1999-04-17 17:10:21  William M. Perry  <wmperry@aventail.com>
+
+	* mail-source.el (mail-source-fetch-file): Return the right
+	value. 
+
+1999-04-17 07:52:17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-insert-parameter): New function.
+	(mml-insert-parameter-string): New function.
+
+	* nnmail.el (nnmail-get-new-mail): Say how many new articles.
+
+	* gnus-art.el (gnus-mime-multipart-functions): New variable.
+	(gnus-mime-display-part): Use it.
+
+	* mm-decode.el (mm-alternative-precedence): Removed.
+	(mm-discouraged-alternatives): New variable.
+	(mm-preferred-alternative-precedence): New function.
+
+	* nnmail.el (nnmail-get-new-mail): Use mail-sources.
+
+	* mail-source.el (mail-sources): New variable.
+
+	* gnus-art.el (article-remove-cr): Remove several trailing CRs. 
+
+	* mm-decode.el (mm-valid-image-format-p): New function.
+	(mm-inline-media-tests): Use it.
+	(mm-valid-and-fit-image-p): New function.
+
+	* gnus-agent.el (gnus-agent-fetch-groups): Error when unplugged.
+	(gnus-agent-fetch-group): Ditto.
+
+1999-04-12  Didier Verna  <verna@inf.enst.fr>
+
+	* nnmail.el (nnmail-article-group): in case of a group name
+	containing "\\n" constructs, be sure to pass the expanded value to 
+	nn*-save-mail.
+
 Sat Apr 17 05:40:45 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.81 is released.

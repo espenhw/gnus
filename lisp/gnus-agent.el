@@ -364,11 +364,15 @@ be a select method."
 (defun gnus-agent-fetch-groups (n)
   "Put all new articles in the current groups into the Agent."
   (interactive "P")
+  (unless gnus-plugged
+    (error "Groups can't be fetched when Gnus is unplugged"))
   (gnus-group-iterate n 'gnus-agent-fetch-group))
 
 (defun gnus-agent-fetch-group (group)
   "Put all new articles in GROUP into the Agent."
   (interactive (list (gnus-group-group-name)))
+  (unless gnus-plugged
+    (error "Groups can't be fetched when Gnus is unplugged"))
   (unless group
     (error "No group on the current line"))
   (let ((gnus-command-method (gnus-find-method-for-group group)))

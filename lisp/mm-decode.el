@@ -57,24 +57,15 @@
 	 ,disposition ,description ,cache ,id))
 
 (defvar mm-inline-media-tests
-  '(("image/jpeg" mm-inline-image
-     (and window-system (featurep 'jpeg) (mm-image-fit-p handle)))
-    ("image/png" mm-inline-image
-     (and window-system (featurep 'png) (mm-image-fit-p handle)))
-    ("image/gif" mm-inline-image
-     (and window-system (featurep 'gif) (mm-image-fit-p handle)))
-    ("image/tiff" mm-inline-image
-     (and window-system (featurep 'tiff) (mm-image-fit-p handle)))
-    ("image/xbm" mm-inline-image
-     (and window-system (fboundp 'device-type) (eq (device-type) 'x)))
-    ("image/x-xbitmap" mm-inline-image
-     (and window-system (fboundp 'device-type) (eq (device-type) 'x)))
-    ("image/xpm" mm-inline-image
-     (and window-system (featurep 'xpm)))
-    ("image/x-pixmap" mm-inline-image
-     (and window-system (featurep 'xpm)))
-    ("image/bmp" mm-inline-image
-     (and window-system (featurep 'bmp)))
+  '(("image/jpeg" mm-inline-image (mm-valid-and-fit-image-p 'jpeg handle))
+    ("image/png" mm-inline-image (mm-valid-and-fit-image-p 'png handle))
+    ("image/gif" mm-inline-image (mm-valid-and-fit-image-p 'gif handle))
+    ("image/tiff" mm-inline-image (mm-valid-and-fit-image-p 'tiff handle)) 
+    ("image/xbm" mm-inline-image (mm-valid-and-fit-image-p 'xbm handle))
+    ("image/x-xbitmap" mm-inline-image (mm-valid-and-fit-image-p 'xbm handle))
+    ("image/xpm" mm-inline-image (mm-valid-and-fit-image-p 'xpm handle))
+    ("image/x-pixmap" mm-inline-image (mm-valid-and-fit-image-p 'xpm handle))
+    ("image/bmp" mm-inline-image (mm-valid-and-fit-image-p 'bmp handle))
     ("text/plain" mm-inline-text t)
     ("text/enriched" mm-inline-text t)
     ("text/richtext" mm-inline-text t)
@@ -112,11 +103,16 @@
 (defvar mm-user-automatic-external-display nil
   "List of MIME type regexps that will be displayed externally automatically.")
 
-(defvar mm-alternative-precedence
-  '("multipart/related" "multipart/mixed" "multipart/alternative"
-    "image/jpeg" "image/gif" "text/html" "text/enriched"
-    "text/richtext" "text/plain")
-  "List that describes the precedence of alternative parts.")
+(defvar mm-discouraged-alternatives nil
+  "List of MIME types that are discouraged when viewing multiapart/alternative.
+Viewing agents are supposed to view the last possible part of a message,
+as that is supposed to be the richest.  However, users may prefer other
+types instead, and this list says what types are most unwanted.  If,
+for instance, text/html parts are very unwanted, and text/richtech are
+somewhat unwanted, then the value of this variable should be set
+to:
+
+ (\"text/html\" \"text/richtext\")")
 
 (defvar mm-tmp-directory
   (cond ((fboundp 'temp-directory) (temp-directory))
@@ -519,21 +515,21 @@ This overrides entries in the mailcap file."
 				     file)))
 	;; Now every coding system is 100% binary within mm-with-unibyte-buffer
 	;; Is text still special?
-      (let ((coding-system-for-write
-             (if (equal "text" (car (split-string
-                                     (car (mm-handle-type handle)) "/")))
-                 buffer-file-coding-system
-               'binary))
-	    ;; Don't re-compress .gz & al.  Arguably we should make
-	    ;; `file-name-handler-alist' nil, but that would chop
-	    ;; ange-ftp which it's reasonable to use here.
-	    (inhibit-file-name-operation 'write-region)
-	    (inhibit-file-name-handlers
-	     (if (equal (car (mm-handle-type handle))
-			"application/octet-stream")
-		 (cons 'jka-compr-handler inhibit-file-name-handlers)
-	       inhibit-file-name-handlers)))
-        (write-region (point-min) (point-max) file))))))
+	(let ((coding-system-for-write
+	       (if (equal "text" (car (split-string
+				       (car (mm-handle-type handle)) "/")))
+		   buffer-file-coding-system
+		 'binary))
+	      ;; Don't re-compress .gz & al.  Arguably we should make
+	      ;; `file-name-handler-alist' nil, but that would chop
+	      ;; ange-ftp which it's reasonable to use here.
+	      (inhibit-file-name-operation 'write-region)
+	      (inhibit-file-name-handlers
+	       (if (equal (car (mm-handle-type handle))
+			  "application/octet-stream")
+		   (cons 'jka-compr-handler inhibit-file-name-handlers)
+		 inhibit-file-name-handlers)))
+	  (write-region (point-min) (point-max) file))))))
 
 (defun mm-pipe-part (handle)
   "Pipe HANDLE to a process."
@@ -555,7 +551,8 @@ This overrides entries in the mailcap file."
 
 (defun mm-preferred-alternative (handles &optional preferred)
   "Say which of HANDLES are preferred."
-  (let ((prec (if preferred (list preferred) mm-alternative-precedence))
+  (let ((prec (if preferred (list preferred)
+		(mm-preferred-alternative-precedence handles)))
 	p h result type handle)
     (while (setq p (pop prec))
       (setq h handles)
@@ -576,6 +573,15 @@ This overrides entries in the mailcap file."
 		prec nil))
 	(pop h)))
     result))
+
+(defun mm-preferred-alternative-precedence (handles)
+  "Return the precedence based on HANDLES and mm-discouraged-alternatives."
+  (let ((seq (mapcar (lambda (h) (car (mm-handle-type h))) handles)))
+    (dolist (disc (reverse mm-discouraged-alternatives))
+      (dolist (elem (copy-sequence seq))
+	(when (string-match disc elem)
+	  (setq seq (nconc (delete elem seq) (list elem))))))
+    seq))
 
 (defun mm-get-content-id (id)
   "Return the handle(s) referred to by ID."
@@ -608,7 +614,7 @@ This overrides entries in the mailcap file."
 			;; specifier.
 			(let ((file (make-temp-name
 				     (expand-file-name "emm.xbm"
-							mm-tmp-directory))))
+						       mm-tmp-directory))))
 			  (unwind-protect
 			      (progn
 				(write-region (point-min) (point-max) file)
@@ -626,6 +632,17 @@ This overrides entries in the mailcap file."
     (or mm-all-images-fit
 	(and (< (glyph-width image) (window-pixel-width))
 	     (< (glyph-height image) (window-pixel-height))))))
+
+(defun mm-valid-image-format-p (format)
+  "Say whether FORMAT can be displayed natively by Emacs."
+  (and (fboundp 'valid-image-instantiator-format-p)
+       (valid-image-instantiator-format-p format)))
+
+(defun mm-valid-and-fit-image-p (format handle)
+  "Say whether FORMAT can be displayed natively and HANDLE fits the window."
+  (and window-system
+       (mm-valid-image-format-p format)
+       (mm-image-fit-p handle)))
 
 (provide 'mm-decode)
 

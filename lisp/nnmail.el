@@ -174,7 +174,7 @@ Eg.:
 (defcustom nnmail-spool-file '((file))
   "*Where the mail backends will look for incoming mail.
 This variable is a list of mail source specifiers.
-If this variable is nil, no mail backends will read incoming mail."
+This variable is obsolete; `mail-sources' should be used instead."
   :group 'nnmail-files
   :type 'sexp)
 
@@ -856,7 +856,7 @@ FUNC will be called with the group name to determine the article number."
   (let ((methods nnmail-split-methods)
 	(obuf (current-buffer))
 	(beg (point-min))
-	end group-art method regrepp)
+	end group-art method grp)
     (if (and (sequencep methods)
 	     (= (length methods) 1))
 	;; If there is only just one group to put everything in, we
@@ -923,25 +923,24 @@ FUNC will be called with the group name to determine the article number."
 			  (not group-art)))
 	    (goto-char (point-max))
 	    (setq method (pop methods)
-		  regrepp nil)
+		  grp (car method))
 	    (if (or methods
 		    (not (equal "" (nth 1 method))))
 		(when (and
 		       (ignore-errors
 			 (if (stringp (nth 1 method))
-			     (progn
-			       (setq regrepp
-				     (string-match "\\\\[0-9&]" (car method)))
-			       (re-search-backward (cadr method) nil t))
+			     (let ((expand (string-match "\\\\[0-9&]" grp))
+				   (pos (re-search-backward (cadr method)
+							    nil t)))
+			       (and expand
+				    (setq grp (nnmail-expand-newtext grp)))
+			       pos)
 			   ;; Function to say whether this is a match.
-			   (funcall (nth 1 method) (car method))))
+			   (funcall (nth 1 method) grp)))
 		       ;; Don't enter the article into the same
 		       ;; group twice.
-		       (not (assoc (car method) group-art)))
-		  (push (cons (if regrepp
-				  (nnmail-expand-newtext (car method))
-				(car method))
-			      (funcall func (car method)))
+		       (not (assoc grp group-art)))
+		  (push (cons grp (funcall func grp))
 			group-art))
 	      ;; This is the final group, which is used as a
 	      ;; catch-all.
@@ -1337,10 +1336,13 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 (defun nnmail-get-new-mail (method exit-func temp
 				   &optional group spool-func)
   "Read new incoming mail."
-  (let* ((sources (if (listp nnmail-spool-file) nnmail-spool-file
-		    (list nnmail-spool-file)))
+  (let* ((sources (or mail-sources
+		      (if (listp nnmail-spool-file) nnmail-spool-file
+			(list nnmail-spool-file))))
 	 (group-in group)
 	 (i 0)
+	 (new 0)
+	 (total 0)
 	 incoming incomings source)
     (when (and (nnmail-get-value "%s-get-new-mail" method)
 	       nnmail-spool-file)
@@ -1375,9 +1377,9 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 				 (list
 				  :predicate
 				  `(lambda (file)
-				     (string-match 
+				     (string-match
 				      ,(concat
-					(regexp-quote (concat group suffix)) 
+					(regexp-quote (concat group suffix))
 					"$")
 				      file)))))))
 	(when nnmail-fetched-sources
@@ -1387,13 +1389,16 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	(when source
 	  (nnheader-message 4 "%s: Reading incoming mail from %s..."
 			    method (car source))
-	  (when (mail-source-fetch
-		 source
-		 `(lambda (file orig-file)
-		    (nnmail-split-incoming
-		     file ',(intern (format "%s-save-mail" method))
-		     ',spool-func (nnmail-get-split-group orig-file source)
-		     ',(intern (format "%s-active-number" method)))))
+	  (when (setq new
+		      (mail-source-fetch
+		       source
+		       `(lambda (file orig-file)
+			  (nnmail-split-incoming
+			   file ',(intern (format "%s-save-mail" method))
+			   ',spool-func
+			   (nnmail-get-split-group orig-file source)
+			   ',(intern (format "%s-active-number" method))))))
+	    (incf total new)
 	    (incf i))))
       ;; If we did indeed read any incoming spools, we save all info.
       (unless (zerop i)
@@ -1403,7 +1408,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	(when exit-func
 	  (funcall exit-func))
 	(run-hooks 'nnmail-read-incoming-hook)
-	(nnheader-message 4 "%s: Reading incoming mail...done" method))
+	(nnheader-message 4 "%s: Reading incoming mail (%d new)...done" method
+			  total))
       ;; Close the message-id cache.
       (nnmail-cache-close)
       ;; Allow the user to hook.

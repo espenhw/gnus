@@ -260,7 +260,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.81"
+(defconst gnus-version-number "0.82"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -1726,7 +1726,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-article-delete-invisible-text gnus-treat-article)
      ("gnus-art" :interactive t
       gnus-article-hide-headers gnus-article-hide-boring-headers
-      gnus-article-treat-overstrike gnus-article-word-wrap
+      gnus-article-treat-overstrike 
       gnus-article-remove-cr gnus-article-remove-trailing-blank-lines
       gnus-article-display-x-face gnus-article-de-quoted-unreadable
       gnus-article-hide-pgp

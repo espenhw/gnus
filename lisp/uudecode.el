@@ -2,7 +2,7 @@
 ;; Copyright (c) 1998 by Shenghuo Zhu <zsh@cs.rochester.edu>
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; $Revision: 5.5 $
+;; $Revision: 5.6 $
 ;; Keywords: uudecode
 
 ;; This file is not part of GNU Emacs, but the same permissions
@@ -55,7 +55,7 @@ input and write the converted data to its standard output.")
 (defvar uudecode-temporary-file-directory
   (cond ((fboundp 'temp-directory) (temp-directory))
 	((boundp 'temporary-file-directory) temporary-file-directory)
-	("/tmp/")))
+	("/tmp")))
 
 ;;;###autoload
 (defun uudecode-decode-region-external (start end &optional file-name)
@@ -75,9 +75,12 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 	       (setq file-name (read-file-name "File to Name:"
 					       nil nil nil
 					       (match-string 1)))))
-	(setq tempfile (expand-file-name
-			(or file-name (concat uudecode-temporary-file-directory
-					      (make-temp-name "uu")))))
+	(setq tempfile (if file-name
+			   (expand-file-name file-name)
+			 (make-temp-name
+			  ;; /tmp/uu...
+			  (expand-file-name
+			   "uu" uudecode-temporary-file-directory))))
 	(let ((cdir default-directory) default-process-coding-system)
 	  (unwind-protect
 	      (progn

@@ -802,7 +802,7 @@ which it may alter in any way.")
     ("^cn\\>\\|\\<chinese\\>" cn-gb-2312)
     ("^fj\\>\\|^japan\\>" iso-2022-jp-2)
     ("^relcom\\>" koi8-r)
-    ("^\\(cz\\|hun\\|pl\\|sk\\)\\>" iso-8859-2)
+    ("^\\(cz\\|hun\\|pl\\|sk\\|hr\\)\\>" iso-8859-2)
     ("^israel\\>" iso-8859-1)
     ("^han\\>" euc-kr)
     ("^\\(comp\\|rec\\|alt\\|sci\\|soc\\|news\\|gnu\\|bofh\\)\\>" iso-8859-1)
@@ -1029,7 +1029,8 @@ variable (string, integer, character, etc).")
     gnus-newsgroup-dependencies gnus-newsgroup-selected-overlay
     gnus-newsgroup-scored gnus-newsgroup-kill-headers
     gnus-thread-expunge-below
-    gnus-score-alist gnus-current-score-file gnus-summary-expunge-below
+    gnus-score-alist gnus-current-score-file
+    (gnus-summary-expunge-below . global)
     (gnus-summary-mark-below . global)
     gnus-newsgroup-active gnus-scores-exclude-files
     gnus-newsgroup-history gnus-newsgroup-ancient
@@ -4306,9 +4307,11 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 			 (set symbol (sort list '<)) t)))
 		newmarked)))
 
-      (if delta-marks
-	  (gnus-request-set-mark gnus-newsgroup-name delta-marks))
-
+      (when delta-marks
+	(unless (gnus-check-group gnus-newsgroup-name)
+	  (error "Can't open server for %s" gnus-newsgroup-name))
+	(gnus-request-set-mark gnus-newsgroup-name delta-marks))
+	  
       ;; Enter these new marks into the info of the group.
       (if (nthcdr 3 info)
 	  (setcar (nthcdr 3 info) newmarked)
@@ -7424,6 +7427,8 @@ This will be the case if the article has both been mailed and posted."
 	;; There are expirable articles in this group, so we run them
 	;; through the expiry process.
 	(gnus-message 6 "Expiring articles...")
+	(unless (gnus-check-group gnus-newsgroup-name)
+	  (error "Can't open server for %s" gnus-newsgroup-name))
 	;; The list of articles that weren't expired is returned.
 	(save-excursion
 	  (if expiry-wait
@@ -9133,6 +9138,8 @@ save those articles instead."
            (let ((del (gnus-remove-from-range (gnus-info-read info) read))
                  (add (gnus-remove-from-range read (gnus-info-read info))))
              (when (or add del)
+	       (unless (gnus-check-group group)
+		 (error "Can't open server for %s" group))
                (gnus-request-set-mark
                 group (delq nil (list (if add (list add 'add '(read)))
                                       (if del (list del 'del '(read)))))))))

@@ -79,7 +79,7 @@
 		 make-annotation
 		 w3-do-setup w3-region
 		 rmail-summary-exists rmail-select-summary rmail-update-summary
-		 url-generic-parse-url
+		 url-generic-parse-url valid-image-instantiator-format-p
 		 )))
 
 (setq load-path (cons "." load-path))

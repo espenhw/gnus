@@ -593,6 +593,9 @@ on parts -- for instance, adding Vcard info to a database."
   :group 'gnus-article-mime
   :type 'function)
 
+(defcustom gnus-mime-multipart-functions nil
+  "An alist of MIME types to functions to display them.")
+
 ;;;
 ;;; The treatment variables
 ;;;
@@ -1290,12 +1293,12 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
 	(forward-sentence)))))
 
 (defun article-remove-cr ()
-  "Translate CRLF pairs into LF, and then CR into LF.."
+  "Remove trailing CRs and then translate remaining CRs into LFs."
   (interactive)
   (save-excursion
     (let ((buffer-read-only nil))
       (goto-char (point-min))
-      (while (search-forward "\r$" nil t)
+      (while (search-forward "\r+$" nil t)
 	(replace-match "" t t))
       (goto-char (point-min))
       (while (search-forward "\r" nil t)
@@ -2965,6 +2968,10 @@ If ALL-HEADERS is non-nil, no headers are hidden."
    ;; Single part.
    ((not (stringp (car handle)))
     (gnus-mime-display-single handle))
+   ;; User-defined multipart
+   ((cdr (assoc (car handle) gnus-mime-multipart-functions))
+    (funcall (cdr (assoc (car handle) gnus-mime-multipart-functions))
+	     handle))
    ;; multipart/alternative
    ((and (equal (car handle) "multipart/alternative")
 	 (not gnus-mime-display-multipart-as-mixed))
