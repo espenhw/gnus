@@ -1,3 +1,8 @@
+2002-10-08  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-agent.el (gnus-agent-fetch-selected-article): Bind
+	gnus-agent-current-history.
+
 2002-10-06  Simon Josefsson  <jas@extundo.com>
 
 	* imap.el (imap-parse-status): Don't use read to read token.
