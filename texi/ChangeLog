@@ -1,3 +1,14 @@
+2003-02-12  Michael Shields  <shields@msrl.com>
+
+	* gnus.texi (Paging the Article): Document
+	gnus-article-boring-faces.
+	(Choosing Commands): Explain that SPACE in the summary buffer
+	is used for both selecting and scrolling.
+
+	* gnus.texi (Article Keymap): Say that SPACE and DEL in the
+	summary buffer are the same as switching to the article buffer
+	and using SPACE and DEL; since now that is the case.
+
 2003-02-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Topic Commands): Addition.

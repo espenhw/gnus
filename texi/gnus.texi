@@ -4909,6 +4909,10 @@ If you want to fetch new articles or redisplay the group, see
 Select the current article, or, if that one's read already, the next
 unread article (@code{gnus-summary-next-page}).
 
+If you have an article window open already and you press @kbd{SPACE}
+again, the article will be scrolled.  This lets you conveniently
+@kbd{SPACE} through an entire newsgroup.  @pxref{Paging the Article}.
+
 @item G n
 @itemx n
 @kindex n (Summary)
@@ -5047,6 +5051,14 @@ instead.  It will leave marks like @code{gnus-low-score-mark},
 Pressing @kbd{SPACE} will scroll the current article forward one page,
 or, if you have come to the end of the current article, will choose the
 next article (@code{gnus-summary-next-page}).
+
+@vindex gnus-article-boring-faces
+If the rest of the article consists only of citations and signature,
+then it will be skipped; the next article will be shown instead.  You
+can customize what is considered uninteresting with
+@code{gnus-article-boring-faces}, or set it to @code{nil} to disable
+this feature.  You can manually view the article's pages, no matter how
+boring, using @kbd{C-v} in the article buffer.
 
 @item DEL
 @kindex DEL (Summary)
@@ -10850,11 +10862,13 @@ A few additional keystrokes are available:
 @kindex SPACE (Article)
 @findex gnus-article-next-page
 Scroll forwards one page (@code{gnus-article-next-page}).
+This is exactly the same as @kbd{h SPACE h}.
 
 @item DEL
 @kindex DEL (Article)
 @findex gnus-article-prev-page
 Scroll backwards one page (@code{gnus-article-prev-page}).
+This is exactly the same as @kbd{h DEL h}.
 
 @item C-c ^
 @kindex C-c ^ (Article)
