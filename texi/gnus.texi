@@ -20254,8 +20254,8 @@ All summary mode commands are available directly from the article
 buffer (@pxref{Article Keymap}).
 
 @item
-Frames can be part of @code{gnus-buffer-configuration} (@pxref{Windows
-Configuration}).
+Frames can be part of @code{gnus-buffer-configuration} (@pxref{Window
+Layout}).
 
 @item
 Mail can be re-scanned by a daemonic process (@pxref{Daemons}).
