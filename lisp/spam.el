@@ -112,6 +112,11 @@ are considered spam."
   :type 'boolean
   :group 'spam)
 
+(defcustom spam-use-hashcash nil
+  "Whether hashcash payments should be detected by spam-split."
+  :type 'boolean
+  :group 'spam)
+
 (defcustom spam-use-regex-headers nil
   "Whether a header regular expression match should be used by spam-split.
 Also see the variable `spam-spam-regex-headers' and `spam-ham-regex-headers'."
@@ -558,6 +563,7 @@ your main source of newsgroup names."
     (spam-use-ifile	 		. 	spam-check-ifile)
     (spam-use-stat	 		. 	spam-check-stat)
     (spam-use-blackholes 		. 	spam-check-blackholes)
+    (spam-use-hashcash  		. 	spam-check-hashcash)
     (spam-use-bogofilter-headers 	. 	spam-check-bogofilter-headers)
     (spam-use-bogofilter 		. 	spam-check-bogofilter))
 "The spam-list-of-checks list contains pairs associating a parameter
@@ -669,6 +675,20 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 			matches))))))))
     (when matches
       spam-split-group)))
+
+;;;; Hashcash.
+
+(condition-case nil
+    (progn
+      (require 'hashcash)
+      
+      (defun spam-check-hashcash ()
+	"Check the headers for hashcash payments."
+	(mail-check-payment)))		;mail-check-payment returns a boolean
+
+  (file-error (progn
+		(defalias 'mail-check-payment 'ignore)
+		(defalias 'spam-check-hashcash 'ignore))))
 
 ;;;; BBDB 
 

@@ -1,3 +1,9 @@
+2003-03-07  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-use-hashcash): new variable
+	(spam-list-of-checks): added spam-use-hashcash with associated spam-check-hashcash
+	(spam-check-hashcash): new function, installed iff hashcash.el is loaded
+
 2003-03-06  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-fetch-group-1): Added default
