@@ -83,11 +83,19 @@ AC_DEFUN(AC_PATH_LISPDIR, [
     if test "x$theprefix" = "xNONE"; then
 	theprefix=$ac_default_prefix
     fi
+    if test "$EMACS_FLAVOR" = "xemacs"; then
+        lispdir="\$(datadir)/${EMACS_FLAVOR}/site-packages/lisp/gnus"
+    else
     lispdir="\$(datadir)/${EMACS_FLAVOR}/site-lisp"
+    fi
     for thedir in share lib; do
 	potential=
 	if test -d ${theprefix}/${thedir}/${EMACS_FLAVOR}/site-lisp; then
-	   lispdir="\$(prefix)/${thedir}/${EMACS_FLAVOR}/site-lisp"
+           if test "$EMACS_FLAVOR" = "xemacs"; then
+	       lispdir="\$(prefix)/${thedir}/${EMACS_FLAVOR}/site-packages/lisp/gnus"
+           else
+               lispdir="\$(datadir)/${EMACS_FLAVOR}/site-lisp"
+           fi
 	   break
 	fi
     done
@@ -101,7 +109,11 @@ AC_DEFUN(AC_PATH_ETCDIR, [
   AC_MSG_CHECKING([where etc files should go])
   if test -z "$etcdir"; then
     dnl Set default value
+    if test "$EMACS_FLAVOR" = "xemacs"; then
+      etcdir="\$(lispdir)/../etc/gnus"
+    else
     etcdir="\$(lispdir)/../etc"
+    fi
   fi
   AC_MSG_RESULT($etcdir)
   AC_SUBST(etcdir)

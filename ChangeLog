@@ -1,3 +1,10 @@
+2002-02-22  Steve Youngs  <youngs@xemacs.org>
+
+	* aclocal.m4 (AC_PATH_LISPDIR): Default to
+	.../site-packages/lisp/gnus for XEmacs. 
+	(AC_PATH_ETCDIR): Default to .../site-packages/etc/gnus for
+	XEmacs. 
+
 2002-02-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* etc/gnus/gnus.xpm: Remove some garbages at the end of the file.
