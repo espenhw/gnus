@@ -218,6 +218,15 @@ to:
 ;; "message/rfc822".
 (defvar mm-dissect-default-type "text/plain")
 
+(defvar mm-viewer-completion-map
+  (let ((map (make-sparse-keymap 'mm-viewer-completion-map)))
+    (set-keymap-parent map minibuffer-local-completion-map)
+    map)
+  "Keymap for input viewer with completion.")
+
+;; Should we bind other key to minibuffer-complete-word?
+(define-key mm-viewer-completion-map " " 'self-insert-command) 
+
 ;;; The functions.
 
 (defun mm-dissect-buffer (&optional no-strict-mime)
@@ -709,7 +718,9 @@ external if displayed external."
 	 (methods
 	  (mapcar (lambda (i) (list (cdr (assoc 'viewer i))))
 		  (mailcap-mime-info type 'all)))
-	 (method (completing-read "Viewer: " methods)))
+	 (method (let ((minibuffer-local-completion-map
+			mm-viewer-completion-map))
+		   (completing-read "Viewer: " methods))))
     (when (string= method "")
       (error "No method given"))
     (if (string-match "^[^% \t]+$" method) 

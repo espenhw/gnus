@@ -1,3 +1,8 @@
+2000-10-25 20:13:02  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-viewer-completion-map): New.
+	(mm-interactively-view-part): Use it.
+
 2000-10-25 18:51:12  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2047.el (rfc2047-q-encode-region): Don't break if a QP-word
