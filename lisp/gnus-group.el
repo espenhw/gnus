@@ -2267,7 +2267,7 @@ ADDRESS."
 	(lambda (group)
 	  (gnus-group-delete-group group nil t))))))
 
-(eval-when-compile (defvar gnus-cache-active-altered))
+(defvar gnus-cache-active-altered)
 
 (defun gnus-group-delete-group (group &optional force no-prompt)
   "Delete the current group.  Only meaningful with editable groups.
@@ -2557,9 +2557,10 @@ If SOLID (the prefix), create a solid group."
        (cons (current-buffer)
 	     (if (eq major-mode 'gnus-summary-mode) 'summary 'group))))))
 
-(eval-when-compile (defvar nnrss-group-alist)
-		   (defun nnrss-discover-feed (arg))
-		   (defun nnrss-save-server-data (arg)))
+(eval-when-compile
+  (defvar nnrss-group-alist)
+  (defun nnrss-discover-feed (arg))
+  (defun nnrss-save-server-data (arg)))
 (defun gnus-group-make-rss-group (&optional url)
   "Given a URL, discover if there is an RSS feed.
 If there is, use Gnus to create an nnrss group"
@@ -2659,7 +2660,7 @@ mail messages or news articles in files that have numeric names."
      (gnus-group-real-name group)
      (list 'nndir (gnus-group-real-name group) (list 'nndir-directory dir)))))
 
-(eval-when-compile (defvar nnkiboze-score-file))
+(defvar nnkiboze-score-file)
 (defun gnus-group-make-kiboze-group (group address scores)
   "Create an nnkiboze group.
 The user will be prompted for a name, a regexp to match groups, and
@@ -3892,7 +3893,7 @@ If GROUP, edit that local kill file instead."
   (interactive)
   (gnus-save-newsrc-file))
 
-(eval-when-compile (defvar gnus-backlog-articles))
+(defvar gnus-backlog-articles)
 
 (defun gnus-group-suspend ()
   "Suspend the current Gnus session.

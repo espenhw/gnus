@@ -1,3 +1,7 @@
+2003-10-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el: Remove superfluous eval-when-compiles.
+
 2003-10-10  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-group.el (gnus-group-suspend): Reset gnus-backlog-articles.
