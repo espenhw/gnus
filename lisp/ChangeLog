@@ -11,6 +11,8 @@
 	* message.el (message-archive-note): Ditto.
 	(message-subscribed-address-file): Ditto.
 	(message-user-fqdn): Ditto.
+	* spam-report.el (spam-report-gmane-regex): Ditto.
+	* spam.el (spam-blackhole-good-server-regex): Ditto.
 
 	* gnus-start.el (gnus-save-killed-list): Fix last change.
 	* message.el (message-courtesy-message): Ditto.

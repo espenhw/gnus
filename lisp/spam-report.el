@@ -39,7 +39,8 @@
 If you are using spam.el, consider setting gnus-spam-process-newsgroups 
 or the gnus-group-spam-exit-processor-report-gmane group/topic parameter 
 instead."
-  :type 'regexp
+  :type '(radio (const nil)
+		(regexp :format "%t: %v\n" :size 0 :value "^nntp\+.*:gmane\."))
   :group 'spam-report)
 
 (defcustom spam-report-gmane-spam-header 

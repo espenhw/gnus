@@ -244,7 +244,8 @@ All unmarked article in such group receive the spam mark on group entry."
 
 (defcustom spam-blackhole-good-server-regex nil
   "String matching IP addresses that should not be checked in the blackholes"
-  :type 'regexp
+  :type '(radio (const nil)
+		(regexp :format "%t: %v\n" :size 0))
   :group 'spam)
 
 (defcustom spam-face 'gnus-splash-face
