@@ -151,7 +151,7 @@ To disable dissecting shar codes, for instance, add
 (defsubst mm-uu-function-2 (entry)
   (nth 5 entry))
 
-(defun mm-uu-copy-to-buffer (from to)
+(defun mm-uu-copy-to-buffer (&optional from to)
   "Copy the contents of the current buffer to a fresh buffer."
   (save-excursion
     (let ((obuf (current-buffer)))
@@ -246,7 +246,7 @@ To disable dissecting shar codes, for instance, add
     (narrow-to-region (point) end-point)
     (mm-dissect-buffer t)))
 
-(defun mm-uu-pgp-signed-test ()
+(defun mm-uu-pgp-signed-test (&rest rest)
   (and
    mml2015-use
    (mml2015-clear-verify-function)
@@ -256,11 +256,8 @@ To disable dissecting shar codes, for instance, add
     ((eq mm-verify-option 'known) t)
     (t (y-or-n-p "Verify pgp signed part?")))))
 
-(defun mm-uu-pgp-signed-extract ()
-  (let ((buf (mm-uu-copy-to-buffer start-point end-point))
-	(mm-security-handle (list (format "multipart/signed"))))
-    (mm-set-handle-multipart-parameter 
-     mm-security-handle 'protocol "application/pgp-signature")
+(defun mm-uu-pgp-signed-extract-1 (handles ctl)
+  (let ((buf (mm-uu-copy-to-buffer (point-min) (point-max))))
     (with-current-buffer buf
       (if (mm-uu-pgp-signed-test)
 	  (progn
@@ -277,13 +274,25 @@ To disable dissecting shar codes, for instance, add
 	  (delete-region (point-min) (point)))
       (if (re-search-forward mm-uu-pgp-beginning-signature nil t)
 	  (delete-region (match-beginning 0) (point-max))))
-    (setcdr mm-security-handle
-	    (list
-	     (mm-make-handle buf
-			     '("text/plain"  (charset . gnus-decoded)))))
+    (list
+     (mm-make-handle buf
+		     '("text/plain"  (charset . gnus-decoded))))))
+
+(defun mm-uu-pgp-signed-extract ()
+  (let ((mm-security-handle (list (format "multipart/signed"))))
+    (mm-set-handle-multipart-parameter 
+     mm-security-handle 'protocol "application/x-gnus-pgp-signature")
+    (save-restriction
+      (narrow-to-region start-point end-point)
+      (add-text-properties 0 (length (car mm-security-handle))
+			   (list 'buffer (mm-uu-copy-to-buffer))
+			   (car mm-security-handle))
+      (setcdr mm-security-handle
+	      (mm-uu-pgp-signed-extract-1 nil 
+					  mm-security-handle)))
     mm-security-handle))
 
-(defun mm-uu-pgp-encrypted-test ()
+(defun mm-uu-pgp-encrypted-test (&rest rest)
   (and
    mml2015-use
    (mml2015-clear-decrypt-function)
@@ -293,19 +302,28 @@ To disable dissecting shar codes, for instance, add
     ((eq mm-decrypt-option 'known) t)
     (t (y-or-n-p "Decrypt pgp encrypted part?")))))
 
-(defun mm-uu-pgp-encrypted-extract ()
-  (let ((buf (mm-uu-copy-to-buffer start-point end-point))
-	(mm-security-handle (list (format "multipart/encrypted"))))
-    (mm-set-handle-multipart-parameter 
-     mm-security-handle 'protocol "application/pgp-encrypted")
+(defun mm-uu-pgp-encrypted-extract-1 (handles ctl)
+  (let ((buf (mm-uu-copy-to-buffer (point-min) (point-max))))
     (if (mm-uu-pgp-encrypted-test)
 	(with-current-buffer buf
 	  (mml2015-clean-buffer)
 	  (funcall (mml2015-clear-decrypt-function))))
-    (setcdr mm-security-handle
-	    (list
-	     (mm-make-handle buf
-			     '("text/plain"  (charset . gnus-decoded)))))
+    (list
+     (mm-make-handle buf
+		     '("text/plain"  (charset . gnus-decoded))))))
+
+(defun mm-uu-pgp-encrypted-extract ()
+  (let ((mm-security-handle (list (format "multipart/encrypted"))))
+    (mm-set-handle-multipart-parameter 
+     mm-security-handle 'protocol "application/x-gnus-pgp-encrypted")
+    (save-restriction
+      (narrow-to-region start-point end-point)
+      (add-text-properties 0 (length (car mm-security-handle))
+			   (list 'buffer (mm-uu-copy-to-buffer))
+			   (car mm-security-handle))
+      (setcdr mm-security-handle
+	      (mm-uu-pgp-encrypted-extract-1 nil 
+					     mm-security-handle)))
     mm-security-handle))
 
 (defun mm-uu-gpg-key-skip-to-last ()

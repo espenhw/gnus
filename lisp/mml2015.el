@@ -139,7 +139,8 @@
   (catch 'error
     (let (part)
       (unless (setq part (mm-find-raw-part-by-type 
-			  ctl (or (mail-content-type-get ctl 'protocol)
+			  ctl (or (mm-handle-multipart-ctl-parameter 
+				   ctl 'protocol)
 				  "application/pgp-signature")
 			  t))
 	(mm-set-handle-multipart-parameter 
@@ -149,7 +150,8 @@
 	(insert "-----BEGIN PGP SIGNED MESSAGE-----\n")
 	(insert (format "Hash: %s\n\n" 
 			(or (mml2015-fix-micalg
-			     (mail-content-type-get ctl 'micalg))
+			     (mm-handle-multipart-ctl-parameter 
+			      ctl 'micalg))
 			    "SHA1")))
 	(save-restriction
 	  (narrow-to-region (point) (point))
@@ -331,7 +333,8 @@
   (catch 'error
     (let (part message signature)
       (unless (setq part (mm-find-raw-part-by-type 
-			  ctl (or (mail-content-type-get ctl 'protocol)
+			  ctl (or (mm-handle-multipart-ctl-parameter 
+				   ctl 'protocol)
 				  "application/pgp-signature")
 			  t))
 	(mm-set-handle-multipart-parameter 

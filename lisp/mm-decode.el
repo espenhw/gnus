@@ -243,6 +243,8 @@ to:
 
 (defvar mm-verify-function-alist
   '(("application/pgp-signature" mml2015-verify "PGP" mml2015-verify-test)
+    ("application/x-gnus-pgp-signature" mm-uu-pgp-signed-extract-1 "PGP" 
+     mm-uu-pgp-signed-test)
     ("application/pkcs7-signature" mml-smime-verify "S/MIME" 
      mml-smime-verify-test)
     ("application/x-pkcs7-signature" mml-smime-verify "S/MIME" 
@@ -262,7 +264,9 @@ to:
 (autoload 'mml2015-decrypt-test "mml2015")
 
 (defvar mm-decrypt-function-alist
-  '(("application/pgp-encrypted" mml2015-decrypt "PGP" mml2015-decrypt-test)))
+  '(("application/pgp-encrypted" mml2015-decrypt "PGP" mml2015-decrypt-test)
+    ("application/x-gnus-pgp-encrypted" mm-uu-pgp-encrypted-extract-1 "PGP" 
+     mm-uu-pgp-encrypted-test)))
 
 (defcustom mm-decrypt-option nil
   "Option of decrypting signed parts.
@@ -614,7 +618,7 @@ external if displayed external."
 	    (kill-buffer (get-text-property 0 'buffer handle))))
 	 ((and (listp handle)
 	       (stringp (car handle)))
-	  (mm-destroy-parts (cdr handle)))
+	  (mm-destroy-parts handle))
 	 (t
 	  (mm-destroy-part handle)))))))
 
@@ -963,8 +967,9 @@ If RECURSIVE, search recursively."
 
 (defun mm-find-raw-part-by-type (ctl type &optional notp) 
   (goto-char (point-min))
-  (let* ((boundary (concat "\n--" (mail-content-type-get ctl 'boundary)))
-	 (close-delimiter (concat (regexp-quote boundary) "--[ \t]*$"))
+  (let* ((boundary (concat "--" (mm-handle-multipart-ctl-parameter ctl 
+								   'boundary)))
+	 (close-delimiter (concat "^" (regexp-quote boundary) "--[ \t]*$"))
 	 start
 	 (end (save-excursion
 		(goto-char (point-max))
@@ -972,14 +977,14 @@ If RECURSIVE, search recursively."
 		    (match-beginning 0)
 		  (point-max))))
 	 result)
-    (setq boundary (concat (regexp-quote boundary) "[ \t]*$"))
+    (setq boundary (concat "^" (regexp-quote boundary) "[ \t]*$"))
     (while (and (not result)
 		(re-search-forward boundary end t))
       (goto-char (match-beginning 0))
       (when start
 	(save-excursion
 	  (save-restriction
-	    (narrow-to-region start (point))
+	    (narrow-to-region start (1- (point)))
 	    (when (let ((ctl (ignore-errors 
 			       (mail-header-parse-content-type 
 				(mail-fetch-field "content-type")))))
@@ -987,7 +992,7 @@ If RECURSIVE, search recursively."
 			(not (equal (car ctl) type))
 		      (equal (car ctl) type)))
 	      (setq result (buffer-substring (point-min) (point-max)))))))
-      (forward-line 2)
+      (forward-line 1)
       (setq start (point)))
     (when (and (not result) start)
       (save-excursion
@@ -1016,7 +1021,8 @@ If RECURSIVE, search recursively."
 	protocol func functest)
     (cond 
      ((equal subtype "signed")
-      (unless (and (setq protocol (mail-content-type-get ctl 'protocol))
+      (unless (and (setq protocol 
+			 (mm-handle-multipart-ctl-parameter ctl 'protocol))
 		   (not (equal protocol "multipart/mixed")))
 	;; The message is broken or draft-ietf-openpgp-multsig-01.
 	(let ((protocols mm-verify-function-alist))
@@ -1048,7 +1054,8 @@ If RECURSIVE, search recursively."
 	       mm-security-handle 'gnus-details 
 	       (format "Unknown sign protocol (%s)" protocol))))))
      ((equal subtype "encrypted")
-      (unless (setq protocol (mail-content-type-get ctl 'protocol))
+      (unless (setq protocol 
+		    (mm-handle-multipart-ctl-parameter ctl 'protocol))
 	;; The message is broken.
 	(let ((parts parts))
 	  (while parts

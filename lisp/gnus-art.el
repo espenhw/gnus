@@ -3575,13 +3575,11 @@ In no internal viewer is available, use an external viewer."
    ((equal (car handle) "multipart/signed")
     (or (memq 'signed gnus-article-wash-types)
 	(push 'signed gnus-article-wash-types))
-    (gnus-insert-mime-security-button handle)
-    (gnus-mime-display-mixed (cdr handle)))
+    (gnus-mime-display-security handle))
    ((equal (car handle) "multipart/encrypted")
     (or (memq 'encrypted gnus-article-wash-types)
 	(push 'encrypted gnus-article-wash-types))
-    (gnus-insert-mime-security-button handle)
-    (gnus-mime-display-mixed (cdr handle)))
+    (gnus-mime-display-security handle))
    ;; Other multiparts are handled like multipart/mixed.
    (t
     (gnus-mime-display-mixed (cdr handle)))))
@@ -5086,6 +5084,26 @@ For example:
 
 (defvar gnus-mime-security-details-buffer nil)
 
+(defun gnus-mime-security-verify-or-decrypt (handle)
+  (mm-remove-parts (cdr handle))
+  (let ((region (mm-handle-multipart-ctl-parameter handle 'gnus-region))
+	buffer-read-only)
+    (when region 
+      (delete-region (car region) (cdr region))
+      (set-marker (car region) nil)
+      (set-marker (cdr region) nil)))
+  (with-current-buffer (mm-handle-multipart-original-buffer handle)
+    (let* ((mm-verify-option 'known)
+	   (mm-decrypt-option 'known)
+	   (nparts (mm-possibly-verify-or-decrypt (cdr handle) handle)))
+      (unless (eq nparts (cdr handle))
+	(mm-destroy-parts (cdr handle))
+	(setcdr handle nparts))))
+  (let ((point (point))
+	buffer-read-only)
+    (gnus-mime-display-security handle)
+    (goto-char point)))
+
 (defun gnus-mime-security-show-details (handle)
   (let ((details (mm-handle-multipart-ctl-parameter handle 'gnus-details)))
     (if details
@@ -5100,6 +5118,11 @@ For example:
 	    (insert details))
 	  (pop-to-buffer gnus-mime-security-details-buffer))
       (gnus-message 5 "No details."))))
+
+(defun gnus-mime-security-press-button (handle)
+  (if (mm-handle-multipart-ctl-parameter handle 'gnus-info)
+      (gnus-mime-security-show-details handle)
+    (gnus-mime-security-verify-or-decrypt handle)))
 
 (defun gnus-insert-mime-security-button (handle &optional displayed)
   (let* ((protocol (mm-handle-multipart-ctl-parameter handle 'protocol))
@@ -5122,7 +5145,7 @@ For example:
      gnus-mime-security-button-line-format-alist
      `(local-map ,gnus-mime-security-button-map
 		 keymap ,gnus-mime-security-button-map
-		 gnus-callback gnus-mime-security-show-details
+		 gnus-callback gnus-mime-security-press-button
 		 article-type annotation
 		 gnus-data ,handle))
     (setq e (point))
@@ -5140,6 +5163,27 @@ For example:
        (format
 	"%S: show detail"
 	(aref gnus-mouse-2 0))))))
+
+(defun gnus-mime-display-security (handle)
+  (save-restriction
+    (narrow-to-region (point) (point))
+    (gnus-insert-mime-security-button handle)
+    (gnus-mime-display-mixed (cdr handle))
+    (unless (bolp)
+      (insert "\n"))
+    (let ((protocol (mm-handle-multipart-ctl-parameter handle 'protocol)))
+      (insert "[End of "
+	      (or (nth 2 (assoc protocol mm-verify-function-alist))
+		  (nth 2 (assoc protocol mm-decrypt-function-alist))
+		  "Unknown")
+	       (if (equal (car handle) "multipart/signed")
+		   " Signed" " Encrypted")
+	      "]\n"))
+    (mm-set-handle-multipart-parameter handle 'gnus-region 
+				       (cons (set-marker (make-marker)
+							 (point-min))
+					     (set-marker (make-marker)
+							 (point-max))))))
 
 (gnus-ems-redefine)
 

@@ -1,3 +1,25 @@
+2000-11-19 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el (mm-uu-pgp-encrypted-extract-1): New function.
+	(mm-uu-pgp-encrypted-extract): Use it.
+	(mm-uu-pgp-signed-extract-1): New function.
+	(mm-uu-pgp-signed-extract): Use it.
+
+	* gnus-art.el (gnus-mime-display-security): New function.
+	(gnus-mime-display-part): Use it.
+	(gnus-mime-security-verify-or-decrypt): New function.
+	(gnus-mime-security-press-button): New function.
+	(gnus-insert-mime-security-button): Use it.
+
+	* mm-decode.el (mm-possibly-verify-or-decrypt): Use mm-h-m-c-p.
+	(mm-find-raw-part-by-type): Ditto.
+	(mm-verify-function-alist): Add x-gnus-pgp-signature handle.
+	(mm-decrypt-function-alist): Add x-gnus-pgp-encrypted handle.
+	(mm-destroy-parts): Kill nested multibyte buffer.
+
+	* mml2015.el (mml2015-mailcrypt-verify): Use mm-h-m-c-p.
+	(mml2015-gpg-verify): Ditto.
+
 2000-11-18  Simon Josefsson  <sj@extundo.com>
 
 	* mml2015.el (mml2015-mailcrypt-clear-verify): New function.
