@@ -16231,7 +16231,7 @@ by hand.
 
 The kill to score conversion package isn't included in Gnus by default.
 You can fetch it from
-@file{http://www.stud.ifi.uio.no/~larsi/ding-other/gnus-kill-to-score}.
+@file{http://www.stud.ifi.uio.no/~larsi/ding-various/gnus-kill-to-score.el}.
 
 If your old kill files are very complex---if they contain more
 non-@code{gnus-kill} forms than not, you'll have to convert them by
