@@ -4091,6 +4091,39 @@ If no internal viewer is available, use an external viewer."
     (when ibegend
       (goto-char point))))
 
+(defconst gnus-article-wash-status-strings
+  (let ((alist '((cite "c" "Possible hidden citation text" 
+		       " " "All citation text visible")
+		 (headers "h" "Hidden headers"
+			  " " "All headers visible.")
+		 (pgp "p" "Encrypted or signed message status hidden" 
+		      " " "No hidden encryption nor digital signature status")
+		 (signature "s" "Signature has been hidden"
+			    " " "Signature is visible")
+		 (overstrike "o" "Overstrike (^H) characters applied"
+			     " " "No overstrike characters applied")
+		 (emphasis "e" "/*_Emphasis_*/ characters applied"
+			   " " "No /*_emphasis_*/ characters applied")))
+	result)
+    (dolist (entry alist result)
+      (let ((key (nth 0 entry))
+	    (on (copy-seq (nth 1 entry)))
+	    (on-help (nth 2 entry))
+	    (off (copy-seq (nth 3 entry)))
+	    (off-help (nth 4 entry)))
+	(put-text-property 0 1 'help-echo on-help on)
+	(put-text-property 0 1 'help-echo off-help off)
+	(push (list key on off) result))))
+  "Alist of strings describing wash status in the mode line.
+Each entry has the form (KEY ON OF), where the KEY is a symbol
+representing the particular washing function, ON is the string to use
+in the article mode line when the washing function is active, and OFF
+is the string to use when it is inactive.")
+      
+(defun gnus-gnus-article-wash-status-entry (key value)
+  (let ((entry (assoc key gnus-article-wash-status-strings)))
+    (if value (nth 1 entry) (nth 2 entry))))
+
 (defun gnus-article-wash-status ()
   "Return a string which display status of article washing."
   (save-excursion
@@ -4105,13 +4138,14 @@ If no internal viewer is available, use an external viewer."
 	  (signature (memq 'signature gnus-article-wash-types))
 	  (overstrike (memq 'overstrike gnus-article-wash-types))
 	  (emphasis (memq 'emphasis gnus-article-wash-types)))
-      (format "%c%c%c%c%c%c"
-	      (if cite ?c ? )
-	      (if (or headers boring) ?h ? )
-	      (if (or pgp pem signed encrypted) ?p ? )
-	      (if signature ?s ? )
-	      (if overstrike ?o ? )
-	      (if emphasis ?e ? )))))
+      (concat (gnus-gnus-article-wash-status-entry 'cite cite)
+	      (gnus-gnus-article-wash-status-entry 'headers 
+						   (or headers boring))
+	      (gnus-gnus-article-wash-status-entry 
+	       'pgp (or pgp pem signed encrypted))
+	      (gnus-gnus-article-wash-status-entry 'signature signature)
+	      (gnus-gnus-article-wash-status-entry 'overstrike overstrike)
+	      (gnus-gnus-article-wash-status-entry 'emphasis emphasis)))))
 
 (defalias 'gnus-article-hide-headers-if-wanted 'gnus-article-maybe-hide-headers)
 

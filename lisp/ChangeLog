@@ -1,3 +1,9 @@
+2001-11-15  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-art.el (gnus-article-wash-status-strings): New constant.
+	(gnus-gnus-article-wash-status-entry): New function.
+	(gnus-article-wash-status): Use it.
+
 2001-11-13 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml1991.el: Add coding header.
