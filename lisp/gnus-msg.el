@@ -337,7 +337,9 @@ headers.")
 ;;; Internal variables.
 
 (defvar gnus-post-news-buffer "*Post Gnus*")
+(defvar gnus-default-post-news-buffer gnus-post-news-buffer)
 (defvar gnus-mail-buffer "*Mail Gnus*")
+(defvar gnus-default-mail-buffer gnus-mail-buffer)
 (defvar gnus-article-copy nil)
 (defvar gnus-reply-subject nil)
 (defvar gnus-newsgroup-followup nil)
@@ -430,7 +432,7 @@ buffer."
   (gnus-set-global-variables)
   (gnus-post-news 'post gnus-newsgroup-name))
 
-(defun gnus-summary-followup (yank &optional yank-articles)
+(defun gnus-summary-followup (yank &optional yank-articles force-news)
   "Compose a followup to an article.
 If prefix argument YANK is non-nil, original article is yanked automatically."
   (interactive "P")
@@ -454,12 +456,13 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
       ;; Send a followup.
       (gnus-post-news nil gnus-newsgroup-name
 		      headers gnus-article-buffer 
-		      (or yank-articles (not (not yank)))))))
+		      (or yank-articles (not (not yank)))
+		      nil force-news))))
 
-(defun gnus-summary-followup-with-original (n)
+(defun gnus-summary-followup-with-original (n &optional force-news)
   "Compose a followup to an article and include the original article."
   (interactive "P")
-  (gnus-summary-followup t (gnus-summary-work-articles n)))
+  (gnus-summary-followup t (gnus-summary-work-articles n) force-news))
 
 ;; Suggested by Daniel Quinlan <quinlan@best.com>.
 (defun gnus-summary-followup-and-reply (yank &optional yank-articles)
@@ -544,7 +547,8 @@ header line with the old Message-ID."
 	  (gnus-set-text-properties (point-min) (point-max) 
 				    nil gnus-article-copy)))))
 
-(defun gnus-post-news (post &optional group header article-buffer yank subject)
+(defun gnus-post-news (post &optional group header article-buffer yank subject
+			    force-news)
   "Begin editing a new USENET news article to be posted.
 Type \\[describe-mode] in the buffer to get a list of commands."
   (interactive (list t))
@@ -560,6 +564,7 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 	    group (gnus-group-real-name group)))
     (if (or (and to-group
 		 (gnus-news-group-p to-group))
+	    force-news
 	    (and (gnus-news-group-p 
 		  (or pgroup gnus-newsgroup-name)
 		  (if header (mail-header-number header) gnus-current-article))
@@ -1866,7 +1871,7 @@ mailer."
     (when (and gnus-interactive-post
 	       (not gnus-expert-user))
       (setq subject (read-string "Subject: ")))
-    (pop-to-buffer gnus-mail-buffer)
+    (pop-to-buffer gnus-default-mail-buffer)
     (erase-buffer)
     (gnus-mail-setup 'new to subject)
     (gnus-inews-insert-gcc)
@@ -1875,7 +1880,7 @@ mailer."
 
 (defun gnus-new-empty-mail ()
   "Create a new, virtually empty mail mode buffer."
-  (pop-to-buffer gnus-mail-buffer)
+  (pop-to-buffer gnus-default-mail-buffer)
   (gnus-mail-setup 'new "" ""))
 
 (defun gnus-mail-reply (&optional yank to-address followup)
@@ -1887,7 +1892,7 @@ mailer."
 	  from subject date reply-to message-of to cc
 	  references message-id sender follow-to sendto elt new-cc new-to
 	  mct mctdo gnus-warning)
-      (set-buffer (get-buffer-create gnus-mail-buffer))
+      (set-buffer (get-buffer-create gnus-default-mail-buffer))
       (mail-mode)
       (if (and (buffer-modified-p)
 	       (> (buffer-size) 0)
@@ -2023,12 +2028,16 @@ mailer."
 	    (while follow-to
 	      (goto-char (point-min))
 	      (if (not (re-search-forward 
-			(concat "^" (caar follow-to) ": *") nil t))
+			(concat "^" (caar follow-to) ":") nil t))
 		  (progn
 		    (goto-char beg)
 		    (insert (caar follow-to) ": " (cdar follow-to) "\n"))
-		(unless (eolp)
-		  (insert ", "))
+		(if (eolp)
+		    (insert " ")
+		  (skip-chars-forward " ")
+		  (unless (eolp)
+		    (end-of-line)
+		    (insert ", ")))
 		(insert (cdar follow-to)))
 	      (setq follow-to (cdr follow-to)))
 	    (widen)))
@@ -2119,9 +2128,10 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 	       (not inhibit-prompt)
 	       (not gnus-expert-user))
       (setq subject (read-string "Subject: ")))
-    (pop-to-buffer gnus-post-news-buffer)  
+    (pop-to-buffer gnus-default-post-news-buffer)  
     (erase-buffer)
     (news-reply-mode)
+
     ;; Let posting styles be configured.
     (gnus-configure-posting-styles)
     (news-setup nil subject nil (and group (gnus-group-real-name group)) nil)
@@ -2145,6 +2155,7 @@ If INHIBIT-PROMPT, never prompt for a Subject."
     (gnus-inews-set-point)
     (make-local-variable 'gnus-prev-winconf)
     (setq gnus-prev-winconf winconf)
+    (setq gnus-post-news-buffer (current-buffer))
     (gnus-inews-modify-mail-mode-map)
     (local-set-key "\C-c\C-c" 'gnus-inews-news)))
 
@@ -2162,8 +2173,9 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 	    from subject date message-of
 	    references message-id follow-to sendto elt 
 	    followup-to distribution newsgroups gnus-warning)
-	(set-buffer (get-buffer-create gnus-post-news-buffer))
+	(set-buffer (get-buffer-create gnus-default-post-news-buffer))
 	(news-reply-mode)
+	(setq gnus-post-news-buffer (current-buffer))
 	;; Associate this buffer with the draft group.
 	(gnus-enter-buffer-into-draft)
 	(if (and (buffer-modified-p)
@@ -2476,15 +2488,22 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 				      (1- (point))
 				    (point)))
 	(goto-char (point-min))
-	(let ((case-fold-search t))
-	  (delete-non-matching-lines gnus-forward-included-headers))))))
-
+	(let ((case-fold-search t)
+	      delete)
+	  (while (re-search-forward "^[^ \t]*:" nil t)
+	    (beginning-of-line)
+	    (when delete (delete-region delete (point)))
+	    (if (looking-at gnus-forward-included-headers)
+		(setq delete nil)
+	      (setq delete (point)))
+	    (forward-line 1)))))))
+	    
 (defun gnus-mail-forward (&optional buffer)
   "Forward the current message to another user using mail."
   (let* ((forward-buffer (or buffer (current-buffer)))
 	 (winconf (current-window-configuration))
 	 (subject (gnus-forward-make-subject forward-buffer)))
-    (set-buffer (get-buffer-create gnus-mail-buffer))
+    (set-buffer (get-buffer-create gnus-default-mail-buffer))
     (if (and (buffer-modified-p)
 	     (> (buffer-size) 0)
 	     (not (gnus-y-or-n-p 
@@ -2773,6 +2792,7 @@ Headers will be generated before sending."
 	   ((eq type 'new) 
 	    gnus-mail-other-window-method))))
    to subject in-reply-to cc replybuffer actions)
+  (setq gnus-mail-buffer (current-buffer))
   ;; Associate this mail buffer with the draft group.
   (gnus-enter-buffer-into-draft))
 

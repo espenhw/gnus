@@ -1,4 +1,4 @@
-;; gnus-topic.el --- a folding minor mode for Gnus group buffers
+;;; gnus-topic.el --- a folding minor mode for Gnus group buffers
 ;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Ilja Weis <kult@uni-paderborn.de>
@@ -84,6 +84,10 @@ with some simple extensions.
 (defun gnus-group-topic-level ()
   "The level of the topic on the current line."
   (get-text-property (gnus-point-at-bol) 'gnus-topic-level))
+
+(defun gnus-group-topic-unread ()
+  "The number of unread articles in topic on the current line."
+  (get-text-property (gnus-point-at-bol) 'gnus-unread))
 
 (defun gnus-topic-init-alist ()
   "Initialize the topic structures."
@@ -296,6 +300,7 @@ articles in the topic and its subtopics."
        (gnus-topic-remove-excess-properties))
      (list 'gnus-topic (intern name)
 	   'gnus-topic-level level
+	   'gnus-unread unread
 	   'gnus-active active-topic
 	   'gnus-topic-visible visiblep))))
 
@@ -423,10 +428,11 @@ articles in the topic and its subtopics."
   "Update all parent topics to the current group."
   (when (and (eq major-mode 'gnus-group-mode)
 	     gnus-topic-mode)
-    (let ((group (gnus-group-group-name)))
-      (when (and group (gnus-get-info group))
-	(gnus-topic-goto-topic (gnus-group-parent-topic))
-	(gnus-topic-update-topic-line)
+    (let ((group (gnus-group-group-name))
+	  (buffer-read-only nil))
+      (when (and group (gnus-get-info group)
+		 (gnus-topic-goto-topic (gnus-group-parent-topic)))
+	(gnus-topic-update-topic-line (gnus-group-topic-name))
 	(gnus-group-goto-group group)
 	(gnus-group-position-point)))))
 
@@ -450,33 +456,33 @@ articles in the topic and its subtopics."
 	(gnus-topic-goto-topic topic)
 	(forward-line 1)))))
 
-(defun gnus-topic-update-topic-line (&optional topic level)
-  (unless topic
-    (setq topic gnus-topic-topology)
-    (setq level 0))
-  (let* ((type (pop topic))
-	 (buffer-read-only nil)
+(defun gnus-topic-update-topic-line (topic-name &optional reads)
+  (let* ((type (cadr (gnus-topic-find-topology topic-name)))
 	 (entries (gnus-topic-find-groups 
 		   (car type) (car gnus-group-list-mode)
 		   (cdr gnus-group-list-mode)))
-	 (visiblep (eq (nth 1 type) 'visible))
+	 (parent (gnus-topic-parent-topic topic-name))
 	 (all-entries entries)
 	 (unread 0)
-	 entry)
-    ;; Tally any sub-topics.
-    (while topic
-      (incf unread (gnus-topic-update-topic-line (pop topic) (1+ level))))
-    ;; Tally all the groups that belong in this topic.
-    (while (setq entry (pop entries))
-      (when (numberp (car entry))
-	(incf unread (car entry))))
-    ;; Insert the topic line.
+	 old-unread entry)
     (when (gnus-topic-goto-topic (car type))
+      ;; Tally all the groups that belong in this topic.
+      (if reads
+	  (setq unread (- (gnus-group-topic-unread) reads))
+	(while (setq entry (pop entries))
+	  (when (numberp (car entry))
+	    (incf unread (car entry)))))
+      (setq old-unread (gnus-group-topic-unread))
+      ;; Insert the topic line.
       (gnus-topic-insert-topic-line 
-       (car type) visiblep
+       (car type) (gnus-topic-visible-p)
        (not (eq (nth 2 type) 'hidden))
-       level all-entries unread)
+       (gnus-group-topic-level) all-entries unread)
       (gnus-delete-line))
+    (when parent
+      (forward-line -1)
+      (gnus-topic-update-topic-line
+       parent (- old-unread (gnus-group-topic-unread))))
     unread))
 
 (defun gnus-topic-grok-active (&optional force read-active)
@@ -773,24 +779,29 @@ group."
 			(gnus-topic-goto-topic (gnus-group-parent-topic))
 			(gnus-group-topic-level)) 0)) ? ))
 	     (yanked (list group))
-	     alist)
+	     alist talist end)
 	;; Then we enter the yanked groups into the topics they belong
 	;; to. 
-	(setq alist (assoc (save-excursion
-			     (forward-line -1)
-			     (gnus-group-parent-topic))
-			   gnus-topic-alist))
-	(when (stringp yanked)
-	  (setq yanked (list yanked)))
-	(if (not prev)
-	    (nconc alist yanked)
-	  (if (not (cdr alist))
-	      (setcdr alist (nconc yanked (cdr alist)))
-	    (while (cdr alist)
-	      (when (equal (cadr alist) prev)
+	(when (setq alist (assoc (save-excursion
+				   (forward-line -1)
+				   (or
+				    (gnus-group-parent-topic)
+				    (caar gnus-topic-topology)))
+				 gnus-topic-alist))
+	  (setq talist alist)
+	  (when (stringp yanked)
+	    (setq yanked (list yanked)))
+	  (if (not prev)
+	      (nconc alist yanked)
+	    (if (not (cdr alist))
 		(setcdr alist (nconc yanked (cdr alist)))
-		(setq alist nil))
-	      (setq alist (cdr alist))))))
+	      (while (and (not end) (cdr alist))
+		(when (equal (cadr alist) prev)
+		  (setcdr alist (nconc yanked (cdr alist)))
+		  (setq end t))
+		(setq alist (cdr alist)))
+	      (unless end
+		(nconc talist yanked))))))
       (gnus-topic-update-topic))))
 
 (defun gnus-topic-goto-next-group (group props)

@@ -60,6 +60,10 @@ all. This may very well take some time.")
 (defvar nnml-prepare-save-mail-hook nil
   "Hook run narrowed to an article before saving.")
 
+(defvar nnml-inhibit-expiry nil
+  "If non-nil, inhibit expiry.")
+
+
 
 
 (defconst nnml-version "nnml 1.0"
@@ -95,6 +99,7 @@ all. This may very well take some time.")
     (nnml-article-file-alist nil)
     (nnml-prepare-save-mail-hook nil)
     (nnml-current-group nil)
+    (nnml-inhibit-expiry ,nnml-inhibit-expiry)
     (nnml-status-string "")
     (nnml-nov-buffer-alist nil)
     (nnml-group-alist nil)
@@ -114,7 +119,7 @@ all. This may very well take some time.")
 	  beg article)
       (if (stringp (car sequence))
 	  'headers
-	(nnml-possibly-change-directory newsgroup)
+	(nnml-possibly-change-directory newsgroup server)
 	(unless nnml-article-file-alist
 	  (setq nnml-article-file-alist
 		(nnheader-article-to-file-alist nnml-current-directory)))
@@ -186,7 +191,7 @@ all. This may very well take some time.")
   nnml-status-string)
 
 (defun nnml-request-article (id &optional newsgroup server buffer)
-  (nnml-possibly-change-directory newsgroup)
+  (nnml-possibly-change-directory newsgroup server)
   (let* ((nntp-server-buffer (or buffer nntp-server-buffer))
 	 file path gpath group-num)
     (if (stringp id)
@@ -220,7 +225,7 @@ all. This may very well take some time.")
 
 (defun nnml-request-group (group &optional server dont-check)
   (cond 
-   ((not (nnml-possibly-change-directory group))
+   ((not (nnml-possibly-change-directory group server))
     (nnheader-report 'nnml "Invalid group (no such directory)"))
    (dont-check 
     (nnheader-report 'nnml "Group %s selected" group)
@@ -240,11 +245,13 @@ all. This may very well take some time.")
   (nnmail-get-new-mail 'nnml 'nnml-save-nov nnml-directory group))
 
 (defun nnml-close-group (group &optional server)
+  (setq nnml-article-file-alist nil)
   t)
 
 (defun nnml-request-close ()
-  (setq nnml-current-server nil)
-  (setq nnml-server-alist nil)
+  (setq nnml-current-server nil
+	nnml-article-file-alist nil
+	nnml-server-alist nil)
   t)
 
 (defun nnml-request-create-group (group &optional server) 
@@ -254,7 +261,7 @@ all. This may very well take some time.")
 	(setq nnml-group-alist (cons (list group (setq active (cons 1 0)))
 				     nnml-group-alist))
 	(nnml-possibly-create-directory group)
-	(nnml-possibly-change-directory group)
+	(nnml-possibly-change-directory group server)
 	(let ((articles 
 	       (nnheader-directory-articles nnml-current-directory )))
 	  (and articles
@@ -277,7 +284,7 @@ all. This may very well take some time.")
     (nnmail-find-file nnml-newsgroups-file)))
 
 (defun nnml-request-expire-articles (articles newsgroup &optional server force)
-  (nnml-possibly-change-directory newsgroup)
+  (nnml-possibly-change-directory newsgroup server)
   (let* ((active-articles 
 	  (nnheader-directory-articles nnml-current-directory))
 	 (is-old t)
@@ -295,7 +302,8 @@ all. This may very well take some time.")
       (when (setq mod-time (nth 5 (file-attributes article)))
 	(if (and (nnml-deletable-article-p newsgroup number)
 		 (setq is-old 
-		       (nnmail-expired-article-p newsgroup mod-time force)))
+		       (nnmail-expired-article-p newsgroup mod-time force
+						 nnml-inhibit-expiry)))
 	    (progn
 	      (nnheader-message 5 "Deleting article %s in %s..."
 				article newsgroup)
@@ -320,7 +328,7 @@ all. This may very well take some time.")
   (article group server accept-form &optional last)
   (let ((buf (get-buffer-create " *nnml move*"))
 	result)
-    (nnml-possibly-change-directory group)
+    (nnml-possibly-change-directory group server)
     (unless nnml-article-file-alist
       (setq nnml-article-file-alist
 	    (nnheader-article-to-file-alist nnml-current-directory)))
@@ -405,7 +413,7 @@ all. This may very well take some time.")
 	  t)))))
 
 (defun nnml-request-delete-group (group &optional force server)
-  (nnml-possibly-change-directory group)
+  (nnml-possibly-change-directory group server)
   (when force
     ;; Delete all articles in GROUP.
     (let ((articles 
@@ -433,7 +441,7 @@ all. This may very well take some time.")
   t)
 
 (defun nnml-request-rename-group (group new-name &optional server)
-  (nnml-possibly-change-directory group)
+  (nnml-possibly-change-directory group server)
   ;; Rename directory.
   (and (file-writable-p nnml-current-directory)
        (condition-case ()
@@ -522,32 +530,34 @@ all. This may very well take some time.")
 	  (last (progn (while (cdr articles) (setq articles (cdr articles)))
 		       (car articles)))
 	  (nov (concat nnml-current-directory nnml-nov-file-name)))
-      (if (file-exists-p nov)
-	  (save-excursion
-	    (set-buffer nntp-server-buffer)
-	    (erase-buffer)
-	    (insert-file-contents nov)
-	    (if (and fetch-old
-		     (not (numberp fetch-old)))
-		t			; Don't remove anything.
-	      (if fetch-old
-		  (setq first (max 1 (- first fetch-old))))
-	      (goto-char (point-min))
-	      (while (and (not (eobp)) (< first (read (current-buffer))))
-		(forward-line 1))
-	      (beginning-of-line)
-	      (if (not (eobp)) (delete-region 1 (point)))
-	      (while (and (not (eobp)) (>= last (read (current-buffer))))
-		(forward-line 1))
-	      (beginning-of-line)
-	      (if (not (eobp)) (delete-region (point) (point-max)))
-	      t))))))
+      (when (file-exists-p nov)
+	(save-excursion
+	  (set-buffer nntp-server-buffer)
+	  (erase-buffer)
+	  (insert-file-contents nov)
+	  (if (and fetch-old
+		   (not (numberp fetch-old)))
+	      t				; Don't remove anything.
+	    (if fetch-old
+		(setq first (max 1 (- first fetch-old))))
+	    (goto-char (point-min))
+	    (while (and (not (eobp)) (> first (read (current-buffer))))
+	      (forward-line 1))
+	    (beginning-of-line)
+	    (if (not (eobp)) (delete-region 1 (point)))
+	    (while (and (not (eobp)) (>= last (read (current-buffer))))
+	      (forward-line 1))
+	    (beginning-of-line)
+	    (if (not (eobp)) (delete-region (point) (point-max)))
+	    t))))))
 
-(defun nnml-possibly-change-directory (group &optional force)
+(defun nnml-possibly-change-directory (group &optional server)
+  (when (and server
+	     (not (nnml-server-opened server)))
+    (nnml-open-server server))
   (when group
     (let ((pathname (nnmail-group-pathname group nnml-directory)))
-      (when (or force
-		(not (equal pathname nnml-current-directory)))
+      (when (not (equal pathname nnml-current-directory))
 	(setq nnml-current-directory pathname
 	      nnml-current-group group
 	      nnml-article-file-alist nil))))

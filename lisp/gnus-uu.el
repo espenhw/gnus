@@ -441,10 +441,8 @@ The headers will be included in the sequence they are matched.")
   (let ((gnus-uu-save-in-digest t)
 	(file (make-temp-name (concat gnus-uu-tmp-dir "forward")))
 	buf subject from)
-    (setq gnus-newsgroup-processable
-	  (gnus-summary-work-articles n))
     (setq gnus-uu-digest-from-subject nil)
-    (gnus-uu-decode-save nil file)
+    (gnus-uu-decode-save n file)
     (gnus-uu-add-file file)
     (setq buf (switch-to-buffer (get-buffer-create " *gnus-uu-forward*")))
     (gnus-add-current-to-buffer-list)
@@ -789,14 +787,14 @@ The headers will be included in the sequence they are matched.")
 		(setq headline (car headers))
 		(setq headers (cdr headers))
 		(goto-char (point-min))
-		(if (re-search-forward headline nil t)
-		    (setq sorthead 
-			  (concat sorthead
-				  (buffer-substring 
-				   (match-beginning 0)
-				   (or (and (re-search-forward "^[^ \t]" nil t)
-					    (1- (point)))
-				       (progn (forward-line 1) (point)))))))))
+		(while (re-search-forward headline nil t)
+		  (setq sorthead 
+			(concat sorthead
+				(buffer-substring 
+				 (match-beginning 0)
+				 (or (and (re-search-forward "^[^ \t]" nil t)
+					  (1- (point)))
+				     (progn (forward-line 1) (point)))))))))
 	    (widen)))
 	(insert sorthead) (goto-char (point-max))
 	(insert body) (goto-char (point-max))

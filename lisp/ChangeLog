@@ -1,4 +1,107 @@
+Fri Mar 22 00:38:28 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el (gnus-summary-update-article): Would make things bug out.
+	(gnus-summary-insert-subject): Remove articles that have changed
+	number. 
+	(gnus-summary-exit): Nix out variables.
+	(gnus-summary-exit-no-update): Ditto.
+	(gnus-article-setup-buffer): Create original buffer on entry.
+
+Thu Mar 21 22:28:12 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-nocem.el (gnus-nocem-enter-article): Would enter things
+	into the wrong hashtb.
+
+	* nnml.el (nnml-inhibit-expiry): New variable.
+	(nnml-request-expire-articles): Use it.
+
+	* gnus.el (gnus-summary-update-article): Would bug out.
+
+	* nnml.el (nnml-possibly-change-directory): Also change server.
+
+	* gnus-nocem.el (gnus-nocem-scan-groups): Don't create a gazillion
+	garbage buffers.
+
+	* nnfolder.el (nnfolder-save-mail): Create new groups
+	automatically. 
+	(nnfolder-request-scan): Change server first.
+
+	* nnheader.el (nnheader-insert-head): Don't insert file contents
+	literally. 
+
+Thu Mar 21 18:17:21 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-score-body): Score in proper order.
+
+Wed Mar 20 20:06:08 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-select-newsgroup): Better message.
+
+	* gnus-uu.el (gnus-uu-save-article): Include multiple headers of
+	the same type.
+
+Tue Mar 19 16:26:13 1996  Roderick Schertler  <roderick@gate.net>
+
+	* gnus-msg.el (gnus-mail-reply): Would bug out given multiple
+	follow-to elements for the same header.
+
+Tue Mar 19 01:15:06 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-cut-thread): Deal with old-fetched & sparse
+	threads at once.
+	(gnus-cut-threads): Make sure there are no nil threads.
+	(gnus-simplify-buffer-fuzzy): Tweaked implementation.
+	(gnus-gather-threads-by-subject): Check
+	gnus-summary-gather-exclude-subject after simplifying.
+
+	* gnus-topic.el (gnus-topic-insert-topic-line): Store the number
+	of unread articles.
+	(gnus-group-topic-unread): New function.
+	(gnus-topic-update-topic-line): Faster implementation.
+
+	* gnus.el (gnus-update-format-specifications): Would push too many
+	emacs-versions onto specs.
+
+	* gnus-msg.el (gnus-default-post-news-buffer,
+	gnus-default-mail-buffer): New variables.
+	(gnus-mail-setup): Set gnus-mail-buffer here.
+	(gnus-news-followup): Set gnus-post-news-buffer here.
+
+	* custom.el (custom-xmas-set-text-properties): New definition.
+
+	* gnus-soup.el (gnus-soup-insert-idx): Throw the Xref header
+	away. 
+	(gnus-soup-add-article): Ditto.
+	(gnus-soup-ignored-headers): New variable.
+
+Mon Mar 18 15:01:40 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-forward-insert-buffer): Wouldn't handle
+	continuation headers.
+
+	* nnml.el (nnml-retrieve-headers-with-nov): Wouldn't strip excess
+	lines.
+
+	* gnus-uu.el (gnus-uu-digest-mail-forward): Would reverse order. 
+
+	* nnsoup.el (nnsoup-make-active): Would bug out.
+
+	* gnus-score.el (gnus-score-followup-thread): Make sure we are in
+	the summary buffer.
+
+	* gnus.el (gnus-buffer-live-p): New function.
+
+	* gnus-topic.el (gnus-topic-change-level): Would bug out on dead
+	groups. 
+
+	* gnus.el (gnus-summary-respool-article): Prompt better.
+	(gnus-add-marked-articles): Would create recursive lists.
+	(gnus-summary-move-article): Activate all groups that have been
+	moved to. 
+
 Sun Mar 17 13:17:26 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.54 is released.
 
 	* gnus.el (gnus-article-hide-pgp): Would hide one char too many.
 

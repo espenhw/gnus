@@ -124,7 +124,7 @@ will be expired along with non-matching score entries.")
 (defvar gnus-score-exact-adapt-limit 10
   "*Number that says how long a match has to be before using substring matching.
 When doing adaptive scoring, one normally uses fuzzy or substring
-matching. However, if the header one matches is short, the possibility
+matching.  However, if the header one matches is short, the possibility
 for false positives is great, so if the length of the match is less
 than this variable, exact matching will be used.
 
@@ -677,27 +677,31 @@ SCORE is the score to add."
   "Add SCORE to all followups to the article in the current buffer."
   (interactive "P")
   (setq score (gnus-score-default score))
-  (save-excursion
-    (save-restriction
-      (goto-char (point-min))
-      (let ((id (mail-fetch-field "message-id")))
-	(when id
-	  (gnus-summary-score-entry
-	   "references" (concat id "[ \t]*$") 'r
-	   score (current-time-string) nil t))))))
+  (when (gnus-buffer-live-p gnus-summary-buffer)
+    (save-excursion
+      (set-buffer gnus-summary-buffer)
+      (save-restriction
+	(goto-char (point-min))
+	(let ((id (mail-fetch-field "message-id")))
+	  (when id
+	    (gnus-summary-score-entry
+	     "references" (concat id "[ \t]*$") 'r
+	     score (current-time-string) nil t)))))))
 
 (defun gnus-score-followup-thread (&optional score)
   "Add SCORE to all later articles in the thread the current buffer is part of."
   (interactive "P")
   (setq score (gnus-score-default score))
-  (save-excursion
-    (save-restriction
-      (goto-char (point-min))
-      (let ((id (mail-fetch-field "message-id")))
-	(when id
-	  (gnus-summary-score-entry
-	   "references" id 's
-	   score (current-time-string)))))))
+  (when (gnus-buffer-live-p gnus-summary-buffer)
+    (save-excursion
+      (set-buffer gnus-summary-buffer)
+      (save-restriction
+	(goto-char (point-min))
+	(let ((id (mail-fetch-field "message-id")))
+	  (when id
+	    (gnus-summary-score-entry
+	     "references" id 's
+	     score (current-time-string))))))))
 
 (defun gnus-score-set (symbol value &optional alist)
   ;; Set SYMBOL to VALUE in ALIST.
@@ -1287,19 +1291,25 @@ SCORE is the score to add."
 (defun gnus-score-body (scores header now expire &optional trace)
   (save-excursion
     (set-buffer nntp-server-buffer)
+    (setq gnus-scores-articles
+	  (sort gnus-scores-articles
+		(lambda (a1 a2)
+		  (< (mail-header-number (car a1))
+		     (mail-header-number (car a2))))))
     (save-restriction
       (let* ((buffer-read-only nil)
 	     (articles gnus-scores-articles)
-	     (last (if (caar gnus-scores-articles)
-		       (mail-header-number (caar gnus-scores-articles))
-		     0))
 	     (all-scores scores)
 	     (request-func (cond ((string= "head" (downcase header))
 				  'gnus-request-head)
 				 ((string= "body" (downcase header))
 				  'gnus-request-body)
 				 (t 'gnus-request-article)))
-	     entries alist ofunc article)
+	     entries alist ofunc article last)
+	(while (cdr articles)
+	  (setq articles (cdr articles)))
+	(setq last (mail-header-number (car articles)))
+	(setq articles gnus-scores-articles)
 	;; Not all backends support partial fetching.  In that case,
 	;; we just fetch the entire article.
 	(or (gnus-check-backend-function 

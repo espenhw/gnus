@@ -35,6 +35,43 @@ Wed Feb 28 04:54:41 1996  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Slow Terminal Connection): Addition.
 
+Sat Mar  9 07:00:48 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Fancy Mail Splitting): Addition.
+
+Sat Mar  9 00:32:23 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.texi (Summary Buffer Lines): Change.
+
+Fri Mar  8 20:17:51 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Summary Score Commands): Change.
+
+Wed Mar  6 21:18:04 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Topic Commands): Addition.
+	(Kill Files): Addition.
+	(Summary Maneuvering): Change.
+	(Summary Maneuvering): Addition.
+	(Saving Articles): Addition.
+
+Mon Mar  4 23:16:56 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Compilation ): Change.
+
+Sun Mar  3 21:56:46 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (NNTP): Addition.
+	(Post): Addition.
+
+Fri Mar  1 20:52:50 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Customizing Threading): Change.
+
+Wed Feb 28 04:54:41 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Slow Terminal Connection): Addition.
+
 Sat Feb 24 01:11:40 1996  Mark Borges  <mdb@cdc.noaa.gov>
 
 	* gnus.texi: Typo fixes.

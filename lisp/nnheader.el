@@ -221,8 +221,9 @@ on your system, you could say something like:
       (insert-file-contents-literally file)
     ;; Read 1K blocks until we find a separator.
     (let ((beg 0)
+	  format-alist 
 	  (chop 1024))
-      (while (and (eq chop (nth 1 (insert-file-contents-literally
+      (while (and (eq chop (nth 1 (insert-file-contents
 				   file nil beg (incf beg chop))))
 		  (prog1 (not (search-forward "\n\n" nil t)) 
 		    (goto-char (point-max)))

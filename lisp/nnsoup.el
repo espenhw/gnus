@@ -405,7 +405,9 @@ The SOUP packet file name will be inserted at the %s.")
     (nnheader-temp-write nnsoup-active-file
       (let ((standard-output (current-buffer)))
 	(prin1 `(setq nnsoup-group-alist ',nnsoup-group-alist))
-	(prin1 `(setq nnsoup-current-prefix ,nnsoup-current-prefix))))))
+	(insert "\n")
+	(prin1 `(setq nnsoup-current-prefix ,nnsoup-current-prefix))
+	(insert "\n")))))
 
 (defun nnsoup-next-prefix ()
   "Return the next free prefix."
@@ -728,9 +730,9 @@ The SOUP packet file name will be inserted at the %s.")
       (erase-buffer)
       (insert-file-contents (car files))
       (goto-char (point-min))
-      (end-of-line)
-      (re-search-backward "[ \t]\\([^ ]+\\):[0-9]")
-      (setq group (buffer-substring (match-beginning 1) (match-end 1)))
+      (if (not (re-search-forward "^[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t *\\(Xref: \\)? *[^ ]* \\([^ ]+\\):[0-9]" nil t))
+	  (setq group "unknown")
+	(setq group (match-string 2)))
       (setq lines (count-lines (point-min) (point-max)))
       (setq ident (progn (string-match
 			  "/\\([0-9]+\\)\\." (car files))
@@ -744,16 +746,13 @@ The SOUP packet file name will be inserted at the %s.")
 		active)
 	(nconc elem
 	       (list
-		(list (cons (setq min (1+ (cdaadr elem)))
+		(list (cons (1+ (setq min (cdadr elem)))
 			    (+ min lines))
 		      (vector ident group "ncm" "" lines))))
 	(setcdr (cadr elem) (+ min lines)))
       (setq files (cdr files)))
     (message "")
     (setq nnsoup-group-alist active)
-    (while active
-      (setcdr (car active) (nreverse (cdar active)))
-      (setq active (cdr active)))
     (nnsoup-write-active-file t)))
 
 (defun nnsoup-delete-unreferenced-message-files ()

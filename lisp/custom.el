@@ -57,7 +57,7 @@
     (defun buffer-substring-no-properties (beg end)
       "Return the text from BEG to END, without text properties, as a string."
       (let ((string (buffer-substring beg end)))
-	(set-text-properties 0 (length string) nil string)
+	(custom-set-text-properties 0 (length string) nil string)
 	string)))
 
 (or (fboundp 'add-to-list)
@@ -153,16 +153,22 @@ STRING should be given if the last search was by `string-match' on STRING."
       (and (fboundp 'set-face-underline-p)
 	   (funcall 'set-face-underline-p 'underline t))))
 
-(or (fboundp 'set-text-properties)
-    ;; Missing in XEmacs 19.12.
-    (defun set-text-properties (start end props &optional buffer)
-      (if (or (null buffer) (bufferp buffer))
-	  (if props
-	      (while props
-		(put-text-property 
-		 start end (car props) (nth 1 props) buffer)
-		(setq props (nthcdr 2 props)))
-	    (remove-text-properties start end ())))))
+(defun custom-xmas-set-text-properties (start end props &optional buffer)
+  "You should NEVER use this function.  It is ideologically blasphemous.
+It is provided only to ease porting of broken FSF Emacs programs."
+  (if (stringp buffer) 
+      nil
+    (map-extents (lambda (extent ignored)
+		   (remove-text-properties 
+		    start end
+		    (list (extent-property extent 'text-prop) nil)
+		    buffer))
+		 buffer start end nil nil 'text-prop)
+    (add-text-properties start end props buffer)))
+
+(if (string-match "XEmacs" emacs-version)
+    (fset 'custom-set-text-properties 'gnus-xmas-set-text-properties)
+  (fset 'custom-set-text-properties 'set-text-properties))
 
 (or (fboundp 'event-closest-point)
     ;; Missing in Emacs 19.29.
@@ -1817,7 +1823,7 @@ If the optional argument SAVE is non-nil, use that for saving changes."
   "Describe how to execute COMMAND."
   (let ((from (point)))
     (insert "`" (key-description (where-is-internal command nil t)) "'")
-    (set-text-properties from (point)
+    (custom-set-text-properties from (point)
 			 (list 'face custom-button-face
 			       mouse-face custom-mouse-face
 			       'custom-jump t ;Make TAB jump over it.
@@ -2143,7 +2149,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
     (insert-char (custom-padding custom)
 		 (- (custom-width custom) (- (point) from)))
     (custom-field-move field from (point))
-    (set-text-properties 
+    (custom-set-text-properties 
      from (point)
      (list 'custom-field field
 	   'custom-tag field

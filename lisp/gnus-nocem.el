@@ -89,25 +89,30 @@
 		       (< (cdr active) (cdr gactive))))
 	  ;; Ok, there are new articles in this group, se we fetch the
 	  ;; headers.
-	  (let ((gnus-newsgroup-dependencies (make-vector 10 nil))
-		headers)
-	    (setq headers
-		  (if (eq 'nov
-			  (gnus-retrieve-headers 
-			   (setq articles
-				 (gnus-uncompress-range
-				  (cons 
-				   (if active (1+ (cdr active)) (car gactive))
-				   (cdr gactive))))
-			   group))
-		      (gnus-get-newsgroup-headers-xover articles)
-		    (gnus-get-newsgroup-headers)))
-	    (while headers
-	      ;; We take a closer look on all articles that have
-	      ;; "@@NCM" in the subject.  
-	      (when (string-match "@@NCM" (mail-header-subject (car headers)))
-		(gnus-nocem-check-article group (car headers)))
-	      (setq headers (cdr headers)))))
+	  (save-excursion
+	    (let ((gnus-newsgroup-dependencies (make-vector 10 nil))
+		  (buffer (nnheader-set-temp-buffer " *Gnus NoCeM*"))
+		  headers)
+	      (setq headers
+		    (if (eq 'nov
+			    (gnus-retrieve-headers 
+			     (setq articles
+				   (gnus-uncompress-range
+				    (cons 
+				     (if active (1+ (cdr active)) 
+				       (car gactive))
+				     (cdr gactive))))
+			     group))
+			(gnus-get-newsgroup-headers-xover articles)
+		      (gnus-get-newsgroup-headers)))
+	      (while headers
+		;; We take a closer look on all articles that have
+		;; "@@NCM" in the subject.  
+		(when (string-match "@@NCM"
+				    (mail-header-subject (car headers)))
+		  (gnus-nocem-check-article group (car headers)))
+		(setq headers (cdr headers)))
+	      (kill-buffer (current-buffer)))))
 	(setq gnus-nocem-active
 	      (cons (list group gactive) 
 		    (delq (assoc group gnus-nocem-active)
@@ -118,26 +123,25 @@
 
 (defun gnus-nocem-check-article (group header)
   "Check whether the current article is an NCM article and that we want it."
-  (nnheader-temp-write nil
-    ;; Get the article.
-    (gnus-message 7 "Checking article %d in %s for NoCeM..."
-		  (mail-header-number header) group)
-    (let ((date (mail-header-date header))
-	  issuer b e)
-      (when (or (not date)
-		(nnmail-time-less 
-		 (nnmail-time-since (nnmail-date-to-time date))
-		 (nnmail-days-to-time gnus-nocem-expiry-wait)))
-	(gnus-request-article-this-buffer (mail-header-number header) group)
-	;; The article has to have proper NoCeM headers.
-	(when (and (setq b (search-forward "\n@@BEGIN NCM HEADERS\n" nil t))
-		   (setq e (search-forward "\n@@BEGIN NCM BODY\n" nil t)))
-	  ;; We get the name of the issuer.
-	  (narrow-to-region b e)
-	  (setq issuer (mail-fetch-field "issuer"))
-	  (and (member issuer gnus-nocem-issuers) ; We like her...
-	       (gnus-nocem-verify-issuer issuer) ; She is who she says she is..
-	       (gnus-nocem-enter-article))))))) ; We gobble the message.
+  ;; Get the article.
+  (gnus-message 7 "Checking article %d in %s for NoCeM..."
+		(mail-header-number header) group)
+  (let ((date (mail-header-date header))
+	issuer b e)
+    (when (or (not date)
+	      (nnmail-time-less 
+	       (nnmail-time-since (nnmail-date-to-time date))
+	       (nnmail-days-to-time gnus-nocem-expiry-wait)))
+      (gnus-request-article-this-buffer (mail-header-number header) group)
+      ;; The article has to have proper NoCeM headers.
+      (when (and (setq b (search-forward "\n@@BEGIN NCM HEADERS\n" nil t))
+		 (setq e (search-forward "\n@@BEGIN NCM BODY\n" nil t)))
+	;; We get the name of the issuer.
+	(narrow-to-region b e)
+	(setq issuer (mail-fetch-field "issuer"))
+	(and (member issuer gnus-nocem-issuers) ; We like her...
+	     (gnus-nocem-verify-issuer issuer) ; She is who she says she is..
+	     (gnus-nocem-enter-article)))))) ; We gobble the message.
   
 (defun gnus-nocem-verify-issuer (person)
   "Verify using PGP that the canceler is who she says she is."
@@ -155,7 +159,7 @@
       (narrow-to-region b (1+ (match-beginning 0)))
       (goto-char (point-min))
       (while (search-forward "\t" nil t)
-	(when (boundp (let ((obarray gnus-newsrc-hashtb)) (read buf)))
+	(when (boundp (let ((obarray gnus-active-hashtb)) (read buf)))
 	  (beginning-of-line)
 	  (while (= (following-char) ?\t)
 	    (forward-line -1))

@@ -240,6 +240,7 @@ it.")
 			     minactive maxactive group))))))))
 
 (defun nnfolder-request-scan (&optional group server)
+  (nnfolder-possibly-change-group group server)
   (nnmail-get-new-mail
    'nnfolder 
    (lambda ()
@@ -282,9 +283,10 @@ it.")
 
 (defun nnfolder-request-create-group (group &optional server) 
   (nnmail-activate 'nnfolder)
-  (unless (assoc group nnfolder-group-alist)
-    (push (list group (cons 1 0)) nnfolder-group-alist)
-    (nnmail-save-active nnfolder-group-alist nnfolder-active-file))
+  (when group 
+    (unless (assoc group nnfolder-group-alist)
+      (push (list group (cons 1 0)) nnfolder-group-alist)
+      (nnmail-save-active nnfolder-group-alist nnfolder-active-file)))
   t)
 
 (defun nnfolder-request-list (&optional server)
@@ -569,9 +571,12 @@ it.")
       (while (search-backward (concat "\n" nnfolder-article-marker) nil t)
 	(delete-region (1+ (point)) (progn (forward-line 2) (point))))
 
-      ;; Insert the new newsgroup marker.
       (nnfolder-possibly-change-group (car group-art))
+      ;; Insert the new newsgroup marker.
       (nnfolder-insert-newsgroup-line group-art)
+      (unless nnfolder-current-buffer
+	(nnfolder-request-create-group (car group-art))
+	(nnfolder-possibly-change-group (car group-art)))
       (let ((beg (point-min))
 	    (end (point-max))
 	    (obuf (current-buffer)))

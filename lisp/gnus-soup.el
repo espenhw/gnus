@@ -57,6 +57,9 @@ The SOUP packet file name will be inserted at the %s.")
 (defvar gnus-soup-packet-regexp "Soupin"
   "*Regular expression matching SOUP REPLIES packets in `gnus-soup-packet-directory'.")
 
+(defvar gnus-soup-ignored-headers "^Xref:"
+  "*Regexp to match headers to be removed when brewing SOUP packets.")
+
 ;;; Internal Variables:
 
 (defvar gnus-soup-encoding-type ?n
@@ -140,6 +143,9 @@ move those articles instead."
 	  (set-buffer tmp-buf)
 	  (when (gnus-request-article-this-buffer 
 		 (car articles) gnus-newsgroup-name)
+	    (save-restriction
+	      (nnheader-narrow-to-headers)
+	      (nnheader-remove-header gnus-soup-ignored-headers t))
 	    (gnus-soup-store gnus-soup-directory prefix headers
 			     gnus-soup-encoding-type 
 			     gnus-soup-index-type)
@@ -283,7 +289,7 @@ If NOT-ALL, don't pack ticked articles."
   ;; [number subject from date id references chars lines xref]
   (goto-char (point-max))
   (insert
-   (format "%d\t%s\t%s\t%s\t%s\t%s\t%d\t%s\t%s\t\n"
+   (format "%d\t%s\t%s\t%s\t%s\t%s\t%d\t%s\t\t\n"
 	   offset
 	   (or (mail-header-subject header) "(none)")
 	   (or (mail-header-from header) "(nobody)")
@@ -295,8 +301,7 @@ If NOT-ALL, don't pack ticked articles."
 			(current-time) "-")))
 	   (or (mail-header-references header) "")
 	   (or (mail-header-chars header) 0) 
-	   (or (mail-header-lines header) "0") 
-	   (or (mail-header-xref header) ""))))
+	   (or (mail-header-lines header) "0"))))
 
 (defun gnus-soup-save-areas ()
   (gnus-soup-write-areas)
