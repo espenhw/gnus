@@ -818,7 +818,7 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 
       ;; Add hooks for loading and saving the spam stats
       (add-hook 'gnus-save-newsrc-hook 'spam-maybe-spam-stat-save)
-      (add-hook 'gnus-get-new-news-hook 'spam-maybe-spam-stat-load))
+      (add-hook 'gnus-get-new-news-hook 'spam-maybe-spam-stat-load)
       (add-hook 'gnus-startup-hook 'spam-maybe-spam-stat-load))
 
   (file-error (progn
