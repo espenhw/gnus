@@ -3547,7 +3547,8 @@ OTHER-HEADERS is an alist of header/value pairs."
 			    (lambda (addr) (cdr addr)) ccalist ", "))))
 	(when (string-match "^ +" (cdr ccs))
 	  (setcdr ccs (substring (cdr ccs) (match-end 0))))
-	(push ccs follow-to)))))
+	(push ccs follow-to)))
+    follow-to))
 
 
 ;;;###autoload

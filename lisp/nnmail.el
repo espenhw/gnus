@@ -1340,6 +1340,10 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (setq nnmail-cache-buffer nil)
       (kill-buffer (current-buffer)))))
 
+;; Compiler directives.
+(defvar group)
+(defvar group-art-list)
+(defvar group-art)
 (defun nnmail-cache-insert (id)
   (when nnmail-treat-duplicates
     ;; Store some information about the group this message is written
