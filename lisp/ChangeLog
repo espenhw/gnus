@@ -1,3 +1,9 @@
+1999-12-14 15:08:03  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-ems.el: Translate more ugly characters.
+	* nnheader.el (nnheader-translate-file-chars): Don't translate
+	the second ':'.
+
 1999-12-14 10:40:33  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-request-article-this-buffer): Use all refer

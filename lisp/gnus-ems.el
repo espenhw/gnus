@@ -89,8 +89,9 @@
 		    (symbol-name system-type))
       (setq nnheader-file-name-translation-alist
 	    (append nnheader-file-name-translation-alist
-		    '((?: . ?_)
-		      (?+ . ?-))))))))
+		    (mapcar (lambda (c) (cons c ?_))
+			    '(?: ?* ?\" ?< ?> ??))
+		    '((?+ . ?-))))))))
 
 (defvar gnus-tmp-unread)
 (defvar gnus-tmp-replied)
