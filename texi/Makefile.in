@@ -18,7 +18,7 @@ INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 SHELL = /bin/sh
 PAPERTYPE=a4
-INFO_DEPS=gnus message emacs-mime sieve
+INFO_DEPS=gnus message emacs-mime sieve pgg
 
 all: $(INFO_DEPS)
 
@@ -34,9 +34,9 @@ most: texi2latex.elc latex latexps
 	  $(EMACSINFO) $<; \
 	fi
 
-dvi: gnus.dvi message.dvi refcard.dvi emacs-mime.dvi sieve.dvi
+dvi: gnus.dvi message.dvi refcard.dvi emacs-mime.dvi sieve.dvi pgg.dvi
 
-pdf: gnus.pdf message.pdf refcard.pdf emacs-mime.pdf sieve.pdf
+pdf: gnus.pdf message.pdf refcard.pdf emacs-mime.pdf sieve.pdf pgg.pdf
 
 .texi.dvi :
 	sed -e '/@iflatex/,/@end iflatex/d' $< > gnustmp.texi 
@@ -94,9 +94,9 @@ makeinfo:
 texi2latex.elc: texi2latex.el
 	srcdir=$(srcdir)/../lisp $(EMACSCOMP) -l $(srcdir)/../lisp/dgnushack.el --eval '(byte-compile-file "$(srcdir)/texi2latex.el")'
 
-latex: gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi sieve.latexi
+latex: gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi sieve.latexi pgg.latexi
 
-gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi sieve.latexi: $(srcdir)/gnus.texi $(srcdir)/gnus-faq.texi $(srcdir)/message.texi $(srcdir)/emacs-mime.texi $(srcdir)/sieve.texi texi2latex.elc
+gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi sieve.latexi pgg.latexi: $(srcdir)/gnus.texi $(srcdir)/gnus-faq.texi $(srcdir)/message.texi $(srcdir)/emacs-mime.texi $(srcdir)/sieve.texi $(srcdir)/pgg.texi texi2latex.elc
 	srcdir=$(srcdir) $(EMACSCOMP) -l ./texi2latex.elc -f latexi-translate
 
 .latexi.dvi-x:

@@ -38,7 +38,8 @@
   (latexi-translate-file "gnus-faq")
   (latexi-translate-file "message" t)
   (latexi-translate-file "emacs-mime" t)
-  (latexi-translate-file "sieve" t))
+  (latexi-translate-file "sieve" t)
+  (latexi-translate-file "pgg" t))
 
 (defun latexi-translate-file (file &optional as-a-chapter)
   "Translate file a LaTeX file."
@@ -94,7 +95,7 @@
 				 (progn (end-of-line) (point))))
 		(if (equal arg "@head")
 		    (insert "\\gnusinteresting")))
-	       ((member command '("setfilename" 
+	       ((member command '("setfilename" "set"
 				  "synindex" "setchapternewpage"
 				  "summarycontents" "bye"
 				  "top" "iftex" "cartouche" 
@@ -129,6 +130,8 @@
 		(delete-char -2)
 		(insert "\\\\"))
 	       ((equal command "sp")
+		(replace-match "" t t))
+	       ((member command '("deffn" "defvar" "defun"))
 		(replace-match "" t t))
 	       ((equal command "node")
 		(latexi-strip-line)
@@ -178,6 +181,8 @@
 		  (latexi-strip-line)
 		  (insert (format "\\end{%s}\n" arg)))
 		 ((member arg '("iflatex" "iftex" "cartouche"))
+		  (latexi-strip-line))
+		 ((member arg '("deffn" "defvar" "defun"))
 		  (latexi-strip-line))
 		 (t
 		  (error "Unknown end arg: %s" arg))))
@@ -241,7 +246,8 @@
 		;;  "\\begin{theindex}\\input{gnus.%s}\\end{theindex}\n" arg))
 		)
 	       (t
-		(error "Unknown command (line %d): %s"
+		(error "Unknown command (file %s line %d): %s"
+		       file
 		       (save-excursion
 			 (widen)
 			 (1+ (count-lines (point-min) (progn
@@ -255,7 +261,7 @@
 	    (latexi-strip-line))
 	   ((member command '("ref" "xref" "pxref"))
 	    (latexi-exchange-command (concat "gnus" command) arg))
-	   ((member command '("sc" "file" "dfn" "emph" "kbd" "uref"
+	   ((member command '("sc" "file" "dfn" "emph" "kbd" "key" "uref"
 			      "code" "samp" "var" "strong" "i"
 			      "result"))
 	    (goto-char (match-beginning 0))
@@ -274,7 +280,8 @@
 	    (delete-char 2)
 	    (insert "duppat{}"))
 	   (t
-	    (error "Unknown command (line %d): %s"
+	    (error "Unknown command (file %s line %d): %s"
+		   file
 		   (save-excursion
 		     (widen)
 		     (1+ (count-lines (point-min) (progn
