@@ -1,3 +1,7 @@
+2000-09-18 09:05:46  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mail-source.el (mail-source-fetch-imap): Disable multibyte.
+
 2000-09-17 01:13:46  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2047.el (rfc2047-q-encoding-alist): Remove = and _ from the
