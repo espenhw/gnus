@@ -1,3 +1,7 @@
+2003-04-13 01:12:01 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+
+	* gnus.el: Oort Gnus v0.18 is released.
+
 2003-04-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-draft.el (gnus-draft-send): Add message-hidden-headers. 
