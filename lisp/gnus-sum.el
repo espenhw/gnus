@@ -8737,8 +8737,7 @@ strokes are `C-u g'."
 	   (or (cdr (assq arg gnus-summary-show-article-charset-alist))
 	       (mm-read-coding-system
 		"View as charset: " ;; actually it is coding system.
-		(save-excursion
-		  (set-buffer gnus-article-buffer)
+		(with-current-buffer gnus-article-buffer
 		  (mm-detect-coding-region (point) (point-max))))))
 	  (gnus-newsgroup-ignored-charsets 'gnus-all))
       (gnus-summary-select-article nil 'force)

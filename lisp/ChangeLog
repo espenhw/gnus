@@ -1,3 +1,7 @@
+2004-10-06  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-summary-show-article): Use with-current-buffer.
+
 2004-10-05  Jesper Harder  <harder@ifa.au.dk>
 
 	* nnsoup.el (nnsoup-read-active-file): Use dolist, mapc or last
