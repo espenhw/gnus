@@ -1,3 +1,21 @@
+2001-07-30  Simon Josefsson  <jas@extundo.com>
+
+	* smime.el (smime-call-openssl-region): Revert previous change,
+	just pass on buf to `call-process-region'.
+	(smime-verify-region): Doc fix.  Don't message stuff.  Use
+	`smime-new-details-buffer'.  Inserts error messages into buffer.
+	(smime-noverify-region): Ditto.
+	(smime-decrypt-region): Ditto.  Handles stderr separately.
+	(smime-verify-buffer, smime-noverify-buffer)
+	(smime-decrypt-buffer): Doc fix.
+	(smime-new-details-buffer): New function.
+	(smime-pkcs7-region, smime-pkcs7-certificates-region)
+	(smime-pkcs7-email-region): Use `smime-new-details-buffer'.
+	(smime-sign-region, smime-encrypt-region): Don't use
+	`insert-buffer'.
+
+	* mml-smime.el (mml-smime-verify): Fix security button strings.
+
 2001-07-30 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-mime-save-part-and-strip): Save

@@ -146,8 +146,8 @@
 	     mm-security-handle 'gnus-info "Failed")
 	    (mm-set-handle-multipart-parameter
 	     mm-security-handle 'gnus-details
-	     (concat "OpenSSL failed to verify message:\n"
-		     "---------------------------------\n"
+	     (concat "OpenSSL failed to verify message integrity:\n"
+		     "-------------------------------------------\n"
 		     openssl-output)))
 	;; verify mail addresses in mail against those in certificate
 	(when (and (smime-pkcs7-region (point-min) (point-max))
@@ -168,10 +168,10 @@
 	      (mm-set-handle-multipart-parameter
 	       mm-security-handle 'gnus-info "Ok (sender authenticated)")
 	    (mm-set-handle-multipart-parameter
-	     mm-security-handle 'gnus-info "Integrity OK (sender unknown)")))
+	     mm-security-handle 'gnus-info "Ok (sender not trusted)")))
 	(mm-set-handle-multipart-parameter
 	 mm-security-handle 'gnus-details
-	 (concat "Sender clamed to be: " (mm-handle-multipart-from ctl) "\n"
+	 (concat "Sender claimed to be: " (mm-handle-multipart-from ctl) "\n"
 		 (if addresses
 		     (concat "Addresses in certificate: "
 			     (mapconcat 'identity addresses ", "))

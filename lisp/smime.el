@@ -209,7 +209,7 @@ to set this to e.g. `(\"-rand\" \"/etc/entropy\")'."
 
 (defun smime-call-openssl-region (b e buf &rest args)
   (case (apply 'call-process-region b e smime-openssl-program nil
-	       (list buf nil) nil (append smime-extra-arguments args))
+	       buf nil (append smime-extra-arguments args))
     (0 t)
     (1 (message "OpenSSL: An error occurred parsing the command options.") nil)
     (2 (message "OpenSSL: One of the input files could not be read.") nil)
@@ -244,7 +244,7 @@ to include in its caar."
 		      (if passphrase
 			  (list "-passin" "env:GNUS_SMIME_PASSPHRASE"))))
 	  (delete-region b e)
-	  (insert-buffer buffer)
+	  (insert-buffer-substring buffer)
 	  (when (looking-at "^MIME-Version: 1.0$")
 	    (delete-region (point) (progn (forward-line 1) (point))))
 	  t)
@@ -252,7 +252,7 @@ to include in its caar."
 	  (setenv "GNUS_SMIME_PASSPHRASE" "" t))
       (with-current-buffer (get-buffer-create smime-details-buffer)
 	(goto-char (point-max))
-	(insert-buffer buffer))
+	(insert-buffer-substring buffer))
       (kill-buffer buffer))))
 
 (defun smime-encrypt-region (b e certfiles)
@@ -265,22 +265,14 @@ is expected to contain of a PEM encoded certificate."
 	(when (apply 'smime-call-openssl-region b e buffer "smime" "-encrypt"
 		     smime-encrypt-cipher (mapcar 'expand-file-name certfiles))
 	  (delete-region b e)
-	  (insert-buffer buffer)
+	  (insert-buffer-substring buffer)
 	  (when (looking-at "^MIME-Version: 1.0$")
 	    (delete-region (point) (progn (forward-line 1) (point))))
 	  t)
       (with-current-buffer (get-buffer-create smime-details-buffer)
 	(goto-char (point-max))
-	(insert-buffer buffer))
+	(insert-buffer-substring buffer))
       (kill-buffer buffer))))
-
-(defun smime-get-certfiles (keyfile keys)
-  (if keys
-      (let ((curkey (car keys))
-	    (otherkeys (cdr keys)))
-	(if (string= keyfile (cadr curkey))
-	    (caddr curkey)
-	  (smime-get-certfiles keyfile otherkeys)))))
 
 ;; Sign+encrypt buffer
 
@@ -314,71 +306,98 @@ nil."
 ;; Verify+decrypt region
 
 (defun smime-verify-region (b e)
-  (let ((buffer (get-buffer-create smime-details-buffer))
-	(CAs (append (if smime-CA-file
+  "Verify S/MIME message in region between B and E.
+Returns non-nil on success.
+Any details (stdout and stderr) are left in the buffer specified by
+`smime-details-buffer'."
+  (smime-new-details-buffer)
+  (let ((CAs (append (if smime-CA-file
 			 (list "-CAfile"
 			       (expand-file-name smime-CA-file)))
 		     (if smime-CA-directory
 			 (list "-CApath"
 			       (expand-file-name smime-CA-directory))))))
-    (unless CAs (error "No CA configured"))
-    (with-current-buffer buffer
-      (erase-buffer))
-    (if (apply 'smime-call-openssl-region b e buffer "smime" "-verify"
-	       "-out" "/dev/null" CAs)
-	(message "S/MIME message verified succesfully.")
-      (message "S/MIME message NOT verified successfully.")
+    (unless CAs
+      (error "No CA configured"))
+    (if (apply 'smime-call-openssl-region b e (list smime-details-buffer t)
+	       "smime" "-verify" "-out" "/dev/null" CAs)
+	t
+      (insert-buffer-substring smime-details-buffer)
       nil)))
 
 (defun smime-noverify-region (b e)
-  (let ((buffer (get-buffer-create smime-details-buffer)))
-    (with-current-buffer buffer
-      (erase-buffer))
-    (if (apply 'smime-call-openssl-region b e buffer "smime" "-verify"
-	       "-noverify" "-out" '("/dev/null"))
-	(message "S/MIME message verified succesfully.")
-      (message "S/MIME message NOT verified successfully.")
-      nil)))
+  "Verify integrity of S/MIME message in region between B and E.
+Returns non-nil on success.
+Any details (stdout and stderr) are left in the buffer specified by
+`smime-details-buffer'."
+  (smime-new-details-buffer)
+  (if (apply 'smime-call-openssl-region b e (list smime-details-buffer t)
+	     "smime" "-verify" "-noverify" "-out" '("/dev/null"))
+      t
+    (insert-buffer-substring smime-details-buffer)
+    nil))
 
 (defun smime-decrypt-region (b e keyfile)
-  (let ((buffer (generate-new-buffer (generate-new-buffer-name "*smime*")))
-	CAs (passphrase (smime-ask-passphrase)))
+  "Decrypt S/MIME message in region between B and E with key in KEYFILE.
+On success, replaces region with decrypted data and return non-nil.
+Any details (stderr on success, stdout and stderr on error) are left
+in the buffer specified by `smime-details-buffer'."
+  (smime-new-details-buffer)
+  (let ((buffer (generate-new-buffer (generate-new-buffer-name " *smime*")))
+	CAs (passphrase (smime-ask-passphrase))
+	(tmpfile (make-temp-file "smime")))
     (if passphrase
 	(setenv "GNUS_SMIME_PASSPHRASE" passphrase))
-    (when (apply 'smime-call-openssl-region
-		 b e buffer "smime" "-decrypt"
-		 "-recip" (expand-file-name keyfile)
-		 (if passphrase
-		     (list "-passin" "env:GNUS_SMIME_PASSPHRASE" )))
+    (if (prog1
+	    (apply 'smime-call-openssl-region b e
+		   (list buffer tmpfile)
+		   "smime" "-decrypt" "-recip" (expand-file-name keyfile)
+		   (if passphrase
+		       (list "-passin" "env:GNUS_SMIME_PASSPHRASE")))
+	  (if passphrase
+	      (setenv "GNUS_SMIME_PASSPHRASE" "" t))
+	  (with-current-buffer smime-details-buffer
+	    (insert-file-contents tmpfile)
+	    (delete-file tmpfile)))
+	(progn
+	  (delete-region b e)
+	  (insert-buffer-substring buffer)
+	  (kill-buffer buffer)
+	  t)
+      (with-current-buffer smime-details-buffer
+	(insert-buffer-substring buffer))
+      (kill-buffer buffer)
       (delete-region b e)
-      (insert-buffer buffer))
-    (if passphrase
-	(setenv "GNUS_SMIME_PASSPHRASE" "" t))
-    (with-current-buffer (get-buffer-create smime-details-buffer)
-      (goto-char (point-max))
-      (insert-buffer buffer))
-    (kill-buffer buffer)))
+      (insert-buffer-substring smime-details-buffer)
+      nil)))
 
 ;; Verify+Decrypt buffer
 
 (defun smime-verify-buffer (&optional buffer)
   "Verify integrity of S/MIME message in BUFFER.
-Uses current buffer if BUFFER is nil."
+Uses current buffer if BUFFER is nil. Returns non-nil on success.
+Any details (stdout and stderr) are left in the buffer specified by
+`smime-details-buffer'."
   (interactive)
   (with-current-buffer (or buffer (current-buffer))
     (smime-verify-region (point-min) (point-max))))
 
 (defun smime-noverify-buffer (&optional buffer)
   "Verify integrity of S/MIME message in BUFFER.
-Uses current buffer if BUFFER is nil.
-Does NOT verify validity of certificate."
+Does NOT verify validity of certificate (only message integrity).
+Uses current buffer if BUFFER is nil. Returns non-nil on success.
+Any details (stdout and stderr) are left in the buffer specified by
+`smime-details-buffer'."
   (interactive)
   (with-current-buffer (or buffer (current-buffer))
     (smime-noverify-region (point-min) (point-max))))
 
 (defun smime-decrypt-buffer (&optional buffer keyfile)
   "Decrypt S/MIME message in BUFFER using KEYFILE.
-Uses current buffer if BUFFER is nil, queries user of KEYFILE is nil."
+Uses current buffer if BUFFER is nil, and query user of KEYFILE if it's nil.
+On success, replaces data in buffer and return non-nil.
+Any details (stderr on success, stdout and stderr on error) are left
+in the buffer specified by `smime-details-buffer'."
   (interactive)
   (with-current-buffer (or buffer (current-buffer))
     (smime-decrypt-region
@@ -392,36 +411,46 @@ Uses current buffer if BUFFER is nil, queries user of KEYFILE is nil."
 
 ;; Various operations
 
+(defun smime-new-details-buffer ()
+  (with-current-buffer (get-buffer-create smime-details-buffer)
+    (erase-buffer)))
+
 (defun smime-pkcs7-region (b e)
   "Convert S/MIME message between points B and E into a PKCS7 message."
-  (let ((buffer (get-buffer-create smime-details-buffer)))
-    (with-current-buffer buffer
-      (erase-buffer))
-    (when (smime-call-openssl-region b e buffer "smime" "-pk7out")
-      (delete-region b e)
-      (insert-buffer-substring buffer)
-      t)))
+  (smime-new-details-buffer)
+  (when (smime-call-openssl-region b e smime-details-buffer "smime" "-pk7out")
+    (delete-region b e)
+    (insert-buffer-substring smime-details-buffer)
+    t))
 
 (defun smime-pkcs7-certificates-region (b e)
   "Extract any certificates enclosed in PKCS7 message between points B and E."
-  (let ((buffer (get-buffer-create smime-details-buffer)))
-    (with-current-buffer buffer
-      (erase-buffer))
-    (when (smime-call-openssl-region b e buffer "pkcs7" "-print_certs" "-text")
-      (delete-region b e)
-      (insert-buffer-substring buffer)
-      t)))
+  (smime-new-details-buffer)
+  (when (smime-call-openssl-region
+	 b e smime-details-buffer "pkcs7" "-print_certs" "-text")
+    (delete-region b e)
+    (insert-buffer-substring smime-details-buffer)
+    t))
 
 (defun smime-pkcs7-email-region (b e)
   "Get email addresses contained in certificate between points B and E.
 A string or a list of strings is returned."
-  (let ((buffer (get-buffer-create smime-details-buffer)))
-    (with-current-buffer buffer
-      (erase-buffer))
-    (when (smime-call-openssl-region b e buffer "x509" "-email" "-noout")
-      (delete-region b e)
-      (insert-buffer-substring buffer)
-      t)))
+  (smime-new-details-buffer)
+  (when (smime-call-openssl-region 
+	 b e smime-details-buffer "x509" "-email" "-noout")
+    (delete-region b e)
+    (insert-buffer-substring smime-details-buffer)
+    t))
+
+;; Utility functions
+
+(defun smime-get-certfiles (keyfile keys)
+  (if keys
+      (let ((curkey (car keys))
+	    (otherkeys (cdr keys)))
+	(if (string= keyfile (cadr curkey))
+	    (caddr curkey)
+	  (smime-get-certfiles keyfile otherkeys)))))
 
 (defalias 'smime-point-at-eol
   (if (fboundp 'point-at-eol)
