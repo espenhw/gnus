@@ -682,12 +682,21 @@ the actual number of articles toggled is returned."
 	       (gnus-agent-method-p gnus-command-method))
       (gnus-agent-load-alist gnus-newsgroup-name)
       ;; First mark all undownloaded articles as undownloaded.
-      (dolist (article (mapcar (lambda (header) (mail-header-number header))
-			       gnus-newsgroup-headers))
-	(unless (or (cdr (assq article gnus-agent-article-alist))
-		    (memq article gnus-newsgroup-downloadable)
-		    (memq article gnus-newsgroup-cached))
-	  (push article gnus-newsgroup-undownloaded)))
+      (let ((articles (mapcar (lambda (header) (mail-header-number header))
+			      gnus-newsgroup-headers))
+	    (agent-articles gnus-agent-article-alist)
+	    candidates article)
+	(while (setq article (pop articles))
+	  (while (and agent-articles
+		      (< (caar agent-articles) article))
+	    (setq agent-articles (cdr agent-articles)))
+	  (when (or (not (cdar agent-articles))
+		    (not (= (caar agent-articles) article)))
+	    (push article candidates)))
+	(dolist (article candidates)
+	  (unless (or (memq article gnus-newsgroup-downloadable)
+		      (memq article gnus-newsgroup-cached))
+	    (push article gnus-newsgroup-undownloaded))))
       ;; Then mark downloaded downloadable as not-downloadable,
       ;; if you get my drift.
       (dolist (article gnus-newsgroup-downloadable)
@@ -1117,9 +1126,9 @@ the actual number of articles toggled is returned."
   (let ((file-name-coding-system nnmail-pathname-coding-system)
 	print-level print-length item)
     (dolist (art articles)
-	(if (setq item (memq art gnus-agent-article-alist))
-	    (setcdr item state)
-	  (push  (cons art state) gnus-agent-article-alist)))
+      (if (setq item (memq art gnus-agent-article-alist))
+	  (setcdr item state)
+	(push (cons art state) gnus-agent-article-alist)))
     (setq gnus-agent-article-alist 
 	  (sort gnus-agent-article-alist 'car-less-than-car))
     (with-temp-file (if dir
@@ -1824,7 +1833,7 @@ The following commands are available:
 	    (forward-line 1))
 	  (setq cached-articles (sort cached-articles '<))))
       (if (setq uncached-articles 
-		  (gnus-set-difference articles cached-articles))
+		(gnus-set-difference articles cached-articles))
 	  (progn
 	    (set-buffer nntp-server-buffer)
 	    (erase-buffer)

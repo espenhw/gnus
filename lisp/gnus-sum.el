@@ -3710,6 +3710,35 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
       (funcall gnus-alter-header-function header))
     (gnus-dependencies-add-header header dependencies force-new)))
 
+(defsubst gnus-nov-parse-line-1 (number dependencies &optional force-new)
+  (let ((eol (gnus-point-at-eol))
+	(buffer (current-buffer))
+	header)
+
+    ;; overview: [num subject from date id refs chars lines misc]
+    (unwind-protect
+	(progn
+	  (narrow-to-region (point) eol)
+	  (unless (eobp)
+	    (forward-char))
+
+	  (setq header
+		(make-full-mail-header
+		 number			; number
+		 (nnheader-nov-field)	; subject
+		 (nnheader-nov-field)	; from
+		 (nnheader-nov-field)	; date
+		 (nnheader-nov-read-message-id)	; id
+		 (nnheader-nov-field)	; refs
+		 (nnheader-nov-read-integer) ; chars
+		 (nnheader-nov-read-integer) ; lines
+		 (unless (eobp)
+		   (nnheader-nov-field)) ; Xref
+		 (nnheader-nov-parse-extra)))) ; extra
+
+      (widen))
+    (gnus-dependencies-add-header header dependencies force-new)))
+
 (defun gnus-build-get-header (id)
   "Look through the buffer of NOV lines and find the header to ID.
 Enter this line into the dependencies hash table, and return
@@ -4738,14 +4767,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       (setq gnus-newsgroup-unreads
 	    (gnus-set-sorted-intersection
 	     gnus-newsgroup-unreads fetched-articles))
-
-      ;; The `seen' marks are treated specially.
-      (if (not gnus-newsgroup-seen)
-	  (setq gnus-newsgroup-unseen gnus-newsgroup-articles)
-	(dolist (article gnus-newsgroup-articles)
-	  (unless (gnus-member-of-range article gnus-newsgroup-seen)
-	    (push article gnus-newsgroup-unseen)))
-	(setq gnus-newsgroup-unseen (nreverse gnus-newsgroup-unseen)))
+      (gnus-compute-unseen-list)
 
       ;; Removed marked articles that do not exist.
       (gnus-update-missing-marks
@@ -4777,6 +4799,14 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	       (gnus-last-element gnus-newsgroup-headers))))
       ;; GROUP is successfully selected.
       (or gnus-newsgroup-headers t)))))
+
+(defun gnus-compute-unseen-list ()
+  ;; The `seen' marks are treated specially.
+  (if (not gnus-newsgroup-seen)
+      (setq gnus-newsgroup-unseen gnus-newsgroup-articles)
+    (setq gnus-newsgroup-unseen
+	  (gnus-inverse-list-range-intersection
+	   gnus-newsgroup-articles gnus-newsgroup-seen))))
 
 (defun gnus-summary-display-make-predicate (display)
   (require 'gnus-agent)

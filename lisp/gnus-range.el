@@ -325,6 +325,40 @@ modified."
 	(setq ranges (cdr ranges)))
       (not not-stop))))
 
+(defun gnus-list-range-intersection (list ranges)
+  "Return a list of numbers in LIST that are members of RANGES.
+LIST is a sorted list."
+  (let (number result)
+    (while (setq number (pop list))
+      (while (and ranges
+		  (if (numberp (car ranges))
+		      (< (car ranges) number)
+		    (< (cdar ranges) number)))
+	(setq ranges (cdr ranges)))
+      (when (and ranges
+		 (if (numberp (car ranges))
+		      (= (car ranges) number)
+		    (< number (cdar ranges))))
+	(push number result)))
+    (nreverse result)))
+
+(defun gnus-inverse-list-range-intersection (list ranges)
+  "Return a list of numbers in LIST that are not members of RANGES.
+LIST is a sorted list."
+  (let (number result)
+    (while (setq number (pop list))
+      (while (and ranges
+		  (if (numberp (car ranges))
+		      (< (car ranges) number)
+		    (< (cdar ranges) number)))
+	(setq ranges (cdr ranges)))
+      (when (or (not ranges)
+		(if (numberp (car ranges))
+		    (not (= (car ranges) number))
+		  (not (< number (cdar ranges)))))
+	(push number result)))
+    (nreverse result)))
+
 (defun gnus-range-length (range)
   "Return the length RANGE would have if uncompressed."
   (length (gnus-uncompress-range range)))

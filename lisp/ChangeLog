@@ -1,3 +1,19 @@
+2002-01-25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-compute-unseen-list): Use new optimized
+	function. 
+
+	* gnus-range.el (gnus-members-of-range): New function.
+	(gnus-list-range-intersection): Renamed.
+	(gnus-inverse-list-range-intersection): New function.
+
+	* gnus-sum.el (gnus-compute-unseen-list): Made into own function.
+
+	* nnagent.el (nnagent-retrieve-headers): New implementation. 
+
+	* gnus-agent.el (gnus-agent-get-undownloaded-list): New, faster
+	implementation. 
+
 2002-01-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Fbind `w3m-charset-to-coding-system'; bind

@@ -138,22 +138,12 @@
       (set-buffer nntp-server-buffer)
       (erase-buffer)
       (nnheader-insert-file-contents file)
-      (goto-char (point-min)) 
-      (while (and arts (not (eobp)))
-	(cond 
-	 ((looking-at "[0-9]")
-	  (setq n (read (current-buffer)))
-	  (if (> n (car arts))
-	      (beginning-of-line))
-	  (while (and arts (> n (car arts)))
-	    (insert (format 
-		     "%d\t[Undownloaded article %d]\tGnus Agent\t\t\t\n"
-		     (car arts) (car arts)))
-	    (pop arts))
-	  (if (and arts (= n (car arts)))
-	    (pop arts))))
-	(forward-line 1))
-      (while (and arts)
+      (goto-char (point-min))
+      ;; This loop is just for the `condition-case' -- if reading bugs
+      ;; out on a line, it'll still continue on to the next line.  So
+      ;; this look is normally just executed once.
+      
+      (while arts
 	(insert (format
 		 "%d\t[Undownloaded article %d]\tGnus Agent\t\t\t\n"
 		 (car arts) (car arts)))
