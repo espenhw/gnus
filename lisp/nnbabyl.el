@@ -161,7 +161,7 @@
       (set-buffer nnbabyl-mbox-buffer)
       (goto-char (point-min))
       (if (search-forward (nnbabyl-article-string article) nil t)
-	  (let (start stop)
+	  (let (start stop summary-line)
 	    (re-search-backward (concat "^" nnbabyl-mail-delimiter) nil t)
 	    (while (and (not (looking-at ".+:"))
 			(zerop (forward-line 1))))
@@ -176,12 +176,20 @@
 	      (erase-buffer)
 	      (insert-buffer-substring nnbabyl-mbox-buffer start stop)
 	      (goto-char (point-min))
-	      (if (search-forward "\n*** EOOH ***" nil t)
-		  (progn
-		    (delete-region (progn (beginning-of-line) (point))
-				   (or (search-forward "\n\n" nil t)
-				       (point)))))
-	      t))))))
+	    ;; If there is an EOOH header, then we have to remove some
+	    ;; duplicated headers. 
+	    (setq summary-line (looking-at "Summary-line:"))
+	    (if (search-forward "\n*** EOOH ***" nil t)
+		(if summary-line
+		    ;; The headers to be deleted are located before the
+		    ;; EOOH line...
+		    (delete-region (point-min) 
+				   (progn (forward-line 1) (point)))
+		  ;; ...or after.
+		  (delete-region (progn (beginning-of-line) (point))
+				 (or (search-forward "\n\n" nil t)
+				     (point)))))
+	    t))))))
 
 (defun nnbabyl-request-group (group &optional server dont-check)
   (save-excursion

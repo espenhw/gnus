@@ -242,7 +242,7 @@ See also the documentation for `gnus-article-highlight-citation'."
     (set-buffer gnus-article-buffer)
     (gnus-cite-parse-maybe force)
     (goto-char (point-min))
-    (search-forward "\n\n")
+    (search-forward "\n\n" nil t)
     (let ((start (point))
 	  (atts gnus-cite-attribution-alist)
 	  (buffer-read-only nil)
@@ -371,7 +371,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 
   ;; Parse current buffer searching for attribution lines.
   (goto-char (point-min))
-  (search-forward "\n\n")
+  (search-forward "\n\n" nil t)
   (while (re-search-forward gnus-cite-attribution-postfix (point-max) t)
     (let* ((start (match-beginning 0))
 	   (end (match-end 0))

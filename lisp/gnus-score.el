@@ -81,7 +81,6 @@ of the last successful match.")
 
 (defvar gnus-score-cache nil)
 (defvar gnus-scores-articles nil)
-(defvar gnus-scores-exclude-files nil)
 (defvar gnus-header-index nil)
 (defvar gnus-score-index nil)
 

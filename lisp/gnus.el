@@ -1248,7 +1248,7 @@ automatically when it is selected.")
 (defvar gnus-current-score-file nil)
 (defvar gnus-internal-global-score-files nil)
 (defvar gnus-score-file-list nil)
-
+(defvar gnus-scores-exclude-files nil)
 
 (defvar gnus-current-move-group nil)
 
@@ -1349,7 +1349,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "Gnus v5.0.9"
+(defconst gnus-version "Gnus v5.0.10"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1862,8 +1862,10 @@ Thank you for your help in stamping out bugs.
 	(setq address (substring from (match-beginning 0) (match-end 0))))
     ;; Then we check whether the "name <address>" format is used.
     (and address
-	 (string-match (concat "<" (regexp-quote address) ">") from)
-	 (and (setq name (substring from 0 (1- (match-beginning 0))))
+ 	 ;; Fix by MORIOKA Tomohiko <morioka@jaist.ac.jp>
+ 	 ;; Linear white space is not required.
+ 	 (string-match (concat "[ \t]*<" (regexp-quote address) ">") from)
+ 	 (and (setq name (substring from 0 (match-beginning 0)))
 	      ;; Strip any quotes from the name.
 	      (string-match "\".*\"" name)
 	      (setq name (substring name 1 (1- (match-end 0))))))
@@ -2016,7 +2018,7 @@ Thank you for your help in stamping out bugs.
       (gnus-set-work-buffer)
       (insert format)
       (goto-char (point-min))
-      (while (re-search-forward "%[-0-9]*\\(,[0-9]*\\)*\\(.\\)\\(.\\)?" nil t)
+      (while (re-search-forward "%[-0-9]*\\(,[0-9]+\\)?\\([^0-9]\\)\\(.\\)?" nil t)
 	(setq spec (string-to-char (buffer-substring (match-beginning 2)
 						     (match-end 2))))
 	;; First check if there are any specs that look anything like
@@ -2443,13 +2445,14 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
     (setq gnus-buffer-list (cdr gnus-buffer-list))))
 
 (defun gnus-windows-old-to-new (setting)
+  ;; First we take care of the really, really old Gnus 3 actions.
   (if (symbolp setting)
       (setq setting 
-	    (cond ((eq setting 'SelectArticle)
+	    (cond ((memq setting '(SelectArticle))
 		   'article)
-		  ((eq setting 'SelectSubject)
+		  ((memq setting '(SelectSubject ExpandSubject))
 		   'summary)
-		  ((eq setting 'SelectNewsgroup)
+		  ((memq setting '(SelectNewsgroup ExitNewsgroup))
 		   'group)
 		  (t setting))))
   (if (or (listp setting)
@@ -4245,13 +4248,14 @@ ADDRESS."
 		(not (file-exists-p (concat (file-name-as-directory (car path))
 					    "doc.txt"))))
       (setq path (cdr path)))
-    (or path (error "Couldn't find doc group"))
-    (gnus-group-make-group 
-     (gnus-group-real-name name)
-     (list 'nndoc name
-	   (list 'nndoc-address 
-		 (concat (file-name-as-directory (car path)) "doc.txt"))
-	   (list 'nndoc-article-type 'mbox))))
+    (if (not path)
+	(message "Couldn't find doc group")
+      (gnus-group-make-group 
+       (gnus-group-real-name name)
+       (list 'nndoc name
+	     (list 'nndoc-address 
+		   (concat (file-name-as-directory (car path)) "doc.txt"))
+	     (list 'nndoc-article-type 'mbox)))))
   (gnus-group-position-cursor))
 
 (defun gnus-group-make-doc-group (file type)
@@ -13141,7 +13145,8 @@ If FORCE is non-nil, the .newsrc file is read."
 		       ;; Options may continue on the next line.
 		       (or (and (re-search-forward "^[^ \t]" nil 'move)
 				(progn (beginning-of-line) (point)))
-			   (point))))))
+			   (point)))))
+	(forward-line -1))
        (symbol
 	(or (boundp symbol) (set symbol nil))
 	;; It was a group name.

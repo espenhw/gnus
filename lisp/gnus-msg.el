@@ -713,7 +713,14 @@ will attempt to use the foreign server to post the article."
 		   (re-search-forward 
 		    (concat "^" (regexp-quote mail-header-separator) "$")))
 		  (goto-char (point-min))
-		  (delete-matching-lines "^BCC:"))
+		  (while (re-search-forward "^BCC:" nil t)
+		    (delete-region (match-beginning 0)
+				   ;; There might be continuation headers. 
+				   (if (re-search-forward "^[^ \t]" nil t)
+				       (match-beginning 0)
+				     ;; Uhm... or something like this.
+				     (forward-line 1)
+				     (point)))))
 		(if fcc-line
 		    (progn
 		      (goto-char (point-max))

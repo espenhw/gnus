@@ -1,3 +1,23 @@
+Thu Oct 26 00:32:40 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-inews-news): Didn't delete continuation Bcc
+	lines. 
+
+	* gnus-cite.el (gnus-cite-parse): Set noerror on the search.
+
+	* gnus.el (gnus-extract-address-components): Linear white space
+	not required.
+	(gnus-newsrc-to-gnus-format): Would swallow the first line after
+	each options line.
+
+Wed Oct 25 23:40:59 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-windows-old-to-new): Deal with really old Gnus 3
+	settings. 
+
+	* nnbabyl.el (nnbabyl-request-article): Didn't like Summary-line
+	headers. 
+
 Wed Oct 18 19:09:10 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.el (gnus-summary-catchup-and-exit): Do the right thing on
