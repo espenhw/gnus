@@ -49,6 +49,7 @@
 
 (autoload 'sieve-manage "sieve")
 (autoload 'sieve-upload "sieve")
+(autoload 'c-mode "cc-mode")
 (require 'easymenu)
 (eval-when-compile
   (require 'font-lock))

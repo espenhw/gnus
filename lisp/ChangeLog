@@ -3,6 +3,8 @@
 	* canlock.el (mail-fetch-field): Autoload it (fix xemacs compile
 	warnings).
 
+	* sieve-mode.el (c-mode): Ditto.
+
 2003-04-28  Dave Love  <fx@gnu.org>
 
 	* gnus-util.el (nnheader): Don't require.
