@@ -1,5 +1,18 @@
 2000-09-24  Simon Josefsson  <simon@josefsson.org>
 
+	* imap.el (imap-starttls-p): Check for starttls binary.
+	(imap-starttls-open): More verbose.
+	(imap-gssapi-auth): Ditto.
+	(imap-kerberos4-auth): Ditto.
+	(imap-cram-md5-auth): Ditto.
+	(imap-login-auth): Ditto.
+	(imap-anonymous-auth): Ditto.
+	(imap-digest-md5-auth): Ditto.
+	(imap-open): Ditto.
+	(imap-digest-md5-p): Check capability first.
+
+2000-09-24  Simon Josefsson  <simon@josefsson.org>
+
 	* imap.el (imap-parse-flag-list): Correctly parse empty lists.
 	(imap-login-p): Support LOGINDISABLED.
 
