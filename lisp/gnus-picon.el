@@ -351,7 +351,7 @@ arguments necessary for the job.")
 
 (defun gnus-picons-lookup (addrs dirs)
   "Lookup the picon for ADDRS in databases DIRS.
-Returns the picon filename or NIL if none found."
+Returns the picon filename or nil if none found."
   (let (result)
     (while (and dirs (null result))
       (setq result (gnus-picons-lookup-internal addrs (pop dirs))))
@@ -381,7 +381,7 @@ DOMAINS is a list of strings from the fully qualified domain name."
 
 (defun gnus-picons-lookup-pairs (domains directories)
   "Lookup picons for DOMAINS and all its parents in DIRECTORIES.
-Returns a list of PAIRS whose CAR is the picon filename or NIL if
+Returns a list of PAIRS whose CAR is the picon filename or nil if
 none, and whose CDR is the corresponding element of DOMAINS."
   (let (picons)
     (setq directories (if (listp directories)

@@ -59,7 +59,7 @@ they will keep on jabbering all the time."
 (defvar nnheader-max-head-length 4096
   "*Max length of the head of articles.
 
-Value is an integer, nil, or t.  Nil means read in chunks of a file
+Value is an integer, nil, or t.  nil means read in chunks of a file
 indefinitely until a complete head is found\; t means always read the
 entire file immediately, disregarding `nnheader-head-chop-length'.
 

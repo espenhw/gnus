@@ -116,7 +116,7 @@ message, a huge time saver for large mailboxes.")
 (defvoo nnfolder-file-coding-system mm-text-coding-system)
 (defvoo nnfolder-file-coding-system-for-write nnheader-file-coding-system
   "Coding system for save nnfolder file.
-If NIL, NNFOLDER-FILE-CODING-SYSTEM is used.")
+if nil, `nnfolder-file-coding-system' is used.") ; FIXME: fill-in the doc-string of this variable
 
 (defvoo nnfolder-nov-is-evil nil
   "If non-nil, Gnus will never generate and use nov databases for mail groups.

@@ -661,7 +661,7 @@ If it is non-nil, it must be a toolbar.  The five valid values are
 			(cons (current-buffer) bar)))))
 
 (defun gnus-xmas-mail-strip-quoted-names (address)
-  "Protect mail-strip-quoted-names from NIL input.
+  "Protect mail-strip-quoted-names from nil input.
 XEmacs compatibility workaround."
   (if (null address)
       nil

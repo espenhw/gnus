@@ -1,3 +1,10 @@
+2001-12-21 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el, gnus-picon.el, gnus-sieve.el, gnus-sum.el:
+	* gnus-xmas.el, imap.el, mailcap.el, mm-util.el, nnfolder.el:
+	* nnheader.el, nnmail.el: Nil/NIL vs. nil. 
+	From  Pavel Jan,Bm(Bk  <Pavel@Janik.cz>
+
 2001-12-20 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnmaildir.el: Copyright changes. Require cl only at compile time.
@@ -1106,7 +1113,7 @@
 	* message.el (message-setup-1): Really add text property to all of
 	the header, not just part of it.
 
-2001-09-04 21:42:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+2001-09-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-group.el (gnus-group-sort-by-server): Use it.
 

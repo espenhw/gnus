@@ -116,7 +116,7 @@ See the documentation for these variables and functions for details."
 
 (defun gnus-sieve-guess-rule-for-article ()
   "Guess a sieve rule based on RFC822 article in buffer.
-Return NIL if no rule could be guessed."
+Return nil if no rule could be guessed."
   (when (message-fetch-field "sender")
     `(sieve address "sender" ,(regexp-quote (message-fetch-field "sender")))))
 
