@@ -1,5 +1,8 @@
 2002-02-03  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-agent.el (gnus-agent-copy-nov-line): Move to the correct
+	line, because there are extra articles in the overview buffer.
+
 	* nntp.el (nntp-retrieve-groups): Check whether BUF is live.
 
 	* message.el (message-forward-rmail-make-body): Directly use
