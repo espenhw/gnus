@@ -12631,8 +12631,9 @@ List of strings to be used as the switches to
 @code{nntp-via-rlogin-command}.  The default is @code{nil}.  If you use
 @samp{ssh} for @code{nntp-via-rlogin-command}, you may set this to
 @samp{("-C")} in order to compress all data connections, otherwise set
-this to @samp{("-t")} or @samp{("-C" "-t")} if the telnet command
-requires a pseudo-tty allocation on an intermediate host.
+this to @samp{("-t" "-e" "none")} or @samp{("-C" "-t" "-e" "none")} if
+the telnet command requires a pseudo-tty allocation on an intermediate
+host.
 @end table
 
 @item nntp-open-via-telnet-and-telnet

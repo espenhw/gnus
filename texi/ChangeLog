@@ -1,3 +1,8 @@
+2003-04-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Indirect Functions): Fix examples for
+	nntp-via-rlogin-command-switches.
+
 2003-03-31  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Article Button Levels): New node.
