@@ -214,24 +214,6 @@ formatting, and then moved afterward.")
     ;; return - value
     attr-list))
 
-(defun html2text-get-attr (p1 p2)
-  (save-restriction
-    (narrow-to-region p1 p2)
-    (let (result)
-      (goto-char (point-min))
-      (while (not (eobp))
-	(when (re-search-forward "[^= ]+" nil t)
-	  (push
-	   (list
-	    (match-string 0)
-	    (when (looking-at " *= *")
-	      (goto-char (match-end 0))
-	      (buffer-substring 
-	       (point)
-	       (goto-char (or (ignore-errors (scan-sexps (point) 1))
-			      (point-max))))))
-	   result)))
-      result)))
 ;;
 ;; </Functions related to attributes>
 ;;
