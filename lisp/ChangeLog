@@ -1,3 +1,8 @@
+2002-05-25  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-nov-is-evil): Change default to t (because the
+	Agent cache NOV's by default now).
+
 2002-05-18  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-dependencies-add-header): Avoid one unecessary
