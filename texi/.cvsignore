@@ -9,6 +9,7 @@ gnustmp.texi
 *.pdf-x
 *.log
 *.aux
+*.latexi
 gnus.ps
 gnus.pdf
 gnusmail.texi
@@ -23,9 +24,7 @@ gnus.gidx
 gnus.kidx
 gnus.toc
 gnus.idx
-gnus-faq.latexi
 gnus.tmplatexi1
-gnus.latexi
 picons.tex
 xface.tex
 smiley.tex
