@@ -1,3 +1,8 @@
+2001-01-22 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-print-article): Take one prefix
+	argument. Allow to print several articles in one file.
+
 2001-01-21 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* webmail.el (webmail-type-definition): netaddress changes.
