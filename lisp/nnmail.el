@@ -247,7 +247,7 @@ that) from the headers before splitting and saving the messages."
   :type 'hook)
 
 (defcustom nnmail-list-identifiers nil
-  "Regexp that match list identifiers to be removed.
+  "Regexp that matches list identifiers to be removed.
 This can also be a list of regexps."
   :group 'gnus-mail
   :type '(choice regexp
@@ -656,7 +656,7 @@ is a spool.  If not using procmail, return GROUP."
 	     (search-forward ""))
 	 (point)))
       (run-hooks 'nnmail-prepare-incoming-header-hook)
-      (widen)
+      (goto-char (point-max))
       ;; Find the Message-ID header.
       (save-excursion
 	(if (re-search-backward "^Message-ID:[ \t]*\\(<[^>]*>\\)" nil t)
@@ -684,6 +684,7 @@ is a spool.  If not using procmail, return GROUP."
 		      ;; a (possibly) faulty header.
 		      (progn (insert "X-") t))))
 	  (setq do-search t)
+	(widen)
 	(if (or (= (+ (point) content-length) (point-max))
 		(save-excursion
 		  (goto-char (+ (point) content-length))
@@ -692,6 +693,7 @@ is a spool.  If not using procmail, return GROUP."
 	      (goto-char (+ (point) content-length))
 	      (setq do-search nil))
 	  (setq do-search t)))
+      (widen)
       ;; Go to the beginning of the next article - or to the end
       ;; of the buffer.  
       (when do-search
@@ -1056,7 +1058,7 @@ Return the number of characters in the body."
     (when regexp
       (goto-char (point-min))
       (when (re-search-forward
-	     (concat "Subject: +\\(Re: +\\)?\\(" regexp "\\) *")
+	     (concat "^Subject: +\\(Re: +\\)?\\(" regexp "\\) *")
 	     nil t)
 	(delete-region (match-beginning 2) (match-end 0))))))
 

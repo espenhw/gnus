@@ -526,10 +526,7 @@ all.  This may very well take some time.")
 (defun nnml-retrieve-headers-with-nov (articles &optional fetch-old)
   (if (or gnus-nov-is-evil nnml-nov-is-evil)
       nil
-    (let ((first (car articles))
-	  (last (progn (while (cdr articles) (setq articles (cdr articles)))
-		       (car articles)))
-	  (nov (concat nnml-current-directory nnml-nov-file-name)))
+    (let ((nov (concat nnml-current-directory nnml-nov-file-name)))
       (when (file-exists-p nov)
 	(save-excursion
 	  (set-buffer nntp-server-buffer)
@@ -538,19 +535,10 @@ all.  This may very well take some time.")
 	  (if (and fetch-old
 		   (not (numberp fetch-old)))
 	      t				; Don't remove anything.
-	    (when fetch-old
-	      (setq first (max 1 (- first fetch-old))))
-	    (goto-char (point-min))
-	    (while (and (not (eobp)) (> first (read (current-buffer))))
-	      (forward-line 1))
-	    (beginning-of-line)
-	    (when (not (eobp))
-	      (delete-region 1 (point)))
-	    (while (and (not (eobp)) (>= last (read (current-buffer))))
-	      (forward-line 1))
-	    (beginning-of-line)
-	    (when (not (eobp))
-	      (delete-region (point) (point-max)))
+	    (nnheader-nov-delete-outside-range
+	     (if fetch-old (max 1 (- (car articles) fetch-old))
+	       (car articles))
+	     (car (last articles)))
 	    t))))))
 
 (defun nnml-possibly-change-directory (group &optional server)

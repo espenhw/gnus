@@ -422,6 +422,8 @@ The following commands are available:
    (list (intern (completing-read "Server method: "
 				  gnus-valid-select-methods nil t))
 	 (read-string "Server name: ")))
+  (when (assq where gnus-server-alist)
+    (error "Server with that name already defined"))
   (push (list where how where) gnus-server-killed-servers)
   (gnus-server-yank-server))
 

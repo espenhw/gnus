@@ -3715,7 +3715,8 @@ If READ-ALL is non-nil, all articles in the group are selected."
 				     (not (eq gnus-fetch-old-headers 'some))
 				     (not (numberp gnus-fetch-old-headers)))
 				    (> (length articles) 1))))))
-		(gnus-get-newsgroup-headers-xover articles)
+		(gnus-get-newsgroup-headers-xover 
+		 articles nil nil gnus-newsgroup-name)
 	      (gnus-get-newsgroup-headers)))
       (gnus-message 5 "Fetching headers for %s...done" gnus-newsgroup-name)
 
@@ -4353,7 +4354,8 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 
 ;; Goes through the xover lines and returns a list of vectors
 (defun gnus-get-newsgroup-headers-xover (sequence &optional 
-						  force-new dependencies)
+						  force-new dependencies
+						  group)
   "Parse the news overview data in the server buffer, and return a
 list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
   ;; Get the Xref when the users reads the articles since most/some
@@ -4399,7 +4401,7 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
 	      (nntp-nov-is-evil t))
 	  (nconc
 	   (nreverse headers)
-	   (when (gnus-retrieve-headers sequence gnus-newsgroup-name)
+	   (when (gnus-retrieve-headers sequence group)
 	     (gnus-get-newsgroup-headers))))))))
 
 (defun gnus-article-get-xrefs ()
@@ -4490,6 +4492,7 @@ taken into consideration."
       (nreverse articles)))
    ((and (boundp 'transient-mark-mode)
 	 transient-mark-mode
+	 (boundp 'mark-active)
 	 mark-active)
     ;; Work on the region between point and mark.
     (let ((max (max (point) (mark)))

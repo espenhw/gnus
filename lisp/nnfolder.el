@@ -517,6 +517,7 @@ time saver for large mailboxes.")
 	      (unless (file-exists-p file)
 		(gnus-make-directory (file-name-directory file))
 		(nnmail-write-region 1 1 file t 'nomesg))
+	      (setq nnfolder-current-group group)
 	      (setq nnfolder-current-buffer
 		    (nnfolder-read-folder file scanning))
 	      (when nnfolder-current-buffer 

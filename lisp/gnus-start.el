@@ -1411,7 +1411,7 @@ newsgroup."
 
       ;; Get the number of unread articles in the group.
       (if active
-	  (inline (gnus-get-unread-articles-in-group info active))
+	  (inline (gnus-get-unread-articles-in-group info active t))
 	;; The group couldn't be reached, so we nix out the number of
 	;; unread articles and stuff.
 	(gnus-set-active group nil)
@@ -1448,8 +1448,8 @@ newsgroup."
     (setq gnus-killed-hashtb
 	  (gnus-make-hashtable
 	   (+ (length gnus-killed-list) (length gnus-zombie-list))))
-    (while (setq list (pop lists))
-      (setq list (symbol-value list))
+    (while lists
+      (setq list (symbol-value (pop lists)))
       (while list
 	(gnus-sethash (car list) (pop list) gnus-killed-hashtb)))))
 

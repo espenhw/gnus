@@ -1045,15 +1045,15 @@ If HIDE, hide the text instead."
   (save-excursion
     (let ((buffer-read-only nil)
 	  (inhibit-point-motion-hooks t)
-	  (beg (point-min)))
-      (while (gnus-goto-char (text-property-any
-			      beg (point-max) 'article-type type))
-	(setq beg (point))
-	(forward-char)
+	  (end (point-min))
+	  beg)
+      (while (setq beg (text-property-any end (point-max) 'article-type type))
+	(goto-char beg)
+	(setq end (text-property-not-all beg (point-max) 'article-type type))
 	(if hide
-	    (gnus-article-hide-text beg (point) gnus-hidden-properties)
-	  (gnus-article-unhide-text beg (point)))
-	(setq beg (point)))
+	    (gnus-article-hide-text beg end gnus-hidden-properties)
+	  (gnus-article-unhide-text beg end))
+	(goto-char end))
       t)))
 
 (defconst article-time-units

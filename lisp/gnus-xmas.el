@@ -445,7 +445,6 @@ call it with the value of the `gnus-data' text property."
   (fset 'gnus-make-local-hook 'make-local-variable)
   (fset 'gnus-add-hook 'gnus-xmas-add-hook)
   (fset 'gnus-character-to-event 'character-to-event)
-  (fset 'gnus-article-show-hidden-text 'gnus-xmas-article-show-hidden-text)
   (fset 'gnus-mode-line-buffer-identification
 	'gnus-xmas-mode-line-buffer-identification)
   (fset 'gnus-key-press-event-p 'key-press-event-p)
@@ -707,27 +706,6 @@ XEmacs compatibility workaround."
       (re-search-forward "^From:" nil t)
       (set-extent-begin-glyph 
        (make-extent (point) (1+ (point))) xface-glyph))))
-
-(defun gnus-xmas-article-show-hidden-text (type &optional hide)
-  "Show all hidden text of type TYPE.
-If HIDE, hide the text instead."
-  (save-excursion
-    (set-buffer gnus-article-buffer)
-    (let ((buffer-read-only nil)
-	  (inhibit-point-motion-hooks t)
-	  (beg (point-min)))
-      (while (gnus-goto-char (text-property-any
-			      beg (point-max) 'gnus-type type))
-	(setq beg (point))
-	(forward-char)
-	(if hide
-	    (gnus-article-hide-text beg (point) gnus-hidden-properties)
-	  (gnus-article-unhide-text beg (point)))
-	(setq beg (point)))
-      (save-window-excursion
-	(select-window (get-buffer-window (current-buffer)))
-	(recenter))
-      t)))
 
 (defvar gnus-xmas-pointer-glyph 
   (progn

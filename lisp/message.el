@@ -982,8 +982,8 @@ Return the number of headers removed."
    ["Fill Yanked Message" message-fill-yanked-message t]
    ["Insert Signature" message-insert-signature t]
    ["Caesar (rot13) Message" message-caesar-buffer-body t]
-   ["Caesar (rot13) Region" message-caesar-region mark-active]
-   ["Elide Region" message-elide-region mark-active]
+   ["Caesar (rot13) Region" message-caesar-region (mark t)]
+   ["Elide Region" message-elide-region (mark t)]
    ["Rename buffer" message-rename-buffer t]
    ["Spellcheck" ispell-message t]
    "----"
@@ -1730,7 +1730,8 @@ to find out how to use this."
   "Send the prepared message buffer with mh."
   (let ((mh-previous-window-config nil)
 	(name (make-temp-name
-	       (concat (file-name-as-directory message-autosave-directory)
+	       (concat (file-name-as-directory 
+			(expand-file-name message-autosave-directory))
 		       "msg."))))
     (setq buffer-file-name name)
     ;; MH wants to generate these headers itself.

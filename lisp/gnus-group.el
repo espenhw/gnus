@@ -2836,7 +2836,7 @@ re-scanning.  If ARG is non-nil and not a number, this will force
     (let ((gnus-read-active-file (if arg nil gnus-read-active-file)))
       (gnus-get-unread-articles arg)))
   (run-hooks 'gnus-after-getting-new-news-hook)
-  (gnus-group-list-groups arg))
+  (gnus-group-list-groups))
 
 (defun gnus-group-get-new-news-this-group (&optional n)
   "Check for newly arrived news in the current group (and the N-1 next groups).

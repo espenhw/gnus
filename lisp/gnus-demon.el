@@ -187,7 +187,7 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
 	     (or (not (setq idle (nth 2 handler))) ; Don't care about idle.
 		 (and (numberp idle)	; Numerical idle...
 		      (< idle gnus-demon-idle-time)) ; Idle timed out.
-		 gnus-demon-idle-time)	; Or just need to be idle.
+		 idle)			; Or just need to be idle.
 	     ;; So we call the handler.
 	     (progn
 	       (funcall (car handler))

@@ -1,3 +1,48 @@
+Mon Jan  6 11:23:05 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-process-babyl-mail-format): Widen at the right
+	place.
+
+	* nnfolder.el (nnfolder-possibly-change-group): Set current group
+	before reading folder.
+
+	* message.el (message-send-mail-with-mh): Expand file name.
+	(message-mode-menu): Check whether mark-active exists.
+
+	* gnus-group.el (gnus-group-get-new-news): Don't pass ARG to the
+	listing function.
+
+	* gnus-xmas.el (gnus-xmas-article-show-hidden-text): Deleted.
+
+Sun Jan  5 21:35:37 1997  Sudish Joseph  <sudish@mindspring.com>
+
+	* gnus-xmas.el (gnus-xmas-article-show-hidden-text): Use
+	'article-type as the textprop of interest.  Speed fix.
+
+	* gnus-art.el (gnus-article-show-hidden-text): Speed fix.
+
+Sun Jan  5 11:43:08 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnml.el (nnml-retrieve-headers-with-nov): Use faster method for
+	finding the right range.
+
+	* gnus-demon.el (gnus-demon): Would fire off even if not idle.
+
+	* gnus-srvr.el (gnus-server-add-server): Error when defining an
+	existing server.
+
+	* gnus-start.el (gnus-get-unread-articles): Update info for native
+	groups.
+
+	* gnus-load.el (gnus-nocem): New file.
+
+	* gnus-sum.el (gnus-get-newsgroup-headers-xover): Make sure the
+	group name isn't nil.
+
+Sun Jan  5 11:18:22 1997  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.78 is released.
+
 Sun Jan  5 09:39:14 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-sum.el (gnus-summary-exit-no-update): Prompt change.
