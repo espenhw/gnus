@@ -1,3 +1,7 @@
+2001-07-04  Yair Friedman  <yairfr@Amdocs.com>
+
+	* make.bat: Use infohack.el to create info files.
+
 2001-05-17  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* etc/Makefile.in (datadir): Set this variable, like in the other

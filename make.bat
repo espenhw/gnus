@@ -40,11 +40,11 @@ attrib -r %1\lisp\gnus\*
 copy *.el* %1\lisp\gnus
 
 :info
-set EMACSINFOHACK="(while (re-search-forward \"@\\(end \\)?ifnottex\" nil t) (replace-match \"\"))"
+set EMACSINFO=call %1\bin\%emacs% -no-site-file -no-init-file -batch -q -l infohack.el -f batch-makeinfo
 cd ..\texi
-call %1\bin\%emacs% -batch -q -no-site-file message.texi -eval %EMACSINFOHACK% -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
-call %1\bin\%emacs% -batch -q -no-site-file emacs-mime.texi -eval %EMACSINFOHACK% -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
-call %1\bin\%emacs% -batch -q -no-site-file gnus.texi -eval %EMACSINFOHACK% -eval "(setq max-lisp-eval-depth 600)" -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
+%EMACSINFO% message.texi
+%EMACSINFO% emacs-mime.texi
+%EMACSINFO% gnus.texi
 if not "%2" == "copy" goto done
 copy gnus %1\info
 copy gnus-?? %1\info
