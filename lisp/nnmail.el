@@ -1092,8 +1092,10 @@ Return the number of characters in the body."
 
 (defun nnmail-remove-list-identifiers ()
   "Remove list identifiers from Subject headers."
-  (let ((regexp (if (stringp nnmail-list-identifiers) nnmail-list-identifiers
-		  (mapconcat 'identity nnmail-list-identifiers " *\\|"))))
+  (let ((regexp 
+	 (if (consp nnmail-list-identifiers) 
+	     (mapconcat 'identity nnmail-list-identifiers " *\\|")
+	   nnmail-list-identifiers)))
     (when regexp
       (goto-char (point-min))
       (while (re-search-forward

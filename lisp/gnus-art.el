@@ -1817,23 +1817,24 @@ If FORCE, decode the article whether it is marked as base64 not."
   "Remove list identifies from the Subject header.
 The `gnus-list-identifiers' variable specifies what to do."
   (interactive)
-  (save-excursion
-    (save-restriction
-      (let ((inhibit-point-motion-hooks t)
-	    buffer-read-only)
-	(article-narrow-to-head)
-	(let ((regexp (if (stringp gnus-list-identifiers) gnus-list-identifiers
-			(mapconcat 'identity gnus-list-identifiers " *\\|"))))
-	  (when regexp
-	    (goto-char (point-min))
-	    (while (re-search-forward
-		    (concat "^Subject: +\\(R[Ee]: +\\)*\\(" regexp " *\\)")
-		    nil t)
-	      (delete-region (match-beginning 2) (match-end 0))
-	      (beginning-of-line))
-	    (when (re-search-forward 
-		   "^Subject: +\\(\\(R[Ee]: +\\)+\\)R[Ee]: +" nil t)
-	      (delete-region (match-beginning 1) (match-end 1)))))))))
+  (let ((inhibit-point-motion-hooks t)
+	(regexp (if (consp gnus-list-identifiers)
+		    (mapconcat 'identity gnus-list-identifiers " *\\|")
+		  gnus-list-identifiers))
+	buffer-read-only)
+    (when regexp
+      (save-excursion
+	(save-restriction
+	  (article-narrow-to-head)
+	  (goto-char (point-min))
+	  (while (re-search-forward
+		  (concat "^Subject: +\\(R[Ee]: +\\)*\\(" regexp " *\\)")
+		  nil t)
+	    (delete-region (match-beginning 2) (match-end 0))
+	    (beginning-of-line))
+	  (when (re-search-forward
+		 "^Subject: +\\(\\(R[Ee]: +\\)+\\)R[Ee]: +" nil t)
+	    (delete-region (match-beginning 1) (match-end 1))))))))
 
 (defun article-hide-pgp ()
   "Remove any PGP headers and signatures in the current article."

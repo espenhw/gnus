@@ -1,3 +1,11 @@
+2001-01-31 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnmail.el (nnmail-remove-list-identifiers): Use consp.
+
+	* gnus-art.el (article-hide-list-identifiers): Ditto.
+
+	* gnus-sum.el (gnus-summary-remove-list-identifiers): Ditto.
+
 2001-01-31 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-remove-list-identifiers): Similar.
