@@ -368,8 +368,10 @@ Server  : " server ":" (or port "2000") "
       (with-current-buffer (get-buffer sieve-buffer)
 	(setq err (sieve-manage-putscript name script sieve-manage-buffer))
 	(if (sieve-manage-ok-p err)
-	    (message (concat "Sieve upload done.  Use `C-c RET' to manage scripts."))
-	  (message "Sieve upload failed: %s" (nth 2 err)))))))
+	    (message (concat
+		      "Sieve upload done.  Use `C-c RET' to manage scripts."))
+	  (message "Sieve upload failed: %s"
+		   (replace-regexp-in-string "[\n\r\t]+" " " (nth 2 err))))))))
 
 ;;;###autoload
 (defun sieve-upload-and-bury (&optional name)

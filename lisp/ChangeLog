@@ -1,5 +1,9 @@
 2003-01-25  Simon Josefsson  <jas@extundo.com>
 
+	* sieve-manage.el (sieve-manage-is-okno): Parse literal strings.
+
+	* sieve.el (sieve-upload): Fix error printing.
+
 	* mm-encode.el (mm-qp-or-base64): Always QP iff
 	mm-use-ultra-safe-encoding and cleartext PGP.
 
