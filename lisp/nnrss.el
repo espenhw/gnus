@@ -510,7 +510,8 @@ It is useful when `(setq nnrss-use-local t)'."
   (gnus-replace-in-string (nnrss-string-as-multibyte string) " *\n *" " "))
 
 (defun nnrss-node-text (namespace local-name element)
-  (let* ((node (assq (intern (concat namespace (symbol-name local-name))) element))
+  (let* ((node (assq (intern (concat namespace (symbol-name local-name)))
+		     element))
 	 (text (if (and node (listp node))
 		   (nnrss-node-just-text node)
 		 node))
