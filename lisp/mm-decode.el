@@ -257,7 +257,9 @@ to:
 
 (defun mm-dissect-singlepart (ctl cte &optional force cdl description id)
   (when (or force
-	    (not (equal "text/plain" (car ctl))))
+	    (if (equal "text/plain" (car ctl))
+		(assoc 'format ctl)
+	      t))
     (let ((res (mm-make-handle
 		(mm-copy-to-buffer) ctl cte nil cdl description nil id)))
       (push (car res) mm-dissection-list)

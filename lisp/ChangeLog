@@ -1,3 +1,14 @@
+2000-03-11  Simon Josefsson  <jas@pdc.kth.se>
+
+	* fill-flowed.el: New file.
+
+	* mm-decode.el (mm-dissect-singlepart): Create a MIME handle for
+	text/plain parts with `format' parameters.
+
+	* mm-view.el (autoload): Autoload fill-flowed.
+	(mm-inline-text): For "plain" parts with a format=flowed
+	parameter, call `fill-flowed'.
+
 2000-03-21 10:32:44  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnslashdot.el (nnslashdot-request-list): Fudge new-style
