@@ -442,7 +442,8 @@ check twice.")
 	   (directory-files
 	    nnml-current-directory t
 	    (concat nnheader-numerical-short-files
-		    "\\|" (regexp-quote nnml-nov-file-name) "$")))
+		    "\\|" (regexp-quote nnml-nov-file-name) "$"
+		    "\\|" (regexp-quote nnml-marks-file-name) "$")))
 	  article)
       (while articles
 	(setq article (pop articles))
@@ -480,6 +481,10 @@ check twice.")
       (let ((overview (concat old-dir nnml-nov-file-name)))
 	(when (file-exists-p overview)
 	  (rename-file overview (concat new-dir nnml-nov-file-name))))
+      ;; Move .marks file.
+      (let ((marks (concat old-dir nnml-marks-file-name)))
+	(when (file-exists-p marks)
+	  (rename-file marks (concat new-dir nnml-marks-file-name))))
       (when (<= (length (directory-files old-dir)) 2)
 	(ignore-errors (delete-directory old-dir)))
       ;; That went ok, so we change the internal structures.
@@ -852,6 +857,85 @@ check twice.")
 	    force)
     (setq nnml-article-file-alist
 	  (nnheader-article-to-file-alist nnml-current-directory))))
+
+(defvoo nnml-marks-file-name ".marks")
+(defvoo nnml-marks-is-evil nil)
+(defvoo nnml-marks nil)
+
+(deffoo nnml-request-set-mark (group actions &optional server)
+  (nnml-possibly-change-directory group server)
+  (unless nnml-marks-is-evil
+    (nnml-open-marks group server)
+    (dolist (action actions)
+      (let ((range (nth 0 action))
+	    (what  (nth 1 action))
+	    (marks (nth 2 action)))
+	(assert (or (eq what 'add) (eq what 'del)) t
+		"Unknown request-set-mark action: %s" what)
+	(dolist (mark marks)
+	  (setq nnml-marks (nnimap-update-alist-soft
+			    mark
+			    (funcall (if (eq what 'add) 'gnus-range-add
+				       'gnus-remove-from-range)
+				     (cdr (assoc mark nnml-marks)) range)
+			    nnml-marks)))))
+    (nnml-save-marks group server)))
+
+(deffoo nnml-request-update-info (group info &optional server)
+  (nnml-possibly-change-directory group server)
+  (unless nnml-marks-is-evil
+    (nnml-open-marks group server)
+    ;; Update info using `nnml-marks'.
+    (mapcar (lambda (pred)
+	      (gnus-info-set-marks
+	       info
+	       (nnimap-update-alist-soft
+		(cdr pred)
+		(cdr (assq (cdr pred) nnml-marks))
+		(gnus-info-marks info))
+	       t))
+	    gnus-article-mark-lists)
+    (let ((seen (cdr (assq 'read nnml-marks))))
+      (gnus-info-set-read info
+			  (if (and (integerp (car seen))
+				   (null (cdr seen)))
+			      (list (cons (car seen) (car seen)))
+			    seen))))
+  info)
+
+(defun nnml-save-marks (group server)
+  (let ((file-name-coding-system nnmail-pathname-coding-system)
+	(file (expand-file-name nnml-marks-file-name
+				(nnmail-group-pathname group nnml-directory))))
+    (gnus-make-directory (file-name-directory file))
+    (with-temp-file file
+      (erase-buffer)
+      (princ nnml-marks (current-buffer))
+      (insert "\n"))))
+
+(defun nnml-open-marks (group server)
+  (with-temp-buffer
+    (let ((file (expand-file-name 
+		 nnml-marks-file-name 
+		 (nnmail-group-pathname group nnml-directory))))
+      (if (file-exists-p file)
+	  (setq nnml-marks (condition-case err
+			       (progn
+				 (nnheader-insert-file-contents file)
+				 (read (current-buffer)))
+			     (error (or (gnus-yes-or-no-p
+					 (format "Error reading nnml marks file %s (%s).  Continuing will use marks from .newsrc.eld.  Continue? " file err))
+					(error "Cannot read nnml marks file %s (%s)" file err)))))
+	;; User didn't have a .marks file.  Probably first time
+	;; user of the .marks stuff.  Bootstrap it from .newsrc.eld.
+	(let ((info (gnus-get-info
+		     (gnus-group-prefixed-name
+		      group
+		      (gnus-server-to-method (format "nnml:%s" server))))))
+	  (nnheader-message 6 "Boostrapping nnml marks...")
+	  (setq nnml-marks (gnus-info-marks info))
+	  (push (cons 'read (gnus-info-read info)) nnml-marks)
+	  (nnml-save-marks group server))))))
 
 (provide 'nnml)
 

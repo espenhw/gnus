@@ -1,5 +1,17 @@
 2001-08-18  Simon Josefsson  <jas@extundo.com>
 
+	Make nnml groups self-contained as far as marks are concerned.
+
+	* nnml.el (nnml-request-delete-group): Delete marks file.
+	(nnml-request-rename-group): Move marks file.
+	(nnml-marks-file-name, nnml-marks-is-evil, nnml-marks): New server
+	variables.
+	(nnml-request-set-mark, nnml-request-update-info): New server
+	functions.
+	(nnml-save-marks, nnml-open-marks): New functions.
+
+2001-08-18  Simon Josefsson  <jas@extundo.com>
+
 	* gnus-sum.el (gnus-summary-move-article): Use `add' instead of
 	`set' when setting marks.
 
