@@ -85,12 +85,12 @@ values are 'apop."
 (defcustom pop3-leave-mail-on-server nil
   "*Non-nil if the mail is to be left on the POP server after fetching.
 
-If the `pop3-leave-mail-on-server' is non-`nil' the mail is to be
-left on the POP server after fetching.  Note that POP servers
-maintain no state information between sessions, so what the
-client believes is there and what is actually there may not match
-up.  If they do not, then the whole thing can fall apart and
-leave you with a corrupt mailbox."
+If `pop3-leave-mail-on-server' is non-nil the mail is to be left
+on the POP server after fetching.  Note that POP servers maintain
+no state information between sessions, so what the client
+believes is there and what is actually there may not match up.
+If they do not, then the whole thing can fall apart and leave you
+with a corrupt mailbox."
   :version "21.4" ;; Oort Gnus
   :type 'boolean
   :group 'pop3)

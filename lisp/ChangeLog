@@ -1,3 +1,8 @@
+2004-11-15  Jesper Harder  <harder@ifa.au.dk>
+
+	* pop3.el (pop3-leave-mail-on-server): Don't quote nil in
+	docstrings.
+
 2004-11-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nntp.el (nntp-request-update-info): Return nil if
