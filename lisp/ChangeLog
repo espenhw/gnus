@@ -1,3 +1,9 @@
+2001-09-09  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-srvr.el (gnus-server-mode-hook, gnus-server-exit-hook) 
+	(gnus-server-line-format, gnus-server-mode-line-format) 
+	(gnus-server-browse-in-group-buffer): Customize.
+
 2001-09-08 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnml.el (nnml-marks-changed-p): Typo.

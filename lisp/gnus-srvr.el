@@ -34,10 +34,17 @@
 (require 'gnus-int)
 (require 'gnus-range)
 
-(defvar gnus-server-mode-hook nil
-  "Hook run in `gnus-server-mode' buffers.")
+(defcustom gnus-server-mode-hook nil
+  "Hook run in `gnus-server-mode' buffers."
+  :group 'gnus-server
+  :type 'hook)
 
-(defconst gnus-server-line-format "     {%(%h:%w%)} %s%a\n"
+(defcustom gnus-server-exit-hook nil
+  "Hook run when exiting the server buffer."
+  :group 'gnus-server
+  :type 'hook)
+
+(defcustom gnus-server-line-format "     {%(%h:%w%)} %s%a\n"
   "Format of server lines.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
@@ -48,16 +55,19 @@ The following specs are understood:
 %n name
 %w address
 %s status
-%a agent covered")
+%a agent covered"
+  :group 'gnus-server-visual
+  :type 'string)
 
-(defvar gnus-server-mode-line-format "Gnus: %%b"
-  "The format specification for the server mode line.")
+(defcustom gnus-server-mode-line-format "Gnus: %%b"
+  "The format specification for the server mode line."
+  :group 'gnus-server-visual
+  :type 'string)
 
-(defvar gnus-server-exit-hook nil
-  "*Hook run when exiting the server buffer.")
-
-(defvar gnus-server-browse-in-group-buffer nil
-  "Whether browse server in group buffer.")
+(defcustom gnus-server-browse-in-group-buffer nil
+  "Whether browse server in group buffer."
+  :group 'gnus-server-visual
+  :type 'string)
 
 ;;; Internal variables.
 
