@@ -1,5 +1,8 @@
 2004-10-15  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-score.el (gnus-adaptive-pretty-print): New variable.
+	(gnus-score-save): Use it.
+
 	* message.el (message-bury): Use `window-dedicated-p'.
 
 2004-10-15  Simon Josefsson  <jas@extundo.com>

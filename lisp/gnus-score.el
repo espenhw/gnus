@@ -306,6 +306,13 @@ If this variable is nil, exact matching will always be used."
   :group 'gnus-score-files
   :type 'regexp)
 
+(defcustom gnus-adaptive-pretty-print nil
+  "If non-nil, adaptive score files fill are pretty printed."
+  :group 'gnus-score-files
+  :group 'gnus-score-adapt
+  :version "22.0" ;; No Gnus
+  :type 'boolean)
+
 (defcustom gnus-score-default-header nil
   "Default header when entering new scores.
 
@@ -1405,12 +1412,13 @@ If FORMAT, also format the current score file."
 	  (setq score (setcdr entry (gnus-delete-alist 'touched score)))
 	  (erase-buffer)
 	  (let (emacs-lisp-mode-hook)
-	    (if (string-match
-		 (concat (regexp-quote gnus-adaptive-file-suffix) "$")
-		 file)
-		;; This is an adaptive score file, so we do not run
-		;; it through `pp'.  These files can get huge, and
-		;; are not meant to be edited by human hands.
+	    (if (and (not gnus-adaptive-pretty-print)
+		     (string-match
+		      (concat (regexp-quote gnus-adaptive-file-suffix) "$")
+		      file))
+		;; This is an adaptive score file, so we do not run it through
+		;; `pp' unless requested.  These files can get huge, and are
+		;; not meant to be edited by human hands.
 		(gnus-prin1 score)
 	      ;; This is a normal score file, so we print it very
 	      ;; prettily.
