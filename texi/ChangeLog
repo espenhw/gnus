@@ -1,5 +1,7 @@
 2004-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.texi (Key Index): Untabified.
+
 	* gnus.texi (RSS): kindex.
 
 2003-12-30  Reiner Steib  <Reiner.Steib@gmx.de>

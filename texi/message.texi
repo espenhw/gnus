@@ -1227,7 +1227,7 @@ controlled by the @code{ispell-message-dictionary-alist} variable:
 @lisp
 (setq ispell-message-dictionary-alist
       '(("^Newsgroups:.*\\bde\\." . "deutsch8")
-	(".*" . "default")))
+        (".*" . "default")))
 @end lisp
 
 @code{ispell} depends on having the external @samp{ispell} command
