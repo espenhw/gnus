@@ -1,3 +1,10 @@
+2003-09-05  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-fetch-extra-entry): don't use
+	puthash unless gnus-registry-entry-caching is on
+	(gnus-registry-split-fancy-with-parent): misplaced parenthesis
+	made everything a part of the 'else'
+
 2003-09-05  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-art.el (gnus-button-alist): Improve Info regexp.

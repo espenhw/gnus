@@ -357,11 +357,11 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	  (setq references (nreverse (gnus-split-references refstr)))
 	  (mapcar (lambda (x)
 		    (setq res (or (gnus-registry-fetch-group x) res))
-		    (when (or (gnus-registry-grep-in-list 
+		    (when (or (gnus-registry-grep-in-list
 			       res
 			       gnus-registry-unfollowed-groups)
 			      (gnus-registry-grep-in-list 
-			       res 
+			       res
 			       nnmail-split-fancy-with-parent-ignore-groups))
 		      (setq res nil)))
 		  references))
@@ -385,13 +385,13 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		    "gnus-registry-split-fancy-with-parent"
 		    subject
 		    (if res res "nil")))))
-	     gnus-registry-hashtb))))
-
+	     gnus-registry-hashtb)))))
+      (debug res)
       (gnus-message
        5 
        "gnus-registry-split-fancy-with-parent traced %s to group %s"
        refstr (if res res "nil"))
-      res)))
+      res))
 
 (defun gnus-registry-register-message-ids ()
   "Register the Message-ID of every article in the group"
@@ -469,7 +469,8 @@ Update the entry cache if needed."
 	
 	(unless entree
 	  (setq entree (assq entry alist))
-	  (puthash id entree entry-cache))
+	  (when gnus-registry-entry-caching
+	    (puthash id entree entry-cache)))
 	entree)
     alist))
 
