@@ -33,7 +33,7 @@
 \makeindex
 \begin{document}
 
-\newcommand{\gnusversionname}{Gnus v5.10.4}
+\newcommand{\gnusversionname}{Gnus v5.10.5}
 \newcommand{\gnuschaptername}{}
 \newcommand{\gnussectionname}{}
 
@@ -397,7 +397,7 @@ can be gotten by any nefarious means you can think of---@acronym{NNTP}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus v5.10.4.
+This manual corresponds to Gnus v5.10.5.
 
 @end ifinfo
 
@@ -26499,7 +26499,7 @@ Gnus will work.
 
 @item
 Try doing an @kbd{M-x gnus-version}.  If you get something that looks
-like @samp{Gnus v5.10.4} you have the right files loaded.  Otherwise
+like @samp{Gnus v5.10.5} you have the right files loaded.  Otherwise
 you have some old @file{.el} files lying around.  Delete these.
 
 @item
