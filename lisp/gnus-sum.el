@@ -691,6 +691,9 @@ is often much slower than sorting by number, and the sorting order is
 very similar.  (Sorting by date means sorting by the time the message
 was sent, sorting by number means sorting by arrival time.)
 
+Each item can also be a list `(not F)' where F is a function;
+this reverses the sort order.
+
 Ready-made functions include `gnus-article-sort-by-number',
 `gnus-article-sort-by-author', `gnus-article-sort-by-subject',
 `gnus-article-sort-by-date', `gnus-article-sort-by-random'
@@ -719,6 +722,9 @@ sorting functions -- preferably first.  Also note that sorting by date
 is often much slower than sorting by number, and the sorting order is
 very similar.  (Sorting by date means sorting by the time the message
 was sent, sorting by number means sorting by arrival time.)
+
+Each list item can also be a list `(not F)' where F is a
+function; this specifies reversed sort order.
 
 Ready-made functions include `gnus-thread-sort-by-number',
 `gnus-thread-sort-by-author', `gnus-thread-sort-by-subject',
