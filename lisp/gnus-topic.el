@@ -490,7 +490,8 @@ articles in the topic and its subtopics."
 		(gnus-topic-alist gnus-topic-active-alist)
 		(gnus-group-list-mode (cons 5 t)))
 	    (gnus-topic-remove-topic
-	     (or insert (not (gnus-topic-visible-p))) nil nil 9)))))))
+	     (or insert (not (gnus-topic-visible-p))) nil nil 9)
+	    (gnus-topic-enter-dribble)))))))
 
 (defun gnus-topic-insert-topic-line (name visiblep shownp level entries 
 					  &optional unread)
@@ -1280,7 +1281,8 @@ If performed on a topic, edit the topic parameters instead."
       (let ((topic (gnus-group-topic-name)))
 	(gnus-edit-form
 	 (gnus-topic-parameters topic)
-	 "Editing the topic parameters."
+	 (format "Editing the topic parameters for `%s'."
+		 (or group topic))
 	 `(lambda (form)
 	    (gnus-topic-set-parameters ,topic form)))))))
 

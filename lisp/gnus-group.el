@@ -1883,11 +1883,12 @@ and NEW-NAME will be prompted for."
 	   (t info))
      ;; The proper documentation.
      (format
-      "Editing the %s."
+      "Editing the %s for `%s'."
       (cond
        ((eq part 'method) "select method")
        ((eq part 'params) "group parameters")
-       (t "group info")))
+       (t "group info"))
+      group)
      `(lambda (form)
 	(gnus-group-edit-group-done ',part ,group form)))))
 

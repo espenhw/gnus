@@ -741,9 +741,9 @@ XEmacs compatibility workaround."
 	   (glyph (make-glyph file)))
       (when (and (featurep 'x)
 		 (file-exists-p file))
-	(set-glyph-face glyph 'modeline-buffer-id))
-      (set-glyph-property glyph 'image (cons 'tty "Gnus:"))
-      glyph)))
+	(set-glyph-face glyph 'modeline-buffer-id)
+	(set-glyph-property glyph 'image (cons 'tty "Gnus:"))
+	glyph))))
 
 (defun gnus-xmas-mode-line-buffer-identification (line)
   (let ((line (car line))

@@ -2462,9 +2462,9 @@ groups."
   :type 'regexp)
 
 (defcustom gnus-button-alist 
-  `(("<\\(url: ?\\)?news:\\([^>\n\t ]*\\)>" 0 t
+  `(("<\\(url: ?\\)?news:\\([^>\n\t ]*@[^>\n\t ]*\\)>" 0 t
      gnus-button-message-id 2)
-    ("\\bnews:\\([^\n\t ]+\\)" 0 t gnus-button-message-id 1)
+    ("\\bnews:\\([^>\n\t ]*@[^>\n\t ]*+\\)" 0 t gnus-button-message-id 1)
     ("\\(\\b<\\(url: ?\\)?news:\\(//\\)?\\([^>\n\t ]*\\)>\\)" 1 t
      gnus-button-fetch-group 4)
     ("\\bnews:\\(//\\)?\\([^>\n\t ]+\\)" 0 t gnus-button-fetch-group 2)
@@ -2825,14 +2825,19 @@ specified by `gnus-button-alist'."
 
 (defun gnus-button-fetch-group (address)
   "Fetch GROUP specified by ADDRESS."
-  (if (not (string-match "^\\([^:/]+\\)\\(:\\([^/]+\\)\\)?/\\(.*\\)$" address))
-      (error "Can't parse %s" address)
-    (gnus-group-read-ephemeral-group
-     (match-string 4 address)
-     `(nntp ,(match-string 1 address) (nntp-address ,(match-string 1 address))
-	    (nntp-port-number ,(if (match-end 3)
-				   (match-string 3 address)
-				 "nntp"))))))
+  (if (not (string-match "[:/]" address))
+      ;; This is just a simple group url.
+      (gnus-group-read-ephemeral-group address gnus-select-method)
+    (if (not (string-match "^\\([^:/]+\\)\\(:\\([^/]+\\)/\\)?\\(.*\\)$"
+			   address))
+	(error "Can't parse %s" address)
+      (gnus-group-read-ephemeral-group
+       (match-string 4 address)
+       `(nntp ,(match-string 1 address)
+	      (nntp-address ,(match-string 1 address))
+	      (nntp-port-number ,(if (match-end 3)
+				     (match-string 3 address)
+				   "nntp")))))))
 
 (defun gnus-split-string (string pattern)
   "Return a list of substrings of STRING which are separated by PATTERN."

@@ -314,7 +314,6 @@ Finds out what articles are to be part of the nnkiboze groups."
   (save-excursion
     (set-buffer buffer)
     (goto-char (point-max))
-    (debug)
     (let ((xref (mail-header-xref header))
 	  (prefix (gnus-group-real-prefix group))
 	  (oheader (copy-sequence header))

@@ -2053,7 +2053,7 @@ SCORE is the score to add."
 
 (defun gnus-score-adaptive ()
   "Create adaptive score rules for this newsgroup."
-  (when gnus-use-adaptive-scoring
+  (when gnus-newsgroup-adaptive
     ;; We change the score file to the adaptive score file.
     (save-excursion
       (set-buffer gnus-summary-buffer)
@@ -2062,8 +2062,8 @@ SCORE is the score to add."
 	   (gnus-score-file-name 
 	    gnus-newsgroup-name gnus-adaptive-file-suffix))))
     ;; Perform ordinary line scoring.
-    (when (or (not (listp gnus-use-adaptive-scoring))
-	      (memq 'line gnus-use-adaptive-scoring))
+    (when (or (not (listp gnus-newsgroup-adaptive))
+	      (memq 'line gnus-newsgroup-adaptive))
       (save-excursion
 	(let* ((malist (gnus-copy-sequence gnus-adaptive-score-alist))
 	       (alist malist)
@@ -2122,8 +2122,8 @@ SCORE is the score to add."
 	    (setq data (cdr data))))))
 
     ;; Perform adaptive word scoring.
-    (when (and (listp gnus-use-adaptive-scoring)
-	       (memq 'word gnus-use-adaptive-scoring))
+    (when (and (listp gnus-newsgroup-adaptive)
+	       (memq 'word gnus-newsgroup-adaptive))
       (nnheader-temp-write nil
 	(let* ((hashtb (gnus-make-hashtable 1000))
 	       (date (gnus-day-number (current-time-string)))

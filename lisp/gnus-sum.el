@@ -1051,14 +1051,16 @@ simple-first is t, first argument is already simplified."
 	       ;; We check that this is, indeed, a summary buffer.
 	       (and (eq major-mode 'gnus-summary-mode)
 		    ;; Also make sure this isn't bogus.
-		    gnus-newsgroup-prepared))
+		    gnus-newsgroup-prepared
+		    ;; Also make sure that this isn't a dead summary buffer.
+		    (not gnus-dead-summary-mode)))
 	     (push bufname buffers))
 	(setq buflist (cdr buflist)))
       ;; Go through all these summary buffers and offer to save them.
       (when buffers
 	(map-y-or-n-p
 	 "Update summary buffer %s? "
-	 (lambda (buf) (set-buffer buf) (gnus-summary-exit))
+	 (lambda (buf) (switch-to-buffer buf) (gnus-summary-exit))
 	 buffers)))))
 
 (defun gnus-summary-bubble-group ()
@@ -5395,7 +5397,7 @@ article."
   (setq gnus-summary-buffer (current-buffer))
   (gnus-set-global-variables)
   (let ((article (gnus-summary-article-number))
-	(article-window (get-buffer-window gnus-article-buffer))
+	(article-window (get-buffer-window gnus-article-buffer t))
 	(endp nil))
     (gnus-configure-windows 'article)
     (if (eq (cdr (assq article gnus-newsgroup-reads)) gnus-canceled-mark)
@@ -5431,7 +5433,7 @@ Argument LINES specifies lines to be scrolled down."
   (interactive "P")
   (gnus-set-global-variables)
   (let ((article (gnus-summary-article-number))
-	(article-window (get-buffer-window gnus-article-buffer)))
+	(article-window (get-buffer-window gnus-article-buffer t)))
     (gnus-configure-windows 'article)
     (if (or (null gnus-current-article)
 	    (null gnus-article-current)
@@ -8276,7 +8278,12 @@ save those articles instead."
 		      (funcall (if (string-match "%s" action)
 				   'format 'concat)
 			       action
-			       (mapconcat (lambda (f) f) files " ")))))
+			       (mapconcat
+				(lambda (f)
+				  (if (equal f " ")
+				      f
+				    (gnus-quote-arg-for-sh-or-csh f)))
+				files " ")))))
 	  (setq ps (cdr ps)))))
     (if (and gnus-view-pseudos (not not-view))
 	(while pslist

@@ -218,7 +218,8 @@
      (save-excursion
        (set-buffer nnbabyl-mbox-buffer)
        (save-buffer)))
-   nnbabyl-mbox-file group
+   (file-name-directory nnbabyl-mbox-file)
+   group
    (lambda ()
      (save-excursion
        (let ((in-buf (current-buffer)))

@@ -4313,9 +4313,9 @@ also mark excluded ticked and dormant articles as read.
 @cindex threading
 @cindex article threading
 
-Gnus threads articles by default.  @dfn{To thread} is to put replies to
-articles directly after the articles they reply to---in a hierarchical
-fashion.
+Gnus threads articles by default.  @dfn{To thread} is to put responses
+to articles directly after the articles they respond to---in a
+hierarchical fashion.
 
 @menu
 * Customizing Threading::     Variables you can change to affect the threading.

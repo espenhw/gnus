@@ -932,9 +932,9 @@ you send to mailing lists, you could do something like the following:
 (defun my-message-header-setup-hook ()
   (when (or (message-fetch-field "newsgroups")
 	    (gnus-group-find-parameter
-             gnus-newsgroup-namegroup 'to-address)
+             gnus-newsgroup-name 'to-address)
 	    (gnus-group-find-parameter
-             gnus-newsgroup-namegroup 'to-list))
+             gnus-newsgroup-name 'to-list))
     (insert "Mail-Copies-To: never\n")))
 
 (add-hook 'message-header-setup-hook 'my-message-header-setup-hook)

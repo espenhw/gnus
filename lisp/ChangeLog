@@ -1,3 +1,41 @@
+Tue Feb 18 23:26:28 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.14 is released.
+
+Tue Feb 18 21:47:18 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-xmas.el (gnus-xmas-modeline-glyph): Didn't work when the
+	etc dir couldn't be found.
+
+	* gnus-topic.el (gnus-topic-fold): Enter into dribble.
+
+	* nnbabyl.el (nnbabyl-request-scan): Put things in right dir.
+	* nnmbox.el (nnmbox-request-scan): Ditto.
+
+	* gnus-sum.el (gnus-offer-save-summaries): Use
+	`switch-to-buffer'. 
+
+	* nnkiboze.el (nnkiboze-enter-nov): Removed debug.
+
+	* gnus-sum.el (gnus-summary-insert-pseudos): Quote when not
+	viewing separately.
+
+Sun Feb 16 23:43:19 1997  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-topic.el (gnus-topic-edit-parameters): Print the topic
+ 	name.
+
+	* gnus-group.el (gnus-group-edit-group): Print the group name.
+
+Sun Feb 16 18:30:27 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-score.el (gnus-score-adaptive): Respect score adapt
+	settings. 
+
+	* gnus-sum.el (gnus-summary-prev-page): Search all frames for
+	window. 
+	(gnus-summary-next-page): Ditto.
+
 Sun Feb 16 18:12:01 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.13 is released.

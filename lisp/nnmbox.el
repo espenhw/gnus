@@ -194,7 +194,8 @@
      (save-excursion
        (set-buffer nnmbox-mbox-buffer)
        (save-buffer)))
-   nnmbox-mbox-file group
+   (file-name-directory nnmbox-mbox-file)
+   group
    (lambda ()
      (save-excursion
        (let ((in-buf (current-buffer)))
