@@ -1,3 +1,7 @@
+2003-04-27 06:47:31 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+
+	* gnus.el: Oort Gnus v0.19 is released.
+
 2003-04-27  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-registry.el (gnus-register-spool-action): Replaced literal
