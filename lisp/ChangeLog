@@ -1,3 +1,8 @@
+2003-03-17  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-mime-delete-part): New function.
+	(gnus-mime-action-alist, gnus-mime-button-commands): Use it.
+
 2003-03-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-next-group): Semi-exit group first to
