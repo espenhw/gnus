@@ -162,10 +162,10 @@ To disable checking of long signatures, for instance, add
 Don't touch this variable unless you really know what you're doing.
 
 Checks include subject-cmsg multiple-headers sendsys message-id from
-long-lines control-chars size new-text redirected-followup signature
-approved sender empty empty-headers message-id from subject
-shorten-followup-to existing-newsgroups buffer-file-name unchanged
-newsgroups."
+long-lines control-chars size new-text quoting-style
+redirected-followup signature approved sender empty empty-headers
+message-id from subject shorten-followup-to existing-newsgroups
+buffer-file-name unchanged newsgroups."
   :group 'message-news
   :type '(repeat sexp))
 
@@ -2787,7 +2787,20 @@ to find out how to use this."
 	  (format
 	   "Your .sig is %d lines; it should be max 4.  Really post? "
 	   (1- (count-lines (point) (point-max)))))
-       t))))
+       t))
+   ;; Ensure that text follows last quoted portion.
+   (message-check 'quoting-style
+     (goto-char (point-max))
+     (let ((no-problem t))
+       (when (search-backward-regexp "^>[^\n]*\n>" nil t)
+	 (setq no-problem nil)
+	 (while (not (eobp))
+	   (when (and (not (eolp)) (looking-at "[^> \t]"))
+	     (setq no-problem t))
+	   (forward-line)))
+       (if no-problem
+	   t
+	 (y-or-n-p "Your text should follow quoted text.  Really post? "))))))
 
 (defun message-checksum ()
   "Return a \"checksum\" for the current buffer."
