@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.54 Manual
+@settitle Gnus 5.4.55 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.54 Manual
+@title Gnus 5.4.55 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.54.
+This manual corresponds to Gnus 5.4.55.
 
 @end ifinfo
 
@@ -9220,6 +9220,19 @@ have all articles that you read marked as expirable automatically.  All
 articles that are marked as expirable have an @samp{E} in the first
 column in the summary buffer.
 
+By default, if you have auto expiry switched on, Gnus will mark all the
+articles you read as expirable, no matter if they were read or unread
+before.  To avoid having articles marked as read marked as expirable
+automatically, you can put something like the following in your
+@file{.gnus} file:
+
+@vindex gnus-mark-article-hook
+@lisp
+(remove-hook 'gnus-mark-article-hook                                
+             'gnus-summary-mark-read-and-unread-as-read)            
+(add-hook 'gnus-mark-article-hook 'gnus-summary-mark-unread-as-read)
+@end lisp
+
 Note that making a group auto-expirable don't mean that all read
 articles are expired---only the articles that are marked as expirable
 will be expired.  Also note the using the @kbd{d} command won't make
@@ -14092,6 +14105,7 @@ Alastair Burt,
 Joao Cachopo,
 Zlatko Calusic,
 Massimo Campostrini,
+Dan Christensen,
 Michael R. Cook,
 Glenn Coombs, 
 Frank D. Cringle, 
@@ -14840,7 +14854,8 @@ default, way of getting news.
 @item foreign
 @cindex foreign
 You can also have any number of foreign groups active at the same time.
-These are groups that use different backends for getting news.
+These are groups that use non-native non-secondary backends for getting
+news.
 
 @item secondary
 @cindex secondary

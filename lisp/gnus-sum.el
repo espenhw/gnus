@@ -6806,7 +6806,7 @@ and `request-accept' functions."
       (save-excursion
 	(set-buffer gnus-group-buffer)
 	(when (gnus-group-goto-group (car to-groups) t)
-	  (gnus-group-get-new-news-this-group 1))
+	  (gnus-group-get-new-news-this-group 1 t))
 	(pop to-groups)))
 
     (gnus-kill-buffer copy-buf)

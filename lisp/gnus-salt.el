@@ -158,7 +158,7 @@ If given a prefix, mark all unpicked articles as read."
     (if gnus-pick-elegant-flow
 	(progn
 	  (when (or catch-up gnus-mark-unpicked-articles-as-read)
-	    (gnus-summary-limit-mark-excluded-as-read))
+	    (gnus-summary-catchup))
 	  (if (gnus-group-quit-config gnus-newsgroup-name)
 	      (gnus-summary-exit)
 	    (gnus-summary-next-group)))

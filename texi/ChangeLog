@@ -1,3 +1,7 @@
+Sun May 25 14:40:17 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Expiring Mail): Addition.
+
 Sat May 24 05:26:17 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Score File Format): Update.

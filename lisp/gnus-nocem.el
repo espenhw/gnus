@@ -194,7 +194,8 @@ matches an previously scanned and verified nocem message."
 (defun gnus-nocem-verify-issuer (person)
   "Verify using PGP that the canceler is who she says she is."
   (if (fboundp gnus-nocem-verifyer)
-      (funcall gnus-nocem-verifyer)
+      (ignore-errors
+	(funcall gnus-nocem-verifyer))
     ;; If we don't have Mailcrypt, then we use the message anyway.
     t))
 

@@ -2874,7 +2874,7 @@ re-scanning.  If ARG is non-nil and not a number, this will force
     (gnus-group-list-groups (and (numberp arg)
 				 (max (car gnus-group-list-mode) arg)))))
 
-(defun gnus-group-get-new-news-this-group (&optional n)
+(defun gnus-group-get-new-news-this-group (&optional n dont-scan)
   "Check for newly arrived news in the current group (and the N-1 next groups).
 The difference between N and the number of newsgroup checked is returned.
 If N is negative, this group and the N-1 previous groups will be checked."
@@ -2888,7 +2888,7 @@ If N is negative, this group and the N-1 previous groups will be checked."
       (gnus-group-remove-mark group)
       ;; Bypass any previous denials from the server.
       (gnus-remove-denial (gnus-find-method-for-group group))
-      (if (gnus-activate-group group 'scan)
+      (if (gnus-activate-group group (if dont-scan nil 'scan))
 	  (progn
 	    (gnus-get-unread-articles-in-group
 	     (gnus-get-info group) (gnus-active group) t)

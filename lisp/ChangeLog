@@ -1,3 +1,29 @@
+Sun May 25 17:08:16 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.55 is released.
+
+Sun May 25 15:13:45 1997  Michael R. Cook  <mcook@cognex.com>
+
+	* gnus-art.el (gnus-button-alist): Typo fix.
+
+Sun May 25 14:44:38 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-salt.el (gnus-pick-start-reading): Mark unpicked as read.
+
+	* gnus-sum.el (gnus-summary-move-article): Don't scan.
+
+	* gnus-group.el (gnus-group-get-new-news-this-group): Accept an
+	optional non-scan parameter.
+
+Sun May 25 14:33:47 1997  Jan Vroonhof  <vroonhof@math.ethz.ch>
+
+	* gnus-cite.el (gnus-cite-attribution-prefix): Typo.
+
+Sat May 24 12:57:46 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-nocem.el (gnus-nocem-verify-issuer): Ignore errors when
+	verifying. 
+
 Sat May 24 11:55:04 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.54 is released.
