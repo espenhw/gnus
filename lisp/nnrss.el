@@ -191,7 +191,7 @@
 (deffoo nnrss-request-expire-articles
     (articles group &optional server force)
   (nnrss-possibly-change-group group server)
-  (let (e changed days)
+  (let (e days expirable)
     (dolist (art articles)
       (when (setq e (assq art nnrss-group-data))
       (if (nnmail-expired-article-p
@@ -199,10 +199,11 @@
 	   (if (listp (setq days (nth 1 e))) days 
 	     (days-to-time (- days (time-to-days '(0 0)))))
 	   force)
-	  (setq nnrss-group-data (delq e nnrss-group-data)
-		changed t))))
-    (if changed
-	(nnrss-save-group-data group server))))
+	  (push art expirable)
+	  (setq nnrss-group-data (delq e nnrss-group-data)))))
+    (if expirable
+	(nnrss-save-group-data group server))
+    expirable))
 
 (deffoo nnrss-request-delete-group (group &optional force server)
   (nnrss-possibly-change-group group server)

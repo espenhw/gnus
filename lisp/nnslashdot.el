@@ -407,7 +407,8 @@
 	      (setq gname (concat description " (" sid ")"))
 	      (if (setq elem (assoc gname nnslashdot-groups))
 		  (setcar (cdr elem) articles)
-		(push (list gname articles sid) nnslashdot-groups))
+		(push (list gname articles sid (current-time)) 
+		      nnslashdot-groups))
 	      (goto-char (point-max))
 	      (widen)))
 	  ;; Then do the older groups.
@@ -428,7 +429,8 @@
 		  (setq gname (concat description " (" sid ")"))
 		  (if (setq elem (assoc gname nnslashdot-groups))
 		      (setcar (cdr elem) articles)
-		    (push (list gname articles sid) nnslashdot-groups)))))
+		    (push (list gname articles sid (current-time)) 
+			  nnslashdot-groups)))))
 	    (incf number 30)))
       (search-failed (nnslashdot-lose why)))
     (nnslashdot-write-groups)
@@ -498,6 +500,24 @@
 (deffoo nnslashdot-request-close ()
   (setq nnslashdot-headers nil
 	nnslashdot-groups nil))
+
+(deffoo nnslashdot-request-expire-articles
+    (articles group &optional server force)
+  (nnslashdot-possibly-change-server group server)
+  (let ((item (assoc group nnslashdot-groups)) expirable)
+    (when item
+      (if (fourth item)
+	  (when (and (>= (length articles) (cadr item)) ;; All are expirable.
+		     (nnmail-expired-article-p 
+		      group
+		      (fourth item) 
+		      force))
+	    (setq nnslashdot-groups (delq item nnslashdot-groups))
+	    (nnslashdot-write-groups)
+	    (setq expirable articles))
+	(setcdr (cddr item) (list (current-time)))
+	(nnslashdot-write-groups)))
+    expirable))
 
 (nnoo-define-skeleton nnslashdot)
 

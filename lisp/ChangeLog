@@ -1,3 +1,13 @@
+2001-05-04 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnrss.el (nnrss-request-expire-articles): Correct the return value.
+
+	* nnslashdot.el (nnslashdot-request-list): Add time.
+	(nnslashdot-request-expire-articles): New.
+
+	* gnus-start.el (gnus-check-bogus-newsgroups): Remove bogus
+	secondary methods too.
+
 2001-05-03 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-use-followup-to): Set default value to t.
