@@ -127,10 +127,11 @@ List of pairs (KEY . GLYPH) where KEY is either a filename or an URL.")
 	    (if exact
 		(setq address nil)
 	      (pop address)))
-	  ;; Kludge to search MISC as well.
-	  (when (setq result (gnus-picon-find-image
-			      (concat base "/MISC/" user "/")))
-	    (throw 'found result)))))))
+	  ;; Kludge to search MISC as well.  But not in "news".
+	  (unless (string= directory "news")
+	    (when (setq result (gnus-picon-find-image
+				(concat base "/MISC/" user "/")))
+	      (throw 'found result))))))))
 
 (defun gnus-picon-find-image (directory)
   (let ((types gnus-picon-file-types)

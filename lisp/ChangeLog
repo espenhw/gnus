@@ -2,6 +2,7 @@
 
 	* gnus-picon.el (gnus-picon-find-face): Search MISC for all types.
 	(gnus-picon-transform-address): Search for unknown faces as well. 
+	(gnus-picon-find-face): Don't search "news" for MISC.
 
 	* gnus-sum.el (gnus-summary-hide-all-threads): Reversed logic. 
 
