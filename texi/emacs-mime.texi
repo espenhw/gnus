@@ -407,6 +407,22 @@ setting this option to non-@code{nil}.  The default value is @code{t}.
 @vindex mm-external-terminal-program
 The program used to start an external terminal.
 
+@item mm-enable-external
+@vindex mm-enable-external
+Indicate whether external MIME handlers should be used.
+
+If @code{t}, all defined external MIME handlers are used.  If
+@code{nil}, files are saved to disk (@code{mailcap-save-binary-file}).
+If it is the symbol @code{ask}, you are prompted before the external
+@acronym{MIME} handler is invoked.
+
+When you launch an attachment through mailcap (@pxref{mailcap}) an
+attempt is made to use a safe viewer with the safest options--this isn't
+the case if you save it to disk and launch it in a different way
+(command line or double-clicking).  Anyhow, if you want to be sure not
+to launch any external programs, set this variable to @code{nil} or
+@code{ask}.
+
 @end table
 
 @node Files and Directories
