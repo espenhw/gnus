@@ -1082,7 +1082,10 @@ FUNC will be called with the group name to determine the article number."
 	;; See whether the split methods returned `junk'.
 	(if (equal group-art '(junk))
 	    nil
-	  (nreverse (delq 'junk group-art)))))))
+	  ;; The article may be "cross-posted" to `junk'.  What
+	  ;; to do?  Just remove the `junk' spec.  Don't really
+	  ;; see anything else to do...
+	  (nreverse (delq (assq 'junk group-art) group-art)))))))
 
 (defun nnmail-insert-lines ()
   "Insert how many lines there are in the body of the mail.

@@ -441,7 +441,10 @@
       (replace-match "\\1 " t)
       (forward-line 1))
     (when (re-search-forward "\n\n+" nil t)
-      (replace-match "\n" t t))))
+      (replace-match "\n" t t))
+    (goto-char (point-min))
+    (when (search-forward "[More Headers]" nil t)
+      (replace-match "" t t))))
 
 (defun nnweb-dejanews-search (search)
   (nnweb-fetch-form

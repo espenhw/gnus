@@ -671,3 +671,12 @@ allow them to be displayed separately.
 
 * gnus-summary-save-in-pipe should concatenate the results from
 the processes when doing a process marked pipe.
+
+* a new match type, like Followup, but which adds Thread matches on all
+articles that match a certain From header.
+
+* a function that can be read from kill-emacs-query-functions to offer
+saving living summary buffers.
+
+* a function for selecting a particular group which will contain
+the articles listed in a list of article numbers/id's.

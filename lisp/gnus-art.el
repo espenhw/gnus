@@ -395,6 +395,11 @@ If you want to run a special decoding program like nkf, use this hook."
   :type 'hook
   :group 'gnus-article-various)
 
+(defcustom gnus-article-hide-pgp-hook nil
+  "*A hook called after successfully hiding a PGP signature."
+  :type 'hook
+  :group 'gnus-article-various)
+
 (defcustom gnus-article-button-face 'bold
   "Face used for highlighting buttons in the article buffer.
 
@@ -964,7 +969,8 @@ always hide."
 	  (while (re-search-forward "^- " nil t)
 	    (gnus-article-hide-text-type
 	     (match-beginning 0) (match-end 0) 'pgp))
-	  (widen))))))
+	  (widen)))
+      (run-hooks 'gnus-article-hide-pgp-hook))))
 
 (defun article-hide-pem (&optional arg)
   "Toggle hiding of any PEM headers and signatures in the current article.
@@ -1130,8 +1136,7 @@ Put point at the beginning of the signature separator."
 	  (setq buf (buffer-string))))
       (when buf
 	(delete-region (point-min) (point-max))
-	(insert buf)
-	(kill-buffer buf))
+	(insert buf))
       (widen)
       (goto-char (point-min))
       (set-window-start (get-buffer-window (current-buffer)) (point-min))

@@ -23,9 +23,6 @@
 
 ;;; Commentary:
 
-;;; TODO:
-;; See the comment in gnus-picons-remove
-
 ;;; Code:
 
 (require 'gnus)
@@ -45,15 +42,16 @@ depending on what gnus-picons-display-where is set to.  You must
 also add gnus-article-display-picons to gnus-article-display-hook."
   :group 'gnus-visual)
 
-(defcustom gnus-picons-buffer "*Icon Buffer*"
-  "Buffer name to display the icons in if gnus-picons-display-where is 'picons."
-  :type 'string
-  :group 'picons)
-
 (defcustom gnus-picons-display-where 'picons
   "Where to display the group and article icons.
 Legal values are `article' and `picons'."
   :type '(choice symbol string)
+  :group 'picons)
+
+(defcustom gnus-picons-has-modeline-p t
+  "Wether the picons window should have a modeline.
+This is only useful if `gnus-picons-display-where' is `picons'."
+  :type 'boolean
   :group 'picons)
 
 (defcustom gnus-picons-database "/usr/local/faces"
@@ -63,10 +61,12 @@ see http://www.cs.indiana.edu/picons/ftp/index.html"
   :type 'directory
   :group 'picons)
 
-(defcustom gnus-picons-news-directory "news"
+(defcustom gnus-picons-news-directories '("news")
   "Sub-directory of the faces database containing the icons for newsgroups."
-  :type 'string
+  :type '(repeat string)
   :group 'picons)
+(define-obsolete-variable-alias 'gnus-picons-news-directory
+  'gnus-picons-news-directories)
 
 (defcustom gnus-picons-user-directories '("local" "users" "usenix" "misc")
   "List of directories to search for user faces."
@@ -152,14 +152,11 @@ List of pairs (KEY . NAME) where KEY is (USER HOST DBS) and NAME is an URL.")
 
 (defvar gnus-group-annotations nil
   "List of annotations added/removed when selecting/exiting a group")
-(defvar gnus-group-annotations-lock nil)
 (defvar gnus-article-annotations nil
   "List of annotations added/removed when selecting an article")
-(defvar gnus-article-annotations-lock nil)
 (defvar gnus-x-face-annotations nil
   "List of annotations added/removed when selecting an article with an
 X-Face.")
-(defvar gnus-x-face-annotations-lock nil)
 
 (defvar gnus-picons-jobs-alist nil
   "List of jobs that still need be done.
@@ -173,37 +170,27 @@ arguments necessary for the job.")
 
 ;;; Functions:
 
-(defsubst gnus-picons-lock (symbol)
-  (intern (concat (symbol-name symbol) "-lock")))
-
 (defun gnus-picons-remove (symbol)
   "Remove all annotations in variable named SYMBOL.
 This function is careful to set it to nil before removing anything so that
 asynchronous process don't get crazy."
-  ;; clear the lock
-  (set (gnus-picons-lock symbol) nil)
+  (setq gnus-picons-jobs-alist (remassq symbol gnus-picons-jobs-alist))
+  ;; notify running job that it may have been preempted
+  (if (eq (car gnus-picons-job-already-running) symbol)
+      (setq gnus-picons-job-already-running t))
   ;; clear all annotations
   (mapc (function (lambda (item)
 		    (if (annotationp item)
 			(delete-annotation item))))
 	(prog1 (symbol-value symbol)
-	  (set symbol nil)))
-  ;; FIXME: there's a race condition here.  If a job is already
-  ;; running, it has already removed itself from this queue...  But
-  ;; will still display its picon.
-  ;; TODO: push a request to clear an annotation.  Then
-  ;; gnus-picons-next-job will be able to clean up when it gets the
-  ;; hand
-  (setq gnus-picons-jobs-alist (remassq symbol gnus-picons-jobs-alist)))
+	  (set symbol nil))))
 
 (defun gnus-picons-remove-all ()
   "Removes all picons from the Gnus display(s)."
   (interactive)
   (gnus-picons-remove 'gnus-article-annotations)
   (gnus-picons-remove 'gnus-group-annotations)
-  (gnus-picons-remove 'gnus-x-face-annotations)
-  (when (bufferp gnus-picons-buffer)
-    (kill-buffer gnus-picons-buffer)))
+  (gnus-picons-remove 'gnus-x-face-annotations))
 
 (defun gnus-get-buffer-name (variable)
   "Returns the buffer name associated with the contents of a variable."
@@ -214,6 +201,22 @@ asynchronous process don't get crazy."
 				    ((stringp newvar) newvar))))
         ((stringp variable) variable)))
 
+(defun gnus-picons-set-buffer ()
+  (set-buffer
+   (get-buffer-create (gnus-get-buffer-name gnus-picons-display-where)))
+  (gnus-add-current-to-buffer-list)
+  (goto-char (point-min))
+  (if (and (eq gnus-picons-display-where 'article)
+	   gnus-picons-display-article-move-p)
+      (if (search-forward "\n\n" nil t)
+	  (forward-line -1)
+	(goto-char (point-max)))
+    (setq buffer-read-only t)
+    (unless gnus-picons-has-modeline-p
+      (set-specifier has-modeline-p
+		     (list (list (current-buffer)
+				 (cons nil gnus-picons-has-modeline-p)))))))
+
 (defun gnus-picons-prepare-for-annotations (annotations)
   "Prepare picons buffer for puting annotations memorized in ANNOTATIONS.
 ANNOTATIONS should be a symbol naming a variable wich contains a list of
@@ -221,18 +224,13 @@ annotations.  Sets buffer to `gnus-picons-display-where'."
   ;; let drawing catch up
   (when gnus-picons-refresh-before-display
     (sit-for 0))
-  (set-buffer (get-buffer-create
-	       (gnus-get-buffer-name gnus-picons-display-where)))
-  (gnus-add-current-to-buffer-list)
-  (goto-char (point-min))
-  (if (and (eq gnus-picons-display-where 'article)
-	   gnus-picons-display-article-move-p)
-      (when (search-forward "\n\n" nil t)
-	(forward-line -1))
-    (make-local-variable 'inhibit-read-only)
-    (setq buffer-read-only t
-	  inhibit-read-only nil))
+  (gnus-picons-set-buffer)
   (gnus-picons-remove annotations))
+
+(defsubst gnus-picons-make-annotation (&rest args)
+  (let ((annot (apply 'make-annotation args)))
+    (set-extent-property annot 'duplicable nil)
+    annot))
 
 (defun gnus-picons-article-display-x-face ()
   "Display the x-face header bitmap in the 'gnus-picons-display-where buffer."
@@ -265,7 +263,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	(save-excursion
 	  (gnus-picons-prepare-for-annotations 'gnus-x-face-annotations)
 	  (setq gnus-x-face-annotations
-		(cons (make-annotation
+		(cons (gnus-picons-make-annotation
 		       (vector 'xface
 			       :data (concat "X-Face: "
 					     (buffer-substring beg end buf)))
@@ -276,7 +274,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	   (annot (save-excursion
 		    (gnus-picons-prepare-for-annotations
 		     'gnus-x-face-annotations)
-		    (make-annotation nil nil 'text)))
+		    (gnus-picons-make-annotation nil nil 'text)))
 	   (process (start-process-shell-command "gnus-x-face" nil 
 						 gnus-picons-convert-x-face)))
       (push annot gnus-x-face-annotations)
@@ -306,18 +304,23 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 		       (message-tokenize-header (substring from (1+ at-idx))
 						"."))))
 	  (gnus-picons-prepare-for-annotations 'gnus-article-annotations)
+	  ;; if display in article buffer, the group annotations
+	  ;; wrongly placed.  Move them here
+	  (if (eq gnus-picons-display-where 'article)
+	      (dolist (ext gnus-group-annotations)
+		(set-extent-endpoints ext (point) (point))))
 	  (if (null gnus-picons-piconsearch-url)
 	      (setq gnus-article-annotations
 		    (nconc gnus-article-annotations
 			   (gnus-picons-display-pairs
 			    (gnus-picons-lookup-pairs
 			     addrs gnus-picons-domain-directories)
-			    (not (or gnus-picons-display-as-address
-				     gnus-article-annotations))
+			    gnus-picons-display-as-address
 			    "." t)
 			   (if (and gnus-picons-display-as-address addrs)
-			       (list (make-annotation [string :data "@"] nil
-						      'text nil nil nil t)))
+			       (list (gnus-picons-make-annotation
+				      [string :data "@"] nil
+				      'text nil nil nil t)))
 			   (gnus-picons-display-picon-or-name
 			    (gnus-picons-lookup-user username addrs)
 			    username t)))
@@ -340,13 +343,13 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 		(gnus-picons-display-pairs
 		 (gnus-picons-lookup-pairs (reverse (message-tokenize-header
 						     gnus-newsgroup-name "."))
-					   gnus-picons-news-directory)
+					   gnus-picons-news-directories)
 		 t "."))
 	(push (list 'gnus-group-annotations 'search nil
 		    (message-tokenize-header gnus-newsgroup-name ".")
-		    (if (listp gnus-picons-news-directory)
-			gnus-picons-news-directory
-		      (list gnus-picons-news-directory))
+		    (if (listp gnus-picons-news-directories)
+			gnus-picons-news-directories
+		      (list gnus-picons-news-directories))
 		    nil)
 	      gnus-picons-jobs-alist)
 	(gnus-picons-next-job))
@@ -404,40 +407,36 @@ none, and whose CDR is the corresponding element of DOMAINS."
 
 (defun gnus-picons-display-picon-or-name (picon name &optional right-p)
   (cond (picon (gnus-picons-display-glyph picon name right-p))
-	(gnus-picons-display-as-address (list (make-annotation
+	(gnus-picons-display-as-address (list (gnus-picons-make-annotation
 					       (vector 'string :data name)
 					       nil 'text
 					       nil nil nil right-p)))))
 
 (defun gnus-picons-display-pairs (pairs &optional bar-p dot-p right-p)
   "Display picons in list PAIRS."
-  (let ((bar (and bar-p (or gnus-picons-display-as-address
-			    (annotations-in-region (point)
-						   (min (point-max)
-							(1+ (point)))
-						   (current-buffer)))))
-	(domain-p (and gnus-picons-display-as-address dot-p))
+  (let ((domain-p (and gnus-picons-display-as-address dot-p))
 	pair picons)
+    (if (and bar-p domain-p right-p)
+	(setq picons (gnus-picons-display-glyph
+		      (gnus-picons-try-face gnus-xmas-glyph-directory
+					    "bar.")
+		      nil right-p)))
     (while pairs
       (setq pair (pop pairs)
-	    picons (nconc (if (and domain-p picons (not right-p))
-			      (list (make-annotation
-				     (vector 'string :data dot-p)
-				     nil 'text nil nil nil right-p)))
+	    picons (nconc picons
 			  (gnus-picons-display-picon-or-name (car pair)
 							     (cadr pair)
 							     right-p)
-			  (if (and domain-p pairs right-p)
-			      (list (make-annotation
+			  (if (and domain-p pairs)
+			      (list (gnus-picons-make-annotation
 				     (vector 'string :data dot-p)
-				     nil 'text nil nil nil right-p)))
-			  (when (and bar domain-p)
-			    (setq bar nil)
+				     nil 'text nil nil nil right-p))))))
+    (if (and bar-p domain-p (not right-p))
+	(setq picons (nconc picons
 			    (gnus-picons-display-glyph
 			     (gnus-picons-try-face gnus-xmas-glyph-directory
 						   "bar.")
-			     nil t))
-			  picons)))
+			     nil right-p))))
     picons))
 
 (defun gnus-picons-try-face (dir &optional filebase)
@@ -456,7 +455,8 @@ none, and whose CDR is the corresponding element of DOMAINS."
     glyph))
 
 (defun gnus-picons-display-glyph (glyph &optional part rightp)
-  (let ((new (make-annotation glyph (point) 'text nil nil nil rightp)))
+  (let ((new (gnus-picons-make-annotation glyph (point)
+					  'text nil nil nil rightp)))
     (when (and part gnus-picons-display-as-address)
       (set-annotation-data new (cons new
 				     (make-glyph (vector 'string :data part))))
@@ -466,8 +466,8 @@ none, and whose CDR is the corresponding element of DOMAINS."
      (if (and (eq major-mode 'gnus-article-mode)
 	      (not gnus-picons-display-as-address)
 	      (not part))
-	 (list (make-annotation [string :data " "]
-				(point) 'text nil nil nil rightp))))))
+	 (list (gnus-picons-make-annotation [string :data " "] (point)
+					    'text nil nil nil rightp))))))
 
 (defun gnus-picons-action-toggle (data)
   "Toggle annotation"
@@ -480,7 +480,8 @@ none, and whose CDR is the corresponding element of DOMAINS."
 (defun gnus-picons-clear-cache ()
   "Clear the picons cache"
   (interactive)
-  (setq gnus-picons-glyph-alist nil))
+  (setq gnus-picons-glyph-alist nil
+	gnus-picons-url-alist nil))
 
 (gnus-add-shutdown 'gnus-picons-close 'gnus)
 
@@ -497,14 +498,13 @@ none, and whose CDR is the corresponding element of DOMAINS."
 (defun gnus-picons-url-retrieve (url fn arg)
   (let ((old-asynch (default-value 'url-be-asynchronous))
 	(url-working-buffer (generate-new-buffer " *picons*"))
-	(url-request-method nil)
 	(url-package-name "Gnus")
-	(url-package-version gnus-version-number))
+	(url-package-version gnus-version-number)
+	url-request-method)
     (setq-default url-be-asynchronous t)
     (save-excursion
       (set-buffer url-working-buffer)
       (setq url-be-asynchronous t
-	    url-show-status nil
 	    url-current-callback-data arg
 	    url-current-callback-func fn)
       (url-retrieve url t))
@@ -588,8 +588,7 @@ none, and whose CDR is the corresponding element of DOMAINS."
 ;;; picon network display functions :
 
 (defun gnus-picons-network-display-internal (sym-ann glyph part right-p)
-  (set-buffer
-   (get-buffer-create (gnus-get-buffer-name gnus-picons-display-where)))
+  (gnus-picons-set-buffer)
   (set sym-ann (nconc (symbol-value sym-ann)
 		      (gnus-picons-display-picon-or-name glyph part right-p)))
   (gnus-picons-next-job-internal))
@@ -599,7 +598,11 @@ none, and whose CDR is the corresponding element of DOMAINS."
 						   w3-image-mappings)))))
     (kill-buffer (current-buffer))
     (push (cons url glyph) gnus-picons-glyph-alist)
-    (gnus-picons-network-display-internal sym-ann glyph part right-p)))
+    ;; only do the job if it has not been preempted.
+    (if (equal gnus-picons-job-already-running
+	       (list sym-ann 'picon url part right-p))
+	(gnus-picons-network-display-internal sym-ann glyph part right-p)
+      (gnus-picons-next-job-internal))))
 
 (defun gnus-picons-network-display (url part sym-ann right-p)
   (let ((cache (assoc url gnus-picons-glyph-alist)))
@@ -665,8 +668,16 @@ none, and whose CDR is the corresponding element of DOMAINS."
       (if (and gnus-picons-display-as-address new-jobs)
 	  (push (list sym-ann "@" right-p) new-jobs))
       (push (list sym-ann 'picon (cdr cache) user right-p) new-jobs))
-    (setq gnus-picons-jobs-alist (nconc (nreverse new-jobs)
-					gnus-picons-jobs-alist))
+    (if (and gnus-picons-display-as-address (not right-p))
+	(push (list sym-ann 'bar right-p) new-jobs))
+    ;; only put the jobs in the queue if this job has not been preempted.
+    (if (equal gnus-picons-job-already-running
+	       (list sym-ann 'search user addrs dbs right-p))
+	(setq gnus-picons-jobs-alist
+	      (nconc (if (and gnus-picons-display-as-address right-p)
+			 (list (list sym-ann 'bar right-p)))
+		     (nreverse new-jobs)
+		     gnus-picons-jobs-alist)))
     (gnus-picons-next-job-internal)))
 
 (defun gnus-picons-network-search-callback (user addrs dbs sym-ann right-p)
@@ -696,31 +707,33 @@ none, and whose CDR is the corresponding element of DOMAINS."
       (gnus-picons-network-search-internal user addrs dbs sym-ann right-p))))
 
 ;;; Main jobs dispatcher function
-;; Given that XEmacs is not really multi threaded, this locking should
-;; be sufficient
 
 (defun gnus-picons-next-job-internal ()
-  (if gnus-picons-jobs-alist
-      (let* ((job (pop gnus-picons-jobs-alist))
+  (if (setq gnus-picons-job-already-running (pop gnus-picons-jobs-alist))
+      (let* ((job gnus-picons-job-already-running)
 	     (sym-ann (pop job))
 	     (tag (pop job)))
 	(if tag
 	    (cond ((stringp tag);; (SYM-ANN "..." RIGHT-P)
 		   (gnus-picons-network-display-internal sym-ann nil tag
 							 (pop job)))
+		  ((eq 'bar tag)
+		   (gnus-picons-network-display-internal
+		    sym-ann (gnus-picons-try-face gnus-xmas-glyph-directory
+						  "bar.")
+		    nil (pop job)))
 		  ((eq 'search tag);; (SYM-ANN 'search USER ADDRS DBS RIGHT-P)
 		   (gnus-picons-network-search
 		    (pop job) (pop job) (pop job) sym-ann (pop job)))
 		  ((eq 'picon tag);; (SYM-ANN 'picon URL PART RIGHT-P)
 		   (gnus-picons-network-display
 		    (pop job) (pop job) sym-ann (pop job)))
-		  (t (error "Unknown picon job tag %s" tag)))))
-    (setq gnus-picons-job-already-running nil)))
+		  (t (setq gnus-picons-job-already-running nil)
+		     (error "Unknown picon job tag %s" tag)))))))
 
 (defun gnus-picons-next-job ()
-  "Start processing the job queue."
+  "Start processing the job queue if it is not in progress"
   (unless gnus-picons-job-already-running
-    (setq gnus-picons-job-already-running t)
     (gnus-picons-next-job-internal)))
 
 (provide 'gnus-picon)

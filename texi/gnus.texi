@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.52 Manual
+@settitle Gnus 5.4.53 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.52 Manual
+@title Gnus 5.4.53 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.52.
+This manual corresponds to Gnus 5.4.53.
 
 @end ifinfo
 
@@ -1944,7 +1944,8 @@ alternative approach, @pxref{Expiring Mail}.
 If the group parameter has an element that looks like
 @code{(total-expire . t)}, all read articles will be put through the
 expiry process, even if they are not marked as expirable.  Use with
-caution.
+caution.  Unread, ticked and dormant articles are not eligible for
+expiry.
 
 @item expiry-wait
 @cindex expiry-wait
@@ -2272,10 +2273,10 @@ Find bogus groups and delete them
 
 @item F
 @kindex F (Group)
-@findex gnus-find-new-newsgroups
-Find new groups and process them (@code{gnus-find-new-newsgroups}).  If
-given a prefix, use the @code{ask-server} method to query the server for
-new groups.
+@findex gnus-group-find-new-groups
+Find new groups and process them (@code{gnus-group-find-new-groups}).
+If given a prefix, use the @code{ask-server} method to query the server
+for new groups.
 
 @item C-c C-x
 @kindex C-c C-x (Group)
@@ -2549,6 +2550,12 @@ Move all groups that match some regular expression to a topic
 @findex gnus-topic-copy-matching
 Copy all groups that match some regular expression to a topic
 (@code{gnus-topic-copy-matching}). 
+
+@item T h
+@kindex T h (Topic)
+@findex gnus-topic-toggle-display-empty-topics
+Toggle hiding empty topics
+(@code{gnus-topic-toggle-display-empty-topics}). 
 
 @item T #
 @kindex T # (Topic)
@@ -5860,7 +5867,10 @@ Signature}.
 @item W W p
 @kindex W W p (Summary)
 @findex gnus-article-hide-pgp
-Hide @sc{pgp} signatures (@code{gnus-article-hide-pgp}). 
+@vindex gnus-article-hide-pgp-hook
+Hide @sc{pgp} signatures (@code{gnus-article-hide-pgp}).  The
+@code{gnus-article-hide-pgp-hook} hook will be run after a @sc{pgp}
+signature has been hidden.
 
 @item W W P
 @kindex W W P (Summary)
@@ -13039,17 +13049,19 @@ your @file{.gnus} file:
 
 @findex gnus-demon-add-handler
 @lisp
-(gnus-demon-add-handler 'gnus-demon-close-connections nil 30)
+(gnus-demon-add-handler 'gnus-demon-close-connections 30 t)
 @end lisp
 
 @findex gnus-demon-add-nocem
 @findex gnus-demon-add-scanmail
 @findex gnus-demon-add-rescan
+@findex gnus-demon-add-scan-timestamps
 @findex gnus-demon-add-disconnection
 Some ready-made functions to do this has been created:
 @code{gnus-demon-add-nocem}, @code{gnus-demon-add-disconnection},
-@code{gnus-demon-add-rescan}, and @code{gnus-demon-add-scanmail}.  Just
-put those functions in your @file{.gnus} if you want those abilities.
+@code{gnus-demon-add-scan-timestamps}, @code{gnus-demon-add-rescan}, and
+@code{gnus-demon-add-scanmail}.  Just put those functions in your
+@file{.gnus} if you want those abilities.
 
 @findex gnus-demon-init
 @findex gnus-demon-cancel
@@ -13996,6 +14008,9 @@ Erik Naggum---help, ideas, support, code and stuff.
 Wes Hardaker---@file{gnus-picon.el} and the manual section on
 @dfn{picons} (@pxref{Picons}).
 
+@item
+Kim-Minh Kaplan---further work on the picon code.
+
 @item 
 Brad Miller---@file{gnus-gl.el} and the GroupLens manual section
 (@pxref{GroupLens}).
@@ -14104,7 +14119,6 @@ Lee Iverson,
 Rajappa Iyer,
 Randell Jesup,
 Fred Johansen, 
-Kim-Minh Kaplan,
 Greg Klanderman,
 Karl Kleinpaste,
 Peter Skov Knudsen,

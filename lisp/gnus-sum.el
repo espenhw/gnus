@@ -5145,7 +5145,8 @@ previous group instead."
 	  (if (and (or (eq t unreads)
 		       (and unreads (not (zerop unreads))))
 		   (gnus-summary-read-group
-		    target-group nil no-article current-buffer))
+		    target-group nil no-article
+		    (and (buffer-name current-buffer) current-buffer)))
 	      (setq entered t)
 	    (setq current-group target-group
 		  target-group nil)))))))
@@ -6331,6 +6332,9 @@ If BACKWARD, search backward instead."
   "Search for an article containing REGEXP.
 Optional argument BACKWARD means do search for backward.
 `gnus-select-article-hook' is not called during the search."
+  ;; We have to require this here to make sure that the following
+  ;; dynamic binding isn't shadowed by autoloading.
+  (require 'gnus-asynch)
   (let ((gnus-select-article-hook nil)	;Disable hook.
 	(gnus-article-display-hook nil)
 	(gnus-mark-article-hook nil)	;Inhibit marking as read.

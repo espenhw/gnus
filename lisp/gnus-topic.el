@@ -77,7 +77,6 @@ with some simple extensions.
 
 (defvar gnus-topic-killed-topics nil)
 (defvar gnus-topic-inhibit-change-level nil)
-(defvar gnus-topic-tallied-groups nil)
 
 (defconst gnus-topic-line-format-alist
   `((?n name ?s)
@@ -362,8 +361,6 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
   (let ((buffer-read-only nil)
         (lowest (or lowest 1)))
 
-    (setq gnus-topic-tallied-groups nil)
-
     (when (or (not gnus-topic-alist)
 	      (not gnus-topology-checked-p))
       (gnus-topic-check-topology))
@@ -439,10 +436,7 @@ articles in the topic and its subtopics."
 	     (gnus-info-level info) (gnus-info-marks info)
 	     (car entry) (gnus-info-method info)))))
       (when (and (listp entry)
-		 (numberp (car entry))
-		 (not (member (gnus-info-group (setq info (nth 2 entry)))
-			      gnus-topic-tallied-groups)))
-	(push (gnus-info-group info) gnus-topic-tallied-groups)
+		 (numberp (car entry)))
 	(incf unread (car entry)))
       (when (listp entry)
 	(setq tick t)))
@@ -648,7 +642,6 @@ articles in the topic and its subtopics."
   (setq gnus-topic-active-topology nil
 	gnus-topic-active-alist nil
 	gnus-topic-killed-topics nil
-	gnus-topic-tallied-groups nil
 	gnus-topology-checked-p nil))
 
 (defun gnus-topic-check-topology ()
@@ -900,7 +893,8 @@ articles in the topic and its subtopics."
     "\C-i" gnus-topic-indent
     [tab] gnus-topic-indent
     "r" gnus-topic-rename
-    "\177" gnus-topic-delete)
+    "\177" gnus-topic-delete
+    "h" gnus-topic-toggle-display-empty-topics)
 
   (gnus-define-keys (gnus-topic-sort-map "S" gnus-group-topic-map)
     "s" gnus-topic-sort-groups
@@ -930,7 +924,8 @@ articles in the topic and its subtopics."
 	["Rename" gnus-topic-rename t]
 	["Create" gnus-topic-create-topic t]
 	["Mark" gnus-topic-mark-topic t]
-	["Indent" gnus-topic-indent t])
+	["Indent" gnus-topic-indent t]
+	["Toggle hide empty" gnus-topic-toggle-display-empty-topics t])
        ["List active" gnus-topic-list-active t]))))
 
 (defun gnus-topic-mode (&optional arg redisplay)
@@ -1304,6 +1299,15 @@ If FORCE, always re-read the active file."
 	(gnus-topic-alist gnus-topic-active-alist)
 	gnus-killed-list gnus-zombie-list)
     (gnus-group-list-groups 9 nil 1)))
+
+(defun gnus-topic-toggle-display-empty-topics ()
+  "Show/hide topics that have no unread articles."
+  (interactive)
+  (setq gnus-topic-display-empty-topics
+	(not gnus-topic-display-empty-topics))
+  (message "%s empty topics"
+	   (if gnus-topic-display-empty-topics
+	       "Showing" "Hiding")))
 
 ;;; Topic sorting functions
 

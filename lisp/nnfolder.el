@@ -276,7 +276,8 @@ time saver for large mailboxes.")
   (when group
     (unless (assoc group nnfolder-group-alist)
       (push (list group (cons 1 0)) nnfolder-group-alist)
-      (nnmail-save-active nnfolder-group-alist nnfolder-active-file)))
+      (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
+      (nnfolder-read-folder group)))
   t)
 
 (deffoo nnfolder-request-list (&optional server)

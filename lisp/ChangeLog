@@ -1,3 +1,85 @@
+Sun May 18 07:35:43 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.53 is released.
+
+Sun May 18 06:20:57 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-set-auto-save-file-name): Create unique auto
+	save file names.
+
+	* gnus-topic.el (gnus-topic-tallied-groups): Removed.
+	(gnus-topic-prepare-topic): Output right number of articles in
+	each sub-topic.
+
+	* gnus-sum.el (gnus-summary-next-group): Don't pass on killed
+	buffers. 
+
+	* nnmail.el (nnmail-article-group): When crossposted to `junk', do
+	`junk'.
+
+	* gnus-util.el (gnus-kill-all-overlays): Remove nil overlays from
+	list. 
+
+	* gnus-art.el (gnus-article-treat-html): Don't kill buf.
+
+	* gnus-group.el (gnus-group-find-new-newsgroups): Newish function.
+
+Sun May 18 06:16:41 1997  Kim-Minh Kaplan  <kimminh.kaplan@utopia.eunet.fr>
+
+	* gnus-picon.el (gnus-picons-has-modeline-p): new user variable.
+	(gnus-picons-set-buffer): new function.
+	(gnus-picons-prepare-for-annotations): use it.
+	(gnus-picons-network-display-internal): ditto.
+	(gnus-picons-make-annotation): new function.
+	(gnus-picons-display-x-face): use it.
+	(gnus-article-display-picons): ditto.
+	(gnus-picons-display-picon-or-name): ditto.
+	(gnus-picons-display-pairs): ditto.  Remember the correct
+	order of insertion of annotations.
+	(gnus-picons-display-glyph): use gnus-picons-make-annotation.
+	(gnus-article-display-picons): move group annotations in article
+ 	buffer to the correct place if displaying in article buffer.
+ 	(gnus-picons-network-search-internal): don't display "@" if there
+	is no domain picon works again.  Check that the picons still
+	need be displayed.  Add the bar bar.xpm separator if
+	gnus-picons-display-as-address.
+	(gnus-picons-network-display-callback): check that the picon still
+	need be displayed.
+	(gnus-picons-lock): function deleted.
+ 	(gnus-picons-remove): don't use it.  New way of locking.
+	(gnus-picons-next-job-internal): new way of locking.  Handle
+	new tag 'bar.
+	(gnus-picons-next-job): new way of locking.
+	(gnus-picons-buffer): variable deleted.
+	(gnus-picons-remove-all): modified accordingly.
+	(gnus-group-annotations-lock): variable deleted.
+	(gnus-article-annotations-lock): variable deleted.
+	(gnus-x-face-annotations-lock): variable deleted.
+	(gnus-picons-news-directories): renamed, was
+	gnus-picons-news-directory.
+	(gnus-picons-url-retrieve): do not change url-show-status.
+	(gnus-picons-clear-cache): also clear gnus-picons-url-alist.
+
+Sun May 18 05:57:31 1997  Michael R. Cook  <mcook@cognex.com>
+
+	* gnus-topic.el (gnus-topic-toggle-display-empty-topics): New
+	function. 
+
+Sun May 18 05:52:59 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnfolder.el (nnfolder-request-create-group): Read folder.
+
+Sat May 17 22:45:07 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-search-article): Require gnus-asynch. 
+
+	* nnweb.el (nnweb-dejanews-wash-article): Remove "More Headers".
+
+Sun May 11 20:07:21 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (article-hide-pgp): Run hook.
+	(gnus-article-hide-pgp-hook): New variable.
+
 Sat May 10 00:37:32 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.52 is released.

@@ -528,7 +528,7 @@ Timezone package is used."
   (unless gnus-xemacs
     (let* ((overlayss (overlay-lists))
 	   (buffer-read-only nil)
-	   (overlays (nconc (car overlayss) (cdr overlayss))))
+	   (overlays (delq nil (nconc (car overlayss) (cdr overlayss)))))
       (while overlays
 	(delete-overlay (pop overlays))))))
 

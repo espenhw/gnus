@@ -444,7 +444,7 @@ ticked: The number of ticked articles."
     "r" gnus-group-read-init-file
     "B" gnus-group-browse-foreign-server
     "b" gnus-group-check-bogus-groups
-    "F" gnus-find-new-newsgroups
+    "F" gnus-group-find-new-groups
     "\C-c\C-d" gnus-group-describe-group
     "\M-d" gnus-group-describe-all-groups
     "\C-c\C-a" gnus-group-apropos
@@ -689,7 +689,7 @@ ticked: The number of ticked articles."
 	["First unread group" gnus-group-first-unread-group t]
 	["Best unread group" gnus-group-best-unread-group t])
        ["Delete bogus groups" gnus-group-check-bogus-groups t]
-       ["Find new newsgroups" gnus-find-new-newsgroups t]
+       ["Find new newsgroups" gnus-group-find-new-groups t]
        ["Transpose" gnus-group-transpose-groups
 	(gnus-group-group-name)]
        ["Read a directory as a group..." gnus-group-enter-directory t]))
@@ -3088,6 +3088,15 @@ group."
   (gnus-check-bogus-newsgroups (and (not silent) (not gnus-expert-user)))
   (gnus-group-list-groups))
 
+(defun gnus-group-find-new-groups (&optional arg)
+  "Search for new groups and add them.
+Each new group will be treated with `gnus-subscribe-newsgroup-method.'
+If ARG (the prefix), use the `ask-server' method to query
+the server for new groups."
+  (interactive "P")
+  (gnus-find-new-newsgroups arg)
+  (gnus-group-list-groups))
+  
 (defun gnus-group-edit-global-kill (&optional article group)
   "Edit the global kill file.
 If GROUP, edit that local kill file instead."
