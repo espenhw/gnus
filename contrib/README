@@ -12,6 +12,13 @@ need to a directory which is in load-path.
 
 Here is an overview of the files:
 
+compface.el
+
+	Provides the ELisp-based uncompface program.  It is excellent
+	and practical (actually you can replace lisp/compface.el with
+	it), however the author is missing and the copyright has not
+	been assigned yet.
+
 gnus-namazu.el
 
 	This file defines the command to search mails and persistent
