@@ -14,10 +14,11 @@
 	* nnml.el (nnml-save-nov, nnml-generate-nov-file):
 	* pop3.el (pop3-md5): Don't hardcode point-min == 1.
 
-2002-04-12  Daiki Ueno  <ueno@unixuser.org>
+2002-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-srvr.el (gnus-server-set-info): Clear
 	`gnus-server-method-cache' when `gnus-server-alist' is changed.
+	From Daiki Ueno <ueno@unixuser.org>.
 
 2002-04-11  Simon Josefsson  <jas@extundo.com>
 
