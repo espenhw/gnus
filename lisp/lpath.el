@@ -60,7 +60,7 @@
 	      rmail-enable-mime-composing
 	      rmail-insert-mime-forwarded-message-function
 	      w3-meta-content-type-charset-regexp
-	      w3m-current-buffer w3m-cid-retrieve-function-alist
+	      w3m-cid-retrieve-function-alist w3m-current-buffer
 	      w3m-meta-content-type-charset-regexp w3m-mode-map))
 
 (if (featurep 'xemacs)

@@ -1,6 +1,7 @@
 2002-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* lpath.el: Bind `w3m-cid-retrieve-function-alist'.
+	* lpath.el: Bind `w3m-cid-retrieve-function-alist' and
+	`w3m-current-buffer'.
 
 2002-01-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
