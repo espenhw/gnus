@@ -1,3 +1,13 @@
+2003-10-18  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-forward-make-body-plain)
+	(message-forward-make-body-mime, message-forward-make-body-mml)
+	(message-forward-make-body-digest-plain)
+	(message-forward-make-body-digest-mime)
+	(message-forward-make-body-digest): New, derived from
+	message-forward-make-body.
+	(message-forward-make-body): Use them.
+
 2003-10-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-article-mode): Set gnus-page-broken to nil.
