@@ -1,3 +1,9 @@
+2001-07-26 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From Steven E. Harris <seh@speakeasy.org>
+
+	* nnheader.el (nnheader-translate-file-chars): cygwin32 is running
+	in M$Windows too.
+
 2001-07-26  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-delay.el (gnus-delay-send-drafts): Don't `error'.
