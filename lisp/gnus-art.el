@@ -969,7 +969,9 @@ See the manual for details."
 (defvar gnus-article-encrypt-protocol-alist
   '(("PGP" . mml2015-self-encrypt)))
 
-(defcustom gnus-article-encrypt-protocol nil
+;; Set to nil if more than one protocol added to
+;; gnus-article-encrypt-protocol-alist.
+(defcustom gnus-article-encrypt-protocol "PGP"
   "The protocol used for encrypt articles.
 It is a string, such as \"PGP\". If nil, ask user."
   :type 'string
@@ -4903,73 +4905,77 @@ For example:
    (t
     (error "%S is not a valid value" val))))
 
-(defun gnus-article-encrypt (protocol)
-  "Replace the article with encrypted one."
+(defun gnus-article-encrypt-body (protocol &optional n)
+  "Encrypt the article body."
   (interactive 
    (list
     (or gnus-article-encrypt-protocol
 	(completing-read "Encrypt protocol: "
 			 gnus-article-encrypt-protocol-alist 
-			 nil t))))
+			 nil t))
+    current-prefix-arg))
   (let ((func (cdr (assoc protocol gnus-article-encrypt-protocol-alist))))
     (unless func
       (error (format "Can't find the encrypt protocol %s" protocol)))
     (if (equal gnus-newsgroup-name "nndraft:drafts")
 	(error "Can't encrypt the article in group nndraft:drafts."))
-    (save-excursion
-      (set-buffer gnus-summary-buffer)
-      (let ((mail-parse-charset gnus-newsgroup-charset)
-	    (mail-parse-ignored-charsets gnus-newsgroup-ignored-charsets)
-	    (summary-buffer gnus-summary-buffer)
-	    references point)
-	(gnus-set-global-variables)
-	(when (gnus-group-read-only-p)
-	  (error "The current newsgroup does not support article encrypt"))
-	(gnus-summary-show-article t)
-	(setq references
+    (if (equal gnus-newsgroup-name "nndraft:queue")
+	(error "Don't encrypt the article in group nndraft:queue."))
+    (gnus-summary-iterate n
+      (save-excursion
+	(set-buffer gnus-summary-buffer)
+	(let ((mail-parse-charset gnus-newsgroup-charset)
+	      (mail-parse-ignored-charsets gnus-newsgroup-ignored-charsets)
+	      (summary-buffer gnus-summary-buffer)
+	      references point)
+	  (gnus-set-global-variables)
+	  (when (gnus-group-read-only-p)
+	    (error "The current newsgroup does not support article encrypt"))
+	  (gnus-summary-show-article t)
+	  (setq references
 	      (or (mail-header-references gnus-current-headers) ""))
-	(set-buffer gnus-article-buffer)
-	(let* ((buffer-read-only nil)
-	       (headers
-		(mapcar (lambda (field)
-			  (and (save-restriction 
-				 (message-narrow-to-head)
-				 (goto-char (point-min))
-				 (search-forward field nil t))
-			       (prog2
-				   (message-narrow-to-field)
-				   (buffer-substring (point-min) (point-max))
-				 (delete-region (point-min) (point-max))
-				 (widen))))
-			'("Content-Type:" "Content-Transfer-Encoding:"
-			  "Content-Disposition:"))))
-	  (message-narrow-to-head)
-	  (message-remove-header "MIME-Version")
-	  (goto-char (point-max))
-	  (setq point (point))
-	  (insert (apply 'concat headers))
-	  (widen)
-	  (narrow-to-region point (point-max))
-	  (let ((message-options message-options))
-	    (message-options-set 'message-sender user-mail-address)
-	    (message-options-set 'message-recipients user-mail-address)
-	    (message-options-set 'message-sign-encrypt 'not)
-	    (funcall func))
-	  (goto-char (point-min))
-	  (insert "MIME-Version: 1.0\n")
-	  (widen)
-	  (gnus-summary-edit-article-done
-	   references nil summary-buffer t))
-	(when gnus-keep-backlog
-	  (gnus-backlog-remove-article
-	   (car gnus-article-current) (cdr gnus-article-current)))
-	(save-excursion
-	  (when (get-buffer gnus-original-article-buffer)
-	    (set-buffer gnus-original-article-buffer)
-	    (setq gnus-original-article nil)))
-	(when gnus-use-cache
-	  (gnus-cache-update-article
-	   (car gnus-article-current) (cdr gnus-article-current)))))))
+	  (set-buffer gnus-article-buffer)
+	  (let* ((buffer-read-only nil)
+		 (headers
+		  (mapcar (lambda (field)
+			    (and (save-restriction 
+				   (message-narrow-to-head)
+				   (goto-char (point-min))
+				   (search-forward field nil t))
+				 (prog2
+				     (message-narrow-to-field)
+				     (buffer-substring (point-min) (point-max))
+				   (delete-region (point-min) (point-max))
+				   (widen))))
+			  '("Content-Type:" "Content-Transfer-Encoding:"
+			    "Content-Disposition:"))))
+	    (message-narrow-to-head)
+	    (message-remove-header "MIME-Version")
+	    (goto-char (point-max))
+	    (setq point (point))
+	    (insert (apply 'concat headers))
+	    (widen)
+	    (narrow-to-region point (point-max))
+	    (let ((message-options message-options))
+	      (message-options-set 'message-sender user-mail-address)
+	      (message-options-set 'message-recipients user-mail-address)
+	      (message-options-set 'message-sign-encrypt 'not)
+	      (funcall func))
+	    (goto-char (point-min))
+	    (insert "MIME-Version: 1.0\n")
+	    (widen)
+	    (gnus-summary-edit-article-done
+	     references nil summary-buffer t))
+	  (when gnus-keep-backlog
+	    (gnus-backlog-remove-article
+	     (car gnus-article-current) (cdr gnus-article-current)))
+	  (save-excursion
+	    (when (get-buffer gnus-original-article-buffer)
+	      (set-buffer gnus-original-article-buffer)
+	      (setq gnus-original-article nil)))
+	  (when gnus-use-cache
+	    (gnus-cache-update-article
+	     (car gnus-article-current) (cdr gnus-article-current))))))))
 
 (gnus-ems-redefine)
 

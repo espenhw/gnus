@@ -1,3 +1,9 @@
+2000-11-06 22:06:44  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-possibly-verify-or-decrypt): Fix.  
+	* gnus-art.el (gnus-article-encrypt-body): Rename and support prefix
+	argument.
+
 2000-11-06 19:10:14  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2231.el (rfc2231-encode-string): Use us-ascii if charset is nil.

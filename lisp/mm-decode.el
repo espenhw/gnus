@@ -1001,12 +1001,15 @@ If RECURSIVE, search recursively."
 		      protocols nil)
 	      (setq protocols (cdr protocols))))))
       (setq func (nth 1 (assoc protocol mm-verify-function-alist)))
-      (setq functest (nth 3 (assoc protocol mm-verify-function-alist)))
       (if (cond
 	   ((eq mm-verify-option 'never) nil)
 	   ((eq mm-verify-option 'always) t)
 	   ((eq mm-verify-option 'known) 
-	    (and func (funcall functest parts ctl)))
+	    (and func 
+		 (or (not (setq functest 
+				(nth 3 (assoc protocol 
+					      mm-verify-function-alist))))
+		     (funcall functest parts ctl))))
 	   (t (y-or-n-p
 	       (format "Verify signed (%s) part? "
 		       (or (nth 2 (assoc protocol mm-verify-function-alist))
@@ -1030,12 +1033,15 @@ If RECURSIVE, search recursively."
 		      parts nil)
 	      (setq parts (cdr parts))))))
       (setq func (nth 1 (assoc protocol mm-decrypt-function-alist)))
-      (setq functest (nth 3 (assoc protocol mm-decrypt-function-alist)))
       (if (cond
 	   ((eq mm-decrypt-option 'never) nil)
 	   ((eq mm-decrypt-option 'always) t)
 	   ((eq mm-decrypt-option 'known)
-	    (and func (funcall functest parts ctl)))
+	    (and func 
+		 (or (not (setq functest 
+				(nth 3 (assoc protocol 
+					      mm-decrypt-function-alist))))
+		     (funcall functest parts ctl))))
 	   (t (y-or-n-p 
 	       (format "Decrypt (%s) part? "
 		       (or (nth 2 (assoc protocol mm-decrypt-function-alist))
