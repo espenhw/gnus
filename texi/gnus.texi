@@ -12065,10 +12065,11 @@ Command used to log in on the intermediate host.  The default is
 @item nntp-via-rlogin-command-switches
 @vindex nntp-via-rlogin-command-switches
 List of strings to be used as the switches to
-@code{nntp-via-rlogin-command}.  The default is @code{nil}.  Set this to
-@samp{("-t")} if you use @samp{ssh} for @code{nntp-via-rlogin-command}
-and the telnet command requires a pseudo-tty allocation on an
-intermediate host.
+@code{nntp-via-rlogin-command}.  The default is @code{nil}.  If you use
+@samp{ssh} for `nntp-via-rlogin-command', you may set this to
+@samp{("-C")} in order to compress all data connections, otherwise set
+this to @samp{("-t")} or @samp{("-C" "-t")} if the telnet command
+requires a pseudo-tty allocation on an intermediate host.
 @end table
 
 @item nntp-open-via-telnet-and-telnet
