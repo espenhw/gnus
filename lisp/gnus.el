@@ -2690,7 +2690,7 @@ gnus-registry.el will populate this if it's loaded.")
       gnus-uu-decode-uu-and-save-view gnus-uu-decode-unshar-view
       gnus-uu-decode-unshar-and-save-view gnus-uu-decode-save-view
       gnus-uu-decode-binhex-view gnus-uu-unmark-thread
-      gnus-uu-mark-over gnus-uu-post-news)
+      gnus-uu-mark-over gnus-uu-post-news gnus-uu-invert-processable)
      ("gnus-uu" gnus-uu-delete-work-dir gnus-uu-unmark-thread)
      ("gnus-msg" (gnus-summary-send-map keymap)
       gnus-article-mail gnus-copy-article-buffer gnus-extended-version)

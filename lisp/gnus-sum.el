@@ -2473,6 +2473,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	 ["Set mark" gnus-summary-mark-as-processable t]
 	 ["Remove mark" gnus-summary-unmark-as-processable t]
 	 ["Remove all marks" gnus-summary-unmark-all-processable t]
+	 ["Invert marks" gnus-uu-invert-processable t]
 	 ["Mark above" gnus-uu-mark-over t]
 	 ["Mark series" gnus-uu-mark-series t]
 	 ["Mark region" gnus-uu-mark-region (gnus-mark-active-p)]

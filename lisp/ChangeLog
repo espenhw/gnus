@@ -1,3 +1,10 @@
+2004-06-27  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Add
+	gnus-uu-invert-processable.
+
+	* gnus.el: Autoload gnus-uu-invert-processable.
+
 2004-06-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-with-multibyte-buffer): New macro.
