@@ -1,3 +1,7 @@
+2000-07-05 21:19:22  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnheader.el (nnheader-insert-nov): Remove EOLs of all fields.
+
 2000-07-05  Dave Love  <fx@gnu.org>
 
 	* utf7.el: Doc and header fixes.

@@ -337,31 +337,36 @@ on your system, you could say something like:
 
 (defun nnheader-insert-nov (header)
   (princ (mail-header-number header) (current-buffer))
-  (insert
-   "\t"
-   (or (mail-header-subject header) "(none)") "\t"
-   (or (mail-header-from header) "(nobody)") "\t"
-   (or (mail-header-date header) "") "\t"
-   (or (mail-header-id header)
-       (nnmail-message-id))
-   "\t"
-   (or (mail-header-references header) "") "\t")
-  (princ (or (mail-header-chars header) 0) (current-buffer))
-  (insert "\t")
-  (princ (or (mail-header-lines header) 0) (current-buffer))
-  (insert "\t")
-  (when (mail-header-xref header)
-    (insert "Xref: " (mail-header-xref header)))
-  (when (or (mail-header-xref header)
-	    (mail-header-extra header))
-    (insert "\t"))
-  (when (mail-header-extra header)
-    (let ((extra (mail-header-extra header)))
-      (while extra
-	(insert (symbol-name (caar extra))
-		": " (cdar extra) "\t")
-        (pop extra))))
-  (insert "\n"))
+  (let ((p (point)))
+    (insert
+     "\t"
+     (or (mail-header-subject header) "(none)") "\t"
+     (or (mail-header-from header) "(nobody)") "\t"
+     (or (mail-header-date header) "") "\t"
+     (or (mail-header-id header)
+	 (nnmail-message-id))
+     "\t"
+     (or (mail-header-references header) "") "\t")
+    (princ (or (mail-header-chars header) 0) (current-buffer))
+    (insert "\t")
+    (princ (or (mail-header-lines header) 0) (current-buffer))
+    (insert "\t")
+    (when (mail-header-xref header)
+      (insert "Xref: " (mail-header-xref header)))
+    (when (or (mail-header-xref header)
+	      (mail-header-extra header))
+      (insert "\t"))
+    (when (mail-header-extra header)
+      (let ((extra (mail-header-extra header)))
+	(while extra
+	  (insert (symbol-name (caar extra))
+		  ": " (cdar extra) "\t")
+	  (pop extra))))
+    (insert "\n")
+    (backward-char 1)
+    (while (search-backward "\n" p t)
+      (delete-char 1))
+    (forward-line 1)))
 
 (defun nnheader-insert-header (header)
   (insert
