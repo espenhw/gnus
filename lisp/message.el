@@ -1012,6 +1012,7 @@ should be sent in several parts. If it is nil, the size is unlimited."
   (autoload 'gnus-open-server "gnus-int")
   (autoload 'gnus-request-post "gnus-int")
   (autoload 'gnus-alive-p "gnus-util")
+  (autoload 'gnus-list-identifiers "gnus-sum")
   (autoload 'rmail-output "rmail"))
 
 
@@ -1134,6 +1135,20 @@ should be sent in several parts. If it is nil, the size is unlimited."
   (or (and (symbolp form) (fboundp form))
       (and (listp form) (eq (car form) 'lambda))
       (byte-code-function-p form)))
+
+(defun message-strip-list-identifiers (subject)
+  "Remove list identifiers in `gnus-list-identifiers'."
+  (let ((regexp (if (stringp gnus-list-identifiers)
+		    gnus-list-identifiers
+		  (mapconcat 'identity gnus-list-identifiers " *\\|"))))
+    (if (string-match (concat "\\(\\(\\(Re: +\\)?\\(" regexp 
+				" *\\)\\)+\\(Re: +\\)?\\)") subject)
+	(concat (substring subject 0 (match-beginning 1))
+		(or (match-string 3 subject)
+		    (match-string 5 subject))
+		(substring subject
+			   (match-end 1)))
+      subject)))
 
 (defun message-strip-subject-re (subject)
   "Remove \"Re:\" from subject lines."
@@ -3676,11 +3691,9 @@ OTHER-HEADERS is an alist of header/value pairs."
 	    date (message-fetch-field "date")
 	    from (message-fetch-field "from")
 	    subject (or (message-fetch-field "subject") "none"))
-    ;; Remove any (buggy) Re:'s that are present and make a
-    ;; proper one.
-    (when (string-match message-subject-re-regexp subject)
-      (setq subject (substring subject (match-end 0))))
-    (setq subject (concat "Re: " subject))
+    (if gnus-list-identifiers
+	(setq subject (message-strip-list-identifiers subject)))
+    (setq subject (concat "Re: " (message-strip-subject-re subject)))
 
     (when (and (setq gnus-warning (message-fetch-field "gnus-warning"))
 	       (string-match "<[^>]+>" gnus-warning))
@@ -3751,11 +3764,9 @@ If TO-NEWSGROUPS, use that as the new Newsgroups line."
 		 (let ((case-fold-search t))
 		   (string-match "world" distribution)))
 	(setq distribution nil))
-      ;; Remove any (buggy) Re:'s that are present and make a
-      ;; proper one.
-      (when (string-match message-subject-re-regexp subject)
-	(setq subject (substring subject (match-end 0))))
-      (setq subject (concat "Re: " subject))
+      (if gnus-list-identifiers
+	  (setq subject (message-strip-list-identifiers subject)))
+      (setq subject (concat "Re: " (message-strip-subject-re subject)))
       (widen))
 
     (message-pop-to-buffer (message-buffer-name "followup" from newsgroups))
