@@ -1,3 +1,7 @@
+2003-01-10  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Choosing Variables, Agent Caveats): Add.
+
 2003-01-09  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Filtering Spam Using spam.el, ifile spam filtering) 

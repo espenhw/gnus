@@ -4965,7 +4965,9 @@ the server and display it in the article buffer.
 @item gnus-select-article-hook
 @vindex gnus-select-article-hook
 This hook is called whenever an article is selected.  By default it
-exposes any threads hidden under the selected article.
+exposes any threads hidden under the selected article.  If you wish
+that the Agent saves all articles you read, putting
+@code{gnus-agent-fetch-selected-article} on this hook should do it.
 
 @item gnus-mark-article-hook
 @vindex gnus-mark-article-hook
@@ -17334,7 +17336,9 @@ may ask:
 @table @dfn
 @item If I read an article while plugged, do they get entered into the Agent?
 
-@strong{No}.
+@strong{No}.  If you want this behaviour, add
+@code{gnus-agent-fetch-selected-article} to
+@code{gnus-select-article-hook}.
 
 @item If I read an article while plugged, and the article already exists in the Agent, will it get downloaded once more?
 
