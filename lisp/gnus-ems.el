@@ -229,7 +229,8 @@
 		    (and (setq start
 			       (next-single-property-change start 'display))
 			 (setq val (get-text-property start 'display)))))
-      (setq end (next-single-property-change start 'display))
+      (setq end (or (next-single-property-change start 'display)
+		    (point-max)))
       (if (and (equal val image)
 	       (equal (get-text-property start 'gnus-image-category)
 		      category))
@@ -237,8 +238,9 @@
 	    (put-text-property start end 'display nil)
 	    (when (get-text-property start 'gnus-image-text-deletable)
 	      (delete-region start end)))
-	(setq start end
-	      end nil)))))
+	(unless (= end (point-max))
+	  (setq start end
+		end nil))))))
 
 (provide 'gnus-ems)
 
