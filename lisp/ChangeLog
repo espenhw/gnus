@@ -6,11 +6,11 @@
 	`gnus-group-read-ephemeral-group'.
 
 	* gnus-group.el (gnus-group-read-ephemeral-group): Add NUMBER
-	argument pass it to `gnus-group-read-group'.
+	argument and pass it to `gnus-group-read-group'.
 
 2005-03-19  Aidan Kehoe  <kehoea@parhasard.net>
 
-	* lisp/mm-util.el (mm-xemacs-find-mime-charset): Only call
+	* mm-util.el (mm-xemacs-find-mime-charset): Only call
 	mm-xemacs-find-mime-charset-1 if we have the mule feature
 	available at runtime.
 
