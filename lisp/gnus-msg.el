@@ -211,6 +211,14 @@ use this option with care."
   :group 'gnus-message
   :type '(repeat (symbol :tab "Variable")))
 
+(defcustom gnus-discouraged-post-methods 
+  '(nndraft nnml nnimap nnmaildir)
+  "A list of back ends that are not used in \"real\" newsgroups.
+This variable is used only when `gnus-post-method' is `current'."
+  :version "21.3"
+  :group 'gnus-group-foreign
+  :type '(repeat (symbol :tab "Back end")))
+
 ;;; Internal variables.
 
 (defvar gnus-inhibit-posting-styles nil
@@ -892,7 +900,7 @@ If SILENT, don't prompt the user."
 	  method-alist))))
      ;; Override normal method.
      ((and (eq gnus-post-method 'current)
-	   (not (eq (car group-method) 'nndraft))
+	   (not (memq (car group-method) gnus-discouraged-post-methods))
 	   (gnus-get-function group-method 'request-post t))
       (assert (not arg))
       group-method)

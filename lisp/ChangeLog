@@ -1,7 +1,12 @@
 2002-02-16  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-msg.el (gnus-discouraged-post-methods): New variable.
+	(gnus-post-method): Use it.
+
 	* gnus-soup.el (gnus-soup-send-packet): Via ... using ...
 	* message.el (message-send-news): Ditto.
+	Suggested by Lloyd Zusman <ljz@asfast.com> and IPmonger
+	<ipmonger@delamancha.org>
 
 	* gnus.el (gnus-select-method): Fix doc.
 	(gnus-server-string): Use 'using nntp'.
