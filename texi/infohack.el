@@ -46,4 +46,9 @@
 	(Info-split))
     (save-buffer)))
 
+(defun batch-makeinfo ()
+  "Emacs makeinfo in batch mode."
+  (infohack (car command-line-args-left))
+  (setq command-line-args-left nil))
+
 ;;; infohack.el ends here

@@ -1,3 +1,11 @@
+2001-02-23 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi: Remove double words. From Gerd Moellmann.
+
+	* infohack.el (batch-makeinfo): New.
+	
+	* Makefile.in (EMACSINFO): Use it.
+
 2001-02-17 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Posting Styles): Doc fix.
