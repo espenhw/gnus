@@ -402,7 +402,7 @@ Valid types include `google', `dejanews', and `gmane'.")
       (caar map))))
 
 (defun nnweb-google-create-mapping ()
-  "Perform the search and create an number-to-url alist."
+  "Perform the search and create a number-to-url alist."
   (save-excursion
     (set-buffer nnweb-buffer)
     (erase-buffer)

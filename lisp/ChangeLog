@@ -1,3 +1,16 @@
+2002-11-17   Markus Rost  <rost@math.ohio-state.edu>
+
+	* gnus-sum.el (gnus-summary-goto-unread): Doc fix - escape open
+	parens in column 0.
+
+2002-11-17  Juanma Barranquero  <lektu@terra.es>
+
+	* nnweb.el (nnweb-google-create-mapping): Fix typo.
+
+	* nnlistserv.el (nnlistserv-kk-create-mapping): Likewise.
+
+	* gnus-nocem.el (gnus-nocem-liberal-fetch): Likewise.
+
 2002-11-17  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-set-auto-save-file-name): Use
