@@ -2837,13 +2837,22 @@ sort in reverse order."
 
 (defun gnus-info-clear-data (info)
   "Clear all marks and read ranges from INFO."
-  (let ((group (gnus-info-group info)))
+  (let ((group (gnus-info-group info))
+	action)
+    (dolist (el (gnus-info-marks info))
+      (push `(,(cdr el) add (,(car el))) action))
+    (push `(,(gnus-info-read info) add (read)) action)
     (gnus-undo-register
       `(progn
+	 (gnus-request-set-mark ,group ',action)
 	 (gnus-info-set-marks ',info ',(gnus-info-marks info) t)
 	 (gnus-info-set-read ',info ',(gnus-info-read info))
 	 (when (gnus-group-goto-group ,group)
+	   (gnus-get-unread-articles-in-group ',info ',(gnus-active group) t)
 	   (gnus-group-update-group-line))))
+    (setq action (mapcar (lambda (el) (list (nth 0 el) 'del (nth 2 el)))
+			 action))
+    (gnus-request-set-mark group action)
     (gnus-info-set-read info nil)
     (when (gnus-info-marks info)
       (gnus-info-set-marks info nil))))

@@ -1,5 +1,10 @@
 2001-08-24  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-group.el (gnus-info-clear-data): Call
+	nnfoo-request-set-mark to propagate marks.  Fix bug:
+	`gnus-group-update-line' doesn't update read range unless we call
+	`gnus-get-unread-articles-in-group' first.
+
 	* nnimap.el (nnimap-request-set-mark): Don't propagate seen flags
 	to server.
 
