@@ -3981,8 +3981,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
   (mm-subst-char-in-string
    ?\r ?\-
    (mm-subst-char-in-string
-    ?\n ?\- string t)
-   t))
+    ?\n ?\- string)))
 
 ;; This function has to be called with point after the article number
 ;; on the beginning of the line.
