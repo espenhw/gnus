@@ -2182,6 +2182,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
     (easy-menu-define
       gnus-summary-thread-menu gnus-summary-mode-map ""
       '("Threads"
+	["Find all messages in thread" gnus-summary-refer-thread t]
 	["Toggle threading" gnus-summary-toggle-threads t]
 	["Hide threads" gnus-summary-hide-all-threads t]
 	["Show threads" gnus-summary-show-all-threads t]

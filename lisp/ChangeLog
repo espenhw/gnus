@@ -1,3 +1,8 @@
+2003-01-07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Added
+	gnus-summary-refer-thread to thread menu.
+
 2002-01-07  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-fetch-group-1): When fetching within a
