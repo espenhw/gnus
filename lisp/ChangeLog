@@ -1,3 +1,8 @@
+2002-08-02  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-logic.el (gnus-advanced-integer): Swap arguments in
+	funcall.  From Scott A Crosby <scrosby@cs.rice.edu>.
+
 2002-07-31  Danny Siu  <dsiu@adobe.com>
 
 	* nnimap.el (nnimap-split-articles): do not call nnmail-fetch-field 

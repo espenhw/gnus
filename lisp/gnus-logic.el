@@ -161,7 +161,7 @@
 (defun gnus-advanced-integer (index match type)
   (if (not (memq type '(< > <= >= =)))
       (error "No such integer score type: %s" type)
-    (funcall type match (or (aref gnus-advanced-headers index) 0))))
+    (funcall type (or (aref gnus-advanced-headers index) 0) match)))
 
 (defun gnus-advanced-date (index match type)
   (let ((date (apply 'encode-time (parse-time-string
