@@ -752,10 +752,13 @@ the actual number of articles toggled is returned."
        (pop gnus-newsgroup-undownloaded) gnus-catchup-mark)))
   (gnus-summary-position-point))
 
-(defun gnus-agent-summary-fetch-group ()
-  "Fetch the downloadable articles in the group."
-  (interactive)
-  (let ((articles gnus-newsgroup-downloadable)
+(defun gnus-agent-summary-fetch-group (&optional all)
+  "Fetch the downloadable articles in the group.
+Optional arg ALL, if non-nil, means to fetch all articles."
+  (interactive "P")
+  (let ((articles
+	 (if all gnus-newsgroup-articles
+	   gnus-newsgroup-downloadable))
 	(gnus-command-method (gnus-find-method-for-group gnus-newsgroup-name))
 	(state gnus-plugged))
     (unwind-protect
@@ -775,6 +778,15 @@ the actual number of articles toggled is returned."
       (when (and (not state)
 		 gnus-plugged)
 	(gnus-agent-toggle-plugged nil)))))
+
+(defun gnus-agent-fetch-selected-article ()
+  "Fetch the current article as it is selected.
+This can be added to `gnus-select-article-hook' or
+`gnus-mark-article-hook'."
+  (let ((gnus-command-method gnus-current-select-method))
+    (gnus-agent-fetch-articles
+     gnus-newsgroup-name
+     (list gnus-current-article))))
 
 ;;;
 ;;; Internal functions
