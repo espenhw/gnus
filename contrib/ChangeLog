@@ -1,3 +1,8 @@
+2003-03-07  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* hashcash.el: New version from Paul Foley with better variable
+	names, executable-find support, and no errors in GNU Emacs
+
 2003-02-21  Simon Josefsson  <jas@extundo.com>
 
 	* hashcash.el (hashcash-point-at-bol):
