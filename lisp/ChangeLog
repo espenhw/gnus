@@ -1,3 +1,8 @@
+2004-10-18  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-copy-article-ignored-headers): Default to
+	nil.  Changed custom type.
+
 2004-10-17  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-copy-article-ignored-headers): New variable.
