@@ -168,6 +168,9 @@
     ;; `gnus-article-dumbquotes-map'.
     ,(unless (mm-coding-system-p 'windows-1252)	; should be defined eventually
        '(windows-1252 . iso-8859-1))
+    ;; ISO-8859-15 is very similar to ISO-8859-1.
+    ,(unless (mm-coding-system-p 'iso-8859-15) ; Emacs 21 defines it.
+       '(iso-8859-15 . iso-8859-1))
     ;; Windows-1250 is a variant of Latin-2 heavily used by Microsoft
     ;; Outlook users in Czech republic. Use this to allow reading of their
     ;; e-mails. cp1250 should be defined by M-x codepage-setup.

@@ -1,3 +1,8 @@
+2001-10-10  Florian Weimer  <fw@deneb.enyo.de>
+
+	* mm-util.el (mm-charset-synonym-alist): If Emacs doesn't support
+	iso-8859-15, make it an alias for iso-8859-1.
+
 2001-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-send-news): Don't modify the value of
