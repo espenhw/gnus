@@ -11885,6 +11885,7 @@ a list, and the first element is @code{:}, then the second element will
 be called as a function with @var{args} given as arguments.  The
 function should return a @var{split}.
 
+@cindex body split
 For instance, the following function could be used to split based on the
 body of the messages:
 
@@ -11896,6 +11897,9 @@ body of the messages:
     (when (re-search-forward "Some.*string" nil t)
       "string.group")))
 @end lisp
+
+The @samp{" *nnmail incoming*"} is narrowed to the message in question
+when the @code{:} function is run.
 
 @item
 @code{(! @var{func} @var{split})}: If the split is a list, and the first
