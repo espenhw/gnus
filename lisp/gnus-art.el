@@ -1658,7 +1658,8 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
 	  ;; We now have the area of the buffer where the X-Face is stored.
 	  (save-excursion
 	    (let ((beg (point))
-		  (end (1- (re-search-forward "^\\($\\|[^ \t]\\)" nil t))))
+		  (end (1- (re-search-forward "^\\($\\|[^ \t]\\)" nil t)))
+		  buffer-read-only)
 	      ;; We display the face.
 	      (if (symbolp gnus-article-x-face-command)
 		  ;; The command is a lisp function, so we call it.

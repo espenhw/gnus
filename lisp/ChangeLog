@@ -1,5 +1,8 @@
 2001-10-30 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-art.el (article-display-x-face): Nix buffer-read-only
+	again.
+
 	* mml2015.el (mml2015-gpg-verify): Convert <LF> to <CR><LF>.
 
 2001-10-30 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
