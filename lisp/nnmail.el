@@ -458,7 +458,7 @@ FUNC will be called with the buffer narrowed to each mail."
 	    (if (not (save-excursion
 		       (and (re-search-backward 
 			     "^Content-Length: \\([0-9]+\\)" nil t)
-			    (setq content-length (int-to-string
+			    (setq content-length (string-to-int
 						  (buffer-substring 
 						   (match-beginning 1)
 						   (match-end 1))))
