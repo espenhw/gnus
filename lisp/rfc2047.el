@@ -246,7 +246,11 @@ The buffer may be narrowed."
 ;; skip to the end of regions appropriately.  Nb. ietf-drums does
 ;; things differently.
 (defconst rfc2047-syntax-table
-  (let ((table (make-char-table 'syntax-table '(2))))
+  ;; This is what we should do, but XEmacs doesn't support the optional
+  ;; arg of `make-syntax-table':
+;;   (let ((table (make-char-table 'syntax-table '(2))))
+  (let ((table (make-char-table 'syntax-table)))
+    (map-char-table (lambda (k v) (aset table k '(2))) table)
     (modify-syntax-entry ?\\ "\\" table)
     (modify-syntax-entry ?\" "\"" table)
     (modify-syntax-entry ?\( "." table)
