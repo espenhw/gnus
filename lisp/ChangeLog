@@ -1,3 +1,17 @@
+2004-04-22  Teodor Zlatanov  <tzz@bwh.harvard.edu>
+
+	* spam.el (spam-necessary-extra-headers): get the extra headers we
+	may need for spam sorting and scoring
+	(spam-user-format-function-S): a user format function suitable for
+	general use
+	(spam-article-sort-by-spam-status): sorting function for summary
+	sorting
+	(spam-extra-header-to-number): get a score from a header
+	(spam-summary-score): get a numeric score from the headers
+	(spam-generic-score): oops, function doc in wrong place
+	(spam-initialize): take symbols when it's run, and install the
+	extra headers that spam-necessary-extra-headers thinks we need
+
 2004-04-21  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-summary-prepare-exit): logic and message fix.

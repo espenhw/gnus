@@ -686,9 +686,59 @@ Respects the process/prefix convention."
     (gnus-summary-remove-process-mark article)
     (spam-report-gmane article)))
 
+(defun spam-necessary-extra-headers ()
+  "Return the extra headers spam.el thinks are necessary."
+  (let (list)
+    (when (or spam-use-spamassassin
+	      spam-use-spamassassin-headers
+	      spam-use-regex-headers)
+      (push 'X-Spam-Status list))
+    list))
+
+(defun spam-user-format-function-S (headers)
+  (when headers
+    (spam-summary-score headers)))
+
+(defun spam-article-sort-by-spam-status (h1 h2)
+  "Sort articles by score."
+  (let (result)
+    (dolist (header (spam-necessary-extra-headers))
+      (let ((s1 (spam-summary-score h1 header))
+	    (s2 (spam-summary-score h2 header)))
+      (unless (= s1 s2)
+	(setq result (< s1 s2))
+	(return))))
+    result))
+
+(defun spam-extra-header-to-number (header headers)
+  "Transform an extra header to a number."
+  (if (gnus-extra-header header headers)
+      (cond
+       ((eq header 'X-Spam-Status)
+	(string-to-number (gnus-replace-in-string
+			   (gnus-extra-header header headers)
+			   ".*hits=" "")))
+       (t nil))
+    nil))
+
+(defun spam-summary-score (headers &optional specific-header)
+  "Score an article for the summary buffer, as fast as possible.
+With SPECIFIC-HEADER, returns only that header's score.
+Will not return a nil score."
+  (let (score)
+    (dolist (header 
+	     (if specific-header
+		 (list specific-header)
+	       (spam-necessary-extra-headers)))
+      (setq score 
+	    (spam-extra-header-to-number header headers))
+      (when score 
+	(return)))
+    (or score 0)))
+
 (defun spam-generic-score ()
-  (interactive)
   "Invoke whatever scoring method we can."
+  (interactive)
   (if (or
        spam-use-spamassassin
        spam-use-spamassassin-headers)
@@ -2166,9 +2216,21 @@ REMOVE not nil, remove the ADDRESSES."
 ;;;; Hooks
 
 ;;;###autoload
-(defun spam-initialize ()
-  "Install the spam.el hooks and do other initialization"
+(defun spam-initialize (&rest symbols)
+  "Install the spam.el hooks and do other initialization.
+When SYMBOLS is given, set those variables to t.  This is so you
+can call spam-initialize before you set spam-use-* variables on
+explicitly, and matters only if you need the extra headers
+installed through spam-necessary-extra-headers."
   (interactive)
+
+  (dolist (var symbols)
+    (set var t))
+
+  (dolist (header (spam-necessary-extra-headers))
+    (add-to-list 'nnmail-extra-headers header)
+    (add-to-list 'gnus-extra-headers header))
+
   (setq spam-install-hooks t)
   ;; TODO: How do we redo this every time spam-face is customized?
   (push '((eq mark gnus-spam-mark) . spam-face)
