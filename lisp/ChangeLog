@@ -1,4 +1,16 @@
+2003-01-24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-security-show-details): Toggle showing
+	details. 
+
 2003-01-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-press-button): let* -> let.
+	(gnus-mime-security-show-details): Cleaned up.
+	(gnus-mime-security-press-button): Save excursion.
+	(gnus-insert-mime-security-button): Clean up.
+
+	* gnus-sum.el (gnus-summary-force-verify-and-decrypt): Doc fix.
 
 	* gnus-async.el (gnus-async-wait-for-article): Don't use a
 	timeout. 

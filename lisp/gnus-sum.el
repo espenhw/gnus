@@ -6905,6 +6905,7 @@ be displayed."
 	'old))))
 
 (defun gnus-summary-force-verify-and-decrypt ()
+  "Display buttons for signed/encrypted parts and verify/decrypt them."
   (interactive)
   (let ((mm-verify-option 'known)
 	(mm-decrypt-option 'known)

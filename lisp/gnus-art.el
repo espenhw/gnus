@@ -5738,8 +5738,8 @@ call it with the value of the `gnus-data' text property."
 If the text at point has a `gnus-callback' property,
 call it with the value of the `gnus-data' text property."
   (interactive)
-  (let* ((data (get-text-property (point) 'gnus-data))
-	 (fun (get-text-property (point) 'gnus-callback)))
+  (let ((data (get-text-property (point) 'gnus-data))
+	(fun (get-text-property (point) 'gnus-callback)))
     (when fun
       (funcall fun data))))
 
@@ -6456,42 +6456,45 @@ For example:
 
 (defun gnus-mime-security-show-details (handle)
   (let ((details (mm-handle-multipart-ctl-parameter handle 'gnus-details)))
-    (if details
-	(if gnus-mime-security-show-details-inline
-	    (let ((gnus-mime-security-button-pressed t)
-		  (gnus-mime-security-button-line-format
-		   (get-text-property (point) 'gnus-line-format))
+    (if (not details)
+	(gnus-message 5 "No details.")
+      (if gnus-mime-security-show-details-inline
+	  (let ((gnus-mime-security-button-pressed
+		 (not (get-text-property (point) 'gnus-mime-details)))
+		(gnus-mime-security-button-line-format
+		 (get-text-property (point) 'gnus-line-format))
 		buffer-read-only)
-	      (forward-char -1)
-	      (while (eq (get-text-property (point) 'gnus-line-format)
-			 gnus-mime-security-button-line-format)
-		(forward-char -1))
-	      (forward-char)
-	      (save-restriction
-		(narrow-to-region (point) (point))
-		(gnus-insert-mime-security-button handle))
-	      (delete-region (point)
-			     (or (text-property-not-all
-				  (point) (point-max)
-				  'gnus-line-format
-				  gnus-mime-security-button-line-format)
-				 (point-max))))
-	  (if (gnus-buffer-live-p gnus-mime-security-details-buffer)
-	      (with-current-buffer gnus-mime-security-details-buffer
-		(erase-buffer)
-		t)
-	    (setq gnus-mime-security-details-buffer
-		  (gnus-get-buffer-create "*MIME Security Details*")))
-	  (with-current-buffer gnus-mime-security-details-buffer
-	    (insert details)
-	    (goto-char (point-min)))
-	  (pop-to-buffer gnus-mime-security-details-buffer))
-      (gnus-message 5 "No details."))))
+	    (forward-char -1)
+	    (while (eq (get-text-property (point) 'gnus-line-format)
+		       gnus-mime-security-button-line-format)
+	      (forward-char -1))
+	    (forward-char)
+	    (save-restriction
+	      (narrow-to-region (point) (point))
+	      (gnus-insert-mime-security-button handle))
+	    (delete-region (point)
+			   (or (text-property-not-all
+				(point) (point-max)
+				'gnus-line-format
+				gnus-mime-security-button-line-format)
+			       (point-max))))
+	;; Not inlined.
+	(if (gnus-buffer-live-p gnus-mime-security-details-buffer)
+	    (with-current-buffer gnus-mime-security-details-buffer
+	      (erase-buffer)
+	      t)
+	  (setq gnus-mime-security-details-buffer
+		(gnus-get-buffer-create "*MIME Security Details*")))
+	(with-current-buffer gnus-mime-security-details-buffer
+	  (insert details)
+	  (goto-char (point-min)))
+	(pop-to-buffer gnus-mime-security-details-buffer)))))
 
 (defun gnus-mime-security-press-button (handle)
-  (if (mm-handle-multipart-ctl-parameter handle 'gnus-info)
-      (gnus-mime-security-show-details handle)
-    (gnus-mime-security-verify-or-decrypt handle)))
+  (save-excursion
+    (if (mm-handle-multipart-ctl-parameter handle 'gnus-info)
+	(gnus-mime-security-show-details handle)
+      (gnus-mime-security-verify-or-decrypt handle))))
 
 (defun gnus-insert-mime-security-button (handle &optional displayed)
   (let* ((protocol (mm-handle-multipart-ctl-parameter handle 'protocol))
@@ -6512,7 +6515,8 @@ For example:
 	 b e)
     (setq gnus-tmp-details
 	  (if gnus-tmp-details
-	      (concat "\n" gnus-tmp-details) ""))
+	      (concat "\n" gnus-tmp-details)
+	    ""))
     (setq gnus-tmp-pressed-details
 	  (if gnus-mime-security-button-pressed gnus-tmp-details ""))
     (unless (bolp)
@@ -6524,6 +6528,7 @@ For example:
      `(,@(gnus-local-map-property gnus-mime-security-button-map)
 	 gnus-callback gnus-mime-security-press-button
 	 gnus-line-format ,gnus-mime-security-button-line-format
+	 gnus-mime-details ,gnus-mime-security-button-pressed
 	 article-type annotation
 	 gnus-data ,handle))
     (setq e (point))
@@ -6536,8 +6541,8 @@ For example:
      (lambda (widget/window &optional overlay pos)
        ;; Needed to properly clear the message due to a bug in
        ;; wid-edit (XEmacs only).
-       (if (boundp 'help-echo-owns-message)
-	   (setq help-echo-owns-message t))
+       (when (boundp 'help-echo-owns-message)
+	 (setq help-echo-owns-message t))
        (format
 	"%S: show detail"
 	(aref gnus-mouse-2 0))))))
