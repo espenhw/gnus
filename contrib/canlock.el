@@ -40,6 +40,7 @@
 (require 'mail-utils)
 
 (autoload 'sha1-encode-binary "sha1")
+(autoload 'sha1-binary "sha1-el")
 (autoload 'base64-encode "base64")
 
 (defgroup canlock nil
@@ -65,9 +66,10 @@
   :type 'sexp
   :group 'canlock)
 
-(defcustom canlock-sha1-function 'sha1-encode-binary
+(defcustom canlock-sha1-function 'sha1-binary
   "*Function called to make a SHA1 digest from a message (string)."
   :type '(radio (function-item sha1-encode-binary)
+		(function-item sha1-binary)
 		(function-item canlock-sha1-with-ssleay)
 		(function :tag "Other"))
   :group 'canlock)
@@ -75,6 +77,7 @@
 (defcustom canlock-sha1-function-for-verify canlock-sha1-function
   "*Function called to make a SHA1 digest for verifying."
   :type '(radio (function-item sha1-encode-binary)
+		(function-item sha1-binary)
 		(function-item canlock-sha1-with-ssleay)
 		(function :tag "Other"))
   :group 'canlock)
