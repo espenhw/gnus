@@ -6007,13 +6007,18 @@ Optional DIGEST will use digest to forward."
   (insert
    "\n-------------------- Start of forwarded message --------------------\n")
   (let ((b (point)) e)
-    (save-restriction
-      (narrow-to-region (point) (point))
-      (mml-insert-buffer forward-buffer)
-      (goto-char (point-min))
-      (when (looking-at "From ")
-	(replace-match "X-From-Line: "))
-      (goto-char (point-max)))
+    (insert
+     (with-temp-buffer
+       (mm-disable-multibyte)
+       (insert
+	(with-current-buffer forward-buffer
+	  (mm-with-unibyte-current-buffer (buffer-string))))
+       (mm-enable-multibyte)
+       (mime-to-mml)
+       (goto-char (point-min))
+       (when (looking-at "From ")
+	 (replace-match "X-From-Line: "))
+       (buffer-string)))
     (setq e (point))
     (insert
      "\n-------------------- End of forwarded message --------------------\n")

@@ -1,7 +1,13 @@
 2003-10-29  Simon Josefsson  <jas@extundo.com>
 
+	* message.el (message-forward-make-body-plain): Fix ARG=1 mode
+	after separating m-f-m-b.
+
+2003-10-29  Simon Josefsson  <jas@extundo.com>
+
 	* message.el (message-forward-make-body-plain): Remove ignored
 	headers.  Tiny patch from Andre Srinivasan <andre@e2open.com>.
+	(message-forward-make-body-plain): Fix ARG=1.
 
 2003-10-28  Jesper Harder  <harder@ifa.au.dk>
 
