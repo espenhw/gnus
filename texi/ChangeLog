@@ -1,3 +1,8 @@
+2003-04-12  Jesper Harder  <harder@ifa.au.dk>
+
+	* emacs-mime.texi (Encoding Customization): Update default for
+	mm-body-charset-encoding-alist.
+
 2003-04-08  Jesper Harder  <harder@ifa.au.dk>
 
 	* emacs-mime.texi (Non-MIME): Add diff.

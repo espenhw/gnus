@@ -777,8 +777,17 @@ This plain text part is an attachment.
 Mapping from @sc{mime} charset to encoding to use.  This variable is
 usually used except, e.g., when other requirements force a specific
 encoding (digitally signed messages require 7bit encodings).  The
-default is @code{((iso-2022-jp . 7bit) (iso-2022-jp-2 . 7bit))}.  As
-an example, if you do not want to have ISO-8859-1 characters
+default is 
+
+@lisp
+((iso-2022-jp . 7bit)
+ (iso-2022-jp-2 . 7bit)
+ (utf-16 . base64)
+ (utf-16be . base64)
+ (utf-16le . base64))
+@end lisp
+
+As an example, if you do not want to have ISO-8859-1 characters
 quoted-printable encoded, you may add @code{(iso-8859-1 . 8bit)} to
 this variable.  You can override this setting on a per-message basis
 by using the @code{encoding} MML tag (@pxref{MML Definition}).
