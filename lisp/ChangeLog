@@ -1,3 +1,12 @@
+2004-05-28  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-button-alist): Fixed regexp for manual links.
+
+	* gnus-group.el (gnus-group-get-new-news-this-group): Added
+	doc-string.
+
+	* gnus-start.el (gnus-activate-group): Added doc-string.
+
 2004-05-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-encode.el (mm-safer-encoding): Consider 7bit is safe.
