@@ -1,3 +1,56 @@
+2003-11-20  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus.el (gnus-agent-covered-methods): Documented use of
+	named servers, not methods, to identity agentized groups.
+	Users may now change their server configurations without having
+	the server become "unagentized".
+	(gnus-agent-covered-methods): Removed from gnus-variable-list to
+	avoid storing two copies of gnus-agent-covered-methods, one in
+	.newsrc.eld and the other in agent/lib/servers.
+	(gnus-server-to-method): Do not cache server for the nil method.
+	(gnus-method-to-server): New function.  Associate named server
+	with all, even foreign, methods.
+	(gnus-agent-method-p, gnus-agent-method-p-cache): Incorporated
+	simple last-response cache to offset performance lose of having to
+	always convert methods to named servers.
+	* gnus-agent.el (gnus-agent-expire-days): Removed obsolete
+	documentation.
+	(gnus-agentize, gnus-agent-add-server, gnus-agent-remove-server):
+	Modified to support new definition of gnus-agent-covered-method.
+	(gnus-agent-read-servers): Rewritten to convert old method data
+	into server names.
+	(gnus-agent-read-servers-validate)
+	(gnus-agent-read-servers-validate-native): New functions.
+	(gnus-agent-write-servers): No longer use gnus-method-simplify as
+	it failed to simplify foreign methods.
+	(gnus-agent-close-connections, gnus-agent-synchronize-flags)
+	(gnus-agent-possibly-synchronize-flags, gnus-agent-fetch-session)
+	(gnus-agent-regenerate): Uses new gnus-agent-covered-methods
+	function as gnus-agent-covered-methods variable no longer provides
+	methods.
+	(gnus-agent-covered-methods): New function
+	(gnus-agent-expire-group, gnus-agent-expire): Final message will,
+	if gnus-verbose is greater than 4, report statistics of NOV
+	entries and files deleted as well as total bytes recovered.
+	(gnus-agent-expire-done-message): New function
+	(gnus-agent-unread-articles): Bug fix.  No longer drops last
+	unread article onto read list.
+	(gnus-agent-regenerate-group): Changed prompt to use typical
+	style.
+	(gnus-agent-group-covered-p): Rewrote to internally use
+	gnus-agent-method-p.
+	* gnus-int.el (gnus-start-news-server): Partially convert old
+	gnus-agent-covered-methods to new format so that gnus-open-server
+	functions correctly.
+	* gnus-srvr.el (gnus-server-insert-server-line): Replaced
+	gnus-agent-covered-methods with gnus-agent-method-p.
+	* gnus-start.el (gnus-clear-system): Added
+	gnus-agent-covered-methods to compensate for removing it from
+	gnus-variable-list.
+	(gnus-setup-news): Complete conversion of old
+	gnus-agent-covered-methods to new format so that secondary and
+	foreign servers can be correctly opened.
+
 2003-11-20  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-ham-copy-or-move-routine): add respooling
