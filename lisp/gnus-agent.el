@@ -1081,7 +1081,7 @@ and that there are no duplicates."
       (save-excursion
         (save-restriction
           (let ((deactivate-mark (if (boundp 'deactivate-mark)
-				     deactivate-mark
+				     (symbol-value 'deactivate-mark)
 				   nil)))
             (widen)
             (goto-char (point-min))
