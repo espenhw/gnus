@@ -1,5 +1,8 @@
 2004-12-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-news.texi: Mention `gnus-summary-limit-to-recipient' and 
+	`gnus-summary-sort-by-recipient'.
+
 	* gnus.texi (Filtering Spam Using The Spam ELisp Package): Index
 	`spam-initialize'.
 	(Limiting): Add `gnus-summary-limit-to-recipient'.

@@ -100,6 +100,13 @@ This changes the default of @code{gnus-article-loose-mime}.
 See the Gnus manual, section Hashcash, for more information.  Use
 (setq message-generate-hashcash t) to enable.
 
+@item Gnus supports new limiting commands in the Summary buffer:
+@kbd{/ r} (@code{gnus-summary-limit-to-replied}) and @kbd{/ R}
+(@code{gnus-summary-limit-to-recipient}).
+
+@item Gnus supports a new sort command in the Summary buffer:
+@kbd{C-c C-s C-t} (@code{gnus-summary-sort-by-recipient}).
+
 @end itemize
 
 @c gnus-news.texi ends here.
