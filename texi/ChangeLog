@@ -1,3 +1,7 @@
+2001-11-15 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Various Summary Stuff): Add gnus-newsgroup-variables.
+
 2001-11-15 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.texi (Security): @uref not @url.

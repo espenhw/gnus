@@ -9275,6 +9275,22 @@ the list in one particular group:
     articles))
 @end lisp
 
+@vindex gnus-newsgroup-variables
+@item gnus-newsgroup-variables
+A list of newsgroup (summary buffer) local variables, or cons of
+variables and their default values (when the default values are not
+nil), that should be made global while the summary buffer is active.
+These variables can be used to set variables in the group parameters
+while still allowing them to affect operations done in other
+buffers. For example:
+
+@lisp
+(setq gnus-newsgroup-variables 
+     '(message-use-followup-to
+       (gnus-visible-headers . 
+	 "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^To:")))
+@end lisp
+
 @end table
 
 
