@@ -1,3 +1,8 @@
+2002-04-07  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-view.el (mm-inline-text-html-render-with-w3): Don't ignore
+	errors when debug.
+
 2002-04-07  Josh Huber  <huber@alum.wpi.edu>
 
 	* message.el (message-make-mft): Changed MFT code from using

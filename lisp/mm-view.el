@@ -145,23 +145,25 @@
 		  ;; Don't let w3 set the global version of
 		  ;; this variable.
 		  (fill-column fill-column))
-	      (condition-case ()
+	      (if (or debug-on-error debug-on-quit)
 		  (w3-region (point-min) (point-max))
-		(error
-		 (delete-region (point-min) (point-max))
-		 (let ((b (point))
-		       (charset (mail-content-type-get
-				 (mm-handle-type handle) 'charset)))
-		   (if (or (eq charset 'gnus-decoded)
-			   (eq mail-parse-charset 'gnus-decoded))
+		(condition-case ()
+		    (w3-region (point-min) (point-max))
+		  (error
+		   (delete-region (point-min) (point-max))
+		   (let ((b (point))
+			 (charset (mail-content-type-get
+				   (mm-handle-type handle) 'charset)))
+		     (if (or (eq charset 'gnus-decoded)
+			     (eq mail-parse-charset 'gnus-decoded))
 		       (save-restriction
 			 (narrow-to-region (point) (point))
 			 (mm-insert-part handle)
 			 (goto-char (point-max)))
-		     (insert (mm-decode-string (mm-get-part handle)
-					       charset))))
-		 (message
-		  "Error while rendering html; showing as text/plain"))))))
+		       (insert (mm-decode-string (mm-get-part handle)
+						 charset))))
+		   (message
+		    "Error while rendering html; showing as text/plain")))))))
 	(mm-handle-set-undisplayer
 	 handle
 	 `(lambda ()
