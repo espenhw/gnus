@@ -30,6 +30,7 @@
 (require 'gnus-start)
 (require 'nnmh)
 (require 'nnoo)
+(require 'mm-util)
 (eval-when-compile
   (require 'cl)
   ;; This is just to shut up the byte-compiler.
@@ -111,8 +112,10 @@
       (when (and (file-exists-p newest)
 		 (let ((nnmail-file-coding-system
 			(if (file-newer-than-file-p file auto)
-			    'binary
-			  message-draft-coding-system)))
+			    (if (equal group "drafts")
+				message-draft-coding-system
+			      mm-text-coding-system)
+			  mm-auto-save-coding-system)))
 		   (nnmail-find-file newest)))
 	(save-excursion
 	  (set-buffer nntp-server-buffer)

@@ -1,6 +1,6 @@
 ;;; pop3.el --- Post Office Protocol (RFC 1460) interface
 
-;; Copyright (C) 1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1996-1999 Free Software Foundation, Inc.
 
 ;; Author: Richard L. Pieri <ratinox@peorth.gweep.net>
 ;; Keywords: mail, pop3
@@ -85,23 +85,24 @@ Used for APOP authentication.")
 	   (pop3-pass process))
 	  (t (error "Invalid POP3 authentication scheme.")))
     (setq message-count (car (pop3-stat process)))
-    (while (<= n message-count)
-      (message (format "Retrieving message %d of %d from %s..."
-		       n message-count pop3-mailhost))
-      (pop3-retr process n crashbuf)
-      (save-excursion
-	(set-buffer crashbuf)
-	(write-region (point-min) (point-max) crashbox t 'nomesg)
-	(set-buffer (process-buffer process))
-	(while (> (buffer-size) 5000)
-	  (goto-char (point-min))
-	  (forward-line 50)
-	  (delete-region (point-min) (point))))
-      (pop3-dele process n)
-      (setq n (+ 1 n))
-      (if pop3-debug (sit-for 1) (sit-for 0.1))
-      )
-    (pop3-quit process)
+    (unwind-protect
+	(while (<= n message-count)
+	  (message (format "Retrieving message %d of %d from %s..."
+			   n message-count pop3-mailhost))
+	  (pop3-retr process n crashbuf)
+	  (save-excursion
+	    (set-buffer crashbuf)
+	    (write-region (point-min) (point-max) crashbox t 'nomesg)
+	    (set-buffer (process-buffer process))
+	    (while (> (buffer-size) 5000)
+	      (goto-char (point-min))
+	      (forward-line 50)
+	      (delete-region (point-min) (point))))
+	  (pop3-dele process n)
+	  (setq n (+ 1 n))
+	  (if pop3-debug (sit-for 1) (sit-for 0.1))
+	  )
+      (pop3-quit process))
     (kill-buffer crashbuf)
     )
   t)
@@ -113,7 +114,7 @@ Returns the process associated with the connection."
 	 (get-buffer-create (format "trace of POP session to %s" mailhost)))
 	(process)
 	(coding-system-for-read 'binary)   ;; because FSF Emacs 20 and
-	(coding-system-for-write 'binary)  ;; XEmacs 20/1 are st00pid
+	(coding-system-for-write 'binary)  ;; XEmacs 20 & 21 are st00pid
     )
     (save-excursion
       (set-buffer process-buffer)

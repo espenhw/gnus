@@ -34,6 +34,14 @@
   `(nth 0 ,handle))
 (defmacro mm-handle-type (handle)
   `(nth 1 ,handle))
+(defsubst mm-handle-media-type (handle)
+  (if (stringp (car handle))
+      (car handle)
+    (car (mm-handle-type handle))))
+(defsubst mm-handle-media-supertype (handle)
+  (car (split-string (mm-handle-media-type handle) "/")))
+(defsubst mm-handle-media-subtype (handle)
+  (cadr (split-string (mm-handle-media-type handle) "/")))
 (defmacro mm-handle-encoding (handle)
   `(nth 2 ,handle))
 (defmacro mm-handle-undisplayer (handle)
@@ -269,7 +277,7 @@ external if displayed external."
     (mailcap-parse-mailcaps)
     (if (mm-handle-displayed-p handle)
 	(mm-remove-part handle)
-      (let* ((type (car (mm-handle-type handle)))
+      (let* ((type (mm-handle-media-type handle))
 	     (method (mailcap-mime-info type)))
 	(if (mm-inlined-p handle)
 	    (progn
@@ -309,7 +317,7 @@ external if displayed external."
 	  (let ((mm (current-buffer))
 		(non-viewer (assoc "non-viewer"
 				   (mailcap-mime-info
-				    (car (mm-handle-type handle)) t))))
+				    (mm-handle-media-type handle)) t)))
 	    (unwind-protect
 		(if method
 		    (funcall method)
@@ -324,7 +332,7 @@ external if displayed external."
 			(mm-handle-disposition handle) 'filename))
 	     (needsterm (assoc "needsterm"
 			       (mailcap-mime-info
-				(car (mm-handle-type handle)) t)))
+				(mm-handle-media-type handle)) t))
 	     process file buffer)
 	;; We create a private sub-directory where we store our files.
 	(make-directory dir)
@@ -407,7 +415,7 @@ external if displayed external."
       (mm-handle-set-undisplayer handle nil))))
 
 (defun mm-display-inline (handle)
-  (let* ((type (car (mm-handle-type handle)))
+  (let* ((type (mm-handle-media-type handle))
 	 (function (cadr (assoc type mm-inline-media-tests))))
     (funcall function handle)
     (goto-char (point-min))))
@@ -415,7 +423,7 @@ external if displayed external."
 (defun mm-inlinable-p (handle)
   "Say whether HANDLE can be displayed inline."
   (let ((alist mm-inline-media-tests)
-	(type (car (mm-handle-type handle)))
+	(type (mm-handle-media-type handle))
 	test)
     (while alist
       (when (equal type (caar alist))
@@ -428,7 +436,7 @@ external if displayed external."
 (defun mm-automatic-display-p (handle)
   "Say whether the user wants HANDLE to be displayed automatically."
   (let ((methods mm-automatic-display)
-	(type (car (mm-handle-type handle)))
+	(type (mm-handle-media-type handle))
 	method result)
     (while (setq method (pop methods))
       (when (and (string-match method type)
@@ -440,7 +448,7 @@ external if displayed external."
 (defun mm-inlined-p (handle)
   "Say whether the user wants HANDLE to be displayed automatically."
   (let ((methods mm-inlined-types)
-	(type (car (mm-handle-type handle)))
+	(type (mm-handle-media-type handle))
 	method result)
     (while (setq method (pop methods))
       (when (and (string-match method type)
@@ -452,7 +460,7 @@ external if displayed external."
 (defun mm-attachment-override-p (handle)
   "Say whether HANDLE should have attachment behavior overridden."
   (let ((types mm-attachment-override-types)
-	(type (car (mm-handle-type handle)))
+	(type (mm-handle-media-type handle))
 	ty)
     (catch 'found
       (while (setq ty (pop types))
@@ -495,13 +503,12 @@ external if displayed external."
   "Insert the contents of HANDLE in the current buffer."
   (let ((cur (current-buffer)))
     (save-excursion
-      (if (member (car (split-string (car (mm-handle-type handle)) "/"))
-		  '("text" "message"))
+      (if (member (mm-handle-media-supertype handle) '("text" "message"))
 	  (with-temp-buffer
 	    (insert-buffer-substring (mm-handle-buffer handle))
 	    (mm-decode-content-transfer-encoding
 	     (mm-handle-encoding handle)
-	     (car (mm-handle-type handle)))
+	     (mm-handle-media-type handle))
 	    (let ((temp (current-buffer)))
 	      (set-buffer cur)
 	      (insert-buffer-substring temp)))
@@ -509,7 +516,7 @@ external if displayed external."
 	  (insert-buffer-substring (mm-handle-buffer handle))
 	  (mm-decode-content-transfer-encoding
 	   (mm-handle-encoding handle)
-	   (car (mm-handle-type handle)))
+	   (mm-handle-media-type handle))
 	  (let ((temp (current-buffer)))
 	    (set-buffer cur)
 	    (insert-buffer-substring temp)))))))
@@ -541,8 +548,7 @@ external if displayed external."
     ;; Now every coding system is 100% binary within mm-with-unibyte-buffer
     ;; Is text still special?
     (let ((coding-system-for-write
-	   (if (equal "text" (car (split-string
-				   (car (mm-handle-type handle)) "/")))
+	   (if (equal "text" (mm-handle-media-supertype handle))
 	       buffer-file-coding-system
 	     'binary))
 	  ;; Don't re-compress .gz & al.  Arguably we should make
@@ -550,7 +556,7 @@ external if displayed external."
 	  ;; ange-ftp which it's reasonable to use here.
 	  (inhibit-file-name-operation 'write-region)
 	  (inhibit-file-name-handlers
-	   (if (equal (car (mm-handle-type handle))
+	   (if (equal (mm-handle-media-type handle)
 		      "application/octet-stream")
 	       (cons 'jka-compr-handler inhibit-file-name-handlers)
 	     inhibit-file-name-handlers)))
@@ -567,7 +573,7 @@ external if displayed external."
 
 (defun mm-interactively-view-part (handle)
   "Display HANDLE using METHOD."
-  (let* ((type (car (mm-handle-type handle)))
+  (let* ((type (mm-handle-media-type handle))
 	 (methods
 	  (mapcar (lambda (i) (list (cdr (assoc 'viewer i))))
 		  (mailcap-mime-info type 'all)))
@@ -582,18 +588,15 @@ external if displayed external."
     (while (setq p (pop prec))
       (setq h handles)
       (while h
-	(setq type
-	      (if (stringp (caar h))
-		  (caar h)
-		(car (mm-handle-type (car h)))))
 	(setq handle (car h))
+	(setq type (mm-handle-media-type handle))
 	(when (and (equal p type)
-		   (mm-automatic-display-p (car h))
-		   (or (stringp (caar h))
-		       (not (mm-handle-disposition (car h)))
-		       (equal (car (mm-handle-disposition (car h)))
+		   (mm-automatic-display-p handle)
+		   (or (stringp (car handle))
+		       (not (mm-handle-disposition handle))
+		       (equal (car (mm-handle-disposition handle))
 			      "inline")))
-	  (setq result (car h)
+	  (setq result handle
 		h nil
 		prec nil))
 	(pop h)))
@@ -602,7 +605,8 @@ external if displayed external."
 (defun mm-preferred-alternative-precedence (handles)
   "Return the precedence based on HANDLES and mm-discouraged-alternatives."
   (let ((seq (nreverse (mapcar (lambda (h)
-				 (car (mm-handle-type h))) handles))))
+				 (mm-handle-media-type h))
+			       handles))))
     (dolist (disc (reverse mm-discouraged-alternatives))
       (dolist (elem (copy-sequence seq))
 	(when (string-match disc elem)
@@ -615,7 +619,7 @@ external if displayed external."
 
 (defun mm-get-image (handle)
   "Return an image instance based on HANDLE."
-  (let ((type (cadr (split-string (car (mm-handle-type handle)) "/")))
+  (let ((type (mm-handle-media-subtype handle))
 	spec)
     ;; Allow some common translations.
     (setq type

@@ -51,29 +51,40 @@
 (defconst mm-uu-postscript-begin-line "^%!PS-")
 (defconst mm-uu-postscript-end-line "^%%EOF$")
 
-(defconst mm-uu-uu-begin-line "^begin[ \t]+[0-7][0-7][0-7][ \t]+\\(.*\\)$")
+(defconst mm-uu-uu-begin-line "^begin[ \t]+[0-7][0-7][0-7][ \t]+")
 (defconst mm-uu-uu-end-line "^end[ \t]*$")
-(defvar mm-uu-decode-function 'uudecode-decode-region)
+
+(defcustom mm-uu-decode-function 'uudecode-decode-region
+  "*Function to uudecode.
+Internal function is done in elisp by default, therefore decoding may
+appear to be horribly slow . You can make Gnus use the external Unix
+decoder, such as uudecode."
+  :type '(choice (item :tag "internal" uudecode-decode-region)
+		 (item :tag "external" uudecode-decode-region-external))
+  :group 'gnus-article-mime) 
 
 (defconst mm-uu-binhex-begin-line
   "^:...............................................................$")
 (defconst mm-uu-binhex-end-line ":$")
-(defvar mm-uu-binhex-decode-function 'binhex-decode-region)
+
+(defcustom mm-uu-binhex-decode-function 'binhex-decode-region
+  "*Function to binhex decode.
+Internal function is done in elisp by default, therefore decoding may
+appear to be horribly slow . You can make Gnus use the external Unix
+decoder, such as hexbin."
+  :type '(choice (item :tag "internal" binhex-decode-region)
+		 (item :tag "external" binhex-decode-region-external))
+  :group 'gnus-article-mime) 
 
 (defconst mm-uu-shar-begin-line "^#! */bin/sh")
-(defconst mm-uu-shar-end-line "^exit 0")
+(defconst mm-uu-shar-end-line "^exit 0\\|^$")
 
 ;;; Thanks to Edward J. Sabol <sabol@alderaan.gsfc.nasa.gov> and 
 ;;; Peter von der Ah\'e <pahe@daimi.au.dk>
-(defconst mm-uu-forward-begin-line "^-+ \\(Start of \\)?Forwarded message")
+(defconst mm-uu-forward-begin-line "^-+ \\(?:Start of \\)?Forwarded message")
 (defconst mm-uu-forward-end-line "^-+ End of forwarded message")
 
-(defconst mm-uu-begin-line
-  (concat mm-uu-postscript-begin-line "\\|"
-	  mm-uu-uu-begin-line "\\|"
-	  mm-uu-binhex-begin-line "\\|"
-	  mm-uu-shar-begin-line "\\|"
-	  mm-uu-forward-begin-line))
+(defvar mm-uu-begin-line nil)
 
 (defconst mm-uu-identifier-alist
   '((?% . postscript) (?b . uu) (?: . binhex) (?# . shar)
@@ -82,6 +93,39 @@
 (defvar mm-dissect-disposition "inline"
   "The default disposition of uu parts.
 This can be either \"inline\" or \"attachment\".")
+
+(defun mm-uu-configure-p  (key val)
+  (member (cons key val) mm-uu-configure-list))
+
+(defun mm-uu-configure (&optional symbol value)
+  (if symbol (set-default symbol value))
+  (setq mm-uu-begin-line nil)
+  (mapcar '(lambda (type)
+	     (if (mm-uu-configure-p type 'disabled) 
+		 nil
+	       (setq mm-uu-begin-line
+		     (concat mm-uu-begin-line
+			     (if mm-uu-begin-line "\\|")
+			     (symbol-value
+			      (intern (concat "mm-uu-" (symbol-name type)
+					      "-begin-line")))))))
+	  '(uu postscript binhex shar forward)))
+
+(defcustom mm-uu-configure-list nil
+  "A list of mm-uu configuration.
+To disable dissecting shar codes, for instance, add
+`(shar . disabled)' to this list."
+  :type '(repeat (cons 
+		  (choice (item postscript)
+			  (item uu) 
+			  (item binhex)
+			  (item shar)
+			  (item forward))
+		  (choice (item disabled))))
+  :group 'gnus-article-mime
+  :set 'mm-uu-configure) 
+
+(mm-uu-configure)
 
 ;;;### autoload
 
@@ -111,20 +155,22 @@ This can be either \"inline\" or \"attachment\".")
 				      (list (cons 'charset charset)))))
       (while (re-search-forward mm-uu-begin-line nil t)
 	(setq start-char (match-beginning 0))
-	(forward-line) ;; in case of failure
-	(setq start-char-1 (point))
 	(setq type (cdr (assq (aref (match-string 0) 0)
 			      mm-uu-identifier-alist)))
 	(setq file-name
-	      (if (eq type 'uu)
+	      (if (and (eq type 'uu)
+		       (looking-at "\\(.+\\)$"))
 		  (and (match-string 1)
 		       (let ((nnheader-file-name-translation-alist
 			      '((?/ . ?,) (? . ?_) (?* . ?_) (?$ . ?_))))
 			 (nnheader-translate-file-chars (match-string 1))))))
+	(forward-line) ;; in case of failure
+	(setq start-char-1 (point))
 	(setq end-line (symbol-value
 			(intern (concat "mm-uu-" (symbol-name type)
 					"-end-line"))))
-	(when (re-search-forward end-line nil t)
+	(when (and (re-search-forward end-line nil t)
+		   (not (eq (match-beginning 0) (match-end 0))))
 	  (setq end-char-1 (match-beginning 0))
 	  (forward-line)
 	  (setq end-char (point))
@@ -191,14 +237,16 @@ This can be either \"inline\" or \"attachment\".")
     (forward-line)
     (let (type end-line result
 	       (case-fold-search t))
-      (while (and (not result) (re-search-forward mm-uu-begin-line nil t))
+      (while (and mm-uu-begin-line
+		  (not result) (re-search-forward mm-uu-begin-line nil t))
 	(forward-line)
 	(setq type (cdr (assq (aref (match-string 0) 0)
 			      mm-uu-identifier-alist)))
 	(setq end-line (symbol-value
 			(intern (concat "mm-uu-" (symbol-name type)
 					"-end-line"))))
-	(if (re-search-forward end-line nil t)
+	(if (and (re-search-forward end-line nil t)
+		 (not (eq (match-beginning 0) (match-end 0))))
 	    (setq result t)))
       result)))
 

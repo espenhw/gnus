@@ -1,4 +1,4 @@
-;;; gnus-mlsplt.el --- a group params-based mail splitting mechanism
+;;; gnus-mlspl.el --- a group params-based mail splitting mechanism
 ;; Copyright (C) 1998,1999 Free Software Foundation, Inc.
 
 ;; Author: Alexandre Oliva <oliva@dcc.unicamp.br>
@@ -24,58 +24,62 @@
 (require 'gnus-group)
 (require 'nnmail)
 
-(defvar gnus-mlsplt-updated-hook nil
+(defvar gnus-mlsplit-updated-hook nil
   "Hook called just after nnmail-split-fancy is updated by
-gnus-mlsplt-update")
+gnus-mlsplit-update")
 
-(defvar gnus-mlsplt-default-catch-all-group "mail.misc"
-  "Group used by gnus-mlsplt and
-gnus-mlsplt-update as default catch-all group")
+(defvar gnus-mlsplit-default-catch-all-group "mail.misc"
+  "Group used by gnus-mlsplit and
+gnus-mlsplit-update as default catch-all group")
 
-(defun gnus-mlsplt-setup (&optional auto-update catch-all)
+;;;###autoload
+(defun gnus-mlsplit-setup (&optional auto-update catch-all)
   "Sets things up so that nnmail-split-fancy is used for mail splitting,
 and defines the variable nnmail-split-fancy according with group parameters.
 
 if AUTO-UPDATE is non-nil (prefix argument accepted, if called interactive),
 makes sure nnmail-split-fancy is re-computed before getting new mail,
-by adding gnus-mlsplt-update to nnmail-pre-get-new-mail-hook."
+by adding gnus-mlsplit-update to nnmail-pre-get-new-mail-hook."
   (interactive "P")
   (setq nnmail-split-methods 'nnmail-split-fancy)
   (when catch-all
-    (setq gnus-mlsplt-default-catch-all-group catch-all))
-  (gnus-mlsplt-update)
+    (setq gnus-mlsplit-default-catch-all-group catch-all))
+  (gnus-mlsplit-update)
   (when auto-update
-    (add-hook 'nnmail-pre-get-new-mail-hook 'gnus-mlsplt-update)))
+    (add-hook 'nnmail-pre-get-new-mail-hook 'gnus-mlsplit-update)))
 
-(defun gnus-mlsplt-update (&optional catch-all)
+;;;###autoload
+(defun gnus-mlsplit-update (&optional catch-all)
   "Computes nnmail-split-fancy from group params, by calling
-\(gnus-mlsplt-fancy nil nil DEFAULTGROUP)"
+\(gnus-mlsplit-fancy nil nil DEFAULTGROUP)"
   (interactive)
   (setq nnmail-split-fancy
-	(gnus-mlsplt-fancy
-	 nil nil (or catch-all gnus-mlsplt-default-catch-all-group)))
-  (run-hooks 'gnus-mlsplt-updated-hook)
+	(gnus-mlsplit-fancy
+	 nil nil (or catch-all gnus-mlsplit-default-catch-all-group)))
+  (run-hooks 'gnus-mlsplit-updated-hook)
   )
 
-(defun gnus-mlsplt ()
+;;;###autoload
+(defun gnus-mlsplit ()
   "Uses information from group parameters in order to split mail.
-See gnus-mlsplt-fancy for more information.
+See gnus-mlsplit-fancy for more information.
 
 If no group is defined as catch-all, the value of
-gnus-mlsplt-default-catch-all-group is used.
+gnus-mlsplit-default-catch-all-group is used.
 
-gnus-mlsplt is a valid value for nnmail-split-methods."
+gnus-mlsplit is a valid value for nnmail-split-methods."
   (let (nnmail-split-fancy)
-    (gnus-mlsplt-update
-     gnus-mlsplt-default-catch-all-group)
+    (gnus-mlsplit-update
+     gnus-mlsplit-default-catch-all-group)
     (nnmail-split-fancy)))
 
-(defun gnus-mlsplt-fancy
+;;;###autoload
+(defun gnus-mlsplit-fancy
   (&optional groups no-crosspost catch-all)
   "Uses information from group parameters in order to split mail.
 It can be embedded into nnmail-split-fancy lists with the SPLIT
 
-\(: gnus-mlsplt-fancy GROUPS NO-CROSSPOST CATCH-ALL\)
+\(: gnus-mlsplit-fancy GROUPS NO-CROSSPOST CATCH-ALL\)
 
 GROUPS may be a regular expression or a list of group names, that will
 be used to select candidate groups.  If it is ommited or nil, all
@@ -112,7 +116,7 @@ nnml:mail.foo:
 nnml:mail.others:
 \((split-spec . catch-all))
 
-Calling (gnus-mlsplt-fancy nil nil \"mail.misc\") returns:
+Calling (gnus-mlsplit-fancy nil nil \"mail.misc\") returns:
 
 \(| (& (any \"\\\\(bar@femail\\\\.com\\\\|.*@femail\\\\.com\\\\)\"
 	   \"nnml:mail.bar\")
@@ -195,4 +199,4 @@ Calling (gnus-mlsplt-fancy nil nil \"mail.misc\") returns:
 	(setq split (list '| split catch-all)))
     split))
 
-(provide 'gnus-mlsplt)
+(provide 'gnus-mlspl)

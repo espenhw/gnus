@@ -1128,40 +1128,40 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	    (setq value (cdr (assq value nnmail-split-abbrev-alist))))
 	(while (and (goto-char end-point)
 		    (re-search-backward (cdr cached-pair) nil t))
-	(when nnmail-split-tracing
-	  (push (cdr cached-pair) nnmail-split-trace))
-	(let ((split-rest (cddr split))
-	      (end (match-end 0))
-	      ;; The searched regexp is \(\(FIELD\).*\)\(VALUE\).  So,
-	      ;; start-of-value is the the point just before the
-	      ;; beginning of the value, whereas after-header-name is
-	      ;; the point just after the field name.
-	      (start-of-value (match-end 1))
-	      (after-header-name (match-end 2)))
+	  (when nnmail-split-tracing
+	    (push (cdr cached-pair) nnmail-split-trace))
+	  (let ((split-rest (cddr split))
+		(end (match-end 0))
+		;; The searched regexp is \(\(FIELD\).*\)\(VALUE\).  So,
+		;; start-of-value is the the point just before the
+		;; beginning of the value, whereas after-header-name is
+		;; the point just after the field name.
+		(start-of-value (match-end 1))
+		(after-header-name (match-end 2)))
 	    ;; Start the next search just before the beginning of the
 	    ;; VALUE match.
 	    (setq end-point (1- start-of-value))
-	  ;; Handle - RESTRICTs
-	  (while (eq (car split-rest) '-)
-	    ;; RESTRICT must start after-header-name and
-	    ;; end after start-of-value, so that, for
-	    ;; (any "foo" - "x-foo" "foo.list")
-	    ;; we do not exclude foo.list just because
-	    ;; the header is: ``To: x-foo, foo''
-	    (goto-char end)
-	    (if (and (re-search-backward (cadr split-rest)
-					 after-header-name t)
-		     (> (match-end 0) start-of-value))
-		(setq split-rest nil)
-	      (setq split-rest (cddr split-rest))))
-	  (when split-rest
-	    (goto-char end)
-	    (let ((value (nth 1 split)))
-	      (if (symbolp value)
-		  (setq value (cdr (assq value nnmail-split-abbrev-alist))))
-	      ;; Someone might want to do a \N sub on this match, so get the
-	      ;; correct match positions.
-	      (re-search-backward value start-of-value))
+	    ;; Handle - RESTRICTs
+	    (while (eq (car split-rest) '-)
+	      ;; RESTRICT must start after-header-name and
+	      ;; end after start-of-value, so that, for
+	      ;; (any "foo" - "x-foo" "foo.list")
+	      ;; we do not exclude foo.list just because
+	      ;; the header is: ``To: x-foo, foo''
+	      (goto-char end)
+	      (if (and (re-search-backward (cadr split-rest)
+					   after-header-name t)
+		       (> (match-end 0) start-of-value))
+		  (setq split-rest nil)
+		(setq split-rest (cddr split-rest))))
+	    (when split-rest
+	      (goto-char end)
+	      (let ((value (nth 1 split)))
+		(if (symbolp value)
+		    (setq value (cdr (assq value nnmail-split-abbrev-alist))))
+		;; Someone might want to do a \N sub on this match, so get the
+		;; correct match positions.
+		(re-search-backward value start-of-value))
 	      (dolist (sp (nnmail-split-it (car split-rest)))
 		(unless (memq sp split-result)
 		  (push sp split-result))))))

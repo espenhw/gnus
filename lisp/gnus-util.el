@@ -944,7 +944,8 @@ ARG is passed to the first function."
 		  (boundp sym)
 		  (symbol-value sym))
 	 (insert (format "%s %d %d y\n"
-			 (symbol-name sym) (cdr (symbol-value sym))
+			 (gnus-group-real-name (symbol-name sym)) 
+			 (cdr (symbol-value sym))
 			 (car (symbol-value sym))))))
      hashtb)))
 

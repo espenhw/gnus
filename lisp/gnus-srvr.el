@@ -592,11 +592,9 @@ The following commands are available:
 	  (goto-char (point-min))
 	  (unless (string= gnus-ignored-newsgroups "")
 	    (delete-matching-lines gnus-ignored-newsgroups))
-	  (while (re-search-forward
-		  "\\(^[^ \t]+\\)[ \t]+[0-9]+[ \t]+[0-9]+" nil t)
-	    (goto-char (match-end 1))
+         (while (and (not (eobp)) (forward-line))
 	    (ignore-errors
-	      (push (cons (match-string 1)
+             (push (cons (read cur)
 			  (max 0 (- (1+ (read cur)) (read cur))))
 		    groups)))))
       (setq groups (sort groups

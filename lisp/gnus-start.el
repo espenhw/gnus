@@ -369,7 +369,7 @@ This hook is called as the first thing when Gnus is started."
 (defcustom gnus-after-getting-new-news-hook
   (when (gnus-boundp 'display-time-timer)
     '(display-time-event-handler))
-  "*A hook run after Gnus checks for new news."
+  "*A hook run after Gnus checks for new news when Gnus is already running."
   :group 'gnus-group-new
   :type 'hook)
 
@@ -1828,7 +1828,7 @@ newsgroup."
 		     (gnus-group-prefixed-name "" method))))
 
     ;; Let the Gnus agent save the active file.
-    (if (and gnus-agent real-active)
+    (if (and gnus-agent real-active gnus-plugged)
 	(progn
 	  (gnus-agent-save-groups method)
 	  (gnus-active-to-gnus-format method hashtb nil real-active))

@@ -63,7 +63,7 @@
     (setq mm-w3-setup t)))
 
 (defun mm-inline-text (handle)
-  (let ((type (cadr (split-string (car (mm-handle-type handle)) "/")))
+  (let ((type (mm-handle-media-subtype handle))
 	text buffer-read-only)
     (cond
      ((equal type "html")

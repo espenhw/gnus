@@ -207,7 +207,8 @@
 	    (cond
 	     ((cdr (assq 'buffer cont))
 	      (insert-buffer-substring (cdr (assq 'buffer cont))))
-	     ((setq filename (cdr (assq 'filename cont)))
+	     ((and (setq filename (cdr (assq 'filename cont)))
+		   (not (equal (cdr (assq 'nofile cont)) "yes")))
 	      (mm-insert-file-contents filename))
 	     (t
 	      (save-restriction
@@ -226,7 +227,8 @@
 	  (cond
 	   ((cdr (assq 'buffer cont))
 	    (insert-buffer-substring (cdr (assq 'buffer cont))))
-	   ((setq filename (cdr (assq 'filename cont)))
+	   ((and (setq filename (cdr (assq 'filename cont)))
+		 (not (equal (cdr (assq 'nofile cont)) "yes")))
 	    (mm-insert-file-contents filename))
 	   (t
 	    (insert (cdr (assq 'contents cont)))))
@@ -299,7 +301,8 @@
 	(cond
 	 ((cdr (assq 'buffer cont))
 	  (insert-buffer-substring (cdr (assq 'buffer cont))))
-	 ((setq filename (cdr (assq 'filename cont)))
+	 ((and (setq filename (cdr (assq 'filename cont)))
+	       (not (equal (cdr (assq 'nofile cont)) "yes")))
 	  (mm-insert-file-contents filename))
 	 (t
 	  (insert (cdr (assq 'contents cont)))))
@@ -434,15 +437,13 @@
   (let (textp buffer)
     ;; Determine type and stuff.
     (unless (stringp (car handle))
-      (unless (setq textp (equal
-			   (car (split-string
-				 (car (mm-handle-type handle)) "/"))
-			   "text"))
+      (unless (setq textp (equal (mm-handle-media-supertype handle)
+				 "text"))
 	(save-excursion
 	  (set-buffer (setq buffer (generate-new-buffer " *mml*")))
 	  (mm-insert-part handle))))
     (unless no-markup
-      (mml-insert-mml-markup handle buffer))
+      (mml-insert-mml-markup handle buffer textp))
     (cond
      ((stringp (car handle))
       (mapcar 'mml-insert-mime (cdr handle))
@@ -453,12 +454,12 @@
      (t
       (insert "<#/part>\n")))))
 
-(defun mml-insert-mml-markup (handle &optional buffer)
+(defun mml-insert-mml-markup (handle &optional buffer nofile)
   "Take a MIME handle and insert an MML tag."
   (if (stringp (car handle))
-      (insert "<#multipart type=" (cadr (split-string (car handle) "/"))
+      (insert "<#multipart type=" (mm-handle-media-subtype handle)
 	      ">\n")
-    (insert "<#part type=" (car (mm-handle-type handle)))
+    (insert "<#part type=" (mm-handle-media-type handle))
     (dolist (elem (append (cdr (mm-handle-type handle))
 			  (cdr (mm-handle-disposition handle))))
       (insert " " (symbol-name (car elem)) "=\"" (cdr elem) "\""))
@@ -466,9 +467,10 @@
       (insert " disposition=" (car (mm-handle-disposition handle))))
     (when buffer
       (insert " buffer=\"" (buffer-name buffer) "\""))
+    (when nofile
+      (insert " nofile=yes"))
     (when (mm-handle-description handle)
       (insert " description=\"" (mm-handle-description handle) "\""))
-    (equal (split-string (car (mm-handle-type handle)) "/") "text")
     (insert ">\n")))
 
 (defun mml-insert-parameter (&rest parameters)

@@ -1,3 +1,70 @@
+Wed Jul  7 13:09:51 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.93 is released.
+
+1999-07-07 10:41:11  Stainless Steel Rat  <ratinox@peorth.gweep.net>
+
+	* pop3.el: New version.
+
+1999-07-05  Simon Josefsson  
+
+        * gnus-srvr.el (gnus-browse-foreign-server): Use read.
+
+1999-07-07 10:37:26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-display-alternative): Do treatment. 
+
+1999-07-06  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-util.el (gnus-write-active-file): Use real name.
+
+	* gnus-agent.el (gnus-agent-expire): Update active file 
+	method by method.
+
+1999-07-06  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nndraft.el (nndraft-request-article): Use difference
+ 	coding-systems for queue and drafts.
+
+	* gnus-sum.el (gnus-summary-setup-default-charset): Special-case
+	nndraft:drafts.
+
+	* mm-util.el (mm-auto-save-coding-system): New coding system.
+
+	* message.el (message-draft-coding-system): Use it.
+
+1999-07-06  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el: More customizable and less aggressive.
+
+1999-07-07 07:53:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-start.el (gnus-groups-to-gnus-format): Only gnus-active
+	when plugged.
+
+	* mml.el (mml-generate-mime-1): Don't insert nofile files.
+	(mml-insert-mml-markup): Accept a nofile.
+	(mml-insert-mime): Insert nofile.
+
+	* gnus-art.el (gnus-treat-strip-blank-lines): Removed.
+
+	* mm-decode.el (mm-handle-media-type): New function.
+	(mm-handle-media-supertype): New function.
+	(mm-handle-media-subtype): New function.
+	Use new functions throughout. "/"))
+
+1999-05-18 03:03:50  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-treat-predicate): Typo.
+
+1999-07-07 06:21:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-score.el (gnus-summary-score-entry): Made un-interactive.
+
+1999-07-06 17:57:16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-date-ut): UT!  Default it!
+
 Tue Jul  6 10:59:24 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.92 is released.

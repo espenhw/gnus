@@ -118,6 +118,18 @@
     (x-ctext . ctext))
   "A mapping from invalid charset names to the real charset names.")
 
+(defconst mm-auto-save-coding-system
+  (cond 
+   ((memq 'emacs-mule (mm-get-coding-system-list))
+    (if (memq system-type '(windows-nt ms-dos ms-windows))
+	'emacs-mule-dos 'emacs-mule))
+   ((memq 'escape-quoted (mm-get-coding-system-list))
+    'escape-quoted)
+   ((memq 'no-conversion (mm-get-coding-system-list))
+    'no-conversion)
+   (t nil))
+  "Coding system of auto save file.")
+
 ;;; Internal variables:
 
 ;;; Functions:

@@ -861,14 +861,7 @@ The cdr of ech entry is a function for applying the face to a region.")
   "Coding system to encode outgoing mail.")
 
 (defvar message-draft-coding-system
-  (cond
-   ((not (fboundp 'coding-system-p)) nil)
-   ((coding-system-p 'emacs-mule) 
-    (if (string-match "nt\\|windows" system-configuration)
-	'emacs-mule-dos 'emacs-mule))
-   ((memq 'escape-quoted (mm-get-coding-system-list)) 'escape-quoted)
-   ((coding-system-p 'no-conversion) 'no-conversion)
-   (t nil))
+  mm-auto-save-coding-system
   "Coding system to compose mail.")
 
 ;;; Internal variables.

@@ -768,7 +768,6 @@ used as score."
 
 (defun gnus-summary-score-entry (header match type score date
 					&optional prompt silent extra)
-  (interactive)
   "Enter score file entry.
 HEADER is the header being scored.
 MATCH is the string we are looking for.
