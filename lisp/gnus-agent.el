@@ -1585,7 +1585,7 @@ downloaded into the agent."
 (defun gnus-agent-unfetch-articles (group articles)
   "Delete ARTICLES that were fetched from GROUP into the agent."
   (when articles
-    (gnus-agent-with-refreshed-group 
+    (gnus-agent-with-refreshed-group
      group
      (gnus-agent-load-alist group)
      (let* ((alist (cons nil gnus-agent-article-alist))
@@ -3885,12 +3885,11 @@ entry of article %s deleted." l1))
 				(and reread gnus-agent-article-alist)
 				(not (equal alist gnus-agent-article-alist))))
 
-<<<<<<< TREE
 	  (setq gnus-agent-article-alist alist)
 
 	  (when regenerated
 	    (gnus-agent-save-alist group)
-       
+
 	    ;; I have to alter the group's active range NOW as
 	    ;; gnus-make-ascending-articles-unread will use it to
 	    ;; recalculate the number of unread articles in the group
@@ -3911,31 +3910,6 @@ entry of article %s deleted." l1))
 					       ((cdr c)
 						(car c)))))
 			     gnus-agent-article-alist))))
-=======
-            (when regenerated
-              (gnus-agent-save-alist group)
-
-              ;; I have to alter the group's active range NOW as
-              ;; gnus-make-ascending-articles-unread will use it to
-              ;; recalculate the number of unread articles in the group
-
-              (let ((group (gnus-group-real-name group))
-                    (group-active (or (gnus-active group)
-                                      (gnus-activate-group group))))
-                (gnus-agent-possibly-alter-active group group-active)))))
-
-        (when (and reread gnus-agent-article-alist)
-          (gnus-make-ascending-articles-unread
-           group
-           (if (listp reread)
-               reread
-             (delq nil (mapcar (function (lambda (c)
-                                           (cond ((eq reread t)
-                                                  (car c))
-                                                 ((cdr c)
-                                                  (car c)))))
-                               gnus-agent-article-alist))))
->>>>>>> MERGE-SOURCE
 
 	(when regenerated
 	  (gnus-agent-update-files-total-fetched-for group nil)))
@@ -3996,7 +3970,7 @@ If CLEAN, obsolete (ignore)."
 	  (push (cons file (file-attributes file)) result))
 	(nreverse result)))))
 
-(defun gnus-agent-update-files-total-fetched-for 
+(defun gnus-agent-update-files-total-fetched-for
   (group delta &optional method path)
   "Update, or set, the total disk space used by the articles that the
 agent has fetched."
@@ -4004,19 +3978,19 @@ agent has fetched."
     (gnus-agent-with-refreshed-group
      group
      ;; if null, gnus-agent-group-pathname will calc method.
-     (let* ((gnus-command-method method) 
+     (let* ((gnus-command-method method)
 	    (path (or path (gnus-agent-group-pathname group)))
 	    (entry (or (gnus-gethash path gnus-agent-total-fetched-hashtb)
-		       (gnus-sethash path (make-list 3 0) 
+		       (gnus-sethash path (make-list 3 0)
 				     gnus-agent-total-fetched-hashtb))))
        (when (listp delta)
 	 (if delta
 	     (let ((sum 0.0)
 		   file)
 	       (while (setq file (pop delta))
-		 (incf sum (float (or (nth 7 (file-attributes 
-					      (nnheader-concat 
-					       path 
+		 (incf sum (float (or (nth 7 (file-attributes
+					      (nnheader-concat
+					       path
 					       (if (numberp file)
 						   (number-to-string file)
 						 file)))) 0))))
@@ -4031,7 +4005,7 @@ agent has fetched."
        (setq gnus-agent-need-update-total-fetched-for t)
        (incf (nth 2 entry) delta)))))
 
-(defun gnus-agent-update-view-total-fetched-for 
+(defun gnus-agent-update-view-total-fetched-for
   (group agent-over &optional method path)
   "Update, or set, the total disk space used by the .agentview and
 .overview files.  These files are calculated separately as they can be
@@ -4040,14 +4014,14 @@ modified."
     (gnus-agent-with-refreshed-group
      group
      ;; if null, gnus-agent-group-pathname will calc method.
-     (let* ((gnus-command-method method) 
+     (let* ((gnus-command-method method)
 	    (path (or path (gnus-agent-group-pathname group)))
 	    (entry (or (gnus-gethash path gnus-agent-total-fetched-hashtb)
-		       (gnus-sethash path (make-list 3 0) 
+		       (gnus-sethash path (make-list 3 0)
 				     gnus-agent-total-fetched-hashtb)))
-	    (size (or (nth 7 (file-attributes 
+	    (size (or (nth 7 (file-attributes
 			      (nnheader-concat
-			       path (if agent-over 
+			       path (if agent-over
 					".overview"
 				      ".agentview"))))
 		      0)))
@@ -4060,13 +4034,13 @@ modified."
     (setq gnus-agent-total-fetched-hashtb (gnus-make-hashtable 1024)))
 
   ;; if null, gnus-agent-group-pathname will calc method.
-  (let* ((gnus-command-method method) 
+  (let* ((gnus-command-method method)
 	 (path (gnus-agent-group-pathname group))
 	 (entry (gnus-gethash path gnus-agent-total-fetched-hashtb)))
     (if entry
 	(apply '+ entry)
       (let ((gnus-agent-inhibit-update-total-fetched-for (not no-inhibit)))
-	(+ 
+	(+
 	 (gnus-agent-update-view-total-fetched-for  group nil method path)
 	 (gnus-agent-update-view-total-fetched-for  group t   method path)
 	 (gnus-agent-update-files-total-fetched-for group nil method path))))))

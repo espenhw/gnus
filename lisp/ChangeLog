@@ -1,3 +1,7 @@
+2005-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-agent.el: Remove garbage made while merging the Emacs trunk.
+
 2005-02-09  Kim F. Storm  <storm@cua.dk>
 
 	Change Emacs release version from 21.4 to 22.1 throughout.
