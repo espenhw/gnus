@@ -1,3 +1,7 @@
+2004-01-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-canlock-generate): Require sha1-el.
+
 2004-01-13  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.el (message-expand-name): Silence the byte compiler.
