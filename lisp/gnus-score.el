@@ -1106,21 +1106,37 @@ EXTRA is the possible non-standard header."
    4 (substitute-command-keys
       "\\<gnus-score-mode-map>\\[gnus-score-edit-exit] to save edits")))
 
-(defun gnus-score-edit-file-at-point ()
-  "Edit score file at point.  Useful especially after `V t'."
-  (interactive)
-  (let* ((string (ffap-string-at-point))
-	 ;; FIXME: Should be the full `match element', not just string at
-	 ;; point.
-	 file)
-    (save-excursion
-      (end-of-line)
-      (setq file (ffap-string-at-point)))
-    (gnus-score-edit-file file)
-    (unless (string= string file)
-      (goto-char (point-min))
-      ;; Goto first match
-      (search-forward string nil t))))
+(defun gnus-score-edit-file-at-point (&optional format)
+  "Edit score file at point in Score Trace buffers.
+If FORMAT, also format the current score file."
+  (let* ((rule (save-excursion
+		 (beginning-of-line)
+		 (read (current-buffer))))
+	 (sep "[ \n\r\t]*")
+	 ;; Must be synced with `gnus-score-find-trace':
+	 (reg " -> +")
+	 (file (save-excursion
+		 (end-of-line)
+		 (if (and (re-search-backward reg (point-at-bol) t)
+			  (re-search-forward  reg (point-at-eol) t))
+		     (buffer-substring (point) (point-at-eol))
+		   nil))))
+    (if (or (not file)
+	    (string-match "non-file" file)
+	    (string= "" file))
+	(gnus-error 3 "Can't find a score file in current line.")
+      (gnus-score-edit-file file)
+      (when format
+	(gnus-score-pretty-print))
+      (when (consp rule) ;; the rule exists
+	(setq rule (mapconcat #'(lambda (obj)
+				  (regexp-quote (format "%S" obj)))
+			      rule
+			      sep))
+	(goto-char (point-min))
+	(re-search-forward rule nil t)
+	;; make it easy to use `kill-sexp':
+	(goto-char (1- (match-beginning 0)))))))
 
 (defun gnus-score-load-file (file)
   ;; Load score file FILE.  Returns a list a retrieved score-alists.
@@ -2354,7 +2370,10 @@ score in `gnus-newsgroup-scored' by SCORE."
     (let ((gnus-newsgroup-headers
 	   (list (gnus-summary-article-header)))
 	  (gnus-newsgroup-scored nil)
-	  trace)
+	  ;; Must be synced with `gnus-score-edit-file-at-point':
+	  (frmt "%S [%s] -> %s\n")
+	  trace
+	  file)
       (save-excursion
 	(nnheader-set-temp-buffer "*Score Trace*"))
       (setq gnus-score-trace nil)
@@ -2364,18 +2383,42 @@ score in `gnus-newsgroup-scored' by SCORE."
 	   1 "No score rules apply to the current article (default score %d)."
 	   gnus-summary-default-score)
 	(set-buffer "*Score Trace*")
-	;; ToDo: Use a keymap instead?
+	;; Use a keymap instead?
 	(local-set-key "q"
 		       (lambda ()
 			 (interactive)
 			 (bury-buffer nil)
 			 (gnus-summary-expand-window)))
-	(local-set-key "e" 'gnus-score-edit-file-at-point)
+	(local-set-key "e" (lambda ()
+			     "Run `gnus-score-edit-file-at-point'."
+			     (interactive)
+			     (gnus-score-edit-file-at-point)))
+	(local-set-key "f" (lambda ()
+			     "Run `gnus-score-edit-file-at-point'."
+			     (interactive)
+			     (gnus-score-edit-file-at-point 'format)))
+	(local-set-key "t" 'toggle-truncate-lines)
 	(setq truncate-lines t)
-	(while trace
-	  (insert (format "%S  ->  %s\n" (cdar trace)
-			  (or (caar trace) "(non-file rule)")))
-	  (setq trace (cdr trace)))
+	(dolist (entry trace)
+	  (setq file (or (car entry)
+			 "(non-file rule)"))
+	  (insert
+	   (format frmt
+		   (cdr entry)
+		   ;; Don't use `file-name-sans-extension' to see .SCORE and
+		   ;; .ADAPT directly:
+		   (file-name-nondirectory file)
+		   (abbreviate-file-name file))))
+	(insert
+	 "\n\nQuick help:
+
+Type `e' to edit score file corresponding to the score rule on current line,
+`f' to format (pretty print) the score file and edit it,
+`t' toggle to truncate long lines in this buffer,
+`q' to quit.
+
+The first sexp on each line is the score rule, followed by the file name of
+the score file and its full name, including the directory.")
 	(goto-char (point-min))
 	(gnus-configure-windows 'score-trace)))
     (set-buffer gnus-summary-buffer)

@@ -1,5 +1,11 @@
 2003-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-score.el (gnus-score-edit-file-at-point): Consider the
+	whole match element.  From Karl Pfl,Ad(Bsterer <sigurd@12move.de>.
+	(gnus-score-find-trace): Use it.  Added `f' and `t' commands,
+	added quick help.  With some suggestions from Karl Pfl,Ad(Bsterer
+	<sigurd@12move.de>.
+
 	* gnus-util.el (gnus-emacs-version): Added doc-string.
 
 	* mml.el (mml-minibuffer-read-disposition): New function.
