@@ -1,3 +1,8 @@
+2001-02-23  Simon Josefsson  <simon@josefsson.org>
+
+	* gnus.texi (Posting Server): Fix, due to change of default value
+	of `gnus-post-method' to `current'.
+	
 2001-02-23 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi: Remove double words. From Gerd Moellmann.

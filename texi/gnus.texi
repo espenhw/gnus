@@ -9679,9 +9679,11 @@ Thank you for asking.  I hate you.
 
 @vindex gnus-post-method
 
-It can be quite complicated.  Normally, Gnus will use the same native
-server.  However.  If your native server doesn't allow posting, just
-reading, you probably want to use some other server to post your
+It can be quite complicated.  Normally, Gnus will post using the same
+select method as you're reading from (which might be convenient if
+you're reading lots of groups from different private servers).
+However.  If the server you're reading from doesn't allow posting,
+just reading, you probably want to use some other server to post your
 (extremely intelligent and fabulously interesting) articles.  You can
 then set the @code{gnus-post-method} to some other method:
 
@@ -9692,7 +9694,7 @@ then set the @code{gnus-post-method} to some other method:
 Now, if you've done this, and then this server rejects your article, or
 this server is down, what do you do then?  To override this variable you
 can use a non-zero prefix to the @kbd{C-c C-c} command to force using
-the ``current'' server for posting.
+the ``current'' server, to get back the default behaviour, for posting.
 
 If you give a zero prefix (i.e., @kbd{C-u 0 C-c C-c}) to that command,
 Gnus will prompt you for what method to use for posting.
@@ -9701,10 +9703,8 @@ You can also set @code{gnus-post-method} to a list of select methods.
 If that's the case, Gnus will always prompt you for what method to use
 for posting.
 
-Finally, if you want to always post using the same select method as
-you're reading from (which might be convenient if you're reading lots of
-groups from different private servers), you can set this variable to
-@code{current}.
+Finally, if you want to always post using the native select method,
+you can set this variable to @code{nil}.
 
 
 @node Mail and Post
