@@ -409,6 +409,7 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 				      (while (re-search-forward
 					      encodable-regexp end t))
 				      (< begin (point)))
+				    (goto-char begin)
 				    (or (not (re-search-forward "\\Sw" end t))
 					(progn
 					  (goto-char (match-beginning 0))
@@ -717,7 +718,7 @@ it, put the following line in your ~/.gnus.el file:
 	 (string (rfc2047-encode-string value)))
     (if (string-match "[][()<>@,;:\\\"/?=]" ;; tspecials
 		      string)
-	(concat param "=" (format "%S" string))
+	(format "%s=%S" param string)
       (concat param "=" string))))
 
 ;;;

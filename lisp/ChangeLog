@@ -1,3 +1,8 @@
+2004-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-encode-region): Fix last change.
+	(rfc2047-encode-parameter): Remove useless concat.
+
 2004-07-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-encode-region): Check carefully whether to
