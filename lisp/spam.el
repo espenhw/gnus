@@ -861,11 +861,14 @@ Will not return a nil score."
 
     (unless (and spam-move-spam-nonspam-groups-only
 		 (spam-group-spam-contents-p gnus-newsgroup-name))
-      (gnus-message 6 "Marking spam as expired and moving it to %s"
-		    (gnus-parameter-spam-process-destination 
-		     gnus-newsgroup-name))
-      (spam-mark-spam-as-expired-and-move-routine
-       (gnus-parameter-spam-process-destination gnus-newsgroup-name)))
+      (when (< 0 (length (spam-list-articles
+			  gnus-newsgroup-articles
+			  'spam)))
+	(gnus-message 6 "Marking spam as expired and moving it to %s"
+		      (gnus-parameter-spam-process-destination 
+		       gnus-newsgroup-name))
+	(spam-mark-spam-as-expired-and-move-routine
+	 (gnus-parameter-spam-process-destination gnus-newsgroup-name))))
 
     ;; now we redo spam-mark-spam-as-expired-and-move-routine to only
     ;; expire spam, in case the above did not expire them
@@ -888,16 +891,19 @@ Will not return a nil score."
 		     (spam-group-processor-p gnus-newsgroup-name processor))
 	    (spam-register-routine classification check)))))
 
-    (when (spam-group-ham-processor-copy-p gnus-newsgroup-name)
-      (gnus-message 6 "Copying ham")
-      (spam-ham-copy-routine
-       (gnus-parameter-ham-process-destination gnus-newsgroup-name)))
+    (when (< 0 (length (spam-list-articles
+			gnus-newsgroup-articles
+			'ham)))
+      (when (spam-group-ham-processor-copy-p gnus-newsgroup-name)
+	(gnus-message 6 "Copying ham")
+	(spam-ham-copy-routine
+	 (gnus-parameter-ham-process-destination gnus-newsgroup-name)))
 
-    ;; now move all ham articles out of spam groups
-    (when (spam-group-spam-contents-p gnus-newsgroup-name)
-      (gnus-message 6 "Moving ham messages from spam group")
-      (spam-ham-move-routine
-       (gnus-parameter-ham-process-destination gnus-newsgroup-name))))
+      ;; now move all ham articles out of spam groups
+      (when (spam-group-spam-contents-p gnus-newsgroup-name)
+	(gnus-message 6 "Moving ham messages from spam group")
+	(spam-ham-move-routine
+	 (gnus-parameter-ham-process-destination gnus-newsgroup-name)))))
 
   (setq spam-old-ham-articles nil)
   (setq spam-old-spam-articles nil))

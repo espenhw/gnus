@@ -1,3 +1,8 @@
+2004-05-17  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-summary-prepare-exit): fix messages, so they show
+	only when there is spam or ham to be processed
+
 2004-05-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mail-source.el (mail-source-delete-crash-box): Refactor.
