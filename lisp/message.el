@@ -997,7 +997,7 @@ candidates:
 	  nil)
       (,(concat "^\\(" message-cite-prefix-regexp "\\).*")
        (0 'message-cited-text-face))
-      ("<#/?\\(multipart\\|part\\|external\\|mml\\|secure\\).*>"
+      ("<#/?\\(multipart\\|part\\|external\\|mml\\|secure\\)[^>]*>"
        (0 'message-mml-face))))
   "Additional expressions to highlight in Message mode.")
 

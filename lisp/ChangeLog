@@ -1,5 +1,8 @@
 2002-03-21  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* message.el (message-font-lock-keywords): Support multi-line MML
+	tags.
+
 	* gnus-sum.el (gnus-print-buffer): Remove gnus-decoration.
 	Trivial change from lorentey@elte.hu (L,Bu(Brentey K,Ba(Broly)
 
@@ -161,7 +164,7 @@
 
 	* message.el (message-mode): If buffer-file-name, don't set auto
 	save file name.
-	From Geoff Greene <ggreene@wpi.edu>
+	Trivial change from Geoff Greene <ggreene@wpi.edu>
 
 2002-03-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
