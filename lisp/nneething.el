@@ -1,7 +1,7 @@
 ;;; nneething.el --- arbitrary file access for Gnus
 ;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
-;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: news, mail
 
@@ -103,11 +103,11 @@ If this variable is nil, no files will be excluded.")
 
 	  (and large
 	       (zerop (% count 20))
-	       (message "nneething: Receiving headers... %d%%"
+	       (nnheader-message 5 "nneething: Receiving headers... %d%%"
 			(/ (* count 100) number))))
 
 	(when large
-	  (message "nneething: Receiving headers...done"))
+	  (nnheader-message 5 "nneething: Receiving headers...done"))
 
 	(nnheader-fold-continuation-lines)
 	'headers))))

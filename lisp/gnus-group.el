@@ -1,7 +1,7 @@
 ;;; gnus-group.el --- group mode commands for Gnus
 ;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
 
-;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
 
 ;; This file is part of GNU Emacs.
@@ -711,7 +711,7 @@ ticked: The number of ticked articles."
 	 (fboundp 'gnus-soup-pack-packet)]
 	["Pack packet" gnus-soup-pack-packet (fboundp 'gnus-soup-pack-packet)]
 	["Save areas" gnus-soup-save-areas (fboundp 'gnus-soup-pack-packet)]
-	["Brew SOUP" gnus-soup-brew-soup (fboundp 'gnus-soup-pack-packet)])
+	["Brew SOUP" gnus-group-brew-soup (fboundp 'gnus-soup-pack-packet)])
        ["Send a bug report" gnus-bug t]
        ["Send a mail" gnus-group-mail t]
        ["Post an article..." gnus-group-post-news t]
@@ -1585,14 +1585,14 @@ Return the name of the group is selection was successful."
   ;; Transform the select method into a unique server.
   (when (stringp method)
     (setq method (gnus-server-to-method method)))
-  (let ((saddr (intern (format "%s-address" (car method)))))
-    (setq method (gnus-copy-sequence method))
-    (require (car method))
-    (when (boundp saddr)
-      (unless (assq saddr method)
-	(nconc method `((,saddr ,(cadr method))))
-	(setf (cadr method) (format "%s-%d" (cadr method)
-				    (incf gnus-ephemeral-group-server))))))
+;;;  (let ((saddr (intern (format "%s-address" (car method)))))
+;;;    (setq method (gnus-copy-sequence method))
+;;;    (require (car method))
+;;;    (when (boundp saddr)
+;;;      (unless (assq saddr method)
+;;;	(nconc method `((,saddr ,(cadr method))))
+;;;	(setf (cadr method) (format "%s-%d" (cadr method)
+;;;				    (incf gnus-ephemeral-group-server))))))
   (let ((group (if (gnus-group-foreign-p group) group
 		 (gnus-group-prefixed-name group method))))
     (gnus-sethash

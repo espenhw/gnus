@@ -1,7 +1,7 @@
 ;;; nntp.el --- nntp access for Gnus
 ;;; Copyright (C) 1987-90,92-97 Free Software Foundation, Inc.
 
-;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
 
 ;; This file is part of GNU Emacs.
@@ -274,7 +274,7 @@ server there that you can connect to.  See also
 	      ;; Nix out "nntp reading...." message.
 	      (when nntp-have-messaged
 		(setq nntp-have-messaged nil)
-		(message ""))
+		(nnheader-message 5 ""))
 	      t))))
       (unless discard
 	(erase-buffer)))))
@@ -977,8 +977,7 @@ password contained in '~/.nntp-authinfo'."
     (while (not (eobp))
       (end-of-line)
       (delete-char 1)
-      (insert nntp-end-of-line)
-      (forward-line 1))
+      (insert nntp-end-of-line))
     (forward-char -1)
     (unless (eq (char-after (1- (point))) ?\r)
       (insert "\r"))))

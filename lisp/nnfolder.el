@@ -2,7 +2,7 @@
 ;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Scott Byer <byer@mv.us.adobe.com>
-;;	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;;	Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: mail
 
@@ -476,34 +476,27 @@ time saver for large mailboxes.")
 
 (defun nnfolder-goto-article (article)
   "Place point at the start of the headers of ARTICLE.
-ARTICLE can be an article number or a Message-ID."
+ARTICLE can be an article number or a Message-ID.
+Returns t if successful, nil otherwise."
   (let ((art-string (nnfolder-article-string article))
-	end-search end start beg)
+	start found)
+    ;; It is likely that we are at or before the delimiter line.
+    ;; We therefore go to the end of the previous line, and start
+    ;; searching from there.
     (beginning-of-line)
     (unless (bobp)
       (forward-char -1))
     (setq start (point))
-    (while (and (not end-search)
-		(search-forward art-string nil t))
-      (setq end (point))
-      (nnmail-search-unix-mail-delim-backward)
-      (setq beg (point))
-      (when (and (search-forward "\n\n" nil end)
-		 (search-backward art-string nil beg))
-	(setq end-search 'found)
-	(goto-char beg)))
-    (unless end-search
+    ;; First search forward.
+    (while (and (setq found (search-forward art-string nil t))
+		(not (nnmail-within-headers-p))))
+    ;; If unsuccessful, search backward from where we started,
+    (unless found
       (goto-char start)
-      (while (and (not end-search)
-		  (search-backward art-string nil t))
-	(setq end (point))
-	(nnmail-search-unix-mail-delim-backward)
-	(setq beg (point))
-	(when (and (search-forward "\n\n" nil end)
-		   (search-backward art-string nil beg))
-	  (setq end-search 'found)
-	  (goto-char beg))))
-    (eq end-search 'found)))
+      (while (and (setq found (search-backward art-string nil t))
+		  (not (nnmail-within-headers-p)))))
+    (when found
+      (nnmail-search-unix-mail-delim-backward))))
 
 (defun nnfolder-delete-mail (&optional force leave-delim)
   "Delete the message that point is in."
@@ -713,8 +706,9 @@ ARTICLE can be an article number or a Message-ID."
 	    (while (and (search-forward marker nil t)
 			(re-search-forward number nil t))
 	      (let ((newnum (string-to-number (match-string 0))))
-		(setq maxid (max maxid newnum))
-		(setq minid (min minid newnum))))
+		(if (nnmail-within-headers-p)
+		    (setq maxid (max maxid newnum)
+		          minid (min minid newnum)))))
 	    (setcar active (max 1 (min minid maxid)))
 	    (setcdr active (max maxid (cdr active)))
 	    (goto-char (point-min)))
@@ -788,7 +782,7 @@ ARTICLE can be an article number or a Message-ID."
           (nnfolder-possibly-change-folder file)
           (nnfolder-possibly-change-group file)
           (nnfolder-close-group file))))
-    (message "")))
+    (nnheader-message 5 "")))
 
 (defun nnfolder-group-pathname (group)
   "Make pathname for GROUP."

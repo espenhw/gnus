@@ -2,7 +2,7 @@
 ;; Copyright (C) 1988,89,90,93,94,95,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
-;; 	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; 	Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
 
 ;; This file is part of GNU Emacs.
@@ -144,11 +144,11 @@ there.")
 
 	    (and do-message
 		 (zerop (% (incf count) 20))
-		 (message "nnspool: Receiving headers... %d%%"
+		 (nnheader-message 5 "nnspool: Receiving headers... %d%%"
 			  (/ (* count 100) number))))
 
 	  (when do-message
-	    (message "nnspool: Receiving headers...done"))
+	    (nnheader-message 5 "nnspool: Receiving headers...done"))
 
 	  ;; Fold continuation lines.
 	  (nnheader-fold-continuation-lines)
@@ -343,7 +343,7 @@ there.")
       (while (re-search-forward "[ \t\n]+" nil t)
 	(replace-match " " t t))
       (nnheader-report 'nnspool "%s" (buffer-string))
-      (message "nnspool: %s" nnspool-status-string)
+      (nnheader-message 5 "nnspool: %s" nnspool-status-string)
       (ding)
       (run-hooks 'nnspool-rejected-article-hook))))
 

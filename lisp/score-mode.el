@@ -1,7 +1,7 @@
 ;;; score-mode.el --- mode for editing Gnus score files
 ;; Copyright (C) 1996 Free Software Foundation, Inc.
 
-;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news, mail
 
 ;; This file is part of GNU Emacs.

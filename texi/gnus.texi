@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.6.9 Manual
+@settitle Gnus 5.6.10 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.6.9 Manual
+@title Gnus 5.6.10 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.6.9.
+This manual corresponds to Gnus 5.6.10.
 
 @end ifinfo
 
@@ -850,7 +850,7 @@ not stored in the @file{.newsrc} file.
 @vindex gnus-save-newsrc-file
 You can turn off writing the @file{.newsrc} file by setting
 @code{gnus-save-newsrc-file} to @code{nil}, which means you can delete
-the file and save some space, as well as making exit from Gnus faster.
+the file and save some space, as well as exiting from Gnus faster.
 However, this will make it impossible to use other newsreaders than
 Gnus.  But hey, who would want to, right?
 
@@ -1356,14 +1356,14 @@ Go to the next group (@code{gnus-group-next-group}).
 @findex gnus-group-prev-group
 Go to the previous group (@code{gnus-group-prev-group}).
 
-@item M-p
-@kindex M-p (Group)
+@item M-n
+@kindex M-n (Group)
 @findex gnus-group-next-unread-group-same-level
 Go to the next unread group on the same (or lower) level
 (@code{gnus-group-next-unread-group-same-level}).
 
-@item M-n
-@kindex M-n (Group)
+@item M-p
+@kindex M-p (Group)
 @findex gnus-group-prev-unread-group-same-level
 Go to the previous unread group on the same (or lower) level
 (@code{gnus-group-prev-unread-group-same-level}).
@@ -1482,7 +1482,7 @@ full summary buffer.
 Select the first unread article when entering the group.
 
 @item best
-Select the most high-scored article in the group when entering the
+Select the highest scored article in the group when entering the
 group.
 @end table
 
@@ -1995,7 +1995,7 @@ when doing a followup---except that if it is present in a news group,
 you'll get mail group semantics when doing @kbd{f}.
 
 If you do an @kbd{a} command in a mail group and you have neither a
-@code{to-list} group parameter nor a @code{to-address} group paramater,
+@code{to-list} group parameter nor a @code{to-address} group parameter,
 then a @code{to-list} group parameter will be added automatically upon
 sending the message if @code{gnus-add-to-list} is set to @code{t}.
 @vindex gnus-add-to-list
@@ -3820,7 +3820,7 @@ Send a complaint about excessive crossposting to the author of the
 current article (@code{gnus-summary-mail-crosspost-complaint}).
 
 @findex gnus-crosspost-complaint
-This command is provided as a way to fight back agains the current
+This command is provided as a way to fight back against the current
 crossposting pandemic that's sweeping Usenet.  It will compose a reply
 using the @code{gnus-crosspost-complaint} variable as a preamble.  This
 command understands the process/prefix convention
@@ -3872,9 +3872,9 @@ process/prefix convention.
 Post a followup to the current article via news, even if you got the
 message through mail (@code{gnus-summary-followup-to-mail}).
 
-@item S n
-@kindex S n (Summary)
-@findex gnus-summary-followup-to-mail
+@item S N
+@kindex S N (Summary)
+@findex gnus-summary-followup-to-mail-with-original
 Post a followup to the current article via news, even if you got the
 message through mail and include the original message
 (@code{gnus-summary-followup-to-mail-with-original}).  This command uses
@@ -3930,7 +3930,7 @@ Be aware, however, that not all sites honor cancels, so your article may
 live on here and there, while most sites will delete the article in
 question.
 
-Gnus will use the ``current'' select method when cancelling.  If you
+Gnus will use the ``current'' select method when canceling.  If you
 want to use the standard posting method, use the @samp{a} symbolic
 prefix (@pxref{Symbolic Prefixes}).
 
@@ -4454,7 +4454,7 @@ dormant articles will also be excluded.
 @item / m
 @kindex / m (Summary)
 @findex gnus-summary-limit-to-marks
-Ask for a mark and then limit to all articles that have not been marked
+Ask for a mark and then limit to all articles that have been marked
 with that mark (@code{gnus-summary-limit-to-marks}).
 
 @item / t
@@ -4489,33 +4489,36 @@ score (@code{gnus-summary-limit-to-score}).
 @kindex M S (Summary)
 @kindex / E (Summary)
 @findex gnus-summary-limit-include-expunged
-Display all expunged articles
+Include all expunged articles in the limit
 (@code{gnus-summary-limit-include-expunged}).
 
 @item / D
 @kindex / D (Summary)
 @findex gnus-summary-limit-include-dormant
-Display all dormant articles (@code{gnus-summary-limit-include-dormant}).
+Include all dormant articles in the limit
+(@code{gnus-summary-limit-include-dormant}).
 
 @item / *
 @kindex / * (Summary)
 @findex gnus-summary-limit-include-cached
-Display all cached articles (@code{gnus-summary-limit-include-cached}).
+Include all cached articles in the limit
+(@code{gnus-summary-limit-include-cached}).
 
 @item / d
 @kindex / d (Summary)
 @findex gnus-summary-limit-exclude-dormant
-Hide all dormant articles (@code{gnus-summary-limit-exclude-dormant}).
+Exclude all dormant articles from the limit
+(@code{gnus-summary-limit-exclude-dormant}).
 
 @item / T
 @kindex / T (Summary)
 @findex gnus-summary-limit-include-thread
-Include all the articles in the current thread.
+Include all the articles in the current thread in the limit.
 
 @item / c
 @kindex / c (Summary)
 @findex gnus-summary-limit-exclude-childless-dormant
-Hide all dormant articles that have no children
+Exclude all dormant articles that have no children from the limit
 (@code{gnus-summary-limit-exclude-childless-dormant}).
 
 @item / C
@@ -4540,7 +4543,7 @@ hierarchical fashion.
 Threading is done by looking at the @code{References} headers of the
 articles.  In a perfect world, this would be enough to build pretty
 trees, but unfortunately, the @code{References} header is often broken
-or simply missing.  Weird news propagration excarcerbates the problem,
+or simply missing.  Weird news propagation excarcerbates the problem,
 so one has to employ other heuristics to get pleasing results.  A
 plethora of approaches exists, as detailed in horrible detail in
 @pxref{Customizing Threading}.
@@ -4560,7 +4563,7 @@ A small(er) section of this tree-like structure.
 @item loose threads
 Threads often lose their roots due to article expiry, or due to the root
 already having been read in a previous session, and not displayed in the
-summary buffer.  We then typicall have many sub-threads that really
+summary buffer.  We then typically have many sub-threads that really
 belong to one thread, but are without connecting roots.  These are
 called loose threads.
 
@@ -5578,7 +5581,7 @@ Finally, you have the @code{gnus-use-long-file-name} variable.  If it is
 @code{nil}, all the preceding functions will replace all periods
 (@samp{.}) in the group names with slashes (@samp{/})---which means that
 the functions will generate hierarchies of directories instead of having
-all the files in the toplevel directory
+all the files in the top level directory
 (@file{~/News/alt/andrea-dworkin} instead of
 @file{~/News/alt.andrea-dworkin}.)  This variable is @code{t} by default
 on most systems.  However, for historical reasons, this is @code{nil} on
@@ -5601,7 +5604,7 @@ a spool, you could
 
 Then just save with @kbd{o}.  You'd then read this hierarchy with
 ephemeral @code{nneething} groups---@kbd{G D} in the group buffer, and
-the toplevel directory as the argument (@file{~/News/}).  Then just walk
+the top level directory as the argument (@file{~/News/}).  Then just walk
 around to the groups/directories with @code{nneething}.
 
 
@@ -6023,7 +6026,7 @@ these articles easier.
 
 @menu
 * Article Highlighting::    You want to make the article look like fruit salad.
-* Article Fontisizing::     Making emphasized text look niced.
+* Article Fontisizing::     Making emphasized text look nice.
 * Article Hiding::          You also want to make certain info go away.
 * Article Washing::         Lots of way-neat functions to make life better.
 * Article Buttons::         Click on URLs, Message-IDs, addresses and the like.
@@ -6319,7 +6322,7 @@ Unreadable articles that tell you to read them with Caesar rotate or rot13.
 It's commonly called ``rot13'' because each letter is rotated 13
 positions in the alphabet, e. g. @samp{B} (letter #2) -> @samp{O} (letter
 #15).  It is sometimes referred to as ``Caesar rotate'' because Caesar
-is rumoured to have employed this form of, uh, somewhat weak encryption.
+is rumored to have employed this form of, uh, somewhat weak encryption.
 
 @item W t
 @kindex W t (Summary)
@@ -9627,7 +9630,7 @@ when all this splitting is performed.
 
 If you want to have Gnus create groups dynamically based on some
 information in the headers (i.e., do @code{replace-match}-like
-substitions in the group names), you can say things like:
+substitutions in the group names), you can say things like:
 
 @example
 (any "debian-\\(\\w*\\)@@lists.debian.org" "mail.debian.\\1")
@@ -11224,7 +11227,7 @@ When the connection to the net is up again (and Gnus knows this), the
 Agent is @dfn{plugged}.
 
 The @dfn{local} machine is the one you're running on, and which isn't
-connected to the net continously.
+connected to the net continuously.
 
 @dfn{Downloading} means fetching things from the net to your local
 machine.  @dfn{Uploading} is doing the opposite.
@@ -13471,7 +13474,7 @@ four days, Gnus will decay the scores four times, for instance.
 * Moderation::                 What to do if you're a moderator.
 * XEmacs Enhancements::        There are more pictures and stuff under XEmacs.
 * Fuzzy Matching::             What's the big fuzz?
-* Thwarting Email Spam::       A how-to on avoiding unsolited commercial email.
+* Thwarting Email Spam::       A how-to on avoiding unsolicited commercial email.
 * Various Various::            Things that are really various.
 @end menu
 
@@ -13559,7 +13562,7 @@ default.
 @cindex symbolic prefixes
 
 Quite a lot of Emacs commands react to the (numeric) prefix.  For
-instance, @kbd{C-u 4 C-f} moves point four charaters forward, and
+instance, @kbd{C-u 4 C-f} moves point four characters forward, and
 @kbd{C-u 9 0 0 I s s p} adds a permanent @code{Subject} substring score
 rule of 900 to the current article.
 
@@ -14321,7 +14324,7 @@ If you add handlers to @code{gnus-demon-handlers} directly, you should
 run @code{gnus-demon-init} to make the changes take hold.  To cancel all
 daemons, you can use the @code{gnus-demon-cancel} function.
 
-Note that adding daemons can be pretty naughty if you overdo it.  Adding
+Note that adding daemons can be pretty naughty if you over do it.  Adding
 functions that scan all news and mail from all servers every two seconds
 is a sure-fire way of getting booted off any respectable system.  So
 behave.
@@ -15010,7 +15013,7 @@ The biggest problem I have with email spam is that it comes in under
 false pretenses.  I press @kbd{g} and Gnus merrily informs me that I
 have 10 new emails.  I say ``Golly gee!  Happy is me!'' and select the
 mail group, only to find two pyramid schemes, seven advertisements
-(``New!  Miracle tonic for growing full, lustrouos hair on your toes!'')
+(``New!  Miracle tonic for growing full, lustrous hair on your toes!'')
 and one mail asking me to repent and find some god.
 
 This is annoying.
@@ -15052,7 +15055,7 @@ header, it's probably ok.  All the rest goes to the @samp{spam} group.
 In addition, many mail spammers talk directly to your @code{smtp} server
 and do not include your email address explicitly in the @code{To}
 header.  Why they do this is unknown---perhaps it's to thwart this
-twarting scheme?  In any case, this is trivial to deal with---you just
+thwarting scheme?  In any case, this is trivial to deal with---you just
 put anything not addressed to you in the @samp{spam} group by ending
 your fancy split rule in this way:
 
@@ -15070,7 +15073,7 @@ citizen, you can even send off complaints to the proper authorities on
 each unsolicited commercial email---at your leisure.
 
 If you are also a lazy net citizen, you will probably prefer complaining
-automatically with the @file{gnus-junk.el} package, availiable FOR FREE
+automatically with the @file{gnus-junk.el} package, available FOR FREE
 at @file{<URL:http://stud2.tuwien.ac.at/~e9426626/gnus-junk.html>}.
 Since most e-mail spam is sent automatically, this may reconcile the
 cosmic balance somewhat.
@@ -15078,7 +15081,7 @@ cosmic balance somewhat.
 This works for me.  It allows people an easy way to contact me (they can
 just press @kbd{r} in the usual way), and I'm not bothered at all with
 spam.  It's a win-win situation.  Forging @code{From} headers to point
-to non-existant domains is yucky, in my opinion.
+to non-existent domains is yucky, in my opinion.
 
 
 @node Various Various
@@ -15499,7 +15502,7 @@ Steven L. Baur---lots and lots and lots of bugs detections and fixes.
 Vladimir Alexiev---the refcard and reference booklets.
 
 @item
-Felix Lee & Jamie Zawinsky---I stole some pieces from the XGnus
+Felix Lee & Jamie Zawinski---I stole some pieces from the XGnus
 distribution by Felix Lee and JWZ.
 
 @item
@@ -15711,7 +15714,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
-* Quassia Gnus::       Two times two is four, or Gnus 5.6.9.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6.10.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -16246,7 +16249,7 @@ Emphasized text can be properly fontisized:
 @node Quassia Gnus
 @subsubsection Quassia Gnus
 
-New features in Gnus 5.6.9:
+New features in Gnus 5.6.10:
 
 @itemize @bullet
 
@@ -16316,7 +16319,7 @@ If you used this function in your initialization files, you must
 rewrite them to use @code{face-spec-set} instead.
 
 @item
- Cancelling now uses the current select method.  Symbolic prefix
+ Canceling now uses the current select method.  Symbolic prefix
 @kbd{a} forces normal posting method.
 
 @item
@@ -16453,14 +16456,14 @@ the crash-box is only appropriate to one specific group.
  nnmh-be-safe means that crossposted articles will
 be marked as unread.
 @item
- Orphan score entries dont show on "V t" score trace
+ Orphan score entries don't show on "V t" score trace
 @item
  when clearing out data, the cache data should also be reset.
 @item
  rewrite gnus-summary-limit-children to be non-recursive
 to avoid exceeding lisp nesting on huge groups.
 @item
- expinged articles are counted when computing scores.
+ expunged articles are counted when computing scores.
 @item
  implement gnus-batch-brew-soup
 @item
@@ -16536,7 +16539,7 @@ bar and the Gnus bar.
 the server?
 @item
  sort after gathering threads -- make false roots have the
-headers of the oldest orhpan with a 0 article number?
+headers of the oldest orphan with a 0 article number?
 @item
  nndoc groups should inherit the score files of their parents?  Also
 inherit copy prompts and save files.
@@ -16577,7 +16580,7 @@ has been changed before using it.
 on.  Eg. -- `(("nnml:" . 1))'.
 @item
  easier interface to nnkiboze to create ephemeral groups that
-contaion groups that match a regexp.
+contain groups that match a regexp.
 @item
  allow newlines in <URL:> urls, but remove them before using
 the URL.
@@ -16723,7 +16726,7 @@ groups it has been mailed to.
 @item
  hide-pgp should also hide PGP public key blocks.
 @item
- Command in the group buffer to respoll process-marked groups.
+ Command in the group buffer to respool process-marked groups.
 @item
  `gnus-summary-find-matching' should accept
 pseudo-"headers" like "body", "head" and "all"
@@ -16776,7 +16779,7 @@ even unread articles.
 @item
  checking for bogus groups should clean topic alists as well.
 @item
- cancelling articles in foreign groups.
+ canceling articles in foreign groups.
 @item
  article number in folded topics isn't properly updated by
 Xref handling.
@@ -16822,7 +16825,7 @@ the entire folder to disk when accepting new messages.
  server mode command for clearing read marks from all groups
 from a server.
 @item
- when following up mulitple articles, include all To, Cc, etc headers
+ when following up multiple articles, include all To, Cc, etc headers
 from all articles.
 @item
  a command for deciding what the total score of the current
@@ -16976,7 +16979,7 @@ on article marks.
  a way to visually distinguish slave Gnusae from masters.  (Whip instead
 of normal logo?)
 @item
- Use DJ Bernstein "From " quoting/dequoting, where appliccable.
+ Use DJ Bernstein "From " quoting/dequoting, where applicable.
 @item
  Why is hide-citation-maybe and hide-citation different?  Also
 clear up info.
@@ -17043,7 +17046,7 @@ They could be used like this:
 would show all the messages which are labeled `bug' but not labeled
 `fixed'.
 
-One could also immagine the labels being used for highliting, or
+One could also imagine the labels being used for highlighting, or
 affect the summary line format.
 
 
@@ -17056,7 +17059,7 @@ would recognize things that looks like messages or folders:
 - If it is a directory containing numbered files, create an nndir
 summary buffer.
 
-- For other directories, create a nneething summaru buffer.
+- For other directories, create a nneething summary buffer.
 
 - For files matching "\\`From ", create a nndoc/mbox summary.
 
@@ -17083,7 +17086,7 @@ decend into sci.something ?
 decend into ucd?
 
 The problem above is that since there is really only one subsection of
-science, shouldn't it prompt you for only decending sci.something?  If
+science, shouldn't it prompt you for only descending sci.something?  If
 there was a sci.somethingelse group or section, then it should prompt
 for sci? first the sci.something? then sci.somethingelse?...
 
@@ -17339,7 +17342,7 @@ to be able to post in them (using the current select method).
  `x' should retain any sortings that have been performed.
 
 @item
- allow the user to specify the presedence of the secondary marks.  Also
+ allow the user to specify the precedence of the secondary marks.  Also
 allow them to be displayed separately.
 
 @item
@@ -18910,7 +18913,7 @@ this:
 @node Score File Syntax
 @subsection Score File Syntax
 
-Score files are meant to be easily parsable, but yet extremely
+Score files are meant to be easily parseable, but yet extremely
 mallable.   It was decided that something that had the same read syntax
 as an Emacs Lisp list would fit that spec.
 

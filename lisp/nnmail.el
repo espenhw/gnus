@@ -1,7 +1,7 @@
 ;;; nnmail.el --- mail support functions for the Gnus mail backends
 ;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
-;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news, mail
 
 ;; This file is part of GNU Emacs.
@@ -591,12 +591,12 @@ parameter.  It should return nil, `warn' or `delete'."
 		      (nnmail-read-passwd
 		       (format "Password for %s: "
 			       (substring inbox (+ popmail 3))))))
-	      (message "Getting mail from the post office..."))
+	      (nnheader-message 5 "Getting mail from the post office..."))
 	  (when (or (and (file-exists-p tofile)
 			 (/= 0 (nnheader-file-size tofile)))
 		    (and (file-exists-p inbox)
 			 (/= 0 (nnheader-file-size inbox))))
-	    (message "Getting mail from %s..." inbox)))
+	    (nnheader-message 5 "Getting mail from %s..." inbox)))
 	;; Set TOFILE if have not already done so, and
 	;; rename or copy the file INBOX to TOFILE if and as appropriate.
 	(cond
@@ -667,7 +667,7 @@ parameter.  It should return nil, `warn' or `delete'."
 				     (buffer-string) result))
 		      (error "%s" (buffer-string)))
 		    (setq tofile nil)))))))
-	(message "Getting mail from %s...done" inbox)
+	(nnheader-message 5 "Getting mail from %s...done" inbox)
 	(and errors
 	     (buffer-name errors)
 	     (kill-buffer errors))
@@ -875,7 +875,7 @@ is a spool.  If not using procmail, return GROUP."
 		  (goto-char (match-beginning 0))))
 	;; Possibly wrong format?
 	(progn
-	  (pop-to-buffer (find-file-noselect nnmail-current-spool))
+	  (pop-to-buffer (nnheader-find-file-noselect nnmail-current-spool))
 	  (error "Error, unknown mail format! (Possibly corrupted.)"))
       ;; Carry on until the bitter end.
       (while (not (eobp))
@@ -962,7 +962,7 @@ is a spool.  If not using procmail, return GROUP."
 		  (forward-line 1)))
 	;; Possibly wrong format?
 	(progn
-	  (pop-to-buffer (find-file-noselect nnmail-current-spool))
+	  (pop-to-buffer (nnheader-find-file-noselect nnmail-current-spool))
 	  (error "Error, unknown mail format! (Possibly corrupted.)"))
       ;; Carry on until the bitter end.
       (while (not (eobp))
@@ -1079,7 +1079,7 @@ FUNC will be called with the group name to determine the article number."
 		       (or (funcall nnmail-split-methods)
 			   '("bogus"))
 		     (error
-		      (message
+		      (nnheader-message 5
 		       "Error in `nnmail-split-methods'; using `bogus' mail group")
 		      (sit-for 1)
 		      '("bogus")))))
@@ -1768,6 +1768,14 @@ If ARGS, PROMPT is used as an argument to `format'."
   (let ((pop3-maildrop
          (substring inbox (match-end (string-match "^po:" inbox)))))
     (pop3-movemail crashbox)))
+
+(defun nnmail-within-headers-p ()
+  "Check to see if point is within the headers of a unix mail message.
+Doesn't change point."
+  (let ((pos (point)))
+    (save-excursion
+      (and (nnmail-search-unix-mail-delim-backward)
+	   (not (search-forward "\n\n" pos t))))))
 
 (run-hooks 'nnmail-load-hook)
 

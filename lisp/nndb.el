@@ -195,7 +195,7 @@ article was posted to nndb")
 	  (nntp-send-command "^[23].*\n" "X-DELETE" delete-list))
       )
 	
-    (message "")
+    (nnheader-message 5 "")
     (nconc rest articles)))
 
 (defun nndb-get-remote-expire-response ()
@@ -297,7 +297,7 @@ Optional LAST is ignored."
     (or (string-match "^\\([0-9]+\\)" msg)
 	(error "nndb: %s" msg))
     (setq art (substring msg (match-beginning 1) (match-end 1)))
-    (message "nndb: accepted %s" art)
+    (nnheader-message 5 "nndb: accepted %s" art)
     (list art)))
 
 (deffoo nndb-request-replace-article (article group buffer)

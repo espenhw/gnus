@@ -2,7 +2,7 @@
 ;; Copyright (C) 1987,88,89,90,93,94,95,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
-;; 	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; 	Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
 
 ;; This file is part of GNU Emacs.
@@ -605,7 +605,7 @@ If FULL, translate everything."
 	   trans leaf path len)
       (if full
 	  ;; Do complete translation.
-	  (setq leaf file
+	  (setq leaf (copy-sequence file)
 		path "")
 	;; We translate -- but only the file name.  We leave the directory
 	;; alone.
@@ -636,9 +636,9 @@ The first string in ARGS can be a format string."
 (defun nnheader-get-report (backend)
   "Get the most recent report from BACKEND."
   (condition-case ()
-      (message "%s" (symbol-value (intern (format "%s-status-string"
+      (nnheader-message 5 "%s" (symbol-value (intern (format "%s-status-string"
 						  backend))))
-    (error (message ""))))
+    (error (nnheader-message 5 ""))))
 
 (defun nnheader-insert (format &rest args)
   "Clear the communication buffer and insert FORMAT and ARGS into the buffer.
@@ -783,6 +783,7 @@ find-file-hooks, etc.
 	(default-major-mode 'fundamental-mode)
 	(enable-local-variables nil)
         (after-insert-file-functions nil)
+	(find-file-hooks nil)
 	(coding-system-for-read nnheader-file-coding-system))
     (apply 'find-file-noselect args)))
 

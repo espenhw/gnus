@@ -1,7 +1,7 @@
 ;;; gnus-util.el --- utility functions for Gnus
 ;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
 
-;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
 
 ;; This file is part of GNU Emacs.
@@ -340,25 +340,22 @@
       (yes-or-no-p prompt)
     (message "")))
 
-;; I suspect there's a better way, but I haven't taken the time to do
-;; it yet.  -erik selberg@cs.washington.edu
 (defun gnus-dd-mmm (messy-date)
   "Return a string like DD-MMM from a big messy string"
-  (if (equal messy-date "")
-      "??-???"
-    (let ((datevec (ignore-errors (timezone-parse-date messy-date))))
-      (if (not datevec)
-	  "??-???"
-	(format "%2s-%s"
-		(condition-case ()
-		    ;; Make sure leading zeroes are stripped.
-		    (number-to-string (string-to-number (aref datevec 2)))
-		  (error "??"))
-		(capitalize
-		 (or (car
-		      (nth (1- (string-to-number (aref datevec 1)))
-			   timezone-months-assoc))
-		     "???")))))))
+  (let ((datevec (ignore-errors (timezone-parse-date messy-date))))
+    (if (or (not datevec)
+	    (string-equal "0" (aref datevec 1)))
+	"??-???"
+      (format "%2s-%s"
+	      (condition-case ()
+		  ;; Make sure leading zeroes are stripped.
+		  (number-to-string (string-to-number (aref datevec 2)))
+		(error "??"))
+	      (capitalize
+	       (or (car
+		    (nth (1- (string-to-number (aref datevec 1)))
+			 timezone-months-assoc))
+		   "???"))))))
 
 (defmacro gnus-date-get-time (date)
   "Convert DATE string to Emacs time.

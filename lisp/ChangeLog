@@ -1,3 +1,80 @@
+Mon Jun  1 04:31:23 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.10 is released.
+
+Mon Jun  1 03:25:33 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-button-alist): Recognize bare mailto buttons
+	for Gnus.
+
+	* nntp.el: Replaced all `message' calls.
+
+Mon Jun  1 03:13:46 1998  Wolfgang Rupprecht  <wolfgang@dailyplanet.wsrcc.com>
+
+	* nntp.el (nntp-encode-text): Removed spurious forward-line.
+
+Sat May 23 19:44:43 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-agent.el (gnus-agent-fetch-session): Would infloop if
+	opening failed.
+
+Tue May 19 04:11:33 1998  Yoshiki Hayashi  <g740685@komaba.ecc.u-tokyo.ac.jp>
+
+	* nnheader.el (nnheader-translate-file-chars): Don't change
+	string. 
+
+Tue May 19 03:07:45 1998  P. E. Jareth Hein  <jareth@camelot-soft.com>
+
+	* gnus-util.el (gnus-dd-mmm): New version.
+
+Tue May 19 03:00:39 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Changed address.
+
+Tue May 12 06:12:42 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-agent.el (gnus-agent-expire): Delete more.
+
+Sun May 10 19:08:28 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-group-read-ephemeral-group): Don't add
+	`address'. 
+
+Sun May  3 18:01:01 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-within-headers-p): Renamed.
+
+	* message.el (message-cancel-news): If a Sender header doesn't
+	exist, compare From against `message-make-from'.
+
+Sun May  3 15:07:25 1998  Lars Balker Rasmussen  <lbr@image.dk>
+
+	* gnus-agent.el (gnus-agent-save-group-info): Fix
+	re-search-forward params.
+
+Sun May  3 15:04:02 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-agent.el (gnus-agent-expire): Check for the size.
+
+Sat May  2 01:50:20 1998  Dan Christensen  <jdc@chow.mat.jhu.edu>
+
+	* nnfolder.el (nnfolder-goto-article): New version.
+	(nnfolder-read-folder): Fix.
+
+	* nnmail.el (nnmail-within-headers): New function.
+
+Sat May  2 01:36:37 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnfolder.el (nnfolder-goto-article): Thinkotypo search arguments.
+
+	* nnheader.el (nnheader-find-file-noselect): Also bind
+	`find-file-hooks' to nil.
+
+	* nnmail.el (nnmail-process-unix-mail-format): Don't use
+	`find-file-noselect'. 
+
+	* gnus-group.el (gnus-group-make-menu-bar): Typo.
+
 Fri May  1 21:59:35 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.9 is released.

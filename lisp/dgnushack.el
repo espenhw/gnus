@@ -1,7 +1,7 @@
 ;;; dgnushack.el --- a hack to set the load path for byte-compiling
 ;; Copyright (C) 1994,95,96,97,98 Free Software Foundation, Inc.
 
-;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Version: 4.19
 ;; Keywords: news, path
 

@@ -1,7 +1,7 @@
 ;;; nnmh.el --- mhspool access for Gnus
 ;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
-;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: news, mail
 
@@ -104,11 +104,11 @@
 
 	  (and large
 	       (zerop (% count 20))
-	       (message "nnmh: Receiving headers... %d%%"
+	       (nnheader-message 5 "nnmh: Receiving headers... %d%%"
 			(/ (* count 100) number))))
 
 	(when large
-	  (message "nnmh: Receiving headers...done"))
+	  (nnheader-message 5 "nnmh: Receiving headers...done"))
 
 	(nnheader-fold-continuation-lines)
 	'headers))))
@@ -270,7 +270,7 @@
 		 (push (car articles) rest))))
 	  (push (car articles) rest)))
       (setq articles (cdr articles)))
-    (message "")
+    (nnheader-message 5 "")
     (nconc rest articles)))
 
 (deffoo nnmh-close-group (group &optional server)

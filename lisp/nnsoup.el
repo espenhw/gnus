@@ -1,7 +1,7 @@
 ;;; nnsoup.el --- SOUP access for Gnus
 ;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
-;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: news, mail
 
@@ -417,7 +417,7 @@ backend for the messages.")
 	  (while (setq area (pop areas))
 	    ;; Change the name to the permanent name and move the files.
 	    (setq cur-prefix (nnsoup-next-prefix))
-	    (message "Incorporating file %s..." cur-prefix)
+	    (nnheader-message 5 "Incorporating file %s..." cur-prefix)
 	    (when (file-exists-p
 		   (setq file (concat nnsoup-tmp-directory
 				      (gnus-soup-area-prefix area) ".IDX")))
@@ -548,13 +548,13 @@ backend for the messages.")
 		  nnsoup-packet-directory t nnsoup-packet-regexp))
 	packet)
     (while (setq packet (pop packets))
-      (message "nnsoup: unpacking %s..." packet)
+      (nnheader-message 5 "nnsoup: unpacking %s..." packet)
       (if (not (gnus-soup-unpack-packet
 		nnsoup-tmp-directory nnsoup-unpacker packet))
-	  (message "Couldn't unpack %s" packet)
+	  (nnheader-message 5 "Couldn't unpack %s" packet)
 	(delete-file packet)
 	(nnsoup-read-areas)
-	(message "Unpacking...done")))))
+	(nnheader-message 5 "Unpacking...done")))))
 
 (defun nnsoup-narrow-to-article (article &optional area head)
   (let* ((area (or area (nnsoup-article-to-area article nnsoup-current-group)))
@@ -618,7 +618,7 @@ backend for the messages.")
   "Make an outbound package of SOUP replies."
   (interactive)
   (unless (file-exists-p nnsoup-replies-directory)
-    (message "No such directory: %s" nnsoup-replies-directory))
+    (nnheader-message 5 "No such directory: %s" nnsoup-replies-directory))
   ;; Write all data buffers.
   (gnus-soup-save-areas)
   ;; Write the active file.
@@ -716,7 +716,7 @@ backend for the messages.")
 		    (incf num))
 		  (when nnsoup-always-save
 		    (save-buffer)))
-		(message "Stored %d messages" num)))
+		(nnheader-message 5 "Stored %d messages" num)))
 	    (nnsoup-write-replies)
 	    (kill-buffer tembuf))))))
 
@@ -754,7 +754,7 @@ backend for the messages.")
     (set-buffer (get-buffer-create " *nnsoup work*"))
     (buffer-disable-undo (current-buffer))
     (while files
-      (message "Doing %s..." (car files))
+      (nnheader-message 5 "Doing %s..." (car files))
       (erase-buffer)
       (nnheader-insert-file-contents (car files))
       (goto-char (point-min))
@@ -779,7 +779,7 @@ backend for the messages.")
 		      (vector ident group "ncm" "" lines))))
 	(setcdr (cadr elem) (+ min lines)))
       (setq files (cdr files)))
-    (message "")
+    (nnheader-message 5 "")
     (setq nnsoup-group-alist active)
     (nnsoup-write-active-file t)))
 

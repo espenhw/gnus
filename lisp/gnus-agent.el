@@ -1,7 +1,7 @@
 ;;; gnus-agent.el --- unplugged support for Gnus
 ;; Copyright (C) 1997,98 Free Software Foundation, Inc.
 
-;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; This file is part of GNU Emacs.
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify
@@ -354,12 +354,12 @@ be a select method."
 ;;;
 
 (defun gnus-agent-fetch-groups (n)
-  "Put all new articles in the current groups into the agent."
+  "Put all new articles in the current groups into the Agent."
   (interactive "P")
   (gnus-group-iterate n 'gnus-agent-fetch-group))
 
 (defun gnus-agent-fetch-group (group)
-  "Put all new articles in GROUP into the agent."
+  "Put all new articles in GROUP into the Agent."
   (interactive (list (gnus-group-group-name)))
   (unless group
     (error "No group on the current line"))
@@ -403,7 +403,7 @@ be a select method."
       (error "Server already in the agent program"))
     (push method gnus-agent-covered-methods)
     (gnus-agent-write-servers)
-    (message "Entered %s into the agent" server)))
+    (message "Entered %s into the Agent" server)))
 
 (defun gnus-agent-remove-server (server)
   "Remove SERVER from the agent program."
@@ -537,7 +537,7 @@ the actual number of articles toggled is returned."
       (nnheader-temp-write file
 	(insert-file-contents file)
 	(goto-char (point-min))
-	(when (re-search-forward "^" (regexp-quote group) " " nil t)
+	(when (re-search-forward (concat "^" (regexp-quote group) " ") nil t)
 	  (gnus-delete-line))
 	(insert group " " (number-to-string (cdr active)) " "
 		(number-to-string (car active)) "\n")))))
@@ -629,7 +629,7 @@ the actual number of articles toggled is returned."
 ;;;
 
 (defun gnus-agent-fetch-articles (group articles)
-  "Fetch ARTICLES from GROUP and put them into the agent."
+  "Fetch ARTICLES from GROUP and put them into the Agent."
   (when articles
     ;; Prune off articles that we have already fetched.
     (while (and articles
@@ -662,7 +662,7 @@ the actual number of articles toggled is returned."
 		  (insert-buffer-substring nntp-server-buffer)))
 	      (copy-to-buffer nntp-server-buffer (point-min) (point-max))
 	      (setq pos (nreverse pos)))))
-	;; Then save these articles into the agent.
+	;; Then save these articles into the Agent.
 	(save-excursion
 	  (set-buffer nntp-server-buffer)
 	  (while pos
@@ -866,11 +866,12 @@ the actual number of articles toggled is returned."
 	(setq gnus-command-method (car methods))
 	(when (or (gnus-server-opened gnus-command-method)
 		  (gnus-open-server gnus-command-method))
-	  (setq groups (gnus-groups-from-server (pop methods)))
+	  (setq groups (gnus-groups-from-server (car methods)))
 	  (gnus-agent-with-fetch
 	    (while (setq group (pop groups))
 	      (when (<= (gnus-group-level group) gnus-agent-handle-level)
-		(gnus-agent-fetch-group-1 group gnus-command-method))))))
+		(gnus-agent-fetch-group-1 group gnus-command-method)))))
+	(pop methods))
       (gnus-message 6 "Finished fetching articles into the Gnus agent"))))
 
 (defun gnus-agent-fetch-group-1 (group method)
@@ -881,7 +882,8 @@ the actual number of articles toggled is returned."
 	gnus-use-cache articles score arts
 	category predicate info marks score-param)
     ;; Fetch headers.
-    (when (and (setq articles (gnus-list-of-unread-articles group))
+    (when (and (or (gnus-active group) (gnus-activate-group group))
+	       (setq articles (gnus-list-of-unread-articles group))
 	       (gnus-agent-fetch-headers group articles))
       ;; Parse them and see which articles we want to fetch.
       (setq gnus-newsgroup-dependencies
@@ -1264,7 +1266,7 @@ The following commands are available:
 	 (setq gnus-agent-current-history
 	       (setq history (gnus-agent-history-buffer))))
 	(goto-char (point-min))
-	(unless (zerop (buffer-size))
+	(when (> (buffer-size) 1)
 	  (goto-char (point-min))
 	  (while (not (eobp))
 	    (skip-chars-forward "^\t")
@@ -1295,12 +1297,14 @@ The following commands are available:
 				  (cdr (assq 'dormant
 					     (gnus-info-marks info)))))
 		   nov-file (gnus-agent-article-name ".overview" group))
+	     (gnus-agent-load-alist group)
 	     (gnus-message 5 "Expiring articles in %s" group)
 	     (set-buffer overview)
 	     (erase-buffer)
 	     (when (file-exists-p nov-file)
 	       (insert-file-contents nov-file))
 	     (goto-char (point-min))
+	     (setq article 0)
 	     (while (setq elem (pop articles))
 	       (setq article (car elem))
 	       (when (or (null low)
@@ -1310,8 +1314,15 @@ The following commands are available:
 			      (not (memq article marked))))
 		 ;; Find and nuke the NOV line.
 		 (while (and (not (eobp))
-			     (< (setq art (read (current-buffer))) article))
-		   (forward-line 1))
+			     (or (not (numberp
+				       (setq art (read (current-buffer)))))
+				 (< art article)))
+		   (if (file-exists-p
+			(gnus-agent-article-name
+			 (number-to-string article) group))
+		       (forward-line 1)
+		     ;; Remove old NOV lines that have no articles.
+		     (gnus-delete-line)))
 		 (if (or (eobp)
 			 (/= art article))
 		     (beginning-of-line)
@@ -1323,7 +1334,26 @@ The following commands are available:
 		   (delete-file file))
 		 ;; Schedule the history line for nuking.
 		 (push (cdr elem) histories)))
-	     (write-region (point-min) (point-max) nov-file nil 'silent))
+	     (write-region (point-min) (point-max) nov-file nil 'silent)
+	     ;; Delete the unwanted entries in the alist.
+	     (setq gnus-agent-article-alist
+		   (sort gnus-agent-article-alist 'car-less-than-car))
+	     (let* ((alist gnus-agent-article-alist)
+		    (prev (cons nil alist))
+		    (first prev))
+	       (while (and alist
+			   (<= (caar alist) article))
+		 (if (or (not (cdar alist))
+			 (not (file-exists-p
+			       (gnus-agent-article-name
+				(number-to-string
+				 (caar alist))
+				group))))
+		     (setcdr prev (setq alist (cdr alist)))
+		   (setq prev alist
+			 alist (cdr alist))))
+	       (setq gnus-agent-article-alist (cdr first)))
+	     (gnus-agent-save-alist group))
 	   expiry-hashtb)
 	  (set-buffer history)
 	  (setq histories (nreverse (sort histories '<)))
