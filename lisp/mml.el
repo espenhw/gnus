@@ -84,9 +84,9 @@
 			  "Warning: Your message contains %d parts.  Really send? "
 			  (length nstruct)))))
 	      (error "Edit your message to use only one charset"))
-	    (setq struct (nconc nstruct struct))))))
-      (unless (eobp)
-	(forward-line 1)))
+	    (setq struct (nconc nstruct struct)))))))
+    (unless (eobp)
+      (forward-line 1))
     (nreverse struct)))
 
 (defun mml-parse-singlepart-with-multiple-charsets (orig-tag beg end)
@@ -108,7 +108,7 @@
 	  (push (append
 		 orig-tag
 		 (list (cons 'contents
-			     (buffer-substring
+			     (buffer-substring-no-properties
 			      beg (or paragraph newline space (point))))))
 		struct)
 	  (setq beg (or paragraph newline space (point))
@@ -131,7 +131,8 @@
       (unless (= beg (point))
 	(push (append orig-tag
 		      (list (cons 'contents
-				  (buffer-substring beg (point)))))
+				  (buffer-substring-no-properties
+				   beg (point)))))
 	      struct))
       struct)))
 
@@ -139,12 +140,15 @@
   "Read a tag and return the contents."
   (let (contents name elem val)
     (forward-char 2)
-    (setq name (buffer-substring (point) (progn (forward-sexp 1) (point))))
+    (setq name (buffer-substring-no-properties
+		(point) (progn (forward-sexp 1) (point))))
     (skip-chars-forward " \t\n")
     (while (not (looking-at ">"))
-      (setq elem (buffer-substring (point) (progn (forward-sexp 1) (point))))
+      (setq elem (buffer-substring-no-properties
+		  (point) (progn (forward-sexp 1) (point))))
       (skip-chars-forward "= \t\n")
-      (setq val (buffer-substring (point) (progn (forward-sexp 1) (point))))
+      (setq val (buffer-substring-no-properties
+		 (point) (progn (forward-sexp 1) (point))))
       (when (string-match "^\"\\(.*\\)\"$" val)
 	(setq val (match-string 1 val)))
       (push (cons (intern elem) val) contents)
@@ -161,13 +165,13 @@
     (if (re-search-forward
 	 "<#\\(/\\)?\\(multipart\\|part\\|external\\)." nil t)
 	(prog1
-	    (buffer-substring beg (match-beginning 0))
+	    (buffer-substring-no-properties beg (match-beginning 0))
 	  (if (or (not (match-beginning 1))
 		  (equal (match-string 2) "multipart"))
 	      (goto-char (match-beginning 0))
 	    (when (looking-at "[ \t]*\n")
 	      (forward-line 1))))
-      (buffer-substring beg (goto-char (point-max))))))
+      (buffer-substring-no-properties beg (goto-char (point-max))))))
 
 (defvar mml-boundary nil)
 (defvar mml-base-boundary "=-=-=")
@@ -210,7 +214,7 @@
 	    (setq coded (buffer-string)))
 	(mm-with-unibyte-buffer
 	  (if (setq filename (cdr (assq 'filename cont)))
-	      (insert-file-contents-literally filename)
+	      (insert-file-contents filename)
 	    (insert (cdr (assq 'contents cont))))
 	  (setq encoding (mm-encode-buffer type)
 		coded (buffer-string))))
@@ -308,7 +312,8 @@
 		    (mml-parameter-string
 		     cont '(name access-type expiration size permission)))
 	      (not (equal type "text/plain")))
-      (when (listp charset)
+      (when (consp charset)
+	(debug)
 	(error
 	 "Can't encode a part with several charsets.  Insert a <#part>."))
       (insert "Content-Type: " type)

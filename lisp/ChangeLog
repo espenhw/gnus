@@ -1,3 +1,16 @@
+Wed Dec  2 20:24:27 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.61 is released.
+
+1998-12-02 21:12:56  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-parse-1): Skipped parts.
+	(mml-insert-mime-headers): Nil is a list.
+	(mml-generate-mime-1): Don't insert literally.
+	(mml-read-tag): Drop text props.
+	(mml-read-part): Ditto.
+	(mml-parse-singlepart-with-multiple-charsets): Ditto.
+
 Wed Dec  2 20:07:16 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.60 is released.
