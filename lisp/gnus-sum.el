@@ -1600,6 +1600,7 @@ increase the score of each group you read."
     "d" gnus-summary-limit-exclude-dormant
     "t" gnus-summary-limit-to-age
     "x" gnus-summary-limit-to-extra
+    "p" gnus-summary-limit-to-display-predicate
     "E" gnus-summary-limit-include-expunged
     "c" gnus-summary-limit-exclude-childless-dormant
     "C" gnus-summary-limit-mark-excluded-as-read
@@ -2071,6 +2072,7 @@ increase the score of each group you read."
 	 ["Age..." gnus-summary-limit-to-age t]
 	 ["Extra..." gnus-summary-limit-to-extra t]
 	 ["Score" gnus-summary-limit-to-score t]
+	 ["Score" gnus-summary-limit-to-display-predicate t]
 	 ["Unread" gnus-summary-limit-to-unread t]
 	 ["Non-dormant" gnus-summary-limit-exclude-dormant t]
 	 ["Articles" gnus-summary-limit-to-articles t]
@@ -4527,16 +4529,15 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	  gnus-newsgroup-unselected nil
 	  gnus-newsgroup-unreads (gnus-list-of-unread-articles group))
     
-    (setq gnus-newsgroup-display (gnus-group-find-parameter group 'display))
-    (setq gnus-newsgroup-display
-	  (cond
-	   ((eq gnus-newsgroup-display 'all)
-	    'all)
-	   ((arrayp gnus-newsgroup-display)
-	    (gnus-summary-display-make-predicate
-	     (mapcar 'identity gnus-newsgroup-display)))
-	   (t
-	    nil)))
+    (let ((display (gnus-group-find-parameter group 'display)))
+      (setq gnus-newsgroup-display
+	    (cond
+	     ((eq display 'all)
+	      'identity)
+	     ((arrayp display)
+	      (gnus-summary-display-make-predicate (mapcar 'identity display)))
+	     (t
+	      nil))))
       
     (gnus-summary-setup-default-charset)
 
@@ -4640,11 +4641,13 @@ If SELECT-ARTICLES, only select those articles from GROUP."
   (when (= (length display) 1)
     (setq display (car display)))
   (unless gnus-summary-display-cache
-    (dolist (elem gnus-article-mark-lists)
-	(push (cons (cdr elem)
-		    (gnus-byte-compile
-		     `(lambda () (gnus-article-marked-p ',(cdr elem)))))
-	      gnus-summary-display-cache)))
+    (dolist (elem (append (list (cons 'read 'read)
+				(cons 'unseen 'unseen))
+			  gnus-article-mark-lists))
+      (push (cons (cdr elem)
+		  (gnus-byte-compile
+		   `(lambda () (gnus-article-marked-p ',(cdr elem)))))
+	    gnus-summary-display-cache)))
   (let ((gnus-category-predicate-alist gnus-summary-display-cache))
     (gnus-get-predicate display)))
 
@@ -4683,6 +4686,8 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       (memq article gnus-newsgroup-cached))
      ((eq type 'forward)
       (memq article gnus-newsgroup-forwarded))
+     ((eq type 'seen)
+      (not (memq article gnus-newsgroup-unseen)))
      ((eq type 'recent)
       (memq article gnus-newsgroup-recent))
      (t t))))
@@ -4695,7 +4700,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	  (if (or read-all
 		  (and (zerop (length gnus-newsgroup-marked))
 		       (zerop (length gnus-newsgroup-unreads)))
-		  gnus-newsgroup-display)
+		  (eq gnus-newsgroup-display 'identity))
 	      ;; We want to select the headers for all the articles in
 	      ;; the group, so we select either all the active
 	      ;; articles in the group, or (if that's nil), the
@@ -6873,6 +6878,18 @@ articles that are younger than AGE days."
 	  (gnus-summary-limit articles))
       (gnus-summary-position-point))))
 
+(defun gnus-summary-limit-to-display-predicate ()
+  "Limit the summary buffer to the predicated in the `display' group parameter."
+  (interactive)
+  (unless gnus-newsgroup-display
+    (error "There is no `diplay' group parameter"))
+  (let (articles)
+    (dolist (number gnus-newsgroup-articles)
+      (when (funcall gnus-newsgroup-display)
+	(push number articles)))
+    (gnus-summary-limit articles))
+  (gnus-summary-position-point))
+
 (defalias 'gnus-summary-delete-marked-as-read 'gnus-summary-limit-to-unread)
 (make-obsolete
  'gnus-summary-delete-marked-as-read 'gnus-summary-limit-to-unread)
@@ -7132,7 +7149,7 @@ fetch-old-headers verbiage, and so on."
   ;; Most groups have nothing to remove.
   (if (or gnus-inhibit-limiting
 	  (and (null gnus-newsgroup-dormant)
-	       (eq gnus-newsgroup-display 'all)
+	       (eq gnus-newsgroup-display 'identity)
 	       (not (eq gnus-fetch-old-headers 'some))
 	       (not (numberp gnus-fetch-old-headers))
 	       (not (eq gnus-fetch-old-headers 'invisible))
@@ -7223,7 +7240,6 @@ fetch-old-headers verbiage, and so on."
 	      t)
 	    ;; Do the `display' group parameter.
 	    (and gnus-newsgroup-display
-		 (not (eq gnus-newsgroup-display 'all))
 		 (not (funcall gnus-newsgroup-display)))
 	    ;; Check NoCeM things.
 	    (if (and gnus-use-nocem

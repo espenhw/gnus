@@ -1061,6 +1061,14 @@ sure of changing the value of `foo'."
       (cons (cons key value) (gnus-remassoc key alist))
     (gnus-remassoc key alist)))
 
+(defun gnus-create-info-command (node)
+  "Create a command that will go to info NODE."
+  `(lambda ()
+     ,(concat "Enter the info system at node " node)
+     (Info-goto-node ,node)
+     (setq gnus-info-buffer (current-buffer))
+     (gnus-configure-windows 'info)))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

@@ -2242,7 +2242,17 @@ and NEW-NAME will be prompted for."
        (t "group info"))
       (gnus-group-decoded-name group))
      `(lambda (form)
-	(gnus-group-edit-group-done ',part ,group form)))))
+	(gnus-group-edit-group-done ',part ,group form)))
+    (local-set-key
+     "\C-c\C-i" 
+     (gnus-create-info-command
+      (cond
+       ((eq part 'method)
+	"(gnus)Select Methods")
+       ((eq part 'params)
+	"(gnus)Group Parameters")
+       (t
+	"(gnus)Group Info"))))))
 
 (defun gnus-group-edit-group-method (group)
   "Edit the select method of GROUP."
