@@ -3208,7 +3208,7 @@ If NOW, use that time instead."
       (setq sign "-")
       (setq zone (- zone)))
     (concat
-     (format-time-string "%d" now)
+     (format-time-string "%a, %d" now)
      ;; The month name of the %b spec is locale-specific.  Pfff.
      (format " %s "
 	     (capitalize (car (rassoc (nth 4 (decode-time now))

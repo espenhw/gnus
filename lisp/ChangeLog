@@ -1,3 +1,12 @@
+2001-06-21  Ralph Schleicher  <rs@nunatak.allgaeu.org>
+
+	* nnultimate.el (nnultimate-retrieve-headers): Date fix.
+
+2001-06-21 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-make-date): Add week day. 
+	Suggested by Jason R. Mastaler <jason@mastaler.com>.
+
 2001-06-19  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-yank-prefix): Doc fix.
