@@ -272,7 +272,10 @@ This is taken from RFC 2396.")
     (require 'w3-vars)
     (require 'url)))
 
+;;;###autoload
 (defun mm-url-insert-file-contents (url)
+  "Insert file contents of URL.
+If `mm-url-use-external' is non-nil, use `mm-url-program'."
   (if mm-url-use-external
       (progn
 	(if (string-match "^file:/+" url)
@@ -280,7 +283,7 @@ This is taken from RFC 2396.")
 	  (mm-url-insert-file-contents-external url))
 	(goto-char (point-min))
 	(if (fboundp 'url-generic-parse-url)
-	    (setq url-current-object 
+	    (setq url-current-object
 		  (url-generic-parse-url url)))
 	(list url (buffer-size)))
     (mm-url-load-url)
@@ -303,7 +306,9 @@ This is taken from RFC 2396.")
 				    (car result))))
       result)))
 
+;;;###autoload
 (defun mm-url-insert-file-contents-external (url)
+  "Insert file contents of URL using `mm-url-program'."
   (let (program args)
     (if (symbolp mm-url-program)
 	(let ((item (cdr (assq mm-url-program mm-url-predefined-programs))))
