@@ -4651,6 +4651,8 @@ I.e., calling it on a Subject: header is useless."
 	(incf paren))
       (and (= (% dquote 2) 1) (= (% paren 2) 1)))))
 
+(autoload 'idna-to-ascii "idna")
+
 (defun message-idna-to-ascii-rhs-1 (header)
   "Interactively potentially IDNA encode domain names in HEADER."
   (let (rhs ace start end startpos endpos)
