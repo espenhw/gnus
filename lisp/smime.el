@@ -260,6 +260,16 @@ nil."
       (message "S/MIME message NOT verified successfully.")
       nil)))
 
+(defun smime-noverify-region (b e)
+  (let ((buffer (get-buffer-create smime-details-buffer)))
+    (with-current-buffer buffer
+      (erase-buffer))
+    (if (apply 'smime-call-openssl-region b e buffer "smime" "-verify" 
+	       "-noverify" "-out" '("/dev/null"))
+	(message "S/MIME message verified succesfully.")
+      (message "S/MIME message NOT verified successfully.")
+      nil)))
+
 (defun smime-decrypt-region (b e keyfile)
   (let ((buffer (generate-new-buffer (generate-new-buffer-name "*smime*")))
 	CAs)
@@ -280,6 +290,14 @@ Uses current buffer if BUFFER is nil."
   (interactive)
   (with-current-buffer (or buffer (current-buffer))
     (smime-verify-region (point-min) (point-max))))
+
+(defun smime-noverify-buffer (&optional buffer)
+  "Verify integrity of S/MIME message in BUFFER.
+Uses current buffer if BUFFER is nil.
+Does NOT verify validity of certificate."
+  (interactive)
+  (with-current-buffer (or buffer (current-buffer))
+    (smime-noverify-region (point-min) (point-max))))
 
 (defun smime-decrypt-buffer (&optional buffer keyfile)
   "Decrypt S/MIME message in BUFFER using KEYFILE.

@@ -29,6 +29,9 @@
 (require 'mm-decode)
 
 (defun mml-smime-sign (cont)
+  (when (null smime-keys)
+    (customize-variable 'smime-keys)
+    (error "No S/MIME keys configured, use customize to add your key"))
   (smime-sign-buffer (cdr (assq 'keyfile cont))))
 
 (defun mml-smime-encrypt (cont)
@@ -130,7 +133,9 @@
     (when (get-buffer smime-details-buffer)
       (kill-buffer smime-details-buffer))
     (let ((buf (current-buffer))
-	  (good-signature (smime-verify-buffer))
+	  (good-signature (smime-noverify-buffer))
+	  (good-certificate (and (or smime-CA-file smime-CA-directory)
+				 (smime-verify-buffer)))
 	  addresses openssl-output)
       (setq openssl-output (with-current-buffer smime-details-buffer
 			     (buffer-string)))
@@ -151,22 +156,26 @@
 	    (insert-buffer-substring buf)
 	    (goto-char (point-min))
 	    (while (re-search-forward "-----END CERTIFICATE-----" nil t)
-	      (smime-pkcs7-email-region (point-min) (point))
-	      (setq addresses (append (smime-buffer-as-string-region
-				       (point-min) (point)) addresses))
-	      (delete-region (point-min) (point)))))
-	(if (not (member mm-security-from addresses))
+	      (when (smime-pkcs7-email-region (point-min) (point))
+		(setq addresses (append (smime-buffer-as-string-region
+					 (point-min) (point)) addresses)))
+	      (delete-region (point-min) (point)))
+	    (setq addresses (mapcar 'downcase addresses))))
+	(if (not (member (downcase mm-security-from) addresses))
 	    (mm-set-handle-multipart-parameter 
-	     mm-security-handle 'gnus-info "Sender forged")
-	  (mm-set-handle-multipart-parameter 
-	   mm-security-handle 'gnus-info "OK"))
+	     mm-security-handle 'gnus-info "Sender address forged")
+	  (if good-certificate
+	      (mm-set-handle-multipart-parameter 
+	       mm-security-handle 'gnus-info "Ok (sender authenticated)")
+	    (mm-set-handle-multipart-parameter
+	     mm-security-handle 'gnus-info "Integrity OK (sender unknown)")))
 	(mm-set-handle-multipart-parameter
 	 mm-security-handle 'gnus-details 
 	 (concat "Sender clamed to be: " mm-security-from "\n"
 		 (if addresses
 		     (concat "Addresses in certificate: " 
 			     (mapconcat 'identity addresses ", "))
-		   "No addresses found in certificate.")
+		   "No addresses found in certificate. (Requires OpenSSL 0.9.6 or later.)")
 		 "\n" "\n" 
 		 "OpenSSL output:\n" 
 		 "---------------\n" openssl-output "\n"

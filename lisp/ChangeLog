@@ -1,3 +1,15 @@
+2001-01-15  Simon Josefsson  <simon@josefsson.org>
+
+	* mml-smime.el (mml-smime-sign): Place user in customize buffer if
+	there aren't any keys.
+	(mml-smime-verify): If smime-CA-{file,directory} set, also try to
+	verify certificate.  Default is changed to only check integrity.
+	Improved security status texts.  If a certificate doesn't contain
+	a email address, don't fail.
+	
+	* smime.el (smime-noverify-region):
+	(smime-noverify-buffer): New functions.  Verifies integrity only.
+
 2001-01-12 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-group.el (gnus-group-sort-by-score): Reverse order.
