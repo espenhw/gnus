@@ -2180,22 +2180,22 @@ If READ-CHARSET, ask for a coding system."
 
 
 (defun article-wash-html (&optional read-charset)
-  "Format an html article.
+  "Format an HTML article.
 If READ-CHARSET, ask for a coding system."
   (interactive "P")
   (save-excursion
     (let ((buffer-read-only nil)
 	  charset)
-      (if (gnus-buffer-live-p gnus-original-article-buffer)
-	  (with-current-buffer gnus-original-article-buffer
-	    (let* ((ct (gnus-fetch-field "content-type"))
-		   (ctl (and ct
-			     (ignore-errors
-			       (mail-header-parse-content-type ct)))))
-	      (setq charset (and ctl
-				 (mail-content-type-get ctl 'charset)))
-	      (if (stringp charset)
-		  (setq charset (intern (downcase charset)))))))
+      (when (gnus-buffer-live-p gnus-original-article-buffer)
+	(with-current-buffer gnus-original-article-buffer
+	  (let* ((ct (gnus-fetch-field "content-type"))
+		 (ctl (and ct
+			   (ignore-errors
+			     (mail-header-parse-content-type ct)))))
+	    (setq charset (and ctl
+			       (mail-content-type-get ctl 'charset)))
+	    (when (stringp charset)
+	      (setq charset (intern (downcase charset)))))))
       (when read-charset
 	(setq charset (mm-read-coding-system "Charset: " charset)))
       (unless charset
@@ -2205,7 +2205,7 @@ If READ-CHARSET, ask for a coding system."
 	(save-restriction
 	  (narrow-to-region (point) (point-max))
 	  (let* ((func (or gnus-article-wash-function mm-text-html-renderer))
-		 (entry (assq func mm-text-html-washer-alist)))
+		 (entry (assq func mm-text-html-washer-alistq)))
 	    (when entry
 	      (setq func (cdr entry)))
 	    (cond
@@ -6227,11 +6227,11 @@ For example:
 	(highlightp (gnus-visual-p 'article-highlight 'highlight))
 	val elem)
     (gnus-run-hooks 'gnus-part-display-hook)
-    (while (setq elem (pop alist))
+    (dolist (elem alist)
       (setq val
 	    (save-excursion
-	      (if (gnus-buffer-live-p gnus-summary-buffer)
-		  (set-buffer gnus-summary-buffer))
+	      (when (gnus-buffer-live-p gnus-summary-buffer)
+		(set-buffer gnus-summary-buffer))
 	      (symbol-value (car elem))))
       (when (and (or (consp val)
 		     treated-type)
