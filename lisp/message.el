@@ -167,7 +167,7 @@ Don't touch this variable unless you really know what you're doing.
 Checks include subject-cmsg multiple-headers sendsys message-id from
 long-lines control-chars size new-text redirected-followup signature
 approved sender empty empty-headers message-id from subject
-shorten-followup-to existing-newsgroups."
+shorten-followup-to existing-newsgroups buffer-file-name unchanged."
   :group 'message-news)
 
 (defcustom message-required-news-headers
@@ -293,7 +293,7 @@ If nil, Message won't autosave."
   :type 'boolean)
 
 (defcustom message-included-forward-headers
-  "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-\\|^Message-ID:\\|^References:"
+  "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-\\|^Message-ID:\\|^References:\\|^Content-Transfer-Encoding:\\|^Content-Type:\\|^Mime-Version:"
   "*Regexp matching headers to be included in forwarded messages."
   :group 'message-forwarding
   :type 'regexp)
@@ -1769,12 +1769,14 @@ Otherwise any failure is reported in a message back to
 the user from the mailer."
   (interactive "P")
   ;; Disabled test.
-  (when (if (and nil buffer-file-name)
+  (when (if (and buffer-file-name
+		 (message-check-element 'buffer-file-name))
 	    (y-or-n-p (format "Send buffer contents as %s message? "
 			      (if (message-mail-p)
 				  (if (message-news-p) "mail and news" "mail")
 				"news")))
 	  (or (buffer-modified-p)
+	      (message-check-element 'unchanged)
 	      (y-or-n-p "No changes in the buffer; really send? ")))
     ;; Make it possible to undo the coming changes.
     (undo-boundary)

@@ -256,7 +256,6 @@ all kibozed articles should be entered into the cache.
 `gnus-jog-cache' does -- for instance, work on just some groups, or on
 some levels, and entering just articles that have a score higher than
 a certain number.
-* function to request all articles in a thread.
 * nnfolder should append to the folder instead of re-writing
 the entire folder to disk when accepting new messages.
 * allow all backends to do the proper thing with .gz files.

@@ -1098,20 +1098,21 @@ SCORE is the score to add."
 	  (decay (car (gnus-score-get 'decay alist)))
 	  (eval (car (gnus-score-get 'eval alist))))
       ;; Perform possible decays.
-      (when gnus-decay-scores
-	(when (or (not decay)
-		  (gnus-decay-scores alist decay))
-	  (gnus-score-set 'touched '(t) alist)
-	  (gnus-score-set 'decay (list (gnus-time-to-day (current-time))))))
+      (when (and gnus-decay-scores
+		 (or (not decay)
+		     (gnus-decay-scores alist decay)))
+	(gnus-score-set 'touched '(t) alist)
+	(gnus-score-set 'decay (list (gnus-time-to-day (current-time)))))
       ;; We do not respect eval and files atoms from global score
       ;; files.
-      (and files (not global)
-	   (setq lists (apply 'append lists
-			      (mapcar (lambda (file)
-					(gnus-score-load-file file))
-				      (if adapt-file (cons adapt-file files)
-					files)))))
-      (and eval (not global) (eval eval))
+      (when (and files (not global))
+	(setq lists (apply 'append lists
+			   (mapcar (lambda (file)
+				     (gnus-score-load-file file))
+				   (if adapt-file (cons adapt-file files)
+				     files)))))
+      (when (and eval (not global))
+	(eval eval))
       ;; We then expand any exclude-file directives.
       (setq gnus-scores-exclude-files
 	    (nconc
@@ -1120,8 +1121,7 @@ SCORE is the score to add."
 		(expand-file-name sfile (file-name-directory file)))
 	      exclude-files)
 	     gnus-scores-exclude-files))
-      (if (not local)
-	  ()
+      (unless local
 	(save-excursion
 	  (set-buffer gnus-summary-buffer)
 	  (while local

@@ -44,4 +44,8 @@ Prefixes" in the Gnus manual for details.
 *** `gnus-simplify-subject-functions' variable to allow greater
 control over simplification.
 
+*** `A T' -- new command for fetching the current thread.
+
+*** `/ T' -- new command for including the current thread in the
+limit.
 

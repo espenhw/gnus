@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.9 Manual
+@settitle Quassia Gnus 0.10 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -309,7 +309,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.9 Manual
+@title Quassia Gnus 0.10 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -345,7 +345,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.9.
+This manual corresponds to Quassia Gnus 0.10.
 
 @end ifinfo
 
@@ -4432,6 +4432,11 @@ Display all dormant articles (@code{gnus-summary-limit-include-dormant}).
 @findex gnus-summary-limit-exclude-dormant
 Hide all dormant articles (@code{gnus-summary-limit-exclude-dormant}).
 
+@item / T
+@kindex / T (Summary)
+@findex gnus-summary-limit-include-thread
+Include all the articles in the current thread.
+
 @item / c
 @kindex / c (Summary)
 @findex gnus-summary-limit-exclude-childless-dormant
@@ -4711,6 +4716,10 @@ fetching old headers only works if the backend you are using carries
 overview files---this would normally be @code{nntp}, @code{nnspool} and
 @code{nnml}.  Also remember that if the root of the thread has been
 expired by the server, there's not much Gnus can do about that.
+
+This variable can also be set to @code{invisible}.  This won't have any
+visible effects, but is useful if you use the @kbd{A T} command a lot
+(@pxref{Finding the Parent}). 
 
 @item gnus-build-sparse-threads
 @vindex gnus-build-sparse-threads
@@ -6623,8 +6632,10 @@ Commands}).
 @cindex parent articles
 @cindex referring articles
 
-@findex gnus-summary-refer-parent-article
+@code @kbd
+@item ^
 @kindex ^ (Summary)
+@findex gnus-summary-refer-parent-article
 If you'd like to read the parent of the current article, and it is not
 displayed in the summary buffer, you might still be able to.  That is,
 if the current group is fetched by @sc{nntp}, the parent hasn't expired
@@ -6641,12 +6652,31 @@ grandparent and the grandgrandparent of the current article.  If you say
 @kbd{-3 ^}, Gnus will only fetch the grandgrandparent of the current
 article. 
 
+@item A R (Summary)
 @findex gnus-summary-refer-references
 @kindex A R (Summary)
-You can have Gnus fetch all articles mentioned in the @code{References}
-header of the article by pushing @kbd{A R}
-(@code{gnus-summary-refer-references}). 
+Fetch all articles mentioned in the @code{References} header of the
+article (@code{gnus-summary-refer-references}).
 
+@item A T (Summary)
+@findex gnus-summary-refer-thread
+@kindex A T (Summary)
+Display the full thread where the current article appears
+(@code{gnus-summary-refer-thread}).  This command has to fetch all the
+headers in the current group to work, so it usually takes a while.  If
+you do it often, you may consider setting @code{gnus-fetch-old-headers}
+to @code{invisible} (@pxref{Filling In Threads}).  This won't have any
+visible effects normally, but it'll make this command work a whole lot
+faster.  Of course, it'll make group entry somewhat slow.
+
+@vindex gnus-refer-thread-limit
+The @code{gnus-refer-thread-limit} variable says how many old (i. e.,
+articles before the first displayed in the current group) headers to
+fetch when doing this command.  The default is 200.  If @code{t}, all
+the available headers will be fetched.  This variable can be overridden
+by giving the @kbd{A T} command a numerical prefix.
+
+@item M-^ (Summary)
 @findex gnus-summary-refer-article
 @kindex M-^ (Summary)
 @cindex Message-ID
@@ -6657,6 +6687,7 @@ matter what group it belongs to.  @kbd{M-^}
 @code{Message-ID}, which is one of those long, hard-to-read thingies
 that look something like @samp{<38o6up$6f2@@hymir.ifi.uio.no>}.  You
 have to get it all exactly right.  No fuzzy searches, I'm afraid.
+@end table
 
 The current select method will be used when fetching by
 @code{Message-ID} from non-news select method, but you can override this
@@ -14041,7 +14072,32 @@ postings to non-binary groups and removes spews (regurgitated articles).
 @end table
 
 You do not have to heed NoCeM messages from all these people---just the
-ones you want to listen to.
+ones you want to listen to.  You also don't have to accept all NoCeM
+messages from the people you like.  Each NoCeM message has a @dfn{type}
+header that gives the message a (more or less, usually less) rigorous
+definition.  Common types are @samp{spam}, @samp{spew}, @samp{mmf},
+@samp{binary}, and @samp{troll}.  To specify this, you have to use
+@var{(issuer conditions ...)} elements in the list.  Each condition is
+either a string (which is a regexp that matches types you want to use)
+or a list on the form @code{(not STRING)}, where @var{string} is a
+regexp that matches types you don't want to use.
+
+For instance, if you want all NoCeM messages from Chris Lewis except his
+@samp{troll} messages, you'd say:
+
+@lisp
+("clewis@ferret.ocunix.on.ca" ".*" (not "troll"))
+@end lisp
+
+On the other hand, if you just want nothing but his @samp{spam} and
+@samp{spew} messages, you'd say:
+
+@lisp
+("clewis@ferret.ocunix.on.ca" (not ".*") "spew" "spam")
+@end lisp
+
+The specs are applied left-to-right.
+
 
 @item gnus-nocem-verifyer
 @vindex gnus-nocem-verifyer

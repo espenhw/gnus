@@ -60,6 +60,13 @@ The server has to support NOV for any of this to work."
 		 number
 		 (sexp :menu-tag "other" t)))
 
+(defcustom gnus-refer-thread-limit 200
+  "*The number of old headers to fetch when doing \\<gnus-summary-mode-map>\\[gnus-summary-refer-thread].
+If t, fetch all the available old headers."
+  :group 'gnus-thread
+  :type '(choice number
+		 (sexp :menu-tag "other" t)))
+
 (defcustom gnus-summary-make-false-root 'adopt
   "*nil means that Gnus won't gather loose threads.
 If the root of a thread has expired or been read in a previous
@@ -1242,6 +1249,7 @@ increase the score of each group you read."
     "m" gnus-summary-limit-to-marks
     "v" gnus-summary-limit-to-score
     "D" gnus-summary-limit-include-dormant
+    "T" gnus-summary-limit-include-thread
     "d" gnus-summary-limit-exclude-dormant
     "t" gnus-summary-limit-to-age
     "E" gnus-summary-limit-include-expunged
@@ -1314,6 +1322,7 @@ increase the score of each group you read."
     "^" gnus-summary-refer-parent-article
     "r" gnus-summary-refer-parent-article
     "R" gnus-summary-refer-references
+    "T" gnus-summary-refer-thread
     "g" gnus-summary-show-article
     "s" gnus-summary-isearch-article
     "P" gnus-summary-print-article)
@@ -1631,6 +1640,7 @@ increase the score of each group you read."
        ["End of the article" gnus-summary-end-of-article t]
        ["Fetch parent of article" gnus-summary-refer-parent-article t]
        ["Fetch referenced articles" gnus-summary-refer-references t]
+       ["Fetch current thread" gnus-summary-refer-thread t]
        ["Fetch article with id..." gnus-summary-refer-article t]
        ["Redisplay" gnus-summary-show-article t]))
 
@@ -3004,6 +3014,30 @@ If NO-DISPLAY, don't generate a summary buffer."
 		      (delq number gnus-newsgroup-unselected)))
 	    (push number gnus-newsgroup-ancient)))))))
 
+(defun gnus-build-all-threads ()
+  "Read all the headers."
+  (let ((deps gnus-newsgroup-dependencies)
+	(gnus-summary-ignore-duplicates t)
+	found header article)
+    (save-excursion
+      (set-buffer nntp-server-buffer)
+      (let ((case-fold-search nil))
+	(goto-char (point-min))
+	(while (not (eobp))
+	  (ignore-errors
+	    (setq article (read (current-buffer)))
+	    (setq header (gnus-nov-parse-line article deps)))
+	  (when header
+	    (push header gnus-newsgroup-headers)
+	    (if (memq (setq article (mail-header-number header))
+		      gnus-newsgroup-unselected)
+		(progn
+		  (push article gnus-newsgroup-unreads)
+		  (setq gnus-newsgroup-unselected
+			(delq article gnus-newsgroup-unselected)))
+	      (push article gnus-newsgroup-ancient))
+	    (forward-line 1)))))))
+
 (defun gnus-summary-update-article-line (article header)
   "Update the line for ARTICLE using HEADERS."
   (let* ((id (mail-header-id header))
@@ -3179,6 +3213,11 @@ If NO-DISPLAY, don't generate a summary buffer."
       (setq last-id id
 	    id (gnus-parent-id (mail-header-references prev))))
     last-id))
+
+(defun gnus-articles-in-thread (thread)
+  "Return the list of articles in THREAD."
+  (cons (mail-header-number (car thread))
+	(apply 'nconc (mapcar 'gnus-articles-in-thread (cdr thread)))))
 
 (defun gnus-remove-thread (id &optional dont-remove)
   "Remove the thread that has ID in it."
@@ -3778,9 +3817,11 @@ If READ-ALL is non-nil, all articles in the group are selected."
       (when gnus-agent
 	(gnus-agent-get-undownloaded-list))
       ;; We might want to build some more threads first.
-      (and gnus-fetch-old-headers
-	   (eq gnus-headers-retrieved-by 'nov)
-	   (gnus-build-old-threads))
+      (when (and gnus-fetch-old-headers
+		 (eq gnus-headers-retrieved-by 'nov))
+	(if (eq gnus-fetch-old-headers 'invisible)
+	    (gnus-build-all-threads)
+	  (gnus-build-old-threads)))
       ;; Check whether auto-expire is to be done in this group.
       (setq gnus-newsgroup-auto-expire
 	    (gnus-group-auto-expirable-p group))
@@ -5925,6 +5966,16 @@ Returns how many articles were removed."
 	(gnus-summary-limit articles)
       (gnus-summary-position-point))))
 
+(defun gnus-summary-limit-include-thread (id)
+  "Display all the hidden articles that in the current thread."
+  (interactive (mail-header-id (gnus-summary-article-header)))
+  (gnus-set-global-variables)
+  (let ((articles (gnus-articles-in-thread
+		   (gnus-id-to-thread (gnus-root-id id)))))
+    (prog1
+	(gnus-summary-limit (nconc articles gnus-newsgroup-limit))
+      (gnus-summary-position-point))))
+
 (defun gnus-summary-limit-include-dormant ()
   "Display all the hidden articles that are marked as dormant."
   (interactive)
@@ -6251,7 +6302,7 @@ The difference between N and the number of articles fetched is returned."
 
 (defun gnus-summary-refer-references ()
   "Fetch all articles mentioned in the References header.
-Return how many articles were fetched."
+Return the number of articles fetched."
   (interactive)
   (gnus-set-global-variables)
   (let ((ref (mail-header-references (gnus-summary-article-header)))
@@ -6270,6 +6321,32 @@ Return how many articles were fetched."
       (gnus-summary-goto-subject current)
       (gnus-summary-position-point)
       n)))
+
+(defun gnus-summary-refer-thread (&optional limit)
+  "Fetch all articles in the current thread.
+If LIMIT (the numerical prefix), fetch that many old headers instead
+of what's specified by the `gnus-refer-thread-limit' variable."
+  (interactive "P")
+  (gnus-set-global-variables)
+  (let ((id (mail-header-id (gnus-summary-article-header)))
+	(limit (if limit (prefix-numeric-value limit)
+		 gnus-refer-thread-limit))
+	fmethod root)
+    ;; We want to fetch LIMIT *old* headers, but we also have to
+    ;; re-fetch all the headers in the current buffer, because many of
+    ;; them may be undisplayed.  So we adjust LIMIT.
+    (when (numberp limit)
+      (incf limit (- gnus-newsgroup-end gnus-newsgroup-begin)))
+    (unless (eq gnus-fetch-old-headers 'invisible)
+      (gnus-message 5 "Fetching headers for %s..." gnus-newsgroup-name)
+      ;; Retrieve the headers and read them in.
+      (if (eq (gnus-retrieve-headers
+	       (list gnus-newsgroup-end) gnus-newsgroup-name limit)
+	      'nov)
+	  (gnus-build-all-threads)
+	(error "Can't fetch thread from backends that don't support NOV"))
+      (gnus-message 5 "Fetching headers for %s...done" gnus-newsgroup-name))
+    (gnus-summary-limit-include-thread id)))
 
 (defun gnus-summary-refer-article (message-id &optional arg)
   "Fetch an article specified by MESSAGE-ID.

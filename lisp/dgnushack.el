@@ -49,11 +49,11 @@
     (fset 'read-color 'ignore)))
 
 (setq byte-compile-warnings
-      '(free-vars unresolved callargs redefine obsolete))
+      '(free-vars unresolved callargs redefine))
 
 (defun dgnushack-compile ()
   ;;(setq byte-compile-dynamic t)
-  (unless (locate-library "custom")
+  (unless (locate-library "cus-edit")
     (error "You do not seem to have Custom installed.
 Fetch it from <URL:http://www.dina.kvl.dk/~abraham/custom/>.
 You also then need to add the following to the lisp/dgnushack.el file:

@@ -1,3 +1,36 @@
+Tue Sep 23 07:45:11 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.10 is released.
+
+Tue Sep 23 01:41:04 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-read-all-headers): New function.
+	(gnus-select-newsgroup): Use it.
+	(gnus-summary-refer-thread): Ditto.
+	(gnus-refer-thread-limit): New variable.
+	(gnus-summary-refer-thread): Use it.
+
+	* gnus-nocem.el (gnus-nocem-message-wanted-p): New function.
+	(gnus-nocem-check-article): Use it.
+	(gnus-nocem-issuers): Dox ofx.
+
+	* dgnushack.el (dgnushack-compile): Check for cus-edit.
+
+	* message.el (message-included-forward-headers): Include Mime
+	headers. 
+	(message-send): Allow posting without confirming from Agent.
+
+Mon Sep 22 05:43:14 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* dgnushack.el (byte-compile-warnings): Don't warn about obsolete
+	variables. 
+
+	* gnus-sum.el (gnus-summary-refer-thread): New command and
+	keystroke. 
+	(gnus-summary-limit-include-thread): New command and keystroke. 
+	(gnus-summary-articles-in-thread): New function.
+	(gnus-articles-in-thread): Renamed.
+
 Sun Sep 21 23:54:50 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.9 is released.

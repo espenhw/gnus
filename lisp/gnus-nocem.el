@@ -52,7 +52,9 @@
     "snowhare@xmission.com"		; Benjamin "Snowhare" Franz
     "red@redpoll.mrfs.oh.us (Richard E. Depew)" ; ARMM! ARMM!
     )
-  "List of NoCeM issuers to pay attention to."
+  "List of NoCeM issuers to pay attention to.
+
+This can also be a list of `(ISSUER CONDITIONS)' elements."
   :group 'gnus-nocem
   :type '(repeat string))
 
@@ -187,7 +189,7 @@ active file."
   (gnus-message 7 "Checking article %d in %s for NoCeM..."
 		(mail-header-number header) group)
   (let ((date (mail-header-date header))
-	issuer b e)
+	issuer b e type)
     (when (or (not date)
 	      (nnmail-time-less
 	       (nnmail-time-since (nnmail-date-to-time date))
@@ -204,15 +206,36 @@ active file."
 		 (setq e (search-forward "\n@@BEGIN NCM BODY\n" nil t)))
 	;; We get the name of the issuer.
 	(narrow-to-region b e)
-	(setq issuer (mail-fetch-field "issuer"))
+	(setq issuer (mail-fetch-field "issuer")
+	      type (mail-fetch-field "issuer"))
 	(widen)
-	(or (member issuer gnus-nocem-issuers)
-	    (message "invalid NoCeM issuer: %s" issuer))
-	(and (member issuer gnus-nocem-issuers) ; We like her....
-	     (gnus-nocem-verify-issuer issuer) ; She is who she says she is...
-	     (gnus-nocem-enter-article)	; We gobble the message..
-	     (push (mail-header-message-id header) ; But don't come back for
-		   gnus-nocem-seen-message-ids)))))) ; second helpings.
+	(if (not (gnus-nocem-message-wanted-p issuer type))
+	    (message "invalid NoCeM issuer: %s" issuer)
+	  (and (gnus-nocem-verify-issuer issuer) ; She is who she says she is.
+	       (gnus-nocem-enter-article) ; We gobble the message.
+	       (push (mail-header-message-id header) ; But don't come back for
+		     gnus-nocem-seen-message-ids))))))) ; second helpings.
+
+(defun gnus-nocem-message-wanted-p (issuer type)
+  (let ((issuers gnus-nocem-issuers)
+	wanted conditions condition)
+    (cond
+     ;; Do the quick check first.
+     ((member issuer issuers)
+      t)
+     ((setq conditions (cdr (assoc issuer issuers)))
+      ;; Check whether we want this type.
+      (while (setq condition (pop conditions))
+	(cond
+	 ((stringp condition)
+	  (setq wanted (string-match condition) type))
+	 ((and (consp condition)
+	       (eq (car condition) 'not)
+	       (stringp (cadr condition)))
+	  (setq wanted (not (string-match (cadr condition) type))))
+	 (t
+	  (error "Invalid NoCeM condition: %S" condition))))
+      wanted))))
 
 (defun gnus-nocem-verify-issuer (person)
   "Verify using PGP that the canceler is who she says she is."
