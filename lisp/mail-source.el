@@ -115,7 +115,7 @@ Common keywords should be listed here.")
        (:authentication password))
       (maildir
        (:path (or (getenv "MAILDIR") "~/Maildir/"))
-       (:subdirs ("tmp" "new" "cur"))
+       (:subdirs ("new" "cur"))
        (:function))
       (imap
        (:server (getenv "MAILHOST"))
