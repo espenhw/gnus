@@ -665,7 +665,7 @@ are supported for %s."
        (list (car flist)))
       ;; A single number.
       ((string= fstring "%d")
-       (setq dontinsert)
+       (setq dontinsert t)
        (if insert
 	   (list `(princ ,(car flist)))
 	 (list `(int-to-string ,(car flist)))))

@@ -1,3 +1,9 @@
+2004-01-27  Steve Youngs  <sryoungs@bigpond.net.au>
+
+	* gnus-spec.el (gnus-parse-simple-format): Fix setq value
+	omission. 
+	From Jerry James  <james@xemacs.org>
+
 2004-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-msg.el (gnus-summary-resend-message-edit): Call mime-to-mml.
