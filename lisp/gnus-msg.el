@@ -722,8 +722,7 @@ a news."
 If prefix argument YANK is non-nil, the original article is yanked
 automatically.
 YANK is a list of elements, where the car of each element is the
-article number, and the two following numbers is the region to be
-yanked."
+article number, and the cdr is the string to be yanked."
   (interactive
    (list (and current-prefix-arg
 	      (gnus-summary-work-articles 1))))
