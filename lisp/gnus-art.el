@@ -3497,6 +3497,12 @@ commands:
     (if (get-buffer name)
 	(save-excursion
 	  (set-buffer name)
+	  (when (and gnus-article-edit-mode
+		     (buffer-modified-p)
+		     (not
+		      (y-or-n-p "Article mode edit in progress; discard? ")))
+	    (error "Action aborted"))
+	  (set (make-local-variable 'gnus-article-edit-mode) nil)
 	  (when gnus-article-mime-handles
 	    (mm-destroy-parts gnus-article-mime-handles)
 	    (setq gnus-article-mime-handles nil))
@@ -5134,12 +5140,12 @@ If given a prefix, show the hidden text instead."
 (defvar gnus-article-edit-done-function nil)
 
 (defvar gnus-article-edit-mode-map nil)
+(defvar gnus-article-edit-mode nil)
 
 ;; Should we be using derived.el for this?
 (unless gnus-article-edit-mode-map
   (setq gnus-article-edit-mode-map (make-keymap))
   (set-keymap-parent gnus-article-edit-mode-map text-mode-map)
-
 
   (gnus-define-keys gnus-article-edit-mode-map
     "\C-c?"    describe-mode
@@ -5209,6 +5215,7 @@ This is an extended text-mode.
   (set (make-local-variable 'font-lock-defaults)
        '(message-font-lock-keywords t))
   (set (make-local-variable 'mail-header-separator) "")
+  (set (make-local-variable 'gnus-article-edit-mode) t)
   (easy-menu-add message-mode-field-menu message-mode-map)
   (mml-mode)
   (setq buffer-read-only nil)
@@ -5323,6 +5330,18 @@ groups."
   :group 'gnus-article-buttons
   :type 'regexp)
 
+(defcustom gnus-button-valid-fqdn-regexp
+  (concat "[a-z0-9][-.a-z0-9]+\\." ;; [hostname.subdomain.]domain.
+	  ;; valid TLDs:
+	  "\\([a-z][a-z]" ;; two letter country TDLs
+	  "\\|biz\\|com\\|edu\\|gov\\|int\\|mil\\|net\\|org"
+	  "\\|aero\\|coop\\|info\\|name\\|museum"
+	  "\\|arpa\\|pro\\|uucp\\|bitnet\\|bofh" ;; old style?
+	  "\\)")
+  "Regular expression that matches a valid FQDN."
+  :group 'gnus-article-buttons
+  :type 'regexp)
+
 (defcustom gnus-button-man-handler 'manual-entry
   "Function to use for displaying man pages.
 The function must take at least one argument with a string naming the
@@ -5332,15 +5351,48 @@ man page."
 		 (function :tag "Other"))
   :group 'gnus-article-buttons)
 
+(defcustom gnus-ctan-url "http://tug.ctan.org/tex-archive/"
+  "Top directory of a CTAN \(Comprehensive TeX Archive Network\) archive.
+If the default site is too slow, try to find a CTAN mirror, see
+<URL:http://tug.ctan.org/tex-archive/CTAN.sites?action=/index.html>.  See also
+the variable `gnus-button-handle-ctan'."
+  :group 'gnus-article-buttons
+  :link '(custom-manual "(gnus)Group Parameters")
+  :type '(choice (const "http://www.tex.ac.uk/tex-archive/")
+		 (const "http://tug.ctan.org/tex-archive/")
+		 (const "http://www.dante.de/CTAN/")
+		 (string :tag "Other")))
+
+(defcustom gnus-button-ctan-handler 'browse-url
+  "Function to use for displaying CTAN links.
+The function must take one argument, the string naming the URL."
+  :type '(choice (function-item :tag "Browse Url" browse-url)
+		 (function :tag "Other"))
+  :group 'gnus-article-buttons)
+
+(defcustom gnus-button-handle-ctan-bogus-regexp "^/?tex-archive/\\|^/"
+  "Bogus strings removed from CTAN URLs."
+  :group 'gnus-article-buttons
+  :type '(choice (const "^/?tex-archive/\\|/")
+		 (regexp :tag "Other")))
+
+(defcustom gnus-button-mid-or-mail-regexp
+  (concat "\\b\\(<?[a-zA-Z0-9][^<>\")!;:,{}\n\t ]*@"
+	  gnus-button-valid-fqdn-regexp
+	  ">?\\)\\b")
+  "Regular expression that matches a message ID or a mail address."
+  :group 'gnus-article-buttons
+  :type 'regexp)
+
 (defcustom gnus-button-prefer-mid-or-mail 'guess
   "What to do when the button on a string as \"foo123@bar.com\" is pushed.
 Strings like this can be either a message ID or a mail address.  If the
 variable is set to the symbol `ask', query the user what do do.  If it is the
 symbol `guess', Gnus will do a guess and query the user what do do if it is
-ambiguous. If it is one of the sybols `mid' or `mail', Gnus will always assume
-that the string is a message ID or a mail address, respectivly.  See the
-variable `gnus-button-guessed-mid-regexp' for details concerning the
-guessing."
+ambiguous.  See the variable `gnus-button-guessed-mid-regexp' for details
+concerning the guessing.  If it is one of the sybols `mid' or `mail', Gnus
+will always assume that the string is a message ID or a mail address,
+respectivly."
   ;; FIXME: doc-string could/should be improved.
   :group 'gnus-article-buttons
   :type '(choice (const ask)
@@ -5423,10 +5475,35 @@ guessing."
    (if (fboundp 'apropos-variable) 'apropos-variable 'apropos)
    (gnus-replace-in-string url gnus-button-handle-describe-prefix "")))
 
+(defun gnus-button-handle-apropos-documentation (url)
+  "Call apropos when pushing the corresponding URL button."
+  (funcall
+   (if (fboundp 'apropos-documentation) 'apropos-documentation 'apropos)
+   (gnus-replace-in-string url gnus-button-handle-describe-prefix "")))
+
+(defun gnus-button-handle-ctan (url)
+  "Call `browse-url' when pushing a CTAN URL button."
+  (funcall
+   gnus-button-ctan-handler
+   (concat
+    gnus-ctan-url
+    (gnus-replace-in-string url gnus-button-handle-ctan-bogus-regexp ""))))
+
+(defcustom gnus-button-tex-level 5
+  "*Integer that says how many TeX-related buttons Gnus will show.
+The higher the number, the more buttons will appear and the more false
+positives are possible.  Note that you can set this variable local to
+specifific groups.  Setting it higher in TeX groups is probably a good idea.
+See Info node `(gnus)Group Parameters' and the variable `gnus-parameters' on
+how to set variables in specific groups."
+  :group 'gnus-article-buttons
+  :link '(custom-manual "(gnus)Group Parameters")
+  :type 'integer)
+
 (defcustom gnus-button-man-level 5
   "*Integer that says how many man-related buttons Gnus will show.
 The higher the number, the more buttons will appear and the more false
-positves are possible.  Note that you can set this variable local to
+positives are possible.  Note that you can set this variable local to
 specifific groups.  Setting it higher in Unix groups is probably a good idea.
 See Info node `(gnus)Group Parameters' and the variable `gnus-parameters' on
 how to set variables in specific groups."
@@ -5437,9 +5514,9 @@ how to set variables in specific groups."
 (defcustom gnus-button-emacs-level 5
   "*Integer that says how many emacs-related buttons Gnus will show.
 The higher the number, the more buttons will appear and the more false
-positves are possible.  Note that you can set this variable local to
+positives are possible.  Note that you can set this variable local to
 specifific groups.  Setting it higher in Emacs or Gnus related groups is
-probably a good idea.See Info node `(gnus)Group Parameters' and the variable
+probably a good idea.  See Info node `(gnus)Group Parameters' and the variable
 `gnus-parameters' on how to set variables in specific groups."
   :group 'gnus-article-buttons
   :link '(custom-manual "(gnus)Group Parameters")
@@ -5448,7 +5525,7 @@ probably a good idea.See Info node `(gnus)Group Parameters' and the variable
 (defcustom gnus-button-mail-level 5
   "*Integer that says how many buttons for message IDs or mail addresses will appear.
 The higher the number, the more buttons will appear and the more false
-positves are possible."
+positives are possible."
   :group 'gnus-article-buttons
   :type 'integer)
 
@@ -5466,6 +5543,9 @@ positves are possible."
     ("\\(<URL: *\\)mailto: *\\([^> \n\t]+\\)>" 0 t gnus-url-mailto 2)
     ("mailto:\\([-a-zA-Z.@_+0-9%=?]+\\)" 0 t gnus-url-mailto 1)
     ("\\bmailto:\\([^ \n\t]+\\)" 0 t gnus-url-mailto 1)
+    ;; CTAN
+    ("\\bCTAN:[ \t\n]*\\([^>)!;:,\n\t ]*\\)" 0 (>= gnus-button-tex-level 1)
+     gnus-button-handle-ctan 1)
     ;; This is info
     ("\\binfo:\\(//\\)?\\([^'\">\n\t ]+\\)" 0
      (>= gnus-button-emacs-level 1) gnus-button-handle-info 2)
@@ -5482,11 +5562,13 @@ positves are possible."
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-apropos-command 1)
     ("M-x[ \t\n]+apropos-variable[ \t\n]+RET[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-apropos-variable 1)
-    ("\\W\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+f[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
+    ("M-x[ \t\n]+apropos-documentation[ \t\n]+RET[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
+     0 (>= gnus-button-emacs-level 1) gnus-button-handle-apropos-documentation 1)
+    ("\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+f[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-function 2)
-    ("\\W\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+v[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
+    ("\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+v[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-variable 2)
-    ("\\W\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+k[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+" 0
+    ("\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+k[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+" 0
      ;; this regexp needs to be fixed!
      (>= gnus-button-emacs-level 9) gnus-button-handle-describe-key 2)
     ;; This is how URLs _should_ be embedded in text...
@@ -5494,22 +5576,23 @@ positves are possible."
     ;; Raw URLs.
     (gnus-button-url-regexp 0 t browse-url 0)
     ;; man pages
-    ("\\b\\([a-z][a-z]+\\)([0-9])\\W" 0
+    ("\\b\\([a-z][a-z]+\\)([1-9])\\W" 0
      (and (>= gnus-button-man-level 1) (< gnus-button-man-level 3))
      gnus-button-handle-man 1)
     ;; more man pages: resolv.conf(5), iso_8859-1(7), xterm(1x)
-    ("\\b\\([a-zA-Z][-_.a-zA-Z0-9]+\\)([0-9])\\W" 0
+    ("\\b\\([a-zA-Z][-_.a-zA-Z0-9]+\\)([1-9])\\W" 0
      (and (>= gnus-button-man-level 3) (< gnus-button-man-level 5))
      gnus-button-handle-man 1)
-    ;; even more: Apache::PerlRun(3pm), PDL::IO::FastRaw(3pm), SoWWWAnchor(3iv)
-    ("\\b\\([a-zA-Z][-_.:a-zA-Z0-9]+\\)([0-9][a-z]*)\\W" 0
+    ;; even more: Apache::PerlRun(3pm), PDL::IO::FastRaw(3pm),
+    ;; SoWWWAnchor(3iv), XSelectInput(3X11)
+    ("\\b\\([a-zA-Z][-_.:a-zA-Z0-9]+\\)([1-9][X1a-z]*)\\W" 0
      (>= gnus-button-man-level 5) gnus-button-handle-man 1)
     ;; MID or mail: To avoid too many false positives we don't try to catch
     ;; all kind of allowed MIDs or mail addresses.  Domain part must contain
     ;; at least one dot.  TLD must contain two or three chars or be a know TLD
     ;; (info|name|...).  Put this entry near the _end_ of `gnus-button-alist'
     ;; so that non-ambiguous entries (see above) match first.
-    ("\\b\\(<?[a-zA-Z0-9][^<>\")!;:,{}\n\t ]*@[a-zA-Z0-9][-.a-zA-Z0-9]+\\.\\([a-zA-Z][a-zA-Z]\\([a-zA-Z]\\)?\\|[Ii][Nn][Ff][Oo]\\|[Nn][Aa][Mm][Ee]\\)>?\\)\\b"
+    (gnus-button-mid-or-mail-regexp
      0 (>= gnus-button-mail-level 5) gnus-button-handle-mid-or-mail 1))
   "*Alist of regexps matching buttons in article bodies.
 

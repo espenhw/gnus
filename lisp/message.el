@@ -1896,6 +1896,13 @@ Point is left at the beginning of the narrowed-to region."
 		   (message-fetch-field "cc")
 		   (message-fetch-field "bcc")))))))
 
+(defun message-subscribed-p ()
+  "Say whether we need to insert a MFT header."
+  (or message-subscribed-regexps
+      message-subscribed-addresses
+      message-subscribed-address-file
+      message-subscribed-address-functions))
+
 (defun message-next-header ()
   "Go to the beginning of the next header."
   (beginning-of-line)
@@ -3343,10 +3350,7 @@ It should typically alter the sending method in some way or other."
     (save-restriction
       (message-narrow-to-headers)
       ;; Generate the Mail-Followup-To header if the header is not there...
-      (if (and (or message-subscribed-regexps
-		   message-subscribed-addresses
-		   message-subscribed-address-file
-		   message-subscribed-address-functions)
+      (if (and (message-subscribed-p)
 	       (not (mail-fetch-field "mail-followup-to")))
 	  (setq headers
 		(cons

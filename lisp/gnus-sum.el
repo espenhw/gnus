@@ -4411,19 +4411,19 @@ Unscored articles will be counted as having a score of zero."
 (defun gnus-thread-latest-date (thread)
   "Return the highest article date in THREAD."
   (let ((previous-time 0))
-    (apply 'max (mapcar
-		 (lambda (header)
-		   (setq previous-time
-			 (time-to-seconds
-			  (mail-header-parse-date
-			   (condition-case ()
-			       (mail-header-date header)
-			     (error previous-time))))))
-		 (sort
-		  (message-flatten-list thread)
-		  (lambda (h1 h2)
-		    (< (mail-header-number h1)
-		       (mail-header-number h2))))))))
+    (apply 'max
+	   (mapcar
+	    (lambda (header)
+	      (setq previous-time
+		    (time-to-seconds
+		     (condition-case ()
+			 (mail-header-parse-date (mail-header-date header))
+		       (error previous-time)))))
+	    (sort
+	     (message-flatten-list thread)
+	     (lambda (h1 h2)
+	       (< (mail-header-number h1)
+		  (mail-header-number h2))))))))
 
 (defun gnus-thread-total-score-1 (root)
   ;; This function find the total score of the thread below ROOT.

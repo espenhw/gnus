@@ -1007,6 +1007,16 @@ TYPE is the MIME type to use."
   (mml-insert-tag 'part 'type type 'disposition "inline")
   (forward-line -1))
 
+(defun mml-preview-insert-mft ()
+  "Insert a Mail-Followup-To header before previewing an article.
+Should be adopted if code in `message-send-mail' is changed."
+  (when (and (message-mail-p)
+	     (message-subscribed-p)
+	     (not (mail-fetch-field "mail-followup-to"))
+	     (message-make-mft))
+    (message-position-on-field "Mail-Followup-To" "X-Draft-From")
+    (insert (message-make-mft))))
+
 (defun mml-preview (&optional raw)
   "Display current buffer with Gnus, in a new buffer.
 If RAW, don't highlight the article."
@@ -1027,6 +1037,7 @@ If RAW, don't highlight the article."
 				   "*MIME preview of ") (buffer-name))))
       (erase-buffer)
       (insert-buffer buf)
+      (mml-preview-insert-mft)
       (let ((message-deletable-headers (if (message-news-p)
 					   nil
 					 message-deletable-headers)))

@@ -1,4 +1,25 @@
+2002-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-button-valid-fqdn-regexp): New variable.
+	(gnus-button-handle-apropos-documentation): New function.
+	(gnus-button-handle-ctan): New function.
+	(gnus-button-alist): Use them.  Improve some regexps.
+	(gnus-button-prefer-mid-or-mail): Addition to doc-string.
+
+2002-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-subscribed-p): New function.
+	(message-send-mail): Use it.
+	* mml.el (mml-preview-insert-mft): New function.
+	(mml-preview): Use it.
+
 2002-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-thread-latest-date): Protect against errors
+	when sorting by date.
+
+	* gnus-art.el (gnus-article-edit-mode): New variable.
+	(gnus-article-setup-buffer): Warn user about discarding edits. 
 
 	* gnus-sum.el (gnus-summary-pipe-output): Clean up.
 	(gnus-summary-pipe-output): Take a symbolic prefix to save all
