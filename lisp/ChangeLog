@@ -1,3 +1,7 @@
+2003-08-09  Jesper Harder  <harder@ifa.au.dk>
+
+	* pgg-gpg.el (pgg-gpg-extra-args): Fix customization type.
+
 2003-08-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* pgg-gpg.el (pgg-gpg-process-region): Bind
