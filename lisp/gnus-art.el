@@ -1039,7 +1039,8 @@ It is a string, such as \"PGP\". If nil, ask user."
 
 (defvar gnus-article-mode-syntax-table
   (let ((table (copy-syntax-table text-mode-syntax-table)))
-    (modify-syntax-entry ?- "w" table)
+    ;; This causes the citation match run O(2^n).
+    ;; (modify-syntax-entry ?- "w" table) 
     (modify-syntax-entry ?> ")" table)
     (modify-syntax-entry ?< "(" table)
     table)

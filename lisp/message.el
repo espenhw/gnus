@@ -332,7 +332,8 @@ The provided functions are:
   :type 'regexp)
 
 (defcustom message-cite-prefix-regexp
-  "[ \t]*\\(\\(\\w\\|[_-\\.]\\)+>+[ \t]*\\|[]>»|:}+ ]*[]>»|:}+][ \t]*\\)+"
+  ;; ?-, ?_ or ?. MUST NOT be in syntax entry w.
+  "[ \t]*\\(\\(\\w\\|[-_.]\\)+>+[ \t]*\\|[]>»|:}+][ \t]*\\)+"
   "*Regexp matching the longest possible citation prefix on a line."
   :group 'message-insertion
   :type 'regexp)
@@ -1521,7 +1522,7 @@ M-RET    message-newline-and-reformat (break the line and reformat)."
          (concat
           "[ \t]*"                      ; possible initial space
           "\\(\\(" (regexp-quote message-yank-prefix) "\\|" ; user's prefix
-          "\\w+>\\|"                    ; supercite-style prefix
+          "\\(\\w\\|[-_.]\\)+>\\|"      ; supercite-style prefix
           "[|:>]"                       ; standard prefix
           "\\)[ \t]*\\)+")))            ; possible space after each prefix
     (setq paragraph-start

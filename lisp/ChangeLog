@@ -1,3 +1,10 @@
+2000-11-15 18:09  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-mode-syntax-table): Add - as a word
+	constituent as in articles.
+	(message-setup-fill-variables): Add -_. as supercite-style prefix.
+	* gnus-art.el (gnus-article-mode-syntax-table): Remove ?-.
+
 2000-11-15 13:21  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-inews-do-gcc): Expire the article.
