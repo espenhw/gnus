@@ -638,8 +638,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
     "Mail from people in the BBDB is never considered spam"
     (let ((who (message-fetch-field "from")))
       (when who
-	(setq who (regexp-quote (cadr
-				 (gnus-extract-address-components who))))
+	(setq who (cadr (gnus-extract-address-components who)))
 	(if (bbdb-search-simple nil who)
 	    nil spam-split-group)))))
 

@@ -1,3 +1,8 @@
+2003-02-05  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-check-BBDB): no need to regexp-quote the argument
+	of bbdb-search-simple
+
 2003-02-05  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-agent.el (gnus-agent-expire-days): Change default to nil.
