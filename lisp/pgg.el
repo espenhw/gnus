@@ -174,7 +174,12 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt.
 If optional arguments START and END are specified, only encrypt within
 the region."
   (interactive (list (split-string (read-string "Recipients: ") "[ \t,]+")))
-  (pgg-encrypt-region (or start (point-min)) (or end (point-max)) rcpts sign))
+  (let* ((start (or start (point-min)))
+	 (end (or end (point-max)))
+	 (status (pgg-encrypt-region start end rcpts sign)))
+    (when (interactive-p)
+      (pgg-display-output-buffer start end status))
+    status))
 
 ;;;###autoload
 (defun pgg-decrypt-region (start end)
@@ -204,13 +209,20 @@ the region."
 If optional arguments START and END are specified, only decrypt within
 the region."
   (interactive "")
-  (pgg-decrypt-region (or start (point-min)) (or end (point-max))))
+  (let* ((start (or start (point-min)))
+	 (end (or end (point-max)))
+	 (status (pgg-decrypt-region start end)))
+    (when (interactive-p)
+      (pgg-display-output-buffer start end status))
+    status))
 
 ;;;###autoload
 (defun pgg-sign-region (start end &optional cleartext)
   "Make the signature from text between START and END.
 If the optional 3rd argument CLEARTEXT is non-nil, it does not create
-a detached signature."
+a detached signature.
+If this function is called interactively, CLEARTEXT is enabled
+and the the output is displayed."
   (interactive "r")
   (let ((status (pgg-save-coding-system start end
 		  (pgg-invoke "sign-region" (or pgg-scheme pgg-default-scheme)
@@ -226,9 +238,16 @@ a detached signature."
 If the optional argument CLEARTEXT is non-nil, it does not create a
 detached signature.
 If optional arguments START and END are specified, only sign data
-within the region."
+within the region.
+If this function is called interactively, CLEARTEXT is enabled
+and the the output is displayed."
   (interactive "")
-  (pgg-sign-region (or start (point-min)) (or end (point-max)) cleartext))
+  (let* ((start (or start (point-min)))
+	 (end (or end (point-max)))
+	 (status (pgg-sign-region start end (or (interactive-p) cleartext))))
+    (when (interactive-p)
+      (pgg-display-output-buffer start end status))
+    status))
   
 ;;;###autoload
 (defun pgg-verify-region (start end &optional signature fetch)
@@ -283,8 +302,16 @@ signer's public key from `pgg-default-keyserver-address'.
 If optional arguments START and END are specified, only verify data
 within the region."
   (interactive "")
-  (pgg-verify-region (or start (point-min)) (or end (point-max))
-		     signature fetch))
+  (let* ((start (or start (point-min)))
+	 (end (or end (point-max)))
+	 (status (pgg-verify-region start end signature fetch)))
+    (when (interactive-p)
+      (let ((temp-buffer-show-function
+	     (function pgg-temp-buffer-show-function)))
+	(with-output-to-temp-buffer pgg-echo-buffer
+	  (set-buffer standard-output)
+	  (insert-buffer-substring (if status pgg-output-buffer
+				     pgg-errors-buffer)))))))
 
 ;;;###autoload
 (defun pgg-insert-key ()
