@@ -1,3 +1,13 @@
+2002-02-14  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-fun.el (gnus-shell-command-to-string): New function.
+	(gnus-shell-command-on-region): New function.
+	(gnus-random-x-face): Use them.
+	(gnus-x-face-from-file): Ditto.
+	(gnus-convert-image-to-gray-x-face): Ditto.
+	(gnus-convert-gray-x-face-to-xpm): Ditto.
+	(gnus-convert-image-to-x-face-command): Don't use 2>/dev/null.
+
 2002-02-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-treat-display-xface): Don't use

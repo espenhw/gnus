@@ -35,10 +35,23 @@
   :group 'gnus-fun
   :type 'string)
 
-(defcustom gnus-convert-image-to-x-face-command "giftopnm %s | ppmnorm 2>/dev/null | pnmscale -width 48 -height 48 | ppmtopgm | pgmtopbm | pbmtoxbm | compface"
+(defcustom gnus-convert-image-to-x-face-command "giftopnm %s | ppmnorm | pnmscale -width 48 -height 48 | ppmtopgm | pgmtopbm | pbmtoxbm | compface"
   "Command for converting a GIF to an X-Face."
   :group 'gnus-fun
   :type 'string)
+
+(defun gnus-shell-command-to-string (command)
+  "Like `shell-command-to-string' except not mingling ERROR."
+  (with-output-to-string
+    (call-process shell-file-name nil (list standard-output nil) 
+		  nil shell-command-switch command)))
+
+(defun gnus-shell-command-on-region (start end command)
+  "A simplified `shell-command-on-region'.
+Output to the current buffer, replace text, and don't mingle error."
+  (call-process-region start end shell-file-name t 
+		       (list (current-buffer) nil) 
+		       nil shell-command-switch command))
 
 ;;;###autoload
 (defun gnus-random-x-face ()
@@ -48,7 +61,7 @@
     (let* ((files (directory-files gnus-x-face-directory t "\\.pbm$"))
 	   (file (nth (random (length files)) files)))
       (when file
-	(shell-command-to-string
+	(gnus-shell-command-to-string
 	 (format gnus-convert-pbm-to-x-face-command
 		 (shell-quote-argument file)))))))
 
@@ -57,7 +70,7 @@
   "Insert an X-Face header based on an image file."
   (interactive "fImage file name:" )
   (when (file-exists-p file)
-    (shell-command-to-string
+    (gnus-shell-command-to-string
      (format gnus-convert-image-to-x-face-command
 	     (shell-quote-argument file)))))
 
@@ -76,8 +89,8 @@
 	(push (cons (* step i) i) color-alist)))
     (when (file-exists-p file)
       (with-temp-buffer
-	(insert (shell-command-to-string
-		 (format "giftopnm %s | ppmnorm 2>/dev/null | pnmscale -width 48 -height 48 | ppmquant -fs -map %s 2>/dev/null | ppmtopgm | pnmnoraw"
+	(insert (gnus-shell-command-to-string
+		 (format "giftopnm %s | ppmnorm | pnmscale -width 48 -height 48 | ppmquant -fs -map %s | ppmtopgm | pnmnoraw"
 			 (shell-quote-argument file)
 			 mapfile)))
 	(goto-char (point-min))
@@ -91,11 +104,10 @@
 	    (insert "P1\n48 48\n")
 	    (dolist (bits bits-list)
 	      (insert (if (zerop (logand bits mask)) "0 " "1 ")))
-	    (shell-command-on-region
+	    (gnus-shell-command-on-region
 	     (point-min) (point-max)
 	     ;; the following is taken from xbmtoikon:
-	     "pbmtoicon | sed '/^[ 	]*[*\\\\/]/d; s/[ 	]//g; s/,$//' | tr , '\\012' | sed 's/^0x//; s/^/0x/' | pr -l1 -t -w22 -3 -s, | sed 's/,*$/,/' | compface"
-	     (current-buffer) t)
+	     "pbmtoicon | sed '/^[ 	]*[*\\\\/]/d; s/[ 	]//g; s/,$//' | tr , '\\012' | sed 's/^0x//; s/^/0x/' | pr -l1 -t -w22 -3 -s, | sed 's/,*$/,/' | compface")
 	    (push (buffer-string) x-faces))))
       (dotimes (i (length x-faces))
 	(insert (if (zerop i) "X-Face:" (format "X-Face-%s:" i))
@@ -112,10 +124,9 @@
       (setq bit-list nil)
       (with-temp-buffer
 	(insert (uncompface face))
-	(shell-command-on-region
+	(gnus-shell-command-on-region
 	 (point-min) (point-max)
-	 "pnmnoraw 2>/dev/null"
-	 (current-buffer) t)
+	 "pnmnoraw")
 	(goto-char (point-min))
 	(forward-line 2)
 	(while (not (eobp))
@@ -138,10 +149,9 @@
 	(insert "P2\n48 48\n255\n")
 	(dolist (pixel pixels)
 	  (insert (number-to-string (* scale pixel)) " "))
-	(shell-command-on-region
+	(gnus-shell-command-on-region
 	 (point-min) (point-max)
-	 "ppmtoxpm 2>/dev/null"
-	 (current-buffer) t)
+	 "ppmtoxpm")
 	(buffer-string)))))
 
 ;;;###autoload
