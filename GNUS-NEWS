@@ -300,7 +300,7 @@ function filters out other articles.
 
 ** Group names are treated as UTF-8 by default.
 
-This is supposedly what USEFOR wants to migrate to.  See
+This is supposedly what USEFOR wanted to migrate to.  See
 `gnus-group-name-charset-group-alist' and
 `gnus-group-name-charset-method-alist' for customization.
 
