@@ -1,5 +1,7 @@
 2003-03-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-start.el (gnus-unload): Removed.
+
 	* pop3.el (pop3-read-response): Use
 	nnheader-accept-process-output.
 	(pop3-retr): Ditto.

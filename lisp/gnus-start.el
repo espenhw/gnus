@@ -787,17 +787,6 @@ prompt the user for the name of an NNTP server to use."
     (gnus-group-set-parameter
      "nndraft:drafts" 'gnus-dummy '((gnus-draft-mode)))))
 
-;;;###autoload
-(defun gnus-unload ()
-  "Unload all Gnus features.
-\(For some value of `all' or `Gnus'.)  Currently, features whose names
-have prefixes `gnus-', `nn', `mm-' or `rfc' are unloaded.  Use
-cautiously -- unloading may cause trouble."
-  (interactive)
-  (dolist (feature features)
-    (if (string-match "^\\(gnus-\\|nn\\|mm-\\|rfc\\)" (symbol-name feature))
-	(unload-feature feature 'force))))
-
 
 ;;;
 ;;; Dribble file
