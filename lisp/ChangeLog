@@ -1,3 +1,8 @@
+2004-10-26  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-agent.el (gnus-agent-expire-group-1): Fix last merge from
+	v5-10: Use `point-at-bol'.
+
 2004-10-26  Simon Josefsson  <jas@extundo.com>
 
 	* hashcash.el: Fix URL in comment, reported by Cheng Gao

@@ -3249,7 +3249,7 @@ missing NOV entry.  Run gnus-agent-regenerate-group to restore it.")))
 
 		     (incf nov-entries-deleted)
 
-		     (let ((from (gnus-point-at-bol))
+		     (let ((from (point-at-bol))
 			   (to (progn (forward-line 1) (point))))
 		       (incf bytes-freed (- to from))
 		       (delete-region from to)))
