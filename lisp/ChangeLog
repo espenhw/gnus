@@ -1,4 +1,55 @@
+Thu May 23 21:06:47 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus-soup.el (gnus-soup-add-article): Would remove Xrefs from
+	packet. 
+
+	* gnus.el (gnus-summary-catchup-to-here): Don't show hidden
+	threads. 
+
+	* nnmail.el (nnmail-moved-inboxes): New variable.
+	(nnmail-move-inbox): Use it.
+
+	* gnus-uu.el (gnus-uu-decode-uu): Optional argument.
+
+	* nnbabyl.el (nnbabyl-insert-lines): Don't insert negative Lines
+	headers. 
+
+Thu May 23 19:28:15 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el (gnus-summary-insert-pseudos): Would create contiguous
+	mouse-face areas.
+
+	* nnheader-ems.el: New file.
+	(nnheader-xmas-run-at-time): New function.
+	(nnheader-xmas-cancel-timer): Ditto.
+	(nnheader-xmas-insert-file-contents-literally): Moved here.
+
+	* gnus.el (gnus-read-move-group-name): Bind
+	minibuffer-confirm-incomplete. 
+
+Thu May 23 15:20:47 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nntp.el (nntp-request-close): Give the QUIT time to reach the
+	server before closing the connection.
+	(nntp-close-server): Ditto.
+
+	* gnus.el (gnus-summary-exit): Run the exit hook with point on the
+	group being exited.
+
+Thu May 23 15:03:16 1996  <morioka@jaist.ac.jp>
+
+	* gnus.el (gnus-narrow-to-signature): Mimeish new definition.
+
+Thu May 23 15:03:16 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnfolder.el (nnfolder-close-group): Don't read the buffer when
+	closing down.
+
+	* gnus.el (gnus-group-exit): Prompt even when the server is down. 
+
 Wed May 22 21:56:56 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.91 is released.
 
 	* gnus.el (gnus-setup-news): Slave Gnusii should clear the dribble
 	buffer.

@@ -1722,7 +1722,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.91"
+(defconst gnus-version "September Gnus v0.92"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -4263,7 +4263,12 @@ The following commands are available:
   (buffer-disable-undo (current-buffer))
   (setq truncate-lines t)
   (setq buffer-read-only t)
+  (make-local-hook 'post-command-hook)
+  (add-hook 'post-command-hook 'gnus-clear-inboxes-moved)
   (run-hooks 'gnus-group-mode-hook))
+
+(defun gnus-clear-inboxes-moved ()
+  (setq nnmail-moved-inboxes nil))
 
 (defun gnus-mouse-pick-group (e)
   "Enter the group under the mouse pointer."
@@ -6693,7 +6698,6 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
   (interactive)
   (when 
       (or noninteractive		;For gnus-batch-kill
-	  (not (gnus-server-opened gnus-select-method)) ;NNTP connection closed
 	  (not gnus-interactive-exit)	;Without confirmation
 	  gnus-expert-user
 	  (gnus-y-or-n-p "Are you sure you want to quit reading news? "))
@@ -9858,9 +9862,10 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
     ;; Make sure where I was, and go to next newsgroup.
     (set-buffer gnus-group-buffer)
     (unless quit-config
-      (gnus-group-jump-to-group group)
-      (gnus-group-next-unread-group 1))
+      (gnus-group-jump-to-group group))
     (run-hooks 'gnus-summary-exit-hook)
+    (unless quit-config
+      (gnus-group-next-unread-group 1))
     (if temporary
 	nil				;Nothing to do.
       ;; If we have several article buffers, we kill them at exit.
@@ -12388,10 +12393,11 @@ If ALL is non-nil, also mark ticked and dormant articles as read."
   (interactive "P")
   (gnus-set-global-variables)
   (save-excursion
-    (let ((beg (point)))
-      ;; We check that there are unread articles.
-      (when (or all (gnus-summary-find-prev))
-	(gnus-summary-catchup all t beg))))
+    (gnus-save-hidden-threads
+      (let ((beg (point)))
+	;; We check that there are unread articles.
+	(when (or all (gnus-summary-find-prev))
+	  (gnus-summary-catchup all t beg)))))
   (gnus-summary-position-point))
 
 (defun gnus-summary-catchup-all (&optional quietly)
@@ -12975,6 +12981,7 @@ save those articles instead."
 (defun gnus-read-move-group-name (prompt default articles prefix)
   "Read a group name."
   (let* ((split-name (gnus-get-split-value gnus-move-split-methods))
+	 (minibuffer-confirm-incomplete nil) ; XEmacs
 	 group-map
 	 (dum (mapatoms
 	       (lambda (g) 
@@ -13243,8 +13250,8 @@ The directory to save in defaults to `gnus-article-save-directory'."
 	  (setq e (point))
 	  (forward-line -1)		; back to `b'
 	  (gnus-add-text-properties
-	   b e (list 'gnus-number gnus-reffed-article-number
-		     gnus-mouse-face-prop gnus-mouse-face))
+	   b (1- e) (list 'gnus-number gnus-reffed-article-number
+			  gnus-mouse-face-prop gnus-mouse-face))
 	  (gnus-data-enter
 	   after-article gnus-reffed-article-number
 	   gnus-unread-mark b (car pslist) 0 (- e b))
@@ -14140,21 +14147,30 @@ always hide."
 	(while (looking-at "[ \t]$")
 	  (gnus-delete-line))))))
 
+(defvar mime::preview/content-list)
+(defvar mime::preview-content-info/point-min)
 (defun gnus-narrow-to-signature ()
   "Narrow to the signature."
   (widen)
-  (goto-char (point-max))
-  (when (re-search-backward gnus-signature-separator nil t)
-    (forward-line 1)
-    (when (or (null gnus-signature-limit)
-	      (and (numberp gnus-signature-limit)
-		   (< (- (point-max) (point)) gnus-signature-limit))
-	      (and (gnus-functionp gnus-signature-limit)
-		   (funcall gnus-signature-limit))
-	      (and (stringp gnus-signature-limit)
-		   (not (re-search-forward gnus-signature-limit nil t))))
-      (narrow-to-region (point) (point-max))
-      t)))
+  (if (and (boundp 'mime::preview/content-list)
+	   mime::preview/content-list)
+      (let ((pcinfo (car (last mime::preview/content-list))))
+	(narrow-to-region
+	 (funcall (intern "mime::preview-content-info/point-min") pcinfo)
+	 (point-max))
+	t)
+    (goto-char (point-max))
+    (when (re-search-backward gnus-signature-separator nil t)
+      (forward-line 1)
+      (when (or (null gnus-signature-limit)
+		(and (numberp gnus-signature-limit)
+		     (< (- (point-max) (point)) gnus-signature-limit))
+		(and (gnus-functionp gnus-signature-limit)
+		     (funcall gnus-signature-limit))
+		(and (stringp gnus-signature-limit)
+		     (not (re-search-forward gnus-signature-limit nil t))))
+	(narrow-to-region (point) (point-max))
+	t))))
 
 (defun gnus-article-check-hidden-text (type arg)
   "Return nil if hiding is necessary."

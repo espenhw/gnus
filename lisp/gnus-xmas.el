@@ -360,8 +360,6 @@ call it with the value of the `gnus-data' text property."
   (if (< emacs-minor-version 14)
       (fset 'gnus-set-text-properties 'gnus-xmas-set-text-properties))
 
-  (fset 'nnheader-find-file-noselect 'gnus-xmas-find-file-noselect)
-
   (or (boundp 'standard-display-table) (setq standard-display-table nil))
 
   (defvar gnus-mouse-face-prop 'highlight)
@@ -558,41 +556,45 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 `right-toolbar', and `left-toolbar'.")
 
 (defvar gnus-group-toolbar 
-  '([gnus-group-exit gnus-group-exit t "Exit Gnus"]
-    [gnus-group-kill-group gnus-group-kill-group t "Kill group"]
+  '(
     [gnus-group-get-new-news gnus-group-get-new-news t "Get new news"]
     [gnus-group-get-new-news-this-group 
      gnus-group-get-new-news-this-group t "Get new news in this group"]
     [gnus-group-catchup-current 
      gnus-group-catchup-current t "Catchup group"]
     [gnus-group-describe-group 
-     gnus-group-describe-group t "Describe group"])
+     gnus-group-describe-group t "Describe group"]
+    [gnus-group-kill-group gnus-group-kill-group t "Kill group"]
+    [gnus-group-exit gnus-group-exit t "Exit Gnus"]
+    )
   "The group buffer toolbar.")
 
 (defvar gnus-summary-toolbar 
-  '([gnus-summary-post-news 
+  '(
+    [gnus-summary-post-news 
      gnus-summary-post-news t "Post an article"]
+    [gnus-summary-followup-with-original
+     gnus-summary-followup-with-original t 
+     "Post a followup and yank the original"]
+    [gnus-summary-followup 
+     gnus-summary-followup t "Post a followup"]
+    [gnus-summary-reply-with-original
+     gnus-summary-reply-with-original t "Mail a reply and yank the original"]
+    [gnus-summary-reply 
+     gnus-summary-reply t "Mail a reply"]
+    [gnus-summary-caesar-message
+     gnus-summary-caesar-message t "Rot 13"]
+    [gnus-uu-decode-uu
+     gnus-uu-decode-uu t "Decode uuencoded articles"]
     [gnus-summary-save-article-file
      gnus-summary-save-article-file t "Save article in file"]
     [gnus-summary-save-article
      gnus-summary-save-article t "Save article"]
-    [gnus-summary-reply 
-     gnus-summary-reply t "Mail a reply"]
-    [gnus-summary-reply-with-original
-     gnus-summary-reply-with-original t "Mail a reply and yank the original"]
-    [gnus-summary-followup 
-     gnus-summary-followup t "Post a followup"]
-    [gnus-summary-followup-with-original
-     gnus-summary-followup-with-original t 
-     "Post a followup and yank the original"]
-    [gnus-uu-decode-uu
-     gnus-uu-decode-uu t "Decode uuencoded articles"]
     [gnus-uu-post-news 
      gnus-uu-post-news t "Post an uuencoded article"]
-    [gnus-summary-caesar-message
-     gnus-summary-caesar-message t "Rot 13"]
     [gnus-summary-cancel-article
-     gnus-summary-cancel-article t "Cancel article"])
+     gnus-summary-cancel-article t "Cancel article"]
+    )
   "The summary buffer toolbar.")
 
 (defvar gnus-summary-mail-toolbar
@@ -625,139 +627,6 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 	 (file-exists-p (concat dir "gnus-group-catchup-current-up.xpm"))
 	 (set-specifier (symbol-value gnus-use-toolbar)
 			(cons (current-buffer) bar)))))
-
-;; Written by Erik Naggum <erik@naggum.no>.
-;; Saved by Steve Baur <steve@miranova.com>.
-(or (fboundp 'insert-file-contents-literally)
-(defun insert-file-contents-literally (filename &optional visit beg end replace)
-  "Like `insert-file-contents', q.v., but only reads in the file.
-A buffer may be modified in several ways after reading into the buffer due
-to advanced Emacs features, such as file-name-handlers, format decoding,
-find-file-hooks, etc.
-  This function ensures that none of these modifications will take place."
-  (let (                                ; (file-name-handler-alist nil)
-        (format-alist nil)
-        (after-insert-file-functions nil)
-        (find-buffer-file-type-function 
-         (if (fboundp 'find-buffer-file-type)
-             (symbol-function 'find-buffer-file-type)
-           nil)))
-    (unwind-protect
-        (progn
-          (fset 'find-buffer-file-type (lambda (filename) t))
-          (insert-file-contents filename visit beg end replace))
-      (if find-buffer-file-type-function
-          (fset 'find-buffer-file-type find-buffer-file-type-function)
-        (fmakunbound 'find-buffer-file-type))))))
-
-(defun gnus-xmas-find-file-noselect (filename &optional nowarn rawfile)
-  "Read file FILENAME into a buffer and return the buffer.
-If a buffer exists visiting FILENAME, return that one, but
-verify that the file has not changed since visited or saved.
-The buffer is not selected, just returned to the caller."
-  (setq filename
-	(abbreviate-file-name
-	 (expand-file-name filename)))
-  (if (file-directory-p filename)
-      (if find-file-run-dired
-	  (dired-noselect filename)
-	(error "%s is a directory." filename))
-    (let* ((buf (get-file-buffer filename))
-	   (truename (abbreviate-file-name (file-truename filename)))
-	   (number (nthcdr 10 (file-attributes truename)))
-	   ;; Find any buffer for a file which has same truename.
-	   (other (and (not buf) 
-		       (if (fboundp 'find-buffer-visiting)
-			   (find-buffer-visiting filename)
-			 (get-file-buffer filename))))
-	   error)
-      ;; Let user know if there is a buffer with the same truename.
-      (if other
-	  (progn
-	    (or nowarn
-		(string-equal filename (buffer-file-name other))
-		(message "%s and %s are the same file"
-			 filename (buffer-file-name other)))
-	    ;; Optionally also find that buffer.
-	    (if (or (and (boundp 'find-file-existing-other-name)
-			 find-file-existing-other-name)
-		    find-file-visit-truename)
-		(setq buf other))))
-      (if buf
-	  (or nowarn
-	      (verify-visited-file-modtime buf)
-	      (cond ((not (file-exists-p filename))
-		     (error "File %s no longer exists!" filename))
-		    ((yes-or-no-p
-		      (if (string= (file-name-nondirectory filename)
-				   (buffer-name buf))
-			  (format
-			   (if (buffer-modified-p buf)
-			       "File %s changed on disk.  Discard your edits? "
-			     "File %s changed on disk.  Reread from disk? ")
-			   (file-name-nondirectory filename))
-			(format
-			 (if (buffer-modified-p buf)
-			     "File %s changed on disk.  Discard your edits in %s? "
-			   "File %s changed on disk.  Reread from disk into %s? ")
-			 (file-name-nondirectory filename)
-			 (buffer-name buf))))
-		     (save-excursion
-		       (set-buffer buf)
-		       (revert-buffer t t)))))
-	(save-excursion
-;;; The truename stuff makes this obsolete.
-;;;	  (let* ((link-name (car (file-attributes filename)))
-;;;		 (linked-buf (and (stringp link-name)
-;;;				  (get-file-buffer link-name))))
-;;;	    (if (bufferp linked-buf)
-;;;		(message "Symbolic link to file in buffer %s"
-;;;			 (buffer-name linked-buf))))
-	  (setq buf (create-file-buffer filename))
-	  ;;	  (set-buffer-major-mode buf)
-	  (set-buffer buf)
-	  (erase-buffer)
-	  (if rawfile
-	      (condition-case ()
-		  (insert-file-contents-literally filename t)
-		(file-error
-		 ;; Unconditionally set error
-		 (setq error t)))
-	    (condition-case ()
-		(insert-file-contents filename t)
-	      (file-error
-	       ;; Run find-file-not-found-hooks until one returns non-nil.
-	       (or t			; (run-hook-with-args-until-success 'find-file-not-found-hooks)
-		   ;; If they fail too, set error.
-		   (setq error t)))))
-	  ;; Find the file's truename, and maybe use that as visited name.
-	  (setq buffer-file-truename truename)
-	  (setq buffer-file-number number)
-	  ;; On VMS, we may want to remember which directory in a search list
-	  ;; the file was found in.
-	  (and (eq system-type 'vax-vms)
-	       (let (logical)
-		 (if (string-match ":" (file-name-directory filename))
-		     (setq logical (substring (file-name-directory filename)
-					      0 (match-beginning 0))))
-		 (not (member logical find-file-not-true-dirname-list)))
-	       (setq buffer-file-name buffer-file-truename))
-	  (if find-file-visit-truename
-	      (setq buffer-file-name
-		    (setq filename
-			  (expand-file-name buffer-file-truename))))
-	  ;; Set buffer's default directory to that of the file.
-	  (setq default-directory (file-name-directory filename))
-	  ;; Turn off backup files for certain file names.  Since
-	  ;; this is a permanent local, the major mode won't eliminate it.
-	  (and (not (funcall backup-enable-predicate buffer-file-name))
-	       (progn
-		 (make-local-variable 'backup-inhibited)
-		 (setq backup-inhibited t)))
-	  (if rawfile
-	      nil
-	    (after-find-file error (not nowarn)))))
-      buf)))
 
 (defun gnus-xmas-mail-strip-quoted-names (address)
   "Protect mail-strip-quoted-names from NIL input.

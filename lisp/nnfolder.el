@@ -4,7 +4,7 @@
 ;; Author: Scott Byer <byer@mv.us.adobe.com>
 ;;	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
-;; Keywords: news, mail
+;; Keywords: mail
 
 ;; This file is part of GNU Emacs.
 
@@ -237,7 +237,15 @@ it.")
   ;; Make sure we _had_ the group open.
   (when (or (assoc group nnfolder-buffer-alist)
 	    (equal group nnfolder-current-group))
-    (nnfolder-possibly-change-group group server)
+    (let ((inf (assoc group nnfolder-buffer-alist)))
+      (when inf
+	(when nnfolder-current-group
+	  (push (list nnfolder-current-group nnfolder-current-buffer)
+		nnfolder-buffer-alist))
+	(setq nnfolder-buffer-alist
+	      (delq inf nnfolder-buffer-alist))
+	(setq nnfolder-current-buffer (cadr inf)
+	      nnfolder-current-group (car inf))))
     (when (and nnfolder-current-buffer
 	       (buffer-name nnfolder-current-buffer))
       (save-excursion

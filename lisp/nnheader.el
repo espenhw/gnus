@@ -544,11 +544,10 @@ without formatting."
   "Concat DIR as directory to FILE."
   (concat (file-name-as-directory dir) file))
 
-(fset 'nnheader-find-file-noselect 'find-file-noselect)
-(fset 'nnheader-insert-raw-file-contents 'insert-file-contents-literally)
-
-(provide 'nnheader)
+(require 'nnheader-ems)
 
 (run-hooks 'nnheader-load-hook)
+
+(provide 'nnheader)
 
 ;;; nnheader.el ends here

@@ -320,7 +320,7 @@ The headers will be included in the sequence they are matched.")
 
 ;; Commands.
 
-(defun gnus-uu-decode-uu (n)
+(defun gnus-uu-decode-uu (&optional n)
   "Uudecodes the current article."
   (interactive "P") 
   (gnus-uu-decode-with-method 'gnus-uu-uustrip-article n))
@@ -335,7 +335,7 @@ The headers will be included in the sequence they are matched.")
 			  gnus-uu-default-dir t))))
   (gnus-uu-decode-with-method 'gnus-uu-uustrip-article n dir nil nil t))
 
-(defun gnus-uu-decode-unshar (n)
+(defun gnus-uu-decode-unshar (&optional n)
   "Unshars the current article."
   (interactive "P")
   (gnus-uu-decode-with-method 'gnus-uu-unshar-article n nil nil 'scan t))
@@ -375,7 +375,7 @@ The headers will be included in the sequence they are matched.")
 	(make-temp-name (concat gnus-uu-work-dir "binhex")))
   (gnus-uu-decode-with-method 'gnus-uu-binhex-article n dir))
 
-(defun gnus-uu-decode-uu-view (n)
+(defun gnus-uu-decode-uu-view (&optional n)
   "Uudecodes and views the current article."    
   (interactive "P")
   (let ((gnus-view-pseudos (or gnus-view-pseudos 'automatic)))
@@ -391,7 +391,7 @@ The headers will be included in the sequence they are matched.")
   (let ((gnus-view-pseudos (or gnus-view-pseudos 'automatic)))
     (gnus-uu-decode-uu-and-save n dir)))
 
-(defun gnus-uu-decode-unshar-view (n)
+(defun gnus-uu-decode-unshar-view (&optional n)
   "Unshars and views the current article."
   (interactive "P")
   (let ((gnus-view-pseudos (or gnus-view-pseudos 'automatic)))
@@ -432,7 +432,7 @@ The headers will be included in the sequence they are matched.")
 
 ;; Digest and forward articles
 
-(defun gnus-uu-digest-mail-forward (n &optional post)
+(defun gnus-uu-digest-mail-forward (&optional n post)
   "Digests and forwards all articles in this series."
   (interactive "P")
   (let ((gnus-uu-save-in-digest t)
@@ -477,7 +477,7 @@ The headers will be included in the sequence they are matched.")
     (kill-buffer buf)
     (setq gnus-uu-digest-from-subject nil)))
 
-(defun gnus-uu-digest-post-forward (n)
+(defun gnus-uu-digest-post-forward (&optional n)
   "Digest and forward to a newsgroup."
   (interactive "P")
   (gnus-uu-digest-mail-forward n t))
@@ -561,7 +561,7 @@ The headers will be included in the sequence they are matched.")
 		(> (gnus-summary-thread-level) level))))
   (gnus-summary-position-point))
 
-(defun gnus-uu-mark-over (score)
+(defun gnus-uu-mark-over (&optional score)
   "Mark all articles with a score over SCORE (the prefix.)"
   (interactive "P")
   (let ((score (gnus-score-default score))
@@ -619,12 +619,12 @@ The headers will be included in the sequence they are matched.")
 
 ;; All PostScript functions written by Erik Selberg <speed@cs.washington.edu>. 
 
-(defun gnus-uu-decode-postscript (n)
+(defun gnus-uu-decode-postscript (&optional n)
   "Gets postscript of the current article."
   (interactive "P")
   (gnus-uu-decode-with-method 'gnus-uu-decode-postscript-article n))
 
-(defun gnus-uu-decode-postscript-view (n)
+(defun gnus-uu-decode-postscript-view (&optional n)
   "Gets and views the current article."
   (interactive "P")
   (let ((gnus-view-pseudos (or gnus-view-pseudos 'automatic)))

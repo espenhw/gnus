@@ -268,6 +268,9 @@ parameter.  It should return nil, `warn' or `delete'.")
 (defvar nnmail-prepare-save-mail-hook nil
   "Hook called before saving mail.")
 
+(defvar nnmail-moved-inboxes nil
+  "List of inboxes that have been moved.")
+
 
 
 (defconst nnmail-version "nnmail 1.0"
@@ -355,66 +358,71 @@ parameter.  It should return nil, `warn' or `delete'.")
 	       ;; and the actual inbox is /usr/spool/mail/foo/foo.
 	       (file-directory-p inbox))
       (setq inbox (expand-file-name (user-login-name) inbox)))
-    (if popmail
-	(message "Getting mail from post office ...")
-      (when (or (and (file-exists-p tofile)
-		     (/= 0 (nth 7 (file-attributes tofile))))
-		(and (file-exists-p inbox)
-		     (/= 0 (nth 7 (file-attributes inbox)))))
-	(message "Getting mail from %s..." inbox)))
-    ;; Set TOFILE if have not already done so, and
-    ;; rename or copy the file INBOX to TOFILE if and as appropriate.
-    (cond ((file-exists-p tofile)
-	   ;; The crash box exists already.
-	   t)
-	  ((and (not popmail)
-		(not (file-exists-p inbox)))
-	   ;; There is no inbox.
-	   (setq tofile nil))
-	  ((and (not movemail) (not popmail))
-	   ;; Try copying.  If that fails (perhaps no space),
-	   ;; rename instead.
-	   (condition-case nil
-	       (copy-file inbox tofile nil)
-	     (error
-	      ;; Third arg is t so we can replace existing file TOFILE.
-	      (rename-file inbox tofile t)))
-	   ;; Make the real inbox file empty.
-	   ;; Leaving it deleted could cause lossage
-	   ;; because mailers often won't create the file.
-	   (condition-case ()
-	       (write-region (point) (point) inbox)
-	     (file-error nil)))
-	  (t
-	   (unwind-protect
-	       (save-excursion
-		 (setq errors (generate-new-buffer " *nnmail loss*"))
-		 (buffer-disable-undo errors)
-		 (let ((default-directory "/"))
-		   (call-process
-		    (expand-file-name nnmail-movemail-program exec-directory)
-		    nil errors nil inbox tofile))
-		 (if (not (buffer-modified-p errors))
-		     ;; No output => movemail won
-		     nil
-		   (set-buffer errors)
-		   (subst-char-in-region (point-min) (point-max) ?\n ?\  )
-		   (goto-char (point-max))
-		   (skip-chars-backward " \t")
-		   (delete-region (point) (point-max))
-		   (goto-char (point-min))
-		   (if (looking-at "movemail: ")
-		       (delete-region (point-min) (match-end 0)))
-		   (beep t)
-		   (message (concat "movemail: "
-				    (buffer-substring (point-min)
-						      (point-max))))
-		   (sit-for 3)
-		   (setq tofile nil))))))
-    (and errors
-	 (buffer-name errors)
-	 (kill-buffer errors))
-    tofile))
+    (if (member inbox nnmail-moved-inboxes)
+	nil
+      (if popmail
+	  (message "Getting mail from post office ...")
+	(when (or (and (file-exists-p tofile)
+		       (/= 0 (nth 7 (file-attributes tofile))))
+		  (and (file-exists-p inbox)
+		       (/= 0 (nth 7 (file-attributes inbox)))))
+	  (message "Getting mail from %s..." inbox)))
+      ;; Set TOFILE if have not already done so, and
+      ;; rename or copy the file INBOX to TOFILE if and as appropriate.
+      (cond 
+       ((file-exists-p tofile)
+	;; The crash box exists already.
+	t)
+       ((and (not popmail)
+	     (not (file-exists-p inbox)))
+	;; There is no inbox.
+	(setq tofile nil))
+       ((and (not movemail) (not popmail))
+	;; Try copying.  If that fails (perhaps no space),
+	;; rename instead.
+	(when (condition-case nil
+		  (copy-file inbox tofile nil)
+		(error
+		 ;; Third arg is t so we can replace existing file TOFILE.
+		 (rename-file inbox tofile t)))
+	  (push inbox nnmail-moved-inboxes))
+	;; Make the real inbox file empty.
+	;; Leaving it deleted could cause lossage
+	;; because mailers often won't create the file.
+	(condition-case ()
+	    (write-region (point) (point) inbox)
+	  (file-error nil)))
+       (t
+	;; Use movemail.
+	(unwind-protect
+	    (save-excursion
+	      (setq errors (generate-new-buffer " *nnmail loss*"))
+	      (buffer-disable-undo errors)
+	      (let ((default-directory "/"))
+		(call-process
+		 (expand-file-name nnmail-movemail-program exec-directory)
+		 nil errors nil inbox tofile))
+	      (if (not (buffer-modified-p errors))
+		  ;; No output => movemail won
+		  (push tofile nnmail-moved-inboxes)
+		(set-buffer errors)
+		(subst-char-in-region (point-min) (point-max) ?\n ?\  )
+		(goto-char (point-max))
+		(skip-chars-backward " \t")
+		(delete-region (point) (point-max))
+		(goto-char (point-min))
+		(if (looking-at "movemail: ")
+		    (delete-region (point-min) (match-end 0)))
+		(beep t)
+		(message (concat "movemail: "
+				 (buffer-substring (point-min)
+						   (point-max))))
+		(sit-for 3)
+		(setq tofile nil))))))
+      (and errors
+	   (buffer-name errors)
+	   (kill-buffer errors))
+      tofile)))
 
 (defun nnmail-get-active ()
   "Returns an assoc of group names and active ranges.
@@ -802,9 +810,9 @@ Return the number of characters in the body."
     (goto-char (point-min))
     (when (search-forward "\n\n" nil t) 
       (forward-char -1)
-      (if (re-search-backward "^Xref: " nil t)
-	  (delete-region (match-beginning 0) 
-			 (progn (forward-line 1) (point))))
+      (when (re-search-backward "^Xref: " nil t)
+	(delete-region (match-beginning 0) 
+		       (progn (forward-line 1) (point))))
       (insert (format "Xref: %s" (system-name)))
       (while group-alist
 	(insert (format " %s:%d" (caar group-alist) (cdar group-alist)))

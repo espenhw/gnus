@@ -144,7 +144,7 @@ move those articles instead."
 	  (when (gnus-request-article-this-buffer 
 		 (car articles) gnus-newsgroup-name)
 	    (save-restriction
-	      (message-narrow-to-headers)
+	      (message-narrow-to-head)
 	      (message-remove-header gnus-soup-ignored-headers t))
 	    (gnus-soup-store gnus-soup-directory prefix headers
 			     gnus-soup-encoding-type 

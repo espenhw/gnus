@@ -10034,7 +10034,7 @@ Prediction +/i confidence.
 @item gnus-summary-grouplens-line-format
 The summary line format used in summary buffers that are GroupLens
 enhanced.  It accepts the same specs as the normal summary line format
-(@pxref{ Summary Buffer Lines}).  The default is
+(@pxref{Summary Buffer Lines}).  The default is
 @samp{%U%R%z%l%I%(%[%4L: %-20,20n%]%) %s\n}.
 
 @item grouplens-bbb-host

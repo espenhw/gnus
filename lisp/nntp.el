@@ -371,7 +371,9 @@ servers."
 	     (set-process-sentinel nntp-server-process nil))
 	;; We cannot send QUIT command unless the process is running.
 	(when (nntp-server-opened)
-	  (nntp-send-command nil "QUIT")))
+	  (nntp-send-command nil "QUIT")
+	  ;; Give the QUIT time to arrive.
+	  (sleep-for 1)))
     (nntp-close-server-internal server)))
 
 (deffoo nntp-request-close ()
@@ -382,6 +384,9 @@ servers."
 	(condition-case ()
 	    (process-send-string proc (concat "QUIT" nntp-end-of-line))
 	  (error nil))
+	;; Give the QUIT time to reach the server before we close
+	;; down the process.
+	(sleep-for 1)
 	(delete-process proc)))
     (and nntp-async-buffer
 	 (buffer-name nntp-async-buffer)
@@ -731,19 +736,9 @@ It will prompt for a password."
   "Wait for server RESPONSE after sending CMD and optional ARGS to server."
   (let ((timer 
 	 (and nntp-command-timeout 
-   	      (cond
-   	       ((fboundp 'run-at-time)
-		(run-at-time nntp-command-timeout
-   			     nil 'nntp-kill-command 
-			     (nnoo-current-server 'nntp)))
-   	       ((fboundp 'start-itimer)
-   		;; Not sure if this will work or not, only one way to
-   		;; find out
-		(start-itimer "nntp-timeout"
-			      (lambda ()
-				(nntp-kill-command 
-				 (nnoo-current-server 'nntp)))
-			      nntp-command-timeout nil)))))
+	      (nnheader-run-at-time
+	       nntp-command-timeout nil 'nntp-kill-command 
+	       (nnoo-current-server 'nntp))))
 	(nntp-retry-command t)
 	result)
     (unwind-protect
@@ -770,9 +765,7 @@ It will prompt for a password."
 		      t))))
 	  result)
       (when timer 
-	(if (fboundp 'run-at-time)
-	    (cancel-timer timer)
-	  (delete-itimer timer))))))
+	(nnheader-cancel-timer timer)))))
 
 (defun nntp-kill-command (server)
   "Kill and restart the connection to SERVER."
@@ -1077,17 +1070,8 @@ If SERVICE, this this as the port number."
 	(status nil)
 	(timer 
 	 (and nntp-connection-timeout 
-   	      (cond
-   	       ((fboundp 'run-at-time)
-		(run-at-time nntp-connection-timeout
-   			     nil 'nntp-kill-connection server))
-   	       ((fboundp 'start-itimer)
-   		;; Not sure if this will work or not, only one way to
-   		;; find out
-   		(eval '(start-itimer "nntp-timeout"
-				     (lambda ()
-				       (nntp-kill-connection server))
-				     nntp-connection-timeout nil)))))))
+	      (nnheader-run-at-time nntp-connection-timeout
+				    nil 'nntp-kill-connection server))))
     (save-excursion
       (set-buffer nntp-server-buffer)
       (setq nntp-status-string "")
@@ -1115,9 +1099,7 @@ If SERVICE, this this as the port number."
 	     (nnheader-report 
 	      'nntp (buffer-substring (point-min) (point-max)))))
       (when timer 
-	(if (fboundp 'run-at-time)
-	    (cancel-timer timer)
-	  (delete-itimer timer)))
+	(nnheader-cancel-timer timer))
       (message "")
       (unless status
 	(nnoo-close-server 'nntp server)

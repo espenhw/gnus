@@ -461,22 +461,21 @@
   (let (lines chars)
     (save-excursion
       (goto-char (point-min))
-      (if (search-forward "\n\n" nil t) 
-	  (progn
-	    ;; There may be an EOOH line here...
-	    (if (looking-at "\\*\\*\\* EOOH \\*\\*\\*")
-		(search-forward "\n\n" nil t))
-	    (setq chars (- (point-max) (point)))
-	    (setq lines (- (count-lines (point) (point-max)) 1))
-	    ;; Move back to the end of the headers. 
-	    (goto-char (point-min))
-	    (search-forward "\n\n" nil t)
-	    (forward-char -1)
-	    (save-excursion
-	      (if (re-search-backward "^Lines: " nil t)
-		  (delete-region (point) (progn (forward-line 1) (point)))))
-	    (insert (format "Lines: %d\n" lines))
-	    chars)))))
+      (when (search-forward "\n\n" nil t) 
+	;; There may be an EOOH line here...
+	(when (looking-at "\\*\\*\\* EOOH \\*\\*\\*")
+	  (search-forward "\n\n" nil t))
+	(setq chars (- (point-max) (point))
+	      lines (max (- (count-lines (point) (point-max)) 1) 0))
+	;; Move back to the end of the headers. 
+	(goto-char (point-min))
+	(search-forward "\n\n" nil t)
+	(forward-char -1)
+	(save-excursion
+	  (when (re-search-backward "^Lines: " nil t)
+	    (delete-region (point) (progn (forward-line 1) (point)))))
+	(insert (format "Lines: %d\n" lines))
+	chars))))
 
 (defun nnbabyl-save-mail ()
   ;; Called narrowed to an article.
