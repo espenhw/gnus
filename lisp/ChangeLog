@@ -1,3 +1,9 @@
+2003-02-20  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-user-fqdn, message-valid-fqdn-regexp): New
+	variables.
+	(message-make-fqdn): Use it.  Improved validity check.
+
 2003-02-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-user-mail-address): Check whether

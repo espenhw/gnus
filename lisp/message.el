@@ -1273,6 +1273,12 @@ no, only reply back to the author."
   :group 'message-headers
   :type 'boolean)
 
+(defcustom message-user-fqdn nil
+  "*Domain part of Messsage-Ids."
+  :group 'message-headers
+  :link '(custom-manual "(message)News Headers")
+  :type 'string)
+
 ;;; Internal variables.
 
 (defvar message-sending-message "Sending...")
@@ -1380,6 +1386,19 @@ no, only reply back to the author."
 
 (defvar message-bogus-system-names "^localhost\\."
   "The regexp of bogus system names.")
+
+(defcustom message-valid-fqdn-regexp
+  (concat "[a-z0-9][-.a-z0-9]+\\." ;; [hostname.subdomain.]domain.
+	  ;; valid TLDs:
+	  "\\([a-z][a-z]" ;; two letter country TDLs
+	  "\\|biz\\|com\\|edu\\|gov\\|int\\|mil\\|net\\|org"
+	  "\\|aero\\|coop\\|info\\|name\\|museum"
+	  "\\|arpa\\|pro\\|uucp\\|bitnet\\|bofh" ;; old style?
+	  "\\)")
+  "Regular expression that matches a valid FQDN."
+  ;; see also: gnus-button-valid-fqdn-regexp
+  :group 'message-headers
+  :type 'regexp)
 
 (eval-and-compile
   (autoload 'message-setup-toolbar "messagexmas")
@@ -4489,23 +4508,34 @@ give as trustworthy answer as possible."
 
 (defun message-make-fqdn ()
   "Return user's fully qualified domain name."
-  (let ((system-name (system-name))
-	(user-mail (message-user-mail-address)))
+  (let* ((system-name (system-name))
+	 (user-mail (message-user-mail-address))
+	 (user-domain
+	  (if (string-match "@\\(.*\\)\\'" user-mail)
+	      (match-string 1 user-mail))))
     (cond
-     ((and (string-match "[^.]\\.[^.]" system-name)
+     ((and message-user-fqdn
+	   (stringp message-user-fqdn)
+	   (string-match message-valid-fqdn-regexp message-user-fqdn)
+	   (not (string-match message-bogus-system-names message-user-fqdn)))
+      message-user-fqdn)
+     ;; `message-user-fqdn' seems to be valid
+     ((and (string-match message-valid-fqdn-regexp system-name)
 	   (not (string-match message-bogus-system-names system-name)))
       ;; `system-name' returned the right result.
       system-name)
      ;; Try `mail-host-address'.
      ((and (boundp 'mail-host-address)
 	   (stringp mail-host-address)
-	   (string-match "\\." mail-host-address))
+	   (string-match message-valid-fqdn-regexp mail-host-address)
+	   (not (string-match message-bogus-system-names mail-host-address)))
       mail-host-address)
      ;; We try `user-mail-address' as a backup.
-     ((and user-mail
-	   (string-match "\\." user-mail)
-	   (string-match "@\\(.*\\)\\'" user-mail))
-      (match-string 1 user-mail))
+     ((and user-domain
+	   (stringp user-domain)
+	   (string-match message-valid-fqdn-regexp user-domain)
+	   (not (string-match message-bogus-system-names user-domain)))
+      user-domain)
      ;; Default to this bogus thing.
      (t
       (concat system-name ".i-did-not-set--mail-host-address--so-tickle-me")))))
