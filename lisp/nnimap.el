@@ -938,6 +938,23 @@ function is generally only called when Gnus is shutting down."
 
 ;; Optional backend functions
 
+(defun nnimap-string-lessp-numerical (s1 s2)
+  "Return t if first arg string is less than second in numerical order."
+  (cond ((string= s1 s2)
+	 nil)
+	((> (length s1) (length s2))
+	 nil)
+	((< (length s1) (length s2))
+	 t)
+	((< (string-to-number (substring s1 0 1))
+	    (string-to-number (substring s2 0 1)))
+	 t)
+	((> (string-to-number (substring s1 0 1))
+	    (string-to-number (substring s2 0 1)))
+	 nil)
+	(t
+	 (nnimap-string-lessp-numerical (substring s1 1) (substring s2 1)))))
+
 (deffoo nnimap-retrieve-groups (groups &optional server)
   (when (nnimap-possibly-change-server server)
     (gnus-message 5 "nnimap: Checking mailboxes...")
@@ -959,8 +976,9 @@ function is generally only called when Gnus is shutting down."
 		  (tag   (nth 1 asyncgroup))
 		  new old)
 	      (when (imap-ok-p (imap-wait-for-tag tag nnimap-server-buffer))
-		(if (< (car (gnus-gethash group nnimap-mailbox-info))
-		       (imap-mailbox-get 'uidnext group nnimap-server-buffer))
+		(if (nnimap-string-lessp-numerical
+		     (car (gnus-gethash group nnimap-mailbox-info))
+		     (imap-mailbox-get 'uidnext group nnimap-server-buffer))
 		    (push (list group) slowgroups)
 		  (insert (cdr (gnus-gethash group nnimap-mailbox-info))))))))
 	(dolist (group slowgroups)
