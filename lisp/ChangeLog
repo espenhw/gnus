@@ -1,3 +1,10 @@
+2004-07-06  Dan Christensen  <jdc@uwo.ca>
+
+	* gnus-sum.el (gnus-summary-read-group-1): When summary
+	is unthreaded, respect display group parameter.
+	(gnus-articles-to-read): Remove unused reference to
+	display group parameter.
+
 2004-07-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnheader.el (nnheader-uniquify-message-id): New experimental

@@ -3602,16 +3602,10 @@ If NO-DISPLAY, don't generate a summary buffer."
       (when gnus-build-sparse-threads
 	(gnus-build-sparse-threads))
       ;; Find the initial limit.
-      (if gnus-show-threads
-	  (if show-all
-	      (let ((gnus-newsgroup-dormant nil))
-		(gnus-summary-initial-limit show-all))
+      (if show-all
+	  (let ((gnus-newsgroup-dormant nil))
 	    (gnus-summary-initial-limit show-all))
-	;; When unthreaded, all articles are always shown.
-	(setq gnus-newsgroup-limit
-	      (mapcar
-	       (lambda (header) (mail-header-number header))
-	       gnus-newsgroup-headers)))
+	(gnus-summary-initial-limit show-all))
       ;; Generate the summary buffer.
       (unless no-display
 	(gnus-summary-prepare))
@@ -5300,8 +5294,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 
 (defun gnus-articles-to-read (group &optional read-all)
   "Find out what articles the user wants to read."
-  (let* ((display (gnus-group-find-parameter group 'display))
-	 (articles
+  (let* ((articles
 	  ;; Select all articles if `read-all' is non-nil, or if there
 	  ;; are no unread articles.
 	  (if (or read-all
