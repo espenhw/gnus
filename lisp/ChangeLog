@@ -1,3 +1,7 @@
+2002-01-08  Simon Josefsson  <jas@extundo.com>
+
+	* mml.el (mml-generate-mime-1): Set recipient correctly.
+
 2002-01-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-read-from-minibuffer): Add argument

@@ -472,7 +472,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	  (if (setq sender (cdr (assq 'sender cont)))
 	      (message-options-set 'message-sender sender))
 	  (if (setq recipients (cdr (assq 'recipients cont)))
-	      (message-options-set 'message-sender recipients))
+	      (message-options-set 'message-recipients recipients))
 	  (funcall (nth 1 item) cont)))
       (let ((item (assoc (cdr (assq 'encrypt cont)) mml-encrypt-alist))
 	    sender recipients)
@@ -480,7 +480,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	  (if (setq sender (cdr (assq 'sender cont)))
 	      (message-options-set 'message-sender sender))
 	  (if (setq recipients (cdr (assq 'recipients cont)))
-	      (message-options-set 'message-sender recipients))
+	      (message-options-set 'message-recipients recipients))
 	  (funcall (nth 1 item) cont))))))
 
 (defun mml-compute-boundary (cont)
