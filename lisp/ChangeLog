@@ -1,3 +1,10 @@
+2004-08-18  Florian Weimer  <fw@deneb.enyo.de>
+
+	* gnus-sum.el (gnus-summary-force-verify-and-decrypt): Bind
+	`mm-fill-flowed'.
+
+	* mm-decode.el (mm-dissect-singlepart): Check it.
+
 2004-08-17  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* nnimap.el (nnimap-open-connection): add 'imaps' synonym to

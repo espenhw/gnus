@@ -7146,6 +7146,7 @@ be displayed."
   (let ((mm-verify-option 'known)
 	(mm-decrypt-option 'known)
 	(gnus-article-emulate-mime t)
+	(mm-fill-flowed nil)
 	(gnus-buttonized-mime-types (append (list "multipart/signed"
 						  "multipart/encrypted")
 					    gnus-buttonized-mime-types)))
