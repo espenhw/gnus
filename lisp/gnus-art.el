@@ -3665,7 +3665,8 @@ If no internal viewer is available, use an external viewer."
 		      ;; This will remove the part.
 		      (mm-display-part handle)
 		    (save-restriction
-		      (narrow-to-region (point) (1+ (point)))
+		      (narrow-to-region (point) 
+					(if (eobp) (point) (1+ (point))))
 		      (mm-display-part handle)
 		      ;; We narrow to the part itself and
 		      ;; then call the treatment functions.

@@ -849,7 +849,7 @@ be set in `.emacs' instead."
 (require 'gnus-util)
 (require 'nnheader)
 
-(defvar gnus-parameters nil
+(defcustom gnus-parameters nil
   "Alist of group parameters.
 
 For example:
@@ -861,7 +861,10 @@ For example:
 		  (display . all))
      (\"mail\\\\.me\" (gnus-use-scoring  t))
      (\"list\\\\..*\" (total-expire . t)
-		  (broken-reply-to . t)))")
+		  (broken-reply-to . t)))"
+  :group 'gnus-group-various
+  :type '(repeat (cons regexp
+		       (repeat sexp))))
 
 (defvar gnus-group-parameters-more nil)
 
