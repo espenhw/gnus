@@ -7,7 +7,7 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-15
 
-;; $Id: gpg.el,v 1.11 2001/01/19 02:04:46 zsh Exp $
+;; $Id: gpg.el,v 1.12 2001/07/13 19:31:08 zsh Exp $
 
 ;; This file is NOT (yet?) part of GNU Emacs.
 
@@ -631,7 +631,7 @@ adjust according to `gpg-command-passphrase-env'."
       ;; temporary file resides in a world-writable directory.
       (unless (or (memq system-type '(windows-nt cygwin32 win32 w32 mswindows))
 		  (eq (file-modes gpg-temp-directory) 448)) ; mode 0700
-	(error "Directory for temporary files (%s) must have mode 0700." gpg-temp-directory))
+	(error "Directory for temporary files (%s) must have mode 0700" gpg-temp-directory))
       (setq name (make-temp-name name))
       (let ((mode (default-file-modes)))
 	(unwind-protect
@@ -763,7 +763,7 @@ Never set this variable directly, use `gpg-show-result' instead.")
       (save-window-excursion
 	(display-buffer (current-buffer))
 	(unless (y-or-n-p "Continue? ")
-	  (error "GnuPG operation aborted."))))))
+	  (error "GnuPG operation aborted"))))))
 
 (defmacro gpg-show-result (always-show &rest body)
   "Show GnuPG result to user for confirmation.

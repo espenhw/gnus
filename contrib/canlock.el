@@ -430,7 +430,7 @@ is not specified, it runs in place."
 	    (insert header)
 	    (canlock-verify))))
     (or canlock-ignore-errors
-	(error "Folder buffer has been killed."))))
+	(error "Folder buffer has been killed"))))
 
 ;;;###autoload
 (defun cmail-summary-canlock-verify ()
