@@ -2115,6 +2115,7 @@ This should be an alist for Emacs, or a plist for XEmacs."
 
 (defvar gnus-agent-gcc-header "X-Gnus-Agent-Gcc")
 (defvar gnus-agent-meta-information-header "X-Gnus-Agent-Meta-Information")
+(defvar gnus-agent-target-move-group-header "X-Gnus-Agent-Move-To")
 (defvar gnus-draft-meta-information-header "X-Draft-From")
 (defvar gnus-group-get-parameter-function 'gnus-group-get-parameter)
 (defvar gnus-original-article-buffer " *Original Article*")

@@ -140,12 +140,20 @@
 				message-send-hook))
 	(message-setup-hook (and group (not (equal group "nndraft:queue"))
 				 message-setup-hook))
-	type method)
+	type method move-to)
     (gnus-draft-setup article (or group "nndraft:queue"))
     ;; We read the meta-information that says how and where
     ;; this message is to be sent.
     (save-restriction
       (message-narrow-to-head)
+      (when (re-search-forward
+	     (concat "^" (regexp-quote gnus-agent-target-move-group-header)
+		     ":") nil t)
+	(skip-syntax-forward "-")
+	(setq move-to (buffer-substring (point) (progn (end-of-line)
+						       (point))))
+	(message-remove-header gnus-agent-target-move-group-header))
+      (goto-char (point-min))
       (when (re-search-forward
 	     (concat "^" (regexp-quote gnus-agent-meta-information-header) ":")
 	     nil t)
@@ -164,8 +172,12 @@
 			 (message-this-is-mail (eq type 'mail))
 			 (gnus-post-method method)
 			 (message-post-method method))
-		     (message-send-and-exit))
-		 (message-send-and-exit)))
+		     (if move-to
+			 (gnus-inews-do-gcc move-to)
+		       (message-send-and-exit)))
+		 (if move-to
+		     (gnus-inews-do-gcc move-to)
+		   (message-send-and-exit))))
       (let ((gnus-verbose-backends nil))
 	(gnus-request-expire-articles
 	 (list article) (or group "nndraft:queue") t)))))

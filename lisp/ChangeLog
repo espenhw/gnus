@@ -1,3 +1,10 @@
+2003-02-23  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus.el (gnus-agent-target-move-group-header): New variable.
+	* gnus-draft.el (gnus-draft-send): If special header
+	"X-Gnus-Agent-Target-Move-Group" is present, do like Gcc into
+	that group, instead of performing the regular sending functions.
+
 2003-02-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-xmas.el (gnus-xmas-mime-button-menu): Accept a prefix arg.
