@@ -190,9 +190,9 @@ colors of the displayed X-Faces."
 	    (if (gnus-image-type-available-p 'xface)
 		(gnus-create-image
 		 (concat "X-Face: " data)
-		 'xface t :ascent 'center :face 'gnus-x-face)
+		 'xface t :face 'gnus-x-face)
 	      (gnus-create-image
-	       pbm 'pbm t :ascent 'center :face 'gnus-x-face))))
+	       pbm 'pbm t :face 'gnus-x-face))))
 	  (gnus-add-wash-type 'xface))))))
 
 (defun gnus-grab-cam-x-face ()
