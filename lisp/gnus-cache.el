@@ -33,6 +33,8 @@
 (require 'gnus-range)
 (require 'gnus-start)
 (eval-when-compile
+  (if (not (fboundp 'gnus-agent-load-alist))
+      (defun gnus-agent-load-alist (group)))
   (require 'gnus-sum))
 
 (defcustom gnus-cache-active-file
@@ -331,8 +333,10 @@ Returns the list of articles entered."
 	  (when (gnus-cache-possibly-enter-article
 		 gnus-newsgroup-name article
 		 nil nil nil t)
+            (setq gnus-newsgroup-undownloaded (delq article gnus-newsgroup-undownloaded))
 	    (push article out))
 	(gnus-message 2 "Can't cache article %d" article))
+      (gnus-summary-update-download-mark article)
       (gnus-summary-update-secondary-mark article))
     (gnus-summary-next-subject 1)
     (gnus-summary-position-point)
@@ -350,7 +354,14 @@ Returns the list of articles removed."
       (setq article (pop articles))
       (gnus-summary-remove-process-mark article)
       (when (gnus-cache-possibly-remove-article article nil nil nil t)
+        (when gnus-newsgroup-agentized
+          (let ((alist (gnus-agent-load-alist gnus-newsgroup-name)))
+            (unless (cdr (assoc article alist))
+              (setq gnus-newsgroup-undownloaded
+                    (gnus-add-to-sorted-list 
+                     gnus-newsgroup-undownloaded article)))))
 	(push article out))
+      (gnus-summary-update-download-mark article)
       (gnus-summary-update-secondary-mark article))
     (gnus-summary-next-subject 1)
     (gnus-summary-position-point)
