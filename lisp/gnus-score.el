@@ -2357,7 +2357,8 @@ score in `gnus-newsgroup-scored' by SCORE."
     (when winconf
       (set-window-configuration winconf))
     (gnus-score-remove-from-cache bufnam)
-    (gnus-score-load-file bufnam)))
+    (gnus-score-load-file bufnam)
+    (run-hooks 'gnus-score-edit-done-hook)))
 
 (defun gnus-score-find-trace ()
   "Find all score rules that applies to the current article."

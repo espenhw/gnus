@@ -907,6 +907,11 @@ Returns t if login was successful, nil otherwise."
 		(concat "LOGIN anonymous \"" (concat (user-login-name) "@"
 						     (system-name)) "\"")))))
 
+;;; Compiler directives.
+
+(defvar imap-sasl-client)
+(defvar imap-sasl-step)
+
 (defun imap-sasl-make-mechanisms (buffer)
   (let ((mecs '()))
     (mapc (lambda (sym)

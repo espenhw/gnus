@@ -2125,6 +2125,16 @@ Point is left at the beginning of the narrowed-to region."
 	     (1+ max)))))
       (message-sort-headers-1))))
 
+(defun message-delete-address ()
+  "Delete the address under point."
+  (interactive)
+  (let ((start (point))
+	(quote nil))
+    (message-narrow-to-field)
+    (while (and (not (eobp))
+		(or (not (eq (setq char (following-char)) ?,))
+		    (not quote)))
+      ())))
 
 
 
