@@ -142,6 +142,7 @@
 	(push elem result)))
     (nreverse result)))
 
+;;;###autoload
 (defun assistant (file)
   "Assist setting up Emacs based on FILE."
   (interactive "fAssistant file name: ")
