@@ -6016,7 +6016,15 @@ Optional DIGEST will use digest to forward."
       (goto-char (point-max)))
     (setq e (point))
     (insert
-     "\n-------------------- End of forwarded message --------------------\n")))
+     "\n-------------------- End of forwarded message --------------------\n")
+    (when (and (not current-prefix-arg)
+	       message-forward-ignored-headers)
+      (save-restriction
+	(narrow-to-region b e)
+	(goto-char b)
+	(narrow-to-region (point)
+			  (or (search-forward "\n\n" nil t) (point)))
+	(message-remove-header message-forward-ignored-headers t)))))
 
 (defun message-forward-make-body-mime (forward-buffer)
   (insert "\n\n<#part type=message/rfc822 disposition=inline raw=t>\n")
