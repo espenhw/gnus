@@ -4133,7 +4133,7 @@ Optional DIGEST will use digest to forward."
 ;;;###autoload
 (defun message-bounce ()
   "Re-mail the current message.
-This only makes sense if the current message is a bounce message than
+This only makes sense if the current message is a bounce message that
 contains some mail you have written which has been bounced back to
 you."
   (interactive)
