@@ -5231,7 +5231,7 @@ Limit the summary buffer to articles that match some author
 @findex gnus-summary-limit-to-extra
 Limit the summary buffer to articles that match one of the ``extra''
 headers (@pxref{To From Newsgroups})
-(@code{gnus-summary-limit-to-author}).
+(@code{gnus-summary-limit-to-extra}).
 
 @item / u
 @itemx x
@@ -5253,7 +5253,7 @@ with that mark (@code{gnus-summary-limit-to-marks}).
 @kindex / t (Summary)
 @findex gnus-summary-limit-to-age
 Ask for a number and then limit the summary buffer to articles older than (or equal to) that number of days
-(@code{gnus-summary-limit-to-marks}).  If given a prefix, limit to
+(@code{gnus-summary-limit-to-age}).  If given a prefix, limit to
 articles younger than that number of days.
 
 @item / n
@@ -7813,8 +7813,7 @@ for posting.  Each element of the alist has the form @code{(}@var{test
 header body-list}@code{)}, where:
 
 @table @var
-@item 
-test
+@item test
 is either a regular expression matching the newsgroup header or a
 variable to query,
 @item header
