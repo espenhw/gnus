@@ -85,6 +85,14 @@ If nil, only read articles will be expired."
   :group 'gnus-agent
   :type 'function)
 
+(defcustom gnus-agent-synchronize-flags 'ask
+  "Indicate if flags are synchronized when you plug in.
+If this is `ask' the hook will query the user."
+  :type '(choice (const :tag "Always" t)
+		 (const :tag "Never" nil)
+		 (const :tag "Ask" ask))
+  :group 'gnus-agent)
+
 ;;; Internal variables
 
 (defvar gnus-agent-history-buffers nil)
@@ -231,7 +239,7 @@ If nil, only read articles will be expired."
   "Jc" gnus-enter-category-buffer
   "Jj" gnus-agent-toggle-plugged
   "Js" gnus-agent-fetch-session
-  "JY" gnus-agent-synchronize
+  "JY" gnus-agent-synchronize-flags
   "JS" gnus-group-send-drafts
   "Ja" gnus-agent-add-group
   "Jr" gnus-agent-remove-group)
@@ -288,6 +296,7 @@ If nil, only read articles will be expired."
   (if plugged
       (progn
 	(setq gnus-plugged plugged)
+	(gnus-agent-possibly-synchronize-flags)
 	(gnus-run-hooks 'gnus-agent-plugged-hook)
 	(setcar (cdr gnus-agent-mode-status) " Plugged"))
     (gnus-agent-close-connections)
@@ -423,27 +432,49 @@ be a select method."
 	  (setf (cadddr c) (delete group (cadddr c))))))
     (gnus-category-write)))
 
-(defun gnus-agent-synchronize ()
-  "Synchronize local, unplugged, data with backend.
-Currently sends flag setting requests, if any."
+(defun gnus-agent-synchronize-flags ()
+  "Synchronize unplugged flags with servers."
   (interactive)
   (save-excursion
     (dolist (gnus-command-method gnus-agent-covered-methods)
       (when (file-exists-p (gnus-agent-lib-file "flags"))
-	(set-buffer (get-buffer-create " *Gnus Agent flag synchronize*"))
-	(erase-buffer)
-	(nnheader-insert-file-contents (gnus-agent-lib-file "flags"))
-	(if (null (gnus-check-server gnus-command-method))
-	    (message "Couldn't open server %s" (nth 1 gnus-command-method))
-	  (while (not (eobp))
-	    (if (null (eval (read (current-buffer))))
-		(progn (forward-line)
-		       (kill-line -1))
-	      (write-file (gnus-agent-lib-file "flags"))
-	      (error "Couldn't set flags from file %s"
-		     (gnus-agent-lib-file "flags"))))
-	  (write-file (gnus-agent-lib-file "flags")))
-        (kill-buffer nil)))))
+	(gnus-agent-synchronize-flags-server gnus-command-method)))))
+
+(defun gnus-agent-possibly-synchronize-flags ()
+  "Synchronize flags according to `gnus-agent-synchronize-flags'."
+  (interactive)
+  (save-excursion
+    (dolist (gnus-command-method gnus-agent-covered-methods)
+      (when (file-exists-p (gnus-agent-lib-file "flags"))
+	(gnus-agent-possibly-synchronize-flags-server gnus-command-method)))))
+
+(defun gnus-agent-synchronize-flags-server (method)
+  "Synchronize flags set when unplugged for server."
+  (let ((gnus-command-method method))
+    (when (file-exists-p (gnus-agent-lib-file "flags"))
+      (set-buffer (get-buffer-create " *Gnus Agent flag synchronize*"))
+      (erase-buffer)
+      (nnheader-insert-file-contents (gnus-agent-lib-file "flags"))
+      (if (null (gnus-check-server gnus-command-method))
+	  (message "Couldn't open server %s" (nth 1 gnus-command-method))
+	(while (not (eobp))
+	  (if (null (eval (read (current-buffer))))
+	      (progn (forward-line)
+		     (kill-line -1))
+	    (write-file (gnus-agent-lib-file "flags"))
+	    (error "Couldn't set flags from file %s"
+		   (gnus-agent-lib-file "flags"))))
+	(delete-file (gnus-agent-lib-file "flags")))
+      (kill-buffer nil))))
+
+(defun gnus-agent-possibly-synchronize-flags-server (method)
+  "Synchronize flags for server according to `gnus-agent-synchronize-flags'."
+  (when (or (and gnus-agent-synchronize-flags
+		 (not (eq gnus-agent-synchronize-flags 'ask)))
+	    (and (eq gnus-agent-synchronize-flags 'ask)
+		 (gnus-y-or-n-p (format "Synchronize flags on server `%s'? " 
+					(cadr method)))))
+    (gnus-agent-synchronize-flags-server method)))
 
 ;;;
 ;;; Server mode commands

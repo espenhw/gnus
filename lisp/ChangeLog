@@ -1,3 +1,15 @@
+2000-07-13  Simon Josefsson <simon@josefsson.org>
+
+	Asks the user to synch flags with server when you plug in.
+
+	* gnus-agent.el (gnus-agent-synchronize-flags): New variable.
+	(gnus-agent-possibly-synchronize-flags-server): New function, use it.
+	(gnus-agent-toggle-plugged): Call it.
+	(gnus-agent-synchronize-flags): Renamed from `gnus-agent-synchronize'.
+	(gnus-agent-group-mode-map): `g-a-s' -> `g-a-s-flags'.
+	(gnus-agent-possibly-synchronize-flags): New function.
+	(gnus-agent-possibly-synchronize-flags-server): New function.
+
 2000-09-30  Simon Josefsson  <simon@josefsson.org>
 
 	* starttls.el: New file, by Daiki Ueno.
