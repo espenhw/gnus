@@ -3244,7 +3244,7 @@ It should typically alter the sending method in some way or other."
       (when (funcall (cadr elem))
 	(when (and (or (not (memq (car elem)
 				  message-sent-message-via))
-		       (not (message-fetch-field "supersedes"))
+		       (message-fetch-field "supersedes")
 		       (if (or (message-gnksa-enable-p 'multiple-copies)
 			       (not (eq (car elem) 'news)))
 			   (y-or-n-p
