@@ -1,3 +1,7 @@
+2002-03-19  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-group.el (gnus-group-process-prefix): Make sure there is a mark.
+
 2002-03-19  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-sum.el (gnus-sum-thread-tree-root) 
