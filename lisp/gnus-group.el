@@ -3218,7 +3218,7 @@ Uses the process/prefix convention."
    (list
     current-prefix-arg
     (progn
-      (unless (gnus-group-group-name)
+      (unless (gnus-group-process-prefix current-prefix-arg)
 	(error "No group on the current line"))
       (string-to-int
        (let ((s (read-string

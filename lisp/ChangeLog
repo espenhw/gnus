@@ -2,6 +2,7 @@
 
 	* gnus-group.el (gnus-group-set-current-level): Signal errors on
 	topic lines.
+	(gnus-group-set-current-level): Fix fix.
 
 2003-12-31  Jeremy Maitin-Shepard  <jbms@attbi.com>
 
