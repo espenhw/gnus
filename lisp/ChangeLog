@@ -1,3 +1,7 @@
+2004-10-12  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-kill-buffer): Raise the current frame.
+
 2004-10-10  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el: Mention that multibyte characters don't work as marks.
