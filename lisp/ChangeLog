@@ -1,3 +1,8 @@
+2004-10-01  Simon Josefsson  <jas@extundo.com>
+
+	* mailcap.el (mailcap-mime-data): Add pdf.  Remove non-free
+	acroread.
+
 2004-10-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* spam-report.el (spam-report-gmane): Fix interactive.
