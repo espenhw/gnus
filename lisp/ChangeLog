@@ -1,3 +1,15 @@
+2003-03-19  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-group-ham-mark-p, spam-group-spam-mark-p) 
+	(spam-group-ham-marks, spam-group-spam-marks): new functions
+	(spam-spam-marks, spam-ham-marks): removed in favor of the
+	spam-marks and ham-marks parameters
+	(spam-generic-register-routine, spam-ham-move-routine): use the
+	new spam-group-{spam,ham}-mark-p functions
+
+	* gnus.el (spam-marks, ham-marks): new group parameters with
+	default values same as the old spam-spam-marks and spam-ham-marks
+
 2003-03-19  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-art.el (gnus-article-decode-hook): Add IDNA.

@@ -190,29 +190,6 @@ All unmarked article in such group receive the spam mark on group entry."
   :type 'regexp
   :group 'spam)
 
-(defcustom spam-ham-marks (list 'gnus-del-mark 'gnus-read-mark 
-				'gnus-killed-mark 'gnus-kill-file-mark 
-				'gnus-low-score-mark)
-  "Marks considered as being ham (positively not spam).
-Such articles will be processed as ham (non-spam) on group exit."
-  :type '(set
-	  (variable-item gnus-del-mark)
-	  (variable-item gnus-read-mark)
-	  (variable-item gnus-killed-mark)
-	  (variable-item gnus-kill-file-mark)
-	  (variable-item gnus-low-score-mark))
-  :group 'spam)
-
-(defcustom spam-spam-marks (list 'gnus-spam-mark)
-  "Marks considered as being spam (positively spam).
-Such articles will be transmitted to `bogofilter -s' on group exit."
-  :type '(set 
-	  (variable-item gnus-spam-mark)
-	  (variable-item gnus-killed-mark)
-	  (variable-item gnus-kill-file-mark)
-	  (variable-item gnus-low-score-mark))
-  :group 'spam)
-
 (defcustom spam-face 'gnus-splash-face
   "Face for spam-marked articles"
   :type 'face
@@ -316,6 +293,29 @@ your main source of newsgroup names."
       gnus-summary-highlight)
 
 ;; convenience functions
+(defun spam-group-ham-mark-p (group mark &optional spam)
+  (when (stringp group)
+    (let* ((marks (spam-group-ham-marks group spam))
+	   (marks (if (symbolp mark) 
+		      marks 
+		    (mapcar 'symbol-value marks))))
+      (memq mark marks))))
+
+(defun spam-group-spam-mark-p (group mark)
+  (spam-group-ham-mark-p group mark t))
+
+(defun spam-group-ham-marks (group &optional spam)
+  (when (stringp group)
+    (let* ((marks (if spam
+		     (gnus-parameter-spam-marks group)
+		   (gnus-parameter-ham-marks group)))
+	   (marks (car marks))
+	   (marks (if (listp (car marks)) (car marks) marks)))
+      marks)))
+
+(defun spam-group-spam-marks (group)
+  (spam-group-ham-marks group t))
+
 (defun spam-group-spam-contents-p (group)
   (if (stringp group)
       (or (member group spam-junk-mailgroups)
@@ -469,13 +469,12 @@ your main source of newsgroup names."
 (defun spam-ham-move-routine (&optional group copy)
   (gnus-summary-kill-process-mark)
   (let ((articles gnus-newsgroup-articles)
-	article ham-mark-values mark tomove)
+	article mark tomove)
     (when (stringp group)		; this routine will do nothing
 					; without a valid group
-      (dolist (mark spam-ham-marks)
-	(push (symbol-value mark) ham-mark-values))
       (dolist (article articles)
-	(when (memq (gnus-summary-article-mark article) ham-mark-values)
+	(when (spam-group-spam-mark-p gnus-newsgroup-name
+				      (gnus-summary-article-mark article))
 	  (push article tomove)))
 
       ;; now do the actual move
@@ -491,24 +490,17 @@ your main source of newsgroup names."
  
 (defun spam-generic-register-routine (spam-func ham-func)
   (let ((articles gnus-newsgroup-articles)
-	article mark ham-articles spam-articles spam-mark-values 
-	ham-mark-values)
-
-    ;; marks are stored as symbolic values, so we have to dereference
-    ;; them for memq to work.  we wouldn't have to do this if
-    ;; gnus-summary-article-mark returned a symbol.
-    (dolist (mark spam-ham-marks)
-      (push (symbol-value mark) ham-mark-values))
-
-    (dolist (mark spam-spam-marks)
-      (push (symbol-value mark) spam-mark-values))
+	article mark ham-articles spam-articles)
 
     (while articles
       (setq article (pop articles)
 	    mark (gnus-summary-article-mark article))
-      (cond ((memq mark spam-mark-values) (push article spam-articles))
+      (cond ((spam-group-spam-mark-p nus-newsgroup-name mark) 
+	     (push article spam-articles))
 	    ((memq article gnus-newsgroup-saved))
-	    ((memq mark ham-mark-values) (push article ham-articles))))
+	    ((spam-group-ham-mark-p gnus-newsgroup-name mark)
+	     (push article ham-articles))))
+
     (when (and ham-articles ham-func)
       (mapc ham-func ham-articles))	; we use mapc because unlike
 					; mapcar it discards the

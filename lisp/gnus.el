@@ -1949,7 +1949,50 @@ mail groups, and only works in spam groups."
 		      (string :tag "Move to a group")
 		      (const :tag "Expire" nil))))
    :parameter-document
-   "Where ham articles will go at summary exit from a spam group."))
+   "Where ham articles will go at summary exit from a spam group.")
+
+  (gnus-define-group-parameter 
+   ham-marks
+   :type 'list
+   :parameter-type '(list :tag "Ham mark choices"
+			  (set 
+			   (variable-item gnus-del-mark)
+			   (variable-item gnus-read-mark)
+			   (variable-item gnus-killed-mark)
+			   (variable-item gnus-kill-file-mark)
+			   (variable-item gnus-low-score-mark)))
+
+   :parameter-document
+   "Marks considered ham (positively not spam).  Such articles will be
+processed as ham (non-spam) on group exit.  When nil, the global
+spam-ham-marks variable takes precedence."
+   :variable-default '((".*" ((gnus-del-mark 
+			       gnus-read-mark
+			       gnus-killed-mark 
+			       gnus-kill-file-mark
+			       gnus-low-score-mark))))
+   :variable-group spam
+   :variable-document
+   "*Groups in which to explicitly set the ham marks to some value.")
+
+  (gnus-define-group-parameter 
+   spam-marks
+   :type 'list
+   :parameter-type '(list :tag "Spam mark choices"
+			  (set 
+			   (variable-item gnus-spam-mark)
+			   (variable-item gnus-killed-mark)
+			   (variable-item gnus-kill-file-mark)
+			   (variable-item gnus-low-score-mark)))
+
+   :parameter-document
+   "Marks considered spam.
+Such articles will be processed as spam on group exit.  When nil, the global
+spam-spam-marks variable takes precedence."
+   :variable-default '((".*" ((gnus-spam-mark))))
+   :variable-group spam
+   :variable-document
+   "*Groups in which to explicitly set the spam marks to some value."))
 
 (defcustom gnus-group-uncollapsed-levels 1
   "Number of group name elements to leave alone when making a short group name."
