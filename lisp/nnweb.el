@@ -435,33 +435,35 @@
       (set-marker body nil))))
 
 (defun nnweb-reference-search (search)
-  (url-insert-file-contents
-   (concat 
-    (nnweb-definition 'address)
-    "?"
-    (nnweb-encode-www-form-urlencoded 
-     `(("search" . "advanced")
-       ("querytext" . ,search)
-       ("subj" . "")
-       ("name" . "")
-       ("login" . "")
-       ("host" . "")
-       ("organization" . "")
-       ("groups" . "")
-       ("keywords" . "")
-       ("choice" . "Search")
-       ("startmonth" . "Jul")
-       ("startday" . "25")
-       ("startyear" . "1996")
-       ("endmonth" . "Aug")
-       ("endday" . "24")
-       ("endyear" . "1996")
-       ("mode" . "Quick")
-       ("verbosity" . "Verbose")
-       ("ranking" . "Relevance")
-       ("first" . "1")
-       ("last" . "25")
-       ("score" . "50"))))))
+  (prog1
+      (url-insert-file-contents
+       (concat 
+	(nnweb-definition 'address)
+	"?"
+	(nnweb-encode-www-form-urlencoded 
+	 `(("search" . "advanced")
+	   ("querytext" . ,search)
+	   ("subj" . "")
+	   ("name" . "")
+	   ("login" . "")
+	   ("host" . "")
+	   ("organization" . "")
+	   ("groups" . "")
+	   ("keywords" . "")
+	   ("choice" . "Search")
+	   ("startmonth" . "Jul")
+	   ("startday" . "25")
+	   ("startyear" . "1996")
+	   ("endmonth" . "Aug")
+	   ("endday" . "24")
+	   ("endyear" . "1996")
+	   ("mode" . "Quick")
+	   ("verbosity" . "Verbose")
+	   ("ranking" . "Relevance")
+	   ("first" . "1")
+	   ("last" . "25")
+	   ("score" . "50")))))
+    (setq buffer-file-name nil)))
 
 ;;;
 ;;; Alta Vista
@@ -506,7 +508,8 @@
 		url)
 	       map))
 	    ;; See if we want more.
-	    (when (or (>= i nnweb-max-hits)
+	    (when (or (not nnweb-articles)
+		      (>= i nnweb-max-hits)
 		      (not (funcall (nnweb-definition 'search)
 				    nnweb-search (incf part))))
 	      (setq more nil)))
@@ -533,19 +536,21 @@
       (nnweb-remove-markup))))
 
 (defun nnweb-altavista-search (search &optional part)
-  (url-insert-file-contents
-   (concat 
-    (nnweb-definition 'address)
-    "?"
-    (nnweb-encode-www-form-urlencoded 
-     `(("pg" . "aq")
-       ("what" . "news")
-       ,@(if part `(("stq" . ,(int-to-string (* part 30)))))
-       ("fmt" . "d")
-       ("q" . ,search)
-       ("r" . "")
-       ("d0" . "")
-       ("d1" . ""))))))
+  (prog1
+      (url-insert-file-contents
+       (concat 
+	(nnweb-definition 'address)
+	"?"
+	(nnweb-encode-www-form-urlencoded 
+	 `(("pg" . "aq")
+	   ("what" . "news")
+	   ,@(if part `(("stq" . ,(int-to-string (* part 30)))))
+	   ("fmt" . "d")
+	   ("q" . ,search)
+	   ("r" . "")
+	   ("d0" . "")
+	   ("d1" . "")))))
+    (setq buffer-file-name nil)))
 
 (provide 'nnweb)
 

@@ -58,8 +58,10 @@ mailbox format.")
 
 ;;;###autoload
 (defvar message-courtesy-message
-  "The following message is a courtesy copy of an article\nthat has been posted as well.\n\n"
+  "The following message is a courtesy copy of an article\nthat has been posted to %s as well.\n\n"
   "*This is inserted at the start of a mailed copy of a posted message.
+If the string contains the format spec \"%s\", the Newsgroups
+the article has been posted to will be inserted there.
 If this variable is nil, no such courtesy message will be added.")
 
 ;;;###autoload
@@ -2275,16 +2277,20 @@ Headers already prepared in the buffer are not modified."
 
 (defun message-insert-courtesy-copy ()
   "Insert a courtesy message in mail copies of combined messages."
+  (let (newsgroups)
   (save-excursion
     (save-restriction
       (message-narrow-to-headers)
-      (let ((newsgroups (message-fetch-field "newsgroups")))
-	(when newsgroups
-	  (goto-char (point-max))
-	  (insert "Posted-To: " newsgroups "\n"))))
+      (when (setq newsgroups (message-fetch-field "newsgroups"))
+	(goto-char (point-max))
+	(insert "Posted-To: " newsgroups "\n")))
     (forward-line 1)
     (when message-courtesy-message
-      (insert message-courtesy-message))))
+      (cond
+       ((string-match "%s" message-courtesy-message)
+	(insert (format message-courtesy-message newsgroups)))
+       (t
+	(insert message-courtesy-message)))))))
     
 ;;;
 ;;; Setting up a message buffer

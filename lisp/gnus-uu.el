@@ -270,38 +270,37 @@ The headers will be included in the sequence they are matched.")
 
 ;; Keymaps
 
-(gnus-define-keys 
- (gnus-uu-mark-map "P" gnus-summary-mark-map)
- "p" gnus-summary-mark-as-processable
- "u" gnus-summary-unmark-as-processable
- "U" gnus-summary-unmark-all-processable
- "v" gnus-uu-mark-over
- "s" gnus-uu-mark-series
- "r" gnus-uu-mark-region
- "R" gnus-uu-mark-by-regexp
- "t" gnus-uu-mark-thread
- "T" gnus-uu-unmark-thread
- "a" gnus-uu-mark-all
- "b" gnus-uu-mark-buffer
- "S" gnus-uu-mark-sparse
- "k" gnus-summary-kill-process-mark
- "y" gnus-summary-yank-process-mark
- "w" gnus-summary-save-process-mark)
+(gnus-define-keys (gnus-uu-mark-map "P" gnus-summary-mark-map)
+  "p" gnus-summary-mark-as-processable
+  "u" gnus-summary-unmark-as-processable
+  "U" gnus-summary-unmark-all-processable
+  "v" gnus-uu-mark-over
+  "s" gnus-uu-mark-series
+  "r" gnus-uu-mark-region
+  "R" gnus-uu-mark-by-regexp
+  "t" gnus-uu-mark-thread
+  "T" gnus-uu-unmark-thread
+  "a" gnus-uu-mark-all
+  "b" gnus-uu-mark-buffer
+  "S" gnus-uu-mark-sparse
+  "k" gnus-summary-kill-process-mark
+  "y" gnus-summary-yank-process-mark
+  "w" gnus-summary-save-process-mark
+  "i" gnus-uu-invert-processable)
 
-(gnus-define-keys 
- (gnus-uu-extract-map "X" gnus-summary-mode-map)
- ;;"x" gnus-uu-extract-any
- ;;"m" gnus-uu-extract-mime
- "u" gnus-uu-decode-uu
- "U" gnus-uu-decode-uu-and-save
- "s" gnus-uu-decode-unshar
- "S" gnus-uu-decode-unshar-and-save
- "o" gnus-uu-decode-save
- "O" gnus-uu-decode-save
- "b" gnus-uu-decode-binhex
- "B" gnus-uu-decode-binhex
- "p" gnus-uu-decode-postscript
- "P" gnus-uu-decode-postscript-and-save)
+(gnus-define-keys (gnus-uu-extract-map "X" gnus-summary-mode-map)
+  ;;"x" gnus-uu-extract-any
+  ;;"m" gnus-uu-extract-mime
+  "u" gnus-uu-decode-uu
+  "U" gnus-uu-decode-uu-and-save
+  "s" gnus-uu-decode-unshar
+  "S" gnus-uu-decode-unshar-and-save
+  "o" gnus-uu-decode-save
+  "O" gnus-uu-decode-save
+  "b" gnus-uu-decode-binhex
+  "B" gnus-uu-decode-binhex
+  "p" gnus-uu-decode-postscript
+  "P" gnus-uu-decode-postscript-and-save)
 
 (gnus-define-keys 
  (gnus-uu-extract-view-map "v" gnus-uu-extract-map)
@@ -558,6 +557,18 @@ The headers will be included in the sequence they are matched.")
 		 (gnus-summary-article-number))
 		(zerop (gnus-summary-next-subject 1))
 		(> (gnus-summary-thread-level) level))))
+  (gnus-summary-position-point))
+
+(defun gnus-uu-invert-processable ()
+  "Invert the list of process-marked articles."
+  (let ((data gnus-newsgroup-data)
+	d number)
+    (save-excursion
+      (while data
+	(if (memq (setq number (gnus-data-number (pop data)))
+		  gnus-newsgroup-processable)
+	    (gnus-summary-remove-process-mark number)
+	  (gnus-summary-set-process-mark number)))))
   (gnus-summary-position-point))
 
 (defun gnus-uu-mark-over (&optional score)

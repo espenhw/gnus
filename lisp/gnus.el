@@ -28,7 +28,7 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
-(defconst gnus-version-number "0.27"
+(defconst gnus-version-number "0.28"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -454,6 +454,8 @@ that that variable is buffer-local to the summary buffers."
    (and (equal server "native") gnus-select-method)
    ;; It should be in the server alist.
    (cdr (assoc server gnus-server-alist))
+   ;; It could be in the predefined server alist.
+   (cdr (assoc server gnus-predefined-server-alist))
    ;; If not, we look through all the opened server
    ;; to see whether we can find it there.
    (let ((opened gnus-opened-servers))
@@ -806,7 +808,8 @@ If NEWSGROUP is nil, return the global kill file name instead."
 Allow completion over sensible values."
   (let ((method
 	 (completing-read
-	  prompt (append gnus-valid-select-methods gnus-server-alist)
+	  prompt (append gnus-valid-select-methods gnus-predefined-server-alist
+			 gnus-server-alist)
 	  nil t nil 'gnus-method-history)))
     (cond 
      ((equal method "")

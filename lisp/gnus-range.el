@@ -35,14 +35,14 @@
 
 (defun gnus-copy-sequence (list)
   "Do a complete, total copy of a list."
-  (if (and (consp list) (not (consp (cdr list))))
-      (cons (car list) (cdr list))
-    (mapcar (lambda (elem) (if (consp elem)
-			       (if (consp (cdr elem))
-				   (gnus-copy-sequence elem)
-				 (cons (car elem) (cdr elem)))
-			     elem))
-	    list)))
+  (let (out)
+    (while (consp list)
+      (if (consp (car list))
+	  (push (gnus-copy-sequence (pop list)) out)
+	(push (pop list) out)))
+    (if list
+	(nconc (nreverse out) list)
+      (nreverse out))))
 
 (defun gnus-set-difference (list1 list2)
   "Return a list of elements of LIST1 that do not appear in LIST2."

@@ -341,6 +341,15 @@ Returns the list of articles removed."
   "Say whether ARTICLE is cached in the current group."
   (memq article gnus-newsgroup-cached))
 
+(defun gnus-summary-insert-cached-articles ()
+  "Insert all the articles cached for this group into the current buffer."
+  (interactive)
+  (let ((cached gnus-newsgroup-cached))
+    (unless cached
+      (error "No cached articles for this group"))
+    (while cached
+      (gnus-summary-goto-subject (pop cached) t))))
+
 ;;; Internal functions.
 
 (defun gnus-cache-change-buffer (group)

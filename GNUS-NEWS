@@ -72,6 +72,30 @@ even when the NNTP server doesn't allow posting.
 *** A new backend for reading searches from Web search engines
 (DejaNews, Alta Vista, InReference) has been added.
 
-    Use the `G n' command in the group buffer to create such
+    Use the `G w' command in the group buffer to create such
     a group.
+
+*** Groups inside topics can now be sorted using the standard
+sorting functions, and each topic can be sorted independently.
+
+    See the commands under the `T S' submap.
+
+*** Subsets of the groups can be sorted independently.
+
+    See the commands under the `G P' submap.
+
+*** Cached articles can be pulled into the groups.
+  
+    Use the `Y c' command.
+
+*** Score files are now applied in a more reliable order.
+
+*** Reports on where mail messages end up can be generated.
+
+    `M-x nnmail-split-history'
+
+*** More hooks and functions have been added to remove junk
+from incoming mail before saving the mail.
+ 
+    See `nnmail-prepare-incoming-header-hook'.
 

@@ -909,8 +909,11 @@ function is @code{rmail-output} which saves in Unix mailbox format.
 @item message-courtesy-message
 @vindex message-courtesy-message
 When sending combined messages, this string is inserted at the start of
-the mailed copy.  If this variable is @code{nil}, no such courtesy
-message will be added.
+the mailed copy.  If the string contains the format spec @samp{%s}, the
+newsgroups the article has been posted to will be inserted there.  If
+this variable is @code{nil}, no such courtesy message will be added.
+The default value is @samp{"The following message is a courtesy copy of
+an article\nthat has been posted to %s as well.\n\n"}. 
 
 @end table
 

@@ -515,10 +515,21 @@ Timezone package is used."
 
 (defun gnus-make-sort-function (funs)
   "Return a composite sort condition based on the functions in FUNC."
+  (cond 
+   ((not (listp funs)) funs)
+   ((null funs) funs)
+   ((cdr funs)
+    `(lambda (t1 t2)
+       ,(gnus-make-sort-function-1 (nreverse funs))))
+   (t
+    (car funs))))
+
+(defun gnus-make-sort-function-1 (funs)
+  "Return a composite sort condition based on the functions in FUNC."
   (if (cdr funs)
       `(or (,(car funs) t1 t2)
 	   (and (not (,(car funs) t2 t1))
-		,(gnus-make-sort-function (cdr funs))))
+		,(gnus-make-sort-function-1 (cdr funs))))
     `(,(car funs) t1 t2)))
 
 (defun gnus-turn-off-edit-menu (type)
@@ -539,8 +550,8 @@ Bind `print-quoted' to t while printing."
 (defun gnus-make-directory (directory)
   "Make DIRECTORY (and all its parents) if it doesn't exist."
   (when (not (file-exists-p directory))
-    (make-directory directory t)
-    t))
+    (make-directory directory t))
+  t)
  
 (provide 'gnus-util)
 

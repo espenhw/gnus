@@ -1,3 +1,138 @@
+Sat Sep  7 14:33:17 1996  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* nntp.el (nntp-after-change-function-callback): Renamed.
+
+	* nnweb.el (nnweb-reference-search): Nix out file name.
+
+Sat Sep  7 14:07:13 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* nnweb.el (nnweb-altavista-search): Nix out buffer file name.
+
+	* gnus-async.el (gnus-asynch-with-semaphore): New macro.
+	(gnus-make-async-article-function): Nix out prefetch list when the
+	summary buffer dies. 
+
+	* nnweb.el (nnweb-altavista-create-mapping): Would search forever
+	when not getting any matches.
+
+Sat Sep  7 12:43:24 1996  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus-msg.el (gnus-inews-yank-articles): Goto body before
+	yanking. 
+
+	* nnheader.el (nnheader-insert-file-contents-literally): New
+	definition. 
+	(nnheader-insert-head): Use new definition.
+
+Sat Sep  7 12:35:37 1996  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-salt.el (gnus-pick-elegant-flow): New variable.
+
+Sat Sep  7 12:03:00 1996  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* nnheader.el (nnheader-insert-head): Don't use
+	`insert-file-contents-literally'.
+	(nnheader-head-chop-length): New variable.
+
+	* gnus-sum.el (gnus-summary-read-document): Prepend "nnvirtual:"
+	to group name.
+
+Sat Sep  7 11:12:26 1996  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* gnus-score.el (gnus-score-save): Don't check result from
+	gnus-make-directory.
+
+	* gnus-util.el (gnus-make-directory): Return t.
+
+Fri Sep  6 17:55:48 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-range.el (gnus-copy-sequence): Didn't work for all
+	sequences. 
+
+Fri Sep  6 14:38:54 1996  Wes Hardaker <Wesley.Hardaker@sphys.unil.ch>
+
+	* gnus-picons.el (gnus-picons-display-as-address): New variable.
+	(gnus-picons-map): New keymap for picons.
+	(gnus-picons-toggle-extent): New function.
+	(gnus-article-display-picons): use them.
+	(gnus-picons-insert-face-if-exists): ditto.
+	(gnus-picons-try-to-find-face): ditto.
+	(gnus-group-display-picons): let display catch up.
+	(gnus-article-display-picons): ditto.
+
+Fri Sep  6 08:11:02 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnkiboze.el (nnkiboze-close-group): Rewrite.
+	(nnkiboze-request-list, nnkiboze-request-newgroups,
+	nnkiboze-request-list-newsgroups): Removed.
+	(nnkiboze-request-scan): New function.
+	(nnkiboze-directory): New default.
+
+	* gnus-sum.el (gnus-article-read-p): New function.
+
+	* nnkiboze.el (nnkiboze-retrieve-headers): Rewrite.
+	(nnkiboze-open-server): Removed.
+	(nnkiboze-server-opened): Ditto.
+
+	* nnheader.el (nnheader-find-nov-line): Renamed.
+	(nnheader-nov-delete-outside-range): New function.
+
+	* gnus-uu.el (gnus-uu-invert-processable): New command and
+	keystroke. 
+
+	* gnus-load.el (gnus-predefined-server-alist): New variable.
+
+	* gnus.el (gnus-server-to-method): Use it.
+	(gnus-read-method): Ditto.
+
+	* gnus-sum.el (t): "M V" commands weren't defined.
+
+	* gnus-cache.el (gnus-summary-insert-cached-articles): New command
+	and keystroke.
+
+	* gnus-score.el (gnus-sort-score-files): New function.
+	(gnus-score-file-rank): New function.
+	(gnus-score-find-bnews): Use it.
+
+	* gnus-topic.el (gnus-topic-mode-map): New sort submap.
+	(gnus-topic-sort-groups, gnus-topic-sort-groups-by-alphabet,
+	gnus-topic-sort-groups-by-unread, gnus-topic-sort-groups-by-level,
+	gnus-topic-sort-groups-by-score, gnus-topic-sort-groups-by-rank,
+	gnus-topic-sort-groups-by-method): New commands and keystrokes.
+
+	* gnus-group.el (gnus-group-sort-selected): New command.
+	(gnus-group-sort-selected-flat): New function.
+	(gnus-group-sort-selected-groups-by-alphabet,
+	gnus-group-sort-selected-groups-by-unread,
+	gnus-group-sort-selected-groups-by-level,
+	gnus-group-sort-selected-groups-by-score,
+	gnus-group-sort-selected-groups-by-rank,
+	gnus-group-sort-selected-groups-by-method): New commands and
+	keystrokes. 
+	(gnus-group-make-menu-bar): Updated.
+
+	* gnus-util.el (gnus-make-sort-function): Create a complete
+	function. 
+	(gnus-make-sort-function-1): Renamed.
+
+	* gnus-topic.el (gnus-group-sort-topic): New function.
+
+	* gnus-group.el (gnus-group-sort-flat): Made into own function.
+	(gnus-group-sort-alist-function): New variable.
+
+	* nnmail.el (nnmail-split-history): New variable.
+	(nnmail-split-history): New command.
+
+	* gnus-score.el (gnus-score-adaptive): Don't do any work on
+	pseudos. 
+
+	* gnus-msg.el (gnus-post-method): Allow easier posting from mail
+	groups. 
+
+Thu Sep  5 19:56:41 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.27 is released.
+
 Thu Sep  5 19:50:19 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-xmas.el (gnus-xmas-modeline-glyph): Set string properly.
@@ -13,6 +148,11 @@ Thu Sep  5 18:39:47 1996  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
 
 	* gnus-msg.el (gnus-post-method): Do the right thing in
 	`to-group' groups.
+
+Fri Sep  6 08:05:53 1996  ISO-2022-JP  <morioka@jaist.ac.jp>
+
+	* nnheader.el (nnheader-insert-head): Use
+	nnheader-insert-file-contents-literally. 
 
 Thu Sep  5 08:29:08 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 

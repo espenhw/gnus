@@ -876,7 +876,7 @@ increase the score of each group you read."
     "|" gnus-summary-pipe-output
     "\M-k" gnus-summary-edit-local-kill
     "\M-K" gnus-summary-edit-global-kill
-    "V" gnus-version
+    ;; "V" gnus-version
     "\C-c\C-d" gnus-summary-describe-group
     "q" gnus-summary-exit
     "Q" gnus-summary-exit-no-update
@@ -897,7 +897,6 @@ increase the score of each group you read."
     "\M-*" gnus-cache-remove-article
     "\M-&" gnus-summary-universal-argument
     "\C-l" gnus-recenter
-    "\M-\C-g" gnus-summary-prepare 
     "I" gnus-summary-increase-score
     "L" gnus-summary-lower-score
 
@@ -928,7 +927,7 @@ increase the score of each group you read."
     "K" gnus-summary-kill-same-subject
     "P" gnus-uu-mark-map)
 
-  (gnus-define-keys (gnus-summary-mscore-map "V" gnus-summary-mode-map)
+  (gnus-define-keys (gnus-summary-mscore-map "V" gnus-summary-mark-map)
     "c" gnus-summary-clear-above
     "u" gnus-summary-tick-above
     "m" gnus-summary-mark-above
@@ -984,6 +983,10 @@ increase the score of each group you read."
     "d" gnus-summary-down-thread
     "#" gnus-uu-mark-thread
     "\M-#" gnus-uu-unmark-thread)
+
+  (gnus-define-keys (gnus-summary-buffer-map "Y" gnus-summary-mode-map)
+    "g" gnus-summary-prepare 
+    "c" gnus-summary-insert-cached-articles)
 
   (gnus-define-keys (gnus-summary-exit-map "Z" gnus-summary-mode-map)
     "c" gnus-summary-catchup-and-exit
@@ -1776,6 +1779,13 @@ The following commands are available:
 (defmacro gnus-summary-article-intangible-p ()
   "Say whether this article is intangible or not."
   '(get-text-property (point) 'gnus-intangible))
+
+(defun gnus-article-read-p (article)
+  "Say whether ARTICLE is read or not."
+  (not (or (memq article gnus-newsgroup-marked)
+	   (memq article gnus-newsgroup-unreads)
+	   (memq article gnus-newsgroup-unselected)
+	   (memq article gnus-newsgroup-dormant))))
 
 ;; Some summary mode macros.
 
@@ -2784,28 +2794,20 @@ If NO-DISPLAY, don't generate a summary buffer."
   "Sort THREADS."
   (if (not gnus-thread-sort-functions)
       threads
-    (let ((func (if (= 1 (length gnus-thread-sort-functions))
-		    (car gnus-thread-sort-functions)
-		  `(lambda (t1 t2)
-		     ,(gnus-make-sort-function 
-		       (reverse gnus-thread-sort-functions))))))
-      (gnus-message 7 "Sorting threads...")
-      (prog1
-	  (sort threads func)
-	(gnus-message 7 "Sorting threads...done")))))
+    (gnus-message 7 "Sorting threads...")
+    (prog1
+	(sort threads (gnus-make-sort-function gnus-thread-sort-functions))
+      (gnus-message 7 "Sorting threads...done"))))
 
 (defun gnus-sort-articles (articles)
   "Sort ARTICLES."
   (when gnus-article-sort-functions
-    (let ((func (if (= 1 (length gnus-article-sort-functions))
-		    (car gnus-article-sort-functions)
-		  `(lambda (t1 t2)
-		     ,(gnus-make-sort-function 
-		       (reverse gnus-article-sort-functions))))))
-      (gnus-message 7 "Sorting articles...")
-      (prog1
-	  (setq gnus-newsgroup-headers (sort articles func))
-	(gnus-message 7 "Sorting articles...done")))))
+    (gnus-message 7 "Sorting articles...")
+    (prog1
+	(setq gnus-newsgroup-headers
+	      (sort articles (gnus-make-sort-function 
+			      gnus-article-sort-functions)))
+      (gnus-message 7 "Sorting articles...done"))))
 
 ;; Written by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>.
 (defmacro gnus-thread-header (thread)
@@ -5678,7 +5680,7 @@ Obeys the standard process/prefix convention."
       (error "None of the articles could be interpreted as documents"))
      ((gnus-group-read-ephemeral-group
        (setq vgroup (format
-		     "%s-%s" gnus-newsgroup-name
+		     "nnvirtual:%s-%s" gnus-newsgroup-name
 		     (format-time-string "%Y%m%dT%H%M%S" (current-time))))
        `(nnvirtual ,vgroup (nnvirtual-component-groups ,groups))
        t

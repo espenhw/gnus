@@ -754,8 +754,16 @@ files, while @code{gnus-save-quick-newsrc-hook} is called just before
 saving the @file{.newsrc.eld} file, and
 @code{gnus-save-standard-newsrc-hook} is called just before saving the
 @file{.newsrc} file.  The latter two are commonly used to turn version
-control on or off.  Version control is off by default when saving the
-startup files.
+control on or off.  Version control is on by default when saving the
+startup files.  If you want to backup creation off, say something like: 
+
+@lisp
+(defun turn-off-backup ()
+  (set (make-local-variable 'backup-inhibited) t))
+
+(add-hook 'gnus-save-quick-newsrc-hook 'turn-off-backup)
+(add-hook 'gnus-save-standard-newsrc-hook 'turn-off-backup)
+@end lisp
 
 @vindex gnus-init-file
 When Gnus starts, it will read the @code{gnus-site-init-file} (default
@@ -2043,6 +2051,48 @@ Sort the group buffer alphabetically by backend name
 
 When given a prefix, all these commands will sort in reverse order. 
 
+You can also sort a subset of the groups:
+
+@table @kbd
+@item G P a
+@kindex G P a (Group)
+@findex gnus-group-sort-selected-groups-by-alphabet
+Sort the process/prefixed groups in the group buffer alphabetically by
+group name (@code{gnus-group-sort-selected-groups-by-alphabet}).
+
+@item G P u
+@kindex G P u (Group)
+@findex gnus-group-sort-selected-groups-by-unread
+Sort the process/prefixed groups in the group buffer by the number of
+unread articles (@code{gnus-group-sort-selected-groups-by-unread}).
+
+@item G P l
+@kindex G P l (Group)
+@findex gnus-group-sort-selected-groups-by-level
+Sort the process/prefixed groups in the group buffer by group level
+(@code{gnus-group-sort-selected-groups-by-level}).
+
+@item G P v
+@kindex G P v (Group)
+@findex gnus-group-sort-selected-groups-by-score
+Sort the process/prefixed groups in the group buffer by group score
+(@code{gnus-group-sort-selected-groups-by-score}).
+
+@item G P r
+@kindex G P r (Group)
+@findex gnus-group-sort-selected-groups-by-rank
+Sort the process/prefixed groups in the group buffer by group level
+(@code{gnus-group-sort-selected-groups-by-rank}).
+
+@item G P m
+@kindex G P m (Group)
+@findex gnus-group-sort-selected-groups-by-method
+Sort the process/prefixed groups in the group buffer alphabetically by
+backend name (@code{gnus-group-sort-selected-groups-by-method}).
+
+@end table
+
+
 
 @node Group Maintenance
 @section Group Maintenance
@@ -2230,6 +2280,7 @@ the hook for the group mode:
 @menu 
 * Topic Variables::    How to customize the topics the Lisp Way.
 * Topic Commands::     Interactive E-Z commands.
+* Topic Sorting::      Sorting each topic individually.
 * Topic Topology::     A map of the world.
 * Topic Parameters::   Parameters that apply to all groups in a topic.
 @end menu
@@ -2393,6 +2444,56 @@ Edit the topic parameters (@code{gnus-topic-edit-parameters}).
 @xref{Topic Parameters}.
 
 @end table
+
+
+@node Topic Sorting
+@subsection Topic Sorting
+@cindex topic sorting
+
+You can sort the groups in each topic individially with the following
+commands: 
+
+
+@table @kbd
+@item T S a
+@kindex T S a (Topic)
+@findex gnus-topic-sort-groups-by-alphabet
+Sort the current topic alphabetically by group name
+(@code{gnus-topic-sort-groups-by-alphabet}). 
+
+@item T S u
+@kindex T S u (Topic)
+@findex gnus-topic-sort-groups-by-unread
+Sort the current topic by the number of unread articles
+(@code{gnus-topic-sort-groups-by-unread}).
+
+@item T S l
+@kindex T S l (Topic)
+@findex gnus-topic-sort-groups-by-level
+Sort the current topic by group level
+(@code{gnus-topic-sort-groups-by-level}). 
+
+@item T S v
+@kindex T S v (Topic)
+@findex gnus-topic-sort-groups-by-score
+Sort the current topic by group score
+(@code{gnus-topic-sort-groups-by-score}). 
+
+@item T S r
+@kindex T S r (Topic)
+@findex gnus-topic-sort-groups-by-rank
+Sort the current topic by group level
+(@code{gnus-topic-sort-groups-by-rank}). 
+
+@item T S m
+@kindex T S m (Topic)
+@findex gnus-topic-sort-groups-by-method
+Sort the current topic alphabetically by backend name
+(@code{gnus-topic-sort-groups-by-method}). 
+
+@end table
+
+@xref{Sorting Groups} for more information about group sorting. 
 
 
 @node Topic Topology
@@ -3771,6 +3872,12 @@ Remove the process mark, if any, from the current article
 @findex gnus-summary-unmark-all-processable
 Remove the process mark from all articles
 (@code{gnus-summary-unmark-all-processable}). 
+
+@item M P i
+@kindex M P i (Summary)
+@findex gnus-uu-invert-processable
+Invert the list of process marked articles
+(@code{gnus-uu-invert-processable}). 
 
 @item M P R
 @kindex M P R (Summary)
@@ -6177,6 +6284,7 @@ suggestions you find reasonable.
 @menu
 * Summary Group Information::         Information oriented commands.
 * Searching for Articles::            Multiple article commands.
+* Summary Generation Commands::       (Re)generating the summary buffer.
 * Really Various Summary Commands::   Those pesky non-conformant commands.
 @end menu
 
@@ -6270,6 +6378,24 @@ Perform any operation on all articles that have been marked with
 the process mark (@code{gnus-summary-universal-argument}).
 @end table
 
+@node Summary Generation Commands
+@subsection Summary Generation Commands
+
+@table @kbd
+
+@item Y g
+@kindex Y g (Summary)
+@findex gnus-summary-prepare
+Regenerate the current summary buffer (@code{gnus-summary-prepare}).
+
+@item Y c 
+@kindex Y c (Summary)
+@findex gnus-summary-insert-cached-articles
+Pull all cached articles (for the current group) into the summary buffer
+(@code{gnus-summary-insert-cached-articles}).
+
+@end table
+
 
 @node Really Various Summary Commands
 @subsection Really Various Summary Commands
@@ -6312,11 +6438,6 @@ to have truncation switched off while reading articles.
 @findex gnus-summary-expand-window
 Expand the summary buffer window (@code{gnus-summary-expand-window}).
 If given a prefix, force an @code{article} window configuration. 
-
-@item M-C-g
-@kindex M-C-g (Summary)
-@findex gnus-summary-prepare
-Regenerate the current summary buffer (@code{gnus-summary-prepare}).
 
 @end table
 
@@ -6717,7 +6838,9 @@ Gnus handles @sc{mime} by shoving the articles through
 default.  Set @code{gnus-show-mime} to @code{t} if you want to use
 @sc{mime} all the time.  However, if @code{gnus-strict-mime} is
 non-@code{nil}, the @sc{mime} method will only be used if there are
-@sc{mime} headers in the article.
+@sc{mime} headers in the article.  If you have @code{gnus-show-mime}
+set, then you'll see some unfortunate display glitches in the article
+buffer.  These can't be avoided.
 
 It might be best to just use the toggling functions from the summary
 buffer to avoid getting nasty surprises. (For instance, you enter the
@@ -8045,6 +8168,11 @@ the crossposted articles.  However, not all files systems support hard
 links.  If that's the case for you, set
 @code{nnmail-crosspost-link-function} to @code{copy-file}.  (This
 variable is @code{add-name-to-file} by default.)  
+
+@kindex M-x nnmail-split-history
+@kindex nnmail-split-history
+If you wish to see where the previous mail split put the messages, you
+can use the @kbd{M-x nnmail-split-history} command.
 
 Gnus gives you all the opportunity you could possibly want for shooting
 yourself in the foot.  Let's say you create a group that will contain
@@ -10098,6 +10226,11 @@ then a regexp match is done.
 
 This means that if you have some score entries that you want to apply to
 all groups, then you put those entries in the @file{all.SCORE} file. 
+
+The score files are applied in a semi-random order, although Gnus will
+try to apply the more general score files before the more specific score
+files.  It does this by looking at the number of elements in the score
+file names---discarding the @samp{all} elements.
 
 @item gnus-score-find-hierarchical
 @findex gnus-score-find-hierarchical
@@ -12570,6 +12703,11 @@ variable is @code{nil}, there is no upper read bound.  If it is
 @code{t}, the backends won't try to read the articles piece by piece,
 but read the entire articles.  This makes sense with some versions of
 @code{ange-ftp}. 
+
+@item nnheader-head-chop-length
+@vindex nnheader-head-chop-length
+This variable says how big a piece of each article to read when doing
+the operation described above.
 
 @item nnheader-file-name-translation-alist 
 @vindex nnheader-file-name-translation-alist 

@@ -75,6 +75,17 @@ from that group.")
   "Release SEMAPHORE."
   (setcdr (symbol-value semaphore) nil))
 
+(defmacro gnus-async-with-semaphore (&rest forms)
+  `(unwind-protect
+       (progn
+	 (gnus-async-get-semaphore 'gnus-async-article-semaphore)
+	 ,@forms)
+     (gnus-async-release-semaphore 'gnus-async-article-semaphore)))
+
+(put 'gnus-asynch-with-semaphore 'lisp-indent-function 0)
+(put 'gnus-asynch-with-semaphore 'lisp-indent-hook 0)
+(put 'gnus-asynch-with-semaphore 'edebug-form-spec '(body))
+	
 ;;;
 ;;; Article prefetch
 ;;;
@@ -109,48 +120,41 @@ from that group.")
 (defun gnus-async-prefetch-article (group article summary &optional next)
   "Possibly prefetch several articles starting with ARTICLE."
   (if (not (gnus-buffer-live-p summary))
-      (progn
-	(gnus-async-get-semaphore 'gnus-async-article-semaphore)
-	(setq gnus-async-fetch-list nil)
-	(gnus-async-release-semaphore 'gnus-async-article-semaphore))
+      (gnus-async-with-semaphore
+       (setq gnus-async-fetch-list nil))
     (when (and gnus-asynchronous
 	       (gnus-alive-p))
       (when next
-	(gnus-async-get-semaphore 'gnus-async-article-semaphore)
-	(pop gnus-async-fetch-list)
-	(gnus-async-release-semaphore 'gnus-async-article-semaphore))
+	(gnus-async-with-semaphore
+	 (pop gnus-async-fetch-list)))
       (let ((do-fetch next))
 	(when (and (gnus-group-asynchronous-p group)
 		   (gnus-buffer-live-p summary)
 		   (or (not next)
 		       gnus-async-fetch-list))
-	  (unwind-protect
-	      (progn
-		(gnus-async-get-semaphore 'gnus-async-article-semaphore)
-		(unless next
-		  (setq do-fetch (not gnus-async-fetch-list))
-		  ;; Nix out any outstanding requests.
-		  (setq gnus-async-fetch-list nil)
-		  ;; Fill in the new list.
-		  (let ((n gnus-use-article-prefetch)
-			(data (gnus-data-find-list article))
-			d)
-		    (while (and (setq d (pop data))
-				(if (numberp n) 
-				    (natnump (decf n))
-				  n))
-		      (unless (or (gnus-async-prefetched-article-entry
-				   group (setq article (gnus-data-number d)))
-				  (not (natnump article)))
-			;; Not already fetched -- so we add it to the list.
-			(push article gnus-async-fetch-list)))
-		    (setq gnus-async-fetch-list
-			  (nreverse gnus-async-fetch-list))))
+	  (gnus-async-with-semaphore
+	   (unless next
+	     (setq do-fetch (not gnus-async-fetch-list))
+	     ;; Nix out any outstanding requests.
+	     (setq gnus-async-fetch-list nil)
+	     ;; Fill in the new list.
+	     (let ((n gnus-use-article-prefetch)
+		   (data (gnus-data-find-list article))
+		   d)
+	       (while (and (setq d (pop data))
+			   (if (numberp n) 
+			       (natnump (decf n))
+			     n))
+		 (unless (or (gnus-async-prefetched-article-entry
+			      group (setq article (gnus-data-number d)))
+			     (not (natnump article)))
+		   ;; Not already fetched -- so we add it to the list.
+		   (push article gnus-async-fetch-list)))
+	       (setq gnus-async-fetch-list
+		     (nreverse gnus-async-fetch-list))))
 
-		(when do-fetch
-		  (setq article (car gnus-async-fetch-list))))
-	
-	    (gnus-async-release-semaphore 'gnus-async-article-semaphore))
+	   (when do-fetch
+	     (setq article (car gnus-async-fetch-list))))
     
 	  (when (and do-fetch article)
 	    ;; We want to fetch some more articles.
@@ -163,8 +167,8 @@ from that group.")
 		(let ((nnheader-callback-function
 		       (gnus-make-async-article-function 
 			group article mark summary next))
-		      (nntp-server-buffer (get-buffer
-					   gnus-async-prefetch-article-buffer)))
+		      (nntp-server-buffer 
+		       (get-buffer gnus-async-prefetch-article-buffer)))
 		  (gnus-message 7 "Prefetching article %d in group %s"
 				article group)
 		  (gnus-request-article article group))))))))))
@@ -174,17 +178,16 @@ from that group.")
   `(lambda (arg)
      (save-excursion
        (gnus-async-set-buffer)
-       (gnus-async-get-semaphore 'gnus-async-article-semaphore)
-       (push (list ',(intern (format "%s-%d" group article))
-		   ,mark (set-marker (make-marker)
-				     (point-max))
-		   ,group ,article)
-	     gnus-async-article-alist)
-       (gnus-async-release-semaphore
-	'gnus-async-article-semaphore)
-       (when (gnus-buffer-live-p ,summary)
-	 (gnus-async-prefetch-article 
-	  ,group ,next ,summary t)))))
+       (gnus-async-with-semaphore
+	(push (list ',(intern (format "%s-%d" group article))
+		    ,mark (set-marker (make-marker)
+				      (point-max))
+		    ,group ,article)
+	      gnus-async-article-alist))
+       (if (not (gnus-buffer-live-p ,summary))
+	   (gnus-async-with-semaphore
+	    (setq gnus-async-fetch-list nil))
+	 (gnus-async-prefetch-article ,group ,next ,summary t)))))
 
 (defun gnus-async-request-fetched-article (group article buffer)
   "See whether we have ARTICLE from GROUP and put it in BUFFER."
@@ -204,10 +207,9 @@ from that group.")
   (delete-region (cadr entry) (caddr entry))
   (set-marker (cadr entry) nil)
   (set-marker (caddr entry) nil)
-  (gnus-async-get-semaphore 'gnus-async-article-semaphore)
-  (setq gnus-async-article-alist 
-	(delq entry gnus-async-article-alist))
-  (gnus-async-release-semaphore 'gnus-async-article-semaphore))
+  (gnus-async-with-semaphore
+   (setq gnus-async-article-alist 
+	 (delq entry gnus-async-article-alist))))
 
 (defun gnus-async-prefetch-remove-group (group)
   "Remove all articles belonging to GROUP from the prefetch buffer."

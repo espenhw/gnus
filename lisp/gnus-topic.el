@@ -800,35 +800,42 @@ articles in the topic and its subtopics."
   (setq gnus-topic-mode-map (make-sparse-keymap))
 
   ;; Override certain group mode keys.
-  (gnus-define-keys
-   gnus-topic-mode-map
-   "=" gnus-topic-select-group
-   "\r" gnus-topic-select-group
-   " " gnus-topic-read-group
-   "\C-k" gnus-topic-kill-group
-   "\C-y" gnus-topic-yank-group
-   "\M-g" gnus-topic-get-new-news-this-topic
-   "AT" gnus-topic-list-active
-   "Gp" gnus-topic-edit-parameters
-   gnus-mouse-2 gnus-mouse-pick-topic)
+  (gnus-define-keys gnus-topic-mode-map
+    "=" gnus-topic-select-group
+    "\r" gnus-topic-select-group
+    " " gnus-topic-read-group
+    "\C-k" gnus-topic-kill-group
+    "\C-y" gnus-topic-yank-group
+    "\M-g" gnus-topic-get-new-news-this-topic
+    "AT" gnus-topic-list-active
+    "Gp" gnus-topic-edit-parameters
+    gnus-mouse-2 gnus-mouse-pick-topic)
 
   ;; Define a new submap.
-  (gnus-define-keys
-   (gnus-group-topic-map "T" gnus-group-mode-map)
-   "#" gnus-topic-mark-topic
-   "\M-#" gnus-topic-unmark-topic
-   "n" gnus-topic-create-topic
-   "m" gnus-topic-move-group
-   "D" gnus-topic-remove-group
-   "c" gnus-topic-copy-group
-   "h" gnus-topic-hide-topic
-   "s" gnus-topic-show-topic
-   "M" gnus-topic-move-matching
-   "C" gnus-topic-copy-matching
-   "\C-i" gnus-topic-indent
-   [tab] gnus-topic-indent
-   "r" gnus-topic-rename
-   "\177" gnus-topic-delete))
+  (gnus-define-keys (gnus-group-topic-map "T" gnus-group-mode-map)
+    "#" gnus-topic-mark-topic
+    "\M-#" gnus-topic-unmark-topic
+    "n" gnus-topic-create-topic
+    "m" gnus-topic-move-group
+    "D" gnus-topic-remove-group
+    "c" gnus-topic-copy-group
+    "h" gnus-topic-hide-topic
+    "s" gnus-topic-show-topic
+    "M" gnus-topic-move-matching
+    "C" gnus-topic-copy-matching
+    "\C-i" gnus-topic-indent
+    [tab] gnus-topic-indent
+    "r" gnus-topic-rename
+    "\177" gnus-topic-delete)
+
+  (gnus-define-keys (gnus-topic-sort-map "S" gnus-group-topic-map)
+    "s" gnus-topic-sort-groups
+    "a" gnus-topic-sort-groups-by-alphabet
+    "u" gnus-topic-sort-groups-by-unread
+    "l" gnus-topic-sort-groups-by-level
+    "v" gnus-topic-sort-groups-by-score
+    "r" gnus-topic-sort-groups-by-rank
+    "m" gnus-topic-sort-groups-by-method))
 
 (defun gnus-topic-make-menu-bar ()
   (unless (boundp 'gnus-topic-menu)
@@ -885,6 +892,8 @@ articles in the topic and its subtopics."
 	   'gnus-topic-group-indentation)
       (set (make-local-variable 'gnus-group-update-group-function)
 	   'gnus-topic-update-topics-containing-group)
+      (set (make-local-variable 'gnus-group-sort-alist-function)
+	   'gnus-group-sort-topic)
       (setq gnus-group-change-level-function 'gnus-topic-change-level)
       (setq gnus-goto-missing-group-function 'gnus-topic-goto-missing-group)
       (gnus-make-local-hook 'gnus-check-bogus-groups-hook)
@@ -1199,6 +1208,8 @@ If FORCE, always re-read the active file."
 	gnus-killed-list gnus-zombie-list)
     (gnus-group-list-groups 9 nil 1)))
 
+;;; Topic sorting functions
+
 (defun gnus-topic-edit-parameters (group)
   "Edit the group parameters of GROUP.
 If performed on a topic, edit the topic parameters instead."
@@ -1213,6 +1224,75 @@ If performed on a topic, edit the topic parameters instead."
 	 "Editing the topic parameters."
 	 `(lambda (form)
 	    (gnus-topic-set-parameters ,topic form)))))))
+
+(defun gnus-group-sort-topic (func reverse)
+  "Sort groups in the topics according to FUNC and REVERSE."
+  (let ((alist gnus-topic-alist))
+    (while alist
+      (gnus-topic-sort-topic (pop alist) func reverse))))
+
+(defun gnus-topic-sort-topic (topic func reverse)
+  ;; Each topic only lists the name of the group, while
+  ;; the sort predicates expect group infos as inputs.
+  ;; So we first transform the group names into infos,
+  ;; then sort, and then transform back into group names.
+  (setcdr
+   topic
+   (mapcar
+    (lambda (info) (gnus-info-group info))
+    (sort
+     (mapcar
+      (lambda (group) (gnus-get-info group))
+      (cdr topic))
+     func)))
+  ;; Do the reversal, if necessary.
+  (when reverse
+    (setcdr topic (nreverse (cdr topic)))))
+
+(defun gnus-topic-sort-groups (func &optional reverse)
+  "Sort the current topic according to FUNC.
+If REVERSE, reverse the sorting order."
+  (interactive (list gnus-group-sort-function current-prefix-arg))
+  (let ((topic (assoc (gnus-current-topic) gnus-topic-alist)))
+    (gnus-topic-sort-topic
+     topic (gnus-make-sort-function func) reverse)
+    (gnus-group-list-groups)))
+
+(defun gnus-topic-sort-groups-by-alphabet (&optional reverse)
+  "Sort the current topic alphabetically by group name.
+If REVERSE, sort in reverse order."
+  (interactive "P")
+  (gnus-topic-sort-groups 'gnus-group-sort-by-alphabet reverse))
+
+(defun gnus-topic-sort-groups-by-unread (&optional reverse)
+  "Sort the current topic by number of unread articles.
+If REVERSE, sort in reverse order."
+  (interactive "P")
+  (gnus-topic-sort-groups 'gnus-group-sort-by-unread reverse))
+
+(defun gnus-topic-sort-groups-by-level (&optional reverse)
+  "Sort the current topic by group level.
+If REVERSE, sort in reverse order."
+  (interactive "P")
+  (gnus-topic-sort-groups 'gnus-group-sort-by-level reverse))
+
+(defun gnus-topic-sort-groups-by-score (&optional reverse)
+  "Sort the current topic by group score.
+If REVERSE, sort in reverse order."
+  (interactive "P")
+  (gnus-topic-sort-groups 'gnus-group-sort-by-score reverse))
+
+(defun gnus-topic-sort-groups-by-rank (&optional reverse)
+  "Sort the current topic by group rank.
+If REVERSE, sort in reverse order."
+  (interactive "P")
+  (gnus-topic-sort-groups 'gnus-group-sort-by-rank reverse))
+
+(defun gnus-topic-sort-groups-by-method (&optional reverse)
+  "Sort the current topic alphabetically by backend name.
+If REVERSE, sort in reverse order."
+  (interactive "P")
+  (gnus-topic-sort-groups 'gnus-group-sort-by-method reverse))
 
 (provide 'gnus-topic)
 

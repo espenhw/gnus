@@ -247,12 +247,12 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
 	(gnus-summary-select-article nil nil nil article)
 	(gnus-summary-remove-process-mark article))
       (gnus-copy-article-buffer)
+      (message-goto-body)      
       (let ((message-reply-buffer gnus-article-copy)
 	    (message-reply-headers gnus-current-headers))
 	(message-yank-original)
 	(setq beg (or beg (mark t))))
       (when articles (insert "\n")))
-    
     (push-mark)
     (goto-char beg)))
 
@@ -431,16 +431,8 @@ If SILENT, don't prompt the user."
 		   (cons (or gnus-last-posting-server "") 0))))
 	  method-alist))))
      ;; Override normal method.
-     ((and gnus-post-method
-	   (or (gnus-method-option-p group-method 'post)
-	       (gnus-method-option-p group-method 'post-mail)
-	       (gnus-group-find-parameter group 'to-group)))
+     (gnus-post-method
       gnus-post-method)
-     ;; Perhaps this is a mail group?
-     ((and (not (gnus-member-of-valid 'post group))
-	   (not (gnus-method-option-p group-method 'post-mail))
-	   (not (gnus-group-find-parameter group 'to-group)))
-      group-method)
      ;; Use the normal select method.
      (t gnus-select-method))))
 

@@ -364,18 +364,11 @@ there.")
 		t			; We want all the headers.
 	      (condition-case ()
 		  (progn
-		    ;; First we find the first wanted line.
-		    (nnspool-find-nov-line
+		    ;; Delete unwanted NOV lines.
+		    (nnheader-nov-delete-outside-range
 		     (if fetch-old (max 1 (- (car articles) fetch-old))
-		       (car articles)))
-		    (delete-region (point-min) (point))
-		    ;; Then we find the last wanted line. 
-		    (if (nnspool-find-nov-line 
-			 (progn (while (cdr articles)
-				  (setq articles (cdr articles)))
-				(car articles)))
-			(forward-line 1))
-		    (delete-region (point) (point-max))
+		       (car articles))
+		     (car (last articles)))
 		    ;; If the buffer is empty, this wasn't very successful.
 		    (unless (zerop (buffer-size))
 		      ;; We check what the last article number was.  
@@ -412,42 +405,6 @@ there.")
 	  (nnheader-insert-nov headers)))
       (kill-buffer buf))))
 
-(defun nnspool-find-nov-line (article)
-  (let ((max (point-max))
-	(min (goto-char (point-min)))
-	(cur (current-buffer))
-	(prev (point-min))
-	num found)
-    (while (not found)
-      (goto-char (/ (+ max min) 2))
-      (beginning-of-line)
-      (if (or (= (point) prev)
-	      (eobp))
-	  (setq found t)
-	(setq prev (point))
-	(cond ((> (setq num (read cur)) article)
-	       (setq max (point)))
-	      ((< num article)
-	       (setq min (point)))
-	      (t
-	       (setq found 'yes)))))
-    ;; Now we may have found the article we're looking for, or we
-    ;; may be somewhere near it.
-    (when (and (not (eq found 'yes))
-	       (not (eq num article)))
-      (setq found (point))
-      (while (and (< (point) max)
-		  (or (not (numberp num))
-		      (< num article)))
-	(forward-line 1)
-	(setq found (point))
-	(or (eobp)
-	    (= (setq num (read cur)) article)))
-      (unless (eq num article)
-	(goto-char found)))
-    (beginning-of-line)
-    (eq num article)))
-    
 (defun nnspool-sift-nov-with-sed (articles file)
   (let ((first (car articles))
 	(last (progn (while (cdr articles) (setq articles (cdr articles)))

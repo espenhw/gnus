@@ -38,29 +38,6 @@
 (defun nnheader-xmas-cancel-function-timers (function)
   )
 
-;; Written by Erik Naggum <erik@naggum.no>.
-;; Saved by Steve Baur <steve@miranova.com>.
-(defun nnheader-xmas-insert-file-contents-literally (filename &optional visit beg end replace)
-  "Like `insert-file-contents', q.v., but only reads in the file.
-A buffer may be modified in several ways after reading into the buffer due
-to advanced Emacs features, such as file-name-handlers, format decoding,
-find-file-hooks, etc.
-  This function ensures that none of these modifications will take place."
-  (let (                                ; (file-name-handler-alist nil)
-        (format-alist nil)
-        (after-insert-file-functions nil)
-        (find-buffer-file-type-function 
-         (if (fboundp 'find-buffer-file-type)
-             (symbol-function 'find-buffer-file-type)
-           nil)))
-    (unwind-protect
-        (progn
-          (fset 'find-buffer-file-type (lambda (filename) t))
-          (insert-file-contents filename visit beg end replace))
-      (if find-buffer-file-type-function
-          (fset 'find-buffer-file-type find-buffer-file-type-function)
-        (fmakunbound 'find-buffer-file-type)))))
-
 (defun nnheader-xmas-find-file-noselect (filename &optional nowarn rawfile)
   "Read file FILENAME into a buffer and return the buffer.
 If a buffer exists visiting FILENAME, return that one, but
@@ -172,10 +149,6 @@ The buffer is not selected, just returned to the caller."
 (fset 'nnheader-cancel-timer 'nnheader-xmas-cancel-timer)
 (fset 'nnheader-cancel-function-timers 'nnheader-xmas-cancel-function-timers)
 (fset 'nnheader-find-file-noselect 'nnheader-xmas-find-file-noselect)
-(fset 'nnheader-insert-file-contents-literally
-      (if (fboundp 'insert-file-contents-literally)
-	  'insert-file-contents-literally
-	'nnheader-xmas-insert-file-contents-literally))
 
 (provide 'nnheaderxm)
 

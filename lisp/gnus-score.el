@@ -1162,7 +1162,7 @@ SCORE is the score to add."
 	entry score file)
     (save-excursion
       (setq gnus-score-alist nil)
-      (nnheader-set-temp-buffer "*Score*")
+      (nnheader-set-temp-buffer " *Gnus Scores*")
       (while cache
 	(current-buffer)
 	(setq entry (pop cache)
@@ -1186,20 +1186,18 @@ SCORE is the score to add."
 	      ;; This is a normal score file, so we print it very
 	      ;; prettily. 
 	      (pp score (current-buffer))))
-	  (if (not (gnus-make-directory (file-name-directory file)))
-	      (gnus-error 1 "Can't create directory %s"
-			  (file-name-directory file))
-	    ;; If the score file is empty, we delete it.
-	    (if (zerop (buffer-size))
-		(delete-file file)
-	      ;; There are scores, so we write the file. 
-	      (when (file-writable-p file)
-		(write-region (point-min) (point-max) file nil 'silent)
-		(when gnus-score-after-write-file-function
-		  (funcall gnus-score-after-write-file-function file)))))
-	  (and gnus-score-uncacheable-files
-	       (string-match gnus-score-uncacheable-files file)
-	       (gnus-score-remove-from-cache file))))
+	  (gnus-make-directory (file-name-directory file))
+	  ;; If the score file is empty, we delete it.
+	  (if (zerop (buffer-size))
+	      (delete-file file)
+	    ;; There are scores, so we write the file. 
+	    (when (file-writable-p file)
+	      (write-region (point-min) (point-max) file nil 'silent)
+	      (when gnus-score-after-write-file-function
+		(funcall gnus-score-after-write-file-function file)))))
+	(and gnus-score-uncacheable-files
+	     (string-match gnus-score-uncacheable-files file)
+	     (gnus-score-remove-from-cache file)))
       (kill-buffer (current-buffer)))))
 
 (defun gnus-score-load-files (score-files)
@@ -2040,10 +2038,12 @@ SCORE is the score to add."
 		(set-syntax-table syntab)
 		;; Go through all articles.
 		(while (setq d (pop data))
-		  (when (setq score
-			      (cdr (assq 
-				    (gnus-data-mark d)
-				    gnus-default-adaptive-word-score-alist)))
+		  (when (and
+			 (not (gnus-data-pseudo-p d))
+			 (setq score
+			       (cdr (assq 
+				     (gnus-data-mark d)
+				     gnus-default-adaptive-word-score-alist))))
 		    ;; This article has a mark that should lead to
 		    ;; adaptive word rules, so we insert the subject
 		    ;; and find all words in that string.
@@ -2368,7 +2368,7 @@ GROUP using BNews sys file syntax."
       ;; file, and not end up in some global score file.
       (let ((localscore (gnus-score-file-name group)))
 	(setq ofiles (cons localscore (delete localscore ofiles))))
-      (nreverse ofiles))))
+      (gnus-sort-score-files (nreverse ofiles)))))
 
 (defun gnus-score-find-single (group)
   "Return list containing the score file for GROUP."
@@ -2390,6 +2390,38 @@ This includes the score file for the group and all its parents."
 	       (gnus-score-file-name newsgroup gnus-adaptive-file-suffix))
 	     (setq all (nreverse all)))
      (mapcar 'gnus-score-file-name all))))
+
+(defun gnus-score-file-rank (file)
+  "Return a number that says how specific score FILE is.
+Destroys the current buffer."
+  (when (string-match
+	 (concat "^" (regexp-quote
+		      (expand-file-name
+		       (file-name-as-directory gnus-kill-files-directory))))
+	 file)
+    (setq file (substring file (match-end 0))))
+  (insert file)
+  (goto-char (point-min))
+  (let ((beg (point))
+	elems)
+    (while (re-search-forward "[./]" nil t)
+      (push (buffer-substring beg (1- (point))) 
+	    elems))
+    (erase-buffer)
+    (setq elems (delete "all" elems))
+    (length elems)))
+    
+(defun gnus-sort-score-files (files)
+  "Sort FILES so that the most general files come first."
+  (nnheader-temp-write nil
+    (let ((alist
+	   (mapcar
+	    (lambda (file)
+	      (cons (inline (gnus-score-file-rank file)) file))
+	    files)))
+      (mapcar
+       (lambda (f) (cdr f))
+       (sort alist (lambda (f1 f2) (< (car f1) (car f2))))))))
 
 (defun gnus-score-find-alist (group)
   "Return list of score files for GROUP.

@@ -450,6 +450,14 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
 (defvar gnus-server-alist nil
   "List of available servers.")
 
+(defvar gnus-predefined-server-alist
+  `(("cache"
+     (nnspool "cache"
+	      (nnspool-spool-directory "~/News/cache/")
+	      (nnspool-nov-directory "~/News/cache/")
+	      (nnspool-active-file "~/News/cache/active"))))
+  "List of predefined (convenience) servers.")
+
 (defvar gnus-topic-indentation "") ;; Obsolete variable.
 
 (defconst gnus-article-mark-lists
@@ -605,7 +613,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-cache-enter-remove-article gnus-cached-article-p
       gnus-cache-open gnus-cache-close gnus-cache-update-article)
      ("gnus-cache" :interactive t gnus-jog-cache gnus-cache-enter-article
-      gnus-cache-remove-article)
+      gnus-cache-remove-article gnus-summary-insert-cached-articles)
      ("gnus-score" :interactive t
       gnus-summary-increase-score gnus-summary-lower-score
       gnus-score-flush-cache gnus-score-close

@@ -291,6 +291,9 @@ parameter.  It should return nil, `warn' or `delete'.")
 
 ;;; Internal variables.
 
+(defvar nnmail-split-history nil
+  "List of group/article elements that say where the previous split put messages.")
+
 (defvar nnmail-pop-password nil
   "*Password to use when reading mail from a POP server, if required.")
 
@@ -1153,6 +1156,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 		    (t
 		     nnmail-treat-duplicates))))
 	 (group-art (nreverse (nnmail-article-group artnum-func))))
+    ;; Let the backend save the article (or not).
     (cond
      ((null group-art)
       (delete-region (point-min) (point-max)))
@@ -1160,7 +1164,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (nnmail-cache-insert message-id)
       (funcall func group-art))
      ((eq action 'delete)
-      (delete-region (point-min) (point-max)))
+      (delete-region (point-min) (point-max))
+      (setq group-art nil))
      ((eq action 'warn)
       ;; We insert a warning.
       (let ((case-fold-search t)
@@ -1176,7 +1181,9 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	(nnmail-cache-insert newid)
 	(funcall func group-art)))
      (t
-      (funcall func group-art)))))
+      (funcall func group-art)))
+    ;; Add the group-art list to the history list.
+    (push group-art nnmail-split-history)))
 
 ;;; Get new mail.
 
@@ -1188,6 +1195,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 (defun nnmail-get-new-mail (method exit-func temp
 				   &optional group spool-func)
   "Read new incoming mail."
+  ;; Nix out the previous split history.
+  (setq nnmail-split-history nil)
   (let* ((spools (nnmail-get-spool-files group))
 	 (group-in group)
 	 incoming incomings spool)
@@ -1355,6 +1364,24 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	(cdr elem))))
    status " "))
 
+(defun nnmail-split-history ()
+  "Generate an overview of where the last mail split put articles."
+  (interactive)
+  (unless nnmail-split-history
+    (error "No current split history"))
+  (pop-to-buffer "*nnmail split history*")
+  (buffer-disable-undo (current-buffer))
+  (erase-buffer)
+  (let ((history nnmail-split-history)
+	elem ga)
+    (while (setq elem (pop history))
+      (insert (mapcar (lambda (ga)
+			(concat (car ga) ":" (int-to-string (cdr ga))))
+		      elem
+		      ", ")
+	      "\n"))
+    (goto-char (point-min))))
+	
 (run-hooks 'nnmail-load-hook)
 	    
 (provide 'nnmail)

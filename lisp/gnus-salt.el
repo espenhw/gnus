@@ -43,6 +43,9 @@
 (defvar gnus-mark-unpicked-articles-as-read nil
   "*If non-nil, mark all unpicked articles as read.")
 
+(defvar gnus-pick-elegant-flow t
+  "If non-nil, gnus-pick-start-reading will run gnus-summary-next-group when no articles have been picked.")
+
 (defvar gnus-summary-pick-line-format
   "%-5P %U\%R\%z\%I\%(%[%4L: %-20,20n%]%) %s\n"
   "*The format specification of the lines in pick buffers.
@@ -131,13 +134,17 @@ It accepts the same format specs that `gnus-summary-line-format' does.")
   "Start reading the picked articles.
 If given a prefix, mark all unpicked articles as read."
   (interactive "P")
-  (unless gnus-newsgroup-processable
-    (error "No articles have been picked"))
-  (gnus-summary-limit-to-articles nil)
-  (when (or catch-up gnus-mark-unpicked-articles-as-read)
-    (gnus-summary-limit-mark-excluded-as-read))
-  (gnus-summary-first-unread-article)
-  (gnus-configure-windows (if gnus-pick-display-summary 'article 'pick) t))
+  (if gnus-newsgroup-processable
+      (progn
+        (gnus-summary-limit-to-articles nil)
+        (when (or catch-up gnus-mark-unpicked-articles-as-read)
+              (gnus-summary-limit-mark-excluded-as-read))
+        (gnus-summary-first-unread-article)
+        (gnus-configure-windows 
+	 (if gnus-pick-display-summary 'article 'pick) t))
+    (if gnus-pick-elegant-flow
+        (gnus-summary-next-group)
+      (error "No articles have been picked"))))
 
 (defun gnus-pick-article (&optional arg)
   "Pick the article on the current line.
@@ -163,9 +170,9 @@ If ARG, pick the article on that line instead."
 (defun gnus-pick-next-page ()
   "Go to the next page.  If at the end of the buffer, start reading articles."
   (interactive)
-  (condition-case ()
+  (condition-case nil
       (scroll-up)
-    (gnus-pick-start-reading)))
+    (end-of-buffer (gnus-pick-start-reading))))
 
 ;;;
 ;;; gnus-binary-mode

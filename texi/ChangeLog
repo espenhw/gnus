@@ -1,3 +1,17 @@
+Sat Sep  7 12:14:23 1996  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus.texi (Various Various): Addition.
+
+Fri Sep  6 07:57:26 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Startup Files): Addition.
+	(Splitting Mail): Addition.
+	(Sorting Groups): Addition.
+	(Topic Sorting): New.
+	(Really Various Summary Commands): Deletia.
+	(Summary Generation Commands): New.
+	(Setting Process Marks): Addition.
+
 Thu Sep  5 07:34:27 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Terminology): Addition.

@@ -601,7 +601,7 @@ It will prompt for a password."
 	    (eval (cadr entry))
 	  (funcall (cadr entry)))))))
 
-(defun nntp-after-change-function (beg end len)
+(defun nntp-after-change-function-callback (beg end len)
   (when nntp-process-callback
     (save-match-data
       (if (and (= beg (point-min))
@@ -663,7 +663,8 @@ It will prompt for a password."
 		nntp-process-wait-for wait-for
 		nntp-process-callback callback
 		nntp-process-start-point (point-max)
-		after-change-functions (list 'nntp-after-change-function)))
+		after-change-functions 
+		(list 'nntp-after-change-function-callback)))
 	t)
        (wait-for 
 	(nntp-wait-for process wait-for buffer decode))

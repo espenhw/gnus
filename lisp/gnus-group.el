@@ -196,6 +196,12 @@ variable.")
 
 ;;; Internal variables
 
+(defvar gnus-group-sort-alist-function 'gnus-group-sort-flat
+  "Function for sorting the group buffer.")
+
+(defvar gnus-group-sort-selected-function 'gnus-group-sort-selected-flat
+  "Function for sorting the selected groups in the group buffer.")
+
 (defvar gnus-group-indentation-function nil)
 (defvar gnus-goto-missing-group-function nil)
 (defvar gnus-group-update-group-function nil)
@@ -366,6 +372,15 @@ variable.")
     "r" gnus-group-sort-groups-by-rank
     "m" gnus-group-sort-groups-by-method)
 
+  (gnus-define-keys (gnus-group-sort-map "P" gnus-group-group-map)
+    "s" gnus-group-sort-selected-groups
+    "a" gnus-group-sort-selected-groups-by-alphabet
+    "u" gnus-group-sort-selected-groups-by-unread
+    "l" gnus-group-sort-selected-groups-by-level
+    "v" gnus-group-sort-selected-groups-by-score
+    "r" gnus-group-sort-selected-groups-by-rank
+    "m" gnus-group-sort-selected-groups-by-method)
+
   (gnus-define-keys (gnus-group-list-map "A" gnus-group-mode-map)
     "k" gnus-group-list-killed
     "z" gnus-group-list-zombies
@@ -446,19 +461,27 @@ variable.")
 	["List all groups matching..." gnus-group-list-all-matching t]
 	["List active file" gnus-group-list-active t])
        ("Sort"
-	["Default sort" gnus-group-sort-groups
+	["Default sort" gnus-group-sort-groups t]
+	["Sort by method" gnus-group-sort-groups-by-method t]
+	["Sort by rank" gnus-group-sort-groups-by-rank t]
+	["Sort by score" gnus-group-sort-groups-by-score t]
+	["Sort by level" gnus-group-sort-groups-by-level t]
+	["Sort by unread" gnus-group-sort-groups-by-unread t]
+	["Sort by name" gnus-group-sort-groups-by-alphabet t])
+       ("Sort process/prefixed"
+	["Default sort" gnus-group-sort-selected-groups
 	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
-	["Sort by method" gnus-group-sort-groups-by-method
+	["Sort by method" gnus-group-sort-selected-groups-by-method
 	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
-	["Sort by rank" gnus-group-sort-groups-by-rank
+	["Sort by rank" gnus-group-sort-selected-groups-by-rank
 	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
-	["Sort by score" gnus-group-sort-groups-by-score
+	["Sort by score" gnus-group-sort-selected-groups-by-score
 	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
-	["Sort by level" gnus-group-sort-groups-by-level
+	["Sort by level" gnus-group-sort-selected-groups-by-level
 	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
-	["Sort by unread" gnus-group-sort-groups-by-unread
+	["Sort by unread" gnus-group-sort-selected-groups-by-unread
 	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
-	["Sort by name" gnus-group-sort-groups-by-alphabet
+	["Sort by name" gnus-group-sort-selected-groups-by-alphabet
 	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))])
        ("Mark"
 	["Mark group" gnus-group-mark-group
@@ -1917,27 +1940,23 @@ score file entries for articles to include in the group."
 (defun gnus-group-sort-groups (func &optional reverse)
   "Sort the group buffer according to FUNC.
 If REVERSE, reverse the sorting order."
-  (interactive (list gnus-group-sort-function
-		     current-prefix-arg))
-  (let ((func (cond 
-	       ((not (listp func)) func)
-	       ((null func) func)
-	       ((= 1 (length func)) (car func))
-	       (t `(lambda (t1 t2)
-		     ,(gnus-make-sort-function 
-		       (reverse func)))))))
-    ;; We peel off the dummy group from the alist.
-    (when func
-      (when (equal (car (gnus-info-group gnus-newsrc-alist)) "dummy.group")
-	(pop gnus-newsrc-alist))
-      ;; Do the sorting.
-      (setq gnus-newsrc-alist
-	    (sort gnus-newsrc-alist func))
-      (when reverse
-	(setq gnus-newsrc-alist (nreverse gnus-newsrc-alist)))
-      ;; Regenerate the hash table.
-      (gnus-make-hashtable-from-newsrc-alist)
-      (gnus-group-list-groups))))
+  (interactive (list gnus-group-sort-function current-prefix-arg))
+  (funcall gnus-group-sort-alist-function
+	   (gnus-make-sort-function func) reverse)
+  (gnus-group-list-groups))
+
+(defun gnus-group-sort-flat (func reverse)
+  ;; We peel off the dummy group from the alist.
+  (when func
+    (when (equal (car (gnus-info-group gnus-newsrc-alist)) "dummy.group")
+      (pop gnus-newsrc-alist))
+    ;; Do the sorting.
+    (setq gnus-newsrc-alist
+	  (sort gnus-newsrc-alist func))
+    (when reverse
+      (setq gnus-newsrc-alist (nreverse gnus-newsrc-alist)))
+    ;; Regenerate the hash table.
+    (gnus-make-hashtable-from-newsrc-alist)))
 
 (defun gnus-group-sort-groups-by-alphabet (&optional reverse)
   "Sort the group buffer alphabetically by group name.
@@ -1974,6 +1993,77 @@ If REVERSE, sort in reverse order."
 If REVERSE, sort in reverse order."
   (interactive "P")
   (gnus-group-sort-groups 'gnus-group-sort-by-method reverse))
+
+;;; Selected group sorting.
+
+(defun gnus-group-sort-selected-groups (n func &optional reverse)
+  "Sort the process/prefixed groups."
+  (interactive (list current-prefix-arg gnus-group-sort-function))
+  (let ((groups (gnus-group-process-prefix n)))
+  (funcall gnus-group-sort-selected-function
+	   groups (gnus-make-sort-function func) reverse)
+  (gnus-group-list-groups)))
+
+(defun gnus-group-sort-selected-flat (groups func reverse)
+  (let (entries infos)
+    ;; First find all the group entries for these groups.
+    (while groups
+      (push (nthcdr 2 (gnus-gethash (pop groups) gnus-newsrc-hashtb))
+	    entries))
+    ;; Then sort the infos.
+    (setq infos
+	  (sort
+	   (mapcar
+	    (lambda (entry) (car entry))
+	    (setq entries (nreverse entries)))
+	   func))
+    (when reverse
+      (setq infos (nreverse infos)))
+    ;; Go through all the infos and replace the old entries
+    ;; with the new infos.
+    (while infos
+      (setcar entries (pop infos))
+      (pop entries))
+    ;; Update the hashtable.
+    (gnus-make-hashtable-from-newsrc-alist)))
+
+(defun gnus-group-sort-selected-groups-by-alphabet (&optional reverse)
+  "Sort the group buffer alphabetically by group name.
+If REVERSE, sort in reverse order."
+  (interactive "P")
+  (gnus-group-sort-selected-groups 'gnus-group-sort-by-alphabet reverse))
+
+(defun gnus-group-sort-selected-groups-by-unread (&optional reverse)
+  "Sort the group buffer by number of unread articles.
+If REVERSE, sort in reverse order."
+  (interactive "P")
+  (gnus-group-sort-selected-groups 'gnus-group-sort-by-unread reverse))
+
+(defun gnus-group-sort-selected-groups-by-level (&optional reverse)
+  "Sort the group buffer by group level.
+If REVERSE, sort in reverse order."
+  (interactive "P")
+  (gnus-group-sort-selected-groups 'gnus-group-sort-by-level reverse))
+
+(defun gnus-group-sort-selected-groups-by-score (&optional reverse)
+  "Sort the group buffer by group score.
+If REVERSE, sort in reverse order."
+  (interactive "P")
+  (gnus-group-sort-selected-groups 'gnus-group-sort-by-score reverse))
+
+(defun gnus-group-sort-selected-groups-by-rank (&optional reverse)
+  "Sort the group buffer by group rank.
+If REVERSE, sort in reverse order."
+  (interactive "P")
+  (gnus-group-sort-selected-groups 'gnus-group-sort-by-rank reverse))
+
+(defun gnus-group-sort-selected-groups-by-method (&optional reverse)
+  "Sort the group buffer alphabetically by backend name.
+If REVERSE, sort in reverse order."
+  (interactive "P")
+  (gnus-group-sort-selected-groups 'gnus-group-sort-by-method reverse))
+
+;;; Sorting predicates.
 
 (defun gnus-group-sort-by-alphabet (info1 info2)
   "Sort alphabetically."

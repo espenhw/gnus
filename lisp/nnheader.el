@@ -42,6 +42,9 @@
 (defvar nnheader-max-head-length 4096
   "*Max length of the head of articles.")
 
+(defvar nnheader-head-chop-length 2048
+  "*Length of each read operation when trying to fetch HEAD headers.")
+
 (defvar nnheader-file-name-translation-alist nil
   "*Alist that says how to translate characters in file names.
 For instance, if \":\" is illegal as a file character in file names
@@ -264,6 +267,57 @@ on your system, you could say something like:
   (forward-char -1)
   (insert "."))
 
+(defun nnheader-nov-delete-outside-range (beg end)
+  "Delete all NOV lines that lie outside the BEG to END range."
+  ;; First we find the first wanted line.
+  (nnheader-find-nov-line beg)
+  (delete-region (point-min) (point))
+  ;; Then we find the last wanted line. 
+  (when (nnheader-find-nov-line end)
+    (forward-line 1))
+  (delete-region (point) (point-max)))
+
+(defun nnheader-find-nov-line (article)
+  "Put point at the NOV line that start with ARTICLE.
+If ARTICLE doesn't exist, put point where that line
+would have been.  The function will return non-nil if
+the line could be found."
+  ;; This function basically does a binary search.
+  (let ((max (point-max))
+	(min (goto-char (point-min)))
+	(cur (current-buffer))
+	(prev (point-min))
+	num found)
+    (while (not found)
+      (goto-char (/ (+ max min) 2))
+      (beginning-of-line)
+      (if (or (= (point) prev)
+	      (eobp))
+	  (setq found t)
+	(setq prev (point))
+	(cond ((> (setq num (read cur)) article)
+	       (setq max (point)))
+	      ((< num article)
+	       (setq min (point)))
+	      (t
+	       (setq found 'yes)))))
+    ;; Now we may have found the article we're looking for, or we
+    ;; may be somewhere near it.
+    (when (and (not (eq found 'yes))
+	       (not (eq num article)))
+      (setq found (point))
+      (while (and (< (point) max)
+		  (or (not (numberp num))
+		      (< num article)))
+	(forward-line 1)
+	(setq found (point))
+	(or (eobp)
+	    (= (setq num (read cur)) article)))
+      (unless (eq num article)
+	(goto-char found)))
+    (beginning-of-line)
+    (eq num article)))
+
 ;; Various cruft the backends and Gnus need to communicate.
 
 (defvar nntp-server-buffer nil)
@@ -310,10 +364,11 @@ on your system, you could say something like:
 	(nnheader-insert-file-contents-literally file)
       ;; Read 1K blocks until we find a separator.
       (let ((beg 0)
-	    format-alist 
-	    (chop 1024))
-	(while (and (eq chop (nth 1 (insert-file-contents
-				     file nil beg (incf beg chop))))
+	    format-alist)
+	(while (and (eq nnheader-head-chop-length
+			(nth 1 (nnheader-insert-file-contents-literally
+				file nil beg
+				(incf beg nnheader-head-chop-length))))
 		    (prog1 (not (search-forward "\n\n" nil t)) 
 		      (goto-char (point-max)))
 		    (or (null nnheader-max-head-length)
@@ -622,12 +677,20 @@ If FILE, find the \".../etc/PACKAGE\" file instead."
       (when (string-match (car ange-ftp-path-format) path)
 	(ange-ftp-re-read-dir path)))))
 
+(defun nnheader-insert-file-contents-literally (filename &optional visit beg end replace)
+  "Like `insert-file-contents', q.v., but only reads in the file.
+A buffer may be modified in several ways after reading into the buffer due
+to advanced Emacs features, such as file-name-handlers, format decoding,
+find-file-hooks, etc.
+  This function ensures that none of these modifications will take place."
+  (let ((format-alist nil)
+        (after-insert-file-functions nil))
+    (insert-file-contents filename visit beg end replace)))
+
 (fset 'nnheader-run-at-time 'run-at-time)
 (fset 'nnheader-cancel-timer 'cancel-timer)
 (fset 'nnheader-cancel-function-timers 'cancel-function-timers)
 (fset 'nnheader-find-file-noselect 'find-file-noselect)
-(fset 'nnheader-insert-file-contents-literally
-      'insert-file-contents-literally)
 
 (when (string-match "XEmacs\\|Lucid" emacs-version)
   (require 'nnheaderxm))
