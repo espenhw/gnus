@@ -2485,9 +2485,20 @@ always hide."
 	  (article-really-strip-banner
 	   (gnus-parameter-banner gnus-newsgroup-name)))
 	(when gnus-article-address-banner-alist
-	  (let ((from (caar (mail-header-parse-addresses
-			     (gnus-fetch-original-field "from")))))
-	    (when from
+	  ;; It is necessary to encode from fields before checking,
+	  ;; because `mail-header-parse-addresses' does not work
+	  ;; (reliably) on decoded headers.  And more, it is
+	  ;; impossible to use `gnus-fetch-original-field' here,
+	  ;; because `article-strip-banner' may be called in draft
+	  ;; buffers to preview them.
+	  (let ((from (save-restriction
+			(widen)
+			(article-narrow-to-head)
+			(mail-fetch-field "from"))))
+	    (when (and from
+		       (setq from
+			     (caar (mail-header-parse-addresses
+				    (mail-encode-encoded-word-string from)))))
 	      (catch 'found
 		(dolist (pair gnus-article-address-banner-alist)
 		  (when (string-match (car pair) from)
