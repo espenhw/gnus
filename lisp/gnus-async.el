@@ -35,7 +35,7 @@
   "Support for asynchronous operations."
   :group 'gnus)
 
-(defcustom gnus-asynchronous t
+(defcustom gnus-asynchronous nil
   "*If nil, inhibit all Gnus asynchronicity.
 If non-nil, let the other asynch variables be heeded."
   :group 'gnus-asynchronous
