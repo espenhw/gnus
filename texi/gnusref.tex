@@ -1,7 +1,7 @@
 %% include file for the Gnus refcard and booklet
 
 \def\progver{5.10}\def\refver{5.10-1} % program and refcard versions
-\def\date{Oct 13th, 2001}
+\def\date{Dec 15th, 2002}
 \def\author{Gnus Bugfixing Girls + Boys $<$bugs@gnus.org$>$}
 
 %%
@@ -53,10 +53,10 @@
 \newcommand{\Notes}{%
   \subsection*{Notes}
   {\esamepage
-    Gnus is complex. Currently it has some 346 interactive (user-callable)
-    functions. Of these 279 are in the two major modes (Group and
+    Gnus is complex. Currently it has some 876 interactive (user-callable)
+    functions. Of these 618 are in the two major modes (Group and
     Summary/Article). Many of these functions have more than one binding, some
-    have 3 or even 4 bindings. The total number of keybindings is 389. So in
+    have 3 or even 4 bindings. The total number of keybindings is 677. So in
     order to save 40\% space, every function is listed only once on this
     \guide, under the ``more logical'' binding. Alternative bindings are given
     in parentheses in the beginning of the description.
@@ -238,6 +238,9 @@
     C-c C-i & Gnus online-manual ({\bf info}).\\
     C-x C-t & {\bf Transpose} two groups.\\
     H f     & Fetch this group's {\bf FAQ} (using ange-ftp).\\
+    H c     & Display this group's {\bf charter}. [Prefix: query for group]\\
+    H C     & Display this group's {\bf control message} (using
+    ange-ftp). [Prefix: query for group]\\
     H v     & (V) Display the Gnus {\bf version} number.\\
     H d     & (C-c C-d) Show the {\bf description} of this group
     [Prefix: re-read from server].\\ 
