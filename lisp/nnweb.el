@@ -59,16 +59,16 @@ and `altavista'.")
 
 (defvar nnweb-type-definition
   '((dejanews
-     (article . nnweb-dejanews-wash-article)
+     (article . ignore)
      (map . nnweb-dejanews-create-mapping)
      (search . nnweb-dejanews-search)
      (address . "http://www.deja.com/=dnc/qs.xp")
      (identifier . nnweb-dejanews-identity))
     (dejanewsold
-     (article . nnweb-dejanews-wash-article)
+     (article . ignore)
      (map . nnweb-dejanews-create-mapping)
      (search . nnweb-dejanewsold-search)
-     (address . "http://wwww.deja.com/dnquery.xp")
+     (address . "http://www.deja.com/dnquery.xp")
      (identifier . nnweb-dejanews-identity))
     (reference
      (article . nnweb-reference-wash-article)
@@ -265,6 +265,7 @@ and `altavista'.")
 
 (defun nnweb-write-active ()
   "Save the active file."
+  (gnus-make-directory nnweb-directory)
   (with-temp-file (nnheader-concat nnweb-directory "active")
     (prin1 `(setq nnweb-group-alist ',nnweb-group-alist) (current-buffer))))
 
@@ -356,51 +357,42 @@ and `altavista'.")
 	    (case-fold-search t)
 	    (active (or (cadr (assoc nnweb-group nnweb-group-alist))
 			(cons 1 0)))
-	    Subject (Score "0") Date Newsgroup Author
-	    map url)
+	    subject date from
+	    map url parse a table group)
 	(while more
 	  ;; Go through all the article hits on this page.
 	  (goto-char (point-min))
-	  (nnweb-decode-entities)
-	  (goto-char (point-min))
-	  (while (re-search-forward "^ <P>\n" nil t)
-	    (narrow-to-region
-	     (point)
-	     (cond ((re-search-forward "^ <P>\n" nil t)
-		    (match-beginning 0))
-		   ((search-forward "\n\n" nil t)
-		    (point))
-		   (t
-		    (point-max))))
-	    (goto-char (point-min))
-	    (looking-at ".*HREF=\"\\([^\"]+\\)\"\\(.*\\)")
-	    (setq url (match-string 1))
- 	    (let ((begin (point)))
- 	      (nnweb-remove-markup)
- 	      (goto-char begin)
- 	      (while (search-forward "\t" nil t)
- 		(replace-match " "))
- 	      (goto-char begin)
- 	      (end-of-line)
- 	      (setq Subject (buffer-substring begin (point)))
- 	      (if (re-search-forward
- 		   "^ Newsgroup: \\(.*\\)\n Posted on \\([0-9/]+\\) by \\(.*\\)$" nil t)
- 		  (setq Newsgroup (match-string 1)
- 			Date (match-string 2)
- 			Author (match-string 3))))
-	    (widen)
-	    (incf i)
-	    (unless (nnweb-get-hashtb url)
-	      (push
-	       (list
-		(incf (cdr active))
-		(make-full-mail-header
-		 (cdr active) Subject Author Date
-		 (concat "<" (nnweb-identifier url) "@dejanews>")
-		 nil 0 (string-to-int Score) url))
-	       map)
-	      (nnweb-set-hashtb (cadar map) (car map))))
+	  (setq parse (w3-parse-buffer (current-buffer))
+		table (nth 1 (nnweb-parse-find-all 'table parse)))
+	  (dolist (row (nth 2 (car (nth 2 table))))
+	    (setq a (nnweb-parse-find 'a row)
+		  url (cdr (assq 'href (nth 1 a)))
+		  text (nnweb-text row))
+	    (when a
+	      (setq subject (nth 2 text)
+		    group (nth 4 text)
+		    date (nth 5 text)
+		    from (nth 6 text))
+	      (string-match "\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)" date)
+	      (setq date (format "%s %s %s"
+				 (car (rassq (string-to-number
+					      (match-string 2 date))
+					     parse-time-months))
+				 (match-string 3 date) (match-string 1 date)))
+	      (incf i)
+	      (setq url (concat url "&fmt=text"))
+	      (unless (nnweb-get-hashtb url)
+		(push
+		 (list
+		  (incf (cdr active))
+		  (make-full-mail-header
+		   (cdr active) (concat subject " (" group ")") from date
+		   (concat "<" (nnweb-identifier url) "@dejanews>")
+		   nil 0 0 url))
+		 map)
+		(nnweb-set-hashtb (cadar map) (car map)))))
 	  ;; See whether there is a "Get next 20 hits" button here.
+	  (goto-char (point-min))
 	  (if (or (not (re-search-forward
 			"HREF=\"\\([^\"]+\\)\"[<>b]+Next result" nil t))
 		  (>= i nnweb-max-hits))
@@ -412,27 +404,6 @@ and `altavista'.")
 	;; Return the articles in the right order.
 	(setq nnweb-articles
 	      (sort (nconc nnweb-articles map) 'car-less-than-car))))))
-
-(defun nnweb-dejanews-wash-article ()
-  (let ((case-fold-search t))
-    (goto-char (point-min))
-    (re-search-forward "<PRE>" nil t)
-    (delete-region (point-min) (point))
-    (re-search-forward "</PRE>" nil t)
-    (delete-region (point) (point-max))
-    (nnweb-remove-markup)
-    (goto-char (point-min))
-    (while (and (looking-at " *$")
-		(not (eobp)))
-      (gnus-delete-line))
-    (while (looking-at "\\(^[^ ]+:\\) *")
-      (replace-match "\\1 " t)
-      (forward-line 1))
-    (when (re-search-forward "\n\n+" nil t)
-      (replace-match "\n" t t))
-    (goto-char (point-min))
-    (when (search-forward "[More Headers]" nil t)
-      (replace-match "" t t))))
 
 (defun nnweb-dejanews-search (search)
   (nnweb-insert
@@ -471,7 +442,7 @@ and `altavista'.")
 
 (defun nnweb-dejanews-identity (url)
   "Return an unique identifier based on URL."
-  (if (string-match "recnum=\\([0-9]+\\)" url)
+  (if (string-match "AN=\\([0-9]+\\)" url)
       (match-string 1 url)
     url))
 

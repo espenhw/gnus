@@ -1392,7 +1392,7 @@ newsgroup."
 	   t)
 	 (condition-case ()
 	     (inline (gnus-request-group group dont-check method))
-	   (error nil)
+	   ;(error nil)
 	   (quit nil))
 	 (setq active (gnus-parse-active))
 	 ;; If there are no articles in the group, the GROUP

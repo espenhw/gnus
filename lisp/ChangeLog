@@ -1,5 +1,8 @@
 1999-11-12 05:04:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnweb.el (nnweb-dejanews-create-mapping): Work with new deja. 
+	(nnweb-dejanews-wash-article): Removed.
+
 	* gnus-msg.el (gnus-configure-posting-styles): Don't insert unless 
 	we mean it.
 
