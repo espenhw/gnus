@@ -43,8 +43,8 @@
   "*Type of the file.
 One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 `rfc934', `rfc822-forward', `mime-parts', `standard-digest',
-`slack-digest', `clari-briefs', `nsmail', `outlook', `oe-dbx' or
-`guess'.")
+`slack-digest', `clari-briefs', `nsmail', `outlook', `oe-dbx',
+`mailman' or `guess'.")
 
 (defvoo nndoc-post-type 'mail
   "*Whether the nndoc group is `mail' or `post'.")
@@ -80,6 +80,10 @@ from the document.")
     (rfc934
      (article-begin . "^--.*\n+")
      (body-end . "^--.*$")
+     (prepare-body-function . nndoc-unquote-dashes))
+    (mailman
+     (article-begin . "^--__--__--\n\nMessage:")
+     (body-end . "^--__--__--$")
      (prepare-body-function . nndoc-unquote-dashes))
     (clari-briefs
      (article-begin . "^ \\*")
@@ -467,6 +471,10 @@ from the document.")
 	     (not (re-search-forward "^Subject:.*digest" nil t))
 	     (not (re-search-backward "^From:" nil t 2))
 	     (not (re-search-forward "^From:" nil t 2)))
+    t))
+
+(defun nndoc-mailman-type-p ()
+  (when (re-search-forward "^--__--__--\n+" nil t)
     t))
 
 (defun nndoc-rfc822-forward-type-p ()

@@ -1,3 +1,9 @@
+2001-09-29  Simon Josefsson  <jas@extundo.com>
+
+	* nndoc.el (nndoc-article-type): Add mailman.
+	(nndoc-type-alist): Ditto.
+	(nndoc-mailman-type-p): New function.
+
 2001-09-28 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-xmas.el (gnus-article-x-face-command): Merge it into
