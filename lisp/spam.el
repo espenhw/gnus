@@ -963,6 +963,7 @@ Respects the process/prefix convention."
     (spam-use-regex-body  	 	. 	spam-check-regex-body)
     (spam-use-whitelist  	 	. 	spam-check-whitelist)
     (spam-use-BBDB	 	 	. 	spam-check-BBDB)
+    (spam-use-BBDB-exclusive 	 	. 	spam-check-BBDB)
     (spam-use-ifile	 	 	. 	spam-check-ifile)
     (spam-use-spamoracle         	. 	spam-check-spamoracle)
     (spam-use-stat	 	 	. 	spam-check-stat)
