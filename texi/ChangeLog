@@ -1,3 +1,8 @@
+2002-09-01  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Gnus Unplugged): Fix, agent is now enabled by default.
+	(Agent as Cache): New.
+
 2002-08-26  Jesper harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Group Information): Add gnus-group-fetch-charter and

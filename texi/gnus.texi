@@ -739,6 +739,7 @@ Gnus Unplugged
 * Agent Basics::                How it all is supposed to work.
 * Agent Categories::            How to tell the Gnus Agent what to download.
 * Agent Commands::              New commands for all the buffers.
+* Agent as Cache::              The Agent is a big cache too.
 * Agent Expiry::                How to make old articles go away.
 * Agent and IMAP::              How to use the Agent with IMAP.
 * Outgoing Messages::           What happens when you post/mail something?
@@ -16215,24 +16216,8 @@ for some years, but doing that's a bore.  Moving the news server
 functionality up to the newsreader makes sense if you're the only person
 reading news on a machine.
 
-Using Gnus as an ``offline'' newsreader is quite simple.
-
-@itemize @bullet
-@item
-First, set up Gnus as you would do if you were running it on a machine
-that has full connection to the net.  Go ahead.  I'll still be waiting
-here.
-
-@item
-Then, put the following magical incantation in your @file{.gnus.el}
-file:
-
-@lisp
-(setq gnus-agent t)
-@end lisp
-@end itemize
-
-That's it.  Gnus is now an ``offline'' newsreader.
+Setting up Gnus as an ``offline'' newsreader is quite simple.  In
+fact, you don't even have to configure anything.
 
 Of course, to use it as such, you have to learn a few new commands.
 
@@ -16240,6 +16225,7 @@ Of course, to use it as such, you have to learn a few new commands.
 * Agent Basics::                How it all is supposed to work.
 * Agent Categories::            How to tell the Gnus Agent what to download.
 * Agent Commands::              New commands for all the buffers.
+* Agent as Cache::              The Agent is a big cache too.
 * Agent Expiry::                How to make old articles go away.
 * Agent and IMAP::              How to use the Agent with IMAP.
 * Outgoing Messages::           What happens when you post/mail something?
@@ -16307,9 +16293,11 @@ the Agent.
 Decide which servers should be covered by the Agent.  If you have a mail
 back end, it would probably be nonsensical to have it covered by the
 Agent.  Go to the server buffer (@kbd{^} in the group buffer) and press
-@kbd{J a} the server (or servers) that you wish to have covered by the
-Agent (@pxref{Server Agent Commands}).  This will typically be only the
-primary select method, which is listed on the bottom in the buffer.
+@kbd{J a} on the server (or servers) that you wish to have covered by the
+Agent (@pxref{Server Agent Commands}), or @kbd{J r} on automatically
+added servers you do not wish to have covered by the Agent.  By default, 
+all @code{nntp} and @code{nnimap} groups in @code{gnus-select-method} and
+@code{gnus-secondary-select-methods} are agentized.
 
 @item
 Decide on download policy.  @xref{Agent Categories}.
@@ -16842,6 +16830,22 @@ Agent (@code{gnus-agent-remove-server}).
 @end table
 
 
+@node Agent as Cache
+@subsection Agent as Cache
+
+When Gnus is plugged, it is not efficient to download headers or
+articles from the server again, if they are already stored in the
+Agent.  So, Gnus normally only downloads headers once, and stores them
+in the Agent.  These headers are later used when generating the summary
+buffer, regardless of whether you are plugged or unplugged.  Articles
+are not cached in the Agent by default though (that would potentially
+consume lots of disk space), but if you have already downloaded an
+article into the Agent, Gnus will not download the article from the
+server again but use the locally stored copy instead.
+
+This behaviour can be controlled by @code{gnus-agent-cache}
+(@pxref{Agent Variables}).
+
 @node Agent Expiry
 @subsection Agent Expiry
 
@@ -16897,23 +16901,22 @@ are kept on the @sc{imap} server, rather than in @code{.newsrc} as is the
 case for nntp.  Thus Gnus need to remember flag changes when
 disconnected, and synchronize these flags when you plug back in.
 
-Gnus keep track of flag changes when reading nnimap groups under the
-Agent by default.  When you plug back in, by default Gnus will check if
-you have any changed any flags and ask if you wish to synchronize these
-with the server.  This behavior is customizable with
-@code{gnus-agent-synchronize-flags}.
+Gnus keeps track of flag changes when reading nnimap groups under the
+Agent.  When you plug back in, Gnus will check if you have any changed
+any flags and ask if you wish to synchronize these with the server.
+The behavior is customizable by @code{gnus-agent-synchronize-flags}.
 
 @vindex gnus-agent-synchronize-flags
 If @code{gnus-agent-synchronize-flags} is @code{nil}, the Agent will
-never automatically synchronize flags.  If it is @code{ask}, the
-default, the Agent will check if you made any changes and if so ask if
-you wish to synchronize these when you re-connect.  If it has any other
-value, all flags will be synchronized automatically.
+never automatically synchronize flags.  If it is @code{ask}, which is
+the default, the Agent will check if you made any changes and if so
+ask if you wish to synchronize these when you re-connect.  If it has
+any other value, all flags will be synchronized automatically.
 
-If you do not wish to automatically synchronize flags when you
-re-connect, this can be done manually with the
+If you do not wish to synchronize flags automatically when you
+re-connect, you can do it manually with the
 @code{gnus-agent-synchronize-flags} command that is bound to @kbd{J Y}
-in the group buffer by default.
+in the group buffer.
 
 Some things are currently not implemented in the Agent that you'd might
 expect from a disconnected @sc{imap} client, including:
@@ -16942,8 +16945,8 @@ directory.  It's emptied when you synchronize flags.
 @subsection Outgoing Messages
 
 When Gnus is unplugged, all outgoing messages (both mail and news) are
-stored in the draft groups (@pxref{Drafts}).  You can view them there
-after posting, and edit them at will.
+stored in the draft group ``queue'' (@pxref{Drafts}).  You can view
+them there after posting, and edit them at will.
 
 When Gnus is plugged again, you can send the messages either from the
 draft group with the special commands available there, or you can use
@@ -16982,8 +16985,9 @@ Hook run when after finishing fetching articles.
 
 @item gnus-agent-cache
 @vindex gnus-agent-cache
-Variable to control whether use the locally stored @sc{nov} and articles when
-plugged.
+Variable to control whether use the locally stored @sc{nov} and
+articles when plugged, e.g. essentially using the Agent as a cache.
+The default is non-nil, which means to use the Agent as a cache.
 
 @item gnus-agent-go-online
 @vindex gnus-agent-go-online
@@ -17018,7 +17022,7 @@ setup, you may be able to use something like the following as your
 
 ;;; Make Gnus into an offline newsreader.
 ;;; (gnus-agentize) ; The obsolete setting.
-(setq gnus-agent t)
+;;; (setq gnus-agent t) ; Now the default.
 @end lisp
 
 That should be it, basically.  Put that in your @file{~/.gnus.el} file,
