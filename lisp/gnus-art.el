@@ -594,7 +594,8 @@ displayed by the first non-nil matching CONTENT face."
   "Function used to decode headers.")
 
 (defvar gnus-article-dumbquotes-map
-  '(("\202" ",")
+  '(("\200" "EUR")
+    ("\202" ",")
     ("\203" "f")
     ("\204" ",,")
     ("\205" "...")
