@@ -826,6 +826,8 @@ XEmacs compatibility workaround."
 Warning: Don't insert text immediately after the image."
   (let ((begin (point))
 	extent)
+    (if (and (bobp) (not string))
+	(setq string " "))
     (if string 
 	(insert string)
       (setq begin (1- begin)))
