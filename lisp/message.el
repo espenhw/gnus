@@ -3940,7 +3940,9 @@ give as trustworthy answer as possible."
 (defun message-make-mft ()
   "Return the Mail-Followup-To header."
   (let* ((case-fold-search t)
-	 (msg-recipients (message-options-get 'message-recipients))
+	 (to (message-fetch-field "To"))
+	 (cc (message-fetch-field "cc"))
+	 (msg-recipients (concat to (and to cc ", ") cc))
 	 (recipients
 	  (mapcar 'mail-strip-quoted-names
 		  (message-tokenize-header msg-recipients)))
