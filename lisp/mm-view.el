@@ -197,17 +197,24 @@
     (setq mm-w3m-setup t))
   (setq w3m-display-inline-images mm-inline-text-html-with-images))
 
+(defun mm-w3m-cid-retrieve-1 (url handle)
+  (dolist (elem handle)
+    (when (and (listp elem)
+	       (equal url (mm-handle-id elem)))
+      (mm-insert-part elem)
+      (throw 'found-handle (mm-handle-media-type elem)))))
+
 (defun mm-w3m-cid-retrieve (url &rest args)
   "Insert a content pointed by URL if it has the cid: scheme."
   (when (string-match "\\`cid:" url)
     (setq url (concat "<" (substring url (match-end 0)) ">"))
     (catch 'found-handle
-      (dolist (handle (with-current-buffer w3m-current-buffer
-			gnus-article-mime-handles))
-	(when (and (listp handle)
-		   (equal url (mm-handle-id handle)))
-	  (mm-insert-part handle)
-	  (throw 'found-handle (mm-handle-media-type handle)))))))
+      (let ((handles (with-current-buffer w3m-current-buffer
+		       gnus-article-mime-handles)))
+	(if (mm-multiple-handles handles)
+	    (dolist (handle handles)
+	      (mm-w3m-cid-retrieve-1 url handle))
+	  (mm-w3m-cid-retrieve-1 url handles))))))
 
 (eval-and-compile
   (unless (or (featurep 'xemacs)

@@ -1,3 +1,15 @@
+2003-11-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-decode.el (mm-dissect-buffer): Save start="<id>" value
+	contained in Content-Type header of multipart/related messages.
+
+	* mm-view.el (mm-w3m-cid-retrieve-1): New function.
+	(mm-w3m-cid-retrieve): Use it.
+
+	* mml.el (mml-generate-mime-1): Add start="<id>" to Content-Type.
+	(mml-insert-mime-headers): Insert Content-ID header.
+	(mml-insert-mml-markup): Insert start="<id>" value.
+
 2003-11-12  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* nnml.el (nnml-request-accept-article): pass sender to

@@ -528,7 +528,8 @@ Postpone undisplaying of viewers for types in
 	  ((equal type "multipart")
 	   (let ((mm-dissect-default-type (if (equal subtype "digest")
 					      "message/rfc822"
-					    "text/plain")))
+					    "text/plain"))
+		 (start (cdr (assq 'start (cdr ctl)))))
 	     (add-text-properties 0 (length (car ctl))
 				  (mm-alist-to-plist (cdr ctl)) (car ctl))
 
@@ -538,10 +539,9 @@ Postpone undisplaying of viewers for types in
 	     ;; the mm-handle API so we simply store the multipart buffert
 	     ;; name as a text property of the "multipart/whatever" string.
 	     (add-text-properties 0 (length (car ctl))
-				  (list 'buffer (mm-copy-to-buffer))
-				  (car ctl))
-	     (add-text-properties 0 (length (car ctl))
-				  (list 'from from)
+				  (list 'buffer (mm-copy-to-buffer)
+					'from from
+					'start start)
 				  (car ctl))
 	     (cons (car ctl) (mm-dissect-multipart ctl))))
 	  (t

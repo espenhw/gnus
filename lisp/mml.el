@@ -530,8 +530,11 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	      (funcall (cdr handler) cont)
 	    ;; No specific handler.  Use default one.
 	    (let ((mml-boundary (mml-compute-boundary cont)))
-	      (insert (format "Content-Type: multipart/%s; boundary=\"%s\"\n"
-			      type mml-boundary))
+	      (insert (format "Content-Type: multipart/%s; boundary=\"%s\""
+			      type mml-boundary)
+		      (if (cdr (assq 'start cont))
+			  (format "; start=\"%s\"\n" (cdr (assq 'start cont)))
+			"\n"))
 	      (let ((cont cont) part)
 		(while (setq part (pop cont))
 		  ;; Skip `multipart' and attributes.
@@ -607,7 +610,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	  mml-base-boundary))
 
 (defun mml-insert-mime-headers (cont type charset encoding flowed)
-  (let (parameters disposition description)
+  (let (parameters id disposition description)
     (setq parameters
 	  (mml-parameter-string
 	   cont mml-content-type-parameters))
@@ -629,6 +632,8 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	(mml-insert-parameter-string
 	 cont mml-content-type-parameters))
       (insert "\n"))
+    (when (setq id (cdr (assq 'id cont)))
+      (insert "Content-ID: " id "\n"))
     (setq parameters
 	  (mml-parameter-string
 	   cont mml-content-disposition-parameters))
@@ -768,8 +773,12 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
 (defun mml-insert-mml-markup (handle &optional buffer nofile mmlp)
   "Take a MIME handle and insert an MML tag."
   (if (stringp (car handle))
-      (insert "<#multipart type=" (mm-handle-media-subtype handle)
-	      ">\n")
+      (progn
+	(insert "<#multipart type=" (mm-handle-media-subtype handle))
+	(let ((start (mm-handle-multipart-ctl-parameter handle 'start)))
+	  (when start
+	    (insert " start=\"" start "\"")))
+	(insert ">\n"))
     (if mmlp
 	(insert "<#mml type=" (mm-handle-media-type handle))
       (insert "<#part type=" (mm-handle-media-type handle)))
@@ -777,6 +786,8 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
 			  (cdr (mm-handle-disposition handle))))
       (unless (symbolp (cdr elem))
 	(insert " " (symbol-name (car elem)) "=\"" (cdr elem) "\"")))
+    (when (mm-handle-id handle)
+      (insert " id=\"" (mm-handle-id handle) "\""))
     (when (mm-handle-disposition handle)
       (insert " disposition=" (car (mm-handle-disposition handle))))
     (when buffer
