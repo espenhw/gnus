@@ -49,10 +49,11 @@
      `(lambda () (remove-images ,b (1+ ,b))))))
 
 (defun mm-inline-image-xemacs (handle)
+  (insert "\n")
+  (forward-char -1)
   (let ((b (point))
 	(annot (make-annotation (mm-get-image handle) nil 'text))
 	buffer-read-only)
-    (insert "\n")
     (mm-handle-set-undisplayer
      handle
      `(lambda ()

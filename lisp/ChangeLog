@@ -1,3 +1,11 @@
+2001-05-30  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* mm-view.el (mm-inline-image-xemacs): Insert newline, then move
+	back, then insert glyph.  (Before, the glyph was inserted first,
+	then the newline.)  This works around a behavior in XEmacs where
+	it is not possible to insert a character after a glyph which is at
+	the end of a buffer.  Patch by Lloyd Zusman <ljz@asfast.com>.
+
 2001-05-28  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	From Jaap-Henk Hoepman (jhh@xs4all.nl).
