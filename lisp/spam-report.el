@@ -62,7 +62,7 @@ This is probably handled better with group/topic parameters."
 	  (spam-report-url-ping "spam.gmane.org" 
 		    (format "/%s:%d"
 			    (gnus-group-real-name gnus-newsgroup-name)
-			    (gnus-summary-article-number)))
+			    article))
 	(with-current-buffer nntp-server-buffer
 	  (gnus-request-head article gnus-newsgroup-name)
 	  (goto-char (point-min))
