@@ -3858,7 +3858,8 @@ the @code{a} spec.
 @item L
 Number of lines in the article.
 @item c
-Number of characters in the article.
+Number of characters in the article. This specifier is not supported in some
+methods (like nnfolder).
 @item I
 Indentation based on thread level (@pxref{Customizing Threading}).
 @item T
@@ -11207,7 +11208,18 @@ Keywords:
 
 @table @code
 @item :plugged
-If non-nil, fetch the mail even when Gnus is unplugged.
+If non-nil, fetch the mail even when Gnus is unplugged.  If you use
+directory source to get mail, you can specify it as in this example:
+
+@lisp
+(setq mail-sources
+      '((directory :path "/home/pavel/.Spool/" 
+                   :suffix ""
+                   :plugged t)))
+@end lisp
+
+Gnus will then fetch your mail even when you are unplugged.  This is
+useful when you use local mail and news.
 
 @end table
 @end table

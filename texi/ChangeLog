@@ -1,3 +1,7 @@
+2000-04-21 13:45:52  Pavel Janik  <Pavel.Janik@inet.cz>
+
+	* gnus.texi (Mail Source Specifiers): Example for :plugged.
+
 2000-04-20 20:37:48  Pavel Janik  <Pavel.Janik@inet.cz>
 
 	* gnus.texi (Limiting): Fix.
