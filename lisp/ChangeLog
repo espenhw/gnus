@@ -1,5 +1,8 @@
 2004-06-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-util.el (gnus-remove-text-with-property): Make it slightly
+	fast.
+
 	* gnus-ems.el (gnus-remove-image): Don't use
 	message-text-with-property; remove only the image found first.
 

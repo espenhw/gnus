@@ -214,12 +214,15 @@ is slower."
 
 (defun gnus-remove-text-with-property (prop)
   "Delete all text in the current buffer with text property PROP."
-  (save-excursion
-    (goto-char (point-min))
-    (while (not (eobp))
-      (while (get-text-property (point) prop)
-	(delete-char 1))
-      (goto-char (next-single-property-change (point) prop nil (point-max))))))
+  (let ((start (point-min))
+	end)
+    (unless (get-text-property start prop)
+      (setq start (next-single-property-change start prop)))
+    (while start
+      (setq end (text-property-any start (point-max) prop nil))
+      (delete-region start (or end (point-max)))
+      (setq start (when end
+		    (next-single-property-change start prop))))))
 
 (defun gnus-newsgroup-directory-form (newsgroup)
   "Make hierarchical directory name from NEWSGROUP name."
