@@ -1,3 +1,17 @@
+2000-06-07  Dave Love  <fx@gnu.org>
+
+	* mm-view.el (mm-inline-image-emacs): Don't specify string for
+	put-image.
+	(mm-inline-image): Defalias, not fset.
+
+	* gnus.el (gnus-group-startup-message): Don't specify string for
+	insert-image.
+
+	* gnus-ems.el (gnus-add-minor-mode): Make it an alias if
+	add-minor-mode is available.
+	(gnus-article-display-xface): Don't specify string for
+	insert-image.
+
 2000-06-06 13:28:53  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-topic.el (gnus-topic-remove-topic): Set hidden.
