@@ -694,7 +694,7 @@ decodable."
      (condition-case nil
 	 (rfc2047-decode
 	  (match-string 1 word)
-	  (upcase (match-string 2 word))
+	  (string-to-char (match-string 2 word))
 	  (match-string 3 word))
        (error word))
      word)))				; un-decodable
@@ -712,7 +712,7 @@ decodable."
 
 (defun rfc2047-decode (charset encoding string)
   "Decode STRING from the given MIME CHARSET in the given ENCODING.
-Valid ENCODINGs are \"B\" and \"Q\".
+Valid ENCODINGs are the characters \"B\" and \"Q\".
 If your Emacs implementation can't decode CHARSET, return nil."
   (if (stringp charset)
       (setq charset (intern (downcase charset))))
@@ -732,13 +732,13 @@ If your Emacs implementation can't decode CHARSET, return nil."
 	(setq cs mail-parse-charset))
       (mm-decode-coding-string
        (cond
-	((equal "B" encoding)
+	((char-equal ?B encoding)
 	 (base64-decode-string
 	  (rfc2047-pad-base64 string)))
-	((equal "Q" encoding)
+	((char-equal ?Q encoding)
 	 (quoted-printable-decode-string
 	  (mm-subst-char-in-string ?_ ? string t)))
-	(t (error "Invalid encoding: %s" encoding)))
+	(t (error "Invalid encoding: %c" encoding)))
        cs))))
 
 (provide 'rfc2047)
