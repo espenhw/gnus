@@ -703,7 +703,7 @@ Digitally sign current message using PGP.
 
 @item C-c C-m s p
 @kindex C-c C-m s p
-@findex mml-secure-message-sign-pgp
+@findex mml-secure-message-sign-pgpmime
 
 Digitally sign current message using @sc{pgp/mime}.
 
