@@ -1,3 +1,18 @@
+2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-treat-unfold-headers): Only fold when
+	lines are shorter than the window width.
+
+2001-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-treat-unfold-lines): New variable.
+	(gnus-treat-unfold-headers): Remamed.
+	(gnus-article-treat-unfold-headers): New command and keystroke. 
+
+	* rfc2047.el (rfc2047-encode-message-header): Clean up.
+
+	* gnus-int.el (gnus-open-server): Mark quit-ed server as denied. 
+
 2001-12-29  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* sha1-el.el (sha1-use-external): New variable.

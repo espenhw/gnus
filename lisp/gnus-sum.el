@@ -1727,6 +1727,7 @@ increase the score of each group you read."
     "r" gnus-summary-caesar-message
     "t" gnus-summary-toggle-header
     "g" gnus-summary-toggle-smiley
+    "u" gnus-article-treat-unfold-headers
     "v" gnus-summary-verbose-headers
     "a" gnus-article-strip-headers-in-body ;; mnemonic: wash archive
     "p" gnus-article-verify-x-pgp-sig
@@ -1924,6 +1925,7 @@ increase the score of each group you read."
 	      ["Verbose header" gnus-summary-verbose-headers t]
 	      ["Toggle header" gnus-summary-toggle-header t]
 	      ["Toggle smiley" gnus-summary-toggle-smiley t]
+	      ["Unfold headers" gnus-article-treat-unfold-headers t]
 	      ["Html" gnus-article-wash-html t]
 	      ["Verify X-PGP-Sig" gnus-article-verify-x-pgp-sig t]
 	      ["HZ" gnus-article-decode-HZ t])

@@ -1014,6 +1014,13 @@ See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
+(defcustom gnus-treat-unfold-headers 'head
+  "Unfold folded header lines.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
+  :group 'gnus-article-treat
+  :type gnus-article-treat-custom)
+
 (defcustom gnus-treat-overstrike t
   "Treat overstrike highlighting.
 Valid values are nil, t, `head', `last', an integer or a predicate.
@@ -1161,6 +1168,7 @@ It is a string, such as \"PGP\". If nil, ask user."
     (gnus-treat-strip-multiple-blank-lines
      gnus-article-strip-multiple-blank-lines)
     (gnus-treat-overstrike gnus-article-treat-overstrike)
+    (gnus-treat-unfold-headers gnus-article-treat-unfold-headers)
     (gnus-treat-buttonize-head gnus-article-add-buttons-to-head)
     (gnus-treat-display-smileys gnus-smiley-display)
     (gnus-treat-capitalize-sentences gnus-article-capitalize-sentences)
@@ -1539,6 +1547,32 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
 	      (gnus-article-hide-text-type (- (point) 2) (point) 'overstrike)
 	      (put-text-property
 	       (point) (1+ (point)) 'face 'underline)))))))))
+
+(defun gnus-article-treat-unfold-headers ()
+  "Translate overstrikes into bold text."
+  (interactive)
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (save-restriction
+      (let ((buffer-read-only nil)
+	    (inhibit-point-motion-hooks t)
+	    (case-fold-search t)
+	    length)
+	(article-narrow-to-head)
+	(while (not (eobp))
+	  (save-restriction
+	    (mail-header-narrow-to-field)
+	    (let ((header (buffer-substring (point-min) (point-max))))
+	      (with-temp-buffer
+		(insert header)
+		(goto-char (point-min))
+		(while (re-search-forward "[\t ]*\n[\t ]+" nil t)
+		  (replace-match " " t t)))
+		(setq length (- (point-max) (point-min) 1)))
+	    (when (< length (window-width))
+	      (while (re-search-forward "[\t ]*\n[\t ]+" nil t)
+		(replace-match " " t t)))
+	    (goto-char (point-max))))))))
 
 (defun article-fill-long-lines ()
   "Fill lines that are wider than the window width."

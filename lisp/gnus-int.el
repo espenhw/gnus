@@ -183,9 +183,13 @@ If it is down, start it up (again)."
 	  nil)
       ;; Open the server.
       (let ((result
-	     (funcall (gnus-get-function gnus-command-method 'open-server)
-		      (nth 1 gnus-command-method)
-		      (nthcdr 2 gnus-command-method))))
+	     (condition-case ()
+		 (funcall (gnus-get-function gnus-command-method 'open-server)
+			  (nth 1 gnus-command-method)
+			  (nthcdr 2 gnus-command-method))
+	       (quit
+		(message "Quit trying to open server")
+		nil))))
 	;; If this hasn't been opened before, we add it to the list.
 	(unless elem
 	  (setq elem (list gnus-command-method nil)
