@@ -1,3 +1,67 @@
+Sun Feb 15 19:50:10 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.27 is released.
+
+Sun Feb 15 19:41:14 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-ephemeral-servers): New variable.
+	* gnus-srvr.el (gnus-server-prepare): Use it.
+	* gnus-group.el (gnus-group-read-ephemeral-group): Ditto.
+
+Sun Feb 15 19:35:11 1998  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-art.el (gnus-article-read-summary-keys): Go to top on
+	some. 
+
+Sun Feb 15 19:26:21 1998  SeokChan LEE  <chan@xfer.kren.nm.kr>
+
+	* message.el (message-ignored-supersedes-headers): Fix.
+
+Sun Feb 15 18:39:15 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-salt.el (gnus-tree-close): Start killing buffer again.
+
+	* gnus-sum.el (gnus-mark-article-as-read): Return t.
+
+	* gnus-art.el (gnus-article-edit-mode): Run text mode hook.
+
+Sun Feb 15 17:31:19 1998  Roland Roberts  <rroberts@muller.com>
+
+	* gnus-sum.el (gnus-nov-parse-line): Would bug out on bogus
+	References headers.
+
+Sun Feb 15 14:23:51 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-article-current-summary): New variable.
+	(gnus-article-mode): Make it local.
+
+	* gnus-score.el (gnus-summary-increase-score): Find the right
+	global score file.
+
+	* gnus-start.el (gnus-setup-news): Don't find new newsgroups
+	unless plugged.
+
+	* message.el (message-mode): Set font-lock things before running
+	mode hook.
+
+	* gnus-agent.el (gnus-agent-group-path): Respect long file names. 
+
+Sat Feb 14 21:31:25 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-goto-last-article): Force jumping to
+	articles outside limit.
+
+	* gnus-agent.el (gnus-agent-toggle-plugged): un/plug before hook. 
+
+Sat Feb 14 21:08:03 1998  Kim-Minh Kaplan  <KimMinh.Kaplan@utopia.eunet.fr>
+
+	* gnus-xmas.el (gnus-xmas-article-display-xface): t t would make
+	faces disappear.
+
+Sat Feb 14 20:52:34 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-netrc-file): New variable.
+
 Sat Feb 14 19:28:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.26 is released.

@@ -796,8 +796,7 @@ Two predefined functions are available:
   (gnus-get-tree-buffer))
 
 (defun gnus-tree-close (group)
-					;(gnus-kill-buffer gnus-tree-buffer)
-  )
+  (gnus-kill-buffer gnus-tree-buffer))
 
 (defun gnus-highlight-selected-tree (article)
   "Highlight the selected article in the tree."

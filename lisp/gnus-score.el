@@ -633,7 +633,15 @@ used as score."
       (save-excursion
 	(set-buffer gnus-summary-buffer)
 	(gnus-score-load-file
-	 (gnus-score-file-name "all"))))
+	 ;; This is a kludge; yes...
+	 (cond
+	  ((eq gnus-score-find-score-files-function
+	       'gnus-score-find-hierarchical)
+	   (gnus-score-file-name ""))
+	  ((eq gnus-score-find-score-files-function 'gnus-score-find-single)
+	   current-score-file)
+	  (t
+	   (gnus-score-file-name "all"))))))
     
     (gnus-summary-score-entry
      (nth 1 entry)			; Header
@@ -2691,8 +2699,7 @@ The list is determined from the variable gnus-score-file-alist."
       ((or (null newsgroup)
 	   (string-equal newsgroup ""))
        ;; The global score file is placed at top of the directory.
-       (expand-file-name
-	suffix gnus-kill-files-directory))
+       (expand-file-name suffix gnus-kill-files-directory))
       ((gnus-use-long-file-name 'not-score)
        ;; Append ".SCORE" to newsgroup name.
        (expand-file-name (concat (gnus-newsgroup-savable-name newsgroup)

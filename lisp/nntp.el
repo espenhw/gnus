@@ -154,7 +154,8 @@ If can be used to set up a server remotely, for instance.  Say you
 have an account at the machine \"other.machine\".  This machine has
 access to an NNTP server that you can't access locally.  You could
 then use this hook to rsh to the remote machine and start a proxy NNTP
-server there that you can connect to.  See also `nntp-open-connection-function'")
+server there that you can connect to.  See also
+`nntp-open-connection-function'")
 
 (defvoo nntp-warn-about-losing-connection t
   "*If non-nil, beep when a server closes connection.")
@@ -163,7 +164,10 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
   "*Coding system to read from NNTP.")
 
 (defvoo nntp-coding-system-for-write 'binary
-    "*Coding system to write to NNTP.")
+  "*Coding system to write to NNTP.")
+
+(defvar nntp-netrc-file "~/.netrc"
+  "*The location of the file containing authinfo information.")
 
 
 
@@ -657,6 +661,10 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	(ignore-errors
 	  (nntp-send-string process "QUIT")
 	  (unless (eq nntp-open-connection-function 'nntp-open-network-stream)
+	    ;; Ok, this is evil, but when using telnet and stuff
+	    ;; as the connection method, it's important that the
+	    ;; QUIT command actually is sent out before we kill
+	    ;; the process.  
 	    (sleep-for 1))))
       (when (buffer-name (process-buffer process))
 	(kill-buffer (process-buffer process))))))
@@ -710,7 +718,7 @@ This function is supposed to be called from `nntp-server-opened-hook'.
 It will look in the \"~/.netrc\" file for matching entries.  If
 nothing suitable is found there, it will prompt for a user name
 and a password."
-  (let* ((list (gnus-parse-netrc "~/.netrc"))
+  (let* ((list (gnus-parse-netrc nntp-netrc-file))
 	 (alist (gnus-netrc-machine list nntp-address))
 	 (user (gnus-netrc-get alist "login"))
 	 (passwd (gnus-netrc-get alist "password")))

@@ -746,12 +746,15 @@ XEmacs compatibility workaround."
 		      (make-glyph
 		       (vector 'xpm :data (buffer-string))))))
 		 (t
-		  (make-glyph [nothing])))))
+		  (make-glyph [nothing]))))
+	  (ext (make-extent (progn
+			      (goto-char (point-min))
+			      (re-search-forward "^From:" nil t)
+			      (point))
+			    (1+ (point)))))
       (set-glyph-face xface-glyph 'gnus-x-face)
-      (goto-char (point-min))
-      (re-search-forward "^From:" nil t)
-      (set-extent-begin-glyph
-       (make-extent (point) (1+ (point))) xface-glyph))))
+      (set-extent-begin-glyph ext xface-glyph)
+      (set-extent-property ext 'duplicable t))))
 
 ;;(defvar gnus-xmas-pointer-glyph
 ;;  (progn

@@ -80,18 +80,18 @@ saved will be used."
   :type '(choice directory (const nil)))
 
 (defcustom gnus-check-new-newsgroups 'ask-server
-  "*Non-nil means that Gnus will run gnus-find-new-newsgroups at startup.
+  "*Non-nil means that Gnus will run `gnus-find-new-newsgroups' at startup.
 This normally finds new newsgroups by comparing the active groups the
 servers have already reported with those Gnus already knows, either alive
 or killed.
 
-When any of the following are true, gnus-find-new-newsgroups will instead
+When any of the following are true, `gnus-find-new-newsgroups' will instead
 ask the servers (primary, secondary, and archive servers) to list new
 groups since the last time it checked:
   1. This variable is `ask-server'.
   2. This variable is a list of select methods (see below).
   3. `gnus-read-active-file' is nil or `some'.
-  4. A prefix argument is given to gnus-find-new-newsgroups interactively.
+  4. A prefix argument is given to `gnus-find-new-newsgroups' interactively.
 
 Thus, if this variable is `ask-server' or a list of select methods or
 `gnus-read-active-file' is nil or `some', then the killed list is no
@@ -608,7 +608,8 @@ the first newsgroup."
 	gnus-newsgroup-data nil
 	gnus-newsgroup-unreads nil
 	nnoo-state-alist nil
-	gnus-current-select-method nil)
+	gnus-current-select-method nil
+	gnus-ephemeral-servers nil)
   (gnus-shutdown 'gnus)
   ;; Kill the startup file.
   (and gnus-current-startup-file
@@ -905,7 +906,8 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
     ;; Find new newsgroups and treat them.
     (when (and init gnus-check-new-newsgroups (not level)
 	       (gnus-check-server gnus-select-method)
-	       (not gnus-slave))
+	       (not gnus-slave)
+	       gnus-plugged)
       (gnus-find-new-newsgroups))
 
     ;; We might read in new NoCeM messages here.

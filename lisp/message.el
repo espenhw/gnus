@@ -210,7 +210,7 @@ included.  Organization, Lines and X-Mailer are optional."
   :group 'message-headers
   :type 'regexp)
 
-(defcustom message-ignored-supersedes-headers "^Path:\\|^Date\\|^NNTP-Posting-Host:\\|^Xref:\\|^Lines:\\|^Received:\\|^X-From-Line:\\|X-Trace:\\|X-Complaints-To:\\|Return-Path:\\|^Supersedes:"
+(defcustom message-ignored-supersedes-headers "^Path:\\|^Date\\|^NNTP-Posting-Host:\\|^Xref:\\|^Lines:\\|^Received:\\|^X-From-Line:\\|^X-Trace:\\|^X-Complaints-To:\\|Return-Path:\\|^Supersedes:"
   "*Header lines matching this regexp will be deleted before posting.
 It's best to delete old Path and Date headers before posting to avoid
 any confusion."
@@ -1316,10 +1316,10 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
 	(mail-abbrevs-setup)
       (funcall (intern "mail-aliases-setup"))))
   (message-set-auto-save-file-name)
-  (gnus-run-hooks 'text-mode-hook 'message-mode-hook)
   (unless (string-match "XEmacs" emacs-version)
     (set (make-local-variable 'font-lock-defaults)
-	 '(message-font-lock-keywords t))))
+	 '(message-font-lock-keywords t)))
+  (gnus-run-hooks 'text-mode-hook 'message-mode-hook))
 
 
 

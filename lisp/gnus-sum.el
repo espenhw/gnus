@@ -4497,7 +4497,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 			 (setq ref
 			       (buffer-substring
 				(1+ (point))
-				(search-backward "<" beg t)))
+				(or (search-backward "<" beg t) beg)))
 		       (setq ref nil))
 		     (goto-char beg))
 		   (gnus-nov-field))	; refs
@@ -5863,7 +5863,7 @@ If ALL-HEADERS is non-nil, no header lines are hidden."
   (interactive)
   (prog1
       (when gnus-last-article
-	(gnus-summary-goto-article gnus-last-article))
+	(gnus-summary-goto-article gnus-last-article nil t))
     (gnus-summary-position-point)))
 
 (defun gnus-summary-pop-article (number)
@@ -7211,13 +7211,14 @@ This will be the case if the article has both been mailed and posted."
 	;; through the expiry process.
 	(gnus-message 6 "Expiring articles...")
 	;; The list of articles that weren't expired is returned.
-	(if expiry-wait
-	    (let ((nnmail-expiry-wait-function nil)
-		  (nnmail-expiry-wait expiry-wait))
-	      (setq es (gnus-request-expire-articles
-			expirable gnus-newsgroup-name)))
-	  (setq es (gnus-request-expire-articles
-		    expirable gnus-newsgroup-name)))
+	(save-excursion
+	  (if expiry-wait
+	      (let ((nnmail-expiry-wait-function nil)
+		    (nnmail-expiry-wait expiry-wait))
+		(setq es (gnus-request-expire-articles
+			  expirable gnus-newsgroup-name)))
+	    (setq es (gnus-request-expire-articles
+		      expirable gnus-newsgroup-name))))
 	(unless total
 	  (setq gnus-newsgroup-expirable es))
 	;; We go through the old list of expirable, and mark all
@@ -7237,10 +7238,10 @@ This will be the case if the article has both been mailed and posted."
 This means that *all* articles that are marked as expirable will be
 deleted forever, right now."
   (interactive)
-  (or gnus-expert-user
-      (gnus-yes-or-no-p
-       "Are you really, really, really sure you want to delete all these messages? ")
-      (error "Phew!"))
+  (unless gnus-expert-user
+    (gnus-yes-or-no-p
+     "Are you really, really, really sure you want to delete all these messages? ")
+    (error "Phew!"))
   (gnus-summary-expire-articles t))
 
 ;; Suggested by Jack Vinson <vinson@unagi.cis.upenn.edu>.
@@ -7773,7 +7774,8 @@ marked."
     (push (cons article mark) gnus-newsgroup-reads)
     ;; Possibly remove from cache, if that is used.
     (when gnus-use-cache
-      (gnus-cache-enter-remove-article article))))
+      (gnus-cache-enter-remove-article article))
+    t))
 
 (defun gnus-mark-article-as-unread (article &optional mark)
   "Enter ARTICLE in the pertinent lists and remove it from others."

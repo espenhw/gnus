@@ -246,7 +246,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.26"
+(defconst gnus-version-number "0.27"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Quassia Gnus v%s" gnus-version-number)
@@ -1372,6 +1372,7 @@ want."
 (defvar gnus-group-get-parameter-function 'gnus-group-get-parameter)
 (defvar gnus-original-article-buffer " *Original Article*")
 (defvar gnus-newsgroup-name nil)
+(defvar gnus-ephemeral-servers nil)
 
 (defvar gnus-agent nil
   "Whether we want to use the Gnus agent or not.")

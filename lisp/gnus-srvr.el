@@ -221,7 +221,9 @@ The following commands are available:
     ;; Then we insert the list of servers that have been opened in
     ;; this session.
     (while opened
-      (unless (member (caar opened) done)
+      (when (and (not (member (caar opened) done))
+		 ;; Just ignore ephemeral servers.
+		 (not (member (caar opened) gnus-ephemeral-servers)))
 	(push (caar opened) done)
 	(gnus-server-insert-server-line
 	 (setq op-ser (format "%s:%s" (caaar opened) (nth 1 (caar opened))))

@@ -534,6 +534,7 @@ displayed by the first non-nil matching CONTENT face."
 ;;; Internal variables
 
 (defvar article-lapsed-timer nil)
+(defvar gnus-article-current-summary nil)
 
 (defvar gnus-article-mode-syntax-table
   (let ((table (copy-syntax-table text-mode-syntax-table)))
@@ -547,8 +548,8 @@ Initialized from `text-mode-syntax-table.")
 (defvar gnus-save-article-buffer nil)
 
 (defvar gnus-article-mode-line-format-alist
-    (nconc '((?w (gnus-article-wash-status) ?s))
-	   gnus-summary-mode-line-format-alist))
+  (nconc '((?w (gnus-article-wash-status) ?s))
+	 gnus-summary-mode-line-format-alist))
 
 (defvar gnus-number-of-articles-to-be-saved nil)
 
@@ -1552,7 +1553,7 @@ This format is defined by the `gnus-article-time-format' variable."
 	     (gnus-number-of-articles-to-be-saved
 	      (when (eq gnus-prompt-before-saving t)
 		num)))			; Magic
-	(set-buffer gnus-summary-buffer)
+	(set-buffer gnus-article-current-summary)
 	(funcall gnus-default-article-saver filename)))))
 
 (defun gnus-read-save-file-name (prompt &optional filename
@@ -1959,6 +1960,7 @@ commands:
   (set (make-local-variable 'page-delimiter) gnus-page-delimiter)
   (set (make-local-variable 'gnus-page-broken) nil)
   (set (make-local-variable 'gnus-button-marker-list) nil)
+  (set (make-local-variable 'gnus-article-current-summary) nil)
   (gnus-set-default-directory)
   (buffer-disable-undo (current-buffer))
   (setq buffer-read-only t)
@@ -2318,7 +2320,7 @@ Argument LINES specifies lines to be scrolled down."
   (let ((obuf (current-buffer))
 	(owin (current-window-configuration))
 	func)
-    (switch-to-buffer gnus-summary-buffer 'norecord)
+    (switch-to-buffer gnus-article-current-summary 'norecord)
     (setq func (lookup-key (current-local-map) (this-command-keys)))
     (call-interactively func)
     (set-buffer obuf)
@@ -2329,7 +2331,7 @@ Argument LINES specifies lines to be scrolled down."
   "Execute the last keystroke in the summary buffer."
   (interactive)
   (let (func)
-    (pop-to-buffer gnus-summary-buffer 'norecord)
+    (pop-to-buffer gnus-article-current-summary 'norecord)
     (setq func (lookup-key (current-local-map) (this-command-keys)))
     (call-interactively func)))
 
@@ -2344,9 +2346,11 @@ Argument LINES specifies lines to be scrolled down."
 	 '("A\r"))
 	(nosave-in-article
 	 '("\C-d"))
+        (up-to-top
+         '("n" "Gn" "p" "Gp"))
 	keys)
     (save-excursion
-      (set-buffer gnus-summary-buffer)
+      (set-buffer gnus-article-current-summary)
       (let (gnus-pick-mode)
 	(push (or key last-command-event) unread-command-events)
 	(setq keys (read-key-sequence nil))))
@@ -2357,14 +2361,14 @@ Argument LINES specifies lines to be scrolled down."
 	    (member keys nosave-in-article))
 	(let (func)
 	  (save-window-excursion
-	    (pop-to-buffer gnus-summary-buffer 'norecord)
+	    (pop-to-buffer gnus-article-current-summary 'norecord)
 	    ;; We disable the pick minor mode commands.
 	    (let (gnus-pick-mode)
 	      (setq func (lookup-key (current-local-map) keys))))
 	  (if (not func)
 	      (ding)
 	    (unless (member keys nosave-in-article)
-	      (set-buffer gnus-summary-buffer))
+	      (set-buffer gnus-article-current-summary))
 	    (call-interactively func))
 	  (when (member keys nosave-but-article)
 	    (pop-to-buffer gnus-article-buffer 'norecord)))
@@ -2374,8 +2378,8 @@ Argument LINES specifies lines to be scrolled down."
 	    (opoint (point))
 	    func in-buffer)
 	(if not-restore-window
-	    (pop-to-buffer gnus-summary-buffer 'norecord)
-	  (switch-to-buffer gnus-summary-buffer 'norecord))
+	    (pop-to-buffer gnus-article-current-summary 'norecord)
+	  (switch-to-buffer gnus-article-current-summary 'norecord))
 	(setq in-buffer (current-buffer))
 	;; We disable the pick minor mode commands.
 	(if (setq func (let (gnus-pick-mode)
@@ -2386,7 +2390,9 @@ Argument LINES specifies lines to be scrolled down."
 	  (set-buffer obuf)
 	  (unless not-restore-window
 	    (set-window-configuration owin))
-	  (set-window-point (get-buffer-window (current-buffer)) opoint))))))
+          (unless (member keys up-to-top)
+            (set-window-point (get-buffer-window (current-buffer))
+                              opoint)))))))
 
 (defun gnus-article-hide (&optional arg force)
   "Hide all the gruft in the current article.
@@ -2516,10 +2522,12 @@ If given a prefix, show the hidden text instead."
 	   ;; It was a pseudo.
 	   (t article)))
 
+      ;; Associate this article with the current summary buffer.
+      (setq gnus-article-current-summary gnus-summary-buffer)
+      
       ;; Take the article from the original article buffer
       ;; and place it in the buffer it's supposed to be in.
       (when (and (get-buffer gnus-article-buffer)
-		 ;;(numberp article)
 		 (equal (buffer-name (current-buffer))
 			(buffer-name (get-buffer gnus-article-buffer))))
 	(save-excursion
@@ -2586,7 +2594,7 @@ This is an extended text-mode.
   (setq buffer-read-only nil)
   (buffer-enable-undo)
   (widen)
-  (gnus-run-hooks 'text-mode 'gnus-article-edit-mode-hook))
+  (gnus-run-hooks 'text-mode-hook 'gnus-article-edit-mode-hook))
 
 (defun gnus-article-edit (&optional force)
   "Edit the current article.

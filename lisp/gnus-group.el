@@ -1600,6 +1600,7 @@ Return the name of the group is selection was successful."
 				(cons gnus-summary-buffer
 				      gnus-current-window-configuration))))))
      gnus-newsrc-hashtb)
+    (push method gnus-ephemeral-servers)
     (set-buffer gnus-group-buffer)
     (unless (gnus-check-server method)
       (error "Unable to contact server: %s" (gnus-status-message method)))
