@@ -1,3 +1,9 @@
+2003-10-27  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Filtering Spam Using The Spam ELisp Package): added
+	example of using a string as a parameter to spam-split in order
+	to override the default spam-split-group value
+
 2003-10-27  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnusref.tex (subsection*{Notes}): do.
