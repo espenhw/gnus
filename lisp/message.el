@@ -191,7 +191,7 @@ header, remove it from this list."
   '(From Subject Date (optional . In-Reply-To) Message-ID Lines
 	 (optional . User-Agent))
   "*Headers to be generated or prompted for when mailing a message.
-RFC822 required that From, Date, To, Subject and Message-ID be
+It is recommended that From, Date, To, Subject and Message-ID be
 included.  Organization, Lines and User-Agent are optional."
   :group 'message-mail
   :group 'message-headers
