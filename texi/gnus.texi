@@ -13074,9 +13074,10 @@ servers have the property that you may backup them using @code{tar} or
 similar, and later be able to restore them into Gnus (by adding the
 proper @code{nnml} server) and have all your marks be preserved.  Marks
 for a group is usually stored in the @code{.marks} file (but see
-@code{nnml-marks-file-name}) within the @code{nnml} directory.
-Individual @code{nnml} groups are also possible to backup, restore it
-using @kbd{G m} to subscribe to the group.
+@code{nnml-marks-file-name}) within each @code{nnml} group's directory.
+Individual @code{nnml} groups are also possible to backup, use @kbd{G m}
+to restore the group (after restoring the backup into the nnml
+directory).
 
 Virtual server settings:
 
@@ -13142,9 +13143,9 @@ Commands}).
 @cindex mh-e mail spool
 
 @code{nnmh} is just like @code{nnml}, except that is doesn't generate
-@sc{nov} databases and it doesn't keep an active file.  This makes
-@code{nnmh} a @emph{much} slower backend than @code{nnml}, but it also
-makes it easier to write procmail scripts for.
+@sc{nov} databases and it doesn't keep an active file or marks file.
+This makes @code{nnmh} a @emph{much} slower backend than @code{nnml},
+but it also makes it easier to write procmail scripts for.
 
 Virtual server settings:
 
@@ -13181,6 +13182,18 @@ to set this variable to @code{t}.  The default is @code{nil}.
 file.  Each file is in the standard Un*x mbox format.  @code{nnfolder}
 will add extra headers to keep track of article numbers and arrival
 dates.
+
+@cindex self contained nnfolder servers
+When the marks file is used (which it is by default), @code{nnfolder}
+servers have the property that you may backup them using @code{tar} or
+similar, and later be able to restore them into Gnus (by adding the
+proper @code{nnfolder} server) and have all your marks be preserved.
+Marks for a group is usually stored in a file named as the mbox file
+with @code{.mrk} concatenated to it (but see
+@code{nnfolder-marks-file-suffix}) within the @code{nnfolder} directory.
+Individual @code{nnfolder} groups are also possible to backup, use
+@kbd{G m} to restore the group (after restoring the backup into the
+@code{nnfolder} directory).
 
 Virtual server settings:
 
@@ -13230,6 +13243,19 @@ extract some information from it before removing it.
 @vindex nnfolder-nov-is-evil
 If non-@code{nil}, this backend will ignore any @sc{nov} files.  The
 default is @code{nil}.
+
+@item nnfolder-nov-file-suffix
+@vindex nnfolder-nov-file-suffix
+The extension for @sc{nov} files.  The default is @file{.nov}.
+
+@item nnfolder-marks-is-evil
+@vindex nnfolder-marks-is-evil
+If non-@code{nil}, this backend will ignore any @sc{marks} files.  The
+default is @code{nil}.
+
+@item nnfolder-marks-file-suffix
+@vindex nnfolder-marks-file-suffix
+The extension for @sc{marks} files.  The default is @file{.mrk}.
 
 @end table
 
