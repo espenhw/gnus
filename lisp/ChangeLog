@@ -1,3 +1,10 @@
+2001-09-12 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-diary.el: Minor modifications to avoid warnings.
+	(gnus-summary-misc-menu): defvar.
+	(gnus-diary-check-message): Use gnus-point-at-eol.
+	(gnus-diary-kill-entire-line): eval-and-compile.
+
 2001-09-12  Didier Verna  <didier@xemacs.org>
 
 	* nndiary.el: new version (0.2-b13).
