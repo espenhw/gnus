@@ -21107,7 +21107,7 @@ requires its users to have a basic understanding of e-mail delivery
 and processing.
 
 The simplest approach to filtering spam is filtering.  If you get 200
-spam messages per day from @email{random-address@@vmadmin.com}, you
+spam messages per day from @samp{random-address@@vmadmin.com}, you
 block @samp{vmadmin.com}.  If you get 200 messages about
 @samp{VIAGRA}, you discard all messages with @samp{VIAGRA} in the
 message.  This, unfortunately, is a great way to discard legitimate
