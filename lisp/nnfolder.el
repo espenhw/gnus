@@ -789,7 +789,8 @@ deleted.  Point is left where the deleted region was."
   (goto-char (point-max))
   (skip-chars-backward "\n")
   (delete-region (point) (point-max))
-  (insert "\n\n"))
+  (unless (bobp)
+    (insert "\n\n")))
 
 (defun nnfolder-insert-newsgroup-line (group-art)
   (save-excursion

@@ -1,5 +1,10 @@
 2001-10-05  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-sum.el (gnus-summary-move-article): Also activate new groups.
+
+	* nnfolder.el (nnfolder-normalize-buffer): Don't insert \n\n in
+	empty folders.
+
 	* gnus-sum.el (gnus-select-newsgroup): Don't enable `display'
 	limiting if read-all (C-u RET) was used.
 

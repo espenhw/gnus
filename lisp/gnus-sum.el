@@ -8180,12 +8180,10 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 	  (gnus-summary-mark-article article gnus-canceled-mark))))
       (gnus-summary-remove-process-mark article))
     ;; Re-activate all groups that have been moved to.
-    (while to-groups
-      (save-excursion
-	(set-buffer gnus-group-buffer)
-	(when (gnus-group-goto-group (car to-groups) t)
-	  (gnus-group-get-new-news-this-group 1 t))
-	(pop to-groups)))
+    (save-excursion
+      (set-buffer gnus-group-buffer)
+      (let ((gnus-group-marked to-groups))
+	(gnus-group-get-new-news-this-group nil t)))
 
     (gnus-kill-buffer copy-buf)
     (gnus-summary-position-point)
