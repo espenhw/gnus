@@ -5,6 +5,9 @@
 
 2004-01-23  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus.el (gnus-tmp-grouplens): Define for the sake of backward
+	compatibility with old .newsrc.eld files.
+
 	* gnus-xmas.el (gnus-xmas-grouplens-menu-add): Remove.
 
 	* gnus-sum.el (gnus-summary-line-format-alist): Remove grouplens.
