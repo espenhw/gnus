@@ -1058,6 +1058,15 @@ this is a reply."
 	  (gnus-newsgroup-name (or gnus-newsgroup-name ""))
 	  style match variable attribute value value-value)
       (make-local-variable 'gnus-message-style-insertions)
+      ;; If the group has a posting-style parameter, add it at the end with a
+      ;; regexp matching everything, to be sure it takes precedence over all
+      ;; the others.
+      (unless (eq 0 (length gnus-newsgroup-name))
+	(let ((tmp-style (gnus-group-find-parameter gnus-newsgroup-name 
+						    'posting-style t)))
+	  (and tmp-style
+	       (setq styles (append styles (list (cons ".*" tmp-style)))))
+	  ))
       ;; Go through all styles and look for matches.
       (while styles
 	(setq style (pop styles)

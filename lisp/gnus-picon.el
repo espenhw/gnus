@@ -343,11 +343,13 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	     (or (null gnus-picons-group-excluded-groups)
 		 (not (string-match gnus-picons-group-excluded-groups
 				    gnus-newsgroup-name))))
-    (let ((groups
-	   (if gnus-picons-display-article-move-p
-	       (list (gnus-group-real-name gnus-newsgroup-name))
-	     (split-string (mail-fetch-field "newsgroups") ",")))
-	  group)
+    (let* ((newsgroups (mail-fetch-field "newsgroups"))
+	   (groups
+	    (if (or gnus-picons-display-article-move-p
+		    (not newsgroups))(mail-fetch-field "newsgroups")
+		(list (gnus-group-real-name gnus-newsgroup-name))
+	      (split-string newsgroups ",")))
+	   group)
       (save-excursion
 	(gnus-picons-prepare-for-annotations)
 	(while (setq group (pop groups))

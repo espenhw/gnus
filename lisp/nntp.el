@@ -945,7 +945,9 @@ password contained in '~/.nntp-authinfo'."
       ;; we only care about insertions at eob
       (when (and (eq 0 len) (eq (point-max) end))
 	(save-match-data
-	  (nntp-async-trigger (get-buffer-process (current-buffer)))))
+	  (let ((proc (get-buffer-process (current-buffer))))
+	    (when proc
+	      (nntp-async-trigger proc)))))
     ;; any throw from after-change-functions will leave it
     ;; set to nil.  so we reset it here, if necessary.
     (when quit-flag

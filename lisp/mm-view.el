@@ -66,9 +66,7 @@
 	   handle
 	   `(lambda ()
 	      (let (buffer-read-only)
-		(delete-region
-		 ,(set-marker (make-marker) (point-min))
-		 ,(set-marker (make-marker) (point-max)))))))))
+		(delete-region ,(point-min-marker) ,(point-max-marker))))))))
      ((equal type "html")
       (mm-setup-w3)
       (setq text (mm-get-part handle))
@@ -89,9 +87,7 @@
 		      (remove-specifier
 		       (face-property 'default prop) (current-buffer)))
                     '(background background-pixmap foreground))
-		(delete-region
-		 ,(set-marker (make-marker) (point-min))
-		 ,(set-marker (make-marker) (point-max)))))))))
+		(delete-region ,(point-min-marker) ,(point-max-marker))))))))
      ((or (equal type "enriched")
 	  (equal type "richtext"))
       (save-excursion

@@ -2349,16 +2349,17 @@ If ALL-HEADERS is non-nil, no headers are hidden."
       (goto-char (posn-point pos))
       (funcall response))))
 
-(defun gnus-mime-view-all-parts ()
+(defun gnus-mime-view-all-parts (&optional handles)
   "View all the MIME parts."
   (interactive)
   (save-current-buffer
     (set-buffer gnus-article-buffer)
-    (let ((handles gnus-article-mime-handles)
+    (let ((handles (or handles gnus-article-mime-handles))
 	  (rfc2047-default-charset gnus-newsgroup-default-charset)
 	  (mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
-      (while handles
-	(mm-display-part (pop handles))))))
+      (if (stringp (car handles))
+	  (gnus-mime-view-all-parts (cdr handles))
+	(mapcar 'mm-display-part handles)))))
 
 (defun gnus-mime-save-part ()
   "Save the MIME part under point."
@@ -2635,13 +2636,13 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	(while ignored
 	  (when (string-match (pop ignored) type)
 	    (throw 'ignored nil)))
-	(if (and (mm-automatic-display-p type)
-		 (or (mm-inlinable-part-p type)
-		     (mm-automatic-external-display-p type))
-		 (setq not-attachment
+	(if (and (setq not-attachment
 		       (or (not (mm-handle-disposition handle))
 			   (equal (car (mm-handle-disposition handle))
-				  "inline"))))
+				  "inline")))
+		 (mm-automatic-display-p type)
+		 (or (mm-inlinable-part-p type)
+		     (mm-automatic-external-display-p type)))
 	    (setq display t)
 	  (when (equal (car (split-string type "/"))
 		       "text")

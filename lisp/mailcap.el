@@ -749,7 +749,7 @@ this type is returned."
     (".wav"      . "audio/x-wav")
     (".wrl"      . "x-world/x-vrml")
     (".xbm"      . "image/xbm")
-    (".xpm"      . "image/x-pixmap")
+    (".xpm"      . "image/xpm")
     (".xwd"      . "image/windowdump")
     (".zip"      . "application/zip")
     (".ai"       . "application/postscript")

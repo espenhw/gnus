@@ -67,6 +67,8 @@
 	  (eq (device-type) 'x)))
     ("image/xpm" mm-inline-image
      (and window-system (featurep 'xpm)))
+    ("image/x-pixmap" mm-inline-image
+     (and window-system (featurep 'xpm)))
     ("image/bmp" mm-inline-image
      (and window-system (featurep 'bmp)))
     ("text/plain" mm-inline-text t)
@@ -543,6 +545,12 @@ This overrides entries in the mailcap file."
   "Return an image instance based on HANDLE."
   (let ((type (cadr (split-string (car (mm-handle-type handle)) "/")))
 	spec)
+    ;; Allow some common translations.
+    (setq type
+	  (cond
+	   ((equal type "x-pixmap")
+	    "xpm")
+	   (t type)))
     (or (mm-handle-cache handle)
 	(mm-with-unibyte-buffer
 	  (insert-buffer-substring (mm-handle-buffer handle))

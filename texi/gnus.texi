@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.61 Manual
+@settitle Pterodactyl Gnus 0.62 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.61 Manual
+@title Pterodactyl Gnus 0.62 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.61.
+This manual corresponds to Pterodactyl Gnus 0.62.
 
 @end ifinfo
 
@@ -2164,6 +2164,23 @@ If you want to hear a beep when you enter a group, you could put
 something like @code{(dummy-variable (ding))} in the parameters of that
 group.  @code{dummy-variable} will be set to the result of the
 @code{(ding)} form, but who cares?
+
+@item posting-style
+You can store additional posting style information for this group only
+here (@pxref{Posting Styles}). The format is that of an entry in the
+@code{gnus-posting-styles} alist, except that there's no regexp matching
+the group name (of course). Style elements in this group parameter will
+take precedence over the ones found in @code{gnus-posting-styles}.
+
+For instance, if you want a funky name and signature in this group only,
+instead of hacking @code{gnus-posting-styles}, you could put something
+like this in the group parameters:
+
+@example
+(posting-style 
+  (name "Funky Name") 
+  (signature "Funky Signature"))
+@end example
 
 @end table
 
@@ -6922,7 +6939,7 @@ signature after all.
 @cindex MIME decoding
 
 @table @kbd
-@item M-tgnus-summary-display-buttonized
+@item M-t
 @kindex M-t (Summary)
 @findex gnus-summary-display-buttonized
 Toggle the buttonized display of the article buffer

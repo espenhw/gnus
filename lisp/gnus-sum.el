@@ -6994,6 +6994,11 @@ article massaging functions being run."
 	  gnus-display-mime-function
 	  gnus-break-pages
 	  gnus-visual)
+      ;; Destroy any MIME parts.
+      (when (gnus-buffer-live-p gnus-article-buffer)
+	(save-excursion
+	  (set-buffer gnus-article-buffer)
+	  (mm-destroy-parts gnus-article-mime-handles)))
       (gnus-summary-select-article nil 'force)))
   (gnus-summary-goto-subject gnus-current-article)
   (gnus-summary-position-point))

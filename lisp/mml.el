@@ -102,7 +102,10 @@
 	      (eq charset current)))
 	 ;; The initial charset was ascii.
 	 ((eq current 'ascii)
-	  (setq current charset))
+	  (setq current charset
+		space nil
+		newline nil
+		paragraph nil))
 	 ;; We have a change in charsets.
 	 (t
 	  (push (append
@@ -214,7 +217,7 @@
 	    (setq coded (buffer-string)))
 	(mm-with-unibyte-buffer
 	  (if (setq filename (cdr (assq 'filename cont)))
-	      (insert-file-contents filename)
+	      (insert-file-contents-literally filename)
 	    (insert (cdr (assq 'contents cont))))
 	  (setq encoding (mm-encode-buffer type)
 		coded (buffer-string))))
@@ -313,9 +316,8 @@
 		     cont '(name access-type expiration size permission)))
 	      (not (equal type "text/plain")))
       (when (consp charset)
-	(debug)
 	(error
-	 "Can't encode a part with several charsets.  Insert a <#part>."))
+	 "Can't encode a part with several charsets."))
       (insert "Content-Type: " type)
       (when charset
 	(insert "; " (mail-header-encode-parameter

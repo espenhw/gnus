@@ -29,6 +29,7 @@
 
 (defvar mm-content-transfer-encoding-defaults
   '(("text/.*" quoted-printable)
+    ("application/emacs-lisp" 8bit)
     (".*" base64))
   "Alist of regexps that match MIME types and their encodings.")
 

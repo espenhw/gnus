@@ -1,3 +1,49 @@
+Thu Dec  3 12:53:58 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.62 is released.
+
+1998-12-03 13:38:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-view-all-parts): Work with multiparts. 
+
+1998-12-03  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* mm-view.el (mm-inline-text): Use `point-min-marker' and
+ 	`point-max-marker'.
+
+1998-12-03 13:22:57  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mailcap.el (mailcap-mime-extensions): Use image/xpm for xpms.
+
+	* gnus-art.el (gnus-mime-display-single): Check for attachment
+	before other tests.
+
+1998-12-03  Didier Verna  <verna@inf.enst.fr>
+
+	* gnus-msg.el (gnus-configure-posting-styles): find a
+	posting-style entry in the group parameters, if any, and honor it
+	at the end.
+
+1998-12-03 13:03:37  Felix Lee  <flee@teleport.com>
+
+	* nntp.el (nntp-after-change-function): Fix. 
+
+1998-12-03 12:44:30  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* mml.el (mml-generate-mime-1): Insert literally.
+
+1998-12-03 00:23:17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-insert-mime-headers): Removed debug.
+
+1998-12-02 22:22:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-show-article): Destroy parts when
+	prefixed. 
+
+	* mm-encode.el (mm-content-transfer-encoding-defaults): Default
+	application/emacs-lisp to 8bit.
+
 Wed Dec  2 20:24:27 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.61 is released.
