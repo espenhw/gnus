@@ -10140,7 +10140,7 @@ Remove the @code{To} header if it is very long.
 Remove all @code{To} headers if there are more than one.
 @end table
 
-To include these three elements, you could say something like;
+To include these three elements, you could say something like:
 
 @lisp
 (setq gnus-boring-article-headers
@@ -10240,18 +10240,18 @@ do semi-manual charset stuff (see
 @code{gnus-summary-show-article-charset-alist} in @pxref{Paging the
 Article}).
 
-@findex gnus-mime-internalize-part
+@findex gnus-mime-view-part-internally
 @item E (Article)
 @kindex E (Article)
 View the @sc{mime} object with an internal viewer.  If no internal
 viewer is available, use an external viewer
-(@code{gnus-mime-internalize-part}).
+(@code{gnus-mime-view-part-internally}).
 
-@findex gnus-mime-externalize-part
+@findex gnus-mime-view-part-externally
 @item e (Article)
 @kindex e (Article)
 View the @sc{mime} object with an external viewer.
-(@code{gnus-mime-externalize-part}).
+(@code{gnus-mime-view-part-externally}).
 
 @findex gnus-mime-pipe-part
 @item | (Article)
