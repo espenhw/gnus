@@ -1,3 +1,9 @@
+2003-02-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-topic.el (gnus-topic-expire-articles): Recursive.
+	(gnus-topic-catchup-articles): Ditto.
+	(gnus-topic-mark-topic): Reverse recursive logic.
+
 2003-02-11  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-refer-thread): Handle case where
