@@ -1,7 +1,7 @@
 1999-12-07  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* nnslashdot.el (nnslashdot-request-list): There were two
-	otp-level body-forms.  Put a `progn' around them.
+	top-level body-forms.  Put a `progn' around them.
 
 	* gnus.el (gnus-select-method): Use `condition-case'
 	instead of `ignore-errors', since cl may not be loaded when the
