@@ -9,6 +9,12 @@
 	* mm-bodies.el (mm-body-encoding): Don't return 8bit for 7bit
 	charset.
 
+2002-10-31  Ted Zlatanov <tzz@lifelogs.com>
+	From Alex Schroeder  <alex@emacswiki.org>
+	* spam-stat.el (spam-stat-process-directory): add dir to message
+	(spam-stat-reduce-size): No longer remove words
+	with values close to 0.5, because the default value is 0.2.  
+
 2002-10-31  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-util.el (gnus-user-date-format-alist): Clarify and correct
