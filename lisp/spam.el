@@ -786,22 +786,12 @@ Respects the process/prefix convention."
     (spam-ham-copy-or-move-routine nil groups)))
 
 (defun spam-get-article-as-string (article)
-  (let ((article-buffer (spam-get-article-as-buffer article))
-	article-string)
-    (when article-buffer
-      (save-window-excursion
-	(set-buffer article-buffer)
-	(setq article-string (buffer-string))))
-    article-string))
-
-(defun spam-get-article-as-buffer (article)
-  (let ((article-buffer))
-    (when (numberp article)
-      (save-window-excursion
-	(gnus-summary-goto-subject article)
-	(gnus-summary-show-article t)
-	(setq article-buffer (get-buffer gnus-article-buffer))))
-    article-buffer))
+  (when (numberp article)
+    (with-temp-buffer
+      (gnus-request-article-this-buffer
+       article
+       gnus-newsgroup-name)
+      (buffer-string))))
 
 ;; disabled for now
 ;; (defun spam-get-article-as-filename (article)

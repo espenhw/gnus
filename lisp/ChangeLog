@@ -1,3 +1,9 @@
+2004-01-12  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-get-article-as-string): updated to use
+	gnus-request-article-this-buffer, much simpler
+	(spam-get-article-as-buffer): removed
+
 2004-01-12  Kai Grossjohann  <kai.grossjohann@mci.com>
 
 	* message.el (message-expand-name): Use EUDC if the user uses
