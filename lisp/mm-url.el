@@ -1,5 +1,5 @@
 ;;; mm-url.el --- a wrapper of url functions/commands for Gnus
-;; Copyright (C) 2001 Free Software Foundation, Inc.
+;; Copyright (C) 2001, 2002 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 
@@ -51,18 +51,21 @@
 
 (defvar mm-url-predefined-programs
   '((wget "wget" "-q" "-O" "-")
+    (w3m  "w3m" "-dump_source")
     (lynx "lynx" "-source")
     (curl "curl")))
 
 (defcustom mm-url-program 
   (cond
    ((executable-find "wget") 'wget)
+   ((executable-find "w3m") 'w3m)
    ((executable-find "lynx") 'lynx)
    ((executable-find "curl") 'curl)
    (t "GET"))
   "The url grab program."
   :type '(choice 
 	  (symbol :tag "wget" wget)
+	  (symbol :tag "w3m" w3m)
 	  (symbol :tag "lynx" lynx)
 	  (symbol :tag "curl" curl)
 	  (string :tag "other"))
