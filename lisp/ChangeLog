@@ -1,3 +1,7 @@
+2004-05-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-idna-to-ascii-rhs-1): Don't use equalp. 
+
 2004-05-18  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	* nntp.el (nntp-request-set-mark, nntp-request-update-info):

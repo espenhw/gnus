@@ -4898,9 +4898,9 @@ subscribed address (and not the additional To and Cc header contents)."
     (when field
       (dolist (address (mail-header-parse-addresses field))
 	(setq address (car address)
-	      rhs (cadr (split-string address "@"))
-	      ace (idna-to-ascii rhs))
-	(when (and (not (equalp rhs ace))
+	      rhs (downcase (cadr (split-string address "@")))
+	      ace (downase (idna-to-ascii rhs)))
+	(when (and (not (equal rhs ace))
 		   (or (not (eq message-use-idna 'ask))
 		       (y-or-n-p (format "Replace %s with %s? " rhs ace))))
 	  (goto-char (point-min))
