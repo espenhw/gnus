@@ -1,6 +1,8 @@
 2003-03-22  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Troubleshooting): Fix typo.
+	(Drafts): Mention how to restore special property, suggested by
+	Florian Weimer <fw@deneb.enyo.de>.
 
 2003-03-19  Simon Josefsson  <jas@extundo.com>
 
