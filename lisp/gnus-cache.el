@@ -412,7 +412,9 @@ Returns the list of articles removed."
 	   (nnheader-translate-file-chars
 	    (if (gnus-use-long-file-name 'not-cache)
 		group
-	      (let ((group (nnheader-replace-chars-in-string group ?/ ?_)))
+	      (let ((group (nnheader-replace-duplicate-chars-in-string
+			    (nnheader-replace-chars-in-string group ?/ ?_)
+			    ?. ?_)))
 		;; Translate the first colon into a slash.
 		(when (string-match ":" group)
 		  (aset group (match-beginning 0) ?/))

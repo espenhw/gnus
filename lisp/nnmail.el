@@ -463,6 +463,9 @@ parameter.  It should return nil, `warn' or `delete'."
   "Make pathname for GROUP."
   (concat
    (let ((dir (file-name-as-directory (expand-file-name dir))))
+     (setq group (nnheader-replace-duplicate-chars-in-string
+		  (nnheader-replace-chars-in-string group ?/ ?_)
+		  ?. ?_))
      (setq group (nnheader-translate-file-chars group))
      ;; If this directory exists, we use it directly.
      (if (or nnmail-use-long-file-names

@@ -676,6 +676,21 @@ without formatting."
       (setq idx (1+ idx)))
     string))
 
+(defun nnheader-replace-duplicate-chars-in-string (string from to)
+  "Replace characters in STRING from FROM to TO."
+  (let ((string (substring string 0))	;Copy string.
+	(len (length string))
+	(idx 0) prev i)
+    ;; Replace all occurrences of FROM with TO.
+    (while (< idx len)
+      (setq i (aref string idx))
+      (when (and (eq prev from) (= i from))
+	(aset string (1- idx) to)
+	(aset string idx to))
+      (setq prev i)
+      (setq idx (1+ idx)))
+    string))
+
 (defun nnheader-file-to-group (file &optional top)
   "Return a group name based on FILE and TOP."
   (nnheader-replace-chars-in-string

@@ -953,7 +953,10 @@ ARG is passed to the first function."
 			 (or (cdr (symbol-value sym))
 			     (car (symbol-value sym)))
 			 (car (symbol-value sym))))))
-     hashtb)))
+     hashtb)
+    (goto-char (point-max))
+    (while (search-backward "\\." nil t)
+      (delete-char 1))))
 
 (provide 'gnus-util)
 

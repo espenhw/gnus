@@ -1,3 +1,17 @@
+1999-11-07 22:56:46  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-save-group-info): Remove backslash
+	before dot.
+	* gnus-util.el (gnus-write-active-file): Ditto.
+
+1999-11-07 22:31:10  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnheader.el (nnheader-replace-duplicate-chars-in-string): New
+	function.
+	* gnus-cache.el (gnus-cache-file-name): Use it.
+	* gnus-agent.el (gnus-agent-group-path): Use it.
+	* nnmail.el (nnmail-group-pathname): Use it.
+
 1999-11-07 21:07:55  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-start.el (gnus-active-to-gnus-format): Don't insert backslash

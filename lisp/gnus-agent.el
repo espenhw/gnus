@@ -624,15 +624,23 @@ the actual number of articles toggled is returned."
 	       (concat "^" (regexp-quote group) " ") nil t)
 	  (gnus-delete-line))
 	(insert (format "%S %d %d y\n" (intern group) (cdr active)
-			(car active)))))))
+			(car active)))
+	(goto-char (point-max))
+	(while (search-backward "\\." nil t)
+	  (delete-char 1))))))
 
 (defun gnus-agent-group-path (group)
   "Translate GROUP into a path."
   (if nnmail-use-long-file-names
       (gnus-group-real-name group)
-    (nnheader-replace-chars-in-string
-     (nnheader-translate-file-chars (gnus-group-real-name group))
-     ?. ?/)))
+    (nnheader-translate-file-chars
+     (nnheader-replace-chars-in-string
+      (nnheader-replace-duplicate-chars-in-string
+       (nnheader-replace-chars-in-string 
+	(gnus-group-real-name group)
+	?/ ?_)
+       ?. ?_)
+      ?. ?/))))
 
 
 
