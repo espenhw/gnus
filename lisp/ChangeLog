@@ -1,3 +1,7 @@
+2004-09-10  Simon Josefsson  <jas@extundo.com>
+
+	* nndb.el (require): Remove tcp and duplicate cl.
+
 2004-09-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-agent.el (directory-files-and-attributes): Move forward.
