@@ -1,3 +1,7 @@
+2000-08-04  Andreas Oeldenberger <andreas.oeldenberger@gmx.net>
+
+	* message.texi (Forwarding): Fix.
+
 2000-07-15  Simon Josefsson  <simon@josefsson.org>
 
 	* gnus.texi (nnimap-authinfo-file):

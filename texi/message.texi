@@ -245,8 +245,8 @@ the message in the current buffer.  If given a prefix, forward using
 news.
 
 @table @code
-@item message-ignored-forward-headers
-@vindex message-ignored-forward-headers
+@item message-forward-ignored-headers
+@vindex message-forward-ignored-headers
 All headers that match this regexp will be deleted when forwarding a message.
 
 @item message-make-forward-subject-function
