@@ -1,3 +1,21 @@
+2000-01-02 08:37:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-next-subject): Don't show the thread
+	of the final article.
+
+	* mm-decode.el (mm-interactively-view-part): Error on no method.
+
+2000-01-02 06:10:32  Stefan Monnier  <monnier+gnu/emacs@tequila.cs.yale.edu>
+
+	* gnus-score.el (gnus-score-insert-help): Something.
+
+	* gnus-art.el (gnus-button-alist): Exclude < from <URL:
+
+	* gnus-win.el (gnus-configure-frame): Ditto.
+
+	* gnus-mh.el (gnus-summary-save-in-folder): Use
+	with-current-buffer.
+
 2000-01-02 05:00:13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnwarchive.el: Changed file perms.
@@ -1932,6 +1950,7 @@ Fri Aug 27 13:17:48 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus-agent.el (gnus-agent-fetch-group-1): Recreate agent
  	overview buffer if it is killed.
+
 1999-08-27 14:26:03  Eric Marsden  <emarsden@mail.dotcom.fr>
 
 	* gnus-art.el (article-babel): New version.

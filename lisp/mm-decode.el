@@ -684,6 +684,8 @@ external if displayed external."
 	  (mapcar (lambda (i) (list (cdr (assoc 'viewer i))))
 		  (mailcap-mime-info type 'all)))
 	 (method (completing-read "Viewer: " methods)))
+    (when (string= method "")
+      (error "No method given"))
     (mm-display-external (copy-sequence handle) method)))
 
 (defun mm-preferred-alternative (handles &optional preferred)

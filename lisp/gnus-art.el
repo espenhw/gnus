@@ -3987,7 +3987,7 @@ groups."
     ("mailto:\\([-a-zA-Z.@_+0-9%]+\\)" 0 t gnus-url-mailto 1)
     ("\\bmailto:\\([^ \n\t]+\\)" 0 t gnus-url-mailto 1)
     ;; This is how URLs _should_ be embedded in text...
-    ("<URL: *\\([^>]*\\)>" 0 t gnus-button-embedded-url 1)
+    ("<URL: *\\([^<>]*\\)>" 0 t gnus-button-embedded-url 1)
     ;; Raw URLs.
     (,gnus-button-url-regexp 0 t browse-url 0))
   "*Alist of regexps matching buttons in article bodies.

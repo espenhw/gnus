@@ -5692,8 +5692,8 @@ returned."
 		(if backward
 		    (gnus-summary-find-prev unread)
 		  (gnus-summary-find-next unread)))
-      (gnus-summary-show-thread)
-      (setq n (1- n)))
+      (unless (zerop (setq n (1- n)))
+	(gnus-summary-show-thread)))
     (when (/= 0 n)
       (gnus-message 7 "No more%s articles"
 		    (if unread " unread" "")))

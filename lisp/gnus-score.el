@@ -730,7 +730,7 @@ used as score."
     (pop-to-buffer "*Score Help*")
     (let ((window-min-height 1))
       (shrink-window-if-larger-than-buffer))
-    (select-window (get-buffer-window gnus-summary-buffer))))
+    (select-window (get-buffer-window gnus-summary-buffer t))))
 
 (defun gnus-summary-header (header &optional no-err extra)
   ;; Return HEADER for current articles, or error.
