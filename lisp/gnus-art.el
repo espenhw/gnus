@@ -1037,8 +1037,6 @@ If PROMPT (the prefix), prompt for a coding system to use."
 			(gnus-group-find-parameter
 			 gnus-newsgroup-name 'charset))))
 	     buffer-read-only)
-	(when charset
-	  (setq charset (downcase charset)))
 	(goto-char (point-max))
 	(widen)
 	(forward-line 1)
@@ -2334,7 +2332,13 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (gnus-insert-mime-button
      handle id (list (not (mm-handle-displayed-p handle))))
     (prog1
-	(mm-display-part handle)
+	(let ((window (selected-window)))
+	  (save-excursion
+	    (unwind-protect
+		(progn
+		  (select-window (get-buffer-window (current-buffer) t))
+		  (mm-display-part handle))
+	      (select-window window))))
       (goto-char point))))
 
 (defun gnus-article-goto-part (n)
@@ -3110,9 +3114,9 @@ groups."
   :type 'regexp)
 
 (defcustom gnus-button-alist
-  `(("<\\(url:[>\n\t ]*?\\)?news:[>\n\t ]*\\([^>\n\t ]*@[^>\n\t ]*\\)>" 0 t
-     gnus-button-message-id 2)
-    ("\\bnews:\\([^>\n\t ]*@[^>\n\t ]*\\)" 0 t gnus-button-message-id 1)
+  `(("<\\(url:[>\n\t ]*?\\)?news:[>\n\t ]*\\([^>\n\t ]*@[^)!;:,>\n\t ]*\\)>"
+     0 t gnus-button-message-id 2)
+    ("\\bnews:\\([^>\n\t ]*@[^>)!;:,\n\t ]*\\)" 0 t gnus-button-message-id 1)
     ("\\(\\b<\\(url:[>\n\t ]*\\)?news:[>\n\t ]*\\(//\\)?\\([^>\n\t ]*\\)>\\)"
      1 t
      gnus-button-fetch-group 4)

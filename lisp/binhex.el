@@ -3,7 +3,7 @@
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Create Date: Oct 1, 1998
-;; $Revision: 1.2 $
+;; $Revision: 5.1 $
 ;; Time-stamp: <Tue Oct  6 23:48:38 EDT 1998 zsh>
 ;; Keywords: binhex
   
@@ -206,7 +206,7 @@ If HEADER-ONLY is non-nil only decode header and return filename."
 	  (when (re-search-forward binhex-begin-line end t)
 	    (if (boundp 'enable-multibyte-characters)
 		(let ((multibyte 
-		       (default-value enable-multibyte-characters)))
+		       (default-value 'enable-multibyte-characters)))
 		  (setq-default enable-multibyte-characters nil)
 		  (setq work-buffer 
 			(generate-new-buffer " *binhex-work*"))

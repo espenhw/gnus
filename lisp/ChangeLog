@@ -1,3 +1,66 @@
+Sat Nov 14 01:51:06 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.43 is released.
+
+1998-11-07  Karl Kleinpaste  <karl@jprc.com>
+
+	* gnus-cus.el (gnus-score-customize): Add "Extra" element.
+	* gnus-score.el (gnus-score-default-header): Ditto.
+	(gnus-header-index): Ditto.
+	(gnus-summary-increase-score): Ditto, & process "extra" requests.
+	(gnus-summary-header): Handle extra headers.
+	(gnus-summary-score-entry): Ditto, & provide new score element.
+	(gnus-summary-score-effect): Ditto.
+	(gnus-score-string): Avoid "extra" string sort, & modify match in
+	"extra" case.
+	* gnus-sum.el (gnus-make-score-map): Add "extra" element.
+
+1998-11-13 20:30:40  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-resend): Bind message-required-mail-headers
+	to nil. 
+
+	* mm-view.el (mm-inline-text): Bind w3-strict-width. 
+
+	* nngateway.el (require): Require cl.
+
+	* gnus-art.el (gnus-button-alist): Exclude more chars from news:
+	things. 
+
+Wed Nov 11 02:15:06 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-fetch-headers): Create directory even
+	when no articles.
+
+1998-11-13 19:25:10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-ignored-resent-headers): Remove X-Gnus.
+
+1998-11-10  Colin Rafferty  <colin@xemacs.org>
+
+	* gnus-sum.el (gnus-ignored-from-addresses): Only quote
+	user-mail-address if non-nil.
+
+1998-11-13 18:50:18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-util.el (gnus-make-sort-function): Do `reverse'.
+	(gnus-make-sort-function-1): Ditto.
+
+	* gnus-art.el (gnus-mm-display-part): Switch to mm in right
+	window. 
+
+1998-11-12 22:31:58  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-util.el (mm-with-unibyte-buffer): Ditto.
+
+	* binhex.el (binhex-decode-region): Quote.
+
+1998-11-10 05:32:28  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-decode-charset): Don't downcase charset.
+
+	* gnus-sum.el (gnus-get-newsgroup-headers-xover): Translate CR's.
+
 Sun Nov  8 23:17:24 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.42 is released.

@@ -169,7 +169,7 @@ used as the line break code type of the coding system."
 (defsubst mm-enable-multibyte ()
   "Enable multibyte in the current buffer."
   (when (and (fboundp 'set-buffer-multibyte)
-	     (default-value enable-multibyte-characters))
+	     (default-value 'enable-multibyte-characters))
     (set-buffer-multibyte t)))
 
 (defsubst mm-disable-multibyte ()
@@ -205,7 +205,7 @@ See also `with-temp-file' and `with-output-to-string'."
 	(multibyte (make-symbol "multibyte")))
     `(if (not (boundp 'enable-multibyte-characters))
 	 (with-temp-buffer ,@forms)
-       (let ((,multibyte (default-value enable-multibyte-characters))
+       (let ((,multibyte (default-value 'enable-multibyte-characters))
 	     ,temp-buffer)
 	 (unwind-protect
 	     (progn
@@ -231,7 +231,8 @@ See also `with-temp-file' and `with-output-to-string'."
       (save-restriction
 	(narrow-to-region b e)
 	(goto-char (point-min))
-	(let ((entry (assoc current-language-environment language-info-alist)))
+	(let ((entry (assoc (capitalize current-language-environment)
+			    language-info-alist)))
 	  (skip-chars-forward "\0-\177")
 	  (if (eobp)
 	      '(ascii)

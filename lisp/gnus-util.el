@@ -478,21 +478,35 @@ If N, return the Nth ancestor instead."
 (defun gnus-make-sort-function (funs)
   "Return a composite sort condition based on the functions in FUNC."
   (cond
-   ((not (listp funs)) funs)
+   ;; Just a simple function.
+   ((gnus-functionp funs) funs)
+   ;; No functions at all.
    ((null funs) funs)
-   ((cdr funs)
+   ;; A list of functions.
+   ((or (cdr funs)
+	(listp (car funs)))
     `(lambda (t1 t2)
        ,(gnus-make-sort-function-1 (reverse funs))))
+   ;; A list containing just one function.
    (t
     (car funs))))
 
 (defun gnus-make-sort-function-1 (funs)
   "Return a composite sort condition based on the functions in FUNC."
-  (if (cdr funs)
-      `(or (,(car funs) t1 t2)
-	   (and (not (,(car funs) t2 t1))
-		,(gnus-make-sort-function-1 (cdr funs))))
-    `(,(car funs) t1 t2)))
+  (let ((function (car funs))
+	(first 't1)
+	(last 't2))
+    (when (consp function)
+      (if (eq (car function) 'not)
+	  (setq function (cadr function)
+		first 't2
+		last 't1)
+	(error "Invalid sort spec: %s" function)))
+    (if (cdr funs)
+	`(or (,function ,first ,last)
+	     (and (not (,function ,last ,first))
+		  ,(gnus-make-sort-function-1 (cdr funs))))
+      `(,function ,first ,last))))
 
 (defun gnus-turn-off-edit-menu (type)
   "Turn off edit menu in `gnus-TYPE-mode-map'."

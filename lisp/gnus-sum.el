@@ -778,7 +778,8 @@ which it may alter in any way.")
   :group 'gnus-summary
   :type '(repeat symbol))
 
-(defcustom gnus-ignored-from-addresses (regexp-quote user-mail-address)
+(defcustom gnus-ignored-from-addresses
+  (and user-mail-address (regexp-quote user-mail-address))
   "*Regexp of From headers that may be suppressed in favor of To headers."
   :group 'gnus-summary
   :type 'regexp)
@@ -1822,6 +1823,7 @@ increase the score of each group you read."
 		     ("article body" "body" string)
 		     ("article head" "head" string)
 		     ("xref" "xref" string)
+		     ("extra header" "extra" string)
 		     ("lines" "lines" number)
 		     ("followups to author" "followup" string)))
 	  (types '((number ("less than" <)
@@ -4631,6 +4633,9 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
 	number headers header)
     (save-excursion
       (set-buffer nntp-server-buffer)
+      (goto-char (point-min))
+      (while (search-forward "\r" nil t)
+	(replace-match " " t t))
       ;; Allow the user to mangle the headers before parsing them.
       (gnus-run-hooks 'gnus-parse-headers-hook)
       (goto-char (point-min))
@@ -6729,6 +6734,7 @@ Optional argument BACKWARD means do search for backward.
   ;; We have to require this here to make sure that the following
   ;; dynamic binding isn't shadowed by autoloading.
   (require 'gnus-async)
+  (require 'gnus-art)
   (let ((gnus-select-article-hook nil)	;Disable hook.
 	(gnus-article-display-hook nil)
 	(gnus-mark-article-hook nil)	;Inhibit marking as read.
@@ -6736,8 +6742,9 @@ Optional argument BACKWARD means do search for backward.
 	(gnus-xmas-force-redisplay nil)	;Inhibit XEmacs redisplay.
 	(gnus-use-trees nil)		;Inhibit updating tree buffer.
 	(sum (current-buffer))
+	(gnus-display-mime-function nil)
 	(found nil)
-	point gnus-display-mime-function)
+	point)
     (gnus-save-hidden-threads
       (gnus-summary-select-article)
       (set-buffer gnus-article-buffer)

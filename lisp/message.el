@@ -321,7 +321,7 @@ The provided functions are:
   :group 'message-forwarding
   :type 'boolean)
 
-(defcustom message-ignored-resent-headers "^Return-receipt"
+(defcustom message-ignored-resent-headers "^Return-receipt\\|^X-Gnus"
   "*All headers that match this regexp will be deleted when resending a message."
   :group 'message-interface
   :type 'regexp)
@@ -3798,7 +3798,8 @@ Optional NEWS will use news to forward instead of mail."
       (when (looking-at "From ")
 	(replace-match "X-From-Line: "))
       ;; Send it.
-      (message-send-mail)
+      (let (message-required-mail-headers)
+	(message-send-mail))
       (kill-buffer (current-buffer)))
     (message "Resending message to %s...done" address)))
 

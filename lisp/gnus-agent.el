@@ -558,7 +558,8 @@ the actual number of articles toggled is returned."
 		(gnus-delete-line))
 	      (insert group " " (number-to-string (cdr active)) " "
 		      (number-to-string (car active)) " y\n"))
-	  (when (re-search-forward (concat (regexp-quote group) "\\($\\| \\)") nil t)
+	  (when (re-search-forward
+		 (concat (regexp-quote group) "\\($\\| \\)") nil t)
 	    (gnus-delete-line))
 	  (insert-buffer-substring nntp-server-buffer))))))
 
@@ -771,8 +772,11 @@ the actual number of articles toggled is returned."
  			(cons (1+ (caar (last gnus-agent-article-alist)))
  			      (cdr (gnus-active group)))))
  		    (gnus-list-of-unread-articles group)))
-	(gnus-decode-encoded-word-function 'identity)) 
+	(gnus-decode-encoded-word-function 'identity)
+	(file (gnus-agent-article-name ".overview" group))) 
     ;; Fetch them.
+    (gnus-make-directory (nnheader-translate-file-chars
+			  (file-name-directory file)))
     (when articles
       (gnus-message 7 "Fetching headers for %s..." group)
       (save-excursion
@@ -781,21 +785,17 @@ the actual number of articles toggled is returned."
  	  (nnvirtual-convert-headers))
  	;; Save these headers for later processing.
  	(copy-to-buffer gnus-agent-overview-buffer (point-min) (point-max))
- 	(let (file)
- 	  (when (file-exists-p
- 		 (setq file (gnus-agent-article-name ".overview" group)))
- 	    (gnus-agent-braid-nov group articles file))
- 	  (gnus-make-directory (nnheader-translate-file-chars
- 				(file-name-directory file)))
-  	  (let ((coding-system-for-write
-  		 gnus-agent-file-coding-system))
-  	    (write-region (point-min) (point-max) file nil 'silent))
- 	  (gnus-agent-save-alist group articles nil)
- 	  (gnus-agent-enter-history
- 	   "last-header-fetched-for-session"
- 	   (list (cons group (nth (- (length  articles) 1) articles)))
- 	   (time-to-days (current-time)))
- 	  articles)))))
+	(when (file-exists-p file)
+	  (gnus-agent-braid-nov group articles file))
+	(let ((coding-system-for-write
+	       gnus-agent-file-coding-system))
+	  (write-region (point-min) (point-max) file nil 'silent))
+	(gnus-agent-save-alist group articles nil)
+	(gnus-agent-enter-history
+	 "last-header-fetched-for-session"
+	 (list (cons group (nth (- (length  articles) 1) articles)))
+	 (time-to-days (current-time)))
+	articles))))
 
 (defsubst gnus-agent-copy-nov-line (article)
   (let (b e)

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.42 Manual
+@settitle Pterodactyl Gnus 0.43 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.42 Manual
+@title Pterodactyl Gnus 0.43 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.42.
+This manual corresponds to Pterodactyl Gnus 0.43.
 
 @end ifinfo
 
@@ -5188,7 +5188,10 @@ Matching}).
 @findex gnus-thread-sort-by-number
 @vindex gnus-thread-sort-functions
 If you are using a threaded summary display, you can sort the threads by
-setting @code{gnus-thread-sort-functions}, which is a list of functions.
+setting @code{gnus-thread-sort-functions}, which can be either a single
+function, a list of functions, or a list containing functions and
+@code{(not some-function)} elements.
+
 By default, sorting is done on article numbers.  Ready-made sorting
 predicate functions include @code{gnus-thread-sort-by-number},
 @code{gnus-thread-sort-by-author}, @code{gnus-thread-sort-by-subject},
@@ -5197,22 +5200,23 @@ predicate functions include @code{gnus-thread-sort-by-number},
 
 Each function takes two threads and returns non-@code{nil} if the first
 thread should be sorted before the other.  Note that sorting really is
-normally done by looking only at the roots of each thread.  If you use
-more than one function, the primary sort key should be the last function
-in the list.  You should probably always include
+normally done by looking only at the roots of each thread.
+
+If you use more than one function, the primary sort key should be the
+last function in the list.  You should probably always include
 @code{gnus-thread-sort-by-number} in the list of sorting
 functions---preferably first.  This will ensure that threads that are
 equal with respect to the other sort criteria will be displayed in
 ascending article order.
 
-If you would like to sort by score, then by subject, and finally by
-number, you could do something like:
+If you would like to sort by reverse score, then by subject, and finally
+by number, you could do something like:
 
 @lisp
 (setq gnus-thread-sort-functions
       '(gnus-thread-sort-by-number
         gnus-thread-sort-by-subject
-        gnus-thread-sort-by-total-score))
+        (reverse gnus-thread-sort-by-total-score)))
 @end lisp
 
 The threads that have highest score will be displayed first in the

@@ -75,17 +75,19 @@
 		 ,(set-marker (make-marker) (point-min))
 		 ,(set-marker (make-marker) (point-max)))))))))
      ((equal type "html")
-      (save-excursion
-	(w3-do-setup)
-	(mm-with-unibyte-buffer
-	  (insert-buffer-substring (mm-handle-buffer handle))
-	  (mm-decode-content-transfer-encoding
-	   (mm-handle-encoding handle)
-	   (car (mm-handle-type handle)))
-	  (require 'url)
-	  (save-window-excursion
-	    (w3-region (point-min) (point-max))
-	    (setq text (buffer-string)))))
+      (let ((width (window-width)))
+	(save-excursion
+	  (w3-do-setup)
+	  (mm-with-unibyte-buffer
+	    (insert-buffer-substring (mm-handle-buffer handle))
+	    (mm-decode-content-transfer-encoding
+	     (mm-handle-encoding handle)
+	     (car (mm-handle-type handle)))
+	    (require 'url)
+	    (save-window-excursion
+	      (let ((w3-strict-width width))
+		(w3-region (point-min) (point-max)))
+	      (setq text (buffer-string))))))
       (mm-insert-inline handle text))
      ((or (equal type "enriched")
 	  (equal type "richtext"))
