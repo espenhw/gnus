@@ -2,6 +2,7 @@
 
 	* gnus.texi (Posting Styles): Clarify the `(header MATCH REGEXP)'
 	case.
+	(Back End Interface): Mention nnnotbackends.
 
 2002-11-29  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 

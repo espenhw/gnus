@@ -24115,6 +24115,10 @@ the `no-reuse' restriction, holes cannot be avoided altogether.  It's
 also useful for the article numbers to start at 1 to avoid running out
 of numbers as long as possible.
 
+Note that by convention, backends are named @code{nnsomething}, but
+Gnus also comes with some @code{nnnotbackends}, such as
+@file{nnheader.el}, @file{nnmail.el} and @file{nnoo.el}.
+
 In the examples and definitions I will refer to the imaginary back end
 @code{nnchoke}.
 
