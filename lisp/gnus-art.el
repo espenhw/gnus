@@ -4744,7 +4744,7 @@ variable it the real callback function."
 			       (integer :tag "Regexp group")))))
 
 (defcustom gnus-header-button-alist
-  `(("^\\(References\\|Message-I[Dd]\\):" "<[^>]+>"
+  `(("^\\(References\\|Message-I[Dd]\\):" "<[^<>]+>"
      0 t gnus-button-message-id 0)
     ("^\\(From\\|Reply-To\\):" ": *\\(.+\\)$" 1 t gnus-button-reply 1)
     ("^\\(Cc\\|To\\):" "[^ \t\n<>,()\"]+@[^ \t\n<>,()\"]+"

@@ -1,3 +1,7 @@
+2001-08-01 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-header-button-alist): References regexp.
+
 2001-08-01  Gerd Moellmann  <gerd@gnu.org>
 
 	* mm-view.el (autoload): Don't autoload `diff-mode' if it's 
