@@ -1,3 +1,8 @@
+2002-12-19  Paul Jarc  <prj@po.cwru.edu>
+
+	* gnus.texi (Optional Back End Functions):
+	nnchoke-request-update-info need not return the info object.
+
 2002-12-15  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnusref.tex: Additions.
