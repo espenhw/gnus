@@ -770,23 +770,36 @@ article's mark is toggled."
 	(setq gnus-newsgroup-undownloaded (cdr undownloaded))))))
 
 (defun gnus-agent-catchup ()
-  "Mark all undownloaded articles as read."
+  "Mark all articles as read that are neither cached, downloaded, nor downloadable."
   (interactive)
   (save-excursion
-    (while gnus-newsgroup-undownloaded
-      (gnus-summary-mark-article
-       (pop gnus-newsgroup-undownloaded) gnus-catchup-mark)))
-  (gnus-summary-position-point))
+    (let ((articles gnus-newsgroup-undownloaded))
+      (when (or gnus-newsgroup-downloadable
+                gnus-newsgroup-cached)
+        (setq articles (gnus-sorted-ndifference (gnus-sorted-ndifference (copy-sequence articles) gnus-newsgroup-downloadable) gnus-newsgroup-cached)))
+
+      (while articles
+        (gnus-summary-mark-article
+         (pop articles) gnus-catchup-mark)))
+    (gnus-summary-position-point)))
 
 (defun gnus-agent-summary-fetch-series ()
   (interactive)
   (when gnus-newsgroup-processable
     (setq gnus-newsgroup-downloadable
           (let* ((dl gnus-newsgroup-downloadable)
-                 (gnus-newsgroup-downloadable (sort gnus-newsgroup-processable '<))
+                 (gnus-newsgroup-downloadable (sort (copy-sequence gnus-newsgroup-processable) '<))
                  (fetched-articles (gnus-agent-summary-fetch-group)))
-            (dolist (article fetched-articles)
-              (gnus-summary-remove-process-mark article))
+            ;; The preceeding call to (gnus-agent-summary-fetch-group)
+            ;; updated gnus-newsgroup-downloadable to remove each
+            ;; article successfully fetched.
+
+            ;; For each article that I processed, remove its
+            ;; processable mark IF the article is no longer
+            ;; downloadable (i.e. it's already downloaded)
+            (dolist (article gnus-newsgroup-processable)
+              (unless (memq article gnus-newsgroup-downloadable)
+                (gnus-summary-remove-process-mark article)))
             (gnus-sorted-ndifference dl fetched-articles)))))
 
 (defun gnus-agent-summary-fetch-group (&optional all)
