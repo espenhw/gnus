@@ -1,7 +1,7 @@
 %% include file for the Gnus refcard and booklet
 
 \def\progver{5.10}\def\refver{5.10-1} % program and refcard versions
-\def\date{Jan, 2004}
+\def\date{Dec, 2004}
 \def\author{Gnus Bugfixing Girls + Boys $<$bugs@gnus.org$>$}
 
 %%
@@ -485,6 +485,7 @@
     {\esamepage
       \begin{keys}{C-c C-s C-a}
         C-c C-s C-a & Sort the summary-buffer by {\bf author}.\\
+        C-c C-s C-t & Sort the summary-buffer by {\bf recipient}.\\
         C-c C-s C-d & Sort the summary-buffer by {\bf date}.\\
         C-c C-s C-i & Sort the summary-buffer by article score.\\
         C-c C-s C-l & Sort the summary-buffer by amount of {\bf lines}.\\
@@ -794,6 +795,7 @@
     \begin{keys}{/M}
       //   & (/s) Limit the summary-buffer to articles matching {\bf subject}.\\
       /a   & Limit the summary-buffer to articles matching {\bf author}.\\
+      /R   & Limit the summary-buffer to articles matching {\bf recipient}.\\
       /x   & Limit depending on ``extra'' headers.\\
       /u   & (x) Limit to {\bf unread} articles.
       [Prefix: also exclude ticked and dormant articles]\\
