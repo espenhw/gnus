@@ -1,5 +1,7 @@
 2003-10-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-summary-refer-article): Strip spaces.
+
 	* rfc2047.el (rfc2047-encode-region): Do error out on invalid
 	strings. 
 
