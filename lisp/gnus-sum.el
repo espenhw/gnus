@@ -4525,10 +4525,10 @@ Unscored articles will be counted as having a score of zero."
 	   (mapcar
 	    (lambda (header)
 	      (setq previous-time
-		    (time-to-seconds
-		     (condition-case ()
-			 (mail-header-parse-date (mail-header-date header))
-		       (error previous-time)))))
+		    (condition-case ()
+			(time-to-seconds (mail-header-parse-date
+					  (mail-header-date header)))
+		      (error previous-time))))
 	    (sort
 	     (message-flatten-list thread)
 	     (lambda (h1 h2)

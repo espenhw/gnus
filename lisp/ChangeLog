@@ -1,3 +1,8 @@
+2003-07-17  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-thread-latest-date): Move condition-case to
+	the right place.
+
 2003-07-14  Simon Josefsson  <jas@extundo.com>
 
 	* mail-source.el (mail-source-fetch-imap): Don't assume
