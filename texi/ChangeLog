@@ -1,3 +1,8 @@
+2002-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* emacs-mime.texi (Customization): Added documentation for
+	`mm-inline-text-html-renderer'.
+
 2002-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Article Washing): Add URL about w3m.
@@ -34,7 +39,7 @@
 2002-01-19  Lars Magne Ingebrigtsen  <karra@cs.utah.edu>
 
 	* gnus.texi (Mail Spool): Note that the .marks files can be
-	removed. 
+	removed.
 
 2002-01-17  Paul Jarc  <prj@po.cwru.edu>
 
@@ -66,7 +71,7 @@
 2002-01-11  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.texi (Mailing Lists): Addition.
-	* gnus.texi (Group Parameters): Addition. 
+	* gnus.texi (Group Parameters): Addition.
 	From Sriram Karra <karra@cs.utah.edu>.
 
 2002-01-10  Colin Marquardt  <c.marquardt@alcatel.de>
@@ -123,7 +128,7 @@
 2002-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Group Timestamp): Addition.  Example from Andras
-	BALI. 
+	BALI.
 	(X-Face): Addition.
 	(Advanced Formatting): Add example.
 
@@ -235,7 +240,7 @@
 	* gnus.texi (Summary Mail Commands): advertise
 	`gnus-summary-news-other-window'.
 
-2001-12-10  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-12-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Advanced Scoring Examples): Clarify that the
 	examples are rules, not complete score files.
@@ -244,7 +249,7 @@
 
 	* gnus.texi (Expiring Mail): Add.
 
-2001-12-05  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-12-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Splitting in IMAP): Typo.  From Colin Marquardt
 	<c.marquardt@alcatel.de>.
@@ -252,7 +257,7 @@
 2001-12-03 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* infohack.el (infohack): To process write-protected files safely,
-      	make this buffer be writable after `find-file'.
+	make this buffer be writable after `find-file'.
 	From TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 2001-12-03 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -318,7 +323,7 @@
 	* message.texi (Security):
 	* emacs-mime.texi (MML Definition): Add PGP.
 
-2001-11-09  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-11-09  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* message.texi (Movement): message-beginning-of-line.
 
@@ -400,11 +405,11 @@
 	* gnus.texi (Posting Server): Use `native' instead of `nil' for
 	posting to native server.
 
-2001-10-22  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-10-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* dir (File): Add standard explanation header.
 
-2001-10-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-10-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Mail Source Specifiers): Explain more explicitly what
 	happens for the `directory' entries.  Say that mail from foo.spool
@@ -417,7 +422,7 @@
 
 	* gnus.texi (Using MIME): s/mime/MIME/ for PDF version.
 
-2001-10-19  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-10-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Finding the News): Disrecommend nnspool for Leafnode
 	users.
@@ -603,7 +608,7 @@
 
 	* gnus.texi (MIME Commands): Add gnus-buttonized-mime-types.
 
-2001-09-08  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-09-08  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Topic Commands): Make this the first subsection of
 	`Group Topics'.  Rearrange keys to mention the most important keys
@@ -611,7 +616,7 @@
 	C-k/C-y.
 	(Group Buffer): Add comment from Alex Schroeder as todo item.
 
-2001-09-06  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-09-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Fancy Mail Splitting): Mention `delete' near the
 	explanation of `junk'.
@@ -622,12 +627,12 @@
 	make a date format is `message-make-date', which should produce a
 	time zone.
 
-2001-09-04  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-09-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Optional Backend Functions): More detail about the
 	DATE arg for nnchoke-request-newgroups.  Reported by Paul Jarc.
 
-2001-09-01  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-09-01  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Hooking New Backends Into Gnus): Say where to put the
 	call for gnus-declare-backend.  Add an index entry for
@@ -678,7 +683,7 @@
 
 	* gnus.texi (Score Variables): Fix.
 
-2001-08-20  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-08-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Delayed Articles): New section.  Documents
 	gnus-delay.el.
@@ -691,7 +696,7 @@
 	(Positioning Point): New.
 	(Tabulation): New.
 
-2001-08-19  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-08-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Getting Started Reading Mail): Use (nnml "") rather
 	than (nnml "private") as the example server specification.  This
@@ -735,7 +740,7 @@
 	Configuration'.  After all, we're not talking about Microsoft.
 	Suggested by Barry Fishman.
 
-2001-08-11  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-08-11  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Summary Mail Commands): Remove duplicate explanation
 	of `S W'.  Reported by Norbert Koch.
@@ -750,11 +755,11 @@
 
 	* gnus.texi (Mail Backend Variables): Fix.
 
-2001-08-04  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-08-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Summary Buffer Lines): Mention `gnus-goto-colon'.
 
-2001-08-03  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-08-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Backend Interface): Explain about article numbers.
 	Suggested by Paul Jarc.
@@ -789,9 +794,9 @@
 2001-07-25 22:22:22  Raymond Scholz  <rscholz@zonix.de>
 
 	* gnus.texi (Fancy Mail Splitting): New variable
-        nnmail-split-fancy-with-parent-ignore-groups
+	nnmail-split-fancy-with-parent-ignore-groups
 
-2001-07-24  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-07-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Duplicates): Make split method regexp more specific,
 	in case other `Gnus-Warning' headers are added in the future.
@@ -815,7 +820,7 @@
 
 	* gnus.texi (Searching for Articles): Raw articles.
 
-2001-07-16  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-07-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* message.texi (Insertion): Refer to gnus-cite-attribution-suffix.
 
@@ -850,12 +855,12 @@
 
 	* gnus.texi (MIME Commands): Add.
 
-2001-06-24  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-06-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Summary Score Commands): Say that some commands
 	create ADAPT files.
 
-2001-06-23  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-06-23  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Duplicates): Contents of Gnus-Warning header have
 	changed.  Reported by Peter J Acklam.
@@ -866,7 +871,7 @@
 
 	* gnus-faq.texi (Frequently Asked Questions): Fix URL.
 
-2001-06-17  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-06-17  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Group Line Specification): Explain why %t is only an
 	estimate.
@@ -959,12 +964,12 @@
 	* gnus.texi: Remove a few The's.
 	(RSS): New.
 
-2001-04-26  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-04-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Unread Articles): Say that dormants are similar to
 	ticked.
 
-2001-04-13  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-04-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Sorting Groups): Note `C-k' and `C-y' for manually
 	moving groups around.
@@ -996,12 +1001,12 @@
 
 	* message.texi (Security): Typos.
 
-2001-03-15  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-03-15  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Hiding Headers): Typos.  Reported by Sriram Karra
 	<karra@cs.utah.edu>.
 
-2001-03-11  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-03-11  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* message.texi (Message Headers): Update doc for
 	`message-generate-headers-first'.
@@ -1016,7 +1021,7 @@
 
 	* infohack.el (infohack): Set max-lisp-eval-depth to 600+.
 
-2001-03-03  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-03-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Posting Styles): Posting styles have (NAME VALUE),
 	not (NAME . VALUE).
@@ -1047,7 +1052,7 @@
 
 	* gnus.texi (Optional Backend Functions): Fix case.
 
-2001-02-14  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-02-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Unread Articles): Say that Gnus itself never expires
 	ticked articles.  Suggested by M D Greenhow
@@ -1070,11 +1075,11 @@
 	* gnus.texi (Pterodactyl Gnus): Added.
 	(Newest Features): Removed. Suggested by RMS.
 
-2001-02-08  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-02-08  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Group Parameters): Mention `G c' in addition to `G p'.
 
-2001-02-07  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-02-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (To From Newsgroups): Make it clear where to put the
 	sample code.  Suggested by Dan Jacobson.
@@ -1082,7 +1087,7 @@
 	* gnus.texi (Mail Source Specifiers, IMAP, Agent and IMAP):
 	Improve IMAP discussion.
 
-2001-02-07  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-02-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* message.texi (Message Headers): `message-generate-headers-first'.
 
@@ -1143,7 +1148,7 @@
 
 	* message.texi (Security): Requires OpenSSL 0.9.6+.
 
-2001-01-13  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-01-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Mail): Move explanation of
 	`message-send-mail-partially-limit' to message.texi
@@ -1158,7 +1163,7 @@
 
 	* gnus.texi (myself): Quote .
 
-2001-01-05  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-01-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Choosing Commands): Add xref for redisplaying the
 	group.  Suggestion from Galen Boyer <galenboyer@yahoo.com>.
@@ -1177,13 +1182,13 @@
 
 	* texi2latex.el (latexi-translate-file): Ignore anchor.
 
-2001-01-04  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-01-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Article Washing): Refer to `Customizing Articles' for
 	permanent changes.  Suggested by Russell Marks (russel dot marks
 	at ntlworld dot com).
 
-2001-01-03  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-01-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Article Washing): Mention `C-u g' as a sort of
 	anti-washing.
@@ -1196,7 +1201,7 @@
 
 	* texi2latex.el (latexi-translate-file): Understand uref.
 
-2000-12-30  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-12-30  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Selecting a Group): Explain in more detail, what a
 	prefix arg means for SPC.  Refer people to M-g command from
@@ -1250,7 +1255,7 @@
 	* gnus.texi (Adaptive Scoring): Use setq by Thomas Seck
 	<tmseck@web.de>.
 
-2000-12-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-12-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Article Washing): Doc addition by Paul Stevenson
 	<p.stevenson@surrey.ac.uk>.
@@ -1268,7 +1273,7 @@
 
 	* gnus.texi (Archived Messages): Add.
 
-2000-11-20 Jochen K,A|(Bpper <jochen@pc1.uni-duesseldorf.de>
+2000-11-20 Jochen K¸pper <jochen@pc1.uni-duesseldorf.de>
 
 	* gnus.texi (Security): Fix typo.
 
@@ -1294,7 +1299,7 @@
 	* emacs-mime.texi (MML Definition): Add sign, encrypt, keyfile and
 	certfile.
 
-2000-11-07  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-11-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Mail Group Commands): `gnus-move-split-methods' uses
 	group names as target, where `gnus-split-methods' uses file
@@ -1304,7 +1309,7 @@
 
 	* gnus.texi: Doc fix.
 
-2000-11-01  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-11-01  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Fancy Mail Splitting): Explain
 	`nnmail-split-fancy-with-parent'.
@@ -1321,18 +1326,18 @@
 
 	* gnus.texi (NNTP): Explain `port'.
 
-2000-10-30  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-10-30  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Archived Messages): Explain what happens when group
 	names mentioned in `gnus-message-archive-group' contain a select
 	method.
 
-2000-10-28  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-10-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Group Levels): Explain meaning of subscribed,
 	unsubscribed, zombie, killed groups.
 
-2000-10-26  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-10-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Gnus Development): nnmail-delete-incoming -->
 	mail-source-delete-incoming.  Suggested by Karl Kleinpaste
@@ -1346,10 +1351,10 @@
 
 	* gnus.texi (IMAP): Add.
 
-2000-10-05  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-10-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Windows Configuration): add examples; first example
-	suggested by Stein A. Str,Ax(Bmme <stromme@mi.uib.no>.  (The actual
+	suggested by Stein A. Str¯mme <stromme@mi.uib.no>.  (The actual
 	Lisp code is also from him.)
 
 2000-10-07  Dave Love  <fx@gnu.org>
@@ -1402,7 +1407,7 @@
 
 	* gnus.texi (IMAP): Add examples.
 
-2000-09-19  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-09-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (IMAP): Add pointer to description of ~/.authinfo file
 	format.
@@ -1842,7 +1847,7 @@
 
 1999-07-06 05:37:46  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
-        * gnus.texi (Fancy Mail Splitting): Document RESTRICT.
+	* gnus.texi (Fancy Mail Splitting): Document RESTRICT.
 
 1999-07-07 10:26:59  Robin S. Socha  <robin@socha.net>
 

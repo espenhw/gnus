@@ -241,7 +241,7 @@ at the beginning of the narrowed buffer.
 @item mail-header-narrow-to-field
 @findex mail-header-narrow-to-field
 Narrow the buffer to the header under point.  Understands continuation
-headers. 
+headers.
 
 @item mail-header-fold-field
 @findex mail-header-fold-field
@@ -647,7 +647,7 @@ Take a year number and say whether it's a leap year.
 
 @item time-to-day-in-year
 Take a time and return the day number within the year that the time is
-in. 
+in.
 
 @end table
 
@@ -1001,9 +1001,19 @@ Prompt for a mailcap method to use to view the part.
 
 @table @code
 
+@item mm-inline-text-html-renderer
+@findex mm-inline-text-html-render-with-w3
+@findex mm-inline-text-html-render-with-w3m
+This function will be used to convert the HTML to the text.  There are
+two pre-defined functions: @code{mm-inline-text-html-render-with-w3},
+which uses Emacs/w3; and @code{mm-inline-text-html-render-with-w3m},
+which uses emacs-w3m (see @uref{http://emacs-w3m.namazu.org/} for more
+information about emacs-w3m).  The function will be called with a MIME
+handle as the argument.
+
 @item mm-inline-media-tests
 This is an alist where the key is a @sc{mime} type, the second element
-is a function to display the part @dfn{inline} (i.e., inside Emacs), and 
+is a function to display the part @dfn{inline} (i.e., inside Emacs), and
 the third element is a form to be @code{eval}ed to say whether the part
 can be displayed inline.
 
@@ -1023,7 +1033,7 @@ be displayed automatically.
 
 @item mm-attachment-override-types
 Some @sc{mime} agents create parts that have a content-disposition of
-@samp{attachment}.  This variable allows overriding that disposition and 
+@samp{attachment}.  This variable allows overriding that disposition and
 displaying the part inline.  (Note that the disposition is only
 overridden if we are able to, and want to, display the part inline.)
 
@@ -1082,7 +1092,7 @@ Here's an example viewer for displaying @code{text/enriched} inline:
 @end lisp
 
 We see that the function takes a @sc{mime} handle as its parameter.  It
-then goes to a temporary buffer, inserts the text of the part, does some 
+then goes to a temporary buffer, inserts the text of the part, does some
 work on the text, stores the result, goes back to the buffer it was
 called from and inserts the result.
 
@@ -1381,7 +1391,7 @@ given by @code{mail-parse-charset} (a symbol) is used.  (Never set this
 variable directly, though.  If you want to change the default charset,
 please consult the documentation of the package which you use to process
 @sc{mime} messages.
-@xref{Various Message Variables, , Various Message Variables, message, 
+@xref{Various Message Variables, , Various Message Variables, message,
       Message Manual}, for example.)
 If there are only ASCII characters, the @sc{mime} charset US-ASCII is
 used, of course.
