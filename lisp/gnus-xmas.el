@@ -442,6 +442,9 @@ call it with the value of the `gnus-data' text property."
 	  (list 'funcall fval)
 	(cons 'progn (cdr (cdr fval))))))
 
+  (unless (fboundp 'match-string-no-properties)
+    (fset 'match-string-no-properties 'match-string))
+
   (fset 'gnus-x-color-values
 	(if (fboundp 'x-color-values)
 	    'x-color-values
