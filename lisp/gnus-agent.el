@@ -1742,7 +1742,7 @@ FILE and places the combined headers into `nntp-server-buffer'."
 
           (cond
            ((< version 2)
-            (error "gnus-agent-read-agentview no longer supports version %d.  Stop gnus, manually evaluate gnus-agent-convert-to-compressed-agentview, then restart gnus."))
+            (error "gnus-agent-read-agentview no longer supports version %d.  Stop gnus, manually evaluate gnus-agent-convert-to-compressed-agentview, then restart gnus." version))
            ((= version 0)
             (let ((inhibit-quit t)
                   entry)
