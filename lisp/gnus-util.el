@@ -478,8 +478,9 @@ If N, return the Nth ancestor instead."
    ;; A list of functions.
    ((or (cdr funs)
 	(listp (car funs)))
-    `(lambda (t1 t2)
-       ,(gnus-make-sort-function-1 (reverse funs))))
+    (gnus-byte-compile
+     `(lambda (t1 t2)
+	,(gnus-make-sort-function-1 (reverse funs)))))
    ;; A list containing just one function.
    (t
     (car funs))))
@@ -1022,6 +1023,21 @@ Return the modified alist."
   (and (= (length x) (length y))
        (or (string-equal x y)
 	   (string-equal (downcase x) (downcase y)))))
+
+(defcustom gnus-use-byte-compile t
+  "If non-nil, byte-compile crucial run-time codes."
+  :type 'boolean
+  :version "21.1"
+  :group 'gnus-various)
+
+(defun gnus-byte-compile (form)
+  "Byte-compile FORM if `gnus-use-byte-compile' is non-nil."
+  (if gnus-use-byte-compile
+      (progn
+	(require 'bytecomp)
+	(defalias 'gnus-byte-compile 'byte-compile)
+	(byte-compile form))
+    form))
 
 (provide 'gnus-util)
 

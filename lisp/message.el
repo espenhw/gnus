@@ -2888,7 +2888,7 @@ to find out how to use this."
 			 (concat newsgroups "," followup-to)
 		       newsgroups)))
 	    (known-groups
-	     (mapcar '(lambda (n) (gnus-group-real-name n))
+	     (mapcar (lambda (n) (gnus-group-real-name n))
 		     (gnus-groups-from-server
 		      (cond ((equal gnus-post-method 'current)
 			     gnus-current-select-method)

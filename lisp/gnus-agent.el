@@ -1149,10 +1149,10 @@ the actual number of articles toggled is returned."
 	    (gnus-get-predicate
 	     (or (gnus-group-find-parameter group 'agent-predicate t)
 		 (cadr category))))
-      (if (memq (caaddr predicate) '(gnus-agent-true gnus-agent-false))
+      (if (memq predicate '(gnus-agent-true gnus-agent-false))
 	  ;; Simple implementation
 	  (setq arts
-		(and (eq (caaddr predicate) 'gnus-agent-true) articles))
+		(and (eq predicate 'gnus-agent-true) articles))
 	(setq arts nil)
 	(setq score-param
 	      (or (gnus-group-get-parameter group 'agent-score t)
@@ -1468,7 +1468,11 @@ The following commands are available:
 
 (defun gnus-category-make-function (cat)
   "Make a function from category CAT."
-  `(lambda () ,(gnus-category-make-function-1 cat)))
+  (let ((func (gnus-category-make-function-1 cat)))
+    (if (and (= (length func) 1)
+	     (symbolp (car func)))
+	(car func)
+      (gnus-byte-compile `(lambda () ,func)))))
 
 (defun gnus-agent-true ()
   "Return t."

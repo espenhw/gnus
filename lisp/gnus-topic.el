@@ -1611,11 +1611,12 @@ If REVERSE, sort in reverse order."
 (defun gnus-topic-sort-topics-1 (top reverse)
   (if (cdr top)
       (let ((subtop
-	     (mapcar `(lambda (top)
-			(gnus-topic-sort-topics-1 top ,reverse))
+	     (mapcar (gnus-byte-compile
+		      `(lambda (top)
+			 (gnus-topic-sort-topics-1 top ,reverse)))
 		     (sort (cdr top)
-			   '(lambda (t1 t2)
-			      (string-lessp (caar t1) (caar t2)))))))
+			   (lambda (t1 t2)
+			     (string-lessp (caar t1) (caar t2)))))))
 	(setcdr top (if reverse (reverse subtop) subtop))))
   top)
 

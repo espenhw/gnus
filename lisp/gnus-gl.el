@@ -632,10 +632,10 @@ recommend using both scores and grouplens predictions together."
 
 (defun bbb-build-rate-command (rate-alist)
   (concat "putratings " grouplens-bbb-token " " grouplens-current-group " \r\n"
-	  (mapconcat '(lambda (this)	; form (mid . (score . time))
-			(concat (car this)
-				" :rating=" (cadr this) ".00"
-				" :time=" (cddr this)))
+	  (mapconcat (lambda (this)	; form (mid . (score . time))
+		       (concat (car this)
+			       " :rating=" (cadr this) ".00"
+			       " :time=" (cddr this)))
 		     rate-alist "\r\n")
 	  "\r\n.\r\n"))
 

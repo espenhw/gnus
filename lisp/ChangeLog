@@ -1,3 +1,21 @@
+2001-07-25 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-util.el (gnus-byte-compile): New.
+	(gnus-use-byte-compile): New.
+	(gnus-make-sort-function): Use it.
+
+	* nnmail.el (nnmail-get-new-mail): Use it.
+
+	* gnus-agent.el (gnus-category-make-function): Simple function or
+	compiled function.
+	(gnus-agent-fetch-group-1): Don't use (caaddr predicate).
+
+	* gnus-gl.el (bbb-build-rate-command): Remove quote before lambda.
+	* gnus-topic.el (gnus-topic-sort-topics-1): Ditto.
+	(gnus-topic-sort-topics-1): Use gnus-byte-compile.
+
+	* message.el (message-check-news-header-syntax): Remove quote.
+
 2001-07-24 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-use-mail-followup-to): `t' is not a
