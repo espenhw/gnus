@@ -1885,6 +1885,8 @@ prefix, and don't delete any headers."
 	       message-indent-citation-function
 	     (list message-indent-citation-function)))))
     (mml-quote-region start end)
+    ;; Allow undoing.
+    (undo-boundary)
     (goto-char end)
     (when (re-search-backward message-signature-separator start t)
       ;; Also peel off any blank lines before the signature.
@@ -3082,7 +3084,7 @@ Headers already prepared in the buffer are not modified."
 		  ;; The element is a symbol.  We insert the value
 		  ;; of this symbol, if any.
 		  (symbol-value header))
-		 (t
+		 ((not (message-check-element header))
 		  ;; We couldn't generate a value for this header,
 		  ;; so we just ask the user.
 		  (read-from-minibuffer
@@ -3898,13 +3900,14 @@ Optional NEWS will use news to forward instead of mail."
     (message-goto-body)
     (if message-forward-as-mime
 	(insert "\n\n<#part type=message/rfc822 disposition=inline>\n")
-      (insert "\n\n"))
+      (insert "\n-------------------- Start of forwarded message --------------------\n"))
     (let ((b (point))
 	  e)
       (mml-insert-buffer cur)
       (setq e (point))
-      (and message-forward-as-mime
-	   (insert "<#/part>\n"))
+      (if message-forward-as-mime
+	  (insert "<#/part>\n")
+	(insert "\n-------------------- End of forwarded message --------------------\n"))
       (when (and (not current-prefix-arg)
 		 message-forward-ignored-headers)
 	(save-restriction

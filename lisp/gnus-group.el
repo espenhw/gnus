@@ -2644,7 +2644,10 @@ or nil if no action could be taken."
 	   (expirable (if (gnus-group-total-expirable-p group)
 			  (cons nil (gnus-list-of-read-articles group))
 			(assq 'expire (gnus-info-marks info))))
-	   (expiry-wait (gnus-group-find-parameter group 'expiry-wait)))
+	   (expiry-wait (gnus-group-find-parameter group 'expiry-wait))
+	   (nnmail-expiry-target
+	    (or (gnus-group-find-parameter group 'expiry-target)
+		nnmail-expiry-target)))
       (when expirable
 	(setcdr
 	 expirable

@@ -166,6 +166,13 @@ Eg.:
   :type '(choice (const :tag "nnmail-expiry-wait" nil)
 		 (function :format "%v" nnmail-)))
 
+(defcustom nnmail-expiry-target 'delete
+  "*Variable that says where expired messages should end up."
+    :group 'nnmail-expire
+    :type '(choice (const delete)
+		   (function :format "%v" nnmail-)
+		   string))
+
 (defcustom nnmail-cache-accepted-message-ids nil
   "If non-nil, put Message-IDs of Gcc'd articles into the duplicate cache."
   :group 'nnmail
@@ -1520,6 +1527,12 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	     (setq days (days-to-time days))
 	     ;; Compare the time with the current time.
 	     (ignore-errors (time-less-p days (time-since time))))))))
+
+(defun nnmail-expiry-target-group (target group)
+  (when (nnheader-functionp target)
+    (setq target (funcall target group)))
+  (unless (eq target 'delete)
+    (gnus-request-accept-article target)))
 
 (defun nnmail-check-syntax ()
   "Check (and modify) the syntax of the message in the current buffer."

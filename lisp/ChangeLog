@@ -1,3 +1,22 @@
+2000-04-20 14:45:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnml.el (nnml-request-expire-articles): Use it.
+
+	* nnmail.el (nnmail-expiry-target): New variable.
+	(nnmail-expiry-target-group): New function.
+
+2000-04-20 02:36:31  Emerick Rogul  <emerick@cs.bu.edu>
+
+	* message.el (message-forward): Add non-MIME separators.
+
+2000-04-20 02:25:39  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-generate-headers): Respect the syntax check
+	spec. 
+
+	* gnus-sum.el (gnus-remove-thread-1): Show thread.
+	(gnus-remove-thread): Don't show all threads.
+
 Thu Apr 20 01:39:25 2000  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v5.8.4 is released.

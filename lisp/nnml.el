@@ -285,6 +285,13 @@ all.  This may very well take some time.")
 			 (nnmail-expired-article-p group mod-time force
 						   nnml-inhibit-expiry)))
 	      (progn
+		;; Allow a special target group.
+		(unless (eq nnmail-expiry-target 'delete)
+		  (with-temp-buffer
+		    (nnml-request-article article group server
+					  (current-buffer))
+		    (nnmail-expiry-target-group
+		     nnmail-expiry-target group)))
 		(nnheader-message 5 "Deleting article %s in %s"
 				  article group)
 		(condition-case ()

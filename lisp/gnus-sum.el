@@ -3594,7 +3594,6 @@ If LINE, insert the rebuilt thread starting on line LINE."
 		  (while thread
 		    (gnus-remove-thread-1 (car thread))
 		    (setq thread (cdr thread))))
-	      (gnus-summary-show-all-threads)
 	      (gnus-remove-thread-1 thread))))))))
 
 (defun gnus-remove-thread-1 (thread)
@@ -3606,6 +3605,7 @@ If LINE, insert the rebuilt thread starting on line LINE."
       (gnus-remove-thread-1 (pop thread)))
     (when (setq d (gnus-data-find number))
       (goto-char (gnus-data-pos d))
+      (gnus-summary-show-thread)
       (gnus-data-remove
        number
        (- (gnus-point-at-bol)
