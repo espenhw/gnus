@@ -1352,23 +1352,23 @@ When called interactively, prompt for REGEXP."
 	      (setq process-state (list 'error))
 	      (gnus-message 2 "No begin part at the beginning")
 	      (sleep-for 2))
-	  (setq state 'middle)))
-
+	  (setq state 'middle))))
+    
       ;; When there are no result-files, then something must be wrong.
-      (if result-files
-	  (message "")
-	(cond
-	 ((not has-been-begin)
-	  (gnus-message 2 "Wrong type file"))
-	 ((memq 'error process-state)
-	  (gnus-message 2 "An error occurred during decoding"))
-	 ((not (or (memq 'ok process-state)
-		   (memq 'end process-state)))
-	  (gnus-message 2 "End of articles reached before end of file")))
-	;; Make unsuccessfully decoded articles unread.
-	(when gnus-uu-unmark-articles-not-decoded
-	  (while article-series
-	    (gnus-summary-tick-article (pop article-series) t)))))
+    (if result-files
+	(message "")
+      (cond
+       ((not has-been-begin)
+	(gnus-message 2 "Wrong type file"))
+       ((memq 'error process-state)
+	(gnus-message 2 "An error occurred during decoding"))
+       ((not (or (memq 'ok process-state)
+		 (memq 'end process-state)))
+	(gnus-message 2 "End of articles reached before end of file")))
+      ;; Make unsuccessfully decoded articles unread.
+      (when gnus-uu-unmark-articles-not-decoded
+	(while article-series
+	  (gnus-summary-tick-article (pop article-series) t))))
 
     ;; The original article buffer is hosed, shoot it down.
     (gnus-kill-buffer gnus-original-article-buffer)

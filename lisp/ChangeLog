@@ -1,3 +1,8 @@
+2003-10-12  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-uu.el (gnus-uu-grab-articles): Fix misplaced parens.
+	From Mark Hood <markhood@speakeasy.net> (tiny change)
+
 2003-10-10  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-decode.el (mm-file-name-delete-gotchas): Avoid infloop in
