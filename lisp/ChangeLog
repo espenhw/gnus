@@ -1,4 +1,10 @@
 2002-07-21  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	From Nevin Kapur <nevin@jhu.edu>.
+
+	* nnmail.el (nnmail-fancy-expiry-target): Treat nonexisting
+	headers as empty headers.
+	
+2002-07-21  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Jochen Hein <jochen@jochen.org>.
 
 	* gnus-art.el (gnus-emphasis-alist): Add strikethrough and

@@ -1770,7 +1770,9 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	(setq target (format-time-string (caddr regexp-target-pair) date)))
        ((and (not (equal header 'to-from))
 	     (string-match (cadr regexp-target-pair)
-			   (message-fetch-field header)))
+			   (or
+			    (message-fetch-field header)
+			    "")))
 	(setq target
 	      (format-time-string (caddr regexp-target-pair) date)))))))
 
