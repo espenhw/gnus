@@ -240,7 +240,8 @@
       (pop-to-buffer pgg-errors-buffer)
       (error "Encrypt error"))
     (delete-region (point-min) (point-max))
-    (insert-buffer-substring pgg-output-buffer)
+    (mm-with-unibyte-current-buffer
+      (insert-buffer-substring pgg-output-buffer))
     (goto-char (point-min))
     (while (re-search-forward "\r+$" nil t)
       (replace-match "" t t))

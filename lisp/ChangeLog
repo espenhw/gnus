@@ -1,3 +1,9 @@
+2003-06-04  Jesper Harder  <harder@ifa.au.dk>
+
+	* mml1991.el (mml1991-pgg-sign): Insert pgg output as unibyte.
+	From: Ivan Boldyrev <boldyrev+nospam@cgitftp.uiggm.nsc.ru> (tiny
+	change)
+
 2003-06-03  Dave Love  <fx@gnu.org>
 
 	* gnus-soup.el (gnus-soup-send-packet): Don't use
