@@ -1923,7 +1923,8 @@ unfolded."
 	  (while (not (eobp))
 	    (end-of-line)
 	    (when (>= (current-column) (min fill-column width))
-	      (narrow-to-region (min (1+ (point)) (point-max)) (gnus-point-at-bol))
+	      (narrow-to-region (min (1+ (point)) (point-max))
+				(gnus-point-at-bol))
               (let ((goback (point-marker)))
                 (fill-paragraph nil)
                 (goto-char (marker-position goback)))
@@ -2134,23 +2135,23 @@ If PROMPT (the prefix), prompt for a coding system to use."
 	(article-narrow-to-head)
 	(with-current-buffer gnus-original-article-buffer
 	  (goto-char (point-min)))
-	(while (re-search-forward "^Newsgroups:\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]"
-				  nil t)
+	(while (re-search-forward
+		"^Newsgroups:\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]" nil t)
 	  (replace-match (save-match-data
-			     (gnus-decode-newsgroups
-			      ;; XXX how to use data in article buffer?
-			      (with-current-buffer gnus-original-article-buffer
-				(re-search-forward
-				 "^Newsgroups:\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]"
-				 nil t)
-				(match-string 1))
-			      gnus-newsgroup-name method))
+			   (gnus-decode-newsgroups
+			    ;; XXX how to use data in article buffer?
+			    (with-current-buffer gnus-original-article-buffer
+			      (re-search-forward
+			       "^Newsgroups:\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]"
+			       nil t)
+			      (match-string 1))
+			    gnus-newsgroup-name method))
 			 t t nil 1))
 	(goto-char (point-min))
 	(with-current-buffer gnus-original-article-buffer
 	  (goto-char (point-min)))
-	(while (re-search-forward "^Followup-To:\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]"
-				  nil t)
+	(while (re-search-forward
+		"^Followup-To:\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]" nil t)
 	  (replace-match (save-match-data
 			   (gnus-decode-newsgroups
 			    ;; XXX how to use data in article buffer?
@@ -3316,7 +3317,8 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 	      ;; Don't verify multiple headers.
 	      (setq headers (mapconcat (lambda (header)
 					 (concat header ": "
-						 (mail-fetch-field header) "\n"))
+						 (mail-fetch-field header)
+						 "\n"))
 				       (split-string (nth 1 items) ",") "")))
 	    (delete-region (point-min) (point-max))
 	    (insert "-----BEGIN PGP SIGNED MESSAGE-----\n\n")
@@ -3818,10 +3820,12 @@ General format specifiers can also be used.  See Info node
       (define-key map (cadr c) (car c)))
     map))
 
-(easy-menu-define gnus-mime-button-menu gnus-mime-button-map "MIME button menu."
+(easy-menu-define
+  gnus-mime-button-menu gnus-mime-button-map "MIME button menu."
   `("MIME Part"
     ,@(mapcar (lambda (c)
-		(vector (caddr c) (car c) :enable t)) gnus-mime-button-commands)))
+		(vector (caddr c) (car c) :enable t))
+	      gnus-mime-button-commands)))
 
 (eval-when-compile
   (define-compiler-macro popup-menu (&whole form

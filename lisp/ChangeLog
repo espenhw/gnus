@@ -1,3 +1,9 @@
+2003-04-13  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-art.el (article-fill-long-lines)
+	(article-verify-x-pgp-sig, article-decode-group-name)
+	(gnus-mime-button-menu): Split >80 character lines.
+
 2003-04-13  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-local-variables): Use defvar since
