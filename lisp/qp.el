@@ -23,46 +23,63 @@
 
 ;;; Code:
 
+(require 'mm-util)
+
 (defvar quoted-printable-encoding-characters
   (mapcar 'identity "0123456789ABCDEFabcdef"))
 
-(defun quoted-printable-decode-region (from to)
-  "Decode quoted-printable in the region between FROM and TO."
+(defun quoted-printable-decode-region (from to &optional charset)
+  "Decode quoted-printable in the region between FROM and TO.
+If CHARSET is non-nil, decode the region with charset."
   (interactive "r")
   (save-excursion
-    (goto-char from)
-    (while (search-forward "=" to t)
-      (cond
-       ;; End of the line.
-       ((eq (char-after) ?\n)
-	(delete-char -1)
-	(delete-char 1))
-       ;; Encoded character.
-       ((and
-	 (memq (char-after) quoted-printable-encoding-characters)
-	 (memq (char-after (1+ (point)))
-	       quoted-printable-encoding-characters))
-	(subst-char-in-region
-	 (1- (point)) (point) ?=
-	 (string-to-number
-	  (buffer-substring (point) (+ 2 (point)))
-	  16))
-	(delete-char 2))
-       ;; Quoted equal sign.
-       ((eq (char-after) ?=)
-	(delete-char 1))
-       ;; End of buffer.
-       ((eobp)
-	(delete-char -1))
-       ;; Invalid.
-       (t
-	(message "Malformed MIME quoted-printable message"))))))
+    (save-restriction
+      (let (start)
+	(narrow-to-region from to)
+	(goto-char from)
+	(while (not (eobp))
+	  (cond 
+	   ((eq (char-after) ?=)
+	    (delete-char 1)
+	    (unless start
+	      (setq start (point)))
+	    (cond
+	     ;; End of the line.
+	     ((eq (char-after) ?\n)
+	      (delete-char 1))
+	     ;; Encoded character.
+	     ((and
+	       (memq (char-after) quoted-printable-encoding-characters)
+	       (memq (char-after (1+ (point)))
+		     quoted-printable-encoding-characters))
+	      (insert
+	       (string-to-number
+		(buffer-substring (point) (+ 2 (point)))
+		16))
+	      (delete-char 2))
+	     ;; Quoted equal sign.
+	     ((eq (char-after) ?=)
+	      (forward-char 1))
+	     ;; End of buffer.
+	     ((eobp))
+	     ;; Invalid.
+	     (t
+	      (message "Malformed MIME quoted-printable message"))))
+	   ((and charset start (not (eq (mm-charset-after) 'ascii)))
+	    (mm-decode-coding-region start (point) charset)
+	    (setq start nil)
+	    (forward-char 1))
+	   (t
+	    (forward-char 1))))
+	(if (and charset start)
+	    (mm-decode-coding-region start (point) charset))))))
 
-(defun quoted-printable-decode-string (string)
-  "Decode the quoted-printable-encoded STRING and return the results."
+(defun quoted-printable-decode-string (string &optional charset)
+  "Decode the quoted-printable-encoded STRING and return the results.
+If CHARSET is non-nil, decode the region with charset."
   (with-temp-buffer
     (insert string)
-    (quoted-printable-decode-region (point-min) (point-max))
+    (quoted-printable-decode-region (point-min) (point-max) charset)
     (buffer-string)))
 
 (defun quoted-printable-encode-region (from to &optional fold class)

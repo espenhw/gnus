@@ -1478,11 +1478,7 @@ or not."
       (when (or force
 		(and type (string-match "quoted-printable" (downcase type))))
 	(article-goto-body)
-	(save-restriction
-	  (narrow-to-region (point) (point-max))
-	  (quoted-printable-decode-region (point-min) (point-max))
-	  (when charset
-	    (mm-decode-body charset)))))))
+	(quoted-printable-decode-region (point) (point-max) charset)))))
 
 (eval-when-compile
   (require 'rfc1843))
