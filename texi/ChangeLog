@@ -1,3 +1,7 @@
+2002-10-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Delayed Articles): Fix gnus-delay-initialize.
+
 2002-10-10  Simon Josefsson  <jas@extundo.com>
 
 	* message.texi (Security): Fix.

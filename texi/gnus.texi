@@ -5466,17 +5466,15 @@ execute the @code{gnus-delay-send-queue} function.
 @table @code
 @item gnus-delay-initialize
 @findex gnus-delay-initialize
-By default, this function installs the @kbd{C-c C-j} key binding in
-Message mode and @code{gnus-delay-send-queue} in
-@code{gnus-get-new-news-hook}.  But it accepts two optional arguments,
-@code{no-keymap} and @code{no-check}.  If @code{no-keymap} is non-nil,
-the @kbd{C-c C-j} binding is not intalled.  If @code{no-check} is
-non-nil, @code{gnus-get-new-news-hook} is not changed.
+By default, this function installs @code{gnus-delay-send-queue} in
+@code{gnus-get-new-news-hook}.  But it accepts the optional second
+argument @code{no-check}.  If it is non-nil,
+@code{gnus-get-new-news-hook} is not changed.  The optional first
+argument is ignored.
 
-For example, @code{(gnus-delay-initialize nil t)} means to change the
-keymap but not to change @code{gnus-get-new-news-hook}.  Presumably, you
-want to use the demon for sending due delayed articles.  Just don't
-forget to set that up :-)
+For example, @code{(gnus-delay-initialize nil t)} means not to change
+@code{gnus-get-new-news-hook}.  Presumably, you want to use the demon
+for sending due delayed articles.  Just don't forget to set that up :-)
 @end table
 
 
