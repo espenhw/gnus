@@ -9126,7 +9126,7 @@ save those articles instead."
 	(set-buffer gnus-original-article-buffer)
 	(save-restriction
 	  (nnheader-narrow-to-headers)
-	  (while methods
+	  (while (and methods (not split-name))
 	    (goto-char (point-min))
 	    (setq method (pop methods))
 	    (setq match (car method))
@@ -9145,7 +9145,7 @@ save those articles instead."
 		    (save-restriction
 		      (widen)
 		      (setq result (eval match)))))
-	      (setq split-name (append (cdr method) split-name))
+	      (setq split-name (cdr method))
 	      (cond ((stringp result)
 		     (push (expand-file-name
 			    result gnus-article-save-directory)
