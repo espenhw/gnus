@@ -1,3 +1,8 @@
+2003-01-08  Simon Josefsson  <jas@extundo.com>
+
+	* nnmail.el (nnmail-expiry-target-group): Request group, create it
+	not successful.
+
 2003-01-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el (bbdb-records): Fbind it for both Emacs and XEmacs.
