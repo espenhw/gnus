@@ -3858,8 +3858,11 @@ than 988 characters long, and if they are not, trim them until they are."
     (if (gnus-alive-p)
 	(setq message-draft-article
 	      (nndraft-request-associate-buffer "drafts"))
-      (setq buffer-file-name (expand-file-name "*message*"
-					       message-auto-save-directory))
+      (setq buffer-file-name (expand-file-name
+			      (if (eq system-type 'windows-nt)
+				  "message"
+				"*message*")
+			      message-auto-save-directory))
       (setq buffer-auto-save-file-name (make-auto-save-file-name)))
     (clear-visited-file-modtime)
     (setq buffer-file-coding-system message-draft-coding-system)))
