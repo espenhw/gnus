@@ -109,7 +109,7 @@
       (setq num (string-to-int (match-string 2 xref))
 	    group (match-string 1 xref))
       (or (with-current-buffer buffer
-	    (or (gnus-cache-request-article num group)
+	    (or (and gnus-use-cache (gnus-cache-request-article num group))
 		(gnus-agent-request-article num group)))
 	  (gnus-request-article num group buffer)))))
 
