@@ -1497,8 +1497,10 @@ See the documentation for the variable `nnmail-split-fancy' for details."
 (defvar group-art)
 (defun nnmail-cache-insert (id grp &optional subject)
   (when (stringp id)
-    (run-hook-with-args 'nnmail-spool-hook 
-			id grp subject)
+    ;; this will handle cases like `B r' where the group is nil
+    (let ((grp (or grp gnus-newsgroup-name "UNKNOWN")))
+      (run-hook-with-args 'nnmail-spool-hook 
+			  id grp subject))
     (when nnmail-treat-duplicates
       ;; Store some information about the group this message is written
       ;; to.  This is passed in as the grp argument -- all locations this

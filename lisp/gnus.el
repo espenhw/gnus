@@ -3274,9 +3274,11 @@ server is native)."
 
 (defun gnus-group-real-prefix (group)
   "Return the prefix of the current group name."
-  (if (string-match "^[^:]+:" group)
-      (substring group 0 (match-end 0))
-    ""))
+  (if (stringp group)
+      (if (string-match "^[^:]+:" group)
+	  (substring group 0 (match-end 0))
+	"")
+    nil))
 
 (defun gnus-group-short-name (group)
   "Return the short group name."

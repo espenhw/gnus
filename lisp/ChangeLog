@@ -1,3 +1,12 @@
+2003-11-07  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* nnmail.el (nnmail-cache-insert): make sure that the
+	nnmail-spool-hook is called with a valid newsgroup name (though
+	it may be wrong)
+
+	* gnus.el (gnus-group-real-prefix): return nil if group is not a
+	string, instead of triggering an error
+
 2003-11-06  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.el (gnus-group-guess-full-name-from-command-method): new	function
