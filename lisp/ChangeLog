@@ -1,3 +1,8 @@
+2001-09-20  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-group.el (gnus-group-catchup): Update expire marks in
+	backend.  Also, if ALL also set expire marks on tick/dormant.
+
 2001-09-20  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* message.el (message-tab-body-function): New variable.

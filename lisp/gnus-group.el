@@ -2911,31 +2911,34 @@ If ALL is non-nil, all articles are marked as read.
 The return value is the number of articles that were marked as read,
 or nil if no action could be taken."
   (let* ((entry (gnus-gethash group gnus-newsrc-hashtb))
-	 (num (car entry)))
+	 (num (car entry))
+	 (marks (nth 3 (nth 2 entry)))
+	 (unread (gnus-list-of-unread-articles group)))
     ;; Remove entries for this group.
     (nnmail-purge-split-history (gnus-group-real-name group))
     ;; Do the updating only if the newsgroup isn't killed.
     (if (not (numberp (car entry)))
 	(gnus-message 1 "Can't catch up %s; non-active group" group)
+      (gnus-update-read-articles group nil)
+      (when all
+	;; Nix out the lists of marks and dormants.
+	(gnus-request-set-mark group (list (list (cdr (assq 'tick marks))
+						 'del '(tick))
+					   (list (cdr (assq 'dormant marks))
+						 'del '(dormant))))
+	(setq unread (gnus-uncompress-range
+		      (gnus-range-add (gnus-range-add
+				       unread (cdr (assq 'dormant marks)))
+				      (cdr (assq 'tick marks)))))
+	(gnus-add-marked-articles group 'tick nil nil 'force)
+	(gnus-add-marked-articles group 'dormant nil nil 'force))
       ;; Do auto-expirable marks if that's required.
       (when (gnus-group-auto-expirable-p group)
-	(gnus-add-marked-articles
-	 group 'expire (gnus-list-of-unread-articles group))
-	(when all
-	  (let ((marks (nth 3 (nth 2 entry))))
-	    (gnus-add-marked-articles
-	     group 'expire (gnus-uncompress-range (cdr (assq 'tick marks))))
-	    (gnus-add-marked-articles
-	     group 'expire (gnus-uncompress-range (cdr (assq 'tick marks)))))))
-      (when entry
-	(gnus-update-read-articles group nil)
-	;; Also nix out the lists of marks and dormants.
-	(when all
-	  (gnus-add-marked-articles group 'tick nil nil 'force)
-	  (gnus-add-marked-articles group 'dormant nil nil 'force))
-	(let ((gnus-newsgroup-name group))
-	  (gnus-run-hooks 'gnus-group-catchup-group-hook))
-	num))))
+	(gnus-add-marked-articles group 'expire unread)
+	(gnus-request-set-mark group (list (list unread 'add '(expire)))))
+      (let ((gnus-newsgroup-name group))
+	(gnus-run-hooks 'gnus-group-catchup-group-hook))
+      num)))
 
 (defun gnus-group-expire-articles (&optional n)
   "Expire all expirable articles in the current newsgroup."
