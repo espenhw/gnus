@@ -481,7 +481,7 @@ Return the number of files that were found."
 		 (condition-case err
 		     (funcall function source callback)
 		   (error
-		    (if (and (not mail-source-ignore-error)
+		    (if (and (not mail-source-ignore-errors)
 			     (yes-or-no-p
 			      (format "Mail source %s error (%s).  Continue? "
 				      (if (memq ':password source)

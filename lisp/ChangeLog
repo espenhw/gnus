@@ -1,3 +1,7 @@
+2003-02-07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-source.el (mail-source-fetch): Typo fix.
+
 2003-02-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* nnmail.el (nnmail-spool-hook): new hook
