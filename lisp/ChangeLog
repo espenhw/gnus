@@ -1,5 +1,9 @@
 2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-art.el (gnus-treat-body-boundary): New variable.
+	(gnus-article-treat-unfold-headers): Use helper macro.
+	(gnus-article-treat-body-boundary): New command.
+
 	* gnus.el (gnus-logo-color-style): Change the default color. 
 	(gnus-splash-face): Gray, gray.
 

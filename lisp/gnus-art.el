@@ -1060,7 +1060,7 @@ See the manual for details."
 (defcustom gnus-treat-from-picon
   (if (gnus-image-type-available-p 'xpm)
       'head nil)
-  "Display picons.
+  "Display picons in the From header.
 Valid values are nil, t, `head', `last', an integer or a predicate.
 See the manual for details."
   :group 'gnus-article-treat
@@ -1070,7 +1070,7 @@ See the manual for details."
 (defcustom gnus-treat-mail-picon
   (if (gnus-image-type-available-p 'xpm)
       'head nil)
-  "Display picons.
+  "Display picons in To and Cc headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
 See the manual for details."
   :group 'gnus-article-treat
@@ -1080,12 +1080,24 @@ See the manual for details."
 (defcustom gnus-treat-newsgroups-picon
   (if (gnus-image-type-available-p 'xpm)
       'head nil)
-  "Display picons.
+  "Display picons in the Newsgroups and Followup-To headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
 See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 (put 'gnus-treat-newsgroups-picon 'highlight t)
+
+(defcustom gnus-treat-body-boundary
+  (if (or gnus-treat-newsgroups-picon
+	  gnus-treat-mail-picon
+	  gnus-treat-from-picon)
+      'head nil)
+  "Draw a boundary at the end of the headers.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
+  :version "21.1"
+  :group 'gnus-article-treat
+  :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-capitalize-sentences nil
   "Capitalize sentence-starting words.
@@ -1193,6 +1205,7 @@ It is a string, such as \"PGP\". If nil, ask user."
     (gnus-treat-from-picon gnus-treat-from-picon)
     (gnus-treat-mail-picon gnus-treat-mail-picon)
     (gnus-treat-newsgroups-picon gnus-treat-newsgroups-picon)
+    (gnus-treat-body-boundary gnus-article-treat-body-boundary)
     (gnus-treat-play-sounds gnus-earcon-display)))
 
 (defvar gnus-article-mime-handle-alist nil)
@@ -1572,28 +1585,30 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
 Only the headers that fit into the current window width will be
 unfolded."
   (interactive)
-  (save-excursion
-    (set-buffer gnus-article-buffer)
-    (save-restriction
-      (let ((buffer-read-only nil)
-	    (inhibit-point-motion-hooks t)
-	    (case-fold-search t)
-	    length)
-	(article-narrow-to-head)
-	(while (not (eobp))
-	  (save-restriction
-	    (mail-header-narrow-to-field)
-	    (let ((header (buffer-substring (point-min) (point-max))))
-	      (with-temp-buffer
-		(insert header)
-		(goto-char (point-min))
-		(while (re-search-forward "[\t ]*\n[\t ]+" nil t)
-		  (replace-match " " t t)))
-		(setq length (- (point-max) (point-min) 1)))
-	    (when (< length (window-width))
+  (gnus-with-article-headers
+    (let (length)
+      (while (not (eobp))
+	(save-restriction
+	  (mail-header-narrow-to-field)
+	  (let ((header (buffer-substring (point-min) (point-max))))
+	    (with-temp-buffer
+	      (insert header)
+	      (goto-char (point-min))
 	      (while (re-search-forward "[\t ]*\n[\t ]+" nil t)
 		(replace-match " " t t)))
-	    (goto-char (point-max))))))))
+	    (setq length (- (point-max) (point-min) 1)))
+	  (when (< length (window-width))
+	    (while (re-search-forward "[\t ]*\n[\t ]+" nil t)
+	      (replace-match " " t t)))
+	  (goto-char (point-max)))))))
+
+(defun gnus-article-treat-body-boundary ()
+  "Place a boundary line at the end of the headers."
+  (interactive)
+  (gnus-with-article-headers
+    (goto-char (point-max))
+    (insert (make-string (1- (window-width)) ?_)
+	    "\n")))
 
 (defun article-fill-long-lines ()
   "Fill lines that are wider than the window width."
