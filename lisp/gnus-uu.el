@@ -321,7 +321,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 
 (defvar gnus-uu-saved-article-name nil)
 
-(defvar gnus-uu-begin-string "^begin[ \t]+[0-7][0-7][0-7][ \t]+\\(.*\\)$")
+(defvar gnus-uu-begin-string "^begin[ \t]+0?[0-7][0-7][0-7][ \t]+\\(.*\\)$")
 (defvar gnus-uu-end-string "^end[ \t]*$")
 
 (defvar gnus-uu-body-line "^M")
@@ -336,7 +336,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 
 (defvar gnus-uu-shar-file-name nil)
 (defvar gnus-uu-shar-name-marker
-  "begin [0-7][0-7][0-7][ \t]+\\(\\(\\w\\|\\.\\)*\\b\\)")
+  "begin 0?[0-7][0-7][0-7][ \t]+\\(\\(\\w\\|[.\\:]\\)*\\b\\)")
 
 (defvar gnus-uu-postscript-begin-string "^%!PS-")
 (defvar gnus-uu-postscript-end-string "^%%EOF$")

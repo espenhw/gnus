@@ -80,7 +80,7 @@ This can be either \"inline\" or \"attachment\".")
      mm-uu-postscript-extract
      nil)
     (uu
-     "^begin[ \t]+[0-7][0-7][0-7][ \t]+"
+     "^begin[ \t]+0?[0-7][0-7][0-7][ \t]+"
      "^end[ \t]*$"
      mm-uu-uu-extract
      mm-uu-uu-filename)
