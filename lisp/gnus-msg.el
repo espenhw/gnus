@@ -696,7 +696,7 @@ network.  The corresponding backend must have a 'request-post method."
 	      (set (make-local-variable 'gnus-discouraged-post-methods)
 		   (delq
 		    (car (gnus-find-method-for-group gnus-newsgroup-name))
-		    gnus-discouraged-post-methods)))))
+		    (copy-sequence gnus-discouraged-post-methods))))))
       (save-excursion
 	(set-buffer buffer)
 	(setq gnus-newsgroup-name group)))))
