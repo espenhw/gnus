@@ -533,7 +533,8 @@ groups matched by the current score file.")
     (custom-buffer-create "*Score Edit*" gnus-score-custom-data
 			  gnus-score-custom-type-properties
 			  'gnus-score-custom-set
-			  'gnus-score-custom-get))
+			  'gnus-score-custom-get
+			  'gnus-score-custom-save))
   (make-local-variable 'gnus-score-custom-file)
   (setq gnus-score-custom-file (expand-file-name  "SCORE" "~/News"))
   (make-local-variable 'gnus-score-alist)

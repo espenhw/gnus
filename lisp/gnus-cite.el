@@ -130,7 +130,7 @@ It is merged with the face for the cited text belonging to the attribution.")
   "Highlight cited text.
 Each citation in the article will be highlighted with a different face.
 The faces are taken from `gnus-cite-face-list'.
-Attribution lines are highlighted with the sameface as the
+Attribution lines are highlighted with the same face as the
 corresponding citation merged with `gnus-cite-attribution-face'.
 
 Text is considered cited if at least `gnus-cite-minimum-match-count'
@@ -222,7 +222,7 @@ See the documentation for `gnus-article-highlight-citation'."
 (defun gnus-article-hide-citation-maybe (&optional force)
   "Hide cited text that has an attribution line.
 This will do nothing unless at least `gnus-cite-hide-percentage'
-percent ans at least `gnus-cite-hide-absolute' lines of the body is
+percent and at least `gnus-cite-hide-absolute' lines of the body is
 cited text with attributions.  When called interactively, these two
 variables are ignored.
 See also the documentation for `gnus-article-highlight-citation'."

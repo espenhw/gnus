@@ -533,6 +533,7 @@ Select the properties you want this face to have.")
 	     (hidden . nil)
 	     (face . custom-default-face)
 	     (data . nil)
+	     (calculate . nil)
 	     (default . __uninitialized__)))
   "Alist of default properties for type symbols.
 The format is `((SYMBOL (PROPERTY . VALUE)... )... )'.")
@@ -600,8 +601,11 @@ If none exist, default to `tag' or, failing that, `type'."
 
 (defun custom-default (custom)
   "Extract `default' from CUSTOM."
-  (custom-property custom 'default))
-
+  (let ((value (custom-property custom 'calculate)))
+    (if value
+	(eval value)
+      (custom-property custom 'default))))
+	       
 (defun custom-data (custom)
   "Extract the `data' from CUSTOM."
   (custom-property custom 'data))
@@ -1435,7 +1439,8 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
 
 (defun custom-default-factory-reset (field)
   "Reset content of editing FIELD to `default'."
-  (let ((default (custom-default (custom-field-custom field))))
+  (let* ((custom (custom-field-custom field))
+	 (default (car (custom-import custom (custom-default custom)))))
     (or (eq default custom-nil)
 	(custom-field-accept field default nil))))
 
@@ -1524,12 +1529,13 @@ about GNU Emacs."
   (custom-buffer-create "*Customize*")
   (custom-reset-all))
 
-(defun custom-buffer-create (name &optional custom types set get)
+(defun custom-buffer-create (name &optional custom types set get save)
   "Create a customization buffer named NAME.
 If the optional argument CUSTOM is non-nil, use that as the custom declaration.
 If the optional argument TYPES is non-nil, use that as the local types.
 If the optional argument SET is non-nil, use that to set external data.
-If the optional argument GET is non-nil, use that to get external data."
+If the optional argument GET is non-nil, use that to get external data.
+If the optional argument SAVE is non-nil, use that for saving changes."
   (switch-to-buffer name)
   (buffer-disable-undo (current-buffer))
   (custom-mode)
@@ -1546,6 +1552,10 @@ If the optional argument GET is non-nil, use that to get external data."
       ()
     (make-local-variable 'custom-external)
     (setq custom-external get))
+  (if (null save)
+      ()
+    (make-local-variable 'custom-save)
+    (setq custom-save save))
   (let ((inhibit-point-motion-hooks t)
 	(before-change-functions nil)
 	(after-change-functions nil))
@@ -1560,6 +1570,7 @@ If the optional argument GET is non-nil, use that to get external data."
     (custom-help-button 'custom-field-factory-reset)
     (custom-help-button 'custom-field-reset)
     (custom-help-button 'custom-field-apply)
+    (custom-help-button 'custom-save-and-exit)
     (custom-help-button 'custom-toggle-documentation)
     (custom-help-insert "\nClick mouse-2 on any button to activate it.\n")
     (custom-text-insert "\n")
@@ -1640,6 +1651,7 @@ If the optional argument GET is non-nil, use that to get external data."
   (define-key custom-mode-map "\C-c\M-\C-z" 'custom-factory-reset-all)
   (define-key custom-mode-map "\C-c\C-a" 'custom-field-apply)
   (define-key custom-mode-map "\C-c\M-\C-a" 'custom-apply-all)
+  (define-key custom-mode-map "\C-c\C-c" 'custom-save-and-exit)
   (define-key custom-mode-map "\C-c\C-d" 'custom-toggle-documentation))
 
 ;; C-c keymap ideas: C-a field-beginning, C-e field-end, C-f
@@ -1660,7 +1672,10 @@ If the optional argument GET is non-nil, use that to get external data."
   (setq after-change-functions '(custom-after-change))
   (if (not (fboundp 'make-local-hook))
       ;; Emacs 19.28 and earlier.
-      (add-hook 'post-command-hook 'custom-post-command nil)      
+      (add-hook 'post-command-hook 
+		(lambda ()
+		  (if (eq major-mode 'custom-mode)
+		      (custom-post-command))))
     ;; Emacs 19.29.
     (make-local-hook 'post-command-hook)
     (add-hook 'post-command-hook 'custom-post-command nil t)))
@@ -1788,11 +1803,9 @@ If the optional argument is non-nil, show text iff the argument is positive."
 		    (not (y-or-n-p "Discard all changes? "))
 		    (error "Reset aborted")))
   (let ((all custom-name-fields)
-	name field custom default)
+	field)
     (while all
       (setq field (cdr (car all))
-	    custom (custom-field-custom field)
-	    default (custom-default custom)
 	    all (cdr all))
       (custom-field-factory-reset field))))
 
@@ -1801,10 +1814,9 @@ If the optional argument is non-nil, show text iff the argument is positive."
   (interactive (list (or (get-text-property (point) 'custom-field)
 			 (get-text-property (point) 'custom-tag))))
   (if (arrayp field)
-      (let* ((custom (custom-field-custom field))
-	     (default (custom-default custom)))
-	(save-excursion
-	  (funcall (custom-property custom 'factory-reset) field)))))
+      (save-excursion
+	(funcall (custom-property (custom-field-custom field) 'factory-reset)
+		 field))))
 
 (defun custom-apply-all ()
   "Apply any changes since the last reset in all fields."
@@ -1846,6 +1858,16 @@ If the optional argument is non-nil, show text iff the argument is positive."
   (interactive)
   (error "This button is not yet implemented"))
 
+(defvar custom-save 'custom-save
+  "Function that will save current customization buffer.")
+
+(defun custom-save-and-exit ()
+  "Save and exit customization buffer."
+  (interactive "@")
+  (save-excursion
+   (funcall custom-save))
+  (kill-buffer (current-buffer)))
+
 (defun custom-save ()
   "Save customization information."
   (interactive)
@@ -1864,7 +1886,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
 	  (let* ((field (cdr (car new)))
 		 (custom (custom-field-custom field))
 		 (value (custom-field-original field))
-		 (default (custom-default custom))
+		 (default (car (custom-import custom (custom-default custom))))
 		 (name (car (car new))))
 	    (setq new (cdr new))
 	    (custom-assert '(eq name (custom-name custom)))
@@ -2009,23 +2031,21 @@ If the optional argument is non-nil, show text iff the argument is positive."
 ;; Last field containing point.
 (make-variable-buffer-local 'custom-field-last)
 
-
 (defun custom-post-command ()
   ;; Keep track of their active field.
-  (if (not (eq major-mode 'custom-mode))
-      (message "Aargh! Why is custom-post-command called here?")
-      ()
-    (let ((field (custom-field-property (point))))
-      (if (eq field custom-field-last)
-	  (if (memq field custom-field-changed)
-	      (custom-field-resize field))
-	(custom-field-parse custom-field-last)
-	(if custom-field-last
-	    (custom-field-leave custom-field-last))
-	(if field
-	    (custom-field-enter field))
-	(setq custom-field-last field)))
-    (set-buffer-modified-p (or custom-modified-list custom-field-changed))))
+  (custom-assert '(eq major-mode 'custom-mode))
+  (let ((field (custom-field-property (point))))
+    (if (eq field custom-field-last)
+	(if (memq field custom-field-changed)
+	    (custom-field-resize field))
+      (custom-field-parse custom-field-last)
+      (if custom-field-last
+	  (custom-field-leave custom-field-last))
+      (if field
+	  (custom-field-enter field))
+      (setq custom-field-last field))
+    (set-buffer-modified-p (or custom-modified-list
+			       custom-field-changed))))
 
 (defvar custom-field-was nil)
 ;; The custom data before the change.

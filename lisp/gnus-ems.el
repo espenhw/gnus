@@ -169,7 +169,9 @@ pounce directly on the real variables themselves.")
     
       (defvar gnus-background-mode 
 	(let ((bg-resource 
-	       (x-get-resource ".backgroundMode" "BackgroundMode" 'string))
+	       (condition-case ()
+		   (x-get-resource ".backgroundMode" "BackgroundMode" 'string)
+		 (error nil)))
 	      (params (frame-parameters)))
 	  (cond (bg-resource (intern (downcase bg-resource)))
 		((and (assq 'background-color params)
@@ -315,18 +317,16 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 		(header-number header)))
 	(let ((gnus-override-method gnus-refer-article-method)
 	      (gnus-ancient-mark gnus-read-mark)
-	      (tmp-buf (get-buffer-create " *gnus refer"))
 	      (tmp-point (window-start
 			  (get-buffer-window gnus-article-buffer)))
-	      number)
+	      number tmp-buf)
 	  (and gnus-refer-article-method
-	       (or (gnus-server-opened gnus-refer-article-method)
-		   (gnus-open-server gnus-refer-article-method)))
+	       (gnus-check-server gnus-refer-article-method))
 	  ;; Save the old article buffer.
 	  (save-excursion
-	    (set-buffer tmp-buf)
-	    (buffer-disable-undo (current-buffer))
-	    (insert-buffer-substring gnus-article-buffer))
+	    (set-buffer gnus-article-buffer)
+	    (gnus-kill-buffer " *temp Article*")
+	    (setq tmp-buf (rename-buffer " *temp Article*")))
 	  (prog1
 	      (if (gnus-article-prepare 
 		   message-id nil (gnus-read-header message-id))
@@ -340,14 +340,13 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 		    message-id)
 		;; We restore the old article buffer.
 		(save-excursion
-		  (set-buffer gnus-article-buffer)
+		  (kill-buffer gnus-article-buffer)
+		  (set-buffer tmp-buf)
+		  (rename-buffer gnus-article-buffer)
 		  (let ((buffer-read-only nil))
-		    (insert-buffer-substring tmp-buf)
 		    (and tmp-point
 			 (set-window-start (get-buffer-window (current-buffer))
-					   tmp-point))))
-		nil)
-	    (kill-buffer tmp-buf)))))))
+					   tmp-point)))))))))))
 
 (defun gnus-summary-insert-pseudos-xemacs (pslist &optional not-view)
   (let ((buffer-read-only nil)

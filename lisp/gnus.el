@@ -36,6 +36,7 @@
 (require 'mail-utils)
 (require 'timezone)
 (require 'nnheader)
+(require 'gnus-cus)
 
 ;; Site dependent variables. These variables should be defined in
 ;; paths.el.
@@ -134,7 +135,7 @@ This is a list where each element is a complete select method (see
 If, for instance, you want to read your mail with the nnml backend,
 you could set this variable:
 
-(setq gnus-secondary-select-methods '((nnml \"\"))")
+(setq gnus-secondary-select-methods '((nnml \"\")))")
 
 (defvar gnus-secondary-servers nil
   "*List of NNTP servers that the user can choose between interactively.
@@ -164,7 +165,7 @@ If a file with the .el or .elc suffixes exist, it will be read
 instead.") 
 
 (defvar gnus-group-faq-directory
-  "/anonymous@rtfm.mit.edu:/pub/usenet-by-group/"
+  "/ftp@mirrors.aol.com:/pub/rtfm/usenet/"
   "*Directory where the group FAQs are stored.
 This will most commonly be on a remote machine, and the file will be
 fetched by ange-ftp.
@@ -978,7 +979,7 @@ with some simple extensions.
     ("nndoc" none prompt-address) 
     ("nnbabyl" mail respool) 
     ("nnkiboze" post virtual) 
-    ("nnsoup" post)
+    ;;("nnsoup" post)
     ("nnfolder" mail respool))
   "An alist of valid select methods.
 The first element of each list lists should be a string with the name
@@ -1329,7 +1330,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.18"
+(defconst gnus-version "(ding) Gnus v0.99.19"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1581,13 +1582,13 @@ Thank you for your help in stamping out bugs.
   (autoload 'rmail-show-message "rmail")
 
   ;; gnus-soup
-  (autoload 'gnus-group-brew-soup "gnus-soup" nil t)
-  (autoload 'gnus-brew-soup "gnus-soup" nil t)
-  (autoload 'gnus-soup-add-article "gnus-soup" nil t)
-  (autoload 'gnus-soup-send-replies "gnus-soup" nil t)
-  (autoload 'gnus-soup-save-areas "gnus-soup" nil t)
-  (autoload 'gnus-soup-pack-packet "gnus-soup" nil t)
-  (autoload 'nnsoup-pack-replies "nnsoup" nil t)
+  ;;(autoload 'gnus-group-brew-soup "gnus-soup" nil t)
+  ;;(autoload 'gnus-brew-soup "gnus-soup" nil t)
+  ;;(autoload 'gnus-soup-add-article "gnus-soup" nil t)
+  ;;(autoload 'gnus-soup-send-replies "gnus-soup" nil t)
+  ;;(autoload 'gnus-soup-save-areas "gnus-soup" nil t)
+  ;;(autoload 'gnus-soup-pack-packet "gnus-soup" nil t)
+  ;;(autoload 'nnsoup-pack-replies "nnsoup" nil t)
 
   ;; gnus-mh
   (autoload 'gnus-mail-reply-using-mhe "gnus-mh")
@@ -3108,11 +3109,11 @@ Note: LIST has to be sorted over `<'."
   (define-key gnus-group-group-map "V" 'gnus-group-make-empty-virtual)
   (define-key gnus-group-group-map "D" 'gnus-group-enter-directory)
   (define-key gnus-group-group-map "f" 'gnus-group-make-doc-group)
-  (define-key gnus-group-group-map "sb" 'gnus-group-brew-soup)
-  (define-key gnus-group-group-map "sw" 'gnus-soup-save-areas)
-  (define-key gnus-group-group-map "ss" 'gnus-soup-send-replies)
-  (define-key gnus-group-group-map "sp" 'gnus-soup-pack-packet)
-  (define-key gnus-group-group-map "sr" 'nnsoup-pack-replies)
+  ;;(define-key gnus-group-group-map "sb" 'gnus-group-brew-soup)
+  ;;(define-key gnus-group-group-map "sw" 'gnus-soup-save-areas)
+  ;;(define-key gnus-group-group-map "ss" 'gnus-soup-send-replies)
+  ;;(define-key gnus-group-group-map "sp" 'gnus-soup-pack-packet)
+  ;;(define-key gnus-group-group-map "sr" 'nnsoup-pack-replies)
 
   (define-prefix-command 'gnus-group-list-map)
   (define-key gnus-group-mode-map "A" 'gnus-group-list-map)
@@ -3215,7 +3216,17 @@ prompt the user for the name of an NNTP server to use."
       (progn
 	(switch-to-buffer gnus-group-buffer)
 	(gnus-group-get-new-news))
+
     (gnus-clear-system)
+
+    (gnus-group-setup-buffer)
+    (let ((buffer-read-only nil))
+      (erase-buffer)
+      (if (not gnus-inhibit-startup-message)
+	  (progn
+	    (gnus-group-startup-message)
+	    (sit-for 0))))
+    
     (nnheader-init-server-buffer)
     (gnus-read-init-file)
 
@@ -3223,7 +3234,6 @@ prompt the user for the name of an NNTP server to use."
 	  did-connect)
       (unwind-protect
 	  (progn
-	    (gnus-group-setup-buffer)
 	    (or dont-connect 
 		(setq did-connect
 		      (gnus-start-news-server (and arg (not level))))))
@@ -3241,12 +3251,6 @@ prompt the user for the name of an NNTP server to use."
 	  (and gnus-use-dribble-file (gnus-dribble-read-file))
 
 	  (gnus-summary-make-display-table)
-	  (let ((buffer-read-only nil))
-	    (erase-buffer)
-	    (if (not gnus-inhibit-startup-message)
-		(progn
-		  (gnus-group-startup-message)
-		  (sit-for 0))))
 	  (gnus-setup-news nil level)
 	  (gnus-group-list-groups level)
 	  (gnus-configure-windows 'group))))))
@@ -3254,6 +3258,8 @@ prompt the user for the name of an NNTP server to use."
 (defun gnus-unload ()
   "Unload all Gnus features."
   (interactive)
+  (or (boundp 'load-history)
+      (error "Sorry, `gnus-unload' is not implemented in this Emacs version."))
   (let ((history load-history)
 	feature)
     (while history
@@ -3261,8 +3267,6 @@ prompt the user for the name of an NNTP server to use."
 	   (setq feature (cdr (assq 'provide (car history))))
 	   (unload-feature feature 'force))
       (setq history (cdr history)))))
-
-                                       
 
 (defun gnus-group-startup-message (&optional x y)
   "Insert startup message in current buffer."
@@ -3361,7 +3365,7 @@ listed."
 		       (or
 			(gnus-group-default-level nil t)
 			gnus-group-default-list-level
-			level-subscribed))))
+			gnus-level-subscribed))))
   (or level
       (setq level (car gnus-group-list-mode)
 	    unread (cdr gnus-group-list-mode)))
@@ -8059,7 +8063,9 @@ If BACKWARD, the previous article is selected instead of the next."
      ;; If not, we try the first unread, if that is wanted.
      ((and subject
 	   gnus-auto-select-same
-	   (gnus-summary-first-unread-article))
+	   (or (gnus-summary-first-unread-article)
+	       (eq (gnus-summary-article-mark) gnus-canceled-mark)))
+      (gnus-summary-position-cursor)
       (gnus-message 6 "Wrapped"))
      ;; Try to get next/previous article not displayed in this group.
      ((and gnus-auto-extend-newsgroup
@@ -8075,7 +8081,7 @@ If BACKWARD, the previous article is selected instead of the next."
      (t
       (or (assoc 'quit-config (gnus-find-method-for-group gnus-newsgroup-name))
 	  (gnus-summary-jump-to-group gnus-newsgroup-name))
-      (let ((cmd (aref (this-command-keys) 0))
+      (let ((cmd last-command-char)
 	    (group 
 	     (if (eq gnus-keep-same-level 'best) 
 		 (gnus-summary-best-group gnus-newsgroup-name)
@@ -8084,7 +8090,7 @@ If BACKWARD, the previous article is selected instead of the next."
 	;; it back.  
 	(select-window (get-buffer-window (current-buffer)))
 	;; Keep just the event type of CMD.
-	(and (listp cmd) (setq cmd (car cmd)))
+	;(and (listp cmd) (setq cmd (car cmd)))
 	;; Select next unread newsgroup automagically.
 	(cond 
 	 ((not gnus-auto-select-next)
@@ -9122,7 +9128,7 @@ This will have permanent effect only in mail groups."
 (defun gnus-summary-raise-thread (&optional score)
   "Raise the score of the articles in the current thread with SCORE."
   (interactive "P")
-  (setq score (1- (gnus-score-default score)))
+  (setq score (gnus-score-default score))
   (let (e)
     (save-excursion
       (let ((level (gnus-summary-thread-level)))
@@ -11015,14 +11021,14 @@ Provided for backwards compatability."
 	(search-forward "\n\n")
 	(narrow-to-region (point-min) (point))
 	(goto-char (point-min))
-	(if (or (not gnus-article-x-face-command)
-		(and (not force)
-		     (or (not gnus-article-x-face-too-ugly)
-			 (string-match gnus-article-x-face-too-ugly
-				       (mail-fetch-field "from"))))
-		(progn
-		  (goto-char (point-min))
-		  (not (re-search-forward "^X-Face: " nil t))))
+	(if (not (and gnus-article-x-face-command
+		      (or force
+			  (and gnus-article-x-face-too-ugly
+			       (not (string-match gnus-article-x-face-too-ugly
+						  (mail-fetch-field "from")))))
+		      (progn
+			(goto-char (point-min))
+			(re-search-forward "^X-Face: " nil t))))
 	    nil
 	  (let ((beg (point))
 		(end (1- (re-search-forward "^\\($\\|[^ \t]\\)" nil t))))
@@ -12134,8 +12140,9 @@ The `-n' option line from .newsrc is respected."
 			 gnus-secondary-select-methods)))
 	 (groups 0)
 	 (new-date (current-time-string))
-	 hashtb group new-newsgroups got-new method)
-    ;; Go thorugh both primary and secondary select methods and
+	 (hashtb (gnus-make-hashtable 100))
+	 group new-newsgroups got-new method)
+    ;; Go through both primary and secondary select methods and
     ;; request new newsgroups.  
     (while methods
       (setq method (gnus-server-get-method nil (car methods)))
@@ -12144,8 +12151,6 @@ The `-n' option line from .newsrc is respected."
 	   (save-excursion
 	     (setq got-new t)
 	     (set-buffer nntp-server-buffer)
-	     (or hashtb (setq hashtb (gnus-make-hashtable 
-				      (count-lines (point-min) (point-max)))))
 	     ;; Enter all the new groups in a hashtable.
 	     (gnus-active-to-gnus-format method hashtb 'ignore)))
       (setq methods (cdr methods)))
@@ -12154,7 +12159,9 @@ The `-n' option line from .newsrc is respected."
     (mapatoms
      (lambda (group-sym)
        (setq group (symbol-name group-sym))
-       (if (or (gnus-gethash group gnus-newsrc-hashtb)
+       (if (or (null group)
+	       (null (symbol-value group-sym))
+	       (gnus-gethash group gnus-newsrc-hashtb)
 	       (member group gnus-zombie-list)
 	       (member group gnus-killed-list))
 	   ;; The group is already known.
@@ -12314,7 +12321,8 @@ The `-n' option line from .newsrc is respected."
 			 (setq info (cdr entry))
 			 (setq num (car entry)))
 		     (setq active (gnus-gethash group gnus-active-hashtb))
-		     (setq num (if active (- (1+ (cdr active)) (car active)) t))
+		     (setq num 
+			   (if active (- (1+ (cdr active)) (car active)) t))
 		     ;; Check whether the group is foreign. If so, the
 		     ;; foreign select method has to be entered into the
 		     ;; info. 
@@ -13132,6 +13140,7 @@ If FORCE is non-nil, the .newsrc file is read."
 				(progn (beginning-of-line) (point)))
 			   (point))))))
        (symbol
+	(or (boundp symbol) (set symbol nil))
 	;; It was a group name.
 	(setq subscribed (= (following-char) ?:)
 	      group (symbol-name symbol)

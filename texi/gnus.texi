@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 @comment %**start of header (This is for running Texinfo on a region.)
 @setfilename gnus.info
-@settitle (ding) Gnus 0.84 Manual
+@settitle (ding) Gnus 0.99.18 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -1135,7 +1135,8 @@ It is recommended that you keep all your mail groups (if any) on quite
 low levels (eg. 1 or 2).
 
 If you want to play with the level variables, you should show some care.
-Set them once, and don't touch them ever again.  
+Set them once, and don't touch them ever again.  Better yet, don't touch
+them at all unless you know exactly what you're doing.
 
 @vindex gnus-level-default-unsubscribed
 @vindex gnus-level-default-subscribed

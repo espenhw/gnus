@@ -283,6 +283,7 @@ used as score."
   (save-excursion
     (set-buffer (get-buffer-create "*Score Help*"))
     (buffer-disable-undo (current-buffer))
+    (delete-windows-on (current-buffer))
     (erase-buffer)
     (insert string ":\n\n")
     (let ((max -1)

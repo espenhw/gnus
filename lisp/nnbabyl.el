@@ -487,7 +487,7 @@
 
 	(goto-char (point-min))
 	(re-search-forward delim nil t)
-	(setq start (match-beginning 0))
+	(setq start (match-end 0))
 	(while (re-search-forward delim nil t)
 	  (setq end (match-end 0))
 	  (or (search-backward "\nX-Gnus-Newsgroup: " start t)

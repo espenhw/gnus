@@ -1,3 +1,71 @@
+Thu Aug 24 01:41:33 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-group-faq-directory): Changed the default to point
+	to aol.
+	(gnus-newsrc-to-gnus-format): Would bug out when there were bogus
+	groups in the .newsrc file.
+
+	* gnus-ems.el: Don't bug out if x-get-resource isn't defined under
+	XEmacs.
+
+	* gnus.el (gnus-ask-server-for-new-groups): Would sometimes
+	iterate over obarray instead of hashtb.
+	(gnus-summary-next-article): Would give wrong message when going
+	to canceled articles and gnus-auto-select-same was non-nil.
+
+Wed Aug 23 22:39:03 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el (custom-save): New variable.
+	(custom-save-and-exit): New function.
+	(custom-buffer-create): Document it.
+	(custom-mode-map): Bind it.
+	(custom-buffer-create): New optional argument `SAVE' to overwrite
+	`custom-save'. 
+	* gnus-edit.el (gnus-score-customize): Use new argument.
+
+Wed Aug 23 22:39:03 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el (custom-mode): Insert appropiate check in hook if
+	`make-local-hook' doesn't exists.
+	(custom-post-command): Remove check for mode here.
+
+Wed Aug 23 22:03:50 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el (custom-factory-reset-all): Removed dead code.
+	(custom-field-factory-reset): Removed dead code.
+	(custom-default-factory-reset): Didn't import the default value.
+	(custom-save): Didn't import the default value.
+
+Wed Aug 23 01:41:20 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-ask-server-for-new-groups): Might not ignore bogus
+	groups. 
+
+	* gnus-score.el (gnus-score-insert-help): `I??' would bug out.
+
+	* gnus.el (gnus-article-display-x-face): Reverse logic a bit.
+	(gnus): Do the startup message earlier.
+	(gnus-group-list-groups): Void variable.
+	(gnus-summary-raise-thread): Increase by (- 1 arg).
+
+	* nnbabyl.el (nnbabyl-read-mbox): Would create extra dummy
+	articles. 
+
+Wed Aug 23 00:49:17 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-summary-next-article): `SPC' `n' didn't work under
+	XEmacs. 
+
+Tue Aug 22 22:20:06 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el (custom-default): Add support for calculated
+	defaults values. 
+	* gnus-cus.el: Use it.
+
+Tue Aug 22 21:05:42 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.99.18 is released.
+
 Tue Aug 22 22:20:06 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* custom.el (custom-forward-field): Allow negative args.
