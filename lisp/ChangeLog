@@ -1,3 +1,9 @@
+2001-08-15  Simon Josefsson  <jas@extundo.com>
+	From Pavel@Janik.cz (Pavel Jan,Bm(Bk)
+
+	* gnus-agent.el (gnus-agent-make-mode-line-string) 
+	(gnus-agent-toggle-plugged): Use new API.
+
 2001-08-14  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-delay.el (gnus-delay-send-drafts): Fix check whether
