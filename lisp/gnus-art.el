@@ -239,10 +239,7 @@ display -"))
 If it is a string, the command will be executed in a sub-shell
 asynchronously.	 The compressed face will be piped to this command."
   :type `(choice string
-		 (function-item
-		  ,(if (featurep 'xemacs)
-		       'gnus-xmas-article-display-xface
-		     'gnus-article-display-xface))
+		 (function-item gnus-display-x-face-in-from)
 		 function)
   :version "21.1"
   :group 'gnus-article-washing)

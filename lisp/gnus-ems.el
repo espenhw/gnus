@@ -226,7 +226,8 @@
   (insert-image glyph (or string " "))
   (unless string
     (put-text-property (1- (point)) (point) 
-		       'gnus-image-text-deletable t)))
+		       'gnus-image-text-deletable t))
+  glyph)
 
 (defun gnus-remove-image (image)
   (dolist (position (message-text-with-property 'display))
