@@ -5099,8 +5099,10 @@ specified by `gnus-button-alist'."
   (if (not (string-match "[:/]" address))
       ;; This is just a simple group url.
       (gnus-group-read-ephemeral-group address gnus-select-method)
-    (if (not (string-match "^\\([^:/]+\\)\\(:\\([^/]+\\)/\\)?\\(.*\\)$"
-			   address))
+    (if (not 
+	 (string-match 
+	  "^\\([^:/]+\\)\\(:\\([^/]+\\)\\)?/\\([^/]+\\)\\(/\\([0-9]+\\)\\)?"
+	  address))
 	(error "Can't parse %s" address)
       (gnus-group-read-ephemeral-group
        (match-string 4 address)
@@ -5108,7 +5110,9 @@ specified by `gnus-button-alist'."
 	      (nntp-address ,(match-string 1 address))
 	      (nntp-port-number ,(if (match-end 3)
 				     (match-string 3 address)
-				   "nntp")))))))
+				   "nntp")))
+       nil nil nil
+       (and (match-end 6) (list (string-to-int (match-string 6 address))))))))
 
 (defun gnus-url-parse-query-string (query &optional downcase)
   (let (retval pairs cur key val)
