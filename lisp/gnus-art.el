@@ -3252,6 +3252,8 @@ In no internal viewer is available, use an external viewer."
 				    'name)
 	     (mail-content-type-get (mm-handle-disposition handle)
 				    'filename)
+	     (mail-content-type-get (mm-handle-type handle)
+				    'url)
 	     ""))
 	(gnus-tmp-type (mm-handle-media-type handle))
 	(gnus-tmp-description
