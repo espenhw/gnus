@@ -1,3 +1,8 @@
+2000-04-27  Dave Love  <fx@gnu.org>
+
+	* mailcap.el (mailcap-mime-data): Fix octet-stream syntax -- might
+	matter in Emacs 21.
+
 2000-04-26  Florian Weimer  <fw@deneb.cygnus.argh.org>
 
 	* mm-bodies.el (mm-encode-body): Remove reference to
