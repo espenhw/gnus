@@ -108,7 +108,7 @@ If no encoding was done, nil is returned."
   "Do Content-Transfer-Encoding and return the encoding of the current buffer."
   (let ((bits (mm-body-7-or-8)))
     (cond
-     ((eq bits '7bit)
+     ((and (not mm-use-ultra-safe-encoding) (eq bits '7bit))
       bits)
      ((and (not mm-use-ultra-safe-encoding)
 	   (or (eq t (cdr message-posting-charset))
