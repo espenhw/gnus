@@ -2143,8 +2143,13 @@ The following commands are available:
      (gnus-agent-cat-predicate info)
      (format "Editing the select predicate for category %s" category)
      `(lambda (predicate)
-        (setf (gnus-agent-cat-predicate (assq ',category gnus-category-alist))
-              predicate)
+        ;; Avoid run-time execution of setf form
+        ;; (setf (gnus-agent-cat-predicate (assq ',category gnus-category-alist))
+        ;;       predicate)
+        ;; use its expansion instead:
+        (gnus-agent-cat-set-property (assq ',category gnus-category-alist)
+                                     'agent-predicate predicate)
+
 	(gnus-category-write)
 	(gnus-category-list)))))
 
@@ -2156,8 +2161,13 @@ The following commands are available:
      (gnus-agent-cat-score-file info)
      (format "Editing the score expression for category %s" category)
      `(lambda (score-file)
-        (setf (gnus-agent-cat-score-file (assq ',category gnus-category-alist))
-              score-file)
+        ;; Avoid run-time execution of setf form
+        ;; (setf (gnus-agent-cat-score-file (assq ',category gnus-category-alist))
+        ;;       score-file)
+        ;; use its expansion instead:
+        (gnus-agent-cat-set-property (assq ',category gnus-category-alist)
+                                     'agent-score-file score-file)
+
 	(gnus-category-write)
 	(gnus-category-list)))))
 
@@ -2169,8 +2179,13 @@ The following commands are available:
      (gnus-agent-cat-groups info)
      (format "Editing the group list for category %s" category)
      `(lambda (groups)
-        (setf (gnus-agent-cat-groups (assq ',category gnus-category-alist))
-              groups)
+        ;; Avoid run-time execution of setf form
+        ;; (setf (gnus-agent-cat-groups (assq ',category gnus-category-alist))
+        ;;       groups)
+        ;; use its expansion instead:
+        (gnus-agent-set-cat-groups (assq ',category gnus-category-alist)
+                                   groups)
+
 	(gnus-category-write)
 	(gnus-category-list)))))
 
