@@ -1,3 +1,7 @@
+2002-11-22  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Extending spam.el): fixed typos and wrong @items
+
 2002-11-21  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi:
