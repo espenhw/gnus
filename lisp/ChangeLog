@@ -1,3 +1,9 @@
+2001-10-09  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* message.el (message-send-news): Allow
+	`gnus-group-name-charset-group-alist' to affect encoding of the
+	"Newsgroups" and "Followup-To" headers.
+
 2001-10-07 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* Makefile.in (install-el): Depend on gnus-load.el.
@@ -10,7 +16,7 @@
 2001-10-07  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* message.el (message-send-news): Don't encode Followups-To when
-	gnus-group-name-charset-group-alist is ".*".  [Yuck]
+	`gnus-group-name-charset-group-alist is' ".*".  [Yuck]
 
 	* gnus-util.el (gnus-decode-newsgroups): No space in newsgroup
 	header. 
@@ -51,7 +57,7 @@
 2001-10-06  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus-srvr.el (gnus-browse-foreign-server): Fixed bug non-nil
-	'gnus-group-name-charset-group-alist'. 
+	`gnus-group-name-charset-group-alist'. 
 
 2001-10-06 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
