@@ -219,7 +219,8 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 		    (cadr (mail-extract-address-components from))
 		    ".*@\\(.*\\)\\'" "\\1")
 		   "\\." "/")) "/")))
-          (set-buffer (gnus-get-buffer-name gnus-picons-display-where))
+          (set-buffer (get-buffer-create
+		       (gnus-get-buffer-name gnus-picons-display-where)))
           (gnus-add-current-to-buffer-list)
 	  (goto-char (point-min))
 	  (if (eq gnus-picons-display-where 'article)
@@ -279,14 +280,12 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	(delete-annotation gnus-group-annotations)
 	(setq gnus-group-annotations nil)))
       (gnus-picons-remove gnus-group-annotations)
-      (setq gnus-group-annotations nil)
       (setq gnus-group-annotations
 	    (gnus-picons-insert-face-if-exists 
 	     (concat (file-name-as-directory gnus-picons-database)  
 		     gnus-picons-news-directory)
-	     (concat (replace-in-string gnus-newsgroup-name "\\." "/") 
-		     "/unknown")
-	     t))
+	     (replace-in-string gnus-newsgroup-name "\\." "/") 
+	     t t))
       (add-hook 'gnus-summary-exit-hook 'gnus-picons-remove-all))))
 
 (defsubst gnus-picons-try-suffixes (file)
@@ -297,10 +296,12 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
       (setq f nil))
     f))
 
-(defun gnus-picons-insert-face-if-exists (path filename &optional rev)
+(defun gnus-picons-insert-face-if-exists (path filename &optional rev bar)
   "Inserts a face at point if I can find one"
   (let ((files (message-tokenize-header filename "/"))
 	picons found)
+;    (when rev
+;      (setq files (nreverse files)))
     (while (and files
 		(file-exists-p path))
       (setq path (concat path "/" (pop files)))
@@ -308,6 +309,11 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 		  (or 
 		   (gnus-picons-try-suffixes (concat path "/face."))
 		   (gnus-picons-try-suffixes (concat path "/unknown/face."))))
+	(when bar
+	  (setq picons
+		(nconc picons
+		       (gnus-picons-try-to-find-face 
+			(concat gnus-xmas-glyph-directory "bar.xbm")))))
 	(setq picons (nconc (gnus-picons-try-to-find-face found)
 			    picons))))
     (nreverse picons)))

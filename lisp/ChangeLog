@@ -1,3 +1,30 @@
+Wed Jun 19 19:31:56 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.22 is released.
+
+Wed Jun 19 18:53:46 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-picon.el (gnus-group-display-picons): Insert a bar.
+
+	* gnus-xmas.el (gnus-xmas-redefine): On XEmacs 19.13, set
+	`shell-command-switch'. 
+
+	* gnus.el (gnus-summary-work-articles): Use numeric value of
+	`C-u'. 
+
+Wed Jun 19 18:36:23 1996  Christopher Davis  <ckd@loiosh.kei.com>
+
+	* message.el (message-mode): Add signature separator.
+	(message-insert-signature): Check whether a signature is present. 
+
+Wed Jun 19 17:29:07 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmh.el (nnmh-request-move-article): Make sure we change back to
+	the right directory.
+
+	* gnus-picon.el (gnus-article-display-picons): Make sure the
+	buffer is created.
+
 Wed Jun 19 16:58:21 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.el: Gnus v5.2.21 is released.

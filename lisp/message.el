@@ -810,6 +810,7 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
   (make-local-variable 'paragraph-start)
   (setq paragraph-start (concat (regexp-quote mail-header-separator)
 				"$\\|[ \t]*[-_][-_][-_]+$\\|"
+				"-- $\\|"
 				paragraph-start))
   (setq paragraph-separate (concat (regexp-quote mail-header-separator)
 				   "$\\|[ \t]*[-_][-_][-_]+$\\|"
@@ -939,9 +940,15 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
 
 (defun message-insert-signature (&optional force)
   "Insert a signature.  See documentation for the `message-signature' variable."
-  (interactive (list t))
+  (interactive (list 0))
   (let* ((signature 
 	  (cond ((and (null message-signature)
+		      (eq force 0))
+		 (save-excursion
+		   (goto-char (point-max))
+		   (not (re-search-backward
+			 message-signature-separator nil t))))
+		((and (null message-signature)
 		      force)
 		 t)
 		((message-functionp message-signature)
@@ -960,10 +967,9 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
       ;; Remove blank lines at the end of the message.
       (goto-char (point-max))
       (skip-chars-backward " \t\n")
-      (forward-line 1)
       (delete-region (point) (point-max))
       ;; Insert the signature.
-      (insert "\n-- \n")
+      (insert "\n\n-- \n")
       (if (eq signature t)
 	  (insert-file-contents message-signature-file)
 	(insert signature))

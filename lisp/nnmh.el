@@ -273,10 +273,12 @@
        (setq result (eval accept-form))
        (kill-buffer (current-buffer))
        result)
-     (condition-case ()
-	 (funcall nnmail-delete-file-function
-		  (concat nnmh-current-directory (int-to-string article)))
-       (file-error nil)))
+     (progn
+       (nnmh-possibly-change-directory group server)
+       (condition-case ()
+	   (funcall nnmail-delete-file-function
+		    (concat nnmh-current-directory (int-to-string article)))
+	 (file-error nil))))
     result))
 
 (deffoo nnmh-request-accept-article (group &optional server last noinsert)

@@ -524,6 +524,8 @@ pounce directly on the real variables themselves.")
     (fset 'gnus-topic-remove-excess-properties
 	  'gnus-xmas-topic-remove-excess-properties)
     (fset 'gnus-mode-line-buffer-identification 'identity)
+    (unless (boundp 'shell-command-switch)
+      (setq shell-command-switch "-c"))
     ))
 
 

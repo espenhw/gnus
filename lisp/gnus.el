@@ -1730,7 +1730,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.21"
+(defconst gnus-version-number "5.2.22"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -9551,10 +9551,10 @@ This is meant to be called in `gnus-article-internal-prepare-hook'."
 the list of process marked articles, and the current article will be
 taken into consideration."
   (cond
-   ((and n (numberp n))
+   (n
     ;; A numerical prefix has been given.
     (let ((backward (< n 0))
-	  (n (abs n))
+	  (n (abs (prefix-numeric-value n)))
 	  articles article)
       (save-excursion
 	(while
@@ -11489,7 +11489,7 @@ and `request-accept' functions."
 	     articles prefix))
       (set (intern (format "gnus-current-%s-group" action)) to-newsgroup))
     (setq to-method (or select-method 
-			(gnus-find-method-for-group to-newsgroup)))
+			(gnus-group-name-to-method to-newsgroup)))
     ;; Check the method we are to move this article to...
     (or (gnus-check-backend-function 'request-accept-article (car to-method))
 	(error "%s does not support article copying" (car to-method)))
@@ -15289,7 +15289,7 @@ If GROUP is nil, all groups on METHOD are scanned."
     (setq method (gnus-server-to-method method)))
   (when (and (not method)
 	     (stringp group))
-    (setq method (gnus-find-method-for-group group)))
+    (setq method (gnus-group-name-to-method group)))
   (goto-char (point-max))
   (unless (bolp)
     (insert "\n"))
