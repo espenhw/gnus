@@ -960,6 +960,7 @@ string containing the @sc{mime} message.
 * Simple MML Example::             An example MML document.
 * MML Definition::                 All valid MML elements.
 * Advanced MML Example::           Another example MML document.
+* Charset Translation::            How charsets are mapped from @sc{mule} to MIME.
 * Conversion::                     Going from @sc{mime} to MML and vice versa.
 @end menu
 
@@ -1181,6 +1182,43 @@ This plain text part is an attachment.
 --=-=-=--
 @end example
 
+@node Charset Translation
+@section Charset Translation
+@cindex charsets
+
+During translation from MML to @sc{mime}, for each @sc{mime} part which
+has been composed inside Emacs, an appropriate charset has to be chosen.
+
+@vindex mail-parse-charset
+If you are running a non-@sc{mule} Emacs, this process is simple: If the
+part contains any non-ASCII (8-bit) characters, the @sc{mime} charset
+given by @code{mail-parse-charset} (a symbol) is used.  (Never set this
+variable directly, though.  If you want to change the default charset,
+please consult the documentation of the package which you use to process
+@sc{mime} messages.
+@xref{Various Message Variables, , Various Message Variables, message, 
+      Message Manual}, for example.)
+If there are only ASCII characters, the @sc{mime} charset US-ASCII is
+used, of course.
+
+@cindex MULE
+@cindex UTF-8
+@cindex Unicode
+@vindex mm-mime-mule-charset-alist
+Things are slightly more complicated when running Emacs with @sc{mule}
+support.  In this case, a list of the @sc{mule} charsets used in the
+part is obtained, and the @sc{mule} charsets are translated to @sc{mime}
+charsets by consulting the variable @code{mm-mime-mule-charset-alist}.
+If this results in a single @sc{mime} charset, this is used to encode
+the part.  But if the resulting list of @sc{mime} charsets contains more
+than one element, two things can happen: If it is possible to encode the
+part via UTF-8, this charset is used.  (For this, Emacs must support
+the @code{utf-8} coding system, and the part must consist entirely of
+characters which have Unicode counterparts.)  If UTF-8 is not available
+for some reason, the part is split into several ones, so that each one
+can be encoded with a single @sc{mime} charset.  The part can only be
+split at line boundaries, though---if more than one @sc{mime} charset is
+required to encode a single line, it is not possible to encode the part.
 
 @node Conversion
 @section Conversion
