@@ -3914,9 +3914,7 @@ General format specifiers can also be used.  See Info node
 	     (let ((mbl1 mml-buffer-list))
 	       (setq mml-buffer-list mbl)
 	       (set (make-local-variable 'mml-buffer-list) mbl1))
-	     ;; LOCAL argument of add-hook differs between GNU Emacs
-	     ;; and XEmacs. make-local-hook makes sure they are local.
-	     (make-local-hook 'kill-buffer-hook)
+	     (gnus-make-local-hook 'kill-buffer-hook)
 	     (add-hook 'kill-buffer-hook 'mml-destroy-buffers t t)))
        `(lambda (no-highlight)
 	  (let ((mail-parse-charset (or gnus-article-charset
@@ -3994,9 +3992,7 @@ Replace it with some information about the removed part."
 	    (let ((mbl1 mml-buffer-list))
 	      (setq mml-buffer-list mbl)
 	      (set (make-local-variable 'mml-buffer-list) mbl1))
-	    ;; LOCAL argument of add-hook differs between GNU Emacs
-	    ;; and XEmacs. make-local-hook makes sure they are local.
-	    (make-local-hook 'kill-buffer-hook)
+	    (gnus-make-local-hook 'kill-buffer-hook)
 	    (add-hook 'kill-buffer-hook 'mml-destroy-buffers t t)))
        `(lambda (no-highlight)
 	  (let ((mail-parse-charset (or gnus-article-charset

@@ -1,3 +1,25 @@
+2003-04-27  Jesper Harder  <harder@ifa.au.dk>
+
+	* mml.el (mml-preview): do.
+
+	* message.el (message-mode): do.
+
+	* gnus-undo.el (gnus-undo-mode): do.
+
+	* gnus-topic.el (gnus-topic-mode): do.
+
+	* gnus-sum.el (gnus-summary-mode, gnus-summary-edit-article): do.
+
+	* gnus-msg.el (gnus-setup-message)
+	(gnus-inews-add-send-actions, gnus-configure-posting-styles): do.
+
+	* gnus-gl.el (gnus-grouplens-mode): do.
+
+	* gnus-art.el (gnus-mime-save-part-and-strip)
+	(gnus-mime-delete-part): Use it.
+
+	* gnus-util.el (gnus-make-local-hook): New function.
+
 2003-04-25  Simon Josefsson  <jas@extundo.com>
 
 	* nnrss.el (nnrss-node-text): Don't use a star.

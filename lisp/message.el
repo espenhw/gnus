@@ -1452,7 +1452,8 @@ no, only reply back to the author."
   (autoload 'gnus-group-name-decode "gnus-group")
   (autoload 'gnus-groups-from-server "gnus")
   (autoload 'rmail-output "rmailout")
-  (autoload 'gnus-delay-article "gnus-delay"))
+  (autoload 'gnus-delay-article "gnus-delay")
+  (autoload 'gnus-make-local-hook "gnus-util"))
 
 
 
@@ -2344,9 +2345,7 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
 	(set (make-local-variable 'tool-bar-map) (message-tool-bar-map))))
   (easy-menu-add message-mode-menu message-mode-map)
   (easy-menu-add message-mode-field-menu message-mode-map)
-  ;; make-local-hook is harmless though obsolete in Emacs 21.
-  ;; Emacs 20 and XEmacs need make-local-hook.
-  (make-local-hook 'after-change-functions)
+  (gnus-make-local-hook 'after-change-functions)
   ;; Mmmm... Forbidden properties...
   (add-hook 'after-change-functions 'message-strip-forbidden-properties
 	    nil 'local)

@@ -137,6 +137,16 @@
       'point-at-eol
     'line-end-position))
 
+;; The LOCAL arg to `add-hook' is interpreted differently in Emacs and
+;; XEmacs.  In Emacs we don't need to call `make-local-hook' first.
+;; It's harmless, though, so the main purpose of this alias is to shut
+;; up the byte compiler.
+(defalias 'gnus-make-local-hook
+  (if (eq (get 'make-local-hook 'byte-compile) 
+	  'byte-compile-obsolete)
+      'ignore				; Emacs
+    'make-local-hook))			; XEmacs
+
 (defun gnus-delete-first (elt list)
   "Delete by side effect the first occurrence of ELT as a member of LIST."
   (if (equal (car list) elt)

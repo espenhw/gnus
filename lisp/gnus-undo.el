@@ -114,7 +114,7 @@
     (when (gnus-visual-p 'undo-menu 'menu)
       (gnus-undo-make-menu-bar))
     (gnus-add-minor-mode 'gnus-undo-mode "" gnus-undo-mode-map)
-    (make-local-hook 'post-command-hook)
+    (gnus-make-local-hook 'post-command-hook)
     (add-hook 'post-command-hook 'gnus-undo-boundary nil t)
     (gnus-run-hooks 'gnus-undo-mode-hook)))
 
