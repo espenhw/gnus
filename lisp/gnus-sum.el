@@ -11640,7 +11640,7 @@ If ALL is a number, fetch this number of articles."
 	  (push i new)
 	  (decf i))
 	(if (not new)
-	    (message "No gnus is bad news.")
+	    (message "No gnus is bad news")
 	  (gnus-summary-insert-articles new)
 	  (setq gnus-newsgroup-unreads
 		(gnus-sorted-nunion gnus-newsgroup-unreads new))
