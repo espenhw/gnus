@@ -368,7 +368,7 @@ This must be bound to a button-down mouse event."
 (defun gnus-binary-display-article (article &optional all-header)
   "Run ARTICLE through the binary decode functions."
   (when (gnus-summary-goto-subject article)
-    (let ((gnus-view-pseudos 'automatic))
+    (let ((gnus-view-pseudos (or gnus-view-pseudos 'automatic)))
       (gnus-uu-decode-uu))))
 
 (defun gnus-binary-show-article (&optional arg)

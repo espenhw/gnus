@@ -11092,13 +11092,12 @@ If ALL is a number, fetch this number of articles."
 	    i new)
 	(setq gnus-newsgroup-active
 	      (gnus-activate-group gnus-newsgroup-name 'scan))
-	(setq i (1+ (cdr old-active)))
-	(while (<= i (cdr gnus-newsgroup-active))
+	(setq i (cdr gnus-newsgroup-active))
+	(while (> i (cdr old-active))
 	  (push i new)
-	  (incf i))
+	  (decf i))
 	(if (not new)
 	    (message "No gnus is bad news.")
-	  (setq new (nreverse new))
 	  (gnus-summary-insert-articles new)
 	  (setq gnus-newsgroup-unreads
 		(gnus-sorted-nunion gnus-newsgroup-unreads new))

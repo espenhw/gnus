@@ -1,3 +1,15 @@
+2002-07-20  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	From Jason Merrill <jason@redhat.com>.
+
+	* nnfolder.el (nnfolder-retrieve-headers): Avoid searching the
+	entire file for each of a sequence of missing articles.
+
+	* gnus-salt.el (gnus-binary-display-article): Respect an existing
+	value for gnus-view-pseudos.
+
+	* gnus-sum.el (gnus-summary-insert-new-articles): Count down to
+	avoid nreverse.
+
 2002-07-14  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Ted Zlatanov <teodor.zlatanov@divine.com>.
 
