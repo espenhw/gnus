@@ -1,3 +1,12 @@
+2002-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-fun.el (gnus-convert-gray-x-face-region): New function.
+	(gnus-convert-gray-x-face-to-ppm): Ditto.
+	(gnus-convert-image-to-gray-x-face): Ditto.
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Add a :keys to
+	gnus-summary0show-raw-article. 
+
 2002-01-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	Display picons in XEmacs without showing text.

@@ -58,7 +58,91 @@
   (when (file-exists-p file)
     (shell-command-to-string
      (format gnus-convert-image-to-x-face-command file))))
-    
+
+(defun gnus-convert-image-to-gray-x-face (file depth)
+  (let* ((mapfile (make-temp-name (expand-file-name "gnus." mm-tmp-directory)))
+	 (levels (expt 2 depth))
+	 (step (/ 255 (1- levels)))
+	 color-alist bits bits-list mask pixel x-faces)
+    (with-temp-file mapfile
+      (insert "P3\n")
+      (insert (format "%d 1\n" levels))
+      (insert "255\n")
+      (dotimes (i levels)
+	(insert (format "%d %d %d\n"
+			(* step i) (* step i) (* step i)))
+	(push (cons (* step i) i) color-alist)))
+    (when (file-exists-p file)
+      (with-temp-buffer
+	(insert (shell-command-to-string (format "giftopnm '%s' | ppmnorm 2>/dev/null | pnmscale -width 48 -height 48 | ppmquant -map %s 2>/dev/null | ppmtopgm | pnmtoplainpnm"
+			       file mapfile)))
+	(goto-char (point-min))
+	(forward-line 3)
+	(while (setq pixel (ignore-errors (read (current-buffer))))
+	  (push (cdr (assq pixel color-alist)) bits-list))
+	(setq bits-list (nreverse bits-list))
+	(dotimes (bit-number depth)
+	  (setq mask (expt 2 bit-number))
+	  (with-temp-buffer
+	    (insert "P1\n48 48\n")
+	    (dolist (bits bits-list)
+	      (insert (if (zerop (logand bits mask)) "0 " "1 ")))
+	    (shell-command-on-region
+	     (point-min) (point-max)
+	     "pbmtoxbm | compface"
+	     (current-buffer) t)
+	    (push (buffer-string) x-faces))))
+      (dotimes (i (length x-faces))
+	(insert (if (zerop i) "X-Face:" (format "X-Face-%s:" i))
+		(nth i x-faces))))
+    (delete-file mapfile)))
+
+(defun gnus-convert-gray-x-face-to-ppm (faces)
+  (let* ((depth (length faces))
+	 (scale (/ 255 (1- (expt 2 depth))))
+	 bit-list bit-lists pixels pixel)
+    (dolist (face faces)
+      (with-temp-buffer
+	(insert face)
+	(shell-command-on-region
+	 (point-min) (point-max)
+	 "uncompface -X | xbmtopbm | pnmtoplainpnm"
+	 (current-buffer) t)
+	(goto-char (point-min))
+	(forward-line 2)
+	(while (not (eobp))
+	  (cond
+	   ((eq (following-char) ?0)
+	    (push 0 bit-list))
+	   ((eq (following-char) ?1)
+	    (push 1 bit-list)))
+	  (forward-char 1)))
+      (push bit-list bit-lists))
+    (dotimes (i (* 48 48))
+      (setq pixel 0)
+      (dotimes (plane depth)
+	(setq pixel (+ (* pixel 2) (nth i (nth plane bit-lists)))))
+      (push pixel pixels))
+    (with-temp-buffer
+      (insert "P2\n48 48\n255\n")
+      (dolist (pixel pixels)
+	(insert (number-to-string (* scale pixel)) " "))
+      (buffer-string))))
+
+(defun gnus-convert-gray-x-face-region (beg end)
+  "Convert the X-Faces in region to a PPM file."
+  (interactive "r")
+  (let ((input (buffer-substring beg end))
+	faces)
+    (with-temp-buffer
+      (insert input)
+      (goto-char (point-min))
+      (while (not (eobp))
+	(save-restriction
+	  (mail-header-narrow-to-field)
+	  (push (mail-header-field-value) faces)
+	  (goto-char (point-max)))))
+    (gnus-convert-gray-x-face-to-ppm faces)))
 
 (provide 'gnus-fun)
 
