@@ -5288,17 +5288,17 @@ calculates the deadline of the message and stores it in the
 @code{nndraft:delayed} group.
 
 And whenever you get new news, Gnus looks through the group for articles
-which are due and sends them.  It uses the @code{gnus-delay-send-drafts}
+which are due and sends them.  It uses the @code{gnus-delay-send-queue}
 function for this.  By default, this function is added to the hook
 @code{gnus-get-new-news-hook}.  But of course, you can change this.
 Maybe you want to use the demon to send drafts?  Just tell the demon to
-execute the @code{gnus-delay-send-drafts} function.
+execute the @code{gnus-delay-send-queue} function.
 
 @table @code
 @item gnus-delay-initialize
 @findex gnus-delay-initialize
 By default, this function installs the @kbd{C-c C-j} key binding in
-Message mode and @code{gnus-delay-send-drafts} in
+Message mode and @code{gnus-delay-send-queue} in
 @code{gnus-get-new-news-hook}.  But it accepts two optional arguments,
 @code{no-keymap} and @code{no-check}.  If @code{no-keymap} is non-nil,
 the @kbd{C-c C-j} binding is not intalled.  If @code{no-check} is
@@ -16147,9 +16147,9 @@ Fetch all eligible articles in all groups
 
 @item J S
 @kindex J S (Agent Group)
-@findex gnus-group-send-drafts
-Send all sendable messages in the draft group
-(@code{gnus-group-send-drafts}).  @xref{Drafts}.
+@findex gnus-group-send-queue
+Send all sendable messages in the queue group
+(@code{gnus-group-send-queue}).  @xref{Drafts}.
 
 @item J a
 @kindex J a (Agent Group)
