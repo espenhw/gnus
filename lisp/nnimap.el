@@ -70,6 +70,8 @@
 (require 'gnus-start)
 (require 'gnus-int)
 
+(eval-when-compile (require 'cl))
+
 (nnoo-declare nnimap)
 
 (defconst nnimap-version "nnimap 1.0")
