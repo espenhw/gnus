@@ -1,3 +1,8 @@
+2002-04-12  Daiki Ueno  <ueno@unixuser.org>
+
+	* gnus-srvr.el (gnus-server-set-info): Clear
+	`gnus-server-method-cache' when `gnus-server-alist' is changed.
+
 2002-04-11  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-sum.el (gnus-summary-force-verify-and-decrypt): Force

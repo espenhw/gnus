@@ -380,7 +380,11 @@ The following commands are available:
      (concat "(gnus-server-set-info \"" server "\" '"
 	     (prin1-to-string info) ")"))
     (let* ((server (nth 1 info))
-	   (entry (assoc server gnus-server-alist)))
+	   (entry (assoc server gnus-server-alist))
+	   (cached (assoc server gnus-server-method-cache)))
+      (if cached
+	  (setq gnus-server-method-cache
+		(delq cached gnus-server-method-cache)))
       (if entry (setcdr entry info)
 	(setq gnus-server-alist
 	      (nconc gnus-server-alist (list (cons server info))))))))
