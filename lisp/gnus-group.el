@@ -911,6 +911,10 @@ The following commands are available:
       (mm-decode-coding-string string charset)
     string))
 
+(defun gnus-group-decoded-name (string)
+  (let ((charset (gnus-group-name-charset nil string)))
+    (gnus-group-name-decode string charset)))
+
 (defun gnus-group-list-groups (&optional level unread lowest)
   "List newsgroups with level LEVEL or lower that have unread articles.
 Default is all subscribed groups.
@@ -2059,7 +2063,7 @@ and NEW-NAME will be prompted for."
        ((eq part 'method) "select method")
        ((eq part 'params) "group parameters")
        (t "group info"))
-      group)
+      (gnus-group-decoded-name group))
      `(lambda (form)
 	(gnus-group-edit-group-done ',part ,group form)))))
 
@@ -3257,7 +3261,7 @@ to use."
     (mapatoms
      (lambda (group)
        (setq b (point))
-       (let ((charset (gnus-group-name-charset nil group)))
+       (let ((charset (gnus-group-name-charset nil (symbol-name group))))
 	 (insert (format "      *: %-20s %s\n" 
 			 (gnus-group-name-decode
 			  (symbol-name group) charset)

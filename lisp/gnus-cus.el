@@ -305,7 +305,7 @@ DOC is a documentation string for the parameter.")
 		     :tag  "topic parameters"
 		     "(gnus)Topic Parameters"))
     (widget-insert " for <")
-    (widget-insert (or group topic))
+    (widget-insert (gnus-group-decoded-name (or group topic)))
     (widget-insert "> and press ")
     (widget-create 'push-button
 		   :tag "done"
