@@ -26,6 +26,7 @@
 
 (require 'gnus)
 (require 'gnus-cache)
+(require 'nnmail)
 (require 'nnvirtual)
 (require 'gnus-sum)
 (require 'gnus-score)
@@ -896,6 +897,7 @@ article's mark is toggled."
              (headers (sort (mapcar (lambda (h)
                                       (mail-header-number h))
                                     gnus-newsgroup-headers) '<))
+             (cached (and gnus-use-cache gnus-newsgroup-cached))
              (undownloaded (list nil))
              (tail-undownloaded undownloaded)
              (unfetched (list nil))
@@ -922,7 +924,14 @@ article's mark is toggled."
 		  (t
 		   (pop alist)
 		   (pop headers)
-		   (gnus-agent-append-to-list tail-undownloaded a)))))
+                   
+                   ;; This article isn't in the agent.  Check to see
+                   ;; if it is in the cache.  If it is, it's been
+                   ;; downloaded.
+                   (while (and cached (< (car cached) a))
+                     (pop cached))
+                   (unless (equal a (car cached))
+                     (gnus-agent-append-to-list tail-undownloaded a))))))
 
 	(while headers
           (let ((num (pop headers)))
@@ -1118,16 +1127,31 @@ This can be added to `gnus-select-article-hook' or
 
 (defun gnus-agent-group-path (group)
   "Translate GROUP into a file name."
-  (if nnmail-use-long-file-names
-      (gnus-group-real-name group)
-    (nnheader-translate-file-chars
-     (nnheader-replace-chars-in-string
-      (nnheader-replace-duplicate-chars-in-string
-       (nnheader-replace-chars-in-string
-	(gnus-group-real-name group)
-	?/ ?_)
-       ?. ?_)
-      ?. ?/))))
+
+  ;; NOTE: This is what nnmail-group-pathname does as of Apr 2003.
+  ;; The two methods must be kept synchronized, which is why
+  ;; gnus-agent-group-pathname was added.
+
+  (setq group
+        (nnheader-translate-file-chars
+         (nnheader-replace-duplicate-chars-in-string
+          (nnheader-replace-chars-in-string 
+           (gnus-group-real-name group)
+           ?/ ?_)
+          ?. ?_)))
+  (if (or nnmail-use-long-file-names
+          (file-directory-p (expand-file-name group (gnus-agent-directory))))
+      group
+    (mm-encode-coding-string
+     (nnheader-replace-chars-in-string group ?. ?/)
+     nnmail-pathname-coding-system)))
+
+(defun gnus-agent-group-pathname (group)
+  "Translate GROUP into a file name."
+  ;; nnagent uses nnmail-group-pathname to read articles while
+  ;; unplugged.  The agent must, therefore, use the same directory
+  ;; while plugged.
+  (nnmail-group-pathname (gnus-group-real-name group) (gnus-agent-directory)))
 
 (defun gnus-agent-get-function (method)
   (if (gnus-online method)
@@ -1224,9 +1248,7 @@ This can be added to `gnus-select-article-hook' or
       (when (or (cdr selected-sets) (car selected-sets))
         (let* ((fetched-articles (list nil))
                (tail-fetched-articles fetched-articles)
-               (dir (concat
-                     (gnus-agent-directory)
-                     (gnus-agent-group-path group) "/"))
+               (dir (gnus-agent-group-pathname group))
                (date (time-to-days (current-time)))
                (case-fold-search t)
                pos crosses id)
@@ -1722,8 +1744,7 @@ FILE and places the combined headers into `nntp-server-buffer'."
 (defun gnus-agent-article-name (article group)
   (expand-file-name article
 		    (file-name-as-directory
-		     (expand-file-name (gnus-agent-group-path group)
-				       (gnus-agent-directory)))))
+                     (gnus-agent-group-pathname group))))
 
 (defun gnus-agent-batch-confirmation (msg)
   "Show error message and return t."
@@ -2450,10 +2471,7 @@ FORCE is equivalent to setting the expiration predicates to true."
   ;; gnus-command-method, initialized overview buffer, and to have
   ;; provided a non-nil active
 
-  (let ((dir (concat
-              (gnus-agent-directory)
-              (gnus-agent-group-path group)
-              "/")))
+  (let ((dir (gnus-agent-group-pathname group)))
     (when (boundp 'gnus-agent-expire-current-dirs)
       (set 'gnus-agent-expire-current-dirs 
            (cons dir 
@@ -3102,10 +3120,7 @@ has been fetched."
                  (not gnus-plugged))
              (numberp article))
     (let* ((gnus-command-method (gnus-find-method-for-group group))
-           (file (concat
-		  (gnus-agent-directory)
-		  (gnus-agent-group-path group) "/"
-		  (number-to-string article)))
+           (file (gnus-agent-article-name (number-to-string article) group))
            (buffer-read-only nil))
       (when (and (file-exists-p file)
                  (> (nth 7 (file-attributes file)) 0))

@@ -1,3 +1,14 @@
+2003-04-10  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-get-undownloaded-list): Articles in
+	the CACHE are now detected and handled the same as an article
+	downloaded into the agent.
+	(gnus-agent-group-path): Modified to match nnmail-group-pathname
+	so that the agent front-end and back-end (nnagent) always use the
+	same directory.
+	(gnus-agent-group-pathname): New function. Wrapper for
+	nnmail-group-pathname.
+
 2003-04-10  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Disable "Encrypt
