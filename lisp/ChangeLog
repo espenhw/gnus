@@ -1,5 +1,10 @@
 2004-01-05  Simon Josefsson  <jas@extundo.com>
 
+	* sieve-manage.el: Use the password package.
+	(sieve-manage-read-passwd): Remove.
+	(sieve-manage-interactive-login): Use password.  Re-add
+	condition-case around loop.
+
 	* pgg.el (pgg-passphrase-cache, pgg-run-at-time): Remove.
 	(pgg-add-passphrase-cache, pgg-remove-passphrase-cache): Use
 	the password package.

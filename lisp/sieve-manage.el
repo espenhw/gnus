@@ -1,5 +1,5 @@
 ;;; sieve-manage.el --- Implementation of the managesive protocol in elisp
-;; Copyright (C) 2001, 2003 Free Software Foundation, Inc.
+;; Copyright (C) 2001, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 
@@ -74,6 +74,7 @@
 
 ;;; Code:
 
+(require 'password)
 (eval-when-compile
   (require 'sasl)
   (require 'starttls))
@@ -180,23 +181,6 @@ Valid states are `closed', `initial', `nonauth', and `auth'.")
   (when (fboundp 'set-buffer-multibyte)
     (set-buffer-multibyte nil)))
 
-(defun sieve-manage-read-passwd (prompt &rest args)
-  "Read a password using PROMPT.
-If ARGS, PROMPT is used as an argument to `format'."
-  (let ((prompt (if args
-		    (apply 'format prompt args)
-		  prompt)))
-    (funcall (if (or (fboundp 'read-passwd)
-		     (and (load "subr" t)
-			  (fboundp 'read-passwd))
-		     (and (load "passwd" t)
-			  (fboundp 'read-passwd)))
-		 'read-passwd
-	       (autoload 'ange-ftp-read-passwd "ange-ftp")
-	       'ange-ftp-read-passwd)
-	     prompt)))
-
-
 ;; Uses the dynamically bound `reason' variable.
 (defvar reason)
 (defun sieve-manage-interactive-login (buffer loginfunc)
@@ -207,38 +191,45 @@ Returns t if login was successful, nil otherwise."
   (with-current-buffer buffer
     (make-variable-buffer-local 'sieve-manage-username)
     (make-variable-buffer-local 'sieve-manage-password)
-    (let (user passwd ret reason)
-      ;;      (condition-case ()
-      (while (or (not user) (not passwd))
-	(setq user (or sieve-manage-username
-		       (read-from-minibuffer
-			(concat "Managesieve username for "
-				sieve-manage-server ": ")
-			(or user sieve-manage-default-user))))
-	(setq passwd (or sieve-manage-password
-			 (sieve-manage-read-passwd
-			  (concat "Managesieve password for " user "@"
-				  sieve-manage-server ": "))))
-	(when (and user passwd)
-	  (if (funcall loginfunc user passwd)
-	      (progn
-		(setq ret t
-		      sieve-manage-username user)
-		(if (and (not sieve-manage-password)
-			 (y-or-n-p "Store password for this session? "))
-		    (setq sieve-manage-password passwd)))
-	    (if reason
-		(message "Login failed (reason given: %s)..." reason)
-	      (message "Login failed..."))
-	    (setq reason nil)
-	    (setq passwd nil)
-	    (sit-for 1))))
-      ;;	(quit (with-current-buffer buffer
-      ;;		(setq user nil
-      ;;		      passwd nil)))
-      ;;	(error (with-current-buffer buffer
-      ;;		 (setq user nil
-      ;;		       passwd nil))))
+    (let (user passwd ret reason passwd-key)
+      (condition-case ()
+	  (while (or (not user) (not passwd))
+	    (setq user (or sieve-manage-username
+			   (read-from-minibuffer
+			    (concat "Managesieve username for "
+				    sieve-manage-server ": ")
+			    (or user sieve-manage-default-user)))
+		  passwd-key (concat "managesieve:" user "@" sieve-manage-server
+				     ":" sieve-manage-port)
+		  passwd (or sieve-manage-password
+			     (password-read (concat "Managesieve password for "
+						    user "@" sieve-manage-server
+						    ": ")
+					    passwd-key)))
+	    (when (y-or-n-p "Store password for this session? ")
+	      (password-cache-add passwd-key (copy-sequence passwd)))
+	    (when (and user passwd)
+	      (if (funcall loginfunc user passwd)
+		  (setq ret t
+			sieve-manage-username user)
+		(if reason
+		    (message "Login failed (reason given: %s)..." reason)
+		  (message "Login failed..."))
+		(password-cache-remove passwd-key)
+		(setq sieve-manage-password nil)
+		(setq passwd nil)
+		(setq reason nil)
+		(sit-for 1))))
+	(quit (with-current-buffer buffer
+		(password-cache-remove passwd-key)
+		(setq user nil
+		      passwd nil
+		      sieve-manage-password nil)))
+	(error (with-current-buffer buffer
+		 (password-cache-remove passwd-key)
+		 (setq user nil
+		       passwd nil
+		       sieve-manage-password nil))))
       ret)))
 
 (defun sieve-manage-erase (&optional p buffer)
@@ -364,7 +355,7 @@ Returns t if login was successful, nil otherwise."
 	       (sieve-manage-erase)
 	       (when (sieve-manage-ok-p rsp)
 		 (when (string-match "^SASL \"\\([^\"]+\\)\"" (cadr rsp))
-		   (sasl-step-set-data 
+		   (sasl-step-set-data
 		    step (base64-decode-string (match-string 1 (cadr rsp)))))
 		 (if (and (setq step (sasl-next-step client step))
 			  (setq data (sasl-step-data step)))
@@ -379,8 +370,8 @@ Returns t if login was successful, nil otherwise."
 	       (setq step (sasl-next-step client step))
 	       (sieve-manage-send
 		(if (sasl-step-data step)
-		    (concat "\"" 
-			    (base64-encode-string (sasl-step-data step) 
+		    (concat "\""
+			    (base64-encode-string (sasl-step-data step)
 						  'no-line-break)
 			    "\"")
 		  "")))))))
