@@ -1,3 +1,11 @@
+2001-07-23 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From Karl Kleinpaste <karl@charcoal.com>
+
+	* gnus-sum.el (gnus-summary-line-format-alist): Add %B.
+	(gnus-summary-prepare-threads): Ditto.
+
+	* gnus.el (gnus-summary-line-format): Add %B.
+
 2001-07-23 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-articles-to-read): Use gnus-group-decoded-name.

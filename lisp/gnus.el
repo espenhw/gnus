@@ -2064,6 +2064,7 @@ with some simple extensions.
 %c   Number of characters in the article (integer)
 %L   Number of lines in the article (integer)
 %I   Indentation based on thread level (a string of spaces)
+%B   A complex trn-style thread tree (string)
 %T   A string with two possible values: 80 spaces if the article
      is on thread level two or larger and 0 spaces on level one
 %R   \"A\" if this article has been replied to, \" \" otherwise (character)

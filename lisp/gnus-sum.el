@@ -1068,7 +1068,8 @@ that were fetched.  Say, for nnultimate groups."
 	 (and (boundp 'thread) (car thread)) gnus-tmp-level t)
 	?c)
     (?u gnus-tmp-user-defined ?s)
-    (?P (gnus-pick-line-number) ?d))
+    (?P (gnus-pick-line-number) ?d)
+    (?B gnus-tmp-thread-tree-header-string ?s))
   "An alist of format specifications that can appear in summary lines.
 These are paired with what variables they correspond with, along with
 the type of the variable (string, integer, character, etc).")
@@ -4090,6 +4091,15 @@ Unscored articles will be counted as having a score of zero."
   (or (cdr (assq type (mail-header-extra (or header gnus-tmp-header))))
       ""))
 
+(defvar gnus-tmp-thread-tree-header-string "")
+
+(defvar gnus-sum-thread-tree-root "> ")
+(defvar gnus-sum-thread-tree-single-indent "")
+(defvar gnus-sum-thread-tree-vertical "| ")
+(defvar gnus-sum-thread-tree-indent "  ")
+(defvar gnus-sum-thread-tree-leaf-with-other "+-> ")
+(defvar gnus-sum-thread-tree-single-leaf "\\-> ")
+
 (defun gnus-summary-prepare-threads (threads)
   "Prepare summary buffer from THREADS and indentation LEVEL.
 THREADS is either a list of `(PARENT [(CHILD1 [(GRANDCHILD ...]...) ...])'
@@ -4108,7 +4118,8 @@ or a straight list of headers."
 	gnus-tmp-replied gnus-tmp-subject-or-nil
 	gnus-tmp-dummy gnus-tmp-indentation gnus-tmp-lines gnus-tmp-score
 	gnus-tmp-score-char gnus-tmp-from gnus-tmp-name
-	gnus-tmp-number gnus-tmp-opening-bracket gnus-tmp-closing-bracket)
+	gnus-tmp-number gnus-tmp-opening-bracket gnus-tmp-closing-bracket
+        tree-stack)
 
     (setq gnus-tmp-prev-subject nil)
 
@@ -4146,7 +4157,8 @@ or a straight list of headers."
 	    ;; the stack.
 	    (setq state (car stack)
 		  gnus-tmp-level (car state)
-		  thread (cdr state)
+                  tree-stack (cadr state)
+		  thread (caddr state)
 		  stack (cdr stack)
 		  gnus-tmp-header (caar thread))))
 
@@ -4313,7 +4325,22 @@ or a straight list of headers."
 	      ((string-match "(.+)" gnus-tmp-from)
 	       (substring gnus-tmp-from
 			  (1+ (match-beginning 0)) (1- (match-end 0))))
-	      (t gnus-tmp-from)))
+	      (t gnus-tmp-from))
+             gnus-tmp-thread-tree-header-string 
+             (if (zerop gnus-tmp-level)
+                 (if (cdar thread) 
+                     gnus-sum-thread-tree-root
+                   gnus-sum-thread-tree-single-indent)
+               (concat (apply 'concat
+                              (mapcar (lambda (item) 
+                                        (if (= item 1) 
+                                            gnus-sum-thread-tree-vertical
+                                          gnus-sum-thread-tree-indent))
+                                      (cdr (reverse tree-stack))))
+                       (if (nth 1 thread) 
+                           gnus-sum-thread-tree-leaf-with-other
+                         gnus-sum-thread-tree-single-leaf))))
+
 	    (when (string= gnus-tmp-name "")
 	      (setq gnus-tmp-name gnus-tmp-from))
 	    (unless (numberp gnus-tmp-lines)
@@ -4332,7 +4359,11 @@ or a straight list of headers."
 	    (setq gnus-tmp-prev-subject subject)))
 
 	(when (nth 1 thread)
-	  (push (cons (max 0 gnus-tmp-level) (nthcdr 1 thread)) stack))
+	  (push (list (max 0 gnus-tmp-level) 
+                      (copy-list tree-stack)
+                      (nthcdr 1 thread))
+                stack))        
+        (push (if (nth 1 thread) 1 0) tree-stack)
 	(incf gnus-tmp-level)
 	(setq threads (if thread-end nil (cdar thread)))
 	(unless threads
