@@ -1,3 +1,8 @@
+2001-02-21 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-topic.el (gnus-topic-get-new-news-this-topic): Redraw the
+	current topic.
+
 2001-02-21 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* smiley.el (gnus-smiley-display): Don't do widening.

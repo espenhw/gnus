@@ -1384,8 +1384,12 @@ If RECURSIVE is t, unmark its subtopics too."
   (interactive "P")
   (if (not (gnus-group-topic-p))
       (gnus-group-get-new-news-this-group n)
-    (gnus-topic-mark-topic (gnus-group-topic-name) nil (and n t))
-    (gnus-group-get-new-news-this-group)))
+    (let* ((topic (gnus-group-topic-name))
+	   (data (cadr (gnus-topic-find-topology topic))))
+      (save-excursion
+	(gnus-topic-mark-topic topic nil (and n t))
+	(gnus-group-get-new-news-this-group))
+      (gnus-topic-remove-topic (eq 'visible (cadr data))))))
 
 (defun gnus-topic-move-matching (regexp topic &optional copyp)
   "Move all groups that match REGEXP to some topic."
