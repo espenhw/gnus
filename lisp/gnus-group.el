@@ -565,7 +565,8 @@ ticked: The number of ticked articles."
     "d" gnus-group-description-apropos
     "m" gnus-group-list-matching
     "M" gnus-group-list-all-matching
-    "l" gnus-group-list-level)
+    "l" gnus-group-list-level
+    "c" gnus-group-list-cached)
 
   (gnus-define-keys (gnus-group-score-map "W" gnus-group-mode-map)
     "f" gnus-score-flush-cache)
@@ -641,7 +642,8 @@ ticked: The number of ticked articles."
 	["Group and description apropos..." gnus-group-description-apropos t]
 	["List groups matching..." gnus-group-list-matching t]
 	["List all groups matching..." gnus-group-list-all-matching t]
-	["List active file" gnus-group-list-active t])
+	["List active file" gnus-group-list-active t]
+	["List groups with cached" gnus-group-list-cached t])
        ("Sort"
 	["Default sort" gnus-group-sort-groups t]
 	["Sort by method" gnus-group-sort-groups-by-method t]
@@ -3525,6 +3527,54 @@ or `gnus-group-catchup-group-hook'."
     (if (not time)
 	""
       (gnus-time-iso8601 time))))
+
+(defun gnus-group-prepare-flat-predicate (level predicate &optional lowest)
+  "List all newsgroups with unread articles of level LEVEL or lower.
+If LOWEST is non-nil, list all newsgroups of level LOWEST or higher.
+If PREDICATE, only list groups which PREDICATE returns non-nil."
+  (set-buffer gnus-group-buffer)
+  (let ((buffer-read-only nil)
+	(newsrc (cdr gnus-newsrc-alist))
+	(lowest (or lowest 1))
+	info clevel unread group params)
+    (erase-buffer)
+    ;; List living groups.
+    (while newsrc
+      (setq info (car newsrc)
+	    group (gnus-info-group info)
+	    params (gnus-info-params info)
+	    newsrc (cdr newsrc)
+	    unread (car (gnus-gethash group gnus-newsrc-hashtb)))
+      (and unread			; This group might be unchecked
+	   (funcall predicate info)
+	   (<= (setq clevel (gnus-info-level info)) level)
+	   (>= clevel lowest)
+	   (gnus-group-insert-group-line
+	    group (gnus-info-level info)
+	    (gnus-info-marks info) unread (gnus-info-method info))))
+
+    (gnus-group-set-mode-line)
+    (setq gnus-group-list-mode (cons level t))
+    (gnus-run-hooks 'gnus-group-prepare-hook)
+    t))
+
+(defun gnus-group-list-cached (level &optional lowest)
+  "List all groups with cached articles.
+If the prefix LEVEL is non-nil, it should be a number that says which
+level to cut off listing groups.
+If LOWEST, don't list groups with level lower than LOWEST.
+
+This command may read the active file."
+  (interactive "P")
+  (when level
+    (setq level (prefix-numeric-value level)))
+  (gnus-group-prepare-flat-predicate (or level gnus-level-killed)
+				#'(lambda (info)
+				    (let ((marks (gnus-info-marks info)))
+				      (assq 'cache marks)))
+				lowest)
+  (goto-char (point-min))
+  (gnus-group-position-point))
 
 (provide 'gnus-group)
 
