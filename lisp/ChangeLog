@@ -1,3 +1,11 @@
+2000-04-23 00:32:32  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-alter-articles-to-read-function): New
+	variable. 
+	(gnus-articles-to-read): Use it.
+
+	* message.el (message-get-reply-headers): Bind free variable.
+
 2000-04-23 01:14:28  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-get-reply-headers): Fix to-address.

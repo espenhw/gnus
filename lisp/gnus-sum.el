@@ -873,6 +873,11 @@ For example: ((1 . cn-gb-2312) (2 . big5))."
   :type 'boolean
   :group 'gnus-summary-marks)
 
+(defcustom gnus-alter-articles-to-read-function nil
+  "Function to be called to alter the list of articles to be selected."
+  :type 'function
+  :group 'gnus-summary)
+
 ;;; Internal variables
 
 (defvar gnus-article-mime-handles nil)
@@ -4276,6 +4281,12 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	    (gnus-sorted-intersection
 	     gnus-newsgroup-unreads
 	     (gnus-sorted-complement gnus-newsgroup-unreads articles)))
+      (when gnus-alter-articles-to-read-function
+	(setq gnus-newsgroup-unreads
+	      (sort 
+	       (funcall gnus-alter-articles-to-read-function
+			gnus-newsgroup-name gnus-newsgroup-unreads)
+	       '<)))
       articles)))
 
 (defun gnus-killed-articles (killed articles)

@@ -3498,7 +3498,7 @@ OTHER-HEADERS is an alist of header/value pairs."
 		     (Subject . ,(or subject ""))))))
 
 (defun message-get-reply-headers (wide &optional to-address)
-  (let (follow-to mct never-mct from to cc reply-to)
+  (let (follow-to mct never-mct from to cc reply-to ccalist)
     ;; Find all relevant headers we need.
     (setq from (message-fetch-field "from")
 	  to (message-fetch-field "to")
