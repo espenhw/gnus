@@ -49,7 +49,7 @@ server denied."
   :group 'gnus-start
   :type '(choice (const :tag "Ask" nil)
 		 (const :tag "Deny server" denied)
-		 (const :tag "Unplugg Agent" offline)))
+		 (const :tag "Unplug Agent" offline)))
 
 (defvar gnus-internal-registry-spool-current-method nil
   "The current method, for the registry.")
@@ -206,6 +206,7 @@ If it is down, start it up (again)."
 		 (funcall (gnus-get-function gnus-command-method 'open-server)
 			  (nth 1 gnus-command-method)
 			  (nthcdr 2 gnus-command-method))
+               (error nil)
 	       (quit
 		(message "Quit trying to open server")
 		nil))))
