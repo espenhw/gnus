@@ -47,7 +47,7 @@ license to the document, as described in section 6 of the license.
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1996, 1997, 1998, 1999, 2000, 2001, 2002 
+Copyright @copyright{} 1996, 1997, 1998, 1999, 2000, 2001, 2002
      Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
@@ -380,9 +380,9 @@ way.  The following variables would come in handy.
 @vindex message-subscribed-addresses
 @item message-subscribed-addresses
 This should be a list of addresses the user is subscribed to.  Its
-default value is @code{nil}.   Example: 
+default value is @code{nil}.   Example:
 @lisp
-(setq message-subscribed-addresses 
+(setq message-subscribed-addresses
       '("ding@@gnus.org" "bing@@noose.org"))
 @end lisp
 
@@ -1206,12 +1206,14 @@ buffers that are initialized as mail.
 @findex message-send-mail-with-sendmail
 @findex message-send-mail-with-mh
 @findex message-send-mail-with-qmail
+@findex message-smtpmail-send-it
 @findex smtpmail-send-it
 @findex feedmail-send-it
 Function used to send the current buffer as mail. The default is
 @code{message-send-mail-with-sendmail}. Other valid values include
 @code{message-send-mail-with-mh}, @code{message-send-mail-with-qmail},
-@code{smtpmail-send-it} and @code{feedmail-send-it}.
+@code{message-smtpmail-send-it}, @code{smtpmail-send-it} and
+@code{feedmail-send-it}.
 
 @item message-mh-deletable-headers
 @vindex message-mh-deletable-headers
@@ -1252,7 +1254,7 @@ the problem will actually occur.
 @item message-send-mail-partially-limit
 @vindex message-send-mail-partially-limit
 The limitation of messages sent as message/partial.
-The lower bound of message size in characters, beyond which the message 
+The lower bound of message size in characters, beyond which the message
 should be sent in several parts. If it is nil, the size is unlimited.
 
 @end table
@@ -1586,8 +1588,8 @@ that you are silly and have nothing important to say.
 Symbol naming a @sc{mime} charset.  Non-ASCII characters in messages are
 assumed to be encoded using this charset.  The default is @code{nil},
 which means ask the user.  (This variable is used only on non-@sc{mule}
-Emacsen.  
-@xref{Charset Translation, , Charset Translation, emacs-mime, 
+Emacsen.
+@xref{Charset Translation, , Charset Translation, emacs-mime,
       Emacs MIME Manual}, for details on the @sc{mule}-to-@sc{mime}
 translation process.
 
