@@ -413,9 +413,11 @@ ARTICLE is the article number of the current headline.")
 		    (second (assoc group nnrss-group-alist))))
       (unless url
 	(setq url
-	      (nnrss-discover-feed
-	       (read-string
-		(format "URL to search for %s: " group) "http://")))
+             (cdr
+              (assoc 'href
+                     (nnrss-discover-feed
+                      (read-string
+                       (format "URL to search for %s: " group) "http://")))))
 	(let ((pair (assoc group nnrss-server-data)))
 	  (if pair
 	      (setcdr (cdr pair) (list url))
@@ -707,7 +709,7 @@ whether they are `offsite' or `onsite'."
 				  "Multiple feeds found.  Select one: "
 				  selection nil t) urllist)))
 		       (cdar urllist))))))
-    (message "XML-RPC is not available... not checking Syndic8.")))
+    (error (message "XML-RPC is not available... not checking Syndic8."))))
 
 (defun nnrss-rss-p (data)
   "Test if data is an RSS feed.  Simply ensures that the first
