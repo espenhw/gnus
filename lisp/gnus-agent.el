@@ -1029,7 +1029,13 @@ the actual number of articles toggled is returned."
 	gnus-newsgroup-dependencies gnus-newsgroup-headers
 	gnus-newsgroup-scored gnus-headers gnus-score
 	gnus-use-cache articles arts
-	category predicate info marks score-param)
+	category predicate info marks score-param
+	(gnus-summary-expunge-below gnus-summary-expunge-below)
+	(gnus-summary-mark-below gnus-summary-mark-below)
+	(gnus-orphan-score gnus-orphan-score)
+	;; Maybe some other gnus-summary local variables should also
+	;; be put here.
+	)
     (unless (gnus-check-group group)
       (error "Can't open server for %s" group))
     ;; Fetch headers.

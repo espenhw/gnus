@@ -1,3 +1,8 @@
+2000-07-14 12:40:51  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-fetch-group-1): mark-below, 
+	expunge-below and orphan-score are "group variables".
+
 2000-07-13  Simon Josefsson  <jas@pdc.kth.se>
 
 	* gnus-srvr.el (gnus-browse-read-group): Don't pass fully
