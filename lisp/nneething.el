@@ -68,6 +68,8 @@ If this variable is nil, no files will be excluded.")
 
 
 
+(autoload 'gnus-encode-coding-string "gnus-ems")
+
 ;;; Interface functions.
 
 (nnoo-define-basics nneething)

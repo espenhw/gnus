@@ -246,7 +246,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.32"
+(defconst gnus-version-number "0.33"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Quassia Gnus v%s" gnus-version-number)
@@ -1127,6 +1127,7 @@ slower."
     ("nnfolder" mail respool address)
     ("nngateway" none address prompt-address physical-address)
     ("nnweb" none)
+    ("nnlistserv" none)
     ("nnagent" post-mail))
   "*An alist of valid select methods.
 The first element of each list lists should be a string with the name
@@ -1633,7 +1634,9 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-group-list-groups gnus-group-first-unread-group
       gnus-group-set-mode-line gnus-group-set-info gnus-group-save-newsrc
       gnus-group-setup-buffer gnus-group-get-new-news
-      gnus-group-make-help-group gnus-group-update-group)
+      gnus-group-make-help-group gnus-group-update-group
+      gnus-clear-inboxes-moved gnus-group-iterate
+      gnus-group-group-name)
      ("gnus-bcklg" gnus-backlog-request-article gnus-backlog-enter-article
       gnus-backlog-remove-article)
      ("gnus-art" gnus-article-read-summary-keys gnus-article-save
@@ -2075,11 +2078,13 @@ g -- Group name."
 	((= c ?g)
 	 (gnus-group-group-name))
 	((= c ?A)
-	 (gnus-summary-article-number))
+	 (gnus-summary-skip-intangible)
+	 (or (get-text-property (point) 'gnus-number)
+	     (gnus-summary-last-subject)))
 	((= c ?H)
-	 (gnus-summary-article-header))
+	 (gnus-data-header (gnus-data-find (gnus-summary-article-number))))
 	(t
-	 (error "Not implemented spec")))
+	 (error "Non-implemented spec")))
        out)
       (cond
        ((= c ?r)

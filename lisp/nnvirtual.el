@@ -38,6 +38,7 @@
 (require 'gnus-util)
 (require 'gnus-start)
 (require 'gnus-sum)
+(require 'gnus-msg)
 (require 'cl)
 
 (nnoo-declare nnvirtual)

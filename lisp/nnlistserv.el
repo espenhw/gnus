@@ -30,8 +30,6 @@
 
 (eval-when-compile (require 'cl))
 
-(push '("nnlistserv" none) gnus-valid-select-methods)
-
 (require 'nnoo)
 (require 'nnweb)
 

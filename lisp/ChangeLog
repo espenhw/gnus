@@ -1,3 +1,50 @@
+Sat Feb 28 08:17:37 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.33 is released.
+
+Sat Feb 28 08:10:27 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-picon.el (gnus-picons-display-x-face): `buf' -- unbound
+	var. 
+
+Sat Feb 28 08:03:23 1998  François Pinard  <pinard@iro.umontreal.ca>
+
+	* gnus: configure'd.
+
+Sat Feb 28 07:43:00 1998  Nelson Jose dos Santos Ferreira  <Nelson.Ferreira@inesc.pt>
+
+	* nnsoup.el (nnsoup-store-reply): Fix double sep error.
+
+Sat Feb 28 07:01:17 1998  Lasse Rasinen  <lrasinen@iki.fi>
+
+	* gnus-start.el (gnus-ask-server-for-new-groups): Message more. 
+
+Fri Feb 27 13:26:34 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-resend): Allow arbitrary Also's.
+
+1998-02-27  Dave Love  <d.love@dl.ac.uk>
+
+	* gnus-sum.el (gnus-simplify-subject-functions): Fix
+	customization, doc.
+
+1998-02-25  Dave Love  <d.love@dl.ac.uk>
+
+	* gnus-art.el (gnus-article-x-face-command): Replace leading `{'.
+
+Mon Feb 23 18:26:48 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-agent.el (gnus-plugged): New command and keystroke.
+
+	* gnus-ems.el (gnus-ems-redefine): Define
+	'gnus-summary-set-display-table as a function that takes no
+	params. 
+
+	* gnus.el (gnus-interactive): Don't use gnus-sum macros.
+	(gnus-valid-select-methods): Include nnlistserv.
+
+	* gnus.el: Autoloaded things to make byte-comp silent.
+
 Mon Feb 23 18:06:47 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.32 is released.

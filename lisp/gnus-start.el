@@ -1076,9 +1076,10 @@ for new groups."
 	 hashtb))
       (when new-newsgroups
 	(gnus-subscribe-hierarchical-interactive new-newsgroups)))
-    (when (> groups 0)
-      (gnus-message 6 "%d new newsgroup%s arrived."
-		    groups (if (> groups 1) "s have" " has")))
+     (if (> groups 0)
+	 (gnus-message 5 "%d new newsgroup%s arrived"
+		       groups (if (> groups 1) "s have" " has"))
+       (gnus-message 5 "No new newsgroups"))
     (when got-new
       (setq gnus-newsrc-last-checked-date new-date))
     got-new))

@@ -261,6 +261,13 @@
   (gnus))
 
 ;;;###autoload
+(defun gnus-plugged ()
+  "Start Gnus plugged."
+  (interactive)
+  (setq gnus-plugged t)
+  (gnus))
+
+;;;###autoload
 (defun gnus-agentize ()
   "Allow Gnus to be an offline newsreader.
 The normal usage of this command is to put the following as the

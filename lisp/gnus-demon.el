@@ -31,6 +31,7 @@
 (require 'gnus-int)
 (require 'nnheader)
 (require 'nntp)
+(require 'nnmail)
 (eval-and-compile
   (if (string-match "XEmacs" (emacs-version))
       (require 'itimer)

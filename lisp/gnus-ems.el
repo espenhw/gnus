@@ -179,7 +179,7 @@
       "Display table used in summary mode buffers.")
     (fset 'gnus-cite-add-face 'gnus-mule-cite-add-face)
     (fset 'gnus-max-width-function 'gnus-mule-max-width-function)
-    (fset 'gnus-summary-set-display-table 'ignore)
+    (fset 'gnus-summary-set-display-table (lambda ()))
     (fset 'gnus-encode-coding-string 'encode-coding-string)
     (fset 'gnus-decode-coding-string 'decode-coding-string)
     

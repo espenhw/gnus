@@ -122,9 +122,12 @@ comparing subjects."
 
 (defcustom gnus-simplify-subject-functions nil
   "List of functions taking a string argument that simplify subjects.
-The functions are applied recursively."
+The functions are applied recursively.
+
+Useful functions to put in this list include: `gnus-simplify-subject-re',
+`gnus-simplify-subject-fuzzy' and `gnus-simplify-whitespace'."
   :group 'gnus-thread
-  :type '(repeat (list function)))
+  :type '(repeat function))
 
 (defcustom gnus-simplify-ignored-prefixes nil
   "*Regexp, matches for which are removed from subject lines when simplifying fuzzily."

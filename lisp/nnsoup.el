@@ -666,6 +666,7 @@ backend for the messages.")
   (require 'mail-utils)
   (let ((tembuf (generate-new-buffer " message temp"))
 	(case-fold-search nil)
+	(real-header-separator mail-header-separator)
 	(mail-header-separator "")
 	delimline
 	(mailbuf (current-buffer)))
@@ -692,7 +693,7 @@ backend for the messages.")
 	    ;; Change header-delimiter to be what sendmail expects.
 	    (goto-char (point-min))
 	    (re-search-forward
-	     (concat "^" (regexp-quote mail-header-separator) "\n"))
+	     (concat "^" (regexp-quote real-header-separator) "\n"))
 	    (replace-match "\n")
 	    (backward-char 1)
 	    (setq delimline (point-marker))

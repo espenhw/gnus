@@ -167,7 +167,7 @@ regexp.  If it matches, the text in question is not a signature."
   :group 'gnus-article-hiding)
 
 (defcustom gnus-article-x-face-command
-  " echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -"
+  "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -"
   "*String or function to be executed to display an X-Face header.
 If it is a string, the command will be executed in a sub-shell
 asynchronously.	 The compressed face will be piped to this command."

@@ -919,7 +919,10 @@ The cdr of ech entry is a function for applying the face to a region.")
   (autoload 'gnus-output-to-rmail "gnus-util")
   (autoload 'mail-abbrev-in-expansion-header-p "mailabbrev")
   (autoload 'nndraft-request-associate-buffer "nndraft")
-  (autoload 'nndraft-request-expire-articles "nndraft"))
+  (autoload 'nndraft-request-expire-articles "nndraft")
+  (autoload 'gnus-open-server "gnus-int")
+  (autoload 'gnus-request-post "gnus-int")
+  (autoload 'rmail-output "rmail"))
 
 
 
@@ -3550,7 +3553,7 @@ Optional NEWS will use news to forward instead of mail."
 	(goto-char (point-max)))
       (insert mail-header-separator)
       ;; Rename all old ("Also-")Resent headers.
-      (while (re-search-backward "^\\(Also-\\)?Resent-" beg t)
+      (while (re-search-backward "^\\(Also-\\)*Resent-" beg t)
 	(beginning-of-line)
 	(insert "Also-"))
       ;; Quote any "From " lines at the beginning.

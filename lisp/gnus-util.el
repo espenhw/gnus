@@ -37,7 +37,10 @@
 (require 'message)
 
 (eval-and-compile
-  (autoload 'nnmail-date-to-time "nnmail"))
+  (autoload 'nnmail-date-to-time "nnmail")
+  (autoload 'rmail-insert-rmail-file-header "rmail")
+  (autoload 'rmail-count-new-messages "rmail")
+  (autoload 'rmail-show-message "rmail"))
 
 (defun gnus-boundp (variable)
   "Return non-nil if VARIABLE is bound and non-nil."

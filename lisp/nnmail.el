@@ -33,7 +33,9 @@
 (require 'custom)
 
 (eval-and-compile
-  (autoload 'gnus-error "gnus-util"))
+  (autoload 'gnus-error "gnus-util")
+  (autoload 'gnus-buffer-live-p "gnus-util")
+  (autoload 'gnus-encode-coding-string "gnus-ems"))
 
 (defgroup nnmail nil
   "Reading mail with Gnus."
