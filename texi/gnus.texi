@@ -21358,7 +21358,7 @@ the following keyboard commands:
 @findex gnus-summary-mark-as-spam
 @code{gnus-summary-mark-as-spam}.
 
-Mark current article as spam, showing it with the @samp{H} mark.
+Mark current article as spam, showing it with the @samp{$} mark.
 Whenever you see a spam article, make sure to mark its summary line
 with @kbd{M-d} before leaving the group.  This is done automatically
 for unread articles in @emph{spam} groups.
@@ -21405,12 +21405,12 @@ considered @emph{unclassified}.  All groups are unclassified by
 default.
 
 In spam groups, all messages are considered to be spam by default:
-they get the @samp{H} mark when you enter the group.  You must review
-these messages from time to time and remove the @samp{H} mark for
-every message that is not spam after all.  To remove the @samp{H}
+they get the @samp{$} mark when you enter the group.  You must review
+these messages from time to time and remove the @samp{$} mark for
+every message that is not spam after all.  To remove the @samp{$}
 mark, you can use @kbd{M-u} to "unread" the article, or @kbd{d} for
 declaring it read the non-spam way.  When you leave a group, all
-spam-marked (@samp{H}) articles are sent to a spam processor which
+spam-marked (@samp{$}) articles are sent to a spam processor which
 will study them as spam samples.
 
 Messages may also be deleted in various other ways, and unless
@@ -21438,7 +21438,7 @@ When you leave @emph{any} group, regardless of its
 to a spam processor, which will study these as spam samples.  If you
 explicit kill a lot, you might sometimes end up with articles marked
 @samp{K} which you never saw, and which might accidentally contain
-spam.  Best is to make sure that real spam is marked with @samp{H},
+spam.  Best is to make sure that real spam is marked with @samp{$},
 and nothing else.
 
 When you leave a @emph{spam} group, all spam-marked articles are
@@ -21690,7 +21690,7 @@ There is no specific spam or ham processor for regular expressions.
 Set this variable if you want @code{spam-split} to use Eric Raymond's
 speedy Bogofilter.
 
-With a minimum of care for associating the @samp{H} mark for spam
+With a minimum of care for associating the @samp{$} mark for spam
 articles only, Bogofilter training all gets fairly automatic.  You
 should do this until you get a few hundreds of articles in each
 category, spam or not.  The command @kbd{S t} in summary mode, either
