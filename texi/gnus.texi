@@ -21656,9 +21656,9 @@ ham processor for blackholes.
 This option is disabled by default.  You can let Gnus check the
 message headers against lists of regular expressions when you set this
 option.  The variables @code{spam-regex-headers-spam} and
-@code{spam-regex-headers-ham} hold the list of regular expressions
+@code{spam-regex-headers-ham} hold the list of regular expressions.
 Gnus will check against the message headers to determine if the
-message is spam or ham, repectively.
+message is spam or ham, respectively.
 
 @end defvar
 
