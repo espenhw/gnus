@@ -1,3 +1,8 @@
+2000-12-20 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nntp.el (nntp-find-connection): Remove the entry.
+	(nntp-retrieve-groups): (gnus-buffer-live-p buf).
+
 2000-12-20 05:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-summary-mail-forward): Use original buffer.
