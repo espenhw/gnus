@@ -505,6 +505,42 @@ by nnmaildir-request-article.")
 	(nnmaildir--art-set-nov article nil)
 	nil))))
 
+(defun nnmaildir-article-number-to-base-name
+  (number group-name server-address-string)
+  (let ((group (nnmaildir--prepare server-address-string group-name))
+	list article suffix dir filename)
+    (catch 'return
+      (if (null group)
+	  ;; The given group or server does not exist.
+	  (throw 'return nil))
+      (setq list (nnmaildir--grp-get-lists group)
+	    list (nnmaildir--lists-get-nlist list)
+	    article (nnmaildir--nlist-art list number))
+      (if (null article)
+	  ;; The given article number does not exist in this group.
+	  (throw 'return nil))
+      (setq suffix (nnmaildir--art-get-suffix article))
+      (if (not (stringp suffix))
+	  ;; The article has expired.
+	  (throw 'return nil))
+      (cons (nnmaildir--art-get-prefix article) suffix))))
+
+(defun nnmaildir-base-name-to-article-number
+  (base-name group-name server-address-string)
+  (let ((group (nnmaildir--prepare server-address-string group-name))
+	list article suffix dir filename)
+    (catch 'return
+      (if (null group)
+	  ;; The given group or server does not exist.
+	  (throw 'return nil))
+      (setq list (nnmaildir--grp-get-lists group)
+	    list (nnmaildir--lists-get-flist list)
+	    article (nnmaildir--flist-art list base-name))
+      (if (null article)
+	  ;; The given article number does not exist in this group.
+	  (throw 'return nil))
+      (nnmaildir--art-get-num article))))
+
 (defun nnmaildir-request-type (group &optional article)
   'mail)
 
