@@ -1,5 +1,8 @@
 2003-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-check-news-header-syntax): Alter "posting"
+	message. 
+
 	* nnrss.el (nnrss-node-text): Don't use char classes.
 
 2003-05-01  David Z. Maze  <dmaze@mit.edu>
