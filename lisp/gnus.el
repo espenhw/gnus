@@ -2772,6 +2772,9 @@ Disallow invalid group names."
 Allow completion over sensible values."
   (let* ((servers
 	  (append gnus-valid-select-methods
+		  (mapcar (lambda (i) (list (format "%s:%s" (caar i)
+						    (cadar i))))
+			  gnus-opened-servers)
 		  gnus-predefined-server-alist
 		  gnus-server-alist))
 	 (method
@@ -2782,11 +2785,18 @@ Allow completion over sensible values."
      ((equal method "")
       (setq method gnus-select-method))
      ((assoc method gnus-valid-select-methods)
-      (list (intern method)
-	    (if (memq 'prompt-address
-		      (assoc method gnus-valid-select-methods))
-		(read-string "Address: ")
-	      "")))
+      (let ((address (if (memq 'prompt-address
+			       (assoc method gnus-valid-select-methods))
+			 (read-string "Address: ")
+		       "")))
+	(or (let ((opened gnus-opened-servers))
+	      (while (and opened
+			  (not (equal (format "%s:%s" method address)
+				      (format "%s:%s" (caaar opened) 
+					      (cadaar opened)))))
+		(pop opened))
+	      (caar opened))
+	    (list (intern method) address))))
      ((assoc method servers)
       method)
      (t
