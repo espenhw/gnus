@@ -2087,7 +2087,7 @@ If READ-CHARSET, ask for a coding system."
       (error))))
 
 (defun gnus-article-wash-html-with-w3m ()
-  "Wash the current buffer with w3m."
+  "Wash the current buffer with emacs-w3m."
   (mm-setup-w3m)
   (let ((w3m-safe-url-regexp "\\`cid:"))
     (w3m-region (point) (point-max)))

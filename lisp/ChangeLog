@@ -1,5 +1,8 @@
 2002-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-art.el (gnus-article-wash-html-with-w3m): Replace w3m to
+	emacs-w3m in doc-string.
+
 	* lpath.el: Bind `w3m-cid-retrieve-function-alist' and
 	`w3m-current-buffer'.
 
