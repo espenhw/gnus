@@ -1454,8 +1454,9 @@ The following commands are available:
 		    (forward-line 1)
 		  ;; Old article.  Schedule it for possible nuking.
 		  (while (not (eolp))
-		    (setq sym (let ((obarray expiry-hashtb))
-				(read (current-buffer))))
+		    (setq sym (let ((obarray expiry-hashtb) s)
+				(setq s (read (current-buffer)))
+				(if (stringp s) (intern s) s)))
 		    (if (boundp sym)
 			(set sym (cons (cons (read (current-buffer)) (point))
 				       (symbol-value sym)))
