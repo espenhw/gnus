@@ -2,6 +2,7 @@
 
 	* mml.el (mml-generate-mime-1): Don't use format=flowed with
 	inline PGP.
+	(mml-menu): Disable mml-quote-region if mark is inactive.
 
 2004-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 

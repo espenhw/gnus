@@ -36,6 +36,7 @@
   (autoload 'gnus-setup-posting-charset "gnus-msg")
   (autoload 'gnus-make-local-hook "gnus-util")
   (autoload 'message-fetch-field "message")
+  (autoload 'message-mark-active-p "message")
   (autoload 'fill-flowed-encode "flow-fill")
   (autoload 'message-posting-charset "message")
   (autoload 'x-dnd-get-local-file-name "x-dnd"))
@@ -872,7 +873,10 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
      ["S/MIME Encrypt Part" mml-secure-encrypt-smime t])
     ["Encrypt/Sign off" mml-unsecure-message t]
     ;;["Narrow" mml-narrow-to-part t]
-    ["Quote MML" mml-quote-region t]
+    ["Quote MML" mml-quote-region
+     :active (message-mark-active-p)
+     ,@(if (featurep 'xemacs) nil
+	 '(:help "Quote MML tags in region"))]
     ["Validate MML" mml-validate t]
     ["Preview" mml-preview t]))
 
