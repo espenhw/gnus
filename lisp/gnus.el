@@ -1093,21 +1093,17 @@ used to 899, you would say something along these lines:
   :group 'gnus-server
   :type 'file)
 
-;; This function is used to check both the environment variable
-;; NNTPSERVER and the /etc/nntpserver file to see whether one can find
-;; an nntp server name default.
 (defun gnus-getenv-nntpserver ()
+  "Find default nntp server.
+Check the NNTPSERVER environment variable and the
+`gnus-nntpserver-file' file."
   (or (getenv "NNTPSERVER")
       (and (file-readable-p gnus-nntpserver-file)
-	   (save-excursion
-	     (set-buffer (gnus-get-buffer-create " *gnus nntp*"))
+	   (with-temp-buffer
 	     (insert-file-contents gnus-nntpserver-file)
 	     (let ((name (buffer-string)))
-	       (prog1
-		   (if (string-match "\\'[ \t\n]*$" name)
-		       nil
-		     name)
-		 (kill-buffer (current-buffer))))))))
+	       (unless (string-match "\\`[ \t\n]*$" name)
+		 name))))))
 
 (defcustom gnus-select-method
   (condition-case nil
