@@ -1,3 +1,8 @@
+2003-07-14  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Filtering Spam Using The Spam ELisp Package):
+	mentioned the spam-install-hooks mess
+
 2003-07-11  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Splitting in IMAP): Typos, tiny patch from Matthias
