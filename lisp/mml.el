@@ -442,6 +442,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 		    ;; actually are hard newlines in the text.
 		    (let (use-hard-newlines)
 		      (when (and (string= type "text/plain")
+				 (not (string= (cdr (assq 'sign cont)) "pgp"))
 				 (or (null (assq 'format cont))
 				     (string= (cdr (assq 'format cont))
 					      "flowed"))
