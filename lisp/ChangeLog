@@ -1,5 +1,8 @@
 1999-11-07 01:17:53  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-art.el (gnus-mime-internalize-part): Bind
+	mm-inlined-types. 
+
 	* nndraft.el (nndraft-request-expire-articles): Do all the backup
 	files. 
 
