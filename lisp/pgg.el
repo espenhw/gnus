@@ -29,6 +29,7 @@
 
 (require 'pgg-def)
 (require 'pgg-parse)
+(autoload 'run-at-time "timer")
 
 ;; Don't merge these two `eval-when-compile's.
 (eval-when-compile

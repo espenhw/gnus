@@ -5,6 +5,8 @@
 
 	* sieve-mode.el (c-mode): Ditto.
 
+	* pgg.el (run-at-time): Ditto.
+
 	* mm-url.el (require): Require timer when compiling for
 	with-timeout macro (fix xemacs compile warnings).
 
