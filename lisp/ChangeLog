@@ -16,6 +16,11 @@
 
 2004-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-select-newsgroup): Use cat.
+
+	* gnus-agent.el (gnus-agent-cat-enable-undownloaded-faces): New
+	cat. 
+
 	* gnus.el (gnus-user-agent): Moved here.
 
 	* gnus-msg.el (gnus-user-agent): Moved from here.

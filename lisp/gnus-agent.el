@@ -344,6 +344,8 @@ manipulated as follows:
  gnus-agent-cat-score-file                 agent-score-file)
 (gnus-agent-cat-defaccessor
  gnus-agent-cat-disable-undownloaded-faces agent-disable-undownloaded-faces)
+(gnus-agent-cat-defaccessor
+ gnus-agent-cat-enable-undownloaded-faces agent-enable-undownloaded-faces)
 
 (eval-when-compile
   (defsetf gnus-agent-cat-groups (category) (groups)

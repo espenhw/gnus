@@ -5043,9 +5043,9 @@ If SELECT-ARTICLES, only select those articles from GROUP."
             (gnus-set-active group (cons (caar alist) (cdr active)))))
 
       (setq gnus-summary-use-undownloaded-faces
-            (not (gnus-agent-find-parameter
-                  group
-                  'agent-disable-undownloaded-faces))))
+	    (gnus-agent-find-parameter
+	     group
+	     'agent-enable-undownloaded-faces)))
 
     (setq gnus-newsgroup-name group
 	  gnus-newsgroup-unselected nil
