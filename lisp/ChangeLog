@@ -1,3 +1,9 @@
+2000-06-17 18:58:46  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-local-variables): gnus-orphan-score is
+	a local variable.
+	* gnus-sum.el (gnus-orphan-score): Move here.
+
 2000-06-10 09:33:36  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-forward): Remove show-mml condition.

@@ -139,12 +139,6 @@ will be expired along with non-matching score entries."
   :group 'gnus-score-expire
   :type 'boolean)
 
-(defcustom gnus-orphan-score nil
-  "*All orphans get this score added.  Set in the score file."
-  :group 'gnus-score-default
-  :type '(choice (const nil)
-		 integer))
-
 (defcustom gnus-decay-scores nil
   "*If non-nil, decay non-permanent scores."
   :group 'gnus-score-decay
