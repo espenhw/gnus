@@ -529,43 +529,44 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
     (if (and n (not (numberp n)))
 	(setq message-forward-as-mime (not message-forward-as-mime)
 	      n nil))
-    (gnus-setup-message 'forward
-      (setq gnus-uu-digest-from-subject nil)
-      (setq gnus-uu-digest-buffer
-	    (gnus-get-buffer-create " *gnus-uu-forward*"))
-      (gnus-uu-decode-save n file)
-      (switch-to-buffer gnus-uu-digest-buffer)
-      (let ((fs gnus-uu-digest-from-subject))
-	(when fs
-	  (setq from (caar fs)
-		subject (gnus-simplify-subject-fuzzy (cdar fs))
-		fs (cdr fs))
-	  (while (and fs (or from subject))
-	    (when from
-	      (unless (string= from (caar fs))
-		(setq from nil)))
-	    (when subject
-	      (unless (string= (gnus-simplify-subject-fuzzy (cdar fs))
-			       subject)
-		(setq subject nil)))
-	    (setq fs (cdr fs))))
-	(unless subject
-	  (setq subject "Digested Articles"))
-	(unless from
-	  (setq from
-		(if (gnus-news-group-p gnus-newsgroup-name)
-		    gnus-newsgroup-name
-		  "Various"))))
-      (goto-char (point-min))
-      (when (re-search-forward "^Subject: ")
-	(delete-region (point) (gnus-point-at-eol))
-	(insert subject))
-      (goto-char (point-min))
-      (when (re-search-forward "^From:")
-	(delete-region (point) (gnus-point-at-eol))
-	(insert " " from))
-      (let ((message-forward-decoded-p t))
-	(message-forward post t)))
+    (let ((gnus-article-reply (gnus-summary-work-articles n)))
+      (gnus-setup-message 'forward
+	(setq gnus-uu-digest-from-subject nil)
+	(setq gnus-uu-digest-buffer
+	      (gnus-get-buffer-create " *gnus-uu-forward*"))
+	(gnus-uu-decode-save n file)
+	(switch-to-buffer gnus-uu-digest-buffer)
+	(let ((fs gnus-uu-digest-from-subject))
+	  (when fs
+	    (setq from (caar fs)
+		  subject (gnus-simplify-subject-fuzzy (cdar fs))
+		  fs (cdr fs))
+	    (while (and fs (or from subject))
+	      (when from
+		(unless (string= from (caar fs))
+		  (setq from nil)))
+	      (when subject
+		(unless (string= (gnus-simplify-subject-fuzzy (cdar fs))
+				 subject)
+		  (setq subject nil)))
+	      (setq fs (cdr fs))))
+	  (unless subject
+	    (setq subject "Digested Articles"))
+	  (unless from
+	    (setq from
+		  (if (gnus-news-group-p gnus-newsgroup-name)
+		      gnus-newsgroup-name
+		    "Various"))))
+	(goto-char (point-min))
+	(when (re-search-forward "^Subject: ")
+	  (delete-region (point) (gnus-point-at-eol))
+	  (insert subject))
+	(goto-char (point-min))
+	(when (re-search-forward "^From:")
+	  (delete-region (point) (gnus-point-at-eol))
+	  (insert " " from))
+	(let ((message-forward-decoded-p t))
+	  (message-forward post t))))
     (setq gnus-uu-digest-from-subject nil)))
 
 (defun gnus-uu-digest-post-forward (&optional n)

@@ -1536,7 +1536,7 @@ newsgroup."
 		  gnus-activate-foreign-newsgroups)
 		 (t 0))
 	   level))
-	 scanned-methods info group active method retrievegroups)
+	 scanned-methods info group active method retrieve-groups)
     (gnus-message 5 "Checking new news...")
 
     (while newsrc
@@ -1583,10 +1583,10 @@ newsgroup."
 	  (if (gnus-check-backend-function 'retrieve-groups group)
 	      ;; if server support gnus-retrieve-groups we push
 	      ;; the group onto retrievegroups for later checking
-	      (if (assoc method retrievegroups)
-		  (setcdr (assoc method retrievegroups)
-			  (cons group (cdr (assoc method retrievegroups))))
-		(push (list method group) retrievegroups))
+	      (if (assoc method retrieve-groups)
+		  (setcdr (assoc method retrieve-groups)
+			  (cons group (cdr (assoc method retrieve-groups))))
+		(push (list method group) retrieve-groups))
 	    ;; hack: `nnmail-get-new-mail' changes the mail-source depending
 	    ;; on the group, so we must perform a scan for every group
 	    ;; if the users has any directory mail sources.
@@ -1619,21 +1619,21 @@ newsgroup."
 	;; unread articles and stuff.
 	(gnus-set-active group nil)
 	(let ((tmp (gnus-gethash group gnus-newsrc-hashtb)))
-	  (if tmp (setcar tmp t))))))
+	  (when tmp
+	    (setcar tmp t))))))
 
     ;; iterate through groups on methods which support gnus-retrieve-groups
     ;; and fetch a partial active file and use it to find new news.
-    (while retrievegroups
-      (let* ((mg (pop retrievegroups))
-	     (method (or (car mg) gnus-select-method))
-	     (groups (cdr mg)))
+    (dolist (rg retrieve-groups)
+      (let ((method (or (car rg) gnus-select-method))
+	    (groups (cdr rg)))
 	(when (gnus-check-server method)
           ;; Request that the backend scan its incoming messages.
           (when (gnus-check-backend-function 'request-scan (car method))
             (gnus-request-scan nil method))
-          (gnus-read-active-file-2 (mapcar (lambda (group)
-                                             (gnus-group-real-name group))
-                                           groups) method)
+          (gnus-read-active-file-2
+	   (mapcar (lambda (group) (gnus-group-real-name group)) groups)
+	   method)
           (dolist (group groups)
             (cond
              ((setq active (gnus-active (gnus-info-group

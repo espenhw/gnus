@@ -396,7 +396,7 @@ this variable specifies group names."
   :type 'character)
 
 (defcustom gnus-souped-mark ?F
-  "*Mark used for killed articles."
+  "*Mark used for souped articles."
   :group 'gnus-summary-marks
   :type 'character)
 
@@ -417,6 +417,11 @@ this variable specifies group names."
 
 (defcustom gnus-replied-mark ?A
   "*Mark used for articles that have been replied to."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-forwarded-mark ?O
+  "*Mark used for articles that have been forwarded."
   :group 'gnus-summary-marks
   :type 'character)
 
@@ -1104,6 +1109,9 @@ the type of the variable (string, integer, character, etc).")
 (defvar gnus-newsgroup-replied nil
   "List of articles that have been replied to in the current newsgroup.")
 
+(defvar gnus-newsgroup-forwarded nil
+  "List of articles that have been forwarded in the current newsgroup.")
+
 (defvar gnus-newsgroup-expirable nil
   "List of articles in the current newsgroup that can be expired.")
 
@@ -1161,7 +1169,8 @@ the type of the variable (string, integer, character, etc).")
     gnus-newsgroup-auto-expire gnus-newsgroup-unreads
     gnus-newsgroup-unselected gnus-newsgroup-marked
     gnus-newsgroup-reads gnus-newsgroup-saved
-    gnus-newsgroup-replied gnus-newsgroup-expirable
+    gnus-newsgroup-replied gnus-newsgroup-forwarded
+    gnus-newsgroup-expirable
     gnus-newsgroup-processable gnus-newsgroup-killed
     gnus-newsgroup-downloadable gnus-newsgroup-undownloaded
     gnus-newsgroup-unsendable
@@ -4228,6 +4237,8 @@ or a straight list of headers."
 		    gnus-cached-mark)
 		   ((memq number gnus-newsgroup-replied)
 		    gnus-replied-mark)
+		   ((memq number gnus-newsgroup-forwarded)
+		    gnus-forwarded-mark)
 		   ((memq number gnus-newsgroup-saved)
 		    gnus-saved-mark)
 		   (t gnus-no-mark))
@@ -8411,7 +8422,7 @@ the actual number of articles unmarked is returned."
 	(error "No such mark type: %s" type)
       (setq var (intern (format "gnus-newsgroup-%s" type)))
       (set var (cons article (symbol-value var)))
-      (if (memq type '(processable cached replied saved))
+      (if (memq type '(processable cached replied forwarded saved))
 	  (gnus-summary-update-secondary-mark article)
 	;;; !!! This is bobus.  We should find out what primary
 	;;; !!! mark we want to set.
@@ -8425,11 +8436,24 @@ the actual number of articles marked is returned."
   (gnus-summary-mark-forward n gnus-expirable-mark))
 
 (defun gnus-summary-mark-article-as-replied (article)
-  "Mark ARTICLE replied and update the summary line."
-  (push article gnus-newsgroup-replied)
-  (let ((buffer-read-only nil))
-    (when (gnus-summary-goto-subject article nil t)
-      (gnus-summary-update-secondary-mark article))))
+  "Mark ARTICLE as replied to and update the summary line.
+ARTICLE can also be a list of articles."
+  (let ((articles (if (listp article) article (list article))))
+    (dolist (article articles)
+      (push article gnus-newsgroup-replied)
+      (let ((buffer-read-only nil))
+	(when (gnus-summary-goto-subject article nil t)
+	  (gnus-summary-update-secondary-mark article))))))
+
+(defun gnus-summary-mark-article-as-forwarded (article)
+  "Mark ARTICLE as forwarded and update the summary line.
+ARTICLE can also be a list of articles."
+  (let ((articles (if (listp article) article (list article))))
+    (dolist (article articles)
+      (push article gnus-newsgroup-forwarded)
+      (let ((buffer-read-only nil))
+	(when (gnus-summary-goto-subject article nil t)
+	  (gnus-summary-update-secondary-mark article))))))
 
 (defun gnus-summary-set-bookmark (article)
   "Set a bookmark in current article."
@@ -8653,6 +8677,8 @@ Iff NO-EXPIRE, auto-expiry will be inhibited."
 	  gnus-cached-mark)
 	 ((memq article gnus-newsgroup-replied)
 	  gnus-replied-mark)
+	 ((memq article gnus-newsgroup-forwarded)
+	  gnus-forwarded-mark)
 	 ((memq article gnus-newsgroup-saved)
 	  gnus-saved-mark)
 	 (t gnus-no-mark))

@@ -1,3 +1,38 @@
+2001-03-31 00:03:42  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-uu.el (gnus-uu-digest-mail-forward): Mark as forwarded.
+
+	* gnus-msg.el (gnus-put-message): Clean up.
+	(gnus-summary-reply): Mark all replied-to articles as replied to.
+	(gnus-inews-add-send-actions): Also mark as forwarded.
+	(gnus-summary-mail-forward): Mark as forwarded.  
+
+	* gnus-sum.el (gnus-summary-mark-article-as-replied): Take a list
+	of articles. 
+	(gnus-summary-mark-article-as-forwarded): Ditto.
+
+	* gnus-msg.el (gnus-summary-resend-message): Mark article as
+	forwarded. 
+	(gnus-summary-mail-forward): Clean up.
+
+	* gnus.el (gnus-article-mark-lists): Added forward.
+
+	* gnus-sum.el (gnus-forwarded-mark): New variable.
+	(gnus-summary-prepare-threads): Use it.
+	(gnus-summary-update-secondary-mark): Ditto.
+	(gnus-newsgroup-forwarded): New variable.
+
+2001-03-30 23:13:37  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-summary-reply): Allow very wide replies.
+	(gnus-summary-very-wide-reply): New command and keystroke.
+	(gnus-summary-very-wide-reply-with-original): Ditto.
+
+	* gnus-score.el (gnus-adaptive-word-length-limit): New variable. 
+	(gnus-score-adaptive): Use it.
+
+	* gnus-start.el (gnus-get-unread-articles): Clean up.
+
 2001-03-21 20:00:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnultimate.el (nnultimate-retrieve-headers): Work for other

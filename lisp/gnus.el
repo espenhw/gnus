@@ -1755,7 +1755,7 @@ covered by that variable."
     (bookmarks . bookmark) (dormant . dormant)
     (scored . score) (saved . save)
     (cached . cache) (downloadable . download)
-    (unsendable . unsend)))
+    (unsendable . unsend) (forwarded . forward)))
 
 (defvar gnus-headers-retrieved-by nil)
 (defvar gnus-article-reply nil)
