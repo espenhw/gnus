@@ -1,3 +1,11 @@
+2003-05-12  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-install): new variable
+	(gnus-registry-fetch-extra, gnus-registry-fetch-extra-entry) 
+	(gnus-registry-store-extra-entry, gnus-registry-delete-group) 
+	(gnus-registry-add-group): add a modification timestamp to each entry
+	(gnus-registry-install-hooks): new function
+
 2003-05-12  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-cat-name): Eval macro while compiling.

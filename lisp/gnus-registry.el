@@ -46,6 +46,11 @@ The group names are matched, they don't have to be fully qualified."
   :group 'gnus-registry
   :type '(repeat string))
 
+(defcustom gnus-registry-install nil
+  "Whether the registry should be installed."
+  :group 'gnus-registry
+  :type 'boolean)
+
 (defcustom gnus-registry-cache-file "~/.gnus.registry.eld"
   "File where the Gnus registry will be stored."
   :group 'gnus-registry
@@ -267,13 +272,19 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		     (string-match x word))
 		   list)))))
 
-(defun gnus-registry-fetch-extra (id)
+(defun gnus-registry-fetch-extra (id &optional entry)
   "Get the extra data of a message, based on the message ID.
 Returns the first place where the trail finds a nonstring."
   (let ((trail (gethash id gnus-registry-hashtb)))
     (dolist (crumb trail)
       (unless (stringp crumb)
-	(return crumb)))))
+	(return (gnus-registry-fetch-extra-entry crumb entry))))))
+
+(defun gnus-registry-fetch-extra-entry (alist &optional entry)
+  "Get the extra data of a message, or a specific entry in it."
+  (if entry
+      (assq entry alist)
+    alist))
 
 (defun gnus-registry-store-extra (id extra)
   "Store the extra data of a message, based on the message ID.
@@ -284,6 +295,13 @@ The message must have at least one group name."
 	  (old-extra (gnus-registry-fetch-extra id)))
       (puthash id (cons extra (delete old-extra trail))
 	       gnus-registry-hashtb))))
+
+(defun gnus-registry-store-extra-entry (id key value)
+  "Put a specific entry in the extras field of the registry entry for id."
+  (let* ((extra (gnus-registry-fetch-extra id))
+	 (alist (cons (cons key value)
+		 (assq-delete-all key (gnus-registry-fetch-extra id)))))
+    (gnus-registry-store-extra id alist)))
 
 (defun gnus-registry-fetch-group (id)
   "Get the group of a message, based on the message ID.
@@ -314,7 +332,8 @@ Returns the first place where the trail finds a group name."
 		 gnus-registry-hashtb))
       ;; now, clear the entry if there are no more groups
       (unless (gnus-registry-group-count id)
-	(remhash id gnus-registry-hashtb)))))
+	(remhash id gnus-registry-hashtb))
+      (gnus-registry-store-extra-entry id 'mtime (current-time)))))
 
 (defun gnus-registry-add-group (id group &rest extra)
   "Add a group for a message, based on the message ID."
@@ -329,7 +348,8 @@ Returns the first place where the trail finds a group name."
 			  (cons group trail)
 			(list group))
 		   gnus-registry-hashtb)
-	  (when extra (gnus-registry-store-extra id extra)))))))
+	  (when extra (gnus-registry-store-extra id extra))
+	  (gnus-registry-store-extra-entry id 'mtime (current-time)))))))
 
 (defun gnus-registry-clear ()
   "Clear the Gnus registry."
@@ -337,16 +357,21 @@ Returns the first place where the trail finds a group name."
   (setq gnus-registry-alist nil)
   (setq gnus-registry-hashtb (alist-to-hashtable gnus-registry-alist)))
 
-; also does copy, respool, and crosspost
-(add-hook 'gnus-summary-article-move-hook 'gnus-register-action) 
-(add-hook 'gnus-summary-article-delete-hook 'gnus-register-action)
-(add-hook 'gnus-summary-article-expire-hook 'gnus-register-action)
-(add-hook 'nnmail-spool-hook 'gnus-register-spool-action)
+(defun gnus-registry-install-hooks ()
+  "Install the registry hooks."
+  (interactive)
+  (add-hook 'gnus-summary-article-move-hook 'gnus-register-action) 
+  (add-hook 'gnus-summary-article-delete-hook 'gnus-register-action)
+  (add-hook 'gnus-summary-article-expire-hook 'gnus-register-action)
+  (add-hook 'nnmail-spool-hook 'gnus-register-spool-action)
+  
+  (add-hook 'gnus-save-newsrc-hook 'gnus-registry-save)
+  (add-hook 'gnus-read-newsrc-el-hook 'gnus-registry-read)
 
-(add-hook 'gnus-save-newsrc-hook 'gnus-registry-save)
-(add-hook 'gnus-read-newsrc-el-hook 'gnus-registry-read)
+  (add-hook 'gnus-summary-prepare-hook 'gnus-registry-register-message-ids))
 
-(add-hook 'gnus-summary-prepare-hook 'gnus-registry-register-message-ids)
+(when gnus-registry-install
+  (gnus-registry-install-hooks))
 
 ;; TODO: a lot of things
 
