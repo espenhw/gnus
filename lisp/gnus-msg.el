@@ -660,7 +660,8 @@ yanked."
     ;; Send a followup.
     (gnus-post-news nil gnus-newsgroup-name
 		    headers gnus-article-buffer
-		    yank nil force-news)))
+		    yank nil force-news)
+    (gnus-summary-handle-replysign)))
 
 (defun gnus-summary-followup-with-original (n &optional force-news)
   "Compose a followup to an article and include the original article."
@@ -1037,19 +1038,23 @@ If VERY-WIDE, make a very wide reply."
 	(message-reply nil wide)
 	(when yank
 	  (gnus-inews-yank-articles yank))
-	(when (or gnus-message-replysign gnus-message-replyencrypt)
-	  (let (signed encrypted)
-	    (save-excursion
-	      (set-buffer gnus-article-buffer)
-	      (setq signed (memq 'signed gnus-article-wash-types))
-	      (setq encrypted (memq 'encrypted gnus-article-wash-types)))
-	    (cond ((and gnus-message-replysign signed)
-		   (mml-secure-message mml-default-sign-method 'sign))
-		  ((and gnus-message-replyencrypt encrypted)
-		   (mml-secure-message mml-default-encrypt-method
-				       (if gnus-message-replysignencrypted
-					   'signencrypt
-					 'encrypt))))))))))
+	(gnus-summary-handle-replysign)))))
+
+(defun gnus-summary-handle-replysign ()
+  "Check the various replysign variables and take action accordingly."
+  (when (or gnus-message-replysign gnus-message-replyencrypt)
+    (let (signed encrypted)
+      (save-excursion
+	(set-buffer gnus-article-buffer)
+	(setq signed (memq 'signed gnus-article-wash-types))
+	(setq encrypted (memq 'encrypted gnus-article-wash-types)))
+      (cond ((and gnus-message-replysign signed)
+	     (mml-secure-message mml-default-sign-method 'sign))
+	    ((and gnus-message-replyencrypt encrypted)
+	     (mml-secure-message mml-default-encrypt-method
+				 (if gnus-message-replysignencrypted
+				     'signencrypt
+				   'encrypt)))))))
 
 (defun gnus-summary-reply-with-original (n &optional wide)
   "Start composing a reply mail to the current message.
