@@ -251,8 +251,6 @@ The SOUP packet file name will be inserted at the %s.")
   t)
 
 (defun nnsoup-request-list (&optional server)
-  (or nnsoup-group-alist (nnsoup-read-areas))
-  (nnsoup-unpack-packets)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -267,6 +265,10 @@ The SOUP packet file name will be inserted at the %s.")
 			  (cdr (car (car areas)))) min))
 	(setq alist (cdr alist)))
       t)))
+
+(defun nnsoup-request-scan (group &optional server)
+  (or nnsoup-group-alist (nnsoup-read-areas))
+  (nnsoup-unpack-packets))
 
 (defun nnsoup-request-newgroups (date &optional server)
   (nnsoup-request-list))

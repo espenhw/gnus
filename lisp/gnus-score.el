@@ -54,6 +54,9 @@ than this variable, exact matching will be used.
 
 If this variable is nil, exact matching will always be used.")
 
+(defvar gnus-score-uncacheable-files "ADAPT$"
+  "*All score files that match this regexp will not be cached.")
+
 
 
 ;; Internal variables.
@@ -588,7 +591,6 @@ SCORE is the score to add."
       (and global
 	   (not (assq 'read-only alist))
 	   (setq alist (cons (list 'read-only t) alist)))
-      ;; Update cache.
       (setq gnus-score-cache
 	    (cons (cons file alist) gnus-score-cache)))
     ;; If there are actual scores in the alist, we add it to the
@@ -776,7 +778,10 @@ SCORE is the score to add."
 		;; There are scores, so we write the file. 
 		(and (file-writable-p file)
 		     (write-region (point-min) (point-max) 
-				   file nil 'silent)))))))
+				   file nil 'silent))))
+	    (and gnus-score-uncacheable-files
+		 (string-match gnus-score-uncacheable-files file)
+		 (gnus-score-remove-from-cache file)))))
       (kill-buffer (current-buffer)))))
   
 (defun gnus-score-headers (score-files &optional trace)
@@ -1651,7 +1656,8 @@ This mode is an extended emacs-lisp mode.
 (defun gnus-score-flush-cache ()
   "Flush the cache of score files."
   (interactive)
-  (setq gnus-score-cache nil))
+  (setq gnus-score-cache nil)
+  (gnus-message 6 "The score cache is now flushed"))
 
 (provide 'gnus-score)
 

@@ -27,7 +27,7 @@
 
 (require 'gnus)
 (require 'gnus-ems)
-(require gnus-easymenu)
+(require 'easymenu)
 (require 'custom)
 
 (defvar gnus-group-menu-hook nil
@@ -220,7 +220,7 @@
     ;; Next regexp stolen from highlight-headers.el.
     ;; Modified by Vladimir Alexiev.
     ("\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-a-zA-Z0-9_=?#$@~`%&*+|\\/.,]*[-a-zA-Z0-9_=#$@~`%&*+|\\/]" 0 t gnus-button-url 0))
-  "Alist of regexps matching buttons in an article.
+  "Alist of regexps matching buttons in article bodies.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
 REGEXP: is the string matching text around the button,
@@ -232,6 +232,20 @@ PAR: is a number of a regexp grouping whose text will be passed to CALLBACK.
 
 CALLBACK can also be a variable, in that case the value of that
 variable it the real callback function.")
+
+(defvar gnus-header-button-alist 
+  '(("^\\(References\\|Message-ID\\):" "<[^>]+>" 0 t gnus-button-message-id 0)
+    ("^\\(From\\|Reply-To\\): " ".*" 0 t gnus-button-reply 0)
+    ("^\\(Cc\\|To\\):" "[^ \t]+@[^ \t]+\\|<[^>]+>" 0 t gnus-button-mailto 0))
+  "Alist of headers and regexps to match buttons in article heads.
+
+This alist is very similar to `gnus-button-alist', except that each
+alist has an additional HEADER element first in each entry:
+
+(HEADER REGEXP BUTTON FORM CALLBACK PAR)
+
+HEADER is a regexp to match a header.  For a fuller explanation, see
+`gnus-button-alist'.")
 
 ;see gnus-cus.el
 ;(eval-when-compile
@@ -328,7 +342,9 @@ variable it the real callback function.")
 	 ["Make a doc group" gnus-group-make-doc-group t]
 	 ["Make a kiboze group" gnus-group-make-kiboze-group t]
 	 ["Make a virtual group" gnus-group-make-empty-virtual t]
-	 ["Add a group to a virtual" gnus-group-add-to-virtual t])
+	 ["Add a group to a virtual" gnus-group-add-to-virtual t]
+	 ["Rename group" gnus-group-rename-group t]
+	 ["Delete group" gnus-group-delete-group t])
 	("Editing groups"
 	 ["Parameters" gnus-group-edit-group-parameters t]
 	 ["Select method" gnus-group-edit-group-method t]
@@ -658,6 +674,7 @@ variable it the real callback function.")
 	 ["Quoted-Printable" gnus-article-de-quoted-unreadable t]
 	 ["Rot 13" gnus-summary-caesar-message t]
 	 ["Add buttons" gnus-article-add-buttons t]
+	 ["Add buttons to head" gnus-article-add-buttons-to-head t]
 	 ["Stop page breaking" gnus-summary-stop-page-breaking t]
 	 ["Toggle MIME" gnus-summary-toggle-mime t]
 	 ["Toggle header" gnus-summary-toggle-header t])
@@ -668,6 +685,7 @@ variable it the real callback function.")
 	 ["Save in MH folder" gnus-summary-save-article-folder t]
 	 ["Save in VM folder" gnus-summary-save-article-vm t]
 	 ["Save in RMAIL mbox" gnus-summary-save-article-rmail t]
+	 ["Save body in file" gnus-summary-save-article-body-file t]
 	 ["Pipe through a filter" gnus-summary-pipe-output t])
 	("Backend"
 	 ["Respool article" gnus-summary-respool-article t]
@@ -1202,7 +1220,8 @@ do the highlighting.  See the documentation for those functions."
   (gnus-article-highlight-headers)
   (gnus-article-highlight-citation force)
   (gnus-article-highlight-signature)
-  (gnus-article-add-buttons force))
+  (gnus-article-add-buttons force)
+  (gnus-article-add-buttons-to-head))
 
 (defun gnus-article-highlight-some (&optional force)
   "Highlight current article.
@@ -1300,10 +1319,9 @@ It does this by making everything after `gnus-signature-separator' invisible."
 				gnus-hidden-properties)))))
 
 (defun gnus-article-add-buttons (&optional force)
-  "Find external references in article and make them to buttons.
-
-External references are things like message-ids and URLs, as specified by 
-`gnus-button-alist'."
+  "Find external references in the article and make buttons of them.
+\"External references\" are things like Message-IDs and URLs, as
+specified by `gnus-button-alist'."
   (interactive (list 'force))
   (if (eq gnus-button-last gnus-button-alist)
       ()
@@ -1329,16 +1347,53 @@ External references are things like message-ids and URLs, as specified by
 	      ()
 	    (goto-char (match-end 0))
 	    (if (eval form)
-		(gnus-article-add-button start end 'gnus-button-push
-					 (set-marker (make-marker)
-						     from)))))))))
+		(gnus-article-add-button 
+		 start end 'gnus-button-push
+		 (set-marker (make-marker) from)))))))))
+
+;; Add buttons to the head of an article.
+(defun gnus-article-add-buttons-to-head ()
+  "Add buttons to the head of the article."
+  (interactive)
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (let ((buffer-read-only nil)
+	  (inhibit-point-motion-hooks t)
+	  (case-fold-search t)
+	  (alist gnus-header-button-alist)
+	  entry beg end)
+      (gnus-narrow-to-headers)
+      (while alist
+	(goto-char (point-min))
+	(if (not (re-search-forward (car (setq entry (car alist))) nil t))
+	    ()				; That header isn't here.
+	  (setq beg (match-beginning 0))
+	  (setq end (or (and (re-search-forward "^[^ \t]" nil t)
+			     (match-beginning 0))
+			(point-max)))
+	  (goto-char beg)
+	  (while (re-search-forward (nth 1 entry) end t)
+	    (let* ((from (match-beginning 0))
+		   (entry (cdr entry))
+		   (start (match-beginning (nth 1 entry)))
+		   (end (match-end (nth 1 entry)))
+		   (form (nth 2 entry)))
+	      (goto-char (match-end 0))
+	      (and (eval form)
+		   (gnus-article-add-button 
+		    start end (nth 3 entry)
+		    (buffer-substring (match-beginning (nth 4 entry))
+				      (match-end (nth 4 entry))))))))
+	(goto-char end)
+	(setq alist (cdr alist))))
+    (widen)))
+
 (defun gnus-netscape-open-url (url)
   "Open URL in netscape, or start new scape with URL."
-  (let ((process (start-process (concat "netscape " url)
-				nil
-				"netscape"
-				"-remote" 
-				(concat "openUrl(" url ")'"))))
+  (let ((process
+	 (start-process 
+	  (concat "netscape " url) nil
+	  "netscape" "-remote"  (concat "openUrl(" url ")'"))))
     (set-process-sentinel process 
 			  (` (lambda (process change)
 			       (or (eq (process-exit-status process) 0)
@@ -1355,11 +1410,12 @@ External references are things like message-ids and URLs, as specified by
   (and gnus-article-button-face
        (gnus-overlay-put (gnus-make-overlay from to)
 			 'face gnus-article-button-face))
-  (add-text-properties from to
-		       (append (and gnus-article-mouse-face
-				    (list 'mouse-face gnus-article-mouse-face))
-			       (list 'gnus-callback fun)
-			       (and data (list 'gnus-data data)))))
+  (add-text-properties 
+   from to
+   (append (and gnus-article-mouse-face
+		(list 'mouse-face gnus-article-mouse-face))
+	   (list 'gnus-callback fun)
+	   (and data (list 'gnus-data data)))))
 
 ;;; Internal functions:
 
@@ -1415,10 +1471,18 @@ External references are things like message-ids and URLs, as specified by
 		      (cons fun args)))))))
 
 (defun gnus-button-message-id (message-id)
-  ;; Push on MESSAGE-ID.
+  ;; Fetch MESSAGE-ID.
   (save-excursion
     (set-buffer gnus-summary-buffer)
     (gnus-summary-refer-article message-id)))
+
+(defun gnus-button-mailto (address)
+  ;; Mail to ADDRESS.
+  (gnus-new-mail address))
+
+(defun gnus-button-reply (address)
+  ;; Reply to ADDRESS.
+  (gnus-mail-reply t address))
 
 ;;; Compatibility Functions:
 

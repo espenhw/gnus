@@ -53,12 +53,15 @@ Optional argument FOLDER specifies folder name."
   ;; Thanks to yuki@flab.Fujitsu.JUNET and ohm@kaba.junet.
   (mh-find-path)
   (let ((folder
-	 (or folder
-	     (mh-prompt-for-folder 
-	      "Save article in"
-	      (funcall gnus-folder-save-name gnus-newsgroup-name
-		       gnus-current-headers gnus-newsgroup-last-folder)
-	      t)))
+	 (cond ((and (eq folder 'default)
+		     gnus-newsgroup-last-folder)
+		gnus-newsgroup-last-folder)
+	       (folder folder)
+	       (t (mh-prompt-for-folder 
+		   "Save article in"
+		   (funcall gnus-folder-save-name gnus-newsgroup-name
+			    gnus-current-headers gnus-newsgroup-last-folder)
+		   t))))
 	(errbuf (get-buffer-create " *Gnus rcvstore*")))
     (gnus-eval-in-buffer-window 
      gnus-article-buffer

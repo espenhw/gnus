@@ -76,7 +76,7 @@
 
 ;;; Interface functions
 
-(defun nnmbox-retrieve-headers (sequence &optional newsgroup server)
+(defun nnmbox-retrieve-headers (sequence &optional newsgroup server fetch-old)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -344,6 +344,48 @@
       (save-buffer)
       t)))
 
+(defun nnmbox-request-delete-group (group &optional force server)
+  (nnmbox-possibly-change-newsgroup group)
+  ;; Delete all articles in GROUP.
+  (if (not force)
+      ()				; Don't delete the articles.
+    (save-excursion
+      (set-buffer nnmbox-mbox-buffer)
+      (goto-char (point-min))
+      ;; Delete all articles in this group.
+      (let ((ident (concat "\nX-Gnus-Newsgroup: " nnmbox-current-group ":"))
+	    found)
+	(while (search-forward ident nil t)
+	  (setq found t)
+	  (nnmbox-delete-mail))
+	(and found (save-buffer)))))
+  ;; Remove the group from all structures.
+  (setq nnmbox-group-alist 
+	(delq (assoc group nnmbox-group-alist) nnmbox-group-alist)
+	nnmbox-current-group nil)
+  ;; Save the active file.
+  (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
+  t)
+
+(defun nnmbox-request-rename-group (group new-name &optional server)
+  (nnmbox-possibly-change-newsgroup group)
+  (save-excursion
+    (set-buffer nnmbox-mbox-buffer)
+    (goto-char (point-min))
+    (let ((ident (concat "\nX-Gnus-Newsgroup: " nnmbox-current-group ":"))
+	  (new-ident (concat "\nX-Gnus-Newsgroup: " new-name ":"))
+	  found)
+      (while (search-forward ident nil t)
+	(replace-match new-ident t t)
+	(setq found t))
+      (and found (save-buffer))))
+  (let ((entry (assoc group nnmbox-group-alist)))
+    (and entry (setcar entry new-name))
+    (setq nnmbox-current-group nil)
+    ;; Save the new group alist.
+    (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
+    t))
+
 
 ;;; Internal functions.
 
@@ -414,7 +456,7 @@
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art)
     (nnmbox-insert-newsgroup-line group-art)
-    (run-hooks 'nnml-prepare-save-mail-hook)
+    (run-hooks 'nnmbox-prepare-save-mail-hook)
     group-art))
 
 (defun nnmbox-insert-newsgroup-line (group-art)

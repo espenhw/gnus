@@ -1,3 +1,111 @@
+Mon Sep 25 22:43:22 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
+
+	* gnus-msg.el (gnus-inews-insert-headers): Heed
+		check-before-posting. 
+		(gnus-mail-reply): Allow specification of In-Reply-To.
+		(gnus-inews-in-reply-to): New function.
+
+Mon Sep 25 00:03:03 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-get-unread-articles): Don't treat nnvirtual groups
+	specially. 
+	(gnus-get-unread-articles): Allow updating of info.
+	(gnus-request-update-info): New function.
+	(gnus-group-sort-function): Can now be a list.
+	(gnus-group-sort-groups): Use it.
+	(gnus-group-sort-by-method): New function.
+	(gnus-group-topic-p): New function.
+
+	* gnus-topic.el: Finally included Ilja Weis' gnus-topic.
+
+Sun Sep 24 02:18:12 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-vis.el (gnus-header-button-alist): New variable.
+	(gnus-button-mailto): New function.
+	(gnus-button-reply): New function.
+	(gnus-article-add-buttons-to-head): New command and keystroke.
+
+	* gnus.el (gnus-group-add-parameter): New function.
+	(gnus-fetch-group): New autoloaded command.
+	(gnus-summary-articles-in-thread): New function.
+	(gnus-summary-kill-thread): Use it.
+	(gnus-summary-raise-thread): Ditto.
+	(gnus-thread-operation-ignore-subject): New variable.
+
+	* gnus-msg.el (gnus-post-news): When posting to a mail group that
+	has no to-address, add the To in the mail to the group
+	parameters. 
+
+	* gnus.el (gnus-create-xref-hashtb): Mark ticked and dormant
+	articles as read when Xreffing.
+	(gnus-dribble-directory): New variable.
+	(gnus-dribble-file-name): Use it.
+	(gnus-auto-select-next): Additional value: `almost-quietly'.
+	(gnus-summary-next-article): Use it.
+	(gnus-summary-last-article-p): New function.
+	(gnus-summary-save-article-body-file): New command and keystroke.
+	(gnus-summary-save-body-in-file): New function.
+	(gnus-prompt-before-saving): New variable.
+	(gnus-summary-save-article): Use it.
+	(gnus-request-article-this-buffer): Fetch the article from
+	`gnus-article-original-buffer' if it is there.
+	(gnus-summary-mode-line-format-alist): New specs for ticked,
+	dormant, read and expunged articles.
+
+	* gnus-cache.el (gnus-uncacheable-groups): New variable.
+	(gnus-cache-possibly-enter-article): Use it.
+
+	* gnus-score.el (gnus-score-uncacheable-files): New variable.
+	(gnus-score-save): Use it.
+
+	* gnus.el (gnus-auto-subscribed-groups): New variable.
+
+	* nnfolder.el (nnfolder-request-delete-group): New function.
+	(nnfolder-request-rename-group): New function.
+
+	* nnbabyl.el (nnbabyl-request-delete-group): New function.
+	(nnbabyl-request-rename-group): New function.
+
+	* nnmbox.el (nnmbox-save-mail): Ran wrong hook.
+	(nnmbox-request-delete-group): New function.
+	(nnmbox-request-rename-group): New function.
+
+	* nnmh.el (nnmh-request-delete-group): New function.
+	(nnmh-request-rename-group): New function.
+
+Sat Sep 23 02:33:29 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-next-article): Use `read-char-exclusive'
+	instead of read-char.
+
+	* nnbabyl.el (nnbabyl-retrieve-headers): Wrong number of arguments.
+
+	* gnus.el (gnus-save-quick-newsrc-hook): New hook.
+	(gnus-save-quick-newsrc-hook): New hook.
+
+	* gnus-msg.el (gnus-news-followup): Used news-mode instead of
+	news-reply-mode. 
+
+	* gnus-uu.el (gnus-uu-digest-mail-forward): Would call wrong
+	forward function.
+
+	* gnus-msg.el (gnus-mail-reply): Would add _-_ to all
+	message-ids. 
+
+	* gnus.el (gnus-request-delete-group): New function.
+	(gnus-request-rename-group): New function.
+	(gnus-group-delete-group): New command and keystroke.
+	(gnus-group-rename-group): New command and keystroke.
+
+	* nnml.el (nnml-request-delete-group): New function.
+	(nnml-request-rename-group): New function.
+
+	* nnsoup.el (nnsoup-request-scan): New function.
+
+Fri Sep 22 22:35:37 1995  Lars Magne Ingebrigtsen  <larsi@mimir.ifi.uio.no>
+
+	* gnus.el: 0.2 is released.
+
 Thu Sep 21 14:19:41 1995  Sudish Joseph <joseph@cis.ohio-state.edu>
 
 	* gnus.el (gnus-article-display-x-face): Use start-process instead

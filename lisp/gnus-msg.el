@@ -169,11 +169,12 @@ be used instead.")
   '(From Date Newsgroups Subject Message-ID Organization Lines X-Newsreader)
   "*Headers to be generated or prompted for when posting an article.
 RFC977 and RFC1036 require From, Date, Newsgroups, Subject,
-Message-ID.  Organization, Lines and X-Newsreader are optional.  If
-you want Gnus not to insert some header, remove it from this list.")
+Message-ID.  Organization, Lines, In-Reply-To and X-Newsreader are
+optional.  If you want Gnus not to insert some header, remove it from
+this list.")
 
 (defvar gnus-required-mail-headers 
-  '(From Date To Subject Message-ID Organization Lines)
+  '(From Date To Subject In-Reply-To Message-ID Organization Lines)
   "*Headers to be generated or prompted for when mailing a message.
 RFC822 required that From, Date, To, Subject and Message-ID be
 included.  Organization, Lines and X-Mailer are optional.")
@@ -187,7 +188,7 @@ included.  Organization, Lines and X-Mailer are optional.")
 (defvar gnus-check-before-posting 
   '(subject-cmsg multiple-headers sendsys message-id from
 		 long-lines control-chars size new-text
-		 signature approved)
+		 signature approved sender)
   "In non-nil, Gnus will attempt to run some checks on outgoing posts.
 If this variable is t, Gnus will check everything it can.  If it is a
 list, then those elements in that list will be checked.")
@@ -263,11 +264,13 @@ headers.")
 (defvar gnus-summary-send-map nil)
 (defvar gnus-article-copy nil)
 (defvar gnus-reply-subject nil)
+(defvar gnus-add-to-address nil)
+(defvar gnus-in-reply-to nil)
 
 (eval-and-compile
   (autoload 'gnus-uu-post-news "gnus-uu" nil t)
   (autoload 'news-setup "rnewspost")
-  (autoload 'news-mode "rnewspost"))
+  (autoload 'news-reply-mode "rnewspost"))
 
 
 ;;;
@@ -456,7 +459,14 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 	    (gnus-new-news group)
 	  (gnus-news-followup yank group))
       (if post
-	  (gnus-new-mail)
+	  (progn
+	    (gnus-new-mail)
+	    ;; Arrange for mail groups that have no `to-address' to
+	    ;; get that when the user sends off the mail.
+	    (or to-address
+		(progn
+		  (make-local-variable 'gnus-add-to-address)
+		  (setq gnus-add-to-address group))))
 	(gnus-mail-reply yank (and to-address (cdr to-address)) 'followup)))))
 
 (defun gnus-inews-news (&optional use-group-method)
@@ -966,6 +976,7 @@ Headers in `gnus-required-headers' will be generated."
 	(Path (gnus-inews-path))
 	(Subject nil)
 	(Newsgroups nil)
+	(In-Reply-To (gnus-inews-in-reply-yo))
 	(To nil)
 	(Distribution nil)
 	(Lines (gnus-inews-lines))
@@ -1052,6 +1063,7 @@ Headers in `gnus-required-headers' will be generated."
     (let ((from (mail-fetch-field "from"))
 	  (sender (mail-fetch-field "sender")))
       (if (and from 
+	       (not (gnus-check-before-posting 'sender))
 	       (not (string=
 		     (downcase (car (gnus-extract-address-components from)))
 		     (downcase (gnus-inews-real-user-address))))
@@ -1341,6 +1353,10 @@ organization."
       (forward-line 1)
       (int-to-string (count-lines (point) (point-max))))))
 
+(defun gnus-inews-in-reply-to ()
+  "Return the In-Reply-To header for this message."
+  gnus-in-reply-to)
+
 
 ;;;
 ;;; Gnus Mail Functions 
@@ -1408,10 +1424,10 @@ mailer."
   (gnus-set-global-variables)
   (gnus-new-mail))
 
-(defun gnus-new-mail ()
+(defun gnus-new-mail (&optional to)
   (pop-to-buffer gnus-mail-buffer)
   (erase-buffer)
-  (gnus-mail-setup nil nil nil nil nil nil))
+  (gnus-mail-setup to nil nil nil nil nil))
 
 (defun gnus-mail-reply (&optional yank to-address followup)
   (save-excursion
@@ -1495,7 +1511,7 @@ mailer."
 	 (or to-address 
 	     (if (and follow-to (not (stringp follow-to))) sendto
 	       (or follow-to reply-to from sender "")))
-	 subject message-of 
+	 subject nil
 	 (if (zerop (length new-cc)) nil new-cc)
 	 gnus-article-copy nil)
 
@@ -1503,6 +1519,10 @@ mailer."
 	(setq gnus-article-reply cur)
 	(make-local-variable 'gnus-prev-winconf)
 	(setq gnus-prev-winconf winconf)
+	(make-local-variable 'gnus-reply-subject)
+	(setq gnus-reply-subject subject)
+	(make-local-variable 'gnus-in-reply-to)
+	(setq gnus-in-reply-to message-of)
 
 	(auto-save-mode auto-save-default)
 	(gnus-inews-modify-mail-mode-map)
@@ -1574,14 +1594,14 @@ mailer."
 		 (gnus-y-or-n-p
 		  "Are you sure you want to post to all of USENET? ")))
 	()
-      (let ((group (or group (gnus-group-real-name gnus-newsgroup-name)))
+      (let ((group (gnus-group-real-name (or group gnus-newsgroup-name)))
 	    (cur (cons (current-buffer) (cdr gnus-article-current)))
 	    (winconf (current-window-configuration))
 	    from subject date reply-to message-of
 	    references message-id sender follow-to sendto elt 
 	    followup-to distribution)
 	(set-buffer (get-buffer-create gnus-mail-buffer))
-	(news-mode)
+	(news-reply-mode)
 	(if (and (buffer-modified-p)
 		 (> (buffer-size) 0)
 		 (not (gnus-y-or-n-p 
@@ -1635,7 +1655,7 @@ mailer."
 		(setq sendto (concat sendto (and sendto ", ") (cdr elt)))
 		(setq follow-to (delq elt follow-to))))
 
-	  (news-setup nil subject message-of 
+	  (news-setup nil subject nil 
 		      (or group sendto 
 			  (and follow-to
 			       gnus-use-followup-to
@@ -1652,6 +1672,9 @@ mailer."
 	  (setq gnus-prev-winconf winconf)
 	  (make-local-variable 'gnus-reply-subject)
 	  (setq gnus-reply-subject (mail-header-subject gnus-current-headers))
+	  (make-local-variable 'gnus-in-reply-to)
+	  (setq gnus-in-reply-to message-of)
+
 
 	  (auto-save-mode auto-save-default)
 	  (gnus-inews-modify-mail-mode-map)
@@ -1752,10 +1775,19 @@ mailer."
 (defun gnus-mail-send-and-exit (&optional dont-send)
   "Send the current mail and return to Gnus."
   (interactive)
-  (let ((reply gnus-article-reply)
-	(winconf gnus-prev-winconf))
+  (let* ((reply gnus-article-reply)
+	 (winconf gnus-prev-winconf)
+	 (address-group gnus-add-to-address)
+	 (to-address (and address-group
+			  (mail-fetch-field "to"))))
+    (setq gnus-add-to-address nil)
     (or dont-send (gnus-mail-send))
     (bury-buffer)
+    ;; This mail group doesn't have a `to-address', so we add one
+    ;; here.  Magic!  
+    (and to-address
+	 (gnus-group-add-parameter 
+	  address-group (cons 'to-address to-address)))
     (if (get-buffer gnus-group-buffer)
 	(progn
 	  (if (gnus-buffer-exists-p (car-safe reply))
@@ -1990,7 +2022,7 @@ contains some mail you have written which has been bounced back to
 you.
 If FETCH, try to fetch the article that this is a reply to, if indeed
 this is a reply."
-  (interactive)
+  (interactive "P")
   (gnus-summary-select-article t)
   ;; Create a mail buffer.
   (gnus-new-mail)
@@ -2033,7 +2065,6 @@ Headers will be generated before sending."
     (save-restriction
       (widen)
       (gnus-inews-narrow-to-headers)
-      (gnus-inews-remove-headers)
       (gnus-inews-insert-headers gnus-required-mail-headers)))
   (widen)
   ;; Remove the header separator.
@@ -2086,6 +2117,7 @@ Headers will be generated before sending."
    to subject in-reply-to cc replybuffer actions))
 
 (defun gnus-sendmail-mail-setup (to subject in-reply-to cc replybuffer actions)
+  (mail-mode)
   (mail-setup to subject in-reply-to cc replybuffer actions))
   
 ;;; Gcc handling.

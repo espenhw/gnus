@@ -474,7 +474,7 @@ The headers will be included in the sequence they are matched.")
 	   (insert from)))
     (if post
 	(gnus-forward-using-post)
-      (funcall gnus-mail-forward-method))
+      (gnus-mail-forward))
     (delete-file file)
     (kill-buffer buf)
     (setq gnus-uu-digest-from-subject nil)))

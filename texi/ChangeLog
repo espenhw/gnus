@@ -1,3 +1,28 @@
+Mon Sep 25 00:28:32 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Group Maintenance): Change.
+	(Group Topics): New.
+
+Sun Sep 24 02:48:58 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (New Groups): Addition.
+	(Score Variables): Addition.
+	(Auto Save): Addition.
+	(Saving Articles): Addition.
+	(Saving Articles): Addition.
+	(Saving Articles): Addition.
+	(Summary Buffer Mode Line): Addition.
+	(Fetching a Group): New.
+	(Thread Commands): Addition.
+	(Article Buttons): New.
+	(Article Washing): Addition.
+
+Sat Sep 23 02:53:11 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Optional Backend Functions): Addition.
+	(Foreign Groups): Addition.
+	(Startup Files): Addition.
+
 Fri Sep 22 14:44:26 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Various Various): Addition.

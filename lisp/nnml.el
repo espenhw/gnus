@@ -392,9 +392,59 @@ all. This may very well take some time.")
 	  (nnml-save-nov)
 	  t)))))
 
+(defun nnml-request-delete-group (group &optional force server)
+  (nnml-possibly-change-directory group)
+  ;; Delete all articles in GROUP.
+  (if (not force)
+      ()				; Don't delete the articles.
+    (let ((articles 
+	   (directory-files 
+	    nnml-current-directory t
+	    (concat "^[0-9]+$\\|" (regexp-quote nnml-nov-file-name) "$"))))
+      (while articles 
+	(and (file-writable-p (car articles))
+	     (progn
+	       (and gnus-verbose-backends
+		    (message (message "Deleting article %s in %s..."
+				      (car articles) group)))
+	       (funcall nnmail-delete-file-function (car articles))))
+	(setq articles (cdr articles))))
+    ;; Try to delete the directory itself.
+    (condition-case ()
+	(delete-directory nnml-current-directory)
+      (error nil)))
+  ;; Remove the group from all structures.
+  (setq nnml-group-alist 
+	(delq (assoc group nnml-group-alist) nnml-group-alist)
+	nnml-current-group nil
+	nnml-current-directory nil)
+  ;; Save the active file.
+  (nnmail-save-active nnml-group-alist nnml-active-file)
+  t)
+
+(defun nnml-request-rename-group (group new-name &optional server)
+  (nnml-possibly-change-directory group)
+  ;; Rename directory.
+  (and (file-writable-p nnml-current-directory)
+       (condition-case ()
+	   (progn
+	     (rename-file 
+	      (directory-file-name nnml-current-directory)
+	      (directory-file-name 
+	       (nnmail-article-pathname new-name nnml-directory)))
+	     t)
+	 (error nil))
+       ;; That went ok, so we change the internal structures.
+       (let ((entry (assoc group nnml-group-alist)))
+	 (and entry (setcar entry new-name))
+	 (setq nnml-current-directory nil
+	       nnml-current-group nil)
+	 ;; Save the new group alist.
+	 (nnmail-save-active nnml-group-alist nnml-active-file)
+	 t)))
 
 
-;;; Internal functions
+;;; Internal functions.
 
 ;; Find an article number in the current group given the Message-ID. 
 (defun nnml-find-group-number (id)

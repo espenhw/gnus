@@ -45,7 +45,6 @@
 (defvar gnus-level-zombie)
 (defvar gnus-newsgroup-bookmarks)
 (defvar gnus-newsgroup-dependencies)
-(defvar gnus-newsgroup-headers-hashtb-by-number)
 (defvar gnus-newsgroup-selected-overlay)
 (defvar gnus-newsrc-hashtb)
 (defvar gnus-read-mark)
@@ -362,8 +361,6 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 	b)
     (or (gnus-summary-goto-subject article)
 	(error (format "No such article: %d" article)))
-    (or gnus-newsgroup-headers-hashtb-by-number
-	(gnus-make-headers-hashtable-by-number))
     (gnus-summary-position-cursor)
     ;; If all commands are to be bunched up on one line, we collect
     ;; them here.  

@@ -107,7 +107,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 ;;; Interface functions
 
-(defun nnfolder-retrieve-headers (sequence &optional newsgroup server)
+(defun nnfolder-retrieve-headers (sequence &optional newsgroup server fetch-old)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -425,6 +425,51 @@ such things as moving mail.  All buffers always get killed upon server close.")
       (insert-buffer-substring buffer)
       (and (buffer-modified-p) (save-buffer))
       t)))
+
+(defun nnfolder-request-delete-group (group &optional force server)
+  (nnfolder-possibly-change-group group)
+  ;; Delete all articles in GROUP.
+  (if (not force)
+      ()				; Don't delete the articles.
+    ;; Delete the file that holds the group and kill the buffer as
+    ;; well.  
+    (save-excursion
+      (and (set-buffer nnfolder-current-buffer)
+	   (progn
+	     (and (file-writable-p buffer-file-name)
+		  (delete-file buffer-file-name))
+	     (kill-buffer (current-buffer))))))
+  ;; Remove the group from all structures.
+  (setq nnfolder-group-alist 
+	(delq (assoc group nnfolder-group-alist) nnfolder-group-alist)
+	nnfolder-current-group nil
+	nnfolder-current-buffer nil)
+  ;; Save the active file.
+  (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
+  t)
+
+(defun nnfolder-request-rename-group (group new-name &optional server)
+  (nnfolder-possibly-change-group group)
+  (save-excursion
+    (set-buffer nnfolder-current-buffer)
+    (and (file-writable-p buffer-file-name)
+	 (condition-case ()
+	     (progn
+	       (rename-file buffer-file-name
+			    (concat (file-name-as-directory nnfolder-directory)
+				    new-name))
+	       t)
+	   (error nil))
+	 ;; That went ok, so we change the internal structures.
+	 (let ((entry (assoc group nnfolder-group-alist)))
+	   (and entry (setcar entry new-name))
+	   (setq nnfolder-current-buffer nil
+		 nnfolder-current-group nil)
+	   ;; Save the new group alist.
+	   (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
+	   ;; We kill the buffer instead of renaming it and stuff.
+	   (kill-buffer (current-buffer))
+	   t))))
 
 
 ;;; Internal functions.

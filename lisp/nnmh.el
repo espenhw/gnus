@@ -73,7 +73,7 @@
 
 ;;; Interface functions.
 
-(defun nnmh-retrieve-headers (sequence &optional newsgroup server)
+(defun nnmh-retrieve-headers (sequence &optional newsgroup server fetch-old)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -349,6 +349,48 @@
 		 (setcar active (apply 'min articles))
 		 (setcdr active (apply 'max articles)))))))
   t)
+
+(defun nnmh-request-delete-group (group &optional force server)
+  (nnmh-possibly-change-directory group)
+  ;; Delete all articles in GROUP.
+  (if (not force)
+      ()				; Don't delete the articles.
+    (let ((articles (directory-files nnmh-current-directory t "^[0-9]+$")))
+      (while articles 
+	(and (file-writable-p (car articles))
+	     (progn
+	       (and gnus-verbose-backends
+		    (message (message "Deleting article %s in %s..."
+				      (car articles) group)))
+	       (funcall nnmail-delete-file-function (car articles))))
+	(setq articles (cdr articles))))
+    ;; Try to delete the directory itself.
+    (condition-case ()
+	(delete-directory nnmh-current-directory)
+      (error nil)))
+  ;; Remove the group from all structures.
+  (setq nnmh-group-alist 
+	(delq (assoc group nnmh-group-alist) nnmh-group-alist)
+	nnmh-current-directory nil)
+  t)
+
+(defun nnmh-request-rename-group (group new-name &optional server)
+  (nnmh-possibly-change-directory group)
+  ;; Rename directory.
+  (and (file-writable-p nnmh-current-directory)
+       (condition-case ()
+	   (progn
+	     (rename-file 
+	      (directory-file-name nnmh-current-directory)
+	      (directory-file-name 
+	       (nnmail-article-pathname new-name nnmh-directory)))
+	     t)
+	 (error nil))
+       ;; That went ok, so we change the internal structures.
+       (let ((entry (assoc group nnmh-group-alist)))
+	 (and entry (setcar entry new-name))
+	 (setq nnmh-current-directory nil)
+	 t)))
 
 
 ;;; Internal functions.

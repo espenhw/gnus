@@ -74,7 +74,7 @@
 
 ;;; Interface functions
 
-(defun nnbabyl-retrieve-headers (sequence &optional newsgroup server)
+(defun nnbabyl-retrieve-headers (sequence &optional newsgroup server fetch-old)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -357,8 +357,50 @@
       (save-buffer)
       t)))
 
+(defun nnbabyl-request-delete-group (group &optional force server)
+  (nnbabyl-possibly-change-newsgroup group)
+  ;; Delete all articles in GROUP.
+  (if (not force)
+      ()				; Don't delete the articles.
+    (save-excursion
+      (set-buffer nnbabyl-mbox-buffer)
+      (goto-char (point-min))
+      ;; Delete all articles in this group.
+      (let ((ident (concat "\nX-Gnus-Newsgroup: " nnbabyl-current-group ":"))
+	    found)
+	(while (search-forward ident nil t)
+	  (setq found t)
+	  (nnbabyl-delete-mail))
+	(and found (save-buffer)))))
+  ;; Remove the group from all structures.
+  (setq nnbabyl-group-alist 
+	(delq (assoc group nnbabyl-group-alist) nnbabyl-group-alist)
+	nnbabyl-current-group nil)
+  ;; Save the active file.
+  (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)
+  t)
+
+(defun nnbabyl-request-rename-group (group new-name &optional server)
+  (nnbabyl-possibly-change-newsgroup group)
+  (save-excursion
+    (set-buffer nnbabyl-mbox-buffer)
+    (goto-char (point-min))
+    (let ((ident (concat "\nX-Gnus-Newsgroup: " nnbabyl-current-group ":"))
+	  (new-ident (concat "\nX-Gnus-Newsgroup: " new-name ":"))
+	  found)
+      (while (search-forward ident nil t)
+	(replace-match new-ident t t)
+	(setq found t))
+      (and found (save-buffer))))
+  (let ((entry (assoc group nnbabyl-group-alist)))
+    (and entry (setcar entry new-name))
+    (setq nnbabyl-current-group nil)
+    ;; Save the new group alist.
+    (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)
+    t))
+
 
-;;; Low-Level Interface
+;;; Internal functions.
 
 ;; If FORCE, delete article no matter how many X-Gnus-Newsgroup
 ;; headers there are. If LEAVE-DELIM, don't delete the Unix mbox

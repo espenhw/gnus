@@ -96,7 +96,7 @@ Possible values:
 
 ;;; Interface functions
 
-(defun nndoc-retrieve-headers (sequence &optional newsgroup server)
+(defun nndoc-retrieve-headers (sequence &optional newsgroup server fetch-old)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
