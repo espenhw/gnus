@@ -274,8 +274,9 @@ with Mule charsets.  It is completely useless for Emacs."
     (condition-case nil
 	(let ((val (delq
 		    'ascii
-		    (symbol-value
-		     'unicode-basic-translation-charset-order-list)))
+		    (copy-sequence
+		     (symbol-value
+		      'unicode-basic-translation-charset-order-list))))
 	      (elem (assq 'utf-8 mm-mime-mule-charset-alist)))
 	  (if elem
 	      (setcdr elem val)
