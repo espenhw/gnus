@@ -1,5 +1,7 @@
 2002-02-20  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-art.el (gnus-article-edit-done): Widen the buffer.
+
 	* gnus-group.el (gnus-group-name-decode): Don't test
 	multibyte-string, because it breaks XEmacs.
 	From: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>

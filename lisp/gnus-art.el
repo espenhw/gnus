@@ -5127,6 +5127,7 @@ groups."
 	(start (window-start))
 	(p (point))
 	(winconf gnus-prev-winconf))
+    (widen) ;; Widen it in case that users narrowed the buffer.
     (funcall func arg)
     (set-buffer buf)
     ;; The cache and backlog have to be flushed somewhat.
