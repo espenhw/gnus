@@ -3318,7 +3318,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (interactive)
   (gnus-article-check-buffer)
   (let* ((data (get-text-property (point) 'gnus-data))
-	 file param)
+	 file param
+	 (handles gnus-article-mime-handles))
     (if (mm-multiple-handles gnus-article-mime-handles)
 	(error "This function is not implemented"))
     (setq file (and data (mm-save-part data)))
@@ -3349,7 +3350,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		 (mbl mml-buffer-list))
 	     (setq mml-buffer-list nil)
 	     (insert-buffer gnus-original-article-buffer)
-	     (mime-to-mml gnus-article-mime-handles)
+	     (mime-to-mml ',handles)
 	     (setq gnus-article-mime-handles nil)
 	     (let ((mbl1 mml-buffer-list))
 	       (setq mml-buffer-list mbl)

@@ -1,3 +1,8 @@
+2001-07-30 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-save-part-and-strip): Save
+	gnus-article-mime-handles.
+
 2001-07-29  Simon Josefsson  <jas@extundo.com>
 
 	* mail-source.el (top-level): Require message for message-directory.
