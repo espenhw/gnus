@@ -35,6 +35,9 @@
 (defun nnheader-xmas-cancel-timer (timer)
   (delete-itimer timer))
 
+(defun nnheader-xmas-cancel-function-timers (function)
+  )
+
 ;; Written by Erik Naggum <erik@naggum.no>.
 ;; Saved by Steve Baur <steve@miranova.com>.
 (defun nnheader-xmas-insert-file-contents-literally (filename &optional visit beg end replace)
@@ -167,6 +170,7 @@ The buffer is not selected, just returned to the caller."
 
 (fset 'nnheader-run-at-time 'nnheader-xmas-run-at-time)
 (fset 'nnheader-cancel-timer 'nnheader-xmas-cancel-timer)
+(fset 'nnheader-cancel-function-timers 'nnheader-xmas-cancel-function-timers)
 (fset 'nnheader-find-file-noselect 'nnheader-xmas-find-file-noselect)
 (fset 'nnheader-insert-file-contents-literally
       (if (fboundp 'insert-file-contents-literally)

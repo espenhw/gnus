@@ -621,6 +621,7 @@ without formatting."
 
 (fset 'nnheader-run-at-time 'run-at-time)
 (fset 'nnheader-cancel-timer 'cancel-timer)
+(fset 'nnheader-cancel-function-timers 'cancel-function-timers)
 (fset 'nnheader-find-file-noselect 'find-file-noselect)
 (fset 'nnheader-insert-file-contents-literally
       'insert-file-contents-literally)

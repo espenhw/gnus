@@ -70,7 +70,7 @@ It accepts the same format specs that `gnus-summary-line-format' does.")
    "b" gnus-uu-mark-buffer
    "B" gnus-uu-unmark-buffer
    "." gnus-pick-article
-   gnus-mouse-2 gnus-pick-pick-article
+   gnus-mouse-2 gnus-mouse-pick-article
    "\r" gnus-pick-start-reading))
 
 (defun gnus-pick-make-menu-bar ()

@@ -580,26 +580,13 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-mh" gnus-mh-mail-setup gnus-summary-save-article-folder
       gnus-Folder-save-name gnus-folder-save-name)
      ("gnus-mh" :interactive t gnus-summary-save-in-folder)
-     ("gnus-vis" gnus-group-make-menu-bar gnus-summary-make-menu-bar
-      gnus-server-make-menu-bar gnus-article-make-menu-bar
-      gnus-browse-make-menu-bar gnus-highlight-selected-summary
-      gnus-summary-highlight-line gnus-carpal-setup-buffer
-      gnus-group-highlight-line
-      gnus-article-add-button gnus-insert-next-page-button
-      gnus-insert-prev-page-button gnus-visual-turn-off-edit-menu)
-     ("gnus-vis" :interactive t
-      gnus-article-push-button gnus-article-press-button
-      gnus-article-highlight gnus-article-highlight-some
-      gnus-article-highlight-headers gnus-article-highlight-signature
-      gnus-article-add-buttons gnus-article-add-buttons-to-head
-      gnus-article-next-button gnus-article-prev-button)
      ("gnus-demon" gnus-demon-add-nocem gnus-demon-add-scanmail
       gnus-demon-add-disconnection gnus-demon-add-handler
       gnus-demon-remove-handler)
      ("gnus-demon" :interactive t
       gnus-demon-init gnus-demon-cancel)
      ("gnus-salt" gnus-highlight-selected-tree gnus-possibly-generate-tree
-      gnus-tree-open gnus-tree-close)
+      gnus-tree-open gnus-tree-close gnus-carpal-setup-buffer)
      ("gnus-nocem" gnus-nocem-scan-groups gnus-nocem-close
       gnus-nocem-unwanted-article-p)
      ("gnus-srvr" gnus-enter-server-buffer gnus-server-set-info)

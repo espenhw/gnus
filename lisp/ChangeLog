@@ -1,3 +1,66 @@
+Wed Aug 28 02:09:20 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnweb.el (nnweb-dejanews-create-mapping): Would just fetch the
+	first 100 hits.
+	(nnweb-close-group): Set file name to nil before killing.
+	(nnweb-altavista-create-mapping): Fetch the required number of
+	articles. 
+
+	* gnus-group.el (gnus-group-read-ephemeral-group): Don't call the
+	activation several times.
+
+	* gnus-sum.el (gnus-summary-enter-digest-group): Copy the parent's
+	params to the nndoc group.
+	(gnus-summary-read-document): Ditto.
+
+	* message.el (message-followup): Would produce buggy messages when
+	replying to messages without Message-IDs.
+
+Sat Aug 10 23:41:07 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el (gnus-decode-rfc1522): Start decoding from beginning of
+	headers instead of end.
+
+Wed Aug 28 01:35:26 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-demon.el (gnus-demon-cancel): Cancel function timers.
+
+	* nnheaderxm.el (nnheader-xmas-cancel-function-timers): New
+	function.
+
+	* nnheader.el (nnheader-cancel-function-timers): New alias.
+
+	* gnus-topic.el (gnus-topic-mode): Update groups.
+	(gnus-topic-remove-group): Update topic.
+
+	* gnus-group.el (gnus-group-update-group-function): New variable. 
+	(gnus-group-update-group): Use it.
+
+	* gnus-topic.el (gnus-topic-update-topics-containing-group): New
+	function. 
+
+Tue Aug 27 14:35:01 1996  Ken Raeburn  <raeburn@cygnus.com>
+
+	* nnmail.el (nnmail-move-inbox): Don't try setting modes on
+	"po:$USER".
+
+Tue Aug 27 21:45:14 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-sum.el (gnus-summary-number-of-articles-in-thread): Would
+	bug out on unthreadeds.
+
+Tue Aug 27 21:38:13 1996  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-salt.el (gnus-pick-mode-map): Typo.
+
+Tue Aug 27 21:35:58 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-load.el: Removed gnus-vis thingies.
+
+Tue Aug 27 00:54:05 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.17 is released.
+
 Tue Aug 27 00:46:48 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nnweb.el (nnweb-dejanews-create-mapping): Dummy function.

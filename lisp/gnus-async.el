@@ -128,10 +128,11 @@ from that group.")
 				(not (natnump article)))
 		      ;; Not already fetched -- so we add it to the list.
 		      (push article gnus-async-fetch-list)))
-		  (setq gnus-async-fetch-list (nreverse gnus-async-fetch-list))))
+		  (setq gnus-async-fetch-list
+			(nreverse gnus-async-fetch-list))))
 
 	      (when do-fetch
-		(setq article (pop gnus-async-fetch-list))))
+		(setq article (car gnus-async-fetch-list))))
 	
 	  (gnus-async-release-semaphore 'gnus-async-article-semaphore))
     

@@ -198,6 +198,7 @@ variable.")
 
 (defvar gnus-group-indentation-function nil)
 (defvar gnus-goto-missing-group-function nil)
+(defvar gnus-group-update-group-function nil)
 (defvar gnus-group-get-parameter-function 'gnus-group-get-parameter)
 (defvar gnus-group-goto-next-group-function nil
   "Function to override finding the next group after listing groups.")
@@ -394,7 +395,6 @@ variable.")
     "w" gnus-group-kill-region
     "\C-k" gnus-group-kill-level
     "z" gnus-group-kill-all-zombies))
-
 
 (defun gnus-group-make-menu-bar ()
   (gnus-turn-off-edit-menu 'group)
@@ -986,6 +986,8 @@ already."
 	    (save-excursion
 	      (forward-line -1)
 	      (run-hooks 'gnus-group-update-group-hook))))
+	(when gnus-group-update-group-function
+	  (funcall gnus-group-update-group-function group))
 	(gnus-group-set-mode-line)))))
 
 (defun gnus-group-set-mode-line ()
@@ -1312,7 +1314,7 @@ Return the name of the group is selection was successful."
 		 (gnus-group-prefixed-name group method))))
     (gnus-sethash
      group
-     `(t nil (,group ,gnus-level-default-subscribed nil nil ,method
+     `(-1 nil (,group ,gnus-level-default-subscribed nil nil ,method
 		     ((quit-config . ,(if quit-config quit-config
 					(cons (current-buffer) 'summary))))))
      gnus-newsrc-hashtb)
@@ -1322,7 +1324,8 @@ Return the name of the group is selection was successful."
     (when activate
       (unless (gnus-request-group group)
 	(error "Couldn't request group: %s" 
-	       (nnheader-get-report (car method)))))
+	       (nnheader-get-report (car method))))
+      (gnus-activate-group group nil t))
     (if request-only
 	group
       (condition-case ()

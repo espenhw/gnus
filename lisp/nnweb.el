@@ -101,7 +101,11 @@
 
 (deffoo nnweb-close-group (group &optional server)
   (nnweb-possibly-change-server server)
-  (gnus-kill-buffer nnweb-buffer)
+  (when (gnus-buffer-live-p nnweb-buffer)
+    (save-excursion
+      (set-buffer nnweb-buffer)
+      (set-buffer-modified-p nil)
+      (kill-buffer nnweb-buffer)))
   t)
 
 (deffoo nnweb-request-article (article &optional group server buffer)
@@ -127,8 +131,12 @@
 	t))))
 
 (deffoo nnweb-close-server (&optional server)
-  (when (nnweb-server-opened server)
-    (gnus-kill-buffer nnweb-buffer))
+  (when (and (nnweb-server-opened server)
+	     (gnus-buffer-live-p nnweb-buffer))
+    (save-excursion
+      (set-buffer nnweb-buffer)
+      (set-buffer-modified-p nil)
+      (kill-buffer nnweb-buffer)))
   (nnoo-close-server 'nnweb server))
 
 (deffoo nnweb-request-update-info (group info &optional server)
@@ -262,9 +270,12 @@
 	  (while (re-search-forward "^ +[0-9]+\\." nil t)
 	    (narrow-to-region 
 	     (point) 
-	     (if (re-search-forward "^ +[0-9]+\\." nil t)
-		 (match-beginning 0)
-	       (point-max)))
+	     (cond ((re-search-forward "^ +[0-9]+\\." nil t)
+		    (match-beginning 0))
+		   ((search-forward "\n\n" nil t)
+		    (point))
+		   (t
+		    (point-max))))
 	    (goto-char (point-min))
 	    (when (looking-at ".*HREF=\"\\([^\"]+\\)\"")
 	      (setq url (match-string 1)))
@@ -291,7 +302,7 @@
 	  ;; See whether there is a "Get next 20 hits" button here.
 	  (if (or (not (re-search-forward
 			"HREF=\"\\([^\"]+\\)\">Get next" nil t))
-		  (> i nnweb-max-hits))
+		  (>= i nnweb-max-hits))
 	      (setq more nil)
 	    ;; Yup -- fetch it.
 	    (setq more (match-string 1))
@@ -461,41 +472,46 @@
   (save-excursion
     (set-buffer nnweb-buffer)
     (erase-buffer)
-    (when (funcall (nnweb-definition 'search) nnweb-search)
-      (let ((i 0)
-	    (more t)
-	    (case-fold-search t)
-	    subject score date newsgroups from id
-	    map url)
-	(while more
-	  ;; Go through all the article hits on this page.
-	  (goto-char (point-min))
-	  (search-forward "<dt>" nil t)
-	  (delete-region (point-min) (match-beginning 0))
-	  (goto-char (point-min))
-	  (while (search-forward "<dt>" nil t)
-	    (replace-match "\n<blubb>"))
-	  (nnweb-decode-entities)
-	  (goto-char (point-min))
-	  (while (re-search-forward "<blubb>.*href=\"\\([^\"]+\\)\"><strong>\\([^>]*\\)</strong></a><dd>\\([^-]+\\)- <b>\\([^<]+\\)<.*href=\"news:\\([^\"]+\\)\">.*\">\\(.+\\)</a><P>"
-				    nil t)
-	    (setq url (match-string 1)
-		  subject (match-string 2)
-		  date (match-string 3)
-		  group (match-string 4)
-		  id (concat "<" (match-string 5) ">")
-		  from (match-string 6))
-	    (push
-	     (list
-	      (incf i)
-	      (make-full-mail-header
-	       i (concat  "(" group ") " subject) from date
-	       id nil 0 0 nil)
-	      url)
-	     map))
-	  (setq more nil))
-	;; Return the articles in the right order.
-	(setq nnweb-articles (nreverse map))))))
+    (let ((part 0))
+      (when (funcall (nnweb-definition 'search) nnweb-search part)
+	(let ((i 0)
+	      (more t)
+	      (case-fold-search t)
+	      subject score date newsgroups from id
+	      map url)
+	  (while more
+	    ;; Go through all the article hits on this page.
+	    (goto-char (point-min))
+	    (search-forward "<dt>" nil t)
+	    (delete-region (point-min) (match-beginning 0))
+	    (goto-char (point-min))
+	    (while (search-forward "<dt>" nil t)
+	      (replace-match "\n<blubb>"))
+	    (nnweb-decode-entities)
+	    (goto-char (point-min))
+	    (while (re-search-forward "<blubb>.*href=\"\\([^\"]+\\)\"><strong>\\([^>]*\\)</strong></a><dd>\\([^-]+\\)- <b>\\([^<]+\\)<.*href=\"news:\\([^\"]+\\)\">.*\">\\(.+\\)</a><P>"
+				      nil t)
+	      (setq url (match-string 1)
+		    subject (match-string 2)
+		    date (match-string 3)
+		    group (match-string 4)
+		    id (concat "<" (match-string 5) ">")
+		    from (match-string 6))
+	      (push
+	       (list
+		(incf i)
+		(make-full-mail-header
+		 i (concat  "(" group ") " subject) from date
+		 id nil 0 0 nil)
+		url)
+	       map))
+	    ;; See if we want more.
+	    (when (or (>= i nnweb-max-hits)
+		      (not (funcall (nnweb-definition 'search)
+				    nnweb-search (incf part))))
+	      (setq more nil)))
+	  ;; Return the articles in the right order.
+	  (setq nnweb-articles (nreverse map)))))))
 
 (defun nnweb-altavista-wash-article ()
   (goto-char (point-min))
@@ -517,7 +533,7 @@
       (widen)
       (nnweb-remove-markup))))
 
-(defun nnweb-altavista-search (search)
+(defun nnweb-altavista-search (search &optional part)
   (url-insert-file-contents
    (concat 
     (nnweb-definition 'address)
@@ -525,6 +541,7 @@
     (nnweb-encode-www-form-urlencoded 
      `(("pg" . "aq")
        ("what" . "news")
+       ,@(if part `(("stq" . ,(int-to-string (* part 30)))))
        ("fmt" . "d")
        ("q" . ,search)
        ("r" . "")

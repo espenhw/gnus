@@ -106,7 +106,8 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's.")
   (and gnus-demon-timer
        (nnheader-cancel-timer gnus-demon-timer))
   (setq gnus-demon-timer nil
-	gnus-use-demon nil))
+	gnus-use-demon nil)
+  (nnheader-cancel-function-timers 'gnus-demon))
 
 (defun gnus-demon-is-idle-p ()
   "Whether Emacs is idle or not."

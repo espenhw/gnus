@@ -440,7 +440,8 @@ parameter.  It should return nil, `warn' or `delete'.")
 	      (if (not (buffer-modified-p errors))
 		  ;; No output => movemail won
 		  (progn
-		    (set-file-modes inbox nnmail-default-file-modes)
+		    (or popmail
+			(set-file-modes inbox nnmail-default-file-modes))
 		    (push inbox nnmail-moved-inboxes))
 		(set-buffer errors)
 		;; There may be a warning about older revisions.  We
@@ -448,7 +449,8 @@ parameter.  It should return nil, `warn' or `delete'.")
 		(goto-char (point-min))
 		(if (search-forward "older revision" nil t)
 		    (progn
-		      (set-file-modes inbox nnmail-default-file-modes)
+		      (or popmail
+			  (set-file-modes inbox nnmail-default-file-modes))
 		      (push inbox nnmail-moved-inboxes))
 		  ;; Probably a real error.
 		  (subst-char-in-region (point-min) (point-max) ?\n ?\  )

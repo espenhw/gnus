@@ -2611,11 +2611,14 @@ Headers already prepared in the buffer are not modified."
 
 ;;;###autoload
 (defun message-wide-reply (&optional to-address)
+  "Make a \"wide\" reply to the message in the current buffer."
   (interactive)
   (message-reply to-address t))
 
 ;;;###autoload
-(defun message-followup ()
+(defun message-followup (&optional to-newsgroups)
+  "Follow up to the message in the current buffer.
+If TO-NEWSGROUPS, use that as the new Newsgroups line."
   (interactive)
   (let ((cur (current-buffer))
 	from subject date reply-to mct
@@ -2660,6 +2663,8 @@ Headers already prepared in the buffer are not modified."
     (message-setup
      `((Subject . ,subject)
        ,@(cond 
+	  (to-newsgroups
+	   (list (cons 'Newsgroups to-newsgroups)))
 	  (follow-to follow-to)
 	  ((and followup-to message-use-followup-to)
 	   (list
@@ -2699,8 +2704,9 @@ responses here are directed to other newsgroups."))
 	  (t
 	   `((Newsgroups . ,newsgroups))))
        ,@(and distribution (list (cons 'Distribution distribution)))
-       (References . ,(concat (or references "") (and references " ")
-			      (or message-id "")))
+       ,@(if (or references message-id)
+	     `((References . ,(concat (or references "") (and references " ")
+				      (or message-id "")))))
        ,@(when (and mct
 		    (not (equal (downcase mct) "never")))
 	   (list (cons 'Cc (if (equal (downcase mct) "always")

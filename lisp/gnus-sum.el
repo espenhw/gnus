@@ -2095,6 +2095,8 @@ This is all marks except unread, ticked, dormant, and expirable."
   (let* ((number
 	  ;; Fix by Luc Van Eycken <Luc.VanEycken@esat.kuleuven.ac.be>.
 	  (cond
+	   ((not (listp thread))
+	    1)
 	   ((and (consp thread) (cdr thread))
 	    (apply
 	     '+ 1 (mapcar
@@ -5565,14 +5567,16 @@ to guess what the document format is."
   (interactive "P")
   (gnus-set-global-variables)
   (gnus-summary-select-article)
-  (let ((name (format "%s-%d"
-		      (gnus-group-prefixed-name
-		       gnus-newsgroup-name (list 'nndoc ""))
-		      gnus-current-article))
-	(ogroup gnus-newsgroup-name)
-	(case-fold-search t)
-	(buf (current-buffer))
-	dig)
+  (let* ((name (format "%s-%d"
+		       (gnus-group-prefixed-name
+			gnus-newsgroup-name (list 'nndoc ""))
+		       gnus-current-article))
+	 (ogroup gnus-newsgroup-name)
+	 (params (append (gnus-info-params (gnus-get-info ogroup))
+			 (list (cons 'to-group ogroup))))
+	 (case-fold-search t)
+	 (buf (current-buffer))
+	 dig)
     (save-excursion
       (setq dig (nnheader-set-temp-buffer " *gnus digest buffer*"))
       (insert-buffer-substring gnus-original-article-buffer)
@@ -5588,8 +5592,7 @@ to guess what the document format is."
 				 ,(get-buffer dig))
 			  (nndoc-article-type ,(if force 'digest 'guess))) t)
 	    ;; Make all postings to this group go to the parent group.
-	    (nconc (gnus-info-params (gnus-get-info name))
-		   (list (cons 'to-group ogroup)))
+	    (gnus-info-set-params (gnus-get-info name) params)
 	  ;; Couldn't select this doc group.
 	  (switch-to-buffer buf)
 	  (gnus-set-global-variables)
@@ -5601,9 +5604,11 @@ to guess what the document format is."
   "Open a new group based on the current article(s).
 Obeys the standard process/prefix convention."
   (interactive "P")
-  (let ((articles (gnus-summary-work-articles n))
-	(ogroup gnus-newsgroup-name)
-	article group egroup groups vgroup)
+  (let* ((articles (gnus-summary-work-articles n))
+	 (ogroup gnus-newsgroup-name)
+	 (params (append (gnus-info-params (gnus-get-info ogroup))
+			 (list (cons 'to-group ogroup))))
+	 article group egroup groups vgroup)
     (while (setq article (pop articles))
       (setq group (format "%s-%d" gnus-newsgroup-name gnus-current-article))
       (gnus-summary-remove-process-mark article)
@@ -5624,8 +5629,7 @@ Obeys the standard process/prefix convention."
 		       t nil t))
 		(progn
 		  ;; Make all postings to this group go to the parent group.
-		  (nconc (gnus-info-params (gnus-get-info egroup))
-			 (list (cons 'to-group ogroup)))
+		  (gnus-info-set-params (gnus-get-info name) params)
 		  (push egroup groups))
 	      ;; Couldn't select this doc group.
 	      (gnus-error 3 "Article couldn't be entered"))))))

@@ -485,13 +485,30 @@ articles in the topic and its subtopics."
 	   'gnus-active active-topic
 	   'gnus-topic-visible visiblep))))
 
+(defun gnus-topic-update-topics-containing-group (group)
+  "Update all topics that have GROUP as a member."
+  (when (and (eq major-mode 'gnus-group-mode)
+	     gnus-topic-mode)
+    (save-excursion
+      (let ((alist gnus-topic-alist))
+	;; This is probably not entirely correct.  If a topic
+	;; isn't shown, then it's not updated.  But the updating
+	;; should be performed in any case, since the topic's
+	;; parent should be updated.  Pfft.
+	(while alist
+	  (when (and (member group (cdar alist))
+		     (gnus-topic-goto-topic (caar alist)))
+	    (gnus-topic-update-topic-line (caar alist)))
+	  (pop alist))))))
+
 (defun gnus-topic-update-topic ()
   "Update all parent topics to the current group."
   (when (and (eq major-mode 'gnus-group-mode)
 	     gnus-topic-mode)
     (let ((group (gnus-group-group-name))
 	  (buffer-read-only nil))
-      (when (and group (gnus-get-info group)
+      (when (and group 
+		 (gnus-get-info group)
 		 (gnus-topic-goto-topic (gnus-current-topic)))
 	(gnus-topic-update-topic-line (gnus-group-topic-name))
 	(gnus-group-goto-group group)
@@ -858,7 +875,6 @@ articles in the topic and its subtopics."
 	      minor-mode-map-alist))
       (add-hook 'gnus-summary-exit-hook 'gnus-topic-update-topic)
       (add-hook 'gnus-group-catchup-group-hook 'gnus-topic-update-topic)
-      (add-hook 'gnus-group-update-group-hook 'gnus-topic-update-topic)
       (set (make-local-variable 'gnus-group-prepare-function)
 	   'gnus-group-prepare-topics)
       (set (make-local-variable 'gnus-group-get-parameter-function)
@@ -867,6 +883,8 @@ articles in the topic and its subtopics."
 	   'gnus-topic-goto-next-group)
       (set (make-local-variable 'gnus-group-indentation-function)
 	   'gnus-topic-group-indentation)
+      (set (make-local-variable 'gnus-group-update-group-function)
+	   'gnus-topic-update-topics-containing-group)
       (setq gnus-group-change-level-function 'gnus-topic-change-level)
       (setq gnus-goto-missing-group-function 'gnus-topic-goto-missing-group)
       (gnus-make-local-hook 'gnus-check-bogus-groups-hook)
@@ -980,6 +998,7 @@ If COPYP, copy the groups instead."
     (when (and topicl group)
       (gnus-delete-line)
       (gnus-delete-first group topicl))
+    (gnus-topic-update-topic)
     (gnus-group-position-point)))
 
 (defun gnus-topic-copy-group (n topic)

@@ -356,7 +356,7 @@ header line with the old Message-ID."
 	    (if post
 		(message-news (or to-group group))
 	      (set-buffer gnus-article-copy)
-	      (message-followup))
+	      (message-followup to-group))
 	  ;; The is mail.
 	  (if post
 	      (progn
