@@ -12095,10 +12095,11 @@ define a server as follows:
 ;; Type `C-c C-c' after you've finished editing.
 ;;
 ;; "snews" is port 563 and is predefined in our /etc/services
+;; however, openssl s_client -port doesn't like named ports
 ;;
 (nntp "snews.bar.com"
       (nntp-open-connection-function nntp-open-ssl-stream)
-      (nntp-port-number "snews")
+      (nntp-port-number 563)
       (nntp-address "snews.bar.com"))
 @end lisp
 
@@ -12236,6 +12237,9 @@ The address of the @sc{nntp} server.
 @item nntp-port-number
 @vindex nntp-port-number
 Port number to connect to the @sc{nntp} server.  The default is @samp{nntp}.
+If you use @sc{nntp} over @sc{ssl}, you may want to use integer ports rather
+than named ports (i.e, use @samp{563} instead of @samp{snews}), because
+external SSL tools may not work with named ports.
 
 @item nntp-end-of-line
 @vindex nntp-end-of-line
