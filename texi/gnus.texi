@@ -484,7 +484,7 @@ The Summary Buffer
 * Marking Articles::            Marking articles as read, expirable, etc.
 * Limiting::                    You can limit the summary buffer.
 * Threading::                   How threads are made.
-* Sorting::                     How articles and threads are sorted.
+* Sorting the Summary Buffer::  How articles and threads are sorted.
 * Asynchronous Fetching::       Gnus might be able to pre-fetch articles.
 * Article Caching::             You may store articles in a cache.
 * Persistent Articles::         Making articles expiry-resistant.
@@ -3885,7 +3885,7 @@ You can have as many summary buffers open as you wish.
 * Marking Articles::            Marking articles as read, expirable, etc.
 * Limiting::                    You can limit the summary buffer.
 * Threading::                   How threads are made.
-* Sorting::                     How articles and threads are sorted.
+* Sorting the Summary Buffer::  How articles and threads are sorted.
 * Asynchronous Fetching::       Gnus might be able to pre-fetch articles.
 * Article Caching::             You may store articles in a cache.
 * Persistent Articles::         Making articles expiry-resistant.
@@ -6023,8 +6023,8 @@ that have subjects fuzzily equal will be included (@pxref{Fuzzy
 Matching}).
 
 
-@node Sorting
-@section Sorting
+@node Sorting the Summary Buffer
+@section Sorting the Summary Buffer
 
 @findex gnus-thread-sort-by-total-score
 @findex gnus-thread-sort-by-date
@@ -8172,6 +8172,12 @@ Sort by article length (@code{gnus-summary-sort-by-chars}).
 @kindex C-c C-s C-i (Summary)
 @findex gnus-summary-sort-by-score
 Sort by score (@code{gnus-summary-sort-by-score}).
+
+@item C-c C-s C-o
+@kindex C-c C-s C-o (Summary)
+@findex gnus-summary-sort-by-original
+Sort using the default sorting method
+(@code{gnus-summary-sort-by-original}).
 @end table
 
 These functions will work both when you use threading and when you don't
