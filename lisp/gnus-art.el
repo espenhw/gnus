@@ -2732,6 +2732,9 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 (substitute-key-definition
  'undefined 'gnus-article-read-summary-keys gnus-article-mode-map)
 
+(eval-when-compile 
+  (defvar gnus-article-commands-menu))
+
 (defun gnus-article-make-menu-bar ()
   (gnus-turn-off-edit-menu 'article)
   (unless (boundp 'gnus-article-article-menu)
