@@ -1897,11 +1897,9 @@ Return the name of the group if selection was successful."
 	       ,(append
 		 parameters
 		 (list
-		  (cons
-		   'quit-config 
-		   ,(if quit-config quit-config
-		      (cons gnus-summary-buffer
-			    gnus-current-window-configuration)))))))
+		  (cons 'quit-config quit-config)
+		  (cons gnus-summary-buffer
+			gnus-current-window-configuration)))))
      gnus-newsrc-hashtb)
     (push method gnus-ephemeral-servers)
     (set-buffer gnus-group-buffer)
