@@ -1,5 +1,10 @@
 2004-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* message.el (message-hidden-headers): Fix the way to avoid a bug
+	in the `repeat' widget in Emacs 21.3 or earlier.
+
+2004-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* message.el (message-hidden-headers): Default to "^References:".
 	From Reiner Steib <Reiner.Steib@gmx.de>; improve customization type.
 	(message-strip-forbidden-properties): Remove check for obsolete

@@ -1117,13 +1117,14 @@ starting with `not' and followed by regexps."
   :group 'message
   :link '(custom-manual "(message)Message Headers")
   :type '(choice
-	  (regexp :tag "regexp" :format "%t\nRegexp: %v" :size 1)
-	  (group :tag "(regexp ...)" :format "(regexp ...)\n%v" :inline t
-		 (repeat :format "%v%i" (regexp :format "%t: %v\n" :size 1)))
-	  (cons :tag "(not regexp ...)"
+	  :format "%{%t%}: %[Value Type%] %v"
+	  (regexp :menu-tag "regexp" :format "regexp\n%t: %v")
+	  (repeat :menu-tag "(regexp ...)" :format "(regexp ...)\n%v%i"
+		  (regexp :format "%t: %v"))
+	  (cons :menu-tag "(not regexp ...)" :format "(not regexp ...)\n%v"
 		(const not)
 		(repeat :format "%v%i"
-			(regexp :format "%t: %v\n" :size 1)))))
+			(regexp :format "%t: %v")))))
 
 (defcustom message-cite-articles-with-x-no-archive t
   "If non-nil, cite text from articles that has X-No-Archive set."
