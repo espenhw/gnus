@@ -1,6 +1,6 @@
 ;;; gnus-picon.el --- displaying pretty icons in Gnus
 
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
 ;;      Free Software Foundation, Inc.
 
 ;; Author: Wes Hardaker <hardaker@ece.ucdavis.edu>
@@ -29,7 +29,9 @@
 
 (require 'gnus)
 ;; (require 'xpm)
-;; (require 'annotations)
+(eval-and-compile
+  (if (featurep 'xemacs)
+      (require 'annotations)))
 (require 'custom)
 (require 'gnus-art)
 (require 'gnus-win)
@@ -37,7 +39,7 @@
 ;;; User variables:
 
 (defgroup picons nil
-  "Show pictures of people, domains, and newsgroups (XEmacs).
+  "Show pictures of people, domains, and newsgroups.
 For this to work, you must switch on the `gnus-treat-display-picons'
 variable."
   :group 'gnus-visual)
@@ -171,7 +173,7 @@ arguments necessary for the job.")
 (defun gnus-picons-remove-all ()
   "Removes all picons from the Gnus display(s)."
   (interactive)
-  ;;(map-extents (function (lambda (ext unused) (delete-annotation ext) nil))
+;;(map-extents (function (lambda (ext unused) (delete-annotation ext) nil))
 ;;	       nil nil nil nil nil 'gnus-picon)
   (setq gnus-picons-jobs-alist '())
   ;; notify running job that it may have been preempted
@@ -241,15 +243,14 @@ arguments necessary for the job.")
   (gnus-picons-set-buffer)
   (gnus-picons-remove-all))
 
-(defun gnus-picons-make-annotation (&rest args)
-  (let ((annot (apply 'make-annotation args)))
-    (set-extent-property annot 'gnus-picon t)
-    (set-extent-property annot 'duplicable t)
-    annot))
+;; (defun gnus-picons-make-annotation (&rest args)
+;;   (let ((annot (apply 'make-annotation args)))
+;;     (set-extent-property annot 'gnus-picon t)
+;;     (set-extent-property annot 'duplicable t)
+;;     annot))
 
 (defun gnus-picons-make-annotation (&rest args)
   nil)
-
 
 (defun gnus-article-display-picons ()
   "Display faces for an author and her domain in gnus-picons-display-where."

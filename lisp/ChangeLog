@@ -1,3 +1,8 @@
+2001-12-29  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* dgnushack.el (dgnushack-compile): Compile gnus-picon for Emacs.
+	* gnus-picon.el: Less warnings when compile.
+
 2001-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-picon.el (gnus-picons-news-directories): Removed obsolete
