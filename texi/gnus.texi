@@ -7162,7 +7162,7 @@ variable is non-@code{nil} and is not a number, Gnus will store
 bound before exploding and taking your machine down with you.  I put
 that in there just to keep y'all on your toes.
 
-This variable is @code{nil} by default.
+The default value is 20.
 
 
 @node Saving Articles
