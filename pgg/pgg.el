@@ -170,11 +170,10 @@
 (defun pgg-decrypt-region (start end)
   "Decrypt the current region between START and END."
   (interactive "r")
-  (let* ((packet (cdr (assq 1 (pgg-parse-armor-region start end))))
-	 (status
-	  (pgg-save-coding-system start end
-	    (pgg-invoke "decrypt-region" (or pgg-scheme pgg-default-scheme)
-			(point-min) (point-max)))))
+  (let ((status
+	 (pgg-save-coding-system start end
+	   (pgg-invoke "decrypt-region" (or pgg-scheme pgg-default-scheme)
+		       (point-min) (point-max)))))
     (when (interactive-p)
       (pgg-display-output-buffer start end status))
     status))

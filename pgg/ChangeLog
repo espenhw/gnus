@@ -1,5 +1,10 @@
 2002-09-29  Simon Josefsson  <jas@extundo.com>
 
+	* pgg-parse.el (pgg-char-int, pgg-string-as-unibyte): Prevent byte
+	compile warnings.
+
+	* pgg.el (pgg-decrypt-region): Don't parse packet.
+
 	* luna.el: Removed.
 
 	* pgg.el, pgg-gpg.el, pgg-pgp5.el: Don't depend on luna.el.

@@ -99,9 +99,10 @@
     "^-----BEGIN PGP SIGNATURE-----\r?$")
   "Armor headers.")
 
-(defalias 'pgg-char-int (if (fboundp 'char-int)
-			    'char-int
-			  'identity))
+(eval-and-compile
+  (defalias 'pgg-char-int (if (fboundp 'char-int)
+			      'char-int
+			    'identity)))
 
 (defmacro pgg-format-key-identifier (string)
   `(mapconcat (lambda (c) (format "%02X" (pgg-char-int c)))
@@ -493,9 +494,10 @@
     (insert string)
     (pgg-decode-armor-region (point-min)(point))))
 
-(defalias 'pgg-string-as-unibyte (if (fboundp 'string-as-unibyte)
-				     'string-as-unibyte
-				   'identity))
+(eval-and-compile
+  (defalias 'pgg-string-as-unibyte (if (fboundp 'string-as-unibyte)
+				       'string-as-unibyte
+				     'identity)))
 
 (defun pgg-parse-armor-region (start end)
   (pgg-parse-armor (pgg-string-as-unibyte (buffer-substring start end))))
