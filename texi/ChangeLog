@@ -1,3 +1,7 @@
+2001-12-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (NNTP): Add a note for `nntp-prepare-post-hook'.
+
 2001-12-18  Josh Huber  <huber@alum.wpi.edu>
 
 	* ChangeLog, gnus.texi, emacs-mime.texi: (oops) removed

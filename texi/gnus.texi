@@ -11561,6 +11561,9 @@ inhibit Gnus to add a @code{Message-ID} header, you could say:
 @lisp
 (add-hook 'nntp-prepare-post-hook 'canlock-insert-header)
 @end lisp
+
+Note that not all servers support the recommended ID.  This works for
+INN versions 2.3.0 and later, for instance.
 @end table
 
 @menu
