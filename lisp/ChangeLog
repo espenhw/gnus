@@ -1,3 +1,23 @@
+2003-01-15  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-use-bogofilter-headers, spam-bogofilter-header) 
+	(spam-bogofilter-database-directory): new variables
+	(spam-check-bogofilter-headers, spam-check-bogofilter) 
+	(spam-bogofilter-register-with-bogofilter) 
+	(spam-bogofilter-register-spam-routine) 
+	(spam-bogofilter-register-ham-routine) 
+	(spam-group-ham-processor-bogofilter-p): new functions for the new
+	Bogofilter interface
+	(spam-summary-prepare-exit): use the new Bogofilter functions
+	(spam-list-of-checks): added spam-use-bogofilter-headers
+	(gnus-summary-mode-map): removed the spam-bogofilter-score entries
+	for now
+
+	* gnus.el (gnus-install-group-spam-parameters): new variable, t by
+	default, in the gnus-start customization group.  Used to disable
+	the spam-*/ham-* parameters.
+	(gnus-group-ham-exit-processor-bogofilter): new ham processor
+
 2003-01-15  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-xmas.el (gnus-xmas-redefine): Use region-exists-p in
@@ -19,12 +39,6 @@
 
 	* nnimap.el (nnimap-split-download-body): New variable.
 	(nnimap-split-articles): Use it.
-
-2003-01-15  Teodor Zlatanov  <tzz@lifelogs.com>
-
-	* gnus.el (gnus-install-group-spam-parameters): new variable, t by
-	default, in the gnus-start customization group.  Used to disable
-	the spam-*/ham-* parameters.
 
 2002-01-14  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 

@@ -105,8 +105,15 @@ The regular expression is matched against the address."
   :type 'boolean
   :group 'spam)
 
+(defcustom spam-use-bogofilter-headers nil
+  "Whether bogofilter headers should be used by spam-split.
+Enable this if you pre-process messages with Bogofilter BEFORE Gnus sees them."
+  :type 'boolean
+  :group 'spam)
+
 (defcustom spam-use-bogofilter nil
-  "Whether bogofilter should be used by spam-split."
+  "Whether bogofilter should be invoked by spam-split.
+Enable this if you want Gnus to invoke Bogofilter on new messages."
   :type 'boolean
   :group 'spam)
 
@@ -202,46 +209,31 @@ your main source of newsgroup names."
   "Spam bogofilter configuration."
   :group 'spam)
 
-(defcustom spam-bogofilter-output-buffer-name "*Bogofilter Output*"
-  "Name of buffer when displaying `bogofilter -v' output."  
-  :type 'string
-  :group 'spam-bogofilter)
-
-(defcustom spam-bogofilter-initial-timeout 40
-  "Timeout in seconds for the initial reply from the `bogofilter' program."
-  :type 'integer
-  :group 'spam-bogofilter)
-
-(defcustom spam-bogofilter-subsequent-timeout 15
-  "Timeout in seconds for any subsequent reply from the `bogofilter' program."
-  :type 'integer
-  :group 'spam-bogofilter)
-
 (defcustom spam-bogofilter-path (executable-find "bogofilter")
   "File path of the Bogofilter executable program."
   :type '(choice (file :tag "Location of bogofilter")
 		 (const :tag "Bogofilter is not installed"))
   :group 'spam-bogofilter)
 
-;; FIXME!  In the following regexp, we should explain which tool produces
-;; which kind of header.  I do not even remember them all by now.  X-Junk
-;; (and previously X-NoSpam) are produced by the `NoSpam' tool, which has
-;; never been published, so it might not be reasonable leaving it in the
-;; list.
-(defcustom spam-bogofilter-spaminfo-header-regexp 
-  "^X-\\(jf\\|Junk\\|NoSpam\\|Spam\\|SB\\)[^:]*:"
-  "Regexp for spam markups in headers.
-Markup from spam recognisers, as well as `Xref', are to be removed from
-articles before they get registered by Bogofilter."
-  :type 'regexp
+(defcustom spam-bogofilter-header "X-Bogosity"
+  "The header that Bogofilter inserts in messages."
+  :type 'string
   :group 'spam-bogofilter)
+
+(defcustom spam-bogofilter-database-directory nil
+  "Directory path of the Bogofilter databases."
+  :type '(choice (directory :tag "Location of the Bogofilter database directory")
+		 (const :tag "Use the default"))
+  :group 'spam-ifile)
 
 ;;; Key bindings for spam control.
 
 (gnus-define-keys gnus-summary-mode-map
-  "St" spam-bogofilter-score
+;;; bogofilter scores don't work yet
+;;;  "St" spam-bogofilter-score
   "Sx" gnus-summary-mark-as-spam
-  "Mst" spam-bogofilter-score
+;;; bogofilter scores don't work yet
+;;;  "Mst" spam-bogofilter-score
   "Msx" gnus-summary-mark-as-spam
   "\M-d" gnus-summary-mark-as-spam)
 
@@ -284,6 +276,9 @@ articles before they get registered by Bogofilter."
 (defun spam-group-ham-processor-ifile-p (group)
   (spam-group-processor-p group 'gnus-group-ham-exit-processor-ifile))
 
+(defun spam-group-ham-processor-bogofilter-p (group)
+  (spam-group-processor-p group 'gnus-group-ham-exit-processor-ifile))
+
 (defun spam-group-spam-processor-stat-p (group)
   (spam-group-processor-p group 'gnus-group-spam-exit-processor-stat))
 
@@ -307,7 +302,7 @@ articles before they get registered by Bogofilter."
   ;; The spam processors are invoked for any group, spam or ham or neither
   (when (and spam-bogofilter-path
 	     (spam-group-spam-processor-bogofilter-p gnus-newsgroup-name))
-    (spam-bogofilter-register-routine))
+    (spam-bogofilter-register-spam-routine))
   
   (when (and spam-ifile-path
 	     (spam-group-spam-processor-ifile-p gnus-newsgroup-name))
@@ -335,6 +330,8 @@ articles before they get registered by Bogofilter."
       (spam-whitelist-register-routine))
     (when (spam-group-ham-processor-ifile-p gnus-newsgroup-name)
       (spam-ifile-register-ham-routine))
+    (when (spam-group-ham-processor-bogofilter-p gnus-newsgroup-name)
+      (spam-bogofilter-register-ham-routine))
     (when (spam-group-ham-processor-stat-p gnus-newsgroup-name)
       (spam-stat-register-ham-routine))
     (when (spam-group-ham-processor-BBDB-p gnus-newsgroup-name)
@@ -444,13 +441,14 @@ articles before they get registered by Bogofilter."
 ;;;; Spam determination.
 
 (defvar spam-list-of-checks
-  '((spam-use-blacklist  . spam-check-blacklist)
-    (spam-use-whitelist  . spam-check-whitelist)
-    (spam-use-BBDB	 . spam-check-BBDB)
-    (spam-use-ifile	 . spam-check-ifile)
-    (spam-use-stat	 . spam-check-stat)
-    (spam-use-blackholes . spam-check-blackholes)
-    (spam-use-bogofilter . spam-check-bogofilter))
+  '((spam-use-blacklist  		. 	spam-check-blacklist)
+    (spam-use-whitelist  		. 	spam-check-whitelist)
+    (spam-use-BBDB	 		. 	spam-check-BBDB)
+    (spam-use-ifile	 		. 	spam-check-ifile)
+    (spam-use-stat	 		. 	spam-check-stat)
+    (spam-use-blackholes 		. 	spam-check-blackholes)
+    (spam-use-bogofilter-headers 	. 	spam-check-bogofilter-headers)
+    (spam-use-bogofilter 		. 	spam-check-bogofilter))
 "The spam-list-of-checks list contains pairs associating a parameter
 variable with a spam checking function.  If the parameter variable is
 true, then the checking function is called, and its value decides what
@@ -770,225 +768,60 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 
 ;;;; Bogofilter
 
-;;; See Paul Graham article, at `http://www.paulgraham.com/spam.html'.
-
-;;; This page is for those wanting to control spam with the help of
-;;; Eric Raymond's speedy Bogofilter, see
-;;; http://www.tuxedo.org/~esr/bogofilter.  This has been tested with
-;;; a locally patched copy of version 0.4.
-
-;;; Make sure Bogofilter is installed.  Bogofilter internally uses
-;;; Judy fast associative arrays, so you need to install Judy first,
-;;; and Bogofilter next.  Fetch both distributions by visiting the
-;;; following links and downloading the latest version of each:
-;;;
-;;;     http://sourceforge.net/projects/judy/
-;;;     http://www.tuxedo.org/~esr/bogofilter/
-;;;
-;;; Unpack the Judy distribution and enter its main directory.  Then do:
-;;;
-;;;     ./configure
-;;;     make
-;;;     make install
-;;;
-;;; You will likely need to become super-user for the last step.
-;;; Then, unpack the Bogofilter distribution and enter its main
-;;; directory:
-;;;
-;;;     make
-;;;     make install
-;;;
-;;; Here as well, you need to become super-user for the last step.
-;;; Now, initialize your word lists by doing, under your own identity:
-;;;
-;;;     mkdir ~/.bogofilter
-;;;     touch ~/.bogofilter/badlist
-;;;     touch ~/.bogofilter/goodlist
-;;;
-;;; These two files are text files you may edit, but you normally don't!
-
-;;; The `M-d' command gets added to Gnus summary mode, marking current
-;;; article as spam, showing it with the `H' mark.  Whenever you see a
-;;; spam article, make sure to mark its summary line with `M-d' before
-;;; leaving the group.  Some groups, as per variable
-;;; `spam-junk-mailgroups' below, receive articles from Gnus splitting
-;;; on clues added by spam recognisers, so for these groups, we tack
-;;; an `H' mark at group entry for all summary lines which would
-;;; otherwise have no other mark.  Make sure to _remove_ `H' marks for
-;;; any article which is _not_ genuine spam, before leaving such
-;;; groups: you may use `M-u' to "unread" the article, or `d' for
-;;; declaring it read the non-spam way.  When you leave a group, all
-;;; `H' marked articles, saved or unsaved, are sent to Bogofilter
-;;; which will study them as spam samples.
-
-;;; Messages may also be deleted in various other ways, and unless
-;;; `spam-ham-marks-form' gets overridden below, marks `R' and `r' for
-;;; default read or explicit delete, marks `X' and 'K' for automatic
-;;; or explicit kills, as well as mark `Y' for low scores, are all
-;;; considered to be associated with articles which are not spam.
-;;; This assumption might be false, in particular if you use kill
-;;; files or score files as means for detecting genuine spam, you
-;;; should then adjust `spam-ham-marks-form'.  When you leave a group,
-;;; all _unsaved_ articles bearing any the above marks are sent to
-;;; Bogofilter which will study these as not-spam samples.  If you
-;;; explicit kill a lot, you might sometimes end up with articles
-;;; marked `K' which you never saw, and which might accidentally
-;;; contain spam.  Best is to make sure that real spam is marked with
-;;; `H', and nothing else.
-
-;;; All other marks do not contribute to Bogofilter pre-conditioning.
-;;; In particular, ticked, dormant or souped articles are likely to
-;;; contribute later, when they will get deleted for real, so there is
-;;; no need to use them prematurely.  Explicitly expired articles do
-;;; not contribute, command `E' is a way to get rid of an article
-;;; without Bogofilter ever seeing it.
-
-;;; In a word, with a minimum of care for associating the `H' mark for
-;;; spam articles only, Bogofilter training all gets fairly automatic.
-;;; You should do this until you get a few hundreds of articles in
-;;; each category, spam or not.  The shell command `head -1
-;;; ~/.bogofilter/*' shows both article counts.  The command `S S' in
-;;; summary mode, either for debugging or for curiosity, triggers
-;;; Bogofilter into displaying in another buffer the "spamicity" score
-;;; of the current article (between 0.0 and 1.0), together with the
-;;; article words which most significantly contribute to the score.
-
-;;; The real way for using Bogofilter, however, is to have some use
-;;; tool like `procmail' for invoking it on message reception, then
-;;; adding some recognisable header in case of detected spam.  Gnus
-;;; splitting rules might later trip on these added headers and react
-;;; by sorting such articles into specific junk folders as per
-;;; `spam-junk-mailgroups'.  Here is a possible `.procmailrc' contents
-;;; (still untested -- please tell me how it goes):
-;;;
-;;; :0HBf:
-;;; * ? bogofilter
-;;; | formail -bfI "X-Spam-Status: Yes"
+(defun spam-check-bogofilter-headers ()
+  (let ((header (message-fetch-field spam-bogofilter-header)))
+      (if (and header
+	       (string-match "^Yes" header))
+	  spam-split-group
+	nil)))
+	  
 
 (defun spam-check-bogofilter ()
-  ;; Dynamic spam check.  I do not know how to check the exit status,
-  ;; so instead, read `bogofilter -v' output.
-  (when (and spam-use-bogofilter spam-bogofilter-path)
-    (spam-bogofilter-articles nil "-v" (list (gnus-summary-article-number)))
-    (when (save-excursion
-	    (set-buffer spam-bogofilter-output-buffer-name)
-	    (goto-char (point-min))
-	    (re-search-forward "Spamicity: \\(0\\.9\\|1\\.0\\)" nil t))
-      spam-split-group)))
+  "Check the Bogofilter backend for the classification of this message"
+  (let ((article-buffer-name (buffer-name)) 
+	return bogorun)
+    (with-temp-buffer
+      (let ((temp-buffer-name (buffer-name)))
+	(save-excursion
+	  (set-buffer article-buffer-name)
+	  (if spam-bogofilter-database-directory
+	      (call-process-region (point-min) (point-max) 
+				   spam-bogofilter-path
+				   nil temp-buffer-name nil "-v"
+				   "-d" spam-bogofilter-database-directory)
+	    (call-process-region (point-min) (point-max) spam-bogofilter-path
+				 nil temp-buffer-name nil "-v")))
+	(when (spam-check-bogofilter-headers)
+	  (setq return spam-split-group))))
+    return))
 
-(defun spam-bogofilter-score ()
-  "Use `bogofilter -v' on the current article.
-This yields the 15 most discriminant words for this article and the
-spamicity coefficient of each, and the overall article spamicity."
-  (interactive)
-  (when (and spam-use-bogofilter spam-bogofilter-path)
-    (spam-bogofilter-articles nil "-v" (list (gnus-summary-article-number)))
-    (with-current-buffer spam-bogofilter-output-buffer-name
-      (unless (zerop (buffer-size))
-	(if (<= (count-lines (point-min) (point-max)) 1)
-	    (progn
-	      (goto-char (point-max))
-	      (when (bolp)
-		(backward-char 1))
-	      (message "%s" (buffer-substring (point-min) (point))))
-	  (goto-char (point-min))
-	  (display-buffer (current-buffer)))))))
+(defun spam-bogofilter-register-with-bogofilter (article-string spam)
+  "Register an article, given as a string, as spam or non-spam."
+  (when (stringp article-string)
+    (let ((switch (if spam "-s" "-n")))
+      (with-temp-buffer
+	(insert-string article-string)
+	(if spam-bogofilter-database-directory
+	    (call-process-region (point-min) (point-max) 
+				 spam-bogofilter-path
+				 nil nil nil "-v" switch
+				 "-d" spam-bogofilter-database-directory)
+	  (call-process-region (point-min) (point-max) spam-bogofilter-path
+			       nil nil nil "-v" switch))))))
 
-(defun spam-bogofilter-register-routine ()
-  (let ((articles gnus-newsgroup-articles)
-	article mark ham-articles spam-articles spam-mark-values 
-	ham-mark-values)
+(defun spam-bogofilter-register-spam-routine ()
+  (spam-generic-register-routine 
+   (lambda (article)
+     (spam-bogofilter-register-with-bogofilter
+      (spam-get-article-as-string article) t))
+   nil))
 
-    ;; marks are stored as symbolic values, so we have to dereference
-    ;; them for memq to work we wouldn't have to do this if
-    ;; gnus-summary-article-mark returned a symbol.
-    (dolist (mark spam-ham-marks)
-      (push (symbol-value mark) ham-mark-values))
-
-    (dolist (mark spam-spam-marks)
-      (push (symbol-value mark) spam-mark-values))
-
-    (while articles
-      (setq article (pop articles)
-	    mark (gnus-summary-article-mark article))
-      (cond ((memq mark spam-mark-values) (push article spam-articles))
-	    ((memq article gnus-newsgroup-saved))
-	    ((memq mark ham-mark-values) (push article ham-articles))))
-    (when ham-articles
-      (spam-bogofilter-articles "ham" "-n" ham-articles))
-    (when spam-articles
-      (spam-bogofilter-articles "SPAM" "-s" spam-articles))))
-
-(defun spam-bogofilter-articles (type option articles)
-  (let ((output-buffer (get-buffer-create spam-bogofilter-output-buffer-name))
-	(article-copy (get-buffer-create " *Bogofilter Article Copy*"))
-	(remove-regexp (concat spam-bogofilter-spaminfo-header-regexp 
-			       "\\|Xref:"))
-	(counter 0)
-	prefix process article)
-    (when type
-      (setq prefix (format "Studying %d articles as %s..." (length articles)
-			   type))
-      (message "%s" prefix))
-    (save-excursion (set-buffer output-buffer) (erase-buffer))
-    (setq process (start-process "bogofilter" output-buffer
-				 spam-bogofilter-path "-F" option))
-    (process-kill-without-query process t)
-    (unwind-protect
-	(save-window-excursion
-	  (while articles
-	    (setq counter (1+ counter))
-	    (when prefix
-	      (message "%s %d" prefix counter))
-	    (setq article (pop articles))
-	    (gnus-summary-goto-subject article)
-	    (gnus-summary-show-article t)
-	    (gnus-eval-in-buffer-window article-copy
-	      (insert-buffer-substring gnus-original-article-buffer)
-	      ;; Remove spam classification redundant headers: they may induce
-	      ;; unwanted biases in later analysis.
-	      (message-remove-header remove-regexp t)
-	      ;; Bogofilter really wants From envelopes for counting articles.
-	      ;; Fake one at the beginning, make sure there will be no other.
-	      (goto-char (point-min))
-	      (if (looking-at "From ")
-		  (forward-line 1)
-		(insert "From nobody " (current-time-string) "\n"))
-	      (let (case-fold-search)
-		(while (re-search-forward "^From " nil t)
-		  (beginning-of-line)
-		  (insert ">")))
-	      (process-send-region process (point-min) (point-max))
-	      (erase-buffer))))
-      ;; Sending the EOF is unwind-protected.  This is to prevent lost copies
-      ;; of `bogofilter', hung on reading their standard input, in case the
-      ;; whole registering process gets interrupted by the user.
-      (process-send-eof process))
-    (kill-buffer article-copy)
-    ;; Receive process output.  It sadly seems that we still have to protect
-    ;; ourselves against hung `bogofilter' processes.
-    (let ((status (process-status process))
-	  (timeout (* 1000 spam-bogofilter-initial-timeout))
-	  (quanta 200))			; also counted in milliseconds
-      (while (and (not (eq status 'exit)) (> timeout 0))
-	;; `accept-process-output' timeout is counted in microseconds.
-	(setq timeout (if (accept-process-output process 0 (* 1000 quanta))
-			  (* 1000 spam-bogofilter-subsequent-timeout)
-			(- timeout quanta))
-	      status (process-status process)))
-      (if (eq status 'exit)
-	  (when prefix
-	    (message "%s done!" prefix))
-	;; Sigh!  The process did time out...  Become brutal!
-	(interrupt-process process)
-	(message "%s %d INTERRUPTED!  (Article %d, status %s)"
-		 (or prefix "Bogofilter process...")
-		 counter article status)
-	;; Give some time for user to read.  Sitting redisplays but gives up
-	;; if input is pending.  Sleeping does not give up, but it does not
-	;; redisplay either.  Mix both: let's redisplay and not give up.
-	(sit-for 1)
-	(sleep-for 3)))))
+(defun spam-bogofilter-register-ham-routine ()
+  (spam-generic-register-routine 
+   nil
+   (lambda (article)
+     (spam-bogofilter-register-with-bogofilter
+      (spam-get-article-as-string article) nil))))
 
 (provide 'spam)
 
