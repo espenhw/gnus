@@ -1189,7 +1189,7 @@ password contained in '~/.nntp-authinfo'."
 	    (nntp-send-command-nodelete
 	     "\r?\n\\.\r?\n" nntp-server-xover range)
 	  ;; We do not wait for the reply.
-	  (nntp-send-command-nodelete "\r?\n\\.\r?\n" nntp-server-xover range))
+	  (nntp-send-command-nodelete nil nntp-server-xover range))
       (let ((commands nntp-xover-commands))
 	;; `nntp-xover-commands' is a list of possible XOVER commands.
 	;; We try them all until we get at positive response.
