@@ -84,17 +84,6 @@
 	     (setq arg (cdr arg)))
 	   (apply (function nconc) (nreverse res))))))
 
-  (define-compiler-macro member-if (&whole form pred list)
-    (if (and (fboundp 'member-if)
-	     (subrp (symbol-function 'member-if)))
-	form
-      `(let ((fn ,pred)
-	     (seq ,list))
-	 (while (and seq
-		     (not (funcall fn (car seq))))
-	   (pop seq))
-	 seq)))
-
   (define-compiler-macro union (&whole form list1 list2)
     (if (and (fboundp 'union)
 	     (subrp (symbol-function 'union)))
