@@ -1,5 +1,5 @@
 ;;; nnmaildir.el --- maildir backend for Gnus
-;; Copyright (c) 2001 Free Software Foundation, Inc.
+;; Copyright (c) 2001, 2002 Free Software Foundation, Inc.
 ;; Copyright (c) 2000, 2001 Paul Jarc <prj@po.cwru.edu>
 
 ;; Author: Paul Jarc <prj@po.cwru.edu>
@@ -30,17 +30,15 @@
 ;;
 ;; Some goals of nnmaildir:
 ;; * Everything Just Works, and correctly.  E.g., stale NOV data is
-;;   ignored when articles have been edited; no need for
-;;   -generate-nov-databases.
+;;   ignored; no need for -generate-nov-databases.
 ;; * Perfect reliability: [C-g] will never corrupt its data in memory,
 ;;   and SIGKILL will never corrupt its data in the filesystem.
 ;; * We make it easy to manipulate marks, etc., from outside Gnus.
 ;; * All information about a group is stored in the maildir, for easy
-;;   backup and restoring.
+;;   backup, copying, restoring, etc.
 ;; * We use the filesystem as a database.
 ;;
 ;; Todo:
-;; * Ignore old NOV data when gnus-extra-headers has changed.
 ;; * Don't force article renumbering, so nnmaildir can be used with
 ;;   the cache and agent.  Alternatively, completely rewrite the Gnus
 ;;   backend interface, which would have other advantages.
@@ -136,7 +134,9 @@ by nnmaildir-request-article.")
  ["subject\tfrom\tdate"
   "references\tchars\lines"
   "extra"
-  article-file-modtime]]
+  article-file-modtime
+  ;; The value of nnmail-extra-headers when this NOV data was parsed:
+  (to in-reply-to)]]
 
 (defmacro nnmaildir--srv-new () '(make-vector 11 nil))
 (defmacro nnmaildir--srv-get-name       (server) `(aref ,server  0))
@@ -213,15 +213,17 @@ by nnmaildir-request-article.")
 (defmacro nnmaildir--art-set-msgid  (article val) `(aset ,article 3 ,val))
 (defmacro nnmaildir--art-set-nov    (article val) `(aset ,article 4 ,val))
 
-(defmacro nnmaildir--nov-new () '(make-vector 4 nil))
+(defmacro nnmaildir--nov-new () '(make-vector 5 nil))
 (defmacro nnmaildir--nov-get-beg   (nov) `(aref ,nov 0))
 (defmacro nnmaildir--nov-get-mid   (nov) `(aref ,nov 1))
 (defmacro nnmaildir--nov-get-end   (nov) `(aref ,nov 2))
 (defmacro nnmaildir--nov-get-mtime (nov) `(aref ,nov 3))
+(defmacro nnmaildir--nov-get-neh   (nov) `(aref ,nov 4))
 (defmacro nnmaildir--nov-set-beg   (nov val) `(aset ,nov 0 ,val))
 (defmacro nnmaildir--nov-set-mid   (nov val) `(aset ,nov 1 ,val))
 (defmacro nnmaildir--nov-set-end   (nov val) `(aset ,nov 2 ,val))
 (defmacro nnmaildir--nov-set-mtime (nov val) `(aset ,nov 3 ,val))
+(defmacro nnmaildir--nov-set-neh   (nov val) `(aset ,nov 4 ,val))
 
 (defmacro nnmaildir--srv-grp-dir (srv-dir gname)
   `(file-name-as-directory (concat ,srv-dir ,gname)))
@@ -289,7 +291,8 @@ by nnmaildir-request-article.")
 (defun nnmaildir--update-nov (srv-dir group article)
   (let ((nnheader-file-coding-system 'binary)
         dir gname pgname msgdir prefix suffix file attr mtime novdir novfile
-        nov msgid nov-beg nov-mid nov-end field pos extra val deactivate-mark)
+        nov msgid nov-beg nov-mid nov-end field pos extra val old-neh new-neh
+        deactivate-mark)
     (catch 'return
       (setq suffix (nnmaildir--art-get-suffix article))
       (if (stringp suffix) nil
@@ -315,17 +318,35 @@ by nnmaildir-request-article.")
             novfile (concat novdir prefix))
       (save-excursion
         (set-buffer (get-buffer-create " *nnmaildir nov*"))
-        (when (file-exists-p novfile)
-          (and nov
-               (equal mtime (nnmaildir--nov-get-mtime nov))
-               (throw 'return nov))
-          (erase-buffer)
-          (nnheader-insert-file-contents novfile)
-          (setq nov (read (current-buffer)))
-          (nnmaildir--art-set-msgid article (car nov))
-          (setq nov (cadr nov))
-          (and (equal mtime (nnmaildir--nov-get-mtime nov))
-               (throw 'return nov)))
+        (when (file-exists-p novfile) ;; If not, force reparsing the message.
+          (if nov nil ;; It's already in memory.
+            ;; Else read the data from the NOV file.
+            (erase-buffer)
+            (nnheader-insert-file-contents novfile)
+            (setq nov (read (current-buffer)))
+            (nnmaildir--art-set-msgid article (car nov))
+            (setq nov (cadr nov)))
+          ;; If the NOV's modtime matches the file's current modtime,
+          ;; and it has the right length (i.e., it wasn't produced by
+          ;; a too-much older version of nnmaildir), then we may use
+          ;; this NOV data rather than parsing the message file,
+          ;; unless nnmail-extra-headers has been augmented since this
+          ;; data was last parsed.
+          (when (and (equal mtime (nnmaildir--nov-get-mtime nov))
+                     (= (length nov) (length (nnmaildir--nov-new))))
+            ;; This NOV data is potentially up-to-date.
+            (setq old-neh (nnmaildir--nov-get-neh nov)
+                  new-neh nnmail-extra-headers)
+            (if (equal new-neh old-neh) (throw 'return nov)) ;; Common case.
+            ;; They're not equal, but maybe the new is a subset of the old...
+            (if (null new-neh) (throw 'return nov))
+            (while new-neh
+              (if (memq (car new-neh) old-neh)
+                  (progn
+                    (setq new-neh (cdr new-neh))
+                    (if new-neh nil (throw 'return nov)))
+                (setq new-neh nil)))))
+        ;; Parse the NOV data out of the message.
         (erase-buffer)
         (nnheader-insert-file-contents file)
         (insert "\n")
@@ -399,6 +420,7 @@ by nnmaildir-request-article.")
         (nnmaildir--nov-set-mid nov nov-mid)
         (nnmaildir--nov-set-end nov nov-end)
         (nnmaildir--nov-set-mtime nov mtime)
+        (nnmaildir--nov-set-neh nov (copy-sequence nnmail-extra-headers))
         (prin1 (list msgid nov) (current-buffer))
         (setq file (concat novdir ":"))
         (nnmaildir--unlink file)

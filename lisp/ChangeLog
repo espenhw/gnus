@@ -1,3 +1,13 @@
+2002-01-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-diary.el, gnus-delay.el: Fix copyright lines.
+
+2002-01-01  Paul Jarc <prj@po.cwru.edu>
+	
+	* nnmaildir.el (nnmaildir--update-nov): automatically parse
+	NOV data out of the message again if nnmail-extra-headers has
+	changed.
+	
 2002-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-fun.el: New file.
@@ -959,8 +969,8 @@
 
 2001-11-20 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* mm-util.el (mm-coding-system-priorities): New.
-	(mm-sort-coding-systems-predicate): New.
+	* mm-util.el (mm-coding-system-priorities): New variable.
+	(mm-sort-coding-systems-predicate): New function.
 	(mm-find-mime-charset-region): Resort coding systems if needed.
 	Suggested by Katsumi Yamaoka <yamaoka@jpl.org>.
 
