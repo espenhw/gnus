@@ -1,5 +1,5 @@
 ;;; gnus-sum.el --- summary mode commands for Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -1725,7 +1725,7 @@ increase the score of each group you read."
     "l" gnus-summary-stop-page-breaking
     "r" gnus-summary-caesar-message
     "t" gnus-summary-toggle-header
-    "g" gnus-summary-toggle-smiley
+    "g" gnus-treat-smiley
     "u" gnus-article-treat-unfold-headers
     "n" gnus-article-treat-fold-newsgroups
     "v" gnus-summary-verbose-headers
@@ -1754,7 +1754,8 @@ increase the score of each group you read."
 
   (gnus-define-keys (gnus-summary-wash-display-map "D" gnus-summary-wash-map)
     "x" gnus-article-display-x-face
-    "s" gnus-summary-toggle-smiley
+    "s" gnus-treat-smiley
+    "D" gnus-article-remove-images
     "f" gnus-treat-from-picon
     "m" gnus-treat-mail-picon
     "n" gnus-treat-newsgroups-picon)
@@ -1902,7 +1903,8 @@ increase the score of each group you read."
 	      ["Lapsed" gnus-article-date-lapsed t]
 	      ["User-defined" gnus-article-date-user t])
 	     ("Display"
-	      ["Toggle smiley" gnus-summary-toggle-smiley t]
+	      ["Remove images" gnus-article-remove-images t]
+	      ["Toggle smiley" gnus-treat-smiley t]
 	      ["Show X-Face" gnus-article-display-x-face t]
 	      ["Show picons in From" gnus-treat-from-picon t]
 	      ["Show picons in mail headers" gnus-treat-mail-picon t]
@@ -8767,14 +8769,6 @@ groups."
   (gnus-summary-edit-article)
   (execute-kbd-macro (concat (this-command-keys) key))
   (gnus-article-edit-done))
-
-
-(defun gnus-summary-toggle-smiley (&optional arg)
-  "Toggle the display of smilies as small graphical icons."
-  (interactive "P")
-  (save-excursion
-    (set-buffer gnus-article-buffer)
-    (gnus-smiley-display arg)))
 
 ;;; Respooling
 

@@ -1,6 +1,6 @@
 ;;; gnus-xmas.el --- Gnus functions for XEmacs
 
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -673,7 +673,7 @@ XEmacs compatibility workaround."
 		    (vector 'xpm :data (buffer-string)))))))
 	    (t
 	     (make-glyph [nothing])))))
-      ;;(set-glyph-face xface-glyph 'gnus-x-face)
+      (set-glyph-face xface-glyph 'gnus-x-face)
 
       (gnus-article-goto-header "from")
       (gnus-put-image xface-glyph " ")

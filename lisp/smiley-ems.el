@@ -1,6 +1,6 @@
 ;;; smiley-ems.el --- displaying smiley faces
 
-;; Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+;; Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
 
 ;; Author: Dave Love <fx@gnu.org>
 ;; Keywords: news mail multimedia
@@ -162,25 +162,6 @@ With arg, turn displaying on if and only if arg is positive."
     (save-window-excursion
       (mouse-set-point event)
       (smiley-toggle-buffer))))
-
-(eval-when-compile (defvar gnus-article-buffer))
-
-(defun gnus-smiley-display (&optional arg)
-  "Display textual emoticaons (\"smilies\") as small graphical icons.
-With arg, turn displaying on if and only if arg is positive."
-  (interactive "P")
-  (gnus-with-article-buffer
-    (if (memq 'smiley gnus-article-wash-types)
-	(gnus-delete-images 'smiley)
-      (article-goto-body)
-      (let ((images (smiley-region (point) (point-max))))
-	(when images
-	  (gnus-add-wash-type 'smiley)
-	  (dolist (image images)
-	    (gnus-add-image 'smiley image))))
-      (when (and (numberp arg)
-		 (<= arg 0))
-	(smiley-toggle-buffer arg)))))
 
 (provide 'smiley)
 

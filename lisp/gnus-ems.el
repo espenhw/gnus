@@ -48,8 +48,8 @@
   (autoload 'appt-select-lowest-window "appt"))
 
 (if (featurep 'xemacs)
-    (autoload 'gnus-smiley-display "smiley")
-  (autoload 'gnus-smiley-display "smiley-ems")) ; override XEmacs version
+    (autoload 'smiley-region "smiley")
+  (autoload 'smiley-region "smiley-ems")) ; override XEmacs version
 
 (defun gnus-kill-all-overlays ()
   "Delete all overlays in the current buffer."

@@ -2055,7 +2055,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-picon" :interactive t gnus-treat-from-picon)
      ("gnus-gl" bbb-login bbb-logout bbb-grouplens-group-p
       gnus-grouplens-mode)
-     ("smiley" :interactive t gnus-smiley-display)
+     ("smiley" :interactive t smiley-region)
      ("gnus-win" gnus-configure-windows gnus-add-configuration)
      ("gnus-sum" gnus-summary-insert-line gnus-summary-read-group
       gnus-list-of-unread-articles gnus-list-of-read-articles

@@ -1,8 +1,20 @@
+2002-01-01  Steve Youngs  <youngs@xemacs.org>
+
+	* gnus-xmas.el (gnus-xmas-article-display-xface): Uncomment
+	'set-glyph-face' so x-face back/foreground can be set.
+
 2001-12-31  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-fix-before-sending): Fix a typo.
 
 2002-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-treat-smiley): Renamed command.
+	(gnus-article-remove-images): New command and keystroke.
+
+	* gnus-sum.el (gnus-summary-toggle-smiley): Removed.
+
+	* smiley-ems.el (gnus-smiley-display): Removed.
 
 	* gnus.el (gnus-version-number): Update version.
 

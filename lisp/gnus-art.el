@@ -1211,7 +1211,7 @@ It is a string, such as \"PGP\". If nil, ask user."
     (gnus-treat-unfold-headers gnus-article-treat-unfold-headers)
     (gnus-treat-fold-newsgroups gnus-article-treat-fold-newsgroups)
     (gnus-treat-buttonize-head gnus-article-add-buttons-to-head)
-    (gnus-treat-display-smileys gnus-smiley-display)
+    (gnus-treat-display-smileys gnus-treat-smiley)
     (gnus-treat-capitalize-sentences gnus-article-capitalize-sentences)
     (gnus-treat-emphasize gnus-article-emphasize)
     (gnus-treat-display-xface gnus-article-display-x-face)
@@ -1638,6 +1638,26 @@ unfolded."
 	    (while (re-search-forward "[\t ]*\n[\t ]+" nil t)
 	      (replace-match " " t t)))
 	  (goto-char (point-max)))))))
+
+(defun gnus-treat-smiley ()
+  "Display textual emoticons (\"smileys\") as small graphical icons."
+  (interactive "P")
+  (gnus-with-article-buffer
+    (if (memq 'smiley gnus-article-wash-types)
+	(gnus-delete-images 'smiley)
+      (article-goto-body)
+      (let ((images (smiley-region (point) (point-max))))
+	(when images
+	  (gnus-add-wash-type 'smiley)
+	  (dolist (image images)
+	    (gnus-add-image 'smiley image)))))))
+
+(defun gnus-article-remove-images ()
+  "Remove all images from the article buffer."
+  (interactive)
+  (gnus-with-article-buffer
+    (dolist (elem gnus-article-image-alist)
+      (gnus-delete-images (car elem)))))
 
 (defun gnus-article-treat-fold-newsgroups ()
   "Unfold folded message headers.
