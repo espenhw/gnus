@@ -1,3 +1,7 @@
+2004-04-10  Jesper Harder  <harder@ifa.au.dk>
+
+	* emacs-mime.texi (Flowed text): Markup fix.
+
 2004-04-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Blacklists and Whitelists, BBDB Whitelists)
