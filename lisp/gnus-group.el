@@ -3672,6 +3672,8 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
 		     (file-name-nondirectory gnus-current-startup-file))))
     (gnus-run-hooks 'gnus-exit-gnus-hook)
     (gnus-configure-windows 'group t)
+    (gnus-dribble-enter
+     ";;; Gnus was exited on purpose without saving the .newsrc files.")
     (gnus-dribble-save)
     (gnus-close-backends)
     (gnus-clear-system)

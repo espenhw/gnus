@@ -811,6 +811,7 @@ cautiously -- unloading may cause trouble."
       (set-buffer-modified-p nil)
       (let ((auto (make-auto-save-file-name))
 	    (gnus-dribble-ignore t)
+	    (purpose nil)
 	    modes)
 	(when (or (file-exists-p auto) (file-exists-p dribble-file))
 	  ;; Load whichever file is newest -- the auto save file
@@ -826,10 +827,15 @@ cautiously -- unloading may cause trouble."
 		     (file-exists-p dribble-file)
 		     (setq modes (file-modes gnus-current-startup-file)))
 	    (set-file-modes dribble-file modes))
+	  (goto-char (point-min))
+	  (when (search-forward "Gnus was exited on purpose" nil t)
+	    (setq purpose t))
 	  ;; Possibly eval the file later.
 	  (when (or gnus-always-read-dribble-file
 		    (gnus-y-or-n-p
-		     "Gnus auto-save file exists.  Do you want to read it? "))
+		     (if purpose
+			 "Gnus exited on purpose without saving; read auto-save file anyway? "
+		     "Gnus auto-save file exists.  Do you want to read it? ")))
 	    (setq gnus-dribble-eval-file t)))))))
 
 (defun gnus-dribble-eval-file ()

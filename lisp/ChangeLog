@@ -1,3 +1,14 @@
+2001-04-02 00:40:12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-check-news-header-syntax): Question even
+	when Gnus doesn't know the group names.
+	(message-send-news): Clean up.
+
+	* gnus-start.el (gnus-dribble-read-file): Say whether Gnus was
+	exited on purpose without saving.
+
+	* gnus-group.el (gnus-group-quit): Mark the dribble file as `Q'.
+
 2001-04-01 00:37:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-score.el (gnus-score-orphans): Clean up.
