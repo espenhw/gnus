@@ -2179,15 +2179,15 @@ Return nil if no complete line has arrived."
 ;;                       ; revisions of this specification.
 
 (defun imap-parse-flag-list ()
-  (let ((str (buffer-substring (point) (search-forward ")" nil t)))
-	pos)
-    (while (setq pos (string-match "\\\\" str (and pos (+ 2 pos))))
-      (setq str (replace-match "\\\\" nil t str)))
-    ;; xxx ugly. rewrite not to use `read' at all.
-    (when (= (length (symbol-name (read "A?A"))) 1)
-      (while (setq pos (string-match "\\?" str (and pos (+ 2 pos))))
-	(setq str (replace-match "\\?" nil t str))))
-    (mapcar 'symbol-name (read str))))
+  (let (flag-list start)
+    (when (eq (char-after) ?\()
+      (imap-forward)
+      (while (and (not (eq (char-before) ?\)))
+		  (setq start (point))
+		  (> (skip-chars-forward "^ )" (gnus-point-at-eol)) 0))
+	(push (buffer-substring start (point)) flag-list)
+	(imap-forward))
+      (nreverse flag-list))))
 
 ;;   envelope        = "(" env-date SP env-subject SP env-from SP env-sender SP
 ;;                     env-reply-to SP env-to SP env-cc SP env-bcc SP

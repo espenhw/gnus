@@ -1,5 +1,7 @@
 2000-09-01  Simon Josefsson  <simon@josefsson.org>
 
+	* imap.el (imap-parse-flag-list): Rewrite.
+
 	* nnimap.el (nnimap-retrieve-headers-from-file): Ignore errors.
 
 	* imap.el (imap-parse-flag-list): Hack.
