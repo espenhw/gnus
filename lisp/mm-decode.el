@@ -253,6 +253,21 @@ to:
   :type 'boolean
   :group 'mime-display)
 
+(defvar mm-file-name-rewrite-functions nil
+  "*List of functions used for rewriting file names of MIME parts.
+Each function takes a file name as input and returns a file name.
+
+Ready-made functions include
+`mm-file-name-delete-whitespace',
+`mm-file-name-trim-whitespace',
+`mm-file-name-collapse-whitespace',
+`mm-file-name-replace-whitespace',
+`capitalize', `downcase', `upcase', and
+`upcase-initials'.")
+
+(defvar mm-file-name-replace-whitespace nil
+  "String used for replacing whitespace characters; default is `\"_\"'.")
+
 (defcustom mm-default-directory nil
   "The default directory where mm will save files.
 If not set, `default-directory' will be used."
@@ -852,6 +867,35 @@ external if displayed external."
 	    (set-buffer cur)
 	    (insert-buffer-substring temp)))))))
 
+(defun mm-file-name-delete-whitespace (file-name)
+  "Remove all whitespace characters from FILE-NAME."
+  (while (string-match "\\s-+" file-name)
+    (setq file-name (replace-match "" t t file-name)))
+  file-name)
+
+(defun mm-file-name-trim-whitespace (file-name)
+  "Remove leading and trailing whitespace characters from FILE-NAME."
+  (when (string-match "\\`\\s-+" file-name)
+    (setq file-name (substring file-name (match-end 0))))
+  (when (string-match "\\s-+\\'" file-name)
+    (setq file-name (substring file-name 0 (match-beginning 0))))
+  file-name)
+
+(defun mm-file-name-collapse-whitespace (file-name)
+  "Collapse multiple whitespace characters in FILE-NAME."
+  (while (string-match "\\s-\\s-+" file-name)
+    (setq file-name (replace-match " " t t file-name)))
+  file-name)
+
+(defun mm-file-name-replace-whitespace (file-name)
+  "Replace whitespace characters in FILE-NAME with underscores.
+Set `mm-file-name-replace-whitespace' to any other string if you do not
+like underscores."
+  (let ((s (or mm-file-name-replace-whitespace "_")))
+    (while (string-match "\\s-" file-name)
+      (setq file-name (replace-match s t t file-name))))
+  file-name)
+
 (defun mm-save-part (handle)
   "Write HANDLE to a file."
   (let* ((name (mail-content-type-get (mm-handle-type handle) 'name))
@@ -859,7 +903,8 @@ external if displayed external."
 		    (mm-handle-disposition handle) 'filename))
 	 file)
     (when filename
-      (setq filename (file-name-nondirectory filename)))
+      (setq filename (gnus-map-function mm-file-name-rewrite-functions
+					(file-name-nondirectory filename))))
     (setq file
 	  (read-file-name "Save MIME part to: "
 			  (expand-file-name
