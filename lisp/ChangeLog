@@ -1,3 +1,12 @@
+1999-12-06 23:57:47  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnwarchive.el: Support www.mail-archive.com.
+
+1999-12-06 23:55:55  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnmail.el (nnmail-get-new-mail): Remove fetched sources before
+	do anything.
+
 1999-12-06  Simon Josefsson  <jas@pdc.kth.se>
 
 	* utf7.el: New file, written by Jon K Hellan.
