@@ -1,3 +1,7 @@
+2001-01-16  Jesper Harder <harder@ifa.au.dk>
+
+	* gnus.texi (Group Line Specification): Add.
+
 2001-01-15 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Using GPG): Doc fix.

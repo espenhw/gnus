@@ -1726,6 +1726,9 @@ The default is 1---this will mean that group names like
 @samp{%} (@code{gnus-new-mail-mark}) if there has arrived new mail to
 the group lately.
 
+@item p
+@samp{#} (@code{gnus-process-mark}) if the group is process marked.
+
 @item d
 A string that says when you last read the group (@pxref{Group
 Timestamp}).
