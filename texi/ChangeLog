@@ -1,3 +1,19 @@
+2003-03-18  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus.texi (Gnus Unplugged): Refer to new agent Group/Topic
+	parameters.
+	(Category Syntax): New description.
+	(Category Buffer): New command.
+	(Category Variables): New variables.
+	(Agent as Cache): Expanded description.
+	(Agent Expiry): Expanded description.
+	(Agent Variables): Fixed and new descriptions.
+
+        * infohack.el (batch-makeinfo): Provide local implementation of
+	subst-char-in-region as the built-in implementation is unreliable
+	on Windows XP (Intermittent failure results in build looping
+	forever).
+	
 2003-03-18  Paul Jarc  <prj@po.cwru.edu>
 
 	* gnus.texi (Maildir): Replace create-directory with
