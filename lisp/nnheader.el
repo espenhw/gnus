@@ -597,10 +597,10 @@ without formatting."
 (defvar efs-path-regexp)
 (defun nnheader-re-read-dir (path)
   "Re-read directory PATH if PATH is on a remote system."
-    (if (or (fboundp 'efs-re-read-dir) (boundp 'efs-path-regexp))
+    (if (and (fboundp 'efs-re-read-dir) (boundp 'efs-path-regexp))
 	(when (string-match efs-path-regexp path)
 	  (efs-re-read-dir path))
-     (if (or (fboundp 'ange-ftp-re-read-dir) (boundp 'ange-ftp-path-format))
+     (if (and (fboundp 'ange-ftp-re-read-dir) (boundp 'ange-ftp-path-format))
       (when (string-match (car ange-ftp-path-format) path)
 	(ange-ftp-re-read-dir path)))))
 

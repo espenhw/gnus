@@ -32,7 +32,6 @@
 (require 'timezone)
 (require 'nnheader)
 (require 'nnmail)
-(require 'backquote)
 (require 'nnoo)
 
 (eval-when-compile (require 'cl))
@@ -1772,7 +1771,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.33"
+(defconst gnus-version-number "5.2.34"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -12742,6 +12741,7 @@ If ARG is positive number, turn showing conversation threads on."
 	    (> (prefix-numeric-value arg) 0)))
     (gnus-summary-prepare)
     (gnus-summary-goto-subject current)
+    (gnus-message 6 "Threading is now %s" (if gnus-show-threads "on" "off"))
     (gnus-summary-position-point)))
 
 (defun gnus-summary-show-all-threads ()

@@ -31,6 +31,12 @@
 
 (setq custom-file "/THIS FILE DOES NOT eXiST!")
 
+(defalias 'device-sound-enabled-p 'ignore)
+(defalias 'play-sound-file 'ignore)
+(defalias 'nndb-request-article 'ignore)
+(defalias 'efs-re-read-dir 'ignore)
+(defalias 'ange-ftp-re-read-dir 'ignore)
+
 (defun dgnushack-compile ()
   ;(setq byte-compile-dynamic t)
   (let ((files (directory-files "." nil ".el$"))
