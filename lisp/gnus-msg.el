@@ -1254,9 +1254,11 @@ this is a reply."
 		       ;; namess with incompatible character sets.  
 		       ;; -- Per Abrahamsen <abraham@dina.kvl.dk> 2001-10-08.
 		       (group-field-charset
-			(gnus-group-name-charset method newsgroups-field))
+			(gnus-group-name-charset
+			 method (or newsgroups-field "")))
 		       (followup-field-charset 
-			(gnus-group-name-charset method (or followup-field "")))
+			(gnus-group-name-charset
+			 method (or followup-field "")))
 		       (rfc2047-header-encoding-alist
 			(append
 			 (when group-field-charset
