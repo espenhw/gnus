@@ -877,6 +877,9 @@ will attempt to use the foreign server to post the article."
 	    (insert "Newsgroups: " newsgroups "\n"
 		    "Subject: cancel " message-id "\n"
 		    "Control: cancel " message-id "\n"
+		    (if distribution
+			(concat "Distribution: " distribution "\n")
+		      "")
 		    mail-header-separator "\n"
 		    "This is a cancel message from " from ".\n")
 	    ;; Send the control article to NNTP server.
@@ -1067,7 +1070,6 @@ nil."
   (save-excursion
     (let ((signature 
 	   (or (and gnus-signature-function
-		    (fboundp gnus-signature-function)
 		    (funcall gnus-signature-function gnus-newsgroup-name))
 	       gnus-signature-file))
 	  b)

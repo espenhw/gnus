@@ -6328,7 +6328,7 @@ Here's a list of all possible keys:
 @code{browse}, @code{group-mail}, @code{summary-mail},
 @code{summary-reply}, @code{info}, @code{summary-faq},
 @code{edit-group}, @code{edit-server}, @code{reply}, @code{reply-yank},
-@code{followup}, @code{followup-yank}.  
+@code{followup}, @code{followup-yank}, @code{edit-score}.  
 
 @findex gnus-add-configuration
 Since this variable is so long and complicated, there's a function you

@@ -142,14 +142,14 @@
 			  (or (header-xref headers) ""))))
 	t))))
 
-(defvar gnus-cache-remove-articles nil)
+(defvar gnus-cache-removeable-articles nil)
 
 (defun gnus-cache-enter-remove-article (article)
-  (setq gnus-cache-remove-articles
-	(cons article gnus-cache-remove-articles)))
+  (setq gnus-cache-removeable-articles
+	(cons article gnus-cache-removeable-articles)))
 
 (defun gnus-cache-possibly-remove-articles ()
-  (let ((articles gnus-cache-remove-articles)
+  (let ((articles gnus-cache-removeable-articles)
 	article)
     (while articles
       (setq article (car articles)

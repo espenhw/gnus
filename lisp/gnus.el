@@ -687,8 +687,8 @@ beginning of a line.")
 		 [edit-group 1.0 point]))
     (edit-server ([server 0.5]
 		  [edit-server 1.0 point]))
-    (summary-edit-score ([summary 0.25]
-			 [edit-score 1.0 point]))
+    (edit-score ([summary 0.25]
+		 [edit-score 1.0 point]))
     (post ([post 1.0 point]))
     (reply ([article 0.5]
 	    [mail 1.0 point]))
@@ -725,7 +725,7 @@ buffer configuration.")
     (summary-carpal . gnus-carpal-summary-buffer)
     (server-carpal . gnus-carpal-server-buffer)
     (browse-carpal . gnus-carpal-browse-buffer)
-    (summary-edit-score . gnus-score-edit-buffer)
+    (edit-score . gnus-score-edit-buffer)
     (mail . gnus-mail-buffer)
     (post . gnus-post-news-buffer))
   "Mapping from short symbols to buffer names or buffer variables.")
@@ -1035,7 +1035,8 @@ which to perform auto-expiry.  This only makes sense for mail groups.")
   "*A hook for Gnus group mode.")
 
 (defvar gnus-summary-mode-hook nil
-  "*A hook for Gnus summary mode.")
+  "*A hook for Gnus summary mode.
+This hook is run before any variables are set in the summary buffer.")
 
 (defvar gnus-article-mode-hook nil
   "*A hook for Gnus article mode.")
@@ -1257,7 +1258,7 @@ automatically when it is selected.")
 		   (or gnus-tmp-adopt-thread 
 		       (if (boundp 'thread) (symbol-value 'thread)
 			 thread nil)) t)
-		   ?d)
+		   ?c)
 	(list ?u 'user-defined ?s))
   "An alist of format specifications that can appear in summary lines,
 and what variables they correspond with, along with the type of the
@@ -1290,7 +1291,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls & Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.87"
+(defconst gnus-version "(ding) Gnus v0.88"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1704,6 +1705,13 @@ Thank you for your help in stamping out bugs.
 
 (defsubst gnus-buffer-substring (beg end)
   (buffer-substring (match-beginning beg) (match-end end)))
+
+;; modified by MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;;   function `substring' might cut on a middle of multi-octet
+;;   character.
+
+(defun gnus-truncate-string (str width)
+  (substring str width))
 
 (defsubst gnus-simplify-subject-re (subject)
   "Remove \"Re:\" from subject lines."
@@ -2520,6 +2528,8 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
     (mail-setup gnus-maintainer nil nil nil nil nil)
     (make-local-variable 'gnus-prev-winconf)
     (setq gnus-prev-winconf winconf)
+    (use-local-map (copy-keymap mail-mode-map))
+    (local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
     (goto-char (point-min))
     (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
     (forward-line 1)
@@ -4352,19 +4362,17 @@ N and the number of steps taken is returned."
 The killed newsgroups can be yanked by using \\[gnus-group-yank-group]."
   (interactive "r")
   (let ((lines
-	 ;; Exclude a line where current point is on.
-	 (1-
-	  ;; Count lines.
-	  (save-excursion
-	    (count-lines
-	     (progn
-	       (goto-char begin)
-	       (beginning-of-line)
-	       (point))
-	     (progn
-	       (goto-char end)
-	       (end-of-line)
-	       (point)))))))
+	 ;; Count lines.
+	 (save-excursion
+	   (count-lines
+	    (progn
+	      (goto-char begin)
+	      (beginning-of-line)
+	      (point))
+	    (progn
+	      (goto-char end)
+	      (beginning-of-line)
+	      (point))))))
     (goto-char begin)
     (beginning-of-line)			;Important when LINES < 1
     (gnus-group-kill-group lines)))
@@ -4464,7 +4472,8 @@ specify which levels you are interested in re-scanning."
 	(progn
 	  (gnus-read-active-file)
 	  (gnus-get-unread-articles (or level (1+ gnus-level-subscribed))))
-      (let ((gnus-read-active-file nil))
+      (let ((gnus-read-active-file nil)
+	    (gnus-have-read-active-file nil))
 	(gnus-get-unread-articles (or level (1+ gnus-level-subscribed)))))
     (gnus-group-list-groups (or (and gnus-group-use-permanent-levels level)
 				gnus-group-default-list-level
@@ -6472,8 +6481,11 @@ If WHERE is `summary', the summary mode line format will be used."
 		(setq max-len (length mode-string)))
 	    (if (< max-len 4) (setq max-len 4))
 	    (if (> (length mode-string) max-len)
+		;; modified by MORIOKA Tomohiko <morioka@jaist.ac.jp>
+		;;  function `substring' might cut on a middle
+		;;  of multi-octet character.
 		(setq mode-string 
-		      (concat (substring mode-string 0 (- max-len 3))
+		      (concat (gnus-truncate-string mode-string (- max-len 3))
 			      "...")))
 	    (setq mode-string (format (format "%%-%ds" max-len)
 				      mode-string))))
@@ -7017,9 +7029,7 @@ searched for."
 			       gnus-unread-mark))
 		       (or (not subject)
 			   (and (setq psubject (gnus-summary-subject-string))
-				(equal (gnus-simplify-subject-re subject)
-				       (gnus-simplify-subject-re
-					psubject)))))))
+				(gnus-subject-eq subject psubject))))))
 	   (if backward (if (bobp) nil (forward-char -1) t)
 	     (if (eobp) nil (forward-char 1) t)))))
     (if did
@@ -7028,6 +7038,20 @@ searched for."
 	  (get-text-property (point) 'gnus-number)
 	(gnus-summary-position-cursor)))))
 
+(defun gnus-subject-eq (s1 s2)
+  (cond
+   ((null gnus-summary-gather-subject-limit)
+    (equal (gnus-simplify-subject-re s1)
+	   (gnus-simplify-subject-re s2)))
+   ((eq gnus-summary-gather-subject-limit 'fuzzy)
+    (equal (gnus-simplify-subject-fuzzy s1)
+	   (gnus-simplify-subject-fuzzy s2)))
+   ((numberp gnus-summary-gather-subject-limit)
+    (equal (substring s1 gnus-summary-gather-subject-limit)
+	   (substring s2 gnus-summary-gather-subject-limit)))
+   (t
+    (equal s1 s2))))
+    
 (defun gnus-summary-search-forward (&optional unread subject backward)
   "Search for article forward.
 If UNREAD is non-nil, only unread articles are selected.
@@ -7411,10 +7435,12 @@ If BACKWARD, go to previous group instead."
     (gnus-summary-search-group backward)
     (let ((group (or group (gnus-summary-search-group backward)))
 	  (buf gnus-summary-buffer))
+      (set-buffer sumbuf)
       (gnus-summary-exit t)		;Update all information.
       (if (null group)
 	  (gnus-summary-exit-no-update t)
 	(gnus-message 5 "Selecting %s..." group)
+	(set-buffer gnus-group-buffer)
 	;; We are now in group mode buffer.
 	;; Make sure group mode buffer point is on GROUP.
 	(gnus-group-jump-to-group group)
@@ -10414,19 +10440,30 @@ how much time has lapsed since DATE."
 	  (insert
 	   (cond 
 	    ((eq type 'local)
-	     (concat "Date: " (timezone-make-date-arpa-standard date) "\n"))
+	     (concat "Date: " (condition-case ()
+				  (timezone-make-date-arpa-standard date)
+				(error date))
+		     "\n"))
 	    ((eq type 'ut)
-	     (concat "Date: " (timezone-make-date-arpa-standard date nil "UT")
+	     (concat "Date: "
+		     (condition-case ()
+			 (timezone-make-date-arpa-standard date nil "UT")
+		       (error date))
 		     "\n"))
 	    ((eq type 'lapsed)
-	     (let* ((sec (max (- (gnus-seconds-since-epoch 
-				  (timezone-make-date-arpa-standard
-				   (current-time-string) 
-				   (current-time-zone) "UT"))
-				 (gnus-seconds-since-epoch 
-				  (timezone-make-date-arpa-standard 
-				   date nil "UT")))
-			      0))
+	     ;; If the date is seriously mangled, the timezone
+	     ;; functions are liable to bug out, so we condition-case
+	     ;; the entire thing.  
+	     (let* ((sec (condition-case ()
+			     (max (- (gnus-seconds-since-epoch 
+				      (timezone-make-date-arpa-standard
+				       (current-time-string) 
+				       (current-time-zone) "UT"))
+				     (gnus-seconds-since-epoch 
+				      (timezone-make-date-arpa-standard 
+				       date nil "UT")))
+				  0)
+			   (error 0)))
 		    num prev)
 	       (concat
 		"X-Sent: "
@@ -13276,7 +13313,7 @@ The list is determined from the variable gnus-score-file-alist."
 	       ;; and used to simplify regexps in the single-alist 
 	       (progn
 		 (setq score-files
-		       (nconc score-files (cdr (car alist))))
+		       (append score-files (cdr (car alist))))
 		 (throw 'done nil)))
 	  (setq alist (cdr alist))))
       ;; cache the score files
@@ -13292,7 +13329,8 @@ The list is determined from the variable gnus-score-file-alist."
 	 (setq func (list func)))
     ;; Go through all the functions for finding score files (or actual
     ;; scores) and add them to a list.
-    (setq score-files (gnus-score-find-alist gnus-newsgroup-name))
+    (setq score-files (copy-sequence
+		       (gnus-score-find-alist gnus-newsgroup-name)))
     (while func
       (and (symbolp (car func))
 	   (fboundp (car func))

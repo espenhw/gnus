@@ -161,30 +161,32 @@
     )
    ((boundp 'MULE)
     ;; Mule definitions
-    (defun top-short-string (str width)
-      "Return a substring of STRING, starting at top and its length is
-equal or smaller than WIDTH. This function doesn't split in the middle
-of multi-octet character. [tl-str]"
-      (substring str 0
-		 (let ((i 0) (w 0) chr (len (length str)))
-		   (catch 'label
-		     (while (< i len)
-		       (setq chr (elt str i))
-		       (setq w (+ w (char-width chr)))
-		       (if (> w width)
-			   (throw 'label i))
-		       (setq i (+ i (char-bytes chr)))
-		       )
-		     i))
-		 ))
-    
+    (if (not (fboundp 'truncate-string))
+	(defun truncate-string (str width)
+	  (let ((w (string-width str))
+		(col 0) (idx 0) (p-idx 0) chr)
+	    (if (<= w width)
+		str
+	      (while (< col width)
+		(setq chr (aref str idx)
+		      col (+ col (char-width chr))
+		      p-idx idx
+		      idx (+ idx (char-bytes chr))
+		      ))
+	      (substring str 0 (if (= col width)
+				   idx
+				 p-idx))
+	      )))
+      )
+    (defalias 'gnus-truncate-string 'truncate-string)
+
     (defun gnus-format-max-width (form length)
       (let* ((val (eval form))
 	     (valstr (if (numberp val) (int-to-string val) val)))
 	(if (> (length valstr) length)
-	    (top-short-string valstr length)
+	    (truncate-string valstr length)
 	  valstr)))
-    
+
     (defun gnus-summary-make-display-table ())
     )
    ))
