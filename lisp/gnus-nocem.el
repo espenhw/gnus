@@ -185,15 +185,13 @@
   (when (and gnus-nocem-alist
 	     gnus-nocem-touched-alist)
     (nnheader-temp-write (gnus-nocem-cache-file)
-      (insert (prin1-to-string
-	       `(setq gnus-nocem-alist ',gnus-nocem-alist))))
+      (prin1 `(setq gnus-nocem-alist ',gnus-nocem-alist) (current-buffer)))
     (setq gnus-nocem-touched-alist nil)))
 
 (defun gnus-nocem-save-active ()
   "Save the NoCeM active file."
   (nnheader-temp-write (gnus-nocem-active-file)
-    (insert (prin1-to-string
-	     `(setq gnus-nocem-active ',gnus-nocem-active)))))
+    (prin1 `(setq gnus-nocem-active ',gnus-nocem-active) (current-buffer))))
 
 (defun gnus-nocem-alist-to-hashtb ()
   "Create a hashtable from the Message-IDs we have."

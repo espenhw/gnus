@@ -2333,10 +2333,11 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 		  (save-excursion
 		    (gnus-copy-article-buffer)
 		    (mail-yank-original nil)
-		    (setq end (point)))
+		    (setq end (set-marker (make-marker) (point))))
 		  (or mail-yank-hooks mail-citation-hook
 		      (run-hooks 'news-reply-header-hook))
 		  (goto-char end)
+		  (set-marker end nil)
 		  (setq yank (cdr yank))))
 	      (goto-char last))
 	    (gnus-configure-windows 'followup-yank 'force))
@@ -2615,18 +2616,17 @@ The source file has to be in the Emacs load path."
       (insert "------------------ Environment follows ------------------\n\n"))
     (while olist
       (if (boundp (car olist))
-	  (insert 
-	   (condition-case ()
-	       (pp-to-string
-		`(setq ,(car olist)
-		       ,(if (or (consp (setq sym (symbol-value (car olist))))
-				(and (symbolp sym)
-				     (not (or (eq sym nil)
-					      (eq sym t)))))
-			    (list 'quote (symbol-value (car olist)))
-			  (symbol-value (car olist)))))
-	     (error
-	      (format "(setq %s 'whatever)\n" (car olist)))))
+	  (condition-case ()
+	      (pp `(setq ,(car olist)
+			 ,(if (or (consp (setq sym (symbol-value (car olist))))
+				  (and (symbolp sym)
+				       (not (or (eq sym nil)
+						(eq sym t)))))
+			      (list 'quote (symbol-value (car olist)))
+			    (symbol-value (car olist))))
+		  (current-buffer))
+	    (error
+	     (format "(setq %s 'whatever)\n" (car olist))))
 	(insert ";; (makeunbound '" (symbol-name (car olist)) ")\n"))
       (setq olist (cdr olist)))
     (insert "\n\n")
@@ -2805,7 +2805,7 @@ Headers will be generated before sending."
 			  ;; If the group doesn't exist, we assume
 			  ;; it's an archive group...
 			  gnus-message-archive-method)
-			 (t (gnus-find-method-for-group group)))))
+			 (t (gnus-group-method group)))))
 	    (unless (gnus-request-group group t method)
 	      (gnus-request-create-group group method))
 	    (gnus-check-server method)

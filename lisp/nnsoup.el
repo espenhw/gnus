@@ -77,6 +77,7 @@ The SOUP packet file name will be inserted at the %s.")
 (defvar nnsoup-replies-list nil)
 (defvar nnsoup-buffers nil)
 (defvar nnsoup-current-group nil)
+(defvar nnsoup-group-alist-touched nil)
 
 
 
@@ -96,6 +97,7 @@ The SOUP packet file name will be inserted at the %s.")
     (nnsoup-packet-directory ,nnsoup-packet-directory)
     (nnsoup-unpacker ,nnsoup-unpacker)
     (nnsoup-packer ,nnsoup-packer)
+    (nnsoup-group-alist-touched nil)
     (nnsoup-replies-index-type ,nnsoup-replies-index-type)
     (nnsoup-replies-format-type ,nnsoup-replies-format-type)
     (nnsoup-replies-directory ,nnsoup-replies-directory)
@@ -213,6 +215,7 @@ The SOUP packet file name will be inserted at the %s.")
 
 (defun nnsoup-close-server (&optional server)
   (setq nnsoup-current-server nil
+	nnsoup-group-alist-touched nil
 	nnsoup-group-alist nil)
   t)
 
@@ -228,6 +231,7 @@ The SOUP packet file name will be inserted at the %s.")
 	   (buffer-name buffer)
 	   (kill-buffer buffer))))
   (setq nnsoup-group-alist nil
+	nnsoup-group-alist-touched nil
 	nnsoup-current-group nil
 	nnsoup-current-server nil
 	nnsoup-server-alist nil
@@ -294,10 +298,14 @@ The SOUP packet file name will be inserted at the %s.")
     (set-buffer nntp-server-buffer)
     (erase-buffer)
     (let ((alist nnsoup-group-alist)
+	  (standard-output (current-buffer))
 	  entry)
       (while (setq entry (pop alist))
-	(insert (format "%s %d %d y\n" (car entry)
-			(cdadr entry) (caadr entry))))
+	(insert (car entry) " ")
+	(princ (cdadr entry))
+	(insert " ")
+	(princ (caadr entry))
+	(insert " y\n"))
       t)))
 
 (defun nnsoup-request-scan (group &optional server)
@@ -357,7 +365,7 @@ The SOUP packet file name will be inserted at the %s.")
     (if (cddr total-infolist)
 	(setcar active (caaadr (cdr total-infolist)))
       (setcar active (1+ (cdr active))))
-    (nnsoup-write-active-file)
+    (nnsoup-write-active-file t)
     ;; Return the articles that weren't expired.
     articles))
 
@@ -373,7 +381,7 @@ The SOUP packet file name will be inserted at the %s.")
   (setq nnsoup-group-alist)
   (when (file-exists-p nnsoup-active-file)
     (condition-case ()
-	(load nnsoup-active-file)
+	(load nnsoup-active-file t t t)
       (error nil))
     ;; Be backwards compatible.
     (when (and nnsoup-group-alist
@@ -385,21 +393,19 @@ The SOUP packet file name will be inserted at the %s.")
 	  (while (cdr e)
 	    (setq e (cdr e)))
 	  (setq max (cdaar e))
-	  (setcdr entry (cons (cons min max) (cdr entry))))))
+	  (setcdr entry (cons (cons min max) (cdr entry)))))
+      (setq nnsoup-group-alist-touched t))
     nnsoup-group-alist))
 
-(defun nnsoup-write-active-file ()
-  (when nnsoup-group-alist
-    (save-excursion
-      (set-buffer (get-buffer-create " *nnsoup work*"))
-      (buffer-disable-undo (current-buffer))
-      (erase-buffer)
-      (insert (format "(setq nnsoup-group-alist '%S)\n" nnsoup-group-alist))
-      (insert (format "(setq nnsoup-current-prefix %d)\n"
-		      nnsoup-current-prefix))
-      (write-region (point-min) (point-max) nnsoup-active-file
-		    nil 'silent)
-      (kill-buffer (current-buffer)))))
+(defun nnsoup-write-active-file (&optional force)
+  (when (and nnsoup-group-alist
+	     (or force 
+		 nnsoup-group-alist-touched))
+    (setq nnsoup-group-alist-touched nil)
+    (nnheader-temp-write nnsoup-active-file
+      (let ((standard-output (current-buffer)))
+	(prin1 `(setq nnsoup-group-alist ',nnsoup-group-alist))
+	(prin1 `(setq nnsoup-current-prefix ,nnsoup-current-prefix))))))
 
 (defun nnsoup-next-prefix ()
   "Return the next free prefix."
@@ -447,7 +453,7 @@ The SOUP packet file name will be inserted at the %s.")
 					   (+ lnum number))
 				     area)))
 	    (setcdr (cadr entry) (+ lnum number))))))
-    (nnsoup-write-active-file)
+    (nnsoup-write-active-file t)
     (delete-file (concat nnsoup-tmp-directory "AREAS"))))
 
 (defun nnsoup-number-of-articles (area)
@@ -748,7 +754,7 @@ The SOUP packet file name will be inserted at the %s.")
     (while active
       (setcdr (car active) (nreverse (cdar active)))
       (setq active (cdr active)))
-    (nnsoup-write-active-file)))
+    (nnsoup-write-active-file t)))
 
 (defun nnsoup-delete-unreferenced-message-files ()
   "Delete any *.MSG and *.IDX files that aren't known by nnsoup."

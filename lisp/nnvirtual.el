@@ -274,6 +274,12 @@ virtual group.")
   (nnvirtual-possibly-change-group group server t)
   (let ((gnus-group-marked nnvirtual-component-groups)
 	(gnus-expert-user t))
+    ;; Make sure all groups are activated.
+    (mapcar
+     (lambda (g)
+       (when (not (numberp (car (gnus-gethash g gnus-newsrc-hashtb))))
+	 (gnus-activate-group g)))
+     nnvirtual-component-groups)
     (save-excursion
       (set-buffer gnus-group-buffer)
       (gnus-group-catchup-current nil all))))

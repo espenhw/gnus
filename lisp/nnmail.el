@@ -688,27 +688,24 @@ FUNC will be called with the buffer narrowed to each mail."
 				  (list (list group ""))
 				nnmail-split-methods)))
     (save-excursion
-      ;; Open the message-id cache.
-      (nnmail-cache-open)
       ;; Insert the incoming file.
       (set-buffer (get-buffer-create " *nnmail incoming*"))
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
       (insert-file-contents incoming)
-      (goto-char (point-min))
-      (save-excursion (run-hooks 'nnmail-prepare-incoming-hook))
-      ;; Handle both babyl, MMDF and unix mail formats, since movemail will
-      ;; use the former when fetching from a mailbox, the latter when
-      ;; fetches from a file.
-      (cond ((or (looking-at "\^L")
-		 (looking-at "BABYL OPTIONS:"))
-	     (nnmail-process-babyl-mail-format func))
-	    ((looking-at "\^A\^A\^A\^A")
-	     (nnmail-process-mmdf-mail-format func))
-	    (t
-	     (nnmail-process-unix-mail-format func)))
-      ;; Close the message-id cache.
-      (nnmail-cache-close)
+      (unless (zerop (buffer-size))
+	(goto-char (point-min))
+	(save-excursion (run-hooks 'nnmail-prepare-incoming-hook))
+	;; Handle both babyl, MMDF and unix mail formats, since movemail will
+	;; use the former when fetching from a mailbox, the latter when
+	;; fetches from a file.
+	(cond ((or (looking-at "\^L")
+		   (looking-at "BABYL OPTIONS:"))
+	       (nnmail-process-babyl-mail-format func))
+	      ((looking-at "\^A\^A\^A\^A")
+	       (nnmail-process-mmdf-mail-format func))
+	      (t
+	       (nnmail-process-unix-mail-format func))))
       (if exit-func (funcall exit-func))
       (kill-buffer (current-buffer)))))
 
@@ -1083,6 +1080,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (nnmail-activate method)
       ;; Allow the user to hook.
       (run-hooks 'nnmail-pre-get-new-mail-hook)
+      ;; Open the message-id cache.
+      (nnmail-cache-open)
       ;; The we go through all the existing spool files and split the
       ;; mail from each.
       (while spools
@@ -1123,6 +1122,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	  (funcall exit-func))
 	(run-hooks 'nnmail-read-incoming-hook)
 	(nnheader-message 3 "%s: Reading incoming mail...done" method))
+      ;; Close the message-id cache.
+      (nnmail-cache-close)
       ;; Allow the user to hook.
       (run-hooks 'nnmail-post-get-new-mail-hook)
       ;; Delete all the temporary files.

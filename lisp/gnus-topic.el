@@ -1,4 +1,4 @@
-;;; gnus-topic.el --- a folding minor mode for Gnus group buffers
+;; gnus-topic.el --- a folding minor mode for Gnus group buffers
 ;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Ilja Weis <kult@uni-paderborn.de>
@@ -78,7 +78,8 @@ with some simple extensions.
 
 (defun gnus-group-topic-name ()
   "The name of the topic on the current line."
-  (get-text-property (gnus-point-at-bol) 'gnus-topic))
+  (let ((group (get-text-property (gnus-point-at-bol) 'gnus-topic)))
+    (and group (symbol-name group))))
 
 (defun gnus-group-topic-level ()
   "The level of the topic on the current line."
@@ -218,9 +219,9 @@ articles in the topic and its subtopics."
        (<= clevel level) 
        (>= clevel lowest)		; Is inside the level we want.
        (or all
-	   (and gnus-group-list-inactive-groups
-		(eq unread t))
-	   (> unread 0)
+	   (if (eq unread t)
+	       gnus-group-list-inactive-groups
+	     (> unread 0))
 	   (and gnus-list-groups-with-ticked-articles
 		(cdr (assq 'tick (gnus-info-marks info))))
 					; Has right readedness.
@@ -273,7 +274,7 @@ articles in the topic and its subtopics."
 
 (defun gnus-group-topic-p ()
   "Return non-nil if the current line is a topic."
-  (get-text-property (gnus-point-at-bol) 'gnus-topic))
+  (gnus-group-topic-name))
 
 (defun gnus-topic-visible-p ()
   "Return non-nil if the current topic is visible."
@@ -293,7 +294,7 @@ articles in the topic and its subtopics."
      (prog1 (1+ (point)) 
        (eval gnus-topic-line-format-spec)
        (gnus-topic-remove-excess-properties))
-     (list 'gnus-topic name
+     (list 'gnus-topic (intern name)
 	   'gnus-topic-level level
 	   'gnus-active active-topic
 	   'gnus-topic-visible visiblep))))
@@ -414,14 +415,9 @@ articles in the topic and its subtopics."
     out))
 
 (defun gnus-topic-goto-topic (topic)
-  (let ((orig (point)))
-    (goto-char (point-min))
-    (while (and (not (equal topic (gnus-group-topic-name)))
-		(zerop (forward-line 1))))
-    (or (gnus-group-topic-name)
-	(progn
-	  (goto-char orig)
-	  nil))))
+  (when topic
+    (gnus-goto-char (text-property-any (point-min) (point-max)
+				       'gnus-topic (intern topic)))))
   
 (defun gnus-topic-update-topic ()
   "Update all parent topics to the current group."
@@ -800,7 +796,7 @@ group."
 (defun gnus-topic-goto-next-group (group props)
   "Go to group or the next group after group."
   (if (null group)
-      (gnus-topic-goto-topic (cadr (memq 'gnus-topic props)))
+      (gnus-topic-goto-topic (symbol-name (cadr (memq 'gnus-topic props))))
     (if (gnus-group-goto-group group)
 	t
       ;; The group is no longer visible.

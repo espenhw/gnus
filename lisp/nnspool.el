@@ -124,6 +124,7 @@ there.")
     (when (nnspool-possibly-change-directory group)
       (let* ((number (length articles))
 	     (count 0)
+	     (default-directory nnspool-current-directory)
 	     (do-message (and (numberp nnspool-large-newsgroup)
 			      (> number nnspool-large-newsgroup)))
 	     file beg article ag)
@@ -132,8 +133,7 @@ there.")
 	    ;; We successfully retrieved the NOV headers.
 	    'nov
 	  ;; No NOV headers here, so we do it the hard way.
-	  (while articles
-	    (setq article (pop articles))
+	  (while (setq article (pop articles))
 	    (if (stringp article)
 		;; This is a Message-ID.
 		(setq ag (nnspool-find-id article)
@@ -141,14 +141,15 @@ there.")
 				    (car ag) (cdr ag)))
 		      article (cdr ag))
 	      ;; This is an article in the current group.
-	      (setq file (nnspool-article-pathname 
-			  nnspool-current-group article)))
+	      (setq file (int-to-string article)))
 	    ;; Insert the head of the article.
 	    (when (and file
 		       (file-exists-p file))
-	      (insert (format "221 %d Article retrieved.\n" article))
+	      (insert "221 ")
+	      (princ article (current-buffer))
+	      (insert " Article retrieved.\n")
 	      (setq beg (point))
-	      (nnheader-insert-head file)
+	      (inline (nnheader-insert-head file))
 	      (goto-char beg)
 	      (search-forward "\n\n" nil t)
 	      (forward-char -1)

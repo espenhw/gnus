@@ -2566,7 +2566,7 @@ move around, read articles, post articles and reply to articles.
 * Saving Articles::             Ways of customizing article saving.
 * Decoding Articles::           Gnus can treat series of (uu)encoded articles.
 * Article Treatment::           The article buffer can be mangled at will.
-* Summary Sorting::             You can sort the summary buffer four ways.
+* Summary Sorting::             Sorting the summary buffer in various ways.
 * Finding the Parent::          No child support? Get the parent.
 * Alternative Approaches::      Reading using non-default summaries.
 * Tree Display::                A more visual display of threads.

@@ -1332,8 +1332,8 @@ It does this by highlighting everything after
 	  (widen)
 	  (re-search-backward gnus-signature-separator nil t)
 	  (let ((start (match-beginning 0))
-		(end (set-marker (make-marker) (match-end 0))))
-	    (gnus-article-add-button start end 'gnus-signature-toggle
+		(end (set-marker (make-marker) (1+ (match-end 0)))))
+	    (gnus-article-add-button start (1- end) 'gnus-signature-toggle
 				     end)))))))
 
 (defun gnus-article-add-buttons (&optional force)
@@ -1434,8 +1434,8 @@ specified by `gnus-button-alist'."
     (let ((buffer-read-only nil)
 	  (inhibit-point-motion-hooks t))
       (if (get-text-property end 'invisible)
-	  (remove-text-properties end (point-max) gnus-hidden-properties)
-	(add-text-properties end (point-max) gnus-hidden-properties)))))
+	  (gnus-unhide-text end (point-max))
+	(gnus-hide-text end (point-max) gnus-hidden-properties)))))
 
 (defun gnus-button-entry ()
   ;; Return the first entry in `gnus-button-alist' matching this place.

@@ -127,6 +127,10 @@
   "%U%R%z%l%I%(%[%4L: %-20,20n%]%) %s\n"
   "*The line format spec in summary GroupLens mode buffers.")
 
+(defvar gnus-summary-grouplens-lab-line-format
+  "%U%R%z%uL%I%(%[%4L: %-20,20n%]%) %s\n"
+  "*The line format spec in summary GroupLens mode buffers.")
+
 (defvar grouplens-pseudonym ""
   "User's pseudonym.  This pseudonym is obtained during the registration 
 process")
@@ -515,10 +519,9 @@ recommend using both scores and grouplens predictions together."
     (let* ((rate-string (make-string 12 ? ))
            (mid (aref header (nth 1 (assoc "message-id" gnus-header-index))))
            (hashent (gethash mid grouplens-current-hashtable))
-           (pred (nth 0 hashent))
+           (pred (or (nth 0 hashent) 0))
            (low (nth 1 hashent))
            (high (nth 2 hashent)))
-      (gnus-message 5 (concat "mid = " mid))
       ;; Init rate-string
       (aset rate-string 0 ?|) 
       (aset rate-string 11 ?|)
@@ -759,7 +762,7 @@ recommend using both scores and grouplens predictions together."
 ;;          BUG REPORTING
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst gnus-gl-version "gnus-gl.el 2.9")
+(defconst gnus-gl-version "gnus-gl.el 2.10")
 (defconst gnus-gl-maintainer-address "grouplens-bug@cs.umn.edu")
 (defun gnus-gl-submit-bug-report ()
   "Submit via mail a bug report on gnus-gl"
@@ -843,7 +846,9 @@ recommend using both scores and grouplens predictions together."
                   '(lambda() 
                      (bbb-build-mid-scores-alist gnus-newsgroup-name))))
       (make-local-variable 'gnus-summary-line-format)
-      (setq gnus-summary-line-format gnus-summary-grouplens-line-format)
+      (if gnus-grouplens-override-scoring
+	
+	  (setq gnus-summary-line-format gnus-summary-grouplens-lab-line-format))
       (make-local-variable 'gnus-summary-line-format-spec)
 
       ;; Set up the menu.
@@ -860,4 +865,3 @@ recommend using both scores and grouplens predictions together."
 (provide 'gnus-gl)
 
 ;;; end gnus-gl.el
-

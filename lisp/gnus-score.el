@@ -1290,7 +1290,9 @@ SCORE is the score to add."
     (save-restriction
       (let* ((buffer-read-only nil)
 	     (articles gnus-scores-articles)
-	     (last (mail-header-number (caar gnus-scores-articles)))
+	     (last (if (caar gnus-scores-articles)
+		       (mail-header-number (caar gnus-scores-articles))
+		     0))
 	     (all-scores scores)
 	     (request-func (cond ((string= "head" (downcase header))
 				  'gnus-request-head)
@@ -1833,7 +1835,7 @@ This mode is an extended emacs-lisp mode.
 (defun gnus-score-edit-insert-date ()
   "Insert date in numerical format."
   (interactive)
-  (insert (int-to-string (gnus-day-number (current-time-string)))))
+  (princ (gnus-day-number (current-time-string)) (current-buffer)))
 
 (defun gnus-score-pretty-print ()
   "Format the current score file."

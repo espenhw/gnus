@@ -1043,7 +1043,7 @@ It will prompt for a password."
 
 (defun nntp-send-xover-command (beg end &optional wait-for-reply)
   "Send the XOVER command to the server."
-  (let ((range (format "%d-%d" beg end)))
+  (let ((range (format "%d-%d" (or beg 1) (or end beg 1))))
     (if (stringp nntp-server-xover)
 	;; If `nntp-server-xover' is a string, then we just send this
 	;; command.

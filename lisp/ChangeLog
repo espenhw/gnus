@@ -1,4 +1,77 @@
+Sat Mar 16 14:46:29 1996  Brad Miller  <bmiller@cs.umn.edu>
+
+	* gnus-gl.el: New version.
+
+Sat Mar 16 13:28:57 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus-score.el (gnus-score-body): Would break on nil
+	`gnus-scores-articles'? 
+
+	* gnus.el: All the backend interface functions should take virtual
+	server names.
+
+	* gnus-msg.el (gnus-post-method): Find the real method.
+
+	* gnus.el (gnus-summary-go-to-next-thread): New definition.
+	(gnus-summary-next-thread): Use it.
+	(gnus-prefix-to-server): New function.
+
+	* gnus-vis.el (gnus-signature-toggle): Use new substs.
+	(gnus-article-highlight-signature): Would make check point wrong.
+
+	* gnus.el (gnus-hide-text): New subst.
+	(gnus-hide-text-type): New function.
+	(gnus-unhide-text): New subst.
+	(gnus-article-show-all-headers, gnus-article-hide-headers,
+	gnus-article-hide-pgp, gnus-article-hide-header,
+	gnus-article-hide-boring-headers): Use them.
+
+Fri Mar 15 07:39:10 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nntp.el (nntp-send-xover-command): Would bug out on
+	single-article groups.
+
+	* gnus.el (gnus-group-prepare-flat): Deal with unactivated groups.
+	* gnus-topic.el (gnus-topic-find-groups): Ditto.
+
+Thu Mar 14 05:24:42 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnspool.el (nnspool-retrieve-headers): Use default-directory to
+	avoid creating so many garbage strings.
+
+	* nnmail.el (nnmail-split-incoming): Make sure the buffer isn't
+	empty before starting treatment.
+	(nnmail-get-new-mail): Open/close cache here.
+
+	* gnus-msg.el (gnus-news-followup): Use markers for positions.
+
+	* gnus.el (gnus-setup-news): Read NoCeM.
+
+Wed Mar 13 03:26:44 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-functionp): Made into a subst.
+	(gnus-all-windows-visible-p): Non-recursive implementation.
+
+	* nnsoup.el (nnsoup-request-list): Don't use `format'.
+
+	* gnus.el (gnus-update-format-specifications): Would recompute all
+	specs every time.
+	(gnus-gnus-to-newsrc-format): Don't call `gnus-server-equal' for
+	each group.
+
+	* nnspool.el (nnspool-retrieve-headers): Don't call so many
+	functions. 
+
+	* gnus-cache.el (gnus-cache-retrieve-headers): Would do too much
+	work. 
+
+	* gnus-topic.el (gnus-topic-goto-topic): Faster.
+
+	* gnus.el: Don't downcase Message-IDs before threading.
+
 Tue Mar 12 01:42:11 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.52 is released.
 
 	* gnus.el (gnus-article-strip-leading-blank-lines): New command. 
 

@@ -315,6 +315,7 @@
        (setq result (nnmbox-save-mail (and (stringp group) group))))
      (save-excursion
        (set-buffer nnmbox-mbox-buffer)
+       (goto-char (point-max))
        (insert-buffer-substring buf)
        (and last (save-buffer))
        result)

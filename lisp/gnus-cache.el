@@ -241,43 +241,48 @@ variable to \"^nnml\".")
 
 (defun gnus-cache-retrieve-headers (articles group &optional fetch-old)
   "Retrieve the headers for ARTICLES in GROUP."
-  (let* ((cached 
-	  (setq gnus-newsgroup-cached (gnus-cache-articles-in-group group)))
-	 (uncached-articles (gnus-sorted-intersection
-			     (gnus-sorted-complement articles cached)
-			     articles))
-	 (cache-file (gnus-cache-file-name group ".overview"))
-	 type)
-    ;; We first retrieve all the headers that we don't have in 
-    ;; the cache.
-    (let ((gnus-use-cache nil))
-      (setq type (and articles 
-		      (gnus-retrieve-headers 
-		       uncached-articles group fetch-old))))
-    (gnus-cache-save-buffers)
-    ;; Then we insert the cached headers.
-    (save-excursion
-      (cond
-       ((not (file-exists-p cache-file))
-	;; There are no cached headers.
-	type)
-       ((null type)
-	;; There were no uncached headers (or retrieval was 
-	;; unsuccessful), so we use the cached headers exclusively.
-	(set-buffer nntp-server-buffer)
-	(erase-buffer)
-	(insert-file-contents cache-file)
-	'nov)
-       ((eq type 'nov)
-	;; We have both cached and uncached NOV headers, so we
-	;; braid them.
-	(gnus-cache-braid-nov group cached)
-	type)
-       (t
-	;; We braid HEADs.
-	(gnus-cache-braid-heads group (gnus-sorted-intersection
-				       cached articles))
-	type)))))
+  (let ((cached 
+	 (setq gnus-newsgroup-cached (gnus-cache-articles-in-group group))))
+    (if (not cached)
+	;; No cached articles here, so we just retrieve them
+	;; the normal way.
+	(let ((gnus-use-cache nil))
+	  (gnus-retrieve-headers articles group fetch-old))
+      (let ((uncached-articles (gnus-sorted-intersection
+				(gnus-sorted-complement articles cached)
+				articles))
+	    (cache-file (gnus-cache-file-name group ".overview"))
+	    type)
+	;; We first retrieve all the headers that we don't have in 
+	;; the cache.
+	(let ((gnus-use-cache nil))
+	  (setq type (and articles 
+			  (gnus-retrieve-headers 
+			   uncached-articles group fetch-old))))
+	(gnus-cache-save-buffers)
+	;; Then we insert the cached headers.
+	(save-excursion
+	  (cond
+	   ((not (file-exists-p cache-file))
+	    ;; There are no cached headers.
+	    type)
+	   ((null type)
+	    ;; There were no uncached headers (or retrieval was 
+	    ;; unsuccessful), so we use the cached headers exclusively.
+	    (set-buffer nntp-server-buffer)
+	    (erase-buffer)
+	    (insert-file-contents cache-file)
+	    'nov)
+	   ((eq type 'nov)
+	    ;; We have both cached and uncached NOV headers, so we
+	    ;; braid them.
+	    (gnus-cache-braid-nov group cached)
+	    type)
+	   (t
+	    ;; We braid HEADs.
+	    (gnus-cache-braid-heads group (gnus-sorted-intersection
+					   cached articles))
+	    type)))))))
 
 (defun gnus-cache-enter-article (&optional n)
   "Enter the next N articles into the cache.
@@ -455,7 +460,9 @@ Returns the list of articles removed."
 	(erase-buffer)
 	(insert-file-contents (gnus-cache-file-name group (car cached)))
 	(goto-char (point-min))
-	(insert "220 " (int-to-string (car cached)) " Article retrieved.\n")
+	(insert "220 ")
+	(princ (car cached) (current-buffer))
+	(insert " Article retrieved.\n")
 	(search-forward "\n\n" nil 'move)
 	(delete-region (point) (point-max))
 	(forward-char -1)
