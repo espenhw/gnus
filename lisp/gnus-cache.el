@@ -507,7 +507,6 @@ Returns the list of articles removed."
     (goto-char (point-min))
     (while cached
       (while (and (not (eobp))
-		  (looking-at "[0-9]+\t")
 		  (< (read (current-buffer)) (car cached)))
 	(forward-line 1))
       (beginning-of-line)

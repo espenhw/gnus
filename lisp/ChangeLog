@@ -1,3 +1,7 @@
+2003-03-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-cache.el (gnus-cache-braid-nov): Revoke last change.
+
 2003-03-30  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-idna-inside-rhs-p): Narrow to header before
