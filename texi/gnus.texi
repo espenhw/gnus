@@ -13461,6 +13461,7 @@ summary buffer.
 (eval-after-load "gnus"
   #'(define-key gnus-summary-mode-map
       (kbd "<RET>") 'browse-nnrss-url))
+(add-to-list 'nnmail-extra-headers nnrss-url-field)
 @end lisp
 
 @node Customizing w3
