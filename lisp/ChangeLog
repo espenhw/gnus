@@ -1,5 +1,9 @@
 2003-01-22  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus-art.el (gnus-treat-strip-pgp, gnus-article-hide-pgp-hook):
+	make-obsolete-variable allows only two arguments in XEmacs and
+	Emacs 20.
+
 	* gnus-sum.el (gnus-summary-wash-hide-map): Remove
 	gnus-article-hide-pgp.
 	(gnus-summary-make-menu-bar): do.

@@ -545,7 +545,8 @@ The following additional specs are available:
   :group 'gnus-article-various)
 
 (defvar gnus-article-hide-pgp-hook nil)
-(make-obsolete-variable 'gnus-article-hide-pgp-hook "" "Gnus 5.10")
+(make-obsolete-variable 'gnus-article-hide-pgp-hook 
+			"This variable is obsolote in Gnus 5.10.")
 
 (defcustom gnus-article-button-face 'bold
   "Face used for highlighting buttons in the article buffer.
@@ -964,7 +965,8 @@ See Info node `(gnus)Customizing Articles' for details."
   :link '(custom-manual "(gnus)Customizing Articles")
   :type gnus-article-treat-custom)
 
-(make-obsolete-variable 'gnus-treat-strip-pgp "" "Gnus 5.10")
+(make-obsolete-variable 'gnus-treat-strip-pgp 
+			"This option is obsolete in Gnus 5.10.")
 
 (defcustom gnus-treat-strip-pem nil
   "Strip PEM signatures.
