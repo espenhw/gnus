@@ -132,19 +132,24 @@ The regular expression is matched against the address."
 (defcustom spam-junk-mailgroups (cons spam-split-group '("mail.junk" "poste.pourriel"))
   "Mailgroups with spam contents.
 All unmarked article in such group receive the spam mark on group entry."
-  :type '(repeat string)
+  :type '(repeat (string :tag "Group"))
+  :group 'spam)
+
+(defcustom spam-blackhole-servers '("bl.spamcop.net" "relays.ordb.org" "dev.null.dk" "relays.visi.com")
+  "List of blackhole servers."
+  :type '(repeat (string :tag "Server"))
   :group 'spam)
 
 (defcustom spam-ham-marks (list gnus-del-mark gnus-read-mark gnus-killed-mark gnus-kill-file-mark gnus-low-score-mark)
   "Marks considered as being ham (positively not spam).
 Such articles will be processed as ham (non-spam) on group exit."
-  :type '(repeat (character))
+  :type '(repeat (character :tag "Mark"))
   :group 'spam)
 
 (defcustom spam-spam-marks (list gnus-spam-mark)
   "Marks considered as being spam (positively spam).
 Such articles will be transmitted to `bogofilter -s' on group exit."
-  :type '(repeat (character))
+  :type '(repeat (character :tag "Mark"))
   :group 'spam)
 
 (defcustom spam-face 'gnus-splash-face
@@ -267,12 +272,6 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 
 ;;;; Blackholes.
 
-(defvar spam-blackhole-servers '("bl.spamcop.net"
-				 "relays.ordb.org"
-				 "dev.null.dk"
-				 "relays.visi.com")
-  "List of blackhole servers.")
-
 (defun spam-check-blackholes ()
   "Check the Received headers for blackholed relays."
   (let ((headers (message-fetch-field "received"))
@@ -356,16 +355,10 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 			    spam-list-of-checks))))
 
 ;;; check the ifile backend; return nil if the mail was NOT classified as spam
-(condition-case nil
-    (progn
-      (require 'ifile-gnus)
-        ;;; 
-      (defun spam-check-ifile ()
-	(let ((ifile-primary-spam-group spam-split-group))
-	  (ifile-spam-filter nil))))
-  (file-error (setq spam-list-of-checks
-		    (delete (assoc 'spam-use-ifile spam-list-of-checks)
-			    spam-list-of-checks))))
+;;; TODO: we can't (require) ifile, because it will insinuate itself automatically
+(defun spam-check-ifile ()
+  (let ((ifile-primary-spam-group spam-split-group))
+    (ifile-spam-filter nil)))
 
 (defun spam-check-blacklist ()
   ;; FIXME!  Should it detect when file timestamps change?
