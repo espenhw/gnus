@@ -769,21 +769,24 @@ be set in `.emacs' instead."
   ;; Insert the message.
   (erase-buffer)
   (cond
-   ((and (fboundp 'find-image)
-	 (display-graphic-p)
-	 (let ((image (find-image '((:type xpm :file "gnus.xpm")
-				    (:type xbm :file "gnus.xbm")))))
-	   (when image
-	     (newline)			; Have somewhere for cursor to
-					; go, not stretched over image.
-	     (insert-image image)
-	     (goto-char (point-min))
-	     (while (not (eobp))
-	       (insert (make-string (/ (max (- (window-width) (or x 35)) 0) 2)
-				    ?\ ))
-	       (forward-line 1))
-	     (setq gnus-simple-splash nil)
-	     t))))
+   ((and
+     (fboundp 'find-image)
+     (display-graphic-p)
+     (let ((image (find-image
+		   `((:type xpm :file "gnus.xpm")
+		     (:type xbm :file "gnus.xbm"
+			    ;; Account for the xbm's blackground.
+			    :background ,(face-foreground 'gnus-splash-face)
+			    :foreground ,(face-background 'default))))))
+       (when image
+	 (let ((size (image-size image)))
+	   (insert-char ?\n (max 0 (round (- (window-height)
+					     (or y (cdr size)) 1) 2)))
+	   (insert-char ?\  (max 0 (round (- (window-width)
+					     (or x (car size))) 2)))
+	   (insert-image image))
+	 (setq gnus-simple-splash nil)
+	 t))))
    (t
     (insert
      (format "              %s
