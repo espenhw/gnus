@@ -262,6 +262,43 @@ colors of the displayed X-Faces."
     (when auth
       (insert auth "\n"))))
 
+(defun gnus-subscribe-to-mailing-list (type)
+  "Generate a Gmane subscription message based on the current gmane.conf line."
+  (interactive
+   (list
+    (intern
+     (completing-read "Mailing list type: "
+		      '(("mailman") ("majordomo") ("exmlm"))
+		      nil t))))
+  (beginning-of-line)
+  (let* ((entry
+	  (split-string
+	   (buffer-substring (point) (progn (end-of-line) (point)))
+	   ":"))
+	 (local (car (split-string (nth 2 entry) "@")))
+	 (host (cadr (split-string (nth 2 entry) "@")))
+	 (from (car entry))
+	 (subject "subscribe")
+	 to)
+    (when (string-match "#" from)
+      (setq from (substring from 1)))
+    (cond
+     ((eq type 'mailman)
+      (setq to (concat local "-request@" host)))
+     ((eq type 'majordomo)
+      (setq to (concat "majordomo@" host)
+	    subject (concat "subscribe " local)))
+     ((eq type 'exmlm)
+      (setq to (concat local "-" from "=m.gmane.org@" host)))
+     (t
+      (error "No such type: %s" type)))
+    (message-mail
+     to subject
+     `((From . ,(concat from "@m.gmane.org"))))
+    (message-goto-body)
+    (delete-region (point) (point-max))
+    (insert subject "\n")))
+  
 (provide 'gnus-fun)
 
 ;;; gnus-fun.el ends here
