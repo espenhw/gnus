@@ -533,7 +533,8 @@ If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
           (gnus-agent-expire expired-articles group 'force))))
     not-deleted))
 
-(defun gnus-request-move-article (article group server accept-function &optional last)
+(defun gnus-request-move-article (article group server accept-function
+					  &optional last)
   (let* ((gnus-command-method (gnus-find-method-for-group group))
 	 (result (funcall (gnus-get-function gnus-command-method
 					     'request-move-article)
