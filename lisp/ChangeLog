@@ -1,3 +1,8 @@
+2001-09-18  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-spec.el (gnus-correct-pad-form): Re-revert.
+	(gnus-parse-simple-format): Re-revert.
+
 2001-09-16  Katsuhiro Hermit Endo  <hermit@koka-in.org>
 
 	* gnus-spec.el (gnus-parse-complex-format): Don't fold search
