@@ -86,6 +86,8 @@ all.  This may very well take some time.")
 
 (defvar nnml-nov-buffer-file-name nil)
 
+(defvoo nnml-file-coding-system nnmail-file-coding-system-1)
+
 
 
 ;;; Interface functions.
@@ -183,7 +185,9 @@ all.  This may very well take some time.")
       (nnheader-report 'nnml "No such file: %s" path))
      ((file-directory-p path)
       (nnheader-report 'nnml "File is a directory: %s" path))
-     ((not (save-excursion (nnmail-find-file path)))
+     ((not (save-excursion (let ((nnmail-file-coding-system 
+				  nnml-file-coding-system)) 
+			     (nnmail-find-file path))))
       (nnheader-report 'nnml "Couldn't read file: %s" path))
      (t
       (nnheader-report 'nnml "Article %s retrieved" id)

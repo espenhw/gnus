@@ -1542,6 +1542,7 @@ increase the score of each group you read."
 
   (gnus-define-keys (gnus-summary-mime-map "K" gnus-summary-mode-map)
     "b" gnus-summary-display-buttonized
+    "m" gnus-summary-repair-multipart
     "v" gnus-article-view-part
     "o" gnus-article-save-part
     "c" gnus-article-copy-part
@@ -8348,25 +8349,15 @@ is non-nil or the Subject: of both articles are the same."
 			 (gnus-summary-article-header parent-article))))
 	(unless (and message-id (not (equal message-id "")))
 	  (error "No message-id in desired parent"))
-	;; We don't want the article to be marked as read.
-	(let (gnus-mark-article-hook)
-	  (gnus-summary-select-article t t nil current-article))
-	(set-buffer gnus-original-article-buffer)
-	(let ((buf (format "%s" (buffer-string))))
-	  (with-temp-buffer
-	    (insert buf)
-	    (goto-char (point-min))
-	    (if (re-search-forward "^References: " nil t)
-		(progn
-		  (re-search-forward "^[^ \t]" nil t)
-		  (forward-line -1)
-		  (end-of-line)
-		  (insert " " message-id))
-	      (insert "References: " message-id "\n"))
-	    (unless (gnus-request-replace-article
-		     current-article (car gnus-article-current)
-		     (current-buffer))
-	      (error "Couldn't replace article"))))
+	(gnus-with-article current-article
+	  (goto-char (point-min))
+	  (if (re-search-forward "^References: " nil t)
+	      (progn
+		(re-search-forward "^[^ \t]" nil t)
+		(forward-line -1)
+		(end-of-line)
+		(insert " " message-id))
+	    (insert "References: " message-id "\n")))
 	(set-buffer gnus-summary-buffer)
 	(gnus-summary-unmark-all-processable)
 	(gnus-summary-update-article current-article)
@@ -9205,7 +9196,25 @@ save those articles instead."
   (require 'gnus-art)
   (let ((gnus-unbuttonized-mime-types nil))
     (gnus-summary-show-article)))
-    
+
+(defun gnus-summary-repair-multipart (article)
+  "Add a Content-Type header to a multipart article without one."
+  (interactive (list (gnus-summary-article-number)))
+  (gnus-with-article article
+    (message-narrow-to-head)
+    (goto-char (point-max))
+    (widen)
+    (when (search-forward "\n--" nil t)
+      (let ((separator (buffer-substring (point) (gnus-point-at-eol))))
+	(message-narrow-to-head)
+	(message-remove-header "Mime-Version")
+	(message-remove-header "Content-Type")
+	(goto-char (point-max))
+	(insert (format "Content-Type: multipart/mixed; boundary=\"%s\"\n"
+			separator))
+	(insert "Mime-Version: 1.0\n")
+	(widen)))))
+
 (defun gnus-summary-toggle-display-buttonized ()
   "Toggle the buttonizing of the article buffer."
   (interactive)

@@ -44,6 +44,14 @@
   `(nth 4 ,handle))
 (defmacro mm-handle-description (handle)
   `(nth 5 ,handle))
+(defmacro mm-handle-cache (handle)
+  `(nth 6 ,handle))
+(defmacro mm-handle-set-cache (handle contents)
+  `(setcar (nthcdr 6 ,handle) ,contents))
+(defmacro mm-make-handle (&optional buffer type encoding undisplayer
+				    disposition description cache)
+  `(list ,buffer ,type ,encoding ,undisplayer
+	 ,disposition ,description ,cache))
 
 (defvar mm-inline-media-tests
   '(("image/jpeg" mm-inline-image
@@ -105,10 +113,10 @@
     (let (ct ctl type subtype cte cd description id result)
       (save-restriction
 	(mail-narrow-to-head)
-	(when (and (or no-strict-mime
-		       (mail-fetch-field "mime-version"))
-		   (setq ct (mail-fetch-field "content-type")))
-	  (setq ctl (condition-case () (mail-header-parse-content-type ct)
+	(when (or no-strict-mime
+		  (mail-fetch-field "mime-version"))
+	  (setq ct (mail-fetch-field "content-type")
+		ctl (condition-case () (mail-header-parse-content-type ct)
 		      (error nil))
 		cte (mail-fetch-field "content-transfer-encoding")
 		cd (mail-fetch-field "content-disposition")
@@ -116,7 +124,11 @@
 		id (mail-fetch-field "content-id"))))
       (if (not ctl)
 	  (mm-dissect-singlepart
-	   '("text/plain") nil no-strict-mime nil description)
+	   '("text/plain") nil no-strict-mime
+	   (and cd (condition-case ()
+		       (mail-header-parse-content-disposition cd)
+		     (error nil)))
+	   description)
 	(setq type (split-string (car ctl) "/"))
 	(setq subtype (cadr type)
 	      type (pop type))
@@ -145,7 +157,8 @@
 (defun mm-dissect-singlepart (ctl cte &optional force cdl description)
   (when (or force
 	    (not (equal "text/plain" (car ctl))))
-    (let ((res (list (mm-copy-to-buffer) ctl cte nil cdl description)))
+    (let ((res (mm-make-handle
+		(mm-copy-to-buffer) ctl cte nil cdl description)))
       (push (car res) mm-dissection-list)
       res)))
 
@@ -512,14 +525,19 @@ This overrides entries in the mailcap file."
 
 (defun mm-get-image (handle)
   "Return an image instance based on HANDLE."
-  (let ((type (cadr (split-string (car (mm-handle-type handle)) "/"))))
-    (mm-with-unibyte-buffer
-      (insert-buffer-substring (mm-handle-buffer handle))
-      (mm-decode-content-transfer-encoding
-       (mm-handle-encoding handle)
-       (car (mm-handle-type handle)))
-      (make-image-specifier
-       (vector (intern type) :data (buffer-string))))))
+  (let ((type (cadr (split-string (car (mm-handle-type handle)) "/")))
+	spec)
+    (or (mm-handle-cache handle)
+	(mm-with-unibyte-buffer
+	  (insert-buffer-substring (mm-handle-buffer handle))
+	  (mm-decode-content-transfer-encoding
+	   (mm-handle-encoding handle)
+	   (car (mm-handle-type handle)))
+	  (prog1
+	      (setq spec
+		    (make-image-specifier
+		     (vector (intern type) :data (buffer-string))))
+	    (mm-handle-set-cache handle spec))))))
 
 (defun mm-image-fit-p (handle)
   "Say whether the image in HANDLE will fit the current window."

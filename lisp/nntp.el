@@ -209,6 +209,16 @@ If this variable is nil, which is the default, no timers are set.")
 (defvoo nntp-server-xover 'try)
 (defvoo nntp-server-list-active-group 'try)
 
+(defvar nntp-async-needs-kluge
+  (string-match "^GNU Emacs 20\\.3\\." (emacs-version))
+  "*When non-nil, nntp will poll asynchronous connections
+once a second.  By default, this is turned on only for Emacs
+20.3, which has a bug that breaks nntp's normal method of
+noticing asynchronous data.")
+
+(defvar nntp-async-timer nil)
+(defvar nntp-async-process-list nil)
+
 (eval-and-compile
   (autoload 'nnmail-read-passwd "nnmail")
   (autoload 'open-ssl-stream "ssl"))
@@ -325,17 +335,7 @@ If this variable is nil, which is the default, no timers are set.")
        ((eq callback 'ignore)
 	t)
        ((and callback wait-for)
-	(save-excursion
-	  (set-buffer (process-buffer process))
-	  (unless nntp-inside-change-function
-	    (erase-buffer))
-	  (setq nntp-process-decode decode
-		nntp-process-to-buffer buffer
-		nntp-process-wait-for wait-for
-		nntp-process-callback callback
-		nntp-process-start-point (point-max)
-		after-change-functions
-		(list 'nntp-after-change-function-callback)))
+	(nntp-async-wait process wait-for buffer decode callback)
 	t)
        (wait-for
 	(nntp-wait-for process wait-for buffer decode))
@@ -904,48 +904,95 @@ password contained in '~/.nntp-authinfo'."
 	    (eval (cadr entry))
 	  (funcall (cadr entry)))))))
 
-(defun nntp-after-change-function-callback (beg end len)
-  (unwind-protect
-      (when nntp-process-callback
-	(save-match-data
-	  (if (and (= beg (point-min))
-		   (memq (char-after beg) '(?4 ?5)))
-	      ;; Report back error messages.
-	      (save-excursion
-		(goto-char beg)
-		(if (looking-at "480")
-		    (nntp-handle-authinfo nntp-process-to-buffer)
-		  (nntp-snarf-error-message)
-		  (funcall nntp-process-callback nil)))
-	    (goto-char end)
-	    (when (and (> (point) nntp-process-start-point)
-		       (re-search-backward nntp-process-wait-for
-					   nntp-process-start-point t))
-	      (when (gnus-buffer-exists-p nntp-process-to-buffer)
-		(let ((cur (current-buffer))
-		      (start nntp-process-start-point))
-		  (save-excursion
-		    (set-buffer nntp-process-to-buffer)
-		    (goto-char (point-max))
-		    (let ((b (point)))
-		      (insert-buffer-substring cur start)
-		      (narrow-to-region b (point-max))
-		      (nntp-decode-text)
-		      (widen)))))
-	      (goto-char end)
-	      (let ((callback nntp-process-callback)
-		    (nntp-inside-change-function t))
-		(setq nntp-process-callback nil)
-		(save-excursion
-		  (funcall callback
-			   (buffer-name (get-buffer
-					 nntp-process-to-buffer)))))))))
+(defun nntp-async-wait (process wait-for buffer decode callback)
+  (save-excursion
+    (set-buffer (process-buffer process))
+    (unless nntp-inside-change-function
+      (erase-buffer))
+    (setq nntp-process-wait-for wait-for
+	  nntp-process-to-buffer buffer
+	  nntp-process-decode decode
+	  nntp-process-callback callback
+	  nntp-process-start-point (point-max))
+    (setq after-change-functions '(nntp-after-change-function))
+    (if nntp-async-needs-kluge
+	(nntp-async-kluge process))))
 
-    ;; Any throw from after-change-functions will leave it
-    ;; set to nil.  So we reset it here, if necessary.
+(defun nntp-async-kluge (process)
+  ;; emacs 20.3 bug: process output with encoding 'binary
+  ;; doesn't trigger after-change-functions.
+  (unless nntp-async-timer
+    (setq nntp-async-timer
+	  (nnheader-run-at-time 1 1 'nntp-async-timer-handler)))
+  (add-to-list 'nntp-async-process-list process))
+
+(defun nntp-async-timer-handler ()
+  (mapcar
+   (lambda (proc)
+     (if (memq (process-status proc) '(open run))
+	 (nntp-async-trigger proc)
+       (nntp-async-stop proc)))
+   nntp-async-process-list))
+
+(defun nntp-async-stop (proc)
+  (setq nntp-async-process-list (delq proc nntp-async-process-list))
+  (when (and nntp-async-timer (not nntp-async-process-list))
+    (nnheader-cancel-timer nntp-async-timer)
+    (setq nntp-async-timer nil)))
+
+(defun nntp-after-change-function (beg end len)
+  (unwind-protect
+      ;; we only care about insertions at eob
+      (when (and (eq 0 len) (eq (point-max) end))
+	(save-match-data
+	  (nntp-async-trigger (get-buffer-process (current-buffer)))))
+    ;; any throw from after-change-functions will leave it
+    ;; set to nil.  so we reset it here, if necessary.
     (when quit-flag
-      (setq after-change-functions
-	    (list 'nntp-after-change-function-callback)))))
+      (setq after-change-functions '(nntp-after-change-function)))))
+
+(defun nntp-async-trigger (process)
+  (save-excursion
+    (set-buffer (process-buffer process))
+    (when nntp-process-callback
+      ;; do we have an error message?
+      (goto-char nntp-process-start-point)
+      (if (memq (following-char) '(?4 ?5))
+	  ;; wants credentials?
+	  (if (looking-at "480")
+	      (nntp-handle-authinfo nntp-process-to-buffer)
+	    ;; report error message.
+	    (nntp-snarf-error-message)
+	    (nntp-do-callback nil))
+
+	;; got what we expect?
+	(goto-char (point-max))
+	(when (re-search-backward
+	       nntp-process-wait-for nntp-process-start-point t)
+	  (nntp-async-stop process)
+	  ;; convert it.
+	  (when (gnus-buffer-exists-p nntp-process-to-buffer)
+	    (let ((buf (current-buffer))
+		  (start nntp-process-start-point)
+		  (decode nntp-process-decode))
+	      (save-excursion
+		(set-buffer nntp-process-to-buffer)
+		(goto-char (point-max))
+		(save-restriction
+		  (narrow-to-region (point) (point))
+		  (insert-buffer-substring buf start)
+		  (when decode
+		    (nntp-decode-text))))))
+	  ;; report it.
+	  (goto-char (point-max))
+	  (nntp-do-callback
+	   (buffer-name (get-buffer nntp-process-to-buffer))))))))
+
+(defun nntp-do-callback (arg)
+  (let ((callback nntp-process-callback)
+	(nntp-inside-change-function t))
+    (setq nntp-process-callback nil)
+    (funcall callback arg)))
 
 (defun nntp-snarf-error-message ()
   "Save the error message in the current buffer."
@@ -955,7 +1002,7 @@ password contained in '~/.nntp-authinfo'."
     (nnheader-report 'nntp message)
     message))
 
-(defun nntp-accept-process-output (process)
+(defun nntp-accept-process-output (process &optional timeout)
   "Wait for output from PROCESS and message some dots."
   (save-excursion
     (set-buffer (or (nntp-find-connection-buffer nntp-server-buffer)
@@ -965,7 +1012,7 @@ password contained in '~/.nntp-authinfo'."
       (unless (< len 10)
 	(setq nntp-have-messaged t)
 	(nnheader-message 7 "nntp read: %dk" len)))
-    (accept-process-output process 1)))
+    (accept-process-output process (or timeout 1))))
 
 (defun nntp-accept-response ()
   "Wait for output from the process that outputs to BUFFER."

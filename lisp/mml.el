@@ -97,10 +97,12 @@
     ;; If the tag ended at the end of the line, we go to the next line.
     (when (looking-at "[ \t]*\n")
       (forward-line 1))
-    (if (re-search-forward "<#/?\\(multipart\\|part\\|external\\)." nil t)
+    (if (re-search-forward
+	 "<#\\(/\\)?\\(multipart\\|part\\|external\\)." nil t)
 	(prog1
 	    (buffer-substring beg (match-beginning 0))
-	  (if (equal (match-string 0) "<#/multipart>")
+	  (if (or (not (match-beginning 1))
+		  (equal (match-string 2) "multipart"))
 	      (goto-char (match-beginning 0))
 	    (when (looking-at "[ \t]*\n")
 	      (forward-line 1))))

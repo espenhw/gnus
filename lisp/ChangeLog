@@ -1,3 +1,75 @@
+Mon Nov 30 21:57:00 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.57 is released.
+
+1998-11-23  Felix Lee  <flee@cygnus.com>
+
+	* nntp.el (nntp-async-needs-kluge): new setting.
+	(nntp-async-timer): new var.
+	(nntp-async-process-list): new var.
+	(nntp-async-kluge): new function.
+	(nntp-async-timer-handler): new function.
+	(nntp-async-wait): new function.
+	(nntp-async-stop): new function.
+	(nntp-after-change-function): renamed, and split apart.
+	(nntp-async-trigger): new function.
+	(nntp-do-callback): new function.
+	(nntp-accept-process-output): add optional timeout arg.
+
+	* gnus-async.el (gnus-async-request-fetched-article): fixed.
+	(gnus-async-wait-for-article): new function.
+	(gnus-async-with-semaphore): s/asynch/async/.
+
+1998-11-30 16:54:56  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-with-article): Don't encode.
+	(gnus-insert-mime-button): Fall back on filename from C-D.
+	(gnus-mime-display-single): Have dots right on text/plain
+	attachments. 
+
+	* mm-decode.el (mm-dissect-buffer): Respect Content-Disposition in 
+	broken parts.
+
+	* gnus-art.el (gnus-with-article): Flush cache and backlog.
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Also do
+	binhex. 
+
+	* gnus-sum.el (gnus-summary-reparent-thread): Use new macro.
+	(gnus-summary-repair-multipart): New command and keystroke.
+
+	* gnus-art.el (gnus-with-article-buffer): New macro.
+
+Sun Nov 29 23:51:57 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-inline-part): Do not get part when
+	undisplay the part.
+
+1998-11-30 03:38:35  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-util.el (gnus-make-sort-function-1): Allow lambdas.
+
+	* mml.el (mml-read-part): Partition right.
+
+	* mm-decode.el (mm-handle-set-cache): New macro.
+	(mm-handle-cache): Ditto.
+	(mm-make-handle): Ditto.
+	(mm-dissect-singlepart): Use it.
+	(mm-get-image): Use the cache.
+
+1998-11-29 23:44:44  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-display-mixed): Rewrite.
+	(gnus-mime-display-single): Don't insert lines between parts. 
+
+Sun Nov 29 04:55:40 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnmail.el (nnmail-file-coding-system-1): New variable.
+	* nnfolder.el (nnfolder-file-coding-system): Ditto.
+	(nnfolder-read-folder): Use nnfolder-file-coding-system.
+	* nnml.el (nnml-file-coding-system): New variable.
+	(nnml-request-article): Use nnml-file-coding-system.
+
 Sun Nov 29 15:12:52 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.56 is released.

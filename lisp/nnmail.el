@@ -496,6 +496,11 @@ parameter.  It should return nil, `warn' or `delete'."
 (defvar nnmail-file-coding-system 'binary
   "Coding system used in nnmail.")
 
+(defvar nnmail-file-coding-system-1 
+  (if (string-match "nt" system-configuration)
+      'raw-text-dos 'binary)
+  "Another coding system used in nnmail.")
+
 (defun nnmail-find-file (file)
   "Insert FILE in server buffer safely."
   (set-buffer nntp-server-buffer)

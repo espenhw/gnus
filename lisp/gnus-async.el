@@ -108,8 +108,8 @@ It should return non-nil if the article is to be prefetched."
 	 ,@forms)
      (gnus-async-release-semaphore 'gnus-async-article-semaphore)))
 
-(put 'gnus-asynch-with-semaphore 'lisp-indent-function 0)
-(put 'gnus-asynch-with-semaphore 'edebug-form-spec '(body))
+(put 'gnus-async-with-semaphore 'lisp-indent-function 0)
+(put 'gnus-async-with-semaphore 'edebug-form-spec '(body))
 
 ;;;
 ;;; Article prefetch
@@ -241,18 +241,9 @@ It should return non-nil if the article is to be prefetched."
 (defun gnus-async-request-fetched-article (group article buffer)
   "See whether we have ARTICLE from GROUP and put it in BUFFER."
   (when (numberp article)
-    (when (and gnus-async-current-prefetch-group
-	       (string= group gnus-async-current-prefetch-group)
+    (when (and (equal group gnus-async-current-prefetch-group)
 	       (eq article gnus-async-current-prefetch-article))
-      (save-excursion
-	(gnus-async-set-buffer)
-	(gnus-message 5 "Waiting for async article...")
-	(let ((proc (nntp-find-connection (current-buffer)))
-	      (nntp-server-buffer (current-buffer))
-	      (nntp-have-messaged nil))
-	  (while (eq article (car gnus-async-fetch-list))
-	    (nntp-accept-process-output proc)))
-	(gnus-message 5 "Waiting for async article...done")))
+      (gnus-async-wait-for-article article))
     (let ((entry (gnus-async-prefetched-article-entry group article)))
       (when entry
 	(save-excursion
@@ -262,6 +253,36 @@ It should return non-nil if the article is to be prefetched."
 	  (when (memq 'read gnus-prefetched-article-deletion-strategy)
 	    (gnus-async-delete-prefetched-entry entry))
 	  t)))))
+
+(defun gnus-async-wait-for-article (article)
+  "Wait until ARTICLE is no longer the currently-being-fetched article."
+  (save-excursion
+    (gnus-async-set-buffer)
+    (let ((proc (nntp-find-connection (current-buffer)))
+	  (nntp-server-buffer (current-buffer))
+	  (nntp-have-messaged nil)
+	  (tries 0))
+      (condition-case nil
+	  ;; FIXME: we could stop waiting after some
+	  ;; timeout, but this is the wrong place to do it.
+	  ;; rather than checking time-spent-waiting, we
+	  ;; should check time-since-last-output, which
+	  ;; needs to be done in nntp.el.
+	  (while (eq article gnus-async-current-prefetch-article)
+	    (incf tries)
+	    (when (nntp-accept-process-output proc 1)
+	      (setq tries 0))
+	    (when (and (not nntp-have-messaged) (eq 3 tries))
+	      (gnus-message 5 "Waiting for async article...")
+	      (setq nntp-have-messaged t)))
+	(quit
+	 ;; if the user interrupted on a slow/hung connection,
+	 ;; do something friendly.
+	 (when (< 3 tries)
+	   (setq gnus-async-current-prefetch-article nil))
+	 (signal 'quit nil)))
+      (when nntp-have-messaged
+	(gnus-message 5 "")))))
 
 (defun gnus-async-delete-prefetched-entry (entry)
   "Delete ENTRY from buffer and alist."

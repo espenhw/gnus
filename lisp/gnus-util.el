@@ -497,11 +497,16 @@ If N, return the Nth ancestor instead."
 	(first 't1)
 	(last 't2))
     (when (consp function)
-      (if (eq (car function) 'not)
-	  (setq function (cadr function)
-		first 't2
-		last 't1)
-	(error "Invalid sort spec: %s" function)))
+      (cond
+       ;; Reversed spec.
+       ((eq (car function) 'not)
+	(setq function (cadr function)
+	      first 't2
+	      last 't1))
+       ((gnus-functionp function)
+	)
+       (t
+	(error "Invalid sort spec: %s" function))))if
     (if (cdr funs)
 	`(or (,function ,first ,last)
 	     (and (not (,function ,last ,first))

@@ -636,6 +636,38 @@ Initialized from `text-mode-syntax-table.")
      (max (1- b) (point-min))
      b 'intangible (cddr (memq 'intangible props)))))
 
+(defmacro gnus-with-article (article &rest forms)
+  "Select ARTICLE, copy the contents of the original article buffer to a new buffer, and then perform FORMS there.
+Then replace the article with the result."
+  `(progn
+     ;; We don't want the article to be marked as read.
+     (let (gnus-mark-article-hook)
+       (gnus-summary-select-article t t nil ,article))
+     (set-buffer gnus-original-article-buffer)
+     (let ((buf (format "%s" (buffer-string))))
+       (with-temp-buffer
+	 (insert buf)
+	 ,@forms
+	 (unless (gnus-request-replace-article
+		  ,article (car gnus-article-current)
+		  (current-buffer) t)
+	   (error "Couldn't replace article"))
+	 ;; The cache and backlog have to be flushed somewhat.
+	 (when gnus-keep-backlog
+	   (gnus-backlog-remove-article
+	    (car gnus-article-current) (cdr gnus-article-current)))
+	 ;; Flush original article as well.
+	 (save-excursion
+	   (when (get-buffer gnus-original-article-buffer)
+	     (set-buffer gnus-original-article-buffer)
+	     (setq gnus-original-article nil)))
+	 (when gnus-use-cache
+	   (gnus-cache-update-article
+	    (car gnus-article-current) (cdr gnus-article-current)))))))
+
+(put 'gnus-with-article 'lisp-indent-function 1)
+(put 'gnus-with-article 'edebug-form-spec '(form body))
+
 (defsubst gnus-article-unhide-text (b e)
   "Remove hidden text properties from region between B and E."
   (remove-text-properties b e gnus-hidden-properties)
@@ -2350,12 +2382,13 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (interactive "P") ; For compatibility reasons we are not using "z".
   (gnus-article-check-buffer)
   (let* ((data (get-text-property (point) 'gnus-data))
-	 (contents (mm-get-part data))
+	 contents
 	 ;(url-standalone-mode (not gnus-plugged))
 	 (b (point))
 	 buffer-read-only)
     (if (mm-handle-undisplayer data)
 	(mm-remove-part data)
+      (setq contents (mm-get-part data))
       (forward-line 2)
       (when charset 
 	(unless (symbolp charset)
@@ -2455,6 +2488,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 
 (defun gnus-insert-mime-button (handle gnus-tmp-id &optional displayed)
   (let ((gnus-tmp-name (mail-content-type-get (mm-handle-type handle) 'name))
+	(filename (mail-content-type-get (mm-handle-disposition handle)
+					 'filename))
 	(gnus-tmp-type (car (mm-handle-type handle)))
 	(gnus-tmp-description (mm-handle-description handle))
 	(gnus-tmp-dots
@@ -2465,6 +2500,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 			   (set-buffer (mm-handle-buffer handle))
 			   (buffer-size)))
 	b e)
+    (setq gnus-tmp-name (or gnus-tmp-name filename))
     (setq gnus-tmp-name
 	  (if gnus-tmp-name
 	      (concat " (" gnus-tmp-name ")")
@@ -2544,14 +2580,13 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (funcall gnus-article-mime-part-function handles)))
 
 (defun gnus-mime-display-mixed (handles)
-  (let (handle)
-    (while (setq handle (pop handles))
-      (gnus-mime-display-part handle))))
+  (mapcar 'gnus-mime-display-part handles))
 
 (defun gnus-mime-display-single (handle)
   (let ((type (car (mm-handle-type handle)))
 	(ignored gnus-ignored-mime-types)
 	(not-attachment t)
+	(move nil)
 	display text)
     (catch 'ignored
       (progn
@@ -2575,19 +2610,22 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	    (gnus-article-insert-newline)
 	    (gnus-insert-mime-button
 	     handle id (list (or display
-				 (and (not not-attachment) text))))
-	    (gnus-article-insert-newline)))	
-	(gnus-article-insert-newline)
+				 (and not-attachment text))))
+	    (gnus-article-insert-newline)
+	    (gnus-article-insert-newline)
+	    (setq move t)))
 	(cond
 	 (display
-	  (forward-line -2)
+	  (when move
+	    (forward-line -2))
 	  (let ((rfc2047-default-charset gnus-newsgroup-default-charset)
 		(mm-charset-iso-8859-1-forced 
 		 gnus-newsgroup-iso-8859-1-forced))
 	    (mm-display-part handle t))
 	  (goto-char (point-max)))
 	 ((and text not-attachment)
-	  (forward-line -2)
+	  (when move
+	    (forward-line -2))
 	  (gnus-article-insert-newline)
 	  (mm-insert-inline handle (mm-get-part handle))
 	  (goto-char (point-max))))))))

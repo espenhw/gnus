@@ -90,6 +90,7 @@ time saver for large mailboxes.")
 (defvoo nnfolder-buffer-alist nil)
 (defvoo nnfolder-scantime-alist nil)
 (defvoo nnfolder-active-timestamp nil)
+(defvoo nnfolder-file-coding-system nnmail-file-coding-system-1)
 
 
 
@@ -682,7 +683,10 @@ deleted.  Point is left where the deleted region was."
 
 (defun nnfolder-read-folder (group)
   (let* ((file (nnfolder-group-pathname group))
-	 (buffer (set-buffer (nnheader-find-file-noselect file))))
+	 (buffer (set-buffer 
+		  (let ((nnmail-file-coding-system 
+			 nnfolder-file-coding-system))
+		    (nnheader-find-file-noselect file)))))
     (if (equal (cadr (assoc group nnfolder-scantime-alist))
 	       (nth 5 (file-attributes file)))
 	;; This looks up-to-date, so we don't do any scanning.
