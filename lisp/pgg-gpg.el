@@ -162,7 +162,10 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
       (pgg-gpg-process-region start end passphrase pgg-gpg-program args))
     (when sign
       (with-current-buffer pgg-errors-buffer
-	(pgg-gpg-possibly-cache-passphrase passphrase pgg-gpg-user-id)))
+	;; Possibly cache passphrase under, e.g. "jas", for future sign.
+	(pgg-gpg-possibly-cache-passphrase passphrase pgg-gpg-user-id)
+	;; Possibly cache passphrase under, e.g. B565716F, for future decrypt.
+	(pgg-gpg-possibly-cache-passphrase passphrase)))
     (pgg-process-when-success)))
 
 (defun pgg-gpg-decrypt-region (start end)
@@ -209,7 +212,10 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
     (pgg-as-lbt start end 'CRLF
       (pgg-gpg-process-region start end passphrase pgg-gpg-program args))
     (with-current-buffer pgg-errors-buffer
-      (pgg-gpg-possibly-cache-passphrase passphrase pgg-gpg-user-id))
+      ;; Possibly cache passphrase under, e.g. "jas", for future sign.
+      (pgg-gpg-possibly-cache-passphrase passphrase pgg-gpg-user-id)
+      ;; Possibly cache passphrase under, e.g. B565716F, for future decrypt.
+      (pgg-gpg-possibly-cache-passphrase passphrase))
     (pgg-process-when-success)))
 
 (defun pgg-gpg-verify-region (start end &optional signature)
