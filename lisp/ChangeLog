@@ -2,6 +2,9 @@
 
 	* message.el (message-newline-and-reformat): Place a boundary
 	before filling.
+	(message-make-forward-subject-function): Changed default to
+	message-forward-subject-name-subject. 
+	(message-forward-subject-name-subject): New function.
 
 	* nnimap.el (nnimap-split-fancy): Ditto.
 
