@@ -12562,6 +12562,14 @@ can be turned off completely by binding
 @code{nnmail-mail-splitting-decodes} to nil, which is useful if you
 want to match articles based on the raw header data.
 
+@vindex nnmail-resplit-incoming
+By default, splitting is not performed on all incoming messages.  If
+you specify a @code{directory} entry for the variable
+@code{mail-sources} @pref{Mail Source Specifiers}, however, then
+splitting does @emph{not} happen by default.  You can set the variable
+@code{nnmail-resplit-incoming} to a non-nil value to make splitting
+happen even in this case.
+
 Gnus gives you all the opportunity you could possibly want for shooting
 yourself in the foot.  Let's say you create a group that will contain
 all the mail you get from your boss.  And then you accidentally
@@ -12664,6 +12672,7 @@ Alter this script to fit find the @samp{movemail} you want to use.
 
 
 @item directory
+@vindex nnmail-scan-directory-mail-source-once
 Get mail from several files in a directory.  This is typically used
 when you have procmail split the incoming mail into several files.
 That is, mail from the file @file{foo.bar.spool} will be put in the
@@ -12673,9 +12682,10 @@ of @code{.spool}.)  Setting
 to scan the mail source only once.  This is particularly useful if you
 want to scan mail groups at a specified level.
 
+@vindex nnmail-resplit-incoming
 There is also the variable @code{nnmail-resplit-incoming}, if you set
 that to a non-nil value, then the normal splitting process is applied
-to all the files from the directory.
+to all the files from the directory, @ref{Splitting Mail}.
 
 Keywords:
 

@@ -1,3 +1,11 @@
+2002-09-09  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Splitting Mail): Document nnmail-resplit-incoming,
+	xref to Mail Source Specifiers.
+	(Mail Source Specifiers): Add index entry for
+	nnmail-scan-directory-mail-source-once.  Add index entry for
+	nnmail-resplit-incoming, with xref to Splitting Mail.
+
 2002-09-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Browse Foreign Server): Addition.
