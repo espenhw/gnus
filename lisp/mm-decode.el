@@ -308,9 +308,11 @@ to:
   :group 'mime-display)
 
 (defcustom mm-tmp-directory
-  (cond ((fboundp 'temp-directory) (temp-directory))
-	((boundp 'temporary-file-directory) temporary-file-directory)
-	("/tmp/"))
+  (if (fboundp 'temp-directory)
+      (temp-directory)
+    (if (boundp 'temporary-file-directory)
+	temporary-file-directory
+      "/tmp/"))
   "Where mm will store its temporary files."
   :type 'directory
   :group 'mime-display)
