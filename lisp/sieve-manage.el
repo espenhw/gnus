@@ -65,7 +65,7 @@
 ;;
 ;; 2001-10-31 Committed to Oort Gnus.
 ;;
-;; $Id: sieve-manage.el,v 1.9 2001/06/30 19:00:00 jas Exp $
+;; $Id: sieve-manage.el,v 6.1 2001/11/01 00:50:22 jas Exp $
 
 ;;; Code:
 
@@ -491,10 +491,10 @@ password is remembered in the buffer."
     (sieve-manage-send (format "HAVESPACE \"%s\" %s" name size))
     (sieve-manage-parse-okno)))
 
-(defun sieve-string-bytes (str)
+(eval-and-compile
   (if (fboundp 'string-bytes)
-      (string-bytes str)
-    (length str)))
+      (defalias 'sieve-string-bytes 'string-bytes)
+    (defalias 'sieve-string-bytes 'length)))
 
 (defun sieve-manage-putscript (name content &optional buffer)
   (with-current-buffer (or buffer (current-buffer))
