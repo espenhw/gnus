@@ -24,6 +24,8 @@
 	Add gnus-spam-mark.
 	(Various Summary Stuff): Add gnus-summary-display-arrow.
 
+	* gnus.texi: Fix typos.
+
 2003-04-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Group Parameters): Fix markup.

@@ -487,7 +487,7 @@ Group Buffer
 Group Buffer Format
 
 * Group Line Specification::    Deciding how the group buffer is to look.
-* Group Modeline Specification::  The group buffer modeline.
+* Group Mode Line Specification::  The group buffer mode line.
 * Group Highlighting::          Having nice colors in the group buffer.
 
 Group Topics
@@ -614,7 +614,7 @@ Article Treatment
 * Article Date::                Grumble, UT!
 * Article Display::             Display various stuff---X-Face, Picons, Smileys
 * Article Signature::           What is a signature?
-* Article Miscellania::         Various other stuff.
+* Article Miscellanea::         Various other stuff.
 
 Alternative Approaches
 
@@ -1717,7 +1717,7 @@ long as Gnus is active.
 
 @menu
 * Group Line Specification::    Deciding how the group buffer is to look.
-* Group Modeline Specification::  The group buffer modeline.
+* Group Mode Line Specification::  The group buffer mode line.
 * Group Highlighting::          Having nice colors in the group buffer.
 @end menu
 
@@ -1883,9 +1883,9 @@ if no info is available---for instance, if it is a non-activated foreign
 group, or a bogus native group.
 
 
-@node Group Modeline Specification
-@subsection Group Modeline Specification
-@cindex group modeline
+@node Group Mode Line Specification
+@subsection Group Mode Line Specification
+@cindex group mode line
 
 @vindex gnus-group-mode-line-format
 The mode line can be changed by setting
@@ -2673,7 +2673,7 @@ the dot is the key, while the thing after the dot is the value.  All the
 parameters have this form @emph{except} local variable specs, which are
 not dotted pairs, but proper lists.
 
-Some parameters have correspondant customizable variables, each of which
+Some parameters have correspondent customizable variables, each of which
 is an alist of regexps and values.
 
 The following group parameters can be used:
@@ -7954,7 +7954,7 @@ these articles easier.
 * Article Date::                Grumble, UT!
 * Article Display::             Display various stuff---X-Face, Picons, Smileys
 * Article Signature::           What is a signature?
-* Article Miscellania::         Various other stuff.
+* Article Miscellanea::         Various other stuff.
 @end menu
 
 
@@ -8415,7 +8415,7 @@ unwrap lines, repair attribution and rearrange citation.
 Unwrap lines that appear to be wrapped citation lines.  You can control
 what lines will be unwrapped by frobbing
 @code{gnus-outlook-deuglify-unwrap-min} and
-@code{gnus-outlook-deuglify-unwrap-max}, indicating the miminum and
+@code{gnus-outlook-deuglify-unwrap-max}, indicating the minimum and
 maximum length of an unwrapped citation line.
 (@code{gnus-article-outlook-unwrap-lines}).
 
@@ -8717,7 +8717,7 @@ article head only, and that each entry has an additional element that is
 used to say what headers to apply the buttonize coding to:
 
 @lisp
-(@var{header} @var{regexp} @var{nutton-par} @var{use-p} @var{function} @var{data-par})
+(@var{header} @var{regexp} @var{button-par} @var{use-p} @var{function} @var{data-par})
 @end lisp
 
 @var{header} is a regular expression.
@@ -8755,7 +8755,7 @@ This variable determines what to do when the button on a string as
 @samp{foo123@@bar.invalid} is pushed.  Strings like this can be either a
 message ID or a mail address.  If it is one of the symbols @code{mid} or
 @code{mail}, Gnus will always assume that the string is a message ID or
-a mail address, respectivly.  If this variable is set to the symbol
+a mail address, respectively.  If this variable is set to the symbol
 @code{ask}, always query the user what do do.  If it is a function, this
 function will be called with the string as it's only argument.  The
 function must return @code{mid}, @code{mail}, @code{invalid} or
@@ -9086,8 +9086,8 @@ the regular expression @samp{^---*Forwarded article}, then it isn't a
 signature after all.
 
 
-@node Article Miscellania
-@subsection Article Miscellania
+@node Article Miscellanea
+@subsection Article Miscellanea
 
 @table @kbd
 @item A t
@@ -10523,7 +10523,7 @@ things to work:
 @enumerate
 @item
 To handle @acronym{PGP} and @acronym{PGP/MIME} messages, you have to
-install an OpenPGP implementation such as GnuPG.  The lisp interface
+install an OpenPGP implementation such as GnuPG.  The Lisp interface
 to GnuPG included with Gnus is called PGG (@pxref{Top, ,PGG, pgg, PGG
 Manual}), but Mailcrypt and gpg.el are also supported.
 
@@ -10664,7 +10664,7 @@ who wrote the article, the date it was written and the subject of the
 article.  That's well and nice, but there's also lots of information
 most people do not want to see---what systems the article has passed
 through before reaching you, the @code{Message-ID}, the
-@code{References}, etc. ad nauseum---and you'll probably want to get rid
+@code{References}, etc. ad nauseam---and you'll probably want to get rid
 of some of those lines.  If you want to keep all those lines in the
 article buffer, you can set @code{gnus-show-all-headers} to @code{t}.
 
@@ -10807,7 +10807,7 @@ The following commands are available when you have placed point over a
 @kindex RET (Article)
 @itemx BUTTON-2 (Article)
 Toggle displaying of the @acronym{MIME} object
-(@code{gnus-article-press-button}). If builtin viewers can not display
+(@code{gnus-article-press-button}). If built-in viewers can not display
 the object, Gnus resorts to external viewers in the @file{mailcap}
 files.  If a viewer has the @samp{copiousoutput} specification, the
 object is displayed inline.
@@ -13623,7 +13623,7 @@ File where mail will be stored while processing it.  The default is@*
 If non-@code{nil}, delete incoming files after handling them.  If
 @code{t}, delete the files immediately, if @code{nil}, never delete any
 files.  If a positive number, delete files older than number of days
-(This will only happen, when reveiving new mail).  You may also set
+(This will only happen, when receiving new mail).  You may also set
 @code{mail-source-delete-incoming} to @code{nil} and call
 @code{mail-source-delete-old-incoming} from a hook or interactively.
 
@@ -13898,7 +13898,7 @@ field names or words.  In other words, all @var{value}'s are wrapped in
 @samp{\<} and @samp{\>} pairs.
 
 @vindex nnmail-split-abbrev-alist
-@var{field} and @var{value} can also be lisp symbols, in that case they
+@var{field} and @var{value} can also be Lisp symbols, in that case they
 are expanded as specified by the variable
 @code{nnmail-split-abbrev-alist}.  This is an alist of cons cells, where
 the @code{car} of a cell contains the key, and the @code{cdr} contains the associated
@@ -14064,7 +14064,7 @@ splits like this:
 @var{groups} may be a regular expression or a list of group names whose
 parameters will be scanned to generate the output split.
 @var{no-crosspost} can be used to disable cross-posting; in this case, a
-single @code{|} split will be output.  @var{catch-all} is the fallback
+single @code{|} split will be output.  @var{catch-all} is the fall back
 fancy split, used like @var{gnus-group-split-default-catch-all-group}.
 If @var{catch-all} is @code{nil}, or if @var{split-regexp} matches the
 empty string in any selected group, no catch-all split will be issued.
@@ -14172,7 +14172,7 @@ Gnus will not delete your old, read mail.  Unless you ask it to, of
 course.
 
 To make Gnus get rid of your unwanted mail, you have to mark the
-articles as @dfn{expirable}.  (With the default keybindings, this means
+articles as @dfn{expirable}.  (With the default key bindings, this means
 that you have to type @kbd{E}.)  This does not mean that the articles
 will disappear right away, however.  In general, a mail article will be
 deleted from your system if, 1) it is marked as expirable, AND 2) it is
@@ -14781,7 +14781,7 @@ stores extra information in the @file{.nnmaildir/} directory within a
 maildir.
 
 Maildir format was designed to allow concurrent deliveries and
-reading, without needing locks.  With other backends, you would have
+reading, without needing locks.  With other back ends, you would have
 your mail delivered to a spool of some kind, and then you would
 configure Gnus to split mail from that spool into your groups.  You
 can still do that with nnmaildir, but the more common configuration is
@@ -14880,17 +14880,17 @@ supply a @code{create-directory} server parameter.
 
 nnmaildir uses several group parameters.  It's safe to ignore all
 this; the default behavior for nnmaildir is the same as the default
-behavior for other mail backends: articles are deleted after one week,
+behavior for other mail back ends: articles are deleted after one week,
 etc.  Except for the expiry parameters, all this functionality is
 unique to nnmaildir, so you can ignore it if you're just trying to
-duplicate the behavior you already have with another backend.
+duplicate the behavior you already have with another back end.
 
 If the value of any of these parameters is a vector, the first element
 is evaluated as a Lisp form and the result is used, rather than the
 original value.  If the value is not a vector, the value itself is
 evaluated as a Lisp form.  (This is why these parameters use names
 different from those of other, similar parameters supported by other
-backends: they have different, though similar, meanings.)  (For
+back ends: they have different, though similar, meanings.)  (For
 numbers, strings, @code{nil}, and @code{t}, you can ignore the
 @code{eval} business again; for other values, remember to use an extra
 quote and wrap the value in a vector when appropriate.)
@@ -14901,7 +14901,7 @@ An integer specifying the minimum age, in seconds, of an article before
 it will be expired, or the symbol @code{never} to specify that
 articles should never be expired.  If this parameter is not set,
 nnmaildir falls back to the usual
-@code{nnmail-expiry-wait}(@code{-function}) variables (overridable by
+@code{nnmail-expiry-wait}(@code{-function}) variables (overrideable by
 the @code{expiry-wait}(@code{-function}) group parameters.  If you
 wanted a value of 3 days, you could use something like @code{[(* 3 24
 60 60)]}; nnmaildir will evaluate the form and use the result.  An
@@ -15986,7 +15986,7 @@ clients. (In other words, Gnus has two ``Tick'' marks and @acronym{IMAP}
 has only one.)
 
 Probably the only reason for frobing this would be if you're trying
-enable per-user persistant dormant flags, using something like:
+enable per-user persistent dormant flags, using something like:
 
 @lisp
 (setcdr (assq 'dormant nnimap-mark-to-flag-alist)
@@ -17315,7 +17315,7 @@ Both topic parameters (@pxref{Topic Parameters}) and agent categories
 to multiple groups.  Which you use is entirely up to you.  Topic
 parameters do override categories so, if you mix the two, you'll have
 to take that into account.  If you have a few groups that deviate from
-your policy, you can use grou parameters (@pxref{Group Parameters}) to
+your policy, you can use group parameters (@pxref{Group Parameters}) to
 configure them.
 
 @item
@@ -17896,7 +17896,7 @@ Remove the downloading mark from the article
 @kindex @@ (Agent Summary)
 @findex gnus-agent-toggle-mark
 Toggle whether to download the article
-(@code{gnus-agent-toggle-mark}).  The dowload mark is @samp{%} by
+(@code{gnus-agent-toggle-mark}).  The download mark is @samp{%} by
 default. 
 
 @item J c
@@ -17961,7 +17961,7 @@ If you so desire, you can configure the agent (see @code{gnus-agent-cache}
 @pxref{Agent Variables}) to always download headers and articles while
 plugged.  Gnus will almost certainly be slower, but it will be kept
 synchronized with the server.  That last point probably won't make any
-sense if you are using a nntp or nnimap backend.
+sense if you are using a nntp or nnimap back end.
 
 @node Agent Expiry
 @subsection Agent Expiry
@@ -17975,8 +17975,8 @@ sense if you are using a nntp or nnimap backend.
 @cindex Gnus Agent expiry
 @cindex expiry
 
-The Agent backend, @code{nnagent}, doesn't handle expiry. Well, at
-least it doesn't handle it like other backends.  Instead, there are
+The Agent back end, @code{nnagent}, doesn't handle expiry. Well, at
+least it doesn't handle it like other back ends.  Instead, there are
 special @code{gnus-agent-expire} and @code{gnus-agent-expire-group}
 commands that will expire all read articles that are older than
 @code{gnus-agent-expire-days} days.  They can be run whenever you feel
@@ -18824,8 +18824,8 @@ Anyway, if you'd like to dig into it yourself, here's an example:
 This example demonstrates most score file elements.  For a different
 approach, see @pxref{Advanced Scoring}.
 
-Even though this looks much like lisp code, nothing here is actually
-@code{eval}ed.  The lisp reader is used to read this form, though, so it
+Even though this looks much like Lisp code, nothing here is actually
+@code{eval}ed.  The Lisp reader is used to read this form, though, so it
 has to be valid syntactically, if not semantically.
 
 Six keys are supported by this alist:
@@ -20347,7 +20347,7 @@ case, they will be @code{eval}ed to insert the required lines.
 Gnus includes a command to help you while creating your own format
 specs.  @kbd{M-x gnus-update-format} will @code{eval} the current form,
 update the spec in question and pop you to a buffer where you can
-examine the resulting lisp code to be run to generate the line.
+examine the resulting Lisp code to be run to generate the line.
 
 
 
@@ -21536,7 +21536,7 @@ want to add @samp{"unknown"} to this list.
 @item gnus-picon-file-types
 @vindex gnus-picon-file-types
 Ordered list of suffixes on picon file names to try.  Defaults to
-@code{("xpm" "gif" "xbm")} minus those not builtin your Emacs.
+@code{("xpm" "gif" "xbm")} minus those not built-in your Emacs.
 
 @end table
 
@@ -22305,7 +22305,7 @@ what @code{spam-use-xyz} variables you have set.
 
 The boolean variable @code{nnimap-split-download-body} needs to be
 set, if you want to split based on the whole message instead of just
-the headers.  By default, the nnimap backend will only retrieve the
+the headers.  By default, the nnimap back end will only retrieve the
 message headers.  If you use @code{spam-check-bogofilter},
 @code{spam-check-ifile}, or @code{spam-check-stat} (the splitters that
 can benefit from the full message body), you should set this variable.
@@ -22315,7 +22315,7 @@ that is not an appropriate decision to make on behalf of the user.
 @xref{Splitting in IMAP}.
 
 @emph{TODO: Currently, spam.el only supports insertion of articles
-into a backend.  There is no way to tell spam.el that an article is no
+into a back end.  There is no way to tell spam.el that an article is no
 longer spam or ham.}
 
 @emph{TODO: spam.el needs to provide a uniform way of training all the
@@ -25694,7 +25694,7 @@ improvements, please produce the patch using @samp{diff -u}.
 @cindex edebug
 If you want to debug your problem further before reporting, possibly
 in order to solve the problem yourself and send a patch, you can use
-edebug.  Debugging lisp code is documented in the Elisp manual
+edebug.  Debugging Lisp code is documented in the Elisp manual
 (@pxref{Debugging, , Debugging Lisp Programs, elisp, The GNU Emacs
 Lisp Reference Manual}).  To get you started with edebug, consider if
 you discover some weird behaviour when pressing @kbd{c}, the first
@@ -27348,8 +27348,3 @@ former).  The manual is unambiguous, but it can be confusing.
 @c mode: texinfo
 @c coding: iso-8859-1
 @c End:
-% LocalWords:  BNF mucho detailmenu cindex kindex kbd
-% LocalWords:  findex Gnusae vindex dfn dfn samp nntp setq nnspool nntpserver
-% LocalWords:  nnmbox newusers Blllrph NEWGROUPS dingnusdingnusdingnus
-% LocalWords:  pre fab rec comp nnslashdot regex ga ga sci nnml nnbabyl nnmh
-% LocalWords:  nnfolder emph looong eld newsreaders defun init elc pxref
