@@ -713,31 +713,46 @@ The following commands are available:
        1 "Couldn't request list: %s" (gnus-status-message method))
       nil)
      (t
-      (save-excursion
-	(set-buffer nntp-server-buffer)
+      (with-current-buffer nntp-server-buffer
 	(let ((cur (current-buffer)))
 	  (goto-char (point-min))
 	  (unless (string= gnus-ignored-newsgroups "")
 	    (delete-matching-lines gnus-ignored-newsgroups))
-	  (while (not (eobp))
-	    (ignore-errors
-	      (push (cons
-		     (if (eq (char-after) ?\")
-			 (read cur)
-		       (let ((p (point)) (name ""))
-			 (skip-chars-forward "^ \t\\\\")
-			 (setq name (buffer-substring p (point)))
-			 (while (eq (char-after) ?\\)
-			   (setq p (1+ (point)))
-			   (forward-char 2)
+	  ;; We treat NNTP as a special case to avoid problems with
+	  ;; garbage group names like `"foo' that appear in some badly
+	  ;; managed active files. -jh.
+	  (if (eq (car method) 'nntp)
+	      (while (not (eobp))
+		(ignore-errors
+		  (push (cons 
+			 (buffer-substring 
+			  (point)
+			  (progn 
+			    (skip-chars-forward "^ \t")
+			    (point)))
+			 (let ((last (read cur)))
+			   (cons (read cur) last)))
+			groups))
+		(forward-line))
+	    (while (not (eobp))
+	      (ignore-errors
+		(push (cons
+		       (if (eq (char-after) ?\")
+			   (read cur)
+			 (let ((p (point)) (name ""))
 			   (skip-chars-forward "^ \t\\\\")
-			   (setq name (concat name (buffer-substring
-						    p (point)))))
-			 name))
-		     (let ((last (read cur)))
-		       (cons (read cur) last)))
-		    groups))
-	    (forward-line))))
+			   (setq name (buffer-substring p (point)))
+			   (while (eq (char-after) ?\\)
+			     (setq p (1+ (point)))
+			     (forward-char 2)
+			     (skip-chars-forward "^ \t\\\\")
+			     (setq name (concat name (buffer-substring
+						      p (point)))))
+			   name))
+		       (let ((last (read cur)))
+			 (cons (read cur) last)))
+		      groups))
+	      (forward-line)))))
       (setq groups (sort groups
 			 (lambda (l1 l2)
 			   (string< (car l1) (car l2)))))

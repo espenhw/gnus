@@ -1,3 +1,8 @@
+2003-06-06  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-srvr.el (gnus-browse-foreign-server): Parse garbage NNTP
+	groups correctly.
+
 2003-06-06  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
 	From Benjamin Rutt <rutt+news@cis.ohio-state.edu>.
 
