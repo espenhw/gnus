@@ -158,6 +158,8 @@ one charsets.")
 	;; included in the message
 	(let* (secure-mode
 	       (taginfo (mml-read-tag))
+	       (keyfile (cdr (assq 'keyfile taginfo)))
+	       (certfile (cdr (assq 'certfile taginfo)))
 	       (recipients (cdr (assq 'recipients taginfo)))
 	       (sender (cdr (assq 'sender taginfo)))
 	       (location (cdr (assq 'tag-location taginfo)))
@@ -181,6 +183,10 @@ one charsets.")
 		 (setq tags (list "sign" method "encrypt" method))))
 	  (eval `(mml-insert-tag ,secure-mode
 				 ,@tags
+				 ,(if keyfile "keyfile")
+				 ,keyfile
+				 ,(if certfile "certfile")
+				 ,certfile
 				 ,(if recipients "recipients")
 				 ,recipients
 				 ,(if sender "sender")

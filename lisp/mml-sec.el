@@ -1,5 +1,5 @@
 ;;; mml-sec.el --- A package with security functions for MML documents
-;; Copyright (C) 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 
@@ -224,6 +224,13 @@ You can also customize or set `mml-signencrypt-style-alist' instead."
 ;; defuns that add the proper <#secure ...> tag to the top of the message body
 (defun mml-secure-message (method &optional modesym)
   (let ((mode (prin1-to-string modesym))
+	(tags (append
+	       (if (or (eq modesym 'sign)
+		       (eq modesym 'signencrypt))
+		   (funcall (nth 2 (assoc method mml-sign-alist))))
+	       (if (or (eq modesym 'encrypt)
+		       (eq modesym 'signencrypt))
+		   (funcall (nth 2 (assoc method mml-encrypt-alist))))))
 	insert-loc)
     (mml-unsecure-message)
     (save-excursion
@@ -232,8 +239,8 @@ You can also customize or set `mml-signencrypt-style-alist' instead."
 	      (concat "^" (regexp-quote mail-header-separator) "\n") nil t)
 	     (goto-char (setq insert-loc (match-end 0)))
 	     (unless (looking-at "<#secure")
-	       (mml-insert-tag
-		'secure 'method method 'mode mode)))
+	       (apply 'mml-insert-tag
+		'secure 'method method 'mode mode tags)))
 	    (t (error
 		"The message is corrupted. No mail header separator"))))
     (when (eql insert-loc (point))

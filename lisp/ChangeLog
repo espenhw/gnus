@@ -1,3 +1,23 @@
+2005-02-22  Arne J,Ax(Brgensen  <arne@arnested.dk>
+
+	* smime.el (smime-ldap-host-list): Doc fix.
+	(smime-ask-passphrase): Use `password-read-and-add' to read (and
+	cache) password.
+	(smime-sign-region): Use it.
+	(smime-decrypt-region): Use it.
+	(smime-sign-buffer): Signal an error if `smime-sign-region' fails.
+	(smime-encrypt-buffer): Signal an error if `smime-encrypt-region'
+	fails.
+	(smime-cert-by-ldap-1): Use `base64-encode-string' to convert
+	certificate from DER to PEM format rather than calling openssl.
+
+	* mml-smime.el (mml-smime-encrypt-query): Remove obsolete comment.
+
+	* mml-sec.el (mml-secure-message): Insert keyfile/certfile tags
+	for signing/encryption.
+
+	* mml.el (mml-parse-1): Use them.
+
 2005-02-21  Arne J,Ax(Brgensen <arne@arnested.dk>
 
 	* nnrss.el (nnrss-verbose): Removed.

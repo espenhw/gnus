@@ -121,6 +121,7 @@
 
 (require 'dig)
 (require 'smime-ldap)
+(require 'password)
 (eval-when-compile (require 'cl))
 
 (defgroup smime nil
@@ -218,7 +219,9 @@ If nil, use system defaults."
   :group 'smime)
 
 (defcustom smime-ldap-host-list nil
-  "A list of LDAP hosts with S/MIME user certificates."
+  "A list of LDAP hosts with S/MIME user certificates.
+If needed search base, binddn, passwd, etc. for the LDAP host
+must be set in `ldap-host-parameters-alist'."
   :type '(repeat (string :tag "Host name"))
   :group 'smime)
 
@@ -238,11 +241,13 @@ If nil, use system defaults."
 
 ;; Password dialog function
 
-(defun smime-ask-passphrase ()
-  "Asks the passphrase to unlock the secret key."
+(defun smime-ask-passphrase (&optional cache-key)
+  "Asks the passphrase to unlock the secret key.
+If `cache-key' and `password-cache' is non-nil then cache the
+password under `cache-key'."
   (let ((passphrase
-	 (read-passwd
-	  "Passphrase for secret key (RET for no passphrase): ")))
+	 (password-read-and-add
+	  "Passphrase for secret key (RET for no passphrase): " cache-key)))
     (if (string= passphrase "")
 	nil
       passphrase)))
@@ -274,11 +279,11 @@ certificates to include in its caar.  If no additional certificates is
 included, KEYFILE may be the file containing the PEM encoded private
 key and certificate itself."
   (smime-new-details-buffer)
-  (let ((keyfile (or (car-safe keyfile) keyfile))
-	(certfiles (and (cdr-safe keyfile) (cadr keyfile)))
-	(buffer (generate-new-buffer (generate-new-buffer-name " *smime*")))
-	(passphrase (smime-ask-passphrase))
-	(tmpfile (smime-make-temp-file "smime")))
+  (let* ((certfiles (and (cdr-safe keyfile) (cadr keyfile)))
+	 (keyfile (or (car-safe keyfile) keyfile))
+	 (buffer (generate-new-buffer (generate-new-buffer-name " *smime*")))
+	 (passphrase (smime-ask-passphrase (expand-file-name keyfile)))
+	 (tmpfile (smime-make-temp-file "smime")))
     (if passphrase
 	(setenv "GNUS_SMIME_PASSPHRASE" passphrase))
     (prog1
@@ -339,16 +344,17 @@ is expected to contain of a PEM encoded certificate."
 KEYFILE should contain a PEM encoded key and certificate."
   (interactive)
   (with-current-buffer (or buffer (current-buffer))
-    (smime-sign-region
-     (point-min) (point-max)
-     (if keyfile
-	 keyfile
-       (smime-get-key-with-certs-by-email
-	(completing-read
-	 (concat "Sign using which key? "
-		 (if smime-keys (concat "(default " (caar smime-keys) ") ")
-		   ""))
-	 smime-keys nil nil (car-safe (car-safe smime-keys))))))))
+    (unless (smime-sign-region
+	     (point-min) (point-max)
+	     (if keyfile
+		 keyfile
+	       (smime-get-key-with-certs-by-email
+		(completing-read
+		 (concat "Sign using which key? "
+			 (if smime-keys (concat "(default " (caar smime-keys) ") ")
+			   ""))
+		 smime-keys nil nil (car-safe (car-safe smime-keys))))))
+      (error "Signing failed"))))
 
 (defun smime-encrypt-buffer (&optional certfiles buffer)
   "S/MIME encrypt BUFFER for recipients specified in CERTFILES.
@@ -357,11 +363,12 @@ a PEM encoded key and certificate.  Uses current buffer if BUFFER is
 nil."
   (interactive)
   (with-current-buffer (or buffer (current-buffer))
-    (smime-encrypt-region
-     (point-min) (point-max)
-     (or certfiles
-	 (list (read-file-name "Recipient's S/MIME certificate: "
-			       smime-certificate-directory nil))))))
+    (unless (smime-encrypt-region
+	     (point-min) (point-max)
+	     (or certfiles
+		 (list (read-file-name "Recipient's S/MIME certificate: "
+				       smime-certificate-directory nil))))
+      (error "Encryption failed"))))
 
 ;; Verify+decrypt region
 
@@ -409,7 +416,7 @@ Any details (stderr on success, stdout and stderr on error) are left
 in the buffer specified by `smime-details-buffer'."
   (smime-new-details-buffer)
   (let ((buffer (generate-new-buffer (generate-new-buffer-name " *smime*")))
-	CAs (passphrase (smime-ask-passphrase))
+	CAs (passphrase (smime-ask-passphrase (expand-file-name keyfile)))
 	(tmpfile (smime-make-temp-file "smime")))
     (if passphrase
 	(setenv "GNUS_SMIME_PASSPHRASE" passphrase))
@@ -567,21 +574,21 @@ A string or a list of strings is returned."
   "Get cetificate for MAIL from the ldap server at HOST."
   (let ((ldapresult (smime-ldap-search (concat "mail=" mail)
 				       host '("userCertificate") nil))
-	(retbuf (generate-new-buffer (format "*certificate for %s*" mail))))
+	(retbuf (generate-new-buffer (format "*certificate for %s*" mail)))
+	cert)
     (if (> (length ldapresult) 1)
 	(with-current-buffer retbuf
-	  (set-buffer-multibyte nil)
-	  (insert (nth 1 (car (nth 1 ldapresult))))
-	  (goto-char (point-min))
-	  (if (smime-call-openssl-region (point-min) (point-max) t "x509"
-					 "-inform" "DER" "-outform" "PEM")
-	      (progn
-		(delete-region (point) (point-max))
-		retbuf)
-	    (kill-buffer retbuf)
-	    nil))
+	  (setq cert (base64-encode-string (nth 1 (car (nth 1 ldapresult))) t))
+	  (insert "-----BEGIN CERTIFICATE-----\n")
+	  (let ((i 0) (len (length cert)))
+	    (while (> (- len 64) i)
+	      (insert (substring cert i (+ i 64)) "\n")
+	      (setq i (+ i 64)))
+	    (insert (substring cert i len) "\n"))
+	  (insert "-----END CERTIFICATE-----\n"))
       (kill-buffer retbuf)
-      nil)))
+      (setq retbuf nil))
+    retbuf))
 
 (defun smime-cert-by-ldap (mail)
   "Find certificate via LDAP for address MAIL."

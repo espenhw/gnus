@@ -135,7 +135,6 @@
     result))
 
 (defun mml-smime-encrypt-query ()
-  ;; todo: add ldap support (xemacs ldap api?)
   ;; todo: try dns/ldap automatically first, before prompting user
   (let (certs done)
     (while (not done)
