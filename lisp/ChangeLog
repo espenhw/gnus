@@ -1,3 +1,9 @@
+2002-11-02  Simon Josefsson  <jas@extundo.com>
+
+	* pgg-gpg.el (pgg-gpg-encrypt-region): Makes PGG respect the
+	setting of the default user ID.  From Raymond Scholz
+	<ray-2002@zonix.de>.
+
 2002-11-01  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-bodies.el (mm-body-encoding): Don't return 8bit for 7bit

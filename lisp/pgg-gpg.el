@@ -137,7 +137,7 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
 	 (args
 	  (append
 	   (list "--batch" "--armor" "--always-trust" "--encrypt")
-	   (if sign '("--sign"))
+	   (if sign (list "--sign" "--local-user" pgg-gpg-user-id))
 	   (if recipients
 	       (apply #'nconc
 		      (mapcar (lambda (rcpt)
