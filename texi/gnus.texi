@@ -1310,8 +1310,9 @@ thought it would be nice to have two of these.  This variable is more
 meant for setting some ground rules, while the other variable is used
 more for user fiddling.  By default this variable makes all new groups
 that come from mail back ends (@code{nnml}, @code{nnbabyl},
-@code{nnfolder}, @code{nnmbox}, and @code{nnmh}) subscribed.  If you
-don't like that, just set this variable to @code{nil}.
+@code{nnfolder}, @code{nnmbox}, @code{nnmh}, and @code{nnmaildir})
+subscribed.  If you don't like that, just set this variable to
+@code{nil}.
 
 New groups that match this regexp are subscribed using
 @code{gnus-subscribe-options-newsgroup-method}.
@@ -6330,9 +6331,10 @@ connect as many loose threads as possible, you should set this variable
 to @code{some} or a number.  If you set it to a number, no more than
 that number of extra old headers will be fetched.  In either case,
 fetching old headers only works if the back end you are using carries
-overview files---this would normally be @code{nntp}, @code{nnspool} and
-@code{nnml}.  Also remember that if the root of the thread has been
-expired by the server, there's not much Gnus can do about that.
+overview files---this would normally be @code{nntp}, @code{nnspool},
+@code{nnml}, and @code{nnmaildir}.  Also remember that if the root of
+the thread has been expired by the server, there's not much Gnus can do
+about that.
 
 This variable can also be set to @code{invisible}.  This won't have any
 visible effects, but is useful if you use the @kbd{A T} command a lot
@@ -9039,12 +9041,12 @@ then ask Deja if that fails:
 @end lisp
 
 Most of the mail back ends support fetching by @code{Message-ID}, but
-do not do a particularly excellent job at it.  That is, @code{nnmbox}
-and @code{nnbabyl} are able to locate articles from any groups, while
-@code{nnml}, @code{nnfolder} and @code{nnimap}1 are only able to locate
-articles that have been posted to the current group.  (Anything else
-would be too time consuming.)  @code{nnmh} does not support this at
-all.
+do not do a particularly excellent job at it.  That is, @code{nnmbox},
+@code{nnbabyl}, and @code{nnmaildir} are able to locate articles from
+any groups, while @code{nnml}, @code{nnfolder}, and @code{nnimap} are
+only able to locate articles that have been posted to the current group.
+(Anything else would be too time consuming.)  @code{nnmh} does not
+support this at all.
 
 
 @node Alternative Approaches
@@ -13790,8 +13792,8 @@ to trudge through a big mbox file just to read your new mail.
 
 @code{nnml} is probably the slowest back end when it comes to article
 splitting.  It has to create lots of files, and it also generates
-@sc{nov} databases for the incoming mails.  This makes it the fastest
-back end when it comes to reading mail.
+@sc{nov} databases for the incoming mails.  This makes it possibly the
+fastest back end when it comes to reading mail.
 
 @cindex self contained nnml servers
 When the marks file is used (which it is by default), @code{nnml}
@@ -14245,30 +14247,33 @@ leisure from your local disk.  No more World Wide Wait for you.
 @cindex archiving mail
 @cindex backup of mail
 
-Some of the back ends, notably nnml and nnfolder, now actually store
-the article marks with each group.  For these servers, archiving and
-restoring a group while preserving marks is fairly simple.
+Some of the back ends, notably @code{nnml}, @code{nnfolder}, and
+@code{nnmaildir}, now actually store the article marks with each group.
+For these servers, archiving and restoring a group while preserving
+marks is fairly simple.
 
 (Preserving the group level and group parameters as well still
 requires ritual dancing and sacrifices to the @file{.newsrc.eld} deity
 though.)
 
-To archive an entire @code{nnml} or @code{nnfolder} server, take a
-recursive copy of the server directory.  There is no need to shut down
-Gnus, so archiving may be invoked by @code{cron} or similar.  You
-restore the data by restoring the directory tree, and adding a server
-definition pointing to that directory in Gnus. The @ref{Article
-Backlog}, @ref{Asynchronous Fetching} and other things might interfer
-with overwriting data, so you may want to shut down Gnus before you
-restore the data.
+To archive an entire @code{nnml}, @code{nnfolder}, or @code{nnmaildir}
+server, take a recursive copy of the server directory.  There is no need
+to shut down Gnus, so archiving may be invoked by @code{cron} or
+similar.  You restore the data by restoring the directory tree, and
+adding a server definition pointing to that directory in Gnus. The
+@ref{Article Backlog}, @ref{Asynchronous Fetching} and other things
+might interfer with overwriting data, so you may want to shut down Gnus
+before you restore the data.
 
-It is also possible to archive individual @code{nnml} or
-@code{nnfolder} groups, while preserving marks.  For @code{nnml}, you
-copy all files in the group's directory.  For @code{nnfolder} you need
-to copy both the base folder file itself (@file{FOO}, say), and the
-marks file (@file{FOO.mrk} in this example).  Restoring the group is
-done with @kbd{G m} from the Group buffer.  The last step makes Gnus
-notice the new directory.
+It is also possible to archive individual @code{nnml},
+@code{nnfolder}, or @code{nnmaildir} groups, while preserving marks.
+For @code{nnml} or @code{nnmaildir}, you copy all files in the group's
+directory.  For @code{nnfolder} you need to copy both the base folder
+file itself (@file{FOO}, say), and the marks file (@file{FOO.mrk} in
+this example). Restoring the group is done with @kbd{G m} from the Group
+buffer.  The last step makes Gnus notice the new directory.
+@code{nnmaildir} notices the new directory automatically, so @kbd{G m}
+is unnecessary in that case.
 
 @node Web Searches
 @subsection Web Searches
@@ -23248,9 +23253,9 @@ It is okay for this function to return `too many' groups; some back ends
 might find it cheaper to return the full list of groups, rather than
 just the new groups.  But don't do this for back ends with many groups.
 Normally, if the user creates the groups herself, there won't be too
-many groups, so nnml and the like are probably safe.  But for back ends
-like nntp, where the groups have been created by the server, it is quite
-likely that there can be many groups.
+many groups, so @code{nnml} and the like are probably safe.  But for
+back ends like @code{nntp}, where the groups have been created by the
+server, it is quite likely that there can be many groups.
 
 
 @item (nnchoke-request-create-group GROUP &optional SERVER)
@@ -23585,9 +23590,9 @@ The user should be prompted for an address when doing commands like
 @subsubsection Mail-like Back Ends
 
 One of the things that separate the mail back ends from the rest of the
-back ends is the heavy dependence by the mail back ends on common
-functions in @file{nnmail.el}.  For instance, here's the definition of
-@code{nnml-request-scan}:
+back ends is the heavy dependence by most of the mail back ends on
+common functions in @file{nnmail.el}.  For instance, here's the
+definition of @code{nnml-request-scan}:
 
 @lisp
 (deffoo nnml-request-scan (&optional group server)

@@ -1,3 +1,7 @@
+2002-03-09  Paul Jarc  <prj@po.cwru.edu>
+
+	* gnus.texi: Mention nnmaildir where appropriate; fix some typos.
+
 2002-03-01  Paul Jarc  <prj@po.cwru.edu>
 
 	* message.texi (Mailing Lists): 'use is the default for
