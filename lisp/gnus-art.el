@@ -2032,10 +2032,10 @@ Point is left at the beginning of the narrowed-to region."
 	  (replace-match "" nil t)))
       ;; Then replace multiple empty lines with a single empty line.
       (article-goto-body)
-      (while (re-search-forward "\n\n\n+" nil t)
+      (while (re-search-forward "\n\n\\(\n+\\)" nil t)
 	(unless (gnus-annotation-in-region-p
 		 (match-beginning 0) (match-end 0))
-	  (replace-match "\n\n" t t))))))
+	  (delete-region (match-beginning 1) (match-end 1)))))))
 
 (defun article-strip-leading-space ()
   "Remove all white space from the beginning of the lines in the article."
