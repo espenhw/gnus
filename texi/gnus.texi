@@ -13914,16 +13914,18 @@ body of the messages:
 @lisp
 (defun split-on-body ()
   (save-excursion
-    (set-buffer
-     (or (get-buffer " *nnmail incoming*")
-         (get-buffer " *nnml move*")))
+    (widen)
     (goto-char (point-min))
     (when (re-search-forward "Some.*string" nil t)
       "string.group")))
 @end lisp
 
 The buffer is narrowed to the message in question when @var{function}
-is run.
+is run.  That's why @code{(widen)} needs to be called after
+@code{save-excursion} in the example above.  Also note that with the
+nnimap backend, message bodies will not be downloaded by default.  You
+need to set @code{nnimap-split-download-body} to t to do that
+(@pxref{Splitting in IMAP}).
 
 @item (! @var{func} @var{split})
 If the split is a list, and the first element is @code{!}, then
@@ -22186,15 +22188,16 @@ call the external tools during splitting.  Example fancy split method:
                              ...))
 (defun kevin-spamassassin ()
   (save-excursion
-    (let ((buf (or (get-buffer " *nnmail incoming*")
-                   (get-buffer " *nnml move*"))))
-      (if (not buf)
-          (progn (message "Oops, cannot find message buffer") nil)
-        (set-buffer buf)
-        (if (eq 1 (call-process-region (point-min) (point-max)
-                                       "spamc" nil nil nil "-c"))
-            "spam")))))
+    (widen)
+    (if (eq 1 (call-process-region (point-min) (point-max)
+				   "spamc" nil nil nil "-c"))
+	"spam")))
 @end lisp
+
+Note that with the nnimap backend, message bodies will not be
+downloaded by default.  You need to set
+@code{nnimap-split-download-body} to t to do that (@pxref{Splitting in
+IMAP}).
 
 That is about it.  As some spam is likely to get through anyway, you
 might want to have a nifty function to call when you happen to read

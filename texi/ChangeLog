@@ -1,3 +1,9 @@
+2003-09-22  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Fancy Mail Splitting, SpamAssassin): corrected fancy
+	split example to use current buffer, mentioned
+	nnimap-split-download-body
+
 2003-09-22  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.texi: Fixes.
