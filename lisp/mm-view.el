@@ -187,7 +187,8 @@
 	(charset (mail-content-type-get
 		  (mm-handle-type handle) 'charset))
 	gnus-displaying-mime handles)
-    (when charset
+    (when (and charset
+	       (stringp charset))
       (setq charset (intern (downcase charset)))
       (when (eq charset 'us-ascii)
 	(setq charset nil)))

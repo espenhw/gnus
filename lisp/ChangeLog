@@ -1,5 +1,10 @@
 1999-12-01 21:59:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* mm-view.el (mm-inline-message): Check whether charset is a
+	string. 
+
+	* nnslashdot.el (nnslashdot-request-post): Insert <p>'s.
+
 	* message.el (message-mode-map): Changed keystroke for
 	message-yank-buffer. 
 
