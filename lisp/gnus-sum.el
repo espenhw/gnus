@@ -10246,6 +10246,7 @@ If ALL is a number, fetch this number of articles."
 	  (incf i))
 	(if (not new)
 	    (message "No gnus is bad news.")
+ 	  (setq new (nreverse new))
 	  (gnus-summary-insert-articles new)
 	  (setq gnus-newsgroup-unreads
 		(append gnus-newsgroup-unreads new))
