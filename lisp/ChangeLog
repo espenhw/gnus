@@ -1,3 +1,8 @@
+2000-05-16  Simon Josefsson  <jas@pdc.kth.se>
+
+	* nnimap.el (nnimap-request-accept-article): Don't unselect
+	mailbox if no select is selected.
+
 2000-05-15  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus-art.el (gnus-button-url-regexp): Revert earlier change.

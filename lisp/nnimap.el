@@ -1061,8 +1061,9 @@ function is generally only called when Gnus is shutting down."
 		    (goto-char (point-min))
 		    (while (search-forward "\n" nil t)
 		      (replace-match "\r\n")))
-		  ;; next line for Cyrus server bug
-		  (imap-mailbox-unselect nnimap-server-buffer)
+                  ;; this 'or' is for Cyrus server bug
+                  (or (null (imap-current-mailbox nnimap-server-buffer))
+                      (imap-mailbox-unselect nnimap-server-buffer))
 		  (imap-message-append group (current-buffer) nil nil
 				       nnimap-server-buffer)))
 	  (cons group (nth 1 uid))
