@@ -158,7 +158,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 (defvar nntp-connection-list nil)
 
 (defvoo nntp-server-type nil)
-(defvar nntp-connection-alist nil)
+(defvoo nntp-connection-alist nil)
 (defvoo nntp-status-string "")
 (defconst nntp-version "nntp 5.0")
 (defvoo nntp-inhibit-erase nil)

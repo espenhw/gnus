@@ -1,3 +1,11 @@
+Mon Mar 31 17:30:10 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.39 is released.
+
+Mon Mar 31 17:29:13 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-connection-alist): Ooize.
+
 Mon Mar 31 16:34:37 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.38 is released.
