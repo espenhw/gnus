@@ -1,3 +1,9 @@
+2004-06-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-cite-articles-with-x-no-archive): New
+	variable. 
+	(message-cite-original): Use it.
+
 2004-06-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-cite-original): Respect X-No-Archive. 
