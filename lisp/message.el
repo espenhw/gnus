@@ -346,11 +346,29 @@ The provided functions are:
   :group 'message-insertion
   :type 'regexp)
 
+(defvar message-mode-syntax-table
+  (let ((table (copy-syntax-table text-mode-syntax-table)))
+    (modify-syntax-entry ?% ". " table)
+    (modify-syntax-entry ?> ". " table)
+    (modify-syntax-entry ?< ". " table)
+    table)
+  "Syntax table used while in Message mode.")
+
 (defcustom message-cite-prefix-regexp
   (if (string-match "[[:digit:]]" "1") ;; support POSIX?
       "\\([ \t]*[-_.[:word:]]+>+\\|[ \t]*[]>»|:}+]\\)+"
-    ;; ?-, ?_ or ?. MUST NOT be in syntax entry w.
-    "\\([ \t]*\\(\\w\\|[-_.]\\)+>+\\|[ \t]*[]>»|:}+]\\)+")
+    (with-syntax-table message-mode-syntax-table
+      ;; ?-, ?_ or ?. MUST NOT be in syntax entry w.
+      (let ((non-word-constituents
+	     (concat
+	      (if (string-match "\\w" "-")  "" "-")
+	      (if (string-match "\\w" "_")  "" "_")
+	      (if (string-match "\\w" ".")  "" "."))))
+	(if (equal non-word-constituents "")
+	    "\\([ \t]*\\(\\w\\)+>+\\|[ \t]*[]>»|:}+]\\)+"
+	  (concat "\\([ \t]*\\(\\w\\|[" 
+		  non-word-constituents
+		  "]\\)+>+\\|[ \t]*[]>»|:}+]\\)+")))))
   "*Regexp matching the longest possible citation prefix on a line."
   :group 'message-insertion
   :type 'regexp)
@@ -814,14 +832,6 @@ candidates:
 
 ;;; Internal variables.
 ;;; Well, not really internal.
-
-(defvar message-mode-syntax-table
-  (let ((table (copy-syntax-table text-mode-syntax-table)))
-    (modify-syntax-entry ?% ". " table)
-    (modify-syntax-entry ?> ". " table)
-    (modify-syntax-entry ?< ". " table)
-    table)
-  "Syntax table used while in Message mode.")
 
 (defface message-header-to-face
   '((((class color)

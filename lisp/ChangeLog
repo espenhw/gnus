@@ -1,5 +1,8 @@
 2002-01-29  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* message.el (message-mode-syntax-table): Move forward.
+	(message-cite-prefix-regexp): Auto detect non word constituents.
+
 	* gnus-sum.el (gnus-summary-update-info): Use
 	gnus-list-range-intersection.
 
