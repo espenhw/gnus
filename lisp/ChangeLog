@@ -1,3 +1,8 @@
+2002-06-24  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* message.el (message-font-lock-keywords): Put colon in header
+	name match.
+
 2002-06-22  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* message.el (message-font-lock-keywords): Don't use header faces

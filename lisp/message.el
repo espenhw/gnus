@@ -980,7 +980,7 @@ candidates:
       (,(concat "^\\([A-Z][^: \n\t]+:\\)" content)
        (1 (when (message-point-in-header-p) 'message-header-name-face))
        (2 (when (message-point-in-header-p) 'message-header-other-face) nil t))
-      (,(concat "^\\(X-[A-Za-z0-9-]+\\|In-Reply-To\\):" content)
+      (,(concat "^\\(X-[A-Za-z0-9-]+:\\|In-Reply-To:\\)" content)
        (1 (when (message-point-in-header-p) 'message-header-name-face))
        (2 (when (message-point-in-header-p) 'message-header-name-face)))
       ,@(if (and mail-header-separator
