@@ -5,8 +5,30 @@ See the end for copying conditions.
 Please send Gnus bug reports to bugs@gnus.org.
 For older news, see Gnus info node "New Features".
 
+
 
 * Changes in No Gnus
+
+./gnus-news.texi:23: Cross reference to nonexistent node `RSS' (perhaps incorrect sectioning?).
+This file contains a list of news features Gnus.  It is supposed to be
+included in `gnus.texi'.  `GNUS-NEWS' is automatically generated from this
+file (see `gnus-news.el').
+
+** You can import and export your RSS subscriptions from OPML files.
+*Note RSS::.
+
+** The option `mm-fill-flowed' can be used to disable treatment of
+format=flowed messages.  Also, flowed text is disabled when sending
+inline PGP signed messages.
+
+** You can now drag and drop attachments to the Message buffer.
+
+** `/ r' limits the summary buffer to replied articles.
+
+** ANSI SGR control sequences can be transformed using `W A'.
+
+ANSI sequences are used in some Chinese hierarchies for highlighting
+articles (`gnus-article-treat-ansi-sequences').
 
 ** Gnus includes an Emacs Lisp SASL library.
 
@@ -30,14 +52,12 @@ after quering the user about whether to do so.
 ** IMAP identity (RFC 2971) is supported.
 
 By default, Gnus do not send any information about itself, but you can
-customize it via the variable `nnimap-id'.
+customize it using the variable `nnimap-id'.
 
-** The "all.SCORE" file can now be edited from the group buffer using `W e'.
+** The `all.SCORE' file can be edited from the group buffer using `W e'.
 
-** The prompt for creating new groups (`G m') now auto complete known groups.
-
-** Gnus now MIME decode articles even when they lack "MIME-Version" header.
-This changes the default of `gnus-article-loose-mime'.
+** Gnus now MIME decode articles even when they lack "MIME-Version"
+header.  This changes the default of `gnus-article-loose-mime'.
 
 
 * For older news, see Gnus info node "New Features".
