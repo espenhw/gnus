@@ -38,6 +38,18 @@
 If the encoding is `qp-or-base64', then either quoted-printable
 or base64 will be used, depending on what is more efficient.")
 
+(defvar mm-use-ultra-safe-encoding nil
+  "If non-nil, use encodings aimed at Procrustean bed survival.
+
+This means that textual parts are encoded as quoted-printable if they
+contain lines longer than 76 characters or starting with \"From \" in
+the body.  Non-7bit encodings (8bit, binary) are generally disallowed.
+This is to reduce the probability that a broken MTA or MDA changes the
+message.
+
+This variable should never be set directly, but bound before a call to
+`mml-generate-mime' or similar functions.")
+
 (defun mm-insert-rfc822-headers (charset encoding)
   "Insert text/plain headers with CHARSET and ENCODING."
   (insert "MIME-Version: 1.0\n")
@@ -59,6 +71,14 @@ or base64 will be used, depending on what is more efficient.")
   (if (not (string-match "\\.[^.]+$" file))
       "application/octet-stream"
     (mailcap-extension-to-mime (match-string 0 file))))
+
+(defun mm-safer-encoding (encoding)
+  "Return a safer but similar encoding."
+  (cond
+   ((memq encoding '(7bit 8bit quoted-printable)) 'quoted-printable)
+   ;; The remaing encodings are binary and base64 (and perhaps some
+   ;; non-standard ones), which are both turned into base64.
+   (t 'base64)))
 
 (defun mm-encode-content-transfer-encoding (encoding &optional type)
   (cond
@@ -121,9 +141,13 @@ The encoding used is returned."
       (while rules
 	(when (string-match (caar rules) type)
 	  (throw 'found
-		 (if (eq (cadar rules) 'qp-or-base64)
-		     (mm-qp-or-base64)
-		   (cadar rules))))
+		 (let ((encoding 
+			(if (eq (cadar rules) 'qp-or-base64)
+			    (mm-qp-or-base64)
+			  (cadar rules))))
+		   (if mm-use-ultra-safe-encoding
+		       (mm-safer-encoding encoding)
+		     encoding))))
 	(pop rules)))))
 
 (defun mm-qp-or-base64 ()
