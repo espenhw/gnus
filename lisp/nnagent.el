@@ -114,7 +114,12 @@
   (gnus-request-accept-article "nndraft:queue" nil t t))
 
 (deffoo nnagent-request-set-mark (group action server)
-  action)
+  (with-temp-buffer
+    (insert (format "(%s-request-set-mark \"%s\" '%s \"%s\")\n"
+                    (nth 0 gnus-command-method) group action
+                    (or server (nth 1 gnus-command-method))))
+    (append-to-file (point-min) (point-max) (gnus-agent-lib-file "flags")))
+  nil)
 
 ;; Use nnml functions for just about everything.
 (nnoo-import nnagent
