@@ -1,3 +1,12 @@
+2002-02-19  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-article-wash-html-with-w3): Remove
+	w3-delay-image-loads.
+	* mm-view.el (mm-inline-text-html-render-with-w3): Ditto.
+	(mm-w3-prepare-buffer): Ditto.
+
+	* mail-source.el (mail-source-fetch-directory): Run scripts.
+
 2002-02-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-fun.el (gnus-respond-to-confirmation): Do the right thing
@@ -8732,7 +8741,7 @@
 	* gnus-sum.el (gnus-summary-edit-article): Remove a hack.
 	* gnus-art.el (gnus-mime-save-part-and-strip): New function.
 	(gnus-mime-action-alist): Use it.
-	(gnus-mime-button-commands): USe it.
+	(gnus-mime-button-commands): Use it.
 	* mm-extern.el (mm-extern-local-file): Error when the file is gone.
 	(mm-inline-external-body): unwind-protect.
 

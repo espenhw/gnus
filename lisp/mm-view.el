@@ -110,7 +110,6 @@
 	(url-standalone-mode t)
  	(url-gateway-unplugged t)
 	(w3-honor-stylesheets nil)
-	(w3-delay-image-loads t)
 	(url-current-object
 	 (url-generic-parse-url (format "cid:%s" (mm-handle-id handle))))
 	(width (window-width))
@@ -433,8 +432,7 @@ will not be substituted.")
   (require 'w3)
   (let ((url-standalone-mode t)
  	(url-gateway-unplugged t)
-	(w3-honor-stylesheets nil)
-	(w3-delay-image-loads t))
+	(w3-honor-stylesheets nil))
     (w3-prepare-buffer)))
 
 (defun mm-view-message ()
