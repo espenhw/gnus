@@ -1,3 +1,24 @@
+1999-08-27 15:09:01  Jim Meyering  <meyering@ascend.com>
+
+	* gnus.texi (The Active File): Typo fix.
+
+1999-08-27 15:00:23  Yoshiki Hayashi  <t90553@m.ecc.u-tokyo.ac.jp>
+
+	* gnus.texi (Generic Marking Commands): Typo fixes.
+
+1999-08-27 14:46:21  Lee Willis  <lee@gbdirect.co.uk>
+
+	* gnus.texi (Customizing Articles): More explanation.
+
+1999-07-10  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus.texi (More Threading): Document new variable
+	`gnus-sort-gathered-threads-function'.
+
+1999-07-30  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus.texi: Added `gnus-list-identifiers' stuff.
+
 1999-07-09 19:41:34  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Using MIME): Addition.

@@ -2853,7 +2853,9 @@ If ADAPT, return the home adaptive file instead."
 	      (when (string-match (gnus-globalify-regexp (car elem)) group)
 		(replace-match (cadr elem) t nil group ))))))
     (when found
-      (nnheader-concat gnus-kill-files-directory found))))
+      (if (file-name-absolute-p found)
+          found
+        (nnheader-concat gnus-kill-files-directory found)))))
 
 (defun gnus-hierarchial-home-score-file (group)
   "Return the score file of the top-level hierarchy of GROUP."

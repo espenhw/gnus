@@ -542,6 +542,15 @@ with some simple extensions:
   :group 'gnus-summary-format
   :type 'string)
 
+(defcustom gnus-list-identifiers nil
+  "Regexp that matches list identifiers to be removed from subject.
+This can also be a list of regexps."
+  :group 'gnus-summary-format
+  :group 'gnus-article-hiding
+  :type '(choice (const :tag "none" nil)
+		 (regexp :value ".*")
+		 (repeat :value (".*") regexp)))
+
 (defcustom gnus-summary-mark-below 0
   "*Mark all articles with a score below this variable as read.
 This variable is local to each summary buffer and usually set by the
@@ -802,6 +811,7 @@ which it may alter in any way.")
     ("^cn\\>\\|\\<chinese\\>" cn-gb-2312)
     ("^fj\\>\\|^japan\\>" iso-2022-jp-2)
     ("^relcom\\>" koi8-r)
+    ("^fido7\\>" koi8-r)
     ("^\\(cz\\|hun\\|pl\\|sk\\|hr\\)\\>" iso-8859-2)
     ("^israel\\>" iso-8859-1)
     ("^han\\>" euc-kr)
@@ -853,6 +863,9 @@ This variable uses the same syntax as `gnus-emphasis-alist'."
 
 (defvar gnus-thread-indent-array nil)
 (defvar gnus-thread-indent-array-level gnus-thread-indent-level)
+(defvar gnus-sort-gathered-threads-function 'gnus-thread-sort-by-number
+  "Function called to sort the articles within a thread after it has 
+been gathered together.")
 
 ;; Avoid highlighting in kill files.
 (defvar gnus-summary-inhibit-highlight nil)
@@ -1502,6 +1515,7 @@ increase the score of each group you read."
     "s" gnus-article-hide-signature
     "c" gnus-article-hide-citation
     "C" gnus-article-hide-citation-in-followups
+    "l" gnus-article-hide-list-identifiers
     "p" gnus-article-hide-pgp
     "B" gnus-article-strip-banner
     "P" gnus-article-hide-pem
@@ -1624,6 +1638,7 @@ increase the score of each group you read."
               ["Headers" gnus-article-hide-headers t]
               ["Signature" gnus-article-hide-signature t]
               ["Citation" gnus-article-hide-citation t]
+	      ["List identifiers" gnus-article-hide-list-identifiers t]
               ["PGP" gnus-article-hide-pgp t]
 	      ["Banner" gnus-article-strip-banner t]
               ["Boring headers" gnus-article-hide-boring-headers t])
@@ -3008,7 +3023,7 @@ If NO-DISPLAY, don't generate a summary buffer."
     (while threads
       (when (stringp (caar threads))
 	(setcdr (car threads)
-		(sort (cdar threads) 'gnus-thread-sort-by-number)))
+		(sort (cdar threads) gnus-sort-gathered-threads-function)))
       (setq threads (cdr threads)))
     result))
 
@@ -4011,6 +4026,22 @@ or a straight list of headers."
 	 (cdr (assq number gnus-newsgroup-scored))
 	 (memq number gnus-newsgroup-processable))))))
 
+(defun gnus-summary-remove-list-identifiers ()
+  "Remove list identifiers in `gnus-list-identifiers' from articles in
+the current group."
+  (let ((regexp (if (stringp gnus-list-identifiers)
+		    gnus-list-identifiers
+		  (mapconcat 'identity gnus-list-identifiers " *\\|"))))
+    (when regexp
+      (dolist (header gnus-newsgroup-headers)
+	(when (string-match (concat "\\(Re: +\\)?\\(" regexp " *\\)")
+			    (mail-header-subject header))
+	  (mail-header-set-subject
+	   header (concat (substring (mail-header-subject header)
+				     0 (match-beginning 2))
+			  (substring (mail-header-subject header)
+				     (match-end 2)))))))))
+
 (defun gnus-select-newsgroup (group &optional read-all select-articles)
   "Select newsgroup GROUP.
 If READ-ALL is non-nil, all articles in the group are selected.
@@ -4130,6 +4161,9 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       ;; Let the Gnus agent mark articles as read.
       (when gnus-agent
 	(gnus-agent-get-undownloaded-list))
+      ;; Remove list identifiers from subject
+      (when gnus-list-identifiers
+	(gnus-summary-remove-list-identifiers))
       ;; Check whether auto-expire is to be done in this group.
       (setq gnus-newsgroup-auto-expire
 	    (gnus-group-auto-expirable-p group))
@@ -4156,7 +4190,9 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 		       (zerop (length gnus-newsgroup-unreads)))
 		  (eq (gnus-group-find-parameter group 'display)
 		      'all))
-	      (gnus-uncompress-range (gnus-active group))
+	      (or
+	       (gnus-uncompress-range (gnus-active group))
+	       (gnus-cache-articles-in-group group))
 	    (sort (append gnus-newsgroup-dormant gnus-newsgroup-marked
 			  (copy-sequence gnus-newsgroup-unreads))
 		  '<)))
@@ -5280,7 +5316,8 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
     (unless quit-config
       ;; Do adaptive scoring, and possibly save score files.
       (when gnus-newsgroup-adaptive
-	(gnus-score-adaptive))
+	(let ((gnus-newsgroup-adaptive gnus-use-adaptive-scoring))
+	  (gnus-score-adaptive)))
       (when gnus-use-scoring
 	(gnus-score-save)))
     (gnus-run-hooks 'gnus-summary-prepare-exit-hook)
@@ -6174,7 +6211,21 @@ If given a prefix, remove all limits."
   "Limit the summary buffer to articles that are older than (or equal) AGE days.
 If YOUNGER-P (the prefix) is non-nil, limit the summary buffer to
 articles that are younger than AGE days."
-  (interactive "nLimit to articles older than (in days): \nP")
+  (interactive
+   (let ((younger current-prefix-arg)
+	 (days-got nil)
+	 days)
+     (while (not days-got)
+       (setq days (if younger
+		      (read-string "Limit to articles within (in days): ")
+		    (read-string "Limit to articles old than (in days): ")))
+       (when (> (length days) 0)
+	 (setq days (read days)))
+       (if (numberp days)
+	   (setq days-got t)
+	 (message "Please enter a number.")
+	 (sleep-for 1)))
+     (list days younger)))
   (prog1
       (let ((data gnus-newsgroup-data)
 	    (cutoff (days-to-time age))
@@ -7268,8 +7319,9 @@ and `request-accept' functions."
 	       art-group))))))
       (cond
        ((not art-group)
-	(gnus-message 1 "Couldn't %s article %s"
-		      (cadr (assq action names)) article))
+       (gnus-message 1 "Couldn't %s article %s: %s"
+                     (cadr (assq action names)) article
+                     (nnheader-get-report (car to-method))))
        ((and (eq art-group 'junk)
 	     (eq action 'move))
 	(gnus-summary-mark-article article gnus-canceled-mark)

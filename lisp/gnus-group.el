@@ -2046,6 +2046,7 @@ and NEW-NAME will be prompted for."
 			  ((= char ?d) 'digest)
 			  ((= char ?f) 'forward)
 			  ((= char ?a) 'mmfd)
+			  ((= char ?g) 'guess)
 			  (t (setq err (format "%c unknown. " char))
 			     nil))))
       (setq type found)))
@@ -2679,10 +2680,11 @@ N and the number of steps taken is returned."
     (gnus-group-yank-group)
     (gnus-group-position-point)))
 
-(defun gnus-group-kill-all-zombies ()
-  "Kill all zombie newsgroups."
-  (interactive)
-  (when (gnus-yes-or-no-p "Really kill all zombies? ")
+(defun gnus-group-kill-all-zombies (&optional dummy)
+  "Kill all zombie newsgroups.
+The optional DUMMY should always be nil."
+  (interactive (list (not (gnus-yes-or-no-p "Really kill all zombies? "))))
+  (unless dummy
     (setq gnus-killed-list (nconc gnus-zombie-list gnus-killed-list))
     (setq gnus-zombie-list nil)
     (gnus-dribble-touch)

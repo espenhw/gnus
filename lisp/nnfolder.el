@@ -295,39 +295,64 @@ If NIL, NNFOLDER-FILE-CODING-SYSTEM is used.")
     (let ((nnmail-file-coding-system nnfolder-file-coding-system))
       (nnmail-find-file nnfolder-newsgroups-file))))
 
+;; Return a list consisting of all article numbers existing in the
+;; current folder.
+
+(defun nnfolder-existing-articles ()
+  (save-excursion
+    (when nnfolder-current-buffer
+      (set-buffer nnfolder-current-buffer)
+      (goto-char (point-min))
+      (let ((marker (concat "\n" nnfolder-article-marker))
+	    (number "[0-9]+")
+	    numbers)
+      
+	(while (and (search-forward marker nil t)
+		    (re-search-forward number nil t))
+	  (let ((newnum (string-to-number (match-string 0))))
+	    (if (nnmail-within-headers-p)
+		(push newnum numbers))))
+	numbers))))
+
 (deffoo nnfolder-request-expire-articles
   (articles newsgroup &optional server force)
   (nnfolder-possibly-change-group newsgroup server)
   (let* ((is-old t)
-	 rest)
+	 ;; The articles we have deleted so far.
+	 (deleted-articles nil)
+	 ;; The articles that really exist and will be expired if they are old enough.
+	 (maybe-expirable (gnus-intersection articles (nnfolder-existing-articles))))
     (nnmail-activate 'nnfolder)
 
     (save-excursion
       (set-buffer nnfolder-current-buffer)
-      (while (and articles is-old)
+      ;; Since messages are sorted in arrival order and expired in the
+      ;; same order, we can stop as soon as we find a message that is
+      ;; too old.
+      (while (and maybe-expirable is-old)
 	(goto-char (point-min))
-	(when (and (nnfolder-goto-article (car articles))
+	(when (and (nnfolder-goto-article (car maybe-expirable))
 		   (search-forward (concat "\n" nnfolder-article-marker)
 				   nil t))
 	  (forward-sexp)
-	  (if (setq is-old
+	  (when (setq is-old
 		    (nnmail-expired-article-p
 		     newsgroup
 		     (buffer-substring
 		      (point) (progn (end-of-line) (point)))
 		     force nnfolder-inhibit-expiry))
-	      (progn
 		(nnheader-message 5 "Deleting article %d..."
-				  (car articles) newsgroup)
-		(nnfolder-delete-mail))
-	    (push (car articles) rest)))
-	(setq articles (cdr articles)))
+			      (car maybe-expirable) newsgroup)
+	    (nnfolder-delete-mail)
+	    ;; Must remember which articles were actually deleted
+	    (push (car maybe-expirable) deleted-articles)))
+	(setq maybe-expirable (cdr maybe-expirable)))
       (unless nnfolder-inhibit-expiry
 	(nnheader-message 5 "Deleting articles...done"))
       (nnfolder-save-buffer)
       (nnfolder-adjust-min-active newsgroup)
       (nnfolder-save-active nnfolder-group-alist nnfolder-active-file)
-      (nconc rest articles))))
+      (gnus-sorted-complement articles (nreverse deleted-articles)))))
 
 (deffoo nnfolder-request-move-article (article group server
 					       accept-form &optional last)

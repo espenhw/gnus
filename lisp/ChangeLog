@@ -1,3 +1,229 @@
+Fri Aug 27 13:17:48 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.96 is released.
+
+1999-08-17  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-start.el (gnus-groups-to-gnus-format): Only use agent
+	to get active info if method is covered by agent, otherwise
+	active info is lost.
+
+1999-08-17  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-sum.el (gnus-summary-move-article): Report backend errors.
+
+1999-08-09  Dave Love  <fx@gnu.org>
+
+	* mm-util.el: Use `defalias', not `fset' for dummy functions.
+
+1999-08-09  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-art.el (gnus-ignored-headers): Remove "X-Pgp-*"
+          (already matched by "^X-Pgp"), removed duplicate
+          X-Mailing-List, added several new junk headers.
+
+1999-08-01  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-art.el (article-decode-charset): Don't assume
+	gnus-summary-buffer is live.
+
+1999-08-27 15:07:43  Paul Flinders  <paul@dawa.demon.co.uk>
+
+	* smiley.el (smiley-deformed-regexp-alist): Fix % smileys.
+
+1999-08-27 15:02:58  Florian Weimer  <fw@s.netic.de>
+
+	* gnus-score.el (gnus-home-score-file): Work with absolute path
+	names. 
+
+1999-07-17  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-articles-to-read): Return cached articles if
+ 	nothing else in the group.
+
+1999-07-16  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-bcklg.el (gnus-backlog-enter-article): Check the size of
+ 	the article.
+
+1999-07-15  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el (mm-uu-dissect): Fix for base64 message.
+
+1999-07-15  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el (mm-uu-forward-end-line): Support forwarded message
+ 	from mutt.
+
+1999-07-14  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Delete
+ 	whitespace.
+
+1999-07-14  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-text-coding-system-for-write): New variable.
+	(mm-append-to-file): New function.
+	(mm-write-region): New function.
+
+	* gnus-art.el (gnus-output-to-file): Use it.
+	* gnus-util.el (gnus-output-to-rmail): Ditto.
+	(gnus-output-to-mail): Ditto.
+	* gnus-uu.el (gnus-uu-binhex-article): Ditto.
+
+1999-07-14  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnmail.el (nnmail-find-file): Use mm-auto-mode-alist.
+
+	* nnheader.el (nnheader-insert-file-contents): Revert and use
+ 	mm-insert-file-contents.
+	(nnheader-find-file-noselect): Use mm-auto-mode-alist.
+	(nnheader-auto-mode-alist): Removed.
+
+	* mm-util.el (mm-inhibit-file-name-handlers): New variable.
+	(mm-insert-file-contents): Add a new parameter for inserting
+ 	compressed file literally.
+
+	* mml.el (mml-generate-mime-1): Insert non-text literally.
+
+	* gnus.el: Change most mm-insert-file-contents back to nnheader. 
+
+1999-07-13  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-art.el (gnus-unbuttonized-mime-types): Fix docstring.
+
+1999-08-27 14:53:42  Oleg S. Tihonov  <ost@benetnash.ffke-campus.mipt.ru>
+
+	* gnus-sum.el (gnus-group-charset-alist): Default fido7 to
+	koi8-r. 
+
+1999-07-11  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (mml-insert-mime): Decode text.
+	(mml-to-mime): Narrow to headers-or-head.
+
+1999-07-11  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-view.el (mm-inline-text): Check 
+	w3-meta-content-type-charset-regexp.
+
+1999-07-10  Simon Josefsson  <jas@pdc.kth.se>
+
+       * gnus-agent.el (gnus-agent-fetch-group-1): Search topics for
+       predicate.
+
+1999-07-10  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+        * gnus-mlspl.el: Documentation fixes.
+
+1999-08-27 14:42:14  Rui Zhu  <sprache@iname.com>
+
+	* gnus-sum.el (gnus-summary-limit-to-age): Prompt better.
+
+1999-08-27 14:40:52  Michael Cook  <cook@sightpath.com>
+
+	* gnus-art.el (gnus-article-setup-buffer): Kill all local
+	variables.
+
+1999-08-27 14:39:34  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* nnmail.el (nnmail-get-new-mail): "Done".
+
+1999-08-27 14:38:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-kill-all-zombies): Only prompt when
+	interactive. 
+
+1999-07-12  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (article-decode-charset): Fix broken CT.
+
+1999-07-12  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-fetch-group-1): Recreate agent
+ 	overview buffer if it is killed.
+1999-08-27 14:26:03  Eric Marsden  <emarsden@mail.dotcom.fr>
+
+	* gnus-art.el (article-babel): New version.
+
+1999-08-27 14:22:39  Jon Kv  <jonkv@ida.liu.se>
+
+	* nnfolder.el (nnfolder-request-list-newsgroups): Faster expiry. 
+
+1999-07-10  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus.texi (More Threading): Document new variable
+	`gnus-sort-gathered-threads-function'.
+
+1999-07-10  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus.texi (More Threading): Document new variable
+	`gnus-sort-gathered-threads-function'.
+
+1999-07-11  Andreas Jaeger  <aj@arthur.rhein-neckar.de>
+
+	* gnus-uu.el (gnus-uu-digest-mail-forward): Delete file after
+	usage.
+
+1999-07-10  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-running-xemacs): Removed.
+	(mm-coding-system-p): New function.
+	(mm-binary-coding-system): Safe guess.
+	(mm-text-coding-system): Ditto.
+	(mm-auto-save-coding-system): Ditto.
+
+1999-07-11 11:02:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-encode.el (mm-qp-or-base64): Also consider control chars. 
+	(mm-qp-or-base64): Reversed logic.
+
+	* mm-decode.el (mm-save-part-to-file): Let coding system be
+	binary. 
+
+1999-07-15  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-agent.el (gnus-agent-fetch-group-1): Allow 'agent-score' to 
+	be set in topic parameters.
+
+1999-07-10  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-sum.el (gnus-sort-gathered-threads-function): New variable.
+	(gnus-sort-gathered-threads): Allow the user to specify the
+	function to use when sorting gathered threads.
+
+	* gnus-agent.el (gnus-agent-get-undownloaded-list): Don't
+	mark cached articles as `undownloaded'.
+
+Tue Jul 20 02:39:56 1999  Peter von der Ahé  <peter@ahe.dk>
+
+	* gnus-sum.el (gnus-summary-exit): Allow gnus-use-adaptive-scoring
+	to have buffer local values.
+
+1999-07-25  Matt Pharr  <mmp@graphics.stanford.edu>
+
+	* gnus-group.el (gnus-group-make-doc-group): Notice when user
+	types 'g' for 'guess group type.
+
+1999-07-30  Simon Josefsson  <jas@pdc.kth.se>
+
+	* nnmail.el (nnmail-remove-list-identifiers): Remove whitespace
+	after each regexp in nnmail-list-identifiers, not just after last
+	one.
+
+	* gnus-sum.el (gnus-list-identifiers): New variable.
+	(gnus-summary-remove-list-identifiers): New function.
+	(gnus-select-newsgroup): Use it.
+	(gnus-summary-wash-hide-map): Bind
+	`gnus-article-hide-list-identifiers' to W W l.
+	(gnus-summary-make-menu-bar): Add list-identifiers command.
+
+	* gnus-art.el (gnus-treat-strip-list-identifiers): New variable.
+	(gnus-treatment-function-alist): Add variable.
+	(article-hide-list-identifiers): New function.
+	(mapcar): Add function.
+	(gnus-article-hide): Use it.
+
 Fri Jul  9 22:21:16 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.95 is released.

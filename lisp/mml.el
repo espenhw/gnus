@@ -229,7 +229,7 @@
 	    (insert-buffer-substring (cdr (assq 'buffer cont))))
 	   ((and (setq filename (cdr (assq 'filename cont)))
 		 (not (equal (cdr (assq 'nofile cont)) "yes")))
-	    (mm-insert-file-contents filename))
+	    (mm-insert-file-contents filename nil nil nil nil t))
 	   (t
 	    (insert (cdr (assq 'contents cont)))))
 	  (setq encoding (mm-encode-buffer type)
@@ -430,7 +430,7 @@
   "Translate the current buffer from MML to MIME."
   (message-encode-message-body)
   (save-restriction
-    (message-narrow-to-headers)
+    (message-narrow-to-headers-or-head)
     (mail-encode-encoded-word-buffer)))
 
 (defun mml-insert-mime (handle &optional no-markup)
@@ -449,7 +449,10 @@
       (mapcar 'mml-insert-mime (cdr handle))
       (insert "<#/multipart>\n"))
      (textp
-      (mm-insert-part handle)
+      (let ((text (mm-get-part handle))
+	    (charset (mail-content-type-get
+		      (mm-handle-type handle) 'charset)))
+	(insert (mm-decode-string text charset)))
       (goto-char (point-max)))
      (t
       (insert "<#/part>\n")))))

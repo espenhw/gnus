@@ -24,19 +24,6 @@
 
 ;;; Code:
 
-(defconst mm-running-xemacs (string-match "XEmacs" emacs-version))
-
-(defconst mm-binary-coding-system
-  (if mm-running-xemacs
-      'binary 'no-conversion)
-  "100% binary coding system.")
-
-(defconst mm-text-coding-system
-  (and (fboundp 'coding-system-list)
-   (if (memq system-type '(windows-nt ms-dos ms-windows))
-       'raw-text-dos 'raw-text))
-  "Text-safe coding system (For removing ^M).")
-
 (defvar mm-mime-mule-charset-alist
   '((us-ascii ascii)
     (iso-8859-1 latin-iso8859-1)
@@ -84,8 +71,8 @@
    (lambda (elem)
      (let ((nfunc (intern (format "mm-%s" (car elem)))))
        (if (fboundp (car elem))
-	   (fset nfunc (car elem))
-	 (fset nfunc (cdr elem)))))
+	   (defalias nfunc (car elem))
+	 (defalias nfunc (cdr elem)))))
    '((decode-coding-string . (lambda (s a) s))
      (encode-coding-string . (lambda (s a) s))
      (encode-coding-region . ignore)
@@ -118,16 +105,37 @@
     (x-ctext . ctext))
   "A mapping from invalid charset names to the real charset names.")
 
-(defconst mm-auto-save-coding-system
+(defun mm-coding-system-p (sym)
+  "Return non-nil if SYM is a coding system."
+  (or (and (fboundp 'coding-system-p) (coding-system-p sym))
+      (memq sym (mm-get-coding-system-list))))
+
+(defvar mm-binary-coding-system
   (cond 
-   ((memq 'emacs-mule (mm-get-coding-system-list))
-    (if (memq system-type '(windows-nt ms-dos ms-windows))
-	'emacs-mule-dos 'emacs-mule))
-   ((memq 'escape-quoted (mm-get-coding-system-list))
-    'escape-quoted)
-   ((memq 'no-conversion (mm-get-coding-system-list))
-    'no-conversion)
+   ((mm-coding-system-p 'no-conversion) 'no-conversion)
+   ((mm-coding-system-p 'binary) 'binary)
    (t nil))
+  "100% binary coding system.")
+
+(defvar mm-text-coding-system
+  (or (if (memq system-type '(windows-nt ms-dos ms-windows))
+	  (and (mm-coding-system-p 'raw-text-dos) 'raw-text-dos)
+	(and (mm-coding-system-p 'raw-text) 'raw-text))
+      mm-binary-coding-system)
+  "Text-safe coding system (For removing ^M).")
+
+(defvar mm-text-coding-system-for-write nil
+  "Text coding system for write.")
+
+(defvar mm-auto-save-coding-system
+  (cond 
+   ((mm-coding-system-p 'emacs-mule)
+    (if (memq system-type '(windows-nt ms-dos ms-windows))
+	(if (mm-coding-system-p 'emacs-mule-dos) 
+	    'emacs-mule-dos mm-binary-coding-system)
+      'emacs-mule))
+   ((mm-coding-system-p 'escape-quoted) 'escape-quoted)
+   (t mm-binary-coding-system))
   "Coding system of auto save file.")
 
 ;;; Internal variables:
@@ -317,20 +325,73 @@ See also `with-temp-file' and `with-output-to-string'."
       (pop alist))
     (nreverse out)))
 
-(defun mm-insert-file-contents (filename &optional visit beg end replace)
+(defvar mm-inhibit-file-name-handlers
+  '(jka-compr-handler)
+  "A list of handlers doing (un)compression (etc) thingies.")
+
+(defun mm-insert-file-contents (filename &optional visit beg end replace
+					 inhibit)
   "Like `insert-file-contents', q.v., but only reads in the file.
 A buffer may be modified in several ways after reading into the buffer due
 to advanced Emacs features, such as file-name-handlers, format decoding,
 find-file-hooks, etc.
+If INHIBIT is non-nil, inhibit mm-inhibit-file-name-handlers.
   This function ensures that none of these modifications will take place."
   (let ((format-alist nil)
-	(auto-mode-alist (mm-auto-mode-alist))
+	(auto-mode-alist (if inhibit nil (mm-auto-mode-alist)))
 	(default-major-mode 'fundamental-mode)
 	(enable-local-variables nil)
         (after-insert-file-functions nil)
 	(enable-local-eval nil)
-	(find-file-hooks nil))
+	(find-file-hooks nil)
+	(inhibit-file-name-operation (if inhibit 
+					 'insert-file-contents
+				       inhibit-file-name-operation))
+	(inhibit-file-name-handlers
+	 (if inhibit
+	     (append mm-inhibit-file-name-handlers 
+		     inhibit-file-name-handlers)
+	   inhibit-file-name-handlers)))
     (insert-file-contents filename visit beg end replace)))
+
+(defun mm-append-to-file (start end filename &optional codesys inhibit)
+  "Append the contents of the region to the end of file FILENAME.
+When called from a function, expects three arguments,
+START, END and FILENAME.  START and END are buffer positions
+saying what text to write.
+Optional fourth argument specifies the coding system to use when
+encoding the file.
+If INHIBIT is non-nil, inhibit mm-inhibit-file-name-handlers."
+  (let ((coding-system-for-write 
+	 (or codesys mm-text-coding-system-for-write 
+	     mm-text-coding-system))
+	(inhibit-file-name-operation (if inhibit 
+					 'append-to-file
+				       inhibit-file-name-operation))
+	(inhibit-file-name-handlers
+	 (if inhibit
+	     (append mm-inhibit-file-name-handlers 
+		     inhibit-file-name-handlers)
+	   inhibit-file-name-handlers)))
+    (append-to-file start end filename)))
+
+(defun mm-write-region (start end filename &optional append visit lockname 
+			      coding-system inhibit)
+
+  "Like `write-region'.
+If INHIBIT is non-nil, inhibit mm-inhibit-file-name-handlers."
+  (let ((coding-system-for-write 
+	 (or coding-system mm-text-coding-system-for-write 
+	     mm-text-coding-system))
+	(inhibit-file-name-operation (if inhibit 
+					 'write-region
+				       inhibit-file-name-operation))
+	(inhibit-file-name-handlers
+	 (if inhibit
+	     (append mm-inhibit-file-name-handlers 
+		     inhibit-file-name-handlers)
+	   inhibit-file-name-handlers)))
+    (write-region start end filename append visit lockname)))
 
 (provide 'mm-util)
 

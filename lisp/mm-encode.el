@@ -132,18 +132,18 @@ The encoding used is returned."
       (let ((8bit 0))
 	(cond
 	 ((not (featurep 'mule))
-	  (while (re-search-forward "[^\x00-\x7f]" nil t)
+	  (while (re-search-forward "[^\x20-\x7f\r\n\t]" nil t)
 	    (incf 8bit)))
 	 (t
 	  ;; Mule version
 	  (while (not (eobp))
-	    (skip-chars-forward "\0-\177")
+	    (skip-chars-forward "\x20-\x7f\r\n\t")
 	    (unless (eobp)
 	      (forward-char 1)
 	      (incf 8bit)))))
 	(if (> (/ (* 8bit 1.0) (buffer-size)) 0.166)
-	    'quoted-printable
-	  'base64)))))
+	    'base64
+	  'quoted-printable)))))
 
 (provide 'mm-encode)
 

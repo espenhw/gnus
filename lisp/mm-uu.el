@@ -82,7 +82,7 @@ decoder, such as hexbin."
 ;;; Thanks to Edward J. Sabol <sabol@alderaan.gsfc.nasa.gov> and 
 ;;; Peter von der Ah\'e <pahe@daimi.au.dk>
 (defconst mm-uu-forward-begin-line "^-+ \\(?:Start of \\)?Forwarded message")
-(defconst mm-uu-forward-end-line "^-+ End of forwarded message")
+(defconst mm-uu-forward-end-line "^-+ End\\(?: of\\)? forwarded message")
 
 (defvar mm-uu-begin-line nil)
 
@@ -146,7 +146,10 @@ To disable dissecting shar codes, for instance, add
 	  (if (stringp cte)
 	      (setq cte (intern (downcase (mail-header-remove-whitespace
 					   (mail-header-remove-comments
-					    cte)))))))
+					    cte))))))
+	  (if (eq cte 'base64)
+	      (setq charset 'gnus-encoded ;; a fake charset
+		    cte nil)))
 	(goto-char (point-max)))
       (forward-line)
       (setq text-start (point)
@@ -170,7 +173,9 @@ To disable dissecting shar codes, for instance, add
 			(intern (concat "mm-uu-" (symbol-name type)
 					"-end-line"))))
 	(when (and (re-search-forward end-line nil t)
-		   (not (eq (match-beginning 0) (match-end 0))))
+		   (not (eq (match-beginning 0) (match-end 0)))
+		   ;; Do not dissect base64 forward. 
+		   (not (and (eq charset 'gnus-encoded) (eq type 'forward))))
 	  (setq end-char-1 (match-beginning 0))
 	  (forward-line)
 	  (setq end-char (point))

@@ -394,7 +394,7 @@ Returns the list of articles removed."
       (erase-buffer)
       (let ((file (gnus-cache-file-name group ".overview")))
 	(when (file-exists-p file)
-	  (mm-insert-file-contents file)))
+	  (nnheader-insert-file-contents file)))
       ;; We have a fresh (empty/just loaded) buffer,
       ;; mark it as unmodified to save a redundant write later.
       (set-buffer-modified-p nil))))

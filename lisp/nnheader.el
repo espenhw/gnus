@@ -471,12 +471,12 @@ the line could be found."
   (when (file-exists-p file)
     (if (eq nnheader-max-head-length t)
 	;; Just read the entire file.
-	(mm-insert-file-contents file)
+	(nnheader-insert-file-contents file)
       ;; Read 1K blocks until we find a separator.
       (let ((beg 0)
 	    format-alist)
 	(while (and (eq nnheader-head-chop-length
-			(nth 1 (mm-insert-file-contents
+			(nth 1 (nnheader-insert-file-contents
 				file nil beg
 				(incf beg nnheader-head-chop-length))))
 		    (prog1 (not (search-forward "\n\n" nil t))
@@ -765,25 +765,18 @@ If FILE, find the \".../etc/PACKAGE\" file instead."
 (defvar nnheader-file-coding-system 'raw-text
   "Coding system used in file backends of Gnus.")
 
-(defun mm-insert-file-contents (filename &optional visit beg end replace)
+(defun nnheader-insert-file-contents (filename &optional visit beg end replace)
   "Like `insert-file-contents', q.v., but only reads in the file.
 A buffer may be modified in several ways after reading into the buffer due
 to advanced Emacs features, such as file-name-handlers, format decoding,
 find-file-hooks, etc.
   This function ensures that none of these modifications will take place."
-  (let ((format-alist nil)
-	(auto-mode-alist (nnheader-auto-mode-alist))
-	(default-major-mode 'fundamental-mode)
-	(enable-local-variables nil)
-        (after-insert-file-functions nil)
-	(enable-local-eval nil)
-	(find-file-hooks nil)
-	(coding-system-for-read nnheader-file-coding-system))
-    (insert-file-contents filename visit beg end replace)))
+  (let ((coding-system-for-read nnheader-file-coding-system))
+    (mm-insert-file-contents filename visit beg end replace)))
 
 (defun nnheader-find-file-noselect (&rest args)
   (let ((format-alist nil)
-	(auto-mode-alist (nnheader-auto-mode-alist))
+	(auto-mode-alist (mm-auto-mode-alist))
 	(default-major-mode 'fundamental-mode)
 	(enable-local-variables nil)
         (after-insert-file-functions nil)
@@ -791,16 +784,6 @@ find-file-hooks, etc.
 	(find-file-hooks nil)
 	(coding-system-for-read nnheader-file-coding-system))
     (apply 'find-file-noselect args)))
-
-(defun nnheader-auto-mode-alist ()
-  "Return an `auto-mode-alist' with only the .gz (etc) thingies."
-  (let ((alist auto-mode-alist)
-	out)
-    (while alist
-      (when (listp (cdar alist))
-	(push (car alist) out))
-      (pop alist))
-    (nreverse out)))
 
 (defun nnheader-directory-regular-files (dir)
   "Return a list of all regular files in DIR."

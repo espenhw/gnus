@@ -1030,7 +1030,7 @@ The cdr of ech entry is a function for applying the face to a region.")
 	     (file-readable-p file)
 	     (file-regular-p file))
     (with-temp-buffer
-      (mm-insert-file-contents file)
+      (nnheader-insert-file-contents file)
       (goto-char (point-min))
       (looking-at message-unix-mail-delimiter))))
 

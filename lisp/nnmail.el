@@ -453,7 +453,7 @@ parameter.  It should return nil, `warn' or `delete'."
         (after-insert-file-functions nil))
     (condition-case ()
 	(let ((coding-system-for-read nnmail-file-coding-system)
-	      (auto-mode-alist (nnheader-auto-mode-alist))
+	      (auto-mode-alist (mm-auto-mode-alist))
 	      (pathname-coding-system nnmail-pathname-coding-system))
 	  (insert-file-contents file)
 	  t)
@@ -849,7 +849,7 @@ FUNC will be called with the buffer narrowed to each mail."
       ;; Insert the incoming file.
       (set-buffer (get-buffer-create " *nnmail incoming*"))
       (erase-buffer)
-      (let ((nnheader-file-coding-system nnmail-incoming-coding-system))
+      (let ((coding-system-for-read nnmail-incoming-coding-system))
 	(mm-insert-file-contents incoming))
       (prog1
 	  (if (zerop (buffer-size))
@@ -1040,11 +1040,11 @@ Return the number of characters in the body."
 (defun nnmail-remove-list-identifiers ()
   "Remove list identifiers from Subject headers."
   (let ((regexp (if (stringp nnmail-list-identifiers) nnmail-list-identifiers
-		  (mapconcat 'identity nnmail-list-identifiers "\\|"))))
+		  (mapconcat 'identity nnmail-list-identifiers " *\\|"))))
     (when regexp
       (goto-char (point-min))
       (when (re-search-forward
-	     (concat "^Subject: +\\(Re: +\\)?\\(" regexp "\\) *")
+	     (concat "^Subject: +\\(Re: +\\)?\\(" regexp " *\\)")
 	     nil t)
 	(delete-region (match-beginning 2) (match-end 0))))))
 
@@ -1274,7 +1274,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
        (setq nnmail-cache-buffer
 	     (get-buffer-create " *nnmail message-id cache*")))
       (when (file-exists-p nnmail-message-id-cache-file)
-	(mm-insert-file-contents nnmail-message-id-cache-file))
+	(nnheader-insert-file-contents nnmail-message-id-cache-file))
       (set-buffer-modified-p nil)
       (current-buffer))))
 
@@ -1447,7 +1447,9 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	    (incf total new)
 	    (incf i))))
       ;; If we did indeed read any incoming spools, we save all info.
-      (unless (zerop total)
+      (if (zerop total)
+	  (nnheader-message 4 "%s: Reading incoming mail (no new mail)...done"
+			    method (car source))
 	(nnmail-save-active
 	 (nnmail-get-value "%s-group-alist" method)
 	 (nnmail-get-value "%s-active-file" method))

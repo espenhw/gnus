@@ -81,10 +81,12 @@
 	  (save-restriction
 	    (narrow-to-region b (point))
 	    (goto-char (point-min))
-	    (if (or (re-search-forward
-		     w3-meta-content-type-charset-regexp nil t)
-		    (re-search-forward
-		     w3-meta-charset-content-type-regexp nil t))
+	    (if (or (and (boundp 'w3-meta-content-type-charset-regexp)
+			 (re-search-forward
+			  w3-meta-content-type-charset-regexp nil t))
+		    (and (boundp 'w3-meta-charset-content-type-regexp)
+			 (re-search-forward
+			  w3-meta-charset-content-type-regexp nil t)))
 		(setq charset (w3-coding-system-for-mime-charset 
 			       (buffer-substring-no-properties 
 				(match-beginning 2) 

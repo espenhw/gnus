@@ -116,11 +116,18 @@
     "^Originator:" "^X-Problems-To:" "^X-Auth-User:" "^X-Post-Time:"
     "^X-Admin:" "^X-UID:" "^Resent-[-A-Za-z]+:" "^X-Mailing-List:"
     "^Precedence:" "^Original-[-A-Za-z]+:" "^X-filename:" "^X-Orcpt:"
-    "^Old-Received:" "^X-Pgp-Fingerprint:" "^X-Pgp-Key-Id:"
-    "^X-Pgp-Public-Key-Url:" "^X-Auth:" "^X-From-Line:"
+    "^Old-Received:" "^X-Pgp" "^X-Auth:" "^X-From-Line:"
     "^X-Gnus-Article-Number:" "^X-Majordomo:" "^X-Url:" "^X-Sender:"
-    "^X-Mailing-List:" "^MBOX-Line" "^Priority:" "^X-Pgp" "^X400-[-A-Za-z]+:"
-    "^Status:" "^X-Gnus-Mail-Source:" "^Cancel-Lock:")
+    "^MBOX-Line" "^Priority:" "^X-Pgp" "^X400-[-A-Za-z]+:"
+    "^Status:" "^X-Gnus-Mail-Source:" "^Cancel-Lock:"
+    "^X-FTN" "^X-EXP32-SerialNo:" "^Encoding:" "^Importance:"
+    "^Autoforwarded:" "^Original-Encoded-Information-Types:" "^X-Ya-Pop3:"
+    "^X-Face-Version:" "^X-Vms-To:" "^X-ML-NAME:" "^X-ML-COUNT:"
+    "^Mailing-List:" "^X-finfo:" "^X-md5sum:" "^X-md5sum-Origin:"
+    "^X-Sun-Charset:" "^X-Accept-Language:" "^X-Envelope-Sender:"
+    "^List-[A-Za-z]+:" "^X-Listprocessor-Version:"
+    "^X-Received:" "^X-Distribute:" "^X-Sequence:" "^X-Juno-Line-Breaks:"
+    "^X-Notes-Item:" "^X-MS-TNEF-Correlator:" "^x-uunet-gateway:")
   "*All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."
@@ -587,7 +594,7 @@ displayed by the first non-nil matching CONTENT face."
   :type '(repeat regexp))
 
 (defcustom gnus-unbuttonized-mime-types '(".*/.*")
-  "List of MIME types that should not be given buttons when rendered."
+  "List of MIME types that should not be given buttons when rendered inline."
   :group 'gnus-article-mime
   :type '(repeat regexp))
 
@@ -704,6 +711,13 @@ See the manual for details."
 
 (defcustom gnus-treat-hide-citation nil
   "Hide cited text.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
+  :group 'gnus-article-treat
+  :type gnus-article-treat-custom)
+
+(defcustom gnus-treat-strip-list-identifiers 'head
+  "Strip list identifiers from `gnus-list-identifiers`.
 Valid values are nil, t, `head', `last', an integer or a predicate.
 See the manual for details."
   :group 'gnus-article-treat
@@ -902,6 +916,7 @@ See the manual for details."
     (gnus-treat-hide-boring-headers gnus-article-hide-boring-headers)
     (gnus-treat-hide-signature gnus-article-hide-signature)
     (gnus-treat-hide-citation gnus-article-hide-citation)
+    (gnus-treat-strip-list-identifiers gnus-article-hide-list-identifiers)
     (gnus-treat-strip-pgp gnus-article-hide-pgp)
     (gnus-treat-strip-pem gnus-article-hide-pem)
     (gnus-treat-highlight-headers gnus-article-highlight-headers)
@@ -1400,9 +1415,13 @@ If PROMPT (the prefix), prompt for a coding system to use."
 			(mail-content-type-get ctl 'charset))))
 	     (mail-parse-charset gnus-newsgroup-charset)
 	     (mail-parse-ignored-charsets 
-	      (save-excursion (set-buffer gnus-summary-buffer)
+             (save-excursion (condition-case nil
+                                 (set-buffer gnus-summary-buffer)
+                               (error))
 			      gnus-newsgroup-ignored-charsets))
 	     buffer-read-only)
+	(if (and ctl (not (string-match "/" (car ctl)))) 
+	    (setq ctl nil))
 	(goto-char (point-max))
 	(widen)
 	(forward-line 1)
@@ -1444,6 +1463,24 @@ or not."
 	  (quoted-printable-decode-region (point-min) (point-max))
 	  (when charset
 	    (mm-decode-body charset)))))))
+
+(defun article-hide-list-identifiers ()
+  "Remove any list identifiers in `gnus-list-identifiers' from Subject
+header in the current article."
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (let ((inhibit-point-motion-hooks t)
+	    buffer-read-only)
+	(article-narrow-to-head)
+	(let ((regexp (if (stringp gnus-list-identifiers) gnus-list-identifiers
+			(mapconcat 'identity gnus-list-identifiers " *\\|"))))
+	  (when regexp
+	    (goto-char (point-min))
+	    (when (re-search-forward
+		   (concat "^Subject: +\\(Re: +\\)?\\(" regexp " *\\)")
+		   nil t)
+	      (delete-region (match-beginning 2) (match-end 0)))))))))
 
 (defun article-hide-pgp ()
   "Remove any PGP headers and signatures in the current article."
@@ -1529,17 +1566,9 @@ always hide."
 	    (while (re-search-forward banner nil t)
 	      (delete-region (match-beginning 0) (match-end 0))))))))))
 
-(defun article-babel-prompt ()
-  "Prompt for a babel translation."
-  (require 'babel)
-  (completing-read "Translate from: "
-		   babel-translations nil t
-		   (car (car babel-translations))
-		   babel-history))
-
-(defun article-babel (translation)
-  "Translate article according to TRANSLATION using babelfish."
-  (interactive (list (article-babel-prompt)))
+(defun article-babel ()
+  "Translate article using an online translation service."
+  (interactive)
   (require 'babel)
   (save-excursion
     (set-buffer gnus-article-buffer)
@@ -1547,14 +1576,12 @@ always hide."
       (let* ((buffer-read-only nil)
 	     (start (point))
 	     (end (point-max))
-	     (msg (buffer-substring start end)))
+	     (orig (buffer-substring start end))
+             (trans (babel-as-string orig)))
 	(save-restriction
 	  (narrow-to-region start end)
 	  (delete-region start end)
-	  (babel-fetch msg (cdr (assoc translation babel-translations)))
-	  (save-restriction
-	    (narrow-to-region start (point-max))
-	    (babel-wash)))))))
+          (insert trans))))))
 
 (defun article-hide-signature (&optional arg)
   "Hide the signature in the current article.
@@ -2355,6 +2382,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-display-x-face
      article-de-quoted-unreadable
      article-mime-decode-quoted-printable
+     article-hide-list-identifiers
      article-hide-pgp
      article-strip-banner
      article-babel
@@ -2513,6 +2541,7 @@ commands:
     (if (get-buffer name)
 	(save-excursion
 	  (set-buffer name)
+	  (kill-all-local-variables)
 	  (buffer-disable-undo)
 	  (setq buffer-read-only t)
 	  (unless (eq major-mode 'gnus-article-mode)
@@ -3287,7 +3316,7 @@ Provided for backwards compatibility."
       ;; save it to file.
       (goto-char (point-max))
       (insert "\n")
-      (append-to-file (point-min) (point-max) file-name)
+      (mm-append-to-file (point-min) (point-max) file-name)
       t)))
 
 (defun gnus-narrow-to-page (&optional arg)
@@ -3524,6 +3553,7 @@ headers will be hidden.
 If given a prefix, show the hidden text instead."
   (interactive (append (gnus-article-hidden-arg) (list 'force)))
   (gnus-article-hide-headers arg)
+  (gnus-article-hide-list-identifiers arg)
   (gnus-article-hide-pgp arg)
   (gnus-article-hide-citation-maybe arg force)
   (gnus-article-hide-signature arg))

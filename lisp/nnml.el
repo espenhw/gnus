@@ -463,7 +463,7 @@ all.  This may very well take some time.")
       (nnheader-report 'nnml "File %s does not exist" file))
      (t
       (with-temp-file file
-	(mm-insert-file-contents file)
+	(nnheader-insert-file-contents file)
 	(nnmail-replace-status name value))
       t))))
 
@@ -519,7 +519,7 @@ all.  This may very well take some time.")
 		     nnml-nov-file-name))
 	number found)
     (when (file-exists-p nov)
-      (mm-insert-file-contents nov)
+      (nnheader-insert-file-contents nov)
       (while (and (not found)
 		  (search-forward id nil t)) ; We find the ID.
 	;; And the id is in the fourth field.
@@ -541,7 +541,7 @@ all.  This may very well take some time.")
 	(save-excursion
 	  (set-buffer nntp-server-buffer)
 	  (erase-buffer)
-	  (mm-insert-file-contents nov)
+	  (nnheader-insert-file-contents nov)
 	  (if (and fetch-old
 		   (not (numberp fetch-old)))
 	      t				; Don't remove anything.
@@ -677,7 +677,7 @@ all.  This may very well take some time.")
 		       nnml-nov-file-name))
 	  (erase-buffer)
 	  (when (file-exists-p nnml-nov-buffer-file-name)
-	    (mm-insert-file-contents nnml-nov-buffer-file-name)))
+	    (nnheader-insert-file-contents nnml-nov-buffer-file-name)))
 	(push (cons group buffer) nnml-nov-buffer-alist)
 	buffer)))
 
@@ -767,7 +767,7 @@ all.  This may very well take some time.")
       (while files
 	(unless (file-directory-p (setq file (concat dir (cdar files))))
 	  (erase-buffer)
-	  (mm-insert-file-contents file)
+	  (nnheader-insert-file-contents file)
 	  (narrow-to-region
 	   (goto-char (point-min))
 	   (progn

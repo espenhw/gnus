@@ -292,6 +292,11 @@ noticing asynchronous data.")
       (unless discard
 	(erase-buffer)))))
 
+(defun nntp-kill-buffer (buffer)
+  (when (buffer-name buffer)
+    (kill-buffer buffer)
+    (nnheader-init-server-buffer)))
+
 (defsubst nntp-find-connection (buffer)
   "Find the connection delivering to BUFFER."
   (let ((alist nntp-connection-alist)
@@ -304,8 +309,7 @@ noticing asynchronous data.")
     (when process
       (if (memq (process-status process) '(open run))
 	  process
-	(when (buffer-name (process-buffer process))
-	  (kill-buffer (process-buffer process)))
+	(nntp-kill-buffer (process-buffer process))
 	(setq nntp-connection-alist (delq entry nntp-connection-alist))
 	nil))))
 
@@ -696,8 +700,7 @@ noticing asynchronous data.")
 	    ;; QUIT command actually is sent out before we kill
 	    ;; the process.
 	    (sleep-for 1))))
-      (when (buffer-name (process-buffer process))
-	(kill-buffer (process-buffer process)))
+      (nntp-kill-buffer (process-buffer process))
       (setq process (car (pop nntp-connection-alist))))
     (nnoo-close-server 'nntp)))
 
@@ -713,8 +716,7 @@ noticing asynchronous data.")
 	    ;; QUIT command actually is sent out before we kill
 	    ;; the process.
 	    (sleep-for 1))))
-      (when (buffer-name (process-buffer process))
-	(kill-buffer (process-buffer process))))))
+      (nntp-kill-buffer (process-buffer process)))))
 
 (deffoo nntp-request-list (&optional server)
   (nntp-possibly-change-group nil server)
@@ -846,8 +848,7 @@ password contained in '~/.nntp-authinfo'."
 	       (nnheader-run-at-time
 		nntp-connection-timeout nil
 		`(lambda ()
-		   (when (buffer-name ,pbuffer)
-		     (kill-buffer ,pbuffer))))))
+		   (nntp-kill-buffer ,pbuffer)))))
 	 (process
 	  (condition-case ()
 	      (let ((coding-system-for-read nntp-coding-system-for-read)
@@ -873,8 +874,7 @@ password contained in '~/.nntp-authinfo'."
 	      (let ((nnheader-callback-function nil))
 		(run-hooks 'nntp-server-opened-hook)
 		(nntp-send-authinfo t))))
-	(when (buffer-name (process-buffer process))
-	  (kill-buffer (process-buffer process)))
+	(nntp-kill-buffer (process-buffer process))
 	nil))))
 
 (defun nntp-open-network-stream (buffer)

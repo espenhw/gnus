@@ -1,7 +1,7 @@
 @c \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.95 Manual
+@settitle Pterodactyl Gnus 0.96 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -319,7 +319,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.95 Manual
+@title Pterodactyl Gnus 0.96 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -355,7 +355,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.95.
+This manual corresponds to Pterodactyl Gnus 0.96.
 
 @end ifinfo
 
@@ -995,7 +995,7 @@ is certainly faster than @code{t} over slow lines.
 
 Some news servers (Leafnode and old versions of INN, for instance) do
 not support the @code{LIST ACTIVE group}.  For these servers, @code{nil}
-is probably the most effficient value for this variable.
+is probably the most efficient value for this variable.
 
 If this variable is @code{nil}, Gnus will ask for group info in total
 lock-step, which isn't very fast.  If it is @code{some} and you use an
@@ -2396,7 +2396,7 @@ Sort the group buffer alphabetically by backend name
 
 @end table
 
-All the commands below obeys the process/prefix convention
+All the commands below obey the process/prefix convention
 (@pxref{Process/Prefix}).
 
 When given a symbolic prefix (@pxref{Symbolic Prefixes}), all these
@@ -3344,7 +3344,7 @@ The following format specification characters are understood:
 @item N
 Article number.
 @item S
-Subject string.
+Subject string. List identifiers stripped, @code{gnus-list-identifies}. @xref{Article Hiding}.
 @item s
 Subject if the article is the root of the thread or the previous article
 had a different subject, @code{gnus-summary-same-subject} otherwise.
@@ -4532,7 +4532,7 @@ The default is @code{t}.
 Some people would like the command that ticks an article (@kbd{!}) go to
 the next article.  Others would like it to go to the next unread
 article.  Yet others would like it to stay on the current article.  And
-even though I haven't heard of anybody wanting it to go the the
+even though I haven't heard of anybody wanting it to go to the
 previous (unread) article, I'm sure there are people that want that as
 well.
 
@@ -4547,7 +4547,7 @@ to list in this manual.
 
 While you can use these commands directly, most users would prefer
 altering the summary mode keymap.  For instance, if you would like the
-@kbd{!} command to go the the next article instead of the next unread
+@kbd{!} command to go to the next article instead of the next unread
 article, you could say something like:
 
 @lisp
@@ -5125,6 +5125,18 @@ in a new thread.
 @vindex gnus-thread-indent-level
 This is a number that says how much each sub-thread should be indented.
 The default is 4.
+
+@item gnus-sort-gathered-threads-function
+@vindex gnus-sort-gathered-threads-function
+Sometimes, particularly with mailing lists, the order in which mails
+arrive locally is not necessarily the same as the order in which they
+arrived on the mailing list. Consequently, when sorting sub-threads
+using the default @code{gnus-thread-sort-by-number}, responses can end
+up appearing before the article to which they are responding to. Setting
+this variable to an alternate value
+(e.g. @code{gnus-thread-sort-by-date}), in a group's parameters or in an
+appropriate hook (e.g. @code{gnus-summary-generate-hook}) can produce a
+more logical sub-thread ordering in such instances.
 
 @end table
 
@@ -6509,6 +6521,23 @@ Hide headers that aren't particularly interesting
 Hide signature (@code{gnus-article-hide-signature}).  @xref{Article
 Signature}.
 
+@item W W l
+@kindex W W l (Summary)
+@findex gnus-article-hide-list-identifiers
+@vindex gnus-list-identifiers
+Hide list identifiers specified in @code{gnus-list-identifiers}. Theese
+are strings some list servers add to the beginning of all @code{Subject}
+headers---for example, @samp{[zebra 4711]}.
+
+@table @code
+
+@item gnus-list-identifiers
+@vindex gnus-list-identifiers
+A regular expression that matches list identifiers to be removed from
+subject. This can also be a list of regular expressions.
+
+@end table
+
 @item W W p
 @kindex W W p (Summary)
 @findex gnus-article-hide-pgp
@@ -6705,7 +6734,7 @@ Fill long lines (@code{gnus-article-fill-long-lines}).
 
 @item W C
 @kindex W C (Summary)
-@findex gnus-article-capitalize-sentencse
+@findex gnus-article-capitalize-sentences
 Capitalize the first word in each sentence
 (@code{gnus-article-capitalize-sentences}).
 
@@ -8394,6 +8423,9 @@ To have them called automatically, you should set the corresponding
 @code{gnus-treat-hide-headers}.  Below is a list of variables that can
 be set, but first we discuss the values these variables can have.
 
+Note: Some values, while valid, make little sense.  Check the list below
+for sensible values.
+
 @enumerate
 @item
 @code{nil}: Don't do this treatment.
@@ -8445,38 +8477,39 @@ controlling variable is a predicate list, as described above.
 
 The following treatment options are available.  The easiest way to
 customize this is to examine the @code{gnus-article-treat} customization
-group.
+group. Values in brackets are suggested sensible values. Others are possible
+but those listed are probably sufficient for most people.
 
 @table @code
-@item gnus-treat-highlight-signature
-@item gnus-treat-buttonize
-@item gnus-treat-buttonize-head
-@item gnus-treat-emphasize
-@item gnus-treat-fill-article
-@item gnus-treat-strip-cr
-@item gnus-treat-hide-headers
-@item gnus-treat-hide-boring-headers
-@item gnus-treat-hide-signature
-@item gnus-treat-hide-citation
-@item gnus-treat-strip-pgp
-@item gnus-treat-strip-pem
-@item gnus-treat-highlight-headers
-@item gnus-treat-highlight-citation
-@item gnus-treat-highlight-signature
-@item gnus-treat-date-ut
-@item gnus-treat-date-local
-@item gnus-treat-date-lapsed
-@item gnus-treat-date-original
-@item gnus-treat-strip-headers-in-body
-@item gnus-treat-strip-trailing-blank-lines
-@item gnus-treat-strip-leading-blank-lines
-@item gnus-treat-strip-multiple-blank-lines
-@item gnus-treat-overstrike
-@item gnus-treat-display-xface
-@item gnus-treat-display-smileys
-@item gnus-treat-display-picons
-@item gnus-treat-capitalize-sentences
-@item gnus-treat-fill-long-lines
+@item gnus-treat-highlight-signature (t, last)
+@item gnus-treat-buttonize (t, integer)
+@item gnus-treat-buttonize-head (head)
+@item gnus-treat-emphasize (t, head, integer)
+@item gnus-treat-fill-article (t, integer)
+@item gnus-treat-strip-cr (t, integer)
+@item gnus-treat-hide-headers (head)
+@item gnus-treat-hide-boring-headers (head)
+@item gnus-treat-hide-signature (t, last)
+@item gnus-treat-hide-citation (t, integer)
+@item gnus-treat-strip-pgp (t, last, integer)
+@item gnus-treat-strip-pem (t, last, integer)
+@item gnus-treat-highlight-headers (head)
+@item gnus-treat-highlight-citation (t, integer)
+@item gnus-treat-highlight-signature (t, last, integer)
+@item gnus-treat-date-ut (head)
+@item gnus-treat-date-local (head)
+@item gnus-treat-date-lapsed (head)
+@item gnus-treat-date-original (head)
+@item gnus-treat-strip-headers-in-body (t, integer)
+@item gnus-treat-strip-trailing-blank-lines (t, last, integer)
+@item gnus-treat-strip-leading-blank-lines (t, integer)
+@item gnus-treat-strip-multiple-blank-lines (t, integer)
+@item gnus-treat-overstrike (t, integer)
+@item gnus-treat-display-xface (head)
+@item gnus-treat-display-smileys (t, integer)
+@item gnus-treat-display-picons (head)
+@item gnus-treat-capitalize-sentences (t, integer)
+@item gnus-treat-fill-long-lines (t, integer)
 @item gnus-treat-play-sounds
 @item gnus-treat-translate
 @end table
@@ -9923,6 +9956,7 @@ course.
 * Mail Sources::                 How to tell Gnus where to get mail from.
 * Mail Backend Variables::       Variables for customizing mail handling.
 * Fancy Mail Splitting::         Gnus can do hairy splitting of incoming mail.
+* Group Mail Splitting::         Use group customize to drive mail splitting.
 * Incorporating Old Mail::       What about the old mail you have?
 * Expiring Mail::                Getting rid of unwanted mail.
 * Washing Mail::                 Removing gruft from the mail you get.
@@ -10600,6 +10634,131 @@ up to @samp{\\9} will be substituted with the text matched by the
 groupings 1 through 9.
 
 
+@node Group Mail Splitting
+@subsection Group Mail Splitting
+@cindex mail splitting
+@cindex group mail splitting
+
+@findex gnus-group-split
+If you subscribe to dozens of mailing lists but you don't want to
+maintain mail splitting rules manually, group mail splitting is for you.
+You just have to set @var{to-list} and/or @var{to-address} in group
+parameters or group customization and set @code{nnmail-split-methods} to
+@code{gnus-group-split}.  This splitting function will scan all groups
+for those parameters and split mail accordingly, i.e., messages posted
+from or to the addresses specified in the parameters @var{to-list} or
+@var{to-address} of a mail group will be stored in that group.
+
+Sometimes, mailing lists have multiple addresses, and you may want mail
+splitting to recognize them all: just set the @var{extra-aliases} group
+parameter to the list of additional addresses and it's done.  If you'd
+rather use a regular expression, set @var{split-regexp}.
+
+All these parameters in a group will be used to create an
+@code{nnmail-split-fancy} split, in which the @var{FIELD} is @samp{any},
+the @var{VALUE} is a single regular expression that matches
+@var{to-list}, @var{to-address}, all of @var{extra-aliases} and all
+matches of @var{split-regexp}, and the @var{SPLIT} is the name of the
+group.  @var{RESTRICT}s are also supported: just set the
+@var{split-exclude} parameter to a list of regular expressions.
+
+If you can't get the right split to be generated using all these
+parameters, or you just need something fancier, you can set the
+parameter @var{split-spec} to an @code{nnmail-split-fancy} split.  In
+this case, all other aforementioned parameters will be ignored by
+@code{gnus-group-split}.  In particular, @var{split-spec} may be set to
+@code{nil}, in which case the group will be ignored by
+@code{gnus-group-split}.
+
+@vindex gnus-group-split-default-catch-all-group
+@code{gnus-group-split} will do cross-posting on all groups that match,
+by defining a single @code{&} fancy split containing one split for each
+group.  If a message doesn't match any split, it will be stored in the
+group named in @code{gnus-group-split-default-catch-all-group}, unless
+some group has @var{split-spec} set to @code{catch-all}, in which case
+that group is used as the catch-all group.  Note that, in this case,
+there's no cross-posting, as a @code{|} fancy split encloses the
+@code{&} split and the catch-all group.
+
+It's time for an example.  Assume the following group parameters have
+been defined:
+
+@example
+nnml:mail.bar:
+((to-address . "bar@@femail.com")
+ (split-regexp . ".*@@femail\\.com"))
+nnml:mail.foo:
+((to-list . "foo@@nowhere.gov")
+ (extra-aliases "foo@@localhost" "foo-redist@@home")
+ (split-exclude "bugs-foo" "rambling-foo")
+ (admin-address . "foo-request@@nowhere.gov"))
+nnml:mail.others:
+((split-spec . catch-all))
+@end example
+
+Setting @code{nnmail-split-methods} to @code{gnus-group-split} will
+behave as if @code{nnmail-split-fancy} had been selected and variable
+@code{nnmail-split-fancy} had been set as follows:
+
+@lisp
+(| (& (any "\\(bar@@femail\\.com\\|.*@@femail\\.com\\)" "mail.bar")
+      (any "\\(foo@@nowhere\\.gov\\|foo@@localhost\\|foo-redist@@home\\)"
+           - "bugs-foo" - "rambling-foo" "mail.foo"))
+   "mail.others")
+@end lisp
+
+@findex gnus-group-split-fancy
+If you'd rather not use group splitting for all your mail groups, you
+may use it for only some of them, by using @code{nnmail-split-fancy}
+splits like this:
+
+@lisp
+(: gnus-mlsplt-fancy GROUPS NO-CROSSPOST CATCH-ALL)
+@end lisp
+
+@var{GROUPS} may be a regular expression or a list of group names whose
+parameters will be scanned to generate the output split.
+@var{NO-CROSSPOST} can be used to disable cross-posting; in this case, a
+single @code{|} split will be output.  @var{CATCH-ALL} may be the name
+of a group to be used as the default catch-all group.  If
+@var{CATCH-ALL} is @code{nil}, or if @var{SPLIT-REGEXP} matches the
+empty string in any selected group, no catch-all split will be issued.
+Otherwise, if some group has @var{SPLIT-SPEC} set to @code{catch-all},
+this group will override the value of the @var{CATCH-ALL} argument.
+
+@findex gnus-group-split-setup
+Unfortunately, scanning all groups and their parameters can be quite
+slow, especially considering that it has to be done for every message.
+But don't despair!  The function @code{gnus-group-split-setup} can be
+used to select @code{gnus-group-split} in a much more efficient way.  It
+sets @code{nnmail-split-methods} to @code{nnmail-split-fancy} and sets
+@code{nnmail-split-fancy} to the split produced by
+@code{gnus-group-split-fancy}.  Thus, the group parameters are only
+scanned once, no matter how many messages are split.
+
+@findex gnus-group-split-update
+However, if you change group parameters, you have to update
+@code{nnmail-split-fancy} manually.  You can do it by running
+@code{gnus-group-split-update}.  If you'd rather have it updated
+automatically, just tell @code{gnus-group-split-setup} to do it for
+you.  For example, add to your @file{.gnus}:
+
+@lisp
+(gnus-group-split-setup AUTO-UPDATE CATCH-ALL)
+@end lisp
+
+If @var{AUTO-UPDATE} is non-@code{nil}, @code{gnus-group-split-update}
+will be added to @code{nnmail-pre-get-new-mail-hook}, so you won't ever
+have to worry about updating @code{nnmail-split-fancy} again.  If you
+don't omit @var{CATCH-ALL} (it's optional),
+@code{gnus-group-split-default-catch-all-group} will be set to its
+value.
+
+@vindex gnus-group-split-updated-hook
+Because you may want to change @code{nnmail-split-fancy} after it is set
+by @code{gnus-group-split-update}, this function will run
+@code{gnus-group-split-updated-hook} just before finishing.
+
 @node Incorporating Old Mail
 @subsection Incorporating Old Mail
 
@@ -10844,6 +11003,9 @@ For instance, if you want to remove the @samp{(idm)} and the
 (setq nnmail-list-identifiers
       '("(idm)" "nagnagnag"))
 @end lisp
+
+This can also be done non-destructively with
+@code{gnus-list-identifiers}, @xref{Article Hiding}.
 
 @item nnmail-remove-tabs
 @findex nnmail-remove-tabs
@@ -11309,7 +11471,7 @@ slowness of access parsing when learning what's new in one's groups.
 
 @item nnfolder
 
-Basically the effetc of @code{nnfolder} is @code{nnmbox} (the first
+Basically the effect of @code{nnfolder} is @code{nnmbox} (the first
 method described above) on a per-group basis.  That is, @code{nnmbox}
 itself puts *all* one's mail in one file; @code{nnfolder} provides a
 little bit of optimization to this so that each of one's mail groups has
@@ -12816,7 +12978,7 @@ Fetch all eligible articles in all groups
 @kindex J S (Agent Group)
 @findex gnus-group-send-drafts
 Send all sendable messages in the draft group
-(@code{gnus-agent-fetch-session}).  @xref{Drafts}.
+(@code{gnus-group-send-drafts}).  @xref{Drafts}.
 
 @item J a
 @kindex J a (Agent Group)

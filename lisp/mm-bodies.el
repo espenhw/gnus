@@ -168,6 +168,7 @@ If no encoding was done, nil is returned."
 				  (save-excursion
 				    (goto-char (point-max))
 				    (skip-chars-backward "\n\t ")
+				    (delete-region (point) (point-max))
 				    (point))))
 	   ((memq encoding '(7bit 8bit binary))
 	    )

@@ -804,8 +804,8 @@ prompt the user for the name of an NNTP server to use."
 	  ;; Load whichever file is newest -- the auto save file
 	  ;; or the "real" file.
 	  (if (file-newer-than-file-p auto dribble-file)
-	      (mm-insert-file-contents auto)
-	    (mm-insert-file-contents dribble-file))
+	      (nnheader-insert-file-contents auto)
+	    (nnheader-insert-file-contents dribble-file))
 	  (unless (zerop (buffer-size))
 	    (set-buffer-modified-p t))
 	  ;; Set the file modes to reflect the .newsrc file modes.
@@ -1828,7 +1828,7 @@ newsgroup."
 		     (gnus-group-prefixed-name "" method))))
 
     ;; Let the Gnus agent save the active file.
-    (if (and gnus-agent real-active gnus-plugged)
+    (if (and gnus-agent real-active gnus-plugged (gnus-agent-method-p method))
 	(progn
 	  (gnus-agent-save-groups method)
 	  (gnus-active-to-gnus-format method hashtb nil real-active))

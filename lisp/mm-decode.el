@@ -566,15 +566,10 @@ external if displayed external."
 (defun mm-save-part-to-file (handle file)
   (mm-with-unibyte-buffer
     (mm-insert-part handle)
-    ;; Now every coding system is 100% binary within mm-with-unibyte-buffer
-    ;; Is text still special?
-    (let ((coding-system-for-write
-	   (if (equal "text" (mm-handle-media-supertype handle))
-	       buffer-file-coding-system
-	     'binary))
+    (let ((coding-system-for-write 'binary)
 	  ;; Don't re-compress .gz & al.  Arguably we should make
 	  ;; `file-name-handler-alist' nil, but that would chop
-	  ;; ange-ftp which it's reasonable to use here.
+	  ;; ange-ftp, which is reasonable to use here.
 	  (inhibit-file-name-operation 'write-region)
 	  (inhibit-file-name-handlers
 	   (if (equal (mm-handle-media-type handle)

@@ -366,7 +366,7 @@ there.")
 	  (erase-buffer)
 	  (if nnspool-sift-nov-with-sed
 	      (nnspool-sift-nov-with-sed articles nov)
-	    (mm-insert-file-contents nov)
+	    (nnheader-insert-file-contents nov)
 	    (if (and fetch-old
 		     (not (numberp fetch-old)))
 		t			; We want all the headers.
@@ -438,7 +438,7 @@ there.")
   (set-buffer nntp-server-buffer)
   (erase-buffer)
   (condition-case ()
-      (let ((nnheader-file-coding-system nnspool-file-coding-system))
+      (let ((coding-system-for-read nnspool-file-coding-system))
 	(mm-insert-file-contents file)
 	t)
     (file-error nil)))

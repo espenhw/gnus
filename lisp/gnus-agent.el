@@ -135,7 +135,7 @@ If nil, only read articles will be expired."
   "Load FILE and do a `read' there."
   (with-temp-buffer
     (ignore-errors
-      (mm-insert-file-contents file)
+      (nnheader-insert-file-contents file)
       (goto-char (point-min))
       (read (current-buffer)))))
 
@@ -521,7 +521,8 @@ the actual number of articles toggled is returned."
 	    article)
 	(while (setq article (pop articles))
 	  (unless (or (cdr (assq article gnus-agent-article-alist))
-		      (memq article gnus-newsgroup-downloadable))
+		      (memq article gnus-newsgroup-downloadable)
+		      (memq article gnus-newsgroup-cached))
 	    (push article gnus-newsgroup-undownloaded))))
       ;; Then mark downloaded downloadable as not-downloadable,
       ;; if you get my drift.
@@ -588,7 +589,7 @@ the actual number of articles toggled is returned."
       (gnus-make-directory (file-name-directory file))
       (with-temp-file file
 	(when (file-exists-p file)
-	  (mm-insert-file-contents file))
+	  (nnheader-insert-file-contents file))
 	(goto-char (point-min))
 	(when (re-search-forward
 	       (concat "^" (regexp-quote group) " ") nil t)
@@ -773,7 +774,7 @@ the actual number of articles toggled is returned."
 	(when (= (point-max) (point-min))
 	  (push (cons group (current-buffer)) gnus-agent-buffer-alist)
 	  (ignore-errors
-	    (mm-insert-file-contents
+	    (nnheader-insert-file-contents
 	     (gnus-agent-article-name ".overview" group))))
 	(nnheader-find-nov-line (string-to-number (cdar crosses)))
 	(insert (string-to-number (cdar crosses)))
@@ -853,7 +854,7 @@ the actual number of articles toggled is returned."
   (goto-char (point-min))
   (set-buffer nntp-server-buffer)
   (erase-buffer)
-  (mm-insert-file-contents file)
+  (nnheader-insert-file-contents file)
   (goto-char (point-max))
   (if (or (= (point-min) (point-max))
 	  (progn
@@ -949,20 +950,31 @@ the actual number of articles toggled is returned."
 	category predicate info marks score-param)
     ;; Fetch headers.
     (when (and (or (gnus-active group) (gnus-activate-group group))
-	       (setq articles (gnus-agent-fetch-headers group)))
-      ;; Parse them and see which articles we want to fetch.
-      (setq gnus-newsgroup-dependencies
-	    (make-vector (length articles) 0))
-      ;; No need to call `gnus-get-newsgroup-headers-xover' with
-      ;; the entire .overview for group as we still have the just
-      ;; downloaded headers in `gnus-agent-overview-buffer'.
-      (let ((nntp-server-buffer gnus-agent-overview-buffer))
-	(setq gnus-newsgroup-headers
-	      (gnus-get-newsgroup-headers-xover articles nil nil group)))
+	       (setq articles (gnus-agent-fetch-headers group))
+	       (progn
+		 ;; Parse them and see which articles we want to fetch.
+		 (setq gnus-newsgroup-dependencies
+		       (make-vector (length articles) 0))
+		 ;; No need to call `gnus-get-newsgroup-headers-xover' with
+		 ;; the entire .overview for group as we still have the just
+		 ;; downloaded headers in `gnus-agent-overview-buffer'.
+		 (let ((nntp-server-buffer gnus-agent-overview-buffer))
+		   (setq gnus-newsgroup-headers
+			 (gnus-get-newsgroup-headers-xover articles nil nil 
+							   group)))
+		 ;; `gnus-agent-overview-buffer' may be killed for
+		 ;; timeout reason. If so, recreate it.
+		 (if (gnus-buffer-live-p gnus-agent-overview-buffer)
+		     t
+		   (setq gnus-agent-overview-buffer
+			 (gnus-get-buffer-create " *Gnus agent overview*"))
+		   (with-current-buffer gnus-agent-overview-buffer
+		     (mm-enable-multibyte))
+		   nil)))
       (setq category (gnus-group-category group))
       (setq predicate
 	    (gnus-get-predicate
-	     (or (gnus-group-get-parameter group 'agent-predicate t)
+            (or (gnus-group-find-parameter group 'agent-predicate t)
 		 (cadr category))))
       ;; Do we want to download everything, or nothing?
       (if (or (eq (caaddr predicate) 'gnus-agent-true)
@@ -976,7 +988,7 @@ the actual number of articles toggled is returned."
 	(setq score-param
 	      (let ((score-method
 		     (or
-		      (gnus-group-get-parameter group 'agent-score t)
+		      (gnus-group-find-parameter group 'agent-score t)
 		      (caddr category))))
 		(when score-method
 		  (require 'gnus-score)
@@ -1366,156 +1378,160 @@ The following commands are available:
     (save-excursion
       (setq overview (gnus-get-buffer-create " *expire overview*"))
       (while (setq gnus-command-method (pop methods))
-	(with-temp-buffer
-	  (insert-file-contents (gnus-agent-lib-file "active"))
-	  (gnus-active-to-gnus-format 
-	   gnus-command-method
-	   (setq orig (gnus-make-hashtable
-		       (count-lines (point-min) (point-max))))))
-	(let ((expiry-hashtb (gnus-make-hashtable 1023)))
-	(gnus-agent-open-history)
-	(set-buffer
-	 (setq gnus-agent-current-history
-	       (setq history (gnus-agent-history-buffer))))
-	(goto-char (point-min))
-	(when (> (buffer-size) 1)
-	  (goto-char (point-min))
-	  (while (not (eobp))
-	    (skip-chars-forward "^\t")
-	    (if (> (read (current-buffer)) day)
-		;; New article; we don't expire it.
-		(forward-line 1)
-	      ;; Old article.  Schedule it for possible nuking.
-	      (while (not (eolp))
-		(setq sym (let ((obarray expiry-hashtb))
-			    (read (current-buffer))))
-		(if (boundp sym)
-		    (set sym (cons (cons (read (current-buffer)) (point))
-				   (symbol-value sym)))
-		  (set sym (list (cons (read (current-buffer)) (point)))))
-		(skip-chars-forward " "))
-	      (forward-line 1)))
-	  ;; We now have all articles that can possibly be expired.
-	  (mapatoms
-	   (lambda (sym)
-	     (setq group (symbol-name sym)
-		   articles (sort (symbol-value sym) 'car-less-than-car)
-		   low (car (gnus-active group))
-		   info (gnus-get-info group)
-		   unreads (ignore-errors (gnus-list-of-unread-articles group))
-		   marked (nconc (gnus-uncompress-range
-				  (cdr (assq 'tick (gnus-info-marks info))))
-				 (gnus-uncompress-range
-				  (cdr (assq 'dormant
-					     (gnus-info-marks info)))))
-		   nov-file (gnus-agent-article-name ".overview" group)
-		   lowest nil
-		   highest nil)
-	     (gnus-agent-load-alist group)
-	     (gnus-message 5 "Expiring articles in %s" group)
-	     (set-buffer overview)
-	     (erase-buffer)
-	     (when (file-exists-p nov-file)
-	       (mm-insert-file-contents nov-file))
-	     (goto-char (point-min))
-	     (setq article 0)
-	     (while (setq elem (pop articles))
-	       (setq article (car elem))
-	       (when (or (null low)
-			 (< article low)
-			 gnus-agent-expire-all
-			 (and (not (memq article unreads))
-			      (not (memq article marked))))
-		 ;; Find and nuke the NOV line.
-		 (while (and (not (eobp))
-			     (or (not (numberp
-				       (setq art (read (current-buffer)))))
-				 (< art article)))
-		   (if (file-exists-p
-			(gnus-agent-article-name
-			 (number-to-string art) group))
-		       (progn
-			 (unless lowest
-			   (setq lowest art))
-			 (setq highest art)
-			 (forward-line 1))
-		     ;; Remove old NOV lines that have no articles.
-		     (gnus-delete-line)))
-		 (if (or (eobp)
-			 (/= art article))
-		     (beginning-of-line)
-		   (gnus-delete-line))
-		 ;; Nuke the article.
-		 (when (file-exists-p (setq file (gnus-agent-article-name
-						  (number-to-string article)
-						  group)))
-		   (delete-file file))
-		 ;; Schedule the history line for nuking.
-		 (push (cdr elem) histories)))
-	     (gnus-make-directory (file-name-directory nov-file))
-	     (let ((coding-system-for-write
-		    gnus-agent-file-coding-system))
-	       (write-region (point-min) (point-max) nov-file nil 'silent))
-	     ;; Delete the unwanted entries in the alist.
-	     (setq gnus-agent-article-alist
-		   (sort gnus-agent-article-alist 'car-less-than-car))
-	     (let* ((alist gnus-agent-article-alist)
-		    (prev (cons nil alist))
-		    (first prev)
-		    expired)
-	       (while (and alist
-			   (<= (caar alist) article))
-		 (if (or (not (cdar alist))
-			 (not (file-exists-p
-			       (gnus-agent-article-name
-				(number-to-string
-				 (caar alist))
-				group))))
-		     (progn
-		       (push (caar alist) expired)
-		       (setcdr prev (setq alist (cdr alist))))
-		   (setq prev alist
-			 alist (cdr alist))))
-	       (setq gnus-agent-article-alist (cdr first))
-	       (gnus-agent-save-alist group)
-               ;; Mark all articles up to the first article
-	       ;; in `gnus-article-alist' as read.
-	       (when (and info (caar gnus-agent-article-alist))
-		 (setcar (nthcdr 2 info)
-			 (gnus-range-add
-			  (nth 2 info)
-			  (cons 1 (- (caar gnus-agent-article-alist) 1)))))
-	       ;; Maybe everything has been expired from `gnus-article-alist'
-	       ;; and so the above marking as read could not be conducted,
-	       ;; or there are expired article within the range of the alist.
-	       (when (and info
-			  expired
-			  (or (not (caar gnus-agent-article-alist))
-			      (> (car expired)
-				 (caar gnus-agent-article-alist))))
-		 (setcar (nthcdr 2 info)
-			 (gnus-add-to-range
-			  (nth 2 info)
-			  (nreverse expired))))
-	       (gnus-dribble-enter
-		(concat "(gnus-group-set-info '"
-			(gnus-prin1-to-string info)
-			")")))
-	     (when lowest
-	       (if (gnus-gethash group orig)
-		   (setcar (gnus-gethash group orig) lowest)
-		 (gnus-sethash group (cons lowest highest) orig))))
-	   expiry-hashtb)
-	  (set-buffer history)
-	  (setq histories (nreverse (sort histories '<)))
-	  (while histories
-	    (goto-char (pop histories))
-	    (gnus-delete-line))
-	  (gnus-agent-save-history)
-	  (gnus-agent-close-history)
-	  (gnus-write-active-file
-	   (gnus-agent-lib-file "active") orig))
-	(gnus-message 4 "Expiry...done"))))))
+	(when (file-exists-p (gnus-agent-lib-file "active"))
+	  (with-temp-buffer
+	    (insert-file-contents (gnus-agent-lib-file "active"))
+	    (gnus-active-to-gnus-format 
+	     gnus-command-method
+	     (setq orig (gnus-make-hashtable
+			 (count-lines (point-min) (point-max))))))
+	  (let ((expiry-hashtb (gnus-make-hashtable 1023)))
+	    (gnus-agent-open-history)
+	    (set-buffer
+	     (setq gnus-agent-current-history
+		   (setq history (gnus-agent-history-buffer))))
+	    (goto-char (point-min))
+	    (when (> (buffer-size) 1)
+	      (goto-char (point-min))
+	      (while (not (eobp))
+		(skip-chars-forward "^\t")
+		(if (> (read (current-buffer)) day)
+		    ;; New article; we don't expire it.
+		    (forward-line 1)
+		  ;; Old article.  Schedule it for possible nuking.
+		  (while (not (eolp))
+		    (setq sym (let ((obarray expiry-hashtb))
+				(read (current-buffer))))
+		    (if (boundp sym)
+			(set sym (cons (cons (read (current-buffer)) (point))
+				       (symbol-value sym)))
+		      (set sym (list (cons (read (current-buffer)) (point)))))
+		    (skip-chars-forward " "))
+		  (forward-line 1)))
+	      ;; We now have all articles that can possibly be expired.
+	      (mapatoms
+	       (lambda (sym)
+		 (setq group (symbol-name sym)
+		       articles (sort (symbol-value sym) 'car-less-than-car)
+		       low (car (gnus-active group))
+		       info (gnus-get-info group)
+		       unreads (ignore-errors
+				 (gnus-list-of-unread-articles group))
+		       marked (nconc
+			       (gnus-uncompress-range
+				(cdr (assq 'tick (gnus-info-marks info))))
+			       (gnus-uncompress-range
+				(cdr (assq 'dormant
+					   (gnus-info-marks info)))))
+		       nov-file (gnus-agent-article-name ".overview" group)
+		       lowest nil
+		       highest nil)
+		 (gnus-agent-load-alist group)
+		 (gnus-message 5 "Expiring articles in %s" group)
+		 (set-buffer overview)
+		 (erase-buffer)
+		 (when (file-exists-p nov-file)
+	       (nnheader-insert-file-contents nov-file))
+		 (goto-char (point-min))
+		 (setq article 0)
+		 (while (setq elem (pop articles))
+		   (setq article (car elem))
+		   (when (or (null low)
+			     (< article low)
+			     gnus-agent-expire-all
+			     (and (not (memq article unreads))
+				  (not (memq article marked))))
+		     ;; Find and nuke the NOV line.
+		     (while (and (not (eobp))
+				 (or (not (numberp
+					   (setq art (read (current-buffer)))))
+				     (< art article)))
+		       (if (file-exists-p
+			    (gnus-agent-article-name
+			     (number-to-string art) group))
+			   (progn
+			     (unless lowest
+			       (setq lowest art))
+			     (setq highest art)
+			     (forward-line 1))
+			 ;; Remove old NOV lines that have no articles.
+			 (gnus-delete-line)))
+		     (if (or (eobp)
+			     (/= art article))
+			 (beginning-of-line)
+		       (gnus-delete-line))
+		     ;; Nuke the article.
+		     (when (file-exists-p
+			    (setq file (gnus-agent-article-name
+					(number-to-string article)
+					group)))
+		       (delete-file file))
+		     ;; Schedule the history line for nuking.
+		     (push (cdr elem) histories)))
+		 (gnus-make-directory (file-name-directory nov-file))
+		 (let ((coding-system-for-write
+			gnus-agent-file-coding-system))
+		   (write-region (point-min) (point-max) nov-file nil 'silent))
+		 ;; Delete the unwanted entries in the alist.
+		 (setq gnus-agent-article-alist
+		       (sort gnus-agent-article-alist 'car-less-than-car))
+		 (let* ((alist gnus-agent-article-alist)
+			(prev (cons nil alist))
+			(first prev)
+			expired)
+		   (while (and alist
+			       (<= (caar alist) article))
+		     (if (or (not (cdar alist))
+			     (not (file-exists-p
+				   (gnus-agent-article-name
+				    (number-to-string
+				     (caar alist))
+				    group))))
+			 (progn
+			   (push (caar alist) expired)
+			   (setcdr prev (setq alist (cdr alist))))
+		       (setq prev alist
+			     alist (cdr alist))))
+		   (setq gnus-agent-article-alist (cdr first))
+		   (gnus-agent-save-alist group)
+		   ;; Mark all articles up to the first article
+		   ;; in `gnus-article-alist' as read.
+		   (when (and info (caar gnus-agent-article-alist))
+		     (setcar (nthcdr 2 info)
+			     (gnus-range-add
+			      (nth 2 info)
+			      (cons 1 (- (caar gnus-agent-article-alist) 1)))))
+		   ;; Maybe everything has been expired from `gnus-article-alist'
+		   ;; and so the above marking as read could not be conducted,
+		   ;; or there are expired article within the range of the alist.
+		   (when (and info
+			      expired
+			      (or (not (caar gnus-agent-article-alist))
+				  (> (car expired)
+				     (caar gnus-agent-article-alist))))
+		     (setcar (nthcdr 2 info)
+			     (gnus-add-to-range
+			      (nth 2 info)
+			      (nreverse expired))))
+		   (gnus-dribble-enter
+		    (concat "(gnus-group-set-info '"
+			    (gnus-prin1-to-string info)
+			    ")")))
+		 (when lowest
+		   (if (gnus-gethash group orig)
+		       (setcar (gnus-gethash group orig) lowest)
+		     (gnus-sethash group (cons lowest highest) orig))))
+	       expiry-hashtb)
+	      (set-buffer history)
+	      (setq histories (nreverse (sort histories '<)))
+	      (while histories
+		(goto-char (pop histories))
+		(gnus-delete-line))
+	      (gnus-agent-save-history)
+	      (gnus-agent-close-history)
+	      (gnus-write-active-file
+	       (gnus-agent-lib-file "active") orig))
+	    (gnus-message 4 "Expiry...done")))))))
 
 ;;;###autoload
 (defun gnus-agent-batch ()

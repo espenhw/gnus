@@ -65,7 +65,7 @@
     ("\\(:-*[)>}»]+\\)\\W" 1 "FaceHappy.xpm")
     ("\\(=[)»]+\\)\\W" 1 "FaceHappy.xpm")
     ("\\(:-*[/\\\"]\\)[^/]\\W" 1 "FaceIronic.xpm")
-    ("\\([8|]-*[|Oo%]\\)\\W" 1 "FaceKOed.xpm")
+    ("[^.0-9]\\([8|]-*[|Oo%]\\)\\W" 1 "FaceKOed.xpm")
     ("\\([:|]-*#+\\)\\W" 1 "FaceNyah.xpm")
     ("\\(:-*[({]+\\)\\W" 1 "FaceSad.xpm")
     ("\\(=[({]+\\)\\W" 1 "FaceSad.xpm")
