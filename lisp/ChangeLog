@@ -1,3 +1,7 @@
+2003-11-29  Alexander Kreuzer <alex@freesources.org>  (tiny change)
+
+	* nnrss.el (nnrss-check-group): Set xml when nnrss-use-local is t.
+
 2003-11-29  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-group.el (gnus-group-make-menu-bar): Add

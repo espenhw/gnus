@@ -424,7 +424,7 @@ ARTICLE is the article number of the current headline.")
 					(nnrss-translate-file-chars
 					 (concat group ".xml"))
 					nnrss-directory))))
-	(nnrss-fetch file t)
+	(setq xml (nnrss-fetch file t))
       (setq url (or (nth 2 (assoc group nnrss-server-data))
 		    (second (assoc group nnrss-group-alist))))
       (unless url
