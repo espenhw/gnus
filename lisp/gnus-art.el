@@ -2261,8 +2261,8 @@ This format is defined by the `gnus-article-time-format' variable."
   (let ((default-name
 	  (funcall function group headers (symbol-value variable)))
 	result)
-    (setq
-     result
+    (setq result
+        (expand-file-name
      (cond
       ((eq filename 'default)
        default-name)
@@ -2330,7 +2330,7 @@ This format is defined by the `gnus-article-time-format' variable."
 	   (setq file (expand-file-name (file-name-nondirectory default-name)
 					(file-name-as-directory file))))
 	 ;; Possibly translate some characters.
-	 (nnheader-translate-file-chars file)))))
+	 (nnheader-translate-file-chars file))))))
     (gnus-make-directory (file-name-directory result))
     (set variable result)))
 

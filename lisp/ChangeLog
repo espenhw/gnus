@@ -1,3 +1,7 @@
+2000-09-26  Richard M. Alderson III <alderson@netcom2.netcom.com> 
+
+	* gnus-art.el (gnus-read-save-file-name): expand-file-name.
+
 2000-09-26  Dave Love  <fx@gnu.org>
 
 	* gnus-draft.el: Don't require gnus-agent.
