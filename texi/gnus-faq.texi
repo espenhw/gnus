@@ -214,7 +214,7 @@ Answer:
 @end example
 
 @noindent
- Make sure that you don't have any gnus related stuff
+ Make sure that you don't have any Gnus related stuff
  before this line, on MS Windows use something like
  "C:/path/to/lisp" (yes, "/").
  
@@ -1385,7 +1385,7 @@ Answer:
 * [5.9]::   Sometimes I accidentally hit r instead of f in newsgroups.
             Can Gnus warn me, when I'm replying by mail in newsgroups? 
 * [5.10]::  How to tell Gnus not to generate a sender header? 
-* [5.11]::  I want gnus to locally store copies of my send mail and news,
+* [5.11]::  I want Gnus to locally store copies of my send mail and news,
             how to do it? 
 * [5.12]::  People tell me my Message-IDs are not correct,
             why aren't they and how to fix it? 
@@ -1654,7 +1654,7 @@ alias al	"Al <al@@english-heritage.bla>"
 @noindent
  Then typing your alias (followed by a space or punctuation
  character) on a To: or Cc: line in the message buffer will
- cause gnus to insert the full address for you. See the
+ cause Gnus to insert the full address for you. See the
  node "Mail Aliases" in Message (not Gnus) manual for
  details.
  

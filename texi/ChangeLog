@@ -6,6 +6,8 @@
 
 2003-09-22  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus.texi, gnus-faq.texi, message.texi: gnus -> Gnus.
+
 	* message.texi: Fixes.
 
 2003-09-20  Jesper Harder  <harder@ifa.au.dk>

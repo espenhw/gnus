@@ -969,7 +969,7 @@ If you want to start Gnus in a different frame, you can use the command
 
 If things do not go smoothly at startup, you have to twiddle some
 variables in your @file{~/.gnus.el} file.  This file is similar to
-@file{~/.emacs}, but is read when gnus starts.
+@file{~/.emacs}, but is read when Gnus starts.
 
 If you puzzle at any terms used in this manual, please refer to the
 terminology section (@pxref{Terminology}).
@@ -17685,7 +17685,7 @@ three forms:
 @item
 Score rule
 
-This has the same syntax as a normal gnus score file except only a
+This has the same syntax as a normal Gnus score file except only a
 subset of scoring keywords are available as mentioned above.
 
 example:
@@ -20001,7 +20001,7 @@ from GroupLens in one of three ways controlled by the variable
 @vindex gnus-grouplens-override-scoring
 There are three ways to display predictions in grouplens.  You may
 choose to have the GroupLens scores contribute to, or override the
-regular gnus scoring mechanism.  override is the default; however, some
+regular Gnus scoring mechanism.  override is the default; however, some
 people prefer to see the Gnus scores plus the grouplens scores.  To get
 the separate scoring behavior you need to set
 @code{gnus-grouplens-override-scoring} to @code{'separate}.  To have the
