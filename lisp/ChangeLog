@@ -1,3 +1,7 @@
+2003-06-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (sender, from): No need to bind them.
+
 2003-06-19  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-enter-list): search-forward specified wrong
