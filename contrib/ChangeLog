@@ -1,3 +1,7 @@
+2004-05-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* gnus-namazu.el: New file.
+
 2004-04-05  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnir.el (nnir-group-server): Move before first use.
