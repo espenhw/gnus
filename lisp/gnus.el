@@ -254,7 +254,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.49"
+(defconst gnus-version-number "0.50"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -2684,6 +2684,7 @@ If NEWSGROUP is nil, return the global kill file name instead."
   (let ((opened gnus-opened-servers))
     (while (and method opened)
       (when (and (equal (cadr method) (cadaar opened))
+                (equal (car method) (caaar opened))
 		 (not (equal method (caar opened))))
 	(setq method nil))
       (pop opened))

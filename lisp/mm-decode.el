@@ -50,7 +50,8 @@
     ("image/png" mm-inline-image (featurep 'png))
     ("image/gif" mm-inline-image (featurep 'gif))
     ("image/tiff" mm-inline-image (featurep 'tiff))
-    ("image/xbm" mm-inline-image (eq (device-type) 'x))
+    ("image/xbm" mm-inline-image (and (fboundp 'device-type)
+				      (eq (device-type) 'x)))
     ("image/xpm" mm-inline-image (featurep 'xpm))
     ("image/bmp" mm-inline-image (featurep 'bmp))
     ("text/plain" mm-inline-text t)
@@ -73,7 +74,7 @@
 
 (defvar mm-user-automatic-display
   '("text/plain" "text/enriched" "text/richtext" "text/html" "image/gif"
-    "message/delivery-status" "multipart/.*"))
+    "image/jpeg" "message/delivery-status" "multipart/.*"))
 
 (defvar mm-alternative-precedence
   '("text/plain" "text/enriched" "text/richtext" "text/html")

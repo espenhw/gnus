@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.49 Manual
+@settitle Pterodactyl Gnus 0.50 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.49 Manual
+@title Pterodactyl Gnus 0.50 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.49.
+This manual corresponds to Pterodactyl Gnus 0.50.
 
 @end ifinfo
 
@@ -2738,17 +2738,6 @@ Mark all groups in the current topic with the process mark
 Remove the process mark from all groups in the current topic
 (@code{gnus-topic-unmark-topic}).
 
-@item RET
-@kindex RET (Topic)
-@findex gnus-topic-select-group
-@itemx SPACE
-Either select a group or fold a topic (@code{gnus-topic-select-group}).
-When you perform this command on a group, you'll enter the group, as
-usual.  When done on a topic line, the topic will be folded (if it was
-visible) or unfolded (if it was folded already).  So it's basically a
-toggling command on topics.  In addition, if you give a numerical
-prefix, group on that level (and lower) will be displayed.
-
 @item T TAB
 @itemx TAB
 @kindex T TAB (Topic)
@@ -2763,6 +2752,23 @@ previous topic (@code{gnus-topic-indent}).  If given a prefix,
 @findex gnus-topic-unindent
 ``Un-indent'' the current topic so that it becomes a sub-topic of the
 parent of its current parent (@code{gnus-topic-unindent}).  
+
+@item RET
+@kindex RET (Topic)
+@findex gnus-topic-select-group
+@itemx SPACE
+Either select a group or fold a topic (@code{gnus-topic-select-group}).
+When you perform this command on a group, you'll enter the group, as
+usual.  When done on a topic line, the topic will be folded (if it was
+visible) or unfolded (if it was folded already).  So it's basically a
+toggling command on topics.  In addition, if you give a numerical
+prefix, group on that level (and lower) will be displayed.
+
+@item C-c C-x
+@kindex C-c C-x (Topic)
+@findex gnus-topic-expire-articles
+Run all expirable articles in the current group or topic through the expiry
+process (if any) (@code{gnus-topic-expire-articles}).
 
 @item C-k
 @kindex C-k (Topic)
@@ -10248,6 +10254,11 @@ wrong group and all your important mail has disappeared.  Be a
 with!  So there!
 
 Most people make most of their mail groups total-expirable, though.
+
+@vindex gnus-inhibit-user-auto-expire
+If @code{gnus-inhibit-user-auto-expire} is non-@code{nil}, user marking
+commands will not mark an article as expirable, even if the group has
+auto-expire turned on.
 
 
 @node Washing Mail

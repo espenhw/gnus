@@ -1,6 +1,7 @@
 1998-11-18 00:52:46  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (MIME Commands): Addition.
+	(Expiring Mail): Addition.
 
 1998-11-07 17:18:07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

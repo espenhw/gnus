@@ -97,11 +97,13 @@
       (buffer-substring beg (goto-char (point-max))))))
 
 (defvar mml-boundary nil)
+(defvar mml-multipart-number 0)
 
 (defun mml-generate-mime ()
   "Generate a MIME message based on the current MML document."
-  (setq mml-boundary "=-=-=")
-  (let ((cont (mml-parse)))
+  (setq mml-boundary "-=-=")
+  (let ((cont (mml-parse))
+	(mml-multipart-number 0))
     (with-temp-buffer
       (if (and (consp (car cont))
 	       (= (length cont) 1))
@@ -134,7 +136,8 @@
 	  (if (setq filename (cdr (assq 'filename cont)))
 	      (insert-file-contents-literally filename)
 	    (insert (cdr (assq 'contents cont))))
-	  (setq coded (buffer-string))))
+	  (setq encoding (mm-encode-buffer type)
+		coded (buffer-string))))
       (when (or charset
 		(not (equal type "text/plain")))
 	(insert "Content-Type: " type)
@@ -146,22 +149,45 @@
       (insert "\n")
       (insert coded)))
    ((eq (car cont) 'multipart)
-    (let ((mml-boundary (concat "=" mml-boundary)))
+    (let ((mml-boundary (mml-compute-boundary cont)))
       (insert (format "Content-Type: multipart/%s; boundary=\"%s\"\n"
 		      (or (cdr (assq 'type cont)) "mixed")
 		      mml-boundary))
       (insert "\n")
       (setq cont (cddr cont))
       (while cont
-	(unless (bolp)
-	  (insert "\n"))
-	(insert "--" mml-boundary "\n")
+	(insert "\n--" mml-boundary "\n")
 	(mml-generate-mime-1 (pop cont)))
-      (unless (bolp)
-	(insert "\n"))
-      (insert "--" mml-boundary "--\n")))
+      (insert "\n--" mml-boundary "--\n")))
    (t
     (error "Invalid element: %S" cont))))
+
+(defun mml-compute-boundary (cont)
+  "Return a unique boundary that does not exist in CONT."
+  (let ((mml-boundary (concat (make-string (incf mml-multipart-number) ?=)
+			      mml-boundary)))
+    ;; This function tries again and again until it has found
+    ;; a unique boundary.
+    (while (not (catch 'not-unique
+		  (mml-compute-boundary-1 cont))))
+    mml-boundary))
+
+(defun mml-compute-boundary-1 (cont)
+  (cond
+   ((eq (car cont) 'part)
+    (with-temp-buffer
+      (if (setq filename (cdr (assq 'filename cont)))
+	  (insert-file-contents-literally filename)
+	(insert (cdr (assq 'contents cont))))
+      (goto-char (point-min))
+      (when (re-search-forward (concat "^--" mml-boundary) nil t)
+	(setq mml-boundary
+	      (concat (make-string (incf mml-multipart-number) ?=)
+			      mml-boundary))
+	(throw 'not-unique nil))))
+   ((eq (car cont) 'multipart)
+    (mapcar 'mml-compute-boundary-1 (cddr cont))))
+  t)
 
 (provide 'mml)
 

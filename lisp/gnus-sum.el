@@ -475,6 +475,19 @@ It uses the same syntax as the `gnus-split-methods' variable."
   :group 'gnus-extract-view
   :type 'boolean)
 
+(defcustom gnus-auto-expirable-marks
+  (list gnus-killed-mark gnus-del-mark gnus-catchup-mark
+	gnus-low-score-mark gnus-ancient-mark gnus-read-mark
+	gnus-souped-mark gnus-duplicate-mark)
+  "*The list of marks converted into expiration if a group is auto-expirable."
+  :group 'gnus-summary
+  :type '(repeat character))
+
+(defcustom gnus-inhibit-user-auto-expire nil
+  "*If non-nil, user marking commands will not mark an article as expirable, even if the group has auto-expire turned on."
+  :group 'gnus-summary
+  :type 'boolean)
+
 (defcustom gnus-view-pseudos nil
   "*If `automatic', pseudo-articles will be viewed automatically.
 If `not-confirm', pseudos will be viewed automatically, and the user
@@ -7775,11 +7788,7 @@ returned."
     (setq mark (gnus-request-update-mark gnus-newsgroup-name article mark))
     ;; Check for auto-expiry.
     (when (and gnus-newsgroup-auto-expire
-	       (or (= mark gnus-killed-mark) (= mark gnus-del-mark)
-		   (= mark gnus-catchup-mark) (= mark gnus-low-score-mark)
-		   (= mark gnus-ancient-mark)
-		   (= mark gnus-read-mark) (= mark gnus-souped-mark)
-		   (= mark gnus-duplicate-mark)))
+	       (memq mark gnus-auto-expirable-marks))
       (setq mark gnus-expirable-mark)
       ;; Let the backend know about the mark change.
       (setq mark (gnus-request-update-mark gnus-newsgroup-name article mark))
@@ -7830,25 +7839,21 @@ returned."
   "Mark ARTICLE with MARK.  MARK can be any character.
 Four MARK strings are reserved: `? ' (unread), `?!' (ticked),
 `??' (dormant) and `?E' (expirable).
-If MARK is nil, then the default character `?D' is used.
+If MARK is nil, then the default character `?r' is used.
 If ARTICLE is nil, then the article on the current line will be
 marked."
   ;; The mark might be a string.
   (when (stringp mark)
     (setq mark (aref mark 0)))
   ;; If no mark is given, then we check auto-expiring.
-  (and (not no-expire)
-       gnus-newsgroup-auto-expire
-       (or (not mark)
-	   (and (gnus-characterp mark)
-		(or (= mark gnus-killed-mark) (= mark gnus-del-mark)
-		    (= mark gnus-catchup-mark) (= mark gnus-low-score-mark)
-		    (= mark gnus-read-mark) (= mark gnus-souped-mark)
-		    (= mark gnus-duplicate-mark))))
-       (setq mark gnus-expirable-mark))
-  (let* ((mark (or mark gnus-del-mark))
-	 (article (or article (gnus-summary-article-number)))
-	 (old-mark (gnus-summary-article-mark article)))
+  (when (null mark)
+    (setq mark gnus-del-mark))
+  (when (and (not no-expire)
+	     gnus-newsgroup-auto-expire
+ 	     (memq mark gnus-auto-expirable-marks))
+    (setq mark gnus-expirable-mark))
+  (let ((article (or article (gnus-summary-article-number)))
+	(old-mark (gnus-summary-article-mark article)))
     ;; Allow the backend to change the mark.
     (setq mark (gnus-request-update-mark gnus-newsgroup-name article mark))
     (if (eq mark old-mark)
@@ -7993,14 +7998,14 @@ If N is negative, mark backwards instead.
 The difference between N and the actual number of articles marked is
 returned."
   (interactive "p")
-  (gnus-summary-mark-forward n gnus-del-mark t))
+  (gnus-summary-mark-forward n gnus-del-mark gnus-inhibit-user-auto-expire))
 
 (defun gnus-summary-mark-as-read-backward (n)
   "Mark the N articles as read backwards.
 The difference between N and the actual number of articles marked is
 returned."
   (interactive "p")
-  (gnus-summary-mark-forward (- n) gnus-del-mark t))
+  (gnus-summary-mark-forward (- n) gnus-del-mark gnus-inhibit-user-auto-expire))
 
 (defun gnus-summary-mark-as-read (&optional article mark)
   "Mark current article as read.
@@ -8545,17 +8550,15 @@ Argument REVERSE means reverse order."
   (let* ((thread (intern (format "gnus-thread-sort-by-%s" predicate)))
 	 (article (intern (format "gnus-article-sort-by-%s" predicate)))
 	 (gnus-thread-sort-functions
-	  (list
-	   (if (not reverse)
-	       thread
-	     `(lambda (t1 t2)
-		(,thread t2 t1)))))
+	  (if (not reverse)
+	      thread
+	    `(lambda (t1 t2)
+	       (,thread t2 t1))))
 	 (gnus-article-sort-functions
-	  (list
-	   (if (not reverse)
-	       article
-	     `(lambda (t1 t2)
-		(,article t2 t1)))))
+	  (if (not reverse)
+	      article
+	    `(lambda (t1 t2)
+	       (,article t2 t1))))
 	 (buffer-read-only)
 	 (gnus-summary-prepare-hook nil))
     ;; We do the sorting by regenerating the threads.

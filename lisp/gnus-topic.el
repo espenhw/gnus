@@ -907,6 +907,7 @@ articles in the topic and its subtopics."
     "=" gnus-topic-select-group
     "\r" gnus-topic-select-group
     " " gnus-topic-read-group
+    "\C-c\C-x" gnus-topic-expire-articles
     "\C-k" gnus-topic-kill-group
     "\C-y" gnus-topic-yank-group
     "\M-g" gnus-topic-get-new-news-this-topic
@@ -1039,6 +1040,19 @@ If performed over a topic line, toggle folding the topic."
   (interactive "e")
   (mouse-set-point e)
   (gnus-topic-read-group nil))
+
+(defun gnus-topic-expire-articles (topic)
+  "Expire articles in this topic or group."
+  (interactive (list (gnus-group-topic-name)))
+  (if (not topic)
+      (call-interactively 'gnus-group-expire-articles)
+    (save-excursion
+      (gnus-message 5 "Expiring groups in %s..." topic)
+      (let ((gnus-group-marked
+            (mapcar (lambda (entry) (car (nth 2 entry)))
+                    (gnus-topic-find-groups topic gnus-level-killed t))))
+       (gnus-group-expire-articles nil))
+      (gnus-message 5 "Expiring groups in %s...done" topic))))
 
 (defun gnus-topic-read-group (&optional all no-article group)
   "Read news in this newsgroup.

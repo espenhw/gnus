@@ -1,3 +1,59 @@
+Wed Nov 18 05:06:44 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.50 is released.
+
+1998-11-18 04:42:01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-inline-media-tests): Check that device-type is
+	fbound. 
+
+	* gnus-sum.el (gnus-summary-sort): Didn't do reverse.
+
+1998-11-07 23:39:48  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus.el (gnus-similar-server-opened): Compare backend.
+
+1998-11-08 03:37:42  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-topic.el (gnus-topic-expire-articles): New function.
+	(gnus-topic-mode-map): Bind it.
+
+	* gnus.texi (Topic Commands): New expiry command. Reordered.
+
+1998-11-10  Miles Bader  <miles@ccs.mt.nec.co.jp>
+
+	* gnus-sum.el
+	(gnus-auto-expirable-marks): New variable.
+	(gnus-inhibit-user-auto-expire): New variable.
+	(gnus-summary-mark-article-as-read, gnus-summary-mark-article):
+	When looking to see if we should expire instead, check
+	gnus-auto-expirable-marks instead of using a hard-wired list.
+	(gnus-summary-mark-as-read-forward,
+	gnus-summary-mark-as-read-backward):
+	Pass gnus-inhibit-user-auto-expire for the no-expire argument to
+	gnus-summary-mark-forward, instead of `t'.
+
+1998-11-18 03:30:26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-compute-boundary): New function.
+	(mml-compute-boundary-1): New function.
+	(mml-generate-mime-1): Use it.
+
+1998-11-18  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* mml.el (mml-generate-mime-1): Always precede closing boundary
+	with newline.
+
+1998-11-18 02:36:37  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-generate-mime-1): Do right boundaries when several
+	multiparts. 
+
+	* mm-decode.el (mm-user-automatic-display): Default to inline
+	jpeg. 
+
+	* mml.el (mml-generate-mime-1): Encode non-text parts.
+
 Wed Nov 18 02:22:23 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.49 is released.
