@@ -178,7 +178,8 @@ you to put the admin address somewhere convenient.")
     (display (choice :tag "Display"
 		     :value default
 		     (const all)
-		     (const default)) "\
+		     (const default)
+		     (sexp  :tag "Other")) "\
 Which articles to display on entering the group.
 
 `all'
@@ -186,7 +187,11 @@ Which articles to display on entering the group.
 
 `default'
      Display the default visible articles, which normally includes
-     unread and ticked articles.")
+     unread and ticked articles.
+
+`Other'
+     Display the articles that satisfy the S-expression. The S-expression  
+     should be in an array form.")
 
     (comment (string :tag  "Comment") "\
 An arbitrary comment on the group.")

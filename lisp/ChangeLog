@@ -1,3 +1,7 @@
+2001-09-26 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-cus.el (gnus-group-parameters): Display as sexp.
+
 2001-09-22  Simon Josefsson  <jas@extundo.com>
 
 	* nnml.el (nnml-open-marks): Remove unpropagatable marks.
