@@ -1,3 +1,12 @@
+2003-06-17  Dave Love  <fx@gnu.org>
+
+	* nnimap.el: Require cl when compiling.
+
+	* message.el (message-fix-before-sending): Reinstate nullifying
+	the invisible text property.
+	(sender, from): Defvar when compiling.
+	(message-is-yours-p): Remove autoload cookie.
+
 2003-06-17  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-util.el (gnus-extract-address-components): Added
@@ -55,7 +64,8 @@
 	is requested but the message is not spam
 
 2003-06-09  Teodor Zlatanov  <tzz@lifelogs.com>
-	From Eric Knauel <knauel@informatik.uni-tuebingen.de>
+	From Eric 
+	<knauel@informatik.uni-tuebingen.de>
 
 	* spam.el (spam-use-spamoracle): new variable
 	(spam-install-hooks): add spamoracle to the list of conditions
