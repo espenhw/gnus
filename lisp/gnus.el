@@ -1200,7 +1200,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "Lars Magne Ingebrigtsen <larsi@ifi.uio.no>"
   "The mail address of the Gnus maintainer.")
 
-(defconst gnus-version "(ding) Gnus v0.41"
+(defconst gnus-version "(ding) Gnus v0.42"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2359,20 +2359,22 @@ ranges."
 	 result)
     (if (null numbers)
 	nil
-      (while numbers
-	(cond ((= last (car numbers)) nil) ;Omit duplicated number
-	      ((= (1+ last) (car numbers)) ;Still in sequence
-	       (setq last (car numbers)))
-	      (t				;End of one sequence
-	       (setq result 
-		     (cons (if (= first last) first (cons first last)) result))
-	       (setq first (car numbers))
-	       (setq last  (car numbers))))
-	(setq numbers (cdr numbers)))
-      (if (and (not always-list) (null result))
-	  (if (= first last) first (cons first last))
-	(nreverse (cons (if (= first last) first (cons first last))
-			result))))))
+      (if (not (listp (cdr numbers)))
+	  numbers
+	(while numbers
+	  (cond ((= last (car numbers)) nil) ;Omit duplicated number
+		((= (1+ last) (car numbers)) ;Still in sequence
+		 (setq last (car numbers)))
+		(t			;End of one sequence
+		 (setq result 
+		       (cons (if (= first last) first (cons first last)) result))
+		 (setq first (car numbers))
+		 (setq last  (car numbers))))
+	  (setq numbers (cdr numbers)))
+	(if (and (not always-list) (null result))
+	    (if (= first last) first (cons first last))
+	  (nreverse (cons (if (= first last) first (cons first last))
+			  result)))))))
 
 (defalias 'gnus-uncompress-sequence 'gnus-uncompress-range)
 (defun gnus-uncompress-range (ranges)
@@ -2890,6 +2892,7 @@ If REGEXP, only list groups matching REGEXP."
 	  ()
 	(while marked
 	  (or (eq 'score (car (car marked)))
+	      (eq 'bookmark (car (car marked)))
 	      (not (or (atom (cdr (cdr (car marked))))
 		       (not (atom (car (cdr (car marked)))))))
 	      (setcdr (car marked) 
@@ -3290,6 +3293,7 @@ ADDRESS."
 	  ()
 	(while marked
 	  (or (eq 'score (car (car marked)))
+	      (eq 'bookmark (car (car marked)))
 	      (setcdr (car marked) 
 		      (gnus-compress-sequence (sort (cdr (car marked)) '<) t)))
 	  (setq marked (cdr marked))))
@@ -5421,11 +5425,15 @@ If READ-ALL is non-nil, all articles in the group are selected."
 	    ((eq 'killed (car prev))
 	     ;; Articles that have been through the kill process are
 	     ;; to be a subset of active articles.
-	     (while (and m (< (cdr (car m)) (car active)))
+	     (while (and m (< (or (and (numberp (car m)) (car m))
+				  (cdr (car m)))
+			      (car active)))
 	       (setcdr prev (cdr m))
 	       (setq m (cdr m)))
-	     (if (and m (< (car (car m)) (car active))) 
-		 (setcar (car m) (car active))))
+	     (if (and m (< (or (and (numberp (car m)) (car m))
+			       (car (car m)))
+			   (car active))) 
+		 (setcar (and (numberp (car m)) m (car m)) (car active))))
 	    ((or (eq 'reply (car marked)) (eq 'expire (car marked)))
 	     ;; The replied and expirable articles have to be articles
 	     ;; that are active. 
@@ -6253,7 +6261,7 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 		 (setq gnus-newsgroup-unselected
 		       (sort gnus-newsgroup-unselected '<)))
 		(setq gnus-newsgroup-unreads
-		      (sort gnus-newsgroup-unreads '<))))))
+		      (sort gnus-newsgroup-unreads '<))) t)))
     (or (listp (cdr gnus-newsgroup-killed))
 	(setq gnus-newsgroup-killed (list gnus-newsgroup-killed)))
     (let ((updated nil)
@@ -12417,6 +12425,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	  ()
 	(while marked
 	  (or (eq 'score (car (car marked)))
+	      (eq 'bookmark (car (car marked)))
 	      (setcdr (car marked) (gnus-uncompress-range (cdr (car marked)))))
 	  (setq marked (cdr marked))))
       (setq newsrc (cdr newsrc)))))
@@ -12430,6 +12439,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	  ()
 	(while marked
 	  (or (eq 'score (car (car marked)))
+	      (eq 'bookmark (car (car marked)))
 	      (setcdr (car marked) 
 		      (gnus-compress-sequence (sort (cdr (car marked)) '<) t)))
 	  (setq marked (cdr marked))))
