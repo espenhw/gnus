@@ -17,8 +17,8 @@ install:
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)
 	cd $(srcdir) \
 	&& for p in gnus-tut.txt; do \
-	  echo " $(INSTALL_DATA) $$p $(etcdir)/images/$$p"; \
-	  $(INSTALL_DATA) $$p $(etcdir)/images/$$p; \
+	  echo " $(INSTALL_DATA) $$p $(etcdir)/$$p"; \
+	  $(INSTALL_DATA) $$p $(etcdir)/$$p; \
 	done
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/gnus
 	cd $(srcdir) \

@@ -1,7 +1,10 @@
 2005-02-19  Miles Bader  <miles@gnu.org>
 
+	* etc/Makefile.in (install): Put gnus-tut.txt in the right place.
+
 	* Makefile.in (all): Don't do sub-make in etc.
 	* etc/Makefile.in (all): Remove target.
+
 	* make.bat: Do image copies properly.
 
 2005-02-18  Miles Bader  <miles@gnu.org>
