@@ -1632,11 +1632,12 @@ this is a reply."
 		     (concat "^" (regexp-quote mail-header-separator) "$")
 		     nil t)
 		(replace-match "" t t ))
-	      (unless (setq group-art
-			    (gnus-request-accept-article group method t t))
+	      (when (or (gnus-group-read-only-p group)
+			(not (setq group-art
+				   (gnus-request-accept-article
+				    group method t t))))
 		(gnus-message 1 "Couldn't store article in group %s: %s"
-			      group (gnus-status-message method))
-		(sit-for 2))
+			      group (gnus-status-message method)))
 	      (when (and group-art
 			 ;; FIXME: Should gcc-mark-as-read work when
 			 ;; Gnus is not running?

@@ -1,5 +1,8 @@
 2004-05-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-msg.el (gnus-inews-do-gcc): Ignore read-only groups. 
+	(gnus-inews-do-gcc): Remove sleep.
+
 	* gnus-art.el (gnus-mime-delete-part): Error message when no MIME
 	part under point.
 
