@@ -196,7 +196,7 @@ Checks include `subject-cmsg', `multiple-headers', `sendsys',
 (defcustom message-required-headers '((optional . References) From)
   "*Headers to be generated or promted for when sending a message.
 Also see `message-required-news-headers' and
-1message-required-mail-headers'."
+`message-required-mail-headers'."
   :group 'message-news
   :group 'message-headers
   :type '(repeat sexp))
