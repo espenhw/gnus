@@ -107,8 +107,7 @@ Should be called narrowed to the head of the message."
   (interactive "*")
   (save-excursion
     (goto-char (point-min))
-    (let ((alist rfc2047-header-encoding-alist)
-	  elem method)
+    (let (alist elem method)
       (while (not (eobp))
 	(save-restriction
 	  (rfc2047-narrow-to-field)
@@ -123,6 +122,8 @@ Should be called narrowed to the head of the message."
 			(point-min) (point-max) 
 			(car message-posting-charset)))
 	    ;; We found something that may perhaps be encoded.
+	    (setq method nil
+		  alist rfc2047-header-encoding-alist)
 	    (while (setq elem (pop alist))
 	      (when (or (and (stringp (car elem))
 			     (looking-at (car elem)))
@@ -133,6 +134,14 @@ Should be called narrowed to the head of the message."
 	     ((eq method 'mime)
 	      (rfc2047-encode-region (point-min) (point-max))
 	      (rfc2047-fold-region (point-min) (point-max)))
+	     ((eq method 'default)
+	      (if (and (featurep 'mule)
+		       mail-parse-charset)
+		  (mm-encode-coding-region (point-min) (point-max) 
+					   mail-parse-charset)))
+	     ((mm-coding-system-p method)
+	      (if (featurep 'mule)
+		  (mm-encode-coding-region (point-min) (point-max) method)))
 	     ;; Hm.
 	     (t)))
 	  (goto-char (point-max)))))))

@@ -1,3 +1,11 @@
+2000-05-17 14:03:49  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-encode-message-header): Encode if the method
+	is a charset.
+	* message.el (message-send-news): Check group name charset.
+	* gnus-msg.el (gnus-post-news): Decode group name.
+	(gnus-inews-do-gcc): Encode group name.
+
 2000-05-17 10:16:32  Karl Kleinpaste <karl@charcoal.com>
 
 	* gnus-art.el (gnus-emphasize-whitespace-regexp): New variable.

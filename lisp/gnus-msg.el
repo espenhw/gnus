@@ -474,6 +474,7 @@ header line with the old Message-ID."
 			      (article-buffer 'reply)
 			      (t 'message))
       (let* ((group (or group gnus-newsgroup-name))
+	     (charset (gnus-group-name-charset nil group))
 	     (pgroup group)
 	     to-address to-group mailing-list to-list
 	     newsgroup-p)
@@ -484,7 +485,8 @@ header line with the old Message-ID."
 		newsgroup-p (gnus-group-find-parameter group 'newsgroup)
 		mailing-list (when gnus-mailing-list-groups
 			       (string-match gnus-mailing-list-groups group))
-		group (gnus-group-real-name group)))
+		group (gnus-group-name-decode (gnus-group-real-name group)
+					      charset)))
 	(if (or (and to-group
 		     (gnus-news-group-p to-group))
 		newsgroup-p
@@ -1058,7 +1060,10 @@ this is a reply."
 		(message-encode-message-body)
 		(save-restriction
 		  (message-narrow-to-headers)
-		  (let ((mail-parse-charset message-default-charset))
+		  (let ((mail-parse-charset message-default-charset)
+			(rfc2047-header-encoding-alist
+			 (cons '("Newsgroups" . default)
+			       rfc2047-header-encoding-alist)))
 		    (mail-encode-encoded-word-buffer)))
 		(goto-char (point-min))
 		(when (re-search-forward

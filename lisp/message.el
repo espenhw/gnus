@@ -2430,6 +2430,12 @@ to find out how to use this."
 	 (method (if (message-functionp message-post-method)
 		     (funcall message-post-method arg)
 		   message-post-method))
+	 (group-name-charset (gnus-group-name-charset method ""))
+	 (rfc2047-header-encoding-alist
+	  (if group-name-charset
+	      (cons (cons "Newsgroups" group-name-charset)
+		    rfc2047-header-encoding-alist)
+	    rfc2047-header-encoding-alist))
 	 (messbuf (current-buffer))
 	 (message-syntax-checks
 	  (if arg
@@ -2450,6 +2456,10 @@ to find out how to use this."
 	(message-generate-headers message-required-news-headers)
 	;; Let the user do all of the above.
 	(run-hooks 'message-header-hook))
+      (if group-name-charset
+	  (setq message-syntax-checks
+	      (cons '(valid-newsgroups . disabled)
+		    message-syntax-checks)))
       (message-cleanup-headers)
       (if (not (message-check-news-syntax))
 	  nil
