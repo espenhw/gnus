@@ -396,9 +396,6 @@ used as the line break code type of the coding system."
 	    (setq cs c)))
       cs))))
 
-(defsubst mm-replace-chars-in-string (string from to)
-  (mm-subst-char-in-string from to string))
-
 (eval-and-compile
   (defvar mm-emacs-mule (and (not (featurep 'xemacs))
 			     (boundp 'default-enable-multibyte-characters)

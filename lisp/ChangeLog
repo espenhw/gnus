@@ -1,3 +1,10 @@
+2004-01-12  Jesper Harder  <harder@ifa.au.dk>
+
+	* mm-util.el (mm-replace-chars-in-string): Remove.
+
+	* rfc2047.el (rfc2047-decode): Use mm-subst-char-in-string instead
+	of mm-replace-chars-in-string.
+
 2004-01-11  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.sum.el (gnus-remove-odd-characters): Don't cons two new

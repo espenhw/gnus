@@ -724,7 +724,7 @@ If your Emacs implementation can't decode CHARSET, return nil."
 	  (rfc2047-pad-base64 string)))
 	((equal "Q" encoding)
 	 (quoted-printable-decode-string
-	  (mm-replace-chars-in-string string ?_ ? )))
+	  (mm-subst-char-in-string ?_ ? string t)))
 	(t (error "Invalid encoding: %s" encoding)))
        cs))))
 
