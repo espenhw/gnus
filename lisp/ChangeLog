@@ -1,3 +1,8 @@
+2000-09-24  Simon Josefsson  <simon@josefsson.org>
+
+	* imap.el (imap-parse-flag-list): Correctly parse empty lists.
+	(imap-login-p): Support LOGINDISABLED.
+
 2000-09-23  Simon Josefsson  <jas@nada.kth.se>
 
 	* rfc2104.el: Add SHA-1 example.

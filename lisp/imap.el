@@ -75,11 +75,11 @@
 ;;
 ;; imap.el support RFC1730/2060 (IMAP4/IMAP4rev1), implemented IMAP
 ;; extensions are RFC2195 (CRAM-MD5), RFC2086 (ACL), RFC2342
-;; (NAMESPACE), RFC2359 (UIDPLUS), the IMAP-part of RFC2595 (STARTTLS)
-;; (with use of external library starttls.el and program starttls) and
-;; the GSSAPI / kerberos V4 sections of RFC1731 (with use of external
-;; program `imtest').  It also take advantage the UNSELECT extension
-;; in Cyrus IMAPD.
+;; (NAMESPACE), RFC2359 (UIDPLUS), the IMAP-part of RFC2595 (STARTTLS,
+;; LOGINDISABLED) (with use of external library starttls.el and
+;; program starttls) and the GSSAPI / kerberos V4 sections of RFC1731
+;; (with use of external program `imtest').  It also take advantage
+;; the UNSELECT extension in Cyrus IMAPD.
 ;;
 ;; Without the work of John McClary Prevost and Jim Radford this library
 ;; would not have seen the light of day.  Many thanks.
@@ -763,7 +763,8 @@ Returns t if login was successful, nil otherwise."
 	    encoded))))))))
 
 (defun imap-login-p (buffer)
-  (not (imap-capability 'X-LOGIN-CMD-DISABLED buffer)))
+  (and (not (imap-capability 'LOGINDISABLED buffer))
+       (not (imap-capability 'X-LOGIN-CMD-DISABLED buffer))))
 
 (defun imap-login-auth (buffer)
   "Login to server using the LOGIN command."
@@ -2181,14 +2182,14 @@ Return nil if no complete line has arrived."
 
 (defun imap-parse-flag-list ()
   (let (flag-list start)
-    (when (eq (char-after) ?\()
-      (imap-forward)
-      (while (and (not (eq (char-before) ?\)))
-		  (setq start (point))
-		  (> (skip-chars-forward "^ )" (gnus-point-at-eol)) 0))
-	(push (buffer-substring start (point)) flag-list)
-	(imap-forward))
-      (nreverse flag-list))))
+    (assert (eq (char-after) ?\())
+    (while (and (not (eq (char-after) ?\)))
+		(setq start (progn (imap-forward) (point)))
+		(> (skip-chars-forward "^ )" (gnus-point-at-eol)) 0))
+      (push (buffer-substring start (point)) flag-list))
+    (assert (eq (char-after) ?\)))
+    (imap-forward)
+    (nreverse flag-list)))
 
 ;;   envelope        = "(" env-date SP env-subject SP env-from SP env-sender SP
 ;;                     env-reply-to SP env-to SP env-cc SP env-bcc SP
