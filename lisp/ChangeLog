@@ -1,3 +1,7 @@
+2003-08-29  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-group.el (gnus-group-delete-group): Doc fix.
+
 2003-08-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (article-display-x-face): Make it possible to set
