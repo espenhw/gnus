@@ -34,7 +34,8 @@
 (eval-and-compile
   (autoload 'password-read "password"))
 
-(defgroup encrypt nil
+(defgroup encrypt '((password-cache custom-variable)
+		    (password-cache-expiry custom-variable))
   "File encryption configuration.")
 
 (defcustom encrypt-file-alist nil

@@ -3,6 +3,8 @@
 	* encrypt.el (encrypt-password-cache-expiry): Remove (use
 	`password-cache-expiry' instead).  Reported by Arne J,Ax(Brgensen
 	<arne@arnested.dk>.
+	(encrypt): Add password-cache and password-cache-expiry as group
+	members.
 
 2005-02-22  Arne J,Ax(Brgensen  <arne@arnested.dk>
 
