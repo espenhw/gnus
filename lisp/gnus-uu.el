@@ -522,7 +522,13 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
   (interactive "P")
   (let ((gnus-uu-save-in-digest t)
 	(file (make-temp-name (nnheader-concat gnus-uu-tmp-dir "forward")))
+	(message-forward-as-mime message-forward-as-mime)
+	(mail-parse-charset gnus-newsgroup-charset)
+	(mail-parse-ignored-charsets gnus-newsgroup-ignored-charsets)
 	gnus-uu-digest-buffer subject from)
+    (if (and n (not (numberp n)))
+	(setq message-forward-as-mime (not message-forward-as-mime)
+	      n nil))
     (gnus-setup-message 'forward
       (setq gnus-uu-digest-from-subject nil)
       (setq gnus-uu-digest-buffer 
