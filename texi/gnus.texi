@@ -13221,7 +13221,9 @@ To use this feature, you have to set @code{nnmail-treat-duplicates} and
 you can include @code{nnmail-split-fancy-with-parent} using the colon
 feature, like so:
 @lisp
-(setq nnmail-split-fancy
+(setq nnmail-treat-duplicates 'warn     ; or 'delete
+      nnmail-cache-accepted-message-ids t
+      nnmail-split-fancy
       '(| (: nnmail-split-fancy-with-parent)
           ;; other splits go here
         ))
