@@ -279,7 +279,7 @@ use the supplied charset unconditionally."
 					    coding-system)))
 	(setq buffer-file-coding-system
 	      (if (boundp 'last-coding-system-used)
-		  last-coding-system-used
+		  (symbol-value 'last-coding-system-used)
 		coding-system))))))
 
 (defun mm-decode-coding-region-safely (start end coding-system)

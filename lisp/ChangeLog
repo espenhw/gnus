@@ -1,3 +1,7 @@
+2003-04-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-bodies.el (mm-decode-body): Silence XEmacs when compiling.
+
 2003-04-06  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-uu.el (mm-uu-copy-to-buffer): Copy
