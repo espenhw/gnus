@@ -1,3 +1,7 @@
+2003-11-29  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnusref.tex (subsection*{Notes}): Add `G R'.
+
 2003-11-25  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Hiding Headers): Update.
