@@ -729,13 +729,14 @@ without formatting."
   (concat
    (let ((dir (file-name-as-directory (expand-file-name dir))))
      ;; If this directory exists, we use it directly.
-     (if (file-directory-p (concat dir group))
-	 (expand-file-name group dir)
-       ;; If not, we translate dots into slashes.
-       (expand-file-name (mm-encode-coding-string
-			  (nnheader-replace-chars-in-string group ?. ?/)
+     (file-name-as-directory
+      (if (file-directory-p (concat dir group))
+	  (expand-file-name group dir)
+	;; If not, we translate dots into slashes.
+	(expand-file-name (mm-encode-coding-string
+			   (nnheader-replace-chars-in-string group ?. ?/)
 			  nnheader-pathname-coding-system)
-			 dir)))
+			  dir))))
    (cond ((null file) "")
 	 ((numberp file) (int-to-string file))
 	 (t file))))

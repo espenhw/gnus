@@ -1,5 +1,5 @@
 ;;; nnmail.el --- mail support functions for the Gnus mail backends
-;; Copyright (C) 1995,96,97,98,99 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99, 00 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news, mail
@@ -468,15 +468,16 @@ parameter.  It should return nil, `warn' or `delete'."
 		  ?. ?_))
      (setq group (nnheader-translate-file-chars group))
      ;; If this directory exists, we use it directly.
-     (if (or nnmail-use-long-file-names
-	     (file-directory-p (concat dir group)))
-	 (expand-file-name group dir)
-       ;; If not, we translate dots into slashes.
-       (expand-file-name
-	(mm-encode-coding-string
-	 (nnheader-replace-chars-in-string group ?. ?/)
-	 nnmail-pathname-coding-system)
-	dir)))
+     (file-name-as-directory
+      (if (or nnmail-use-long-file-names
+	      (file-directory-p (concat dir group)))
+	  (expand-file-name group dir)
+	;; If not, we translate dots into slashes.
+	(expand-file-name
+	 (mm-encode-coding-string
+	  (nnheader-replace-chars-in-string group ?. ?/)
+	  nnmail-pathname-coding-system)
+	 dir))))
    (or file "")))
 
 (defun nnmail-get-active ()
@@ -1086,7 +1087,10 @@ Return the number of characters in the body."
     (goto-char (point-min))
     (when (re-search-forward "^References:" nil t)
       (beginning-of-line)
-      (insert "X-Gnus-Broken-Eudora-"))))
+      (insert "X-Gnus-Broken-Eudora-"))
+    (goto-char (point-min))
+    (when (re-search-forward "^In-Reply-To:[^\n]+\\(\n[ \t]+\\)" nil t)
+      (replace-match "" t t nil 1))))
 
 (custom-add-option 'nnmail-prepare-incoming-header-hook
 		   'nnmail-fix-eudora-headers)

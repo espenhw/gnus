@@ -1,3 +1,14 @@
+2000-03-15  Simon Josefsson <jas@pdc.kth.se>
+
+	* nnheader.el (nnheader-group-pathname): Make sure to return a
+	directory. 
+	* nnmail.el (nnmail-group-pathname): Ditto.
+
+2000-02-08  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* nnmail.el (nnmail-fix-eudora-headers): Fix `In-Reply-To' too, it
+	might split in the middle of a message-id.
+
 2000-03-13 13:51:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-srvr.el (gnus-server-kill-server): Offer to kill all the
