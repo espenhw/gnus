@@ -5274,6 +5274,120 @@ man page."
 		 (function :tag "Other"))
   :group 'gnus-article-buttons)
 
+(defcustom gnus-button-prefer-mid-or-mail 'guess
+  "What to do when the button on a string as \"foo123@bar.com\" is pushed.
+Strings like this can be either a message ID or a mail address.  If the
+variable is set to the symbol `ask', query the user what do do.  If it is the
+symbol `guess', Gnus will do a guess and query the user what do do if it is
+ambiguous. If it is one of the sybols `mid' or `mail', Gnus will always assume
+that the string is a message ID or a mail address, respectivly.  See the
+variable `gnus-button-guessed-mid-regexp' for details concerning the
+guessing."
+  ;; FIXME: doc-string could/should be improved.
+  :group 'gnus-article-buttons
+  :type '(choice (const ask)
+		 (const guess)
+		 (const mid)
+		 (const mail)))
+
+(defcustom gnus-button-guessed-mid-regexp
+  (concat "^<?\\(slrn\\|Pine\\)\\."
+	  "\\|\\.fsf@\\|@4ax\\.com\\|@ID-[0-9]+\\.[a-zA-Z]+\\.dfncis\\.de"
+	  "\\|^<?.*[0-9].*[0-9].*[0-9].*[0-9].*[0-9].*[0-9].*@")
+  "Regular expression that matches message IDs and not mail addresses."
+  ;; TODO: Incorporate more matches from
+  ;; <URL:http://piology.org/perl/id-or-mail.pl.html>. I.e. translate the
+  ;; Perl-REs to Elisp-REs.
+  :group 'gnus-article-buttons
+  :type 'regexp)
+
+(defun gnus-button-handle-mid-or-mail (mid-or-mail)
+  (let* ((pref gnus-button-prefer-mid-or-mail)
+	 (url-mid (concat "news" ":" mid-or-mail))
+	 (url-mailto (concat "mailto" ":" mid-or-mail)))
+    (gnus-message 9 "mid-or-mail=%s" mid-or-mail)
+    ;; If it looks like a MID (well known readers or servers) use 'mid,
+    ;; otherwise 'ask the user.
+    (if (eq pref 'guess)
+	(if (string-match gnus-button-guessed-mid-regexp mid-or-mail)
+	    (setq pref 'mid)
+	  (setq pref 'ask)))
+    (if (eq pref 'ask)
+	(save-window-excursion
+	  (if (y-or-n-p (concat "Is <" mid-or-mail "> a mail address? "))
+	      (setq pref 'mail)
+	    (setq pref 'mid))))
+    (cond ((eq pref 'mid)
+	   (gnus-message 9 "calling `gnus-button-handle-news' %s" url-mid)
+	   (gnus-button-handle-news url-mid))
+	  ((eq pref 'mail)
+	   (gnus-message 9 "calling `gnus-url-mailto'  %s" url-mailto)
+	   (gnus-url-mailto url-mailto)))))
+
+(defun gnus-button-handle-custom (url)
+  "Follow a Custom URL."
+  (customize-apropos (gnus-url-unhex-string url)))
+
+(defvar gnus-button-handle-describe-prefix "^\\(C-h\\|<?[F1]1>?\\)")
+
+(defun gnus-button-handle-describe-function (url)
+  "Call describe-function when pushing the corresponing URL button."
+  (describe-function
+   (intern
+    (gnus-replace-in-string url gnus-button-handle-describe-prefix ""))))
+
+(defun gnus-button-handle-describe-variable (url)
+  "Call describe-variable when pushing the corresponing URL button."
+  (describe-variable
+   (intern
+    (gnus-replace-in-string url gnus-button-handle-describe-prefix ""))))
+
+;; FIXME: Is is possible to implement this?  Else it should be removed here
+;; and in `gnus-button-alist'.
+(defun gnus-button-handle-describe-key (url)
+  "Call describe-key when pushing the corresponing URL button."
+  (error "not implemented"))
+
+(defun gnus-button-handle-apropos (url)
+  "Call apropos when pushing the corresponing URL button."
+  (apropos (gnus-replace-in-string url gnus-button-handle-describe-prefix "")))
+
+(defun gnus-button-handle-apropos-command (url)
+  "Call apropos when pushing the corresponing URL button."
+  (apropos-command (gnus-replace-in-string url
+					   gnus-button-handle-describe-prefix "")))
+
+(defun gnus-button-handle-apropos-variable (url)
+  "Call apropos when pushing the corresponing URL button."
+  (apropos-variable (gnus-replace-in-string url gnus-button-handle-describe-prefix "")))
+
+(defcustom gnus-button-man-level 5
+  "*Integer that says how many man-related buttons Gnus will show.
+The higher the number, the more buttons will appear and the more false
+positves are possible.  Note that you can set this variable local to
+specifific groups.  Setting it higher in Unix groups is probably a good idea.
+See Info node `(gnus)Group Parameters' and the variable `gnus-parameters' on
+how to set variables in specific groups."
+  :group 'gnus-article-buttons
+  :type 'integer)
+
+(defcustom gnus-button-emacs-level 5
+  "*Integer that says how many emacs-related buttons Gnus will show.  
+The higher the number, the more buttons will appear and the more false
+positves are possible.  Note that you can set this variable local to
+specifific groups.  Setting it higher in Emacs or Gnus related groups is
+probably a good idea.See Info node `(gnus)Group Parameters' and the variable
+`gnus-parameters' on how to set variables in specific groups."
+  :group 'gnus-article-buttons
+  :type 'integer)
+
+(defcustom gnus-button-mail-level 5
+  "*Integer that says how many buttons for message IDs or mail addresses will appear.
+The higher the number, the more buttons will appear and the more false
+positves are possible."
+  :group 'gnus-article-buttons
+  :type 'integer)
+
 (defcustom gnus-button-alist
   '(("<\\(url:[>\n\t ]*?\\)?\\(nntp\\|news\\):[>\n\t ]*\\([^>\n\t ]*@[^>\n\t ]*\\)>"
      0 t gnus-button-handle-news 3)
@@ -5289,14 +5403,48 @@ man page."
     ("mailto:\\([-a-zA-Z.@_+0-9%=?]+\\)" 0 t gnus-url-mailto 1)
     ("\\bmailto:\\([^ \n\t]+\\)" 0 t gnus-url-mailto 1)
     ;; This is info
-    ("\\binfo:\\(//\\)?\\([^'\">\n\t ]+\\)" 0 t
-     gnus-button-handle-info 2)
+    ("\\binfo:\\(//\\)?\\([^'\">\n\t ]+\\)" 0 
+     (>= gnus-button-emacs-level 1) gnus-button-handle-info 2)
+    ;; This is custom
+    ("\\bcustom:\\(//\\)?\\([^'\">\n\t ]+\\)" 0
+     (>= gnus-button-emacs-level 5) gnus-button-handle-custom 2)
+    ("M-x[ \t\n]customize-[^ ]+[ \t\n]RET[ \t\n]\\([^ ]+\\)[ \t\n]RET" 0
+     (>= gnus-button-emacs-level 1) gnus-button-handle-custom 1)
+    ;; Emacs help commands
+    ("M-x[ \t\n]apropos[ \t\n]\\([^ ]+\\)[ \t\n]RET"
+     ;; regexp doesn't match arguments containing ` '.
+     0 (>= gnus-button-emacs-level 1) gnus-button-handle-apropos 1)
+    ("M-x[ \t\n]apropos-command[ \t\n]\\([^ ]+\\)[ \t\n]RET" 0
+     (>= gnus-button-emacs-level 1) gnus-button-handle-apropos-command 1)
+    ("M-x[ \t\n]apropos-variable[ \t\n]\\([^ ]+\\)[ \t\n]RET" 0
+     (>= gnus-button-emacs-level 1) gnus-button-handle-apropos-variable 1)
+    ("\\W\\(C-h\\|<?[F1]1>?\\)[ \t\n]f[ \t\n]\\([^ ]+\\)[ \t\n]RET" 0
+     (>= gnus-button-emacs-level 1) gnus-button-handle-describe-function 2)
+    ("\\W\\(C-h\\|<?[F1]1>?\\)[ \t\n]v[ \t\n]\\([^ ]+\\)[ \t\n]RET" 0
+     (>= gnus-button-emacs-level 1) gnus-button-handle-describe-variable 2)
+    ("\\W\\(C-h\\|<?[F1]1>?\\)[ \t\n]k[ \t\n]\\([^ ]+\\)[ \t\n]" 0
+     ;; this regexp needs to be fixed!
+     (>= gnus-button-emacs-level 9) gnus-button-handle-describe-key 2)
     ;; This is how URLs _should_ be embedded in text...
     ("<URL: *\\([^<>]*\\)>" 1 t gnus-button-embedded-url 1)
     ;; Raw URLs.
     (gnus-button-url-regexp 0 t browse-url 0)
     ;; man pages
-    ("\\b\\([a-z]+\\)([0-9])\\W" 0 t gnus-button-handle-man 1))
+    ("\\b\\([a-z][a-z]+\\)([0-9])\\W" 0 (>= gnus-button-man-level 1)
+     gnus-button-handle-man 1)
+    ;; more man pages: resolv.conf(5), iso_8859-1(7), xterm(1x)
+    ("\\b\\([a-zA-Z][-_.a-zA-Z0-9]+\\)([0-9]x?)\\W" 0
+     (>= gnus-button-man-level 3) gnus-button-handle-man 3)
+    ;; even more: Apache::PerlRun(3pm), PDL::IO::FastRaw(3pm), SoWWWAnchor(3iv)
+    ("\\b\\([a-zA-Z][-_.:a-zA-Z0-9]+\\)([0-9][a-z]*)\\W" 0
+     (>= gnus-button-man-level 5) gnus-button-handle-man 1)
+    ;; MID or mail: To avoid too many false positives we don't try to catch
+    ;; all kind of allowed MIDs or mail addresses.  Domain part must contain
+    ;; at least one dot.  TLD must contain two or three chars or be a know TLD
+    ;; (info|name|...).  Put this entry near the _end_ of `gnus-button-alist'
+    ;; so that non-ambiguous entries (see above) match first.
+    ("\\b\\(<?[a-zA-Z0-9][^>)!;:,{}\n\t ]*@[a-zA-Z0-9][-.a-zA-Z0-9]+\\.\\([a-zA-Z][a-zA-Z]\\([a-zA-Z]\\)?\\|[Ii][Nn][Ff][Oo]\\|[Nn][Aa][Mm][Ee]\\)>?\\)\\b"
+     0 (>= gnus-button-mail-level 5) gnus-button-handle-mid-or-mail 1))
   "*Alist of regexps matching buttons in article bodies.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where

@@ -1,3 +1,15 @@
+2002-09-20  Kai Gro,b_(Bjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+	From Reiner Steib.
+
+	* gnus-art.el (gnus-button-handle-custom,
+	gnus-button-handle-mid-or-mail,
+	gnus-button-handle-describe-{function,variable,key},
+	gnus-button-handle-apropos{,command,variable}): New functions.
+	(gnus-button-prefer-mid-or-mail,gnus-button-guessed-mid-regexp,
+	gnus-button-{man,emacs,mail}-level): New variables.
+	(gnus-button-alist): Use the above to buttonize emacs and mail
+	related links.
+
 2002-09-18  Juanma Barranquero  <lektu@terra.es>
 
 	* gnus-int.el (gnus-status-message): Fix spacing.
