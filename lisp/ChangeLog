@@ -1,5 +1,8 @@
 2001-10-01  Simon Josefsson  <jas@extundo.com>
 
+	* mail-source.el (mail-source-fetch-imap): Use BODY.PEEK if server
+	is IMAP4rev1.
+
 	* nnml.el (gnus-article-unpropagatable-p): Autoload gnus-sum.
 
 	* nnfolder.el: Ditto.
