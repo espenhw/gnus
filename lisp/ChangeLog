@@ -1,5 +1,10 @@
 2002-02-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-art.el (article-display-x-face): Don't sort multiple
+	X-Faces.
+
+2002-02-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* gnus-fun.el (gnus-convert-gray-x-face-to-xpm): Improved to speed
 	up.  Suggested by Yuuichi Teranishi <teranisi@gohome.org>.
 

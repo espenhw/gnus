@@ -1854,7 +1854,9 @@ unfolded."
 				  x-faces))
 			(push (cons 0 (mail-header-field-value)) x-faces)))
 		    (dolist (x-face (prog1
-					(sort x-faces 'car-less-than-car)
+					(if grey
+					    (sort x-faces 'car-less-than-car)
+					  (nreverse x-faces))
 				      (setq x-faces nil)))
 		      (push (cdr x-face) x-faces)))
 		(while (gnus-article-goto-header "X-Face")
