@@ -20016,9 +20016,10 @@ Face used for mouse highlighting over the smiley face.
 @subsection X-Face
 @cindex x-face
 
-@code{X-Face} headers describe a 48x48 pixel black-and-white image
-that's supposed to represent the author of the message.  It seems to
-be supported by an ever-growing number of mail and news readers.
+@code{X-Face} headers describe a 48x48 pixel black-and-white (1 bit
+depth) image that's supposed to represent the author of the message.
+It seems to be supported by an ever-growing number of mail and news
+readers.
 
 @cindex x-face
 @findex gnus-article-display-x-face
@@ -20061,6 +20062,39 @@ like @code{netpbm}, @code{libgr-progs} and @code{compface}.})
 
 (NOTE: @code{x-face} is used in the variable/function names, not
 @code{xface}).
+
+Gnus provides a few convenience functions and variables to allow
+easier insertion of X-Face headers in outgoing messages.
+
+@findex gnus-random-x-face
+@code{gnus-random-x-face} goes through all the @samp{pbm} files
+in @code{gnus-x-face-directory} and picks one at random, and then
+converts it to the X-Face format by using the
+@code{gnus-convert-pbm-to-x-face-command} shell command.  The
+@samp{pbm} files should be 48x48 pixels big.
+
+@code{gnus-x-face-from-file} takes a file as the parameter, and then
+converts the file to X-Face format by using the
+@code{gnus-convert-image-to-x-face-command} shell command.
+
+Here's how you would typically use the former function.  Put something
+like the folllowing in your @file{.gnus.el} file:
+
+@lisp
+(setq message-required-news-headers
+      (nconc message-required-news-headers
+             (list '(X-Face . gnus-random-x-face))))
+@end lisp
+
+Using the latter function would be something like this:
+
+@lisp
+(setq message-required-news-headers
+      (nconc message-required-news-headers
+             (list '(X-Face . (lambda ()
+                                (gnus-x-face-from-file
+                                 "~/My-face.gif"))))))
+@end lisp
 
 
 @node Toolbar
