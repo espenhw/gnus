@@ -139,7 +139,8 @@
 	* nnimap.el (nnimap-request-expire-articles): Compress sequence
 	before storing \Deleted mark on expired articles.
 
-2002-11-17   Markus Rost  <rost@math.ohio-state.edu>
+2002-11-17  Shenghuo Zhu <zsh@cs.rochester.edu> 
+	Trivial patch from Markus Rost  <rost@math.ohio-state.edu>
 
 	* gnus-sum.el (gnus-summary-goto-unread): Doc fix - escape open
 	parens in column 0.
@@ -1001,6 +1002,7 @@
 	(gnus-button-handle-apropos-command): Doc fix.  From Reiner Steib.
 
 2002-09-25  Mark A. Hershberger  <mah@everybody.org>
+	Trivial patch.
 
 	* nnrss.el (nnrss-save-server-data): Save nnrss-group-alist in
 	the file.
@@ -1855,6 +1857,7 @@
 	name (makes it work with recent Cyrus timsieved).
 
 2002-05-20  Jason  <jbaker@cs.utah.edu>
+	Trivial patch.
 
 	* gnus-art.el (gnus-request-article-this-buffer): Try
 	reconnecting if you don't get the message.
@@ -2298,6 +2301,7 @@
 	* nnmaildir.el: fixed some buggy invocations of nnmaildir--pgname.
 
 2002-03-31  Andrew Cohen  <cohen@andy.bu.edu>
+	Trivial patch.
 
 	* dns.el: open-network-stream under XEmacs does udp.
 
@@ -3573,6 +3577,7 @@
 	* nnweb.el (nnweb-type-definition): Clean up.
 
 2002-01-21  Alastair Burt  <burt@dfki.de>
+	Trivial patch.
 
 	* gnus-art.el (gnus-mm-display-part): Make sure that the summary
 	buffer exists before jumping to it.
@@ -4211,6 +4216,7 @@
 	* gnus.el (gnus-logo-color-alist): Added more colors from Luis.
 
 2002-01-05  Keiichi Suzuki  <keiichi@nanap.org>
+	Trivial patch.
 
 	* nntp.el (nntp-possibly-change-group): Erase contents of nntp
 	buffer to get rid of junk line.
@@ -6468,6 +6474,7 @@
 	(gnus-parse-simple-format): Re-revert.
 
 2001-09-16  Katsuhiro Hermit Endo  <hermit@koka-in.org>
+	Trivial patch.
 
 	* gnus-spec.el (gnus-parse-complex-format): Don't fold search
 	case.  (Thanks to Daiki Ueno <ueno@unixuser.org>.)
@@ -8115,6 +8122,7 @@
 	* nntp.el (nntp-send-command-and-decode): ditto.
 
 2001-06-30  YAGI Tatsuya  <yagi@is.titech.ac.jp>
+	Trivial patch.
 
 	* gnus-start.el (gnus-check-first-time-used): Use `if' instead of
 	`when'.
@@ -8331,7 +8339,8 @@
 
 	* nnrss.el (nnrss-node-text): Use cddr instead xml-node-children.
 
-2001-06-03  Dale Hagglund  <rdh@best.com>
+2001-06-03  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	Trivial patch from Dale Hagglund  <rdh@best.com>
 
 	* gnus-mlspl.el (gnus-group-split-fancy): Fix generation of split
 	restrict clauses.
@@ -8563,8 +8572,8 @@
 	(smime-sign-region): Rework to bind value and use it.
 	(smime-decrypt-region): Ditto.
 
-2001-04-18  Mathias Herberts  <Mathias.Herberts@iroise.net>
-	Committed by Simon Josefsson  <simon@josefsson.org>
+2001-04-18  Simon Josefsson  <simon@josefsson.org>
+	Trivial patch from Mathias Herberts  <Mathias.Herberts@iroise.net>
 
 	* smime.el (smime-ask-passphrase): New function.
 	(smime-sign-region): Use it.
@@ -8579,7 +8588,7 @@
 
 2001-04-14 01:14:42 Lars Magne Ingebrigtsen  <lars@ingebrigtsen.no>
 
-	*gnus.el: Oort Gnus v0.02 is released.
+	* gnus.el: Oort Gnus v0.02 is released.
 
 2001-04-14 00:48:42  Lars Magne Ingebrigtsen  <larsi@quimby.gnus.org>
 
@@ -8848,6 +8857,7 @@
 	* message.el (message-generate-headers-first): Update doc.
 
 2001-03-10  Matthias Wiehl  <mwiehl@gmx.de>
+	Trivial patch.
 
 	* gnus.el (gnus-summary-line-format): Typo.
 
@@ -9259,6 +9269,7 @@
 	(message-supersede): Ditto.
 
 2001-02-08  Tommi Vainikainen  <thv@iki.fi>
+	Trivial patch.
 
 	* gnus-sum.el (gnus-simplify-subject-re): Use
 	message-subject-re-regexp.
@@ -9545,7 +9556,8 @@
 	* message.el (message-ignored-news-headers): Only search beginning
 	of line.
 
-2001-01-19  Alberto Lusiani  <a.lusiani@noemail.org>
+2001-01-19  ShengHuo Zhu  <zsh@cs.rochester.edu>
+	Trivial patch from Alberto Lusiani  <a.lusiani@noemail.org>
 
 	* message.el (message-send-mail): Content-Type may not be there.
 
@@ -9725,6 +9737,7 @@
 	* time-date.el (time-to-number-of-days): New function.
 
 2001-01-04 11:06:14  Gregory Chernov  <greg@visiontech-dml.com>
+	Trivial patch.
 
 	* nnslashdot.el (nnslashdot-request-list): Always get the right
 	sid.
@@ -9752,6 +9765,7 @@
 	* nnslashdot.el (nnslashdot-request-list): Get the right year.
 
 2001-01-01 00:52:44  Ed L. Cashin  <ecashin@coe.uga.edu>
+	A revoked patch.
 
 	* gnus-sum.el (gnus-summary-expire-articles): Save excursion.
 
@@ -9884,6 +9898,7 @@
 	(gnus-new-processable): New function.
 
 2000-12-28 19:21:57  Inge Frick  <inge@nada.kth.se>
+	 Trivial patch.
 
 	* gnus-sum.el (gnus-no-mark): New variable.
 
@@ -9905,6 +9920,7 @@
 	XEmacs.
 
 2000-12-25  Lloyd Zusman  <ljz@asfast.com>
+	Trivial patch.
 
 	* mml.el (mml-read-tag): Save tag location.
 
@@ -11616,6 +11632,7 @@
 	(nnultimate-forum-table-p): Use it.
 
 2000-10-30  Ed L Cashin  <ecashin@coe.uga.edu>
+	Trivial patch.
 
 	* gnus-sum.el (gnus-summary-expire-articles): Save point.
 
