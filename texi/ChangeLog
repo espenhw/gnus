@@ -1,5 +1,8 @@
 2004-01-05  Simon Josefsson  <jas@extundo.com>
 
+	* pgg.texi (Caching passphrase): Fix PGG passphrase caching
+	section.
+
 	* sasl.texi: New file.
 	* Makefile.in: Add sasl.texi.
 

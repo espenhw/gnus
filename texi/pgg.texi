@@ -13,7 +13,7 @@
 @ifinfo
 This file describes the PGG.
 
-Copyright (C) 2003 Free Software Foundation, Inc.
+Copyright (C) 2003, 2004 Free Software Foundation, Inc.
 Copyright (C) 2001 Daiki Ueno.
 
 Permission is granted to copy, distribute and/or modify this document
@@ -209,8 +209,8 @@ The value can be @code{gpg}, @code{pgp}, and @code{pgp5}.
 @node Caching passphrase
 @section Caching passphrase
 
-PGG provides a simple passphrase caching mechanism.  If you want to
-arrange the interaction, set the variable @code{pgg-read-passphrase}.
+PGG uses a simple passphrase caching mechanism, which is enabled by
+default.
 
 @defvar pgg-cache-passphrase
 If non-@code{nil}, store passphrases.  The default value of this
