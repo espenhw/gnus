@@ -6058,7 +6058,7 @@ positives are possible."
     ("\\(<URL: *\\)mailto: *\\([^> \n\t]+\\)>"
      0 (>= gnus-button-message-level 0) gnus-url-mailto 2)
     ;; RFC 2368 (The mailto URL scheme)
-    ("mailto:\\([-a-z.@_+0-9%=?&]+\\)"
+    ("\\bmailto:\\([-a-z.@_+0-9%=?&/]+\\)"
      0 (>= gnus-button-message-level 0) gnus-url-mailto 1)
     ("\\bmailto:\\([^ \n\t]+\\)"
      0 (>= gnus-button-message-level 0) gnus-url-mailto 1)
@@ -6193,7 +6193,7 @@ variable it the real callback function."
      0 (>= gnus-button-browse-level 0) browse-url 0)
     ("^[^:]+:" gnus-button-url-regexp
      0 (>= gnus-button-browse-level 0) browse-url 0)
-    ("^[^:]+:" "\\bmailto:\\([-a-z.@_+0-9%=?&]+\\)"
+    ("^[^:]+:" "\\bmailto:\\([-a-z.@_+0-9%=?&/]+\\)"
      0 (>= gnus-button-message-level 0) gnus-url-mailto 1)
     ("^[^:]+:" "\\(<\\(url: \\)?\\(nntp\\|news\\):\\([^>\n ]*\\)>\\)"
      1 (>= gnus-button-message-level 0) gnus-button-message-id 4))
