@@ -734,9 +734,8 @@ this type is returned."
        ((or (null request) (equal request ""))
 	(mailcap-unescape-mime-test (cdr (assq 'viewer viewer)) info))
        ((stringp request)
-	(if (or (eq request 'test) (eq request 'viewer))
-	    (mailcap-unescape-mime-test
-	     (cdr-safe (assoc request viewer)) info)))
+	(mailcap-unescape-mime-test
+	 (cdr-safe (assoc request viewer)) info))
        ((eq request 'all)
 	passed)
        (t

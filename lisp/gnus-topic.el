@@ -164,6 +164,7 @@ with some simple extensions.
 			  (mapcar 'list (gnus-topic-list))
 			  nil t)))
   (dolist (topic (gnus-current-topics topic))
+    (gnus-topic-goto-topic topic)
     (gnus-topic-fold t))
   (gnus-topic-goto-topic topic))
 

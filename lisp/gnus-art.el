@@ -3439,6 +3439,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (gnus-mime-inline-part "i" "View As Text, In This Buffer")
     (gnus-mime-internalize-part "E" "View Internally")
     (gnus-mime-externalize-part "e" "View Externally")
+    (gnus-mime-print-part "p" "Print")
     (gnus-mime-pipe-part "|" "Pipe To Command...")
     (gnus-mime-action-on-part "." "Take action on the part")))
 
@@ -3619,7 +3620,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
       (gnus-mm-display-part handle))))
 
 (defun gnus-mime-copy-part (&optional handle)
-  "Put the the MIME part under point into a new buffer."
+  "Put the MIME part under point into a new buffer."
   (interactive)
   (gnus-article-check-buffer)
   (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
@@ -3642,6 +3643,32 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	    (normal-mode))
 	(setq buffer-file-name nil))
       (goto-char (point-min)))))
+
+(defun gnus-mime-print-part (&optional handle)
+  "Print the MIME part under point."
+  (interactive)
+  (gnus-article-check-buffer)
+  (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
+	 (contents (and handle (mm-get-part handle)))
+	 (file (make-temp-name (expand-file-name "mm." dir)))
+	 (printer (mailcap-mime-info (mm-handle-type handle) "print")))
+    (when contents
+	(if printer
+	    (unwind-protect
+		(progn
+		  (with-temp-file file
+		    (insert contents))
+		  (call-process shell-file-name nil
+				(setq buffer
+				      (generate-new-buffer " *mm*"))
+				nil
+				shell-command-switch
+				(mm-mailcap-command
+				 method file (mm-handle-type handle))))
+	      (delete-file file))
+	  (with-temp-buffer
+	    (insert contents)
+	    (gnus-print-buffer))))))
 
 (defun gnus-mime-inline-part (&optional handle arg)
   "Insert the MIME part under point into the current buffer."

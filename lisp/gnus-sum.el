@@ -36,9 +36,8 @@
 (require 'gnus-undo)
 (require 'gnus-util)
 (require 'mm-decode)
-;; Recursive :-(.
-;; (require 'gnus-art)
 (require 'nnoo)
+
 (autoload 'gnus-summary-limit-include-cached "gnus-cache" nil t)
 (autoload 'gnus-cache-write-active "gnus-cache")
 (autoload 'gnus-mailing-list-insinuate "gnus-ml" nil t)
@@ -2708,9 +2707,6 @@ marks of articles."
 
 ;; Saving hidden threads.
 
-(put 'gnus-save-hidden-threads 'lisp-indent-function 0)
-(put 'gnus-save-hidden-threads 'edebug-form-spec '(body))
-
 (defmacro gnus-save-hidden-threads (&rest forms)
   "Save hidden threads, eval FORMS, and restore the hidden threads."
   (let ((config (make-symbol "config")))
@@ -2719,6 +2715,8 @@ marks of articles."
 	   (save-excursion
 	     ,@forms)
 	 (gnus-restore-hidden-threads-configuration ,config)))))
+(put 'gnus-save-hidden-threads 'lisp-indent-function 0)
+(put 'gnus-save-hidden-threads 'edebug-form-spec '(body))
 
 (defun gnus-data-compute-positions ()
   "Compute the positions of all articles."
@@ -7902,41 +7900,44 @@ to save in."
   (dolist (article (gnus-summary-work-articles n))
     (gnus-summary-select-article nil nil 'pseudo article)
     (gnus-eval-in-buffer-window gnus-article-buffer
-      (let ((buffer (generate-new-buffer " *print*")))
-	(unwind-protect
-	    (progn
-	      (copy-to-buffer buffer (point-min) (point-max))
-	      (set-buffer buffer)
-	      (gnus-article-delete-invisible-text)
-	      (when (gnus-visual-p 'article-highlight 'highlight)
-		;; Copy-to-buffer doesn't copy overlay.  So redo
-		;; highlight.
-		(let ((gnus-article-buffer buffer))
-		  (gnus-article-highlight-citation t)
-		  (gnus-article-highlight-signature)))
-	      (let ((ps-left-header
-		     (list
-		      (concat "("
-			      (gnus-summary-print-truncate-and-quote
-			       (mail-header-subject gnus-current-headers)
-			       66) ")")
-		      (concat "("
-			      (gnus-summary-print-truncate-and-quote
-			       (mail-header-from gnus-current-headers)
-			       45) ")")))
-		    (ps-right-header
-		     (list
-		      "/pagenumberstring load"
-		      (concat "("
-			      (mail-header-date gnus-current-headers) ")"))))
-		(gnus-run-hooks 'gnus-ps-print-hook)
-		(save-excursion
-		  (if window-system
-		      (ps-spool-buffer-with-faces)
-		    (ps-spool-buffer)))))
-	  (kill-buffer buffer))))
+      (gnus-print-buffer))
     (gnus-summary-remove-process-mark article))
   (ps-despool filename))
+
+(defun gnus-print-buffer ()
+  (let ((buffer (generate-new-buffer " *print*")))
+    (unwind-protect
+	(progn
+	  (copy-to-buffer buffer (point-min) (point-max))
+	  (set-buffer buffer)
+	  (gnus-article-delete-invisible-text)
+	  (when (gnus-visual-p 'article-highlight 'highlight)
+	    ;; Copy-to-buffer doesn't copy overlay.  So redo
+	    ;; highlight.
+	    (let ((gnus-article-buffer buffer))
+	      (gnus-article-highlight-citation t)
+	      (gnus-article-highlight-signature)))
+	  (let ((ps-left-header
+		 (list
+		  (concat "("
+			  (gnus-summary-print-truncate-and-quote
+			   (mail-header-subject gnus-current-headers)
+			   66) ")")
+		  (concat "("
+			  (gnus-summary-print-truncate-and-quote
+			   (mail-header-from gnus-current-headers)
+			   45) ")")))
+		(ps-right-header
+		 (list
+		  "/pagenumberstring load"
+		  (concat "("
+			  (mail-header-date gnus-current-headers) ")"))))
+	    (gnus-run-hooks 'gnus-ps-print-hook)
+	    (save-excursion
+	      (if window-system
+		  (ps-spool-buffer-with-faces)
+		(ps-spool-buffer)))))
+      (kill-buffer buffer))))
 
 (defun gnus-summary-show-article (&optional arg)
   "Force redisplaying of the current article.
