@@ -62,7 +62,7 @@
 (defvar spam-use-blacklist t
   "True if the blacklist should be used.")
 
-(defvar spam-use-whitelist t
+(defvar spam-use-whitelist nil
   "True if the whitelist should be used.")
 
 (defvar spam-use-blackholes nil
