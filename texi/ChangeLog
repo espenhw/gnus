@@ -1,3 +1,7 @@
+2001-12-26  Florian Weimer  <fw@deneb.enyo.de>
+
+	* gnus.texi (Using GPG): Remove obsolete reference to gpg-2comp.
+
 2001-12-26  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Summary Buffer Lines): Add xrefs.  Suggested by

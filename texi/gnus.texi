@@ -10870,21 +10870,6 @@ To use this correctly with GPG, you'll need the following lisp code in your
 The @code{gpg-temp-directory} need to point to a directory with permissions set
 to 700, for your own safety.
 
-If you want to benefit of PGP2.6 compatibility, you might create a script named
-@file{gpg-2comp} with these instructions:
-
-@example
-#!/bin/sh
-exec gpg --rfc1991 "$@@"
-@end example
-
-If you don't want to use such compatibility, you can add the following line to
-your @file{~/.emacs} or @file{~/.gnus}:
-
-@lisp
-(setq gpg-command-default-alist (quote ((gpg . "gpg") (gpg-2comp . "gpg"))))
-@end lisp
-
 To sign or encrypt your message you may choose to use the MML Security
 menu or @kbd{C-c C-m s p} to sign your message using PGP/MIME,
 @kbd{C-c C-m s s} to sign your message using S/MIME.  There's also
