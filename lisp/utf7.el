@@ -4,7 +4,7 @@
 ;; Author: Jon K Hellan <hellan@acm.org>
 ;; Keywords: mail
 
-;; This file is part of GNU Emacs, but the same permissions apply
+;; This file is part of GNU Emacs.
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -24,35 +24,35 @@
 ;;; Commentary:
 ;;; UTF-7 - A Mail-Safe Transformation Format of Unicode - RFC 2152
 ;;; This is a transformation format of Unicode that contains only 7-bit
-;;; ASCII octets and is intended to be readable by humans in the limiting 
+;;; ASCII octets and is intended to be readable by humans in the limiting
 ;;; case that the document consists of characters from the US-ASCII
 ;;; repertoire.
-;;; In short, runs of characters outside US-ASCII are encoded as base64 
+;;; In short, runs of characters outside US-ASCII are encoded as base64
 ;;; inside delimiters.
 ;;; A variation of UTF-7 is specified in IMAP 4rev1 (RFC 2060) as the way
 ;;; to represent characters outside US-ASCII in mailbox names in IMAP.
 ;;; This library supports both variants, but the IMAP variation was the
-;;; reason I wrote it. 
-;;; The routines convert UTF-7 -> UTF-16 (16 bit encoding of Unicode) 
-;;; -> current character set, and vice versa. 
+;;; reason I wrote it.
+;;; The routines convert UTF-7 -> UTF-16 (16 bit encoding of Unicode)
+;;; -> current character set, and vice versa.
 ;;; However, until Emacs supports Unicode, the only Emacs character set
 ;;; supported here is ISO-8859.1, which can trivially be converted to/from
 ;;; Unicode.
 ;;; When decoding results in a character outside the Emacs character set,
-;;; an error is thrown. It is up to the application to recover.
+;;; an error is thrown.  It is up to the application to recover.
 
 ;;; Code:
 
 (require 'base64)
 
-(defvar utf7-direct-encoding-chars " -%'-*,-[]-}" 
-  "Characters ranges which do not need escaping in UTF-7")
+(defvar utf7-direct-encoding-chars " -%'-*,-[]-}"
+  "Character ranges which do not need escaping in UTF-7.")
 
-(defvar utf7-imap-direct-encoding-chars 
+(defvar utf7-imap-direct-encoding-chars
   (concat utf7-direct-encoding-chars "+\\~")
-  "Characters ranges which do not need escaping in the IMAP variant of UTF-7")
+  "Character ranges which do not need escaping in the IMAP variant of UTF-7.")
 
-(defsubst utf7-imap-get-pad-length (len modulus)	  
+(defsubst utf7-imap-get-pad-length (len modulus)
   "Return required length of padding for IMAP modified base64 fragment."
   (mod (- len) modulus))
 
@@ -64,7 +64,7 @@ Use IMAP modification if FOR-IMAP is non-nil."
     (narrow-to-region start end)
     (goto-char start)
     (let ((esc-char (if for-imap ?& ?+))
-	  (direct-encoding-chars 
+	  (direct-encoding-chars
 	   (if for-imap utf7-imap-direct-encoding-chars
 	     utf7-direct-encoding-chars)))
       (while (not (eobp))
@@ -73,7 +73,7 @@ Use IMAP modification if FOR-IMAP is non-nil."
 	  (insert esc-char)
 	  (let ((p (point))
 		(fc (following-char))
-		(run-length 
+		(run-length
 		 (skip-chars-forward (concat "^" direct-encoding-chars))))
 	    (if (and (= fc esc-char)
 		     (= run-length 1))	; Lone esc-char?
@@ -90,7 +90,7 @@ Use IMAP modification if FOR-IMAP is non-nil."
     (base64-encode-region start (point-max))
     (goto-char start)
     (let ((pm (point-max)))
-      (when for-imap 
+      (when for-imap
 	(while (search-forward "/" nil t)
 	  (replace-match ",")))
       (skip-chars-forward "^= \t\n" pm)
@@ -103,7 +103,7 @@ Use IMAP modification if FOR-IMAP is non-nil."
 	(end (point-max)))
     (goto-char start)
     (let* ((esc-pattern (concat "^" (char-to-string (if for-imap ?& ?+))))
-	   (base64-chars (concat "A-Za-z0-9+" 
+	   (base64-chars (concat "A-Za-z0-9+"
 				 (char-to-string (if for-imap ?, ?/)))))
       (while (not (eobp))
 	(skip-chars-forward esc-pattern)
@@ -159,7 +159,7 @@ Characters are in raw byte pairs in narrowed buffer."
     (forward-char)))
 
 (defun utf7-encode (string &optional for-imap)
-  "Encode UTF-7 string. Use IMAP modification if FOR-IMAP is non-nil."
+  "Encode UTF-7 STRING.  Use IMAP modification if FOR-IMAP is non-nil."
   (let ((default-enable-multibyte-characters nil))
     (with-temp-buffer
       (insert string)
@@ -167,7 +167,7 @@ Characters are in raw byte pairs in narrowed buffer."
       (buffer-string))))
 
 (defun utf7-decode (string &optional for-imap)
-  "Decode UTF-7 string. Use IMAP modification if FOR-IMAP is non-nil."
+  "Decode UTF-7 STRING.  Use IMAP modification if FOR-IMAP is non-nil."
   (let ((default-enable-multibyte-characters nil))
     (with-temp-buffer
       (insert string)
