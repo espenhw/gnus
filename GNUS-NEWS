@@ -8,6 +8,9 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** In draft groups, `e' is now bound to `gnus-draft-edit-message'.
+Use `B w' for `gnus-summary-edit-article' instead.
+
 ** The revised Gnus FAQ is included in the manual.
 See the info node "Frequently Asked Questions".
 

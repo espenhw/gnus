@@ -25139,6 +25139,10 @@ New features in Gnus 5.10:
 @itemize @bullet
 
 @item
+In draft groups, @kbd{e} is now bound to @code{gnus-draft-edit-message}.
+Use @kbd{B w} for @code{gnus-summary-edit-article} instead.
+
+@item
 The revised Gnus @acronym{FAQ} is included in the manual,
 @xref{Frequently Asked Questions}.
 

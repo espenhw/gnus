@@ -1,3 +1,7 @@
+2003-12-23  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Oort Gnus): Mention change of `e' in draft groups.
+
 2003-12-15  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Group Parameters): Clarify.
