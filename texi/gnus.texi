@@ -1047,7 +1047,7 @@ you would typically set this variable to
 Note: the @acronym{NNTP} back end stores marks in marks files
 (@pxref{NNTP marks}).  This feature makes it easy to share marks between
 several Gnus installations, but may slow down things a bit when fetching
-new articles.  @xref{NNTP marks} for more information.
+new articles.  @xref{NNTP marks}, for more information.
 
 
 @node The First Time
