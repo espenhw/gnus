@@ -574,7 +574,7 @@ spamoracle database."
 
   (gnus-summary-yank-process-mark))
  
-(defun spam-ham-copy-or-move-routine (copy &rest groups)
+(defun spam-ham-copy-or-move-routine (copy groups)
   (gnus-summary-kill-process-mark)
   (let ((articles gnus-newsgroup-articles)
 	article mark todo)
@@ -592,11 +592,12 @@ spamoracle database."
 	  (gnus-summary-set-process-mark article))
 	(gnus-summary-copy-article nil group)))
   
-    ;; now delete the articles
-    (dolist (article todo)
-      (gnus-summary-set-process-mark article))
-    (when todo
-      (gnus-summary-delete-article nil)))
+    ;; now delete the articles, unless copy is t
+    (unless copy
+      (dolist (article todo)
+	(gnus-summary-set-process-mark article))
+      (when todo
+	(gnus-summary-delete-article nil))))
   
   (gnus-summary-yank-process-mark))
  

@@ -1,3 +1,8 @@
+2003-10-24  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-ham-copy-or-move-routine): do not delete if copy
+	is t, also don't intepret the list of groups as a list of lists
+
 2003-10-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nndoc.el (nndoc-guess-type): Reverse the sort order.  Suggested
