@@ -1,3 +1,24 @@
+2001-08-04  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-cache.el (gnus-cache-fully-p)
+	(gnus-cache-passively-or-fully-p): New functions.
+	(gnus-cache-possibly-enter-article): Cosmetic change, use
+	`g-c-p-o-f-p'.
+	(gnus-cache-possibly-enter-article): Use `g-c-p-u-a'; last change
+	was bogus (`g-c-p-a-a' does not change active info, just change
+	the functions parameters).
+	(gnus-cache-possibly-remove-articles-1): Make sure articles are
+	not removed in groups that match `gnus-uncacheable-groups'.
+
+	Reported and modifications based on discussions with Nuutti
+	Kotivuori <nuutti.kotivuori@smarttrust.com>.
+
+2001-08-04  Nuutti Kotivuori <nuutti.kotivuori@smarttrust.com>
+	Committed by Simon Josefsson  <jas@extundo.com>
+
+	* gnus-cache.el (gnus-cache-possibly-update-active): New function;
+	calls `gnus-cache-update-active' if bounds has been extended.
+
 2001-08-04 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-mime-security-verify-or-decrypt): Insert
