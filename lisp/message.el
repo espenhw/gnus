@@ -1032,9 +1032,19 @@ should be sent in several parts. If it is nil, the size is unlimited."
   `(delete-region (progn (beginning-of-line) (point))
 		  (progn (forward-line ,(or n 1)) (point))))
 
+(defun message-unquote-tokens (elems)
+  "Remove leading and trailing double quotes (\") from quoted strings
+in list."
+  (mapcar (lambda (item)
+            (if (string-match "^\"\\(.*\\)\"$" item)
+                (match-string 1 item)
+              item))
+          elems))
+
 (defun message-tokenize-header (header &optional separator)
   "Split HEADER into a list of header elements.
-\",\" is used as the separator."
+SEPARATOR is a string of characters to be used as separators.  \",\"
+is used by default."
   (if (not header)
       nil
     (let ((regexp (format "[%s]+" (or separator ",")))
@@ -1064,7 +1074,7 @@ should be sent in several parts. If it is nil, the size is unlimited."
 		((and (eq (char-after) ?\))
 		      (not quoted))
 		 (setq paren nil))))
-	(nreverse elems)))))
+        (nreverse elems)))))
 
 (defun message-mail-file-mbox-p (file)
   "Say whether FILE looks like a Unix mbox file."

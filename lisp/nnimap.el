@@ -37,7 +37,6 @@
 ;; Todo, minor things:
 ;;
 ;;   o Don't require half of Gnus -- backends should be standalone
-;;   o Support escape characters in `message-tokenize-header'
 ;;   o Verify that we don't use IMAP4rev1 specific things (RFC2060 App B)
 ;;   o Dont uid fetch 1,* in nnimap-retrive-groups (slow)
 ;;   o Split up big fetches (1,* header especially) in smaller chunks
@@ -741,8 +740,9 @@ function is generally only called when Gnus is shutting down."
 
 (deffoo nnimap-request-post (&optional server)
   (let ((success t))
-    (dolist  (mbx (message-tokenize-header
-		   (message-fetch-field "Newsgroups")) success)
+    (dolist (mbx (message-unquote-tokens
+                  (message-tokenize-header
+                   (message-fetch-field "Newsgroups") ", ") success))
       (let ((to-newsgroup (gnus-group-prefixed-name mbx gnus-command-method)))
 	(or (gnus-active to-newsgroup)
 	    (gnus-activate-group to-newsgroup)
