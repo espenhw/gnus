@@ -1,3 +1,11 @@
+2003-03-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-util.el (gnus-byte-compile): Make it work silently as the
+	gnus-compile function does.
+
+	* gnus-sum.el (gnus-summary-highlight-line-0): Revoke the last
+	bogus change.
+
 2003-03-19  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-util.el (mm-mule-charset-to-mime-charset): Test if

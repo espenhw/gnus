@@ -1115,8 +1115,11 @@ Setting it to nil has no effect after first time running
 	    (require 'byte-optimize)
 	  (error))
 	(require 'bytecomp)
-	(defalias 'gnus-byte-compile 'byte-compile)
-	(byte-compile form))
+	(defalias 'gnus-byte-compile
+	  (lambda (form)
+	    (let ((byte-compile-warnings '(unresolved callargs redefine)))
+	      (byte-compile form))))
+	(gnus-byte-compile form))
     form))
 
 (defun gnus-remassoc (key alist)

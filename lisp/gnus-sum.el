@@ -11129,18 +11129,7 @@ If REVERSE, save parts that do not match TYPE."
               (setcdr c (cons (list (caar list) (list 'quote (cdar list))) nil))
               (setq c (cdr c)
                     list (cdr list)))
-	    (let ((byte-compile-warnings
-		   ;; Since XEmacs version of bytecomp complains about
-		   ;; the unbound variables because of `globally-boundp'
-		   ;; even if they are bound by `let', we silence it.
-		   (if (and (boundp 'byte-compile-default-warnings) ;; XEmacs
-			    (listp (symbol-value
-				    'byte-compile-default-warnings)))
-		       (delq 'free-vars
-			     (copy-sequence (symbol-value
-					     'byte-compile-default-warnings)))
-		     byte-compile-warnings)))
-	      (gnus-byte-compile (list 'lambda nil cond)))))))
+            (gnus-byte-compile (list 'lambda nil cond))))))
 
 (defun gnus-summary-highlight-line ()
   "Highlight current line according to `gnus-summary-highlight'."
