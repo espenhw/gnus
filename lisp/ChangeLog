@@ -1,3 +1,9 @@
+2004-12-17  Kim F. Storm  <storm@cua.dk>
+
+	* gnus-group.el (gnus-group-mode-map): Map follow-link to mouse-face.
+
+	* gnus-sum.el (gnus-summary-mode-map): Likewise.
+
 2004-12-26  Tsuyoshi AKIHO  <akiho@kawachi.zaq.ne.jp>
 
 	* gnus-sum.el (gnus-summary-walk-group-buffer): Decode group name.
@@ -1174,7 +1180,7 @@
 	* gnus-delay.el (gnus-delay-default-hour): Add :version.
 
 	* gnus-cite.el (gnus-cite-blank-line-after-header)
-	(gnus-article-boring-faces): 
+	(gnus-article-boring-faces):
 
 	* gnus-art.el (gnus-buttonized-mime-types)
 	(gnus-inhibit-mime-unbuttonizing)
