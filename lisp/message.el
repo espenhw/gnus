@@ -2197,6 +2197,7 @@ It should typically alter the sending method in some way or other."
 	      (insert header)
 	      (message-remove-header "Mime-Version")
 	      (message-remove-header "Content-Type")
+	      (message-remove-header "Content-Transfer-Encoding")
 	      (message-remove-header "Message-ID")
 	      (message-remove-header "Lines")
 	      (goto-char (point-max))

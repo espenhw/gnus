@@ -1,3 +1,7 @@
+2000-04-28 01:16:10  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-send-mail-partially): Remove CTE.
+
 2000-04-28 00:31:53  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* lpath.el: Fbind put-image for XEmacs.
