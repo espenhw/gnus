@@ -22609,6 +22609,7 @@ non-spam messages.
 Make sure you read the section on the @code{spam.el} sequence of
 events.  See @xref{Spam ELisp Package Sequence of Events}.
 
+@cindex spam-initialize
 To use @code{spam.el}, you @strong{must} run the function
 @code{spam-initialize} to autoload @code{spam.el} and to install the
 @code{spam.el} hooks.  There is one exception: if you use the

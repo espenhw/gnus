@@ -1,3 +1,8 @@
+2004-12-06  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Filtering Spam Using The Spam ELisp Package): Index
+	`spam-initialize'.
+
 2004-11-30  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Misc Article): Add, suggested by Reiner Steib
