@@ -2818,8 +2818,8 @@ be inserted literally as a @code{gcc} header.  This parameter takes
 precedence over any default @code{Gcc} rules as described later
 (@pxref{Archived Messages}).
 
-@strong{Caveat}: It yields an error putting @code{(gcc-self . t)} in
-groups of an @code{nntp} server or so, because an @code{nntp} server
+@strong{Caveat}: Adding @code{(gcc-self . t)} to the parameter list of
+@code{nntp} groups (or the like) isn't valid.  An @code{nntp} server
 doesn't accept articles.
 
 @item auto-expire

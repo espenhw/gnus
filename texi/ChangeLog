@@ -1,3 +1,7 @@
+2003-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Group Parameters): Clarification.
+
 2003-12-29  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Agent Variables): Add.
