@@ -1,3 +1,14 @@
+2000-12-20 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-tool-bar-map): Simplify.
+	(message-narrow-to-head-1): New function.
+	(message-narrow-to-head): Use it.
+	(message-reply): Ditto.
+	(message-cancel-news): Ditto.
+	(message-supersede): Ditto.
+	(message-make-forward-subject): Ditto.
+	(message-bounce): Ditto.
+
 2000-12-20 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* uudecode.el (uudecode-decode-region-external): make-temp-file

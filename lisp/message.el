@@ -1263,16 +1263,20 @@ Return the number of headers removed."
      (point-max)))
   (goto-char (point-min)))
 
-(defun message-narrow-to-head ()
-  "Narrow the buffer to the head of the message.
-Point is left at the beginning of the narrowed-to region."
-  (widen)
+(defun message-narrow-to-head-1 ()
+  "Like `message-narrow-to-head'. Don't widen."
   (narrow-to-region
    (goto-char (point-min))
    (if (search-forward "\n\n" nil 1)
        (1- (point))
      (point-max)))
   (goto-char (point-min)))
+
+(defun message-narrow-to-head ()
+  "Narrow the buffer to the head of the message.
+Point is left at the beginning of the narrowed-to region."
+  (widen)
+  (message-narrow-to-head-1))
 
 (defun message-narrow-to-headers-or-head ()
   "Narrow the buffer to the head of the message."
@@ -1458,7 +1462,7 @@ Point is left at the beginning of the narrowed-to region."
    ["Body" message-goto-body t]
    ["Signature" message-goto-signature t]))
 
-(defvar message-tool-bar-map 'unset)
+(defvar message-tool-bar-map nil)
 
 (eval-when-compile
   (defvar facemenu-add-face-function)
@@ -3884,7 +3888,7 @@ responses here are directed to other addresses.")))
 	(message-this-is-mail t)
 	gnus-warning)
     (save-restriction
-      (message-narrow-to-head)
+      (message-narrow-to-head-1)
       ;; Allow customizations to have their say.
       (if (not wide)
 	  ;; This is a regular reply.
@@ -4059,7 +4063,7 @@ If ARG, allow editing of the cancellation message."
       (save-excursion
 	;; Get header info from original article.
 	(save-restriction
-	  (message-narrow-to-head)
+	  (message-narrow-to-head-1)
 	  (setq from (message-fetch-field "from")
 		sender (message-fetch-field "sender")
 		newsgroups (message-fetch-field "newsgroups")
@@ -4121,7 +4125,7 @@ header line with the old Message-ID."
     (message-pop-to-buffer (message-buffer-name "supersede"))
     (insert-buffer-substring cur)
     (mime-to-mml)
-    (message-narrow-to-head)
+    (message-narrow-to-head-1)
     ;; Remove unwanted headers.
     (when message-ignored-supersedes-headers
       (message-remove-header message-ignored-supersedes-headers t))
@@ -4209,11 +4213,7 @@ the message."
   "Return a Subject header suitable for the message in the current buffer."
   (save-excursion
     (save-restriction
-      (narrow-to-region
-       (goto-char (point-min))
-       (if (search-forward "\n\n" nil 1)
-	   (1- (point))
-	 (point-max)))
+      (message-narrow-to-head-1)
       (let ((funcs message-make-forward-subject-function)
 	    (subject (message-fetch-field "Subject")))
 	(setq subject
@@ -4392,7 +4392,7 @@ you."
     (mm-enable-multibyte)
     (mime-to-mml)
     (save-restriction
-      (message-narrow-to-head)
+      (message-narrow-to-head-1)
       (message-remove-header message-ignored-bounced-headers t)
       (goto-char (point-max))
       (insert mail-header-separator))
@@ -4501,29 +4501,27 @@ which specify the range to operate on."
   (defvar tool-bar-mode))
 
 (defun message-tool-bar-map ()
-  (if (eq message-tool-bar-map 'unset)
+  (or message-tool-bar-map
       (setq message-tool-bar-map
-	    (if (and (fboundp 'tool-bar-add-item-from-menu)
-		     tool-bar-mode)
-		(let ((tool-bar-map (copy-keymap tool-bar-map)))
-		  ;; Zap some items which aren't so relevant and take up space.
-		  (dolist (key '(print-buffer kill-buffer save-buffer 
-					      write-file dired open-file))
-		    (define-key tool-bar-map (vector key) nil))
-		  
-		  (tool-bar-add-item-from-menu
-		   'message-send-and-exit "mail_send" message-mode-map)
-		  (tool-bar-add-item-from-menu
-		   'message-kill-buffer "close" message-mode-map)
-		  (tool-bar-add-item-from-menu
-		   'message-dont-send "cancel" message-mode-map)
-		  (tool-bar-add-item-from-menu
-		   'mml-attach-file "attach" message-mode-map)
-		  (tool-bar-add-item-from-menu
-		   'ispell-message "spell" message-mode-map)
-		  tool-bar-map)
-	      nil))
-    message-tool-bar-map))
+	    (and (fboundp 'tool-bar-add-item-from-menu)
+		 tool-bar-mode
+		 (let ((tool-bar-map (copy-keymap tool-bar-map)))
+		   ;; Zap some items which aren't so relevant and take
+		   ;; up space.
+		   (dolist (key '(print-buffer kill-buffer save-buffer 
+					       write-file dired open-file))
+		     (define-key tool-bar-map (vector key) nil))
+		   (tool-bar-add-item-from-menu
+		    'message-send-and-exit "mail_send" message-mode-map)
+		   (tool-bar-add-item-from-menu
+		    'message-kill-buffer "close" message-mode-map)
+		   (tool-bar-add-item-from-menu
+		    'message-dont-send "cancel" message-mode-map)
+		   (tool-bar-add-item-from-menu
+		    'mml-attach-file "attach" message-mode-map)
+		   (tool-bar-add-item-from-menu
+		    'ispell-message "spell" message-mode-map)
+		   tool-bar-map)))))
 
 ;;; Group name completion.
 

@@ -149,7 +149,7 @@ encode lines starting with \"From\"."
 		(end-of-line))
 	      (unless (eobp)
 		(forward-line))))))))))
-  
+
 (defun quoted-printable-encode-string (string)
   "Encode the STRING as quoted-printable and return the result."
   (with-temp-buffer
