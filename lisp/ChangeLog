@@ -1,3 +1,10 @@
+2002-09-03  Josh Huber <huber@alum.wpi.edu>
+
+	* gnus-msg.el (gnus-summary-handle-replysign): Change the order we
+	check for signed and encrypted parts.
+	* mml.el (mml-parse-1): Correct small typo which preventing
+	setting recipients in a secure tag.
+
 2002-09-03  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* mm-util.el (mm-coding-system-priorities): Default to a list of

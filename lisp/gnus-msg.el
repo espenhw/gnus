@@ -1068,13 +1068,13 @@ If VERY-WIDE, make a very wide reply."
 	(set-buffer gnus-article-buffer)
 	(setq signed (memq 'signed gnus-article-wash-types))
 	(setq encrypted (memq 'encrypted gnus-article-wash-types)))
-      (cond ((and gnus-message-replysign signed)
-	     (mml-secure-message mml-default-sign-method 'sign))
-	    ((and gnus-message-replyencrypt encrypted)
+      (cond ((and gnus-message-replyencrypt encrypted)
 	     (mml-secure-message mml-default-encrypt-method
 				 (if gnus-message-replysignencrypted
 				     'signencrypt
-				   'encrypt)))))))
+				   'encrypt)))
+	    ((and gnus-message-replysign signed)
+	     (mml-secure-message mml-default-sign-method 'sign))))))
 
 (defun gnus-summary-reply-with-original (n &optional wide)
   "Start composing a reply mail to the current message.

@@ -173,7 +173,7 @@ one charsets.")
 		 (setq tags (list "sign" method "encrypt" method))))
 	  (eval `(mml-insert-tag ,secure-mode
 				 ,@tags
-				 ,(if recipients 'recipients)
+				 ,(if recipients "recipients")
 				 ,recipients))
 	  ;; restart the parse
 	  (goto-char location)))
