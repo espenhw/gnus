@@ -1,6 +1,6 @@
 @c Insert  "\input texinfo" at 1st line before texing this file alone.
 @c -*-texinfo-*-
-@c Copyright (C) 1995, 2001 Free Software Foundation, Inc.
+@c Copyright (C) 1995, 2001, 2002 Free Software Foundation, Inc.
 @setfilename gnus-faq.info
 
 @node Frequently Asked Questions
