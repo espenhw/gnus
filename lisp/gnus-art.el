@@ -3796,6 +3796,8 @@ In no internal viewer is available, use an external viewer."
 	      (gnus-treat-article 'head))))))))
 
 (defvar gnus-mime-display-multipart-as-mixed nil)
+(defvar gnus-mime-display-multipart-alternative-as-mixed nil)
+(defvar gnus-mime-display-multipart-related-as-mixed nil)
 
 (defun gnus-mime-display-part (handle)
   (cond
@@ -3808,13 +3810,15 @@ In no internal viewer is available, use an external viewer."
 	     handle))
    ;; multipart/alternative
    ((and (equal (car handle) "multipart/alternative")
-	 (not gnus-mime-display-multipart-as-mixed))
+	 (not (or gnus-mime-display-multipart-as-mixed
+		  gnus-mime-display-multipart-alternative-as-mixed)))
     (let ((id (1+ (length gnus-article-mime-handle-alist))))
       (push (cons id handle) gnus-article-mime-handle-alist)
       (gnus-mime-display-alternative (cdr handle) nil nil id)))
    ;; multipart/related
    ((and (equal (car handle) "multipart/related")
-	 (not gnus-mime-display-multipart-as-mixed))
+	 (not (or gnus-mime-display-multipart-as-mixed
+		  gnus-mime-display-multipart-related-as-mixed)))
     ;;;!!!We should find the start part, but we just default
     ;;;!!!to the first part.
     ;;(gnus-mime-display-part (cadr handle))
