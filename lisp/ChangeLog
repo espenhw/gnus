@@ -5,6 +5,16 @@
 
 2003-04-16  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* gnus-registry.el (gnus-register-action) 
+	(gnus-register-spool-action, hashtable-to-alist) 
+	(gnus-registry-translate-from-alist, alist-to-hashtable) 
+	(gnus-registry-translate-to-alist, gnus-registry-headers-hashtb):
+	new variables and function fixes
+
+	* gnus.el (gnus-registry-headers-alist): new variable to hold
+	article header data
+	(gnus-variable-list): save gnus-registry-headers-alist
+
 	* spam-report.el (Module): new module for spam reporting
 
 	* gnus.el (spam-process): added
