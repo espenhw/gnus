@@ -194,6 +194,8 @@ RFC2060 section 6.4.4."
   :group 'nnimap
   :type 'sexp)
 
+;; Performance / bug workaround variables
+
 (defcustom nnimap-close-asynchronous nil
   "Close mailboxes asynchronously in `nnimap-close-group'.
 This means that errors cought by nnimap when closing the mailbox will
@@ -201,6 +203,18 @@ not prevent Gnus from updating the group status, which may be harmful.
 However, it increases speed."
   :type 'boolean
   :group 'nnimap)
+
+(defcustom nnimap-dont-close t
+  "Never close mailboxes.
+This increases the speed of closing mailboxes (quiting group) but may
+decrease the speed of selecting another mailbox later.  Re-selecting
+the same mailbox will be faster though."
+  :type 'boolean
+  :group 'nnimap)
+
+(defvoo nnimap-need-unselect-to-notice-new-mail nil
+  "Unselect mailboxes before looking for new mail in them.
+Some servers seem to need this under some circumstances.")
 
 ;; Authorization / Privacy variables
 
@@ -419,16 +433,18 @@ If SERVER is nil, uses the current server."
 (defun nnimap-before-find-minmax-bugworkaround ()
   "Function called before iterating through mailboxes with
 `nnimap-find-minmax-uid'."
-  ;; XXX this is for UoW imapd problem, it doesn't notice new mail in
-  ;; currently selected mailbox without a re-select/examine.
-  (or (null (imap-current-mailbox nnimap-server-buffer))
-      (imap-mailbox-unselect nnimap-server-buffer)))
+  (when nnimap-need-unselect-to-notice-new-mail
+    ;; XXX this is for UoW imapd problem, it doesn't notice new mail in
+    ;; currently selected mailbox without a re-select/examine.
+    (or (null (imap-current-mailbox nnimap-server-buffer))
+	(imap-mailbox-unselect nnimap-server-buffer))))
 
 (defun nnimap-find-minmax-uid (group &optional examine)
   "Find lowest and highest active article nummber in GROUP.
 If EXAMINE is non-nil the group is selected read-only."
   (with-current-buffer nnimap-server-buffer
-    (when (imap-mailbox-select group examine)
+    (when (or (string= group (imap-current-mailbox))
+	      (imap-mailbox-select group examine))
       (let (minuid maxuid)
 	(when (> (imap-mailbox-get 'exists) 0)
 	  (imap-fetch "1,*" "UID" nil 'nouidfetch)
@@ -843,15 +859,16 @@ function is generally only called when Gnus is shutting down."
     (when (and (imap-opened)
 	       (nnimap-possibly-change-group group server))
       (case nnimap-expunge-on-close
-	(always (imap-mailbox-expunge nnimap-close-asynchronous)
-		 (imap-mailbox-close nnimap-close-asynchronous))
+	(always (unless nnimap-dont-close
+		  (imap-mailbox-expunge nnimap-close-asynchronous)
+		  (imap-mailbox-close nnimap-close-asynchronous)))
 	(ask (if (and (imap-search "DELETED")
-		       (gnus-y-or-n-p (format
-				       "Expunge articles in group `%s'? "
-				       imap-current-mailbox)))
-		  (progn (imap-mailbox-expunge nnimap-close-asynchronous)
-			 (imap-mailbox-close nnimap-close-asynchronous))
-		(imap-mailbox-unselect)))
+		      (gnus-y-or-n-p (format "Expunge articles in group `%s'? "
+					     imap-current-mailbox)))
+		 (unless nnimap-dont-close
+		   (imap-mailbox-expunge nnimap-close-asynchronous)
+		   (imap-mailbox-close nnimap-close-asynchronous))
+	       (imap-mailbox-unselect)))
 	(t (imap-mailbox-unselect)))
       (not imap-current-mailbox))))
 

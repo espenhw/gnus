@@ -1,3 +1,11 @@
+2002-01-12  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-need-unselect-to-notice-new-mail) 
+	(nnimap-before-find-minmax-bugworkaround): Use it.
+	(nnimap-find-minmax-uid): Don't reselect current mailbox.
+	(nnimap-dont-close): New variable.
+	(nnimap-close-group): Use it.
+
 2002-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-article-reply-with-original): Use
