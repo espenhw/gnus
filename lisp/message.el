@@ -4560,9 +4560,6 @@ which specify the range to operate on."
 (defalias 'message-exchange-point-and-mark 'exchange-point-and-mark)
 
 ;; Support for toolbar
-(if (featurep 'xemacs)
-    (require 'messagexmas))
-
 (eval-when-compile 
   (defvar tool-bar-map)
   (defvar tool-bar-mode))
@@ -4808,6 +4805,10 @@ regexp varstr."
     (message-options-set 'message-recipients
 			  (mail-strip-quoted-names 
 			   (message-fetch-field "to")))))
+
+(when (featurep 'xemacs)
+  (require 'messagexmas)
+  (message-xmas-redefine))
 
 (provide 'message)
 

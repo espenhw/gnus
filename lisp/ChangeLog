@@ -1,5 +1,9 @@
 2000-12-22 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* messagexmas.el (message-xmas-redefine): New function.
+
+	* message.el: Use it.
+
 	* gnus-art.el (gnus-article-check-hidden-text): Return t.
 
 	* gnus-util.el (gnus-remove-text-properties-when): Return t.
