@@ -219,6 +219,13 @@
     (if (not (file-exists-p file))
 	()
       (erase-buffer)
+      ;; There may be some overlays that we have to kill...
+      (insert "i")
+      (let ((overlays (overlays-at (point-min))))
+	(while overlays
+	  (delete-overlay (car overlays))
+	  (setq overlays (cdr overlays))))
+      (erase-buffer)	  
       (insert-file-contents file)
       t)))
 

@@ -389,6 +389,8 @@ Returns the number of articles marked as read."
 	      (message "Processing kill file %s...done" (car kill-files)))
 	    (setq kill-files (cdr kill-files)))))
 
+      (gnus-set-mode-line 'summary)
+
       (if beg
 	  (let ((nunreads (- unreads (length gnus-newsgroup-unreads))))
 	    (or (eq nunreads 0)

@@ -124,8 +124,8 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
 	  (gnus-mail-buffer (current-buffer))
 	  mail-buf)
       (if (not yank)
-	  (gnus-configure-windows 'reply)
-	(gnus-configure-windows 'reply-yank))
+	  (gnus-configure-windows 'reply 'force)
+	(gnus-configure-windows 'reply-yank 'force))
       (setq mail-buf gnus-mail-buffer)
       (pop-to-buffer mail-buf);; always in the display, so won't have window probs
       (switch-to-buffer draft))
@@ -173,7 +173,7 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
     (let ((draft (current-buffer))
 	  (gnus-mail-buffer (current-buffer))
 	  mail-buf)
-      (gnus-configure-windows 'reply-yank)
+      (gnus-configure-windows 'reply-yank 'force)
       (setq mail-buf (eval (cdr (assq 'mail gnus-window-to-buffer))))
       (pop-to-buffer mail-buf);; always in the display, so won't have window probs
       (switch-to-buffer draft)

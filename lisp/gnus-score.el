@@ -612,8 +612,13 @@ SCORE is the score to add."
 					(gnus-score-load-file file)) 
 				      files))))
       (and eval (not global) (eval eval))
+      ;; We then expand any exclude-file directives.
       (setq gnus-scores-exclude-files 
-	    (append exclude-files gnus-scores-exclude-files))
+	    (nconc 
+	     (mapcar 
+	      (lambda (sfile) 
+		(expand-file-name sfile (file-name-directory file)))
+	      exclude-files) gnus-scores-exclude-files))
       (if (not local)
 	  ()
 	(save-excursion

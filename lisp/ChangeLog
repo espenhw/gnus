@@ -1,3 +1,54 @@
+Fri Nov  3 03:16:04 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el (gnus-summary-refer-article): Would mark oddly.
+
+	* gnus-msg.el (gnus-inews-do-fcc): rmail-file-p doesn't exist in
+	19.30. 
+
+Fri Nov  3 00:25:35 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-documentation-group-file): Removed variable.
+
+Thu Nov  2 21:58:41 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-make-help-group): Find gnus-tut.txt in the
+	etc directory.
+
+Wed Nov  1 02:51:56 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-inews-check-post): Counted signatures
+	wrongly.  
+
+	* gnus-kill.el (gnus-apply-kill-file-internal): Update mode line
+	after processing.
+
+Mon Oct 23 11:06:39 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-edit.el (gnus-score-custom-get): Special treatment of
+	adapt. 
+
+Mon Oct 30 00:56:46 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-delete-article): Update mode line.
+	(gnus-summary-move-article): Ditto.
+	(gnus-summary-line-format): Doc fix.
+	(gnus-articles-to-read): Understand numerical prefixes.
+	(gnus-group-quit-config): New function.
+	(gnus-group-change-level): Don't enter empemeral groups into the
+	dribble buffer.
+
+	* gnus-score.el (gnus-score-load-file): Didn't expand excluded
+	file names.
+
+	* gnus-mh.el (gnus-mail-reply-using-mhe): Force window configs.
+
+Sun Oct 29 18:45:38 1995  Lars Magne Ingebrigtsen  <larsi@bera.ifi.uio.no>
+
+	* gnus.el (gnus-parse-simple-format): Backtrack-regexp
+	eliminated. 
+
+	* gnus.el: 5.0.10 is released.
+
 Thu Oct 26 00:32:40 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus-msg.el (gnus-inews-news): Didn't delete continuation Bcc
@@ -26,6 +77,8 @@ Wed Oct 18 19:09:10 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 	(gnus-score-find-bnews): Translate ".all" to "\\..*".
 	(gnus-summary-sort-by-subject): Use article numbers as the
 	secondary sort keys.
+
+	* gnus.el: 5.0.9 is released.
 
 Sat Oct 14 01:41:11 1995  Sudish Joseph <joseph@cis.ohio-state.edu>
 

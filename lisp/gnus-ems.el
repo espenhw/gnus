@@ -33,6 +33,9 @@
 (defalias 'gnus-overlay-put 'overlay-put)
 (defalias 'gnus-move-overlay 'move-overlay)
 
+(or (fboundp 'mail-file-babyl-p)
+    (fset 'mail-file-babyl-p 'rmail-file-p))
+
 ;; Don't warn about these undefined variables.
 					;defined in gnus.el
 (defvar gnus-active-hashtb)
@@ -515,7 +518,6 @@ call it with the value of the `gnus-data' text property."
             (progn
               (select-window lowest-window)
               (setq window-search nil)))))))
-
 
 (defun gnus-ems-redefine ()
   (cond 

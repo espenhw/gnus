@@ -482,16 +482,10 @@ Newsgroup must be selected before calling this function."
 	 (ttime (mapcar (lambda (ti) (and ti (string-to-int ti)))
 			(timezone-parse-time
 			 (aref (timezone-parse-date date) 3))))
-	 (edate (mapcar (lambda (ti) (and ti (string-to-int ti)))
-			(timezone-parse-date "Jan 1 12:00:00 1970")))
-	 (tday (- (timezone-absolute-from-gregorian 
-		   (nth 1 tdate) (nth 2 tdate) (nth 0 tdate))
-		  (timezone-absolute-from-gregorian 
-		   (nth 1 edate) (nth 2 edate) (nth 0 edate)))))
-    (+ (nth 2 ttime)
-       (* (nth 1 ttime) 60)
-       (* 1.0 (nth 0 ttime) 60 60)
-       (* 1.0 tday 60 60 24))))
+	 (unix (encode-time (nth 2 ttime) (nth 1 ttime) (nth 0 ttime)
+			    (nth 2 tdate) (nth 1 tdate) (nth 0 tdate) (nth 4 tdate))))
+    (+ (* (car unix) 65536.0)
+       (car (cdr unix)))))
 
 (provide 'nnspool)
 

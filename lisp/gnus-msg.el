@@ -885,7 +885,7 @@ will attempt to use the foreign server to post the article."
 	  (goto-char (point-max))
 	  (if (not (re-search-backward gnus-signature-separator nil t))
 	      t
-	    (if (> (count-lines (point) (point-max)) 4)
+	    (if (> (count-lines (point) (point-max)) 5)
 		(gnus-y-or-n-p
 		 (format
 		  "Your .sig is %d lines; it should be max 4.  Really post? "
@@ -1251,7 +1251,8 @@ a program specified by the rest of the value."
 		 (if (and gnus-author-copy-saver
 			  (not (eq gnus-author-copy-saver 'rmail-output)))
 		     (funcall gnus-author-copy-saver fcc-file)
-		   (if (and (file-readable-p fcc-file) (rmail-file-p fcc-file))
+		   (if (and (file-readable-p fcc-file) 
+			    (mail-file-babyl-p fcc-file))
 		       (gnus-output-to-rmail fcc-file)
 		     (rmail-output fcc-file 1 t t))))))))))
 
