@@ -56,6 +56,7 @@ The list will be on the form
 			(mail-header-remove-comments string)))
       (let ((table (copy-syntax-table ietf-drums-syntax-table)))
 	(modify-syntax-entry ?\' "w" table)
+	(modify-syntax-entry ?= " " table)
 	;; The following isn't valid, but one should be liberal
 	;; in what one receives.
 	(modify-syntax-entry ?\: "w" table)
