@@ -1,3 +1,7 @@
+1999-12-13 17:20:25  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnagent.el: Support different backend with same name.
+
 1999-12-13 13:14:42  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnslashdot.el (nnslashdot-threaded-retrieve-headers): Support
