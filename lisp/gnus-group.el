@@ -847,6 +847,9 @@ simple manner.")
 	["Jump to group" gnus-group-jump-to-group t]
 	["First unread group" gnus-group-first-unread-group t]
 	["Best unread group" gnus-group-best-unread-group t])
+       ("Sieve"
+	["Generate" gnus-sieve-generate t]
+	["Generate and update" gnus-sieve-update t])
        ["Delete bogus groups" gnus-group-check-bogus-groups t]
        ["Find new newsgroups" gnus-group-find-new-groups t]
        ["Transpose" gnus-group-transpose-groups
