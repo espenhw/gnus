@@ -1,3 +1,7 @@
+2000-04-24 21:11:48  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-util.el (gnus-netrc-machine): Another default to nntp.
+
 2000-04-24 18:14:12  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-draft.el (gnus-draft-setup): Restore mml only when

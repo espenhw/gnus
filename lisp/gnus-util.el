@@ -873,7 +873,8 @@ ARG is passed to the first function."
       (setq result (nreverse result))
       (while (and result
 		  (not (equal (or port "nntp")
-			      (gnus-netrc-get (car result) "port"))))
+			      (or (gnus-netrc-get (car result) "port")
+				  "nntp"))))
 	(pop result))
       (car result))))
 
