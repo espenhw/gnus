@@ -1,5 +1,8 @@
 2001-07-29  Simon Josefsson  <jas@extundo.com>
 
+	* mail-source.el (top-level): Require message for message-directory.
+	(mail-source-directory): Change default to message-directory.
+
 	* smime.el (smime-keys, smime-CA-directory, smime-CA-file) 
 	(smime-certificate-directory, smime-openssl-program) 
 	(smime-encrypt-cipher, smime-dns-server): Fix doc (leading "*").

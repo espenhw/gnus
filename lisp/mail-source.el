@@ -36,6 +36,7 @@
   (autoload 'nnheader-run-at-time "nnheader"))
 (require 'format-spec)
 (require 'mm-util)
+(require 'message) ;; for `message-directory'
 
 (defgroup mail-source nil
   "The mail-fetching library."
@@ -228,7 +229,7 @@ If non-nil, this maildrop will be checked periodically for new mail."
   :group 'mail-source
   :type 'file)
 
-(defcustom mail-source-directory "~/Mail/"
+(defcustom mail-source-directory message-directory
   "Directory where files (if any) will be stored."
   :group 'mail-source
   :type 'directory)
