@@ -620,7 +620,9 @@ If FULL, translate everything."
       (if full
 	  ;; Do complete translation.
 	  (setq leaf (copy-sequence file)
-		path "")
+		path ""
+		i (if (and (< 1 (length leaf)) (eq ?: (aref leaf 1))) 
+		      2 0))
 	;; We translate -- but only the file name.  We leave the directory
 	;; alone.
 	(if (string-match "/[^/]+\\'" file)
@@ -631,10 +633,6 @@ If FULL, translate everything."
 	  (setq leaf (file-name-nondirectory file)
 		path (file-name-directory file))))
       (setq len (length leaf))
-      (when (and (< 1 len)
-		 (eq ?: (aref leaf 1))
-		 (assq ?: nnheader-file-name-translation-alist))
-	(setq i 2))
       (while (< i len)
 	(when (setq trans (cdr (assq (aref leaf i)
 				     nnheader-file-name-translation-alist)))

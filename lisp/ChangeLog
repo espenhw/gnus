@@ -1,3 +1,7 @@
+1999-12-14 22:07:26  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnheader.el (nnheader-translate-file-chars): Only in full path.
+
 1999-12-14 16:21:45  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-find-charset-region): mail-parse-charset is a
