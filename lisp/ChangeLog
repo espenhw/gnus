@@ -1,5 +1,8 @@
 1999-12-23  Florian Weimer  <fw@s.netic.de>
 
+	* gnus-msg.el (gnus-group-posting-charset-alist): Correct default
+	value (crosspostings are handled), improve documentation.
+
 	* smiley.el: Declare file coding system as iso-8859-1.
 
 	* nnultimate.el: Dito.
