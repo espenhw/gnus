@@ -4,3 +4,13 @@ gnus
 gnus-[0-9]*
 message
 gnustmp.texi
+*.dvi
+*.log
+etc
+herds
+misc
+picons
+*.aux
+screen
+smilies
+xface

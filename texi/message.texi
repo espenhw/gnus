@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Pterodactyl Message 0.99 Manual
+@settitle Message 5.8.2 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -42,7 +42,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Message 0.99 Manual
+@title Message 5.8.2 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -83,7 +83,7 @@ Message mode buffers.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Pterodactyl Message 0.99.  Message is
+This manual corresponds to Message 5.8.2.  Message is
 distributed with the Gnus distribution bearing the same version number
 as this manual.
 
@@ -1148,7 +1148,7 @@ A function to be called if @var{predicate} returns non-@code{nil}.
 @item message-fcc-handler-function
 @vindex message-fcc-handler-function
 A function called to save outgoing articles.  This function will be
-called with the name of the file to store the article in. The default
+called with the name of the file to store the article in.  The default
 function is @code{message-output} which saves in Unix mailbox format.
 
 @item message-courtesy-message
