@@ -38,25 +38,7 @@
 ;; BS, vertical TAB, form feed, and ^_
 (defvar mm-8bit-char-regexp "[^\x20-\x7f\r\n\t\x7\x8\xb\xc\x1f]")
 
-(defvar mm-body-charset-encoding-alist
-  '((us-ascii . 7bit)
-    (iso-8859-1 . quoted-printable)
-    (iso-8859-2 . quoted-printable)
-    (iso-8859-3 . quoted-printable)
-    (iso-8859-4 . quoted-printable)
-    (iso-8859-5 . base64)
-    (koi8-r . 8bit)
-    (iso-8859-7 . quoted-printable)
-    (iso-8859-8 . quoted-printable)
-    (iso-8859-9 . quoted-printable)
-    (iso-2022-jp . base64)
-    (iso-2022-kr . base64)
-    (gb2312 . base64)
-    (cn-gb . base64)
-    (cn-gb-2312 . base64)
-    (euc-kr . 8bit)
-    (iso-2022-jp-2 . base64)
-    (iso-2022-int-1 . base64))
+(defvar mm-body-charset-encoding-alist nil
   "Alist of MIME charsets to encodings.
 Valid encodings are `7bit', `8bit', `quoted-printable' and `base64'.")
 
@@ -123,7 +105,7 @@ If no encoding was done, nil is returned."
       bits)
      (t
       (let ((encoding (or (cdr (assq charset mm-body-charset-encoding-alist))
-			  'quoted-printable)))
+			  (mm-qp-or-base64))))
 	(mm-encode-content-transfer-encoding encoding "text/plain")
 	encoding)))))
 

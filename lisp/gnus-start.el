@@ -1161,12 +1161,15 @@ for new groups, and subscribe the new groups as zombies."
 	(when gnus-novice-user
 	  (gnus-message 7 "`A k' to list killed groups"))))))
 
-(defun gnus-subscribe-group (group previous &optional method)
+
+(defun gnus-subscribe-group (group &optional previous method)
+  "Subcribe GROUP and put it after PREVIOUS."
   (gnus-group-change-level
    (if method
        (list t group gnus-level-default-subscribed nil nil method)
      group)
-   gnus-level-default-subscribed gnus-level-killed previous t))
+   gnus-level-default-subscribed gnus-level-killed previous t)
+  t)
 
 ;; `gnus-group-change-level' is the fundamental function for changing
 ;; subscription levels of newsgroups.  This might mean just changing

@@ -104,6 +104,9 @@
     ("text/plain" mm-inline-text identity)
     ("text/enriched" mm-inline-text identity)
     ("text/richtext" mm-inline-text identity)
+    ("text/x-patch" mm-display-patch-inline
+     (lambda (handle)
+       (locate-library "diff-mode")))
     ("text/html"
      mm-inline-text
      (lambda (handle)
@@ -136,7 +139,7 @@
 (defvar mm-automatic-display
   '("text/plain" "text/enriched" "text/richtext" "text/html"
     "text/x-vcard" "image/.*" "message/delivery-status" "multipart/.*"
-    "message/rfc822")
+    "message/rfc822" "text/x-patch")
   "A list of MIME types to be displayed automatically.")
 
 (defvar mm-attachment-override-types '("text/x-vcard")

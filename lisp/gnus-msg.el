@@ -1201,7 +1201,7 @@ this is a reply."
       (when (or name address)
 	(add-hook 'message-setup-hook
 		  `(lambda ()
-		     (let ((user-full-name ,(or (cdr name) user-full-name))
+		     (let ((user-full-name ,(or (cdr name) (user-full-name)))
 			   (user-mail-address
 			    ,(or (cdr address) user-mail-address)))
 		       (save-excursion

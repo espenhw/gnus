@@ -183,6 +183,10 @@
 	  (run-hooks 'gnus-article-decode-hook)
 	  (gnus-article-prepare-display)
 	  (setq handles gnus-article-mime-handles))
+	(goto-char (point-max))
+	(unless (bolp)
+	  (insert "\n"))
+	(insert "----------\n\n")
 	(when handles
 	  (setq gnus-article-mime-handles
 		(nconc gnus-article-mime-handles 
@@ -199,6 +203,20 @@
 			 (face-property 'default prop) (current-buffer)))
 		      '(background background-pixmap foreground)))
 	      (delete-region ,(point-min-marker) ,(point-max-marker)))))))))
+
+(defun mm-display-patch-inline (handle)
+  (let (text)
+    (with-temp-buffer
+      (mm-insert-part handle)
+      (diff-mode)
+      (font-lock-fontify-buffer)
+      (when (fboundp 'extent-list)
+	(map-extents (lambda (ext ignored)
+		       (set-extent-property ext 'duplicable t)
+		       nil)
+		     nil nil nil nil nil 'text-prop))
+      (setq text (buffer-string)))
+    (mm-insert-inline handle text)))
 
 (provide 'mm-view)
 

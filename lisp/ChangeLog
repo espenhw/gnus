@@ -1,3 +1,45 @@
+1999-11-06 04:12:13  Francisco Solsona  <flsc@hp.fciencias.unam.mx>
+
+	* message.el (message-newline-and-reformat): Improvements.
+
+1999-11-06 03:51:24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-newline-and-reformat): Don't insert too many 
+	newlines.
+	(message-newline-and-reformat): Work even if not sc.
+
+	* mm-view.el (mm-inline-message): Insert a delimiter at the end.
+
+	* mm-decode.el (mm-inline-media-tests): Only if diff mode.
+
+1999-11-06 03:48:02  Toby Speight  <Toby.Speight@streapadair.freeserve.co.uk>
+
+	* mm-view.el (mm-display-patch-inline): New function.
+
+1999-11-06 03:47:54  Robert Bihlmeyer  <robbe@orcus.priv.at>
+
+	* mm-view.el (mm-display-patch-inline): New function.
+
+1999-11-06 02:17:54  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-read-move-group-name): Subscribe to the
+	group. 
+
+	* message.el (message-forward): Narrow to the right header.
+
+	* gnus-sum.el (gnus-summary-limit-to-age): Protect against bogus
+	dates. 
+
+	* gnus-msg.el (gnus-configure-posting-styles): Use the
+	user-full-name function.
+
+	* mm-bodies.el (mm-body-encoding): Use the choosing function.
+	(mm-body-charset-encoding-alist): Default to nil.
+
+	* message.el (message-elide-ellipsis): Fix typo.
+	(message-elide-region): Ditto.
+	(message-elide-region): Don't insert a newline first.
+
 1999-11-05 20:28:27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-cut-thread): Also cut for numberp

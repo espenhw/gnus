@@ -232,7 +232,7 @@ any confusion."
   :type 'regexp
   :group 'message-various)
 
-(defcustom message-elide-elipsis "\n[...]\n\n"
+(defcustom message-elide-ellipsis "\n[...]\n\n"
   "*The string which is inserted for elided text."
   :type 'string
   :group 'message-various)
@@ -1614,19 +1614,24 @@ With the prefix argument FORCE, insert the header anyway."
 (defun message-newline-and-reformat ()
   "Insert four newlines, and then reformat if inside quoted text."
   (interactive)
-  (let ((point (point))
-	quoted)
-    (save-excursion
-      (beginning-of-line)
-      (if (looking-at (sc-cite-regexp))
-	  (setq quoted (buffer-substring (match-beginning 0) (match-end 0)))))
-    (insert "\n\n\n\n")
+  (let ((prefix "[]>»|:}+ \t]*")
+	(supercite-thing "[-._a-zA-Z0-9]*[>]+[ \t]*")
+	quoted point)
+    (unless (bolp)
+      (save-excursion
+	(beginning-of-line)
+	(when (looking-at (concat prefix
+				  supercite-thing))
+	  (setq quoted (match-string 0))))
+      (insert "\n"))
+    (setq point (point))
+    (insert "\n\n\n")
     (delete-region (point) (re-search-forward "[ \t]*"))
     (when quoted
       (insert quoted))
     (fill-paragraph nil)
     (goto-char point)
-    (forward-line 2)))
+    (forward-line 1)))
 
 (defun message-insert-signature (&optional force)
   "Insert a signature.  See documentation for the `message-signature' variable."
@@ -1667,13 +1672,11 @@ With the prefix argument FORCE, insert the header anyway."
 
 (defun message-elide-region (b e)
   "Elide the text between point and mark.
-An ellipsis (from `message-elide-elipsis') will be inserted where the
+An ellipsis (from `message-elide-ellipsis') will be inserted where the
 text was killed."
   (interactive "r")
   (kill-region b e)
-  (unless (bolp)
-    (insert "\n"))
-  (insert message-elide-elipsis))
+  (insert message-elide-ellipsis))
 
 (defvar message-caesar-translation-table nil)
 
@@ -3827,7 +3830,8 @@ Optional NEWS will use news to forward instead of mail."
       (when message-forward-ignored-headers
 	(save-restriction
 	  (narrow-to-region b e)
-	  (message-narrow-to-head)
+	  (goto-char b)
+	  (narrow-to-region (point) (or (search-forward "\n\n" nil t) (point)))
 	  (message-remove-header message-forward-ignored-headers t))))
     (message-position-point)))
 

@@ -6234,7 +6234,9 @@ articles that are younger than AGE days."
 	  (when (and (vectorp (gnus-data-header d))
 		     (setq date (mail-header-date (gnus-data-header d))))
 	    (setq is-younger (time-less-p
-			      (time-since (date-to-time date))
+			      (time-since (condition-case ()
+					      (date-to-time date)
+					    (error '(0 0))))
 			      cutoff))
 	    (when (if younger-p
 		      is-younger
@@ -8971,9 +8973,10 @@ save those articles instead."
 				     to-newsgroup))
 	      (or (and (gnus-request-create-group
 			to-newsgroup (gnus-group-name-to-method to-newsgroup))
-		       (gnus-activate-group to-newsgroup nil nil
-					    (gnus-group-name-to-method
-					     to-newsgroup)))
+		       (gnus-activate-group
+			to-newsgroup nil nil
+			(gnus-group-name-to-method to-newsgroup))
+		       (gnus-subscribe-group to-newsgroup))
 		  (error "Couldn't create group %s" to-newsgroup)))
 	  (error "No such group: %s" to-newsgroup)))
     to-newsgroup))
