@@ -264,6 +264,8 @@ instead call function `nntp-status-message' to get status message.")
 (defun nntp-server-opened (&optional server)
   "Say whether a connection to SERVER has been opened."
   (and (equal server nntp-current-server)
+       nntp-server-buffer
+       (buffer-name nntp-server-buffer)
        nntp-server-process
        (memq (process-status nntp-server-process) '(open run))))
 
@@ -328,7 +330,7 @@ instead call function `nntp-status-message' to get status message.")
 	  ;; does, we transform the output.  
 	  (cond ((looking-at "2[0-9]+")
 		 (forward-line 1)
-		 (if (looking-at "[^ ] +\\([0-9]\\) +\\([0-9]\\)")
+		 (if (looking-at "[^ ]+[ \t]+\\([0-9]\\)[ \t]+\\([0-9]\\)")
 		     (let ((end (progn (goto-char (match-beginning 1))
 				       (read (current-buffer))))
 			   (beg (read (current-buffer))))

@@ -143,7 +143,9 @@
   t)
 
 (defun nnmbox-server-opened (&optional server)
-  (equal server nnmbox-current-server))
+  (and (equal server nnmbox-current-server)
+       nntp-server-buffer
+       (buffer-name nntp-server-buffer)))
 
 (defun nnmbox-status-message (&optional server)
   nnmbox-status-string)
@@ -247,7 +249,7 @@
 	(goto-char (point-min))
 	(while (not (search-forward
 		     (nnmbox-article-string (car active)) nil t))
-	  (setcar (car active) (1+ (car active)))
+	  (setcar active (1+ (car active)))
 	  (goto-char (point-min))))
       (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
       rest)))

@@ -168,7 +168,9 @@ Newsgroup must be selected before calling this function."
   t)
 
 (defun nnspool-server-opened (&optional server)
-  (equal server nnspool-current-server))
+  (and (equal server nnspool-current-server)
+       nntp-server-buffer
+       (buffer-name nntp-server-buffer)))
 
 (defun nnspool-status-message (&optional server)
   "Return server status response as string."

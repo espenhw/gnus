@@ -160,7 +160,9 @@ all. This may very well take some time.")
   t)
 
 (defun nnml-server-opened (&optional server)
-  (equal server nnml-current-server))
+  (and (equal server nnml-current-server)
+       nntp-server-buffer
+       (buffer-name nntp-server-buffer)))
 
 (defun nnml-status-message (&optional server)
   nnml-status-string)

@@ -144,7 +144,9 @@
   t)
 
 (defun nnbabyl-server-opened (&optional server)
-  (equal server nnbabyl-current-server))
+  (and (equal server nnbabyl-current-server)
+       nntp-server-buffer
+       (buffer-name nntp-server-buffer)))
 
 (defun nnbabyl-status-message (&optional server)
   nnbabyl-status-string)

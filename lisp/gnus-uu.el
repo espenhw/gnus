@@ -243,6 +243,9 @@ so I simply dropped them.")
 (defvar gnus-uu-shar-file-name nil)
 (defconst gnus-uu-shar-name-marker "begin [0-7][0-7][0-7][ \t]+\\(\\(\\w\\|\\.\\)*\\b\\)")
 
+(defconst gnus-uu-postscript-begin-string "^%!PS-")
+(defconst gnus-uu-postscript-end-string "^%%EOF$")
+
 (defvar gnus-uu-file-name nil)
 (defconst gnus-uu-uudecode-process nil)
 
@@ -449,6 +452,40 @@ so I simply dropped them.")
 	(forward-line 1))))
   (gnus-summary-position-cursor))
 
+;; All PostScript functions written by Erik Selberg <speed@cs.washington.edu>. 
+
+(defun gnus-uu-decode-postscript (n)
+  "Gets postscript of the current article."
+  (interactive "P")
+  (gnus-uu-decode-with-method 'gnus-uu-decode-postscript-article n))
+
+(defun gnus-uu-decode-postscript-view (n)
+  "Gets and views the current article."
+  (interactive "P")
+  (let ((gnus-view-pseudos (or gnus-view-pseudos 'automatic)))
+    (gnus-uu-decode-postscript n)))
+
+(defun gnus-uu-decode-postscript-and-save (n dir)
+  "Extracts postscript and saves the current article."
+  (interactive
+   (list current-prefix-arg
+	 (read-file-name "Where do you want to save the file(s)? "
+			 gnus-uu-default-dir
+			 gnus-uu-default-dir t)))
+  (gnus-uu-decode-with-method 'gnus-uu-decode-postscript-article n dir))
+
+
+(defun gnus-uu-decode-postscript-and-save-view (n dir)
+  "Decodes, views and saves the resulting file."
+  (interactive
+   (list current-prefix-arg
+	 (read-file-name "Where do you want to save the file(s)? "
+			 gnus-uu-default-dir
+			 gnus-uu-default-dir t)))
+  (let ((gnus-view-pseudos (or gnus-view-pseudos 'automatic)))
+    (gnus-uu-decode-postscript-and-save n dir)))
+
+
 ;; Internal functions.
 
 (defun gnus-uu-decode-with-method (method n &optional save)
@@ -465,13 +502,17 @@ so I simply dropped them.")
 
 (defun gnus-uu-save-files (files dir)
   (let ((len (length files))
-	file)
+	to-file file)
     (while files
       (setq file (cdr (assq 'name (car files))))
       (and (file-exists-p file)
-	   (copy-file file (if (file-directory-p dir)
-			       (concat dir (file-name-nondirectory file)) dir)
-		      1 t))
+	   (progn
+	     (setq to-file (if (file-directory-p dir)
+			       (concat dir (file-name-nondirectory file))
+			     dir))
+	     (and (or (not (file-exists-p to-file))
+		      (gnus-y-or-n-p (format "%s exists; overwrite? ")))
+		  (copy-file file to-file 1 t))))
       (setq files (cdr files)))
     (message "Saved %d file%s" len (if (> len 1) "s" ""))))
 
@@ -616,6 +657,31 @@ so I simply dropped them.")
     (if (memq 'begin state)
 	(cons gnus-uu-binhex-article-name state)
       state)))
+
+;; PostScript
+
+(defun gnus-uu-decode-postscript-article (process-buffer in-state)
+  (let ((state (list 'ok))
+	start-char end-char file-name)
+    (save-excursion
+     (set-buffer process-buffer)
+     (goto-char 1)
+     (if (not (re-search-forward gnus-uu-postscript-begin-string nil t))
+	 (setq state (list 'wrong-type))
+       (beginning-of-line)
+       (setq start-char (point))
+       (if (not (re-search-forward gnus-uu-postscript-end-string nil t))
+	   (setq state (list 'wrong-type))
+	 (setq end-char (point))
+	 (set-buffer (get-buffer-create gnus-uu-output-buffer-name))
+	 (insert-buffer-substring process-buffer start-char end-char)
+	 (setq file-name (concat gnus-uu-work-dir (cdr gnus-article-current) ".ps"))
+	 (write-region (point-min) (point-max) file-name)
+	 (setq state (list file-name'begin 'end))
+
+	 ))
+     )
+    state))
       
 
 ;; Find actions.

@@ -1,3 +1,42 @@
+Wed Apr 19 05:51:27 1995  Lars Magne Ingebrigtsen  <larsi@holmenkollen.ifi.uio.no>
+
+	* nntp.el (nntp-request-group): Error in regexp when using LIST
+	ACTIVE. 
+
+	* gnus.el (gnus-parse-newsrc-body): Don't reset levels.
+	(gnus-group-always-list-unread): New variable.
+
+	* gnus-uu.el (gnus-uu-save-files): Ask user whether to overwrite
+	existing files.
+
+	* nnmbox.el (nnmbox-request-expire-articles): Fix from Ilja Weis.
+
+Tue Apr 18 02:45:28 1995  Christian Limpach  <chris@nice.ch>
+
+	* gnus.el (gnus-point-at-bol): new subst
+	(gnus-point-at-eol): new subst
+	* gnus.el: changed all save-excursions to find point at the
+	beginning or end of a line to use either gnus-point-at-bol or
+	gnus-point-at-eol.
+
+Wed Apr 19 03:59:04 1995  Lars Magne Ingebrigtsen  <larsi@holmenkollen.ifi.uio.no>
+
+	* gnus-visual.el (gnus-visual-highlight-selected-summary):
+	Highlight correctly with no mouse-face present.
+
+	* gnus.el (gnus-current-score-file-nondirectory): New function.
+	(gnus-mode-non-string-length): New semantics from Sudish Joseph. 
+
+	* gnus-uu.el: Included all of Eric Selbergs PostScript functions. 
+
+	* gnus.el (gnus-summary-mode-line-format-alist): Missing ?s in g
+	spec. 
+	(gnus-summary-read-group): Go to the next group if the group can't
+	be selected. 
+	(gnus-update-summary-mark-positions): Don't bug out on threads. 
+	(gnus-summary-copy-article): Accept the prefix as the default
+	group. 
+
 Wed Apr 19 03:28:37 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Major changes in server handling; new mode; and lots of

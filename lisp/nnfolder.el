@@ -61,7 +61,7 @@
 (defvar nnfolder-buffer-alist nil)
 
 (defmacro nnfolder-article-string (article)
-  (` (concat "\n" nnfolder-article-marker (int-to-string (, article)) "")))
+  (` (concat "\n" nnfolder-article-marker (int-to-string (, article)) " ")))
 
 
 
@@ -92,6 +92,8 @@
 	  (delim-string (concat "^" rmail-unix-mail-delimiter))
 	  beg article art-string start stop)
       (nnfolder-possibly-change-group newsgroup)
+      (set-buffer nnfolder-current-buffer)
+      (goto-char (point-min))
       (while sequence
 	(setq article (car sequence))
 	(setq art-string (nnfolder-article-string article))
@@ -143,7 +145,9 @@
   t)
 
 (defun nnfolder-server-opened (&optional server)
-  (equal server nnfolder-current-server))
+  (and (equal server nnfolder-current-server)
+       nntp-server-buffer
+       (buffer-name nntp-server-buffer)))
 
 (defun nnfolder-request-close ()
   (let ((alist nnfolder-buffer-alist))
@@ -162,7 +166,7 @@
       nil
     (save-excursion
       (set-buffer nnfolder-current-buffer)
-      (goto-char 1)
+      (goto-char (point-min))
       (if (search-forward (nnfolder-article-string article) nil t)
 	  (let (start stop)
 	    (re-search-backward (concat "^" rmail-unix-mail-delimiter) nil t)
@@ -263,12 +267,18 @@
 	(setq articles (cdr articles)))
       (save-buffer)
       ;; Find the lowest active article in this group.
-      (let ((active (nth 1 (assoc newsgroup nnfolder-group-alist))))
+      (let* ((active (car (cdr (assoc newsgroup nnfolder-group-alist))))
+	     (marker (concat "\n" nnfolder-article-marker))
+	     (number "[0-9]+")
+	     (activemin (cdr active)))
 	(goto-char (point-min))
-	(while (not (search-forward
-		     (nnfolder-article-string (car active)) nil t))
-	  (setcar active (1+ (car active)))
-	  (goto-char (point-min))))
+	(while (and (search-forward marker nil t)
+		    (re-search-forward number nil t))
+	  (setq activemin (min activemin
+			       (string-to-number (buffer-substring
+						  (match-beginning 0)
+						  (match-end 0))))))
+	(setcar active activemin))
       (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
       rest)))
 
@@ -493,16 +503,17 @@
       ;; Keep track of the active number on our own, and insert it back into
       ;; the active list when we're done. Also, prime the pump to cut down on
       ;; the number of searches we do.
-      (setq end (or (and (re-search-forward delim nil t)
-			 (match-beginning 0))
-		    (point-max)))
+      (setq end (point-marker))
+      (set-marker end (or (and (re-search-forward delim nil t)
+			       (match-beginning 0))
+			  (point-max)))
       (while (not (= end (point-max)))
-	(setq start end)
+	(setq start (marker-position end))
 	(goto-char end)
 	(end-of-line)
-	(setq end (or (and (re-search-forward delim nil t)
-			   (match-beginning 0))
-		      (point-max)))
+	(set-marker end (or (and (re-search-forward delim nil t)
+				 (match-beginning 0))
+			    (point-max)))
 	(goto-char start)
 	(if (not (search-forward marker end t))
 	    (progn

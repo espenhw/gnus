@@ -3169,6 +3169,7 @@ score (or over the numeric prefix) with this mark
 (@code{gnus-summary-clear-above}).
 @end table
 
+@code{gnus-summary-goto-unread}
 The @code{gnus-summary-goto-unread} variable controls what action should
 be taken after setting a mark.  If non-@code{nil}, point will move to
 the next/previous unread article.  If @code{nil}, point will just move
@@ -3643,6 +3644,7 @@ encoded in some way or other.  Gnus can decode them for you.
 @menu 
 * Uuencoded Articles::    Uudecode articles.
 * Shared Articles::       Unshar articles.
+* PostScript Files::      Split PoscScript.
 @end menu
 
 All these functions use the process/prefix convention
@@ -3736,6 +3738,32 @@ Unshars and views the current series (@code{gnus-uu-decode-unshar-view}).
 @findex gnus-uu-decode-unshar-and-save-view
 Unshars, views and saves the current series
 (@code{gnus-uu-decode-unshar-and-save-view}). 
+@end table
+
+@node PostScript Files
+@subsection PostScript Files
+@cindex PostScript
+
+@table @kbd
+@item X p
+@kindex X p (Summary)
+@findex gnus-uu-decode-postscript
+Unpack the current PostScript series (@code{gnus-uu-decode-postscript}).
+@item X P
+@kindex X P (Summary)
+@findex gnus-uu-decode-postscript-and-save
+Unpack and save the current PostScript series
+(@code{gnus-uu-decode-postscript-and-save}).
+@item X v p
+@kindex X v p (Summary)
+@findex gnus-uu-decode-postscript-view
+View the current PostScript series
+(@code{gnus-uu-decode-postscript-view}).
+@item X v P
+@kindex X v P (Summary)
+@findex gnus-uu-decode-postscript-and-save-view
+View and save the current PostScript series
+(@code{gnus-uu-decode-postscript-and-save-view}). 
 @end table
 
 @node Decoding Variables

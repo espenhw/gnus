@@ -406,7 +406,7 @@ To check for marks, e.g. to underline replied articles, use
 		(overlay-put gnus-newsgroup-selected-overlay 'face 
 			     gnus-summary-selected-face))))))
 
-  (defun gnus-visual-highlight-selected-summary ()
+(defun gnus-visual-highlight-selected-summary ()
     ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
     ;; Highlight selected article in summary buffer
     (if gnus-summary-selected-face
@@ -415,14 +415,20 @@ To check for marks, e.g. to underline replied articles, use
 		 (end (progn (end-of-line) (point)))
 		 (to (max 1 (1- (previous-single-property-change
 				 end 'mouse-face nil beg))))
-		 (from (1+ (previous-single-property-change 
-			    to 'mouse-face nil beg))))
+		 (from (1+ (next-single-property-change 
+			    beg 'mouse-face nil end))))
+	    (if (< to beg)
+		(progn
+		  (setq from beg)
+		  (setq to end)))
 	    (if gnus-newsgroup-selected-overlay
 		(move-overlay gnus-newsgroup-selected-overlay 
 			      from to (current-buffer))
 	      (setq gnus-newsgroup-selected-overlay (make-overlay from to))
 	      (overlay-put gnus-newsgroup-selected-overlay 'face 
-			   gnus-summary-selected-face)))))))
+			   gnus-summary-selected-face))))))
+)
+
 
 ;; New implementation by Christian Limpach <Christian.Limpach@nice.ch>.
 (defun gnus-visual-summary-highlight-line ()

@@ -133,7 +133,9 @@
   t)
 
 (defun nnmh-server-opened (&optional server)
-  (equal server nnmh-current-server))
+  (and (equal server nnmh-current-server)
+       nntp-server-buffer
+       (buffer-name nntp-server-buffer)))
 
 (defun nnmh-status-message (&optional server)
   nnmh-status-string)
