@@ -1,3 +1,10 @@
+2001-05-05 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnslashdot.el (nnslashdot-request-expire-articles): Fix.
+
+	* nnrss.el (nnrss-open-server): Read server data when it is called.
+	(nnrss-request-expire-articles): Fix.
+
 2001-05-05 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-do-send-housekeeping): mail-abbrevs may

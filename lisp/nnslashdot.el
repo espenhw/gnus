@@ -504,7 +504,7 @@
 (deffoo nnslashdot-request-expire-articles
     (articles group &optional server force)
   (nnslashdot-possibly-change-server group server)
-  (let ((item (assoc group nnslashdot-groups)) expirable)
+  (let ((item (assoc group nnslashdot-groups)))
     (when item
       (if (fourth item)
 	  (when (and (>= (length articles) (cadr item)) ;; All are expirable.
@@ -514,10 +514,10 @@
 		      force))
 	    (setq nnslashdot-groups (delq item nnslashdot-groups))
 	    (nnslashdot-write-groups)
-	    (setq expirable articles))
+	    (setq articles nil)) ;; all expired.
 	(setcdr (cddr item) (list (current-time)))
-	(nnslashdot-write-groups)))
-    expirable))
+	(nnslashdot-write-groups))))
+  articles)
 
 (nnoo-define-skeleton nnslashdot)
 

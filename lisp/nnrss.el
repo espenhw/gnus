@@ -33,6 +33,7 @@
 (require 'mm-util)
 (require 'gnus-util)
 (require 'time-date)
+(require 'rfc2231)
 (eval-when-compile
   (ignore-errors
     (require 'xml)
@@ -236,25 +237,27 @@
   t)
 
 (deffoo nnrss-open-server (server &optional defs connectionless)
+  (nnrss-read-server-data server)
   (nnoo-change-server 'nnrss server defs)
   t)
 
 (deffoo nnrss-request-expire-articles
     (articles group &optional server force)
   (nnrss-possibly-change-group group server)
-  (let (e days expirable)
+  (let (e days not-expirable changed)
     (dolist (art articles)
-      (when (setq e (assq art nnrss-group-data))
-      (if (nnmail-expired-article-p
-	   group
-	   (if (listp (setq days (nth 1 e))) days 
-	     (days-to-time (- days (time-to-days '(0 0)))))
-	   force)
-	  (push art expirable)
-	  (setq nnrss-group-data (delq e nnrss-group-data)))))
-    (if expirable
+      (if (and (setq e (assq art nnrss-group-data))
+	       (nnmail-expired-article-p
+		group
+		(if (listp (setq days (nth 1 e))) days 
+		  (days-to-time (- days (time-to-days '(0 0)))))
+		force))
+	  (setq nnrss-group-data (delq e nnrss-group-data)
+		changed t)
+	(push art not-expirable)))
+    (if changed
 	(nnrss-save-group-data group server))
-    expirable))
+    not-expirable))
 
 (deffoo nnrss-request-delete-group (group &optional force server)
   (nnrss-possibly-change-group group server)
@@ -267,7 +270,8 @@
 				   (not (equal server ""))
 				   "-")
 			server ".el")) nnrss-directory)))
-    (delete-file file))
+    (ignore-errors
+      (delete-file file)))
   t)
 
 (deffoo nnrss-request-list-newsgroups (&optional server)
@@ -287,13 +291,17 @@
 (defun nnrss-possibly-change-group (&optional group server)
   (when (and server
 	     (not (nnrss-server-opened server)))
-    (nnrss-read-server-data server)
     (nnrss-open-server server))
   (when (and group (not (equal group nnrss-group)))
     (nnrss-read-group-data group server)
     (setq nnrss-group group)))
 
+(defvar nnrss-extra-categories '(nnrss-snarf-moreover-categories))
+
 (defun nnrss-generate-active ()
+  (if (y-or-n-p "Fetch extra categories?")
+      (dolist (func nnrss-extra-categories)
+	(funcall func)))
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -319,6 +327,7 @@
       (with-temp-buffer
 	(let ((coding-system-for-read 'binary))
 	  (insert-file-contents file))
+	(emacs-lisp-mode)
 	(goto-char (point-min))
 	(eval-buffer)))))
 
@@ -354,6 +363,7 @@
       (with-temp-buffer
 	(let ((coding-system-for-read 'binary))
 	  (insert-file-contents file))
+	(emacs-lisp-mode)
 	(goto-char (point-min))
 	(eval-buffer))
       (dolist (e nnrss-group-data)
@@ -483,16 +493,44 @@ It is useful when `(setq nnrss-use-local t)'."
   (insert "#!/bin/sh\n")
   (insert "WGET=wget\n")
   (insert "RSSDIR='" (expand-file-name nnrss-directory) "'\n")
-  (dolist (elem nnrss-group-alist)
+  (dolist (elem nnrss-server-data)
+    (let ((url (or (nth 2 elem)
+		   (second (assoc (car elem) nnrss-group-alist)))))
     (insert "$WGET -q -O \"$RSSDIR\"/'" 
 	    (nnrss-translate-file-chars (concat (car elem) ".xml"))
-	    "' '"
-	    (second elem) "'\n")))
+	    "' '" url "'\n"))))
 
 (defun nnrss-translate-file-chars (name)
   (let ((nnheader-file-name-translation-alist
 	 (append nnheader-file-name-translation-alist '((?' . ?_)))))
     (nnheader-translate-file-chars name)))
+
+(defvar nnrss-moreover-url 
+  "http://w.moreover.com/categories/category_list_rss.html"
+  "The url of moreover.com categories.")
+
+(defun nnrss-snarf-moreover-categories ()
+  "Snarf RSS links from moreover.com."
+  (interactive)
+  (let (category name url changed)
+    (with-temp-buffer
+      (nnrss-insert nnrss-moreover-url)
+      (goto-char (point-min))
+      (while (re-search-forward 
+	      "<A NAME=\"\\([^\"]+\\)\">\\|<A HREF=\"\\(http://[^\"]*moreover\\.com[^\"]+page\\?c=\\([^\"&]+\\)&o=rss\\)" nil t)
+	(if (match-string 1)
+	    (setq category (match-string 1))
+	  (setq url (match-string 2)
+		name (nnweb-decode-entities-string
+		      (rfc2231-decode-encoded-string 
+		       (match-string 3))))
+	  (if category
+	      (setq name (concat category "." name)))
+	  (unless (assoc name nnrss-server-data)
+	    (setq changed t)
+	    (push (list name 0 url) nnrss-server-data)))))
+    (if changed
+	(nnrss-save-server-data ""))))
 
 (provide 'nnrss)
 
