@@ -1,3 +1,7 @@
+2003-04-24  Simon Josefsson  <jas@extundo.com>
+
+	* sieve.el (sieve-upload): Don't use replace-regexp-in-string.
+
 2003-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-msg.el (gnus-inews-do-gcc): Make sure the obsolete variable
