@@ -98,7 +98,7 @@
 	  (message-mail server subject)
 	  (message-goto-body)
 	  (delete-region (point) (point-max))
-	  (insert-buffer buf)
+	  (insert-buffer-substring buf)
 	  (message "Requesting external body...")
 	  (message-send-and-exit)
 	  (setq info "Request is sent.")

@@ -179,7 +179,7 @@ the region."
   (interactive "r")
   (let* ((buf (current-buffer))
 	 (packet (cdr (assq 1 (with-temp-buffer
-				(insert-buffer buf)
+				(insert-buffer-substring buf)
 				(pgg-decode-armor-region
 				 (point-min) (point-max))))))
 	 (key (cdr (assq 'key-identifier packet)))

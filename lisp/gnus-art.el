@@ -3303,7 +3303,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 		   mml2015-use
 		   (mml2015-clear-verify-function))
 	  (with-temp-buffer
-	    (insert-buffer gnus-original-article-buffer)
+	    (insert-buffer-substring gnus-original-article-buffer)
 	    (setq items (split-string sig))
 	    (message-narrow-to-head)
 	    (let ((inhibit-point-motion-hooks t)

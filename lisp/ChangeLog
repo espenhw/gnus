@@ -1,3 +1,27 @@
+2003-04-07  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (article-verify-x-pgp-sig): Don't use
+	`insert-buffer', the docstring says "This function is meant for
+	the user to run interactively.  Don't call it from programs!"
+
+	* mm-extern.el (mm-extern-mail-server): do.
+
+	* mml1991.el (mml1991-mailcrypt-sign, mml1991-mailcrypt-sign)
+	(mml1991-gpg-sign, mml1991-gpg-encrypt, mml1991-pgg-sign)
+	(mml1991-pgg-encrypt): do.
+
+	* pgg.el (pgg-decrypt-region): do.
+
+	* mm-view.el (mm-view-pkcs7-decrypt): do.
+
+	* mml-smime.el (mml-smime-verify): do.
+
+	* mml.el (mml-insert-mime, mml-preview): do.
+
+	* mml2015.el (mml2015-gpg-decrypt-1, mml2015-gpg-sign)
+	(mml2015-gpg-encrypt, mml2015-pgg-clear-decrypt)
+	(mml2015-pgg-encrypt): do.
+
 2003-04-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-bodies.el (mm-decode-body): Silence XEmacs when compiling.

@@ -125,7 +125,7 @@
 
 (defun mml-smime-verify (handle ctl)
   (with-temp-buffer
-    (insert-buffer (mm-handle-multipart-original-buffer ctl))
+    (insert-buffer-substring (mm-handle-multipart-original-buffer ctl))
     (goto-char (point-min))
     (insert (format "Content-Type: %s; " (mm-handle-media-type ctl)))
     (insert (format "protocol=\"%s\"; "

@@ -738,7 +738,7 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
 	(mml-insert-mml-markup handle buffer textp)))
     (cond
      (mmlp
-      (insert-buffer buffer)
+      (insert-buffer-substring buffer)
       (goto-char (point-max))
       (insert "<#/mml>\n"))
      ((stringp (car handle))
@@ -1039,7 +1039,7 @@ If RAW, don't highlight the article."
 			 (concat (if raw "*Raw MIME preview of "
 				   "*MIME preview of ") (buffer-name))))
       (erase-buffer)
-      (insert-buffer buf)
+      (insert-buffer-substring buf)
       (mml-preview-insert-mail-followup-to)
       (let ((message-deletable-headers (if (message-news-p)
 					   nil

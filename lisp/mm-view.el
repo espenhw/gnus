@@ -559,7 +559,7 @@ map.")))
   t)
 
 (defun mm-view-pkcs7-decrypt (handle)
-  (insert-buffer (mm-handle-buffer handle))
+  (insert-buffer-substring (mm-handle-buffer handle))
   (goto-char (point-min))
   (insert "MIME-Version: 1.0\n")
   (mm-insert-headers "application/pkcs7-mime" "base64" "smime.p7m")

@@ -62,7 +62,7 @@
     (quoted-printable-decode-region (point-min) (point-max))
     (with-temp-buffer
       (setq signature (current-buffer))
-      (insert-buffer text)
+      (insert-buffer-substring text)
       (unless (mc-sign-generic (message-options-get 'message-sender)
 			       nil nil nil nil)
 	(unless (> (point-max) (point-min))
@@ -76,7 +76,7 @@
       (delete-region (point-min) (point-max))
       (if headers (insert headers))
       (insert "\n")
-      (insert-buffer signature)
+      (insert-buffer-substring signature)
       (goto-char (point-max)))))
 
 (defun mml1991-mailcrypt-encrypt (cont &optional sign)
@@ -100,7 +100,7 @@
     (mm-with-unibyte-current-buffer-mule4
       (with-temp-buffer
 	(setq cipher (current-buffer))
-	(insert-buffer text)
+	(insert-buffer-substring text)
 	(unless (mc-encrypt-generic
 		 (or
 		  (message-options-get 'message-recipients)
@@ -121,7 +121,7 @@
 	;;(insert "Content-Type: application/pgp-encrypted\n\n")
 	;;(insert "Version: 1\n\n")
 	(insert "\n")
-	(insert-buffer cipher)
+	(insert-buffer-substring cipher)
 	(goto-char (point-max))))))
 
 ;;; gpg wrapper
@@ -159,7 +159,7 @@
       (delete-region (point-min) (point-max))
       (if headers (insert headers))
       (insert "\n")
-      (insert-buffer signature)
+      (insert-buffer-substring signature)
       (goto-char (point-max)))))
 
 (defun mml1991-gpg-encrypt (cont &optional sign)
@@ -207,7 +207,7 @@
 	;;(insert "Content-Type: application/pgp-encrypted\n\n")
 	;;(insert "Version: 1\n\n")
 	(insert "\n")
-	(insert-buffer cipher)
+	(insert-buffer-substring cipher)
 	(goto-char (point-max))))))
 
 ;; pgg wrapper
@@ -233,7 +233,7 @@
       (pop-to-buffer pgg-errors-buffer)
       (error "Encrypt error"))
     (delete-region (point-min) (point-max))
-    (insert-buffer pgg-output-buffer)
+    (insert-buffer-substring pgg-output-buffer)
     (goto-char (point-min))
     (while (re-search-forward "\r+$" nil t)
       (replace-match "" t t))
@@ -265,7 +265,7 @@
     ;;(insert "Content-Type: application/pgp-encrypted\n\n")
     ;;(insert "Version: 1\n\n")
     (insert "\n")
-    (insert-buffer pgg-output-buffer)
+    (insert-buffer-substring pgg-output-buffer)
     t))
 
 ;;;###autoload
