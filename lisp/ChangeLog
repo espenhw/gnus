@@ -1,5 +1,8 @@
 2001-08-02  Simon Josefsson  <jas@extundo.com>
 
+	* smime.el (smime-sign-region): Handle stderr.
+	(smime-encrypt-region): Ditto.
+
 	* mm-view.el (mm-pkcs7-signed-magic): Make it a regexp.  Don't
 	match the ASN.1 length bytes.
 	(mm-pkcs7-enveloped-magic): Ditto.
