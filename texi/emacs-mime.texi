@@ -1067,6 +1067,14 @@ RFC822 date when the part was read (@code{Content-Disposition}).
 @item size
 The size (in octets) of the part (@code{Content-Disposition}).
 
+@item sign
+What technology to sign this MML part with (@code{smime} or
+@code{pgpmime})
+
+@item encrypt
+What technology to encrypt this MML part with (@code{smime} or
+@code{pgpmime})
+
 @end table
 
 Parameters for @samp{application/octet-stream}:
@@ -1095,6 +1103,24 @@ The size (in octets) of the file.  (@code{Content-Type}.)
 @item permission
 Valid values are @samp{read} and @samp{read-write}
 (@code{Content-Type}).
+
+@end table
+
+Parameters for @samp{sign=smime}:
+
+@table @samp
+
+@item keyfile
+File containing key and certificate for signer.
+
+@end table
+
+Parameters for @samp{encrypt=smime}:
+
+@table @samp
+
+@item certfile
+File containing certificate for recipient.
 
 @end table
 
