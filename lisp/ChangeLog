@@ -534,7 +534,7 @@
 
 2001-12-19 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* nnmaildir.el: New.
+	* nnmaildir.el: New file.
 	From Paul Jarc <prj@po.cwru.edu>.
 
 2001-12-19 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -548,7 +548,7 @@
 
 2001-12-19 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-win.el (gnus-frames-on-display-list): New.
+	* gnus-win.el (gnus-frames-on-display-list): New function.
 	(gnus-get-buffer-window): Use it.
 
 2001-12-19 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -646,15 +646,15 @@
 
 2001-12-13 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* uudecode.el (uudecode-use-external): New.
+	* uudecode.el (uudecode-use-external): New variable.
 	(uudecode-decode-region): Automatically detect external program.
 
-	* binhex.el (binhex-use-external): New.
-	(binhex-decode-region-internal): New.
+	* binhex.el (binhex-use-external): New variable.
+	(binhex-decode-region-internal): New function.
 	(binhex-decode-region): Automatically detect external program.
 	
-	* mm-uu.el (mm-uu-decode-function): 
-	(mm-uu-binhex-decode-function): Use them.
+	* mm-uu.el (mm-uu-decode-function,mm-uu-binhex-decode-function):
+	Use them.
 
 2001-12-12  Simon Josefsson  <jas@extundo.com>
 
@@ -753,7 +753,7 @@
 
 2001-12-07 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-sum.el (gnus-summary-print-truncate-and-quote): New.
+	* gnus-sum.el (gnus-summary-print-truncate-and-quote): New function.
 	(gnus-summary-print-article): Use it.
 
 	* gnus-util.el (gnus-replace-in-string): Typo.
@@ -807,7 +807,7 @@
 
 2001-12-03 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* mm-url.el: New.
+	* mm-url.el: New file.
 	* nnslashdot.el: Use it.
 	* mm-extern.el (mm-extern-url): Use it.
 
@@ -1319,7 +1319,7 @@
 	(message-send-mail): Add Mail-Followup-To.
 	(message-make-mft): New function.
 
-	* gnus.el (gnus-find-subscribed-addresses): New.
+	* gnus.el (gnus-find-subscribed-addresses): New function.
 
 2001-10-31 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
@@ -1339,7 +1339,7 @@
 	mm-coding-system-p. Don't correct it only in XEmacs.
 	(mm-charset-to-coding-system): Use mm-coding-system-p and
 	mm-get-coding-system-list.
-	(mm-emacs-mule, mm-mule4-p): New.
+	(mm-emacs-mule, mm-mule4-p): New variables.
 	(mm-enable-multibyte, mm-disable-multibyte,
 	mm-enable-multibyte-mule4, mm-disable-multibyte-mule4,
 	mm-with-unibyte-current-buffer,
@@ -1406,8 +1406,8 @@
 	message-news-p, which widens the buffer.
 	(message-forward-make-body): New function.
 	(message-forward): Use it.
-	(message-insinuate-rmail): New.
-	(message-forward-rmail-make-body): New.
+	(message-insinuate-rmail): New function.
+	(message-forward-rmail-make-body): New function.
 
 2001-10-30 02:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
@@ -2401,7 +2401,7 @@
 	* nnslashdot.el (nnslashdot-retrieve-headers-1): Replace
 	nnslashdot-*-retrieve-headers.
 	(nnslashdot-request-article): Fix for slashcode 2.2.
-	(nnslashdot-make-tuple): New.
+	(nnslashdot-make-tuple): New function.
 	(nnslashdot-read-groups): Use it.
 
 2001-08-20 01:34:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
@@ -2506,7 +2506,7 @@
 
 	* gnus.el (gnus-expand-group-parameters): Fix.
 
-	* gnus-spec.el (gnus-char-width): New.
+	* gnus-spec.el (gnus-char-width): New function.
 	(gnus-correct-substring, gnus-correct-length): Use it.
 
 	* message.el (message-required-mail-headers): Fix doc.
@@ -2556,7 +2556,7 @@
 
 	* gnus.el (gnus-info-find-node): Take an argument.
 
-	* gnus-art.el (gnus-button-handle-info): New.
+	* gnus-art.el (gnus-button-handle-info): New function.
 	(gnus-url-unhex-string): Replace "+" with " ".
 
 2001-08-17 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -2595,7 +2595,7 @@
 2001-08-17 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* smime.el (smime-point-at-eol): eval-and-compile.
-	(smime-make-temp-file): New.
+	(smime-make-temp-file): New function.
 	(smime-sign-region, smime-encrypt-region, smime-decrypt-region):
 	Use it.
 
@@ -2706,12 +2706,12 @@
 2001-08-10 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nndoc.el (nndoc-article-type): Fix doc.
-	(nndoc-generate-article-function): New.
-	(nndoc-dissection-function): New.
+	(nndoc-generate-article-function): New variable.
+	(nndoc-dissection-function): New variable.
 	(nndoc-type-alist): Add oe-dbx.
-	(nndoc-oe-dbx-type-p): New.
-	(nndoc-oe-dbx-dissection): New.
-	(nndoc-oe-dbx-generate-article): New.
+	(nndoc-oe-dbx-type-p): New function.
+	(nndoc-oe-dbx-dissection): New function.
+	(nndoc-oe-dbx-generate-article): New function.
 
 2001-08-11  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -2730,7 +2730,7 @@
 
 2001-08-10 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* message.el (message-bogus-system-names): New.
+	* message.el (message-bogus-system-names): New variable.
 	(message-make-fqdn): Use it.
 
 2001-08-09 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -2943,7 +2943,7 @@
 2001-07-31 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	Originally from Pavel Jan,Bm(Bk <Pavel@Janik.cz>
 
-	* gnus-agent.el (gnus-agent-make-mode-line-string): New.
+	* gnus-agent.el (gnus-agent-make-mode-line-string): New function.
 	(gnus-agent-toggle-plugged): Use it.
 
 2001-07-31  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -2961,8 +2961,8 @@
 2001-07-30 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	Originally from Andreas Fuchs <asf@void.at>
 
-	* mml2015.el (mml2015-trust-boundaries-alist)
-	(mml2015-gpg-pretty-print-fpr): New.
+	* mml2015.el (mml2015-trust-boundaries-alist): New variable.
+	(mml2015-gpg-pretty-print-fpr): New function.
 	(mml2015-gpg-extract-signature-details): More details, rename from
 	`m-g-e-from'.
 	(mml2015-gpg-verify): Use them.
@@ -3069,12 +3069,12 @@
 
 2001-07-27 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* mm-decode.el (mm-image-type-from-buffer): New.
+	* mm-decode.el (mm-image-type-from-buffer): New function.
 	(mm-get-image): Use it.
 
 2001-07-27 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus.el (gnus-large-newsgroup): If it is nil, ...
+	* gnus.el (gnus-large-newsgroup): Add doc, "If it is nil, ..."
 
 	* gnus-art.el (gnus-mime-view-all-parts): buffer-read-only covers
 	mm-display-parts too.
@@ -3095,9 +3095,9 @@
 
 2001-07-27 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* mml.el (mml-tweak-type-alist): New.
-	(mml-tweak-function-alist): New.
-	(mml-tweak-part): New.
+	* mml.el (mml-tweak-type-alist): New variable.
+	(mml-tweak-function-alist): New variable.
+	(mml-tweak-part): New function.
 	(mml-generate-mime-1): Use it.
 
 2001-07-26 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -3128,7 +3128,7 @@
 
 2001-07-26 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* mm-decode.el (mm-readable-p): New.
+	* mm-decode.el (mm-readable-p): New function.
 	(mm-inline-media-tests): Fix the default testers.
 
 2001-07-26  Simon Josefsson  <jas@extundo.com>
@@ -3171,8 +3171,8 @@
 
 2001-07-25 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-util.el (gnus-byte-compile): New.
-	(gnus-use-byte-compile): New.
+	* gnus-util.el (gnus-byte-compile): New function.
+	(gnus-use-byte-compile): New variable.
 	(gnus-make-sort-function): Use it.
 
 	* nnmail.el (nnmail-get-new-mail): Use it.
@@ -3210,7 +3210,7 @@
 	* message.el (message-bounce): If no Return-Path, the whole
 	content is considered as the original message.
 
-	* nnml.el (nnml-check-directory-twice): New.
+	* nnml.el (nnml-check-directory-twice): New variable.
 	(nnml-article-to-file): Use it.
 	(nnml-retrieve-headers): Hack it.
 
@@ -3241,13 +3241,13 @@
 
 	* gnus-sum.el (gnus-articles-to-read): Use gnus-group-decoded-name.
 
-	* mm-util.el (mm-string-as-multibyte): New.
+	* mm-util.el (mm-string-as-multibyte): New function.
 
 	* nnmh.el (nnmh-request-list-1): Encode, not decode!
 
 2001-07-23 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* mm-util.el (mm-universal-coding-system): New.
+	* mm-util.el (mm-universal-coding-system): New variable.
 
 	* gnus-start.el (gnus-startup-file-coding-system): Use it.
 
@@ -3339,8 +3339,8 @@
 
 2001-07-18 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* mml.el (mml-content-type-parameters): New.
-	(mml-content-disposition-parameters): New.
+	* mml.el (mml-content-type-parameters): New variable.
+	(mml-content-disposition-parameters): New variable.
 	(mml-insert-mime-headers): Use them.
 	(mml-parse-1): Accept charset.
 
@@ -3418,8 +3418,8 @@
 
 	* gnus-msg.el (gnus-msg-treat-broken-reply-to): Add force.
 	(gnus-summary-reply): Use it.
-	(gnus-summary-reply-broken-reply-to): New.
-	(gnus-msg-force-broken-reply-to): New.
+	(gnus-summary-reply-broken-reply-to): New function.
+	(gnus-msg-force-broken-reply-to): New function.
 
 	* mm-view.el (mm-inline-text): Showing as text/plain when error.
 
@@ -3961,7 +3961,7 @@
 	* nnrss.el (nnrss-request-expire-articles): Correct the return value.
 
 	* nnslashdot.el (nnslashdot-request-list): Add time.
-	(nnslashdot-request-expire-articles): New.
+	(nnslashdot-request-expire-articles): New function.
 
 	* gnus-start.el (gnus-check-bogus-newsgroups): Remove bogus
 	secondary methods too.
@@ -4280,10 +4280,8 @@
 
 2001-03-21  Didier Verna  <didier@lrde.epita.fr>
 
-	* gnus-start.el:
 	* gnus-start.el (gnus-subscribe-newsgroup-hooks): New.
 	* gnus-start.el (gnus-subscribe-newsgroup): use it.
-
 
 2001-03-15 09:47:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -4468,7 +4466,7 @@
 
 2001-02-23 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* nnslashdot.el (nnslashdot-backslash-url): New.
+	* nnslashdot.el (nnslashdot-backslash-url): New variable.
 	(nnslashdot-request-list): Use it.
 
 2001-02-23 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -4477,9 +4475,9 @@
 	no file.
 
 	* gnus-sum.el (gnus-summary-import-article): Display it. Enable edit.
-	(gnus-summary-create-article): New.
+	(gnus-summary-create-article): New function.
 
-	* gnus-group.el (gnus-group-mark-article-read): New.
+	* gnus-group.el (gnus-group-mark-article-read): New function.
 
 	* gnus-msg.el (gnus-inews-do-gcc): Use it.
 
@@ -4491,9 +4489,9 @@
 	gnus-article-edit-exit.
 	(gnus-article-edit-exit): Confirm and insert original-article-buffer.
 
-	* gnus.el (gnus-parameters): New.
+	* gnus.el (gnus-parameters): New variable.
 	Suggested by NAGY Andras <nagya@inf.elte.hu>.
-	(gnus-parameters-get-parameter): New.
+	(gnus-parameters-get-parameter): New function.
 	(gnus-group-find-parameter): Use it.
 
 2001-02-23  Simon Josefsson  <simon@josefsson.org>
@@ -4513,11 +4511,11 @@
 
 2001-02-22 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-sum.el (gnus-fetch-headers): New.
+	* gnus-sum.el (gnus-fetch-headers): New function.
 	(gnus-select-newsgroup): Use it.
-	(gnus-summary-insert-articles): New.
-	(gnus-summary-insert-old-articles): New.
-	(gnus-summary-insert-new-articles): New.
+	(gnus-summary-insert-articles): New function.
+	(gnus-summary-insert-old-articles): New function.
+	(gnus-summary-insert-new-articles): New function.
 
 	* gnus-group.el (gnus-group-prepare-flat-list-dead): Use decoded-name.
 	(gnus-group-list-active): Ditto.
@@ -4539,8 +4537,8 @@
 	* gnus-msg.el (gnus-inews-do-gcc): Activate group anyway.
 
 	* gnus-art.el (gnus-mime-display-multipart-alternative-as-mixed):
-	New.
-	(gnus-mime-display-multipart-related-as-mixed): New.
+	New variable.
+	(gnus-mime-display-multipart-related-as-mixed): New variable.
 	(gnus-mime-display-part): Use them.
 
 2001-02-20 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -4608,9 +4606,9 @@
 
 	* gnus-srvr.el (gnus-server-regenerate-server): Use gnus-get-function.
 
-	* nnagent.el (nnagent-request-regenerate): New.
+	* nnagent.el (nnagent-request-regenerate): New function.
 
-	* nnfolder.el (nnfolder-request-regenerate): Deffoo.
+	* nnfolder.el (nnfolder-request-regenerate): New deffoo.
 
 	* nnml.el (nnml-generate-nov-databases): Accept argument
 	server. Don't open server if it is opened.
@@ -4653,9 +4651,9 @@
 
 2001-02-13 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-draft.el (gnus-draft-reminder): New.
+	* gnus-draft.el (gnus-draft-reminder): New function.
 
-	* gnus-art.el (gnus-sender-save-name): New.
+	* gnus-art.el (gnus-sender-save-name): New function.
 
 2001-02-13 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
@@ -4670,7 +4668,7 @@
 	* gnus-topic.el (gnus-subscribe-topics): Return nil if not
 	subscribe.
 
-	* gnus-start.el (gnus-call-subscribe-functions): New.
+	* gnus-start.el (gnus-call-subscribe-functions): New function.
 	(gnus-find-new-newsgroups): Use it.
 	(gnus-ask-server-for-new-groups): Use it.
 	(gnus-check-first-time-used): Use it.
@@ -4695,9 +4693,9 @@
 
 	* gnus-group.el (gnus-group-suspend): Offer save summaries.
 
-	* gnus-art.el (gnus-treat-leading-whitespace): New.
+	* gnus-art.el (gnus-treat-leading-whitespace): New variable.
 	(gnus-treatment-function-alist): Use it.
-	(article-remove-leading-whitespace): New.
+	(article-remove-leading-whitespace): New function.
 	(gnus-article-make-menu-bar): Use it.
 
 	* gnus-sum.el (gnus-summary-wash-empty-map): Add
@@ -4782,7 +4780,7 @@
 
 2001-02-06 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-group.el (gnus-group-listing-limit): New.
+	* gnus-group.el (gnus-group-listing-limit): New variable.
 	(gnus-group-prepare-flat-list-dead): Use old trick to speed up.
 
 	* gnus-topic.el (gnus-group-prepare-topics): Use gnus-killed-hashtb.
@@ -4991,7 +4989,7 @@
 
 2001-01-20 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* mm-util.el (mm-string-as-unibyte): New.
+	* mm-util.el (mm-string-as-unibyte): New function.
 
 	* message.el (message-forward): Use it.
 
@@ -5477,7 +5475,7 @@
 
 	* message.el (message-tool-bar-map): Use it.
 
-	* Makefile.in (install-el): New.
+	* Makefile.in (install-el): New rule.
 
 2000-12-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -6886,7 +6884,7 @@
 
 	* mml2015.el (mml2015-function-alist): Clear verify and decrypt.
 	* mm-uu.el: Reorganized.  Add gnatsweb, pgp-signed, pgp-encrypted.
-	* mm-decode.el (mm-snarf-option): New.
+	* mm-decode.el (mm-snarf-option): New variable.
 
 2000-11-04 13:08:02  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
