@@ -1,3 +1,8 @@
+2004-03-15  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnir.el (nnir-run-swish-e): Fixed typo.  From Adrian Lanz
+	<lanz@fowi.ethz.ch> (tiny change).
+
 2004-01-23  Jesper Harder  <harder@ifa.au.dk>
 
 	* README: update.
