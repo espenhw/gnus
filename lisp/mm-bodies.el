@@ -282,14 +282,17 @@ use the supplied charset unconditionally."
   "Decode region between START and END with CODING-SYSTEM.
 If CODING-SYSTEM is not a valid coding system for the text, let Emacs
 decide which coding system to use."
-  (let* ((decoded (mm-decode-coding-string (buffer-substring start end)
-					   coding-system))
-	 (charsets (find-charset-string decoded)))
-    (if (or (memq 'eight-bit-control charsets)
-	    (memq 'eight-bit-graphic charsets))
-	(mm-decode-coding-region start end 'undecided)
-      (delete-region start end)
-      (insert decoded))))
+  (let* ((orig (buffer-substring start end))
+	 charsets)
+    (save-restriction
+      (narrow-to-region start end)
+      (mm-decode-coding-region (point-min) (point-max) coding-system)
+      (setq charsets (find-charset-region (point-min) (point-max)))
+      (when (or (memq 'eight-bit-control charsets)
+		(memq 'eight-bit-graphic charsets))
+	(delete-region (point-min) (point-max))
+	(insert orig)
+	(mm-decode-coding-region (point-min) (point-max) 'undecided)))))
 
 (defun mm-decode-string (string charset)
   "Decode STRING with CHARSET."
