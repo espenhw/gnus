@@ -49,6 +49,11 @@ The group names are matched, they don't have to be fully qualified."
   :group 'gnus-registry
   :type '(repeat string))
 
+(defcustom gnus-registry-unregistered-group-regex "^nntp"
+  "Group name regex that gnus-registry-register-message-ids won't process."
+  :group 'gnus-registry
+  :type 'regexp)
+
 ;; Function(s) missing in Emacs 20
 (when (memq nil (mapcar 'fboundp '(puthash)))
   (require 'cl)
@@ -151,13 +156,15 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 
 (defun gnus-registry-register-message-ids ()
   "Register the Message-ID of every article in the group"
-  (dolist (article gnus-newsgroup-articles)
-    (let ((id (gnus-registry-fetch-message-id-fast article)))
-      (unless (gnus-registry-fetch-group id)
-	(gnus-message 9 "Registry: Registering article %d with group %s" 
-		      article gnus-newsgroup-name)
-	(gnus-registry-add-group (gnus-registry-fetch-message-id-fast article)
-				 gnus-newsgroup-name)))))
+  (unless (and gnus-registry-unregistered-group-regex
+	       (string-match gnus-registry-unregistered-group-regex gnus-newsgroup-name))
+    (dolist (article gnus-newsgroup-articles)
+      (let ((id (gnus-registry-fetch-message-id-fast article)))
+	(unless (gnus-registry-fetch-group id)
+	  (gnus-message 9 "Registry: Registering article %d with group %s" 
+			article gnus-newsgroup-name)
+	  (gnus-registry-add-group (gnus-registry-fetch-message-id-fast article)
+				   gnus-newsgroup-name))))))
 
 (defun gnus-registry-fetch-message-id-fast (article)
   "Fetch the Message-ID quickly, using the internal gnus-data-list function"
