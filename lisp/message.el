@@ -145,7 +145,7 @@ If the string contains the format spec \"%s\", the Newsgroups
 the article has been posted to will be inserted there.
 If this variable is nil, no such courtesy message will be added."
   :group 'message-sending
-  :type '(radio (const nil) (string :size 0)))
+  :type '(radio (string :format "%t: %v\n" :size 0) (const nil)))
 
 (defcustom message-ignored-bounced-headers
   "^\\(Received\\|Return-Path\\|Delivered-To\\):"
@@ -339,7 +339,8 @@ Archives \(such as groups.google.com\) respect this header."
   "X-No-Archive: Yes - save http://groups.google.com/"
   "Note to insert why you wouldn't want this posting archived.
 If nil, don't insert any text in the body."
-  :type 'string
+  :type '(radio (string :format "%t: %v\n" :size 0)
+		(const nil))
   :group 'message-various)
 
 ;;; Crossposts and Followups
@@ -615,7 +616,8 @@ conjunction with `message-subscribed-regexps' and
 If nil, do not look at any files to determine list subscriptions.  If
 non-nil, each line of this file should be a mailing list address."
   :group 'message-interface
-  :type 'string)
+  :type '(radio (file :format "%t: %v\n" :size 0)
+		(const nil)))
 
 (defcustom message-subscribed-addresses nil
   "*Specifies a list of addresses the user is subscribed to.
@@ -1311,7 +1313,8 @@ no, only reply back to the author."
   "*Domain part of Messsage-Ids."
   :group 'message-headers
   :link '(custom-manual "(message)News Headers")
-  :type 'string)
+  :type '(radio (const :format "%v  " nil)
+		(string :format "FQDN: %v\n" :size 0)))
 
 (defcustom message-use-idna (and (condition-case nil (require 'idna)
 				   (file-error))

@@ -4572,17 +4572,17 @@ Unscored articles will be counted as having a score of zero."
 (defcustom gnus-sum-thread-tree-root "> "
   "With %B spec, used for the root of a thread.
 If nil, use subject instead."
-  :type 'string
+  :type '(radio (const :format "%v  " nil) (string :size 0))
   :group 'gnus-thread)
 (defcustom gnus-sum-thread-tree-false-root "> "
   "With %B spec, used for a false root of a thread.
 If nil, use subject instead."
-  :type 'string
+  :type '(radio (const :format "%v  " nil) (string :size 0))
   :group 'gnus-thread)
 (defcustom gnus-sum-thread-tree-single-indent ""
   "With %B spec, used for a thread with just one message.
 If nil, use subject instead."
-  :type 'string
+  :type '(radio (const :format "%v  " nil) (string :size 0))
   :group 'gnus-thread)
 (defcustom gnus-sum-thread-tree-vertical "| "
   "With %B spec, used for drawing a vertical line."

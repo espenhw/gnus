@@ -235,13 +235,13 @@
 ;;;###autoload
 (defcustom gnus-outlook-deuglify-unwrap-min 45
   "Minimum length of the cited line above the (possibly) wrapped line."
-  :type 'number
+  :type 'integer
   :group 'gnus-outlook-deuglify)
 
 ;;;###autoload
 (defcustom gnus-outlook-deuglify-unwrap-max 95
   "Maximum length of the cited line after unwrapping."
-  :type 'number
+  :type 'integer
   :group 'gnus-outlook-deuglify)
 
 (defcustom gnus-outlook-deuglify-cite-marks ">|#%"
@@ -251,7 +251,8 @@
 
 (defcustom gnus-outlook-deuglify-unwrap-stop-chars nil ;; ".?!" or nil
   "Characters that inhibit unwrapping if they are the last one on the cited line above the possible wrapped line."
-  :type 'string
+  :type '(radio (const :format "None  " nil)
+		(string :size 0 :value ".?!"))
   :group 'gnus-outlook-deuglify)
 
 (defcustom gnus-outlook-deuglify-no-wrap-chars "`"

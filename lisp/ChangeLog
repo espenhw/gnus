@@ -1,3 +1,20 @@
+2003-08-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* canlock.el (canlock-password): Fix customization type.
+	(canlock-password-for-verify): Ditto.
+	* deuglify.el (gnus-outlook-deuglify-unwrap-min): Ditto.
+	(gnus-outlook-deuglify-unwrap-max): Ditto.
+	(gnus-outlook-deuglify-unwrap-stop-chars): Ditto.
+	* gnus-sum.el (gnus-sum-thread-tree-root): Ditto.
+	(gnus-sum-thread-tree-false-root): Ditto.
+	(gnus-sum-thread-tree-single-indent): Ditto.
+	* message.el (message-archive-note): Ditto.
+	(message-subscribed-address-file): Ditto.
+	(message-user-fqdn): Ditto.
+
+	* gnus-start.el (gnus-save-killed-list): Fix last change.
+	* message.el (message-courtesy-message): Ditto.
+
 2003-08-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-art.el (gnus-header-face-alist): Revert previous change.
