@@ -30,6 +30,7 @@
 (require 'gnus-sum)
 (require 'gnus-score)
 (require 'gnus-srvr)
+(require 'gnus-util)
 (eval-when-compile
   (if (featurep 'xemacs)
       (require 'itimer)
@@ -1869,6 +1870,9 @@ FILE and places the combined headers into `nntp-server-buffer'."
                                       (gnus-agent-long-article
                                        (gnus-agent-find-parameter
                                         group 'agent-long-article))
+                                      (gnus-agent-short-article
+                                       (gnus-agent-find-parameter
+                                        group 'agent-short-article))
                                       (gnus-agent-low-score
                                        (gnus-agent-find-parameter
                                         group 'agent-low-score))
@@ -2115,7 +2119,7 @@ The following commands are available:
                  (lambda (c)
                    (setcdr c
                            (delq nil
-                                 (mapcar*
+                                 (gnus-mapcar
                                   (lambda (valu symb)
                                     (if valu
                                         (cons symb valu)))

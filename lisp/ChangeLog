@@ -1,3 +1,14 @@
+2003-03-06  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-fetch-group-1): Added missing binding
+	on gnus-agent-short-article.
+	(gnus-category-read): Replaced CL function mapcar* with new macro:
+	gnus-mapcar.
+	* gnus-util.el (gnus-mapcar): New macro.  Generalizes mapcar to
+	support functions that accept multiple parameters.  A separate
+	sequence must be provided for each parameter in the function.
+	Iteration stops when the end of the shortest list is reached.
+
 2003-03-06  Jesper Harder  <harder@ifa.au.dk>
 
 	* nnimap.el (nnimap-request-accept-article): Use delete-region.
