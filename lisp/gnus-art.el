@@ -701,10 +701,10 @@ To see e.g. security buttons you could set this to
   :group 'gnus-article-mime
   :type '(repeat regexp))
 
-(defcustom gnus-body-boundary-delimiter "-"
+(defcustom gnus-body-boundary-delimiter "_"
   "String used to delimit header and body.
 This variable is used by `gnus-article-treat-body-boundary' which can
-be controled by `gnus-treat-body-boundary'."
+be controlled by `gnus-treat-body-boundary'."
   :group 'gnus-article-various
   :type '(choice (item :tag "None" :value nil)
 		 string))
