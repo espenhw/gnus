@@ -1,3 +1,7 @@
+2004-03-29  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Spam ELisp Package Sequence of Events): some clarifications
+
 2004-03-18  Helmut Waitzmann  <Helmut.Waitzmann@web.de>  (tiny change)
 
 	* gnus.texi (Various Summary Stuff): Fix the documentation for

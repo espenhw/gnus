@@ -22566,14 +22566,15 @@ Gnus does not do further splitting.  The @code{spam-autodetect} and
 @code{spam-autodetect-methods} group parameters (accessible with
 @kbd{G c} and @kbd{G p} as usual), and the corresponding variables
 @code{gnus-spam-autodetect} and @code{gnus-spam-autodetect-methods}
-(accessible with @kbd{M-x customize-variable} as usual).
+(accessible with @kbd{M-x customize-variable} as usual) can help.
 
-When @code{spam-autodetect} is used, it hooks into the process of
-entering a group.  Thus, entering a group with unseen or unread
-articles becomes the substitute for checking incoming mail.  Whether
-only unseen articles or all unread articles will be processed is
-determined by the @code{spam-autodetect-recheck-messages}.  When set
-to @code{t}, unread messages will be rechecked.
+When @code{spam-autodetect} is used (you can turn it on for a
+group/topic or wholesale by regex, as needed), it hooks into the
+process of entering a group.  Thus, entering a group with unseen or
+unread articles becomes the substitute for checking incoming mail.
+Whether only unseen articles or all unread articles will be processed
+is determined by the @code{spam-autodetect-recheck-messages}.  When
+set to @code{t}, unread messages will be rechecked.
 
 @code{spam-autodetect} grants the user at once more and less control
 of spam filtering.  The user will have more control over each group's
