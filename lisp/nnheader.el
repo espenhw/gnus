@@ -468,27 +468,50 @@ the line could be found."
   (current-buffer))
 
 (defmacro nnheader-temp-write (file &rest forms)
-  "Create a new buffer, evaluate FORM there, and write the buffer to FILE."
-  `(save-excursion
-     (let* ((nnheader-temp-file ,file)
-	    (default-major-mode 'fundamental-mode)
-	    (nnheader-temp-cur-buffer
-	     (nnheader-set-temp-buffer
-	      (generate-new-buffer-name " *nnheader temp*"))))
-       (when (and nnheader-temp-file 
-		  (not (file-directory-p (file-name-directory 
-					  nnheader-temp-file))))
-	 (make-directory (file-name-directory nnheader-temp-file) t))
-       (unwind-protect
-	   (prog1
+  "Create a new buffer, evaluate FORMS there, and write the buffer to FILE.
+Return the value of FORMS.
+If FILE is nil, just evaluate FORMS and don't save anything.
+If FILE is t, return the buffer contents as a string."
+  (let ((temp-file (make-symbol "temp-file"))
+	(temp-buffer (make-symbol "temp-buffer"))
+	(temp-results (make-symbol "temp-results")))
+    `(save-excursion
+       (let* ((,temp-file ,file)
+	      (default-major-mode 'fundamental-mode)
+	      (,temp-buffer
 	       (progn
-		 ,@forms)
-	     (when nnheader-temp-file
-	       (set-buffer nnheader-temp-cur-buffer)
-	       (write-region (point-min) (point-max) 
-			     nnheader-temp-file nil 'nomesg)))
-	 (when (buffer-name nnheader-temp-cur-buffer)
-	   (kill-buffer nnheader-temp-cur-buffer))))))
+		 (set-buffer
+		  (get-buffer-create
+		   (generate-new-buffer-name " *nnheader temp*")))
+		 (buffer-disable-undo (current-buffer))
+		 (current-buffer)))
+	      ,temp-results)
+	 (unwind-protect
+	     (progn
+	       (setq ,temp-results (progn ,@forms))
+	       (cond
+		;; Don't save anything.
+		((null ,temp-file)
+		 ,temp-results)
+		;; Return the buffer contents.
+		((eq ,temp-file t)
+		 (set-buffer ,temp-buffer)
+		 (buffer-string))
+		;; Save a file.
+		(t
+		 (set-buffer ,temp-buffer)
+		 ;; Make sure the directory where this file is
+		 ;; to be saved exists.
+		 (when (not (file-directory-p
+			     (file-name-directory ,temp-file)))
+		   (make-directory (file-name-directory ,temp-file) t))
+		 ;; Save the file.
+		 (write-region (point-min) (point-max)
+			       ,temp-file nil 'nomesg)
+		 ,temp-results)))
+	   ;; Kill the buffer.
+	   (when (buffer-name ,temp-buffer)
+	     (kill-buffer ,temp-buffer)))))))
 
 (put 'nnheader-temp-write 'lisp-indent-function 1)
 (put 'nnheader-temp-write 'lisp-indent-hook 1)

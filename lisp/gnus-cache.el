@@ -524,7 +524,7 @@ $ emacs -batch -l ~/.emacs -l gnus -f gnus-jog-cache"
     (gnus-group-universal-argument 
      nil nil 
      (lambda ()
-       (gnus-summary-read-group nil nil t)
+       (gnus-summary-read-group (gnus-group-group-name) nil t)
        ;; ... and enter the articles into the cache.
        (when (eq major-mode 'gnus-summary-mode)
 	 (gnus-uu-mark-buffer)

@@ -273,7 +273,12 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 	  (set-marker (caar marks) nil)
 	  (setq marks (cdr marks)))
 	(when marks
-	  (set-marker (caar marks) nil))))))
+	  (set-marker (caar marks) nil))
+	;; All this information is now incorrect.
+	(setq gnus-cite-prefix-alist nil
+	      gnus-cite-attribution-alist nil
+	      gnus-cite-loose-prefix-alist nil
+	      gnus-cite-loose-attribution-alist nil)))))
 
 (defun gnus-article-hide-citation (&optional arg force)
   "Toggle hiding of all cited text except attribution lines.

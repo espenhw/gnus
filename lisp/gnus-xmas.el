@@ -599,22 +599,22 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 `right-toolbar', and `left-toolbar'.")
 
 (defvar gnus-group-toolbar 
-  '(
-    [gnus-group-get-new-news gnus-group-get-new-news t "Get new news"]
+  '([gnus-group-get-new-news gnus-group-get-new-news t "Get new news"]
     [gnus-group-get-new-news-this-group 
      gnus-group-get-new-news-this-group t "Get new news in this group"]
     [gnus-group-catchup-current 
      gnus-group-catchup-current t "Catchup group"]
     [gnus-group-describe-group 
      gnus-group-describe-group t "Describe group"]
+    [gnus-group-unsubscribe gnus-group-unsubscribe t "Unsubscribe group"]
+    [gnus-group-subscribe gnus-group-subscribe t "Subscribe group"]
     [gnus-group-kill-group gnus-group-kill-group t "Kill group"]
     [gnus-group-exit gnus-group-exit t "Exit Gnus"]
     )
   "The group buffer toolbar.")
 
 (defvar gnus-summary-toolbar 
-  '(
-    [gnus-summary-prev-unread 
+  '([gnus-summary-prev-unread 
      gnus-summary-prev-unread-article t "Prev unread article"]
     [gnus-summary-next-unread 
      gnus-summary-next-unread-article t "Next unread article"]
@@ -641,6 +641,8 @@ If it is non-nil, it must be a toolbar.  The five legal values are
      gnus-uu-post-news t "Post an uuencoded article"]
     [gnus-summary-cancel-article
      gnus-summary-cancel-article t "Cancel article"]
+    [gnus-summary-catchup
+     gnus-summary-catchup t "Catchup"]
     [gnus-summary-catchup-and-exit
      gnus-summary-catchup-and-exit t "Catchup and exit"]
     [gnus-summary-exit gnus-summary-exit t "Exit this summary"]
@@ -672,6 +674,8 @@ If it is non-nil, it must be a toolbar.  The five legal values are
      gnus-summary-save-article t "Save article"]
     [gnus-summary-catchup-and-exit
      gnus-summary-catchup-and-exit t "Catchup and exit"]
+    [gnus-summary-catchup
+     gnus-summary-catchup t "Catchup"]
     [gnus-summary-exit gnus-summary-exit t "Exit this summary"]
     )
   "The summary buffer mail toolbar.")

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.43 Manual
+@settitle Red Gnus 0.44 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.43 Manual
+@title Red Gnus 0.44 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -12540,7 +12540,8 @@ Norwegian, and was the person(s) who invented NoCeM.
 
 @item jem@@xpat.com;
 @cindex Jem
-Jem---Korean despammer who is getting very busy these days.
+John Milburn---despammer located in Korea who is getting very busy these
+days.
 
 @item red@@redpoll.mrfs.oh.us (Richard E. Depew)
 Richard E. Depew---lone American despammer.  He mostly cancels binary

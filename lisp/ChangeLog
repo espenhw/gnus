@@ -1,3 +1,43 @@
+Fri Sep 27 21:24:46 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-sum.el (gnus-nov-parse-line): Would double articles.
+
+Fri Sep 27 20:52:31 1996  Shlomo Mahlab  <shlomo@en3501.oren.co.il>
+
+	* gnus-cache.el (gnus-jog-cache): Call with function name.
+
+	* gnus-group.el (gnus-group-universal-argument): Shadowed `func'. 
+
+Fri Sep 27 19:48:52 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-cite.el (gnus-article-fill-cited-article): Nix out data
+	after filling.
+
+	* gnus-group.el (gnus-group-unsubscribe-current-group): Accept
+	second param.
+	(gnus-group-unsubscribe): New function.
+	(gnus-group-subscribe): New function.
+
+Fri Sep 27 17:36:31 1996  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-sum.el (gnus-get-newsgroup-headers-xover): Never add nil
+	headers. 
+
+Fri Sep 27 17:33:30 1996  Stephen Peters  <speters@cygnus.com>
+
+	* gnus-art.el (gnus-header-face-alist): Typo.
+
+Fri Sep 27 04:10:21 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-summary-mail-crosspost-complaint): Add a tag
+	to the subject.
+	(gnus-mail-yank-original): Elided.
+	(gnus-inews-yank-articles): Would yank articles in reverse order.
+
+Thu Sep 26 22:39:45 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.43 is released.
+
 Thu Sep 26 22:13:00 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nnweb.el (nnweb-altavista-wash-article): Didn't remove all

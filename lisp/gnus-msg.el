@@ -242,13 +242,13 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
 
 (defun gnus-inews-yank-articles (articles)
   (let (beg article)
+    (message-goto-body)      
     (while (setq article (pop articles))
       (save-window-excursion
 	(set-buffer gnus-summary-buffer)
 	(gnus-summary-select-article nil nil nil article)
 	(gnus-summary-remove-process-mark article))
       (gnus-copy-article-buffer)
-      (message-goto-body)      
       (let ((message-reply-buffer gnus-article-copy)
 	    (message-reply-headers gnus-current-headers))
 	(message-yank-original)
@@ -630,6 +630,9 @@ The current group name will be inserted at \"%s\".")
 	  (set-buffer gnus-message-buffer)
 	  (message-goto-body)
 	  (insert (format gnus-crosspost-complaint newsgroups group))
+	  (message-goto-subject)
+	  (re-search-forward " *$")
+	  (replace-match " (crosspost notification)" t t)
 	  (when (gnus-y-or-n-p "Send this complaint? ")
 	    (message-send-and-exit)))))))
 
@@ -665,13 +668,6 @@ The current group name will be inserted at \"%s\".")
       (skip-chars-forward "^,")
       (skip-chars-forward ", "))
     accumulated))
-
-(defun gnus-mail-yank-original ()
-  (interactive)
-  (save-excursion
-    (mail-yank-original nil))
-  (or mail-yank-hooks mail-citation-hook
-      (run-hooks 'news-reply-header-hook)))
 
 (defun gnus-inews-add-to-address (group)
   (let ((to-address (mail-fetch-field "to")))

@@ -3946,11 +3946,12 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 (defmacro gnus-nov-field ()
   '(buffer-substring (point) (if (gnus-nov-skip-field) (1- (point)) eol)))
 
+(defvar gnus-nov-none-counter 0)
+
 ;; This function has to be called with point after the article number
 ;; on the beginning of the line.
 (defun gnus-nov-parse-line (number dependencies &optional force-new)
-  (let ((none 0)
-	(eol (gnus-point-at-eol))
+  (let ((eol (gnus-point-at-eol))
 	(buffer (current-buffer))
 	header ref id id-dep ref-dep)
 
@@ -3967,17 +3968,17 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	   (setq id (or (gnus-nov-field)
 			(concat "none+"
 				(int-to-string
-				 (setq none (1+ none)))))) ; id
+				 (incf gnus-nov-none-counter))))) ; id
 	   (progn
-	     (save-excursion
-	       (let ((beg (point)))
-		 (search-forward "\t" eol)
-		 (if (search-backward ">" beg t)
-		     (setq ref
-			   (buffer-substring
-			    (1+ (point))
-			    (search-backward "<" beg t)))
-		   (setq ref nil))))
+	     (let ((beg (point)))
+	       (search-forward "\t" eol)
+	       (if (search-backward ">" beg t)
+		   (setq ref
+			 (buffer-substring
+			  (1+ (point))
+			  (search-backward "<" beg t)))
+		 (setq ref nil))
+	       (goto-char beg))
 	     (gnus-nov-field))		; refs
 	   (gnus-nov-read-integer)	; chars
 	   (gnus-nov-read-integer)	; lines
@@ -4008,11 +4009,12 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	      (setq header nil))
 	  (setcar (symbol-value id-dep) header))
       (set id-dep (list header)))
-    (if (boundp (setq ref-dep (intern (or ref "none") dependencies)))
-	(setcdr (symbol-value ref-dep)
-		(nconc (cdr (symbol-value ref-dep))
-		       (list (symbol-value id-dep))))
-      (set ref-dep (list nil (symbol-value id-dep))))
+    (when header
+      (if (boundp (setq ref-dep (intern (or ref "none") dependencies)))
+	  (setcdr (symbol-value ref-dep)
+		  (nconc (cdr (symbol-value ref-dep))
+			 (list (symbol-value id-dep))))
+	(set ref-dep (list nil (symbol-value id-dep)))))
     header))
 
 ;; Goes through the xover lines and returns a list of vectors
@@ -4042,14 +4044,14 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
 		   (eq number (car sequence))
 		   (progn
 		     (setq sequence (cdr sequence))
-		     (push (inline (gnus-nov-parse-line
-				    number dependencies force-new))
-			   headers)))
+		     (setq header (inline
+				    (gnus-nov-parse-line
+				     number dependencies force-new))))
+		   (push header headers))
 	      (forward-line 1))
 	  (error
-	   (progn
-	     (gnus-error 4 "Strange nov line")
-	     (forward-line 1)))))
+	   (gnus-error 4 "Strange nov line")))
+	(forward-line 1))
       (nreverse headers))))
 
 (defun gnus-article-get-xrefs ()

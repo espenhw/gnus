@@ -261,7 +261,7 @@ above them."
 
 (defcustom gnus-header-face-alist
   '(("From" nil gnus-header-from-face)
-    ("Subejct" nil gnus-header-subject-face)
+    ("Subject" nil gnus-header-subject-face)
     ("Newsgroups:.*," nil gnus-header-newsgroups-face)
     ("" gnus-header-name-face gnus-header-content-face))
   "Controls highlighting of article header.

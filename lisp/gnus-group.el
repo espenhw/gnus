@@ -1284,8 +1284,7 @@ Return nil if the group isn't displayed."
 (defun gnus-group-universal-argument (arg &optional groups func)
   "Perform any command on all groups according to the process/prefix convention."
   (interactive "P")
-  (let ((groups (or groups (gnus-group-process-prefix arg)))
-	func)
+  (let ((groups (or groups (gnus-group-process-prefix arg))))
     (if (eq (setq func (or func
 			   (key-binding
 			    (read-key-sequence
@@ -2368,7 +2367,17 @@ or nil if no action could be taken."
       (gnus-group-update-group-line)))
   (gnus-group-position-point))
 
-(defun gnus-group-unsubscribe-current-group (&optional n)
+(defun gnus-group-unsubscribe (&optional n)
+  "Unsubscribe the current group."
+  (interactive "P")
+  (gnus-group-unsubscribe-current-group n 'unsubscribe))
+
+(defun gnus-group-subscribe (&optional n)
+  "Unsubscribe the current group."
+  (interactive "P")
+  (gnus-group-unsubscribe-current-group n 'subscribe))
+
+(defun gnus-group-unsubscribe-current-group (&optional n do-sub)
   "Toggle subscription of the current group.
 If given numerical prefix, toggle the N next groups."
   (interactive "P")
@@ -2379,9 +2388,17 @@ If given numerical prefix, toggle the N next groups."
 	    groups (cdr groups))
       (gnus-group-remove-mark group)
       (gnus-group-unsubscribe-group
-       group (if (<= (gnus-group-group-level) gnus-level-subscribed)
-		 gnus-level-default-unsubscribed
-	       gnus-level-default-subscribed) t)
+       group 
+       (cond
+	((eq do-sub 'unsubscribe)
+	 gnus-level-default-unsubscribed)
+	((eq do-sub 'subscribe)
+	 gnus-level-default-subscribed)
+	((<= (gnus-group-group-level) gnus-level-subscribed)
+	 gnus-level-default-unsubscribed)
+	(t
+	 gnus-level-default-subscribed))
+       t)
       (gnus-group-update-group-line))
     (gnus-group-next-group 1)))
 
