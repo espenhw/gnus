@@ -32,8 +32,7 @@
 (require 'message)
 (require 'gnus-range)
 
-(eval-when-compile
-  (defun gnus-agent-expire (a b c)))
+(autoload 'gnus-agent-expire "gnus-agent")
 
 (defcustom gnus-open-server-hook nil
   "Hook called just before opening connection to the news server."
