@@ -291,19 +291,24 @@ If FULLP, return the entire record returned."
   (mm-with-unibyte-buffer
     (let ((coding-system-for-read 'binary) 
 	  (coding-system-for-write 'binary)
-	  (tcp-p (not (fboundp 'open-network-stream))))
+	  (tcp-p (and (not (fboundp 'open-network-stream))
+		      (not (featurep 'xemacs)))))
       (let ((process
-	     (if tcp-p
-		 (open-network-stream
-		  "dns" (current-buffer)
-		  (car dns-servers) "domain")
+ 	     (cond
+	      ((featurep 'xemacs)
+	       (open-network-stream
+		"dns" (current-buffer) (car dns-servers) "domain" 'udp))
+	      (tcp-p
+	       (open-network-stream
+		"dns" (current-buffer) (car dns-servers) "domain"))
+	      (t
 	       (make-network-process
 		:name "dns"
 		:coding 'binary
 		:buffer (current-buffer)
 		:host (car dns-servers)
 		:service "domain"
-		:type 'datagram)))
+		:type 'datagram))))
 	    (step 100)
 	    (times (* dns-timeout 1000))
 	    (id (random 65000)))

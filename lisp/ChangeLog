@@ -1,3 +1,7 @@
+2002-03-31  Andrew Cohen  <cohen@andy.bu.edu>
+
+	* dns.el: open-network-stream under XEmacs does udp.
+
 2002-03-31  Lars Magne Ingebrigtsen  <larsi@quimbies.gnus.org>
 
 	* spam.el (spam-enter-whitelist): New function.
