@@ -266,17 +266,36 @@
 
 (defun mm-display-inline-fontify (handle mode)
   (let (text)
-    (with-temp-buffer
-      (mm-insert-part handle)
-      (funcall mode)
-      (font-lock-fontify-buffer)
-      (when (fboundp 'extent-list)
-	(map-extents (lambda (ext ignored)
-		       (set-extent-property ext 'duplicable t)
-		       nil)
-		     nil nil nil nil nil 'text-prop))
-      (setq text (buffer-string)))
+    ;; XEmacs @#$@ version of font-lock refuses to fully turn itself
+    ;; on for buffers whose name begins with " ".  That's why we use
+    ;; save-current-buffer/get-buffer-create rather than
+    ;; with-temp-buffer.
+    (save-current-buffer
+      (set-buffer (generate-new-buffer "*fontification*"))
+      (unwind-protect
+	  (progn
+	    (buffer-disable-undo)
+	    (mm-insert-part handle)
+	    (funcall mode)
+	    (let ((font-lock-verbose nil))
+	      ;; I find font-lock a bit too verbose.
+	      (font-lock-fontify-buffer))
+	    ;; By default, XEmacs font-lock uses non-duplicable text
+	    ;; properties.  This code forces all the text properties
+	    ;; to be copied along with the text.
+	    (when (fboundp 'extent-list)
+	      (map-extents (lambda (ext ignored)
+			     (set-extent-property ext 'duplicable t)
+			     nil)
+			   nil nil nil nil nil 'text-prop))
+	    (setq text (buffer-string)))
+	(kill-buffer (current-buffer))))
     (mm-insert-inline handle text)))
+
+;; Shouldn't these functions check whether the user even wants to use
+;; font-lock?  At least under XEmacs, this fontification is pretty
+;; much unconditional.  Also, it would be nice to change for the size
+;; of the fontified region.
 
 (defun mm-display-patch-inline (handle)
   (mm-display-inline-fontify handle 'diff-mode))

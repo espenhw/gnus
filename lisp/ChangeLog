@@ -1,3 +1,8 @@
+2001-04-24  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* mm-view.el (mm-display-inline-fontify): Allow XEmacs to fully
+	fontify HANDLE.
+
 2001-04-18  Simon Josefsson  <simon@josefsson.org>
 
 	* smime.el (smime-ask-passphrase): Rework to return value.
