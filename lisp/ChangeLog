@@ -1,3 +1,8 @@
+2002-12-03  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus.el (fboundp): After loading mm-util, make sure it was the
+	right one.
+
 2002-11-29  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-art.el (gnus-inhibit-mime-unbuttonizing): Moved here from

@@ -34,6 +34,10 @@
 (require 'wid-edit)
 (require 'mm-util)
 
+;; Make sure it was the right mm-util.
+(unless (fboundp 'mm-guess-mime-charset)
+  (error "Wrong `mm-util' found in `load-path'.  Make sure the Gnus one is found first."))
+
 (defgroup gnus nil
   "The coffee-brewing, all singing, all dancing, kitchen sink newsreader."
   :group 'news
