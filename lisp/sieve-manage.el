@@ -65,7 +65,7 @@
 ;;
 ;; 2001-10-31 Committed to Oort Gnus.
 ;;
-;; $Id: sieve-manage.el,v 6.1 2001/11/01 00:50:22 jas Exp $
+;; $Id: sieve-manage.el,v 6.2 2001/11/01 01:18:11 zsh Exp $
 
 ;;; Code:
 
@@ -107,7 +107,7 @@
     (starttls  sieve-manage-starttls-p         sieve-manage-starttls-open))
   "Definition of network streams.
 
-(NAME CHECK OPEN)
+\(NAME CHECK OPEN)
 
 NAME names the stream, CHECK is a function returning non-nil if the
 server support the stream and OPEN is a function for opening the
@@ -121,11 +121,11 @@ stream.")
     (plain      sieve-manage-plain-p          sieve-manage-plain-auth))
   "Definition of authenticators.
 
-(NAME CHECK AUTHENTICATE)
+\(NAME CHECK AUTHENTICATE)
 
 NAME names the authenticator.  CHECK is a function returning non-nil if
 the server support the authenticator and AUTHENTICATE is a function
-for doing the actuall authentification.")
+for doing the actual authentication.")
 
 (defcustom sieve-manage-default-port 2000
   "Default port number for managesieve protocol."

@@ -1,5 +1,11 @@
 2001-11-28 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* sieve-manage.el (sieve-manage-stream-alist): Backslash before
+	open parenthesis in doc.
+	(sieve-manage-authenticator-alist): Typo in doc.
+	* imap.el (imap-authenticator-alist): Typo in doc.
+	(imap-stream-alist): Backslash.
+
 	* gnus-sum.el (gnus-summary-limit-to-author): Missing arguments.
 	  Thanks to david.goldberg6@verizon.net (David S. Goldberg)
 

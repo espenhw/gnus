@@ -264,7 +264,7 @@ encoded mailboxes which doesn't translate into ISO-8859-1."
     (starttls  imap-starttls-p         imap-starttls-open))
   "Definition of network streams.
 
-(NAME CHECK OPEN)
+\(NAME CHECK OPEN)
 
 NAME names the stream, CHECK is a function returning non-nil if the
 server support the stream and OPEN is a function for opening the
@@ -287,11 +287,11 @@ stream.")
     (digest-md5 imap-digest-md5-p     imap-digest-md5-auth))
   "Definition of authenticators.
 
-(NAME CHECK AUTHENTICATE)
+\(NAME CHECK AUTHENTICATE)
 
 NAME names the authenticator.  CHECK is a function returning non-nil if
 the server support the authenticator and AUTHENTICATE is a function
-for doing the actuall authentification.")
+for doing the actual authentication.")
 
 (defvar imap-error nil
   "Error codes from the last command.")
