@@ -1,5 +1,7 @@
 2002-09-26  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-int.el (gnus-server-unopen-status): Defcustom.
+
 	* mml-sec.el (mml-signencrypt-style): Docstring to font-lock
 	better.
 

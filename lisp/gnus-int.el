@@ -35,12 +35,16 @@
   :group 'gnus-start
   :type 'hook)
 
-(defvar gnus-server-unopen-status nil
+(defcustom gnus-server-unopen-status nil
   "The default status if the server is not able to open.
 If the server is covered by Gnus agent, the possible values are
 `denied', set the server denied; `offline', set the server offline;
 `nil', ask user.  If the server is not covered by Gnus agent, set the
-server denied.")
+server denied."
+  :group 'gnus-start
+  :type '(choice (const :tag "Ask" nil)
+		 (const :tag "Deny server" denied)
+		 (const :tag "Unplugg Agent" offline)))
 
 ;;;
 ;;; Server Communication
