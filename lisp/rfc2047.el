@@ -141,6 +141,8 @@ Should be called narrowed to the head of the message."
 		(rfc2047-fold-region (save-excursion
 				       (goto-char (point-min))
 				       (skip-chars-forward "^:")
+				       (and (looking-at ": ")
+					    (forward-char 2))
 				       (point)) (point-max)))
 	    ;; We found something that may perhaps be encoded.
 	    (setq method nil
