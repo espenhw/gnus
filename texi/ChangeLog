@@ -1,3 +1,10 @@
+2002-02-12  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.texi (Sending Variables): Addition.
+
+	* gnus.texi (Group Parameters): Add unread, not read.
+	(Archived Messages): Addition.
+
 2002-02-09  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Group Parameters): Addition.

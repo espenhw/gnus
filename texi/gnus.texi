@@ -2719,12 +2719,14 @@ news group.
 @item gcc-self
 @cindex gcc-self
 If @code{(gcc-self . t)} is present in the group parameter list, newly
-composed messages will be @code{Gcc}'d to the current group.  If
+composed messages will be @code{Gcc}'d to the current group If
 @code{(gcc-self . none)} is present, no @code{Gcc:} header will be
 generated, if @code{(gcc-self . "string")} is present, this string will
 be inserted literally as a @code{gcc} header.  This parameter takes
 precedence over any default @code{Gcc} rules as described later
-(@pxref{Archived Messages}).
+(@pxref{Archived Messages}).  CAVEAT:: It yields an error putting
+@code{(gcc-self . t)} in groups of a @code{nntp} server or so, because
+a @code{nntp} server doesn't accept artciles.
 
 @item auto-expire
 @cindex auto-expire
@@ -2795,8 +2797,8 @@ Display articles that satisfy a predicate.
 Here are some examples:
 
 @table @code
-@item [read]
-Display only read articles.
+@item [unread]
+Display only unread articles.
 
 @item [not expire]
 Display everything except expirable articles.
@@ -2808,9 +2810,9 @@ responded to.
 
 The available operators are @code{not}, @code{and} and @code{or}.
 Predicates include @code{tick}, @code{unsend}, @code{undownload},
-@code{read}, @code{dormant}, @code{expire}, @code{reply},
+@code{unread}, @code{dormant}, @code{expire}, @code{reply},
 @code{killed}, @code{bookmark}, @code{score}, @code{save},
-@code{cache}, @code{forward}, @code{seen} and @code{recent}.
+@code{cache}, @code{forward}, @code{unseen} and @code{recent}.
 
 @end table
 
@@ -10895,6 +10897,14 @@ but the latter is the preferred method.
 @item gnus-gcc-mark-as-read
 @vindex gnus-gcc-mark-as-read
 If non-@code{nil}, automatically mark @code{Gcc} articles as read.
+
+@item gnus-gcc-externalize-attachments
+@vindex gnus-gcc-externalize-attachments
+If @code{nil}, attach files as normal parts in Gcc copies; if a regexp
+and matches the Gcc group name, attach files as external parts; if it is
+@code{all}, attach local files as external parts; if it is other
+non-@code{nil}, the behavior is the same as @code{all}, but it may be
+changed in the future.
 
 @end table
 
