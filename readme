@@ -6,7 +6,15 @@ To use Gnus you first have to unpack the files, which you've obviously
 done, because you are reading this.
 
 You should definitely byte-compile the source files. To do that, you
-can simply say "make" in this directory.
+can simply say "make" in this directory.  If you are using XEmacs, you
+*must* say "make EMACS=xemacs". If you use XEmacs 19.12 (or earlier)
+you should rename "lisp/x-easymenu.el" to "lisp/easymenu.el".
+
+You will most probably get lots of warnings while byte-compiling the
+sources (especially when you use xemacs).  Just ignore them.
+
+You need LaTeX to get a refcard.  If you don't want a refcard, just
+ignore the error message from make that says you don't have latex.
 
 Then you have to tell Emacs where Gnus is. You might put something
 like

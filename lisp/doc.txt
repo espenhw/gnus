@@ -11,8 +11,7 @@ For real documentation, you'll have to read the source code. Or you
 can read the info file, which is pretty comprehensive, if somewhat out
 of date.
 
-(ding) Gnus is still in alpha and is in no way, whatsoever, expected
-to work flawlessly.
+Gnus is currently in beta.
 
 When you happen upon a bug, please drop me a note.
 
@@ -20,11 +19,11 @@ When you happen upon a bug, please drop me a note.
 From lars Thu Feb 23 23:20:38 1995
 From: larsi@ifi.uio.no (ding)
 Date: Fri Feb 24 13:40:45 1995
-Subject: So you want to use (ding) Gnus
+Subject: So you want to use the new Gnus
 Message-ID: <lars-doc1@eyesore.no>
 
 Actually, since you are reading this, chances are you are already
-using (ding) Gnus. Congratulations.
+using the new Gnus. Congratulations.
 
 This entire newsgroup you are reading is, in fact, no real newsgroup
 at all, in the traditional sense. It is an example of one of the
@@ -38,10 +37,10 @@ This isn't the real documentation. `M-x info', `m gnus <RET>' to read
 that. This "newsgroup" is intended as a kinder, gentler way of getting
 people started.
 
-(ding) Gnus is a rewrite of GNUS 4.1, written by Masanobu Umeda. The
-rewrite was done by moi, yours truly, your humble servant, Lars Magne
+Gnus is a rewrite of GNUS 4.1, written by Masanobu Umeda. The rewrite
+was done by moi, yours truly, your humble servant, Lars Magne
 Ingebrigtsen. If you have a WWW browser, you can investigate to your
-heart's delight at "http://www.ifi.uio.no/~larsi/larsi.html". 
+heart's delight at "http://www.ifi.uio.no/~larsi/larsi.html".
 
 Much code (especially the score code) was written by Per Abrahamsen. 
 
@@ -134,7 +133,7 @@ Date: Fri Feb 24 13:40:45 1995
 Subject: I want to read my mail!
 Message-ID: <lars-doc4@eyesore.no>
 
-Yes, Virginia, you can read mail with (ding) Gnus.
+Yes, Virginia, you can read mail with Gnus.
 
 First you have to decide which mail backend you want to use. You have
 nnml, which is a one-file-one-mail backend, which is quite nice, but
@@ -195,8 +194,8 @@ Date: Fri Feb 24 13:40:45 1995
 Subject: Low level changes in GNUS, or, Wrong type argument: stringp, nil
 Message-ID: <lars-doc6@eyesore.no>
 
-(ding) Gnus really isn't GNUS, even though it looks like it. If you
-scrape the surface, you'll find that most things have changed.
+Gnus really isn't GNUS, even though it looks like it. If you scrape
+the surface, you'll find that most things have changed.
 
 This means that old code that relies on GNUS internals will fail. 
 
