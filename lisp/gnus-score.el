@@ -2387,6 +2387,11 @@ score in `gnus-newsgroup-scored' by SCORE."
 			 (interactive)
 			 (bury-buffer nil)
 			 (gnus-summary-expand-window)))
+	(local-set-key "k"
+		       (lambda ()
+			 (interactive)
+			 (kill-buffer (current-buffer))
+			 (gnus-summary-expand-window)))
 	(local-set-key "e" (lambda ()
 			     "Run `gnus-score-edit-file-at-point'."
 			     (interactive)
@@ -2415,7 +2420,7 @@ score in `gnus-newsgroup-scored' by SCORE."
 Type `e' to edit score file corresponding to the score rule on current line,
 `f' to format (pretty print) the score file and edit it,
 `t' toggle to truncate long lines in this buffer,
-`q' to quit.
+`q' to quit, `k' to kill score trace buffer.
 
 The first sexp on each line is the score rule, followed by the file name of
 the score file and its full name, including the directory.")

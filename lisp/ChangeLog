@@ -1,3 +1,7 @@
+2004-01-07  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-score.el (gnus-score-find-trace): Add `k' (kill-buffer).
+
 2004-01-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-split): do not require spam-use-CHECK to be
