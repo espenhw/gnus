@@ -1,3 +1,12 @@
+2001-10-29  Simon Josefsson  <jas@extundo.com>
+
+	* mml.el (mml-preview): Bind message-this-is-news if it is
+	news. From Jesper Harder <harder@myrealbox.com>.
+
+2001-10-28  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-sum.el (gnus-group-make-articles-read): Inline group.
+
 2001-10-29  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* smiley-ems.el (smiley-regexp-alist): Add support for sad and

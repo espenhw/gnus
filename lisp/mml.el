@@ -887,13 +887,14 @@ TYPE is the MIME type to use."
   "Display current buffer with Gnus, in a new buffer.
 If RAW, don't highlight the article."
   (interactive "P")
-  (let ((buf (current-buffer))
-	(message-options message-options)
-	(message-posting-charset (or (gnus-setup-posting-charset
-				      (save-restriction
-					(message-narrow-to-headers-or-head)
-					(message-fetch-field "Newsgroups")))
-				     message-posting-charset)))
+  (let* ((buf (current-buffer))
+	 (message-options message-options)
+	 (message-this-is-news (message-news-p))
+	 (message-posting-charset (or (gnus-setup-posting-charset
+				       (save-restriction
+					 (message-narrow-to-headers-or-head)
+					 (message-fetch-field "Newsgroups")))
+				      message-posting-charset)))
     (message-options-set-recipient)
     (switch-to-buffer (generate-new-buffer
 		       (concat (if raw "*Raw MIME preview of "
