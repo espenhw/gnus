@@ -645,7 +645,8 @@ was sent, sorting by number means sorting by arrival time.)
 
 Ready-made functions include `gnus-article-sort-by-number',
 `gnus-article-sort-by-author', `gnus-article-sort-by-subject',
-`gnus-article-sort-by-date' and `gnus-article-sort-by-score'.
+`gnus-article-sort-by-date', `gnus-article-sort-by-random'
+and `gnus-article-sort-by-score'.
 
 When threading is turned on, the variable `gnus-thread-sort-functions'
 controls how articles are sorted."
@@ -655,6 +656,7 @@ controls how articles are sorted."
 			 (function-item gnus-article-sort-by-subject)
 			 (function-item gnus-article-sort-by-date)
 			 (function-item gnus-article-sort-by-score)
+			 (function-item gnus-article-sort-by-random)
 			 (function :tag "other"))))
 
 (defcustom gnus-thread-sort-functions '(gnus-thread-sort-by-number)
@@ -674,7 +676,8 @@ Ready-made functions include `gnus-thread-sort-by-number',
 `gnus-thread-sort-by-author', `gnus-thread-sort-by-subject',
 `gnus-thread-sort-by-date', `gnus-thread-sort-by-score',
 `gnus-thread-sort-by-most-recent-number',
-`gnus-thread-sort-by-most-recent-date', and
+`gnus-thread-sort-by-most-recent-date',
+`gnus-thread-sort-by-random', and
 `gnus-thread-sort-by-total-score' (see `gnus-thread-score-function').
 
 When threading is turned off, the variable
@@ -686,6 +689,7 @@ When threading is turned off, the variable
 			 (function-item gnus-thread-sort-by-date)
 			 (function-item gnus-thread-sort-by-score)
 			 (function-item gnus-thread-sort-by-total-score)
+			 (function-item gnus-thread-sort-by-random)
 			 (function :tag "other"))))
 
 (defcustom gnus-thread-score-function '+
@@ -1557,6 +1561,7 @@ increase the score of each group you read."
     "\C-c\C-s\C-d" gnus-summary-sort-by-date
     "\C-c\C-s\C-i" gnus-summary-sort-by-score
     "\C-c\C-s\C-o" gnus-summary-sort-by-original
+    "\C-c\C-s\C-r" gnus-summary-sort-by-random
     "=" gnus-summary-expand-window
     "\C-x\C-s" gnus-summary-reselect-current-group
     "\M-g" gnus-summary-rescan-group
@@ -2320,6 +2325,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	 ["Sort by score" gnus-summary-sort-by-score t]
 	 ["Sort by lines" gnus-summary-sort-by-lines t]
 	 ["Sort by characters" gnus-summary-sort-by-chars t]
+	 ["Randomize" gnus-summary-sort-by-random t]
 	 ["Original sort" gnus-summary-sort-by-original t])
 	("Help"
 	 ["Fetch group FAQ" gnus-summary-fetch-faq t]
@@ -4231,6 +4237,15 @@ using some other form will lead to serious barfage."
 (defun gnus-thread-sort-by-number (h1 h2)
   "Sort threads by root article number."
   (gnus-article-sort-by-number
+   (gnus-thread-header h1) (gnus-thread-header h2)))
+
+(defsubst gnus-article-sort-by-random (h1 h2)
+  "Sort articles by article number."
+  (zerop (random 2)))
+
+(defun gnus-thread-sort-by-random (h1 h2)
+  "Sort threads by root article number."
+  (gnus-article-sort-by-random
    (gnus-thread-header h1) (gnus-thread-header h2)))
 
 (defsubst gnus-article-sort-by-lines (h1 h2)
@@ -10167,6 +10182,12 @@ If the prefix argument is negative, tick articles instead."
 Argument REVERSE means reverse order."
   (interactive "P")
   (gnus-summary-sort 'number reverse))
+
+(defun gnus-summary-sort-by-random (&optional reverse)
+  "Randomize the order in the summary buffer.
+Argument REVERSE means to randomize in reverse order."
+  (interactive "P")
+  (gnus-summary-sort 'random reverse))
 
 (defun gnus-summary-sort-by-author (&optional reverse)
   "Sort the summary buffer by author name alphabetically.

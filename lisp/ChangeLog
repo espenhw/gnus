@@ -1,3 +1,11 @@
+2002-08-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-thread-sort-functions): Doc fix.
+	(gnus-article-sort-functions): Doc fix.
+	(t): New keystroke.
+	(gnus-article-sort-by-random): New function.
+	(gnus-thread-sort-by-random): New function.
+
 2002-08-02  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-logic.el (gnus-advanced-integer): Swap arguments in

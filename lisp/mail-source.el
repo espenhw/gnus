@@ -464,7 +464,8 @@ Return the number of files that were found."
 		     (funcall function source callback)
 		   (error
 		    (unless (yes-or-no-p
-			     (format "Mail source error (%s).  Continue? " 
+			     (format "Mail source %s error (%s).  Continue? "
+				     source
 				     (cadr err)))
 		      (error "Cannot get new mail"))
 		    0)))))))))
