@@ -110,7 +110,9 @@ or `libgr-progs', for instance."
 			   uncompface-use-external-threshold)
 			(executable-find "uncompface")
 			(executable-find "icontopbm")
-			t)))))))
+			t))
+	     (message "Setting `uncompface-use-external' to `%s'"
+		      uncompface-use-external))))))
 
 ;; The following section is a bug-for-bug compatible version of
 ;; `uncompface' program entirely implemented in Emacs-Lisp.
