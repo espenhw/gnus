@@ -8,6 +8,18 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Unread count correct in nnimap groups.
+
+The estimated number of unread articles in the group buffer should now
+be correct for nnimap groups.  This is achieved by calling
+`nnimap-fixup-unread-after-getting-new-news' from the
+`gnus-setup-news-hook' (called on startup) and
+gnus-after-getting-new-news-hook. (called after getting new mail).  If
+you have modified those variables from the default, you may want to
+add n-f-u-a-g-n-n again.  If you were happy with the estimate and want
+to save some (minimal) time when getting new mail, remove the
+function.
+
 ** Group Carbon Copy (GCC) quoting
 
 To support groups that contains SPC and other weird characters, groups
