@@ -319,6 +319,7 @@ will be removed before popping up the buffer.  The default is
 @chapter Commands
 
 @menu
+* Buffer Entry::        Commands after entering a Message buffer.
 * Header Commands::     Commands for moving to headers.
 * Movement::            Moving around in message buffers.
 * Insertion::           Inserting things into message buffers.
@@ -328,6 +329,21 @@ will be removed before popping up the buffer.  The default is
 * Sending::             Actually sending the message.
 * Mail Aliases::        How to use mail aliases.
 @end menu
+
+
+@node Buffer Entry
+@section Buffer Entry
+@cindex undo
+@kindex C-_
+
+You most often end up in a Message buffer when responding to some other
+message of some sort.  Message does lots of handling of quoted text, and
+may remove signatures, reformat the text, or the like---depending on
+which used settings you're using.  Message usually gets things right,
+but sometimes it stumbles.  To help the user unwind these stumblings,
+Message sets the undo boundary before each major automatic action it
+takes.  If you press the undo key (usually located at @kbd{C-_}) a few
+times, you will get back the un-edited message you're responding to.
 
 
 @node Header Commands

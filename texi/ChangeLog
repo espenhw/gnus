@@ -1,3 +1,7 @@
+2000-12-28 20:04:26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.texi (Buffer Entry): New section.
+
 2000-12-22  Christopher Splinter  <chris@splinter.inka.de>
 
 	* gnus.texi (Group Parameters): Add documentation for the `banner'
