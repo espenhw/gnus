@@ -6364,7 +6364,7 @@ If FORCE (the prefix), also save the .newsrc file(s)."
 	  (progn
 	    (gnus-deaden-summary)
 	    (setq mode nil))
-       ;; We set all buffer-local variables to nil.  It is unclear why
+	;; We set all buffer-local variables to nil.  It is unclear why
 	;; this is needed, but if we don't, buffer-local variables are
 	;; not garbage-collected, it seems.  This would the lead to en
 	;; ever-growing Emacs.
