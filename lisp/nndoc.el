@@ -130,7 +130,7 @@ from the document.")
      (article-transform-function . nndoc-transform-lanl-gov-announce)
      (subtype preprints guess))
     (rfc822-forward
-     (article-begin . "^\n\n*")
+     (article-begin . "^\n+")
      (body-end-function . nndoc-rfc822-forward-body-end-function)
      (generate-head-function . nndoc-rfc822-forward-generate-head)
      (generate-article-function . nndoc-rfc822-forward-generate-article))

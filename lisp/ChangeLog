@@ -1,5 +1,8 @@
 2004-08-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* nndoc.el (nndoc-type-alist): Fix regexp in the rfc822-forward
+	entry.
+
 	* gnus-group.el (gnus-group-line-format-alist): Convert the value
 	of gnus-tmp-news-method into string under XEmacs.  It will be
 	passed to gnus-correct-length which takes only a string argument.
