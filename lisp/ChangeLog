@@ -1,3 +1,8 @@
+2004-03-04  Jesper Harder  <harder@ifa.au.dk>
+
+	* rfc2047.el (rfc2047-encoded-word-regexp): Support RFC 2231
+	language tags.
+
 2004-03-03  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus-agent.el (gnus-agent-read-local, gnus-agent-save-local):

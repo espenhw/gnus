@@ -607,8 +607,8 @@ By default, the region is treated as containing addresses (see
 
 (eval-and-compile
   (defconst rfc2047-encoded-word-regexp
-    "=\\?\\([^][\000-\040()<>@,\;:\\\"/?.=]+\\)\\?\\(B\\|Q\\)\
-\\?\\([!->@-~ +]*\\)\\?="))
+    "=\\?\\([^][\000-\040()<>@,\;:*\\\"/?.=]+\\)(?:\\*[^?]+\\)?\
+\\?\\(B\\|Q\\)\\?\\([!->@-~ +]*\\)\\?="))
 
 ;; Fixme: This should decode in place, not cons intermediate strings.
 ;; Also check whether it needs to worry about delimiting fields like
