@@ -1,3 +1,8 @@
+2003-07-25  Jesper Harder  <harder@ifa.au.dk>
+
+	* smime.el (smime-ask-passphrase): Use read-passwd rather than
+	comint-read-noecho.  The former is more secure.
+
 2003-07-24  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-cache-whitespace): make "adding

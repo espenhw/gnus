@@ -119,7 +119,6 @@
 ;;; Code:
 
 (require 'dig)
-(require 'comint)
 (eval-when-compile (require 'cl))
 
 (defgroup smime nil
@@ -211,8 +210,8 @@ If nil, use system defaults."
 (defun smime-ask-passphrase ()
   "Asks the passphrase to unlock the secret key."
   (let ((passphrase
-	 (comint-read-noecho
-	  "Passphrase for secret key (RET for no passphrase): " t)))
+	 (read-passwd
+	  "Passphrase for secret key (RET for no passphrase): ")))
     (if (string= passphrase "")
 	nil
       passphrase)))
