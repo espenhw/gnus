@@ -1,3 +1,7 @@
+2002-01-27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-util.el (gnus-cache-file-contents): Don't use equalp. 
+
 2002-01-26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnheader.el (nnheader-insert-nov-file): Increased cutoff to
