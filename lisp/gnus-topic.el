@@ -395,7 +395,7 @@ If RECURSIVE is t, return groups in its subtopics too."
 (defun gnus-topic-hierarchical-parameters (topic)
   "Return a topic list computed for TOPIC."
   (let ((params-list (nreverse (mapcar 'gnus-topic-parameters
-				       (gnus-current-topic topic))))
+				       (gnus-current-topics topic))))
 	param out params)
     ;; We probably have lots of nil elements here, so
     ;; we remove them.  Probably faster than doing this "properly".

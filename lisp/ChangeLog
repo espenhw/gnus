@@ -1,3 +1,8 @@
+2004-10-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-topic.el (gnus-topic-hierarchical-parameters): Use
+	gnus-current-topics instead of gnus-current-topic.
+
 2004-10-06  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-show-article): Use with-current-buffer.
