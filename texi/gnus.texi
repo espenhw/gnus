@@ -1033,8 +1033,8 @@ group, or a bogus (or semi-bogus) native group.
 
 @vindex gnus-group-mode-line-format
 The mode line can be changed by setting
-(@code{gnus-group-mode-line-format}).  It doesn't understand that many
-format specifiers:
+@code{gnus-group-mode-line-format} (@pxref{Formatting Variables}).  It
+doesn't understand that many format specifiers:
 
 @table @samp
 @item S
@@ -1840,7 +1840,9 @@ List absolutely all groups that are in the active file(s) of the
 server(s) you are connected to (@code{gnus-group-list-active}).  This
 might very well take quite a while.  It might actually be a better idea
 to do a @kbd{A m} to list all matching, and just give @samp{.} as the
-thing to match on.
+thing to match on.  Also note that this command may list group that
+don't exist (yet)---these will be listed as if they are killed groups.
+Take the output with some grains of salt.
 
 @item A a
 @kindex A a (Group)
@@ -2162,8 +2164,8 @@ really neat, I think.
 
 @vindex gnus-topic-line-format
 The topic lines themselves are created according to the
-@code{gnus-topic-line-format} variable.  @xref{Formatting Variables}.
-Elements allowed are:
+@code{gnus-topic-line-format} variable (@pxref{Formatting Variables}).
+Legal elements are:
 
 @table @samp
 @item i
@@ -2655,7 +2657,8 @@ with those specs that require it.  The default is @samp{}.
 @vindex gnus-summary-line-format
 You can change the format of the lines in the summary buffer by changing
 the @code{gnus-summary-line-format} variable.  It works along the same
-lines a a normal @code{format} string, with some extensions.
+lines a a normal @code{format} string, with some extensions
+(@pxref{Formatting Variables}).
 
 The default string is @samp{%U%R%z%I%(%[%4L: %-20,20n%]%) %s\n}.
 
@@ -2667,10 +2670,11 @@ Article number.
 @item S
 Subject string.
 @item s
-Subject if the article is the root, @code{gnus-summary-same-subject}
-otherwise. 
+Subject if the article is the root or the previous article had a
+different subject, @code{gnus-summary-same-subject} otherwise.
+(@code{gnus-summary-same-subject} defaults to @samp{}.)
 @item F
-Full @code{From} line.
+Full @code{From} header.
 @item n
 The name (from the @code{From} header).
 @item a
@@ -2691,7 +2695,7 @@ Nothing if the article is a root and lots of spaces if it isn't (it
 pushes everything after it off the screen).
 @item \[
 Opening bracket, which is normally @samp{\[}, but can also be @samp{<}
-for adopted articles.
+for adopted articles (@pxref{Customizing Threading}).
 @item \]
 Closing bracket, which is normally @samp{\]}, but can also be @samp{>}
 for adopted articles.
@@ -2717,6 +2721,10 @@ Total thread score.
 @code{Xref}.
 @item D
 @code{Date}.
+@item d
+The @code{Date} in @code{YY-MMM} format.
+@item o
+The @code{Date} in @code{YYMMDD-HH:MM:SS} format.
 @item M
 @code{Message-ID}.
 @item r
@@ -3510,6 +3518,12 @@ Mark the current article as dormant
 @findex gnus-summary-mark-as-read-forward
 Mark the current article as read
 (@code{gnus-summary-mark-as-read-forward}).
+
+@item D
+@kindex D (Summary)
+@findex gnus-summary-mark-as-read-backward
+Mark the current article as read and move point to the previous line
+(@code{gnus-summary-mark-as-read-backward}).
 
 @item M k
 @itemx k
@@ -5204,7 +5218,8 @@ is hidden.
 @vindex gnus-cited-text-button-line-format
 Gnus adds buttons show where the cited text has been hidden, and to
 allow toggle hiding the text.  The format of the variable is specified
-by this format-like variable.  These specs are legal:
+by this format-like variable (@pxref{Formatting Variables}).  These
+specs are legal:
 
 @table @samp
 @item b
@@ -10826,11 +10841,22 @@ lots of percentages everywhere.
 
 Each @samp{%} element will be replaced by some string or other when the
 buffer in question is generated.  @samp{%5y} means ``insert the @samp{y}
-spec, and pad with spaces to get a 5-character field''.  Just like a
+spec, and pad with spaces (to the left) to get a 5-character field''.
+(@samp{%-5y} means the same, but pad to the right instead.)  Just like a
 normal format spec, almost.
 
-You can also say @samp{%6,4y}, which means that the field will never be
-more than 4 characters wide and never less than 6 characters wide.
+You can also say @samp{%4,6y}, which means that the field will never be
+more than 6 characters wide and never less than 4 characters wide.
+
+All the specs allow for inserting user defined specifiers -- @samp{u}.
+The next character in the format string should be a letter.  @sc{gnus}
+will call the function @code{gnus-user-format-function-}@samp{X}, where
+@samp{X} is the letter following @samp{%u}.  The function will be passed
+a single parameter---what the parameter means depends on what buffer
+it's being called from.  The function should return a string, which will
+be inserted into the buffer just like information from any other
+specifier.  This function may also be called with dummy values, so it
+should protect against that.
 
 There are also specs for highlighting, and these are shared by all the
 format variables.  Text inside the @samp{%(} and @samp{%)} specifiers
@@ -12670,9 +12696,10 @@ always check whether are present before attempting to call.
 All these functions are expected to return data in the buffer
 @code{nntp-server-buffer} (@samp{ *nntpd*}), which is somewhat
 unfortunately named, but we'll have to live with it.  When I talk about
-``resulting data'', I always refer to the data in that buffer.  When I
-talk about ``return value'', I talk about the function value returned by
-the function call.
+@dfn{resulting data}, I always refer to the data in that buffer.  When I
+talk about @dfn{return value}, I talk about the function value returned by
+the function call.  Functions that fail should return @code{nil} as the
+return value.
 
 Some backends could be said to be @dfn{server-forming} backends, and
 some might be said to not be.  The latter are backends that generally
@@ -12689,6 +12716,7 @@ In the examples and definitions I will refer to the imaginary backend
 * Required Backend Functions::        Functions that must be implemented.
 * Optional Backend Functions::        Functions that need not be implemented.
 * Writing New Backends::              Extending old backends.
+* Hooking New Backends Into Gnus::    What has to be done on the Gnus end.
 @end menu
 
 
@@ -12839,10 +12867,13 @@ Make @var{group} the current group.
 There should be no data returned by this function.
 
 
-@item (nnchoke-request-group GROUP &optional SERVER)
+@item (nnchoke-request-group GROUP &optional SERVER FAST)
 
 Get data on @var{group}.  This function also has the side effect of
 making @var{group} the current group. 
+
+If @var{FAST}, don't bother to return useful data, just make @var{group}
+the current group.
 
 Here's an example of some result data and a definition of the same:
 
@@ -13283,6 +13314,48 @@ Below is a slightly shortened version of the @code{nndir} backend.
 
 (provide 'nndir)
 @end lisp
+
+
+@node Hooking New Backends Into Gnus
+@subsubsection Hooking New Backends Into Gnus
+
+@vindex gnus-valid-select-methods
+Having Gnus start using your new backend is rather easy---you just
+declare it with the @code{gnus-declare-backend} functions.  This will
+enter the backend into the @code{gnus-valid-select-methods} variable.
+
+@code{gnus-declare-backend} takes two parameters---the backend name and
+an arbitrary number of @dfn{abilities}.
+
+Here's an example:
+
+@lisp
+(gnus-declare-backend "nnchoke" 'mail 'respool 'address)
+@end lisp
+
+The abilities can be:
+
+@table @code
+@item mail
+This is a mailish backend---followups should (probably) go via mail.
+@item post
+This is a newsish backend---followups should (probably) go via news. 
+@item post-mail
+This backend supports both mail and news.
+@item none
+This is neither a post or mail backend---it's something completely
+different. 
+@item respool
+It supports respooling---or rather, it is able to modify its source
+articles and groups.
+@item address
+The name of the server should be in the virtual server name.  This is
+true for almost all backends.
+@item prompt-address
+The user should be prompted for an address when doing commands like
+@kbd{B} in the group buffer.  This is true for backends like
+@code{nntp}, but not @code{nnmbox}, for instance. 
+@end table
 
 
 

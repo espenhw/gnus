@@ -195,6 +195,9 @@ all. This may very well take some time.")
   (cond 
    ((not (nnml-possibly-change-directory group server))
     (nnheader-report 'nnml "Invalid group (no such directory)"))
+   ((not (file-exists-p nnml-current-directory))
+    (nnheader-report 'nnml "Directory %s does not exist"
+		     nnml-current-directory))
    ((not (file-directory-p nnml-current-directory))
     (nnheader-report 'nnml "%s is not a directory" nnml-current-directory))
    (dont-check 
@@ -424,6 +427,10 @@ all. This may very well take some time.")
 	   (concat old-dir (cdar files))
 	   (concat new-dir (cdar files)))
 	  (pop files)))
+      ;; Move .overview file.
+      (let ((overview (concat old-dir nnml-nov-file-name)))
+	(when (file-exists-p overview)
+	  (rename-file overview (concat new-dir nnml-nov-file-name))))
       (when (<= (length (directory-files old-dir)) 2)
 	(condition-case ()
 	    (delete-directory old-dir)

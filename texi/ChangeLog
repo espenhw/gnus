@@ -1,3 +1,16 @@
+Wed Aug  7 22:00:56 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Hooking New Backends Into Gnus): New node.
+
+Wed Aug  7 01:02:08 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Setting Marks): Addition.
+	(Formatting Variables): Addition.
+
+Mon Aug  5 20:20:42 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Formatting Variables): Addition.
+
 Sun Aug  4 07:15:28 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Score File Format): Addition.

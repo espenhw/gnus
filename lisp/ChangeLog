@@ -1,3 +1,108 @@
+Thu Aug  8 01:36:34 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.7 is released.
+
+Thu Aug  8 01:29:56 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-deletable-headers): Have Lines be
+	deletable. 
+
+Wed Aug  7 23:41:26 1996  Richard Pieri  <ratinox@unilab.dfci.harvard.edu>
+
+	* gnus.el (gnus-short-group-name): New version.
+
+Wed Aug  7 19:55:25 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-declare-backend): New function.
+
+	* gnus-xmas.el (gnus-xmas-pointer-glyph): New variable.
+	(gnus-xmas-modeline-glyph): New variable.
+	(gnus-xmas-mode-line-buffer-identification): New definition. 
+
+	* nntp.el (nntp-request-article): Would sometimes return nil
+	falsely. 
+	(nntp-find-group-and-number): Saved function.
+	(nntp-request-article): Use it.
+	(nntp-request-head): Saved.
+
+	* gnus-dup.el (gnus-dup-suppress-articles): Message.
+
+	* gnus-group.el (gnus-group-mark-group): Used string instead of
+	char. 
+
+Wed Aug  7 02:52:55 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-util.el: Use `format-time-string'.
+
+	* gnus-sum.el (gnus-summary-edit-article-postpone): Defined
+	again. 
+
+	* article.el (article-make-date-line): Would say "unknown" on
+	"now" dates.
+
+Wed Aug  7 02:48:12 1996  Katsumi Yamaoka  <yamaoka@ga.sony.co.jp>
+
+	* message.el (message-rename-buffer): Set proper outsave name. 
+
+Wed Aug  7 00:28:44 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnheader.el (nnheader-temp-write): Always use
+	`fundamental-mode'. 
+
+	* gnus-util.el (gnus-date-iso8601): Illegal format.
+
+	* gnus-group.el (gnus-group-make-doc-group): Full name in server
+	name. 
+
+	* gnus-undo.el (gnus-undo): Typo.
+
+	* gnus-group.el (gnus-group-mark-group): Don't touch props.
+
+	* gnus-score.el (gnus-score-headers): Don't root out 0 scores when
+	saving.
+
+	* gnus-art.el (gnus-narrow-to-page): Don't do a "next-page" if
+	`^L' is the last char.
+
+	* gnus.el (gnus): Autoload.
+
+Tue Aug  6 23:00:01 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-score-string): Wiwnd't do word and fuzzy
+	matching properly.
+
+Mon Aug  5 22:23:03 1996  Raja R. Harinath  <harinath@cs.umn.edu>
+
+	* gnus-gl.el (gnus-grouplens-mode): Clear proper variables.
+
+Mon Aug  5 20:27:11 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-art.el (gnus-article-edit-exit): Would move point.
+	(gnus-article-edit): New command.
+
+	* nnml.el (nnml-request-rename-group): Copy over .overview file. 
+	(nnml-request-group): Better error message.
+
+Sat Aug  3 17:52:01 1996  Steven L Baur  <steve@miranova.com>
+
+	* gnus-setup.el (message): Can't require 'message until we know
+	where the Gnus .elcs are.
+	
+Mon Aug  5 20:07:11 1996  François Pinard  <pinard@progiciels-bpi.ca>
+
+	* gnus-util.el (gnus-date-iso8601): New function.
+
+Mon Aug  5 19:14:12 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-sum.el (gnus-summary-search-article-forward): Show thread
+	when finding matches.
+
+	* nnmail.el (nnmail-get-spool-files): Sort procmail files.
+
+Mon Aug  5 02:25:06 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.6 is released.
+
 Mon Aug  5 01:12:24 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nntp.el (nntp-request-type): Defined again.

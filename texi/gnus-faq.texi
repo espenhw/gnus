@@ -264,7 +264,7 @@ and Yank} and @i{Reply and Yank} in the Post menu.
 @kbd{C-c C-y} grabs the previous message and prefixes each line with
 @code{ail-indentation-spaces} spaces or @code{mail-yank-prefix} if that is
 non-nil, unless you have set your own @code{mail-citation-hook}, which will
-be called to to do the job.
+be called to do the job.
 
 You might also consider the Supercite package, which allows for pretty
 arbitrarily complex quoting styles.  Some people love it, some people

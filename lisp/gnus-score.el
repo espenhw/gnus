@@ -1250,12 +1250,12 @@ SCORE is the score to add."
 
 	  ;; Add articles to `gnus-newsgroup-scored'.
 	  (while gnus-scores-articles
-	    (or (= gnus-summary-default-score (cdar gnus-scores-articles))
-		(setq gnus-newsgroup-scored
-		      (cons (cons (mail-header-number 
-				   (caar gnus-scores-articles))
-				  (cdar gnus-scores-articles))
-			    gnus-newsgroup-scored)))
+	    (when (or (/= gnus-summary-default-score
+			  (cdar gnus-scores-articles))
+		      gnus-save-score)
+	      (push (cons (mail-header-number (caar gnus-scores-articles))
+			  (cdar gnus-scores-articles))
+		    gnus-newsgroup-scored))
 	    (setq gnus-scores-articles (cdr gnus-scores-articles)))
 
 	  (let (score)
@@ -1461,20 +1461,16 @@ SCORE is the score to add."
 				 (t 'gnus-request-article)))
 	     entries alist ofunc article last)
 	(when articles
-	  (while (cdr articles)
-	    (setq articles (cdr articles)))
-	  (setq last (mail-header-number (caar articles)))
-	  (setq articles gnus-scores-articles)
+	  (setq last (mail-header-number (caar (last articles))))
 	  ;; Not all backends support partial fetching.  In that case,
 	  ;; we just fetch the entire article.
-	  (or (gnus-check-backend-function 
-	       (and (string-match "^gnus-" (symbol-name request-func))
-		    (intern (substring (symbol-name request-func)
-				       (match-end 0))))
-	       gnus-newsgroup-name)
-	      (progn
-		(setq ofunc request-func)
-		(setq request-func 'gnus-request-article)))
+	  (unless (gnus-check-backend-function 
+		   (and (string-match "^gnus-" (symbol-name request-func))
+			(intern (substring (symbol-name request-func)
+					   (match-end 0))))
+		   gnus-newsgroup-name)
+	    (setq ofunc request-func)
+	    (setq request-func 'gnus-request-article))
 	  (while articles
 	    (setq article (mail-header-number (caar articles)))
 	    (gnus-message 7 "Scoring on article %s of %s..." article last)
@@ -1804,7 +1800,7 @@ SCORE is the score to add."
     (when fuzzies
       ;; Simplify the entire buffer for easy matching.
       (gnus-simplify-buffer-fuzzy)
-      (while (setq kill (cadr fuzzies))
+      (while (setq kill (cadar fuzzies))
 	(let* ((match (nth 0 kill))
 	       (type (nth 3 kill))
 	       (score (or (nth 1 kill) gnus-score-interactive-default-score))
@@ -1829,30 +1825,26 @@ SCORE is the score to add."
 		  (setcdr art (+ score (cdr art))))))
 	    (forward-line 1))
 	  ;; Update expiry date
-	  (if trace
-	      (setq entries (cdr entries))
-	    (cond
-	     ;; Permanent.
-	     ((null date)
-	      (setq fuzzies (cdr fuzzies)))
-	     ;; Match, update date.
-	     ((and found gnus-update-score-entry-dates)
-	      (gnus-score-set 'touched '(t) alist)
-	      (setcar (nthcdr 2 kill) now)
-	      (setq fuzzies (cdr fuzzies)))
-	     ;; Old entry, remove.
-	     ((and expire (< date expire)) 
-	      (gnus-score-set 'touched '(t) alist)
-	      (setcdr fuzzies (cddr fuzzies)))
-	     (t
-	      (setq fuzzies (cdr fuzzies))))))))
+	  (cond
+	   ;; Permanent.
+	   ((null date)
+	    )
+	   ;; Match, update date.
+	   ((and found gnus-update-score-entry-dates)
+	    (gnus-score-set 'touched '(t) alist)
+	    (setcar (nthcdr 2 kill) now))
+	   ;; Old entry, remove.
+	   ((and expire (< date expire)) 
+	    (gnus-score-set 'touched '(t) alist)
+	    (setcdr (car fuzzies) (cddar fuzzies))))
+	  (setq fuzzies (cdr fuzzies)))))
 
     (when words
       ;; Enter all words into the hashtb.
       (let ((hashtb (gnus-make-hashtable
 		     (* 10 (count-lines (point-min) (point-max))))))
 	(gnus-enter-score-words-into-hashtb hashtb)
-	(while (setq kill (cadr words))
+	(while (setq kill (cadar words))
 	  (let* ((score (or (nth 1 kill) gnus-score-interactive-default-score))
 		 (date (nth 2 kill))
 		 found)
@@ -1868,23 +1860,19 @@ SCORE is the score to add."
 		(while (setq art (pop arts))
 		  (setcdr art (+ score (cdr art))))))
 	    ;; Update expiry date
-	    (if trace
-		(setq entries (cdr entries))
-	      (cond
-	       ;; Permanent.
-	       ((null date)
-		(setq words (cdr words)))
-	       ;; Match, update date.
-	       ((and found gnus-update-score-entry-dates)
-		(gnus-score-set 'touched '(t) alist)
-		(setcar (nthcdr 2 kill) now)
-		(setq words (cdr words)))
-	       ;; Old entry, remove.
-	       ((and expire (< date expire)) 
-		(gnus-score-set 'touched '(t) alist)
-		(setcdr words (cddr words)))
-	       (t
-		(setq words (cdr words)))))))))
+	    (cond
+	     ;; Permanent.
+	     ((null date)
+	      )
+	     ;; Match, update date.
+	     ((and found gnus-update-score-entry-dates)
+	      (gnus-score-set 'touched '(t) alist)
+	      (setcar (nthcdr 2 kill) now))
+	     ;; Old entry, remove.
+	     ((and expire (< date expire)) 
+	      (gnus-score-set 'touched '(t) alist)
+	      (setcdr (car words) (cddar words))))
+	    (setq fuzzies (cdr fuzzies))))))
     nil))
 
 (defun gnus-enter-score-words-into-hashtb (hashtb)

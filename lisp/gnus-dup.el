@@ -114,6 +114,7 @@ seen in the same session.")
   "Mark duplicate articles as read."
   (unless gnus-dup-list
     (gnus-dup-open))
+  (gnus-message 6 "Suppressing duplicates...")
   (let ((headers gnus-newsgroup-headers)
 	number)
     (while headers
@@ -123,7 +124,8 @@ seen in the same session.")
 		    gnus-newsgroup-unreads))
 	(push (cons number gnus-duplicate-mark)
 	      gnus-newsgroup-reads))
-      (pop headers))))
+      (pop headers)))
+  (gnus-message 6 "Suppressing duplicates...done"))
 
 (provide 'gnus-dup)
 

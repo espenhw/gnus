@@ -756,15 +756,46 @@ If HIDE, hide the text instead."
 	(recenter))
       t)))
 
+(defvar gnus-xmas-pointer-glyph 
+  (progn
+    (setq gnus-xmas-glyph-directory (message-xmas-find-glyph-directory "gnus"))
+    (make-pointer-glyph (concat gnus-xmas-glyph-directory "gnus-pointer."
+				(if (featurep 'xpm) "xpm" "xbm")))))
+
+(defvar gnus-xmas-modeline-left-extent 
+  (let ((ext (copy-extent modeline-buffer-id-left-extent)))
+    (set-extent-property ext 'pointer gnus-xmas-pointer-glyph)
+    ext))
+      
+(defvar gnus-xmas-modeline-right-extent 
+  (let ((ext (copy-extent modeline-buffer-id-right-extent)))
+    (set-extent-property ext 'pointer gnus-xmas-pointer-glyph)
+    ext))
+
+(defvar gnus-xmas-modeline-glyph
+  (progn
+    (setq gnus-xmas-glyph-directory (message-xmas-find-glyph-directory "gnus"))
+    (let* ((file (concat gnus-xmas-glyph-directory "gnus-pointer."
+			 (if (featurep 'xpm) "xpm" "xbm")))
+	   (glyph (make-glyph file)))
+      (when (file-exists-p file)
+	(set-glyph-face glyph 'modeline-buffer-id)
+	glyph))))
+
 (defun gnus-xmas-mode-line-buffer-identification (line)
   (let ((line (car line))
 	chop)
     (if (not (stringp line))
 	(list line)
-      (unless (setq chop (string-match ":" line))
+      (if (setq chop (string-match ":" line))
+	  (incf chop)
 	(setq chop (/ (length line) 2)))
-      (list (cons modeline-buffer-id-left-extent (substring line 0 chop))
-	    (cons modeline-buffer-id-right-extent (substring line chop))))))
+      (list 
+       (if (and (featurep 'x)
+		gnus-xmas-modeline-glyph)
+	   (cons gnus-xmas-modeline-left-extent gnus-xmas-modeline-glyph)
+	 (cons gnus-xmas-modeline-left-extent (substring line 0 chop)))
+       (cons gnus-xmas-modeline-right-extent (substring line chop))))))
 
 (provide 'gnus-xmas)
 

@@ -478,6 +478,7 @@ automatically when it is selected.")
     (?x ,(macroexpand '(mail-header-xref gnus-tmp-header)) ?s)
     (?D ,(macroexpand '(mail-header-date gnus-tmp-header)) ?s)
     (?d (gnus-dd-mmm (mail-header-date gnus-tmp-header)) ?s)
+    (?o (gnus-date-iso8601 gnus-tmp-header) ?s)
     (?M ,(macroexpand '(mail-header-id gnus-tmp-header)) ?s)
     (?r ,(macroexpand '(mail-header-references gnus-tmp-header)) ?s)
     (?c (or (mail-header-chars gnus-tmp-header) 0) ?d)
@@ -4293,6 +4294,11 @@ If BACKWARD, the previous article is selected instead of the next."
    ;; If not, we try the first unread, if that is wanted.
    ((and subject
 	 gnus-auto-select-same
+	 ;; Make sure that we don't select the current article.
+	 (not (eq (gnus-summary-article-number)
+		  (save-excursion
+		    (gnus-summary-first-subject t)
+		    (gnus-summary-article-number))))
 	 (gnus-summary-first-unread-article))
     (gnus-summary-position-point)
     (gnus-message 6 "Wrapped"))
@@ -4502,11 +4508,10 @@ Return nil if there are no unread articles."
   (interactive)
   (gnus-set-global-variables)
   (prog1
-      (if (gnus-summary-first-subject t)
-	  (progn
-	    (gnus-summary-show-thread)
-	    (gnus-summary-first-subject t)
-	    (gnus-summary-display-article (gnus-summary-article-number))))
+      (when (gnus-summary-first-subject t)
+	(gnus-summary-show-thread)
+	(gnus-summary-first-subject t)
+	(gnus-summary-display-article (gnus-summary-article-number)))
     (gnus-summary-position-point)))
 
 (defun gnus-summary-best-unread-article ()
@@ -5091,7 +5096,8 @@ If BACKWARD, search backward instead."
   (if (string-equal regexp "")
       (setq regexp (or gnus-last-search-regexp ""))
     (setq gnus-last-search-regexp regexp))
-  (unless (gnus-summary-search-article regexp backward)
+  (if (gnus-summary-search-article regexp backward)
+      (gnus-summary-show-thread)
     (error "Search failed: \"%s\"" regexp)))
 
 (defun gnus-summary-search-article-backward (regexp)
@@ -5111,6 +5117,7 @@ Optional argument BACKWARD means do search for backward.
   (let ((gnus-select-article-hook nil)	;Disable hook.
 	(gnus-article-display-hook nil)
 	(gnus-mark-article-hook nil)	;Inhibit marking as read.
+	(gnus-use-article-prefetch nil)
 	(re-search
 	 (if backward
 	     're-search-backward 're-search-forward))
@@ -5698,10 +5705,10 @@ delete these instead."
     not-deleted))
 
 (defun gnus-summary-edit-article (&optional force)
-  "Enter into a buffer and edit the current article.
+  "Edit the current article.
 This will have permanent effect only in mail groups.
 If FORCE is non-nil, allow editing of articles even in read-only
-groups."
+groups." 
   (interactive "P")
   (save-excursion
     (set-buffer gnus-summary-buffer)
@@ -5716,8 +5723,10 @@ groups."
     (gnus-article-edit-article
      `(lambda ()
 	(gnus-summary-edit-article-done
-	 ,(mail-header-references gnus-current-headers)
+	 ,(or (mail-header-references gnus-current-headers) "")
 	 ,(gnus-group-read-only-p) ,gnus-summary-buffer)))))
+
+(defalias 'gnus-summary-edit-article-postpone 'gnus-article-edit-exit)
 
 (defun gnus-summary-edit-article-done (references read-only buffer)
   "Make edits to the current article permanent."
@@ -5731,15 +5740,16 @@ groups."
     ;; Update the summary buffer.
     (if (equal (message-tokenize-header references " ")
 	       (message-tokenize-header
-		(message-fetch-field "references") " "))
+		(or (message-fetch-field "references") "") " "))
 	;; We only have to update this line.
-	(save-restriction
-	  (message-narrow-to-head)
-	  (let ((header (nnheader-parse-head t)))
-	    (set-buffer buffer)
-	    (mail-header-set-number header (cdr gnus-article-current))
-	    (gnus-summary-update-article-line
-	     (cdr gnus-article-current) header)))
+	(save-excursion
+	  (save-restriction
+	    (message-narrow-to-head)
+	    (let ((header (nnheader-parse-head t)))
+	      (set-buffer buffer)
+	      (mail-header-set-number header (cdr gnus-article-current))
+	      (gnus-summary-update-article-line
+	       (cdr gnus-article-current) header))))
       ;; Update threads.
       (set-buffer buffer)
       (gnus-summary-update-article (cdr gnus-article-current)))

@@ -479,6 +479,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
     "\r" gnus-article-press-button
     "\t" gnus-article-next-button
     "\M-\t" gnus-article-prev-button
+    "e" gnus-article-edit
     "<" beginning-of-buffer
     ">" end-of-buffer
     "\C-c\C-i" gnus-info-find-node
@@ -809,6 +810,7 @@ If given a numerical ARG, move forward ARG pages."
     (set-buffer gnus-article-buffer)
     (goto-char (point-min))
     (widen)
+    ;; Remove any old next/prev buttons.
     (when (gnus-visual-p 'page-marker)
       (let ((buffer-read-only nil))
 	(gnus-remove-text-with-property 'gnus-prev)
@@ -830,7 +832,7 @@ If given a numerical ARG, move forward ARG pages."
 	(goto-char (point-min))
 	(gnus-insert-prev-page-button)))
     (when (and (gnus-visual-p 'page-marker)
-	       (not (= (1- (point-max)) (buffer-size))))
+	       (< (+ (point-max) 2) (buffer-size)))
       (save-excursion
 	(goto-char (point-max))
 	(gnus-insert-next-page-button)))))
@@ -1193,6 +1195,21 @@ This is an extended text-mode.
   (widen)
   (run-hooks 'text-mode 'gnus-article-edit-mode-hook))
 
+(defun gnus-article-edit (&optional force)
+  "Edit the current article.
+This will have permanent effect only in mail groups.
+If FORCE is non-nil, allow editing of articles even in read-only
+groups."
+  (interactive "P")
+  (when (and (not force)
+	     (gnus-group-read-only-p))
+    (error "The current newsgroup does not support article editing."))
+  (gnus-article-edit-article
+   `(lambda ()
+      (gnus-summary-edit-article-done
+       ,(or (mail-header-references gnus-current-headers) "")
+       ,(gnus-group-read-only-p) ,gnus-summary-buffer))))
+
 (defun gnus-article-edit-article (exit-func)
   "Start editing the contents of the current article buffer."
   (let ((winconf (current-window-configuration)))
@@ -1207,39 +1224,49 @@ This is an extended text-mode.
   "Update the article edits and exit."
   (interactive)
   (let ((func gnus-article-edit-done-function)
-	(buf (current-buffer)))
+	(buf (current-buffer))
+	(start (window-start)))
     (gnus-article-edit-exit)
-    (save-excursion
+    (let ((cur (current-buffer)))
+      (save-excursion
+	(set-buffer buf)
+	(let ((buffer-read-only nil))
+	  (funcall func)))
       (set-buffer buf)
-      (let ((buffer-read-only nil))
-	(funcall func)))))
+      (set-window-start (get-buffer-window buf) start)
+      (set-window-point (get-buffer-window buf) (point)))))
 
 (defun gnus-article-edit-exit ()
   "Exit the article editing without updating."
   (interactive)
-      ;; We remove all text props from the article buffer.
-    (let ((buf (format "%s" (buffer-string)))
-	  (p (point))
-	  (window-start (window-start)))
-      (erase-buffer)
-      (insert buf)
+  ;; We remove all text props from the article buffer.
+  (let ((buf (format "%s" (buffer-string)))
+	(curbuf (current-buffer))
+	(p (point))
+	(window-start (window-start)))
+    (erase-buffer)
+    (insert buf)
+  (let ((winconf gnus-prev-winconf))
+    (gnus-article-mode)
+    ;; The cache and backlog have to be flushed somewhat.
+    (when gnus-use-cache
+      (gnus-cache-update-article 	
+       (car gnus-article-current) (cdr gnus-article-current)))
+    (when gnus-keep-backlog
+      (gnus-backlog-remove-article 
+       (car gnus-article-current) (cdr gnus-article-current)))
+    ;; Flush original article as well.
+    (save-excursion
+      (when (get-buffer gnus-original-article-buffer)
+	(set-buffer gnus-original-article-buffer)
+	(setq gnus-original-article nil)))
+    (set-window-configuration winconf)
+    ;; Tippy-toe some to make sure that point remains where it was.
+    (let ((buf (current-buffer)))
+      (set-buffer curbuf)
+      (set-window-start (get-buffer-window (current-buffer)) window-start)
       (goto-char p)
-      (set-window-start (selected-window) window-start))
-    (let ((winconf gnus-prev-winconf))
-      (gnus-article-mode)
-      ;; The cache and backlog have to be flushed somewhat.
-      (when gnus-use-cache
-	(gnus-cache-update-article 	
-	 (car gnus-article-current) (cdr gnus-article-current)))
-      (when gnus-keep-backlog
-	(gnus-backlog-remove-article 
-	 (car gnus-article-current) (cdr gnus-article-current)))
-      ;; Flush original article as well.
-      (save-excursion
-	(when (get-buffer gnus-original-article-buffer)
-	  (set-buffer gnus-original-article-buffer)
-	  (setq gnus-original-article nil)))
-      (set-window-configuration winconf)))
+      (set-buffer buf)))))
       
 (defun gnus-article-edit-full-stops ()
   "Interactively repair spacing at end of sentences."

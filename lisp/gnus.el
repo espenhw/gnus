@@ -28,7 +28,7 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
-(defconst gnus-version-number "0.6"
+(defconst gnus-version-number "0.8"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -58,6 +58,8 @@
     (save-restriction
       (narrow-to-region start end)
       (indent-rigidly start end arg)
+      ;; We translate tabs into spaces -- not everybody uses
+      ;; an 8-character tab.
       (goto-char (point-min))
       (while (search-forward "\t" nil t)
 	(replace-match "        " t t)))))
@@ -600,25 +602,40 @@ If SCORE is nil, add 1 to the score of GROUP."
     (when info
       (gnus-info-set-score info (+ (gnus-info-score info) (or score 1))))))
 
-;; Function written by Stainless Steel Rat <ratinox@ccs.neu.edu>.
+;; Function written by Stainless Steel Rat <ratinox@peorth.gweep.net>
 (defun gnus-short-group-name (group &optional levels)
-  "Collapse GROUP name LEVELS."
-  (let* ((name "") 
-	 (foreign "")
-	 (depth 0) 
-	 (skip 1)
+  "Collapse GROUP name LEVELS.
+Select methods are stripped and any remote host name is stripped down to
+just the host name."
+  (let* ((name "") (foreign "") (depth -1) (skip 1)
 	 (levels (or levels
 		     (progn
 		       (while (string-match "\\." group skip)
 			 (setq skip (match-end 0)
 			       depth (+ depth 1)))
 		       depth))))
+    ;; separate foreign select method from group name and collapse.
+    ;; if method contains a server, collapse to non-domain server name,
+    ;; otherwise collapse to select method
     (if (string-match ":" group)
-	(setq foreign (substring group 0 (match-end 0))
-	      group (substring group (match-end 0))))
+	(cond ((string-match "+" group)
+	       (let* ((plus (string-match "+" group))
+		      (colon (string-match ":" group))
+		      (dot (string-match "\\." group)))
+		 (setq foreign (concat
+				(substring group (+ 1 plus)
+					   (cond ((< colon dot) colon)
+						 ((< dot colon) dot))) ":")
+		       group (substring group (+ 1 colon))
+		       )))
+	      (t
+	       (let* ((colon (string-match ":" group)))
+		 (setq foreign (concat (substring group 0 (+ 1 colon)))
+		       group (substring group (+ 1 colon)))
+		 ))))
+    ;; collapse group name leaving LEVELS uncollapsed elements
     (while group
-      (if (and (string-match "\\." group)
-	       (> levels (- gnus-group-uncollapsed-levels 1)))
+      (if (and (string-match "\\." group) (> levels 0))
 	  (setq name (concat name (substring group 0 1))
 		group (substring group (match-end 0))
 		levels (- levels 1)
@@ -626,6 +643,7 @@ If SCORE is nil, add 1 to the score of GROUP."
 	(setq name (concat foreign name group)
 	      group nil)))
     name))
+
 
 
 ;;;
@@ -809,6 +827,7 @@ As opposed to `gnus', this command will not connect to the local server."
     (select-frame (make-frame))
     (gnus arg)))
 
+;;;###autoload
 (defun gnus (&optional arg dont-connect slave)
   "Read network news.
 If ARG is non-nil and a positive number, Gnus will use that as the

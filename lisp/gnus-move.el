@@ -40,7 +40,7 @@
   "Move from FROM-SERVER to TO-SERVER.
 Update the .newsrc.eld file to reflect the change of nntp server."
   (interactive
-   (list gnus-select-method (gnus-read-server "Move to method: ")))
+   (list gnus-select-method (gnus-read-method "Move to method: ")))
   
   ;; First start Gnus.
   (let ((gnus-activate-level 0)
@@ -152,7 +152,7 @@ Update the .newsrc.eld file to reflect the change of nntp server."
   (interactive
    (let ((info (gnus-get-info (gnus-group-group-name))))
      (list info (gnus-find-method-for-group (gnus-info-group info))
-	   (gnus-read-server (format "Move group %s to method: " 
+	   (gnus-read-method (format "Move group %s to method: " 
 				     (gnus-info-group info))))))
   (save-excursion
     (gnus-move-group-to-server info from-server to-server)

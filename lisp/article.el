@@ -723,13 +723,14 @@ how much time has lapsed since DATE."
 		 (gnus-encode-date
 		  (timezone-make-date-arpa-standard
 		   date nil "UT")))
-	      (error '(0 0))))
-	   (real-sec (+ (* (float (car real-time)) 65536)
-			(cadr real-time)))
-	   (sec (abs real-sec))
+	      (error nil)))
+	   (real-sec (and real-time
+			  (+ (* (float (car real-time)) 65536)
+			     (cadr real-time))))
+	   (sec (and real-time (abs real-sec)))
 	   num prev)
       (cond
-       ((equal real-time '(0 0))
+       ((null real-time)
 	"X-Sent: Unknown\n")
        ((zerop sec)
 	"X-Sent: Now\n")

@@ -925,7 +925,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 		 (directory-files 
 		  nnmail-procmail-directory 
 		  t (concat (if group (concat "^" group) "")
-			    nnmail-procmail-suffix "$") t)))
+			    nnmail-procmail-suffix "$"))))
 	   (p procmails)
 	   (crash (when (and (file-exists-p nnmail-crash-box)
 			     (> (nnheader-file-size

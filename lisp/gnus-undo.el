@@ -143,7 +143,7 @@ A numeric argument serves as a repeat count."
   (let (actions action)
     (while (setq actions (pop gnus-undo-last))
       (unless action
-	(errror "Nothing further to undo"))
+	(error "Nothing further to undo"))
       (setq gnus-undo-actions (delq action gnus-undo-actions))
       (while action
 	(funcall (pop action))))))

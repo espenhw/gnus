@@ -31,8 +31,6 @@
 
 ;;; Code:
 
-(require 'message)
-
 (defvar running-xemacs (string-match "XEmacs\\|Lucid" emacs-version))
 
 (defvar gnus-emacs-lisp-directory (if running-xemacs
@@ -84,6 +82,9 @@
 			gnus-gnus-lisp-directory)))
   (if (null (member gnus-directory load-path))
       (setq load-path (cons gnus-directory load-path))))
+
+;;; We can't do this until we know where Gnus is.
+(require 'message)
 
 ;;; Tools for MIME by
 ;;; UMEDA Masanobu <umerin@mse.kyutech.ac.jp>

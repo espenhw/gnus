@@ -374,10 +374,11 @@ on your system, you could say something like:
 (defmacro nnheader-temp-write (file &rest forms)
   "Create a new buffer, evaluate FORM there, and write the buffer to FILE."
   `(save-excursion
-     (let ((nnheader-temp-file ,file)
-	   (nnheader-temp-cur-buffer
-	    (nnheader-set-temp-buffer
-	     (generate-new-buffer-name " *nnheader temp*"))))
+     (let* ((nnheader-temp-file ,file)
+	    (default-major-mode 'fundamental-mode)
+	    (nnheader-temp-cur-buffer
+	     (nnheader-set-temp-buffer
+	      (generate-new-buffer-name " *nnheader temp*"))))
        (when (and nnheader-temp-file 
 		  (not (file-directory-p (file-name-directory 
 					  nnheader-temp-file))))

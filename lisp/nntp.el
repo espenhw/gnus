@@ -228,7 +228,7 @@ server there that you can connect to.")
 	(copy-to-buffer nntp-server-buffer (point-min) (point-max))
 	'headers))))
 
-(deffoo nntp-request-article (article &optional group server buffer)
+(deffoo nntp-request-article (article &optional group server buffer command)
   (nntp-possibly-change-group group server)
   (when (nntp-send-command-and-decode
 	 "\r\n\\.\r\n" "ARTICLE"
@@ -236,8 +236,16 @@ server there that you can connect to.")
     (when buffer
       (save-excursion
 	(set-buffer nntp-server-buffer)
-	(copy-to-buffer buffer (point-min) (point-max)))
-      t)))
+	(copy-to-buffer buffer (point-min) (point-max))
+	(nntp-find-group-and-number)))
+    (nntp-find-group-and-number)))
+
+(deffoo nntp-request-head (article &optional group server)
+  (nntp-possibly-change-group group server)
+  (when (nntp-send-command-and-decode
+	 "\r\n\\.\r\n" "HEAD"
+	 (if (numberp article) (int-to-string article) article))
+    (nntp-find-group-and-number)))
 
 (deffoo nntp-request-body (article &optional group server)
   (nntp-possibly-change-group group server)
@@ -583,7 +591,7 @@ It will prompt for a password."
   (save-excursion
     (set-buffer (or (nntp-find-connection-buffer nntp-server-buffer)
 		    nntp-server-buffer))
-    (message "nntp reading%s" (make-string (/ (point-max) 1000) ?.))
+    (message "nntp reading%s" (make-string (/ (point-max) 10000) ?.))
     (accept-process-output process 1)))
 
 (defun nntp-accept-response ()
@@ -833,6 +841,45 @@ It will prompt for a password."
 		 (mapconcat 'identity
 			    nntp-rlogin-parameters " ")))))
     proc))
+
+(defun nntp-find-group-and-number ()
+  (save-excursion
+    (save-restriction
+      (set-buffer nntp-server-buffer)
+      (narrow-to-region (goto-char (point-min))
+			(or (search-forward "\n\n" nil t) (point-max)))
+      (goto-char (point-min))
+      ;; We first find the number by looking at the status line.
+      (let ((number (and (looking-at "2[0-9][0-9] +\\([0-9]+\\) ")
+			 (string-to-int
+			  (buffer-substring (match-beginning 1)
+					    (match-end 1)))))
+	    group newsgroups xref)
+	(and number (zerop number) (setq number nil))
+	;; Then we find the group name.
+	(setq group
+	      (cond 
+	       ;; If there is only one group in the Newsgroups header,
+	       ;; then it seems quite likely that this article comes
+	       ;; from that group, I'd say.
+	       ((and (setq newsgroups (mail-fetch-field "newsgroups"))
+		     (not (string-match "," newsgroups)))
+		newsgroups)
+	       ;; If there is more than one group in the Newsgroups
+	       ;; header, then the Xref header should be filled out.
+	       ;; We hazard a guess that the group that has this
+	       ;; article number in the Xref header is the one we are
+	       ;; looking for.  This might very well be wrong if this
+	       ;; article happens to have the same number in several
+	       ;; groups, but that's life. 
+	       ((and (setq xref (mail-fetch-field "xref"))
+		     number
+		     (string-match (format "\\([^ :]+\\):%d" number) xref))
+		(substring xref (match-beginning 1) (match-end 1)))
+	       (t "")))
+	(when (string-match "\r" group) 
+	  (setq group (substring group 0 (match-beginning 0))))
+	(cons group number)))))
 
 (provide 'nntp)
 

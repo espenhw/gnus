@@ -340,6 +340,11 @@
 			 timezone-months-assoc))
 		   "???"))))))
 
+(defun gnus-date-iso8601 (header)
+  "Convert the date field in HEADER to YYMMDDTHHMMSS"
+  (format-time-string "%y%m%dT%H%M%S"
+		      (nnmail-date-to-time (mail-header-date header))))
+
 (defun gnus-mode-string-quote (string)
   "Quote all \"%\" in STRING."
   (save-excursion

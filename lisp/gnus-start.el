@@ -2286,6 +2286,13 @@ If FORCE is non-nil, the .newsrc file is read."
       (when (looking-at "[^ \t]+[ \t]+\\(.*\\)")
 	(match-string 1)))))
 
+;;;###autoload
+(defun gnus-declare-backend (name &rest abilities)
+  "Declare backend NAME with ABILITIES as a Gnus backend."
+  (setq gnus-valid-select-methods
+	(nconc gnus-valid-select-methods
+	       (list (apply 'list name abilities)))))
+
 (provide 'gnus-start)
 
 ;;; gnus-start.el ends here

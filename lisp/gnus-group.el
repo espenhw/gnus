@@ -889,19 +889,20 @@ If FIRST-TOO, the current line is also eligible as a target."
     (while (and (> n 0)
 		(not (eobp)))
       (when (setq group (gnus-group-group-name))
-	;; Update the mark.
+	;; Go to the mark position.
 	(beginning-of-line)
-	(forward-char
-	 (or (cdr (assq 'process gnus-group-mark-positions)) 2))
-	(delete-char 1)
-	(if unmark
-	    (progn
-	      (insert " ")
-	      (setq gnus-group-marked (delete group gnus-group-marked)))
-	  (insert "#")
-	  (setq gnus-group-marked
-		(cons group (delete group gnus-group-marked)))))
-      (or no-advance (gnus-group-next-group 1))
+	(forward-char (or (cdr (assq 'process gnus-group-mark-positions)) 2))
+	(subst-char-in-region
+	 (point) (1+ (point)) (following-char) 
+	 (if unmark
+	     (progn
+	       (setq gnus-group-marked (delete group gnus-group-marked))
+	       ? )
+	   (setq gnus-group-marked
+		 (cons group (delete group gnus-group-marked)))
+	   gnus-process-mark)))
+      (unless no-advance
+	(gnus-group-next-group 1))
       (decf n))
     (gnus-summary-position-point)
     n))
@@ -1286,7 +1287,7 @@ ADDRESS."
   (interactive
    (list
     (read-string "Group name: ")
-    (gnus-read-server "From method: ")))
+    (gnus-read-method "From method: ")))
 
   (let* ((meth (when (and method
 			  (not (gnus-server-equal method gnus-select-method)))
@@ -1525,7 +1526,7 @@ and NEW-NAME will be prompted for."
 		 (file-name-nondirectory file) '(nndoc "")))))
     (gnus-group-make-group
      (gnus-group-real-name name)
-     (list 'nndoc (file-name-nondirectory file)
+     (list 'nndoc file
 	   (list 'nndoc-address file)
 	   (list 'nndoc-article-type (or type 'guess))))))
 
