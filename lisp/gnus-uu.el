@@ -1164,8 +1164,8 @@ The headers will be included in the sequence they are matched.")
       ;; If this is the last article to be decoded, and
       ;; we still haven't reached the end, then we delete
       ;; the partially decoded file.
-      (and (or (eq state 'last) (eq state 'first-and-last)
-	       (not (memq 'end process-state)))
+      (and (or (eq state 'last) (eq state 'first-and-last))
+	   (not (memq 'end process-state))
 	   result-file 
 	   (file-exists-p result-file)
 	   (delete-file result-file))

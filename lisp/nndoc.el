@@ -29,7 +29,7 @@
 (require 'rmail)
 (require 'nnmail)
 
-(defvar nndoc-article-type 'mbox
+(defvar nndoc-article-type 'guess
   "*Type of the file.
 One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
 `forward', `mime-digest', `standard-digest', `slack-digest', or
@@ -66,6 +66,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
      (prepare-body . nndoc-prepare-digest-body))
     (mime-digest
      (article-begin . "")
+     (head-end . "^ ?$")
      (body-end . "")
      (file-end . ""))
     (standard-digest
@@ -253,6 +254,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
     (cond 
      ;; The current buffer is this group's buffer.
      ((and nndoc-current-buffer
+	   (buffer-name nndoc-current-buffer)
 	   (eq nndoc-current-buffer 
 	       (setq buf (cdr (assoc group nndoc-group-alist))))))
      ;; We change buffers by taking an old from the group alist.
@@ -270,6 +272,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
 				    (get-buffer-create 
 				     (concat " *nndoc " group "*"))))
 		  nndoc-group-alist))
+      (setq nndoc-dissection-alist nil)
       (save-excursion
 	(set-buffer nndoc-current-buffer)
 	(buffer-disable-undo (current-buffer))
@@ -277,7 +280,8 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
 	(if (stringp nndoc-address)
 	    (insert-file-contents nndoc-address)
 	  (insert-buffer-substring nndoc-address)))))
-    (when nndoc-current-buffer
+    (when (and nndoc-current-buffer
+	       (not nndoc-dissection-alist))
       (save-excursion
 	(set-buffer nndoc-current-buffer)
 	(nndoc-set-delims)
@@ -293,7 +297,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
      ;; MIME digest.
      ((and
        (re-search-forward
-	(concat "\n\n\\|^Content-Type: *multipart/digest;[ \t\n]*[ \t]"
+	(concat "^Content-Type: *multipart/digest;[ \t\n]*[ \t]"
 		"boundary=\"\\([^\"\n]*[^\" \t\n]\\)\"")
 	nil t)
        (match-beginning 1))
@@ -302,9 +306,12 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
       (setq entry (assq 'mime-digest nndoc-type-alist))
       (setcdr entry
 	      (list
+	       (cons 'head-end "^ ?$")
+	       (cons 'body-begin "^ \n")
 	       (cons 'article-begin b-delimiter)
-	       (cons 'body-end 
-		     (concat "\n--" boundary-id "\\(--\\)?[\n \t]+"))
+	       (cons 'body-end-function 'nndoc-digest-body-end)
+;	       (cons 'body-end 
+;		     (concat "\n--" boundary-id "\\(--\\)?[\n \t]+"))
 	       (cons 'file-end (concat "\n--" boundary-id "--[ \t]*$"))))
       'mime-digest)
      ((and (re-search-forward (concat "^" (make-string 70 ?-) "\n\n") nil t)
@@ -395,8 +402,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
 	(setq body-end (point))
 	(push (list (incf i) head-begin head-end body-begin body-end
 		    (count-lines body-begin body-end))
-	      nndoc-dissection-alist)
-	))))
+	      nndoc-dissection-alist)))))
 
 (defun nndoc-prepare-digest-body ()
   "Unquote quoted non-separators in digests."

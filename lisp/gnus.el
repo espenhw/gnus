@@ -775,14 +775,18 @@ beginning of a line.")
 	       (summary 1.0 point)
 	       (if gnus-carpal (summary-carpal 4))))
     (article
-     (vertical 1.0
-	       (if gnus-use-picon
-		   '(horizontal 0.25
-				(summary 1.0 point)
-				(picon 10))
-		 '(summary 0.25 point))
-	       (if gnus-carpal (summary-carpal 4)) 
-	       (article 1.0)))
+     (if gnus-use-picon
+	 '(frame 1.0
+		 (vertical 1.0
+			   (summary 0.25 point)
+			   (if gnus-carpal (summary-carpal 4)) 
+			   (article 1.0))
+		 (vertical 1.0
+			   (picon 1.0)))
+       '(vertical 1.0
+		 (summary 0.25 point)
+		 (if gnus-carpal (summary-carpal 4)) 
+		 (article 1.0))))
     (server
      (vertical 1.0
 	       (server 1.0 point)
@@ -1571,7 +1575,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.23"
+(defconst gnus-version "September Gnus v0.24"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1604,7 +1608,8 @@ variable (string, integer, character, etc).")
     gnus-newsrc-last-checked-date 
     gnus-newsrc-alist gnus-server-alist
     gnus-killed-list gnus-zombie-list
-    gnus-topic-topology gnus-topic-alist)
+    gnus-topic-topology gnus-topic-alist
+    gnus-format-specs)
   "Gnus variables saved in the quick startup file.")
 
 (defvar gnus-newsrc-options nil
@@ -1924,7 +1929,7 @@ Thank you for your help in stamping out bugs.
       gnus-summary-reply gnus-summary-reply-with-original
       gnus-summary-mail-forward gnus-summary-mail-other-window
       gnus-bug)
-     ("gnus-picon" gnus-article-display-picon)
+     ("gnus-picon" gnus-article-display-picons)
      ("gnus-vm" gnus-vm-mail-setup)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
       gnus-summary-save-article-vm gnus-yank-article))))
@@ -2195,10 +2200,12 @@ Thank you for your help in stamping out bugs.
 (defvar gnus-group-line-format-spec 
   (gnus-byte-code 'gnus-group-line-format-spec))
 
-(defvar gnus-old-specs 
-  '((group . "%M%S%p%5y: %(%g%)\n")
-    (summary-dummy . "*  :                          : %S\n")
-    (summary . "%U%R%z%I%(%[%4L: %-20,20n%]%) %s\n")))
+(defvar gnus-format-specs 
+  `((version . ,emacs-version)
+    (group ,gnus-group-line-format ,gnus-group-line-format-spec)
+    (summary-dummy ,gnus-summary-dummy-line-format
+		   ,gnus-summary-dummy-line-format-spec)
+    (summary ,gnus-summary-line-format ,gnus-summary-line-format-spec)))
 
 (defvar gnus-article-mode-line-format-spec nil)
 (defvar gnus-summary-mode-line-format-spec nil)
@@ -2288,32 +2295,44 @@ Thank you for your help in stamping out bugs.
 
 
 (defun gnus-update-format-specifications (&optional force)
+  "Update all (necessary) format specifications."
+  ;; Make the indentation array.
   (gnus-make-thread-indent-array)
 
-  (when force
-    (setq gnus-old-specs nil))
+  (when (or force
+	    (and (assq 'version gnus-format-specs)
+		 (not (equal emacs-version
+			     (cdr (assq 'version gnus-format-specs))))))
+    (setq gnus-format-specs nil))
 
-  (let ((formats '(summary summary-dummy group 
+  (let ((types '(summary summary-dummy group 
 			   summary-mode group-mode article-mode))
-	old-format new-format)
-    (while formats
+	old-format new-format entry type val)
+    (while types
+      (setq type (pop types))
       (setq new-format (symbol-value
-			(intern (format "gnus-%s-line-format" (car formats)))))
-      (or (and (setq old-format (cdr (assq (car formats) gnus-old-specs)))
-	       (equal old-format new-format))
-	  (set (intern (format "gnus-%s-line-format-spec" (car formats)))
-	       (if (not (stringp new-format)) new-format
-		 (gnus-parse-format
+			(intern (format "gnus-%s-line-format" type))))
+      (setq entry (cdr (assq type gnus-format-specs)))
+      (if (and entry
+	       (equal (car entry) new-format))
+	  (set (intern (format "gnus-%s-line-format-spec" type)) 
+	       (car (cdr entry)))
+	(setq val
+	      (if (not (stringp new-format)) 
+		  ;; This is a function call or something.
 		  new-format
-		  (symbol-value 
-		   (intern (format "gnus-%s-line-format-alist"
-				   (if (eq (car formats) 'article-mode)
-				       'summary-mode (car formats)))))
-		  (not (string-match "mode$" (symbol-name (car formats))))))))
-      (setq gnus-old-specs (cons (cons (car formats) new-format)
-				 (delq (assq (car formats) gnus-old-specs)
-				       gnus-old-specs)))
-      (setq formats (cdr formats))))
+		;; This is a "real" format.
+		(gnus-parse-format
+		 new-format
+		 (symbol-value 
+		  (intern (format "gnus-%s-line-format-alist"
+				  (if (eq type 'article-mode)
+				      'summary-mode type))))
+		 (not (string-match "mode$" (symbol-name type))))))
+	(set (intern (format "gnus-%s-line-format-spec" type)) val)
+	(if entry 
+	    (setcar (cdr entry) val)
+	  (push (list type new-format val) gnus-format-specs)))))
       
   (gnus-update-group-mark-positions)
   (gnus-update-summary-mark-positions)
@@ -2555,7 +2574,7 @@ If INSERT, insert the result."
   (save-excursion
     (goto-char (point-min))
     (while (not (eobp))
-      (when (get-text-property (point) prop)
+      (while (get-text-property (point) prop)
 	(delete-char 1))
       (goto-char (next-single-property-change (point) prop nil (point-max))))))
 
@@ -3036,15 +3055,19 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
      ((null split))
      ;; This is a buffer to be selected.
      ((not (or (eq type 'horizontal) (eq type 'vertical)))
-      (let ((buffer (cdr (assq type gnus-window-to-buffer))))
+      (let ((buffer (cond ((stringp type) type)
+			  (t (cdr (assq type gnus-window-to-buffer)))))
+	    buf)
 	(unless buffer
 	  (error "Illegal buffer type: %s" type))
-	(switch-to-buffer (get-buffer (if (symbolp buffer) 
-					  (symbol-value buffer)
-					buffer)))
+	(unless (setq buf (get-buffer (if (symbolp buffer)
+					  (symbol-value buffer) buffer)))
+	  (setq buf (get-buffer-create (if (symbolp buffer)
+					   (symbol-value buffer) buffer))))
+	(switch-to-buffer buf)
 	;; We return the window if it has the `point' spec.
 	(and (memq 'point split) window)))
-     ;; This is a normal split
+     ;; This is a normal split.
      (t
       (when (> (length subs) 0)
 	;; First we have to compute the sizes of all new windows.
@@ -3141,14 +3164,14 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
      ((null split)
       t)
      ((not (or (eq type 'horizontal) (eq type 'vertical)))
-      (let ((buffer (cdr (assq type gnus-window-to-buffer)))
-	    win)
+      (let ((buffer (cond ((stringp type) type)
+			  (t (cdr (assq type gnus-window-to-buffer)))))
+	    win buf)
 	(unless buffer
 	  (error "Illegal buffer type: %s" type))
-	(setq win
-	      (get-buffer-window (get-buffer (if (symbolp buffer) 
-						 (symbol-value buffer)
-					       buffer))))
+	(when (setq buf (get-buffer (if (symbolp buffer) (symbol-value buffer) 
+				      buffer)))
+	  (setq win (get-buffer-window buf)))
 	(when win
 	  (if (memq 'point split)
 	      win
@@ -3995,50 +4018,27 @@ prompt the user for the name of an NNTP server to use."
       (setq history (cdr history)))))
 
 (defun gnus-compile ()
-  "Byte-compile the Gnus startup file.
-This will also compile the user-defined format specs."
+  "Byte-compile the user-defined format specs."
   (interactive)
-  (let ((file (concat (make-temp-name "/tmp/gnuss") ".el")))
+  (let ((entries gnus-format-specs)
+	entry gnus-tmp-func)
     (save-excursion
-      (gnus-message 7 "Compiling user file...")
-      (nnheader-set-temp-buffer " *compile gnus*")
-      (and (file-exists-p gnus-init-file)
-	   (insert-file gnus-init-file))
-      (goto-char (point-max))
+      (gnus-message 7 "Compiling format specs...")
 
-      (let ((formats '(summary summary-dummy group 
-			       summary-mode group-mode article-mode))
-	    format fs)
-	
-	(while formats
-	  (setq format (symbol-name (car formats))
-		formats (cdr formats)
-		fs (cons (symbol-value 
-			  (intern (format "gnus-%s-line-format" format)))
-			 fs))
-	  (insert "(defun gnus-" format "-line-format-spec ()\n")
-	  (insert 
-	   (prin1-to-string
-	    (symbol-value 
-	     (intern (format "gnus-%s-line-format-spec" format)))))
-	  (insert ")\n")
-	  (insert "(setq gnus-" format 
-		  "-line-format-spec (list 'gnus-byte-code 'gnus-"
-		  format "-line-format-spec))\n"))
+      (while entries
+	(setq entry (pop entries))
+	(if (eq (car entry) 'version)
+	    (setq gnus-format-specs (delq entry gnus-format-specs))
+	  (when (and (listp (caddr entry))
+		     (not (eq 'byte-code (caaddr entry))))
+	    (fset 'gnus-tmp-func 
+		  `(lambda () ,(caddr entry)))
+	    (byte-compile 'gnus-tmp-func)
+	    (setcar (cddr entry) (gnus-byte-code 'gnus-tmp-func)))))
 
-	(insert "(setq gnus-old-specs '" (prin1-to-string fs) ")\n")
+      (push (cons 'version emacs-version) gnus-format-specs)
 
-	(write-region (point-min) (point-max) file nil 'silent)
-	(byte-compile-file file)
-	(rename-file
-	 (concat file "c") 
-	 (concat gnus-init-file 
-		 (if (string-match "\\.el$" gnus-init-file) "c" ".elc"))
-	 t)
-	(when (file-exists-p file)
-	  (delete-file file))
-	(kill-buffer (current-buffer)))
-      (gnus-message 7 "Compiling user file...done"))))
+      (gnus-message 7 "Compiling user specs...done"))))
 
 (defun gnus-indent-rigidly (start end arg)
   "Indent rigidly using only spaces and no tabs."
@@ -5520,11 +5520,20 @@ If ALL is non-nil, all articles are marked as read.
 The return value is the number of articles that were marked as read,
 or nil if no action could be taken."
   (let* ((entry (gnus-gethash group gnus-newsrc-hashtb))
-	 (num (car entry))
-	 (marked (nth 3 (nth 2 entry))))
+	 (num (car entry)))
+    ;; Do the updating only if the newsgroup isn't killed.
     (if (not (numberp (car entry)))
 	(gnus-message 1 "Can't catch up; non-active group")
-      ;; Do the updating only if the newsgroup isn't killed.
+      ;; Do auto-expirable marks if that's required.
+      (when (gnus-group-auto-expirable-p group)
+	(gnus-add-marked-articles 
+	 group 'expire (gnus-list-of-unread-articles group))
+	(when all
+	  (let ((marks (nth 3 (nth 2 entry))))
+	    (gnus-add-marked-articles 
+	     group 'expire (gnus-uncompress-range (cdr (assq 'tick marks))))
+	    (gnus-add-marked-articles 
+	     group 'expire (gnus-uncompress-range (cdr (assq 'tick marks)))))))
       (when entry
 	(gnus-update-read-articles group nil)
 	;; Also nix out the lists of marks and dormants. 
@@ -6672,6 +6681,7 @@ buffer.
   (define-key gnus-summary-thread-map "l" 'gnus-summary-lower-thread)
   (define-key gnus-summary-thread-map "i" 'gnus-summary-raise-thread)
   (define-key gnus-summary-thread-map "T" 'gnus-summary-toggle-threads)
+  (define-key gnus-summary-thread-map "T" 'gnus-summary-rethread-current)
   (define-key gnus-summary-thread-map "s" 'gnus-summary-show-thread)
   (define-key gnus-summary-thread-map "S" 'gnus-summary-show-all-threads)
   (define-key gnus-summary-thread-map "h" 'gnus-summary-hide-thread)
@@ -11638,6 +11648,19 @@ with that article."
       ;; Return the list of articles.
       (nreverse articles))))
 
+(defun gnus-summary-rethread-current ()
+  "Rethread the thread the current article is part of."
+  (interactive)
+  (gnus-set-global-variables)
+  (let* ((gnus-show-threads t)
+	 (article (gnus-summary-article-number))
+	 (id (mail-header-id (gnus-summary-article-header)))
+	 (gnus-newsgroup-threads (list (gnus-id-to-thread (gnus-root-id id)))))
+    (unless id
+      (error "No article on the current line"))
+    (gnus-rebuild-thread id)
+    (gnus-summary-goto-subject article)))
+
 (defun gnus-summary-toggle-threads (&optional arg)
   "Toggle showing conversation threads.
 If ARG is positive number, turn showing conversation threads on."
@@ -13214,23 +13237,32 @@ If given a numerical ARG, move forward ARG pages."
     (set-buffer gnus-article-buffer)
     (goto-char (point-min))
     (widen)
+    (when (gnus-visual-p 'page-marker)
+      (let ((buffer-read-only nil))
+	(gnus-remove-text-with-property 'gnus-prev)
+	(gnus-remove-text-with-property 'gnus-next)))
     (when 
 	(cond ((< arg 0)
 	       (re-search-backward page-delimiter nil 'move (1+ (abs arg))))
 	      ((> arg 0)
 	       (re-search-forward page-delimiter nil 'move arg)))
       (goto-char (match-end 0)))
-    (when (and (gnus-visual-p 'page-marker)
-	       (not (bolp)))
-      (gnus-insert-prev-page-button))
     (narrow-to-region
      (point)
      (if (re-search-forward page-delimiter nil 'move)
-	 (prog1 (match-beginning 0) 
-	   (when (and (gnus-visual-p 'page-marker)
-		      (not (bolp)))
-	     (gnus-insert-next-page-button)))
-       (point)))))
+	 (match-beginning 0) 
+       (point)))
+    (when (and (gnus-visual-p 'page-marker)
+	       (not (= (point-min) 1)))
+      (save-excursion
+	(goto-char (point-min))
+	(gnus-insert-prev-page-button)))
+    (when (and (gnus-visual-p 'page-marker)
+	       (not (= (1- (point-max)) (buffer-size))))
+      (save-excursion
+	(goto-char (point-max))
+	(gnus-insert-next-page-button)))))
+
 
 ;; Article mode commands
 

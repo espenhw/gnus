@@ -114,48 +114,52 @@ there.")
 
 ;;; Interface functions.
 
-(defun nnspool-retrieve-headers (sequence &optional newsgroup server fetch-old)
-  "Retrieve the headers for the articles in SEQUENCE.
-Newsgroup must be selected before calling this function."
+(defun nnspool-retrieve-headers (articles &optional group server fetch-old)
+  "Retrieve the headers of ARTICLES."
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
-    (let* ((number (length sequence))
-	   (count 0)
-	   (do-message (and (numberp nnspool-large-newsgroup)
-			    (> number nnspool-large-newsgroup)))
-	   file beg article)
-      (if (not (nnspool-possibly-change-directory newsgroup))
-	  ()
-	(if (and (numberp (car sequence))
-		 (nnspool-retrieve-headers-with-nov sequence fetch-old))
+    (when (nnspool-possibly-change-directory group)
+      (let* ((number (length articles))
+	     (count 0)
+	     (do-message (and (numberp nnspool-large-newsgroup)
+			      (> number nnspool-large-newsgroup)))
+	     file beg article ag)
+	(if (and (numberp (car articles))
+		 (nnspool-retrieve-headers-with-nov articles fetch-old))
+	    ;; We successfully retrieved the NOV headers.
 	    'nov
-	  (while sequence
-	    (setq article (car sequence))
+	  ;; No NOV headers here, so we do it the hard way.
+	  (while articles
+	    (setq article (pop articles))
 	    (if (stringp article)
-		(progn
-		  (setq file (nnspool-find-article-by-message-id article))
-		  (setq article 0))
-	      (setq file (concat nnspool-current-directory 
-				 (int-to-string article))))
-	    (and file (file-exists-p file)
-		 (progn
-		   (insert (format "221 %d Article retrieved.\n" article))
-		   (setq beg (point))
-		   (nnheader-insert-head file)
-		   (goto-char beg)
-		   (search-forward "\n\n" nil t)
-		   (forward-char -1)
-		   (insert ".\n")
-		   (delete-region (point) (point-max))))
-	    (setq sequence (cdr sequence))
+		;; This is a Message-ID.
+		(setq ag (nnspool-find-id article)
+		      file (and ag (nnspool-article-pathname 
+				    (car ag) (cdr ag)))
+		      article (cdr ag))
+	      ;; This is an article in the current group.
+	      (setq file (nnspool-article-pathname 
+			  nnspool-current-group article)))
+	    ;; Insert the head of the article.
+	    (when (and file
+		       (file-exists-p file))
+	      (insert (format "221 %d Article retrieved.\n" article))
+	      (setq beg (point))
+	      (nnheader-insert-head file)
+	      (goto-char beg)
+	      (search-forward "\n\n" nil t)
+	      (forward-char -1)
+	      (insert ".\n")
+	      (delete-region (point) (point-max)))
 	    
 	    (and do-message
-		 (zerop (% (setq count (1+ count)) 20))
-		 (message "NNSPOOL: Receiving headers... %d%%"
+		 (zerop (% (incf count) 20))
+		 (message "nnspool: Receiving headers... %d%%"
 			  (/ (* count 100) number))))
 	  
-	  (and do-message (message "NNSPOOL: Receiving headers...done"))
+	  (and do-message
+	       (message "nnspool: Receiving headers...done"))
 	  
 	  ;; Fold continuation lines.
 	  (goto-char (point-min))
@@ -193,26 +197,28 @@ Newsgroup must be selected before calling this function."
   "Return server status response as string."
   nnspool-status-string)
 
-(defun nnspool-request-article (id &optional newsgroup server buffer)
+(defun nnspool-request-article (id &optional group server buffer)
   "Select article by message ID (or number)."
-  (nnspool-possibly-change-directory newsgroup)
-  (let* ((group (if (stringp id)
-		    (nnspool-find-article-by-message-id id)
-		  nnspool-current-group))
-	 (file (and group (nnspool-article-pathname group id)))
-	 (nntp-server-buffer (or buffer nntp-server-buffer)))
+  (nnspool-possibly-change-directory group)
+  (let ((nntp-server-buffer (or buffer nntp-server-buffer))
+	file ag)
+    (if (stringp id)
+	;; This is a Message-ID.	
+	(when (setq ag (nnspool-find-id id))
+	  (setq file (nnspool-article-pathname (car ag) (cdr ag))))
+      (setq file (nnspool-article-pathname nnspool-current-group id)))
     (and file
 	 (file-exists-p file)
 	 (not (file-directory-p file))
 	 (save-excursion (nnspool-find-file file))
-	 ;; We return the article number.
+	 ;; We return the article number and group name.
 	 (if (numberp id)
-	     (cons newsgroup id)
-	   (cons group id)))))
+	     (cons nnspool-current-group id)
+	   ag))))
 	    
-(defun nnspool-request-body (id &optional newsgroup server)
+(defun nnspool-request-body (id &optional group server)
   "Select article body by message ID (or number)."
-  (nnspool-possibly-change-directory newsgroup)
+  (nnspool-possibly-change-directory group)
   (if (nnspool-request-article id)
       (save-excursion
 	(set-buffer nntp-server-buffer)
@@ -221,9 +227,9 @@ Newsgroup must be selected before calling this function."
 	    (delete-region (point-min) (point)))
 	t)))
 
-(defun nnspool-request-head (id &optional newsgroup server)
+(defun nnspool-request-head (id &optional group server)
   "Select article head by message ID (or number)."
-  (nnspool-possibly-change-directory newsgroup)
+  (nnspool-possibly-change-directory group)
   (if (nnspool-request-article id)
       (save-excursion
 	(set-buffer nntp-server-buffer)
@@ -403,24 +409,27 @@ Newsgroup must be selected before calling this function."
 	(cur (current-buffer))
 	(prev (point-min))
 	num found)
-    (if (or (eobp)
-	    (>= (setq num (read cur)) article))
-	(beginning-of-line)
-      (while (not found)
-	(goto-char (/ (+ max min) 2))
-	(forward-line 1)
-	(if (or (= (point) prev)
-		(eobp))
-	    (setq found t)
-	  (setq prev (point))
-	  (cond ((> (setq num (read cur)) article)
-		 (setq max (point)))
-		((< num article)
-		 (setq min (point)))
-		(t
-		 (setq found t))))
-	(beginning-of-line)))
-    (or (not num) (= num article))))
+    (while (not found)
+      (goto-char (/ (+ max min) 2))
+      (beginning-of-line)
+      (if (or (= (point) prev)
+	      (eobp))
+	  (setq found t)
+	(setq prev (point))
+	(cond ((> (setq num (read cur)) article)
+	       (setq max (point)))
+	      ((< num article)
+	       (setq min (point)))
+	      (t
+	       (setq found t)))))
+    (when (not (eq num article))
+      (setq found (point))
+      (forward-line 1)
+      (or (eobp)
+	  (= (setq num (read cur)) article)
+	  (goto-char found)))
+    (beginning-of-line)
+    (eq num article)))
     
 
 (defun nnspool-sift-nov-with-sed (articles file)
@@ -434,7 +443,7 @@ Newsgroup must be selected before calling this function."
 
 ;; Fixed by fdc@cliwe.ping.de (Frank D. Cringle). 
 ;; Find out what group an article identified by a Message-ID is in.
-(defun nnspool-find-article-by-message-id (id)
+(defun nnspool-find-id (id)
   (save-excursion
     (set-buffer (get-buffer-create " *nnspool work*"))
     (buffer-disable-undo (current-buffer))
@@ -442,8 +451,8 @@ Newsgroup must be selected before calling this function."
     (call-process "grep" nil t nil id nnspool-history-file)
     (goto-char (point-min))
     (prog1
-	(if (looking-at "<[^>]+>[ \t]+[-0-9~]+[ \t]+\\([^ \t\n]*\\)")
-	    (buffer-substring (match-beginning 1) (match-end 1)))
+	(if (looking-at "<[^>]+>[ \t]+[-0-9~]+[ \t]+\\([^ /\t\n]+\\)/\\([0-9]+\\)[ \t\n]")
+	    (cons (match-string 1) (string-to-int (match-string 2))))
       (kill-buffer (current-buffer)))))
 
 (defun nnspool-find-file (file)
@@ -454,15 +463,15 @@ Newsgroup must be selected before calling this function."
       (progn (insert-file-contents file) t)
     (file-error nil)))
 
-(defun nnspool-possibly-change-directory (newsgroup)
-  (if newsgroup
-      (let ((pathname (nnspool-article-pathname newsgroup)))
+(defun nnspool-possibly-change-directory (group)
+  (if group
+      (let ((pathname (nnspool-article-pathname group)))
 	(if (file-directory-p pathname)
 	    (progn
 	      (setq nnspool-current-directory pathname)
-	      (setq nnspool-current-group newsgroup))
+	      (setq nnspool-current-group group))
 	  (setq nnspool-status-string 
-		(format "No such newsgroup: %s" newsgroup))
+		(format "No such newsgroup: %s" group))
 	  nil))
     t))
 

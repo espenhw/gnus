@@ -3176,6 +3176,15 @@ Elements that look like @samp{(score-file . "file")} will make
 @samp{file} into the current score file for the group in question.  This
 means that all score commands you issue will end up in that file. 
 
+@item admin-address
+When unsubscribing to a mailing list you should never send the
+unsubscription notice to the mailing list itself.  Instead, you'd send
+messages to the administrative address.  This parameter allows you to
+put the admin address somewhere convenient.
+
+@item comment
+This parameter allows you to enter a random comment on the group.
+
 @item @var{(variable form)}
 You can use the group parameters to set variables local to the group you
 are entering.  Say you want to turn threading off in
@@ -4738,7 +4747,9 @@ checking/generation.
 @item gnus-inews-article-hook
 @vindex gnus-inews-article-hook
 This hook is called right before the article is posted.  By default it
-handles FCC processing (i.e., saving the article to a file.)
+handles FCC processing (i.e., saving the article to a file.)  You can
+also have this hook add a score to all followups to the article you've
+written (@pxref{Followups To Yourself}). 
 
 @item gnus-inews-article-header-hook
 @vindex gnus-inews-article-header-hook
@@ -5788,6 +5799,14 @@ Expose all hidden threads (@code{gnus-summary-show-all-threads}).
 @kindex T H (Summary)
 @findex gnus-summary-hide-all-threads
 Hide all threads (@code{gnus-summary-hide-all-threads}).
+
+@item T R
+@kindex T R (Summary)
+@findex gnus-summary-rethread-current
+Re-thread the thread the current article is part of
+(@code{gnus-summary-rethread-current}).  This works even when the
+summary buffer is otherwise unthreaded.
+
 @end table
 
 The following commands are thread movement commands.  They all
@@ -7852,6 +7871,7 @@ silently to help keep the sizes of the score files down.
 * Score File Format::        What a score file may contain.
 * Score File Editing::       You can edit score files by hand as well.
 * Adaptive Scoring::         Big Sister Gnus *knows* what you read.
+* Followups To Yourself::    Having Gnus notice when people answer you.
 * Scoring Tips::             How to score effectively.
 * Reverse Scoring::          That problem child of old is not problem.
 * Global Score Files::       Earth-spanning, ear-splitting score files.
@@ -8479,6 +8499,34 @@ the length of the match is less than
 this variable is @code{nil}, exact matching will always be used to avoid
 this problem.
 
+
+@node Followups To Yourself
+@section Followups To Yourself
+
+Gnus offers two commands for picking out the @code{Message-ID} header in
+the current buffer.  Gnus will then add a score rule that scores using
+this @code{Message-ID} on the @code{References} header of other
+articles.  This will, in effect, increase the score of all articles that
+respond to the article in the current buffer.  Quite useful if you want
+to easily note when people answer what you've said.
+
+@table @code
+@item gnus-score-followup-article
+@findex gnus-score-followup-article
+This will add a score to articles that directly follow up your own
+article. 
+
+@item gnus-score-followup-thread
+@findex gnus-score-followup-thread
+This will add a score to all articles that appear in a thread "below"
+your own article.
+@end table
+
+@vindex gnus-inews-article-hook
+These two functions are both primarily meant to be used in hooks like
+@code{gnus-inews-article-hook}.  
+
+
 @node Scoring Tips
 @section Scoring Tips
 @cindex scoring tips
@@ -8970,6 +9018,9 @@ you want to change the @code{article} setting, you could say:
                (article 1.0))))
 @end lisp
 
+You'd typically stick these @code{gnus-add-configuration} calls in your
+@file{.gnus} file or in some startup hook -- they should be run after
+Gnus has been loaded.
 
 
 @node Buttons
@@ -10056,6 +10107,7 @@ one looong line, then that's ok.
 The meaning of the various atoms are explained elsewhere in this
 manual. 
 
+
 @node Headers
 @subsection Headers
 
@@ -10080,6 +10132,7 @@ they all have predicatable names beginning with @code{mail-header-} and
 
 The @code{xref} slot is really a @code{misc} slot.  Any extra info will
 be put in there.
+
 
 @node Ranges
 @subsection Ranges
@@ -10116,7 +10169,7 @@ This means that comparing two ranges to find out whether they are equal
 is slightly tricky:
 
 @example
-((1 . 6) 7 8 (10 . 12))
+((1 . 5) 7 8 (10 . 12))
 @end example
 
 and

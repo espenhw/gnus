@@ -1486,22 +1486,23 @@ specified by `gnus-button-alist'."
 (defvar gnus-prev-page-map nil)
 (unless gnus-prev-page-map
   (setq gnus-prev-page-map (make-sparse-keymap))
-  (define-key gnus-prev-page-map "\n" 'gnus-article-prev-page))
+  (define-key gnus-prev-page-map gnus-mouse-2 'gnus-article-prev-page)
+  (define-key gnus-prev-page-map "\r" 'gnus-article-prev-page))
 
 (defun gnus-insert-prev-page-button ()
   (let ((buffer-read-only nil))
-    (gnus-remove-text-with-property 'gnus-prev)
     (gnus-eval-format gnus-prev-page-line-format nil
 		      `(gnus-prev t local-map ,gnus-prev-page-map))))
 
 (defvar gnus-next-page-map nil)
 (unless gnus-next-page-map
-  (setq gnus-next-page-map (make-sparse-keymap))
-  (define-key gnus-next-page-map "\n" 'gnus-article-next-page))
+  (setq gnus-next-page-map (make-keymap))
+  (suppress-keymap gnus-prev-page-map)
+  (define-key gnus-next-page-map gnus-mouse-2 'gnus-article-next-page)
+  (define-key gnus-next-page-map "\r" 'gnus-article-next-page))
 
 (defun gnus-insert-next-page-button ()
   (let ((buffer-read-only nil))
-    (gnus-remove-text-with-property 'gnus-next)
     (gnus-eval-format gnus-next-page-line-format nil
 		      `(gnus-next t local-map ,gnus-next-page-map))))
 

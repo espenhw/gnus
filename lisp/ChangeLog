@@ -1,7 +1,46 @@
+Sun Dec 17 16:06:11 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* nndoc.el (nndoc-guess-digest-type): Didn't grok MIME digests.
+
+	* gnus.el (gnus-all-windows-visible-p): Would bug out on buffers
+	that didn't exist. 
+	(gnus-all-windows-visible-p): Allow strings in buffer-config.
+	(gnus-configure-frame): Ditto.
+	(gnus-remove-text-with-property): Didn't remove all text.
+
+	* gnus-uu.el (gnus-uu-grab-articles): Would delete files after
+	decoding them. 
+
+Sun Dec 17 00:12:34 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-score-followup-article): New command.
+	(gnus-score-followup-thread): New command.
+
+	* gnus.el (gnus-compile): New implementation; save in
+	.newsrc.eld. 
+	(gnus-summary-rethread-thread): New command and keystroke.
+
+Sat Dec 16 22:22:58 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnspool.el (nnspool-find-article-by-message-id): Decompose the
+	output; renamed.
+	(nnspool-request-article): Use the function.
+	(nnspool-retrieve-headers): Ditto.
+
+	* gnus.el (gnus-group-catchup): Do the auto-expirable thaang.
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Don't enter
+	empty articles into the cache.
+
+	* nnspool.el (nnspool-find-nov-line): Would often not find the
+	right line.
+
 Sat Dec 16 14:26:27 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
 
 	* gnus.el (gnus-summary-exit): Would nix out the group name of
 	parents to nndoc groups.
+
+	* gnus.el: 0.23 is released.
 
 Fri Dec 15 20:55:26 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 

@@ -53,19 +53,19 @@
 	(beginning-of-buffer)
 	(open-line 1)
 	(let* ((iconpoint (point)) (from (mail-fetch-field "from"))
-	  (username 
-	   (progn
-	     (string-match "\\([-_a-zA-Z0-9]+\\)@" from)
-	     (match-string 1 from)))
-	   (hostpath
-	    (gnus-picons-reverse-domain-path
-	     (replace-in-string
-	      (replace-in-string from ".*@\\([_a-zA-Z0-9-.]+\\).*" "\\1") 
-	      "\\." "/"))))
+	       (username 
+		(progn
+		  (string-match "\\([-_a-zA-Z0-9]+\\)@" from)
+		  (match-string 1 from)))
+	       (hostpath
+		(gnus-picons-reverse-domain-path
+		 (replace-in-string
+		  (replace-in-string from ".*@\\([_a-zA-Z0-9-.]+\\).*" "\\1") 
+		  "\\." "/"))))
 	  (if (equal username from)
-		(setq username (replace-in-string from 
-						  ".*<\\([_a-zA-Z0-9-.]+\\)>.*" 
-						  "\\1")))
+	      (setq username (replace-in-string from 
+						".*<\\([_a-zA-Z0-9-.]+\\)>.*" 
+						"\\1")))
 	  (insert username)
 	  (gnus-picons-insert-face-if-exists 
 	   (concat gnus-picons-database "/" gnus-picons-news-directory)

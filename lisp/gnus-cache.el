@@ -128,45 +128,44 @@ variable to \"^nnml\".")
 	    (gnus-summary-select-article))
 	  (save-excursion
 	    (set-buffer gnus-original-article-buffer)
-	    (save-restriction
-	      (widen)
-	      (write-region (point-min) (point-max) file nil 'quiet))
-	    (gnus-cache-change-buffer group)
-	    (set-buffer (cdr gnus-cache-buffer))
-	    (goto-char (point-max))
-	    (forward-line -1)
-	    (while (condition-case ()
-		       (and (not (bobp))
-			    (> (read (current-buffer)) number))
-		     (error
-		      ;; The line was malformed, so we just remove it!!
-		      (gnus-delete-line)
-		      t))
-	      (forward-line -1))
-	    (if (bobp) 
-		(if (not (eobp))
-		    (progn
-		      (beginning-of-line)
-		      (if (< (read (current-buffer)) number)
-			  (forward-line 1)))
-		  (beginning-of-line))
-	      (forward-line 1))
-	    (beginning-of-line)
-	    ;; [number subject from date id references chars lines xref]
-	    (insert (format "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n"
-			    (mail-header-number headers)
-			    (mail-header-subject headers)
-			    (mail-header-from headers)
-			    (mail-header-date headers)
-			    (mail-header-id headers)
-			    (or (mail-header-references headers) "")
-			    (or (mail-header-chars headers) "")
-			    (or (mail-header-lines headers) "")
-			    (or (mail-header-xref headers) ""))))
-	  ;; Update the active info.
-	  (gnus-cache-update-active group number)
-	  (push number gnus-newsgroup-cached)
-	  t)))))
+	    (when (> (buffer-size) 0)
+	      (write-region (point-min) (point-max) file nil 'quiet)
+	      (gnus-cache-change-buffer group)
+	      (set-buffer (cdr gnus-cache-buffer))
+	      (goto-char (point-max))
+	      (forward-line -1)
+	      (while (condition-case ()
+			 (and (not (bobp))
+			      (> (read (current-buffer)) number))
+		       (error
+			;; The line was malformed, so we just remove it!!
+			(gnus-delete-line)
+			t))
+		(forward-line -1))
+	      (if (bobp) 
+		  (if (not (eobp))
+		      (progn
+			(beginning-of-line)
+			(if (< (read (current-buffer)) number)
+			    (forward-line 1)))
+		    (beginning-of-line))
+		(forward-line 1))
+	      (beginning-of-line)
+	      ;; [number subject from date id references chars lines xref]
+	      (insert (format "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n"
+			      (mail-header-number headers)
+			      (mail-header-subject headers)
+			      (mail-header-from headers)
+			      (mail-header-date headers)
+			      (mail-header-id headers)
+			      (or (mail-header-references headers) "")
+			      (or (mail-header-chars headers) "")
+			      (or (mail-header-lines headers) "")
+			      (or (mail-header-xref headers) "")))
+	      ;; Update the active info.
+	      (gnus-cache-update-active group number)
+	      (push number gnus-newsgroup-cached))
+	    t))))))
 
 (defun gnus-cache-enter-remove-article (article)
   "Mark ARTICLE for later possible removal."
@@ -503,9 +502,9 @@ If LOW, update the lower bound instead."
 	    (string-match 
 	     (concat "^" (file-name-as-directory
 			  (expand-file-name gnus-cache-directory)))
-	     directory)
+	     (file-name-as-directory directory))
 	    (gnus-replace-chars-in-string 
-	     (substring directory (match-end 0))
+	     (substring (file-name-as-directory directory) (match-end 0))
 	     ?/ ?.)))
 	 nums alphs)
     (when top

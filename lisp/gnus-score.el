@@ -597,6 +597,32 @@ SCORE is the score to add."
   (gnus-score-set 'expunge (list score))
   (gnus-score-set 'touched '(t)))
 
+(defun gnus-score-followup-article (&optional score)
+  "Add SCORE to all followups to the article in the current buffer."
+  (interactive "P")
+  (setq score (gnus-score-default score))
+  (save-excursion
+    (save-restriction
+      (goto-char (point-min))
+      (let ((id (mail-fetch-field "message-id")))
+	(when id
+	  (gnus-summary-score-entry
+	   "references" (concat id "[ \t]*$") 'r
+	   score (current-time-string)))))))
+
+(defun gnus-score-followup-thread (&optional score)
+  "Add SCORE to all later articles in the thread the current buffer is part of."
+  (interactive "P")
+  (setq score (gnus-score-default score))
+  (save-excursion
+    (save-restriction
+      (goto-char (point-min))
+      (let ((id (mail-fetch-field "message-id")))
+	(when id
+	  (gnus-summary-score-entry
+	   "references" id 's
+	   score (current-time-string)))))))
+
 (defun gnus-score-set (symbol value &optional alist)
   ;; Set SYMBOL to VALUE in ALIST.
   (let* ((alist 

@@ -44,9 +44,12 @@
 	(setq byte-compile-warnings 
 	      '(free-vars unresolved callargs redefine obsolete))))
       (and (or (and (not (string= file "gnus-xmas.el"))
-		    (not (string= file "x-easymenu.el")))
+		    (not (string= file "x-easymenu.el"))
+		    (not (string= file "gnus-picon.el")))
 	       xemacs)
-	   (byte-compile-file file)))))
+	   (condition-case ()
+	       (byte-compile-file file)
+	     (error nil))))))
 
 (defun dgnushack-recompile ()
   (require 'gnus)

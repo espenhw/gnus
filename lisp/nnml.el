@@ -33,8 +33,6 @@
 (require 'nnmail)
 (eval-when-compile (require 'cl))
 
-(require 'cl)
-
 (defvar nnml-directory "~/Mail/"
   "Mail spool directory.")
 
@@ -721,7 +719,8 @@ all. This may very well take some time.")
   (let ((group (nnmail-replace-chars-in-string 
 		(substring dir (length nnml-directory))
 		?/ ?.)))
-    (setq nnml-group-alist (delq (assoc group nnml-group-alist) nnml-group-alist))
+    (setq nnml-group-alist
+	  (delq (assoc group nnml-group-alist) nnml-group-alist))
     (push (list group
 		(cons (car files)
 		      (let ((f files))
