@@ -77,7 +77,7 @@ automatically."
   (if (or (featurep 'xface)
 	  (featurep 'xpm))
       'gnus-xmas-article-display-xface
-    "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -")
+    "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | ee -")
   "*String or function to be executed to display an X-Face header.
 If it is a string, the command will be executed in a sub-shell
 asynchronously.	 The compressed face will be piped to this command."

@@ -227,18 +227,17 @@ Note: LIST has to be sorted over `<'."
 (defun gnus-remove-from-range (range1 range2)
   "Return a range that has all articles from RANGE2 removed from
 RANGE1. The returned range is always a list. RANGE2 can also be a
-unsorted list of articles."
+unsorted list of articles. RANGE1 is modified by side effects, RANGE2
+is not modified."
   (if (or (null range1) (null range2))
       range1
     (let (out r1 r2 r1_min r1_max r2_min r2_max
-	      (range1 range1)
-	      (range2 (if (listp (cdr range2))
-			  (sort range2 (lambda (e1 e2)
-					 (< (if (consp e1) (car e1) e1)
-					    (if (consp e2) (car e2) e2))))
-			range2)))
+             (range2 (gnus-copy-sequence range2)))
       (setq range1 (if (listp (cdr range1)) range1 (list range1))
-	    range2 (if (listp (cdr range2)) range2 (list range2))
+           range2 (sort (if (listp (cdr range2)) range2 (list range2))
+                        (lambda (e1 e2)
+                          (< (if (consp e1) (car e1) e1)
+                             (if (consp e2) (car e2) e2))))
 	    r1 (car range1)
 	    r2 (car range2)
 	    r1_min (if (consp r1) (car r1) r1)

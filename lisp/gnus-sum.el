@@ -4289,27 +4289,24 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 		(setq arts (cdr arts)))
 	      (setq list (cdr all)))))
 
-	  (when (gnus-check-backend-function 'request-set-mark
-					     gnus-newsgroup-name)
-	    ;; uncompressed:s are not proper flags (they are cons cells)
-	    ;; cache is a internal gnus flag
-	    (unless (memq (cdr type) (cons 'cache uncompressed))
-	      (let* ((old (cdr (assq (cdr type) (gnus-info-marks info))))
-		     (list (gnus-compress-sequence (sort list '<)))
-		     (del (gnus-remove-from-range old list))
-		     (add (gnus-remove-from-range list old)))
-		(if add
-		    (push (list add 'add (list (cdr type))) delta-marks))
-		(if del
-		    (push (list del 'del (list (cdr type))) delta-marks)))))
+       (or (memq (cdr type) uncompressed)
+           (setq list (gnus-compress-sequence (set symbol (sort list '<)) t)))
+       
+       (when (gnus-check-backend-function 'request-set-mark
+                                          gnus-newsgroup-name)
+         ;; uncompressed:s are not proper flags (they are cons cells)
+         ;; cache is a internal gnus flag
+         (unless (memq (cdr type) (cons 'cache uncompressed))
+           (let* ((old (cdr (assq (cdr type) (gnus-info-marks info))))
+                  (del (gnus-remove-from-range (gnus-copy-sequence old) list))
+                  (add (gnus-remove-from-range (gnus-copy-sequence list) old)))
+             (if add
+                 (push (list add 'add (list (cdr type))) delta-marks))
+             (if del
+                 (push (list del 'del (list (cdr type))) delta-marks)))))
 	  
 	(when list
-	  (push (cons (cdr type)
-		      (if (memq (cdr type) uncompressed) list
-			(gnus-compress-sequence
-			 (set symbol (sort list '<)) t)))
-		newmarked)))
-	
+         (push (cons (cdr type) list) newmarked)))
 
       (when delta-marks
 	(unless (gnus-check-group gnus-newsgroup-name)
@@ -4872,7 +4869,8 @@ executed with point over the summary line of the articles."
     `(let ((,articles (gnus-summary-work-articles ,arg)))
        (while ,articles
 	 (gnus-summary-goto-subject (car ,articles))
-	 ,@forms))))
+	 ,@forms
+	 (pop ,articles)))))
 
 (put 'gnus-summary-iterate 'lisp-indent-function 1)
 (put 'gnus-summary-iterate 'edebug-form-spec '(form body))
@@ -6141,7 +6139,7 @@ If given a prefix, remove all limits."
   "Limit the summary buffer to articles that are older than (or equal) AGE days.
 If YOUNGER-P (the prefix) is non-nil, limit the summary buffer to
 articles that are younger than AGE days."
-  (interactive "nTime in days: \nP")
+  (interactive "nLimit to articles older than (in days): \nP")
   (prog1
       (let ((data gnus-newsgroup-data)
 	    (cutoff (days-to-time age))
@@ -8793,11 +8791,8 @@ save those articles instead."
   (and (boundp group)
        (symbol-name group)
        (symbol-value group)
-       (memq 'respool
-	     (assoc (symbol-name
-		     (car (gnus-find-method-for-group
-			   (symbol-name group))))
-		    gnus-valid-select-methods))))
+       (gnus-get-function (gnus-find-method-for-group
+			   (symbol-name group)) 'request-accept-article t)))
 
 (defun gnus-read-move-group-name (prompt default articles prefix)
   "Read a group name."
@@ -8847,6 +8842,39 @@ save those articles instead."
 		  (error "Couldn't create group %s" to-newsgroup)))
 	  (error "No such group: %s" to-newsgroup)))
     to-newsgroup))
+
+(defun gnus-summary-save-parts (type dir n reverse)
+  "Save parts matching a type."
+  (interactive
+   (list (read-string "Save parts of type: " "image/.*")
+	 (read-file-name "Save to directory: " t nil t)
+	 current-prefix-arg))
+  (gnus-summary-iterate n
+    (let ((gnus-display-mime-function nil)
+	  (gnus-inhibit-treatment t))
+      (gnus-summary-select-article))
+    (save-excursion
+      (set-buffer gnus-article-buffer)
+      (let ((handles (or (mm-dissect-buffer) (mm-uu-dissect))))
+	(when handles
+	  (gnus-summary-save-parts-1 type dir handles reverse))))))
+
+(defun gnus-summary-save-parts-1 (type dir handle reverse)
+  (if (stringp (car handle))
+      (mapcar (lambda (h) (gnus-summary-save-parts-1 type dir h reverse))
+	      (cdr handle))
+    (when (if reverse
+	      (not (string-match type (car (mm-handle-type handle))))
+	    (string-match type (car (mm-handle-type handle))))
+      (let ((file (expand-file-name
+		   (file-name-nondirectory
+		    (or
+		     (mail-content-type-get
+		      (mm-handle-disposition handle) 'filename)
+		     (concat gnus-newsgroup-name "." gnus-current-article)))
+		   dir)))
+	(unless (file-exists-p file)
+	  (mm-save-part-to-file handle file))))))
 
 ;; Summary extract commands
 

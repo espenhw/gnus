@@ -3287,59 +3287,60 @@ and the second element is the address."
   (gnus-browse-foreign-server method))
 
 (defun gnus-group-set-info (info &optional method-only-group part)
-  (let* ((entry (gnus-gethash
-		 (or method-only-group (gnus-info-group info))
-		 gnus-newsrc-hashtb))
-	 (part-info info)
-	 (info (if method-only-group (nth 2 entry) info))
-	 method)
-    (when method-only-group
+  (when info
+    (let* ((entry (gnus-gethash
+		   (or method-only-group (gnus-info-group info))
+		   gnus-newsrc-hashtb))
+	   (part-info info)
+	   (info (if method-only-group (nth 2 entry) info))
+	   method)
+      (when method-only-group
+	(unless entry
+	  (error "Trying to change non-existent group %s" method-only-group))
+	;; We have received parts of the actual group info - either the
+	;; select method or the group parameters.	 We first check
+	;; whether we have to extend the info, and if so, do that.
+	(let ((len (length info))
+	      (total (if (eq part 'method) 5 6)))
+	  (when (< len total)
+	    (setcdr (nthcdr (1- len) info)
+		    (make-list (- total len) nil)))
+	  ;; Then we enter the new info.
+	  (setcar (nthcdr (1- total) info) part-info)))
       (unless entry
-	(error "Trying to change non-existent group %s" method-only-group))
-      ;; We have received parts of the actual group info - either the
-      ;; select method or the group parameters.	 We first check
-      ;; whether we have to extend the info, and if so, do that.
-      (let ((len (length info))
-	    (total (if (eq part 'method) 5 6)))
-	(when (< len total)
-	  (setcdr (nthcdr (1- len) info)
-		  (make-list (- total len) nil)))
-	;; Then we enter the new info.
-	(setcar (nthcdr (1- total) info) part-info)))
-    (unless entry
-      ;; This is a new group, so we just create it.
-      (save-excursion
-	(set-buffer gnus-group-buffer)
-	(setq method (gnus-info-method info))
-	(when (gnus-server-equal method "native")
-	  (setq method nil))
+	;; This is a new group, so we just create it.
 	(save-excursion
 	  (set-buffer gnus-group-buffer)
-	  (if method
-	      ;; It's a foreign group...
-	      (gnus-group-make-group
-	       (gnus-group-real-name (gnus-info-group info))
-	       (if (stringp method) method
-		 (prin1-to-string (car method)))
-	       (and (consp method)
-		    (nth 1 (gnus-info-method info))))
-	    ;; It's a native group.
-	    (gnus-group-make-group (gnus-info-group info))))
-	(gnus-message 6 "Note: New group created")
-	(setq entry
-	      (gnus-gethash (gnus-group-prefixed-name
-			     (gnus-group-real-name (gnus-info-group info))
-			     (or (gnus-info-method info) gnus-select-method))
-			    gnus-newsrc-hashtb))))
-    ;; Whether it was a new group or not, we now have the entry, so we
-    ;; can do the update.
-    (if entry
-	(progn
-	  (setcar (nthcdr 2 entry) info)
-	  (when (and (not (eq (car entry) t))
-		     (gnus-active (gnus-info-group info)))
-	    (setcar entry (length (gnus-list-of-unread-articles (car info))))))
-      (error "No such group: %s" (gnus-info-group info)))))
+	  (setq method (gnus-info-method info))
+	  (when (gnus-server-equal method "native")
+	    (setq method nil))
+	  (save-excursion
+	    (set-buffer gnus-group-buffer)
+	    (if method
+		;; It's a foreign group...
+		(gnus-group-make-group
+		 (gnus-group-real-name (gnus-info-group info))
+		 (if (stringp method) method
+		   (prin1-to-string (car method)))
+		 (and (consp method)
+		      (nth 1 (gnus-info-method info))))
+	      ;; It's a native group.
+	      (gnus-group-make-group (gnus-info-group info))))
+	  (gnus-message 6 "Note: New group created")
+	  (setq entry
+		(gnus-gethash (gnus-group-prefixed-name
+			       (gnus-group-real-name (gnus-info-group info))
+			       (or (gnus-info-method info) gnus-select-method))
+			      gnus-newsrc-hashtb))))
+      ;; Whether it was a new group or not, we now have the entry, so we
+      ;; can do the update.
+      (if entry
+	  (progn
+	    (setcar (nthcdr 2 entry) info)
+	    (when (and (not (eq (car entry) t))
+		       (gnus-active (gnus-info-group info)))
+	      (setcar entry (length (gnus-list-of-unread-articles (car info))))))
+	(error "No such group: %s" (gnus-info-group info))))))
 
 (defun gnus-group-set-method-info (group select-method)
   (gnus-group-set-info select-method group 'method))

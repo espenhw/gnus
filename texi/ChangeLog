@@ -1,3 +1,17 @@
+1999-06-12 00:13:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Comparing Mail Backends): Slight edits.
+
+1999-06-12 00:13:20  Karl Kleinpaste  <karl@justresearch.com>
+
+	* gnus.texi (Comparing Mail Backends): New.
+
+1999-06-11 21:47:22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Group Score): Doc fix.
+	(The Active File): Addition.
+	(Document Groups): Addition.
+
 1999-04-18  Didier Verna  <verna@inf.enst.fr>
 
 	* gnus.texi (Article treatment): document the new variable

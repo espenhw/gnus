@@ -2499,6 +2499,8 @@ If FORCE is non-nil, the .newsrc file is read."
 
     (gnus-message 5 "Reading descriptions file via %s..." (car method))
     (cond
+     ((null (gnus-get-function method 'request-list-newsgroups t))
+      t)
      ((not (gnus-check-server method))
       (gnus-message 1 "Couldn't open server")
       nil)

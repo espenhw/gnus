@@ -505,28 +505,31 @@ This overrides entries in the mailcap file."
 			   (or filename name "")
 			   (or mm-default-directory default-directory))))
     (setq mm-default-directory (file-name-directory file))
-    (mm-with-unibyte-buffer
-      (mm-insert-part handle)
-      (when (or (not (file-exists-p file))
-		(yes-or-no-p (format "File %s already exists; overwrite? "
-				     file)))
-	;; Now every coding system is 100% binary within mm-with-unibyte-buffer
-	;; Is text still special?
-	(let ((coding-system-for-write
-	       (if (equal "text" (car (split-string
-				       (car (mm-handle-type handle)) "/")))
-		   buffer-file-coding-system
-		 'binary))
-	      ;; Don't re-compress .gz & al.  Arguably we should make
-	      ;; `file-name-handler-alist' nil, but that would chop
-	      ;; ange-ftp which it's reasonable to use here.
-	      (inhibit-file-name-operation 'write-region)
-	      (inhibit-file-name-handlers
-	       (if (equal (car (mm-handle-type handle))
-			  "application/octet-stream")
-		   (cons 'jka-compr-handler inhibit-file-name-handlers)
-		 inhibit-file-name-handlers)))
-	  (write-region (point-min) (point-max) file))))))
+    (when (or (not (file-exists-p file))
+	      (yes-or-no-p (format "File %s already exists; overwrite? "
+				   file)))
+      (mm-save-part-to-file handle file))))
+
+(defun mm-save-part-to-file (handle file)
+  (mm-with-unibyte-buffer
+    (mm-insert-part handle)
+    ;; Now every coding system is 100% binary within mm-with-unibyte-buffer
+    ;; Is text still special?
+    (let ((coding-system-for-write
+	   (if (equal "text" (car (split-string
+				   (car (mm-handle-type handle)) "/")))
+	       buffer-file-coding-system
+	     'binary))
+	  ;; Don't re-compress .gz & al.  Arguably we should make
+	  ;; `file-name-handler-alist' nil, but that would chop
+	  ;; ange-ftp which it's reasonable to use here.
+	  (inhibit-file-name-operation 'write-region)
+	  (inhibit-file-name-handlers
+	   (if (equal (car (mm-handle-type handle))
+		      "application/octet-stream")
+	       (cons 'jka-compr-handler inhibit-file-name-handlers)
+	     inhibit-file-name-handlers)))
+      (write-region (point-min) (point-max) file))))
 
 (defun mm-pipe-part (handle)
   "Pipe HANDLE to a process."

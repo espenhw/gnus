@@ -1401,7 +1401,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	    (incf total new)
 	    (incf i))))
       ;; If we did indeed read any incoming spools, we save all info.
-      (unless (zerop i)
+      (unless (zerop new)
 	(nnmail-save-active
 	 (nnmail-get-value "%s-group-alist" method)
 	 (nnmail-get-value "%s-active-file" method))

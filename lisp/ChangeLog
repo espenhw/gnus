@@ -1,3 +1,87 @@
+Sat Jun 12 00:19:57 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.85 is released.
+
+1999-04-20  Michael Cook  <cook@sightpath.com>
+
+	* gnus-cite.el (gnus-cite-attribution-prefix): Tweak for MS
+	  Outlook citation regex.
+
+1999-06-12 02:09:49  Lars Magne Ingebrigtsen  <pinard@iro.umontreal.ca>
+
+	* nndoc.el (nndoc-mime-parts-type-p): Accept space before
+	semicolon. 
+
+1999-05-24  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-range.el (gnus-remove-from-range): Document range1
+	modification, protect range2.
+
+1999-05-24  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-sum.el (gnus-update-marks): Protect lists from
+	gnus-remove-from-range, don't sort twice.
+
+1999-05-21  Simon Josefsson  <jas@pdc.kth.se>
+
+        * gnus-start.el (gnus-read-descriptions-file): Protect if no
+        function in backend.
+
+1999-05-15  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-sum.el (gnus-valid-move-group-p): Check for a
+	request-accept-article function in the backend instead of using
+	the 'respool capability.
+
+1999-04-18  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Handle
+	spurious whitespace at eob.
+
+1999-06-12 02:02:06  Adrian Aichner  <aichner@ecf.teradyne.com>
+
+	* nnmail.el (nnmail-get-new-mail): Check right variable.
+
+1999-06-12 01:57:39  Karl Kleinpaste  <karl@justresearch.com>
+
+	* mailcap.el (mailcap-mime-data): Fix rfc822.
+
+1999-06-11 23:48:50  TOZAWA Akihiko  <miles@is.s.u-tokyo.ac.jp>
+
+	* nndoc.el (nndoc-nsmail-type-p): New function.
+	(nndoc-type-alist): Recognize nsmail.
+
+1999-05-12  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-art.el (gnus-treatment-function-alist): Display `x-face'
+	*before* `article-hide-headers' deletes the information.
+
+1999-05-22 00:26:46  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-save-parts): New command and
+	keystroke. 
+	(gnus-summary-save-parts-1): New function.
+	(gnus-summary-iterate): Buggy.
+
+	* mm-decode.el (mm-save-part-to-file): Made into own function. 
+
+1999-05-11 05:53:16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-set-info): Resist nils.
+
+1999-05-04 19:26:08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mailcap.el (mailcap-mime-data): Ditto.
+
+	* gnus-uu.el (gnus-uu-default-view-rules): Ditto.
+
+	* gnus-art.el (gnus-article-x-face-command): Default to ee.
+
+1999-05-02  Gareth Jones  <gdj1@gdjones.demon.co.uk>
+
+	* gnus-art.el (article-make-date-line): Put X-Sent below Date if
+	gnus-article-date-lapsed-new-header is t.
+
 Sat May  1 20:27:43 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.84 is released.

@@ -58,8 +58,8 @@
   '(("\\.te?xt$\\|\\.doc$\\|read.*me\\|\\.c?$\\|\\.h$\\|\\.bat$\\|\\.asm$\\|makefile" "cat %s | sed 's/\r$//'")
     ("\\.pas$" "cat %s | sed 's/\r$//'")
     ("\\.[1-9]$" "groff -mandoc -Tascii %s | sed s/\b.//g")
-    ("\\.\\(jpe?g\\|gif\\|tiff?\\|p[pgb]m\\|xwd\\|xbm\\|pcx\\)$" "xv")
-    ("\\.tga$" "tgatoppm %s | xv -")
+    ("\\.\\(jpe?g\\|gif\\|tiff?\\|p[pgb]m\\|xwd\\|xbm\\|pcx\\)$" "ee")
+    ("\\.tga$" "tgatoppm %s | ee -")
     ("\\.\\(wav\\|aiff\\|hcom\\|u[blw]\\|s[bfw]\\|voc\\|smp\\)$"
      "sox -v .5 %s -t .au -u - > /dev/audio")
     ("\\.au$" "cat %s > /dev/audio")
@@ -369,7 +369,8 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
   "k" gnus-summary-kill-process-mark
   "y" gnus-summary-yank-process-mark
   "w" gnus-summary-save-process-mark
-  "i" gnus-uu-invert-processable)
+  "i" gnus-uu-invert-processable
+  "m" gnus-summary-save-parts)
 
 (gnus-define-keys (gnus-uu-extract-map "X" gnus-summary-mode-map)
   ;;"x" gnus-uu-extract-any
@@ -1398,7 +1399,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 	  ;; We replace certain characters that could make things messy.
 	  (setq gnus-uu-file-name
 		(let ((nnheader-file-name-translation-alist
-		       '((?/ . ?,) (? . ?_) (?* . ?_) (?$ . ?_))))
+		       '((?/ . ?,) (?  . ?_) (?* . ?_) (?$ . ?_))))
 		  (nnheader-translate-file-chars (match-string 1))))
           (replace-match (concat "begin 644 " gnus-uu-file-name) t t)
 

@@ -39,7 +39,7 @@
   "*Type of the file.
 One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 `rfc934', `rfc822-forward', `mime-parts', `standard-digest',
-`slack-digest', `clari-briefs' or `guess'.")
+`slack-digest', `clari-briefs', `nsmail' or `guess'.")
 
 (defvoo nndoc-post-type 'mail
   "*Whether the nndoc group is `mail' or `post'.")
@@ -53,6 +53,8 @@ from the document.")
   `((mmdf
      (article-begin .  "^\^A\^A\^A\^A\n")
      (body-end .  "^\^A\^A\^A\^A\n"))
+    (nsmail
+     (article-begin .  "^From - "))
     (news
      (article-begin . "^Path:"))
     (rnews
@@ -448,7 +450,7 @@ from the document.")
     (when (and limit
 	       (re-search-forward
 		(concat "\
-^Content-Type:[ \t]*multipart/[a-z]+ *;\\(\\(\n[ \t]\\)?.*;\\)*"
+^Content-Type:[ \t]*multipart/[a-z]+ *; *\\(\\(\n[ \t]\\)?.*;\\)*"
 			"\\(\n[ \t]\\)?[ \t]*boundary=\"?[^\"\n]*[^\" \t\n]")
 		limit t))
       t)))
@@ -551,9 +553,12 @@ from the document.")
     (insert "From: "  (or from "unknown")
  	    "\nSubject: " (or subject "(no subject)") "\n")))
 
+(defun nndoc-nsmail-type-p ()
+  (when (looking-at "From - ")
+    t))
+
 (deffoo nndoc-request-accept-article (group &optional server last)
   nil)
-
 
 
 ;;;

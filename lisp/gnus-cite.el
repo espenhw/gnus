@@ -104,7 +104,7 @@ The first regexp group should match the Supercite attribution."
   :type 'integer)
 
 (defcustom gnus-cite-attribution-prefix
-  "In article\\|in <\\|On \\(Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\|Sun\\),\\|    > -----Original Message-----"
+  "In article\\|in <\\|On \\(Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\|Sun\\),\\|-----Original Message-----"
   "*Regexp matching the beginning of an attribution line."
   :group 'gnus-cite
   :type 'regexp)

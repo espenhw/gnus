@@ -392,10 +392,10 @@ If ARGS, PROMPT is used as an argument to `format'."
       (if result
 	  (prog1
 	      (mail-source-callback callback server)
-	    (when prescript
+	    (when postscript
 	      (if (and (symbolp postscript)
 		       (fboundp postscript))
-		  (funcall prescript)
+		  (funcall postscript)
 		(call-process shell-file-name nil 0 nil
 			      shell-command-switch 
 			      (format-spec

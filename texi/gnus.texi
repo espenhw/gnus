@@ -1,8 +1,7 @@
-
-\input texinfo                  @c -*-texinfo-*-
+@c \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.84 Manual
+@settitle Pterodactyl Gnus 0.85 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -51,6 +50,7 @@
 \newcommand{\gnussc}[1]{\textsc{#1}}
 \newcommand{\gnustitle}[1]{{\huge\textbf{#1}}}
 \newcommand{\gnusauthor}[1]{{\large\textbf{#1}}}
+\newcommand{\gnusresult}[1]{\gnustt{=> #1}}
 
 \newcommand{\gnusbullet}{{${\bullet}$}}
 \newcommand{\gnusdollar}{\$}
@@ -319,7 +319,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.84 Manual
+@title Pterodactyl Gnus 0.85 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -355,7 +355,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.84.
+This manual corresponds to Pterodactyl Gnus 0.85.
 
 @end ifinfo
 
@@ -993,12 +993,19 @@ support the @code{LIST ACTIVE group} command), on others this isn't fast
 at all.  In any case, @code{some} should be faster than @code{nil}, and
 is certainly faster than @code{t} over slow lines.
 
+Some news servers (Leafnode and old versions of INN, for instance) do
+not support the @code{LIST ACTIVE group}.  For these servers, @code{nil}
+is probably the most effficient value for this variable.
+
 If this variable is @code{nil}, Gnus will ask for group info in total
 lock-step, which isn't very fast.  If it is @code{some} and you use an
 @sc{nntp} server, Gnus will pump out commands as fast as it can, and
 read all the replies in one swoop.  This will normally result in better
 performance, but if the server does not support the aforementioned
 @code{LIST ACTIVE group} command, this isn't very nice to the server.
+
+If you think that starting up Gnus takes too long, try all the three
+different values for this variable and see what works best for you. 
 
 In any case, if you use @code{some} or @code{nil}, you should definitely
 kill all groups that you aren't interested in to speed things up.
@@ -1742,13 +1749,14 @@ is somewhat restrictive.  Don't you wish you could have Gnus sort the
 group buffer according to how often you read groups, perhaps?  Within
 reason?
 
-This is what @dfn{group score} is for.  You can assign a score to each
-group.  You can then sort the group buffer based on this score.
-Alternatively, you can sort on score and then level.  (Taken together,
-the level and the score is called the @dfn{rank} of the group.  A group
-that is on level 4 and has a score of 1 has a higher rank than a group
-on level 5 that has a score of 300.  (The level is the most significant
-part and the score is the least significant part.))
+This is what @dfn{group score} is for.  You can have Gnus assign a score
+to each group through the mechanism described below.  You can then sort
+the group buffer based on this score.  Alternatively, you can sort on
+score and then level.  (Taken together, the level and the score is
+called the @dfn{rank} of the group.  A group that is on level 4 and has
+a score of 1 has a higher rank than a group on level 5 that has a score
+of 300.  (The level is the most significant part and the score is the
+least significant part.))
 
 @findex gnus-summary-bubble-group
 If you want groups you read often to get higher scores than groups you
@@ -1928,9 +1936,9 @@ Make a group based on some file or other
 command, you will be prompted for a file name and a file type.
 Currently supported types are @code{babyl}, @code{mbox}, @code{digest},
 @code{mmdf}, @code{news}, @code{rnews}, @code{clari-briefs},
-@code{rfc934}, @code{rfc822-forward}, and @code{forward}.  If you run
-this command without a prefix, Gnus will guess at the file type.
-@xref{Document Groups}.
+@code{rfc934}, @code{rfc822-forward}, @code{nsmail} and @code{forward}.
+If you run this command without a prefix, Gnus will guess at the file
+type.  @xref{Document Groups}.
 
 @item G u
 @kindex G u (Group)
@@ -10849,6 +10857,7 @@ backends are available separately.  The mail backend most people use
 * Mail Spool::                  Store your mail in a private spool?
 * MH Spool::                    An mhspool-like backend.
 * Mail Folders::                Having one file for each group.
+* Comparing Mail Backends::     An in-depth looks at pros and cons.
 @end menu
 
 
@@ -11078,6 +11087,127 @@ command to make @code{nnfolder} aware of all likely files in
 @code{nnfolder-directory}.  This only works if you use long file names,
 though.
 
+@node Comparing Mail Backends
+@subsubsection Comparing Mail Backends
+
+First, just for terminology, the @dfn{backend} is the common word for a
+low-level access method---a transport, if you will, by which something
+is acquired.  The sense is that one's mail has to come from somewhere,
+and so selection of a suitable backend is required in order to get that
+mail within spitting distance of Gnus.
+
+The same concept exists for Usenet itself: Though access to articles is
+typically done by NNTP these days, once upon a midnight dreary, everyone
+in the world got at Usenet by running a reader on the machine where the
+articles lay (the machine which today we call an NNTP server), and
+access was by the reader stepping into the articles' directory spool
+area directly.  One can still select between either the @code{nntp} or
+@code{nnspool} backends, to select between these methods, if one happens
+actually to live on the server (or can see its spool directly, anyway,
+via NFS).
+
+The goal in selecting a mail backend is to pick one which
+simultaneously represents a suitable way of dealing with the original
+format plus leaving mail in a form that is convenient to use in the
+future.  Here are some high and low points on each:
+
+@table @code
+@item nnmbox
+
+UNIX systems have historically had a single, very common, and well-
+defined format.  All messages arrive in a single @dfn{spool file}, and
+they are delineated by a line whose regular expression matches
+@samp{^From_}.  (My notational use of @samp{_} is to indicate a space,
+to make it clear in this instance that this is not the RFC-specified
+@samp{From:} header.)  Because Emacs and therefore Gnus emanate
+historically from the Unix environment, it is simplest if one does not
+mess a great deal with the original mailbox format, so if one chooses
+this backend, Gnus' primary activity in getting mail from the real spool
+area to Gnus' preferred directory is simply to copy it, with no
+(appreciable) format change in the process.  It is the ``dumbest'' way
+to move mail into availability in the Gnus environment.  This makes it
+fast to move into place, but slow to parse, when Gnus has to look at
+what's where.
+
+@item nnbabyl
+
+Once upon a time, there was the DEC-10 and DEC-20, running operating
+systems called TOPS and related things, and the usual (only?) mail
+reading environment was a thing called Babyl.  I don't know what format
+was used for mail landing on the system, but Babyl had its own internal
+format to which mail was converted, primarily involving creating a
+spool-file-like entity with a scheme for inserting Babyl-specific
+headers and status bits above the top of each message in the file.
+RMAIL was Emacs' first mail reader, it was written by Richard Stallman,
+and Stallman came out of that TOPS/Babyl environment, so he wrote RMAIL
+to understand the mail files folks already had in existence.  Gnus (and
+VM, for that matter) continue to support this format because it's
+perceived as having some good qualities in those mailer-specific
+headers/status bits stuff.  RMAIL itself still exists as well, of
+course, and is still maintained by Stallman.
+
+Both of the above forms leave your mail in a single file on your
+filesystem, and they must parse that entire file each time you take a
+look at your mail.
+
+@item nnml
+
+@code{nnml} is the backend which smells the most as though you were
+actually operating with an @code{nnspool}-accessed Usenet system.  (In
+fact, I believe @code{nnml} actually derived from @code{nnspool} code,
+lo these years ago.)  One's mail is taken from the original spool file,
+and is then cut up into individual message files, 1:1.  It maintains a
+Usenet-style active file (analogous to what one finds in an INN- or
+CNews-based news system in (for instance) @file{/var/lib/news/active},
+or what is returned via the @samp{NNTP LIST} verb) and also creates
+@dfn{overview} files for efficient group entry, as has been defined for
+@sc{nntp} servers for some years now.  It is slower in mail-splitting,
+due to the creation of lots of files, updates to the @code{nnml} active
+file, and additions to overview files on a per-message basis, but it is
+extremely fast on access because of what amounts to the indexing support
+provided by the active file and overviews.
+
+@code{nnml} costs @dfn{inodes} in a big way; that is, it soaks up the
+resource which defines available places in the filesystem to put new
+files.  Sysadmins take a dim view of heavy inode occupation within
+tight, shared filesystems.  But if you live on a personal machine where
+the filesystem is your own and space is not at a premium, @code{nnml}
+wins big.
+
+It is also problematic using this backend if you are living in a
+FAT16-based Windows world, since much space will be wasted on all these
+tiny files.
+
+@item nnmh
+
+The Rand MH mail-reading system has been around UNIX systems for a very
+long time; it operates by splitting one's spool file of messages into
+individual files, but with little or no indexing support -- @code{nnmh}
+is considered to be semantically equivalent to ``@code{nnml} without
+active file or overviews''.  This is arguably the worst choice, because
+one gets the slowness of individual file creation married to the
+slowness of access parsing when learning what's new in one's groups.
+
+@item nnfolder
+
+Basically the effetc of @code{nnfolder} is @code{nnmbox} (the first
+method described above) on a per-group basis.  That is, @code{nnmbox}
+itself puts *all* one's mail in one file; @code{nnfolder} provides a
+little bit of optimization to this so that each of one's mail groups has
+a Unix mail box file.  It's faster than @code{nnmbox} because each group
+can be parsed separately, and still provides the simple Unix mail box
+format requiring minimal effort in moving the mail around.  In addition, 
+it maintains an ``active'' file making it much faster for Gnus to figure 
+out how many messages there are in each separate group.
+
+If you have groups that are expected to have a massive amount of
+messages, @code{nnfolder} is not the best choice, but if you receive
+only a moderate amount of mail, @code{nnfolder} is probably the most
+friendly mail backend all over.
+
+@end table
+
+
 
 @node Other Sources
 @section Other Sources
@@ -11224,6 +11354,9 @@ The rnews batch transport format.
 @item forward
 Forwarded articles.
 
+@item nsmail
+Netscape mail boxes.
+
 @item mime-parts
 MIME multipart messages.
 
@@ -11262,7 +11395,7 @@ Virtual server variables:
 This should be one of @code{mbox}, @code{babyl}, @code{digest},
 @code{news}, @code{rnews}, @code{mmdf}, @code{forward}, @code{rfc934},
 @code{rfc822-forward}, @code{mime-parts}, @code{standard-digest},
-@code{slack-digest}, @code{clari-briefs} or @code{guess}.
+@code{slack-digest}, @code{clari-briefs}, @code{nsmail} or @code{guess}.
 
 @item nndoc-post-type
 @vindex nndoc-post-type
@@ -18819,6 +18952,20 @@ but it gives an error that it cant access the group.
 Is the "+" character illegal in newsgroup names?  Is there any way in
 Gnus to work around this?  (gnus 5.6.45 - XEmacs 20.4)
 
+@item
+
+When `#F', do:
+
+@example
+Subject: Answer to your mails 01.01.1999-01.05.1999
+ --text follows this line--
+Sorry I killfiled you...
+
+Under the subject "foo", you wrote on 01.01.1999:
+> bar
+Under the subject "foo1", you wrote on 01.01.1999:
+> bar 1
+@end example
 
 @item
 Solve the halting problem.

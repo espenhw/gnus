@@ -193,7 +193,7 @@ regexp.  If it matches, the text in question is not a signature."
   :group 'gnus-article-hiding)
 
 (defcustom gnus-article-x-face-command
-  "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -"
+  "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | eae -"
   "*String or function to be executed to display an X-Face header.
 If it is a string, the command will be executed in a sub-shell
 asynchronously.	 The compressed face will be piped to this command."
@@ -890,6 +890,7 @@ See the manual for details."
     (gnus-treat-fill-long-lines gnus-article-fill-long-lines)
     (gnus-treat-strip-cr gnus-article-remove-cr)
     (gnus-treat-emphasize gnus-article-emphasize)
+    (gnus-treat-display-xface gnus-article-display-x-face)
     (gnus-treat-hide-headers gnus-article-maybe-hide-headers)
     (gnus-treat-hide-boring-headers gnus-article-hide-boring-headers)
     (gnus-treat-hide-signature gnus-article-hide-signature)
@@ -914,7 +915,6 @@ See the manual for details."
     (gnus-treat-strip-blank-lines gnus-article-strip-blank-lines)
     (gnus-treat-overstrike gnus-article-treat-overstrike)
     (gnus-treat-buttonize-head gnus-article-add-buttons-to-head)
-    (gnus-treat-display-xface gnus-article-display-x-face)
     (gnus-treat-display-smileys gnus-smiley-display)
     (gnus-treat-display-picons gnus-article-display-picons)
     (gnus-treat-play-sounds gnus-earcon-display)))
@@ -1781,6 +1781,8 @@ should replace the \"Date:\" one, or should be added below it."
 		(delete-region (progn (beginning-of-line) (point))
 			       (progn (forward-line 1) (point))))
 	      (setq newline nil))
+	    (if (re-search-forward tdate-regexp nil t)
+		(forward-line 1))
 	    (insert (article-make-date-line date type))
 	    (when newline
 	      (insert "\n")
