@@ -1,3 +1,8 @@
+2002-11-04  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-group.el (gnus-group-delete-group):
+	gnus-cache-active-hashtb might be void.
+
 2002-11-02  Simon Josefsson  <jas@extundo.com>
 
 	* pgg-gpg.el (pgg-gpg-encrypt-region): Makes PGG respect the
@@ -10,10 +15,10 @@
 	charset.
 
 2002-10-31  Ted Zlatanov <tzz@lifelogs.com>
-	From Alex Schroeder  <alex@emacswiki.org>
+	From Alex Schroeder <alex@emacswiki.org>
 	* spam-stat.el (spam-stat-process-directory): add dir to message
 	(spam-stat-reduce-size): No longer remove words
-	with values close to 0.5, because the default value is 0.2.  
+	with values close to 0.5, because the default value is 0.2.
 
 2002-10-31  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
