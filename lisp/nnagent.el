@@ -130,11 +130,17 @@
 
 (deffoo nnagent-retrieve-headers (articles &optional group server fetch-old)
   (let ((file (gnus-agent-article-name ".overview" group))
-	arts n)
+	arts n first)
     (save-excursion
       (gnus-agent-load-alist group)
       (setq arts (gnus-sorted-difference
 		  articles (mapcar 'car gnus-agent-article-alist)))
+      ;; Assume that articles with smaller numbers than the first one
+      ;; Agent knows are gone.
+      (setq first (caar gnus-agent-article-alist))
+      (when first 
+	(while (and arts (< (car arts) first))
+	  (pop arts)))
       (set-buffer nntp-server-buffer)
       (erase-buffer)
       (nnheader-insert-nov-file file (car articles))
