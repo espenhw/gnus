@@ -1,3 +1,7 @@
+2001-02-09 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-cus.el (gnus-score-customize): Error on no score file.
+
 2001-02-09 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-merge-handles): New function.

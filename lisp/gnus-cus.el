@@ -684,6 +684,9 @@ eh?")))
 (defun gnus-score-customize (file)
   "Customize score file FILE."
   (interactive (list gnus-current-score-file))
+  (unless file
+    (error (format "No score file for %s." 
+		   (gnus-group-decoded-name gnus-newsgroup-name))))
   (let ((scores (gnus-score-load file))
 	(types (mapcar (lambda (entry)
 			 `(group :format "%v%h\n"
