@@ -579,7 +579,7 @@ from the document.")
 	       (cons 'body-begin "^ ?\n")
 	       (cons 'article-begin b-delimiter)
 	       (cons 'body-end-function 'nndoc-digest-body-end)
-	       (cons 'file-end (concat "\n--" boundary-id "--[ \t]*$"))))
+	       (cons 'file-end (concat "^--" boundary-id "--[ \t]*$"))))
       t)))
 
 (defun nndoc-standard-digest-type-p ()

@@ -1,3 +1,7 @@
+2002-05-10  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nndoc.el (nndoc-mime-digest-type-p): Set proper file-end.
+
 2002-05-08  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Florian Weimer <fw@deneb.enyo.de>.
 	
