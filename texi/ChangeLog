@@ -1,3 +1,7 @@
+2000-05-15 10:16:29  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Mail Source Specifiers): Update maildir.
+
 2000-05-02  Pavel Janik  <Pavel.Janik@inet.cz>
 
 	* gnus.texi (MIME comands): Spelling fix.

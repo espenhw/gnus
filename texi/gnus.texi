@@ -11128,12 +11128,16 @@ Keywords:
 @table @code
 @item :path
 The path of the directory where the mails are stored.  The default is
-@samp{~/Maildir/new}.
+taken from the @code{MAILDIR} environment variable or
+@samp{~/Maildir/}.
+@item :subdirs
+The subdirectories of the Maildir.  The default is
+@samp{("new" "cur")}.
 
-If you sometimes look at your mail through a pop3 daemon before fetching
-them with Gnus, you may also have to fetch your mails from the
-@code{cur} directory inside the maildir, like in the first example
-below.
+@c If you sometimes look at your mail through a pop3 daemon before fetching
+@c them with Gnus, you may also have to fetch your mails from the
+@c @code{cur} directory inside the maildir, like in the first example
+@c below.
 
 You can also get mails from remote hosts (because maildirs don't suffer
 from locking problems).
@@ -11143,11 +11147,11 @@ from locking problems).
 Two example maildir mail sources:
 
 @lisp
-(maildir :path "/home/user-name/Maildir/cur")
+(maildir :path "/home/user-name/Maildir/" :subdirs ("cur" "new"))
 @end lisp
 
 @lisp
-(maildir :path "/user@@remotehost.org:~/Maildir/new")
+(maildir :path "/user@@remotehost.org:~/Maildir/" :subdirs ("new"))
 @end lisp
 
 @item imap
