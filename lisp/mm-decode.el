@@ -95,6 +95,20 @@
   `(list ,buffer ,type ,encoding ,undisplayer
 	 ,disposition ,description ,cache ,id))
 
+(defcustom mm-inline-text-html-renderer
+  (cond ((locate-library "w3")
+	 'mm-inline-text-html-render-with-w3)
+	((locate-library "w3m")
+	 'mm-inline-text-html-render-with-w3m))
+  "Function used for rendering HTML contents.  The function will be
+called with a MIME handle as the argument.  There are two pre-defined
+functions: `mm-inline-text-html-render-with-w3', which uses Emacs/w3;
+and `mm-inline-text-html-render-with-w3m', which uses emacs-w3m."
+  :type '(radio (function-item mm-inline-text-html-render-with-w3)
+		(function-item mm-inline-text-html-render-with-w3m)
+		(function))
+  :group 'mime-display)
+
 (defcustom mm-inline-media-tests
   '(("image/jpeg"
      mm-inline-image
@@ -147,7 +161,7 @@
     ("text/html"
      mm-inline-text
      (lambda (handle)
-       (locate-library "w3")))
+       (gnus-functionp mm-inline-text-html-renderer)))
     ("text/x-vcard"
      mm-inline-text
      (lambda (handle)

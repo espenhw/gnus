@@ -21,7 +21,7 @@
 	       find-coding-systems-string
 	       image-size image-type-available-p insert-image
 	       image-type-from-file-header
-               make-symbolic-link
+	       make-symbolic-link
 	       make-temp-file message-xmas-redefine
 	       mail-aliases-setup mm-copy-tree
 	       mule-write-region-no-coding-system put-image
@@ -36,10 +36,11 @@
 	       sc-cite-regexp set-font-family set-font-size temp-directory
 	       string-as-multibyte
 	       tool-bar-add-item tool-bar-add-item-from-menu
-               unix-sync
+	       unix-sync
 	       url-view-url vcard-pretty-print
 	       url-insert-file-contents
 	       w3-coding-system-for-mime-charset w3-prepare-buffer w3-region
+	       w3m-region
 	       widget-make-intangible x-defined-colors))
 
 (maybe-bind '(adaptive-fill-first-line-regexp
@@ -58,7 +59,8 @@
 	      url-current-mime-headers w3-meta-charset-content-type-regexp
 	      rmail-enable-mime-composing
 	      rmail-insert-mime-forwarded-message-function
-	      w3-meta-content-type-charset-regexp))
+	      w3-meta-content-type-charset-regexp
+	      w3m-mode-map))
 
 (if (featurep 'xemacs)
     (progn

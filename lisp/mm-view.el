@@ -81,81 +81,118 @@
     (require 'url-vars)
     (setq mm-w3-setup t)))
 
+(defun mm-inline-text-html-render-with-w3 (handle)
+  (mm-setup-w3)
+  (let ((text (mm-get-part handle))
+	(b (point))
+	(url-standalone-mode t)
+	(w3-honor-stylesheets nil)
+	(w3-delay-image-loads t)
+	(url-current-object
+	 (url-generic-parse-url (format "cid:%s" (mm-handle-id handle))))
+	(width (window-width))
+	(charset (mail-content-type-get
+		  (mm-handle-type handle) 'charset)))
+    (save-excursion
+      (insert text)
+      (save-restriction
+	(narrow-to-region b (point))
+	(goto-char (point-min))
+	(if (or (and (boundp 'w3-meta-content-type-charset-regexp)
+		     (re-search-forward
+		      w3-meta-content-type-charset-regexp nil t))
+		(and (boundp 'w3-meta-charset-content-type-regexp)
+		     (re-search-forward
+		      w3-meta-charset-content-type-regexp nil t)))
+	    (setq charset
+		  (or (let ((bsubstr (buffer-substring-no-properties
+				      (match-beginning 2)
+				      (match-end 2))))
+			(if (fboundp 'w3-coding-system-for-mime-charset)
+			    (w3-coding-system-for-mime-charset bsubstr)
+			  (mm-charset-to-coding-system bsubstr)))
+		      charset)))
+	(delete-region (point-min) (point-max))
+	(insert (mm-decode-string text charset))
+	(save-window-excursion
+	  (save-restriction
+	    (let ((w3-strict-width width)
+		  ;; Don't let w3 set the global version of
+		  ;; this variable.
+		  (fill-column fill-column)
+		  (w3-honor-stylesheets nil)
+		  (w3-delay-image-loads t)
+		  (url-standalone-mode t))
+	      (condition-case var
+		  (w3-region (point-min) (point-max))
+		(error
+		 (delete-region (point-min) (point-max))
+		 (let ((b (point))
+		       (charset (mail-content-type-get
+				 (mm-handle-type handle) 'charset)))
+		   (if (or (eq charset 'gnus-decoded)
+			   (eq mail-parse-charset 'gnus-decoded))
+		       (save-restriction
+			 (narrow-to-region (point) (point))
+			 (mm-insert-part handle)
+			 (goto-char (point-max)))
+		     (insert (mm-decode-string (mm-get-part handle)
+					       charset))))
+		 (message
+		  "Error while rendering html; showing as text/plain"))))))
+	(mm-handle-set-undisplayer
+	 handle
+	 `(lambda ()
+	    (let (buffer-read-only)
+	      (if (functionp 'remove-specifier)
+		  (mapcar (lambda (prop)
+			    (remove-specifier
+			     (face-property 'default prop)
+			     (current-buffer)))
+			  '(background background-pixmap foreground)))
+	      (delete-region ,(point-min-marker)
+			     ,(point-max-marker)))))))))
+
+(defvar mm-w3m-minor-mode nil)
+(make-variable-buffer-local 'mm-w3m-minor-mode)
+(defvar mm-w3m-setup nil)
+(defun mm-setup-w3m ()
+  (unless mm-w3m-setup
+    (require 'w3m)
+    (gnus-add-minor-mode 'mm-w3m-minor-mode " w3m" w3m-mode-map)
+    (setq mm-w3m-setup t)))
+
+(defun mm-inline-text-html-render-with-w3m (handle)
+  (mm-setup-w3m)
+  (let ((text (mm-get-part handle))
+	(b (point)))
+    (save-excursion
+      (insert text)
+      (save-restriction
+	(narrow-to-region b (point))
+	(goto-char (point-min))
+	(w3m-region (point-min) (point-max))
+	(setq mm-w3m-minor-mode t))
+      (mm-handle-set-undisplayer
+       handle
+       `(lambda ()
+	  (let (buffer-read-only)
+	    (setq mm-w3m-minor-mode nil)
+	    (if (functionp 'remove-specifier)
+		(mapcar (lambda (prop)
+			  (remove-specifier
+			   (face-property 'default prop)
+			   (current-buffer)))
+			'(background background-pixmap foreground)))
+	    (delete-region ,(point-min-marker)
+			   ,(point-max-marker))))))))
+
 (defun mm-inline-text (handle)
   (let ((type (mm-handle-media-subtype handle))
-	text buffer-read-only)
+	buffer-read-only)
     (cond
      ((equal type "html")
-      (mm-setup-w3)
-      (setq text (mm-get-part handle))
-      (let ((b (point))
-	    (url-standalone-mode t)
-	    (w3-honor-stylesheets nil)
-	    (w3-delay-image-loads t)
-	    (url-current-object
-	     (url-generic-parse-url (format "cid:%s" (mm-handle-id handle))))
-	    (width (window-width))
-	    (charset (mail-content-type-get
-		      (mm-handle-type handle) 'charset)))
-	(save-excursion
-	  (insert text)
-	  (save-restriction
-	    (narrow-to-region b (point))
-	    (goto-char (point-min))
-	    (if (or (and (boundp 'w3-meta-content-type-charset-regexp)
-			 (re-search-forward
-			  w3-meta-content-type-charset-regexp nil t))
-		    (and (boundp 'w3-meta-charset-content-type-regexp)
-			 (re-search-forward
-			  w3-meta-charset-content-type-regexp nil t)))
-		(setq charset
-		      (or (let ((bsubstr (buffer-substring-no-properties
-					  (match-beginning 2)
-					  (match-end 2))))
-			    (if (fboundp 'w3-coding-system-for-mime-charset)
-				(w3-coding-system-for-mime-charset bsubstr)
-			      (mm-charset-to-coding-system bsubstr)))
-			  charset)))
-	    (delete-region (point-min) (point-max))
-	    (insert (mm-decode-string text charset))
-	    (save-window-excursion
-	      (save-restriction
-		(let ((w3-strict-width width)
-		      ;; Don't let w3 set the global version of
-		      ;; this variable.
-		      (fill-column fill-column)
-		      (w3-honor-stylesheets nil)
-		      (w3-delay-image-loads t)
-		      (url-standalone-mode t))
-		  (condition-case var
-		      (w3-region (point-min) (point-max))
-		    (error
-		     (delete-region (point-min) (point-max))
-		     (let ((b (point))
-			   (charset (mail-content-type-get
-				     (mm-handle-type handle) 'charset)))
-		       (if (or (eq charset 'gnus-decoded)
-			       (eq mail-parse-charset 'gnus-decoded))
-			   (save-restriction
-			     (narrow-to-region (point) (point))
-			     (mm-insert-part handle)
-			     (goto-char (point-max)))
-			 (insert (mm-decode-string (mm-get-part handle)
-						   charset))))
-		     (message
-		      "Error while rendering html; showing as text/plain"))))))
-	    (mm-handle-set-undisplayer
-	     handle
-	     `(lambda ()
-		(let (buffer-read-only)
-		  (if (functionp 'remove-specifier)
-		      (mapcar (lambda (prop)
-				(remove-specifier
-				 (face-property 'default prop)
-				 (current-buffer)))
-			      '(background background-pixmap foreground)))
-		  (delete-region ,(point-min-marker)
-				 ,(point-max-marker)))))))))
+      (funcall mm-inline-text-html-renderer handle))
      ((equal type "x-vcard")
       (mm-insert-inline
        handle
