@@ -21120,7 +21120,8 @@ New features in Gnus 5.8:
 
 @itemize @bullet
 
-@item The mail-fetching functions have changed.  See the manual for the
+@item 
+The mail-fetching functions have changed.  See the manual for the
 many details.  In particular, all procmail fetching variables are gone.
 
 If you used procmail like in
@@ -21143,29 +21144,37 @@ this now has changed to
 More information is available in the info doc at Select Methods ->
 Getting Mail -> Mail Sources
 
-@item Gnus is now a MIME-capable reader.  This affects many parts of
+@item 
+Gnus is now a MIME-capable reader.  This affects many parts of
 Gnus, and adds a slew of new commands.  See the manual for details.
 
-@item Gnus has also been multilingualized.  This also affects too
+@item
+Gnus has also been multilingualized.  This also affects too
 many parts of Gnus to summarize here, and adds many new variables.
 
-@item @code{gnus-auto-select-first} can now be a function to be
+@item
+@code{gnus-auto-select-first} can now be a function to be
 called to position point.
 
-@item The user can now decide which extra headers should be included in
+@item
+The user can now decide which extra headers should be included in
 summary buffers and NOV files.
 
-@item @code{gnus-article-display-hook} has been removed.  Instead, a number
+@item
+@code{gnus-article-display-hook} has been removed.  Instead, a number
 of variables starting with @code{gnus-treat-} have been added.
 
-@item The Gnus posting styles have been redone again and now works in a
+@item
+The Gnus posting styles have been redone again and now works in a
 subtly different manner.
 
-@item New web-based back ends have been added: @code{nnslashdot},
+@item
+New web-based back ends have been added: @code{nnslashdot},
 @code{nnwarchive} and @code{nnultimate}.  nnweb has been revamped,
 again, to keep up with ever-changing layouts.
 
-@item Gnus can now read IMAP mail via @code{nnimap}.
+@item
+Gnus can now read IMAP mail via @code{nnimap}.
 
 @end itemize
 
