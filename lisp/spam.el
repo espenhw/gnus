@@ -155,6 +155,11 @@ All unmarked article in such group receive the spam mark on group entry."
   :type '(repeat (string :tag "Server"))
   :group 'spam)
 
+(defcustom spam-blackhole-good-server-regex nil
+  "String matching IP addresses that should not be checked in the blackholes"
+  :type 'regexp
+  :group 'spam)
+
 (defcustom spam-ham-marks (list 'gnus-del-mark 'gnus-read-mark 
 				'gnus-killed-mark 'gnus-kill-file-mark 
 				'gnus-low-score-mark)
@@ -575,18 +580,20 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		ips)))
       (dolist (server spam-blackhole-servers)
 	(dolist (ip ips)
-	  (let ((query-string (concat ip "." server)))
-	    (if spam-use-dig
-		(let ((query-result (query-dig query-string)))
-		  (when query-result
-		    (gnus-message 5 "(DIG): positive blackhole check '%s'" query-result)
-		    (push (list ip server query-result)
-			  matches)))
-	      ;; else, if not using dig.el
-	      (when (query-dns query-string)
-		(gnus-message 5 "positive blackhole check")
-		(push (list ip server (query-dns query-string 'TXT))
-		      matches)))))))
+	  (unless (and spam-blackhole-good-server-regex
+		       (string-match spam-blackhole-good-server-regex ip))
+	    (let ((query-string (concat ip "." server)))
+	      (if spam-use-dig
+		  (let ((query-result (query-dig query-string)))
+		    (when query-result
+		      (gnus-message 5 "(DIG): positive blackhole check '%s'" query-result)
+		      (push (list ip server query-result)
+			    matches)))
+		;; else, if not using dig.el
+		(when (query-dns query-string)
+		  (gnus-message 5 "positive blackhole check")
+		  (push (list ip server (query-dns query-string 'TXT))
+			matches))))))))
     (when matches
       spam-split-group)))
 

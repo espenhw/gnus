@@ -1,3 +1,9 @@
+2003-01-27  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-check-blackholes) 
+	(spam-blackhole-good-server-regex): new variable to skip some IPs
+	when checking blackholes; use it
+
 2003-01-27  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-util.el (gnus-kill-buffer): Remove buffer from gnus-buffers
