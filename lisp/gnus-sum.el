@@ -10086,36 +10086,40 @@ returned."
     n))
 
 (defun gnus-summary-insert-articles (articles)
-  (setq gnus-newsgroup-headers 
-	(merge 'list
-	       gnus-newsgroup-headers
-	       (gnus-fetch-headers articles)
-	       'gnus-article-sort-by-number))
-  ;; Suppress duplicates?
-  (when gnus-suppress-duplicates
-    (gnus-dup-suppress-articles))
-
-  ;; We might want to build some more threads first.
-  (when (and gnus-fetch-old-headers
-	     (eq gnus-headers-retrieved-by 'nov))
-    (if (eq gnus-fetch-old-headers 'invisible)
+  (when (setq articles
+	      (gnus-set-difference articles
+				   (mapcar (lambda (h) (mail-header-number h))
+					   gnus-newsgroup-headers)))
+    (setq gnus-newsgroup-headers 
+	  (merge 'list
+		 gnus-newsgroup-headers
+		 (gnus-fetch-headers articles)
+		 'gnus-article-sort-by-number))
+    ;; Suppress duplicates?
+    (when gnus-suppress-duplicates
+      (gnus-dup-suppress-articles))
+    
+    ;; We might want to build some more threads first.
+    (when (and gnus-fetch-old-headers
+	       (eq gnus-headers-retrieved-by 'nov))
+      (if (eq gnus-fetch-old-headers 'invisible)
 	(gnus-build-all-threads)
-      (gnus-build-old-threads)))
-  ;; Let the Gnus agent mark articles as read.
-  (when gnus-agent
-    (gnus-agent-get-undownloaded-list))
-  ;; Remove list identifiers from subject
-  (when gnus-list-identifiers
-    (gnus-summary-remove-list-identifiers))
-  ;; First and last article in this newsgroup.
-  (when gnus-newsgroup-headers
-    (setq gnus-newsgroup-begin
-	  (mail-header-number (car gnus-newsgroup-headers))
-	  gnus-newsgroup-end
-	  (mail-header-number
-	   (gnus-last-element gnus-newsgroup-headers))))
-  (when gnus-use-scoring
-    (gnus-possibly-score-headers)))
+	(gnus-build-old-threads)))
+    ;; Let the Gnus agent mark articles as read.
+    (when gnus-agent
+      (gnus-agent-get-undownloaded-list))
+    ;; Remove list identifiers from subject
+    (when gnus-list-identifiers
+      (gnus-summary-remove-list-identifiers))
+    ;; First and last article in this newsgroup.
+    (when gnus-newsgroup-headers
+      (setq gnus-newsgroup-begin
+	    (mail-header-number (car gnus-newsgroup-headers))
+	    gnus-newsgroup-end
+	    (mail-header-number
+	     (gnus-last-element gnus-newsgroup-headers))))
+    (when gnus-use-scoring
+      (gnus-possibly-score-headers))))
 
 (defun gnus-summary-insert-old-articles (&optional all)
   "Insert all old articles in this group.
