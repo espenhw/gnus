@@ -1,3 +1,9 @@
+2004-06-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (article-hide-headers): Don't change the buffer
+	mistakenly when performing mml-preview even if
+	gnus-single-article-buffer is nil.
+
 2004-06-08  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	* message.el (message-expand-name-databases): New user option.

@@ -1579,6 +1579,7 @@ Initialized from `text-mode-syntax-table.")
 	  (case-fold-search t)
 	  (max (1+ (length gnus-sorted-header-list)))
 	  (inhibit-point-motion-hooks t)
+	  (cur (current-buffer))
 	  ignored visible beg)
       (save-excursion
 	;; `gnus-ignored-headers' and `gnus-visible-headers' may be
@@ -1601,7 +1602,7 @@ Initialized from `text-mode-syntax-table.")
 				     (mapconcat 'identity
 						gnus-visible-headers
 						"\\|")))))
-	  (set-buffer gnus-article-buffer))
+	  (set-buffer cur))
 	(save-restriction
 	  ;; First we narrow to just the headers.
 	  (article-narrow-to-head)
