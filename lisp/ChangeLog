@@ -1,3 +1,9 @@
+2004-12-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-start.el (gnus-setup-news): Honor user's setting to
+	gnus-message-archive-method.  Suggested by Lute Kamstra
+	<Lute.Kamstra@xs4all.nl>.
+
 2004-12-10  Arnaud Giersch  <arnaud.giersch@free.fr>  (tiny change)
 
 	* gnus-sum.el (gnus-summary-exit-no-update): Don't clear the
