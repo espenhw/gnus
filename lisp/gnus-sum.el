@@ -2950,8 +2950,14 @@ buffer that was in action when the last article was fetched."
 		((memq gnus-tmp-current gnus-newsgroup-cached)
 		 gnus-cached-mark)
 		(gnus-tmp-replied gnus-replied-mark)
+		((memq gnus-tmp-current gnus-newsgroup-forwarded)
+		 gnus-forwarded-mark)
 		((memq gnus-tmp-current gnus-newsgroup-saved)
 		 gnus-saved-mark)
+		((memq number gnus-newsgroup-recent)
+		 gnus-recent-mark)
+		((memq number gnus-newsgroup-unseen)
+		 gnus-unseen-mark)
 		(t gnus-no-mark)))
 	 (gnus-tmp-from (mail-header-from gnus-tmp-header))
 	 (gnus-tmp-name
@@ -8333,7 +8339,7 @@ This will be the case if the article has both been mailed and posted."
 	   (expirable (if total
 			  (progn
 			    ;; We need to update the info for
-			;; this group for `gnus-list-of-read-articles'
+			    ;; this group for `gnus-list-of-read-articles'
 			    ;; to give us the right answer.
 			    (gnus-run-hooks 'gnus-exit-group-hook)
 			    (gnus-summary-update-info)
