@@ -1755,7 +1755,7 @@ If READ-CHARSET, ask for a coding system."
 	      (if (stringp charset)
 		  (setq charset (intern (downcase charset)))))))
       (if read-charset
-	  (setq charset (read-coding-system "Charset: " charset)))
+	  (setq charset (mm-read-coding-system "Charset: " charset)))
       (unless charset
 	(setq charset gnus-newsgroup-charset))
       (when (or force
@@ -1785,7 +1785,7 @@ If READ-CHARSET, ask for a coding system."
 	      (if (stringp charset)
 		  (setq charset (intern (downcase charset)))))))
       (if read-charset
-	  (setq charset (read-coding-system "Charset: " charset)))
+	  (setq charset (mm-read-coding-system "Charset: " charset)))
       (unless charset
 	(setq charset gnus-newsgroup-charset))
       (when (or force
@@ -1827,7 +1827,7 @@ If READ-CHARSET, ask for a coding system."
 	      (if (stringp charset)
 		  (setq charset (intern (downcase charset)))))))
       (if read-charset
-	  (setq charset (read-coding-system "Charset: " charset)))
+	  (setq charset (mm-read-coding-system "Charset: " charset)))
       (unless charset
 	(setq charset gnus-newsgroup-charset))
       (article-goto-body)
@@ -3482,7 +3482,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	  (setq charset
 		(or (cdr (assq arg
 			       gnus-summary-show-article-charset-alist))
-		    (read-coding-system "Charset: ")))))
+		    (mm-read-coding-system "Charset: ")))))
 	(forward-line 2)
 	(mm-insert-inline handle
 			  (if (and charset
@@ -3508,7 +3508,7 @@ specified charset."
       (let ((gnus-newsgroup-charset
 	     (or (cdr (assq arg
 			    gnus-summary-show-article-charset-alist))
-		 (read-coding-system "Charset: ")))
+		 (mm-read-coding-system "Charset: ")))
 	  (gnus-newsgroup-ignored-charsets 'gnus-all))
 	(gnus-article-press-button)))))
 

@@ -100,12 +100,6 @@
      (make-char
       . (lambda (charset int)
 	  (int-to-char int)))
-     (read-coding-system
-      . (lambda (prompt)
-	  "Prompt the user for a coding system."
-	  (completing-read
-	   prompt (mapcar (lambda (s) (list (symbol-name (car s))))
-			  mm-mime-mule-charset-alist))))
      (read-charset
       . (lambda (prompt)
 	  "Return a charset."
@@ -136,6 +130,21 @@
      ((fboundp 'char-or-char-int-p) 'char-or-char-int-p)
      ((fboundp 'char-valid-p) 'char-valid-p)
      (t 'identity))))
+
+(eval-and-compile
+  (defalias 'mm-read-coding-system
+    (cond
+     ((fboundp 'read-coding-system) 
+      (if (and (featurep 'xemacs)
+               (<= (string-to-number emacs-version) 21.1))
+          (lambda (prompt &optional default-coding-system)
+            (read-coding-system prompt))
+        'read-coding-system))
+     (t (lambda (prompt &optional default-coding-system)
+	  "Prompt the user for a coding system."
+	  (completing-read
+	   prompt (mapcar (lambda (s) (list (symbol-name (car s))))
+			  mm-mime-mule-charset-alist)))))))
 
 (defvar mm-coding-system-list nil)
 (defun mm-get-coding-system-list ()

@@ -7626,7 +7626,7 @@ without any article massaging functions being run."
    ((numberp arg)
     (let ((gnus-newsgroup-charset
 	   (or (cdr (assq arg gnus-summary-show-article-charset-alist))
-	       (read-coding-system "Charset: ")))
+	       (mm-read-coding-system "Charset: ")))
 	  (gnus-newsgroup-ignored-charsets 'gnus-all))
       (gnus-summary-select-article nil 'force)
       (let ((deps gnus-newsgroup-dependencies)

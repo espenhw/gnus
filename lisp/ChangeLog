@@ -1,3 +1,15 @@
+2001-07-21 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-read-coding-system): Take two arguments.
+
+	* gnus-sum.el (gnus-summary-show-article): Use
+	mm-read-coding-system.
+
+	* gnus-art.el (article-de-quoted-unreadable):
+	(article-de-base64-unreadable, article-wash-html): 
+	(gnus-mime-inline-part, gnus-mime-view-part-as-charset): Ditto.
+
+
 2001-07-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* nnml.el (nnml-request-post): New function.  Can be used for
