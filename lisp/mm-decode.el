@@ -1037,7 +1037,7 @@ string if you do not like underscores."
 (defun mm-file-name-delete-gotchas (filename)
   "Delete shell gotchas from FILENAME."
   (setq filename (gnus-replace-in-string filename "[<>|]" ""))
-  (gnus-replace-in-string filename "^[.-]*" ""))
+  (gnus-replace-in-string filename "^[.-]+" ""))
 
 (defun mm-save-part (handle)
   "Write HANDLE to a file."

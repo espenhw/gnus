@@ -1,3 +1,8 @@
+2003-10-10  Jesper Harder  <harder@ifa.au.dk>
+
+	* mm-decode.el (mm-file-name-delete-gotchas): Avoid infloop in
+	XEmacs.
+
 2003-10-10  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-initialize): new function, does the spam-face
