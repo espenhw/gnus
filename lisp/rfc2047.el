@@ -215,10 +215,14 @@ Should be called narrowed to the head of the message."
       (if (equal (nth 2 word) current)
 	  (setq beg (nth 0 word))
 	(when current
-	  (when (prog1 (and (eq beg (nth 1 word)) (nth 2 word))
-		  (rfc2047-encode beg end current))
-	    (goto-char beg)
-	    (insert " ")))
+	  (if (and (eq beg (nth 1 word)) (nth 2 word))
+	      (progn
+		;; There might be a bug in Emacs Mule.
+		;; A space must be inserted before encoding.
+		(goto-char beg)
+		(insert " ")
+		(rfc2047-encode (1+ beg) (1+ end) current))
+	    (rfc2047-encode beg end current)))
 	(setq current (nth 2 word)
 	      beg (nth 0 word)
 	      end (nth 1 word))))

@@ -1,3 +1,11 @@
+2000-05-05 00:30:12  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-encode-region): Insert a space before encoding.
+	Emacs MULE can not encode adjacent iso-2022-jp and cn-gb-2312.
+	* gnus-msg.el (gnus-summary-mail-forward): Use unibyte buffer.
+	Emacs MULE can not copy some 8bit characters in multibyte buffers.
+	* mm-decode.el (mm-insert-part): Ditto.
+
 2000-05-04 17:49:04  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nndoc.el (nndoc-type-alist): Extend forward regexp.

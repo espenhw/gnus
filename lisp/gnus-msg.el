@@ -691,22 +691,20 @@ If POST, post instead of mail."
 	    text)
 	(save-excursion
 	  (set-buffer gnus-original-article-buffer)
-	  (setq text (buffer-string)))
+	  (mm-with-unibyte-current-buffer
+	    (setq text (buffer-string))))
 	(set-buffer 
-	 (if message-forward-show-mml
-	     (gnus-get-buffer-create
-	      (generate-new-buffer-name " *Gnus forward*"))
-	   (mm-with-unibyte-current-buffer
-	     ;; create an unibyte buffer
-	     (gnus-get-buffer-create
-	      (generate-new-buffer-name " *Gnus forward*")))))
+	 (gnus-get-buffer-create
+	  (generate-new-buffer-name " *Gnus forward*")))
 	(erase-buffer)
+	(mm-disable-multibyte)
 	(insert text)
 	(goto-char (point-min))
 	(when (looking-at "From ")
 	  (replace-match "X-From-Line: ") )
-	(if message-forward-show-mml
-	    (mime-to-mml))
+	(when message-forward-show-mml
+	  (mm-enable-multibyte)
+	  (mime-to-mml))
 	(message-forward post)))))
 
 (defun gnus-summary-resend-message (address n)
