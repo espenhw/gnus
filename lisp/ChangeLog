@@ -1,3 +1,11 @@
+Sat Mar  7 17:35:53 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.36 is released.
+
+Sat Mar  7 17:29:20 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-wait-for): Reversed logic.
+
 Sat Mar  7 17:19:04 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.35 is released.

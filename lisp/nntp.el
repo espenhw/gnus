@@ -256,7 +256,7 @@ server there that you can connect to.  See also
 	  (progn
 	    (nntp-snarf-error-message)
 	    nil))
-	 ((memq (process-status process) '(open run))
+	 ((not (memq (process-status process) '(open run)))
 	  (nnheader-report 'nntp "Server closed connection"))
 	 (t
 	  (goto-char (point-max))
