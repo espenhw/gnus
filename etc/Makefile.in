@@ -13,9 +13,6 @@ INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 SHELL = /bin/sh
 
-all: 
-	ln -s . images
-
 install: 
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)
 	cd $(srcdir) \
@@ -25,13 +22,13 @@ install:
 	done
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/gnus
 	cd $(srcdir) \
-	&& for p in gnus/*.xpm gnus/*.pbm gnus/*.xbm gnus/x-splash; do \
+	&& for p in images/gnus/*.xpm images/gnus/*.pbm images/gnus/*.xbm images/gnus/x-splash; do \
 	  echo " $(INSTALL_DATA) $$p $(etcdir)/images/$$p"; \
 	  $(INSTALL_DATA) $$p $(etcdir)/images/$$p; \
 	done
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/images/smilies
 	cd $(srcdir) \
-	&& for p in smilies/*.pbm smilies/*.xpm; do \
+	&& for p in images/smilies/*.pbm images/smilies/*.xpm; do \
 	  echo " $(INSTALL_DATA) $$p $(etcdir)/images/$$p"; \
 	  $(INSTALL_DATA) $$p $(etcdir)/images/$$p; \
 	done
@@ -39,7 +36,7 @@ install:
 uninstall: 
 	rm -f $(etcdir)/gnus-tut.txt
 	cd $(srcdir) \
-	&& for p in gnus/*.xpm gnus/*.pbm gnus/*.xbm gnus/x-splash; do \
+	&& for p in images/gnus/*.xpm images/gnus/*.pbm images/gnus/*.xbm images/gnus/x-splash; do \
 	  rm -f "$(etcdir)/images/$$p"; \
 	done
 	rmdir $(etcdir)/images/gnus 2> /dev/null || true

@@ -181,15 +181,18 @@ echo.
 echo Stand by while copying etc files.
 echo.
 if not exist %GNUS_ETC_DIR%\nul mkdir %GNUS_ETC_DIR%
-if not exist %GNUS_ETC_DIR%\images\nul mkdir %GNUS_ETC_DIR%\images
 xcopy /R /Q /Y gnus-tut.txt %GNUS_ETC_DIR%
 if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-gnus-tut-txt
-if not exist %GNUS_ETC_DIR%\images\gnus\nul mkdir %GNUS_ETC_DIR%\images\gnus
-xcopy /R /Q /Y .\gnus\* %GNUS_ETC_DIR%\images\gnus\
+if not exist %GNUS_ETC_DIR%\gnus\nul mkdir %GNUS_ETC_DIR%\gnus
+xcopy /R /Q /Y .\gnus\* %GNUS_ETC_DIR%\gnus\
 if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-gnus-*
+if not exist %GNUS_ETC_DIR%\images\nul mkdir %GNUS_ETC_DIR%\images
+if not exist %GNUS_ETC_DIR%\images\gnus\nul mkdir %GNUS_ETC_DIR%\images\gnus
+xcopy /R /Q /Y .\images\gnus\* %GNUS_ETC_DIR%\images\gnus\
+if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-images-gnus-*
 if not exist %GNUS_ETC_DIR%\images\smilies\nul mkdir %GNUS_ETC_DIR%\images\smilies
-xcopy /R /Q /Y .\smilies\* %GNUS_ETC_DIR%\images\smilies\
-if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-smilies-*
+xcopy /R /Q /Y .\images\smilies\* %GNUS_ETC_DIR%\images\smilies\
+if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-images-smilies-*
 goto warnings
 
 :nocopy
