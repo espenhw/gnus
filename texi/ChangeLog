@@ -1,3 +1,16 @@
+2004-03-02  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* emacs-mime.texi: Wrapped documentencoding inside of iflatex as
+	documentencoding is not supported by infohack.
+
+	* gnus.texi: Wrapped documentencoding inside of iflatex as
+	documentencoding is not supported by infohack.
+	Changed file's character coding to utf-8 as the file contains
+	characters that can not be encoded using iso-8859-1.
+	(Gnus Unplugged): Reference gnus-agent variable.
+	(Agent Variables): Added gnus-agent.
+	
+
 2004-02-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (X-Face): Add uncompface-use-external.
