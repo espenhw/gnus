@@ -1,5 +1,5 @@
 ;;; nnvirtual.el --- virtual newsgroups access for Gnus
-;; Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000
+;; Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
 ;;        Free Software Foundation, Inc.
 
 ;; Author: David Moore <dmoore@ucsd.edu>
@@ -362,7 +362,7 @@ component group will show up when you enter the virtual group.")
       (gnus-request-post (gnus-find-method-for-group group)))))
 
 
-(deffoo nnvirtual-request-expire-articles (articles group 
+(deffoo nnvirtual-request-expire-articles (articles group
 						    &optional server force)
   (nnvirtual-possibly-change-server server)
   (setq nnvirtual-component-groups

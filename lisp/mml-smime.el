@@ -1,5 +1,5 @@
 ;;; mml-smime.el --- S/MIME support for MML
-;; Copyright (c) 2000 Free Software Foundation, Inc.
+;; Copyright (c) 2000, 2001 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 ;; Keywords: Gnus, MIME, S/MIME, MML
@@ -77,7 +77,7 @@
 	      (smime-get-key-by-email
 	       (completing-read "Sign this part with what signature? "
 				smime-keys nil nil
-				(and (listp (car-safe smime-keys)) 
+				(and (listp (car-safe smime-keys))
 				     (caar smime-keys))))))))
 
 (defun mml-smime-get-file-cert ()
@@ -93,7 +93,7 @@
 	(while (not result)
 	  (setq who (read-from-minibuffer
 		     (format "%sLookup certificate for: " (or bad ""))
-		     (cadr (funcall gnus-extract-address-components 
+		     (cadr (funcall gnus-extract-address-components
 				    (or (save-excursion
 					  (save-restriction
 					    (message-narrow-to-headers)
@@ -124,9 +124,9 @@
     (insert-buffer (mm-handle-multipart-original-buffer ctl))
     (goto-char (point-min))
     (insert (format "Content-Type: %s; " (mm-handle-media-type ctl)))
-    (insert (format "protocol=\"%s\"; " 
+    (insert (format "protocol=\"%s\"; "
 		    (mm-handle-multipart-ctl-parameter ctl 'protocol)))
-    (insert (format "micalg=\"%s\"; " 
+    (insert (format "micalg=\"%s\"; "
 		    (mm-handle-multipart-ctl-parameter ctl 'micalg)))
     (insert (format "boundary=\"%s\"\n\n"
 		    (mm-handle-multipart-ctl-parameter ctl 'boundary)))
@@ -142,12 +142,12 @@
       (if (not good-signature)
 	  (progn
 	    ;; we couldn't verify message, fail with openssl output as message
-	    (mm-set-handle-multipart-parameter 
+	    (mm-set-handle-multipart-parameter
 	     mm-security-handle 'gnus-info "Failed")
 	    (mm-set-handle-multipart-parameter
-	     mm-security-handle 'gnus-details 
-	     (concat "OpenSSL failed to verify message:\n" 
-		     "---------------------------------\n" 
+	     mm-security-handle 'gnus-details
+	     (concat "OpenSSL failed to verify message:\n"
+		     "---------------------------------\n"
 		     openssl-output)))
 	;; verify mail addresses in mail against those in certificate
 	(when (and (smime-pkcs7-region (point-min) (point-max))
@@ -162,22 +162,22 @@
 	      (delete-region (point-min) (point)))
 	    (setq addresses (mapcar 'downcase addresses))))
 	(if (not (member (downcase (or (mm-handle-multipart-from ctl) "")) addresses))
-	    (mm-set-handle-multipart-parameter 
+	    (mm-set-handle-multipart-parameter
 	     mm-security-handle 'gnus-info "Sender address forged")
 	  (if good-certificate
-	      (mm-set-handle-multipart-parameter 
+	      (mm-set-handle-multipart-parameter
 	       mm-security-handle 'gnus-info "Ok (sender authenticated)")
 	    (mm-set-handle-multipart-parameter
 	     mm-security-handle 'gnus-info "Integrity OK (sender unknown)")))
 	(mm-set-handle-multipart-parameter
-	 mm-security-handle 'gnus-details 
+	 mm-security-handle 'gnus-details
 	 (concat "Sender clamed to be: " (mm-handle-multipart-from ctl) "\n"
 		 (if addresses
-		     (concat "Addresses in certificate: " 
+		     (concat "Addresses in certificate: "
 			     (mapconcat 'identity addresses ", "))
 		   "No addresses found in certificate. (Requires OpenSSL 0.9.6 or later.)")
-		 "\n" "\n" 
-		 "OpenSSL output:\n" 
+		 "\n" "\n"
+		 "OpenSSL output:\n"
 		 "---------------\n" openssl-output "\n"
 		 "Certificate(s) inside S/MIME signature:\n"
 		 "---------------------------------------\n"

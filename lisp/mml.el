@@ -1,5 +1,5 @@
 ;;; mml.el --- A package for parsing and validating MML documents
-;; Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; This file is part of GNU Emacs.
@@ -40,7 +40,7 @@
 (defvar mml-generate-multipart-alist nil
   "*Alist of multipart generation functions.
 Each entry has the form (NAME . FUNCTION), where
-NAME is a string containing the name of the part (without the 
+NAME is a string containing the name of the part (without the
 leading \"/multipart/\"),
 FUNCTION is a Lisp function which is called to generate the part.
 
@@ -78,7 +78,7 @@ one charsets.")
 
 (defvar mml-buffer-list nil)
 
-(defun mml-generate-new-buffer (name) 
+(defun mml-generate-new-buffer (name)
   (let ((buf (generate-new-buffer name)))
     (push buf mml-buffer-list)
     buf))
@@ -121,7 +121,7 @@ one charsets.")
 	(setq raw (cdr (assq 'raw tag))
 	      point (point)
 	      contents (mml-read-part (eq 'mml (car tag)))
-	      charsets (if raw nil 
+	      charsets (if raw nil
 			 (mm-find-mime-charset-region point (point))))
 	(when (and (not raw) (memq nil charsets))
 	  (if (or (memq 'unknown-encoding mml-confirmation-set)
@@ -130,7 +130,7 @@ one charsets.")
 Message contains characters with unknown encoding.  Really send?")
 		    (set (make-local-variable 'mml-confirmation-set)
 			 (push 'unknown-encoding mml-confirmation-set))))
-	      (if (setq use-ascii 
+	      (if (setq use-ascii
 			(or (memq 'use-ascii mml-confirmation-set)
 			    (y-or-n-p "Use ASCII as charset?")))
 		  (setq charsets (delq nil charsets))
@@ -162,7 +162,7 @@ A message part needs to be split into %d charset parts.  Really send? "
       (forward-line 1))
     (nreverse struct)))
 
-(defun mml-parse-singlepart-with-multiple-charsets 
+(defun mml-parse-singlepart-with-multiple-charsets
   (orig-tag beg end &optional use-ascii)
   (save-excursion
     (save-restriction
@@ -258,7 +258,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	    (if (re-search-forward "<#\\(/\\)?mml." nil t)
 		(setq count (+ count (if (match-beginning 1) -1 1)))
 	      (goto-char (point-max))))
-	  (buffer-substring-no-properties beg (if (> count 0) 
+	  (buffer-substring-no-properties beg (if (> count 0)
 						  (point)
 						(match-beginning 0))))
       (if (re-search-forward
@@ -291,7 +291,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	(buffer-string)))))
 
 (defun mml-generate-mime-1 (cont)
-  (let ((mm-use-ultra-safe-encoding 
+  (let ((mm-use-ultra-safe-encoding
 	 (or mm-use-ultra-safe-encoding (assq 'sign cont))))
     (save-restriction
       (narrow-to-region (point) (point))
@@ -303,7 +303,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	  (if (and (not raw)
 		   (member (car (split-string type "/")) '("text" "message")))
 	      (with-temp-buffer
-		(setq charset (mm-charset-to-coding-system 
+		(setq charset (mm-charset-to-coding-system
 			       (cdr (assq 'charset cont))))
 		(when (eq charset 'ascii)
 		  (setq charset nil))
@@ -327,7 +327,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 			    nil t)
 		      (delete-region (+ (match-beginning 0) 2)
 				     (+ (match-beginning 0) 3))))))
-		(cond 
+		(cond
 		 ((eq (car cont) 'mml)
 		  (let ((mml-boundary (funcall mml-boundary-function
 					       (incf mml-multipart-number)))
@@ -340,7 +340,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 		  (let ((mm-7bit-chars (concat mm-7bit-chars "\x1b")))
 		    ;; ignore 0x1b, it is part of iso-2022-jp
 		    (setq encoding (mm-body-7-or-8))))
-		 (t 
+		 (t
 		  (setq charset (mm-encode-body charset))
 		  (setq encoding (mm-body-encoding
 				  charset (cdr (assq 'encoding cont))))))
@@ -382,7 +382,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	       (concat "access-type="
 		       (if (member (nth 0 name) '("ftp@" "anonymous@"))
 			   "anon-ftp"
-			 "ftp")))))      
+			 "ftp")))))
 	  (when url
 	    (mml-insert-parameter
 	     (mail-header-encode-parameter "url" url)
@@ -599,7 +599,7 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
 	(save-excursion
 	  (set-buffer (setq buffer (mml-generate-new-buffer " *mml*")))
 	  (mm-insert-part handle)
-	  (if (setq mmlp (equal (mm-handle-media-type handle) 
+	  (if (setq mmlp (equal (mm-handle-media-type handle)
 				"message/rfc822"))
 	      (mime-to-mml)))))
     (if mmlp
@@ -608,7 +608,7 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
 		   (equal (mm-handle-media-type handle) "text/plain"))
 	(mml-insert-mml-markup handle buffer textp)))
     (cond
-     (mmlp 
+     (mmlp
       (insert-buffer buffer)
       (goto-char (point-max))
       (insert "<#/mml>\n"))
@@ -863,7 +863,7 @@ If RAW, don't highlight the article."
   (interactive "P")
   (let ((buf (current-buffer))
 	(message-options message-options)
-	(message-posting-charset (or (gnus-setup-posting-charset 
+	(message-posting-charset (or (gnus-setup-posting-charset
 				      (save-restriction
 					(message-narrow-to-headers-or-head)
 					(message-fetch-field "Newsgroups")))

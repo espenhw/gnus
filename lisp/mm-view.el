@@ -1,5 +1,5 @@
 ;;; mm-view.el --- Functions for viewing MIME objects
-;; Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; This file is part of GNU Emacs.
@@ -103,9 +103,9 @@
 		    (and (boundp 'w3-meta-charset-content-type-regexp)
 			 (re-search-forward
 			  w3-meta-charset-content-type-regexp nil t)))
-		(setq charset (or (w3-coding-system-for-mime-charset 
-				   (buffer-substring-no-properties 
-				    (match-beginning 2) 
+		(setq charset (or (w3-coding-system-for-mime-charset
+				   (buffer-substring-no-properties
+				    (match-beginning 2)
 				    (match-end 2)))
 				  charset)))
 	    (delete-region (point-min) (point-max))
@@ -158,7 +158,7 @@
 		      (mm-handle-type handle) 'charset)))
 	(if (or (eq charset 'gnus-decoded)
 		;; This is probably not entirely correct, but
-		;; makes rfc822 parts with embedded multiparts work. 
+		;; makes rfc822 parts with embedded multiparts work.
 		(eq mail-parse-charset 'gnus-decoded))
 	    (save-restriction
 	      (narrow-to-region (point) (point))
@@ -215,8 +215,8 @@
       (setq handles gnus-article-mime-handles))
     (when handles
       (setq gnus-article-mime-handles
-	    (nconc gnus-article-mime-handles 
-		   (if (listp (car handles)) 
+	    (nconc gnus-article-mime-handles
+		   (if (listp (car handles))
 		       handles (list handles))))))
   (fundamental-mode)
   (goto-char (point-min)))
@@ -237,8 +237,8 @@
 	(narrow-to-region b b)
 	(mm-insert-part handle)
 	(let (gnus-article-mime-handles
-	      ;; disable prepare hook 
-	      gnus-article-prepare-hook  
+	      ;; disable prepare hook
+	      gnus-article-prepare-hook
 	      (gnus-newsgroup-charset
 	       (or charset gnus-newsgroup-charset)))
 	  (run-hooks 'gnus-article-decode-hook)
@@ -253,8 +253,8 @@
 	(insert "----------\n\n")
 	(when handles
 	  (setq gnus-article-mime-handles
-		(nconc gnus-article-mime-handles 
-		       (if (listp (car handles)) 
+		(nconc gnus-article-mime-handles
+		       (if (listp (car handles))
 			   handles (list handles)))))
 	(mm-handle-set-undisplayer
 	 handle

@@ -1,5 +1,5 @@
 ;;; mm-util.el --- Utility functions for Mule and low level things
-;; Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;;	MORIOKA Tomohiko <morioka@jaist.ac.jp>
@@ -35,7 +35,7 @@
     (iso-8859-4 latin-iso8859-4)
     (iso-8859-5 cyrillic-iso8859-5)
     ;; Non-mule (X)Emacs uses the last mule-charset for 8bit characters.
-    ;; The fake mule-charset, gnus-koi8-r, tells Gnus that the default 
+    ;; The fake mule-charset, gnus-koi8-r, tells Gnus that the default
     ;; charset is koi8-r, not iso-8859-5.
     (koi8-r cyrillic-iso8859-5 gnus-koi8-r)
     (iso-8859-6 arabic-iso8859-6)
@@ -126,9 +126,9 @@
 
 (eval-and-compile
   (defalias 'mm-char-or-char-int-p
-    (cond 
+    (cond
      ((fboundp 'char-or-char-int-p) 'char-or-char-int-p)
-     ((fboundp 'char-valid-p) 'char-valid-p) 
+     ((fboundp 'char-valid-p) 'char-valid-p)
      (t 'identity))))
 
 (defvar mm-coding-system-list nil)
@@ -154,7 +154,7 @@
   "A mapping from invalid charset names to the real charset names.")
 
 (defvar mm-binary-coding-system
-  (cond 
+  (cond
    ((mm-coding-system-p 'binary) 'binary)
    ((mm-coding-system-p 'no-conversion) 'no-conversion)
    (t nil))
@@ -171,10 +171,10 @@
   "Text coding system for write.")
 
 (defvar mm-auto-save-coding-system
-  (cond 
+  (cond
    ((mm-coding-system-p 'emacs-mule)
     (if (memq system-type '(windows-nt ms-dos ms-windows))
-	(if (mm-coding-system-p 'emacs-mule-dos) 
+	(if (mm-coding-system-p 'emacs-mule-dos)
 	    'emacs-mule-dos mm-binary-coding-system)
       'emacs-mule))
    ((mm-coding-system-p 'escape-quoted) 'escape-quoted)
@@ -290,9 +290,9 @@ If the charset is `composition', return the actual one."
 	   (progn
 	     (setq mail-parse-mule-charset
 		   (and (boundp 'current-language-environment)
-		      (car (last 
-			    (assq 'charset 
-				  (assoc current-language-environment 
+		      (car (last
+			    (assq 'charset
+				  (assoc current-language-environment
 					 language-info-alist))))))
 	     (if (or (not mail-parse-mule-charset)
 		     (eq mail-parse-mule-charset 'ascii))
@@ -430,8 +430,8 @@ Mule4 only."
 	  (let (charset)
 	    (setq charset
 		  (and (boundp 'current-language-environment)
-		       (car (last (assq 'charset 
-					(assoc current-language-environment 
+		       (car (last (assq 'charset
+					(assoc current-language-environment
 					       language-info-alist))))))
 	    (if (eq charset 'ascii) (setq charset nil))
 	    (or charset
@@ -484,12 +484,12 @@ If INHIBIT is non-nil, inhibit mm-inhibit-file-name-handlers.
         (after-insert-file-functions nil)
 	(enable-local-eval nil)
 	(find-file-hooks nil)
-	(inhibit-file-name-operation (if inhibit 
+	(inhibit-file-name-operation (if inhibit
 					 'insert-file-contents
 				       inhibit-file-name-operation))
 	(inhibit-file-name-handlers
 	 (if inhibit
-	     (append mm-inhibit-file-name-handlers 
+	     (append mm-inhibit-file-name-handlers
 		     inhibit-file-name-handlers)
 	   inhibit-file-name-handlers)))
     (insert-file-contents filename visit beg end replace)))
@@ -502,33 +502,33 @@ saying what text to write.
 Optional fourth argument specifies the coding system to use when
 encoding the file.
 If INHIBIT is non-nil, inhibit mm-inhibit-file-name-handlers."
-  (let ((coding-system-for-write 
-	 (or codesys mm-text-coding-system-for-write 
+  (let ((coding-system-for-write
+	 (or codesys mm-text-coding-system-for-write
 	     mm-text-coding-system))
-	(inhibit-file-name-operation (if inhibit 
+	(inhibit-file-name-operation (if inhibit
 					 'append-to-file
 				       inhibit-file-name-operation))
 	(inhibit-file-name-handlers
 	 (if inhibit
-	     (append mm-inhibit-file-name-handlers 
+	     (append mm-inhibit-file-name-handlers
 		     inhibit-file-name-handlers)
 	   inhibit-file-name-handlers)))
     (append-to-file start end filename)))
 
-(defun mm-write-region (start end filename &optional append visit lockname 
+(defun mm-write-region (start end filename &optional append visit lockname
 			      coding-system inhibit)
 
   "Like `write-region'.
 If INHIBIT is non-nil, inhibit mm-inhibit-file-name-handlers."
-  (let ((coding-system-for-write 
-	 (or coding-system mm-text-coding-system-for-write 
+  (let ((coding-system-for-write
+	 (or coding-system mm-text-coding-system-for-write
 	     mm-text-coding-system))
-	(inhibit-file-name-operation (if inhibit 
+	(inhibit-file-name-operation (if inhibit
 					 'write-region
 				       inhibit-file-name-operation))
 	(inhibit-file-name-handlers
 	 (if inhibit
-	     (append mm-inhibit-file-name-handlers 
+	     (append mm-inhibit-file-name-handlers
 		     inhibit-file-name-handlers)
 	   inhibit-file-name-handlers)))
     (write-region start end filename append visit lockname)))

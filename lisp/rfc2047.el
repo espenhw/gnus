@@ -1,5 +1,5 @@
 ;;; rfc2047.el --- Functions for encoding and decoding rfc2047 messages
-;; Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;;	MORIOKA Tomohiko <morioka@jaist.ac.jp>
@@ -88,7 +88,7 @@ Valid encodings are nil, `Q' and `B'.")
   "Alist of RFC2047 encodings to encoding functions.")
 
 (defvar rfc2047-q-encoding-alist
-  '(("\\(Resent-\\)?\\(From\\|Cc\\|To\\|Bcc\\|Reply-To\\|Sender\\):" 
+  '(("\\(Resent-\\)?\\(From\\|Cc\\|To\\|Bcc\\|Reply-To\\|Sender\\):"
      . "-A-Za-z0-9!*+/" )
     ;; = (\075), _ (\137), ? (\077) are used in the encoded word.
     ;; Avoid using 8bit characters. Some versions of Emacs has bug!
@@ -156,14 +156,14 @@ Should be called narrowed to the head of the message."
 		  (mm-encode-coding-region (point-min) (point-max)
 					   mail-parse-charset)))
 	     ((null method)
-	      (and (delq 'ascii 
-			 (mm-find-charset-region (point-min) 
+	      (and (delq 'ascii
+			 (mm-find-charset-region (point-min)
 						 (point-max)))
 		   (if (or (message-options-get
-			    'rfc2047-encode-message-header-encode-any) 
+			    'rfc2047-encode-message-header-encode-any)
 			   (message-options-set
 			    'rfc2047-encode-message-header-encode-any
-			    (y-or-n-p 
+			    (y-or-n-p
 			     "Some texts are not encoded. Encode anyway?")))
 		       (rfc2047-encode-region (point-min) (point-max))
 		     (error "Cannot send unencoded text."))))
@@ -196,7 +196,7 @@ The buffer may be narrowed."
     ;; Anything except most CTLs, WSP
     (setq word-chars "\010\012\014\041-\177"))
   (let (mail-parse-mule-charset
-	words point current 
+	words point current
 	result word)
     (save-restriction
       (narrow-to-region b e)
@@ -531,7 +531,7 @@ If your Emacs implementation can't decode CHARSET, return nil."
 	(mm-decode-coding-string
 	 (cond
 	  ((equal "B" encoding)
-	   (base64-decode-string 
+	   (base64-decode-string
 	    (rfc2047-pad-base64 string)))
 	  ((equal "Q" encoding)
 	   (quoted-printable-decode-string

@@ -1,5 +1,5 @@
 ;;; gnus-ems.el --- functions for making Gnus work under different Emacsen
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -209,7 +209,7 @@
 
 (defvar gnus-article-compface-xbm
   (condition-case ()
-      (eq 0 (string-match "#define" 
+      (eq 0 (string-match "#define"
 			  (shell-command-to-string "uncompface -X")))
     (error nil))
   "Non-nil means the compface program supports the -X option.

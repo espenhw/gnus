@@ -36,7 +36,7 @@
 	      display-time-mail-function imap-password mail-mode-hook
 	      mc-pgp-always-sign
 	      nnoo-definition-alist
-	      url-current-callback-func url-be-asynchronous 
+	      url-current-callback-func url-be-asynchronous
 	      url-current-callback-data url-working-buffer
 	      url-current-mime-headers w3-meta-charset-content-type-regexp
 	      w3-meta-content-type-charset-regexp))
@@ -64,7 +64,7 @@
 		     url-retrieve w3-form-encode-xwfu window-at
 		     window-edges x-color-values x-popup-menu browse-url
 		     frame-char-height frame-char-width))
-      (maybe-bind '(buffer-display-table 
+      (maybe-bind '(buffer-display-table
 		    buffer-file-coding-system font-lock-defaults
 		    global-face-data gnus-article-x-face-too-ugly
 		    gnus-newsgroup-charset gnus-newsgroup-emphasis-alist

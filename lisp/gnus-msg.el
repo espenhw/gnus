@@ -1,5 +1,5 @@
 ;;; gnus-msg.el --- mail and post interface for Gnus
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -415,7 +415,7 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
 	(gnus-summary-remove-process-mark article))
       (gnus-copy-article-buffer)
       (let ((message-reply-buffer gnus-article-copy)
-	    (message-reply-headers 
+	    (message-reply-headers
 	     (with-current-buffer gnus-article-copy
 	       ;; The headers are decoded.
 	       (nnheader-parse-head t))))
@@ -485,7 +485,7 @@ header line with the old Message-ID."
 	(set-buffer article-buffer)
 	(let ((gnus-newsgroup-charset (or gnus-article-charset
 					  gnus-newsgroup-charset))
-	      (gnus-newsgroup-ignored-charsets 
+	      (gnus-newsgroup-ignored-charsets
 	       (or gnus-article-ignored-charsets
 		   gnus-newsgroup-ignored-charsets)))
 	  (save-restriction
@@ -736,7 +736,7 @@ The original article will be yanked."
   (gnus-summary-reply-with-original n t))
 
 (defun gnus-summary-mail-forward (&optional arg post)
-  "Forward the current message to another user.  
+  "Forward the current message to another user.
 If ARG is nil, see `message-forward-as-mime' and `message-forward-show-mml';
 if ARG is 1, decode the message and forward directly inline;
 if ARG is 2, forward message as an rfc822 MIME section;
@@ -747,7 +747,7 @@ If POST, post instead of mail."
   (interactive "P")
   (let ((message-forward-as-mime message-forward-as-mime)
 	(message-forward-show-mml message-forward-show-mml))
-    (cond 
+    (cond
      ((null arg))
      ((eq arg 1) (setq message-forward-as-mime nil
 		       message-forward-show-mml t))
@@ -767,8 +767,8 @@ If POST, post instead of mail."
 
 (defun gnus-summary-resend-message (address n)
   "Resend the current article to ADDRESS."
-  (interactive 
-   (list (message-read-from-minibuffer "Resend message(s) to: ") 
+  (interactive
+   (list (message-read-from-minibuffer "Resend message(s) to: ")
 	 current-prefix-arg))
   (let ((articles (gnus-summary-work-articles n))
 	article)
@@ -1120,7 +1120,7 @@ this is a reply."
 		       (concat "^" (regexp-quote mail-header-separator) "$")
 		       nil t)
 		  (replace-match "" t t ))
-		(unless (setq group-art 
+		(unless (setq group-art
 			      (gnus-request-accept-article group method t t))
 		  (gnus-message 1 "Couldn't store article in group %s: %s"
 				group (gnus-status-message method))
@@ -1129,26 +1129,26 @@ this is a reply."
 		  (let ((active (gnus-active group)))
 		    (if active
 			(if (< (cdr active) (cdr group-art))
-			    (gnus-set-active group (cons (car active) 
+			    (gnus-set-active group (cons (car active)
 							 (cdr group-art))))
 		      (gnus-activate-group group)))
 		  (let ((buffer (gnus-summary-buffer-name group))
 			(mark gnus-read-mark)
 			(article (cdr group-art)))
-		    (unless 
-			(and 
+		    (unless
+			(and
 			 (get-buffer buffer)
 			 (with-current-buffer buffer
 			   (when gnus-newsgroup-prepared
 			     (when (and gnus-newsgroup-auto-expire
 					(memq mark gnus-auto-expirable-marks))
 			       (setq mark gnus-expirable-mark))
-			     (setq mark (gnus-request-update-mark 
+			     (setq mark (gnus-request-update-mark
 					 group article mark))
 			     (gnus-mark-article-as-read article mark)
 			     (setq gnus-newsgroup-active (gnus-active group))
 			     t)))
-		      (gnus-group-make-articles-read group 
+		      (gnus-group-make-articles-read group
 						     (list article))
 		      (when (gnus-group-auto-expirable-p group)
 			(gnus-add-marked-articles

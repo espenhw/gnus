@@ -1,5 +1,5 @@
 ;;; smime.el --- S/MIME support library
-;; Copyright (c) 2000 Free Software Foundation, Inc.
+;; Copyright (c) 2000, 2001 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 ;; Keywords: SMIME X.509 PEM OpenSSL
@@ -150,8 +150,8 @@ and the files themself should be in PEM format."
   :type 'directory
   :group 'smime)
 
-(defcustom smime-openssl-program 
-  (and (condition-case () 
+(defcustom smime-openssl-program
+  (and (condition-case ()
 	   (eq 0 (call-process "openssl" nil nil nil "version"))
 	 (error nil))
        "openssl")
@@ -227,7 +227,7 @@ KEYFILE should contain a PEM encoded key and certificate."
   (interactive)
   (with-current-buffer (or buffer (current-buffer))
     (smime-sign-region
-     (point-min) (point-max) 
+     (point-min) (point-max)
      (or keyfile
 	 (smime-get-key-by-email
 	  (completing-read "Sign using which signature? " smime-keys nil nil
@@ -241,7 +241,7 @@ a PEM encoded key and certificate.  Uses current buffer if BUFFER is
 nil."
   (interactive)
   (with-current-buffer (or buffer (current-buffer))
-    (smime-encrypt-region 
+    (smime-encrypt-region
      (point-min) (point-max)
      (or certfiles
 	 (list (read-file-name "Recipient's S/MIME certificate: "
@@ -259,7 +259,7 @@ nil."
 		    (error "No CA configured.")))))
     (with-current-buffer buffer
       (erase-buffer))
-    (if (apply 'smime-call-openssl-region b e buffer "smime" "-verify" 
+    (if (apply 'smime-call-openssl-region b e buffer "smime" "-verify"
 	       "-out" "/dev/null" CAs)
 	(message "S/MIME message verified succesfully.")
       (message "S/MIME message NOT verified successfully.")
@@ -269,7 +269,7 @@ nil."
   (let ((buffer (get-buffer-create smime-details-buffer)))
     (with-current-buffer buffer
       (erase-buffer))
-    (if (apply 'smime-call-openssl-region b e buffer "smime" "-verify" 
+    (if (apply 'smime-call-openssl-region b e buffer "smime" "-verify"
 	       "-noverify" "-out" '("/dev/null"))
 	(message "S/MIME message verified succesfully.")
       (message "S/MIME message NOT verified successfully.")
@@ -278,15 +278,15 @@ nil."
 (defun smime-decrypt-region (b e keyfile)
   (let ((buffer (generate-new-buffer (generate-new-buffer-name "*smime*")))
 	CAs)
-    (when (apply 'smime-call-openssl-region b e buffer "smime" "-decrypt" 
+    (when (apply 'smime-call-openssl-region b e buffer "smime" "-decrypt"
 		 "-recip" (list keyfile))
-      
+
       )
     (with-current-buffer (get-buffer-create smime-details-buffer)
       (goto-char (point-max))
       (insert-buffer buffer))
     (kill-buffer buffer)))
-  
+
 ;; Verify+Decrypt buffer
 
 (defun smime-verify-buffer (&optional buffer)
@@ -309,13 +309,13 @@ Does NOT verify validity of certificate."
 Uses current buffer if BUFFER is nil, queries user of KEYFILE is nil."
   (interactive)
   (with-current-buffer (or buffer (current-buffer))
-    (smime-decrypt-region 
+    (smime-decrypt-region
      (point-min) (point-max)
      (expand-file-name
       (or keyfile
 	  (smime-get-key-by-email
 	   (completing-read "Decrypt with which key? " smime-keys nil nil
-			    (and (listp (car-safe smime-keys)) 
+			    (and (listp (car-safe smime-keys))
 				 (caar smime-keys)))))))))
 
 ;; Various operations
@@ -349,7 +349,7 @@ A string or a list of strings is returned."
     (when (smime-call-openssl-region b e buffer "x509" "-email" "-noout")
       (delete-region b e)
       (insert-buffer-substring buffer)
-      t)))  
+      t)))
 
 (defalias 'smime-point-at-eol
   (if (fboundp 'point-at-eol)
@@ -447,7 +447,7 @@ The following commands are available:
       (erase-buffer)
       (insert "\nYour keys:\n")
       (dolist (key smime-keys)
-	(insert 
+	(insert
 	 (format "\t\t%s: %s\n" (car key) (cadr key))))
       (insert "\nTrusted Certificate Authoritys:\n")
       (insert "\nKnown Certificates:\n"))))

@@ -1,5 +1,6 @@
 ;;; gnus-art.el --- article mode commands for Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000 Free Software Foundation, Inc.
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
+;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -1318,7 +1319,7 @@ always hide."
 	     ((eq elem 'to-address)
 	      (let ((to (message-fetch-field "to"))
 		    (to-address
-		     (gnus-group-find-parameter 
+		     (gnus-group-find-parameter
 		      (if (boundp 'gnus-newsgroup-name)
 			  gnus-newsgroup-name "") 'to-address)))
 		(when (and to to-address
@@ -1566,7 +1567,7 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
       (save-restriction
 	(article-narrow-to-head)
 	(when (and buffer-read-only ;; When type `W f'
-		   (progn 
+		   (progn
 		     (goto-char (point-min))
 		     (not (re-search-forward "^X-Face:[\t ]*" nil t)))
 		   (gnus-buffer-live-p gnus-original-article-buffer))
@@ -1577,7 +1578,7 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
 		(setq x-faces
 		      (concat
 		       (or x-faces "")
-		       (buffer-substring 
+		       (buffer-substring
 			(match-beginning 0)
 			(1- (re-search-forward
 			     "^\\($\\|[^ \t]\\)" nil t))))))))

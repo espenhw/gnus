@@ -1,5 +1,5 @@
 ;;; gnus-util.el --- utility functions for Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -993,7 +993,7 @@ Entries without port tokens default to DEFAULTPORT."
   (property value start end properties &optional object)
   "Like `gnus-add-text-properties', only applied on where PROPERTY is VALUE."
   (let (point)
-    (while (and start 
+    (while (and start
 		(< start end) ;; XEmacs will loop for every when start=end.
 		(setq point (text-property-not-all start end property value)))
       (gnus-add-text-properties start point properties object)
@@ -1005,7 +1005,7 @@ Entries without port tokens default to DEFAULTPORT."
   (property value start end properties &optional object)
   "Like `remove-text-properties', only applied on where PROPERTY is VALUE."
   (let (point)
-    (while (and start 
+    (while (and start
 		(< start end)
 		(setq point (text-property-not-all start end property value)))
       (remove-text-properties start point properties object)
