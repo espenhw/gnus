@@ -77,21 +77,24 @@
     (put-image (mm-get-image handle) b)
     (mm-handle-set-undisplayer
      handle
-     `(lambda () (remove-images ,b (1+ ,b))))))
+     `(lambda ()
+	(let ((b ,b)
+	      buffer-read-only)
+	  (remove-images b (1+ b))
+	  (delete-region b (1+ b)))))))
 
 (defun mm-inline-image-xemacs (handle)
   (insert "\n")
   (forward-char -1)
-  (let ((b (point))
-	(annot (make-annotation (mm-get-image handle) nil 'text))
+  (let ((annot (make-annotation (mm-get-image handle) nil 'text))
 	buffer-read-only)
     (mm-handle-set-undisplayer
      handle
      `(lambda ()
-	(let (buffer-read-only)
+	(let ((b ,(point-marker))
+	      buffer-read-only)
 	  (delete-annotation ,annot)
-	  (delete-region ,(set-marker (make-marker) b)
-			 ,(set-marker (make-marker) (point))))))
+	  (delete-region (1- b) b))))
     (set-extent-property annot 'mm t)
     (set-extent-property annot 'duplicable t)))
 

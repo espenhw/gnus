@@ -1,3 +1,9 @@
+2003-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-view.el (mm-inline-image-emacs): Make it delete an excessive
+	newline next time.
+	(mm-inline-image-xemacs): Ditto.
+
 2003-03-10  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-agent.el (gnus-agent-synchronize-flags-server): Don't use
