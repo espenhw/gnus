@@ -3816,8 +3816,10 @@ than 988 characters long, and if they are not, trim them until they are."
 		     (string-equal name "mail")
 		     (string-equal name "news")))
 	    (setq name (concat "*sent " name "*"))
+	  (message-narrow-to-headers)
 	  (setq to (message-fetch-field "to"))
 	  (setq group (message-fetch-field "newsgroups"))
+	  (widen)
 	  (setq name
 		(cond
 		 (to (concat "*sent mail to "

@@ -1,3 +1,16 @@
+2001-06-25 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnslashdot.el (nnslashdot-write-groups): Use gnus-prin1.
+
+	* nnrss.el (nnrss-save-server-data): Bind print-level and print-length.
+	(nnrss-save-group-data): Ditto.
+	
+	* gnus-agent.el (gnus-agent-save-alist): Ditto.
+
+2001-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-do-send-housekeeping): Narrow to headers.
+
 2001-06-24  Simon Josefsson  <jas@extundo.com>
 
 	* rfc2047.el (rfc2047-fold-region): The check to skip WSP

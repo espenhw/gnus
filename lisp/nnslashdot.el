@@ -541,7 +541,7 @@
 
 (defun nnslashdot-write-groups ()
   (with-temp-file (expand-file-name "groups" nnslashdot-directory)
-    (prin1 nnslashdot-groups (current-buffer))))
+    (gnus-prin1 nnslashdot-groups)))
 
 (defun nnslashdot-init (server)
   "Initialize buffers and such."

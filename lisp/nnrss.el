@@ -368,7 +368,8 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 				     "-")
 			server ".el"))
 	       nnrss-directory)))
-    (let ((coding-system-for-write 'binary))
+    (let ((coding-system-for-write 'binary)
+          print-level print-length)
       (with-temp-file file
 	(insert "(setq nnrss-server-data '"
 		(prin1-to-string nnrss-server-data)
@@ -410,7 +411,8 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 				   "-")
 			server ".el"))
 	       nnrss-directory)))
-    (let ((coding-system-for-write 'binary))
+    (let ((coding-system-for-write 'binary)
+          print-level print-length)
       (with-temp-file file
 	(insert "(setq nnrss-group-data '"
 		(prin1-to-string nnrss-group-data)
