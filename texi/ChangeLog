@@ -2,6 +2,8 @@
 
 	* gnus.texi (Mailing List): Fix.
 
+	* gnus.texi: Markup fixes.
+
 2003-02-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Article Washing): Mention `g'.

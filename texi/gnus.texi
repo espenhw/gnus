@@ -2968,7 +2968,7 @@ Group parameters can be set via the @code{gnus-parameters} variable too.
 But some variables, such as @code{visible}, have no effect.  For
 example:
 
-@example
+@lisp
 (setq gnus-parameters
       '(("mail\\..*"
          (gnus-show-threads nil)
@@ -2987,7 +2987,7 @@ example:
         ("list\\..*"
          (total-expire . t)
          (broken-reply-to . t))))
-@end example
+@end lisp
 
 String value of parameters will be subjected to regexp substitution, as
 the @code{to-group} example shows.
@@ -4664,10 +4664,11 @@ headers are used instead.
 
 @vindex nnmail-extra-headers
 A related variable is @code{nnmail-extra-headers}, which controls when
-to include extra headers when generating overview (@sc{nov}) files.  If
-you have old overview files, you should regenerate them after changing
-this variable, by entering the server buffer using `^', and then `g' on
-the appropriate mail server (e.g. nnml) to cause regeneration.
+to include extra headers when generating overview (@sc{nov}) files.
+If you have old overview files, you should regenerate them after
+changing this variable, by entering the server buffer using @kbd{^},
+and then @kbd{g} on the appropriate mail server (e.g. nnml) to cause
+regeneration.
 
 @vindex gnus-summary-line-format
 You also have to instruct Gnus to display the data by changing the
@@ -6831,7 +6832,7 @@ Go to the top of the thread (@code{gnus-summary-top-thread}).
 @vindex gnus-thread-operation-ignore-subject
 If you ignore subject while threading, you'll naturally end up with
 threads that have several different subjects in them.  If you then issue
-a command like `T k' (@code{gnus-summary-kill-thread}) you might not
+a command like @kbd{T k} (@code{gnus-summary-kill-thread}) you might not
 wish to kill the entire thread, but just those parts of the thread that
 have the same subject as the current article.  If you like this idea,
 you can fiddle with @code{gnus-thread-operation-ignore-subject}.  If it
@@ -7397,7 +7398,7 @@ File names like @file{~/News/larsi}.
 You can have Gnus suggest where to save articles by plonking a regexp into
 the @code{gnus-split-methods} alist.  For instance, if you would like to
 save articles related to Gnus in the file @file{gnus-stuff}, and articles
-related to VM in @code{vm-stuff}, you could set this variable to something
+related to VM in @file{vm-stuff}, you could set this variable to something
 like:
 
 @lisp
@@ -7682,7 +7683,7 @@ variables are of the form
 @vindex gnus-uu-user-view-rules
 @cindex sox
 This variable is consulted first when viewing files.  If you wish to use,
-for instance, @code{sox} to convert an @samp{.au} sound file, you could
+for instance, @code{sox} to convert an @file{.au} sound file, you could
 say something like:
 @lisp
 (setq gnus-uu-user-view-rules
@@ -12440,7 +12441,7 @@ Command used to log in on the intermediate host.  The default is
 @vindex nntp-via-rlogin-command-switches
 List of strings to be used as the switches to
 @code{nntp-via-rlogin-command}.  The default is @code{nil}.  If you use
-@samp{ssh} for `nntp-via-rlogin-command', you may set this to
+@samp{ssh} for @code{nntp-via-rlogin-command}, you may set this to
 @samp{("-C")} in order to compress all data connections, otherwise set
 this to @samp{("-t")} or @samp{("-C" "-t")} if the telnet command
 requires a pseudo-tty allocation on an intermediate host.
@@ -12726,7 +12727,7 @@ mail" back end), you could put the following in your @file{.gnus.el} file:
 
 Now, the next time you start Gnus, this back end will be queried for new
 articles, and it will move all the messages in your spool file to its
-directory, which is @code{~/Mail/} by default.  The new group that will
+directory, which is @file{~/Mail/} by default.  The new group that will
 be created (@samp{mail.misc}) will be subscribed, and you can read it
 like any other group.
 
@@ -13104,7 +13105,7 @@ Keywords:
 @item :path
 The name of the directory where the mails are stored.  The default is
 taken from the @code{MAILDIR} environment variable or
-@samp{~/Maildir/}.
+@file{~/Maildir/}.
 @item :subdirs
 The subdirectories of the Maildir.  The default is
 @samp{("new" "cur")}.
@@ -13174,7 +13175,7 @@ this means @samp{gssapi}, @samp{kerberos4}, @samp{digest-md5},
 
 @item :program
 When using the `shell' :stream, the contents of this variable is
-mapped into the `imap-shell-program' variable.  This should be a
+mapped into the @code{imap-shell-program} variable.  This should be a
 @code{format}-like string (or list of strings).  Here's an example:
 
 @example
@@ -13188,7 +13189,7 @@ The valid format specifier characters are:
 The name of the server.
 
 @item l
-User name from `imap-default-user'.
+User name from @code{imap-default-user}.
 
 @item p
 The port number of the server.
@@ -14374,9 +14375,9 @@ Virtual server settings:
 @table @code
 @item nnml-directory
 @vindex nnml-directory
-All @code{nnml} directories will be placed under this directory.
-The default is the value of `message-directory' (whose default value is
-@file{~/Mail}).
+All @code{nnml} directories will be placed under this directory.  The
+default is the value of @code{message-directory} (whose default value
+is @file{~/Mail}).
 
 @item nnml-active-file
 @vindex nnml-active-file
@@ -14679,7 +14680,7 @@ slowness of access parsing when learning what's new in one's groups.
 
 Basically the effect of @code{nnfolder} is @code{nnmbox} (the first
 method described above) on a per-group basis.  That is, @code{nnmbox}
-itself puts *all* one's mail in one file; @code{nnfolder} provides a
+itself puts @emph{all} one's mail in one file; @code{nnfolder} provides a
 little bit of optimization to this so that each of one's mail groups has
 a Unix mail box file.  It's faster than @code{nnmbox} because each group
 can be parsed separately, and still provides the simple Unix mail box
@@ -14981,7 +14982,7 @@ The password to use when posting.
 @item nnslashdot-directory
 @vindex nnslashdot-directory
 Where @code{nnslashdot} will store its files.  The default is
-@samp{~/News/slashdot/}.
+@file{~/News/slashdot/}.
 
 @item nnslashdot-active-url
 @vindex nnslashdot-active-url
@@ -15038,7 +15039,7 @@ The following @code{nnultimate} variables can be altered:
 @item nnultimate-directory
 @vindex nnultimate-directory
 The directory where @code{nnultimate} stores its files.  The default is
-@samp{~/News/ultimate/}.
+@file{~/News/ultimate/}.
 @end table
 
 
@@ -15068,7 +15069,7 @@ The following @code{nnwarchive} variables can be altered:
 @item nnwarchive-directory
 @vindex nnwarchive-directory
 The directory where @code{nnwarchive} stores its files.  The default is
-@samp{~/News/warchive/}.
+@file{~/News/warchive/}.
 
 @item nnwarchive-login
 @vindex nnwarchive-login
@@ -15099,7 +15100,7 @@ The following @code{nnrss} variables can be altered:
 @item nnrss-directory
 @vindex nnrss-directory
 The directory where @code{nnrss} stores its files.  The default is
-@samp{~/News/rss/}.
+@file{~/News/rss/}.
 
 @end table
 
@@ -15197,7 +15198,7 @@ entry in @code{gnus-secondary-select-methods}.  With this, Gnus will
 manipulate mails stored on the @sc{imap} server.  This is the kind of
 usage explained in this section.
 
-A server configuration in @code{~/.gnus} with a few @sc{imap} servers
+A server configuration in @file{~/.gnus} with a few @sc{imap} servers
 might look something like the following. (Note that for SSL/TLS, you
 need external programs and libraries, see below.)
 
@@ -16898,7 +16899,7 @@ misconfigured systems/mailers out there and so an article's date is not
 always a reliable indication of when it was posted.  Hell, some people
 just don't give a damn.
 
-The above predicates apply to *all* the groups which belong to the
+The above predicates apply to @emph{all} the groups which belong to the
 category.  However, if you wish to have a specific predicate for an
 individual group within a category, or you're just too lazy to set up a
 new category, you can enter a group's individual predicate in it's group
@@ -16974,8 +16975,8 @@ Again, note the omission of the outermost parenthesis here.
 @item
 Agent score file
 
-These score files must *only* contain the permitted scoring keywords
-stated above.
+These score files must @emph{only} contain the permitted scoring
+keywords stated above.
 
 example:
 
@@ -17014,7 +17015,7 @@ your desired @code{downloading} criteria for a group are the same as your
 
 These directives in either the category definition or a group's
 parameters will cause the agent to read in all the applicable score
-files for a group, *filtering out* those sections that do not
+files for a group, @emph{filtering out} those sections that do not
 relate to one of the permitted subset of scoring keywords.
 
 @itemize @bullet
@@ -17595,7 +17596,7 @@ may ask:
 
 @item If I read an article while plugged, and the article already exists in the Agent, will it get downloaded once more?
 
-@strong{No}, unless @code{gnus-agent-cache} is `nil'.
+@strong{No}, unless @code{gnus-agent-cache} is @code{nil}.
 
 @end table
 
@@ -19544,7 +19545,7 @@ Many commands do not use the process/prefix convention.  All commands
 that do explicitly say so in this manual.  To apply the process/prefix
 convention to commands that do not use it, you can use the @kbd{M-&}
 command.  For instance, to mark all the articles in the group as
-expirable, you could say `M P b M-& E'.
+expirable, you could say @kbd{M P b M-& E}.
 
 
 @node Interactive
@@ -21938,10 +21939,10 @@ incoming mail, provide the following:
 @item
 code
 
-@example
+@lisp
 (defvar spam-use-blackbox nil
   "True if blackbox should be used.")
-@end example
+@end lisp
 
 Add
 @example
@@ -21967,7 +21968,7 @@ code
 Note you don't have to provide a spam or a ham processor.  Only
 provide them if Blackbox supports spam or ham processing.
 
-@example
+@lisp
 (defvar gnus-group-spam-exit-processor-blackbox "blackbox"
   "The Blackbox summary exit spam processor.
 Only applicable to spam groups.")
@@ -21976,12 +21977,12 @@ Only applicable to spam groups.")
   "The whitelist summary exit ham processor.
 Only applicable to non-spam (unclassified and ham) groups.")
 
-@end example
+@end lisp
 
 @item
 functionality
 
-@example
+@lisp
 (defun spam-blackbox-register-spam-routine ()
   (spam-generic-register-routine
    ;; the spam function
@@ -22001,7 +22002,7 @@ functionality
      (let ((from (spam-fetch-field-from-fast article)))
        (when (stringp from)
 	   (blackbox-do-something-with-this-ham-sender from))))))
-@end example
+@end lisp
 
 Write the @code{blackbox-do-something-with-this-ham-sender} and
 @code{blackbox-do-something-with-this-spammer} functions.  You can add
@@ -22130,10 +22131,10 @@ The filename used to store the dictionary.  This defaults to
 In order to use @code{spam-stat} to split your mail, you need to add the
 following to your @file{~/.gnus} file:
 
-@example
+@lisp
 (require 'spam-stat)
 (spam-stat-load)
-@end example
+@end lisp
 
 This will load the necessary Gnus code, and the dictionary you
 created.
@@ -22148,11 +22149,11 @@ In the simplest case, you only have two groups, @samp{mail.misc} and
 spam or it should go into @samp{mail.misc}.  If it is spam, then
 @code{spam-stat-split-fancy} will return @samp{mail.spam}.
 
-@example
+@lisp
 (setq nnmail-split-fancy
       `(| (: spam-stat-split-fancy)
 	  "mail.misc"))
-@end example
+@end lisp
 
 @defvar spam-stat-split-fancy-spam-group
 The group to use for spam.  Default is @samp{mail.spam}.
@@ -22162,12 +22163,12 @@ If you also filter mail with specific subjects into other groups, use
 the following expression.  Only mails not matching the regular
 expression are considered potential spam.
 
-@example
+@lisp
 (setq nnmail-split-fancy
       `(| ("Subject" "\\bspam-stat\\b" "mail.emacs")
 	  (: spam-stat-split-fancy)
 	  "mail.misc"))
-@end example
+@end lisp
 
 If you want to filter for spam first, then you must be careful when
 creating the dictionary.  Note that @code{spam-stat-split-fancy} must
@@ -22175,12 +22176,12 @@ consider both mails in @samp{mail.emacs} and in @samp{mail.misc} as
 non-spam, therefore both should be in your collection of non-spam
 mails, when creating the dictionary!
 
-@example
+@lisp
 (setq nnmail-split-fancy
       `(| (: spam-stat-split-fancy)
           ("Subject" "\\bspam-stat\\b" "mail.emacs")
 	  "mail.misc"))
-@end example
+@end lisp
 
 You can combine this with traditional filtering.  Here, we move all
 HTML-only mails into the @samp{mail.spam.filtered} group.  Note that since
@@ -22189,13 +22190,13 @@ HTML-only mails into the @samp{mail.spam.filtered} group.  Note that since
 nor in your collection of non-spam mails, when creating the
 dictionary!
 
-@example
+@lisp
 (setq nnmail-split-fancy
       `(| ("Content-Type" "text/html" "mail.spam.filtered")
 	  (: spam-stat-split-fancy)
           ("Subject" "\\bspam-stat\\b" "mail.emacs")
 	  "mail.misc"))
-@end example
+@end lisp
 
 
 @node Low-level interface to the spam-stat dictionary
@@ -22251,10 +22252,10 @@ spam-stat-split-fancy)} to @code{nnmail-split-fancy}
 Make sure you load the dictionary before using it.  This requires the
 following in your @file{~/.gnus} file:
 
-@example
+@lisp
 (require 'spam-stat)
 (spam-stat-load)
-@end example
+@end lisp
 
 Typical test will involve calls to the following functions:
 
@@ -25171,9 +25172,9 @@ of @code{nndir}.  (The same with @code{nnmh}.)
 This macro defines some common functions that almost all back ends should
 have.
 
-@example
+@lisp
 (nnoo-define-basics nndir)
-@end example
+@end lisp
 
 @item deffoo
 This macro is just like @code{defun} and takes the same parameters.  In
@@ -25184,11 +25185,11 @@ function as being public so that other back ends can inherit it.
 This macro allows mapping of functions from the current back end to
 functions from the parent back ends.
 
-@example
+@lisp
 (nnoo-map-functions nndir
   (nnml-retrieve-headers 0 nndir-current-group 0 0)
   (nnmh-request-article 0 nndir-current-group 0 0))
-@end example
+@end lisp
 
 This means that when @code{nndir-retrieve-headers} is called, the first,
 third, and fourth parameters will be passed on to
@@ -25200,13 +25201,13 @@ This macro allows importing functions from back ends.  It should be the
 last thing in the source file, since it will only define functions that
 haven't already been defined.
 
-@example
+@lisp
 (nnoo-import nndir
   (nnmh
    nnmh-request-list
    nnmh-request-newgroups)
   (nnml))
-@end example
+@end lisp
 
 This means that calls to @code{nndir-request-list} should just be passed
 on to @code{nnmh-request-list}, while all public functions from
