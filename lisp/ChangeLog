@@ -1,3 +1,9 @@
+2004-01-21  Jesper Harder  <harder@ifa.au.dk>
+
+	* spam-stat.el (spam-stat-test-directory): New optional argument
+	displays a list of files detected.  Suggested by Andrew Cohen
+	<cohen@andy.bu.edu>.
+
 2004-01-20  Teodor Zlatanov  <tzz@lifelogs.com>  
 
 	* spam.el (gnus-summary-mode-map): make spam-generic-score the
@@ -36,7 +42,7 @@
 
 2004-01-20  Jesper Harder  <harder@ifa.au.dk>
 
-	* spam-stat.el (spam-stat-to-hash-table): Use :size argument in
+	* spam-stat.el (spam-stat-to-hash-table): Use :size keyword in
 	make-hash-table.
 
 2004-01-19  Katsumi Yamaoka  <yamaoka@jpl.org>

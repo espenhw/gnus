@@ -504,13 +504,19 @@ check the variable `spam-stat-score-data'."
   (interactive)
   (hash-table-count spam-stat))
 
-(defun spam-stat-test-directory (dir)
+(defun spam-stat-test-directory (dir &optional verbose)
   "Test all the regular files in directory DIR for spam.
 If the result is 1.0, then all files are considered spam.
 If the result is 0.0, non of the files is considered spam.
-You can use this to determine error rates."
-  (interactive "D")
+You can use this to determine error rates.
+
+If VERBOSE is non-nil display names of files detected as spam or
+non-spam in a temporary buffer.  If it is the symbol `ham',
+display non-spam files; otherwise display spam files."
+  (interactive "DDirectory: ")
   (let* ((files (directory-files dir t "^[^.]"))
+	 display-files
+	 buffer-score
 	 (total (length files))
 	 (score 0.0); float
 	 (max (/ total 100.0)); float
@@ -521,12 +527,22 @@ You can use this to determine error rates."
 		   (file-regular-p f)
                    (> (nth 7 (file-attributes f)) 0))
 	  (setq count (1+ count))
-	  (message "Reading %.2f%%, score %.2f%%"
-		   (/ count max) (/ score count))
+	  (message "Reading %.2f%%, score %.2f"
+	  	   (/ count max) (/ score count))
 	  (insert-file-contents f)
-	  (when (> (spam-stat-score-buffer) 0.9)
+	  (setq buffer-score (spam-stat-score-buffer))
+	  (when (> buffer-score 0.9)
 	    (setq score (1+ score)))
+	  (when verbose
+	    (if (> buffer-score 0.9)
+		(unless (eq verbose 'ham) (push f display-files))
+	      (when (eq verbose 'ham) (push f display-files))))
 	  (erase-buffer))))
+    (when display-files
+      (with-output-to-temp-buffer "*spam-stat results*"
+	(dolist (file display-files)
+	  (princ file)
+	  (terpri))))
     (message "Final score: %d / %d = %f" score total (/ score total))))
 
 ;; Shrinking the dictionary
