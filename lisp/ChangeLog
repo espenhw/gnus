@@ -1,3 +1,8 @@
+2003-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-decode.el (mm-inline-text-html-with-images): Doc fix.
+	(mm-w3m-safe-url-regexp): Doc fix.
+
 2003-10-12  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-respool-query): Don't narrow to head,

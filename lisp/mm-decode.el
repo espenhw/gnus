@@ -127,9 +127,9 @@ nil    : using external viewer."
 It is suggested to customize `mm-text-html-renderer' instead.")
 
 (defcustom mm-inline-text-html-with-images nil
-  "If non-nil, Gnus will allow retrieving images in the HTML contents
-with <img> tags.  It has no effect on Emacs/w3.  See also
-the documentation for the option `mm-w3m-safe-url-regexp'."
+  "If non-nil, Gnus will allow retrieving images in HTML contents with
+the <img> tags.  It has no effect on Emacs/w3.  See also the
+documentation for the `mm-w3m-safe-url-regexp' variable."
   :type 'boolean
   :group 'mime-display)
 
@@ -141,10 +141,10 @@ It is most likely intended to check whether the ominous spam mail has
 reached your eyes or not, in which case the spammer knows for sure
 that your email address is valid.  It is done by embedding an
 identifier string into a URL that you might automatically retrieve
-when displaying the image.  By default, the
-`mm-inline-text-html-with-images' variable is nil and Gnus will never
-connect to the spammer's site arbitrarily.  You may set this value to
-nil if you consider all urls to be safe."
+when displaying the image.  The default value is \"\\\\`cid:\" which only
+matches parts embedded to the Multipart/Related type MIME contents and
+Gnus will never connect to the spammer's site arbitrarily.  You may
+set this variable to nil if you consider all urls to be safe."
   :type '(choice (regexp :tag "Regexp")
 		 (const :tag "All URLs are safe" nil))
   :group 'mime-display)
