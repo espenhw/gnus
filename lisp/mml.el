@@ -37,7 +37,8 @@
   (autoload 'gnus-make-local-hook "gnus-util")
   (autoload 'message-fetch-field "message")
   (autoload 'fill-flowed-encode "flow-fill")
-  (autoload 'message-posting-charset "message"))
+  (autoload 'message-posting-charset "message")
+  (autoload 'x-dnd-get-local-file-name "x-dnd"))
 
 (defcustom mml-content-type-parameters
   '(name access-type expiration size permission format)
@@ -888,6 +889,11 @@ See Info node `(emacs-mime)Composing'.
 	       (> (prefix-numeric-value arg) 0)))
     (add-minor-mode 'mml-mode " MML" mml-mode-map)
     (easy-menu-add mml-menu mml-mode-map)
+    (when (boundp 'x-dnd-protocol-alist)
+      (set (make-local-variable 'x-dnd-protocol-alist)
+	   '(("^file:///" . mml-x-dnd-attach-file)
+	     ("^file://"  . x-dnd-open-file)
+	     ("^file:"    . mml-x-dnd-attach-file))))
     (run-hooks 'mml-mode-hook)))
 
 ;;;
@@ -1004,6 +1010,15 @@ description of the attachment."
 			'filename file
 			'disposition (or disposition "attachment")
 			'description description))
+
+(defun mml-x-dnd-attach-file (uri action)
+  "Attach a drag and drop file."
+  (let ((file (x-dnd-get-local-file-name uri t)))
+    (when (and file (file-regular-p file))
+      (let* ((type (mml-minibuffer-read-type file))
+	    (description (mml-minibuffer-read-description))
+	    (disposition (mml-minibuffer-read-disposition type)))
+	(mml-attach-file file type description disposition)))))
 
 (defun mml-attach-buffer (buffer &optional type description)
   "Attach a buffer to the outgoing MIME message.

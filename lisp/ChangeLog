@@ -1,5 +1,8 @@
 2004-02-06  Jesper Harder  <harder@ifa.au.dk>
 
+	* mml.el (mml-mode, mml-x-dnd-attach-file): Attach drop and drag
+	files.
+
 	* message.el (message-generate-headers-first): Don't quote nil
 	and t in docstrings.
 
