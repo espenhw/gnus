@@ -1,3 +1,8 @@
+2003-02-17  John Paul Wallington  <jpw@gnu.org>
+
+	* gnus.el (gnus-shell-command-separator, gnus-email-address)
+	(gnus-default-charset, gnus-other-frame-parameters): Doc fixes.
+
 2003-02-20  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-spec.el (gnus-xmas-format): Use insert instead of
