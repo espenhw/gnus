@@ -392,24 +392,21 @@ DOC is a documentation string for the parameter."))
     (widget-insert ".\n\n")
     (make-local-variable 'gnus-custom-params)
 
-    (let* ((values (if group
-                           (gnus-info-params info)
-                         (gnus-topic-parameters topic))))
+    (let ((values (if group
+		      (gnus-info-params info)
+		    (gnus-topic-parameters topic))))
 
       ;; The parameters in values may contain duplicates.  This is
       ;; normally OK as assq returns the first. However, right here
       ;; every duplicate ends up being displayed.  So, rather than
       ;; display them, remove them from the list.
 
-      (let (tmp)
-        (setq values (gnus-copy-sequence values)
-              tmp values)
-
-        (while tmp
-          (setcdr tmp (delete-if (lambda (testing) (eq (caar tmp)
-                                                       (car testing))) 
-                                 (cdr tmp)))
-          (setq tmp (cdr tmp))))
+      (let ((tmp (setq values (gnus-copy-sequence values)))
+	    elem)
+	(while (cdr tmp)
+	  (while (setq elem (assq (caar tmp) (cdr tmp)))
+	    (delq elem tmp))
+	  (setq tmp (cdr tmp))))
 
       (setq gnus-custom-params
             (apply 'widget-create 'group
