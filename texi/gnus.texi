@@ -12572,7 +12572,8 @@ Keywords:
 @table @code
 @item :path
 The path of the file.  Defaults to the value of the @code{MAIL}
-environment variable or @file{/usr/mail/spool/user-name}.
+environment variable or the value of @code{rmail-spool-directory}
+(usually something like @file{/usr/mail/spool/user-name}).
 @end table
 
 An example file mail source:
