@@ -1,3 +1,11 @@
+2003-10-26  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-art.el (gnus-button-alist): Allow & in mailto URLs.
+	(gnus-header-button-alist): Likewise.
+	(gnus-url-mailto): Handle ?to parameters.  Replace \r\n with \n.
+	Reverse parameter list to use same order as in the URL.  Reported
+	by f95-msv@f.kth.se (M,Ae(Brten Svantesson).
+
 2003-10-25  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-move-spam-nonspam-groups-only): documentation fix

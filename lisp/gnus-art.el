@@ -6049,7 +6049,7 @@ positives are possible."
      2 (>= gnus-button-message-level 0) gnus-button-message-id 3)
     ("\\(<URL: *\\)mailto: *\\([^> \n\t]+\\)>"
      0 (>= gnus-button-message-level 0) gnus-url-mailto 2)
-    ("mailto:\\([-a-z.@_+0-9%=?]+\\)"
+    ("mailto:\\([-a-z.@_+0-9%=?&]+\\)"
      0 (>= gnus-button-message-level 0) gnus-url-mailto 1)
     ("\\bmailto:\\([^ \n\t]+\\)"
      0 (>= gnus-button-message-level 0) gnus-url-mailto 1)
@@ -6176,7 +6176,7 @@ variable it the real callback function."
      0 (>= gnus-button-browse-level 0) browse-url 0)
     ("^[^:]+:" gnus-button-url-regexp
      0 (>= gnus-button-browse-level 0) browse-url 0)
-    ("^[^:]+:" "\\bmailto:\\([-a-z.@_+0-9%=?]+\\)"
+    ("^[^:]+:" "\\bmailto:\\([-a-z.@_+0-9%=?&]+\\)"
      0 (>= gnus-button-message-level 0) gnus-url-mailto 1)
     ("^[^:]+:" "\\(<\\(url: \\)?\\(nntp\\|news\\):\\([^>\n ]*\\)>\\)"
      1 (>= gnus-button-message-level 0) gnus-button-message-id 4))
@@ -6613,12 +6613,14 @@ specified by `gnus-button-alist'."
   (when (string-match "mailto:/*\\(.*\\)" url)
     (setq url (substring url (match-beginning 1) nil)))
   (let (to args subject func)
-    (if (string-match (regexp-quote "?") url)
-	(setq to (gnus-url-unhex-string (substring url 0 (match-beginning 0)))
-	      args (gnus-url-parse-query-string
-		    (substring url (match-end 0) nil) t))
-      (setq to (gnus-url-unhex-string url)))
-    (setq args (cons (list "to" to) args)
+    (setq args (gnus-url-parse-query-string
+		(if (string-match "^\\?" url)
+		    (substring url 1)
+		  (if (string-match "^\\([^?]+\\)\\?\\(.*\\)" url)
+		      (concat "to=" (match-string 1 url) "&"
+			      (match-string 2 url))
+		    (concat "to=" url)))
+		t)
 	  subject (cdr-safe (assoc "subject" args)))
     (gnus-msg-mail)
     (while args
@@ -6626,7 +6628,9 @@ specified by `gnus-button-alist'."
       (if (fboundp func)
 	  (funcall func)
 	(message-position-on-field (caar args)))
-      (insert (mapconcat 'identity (cdar args) ", "))
+      (insert (gnus-replace-in-string
+	       (mapconcat 'identity (reverse (cdar args)) ", ")
+	       "\r\n" "\n" t))
       (setq args (cdr args)))
     (if subject
 	(message-goto-body)
