@@ -1,3 +1,7 @@
+2001-10-22  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* dir (File): Add standard explanation header.
+
 2001-10-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Mail Source Specifiers): Explain more explicitly what
