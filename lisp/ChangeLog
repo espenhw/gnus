@@ -1,5 +1,8 @@
 2004-04-07  Jesper Harder  <harder@ifa.au.dk>
 
+	* rfc2047.el (rfc2047-encoded-word-regexp): Remove unnecessary
+	'+'.  Reported by Stefan Wiens <s.wi@gmx.net>.
+
 	* mm-util.el (mm-image-load-path): Handle nil in load-path.
 	From Christian Neukirchen <chneukirchen@yahoo.de>.
 
