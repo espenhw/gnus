@@ -2,6 +2,8 @@
 
 	* gnus-sum.el (gnus-summary-edit-article): Better support for
 	nndraft:drafts.
+	* nndraft.el (nndraft-request-replace-article): New function,
+	bind nnmail-file-coding-system.
 
 2000-05-14  Dave Love  <fx@gnu.org>
 

@@ -198,6 +198,15 @@
     (nnoo-parent-function 'nndraft 'nnmh-request-accept-article
 			  (list group server last noinsert))))
 
+(deffoo nndraft-request-replace-article (article group buffer)
+  (nndraft-possibly-change-group group)
+  (let ((nnmail-file-coding-system
+	 (if (equal group "drafts")
+	     mm-auto-save-coding-system
+	   mm-text-coding-system)))
+    (nnoo-parent-function 'nndraft 'nnmh-request-replace-article
+			  (list article group buffer))))
+
 (deffoo nndraft-request-create-group (group &optional server args)
   (nndraft-possibly-change-group group)
   (if (file-exists-p nndraft-current-directory)
@@ -251,8 +260,7 @@
    nnmh-close-group
    nnmh-request-list
    nnmh-request-newsgroups
-   nnmh-request-move-article
-   nnmh-request-replace-article))
+   nnmh-request-move-article))
 
 (provide 'nndraft)
 
