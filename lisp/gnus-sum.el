@@ -7503,7 +7503,9 @@ to save in."
 			      (mail-header-date gnus-current-headers) ")"))))
 		(gnus-run-hooks 'gnus-ps-print-hook)
 		(save-excursion
-		  (ps-spool-buffer-with-faces))))
+		  (if window-system
+		      (ps-spool-buffer-with-faces)
+		    (ps-spool-buffer))))
 	  (kill-buffer buffer))))
     (gnus-summary-remove-process-mark article))
   (ps-despool filename))
@@ -8438,6 +8440,7 @@ the actual number of articles marked is returned."
 (defun gnus-summary-mark-article-as-replied (article)
   "Mark ARTICLE as replied to and update the summary line.
 ARTICLE can also be a list of articles."
+  (interactive (list (gnus-summary-article-number)))
   (let ((articles (if (listp article) article (list article))))
     (dolist (article articles)
       (push article gnus-newsgroup-replied)

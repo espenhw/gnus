@@ -1,3 +1,15 @@
+2001-03-31 02:14:38  Alan Shutko  <ats@acm.org>
+
+	* gnus-sum.el: Let printing work on ttys on Emacs.
+
+2001-03-31 01:11:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-post-news): Add an empty Newsgroups header
+	when forcing news.
+
+	* gnus-sum.el (gnus-summary-mark-article-as-replied): Make into a
+	command. 
+
 2001-03-31 01:04:54  Francis Litterio  <franl-removethis@world.omitthis.std.com>
 
 	* message.el (message-set-auto-save-file-name): Don't use
