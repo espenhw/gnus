@@ -1,3 +1,11 @@
+2002-02-11  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-summary-set-agent-mark): Added call to
+	gnus-summary-goto-subject as gnus-summary-update-mark operates on
+	the current LINE.
+	(gnus-agent-summary-fetch-group): Minimized the number of times
+	that the article is updated in the buffer.
+	
 2003-02-11  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-ham-move-routine): use the process-mark instead of

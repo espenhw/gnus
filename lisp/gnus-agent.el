@@ -62,8 +62,7 @@
 (defcustom gnus-agent-expire-days 7
   "Read articles older than this will be expired.
 This can also be a list of regexp/day pairs.  The regexps will be
-matched against group names.  If nil, articles in the agent cache are
-never expired."
+matched against group names."
   :group 'gnus-agent
   :type '(choice (number :tag "days")
 		 (sexp :tag "List" nil)))
@@ -734,18 +733,19 @@ article's mark is toggled."
 		       t)
 		      (t
 		       (memq article gnus-newsgroup-downloadable)))))
-    (gnus-summary-update-mark
-    (if unmark
-	 (progn
-	  (setq gnus-newsgroup-downloadable
-		(delq article gnus-newsgroup-downloadable))
-	   (gnus-article-mark article))
-       (progn
-      (setq gnus-newsgroup-downloadable
-	       (gnus-add-to-sorted-list gnus-newsgroup-downloadable article))
-	 gnus-downloadable-mark)
-       )
-     'unread)))
+    (when (gnus-summary-goto-subject article nil t)
+      (gnus-summary-update-mark
+       (if unmark
+           (progn
+             (setq gnus-newsgroup-downloadable
+                   (delq article gnus-newsgroup-downloadable))
+             (gnus-article-mark article))
+         (progn
+           (setq gnus-newsgroup-downloadable
+                 (gnus-add-to-sorted-list gnus-newsgroup-downloadable article))
+           gnus-downloadable-mark)
+         )
+       'unread))))
 
 (defun gnus-agent-get-undownloaded-list ()
   "Construct list of articles that have not been downloaded."
@@ -853,14 +853,30 @@ Optional arg ALL, if non-nil, means to fetch all articles."
 			 (gnus-agent-fetch-articles
 			  gnus-newsgroup-name articles)))))
 	  (save-excursion
-
             (dolist (article articles)
-	      (setq gnus-newsgroup-downloadable
-		    (delq article gnus-newsgroup-downloadable))
-              (if gnus-agent-mark-unread-after-downloaded
-                  (gnus-summary-mark-article article gnus-unread-mark))
-              (when (gnus-summary-goto-subject article nil t)
-                (gnus-summary-update-download-mark article)))))
+              (let ((was-marked-downloadable
+                     (memq article gnus-newsgroup-downloadable)))
+                (when
+                    (cond
+                     (gnus-agent-mark-unread-after-downloaded
+                      (setq gnus-newsgroup-downloadable
+                            (delq article gnus-newsgroup-downloadable))
+
+                      ;; The downloadable mark is implemented as a
+                      ;; type of read mark.  Therefore, marking the
+                      ;; article as unread is sufficient to clear
+                      ;; its downloadable flag.
+                      (gnus-summary-mark-article article gnus-unread-mark)
+                      ;; I just redrew the entire article so
+                      ;; there's no need to update the download
+                      ;; mark below.
+                      nil)
+                     (was-marked-downloadable
+                      (gnus-summary-set-agent-mark article t)
+                      t)
+                     (t t))
+                  (when (gnus-summary-goto-subject article nil t)
+                    (gnus-summary-update-download-mark article)))))))
       (when (and (not state)
 		 gnus-plugged)
 	(gnus-agent-toggle-plugged nil)))
