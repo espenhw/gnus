@@ -7695,6 +7695,8 @@ If NOT-MATCHING, excluding articles that have authors that match a regexp."
 (defun gnus-summary-limit-to-recipient (recipient &optional not-matching)
   "Limit the summary buffer to articles with the given RECIPIENT.
 
+If NOT-MATCHING, exclude RECIPIENT.
+
 To and Cc headers are checked.  You need to include them in
 `nnmail-extra-headers'."
   ;; Unlike `rmail-summary-by-recipients', doesn't include From.
@@ -7703,7 +7705,7 @@ To and Cc headers are checked.  You need to include them in
 			      (if current-prefix-arg "Exclude" "Limit to")))
 	 current-prefix-arg))
   (when (not (equal "" recipient))
-    (prog1 (let* ((articles1
+    (prog1 (let* ((to
 		   (if (memq 'To nnmail-extra-headers)
 		       (gnus-summary-find-matching
 			(cons 'extra 'To) recipient 'all nil nil
@@ -7712,7 +7714,7 @@ To and Cc headers are checked.  You need to include them in
 		      1 "`To' isn't present in `nnmail-extra-headers'")
 		     (sit-for 1)
 		     nil))
-		  (articles2
+		  (cc
 		   (if (memq 'Cc nnmail-extra-headers)
 		       (gnus-summary-find-matching
 			(cons 'extra 'Cc) recipient 'all nil nil
@@ -7721,7 +7723,13 @@ To and Cc headers are checked.  You need to include them in
 		      1 "`Cc' isn't present in `nnmail-extra-headers'")
 		     (sit-for 1)
 		     nil))
-		  (articles (nconc articles1 articles2)))
+		  (articles
+		   (if not-matching
+		       ;; We need the numbers that are in both lists:
+		       (mapcar (lambda (a)
+				 (and (memq a to) a))
+			       cc)
+		     (nconc to cc))))
 	     (unless articles
 	       (error "Found no matches for \"%s\"" recipient))
 	     (gnus-summary-limit articles))

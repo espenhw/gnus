@@ -1,3 +1,8 @@
+2004-12-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-sum.el (gnus-summary-limit-to-recipient): Implement
+	not-matching option.
+
 2004-12-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-summary-limit-to-recipient): New function.
