@@ -1,3 +1,8 @@
+2003-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-source.el (mail-sources): Removed autoload to make it
+	compile under XEmacs.
+
 2003-01-12  Raymond Scholz  <ray-2003@zonix.de>
 
 	* gnus-msg.el (gnus-confirm-mail-reply-to-news):  May be a
