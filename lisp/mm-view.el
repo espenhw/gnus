@@ -47,7 +47,7 @@
 	   mm-links-remove-leading-blank
 	   "links" "-dump" file)
     (lynx  mm-inline-render-with-stdin nil
-	   "lynx" "-dump" "-force_html" "-stdin")
+	   "lynx" "-dump" "-force_html" "-stdin" "-nolist")
     (html2text  mm-inline-render-with-function html2text))
   "The attributes of renderer types for text/html.")
 
@@ -60,7 +60,7 @@
 	   mm-links-remove-leading-blank
 	   "links" "-dump" file)
     (lynx  mm-inline-wash-with-stdin nil
-	   "lynx" "-dump" "-force_html" "-stdin")
+	   "lynx" "-dump" "-force_html" "-stdin" "-nolist")
     (html2text  html2text))
   "The attributes of washer types for text/html.")
 
