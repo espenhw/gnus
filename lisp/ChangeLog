@@ -1,3 +1,7 @@
+2001-05-03 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-use-followup-to): Set default value to t.
+
 2001-05-03  Florian Weimer  <fw@deneb.enyo.de>
 
 	* message.el (message-dont-reply-to-names): Fix documentation.
