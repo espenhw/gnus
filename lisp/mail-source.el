@@ -99,7 +99,9 @@ This variable is a list of mail source specifiers."
        (:user (or (user-login-name) (getenv "LOGNAME") (getenv "USER")))
        (:password)
        (:mailbox "INBOX")
-       (:predicate "UNSEEN UNDELETED")))
+       (:predicate "UNSEEN UNDELETED")
+       (:fetchflag "\Deleted")
+       (:dontexpunge)))
     "Mapping from keywords to default values.
 All keywords that can be used must be listed here."))
 
@@ -442,11 +444,14 @@ If ARGS, PROMPT is used as an argument to `format'."
   (autoload 'imap-open "imap")
   (autoload 'imap-authenticate "imap")
   (autoload 'imap-mailbox-select "imap")
+  (autoload 'imap-mailbox-unselect "imap")
+  (autoload 'imap-mailbox-close "imap")
   (autoload 'imap-search "imap")
   (autoload 'imap-fetch "imap")
-  (autoload 'imap-mailbox-unselect "imap")
   (autoload 'imap-close "imap")
   (autoload 'imap-error-text "imap")
+  (autoload 'imap-message-flags-add "imap")
+  (autoload 'imap-list-to-message-set "imap")
   (autoload 'nnheader-ms-strip-cr "nnheader"))
 
 (defun mail-source-fetch-imap (source callback)
@@ -454,7 +459,8 @@ If ARGS, PROMPT is used as an argument to `format'."
   (mail-source-bind (imap source)
     (let ((found 0)
 	  (buf (get-buffer-create (generate-new-buffer-name " *imap source*")))
-	  (mail-source-string (format "imap:%s:%s" server mailbox)))
+	  (mail-source-string (format "imap:%s:%s" server mailbox))
+	  remove)
       (if (and (imap-open server port stream authentication buf)
 	       (imap-authenticate user password buf)
 	       (imap-mailbox-select mailbox nil buf))
@@ -462,7 +468,8 @@ If ARGS, PROMPT is used as an argument to `format'."
 	    (with-temp-file mail-source-crash-box
 	      ;; if predicate is nil, use all uids
 	      (dolist (uid (imap-search (or predicate "1:*") buf))
-		(when (setq str (imap-fetch uid "RFC822" 'RFC822 nil buf))
+		(when (setq str (imap-fetch uid "RFC822.PEEK" 'RFC822 nil buf))
+		  (push uid remove)
 		  (insert "From imap " (current-time-string) "\n")
 		  (save-excursion
 		    (insert str "\n\n"))
@@ -471,7 +478,12 @@ If ARGS, PROMPT is used as an argument to `format'."
 		  (goto-char (point-max))))
 	      (nnheader-ms-strip-cr))
 	    (incf found (mail-source-callback callback server))
-	    (imap-mailbox-unselect buf)
+	    (when (and remove fetchflag)
+	      (imap-message-flags-add
+	       (imap-list-to-message-set remove) fetchflag nil buf))
+	    (if dontexpunge
+		(imap-mailbox-unselect buf)
+	      (imap-mailbox-close buf))
 	    (imap-close buf))
 	(imap-close buf)
 	(error (imap-error-text buf)))
