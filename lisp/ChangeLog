@@ -1,3 +1,11 @@
+2000-11-02 13:27:56  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-uu.el (gnus-uu-post-news): Comment out the redundancy.  
+	* gnus-art.el (gnus-article-edit-done): 
+	* gnus-sum.el (gnus-summary-edit-article-done): Move line 
+	counting code here.
+	* gnus-msg.el (gnus-setup-message): Remove a hack.
+
 2000-11-02 09:33:01  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-newsgroup-variables): New variable.

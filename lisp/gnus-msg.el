@@ -246,12 +246,9 @@ the Gcc: header for archiving purposes."
 	 (set (make-local-variable 'gnus-newsgroup-name) ,group)
 	 (gnus-run-hooks 'gnus-message-setup-hook)
 	 (if (eq major-mode 'message-mode)
-	     ;; Make mml-buffer-list local.
-	     ;; Restore global mml-buffer-list value as mbl.
-	     ;; What a hack! -- Shenghuo
-	     (let ((mml-buffer-list mml-buffer-list))
-	       (setq mml-buffer-list mbl)
-	       (make-local-variable 'mml-buffer-list)
+	     (let ((mbl1 mml-buffer-list))
+	       (setq mml-buffer-list mbl)  ;; Global value
+	       (set (make-local-variable 'mml-buffer-list) mbl1);; Local value
 	       (add-hook 'kill-buffer-hook 'mml-destroy-buffers t t))
 	   (mml-destroy-buffers)
 	   (setq mml-buffer-list mbl)))

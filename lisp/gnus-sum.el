@@ -7929,10 +7929,31 @@ groups."
 						 no-highlight)
   "Make edits to the current article permanent."
   (interactive)
+  (save-excursion
+    ;; The buffer restriction contains the entire article if it exists.
+    (when (article-goto-body)
+      (let ((lines (count-lines (point) (point-max)))
+	    (length (- (point-max) (point)))
+	    (case-fold-search t)
+	    (body (copy-marker (point))))
+	(goto-char (point-min))
+	(when (re-search-forward "^content-length:[ \t]\\([0-9]+\\)" body t)
+	  (delete-region (match-beginning 1) (match-end 1))
+	  (insert (number-to-string length)))
+	(goto-char (point-min))
+	(when (re-search-forward
+	       "^x-content-length:[ \t]\\([0-9]+\\)" body t)
+	  (delete-region (match-beginning 1) (match-end 1))
+	  (insert (number-to-string length)))
+	(goto-char (point-min))
+	(when (re-search-forward "^lines:[ \t]\\([0-9]+\\)" body t)
+	  (delete-region (match-beginning 1) (match-end 1))
+	  (insert (number-to-string lines))))))
   ;; Replace the article.
   (let ((buf (current-buffer)))
     (with-temp-buffer
       (insert-buffer-substring buf)
+      
       (if (and (not read-only)
 	       (not (gnus-request-replace-article
 		     (cdr gnus-article-current) (car gnus-article-current)

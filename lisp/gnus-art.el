@@ -4116,27 +4116,6 @@ groups."
 (defun gnus-article-edit-done (&optional arg)
   "Update the article edits and exit."
   (interactive "P")
-  (save-excursion
-    (save-restriction
-      (widen)
-      (when (article-goto-body)
-	(let ((lines (count-lines (point) (point-max)))
-	      (length (- (point-max) (point)))
-	      (case-fold-search t)
-	      (body (copy-marker (point))))
-	  (goto-char (point-min))
-	  (when (re-search-forward "^content-length:[ \t]\\([0-9]+\\)" body t)
-	    (delete-region (match-beginning 1) (match-end 1))
-	    (insert (number-to-string length)))
-	  (goto-char (point-min))
-	  (when (re-search-forward
-		 "^x-content-length:[ \t]\\([0-9]+\\)" body t)
-	    (delete-region (match-beginning 1) (match-end 1))
-	    (insert (number-to-string length)))
-	  (goto-char (point-min))
-	  (when (re-search-forward "^lines:[ \t]\\([0-9]+\\)" body t)
-	    (delete-region (match-beginning 1) (match-end 1))
-	    (insert (number-to-string lines)))))))
   (let ((func gnus-article-edit-done-function)
 	(buf (current-buffer))
 	(start (window-start)))
