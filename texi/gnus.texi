@@ -19775,16 +19775,8 @@ Crossposted articles should "inherit" the % or @ mark from the other
 groups it has been crossposted to, or something.  (Agent.)
 
 @item
-`S D r' should allow expansion of aliases.
-
-@item
 If point is on a group that appears multiple times in topics, and
 you press `l', point will move to the first instance of the group.
-
-@item
-Fetch by Message-ID from dejanews.
-
-<URL:http://search.dejanews.com/msgid.xp?MID=%3C62h9l9$hm4@@basement.replay.com%3E&fmt=raw>
 
 @item
 A spec for the group line format to display the number of

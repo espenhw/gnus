@@ -2,6 +2,7 @@
 
 	* nnweb.el (nnweb-dejanews-create-mapping): Work with new deja. 
 	(nnweb-dejanews-wash-article): Removed.
+	(nnweb-type-definition): Fetch by id.
 
 	* gnus-msg.el (gnus-configure-posting-styles): Don't insert unless 
 	we mean it.

@@ -60,6 +60,7 @@ and `altavista'.")
 (defvar nnweb-type-definition
   '((dejanews
      (article . ignore)
+     (id . "http://search.dejanews.com/msgid.xp?MID=%s&fmt=text")
      (map . nnweb-dejanews-create-mapping)
      (search . nnweb-dejanews-search)
      (address . "http://www.deja.com/=dnc/qs.xp")
