@@ -1,3 +1,7 @@
+2001-01-15 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Using GPG): Doc fix.
+
 2001-01-15  Simon Josefsson  <simon@josefsson.org>
 
 	* message.texi (Security): Requires OpenSSL 0.9.6+.

@@ -10066,16 +10066,17 @@ typically enter that group and send all the articles off.
 @section Using GPG
 @cindex using gpg
 
-Gnus has an ALPHA support to GPG that's provided by @file{gpg.el} and
-@file{mml2015.el}. When viewing signed or encrypted messages, Gnus automatically
-asks if you want to verify or decrypt them. 
+Gnus has an ALPHA support to GPG that's provided by @file{gpg.el}. See
+@code{mm-verify-option} and @code{mm-decrypt-option} to enable Gnus to
+verify or decrypt messages accordingly.
 
 To use this correctly with GPG, you'll need the following lisp code in your
 @file{~/.emacs} or @file{~/.gnus}:
 
 @lisp
+(require 'gpg)
 (setq mml2015-use 'gpg)
-(setq gpg-temp-directory "~/.gnupg/tmp")
+(setq gpg-temp-directory (expand-file-name "~/.gnupg/tmp"))
 @end lisp
 
 The @code{gpg-temp-directory} need to point to a directory with permissions set
@@ -10101,9 +10102,8 @@ To sign or encrypt your message you may choose to use the MML Security menu or
 message using S/MIME. There's also @kbd{M-m c p} to encrypt your message with
 PGP/MIME and @kbd{M-m c s} to encrypt using S/MIME.
 
-Gnus will ask for your passphrase three times and then it will send your
-message, if you've typed it correctly.
-
+Gnus will ask for your passphrase and then it will send your message, if
+you've typed it correctly.
 
 @node Select Methods
 @chapter Select Methods
