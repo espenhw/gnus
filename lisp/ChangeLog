@@ -1,3 +1,7 @@
+2003-01-01  Raymond Scholz  <ray-2002@zonix.de>
+
+	* message.el (message-signature-insert-empty-line): New variable. 
+
 2002-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el: Renamed functions and variables: "xpost" ->

@@ -800,6 +800,12 @@ If nil, don't insert a signature."
   :type '(choice file (const :tags "None" nil))
   :group 'message-insertion)
 
+;;;###autoload
+(defcustom message-signature-insert-empty-line t
+  "*If non-nil, insert an empty line before the signature separator."
+  :type 'boolean
+  :group 'message-insertion)
+
 (defcustom message-distribution-function nil
   "*Function called to return a Distribution header."
   :group 'message-news
@@ -2677,7 +2683,9 @@ Prefix arg means justify as well."
       ;; Insert the signature.
       (unless (bolp)
 	(insert "\n"))
-      (insert "\n-- \n")
+      (when message-signature-insert-empty-line
+	(insert "\n"))
+      (insert "-- \n")
       (if (eq signature t)
 	  (insert-file-contents message-signature-file)
 	(insert signature))
