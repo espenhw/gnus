@@ -106,6 +106,9 @@ visible, use `(setq message-hidden-headers nil)'.
 ** `gnus-decay-scores' can be a regexp matching score files.  This
 allows to decay only adaptive score files.  *Note Score Decays::.
 
+** S/MIME now feature LDAP user certificate searches.  You need to
+configure the server in `smime-ldap-host-list'.
+
 
 * For older news, see Gnus info node "New Features".
 
