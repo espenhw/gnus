@@ -187,7 +187,6 @@ Should be called narrowed to the head of the message."
 			(eq (car elem) t))
 		(setq alist nil
 		      method (cdr elem))))
-	    (goto-char (point-min))
 	    (re-search-forward "^[^:]+: *" nil t)
 	    (cond
 	     ((eq method 'address-mime)
@@ -497,8 +496,7 @@ By default, the string is treated as containing addresses (see
 
 (defun rfc2047-encode (b e)
   "Encode the word(s) in the region B to E.
-By default, the region is treated as containing addresses (see
-`rfc2047-encoding-type')."
+Point moves to the end of the region."
   (let ((mime-charset (or (mm-find-mime-charset-region b e) (list 'us-ascii)))
 	cs encoding space eword)
     (cond ((> (length mime-charset) 1)
@@ -522,6 +520,9 @@ By default, the region is treated as containing addresses (see
 			 'Q)))
 	     (widen)
 	     (goto-char b)
+	     (setq b (point-marker)
+		   e (set-marker (make-marker) e))
+	     (rfc2047-fold-region (point-at-bol) b)
 	     (unless (= 0 (skip-chars-backward " \t"))
 	       (setq space (buffer-substring-no-properties (point) b)))
 	     (setq eword (rfc2047-encode-1
@@ -541,6 +542,8 @@ By default, the region is treated as containing addresses (see
 			      (goto-char b))
 			    e)
 	     (insert eword)
+	     (set-marker b nil)
+	     (set-marker e nil)
 	     (unless (or (eolp)
 			 (looking-at "[ \t\n)]"))
 	       (insert " "))))

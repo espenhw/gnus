@@ -1,3 +1,9 @@
+2004-06-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-encode-message-header): Remove useless
+	goto-char.
+	(rfc2047-encode): Fold the line before encoding.
+
 2004-06-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* rfc2047.el (rfc2047-encode-message-header): Disabled header
