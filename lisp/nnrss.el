@@ -492,7 +492,9 @@ Export subscriptions to a buffer in OPML Format."
     (insert (concat
 	     "  </body>\n"
            "</opml>\n")))
-  (pop-to-buffer "*OPML Export*"))
+  (pop-to-buffer "*OPML Export*")
+  (when (fboundp 'sgml-mode)
+    (sgml-mode)))
 
 (defun nnrss-generate-download-script ()
   "Generate a download script in the current buffer.

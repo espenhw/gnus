@@ -1,3 +1,7 @@
+2004-02-27  Jesper Harder  <harder@ifa.au.dk>
+
+	* nnrss.el (nnrss-opml-export): Turn on sgml-mode.
+
 2004-02-27  Kevin Ryde  <user42@zip.com.au>  (tiny change)
 
 	* gnus.el (gnus-group, gnus-summary, gnus-summary-sort):
