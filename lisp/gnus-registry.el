@@ -45,6 +45,13 @@
 ;; (maphash (lambda (key value) (message "key: %s value: %s" key value)) gnus-registry-hashtb)
 ;; (clrhash gnus-registry-hashtb)
 
+;; Function(s) missing in Emacs 20
+(when (memq nil (mapcar 'fboundp '(puthash)))
+  (require 'cl)
+  (unless (fboundp 'puthash)
+    ;; alias puthash is missing from Emacs 20 cl-extra.el
+    (defalias 'puthash 'cl-puthash)))
+
 (defun gnus-register-action (action data-header from &optional to method)
   (let* ((id (mail-header-id data-header))
 	(hash-entry (gethash id gnus-registry-hashtb)))
