@@ -54,6 +54,12 @@ The group names are matched, they don't have to be fully qualified."
   :group 'gnus-registry
   :type 'boolean)
 
+(defcustom gnus-registry-clean-empty t
+  "Whether the empty registry entries should be deleted.
+Registry entries are considered empty when they have no groups."
+  :group 'gnus-registry
+  :type 'boolean)
+
 (defcustom gnus-registry-use-long-group-names nil
   "Whether the registry should use long group names (BUGGY)."
   :group 'gnus-registry
@@ -155,7 +161,7 @@ The group names are matched, they don't have to be fully qualified."
 ;; Idea from Dan Christensen <jdc@chow.mat.jhu.edu>
 ;; Save the gnus-registry file with extra line breaks.
 (defun gnus-registry-cache-whitespace (filename)
-  (gnus-message 4 "Adding whitespace to %s" filename)
+  (gnus-message 5 "Adding whitespace to %s" filename)
   (save-excursion
     (goto-char (point-min))
     (while (re-search-forward "^(\\|(\\\"" nil t)
@@ -165,12 +171,27 @@ The group names are matched, they don't have to be fully qualified."
       (replace-match "" t t))))
 
 (defun gnus-registry-save (&optional force)
-;; TODO: delete entries with 0 groups
   (when (or gnus-registry-dirty force)
+    ;; remove empty entries
+    (when gnus-registry-clean-empty 
+      (gnus-registry-clean-empty-function))
+    ;; now trim the registry appropriately
     (setq gnus-registry-alist (gnus-registry-trim 
 			       (hashtable-to-alist gnus-registry-hashtb)))
+    ;; really save
     (gnus-registry-cache-save)
     (setq gnus-registry-dirty nil)))
+
+(defun gnus-registry-clean-empty-function ()
+  "Remove all empty entries from the registry.  Returns count thereof."
+  (let ((count 0))
+    (maphash
+     (lambda (key value)
+       (unless (gnus-registry-fetch-group key)
+	 (incf count)
+	 (remhash key gnus-registry-hashtb)))
+     gnus-registry-hashtb)
+    count))
 
 (defun gnus-registry-read ()
   (gnus-registry-cache-read)

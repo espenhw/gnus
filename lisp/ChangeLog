@@ -1,5 +1,12 @@
 2003-07-24  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* gnus-registry.el (gnus-registry-cache-whitespace): make "adding
+	whitespace" message level 5 instead of 4
+	(gnus-registry-clean-empty-function): new function to remove empty
+	registry entries
+	(gnus-registry-clean-empty): new variable to enable cleaning the
+	registry when saving it by calling gnus-registry-clean-empty-function
+
 	* spam.el (spam-summary-prepare-exit): use spam-process-ham-in-spam-groups
 	(spam-process-ham-in-spam-groups): new variable
 
