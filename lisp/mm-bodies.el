@@ -112,16 +112,32 @@ If no encoding was done, nil is returned."
 	      (setq start nil))
 	    charset)))))))
 
-(eval-when-compile (defvar message-posting-charset))
+(defun mm-long-lines-p (length)
+  "Say whether any of the lines in the buffer is longer than LINES."
+  (save-excursion
+    (goto-char (point-min))
+    (end-of-line)
+    (while (and (not (eobp))
+		(not (> (current-column) length)))
+      (forward-line 1)
+      (end-of-line))
+    (and (> (current-column) length)
+	 (current-column))))
+
+(defvar message-posting-charset)
 
 (defun mm-body-encoding (charset &optional encoding)
   "Do Content-Transfer-Encoding and return the encoding of the current buffer."
-  (let ((bits (mm-body-7-or-8)))
+  (let ((bits (mm-body-7-or-8))
+	(longp (mm-long-lines-p 1000)))
     (require 'message)
     (cond
-     ((and (not mm-use-ultra-safe-encoding) (eq bits '7bit))
+     ((and (not mm-use-ultra-safe-encoding)
+	   (not longp)
+	   (eq bits '7bit))
       bits)
      ((and (not mm-use-ultra-safe-encoding)
+	   (not longp)
 	   (or (eq t (cdr message-posting-charset))
 	       (memq charset (cdr message-posting-charset))
 	       (eq charset mail-parse-charset)))

@@ -5358,11 +5358,10 @@ For example:
     (let ((gnus-mime-security-button-line-format 
 	   gnus-mime-security-button-end-line-format))
       (gnus-insert-mime-security-button handle))
-    (mm-set-handle-multipart-parameter handle 'gnus-region 
-				       (cons (set-marker (make-marker)
-							 (point-min))
-					     (set-marker (make-marker)
-							 (point-max))))))
+    (mm-set-handle-multipart-parameter
+     handle 'gnus-region 
+     (cons (set-marker (make-marker) (point-min))
+	   (set-marker (make-marker) (point-max))))))
 
 (gnus-ems-redefine)
 

@@ -299,7 +299,8 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	      (with-temp-buffer
 		(setq charset (mm-charset-to-coding-system 
 			       (cdr (assq 'charset cont))))
-		(if (eq charset 'ascii) (setq charset nil))
+		(when (eq charset 'ascii)
+		  (setq charset nil))
 		(cond
 		 ((cdr (assq 'buffer cont))
 		  (insert-buffer-substring (cdr (assq 'buffer cont))))
@@ -316,7 +317,8 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 		    ;; Remove quotes from quoted tags.
 		    (goto-char (point-min))
 		    (while (re-search-forward
-			    "<#!+/?\\(part\\|multipart\\|external\\|mml\\)" nil t)
+			    "<#!+/?\\(part\\|multipart\\|external\\|mml\\)"
+			    nil t)
 		      (delete-region (+ (match-beginning 0) 2)
 				     (+ (match-beginning 0) 3))))))
 		(cond 

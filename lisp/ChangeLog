@@ -1,3 +1,10 @@
+2000-12-29 13:25:10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-bodies.el (mm-long-lines-p): New function.
+	(mm-body-encoding): Use it.
+	(mm-body-encoding): Encode articles with lines longer than 1000
+	characters. 
+
 2000-12-29 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-enable-multibyte): Use
