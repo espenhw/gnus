@@ -1652,6 +1652,7 @@ increase the score of each group you read."
     "v" gnus-article-view-part
     "o" gnus-article-save-part
     "c" gnus-article-copy-part
+    "C" gnus-article-view-part-as-charset
     "e" gnus-article-externalize-part
     "i" gnus-article-inline-part
     "|" gnus-article-pipe-part))

@@ -664,6 +664,7 @@ used."
     ("view the part" . gnus-mime-view-part)
     ("pipe to command" . gnus-mime-pipe-part)
     ("toggle display" . gnus-article-press-button)
+    ("toggle display" . gnus-article-view-part-as-charset)
     ("view as type" . gnus-mime-view-part-as-type)
     ("internalize type" . gnus-mime-internalize-part)
     ("externalize type" . gnus-mime-externalize-part))
@@ -2923,6 +2924,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   '((gnus-article-press-button "\r" "Toggle Display")
     (gnus-mime-view-part "v" "View Interactively...")
     (gnus-mime-view-part-as-type "t" "View As Type...")
+    (gnus-mime-view-part-as-charset "C" "View As charset...")
     (gnus-mime-save-part "o" "Save...")
     (gnus-mime-save-part-and-strip "\C-o" "Save and Strip")
     (gnus-mime-copy-part "c" "View As Text, In Other Buffer")
@@ -3127,7 +3129,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	 contents charset
 	 (b (point))
 	 buffer-read-only)
-    (if (mm-handle-undisplayer handle)
+    (if (and (not arg) (mm-handle-undisplayer handle))
 	(mm-remove-part handle)
       (setq contents (mm-get-part handle))
       (cond
@@ -3136,6 +3138,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 			   (mm-handle-type handle) 'charset)
 			  gnus-newsgroup-charset)))
        ((numberp arg)
+	(if (mm-handle-undisplayer handle)
+	    (mm-remove-part handle))
 	(setq charset
 	      (or (cdr (assq arg 
 			     gnus-summary-show-article-charset-alist))
@@ -3149,6 +3153,23 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 			    (mm-decode-coding-string contents charset)
 			  contents))
       (goto-char b))))
+
+(defun gnus-mime-view-part-as-charset (&optional handle arg)
+  "Insert the MIME part under point into the current buffer."
+  (interactive (list nil current-prefix-arg))
+  (gnus-article-check-buffer)
+  (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
+	 contents charset
+	 (b (point))
+	 buffer-read-only)
+    (if (mm-handle-undisplayer handle)
+	(mm-remove-part handle))
+    (let ((gnus-newsgroup-charset
+	   (or (cdr (assq arg 
+			  gnus-summary-show-article-charset-alist))
+	       (read-coding-system "Charset: ")))
+	  (gnus-newsgroup-ignored-charsets 'gnus-all))
+      (gnus-article-press-button))))
 
 (defun gnus-mime-externalize-part (&optional handle)
   "View the MIME part under point with an external viewer."
@@ -3219,6 +3240,11 @@ In no internal viewer is available, use an external viewer."
   "Copy MIME part N, which is the numerical prefix."
   (interactive "p")
   (gnus-article-part-wrapper n 'gnus-mime-copy-part))
+
+(defun gnus-article-view-part-as-charset (n)
+  "Copy MIME part N, which is the numerical prefix."
+  (interactive "p")
+  (gnus-article-part-wrapper n 'gnus-mime-view-part-as-charset))
 
 (defun gnus-article-externalize-part (n)
   "View MIME part N externally, which is the numerical prefix."

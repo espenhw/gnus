@@ -1,3 +1,8 @@
+2000-11-06 13:01:27  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-view-part-as-charset): New function.
+	(gnus-article-view-part-as-charset): New function.
+
 2000-11-05 22:34:07  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-verify-option): Default value.
