@@ -39,8 +39,7 @@
 
 ;;; Installation: (TODO: merge into message.el)
 
-;; .. is easy as in most cases. Add this file to where your
-;; Emacs can find it and add
+;; .. is easy as in most cases. Add
 ;; (autoload 'message-mark-inserted-region "message-utils" nil t)
 ;; (autoload 'message-mark-insert-file "message-utils" nil t)
 ;; (autoload 'message-strip-subject-was "message-utils" nil t)
@@ -67,11 +66,12 @@
 ;;  (easy-menu-add-item nil '("Field")  
 ;;   ["Crosspost / Followup" message-xpost-fup2 t] "----")
 ;;  (easy-menu-add-item nil '("Field")
-;;   ["New Subject" message-mark-inserted-region t] "----")
+;;   ["New Subject" message-change-subject t] "----")
 ;;  (easy-menu-add-item nil '("Field")
 ;;   ["Reduce To: to Cc:" message-reduce-to-to-cc t] "----")
 ;;  (easy-menu-add-item nil '("Field") 
 ;;   [ "X-No-Archive:" message-add-archive-header t ]))
+;; (add-hook 'message-mode-hook 'message-utils-setup)
 
 ;;; Code:
 
