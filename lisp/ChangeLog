@@ -1,3 +1,8 @@
+2000-09-04  Dave Love  <fx@gnu.org>
+
+	* mm-decode.el (mime-display) <defgroup>: Add `multimedia' group.
+	(mm-get-image): Avoid the losing `make-glyph' from W3.
+
 2000-09-03  Simon Josefsson  <simon@josefsson.org>
 
 	* gnus-sum.el (gnus-summary-delete-article): Check server.
