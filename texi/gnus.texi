@@ -10668,6 +10668,10 @@ name.
 The password to give to the webmail server.  If not specified, the user is
 prompted.
 
+@item :dontexpunge
+If non-nil, only fetch unread articles and don't move them to trash
+folder after finishing the fetch.
+
 @end table
 
 An example webmail source:
@@ -10677,6 +10681,18 @@ An example webmail source:
 @end lisp
 @end table
 
+@table @dfn
+@item Common Keywords
+Common keywords can be used in any type of mail source.
+
+Keywords:
+
+@table @code
+@item :plugged
+If non-nil, fetch the mail even when Gnus is unplugged.
+
+@end table
+@end table
 
 @node Mail Source Customization
 @subsubsection Mail Source Customization
