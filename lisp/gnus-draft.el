@@ -242,6 +242,7 @@
 		 (ignore-errors (setq ga (car (read-from-string ga)))))
 	(setq gnus-newsgroup-name
 	      (if (equal (car ga) "") nil (car ga)))
+	(gnus-configure-posting-styles)
 	(setq gnus-message-group-art (cons gnus-newsgroup-name (cadr ga)))
 	(setq message-post-method
 	      `(lambda (arg)

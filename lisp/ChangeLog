@@ -1,3 +1,7 @@
+2003-02-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-draft.el (defun): Remove debug.
+
 2003-02-22  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-refer-article): Skip method if we
