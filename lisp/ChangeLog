@@ -1,3 +1,8 @@
+2004-02-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* spam-report.el (spam-report-plug-agent): Quote
+	spam-report-url-to-file and spam-report-url-ping-plain.
+
 2004-02-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-button-alist, gnus-header-button-alist): Allow

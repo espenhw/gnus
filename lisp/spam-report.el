@@ -221,13 +221,13 @@ Process queued spam reports."
   ;; Process the queue, unless the user only wanted to report to a file
   ;; anyway.
   (unless (equal spam-report-url-ping-temp-agent-function
-		 spam-report-url-to-file)
+		 'spam-report-url-to-file)
     (spam-report-process-queue))
   ;; Set the reporting function, if we have memorized something otherwise,
   ;; stick with plain URL reporting.
   (setq spam-report-url-ping-function
 	(or spam-report-url-ping-temp-agent-function
-	    spam-report-url-ping-plain)))
+	    'spam-report-url-ping-plain)))
 
 (defun spam-report-unplug-agent ()
   "Restore spam report settings for unplugged state."
