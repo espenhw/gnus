@@ -245,7 +245,8 @@ If the charset is `composition', return the actual one."
       (if (eq charset 'composition)
 	  (let ((p (or pos (point))))
 	    (cadr (find-charset-region p (1+ p))))
-	(if (and charset (not (eq charset 'ascii)))
+	(if (and charset (not (memq charset '(ascii eight-bit-control
+						    eight-bit-graphic))))
 	    charset
 	  (or
 	   mail-parse-mule-charset ;; cached mule-charset
