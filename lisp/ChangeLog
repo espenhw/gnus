@@ -1,3 +1,9 @@
+2000-01-04  Simon Josefsson  <jas@pdc.kth.se>
+
+	* imap.el (imap-parse-literal): 
+	(imap-parse-flag-list): Don't care about props.
+	(imap-parse-string): Handle quoted characters.
+
 2000-01-02 08:37:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-next-subject): Don't show the thread

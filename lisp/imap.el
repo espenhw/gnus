@@ -1436,7 +1436,7 @@ Return nil if no complete line has arrived."
       (if (< (point-max) (+ pos len))
 	  nil
 	(goto-char (+ pos len))
-	(buffer-substring-no-properties pos (+ pos len))))))
+	(buffer-substring pos (+ pos len))))))
 
 ;;   string          = quoted / literal
 ;;
@@ -1450,13 +1450,20 @@ Return nil if no complete line has arrived."
 ;;   TEXT-CHAR       = <any CHAR except CR and LF>
 
 (defsubst imap-parse-string ()
-  (let (strstart strend)
-    (cond ((and (eq (char-after) ?\")
-		(setq strstart (point))
-		(setq strend (search-forward "\"" nil t 2)))
-	   (buffer-substring-no-properties (1+ strstart) (1- strend)))
-	  ((eq (char-after) ?{)
-	   (imap-parse-literal)))))
+  (cond ((eq (char-after) ?\")
+	 (forward-char 1)
+	 (let ((p (point)) (name ""))
+	   (skip-chars-forward "^\"\\\\")
+	   (setq name (buffer-substring p (point)))
+	   (while (eq (char-after) ?\\)
+	     (setq p (1+ (point)))
+	     (forward-char 2)
+	     (skip-chars-forward "^\"\\\\")
+	     (setq name (concat name (buffer-substring p (point)))))
+	   (forward-char 1)
+	   name))
+	((eq (char-after) ?{)
+	 (imap-parse-literal))))
 
 ;;   nil             = "NIL"
 
@@ -1967,8 +1974,7 @@ Return nil if no complete line has arrived."
 ;;                       ; revisions of this specification.
 
 (defun imap-parse-flag-list ()
-  (let ((str (buffer-substring-no-properties
-	      (point) (search-forward ")" nil t)))
+  (let ((str (buffer-substring (point) (search-forward ")" nil t)))
 	pos)
     (while (setq pos (string-match "\\\\" str (and pos (+ 2 pos))))
       (setq str (replace-match "\\\\" nil t str)))
