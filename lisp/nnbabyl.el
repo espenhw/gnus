@@ -563,11 +563,11 @@
 	  (when (and (re-search-backward
 		      (format "^X-Gnus-Newsgroup: %s:\\([0-9]+\\) "
 			      (caar alist)) nil t)
-		     (>= (setq number
-			       (string-to-number 
-				(buffer-substring
-				 (match-beginning 1) (match-end 1))))
-			 (cdadar alist)))
+		     (> (setq number
+			      (string-to-number 
+			       (buffer-substring
+				(match-beginning 1) (match-end 1))))
+			(cdadar alist)))
 	    (setcdr (cadar alist) (1+ number)))
 	  (setq alist (cdr alist)))
 	

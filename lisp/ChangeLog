@@ -1,4 +1,11 @@
+Thu May 23 23:32:43 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* nnbabyl.el (nnbabyl-read-mbox): Would bogously increase the
+ 	number in groups.
+
 Thu May 23 21:06:47 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.92 is released.
 
 	* gnus-soup.el (gnus-soup-add-article): Would remove Xrefs from
 	packet. 
