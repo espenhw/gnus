@@ -1,3 +1,8 @@
+2001-08-09 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nndraft.el (nndraft-request-group): Use
+	nndraft-auto-save-file-name.
+
 2001-08-09  Simon Josefsson  <jas@extundo.com>
 
 	* mm-view.el (mm-view-pkcs7-decrypt): Operate in current buffer.

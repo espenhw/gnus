@@ -181,8 +181,7 @@
       (dolist (n dir)
 	(unless (file-exists-p
 		 (setq file (expand-file-name (int-to-string n) pathname)))
-	  (rename-file (let ((buffer-file-name file))
-			 (make-auto-save-file-name)) file)))))
+	  (rename-file (nndraft-auto-save-file-name file) file)))))
   (nnoo-parent-function 'nndraft
 			'nnmh-request-group
 			(list group server dont-check)))
