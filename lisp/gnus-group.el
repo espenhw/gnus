@@ -1168,36 +1168,36 @@ if it is a string, only list groups matching REGEXP."
 	      unread (car (gnus-gethash group gnus-newsrc-hashtb)))
 	(if not-in-list
 	    (setq not-in-list (delete group not-in-list)))
-	(and
-	 (gnus-group-prepare-logic
-	  group
-	  (and unread		; This group might be unchecked
-	       (or (not (stringp regexp))
-		   (string-match regexp group))
-	       (<= (setq clevel (gnus-info-level info)) level)
-	       (>= clevel lowest)
-	       (cond
-		((functionp predicate)
-		 (funcall predicate info))
-		(predicate t)		; We list all groups?
-		(t
-		 (or
-		  (if (eq unread t)	; Unactivated?
-		      gnus-group-list-inactive-groups
+	(when (gnus-group-prepare-logic
+	       group
+	       (and unread		; This group might be unchecked
+		    (or (not (stringp regexp))
+			(string-match regexp group))
+		    (<= (setq clevel (gnus-info-level info)) level)
+		    (>= clevel lowest)
+		    (cond
+		     ((functionp predicate)
+		      (funcall predicate info))
+		     (predicate t)	; We list all groups?
+		     (t
+		      (or
+		       (if (eq unread t) ; Unactivated?
+			   gnus-group-list-inactive-groups
 					; We list unactivated
-		    (> unread 0))
+			 (> unread 0))
 					; We list groups with unread articles
-		  (and gnus-list-groups-with-ticked-articles
-		       (cdr (assq 'tick (gnus-info-marks info))))
+		       (and gnus-list-groups-with-ticked-articles
+			    (cdr (assq 'tick (gnus-info-marks info))))
 					; And groups with tickeds
-		  ;; Check for permanent visibility.
-		  (and gnus-permanently-visible-groups
-		       (string-match gnus-permanently-visible-groups group))
-		  (memq 'visible params)
-		  (cdr (assq 'visible params)))))))
-	 (gnus-group-insert-group-line
-	  group (gnus-info-level info)
-	  (gnus-info-marks info) unread (gnus-info-method info)))))
+		       ;; Check for permanent visibility.
+		       (and gnus-permanently-visible-groups
+			    (string-match gnus-permanently-visible-groups
+					  group))
+		       (memq 'visible params)
+		       (cdr (assq 'visible params)))))))
+	  (gnus-group-insert-group-line
+	   group (gnus-info-level info)
+	   (gnus-info-marks info) unread (gnus-info-method info)))))
 
     ;; List dead groups.
     (if (or gnus-group-listed-groups
