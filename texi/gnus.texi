@@ -13332,7 +13332,9 @@ expression should @emph{always} be @samp{*} so that it matches any mails
 that haven't been matched by any of the other regexps.  (These rules are
 processed from the beginning of the alist toward the end.  The first
 rule to make a match will ``win'', unless you have crossposting enabled.
-In that case, all matching rules will ``win''.)
+In that case, all matching rules will ``win''.)  When new groups are
+created by splitting mail, you may want to run
+@code{gnus-group-find-new-groups} to see the new groups.
 
 If you like to tinker with this yourself, you can set this variable to a
 function of your choice.  This function will be called without any

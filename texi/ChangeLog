@@ -1,3 +1,7 @@
+2004-05-28  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Splitting Mail): Mention gnus-group-find-new-groups.
+
 2004-05-19  Andre Srinivasan  <andre@e2open.com>
 
 	* gnus.texi (Group Parameters): Added more on hooks.  (Small
@@ -7,6 +11,7 @@
 
 	* gnus.texi (Oort Gnus): Mention new behavior of `F' and `R' when
 	the region is active.
+	(Article Display): Add `gnus-picon-style'.
 
 2004-05-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
