@@ -1,3 +1,8 @@
+2004-01-16  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnir.el (nnir-run-glimpse): Fixed typo.  Reported by Patrick
+	Drechsler <patrick.drechsler@gmx.net>.
+
 2003-11-15  Simon Josefsson  <jas@extundo.com>
 
 	* starttls.el: Sync with recent gnu.emacs.sources post.

@@ -298,7 +298,7 @@
 
 ;;; Setup Code:
 
-(defconst nnir-version "$Id: nnir.el,v 1.3 2003/10/24 21:43:57 youngs Exp $"
+(defconst nnir-version "$Id: nnir.el,v 7.1 2004/01/04 21:50:49 larsi Exp $"
   "Version of NNIR.")
 
 (require 'cl)
@@ -865,7 +865,7 @@ pairs (also vectors, actually)."
     (let ((artlist nil)
           (groupspec (cdr (assq 'group query)))
           (qstring (cdr (assq 'query query)))
-	  (prefix (nnir-read-server-parm 'nnir-glimps-remove-prefix server))
+	  (prefix (nnir-read-server-parm 'nnir-glimpse-remove-prefix server))
 	  artno dirnam)
       (when (and group groupspec)
         (error (concat "It does not make sense to use a group spec"
