@@ -137,11 +137,12 @@
 (defun gnus-mailing-list-archive ()
   "Browse archive"
   (interactive)
+  (require 'browse-url)
   (let ((list-archive 
 	 (with-current-buffer gnus-original-article-buffer
 	   (gnus-fetch-field "list-archive"))))
-    (cond (list-archive (gnus-mailing-list-message list-archive))
-	  (t (gnus-message 1 "no list-owner in this group")))))
+    (cond (list-archive (browse-url list-archive))
+	  (t (gnus-message 1 "no list-archive in this group")))))
 
 ;;; Utility functions
 
