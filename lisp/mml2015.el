@@ -82,8 +82,9 @@
 
 (defun mml2015-mailcrypt-decrypt (handle ctl)
   (let (child handles result)
-    (unless (setq child (mm-find-part-by-type (cdr handle) 
-					      "application/octet-stream"))
+    (unless (setq child (mm-find-part-by-type 
+			 (cdr handle) 
+			 "application/octet-stream" nil t))
       (error "Corrupted pgp-encrypted part."))
     (with-temp-buffer
       (mm-insert-part child)
@@ -111,7 +112,9 @@
 (defun mml2015-mailcrypt-verify (handle ctl)
   (let (part)
     (unless (setq part (mm-find-raw-part-by-type 
-			 ctl "application/pgp-signature" t))
+			 ctl (or (mail-content-type-get ctl 'protocol)
+				 "application/pgp-signature")
+			 t))
       (error "Corrupted pgp-signature part."))
     (with-temp-buffer
       (insert "-----BEGIN PGP SIGNED MESSAGE-----\n")
@@ -122,7 +125,7 @@
       (insert part "\n")
       (goto-char (point-max))
       (unless (setq part (mm-find-part-by-type 
-			   (cdr handle) "application/pgp-signature"))
+			   (cdr handle) "application/pgp-signature" nil t))
 	(error "Corrupted pgp-signature part."))
       (mm-insert-part part)
       (unless (funcall mml2015-verify-function)
@@ -245,7 +248,9 @@
 (defun mml2015-gpg-verify (handle ctl)
   (let (part message signature)
     (unless (setq part (mm-find-raw-part-by-type 
-			 ctl "application/pgp-signature" t))
+			 ctl (or (mail-content-type-get ctl 'protocol)
+				 "application/pgp-signature")
+			 t))
       (error "Corrupted pgp-signature part."))
     (with-temp-buffer
       (setq message (current-buffer))
@@ -253,7 +258,7 @@
       (with-temp-buffer
 	(setq signature (current-buffer))
 	(unless (setq part (mm-find-part-by-type 
-			    (cdr handle) "application/pgp-signature"))
+			    (cdr handle) "application/pgp-signature" nil t))
 	  (error "Corrupted pgp-signature part."))
 	(mm-insert-part part)
 	(unless (gpg-verify message signature mml2015-result-buffer)
@@ -357,12 +362,20 @@
       handle)))
 
 ;;;###autoload
+(defun mml2015-decrypt-test (handle ctl)
+  mml2015-use)
+
+;;;###autoload
 (defun mml2015-verify (handle ctl)
   (mml2015-clean-buffer)
   (let ((func (nth 3 (assq mml2015-use mml2015-function-alist))))
     (if func
 	(funcall func handle ctl)
       handle)))
+
+;;;###autoload
+(defun mml2015-verify-test (handle ctl)
+  mml2015-use)
 
 ;;;###autoload
 (defun mml2015-encrypt (cont)

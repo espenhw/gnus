@@ -1,3 +1,13 @@
+2000-11-06 13:51:37  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mime-security): New group.
+	(mm-verify-function-alist): Add test function.
+	(mm-decrypt-function-alist): Ditto.
+	(mm-snarf-option): Set default value as nil.
+	(mm-find-part-by-type): Recursive parameter.
+	(mm-possibly-verify-or-decrypt): Support draft-ietf-openpgp-multsig.
+	* mml2015.el: Support draft-ietf-openpgp-multsig.
+
 2000-11-06 13:01:27  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-mime-view-part-as-charset): New function.

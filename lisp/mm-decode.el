@@ -40,6 +40,13 @@
   :group 'news
   :group 'multimedia)
 
+(defgroup mime-security ()
+  "MIME security in mail and news articles."
+  :link '(custom-manual "(emacs-mime)Customization")
+  :group 'mail
+  :group 'news
+  :group 'multimedia)
+
 ;;; Convenience macros.
 
 (defmacro mm-handle-buffer (handle)
@@ -230,12 +237,13 @@ to:
 (defvar mm-dissect-default-type "text/plain")
 
 (autoload 'mml2015-verify "mml2015")
+(autoload 'mml2015-verify-test "mml2015")
 (autoload 'mml-smime-verify "mml-smime")
 
 (defvar mm-verify-function-alist
-  '(("application/pgp-signature" mml2015-verify "PGP")
-    ("application/pkcs7-signature" mml-smime-verify "S/MIME")
-    ("application/x-pkcs7-signature" mml-smime-verify "S/MIME")))
+  '(("application/pgp-signature" mml2015-verify "PGP" mml2015-verify-test)
+    ("application/pkcs7-signature" mml-smime-verify "S/MIME" nil)
+    ("application/x-pkcs7-signature" mml-smime-verify "S/MIME" nil)))
 
 (defcustom mm-verify-option 'known
   "Option of verifying signed parts.
@@ -245,12 +253,13 @@ to:
 		 (item never)
 		 (item :tag "only known protocols" known)
 		 (item :tag "ask" nil))
-  :group 'gnus-article)
+  :group 'mime-security)
 
 (autoload 'mml2015-decrypt "mml2015")
+(autoload 'mml2015-decrypt-test "mml2015")
 
 (defvar mm-decrypt-function-alist
-  '(("application/pgp-encrypted" mml2015-decrypt "PGP")))
+  '(("application/pgp-encrypted" mml2015-decrypt "PGP" mml2015-decrypt-test)))
 
 (defcustom mm-decrypt-option 'known
   "Option of decrypting signed parts.
@@ -260,9 +269,9 @@ to:
 		 (item never)
 		 (item :tag "only known protocols" known)
 		 (item :tag "ask" nil))
-  :group 'gnus-article)
+  :group 'mime-security)
 
-(defcustom mm-snarf-option 'known
+(defcustom mm-snarf-option nil
   "Option of snarfing PGP key.
 `never', not snarf; `always', always snarf; 
 `known', only snarf known protocols. Otherwise, ask user."
@@ -270,7 +279,7 @@ to:
 		 (item never)
 		 (item :tag "only known protocols" known)
 		 (item :tag "ask" nil))
-  :group 'gnus-article)
+  :group 'mime-security)
 
 (defvar mm-viewer-completion-map
   (let ((map (make-sparse-keymap 'mm-viewer-completion-map)))
@@ -926,16 +935,21 @@ external if displayed external."
   (and (mm-valid-image-format-p format)
        (mm-image-fit-p handle)))
 
-(defun mm-find-part-by-type (handles type &optional notp) 
+(defun mm-find-part-by-type (handles type &optional notp recursive) 
   "Search in HANDLES for part with TYPE.
-If NOTP, returns first non-matching part."
+If NOTP, returns first non-matching part.
+If RECURSIVE, search recursively."
   (let (handle)
     (while handles
-      (if (if notp
-	      (not (equal (mm-handle-media-type (car handles)) type))
-	    (equal (mm-handle-media-type (car handles)) type))
-	  (setq handle (car handles)
-		handles nil))
+      (if (and recursive (stringp (caar handles)))
+	  (if (setq handle (mm-find-part-by-type (cdar handles) type
+						 notp recursive))
+	      (setq handles nil))
+	(if (if notp
+		(not (equal (mm-handle-media-type (car handles)) type))
+	      (equal (mm-handle-media-type (car handles)) type))
+	    (setq handle (car handles)
+		  handles nil)))
       (setq handles (cdr handles)))
     handle))
 
@@ -982,23 +996,27 @@ If NOTP, returns first non-matching part."
 
 (defun mm-possibly-verify-or-decrypt (parts ctl)
   (let ((subtype (cadr (split-string (car ctl) "/")))
-	protocol func)
+	protocol func functest)
     (cond 
      ((equal subtype "signed")
-      (unless (setq protocol (mail-content-type-get ctl 'protocol))
-	;; The message is broken.
-	(let ((parts parts))
-	  (while parts
-	    (if (assoc (mm-handle-media-type (car parts)) 
-		       mm-verify-function-alist)
-		(setq protocol (mm-handle-media-type (car parts)) 
-		      parts nil)
-	      (setq parts (cdr parts))))))
+      (unless (and (setq protocol (mail-content-type-get ctl 'protocol))
+		   (not (equal protocol "multipart/mixed")))
+	;; The message is broken or draft-ietf-openpgp-multsig-01.
+	(let ((protocols mm-verify-function-alist))
+	  (while protocols
+	    (if (and (or (not (setq functest (nth 3 (car protocols))))
+			 (funcall functest parts ctl))
+		     (mm-find-part-by-type parts (caar protocols) nil t))
+		(setq protocol (caar protocols)
+		      protocols nil)
+	      (setq protocols (cdr protocols))))))
       (setq func (nth 1 (assoc protocol mm-verify-function-alist)))
+      (setq functest (nth 3 (assoc protocol mm-verify-function-alist)))
       (if (cond
 	   ((eq mm-verify-option 'never) nil)
 	   ((eq mm-verify-option 'always) t)
-	   ((eq mm-verify-option 'known) func)
+	   ((eq mm-verify-option 'known) 
+	    (and func (funcall functest parts ctl)))
 	   (t (y-or-n-p
 	       (format "Verify signed (%s) part? "
 		       (or (nth 2 (assoc protocol mm-verify-function-alist))
@@ -1022,10 +1040,12 @@ If NOTP, returns first non-matching part."
 		      parts nil)
 	      (setq parts (cdr parts))))))
       (setq func (nth 1 (assoc protocol mm-decrypt-function-alist)))
+      (setq functest (nth 3 (assoc protocol mm-decrypt-function-alist)))
       (if (cond
 	   ((eq mm-decrypt-option 'never) nil)
 	   ((eq mm-decrypt-option 'always) t)
-	   ((eq mm-decrypt-option 'known) func)
+	   ((eq mm-decrypt-option 'known)
+	    (and func (funcall functest parts ctl)))
 	   (t (y-or-n-p 
 	       (format "Decrypt (%s) part? "
 		       (or (nth 2 (assoc protocol mm-decrypt-function-alist))
