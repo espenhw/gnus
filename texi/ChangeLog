@@ -1,3 +1,9 @@
+2000-10-26  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Gnus Development): nnmail-delete-incoming -->
+	mail-source-delete-incoming.  (Kudos to Karl Kleinpaste
+	<karl@charcoal.com> for pointing this out.)
+
 2000-10-18  Dave Love  <fx@gnu.org>
 
 	* gnus.texi (NoCeM): Update.
