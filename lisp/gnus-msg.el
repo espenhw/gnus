@@ -1586,7 +1586,7 @@ The source file has to be in the Emacs load path."
 
 (defun gnus-summary-resend-bounced-mail (&optional fetch)
   "Re-mail the current message.
-This only makes sense if the current message is a bounce message than
+This only makes sense if the current message is a bounce message that
 contains some mail you have written which has been bounced back to
 you.
 If FETCH, try to fetch the article that this is a reply to, if indeed
