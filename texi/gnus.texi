@@ -22840,11 +22840,9 @@ parameter or a match in the @code{gnus-ham-process-destinations}
 variable, which is a list of regular expressions matched with group
 names (it's easiest to customize this variable with @kbd{M-x
 customize-variable @key{RET} gnus-ham-process-destinations}).  Each
-newsgroup specification has the format @code{(@var{regexp}
-@var{processor})} in a standard Lisp list, if you prefer to customize
-the variable manually.  The ultimate location is a group name or
-names.  If the @code{ham-process-destination} parameter is not set,
-ham articles are left in place.  If the
+group name list is a standard Lisp list, if you prefer to customize
+the variable manually.  If the @code{ham-process-destination}
+parameter is not set, ham articles are left in place.  If the
 @code{spam-mark-ham-unread-before-move-from-spam-group} parameter is
 set, the ham articles are marked as unread before being moved.
 
@@ -22878,10 +22876,8 @@ the @code{spam-process-destination} group parameter or a match in the
 @code{gnus-spam-process-destinations} variable, which is a list of
 regular expressions matched with group names (it's easiest to
 customize this variable with @kbd{M-x customize-variable @key{RET}
-gnus-spam-process-destinations}).  Each newsgroup specification has
-the repeated format @code{(@var{regexp} @var{group})} and they are all
-in a standard Lisp list, if you prefer to customize the variable
-manually.  The ultimate location is a group name or names.  If the
+gnus-spam-process-destinations}).  Each group name list is a standard
+Lisp list, if you prefer to customize the variable manually.  If the
 @code{spam-process-destination} parameter is not set, the spam
 articles are only expired.  The group name is fully qualified, meaning
 that if you see @samp{nntp:servername} before the group name in the
