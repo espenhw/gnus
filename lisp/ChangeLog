@@ -1,6 +1,11 @@
+2000-07-05  Dave Love  <fx@gnu.org>
+
+	* gnus-art.el: Don't alias article-mime-decode-quoted-printable.
+	(gnus-Plain-save-name): Delete -- apparently bogus.
+
 2000-07-03 00:12:26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* nnsoup.el: Use expand-file-name throughtout.
+	* nnsoup.el: Use expand-file-name throughout.
 
 2000-07-03 00:07:51  Kjetil Torgrim Homme  <kjetilho@ifi.uio.no>
 
