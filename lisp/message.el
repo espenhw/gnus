@@ -669,7 +669,8 @@ Valid valued are `unique' and `unsent'."
   :group 'message
   :type 'symbol)
 
-(defcustom message-dont-reply-to-names rmail-dont-reply-to-names
+(defcustom message-dont-reply-to-names 
+  (and (boundp 'rmail-dont-reply-to-names) rmail-dont-reply-to-names)
   "*A regexp specifying names to prune when doing wide replies.
 A value of nil means exclude your own name only."
   :group 'message
