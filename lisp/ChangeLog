@@ -1,3 +1,7 @@
+2003-01-21  Andreas Fuchs  <asf@void.at>
+
+	* mml-sec.el (mml-sign-alist): Added pgpauto.
+
 2003-01-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-version-number): Bumped version number.

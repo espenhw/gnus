@@ -31,6 +31,7 @@
 (defvar mml-sign-alist
   '(("smime"     mml-smime-sign-buffer     mml-smime-sign-query)
     ("pgp"       mml-pgp-sign-buffer       list)
+    ("pgpauto"   mml-pgpauto-sign-buffer  list)
     ("pgpmime"   mml-pgpmime-sign-buffer   list))
   "Alist of MIME signer functions.")
 
@@ -40,6 +41,7 @@
 (defvar mml-encrypt-alist
   '(("smime"     mml-smime-encrypt-buffer     mml-smime-encrypt-query)
     ("pgp"       mml-pgp-encrypt-buffer       list)
+    ("pgpauto"   mml-pgpauto-sign-buffer  list)
     ("pgpmime"   mml-pgpmime-encrypt-buffer   list))
   "Alist of MIME encryption functions.")
 
@@ -49,6 +51,7 @@
 (defcustom mml-signencrypt-style-alist
   '(("smime"   separate)
     ("pgp"     separate)
+    ("pgpauto" separate)
     ("pgpmime" separate))
   "Alist specifying if `signencrypt' results in two separate operations or not.
 The first entry indicates the MML security type, valid entries include
@@ -118,6 +121,20 @@ You can also customize or set `mml-signencrypt-style-alist' instead."
   (or (mml2015-encrypt cont sign)
       (error "Encryption failed... inspect message logs for errors")))
 
+(defun mml-pgpauto-sign-buffer (cont)
+  (message-goto-body)
+  (or (if (re-search-backward "Content-Type: *multipart/.*" nil t) ; there must be a better way...
+	  (mml2015-sign cont)
+	(mml1991-sign cont))
+      (error "Encryption failed... inspect message logs for errors")))
+
+(defun mml-pgpauto-encrypt-buffer (cont &optional sign)
+  (message-goto-body)
+  (or (if (re-search-backward "Content-Type: *multipart/.*" nil t) ; there must be a better way...
+	  (mml2015-encrypt cont sign)
+	(mml1991-encrypt cont sign))
+      (error "Encryption failed... inspect message logs for errors")))
+
 (defun mml-secure-part (method &optional sign)
   (save-excursion
     (let ((tags (funcall (nth 2 (assoc method (if sign mml-sign-alist
@@ -147,6 +164,11 @@ You can also customize or set `mml-signencrypt-style-alist' instead."
   "Add MML tags to PGP sign this MML part."
   (interactive)
   (mml-secure-part "pgp" 'sign))
+
+(defun mml-secure-sign-pgp ()
+  "Add MML tags to PGP-auto sign this MML part."
+  (interactive)
+  (mml-secure-part "pgpauto" 'sign))
 
 (defun mml-secure-sign-pgpmime ()
   "Add MML tags to PGP/MIME sign this MML part."
@@ -214,6 +236,11 @@ You can also customize or set `mml-signencrypt-style-alist' instead."
   (interactive)
   (mml-secure-message "pgpmime" 'sign))
 
+(defun mml-secure-message-sign-pgpauto ()
+  "Add MML tag to encrypt/sign the entire message."
+  (interactive)
+  (mml-secure-message "pgpauto" 'sign))
+
 (defun mml-secure-message-encrypt-smime (&optional dontsign)
   "Add MML tag to encrypt and sign the entire message.
 If called with a prefix argument, only encrypt (do NOT sign)."
@@ -231,6 +258,12 @@ If called with a prefix argument, only encrypt (do NOT sign)."
 If called with a prefix argument, only encrypt (do NOT sign)."
   (interactive "P")
   (mml-secure-message "pgpmime" (if dontsign 'encrypt 'signencrypt)))
+
+(defun mml-secure-message-encrypt-pgpmime (&optional dontsign)
+  "Add MML tag to encrypt and sign the entire message.
+If called with a prefix argument, only encrypt (do NOT sign)."
+  (interactive "P")
+  (mml-secure-message "pgpauto" (if dontsign 'encrypt 'signencrypt)))
 
 (provide 'mml-sec)
 
