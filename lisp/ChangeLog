@@ -1,5 +1,9 @@
 2002-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-topic.el (gnus-topic-goto-previous-topic): New command and
+	keystroke. 
+	(gnus-topic-goto-next-topic): Ditto.
+
 	* gnus.el (gnus-summary-line-format): Changed default.
 
 	* nnmail.el (nnmail-extra-headers): Change default.

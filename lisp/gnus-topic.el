@@ -249,6 +249,28 @@ If RECURSIVE is t, return groups in its subtopics too."
 	      (cdr recursive)))
     visible-groups))
 
+(defun gnus-topic-goto-previous-topic (n)
+  "Go to the N'th previous topic."
+  (interactive "p")
+  (gnus-topic-goto-next-topic (- n)))
+
+(defun gnus-topic-goto-next-topic (n)
+  "Go to the N'th next topic."
+  (interactive "p")
+  (let ((backward (< n 0))
+	(n (abs n))
+	(topic (gnus-current-topic)))
+    (while (and (> n 0)
+		(setq topic
+		      (if backward
+			  (gnus-topic-previous-topic topic)
+			(gnus-topic-next-topic topic))))
+      (gnus-topic-goto-topic topic)
+      (setq n (1- n)))
+    (when (/= 0 n)
+      (gnus-message 7 "No more topics"))
+    n))
+
 (defun gnus-topic-previous-topic (topic)
   "Return the previous topic on the same level as TOPIC."
   (let ((top (cddr (gnus-topic-find-topology
@@ -1028,6 +1050,8 @@ articles in the topic and its subtopics."
     "j" gnus-topic-jump-to-topic
     "M" gnus-topic-move-matching
     "C" gnus-topic-copy-matching
+    "\M-p" gnus-topic-goto-previous-topic
+    "\M-n" gnus-topic-goto-next-topic
     "\C-i" gnus-topic-indent
     [tab] gnus-topic-indent
     "r" gnus-topic-rename
@@ -1067,6 +1091,8 @@ articles in the topic and its subtopics."
 	["Mark" gnus-topic-mark-topic t]
 	["Indent" gnus-topic-indent t]
 	["Sort" gnus-topic-sort-topics t]
+	["Previous topic" gnus-topic-goto-previous-topic t]
+	["Next topic" gnus-topic-goto-next-topic t]
 	["Toggle hide empty" gnus-topic-toggle-display-empty-topics t]
 	["Edit parameters" gnus-topic-edit-parameters t])
        ["List active" gnus-topic-list-active t]))))
