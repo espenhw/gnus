@@ -661,11 +661,11 @@ Bind `print-quoted' and `print-readably' to t, and `print-length' and
 `print-level' to nil.  See also `gnus-bind-print-variables'."
   (gnus-bind-print-variables (prin1-to-string form)))
 
-(defun gnus-pp (form)
+(defun gnus-pp (form &optional stream)
   "Use `pp' on FORM in the current buffer.
 Bind `print-quoted' and `print-readably' to t, and `print-length' and
 `print-level' to nil.  See also `gnus-bind-print-variables'."
-  (gnus-bind-print-variables (pp form (current-buffer))))
+  (gnus-bind-print-variables (pp form (or stream (current-buffer)))))
 
 (defun gnus-pp-to-string (form)
   "The same as `pp-to-string'.
