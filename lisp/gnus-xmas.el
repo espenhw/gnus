@@ -555,6 +555,8 @@ If it is non-nil, it must be a toolbar.  The five valid values are
     [gnus-group-unsubscribe gnus-group-unsubscribe t "Unsubscribe group"]
     [gnus-group-subscribe gnus-group-subscribe t "Subscribe group"]
     [gnus-group-kill-group gnus-group-kill-group t "Kill group"]
+    [gnus-summary-mail-save
+     gnus-group-save-newsrc t "Save .newsrc files"] ; borrowed icon.
     [gnus-group-exit gnus-group-exit t "Exit Gnus"])
   "The group buffer toolbar.")
 
@@ -612,6 +614,8 @@ If it is non-nil, it must be a toolbar.  The five valid values are
      gnus-summary-save-article-file t "Save article in file"]
     [gnus-summary-save-article
      gnus-summary-save-article t "Save article"]
+    [gnus-summary-cancel-article ; usenet : cancellation :: mail : deletion.
+     gnus-summary-delete-article t "Delete message"]
     [gnus-summary-catchup
      gnus-summary-catchup t "Catchup"]
     [gnus-summary-catchup-and-exit

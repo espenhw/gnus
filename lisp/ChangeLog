@@ -1,5 +1,11 @@
 2002-01-17  Karl Kleinpaste  <karl@charcoal.com>
 
+	* gnus-xmas.el (gnus-group-toolbar): Add .newsrc save button.
+	(gnus-summary-mail-toolbar): Add mail article deletion button.
+
+	* smiley.el (smiley-deformed-regexp-alist): Eliminate noseless
+	false positives for lines of "^^^^".
+
 	* gnus-picon.el (gnus-picon-find-face): faces database is all
 	lowercase.
 
