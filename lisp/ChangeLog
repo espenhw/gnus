@@ -1,9 +1,9 @@
 2002-11-26  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-uncached-articles): if
-	gnus-agent-load-alist fails, return articles.
+	gnus-agent-load-alist fails, return ARTICLES.
 
-	* nnrss.el (nnrss-group-alist): Update links for Jabber.
+	* nnrss.el (nnrss-group-alist): Update the link of Jabber.
 
 2002-11-26  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
