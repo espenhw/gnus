@@ -6048,6 +6048,11 @@ the subject line on."
 	      (prog1
 		  (1+ (point-at-eol))
 		(gnus-delete-line))))))
+      ;; Remove list identifiers from subject.
+      (when gnus-list-identifiers
+	(let ((gnus-newsgroup-headers (list header)))
+	  (gnus-summary-remove-list-identifiers)
+	  (setq header (car gnus-newsgroup-headers))))
       (when old-header
 	(mail-header-set-number header (mail-header-number old-header)))
       (setq gnus-newsgroup-sparse

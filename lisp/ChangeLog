@@ -1,3 +1,8 @@
+2004-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-sum.el (gnus-summary-insert-subject): Remove list
+	identifiers.
+
 2004-09-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-picon.el: Fix indentation and closing parenthesis.
