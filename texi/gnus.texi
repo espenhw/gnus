@@ -507,6 +507,7 @@ Summary Buffer
 * Crosspost Handling::          How crossposted articles are dealt with.
 * Duplicate Suppression::       An alternative when crosspost handling fails.
 * Security::                    Decrypt and Verify.
+* Mailing List::                Mailing list minor mode.
 
 Summary Buffer Format
 
@@ -2602,6 +2603,9 @@ If you do an @kbd{a} command in a mail group and you don't have a
 @code{to-list} group parameter, one will be added automatically upon
 sending the message.
 
+If this variable is set, @code{gnus-mailing-list-mode} is turned on when
+entering summary buffer.
+
 See also @code{gnus-parameter-to-list-alist}.
 
 @item visible
@@ -2734,6 +2738,11 @@ like this in the group parameters:
   (name "Funky Name")
   (signature "Funky Signature"))
 @end example
+
+@item post-method
+@cindex post-method
+If it is set, the value is used as the method for posting message
+instead of @code{gnus-post-method}.
 
 @item banner
 An item like @code{(banner . "regex")} causes any part of an article
@@ -3940,6 +3949,7 @@ You can have as many summary buffers open as you wish.
 * Crosspost Handling::          How crossposted articles are dealt with.
 * Duplicate Suppression::       An alternative when crosspost handling fails.
 * Security::                    Decrypt and Verify.
+* Mailing List::                Mailing list minor mode.
 @end menu
 
 
@@ -9282,6 +9292,46 @@ protocols. Otherwise, ask user.
 Option of decrypting encrypted parts.  @code{never}, no decryption;
 @code{always}, always decrypt @code{known}, only decrypt known
 protocols. Otherwise, ask user.
+
+@end table
+
+@node Mailing List
+@section Mailing List
+
+Gnus understands some mailing list fields of RFC 2369.
+
+@table @kbd
+
+@item C-c C-n h
+@kindex C-c C-n h (Summary)
+@findex gnus-mailing-list-help
+Send a message to fetch mailing list help, if List-Help field exists.
+
+@item C-c C-n s
+@kindex C-c C-n s (Summary)
+@findex gnus-mailing-list-subscribe
+Send a message to subscribe the mailing list, if List-Subscribe field exists.
+
+@item C-c C-n u
+@kindex C-c C-n u (Summary)
+@findex gnus-mailing-list-unsubscribe
+Send a message to unsubscribe the mailing list, if List-Unsubscribe
+field exists.
+
+@item C-c C-n p
+@kindex C-c C-n p (Summary)
+@findex gnus-mailing-list-post
+Post to the mailing list, if List-Post field exists.
+
+@item C-c C-n o
+@kindex C-c C-n o (Summary)
+@findex gnus-mailing-list-owner
+Send a message to the mailing list owner, if List-Owner field exists.
+
+@item C-c C-n a
+@kindex C-c C-n a (Summary)
+@findex gnus-mailing-list-owner
+Browse the mailing list archive, if List-Archive field exists.
 
 @end table
 

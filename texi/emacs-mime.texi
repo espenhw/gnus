@@ -824,6 +824,7 @@ returned as a result of this analysis.
 
 @menu
 * Dissection::     Analyzing a @sc{mime} message.
+* Non-MIME::       Analyzing a non-@sc{mime} message.
 * Handles::        Handle manipulations.
 * Display::        Displaying handles.
 * Customization::  Variables that affect display.
@@ -839,6 +840,62 @@ a @sc{mime} article.  If given a multipart message, it will recursively
 descend the message, following the structure, and return a tree of
 @sc{mime} handles that describes the structure of the message.
 
+@node Non-MIME
+@section Non-MIME
+
+Gnus also understands some non-MIME attachments, such as postscript,
+uuencode, binhex, shar, forward, gnatsweb, pgp.  Each of these features
+can be disabled by add an item into @code{mm-uu-configure-list}.
+For example,
+
+@lisp
+(require 'mm-uu)
+(add-to-list 'mm-uu-configure-list '(pgp-signed . disabled))
+@end lisp
+
+@table @code
+@item postscript
+@findex postscript
+Postscript file.
+
+@item uu
+@findex uu
+Uuencoded file.
+
+@item binhex
+@findex binhex
+Binhex encoded file.
+
+@item shar
+@findex shar
+Shar archive file.
+
+@item forward
+@findex forward
+Non-@sc{mime} forwarded message.
+
+@item gnatsweb
+@findex gnatsweb
+Gnatsweb attachment.
+
+@item pgp-signed
+@findex pgp-signed
+PGP signed clear text.
+
+@item pgp-encrypted
+@findex pgp-encrypted
+PGP encrypted clear text.
+
+@item pgp-key
+@findex pgp-key
+PGP public keys.
+
+@item emacs-sources
+@findex emacs-sources
+Emacs source code.  This item works only in the groups matching
+@code{mm-uu-emacs-sources-regexp}.
+
+@end table
 
 @node Handles
 @section Handles
