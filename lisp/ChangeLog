@@ -1,3 +1,8 @@
+2003-01-13  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-score.el (gnus-score-edit-file-at-point): New function.
+	(gnus-score-find-trace): Bind it to `e' key.  Added `q' for quit.
+
 2003-01-13  Romain FRANCOISE  <romain@orebokech.com>
 
 	* gnus-fun.el (gnus-x-face-from-file): Quote file name. 

@@ -36,6 +36,8 @@
 (require 'message)
 (require 'score-mode)
 
+(autoload 'ffap-string-at-point "ffap")
+
 (defcustom gnus-global-score-files nil
   "List of global score files and directories.
 Set this variable if you want to use people's score files.  One entry
@@ -1100,6 +1102,11 @@ EXTRA is the possible non-standard header."
   (gnus-message
    4 (substitute-command-keys
       "\\<gnus-score-mode-map>\\[gnus-score-edit-exit] to save edits")))
+
+(defun gnus-score-edit-file-at-point ()
+  "Edit score file at point.  Useful especially after `V t'."
+  (interactive)
+  (gnus-score-edit-file (ffap-string-at-point)))
 
 (defun gnus-score-load-file (file)
   ;; Load score file FILE.  Returns a list a retrieved score-alists.
@@ -2343,6 +2350,13 @@ score in `gnus-newsgroup-scored' by SCORE."
 	   1 "No score rules apply to the current article (default score %d)."
 	   gnus-summary-default-score)
 	(set-buffer "*Score Trace*")
+	;; ToDo: Use a keymap instead?
+	(local-set-key "q"
+		       (lambda ()
+			 (interactive)
+			 (kill-buffer nil)
+			 (gnus-article-show-summary)))
+	(local-set-key "e" 'gnus-score-edit-file-at-point)
 	(setq truncate-lines t)
 	(while trace
 	  (insert (format "%S  ->  %s\n" (cdar trace)
