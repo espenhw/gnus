@@ -1,19 +1,23 @@
 % -*- latex -*-
 % Reference Card for Oort Gnus: to be processed with LaTeX2e
 \documentclass{article}
+
+\usepackage{supertabular}
+
 \def\Guide{Card}\def\guide{card}
 \def\logoscale{0.25}
-\textwidth 7.26in \textheight 10in \topmargin -1.0in
+\setlength{\textwidth}{7.26in} \setlength{\textheight}{10in}
+\setlength{\topmargin}{-1.0in}
 % the same settings work for A4, although there is a bit of space at the
 % top and bottom of the page. 
-\oddsidemargin -0.5in \evensidemargin -0.5in
+\setlength{\oddsidemargin}{-0.5in} \setlength{\evensidemargin}{-0.5in}
 
 \usepackage{epsfig}
 
 % README:
 % *** purpose
-% this was originally thought of as a reference card, but as it is now 5+
-% pages long, I doubt that it is more useful than the online-help. It helped
+% this was originally thought of as a reference card (but as it is now 5+
+% pages long, it may not be more useful than the online-help). It helps
 % to get an overview for the Gnus-functionality.
 %
 % *** files
@@ -70,12 +74,13 @@
 \newlength{\logowidth} \setlength{\logowidth}{6.861in}
 \newlength{\logoheight} \setlength{\logoheight}{7.013in}
 
-\def\progver{(Oort)}\def\refver{5.x-1} % program and refcard versions
+\def\progver{5.10}\def\refver{5.10-1} % program and refcard versions
 \def\date{Oct 13th, 2001}
 \def\author{Gnus Bugfixing Girls + Boys $<$bugs@gnus.org$>$}
 \raggedbottom\raggedright
 
 \twocolumn
+% use \tiny to shrink it to 4 pages (needs a high-resaoultion printer, though)
 %\tiny
 \scriptsize
 \pagestyle{plain}
