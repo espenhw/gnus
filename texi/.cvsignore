@@ -13,6 +13,7 @@ gnustmp.texi
 *.latexi
 gnus.ps
 gnus.pdf
+gnus.out
 gnusmail.texi
 pspackage.tar.gz
 gnus.tmplatexi
