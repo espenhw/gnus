@@ -560,27 +560,28 @@ If UPDATE-P is not nil, call gnus-group-update-group on the components."
 
 (defun nnvirtual-reverse-map-article (group article)
   "Return the virtual article number corresponding to the given component GROUP and ARTICLE."
-  (let ((table nnvirtual-mapping-table)
-	(group-pos 0)
-	entry)
-    (while (not (string= group (car (aref nnvirtual-mapping-offsets
+  (when (numberp article)
+    (let ((table nnvirtual-mapping-table)
+	  (group-pos 0)
+	  entry)
+      (while (not (string= group (car (aref nnvirtual-mapping-offsets
+					    group-pos))))
+	(setq group-pos (1+ group-pos)))
+      (setq article (- article (cdr (aref nnvirtual-mapping-offsets
 					  group-pos))))
-      (setq group-pos (1+ group-pos)))
-    (setq article (- article (cdr (aref nnvirtual-mapping-offsets
-					group-pos))))
-    (while (and table
-		(> article (aref (car table) 0)))
-      (setq table (cdr table)))
-    (setq entry (car table))
-    (when (and entry
-	       (> article 0)
-	       (< group-pos (aref entry 2))) ; article not out of range below
-      (+ (aref entry 4)
-	 group-pos
-	 (* (- article (aref entry 1))
-	    (aref entry 2))
-	 1))
-    ))
+      (while (and table
+		  (> article (aref (car table) 0)))
+	(setq table (cdr table)))
+      (setq entry (car table))
+      (when (and entry
+		 (> article 0)
+		 (< group-pos (aref entry 2))) ; article not out of range below
+	(+ (aref entry 4)
+	   group-pos
+	   (* (- article (aref entry 1))
+	      (aref entry 2))
+	   1))
+      )))
 
 
 (defsubst nnvirtual-reverse-map-sequence (group articles)

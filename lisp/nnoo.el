@@ -96,14 +96,14 @@
 	(pop functions)))))
 
 (defun nnoo-parent-function (backend function args)
-  (let* ((pbackend (nnoo-backend function)))
+  (let ((pbackend (nnoo-backend function)))
     (nnoo-change-server pbackend (nnoo-current-server backend)
 			(cdr (assq pbackend (nnoo-parents backend))))
     (apply function args)))
 
 (defun nnoo-execute (backend function &rest args)
   "Execute FUNCTION on behalf of BACKEND."
-  (let* ((pbackend (nnoo-backend function)))
+  (let ((pbackend (nnoo-backend function)))
     (nnoo-change-server pbackend (nnoo-current-server backend)
 			(cdr (assq pbackend (nnoo-parents backend))))
     (apply function args)))

@@ -413,6 +413,16 @@ It uses the same syntax as the `gnus-split-methods' variable."
   :group 'gnus-summary-marks
   :type 'character)
 
+(defcustom gnus-undownloaded-mark ?@
+  "*Mark used for articles that weren't downloaded."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-downloadable-mark ?%
+  "*Mark used for articles that are to be downloaded."
+  :group 'gnus-summary-marks
+  :type 'character)
+
 (defcustom gnus-score-over-mark ?+
   "*Score mark used for articles with high scores."
   :group 'gnus-summary-marks
@@ -870,6 +880,12 @@ variable (string, integer, character, etc).")
 (defvar gnus-newsgroup-processable nil
   "List of articles in the current newsgroup that can be processed.")
 
+(defvar gnus-newsgroup-downloadable nil
+  "List of articles in the current newsgroup that can be processed.")
+
+(defvar gnus-newsgroup-undownloaded nil
+  "List of articles in the current newsgroup that haven't been downloaded..")
+
 (defvar gnus-newsgroup-bookmarks nil
   "List of articles in the current newsgroup that have bookmarks.")
 
@@ -909,6 +925,7 @@ variable (string, integer, character, etc).")
     gnus-newsgroup-reads gnus-newsgroup-saved
     gnus-newsgroup-replied gnus-newsgroup-expirable
     gnus-newsgroup-processable gnus-newsgroup-killed
+    gnus-newsgroup-downloadable gnus-newsgroup-undownloaded
     gnus-newsgroup-bookmarks gnus-newsgroup-dormant
     gnus-newsgroup-headers gnus-newsgroup-threads
     gnus-newsgroup-prepared gnus-summary-highlight-line-function
@@ -2153,6 +2170,8 @@ This is all marks except unread, ticked, dormant, and expirable."
 
 (defmacro gnus-article-mark (number)
   `(cond
+    ((memq ,number gnus-newsgroup-undownloaded) gnus-undownloaded-mark)
+    ((memq ,number gnus-newsgroup-downloadable) gnus-downloadable-mark)
     ((memq ,number gnus-newsgroup-unreads) gnus-unread-mark)
     ((memq ,number gnus-newsgroup-marked) gnus-ticked-mark)
     ((memq ,number gnus-newsgroup-dormant) gnus-dormant-mark)
@@ -2316,11 +2335,13 @@ This is all marks except unread, ticked, dormant, and expirable."
     (let ((gnus-replied-mark 129)
 	  (gnus-score-below-mark 130)
 	  (gnus-score-over-mark 130)
+	  (gnus-download-mark 131)
 	  (spec gnus-summary-line-format-spec)
 	  thread gnus-visual pos)
       (save-excursion
 	(gnus-set-work-buffer)
-	(let ((gnus-summary-line-format-spec spec))
+	(let ((gnus-summary-line-format-spec spec)
+	      (gnus-newsgroup-downloadable '((0 . t))))
 	  (gnus-summary-insert-line
 	   [0 "" "" "" "" "" 0 0 ""]  0 nil 128 t nil "" nil 1)
 	  (goto-char (point-min))
@@ -2332,6 +2353,10 @@ This is all marks except unread, ticked, dormant, and expirable."
 		pos)
 	  (goto-char (point-min))
 	  (push (cons 'score (and (search-forward "\202" nil t) (- (point) 2)))
+		pos)
+	  (goto-char (point-min))
+	  (push (cons 'download
+		      (and (search-forward "\203" nil t) (- (point) 2)))
 		pos)))
       (setq gnus-summary-mark-positions pos))))
 
@@ -3704,6 +3729,9 @@ If READ-ALL is non-nil, all articles in the group are selected."
       ;; Removed marked articles that do not exist.
       (gnus-update-missing-marks
        (gnus-sorted-complement fetched-articles articles))
+      ;; Let the Gnus agent mark articles as read.
+      (when gnus-agent
+	(gnus-agent-get-undownloaded-list))
       ;; We might want to build some more threads first.
       (and gnus-fetch-old-headers
 	   (eq gnus-headers-retrieved-by 'nov)
@@ -4048,64 +4076,65 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	 (info (nth 2 entry))
 	 (active (gnus-active group))
 	 range)
-    ;; First peel off all illegal article numbers.
-    (when active
-      (let ((ids articles)
-	    id first)
-	(while (setq id (pop ids))
-	  (when (and first (> id (cdr active)))
-	    ;; We'll end up in this situation in one particular
-	    ;; obscure situation.  If you re-scan a group and get
-	    ;; a new article that is cross-posted to a different
-	    ;; group that has not been re-scanned, you might get
-	    ;; crossposted article that has a higher number than
-	    ;; Gnus believes possible.  So we re-activate this
-	    ;; group as well.  This might mean doing the
-	    ;; crossposting thingy will *increase* the number
-	    ;; of articles in some groups.  Tsk, tsk.
-	    (setq active (or (gnus-activate-group group) active)))
-	  (when (or (> id (cdr active))
-		    (< id (car active)))
-	    (setq articles (delq id articles))))))
-    (save-excursion
-      (set-buffer gnus-group-buffer)
-      (gnus-undo-register
-	`(progn
-	   (gnus-info-set-marks ',info ',(gnus-info-marks info) t)
-	   (gnus-info-set-read ',info ',(gnus-info-read info))
-	   (gnus-get-unread-articles-in-group ',info (gnus-active ,group))
-	   (gnus-group-update-group ,group t))))
-    ;; If the read list is nil, we init it.
-    (and active
-	 (null (gnus-info-read info))
-	 (> (car active) 1)
-	 (gnus-info-set-read info (cons 1 (1- (car active)))))
-    ;; Then we add the read articles to the range.
-    (gnus-info-set-read
-     info
-     (setq range
-	   (gnus-add-to-range
-	    (gnus-info-read info) (setq articles (sort articles '<)))))
-    ;; Then we have to re-compute how many unread
-    ;; articles there are in this group.
-    (when active
-      (cond
-       ((not range)
-	(setq num (- (1+ (cdr active)) (car active))))
-       ((not (listp (cdr range)))
-	(setq num (- (cdr active) (- (1+ (cdr range))
-				     (car range)))))
-       (t
-	(while range
-	  (if (numberp (car range))
-	      (setq num (1+ num))
-	    (setq num (+ num (- (1+ (cdar range)) (caar range)))))
-	  (setq range (cdr range)))
-	(setq num (- (cdr active) num))))
-      ;; Update the number of unread articles.
-      (setcar entry num)
-      ;; Update the group buffer.
-      (gnus-group-update-group group t))))
+    (when entry
+      ;; First peel off all illegal article numbers.
+      (when active
+	(let ((ids articles)
+	      id first)
+	  (while (setq id (pop ids))
+	    (when (and first (> id (cdr active)))
+	      ;; We'll end up in this situation in one particular
+	      ;; obscure situation.  If you re-scan a group and get
+	      ;; a new article that is cross-posted to a different
+	      ;; group that has not been re-scanned, you might get
+	      ;; crossposted article that has a higher number than
+	      ;; Gnus believes possible.  So we re-activate this
+	      ;; group as well.  This might mean doing the
+	      ;; crossposting thingy will *increase* the number
+	      ;; of articles in some groups.  Tsk, tsk.
+	      (setq active (or (gnus-activate-group group) active)))
+	    (when (or (> id (cdr active))
+		      (< id (car active)))
+	      (setq articles (delq id articles))))))
+      (save-excursion
+	(set-buffer gnus-group-buffer)
+	(gnus-undo-register
+	  `(progn
+	     (gnus-info-set-marks ',info ',(gnus-info-marks info) t)
+	     (gnus-info-set-read ',info ',(gnus-info-read info))
+	     (gnus-get-unread-articles-in-group ',info (gnus-active ,group))
+	     (gnus-group-update-group ,group t))))
+      ;; If the read list is nil, we init it.
+      (and active
+	   (null (gnus-info-read info))
+	   (> (car active) 1)
+	   (gnus-info-set-read info (cons 1 (1- (car active)))))
+      ;; Then we add the read articles to the range.
+      (gnus-info-set-read
+       info
+       (setq range
+	     (gnus-add-to-range
+	      (gnus-info-read info) (setq articles (sort articles '<)))))
+      ;; Then we have to re-compute how many unread
+      ;; articles there are in this group.
+      (when active
+	(cond
+	 ((not range)
+	  (setq num (- (1+ (cdr active)) (car active))))
+	 ((not (listp (cdr range)))
+	  (setq num (- (cdr active) (- (1+ (cdr range))
+				       (car range)))))
+	 (t
+	  (while range
+	    (if (numberp (car range))
+		(setq num (1+ num))
+	      (setq num (+ num (- (1+ (cdar range)) (caar range)))))
+	    (setq range (cdr range)))
+	  (setq num (- (cdr active) num))))
+	;; Update the number of unread articles.
+	(setcar entry num)
+	;; Update the group buffer.
+	(gnus-group-update-group group t)))))
 
 (defun gnus-methods-equal-p (m1 m2)
   (let ((m1 (or m1 gnus-select-method))
@@ -4745,7 +4774,7 @@ displayed, no centering will be performed."
       (push first unread)
       (setq first (1+ first)))
     ;; Return the list of unread articles.
-    (nreverse unread)))
+    (delq 0 (nreverse unread))))
 
 (defun gnus-list-of-read-articles (group)
   "Return a list of unread, unticked and non-dormant articles."
@@ -7257,8 +7286,8 @@ number of articles marked is returned."
 
 (defun gnus-summary-unmark-as-processable (n)
   "Remove the process mark from the next N articles.
-If N is negative, mark backward instead.  The difference between N and
-the actual number of articles marked is returned."
+If N is negative, unmark backward instead.  The difference between N and
+the actual number of articles unmarked is returned."
   (interactive "p")
   (gnus-set-global-variables)
   (gnus-summary-mark-as-processable n t))

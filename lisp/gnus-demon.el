@@ -105,9 +105,8 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
   "Initialize the Gnus daemon."
   (interactive)
   (gnus-demon-cancel)
-  (if (null gnus-demon-handlers)
-      ()				; Nothing to do.
-    ;; Set up timer.
+  (when gnus-demon-handlers
+    ;; Set up the timer.
     (setq gnus-demon-timer
 	  (nnheader-run-at-time
 	   gnus-demon-timestep gnus-demon-timestep 'gnus-demon))
@@ -130,7 +129,8 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
   (when gnus-demon-timer
     (nnheader-cancel-timer gnus-demon-timer))
   (setq gnus-demon-timer nil
-	gnus-use-demon nil)
+	gnus-use-demon nil
+	gnus-demon-idle-has-been-called nil)
   (condition-case ()
       (nnheader-cancel-function-timers 'gnus-demon)
     (error t)))

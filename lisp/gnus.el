@@ -203,6 +203,10 @@
   :group 'gnus
   :group 'faces)
 
+(defgroup gnus-agent nil
+  "Offline support for Gnus."
+  :group 'gnus)
+
 (defgroup gnus-files nil
   "Files used by Gnus."
   :group 'gnus)
@@ -240,10 +244,10 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.67"
+(defconst gnus-version-number  "0.1"
   "Version number for this version of Gnus.")
 
-(defconst gnus-version (format "Gnus v%s" gnus-version-number)
+(defconst gnus-version (format "Quassia Gnus v%s" gnus-version-number)
   "Version string for this version of Gnus.")
 
 (defcustom gnus-inhibit-startup-message nil
@@ -636,10 +640,10 @@ be set in `.emacs' instead."
 (defface gnus-splash-face
   '((((class color)
       (background dark))
-     (:foreground "red"))
+     (:foreground "green"))
     (((class color)
       (background light))
-     (:foreground "red"))
+     (:foreground "green"))
     (t
      ()))
   "Level 1 newsgroup face.")
@@ -1155,7 +1159,8 @@ slower."
     ("nndraft" post-mail)
     ("nnfolder" mail respool address)
     ("nngateway" none address prompt-address physical-address)
-    ("nnweb" none))
+    ("nnweb" none)
+    ("nnagent" post-mail))
   "An alist of valid select methods.
 The first element of each list lists should be a string with the name
 of the select method.  The other elements may be the category of
@@ -1397,6 +1402,12 @@ want."
 (defvar gnus-original-article-buffer " *Original Article*")
 (defvar gnus-newsgroup-name nil)
 
+(defvar gnus-agent nil
+  "Whether we want to use the Gnus agent or not.")
+
+(defvar gnus-command-method nil
+  "Dynamically bound variable that says what the current backend is.")
+
 (defvar gnus-current-select-method nil
   "The current method for selecting a newsgroup.")
 
@@ -1434,7 +1445,7 @@ want."
     (expirable . expire) (killed . killed)
     (bookmarks . bookmark) (dormant . dormant)
     (scored . score) (saved . save)
-    (cached . cache)))
+    (cached . cache) (downloadable . download)))
 
 (defvar gnus-headers-retrieved-by nil)
 (defvar gnus-article-reply nil)
@@ -1576,7 +1587,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-tree-open gnus-tree-close gnus-carpal-setup-buffer)
      ("gnus-nocem" gnus-nocem-scan-groups gnus-nocem-close
       gnus-nocem-unwanted-article-p)
-     ("gnus-srvr" gnus-enter-server-buffer gnus-server-set-info)
+     ("gnus-srvr" gnus-enter-server-buffer gnus-server-set-info
+      gnus-server-server-name)
      ("gnus-srvr" gnus-browse-foreign-server)
      ("gnus-cite" :interactive t
       gnus-article-highlight-citation gnus-article-hide-citation-maybe
@@ -1683,6 +1695,10 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-async" gnus-async-request-fetched-article gnus-async-prefetch-next
       gnus-async-prefetch-article gnus-async-prefetch-remove-group
       gnus-async-halt-prefetch)
+     ("gnus-agent" gnus-open-agent gnus-agent-get-function
+      gnus-agent-save-groups gnus-agent-save-active)
+     ("gnus-agent" :interactive t
+      gnus-unplugged)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
       gnus-summary-save-article-vm))))
 
@@ -1725,6 +1741,7 @@ with some simple extensions.
 %l   GroupLens score (string).
 %V   Total thread score (number).
 %P   The line number (number).
+%O   Download mark (character).
 %u   User defined specifier.  The next character in the format string should
      be a letter.  Gnus will call the function gnus-user-format-function-X,
      where X is the letter following %u.  The function will be passed the
@@ -2245,6 +2262,15 @@ You should probably use `gnus-find-method-for-group' instead."
 			    gmethod)))
       (setq methods (cdr methods)))
     methods))
+
+(defun gnus-groups-from-server (server)
+  "Return a list of all groups that are fetched from SERVER."
+  (let ((alist (cdr gnus-newsrc-alist))
+	info groups)
+    (while (setq info (pop alist))
+      (when (gnus-server-equal (gnus-info-method info) server)
+	(push (gnus-info-group info) groups)))
+    (sort groups 'string<)))
 
 (defun gnus-group-foreign-p (group)
   "Say whether a group is foreign or not."

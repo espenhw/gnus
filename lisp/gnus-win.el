@@ -157,6 +157,9 @@
      (vertical 1.0
 	       (summary 0.5 point)
 	       ("*Score Words*" 1.0)))
+    (category
+     (vertical 1.0
+	       (category 1.0)))
     (compose-bounce
      (vertical 1.0
 	       (article 0.5)
@@ -186,6 +189,7 @@ See the Gnus manual for an explanation of the syntax used.")
     (tree . gnus-tree-buffer)
     (score-trace . "*Score Trace*")
     (info . gnus-info-buffer)
+    (category . gnus-category-buffer)
     (article-copy . gnus-article-copy)
     (draft . gnus-draft-buffer))
   "Mapping from short symbols to buffer names or buffer variables.")

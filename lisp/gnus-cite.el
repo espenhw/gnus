@@ -107,7 +107,7 @@ The first regexp group should match the Supercite attribution."
   :type 'regexp)
 
 (defcustom gnus-cite-attribution-suffix
-  "\\(\\(wrote\\|writes\\|said\\|says\\|>\\)\\(:\\|\\.\\.\\.\\)\\)[ 	]*$"
+  "\\(\\(wrote\\|writes\\|said\\|says\\|>\\)\\(:\\|\\.\\.\\.\\)\\)[ \t]*$"
   "Regexp matching the end of an attribution line.
 The text matching the first grouping will be used as a button."
   :group 'gnus-cite
@@ -449,9 +449,7 @@ See the documentation for `gnus-article-highlight-citation'.
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
   (interactive (append (gnus-article-hidden-arg) (list 'force)))
-  (setq gnus-cited-text-button-line-format-spec
-	(gnus-parse-format gnus-cited-text-button-line-format
-			   gnus-cited-text-button-line-format-alist t))
+  (gnus-set-format 'cited-text-button t)
   (save-excursion
     (set-buffer gnus-article-buffer)
     (cond

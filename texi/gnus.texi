@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.67 Manual
+@settitle Quassia Gnus 0.1 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -309,7 +309,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.67 Manual
+@title Quassia Gnus 0.1 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -345,7 +345,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.67.
+This manual corresponds to Quassia Gnus 0.1.
 
 @end ifinfo
 
@@ -984,13 +984,17 @@ A hook run while Gnus is being loaded.  Note that this hook will
 normally be run just once in each Emacs session, no matter how many
 times you start Gnus.
 
+@item gnus-before-startup-hook
+@vindex gnus-before-startup-hook
+A hook run after starting up Gnus successfully.
+
 @item gnus-startup-hook
 @vindex gnus-startup-hook
-A hook run after starting up Gnus successfully.
+A hook run as the very last thing after starting up Gnus
 
 @item gnus-started-hook
 @vindex gnus-started-hook
-A hook run as the very last thing after starting up Gnus
+A hook that is run as the very last thing after starting up Gnus
 successfully.
 
 @item gnus-check-bogus-newsgroups
@@ -1629,7 +1633,7 @@ Two closely related variables are @code{gnus-level-default-subscribed}
 (default 3) and @code{gnus-level-default-unsubscribed} (default 6),
 which are the levels that new groups will be put on if they are
 (un)subscribed.  These two variables should, of course, be inside the
-relevant legal ranges.
+relevant valid ranges.
 
 @vindex gnus-keep-same-level
 If @code{gnus-keep-same-level} is non-@code{nil}, some movement commands
@@ -1776,7 +1780,7 @@ to subscribe to @sc{nntp} groups, @pxref{Browse Foreign Server}.
 @findex gnus-group-rename-group
 @cindex renaming groups
 Rename the current group to something else
-(@code{gnus-group-rename-group}).  This is legal only on some
+(@code{gnus-group-rename-group}).  This is valid only on some
 groups---mail groups mostly.  This command might very well be quite slow
 on some backends.
 
@@ -1871,7 +1875,7 @@ this command without a prefix, Gnus will guess at the file type.
 Make an ephemeral group based on a web search
 (@code{gnus-group-make-web-group}).  If you give a prefix to this
 command, make a solid group instead.  You will be prompted for the
-search engine type and the search string.  Legal search engine types
+search engine type and the search string.  Valid search engine types
 include @code{dejanews}, @code{altavista} and @code{reference}.
 @xref{Web Searches}.
 
@@ -2004,14 +2008,14 @@ the symbols @code{never} or @code{immediate}.
 @item score-file
 @cindex score file group parameter
 Elements that look like @code{(score-file . "file")} will make
-@file{file} into the current score file for the group in question.  This
-means that all score commands you issue will end up in that file. 
+@file{file} into the current adaptive score file for the group in
+question.  All adaptive score entries will be put into this file.
 
 @item adapt-file
 @cindex adapt file group parameter
 Elements that look like @code{(adapt-file . "file")} will make
-@file{file} into the current adaptive score file for the group in
-question.  All adaptive score entries will be put into this file.
+@file{file} into the current adaptive file for the group in question.
+All adaptive score entries will be put into this file.
 
 @item admin-address
 When unsubscribing from a mailing list you should never send the
@@ -2021,7 +2025,7 @@ put the admin address somewhere convenient.
 
 @item display
 Elements that look like @code{(display . MODE)} say which articles to
-display on entering the group.  Legal values are:
+display on entering the group.  Valid values are:
 
 @table @code
 @item all
@@ -2524,7 +2528,7 @@ really neat, I think.
 @vindex gnus-topic-line-format
 The topic lines themselves are created according to the
 @code{gnus-topic-line-format} variable (@pxref{Formatting Variables}).
-Legal elements are:
+Valid elements are:
 
 @table @samp
 @item i
@@ -2781,7 +2785,7 @@ allowed---@code{visible} and @code{invisible}.
 @cindex topic parameters
 
 All groups in a topic will inherit group parameters from the parent (and
-ancestor) topic parameters.  All legal group parameters are legal topic
+ancestor) topic parameters.  All valid group parameters are valid topic
 parameters (@pxref{Group Parameters}).  
 
 Group parameters (of course) override topic parameters, and topic
@@ -3233,6 +3237,8 @@ An @samp{=} (@code{gnus-not-empty-thread-mark}) will be displayed if the
 article has any children.
 @item P
 The line number.
+@item O
+Download mark.
 @item u
 User defined specifier.  The next character in the format string should
 be a letter.  Gnus will call the function
@@ -3245,7 +3251,7 @@ into the summary just like information from any other summary specifier.
 The @samp{%U} (status), @samp{%R} (replied) and @samp{%z} (zcore) specs
 have to be handled with care.  For reasons of efficiency, Gnus will
 compute what column these characters will end up in, and ``hard-code''
-that.  This means that it is illegal to have these specs after a
+that.  This means that it is invalid to have these specs after a
 variable-length spec.  Well, you might not be arrested, but your summary
 buffer will look strange, which is bad enough.
 
@@ -3518,8 +3524,8 @@ Go to the article with the highest score
 @findex gnus-summary-goto-last-article
 Go to the previous article read (@code{gnus-summary-goto-last-article}).
 
-@item G p
-@kindex G p (Summary)
+@item G o
+@kindex G o (Summary)
 @findex gnus-summary-pop-article
 Pop an article off the summary history and go to this article
 (@code{gnus-summary-pop-article}).  This command differs from the
@@ -5388,6 +5394,7 @@ encoded in some way or other.  Gnus can decode them for you.
 * Uuencoded Articles::    Uudecode articles.
 * Shared Articles::       Unshar articles.
 * PostScript Files::      Split PostScript.
+* Other Files::           Plain save and binhex.
 * Decoding Variables::    Variables for a happy decoding.
 * Viewing Files::         You want to look at the result of the decoding?
 @end menu
@@ -5439,7 +5446,8 @@ Uudecodes and views the current series (@code{gnus-uu-decode-uu-view}).
 @kindex X v U (Summary)
 @findex gnus-uu-decode-uu-and-save-view
 Uudecodes, views and saves the current series
-(@code{gnus-uu-decode-uu-and-save-view}). 
+(@code{gnus-uu-decode-uu-and-save-view}).
+
 @end table
 
 Remember that these all react to the presence of articles marked with
@@ -5521,6 +5529,24 @@ View the current PostScript series
 @findex gnus-uu-decode-postscript-and-save-view
 View and save the current PostScript series
 (@code{gnus-uu-decode-postscript-and-save-view}). 
+@end table
+
+
+@node Other Files
+@subsection Other Files
+
+@table @kbd
+@item X o
+@kindex X o (Summary)
+@findex gnus-uu-decode-save
+Save the current series
+(@code{gnus-uu-decode-save}).
+
+@item X b
+@kindex X b (Summary)
+@findex gnus-uu-decode-binhex
+Unbinhex the current series (@code{gnus-uu-decode-binhex}).  This
+doesn't really work yet.
 @end table
 
 
@@ -5993,7 +6019,7 @@ is hidden.
 Gnus adds buttons to show where the cited text has been hidden, and to
 allow toggle hiding the text.  The format of the variable is specified
 by this format-like variable (@pxref{Formatting Variables}).  These
-specs are legal:
+specs are valid:
 
 @table @samp
 @item b
@@ -6653,7 +6679,7 @@ A hook called in all tree mode buffers.
 @item gnus-tree-mode-line-format
 @vindex gnus-tree-mode-line-format
 A format string for the mode bar in the tree mode buffers.  The default
-is @samp{Gnus: %%b [%A] %Z}.  For a list of legal specs, @pxref{Summary
+is @samp{Gnus: %%b [%A] %Z}.  For a list of valid specs, @pxref{Summary
 Buffer Mode Line}. 
 
 @item gnus-selected-tree-face
@@ -6669,7 +6695,7 @@ is @samp{%(%[%3,3n%]%)}, which displays the first three characters of
 the name of the poster.  It is vital that all nodes are of the same
 length, so you @emph{must} use @samp{%4,4n}-like specifiers.
 
-Legal specs are:
+Valid specs are:
 
 @table @samp
 @item n
@@ -6777,7 +6803,7 @@ following to your @file{.gnus.el} file:
 @cindex mail group commands
 
 Some commands only make sense in mail groups.  If these commands are
-illegal in the current group, they will raise hell and let you know.
+invalid in the current group, they will raise a hell and let you know.
 
 All these commands (except the expiry and edit commands) use the
 process/prefix convention (@pxref{Process/Prefix}).
@@ -10014,7 +10040,7 @@ This should be one of @code{mbox}, @code{babyl}, @code{digest},
 @item nndoc-post-type
 @vindex nndoc-post-type
 This variable says whether Gnus is to consider the group a news group or
-a mail group.  There are two legal values:  @code{mail} (the default)
+a mail group.  There are two valid values:  @code{mail} (the default)
 and @code{news}.
 @end table
 
@@ -10142,7 +10168,7 @@ is of @code{mmdf} type, and so on.  These type predicates should return
 @code{nil} if the document is not of the correct type; @code{t} if it is
 of the correct type; and a number if the document might be of the
 correct type.  A high number means high probability; a low number means
-low probability with @samp{0} being the lowest legal number.
+low probability with @samp{0} being the lowest valid number.
 
 
 @node SOUP
@@ -10883,7 +10909,7 @@ Score on the head.
 @end table
 
 @item
-The third key is the match type.  Which match types are legal depends on
+The third key is the match type.  Which match types are valid depends on
 what headers you are scoring on.
 
 @table @code
@@ -11165,7 +11191,7 @@ approach, see @pxref{Advanced Scoring}.
 
 Even though this looks much like lisp code, nothing here is actually
 @code{eval}ed.  The lisp reader is used to read this form, though, so it
-has to be legal syntactically, if not semantically.
+has to be valid syntactically, if not semantically.
 
 Six keys are supported by this alist:
 
@@ -12098,7 +12124,7 @@ In either case, GroupLens gives you a few choices for how you would like
 to see your predictions displayed.  The display of predictions is
 controlled by the @code{grouplens-prediction-display} variable.
 
-The following are legal values for that variable.
+The following are valid values for that variable.
 
 @table @code
 @item prediction-spot
@@ -12551,7 +12577,7 @@ Padding, limiting, cutting off parts and suppressing certain values can
 be achieved by using @dfn{tilde modifiers}.  A typical tilde spec might
 look like @samp{%~(cut 3)~(ignore "0")y}.
 
-These are the legal modifiers:
+These are the valid modifiers:
 
 @table @code
 @item pad
@@ -12759,7 +12785,7 @@ For each split, there @emph{must} be one element that has the 100% tag.
 The splitting is never accurate, and this buffer will eat any leftover
 lines from the splits.
 
-To be slightly more formal, here's a definition of what a legal split
+To be slightly more formal, here's a definition of what a valid split
 may look like:
 
 @example
@@ -12972,7 +12998,7 @@ colors or fonts.  This will also inhibit loading the @file{gnus-vis.el}
 file.
 
 This variable can be a list of visual properties that are enabled.  The
-following elements are legal, and are all included by default:
+following elements are valid, and are all included by default:
 
 @table @code
 @item group-highlight
@@ -13621,7 +13647,6 @@ The name of the buffer that @code{picons} points to.  Defaults to
 
 @end table
 
-
 @node Smileys
 @subsection Smileys
 @cindex smileys
@@ -13766,6 +13791,8 @@ default.
 @end table
 
 
+
+
 @node Fuzzy Matching
 @section Fuzzy Matching
 @cindex fuzzy matching
@@ -13813,7 +13840,7 @@ This is annoying.
 The way to deal with this is having Gnus split out all spam into a
 @samp{spam} mail group (@pxref{Splitting Mail}).
 
-First, pick one (1) legal mail address that you can be reached at, and
+First, pick one (1) valid mail address that you can be reached at, and
 put it in your @code{From} header of all your news articles.  (I've
 chosen @samp{larsi@@trym.ifi.uio.no}, but for many addresses on the form
 @samp{larsi+usenet@@ifi.uio.no} will be a better choice.  Ask your
@@ -13934,10 +13961,10 @@ read when doing the operation described above.
 @item nnheader-file-name-translation-alist 
 @vindex nnheader-file-name-translation-alist 
 @cindex file names
-@cindex illegal characters in file names
+@cindex invalid characters in file names
 @cindex characters in file names
 This is an alist that says how to translate characters in file names.
-For instance, if @samp{:} is illegal as a file character in file names
+For instance, if @samp{:} is invalid as a file character in file names
 on your system (you OS/2 user you), you could say something like:
 
 @lisp
@@ -15191,7 +15218,7 @@ A machine one can connect to and get news (or mail) from.
 @item select method
 @cindex select method
 A structure that specifies the backend, the server and the virtual
-server parameters.
+server settings.
 
 @item virtual server
 @cindex virtual server
@@ -16478,7 +16505,7 @@ are equal.  In fact, any non-descending list is a range:
 @end example
 
 is a perfectly valid range, although a pretty long-winded one.  This is
-also legal:
+also valid:
 
 @example
 (1 . 5)

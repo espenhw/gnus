@@ -181,10 +181,10 @@ with some simple extensions.
     (beginning-of-line)
     (get-text-property (point) 'gnus-active)))
 
-(defun gnus-topic-find-groups (topic &optional level all)
+(defun gnus-topic-find-groups (topic &optional level all lowest)
   "Return entries for all visible groups in TOPIC."
   (let ((groups (cdr (assoc topic gnus-topic-alist)))
-        info clevel unread group lowest params visible-groups entry active)
+        info clevel unread group params visible-groups entry active)
     (setq lowest (or lowest 1))
     (setq level (or level 7))
     ;; We go through the newsrc to look for matches.
@@ -371,7 +371,8 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
       (erase-buffer))
 
     ;; List dead groups?
-    (when (and (>= level gnus-level-zombie) (<= lowest gnus-level-zombie))
+    (when (and (>= level gnus-level-zombie)
+	       (<= lowest gnus-level-zombie))
       (gnus-group-prepare-flat-list-dead
        (setq gnus-zombie-list (sort gnus-zombie-list 'string<))
        gnus-level-zombie ?Z
@@ -389,20 +390,23 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 	  (if list-topic
 	      (let ((top (gnus-topic-find-topology list-topic)))
 		(gnus-topic-prepare-topic (cdr top) (car top)
-					  (or topic-level level) all))
+					  (or topic-level level) all
+					  nil lowest))
 	    (gnus-topic-prepare-topic gnus-topic-topology 0
-				      (or topic-level level) all)))
+				      (or topic-level level) all
+				      nil lowest)))
 
       (gnus-group-set-mode-line)
       (setq gnus-group-list-mode (cons level all))
       (run-hooks 'gnus-group-prepare-hook))))
 
-(defun gnus-topic-prepare-topic (topicl level &optional list-level all silent)
+(defun gnus-topic-prepare-topic (topicl level &optional list-level all silent
+					lowest)
   "Insert TOPIC into the group buffer.
 If SILENT, don't insert anything.  Return the number of unread
 articles in the topic and its subtopics."
   (let* ((type (pop topicl))
-	 (entries (gnus-topic-find-groups (car type) list-level all))
+	 (entries (gnus-topic-find-groups (car type) list-level all lowest))
 	 (visiblep (and (eq (nth 1 type) 'visible) (not silent)))
 	 (gnus-group-indentation
 	  (make-string (* gnus-topic-indent-level level) ? ))
@@ -418,7 +422,7 @@ articles in the topic and its subtopics."
       (incf unread
 	    (gnus-topic-prepare-topic
 	     (pop topicl) (1+ level) list-level all
-	     (not visiblep))))
+	     (not visiblep) lowest)))
     (setq end (point))
     (goto-char beg)
     ;; Insert all the groups that belong in this topic.
@@ -943,13 +947,11 @@ articles in the topic and its subtopics."
 	  (if (null arg) (not gnus-topic-mode)
 	    (> (prefix-numeric-value arg) 0)))
     ;; Infest Gnus with topics.
-    (if (not gnus-topic-mode)
-	(setq gnus-goto-missing-group-function nil)
+     (if (not gnus-topic-mode)
+ 	(setq gnus-goto-missing-group-function nil)
       (when (gnus-visual-p 'topic-menu 'menu)
 	(gnus-topic-make-menu-bar))
-      (setq gnus-topic-line-format-spec
-	    (gnus-parse-format gnus-topic-line-format
-			       gnus-topic-line-format-alist t))
+      (gnus-set-format 'topic t)
       (gnus-add-minor-mode 'gnus-topic-mode " Topic" gnus-topic-mode-map)
       (add-hook 'gnus-summary-exit-hook 'gnus-topic-update-topic)
       (add-hook 'gnus-group-catchup-group-hook 'gnus-topic-update-topic)

@@ -381,7 +381,7 @@ Cache the result as a text property stored in DATE."
 (defun gnus-date-iso8601 (header)
   "Convert the date field in HEADER to YYMMDDTHHMMSS"
   (condition-case ()
-      (gnus-time-iso8601 (gnus-date-get-time (mail-header-date header)))
+      (gnus-time-iso8601 (gnus-date-get-time header))
     (error "")))
 
 (defun gnus-mode-string-quote (string)

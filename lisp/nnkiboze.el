@@ -283,7 +283,8 @@ Finds out what articles are to be part of the nnkiboze groups."
 					   (car ginfo)))
 				  0))
 			   (progn
-			     (gnus-group-select-group nil)
+			     (ignore-errors 
+			       (gnus-group-select-group nil))
 			     (eq major-mode 'gnus-summary-mode)))
 		  ;; We are now in the group where we want to be.
 		  (setq method (gnus-find-method-for-group

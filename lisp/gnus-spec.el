@@ -525,6 +525,14 @@ If PROPS, insert the result."
       (gnus-dribble-enter " ")
       (gnus-message 7 "Compiling user specs...done"))))
 
+(defun gnus-set-format (type &optional insertable)
+  (set (intern (format "gnus-%s-line-format-spec" type))
+       (gnus-parse-format
+	(symbol-value (intern (format "gnus-%s-line-format" type)))
+	(symbol-value (intern (format "gnus-%s-line-format-alist" type)))
+	insertable)))
+	
+
 (provide 'gnus-spec)
 
 ;;; gnus-spec.el ends here

@@ -118,7 +118,7 @@ seen in the same session."
     (while (setq datum (pop data))
       (when (and (not (gnus-data-pseudo-p datum))
 		 (> (gnus-data-number datum) 0)
-		 (gnus-data-read-p datum)
+		 (not (memq (gnus-data-number datum) gnus-newsgroup-unreads))
 		 (not (= (gnus-data-mark datum) gnus-canceled-mark))
  		 (setq msgid (mail-header-id (gnus-data-header datum)))
  		 (not (nnheader-fake-message-id-p msgid))

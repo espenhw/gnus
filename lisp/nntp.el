@@ -1,5 +1,5 @@
 ;;; nntp.el --- nntp access for Gnus
-;;; Copyright (C) 1987,88,89,90,92,93,94,95,96,97 Free Software Foundation, Inc.
+;;; Copyright (C) 1987-90,92-97 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -339,6 +339,20 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 
 (nnoo-define-basics nntp)
 
+(defsubst nntp-next-result-arrived-p ()
+  (let ((point (point)))
+    (cond
+     ((eq (following-char) ?2)
+      (if (re-search-forward "\n\\.\r?\n" nil t)
+	  t
+	(goto-char point)
+	nil))
+     ((looking-at "[34]")
+      (forward-line 1)
+      t)
+     (t
+      nil))))
+
 (deffoo nntp-retrieve-headers (articles &optional group server fetch-old)
   "Retrieve the headers of ARTICLES."
   (nntp-possibly-change-group group server)
@@ -358,48 +372,37 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	    (last-point (point-min))
 	    (buf (nntp-find-connection-buffer nntp-server-buffer))
 	    (nntp-inhibit-erase t))
-	;; Send HEAD command.
-	(while articles
-	  (nntp-send-command
-	   nil
-	   "HEAD" (if (numberp (car articles))
-		      (int-to-string (car articles))
-		    ;; `articles' is either a list of article numbers
-		    ;; or a list of article IDs.
-		    (car articles)))
-	  (setq articles (cdr articles)
-		count (1+ count))
-	  ;; Every 400 header requests we have to read the stream in
-	  ;; order to avoid deadlocks.
-	  (when (or (null articles)	;All requests have been sent.
-		    (zerop (% count nntp-maximum-request)))
-	    (nntp-accept-response)
-	    (while (progn
-		     (progn
-		       (set-buffer buf)
-		       (goto-char last-point))
-		     ;; Count replies.
-		     (while (re-search-forward "^[0-9]" nil t)
-		       (incf received))
-		     (setq last-point (point))
-		     (< received count))
-	      ;; If number of headers is greater than 100, give
-	      ;;  informative messages.
-	      (and (numberp nntp-large-newsgroup)
-		   (> number nntp-large-newsgroup)
-		   (zerop (% received 20))
-		   (nnheader-message 6 "NNTP: Receiving headers... %d%%"
-				     (/ (* received 100) number)))
-	      (nntp-accept-response))))
-	;; Wait for text of last command.
-	(goto-char (point-max))
-	(re-search-backward "^[0-9]" nil t)
-	(when (looking-at "^[23]")
+	;; Send HEAD commands.
+      (while (setq article (pop articles))
+	(nntp-send-command
+	 nil
+	 "HEAD" (if (numberp article)
+		    (int-to-string article)
+		  ;; `articles' is either a list of article numbers
+		  ;; or a list of article IDs.
+		  article))
+	(incf count)
+	;; Every 400 requests we have to read the stream in
+	;; order to avoid deadlocks.
+	(when (or (null articles)	;All requests have been sent.
+		  (zerop (% count nntp-maximum-request)))
+	  (nntp-accept-response)
 	  (while (progn
-		   (goto-char (point-max))
-		   (forward-line -1)
-		   (not (looking-at "^\\.\r?\n")))
-	    (nntp-accept-response)))
+		   (set-buffer buf)
+		   (goto-char last-point)
+		   ;; Count replies.
+		   (while (nntp-next-result-arrived-p)
+		     (setq last-point (point))
+		     (incf received))
+		   (< received count))
+	    ;; If number of headers is greater than 100, give
+	    ;;  informative messages.
+	    (and (numberp nntp-large-newsgroup)
+		 (> number nntp-large-newsgroup)
+		 (zerop (% received 20))
+		 (nnheader-message 6 "NNTP: Receiving headers... %d%%"
+				   (/ (* received 100) number)))
+	    (nntp-accept-response))))
 	(and (numberp nntp-large-newsgroup)
 	     (> number nntp-large-newsgroup)
 	     (nnheader-message 6 "NNTP: Receiving headers...done"))
@@ -487,7 +490,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	  article alist)
       (set-buffer buf)
       (erase-buffer)
-      ;; Send HEAD command.
+      ;; Send ARTICLE command.
       (while (setq article (pop articles))
 	(nntp-send-command
 	 nil
@@ -503,14 +506,13 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 		  (zerop (% count nntp-maximum-request)))
 	  (nntp-accept-response)
 	  (while (progn
-		   (progn
-		     (set-buffer buf)
-		     (goto-char last-point))
+		   (set-buffer buf)
+		   (goto-char last-point)
 		   ;; Count replies.
 		   (while (nntp-next-result-arrived-p)
 		     (aset map received (cons (aref map received) (point)))
+		     (setq last-point (point))
 		     (incf received))
-		   (setq last-point (point))
 		   (< received count))
 	    ;; If number of headers is greater than 100, give
 	    ;;  informative messages.
@@ -522,12 +524,13 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	    (nntp-accept-response))))
       (and (numberp nntp-large-newsgroup)
 	   (> number nntp-large-newsgroup)
-	   (nnheader-message 6 "NNTP: Receiving headers...done"))
-
+	   (nnheader-message 6 "NNTP: Receiving articles...done"))
+      
       ;; Now we have all the responses.  We go through the results,
       ;; washes it and copies it over to the server buffer.
       (set-buffer nntp-server-buffer)
       (erase-buffer)
+      (setq last-point (point-min))
       (mapcar
        (lambda (entry)
 	 (narrow-to-region
@@ -535,24 +538,11 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	  (progn
 	    (insert-buffer-substring buf last-point (cdr entry))
 	    (point-max)))
+	 (setq last-point (cdr entry))
 	 (nntp-decode-text)
 	 (widen)
 	 (cons (car entry) point))
        map))))
-
-(defun nntp-next-result-arrived-p ()
-  (let ((point (point)))
-    (cond
-     ((looking-at "2")
-      (if (re-search-forward "\n.\r?\n" nil t)
-	  t
-	(goto-char point)
-	nil))
-     ((looking-at "[34]")
-      (forward-line 1)
-      t)
-     (t
-      nil))))
 
 (defun nntp-try-list-active (group)
   (nntp-list-active-group group)
@@ -634,7 +624,8 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
     (while (setq process (car (pop nntp-connection-alist)))
       (when (memq (process-status process) '(open run))
 	(set-process-sentinel process nil)
-	(nntp-send-string process "QUIT"))
+	(ignore-errors
+	  (nntp-send-string process "QUIT")))
       (when (buffer-name (process-buffer process))
 	(kill-buffer (process-buffer process))))
     (nnoo-close-server 'nntp)))

@@ -70,25 +70,24 @@ It accepts the same format specs that `gnus-summary-line-format' does."
 (unless gnus-pick-mode-map
   (setq gnus-pick-mode-map (make-sparse-keymap))
 
-  (gnus-define-keys
-   gnus-pick-mode-map
-   "t" gnus-uu-mark-thread
-   "T" gnus-uu-unmark-thread
-   " " gnus-pick-next-page
-   "u" gnus-summary-unmark-as-processable
-   "U" gnus-summary-unmark-all-processable
-   "v" gnus-uu-mark-over
-   "r" gnus-uu-mark-region
-   "R" gnus-uu-unmark-region
-   "e" gnus-uu-mark-by-regexp
-   "E" gnus-uu-mark-by-regexp
-   "b" gnus-uu-mark-buffer
-   "B" gnus-uu-unmark-buffer
-   "." gnus-pick-article
-   gnus-down-mouse-2 gnus-pick-mouse-pick-region
-   ;;gnus-mouse-2 gnus-pick-mouse-pick
-   "X" gnus-pick-start-reading
-   "\r" gnus-pick-start-reading))
+  (gnus-define-keys gnus-pick-mode-map
+    "t" gnus-uu-mark-thread
+    "T" gnus-uu-unmark-thread
+    " " gnus-pick-next-page
+    "u" gnus-summary-unmark-as-processable
+    "U" gnus-summary-unmark-all-processable
+    "v" gnus-uu-mark-over
+    "r" gnus-uu-mark-region
+    "R" gnus-uu-unmark-region
+    "e" gnus-uu-mark-by-regexp
+    "E" gnus-uu-mark-by-regexp
+    "b" gnus-uu-mark-buffer
+    "B" gnus-uu-unmark-buffer
+    "." gnus-pick-article
+    gnus-down-mouse-2 gnus-pick-mouse-pick-region
+    ;;gnus-mouse-2 gnus-pick-mouse-pick
+    "X" gnus-pick-start-reading
+    "\r" gnus-pick-start-reading))
 
 (defun gnus-pick-make-menu-bar ()
   (unless (boundp 'gnus-pick-menu)
@@ -445,12 +444,8 @@ Two predefined functions are available:
 (defun gnus-tree-mode ()
   "Major mode for displaying thread trees."
   (interactive)
-  (setq gnus-tree-mode-line-format-spec
-	(gnus-parse-format gnus-tree-mode-line-format
-			   gnus-summary-mode-line-format-alist))
-  (setq gnus-tree-line-format-spec
-	(gnus-parse-format gnus-tree-line-format
-			   gnus-tree-line-format-alist t))
+  (gnus-set-format 'tree-mode)
+  (gnus-set-format 'tree t)
   (when (gnus-visual-p 'tree-menu 'menu)
     (gnus-tree-make-menu-bar))
   (kill-all-local-variables)

@@ -39,9 +39,16 @@
 (defconst gnus-server-line-format "     {%(%h:%w%)} %s\n"
   "Format of server lines.
 It works along the same lines as a normal formatting string,
-with some simple extensions.")
+with some simple extensions.
 
-(defvar gnus-server-mode-line-format "Gnus  List of servers"
+The following specs are understood:
+
+%h backend
+%n name
+%w address
+%s status")
+
+(defvar gnus-server-mode-line-format "Gnus: %%b"
   "The format specification for the server mode line.")
 
 (defvar gnus-server-exit-hook nil
@@ -108,28 +115,27 @@ with some simple extensions.")
   (setq gnus-server-mode-map (make-sparse-keymap))
   (suppress-keymap gnus-server-mode-map)
 
-  (gnus-define-keys
-   gnus-server-mode-map
-   " " gnus-server-read-server
-   "\r" gnus-server-read-server
-   gnus-mouse-2 gnus-server-pick-server
-   "q" gnus-server-exit
-   "l" gnus-server-list-servers
-   "k" gnus-server-kill-server
-   "y" gnus-server-yank-server
-   "c" gnus-server-copy-server
-   "a" gnus-server-add-server
-   "e" gnus-server-edit-server
-   "s" gnus-server-scan-server
+  (gnus-define-keys gnus-server-mode-map
+    " " gnus-server-read-server
+    "\r" gnus-server-read-server
+    gnus-mouse-2 gnus-server-pick-server
+    "q" gnus-server-exit
+    "l" gnus-server-list-servers
+    "k" gnus-server-kill-server
+    "y" gnus-server-yank-server
+    "c" gnus-server-copy-server
+    "a" gnus-server-add-server
+    "e" gnus-server-edit-server
+    "s" gnus-server-scan-server
 
-   "O" gnus-server-open-server
-   "\M-o" gnus-server-open-all-servers
-   "C" gnus-server-close-server
-   "\M-c" gnus-server-close-all-servers
-   "D" gnus-server-deny-server
-   "R" gnus-server-remove-denials
+    "O" gnus-server-open-server
+    "\M-o" gnus-server-open-all-servers
+    "C" gnus-server-close-server
+    "\M-c" gnus-server-close-all-servers
+    "D" gnus-server-deny-server
+    "R" gnus-server-remove-denials
 
-   "g" gnus-server-regenerate-server
+    "g" gnus-server-regenerate-server
 
     "\C-c\C-i" gnus-info-find-node
     "\C-c\C-b" gnus-bug))
@@ -195,12 +201,8 @@ The following commands are available:
 	(gnus-carpal-setup-buffer 'server)))))
 
 (defun gnus-server-prepare ()
-  (setq gnus-server-mode-line-format-spec
-	(gnus-parse-format gnus-server-mode-line-format
-			   gnus-server-mode-line-format-alist))
-  (setq gnus-server-line-format-spec
-	(gnus-parse-format gnus-server-line-format
-			   gnus-server-line-format-alist t))
+  (gnus-set-format 'server-mode)
+  (gnus-set-format 'server t)
   (let ((alist gnus-server-alist)
 	(buffer-read-only nil)
 	(opened gnus-opened-servers)
@@ -638,7 +640,7 @@ buffer.
 (defun gnus-browse-read-group (&optional no-article)
   "Enter the group at the current line."
   (interactive)
-  (let ((group (gnus-group-real-name (gnus-browse-group-name))))
+  (let ((group (gnus-browse-group-name)))
     (unless (gnus-group-read-ephemeral-group
 	     group gnus-browse-current-method nil
 	     (cons (current-buffer) 'browse))

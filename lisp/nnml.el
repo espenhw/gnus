@@ -264,10 +264,10 @@ all.  This may very well take some time.")
 (deffoo nnml-request-expire-articles (articles group
 					       &optional server force)
   (nnml-possibly-change-directory group server)
-  (let* ((active-articles
-	  (nnheader-directory-articles nnml-current-directory))
-	 (is-old t)
-	 article rest mod-time number)
+  (let ((active-articles
+	 (nnheader-directory-articles nnml-current-directory))
+	(is-old t)
+	article rest mod-time number)
     (nnmail-activate 'nnml)
 
     (while (and articles is-old)

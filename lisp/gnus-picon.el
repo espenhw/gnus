@@ -130,7 +130,7 @@ Otherwise the cache will be cleared every time you exit Gnus."
 
 (defcustom gnus-picons-piconsearch-url nil
   "*The url to query for picons.  Setting this to nil will disable it.
-The only plublicly available address currently known is
+The only publicly available address currently known is
 http://www.cs.indiana.edu:800/piconsearch.  If you know of any other,
 please tell me so that we can list it."
   :type '(choice (const :tag "Disable" :value nil)

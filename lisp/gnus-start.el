@@ -337,6 +337,12 @@ This hook is called after Gnus is connected to the NNTP server."
   :group 'gnus-start
   :type 'hook)
 
+(defcustom gnus-before-startup-hook nil
+  "A hook called at before startup.
+This hook is called as the first thing when Gnus is started."
+  :group 'gnus-start
+  :type 'hook)
+
 (defcustom gnus-started-hook nil
   "A hook called as the last thing after startup."
   :group 'gnus-start
@@ -642,6 +648,7 @@ prompt the user for the name of an NNTP server to use."
 
     (gnus-splash)
     (gnus-clear-system)
+    (run-hooks 'gnus-before-startup-hook)
     (nnheader-init-server-buffer)
     (setq gnus-slave slave)
     (gnus-read-init-file)
@@ -1621,9 +1628,11 @@ newsgroup."
 		     1.2 "Cannot read partial active file from %s server."
 		     (car method)))
 		   ((eq list-type 'active)
-		    (gnus-active-to-gnus-format method gnus-active-hashtb))
+		    (gnus-active-to-gnus-format
+		     method gnus-active-hashtb nil t))
 		   (t
-		    (gnus-groups-to-gnus-format method gnus-active-hashtb))))))
+		    (gnus-groups-to-gnus-format
+		     method gnus-active-hashtb t))))))
 	     ((null method)
 	      t)
 	     (t
@@ -1632,7 +1641,7 @@ newsgroup."
 		    (gnus-error 1 "Cannot read active file from %s server"
 				(car method)))
 		(gnus-message 5 mesg)
-		(gnus-active-to-gnus-format method gnus-active-hashtb)
+		(gnus-active-to-gnus-format method gnus-active-hashtb nil t)
 		;; We mark this active file as read.
 		(push method gnus-have-read-active-file)
 		(gnus-message 5 "%sdone" mesg))))))
@@ -1647,7 +1656,8 @@ newsgroup."
 		gnus-ignored-newsgroups))
 
 ;; Read an active file and place the results in `gnus-active-hashtb'.
-(defun gnus-active-to-gnus-format (&optional method hashtb ignore-errors)
+(defun gnus-active-to-gnus-format (&optional method hashtb ignore-errors
+					     real-active)
   (unless method
     (setq method gnus-select-method))
   (let ((cur (current-buffer))
@@ -1675,6 +1685,10 @@ newsgroup."
     (goto-char (point-max))
     (while (re-search-backward "[][';?()#]" nil t)
       (insert ?\\))
+
+    ;; Let the Gnus agent save the active file.
+    (when (and gnus-agent real-active)
+      (gnus-agent-save-active method))
 
     ;; If these are groups from a foreign select method, we insert the
     ;; group prefix in front of the group names.
@@ -1724,7 +1738,7 @@ newsgroup."
 	(widen)
 	(forward-line 1)))))
 
-(defun gnus-groups-to-gnus-format (method &optional hashtb)
+(defun gnus-groups-to-gnus-format (method &optional hashtb real-active)
   ;; Parse a "groups" active file.
   (let ((cur (current-buffer))
 	(hashtb (or hashtb
@@ -1739,6 +1753,10 @@ newsgroup."
 			   (gnus-server-get-method nil gnus-select-method)))
 		     (gnus-group-prefixed-name "" method))))
 
+    ;; Let the Gnus agent save the active file.
+    (when (and gnus-agent real-active)
+      (gnus-agent-save-groups method))
+    
     (goto-char (point-min))
     ;; We split this into to separate loops, one with the prefix
     ;; and one without to speed the reading up somewhat.

@@ -1052,7 +1052,7 @@ If REGEXP, only list groups matching REGEXP."
 	 (gnus-tmp-moderated-string
 	  (if (eq gnus-tmp-moderated ?m) "(m)" ""))
 	 (gnus-tmp-method
-	  (gnus-server-get-method gnus-tmp-group gnus-tmp-method))
+	  (gnus-server-get-method gnus-tmp-group gnus-tmp-method)) ;
 	 (gnus-tmp-news-server (or (cadr gnus-tmp-method) ""))
 	 (gnus-tmp-news-method (or (car gnus-tmp-method) ""))
 	 (gnus-tmp-news-method-string
@@ -1198,10 +1198,7 @@ already."
     (save-excursion
       (set-buffer gnus-group-buffer)
       (let* ((gformat (or gnus-group-mode-line-format-spec
-			  (setq gnus-group-mode-line-format-spec
-				(gnus-parse-format
-				 gnus-group-mode-line-format
-				 gnus-group-mode-line-format-alist))))
+			  (gnus-set-format 'group-mode)))
 	     (gnus-tmp-news-server (cadr gnus-select-method))
 	     (gnus-tmp-news-method (car gnus-select-method))
 	     (gnus-tmp-colon (if (equal gnus-tmp-news-server "") "" ":"))
@@ -1447,20 +1444,21 @@ Take into consideration N (the prefix) and the list of marked groups."
     (let ((group (gnus-group-group-name)))
       (and group (list group))))))
 
-(defun gnus-group-iterate (arg function)
+;;;!!! All the variables below should be gensymmed.
+(defun gnus-group-iterate (arg gnus-group-iterate-function)
   "Iterate FUNCTION over all process/prefixed groups.
-FUNCTION will be called with the group name as the paremeter
-and with point over the group in question."
+  FUNCTION will be called with the group name as the paremeter
+  and with point over the group in question."
   (let ((groups (gnus-group-process-prefix arg))
-	(window (selected-window))
-	group)
+ 	(window (selected-window))
+ 	group)
     (while (setq group (pop groups))
       (select-window window)
       (gnus-group-remove-mark group)
       (save-selected-window
-	(save-excursion
-	  (funcall function group))))))
-
+ 	(save-excursion
+ 	  (funcall function group))))))
+  
 (put 'gnus-group-iterate 'lisp-indent-function 1)
 
 ;; Selecting groups.
