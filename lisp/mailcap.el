@@ -656,7 +656,7 @@ to supply to the test."
 	       test (list shell-file-name nil nil nil
 			  shell-command-switch test)
 	       status (apply 'call-process test))
-	 (= 0 status))))
+	 (eq 0 status))))
       (push (list otest result) mailcap-viewer-test-cache)
       result)))
 

@@ -648,8 +648,8 @@ Pass INFO on to CALLBACK."
       (delete-file from)))
 
 (defun mail-source-fetch-with-program (program)
-  (zerop (call-process shell-file-name nil nil nil
-		       shell-command-switch program)))
+  (eq 0 (call-process shell-file-name nil nil nil
+		      shell-command-switch program)))
 
 (defun mail-source-run-script (script spec &optional delay)
   (when script

@@ -1,5 +1,18 @@
 2003-12-07  Jesper Harder  <harder@ifa.au.dk>
 
+	* spam.el (spam-check-spamoracle, spam-spamoracle-learn): Don't
+	use = or zerop to test the return value of call-process, because
+	it can be a string.
+
+	* mail-source.el (mail-source-fetch-with-program): do.
+
+	* mailcap.el (mailcap-viewer-passes-test): do.
+
+	* gnus-uu.el (gnus-uu-treat-archive, gnus-uu-post-encode-mime)
+	(gnus-uu-post-encode-file): do.
+
+	* gnus-soup.el (gnus-soup-pack, gnus-soup-unpack-packet): do.
+
 	* message.el (message-fix-before-sending): Fix detection of
 	non-printables.  Don't replace unencodable utf-8.
 

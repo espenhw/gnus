@@ -781,7 +781,7 @@ spam-use-* variable.")
     nil))
 
 (defun spam-fetch-field-message-id-fast (article)
-  "Fetch the `Message-ID' field quickly, using the internal
+  "Fetch the `subject' field quickly, using the internal
   gnus-data-list function"
   (if (and (numberp article)
 	   (assoc article (gnus-data-list nil)))
@@ -1539,8 +1539,8 @@ REMOVE not nil, remove the ADDRESSES."
 		 (point-min) (point-max) 
 		 spam-bogofilter-path
 		 nil temp-buffer-name nil
-		 (if db `("-d" ,db "-v") `("-v"))))
-	(setq return (spam-check-bogofilter-headers score))))
+		 (if db `("-d" ,db "-v") `("-v")))
+	  (setq return (spam-check-bogofilter-headers score)))))
     return))
 
 (defun spam-bogofilter-register-with-bogofilter (articles 
@@ -1597,7 +1597,7 @@ REMOVE not nil, remove the ADDRESSES."
 			(if spam-spamoracle-database
 			    `("-f" ,spam-spamoracle-database "mark")
 			  '("mark")))))
-	    (if (zerop status)
+	    (if (eq 0 status)
 		(progn
 		  (set-buffer temp-buffer-name)
 		  (goto-char (point-min))
@@ -1625,7 +1625,7 @@ REMOVE not nil, remove the ADDRESSES."
 			   `("-f" ,spam-spamoracle-database 
 			     "add" ,arg)
 			 `("add" ,arg)))))
-	  (when (not (zerop status))
+	  (when (not (eq 0 status))
 	    (error "Error running spamoracle" status)))))))
 
 (defun spam-spamoracle-learn-ham (articles &optional unregister)
