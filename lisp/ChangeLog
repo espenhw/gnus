@@ -1,5 +1,7 @@
 2001-08-24 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-spec.el (gnus-correct-substring): Take optional END.
+
 	* nnrss.el (nnrss-request-article): Remove \n.
 
 2001-08-24  Simon Josefsson  <jas@extundo.com>

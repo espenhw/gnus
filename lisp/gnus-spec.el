@@ -270,7 +270,7 @@
     (mapcar (lambda (char) (incf length (gnus-char-width char))) string)
     length))
 
-(defun gnus-correct-substring (string start end)
+(defun gnus-correct-substring (string start &optional end)
   (let ((wstart 0)
 	(wend 0)
 	(seek 0)
@@ -284,7 +284,8 @@
 	  wstart seek)
     ;; Find the end position.
     (while (and (< seek length)
-		(<= wend end))
+		(or (not end)
+		    (<= wend end)))
       (incf wend (gnus-char-width (aref string seek)))
       (incf seek))
     (setq wend seek)
