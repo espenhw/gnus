@@ -290,7 +290,28 @@ be set in `.emacs' instead."
   (defalias 'gnus-character-to-event 'identity)
   (defalias 'gnus-add-text-properties 'add-text-properties)
   (defalias 'gnus-put-text-property 'put-text-property)
-  (defalias 'gnus-mode-line-buffer-identification 'identity)
+  (defvar gnus-mode-line-image-cache t)
+  (if (fboundp 'find-image)
+      (defun gnus-mode-line-buffer-identification (line)
+	(let ((str (car-safe line)))
+	  (if (and (stringp str)
+		   (string-match "^Gnus:" str))
+	      (progn (add-text-properties
+		      0 5
+		      (list 'display
+			    (if (eq t gnus-mode-line-image-cache)
+				(setq gnus-mode-line-image-cache
+				      (find-image
+				       '((:type xpm :file "gnus-pointer.xpm"
+						:ascent 100)
+					 (:type xbm :file "gnus-pointer.xbm"
+						:ascent 100))))
+			      gnus-mode-line-image-cache)
+			    'help-echo "This is Gnus")
+		      str)
+		     (list str))
+	    line)))
+    (defalias 'gnus-mode-line-buffer-identification 'identity))
   (defalias 'gnus-characterp 'numberp)
   (defalias 'gnus-deactivate-mark 'deactivate-mark)
   (defalias 'gnus-window-edges 'window-edges)
