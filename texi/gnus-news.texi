@@ -18,6 +18,11 @@ this file (see `gnus-news.el').
 
 @itemize @bullet
 
+@item 
+The option @code{mm-fill-flowed} can be used to disable treatment of
+format=flowed messages.  Also, flowed text is disabled when sending
+inline @acronym{PGP} signed messages.
+
 @item You can now drag and drop attachments to the Message buffer.
 
 @item @kbd{/ r} limits the summary buffer to replied articles.
