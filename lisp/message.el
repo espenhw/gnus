@@ -42,7 +42,8 @@
 (require 'mail-parse)
 (require 'mml)
 (require 'rfc822)
-(autoload 'sha1 "sha1-el")
+(eval-and-compile
+  (autoload 'sha1 "sha1-el"))
 
 (defgroup message '((user-mail-address custom-variable)
 		    (user-full-name custom-variable))
