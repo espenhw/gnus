@@ -2331,7 +2331,7 @@ score file entries for articles to include in the group."
 					  "Match on header: " headers nil t))))
 	(setq regexps nil)
 	(while (not (equal "" (setq regexp (read-string
-					    (format "Match on %s (string): "
+					    (format "Match on %s (regexp): "
 						    header)))))
 	  (push (list regexp nil nil 'r) regexps))
 	(push (cons header regexps) scores))

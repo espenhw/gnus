@@ -7,6 +7,10 @@
 	(nnkiboze-generate-groups): List groups.
 	* gnus-group.el (gnus-group-make-kiboze-group): Use 
 	nnkiboze-score-file.
+	
+	* nnkiboze.el (nnkiboze-request-article): Use
+	gnus-cache-request-article.
+	* gnus-group.el (gnus-group-make-kiboze-group): Fix prompt.
 
 2000-07-16 Dmitry Bely <dbely@mail.ru>
 

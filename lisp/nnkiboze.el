@@ -98,14 +98,17 @@
       ;; article fetching by message-id at all.
       (nntp-request-article article newsgroup gnus-nntp-server buffer)
     (let* ((header (gnus-summary-article-header article))
-	   (xref (mail-header-xref header)))
+	   (xref (mail-header-xref header))
+	   num group)
       (unless xref
 	(error "nnkiboze: No xref"))
       (unless (string-match " \\([^ ]+\\):\\([0-9]+\\)" xref)
 	(error "nnkiboze: Malformed xref"))
-      (gnus-request-article (string-to-int (match-string 2 xref))
-			    (match-string 1 xref)
-			    buffer))))
+      (setq num (string-to-int (match-string 2 xref))
+	    group (match-string 1 xref))
+      (or (with-current-buffer buffer
+	    (gnus-cache-request-article num group))
+	  (gnus-request-article num group buffer)))))
 
 (deffoo nnkiboze-request-scan (&optional group server)
   (nnkiboze-generate-group (concat "nnkiboze:" group)))
