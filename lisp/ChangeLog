@@ -1,3 +1,12 @@
+2002-01-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-gcc-mark-as-read): New variable.
+	(gnus-inews-mark-gcc-as-read): Obsoleted variable.
+	(gnus-inews-do-gcc): Use it.
+
+	* gnus-group.el (gnus-group-mark-article-read): Put holes into
+	gnus-newsgroup-unselected.
+
 2002-01-06  Simon Josefsson  <jas@extundo.com>
 
 	* imap.el (imap-ssl-open, imap-ssl-open, imap-parse-fetch): Use
