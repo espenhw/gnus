@@ -2478,7 +2478,9 @@ If SOLID (the prefix), create a solid group."
 		  (nnweb-type ,(intern type))
 		  (nnweb-ephemeral-p t))))
     (if solid
-	(gnus-group-make-group group "nnweb" "" `(,(intern type) ,search))
+	(progn
+	  (gnus-pull 'nnweb-ephemeral-p method)
+	  (gnus-group-make-group group method))
       (gnus-group-read-ephemeral-group
        group method t
        (cons (current-buffer)

@@ -62,7 +62,8 @@
    ((executable-find "lynx") 'lynx)
    ((executable-find "curl") 'curl)
    (t "GET"))
-  "The url grab program."
+  "The url grab program.
+Likely values are `wget', `w3m', `lynx' and `curl'."
   :type '(choice
 	  (symbol :tag "wget" wget)
 	  (symbol :tag "w3m" w3m)

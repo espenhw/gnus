@@ -3494,7 +3494,8 @@ If NO-DISPLAY, don't generate a summary buffer."
 	;; Mark this buffer as "prepared".
 	(setq gnus-newsgroup-prepared t)
 	(gnus-run-hooks 'gnus-summary-prepared-hook)
-	(gnus-group-update-group group)
+	(unless (gnus-ephemeral-group-p group)
+	  (gnus-group-update-group group))
 	t)))))
 
 (defun gnus-summary-auto-select-subject ()
@@ -5555,7 +5556,8 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	;; Update the number of unread articles.
 	(setcar entry num)
 	;; Update the group buffer.
-	(gnus-group-update-group group t)))))
+	(unless (gnus-ephemeral-group-p group)
+	  (gnus-group-update-group group t))))))
 
 (defvar gnus-newsgroup-none-id 0)
 
@@ -6443,7 +6445,8 @@ If FORCE (the prefix), also save the .newsrc file(s)."
       (gnus-configure-windows 'group 'force)
       ;; Clear the current group name.
       (setq gnus-newsgroup-name nil)
-      (gnus-group-update-group group)
+      (unless (gnus-ephemeral-group-p group)
+	(gnus-group-update-group group))
       (when (equal (gnus-group-group-name) group)
 	(gnus-group-next-unread-group 1))
       (when quit-config
