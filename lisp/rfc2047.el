@@ -476,6 +476,17 @@ Return WORD if not."
        (error word))
      word)))
 
+(defun rfc2047-pad-base64 (string)
+  "Pad STRING to quartets."
+  ;; Be more liberal to accept buggy base64 strings. If
+  ;; base64-decode-string accepts buggy strings, this function could
+  ;; be aliased to identity.
+  (case (mod (length string) 4)
+    (0 string)
+    (1 string) ;; Error, don't pad it.
+    (2 (concat string "=="))
+    (3 (concat string "="))))
+
 (defun rfc2047-decode (charset encoding string)
   "Decode STRING that uses CHARSET with ENCODING.
 Valid ENCODINGs are \"B\" and \"Q\".
@@ -501,7 +512,8 @@ If your Emacs implementation can't decode CHARSET, it returns nil."
 	(mm-decode-coding-string
 	 (cond
 	  ((equal "B" encoding)
-	   (base64-decode-string string))
+	   (base64-decode-string 
+	    (rfc2047-pad-base64 string)))
 	  ((equal "Q" encoding)
 	   (quoted-printable-decode-string
 	    (mm-replace-chars-in-string string ?_ ? )))

@@ -1,3 +1,8 @@
+2000-11-09 16:20:37  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-pad-base64): New function.
+	(rfc2047-decode): Use it.
+
 2000-11-09 08:53:04  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-srvr.el (gnus-browse-foreign-server): Bind the original
