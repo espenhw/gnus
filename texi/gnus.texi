@@ -15870,6 +15870,21 @@ An easy way to get started with @code{nnrss} is to say something like
 the following in the group buffer: @kbd{B nnrss RET y}, then
 subscribe to groups.
 
+@cindex OPML
+You can also use the following commands to import and export your
+subscriptions from a file in @acronym{OPML} format (Outline Processor
+Markup Language).
+
+@defun nnrss-opml-import file
+Prompt for an @acronym{OPML} file, and subscribe to each feed in the
+file.
+@end defun
+
+@defun nnrss-opml-export
+Write your current @acronym{RSS} subscriptions to a buffer in
+@acronym{OPML} format.
+@end defun
+
 The following @code{nnrss} variables can be altered:
 
 @table @code

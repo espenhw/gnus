@@ -18,6 +18,10 @@ this file (see `gnus-news.el').
 
 @itemize @bullet
 
+@item
+You can import and export your @acronym{RSS} subscriptions from
+@acronym{OPML} files.  @xref{RSS}.
+
 @item 
 The option @code{mm-fill-flowed} can be used to disable treatment of
 format=flowed messages.  Also, flowed text is disabled when sending
