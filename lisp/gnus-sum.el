@@ -1554,6 +1554,7 @@ increase the score of each group you read."
     "6" gnus-article-de-base64-unreadable
     "Z" gnus-article-decode-HZ
     "h" gnus-article-wash-html
+    "s" gnus-summary-force-verify-and-decrypt
     "f" gnus-article-display-x-face
     "l" gnus-summary-stop-page-breaking
     "r" gnus-summary-caesar-message
@@ -1705,7 +1706,8 @@ increase the score of each group you read."
 	      ["Charset" gnus-article-decode-charset t]
 	      ["QP" gnus-article-de-quoted-unreadable t]
 	      ["Base64" gnus-article-de-base64-unreadable t]
-	      ["View all" gnus-mime-view-all-parts t])
+	      ["View all" gnus-mime-view-all-parts t]
+	      ["Verify and Decrypt" gnus-summary-force-verify-and-decrypt])
              ("Date"
               ["Local" gnus-article-date-local t]
               ["ISO8601" gnus-article-date-iso8601 t]
@@ -5914,6 +5916,12 @@ be displayed."
 	(when (or all-headers gnus-show-all-headers)
 	  (gnus-article-show-all-headers))
 	'old))))
+
+(defun gnus-summary-force-verify-and-decrypt ()
+  (interactive)
+  (let ((mm-verify-option 'known)
+	(mm-decrypt-option 'known))
+    (gnus-summary-select-article nil 'force)))
 
 (defun gnus-summary-set-current-mark (&optional current-mark)
   "Obsolete function."

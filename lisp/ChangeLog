@@ -1,3 +1,7 @@
+2000-11-01 07:39:24  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-force-verify-and-decrypt): New function.
+
 2000-10-31 22:06:13  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-article-charset): New variable.
