@@ -1,6 +1,6 @@
 ;;; qp.el --- Quoted-Printable functions
 
-;; Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: mail, extensions
@@ -85,8 +85,9 @@ If CODING-SYSTEM is non-nil, decode the region with coding-system."
   "Quoted-printable encode the region between FROM and TO per RFC 2045.
 
 If FOLD, fold long lines at 76 characters (as required by the RFC).
-If CLASS is non-nil, translate the characters matched by that class in
-the form expected by `skip-chars-forward'.
+If CLASS is non-nil, translate the characters not matched by that
+regexp class, which is in the form expected by `skip-chars-forward'.
+You should probably avoid non-ASCII characters in this arg.
 
 If `mm-use-ultra-safe-encoding' is set, fold lines unconditionally and
 encode lines starting with \"From\"."
@@ -95,8 +96,6 @@ encode lines starting with \"From\"."
     ;; Avoid using 8bit characters. = is \075.
     ;; Equivalent to "^\000-\007\013\015-\037\200-\377="
     (setq class "\010-\012\014\040-\074\076-\177"))
-  (if (fboundp 'string-as-multibyte)
-      (setq class (string-as-multibyte class)))
   (save-excursion
     (save-restriction
       (narrow-to-region from to)
@@ -130,34 +129,33 @@ encode lines starting with \"From\"."
 	       (and (boundp 'mm-use-ultra-safe-encoding)
 		    mm-use-ultra-safe-encoding)))
 	  (when (or fold mm-use-ultra-safe-encoding)
-	    ;; Fold long lines.
-	    (let ((tab-width 1))		; HTAB is one character.
+	    (let ((tab-width 1))	; HTAB is one character.
 	      (goto-char (point-min))
 	      (while (not (eobp))
 		;; In ultra-safe mode, encode "From " at the beginning
 		;; of a line.
 		(when mm-use-ultra-safe-encoding
-		  (beginning-of-line)
 		  (if (looking-at "From ")
 		      (replace-match "From=20" nil t)
 		    (if (looking-at "-")
 			(replace-match "=2D" nil t))))
 		(end-of-line)
-	      (while (> (current-column) 76) ; tab-width must be 1.
-		(beginning-of-line)
-		(forward-char 75)	; 75 chars plus an "="
-		(search-backward "=" (- (point) 2) t)
-		(insert "=\n")
-		(end-of-line))
-	      (unless (eobp)
-		(forward-line))))))))))
+		;; Fold long lines.
+		(while (> (current-column) 76) ; tab-width must be 1.
+		  (beginning-of-line)
+		  (forward-char 75)	; 75 chars plus an "="
+		  (search-backward "=" (- (point) 2) t)
+		  (insert "=\n")
+		  (end-of-line))
+		(forward-line)))))))))
 
 (defun quoted-printable-encode-string (string)
   "Encode the STRING as quoted-printable and return the result."
-  (with-temp-buffer
-    (insert string)
-    (quoted-printable-encode-region (point-min) (point-max))
-    (buffer-string)))
+  (let ((default-enable-multibyte-characters (mm-multibyte-string-p string)))
+    (with-temp-buffer
+      (insert string)
+      (quoted-printable-encode-region (point-min) (point-max))
+      (buffer-string))))
 
 (provide 'qp)
 

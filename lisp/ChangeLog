@@ -1,3 +1,34 @@
+2001-01-31  Dave Love  <fx@gnu.org>
+
+	* mm-util.el (mm-mime-mule-charset-alist)
+	(mm-find-mime-charset-region): Consider mule-utf-8.
+
+2001-01-31  Dave Love  <fx@gnu.org>
+
+	* gnus-art.el (gnus-article-x-face-command)
+	(gnus-treat-display-xface, gnus-treat-display-smileys): Add
+	:version.
+
+2001-01-26  Dave Love  <fx@gnu.org>
+
+	* mm-util.el (mm-multibyte-string-p): New.
+	
+;;	* qp.el: Remove un-logged bogus changes from 2000-12-20.
+;;	(quoted-printable-encode-region): Doc fix.  Don't call
+;;	string-as-multibyte on class.  Clarify line-folding.
+	(quoted-printable-encode-string): Make temp buffer inherit
+	string's multibyteness.
+
+2001-01-23  Gerd Moellmann  <gerd@gnu.org>
+
+	* nnheader.el (toplevel): Don't require `gnus-util' at
+	compile-time; this creates a circular dependency, and prevents
+	a bootstrap.
+
+2001-01-22  Andreas Schwab  <schwab@suse.de>
+
+	* nnheader.el (gnus-delete-line): Autoload it as a macro.
+
 2001-01-31 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnmail.el (nnmail-remove-list-identifiers): Use consp.

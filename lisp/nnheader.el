@@ -1,7 +1,7 @@
 ;;; nnheader.el --- header access macros for Gnus and its backends
 
 ;; Copyright (C) 1987, 1988, 1989, 1990, 1993, 1994, 1995, 1996,
-;;        1997, 1998, 2000
+;;        1997, 1998, 2000, 2001
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -31,6 +31,10 @@
 
 (eval-when-compile (require 'cl))
 
+;; Requiring `gnus-util' at compile time creates a circular
+;; dependency between nnheader.el and gnus-util.el.
+;(eval-when-compile (require 'gnus-util))
+
 (require 'mail-utils)
 (require 'mm-util)
 (eval-and-compile
@@ -56,7 +60,7 @@ on your system, you could say something like:
   (autoload 'mail-position-on-field "sendmail")
   (autoload 'message-remove-header "message")
   (autoload 'gnus-point-at-eol "gnus-util")
-  (autoload 'gnus-delete-line "gnus-util")
+  (autoload 'gnus-delete-line "gnus-util" nil nil 'macro)
   (autoload 'gnus-buffer-live-p "gnus-util"))
 
 ;;; Header access macros.
