@@ -1,3 +1,12 @@
+2004-01-05  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-treat-ansi-sequences,
+	article-treat-ansi-sequences): New variable and function.
+	Suggested by Dan Jacobson <jidanni@jidanni.org>.
+
+	* gnus-sum.el (gnus-summary-wash-map, gnus-summary-make-menu-bar):
+	Use it.
+
 2004-01-05  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-util.el (mm-quote-arg): Remove.

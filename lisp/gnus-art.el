@@ -46,6 +46,7 @@
 (autoload 'gnus-msg-mail "gnus-msg" nil t)
 (autoload 'gnus-button-mailto "gnus-msg")
 (autoload 'gnus-button-reply "gnus-msg" nil t)
+(autoload 'ansi-color-apply-on-region "ansi-color")
 
 (defgroup gnus-article nil
   "Article display."
@@ -1147,6 +1148,14 @@ See Info node `(gnus)Customizing Articles' for details."
   :type gnus-article-treat-custom)
 (put 'gnus-treat-overstrike 'highlight t)
 
+(defcustom gnus-treat-ansi-sequences t
+  "Treat ANSI SGR control sequences.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See Info node `(gnus)Customizing Articles' for details."
+  :group 'gnus-article-treat
+  :link '(custom-manual "(gnus)Customizing Articles")
+  :type gnus-article-treat-custom)
+
 (make-obsolete-variable 'gnus-treat-display-xface
 			'gnus-treat-display-x-face)
 
@@ -1409,6 +1418,7 @@ This requires GNU Libidn, and by default only enabled if it is found."
     (gnus-treat-strip-multiple-blank-lines
      gnus-article-strip-multiple-blank-lines)
     (gnus-treat-overstrike gnus-article-treat-overstrike)
+    (gnus-treat-ansi-sequences gnus-article-treat-ansi-sequences)
     (gnus-treat-unfold-headers gnus-article-treat-unfold-headers)
     (gnus-treat-fold-headers gnus-article-treat-fold-headers)
     (gnus-treat-fold-newsgroups gnus-article-treat-fold-newsgroups)
@@ -1861,6 +1871,14 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
 	      (gnus-article-hide-text-type (- (point) 2) (point) 'overstrike)
 	      (put-text-property
 	       (point) (1+ (point)) 'face 'underline)))))))))
+
+(defun article-treat-ansi-sequences ()
+  "Translate ANSI SGR control sequences into overlays or extents."
+  (interactive)
+  (save-excursion
+    (when (article-goto-body)
+      (let ((buffer-read-only nil))
+	(ansi-color-apply-on-region (point) (point-max))))))
 
 (defun gnus-article-treat-unfold-headers ()
   "Unfold folded message headers.
@@ -3470,6 +3488,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-verify-cancel-lock
      article-hide-boring-headers
      article-treat-overstrike
+     article-treat-ansi-sequences
      article-fill-long-lines
      article-capitalize-sentences
      article-remove-cr
@@ -3570,6 +3589,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
        ["Hide signature" gnus-article-hide-signature t]
        ["Hide citation" gnus-article-hide-citation t]
        ["Treat overstrike" gnus-article-treat-overstrike t]
+       ["Treat ANSI sequences" gnus-article-treat-ansi-sequences t]
        ["Remove carriage return" gnus-article-remove-cr t]
        ["Remove leading whitespace" gnus-article-remove-leading-whitespace t]
        ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]

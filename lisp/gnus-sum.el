@@ -1845,6 +1845,7 @@ increase the score of each group you read."
   "q" gnus-article-de-quoted-unreadable
   "6" gnus-article-de-base64-unreadable
   "Z" gnus-article-decode-HZ
+  "A" gnus-article-treat-ansi-sequences
   "h" gnus-article-wash-html
   "u" gnus-article-unsplit-urls
   "s" gnus-summary-force-verify-and-decrypt
@@ -2193,6 +2194,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	      ["Unsplit URLs" gnus-article-unsplit-urls t]
 	      ["Verify X-PGP-Sig" gnus-article-verify-x-pgp-sig t]
 	      ["Decode HZ" gnus-article-decode-HZ t]
+	      ["ANSI sequences" gnus-article-treat-ansi-sequences t]
 	      ("(Outlook) Deuglify"
 	       ["Unwrap lines" gnus-article-outlook-unwrap-lines t]
 	       ["Repair attribution" gnus-article-outlook-repair-attribution t]
