@@ -1,3 +1,9 @@
+2004-03-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-exchange-point-and-mark): Use
+	message-mark-active-p.  Suggested by Jesper Harder
+	<harder@ifa.au.dk>.
+
 2004-03-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-exchange-point-and-mark): Don't activate
