@@ -1,3 +1,7 @@
+2004-06-28  Jesper Harder  <harder@ifa.au.dk>
+
+	* nnheader.el (nnheader-max-head-length): Increase to 8192.
+
 2004-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-coding-system-p): Return a coding-system.
