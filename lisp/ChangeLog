@@ -1,3 +1,11 @@
+2002-01-19  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-add-wash-type): Use add-to-list.
+
+	* smiley-ems.el (smiley-region): Register smiley.
+	(smiley-toggle-buffer): Rewrite the function.
+	(smiley-active): Removed.
+
 2002-01-19  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-util.el (gnus-parent-id): Optimize null n case.  From

@@ -4373,7 +4373,7 @@ is the string to use when it is inactive.")
 
 (defun gnus-add-wash-type (type)
   "Add a washing of TYPE to the current status."
-  (push type gnus-article-wash-types))
+  (add-to-list 'gnus-article-wash-types type))
 
 (defun gnus-delete-wash-type (type)
   "Add a washing of TYPE to the current status."
