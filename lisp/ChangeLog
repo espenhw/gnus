@@ -1,4 +1,12 @@
-Fri Aug  4 00:08:59 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci7.cern.ch>
+Fri Aug  4 03:44:13 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.99.5 is released. (Hah!)
+
+	* nnheader.el (nnheader-find-file-noselect): Did not work.
+
+Fri Aug  4 00:08:59 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.99.4 is released.
 
 	* nnheader.el (nnheader-find-file-noselect): New function.
 	* nnfolder.el (nnfolder-read-folder): Use it.

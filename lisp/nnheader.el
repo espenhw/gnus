@@ -212,10 +212,11 @@
     (or
      (get-file-buffer file)
      (prog1
-	 (get-buffer-create (create-file-buffer file))
+	 (set-buffer (get-buffer-create (create-file-buffer file)))
        (and (file-exists-p file)
 	    (not (file-directory-p file))
-	    (insert-file-contents file))))))
+	    (insert-file-contents file))
+       (set-visited-file-name file)))))
 
 (provide 'nnheader)
 
