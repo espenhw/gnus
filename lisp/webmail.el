@@ -154,9 +154,7 @@
      (list-url "http://www.deja.com/rg_gotomail.xp")
      (list-snarf . webmail-my-deja-list)
      (article-snarf . webmail-my-deja-article)
-     (trash-url 
-      "%s/gmm_multiplex.femail?%%2Fgmm_domovemesg_top.femail=Move+to%%3A&folder_top=%s%%3Azzz%%3A%%7E6trash%%3AF%%3A0&docid=%s"
-      webmail-aux user id))))
+     (trash-url webmail-aux id))))
 
 (defvar webmail-variables
   '(address article-snarf article-url list-snarf list-url 
@@ -1041,44 +1039,142 @@
     (webmail-error "open@1")))
 
 (defun webmail-my-deja-list ()
-  (let (item id newp)
+  (let (item id newp base)
+    (goto-char (point-min))
+    (when (re-search-forward "href=\"\\(\\([^\"]*\\)/mailnf\\.[^\"]*\\)\"" 
+			     nil t)
+      (let ((url (match-string 1)))
+	(setq base (match-string 2))
+	(erase-buffer)
+	(nnweb-insert url)))
     (goto-char (point-min))
     (when (re-search-forward 
-	   "(\\([0-9]+\\) message(s), \\([0-9]+\\) new, \\([0-9]+\\)&nbsp;k )"
+	   "(\\([0-9]+\\) Message.?-[^>]*\\([0-9]+\\) New"
 	   nil t) 
-      (message "Found %s mail(s), %s unread, total size %s K" 
-	       (match-string 1) (match-string 2) (match-string 3)))
+      (message "Found %s mail(s), %s unread" 
+	       (match-string 1) (match-string 2)))
     (goto-char (point-min))
     (while (re-search-forward 
-	    "&#149; &nbsp;&nbsp;\\|\\(http:[^\"]+\\)/display_seemesg\\.femail\\?docid=\\([^&\"]+\\)"
+	    "newmail\\.gif\\|href=\"[^\"]*\\(mailnf\\.[^\"]+act=view[^\"]+mid=\\([^\"&]+\\)[^\"]+\\)\""
 	    nil t)
       (if (setq id (match-string 2))
-	  (when (or newp (not webmail-newmail-only))
-	    (push
-	     (cons id (format "%s/gmm_multiplex.femail?docid=%s&femail_page_name=display_page&bool_next_on_disp_pg=true&bool_prev_on_disp_pg=false&display_all_headers=false&%%2Fgmm_save.femail=Download&femail_page_name=display_page&bool_next_on_disp_pg=true&bool_prev_on_disp_pg=false&display_all_headers=false"
-			      (match-string 1) id))
-	     webmail-articles)
-	    (setq webmail-aux (match-string 1))
+	  (when (and (or newp (not webmail-newmail-only))
+		     (not (assoc id webmail-articles)))
+	    (push (cons id (setq webmail-aux 
+				 (concat base "/" (match-string 1))))
+		  webmail-articles)
 	    (setq newp nil))
 	(setq newp t)))
     (setq webmail-articles (nreverse webmail-articles))))
 
+(defun webmail-my-deja-article-part (base)
+  (let (p)
+    (cond 
+     ((looking-at "[\t\040\r\n]*<!--[^>]*>")
+      (replace-match ""))
+     ((looking-at "[\t\040\r\n]*</PRE>")
+      (replace-match ""))
+     ((looking-at "[\t\040\r\n]*<PRE>")
+      ;; text/plain
+      (replace-match "")
+      (save-restriction
+	(narrow-to-region (point)
+			  (if (re-search-forward "</?PRE>" nil t)
+			      (match-beginning 0)
+			    (point-max)))
+	(goto-char (point-min))
+	(nnweb-remove-markup)
+	(let ((w3-html-entities (cons '(nbsp . 32) w3-html-entities)))
+	  (nnweb-decode-entities))
+	(goto-char (point-max))))
+     ((looking-at "[\t\040\r\n]*<TABLE")
+      (save-restriction
+	(narrow-to-region (point)
+			  (if (search-forward "</TABLE>" nil t 2)
+			      (point)
+			    (point-max)))
+	(goto-char (point-min))
+	(let (name type url bufname)
+	  (if (and (search-forward "File Name:" nil t)
+		   (re-search-forward "<FONT[^>]+>\\([^<]+\\)" nil t))
+	      (setq name (match-string 1)))
+	  (if (and (search-forward "File Type:" nil t)
+		   (re-search-forward "<FONT[^>]+>\\([^<]+\\)" nil t))
+	      (setq type (match-string 1)))
+	  (unless (re-search-forward "action=\"getattach\\.cgi/\\([^\"]+\\)" 
+				     nil t)
+	    (webmail-error "article@5"))
+	  (setq url (concat base "/getattach.cgi/" (match-string 1)
+			    "?sm=Download"))
+	  (while (re-search-forward 
+		  "type=hidden name=\"\\([^\"]+\\)\" value=\"\\([^\"]+\\)" 
+		  nil t)
+	    (setq url (concat url "&" (match-string 1) "="
+				  (match-string 2))))
+	  (delete-region (point-min) (point-max))
+	  (save-excursion
+	    (set-buffer (generate-new-buffer " *webmail-att*"))
+	    (nnweb-insert url)
+	    (push (current-buffer) webmail-buffer-list)
+	    (setq bufname (buffer-name)))
+	  (insert "<#part type=\"" type "\"")
+	  (if name (insert " filename=\"" name "\""))
+	  (insert " buffer=\"" bufname "\"")
+	  (insert " disposition=inline><#/part>"))))
+     (t
+      (insert "<#part type=\"text/html\" disposition=inline>")
+      (goto-char (point-max))
+      (insert "<#/part>")))))
+
 (defun webmail-my-deja-article (file id)
-  (let (url)
+  (let (base)
     (goto-char (point-min))
-    (unless (re-search-forward "\\(http:[^\"]+/attachment/entire_message.txt[^\"]+\\)" nil t)
+    (unless (string-match "\\([^\"]+\\)/mail" webmail-aux)
+      (webmail-error "article@0"))
+    (setq base (match-string 1 webmail-aux))
+    (when (re-search-forward 
+	   "href=\"[^\"]*\\(mailnf\\.[^\"]+act=move[^\"]+mid=\\([^\"&]+\\)[^\"]+\\)\""
+	   nil t)
+      (setq webmail-aux (concat base "/" (match-string 1)))
+      (string-match "mid=[^\"&]+" webmail-aux)
+      (setq webmail-aux (replace-match "mid=%s" nil nil webmail-aux)))
+    (unless (search-forward "<HR noshade>" nil t)
       (webmail-error "article@1"))
-    (setq url (match-string 1))
-    (erase-buffer)
-    (mm-with-unibyte-current-buffer
-      (nnweb-insert url))
-    (goto-char (point-min))
-    (while (search-forward "\r\n" nil t)
-      (replace-match "\n"))
+    (delete-region (point-min) (point))
+    (unless (search-forward "<HR noshade>" nil t)
+      (webmail-error "article@2"))
+    (save-restriction
+      (narrow-to-region (point-min) (point))
+      (while (search-forward "\r\n" nil t)
+	(replace-match "\n"))
+      (nnweb-remove-markup)
+      (let ((w3-html-entities (cons '(nbsp . 32) w3-html-entities)))
+	(nnweb-decode-entities))
+      (goto-char (point-min))
+      (while (re-search-forward "\n\n+" nil t)
+	(replace-match "\n"))
+      (goto-char (point-max)))
+    (save-restriction
+      (narrow-to-region (point) (point-max))
+      (goto-char (point-max))
+      (unless (search-backward "<HR noshade>" nil t)
+	(webmail-error "article@3"))
+      (unless (search-backward "</TT>" nil t)
+	(webmail-error "article@4"))
+      (delete-region (point) (point-max))
+      (goto-char (point-min))
+      (while (not (eobp)) 
+	(webmail-my-deja-article-part base))
+      (insert "MIME-Version: 1.0\n"
+	      (prog1
+		  (mml-generate-mime)
+		(delete-region (point-min) (point-max)))))
     (goto-char (point-min))
     (insert "\n\nFrom nobody " (current-time-string) "\n")
     (insert "X-Gnus-Webmail: " (symbol-value 'user)
 	    "@" (symbol-name webmail-type) "\n")
+    (if (eq (char-after) ?\n)
+	(delete-char 1))
     (mm-append-to-file (point-min) (point-max) file)))
 
 (provide 'webmail)
