@@ -69,10 +69,10 @@ makeinfo:
 	makeinfo -o message message.texi
 
 texi2latex.elc: texi2latex.el
-	$(EMACS) -batch -l bytecomp --eval '(byte-compile-file "texi2latex.el")'
+	$(EMACSINFO) -batch -l bytecomp --eval '(byte-compile-file "texi2latex.el")'
 
 latex: gnus.texi texi2latex.elc
-	$(EMACS) -batch -q -no-site-file gnus.texi -l ./texi2latex.elc -f latexi-translate
+	$(EMACSINFO) -batch -q -no-site-file gnus.texi -l ./texi2latex.elc -f latexi-translate
 
 latexps:
 	make texi2latex.elc

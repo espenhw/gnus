@@ -31,7 +31,7 @@
 
 (require 'cl)
 
-(push "/usr/share/emacs/site-lisp" load-path)
+;(push "/usr/share/emacs/site-lisp" load-path)
 
 (unless (featurep 'xemacs)
   (define-compiler-macro last (&whole form x &optional n)
