@@ -35,17 +35,30 @@
   :group 'gnus-fun
   :type 'string)
 
+(defcustom gnus-convert-image-to-x-face-command "giftopnm '%s' | ppmnorm 2>/dev/null | pnmscale -width 48 -height 48 | ppmtopgm | pgmtopbm | pbmtoxbm | compface"
+  "Command for converting a PBM to an X-Face."
+  :group 'gnus-fun
+  :type 'string)
+
 ;;;###autoload
-(defun gnus-insert-random-x-face ()
+(defun gnus-random-x-face ()
   "Insert a random X-Face header from `gnus-x-face-directory'."
   (interactive)
   (when (file-exists-p gnus-x-face-directory)
     (let* ((files (directory-files gnus-x-face-directory t "\\.pbm$"))
 	   (file (nth (random (length files)) files)))
       (when file
-	(insert "X-Face:"
-		(shell-command-to-string
-		 (format gnus-convert-pbm-to-x-face-command file)))))))
+	(shell-command-to-string
+	 (format gnus-convert-pbm-to-x-face-command file))))))
+
+;;;###autoload
+(defun gnus-x-face-from-file (file)
+  "Insert an X-Face header based on an image file."
+  (interactive "fImage file name:" )
+  (when (file-exists-p file)
+    (shell-command-to-string
+     (format gnus-convert-image-to-x-face-command file))))
+    
 
 (provide 'gnus-fun)
 

@@ -11,6 +11,10 @@
 2002-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-fun.el: New file.
+	(gnus-convert-image-to-x-face-command): New variable.
+	(gnus-insert-x-face): New function.
+	(gnus-random-x-face): Renamed.
+	(gnus-x-face-from-file): Renamed.
 
 	* gnus-art.el (gnus-body-boundary-delimiter): Changed default to
 	"_". 
