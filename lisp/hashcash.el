@@ -1,6 +1,5 @@
 ;;; hashcash.el --- Add hashcash payments to email
 
-;; $Revision: 7.1 $
 ;; Copyright (C) 1997--2002 Paul E. Foley
 ;; Copyright (C) 2003 Free Software Foundation
 
