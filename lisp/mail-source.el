@@ -89,7 +89,8 @@ This variable is a list of mail source specifiers."
        (:password)
        (:authentication password))
       (maildir
-       (:path "~/Maildir/new/"))
+       (:path "~/Maildir/new/")
+       (:function))
       (imap
        (:server (getenv "MAILHOST"))
        (:port)
@@ -294,6 +295,12 @@ Pass INFO on to CALLBACK."
       ;; Return whether we moved successfully or not.
       to)))
 
+(defun mail-source-movemail-and-remove (from to)
+  "Move FROM to TO using movemail, then remove FROM if empty."
+  (or (not (mail-source-movemail from to))
+      (not (zerop (nth 7 (file-attributes from))))
+      (delete-file from)))
+
 (defvar mail-source-read-passwd nil)
 (defun mail-source-read-passwd (prompt &rest args)
   "Read a password using PROMPT.
@@ -425,7 +432,9 @@ If ARGS, PROMPT is used as an argument to `format'."
 	  (mail-source-string (format "maildir:%s" path)))
       (dolist (file (directory-files path t))
 	(when (and (file-regular-p file)
-		   (not (rename-file file mail-source-crash-box)))
+		   (not (if function
+			    (funcall function file mail-source-crash-box)
+			  (rename-file file mail-source-crash-box))))
 	  (incf found (mail-source-callback callback file))))
       found)))
 

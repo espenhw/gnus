@@ -1,3 +1,9 @@
+1999-11-10 16:50:01  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mail-source.el (mail-source-movemail-and-remove): New function.
+	(mail-source-keyword-map): Add `function' for `maildir'.
+	(mail-source-fetch-maildir): Use it.
+
 1999-11-10 13:48:10  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnwarchive.el: New file.
