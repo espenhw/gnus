@@ -1395,7 +1395,9 @@ buffers. For example:
     ;; source file.
     (if (boundp 'gnus-newsgroup-variables)
         nil
-      (load "gnus-sum.el" t t t t))
+      (if (featurep 'xemacs)
+	  (load "gnus-sum.el" t t t)
+	(load "gnus-sum.el" t t t t)))
     (require 'gnus)
     (require 'gnus-agent)
     (require 'gnus-art)))

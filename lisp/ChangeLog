@@ -1,3 +1,8 @@
+2003-04-05  Steve Youngs  <youngs@xemacs.org>
+
+	* gnus-sum.el: XEmacs doesn't support the 5th arg to 'load', so
+	don't use it when loading gnus-sum.el if we're in XEmacs.
+
 2003-04-05  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-start.el (gnus-gnus-to-quick-newsrc-format): Bound
