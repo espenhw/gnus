@@ -1,3 +1,11 @@
+2002-09-23  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el: Store article numbers persistently.  General
+	revision.
+	(nnmaildir-request-expire-articles): handle 'immediate and 'never
+	for nnmail-expiry-wait; delete instead of moving if 'force is
+	given.
+
 2002-09-23  Simon Josefsson  <jas@extundo.com>
 	Trivial fix from beaker@iavmb.pl (Krzysztof J,Bj(Bdruczyk).
 
