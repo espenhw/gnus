@@ -604,7 +604,7 @@ If optional 2nd argument IGNORE-MARKED is non-nil, articles which are
 marked as read or ticked are ignored."
   (save-excursion
     (let ((killed-no 0)
-	  function article)
+	  function article header)
       (if (or (null field) (string-equal field ""))
 	  (setq function nil)
 	;; Get access function of header filed.
@@ -624,8 +624,8 @@ marked as read or ticked are ignored."
 			backward (not ignore-marked))))
 	(and (or (null gnus-newsgroup-kill-headers)
 		 (memq article gnus-newsgroup-kill-headers))
-	     (gnus-execute-1 function regexp form 
-			     (gnus-get-header-by-number article))
+	     (vectorp (setq header (gnus-get-header-by-number article)))
+	     (gnus-execute-1 function regexp form header)
 	     (setq killed-no (1+ killed-no))))
       killed-no)))
 

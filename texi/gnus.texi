@@ -5253,8 +5253,8 @@ Sort by subject (@code{gnus-summary-sort-by-subject}).
 @kindex C-c C-s C-d (Summary)
 @findex gnus-summary-sort-by-date
 Sort by date (@code{gnus-summary-sort-by-date}).
-@item C-c C-s C-v
-@kindex C-c C-s C-v (Summary)
+@item C-c C-s C-i
+@kindex C-c C-s C-i (Summary)
 @findex gnus-summary-sort-by-score
 Sort by score (@code{gnus-summary-sort-by-score}).
 @end table
@@ -5998,7 +5998,7 @@ forms into this file, which means that you can use kill files as some
 sort of primitive hook function to be run on group entry, even though
 that isn't a very good idea.
 
-Normal kill files look like this:
+XCNormal kill files look like this:
 
 @lisp
 (gnus-kill "From" "Lars Ingebrigtsen")

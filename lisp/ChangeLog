@@ -1,10 +1,23 @@
-Tue Sep 19 17:32:14 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+Tue Sep 26 00:42:54 1995  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
-	* gnus.el (gnus-find-new-newsgroups): Would not save .newsrc if
-		all new group were made into zombies.
+	* gnus.el: 5.0.5 & 5.0.6 are released.
 
-	* gnus-ems.el (gnus-set-text-properties-xemacs): Would bug out on
-		strings that happened to be buffer names.
+Sat Sep 23 20:00:35 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-insert-line): Don't lose process marks. 
+
+	* auc-menu.el: Removed file.
+
+	* gnus.el (gnus-no-server): Would have permanent effects.
+
+	* gnus-kill.el (gnus-execute): Would bug out on pseudo-articles.
+
+	* gnus.el (gnus-article-display-x-face): Would bug out on articles
+ 	with no From header.
+	(gnus-summary-sort): Async would not work after sorting.
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Would enter
+	reffed articles.
 
 Sat Sep 16 10:24:02 1995  Lars Magne Ingebrigtsen  <larsi@surt.ifi.uio.no>
 

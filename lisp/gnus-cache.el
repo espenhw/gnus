@@ -120,6 +120,7 @@
   (let ((number (mail-header-number headers))
 	file dir)
     (if (or (not (vectorp headers))	; This might be a dummy article.
+	    (< number 0)		; Reffed article from other group.
 	    (not (gnus-cache-member-of-class
 		  gnus-cache-enter-articles ticked dormant unread))
 	    (file-exists-p (setq file (gnus-cache-file-name group article))))

@@ -25,7 +25,6 @@
 ;;; Code:
 
 (defvar gnus-mouse-2 [mouse-2])
-(defvar gnus-easymenu 'easymenu)
 (defvar gnus-group-mode-hook ())
 (defvar gnus-summary-mode-hook ())
 (defvar gnus-article-mode-hook ())
@@ -72,7 +71,7 @@
 (defun gnus-set-text-properties-xemacs (start end props &optional buffer)
   "You should NEVER use this function.  It is ideologically blasphemous.
 It is provided only to ease porting of broken FSF Emacs programs."
-  (if (stringp buffer)
+  (if (and (stringp buffer) (not (setq buffer (get-buffer buffer))))
       nil
     (map-extents (lambda (extent ignored)
 		   (remove-text-properties 
@@ -134,7 +133,6 @@ pounce directly on the real variables themselves."))
       ;; XEmacs definitions.
 
       (setq gnus-mouse-2 [button2])
-      (setq gnus-easymenu 'auc-menu)
 
       (or (memq 'underline (list-faces))
 	  (and (fboundp 'make-face)

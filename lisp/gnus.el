@@ -1349,7 +1349,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "Gnus v5.0.5"
+(defconst gnus-version "Gnus v5.0.6"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -3236,6 +3236,8 @@ The following commands are available:
     (or level gnus-group-default-list-level gnus-level-subscribed))))
   
 
+(defvar gnus-tmp-prev-perm nil)
+
 ;;;###autoload
 (defun gnus-no-server (&optional arg)
   "Read network news.
@@ -3245,8 +3247,12 @@ If ARG is non-nil and not a positive number, Gnus will
 prompt the user for the name of an NNTP server to use.
 As opposed to `gnus', this command will not connect to the local server."
   (interactive "P")
-  (setq gnus-group-use-permanent-levels t)
-  (gnus (or arg (1- gnus-level-default-subscribed)) t))
+  (let ((perm
+	 (cons gnus-group-use-permanent-levels gnus-group-default-list-level)))
+    (setq gnus-tmp-prev-perm nil)
+    (setq gnus-group-use-permanent-levels t)
+    (gnus (or arg (1- gnus-level-default-subscribed)) t)
+    (setq gnus-tmp-prev-perm perm)))
 
 ;;;###autoload
 (defun gnus (&optional arg dont-connect)
@@ -3263,6 +3269,11 @@ prompt the user for the name of an NNTP server to use."
     (gnus-clear-system)
 
     (nnheader-init-server-buffer)
+    ;; We do this if `gnus-no-server' has been run.
+    (if gnus-tmp-prev-perm 
+	(setq gnus-group-use-permanent-levels (car gnus-tmp-prev-perm)
+	      gnus-group-default-list-level (cdr gnus-tmp-prev-perm)
+	      gnus-tmp-prev-perm nil))
     (gnus-read-init-file)
 
     (gnus-group-setup-buffer)
@@ -5324,7 +5335,7 @@ buffer.
   (define-key gnus-summary-mode-map 
     "\C-c\C-s\C-s" 'gnus-summary-sort-by-subject)
   (define-key gnus-summary-mode-map "\C-c\C-s\C-d" 'gnus-summary-sort-by-date)
-  (define-key gnus-summary-mode-map "\C-c\C-s\C-v" 'gnus-summary-sort-by-score)
+  (define-key gnus-summary-mode-map "\C-c\C-s\C-i" 'gnus-summary-sort-by-score)
   (define-key gnus-summary-mode-map "=" 'gnus-summary-expand-window)
   (define-key gnus-summary-mode-map 
     "\C-x\C-s" 'gnus-summary-reselect-current-group)
@@ -5792,7 +5803,7 @@ article number."
 
 (defun gnus-summary-insert-line 
   (sformat header level current unread replied expirable subject-or-nil
-	   &optional dummy score)
+	   &optional dummy score process)
   (or sformat (setq sformat gnus-summary-line-format-spec))
   (let* ((indentation (aref gnus-thread-indent-array level))
 	 (lines (mail-header-lines header))
@@ -5803,7 +5814,9 @@ article number."
 		      gnus-summary-zcore-fuzz)) ? 
 	    (if (< score gnus-summary-default-score)
 		gnus-score-below-mark gnus-score-over-mark)))
-	 (replied (if replied gnus-replied-mark ? ))
+	 (replied (cond (process gnus-process-mark)
+			(replied gnus-replied-mark)
+			(t gnus-unread-mark)))
 	 (from (mail-header-from header))
 	 (name (cond 
 		((string-match "(.+)" from)
@@ -6574,7 +6587,8 @@ or a straight list of headers."
 		 (t gnus-summary-same-subject))
 		(and (eq gnus-summary-make-false-root 'adopt)
 		     (memq number gnus-tmp-gathered))
-		(cdr (assq number gnus-newsgroup-scored)))
+		(cdr (assq number gnus-newsgroup-scored))
+		(memq number gnus-newsgroup-processable))
 
 	       (setq gnus-tmp-prev-subject subject)))))
 
@@ -6627,7 +6641,8 @@ or a straight list of headers."
 	 (memq number gnus-newsgroup-replied)
 	 (memq number gnus-newsgroup-expirable)
 	 (mail-header-subject header) nil
-	 (cdr (assq number gnus-newsgroup-scored))))))))
+	 (cdr (assq number gnus-newsgroup-scored))
+	 (memq number gnus-newsgroup-processable)))))))
 
 (defun gnus-select-newsgroup (group &optional read-all)
   "Select newsgroup GROUP.
@@ -8360,7 +8375,9 @@ Return nil if there are no unread articles."
 			article (gnus-summary-article-number)))
 	     t)
 	   (gnus-summary-search-subject nil t))))
-    (gnus-summary-goto-article article)
+    (if (not article)
+	(error "No unread articles")
+      (gnus-summary-goto-article article))
     (gnus-summary-position-cursor)))
 
 (defun gnus-summary-goto-article (article &optional all-headers)
@@ -10276,7 +10293,8 @@ Argument REVERSE means reverse order."
 		(if (and gnus-asynchronous-article-function
 			 (fboundp gnus-asynchronous-article-function))
 		    (funcall gnus-asynchronous-article-function
-			     gnus-newsgroup-threads)))))))))
+			     gnus-newsgroup-threads)
+		  gnus-newsgroup-threads))))))))
 
   
 (defun gnus-sortable-date (date)
@@ -11094,18 +11112,20 @@ Provided for backwards compatability."
   (save-excursion
     (set-buffer gnus-article-buffer)
     (let ((inhibit-point-motion-hooks t)
-	  (case-fold-search nil))
+	  (case-fold-search nil)
+	  from)
       (save-restriction
 	(goto-char (point-min))
 	(search-forward "\n\n")
 	(narrow-to-region (point-min) (point))
 	(goto-char (point-min))
+	(setq from (mail-fetch-field "from"))
 	(if (not (and gnus-article-x-face-command
 		      (or force
 			  (not gnus-article-x-face-too-ugly)
-			  (and gnus-article-x-face-too-ugly
+			  (and gnus-article-x-face-too-ugly from
 			       (not (string-match gnus-article-x-face-too-ugly
-						  (mail-fetch-field "from")))))
+						  from))))
 		      (progn
 			(goto-char (point-min))
 			(re-search-forward "^X-Face: " nil t))))
@@ -12065,10 +12085,8 @@ The `-n' option line from .newsrc is respected."
 	      (gnus-subscribe-hierarchical-interactive new-newsgroups))
 	  ;; Suggested by Per Abrahamsen <amanda@iesd.auc.dk>.
 	  (if (> groups 0)
-	      (progn
-		(gnus-dribble-enter "")
-		(gnus-message 6 "%d new newsgroup%s arrived." 
-			      groups (if (> groups 1) "s have" " has")))
+	      (gnus-message 6 "%d new newsgroup%s arrived." 
+			    groups (if (> groups 1) "s have" " has"))
 	    (gnus-message 6 "No new newsgroups."))))))
 
 (defun gnus-matches-options-n (group)
@@ -12151,10 +12169,8 @@ The `-n' option line from .newsrc is respected."
 	(gnus-subscribe-hierarchical-interactive new-newsgroups))
     ;; Suggested by Per Abrahamsen <amanda@iesd.auc.dk>.
     (if (> groups 0)
-	(progn
-	  (gnus-dribble-enter "")
-	  (gnus-message 6 "%d new newsgroup%s arrived." 
-			groups (if (> groups 1) "s have" " has"))))
+	(gnus-message 6 "%d new newsgroup%s arrived." 
+		      groups (if (> groups 1) "s have" " has")))
     got-new))
 
 (defun gnus-check-first-time-used ()

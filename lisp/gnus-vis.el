@@ -27,7 +27,7 @@
 
 (require 'gnus)
 (require 'gnus-ems)
-(require gnus-easymenu)
+(require 'easymenu)
 (require 'custom)
 
 (defvar gnus-group-menu-hook nil
