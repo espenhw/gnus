@@ -15131,6 +15131,36 @@ MIME multipart messages.
 @item standard-digest
 The standard (RFC 1153) digest format.
 
+@item mime-digest
+A MIME digest of messages.
+
+@item lanl-gov-announce
+Announcement messages from LANL Gov Announce.
+
+@item rfc822-forward
+A message forwarded according to RFC822.
+
+@item outlook
+The Outlook mail box.
+
+@item oe-dbx
+The Outlook Express dbx mail box.
+
+@item exim-bounce
+A bounce message from the Exim MTA.
+
+@item forward
+A message forwarded according to informal rules.
+
+@item rfc934
+An RFC934-forwarded message.
+
+@item mailman
+A mailman digest.
+
+@item clari-briefs
+A digest of Clarinet brief news items.
+
 @item slack-digest
 Non-standard digest format---matches most things, but does it badly.
 @end table
