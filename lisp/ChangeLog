@@ -1,3 +1,7 @@
+2000-04-28 16:01:09  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-button-menu): Use call-interactively.
+
 2000-04-28 15:30:17  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml.el (mml-generate-mime-1): Ignore 0x1b.

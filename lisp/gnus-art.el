@@ -2821,7 +2821,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 					   (cons (caddr c) (car c)))
 					 gnus-mime-button-commands))))))
 	(if response
-	    (funcall response))))))
+	    (call-interactively response))))))
 
 (defun gnus-mime-view-all-parts (&optional handles)
   "View all the MIME parts."
