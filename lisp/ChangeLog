@@ -1,3 +1,8 @@
+2001-07-25 12:54:00  Danny Siu <dsiu@adobe.com>
+	
+	* gnus-sum.el (gnus-summary-prepare-threads): Shouldn't do tree
+	display (%B) for threads if threading is off.
+ 
 2001-07-25 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Henrik Enberg <henrik@enberg.org>
 

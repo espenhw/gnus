@@ -4326,20 +4326,22 @@ or a straight list of headers."
 			  (1+ (match-beginning 0)) (1- (match-end 0))))
 	      (t gnus-tmp-from))
 	     gnus-tmp-thread-tree-header-string
-	     (if (zerop gnus-tmp-level)
-		 (if (cdar thread)
-		     gnus-sum-thread-tree-root
-		   gnus-sum-thread-tree-single-indent)
+	     (cond 
+	      ((not gnus-show-threads) "")
+	      ((zerop gnus-tmp-level)
+	       (if (cdar thread) 
+		   gnus-sum-thread-tree-root
+		 gnus-sum-thread-tree-single-indent))
+	      (t
 	       (concat (apply 'concat
-			      (mapcar (lambda (item)
-					(if (= item 1)
+			      (mapcar (lambda (item) 
+					(if (= item 1) 
 					    gnus-sum-thread-tree-vertical
 					  gnus-sum-thread-tree-indent))
 				      (cdr (reverse tree-stack))))
-		       (if (nth 1 thread)
+		       (if (nth 1 thread) 
 			   gnus-sum-thread-tree-leaf-with-other
-			 gnus-sum-thread-tree-single-leaf))))
-
+			 gnus-sum-thread-tree-single-leaf)))))
 	    (when (string= gnus-tmp-name "")
 	      (setq gnus-tmp-name gnus-tmp-from))
 	    (unless (numberp gnus-tmp-lines)
