@@ -9373,24 +9373,34 @@ Toggle displaying of the @sc{mime} object
 Prompt for a method, and then view the @sc{mime} object using this
 method (@code{gnus-mime-view-part}).
 
-@findex gnus-mime-save-part
-@item o (Article)
-Prompt for a file name, and then save the @sc{mime} object
-(@code{gnus-mime-save-part}).
-
-@findex gnus-mime-copy-part
-@item c (Article)
-Copy the @sc{mime} object to a fresh buffer and display this buffer
-(@code{gnus-mime-copy-part}).
-
 @findex gnus-mime-view-part-as-type
 @item t (Article)
 View the @sc{mime} object as if it were a different @sc{mime} media type
 (@code{gnus-mime-view-part-as-type}). 
 
-@findex gnus-mime-pipe-part
-@item | (Article)
-Output the @sc{mime} object to a process (@code{gnus-mime-pipe-part}).
+@findex gnus-mime-view-part-as-charset
+@itemx C (Article)
+Prompt for a charset, and then view the @sc{mime} object using this
+charset (@code{gnus-mime-view-part-as-charset}).
+
+@findex gnus-mime-save-part
+@item o (Article)
+Prompt for a file name, and then save the @sc{mime} object
+(@code{gnus-mime-save-part}).
+
+@findex gnus-mime-save-part-and-strip
+@item C-o (Article)
+Prompt for a file name, then save the @sc{mime} object and strip it from
+the article.  Then proceed to article editing, where a reasonable
+suggestion is being made on how the altered article should look
+like. The stripped @sc{mime} object will be referred via the
+message/external-body @sc{mime} type.
+(@code{gnus-mime-save-part-and-strip}).
+
+@findex gnus-mime-copy-part
+@item c (Article)
+Copy the @sc{mime} object to a fresh buffer and display this buffer
+(@code{gnus-mime-copy-part}).
 
 @findex gnus-mime-inline-part
 @item i (Article)
@@ -9400,6 +9410,21 @@ the raw contents without decoding.  If given a numerical prefix, you can
 do semi-manual charset stuff (see
 @code{gnus-summary-show-article-charset-alist} in @pxref{Paging the
 Article}).
+
+@findex gnus-mime-internalize-part
+@item E (Article)
+View the @sc{mime} object with an internal viewer.  If no internal
+viewer is available, use an external viewer
+(@code{gnus-mime-internalize-part}).
+
+@findex gnus-mime-externalize-part
+@item e (Article)
+View the @sc{mime} object with an external viewer.
+(@code{gnus-mime-externalize-part}).
+
+@findex gnus-mime-pipe-part
+@item | (Article)
+Output the @sc{mime} object to a process (@code{gnus-mime-pipe-part}).
 
 @findex gnus-mime-action-on-part
 @item . (Article)
