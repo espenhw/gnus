@@ -248,6 +248,11 @@ your main source of newsgroup names."
   :type 'string
   :group 'spam-bogofilter)
 
+(defcustom spam-bogofilter-bogosity-positive-spam-header "^\\(Yes\\|Spam\\)"
+  "The regex on `spam-bogofilter-header' for positive spam identification."
+  :type 'regexp
+  :group 'spam-bogofilter)
+
 (defcustom spam-bogofilter-database-directory nil
   "Directory path of the Bogofilter databases."
   :type '(choice (directory :tag "Location of the Bogofilter database directory")
@@ -408,15 +413,15 @@ your main source of newsgroup names."
 (defun spam-ham-move-routine (&optional group)
   (let ((articles gnus-newsgroup-articles)
 	article ham-mark-values mark)
+
     (dolist (mark spam-ham-marks)
       (push (symbol-value mark) ham-mark-values))
-
-    (while articles
-      (setq article (pop articles))
-      (when (and (memq mark ham-mark-values)
+    
+    (dolist (article articles)
+      (when (and (memq (gnus-summary-article-mark article) ham-mark-values)
 		 (stringp group))
-	  (let ((gnus-current-article article))
-	    (gnus-summary-move-article nil group))))))
+	(let ((gnus-current-article article))
+	  (gnus-summary-move-article nil group))))))
  
 (defun spam-generic-register-routine (spam-func ham-func)
   (let ((articles gnus-newsgroup-articles)
@@ -853,12 +858,12 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 (defun spam-check-bogofilter-headers (&optional score)
   (let ((header (message-fetch-field spam-bogofilter-header)))
       (when (and header
-	       (string-match "^Yes" header))
+		 (string-match spam-bogofilter-bogosity-positive-spam-header
+			       header))
 	  (if score
 	      (when (string-match "spamicity=\\([0-9.]+\\)" header)
 		(match-string 1 header))
 	    spam-split-group))))
-	  
 
 ;; return something sensible if the score can't be determined
 (defun spam-bogofilter-score ()

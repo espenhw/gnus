@@ -3,6 +3,11 @@
 	* spam.el (spam-check-blackholes) 
 	(spam-blackhole-good-server-regex): new variable to skip some IPs
 	when checking blackholes; use it
+	(spam-check-bogofilter-headers) 
+	(spam-bogofilter-bogosity-positive-spam-header): new variable, in
+	case more X-Bogosity is used than just "Yes/No"
+	(spam-ham-move-routine): semi-fixed, only first article is
+	properly moved now
 
 2003-01-27  Jesper Harder  <harder@ifa.au.dk>
 
