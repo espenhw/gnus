@@ -839,7 +839,7 @@ default charset will be used instead."
   :type '(repeat symbol)
   :group 'gnus-charset)
 
-(defcustom gnus-group-ignored-charsets-alist 
+(defcustom gnus-group-ignored-charsets-alist
   '(("alt\\.chinese\\.text" iso-8859-1))
   "Alist of regexps (to match group names) and charsets that should be ignored.
 When these charsets are used in the \"charset\" parameter, the
@@ -855,7 +855,7 @@ This variable uses the same syntax as `gnus-emphasis-alist'."
 		       (repeat (list (regexp :tag "Highlight regexp")
 				     (number :tag "Group for entire word" 0)
 				     (number :tag "Group for displayed part" 0)
-				     (symbol :tag "Face" 
+				     (symbol :tag "Face"
 					     gnus-emphasis-highlight-words)))))
   :group 'gnus-summary-visual)
 
@@ -957,9 +957,9 @@ For example: ((1 . cn-gb-2312) (2 . big5))."
 	?c)
     (?u gnus-tmp-user-defined ?s)
     (?P (gnus-pick-line-number) ?d))
-  "An alist of format specifications that can appear in summary lines,
-and what variables they correspond with, along with the type of the
-variable (string, integer, character, etc).")
+  "An alist of format specifications that can appear in summary lines.
+These are paired with what variables they correspond with, along with
+the type of the variable (string, integer, character, etc).")
 
 (defvar gnus-summary-dummy-line-format-alist
   `((?S gnus-tmp-subject ?s)
@@ -1132,8 +1132,7 @@ whose names match REGEXP.
 For example:
 ((\"chinese\" . gnus-decode-encoded-word-string-by-guess)
  mail-decode-encoded-word-string
- (\"chinese\" . rfc1843-decode-string))
-")
+ (\"chinese\" . rfc1843-decode-string))")
 
 (defvar gnus-decode-encoded-word-methods-cache nil)
 
@@ -1160,7 +1159,7 @@ For example:
 ;; Subject simplification.
 
 (defun gnus-simplify-whitespace (str)
-  "Remove excessive whitespace."
+  "Remove excessive whitespace from STR."
   (let ((mystr str))
     ;; Multiple spaces.
     (while (string-match "[ \t][ \t]+" mystr)
@@ -1213,7 +1212,7 @@ The string in the accessible portion of the current buffer is simplified.
 It is assumed to be a single-line subject.
 Whitespace is generally cleaned up, and miscellaneous leading/trailing
 matter is removed.  Additional things can be deleted by setting
-gnus-simplify-subject-fuzzy-regexp."
+`gnus-simplify-subject-fuzzy-regexp'."
   (let ((case-fold-search t)
 	(modified-tick))
     (gnus-simplify-buffer-fuzzy-step "\t" " ")
@@ -1449,7 +1448,7 @@ increase the score of each group you read."
     "T" gnus-summary-limit-include-thread
     "d" gnus-summary-limit-exclude-dormant
     "t" gnus-summary-limit-to-age
-    "x" gnus-summary-limit-to-extra 
+    "x" gnus-summary-limit-to-extra
     "E" gnus-summary-limit-include-expunged
     "c" gnus-summary-limit-exclude-childless-dormant
     "C" gnus-summary-limit-mark-excluded-as-read)
@@ -2445,9 +2444,10 @@ marks of articles."
   (gnus-summary-next-page nil t))
 
 (defun gnus-summary-set-display-table ()
-  ;; Change the display table.  Odd characters have a tendency to mess
-  ;; up nicely formatted displays - we make all possible glyphs
-  ;; display only a single character.
+  "Change the display table.
+Odd characters have a tendency to mess
+up nicely formatted displays - we make all possible glyphs
+display only a single character."
 
   ;; We start from the standard display table, if any.
   (let ((table (or (copy-sequence standard-display-table)
@@ -2491,9 +2491,9 @@ marks of articles."
       t)))
 
 (defun gnus-set-global-variables ()
-  ;; Set the global equivalents of the summary buffer-local variables
-  ;; to the latest values they had.  These reflect the summary buffer
-  ;; that was in action when the last article was fetched.
+  "Set the global equivalents of the buffer-local variables.
+They are set to the latest values they had.  These reflect the summary
+buffer that was in action when the last article was fetched."
   (when (eq major-mode 'gnus-summary-mode)
     (setq gnus-summary-buffer (current-buffer))
     (let ((name gnus-newsgroup-name)
@@ -2599,7 +2599,7 @@ marks of articles."
   (let ((to (cdr (assq 'To (mail-header-extra header))))
 	(newsgroups (cdr (assq 'Newsgroups (mail-header-extra header))))
 	(mail-parse-charset gnus-newsgroup-charset)
-	(mail-parse-ignored-charsets 
+	(mail-parse-ignored-charsets
 	 (save-excursion (set-buffer gnus-summary-buffer)
 			 gnus-newsgroup-ignored-charsets)))
     (cond
@@ -2678,7 +2678,7 @@ marks of articles."
       (forward-line 1))))
 
 (defun gnus-summary-update-line (&optional dont-update)
-  ;; Update summary line after change.
+  "Update summary line after change."
   (when (and gnus-summary-default-score
 	     (not gnus-summary-inhibit-highlight))
     (let* ((gnus-summary-inhibit-highlight t) ; Prevent recursion.
@@ -3309,9 +3309,9 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
     (gnus-dependencies-add-header header dependencies force-new)))
 
 (defun gnus-build-get-header (id)
-  ;; Look through the buffer of NOV lines and find the header to
-  ;; ID.  Enter this line into the dependencies hash table, and return
-  ;; the id of the parent article (if any).
+  "Look through the buffer of NOV lines and find the header to ID.
+Enter this line into the dependencies hash table, and return
+the id of the parent article (if any)."
   (let ((deps gnus-newsgroup-dependencies)
 	found header)
     (prog1
@@ -3659,12 +3659,12 @@ If LINE, insert the rebuilt thread starting on line LINE."
 
 ;; Written by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>.
 (defmacro gnus-thread-header (thread)
-  ;; Return header of first article in THREAD.
-  ;; Note that THREAD must never, ever be anything else than a variable -
-  ;; using some other form will lead to serious barfage.
+  "Return header of first article in THREAD.
+Note that THREAD must never, ever be anything else than a variable -
+using some other form will lead to serious barfage."
   (or (symbolp thread) (signal 'wrong-type-argument '(symbolp thread)))
   ;; (8% speedup to gnus-summary-prepare, just for fun :-)
-  (list 'byte-code "\10\211:\203\17\0\211@;\203\16\0A@@\207" 
+  (list 'byte-code "\10\211:\203\17\0\211@;\203\16\0A@@\207"
 	(vector thread) 2))
 
 (defsubst gnus-article-sort-by-number (h1 h2)
@@ -4232,7 +4232,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       (or gnus-newsgroup-headers t)))))
 
 (defun gnus-articles-to-read (group &optional read-all)
-  ;; Find out what articles the user wants to read.
+  "Find out what articles the user wants to read."
   (let* ((articles
 	  ;; Select all articles if `read-all' is non-nil, or if there
 	  ;; are no unread articles.
@@ -4456,7 +4456,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	    (setcdr (nthcdr i info) nil)))))))
 
 (defun gnus-set-mode-line (where)
-  "This function sets the mode line of the article or summary buffers.
+  "Set the mode line of the article or summary buffers.
 If WHERE is `summary', the summary mode line format will be used."
   ;; Is this mode line one we keep updated?
   (when (and (memq where gnus-updated-mode-lines)
@@ -4672,7 +4672,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 			     gnus-newsgroup-dependencies)))
 	headers id end ref
 	(mail-parse-charset gnus-newsgroup-charset)
-	(mail-parse-ignored-charsets 
+	(mail-parse-ignored-charsets
 	 (save-excursion (condition-case nil
 			     (set-buffer gnus-summary-buffer)
 			   (error))
@@ -4824,8 +4824,9 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 (defun gnus-get-newsgroup-headers-xover (sequence &optional
 						  force-new dependencies
 						  group also-fetch-heads)
-  "Parse the news overview data in the server buffer, and return a
-list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
+  "Parse the news overview data in the server buffer.
+Return a list of headers that match SEQUENCE (see
+`nntp-retrieve-headers')."
   ;; Get the Xref when the users reads the articles since most/some
   ;; NNTP servers do not include Xrefs when using XOVER.
   (setq gnus-article-internal-prepare-hook '(gnus-article-get-xrefs))
@@ -6329,12 +6330,12 @@ articles that are younger than AGE days."
    (let ((header
 	  (intern
 	   (gnus-completing-read
-	    (symbol-name (car gnus-extra-headers))	
-	    "Limit extra header:"	
-	    (mapcar (lambda (x)	
+	    (symbol-name (car gnus-extra-headers))
+	    "Limit extra header:"
+	    (mapcar (lambda (x)
 		      (cons (symbol-name x) x))
 		    gnus-extra-headers)
-	    nil			
+	    nil
 	    t))))
      (list header
 	   (read-string (format "Limit to header %s (regexp): " header)))))
@@ -7207,15 +7208,15 @@ to save in."
 
 (defun gnus-summary-show-article (&optional arg)
   "Force re-fetching of the current article.
-If ARG (the prefix) is a number, show the article with the charset 
+If ARG (the prefix) is a number, show the article with the charset
 defined in `gnus-summary-show-article-charset-alist', or the charset
 inputed.
-If ARG (the prefix) is non-nil and not a number, show the raw article 
+If ARG (the prefix) is non-nil and not a number, show the raw article
 without any article massaging functions being run."
   (interactive "P")
-  (cond 
+  (cond
    ((numberp arg)
-    (let ((gnus-newsgroup-charset 
+    (let ((gnus-newsgroup-charset
 	   (or (cdr (assq arg gnus-summary-show-article-charset-alist))
 	       (read-coding-system "Charset: ")))
 	  (gnus-newsgroup-ignored-charsets 'gnus-all))
@@ -7270,7 +7271,7 @@ If ARG is a negative number, hide the unwanted header lines."
 	(setq hidden
 	      (if (numberp arg)
 		  (>= arg 0)
-		(save-restriction 
+		(save-restriction
 		  (article-narrow-to-head)
 		  (gnus-article-hidden-text-p 'headers))))
 	(goto-char (point-min))
@@ -7489,7 +7490,7 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 		 (memq article gnus-newsgroup-dormant)
 		 (memq article gnus-newsgroup-unreads)))
 
-	      (when gnus-preserve-marks 
+	      (when gnus-preserve-marks
 		;; Copy any marks over to the new group.
 		(when (and (equal to-group gnus-newsgroup-name)
 			   (not (memq article gnus-newsgroup-unreads)))
@@ -8900,14 +8901,14 @@ Argument REVERSE means reverse order."
 
 (defun gnus-summary-sort-by-author (&optional reverse)
   "Sort the summary buffer by author name alphabetically.
-If case-fold-search is non-nil, case of letters is ignored.
+If `case-fold-search' is non-nil, case of letters is ignored.
 Argument REVERSE means reverse order."
   (interactive "P")
   (gnus-summary-sort 'author reverse))
 
 (defun gnus-summary-sort-by-subject (&optional reverse)
   "Sort the summary buffer by subject alphabetically.  `Re:'s are ignored.
-If case-fold-search is non-nil, case of letters is ignored.
+If `case-fold-search' is non-nil, case of letters is ignored.
 Argument REVERSE means reverse order."
   (interactive "P")
   (gnus-summary-sort 'subject reverse))
@@ -8934,7 +8935,7 @@ Argument REVERSE means reverse order."
   "Sort the summary buffer by article length.
 Argument REVERSE means reverse order."
   (interactive "P")
-  (gnus-summary-sort 'chars reverse))	
+  (gnus-summary-sort 'chars reverse))
 
 (defun gnus-summary-sort (predicate reverse)
   "Sort summary buffer by PREDICATE.  REVERSE means reverse order."
@@ -9388,8 +9389,8 @@ If REVERSE, save parts that do not match TYPE."
 ;;;
 
 (defun gnus-highlight-selected-summary ()
+  "Highlight selected article in summary buffer."
   ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
-  ;; Highlight selected article in summary buffer
   (when gnus-summary-selected-face
     (save-excursion
       (let* ((beg (progn (beginning-of-line) (point)))
@@ -9541,7 +9542,7 @@ If REVERSE, save parts that do not match TYPE."
       (setq gnus-newsgroup-charset nil)
     (let* ((name (and gnus-newsgroup-name
 		      (gnus-group-real-name gnus-newsgroup-name)))
-	   (ignored-charsets 
+	   (ignored-charsets
 	    (or gnus-newsgroup-ephemeral-ignored-charsets
 		(append
 		 (and gnus-newsgroup-name
@@ -9569,7 +9570,7 @@ If REVERSE, save parts that do not match TYPE."
 				     charset (cadr elem))))
 			   charset)))
 		gnus-default-charset))
-      (set (make-local-variable 'gnus-newsgroup-ignored-charsets) 
+      (set (make-local-variable 'gnus-newsgroup-ignored-charsets)
 	   ignored-charsets))))
 
 ;;;
@@ -9649,7 +9650,7 @@ treated as multipart/mixed."
 	(setq func (eval func))
 	(define-key map (nth 4 lway) func)))))
       
-(defun gnus-summary-make-marking-command-1 (mark way lway name)      
+(defun gnus-summary-make-marking-command-1 (mark way lway name)
   `(defun ,(intern
 	    (format "gnus-summary-put-mark-as-%s%s"
 		    name (if (eq way 'nomove)
