@@ -418,6 +418,9 @@ By default, the region is treated as containing addresses (see
 		   ((big5 gb2312 euc-kr) 2)
 		   (utf-8 4)
 		   (t 8)))
+	 (pre (- b (save-restriction
+		     (widen)
+		     (rfc2047-point-at-bol))))
 	 ;; encoded-words must not be longer than 75 characters,
 	 ;; including charset, encoding etc.  This leaves us with
 	 ;; 75 - (length start) - 2 - 2 characters.  The last 2 is for
@@ -425,6 +428,9 @@ By default, the region is treated as containing addresses (see
 	 ;; each character expands to 8 bytes which is expanded by a
 	 ;; factor of 4/3 by base64 encoding.
 	 (length (floor (- 75 (length start) 4) (* factor (/ 4.0 3.0))))
+	 ;; Limit line length to 76 characters.
+	 (length1 (max 1 (floor (- 76 (length start) 4 pre)
+				(* factor (/ 4.0 3.0)))))
 	 (first t))
     (if mime-charset
 	(save-restriction
@@ -433,9 +439,14 @@ By default, the region is treated as containing addresses (see
 	    ;; break into lines before encoding
 	    (goto-char (point-min))
 	    (while (not (eobp))
-	      (goto-char (min (point-max) (+ length (point))))
+	      (if first
+		  (progn
+		    (goto-char (min (point-max) (+ length1 (point))))
+		    (setq first nil))
+		(goto-char (min (point-max) (+ length (point)))))
 	      (unless (eobp)
-		(insert ?\n))))
+		(insert ?\n)))
+	    (setq first t))
 	  (if (and (mm-multibyte-p)
 		   (mm-coding-system-p cs))
 	      (mm-encode-coding-region (point-min) (point-max) cs))
