@@ -253,7 +253,9 @@ inserts new groups at the beginning of the list of groups;
 alphabetic order; `gnus-subscribe-hierarchically' inserts new groups
 in hierarchical newsgroup order; `gnus-subscribe-interactively' asks
 for your decision; `gnus-subscribe-killed' kills all new groups;
-`gnus-subscribe-zombies' will make all new groups into zombies."
+`gnus-subscribe-zombies' will make all new groups into zombies;
+`gnus-subscribe-topics' will enter groups into the topics that
+claim them."
   :group 'gnus-group-new
   :type '(radio (function-item gnus-subscribe-randomly)
 		(function-item gnus-subscribe-alphabetically)
@@ -261,6 +263,7 @@ for your decision; `gnus-subscribe-killed' kills all new groups;
 		(function-item gnus-subscribe-interactively)
 		(function-item gnus-subscribe-killed)
 		(function-item gnus-subscribe-zombies)
+		(function-item gnus-subscribe-topics)
 		function))
 
 (defcustom gnus-subscribe-options-newsgroup-method
@@ -1775,18 +1778,25 @@ newsgroup."
       (let ((prefix (gnus-group-prefixed-name "" method)))
 	(goto-char (point-min))
 	(while (and (not (eobp))
-		    (progn (insert prefix)
-			   (zerop (forward-line 1)))))))
+		    (progn
+		      (when (= (following-char) ?\")
+			(forward-char 1))
+		      (insert prefix)
+		      (zerop (forward-line 1)))))))
     ;; Store the active file in a hash table.
     (goto-char (point-min))
     (let (group max min)
       (while (not (eobp))
-	(condition-case ()
+	(condition-case err
 	    (progn
 	      (narrow-to-region (point) (gnus-point-at-eol))
 	      ;; group gets set to a symbol interned in the hash table
 	      ;; (what a hack!!) - jwz
 	      (setq group (let ((obarray hashtb)) (read cur)))
+	      ;; ### The extended group name scheme makes
+	      ;; the previous optimization strategy sort of pointless...
+	      (when (stringp group)
+		(setq group (intern group hashtb)))
 	      (if (and (numberp (setq max (read cur)))
 		       (numberp (setq min (read cur)))
 		       (progn
@@ -1804,7 +1814,7 @@ newsgroup."
 		      (gnus-sethash (symbol-name group) t
 				    gnus-moderated-hashtb)))
 		(set group nil)))
-	  (error
+	  (quit
 	   (and group
 		(symbolp group)
 		(set group nil))

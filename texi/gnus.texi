@@ -722,6 +722,19 @@ to will be subscribed hierarchically.
 @vindex gnus-subscribe-killed
 Kill all new groups.
 
+@item gnus-subscribe-topics
+@vindex gnus-subscribe-topics
+Put the groups into the topic that has a matching @code{subscribe} topic 
+parameter (@pxref{Topic Parameters}).  For instance, a @code{subscribe}
+topic parameter that looks like
+
+@example
+"nntp\\+somewhere"
+@end example
+
+will mean that all groups that match that regex will be subscribed under 
+that topic.
+
 @end table
 
 @vindex gnus-subscribe-hierarchical-interactive

@@ -1531,6 +1531,19 @@ If REVERSE, reverse the sorting order."
     (gnus-group-list-groups)
     (gnus-topic-goto-topic current)))
 
+(defun gnus-subscribe-topics (newsgroup)
+  (catch 'end
+    (let (match gnus-group-change-level-function)
+      (dolist (topic (gnus-topic-list))
+	(when (and (setq match (cdr (assq 'subscribe
+					  (gnus-topic-parameters topic))))
+		   (string-match match newsgroup))
+	  ;; Just subscribe the group.
+	  (gnus-subscribe-alphabetically newsgroup)
+	  ;; Add the group to the topic.
+	  (nconc (assoc topic gnus-topic-alist) (list newsgroup))
+	  (throw 'end t))))))
+	  
 (provide 'gnus-topic)
 
 ;;; gnus-topic.el ends here

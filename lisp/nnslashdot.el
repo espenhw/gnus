@@ -118,7 +118,9 @@
 	    (push s startats)))
 	(unless startats
 	  (push 1 startats)))
-      (dolist (start (sort startats '<))
+      (setq startats (sort startats '<))
+      (while (and (setq start (pop startats))
+		  (< start last))
 	(setq point (goto-char (point-max)))
 	(url-insert-file-contents
 	 (format nnslashdot-comments-url sid nnslashdot-threshold start))
@@ -359,8 +361,11 @@
       (erase-buffer)
       (dolist (elem nnslashdot-groups)
 	(insert (prin1-to-string (car elem))
-		" " (number-to-string (cadr elem)) " 1 m\n")))
+		" " (number-to-string (cadr elem)) " 1 y\n")))
     t))
+
+(deffoo nnslashdot-request-newgroups (date &optional server)
+  (nnslashdot-request-list server))
 
 (deffoo nnslashdot-asynchronous-p ()
   nil)
