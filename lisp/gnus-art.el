@@ -883,13 +883,6 @@ See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
-(defcustom gnus-treat-hide-citation-maybe nil
-  "Hide cited text.
-Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
-  :group 'gnus-article-treat
-  :type gnus-article-treat-custom)
-
 (defcustom gnus-treat-strip-list-identifiers 'head
   "Strip list identifiers from `gnus-list-identifiers`.
 Valid values are nil, t, `head', `last', an integer or a predicate.
@@ -5058,14 +5051,21 @@ specified by `gnus-button-alist'."
     (let ((buffer-read-only nil)
 	  (inhibit-point-motion-hooks t))
       (if (text-property-any end (point-max) 'article-type 'signature)
-	  (gnus-remove-text-properties-when
-	   'article-type 'signature end (point-max)
-	   (cons 'article-type (cons 'signature
-				     gnus-hidden-properties)))
+	  (progn
+	    (setq gnus-article-wash-types
+		  (delq 'signature gnus-article-wash-types))
+	    (gnus-remove-text-properties-when
+	     'article-type 'signature end (point-max)
+	     (cons 'article-type (cons 'signature
+				       gnus-hidden-properties))))
+	(or (memq 'signature gnus-article-wash-types)
+	    (push 'signature gnus-article-wash-types))
 	(gnus-add-text-properties-when
 	 'article-type nil end (point-max)
 	 (cons 'article-type (cons 'signature
-				   gnus-hidden-properties)))))))
+				   gnus-hidden-properties)))))
+    (let ((gnus-article-mime-handle-alist-1 gnus-article-mime-handle-alist))
+      (gnus-set-mode-line 'article))))
 
 (defun gnus-button-entry ()
   ;; Return the first entry in `gnus-button-alist' matching this place.

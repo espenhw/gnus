@@ -1,7 +1,18 @@
 2001-10-12  Simon Josefsson  <jas@extundo.com>
+	Suggested by david.goldberg6@verizon.net (David S. Goldberg)
+
+	* gnus-cite.el (gnus-article-hide-citation): Add `c' mode line
+	character.
+	(gnus-article-toggle-cited-text): Toggle `c' mode line character.
+
+	* gnus-art.el (gnus-treat-hide-citation-maybe): Remove duplicate
+	definition.
+	(gnus-signature-toggle): Toggle `s' mode line character.
 
 	* gnus-art.el (article-emphasize): Set `g-a-wash-types' after
 	doing stuff that clears it.
+
+2001-10-12  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-cache.el (gnus-summary-limit-include-cached): Rewrite.
 	From Eric Marsden <emarsden@laas.fr>.
