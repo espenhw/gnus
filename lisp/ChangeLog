@@ -1,5 +1,11 @@
 2003-02-12  Michael Shields  <shields@msrl.com>
 
+	* gnus-art.el (article-strip-banner): Strip both per-group and
+	per-user-address banners.
+	(article-really-strip-banner): New.
+
+2003-02-12  Michael Shields  <shields@msrl.com>
+
 	* gnus-sum.el (gnus-article-goto-next-page,
 	gnus-article-goto-prev-page): Call gnus-summary-*-page, instead of
 	relying on the summary bindings of `n' and `p'.
