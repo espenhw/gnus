@@ -1,3 +1,9 @@
+2001-08-04 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-security-verify-or-decrypt): Insert
+	before remove.
+	(gnus-mime-security-show-details): Ditto.
+
 2001-08-04  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* nnmail.el (nnmail-split-fancy-with-parent): Correct `mapconcat'
