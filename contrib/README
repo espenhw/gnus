@@ -12,6 +12,13 @@ need to a directory which is in load-path.
 
 Here is an overview of the files:
 
+gnus-namazu.el
+
+	This file defines the command to search mails and persistent
+	articles with Namazu, which is a full-text search engine
+	distributed at http://namazu.org, and to browse its results
+	with Gnus.
+
 gpg-ring.el
 gpg.el
 
