@@ -8,9 +8,15 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Printing capabilities are enhanced.
+
+Gnus supports Muttprint natively with O P from the Summary and Article
+buffers.  Also, each individual MIME part can be printed using p on
+the MIME button.
+
 ** Message supports the Importance: header.
 
-In the message buffer, C-c C-p cycles through the valid values.
+In the message buffer, C-c C-f C-i or C-u cycles through the valid values.
 
 ** Gnus supports Cancel Locks in News.
 
