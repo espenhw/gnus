@@ -1103,7 +1103,7 @@ this is a reply."
 		  (gnus-message 1 "Couldn't store article in group %s: %s"
 				group (gnus-status-message method))
 		  (sit-for 2))
-		(when gnus-inews-mark-gcc-as-read
+		(when (and group-art gnus-inews-mark-gcc-as-read)
 		  (let ((active (gnus-active group)))
 		    (when active
 		      (if (< (cdr active) (cdr group-art))
