@@ -243,7 +243,7 @@ regexp.  If it matches, the text in question is not a signature."
   :type 'sexp
   :group 'gnus-article-hiding)
 
-;; Fixme: This isn't the right thing for mixed graphical and and
+;; Fixme: This isn't the right thing for mixed graphical and
 ;; non-graphical frames in a session.
 (defcustom gnus-article-x-face-command
   (if (featurep 'xemacs)

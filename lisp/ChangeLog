@@ -1,3 +1,7 @@
+2003-06-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el: Comment fix.
+
 2003-06-20  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-msg.el (gnus-configure-posting-styles): Remove unused
