@@ -200,7 +200,7 @@ Should be called narrowed to the head of the message."
       (if (and (cdr word) 
 	       (caar words)
 	       (not (cdar words))
-	       (string-match "^[ \t]+$" (caar words)))
+	       (not (string-match "[^ \t]" (caar words))))
 	  (if (eq (cdr (nth 1 words)) (cdr word))
 	      (progn
 		(setq word (cons (concat 
@@ -301,7 +301,8 @@ Should be called narrowed to the head of the message."
 	(cond
 	 ((eq (char-after) ?\n)
 	  (forward-char 1)
-	  (setq bol (point))
+	  (setq bol (point)
+		break nil)
 	  (skip-chars-forward " \t")
 	  (unless (or (eobp) (eq (char-after) ?\n))
 	    (forward-char 1)))
@@ -314,11 +315,19 @@ Should be called narrowed to the head of the message."
 	  (if (not (looking-at "=\\?"))
 	      (if (eq (char-after) ?=)
 		  (forward-char 1)
-		(skip-chars-forward "^ \t="))
+		(skip-chars-forward "^ \t\n\r="))
 	    (setq break (point))
-	    (skip-chars-forward "^ \t")))
+	    (skip-chars-forward "^ \t\n\r")))
 	 (t
-	  (skip-chars-forward "^ \t")))))))
+	  (skip-chars-forward "^ \t\n\r"))))
+      (when (and break (> (- (point) bol) 76))
+	(goto-char break)
+	(setq break nil)
+	(insert "\n ")
+	(setq bol (1- (point)))
+	;; Don't break before the first non-LWSP characters.
+	(skip-chars-forward " \t")
+	(forward-char 1)))))
 
 (defun rfc2047-unfold-region (b e)
   "Fold the long lines in the region."
