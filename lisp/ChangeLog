@@ -1,3 +1,8 @@
+2000-10-27  Paul Jarc <prj@po.cwru.edu>
+
+	* message.el (message-insert-to, message-get-reply-headers):
+	(message-reply, message-followup): Mail-{Followup,Reply}-To.
+
 2000-10-27 19:45:58  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml2015.el: New file.

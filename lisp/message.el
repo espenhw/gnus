@@ -1641,7 +1641,8 @@ With the prefix argument FORCE, insert the header anyway."
 	     (mail-fetch-field "to")
 	     (not (string-match "\\` *\\'" (mail-fetch-field "to"))))
     (insert ", "))
-  (insert (or (message-fetch-reply-field "reply-to")
+  (insert (or (message-fetch-reply-field "mail-reply-to")
+	      (message-fetch-reply-field "reply-to")
 	      (message-fetch-reply-field "from") "")))
 
 (defun message-widen-reply ()
@@ -3667,13 +3668,15 @@ OTHER-HEADERS is an alist of header/value pairs."
 		     (Subject . ,(or subject ""))))))
 
 (defun message-get-reply-headers (wide &optional to-address)
-  (let (follow-to mct never-mct from to cc reply-to ccalist)
+  (let (follow-to mct never-mct from to cc reply-to mrt mft ccalist)
     ;; Find all relevant headers we need.
     (setq from (message-fetch-field "from")
 	  to (message-fetch-field "to")
 	  cc (message-fetch-field "cc")
 	  mct (message-fetch-field "mail-copies-to")
-	  reply-to (message-fetch-field "reply-to"))
+	  reply-to (message-fetch-field "reply-to")
+	  mrt (message-fetch-field "mail-reply-to")
+	  mft (message-fetch-field "mail-followup-to"))
 
     ;; Handle special values of Mail-Copies-To.
     (when mct
@@ -3683,22 +3686,42 @@ OTHER-HEADERS is an alist of header/value pairs."
 	     (setq mct nil))
 	    ((or (equal (downcase mct) "always")
 		 (equal (downcase mct) "poster"))
-	     (setq mct (or reply-to from)))))
+	     (setq mct (or mrt reply-to from)))))
 
     (if (or (not wide)
 	    to-address)
 	(progn
-	  (setq follow-to (list (cons 'To (or to-address reply-to from))))
-	  (when (and wide mct)
-	    (push (cons 'Cc mct) follow-to)))
+	  (setq follow-to (list (cons 'To (or to-address mrt reply-to from))))
+	  (when (and wide (or mft mct))
+	    (push (cons 'Cc (or mft mct)) follow-to)))
       (let (ccalist)
 	(save-excursion
 	  (message-set-work-buffer)
-	  (unless never-mct
-	    (insert (or reply-to from "")))
-	  (insert (if to (concat (if (bolp) "" ", ") to "") ""))
-	  (insert (if mct (concat (if (bolp) "" ", ") mct) ""))
-	  (insert (if cc (concat (if (bolp) "" ", ") cc) ""))
+          (if (and mft
+                   message-use-followup-to
+                   (or (not (eq message-use-followup-to 'ask))
+                       (message-y-or-n-p
+		        (concat "Obey Mail-Followup-To: " mft "? ") t "\
+You should normally obey the Mail-Followup-To: header.
+
+	`Mail-Followup-To: " mft "'
+directs your response to " (if (string-match "," mft)
+			       "the specified addresses"
+			     "that address only") ".
+
+If a message is posted to several mailing lists, Mail-Followup-To is
+often used to direct the following discussion to one list only,
+because discussions that are spread over several lists tend to be
+fragmented and very difficult to follow.
+
+Also, some source/announcement lists are not indented for discussion;
+responses here are directed to other addresses.")))
+              (insert mft)
+	    (unless never-mct
+	      (insert (or mrt reply-to from "")))
+	    (insert (if to (concat (if (bolp) "" ", ") to "") ""))
+	    (insert (if mct (concat (if (bolp) "" ", ") mct) ""))
+	    (insert (if cc (concat (if (bolp) "" ", ") cc) "")))
 	  (goto-char (point-min))
 	  (while (re-search-forward "[ \t]+" nil t)
 	    (replace-match " " t t))
@@ -3709,7 +3732,7 @@ OTHER-HEADERS is an alist of header/value pairs."
 	  (goto-char (point-min))
 	  ;; Perhaps "Mail-Copies-To: never" removed the only address?
 	  (when (eobp)
-	    (insert (or reply-to from "")))
+	    (insert (or mrt reply-to from "")))
 	  (setq ccalist
 		(mapcar
 		 (lambda (addr)
@@ -3797,7 +3820,7 @@ If TO-NEWSGROUPS, use that as the new Newsgroups line."
   (interactive)
   (require 'gnus-sum)			; for gnus-list-identifiers
   (let ((cur (current-buffer))
-	from subject date reply-to mct
+	from subject date reply-to mrt mct
 	references message-id follow-to
 	(inhibit-point-motion-hooks t)
 	(message-this-is-news t)
@@ -3820,6 +3843,7 @@ If TO-NEWSGROUPS, use that as the new Newsgroups line."
 	    newsgroups (message-fetch-field "newsgroups")
 	    posted-to (message-fetch-field "posted-to")
 	    reply-to (message-fetch-field "reply-to")
+	    mrt (message-fetch-field "mail-reply-to")
 	    distribution (message-fetch-field "distribution")
 	    mct (message-fetch-field "mail-copies-to"))
       (when (and (setq gnus-warning (message-fetch-field "gnus-warning"))
@@ -3857,7 +3881,7 @@ A typical situation where `Followup-To: poster' is used is when the poster
 does not read the newsgroup, so he wouldn't see any replies sent to it."))
 		  (progn
 		    (setq message-this-is-news nil)
-		    (cons 'To (or reply-to from "")))
+		    (cons 'To (or mrt reply-to from "")))
 		(cons 'Newsgroups newsgroups)))
 	     (t
 	      (if (or (equal followup-to newsgroups)
@@ -3893,7 +3917,7 @@ responses here are directed to other newsgroups."))
 			     (equal (downcase mct) "nobody"))))
 	   (list (cons 'Cc (if (or (equal (downcase mct) "always")
 				   (equal (downcase mct) "poster"))
-			       (or reply-to from "")
+			       (or mrt reply-to from "")
 			     mct)))))
 
      cur)
