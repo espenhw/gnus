@@ -1,3 +1,11 @@
+2003-02-19  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.el (message-fix-before-sending): Fix highlighting of
+	illegible and invisible text.
+
+	* gnus-util.el (gnus-multiple-choice): Separate choices with
+	",,A (B".  Suggested by Dan Jacobson <jidanni@dman.ddts.net>.
+
 2003-02-18  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-exit-no-update): Use gnus-kill-buffer.

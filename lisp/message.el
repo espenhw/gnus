@@ -3233,7 +3233,8 @@ It should typically alter the sending method in some way or other."
 	(goto-char (car points))
 	(dolist (point points)
 	  (add-text-properties point (1+ point)
-			       '(invisible nil highlight t)))
+			       '(invisible nil face highlight
+					   font-lock-face highlight)))
 	(unless (yes-or-no-p
 		 "Invisible text found and made visible; continue posting? ")
 	  (error "Invisible text found and made visible")))))
@@ -3248,14 +3249,15 @@ It should typically alter the sending method in some way or other."
 			 (memq (char-charset char)
 			       '(eight-bit-control eight-bit-graphic
 						   control-1)))))
-	  (add-text-properties (point) (1+ (point)) '(highlight t))
+	  (add-text-properties (point) (1+ (point))
+			       '(font-lock-face highlight face highlight))
 	  (setq found t))
 	(forward-char)
 	(skip-chars-forward mm-7bit-chars))
       (when found
 	(setq choice
 	      (gnus-multiple-choice
-	       "Illegible text found. Continue posting? "
+	       "Illegible text found.  Continue posting?"
 	       '((?d "Remove and continue posting")
 		 (?r "Replace with dots and continue posting")
 		 (?i "Ignore and continue posting")
@@ -3272,10 +3274,11 @@ It should typically alter the sending method in some way or other."
 				 '(eight-bit-control eight-bit-graphic
 						     control-1)))))
 	    (if (eq choice ?i)
-		(remove-text-properties (point) (1+ (point)) '(highlight t))
+		(remove-text-properties (point) (1+ (point))
+					'(font-lock-face highlight face highlight))
 	      (delete-char 1)
-	      (if (eq choice ?r)
-		  (insert "."))))
+	      (when (eq choice ?r)
+		(insert "."))))
 	  (forward-char)
 	  (skip-chars-forward mm-7bit-chars))))))
 
