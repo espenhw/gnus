@@ -1718,7 +1718,7 @@ With the prefix argument FORCE, insert the header anyway."
     (unless (bolp)
       (save-excursion
 	(beginning-of-line)
-	(when (looking-at message-cite-prefix-regexp)
+	(when (looking-at (concat message-cite-prefix-regexp "[ \t]*"))
 	  (setq quoted (match-string 0))))
       (insert "\n"))
     (setq point (point))

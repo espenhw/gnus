@@ -1,3 +1,7 @@
+2000-11-17 08:02  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-newline-and-reformat): Match extra WSPs.
+
 2000-11-16 23:31  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml.el (mml-generate-mime-1): Ignore ascii.
