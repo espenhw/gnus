@@ -1,3 +1,7 @@
+2001-07-01  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-date-days-ago): Defeat locale.
+
 2001-06-28 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml2015.el (mml2015-format-error): New function.
