@@ -681,7 +681,7 @@ The SOUP packet file name will be inserted at the %s.")
 	    (message-remove-header message-ignored-mail-headers t))
 	  (goto-char (point-max))
 	  ;; require one newline at the end.
-	  (or (= (preceding-char) ?\n)
+	  (or (= (char-before (point)) ?\n)
 	      (insert ?\n))
 	  (let ((case-fold-search t))
 	    ;; Change header-delimiter to be what sendmail expects.

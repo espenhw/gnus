@@ -762,7 +762,7 @@ always hide."
     (when (search-forward "\n\n" nil t)
       (let ((buffer-read-only nil))
 	(while (search-forward "\b" nil t)
-	  (let ((next (following-char))
+	  (let ((next (char-after (point)))
 		(previous (char-after (- (point) 2))))
 	    ;; We do the boldification/underlining by hiding the
 	    ;; overstrikes and putting the proper text property
@@ -795,7 +795,7 @@ always hide."
 	    (adaptive-fill-mode t))
 	(while (not (eobp))
 	  (and (>= (current-column) (min fill-column (window-width)))
-	       (/= (preceding-char) ?:)
+	       (/= (char-before (point)) ?:)
 	       (fill-paragraph nil))
 	  (end-of-line 2))))))
 
@@ -932,7 +932,7 @@ or not."
   (interactive "r")
   (goto-char from)
   (while (search-forward "=" to t)
-    (cond ((eq (following-char) ?\n)
+    (cond ((eq (char-after (point)) ?\n)
 	   (delete-char -1)
 	   (delete-char 1))
 	  ((looking-at "[0-9A-F][0-9A-F]")
@@ -1124,7 +1124,8 @@ Put point at the beginning of the signature separator."
       nil)))
 
 (eval-and-compile
-  (autoload 'w3-parse-buffer "w3-parse"))
+  (autoload 'w3-parse-buffer "w3-parse")
+  (autoload 'w3-do-setup "w3" "" t))
 
 (defun gnus-article-treat-html ()
   "Render HTML."
@@ -1132,6 +1133,7 @@ Put point at the beginning of the signature separator."
   (let ((cbuf (current-buffer)))
     (set-buffer gnus-article-buffer)
     (let (buf buffer-read-only b e)
+      (w3-do-setup)
       (goto-char (point-min))
       (narrow-to-region
        (if (search-forward "\n\n" nil t)

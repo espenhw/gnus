@@ -257,7 +257,7 @@ on your system, you could say something like:
 
 (defmacro nnheader-nov-read-integer ()
   '(prog1
-       (if (= (following-char) ?\t)
+       (if (= (char-after (point)) ?\t)
 	   0
 	 (let ((num (ignore-errors (read (current-buffer)))))
 	   (if (numberp num) num 0)))
@@ -277,7 +277,7 @@ on your system, you could say something like:
      (nnheader-nov-field)		; refs
      (nnheader-nov-read-integer)	; chars
      (nnheader-nov-read-integer)	; lines
-     (if (= (following-char) ?\n)
+     (if (= (char-after (point)) ?\n)
 	 nil
        (nnheader-nov-field))		; misc
      )))

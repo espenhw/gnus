@@ -60,7 +60,7 @@ that name."
 	start end)
     (while (and (setq start (point))
 		(> (skip-chars-forward "^\0- :") 0)
-		(= (following-char) ?:)
+		(= (char-after (point)) ?:)
 		(setq end (point))
 		(progn (forward-char)
 		       (> (skip-chars-forward " \t") 0)))

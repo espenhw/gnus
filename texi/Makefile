@@ -10,7 +10,7 @@ INFODIR=/usr/local/info
 
 all: gnus message custom widget
 
-most: texi2latexi.elc latex latexps
+most: texi2latex.elc latex latexps
 
 gnus: gnus.texi
 	$(MAKEINFO) -eval '(find-file "gnus.texi")' $(XINFOSWI)
@@ -46,6 +46,7 @@ sclean:
 clean:
 	make sclean 
 	rm -f *.latexi 
+	rm ps/new-herd-[0-9]*.ps
 
 makeinfo: 
 	makeinfo -o gnus gnus.texi	
@@ -53,24 +54,30 @@ makeinfo:
 	makeinfo -o widget widget.texi	
 	makeinfo -o custom custom.texi	
 
-texi2latexi.elc:
+texi2latex.elc: texi2latex.el
 	$(EMACS) -batch -l bytecomp -f batch-byte-recompile-directory
 
 latex: gnus.texi
 	$(EMACS) -batch -q -no-site-file gnus.texi -l ./texi2latex.elc -f latexi-translate
 
 latexps: 
+	make texi2latex.elc
 	egrep -v "label.*Index|chapter.*Index" gnus.latexi > gnus.tmplatexi1
 	$(LATEX) gnus.tmplatexi1
 	splitindex
 	makeindex -o gnus.kind gnus.kidx
 	makeindex -o gnus.cind gnus.cidx
 	makeindex -o gnus.gind gnus.gidx
+	sed 's/\\char 5E\\relax {}/\\symbol{"5E}/' < gnus.kind > gnus.tmpkind
+	mv gnus.tmpkind gnus.kind
 	egrep -v "end{document}" gnus.tmplatexi1 > gnus.tmplatexi
 	cat postamble.tex >> gnus.tmplatexi
 	$(LATEX) gnus.tmplatexi 
 	$(LATEX) gnus.tmplatexi 
-	$(DVIPS) -f gnus.dvi > gnus.ps
+	$(DVIPS) -f gnus.dvi > /local/tmp/larsi/gnus.ps
+
+herds:
+	cd ps ; for i in new-herd-[0-9]*.gif; do echo $$i; giftoppm $$i | pnmscale 2 | pnmsmooth -size 5 5 | ppmtopgm | pgmtops > `basename $$i .gif`.ps; done
 
 pss:	
 	make latex
@@ -81,21 +88,27 @@ psout:
 	make latexboth
 	make out
 
+screenp:
+	cd screen; for i in *.gif; do echo $$i; giftopnm $$i | ppmtopgm | pnmtops -scale 1 -noturn -nocenter > `basename $$i .gif`.ps; done
+
 latexboth: 
 	rm -f gnus-manual-a4.ps.gz gnus-manual-standard.ps.gz 
 	make latexps
-	mv gnus.ps gnus-manual-a4.ps
-	gzip gnus-manual-a4.ps 
+	mv /local/tmp/larsi/gnus.ps /local/tmp/larsi/gnus-manual-a4.ps
+	gzip /local/tmp/larsi/gnus-manual-a4.ps 
 	sed 's/,a4paper//' gnus.latexi > gnus-standard.latexi 
+	mv gnus-standard.latexi gnus.latexi
 	make latexps
-	mv gnus.ps gnus-manual-standard.ps 
-	gzip gnus-manual-standard.ps 
+	mv /local/tmp/larsi/gnus.ps /local/tmp/larsi/gnus-manual-standard.ps 
+	gzip /local/tmp/larsi/gnus-manual-standard.ps 
 
 out:
-	cp gnus-manual-standard.ps.gz gnus-manual-a4.ps.gz \
+	cp /local/tmp/larsi/gnus-manual-standard.ps.gz \
+	/local/tmp/larsi/gnus-manual-a4.ps.gz \
 	/local/ftp/pub/emacs/gnus/manual
-	mv gnus-manual-standard.ps.gz gnus-manual-a4.ps.gz \
-	/hom/larsi/www_docs/gnus/manual
+	mv /local/tmp/larsi/gnus-manual-standard.ps.gz \
+	/local/tmp/larsi/gnus-manual-a4.ps.gz \
+	/hom/larsi/www_docs/www.gnus.org/documents
 
 veryclean:
 	make clean
@@ -111,3 +124,4 @@ install:
 	cp message $(INFODIR)
 	cp widget $(INFODIR)
 	cp custom $(INFODIR)
+

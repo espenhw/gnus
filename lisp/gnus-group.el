@@ -1274,24 +1274,26 @@ If FIRST-TOO, the current line is also eligible as a target."
 	      (not (eobp))
 	      (not (setq
 		    found
-		    (and (or all
-			     (and
-			      (let ((unread
-				     (get-text-property (point) 'gnus-unread)))
-				(and (numberp unread) (> unread 0)))
-			      (setq lev (get-text-property (point)
+		    (and
+		     (get-text-property (point) 'gnus-group)
+		     (or all
+			 (and
+			  (let ((unread
+				 (get-text-property (point) 'gnus-unread)))
+			    (and (numberp unread) (> unread 0)))
+			  (setq lev (get-text-property (point)
+						       'gnus-level))
+			  (<= lev gnus-level-subscribed)))
+		     (or (not level)
+			 (and (setq lev (get-text-property (point)
 							   'gnus-level))
-			      (<= lev gnus-level-subscribed)))
-			 (or (not level)
-			     (and (setq lev (get-text-property (point)
-							       'gnus-level))
-				  (or (= lev level)
-				      (and (< lev low)
-					   (< level lev)
-					   (progn
-					     (setq low lev)
-					     (setq pos (point))
-					     nil))))))))
+			      (or (= lev level)
+				  (and (< lev low)
+				       (< level lev)
+				       (progn
+					 (setq low lev)
+					 (setq pos (point))
+					 nil))))))))
 	      (zerop (forward-line way)))))
     (if found
 	(progn (gnus-group-position-point) t)
@@ -1314,7 +1316,7 @@ If FIRST-TOO, the current line is also eligible as a target."
 	(beginning-of-line)
 	(forward-char (or (cdr (assq 'process gnus-group-mark-positions)) 2))
 	(subst-char-in-region
-	 (point) (1+ (point)) (following-char)
+	 (point) (1+ (point)) (char-after (point))
 	 (if unmark
 	     (progn
 	       (setq gnus-group-marked (delete group gnus-group-marked))
@@ -2022,15 +2024,16 @@ If SOLID (the prefix), create a solid group."
   (let* ((group
 	  (if solid (gnus-read-group "Group name: ")
 	    (message-unique-id)))
+	 (default-type (or (car gnus-group-web-type-history)
+			   (symbol-name (caar nnweb-type-definition))))
 	 (type
-	  (completing-read
-	   "Search engine type: "
-	   (mapcar (lambda (elem) (list (symbol-name (car elem))))
-		   nnweb-type-definition)
-	   nil t (cons (or (car gnus-group-web-type-history)
-			   (symbol-name (caar nnweb-type-definition)))
-		       0)
-	   'gnus-group-web-type-history))
+	  (gnus-string-or
+	   (completing-read
+	    (format "Search engine type (default %s): " default-type)
+	    (mapcar (lambda (elem) (list (symbol-name (car elem))))
+		    nnweb-type-definition)
+	    nil t nil 'gnus-group-web-type-history)
+	   default-type))
 	 (search
 	  (read-string
 	   "Search string: "

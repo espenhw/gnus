@@ -1081,11 +1081,11 @@ SCORE is the score to add."
 	  (decay (car (gnus-score-get 'decay alist)))
 	  (eval (car (gnus-score-get 'eval alist))))
       ;; Perform possible decays.
-      (when (and gnus-decay-scores
-		 (gnus-decay-scores
-		  alist (or decay (gnus-time-to-day (current-time)))))
-	(gnus-score-set 'touched '(t) alist)
-	(gnus-score-set 'decay (list (gnus-time-to-day (current-time)))))
+      (when gnus-decay-scores
+	(when (or (not decay)
+		  (gnus-decay-scores alist (gnus-time-to-day (current-time))))
+	  (gnus-score-set 'touched '(t) alist)
+	  (gnus-score-set 'decay (list (gnus-time-to-day (current-time))))))
       ;; We do not respect eval and files atoms from global score
       ;; files.
       (and files (not global)
@@ -2196,7 +2196,9 @@ SCORE is the score to add."
 	(gnus-add-current-to-buffer-list)
 	(while trace
 	  (insert (format "%S  ->  %s\n" (cdar trace)
-			  (file-name-nondirectory (caar trace))))
+			  (if (caar trace)
+			      (file-name-nondirectory (caar trace))
+			    "(non-file rule)")))
 	  (setq trace (cdr trace)))
 	(goto-char (point-min))
 	(gnus-configure-windows 'score-trace)))
@@ -2745,11 +2747,13 @@ If ADAPT, return the home adaptive file instead."
 	  (while (setq kill (pop entry))
 	    (when (nth 2 kill)
 	      (setq updated t)
-	      (setq score (or (car kill) gnus-score-interactive-default-score)
+	      (setq score (or (nth 1 kill)
+			      gnus-score-interactive-default-score)
 		    n times)
 	      (while (natnump (decf n))
 		(setq score (funcall gnus-decay-score-function score)))
-	      (setcar kill score))))))
+	      (setcdr kill (cons score 
+				 (cdr (cdr kill)))))))))
     ;; Return whether this score file needs to be saved.  By Je-haysuss!
     updated))
 

@@ -714,3 +714,18 @@ Mac, MS (etc) characters into ISO 8859-1.
 * new Date score match types -- < > = (etc) that take floating point
 numbers and match on the age of the article.
 
+* gnus-cacheable-groups
+
+*>  > > If so, I've got one gripe: It seems that when I fire up gnus 5.2.25
+>  > > under xemacs-19.14, it's creating a new frame, but is erasing the
+>  > > buffer in the frame that it was called from =:-O
+> 
+>  > Hm.  How do you start up Gnus?  From the toolbar or with
+>  > `M-x gnus-other-frame'?  
+> 
+>    I normally start it up from the toolbar; at
+> least that's the way I've caught it doing the
+> deed before.
+
+* all commands that react to the process mark should push
+the current process mark set onto the stack.

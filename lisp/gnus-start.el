@@ -1690,13 +1690,13 @@ newsgroup."
 		       (progn
 			 (skip-chars-forward " \t")
 			 (not
-			  (or (= (following-char) ?=)
-			      (= (following-char) ?x)
-			      (= (following-char) ?j)))))
+			  (or (= (char-after (point)) ?=)
+			      (= (char-after (point)) ?x)
+			      (= (char-after (point)) ?j)))))
 		  (progn
 		    (set group (cons min max))
 		    ;; if group is moderated, stick in moderation table
-		    (when (= (following-char) ?m)
+		    (when (= (char-after (point)) ?m)
 		      (unless gnus-moderated-hashtb
 			(setq gnus-moderated-hashtb (gnus-make-hashtable)))
 		      (gnus-sethash (symbol-name group) t
@@ -1750,7 +1750,7 @@ newsgroup."
       (let (min max group)
 	(while (not (eobp))
 	  (condition-case ()
-	      (when (= (following-char) ?2)
+	      (when (= (char-after (point)) ?2)
 		(read cur) (read cur)
 		(setq min (read cur)
 		      max (read cur))
@@ -1965,7 +1965,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	(unless (boundp symbol)
 	  (set symbol nil))
 	;; It was a group name.
-	(setq subscribed (= (following-char) ?:)
+	(setq subscribed (= (char-after (point)) ?:)
 	      group (symbol-name symbol)
 	      reads nil)
 	(if (eolp)
@@ -1989,7 +1989,7 @@ If FORCE is non-nil, the .newsrc file is read."
 			   (read buf)))
 	      (widen)
 	      ;; If the next character is a dash, then this is a range.
-	      (if (= (following-char) ?-)
+	      (if (= (char-after (point)) ?-)
 		  (progn
 		    ;; We read the upper bound of the range.
 		    (forward-char 1)
@@ -2011,8 +2011,8 @@ If FORCE is non-nil, the .newsrc file is read."
 		(push num1 reads))
 	      ;; If the next char in ?\n, then we have reached the end
 	      ;; of the line and return nil.
-	      (/= (following-char) ?\n))
-	     ((= (following-char) ?\n)
+	      (/= (char-after (point)) ?\n))
+	     ((= (char-after (point)) ?\n)
 	      ;; End of line, so we end.
 	      nil)
 	     (t

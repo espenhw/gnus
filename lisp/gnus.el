@@ -226,7 +226,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.56"
+(defconst gnus-version-number "5.4.57"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -647,12 +647,13 @@ be set in `.emacs' instead."
   (save-excursion
     (save-restriction
       (narrow-to-region start end)
-      (indent-rigidly start end arg)
-      ;; We translate tabs into spaces -- not everybody uses
-      ;; an 8-character tab.
-      (goto-char (point-min))
-      (while (search-forward "\t" nil t)
-	(replace-match "        " t t)))))
+      (let ((tab-width 8))
+	(indent-rigidly start end arg)
+	;; We translate tabs into spaces -- not everybody uses
+	;; an 8-character tab.
+	(goto-char (point-min))
+	(while (search-forward "\t" nil t)
+	  (replace-match "        " t t))))))
 
 (defvar gnus-simple-splash nil)
 
@@ -1906,6 +1907,20 @@ This restriction may disappear in later versions of Gnus."
 ;;;
 ;;; Gnus Utility Functions
 ;;;
+
+(defmacro gnus-string-or (&rest strings)
+  "Return the first element of STRINGS that is a non-blank string.
+STRINGS will be evaluated in normal `or' order."
+  `(gnus-string-or-1 ',strings))
+
+(defun gnus-string-or-1 (strings)
+  (let (string)
+    (while strings
+      (setq string (eval (pop strings)))
+      (if (string-match "^[ \t]*$" string)
+	  (setq string nil)
+	(setq strings nil)))
+    string))
 
 ;; Add the current buffer to the list of buffers to be killed on exit.
 (defun gnus-add-current-to-buffer-list ()

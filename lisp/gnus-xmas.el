@@ -69,7 +69,8 @@ automatically."
   "Colors used for the Gnus logo.")
 
 (defcustom gnus-article-x-face-command
-  (if (featurep 'xface)
+  (if (or (featurep 'xface)
+	  (featurep 'xpm))
       'gnus-xmas-article-display-xface
     "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -")
   "String or function to be executed to display an X-Face header.
@@ -133,11 +134,12 @@ It is provided only to ease porting of broken FSF Emacs programs."
   (if (stringp buffer)
       nil
     (map-extents (lambda (extent ignored)
-		   (remove-text-properties
-		    start end
-		    (list (extent-property extent 'text-prop) nil)
-		    buffer))
-		 buffer start end nil nil 'text-prop)
+                   (remove-text-properties
+                    start end
+                    (list (extent-property extent 'text-prop) nil)
+                    buffer)
+		   nil)
+                 buffer start end nil nil 'text-prop)
     (gnus-add-text-properties start end props buffer)))
 
 (defun gnus-xmas-highlight-selected-summary ()
@@ -526,15 +528,16 @@ call it with the value of the `gnus-data' text property."
     (let* ((logo-xpm (expand-file-name "gnus.xpm" gnus-xmas-glyph-directory))
 	   (logo-xbm (expand-file-name "gnus.xbm" gnus-xmas-glyph-directory))
 	   (glyph (make-glyph
-		   (list
-		    (vector 'xpm
-			    ':file logo-xpm
-			    ':color-symbols
-			    `(("thing" . ,(car gnus-xmas-logo-colors))
-			      ("shadow" . ,(cadr gnus-xmas-logo-colors))
-			      ("background" . ,(face-background 'default))))
-		    (vector 'xbm :file logo-xbm)
-		    (vector 'nothing)))))
+		   `(,@(if (featurep 'xpm)
+			   (list
+			    (vector 'xpm
+			     ':file logo-xpm
+			     ':color-symbols
+			     `(("thing" . ,(car gnus-xmas-logo-colors))
+			       ("shadow" . ,(cadr gnus-xmas-logo-colors))
+			       ("background" . ,(face-background 'default))))))
+		       ,(vector 'xbm :file logo-xbm)
+		       ,(vector 'nothing)))))
       (insert " ")
       (set-extent-begin-glyph (make-extent (point) (point)) glyph)
       (goto-char (point-min))
@@ -717,21 +720,24 @@ XEmacs compatibility workaround."
   "Display any XFace headers in the current article."
   (save-excursion
     (let ((xface-glyph
-	   (if (featurep 'xface)
-	       (make-glyph (vector 'xface :data
-				   (concat "X-Face: "
-					   (buffer-substring beg end))))
-	     (let ((cur (current-buffer)))
-	       (save-excursion
-		 (gnus-set-work-buffer)
-		 (insert (format "%s" (buffer-substring beg end cur)))
-		 (gnus-xmas-call-region "uncompface")
-		 (goto-char (point-min))
-		 (insert "/* Width=48, Height=48 */\n")
-		 (gnus-xmas-call-region "icontopbm")
-		 (gnus-xmas-call-region "ppmtoxpm")
-		 (make-glyph
-		  (vector 'xpm :data (buffer-string))))))))
+	   (cond ((featurep 'xface)
+		  (make-glyph (vector 'xface :data
+				      (concat "X-Face: "
+					      (buffer-substring beg end)))))
+		 ((featurep 'xpm)
+		  (let ((cur (current-buffer)))
+		    (save-excursion
+		      (gnus-set-work-buffer)
+		      (insert (format "%s" (buffer-substring beg end cur)))
+		      (gnus-xmas-call-region "uncompface")
+		      (goto-char (point-min))
+		      (insert "/* Width=48, Height=48 */\n")
+		      (gnus-xmas-call-region "icontopbm")
+		      (gnus-xmas-call-region "ppmtoxpm")
+		      (make-glyph
+		       (vector 'xpm :data (buffer-string)))))
+		  (t
+		   (make-glyph [nothing]))))))
       (set-glyph-face xface-glyph 'gnus-x-face)
       (goto-char (point-min))
       (re-search-forward "^From:" nil t)
@@ -768,13 +774,15 @@ XEmacs compatibility workaround."
 	   (file-xbm (expand-file-name "gnus-pointer.xbm"
 				    gnus-xmas-glyph-directory))
 	   (glyph (make-glyph
-		   (list
-		    ;; Let's try a nifty XPM
-		    (vector 'xpm ':file file-xpm)
-		    ;; Then a not-so-nifty XBM
-		    (vector 'xbm ':file file-xbm)
-		    ;; Then the simple string
-		    (vector 'string ':data "Gnus:")))))
+		   ;; Gag gag gag.
+		   `(
+		     ,@(if (featurep 'xpm)
+			   ;; Let's try a nifty XPM
+			   (list (vector 'xpm ':file file-xpm)))
+		       ;; Then a not-so-nifty XBM
+		       ,(vector 'xbm ':file file-xbm)
+		       ;; Then the simple string
+		       ,(vector 'string ':data "Gnus:")))))
       (set-glyph-face glyph 'modeline-buffer-id)
       glyph)))
 

@@ -225,7 +225,7 @@ matches an previously scanned and verified nocem message."
 	  (when (gnus-gethash (symbol-name group) gnus-newsrc-hashtb)
 	    ;; Valid group.
 	    (beginning-of-line)
-	    (while (= (following-char) ?\t)
+	    (while (= (char-after (point)) ?\t)
 	      (forward-line -1))
 	    (setq id (buffer-substring (point) (1- (search-forward "\t"))))
 	    (unless (gnus-gethash id gnus-nocem-hashtb)
@@ -233,7 +233,7 @@ matches an previously scanned and verified nocem message."
 	      (gnus-sethash id t gnus-nocem-hashtb)
 	      (push id ncm))
 	    (forward-line 1)
-	    (while (= (following-char) ?\t)
+	    (while (= (char-after (point)) ?\t)
 	      (forward-line 1))))))
       (when ncm
 	(setq gnus-nocem-touched-alist t)

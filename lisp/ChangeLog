@@ -1,3 +1,84 @@
+Wed Jun 18 00:33:41 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.57 is released.
+
+Wed Jun 18 00:09:35 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-demon.el (gnus-demon-add-nocem): Use a numerical idle.
+
+1997-06-10  Steven L Baur  <steve@altair.xemacs.org>
+
+	* nntp.el (nntp-wait-for): Replace following-char with char-after.
+
+1997-06-09  Steven L Baur  <steve@altair.xemacs.org>
+
+	* gnus-msg.el (gnus-extended-version): Put XEmacs codename in
+	default X-Mailer/X-Newsreader if the symbol exists.
+
+Tue Jun 10 20:24:35 1997  Christoph Wedler  <wedler@fmi.uni-passau.de>
+
+	* message.el (message-checksum): Do not only inspect the last
+	32/64 characters; technical: `ash' is no bit-rotate.
+
+Tue Jun 17 23:45:00 1997  Guy Geens  <Guy.Geens@elis.rug.ac.be>
+
+	* gnus-score.el (gnus-decay-scores): Use the right index.
+
+Tue Jun 17 23:22:24 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-score.el (gnus-score-load-file): Set the decay when not
+	set. 
+
+	* gnus-art.el (gnus-article-treat-html): Do w3 setup.
+
+	* gnus.el (gnus-indent-rigidly): Be useful on odd tab widths.
+
+	* gnus-xmas.el (gnus-article-x-face-command): Allow just using
+	xpm. 
+
+Thu Jun  5 18:33:31 1997  Robert Bihlmeyer  <robbe@orcus.priv.at>
+
+	* gnus-score.el (gnus-score-find-trace): Would bug out for
+	file-less rules.
+
+Tue Jun 17 22:57:14 1997  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-xmas.el (gnus-xmas-group-startup-message): Cleanup. 
+
+Tue Jun 17 22:55:14 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-request-head): Guess at article number.
+
+Tue Jun 17 22:40:49 1997  David Moore  <dmoore@ucsd.edu>
+
+	* gnus-xmas.el (gnus-xmas-set-text-properties): New version.
+
+Tue Jun 17 21:30:37 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-group-search-forward): Ignore topic lines. 
+
+Tue Jun 17 18:06:09 1997  "Karl M. Hegbloom" <karlheg@inetarena.com>
+
+	* gnus.el: ebola fixes.
+
+Wed Jun 11 19:23:09 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (t): Moved pop article keystroke.
+
+Tue Jun 10 06:32:52 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-search-unix-mail-delim-backward): Allow
+	several "From "'s.
+	(nnmail-search-unix-mail-delim): Ditto.
+
+Fri Jun  6 19:31:10 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-group-make-web-group): Use default prompt
+	instead of string.
+
+	* gnus.el (gnus-string-or): New macro.
+	(gnus-string-or-1): New function.
+
 Sat May 31 15:41:09 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.56 is released.

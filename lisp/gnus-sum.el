@@ -1193,7 +1193,7 @@ increase the score of each group you read."
     "j" gnus-summary-goto-article
     "g" gnus-summary-goto-subject
     "l" gnus-summary-goto-last-article
-    "p" gnus-summary-pop-article)
+    "o" gnus-summary-pop-article)
 
   (gnus-define-keys (gnus-summary-thread-map "T" gnus-summary-mode-map)
     "k" gnus-summary-kill-thread
@@ -2176,7 +2176,7 @@ This is all marks except unread, ticked, dormant, and expirable."
     (while (setq point (pop config))
       (when (and (< point (point-max))
 		 (goto-char point)
-		 (= (following-char) ?\n))
+		 (= (char-after (point)) ?\n))
 	(subst-char-in-region point (1+ point) ?\n ?\r)))))
 
 ;; Various summary mode internalish functions.
@@ -4250,7 +4250,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 
 (defmacro gnus-nov-read-integer ()
   '(prog1
-       (if (= (following-char) ?\t)
+       (if (= (char-after (point)) ?\t)
 	   0
 	 (let ((num (ignore-errors (read buffer))))
 	   (if (numberp num) num 0)))
@@ -4300,7 +4300,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 		   (gnus-nov-field))	; refs
 		 (gnus-nov-read-integer) ; chars
 		 (gnus-nov-read-integer) ; lines
-		 (if (= (following-char) ?\n)
+		 (if (eq (char-after (point)) ?\n)
 		     nil
 		   (gnus-nov-field)))))	; misc
 
@@ -4409,7 +4409,7 @@ This is meant to be called in `gnus-article-internal-prepare-hook'."
 	  (save-restriction
 	    (nnheader-narrow-to-headers)
 	    (goto-char (point-min))
-	    (when (or (and (eq (downcase (following-char)) ?x)
+	    (when (or (and (eq (downcase (char-after (point))) ?x)
 			   (looking-at "Xref:"))
 		      (search-forward "\nXref:" nil t))
 	      (goto-char (1+ (match-end 0)))
@@ -7498,7 +7498,7 @@ marked."
       ;; Go to the right position on the line.
       (goto-char (+ forward (point)))
       ;; Replace the old mark with the new mark.
-      (subst-char-in-region (point) (1+ (point)) (following-char) mark)
+      (subst-char-in-region (point) (1+ (point)) (char-after (point)) mark)
       ;; Optionally update the marks by some user rule.
       (when (eq type 'unread)
         (gnus-data-set-mark
