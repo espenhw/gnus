@@ -1,3 +1,11 @@
+2000-10-07 08:19:17  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el: Define dynamic variables in eval-when-compile.
+	* message.el (message-sending-message): New variable.
+	(message-send): Use it.
+	* gnus-draft.el (gnus-draft-send-message): Ditto.
+	(gnus-group-send-drafts): Ditto.
+
 2000-10-06  Dave Love  <fx@gnu.org>
 
 	* gnus-audio.el: Don't require cl.

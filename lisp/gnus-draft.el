@@ -112,12 +112,16 @@
 (defun gnus-draft-send-message (&optional n)
   "Send the current draft."
   (interactive "P")
-  (let ((articles (gnus-summary-work-articles n))
-	article)
+  (let* ((articles (gnus-summary-work-articles n))
+	 total (length articles)
+	 article)
     (while (setq article (pop articles))
       (gnus-summary-remove-process-mark article)
       (unless (memq article gnus-newsgroup-unsendable)
-	(gnus-draft-send article gnus-newsgroup-name t)
+	(let ((message-sending-message 
+	       (format "Sending message %d of %d..." 
+		       (- total (length articles)) total)))
+	  (gnus-draft-send article gnus-newsgroup-name t))
 	(gnus-summary-mark-article article gnus-canceled-mark)))))
 
 (defun gnus-draft-send (article &optional group interactive)
@@ -172,15 +176,19 @@
   (interactive)
   (gnus-activate-group "nndraft:queue")
   (save-excursion
-    (let ((articles (nndraft-articles))
-	  (unsendable (gnus-uncompress-range
-		       (cdr (assq 'unsend
-				  (gnus-info-marks
-				   (gnus-get-info "nndraft:queue"))))))
-	  article)
+    (let* ((articles (nndraft-articles))
+	   (unsendable (gnus-uncompress-range
+			(cdr (assq 'unsend
+				   (gnus-info-marks
+				    (gnus-get-info "nndraft:queue"))))))
+	   (total (length articles))
+	   article)
       (while (setq article (pop articles))
 	(unless (memq article unsendable)
-	  (gnus-draft-send article))))))
+	  (let ((message-sending-message 
+		 (format "Sending message %d of %d..." 
+			 (- total (length articles)) total)))
+	    (gnus-draft-send article)))))))
 
 ;;; Utility functions
 

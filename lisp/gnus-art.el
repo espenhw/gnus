@@ -4743,11 +4743,13 @@ For example:
 	  (funcall (cadr elem)))))))
 
 ;; Dynamic variables.
-(defvar part-number)
-(defvar total-parts)
-(defvar type)
-(defvar condition)
-(defvar length)
+(eval-when-compile
+  (defvar part-number)
+  (defvar total-parts)
+  (defvar type)
+  (defvar condition)
+  (defvar length))
+
 (defun gnus-treat-predicate (val)
   (cond
    ((null val)

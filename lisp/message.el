@@ -911,6 +911,7 @@ The first matched address (not primary one) is used in the From field."
 
 ;;; Internal variables.
 
+(defvar message-sending-message "Sending...")
 (defvar message-buffer-list nil)
 (defvar message-this-is-news nil)
 (defvar message-this-is-mail nil)
@@ -2119,7 +2120,7 @@ It should typically alter the sending method in some way or other."
     (put-text-property (point-min) (point-max) 'read-only nil))
   (message-fix-before-sending)
   (run-hooks 'message-send-hook)
-  (message "Sending...")
+  (message message-sending-message)
   (let ((alist message-send-method-alist)
 	(success t)
 	elem sent)
