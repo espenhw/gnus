@@ -5249,7 +5249,9 @@ groups."
     ;; This is how URLs _should_ be embedded in text...
     ("<URL: *\\([^<>]*\\)>" 1 t gnus-button-embedded-url 1)
     ;; Raw URLs.
-    (gnus-button-url-regexp 0 t browse-url 0))
+    (gnus-button-url-regexp 0 t browse-url 0)
+    ;; man pages
+    ("\\b\\([a-z]+\\)([0-9])\\W" 0 t man 1))
   "*Alist of regexps matching buttons in article bodies.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where

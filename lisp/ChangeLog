@@ -1,3 +1,7 @@
+2002-09-08  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-art.el (gnus-button-alist): Buttonize man page links.
+
 2002-09-07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-article-dumbquotes-map): Add \230.
