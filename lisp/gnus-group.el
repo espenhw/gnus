@@ -2260,7 +2260,7 @@ and NEW-NAME will be prompted for."
      `(lambda (form)
 	(gnus-group-edit-group-done ',part ,group form)))
     (local-set-key
-     "\C-c\C-i" 
+     "\C-c\C-i"
      (gnus-create-info-command
       (cond
        ((eq part 'method)
@@ -2329,20 +2329,33 @@ and NEW-NAME will be prompted for."
       (setcar entry (eval (cadar entry)))))
   (gnus-group-make-group group method))
 
-(defun gnus-group-make-help-group ()
-  "Create the Gnus documentation group."
+(defun gnus-group-make-help-group (&optional noerror)
+  "Create the Gnus documentation group.
+Optional argument NOERROR modifies the behavior of this function when the
+group already exists:
+- if not given, and error is signaled,
+- if t, stay silent,
+- if anything else, just print a message."
   (interactive)
   (let ((name (gnus-group-prefixed-name "gnus-help" '(nndoc "gnus-help")))
 	(file (nnheader-find-etc-directory "gnus-tut.txt" t)))
-    (when (gnus-gethash name gnus-newsrc-hashtb)
-      (error "Documentation group already exists"))
-    (if (not file)
-	(gnus-message 1 "Couldn't find doc group")
-      (gnus-group-make-group
-       (gnus-group-real-name name)
-       (list 'nndoc "gnus-help"
-	     (list 'nndoc-address file)
-	     (list 'nndoc-article-type 'mbox)))))
+    (if (gnus-gethash name gnus-newsrc-hashtb)
+	(cond ((eq noerror nil)
+	       (error "Documentation group already exists"))
+	      ((eq noerror t)
+	       ;; stay silent
+	       )
+	      (t
+	       (gnus-message 1 "Documentation group already exists")))
+      ;; else:
+      (if (not file)
+	  (gnus-message 1 "Couldn't find doc group")
+	(gnus-group-make-group
+	 (gnus-group-real-name name)
+	 (list 'nndoc "gnus-help"
+	       (list 'nndoc-address file)
+	       (list 'nndoc-article-type 'mbox))))
+      ))
   (gnus-group-position-point))
 
 (defun gnus-group-make-doc-group (file type)

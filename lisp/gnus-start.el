@@ -1218,7 +1218,9 @@ for new groups, and subscribe the new groups as zombies."
 	     group gnus-level-default-subscribed gnus-level-killed)))
 	(save-excursion
 	  (set-buffer gnus-group-buffer)
-	  (gnus-group-make-help-group))
+	  ;; Don't error if the group already exists. This happens when a
+	  ;; first-time user types 'F'. -- didier
+	  (gnus-group-make-help-group t))
 	(when gnus-novice-user
 	  (gnus-message 7 "`A k' to list killed groups"))))))
 
