@@ -14449,7 +14449,7 @@ predicates an additional score rule is superfluous.
 
 Predicates of @code{high} or @code{low} download articles in respect of
 their scores in relationship to @code{gnus-agent-high-score} and
-@code{gnus-agent-low-score} as descibed below.
+@code{gnus-agent-low-score} as described below.
 
 To gain even finer control of what is to be regarded eligible for
 download a predicate can consist of a number of predicates with logical
