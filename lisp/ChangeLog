@@ -1,3 +1,8 @@
+2003-10-31  Simon Josefsson  <jas@extundo.com>
+
+	* imap.el (imap-kerberos4-open): Ignore output from ATHENA imtest.
+	Tiny patch from Derek Atkins <warlord@MIT.EDU>.
+
 2003-10-31  Teodor Zlatanov  <tzz@beld.net>
 
 	* spam.el (autoload): autoload the gnus-registry functions we'll
