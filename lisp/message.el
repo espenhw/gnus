@@ -583,6 +583,9 @@ actually occur."
     'message-mail 'message-send-and-exit 
     'message-kill-buffer 'message-send-hook))
 
+(defvar message-delete-mh-headers t
+  "If non-nil, delete the deletable headers before feeding to mh.")
+
 ;;; Internal variables.
 ;;; Well, not really internal.
 
@@ -1760,13 +1763,14 @@ to find out how to use this."
 		       "msg."))))
     (setq buffer-file-name name)
     ;; MH wants to generate these headers itself.
-    (let ((headers message-deletable-headers))
-      (while headers
-	(goto-char (point-min)) 
-	(and (re-search-forward 
-	      (concat "^" (symbol-name (car headers)) ": *") nil t)
-	     (message-delete-line))
-	(pop headers)))
+    (when message-delete-mh-headers
+      (let ((headers message-deletable-headers))
+	(while headers
+	  (goto-char (point-min)) 
+	  (and (re-search-forward 
+		(concat "^" (symbol-name (car headers)) ": *") nil t)
+	       (message-delete-line))
+	  (pop headers))))
     (run-hooks 'message-send-mail-hook)
     ;; Pass it on to mh.
     (mh-send-letter)))
@@ -3337,7 +3341,15 @@ Do a `tab-to-tab-stop' if not in those headers."
 
 (defvar gnus-active-hashtb)
 (defun message-expand-group ()
-  (let* ((b (save-excursion (skip-chars-backward "^, :\t\n") (point)))
+  (let* ((b (save-excursion 
+	      (save-restriction
+		(narrow-to-region 
+		 (save-excursion
+		   (beginning-of-line)
+		   (skip-chars-forward "^:")
+		   (1+ (point)))
+		 (point))
+		(skip-chars-backward "^, \t\n") (point))))
 	 (completion-ignore-case t)
 	 (string (buffer-substring b (point)))
 	 (hashtb (and (boundp 'gnus-active-hashtb) gnus-active-hashtb))

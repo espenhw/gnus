@@ -2429,12 +2429,11 @@ GROUP using BNews sys file syntax."
 	  ;; Kludge to get rid of "nntp+" problems.
 	  (goto-char (point-min))
 	  (when (looking-at "nn[a-z]+\\+")
-	    (progn
-	      (search-forward "+")
-	      (forward-char -1)
-	      (insert "\\")))
+	    (search-forward "+")
+	    (forward-char -1)
+	    (insert "\\")
+	    (forward-char 1))
 	  ;; Kludge to deal with "++".
-	  (goto-char (point-min))
 	  (while (search-forward "+" nil t)
 	    (replace-match "\\+" t t))
 	  ;; Translate "all" to ".*".

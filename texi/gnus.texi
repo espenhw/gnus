@@ -12715,21 +12715,6 @@ Other general variables that influence the look of all buffers include:
 This is the face (i.e., font) used for mouse highlighting in Gnus.  No
 mouse highlights will be done if @code{gnus-visual} is @code{nil}.
 
-@item gnus-display-type
-@vindex gnus-display-type
-This variable is symbol indicating the display type Emacs is running
-under.  The symbol should be one of @code{color}, @code{grayscale} or
-@code{mono}.  If Gnus guesses this display attribute wrongly, either set
-this variable in your @file{~/.emacs} or set the resource
-@code{Emacs.displayType} in your @file{~/.Xdefaults}.
-
-@item gnus-background-mode 
-@vindex gnus-background-mode 
-This is a symbol indicating the Emacs background brightness.  The symbol
-should be one of @code{light} or @code{dark}.  If Gnus guesses this
-frame attribute wrongly, either set this variable in your @file{~/.emacs} or
-set the resource @code{Emacs.backgroundMode} in your @file{~/.Xdefaults}. 
-`gnus-display-type'.
 @end table
 
 There are hooks associated with the creation of all the different menus:

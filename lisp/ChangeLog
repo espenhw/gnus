@@ -1,3 +1,58 @@
+Mon Jan 27 18:03:17 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.5 is released.
+
+Mon Jan 27 18:00:46 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.5 is released.
+
+Mon Jan 27 17:35:21 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-expand-group): Don't skip over ":".
+
+	* gnus-score.el (gnus-score-find-bnews): Wouldn't find "nntp+"
+	score files.
+
+	* gnus-art.el (t): Define `M-^'.
+
+Mon Jan 27 15:00:11 1997  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-sum.el (gnus-summary-search-article): Inhibit forced
+ 	redisplay on XEmacs.
+
+Mon Jan 27 08:54:55 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.4 is released.
+
+Mon Jan 27 07:29:30 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnsoup.el (nnsoup-file-name): Also find AREAS.
+
+Mon Jan 27 07:09:13 1997  Joev Dubach  <dubach1@husc.harvard.edu>
+
+	* message.el (message-use-followup-to): Doc fix.
+
+Mon Jan 27 06:59:14 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-article-read-summary-keys): Don't mess up when
+	using pick mode.
+
+	* gnus-undo.el (gnus-undo-mode): Set undo boundary.
+
+	* gnus-sum.el (gnus-summary-exit-hook): Doc fix.
+
+Sun Jan 26 13:20:42 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Autoload gnus-add-configuration.
+
+Sun Jan 26 13:01:07 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.3 is released.
+
+Sun Jan 26 12:52:11 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.2 is released.
+
 Sun Jan 26 09:28:31 1997  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus-group.el: Organized customization options, and moved group

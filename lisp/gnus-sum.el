@@ -6215,6 +6215,7 @@ Optional argument BACKWARD means do search for backward.
 	(gnus-article-display-hook nil)
 	(gnus-mark-article-hook nil)	;Inhibit marking as read.
 	(gnus-use-article-prefetch nil)
+	(gnus-xmas-force-redisplay nil)	;Inhibit XEmacs redisplay.
 	(sum (current-buffer))
 	(found nil)
 	point)
