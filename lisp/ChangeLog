@@ -1,3 +1,33 @@
+2004-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* canlock.el (canlock-password): Remove `:size 0' or `:size 1'
+	which may confuse users.
+	(canlock-password-for-verify): Ditto.
+
+	* deuglify.el (gnus-outlook-deuglify-unwrap-stop-chars): Ditto.
+
+	* gnus-art.el (gnus-emphasis-alist): Ditto.
+
+	* gnus-registry.el (gnus-registry-max-entries): Ditto.
+
+	* gnus-score.el (gnus-adaptive-word-length-limit): Ditto.
+
+	* gnus-start.el (gnus-save-killed-list): Ditto.
+
+	* gnus-sum.el (gnus-thread-hide-subtree): Ditto.
+	(gnus-sum-thread-tree-root): Ditto.
+	(gnus-sum-thread-tree-false-root): Ditto.
+	(gnus-sum-thread-tree-single-indent): Ditto.
+
+	* message.el (message-courtesy-message): Ditto.
+	(message-archive-note): Ditto.
+	(message-subscribed-address-file): Ditto.
+	(message-user-fqdn): Ditto.
+
+	* spam-report.el (spam-report-gmane-regex): Ditto.
+
+	* spam.el (spam-blackhole-good-server-regex): Ditto.
+
 2004-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mml.el (mml-preview): Widen the message buffer before copying

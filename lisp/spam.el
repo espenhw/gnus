@@ -347,8 +347,7 @@ Only meaningful if you enable `spam-use-blackholes'."
 (defcustom spam-blackhole-good-server-regex nil
   "String matching IP addresses that should not be checked in the blackholes.
 Only meaningful if you enable `spam-use-blackholes'."
-  :type '(radio (const nil)
-		(regexp :format "%t: %v\n" :size 0))
+  :type '(radio (const nil) regexp)
   :group 'spam)
 
 (defcustom spam-face 'gnus-splash-face
