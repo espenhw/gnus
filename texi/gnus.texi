@@ -16039,7 +16039,7 @@ The title, which allows any characters, will be used for the group name
 and the name of the group data file.  The description can be omitted.
 
 An easy way to get started with @code{nnrss} is to say something like
-the following in the group buffer: @kbd{B nnrss RET y}, then
+the following in the group buffer: @kbd{B nnrss RET RET y}, then
 subscribe to groups.
 
 The @code{nnrss} back end saves the group data file in

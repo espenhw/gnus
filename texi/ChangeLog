@@ -1,3 +1,7 @@
+2005-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (RSS): Fix the keystroke.
+
 2005-01-16  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Article Washing): Add libidn URL.  Suggested by
