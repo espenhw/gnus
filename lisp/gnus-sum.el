@@ -6095,23 +6095,23 @@ Also do horizontal recentering."
 If `gnus-auto-center-summary' is nil, or the article buffer isn't
 displayed, no centering will be performed."
   ;; Suggested by earle@mahendo.JPL.NASA.GOV (Greg Earle).
-;; Recenter only when requested.  Suggested by popovich@park.cs.columbia.edu.
+  ;; Recenter only when requested.  Suggested by popovich@park.cs.columbia.edu.
   (interactive)
-  (let* ((top (cond ((< (window-height) 4) 0)
-		    ((< (window-height) 7) 1)
-		    (t (if (numberp gnus-auto-center-summary)
-			   gnus-auto-center-summary
-			 2))))
-	 (height (1- (window-height)))
-	 (bottom (save-excursion (goto-char (point-max))
-				 (forward-line (- height))
-				 (point)))
-	 (window (get-buffer-window (current-buffer))))
-    ;; The user has to want it.
-    (when gnus-auto-center-summary
+  ;; The user has to want it.
+  (when gnus-auto-center-summary
+    (let* ((top (cond ((< (window-height) 4) 0)
+		      ((< (window-height) 7) 1)
+		      (t (if (numberp gnus-auto-center-summary)
+			     gnus-auto-center-summary
+			   2))))
+	   (height (1- (window-height)))
+	   (bottom (save-excursion (goto-char (point-max))
+				   (forward-line (- height))
+				   (point)))
+	   (window (get-buffer-window (current-buffer))))
       (when (get-buffer-window gnus-article-buffer)
 	;; Only do recentering when the article buffer is displayed,
-      ;; Set the window start to either `bottom', which is the biggest
+	;; Set the window start to either `bottom', which is the biggest
 	;; possible valid number, or the second line from the top,
 	;; whichever is the least.
 	(let ((top-pos (save-excursion (forward-line (- top)) (point))))
@@ -8202,6 +8202,12 @@ Optional argument BACKWARD means do search for backward.
 	(gnus-use-article-prefetch nil)
 	(gnus-xmas-force-redisplay nil)	;Inhibit XEmacs redisplay.
 	(gnus-use-trees nil)		;Inhibit updating tree buffer.
+	(gnus-visual nil)
+	(gnus-keep-backlog nil)
+	(gnus-break-pages nil)
+	(gnus-summary-display-arrow nil)
+	(gnus-updated-mode-lines nil)
+	(gnus-auto-center-summary nil)
 	(sum (current-buffer))
 	(gnus-display-mime-function nil)
 	(found nil)

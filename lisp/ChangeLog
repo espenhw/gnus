@@ -1,3 +1,9 @@
+2003-02-04  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-summary-search-article): Speed up by
+	disabling various visual features while searching.
+	(gnus-summary-recenter): Test gnus-auto-center-summary first.
+
 2003-02-03  Jesper Harder  <harder@ifa.au.dk>
 
 	* spam.el (spam-list-of-checks): Don't quote nil and t in
