@@ -1,5 +1,8 @@
 2002-02-22  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* deuglify.el: New file. The original file name is
+	gnus-outlook-deuglify.el from Raymond Scholz <rscholz@zonix.de>.
+
 	* mm-decode.el (mm-display-external): Use
 	mm-file-name-rewrite-functions.  From <andre@slamdunknetworks.com>
 
