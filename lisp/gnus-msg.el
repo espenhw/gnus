@@ -691,7 +691,12 @@ network.  The corresponding backend must have a 'request-post method."
 		  gnus-newsgroup-name))
 	  ;; #### see comment in gnus-setup-message -- drv
 	  (gnus-setup-message 'message
-	    (message-news (gnus-group-real-name gnus-newsgroup-name))))
+	    (progn
+	      (message-news (gnus-group-real-name gnus-newsgroup-name))
+	      (set (make-local-variable 'gnus-discouraged-post-methods)
+		   (remove
+		    (car (gnus-find-method-for-group gnus-newsgroup-name))
+		    gnus-discouraged-post-methods)))))
       (save-excursion
 	(set-buffer buffer)
 	(setq gnus-newsgroup-name group)))))

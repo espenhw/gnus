@@ -1,3 +1,9 @@
+2003-04-14  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-msg.el (gnus-summary-news-other-window): Make a buffer
+	local copy of gnus-discouraged-post-methods with the current
+	method removed.
+
 2003-04-14  Simon Josefsson  <jas@extundo.com>
 
 	* mailcap.el (mailcap-mime-data): Add application/pgp-keys.
