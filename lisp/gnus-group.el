@@ -2100,6 +2100,43 @@ If SOLID (the prefix), create a solid group."
        (cons (current-buffer)
 	     (if (eq major-mode 'gnus-summary-mode) 'summary 'group))))))
 
+(defvar nnwarchive-type-definition)
+(defvar gnus-group-warchive-type-history nil)
+(defvar gnus-group-warchive-login-history nil)
+(defvar gnus-group-warchive-address-history "")
+
+(defun gnus-group-make-warchive-group ()
+  "Create a nnwarchive group."
+  (interactive)
+  (require 'nnwarchive)
+  (let* ((group (gnus-read-group "Group name: "))
+	 (default-type (or (car gnus-group-warchive-type-history)
+			   (symbol-name (caar nnwarchive-type-definition))))
+	 (type
+	  (gnus-string-or
+	   (completing-read
+	    (format "Warchive type (default %s): " default-type)
+	    (mapcar (lambda (elem) (list (symbol-name (car elem))))
+		    nnwarchive-type-definition)
+	    nil t nil 'gnus-group-warchive-type-history)
+	   default-type))
+	 (address (read-string
+		   (format "Warchive address: " )
+		   nil 'gnus-group-warchive-address-history))
+	 (default-login (or (car gnus-group-warchive-login-history)
+			    user-mail-address))
+	 (login
+	  (gnus-string-or
+	   (read-string
+	    (format "Warchive login (default %s): " user-mail-address)
+	    default-login 'gnus-group-warchive-login-history)
+	   user-mail-address))
+	 (method
+	  `(nnwarchive ,address 
+		       (nnwarchive-type ,(intern type))
+		       (nnwarchive-login ,login))))
+    (gnus-group-make-group group method)))
+
 (defun gnus-group-make-archive-group (&optional all)
   "Create the (ding) Gnus archive group of the most recent articles.
 Given a prefix, create a full group."

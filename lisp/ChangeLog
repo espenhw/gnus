@@ -1,3 +1,9 @@
+1999-11-10 13:48:10  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnwarchive.el: New file.
+	* gnus-group.el (gnus-group-make-warchive-group): New function.
+	* gnus.el (gnus-valid-select-methods): Add `nnwarchive'.
+
 1999-11-10 12:13:30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnultimate.el (nnultimate-retrieve-headers): Work for multi-page 

@@ -1235,6 +1235,7 @@ slower."
     ("nnweb" none)
     ("nnslashdot" none)
     ("nnultimate" none)
+    ("nnwarchive" none)
     ("nnlistserv" none)
     ("nnagent" post-mail)
     ("nnimap" post-mail address prompt-address physical-address))
