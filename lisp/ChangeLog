@@ -1,3 +1,17 @@
+1999-12-01 14:28:49  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-catchup-and-goto-next-group): Select
+	next group in a more normal fasion.
+
+	* mml.el (mml-boundary-function): New variable.
+	(mml-compute-boundary): Use it.
+
+	* nnmh.el (nnmh-active-number): Skip past files that have buffers
+	that exist for them.
+
+	* gnus-async.el (gnus-async-prefetch-next): Cancel timers.
+	(gnus-async-timer): New variable.
+
 1999-11-30 02:07:18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnultimate.el (nnultimate-request-list): Be more lenient with

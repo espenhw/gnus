@@ -8416,7 +8416,6 @@ If prefix argument ALL is non-nil, all articles are marked as read."
   (interactive "P")
   (gnus-summary-catchup-and-exit t quietly))
 
-;; Suggested by "Arne Eofsson" <arne@hodgkin.mbi.ucla.edu>.
 (defun gnus-summary-catchup-and-goto-next-group (&optional all)
   "Mark all articles in this group as read and select the next group.
 If given a prefix, mark all articles, unread as well as ticked, as
@@ -8424,7 +8423,7 @@ read."
   (interactive "P")
   (save-excursion
     (gnus-summary-catchup all))
-  (gnus-summary-next-group t nil nil))
+  (gnus-summary-next-group))
 
 ;; Thread-based commands.
 

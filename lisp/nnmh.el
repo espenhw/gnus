@@ -453,7 +453,8 @@
   "Compute the next article number in GROUP."
   (let ((active (cadr (assoc group nnmh-group-alist)))
 	(dir (nnmail-group-pathname group nnmh-directory))
-	(pathname-coding-system 'binary))
+	(pathname-coding-system 'binary)
+	file)
     (unless active
       ;; The group wasn't known to nnmh, so we just create an active
       ;; entry for it.
@@ -471,9 +472,15 @@
 	(when files
 	  (setcdr active (car files)))))
     (setcdr active (1+ (cdr active)))
-    (while (file-exists-p
-	    (concat (nnmail-group-pathname group nnmh-directory)
-		    (int-to-string (cdr active))))
+    (while (or
+	    ;; See whether the file exists...
+	    (file-exists-p
+	     (setq file (concat (nnmail-group-pathname group nnmh-directory)
+				(int-to-string (cdr active)))))
+	    ;; ... or there is a buffer that will make that file exist
+	    ;; in the future.
+	    (get-file-buffer file))
+      ;; Skip past that file.
       (setcdr active (1+ (cdr active))))
     (cdr active)))
 

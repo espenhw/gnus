@@ -80,6 +80,7 @@ It should return non-nil if the article is to be prefetched."
 (defvar gnus-async-hashtb nil)
 (defvar gnus-async-current-prefetch-group nil)
 (defvar gnus-async-current-prefetch-article nil)
+(defvar gnus-async-timer nil)
 
 (defvar gnus-async-prefetch-headers-buffer " *Async Prefetch Headers*")
 (defvar gnus-async-header-prefetched nil)
@@ -146,8 +147,13 @@ It should return non-nil if the article is to be prefetched."
 	      ;; do this, which leads to slightly slower article
 	      ;; buffer display.
 	      (gnus-async-prefetch-article group next summary)
-	    (run-with-idle-timer
-	     0.1 nil 'gnus-async-prefetch-article group next summary)))))))
+	    (when gnus-async-timer
+	      (ignore-errors
+		(cancel-timer 'gnus-async-timer)))
+	    (setq gnus-async-timer
+		  (run-with-idle-timer
+		   0.1 nil 'gnus-async-prefetch-article
+		   group next summary))))))))
 
 (defun gnus-async-prefetch-article (group article summary &optional next)
   "Possibly prefetch several articles starting with ARTICLE."
