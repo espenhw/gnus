@@ -1422,7 +1422,9 @@ is non-nil return theese properties."
     (imap-mailbox-put 'search 'dummy)
     (when (imap-ok-p (imap-send-command-wait (concat "UID SEARCH " predicate)))
       (if (eq (imap-mailbox-get-1 'search imap-current-mailbox) 'dummy)
-	  (message "Missing SEARCH response to a SEARCH command (server not RFC compliant)...")
+	  (progn
+	    (message "Missing SEARCH response to a SEARCH command (server not RFC compliant)...")
+	    nil)
 	(imap-mailbox-get-1 'search imap-current-mailbox)))))
 
 (defun imap-message-flag-permanent-p (flag &optional mailbox buffer)
