@@ -177,8 +177,8 @@
     ("application/pgp-signature" ignore identity)
     ("application/x-pkcs7-signature" ignore identity)
     ("application/pkcs7-signature" ignore identity)
-    ("application/x-pkcs7-mime" mm-view-pkcs7 identity)
-    ("application/pkcs7-mime" mm-view-pkcs7 identity)
+    ("application/x-pkcs7-mime" ignore identity)
+    ("application/pkcs7-mime" ignore identity)
     ("multipart/alternative" ignore identity)
     ("multipart/mixed" ignore identity)
     ("multipart/related" ignore identity)
@@ -456,10 +456,10 @@ for types in mm-keep-viewer-alive-types."
 				  (mm-alist-to-plist (cdr ctl)) (car ctl))
 
 	     ;; what really needs to be done here is a way to link a
-       ;; MIME handle back to it's parent MIME handle (in a multilevel
+	     ;; MIME handle back to it's parent MIME handle (in a multilevel
 	     ;; MIME article).  That would probably require changing
-	 ;; the mm-handle API so we simply store the multipart buffert
-	;; name as a text property of the "multipart/whatever" string.
+	     ;; the mm-handle API so we simply store the multipart buffert
+	     ;; name as a text property of the "multipart/whatever" string.
 	     (add-text-properties 0 (length (car ctl))
 				  (list 'buffer (mm-copy-to-buffer))
 				  (car ctl))
@@ -468,14 +468,17 @@ for types in mm-keep-viewer-alive-types."
 				  (car ctl))
 	     (cons (car ctl) (mm-dissect-multipart ctl))))
 	  (t
-	   (mm-dissect-singlepart
-	    ctl
-	    (and cte (intern (downcase (mail-header-remove-whitespace
-					(mail-header-remove-comments
-					 cte)))))
-	    no-strict-mime
-	    (and cd (ignore-errors (mail-header-parse-content-disposition cd)))
-	    description id))))
+	   (mm-possibly-verify-or-decrypt
+	    (mm-dissect-singlepart
+	     ctl
+	     (and cte (intern (downcase (mail-header-remove-whitespace
+					 (mail-header-remove-comments
+					  cte)))))
+	     no-strict-mime
+	     (and cd (ignore-errors
+		       (mail-header-parse-content-disposition cd)))
+	     description id)
+	    ctl))))
 	(when id
 	  (when (string-match " *<\\(.*\\)> *" id)
 	    (setq id (match-string 1 id)))
@@ -1217,10 +1220,22 @@ If RECURSIVE, search recursively."
 			 (car handle))))
 
 (defun mm-possibly-verify-or-decrypt (parts ctl)
-  (let ((subtype (cadr (split-string (car ctl) "/")))
+  (let ((type (car ctl))
+	(subtype (cadr (split-string (car ctl) "/")))
 	(mm-security-handle ctl) ;; (car CTL) is the type.
 	protocol func functest)
     (cond
+     ((or (equal type "application/x-pkcs7-mime")
+	  (equal type "application/pkcs7-mime"))
+      (with-temp-buffer
+	(when (and (cond
+		    ((eq mm-decrypt-option 'never) nil)
+		    ((eq mm-decrypt-option 'always) t)
+		    ((eq mm-decrypt-option 'known) t)
+		    (t (y-or-n-p
+			(format "Decrypt (S/MIME) part? "))))
+		   (mm-view-pkcs7 parts))
+	  (setq parts (mm-dissect-buffer t)))))
      ((equal subtype "signed")
       (unless (and (setq protocol
 			 (mm-handle-multipart-ctl-parameter ctl 'protocol))

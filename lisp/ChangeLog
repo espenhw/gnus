@@ -1,5 +1,16 @@
 2001-08-09  Simon Josefsson  <jas@extundo.com>
 
+	* mm-view.el (mm-view-pkcs7-decrypt): Operate in current buffer.
+	Don't ask whether to decrypt.  Just leave result in buffer (don't
+	call mm).
+
+	* mm-decode.el (mm-dissect-buffer): Possibly verify/decrypt single
+	parts as well.
+	(mm-inline-media-tests): Ignore application/{x-,}pkcs7-mime.
+	(mm-possibly-verify-or-decrypt): Support application/{x-,}pkcs7-mime.
+
+2001-08-09  Simon Josefsson  <jas@extundo.com>
+
 	* mm-decode.el (mm-insert-part): Return decoding success status.
 	(mm-save-part-to-file): Error if decoding failed.
 
