@@ -5233,9 +5233,9 @@ groups."
   "Function to use for displaying man pages.
 The function must take at least one argument with a string naming the
 man page."
-  :type '(choice (function :tag "Man" man)
-		 (function :tag "Woman" woman)
-		 function)
+  :type '(choice (function-item :tag "Man" man)
+		 (function-item :tag "Woman" woman)
+		 (function :tag "Other"))
   :group 'gnus-article-buttons)
 
 (defcustom gnus-button-alist
