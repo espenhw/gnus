@@ -1,3 +1,16 @@
+2002-07-27  Simon Josefsson  <jas@extundo.com>
+
+	* sieve-manage.el (sieve-manage-deletescript): New function.
+
+	* sieve.el (sieve-manage-mode-map): Fix down-mouse-2 and down-mouse-3.  
+	(sieve-manage-mode): Fix menubar.
+	(sieve-activate): Change some messages.
+	(sieve-deactivate-all): New function.
+	(sieve-deactivate): New alias.
+	(sieve-remove): New function.
+	(sieve-help): Fix help.
+	All suggested by Ned Ludd.
+
 2002-07-24  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* mm-decode.el (mm-inline-text-html-with-images): Doc fix.

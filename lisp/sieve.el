@@ -33,8 +33,10 @@
 ;; Release history:
 ;;
 ;; 2001-10-31 Committed to Oort Gnus.
-;;
-;; $Id: sieve.el,v 6.3 2002/02/20 00:15:33 yamaoka Exp $
+;; 2002-07-27 Fix down-mouse-2 and down-mouse-3 in manage-mode.  Fix menubar
+;;            in manage-mode.  Change some messages.  Added sieve-deactivate*,
+;;            sieve-remove.  Fixed help text in manage-mode.  Suggested by
+;;            Ned Ludd.
 ;;
 ;; Todo:
 ;;
@@ -126,14 +128,15 @@ require \"fileinto\";
   (define-key sieve-manage-mode-map "f" 'sieve-edit-script)
   (define-key sieve-manage-mode-map "o" 'sieve-edit-script-other-window)
   (define-key sieve-manage-mode-map "r" 'sieve-remove)
-  (define-key sieve-manage-mode-map [mouse-2] 'sieve-edit-script)
-  (define-key sieve-manage-mode-map [(down-mouse-3)] 'sieve-menu))
+  (define-key sieve-manage-mode-map [(down-mouse-2)] 'sieve-edit-script)
+  (define-key sieve-manage-mode-map [(down-mouse-3)] 'sieve-manage-mode-menu))
 
 (define-derived-mode sieve-manage-mode fundamental-mode "SIEVE"
   "Mode used for sieve script management."
   (setq mode-name "SIEVE")
   (buffer-disable-undo (current-buffer))
-  (setq truncate-lines t))
+  (setq truncate-lines t)
+  (easy-menu-add-item nil nil sieve-manage-mode-menu))
 
 (put 'sieve-manage-mode 'mode-class 'special)
 
@@ -153,13 +156,38 @@ require \"fileinto\";
 (defun sieve-activate (&optional pos)
   (interactive "d")
   (let ((name (sieve-script-at-point)) err)
-    (unless name
+    (when (or (null name) (string-equal name sieve-new-script))
       (error "No sieve script at point"))
+    (message "Activating script %s..." name)
     (setq err (sieve-manage-setactive name sieve-manage-buffer))
+    (sieve-refresh-scriptlist)
     (if (sieve-manage-ok-p err)
-	(message "Script %s activated." name)
-      (message "Failed to activate script %s: %s" name (nth 2 err)))
-    (sieve-refresh-scriptlist)))
+	(message "Activating script %s...done" name)
+      (message "Activating script %s...failed: %s" name (nth 2 err)))))
+
+(defun sieve-deactivate-all (&optional pos)
+  (interactive "d")
+  (let ((name (sieve-script-at-point)) err)
+    (message "Deactivating scripts...")
+    (setq err (sieve-manage-setactive "" sieve-manage-buffer))
+    (sieve-refresh-scriptlist)
+    (if (sieve-manage-ok-p err)
+	(message "Deactivating scripts...done")
+      (message "Deactivating scripts...failed" (nth 2 err)))))
+
+(defalias 'sieve-deactivate 'sieve-deactivate-all)
+
+(defun sieve-remove (&optional pos)
+  (interactive "d")
+  (let ((name (sieve-script-at-point)) err)
+    (when (or (null name) (string-equal name sieve-new-script))
+      (error "No sieve script at point"))
+    (message "Removing sieve script %s..." name)
+    (setq err (sieve-manage-deletescript name sieve-manage-buffer))
+    (unless (sieve-manage-ok-p err)
+      (error "Removing sieve script %s...failed: " err))
+    (sieve-refresh-scriptlist)
+    (message "Removing sieve script %s...done" name)))
 
 (defun sieve-edit-script (&optional pos)
   (interactive "d")
@@ -216,7 +244,7 @@ Used to bracket operations which move point in the sieve-buffer."
       ;; would need minor-mode for log-edit-mode
       (describe-function 'sieve-mode)
     (message (substitute-command-keys
-	      "`\\[sieve-help]':help `\\[cvs-mode-add]':add `\\[sieve-remove]':remove"))))
+	      "`\\[sieve-edit-script]':edit `\\[sieve-activate]':activate `\\[sieve-deactivate]':deactivate `\\[sieve-remove]':remove"))))
 
 (defun sieve-bury-buffer (buf &optional mainbuf)
   "Hide the buffer BUF that was temporarily popped up.

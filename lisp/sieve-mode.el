@@ -44,8 +44,6 @@
 ;;            version 1.1 change file extension into ".siv" (official one)
 ;;                        added keymap and menubar to hook into sieve-manage
 ;; 2001-10-31 version 1.2 committed to Oort Gnus
-;;
-;; $Id: sieve-mode.el,v 6.3 2002/02/20 00:15:33 yamaoka Exp $
 
 ;;; Code:
 
