@@ -4,9 +4,10 @@
 
 	* nnml.el (autoload): Move to nnheader.el.
 
-	* nnfolder.el (nnfolder-existing-articles): Reversed.
+	* nnfolder.el (nnfolder-existing-articles): Reversed, i.e. sorted.
 	(nnfolder-request-expire-articles): Use gnus-sorted-intersection.
-	(nnfolder-retrieve-headers): Use intersection.
+	(nnfolder-retrieve-headers): Use intersection. Suggested by Jonas
+	Kvarnstr,Av(Bm <jonkv@ida.liu.se>.
 
 2000-12-30 00:17:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
