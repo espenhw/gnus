@@ -1,3 +1,8 @@
+2003-10-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-remove-odd-characters): New function.
+	(gnus-nov-parse-line): Use it.
+
 2003-10-18  Matt Swift  <swift@alum.mit.edu>
 
 	* mm-decode.el (mm-inline-media-tests): Recognize pjpeg as jpeg. 

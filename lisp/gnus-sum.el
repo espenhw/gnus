@@ -3976,6 +3976,14 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 	     (setq heads nil)))))
      gnus-newsgroup-dependencies)))
 
+(defsubst gnus-remove-odd-characters (string)
+  "Translate STRING into something that doesn't contain weird characters."
+  (subst-char-in-string
+   ?\r ?\-
+   (subst-char-in-string 
+    ?\n ?\- string t)
+   t))
+
 ;; This function has to be called with point after the article number
 ;; on the beginning of the line.
 (defsubst gnus-nov-parse-line (number dependencies &optional force-new)
@@ -3994,12 +4002,14 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 		(make-full-mail-header
 		 number			; number
 		 (condition-case ()	; subject
-		     (funcall gnus-decode-encoded-word-function
-			      (setq x (nnheader-nov-field)))
+		     (gnus-remove-odd-characters
+		      (funcall gnus-decode-encoded-word-function
+			       (setq x (nnheader-nov-field))))
 		   (error x))
 		 (condition-case ()	; from
-		     (funcall gnus-decode-encoded-word-function
-			      (setq x (nnheader-nov-field)))
+		     (gnus-remove-odd-characters
+		      (funcall gnus-decode-encoded-word-function
+			       (setq x (nnheader-nov-field))))
 		   (error x))
 		 (nnheader-nov-field)	; date
 		 (nnheader-nov-read-message-id)	; id
