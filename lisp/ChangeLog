@@ -1,3 +1,7 @@
+2003-02-18  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-summary-exit-no-update): Use gnus-kill-buffer.
+
 2003-02-18  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-ham-move-routine) 
