@@ -9001,7 +9001,7 @@ If nil, use to the current newsgroup method."
   :group 'gnus-summary-mail)
 
 (defcustom gnus-summary-display-while-building nil
-  "If not-nil, show and update the summary buffer as it's being built.
+  "If non-nil, show and update the summary buffer as it's being built.
 If the value is t, update the buffer after every line is inserted.  If
 the value is an integer (N), update the display every N lines."
   :group 'gnus-thread
