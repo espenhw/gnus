@@ -1,3 +1,24 @@
+2000-09-13  Dave Love  <fx@gnu.org>
+
+	* gnus-ems.el (gnus-ems-redefine): Don't alias
+	gnus-summary-set-display-table.
+
+	* message.el (message-user-agent): Don't wrap ignore-errors around
+	it.
+
+	* mm-encode.el (mm-insert-multipart-headers): Avoid redundant
+	`format'.
+	(mm-content-transfer-encoding): Don't use cadar.
+
+	* uudecode.el (uudecode-decoder-program) 
+	(uudecode-decoder-switches): Customize.
+
+	* gnus-score.el (gnus-home-score-file): Improve custom type.
+
+	* gnus-cus.el (gnus-custom-mode): Conditionally set local
+	variables for Emacs 21.
+	(gnus-group-customize): Disable undo while laying out the buffer.
+
 2000-09-13 09:38:26  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-util.el (gnus-write-active-file): Bind
