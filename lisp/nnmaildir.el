@@ -422,7 +422,7 @@ by nnmaildir-request-article.")
         (nnmaildir--nov-set-mtime nov mtime)
         (nnmaildir--nov-set-neh nov (copy-sequence nnmail-extra-headers))
         (prin1 (list msgid nov) (current-buffer))
-        (setq file (concat novdir ":"))
+        (setq file (concat novfile ":"))
         (nnmaildir--unlink file)
         (write-region (point-min) (point-max) file nil 'no-message))
       (rename-file file novfile 'replace)
@@ -1460,7 +1460,8 @@ by nnmaildir-request-article.")
   (let ((no-force (not force))
         (group (nnmaildir--prepare server gname))
         pgname time boundary time-iter bound-iter high low target dir nlist
-        stop num article didnt suffix nnmaildir--file deactivate-mark)
+        stop number article didnt suffix nnmaildir--file
+        nnmaildir-article-file-name deactivate-mark)
     (catch 'return
       (if group nil
         (nnmaildir--srv-set-error nnmaildir--cur-server
@@ -1482,11 +1483,7 @@ by nnmaildir-request-article.")
                 high (1- high)))
       (setcar (cdr boundary) low)
       (setcar boundary high)
-      (setq target (nnmaildir--param pgname 'expire-group)
-            target (and (stringp target)
-                        (not (string-equal target pgname))
-                        target)
-            dir (nnmaildir--srv-get-dir nnmaildir--cur-server)
+      (setq dir (nnmaildir--srv-get-dir nnmaildir--cur-server)
             dir (nnmaildir--srv-grp-dir dir gname)
             dir (nnmaildir--cur dir)
             nlist (nnmaildir--grp-get-lists group)
@@ -1495,17 +1492,17 @@ by nnmaildir-request-article.")
       (save-excursion
         (set-buffer (get-buffer-create " *nnmaildir move*"))
         (while ranges
-          (setq num (car ranges) ranges (cdr ranges))
-          (while (eq num (car ranges))
+          (setq number (car ranges) ranges (cdr ranges))
+          (while (eq number (car ranges))
             (setq ranges (cdr ranges)))
-          (if (numberp num) (setq stop num)
-            (setq stop (car num) num (cdr num)))
-          (setq nlist (nthcdr (- (nnmaildir--art-get-num (car nlist)) num)
+          (if (numberp number) (setq stop number)
+            (setq stop (car number) number (cdr number)))
+          (setq nlist (nthcdr (- (nnmaildir--art-get-num (car nlist)) number)
                               nlist))
           (while (and nlist
                       (setq article (car nlist)
-                            num (nnmaildir--art-get-num article))
-                      (>= num stop))
+                            number (nnmaildir--art-get-num article))
+                      (>= number stop))
             (setq nlist (cdr nlist)
                   suffix (nnmaildir--art-get-suffix article))
             (catch 'continue
@@ -1531,14 +1528,20 @@ by nnmaildir-request-article.")
                                  time-iter (cdr time-iter)))
                          (and bound-iter time-iter
                               (car-less-than-car bound-iter time-iter))))
-                  (setq didnt (cons (nnmaildir--art-get-num article) didnt))
-                (when target
+                  (setq didnt (cons number didnt))
+                (save-excursion
+                  (setq nnmaildir-article-file-name nnmaildir--file
+                        target (nnmaildir--param pgname 'expire-group)))
+                (when (and (stringp target)
+                           (not (string-equal target pgname))) ;; Move it.
                   (erase-buffer)
                   (nnheader-insert-file-contents nnmaildir--file)
                   (gnus-request-accept-article target nil nil 'no-encode))
-                (nnmaildir--unlink nnmaildir--file)
-                (nnmaildir--art-set-suffix article 'expire)
-                (nnmaildir--art-set-nov article nil)))))
+                (if (equal target pgname)
+                    (setq didnt (cons number didnt)) ;; Leave it here.
+                  (nnmaildir--unlink nnmaildir--file)
+                  (nnmaildir--art-set-suffix article 'expire)
+                  (nnmaildir--art-set-nov article nil))))))
         (erase-buffer))
       didnt)))
 
