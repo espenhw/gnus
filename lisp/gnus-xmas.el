@@ -703,7 +703,9 @@ XEmacs compatibility workaround."
    args))
 
 (unless (find-face 'gnus-x-face)
-  (copy-face 'default 'gnus-x-face))
+  (copy-face 'default 'gnus-x-face)
+  (set-face-foreground 'gnus-x-face "black")
+  (set-face-background 'gnus-x-face "white"))
 
 (defun gnus-xmas-article-display-xface (beg end)
   "Display any XFace headers in the current article."

@@ -260,9 +260,10 @@ into the buffer visible in the event's window."
 
 ;; Put it in the Help menu, if possible.
 (if (string-match "XEmacs" emacs-version)
-    ;; XEmacs (disabled because it doesn't work)
-    (and current-menubar
-	 (add-menu-item '("Help") "Customize..." 'customize t))
+    (if (featurep 'menubar)
+	;; XEmacs (disabled because it doesn't work)
+	(and current-menubar
+	     (add-menu-item '("Help") "Customize..." 'customize t)))
   ;; Emacs 19.28 and earlier
   (global-set-key [ menu-bar help customize ]
 		  '("Customize..." . customize))

@@ -1,3 +1,23 @@
+Sat Jun 22 11:16:57 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-adjust-marked-articles): Would bug out on some
+	bookmarks. 
+
+Sat Jun 22 11:13:51 1996  Raja R. Harinath  <harinath@cs.umn.edu>
+
+	* gnus.el (gnus-summary-save-body-in-file): Saved wrong buffer.
+
+Sat Jun 22 10:57:35 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-thread-total-score-1): Replaced with old,
+	non-buggy version.
+
+	* gnus-xmas.el ((find-face 'gnus-x-face)): Set proper colors. 
+
+Fri Jun 21 18:04:03 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.24 is released.
+
 Fri Jun 21 16:36:03 1996  Christoph Wedler  <wedler@fmi.uni-passau.de>
 
 	* gnus-picon.el (gnus-picons-insert-face-if-exists): Total change.

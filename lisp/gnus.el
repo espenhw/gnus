@@ -1730,7 +1730,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.24"
+(defconst gnus-version-number "5.2.25"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -8423,23 +8423,14 @@ Unscored articles will be counted as having a score of zero."
 	 (gnus-thread-total-score-1 (list thread)))))
 
 (defun gnus-thread-total-score-1 (root)
-  ;; This function finds the total score of the thread below ROOT.
+  ;; This function find the total score of the thread below ROOT.
   (setq root (car root))
-  (let ((number (mail-header-number root)))
-    (if (and (not (memq number gnus-newsgroup-limit))
-	     (not (memq number gnus-newsgroup-sparse)))
-	;; This article shouldn't be counted.
-	(apply gnus-thread-score-function
-	       (mapcar 'gnus-thread-total-score
-		       (cdr (gnus-gethash (mail-header-id root)
-					  gnus-newsgroup-dependencies))))
-      ;; This article should be counted.
-      (apply gnus-thread-score-function
-	     (or (cdr (assq number gnus-newsgroup-scored))
-		 gnus-summary-default-score 0)
-	     (mapcar 'gnus-thread-total-score
-		     (cdr (gnus-gethash (mail-header-id root)
-					gnus-newsgroup-dependencies)))))))
+  (apply gnus-thread-score-function
+	 (or (cdr (assq (mail-header-number root) gnus-newsgroup-scored))
+	     gnus-summary-default-score 0)
+	 (mapcar 'gnus-thread-total-score
+		 (cdr (gnus-gethash (mail-header-id root)
+				    gnus-newsgroup-dependencies)))))
 
 ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
 (defvar gnus-tmp-prev-subject nil)
@@ -8968,7 +8959,8 @@ If READ-ALL is non-nil, all articles in the group are selected."
        ;; Adjust assocs.
        ((memq mark '(score bookmark))
 	(while articles
-	  (when (or (< (car (setq article (pop articles))) min)
+	  (when (or (not (consp (setq article (pop articles))))
+		    (< (car article) min)
 		    (> (car article) max))
 	    (set var (delq article (symbol-value var))))))))))
 
@@ -13311,7 +13303,7 @@ The directory to save in defaults to `gnus-article-save-directory'."
 		(t (gnus-read-save-file-name
 		    "Save body in file:" default-name))))
     (gnus-make-directory (file-name-directory filename))
-    (gnus-eval-in-buffer-window gnus-article-buffer
+    (gnus-eval-in-buffer-window gnus-original-article-buffer
       (save-excursion
 	(save-restriction
 	  (widen)
