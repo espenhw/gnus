@@ -13,7 +13,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Customization Library
 
-Version: 1.55
+Version: 1.59
 
 @menu
 * Introduction::                
@@ -395,12 +395,12 @@ list above (except hidden members, which are ignored).
 The last part of the customization buffer looks like this:
 
 @example
-[Set] [Save] [Reset]
+[Set] [Save] [Reset] [Done]
 @end example
 
 Activating the @samp{[Set]}, @samp{[Save]}, or @samp{[Reset]}
 button will affect all modified customization items that are visible in
-the buffer.
+the buffer.  @samp{[Done]} will bury the buffer.
 
 @node   Declarations, Utilities, The Customization Buffer, Top
 @comment  node-name,  next,  previous,  up
@@ -640,7 +640,8 @@ customize buffer.
 @item
 Integrate with @file{w3} so you can customization buffers with much
 better formatting.  I'm thinking about adding a <custom>name</custom>
-tag. 
+tag.  The latest w3 have some support for this, so come up with a
+convincing example.
 
 @item
 Add an `examples' section, with explained examples of custom type

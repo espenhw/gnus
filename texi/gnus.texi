@@ -1165,7 +1165,7 @@ User defined specifier.  The next character in the format string should
 be a letter.  @sc{gnus} will call the function
 @code{gnus-user-format-function-}@samp{X}, where @samp{X} is the letter
 following @samp{%u}.  The function will be passed a single dummy
-paratere as argument.  The function should return a string, which will
+parameter as argument.  The function should return a string, which will
 be inserted into the buffer just like information from any other
 specifier.
 @end table
@@ -2008,7 +2008,7 @@ Also @pxref{Topic Parameters}.
 Here's an example group parameter list:
 
 @example
-((to-address . "ding@ifi.uio.no")
+((to-address . "ding@@ifi.uio.no")
  (auto-expiry . t))
 @end example
 

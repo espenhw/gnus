@@ -1,3 +1,18 @@
+Sun Mar  9 01:51:16 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.24 is released.
+
+Sun Mar  9 00:52:47 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-set-local-parameters): Ignore errors. 
+
+Sat Mar  8 08:55:52 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-article-prev-page): Return a proper value.
+
+	* gnus-sum.el (gnus-summary-prev-page-or-article): New command.
+	* gnus-xmas.el (gnus-summary-toolbar): Use it.
+
 Sat Mar  8 08:34:22 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.23 is released.

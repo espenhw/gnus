@@ -2449,7 +2449,7 @@ the thread are to be displayed."
 	   (symbolp (car elem))		; Has to be a symbol in there.
 	   (not (memq (car elem)
 		      '(quit-config to-address to-list to-group)))
-	   (progn			; So we set it.
+	   (ignore-errors		; So we set it.
 	     (make-local-variable (car elem))
 	     (set (car elem) (eval (nth 1 elem))))))))
 
@@ -5387,7 +5387,7 @@ article."
   (gnus-set-global-variables)
   (let ((article (gnus-summary-article-number))
 	(article-window (get-buffer-window gnus-article-buffer t))
-	(endp nil))
+	endp)
     (gnus-configure-windows 'article)
     (if (eq (cdr (assq article gnus-newsgroup-reads)) gnus-canceled-mark)
 	(if (and (eq gnus-summary-goto-unread 'never)
@@ -5416,13 +5416,16 @@ article."
     (gnus-summary-recenter)
     (gnus-summary-position-point)))
 
-(defun gnus-summary-prev-page (&optional lines)
+(defun gnus-summary-prev-page (&optional lines move)
   "Show previous page of selected article.
-Argument LINES specifies lines to be scrolled down."
+Argument LINES specifies lines to be scrolled down.
+If MOVE, move to the previous unread article if point is at
+the beginning of the buffer."
   (interactive "P")
   (gnus-set-global-variables)
   (let ((article (gnus-summary-article-number))
-	(article-window (get-buffer-window gnus-article-buffer t)))
+	(article-window (get-buffer-window gnus-article-buffer t))
+	endp)
     (gnus-configure-windows 'article)
     (if (or (null gnus-current-article)
 	    (null gnus-article-current)
@@ -5433,8 +5436,23 @@ Argument LINES specifies lines to be scrolled down."
       (gnus-summary-recenter)
       (when article-window
 	(gnus-eval-in-buffer-window gnus-article-buffer
-	  (gnus-article-prev-page lines)))))
+	  (setq endp (gnus-article-prev-page lines)))
+	(when (and move endp)
+	  (cond (lines
+		 (gnus-message 3 "Beginning of message"))
+		((null lines)
+		 (if (and (eq gnus-summary-goto-unread 'never)
+			  (not (gnus-summary-first-article-p article)))
+		     (gnus-summary-prev-article)
+		   (gnus-summary-prev-unread-article))))))))
   (gnus-summary-position-point))
+
+(defun gnus-summary-prev-page-or-article (&optional lines)
+  "Show previous page of selected article.
+Argument LINES specifies lines to be scrolled down.
+If at the beginning of the article, go to the next article."
+  (interactive "P")
+  (gnus-summary-prev-page lines t))
 
 (defun gnus-summary-scroll-up (lines)
   "Scroll up (or down) one line current article.

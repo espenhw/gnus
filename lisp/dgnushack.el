@@ -48,7 +48,7 @@
     (fset 'read-color 'ignore)))
 
 (setq byte-compile-warnings
-      '(free-vars unresolved callargs redefine))
+      '(free-vars unresolved callargs redefine obsolete))
 
 (defun dgnushack-compile ()
   ;;(setq byte-compile-dynamic t)

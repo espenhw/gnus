@@ -2089,8 +2089,10 @@ Argument LINES specifies lines to be scrolled down."
 	(recenter -1))
     (let ((scroll-in-place nil))
       (prog1
-	  (ignore-errors
-	    (scroll-down lines))
+	  (condition-case ()
+	      (scroll-down lines)
+	    (beginning-of-buffer
+	     (goto-char (point-min))))
 	(move-to-window-line 0)))))
 
 (defun gnus-article-refer-article ()

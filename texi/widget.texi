@@ -1,6 +1,6 @@
 \input texinfo.tex
 
-@c $Id: widget.texi,v 1.83 1997/03/05 16:43:09 abraham Exp $
+@c $Id: widget.texi,v 1.87 1997/03/08 16:21:38 abraham Exp $
 
 @c %**start of header
 @setfilename widget
@@ -15,7 +15,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Emacs Widget Library
 
-Version: 1.55
+Version: 1.59
 
 @menu
 * Introduction::                
@@ -533,6 +533,13 @@ return the widget containing the invalid data, and set that widgets
 @item :parent
 The parent of a nested widget (e.g. a @code{menu-choice} item or an element of a
 @code{editable-list} widget). 
+
+@item :sibling-args
+This keyword is only used for members of a @code{radio-button-choice} or
+@code{checklist}.  The value should be a list of extra keyword
+arguments, which will be used when creating the @code{radio-button} or
+@code{checkbox} associated with this item.
+
 @end table
 
 @deffn {User Option} widget-glyph-directory
@@ -754,6 +761,10 @@ Replace with the radio button.
 Insert a literal @samp{%}. 
 @end table
 
+@item button-args
+A list of keywords to pass to the radio buttons.  Useful for setting
+e.g. the @samp{:help-echo} for each button.
+
 @item :buttons
 The widgets representing the radio buttons.
 
@@ -881,6 +892,10 @@ Replace with the checkbox.
 Insert a literal @samp{%}. 
 @end table
 
+@item button-args
+A list of keywords to pass to the checkboxes.  Useful for setting
+e.g. the @samp{:help-echo} for each checkbox.
+
 @item :buttons
 The widgets representing the checkboxes.
 
@@ -921,6 +936,16 @@ Insert the @b{[DEL]} button.
 @item %%
 Insert a literal @samp{%}. 
 @end table
+
+@item :insert-button-args
+A list of keyword arguments to pass to the insert buttons.
+
+@item :delete-button-args
+A list of keyword arguments to pass to the delete buttons.
+
+@item :append-button-args
+A list of keyword arguments to pass to the trailing insert button.
+
 
 @item :buttons
 The widgets representing the insert and delete buttons.

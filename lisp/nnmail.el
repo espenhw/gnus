@@ -987,7 +987,7 @@ FUNC will be called with the buffer narrowed to each mail."
 	(save-excursion (run-hooks 'nnmail-prepare-incoming-hook))
 	;; Handle both babyl, MMDF and unix mail formats, since movemail will
 	;; use the former when fetching from a mailbox, the latter when
-	;; fetches from a file.
+	;; fetching from a file.
 	(cond ((or (looking-at "\^L")
 		   (looking-at "BABYL OPTIONS:"))
 	       (nnmail-process-babyl-mail-format func artnum-func))
