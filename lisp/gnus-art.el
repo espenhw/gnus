@@ -3648,7 +3648,8 @@ commands:
   (make-local-variable 'gnus-article-ignored-charsets)
   (gnus-set-default-directory)
   (buffer-disable-undo)
-  (setq buffer-read-only t)
+  (setq buffer-read-only t
+	show-trailing-whitespace nil)
   (set-syntax-table gnus-article-mode-syntax-table)
   (mm-enable-multibyte)
   (gnus-run-hooks 'gnus-article-mode-hook))

@@ -1,5 +1,8 @@
 2004-05-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-group.el (gnus-group-mode): Set show-trailing-whitespace
+	to nil.
+	
 	* gnus-cache.el (gnus-cache-possibly-enter-article): Use it.
 
 	* nnheader.el (nnheader-get-lines-and-char): New function.

@@ -1040,7 +1040,8 @@ The following commands are available:
   (use-local-map gnus-group-mode-map)
   (buffer-disable-undo)
   (setq truncate-lines t)
-  (setq buffer-read-only t)
+  (setq buffer-read-only t
+	show-trailing-whitespace nil)
   (gnus-set-default-directory)
   (gnus-update-format-specifications nil 'group 'group-mode)
   (gnus-update-group-mark-positions)

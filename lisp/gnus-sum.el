@@ -2610,6 +2610,8 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	      (tool-bar-add-item-from-menu
 	       'gnus-uu-post-news "uu-post" gnus-summary-mode-map)
 	      (tool-bar-add-item-from-menu
+	       'gnus-uu-post-news "uu-post" gnus-summary-mode-map)
+	      (tool-bar-add-item-from-menu
 	       'gnus-summary-catchup "catchup" gnus-summary-mode-map)
 	      (tool-bar-add-item-from-menu
 	       'gnus-summary-catchup-and-exit "cu-exit" gnus-summary-mode-map)
@@ -2741,7 +2743,8 @@ The following commands are available:
   (make-local-variable 'minor-mode-alist)
   (use-local-map gnus-summary-mode-map)
   (buffer-disable-undo)
-  (setq buffer-read-only t)		;Disable modification
+  (setq buffer-read-only t		;Disable modification
+	show-trailing-whitespace nil)
   (setq truncate-lines t)
   (setq selective-display t)
   (setq selective-display-ellipses t)	;Display `...'
