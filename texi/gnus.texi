@@ -871,7 +871,7 @@ Appendices
 * Troubleshooting::             What you might try if things do not work.
 * Gnus Reference Guide::        Rilly, rilly technical stuff.
 * Emacs for Heathens::          A short introduction to Emacsian terms.
-* Frequently Asked Questions::
+* Frequently Asked Questions::  The Gnus FAQ.
 
 History
 
@@ -23244,7 +23244,7 @@ but at the common table.@*
 * Troubleshooting::             What you might try if things do not work.
 * Gnus Reference Guide::        Rilly, rilly technical stuff.
 * Emacs for Heathens::          A short introduction to Emacsian terms.
-* Frequently Asked Questions::
+* Frequently Asked Questions::  The Gnus FAQ
 @end menu
 
 

@@ -1,5 +1,7 @@
 2003-04-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus.texi (Top, Appendices): Fixed Gnus FAQ entry.
+
 	* gnus-faq.texi: Wrap long lines in menus.  Index.
 
 	* gnus.texi (Image Enhancements): Mention missing images support
