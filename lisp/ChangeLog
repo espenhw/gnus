@@ -1,5 +1,8 @@
 2002-03-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* nnslashdot.el (nnslashdot-request-article): Use "<!-- no ad 6
+	-->" as the end of the first article.
+
 	* gnus-msg.el (gnus-summary-resend-message-edit): New function.
 	From Matthieu Moy <Matthieu.Moy@imag.fr>
 
