@@ -511,17 +511,6 @@ Return the number of files that were found."
 		      (error "Cannot get new mail"))
 		    0)))))))))
 
-(eval-and-compile
-  (if (fboundp 'make-temp-file)
-      (defalias 'mail-source-make-complex-temp-name 'make-temp-file)
-    (defun mail-source-make-complex-temp-name (prefix)
-      (let ((newname (make-temp-name prefix))
-	    (newprefix prefix))
-	(while (file-exists-p newname)
-	  (setq newprefix (concat newprefix "x"))
-	  (setq newname (make-temp-name newprefix)))
-	newname))))
-
 (defun mail-source-delete-old-incoming (&optional age confirm)
   "Remove incoming files older than AGE days.
 If CONFIRM is non-nil, ask for confirmation before removing a file."
@@ -566,7 +555,7 @@ Pass INFO on to CALLBACK."
 	(if (eq mail-source-delete-incoming t)
 	    (delete-file mail-source-crash-box)
 	  (let ((incoming
-		 (mail-source-make-complex-temp-name
+		 (mm-make-temp-file
 		  (expand-file-name
 		   mail-source-incoming-file-prefix
 		   mail-source-directory))))
