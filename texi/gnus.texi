@@ -13451,7 +13451,7 @@ the article marks with each group.  For these servers, archiving and
 restoring a group while preserving marks is fairly simple.
 
 (Preserving the group level and group parameters as well still
-requires ritual dancing and sacrifies to the @code{.newsrc.eld} deity
+requires ritual dancing and sacrifices to the @code{.newsrc.eld} deity
 though.)
 
 To archive an entire @code{nnml} or @code{nnfolder} server, take a
