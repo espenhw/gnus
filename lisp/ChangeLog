@@ -1,5 +1,13 @@
 2003-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnrss.el (nnrss-find-rss-via-syndic8): Indent.
+
+2003-05-01  Mark A. Hershberger  <mah@everybody.org>
+
+	* nnrss.el (nnrss-find-rss-via-syndic8): Don't error out.
+
+2003-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
 	* gnus.el (gnus-version-number): Bump.
 
 2003-05-01  Teodor Zlatanov  <tzz@lifelogs.com>

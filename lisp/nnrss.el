@@ -684,48 +684,48 @@ whether they are `offsite' or `onsite'."
 
 (defun nnrss-find-rss-via-syndic8 (url)
   "query syndic8 for the rss feeds it has for the url."
-  (if (locate-library "xml-rpc")
-      (progn (require 'xml-rpc)
-	     (let ((feedid (xml-rpc-method-call
-			    "http://www.syndic8.com/xmlrpc.php"
-			    'syndic8.FindSites
-			    url)))
-	       (if feedid
-		   (let* ((feedinfo (xml-rpc-method-call 
-				     "http://www.syndic8.com/xmlrpc.php"
-				     'syndic8.GetFeedInfo
-				     feedid))
-			  (urllist
-			   (delq nil 
-				 (mapcar
-				  (lambda (listinfo)
-				    (if (string-equal 
-					 (cdr (assoc "status" listinfo))
-					 "Syndicated")
-					(cons
-					 (cdr (assoc "sitename" listinfo))
-					 (list
-					  (cons 'title
-						(cdr (assoc 
-						      "sitename" listinfo)))
-					  (cons 'href
-						(cdr (assoc
-						      "dataurl" listinfo)))))))
-				  feedinfo))))
-		     (if (> (length urllist) 1)
-			 (let ((completion-ignore-case t)
-			       (selection 
-				(mapcar (lambda (listinfo)
-					  (cons (cdr (assoc "sitename" listinfo)) 
-						(string-to-int 
-						 (cdr (assoc "feedid" listinfo)))))
-					feedinfo)))
-			   (cdr (assoc 
-				 (completing-read
-				  "Multiple feeds found.  Select one: "
-				  selection nil t) urllist)))
-		       (cdar urllist))))))
-    (error (message "XML-RPC is not available... not checking Syndic8."))))
+  (if (not (locate-library "xml-rpc"))
+      (message "XML-RPC is not available... not checking Syndic8.")
+    (require 'xml-rpc)
+    (let ((feedid (xml-rpc-method-call
+		   "http://www.syndic8.com/xmlrpc.php"
+		   'syndic8.FindSites
+		   url)))
+      (when feedid
+	(let* ((feedinfo (xml-rpc-method-call 
+			  "http://www.syndic8.com/xmlrpc.php"
+			  'syndic8.GetFeedInfo
+			  feedid))
+	       (urllist
+		(delq nil 
+		      (mapcar
+		       (lambda (listinfo)
+			 (if (string-equal 
+			      (cdr (assoc "status" listinfo))
+			      "Syndicated")
+			     (cons
+			      (cdr (assoc "sitename" listinfo))
+			      (list
+			       (cons 'title
+				     (cdr (assoc 
+					   "sitename" listinfo)))
+			       (cons 'href
+				     (cdr (assoc
+					   "dataurl" listinfo)))))))
+		       feedinfo))))
+	  (if (not (> (length urllist) 1))
+	      (cdar urllist)
+	    (let ((completion-ignore-case t)
+		  (selection 
+		   (mapcar (lambda (listinfo)
+			     (cons (cdr (assoc "sitename" listinfo)) 
+				   (string-to-int 
+				    (cdr (assoc "feedid" listinfo)))))
+			   feedinfo)))
+	      (cdr (assoc 
+		    (completing-read
+		     "Multiple feeds found.  Select one: "
+		     selection nil t) urllist)))))))))
 
 (defun nnrss-rss-p (data)
   "Test if data is an RSS feed.  Simply ensures that the first
