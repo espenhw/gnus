@@ -612,8 +612,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 (defun spam-setup-widening ()
   (dolist (check spam-list-of-statistical-checks)
     (when (symbol-value check)
-      (setq nnimap-split-download-body t)
-      (return))))
+      (setq nnimap-split-download-body t))))
 
 (add-hook 'gnus-get-new-news-hook 'spam-setup-widening)
 
