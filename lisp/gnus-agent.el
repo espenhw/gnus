@@ -1115,6 +1115,11 @@ This can be added to `gnus-select-article-hook' or
     (when (gnus-agent-load-alist group)
       (let ((low (1+ (caar (last gnus-agent-article-alist))))
 	    (high (cdr (gnus-active group))))
+	;; I suspect a deeper problem here and I suspect that low
+	;; should never be greater than high.  But for the time being
+	;; we just work around the problem and abstain from frobbing
+	;; the article list in that case.  If anyone knows how to
+	;; properly deal with it, please holler.  -- kai
 	(when (<= low high)
 	  (setq articles (gnus-list-range-intersection
 			  articles (list (cons low high)))))))
