@@ -1,3 +1,7 @@
+2001-08-30 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nndoc.el (nndoc-forward-type-p): It is not a digest.
+
 2001-08-30 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnml.el (nnml-check-directory-twice): Remove.

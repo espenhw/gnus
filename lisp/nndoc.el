@@ -459,9 +459,7 @@ from the document.")
 (defun nndoc-forward-type-p ()
   (when (and (re-search-forward "^-+ \\(Start of \\)?forwarded message.*\n+"
 				nil t)
-	     (not (re-search-forward "^Subject:.*digest" nil t))
-	     (not (re-search-backward "^From:" nil t 2))
-	     (not (re-search-forward "^From:" nil t 2)))
+	     (looking-at "[\r\n]*[a-zA-Z][a-zA-Z0-9-]*:"))
     t))
 
 (defun nndoc-rfc934-type-p ()
