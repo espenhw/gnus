@@ -1985,6 +1985,36 @@ always hide."
 		    (looking-at "[ \t]*$"))
 	  (gnus-delete-line))))))
 
+(defun article-replace-with-quoted-text ()
+  "Replace the entire article with the quoted text in the article."
+  (interactive)
+  (unless gnus-cite-prefix-alist
+    (error "No quoted text in the article"))
+  (gnus-summary-show-article t)
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (gnus-cite-parse-maybe t)
+    (let ((prefix (concat "^" (caar gnus-cite-prefix-alist)))
+	  (buffer-read-only nil)
+	  (body nil))
+      (dolist (line (sort (copy-sequence (cdar gnus-cite-prefix-alist)) '<))
+	(save-excursion
+	  (set-buffer gnus-original-article-buffer)
+	  (goto-char (point-min))
+	  (forward-line (1- line))
+	  (push (buffer-substring (point) (progn (forward-line 1) (point)))
+		body)))
+      (article-goto-body)
+      (forward-line -1)
+      (delete-region (point) (point-max))
+      (mapcar #'insert (mapcar #'string-as-unibyte (nreverse body)))
+      (goto-char (point-min))
+      (while (re-search-forward prefix nil t)
+	(replace-match "" t t))
+      (gnus-article-prepare-display))))
+    
+    
+
 (defun article-narrow-to-head ()
   "Narrow the buffer to the head of the message.
 Point is left at the beginning of the narrowed-to region."
@@ -2889,6 +2919,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-strip-trailing-space
      article-strip-blank-lines
      article-strip-all-blank-lines
+     article-replace-with-quoted-text
      article-date-local
      article-date-english
      article-date-iso8601

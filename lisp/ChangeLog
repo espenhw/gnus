@@ -1,3 +1,8 @@
+2001-03-21 20:00:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnultimate.el (nnultimate-retrieve-headers): Work for other
+	boards. 
+
 2001-03-21  Didier Verna  <didier@lrde.epita.fr>
 
 	* gnus-start.el:
