@@ -8,6 +8,8 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Gnus decodes morse encoded messages if you press W m.
+
 ** Unread count correct in nnimap groups.
 
 The estimated number of unread articles in the group buffer should now
@@ -226,6 +228,8 @@ S/MIME (RFC 2630-2633).
 
 This change was made to avoid conflict with the standard binding of
 `back-to-indentation', which is also useful in message mode.
+
+** Bug fixes.
 
 
 * Changes in Pterodactyl Gnus (5.8/5.9)
