@@ -1,0 +1,6 @@
+Makefile
+emacs-mime
+gnus
+gnus-[0-9]*
+message
+gnustmp.texi
