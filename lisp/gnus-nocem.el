@@ -297,7 +297,8 @@ valid issuer, which is much faster if you are selective about the issuers."
       (while (search-forward "\t" nil t)
 	(cond
 	 ((not (ignore-errors
-		 (setq group (let ((obarray gnus-active-hashtb)) (read buf)))))
+		 (setq group (let ((obarray gnus-nocem-real-group-hashtb))
+			       (read buf)))))
 	  ;; An error.
 	  )
 	 ((not (symbolp group))

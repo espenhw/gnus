@@ -1,3 +1,8 @@
+2004-01-02  Edwin Steiner  <edwin.steiner@gmx.net>
+
+	* gnus-nocem.el (gnus-nocem-enter-article): Use the real group
+	hashtb (tiny patch).
+
 2004-01-02  Kai Grossjohann  <kai@emptydomain.de>
 
 	* nnml.el (nnml-save-mail): Grok compressed articles.  From
