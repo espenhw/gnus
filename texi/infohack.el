@@ -40,6 +40,10 @@
   (let ((dest-directory default-directory)
 	(max-lisp-eval-depth (max max-lisp-eval-depth 600))
 	coding-system)
+    ;; Emacs 21.3 doesn't support @documentencoding
+    (unless (get 'documentencoding 'texinfo-format)
+      (put 'documentencoding 'texinfo-format 
+	   'texinfo-discard-line-with-args))
     (find-file file)
     (setq buffer-read-only nil)
     (setq coding-system buffer-file-coding-system)
