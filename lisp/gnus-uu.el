@@ -1678,20 +1678,26 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
     (when (setq buf (get-buffer gnus-uu-output-buffer-name))
       (kill-buffer buf))))
 
-;; Inputs an action and a file and returns a full command, putting
-;; quotes round the file name and escaping any quotes in the file name.
+(defun gnus-quote-arg-for-sh-or-csh (arg)
+  (let ((pos 0) new-pos accum)
+    ;; *** bug: we don't handle newline characters properly
+    (while (setq new-pos (string-match "[!`\"$\\& \t]" arg pos))
+      (push (substring arg pos new-pos) accum)
+      (push "\\" accum)
+      (push (list (aref arg new-pos)) accum)
+      (setq pos (1+ new-pos)))
+    (if (= pos 0)
+        arg
+      (apply 'concat (nconc (nreverse accum) (list (substring arg pos)))))))
+
+;; Inputs an action and a filename and returns a full command, making sure
+;; that the filename will be treated as a single argument when the shell
+;; executes the command.
 (defun gnus-uu-command (action file)
-  (let ((ofile ""))
-    (while (string-match "!\\|`\\|\"\\|\\$\\|\\\\\\|&" file)
-      (progn
-	(setq ofile
-	      (concat ofile (substring file 0 (match-beginning 0)) "\\"
-		      (substring file (match-beginning 0) (match-end 0))))
-	(setq file (substring file (1+ (match-beginning 0))))))
-    (setq ofile (concat "\"" ofile file "\""))
+  (let ((quoted-file (gnus-quote-arg-for-sh-or-csh file)))
     (if (string-match "%s" action)
-	(format action ofile)
-      (concat action " " ofile))))
+	(format action quoted-file)
+      (concat action " " quoted-file))))
 
 (defun gnus-uu-delete-work-dir (&optional dir)
   "Delete recursively all files and directories under `gnus-uu-work-dir'."

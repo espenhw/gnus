@@ -44,18 +44,20 @@
 (defmacro gnus-eval-in-buffer-window (buffer &rest forms)
   "Pop to BUFFER, evaluate FORMS, and then return to the original window."
   (let ((tempvar (make-symbol "GnusStartBufferWindow"))
-	(w (make-symbol "w"))
-	(buf (make-symbol "buf")))
+        (w (make-symbol "w"))
+        (buf (make-symbol "buf")))
     `(let* ((,tempvar (selected-window))
-	    (,buf ,buffer)
-	    (,w (get-buffer-window ,buf 'visible)))
+            (,buf ,buffer)
+            (,w (get-buffer-window ,buf 'visible)))
        (unwind-protect
-	   (progn
-	     (if ,w
-		 (select-window ,w)
-	       (pop-to-buffer ,buf))
-	     ,@forms)
-	 (select-window ,tempvar)))))
+           (progn
+             (if ,w
+                 (progn
+                   (select-window ,w)
+                   (set-buffer (window-buffer ,w)))
+               (pop-to-buffer ,buf))
+             ,@forms)
+         (select-window ,tempvar)))))
 
 (put 'gnus-eval-in-buffer-window 'lisp-indent-function 1)
 (put 'gnus-eval-in-buffer-window 'edebug-form-spec '(form body))

@@ -81,6 +81,7 @@ The SOUP packet file name will be inserted at the %s.")
 (defvoo nnsoup-buffers nil)
 (defvoo nnsoup-current-group nil)
 (defvoo nnsoup-group-alist-touched nil)
+(defvoo nnsoup-article-alist nil)
 
 
 
@@ -341,9 +342,11 @@ The SOUP packet file name will be inserted at the %s.")
 ;;; Internal functions
 
 (defun nnsoup-possibly-change-group (group &optional force)
-  (if group
-      (setq nnsoup-current-group group)
-    t))
+  (when (and group
+	     (not (equal nnsoup-current-group group)))
+    (setq nnsoup-article-alist nil)
+    (setq nnsoup-current-group group))
+  t)
 
 (defun nnsoup-read-active-file ()
   (setq nnsoup-group-alist nil)
@@ -386,45 +389,51 @@ The SOUP packet file name will be inserted at the %s.")
     (incf nnsoup-current-prefix)
     prefix))
 
+(defun nnsoup-file-name (dir file)
+  "Return the full path of FILE (in any case) in DIR."
+  (let* ((case-fold-search t)
+	 (files (directory-files dir t (concat (regexp-quote file) "$"))))
+    (car files)))
+
 (defun nnsoup-read-areas ()
-  (when (file-exists-p (concat nnsoup-tmp-directory "AREAS"))
-    (save-excursion
-      (set-buffer nntp-server-buffer)
-      (let ((areas (gnus-soup-parse-areas 
-		    (concat nnsoup-tmp-directory "AREAS")))
-	    entry number area lnum cur-prefix file)
-	;; Go through all areas in the new AREAS file.
-	(while (setq area (pop areas))
-	  ;; Change the name to the permanent name and move the files.
-	  (setq cur-prefix (nnsoup-next-prefix))
-	  (message "Incorporating file %s..." cur-prefix)
-	  (when (file-exists-p 
-		 (setq file (concat nnsoup-tmp-directory
-				    (gnus-soup-area-prefix area) ".IDX")))
-	    (rename-file file (nnsoup-file cur-prefix)))
-	  (when (file-exists-p 
-		 (setq file (concat nnsoup-tmp-directory 
-				    (gnus-soup-area-prefix area) ".MSG")))
-	    (rename-file file (nnsoup-file cur-prefix t))
-	    (gnus-soup-set-area-prefix area cur-prefix)
-	    ;; Find the number of new articles in this area.
-	    (setq number (nnsoup-number-of-articles area))
-	    (if (not (setq entry (assoc (gnus-soup-area-name area)
-					nnsoup-group-alist)))
-		;; If this is a new area (group), we just add this info to
-		;; the group alist. 
-		(push (list (gnus-soup-area-name area)
-			    (cons 1 number)
-			    (list (cons 1 number) area))
-		      nnsoup-group-alist)
-	      ;; There are already articles in this group, so we add this
-	      ;; info to the end of the entry.
-	      (nconc entry (list (list (cons (1+ (setq lnum (cdadr entry)))
-					     (+ lnum number))
-				       area)))
-	      (setcdr (cadr entry) (+ lnum number))))))
-      (nnsoup-write-active-file t)
-      (delete-file (concat nnsoup-tmp-directory "AREAS")))))
+  (let ((areas-file (nnsoup-file-name nnsoup-tmp-directory "areas")))
+    (when areas-file
+      (save-excursion
+	(set-buffer nntp-server-buffer)
+	(let ((areas (gnus-soup-parse-areas areas-file))
+	      entry number area lnum cur-prefix file)
+	  ;; Go through all areas in the new AREAS file.
+	  (while (setq area (pop areas))
+	    ;; Change the name to the permanent name and move the files.
+	    (setq cur-prefix (nnsoup-next-prefix))
+	    (message "Incorporating file %s..." cur-prefix)
+	    (when (file-exists-p 
+		   (setq file (concat nnsoup-tmp-directory
+				      (gnus-soup-area-prefix area) ".IDX")))
+	      (rename-file file (nnsoup-file cur-prefix)))
+	    (when (file-exists-p 
+		   (setq file (concat nnsoup-tmp-directory 
+				      (gnus-soup-area-prefix area) ".MSG")))
+	      (rename-file file (nnsoup-file cur-prefix t))
+	      (gnus-soup-set-area-prefix area cur-prefix)
+	      ;; Find the number of new articles in this area.
+	      (setq number (nnsoup-number-of-articles area))
+	      (if (not (setq entry (assoc (gnus-soup-area-name area)
+					  nnsoup-group-alist)))
+		  ;; If this is a new area (group), we just add this info to
+		  ;; the group alist. 
+		  (push (list (gnus-soup-area-name area)
+			      (cons 1 number)
+			      (list (cons 1 number) area))
+			nnsoup-group-alist)
+		;; There are already articles in this group, so we add this
+		;; info to the end of the entry.
+		(nconc entry (list (list (cons (1+ (setq lnum (cdadr entry)))
+					       (+ lnum number))
+					 area)))
+		(setcdr (cadr entry) (+ lnum number))))))
+	(nnsoup-write-active-file t)
+	(delete-file areas-file)))))
 
 (defun nnsoup-number-of-articles (area)
   (save-excursion
@@ -440,13 +449,68 @@ The SOUP packet file name will be inserted at the %s.")
      ;; buffer. 
      (t
       (set-buffer (nnsoup-message-buffer (gnus-soup-area-prefix area)))
-      (goto-char (point-min))
-      (let ((regexp (nnsoup-header (gnus-soup-encoding-format 
-				    (gnus-soup-area-encoding area))))
-	    (num 0))
-	(while (re-search-forward regexp nil t)
-	  (setq num (1+ num)))
-	num)))))
+      (unless (assoc (gnus-soup-area-prefix area) nnsoup-article-alist)
+	(nnsoup-dissect-buffer area))
+      (length (cdr (assoc (gnus-soup-area-prefix area) 
+			  nnsoup-article-alist)))))))
+
+(defun nnsoup-dissect-buffer (area)
+  (let ((mbox-delim (concat "^" message-unix-mail-delimiter))
+	(format (gnus-soup-encoding-format (gnus-soup-area-encoding area)))
+	(i 0)
+	alist len)
+    (goto-char (point-min))
+    (cond 
+     ;; rnews batch format
+     ((= format ?n)
+      (while (looking-at "^#! *rnews \\(+[0-9]+\\) *$")
+	(forward-line 1)
+	(push (list
+	       (incf i) (point)
+	       (progn
+		 (forward-char (string-to-number (match-string 1)))
+		 (point)))
+	      alist)))
+     ;; Unix mbox format
+     ((= format ?m)
+      (while (looking-at mbox-delim)
+	(forward-line 1)
+	(push (list 
+	       (incf i) (point)
+	       (progn
+		 (if (re-search-forward mbox-delim nil t)
+		     (beginning-of-line)
+		   (goto-char (point-max)))
+		 (point)))
+	      alist)))
+     ;; MMDF format
+     ((= format ?M)
+      (while (looking-at "\^A\^A\^A\^A\n")
+	(forward-line 1)
+	(push (list 
+	       (incf i) (point)
+	       (progn
+		 (if (search-forward "\n\^A\^A\^A\^A\n" nil t)
+		     (beginning-of-line)
+		   (goto-char (point-max)))
+		 (point)))
+	      alist)))
+     ;; Binary format
+     ((or (= format ?B) (= format ?b))
+      (while (not (eobp))
+	(setq len (+ (* (char-after (point)) (expt 2.0 24))
+		     (* (char-after (+ (point) 1)) (expt 2 16))
+		     (* (char-after (+ (point) 2)) (expt 2 8))
+		     (char-after (+ (point) 3))))
+	(push (list
+	       (incf i) (+ (point) 4)
+	       (progn
+		 (forward-char (floor (+ len 4)))
+		 (point)))
+	      alist)))
+     (t
+      (error "Unknown format: %c" format)))
+    (push (cons (gnus-soup-area-prefix area) alist) nnsoup-article-alist)))
 
 (defun nnsoup-index-buffer (prefix &optional message)
   (let* ((file (concat prefix (if message ".MSG" ".IDX")))
@@ -520,16 +584,14 @@ The SOUP packet file name will be inserted at the %s.")
 	 (t
 	  (set-buffer msg-buf)
 	  (widen)
-	  (goto-char (point-min))
-	  (let ((header (nnsoup-header 
-			 (gnus-soup-encoding-format 
-			  (gnus-soup-area-encoding (nth 1 area))))))
-	    (re-search-forward header nil t (- article (caar area)))
-	    (narrow-to-region
-	     (match-beginning 0)
-	     (if (re-search-forward header nil t)
-		 (match-beginning 0)
-	       (point-max))))))
+	  (unless (assoc (gnus-soup-area-prefix (nth 1 area))
+			 nnsoup-article-alist)
+	    (nnsoup-dissect-buffer (nth 1 area)))
+	  (let ((entry (assq article (cdr (assoc (gnus-soup-area-prefix
+						  (nth 1 area))
+						 nnsoup-article-alist)))))
+	    (when entry
+	      (narrow-to-region (cadr entry) (caddr entry))))))
 	(goto-char (point-min))
 	(if (not head)
 	    ()
@@ -539,17 +601,6 @@ The SOUP packet file name will be inserted at the %s.")
 	       (1- (point))
 	     (point-max))))
 	msg-buf))))
-
-(defun nnsoup-header (format)
-  (cond 
-   ((= format ?n)
-    "^#! *rnews +[0-9]+ *$")
-   ((= format ?m)
-    (concat "^" message-unix-mail-delimiter))
-   ((= format ?M)
-    "^\^A\^A\^A\^A\n")
-   (t
-    (error "Unknown format: %c" format))))
 
 ;;;###autoload
 (defun nnsoup-pack-replies ()

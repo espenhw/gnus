@@ -836,6 +836,8 @@ articles in the topic and its subtopics."
     "\M-g" gnus-topic-get-new-news-this-topic
     "AT" gnus-topic-list-active
     "Gp" gnus-topic-edit-parameters
+    "#" gnus-topic-mark-topic
+    "\M-#" gnus-topic-unmark-topic
     gnus-mouse-2 gnus-mouse-pick-topic)
 
   ;; Define a new submap.
@@ -1128,16 +1130,20 @@ If COPYP, copy the groups instead."
 (defun gnus-topic-mark-topic (topic &optional unmark)
   "Mark all groups in the topic with the process mark."
   (interactive (list (gnus-current-topic)))
-  (save-excursion
-    (let ((groups (gnus-topic-find-groups topic 9 t)))
-      (while groups
-	(funcall (if unmark 'gnus-group-remove-mark 'gnus-group-set-mark)
-		 (gnus-info-group (nth 2 (pop groups))))))))
+  (if (not topic)
+      (call-interactively 'gnus-group-mark-group)
+    (save-excursion
+      (let ((groups (gnus-topic-find-groups topic 9 t)))
+	(while groups
+	  (funcall (if unmark 'gnus-group-remove-mark 'gnus-group-set-mark)
+		   (gnus-info-group (nth 2 (pop groups)))))))))
 
 (defun gnus-topic-unmark-topic (topic &optional unmark)
   "Remove the process mark from all groups in the topic."
   (interactive (list (gnus-current-topic)))
-  (gnus-topic-mark-topic topic t))
+  (if (not topic)
+      (call-interactively 'gnus-group-mark-group)
+    (gnus-topic-mark-topic topic t)))
 
 (defun gnus-topic-get-new-news-this-topic (&optional n)
   "Check for new news in the current topic."
@@ -1208,15 +1214,16 @@ If UNINDENT, remove an indentation."
   (if unindent
       (gnus-topic-unindent)
     (let* ((topic (gnus-current-topic))
-	   (parent (gnus-topic-previous-topic topic)))
+	   (parent (gnus-topic-previous-topic topic))
+	   (buffer-read-only nil))
       (unless parent
 	(error "Nothing to indent %s into" topic))
       (when topic
 	(gnus-topic-goto-topic topic)
 	(gnus-topic-kill-group)
+	(push (cdar gnus-topic-killed-topics) gnus-topic-alist)
 	(gnus-topic-create-topic
 	 topic parent nil (cdaar gnus-topic-killed-topics))
-	(push (cdar gnus-topic-killed-topics) gnus-topic-alist)
 	(pop gnus-topic-killed-topics)
 	(or (gnus-topic-goto-topic topic)
 	    (gnus-topic-goto-topic parent))))))
@@ -1232,10 +1239,10 @@ If UNINDENT, remove an indentation."
     (when topic
       (gnus-topic-goto-topic topic)
       (gnus-topic-kill-group)
+      (push (cdar gnus-topic-killed-topics) gnus-topic-alist)
       (gnus-topic-create-topic
        topic grandparent (gnus-topic-next-topic parent)
        (cdaar gnus-topic-killed-topics))
-      (push (cdar gnus-topic-killed-topics) gnus-topic-alist)
       (pop gnus-topic-killed-topics)
       (gnus-topic-goto-topic topic))))
 

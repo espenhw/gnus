@@ -131,7 +131,7 @@ asynchronously.	 The compressed face will be piped to this command."
 	   ("_\\*" "\\*_" underline-bold)
 	   ("\\*/" "/\\*" bold-italic)
 	   ("_\\*/" "/\\*_" underline-bold-italic))))
-    `(("\\(\\s-\\|^\\)\\(_\\(\\(\\w\\|_\\)+\\)_\\)\\(\\s-\\|[?!.,;]\\)"
+    `(("\\(\\s-\\|^\\)\\(_\\(\\(\\w\\|_[^_]\\)+\\)_\\)\\(\\s-\\|[?!.,;]\\)"
        2 3 gnus-emphasis-underline)
       ,@(mapcar
 	 (lambda (spec)
@@ -655,9 +655,10 @@ always hide."
 		    (reply-to (message-fetch-field "reply-to")))
 		(when (and
 		       from reply-to
-		       (equal 
-			(nth 1 (mail-extract-address-components from))
-			(nth 1 (mail-extract-address-components reply-to))))
+		       (ignore-errors
+			 (equal 
+			  (nth 1 (mail-extract-address-components from))
+			  (nth 1 (mail-extract-address-components reply-to)))))
 		  (gnus-article-hide-header "reply-to"))))
 	     ((eq elem 'date)
 	      (let ((date (message-fetch-field "date")))
@@ -2005,7 +2006,7 @@ If given a numerical ARG, move forward ARG pages."
 (defun gnus-article-goto-prev-page ()
   "Show the next page of the article."
   (interactive)
-  (if (bobp) (gnus-article-read-summary-keys nil (gnus-character-to-event ?n))
+  (if (bobp) (gnus-article-read-summary-keys nil (gnus-character-to-event ?p))
     (gnus-article-prev-page nil)))
 
 (defun gnus-article-next-page (&optional lines)
@@ -2444,9 +2445,9 @@ groups."
   :type 'regexp)
 
 (defcustom gnus-button-alist 
-  `(("\\(<?\\(url: ?\\)?news:\\([^>\n\t ]*\\)>?\\)" 1 t
+  `(("\\(\\b<?\\(url: ?\\)?news:\\([^>\n\t ]*\\)>?\\)" 1 t
      gnus-button-message-id 3)
-    ("\\(<?\\(url: ?\\)?news:\\(//\\)?\\([^>\n\t ]*\\)>?\\)" 1 t
+    ("\\(\\b<?\\(url: ?\\)?news:\\(//\\)?\\([^>\n\t ]*\\)>?\\)" 1 t
      gnus-button-fetch-group 4)
     ("\\bin\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2 
      t gnus-button-message-id 3)
@@ -2868,9 +2869,8 @@ forbidden in URL encoding."
  
 (defun gnus-url-mailto (url)
   ;; Send mail to someone
-  (if (not (string-match "mailto:/*\\(.*\\)" url))
-      (error "Malformed mailto link: %s" url))
-  (setq url (substring url (match-beginning 1) nil))
+  (when (string-match "mailto:/*\\(.*\\)" url)
+    (setq url (substring url (match-beginning 1) nil)))
   (let (to args source-url subject func)
     (if (string-match (regexp-quote "?") url)
         (setq to (gnus-url-unhex-string (substring url 0 (match-beginning 0)))

@@ -1661,7 +1661,6 @@ newsgroup."
 		       (progn (insert prefix)
 			      (zerop (forward-line 1)))))))
     ;; Store the active file in a hash table.
-    ;; dmoore@ucsd.edu 31.10.1996 - use same method for moderation or not
     (goto-char (point-min))
     (let (group max min)
       (while (not (eobp))

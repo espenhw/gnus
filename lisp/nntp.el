@@ -146,6 +146,8 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 
 ;;; Internal variables.
 
+(defvar nntp-have-messaged nil)
+
 (defvar nntp-process-wait-for nil)
 (defvar nntp-process-to-buffer nil)
 (defvar nntp-process-callback nil)
@@ -798,7 +800,9 @@ It will prompt for a password."
 	      (goto-char (point-max))
 	      (insert-buffer-substring (process-buffer process))
 	      ;; Nix out "nntp reading...." message.
-	      (message "")
+	      (when nntp-have-messaged
+		(setq nntp-have-messaged nil)
+		(message ""))
 	      t)))
       (unless discard
 	(erase-buffer)))))
@@ -818,6 +822,7 @@ It will prompt for a password."
 		    nntp-server-buffer))
     (let ((len (/ (point-max) 1024)))
       (unless (< len 10)
+	(setq nntp-have-messaged t)
 	(message "nntp read: %dk" len)))
     (accept-process-output process 1)))
 

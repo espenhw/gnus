@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.82 Manual
+@settitle Red Gnus 0.83 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.82 Manual
+@title Red Gnus 0.83 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Red Gnus 0.82
+This manual corresponds to Red Gnus 0.83
 
 @end ifinfo
 
@@ -3555,6 +3555,19 @@ Mail a reply to the author of the current article
 Mail a reply to the author of the current article and include the
 original message (@code{gnus-summary-reply-with-original}).  This
 command uses the process/prefix convention.
+
+@item S w
+@kindex S w (Summary)
+@findex gnus-summary-wide-reply
+Mail a wide reply to the author of the current article
+(@code{gnus-summary-wide-reply}). 
+
+@item S W
+@kindex S W (Summary)
+@findex gnus-summary-wide-reply-with-original
+Mail a wide reply to the current article and include the original
+message (@code{gnus-summary-reply-with-original}).  This command uses
+the process/prefix convention.
 
 @item S o m
 @kindex S o m (Summary)
@@ -11371,8 +11384,8 @@ exploited---the following rule will raise the score on all followups to
 myself: 
 
 @lisp
-("references" 
- "<x6[0-9a-z]+\\.fsf@@.*eyesore.no>" 1000 nil r)
+("references"
+ ("<x6[0-9a-z]+\\.fsf@.*eyesore.no>" 1000 nil r))
 @end lisp
 
 Whether it's the first two or first three characters that are ``yours''
@@ -13604,14 +13617,6 @@ consumer information.  After seeing so many badly formatted articles
 coming from @code{tin} and @code{Netscape} I know not to use either of
 those for posting articles.  I would not have known that if it wasn't
 for the @code{X-Newsreader} header.
-
-@item References
-Gnus does line breaking on this header.  I infer from RFC1036 that being
-conservative in what you output is not creating 5000-character lines, so
-it seems like a good idea to me.  However, this standard-to-be says that
-whitespace in the @code{References} header is to be preserved, so...  It
-doesn't matter one way or the other to Gnus, so if somebody tells me
-what The Way is, I'll change it.  Or not.
 @end table
 
 @end table
@@ -15046,13 +15051,6 @@ the article number.  This will enable Gnus to find out what the real
 group and article numbers are when fetching articles by
 @code{Message-ID}.  If this isn't possible, @code{t} should be returned
 on successful article retrievement.
-
-
-@item (nnchoke-open-group GROUP &optional SERVER)
-
-Make @var{group} the current group.  
-
-There should be no data returned by this function.
 
 
 @item (nnchoke-request-group GROUP &optional SERVER FAST)

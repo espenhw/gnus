@@ -1052,52 +1052,43 @@ If RE-ONLY is non-nil, strip leading `Re:'s only."
 
 ;; Remove any leading "re:"s, any trailing paren phrases, and simplify
 ;; all whitespace.
-;; Written by Stainless Steel Rat <ratinox@ccs.neu.edu>.
+(defsubst gnus-simplify-buffer-fuzzy-step (regexp &optional newtext)
+  (goto-char (point-min))
+  (while (re-search-forward regexp nil t)
+      (replace-match (or newtext ""))))
+
 (defun gnus-simplify-buffer-fuzzy ()
-  (let ((case-fold-search t))
-    (goto-char (point-min))
-    (while (search-forward "\t" nil t)
-      (replace-match " " t t))
-    (goto-char (point-min))
-    (re-search-forward "^ *\\(re\\|fwd\\)[[{(^0-9]*[])}]?[:;] *" nil t)
-    (goto-char (match-beginning 0))
-    (while (or
-	    (and 
-	     gnus-simplify-subject-fuzzy-regexp
-	     (looking-at gnus-simplify-subject-fuzzy-regexp))
-	    (looking-at "^ *\\(re\\|fwd\\)[[{(^0-9]*[])}]?[:;] *")
-	    (looking-at "^[[].*: .*[]]$"))
-      (goto-char (point-min))
-      (when gnus-simplify-subject-fuzzy-regexp
-	(while (re-search-forward gnus-simplify-subject-fuzzy-regexp
-				  nil t)
-	  (replace-match "" t t)))
-      (goto-char (point-min))
-      (while (re-search-forward "^ *\\(re\\|fw\\|fwd\\)[[{(^0-9]*[])}]?[:;] *"
-				nil t)
-	(replace-match "" t t))
-      (goto-char (point-min))
-      (while (re-search-forward "^[[].*: .*[]]$" nil t)
-	(goto-char (match-end 0))
-	(delete-char -1)
-	(delete-region
-	 (progn (goto-char (match-beginning 0)))
-	 (re-search-forward ":"))))
-    (goto-char (point-min))
-    (while (re-search-forward " *[[{(][^()\n]*[]})] *$" nil t)
-      (replace-match "" t t))
-    (goto-char (point-min))
-    (while (re-search-forward "  +" nil t)
-      (replace-match " " t t))
-    (goto-char (point-min))
-    (while (re-search-forward " $" nil t)
-      (replace-match "" t t))
-    (goto-char (point-min))
-    (while (re-search-forward "^ +" nil t)
-      (replace-match "" t t))))
+  "Simplify string in the buffer fuzzily.
+The string in the accessible portion of the current buffer is simplified.
+It is assumed to be a single-line subject.
+Whitespace is generally cleaned up, and miscellaneous leading/trailing
+matter is removed.  Additional things can be deleted by setting
+gnus-simplify-subject-fuzzy-regexp."
+  (let ((case-fold-search t)
+	(modified-tick))
+    (gnus-simplify-buffer-fuzzy-step "\t" " ")
+
+    (while (not (eq modified-tick (buffer-modified-tick)))
+      (setq modified-tick (buffer-modified-tick))
+      (cond
+       ((listp gnus-simplify-subject-fuzzy-regexp)
+	(mapcar 'gnus-simplify-buffer-fuzzy-step
+		gnus-simplify-subject-fuzzy-regexp))
+       (gnus-simplify-subject-fuzzy-regexp
+	(gnus-simplify-buffer-fuzzy-step gnus-simplify-subject-fuzzy-regexp)))
+      (gnus-simplify-buffer-fuzzy-step "^ *\\[[-+?*!][-+?*!]\\] *")
+      (gnus-simplify-buffer-fuzzy-step
+       "^ *\\(re\\|fw\\|fwd\\)[[{(^0-9]*[])}]?[:;] *")
+      (gnus-simplify-buffer-fuzzy-step "^[[].*:\\( .*\\)[]]$" "\\1"))
+
+    (gnus-simplify-buffer-fuzzy-step " *[[{(][^()\n]*[]})] *$")
+    (gnus-simplify-buffer-fuzzy-step "  +" " ")
+    (gnus-simplify-buffer-fuzzy-step " $")
+    (gnus-simplify-buffer-fuzzy-step "^ +")))
 
 (defun gnus-simplify-subject-fuzzy (subject)
-  "Simplify a subject string fuzzily."
+  "Simplify a subject string fuzzily.
+See gnus-simplify-buffer-fuzzy for details."
   (save-excursion
     (gnus-set-work-buffer)
     (let ((case-fold-search t))
@@ -1106,7 +1097,7 @@ If RE-ONLY is non-nil, strip leading `Re:'s only."
       (buffer-string))))
 
 (defsubst gnus-simplify-subject-fully (subject)
-  "Simplify a subject string according to the user's wishes."
+  "Simplify a subject string according to gnus-summary-gather-subject-limit."
   (cond
    ((null gnus-summary-gather-subject-limit)
     (gnus-simplify-subject-re subject))
@@ -1724,6 +1715,8 @@ increase the score of each group you read."
        ["Cancel article" gnus-summary-cancel-article t]
        ["Reply" gnus-summary-reply t]
        ["Reply and yank" gnus-summary-reply-with-original t]
+       ["Wide reply" gnus-summary-wide-reply t]
+       ["Wide reply and yank" gnus-summary-wide-reply-with-original t]
        ["Mail forward" gnus-summary-mail-forward t]
        ["Post forward" gnus-summary-post-forward t]
        ["Digest and mail" gnus-uu-digest-mail-forward t]
@@ -4399,15 +4392,15 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
       ;; article may not have been generated yet, so this may fail.
       ;; We work around this problem by retrieving the last few
       ;; headers using HEAD.
-      (when also-fetch-heads
-	(if (not sequence)
-	    (nreverse headers)
-	  (let ((gnus-nov-is-evil t)
-		(nntp-nov-is-evil t))
-	    (nconc
-	     (nreverse headers)
-	     (when (gnus-retrieve-headers sequence group)
-	       (gnus-get-newsgroup-headers)))))))))
+      (if (or (not also-fetch-heads)
+	      (not sequence))
+	  (nreverse headers)
+	(let ((gnus-nov-is-evil t)
+	      (nntp-nov-is-evil t))
+	  (nconc
+	   (nreverse headers)
+	   (when (gnus-retrieve-headers sequence group)
+	     (gnus-get-newsgroup-headers))))))))
 
 (defun gnus-article-get-xrefs ()
   "Fill in the Xref value in `gnus-current-headers', if necessary.

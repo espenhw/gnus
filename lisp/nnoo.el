@@ -265,7 +265,7 @@ All functions will return nil and report an error."
 (defun nnoo-define-skeleton-1 (backend)
   (let ((functions '(retrieve-headers
 		     request-close request-article
-		     open-group request-group close-group
+		     request-group close-group
 		     request-list request-post request-list-newsgroups))
 	function fun)
     (while (setq function (pop functions))

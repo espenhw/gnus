@@ -438,7 +438,7 @@ parameter.  It should return nil, `warn' or `delete'."
        ;; If not, we translate dots into slashes.
        (concat dir (nnheader-replace-chars-in-string group ?. ?/) "/")))
    (or file "")))
-  
+
 (defun nnmail-date-to-time (date)
   "Convert DATE into time."
   (condition-case ()
@@ -450,7 +450,8 @@ parameter.  It should return nil, `warn' or `delete'."
 		       (list
 			(aref t1 2) (aref t1 1) (aref t1 0)
 			(aref d1 2) (aref d1 1) (aref d1 0)
-			(aref d1 4)))))
+			(number-to-string
+			 (* 60 (timezone-zone-to-minute (aref d1 4))))))))
     ;; If we get an error, then we just return a 0 time.
     (error (list 0 0))))
 
@@ -546,11 +547,11 @@ parameter.  It should return nil, `warn' or `delete'."
 		     'call-process
 		     (append
 		      (list
-		       (expand-file-name nnmail-movemail-program
-					 exec-directory)
+		       (expand-file-name 
+			nnmail-movemail-program exec-directory)
 		       nil errors nil inbox tofile)
 		      (when nnmail-internal-password
-			(list (prin1-to-string nnmail-internal-password)))))))
+			(list nnmail-internal-password))))))
 		(if (not (buffer-modified-p errors))
 		    ;; No output => movemail won
 		    (progn

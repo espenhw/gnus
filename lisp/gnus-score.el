@@ -799,7 +799,7 @@ If optional argument `SILENT' is nil, show effect of score entry."
   "Simulate the effect of a score file entry.
 HEADER is the header being scored.
 MATCH is the string we are looking for.
-TYPE is a flag indicating if it is a regexp or substring.
+TYPE is the score type.
 SCORE is the score to add."
   (interactive (list (completing-read "Header: "
 				      gnus-header-index
@@ -991,6 +991,7 @@ SCORE is the score to add."
 (defun gnus-score-edit-current-scores (file)
   "Edit the current score alist."
   (interactive (list gnus-current-score-file))
+  (gnus-set-global-variables)
   (let ((winconf (current-window-configuration)))
     (when (buffer-name gnus-summary-buffer)
       (gnus-score-save))

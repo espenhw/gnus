@@ -1,3 +1,105 @@
+Fri Jan 24 05:05:38 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-article-display-hook): Removed emphasize.
+
+	* gnus-score.el (gnus-score-edit-current-scores): Set global
+	vars. 
+
+	* nnml.el (nnml-possibly-change-directory): Return nil when the
+	group can't be selected.
+
+	* gnus-art.el (gnus-emphasis-alist): Don't underline
+	all-underscore words.
+
+	* gnus-topic.el (gnus-topic-unindent): Give the right number of
+	unread articles.
+	(gnus-topic-indent): Ditto.
+
+	* gnus-msg.el (gnus-summary-wide-reply-with-original): New command
+	and keystroke.
+	(gnus-summary-wide-reply): Ditto.
+
+Fri Jan 24 04:57:07 1997  Joe Wells  <jbw@cs.bu.edu>
+
+	* gnus-uu.el (gnus-quote-arg-for-sh-or-csh): New function.
+	(gnus-uu-command): Use it.
+
+Fri Jan 24 04:55:10 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-mark-topic): Also bound to `#'.
+
+Fri Jan 24 04:44:10 1997  Greg Klanderman  <greg@alphatech.com>
+
+	* message.el (message-do-send-housekeeping): Check for nil
+	message-buffer-list. 
+
+Fri Jan 24 02:55:33 1997  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-util.el (gnus-eval-in-buffer-window): Set buffer.
+
+Thu Jan 23 03:39:48 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnsoup.el (nnsoup-file-name): New function.
+	(nnsoup-read-areas): Use it.
+	(nnsoup-dissect-buffer): New function.
+	(nnsoup-number-of-articles): Use it.
+	(nnsoup-narrow-to-article): Ditto.
+	(nnsoup-header): Removed.
+
+	* gnus.el (gnus-check-backend-function): Doc fix.
+
+	* gnus-art.el (gnus-article-goto-prev-page): Went to next article,
+	not prev.
+
+	* gnus-group.el (gnus-group-insert-group-line-info): Display "*"
+	on unknown groups.
+
+	* gnus-art.el (article-hide-boring-headers): Ignore errors in
+	`mail-extract-address-components'. 
+
+	* nnmail.el (nnmail-date-to-time): Parse zone correctly.
+	(nnmail-date-to-time): Seconds, dammit, seconds!
+
+Tue Jan 21 09:31:55 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-url-mailto): Didn't accept mailto links. 
+
+	* gnus-score.el (gnus-summary-score-effect): Doc fix.
+
+	* nnmail.el (nnmail-move-inbox): Don't prin1 password.
+
+Mon Jan 20 18:06:19 1997  Paul Franklin  <paul@cs.washington.edu>
+
+	* gnus-sum.el (gnus-simplify-buffer-fuzzy-step): New function.
+	(gnus-simplify-buffer-fuzzy): Use it.
+
+	* gnus-sum.el (gnus-simplify-buffer-fuzzy): Fix while condition.
+	Add self-discipline tags.
+
+Tue Jan 21 05:28:05 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-get-newsgroup-headers-xover): Would return
+	nil from NoCeM.
+
+Mon Jan 20 04:59:53 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-button-alist): Only on word boundaries.
+
+	* message.el (message-check-news-header-syntax): Don't prompt when
+	not read active file.
+
+	* gnus-msg.el (gnus-setup-message): Always set actions.
+
+Sat Jan 18 07:23:41 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-have-messaged): New variable.
+	(nntp-accept-process-output): Use it.
+	(nntp-wait-for): Ditto.
+
+Sat Jan 18 02:44:53 1997  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.82 is released.
+
 Fri Jan 17 00:04:47 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nnheader.el (nnheader-find-nov-line): Do the right thing with

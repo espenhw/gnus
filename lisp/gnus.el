@@ -43,7 +43,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.82"
+(defconst gnus-version-number "0.83"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -1141,12 +1141,10 @@ face."
 	gnus-article-hide-boring-headers
 	gnus-article-treat-overstrike
 	gnus-article-maybe-highlight
-	gnus-article-emphasize
 	gnus-article-display-x-face)
     '(gnus-article-hide-headers-if-wanted
       gnus-article-hide-boring-headers
       gnus-article-treat-overstrike
-      gnus-article-emphasize
       gnus-article-maybe-highlight))
   "Controls how the article buffer will look.
 
@@ -1980,7 +1978,8 @@ that that variable is buffer-local to the summary buffers."
     ""))
 
 (defun gnus-group-method (group)
-  "Return the server or method used for selecting GROUP."
+  "Return the server or method used for selecting GROUP.
+You should probably use `gnus-find-method-for-group' instead."
   (let ((prefix (gnus-group-real-prefix group)))
     (if (equal prefix "")
 	gnus-select-method
@@ -2202,7 +2201,7 @@ If NEWSGROUP is nil, return the global kill file name instead."
   (nth 1 (assoc method gnus-opened-servers)))
 
 (defun gnus-group-name-to-method (group)
-  "Return a select method suitable for GROUP."
+  "Guess a select method based on GROUP."
   (if (string-match ":" group)
       (let ((server (substring group 0 (match-beginning 0))))
 	(if (string-match "\\+" server)
@@ -2237,7 +2236,8 @@ If NEWSGROUP is nil, return the global kill file name instead."
 		 (gnus-server-add-address method)))))))
 
 (defun gnus-check-backend-function (func group)
-  "Check whether GROUP supports function FUNC."
+  "Check whether GROUP supports function FUNC.
+GROUP can either be a string (a group name) or a select method."
   (ignore-errors
     (let ((method (if (stringp group)
 		      (car (gnus-find-method-for-group group))

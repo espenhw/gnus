@@ -1001,7 +1001,7 @@ If REGEXP, only list groups matching REGEXP."
 	   (if (zerop (cdr active))
 	       0
 	     (- (1+ (cdr active)) (car active)))
-	 0)
+	 nil)
        nil))))
 
 (defun gnus-group-insert-group-line (gnus-tmp-group gnus-tmp-level 

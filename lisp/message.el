@@ -650,6 +650,7 @@ The cdr of ech entry is a function for applying the face to a region.")
 
 ;; Byte-compiler warning
 (defvar gnus-active-hashtb)
+(defvar gnus-read-active-file)
 
 ;;; Regexp matching the delimiter of messages in UNIX mail format
 ;;; (UNIX From lines), minus the initial ^.  
@@ -1954,7 +1955,10 @@ to find out how to use this."
 	    (hashtb (and (boundp 'gnus-active-hashtb)
 			 gnus-active-hashtb))
 	    errors)
-       (if (not hashtb)
+       (if (or (not hashtb)
+	       (not (boundp 'gnus-read-active-file))
+	       (not gnus-read-active-file)
+	       (eq gnus-read-active-file 'some))
 	   t
 	 (while groups
 	   (when (and (not (boundp (intern (car groups) hashtb)))
@@ -2657,6 +2661,7 @@ Headers already prepared in the buffer are not modified."
   ;; list of buffers.
   (setq message-buffer-list (delq (current-buffer) message-buffer-list))
   (while (and message-max-buffers
+              message-buffer-list
 	      (>= (length message-buffer-list) message-max-buffers))
     ;; Kill the oldest buffer -- unless it has been changed.
     (let ((buffer (pop message-buffer-list)))

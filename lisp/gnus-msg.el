@@ -132,6 +132,8 @@ Thank you for your help in stamping out bugs.
   "s" gnus-summary-supersede-article
   "r" gnus-summary-reply
   "R" gnus-summary-reply-with-original
+  "w" gnus-summary-wide-reply
+  "W" gnus-summary-wide-reply-with-original
   "n" gnus-summary-followup-to-mail
   "N" gnus-summary-followup-to-mail-with-original
   "m" gnus-summary-mail-other-window
@@ -161,10 +163,11 @@ Thank you for your help in stamping out bugs.
 	    (copy-sequence message-header-setup-hook)))
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-gcc)
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-archive-gcc)
-       ,@forms
-       (gnus-inews-add-send-actions ,winconf ,buffer ,article)
-       (setq gnus-message-buffer (current-buffer))
-       (make-local-variable 'gnus-newsgroup-name)
+       (unwind-protect
+	   ,@forms
+	 (gnus-inews-add-send-actions ,winconf ,buffer ,article)
+	 (setq gnus-message-buffer (current-buffer))
+	 (make-local-variable 'gnus-newsgroup-name))
        (gnus-configure-windows ,config t))))
     
 (defun gnus-inews-add-send-actions (winconf buffer article)
@@ -556,13 +559,13 @@ If SILENT, don't prompt the user."
 
 ;;; Mail reply commands of Gnus summary mode
 
-(defun gnus-summary-reply (&optional yank)
-  "Reply mail to news author.
-If prefix argument YANK is non-nil, original article is yanked automatically."
+(defun gnus-summary-reply (&optional yank wide)
+  "Start composing a reply mail to the current message.
+If prefix argument YANK is non-nil, the original article is yanked 
+automatically."
   (interactive 
    (list (and current-prefix-arg 
 	      (gnus-summary-work-articles 1))))
-  ;; Bug fix by jbw@bigbird.bu.edu (Joe Wells)
   ;; Stripping headers should be specified with mail-yank-ignored-headers.
   (gnus-set-global-variables)
   (when yank 
@@ -571,15 +574,31 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
     (gnus-setup-message (if yank 'reply-yank 'reply)
       (gnus-summary-select-article)
       (set-buffer (gnus-copy-article-buffer))
-      (message-reply nil nil (gnus-group-find-parameter
-			      gnus-newsgroup-name 'broken-reply-to))
+      (message-reply nil wide (gnus-group-find-parameter
+			       gnus-newsgroup-name 'broken-reply-to))
       (when yank
 	(gnus-inews-yank-articles yank)))))
 
-(defun gnus-summary-reply-with-original (n)
-  "Reply mail to news author with original article."
+(defun gnus-summary-reply-with-original (n &optional wide)
+  "Start composing a reply mail to the current message.
+The original article will be yanked."
   (interactive "P")
   (gnus-summary-reply (gnus-summary-work-articles n)))
+
+(defun gnus-summary-wide-reply (&optional yank)
+  "Start composing a wide reply mail to the current message.
+If prefix argument YANK is non-nil, the original article is yanked 
+automatically."
+  (interactive 
+   (list (and current-prefix-arg 
+	      (gnus-summary-work-articles 1))))
+  (gnus-summary-reply yank t))
+
+(defun gnus-summary-wide-reply-with-original (n)
+  "Start composing a wide reply mail to the current message.
+The original article will be yanked."
+  (interactive "P")
+  (gnus-summary-reply-with-original n t))
 
 (defun gnus-summary-mail-forward (&optional full-headers post)
   "Forward the current message to another user.
