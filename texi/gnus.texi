@@ -11153,7 +11153,7 @@ after finishing the fetch.
 An example @sc{imap} mail source:
 
 @lisp
-(imap :server "mail.mycorp.com" :stream kerberos4)
+(imap :server "mail.mycorp.com" :stream kerberos4 :fetchflag "\\Seen")
 @end lisp
 
 @item webmail
@@ -13552,6 +13552,18 @@ thinks the article should be splitted to.
 The splitting code tries to create mailboxes if it need too.
 
 Nnmail equivalent: @code{nnmail-split-methods}.
+
+@item nnimap-split-predicate
+@cindex splitting
+@vindex nnimap-split-predicate
+
+Mail matching this predicate in @code{nnimap-split-inbox} will be
+splitted, it is a string and the default is @samp{UNSEEN UNDELETED}.
+
+This might be useful if you use another @sc{imap} client to read mail in
+your inbox but would like Gnus to split all articles in the inbox
+regardless of readedness. Then you might change this to
+@samp{UNDELETED}.
 
 @item nnimap-split-fancy
 @cindex splitting, fancy
