@@ -1,3 +1,8 @@
+2001-10-31  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Group Parameters): Add integer `display'.
+	(IMAP): Fix.
+
 2001-10-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (NNTP): Added documentation for

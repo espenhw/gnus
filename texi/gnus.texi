@@ -2756,6 +2756,10 @@ display on entering the group.  Valid values are:
 @item all
 Display all articles, both read and unread.
 
+@item an integer
+Display the last INTEGER articles in the group.  This is the same as
+entering the group with C-u INTEGER.
+
 @item default
 Display the default visible articles, which normally includes unread and
 ticked articles.
@@ -14087,7 +14091,7 @@ server name if not specified.
 @vindex nnimap-server-port
 Port on server to contact.  Defaults to port 143, or 993 for SSL.
 
-Note that this should be a integer, example server specification:
+Note that this should be an integer, example server specification:
 
 @lisp
 (nnimap "mail.server.com"
