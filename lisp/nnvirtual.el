@@ -401,8 +401,9 @@ If UPDATE-P is not nil, call gnus-group-update-group on the components."
     ;; hits C-g, you won't leave the component groups in a half-way state.
     (gnus-atomic-progn
       ;; move (un)read
-      (while (setq entry (pop unreads))
-	(gnus-update-read-articles (car entry) (cdr entry)))
+      (let ((gnus-newsgroup-active nil)) ;workaround guns-update-read-articles
+	(while (setq entry (pop unreads))
+	  (gnus-update-read-articles (car entry) (cdr entry))))
 
       ;; clear all existing marks on the component groups
       (setq groups nnvirtual-component-groups)

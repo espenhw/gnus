@@ -598,6 +598,22 @@ Bind `print-quoted' to t while printing."
   (when (file-exists-p file)
     (delete-file file)))
 
+(defun gnus-strip-whitespace (string)
+  "Return STRING stripped of all whitespace."
+  (while (string-match "[\r\n\t ]+" string)
+    (setq string (replace-match "" t t string)))
+  string)
+
+(defun gnus-put-text-property-excluding-newlines (beg end prop val)
+  "The same as `put-text-property', but don't put this prop on any newlines in the region."
+  (save-match-data
+    (save-excursion
+      (save-restriction
+	(goto-char beg)
+	(while (re-search-forward "[ \t]*\n" end 'move)
+	  (put-text-property beg (match-beginning 0) prop val)
+	  (setq beg (point)))
+	(put-text-property beg (point) prop val)))))
 
 ;;; Protected and atomic operations.  dmoore@ucsd.edu 21.11.1996
 ;;; The primary idea here is to try to protect internal datastructures
@@ -620,7 +636,6 @@ variables and then do only the assignment atomically."
      ,@forms))
 
 (put 'gnus-atomic-progn 'lisp-indent-function 0)
-
 
 (defmacro gnus-atomic-progn-assign (protect &rest forms)
   "Evaluate FORMS, but insure that the variables listed in PROTECT
@@ -658,7 +673,6 @@ non-local exit, it will still be unbound."
 (put 'gnus-atomic-progn-assign 'lisp-indent-function 1)
 ;(put 'gnus-atomic-progn-assign 'edebug-form-spec '(sexp body))
 
-
 (defmacro gnus-atomic-setq (&rest pairs)
   "Similar to setq, except that the real symbols are only assigned when
 there are no errors.  And when the real symbols are assigned, they are
@@ -674,7 +688,6 @@ with potentially long computations."
        (setq ,@pairs))))
 
 ;(put 'gnus-atomic-setq 'edebug-form-spec '(body))
-
 
 
 (provide 'gnus-util)

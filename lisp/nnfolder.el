@@ -315,6 +315,7 @@ time saver for large mailboxes.")
 		(nnfolder-delete-mail))
 	    (push (car articles) rest)))
 	(setq articles (cdr articles)))
+      (nnheader-message 5 "Deleting articles...done")
       (nnfolder-save-buffer)
       ;; Find the lowest active article in this group.
       (let* ((active (cadr (assoc newsgroup nnfolder-group-alist)))
@@ -454,7 +455,7 @@ time saver for large mailboxes.")
   (save-excursion
     (delete-region
      (save-excursion
-       (nnmail-search-unix-mail-delim)
+       (nnmail-search-unix-mail-delim-backward)
        (if leave-delim (progn (forward-line 1) (point))
 	 (match-beginning 0)))
      (progn

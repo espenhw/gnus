@@ -1,6 +1,6 @@
 \input texinfo.tex
 
-@c $Id: widget.texi,v 1.2 1996/10/30 19:27:41 steve Exp $
+@c $Id: widget.texi,v 1.3 1996/12/14 09:53:45 steve Exp $
 
 @c %**start of header
 @setfilename widget
@@ -15,7 +15,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Emacs Widget Library
 
-Version: 0.995
+Version: 1.12
 
 @menu
 * Introduction::                
@@ -183,9 +183,9 @@ Editing text fields are created by the @code{editable-field} widget.
 The editing text fields are highlighted with the
 @code{widget-field-face} face, making them easy to find.
 
-@defopt widget-field-face
+@deffn Face widget-field-face
 Face used for other editing fields.
-@end defopt
+@end deffn
 
 @subsection Buttons
 
@@ -243,9 +243,9 @@ enough.
 
 To make them easier to locate, buttons are emphasized in the buffer.  
 
-@defopt widget-button-face
+@deffn Face widget-button-face
 Face used for buttons.
-@end defopt
+@end deffn
 
 @defopt widget-mouse-face
 Face used for buttons when the mouse pointer is above it.
@@ -528,20 +528,22 @@ The parent of a nested widget (e.g. a @code{menu-choice} item or an element of a
 
 @menu
 * link::                        
-* push-button::                        
-* editable-field::                       
+* url-link::                    
+* info-link::                   
+* push-button::                 
+* editable-field::              
 * text::                        
-* menu-choice::                      
-* radio-button-choice::                       
+* menu-choice::                 
+* radio-button-choice::         
 * item::                        
 * choice-item::                 
 * toggle::                      
 * checkbox::                    
 * checklist::                   
-* editable-list::                      
+* editable-list::               
 @end menu
 
-@node link, push-button, Basic Types, Basic Types
+@node link, url-link, Basic Types, Basic Types
 @comment  node-name,  next,  previous,  up
 @subsection The @code{link} Widget
 
@@ -555,7 +557,33 @@ The @var{value}, if present, is used to initialize the @code{:value}
 property.  The value should be a string, which will be inserted in the
 buffer. 
 
-@node  push-button, editable-field, link, Basic Types
+@node url-link, info-link, link, Basic Types
+@comment  node-name,  next,  previous,  up
+@subsection The @code{url-link} Widget
+
+Syntax:
+
+@example
+TYPE ::= (url-link [KEYWORD ARGUMENT]...  URL)
+@end example
+
+When this link is activated, the @sc{www} browser specified by
+@code{browse-url-browser-function} will be called with @var{url}. 
+
+@node info-link, push-button, url-link, Basic Types
+@comment  node-name,  next,  previous,  up
+@subsection The @code{info-link} Widget
+
+Syntax:
+
+@example
+TYPE ::= (info-link [KEYWORD ARGUMENT]...  ADDRESS)
+@end example
+
+When this link is activated, the build-in info browser is started on
+@var{address}. 
+
+@node  push-button, editable-field, info-link, Basic Types
 @comment  node-name,  next,  previous,  up
 @subsection The @code{push-button} Widget
 

@@ -1,3 +1,93 @@
+Fri Dec 13 04:49:21 1996  Andre Deparade  <deparade@i3.informatik.rwth-aachen.de>
+
+	* gnus-cite.el (gnus-cited-text-button-line-format-alist): Make %b
+	and %e usable.
+
+Fri Dec 13 01:06:09 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* article.el (article-decode-rfc1522): Would collate subsequent
+	encodings. 
+
+	* gnus-start.el (gnus-check-bogus-newsgroups): Use
+	`map-y-or-n-p'. 
+
+	* gnus-topic.el (gnus-topic-kill-group): Save topic contents.
+	(gnus-topic-yank-group): Insert topic contents.
+
+	* gnus-sum.el (gnus-simplify-subject-fuzzy-regexp): Changed
+	default to "".
+
+	* gnus-score.el (gnus-score-find-favourite-words): Put point at bob.
+
+	* gnus-sum.el (gnus-summary-limit-to-age): Dox fix & interactive
+	spec. 
+
+Fri Dec 13 01:01:46 1996  David Moore  <dmoore@ucsd.edu>
+
+	* gnus-sum.el (gnus-summary-limit-to-age): New function and
+	keystroke. 
+
+Tue Dec 10 23:42:00 1996  David Moore  <dmoore@ucsd.edu>
+
+	* gnus-nocem.el (gnus-nocem-groups): news.lists.filters is to
+	replace alt.nocem.misc
+
+Wed Dec 11 01:15:31 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnfolder.el (nnfolder-request-expire-articles): Better message.
+	(nnfolder-delete-mail): Actually delete.
+
+	* gnus-sum.el (gnus-summary-update-info): Don't run
+	`gnus-exit-group-hook'. 
+	(gnus-summary-expire-articles): Do it.
+	(gnus-summary-exit): Ditto.
+	(gnus-summary-save-newsrc): New command and keystroke.
+
+Wed Dec 11 00:38:12 1996  Stainless Steel Rat  <ratinox@peorth.gweep.net>
+
+	* gnus-sum.el (gnus-simplify-buffer-fuzzy): New version.
+
+Mon Dec  9 21:00:09 1996  David Moore  <dmoore@ucsd.edu>
+
+	* gnus-sum.el (gnus-summary-catchup): Out dated catchup code
+	removed.
+
+	* nnvirtual.el (nnvirtual-update-read-and-marked): Work around a
+	cache of active count in gnus-update-read-articles.
+
+Mon Dec  9 22:55:56 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* article.el (article-emphasize): Use it.
+
+	* gnus-util.el (gnus-put-text-property-excluding-newlines): New
+	function. 
+
+Mon Dec  9 08:38:08 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-sum.el: Split customize groups and added links to the manual.
+
+1996-12-08  Dave Love  <d.love@dl.ac.uk>
+
+	* gnus-vis.el (gnus-button-alist): Allow whitespace in `<URL:...'
+  	markup (rfc1738), done last, after possible partial matches.
+	(gnus-button-url): Zap any whitespace from a <URL:...> match.
+
+Mon Dec  9 02:18:35 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-button-embedded-url): New function.
+	(gnus-button-alist): Use it.
+
+	* gnus-util.el (gnus-strip-whitespace): New function.
+
+Mon Dec  9 00:04:24 1996  Richard Stallman  <rms@gnu.ai.mit.edu>
+
+	* gnus-start.el (gnus-read-init-file): Don't read init file when
+	started with "emacs -q".
+
+Sun Dec  8 18:25:34 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.74 is released.
+
 Fri Dec  6 12:47:24 1996  Wes Hardaker  <Wesley.Hardaker@sphys.unil.ch>
 
 	* gnus-picon.el (gnus-picons-insert-face-if-exists): Don't reverse

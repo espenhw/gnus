@@ -264,8 +264,8 @@ This should make it easier to see who wrote what."
 ;; TAG: Is a Supercite tag, if any.
 
 (defvar gnus-cited-text-button-line-format-alist 
-  `((?b beg ?d)
-    (?e end ?d)
+  `((?b (marker-position beg) ?d)
+    (?e (marker-position end) ?d)
     (?l (- end beg) ?d)))
 (defvar gnus-cited-text-button-line-format-spec nil)
 

@@ -9,22 +9,11 @@
 @end iftex
 @c %**end of header
 
-@menu
-* Introduction::                
-* User Commands::               
-* The Customization Buffer::    
-* Declaring Groups::            
-* Declaring Variables::         
-* Declaring Faces::             
-* The Init File::               
-* Wishlist::                    
-@end menu
-
 @node Top, Introduction, (dir), (dir)
 @comment  node-name,  next,  previous,  up
 @top The Customization Library
 
-Version: 0.995
+Version: 1.12
 
 @menu
 * Introduction::                
@@ -33,6 +22,7 @@ Version: 0.995
 * Declaring Groups::            
 * Declaring Variables::         
 * Declaring Faces::             
+* Utilities::            
 * The Init File::               
 * Wishlist::                    
 @end menu
@@ -434,6 +424,17 @@ The following @var{keyword}'s are defined:
 @item :group
 @var{value} should be a customization group. 
 Add @var{symbol} to that group. 
+@item :link
+@var{value} should be a widget type. 
+Add @var{value} to the extrenal links for this customization option.
+Useful widget types include @code{custom-manual}, @code{info-link}, and
+@code{url-link}. 
+@item :load
+Add @var{value} to the files that should be loaded nefore displaying
+this customization option.  The value should be iether a string, which
+should be a string which will be loaded with @code{load-library} unless
+present in @code{load-history}, or a symbol which will be loaded with
+@code{require}. 
 @end table
 @end defun
 
@@ -465,6 +466,17 @@ For hooks, this is a list of function names.
 @item :group
 @var{value} should be a customization group. 
 Add @var{symbol} to that group. 
+@item :link
+@var{value} should be a widget type. 
+Add @var{value} to the extrenal links for this customization option.
+Useful widget types include @code{custom-manual}, @code{info-link}, and
+@code{url-link}. 
+@item :load
+Add @var{value} to the files that should be loaded nefore displaying
+this customization option.  The value should be iether a string, which
+should be a string which will be loaded with @code{load-library} unless
+present in @code{load-history}, or a symbol which will be loaded with
+@code{require}. 
 @end table
 
 @xref{Sexp Types,,,widget,The Widget Library}, for information about
@@ -477,8 +489,17 @@ specified default value, @code{default-value} for a user specified
 default value, and @code{variable-documentation} for the documentation
 string.
 
+Use @code{custom-add-option} to specify that a specific function is
+useful as an meber of a hook.
 
-@node  Declaring Faces, The Init File, Declaring Variables, Top
+@defun custom-add-option symbol option
+To the variable @var{symbol} add @var{option}.
+
+If @var{symbol} is a hook variable, @var{option} should be a hook
+member.  For other types variables, the effect is undefined."
+@end defun
+
+@node  Declaring Faces, Utilities, Declaring Variables, Top
 @comment  node-name,  next,  previous,  up
 @section Declaring Faces
 
@@ -501,6 +522,17 @@ The following @var{keyword}'s are defined:
 @item :group
 @var{value} should be a customization group. 
 Add @var{symbol} to that group. 
+@item :link
+@var{value} should be a widget type. 
+Add @var{value} to the extrenal links for this customization option.
+Useful widget types include @code{custom-manual}, @code{info-link}, and
+@code{url-link}. 
+@item :load
+Add @var{value} to the files that should be loaded nefore displaying
+this customization option.  The value should be iether a string, which
+should be a string which will be loaded with @code{load-library} unless
+present in @code{load-history}, or a symbol which will be loaded with
+@code{require}. 
 @end table
 
 @var{spec} should be an alist of the form @samp{((@var{display} @var{atts})...)}.
@@ -540,7 +572,32 @@ documentation string.@refill
 
 @end defun
 
-@node  The Init File, Wishlist, Declaring Faces, Top
+@node  Utilities, The Init File, Declaring Faces, Top
+@comment  node-name,  next,  previous,  up
+@section Utilities
+
+These utilities can come in handy when adding customization support. 
+
+@deffn Widget custom-manual
+Widget type for specifying the info manual entry for a customization
+option.  It takes one argument, an info address.
+@end deffn
+
+@defun custom-add-to-group group member widget
+To existing @var{group} add a new @var{member} of type @var{widget},
+If there already is an entry for that member, overwrite it.
+@end defun
+
+@defun custom-add-link symbol widget
+To the custom option @var{symbol} add the link @var{widget}.
+@end defun
+
+@defun custom-add-load symbol load
+To the custom option @var{symbol} add the dependency @var{load}.
+@var{load} should be either a library file name, or a feature name.
+@end defun
+
+@node  The Init File, Wishlist, Utilities, Top
 @comment  node-name,  next,  previous,  up
 @section The Init File
 
@@ -565,17 +622,6 @@ We need @strong{much} better support for keyboard operations in the
 customize buffer.
 
 @item
-There should be a function to create a customize menu from a group.
-
-@item
-There should be a `Help | Customize' entry in the menu bar with a user
-specified number of levels of submenus.  
-
-@item
-It would be nice if one could set simple variables directly from the
-menu. 
-
-@item
 Support real specifiers under XEmacs.
 
 @item
@@ -584,10 +630,8 @@ better formatting.  I'm thinking about adding a <custom>name</custom>
 tag. 
 
 @item
-Try to keep track of whether it is necessary to save or not.
-
-@item
-Offer to save if you exit emacs with unsaved customizations.
+Add an `examples' section, with explained examples of custom type
+definitions. 
 
 @end itemize
 

@@ -2230,8 +2230,8 @@ SCORE is the score to add."
 	(insert (format "%-5d: %s\n" (caar rules) (cdar rules)))
 	(pop rules))
       (gnus-add-current-to-buffer-list)
-      (gnus-configure-windows 'score-words)
-      (goto-char (point-min)))))
+      (goto-char (point-min))
+      (gnus-configure-windows 'score-words))))
 
 (defun gnus-summary-rescore ()
   "Redo the entire scoring process in the current summary."

@@ -389,22 +389,24 @@ Can be used to turn version control on or off."
 ;; Suggested by Brian Edmonds <edmonds@cs.ubc.ca>.
 (defvar gnus-init-inhibit nil)
 (defun gnus-read-init-file (&optional inhibit-next)
-  (if gnus-init-inhibit
-      (setq gnus-init-inhibit nil)
-    (setq gnus-init-inhibit inhibit-next)
-    (let ((files (list gnus-site-init-file gnus-init-file))
-	  file)
-      (while files
-	(and (setq file (pop files))
-	     (or (and (file-exists-p file)
-		      ;; Don't try to load a directory.
-		      (not (file-directory-p file)))
-		 (file-exists-p (concat file ".el"))
-		 (file-exists-p (concat file ".elc")))
-	     (condition-case var
-		 (load file nil t)
-	       (error
-		(error "Error in %s: %s" file var))))))))
+  ;; Don't load .gnus if -q option was used.
+  (when init-file-user
+    (if gnus-init-inhibit
+	(setq gnus-init-inhibit nil)
+      (setq gnus-init-inhibit inhibit-next)
+      (let ((files (list gnus-site-init-file gnus-init-file))
+	    file)
+	(while files
+	  (and (setq file (pop files))
+	       (or (and (file-exists-p file)
+			;; Don't try to load a directory.
+			(not (file-directory-p file)))
+		   (file-exists-p (concat file ".el"))
+		   (file-exists-p (concat file ".elc")))
+	       (condition-case var
+		   (load file nil t)
+		 (error
+		  (error "Error in %s: %s" file var)))))))))
 
 ;; For subscribing new newsgroup
 
@@ -1220,19 +1222,25 @@ newsgroup."
 	(setq info (pop newsrc)
 	      group (gnus-info-group info))
 	(unless (or (gnus-active group)	; Active
-		    (gnus-info-method info) ; Foreign
-		    (and confirm
-			 (not (gnus-y-or-n-p
-			       (format "Remove bogus newsgroup: %s " group)))))
+		    (gnus-info-method info)) ; Foreign
 	  ;; Found a bogus newsgroup.
 	  (push group bogus)))
-      ;; Remove all bogus subscribed groups by first killing them, and
-      ;; then removing them from the list of killed groups.
-      (while bogus
-	(when (setq entry (gnus-gethash (setq group (pop bogus))
-					gnus-newsrc-hashtb))
-	  (gnus-group-change-level entry gnus-level-killed)
-	  (setq gnus-killed-list (delete group gnus-killed-list))))
+      (if confirm
+	  (map-y-or-n-p
+	   "Remove bogus group %s? "
+	   (lambda (group)
+	     ;; Remove all bogus subscribed groups by first killing them, and
+	     ;; then removing them from the list of killed groups.
+	     (when (setq entry (gnus-gethash group gnus-newsrc-hashtb))
+	       (gnus-group-change-level entry gnus-level-killed)
+	       (setq gnus-killed-list (delete group gnus-killed-list))))
+	   bogus)
+	(while (setq group (pop bogus))
+	  ;; Remove all bogus subscribed groups by first killing them, and
+	  ;; then removing them from the list of killed groups.
+	  (when (setq entry (gnus-gethash group gnus-newsrc-hashtb))
+	    (gnus-group-change-level entry gnus-level-killed)
+	    (setq gnus-killed-list (delete group gnus-killed-list)))))
       ;; Then we remove all bogus groups from the list of killed and
       ;; zombie groups.  They are removed without confirmation.
       (let ((dead-lists '(gnus-killed-list gnus-zombie-list))

@@ -36,7 +36,7 @@
   :group 'gnus-score)
 
 (defcustom gnus-nocem-groups 
-  '("alt.nocem.misc" "news.admin.net-abuse.announce")
+  '("news.lists.filters" "alt.nocem.misc" "news.admin.net-abuse.announce")
   "List of groups that will be searched for NoCeM messages."
   :group 'gnus-nocem
   :type '(repeat (string :tag "Group")))

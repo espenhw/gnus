@@ -1504,9 +1504,8 @@ groups."
      gnus-button-message-id 3)
     ("\\(<URL: *\\)?mailto: *\\([^> \n\t]+\\)>?" 0 t gnus-url-mailto 2)
     ;; This is how URLs _should_ be embedded in text...
-    ("<URL: *\\([^\n\r>]*\\)>" 0 t gnus-button-url 1)
-    ;; Next regexp stolen from highlight-headers.el.
-    ;; Modified by Vladimir Alexiev.
+    ("<URL: *\\([^>]*\\)>" 0 t gnus-button-embedded-url 1)
+    ;; Raw URLs.
     (,gnus-button-url-regexp 0 t gnus-button-url 0))
   "Alist of regexps matching buttons in article bodies.
 
@@ -1828,9 +1827,7 @@ specified by `gnus-button-alist'."
 	   (inhibit-point-motion-hooks t)
 	   (fun (nth 3 entry))
 	   (args (mapcar (lambda (group)
-			   (let ((string (buffer-substring
-					  (match-beginning group)
-					  (match-end group))))
+			   (let ((string (match-string group)))
 			     (gnus-set-text-properties
 			      0 (length string) nil string)
 			     string))
@@ -1957,6 +1954,10 @@ forbidden in URL encoding."
 (defun gnus-button-url (address)
   "Browse ADDRESS."
   (funcall browse-url-browser-function address))
+
+(defun gnus-button-embedded-url (address)
+  "Browse ADDRESS."
+  (funcall browse-url-browser-function (gnus-strip-whitespace address)))
 
 ;;; Next/prev buttons in the article buffer.
 

@@ -1051,9 +1051,12 @@ If COPYP, copy the groups instead."
   (interactive "P")
   (if (gnus-group-topic-p)
       (let ((topic (gnus-group-topic-name)))
-	(gnus-topic-remove-topic nil t)
-	(push (gnus-topic-find-topology topic nil nil gnus-topic-topology)
+	(push (cons 
+	       (gnus-topic-find-topology topic)
+	       (assoc topic gnus-topic-alist))
 	      gnus-topic-killed-topics)
+	(gnus-topic-remove-topic nil t)
+	(gnus-topic-find-topology topic nil nil gnus-topic-topology)
 	(gnus-topic-enter-dribble))
     (gnus-group-kill-group n discard)
     (gnus-topic-update-topic)))
@@ -1062,10 +1065,13 @@ If COPYP, copy the groups instead."
   "Yank the last topic."
   (interactive "p")
   (if gnus-topic-killed-topics
-      (let ((previous 
-	     (or (gnus-group-topic-name)
-		 (gnus-topic-next-topic (gnus-current-topic))))
-	    (item (cdr (pop gnus-topic-killed-topics))))
+      (let* ((previous 
+	      (or (gnus-group-topic-name)
+		  (gnus-topic-next-topic (gnus-current-topic))))
+	     (data (pop gnus-topic-killed-topics))
+	     (alist (cdr data))
+	     (item (cdar data)))
+	(push alist gnus-topic-alist)
 	(gnus-topic-create-topic
 	 (caar item) (gnus-topic-parent-topic previous) previous
 	 item)
@@ -1205,7 +1211,7 @@ If UNINDENT, remove an indentation."
 	(gnus-topic-goto-topic topic)
 	(gnus-topic-kill-group)
 	(gnus-topic-create-topic
-	 topic parent nil (cdr (pop gnus-topic-killed-topics)))
+	 topic parent nil (cdar (pop gnus-topic-killed-topics)))
 	(or (gnus-topic-goto-topic topic)
 	    (gnus-topic-goto-topic parent))))))
 
@@ -1222,7 +1228,7 @@ If UNINDENT, remove an indentation."
       (gnus-topic-kill-group)
       (gnus-topic-create-topic
        topic grandparent (gnus-topic-next-topic parent)
-       (cdr (pop gnus-topic-killed-topics)))
+       (cdar (pop gnus-topic-killed-topics)))
       (gnus-topic-goto-topic topic))))
 
 (defun gnus-topic-list-active (&optional force)

@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.04
+;; Version: 1.12
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -17,7 +17,7 @@
 (require 'widget-edit)
 (require 'easymenu)
 
-(define-widget-keywords :custom-show :custom-magic
+(define-widget-keywords :custom-menu :custom-show :custom-magic
   :custom-state :custom-level :custom-form
   :custom-apply :custom-set-default :custom-reset)
 
@@ -50,6 +50,44 @@ IF REGEXP is not a string, return it unchanged."
 	(nreverse (cons (substring regexp start) all)))
     regexp))
 
+(defvar custom-prefix-list nil
+  "List of prefixes that should be ignored by `custom-unlispify'")
+
+(defcustom custom-unlispify-menu-entries t
+  "Display menu entries as words instead of symbols if non nil."
+  :group 'customize
+  :type 'boolean)
+
+(defun custom-unlispify-menu-entry (symbol &optional no-suffix)
+  "Convert symbol into a menu entry."
+  (cond ((not custom-unlispify-menu-entries)
+	 (symbol-name symbol))
+	((get symbol 'custom-tag)
+	 (if no-suffix
+	     (get symbol 'custom-tag)
+	   (concat (get symbol 'custom-tag) "...")))
+	(t
+	 (save-excursion
+	   (set-buffer (get-buffer-create " *Custom-Work*"))
+	   (erase-buffer)
+	   (princ symbol (current-buffer))
+	   (goto-char (point-min))
+	   (let ((prefixes custom-prefix-list)
+		 prefix)
+	     (while prefixes
+	       (setq prefix (car prefixes))
+	       (if (search-forward prefix (+ (point) (length prefix)) t)
+		   (progn 
+		     (setq prefixes nil)
+		     (delete-region (point-min) (point)))
+		 (setq prefixes (cdr prefixes)))))
+	   (subst-char-in-region (point-min) (point-max) ?- ?\  t)
+	   (capitalize-region (point-min) (point-max))
+	   (unless no-suffix 
+	     (goto-char (point-max))
+	     (insert "..."))
+	   (buffer-string)))))
+
 ;;; The Custom Mode.
 
 (defvar custom-options nil
@@ -70,6 +108,11 @@ IF REGEXP is not a string, return it unchanged."
       ["Set Default" custom-set-default t]
       ["Reset" custom-reset t]
       ["Save" custom-save t]))
+
+(defcustom custom-mode-hook nil
+  "Hook called when entering custom-mode."
+  :type 'hook
+  :group 'customize)
 
 (defun custom-mode ()
   "Major mode for editing customization buffers.
@@ -528,6 +571,23 @@ The list should be sorted most significant first."
 	  (t
 	   (funcall show widget value)))))
 
+(defun custom-load-symbol (symbol)
+  "Load all dependencies for SYMBOL."
+  (let ((loads (get symbol 'custom-loads))
+	load)
+    (while loads
+      (setq load (car loads)
+	    loads (cdr loads))
+      (cond ((symbolp load)
+	     (require load))
+	    ((member load load-history))
+	    (t
+	     (load-library load))))))
+
+(defun custom-load-widget (widget)
+  "Load all dependencies for WIDGET."
+  (custom-load-symbol (widget-value widget)))
+
 ;;; The `custom-variable' Widget.
 
 (define-widget 'custom-variable 'custom
@@ -536,6 +596,7 @@ The list should be sorted most significant first."
   :help-echo "Push me to set or reset this variable."
   :documentation-property 'variable-documentation
   :custom-state nil
+  :custom-menu 'custom-variable-menu-create
   :custom-form 'edit
   :value-create 'custom-variable-value-create
   :action 'custom-variable-action
@@ -545,6 +606,7 @@ The list should be sorted most significant first."
 
 (defun custom-variable-value-create (widget)
   "Here is where you edit the variables value."
+  (custom-load-widget widget)
   (let* ((buttons (widget-get widget :buttons))
 	 (children (widget-get widget :children))
 	 (form (widget-get widget :custom-form))
@@ -570,7 +632,8 @@ The list should be sorted most significant first."
 	   (setq state 'hidden)))
     ;; If we don't know the state, see if we need to edit it in lisp form.
     (when (eq state 'unknown)
-      (unless (widget-apply (widget-convert type) :match value)
+      (unless (widget-apply conv :match value)
+	;; (widget-apply (widget-convert type) :match value)
 	(setq form 'lisp)))
     ;; Now we can create the child widget.
     (cond ((eq state 'hidden)
@@ -597,6 +660,7 @@ The list should be sorted most significant first."
 		   children)))
 	  (t
 	   ;; Edit mode.
+
 	   (push (widget-create-child-and-convert widget type 
 						  :tag (symbol-name symbol)
 						  :value value)
@@ -614,7 +678,9 @@ The list should be sorted most significant first."
 (defun custom-variable-state-set (widget)
   "Set the state of WIDGET."
   (let* ((symbol (widget-value widget))
-	 (value (default-value symbol))
+	 (value (if (default-boundp symbol)
+		    (default-value symbol)
+		  (widget-get widget :value)))
 	 (state (if (get symbol 'saved-value)
 		    (if (condition-case nil
 			    (equal value
@@ -800,7 +866,8 @@ Optional EVENT is the location for the menu."
   :action 'custom-face-action
   :custom-apply 'custom-face-apply
   :custom-set-default 'custom-face-set-default
-  :custom-reset 'custom-redraw)
+  :custom-reset 'custom-redraw
+  :custom-menu 'custom-face-menu-create)
 
 (defun custom-face-format-handler (widget escape)
   ;; We recognize extra escape sequences.
@@ -808,6 +875,10 @@ Optional EVENT is the location for the menu."
 	(state (widget-get widget :custom-state))
 	(symbol (widget-get widget :value)))
     (cond ((eq escape ?s)
+	   (and (string-match "XEmacs" emacs-version)
+		;; XEmacs cannot display initialized faces.
+		(not (custom-facep symbol))
+		(copy-face 'custom-face-empty symbol))
 	   (setq child (widget-create-child-and-convert 
 			widget 'custom-level
 			:format "(%[%t%])\n"
@@ -824,6 +895,7 @@ Optional EVENT is the location for the menu."
   (unless (eq (preceding-char) ?\n)
     (insert "\n"))
   (when (not (eq (widget-get widget :custom-state) 'hidden))
+    (custom-load-widget widget)
     (let* ((symbol (widget-value widget))
 	   (edit (widget-create-child-and-convert
 		  widget 'editable-list
@@ -970,7 +1042,9 @@ Optional EVENT is the location for the menu."
 (defun custom-hook-convert-widget (widget)
   ;; Handle `:custom-options'.
   (let* ((options (widget-get widget :options))
-	 (other `(editable-list :inline t (function :format "%v")))
+	 (other `(editable-list :inline t 
+				:entry-format "%i %d%v"
+				(function :format " %v")))
 	 (args (if options
 		   (list `(checklist :inline t
 				     ,@(mapcar (lambda (entry)
@@ -992,15 +1066,17 @@ Optional EVENT is the location for the menu."
   :action 'custom-group-action
   :custom-apply 'custom-group-apply
   :custom-set-default 'custom-group-set-default
-  :custom-reset 'custom-group-reset)
+  :custom-reset 'custom-group-reset
+  :custom-menu 'custom-group-menu-create)
 
 (defun custom-group-value-create (widget)
-  (let* ((state (widget-get widget :custom-state))
-	 (level (widget-get widget :custom-level))
-	 (symbol (widget-value widget))
-	 (members (get symbol 'custom-group)))
+  (let ((state (widget-get widget :custom-state)))
     (unless (eq state 'hidden)
-      (let* ((children (mapcar (lambda (entry)
+      (custom-load-widget widget)
+      (let* ((level (widget-get widget :custom-level))
+	     (symbol (widget-value widget))
+	     (members (get symbol 'custom-group))
+	     (children (mapcar (lambda (entry)
 				 (widget-insert "\n")
 				 (prog1
 				     (widget-create-child-and-convert
@@ -1161,6 +1237,123 @@ Leave point at the location of the call, or after the last expression."
   (save-excursion
     (set-buffer (find-file-noselect custom-file))
     (save-buffer)))
+
+;;; The Customize Menu.
+
+(defcustom custom-menu-nesting 2
+  "Maximum nesting in custom menus."
+  :type 'integer
+  :group 'customize)
+
+(defun custom-face-menu-create (widget symbol)
+  "Ignoring WIDGET, create a menu entry for customization face SYMBOL."
+  (vector (custom-unlispify-menu-entry symbol)
+	  `(custom-buffer-create '((,symbol custom-face)))
+	  t))
+
+(defun custom-variable-menu-create (widget symbol)
+  "Ignoring WIDGET, create a menu entry for customization variable SYMBOL."
+  (let ((type (get symbol 'custom-type)))
+    (unless (listp type)
+      (setq type (list type)))
+    (if (and type (widget-get type :custom-menu))
+	(widget-apply type :custom-menu symbol)
+      (vector (custom-unlispify-menu-entry symbol)
+	      `(custom-buffer-create '((,symbol custom-variable)))
+	      t))))
+
+(widget-put (get 'boolean 'widget-type)
+	    :custom-menu (lambda (widget symbol)
+			   (vector (custom-unlispify-menu-entry symbol)
+				   `(custom-buffer-create
+				     '((,symbol custom-variable)))
+				   ':style 'toggle
+				   ':selected symbol)))
+
+(defun custom-group-menu-create (widget symbol)
+  "Ignoring WIDGET, create a menu entry for customization group SYMBOL."
+  (custom-menu-create symbol))
+
+(defun custom-menu-create (symbol &optional name)
+  "Create menu for customization group SYMBOL.
+If optional NAME is given, use that as the name of the menu. 
+Otherwise make up a name from SYMBOL.
+The menu is in a format applicable to `easy-menu-define'."
+  (unless name
+    (setq name (custom-unlispify-menu-entry symbol)))
+  (let ((item (vector name
+		      `(custom-buffer-create '((,symbol custom-group)))
+		      t)))
+    (if (> custom-menu-nesting 0)
+	(let ((custom-menu-nesting (1- custom-menu-nesting))
+	      (custom-prefix-list (cons (or (get symbol 'custom-prefix)
+					    (concat (symbol-name symbol) "-"))
+					custom-prefix-list)))
+	  (custom-load-symbol symbol)
+	  `(,(custom-unlispify-menu-entry symbol t)
+	    ,item
+	    "--"
+	    ,@(mapcar (lambda (entry)
+			(widget-apply (if (listp (nth 1 entry))
+					  (nth 1 entry)
+					(list (nth 1 entry)))
+				      :custom-menu (nth 0 entry)))
+		      (get symbol 'custom-group))))
+      item)))
+
+;;;###autoload
+(defun custom-menu-update ()
+  "Update customize menu."
+  (interactive)
+  (add-hook 'custom-define-hook 'custom-menu-reset)
+  (let ((menu `(,(car custom-help-menu)
+		,(widget-apply '(custom-group) :custom-menu 'emacs)
+		,@(cdr (cdr custom-help-menu)))))
+    (if (fboundp 'add-submenu)
+	(add-submenu '("Help") menu)
+      (define-key global-map [menu-bar help-menu customize-menu]
+	(cons (car menu) (easy-menu-create-keymaps (car menu) (cdr menu)))))))
+
+;;; Dependencies.
+
+;;;###autoload
+(defun custom-make-dependencies ()
+  "Batch function to extract custom dependencies from .el files.
+Usage: emacs -batch *.el -f custom-make-dependencies > deps.el"
+  (let ((buffers (buffer-list)))
+    (while buffers
+      (set-buffer (car buffers))
+      (setq buffers (cdr buffers))
+      (let ((file (buffer-file-name)))
+	(when (and file (string-match "\\`\\(.*\\)\\.el\\'" file))
+	  (goto-char (point-min))
+	  (condition-case nil
+	      (let ((name (file-name-nondirectory (match-string 1 file))))
+		(while t
+		  (let ((expr (read (current-buffer))))
+		    (when (and (listp expr)
+			       (memq (car expr) '(defcustom defface defgroup)))
+		      (eval expr)
+		      (put (nth 1 expr) 'custom-where name)))))
+	    (error nil))))))
+  (mapatoms (lambda (symbol)
+	      (let ((members (get symbol 'custom-group))
+		    item where found)
+		(when members
+		  (princ "(put '")
+		  (princ symbol)
+		  (princ " 'custom-loads '(")
+		  (while members
+		    (setq item (car (car members))
+			  members (cdr members)
+			  where (get item 'custom-where))
+		    (unless (or (null where)
+				(member where found))
+		      (when found
+			(princ " "))
+		      (prin1 where)
+		      (push where found)))
+		  (princ "))\n"))))))
 
 ;;; The End.
 

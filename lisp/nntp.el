@@ -79,7 +79,7 @@ telnets to a remote system, logs in and does the same")
 
 (defvoo nntp-rlogin-parameters '("telnet" "-8" "${NNTPSERVER:=news}" "nntp")
   "*Parameters to `nntp-open-login'.
-That function may be used as `nntp-open-server-function'.  In that
+That function may be used as `nntp-open-connection-function'.  In that
 case, this list will be used as the parameter list given to rsh.")
 
 (defvoo nntp-rlogin-user-name nil
@@ -87,7 +87,7 @@ case, this list will be used as the parameter list given to rsh.")
 
 (defvoo nntp-telnet-parameters '("exec" "telnet" "-8" "${NNTPSERVER:=news}" "nntp")
   "*Parameters to `nntp-open-telnet'.
-That function may be used as `nntp-open-server-function'.  In that
+That function may be used as `nntp-open-connection-function'.  In that
 case, this list will be executed as a command after logging in
 via telnet.")
 

@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, extensions, faces, hypermedia
-;; Version: 1.04
+;; Version: 1.12
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -19,12 +19,13 @@
 (eval-when-compile (require 'cl))
 
 (defmacro define-widget-keywords (&rest keys)
-  `(eval-and-compile
-     (let ((keywords (quote ,keys)))
+  (`
+   (eval-and-compile
+     (let ((keywords (quote (, keys))))
        (while keywords
 	 (or (boundp (car keywords))
 	     (set (car keywords) (car keywords)))
-	 (setq keywords (cdr keywords))))))
+	 (setq keywords (cdr keywords)))))))
 
 (define-widget-keywords :case-fold :widget-doc
   :create :convert-widget :format :value-create :offset :extra-offset

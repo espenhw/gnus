@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 1.04
+;; Version: 1.12
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -18,23 +18,43 @@
 (autoload 'pp-to-string "pp")
 (autoload 'Info-goto-node "info")
 
+(if (string-match "XEmacs" emacs-version)
+    ;; XEmacs spell `intangible' as `atomic'.
+    (defun widget-make-intangible (from to side)
+      "Make text between FROM and TO atomic with regard to movement.
+Third argument should be `start-open' if it should be sticky to the rear,
+and `end-open' if it should sticky to the front."
+      (require 'atomic-extents)
+      (let ((ext (make-extent from to)))
+	 ;; XEmacs doesn't understant different kinds of read-only, so
+	 ;; we have to use extents instead.  
+	(put-text-property from to 'read-only nil)
+	(set-extent-property ext 'read-only t)
+	(set-extent-property ext 'start-open nil)
+	(set-extent-property ext 'end-open nil)
+	(set-extent-property ext side t)
+	(set-extent-property ext 'atomic t)))
+  (defun widget-make-intangible (from to size)
+    "Make text between FROM and TO intangible."
+    (put-text-property from to 'intangible 'front)))
+	  
 ;; The following should go away when bundled with Emacs.
 (eval-and-compile
   (condition-case ()
       (require 'custom)
-    (error nil)))
+    (error nil))
 
-(unless (and (featurep 'custom) (fboundp 'custom-declare-variable))
-  ;; We have the old custom-library, hack around it!
-  (defmacro defgroup (&rest args) nil)
-  (defmacro defcustom (&rest args) nil)
-  (defmacro defface (&rest args) nil)
-  (when (fboundp 'copy-face)
-    (copy-face 'default 'widget-documentation-face)
-    (copy-face 'bold 'widget-button-face)
-    (copy-face 'italic 'widget-field-face))
-  (defvar widget-mouse-face 'highlight)
-  (defvar widget-menu-max-size 40))
+  (unless (and (featurep 'custom) (fboundp 'custom-declare-variable))
+    ;; We have the old custom-library, hack around it!
+    (defmacro defgroup (&rest args) nil)
+    (defmacro defcustom (&rest args) nil)
+    (defmacro defface (&rest args) nil)
+    (when (fboundp 'copy-face)
+      (copy-face 'default 'widget-documentation-face)
+      (copy-face 'bold 'widget-button-face)
+      (copy-face 'italic 'widget-field-face))
+    (defvar widget-mouse-face 'highlight)
+    (defvar widget-menu-max-size 40)))
 
 ;;; Compatibility.
 
@@ -54,6 +74,7 @@ into the buffer visible in the event's window."
   :link '(custom-manual "(widget)Top")
   :link '(url-link :tag "Development Page" 
 		   "http://www.dina.kvl.dk/~abraham/custom/")
+  :prefix "widget-"
   :group 'emacs)
 
 (defface widget-documentation-face '((t ()))
@@ -167,6 +188,8 @@ minibuffer."
   ;; Default properties.
   (add-text-properties from to (list 'read-only t
 				     'front-sticky t
+				     'start-open t
+				     'end-open t
 				     'rear-nonsticky nil)))
 
 (defun widget-specify-field (widget from to)
@@ -183,21 +206,32 @@ minibuffer."
     ;; before the field can be modified (e.g. if it belongs to a
     ;; choice widget).  We try to compensate by checking the format
     ;; string, and hope the user hasn't changed the :create method.
-    (put-text-property (- from 2) from 'intangible 'front))
+    (widget-make-intangible (- from 2) from 'end-open))
   
   ;; Make it possible to edit back end of the field.
   (add-text-properties to (1+ to) (list 'front-sticky nil
+					'read-only t
 					'start-open t))
 
-  (when (widget-get widget :size)
-    (put-text-property to (1+ to) 'invisible t)
-    (when (or (string-match "%v\\(.\\|\n\\)" (widget-get widget :format))
-	      (widget-get widget :hide-rear-space))
-      ;; WARNING: This is going to lose horrible if the character just
-      ;; after the field can be modified (e.g. if it belongs to a
-      ;; choice widget).  We try to compensate by checking the format
-      ;; string, and hope the user hasn't changed the :create method.
-      (put-text-property to (+ to 2) 'intangible 'rear))))
+  (cond ((widget-get widget :size)
+	 (put-text-property to (1+ to) 'invisible t)
+	 (when (or (string-match "%v\\(.\\|\n\\)" (widget-get widget :format))
+		   (widget-get widget :hide-rear-space))
+	   ;; WARNING: This is going to lose horrible if the character just
+	   ;; after the field can be modified (e.g. if it belongs to a
+	   ;; choice widget).  We try to compensate by checking the format
+	   ;; string, and hope the user hasn't changed the :create method.
+	   (widget-make-intangible to (+ to 2) 'start-open)))
+	((string-match "XEmacs" emacs-version)
+	 ;; XEmacs does not allow you to insert before a read-only
+	 ;; character, even if it is start.open.
+	 ;; XEmacs does allow you to delete an read-only extent, so
+	 ;; making the terminating newline read only doesn't help.
+	 ;; I tried putting an invisible intangible read-only space
+	 ;; before the newline, which gave really weird effects.
+	 ;; So for now, we just have trust the user not to delete the
+	 ;; newline.  
+	 (put-text-property to (1+ to) 'read-only nil))))
 
 (defun widget-specify-field-update (widget from to)
   ;; Specify editable button for WIDGET between FROM and TO.
@@ -315,11 +349,24 @@ The child is converted, using the keyword arguments ARGS."
     widget))
 
 (defun widget-create-child (parent type)
-  "Create widget of TYPE.  "
+  "Create widget of TYPE."
   (let ((widget (copy-list type)))
     (widget-put widget :parent parent)
     (unless (widget-get widget :indent)
       (widget-put widget :indent (+ (or (widget-get parent :indent) 0)
+				    (or (widget-get widget :extra-offset) 0)
+				    (widget-get parent :offset))))
+    (widget-apply widget :create)
+    widget))
+
+(defun widget-create-child-value (parent type value)
+  "Create widget of TYPE with value VALUE."
+  (let ((widget (copy-list type)))
+    (widget-put widget :value (widget-apply widget :value-to-internal value))
+    (widget-put widget :parent parent)
+    (unless (widget-get widget :indent)
+      (widget-put widget :indent (+ (or (widget-get parent :indent) 0)
+				    (or (widget-get widget :extra-offset) 0)
 				    (widget-get parent :offset))))
     (widget-apply widget :create)
     widget))
@@ -562,11 +609,6 @@ With optional ARG, move across that many fields."
 	       (message "Error: `widget-after-change' called on two fields"))
 	      (t
 	       (let ((size (widget-get field :size)))
-		 (and (string-match "XEmacs" emacs-version)
-		      ;; XEmacs cannot handle zero-sized fields.
-		      (or (null size)
-			  (zerop size))
-		      (setq size 1))
 		 (if size 
 		     (let ((begin (1+ (widget-get field :value-from)))
 			   (end (1- (widget-get field :value-to))))
@@ -898,18 +940,10 @@ With optional ARG, move across that many fields."
   (let ((size (widget-get widget :size))
 	(value (widget-get widget :value))
 	(from (point)))
-    (if (null size)
-	(if (zerop (length value))
-	    (insert "")
-	  (insert value))
-      (insert value)
-      (if (< (length value) size)
-	  (insert-char ?\  (- size (length value)))))
-    (and (string-match "XEmacs" emacs-version)
-	 ;; XEmacs cannot handle zero-sized fields.
-	 (or (null size)
-	     (zerop size))
-	 (insert " "))
+    (insert value)
+    (and size
+	 (< (length value) size)
+	 (insert-char ?\  (- size (length value))))
     (unless (memq widget widget-field-list)
       (setq widget-field-new (cons widget widget-field-new)))
     (widget-put widget :value-to (copy-marker (point)))
@@ -983,8 +1017,8 @@ With optional ARG, move across that many fields."
       (setq current (car args)
 	    args (cdr args))
       (when (widget-apply current :match value)
-	(widget-put widget :children (list (widget-create-child-and-convert
-					    widget current :value value)))
+	(widget-put widget :children (list (widget-create-child-value
+					    widget current value)))
 	(widget-put widget :choice current)
 	(setq args nil
 	      current nil)))
@@ -1159,11 +1193,11 @@ With optional ARG, move across that many fields."
 		      (cond ((not chosen)
 			     (widget-create-child widget type))
 			    ((widget-get type :inline)
-			     (widget-create-child-and-convert
-			      widget type :value (cdr chosen)))
+			     (widget-create-child-value
+			      widget type (cdr chosen)))
 			    (t
-			     (widget-create-child-and-convert
-			      widget type :value (car (cdr chosen)))))))
+			     (widget-create-child-value
+			      widget type (car (cdr chosen)))))))
 	       (t 
 		(error "Unknown escape `%c'" escape)))))
      ;; Update properties.
@@ -1335,8 +1369,8 @@ With optional ARG, move across that many fields."
 			      :value (not (null chosen)))))
 	       ((eq escape ?v)
 		(setq child (if chosen
-				(widget-create-child-and-convert
-				 widget type :value value)
+				(widget-create-child-value
+				 widget type value)
 			      (widget-create-child widget type))))
 	       (t 
 		(error "Unknown escape `%c'" escape)))))
@@ -1610,8 +1644,8 @@ With optional ARG, move across that many fields."
 			      widget 'delete-button)))
 	       ((eq escape ?v)
 		(if conv
-		    (setq child (widget-create-child-and-convert 
-				 widget type :value value))
+		    (setq child (widget-create-child-value 
+				 widget type value))
 		  (setq child (widget-create-child widget type))))
 	       (t 
 		(error "Unknown escape `%c'" escape)))))
@@ -1659,11 +1693,9 @@ With optional ARG, move across that many fields."
       (push (cond ((null answer)
 		   (widget-create-child widget arg))
 		  ((widget-get arg :inline)
-		   (widget-create-child-and-convert
-		    widget arg :value (car answer)))
+		   (widget-create-child-value widget arg  (car answer)))
 		  (t
-		   (widget-create-child-and-convert
-		    widget arg :value (car (car answer)))))
+		   (widget-create-child-value widget arg  (car (car answer)))))
 	    children))
     (widget-put widget :children (nreverse children))))
 

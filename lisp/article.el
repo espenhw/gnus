@@ -533,8 +533,6 @@ always hide."
 	   (goto-char (point-min)) (point-max))
 	  (subst-char-in-region (point-min) (point-max) ?_ ? )
 	  (goto-char (point-max)))
-	(when (looking-at "\\([ \t\n]+\\)=\\?")
-	  (replace-match "" t t nil 1))
 	(goto-char (point-min))))))
 
 (defun article-de-quoted-unreadable (&optional force)
@@ -957,7 +955,7 @@ function and want to see what the date was before converting."
  	       (match-beginning invisible) (match-end invisible) props)
  	      (article-unhide-text-type
  	       (match-beginning visible) (match-end visible) 'emphasis)
- 	      (put-text-property 
+ 	      (gnus-put-text-property-excluding-newlines
  	       (match-beginning visible) (match-end visible) 'face face)
  	      (goto-char (match-end invisible)))))))))
 

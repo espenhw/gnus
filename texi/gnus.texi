@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.74 Manual
+@settitle Red Gnus 0.75 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.74 Manual
+@title Red Gnus 0.75 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Red Gnus 0.74
+This manual corresponds to Red Gnus 0.75
 
 @end ifinfo
 
@@ -4228,6 +4228,14 @@ dormant articles will also be excluded.
 Ask for a mark and then limit to all articles that have not been marked
 with that mark (@code{gnus-summary-limit-to-marks}).
 
+@item / t
+@kindex / t (Summary)
+@findex gnus-summary-limit-to-age
+Ask for a number and then limit the summary buffer to articles that are
+older than (or equal to) that number of days
+(@code{gnus-summary-limit-to-marks}).  If given a prefix, limit to
+articles that are younger than that number of days.
+
 @item / n
 @kindex / n (Summary)
 @findex gnus-summary-limit-to-articles
@@ -6885,6 +6893,13 @@ Exit the group and go to the next group
 @findex gnus-summary-prev-group
 Exit the group and go to the previous group
 (@code{gnus-summary-prev-group}). 
+
+@item Z s
+@kindex Z s (Summary)
+@findex gnus-summary-save-newsrc
+Save the @file{.newsrc} file(s).  The current number of read/marked
+articles in the summary buffer will also be saved.  This will make exit
+without updating (the @kbd{Q} command) worthless.
 @end table
 
 @vindex gnus-exit-group-hook
@@ -8034,7 +8049,7 @@ should probably look something like this:
 @lisp
 (nntp "firewall"
       (nntp-address "the.firewall.machine")
-      (nntp-open-server-function nntp-open-rlogin)
+      (nntp-open-connection-function nntp-open-rlogin)
       (nntp-end-of-line "\n")
       (nntp-rlogin-parameters
        ("telnet" "the.real.nntp.host" "nntp")))
@@ -8293,8 +8308,8 @@ server.
 
 @findex nntp-open-rlogin
 @findex nntp-open-network-stream
-@item nntp-open-server-function
-@vindex nntp-open-server-function
+@item nntp-open-connection-function
+@vindex nntp-open-connection-function
 This function is used to connect to the remote system.  Two pre-made
 functions are @code{nntp-open-network-stream}, which is the default, and
 simply connects to some port or other on the remote system.  The other
@@ -8304,7 +8319,7 @@ and then does a telnet to the @sc{nntp} server available there.
 @item nntp-rlogin-parameters
 @vindex nntp-rlogin-parameters
 If you use @code{nntp-open-rlogin} as the
-@code{nntp-open-server-function}, this list will be used as the
+@code{nntp-open-connection-function}, this list will be used as the
 parameter list given to @code{rsh}.
 
 @item nntp-end-of-line
@@ -11182,6 +11197,11 @@ After using this scheme for a while, it might be nice to write a
 @code{gnus-psychoanalyze-user} command to go through the rules and see
 what words you like and what words you don't like.  Or perhaps not.
 
+Note that the adaptive word scoring thing is highly experimental and is
+likely to change in the future.  Initial impressions seem to indicate
+that it's totally useless as it stands.  Some more work (involving more
+rigorous statistical methods) will have to be done to make this useful. 
+
 
 @node Home Score File
 @section Home Score File
@@ -13701,6 +13721,7 @@ Michael R. Cook,
 Glenn Coombs, 
 Frank D. Cringle, 
 Geoffrey T. Dairiki,
+Andre Deparade,
 Ulrik Dickow,
 Dave Disser,
 Joev Dubach,
@@ -13719,10 +13740,13 @@ Francois Felix Ingrand,
 Lee Iverson, 
 Randell Jesup,
 Fred Johansen, 
+Shuhei Kobayashi, @c Kobayashi
 Thor Kristoffersen,
 Jens Lautenbacher,
 Carsten Leonhardt,
 Christian Limpach,
+Markus Linnala,
+Dave Love,
 Tonny Madsen,
 Shlomo Mahlab,
 Nat Makarevitch,
@@ -13742,6 +13766,7 @@ Stephen Peters,
 Ulrich Pfeifer,
 Colin Rafferty,
 Bart Robinson,
+Loren Schall,
 Ralph Schleicher,
 Randal L. Schwartz,
 Danny Siu, 

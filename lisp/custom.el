@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.04
+;; Version: 1.12
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -19,7 +19,7 @@
 
 (require 'widget)
 
-(define-widget-keywords :link :options :type :group)
+(define-widget-keywords :prefix :tag :load :link :options :type :group)
 
 ;; These autoloads should be deleted when the file is added to Emacs
 (autoload 'customize "custom-edit" nil t)
@@ -28,6 +28,8 @@
 (autoload 'customize-apropos "custom-edit" nil t)
 (autoload 'customize-customized "custom-edit" nil t)
 (autoload 'custom-buffer-create "custom-edit")
+(autoload 'custom-menu-update "custom-edit")
+(autoload 'custom-make-dependencies "custom-edit")
 
 ;;; Compatibility.
 
@@ -74,7 +76,8 @@ If FRAME is omitted or nil, use the selected frame."
 			     (list (cons 'background-mode mode)))
     mode))
 
-;; XEmacs and Emacs have two different definitions of `facep'.
+;; XEmacs and Emacs have different definitions of `facep'.  
+;; The Emacs definition is the useful one, so emulate that. 
 (cond ((not (fboundp 'facep))
        (defun custom-facep (face) 
 	 "No faces"
@@ -120,12 +123,9 @@ If FRAME is omitted or nil, use the selected frame."
 			   value)
 		 ;; Fast code for the common case.
 		 (put symbol 'custom-options (copy-list value))))
-	      ((eq keyword :group)
-	       (custom-add-to-group value symbol 'custom-variable))
-	      ((eq keyword :link)
-	       (custom-add-link symbol value))
 	      (t
-	       (error "Unknown keyword %s" keyword))))))
+	       (custom-handle-keyword symbol keyword value
+				      'custom-variable))))))
   (run-hooks 'custom-define-hook)
   symbol)
 
@@ -166,22 +166,7 @@ information."
 	(custom-face-display-set face value))))
   (when doc
     (put face 'face-documentation doc))
-  (while args 
-    (let ((arg (car args)))
-      (setq args (cdr args))
-      (unless (symbolp arg)
-	(error "Junk in args %S" args))
-      (let ((keyword arg)
-	    (value (car args)))
-	(unless args
-	  (error "Keyword %s is missing an argument" :type))
-	(setq args (cdr args))
-	(cond ((eq keyword :group)
-	       (custom-add-to-group value face 'custom-face))
-	      ((eq keyword :link)
-	       (custom-add-link face value))
-	      (t
-	       (error "Unknown keyword %s" face))))))
+  (custom-handle-all-keywords face args 'custom-face)
   (run-hooks 'custom-define-hook)
   face)
 
@@ -249,14 +234,13 @@ information."
       (let ((keyword arg)
 	    (value (car args)))
 	(unless args
-	  (error "Keyword %s is missing an argument" :type))
+	  (error "Keyword %s is missing an argument" keyword))
 	(setq args (cdr args))
-	(cond ((eq keyword :group)
-	       (custom-add-to-group value symbol 'custom-group))
-	      ((eq keyword :link)
-	       (custom-add-link symbol value))
+	(cond ((eq keyword :prefix)
+	       (put symbol 'custom-prefix value))
 	      (t
-	       (error "Unknown keyword %s" symbol))))))
+	       (custom-handle-keyword symbol keyword value
+				      'custom-group))))))
   (run-hooks 'custom-define-hook)
   symbol)
 
@@ -297,6 +281,35 @@ If there already is an entry for that option, overwrite it."
 
 ;;; Properties.
 
+(defun custom-handle-all-keywords (symbol args type)
+  "For customization option SYMBOL, handle keyword arguments ARGS.
+Third argument TYPE is the custom option type."
+  (while args 
+    (let ((arg (car args)))
+      (setq args (cdr args))
+      (unless (symbolp arg)
+	(error "Junk in args %S" args))
+      (let ((keyword arg)
+	    (value (car args)))
+	(unless args
+	  (error "Keyword %s is missing an argument" keyword))
+	(setq args (cdr args))
+	(custom-handle-keyword symbol keyword value type)))))  
+
+(defun custom-handle-keyword (symbol keyword value type)
+  "For customization option SYMBOL, handle KEYWORD with VALUE.
+Fourth argument TYPE is the custom option type."
+  (cond ((eq keyword :group)
+	 (custom-add-to-group value symbol type))
+	((eq keyword :link)
+	 (custom-add-link symbol value))
+	((eq keyword :load)
+	 (custom-add-load symbol value))
+	((eq keyword :tag)
+	 (put symbol 'custom-tag value))
+	(t
+	 (error "Unknown keyword %s" symbol))))  
+
 (defun custom-add-option (symbol option)
   "To the variable SYMBOL add OPTION.
 
@@ -311,6 +324,13 @@ For other types variables, the effect is undefined."
   (let ((links (get symbol 'custom-links)))
     (unless (member widget links)
       (put symbol 'custom-links (cons widget links)))))
+
+(defun custom-add-load (symbol load)
+  "To the custom option SYMBOL add the dependency LOAD.
+LOAD should be either a library file name, or a feature name."
+  (let ((loads (get symbol 'custom-loads)))
+    (unless (member load loads)
+      (put symbol 'custom-loads (cons load loads)))))
 
 ;;; Face Utilities.
 
@@ -526,6 +546,7 @@ See `defface' for the format of SPEC."
   :link '(custom-manual "(custom)Top")
   :link '(url-link :tag "Development Page" 
 		   "http://www.dina.kvl.dk/~abraham/custom/")
+  :prefix "custom-"
   :group 'emacs)
 
 (defcustom custom-define-hook nil
@@ -534,32 +555,6 @@ See `defface' for the format of SPEC."
   :type 'hook)
 
 ;;; Menu support
-
-(defcustom custom-menu-nesting 2
-  "Maximum nesting in custom menus."
-  :type 'integer
-  :group 'customize)
-
-(defun custom-menu-create-entry (entry)
-  "Create a easy menu entry for customization option ENTRY.
-
-ENTRY should be list whose first element is a symbol, and second
-element is a widget type used to customize the symbol.  The widget
-type `custom-group' is recognized, and will return a submenu
-specification containing the group members.
-
-The maximum nesting in the submenu is specified by `custom-menu-nesting'."
-  (let ((item (vector (symbol-name (nth 0 entry))
-		      `(custom-buffer-create (list (quote ,entry)))
-		      t)))
-    (if (and (> custom-menu-nesting 0)
-	     (eq (nth 1 entry) 'custom-group))
-	(let ((custom-menu-nesting (1- custom-menu-nesting))
-	      (symbol (nth 0 entry)))
-	  `(,(symbol-name symbol)
-	    ,item
-	    ,@(mapcar 'custom-menu-create-entry (get symbol 'custom-group))))
-      item)))
 
 (defconst custom-help-menu '("Customize"
 			     ["Update menu..." custom-menu-update t]
@@ -579,18 +574,6 @@ The maximum nesting in the submenu is specified by `custom-menu-nesting'."
       (cons (car custom-help-menu)
 	    (easy-menu-create-keymaps (car custom-help-menu)
 				      (cdr custom-help-menu))))))
-
-(defun custom-menu-update ()
-  "Update customize menu."
-  (interactive)
-  (add-hook 'custom-define-hook 'custom-menu-reset)
-  (let ((menu `(,(car custom-help-menu)
-		,(custom-menu-create-entry '(emacs custom-group))
-		,@(cdr (cdr custom-help-menu)))))
-    (if (fboundp 'add-submenu)
-	(add-submenu '("Help") menu)
-      (define-key global-map [menu-bar help-menu customize-menu]
-	(cons (car menu) (easy-menu-create-keymaps (car menu) (cdr menu)))))))
 
 (custom-menu-reset)
 
