@@ -18,7 +18,8 @@
 	gnus-article-edit-exit.
 	(gnus-article-edit-exit): Confirm and insert original-article-buffer.
 
-	* gnus.el (gnus-parameters): New.
+	* gnus.el (gnus-parameters): New. 
+	Suggested by NAGY Andras <nagya@inf.elte.hu>.
 	(gnus-parameters-get-parameter): New.
 	(gnus-group-find-parameter): Use it.
 
