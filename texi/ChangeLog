@@ -1,3 +1,13 @@
+2001-11-15  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* sieve.texi (Standards): Changed @samp to @uref.
+
+	* message.texi (Security): Changed @code to @uref.
+
+	* gnus-faq.texi: Changed a lot of @file to @uref.
+
+	* emacs-mime.texi (Standards): Changed @samp to @uref.
+
 2001-11-13  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Article Washing): Add `W s'.

@@ -1,6 +1,6 @@
 @c Insert  "\input texinfo" at 1st line before texing this file alone.
 @c -*-texinfo-*-
-@c Copyright (C) 1995 Free Software Foundation, Inc.
+@c Copyright (C) 1995, 2001 Free Software Foundation, Inc.
 @setfilename gnus-faq.info
 
 @node Frequently Asked Questions
@@ -8,7 +8,7 @@
 
 This is the Gnus Frequently Asked Questions list.
 If you have a Web browser, the official hypertext version is at
-@file{http://www.ccs.neu.edu/software/contrib/gnus/}, and has
+@uref{http://www.ccs.neu.edu/software/contrib/gnus/}, and has
 probably been updated since you got this manual.
 
 @menu
@@ -38,19 +38,19 @@ Any of the following locations:
 
 @itemize @minus
 @item
-@file{ftp://ftp.ifi.uio.no/pub/emacs/gnus/gnus.tar.gz}
+@uref{ftp://ftp.ifi.uio.no/pub/emacs/gnus/gnus.tar.gz}
 
 @item
-@file{ftp://ftp.pilgrim.umass.edu/pub/misc/ding/}
+@uref{ftp://ftp.pilgrim.umass.edu/pub/misc/ding/}
 
 @item
 @file{gopher://gopher.pilgrim.umass.edu/11/pub/misc/ding/}
 
 @item
-@file{ftp://aphrodite.nectar.cs.cmu.edu/pub/ding-gnus/}
+@uref{ftp://aphrodite.nectar.cs.cmu.edu/pub/ding-gnus/}
 
 @item
-@file{ftp://ftp.solace.mh.se:/pub/gnu/elisp/}
+@uref{ftp://ftp.solace.mh.se:/pub/gnu/elisp/}
 
 @end itemize
 
@@ -113,7 +113,7 @@ XEmacs          |               19.29           XEmacs
 
 If you have Gnu Emacs 19.28 or earlier, or XEmacs 19.12 or earlier, get
 a recent version of auc-menu.el from
-@file{ftp://ftp.iesd.auc.dk/pub/emacs-lisp/auc-menu.el}, and install it
+@uref{ftp://ftp.iesd.auc.dk/pub/emacs-lisp/auc-menu.el}, and install it
 under the name easymenu.el somewhere early in your load path.
 
 
@@ -130,40 +130,40 @@ on it (unless you use Gnus as your mailer reader, that is). The mailing
 list is mainly for developers and testers.
 
 Gnus has a home World Wide Web page at@*
-@file{http://www.ifi.uio.no/~larsi/ding.html}.
+@uref{http://www.ifi.uio.no/~larsi/ding.html}.
    
 Gnus has a write up in the X Windows Applications FAQ at@*
-@file{http://www.ee.ryerson.ca:8080/~elf/xapps/Q-III.html}.
+@uref{http://www.ee.ryerson.ca:8080/~elf/xapps/Q-III.html}.
    
 The Gnus manual is also available on the World Wide Web. The canonical
 source is in Norway at@*
-@file{http://www.ifi.uio.no/~larsi/ding-manual/gnus_toc.html}.
+@uref{http://www.ifi.uio.no/~larsi/ding-manual/gnus_toc.html}.
 
 There are three mirrors in the United States:
 @enumerate
 @item
-@file{http://www.miranova.com/gnus-man/}
+@uref{http://www.miranova.com/gnus-man/}
 
 @item
-@file{http://www.pilgrim.umass.edu/pub/misc/ding/manual/gnus_toc.html}
+@uref{http://www.pilgrim.umass.edu/pub/misc/ding/manual/gnus_toc.html}
 
 @item
-@file{http://www.rtd.com/~woo/gnus/}
+@uref{http://www.rtd.com/~woo/gnus/}
 
 @end enumerate
 
 PostScript copies of the Gnus Reference card are available from@*
-@file{ftp://ftp.cs.ualberta.ca/pub/oolog/gnus/}.  They are mirrored at@*
-@file{ftp://ftp.pilgrim.umass.edu/pub/misc/ding/refcard/} in the
+@uref{ftp://ftp.cs.ualberta.ca/pub/oolog/gnus/}.  They are mirrored at@*
+@uref{ftp://ftp.pilgrim.umass.edu/pub/misc/ding/refcard/} in the
 United States. And@*
-@file{ftp://marvin.fkphy.uni-duesseldorf.de/pub/gnus/}
+@uref{ftp://marvin.fkphy.uni-duesseldorf.de/pub/gnus/}
 in Germany.
    
 An online version of the Gnus FAQ is available at@*
-@file{http://www.miranova.com/~steve/gnus-faq.html}. Off-line formats
+@uref{http://www.miranova.com/~steve/gnus-faq.html}. Off-line formats
 are also available:@*
-ASCII: @file{ftp://ftp.miranova.com/pub/gnus/gnus-faq}@*
-PostScript: @file{ftp://ftp.miranova.com/pub/gnus/gnus-faq.ps}.
+ASCII: @uref{ftp://ftp.miranova.com/pub/gnus/gnus-faq}@*
+PostScript: @uref{ftp://ftp.miranova.com/pub/gnus/gnus-faq.ps}.
 
 
 @item
@@ -211,7 +211,7 @@ Mailcrypt.
 Mailcrypt is an Emacs interface to PGP.  It works, it installs
 without hassle, and integrates very easily.  Mailcrypt can be
 obtained from@*
-@file{ftp://cag.lcs.mit.edu/pub/patl/mailcrypt-3.4.tar.gz}.
+@uref{ftp://cag.lcs.mit.edu/pub/patl/mailcrypt-3.4.tar.gz}.
 
 @item
 Tools for Mime.
@@ -221,7 +221,7 @@ a two-step process unlike most other packages, so you should
 be prepared to move the byte-compiled code somewhere.  There
 are currently two versions of this package available.  It can
 be obtained from@*
-@file{ftp://ftp.jaist.ac.jp/pub/GNU/elisp/}.
+@uref{ftp://ftp.jaist.ac.jp/pub/GNU/elisp/}.
 Be sure to apply the supplied patch.  It works with Gnus through
 version 5.0.9.  In order for all dependencies to work correctly
 the load sequence is as follows:
@@ -501,7 +501,7 @@ Q3.1  How do I convert my kill files to score files?
 
 @samp{ethanb@@ptolemy.astro.washington.edu, Ethan Bradford} write a
 kill-to-score translator.  It is available from@*
-@file{http://baugi.ifi.uio.no/~larsi/ding-various/gnus-kill-to-score.el}.
+@uref{http://baugi.ifi.uio.no/~larsi/ding-various/gnus-kill-to-score.el}.
 
 
 @item
@@ -594,7 +594,7 @@ Send mail to @file{majordomo@@edmonds.home.cs.ubc.ca} with the following
 line in the body of the message: @emph{get misc gnus-bbdb.el}.
 
 Or get it from the World Wide Web:@*
-@file{http://www.cs.ubc.ca/spider/edmonds/gnus-bbdb.el}.
+@uref{http://www.cs.ubc.ca/spider/edmonds/gnus-bbdb.el}.
 
 @end itemize
 

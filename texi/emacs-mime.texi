@@ -18,7 +18,7 @@
 
 This file documents the Emacs MIME interface functionality.
 
-Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
+Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
@@ -1418,7 +1418,7 @@ if not identical.
 The Emacs @sc{mime} library implements handling of various elements
 according to a (somewhat) large number of RFCs, drafts and standards
 documents.  This chapter lists the relevant ones.  They can all be
-fetched from @samp{http://quimby.gnus.org/notes/}.
+fetched from @uref{http://quimby.gnus.org/notes/}.
 
 @table @dfn
 @item RFC822
