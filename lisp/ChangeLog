@@ -1,3 +1,28 @@
+2003-10-31  Teodor Zlatanov  <tzz@beld.net>
+
+	* spam.el (autoload): autoload the gnus-registry functions we'll
+	need
+	(spam-log-to-registry): new variable for interfacing with the
+	gnus-registry
+	(spam-install-hooks): variable had the wrong customization group
+	(spam-fetch-field-message-id-fast): convenience function for fetch
+	a message ID quickly
+	(spam-log-processing-to-registry): new function
+	(spam-ifile-register-spam-routine)
+	(spam-ifile-register-ham-routine, spam-stat-register-spam-routine)
+	(spam-stat-register-ham-routine)
+	(spam-blacklist-register-routine)
+	(spam-whitelist-register-routine)
+	(spam-bogofilter-register-spam-routine)
+	(spam-bogofilter-register-ham-routine)
+	(spam-spamoracle-learn-ham, spam-spamoracle-learn-spam): add
+	spam-log-processing-to-registry invocations
+
+	* gnus-registry.el: fixed docs in the preface to mention
+	gnus-registry-initialize
+	(gnus-registry-store-extra): remove cached extra entry
+	information when new extra entry is stored
+
 2003-10-29  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-forward-make-body-plain): Fix ARG=1 mode

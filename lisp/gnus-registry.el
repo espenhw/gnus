@@ -37,11 +37,10 @@
 
 ;; Put this in your startup file (~/.gnus.el for instance)
 
-;; (setq gnus-registry-install t
-;;  gnus-registry-max-entries 2500
-;;  gnus-registry-use-long-group-names t)
+;; (setq gnus-registry-max-entries 2500
+;;       gnus-registry-use-long-group-names t)
 
-;; (require 'gnus-registry)
+;; (gnus-registry-initialize)
 
 ;; Then use this in your fancy-split:
 
@@ -480,10 +479,17 @@ The message must have at least one group name."
   (when (gnus-registry-group-count id)
     ;; we now know the trail has at least 1 group name, so it's not empty
     (let ((trail (gethash id gnus-registry-hashtb))
-	  (old-extra (gnus-registry-fetch-extra id)))
+	  (old-extra (gnus-registry-fetch-extra id))
+	  entry-cache)
+      (dolist (crumb trail)
+	(unless (stringp crumb)
+	  (dolist (entry crumb)
+	    (setq entry-cache (gethash (car entry) gnus-registry-hashtb))
+	  (when entry-cache
+	    (remhash id entry-cache))))
       (puthash id (cons extra (delete old-extra trail))
 	       gnus-registry-hashtb)
-      (setq gnus-registry-dirty t))))
+      (setq gnus-registry-dirty t)))))
 
 (defun gnus-registry-store-extra-entry (id key value)
   "Put a specific entry in the extras field of the registry entry for id."
