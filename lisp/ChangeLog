@@ -1,3 +1,76 @@
+Mon Dec 16 14:33:58 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-msg.el (gnus-bug): Insert nntp server type.
+	(gnus-copy-article-buffer): Remove prev/next buttons.
+
+	* gnus-cache.el (gnus-jog-cache): Let the call func be
+	interactive. 
+
+	* gnus-art.el (gnus-summary-save-in-pipe): Include number of
+	articles. 
+	(gnus-article-add-buttons): Don't add buttons to already
+	buttonized areas.
+
+	* nntp.el (nntp-open-connection): Allow `C-g' to continue.
+
+	* nnbabyl.el (nnbabyl-retrieve-headers): Wouldn't find all
+	articles sometimes.
+
+	* gnus-sum.el (gnus-data-compute-positions): Reinstated.
+	(gnus-remove-thread): Do the right thing with dummy roots.
+
+	* nndoc.el (nndoc-request-article): Only return valid articles.
+
+	* nnfolder.el (nnfolder-delete-mail): Wouldn't delete From lines. 
+
+	* gnus-topic.el (gnus-topic-find-groups): Ignore nil groups. 
+
+	* nnfolder.el (nnfolder-save-mail): Quote all "From " lines.
+
+Sat Dec 14 11:49:21 1996  David Moore  <dmoore@ucsd.edu>
+
+	* gnus-nocem.el (gnus-nocem-groups):
+	news.admin.net-abuse.bulletins is to replace
+	news.admin.net-abuse.announce for nocemish postings.
+
+Mon Dec 16 13:38:38 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-move-inbox): Message at end.
+
+	* gnus-sum.el (gnus-summary-refer-parent-article): Use
+	"in-reply-to" header.
+
+	* gnus-topic.el (gnus-topic-set-parameters): Enter into dribble. 
+
+	* gnus-sum.el (gnus-summary-save-newsrc): Change.
+	(gnus-summary-catchup): Only catch up the limited articles. 
+	(gnus-simplify-subject-fuzzy-regexp): Changed to nil.
+	(gnus-simplify-buffer-fuzzy): Ignore nil
+	gnus-simplify-subject-fuzzy-regexp. 
+
+	* gnus-srvr.el (gnus-server-prepare): Don't insert servers twice.
+
+Thu Dec 12 18:18:11 1996  David Moore  <dmoore@ucsd.edu>
+
+	* gnus-start.el (gnus-setup-news): Use gnus-make-hashtable.
+	(gnus-update-active-hashtb-from-killed): ditto.
+	(gnus-newsrc-to-gnus-format): ditto.
+	
+ 	* gnus-bcklg.el (gnus-backlog-setup): ditto.
+
+	* gnus-sum.el (gnus-create-xref-hashtb): ditto.
+
+	* gnus-move.el (gnus-move-group-to-server): ditto.
+
+	* gnus-util.el (gnus-create-hash-size): Power of 2 hashtables can
+	be _significantly_ faster than 2^x-1 tables on many risc
+	machines.  Any gains of 2^x-1 are comparably small on other
+	machines. 
+
+Fri Dec 13 05:05:03 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.75 is released.
+
 Fri Dec 13 04:49:21 1996  Andre Deparade  <deparade@i3.informatik.rwth-aachen.de>
 
 	* gnus-cite.el (gnus-cited-text-button-line-format-alist): Make %b

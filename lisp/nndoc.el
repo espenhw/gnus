@@ -182,20 +182,21 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	  beg)
       (set-buffer buffer)
       (erase-buffer)
-      (if (stringp article)
-	  nil
-	(insert-buffer-substring 
-	 nndoc-current-buffer (car entry) (nth 1 entry))
-	(insert "\n")
-	(setq beg (point))
-	(insert-buffer-substring 
-	 nndoc-current-buffer (nth 2 entry) (nth 3 entry))
-	(goto-char beg)
-	(when nndoc-prepare-body-function
-	  (funcall nndoc-prepare-body-function))
-	(when nndoc-article-transform-function
-	  (funcall nndoc-article-transform-function article))
-	t))))
+      (when entry
+	(if (stringp article)
+	    nil
+	  (insert-buffer-substring 
+	   nndoc-current-buffer (car entry) (nth 1 entry))
+	  (insert "\n")
+	  (setq beg (point))
+	  (insert-buffer-substring 
+	   nndoc-current-buffer (nth 2 entry) (nth 3 entry))
+	  (goto-char beg)
+	  (when nndoc-prepare-body-function
+	    (funcall nndoc-prepare-body-function))
+	  (when nndoc-article-transform-function
+	    (funcall nndoc-article-transform-function article))
+	  t)))))
 
 (deffoo nndoc-request-group (group &optional server dont-check)
   "Select news GROUP."

@@ -48,7 +48,7 @@
 (defun gnus-backlog-setup ()
   "Initialize backlog variables."
   (unless gnus-backlog-hashtb
-    (setq gnus-backlog-hashtb (make-vector 1023 0))))
+    (setq gnus-backlog-hashtb (gnus-make-hashtable 1024))))
 
 (gnus-add-shutdown 'gnus-backlog-shutdown 'gnus)
 

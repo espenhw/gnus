@@ -328,6 +328,8 @@ header line with the old Message-ID."
 	  (copy-to-buffer gnus-article-copy (point-min) (point-max))
 	  (set-buffer gnus-article-copy)
 	  (article-delete-text-of-type 'annotation)
+	  (gnus-remove-text-with-property 'gnus-prev)
+	  (gnus-remove-text-with-property 'gnus-next)
 	  (insert
 	   (prog1
 	       (format "%s" (buffer-string))
@@ -745,6 +747,7 @@ If YANK is non-nil, include the original article."
       (when yank
 	(gnus-inews-yank-articles (list (cdr gnus-article-current)))))))
 
+(defvar nntp-server-type)
 (defun gnus-bug ()
   "Send a bug report to the Gnus maintainers."
   (interactive)
@@ -763,7 +766,10 @@ If YANK is non-nil, include the original article."
     (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
     (forward-line 1)
     (insert (gnus-version) "\n")
-    (insert (emacs-version))
+    (insert (emacs-version) "\n")
+    (when (and (boundp 'nntp-server-type)
+	       (stringp nntp-server-type))
+      (insert nntp-server-type))
     (insert "\n\n\n\n\n")
     (gnus-debug)
     (goto-char (point-min))

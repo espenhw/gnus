@@ -832,7 +832,7 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
 	 (gnus-read-active-file))
 
     (unless gnus-active-hashtb
-      (setq gnus-active-hashtb (make-vector 4095 0)))
+      (setq gnus-active-hashtb (gnus-make-hashtable 4096)))
 
     ;; Initialize the cache.
     (when gnus-use-cache
@@ -1503,7 +1503,7 @@ newsgroup."
 
 ;; Enter all dead groups into the hashtb.
 (defun gnus-update-active-hashtb-from-killed ()
-  (let ((hashtb (setq gnus-active-hashtb (make-vector 4095 0)))
+  (let ((hashtb (setq gnus-active-hashtb (gnus-make-hashtable 4096)))
 	(lists (list gnus-killed-list gnus-zombie-list))
 	killed)
     (while lists
@@ -1683,7 +1683,7 @@ newsgroup."
 		    ;; if group is moderated, stick in moderation table
 		    (when (= (following-char) ?m)
 		      (unless gnus-moderated-hashtb
-			(setq gnus-moderated-hashtb (make-vector 127 0)))
+			(setq gnus-moderated-hashtb (gnus-make-hashtable)))
 		      (gnus-sethash (symbol-name group) t
 				    gnus-moderated-hashtb)))
 		(set group nil)))
@@ -1898,7 +1898,7 @@ If FORCE is non-nil, the .newsrc file is read."
   (setq gnus-newsrc-options-n nil)
 
   (unless gnus-active-hashtb
-    (setq gnus-active-hashtb (make-vector 4095 0)))
+    (setq gnus-active-hashtb (gnus-make-hashtable 4096)))
   (let ((buf (current-buffer))
 	(already-read (> (length gnus-newsrc-alist) 1))
 	group subscribed options-symbol newsrc Options-symbol

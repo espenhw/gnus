@@ -457,13 +457,13 @@ time saver for large mailboxes.")
      (save-excursion
        (nnmail-search-unix-mail-delim-backward)
        (if leave-delim (progn (forward-line 1) (point))
-	 (match-beginning 0)))
+	 (point)))
      (progn
        (forward-line 1)
        (if (nnmail-search-unix-mail-delim)
 	   (if (and (not (bobp)) leave-delim)
 	       (progn (forward-line -2) (point))
-	     (match-beginning 0))
+	     (point))
 	 (point-max))))))
 
 ;; When scanning, we're not looking t immediately switch into the group - if
@@ -539,7 +539,7 @@ time saver for large mailboxes.")
       (goto-char (point-min)))
     ;; Quote all "From " lines in the article.
     (forward-line 1)
-    (while (re-search-forward delim nil t)
+    (while (re-search-forward "^From " nil t)
       (beginning-of-line)
       (insert "> "))
     (setq save-list group-art-list)

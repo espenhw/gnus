@@ -63,7 +63,7 @@ Update the .newsrc.eld file to reflect the change of nntp server."
     (gnus-message 7 "Translating %s..." group)
     (when (gnus-request-group group nil to-server)
       (setq to-active (gnus-parse-active)
-	    hashtb (make-vector 1023 0))
+	    hashtb (gnus-make-hashtable 1024))
       ;; Fetch the headers from the `to-server'.
       (when (and to-active
 		 (setq type (gnus-retrieve-headers

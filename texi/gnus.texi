@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.75 Manual
+@settitle Red Gnus 0.76 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.75 Manual
+@title Red Gnus 0.76 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Red Gnus 0.75
+This manual corresponds to Red Gnus 0.76
 
 @end ifinfo
 
@@ -4488,6 +4488,13 @@ Don't gather loose threads.
 If non-@code{nil}, all threads will be hidden when the summary buffer is
 generated.
 
+@item gnus-thread-expunge-below
+@vindex gnus-thread-expunge-below
+All threads that have a total score (as defined by
+@code{gnus-thread-score-function}) less than this number will be
+expunged.  This variable is @code{nil} by default, which means that no
+threads are expunged.
+
 @item gnus-thread-hide-killed
 @vindex gnus-thread-hide-killed
 if you kill a thread and this variable is non-@code{nil}, the subtree
@@ -4504,6 +4511,14 @@ in a new thread.
 @vindex gnus-thread-indent-level
 This is a number that says how much each sub-thread should be indented.
 The default is 4.
+
+@item gnus-parse-headers-hook
+@vindex gnus-parse-headers-hook
+Hook run before parsing any headers.  The default value is
+@code{(gnus-decode-rfc1522)}, which means that QPized headers will be
+slightly decoded in a hackish way.  This is likely to change in the
+future when Gnus becomes @sc{MIME}ified.
+
 @end table
 
 
@@ -6600,6 +6615,9 @@ name, a @code{From} header and a @code{Subject} header.
 @kindex B r (Summary)
 @findex gnus-summary-respool-article
 Respool the mail article (@code{gnus-summary-move-article}).
+@code{gnus-summary-respool-default-method} will be used as the default
+method when respooling.  This variable is @code{nil} by default, which
+means that the current group method will be used instead.
 
 @item B w
 @itemx e
@@ -6836,7 +6854,8 @@ Exit the current group and update all information on the group
 called before doing much of the exiting, and calls
 @code{gnus-summary-expire-articles} by default.
 @code{gnus-summary-exit-hook} is called after finishing the exiting
-process. 
+process.  @code{gnus-group-no-more-groups-hook} is run when returning to
+group mode having no more (unread) groups.
 
 @item Z E
 @itemx Q
@@ -6897,9 +6916,10 @@ Exit the group and go to the previous group
 @item Z s
 @kindex Z s (Summary)
 @findex gnus-summary-save-newsrc
-Save the @file{.newsrc} file(s).  The current number of read/marked
-articles in the summary buffer will also be saved.  This will make exit
-without updating (the @kbd{Q} command) worthless.
+Save the current number of read/marked articles in the dribble buffer
+(@code{gnus-summary-save-newsrc}).  If given a prefix, also save the
+@file{.newsrc} file(s).  Using this command will make exit without
+updating (the @kbd{Q} command) worthless.
 @end table
 
 @vindex gnus-exit-group-hook
@@ -10691,6 +10711,12 @@ manually entered data.
 @item gnus-summary-default-score
 @vindex gnus-summary-default-score
 Default score of an article, which is 0 by default.
+
+@item gnus-summary-expunge-below
+@vindex gnus-summary-expunge-below
+Don't display the summary lines of articles that have scores lower than
+this variable.  This is @code{nil} by default, which means that no
+articles will be hidden.
 
 @item gnus-score-over-mark
 @vindex gnus-score-over-mark

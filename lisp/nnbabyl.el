@@ -85,7 +85,7 @@
       (while (setq article (pop articles))
 	(setq art-string (nnbabyl-article-string article))
 	(set-buffer nnbabyl-mbox-buffer)
-	(beginning-of-line)
+	(end-of-line)
 	(when (or (search-forward art-string nil t)
 		  (search-backward art-string nil t))
 	  (unless (re-search-backward delim nil t)
@@ -581,7 +581,7 @@
 			       (buffer-substring
 				(match-beginning 1) (match-end 1))))
 			(cdadar alist)))
-	    (setcdr (cadar alist) (1+ number)))
+	    (setcdr (cadar alist) number))
 	  (setq alist (cdr alist)))
 	
 	;; We go through the mbox and make sure that each and 

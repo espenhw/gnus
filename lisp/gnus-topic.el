@@ -188,16 +188,17 @@ with some simple extensions.
     (setq level (or level 7))
     ;; We go through the newsrc to look for matches.
     (while groups
-      (setq entry (gnus-gethash (setq group (pop groups)) gnus-newsrc-hashtb)
-	    info (nth 2 entry)
-	    params (gnus-info-params info)
-	    active (gnus-active group)
-            unread (or (car entry)
-		       (and (not (equal group "dummy.group"))
-			    active
-			    (- (1+ (cdr active)) (car active))))
-	    clevel (or (gnus-info-level info)
-		       (if (member group gnus-zombie-list) 8 9)))
+      (when (setq group (pop groups))
+	(setq entry (gnus-gethash group gnus-newsrc-hashtb)
+	      info (nth 2 entry)
+	      params (gnus-info-params info)
+	      active (gnus-active group)
+	      unread (or (car entry)
+			 (and (not (equal group "dummy.group"))
+			      active
+			      (- (1+ (cdr active)) (car active))))
+	      clevel (or (gnus-info-level info)
+			 (if (member group gnus-zombie-list) 8 9))))
       (and 
        unread				; nil means that the group is dead.
        (<= clevel level)
@@ -302,7 +303,9 @@ with some simple extensions.
       (nconc (cadr top) (list nil)))
     (unless (nthcdr 3 (cadr top))
       (nconc (cadr top) (list nil)))
-    (setcar (nthcdr 3 (cadr top)) parameters)))
+    (setcar (nthcdr 3 (cadr top)) parameters)
+    (gnus-dribble-enter
+     (format "(gnus-topic-set-parameters %s '%S)" topic parameters))))
 
 (defun gnus-group-topic-parameters (group)
   "Compute the group parameters for GROUP taking into account inheritance from topics."
@@ -699,7 +702,7 @@ articles in the topic and its subtopics."
 	  (forward-line -1)
 	  (when (setq alist (assoc (gnus-current-topic) gnus-topic-alist))
 	    (setcdr alist (gnus-delete-first group (cdr alist))))))
-      ;; If the group is subscribed.  then we enter it into the topics.
+      ;; If the group is subscribed we enter it into the topics.
       (when (and (< level gnus-level-zombie)
 		 (>= oldlevel gnus-level-zombie))
 	(let* ((prev (gnus-group-group-name))

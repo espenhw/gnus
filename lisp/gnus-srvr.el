@@ -206,14 +206,15 @@ The following commands are available:
     (setq gnus-inserted-opened-servers nil)
     ;; First we do the real list of servers.
     (while alist
-      (push (cdr (setq server (pop alist))) done)
+      (push (caar alist) done)
+      (cdr (setq server (pop alist))) 
       (when (and server (car server) (cdr server))
 	(gnus-server-insert-server-line (car server) (cdr server))))
     ;; Then we insert the list of servers that have been opened in
     ;; this session.
     (while opened 
-      (unless (member (caar opened) done)
-	(push (caar opened) done)
+      (unless (member (cadaar opened) done)
+	(push (cadaar opened) done)
 	(gnus-server-insert-server-line 
 	 (setq op-ser (format "%s:%s" (caaar opened) (nth 1 (caar opened))))
 	 (caar opened))

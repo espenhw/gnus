@@ -546,8 +546,15 @@ The directory to save in defaults to `gnus-article-save-directory'."
 	(cond ((eq command 'default)
 	       gnus-last-shell-command)
 	      (command command)
-	      (t (read-string "Shell command on article: "
-			      gnus-last-shell-command))))
+	      (t (read-string 
+		  (format
+		   "Shell command on %s: "
+		   (if (and gnus-number-of-articles-to-be-saved
+			    (> gnus-number-of-articles-to-be-saved 1))
+		       (format "these %d articles"
+			       gnus-number-of-articles-to-be-saved)
+		     "this article"))
+		  gnus-last-shell-command))))
   (when (string-equal command "")
     (setq command gnus-last-shell-command))
   (gnus-eval-in-buffer-window gnus-article-buffer
@@ -1734,8 +1741,9 @@ specified by `gnus-button-alist'."
 	  (let* ((start (and entry (match-beginning (nth 1 entry))))
 		 (end (and entry (match-end (nth 1 entry))))
 		 (from (match-beginning 0)))
-	    (when (or (eq t (nth 1 entry))
-		      (eval (nth 1 entry)))
+	    (when (and (or (eq t (nth 1 entry))
+			   (eval (nth 1 entry)))
+		       (not (get-text-property (point) 'gnus-callback)))
 	      ;; That optional form returned non-nil, so we add the
 	      ;; button. 
 	      (gnus-article-add-button 

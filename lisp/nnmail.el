@@ -577,6 +577,7 @@ parameter.  It should return nil, `warn' or `delete'."
 				     (buffer-string)))
 		      (error "%s" (buffer-string)))
 		    (setq tofile nil)))))))
+	(message "Getting mail from %s...done" inbox)
 	(and errors
 	     (buffer-name errors)
 	     (kill-buffer errors))

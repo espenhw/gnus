@@ -383,18 +383,22 @@ Cache the result as a text property stored in DATE."
       (insert "%"))
     (buffer-string)))
 
-;; Make a hash table (default and minimum size is 255).
+;; Make a hash table (default and minimum size is 256).
 ;; Optional argument HASHSIZE specifies the table size.
 (defun gnus-make-hashtable (&optional hashsize)
-  (make-vector (if hashsize (max (gnus-create-hash-size hashsize) 255) 255) 0))
+  (make-vector (if hashsize (max (gnus-create-hash-size hashsize) 256) 256) 0))
 
-;; Make a number that is suitable for hashing; bigger than MIN and one
-;; less than 2^x.
+;; Make a number that is suitable for hashing; bigger than MIN and
+;; equal to some 2^x.  Many machines (such as sparcs) do not have a
+;; hardware modulo operation, so they implement it in software.  On
+;; many sparcs over 50% of the time to intern is spent in the modulo.
+;; Yes, it's slower than actually computing the hash from the string!
+;; So we use powers of 2 so people can optimize the modulo to a mask.
 (defun gnus-create-hash-size (min)
   (let ((i 1))
     (while (< i min)
       (setq i (* 2 i)))
-    (1- i)))
+    i))
 
 (defcustom gnus-verbose 7
   "*Integer that says how verbose Gnus should be.

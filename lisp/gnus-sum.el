@@ -261,7 +261,7 @@ will not be marked."
   :group 'gnus-summary-format
   :type 'integer)
 
-(defcustom gnus-simplify-subject-fuzzy-regexp ""
+(defcustom gnus-simplify-subject-fuzzy-regexp nil
   "*Strings to be removed when doing fuzzy matches.
 This can either be a regular expression or list of regular expressions
 that will be removed from subject strings if fuzzy subject
@@ -1189,13 +1189,16 @@ If RE-ONLY is non-nil, strip leading `Re:'s only."
     (re-search-forward "^ *\\(re\\|fwd\\)[[{(^0-9]*[])}]?[:;] *" nil t)
     (goto-char (match-beginning 0))
     (while (or
-	    (looking-at gnus-simplify-subject-fuzzy-regexp)
+	    (and 
+	     gnus-simplify-subject-fuzzy-regexp
+	     (looking-at gnus-simplify-subject-fuzzy-regexp))
 	    (looking-at "^ *\\(re\\|fwd\\)[[{(^0-9]*[])}]?[:;] *")
 	    (looking-at "^[[].*: .*[]]$"))
       (goto-char (point-min))
-      (while (re-search-forward gnus-simplify-subject-fuzzy-regexp
-				nil t)
-	(replace-match "" t t))
+      (when gnus-simplify-subject-fuzzy-regexp
+	(while (re-search-forward gnus-simplify-subject-fuzzy-regexp
+				  nil t)
+	  (replace-match "" t t)))
       (goto-char (point-min))
       (while (re-search-forward "^ *\\(re\\|fw\\|fwd\\)[[{(^0-9]*[])}]?[:;] *"
 				nil t)
@@ -1975,7 +1978,7 @@ increase the score of each group you read."
 	["Exit and goto prev group" gnus-summary-prev-group t]
 	["Reselect group" gnus-summary-reselect-current-group t]
 	["Rescan group" gnus-summary-rescan-group t]
-	["Save newsrc" gnus-summary-save-newsrc t])))
+	["Update dribble" gnus-summary-save-newsrc t])))
 
     (run-hooks 'gnus-summary-menu-hook)))
 
@@ -2245,6 +2248,17 @@ The following commands are available:
   (while data
     (setcar (nthcdr 2 (car data)) (+ offset (nth 2 (car data))))
     (setq data (cdr data))))
+
+(defun gnus-data-compute-positions ()
+  "Compute the positions of all articles."
+  (let ((data gnus-newsgroup-data)
+	pos)
+    (while data
+      (when (setq pos (text-property-any
+		       (point-min) (point-max)
+		       'gnus-number (gnus-data-number (car data))))
+	(gnus-data-set-pos (car data) (+ pos 3)))
+      (setq data (cdr data)))))
 
 (defun gnus-summary-article-pseudo-p (article)
   "Say whether this article is a pseudo article or not."
@@ -2874,7 +2888,7 @@ If NO-DISPLAY, don't generate a summary buffer."
   "Gather threads by looking at Subject headers."
   (if (not gnus-summary-make-false-root)
       threads
-    (let ((hashtb (gnus-make-hashtable 1023))
+    (let ((hashtb (gnus-make-hashtable 1024))
 	  (prev threads)
 	  (result threads)
 	  subject hthread whole-subject)
@@ -2904,8 +2918,8 @@ If NO-DISPLAY, don't generate a summary buffer."
 
 (defun gnus-gather-threads-by-references (threads)
   "Gather threads by looking at References headers."
-  (let ((idhashtb (gnus-make-hashtable 1023))
-	(thhashtb (gnus-make-hashtable 1023))
+  (let ((idhashtb (gnus-make-hashtable 1024))
+	(thhashtb (gnus-make-hashtable 1024))
 	(prev threads)
 	(result threads)
 	ids references id gthread gid entered ref)
@@ -3317,8 +3331,8 @@ If NO-DISPLAY, don't generate a summary buffer."
 		  ;; If we use dummy roots, then we have to remove the
 		  ;; dummy root as well.
 		  (when (eq gnus-summary-make-false-root 'dummy)
-		    ;; Uhm.
-		    )
+		    (gnus-delete-line)
+		    (gnus-data-compute-positions))
 		  (setq thread (cdr thread))
 		  (while thread
 		    (gnus-remove-thread-1 (car thread))
@@ -4102,7 +4116,7 @@ If WHERE is `summary', the summary mode line format will be used."
 The resulting hash table is returned, or nil if no Xrefs were found."
   (let* ((virtual (gnus-virtual-group-p from-newsgroup))
 	 (prefix (if virtual "" (gnus-group-real-prefix from-newsgroup)))
-	 (xref-hashtb (make-vector 63 0))
+	 (xref-hashtb (gnus-make-hashtable))
 	 start group entry number xrefs header)
     (while headers
       (setq header (pop headers))
@@ -4940,13 +4954,13 @@ The prefix argument ALL means to select all articles."
 	(unless (gnus-ephemeral-group-p gnus-newsgroup-name)
 	  (gnus-group-update-group group))))))
 
-(defun gnus-summary-save-newsrc ()
-  "Save the .newsrc file.
-The current number of read/marked articles in the summary buffer
-will also be saved."
+(defun gnus-summary-save-newsrc (&optional force)
+  "Save the current number of read/marked articles in the dribble buffer.
+If FORCE (the prefix), also save the .newsrc file(s)."
   (interactive)
   (gnus-summary-update-info)
-  (gnus-save-newsrc-file))
+  (when force
+    (gnus-save-newsrc-file)))
 
 (defun gnus-summary-exit (&optional temporary)
   "Exit reading current newsgroup, and then return to group selection mode.
@@ -6164,22 +6178,22 @@ The difference between N and the number of articles fetched is returned."
     (while (and (> n 0)
 		(not error))
       (setq header (gnus-summary-article-header))
-      (setq ref
-	    ;; If we try to find the parent of the currently
-	    ;; displayed article, then we take a look at the actual
-	    ;; References header, since this is slightly more
-	    ;; reliable than the References field we got from the
-	    ;; server.
-	    (if (and (eq (mail-header-number header)
-			 (cdr gnus-article-current))
-		     (equal gnus-newsgroup-name
-			    (car gnus-article-current)))
-		(save-excursion
-		  (set-buffer gnus-original-article-buffer)
-		  (nnheader-narrow-to-headers)
-		  (prog1
-		      (message-fetch-field "references")
-		    (widen)))
+      (if (and (eq (mail-header-number header)
+		   (cdr gnus-article-current))
+	       (equal gnus-newsgroup-name
+		      (car gnus-article-current)))
+	  ;; If we try to find the parent of the currently
+	  ;; displayed article, then we take a look at the actual
+	  ;; References header, since this is slightly more
+	  ;; reliable than the References field we got from the
+	  ;; server.
+	  (save-excursion
+	    (set-buffer gnus-original-article-buffer)
+	    (nnheader-narrow-to-headers)
+	    (unless (setq ref (message-fetch-field "references"))
+	      (setq ref (message-fetch-field "in-reply-to")))
+	    (widen))
+	(setq ref
 	      ;; It's not the current article, so we take a bet on
 	      ;; the value we got from the server.
 	      (mail-header-references header)))
@@ -7716,11 +7730,14 @@ even ticked and dormant ones."
 	t))))
 
 (defun gnus-summary-catchup (&optional all quietly to-here not-mark)
-  "Mark all articles not marked as unread in this newsgroup as read.
-If prefix argument ALL is non-nil, all articles are marked as read.
+  "Mark all unread articles in this newsgroup as read.
+If prefix argument ALL is non-nil, ticked and dormant articles will 
+also be marked as read.
 If QUIETLY is non-nil, no questions will be asked.
 If TO-HERE is non-nil, it should be a point in the buffer.  All
 articles before this point will be marked as read.
+Note that this function will only catch up the unread article
+in the current summary buffer limitation.
 The number of articles marked as read is returned."
   (interactive "P")
   (gnus-set-global-variables)
@@ -7750,8 +7767,6 @@ The number of articles marked as read is returned."
 		      (if to-here (< (point) to-here) t)
 		      (gnus-summary-mark-article-as-read gnus-catchup-mark)
 		      (gnus-summary-find-next (not all)))))
-	    (unless to-here
-	      (setq gnus-newsgroup-unreads nil))
 	    (gnus-set-mode-line 'summary))
 	  t))
     (gnus-summary-position-point)))

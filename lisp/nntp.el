@@ -652,8 +652,10 @@ It will prompt for a password."
   (run-hooks 'nntp-prepare-server-hook)
   (let* ((pbuffer (nntp-make-process-buffer buffer))
 	 (process
-	  (ignore-errors
-	    (funcall nntp-open-connection-function pbuffer))))
+	  (condition-case ()
+	      (funcall nntp-open-connection-function pbuffer)
+	    (error nil)
+	    (quit nil))))
     (when process
       (process-kill-without-query process)
       (nntp-wait-for process "^.*\n" buffer nil t)
