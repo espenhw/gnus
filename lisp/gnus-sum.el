@@ -8328,6 +8328,10 @@ If TO-NEWSGROUP is string, do not prompt for a newsgroup to move to.
 If SELECT-METHOD is non-nil, do not move to a specific newsgroup, but
 re-spool using this method.
 
+When called interactively with TO-NEWSGROUP being nil, the value of
+the variable `gnus-move-split-methods' is used for finding a default
+for the target newsgroup.
+
 For this function to work, both the current newsgroup and the
 newsgroup that you want to move to have to support the `request-move'
 and `request-accept' functions.
@@ -8556,6 +8560,9 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 (defun gnus-summary-copy-article (&optional n to-newsgroup select-method)
   "Move the current article to a different newsgroup.
 If TO-NEWSGROUP is string, do not prompt for a newsgroup to move to.
+When called interactively, if TO-NEWSGROUP is nil, use the value of
+the variable `gnus-move-split-methods' for finding a default target
+newsgroup.
 If SELECT-METHOD is non-nil, do not move to a specific newsgroup, but
 re-spool using this method."
   (interactive "P")

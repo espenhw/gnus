@@ -1,3 +1,9 @@
+2002-03-29  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-sum.el (gnus-summary-move-article)
+	(gnus-summary-copy-article): Mention `gnus-move-split-methods' in
+	the doc string.
+
 2002-03-28  Simon Josefsson  <jas@extundo.com>
 
 	* mml-sec.el (mml-secure-message): Search after
