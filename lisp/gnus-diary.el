@@ -1,6 +1,6 @@
 ;;; gnus-diary.el --- Wrapper around the NNDiary Gnus backend
 
-;; Copyright (c) 2001, 2002 Free Software Foundation, Inc.
+;; Copyright (c) 2001, 2002, 2003 Free Software Foundation, Inc.
 ;; Copyright (C) 1999, 2000, 2001 Didier Verna.
 
 ;; Author:        Didier Verna <didier@xemacs.org>

@@ -1,6 +1,6 @@
 ;;; nndiary.el --- A diary backend for Gnus
 
-;; Copyright (C) 1999, 2000, 2001
+;; Copyright (C) 1999, 2000, 2001, 2003
 ;;        Free Software Foundation, Inc.
 
 ;; Author:        Didier Verna <didier@xemacs.org>
