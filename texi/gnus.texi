@@ -17784,7 +17784,7 @@ default is @code{("news.lists.filters" "news.admin.net-abuse.bulletins"
 There are many people issuing NoCeM messages.  This list says what
 people you want to listen to.  The default is @code{("Automoose-1"
 "clewis@@ferret.ocunix.on.ca" "cosmo.roadkill" "SpamHippo"
-"hweede@snafu.de")}; fine, upstanding citizens all of them.
+"hweede@@snafu.de")}; fine, upstanding citizens all of them.
 
 Known despammers that you can put in this list are listed at
 @uref{http://www.xs4all.nl/~rosalind/nocemreg/nocemreg.html}.
