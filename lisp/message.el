@@ -1479,6 +1479,12 @@ no, only reply back to the author."
 	  "^|? *---+ +Message text follows: +---+ *|?$")
   "A regexp that matches the separator before the text of a failed message.")
 
+(defvar message-field-fillers
+  '((To message-fill-address)
+    (Cc message-fill-address)
+    (From message-fill-address))
+  "Alist of header names/filler functions.")
+
 (defvar message-header-format-alist
   `((Newsgroups)
     (To . message-fill-address)
@@ -1644,6 +1650,8 @@ see `message-narrow-to-headers-or-head'."
 (defun message-narrow-to-field ()
   "Narrow the buffer to the header on the current line."
   (beginning-of-line)
+  (while (looking-at "[ \t]")
+    (forward-line -1))
   (narrow-to-region
    (point)
    (progn
@@ -2208,7 +2216,6 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-v" 'message-delete-not-region)
   (define-key message-mode-map "\C-c\C-z" 'message-kill-to-signature)
   (define-key message-mode-map "\M-\r" 'message-newline-and-reformat)
-  ;;(define-key message-mode-map "\M-q" 'message-fill-paragraph)
   (define-key message-mode-map [remap split-line]  'message-split-line)
 
   (define-key message-mode-map "\C-c\C-a" 'mml-attach-file)
@@ -2872,7 +2879,9 @@ Prefix arg means justify as well."
   (interactive (list (if current-prefix-arg 'full)))
   (if (if (boundp 'filladapt-mode) filladapt-mode)
       nil
-    (message-newline-and-reformat arg t)
+    (if (message-point-in-header-p)
+	(message-fill-field)
+      (message-newline-and-reformat arg t))
     t))
 
 ;; Is it better to use `mail-header-end'?
@@ -5111,22 +5120,7 @@ Headers already prepared in the buffer are not modified."
 	  ": "
 	  (if (consp value) (car value) value)
 	  "\n")
-  (message-fill-header-address))
-
-(defun message-fill-header-address ()
-  (save-restriction
-    (message-narrow-to-field)
-    (while (not (eobp))
-      (message-skip-to-next-address)
-      (let (last)
-	(if (and (> (current-column) 78)
-		 last)
-	    (progn
-	      (save-excursion
-		(goto-char last)
-		(insert "\n\t"))
-	      (setq last (1+ (point))))
-	  (setq last (1+ (point))))))))
+  (message-fill-field-address))
 
 (defun message-split-line ()
   "Split current line, moving portion beyond point vertically down.
@@ -5136,27 +5130,58 @@ If the current line has `message-yank-prefix', insert it on the new line."
       (split-line message-yank-prefix) ;; Emacs 21.3.50+ supports arg.
     (error
      (split-line))))
-     
+
 (defun message-fill-header (header value)
+  (insert (capitalize (symbol-name header))
+	  ": "
+	  (if (consp value) (car value) value)
+	  "\n")
+  (message-fill-field))
+
+(defun message-field-name ()
+  (save-excursion
+    (goto-char (point-min))
+    (when (looking-at "\\([^:]+\\):")
+      (intern (capitalize (match-string 1))))))
+
+(defun message-fill-field ()
+  (save-excursion
+    (save-restriction
+      (message-narrow-to-field)
+      (let ((field-name (message-field-name)))
+	(funcall (or (cadr (assq field-name message-field-fillers))
+		     'message-fill-field-general))))))
+
+(defun message-fill-field-address ()
+  (while (not (eobp))
+    (message-skip-to-next-address)
+    (let (last)
+      (if (and (> (current-column) 78)
+	       last)
+	  (progn
+	    (save-excursion
+	      (goto-char last)
+	      (insert "\n\t"))
+	    (setq last (1+ (point))))
+	(setq last (1+ (point)))))))
+  
+(defun message-fill-field-general ()
   (let ((begin (point))
 	(fill-column 78)
 	(fill-prefix "\t"))
-    (insert (capitalize (symbol-name header))
-	    ": "
-	    (if (consp value) (car value) value)
-	    "\n")
-    (save-restriction
-      (narrow-to-region begin (point))
-      (fill-region-as-paragraph begin (point))
-      ;; Tapdance around looong Message-IDs.
-      (forward-line -1)
-      (when (looking-at "[ \t]*$")
-	(message-delete-line))
-      (goto-char begin)
-      (re-search-forward ":" nil t)
-      (when (looking-at "\n[ \t]+")
-	(replace-match " " t t))
-      (goto-char (point-max)))))
+    (while (and (search-forward "\n" nil t)
+		(not (eobp)))
+      (replace-match " " t t))
+    (fill-region-as-paragraph begin (point-max))
+    ;; Tapdance around looong Message-IDs.
+    (forward-line -1)
+    (when (looking-at "[ \t]*$")
+      (message-delete-line))
+    (goto-char begin)
+    (re-search-forward ":" nil t)
+    (when (looking-at "\n[ \t]+")
+      (replace-match " " t t))
+    (goto-char (point-max))))
 
 (defun message-shorten-1 (list cut surplus)
   "Cut SURPLUS elements out of LIST, beginning with CUTth one."

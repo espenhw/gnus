@@ -4,6 +4,9 @@
 	(message-fill-header-address): Refactor.
 	(message-fill-address): Use it.
 	(message-delete-address): Use it.
+	(message-fill-header-general): Refactor.
+	(message-fill-field-address): Rename.
+	(message-narrow-to-field): Find the start of the header. 
 
 	* rfc2047.el (rfc2047-field-value): Strip props.
 
