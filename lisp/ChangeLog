@@ -1,3 +1,7 @@
+2003-01-08  Jesper Harder  <harder@ifa.au.dk>
+
+	* mm-decode.el (mm-inline-media-tests): .xpm is 'x-xpixmap'.
+
 2003-01-07  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnrss.el (nnrss-group-alist): Add and clear up.
