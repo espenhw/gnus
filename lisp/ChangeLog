@@ -1,5 +1,16 @@
 2002-09-26  Simon Josefsson  <jas@extundo.com>
 
+	* imap.el (imap-parse-resp-text-code): The UNSEEN value in
+	SELECT/EXAMINE is first unseen article, not number of unseen
+	articles.  Make them distinct by renaming the former to
+	`first-unseen' instead of `unseen'.
+
+	* nnimap.el (nnimap-retrieve-groups): Get uidvalidity and unseen
+	too.
+	(nnimap-retrieve-groups): Don't used cached data if uidvalidity
+	changed.
+	(nnimap-retrieve-groups): Store uidvalidity and unseen data too.
+
 	* gnus-int.el (gnus-server-unopen-status): Defcustom.
 
 	* mml-sec.el (mml-signencrypt-style): Docstring to font-lock

@@ -975,19 +975,26 @@ function is generally only called when Gnus is shutting down."
 			     'asyncgroups
 			   'slowgroups)
 			 (list group (imap-mailbox-status-asynch
-				      group 'uidnext nnimap-server-buffer))))
+				      group '(uidvalidity uidnext unseen) 
+				      nnimap-server-buffer))))
 	  (dolist (asyncgroup asyncgroups)
 	    (let ((group (nth 0 asyncgroup))
 		  (tag   (nth 1 asyncgroup))
 		  new old)
 	      (when (imap-ok-p (imap-wait-for-tag tag nnimap-server-buffer))
-		(if (nnimap-string-lessp-numerical
-		     (car (gnus-gethash
-			   (concat server group) nnimap-mailbox-info))
-		     (imap-mailbox-get 'uidnext group nnimap-server-buffer))
+		(if (or (not (string=
+			      (nth 0 (gnus-gethash (concat server group) 
+						   nnimap-mailbox-info))
+			      (imap-mailbox-get 'uidvalidity group 
+						nnimap-server-buffer)))
+			(not (string=
+			      (nth 1 (gnus-gethash (concat server group) 
+						   nnimap-mailbox-info))
+			      (imap-mailbox-get 'uidnext group 
+						nnimap-server-buffer))))
 		    (push (list group) slowgroups)
-		  (insert (cdr (gnus-gethash (concat server group)
-					     nnimap-mailbox-info))))))))
+		  (insert (nth 3 (gnus-gethash (concat server group)
+					       nnimap-mailbox-info))))))))
 	(dolist (group slowgroups)
 	  (if nnimap-retrieve-groups-asynchronous
 	      (setq group (car group)))
@@ -1007,10 +1014,18 @@ function is generally only called when Gnus is shutting down."
 		(when nnimap-retrieve-groups-asynchronous
 		  (gnus-sethash
 		   (concat server group)
-		   (cons (or (imap-mailbox-get
+		   (list (or (imap-mailbox-get
+			      'uidvalidity group nnimap-server-buffer)
+			     (imap-mailbox-status
+			      group 'uidvalidity nnimap-server-buffer))
+			 (or (imap-mailbox-get
 			      'uidnext group nnimap-server-buffer)
 			     (imap-mailbox-status
 			      group 'uidnext nnimap-server-buffer))
+			 (or (imap-mailbox-get
+			      'unseen group nnimap-server-buffer)
+			     (imap-mailbox-status
+			      group 'unseen nnimap-server-buffer))
 			 str)
 		   nnimap-mailbox-info)))))))
     (gnus-message 5 "nnimap: Checking mailboxes...done")

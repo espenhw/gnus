@@ -2133,7 +2133,7 @@ Return nil if no complete line has arrived."
 	  ((search-forward "UIDNEXT \\([0-9]+\\)" nil t)
 	   (imap-mailbox-put 'uidnext (match-string 1)))
 	  ((search-forward "UNSEEN " nil t)
-	   (imap-mailbox-put 'unseen (read (current-buffer))))
+	   (imap-mailbox-put 'first-unseen (read (current-buffer))))
 	  ((looking-at "UIDVALIDITY \\([0-9]+\\)")
 	   (imap-mailbox-put 'uidvalidity (match-string 1)))
 	  ((search-forward "READ-ONLY" nil t)
