@@ -1,3 +1,8 @@
+2004-10-11  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-group.el (gnus-group-delete-group): Change "\t." to "  " in
+	doc string.
+
 2004-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-uu.el (mm-uu-dissect-text-parts): Support all text/* types.

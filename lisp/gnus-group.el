@@ -2332,7 +2332,7 @@ ADDRESS."
   "Delete the current group.  Only meaningful with editable groups.
 If FORCE (the prefix) is non-nil, all the articles in the group will
 be deleted.  This is \"deleted\" as in \"removed forever from the face
-of the Earth\".	 There is no undo.  The user will be prompted before
+of the Earth\".  There is no undo.  The user will be prompted before
 doing the deletion.
 Note that you also have to specify FORCE if you want the group to
 be removed from the server, even when it's empty."
