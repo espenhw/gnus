@@ -266,7 +266,7 @@ all.  This may very well take some time.")
     (while (and articles is-old)
       (when (setq article
 		  (assq (setq number (pop articles)) 
-			nnml-article-to-file-alist))
+			nnml-article-file-alist))
 	(setq article (concat nnml-current-directory (cdr article)))
 	(when (setq mod-time (nth 5 (file-attributes article)))
 	  (if (and (nnml-deletable-article-p newsgroup number)
@@ -274,7 +274,7 @@ all.  This may very well take some time.")
 			 (nnmail-expired-article-p newsgroup mod-time force
 						   nnml-inhibit-expiry)))
 	      (progn
-		(nnheader-message 5 "Deleting article %s in %s..."
+		(nnheader-message 5 "Deleting article %s in %s"
 				  article newsgroup)
 		(condition-case ()
 		    (funcall nnmail-delete-file-function article)
@@ -290,7 +290,6 @@ all.  This may very well take some time.")
 			   (1+ (cdr active)))))
       (nnmail-save-active nnml-group-alist nnml-active-file))
     (nnml-save-nov)
-    (message "")
     (nconc rest articles)))
 
 (deffoo nnml-request-move-article 

@@ -315,7 +315,8 @@ time saver for large mailboxes.")
 		(nnfolder-delete-mail))
 	    (push (car articles) rest)))
 	(setq articles (cdr articles)))
-      (nnheader-message 5 "Deleting articles...done")
+      (unless nnfolder-inhibit-expiry
+	(nnheader-message 5 "Deleting articles...done"))
       (nnfolder-save-buffer)
       ;; Find the lowest active article in this group.
       (let* ((active (cadr (assoc newsgroup nnfolder-group-alist)))

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.81 Manual
+@settitle Red Gnus 0.82 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.81 Manual
+@title Red Gnus 0.82 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Red Gnus 0.81
+This manual corresponds to Red Gnus 0.82
 
 @end ifinfo
 
@@ -6928,9 +6928,9 @@ Exit the group and go to the previous group
 @kindex Z s (Summary)
 @findex gnus-summary-save-newsrc
 Save the current number of read/marked articles in the dribble buffer
-(@code{gnus-summary-save-newsrc}).  If given a prefix, also save the
-@file{.newsrc} file(s).  Using this command will make exit without
-updating (the @kbd{Q} command) worthless.
+and then save the dribble buffer (@code{gnus-summary-save-newsrc}).  If
+given a prefix, also save the @file{.newsrc} file(s).  Using this
+command will make exit without updating (the @kbd{Q} command) worthless.
 @end table
 
 @vindex gnus-exit-group-hook
@@ -8750,7 +8750,8 @@ default for reasons of security.
 
 Since Red Gnus is an alpha release, it is to be expected to lose mail.
 (No Gnus release since (ding) Gnus 0.10 (or something like that) have
-lost mail, I think, but that's not the point.)  By not deleting the
+lost mail, I think, but that's not the point.  (Except certain versions
+of Red Gnus.))  By not deleting the
 Incoming* files, one can be sure to not lose mail -- if Gnus totally
 whacks out, one can always recover what was lost.
 
@@ -12918,7 +12919,8 @@ by default.
 @item gnus-nocem-groups
 @vindex gnus-nocem-groups
 Gnus will look for NoCeM messages in the groups in this list.  The
-default is @code{("alt.nocem.misc" "news.admin.net-abuse.announce")}. 
+default is @code{("news.lists.filters" "news.admin.net-abuse.bulletins"
+"alt.nocem.misc" "news.admin.net-abuse.announce")}. 
 
 @item gnus-nocem-issuers
 @vindex gnus-nocem-issuers

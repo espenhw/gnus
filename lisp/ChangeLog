@@ -1,3 +1,47 @@
+Fri Jan 17 00:04:47 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnheader.el (nnheader-find-nov-line): Do the right thing with
+	short buffers.
+
+	* nnkiboze.el (nnkiboze-generate-group): Supress duplicate
+	suppression. 
+	(nnkiboze-generate-group): Message better.
+
+	* gnus-sum.el (gnus-get-newsgroup-headers-xover): Don't always
+	fetch more heads.
+	(gnus-select-newsgroup): Use it.
+
+	* nnmail.el (nnmail-get-new-mail): Weird file-truename problem.
+
+	* gnus-sum.el (gnus-summary-caesar-message): Dox fix.
+	(gnus-articles-to-read): Limit length of prompt.
+
+	* message.el (message-followup): Fold case before comparing
+	"world" to Distribution.
+
+	* gnus-sum.el (gnus-summary-save-newsrc): Save dribble buffer.
+
+	* nnfolder.el (nnfolder-request-expire-articles): Better message. 
+
+	* gnus-nocem.el (gnus-nocem-load-cache): Interactive.
+
+Thu Jan 16 23:48:05 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-move-inbox): Use `nnmail-pop-password'. 
+
+Wed Jan 15 18:41:42 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnml.el (nnml-request-expire-articles): Typo.
+	(nnml-request-expire-articles): Don't blank out messages so
+	often. 
+
+	* nnsoup.el (nnsoup-request-type): Let commands like `a' work
+	better. 
+
+Wed Jan 15 05:33:23 1997  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.81 is released.
+
 Wed Jan 15 02:57:18 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-topic.el (gnus-topic-indent): Don't remove all groups from

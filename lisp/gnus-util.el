@@ -433,13 +433,6 @@ jabbering all the time."
 	(sit-for duration))))
   nil)
 
-(defun gnus-parent-id (references &optional n)
-  "Return the last Message-ID in REFERENCES.
-If N, return the Nth ancestor instead."
-  (when references
-    (let ((ids (gnus-split-references references)))
-      (car (last ids (or n 1))))))
-
 (defun gnus-split-references (references)
   "Return a list of Message-IDs in REFERENCES."
   (let ((beg 0)
@@ -448,6 +441,13 @@ If N, return the Nth ancestor instead."
       (push (substring references (match-beginning 0) (setq beg (match-end 0)))
 	    ids))
     (nreverse ids)))
+
+(defun gnus-parent-id (references &optional n)
+  "Return the last Message-ID in REFERENCES.
+If N, return the Nth ancestor instead."
+  (when references
+    (let ((ids (inline (gnus-split-references references))))
+      (car (last ids (or n 1))))))
 
 (defun gnus-buffer-live-p (buffer)
   "Say whether BUFFER is alive or not."

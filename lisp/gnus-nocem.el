@@ -240,6 +240,7 @@ matches an previously scanned and verified nocem message."
 
 (defun gnus-nocem-load-cache ()
   "Load the NoCeM cache."
+  (interactive)
   (unless gnus-nocem-alist
     ;; The buffer doesn't exist, so we create it and load the NoCeM
     ;; cache.  

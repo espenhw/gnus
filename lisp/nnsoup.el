@@ -236,6 +236,10 @@ The SOUP packet file name will be inserted at the %s.")
 
 (deffoo nnsoup-request-type (group &optional article)
   (nnsoup-possibly-change-group group)
+  ;; Try to guess the type based on the first articl ein the group.
+  (when (not article)
+    (setq article
+	  (cdaar (cddr (assoc group nnsoup-group-alist)))))
   (if (not article)
       'unknown
     (let ((kind (gnus-soup-encoding-kind 

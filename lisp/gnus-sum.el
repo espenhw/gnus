@@ -3719,7 +3719,7 @@ If READ-ALL is non-nil, all articles in the group are selected."
 				     (not (numberp gnus-fetch-old-headers)))
 				    (> (length articles) 1))))))
 		(gnus-get-newsgroup-headers-xover 
-		 articles nil nil gnus-newsgroup-name)
+		 articles nil nil gnus-newsgroup-name t)
 	      (gnus-get-newsgroup-headers)))
       (gnus-message 5 "Fetching headers for %s...done" gnus-newsgroup-name)
 
@@ -3796,7 +3796,8 @@ If READ-ALL is non-nil, all articles in the group are selected."
 			 (read-string
 			  (format
 			   "How many articles from %s (default %d): "
-			   gnus-newsgroup-name number))))
+			   (gnus-limit-string gnus-newsgroup-name 35)
+			   number))))
 		    (if (string-match "^[ \t]*$" input) number input)))
 		 ((and (> scored marked) (< scored number)
 		       (> (- scored number) 20))
@@ -4358,7 +4359,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 ;; Goes through the xover lines and returns a list of vectors
 (defun gnus-get-newsgroup-headers-xover (sequence &optional 
 						  force-new dependencies
-						  group)
+						  group also-fetch-heads)
   "Parse the news overview data in the server buffer, and return a
 list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
   ;; Get the Xref when the users reads the articles since most/some
@@ -4398,14 +4399,15 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
       ;; article may not have been generated yet, so this may fail.
       ;; We work around this problem by retrieving the last few
       ;; headers using HEAD.
-      (if (not sequence)
-	  (nreverse headers)
-	(let ((gnus-nov-is-evil t)
-	      (nntp-nov-is-evil t))
-	  (nconc
-	   (nreverse headers)
-	   (when (gnus-retrieve-headers sequence group)
-	     (gnus-get-newsgroup-headers))))))))
+      (when also-fetch-heads
+	(if (not sequence)
+	    (nreverse headers)
+	  (let ((gnus-nov-is-evil t)
+		(nntp-nov-is-evil t))
+	    (nconc
+	     (nreverse headers)
+	     (when (gnus-retrieve-headers sequence group)
+	       (gnus-get-newsgroup-headers)))))))))
 
 (defun gnus-article-get-xrefs ()
   "Fill in the Xref value in `gnus-current-headers', if necessary.
@@ -4850,11 +4852,13 @@ The prefix argument ALL means to select all articles."
 
 (defun gnus-summary-save-newsrc (&optional force)
   "Save the current number of read/marked articles in the dribble buffer.
+The dribble buffer will then be saved.
 If FORCE (the prefix), also save the .newsrc file(s)."
   (interactive "P")
   (gnus-summary-update-info t)
-  (when force
-    (gnus-save-newsrc-file)))
+  (if force
+      (gnus-save-newsrc-file)
+    (gnus-dribble-save)))
 
 (defun gnus-summary-exit (&optional temporary)
   "Exit reading current newsgroup, and then return to group selection mode.
@@ -6540,7 +6544,7 @@ If ARG is a positive number, turn MIME processing on."
 
 (defun gnus-summary-caesar-message (&optional arg)
   "Caesar rotate the current article by 13.
-The numerical prefix specifies how manu places to rotate each letter
+The numerical prefix specifies how many places to rotate each letter
 forward."
   (interactive "P")
   (gnus-set-global-variables)

@@ -507,7 +507,7 @@ parameter.  It should return nil, `warn' or `delete'."
 	(if popmail
 	    (progn
 	      (when (and nnmail-pop-password
-			 nnmail-internal-password)
+			 (not nnmail-internal-password))
 		(setq nnmail-internal-password nnmail-pop-password))
 	      (when (and nnmail-pop-password-required
 			 (not nnmail-internal-password))
@@ -1447,7 +1447,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	;; spool, or the file exists.  We can't check for the
 	;; existence of POPped mail.
 	(when (or (string-match "^po:" spool)
-		  (and (file-exists-p spool)
+		  (and (file-exists-p (file-truename spool))
 		       (> (nnheader-file-size (file-truename spool)) 0)))
 	  (nnheader-message 3 "%s: Reading incoming mail..." method)
 	  (when (and (nnmail-move-inbox spool)

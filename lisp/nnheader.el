@@ -342,6 +342,10 @@ the line could be found."
 	       (setq min (point)))
 	      (t
 	       (setq found 'yes)))))
+    ;; We may be at the first line.
+    (when (and (not num)
+	       (not (eobp)))
+      (setq num (read cur)))
     ;; Now we may have found the article we're looking for, or we
     ;; may be somewhere near it.
     (when (and (not (eq found 'yes))

@@ -2916,9 +2916,10 @@ If TO-NEWSGROUPS, use that as the new Newsgroups line."
 		 (string-match "<[^>]+>" gnus-warning))
 	(setq message-id (match-string 0 gnus-warning)))
       ;; Remove bogus distribution.
-      (and (stringp distribution)
-	   (string-match "world" distribution)
-	   (setq distribution nil))
+      (when (and (stringp distribution)
+		 (let ((case-fold-search t))
+		   (string-match "world" distribution)))
+	(setq distribution nil))
       ;; Remove any (buggy) Re:'s that are present and make a
       ;; proper one.
       (when (string-match "^[ \t]*[Rr][Ee]:[ \t]*" subject)
