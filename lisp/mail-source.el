@@ -687,7 +687,10 @@ If ARGS, PROMPT is used as an argument to `format'."
 (defvar mail-source-report-new-mail-timer nil)
 (defvar mail-source-report-new-mail-idle-timer nil)
 
-(eval-when-compile (require 'timer))
+(eval-when-compile 
+  (if (featurep 'xemacs)
+      (require 'itimer)
+    (require 'timer)))
 
 (defun mail-source-start-idle-timer ()
   ;; Start our idle timer if necessary, so we delay the check until the

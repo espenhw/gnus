@@ -28,7 +28,9 @@
 (require 'nnvirtual)
 (require 'gnus-sum)
 (eval-when-compile
-  (require 'timer)
+  (if (featurep 'xemacs)
+      (require 'itimer)
+    (require 'timer))
   (require 'cl)
   (require 'gnus-score))
 

@@ -34,7 +34,7 @@
 (require 'nnmail)
 (require 'gnus-util)
 (eval-and-compile
-  (if (string-match "XEmacs" (emacs-version))
+  (if (featurep 'xemacs)
       (require 'itimer)
     (require 'timer)))
 
