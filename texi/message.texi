@@ -991,7 +991,7 @@ address (not primary one) is used in the @code{From} field.
 @vindex message-required-mail-headers
 @xref{News Headers}, for the syntax of this variable.  It is
 @code{(From Date Subject (optional . In-Reply-To) Message-ID Lines
-(optional . X-Mailer))} by default.
+(optional . User-Agent))} by default.
 
 @item message-ignored-mail-headers
 @vindex message-ignored-mail-headers
@@ -1085,15 +1085,10 @@ will use @code{system-name} to determine the name of the system.  If
 this isn't a fully qualified domain name (FQDN), Message will use
 @code{mail-host-address} as the FQDN of the machine.
 
-@item X-Newsreader
-@cindex X-Newsreader
+@item User-Agent
+@cindex User-Agent
 This optional header will be filled out according to the
 @code{message-newsreader} local variable.
-
-@item X-Mailer
-This optional header will be filled out according to the
-@code{message-mailer} local variable, unless there already is an
-@code{X-Newsreader} header present.
 
 @item In-Reply-To
 This optional header is filled out using the @code{Date} and @code{From}
