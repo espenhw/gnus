@@ -1174,22 +1174,22 @@ for new groups, and subscribe the new groups as zombies."
     (let ((groups (or gnus-default-subscribed-newsgroups
 		      gnus-backup-default-subscribed-newsgroups))
 	  group)
-      (when (eq groups t)
-	;; If t, we subscribe (or not) all groups as if they were new.
-	(mapatoms
-	 (lambda (sym)
-	   (when (setq group (symbol-name sym))
-	     (let ((do-sub (gnus-matches-options-n group)))
-	       (cond
-		((eq do-sub 'subscribe)
-		 (gnus-sethash group group gnus-killed-hashtb)
-		 (gnus-call-subscribe-functions
-		  gnus-subscribe-options-newsgroup-method group))
-		((eq do-sub 'ignore)
-		 nil)
-		(t
-		 (push group gnus-killed-list))))))
-	 gnus-active-hashtb)
+      (if (eq groups t)
+	  ;; If t, we subscribe (or not) all groups as if they were new.
+	  (mapatoms
+	   (lambda (sym)
+	     (when (setq group (symbol-name sym))
+	       (let ((do-sub (gnus-matches-options-n group)))
+		 (cond
+		  ((eq do-sub 'subscribe)
+		   (gnus-sethash group group gnus-killed-hashtb)
+		   (gnus-call-subscribe-functions
+		    gnus-subscribe-options-newsgroup-method group))
+		  ((eq do-sub 'ignore)
+		   nil)
+		  (t
+		   (push group gnus-killed-list))))))
+	   gnus-active-hashtb)
 	(dolist (group groups)
 	  ;; Only subscribe the default groups that are activated.
 	  (when (gnus-active group)
