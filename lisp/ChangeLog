@@ -1,3 +1,8 @@
+2000-10-09 22:50:05  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* base64.el (base64-decode-region): Just give a message if the end
+	is not sane.
+
 2000-10-09 20:09:11  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2047.el (rfc2047-encode-message-header): Move fold into
