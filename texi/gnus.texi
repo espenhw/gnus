@@ -15222,6 +15222,9 @@ instance:
 ("INBOX.lists.\\1"     "^Sender: owner-\\([a-z-]+\\)@@")
 @end lisp
 
+The first element can also be the symbol @code{junk} to indicate that
+matching messages should simply be deleted.  Use with care.
+
 The second element can also be a function.  In that case, it will be
 called with the first element of the rule as the argument, in a buffer
 containing the headers of the article.  It should return a non-nil value
