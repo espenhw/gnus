@@ -1,5 +1,11 @@
 2000-08-10 20:22:09  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnvirtual.el (nnvirtual-request-expire-articles): Return the
+	list of unexpired articles.
+
+	* gnus-group.el (gnus-group-expire-articles-1): Return the list of
+	un-expired articles. 
+
 	* gnus-sum.el (gnus-summary-reparent-thread): Narrow to the
 	headers. 
 

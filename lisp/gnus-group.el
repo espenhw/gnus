@@ -2787,7 +2787,9 @@ or nil if no action could be taken."
 	    (gnus-request-expire-articles
 	     (gnus-uncompress-sequence (cdr expirable)) group))))
 	(gnus-close-group group))
-      (gnus-message 6 "Expiring articles in %s...done" group))))
+      (gnus-message 6 "Expiring articles in %s...done" group)
+      ;; Return the list of un-expired articles.
+      (cdr expirable))))
 
 (defun gnus-group-expire-all-groups ()
   "Expire all expirable articles in all newsgroups."
