@@ -1,5 +1,8 @@
 2003-04-20  Simon Josefsson  <jas@extundo.com>
 
+	* imap.el (imap-gssapi-open, imap-ssl-open): Erase buffer before
+	starting process, like imap-kerberos4-open does.
+
 	* mml-smime.el, rfc1843.el, dig.el, smime.el, uudecode.el: Fix
 	license template.
 

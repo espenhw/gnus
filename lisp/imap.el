@@ -499,7 +499,7 @@ sure of changing the value of `foo'."
 			(set-buffer buffer) ;; XXX "blue moon" nntp.el bug
 			(goto-char (point-min))
 			;; cyrus 1.6.x (13? < x <= 22) queries capabilities
-		        (or (while (looking-at "^C:")
+			(or (while (looking-at "^C:")
 			      (forward-line))
 			    t)
 			;; cyrus 1.6 imtest print "S: " before server greeting
@@ -542,6 +542,7 @@ sure of changing the value of `foo'."
 	cmd done)
     (while (and (not done) (setq cmd (pop cmds)))
       (message "Opening GSSAPI IMAP connection with `%s'..." cmd)
+      (erase-buffer)
       (let* ((port (or port imap-default-port))
 	     (coding-system-for-read imap-coding-system-for-read)
 	     (coding-system-for-write imap-coding-system-for-write)
@@ -607,16 +608,17 @@ sure of changing the value of `foo'."
 	cmd done)
     (while (and (not done) (setq cmd (pop cmds)))
       (message "imap: Opening SSL connection with `%s'..." cmd)
+      (erase-buffer)
       (let* ((port (or port imap-default-ssl-port))
 	     (coding-system-for-read imap-coding-system-for-read)
 	     (coding-system-for-write imap-coding-system-for-write)
 	     (process-connection-type nil)
 	     process)
 	(when (progn
-		(setq process (start-process 
+		(setq process (start-process
 			       name buffer shell-file-name
 			       shell-command-switch
-			       (format-spec cmd 
+			       (format-spec cmd
 					    (format-spec-make
 					     ?s server
 					     ?p (number-to-string port)))))
