@@ -36,12 +36,12 @@
   :type 'string)
 
 (defcustom gnus-convert-image-to-x-face-command "giftopnm %s | ppmnorm | pnmscale -width 48 -height 48 | ppmtopgm | pgmtopbm | pbmtoxbm | compface"
-  "Command for converting a GIF to an X-Face."
+  "Command for converting an image to an X-Face."
   :group 'gnus-fun
   :type 'string)
 
 (defcustom gnus-convert-image-to-face-command "djpeg %s | ppmnorm | pnmscale -width 48 -height 48 | ppmquant %d | pnmtopng"
-  "Command for converting a GIF to an X-Face."
+  "Command for converting an image to an X-Face."
   :group 'gnus-fun
   :type 'string)
 
@@ -85,7 +85,7 @@ Output to the current buffer, replace text, and don't mingle error."
 
 ;;;###autoload
 (defun gnus-x-face-from-file (file)
-  "Insert an X-Face header based on a GIF image file."
+  "Insert an X-Face header based on an image file."
   (interactive "fImage file name: ")
   (when (file-exists-p file)
     (gnus-shell-command-to-string
@@ -94,7 +94,7 @@ Output to the current buffer, replace text, and don't mingle error."
 
 ;;;###autoload
 (defun gnus-face-from-file (file)
-  "Return an Face header based on a JPEG image file."
+  "Return an Face header based on an image file."
   (interactive "fImage file name: ")
   (when (file-exists-p file)
     (let ((done nil)
