@@ -1,3 +1,70 @@
+2003-05-02  Dave Love  <fx@gnu.org>
+
+	* rfc2047.el (rfc2047-q-encode-region, rfc2047-decode): Use
+	mm-with-unibyte-current-buffer.
+
+	* sieve.el (sieve-manage-mode-menu): Define before use.
+
+	* mml-smime.el (message-narrow-to-headers): Autoload.
+
+	* mm-util.el (mm-coding-system-p): Don't override nil from
+	coding-system-p.
+	(mm-mule4-p, mm-disable-multibyte-mule4)
+	(mm-with-unibyte-current-buffer-mule4): Deleted.
+	(mm-multibyte-p): Use defun, not defalias.
+	(mm-make-temp-file): Moved to group at top of file.
+
+	* gnus-cite.el (gnus-art): Require.
+
+	* gnus-ems.el (gnus-get-buffer-create)
+	(nnheader-find-etc-directory, message-text-with-property):
+	Autoload.
+	(gnus-tmp-unread, gnus-tmp-replied, gnus-tmp-score-char)
+	(gnus-tmp-indentation, gnus-tmp-opening-bracket, gnus-tmp-lines)
+	(gnus-tmp-name, gnus-tmp-closing-bracket, gnus-tmp-subject-or-nil)
+	(gnus-check-before-posting): Only defvar when compiling.
+
+	* gnus-int.el (gnus-agent-expire): Autoload, don't defun.
+
+	* gnus-util.el (rmail-default-rmail-file, mm-text-coding-system):
+	Defvar when compiling.
+	(gnus-output-to-rmail): Require mm-util.
+
+	* mail-source.el (mail-source-callback): Use mm-make-temp-file.
+	(mail-source-make-complex-temp-name): Deleted.
+
+	* message.el (message-use-idna): Use mm-coding-system-p.
+	(message-tokenize-header, message-make-organization)
+	(message-make-from):  Use with-temp-buffer.
+	(message-set-work-buffer): Deleted.
+	(message-fill-paragraph): Use `if' not `and' for compiler warning.
+	(message-check-news-header-syntax): Remove useless lambda.
+	(message-forward-make-body): Use mm-disable-multibyte,
+	mm-with-unibyte-current-buffer, mm-enable-multibyte.
+	(message-replace-chars-in-string): Deleted.
+
+	* mm-extern.el (mm-extern-local-file): Use mm-disable-multibyte.
+	(mm-extern-url): Use mm-with-unibyte-current-buffer,
+	mm-disable-multibyte.
+	(mm-extern-anon-ftp): Use mm-disable-multibyte.
+
+	* mml1991.el (mml1991-mailcrypt-encrypt, mml1991-gpg-encrypt): Use
+	mm-with-unibyte-current-buffer.
+
+	* mml2015.el (mml): Require.
+	(mml2015-mailcrypt-encrypt, mml2015-gpg-encrypt): Use
+	mm-with-unibyte-current-buffer.
+
+	* nnheader.el (gnus-util): Require.
+
+	* nntp.el (format-spec, format-spec-make, open-tls-stream):
+	Autoload.
+
+	* rfc2231.el (mail-header-remove-comments, mm-encode-body)
+	(mail-header-remove-whitespace): Autoload.
+
+	* sieve-manage.el (starttls-negotiate): Autoload.
+
 2003-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnrss.el (nnrss-find-rss-via-syndic8): Indent.
