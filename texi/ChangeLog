@@ -1,3 +1,8 @@
+2001-07-13 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (RSS): Add.
+	From Christoph Conrad <cc@cli.de>.
+
 2001-07-13 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Incorporating Old Mail): Add index.
