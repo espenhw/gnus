@@ -170,6 +170,7 @@ rules as described later).")
 
     (banner (choice :tag "Banner"
 		    (const signature)
+		    symbol
 		    regexp
 		    (const :tag "None" nil)) "\
 Regular expression matching banners to be removed from articles.")

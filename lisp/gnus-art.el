@@ -219,6 +219,13 @@ asynchronously.	 The compressed face will be piped to this command."
   :type '(choice regexp (const nil))
   :group 'gnus-article-washing)
 
+(defcustom gnus-article-banner-alist nil
+  "Banner alist for stripping.
+For example, 
+     ((egroups . \"^[ \\t\\n]*-------------------+\\\\( eGroups Sponsor -+\\\\)?....\\n\\\\(.+\\n\\\\)+\"))"
+  :type '(repeat (cons symbol regexp))
+  :group 'gnus-article-washing)
+
 (defcustom gnus-emphasis-alist
   (let ((format
 	 "\\(\\s-\\|^\\|[-\"]\\|\\s(\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*[.,]?\\)%s\\)\\(\\s-\\|[-,;:\"]\\s-\\|[?!.]+\\s-\\|\\s)\\)")
@@ -1705,6 +1712,10 @@ always hide."
 	      (widen)
 	      (forward-line -1)
 	      (delete-region (point) (point-max))))
+	   ((symbolp banner)
+	    (if (setq banner (cdr (assq banner gnus-article-banner-alist)))
+		(while (re-search-forward banner nil t)
+		  (delete-region (match-beginning 0) (match-end 0)))))
 	   ((stringp banner)
 	    (while (re-search-forward banner nil t)
 	      (delete-region (match-beginning 0) (match-end 0))))))))))
