@@ -23575,7 +23575,8 @@ former).  The manual is unambiguous, but it can be confusing.
 
 @c Local Variables:
 @c mode: texinfo
-@c buffer-file-coding-system: iso-latin-1
+@c coding: iso-8859-1
+@c buffer-file-coding-system: iso-8859-1
 @c End:
 % LocalWords:  BNF mucho detailmenu cindex kindex kbd
 % LocalWords:  findex Gnusae vindex dfn dfn samp nntp setq nnspool nntpserver

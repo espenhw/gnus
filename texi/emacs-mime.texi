@@ -1479,5 +1479,6 @@ Content-Disposition Header Field
 
 @c Local Variables:
 @c mode: texinfo
-@c buffer-file-coding-system: iso-latin-1
+@c coding: iso-8859-1
+@c buffer-file-coding-system: iso-8859-1
 @c End:

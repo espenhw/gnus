@@ -1,3 +1,8 @@
+2001-12-18 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* ChangeLog, gnus.texi, emacs-mime.texi: Local Variables `coding'
+	MUST be added!
+
 2001-12-17  Josh Huber  <huber@alum.wpi.edu>
 
 	* ChangeLog: changed coding to buffer-file-coding-system
@@ -1943,5 +1948,6 @@ Thu Feb 25 00:28:49 1999  Shenghuo ZHU  <zsh@cs.rochester.edu>
 	* gnus.texi (Mail Folders): Addition.
 
 ;; Local Variables:
+;; coding: iso-2022-7bit
 ;; buffer-file-coding-system: iso-2022-7bit
 ;; End:
