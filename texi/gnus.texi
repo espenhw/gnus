@@ -11560,6 +11560,8 @@ configuration to the example above:
       (nntp-via-rlogin-command "ssh")
 @end lisp
 
+See also @code{nntp-via-rlogin-command-switches}.
+
 If you're behind a firewall, but have direct access to the outside world
 through a wrapper command like "runsocks", you could open a socksified
 telnet connection to the news server as follows:
@@ -12059,6 +12061,14 @@ you need to connect to a firewall machine first.
 @vindex nntp-via-rlogin-command
 Command used to log in on the intermediate host.  The default is
 @samp{rsh}, but @samp{ssh} is a popular alternative.
+
+@item nntp-via-rlogin-command-switches
+@vindex nntp-via-rlogin-command-switches
+List of strings to be used as the switches to
+@code{nntp-via-rlogin-command}.  The default is @code{nil}.  Set this to
+@samp{("-t")} if you use @samp{ssh} for @code{nntp-via-rlogin-command}
+and the telnet command requires a pseudo-tty allocation on an
+intermediate host.
 @end table
 
 @item nntp-open-via-telnet-and-telnet

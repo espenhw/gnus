@@ -102,6 +102,12 @@ using and indirect connection method (nntp-open-via-*).")
 This command is used by the `nntp-open-via-rlogin-and-telnet' method.
 The default is \"rsh\", but \"ssh\" is a popular alternative.")
 
+(defvoo nntp-via-rlogin-command-switches nil
+  "*Switches given to the rlogin command `nntp-via-rlogin-command'.
+Set this to (\"-t\") if you use \"ssh\" for `nntp-via-rlogin-command' and
+the telnet command requires a pseudo-tty allocation on an intermediate
+host.")
+
 (defvoo nntp-via-telnet-command "telnet"
   "*Telnet command used to connect to an intermediate host.
 This command is used by the `nntp-open-via-telnet-and-telnet' method.")
@@ -1605,17 +1611,21 @@ Please refer to the following variables to customize the connection:
 - `nntp-end-of-line'."
   (let ((command `(,nntp-via-address
 		   ,nntp-telnet-command
-		   ,@nntp-telnet-switches
-		   ,nntp-address ,nntp-port-number))
+		   ,@nntp-telnet-switches))
 	proc)
-    (and nntp-via-user-name
-	 (setq command `("-l" ,nntp-via-user-name ,@command)))
+    (when nntp-via-user-name
+      (setq command `("-l" ,nntp-via-user-name ,@command)))
+    (when nntp-via-rlogin-command-switches
+      (setq command (append nntp-via-rlogin-command-switches command)))
     (push nntp-via-rlogin-command command)
     (and nntp-pre-command
 	 (push nntp-pre-command command))
     (setq proc (apply 'start-process "nntpd" buffer command))
     (save-excursion
       (set-buffer buffer)
+      (nntp-wait-for-string "^r?telnet")
+      (process-send-string proc (concat "open " nntp-address
+					" " nntp-port-number "\n"))
       (nntp-wait-for-string "^\r*20[01]")
       (beginning-of-line)
       (delete-region (point-min) (point))

@@ -1,3 +1,7 @@
+2002-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (NNTP): Add nntp-via-rlogin-command-switches.
+
 2002-06-27  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Mail Back End Variables): Document
