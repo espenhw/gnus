@@ -1,3 +1,11 @@
+2002-11-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-draft-coding-system): Default to
+	iso-2022-7bit.
+
+	* mm-util.el (mm-auto-save-coding-system): Undo last change to
+	restore the default value to emacs-mule or escape-quoted.
+
 2002-11-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-encrypt-body): Inhibit encrypting of
