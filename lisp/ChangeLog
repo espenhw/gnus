@@ -1,3 +1,8 @@
+2003-04-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-button-alist): Add nntp: urls.
+	(gnus-header-button-alist): Ditto.
+
 2003-04-17  Dave Love  <fx@gnu.org>
 
 	* gnus-util.el (gnus-string-equal): Revert last change.
