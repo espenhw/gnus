@@ -40,16 +40,6 @@
 (require 'gnus)	; for the definitions of group content classification and spam processors
 (require 'message)			;for the message-fetch-field functions
 
-;; Attempt to load BBDB macros
-(eval-when-compile
-  (condition-case nil
-      (require 'bbdb-com)
-    (file-error 
-     (defalias 'spam-BBDB-register-routine 'ignore)
-     (defalias 'spam-enter-ham-BBDB 'ignore)
-     (defalias 'bbdb-search 'ignore)
-     (defalias 'bbdb-create-internal 'ignore))))
-
 ;; autoload executable-find
 (eval-and-compile
   ;; executable-find is not autoloaded in Emacs 20

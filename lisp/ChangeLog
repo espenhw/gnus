@@ -1,3 +1,10 @@
+2003-01-07  Teodor Zlatanov  <tzz@beld.net>
+
+	* spam.el: removed unnecessary condition-case for loading bbdb-com.el
+
+	* lpath.el (bbdb-search): added BBDB functions for a better way to
+	fix missing functions
+
 2003-01-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el: define 'ignore alias for spam-BBDB-register-routine,

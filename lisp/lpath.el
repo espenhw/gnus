@@ -9,12 +9,14 @@
 (defun maybe-bind (args)
   (mapcar (lambda (var) (unless (boundp var) (set var nil))) args))
 
-(maybe-fbind '(create-image display-graphic-p
+(maybe-fbind '(bbdb-search bbdb-create-internal
+	       create-image display-graphic-p
 	       display-time-event-handler find-image image-size
 	       image-type-available-p insert-image
 	       make-mode-line-mouse-map make-temp-file propertize
 	       put-image replace-regexp-in-string rmail-msg-is-pruned
 	       rmail-msg-restore-non-pruned-header sort-coding-systems
+	       spam-BBDB-register-routine spam-enter-ham-BBDB
 	       tool-bar-add-item tool-bar-add-item-from-menu
 	       tool-bar-local-item-from-menu url-http-file-exists-p
 	       vcard-pretty-print w32-focus-frame
