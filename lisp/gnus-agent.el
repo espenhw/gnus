@@ -393,6 +393,13 @@ If this is `ask' the hook will query the user."
   (gnus))
 
 ;;;###autoload
+(defun gnus-slave-unplugged (&optional arg)
+  "Read news as a slave unplugged."
+  (interactive "P")
+  (setq gnus-plugged nil)
+  (gnus arg nil 'slave))
+
+;;;###autoload
 (defun gnus-agentize ()
   "Allow Gnus to be an offline newsreader.
 The normal usage of this command is to put the following as the
