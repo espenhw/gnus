@@ -1,3 +1,8 @@
+2003-03-21  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (gnus-treat-display-xface): Don't enable if
+	icontopbm isn't available.
+
 2003-03-21  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-int.el (gnus-open-server): Catch errors in backend's
