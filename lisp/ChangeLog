@@ -3,6 +3,9 @@
 	* dns-mode.el (dns-mode): Fix menu for XEmacs, reported by Steve
 	Youngs <steve@youngs.au.com> and suggested by Katsumi Yamaoka
 	<yamaoka@jpl.org>.
+	(dns-mode-font-lock-keywords): Fix faces, reported by Steve Youngs
+	<steve@youngs.au.com> and suggested by Katsumi Yamaoka
+	<yamaoka@jpl.org>.
 
 	* sieve.el (sieve-manage-mode): Ditto.
 
