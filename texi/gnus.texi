@@ -1778,6 +1778,9 @@ Number of ticked articles.
 @item R
 Number of read articles.
 
+@item U
+Number of unseen articles.
+
 @item t
 Estimated total number of articles.  (This is really @var{max-number}
 minus @var{min-number} plus 1.)

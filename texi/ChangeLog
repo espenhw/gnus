@@ -1,6 +1,7 @@
 2003-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Setting Process Marks): Addition.
+	(Group Line Specification): Addition.
 
 2003-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
