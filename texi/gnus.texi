@@ -3231,6 +3231,11 @@ Sort the groups by group rank
 Sort the groups alphabetically by back end name
 (@code{gnus-group-sort-selected-groups-by-method}).
 
+@item G P s
+@kindex G P s (Group)
+@findex gnus-group-sort-selected-groups
+Sort the groups according to @code{gnus-group-sort-function}.
+
 @end table
 
 And finally, note that you can use @kbd{C-k} and @kbd{C-y} to manually
@@ -8067,9 +8072,9 @@ Toggle whether to display all headers in the article buffer
 
 @item W v
 @kindex W v (Summary)
-@findex gnus-summary-verbose-header
+@findex gnus-summary-verbose-headers
 Toggle whether to display all headers in the article buffer permanently
-(@code{gnus-summary-verbose-header}).
+(@code{gnus-summary-verbose-headers}).
 
 @item W o
 @kindex W o (Summary)

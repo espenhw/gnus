@@ -1,3 +1,22 @@
+2002-04-01  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Sorting Groups): Add gnus-group-sort-selected-groups.
+	(Article Washing): Fix typo.
+
+	* message.texi (Various Commands): Index message-elide-ellipsis.
+	Add message-sort-headers.
+	(Mail Variables): Add message-qmail-inject-args,
+	message-mailer-swallows-blank-line, message-sendmail-f-is-evil,
+	message-qmail-inject-program.
+	(Various Message Variables): Add message-auto-save-directory,
+	message-strip-special-text-properties, message-cancel-hook.
+	(News Headers): Index message-user-organization etc.
+	(Forwarding): Add message-forward-before-signature.
+	(Mailing Lists): Index message-subscribed-address-file.
+	(Wide Reply): Add message-wide-reply-confirm-recipients.
+	(Canceling News): Add message-cancel-message.
+	(Sending Variables): Add message-interactive.
+
 2002-03-25  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Mail Spool): Add cindex for marks.

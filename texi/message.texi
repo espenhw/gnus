@@ -192,10 +192,14 @@ but you can change the behavior to suit your needs by fiddling with the
 @code{message-wide-reply-to-function}.  It is used in the same way as
 @code{message-reply-to-function} (@pxref{Reply}).
 
-@findex message-dont-reply-to-names
+@vindex message-dont-reply-to-names
 Addresses that match the @code{message-dont-reply-to-names} regular
 expression will be removed from the @code{Cc} header.
 
+@vindex message-wide-reply-confirm-recipients
+If @code{message-wide-reply-confirm-recipients} is non-@code{nil} you
+will be asked to confirm that you want to reply to multiple
+recipients.  The default is @code{nil}.
 
 @node Followup
 @section Followup
@@ -224,6 +228,11 @@ it is @code{nil}, don't use the value.
 @findex message-cancel-news
 The @code{message-cancel-news} command cancels the article in the
 current buffer.
+
+@vindex message-cancel-message
+The value of @code{message-cancel-message} is inserted in the body of
+the cancel message.  The default is @samp{I am canceling my own
+article.}.
 
 
 @node Superseding
@@ -285,6 +294,11 @@ If this variable is @code{t} (the default), forwarded messages are
 included as inline @sc{mime} RFC822 parts.  If it's @code{nil}, forwarded
 messages will just be copied inline to the new message, like previous,
 non @sc{mime}-savvy versions of gnus would do.
+
+@item message-forward-before-signature
+@vindex message-forward-before-signature
+If non-@code{nil}, put forwarded message before signature, else after.
+
 @end table
 
 
@@ -399,6 +413,7 @@ group parameter set to a non-nil value.  This is how you would do it.
       '(gnus-find-subscribed-addresses))
 @end lisp
 
+@vindex message-subscribed-address-file
 @item message-subscribed-address-file
 You might be one organised human freak and have a list of addresses of
 all subscribed mailing lists in a separate file!  Then you can just
@@ -861,6 +876,7 @@ many places to rotate the text.  The default is 13.
 @item C-c C-e
 @kindex C-c C-e
 @findex message-elide-region
+@vindex message-elide-ellipsis
 Elide the text between point and mark (@code{message-elide-region}).
 The text is killed and replaced with the contents of the variable
 @code{message-elide-ellipsis}. The default value is to use an ellipsis
@@ -914,6 +930,13 @@ Insert a @code{To} header that contains the @code{Reply-To} or
 Insert a @code{Newsgroups} header that reflects the @code{Followup-To}
 or @code{Newsgroups} header of the article you're replying to
 (@code{message-insert-newsgroups}).
+
+@item C-c C-o
+@kindex C-c C-o
+@findex message-sort-headers
+@vindex message-header-format-alist
+Sort headers according to @code{message-header-format-alist}
+(@code{message-sort-headers}).
 
 @item C-c M-r
 @kindex C-c M-r
@@ -1182,6 +1205,34 @@ the default), these headers will be removed before mailing when sending
 messages via MH.  Set it to @code{nil} if your MH can handle these
 headers.
 
+@item message-qmail-inject-program
+@vindex message-qmail-inject-program
+@cindex qmail
+Location of the qmail-inject program.
+
+@item message-qmail-inject-args
+@vindex message-qmail-inject-args
+Arguments passed to qmail-inject programs.
+This should be a list of strings, one string for each argument.  It
+may also be a function.
+
+For e.g., if you wish to set the envelope sender address so that bounces
+go to the right place or to deal with listserv's usage of that address, you
+might set this variable to @code{'("-f" "you@@some.where")}.
+
+@item message-sendmail-f-is-evil
+@vindex message-sendmail-f-is-evil
+@cindex sendmail
+Non-@code{nil} means don't add @samp{-f username} to the sendmail
+command line.  Doing so would be even more evil than leaving it out.
+
+@item message-mailer-swallows-blank-line
+@vindex message-mailer-swallows-blank-line
+Set this to non-@code{nil} if the system's mailer runs the header and
+body together.  (This problem exists on Sunos 4 when sendmail is run
+in remote mode.)  The value should be an expression to test whether
+the problem will actually occur.
+
 @item message-send-mail-partially-limit
 @vindex message-send-mail-partially-limit
 The limitation of messages sent as message/partial.
@@ -1221,6 +1272,8 @@ to.  If it isn't present already, it will be prompted for.
 
 @item Organization
 @cindex organization
+@vindex message-user-organization
+@vindex message-user-organization-file
 This optional header will be filled out depending on the
 @code{message-user-organization} variable.
 @code{message-user-organization-file} will be used if this variable is
@@ -1254,18 +1307,21 @@ header of the article being replied to.
 
 @item Expires
 @cindex Expires
+@vindex message-expires
 This extremely optional header will be inserted according to the
 @code{message-expires} variable.  It is highly deprecated and shouldn't
 be used unless you know what you're doing.
 
 @item Distribution
 @cindex Distribution
+@vindex message-distribution-function
 This optional header is filled out according to the
 @code{message-distribution-function} variable.  It is a deprecated and
 much misunderstood header.
 
 @item Path
 @cindex path
+@vindex message-user-path
 This extremely optional header should probably never be used.
 However, some @emph{very} old servers require that this header is
 present.  @code{message-user-path} further controls how this
@@ -1524,6 +1580,11 @@ follows this line--} by default.
 @vindex message-directory
 Directory used by many mailey things.  The default is @file{~/Mail/}.
 
+@item message-auto-save-directory
+@vindex message-auto-save-directory
+Directory where Message auto-saves buffers if Gnus isn't running.  If
+@code{nil}, Message won't auto-save.  The default is @file{~/Mail/drafts/}.
+
 @item message-signature-setup-hook
 @vindex message-signature-setup-hook
 Hook run when initializing the message buffer.  It is run after the
@@ -1583,9 +1644,22 @@ Hook run before sending news messages.
 @vindex message-sent-hook
 Hook run after sending messages.
 
+@item message-cancel-hook
+@vindex message-cancel-hook
+Hook run when cancelling news articles.
+
 @item message-mode-syntax-table
 @vindex message-mode-syntax-table
 Syntax table used in message mode buffers.
+
+@item message-strip-special-text-properties
+@vindex message-strip-special-text-properties
+Emacs has a number of special text properties which can break message
+composing in various ways.  If this option is set, message will strip
+these properties from the message composition buffer.  However, some
+packages requires these properties to be present in order to work.  If
+you use one of these packages, turn this option off, and hope the
+message composition doesn't break too bad.
 
 @item message-send-method-alist
 @vindex message-send-method-alist
@@ -1644,6 +1718,11 @@ an article\\nthat has been posted to %s as well.\\n\\n"}.
 @vindex message-fcc-externalize-attachments
 If @code{nil}, attach files as normal parts in Fcc copies; if it is
 non-@code{nil}, attach local files as external parts.
+
+@item message-interactive
+@vindex message-interactive
+If non-@code{nil} wait for and display errors when sending a message;
+if @code{nil} let the mailer mail back a message to report errors.
 
 @end table
 
