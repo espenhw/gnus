@@ -1,5 +1,9 @@
 2003-11-06  Teodor Zlatanov  <tzz@lifelogs.com> suggested by Jean-Marc Lasgouttes <Jean-Marc.Lasgouttes@inria.fr>
 
+	* spam.el (spam-mark-spam-as-expired-and-move-routine)
+	(spam-ham-copy-or-move-routine): prevent article deletions or
+	moves unless the backend allows it
+
 	* gnus.el (gnus-install-group-spam-parameters): fixed parameters
 	to list spamoracle as well
 

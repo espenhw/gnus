@@ -561,6 +561,9 @@ spamoracle database."
 (defun spam-mark-spam-as-expired-and-move-routine (&rest groups)
   (gnus-summary-kill-process-mark)
   (let ((articles gnus-newsgroup-articles)
+	(backend-supports-deletions
+	 (gnus-check-backend-function
+	  'request-move-article gnus-newsgroup-name))
 	article tomove deletep)
     (dolist (article articles)
       (when (eq (gnus-summary-article-mark article) gnus-spam-mark)
@@ -574,14 +577,16 @@ spamoracle database."
 	(dolist (article tomove)
 	  (gnus-summary-set-process-mark article))
 	(when tomove
-	  (if (> (length groups) 1)
+	  (if (or (not backend-supports-deletions)
+		(> (length groups) 1))
 	      (progn 
 		(gnus-summary-copy-article nil group)
 		(setq deletep t))
 	    (gnus-summary-move-article nil group)))))
     
-    ;; now delete the articles, if there was a copy done
-    (when deletep
+    ;; now delete the articles, if there was a copy done, and the
+    ;; backend allows it
+    (when (and deletep backend-supports-deletions)
       (dolist (article tomove)
 	(gnus-summary-set-process-mark article))
       (when tomove
@@ -593,6 +598,9 @@ spamoracle database."
 (defun spam-ham-copy-or-move-routine (copy groups)
   (gnus-summary-kill-process-mark)
   (let ((articles gnus-newsgroup-articles)
+	(backend-supports-deletions
+	 (gnus-check-backend-function
+	  'request-move-article gnus-newsgroup-name))
 	article mark todo deletep)
     (dolist (article articles)
       (when (spam-group-ham-mark-p gnus-newsgroup-name
@@ -607,16 +615,18 @@ spamoracle database."
 	    (gnus-summary-mark-article article gnus-unread-mark))
 	  (gnus-summary-set-process-mark article))
 
-	(if (> (length groups) 1)
+	(if (or (not backend-supports-deletions)
+		(> (length groups) 1))
 	    (progn 
 	      (gnus-summary-copy-article nil group)
 	      (setq deletep t))
 	  (gnus-summary-move-article nil group))))
-  
-    ;; now delete the articles, unless a) copy is t, and when there was a copy done
+    
+    ;; now delete the articles, unless a) copy is t, and there was a copy done
     ;;                                 b) a move was done to a single group
+    ;;                                 c) backend-supports-deletions is nil
     (unless copy
-      (when deletep
+      (when (and deletep backend-supports-deletions)
 	(dolist (article todo)
 	  (gnus-summary-set-process-mark article))
 	(when todo
