@@ -798,8 +798,7 @@ which it may alter in any way.")
   :type 'regexp)
 
 (defcustom gnus-default-charset 'iso-8859-1
-  "Default charset assumed to be used when viewing non-ASCII characters.
-This variable is used only in non-Mule Emacsen.")
+  "Default charset assumed to be used when viewing non-ASCII characters.")
 
 (defcustom gnus-newsgroup-default-charset-alist 
   '(("^hk\\>\\|^tw\\>\\|\\<big5\\>" . cn-big5)
@@ -9195,11 +9194,14 @@ save those articles instead."
 ;;; MIME Commands
 ;;;
 
-(defun gnus-summary-display-buttonized ()
-  "Display the current article buffer fully MIME-buttonized."
-  (interactive)
+(defun gnus-summary-display-buttonized (&optional show-all-parts)
+  "Display the current article buffer fully MIME-buttonized.  
+If SHOW-ALL-PARTS (the prefix) is non-nil, all multipart/* parts are
+treated as multipart/mixed."
+  (interactive "P")
   (require 'gnus-art)
-  (let ((gnus-unbuttonized-mime-types nil))
+  (let ((gnus-unbuttonized-mime-types nil)
+	(gnus-mime-display-multipart-as-mixed show-all-parts))
     (gnus-summary-show-article)))
 
 (defun gnus-summary-repair-multipart (article)

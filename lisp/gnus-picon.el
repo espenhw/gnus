@@ -261,8 +261,8 @@ arguments necessary for the job.")
     (setq gnus-picons-processes-alist
 	  (delq process gnus-picons-processes-alist))
     (gnus-picons-set-buffer)
-    (gnus-picons-make-annotation (make-glyph gnus-picons-x-face-file-name)
-				 nil 'text)
+    (gnus-picons-make-annotation
+     (make-glyph gnus-picons-x-face-file-name) nil 'text)
     (when (file-exists-p gnus-picons-x-face-file-name)
       (delete-file gnus-picons-x-face-file-name))))
 
@@ -285,8 +285,8 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	   nil 'text nil nil nil t)))
     ;; convert the x-face header to a .xbm file
     (let* ((process-connection-type nil)
-	   (process (start-process-shell-command "gnus-x-face" nil 
-						 gnus-picons-convert-x-face)))
+	   (process (start-process-shell-command
+		     "gnus-x-face" nil gnus-picons-convert-x-face)))
       (push process gnus-picons-processes-alist)
       (process-kill-without-query process)
       (set-process-sentinel process 'gnus-picons-x-face-sentinel)
@@ -618,7 +618,6 @@ none, and whose CDR is the corresponding element of DOMAINS."
 ;;; picon network display functions :
 
 (defun gnus-picons-network-display-internal (sym-ann glyph part right-p)
-  (gnus-picons-set-buffer)
   (gnus-picons-display-picon-or-name glyph part right-p)
   (gnus-picons-next-job-internal))
 

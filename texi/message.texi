@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Pterodactyl Message 0.65 Manual
+@settitle Pterodactyl Message 0.66 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -42,7 +42,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Message 0.65 Manual
+@title Pterodactyl Message 0.66 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -83,7 +83,7 @@ Message mode buffers.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Pterodactyl Message 0.65.  Message is
+This manual corresponds to Pterodactyl Message 0.66.  Message is
 distributed with the Gnus distribution bearing the same version number
 as this manual.
 
@@ -446,12 +446,16 @@ strange.  You'll quickly get a feel for when it's safe, though.  Anyway,
 just remember that @kbd{C-x u} (@code{undo}) is available and you'll be
 all right.
 
-
 @item C-c C-w
 @kindex C-c C-w 
 @findex message-insert-signature
 Insert a signature at the end of the buffer
 (@code{message-insert-signature}).  
+
+@item C-c M-h
+@kindex C-c M-h
+@findex message-insert-headers
+Insert the message headers (@code{message-insert-headers}).
 
 @end table
 

@@ -1307,6 +1307,7 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-y" 'message-yank-original)
   (define-key message-mode-map "\C-c\C-q" 'message-fill-yanked-message)
   (define-key message-mode-map "\C-c\C-w" 'message-insert-signature)
+  (define-key message-mode-map "\C-c\M-h" 'message-insert-headers)
   (define-key message-mode-map "\C-c\C-r" 'message-caesar-buffer-body)
   (define-key message-mode-map "\C-c\C-o" 'message-sort-headers)
   (define-key message-mode-map "\C-c\M-r" 'message-rename-buffer)
@@ -3344,6 +3345,23 @@ Headers already prepared in the buffer are not modified."
   (when message-draft-article
     (nndraft-request-expire-articles
      (list message-draft-article) "drafts" nil t)))
+
+(defun message-insert-headers ()
+  "Generate the headers for the article."
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (message-narrow-to-headers)
+      (when (message-news-p)
+	(message-generate-headers
+	 (delq 'Lines
+	       (delq 'Subject
+		     (copy-sequence message-required-news-headers)))))
+      (when (message-mail-p)
+	(message-generate-headers
+	 (delq 'Lines
+	       (delq 'Subject
+		     (copy-sequence message-required-mail-headers))))))))
 
 
 

@@ -130,6 +130,13 @@
   (require 'w3)
   (w3-prepare-buffer))
 
+(eval-and-compile
+  (autoload 'gnus-article-prepare-display "gnus-art"))
+
+(defun mm-view-message ()
+  (gnus-article-prepare-display)
+  (fundamental-mode))
+
 (provide 'mm-view)
 
 ;; mm-view.el ends here

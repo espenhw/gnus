@@ -126,7 +126,7 @@
       (type   . "audio/*")))
     ("message"
      ("rfc-*822"
-      (viewer . gnus-article-prepare-display)
+      (viewer . mm-view-message)
       (test   . (and (featurep 'gnus)
 		     (gnus-alive-p)))
       (type   . "message/rfc-822"))
@@ -714,6 +714,7 @@ this type is returned."
     (".nc"       . "application/x-netcdf")
     (".nc"       . "application/x-netcdf")
     (".oda"      . "application/oda")
+    (".patch"    . "application/x-patch")
     (".pbm"      . "image/x-portable-bitmap")
     (".pdf"      . "application/pdf")
     (".pgm"      . "image/portable-graymap")

@@ -300,7 +300,10 @@ time saver for large mailboxes.")
       (set-buffer nnfolder-current-buffer)
       (while (and articles is-old)
 	(goto-char (point-min))
-	(when (nnfolder-goto-article (car articles))
+	(when (and (nnfolder-goto-article (car articles))
+		   (search-forward (concat "\n" nnfolder-article-marker)
+				   nil t))
+	  (forward-sexp)
 	  (if (setq is-old
 		    (nnmail-expired-article-p
 		     newsgroup

@@ -65,6 +65,9 @@
     ("image/xbm" mm-inline-image
      (and window-system (fboundp 'device-type)
 	  (eq (device-type) 'x)))
+    ("image/x-xbitmap" mm-inline-image
+     (and window-system (fboundp 'device-type)
+	  (eq (device-type) 'x)))
     ("image/xpm" mm-inline-image
      (and window-system (featurep 'xpm)))
     ("image/x-pixmap" mm-inline-image
@@ -236,7 +239,8 @@ external if displayed external."
 	(if (eq user-method 'inline)
 	    (progn
 	      (forward-line 1)
-	      (mm-display-inline handle))
+	      (mm-display-inline handle)
+	      'inline)
 	  (when (or user-method
 		    method
 		    (not no-default))
@@ -244,6 +248,7 @@ external if displayed external."
 		     (not method)
 		     (equal "text" (car (split-string type))))
 		(progn
+		  (forward-line 1)
 		  (mm-insert-inline handle (mm-get-part handle))
 		  'inline)
 	      (mm-display-external
@@ -558,6 +563,8 @@ This overrides entries in the mailcap file."
 	  (cond
 	   ((equal type "x-pixmap")
 	    "xpm")
+	   ((equal type "x-xbitmap")
+	    "xbm")
 	   (t type)))
     (or (mm-handle-cache handle)
 	(mm-with-unibyte-buffer

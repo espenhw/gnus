@@ -1,3 +1,93 @@
+Tue Dec 15 17:31:44 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.66 is released.
+
+1998-12-13 11:00:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-insert-mime-button): Decode description.
+
+Sat Dec  5 16:50:49 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (article-decode-encoded-words): Rollback to 0.55.
+	(gnus-decode-header-methods): Ditto.
+	(gnus-decode-with-mail-decode-encoded-word-region): Ditto.
+
+1998-12-13 10:04:39  Lloyd Zusman  <ljz@asfast.com>
+
+	* gnus-xmas.el (gnus-xmas-summary-recenter): Allow numbers. 
+
+1998-12-13 09:32:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-insert-mime-headers): Encode description.
+
+	* nnfolder.el (nnfolder-request-expire-articles): Go to the date
+	line. 
+
+	* gnus-sum.el (gnus-default-charset): Doc fix.
+
+Wed Dec  9 15:18:39 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-display-part): Forward a line.
+
+Wed Dec  9 13:30:29 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-running-ntemacs): New variable.
+	(mm-text-coding-system): Ditto.
+	* nnmail.el (nnmail-incoming-coding-system): Ditto.
+	(nnmail-split-incoming): Use nnmail-incoming-coding-system.
+
+1998-12-13 08:52:45  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-picon.el (gnus-picons-network-display-internal): Don't set
+	buffer. 
+
+	* message.el (message-insert-headers): New command and keystroke. 
+
+1998-12-07 23:42:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-inline-media-tests): Recognize x-xbitmap.
+	(mm-get-image): Ditto.
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Only for
+	base64, uudecode and binhex.
+
+Sun Dec  6 21:58:31 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Replace CRLF
+	in text/plain.
+	* mm-uu.el (mm-uu-dissect): Use inline.
+
+1998-12-07 23:19:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-view.el (mm-view-message): New function.
+
+	* mm-encode.el (mm-content-transfer-encoding-defaults): Changed to 
+	qp.
+
+1998-12-07  Karl Kleinpaste  <karl@justresearch.com>
+
+	* mm-encode.el (mm-content-transfer-encoding-defaults): Add an
+	entry for message/rfc822 as 8bit.
+
+1998-12-07 23:16:54  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mailcap.el (mailcap-mime-extensions): Add patch.
+
+1998-12-05  Dale Hagglund  <rdh@best.com>
+
+	* gnus-sum.el (gnus-summary-display-buttonized): Use prefix
+	argument to force all multipart/* to look like multipart/mixed.
+
+	* gnus-art.el (gnus-mime-display-multipart-as-mixed): New
+	variable.
+	(gnus-mime-display-part): Use it.
+
+1998-12-07 22:46:37  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-draft.el (gnus-draft-send): Only disable checks for
+	non-interactive use.
+	(gnus-draft-send-message): Use it.
+
 Sun Dec  6 19:36:53 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.65 is released.

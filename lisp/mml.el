@@ -337,7 +337,8 @@
     (unless (eq encoding '7bit)
       (insert (format "Content-Transfer-Encoding: %s\n" encoding)))
     (when (setq description (cdr (assq 'description cont)))
-      (insert "Content-Description: " description "\n"))))
+      (insert "Content-Description: "
+	      (mail-encode-encoded-word-string description) "\n"))))
 
 (defun mml-parameter-string (cont types)
   (let ((string "")

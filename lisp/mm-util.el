@@ -26,10 +26,25 @@
 
 (defvar mm-running-xemacs (string-match "XEmacs" emacs-version))
 
+(defvar mm-running-ntemacs 
+  (and (not mm-running-xemacs) 
+       (string-match "nt" system-configuration)))
+
 (defvar mm-binary-coding-system 
     (if mm-running-xemacs
 	'binary 'no-conversion)
     "100% binary coding system.")   
+
+(defvar mm-text-coding-system 
+  (cond 
+   ((not (fboundp 'coding-system-p)) nil)
+   (mm-running-xemacs  ;; XEmacs
+    (and (coding-system-p 'no-conversion) 'no-conversion))
+   (mm-running-ntemacs ;; NTEmacs
+    (and (coding-system-p 'raw-text-dos) 'raw-text-dos))
+   ((coding-system-p 'raw-text) 'raw-text) ;; Emacs
+   (t nil))
+  "100% text coding system, for removing ^M.")
 
 (defvar mm-default-coding-system nil
   "The default coding system to use.")  

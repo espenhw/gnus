@@ -119,36 +119,32 @@ If no encoding was done, nil is returned."
 ;;;
 
 (defun mm-decode-content-transfer-encoding (encoding &optional type)
-  (cond
-   ((eq encoding 'quoted-printable)
-    (quoted-printable-decode-region (point-min) (point-max)))
-   ((eq encoding 'base64)
-    (prog1
-	(condition-case ()
-	    (base64-decode-region (point-min) (point-max))
-	  (error nil))
-      (when (equal type "text/plain")
-	(goto-char (point-min))
-	(while (search-forward "\r\n" nil t)
-	  (replace-match "\n" t t)))))
-   ((memq encoding '(7bit 8bit binary))
-    )
-   ((null encoding)
-    )
-   ((eq encoding 'x-uuencode)
-    (condition-case ()
-	(uudecode-decode-region (point-min) (point-max))
-      (error nil)))
-   ((eq encoding 'x-binhex)
-    (condition-case ()
-	(binhex-decode-region (point-min) (point-max))
-      (error nil)))
-   ((functionp encoding)
-    (condition-case ()
-	(funcall encoding (point-min) (point-max))
-      (error nil)))
-   (t
-    (message "Unknown encoding %s; defaulting to 8bit" encoding))))
+  (prog1
+      (condition-case ()
+	  (cond
+	   ((eq encoding 'quoted-printable)
+	    (quoted-printable-decode-region (point-min) (point-max)))
+	   ((eq encoding 'base64)
+	    (base64-decode-region (point-min) (point-max)))
+	   ((memq encoding '(7bit 8bit binary))
+	    )
+	   ((null encoding)
+	    )
+	   ((eq encoding 'x-uuencode)
+	    (uudecode-decode-region (point-min) (point-max)))
+	   ((eq encoding 'x-binhex)
+	    (binhex-decode-region (point-min) (point-max)))
+	   ((functionp encoding)
+	    (funcall encoding (point-min) (point-max)))
+	   (t
+	    (message "Unknown encoding %s; defaulting to 8bit" encoding)))
+	(error nil))
+    (when (and
+	   (memq encoding '(base64 x-uuencode x-binhex))
+	   (equal type "text/plain"))
+      (goto-char (point-min))
+      (while (search-forward "\r\n" nil t)
+	(replace-match "\n" t t)))))
 
 (defun mm-decode-body (charset &optional encoding type)
   "Decode the current article that has been encoded with ENCODING.

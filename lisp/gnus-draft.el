@@ -115,13 +115,14 @@
     (while (setq article (pop articles))
       (gnus-summary-remove-process-mark article)
       (unless (memq article gnus-newsgroup-unsendable)
-	(gnus-draft-send article gnus-newsgroup-name)
+	(gnus-draft-send article gnus-newsgroup-name t)
 	(gnus-summary-mark-article article gnus-canceled-mark)))))
 
-(defun gnus-draft-send (article &optional group)
+(defun gnus-draft-send (article &optional group interactive)
   "Send message ARTICLE."
   (gnus-draft-setup article (or group "nndraft:queue"))
-  (let ((message-syntax-checks 'dont-check-for-anything-just-trust-me)
+  (let ((message-syntax-checks (if interactive nil
+				 'dont-check-for-anything-just-trust-me))
 	message-send-hook type method)
     ;; We read the meta-information that says how and where
     ;; this message is to be sent.

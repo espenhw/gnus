@@ -501,6 +501,10 @@ parameter.  It should return nil, `warn' or `delete'."
       'raw-text-dos 'binary)
   "Another coding system used in nnmail.")
 
+(defvar nnmail-incoming-coding-system
+  mm-text-coding-system
+  "Coding system used in reading inbox")
+
 (defun nnmail-find-file (file)
   "Insert FILE in server buffer safely."
   (set-buffer nntp-server-buffer)
@@ -1007,7 +1011,8 @@ FUNC will be called with the buffer narrowed to each mail."
       ;; Insert the incoming file.
       (set-buffer (get-buffer-create " *nnmail incoming*"))
       (erase-buffer)
-      (nnheader-insert-file-contents incoming)
+      (let ((nnheader-file-coding-system nnmail-incoming-coding-system))
+	(nnheader-insert-file-contents incoming))
       (unless (zerop (buffer-size))
 	(goto-char (point-min))
 	(save-excursion (run-hooks 'nnmail-prepare-incoming-hook))

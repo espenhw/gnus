@@ -181,7 +181,9 @@ displayed, no centering will be performed."
 		     (- (window-height) 2)))
 	   (top (cond ((< height 4) 0)
 		      ((< height 7) 1)
-		      (t 2)))
+		      (t (if (numberp gnus-auto-center-summary)
+			     gnus-auto-center-summary
+			   2))))
 	   (bottom (save-excursion (goto-char (point-max))
 				   (forward-line (- height))
 				   (point)))
