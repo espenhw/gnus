@@ -1,3 +1,8 @@
+2004-06-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-get-new-news-this-group): Don't
+	update info that isn't there.
+
 2004-06-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-view.el (mm-inline-render-with-function): Use multibyte
