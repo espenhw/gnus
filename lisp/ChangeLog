@@ -1,5 +1,8 @@
 2003-06-24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-ems.el (gnus-put-image): Mark the right text segment with
+	gnus-image-category. 
+
 	* gnus-srvr.el (gnus-browse-unsubscribe-group): Strip prefix from
 	native groups.
 

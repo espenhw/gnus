@@ -220,12 +220,13 @@
     (apply 'create-image file type data-p props)))
 
 (defun gnus-put-image (glyph &optional string category)
-  (insert-image glyph (or string " "))
-  (put-text-property (1- (point)) (point) 'gnus-image-category category)
-  (unless string
-    (put-text-property (1- (point)) (point)
-		       'gnus-image-text-deletable t))
-  glyph)
+  (let ((point (point)))
+    (insert-image glyph (or string " "))
+    (put-text-property point (point) 'gnus-image-category category)
+    (unless string
+      (put-text-property (1- (point)) (point)
+			 'gnus-image-text-deletable t))
+    glyph))
 
 (defun gnus-remove-image (image &optional category)
   (dolist (position (message-text-with-property 'display))
