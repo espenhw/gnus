@@ -1,3 +1,7 @@
+2000-10-02 08:04:48  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* webmail.el (webmail-hotmail-list): Fix.
+
 2000-10-01 20:55:53  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	Don't postpone GCC if none of GCC methods is agent-covered.  This
