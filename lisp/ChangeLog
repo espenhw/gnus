@@ -1,3 +1,8 @@
+2000-11-13  Simon Josefsson  <sj@extundo.com>
+
+	* mm-uu.el (mm-uu-pgp-signed-extract): Explain why clear
+	verification doesn't work.
+
 2000-11-12 23:36:45  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-inews-mark-gcc-as-read): New variable.

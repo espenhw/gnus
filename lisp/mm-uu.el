@@ -262,11 +262,16 @@ To disable dissecting shar codes, for instance, add
     (mm-set-handle-multipart-parameter 
      mm-security-handle 'protocol "application/pgp-signature")
     (with-current-buffer buf
-      (when (mm-uu-pgp-signed-test)
-	(mml2015-clean-buffer)
-	(let ((coding-system-for-write (or gnus-newsgroup-charset
-					   'iso-8859-1)))
-	  (funcall (mml2015-clear-verify-function))))
+      (if (mm-uu-pgp-signed-test)
+	  (progn
+	    (mml2015-clean-buffer)
+	    (let ((coding-system-for-write (or gnus-newsgroup-charset
+					       'iso-8859-1)))
+	      (funcall (mml2015-clear-verify-function))))
+	(when (and mml2015-use (null (mml2015-clear-verify-function)))
+	  (mm-set-handle-multipart-parameter
+	   mm-security-handle 'gnus-details 
+	   (format "Clear verification not supported by `%s'.\n" mml2015-use))))
       (goto-char (point-min))
       (if (search-forward "\n\n" nil t)
 	  (delete-region (point-min) (point)))
