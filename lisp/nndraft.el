@@ -134,6 +134,7 @@
   (when (nndraft-request-article article group server (current-buffer))
     (message-remove-header "xref")
     (message-remove-header "lines")
+    (message-remove-header "date")
     t))
 
 (deffoo nndraft-request-update-info (group info &optional server)
