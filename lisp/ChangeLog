@@ -1,3 +1,12 @@
+2002-08-26  Jesper harder  <harder@ifa.au.dk>
+
+	* gnus.el (gnus-group-charter-alist): New option.
+	(gnus-group-fetch-control-use-browse-url): New option.
+
+	* gnus-group.el (gnus-group-fetch-charter): New function.
+	(gnus-group-fetch-control): New function.  
+	Add them to the keymap and menu. Require mm-url.
+
 2002-08-30  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* gnus-mlspl.el (gnus-group-split-fancy): Doc fix.

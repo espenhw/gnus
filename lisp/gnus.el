@@ -1246,6 +1246,41 @@ If the default site is too slow, try one of these:
   :type '(choice directory
 		 (repeat directory)))
 
+(defcustom gnus-group-charter-alist
+  '(("no" . (concat "http://no.news-admin.org/charter/" name ".txt"))
+    ("de" . (concat "http://purl.net/charta/" name ".html"))
+    ("dk" . (concat "http://www.usenet.dk/grupper.pl?get=" name))
+    ("england" . (concat "http://england.news-admin.org/charters/" name))
+    ("fr" . (concat "http://www.usenet-fr.net/fur/chartes/" name ".html"))
+    ("europa" . (concat "http://www.europa.usenet.eu.org/chartas/charta-en-" 
+			(gnus-replace-in-string name "europa\\." "") ".html"))
+    ("nl" . (concat "http://www.xs4all.nl/~sister/usenet/charters/" name))
+    ("aus" . (concat "http://aus.news-admin.org/groupinfo.php/" name))
+    ("pl" . (concat "http://www.usenet.pl/opisy/" name))
+    ("ch" . (concat "http://www.use-net.ch/Usenet/charter.html#" name))
+    ("at" . (concat "http://www.usenet.at/chartas/" name "/charta"))
+    ("uk" . (concat "http://www.usenet.org.uk/" name ".html"))
+    ("wales" . (concat "http://www.wales-usenet.org/english/groups/" name ".html"))
+    ("dfw" . (concat "http://www.cirr.com/dfw/charters/" name ".html"))
+    ("se" . (concat "http://www.usenet-se.net/Reglementen/" 
+		    (gnus-replace-in-string name "\\." "_") ".html"))
+    ("milw" . (concat "http://usenet.mil.wi.us/" 
+		      (gnus-replace-in-string name "milw\\." "") "-charter"))
+    ("ca" . (concat "http://www.sbay.org/ca/charter-" name ".html"))
+    ("netins" . (concat "http://www.netins.net/usenet/charter/" 
+			(gnus-replace-in-string name "\\." "-") "-charter.html")))
+  "*An alist of (HIERARCHY . FORM) pairs used to construct the URL of a charter.
+  When FORM is evaluated `name' is bound to the name of the group."
+  :group 'gnus-group-various
+  :type '(repeat (cons (string :tag "Hierarchy") (sexp :tag "Form"))))
+
+(defcustom gnus-group-fetch-control-use-browse-url nil
+  "*Non-nil means that control messages are displayed using `browse-url'.
+Otherwise they are fetched with ange-ftp and displayed in an ephemeral
+group."
+  :group 'gnus-group-various
+  :type 'boolean)
+
 (defcustom gnus-use-cross-reference t
   "*Non-nil means that cross referenced articles will be marked as read.
 If nil, ignore cross references.  If t, mark articles as read in

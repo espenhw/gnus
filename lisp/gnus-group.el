@@ -38,6 +38,7 @@
 (require 'gnus-undo)
 (require 'time-date)
 (require 'gnus-ems)
+(require 'mm-url)
 
 (defcustom gnus-group-archive-directory
   "*ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/"
@@ -701,6 +702,8 @@ simple manner.")
     "f" gnus-score-flush-cache)
 
   (gnus-define-keys (gnus-group-help-map "H" gnus-group-mode-map)
+    "c" gnus-group-fetch-charter
+    "C" gnus-group-fetch-control
     "d" gnus-group-describe-group
     "f" gnus-group-fetch-faq
     "v" gnus-version)
@@ -745,6 +748,12 @@ simple manner.")
 	,@(if (featurep 'xemacs) nil
 	    '(:help "Display description of the current group"))]
        ["Fetch FAQ" gnus-group-fetch-faq (gnus-group-group-name)]
+       ["Fetch charter" gnus-group-fetch-charter :active (gnus-group-group-name)
+	,@(if (featurep 'xemacs) nil
+	    '(:help "Display the charter of the current group"))]
+       ["Fetch control message" gnus-group-fetch-control :active (gnus-group-group-name)
+	,@(if (featurep 'xemacs) nil
+	    '(:help "Display the archived control message for the current group"))]
        ;; Actually one should check, if any of the marked groups gives t for
        ;; (gnus-check-backend-function 'request-expire-articles ...)
        ["Expire articles" gnus-group-expire-articles
@@ -3512,6 +3521,44 @@ to use."
 	(let ((enable-local-variables nil))
 	  (find-file file)
 	  (setq found t))))))
+
+(defun gnus-group-fetch-charter (group)
+  "Fetch the charter for the current group."
+  (interactive
+    (list (or (gnus-group-group-name)
+        gnus-newsgroup-name)))
+  (unless group
+    (error "No group name given"))
+  (let ((name (mm-url-form-encode-xwfu (gnus-group-real-name group)))
+	url hierarchy)
+    (when (string-match "\\(^[^\\.]+\\)\\..*" name)
+      (setq hierarchy (match-string 1 name))
+      (if (setq url (cdr (assoc hierarchy gnus-group-charter-alist)))
+	  (browse-url (eval url))
+	(gnus-group-fetch-control group)))))
+
+(defun gnus-group-fetch-control (group)
+  "Fetch the archived control messages for the current group."
+  (interactive
+    (list (or (gnus-group-group-name)
+        gnus-newsgroup-name)))
+  (unless group
+    (error "No group name given"))
+  (let ((name (gnus-group-real-name group))
+	hierarchy)
+    (when (string-match "\\(^[^\\.]+\\)\\..*" name)
+      (setq hierarchy (match-string 1 name))
+      (if gnus-group-fetch-control-use-browse-url
+	  (browse-url (concat "ftp://ftp.isc.org:/usenet/control/"
+			      hierarchy "/" name ".Z"))
+	(let ((enable-local-variables nil))
+	  (gnus-group-read-ephemeral-group
+	   group
+	   `(nndoc ,group (nndoc-address 
+			   ,(find-file-noselect
+			     (concat "/ftp@ftp.isc.org:/usenet/control/" 
+				     hierarchy "/" name ".Z")))
+		   (nndoc-article-type mbox)) t nil nil))))))
 
 (defun gnus-group-describe-group (force &optional group)
   "Display a description of the current newsgroup."
