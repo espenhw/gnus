@@ -235,7 +235,6 @@ not match this regexp will be removed before saving the list."
  (mapconcat 'identity
 	    '("^to\\."			; not "real" groups
 	      "^[0-9. \t]+ "		; all digits in name
-	      "[][\"#'()]"		; bogus characters
 	      )
 	    "\\|")
   "*A regexp to match uninteresting newsgroups in the active file.

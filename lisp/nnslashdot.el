@@ -56,7 +56,7 @@
 (defvoo nnslashdot-active-url "http://slashdot.org/search.pl?section=&min=%d"
   "Where nnslashdot will fetch the active file from.")
 
-(defvoo nnslashdot-articles-url "http://slashdot.org/article.pl?sid=%s&threshold=%d&commentsort=4&mode=flat&startat=%d"
+(defvoo nnslashdot-articles-url "http://slashdot.org/article.pl?sid=%s&threshold=%d&commentsort=0&mode=flat&startat=%d"
   "Where nnslashdot will fetch articles from.")
 
 (defvoo nnslashdot-threshold 0
@@ -79,7 +79,7 @@
   (nnslashdot-possibly-change-server group server)
   (let ((last (car (last articles)))
 	(did nil)
-	(start (car articles))
+	(start 1)
 	headers article subject score from date lines parent point)
     (save-excursion
       (set-buffer nnslashdot-buffer)
@@ -91,7 +91,9 @@
 	  (setq start (1+ (string-to-number article))))
 	(setq point (goto-char (point-max)))
 	(url-insert-file-contents
-	 (format nnslashdot-articles-url group nnslashdot-threshold start))
+	 (format nnslashdot-articles-url
+		 (caddr (assoc group nnslashdot-groups))
+		 nnslashdot-threshold start))
 	(setq buffer-file-name nil)
 	(goto-char point)
 	(while (re-search-forward
@@ -127,7 +129,8 @@
 	     (if parent (concat "<" group "%" parent "@slashdot>") "")
 	     0 lines nil nil))
 	   headers))))
-    (setq nnslashdot-headers (nreverse headers))
+    (setq nnslashdot-headers
+	  (sort headers (lambda (s1 s2) (< (car s1) (car s2)))))
     (save-excursion
       (set-buffer nntp-server-buffer)
       (erase-buffer)
@@ -144,7 +147,8 @@
      (t
       (nnheader-report 'nnslashdot "Opened group %s" group)
       (nnheader-insert
-       "211 %d %d %d %s\n" (cadr elem) 1 (cadr elem) group)))))
+       "211 %d %d %d %s\n" (cadr elem) 1 (cadr elem)
+       (prin1-to-string group))))))
 
 (deffoo nnslashdot-close-group (group &optional server)
   (nnslashdot-possibly-change-server group server)
@@ -192,7 +196,7 @@
   (nnslashdot-possibly-change-server nil server)
   (let ((case-fold-search t)
 	(number 0)
-	sid elem description articles)
+	sid elem description articles gname)
     (while (> (- nnslashdot-group-number number) 0)
       (with-temp-buffer
 	(url-insert-file-contents (format nnslashdot-active-url number))
@@ -205,16 +209,18 @@
 	  (forward-line 1)
 	  (when (re-search-forward "<b>\\([0-9]+\\)</b>" nil t)
 	    (setq articles (string-to-number (match-string 1))))
-	  (if (setq elem (assoc sid nnslashdot-groups))
+	  (setq gname (concat description " (" sid ")"))
+	  (if (setq elem (assoc gname nnslashdot-groups))
 	      (setcar (cdr elem) articles)
-	    (push (list sid articles description) nnslashdot-groups))))
+	    (push (list gname articles sid) nnslashdot-groups))))
       (incf number 30))
     (nnslashdot-write-groups)
     (save-excursion
       (set-buffer nntp-server-buffer)
       (erase-buffer)
       (dolist (elem nnslashdot-groups)
-	(insert (car elem) " " (number-to-string (cadr elem)) " 1 m\n")))
+	(insert (prin1-to-string (car elem))
+		" " (number-to-string (cadr elem)) " 1 m\n")))
     t))
 
 (deffoo nnslashdot-asynchronous-p ()
