@@ -1,3 +1,8 @@
+2001-11-01 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* texi2latex.el (latexi-translate): Typo.
+	(latexi-translate-file): Nine in a herd is enough.
+
 2001-11-01  Simon Josefsson  <jas@extundo.com>
 
 	* sieve.texi (Installation): Workaround texi2latex bug (replacing

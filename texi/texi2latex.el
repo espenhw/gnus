@@ -38,7 +38,7 @@
   (latexi-translate-file "gnus-faq")
   (latexi-translate-file "message" t)
   (latexi-translate-file "emacs-mime" t)
-  (latexi-translate-file "sieve-mime" t))
+  (latexi-translate-file "sieve" t))
 
 (defun latexi-translate-file (file &optional as-a-chapter)
   "Translate file a LaTeX file."
@@ -116,10 +116,8 @@
 		    (latexi-switch-line 
 		     (format 
 		      "gnus%s{%s}" command
-		      (if (> (incf chapter) 10)
-			  ""
-			(format "\\epsfig{figure=ps/new-herd-%d,scale=.5}"
-				chapter)))
+		      (format "\\epsfig{figure=ps/new-herd-%d,scale=.5}"
+			      (if (> (incf chapter) 9) 9 chapter)))
 		     arg))))
 	       ((member command '("section"))
 		(if as-a-chapter

@@ -9,7 +9,7 @@ summary-article-c-ug.ps summary-article.ps summary-dummy.ps		\
 summary-empty.ps summary-none.ps summary-unthreaded.ps summary.ps
 
 HERDS_PS= gnus-herd-bw.ps gnus-herd-new.ps new-herd-1.ps		\
-new-herd-10.ps new-herd-2.ps new-herd-3.ps new-herd-4.ps new-herd-5.ps	\
+ new-herd-2.ps new-herd-3.ps new-herd-4.ps new-herd-5.ps	\
 new-herd-6.ps new-herd-7.ps new-herd-8.ps new-herd-9.ps			\
 new-herd-section.ps new-herd.ps new-herd2.ps
 
@@ -71,7 +71,7 @@ summary-article-c-ug.pdf summary-article.pdf summary-dummy.pdf		\
 summary-empty.pdf summary-none.pdf summary-unthreaded.pdf summary.pdf
 
 HERDS_PDF= gnus-herd-bw.pdf gnus-herd-new.pdf new-herd-1.pdf	\
-new-herd-10.pdf new-herd-2.pdf new-herd-3.pdf new-herd-4.pdf	\
+ new-herd-2.pdf new-herd-3.pdf new-herd-4.pdf	\
 new-herd-5.pdf new-herd-6.pdf new-herd-7.pdf new-herd-8.pdf	\
 new-herd-9.pdf new-herd-section.pdf new-herd.pdf new-herd2.pdf
 
