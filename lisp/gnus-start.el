@@ -123,7 +123,7 @@ check for bogus newsgroups with \\<gnus-group-mode-map>\\[gnus-group-check-bogus
   :group 'gnus-start-server
   :type 'boolean)
 
-(defcustom gnus-read-active-file t
+(defcustom gnus-read-active-file 'some
   "*Non-nil means that Gnus will read the entire active file at startup.
 If this variable is nil, Gnus will only know about the groups in your
 `.newsrc' file.
@@ -691,7 +691,7 @@ prompt the user for the name of an NNTP server to use."
   "Unload all Gnus features."
   (interactive)
   (unless (boundp 'load-history)
-    (error "Sorry, `gnus-unload' is not implemented in this Emacs version."))
+    (error "Sorry, `gnus-unload' is not implemented in this Emacs version"))
   (let ((history load-history)
 	feature)
     (while history
@@ -1625,7 +1625,7 @@ newsgroup."
 	     (t
 	      (if (not (gnus-request-list method))
 		  (unless (equal method gnus-message-archive-method)
-		    (gnus-error 1 "Cannot read active file from %s server."
+		    (gnus-error 1 "Cannot read active file from %s server"
 				(car method)))
 		(gnus-message 5 mesg)
 		(gnus-active-to-gnus-format method gnus-active-hashtb)

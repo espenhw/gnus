@@ -1320,7 +1320,7 @@ If performed on a topic, edit the topic parameters instead."
   (if group
       (gnus-group-edit-group-parameters group)
     (if (not (gnus-group-topic-p))
-	(error "Nothing to edit on the current line.")
+	(error "Nothing to edit on the current line")
       (let ((topic (gnus-group-topic-name)))
 	(gnus-edit-form
 	 (gnus-topic-parameters topic)

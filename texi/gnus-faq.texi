@@ -214,9 +214,9 @@ obtained from@*
 @file{ftp://cag.lcs.mit.edu/pub/patl/mailcrypt-3.4.tar.gz}.
 
 @item
-Tiny Mime.
+Tools for Mime.
 
-Tiny Mime is an Emacs MUA interface to MIME.  Installation is
+Tools for Mime is an Emacs MUA interface to MIME.  Installation is
 a two-step process unlike most other packages, so you should
 be prepared to move the byte-compiled code somewhere.  There
 are currently two versions of this package available.  It can

@@ -1359,6 +1359,7 @@ SCORE is the score to add."
 	  (save-excursion
 	    (set-buffer (get-buffer-create "*Headers*"))
 	    (buffer-disable-undo (current-buffer))
+	    (message-clone-locals gnus-summary-buffer)
 
 	    ;; Set the global variant of this variable.
 	    (setq gnus-current-score-file current-score-file)

@@ -1,3 +1,37 @@
+Sun Jul  6 17:22:47 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.62 is released.
+
+Sun Jul  6 12:38:56 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nngateway.el (nngateway-request-post): Call sendmail function.
+
+	* message.el (message-send-news): Supply the method to the post
+	function.
+
+	* gnus.el (gnus-group-auto-expirable-p): Dox fox.
+
+	* message.el (message-clone-locals): Only clone Gnus variables. 
+
+	* gnus-nocem.el (gnus-nocem-enter-article): Use real group name. 
+
+Fri Jul  4 13:00:39 1997  enami tsugutomo  <enami@but-b.or.jp>
+
+	* gnus-group.el (gnus-group-set-mode-line): Use new, shorter
+	format. 
+
+Fri Jul  4 12:31:18 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-score.el (gnus-score-headers): Let the score buffer inherit
+	variables from the summary buffer.
+
+	* message.el (message-clone-locals): Made into own function.
+
+	* gnus.el (gnus-select-method): Changed default.
+
+	* gnus-start.el (gnus-read-active-file): Changed default to
+	`some'. 
+
 Tue Jul  1 01:51:24 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.61 is released.

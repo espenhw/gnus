@@ -238,7 +238,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.61"
+(defconst gnus-version-number "5.4.62"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -791,7 +791,7 @@ used to 899, you would say something along these lines:
 		     (when (and gnus-default-nntp-server
 				(not (string= gnus-default-nntp-server "")))
 		       gnus-default-nntp-server)
-		     (system-name)))
+		     "news"))
      (if (or (null gnus-nntp-service)
 	     (equal gnus-nntp-service "nntp"))
 	 nil
@@ -2014,7 +2014,7 @@ that that variable is buffer-local to the summary buffers."
       (string-match gnus-total-expirable-newsgroups group)))))
 
 (defun gnus-group-auto-expirable-p (group)
-  "Check whether GROUP is total-expirable or not."
+  "Check whether GROUP is auto-expirable or not."
   (let ((params (gnus-group-find-parameter group))
 	val)
     (cond

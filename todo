@@ -729,3 +729,9 @@ numbers and match on the age of the article.
 
 * all commands that react to the process mark should push
 the current process mark set onto the stack.
+
+* gnus-article-hide-pgp
+Selv ville jeg nok ha valgt å slette den dersom teksten matcher
+	 "\\(This\s+\\)?[^ ]+ has been automatically signed by"
+og det er maks hundre tegn mellom match-end og ----linja.  Men -det-
+er min type heuristikk og langt fra alles.

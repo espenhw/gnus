@@ -1942,10 +1942,10 @@ to find out how to use this."
     ;; qmail-inject doesn't say anything on it's stdout/stderr,
     ;; we have to look at the retval instead
     (0 nil)
-    (1   (error "qmail-inject reported permanent failure."))
-    (111 (error "qmail-inject reported transient failure."))
+    (1   (error "qmail-inject reported permanent failure"))
+    (111 (error "qmail-inject reported transient failure"))
     ;; should never happen
-    (t   (error "qmail-inject reported unknown failure."))))
+    (t   (error "qmail-inject reported unknown failure"))))
 
 (defun message-send-mail-with-mh ()
   "Send the prepared message buffer with mh."
@@ -2023,7 +2023,8 @@ to find out how to use this."
 	    (funcall (intern (format "%s-open-server" (car method)))
 		     (cadr method) (cddr method))
 	    (setq result
-		  (funcall (intern (format "%s-request-post" (car method))))))
+		  (funcall (intern (format "%s-request-post" (car method)))
+			   (cadr method))))
 	(kill-buffer tembuf))
       (set-buffer messbuf)
       (if result
@@ -3641,18 +3642,26 @@ The following arguments may contain lists of values."
 Then clone the local variables and values from the old buffer to the
 new one, cloning only the locals having a substring matching the
 regexp varstr."
-  (let ((oldlocals (buffer-local-variables)))
+  (let ((oldbuf (current-buffer)))
     (save-excursion
       (set-buffer (generate-new-buffer name))
-      (mapcar (lambda (dude)
-		(when (and (car dude)
-			   (or (not varstr)
-			       (string-match varstr (symbol-name (car dude)))))
-		  (ignore-errors
-		    (set (make-local-variable (car dude))
-			 (cdr dude)))))
-	      oldlocals)
+      (message-clone-locals oldbuf)
       (current-buffer))))
+
+(defun message-clone-locals (buffer)
+  "Clone the local variables from BUFFER to the current buffer."
+  (let ((locals (save-excursion
+		  (set-buffer buffer)
+		  (buffer-local-variables)))
+	(regexp "^gnus\\|^nn\\|^message"))
+    (mapcar
+     (lambda (local)
+       (when (and (car local)
+		  (string-match regexp (symbol-name (car local))))
+	 (ignore-errors
+	   (set (make-local-variable (car local))
+		(cdr local)))))
+     locals)))
 
 (run-hooks 'message-load-hook)
 

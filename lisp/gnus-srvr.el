@@ -662,7 +662,7 @@ buffer.
   "(Un)subscribe to the next ARG groups."
   (interactive "p")
   (when (eobp)
-    (error "No group at current line."))
+    (error "No group at current line"))
   (let ((ward (if (< arg 0) -1 1))
 	(arg (abs arg)))
     (while (and (> arg 0)

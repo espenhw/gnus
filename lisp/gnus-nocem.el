@@ -222,7 +222,8 @@ matches an previously scanned and verified nocem message."
 	  ;; Make sure all entries in the hashtb are bound.
 	  (set group nil))
 	 (t
-	  (when (gnus-gethash (symbol-name group) gnus-newsrc-hashtb)
+	  (when (gnus-gethash (gnus-group-real-name (symbol-name group))
+			      gnus-newsrc-hashtb)
 	    ;; Valid group.
 	    (beginning-of-line)
 	    (while (= (following-char) ?\t)

@@ -1213,8 +1213,7 @@ already."
 		     (not (zerop (buffer-size))))))
 	     (mode-string (eval gformat)))
 	;; Say whether the dribble buffer has been modified.
-	(setq mode-line-modified
-	      (if modified "--**- " "----- "))
+	(setq mode-line-modified (if modified "**" "--"))
 	;; If the line is too long, we chop it off.
 	(when (> (length mode-string) max-len)
 	  (setq mode-string (substring mode-string 0 (- max-len 4))))
@@ -2146,7 +2145,7 @@ score file entries for articles to include in the group."
 	 (pgroup (gnus-group-prefixed-name group method)))
     ;; Check whether it exists already.
     (when (gnus-gethash pgroup gnus-newsrc-hashtb)
-      (error "Group %s already exists." pgroup))
+      (error "Group %s already exists" pgroup))
     ;; Subscribe the new group after the group on the current line.
     (gnus-subscribe-group pgroup (gnus-group-group-name) method)
     (gnus-group-update-group pgroup)

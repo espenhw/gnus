@@ -5299,7 +5299,7 @@ be displayed."
 	did)
     (and (not pseudo)
 	 (gnus-summary-article-pseudo-p article)
-	 (error "This is a pseudo-article."))
+	 (error "This is a pseudo-article"))
     (prog1
 	(save-excursion
 	  (set-buffer gnus-summary-buffer)
@@ -7005,7 +7005,7 @@ delete these instead."
   (gnus-set-global-variables)
   (unless (gnus-check-backend-function 'request-expire-articles
 				       gnus-newsgroup-name)
-    (error "The current newsgroup does not support article deletion."))
+    (error "The current newsgroup does not support article deletion"))
   ;; Compute the list of articles to delete.
   (let ((articles (gnus-summary-work-articles n))
 	not-deleted)
@@ -7043,7 +7043,7 @@ groups."
     (gnus-set-global-variables)
     (when (and (not force)
 	       (gnus-group-read-only-p))
-      (error "The current newsgroup does not support article editing."))
+      (error "The current newsgroup does not support article editing"))
     ;; Select article if needed.
     (unless (eq (gnus-summary-article-number)
 		gnus-current-article)
@@ -7064,7 +7064,7 @@ groups."
 	   (not (gnus-request-replace-article
 		 (cdr gnus-article-current) (car gnus-article-current)
 		 (current-buffer))))
-      (error "Couldn't replace article.")
+      (error "Couldn't replace article")
     ;; Update the summary buffer.
     (if (and references
 	     (equal (message-tokenize-header references " ")
@@ -7712,7 +7712,7 @@ even ticked and dormant ones."
 	(setq scored (cdr scored)))
       (if (not headers)
 	  (when (not no-error)
-	    (error "No expunged articles hidden."))
+	    (error "No expunged articles hidden"))
 	(goto-char (point-min))
 	(gnus-summary-prepare-unthreaded (nreverse headers))
 	(goto-char (point-min))
@@ -7867,9 +7867,9 @@ Note that the re-threading will only work if `gnus-thread-ignore-subject'
 is non-nil or the Subject: of both articles are the same."
   (interactive)
   (unless (not (gnus-group-read-only-p))
-    (error "The current newsgroup does not support article editing."))
+    (error "The current newsgroup does not support article editing"))
   (unless (<= (length gnus-newsgroup-processable) 1)
-    (error "No more than one article may be marked."))
+    (error "No more than one article may be marked"))
   (save-window-excursion
     (let ((gnus-article-buffer " *reparent*")
 	  (current-article (gnus-summary-article-number))
@@ -7879,13 +7879,13 @@ is non-nil or the Subject: of both articles are the same."
 			    (save-excursion
 			      (if (eq (forward-line -1) 0)
 				  (gnus-summary-article-number)
-				(error "Beginning of summary buffer."))))))
+				(error "Beginning of summary buffer"))))))
       (unless (not (eq current-article parent-article))
-	(error "An article may not be self-referential."))
+	(error "An article may not be self-referential"))
       (let ((message-id (mail-header-id
 			 (gnus-summary-article-header parent-article))))
 	(unless (and message-id (not (equal message-id "")))
-	  (error "No message-id in desired parent."))
+	  (error "No message-id in desired parent"))
 	(gnus-summary-select-article t t nil current-article)
 	(set-buffer gnus-original-article-buffer)
 	(let ((buf (format "%s" (buffer-string))))
@@ -7898,11 +7898,11 @@ is non-nil or the Subject: of both articles are the same."
 	    (unless (gnus-request-replace-article
 		     current-article (car gnus-article-current)
 		     (current-buffer))
-	      (error "Couldn't replace article."))))
+	      (error "Couldn't replace article"))))
 	(set-buffer gnus-summary-buffer)
 	(gnus-summary-unmark-all-processable)
 	(gnus-summary-rethread-current)
-	(gnus-message 3 "Article %d is now the child of article %d."
+	(gnus-message 3 "Article %d is now the child of article %d"
 		      current-article parent-article)))))
 
 (defun gnus-summary-toggle-threads (&optional arg)

@@ -77,7 +77,7 @@ Used for APOP authentication.")
 	  ((equal 'pass pop3-authentication-scheme)
 	   (pop3-user process pop3-maildrop)
 	   (pop3-pass process))
-	  (t (error "Invalid POP3 authentication scheme.")))
+	  (t (error "Invalid POP3 authentication scheme")))
     (setq message-count (car (pop3-stat process)))
     (while (<= n message-count)
       (message (format "Retrieving message %d of %d from %s..."

@@ -1419,7 +1419,7 @@ This format is defined by the `gnus-article-time-format' variable."
       (gnus-article-hide-headers 1 t)))
   (save-window-excursion
     (if (not gnus-default-article-saver)
-	(error "No default saver is defined.")
+	(error "No default saver is defined")
       ;; !!! Magic!  The saving functions all save
       ;; `gnus-original-article-buffer' (or so they think), but we
       ;; bind that variable to our save-buffer.
@@ -2471,7 +2471,7 @@ groups."
   (interactive "P")
   (when (and (not force)
 	     (gnus-group-read-only-p))
-    (error "The current newsgroup does not support article editing."))
+    (error "The current newsgroup does not support article editing"))
   (gnus-article-edit-article
    `(lambda ()
       (gnus-summary-edit-article-done

@@ -541,7 +541,7 @@ parameter.  It should return nil, `warn' or `delete'."
 (defun nnmail-move-inbox (inbox)
   "Move INBOX to `nnmail-crash-box'."
   (if (not (file-writable-p nnmail-crash-box))
-      (gnus-error 1 "Can't write to crash box %s.  Not moving mail."
+      (gnus-error 1 "Can't write to crash box %s.  Not moving mail"
 		  nnmail-crash-box)
     ;; If the crash box exists and is empty, we delete it.
     (when (and (file-exists-p nnmail-crash-box)

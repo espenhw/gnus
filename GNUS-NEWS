@@ -1,5 +1,10 @@
 ** Gnus changes.
 
+*** `gnus-select-method' now defaults to `(nntp "news")' instead
+of `(nntp "localhost")'.
+
+*** `gnus-read-active-file' now defaults to `some' instead of t.
+
 *** nntp.el has been totally rewritten in an asynchronous fashion.
 
 *** Article prefetching functionality has been moved up into 
