@@ -1,3 +1,15 @@
+2001-07-29  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.el (gnus-summary-line-format): Mention `gnus-sum-thread-*'
+	for %B spec.
+
+	* gnus-sum.el (gnus-summary-prepare-threads): If
+	gnus-sum-thread-tree-root is nil, use subject instead.
+	(gnus-sum-thread-tree-root, gnus-sum-thread-tree-single-indent) 
+	(gnus-sum-thread-tree-vertical, gnus-sum-thread-tree-indent) 
+	(gnus-sum-thread-tree-leaf-with-other) 
+	(gnus-sum-thread-tree-single-leaf): Documentation.
+
 2001-07-28 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-fill-paragraph): Do nothing if the user

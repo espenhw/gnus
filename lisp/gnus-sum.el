@@ -4092,12 +4092,19 @@ Unscored articles will be counted as having a score of zero."
 
 (defvar gnus-tmp-thread-tree-header-string "")
 
-(defvar gnus-sum-thread-tree-root "> ")
-(defvar gnus-sum-thread-tree-single-indent "")
-(defvar gnus-sum-thread-tree-vertical "| ")
-(defvar gnus-sum-thread-tree-indent "  ")
-(defvar gnus-sum-thread-tree-leaf-with-other "+-> ")
-(defvar gnus-sum-thread-tree-single-leaf "\\-> ")
+(defvar gnus-sum-thread-tree-root "> "
+  "With %B spec, used for the root of a thread.
+If nil, use subject instead.")
+(defvar gnus-sum-thread-tree-single-indent ""
+  "With %B spec, used for a thread with just one message.")
+(defvar gnus-sum-thread-tree-vertical "| "
+  "With %B spec, used for drawing a vertical line.")
+(defvar gnus-sum-thread-tree-indent "  "
+  "With %B spec, used for indenting.")
+(defvar gnus-sum-thread-tree-leaf-with-other "+-> "
+  "With %B spec, used for a leaf with brothers.")
+(defvar gnus-sum-thread-tree-single-leaf "\\-> "
+  "With %B spec, used for a leaf without brothers.")
 
 (defun gnus-summary-prepare-threads (threads)
   "Prepare summary buffer from THREADS and indentation LEVEL.
@@ -4330,7 +4337,7 @@ or a straight list of headers."
 	      ((not gnus-show-threads) "")
 	      ((zerop gnus-tmp-level)
 	       (if (cdar thread) 
-		   gnus-sum-thread-tree-root
+		   (or gnus-sum-thread-tree-root subject)
 		 gnus-sum-thread-tree-single-indent))
 	      (t
 	       (concat (apply 'concat
