@@ -392,8 +392,25 @@ human readable response text (a string).")
   "Non-nil indicates that the server emitted a continuation request.
 The actually value is really the text on the continuation line.")
 
+(defvar imap-callbacks nil
+  "List of response tags and callbacks, on the form `(number . function)'.
+The function should take two arguments, the first the IMAP tag and the
+second the status (OK, NO, BAD etc) of the command.")
+
 
 ;; Utility functions:
+
+(defun imap-remassoc (key alist)
+  "Delete by side effect any elements of LIST whose car is `equal' to KEY.
+The modified LIST is returned.  If the first member
+of LIST has a car that is `equal' to KEY, there is no way to remove it
+by side effect; therefore, write `(setq foo (remassoc key foo))' to be
+sure of changing the value of `foo'."
+  (when alist
+    (if (equal key (caar alist))
+	(cdr alist)
+      (setcdr alist (imap-remassoc key (cdr alist)))
+      alist)))
 
 (defsubst imap-disable-multibyte ()
   "Enable multibyte in the current buffer."
@@ -1139,22 +1156,38 @@ If EXAMINE is non-nil, do a read-only select."
 	    imap-state 'auth)
       t)))
 
-(defun imap-mailbox-expunge (&optional buffer)
+(defun imap-mailbox-expunge (&optional asynch buffer)
   "Expunge articles in current folder in BUFFER.
+If ASYNCH, do not wait for succesful completion of the command.
 If BUFFER is nil the current buffer is assumed."
   (with-current-buffer (or buffer (current-buffer))
     (when (and imap-current-mailbox (not (eq imap-state 'examine)))
-      (imap-ok-p (imap-send-command-wait "EXPUNGE")))))
+      (if asynch
+	  (imap-send-command "EXPUNGE")
+      (imap-ok-p (imap-send-command-wait "EXPUNGE"))))))
 
-(defun imap-mailbox-close (&optional buffer)
+(defun imap-mailbox-close (&optional asynch buffer)
   "Expunge articles and close current folder in BUFFER.
+If ASYNCH, do not wait for succesful completion of the command.
 If BUFFER is nil the current buffer is assumed."
   (with-current-buffer (or buffer (current-buffer))
-    (when (and imap-current-mailbox
-	       (imap-ok-p (imap-send-command-wait "CLOSE")))
-      (setq imap-current-mailbox nil
-	    imap-message-data nil
-	    imap-state 'auth)
+    (when imap-current-mailbox
+      (if asynch
+	  (imap-add-callback (imap-send-command "CLOSE")
+			     `(lambda (tag status)
+				(message "IMAP mailbox `%s' closed... %s"
+					 imap-current-mailbox status)
+				(when (eq ,imap-current-mailbox
+					  imap-current-mailbox)
+				  ;; Don't wipe out data if another mailbox
+				  ;; was selected...
+				  (setq imap-current-mailbox nil
+					imap-message-data nil
+					imap-state 'auth))))
+	(when (imap-ok-p (imap-send-command-wait "CLOSE"))
+	  (setq imap-current-mailbox nil
+		imap-message-data nil
+		imap-state 'auth)))
       t)))
 
 (defun imap-mailbox-create-1 (mailbox)
@@ -1569,6 +1602,9 @@ on failure."
 
 ;; Internal functions.
 
+(defun imap-add-callback (tag func)
+  (setq imap-callbacks (append (list (cons tag func)) imap-callbacks)))
+
 (defun imap-send-command-1 (cmdstr)
   (setq cmdstr (concat cmdstr imap-client-eol))
   (and imap-log
@@ -1938,9 +1974,9 @@ Return nil if no complete line has arrived."
 			(read (concat "(" (buffer-substring (point) (point-max)) ")"))))
 	   (STATUS     (imap-parse-status))
 	   (CAPABILITY (setq imap-capability
-			     (read (concat "(" (upcase (buffer-substring
-							(point) (point-max)))
-					   ")"))))
+			       (read (concat "(" (upcase (buffer-substring
+							  (point) (point-max)))
+					     ")"))))
 	   (ACL        (imap-parse-acl))
 	   (t       (case (prog1 (read (current-buffer))
 			    (imap-forward))
@@ -1982,7 +2018,11 @@ Return nil if no complete line has arrived."
 			(push (list token status code text) imap-failed-tags)
 			(error "Internal error, tag %s status %s code %s text %s"
 			       token status code text))))
-	       (t   (message "Garbage: %s" (buffer-string))))))))))
+	       (t   (message "Garbage: %s" (buffer-string))))
+	     (when (assq token imap-callbacks)
+	       (funcall (cdr (assq token imap-callbacks)) token status)
+	       (setq imap-callbacks
+		     (imap-remassoc token imap-callbacks)))))))))
 
 ;;   resp-text       = ["[" resp-text-code "]" SP] text
 ;;

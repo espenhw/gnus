@@ -1,5 +1,16 @@
 2001-11-01  Simon Josefsson  <jas@extundo.com>
 
+	* nnimap.el (nnimap-close-asynchronous): New variable.
+	(nnimap-close-group): Use it.
+	(nnimap-expunge): Don't use it.
+
+	* imap.el (imap-callbacks): New variable.
+	(imap-remassoc): Copied from `gnus-remassoc'.
+	(imap-add-callback): New function.
+	(imap-mailbox-expunge, imap-mailbox-close): Support asynchronous
+	behaviour.
+	(imap-parse-response): Call the callback.
+
 	* message.el (message-insert-canlock): New variable.
 	(message-canlock-generate, message-canlock-password) 
 	(message-insert-canlock): New functions.
