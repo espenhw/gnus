@@ -74,6 +74,8 @@
 (defvar gnus-tmp-article-number)
 (defvar gnus-mouse-face)
 (defvar gnus-mouse-face-prop)
+(defvar gnus-tmp-header)
+(defvar gnus-tmp-from)
 
 (defun gnus-summary-line-format-spec ()
   (insert gnus-tmp-unread gnus-tmp-replied
@@ -82,13 +84,15 @@
    (point)
    (progn
      (insert
-      gnus-tmp-opening-bracket
-      (format "%4d: %-20s"
-	      gnus-tmp-lines
-	      (if (> (length gnus-tmp-name) 20)
-		  (substring gnus-tmp-name 0 20)
-		gnus-tmp-name))
-      gnus-tmp-closing-bracket)
+      (format "%c%4s: %-23s%c" gnus-tmp-opening-bracket gnus-tmp-lines
+	      (let ((val
+		     (inline
+		       (gnus-summary-from-or-to-or-newsgroups
+			gnus-tmp-header gnus-tmp-from))))
+		(if (> (length val) 23)
+		    (substring val 0 23)
+		  val))
+	      gnus-tmp-closing-bracket))
      (point))
    gnus-mouse-face-prop gnus-mouse-face)
   (insert " " gnus-tmp-subject-or-nil "\n"))
@@ -129,9 +133,11 @@
     (group "%M\%S\%p\%P\%5y: %(%g%)%l\n" ,gnus-group-line-format-spec)
     (summary-dummy "*  %(:                          :%) %S\n"
 		   ,gnus-summary-dummy-line-format-spec)
-    (summary "%U\%R\%z\%I\%(%[%4L: %-23,23n%]%) %s\n"
+    (summary "%U%R%z%I%(%[%4L: %-23,23f%]%) %s\n"
 	     ,gnus-summary-line-format-spec))
   "Alist of format specs.")
+
+(defvar gnus-default-format-specs gnus-format-specs)
 
 (defvar gnus-article-mode-line-format-spec nil)
 (defvar gnus-summary-mode-line-format-spec nil)
@@ -175,8 +181,9 @@
   ;; Make the indentation array.
   ;; See whether all the stored info needs to be flushed.
   (when (or force
+	    (not gnus-newsrc-file-version)
 	    (not (equal (gnus-continuum-version)
-			(cdr (assq 'gnus-version gnus-format-specs))))
+			(gnus-continuum-version gnus-newsrc-file-version)))
 	    (not (equal emacs-version
 			(cdr (assq 'version gnus-format-specs)))))
     (setq gnus-format-specs nil))

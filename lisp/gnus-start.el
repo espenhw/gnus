@@ -611,7 +611,7 @@ the first newsgroup."
 (defun gnus-clear-system ()
   "Clear all variables and buffers."
   ;; Clear Gnus variables.
-  (let ((variables gnus-variable-list))
+  (let ((variables (delete 'gnus-format-specs gnus-variable-list)))
     (while variables
       (set (car variables) nil)
       (setq variables (cdr variables))))
@@ -2014,7 +2014,7 @@ newsgroup."
   "Read startup file.
 If FORCE is non-nil, the .newsrc file is read."
   ;; Reset variables that might be defined in the .newsrc.eld file.
-  (let ((variables gnus-variable-list))
+  (let ((variables (delete 'gnus-format-specs gnus-variable-list)))
     (while variables
       (set (car variables) nil)
       (setq variables (cdr variables))))
@@ -2099,8 +2099,8 @@ If FORCE is non-nil, the .newsrc file is read."
 	     (and gnus-newsrc-file-version
 		  (gnus-continuum-version gnus-newsrc-file-version))))
 	(when (or (not version)
-		  (< version 5.090002))
-	  (setq gnus-format-specs nil)))
+		  (< version 5.090009))
+	  (setq gnus-format-specs gnus-default-format-specs)))
       (when gnus-newsrc-assoc
 	(setq gnus-newsrc-alist gnus-newsrc-assoc)))
     (gnus-make-hashtable-from-newsrc-alist)

@@ -190,6 +190,42 @@ colors of the displayed X-Faces."
 	       pbm 'pbm t :ascent 'center :face 'gnus-x-face))))
 	  (gnus-add-wash-type 'xface))))))
 
+(defun gnus-grab-cam-x-face ()
+  "Grab a picture off the camera and make it into an X-Face."
+  (interactive)
+  (shell-command "xawtv-remote snap ppm")
+  (let ((file nil))
+    (while (null (setq file (directory-files "/tftpboot/sparky/tmp"
+					     t "snap.*ppm")))
+      (sleep-for 1))
+    (setq file (car file))
+    (with-temp-buffer
+      (shell-command
+       (format "pnmcut -left 110 -top 60 -width 144 -height 144 '%s' | ppmnorm 2>/dev/null | pnmscale -width 48 | ppmtopgm | pgmtopbm | pbmtoxbm | compface"
+	       file)
+       (current-buffer))
+      ;;(sleep-for 3)
+      (delete-file file)
+      (buffer-string))))
+
+(defun gnus-grab-gray-x-face ()
+  "Grab a picture off the camera and make it into an X-Face."
+  (interactive)
+  (shell-command "xawtv-remote snap ppm")
+  (let ((file nil))
+    (while (null (setq file (directory-files "/tftpboot/sparky/tmp"
+					     t "snap.*ppm")))
+      (sleep-for 1))
+    (setq file (car file))
+    (with-temp-buffer
+      (shell-command
+       (format "pnmcut -left 70 -top 100 -width 144 -height 144 '%s' | ppmquant 256 2>/dev/null | ppmtogif > '%s.gif'"
+	       file file)
+       (current-buffer))
+      (delete-file file))
+    (gnus-convert-image-to-gray-x-face (concat file ".gif") 3)
+    (delete-file (concat file ".gif"))))
+
 (provide 'gnus-fun)
 
 ;;; gnus-fun.el ends here

@@ -2987,11 +2987,12 @@ buffer that was in action when the last article was fetched."
 	    (cond
 	     ((setq to (cdr (assq 'To extra-headers)))
 	      (concat "-> "
-		      (gnus-summary-extract-address-component
-		       (funcall gnus-decode-encoded-word-function to))))
+		      (inline
+			(gnus-summary-extract-address-component
+			 (funcall gnus-decode-encoded-word-function to)))))
 	     ((setq newsgroups (cdr (assq 'Newsgroups extra-headers)))
 	      (concat "=> " newsgroups)))))
-     (gnus-summary-extract-address-component gnus-tmp-from))))
+     (inline (gnus-summary-extract-address-component gnus-tmp-from)))))
 
 (defun gnus-summary-insert-line (gnus-tmp-header
 				 gnus-tmp-level gnus-tmp-current
@@ -3427,7 +3428,7 @@ If NO-DISPLAY, don't generate a summary buffer."
     (while threads
       (when (setq references (mail-header-references (caar threads)))
 	(setq id (mail-header-id (caar threads))
-	      ids (gnus-split-references references)
+	      ids (inline (gnus-split-references references))
 	      entered nil)
 	(while (setq ref (pop ids))
 	  (setq ids (delete ref ids))

@@ -1,3 +1,36 @@
+2002-01-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-initial-limit): Inline
+	gnus-summary-limit-children. 
+	(gnus-summary-initial-limit): Don't limit if
+	gnus-newsgroup-display is nil.
+	(gnus-summary-initial-limit): No, don't.
+
+	* gnus-util.el
+	(gnus-put-text-property-excluding-characters-with-faces): Inline
+	gnus-put-text-property. 
+
+	* gnus-spec.el (gnus-default-format-specs): New variable.
+
+	* gnus-start.el (gnus-read-newsrc-file): Don't clear
+	gnus-format-specs. 
+	(gnus-read-newsrc-el-file): Default to gnus-default-format-specs. 
+
+	* gnus-spec.el (gnus-update-format-specifications): Really check
+	the Gnus version of the .newsrc.eld file.
+	(gnus-format-specs): Save the new default summary format.
+
+	* gnus-util.el (gnus-parent-id): Check whether references is empty
+	before splitting.
+
+	* gnus-sum.el (gnus-summary-from-or-to-or-newsgroups): Inline some
+	functions. 
+	(gnus-gather-threads-by-references): Inline
+	`gnus-split-references'. 
+
+	* gnus-spec.el (gnus-summary-line-format-spec): New, optimized
+	default value of gnus-summary-line-format-spec.
+
 2002-01-15  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnslashdot.el (nnslashdot-retrieve-headers-1): A better error

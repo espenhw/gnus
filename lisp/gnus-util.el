@@ -477,7 +477,8 @@ jabbering all the time."
 (defsubst gnus-parent-id (references &optional n)
   "Return the last Message-ID in REFERENCES.
 If N, return the Nth ancestor instead."
-  (when references
+  (when (and references
+	     (not (zerop (length references))))
     (let ((ids (inline (gnus-split-references references))))
       (while (nthcdr (or n 1) ids)
 	(setq ids (cdr ids)))
@@ -675,9 +676,10 @@ Bind `print-quoted' and `print-readably' to t while printing."
       (when (get-text-property b 'gnus-face)
 	(setq b (next-single-property-change b 'gnus-face nil end)))
       (when (/= b end)
-	(gnus-put-text-property
-	 b (setq b (next-single-property-change b 'gnus-face nil end))
-	 prop val)))))
+	(inline
+	  (gnus-put-text-property
+	   b (setq b (next-single-property-change b 'gnus-face nil end))
+	   prop val))))))
 
 ;;; Protected and atomic operations.  dmoore@ucsd.edu 21.11.1996
 ;;; The primary idea here is to try to protect internal datastructures
