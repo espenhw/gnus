@@ -1,3 +1,8 @@
+2000-11-13 09:50:29  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-repair-multipart): Fix Mime-Version
+	anyway.
+
 2000-11-13  Simon Josefsson  <sj@extundo.com>
 
 	* mm-uu.el (mm-uu-pgp-signed-extract): Explain why clear
