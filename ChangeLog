@@ -1,3 +1,7 @@
+2004-01-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* GNUS-NEWS: Add `gnus-group-read-ephemeral-group'.
+
 2003-12-23  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* GNUS-NEWS: Mention change of `e' in draft groups.

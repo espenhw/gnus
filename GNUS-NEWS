@@ -8,6 +8,8 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** `gnus-group-read-ephemeral-group' can be called interactively, using `G M'.
+
 ** In draft groups, `e' is now bound to `gnus-draft-edit-message'.
 Use `B w' for `gnus-summary-edit-article' instead.
 
