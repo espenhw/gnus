@@ -22,7 +22,7 @@
 	      mc-pgp-always-sign rmail-enable-mime-composing
 	      rmail-insert-mime-forwarded-message-function
 	      w3m-cid-retrieve-function-alist w3m-current-buffer
-	      w3m-meta-content-type-charset-regexp w3m-mode-map))
+	      w3m-meta-content-type-charset-regexp w3m-minor-mode-map))
 
 (if (featurep 'xemacs)
     (progn

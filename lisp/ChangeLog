@@ -1,3 +1,17 @@
+2002-10-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* lpath.el: Bind w3m-minor-mode-map.
+
+	* mm-view.el (mm-w3m-mode-command-alist)
+	(mm-w3m-mode-dont-bind-keys, mm-w3m-mode-ignored-keys): Removed.
+	(mm-w3m-mode-map): Undefined for Emacs21 and XEmacs.
+	(mm-setup-w3m): Simplified.
+	(mm-w3m-local-map-property): New function.
+	(mm-inline-text-html-render-with-w3m): Use it.
+
+	* gnus-art.el (gnus-article-wash-html-with-w3m): Use
+	mm-w3m-local-map-property.
+
 2002-10-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-auto-save-coding-system): Default to

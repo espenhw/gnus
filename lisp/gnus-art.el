@@ -2222,8 +2222,8 @@ If READ-CHARSET, ask for a coding system."
     (when mm-inline-text-html-with-w3m-keymap
       (add-text-properties
        (point-min) (point-max)
-       (append '(mm-inline-text-html-with-w3m t)
-	       (gnus-local-map-property mm-w3m-mode-map))))))
+       (nconc (mm-w3m-local-map-property)
+	      '(mm-inline-text-html-with-w3m t))))))
 
 (defun article-hide-list-identifiers ()
   "Remove list identifies from the Subject header.

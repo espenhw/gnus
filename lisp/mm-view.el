@@ -181,62 +181,6 @@
 	      (delete-region ,(point-min-marker)
 			     ,(point-max-marker)))))))))
 
-(defvar mm-w3m-mode-map nil
-  "Local keymap for inlined text/html part rendered by emacs-w3m.  It will
-be different from `w3m-mode-map' to use in the article buffer.")
-
-(defvar mm-w3m-mode-command-alist
-  '((backward-char)
-    (describe-mode)
-    (forward-char)
-    (goto-line)
-    (next-line)
-    (previous-line)
-    (w3m-antenna)
-    (w3m-antenna-add-current-url)
-    (w3m-bookmark-add-current-url)
-    (w3m-bookmark-add-this-url)
-    (w3m-bookmark-view)
-    (w3m-close-window)
-    (w3m-copy-buffer)
-    (w3m-delete-buffer)
-    (w3m-dtree)
-    (w3m-edit-current-url)
-    (w3m-edit-this-url)
-    (w3m-gohome)
-    (w3m-goto-url)
-    (w3m-goto-url-new-session)
-    (w3m-history)
-    (w3m-history-restore-position)
-    (w3m-history-store-position)
-    (w3m-namazu)
-    (w3m-next-buffer)
-    (w3m-previous-buffer)
-    (w3m-quit)
-    (w3m-redisplay-with-charset)
-    (w3m-reload-this-page)
-    (w3m-scroll-down-or-previous-url)
-    (w3m-scroll-up-or-next-url)
-    (w3m-search)
-    (w3m-select-buffer)
-    (w3m-switch-buffer)
-    (w3m-view-header)
-    (w3m-view-parent-page)
-    (w3m-view-previous-page)
-    (w3m-view-source)
-    (w3m-weather))
-  "Alist of commands to use for emacs-w3m in the article buffer.  Each
-element looks like (FROM-COMMAND . TO-COMMAND); FROM-COMMAND should be
-registered in `w3m-mode-map' which will be substituted by TO-COMMAND
-in `mm-w3m-mode-map'.  If TO-COMMAND is nil, an article command key
-will not be substituted.")
-
-(defvar mm-w3m-mode-dont-bind-keys (list [up] [right] [left] [down])
-  "List of keys which should not be bound for the emacs-w3m commands.")
-
-(defvar mm-w3m-mode-ignored-keys (list [down-mouse-2])
-  "List of keys which should ignore.")
-
 (defvar mm-w3m-setup nil
   "Whether gnus-article-mode has been setup to use emacs-w3m.")
 
@@ -244,20 +188,6 @@ will not be substituted.")
   "Setup gnus-article-mode to use emacs-w3m."
   (unless mm-w3m-setup
     (require 'w3m)
-    (unless mm-w3m-mode-map
-      (setq mm-w3m-mode-map (copy-keymap w3m-mode-map))
-      (dolist (def mm-w3m-mode-command-alist)
-	(condition-case nil
-	    (substitute-key-definition (car def) (cdr def) mm-w3m-mode-map)
-	  (error)))
-      (dolist (key mm-w3m-mode-dont-bind-keys)
-	(condition-case nil
-	    (define-key mm-w3m-mode-map key nil)
-	  (error)))
-      (dolist (key mm-w3m-mode-ignored-keys)
-	(condition-case nil
-	    (define-key mm-w3m-mode-map key 'ignore)
-	  (error))))
     (unless (assq 'gnus-article-mode w3m-cid-retrieve-function-alist)
       (push (cons 'gnus-article-mode 'mm-w3m-cid-retrieve)
 	    w3m-cid-retrieve-function-alist))
@@ -274,6 +204,27 @@ will not be substituted.")
 		   (equal url (mm-handle-id handle)))
 	  (mm-insert-part handle)
 	  (throw 'found-handle (mm-handle-media-type handle)))))))
+
+(eval-and-compile
+  (unless (or (featurep 'xemacs)
+	      (>= emacs-major-version 21))
+    (defvar mm-w3m-mode-map nil
+      "Keymap for text/html part rendered by `mm-w3m-preview-text/html'.
+This map is overwritten by `mm-w3m-local-map-property' based on the
+value of `w3m-minor-mode-map'.  Therefore, in order to add some
+commands to this map, add them to `w3m-minor-mode-map' instead of this
+map.")))
+
+(defun mm-w3m-local-map-property ()
+  (if (or (featurep 'xemacs)
+	  (>= emacs-major-version 21))
+      (list 'keymap w3m-minor-mode-map)
+    (list 'local-map
+	  (or mm-w3m-mode-map
+	      (progn
+		(setq mm-w3m-mode-map (copy-keymap w3m-minor-mode-map))
+		(set-keymap-parent mm-w3m-mode-map gnus-article-mode-map)
+		mm-w3m-mode-map)))))
 
 (defun mm-inline-text-html-render-with-w3m (handle)
   "Render a text/html part using emacs-w3m."
@@ -299,8 +250,8 @@ will not be substituted.")
 	(when mm-inline-text-html-with-w3m-keymap
 	  (add-text-properties
 	   (point-min) (point-max)
-	   (append '(mm-inline-text-html-with-w3m t)
-		   (gnus-local-map-property mm-w3m-mode-map)))))
+	   (nconc (mm-w3m-local-map-property)
+		  '(mm-inline-text-html-with-w3m t)))))
       (mm-handle-set-undisplayer
        handle
        `(lambda ()
