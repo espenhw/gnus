@@ -22441,6 +22441,7 @@ The following are the methods you can use to control the behavior of
 * Bogofilter::                  
 * ifile spam filtering::        
 * spam-stat spam filtering::    
+* SpamOracle::
 * Extending the spam elisp package::  
 @end menu
 
@@ -22832,6 +22833,109 @@ provides an internal (Lisp-only) spam database, which unlike ifile or
 Bogofilter does not require external programs.  A spam and a ham
 processor, and the @code{spam-use-stat} variable for @code{spam-split}
 are provided.
+
+@node SpamOracle
+@subsubsection Using SpamOracle with Gnus
+@cindex spam filtering
+@cindex SpamOracle
+@cindex spam
+
+An easy way to filter out spam is to use SpamOracle. SpamOracle is an
+statistical mail filtering tool written by Xavier Leroy and needs to be
+installed separately.
+
+There are several ways to use SpamOracle with Gnus. In all cases, your
+mail is piped through SpamOracle in its @emph{mark} mode. SpamOracle will
+then enter an @samp{X-Spam} header indicating whether it regards the
+mail as a spam mail or not.
+
+One possibility is to run SpamOracle as a @code{:prescript} from the
+@xref{Mail Source Specifiers}, (@pxref{SpamAssassin}). This method has
+the advantage that the user can see the @emph{X-Spam} headers.
+
+The easiest method is to make @code{spam.el} (@pxref{Filtering Spam
+Using The Spam ELisp Package}) call SpamOracle. 
+
+@vindex spam-use-spamoracle 
+To enable SpamOracle usage by @code{spam.el}, set the variable
+@code{spam-use-spamoracle} to @code{t} and configure the
+@code{nnmail-split-fancy} or @code{nnimap-split-fancy} as described in
+the section @xref{Filtering Spam Using The Spam ELisp Package}. In
+this example the @samp{INBOX} of an nnimap server is filtered using
+SpamOracle. Mails recognized as spam mails will be moved to
+@code{spam-split-group}, @samp{Junk} in this case. Ham messages stay
+in @samp{INBOX}:
+
+@example
+(setq spam-use-spamoracle t
+      spam-split-group "Junk"
+      nnimap-split-inbox '("INBOX")
+      nnimap-split-rule 'nnimap-split-fancy
+      nnimap-split-fancy '(| (: spam-split) "INBOX"))
+@end example
+
+@defvar spam-use-spamoracle
+Set to @code{t} if you want Gnus to enable spam filtering using
+SpamOracle.
+@end defvar
+
+@defvar spam-spamoracle-binary
+Gnus uses the SpamOracle binary called @file{spamoracle} found in the
+user's PATH. Using the variable @code{spam-spamoracle-binary}, this
+can be customized.
+@end defvar
+
+@defvar spam-spamoracle-database
+By default, SpamOracle uses the file @file{~/.spamoracle.db} as a database to
+store its analyses. This is controlled by the variable
+@code{spam-spamoracle-database} which defaults to @code{nil}. That means
+the default SpamOracle database will be used. In case you want your
+database to live somewhere special, set
+@code{spam-spamoracle-database} to this path.
+@end defvar
+
+SpamOracle employs a statistical algorithm to determine whether a
+message is spam or ham. In order to get good results, meaning few
+false hits or misses, SpamOracle needs training. SpamOracle learns the
+characteristics of your spam mails. Using the @emph{add} mode
+(training mode) one has to feed good (ham) and spam mails to
+SpamOracle. This can be done by pressing @kbd{|} in the Summary buffer
+and pipe the mail to a SpamOracle process or using @code{spam.el}'s
+spam- and ham-processors, which is much more convenient. For a
+detailed description of spam- and ham-processors, see @xref{Filtering Spam Using The Spam ELisp Package}.
+
+@defvar gnus-group-spam-exit-processor-spamoracle
+Add this symbol to a group's @code{spam-process} parameter by
+customizing the group parameter or the
+@code{gnus-spam-process-newsgroups} variable. When this symbol is added
+to a group's @code{spam-process} parameter, spam-marked articles will be
+sent to SpamOracle as spam samples.
+@end defvar
+
+@defvar gnus-group-ham-exit-processor-spamoracle
+Add this symbol to a group's @code{spam-process} parameter by
+customizing the group parameter or the
+@code{gnus-spam-process-newsgroups} variable. When this symbol is added
+to a grup's @code{spam-process} parameter, the ham-marked articles in
+@emph{ham} groups will be sent to the SpamOracle as samples of ham
+messages. Note that this ham processor has no effect in @emph{spam} or
+@emph{unclassified} groups.
+@end defvar
+
+@emph{Example:} These are the Group Parameters of an group that has been
+classified as a ham group, meaning that it should only contain ham
+messages.
+@example
+ ((spam-contents gnus-group-spam-classification-ham)
+  (spam-process
+   (gnus-group-spam-exit-processor-spamoracle)))
+@end example
+For this group the `gnus-group-spam-exit-processor-spamoracle' is
+installed. If the group contains spam message (e.g. because SpamOracle
+has not had enough sample messages yet) and the user marks some
+messages as spam messages, these messages will be processed by
+@code{gnus-group-spam-exit-processor-spamoracle}. This processor sends
+the messages to SpamOracle as new samples for spam.
 
 @node Extending the spam elisp package
 @subsubsection Extending the spam elisp package

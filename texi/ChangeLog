@@ -1,3 +1,9 @@
+2003-06-09  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Filtering Spam Using The Spam ELisp Package): new
+	SpamOracle node
+	(SpamOracle): document new SpamOracle code
+
 2003-06-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Article Buttons, Splitting in IMAP)
