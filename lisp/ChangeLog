@@ -7,6 +7,8 @@
 	(message-forward-make-body-digest): New, derived from
 	message-forward-make-body.
 	(message-forward-make-body): Use them.
+	(message-forward-show-mml): New default 'best.
+	(message-forward-make-body): Support it.
 
 2003-10-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

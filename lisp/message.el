@@ -467,12 +467,19 @@ Otherwise, directly inline the old message in the forwarded message."
   :group 'message-forwarding
   :type 'boolean)
 
-(defcustom message-forward-show-mml nil
-  "*Non-nil means show forwarded messages as mml.
-Otherwise, forwarded messages are unchanged."
+(defcustom message-forward-show-mml 'best
+  "*Non-nil means show forwarded messages as MML (decoded from MIME).
+Otherwise, forwarded messages are unchanged.
+Can also be the symbol `best' to indicate that MML should be
+used, except when it is a bad idea to use MML.  One example where
+it is a bad idea is when forwarding a signed or encrypted
+message, because converting MIME to MML would invalidate the
+digital signature."
   :version "21.1"
   :group 'message-forwarding
-  :type 'boolean)
+  :type '(choice (const :tag "use MML" t)
+		 (const :tag "don't use MML " nil)
+		 (const :tag "use MML when appropriate" best)))
 
 (defcustom message-forward-before-signature t
   "*Non-nil means put forwarded message before signature, else after."
@@ -6076,7 +6083,13 @@ Optional DIGEST will use digest to forward."
   (if message-forward-as-mime
       (if digest
 	  (message-forward-make-body-digest forward-buffer)
-	(if message-forward-show-mml
+	(if (and message-forward-show-mml
+		 (not (and (eq message-forward-show-mml 'best)
+			   (with-current-buffer forward-buffer
+			     (goto-char (point-min))
+			     (re-search-forward
+			      "Content-Type: *multipart/\\(signed\\|encrypted\\)"
+			      nil t)))))
 	    (message-forward-make-body-mml forward-buffer)
 	  (message-forward-make-body-mime forward-buffer)))
     (message-forward-make-body-plain forward-buffer))
