@@ -244,7 +244,10 @@ The buffer is not selected, just returned to the caller."
 	   (truename (abbreviate-file-name (file-truename filename)))
 	   (number (nthcdr 10 (file-attributes truename)))
 	   ;; Find any buffer for a file which has same truename.
-	   (other (and (not buf) (find-buffer-visiting filename)))
+	   (other (and (not buf) 
+		       (if (fboundp 'find-buffer-visiting)
+			   (find-buffer-visiting filename)
+			 (get-file-buffer filename))))
 	   error)
       ;; Let user know if there is a buffer with the same truename.
       (if other
@@ -254,7 +257,9 @@ The buffer is not selected, just returned to the caller."
 		(message "%s and %s are the same file"
 			 filename (buffer-file-name other)))
 	    ;; Optionally also find that buffer.
-	    (if (or find-file-existing-other-name find-file-visit-truename)
+	    (if (or (and (boundp 'find-file-existing-other-name)
+			 find-file-existing-other-name)
+		    find-file-visit-truename)
 		(setq buf other))))
       (if buf
 	  (or nowarn

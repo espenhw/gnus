@@ -79,9 +79,10 @@
 	    (set-buffer buffer)
 	    (if (> (buffer-size) 0)
 		;; non-empty overview, write it out
-		(gnus-make-directory (file-name-directory overview-file))
-		(write-region (point-min) (point-max)
-			      overview-file nil 'quietly)
+		(progn
+		  (gnus-make-directory (file-name-directory overview-file))
+		  (write-region (point-min) (point-max)
+				overview-file nil 'quietly))
 	      ;; empty overview file, remove it
 	      (and (file-exists-p overview-file)
 		   (delete-file overview-file))
@@ -129,7 +130,8 @@
       ;; Save the article in the cache.
       (if (file-exists-p file)
 	  t ; The article already is saved, so we end here.
-	(gnus-summary-select-article)
+	(let ((gnus-use-cache nil))
+	  (gnus-summary-select-article))
 	(save-excursion
 	  (set-buffer gnus-article-buffer)
 	  (save-restriction

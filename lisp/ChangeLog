@@ -1,3 +1,27 @@
+Tue Aug  8 09:58:27 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus-ems.el (gnus-summary-insert-pseudos-xemacs): Would bug out
+	on the end of the buffer.
+
+Tue Aug  8 07:22:17 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci7.cern.ch>
+
+	* gnus.el (gnus-group-list-groups): Did not properly respect
+	permanent levels. 
+
+	* nnheader.el (nnheader-find-file-noselect): Didn't work on
+	XEmacs. 
+
+	* gnus.el (gnus-group-get-new-news): Would do the wrong thing
+	without permanent levels.
+	(gnus-update-format-specifications): Did not update group mark
+	pos. 
+
+	* nntp.el (nntp-retrieve-headers-with-xover): Did not remove nntp
+	server gruft.
+
+	* gnus-cache.el (gnus-cache-save-buffers): Did not write .overview
+	file. 
+
 Mon Aug  7 02:32:03 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
 
 	* gnus.el (gnus-group-list-mode): New variable.

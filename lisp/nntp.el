@@ -511,7 +511,6 @@ instead call function `nntp-status-message' to get status message.")
 		(nntp-async-open-server)))
        (progn
 	 (message "Can't open second connection to %s" nntp-address)
-;	 (debug)
 	 (ding)
 	 (setq nntp-async-articles nil)
 	 (sit-for 2))
@@ -874,8 +873,18 @@ It will prompt for a password."
 
    ;; We don't care about gaps.
    ((not nntp-nov-gap)
-    (nntp-send-xover-command (car sequence) (nntp-last-element sequence)
-			     'wait))
+    (nntp-send-xover-command 
+     (car sequence) (nntp-last-element sequence) 'wait)
+
+    (goto-char (point-min))
+    (if (looking-at "[1-5][0-9][0-9] ")
+	(delete-region (point) (progn (forward-line 1) (point))))
+    (while (search-forward "\r" nil t)
+      (replace-match "" t t))
+    (goto-char (point-max))
+    (forward-line -1)
+    (if (looking-at "\\.")
+	(delete-region (point) (progn (forward-line 1) (point)))))
 
    ;; We do it the hard way.  For each gap, an XOVER command is sent
    ;; to the server.  We do not wait for a reply from the server, we
@@ -935,9 +944,9 @@ It will prompt for a password."
 	(while (search-forward "\r" nil t)
 	  (delete-char -1))
 	(goto-char (point-min))
-	(delete-matching-lines "^\\.$\\|^[1-5][0-9][0-9] "))
+	(delete-matching-lines "^\\.$\\|^[1-5][0-9][0-9] ")))))
 
-      nntp-server-xover))))
+  nntp-server-xover)
 
 (defun nntp-send-xover-command (beg end &optional wait-for-reply)
   (let ((range (format "%d-%d" beg end)))

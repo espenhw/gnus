@@ -771,8 +771,8 @@ hierarchy in its entirety.")
   "*Function used for sorting the group buffer.
 This function will be called with group info entries as the arguments
 for the groups to be sorted.  Pre-made functions include
-`gnus-sort-by-alphabet', `gnus-sort-by-unread' and
-`gnus-sort-by-level'")
+`gnus-group-sort-by-alphabet', `gnus-group-sort-by-unread' and
+`gnus-group-sort-by-level'")
 
 ;; Mark variables suggested by Thomas Michanek
 ;; <Thomas.Michanek@telelogic.se>. 
@@ -1308,7 +1308,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.7"
+(defconst gnus-version "(ding) Gnus v0.99.8"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1868,6 +1868,7 @@ Thank you for your help in stamping out bugs.
 				 (delq (car formats) gnus-old-specs)))
       (setq formats (cdr formats))))
       
+  (gnus-update-group-mark-positions)
   (gnus-update-summary-mark-positions)
 
   (if (and (string-match "%D" gnus-group-line-format)
@@ -3283,7 +3284,9 @@ If argument UNREAD is non-nil, groups with no unread articles are also
 listed." 
   (interactive (list (if current-prefix-arg
 			 (prefix-numeric-value current-prefix-arg)
-		       gnus-level-subscribed)))
+		       (or
+			(gnus-group-default-level nil t)
+			gnus-level-subscribed))))
   (or level
       (setq level (car gnus-group-list-mode)
 	    unread (cdr gnus-group-list-mode)))
@@ -4522,7 +4525,9 @@ unsubscribed groups."
   (interactive)
   (if (not gnus-killed-list)
       (gnus-message 6 "No killed groups")
-    (funcall gnus-group-prepare-function gnus-level-killed t gnus-level-killed)
+    (let (gnus-group-list-mode)
+      (funcall gnus-group-prepare-function 
+	       gnus-level-killed t gnus-level-killed))
     (goto-char (point-min)))
   (gnus-group-position-cursor))
 
@@ -4531,7 +4536,9 @@ unsubscribed groups."
   (interactive)
   (if (not gnus-zombie-list)
       (gnus-message 6 "No zombie groups")
-    (funcall gnus-group-prepare-function gnus-level-zombie t gnus-level-zombie)
+    (let (gnus-group-list-mode)
+      (funcall gnus-group-prepare-function
+	       gnus-level-zombie t gnus-level-zombie))
     (goto-char (point-min)))
   (gnus-group-position-cursor))
 
@@ -4550,7 +4557,7 @@ specify which levels you are interested in re-scanning."
 	  (gnus-have-read-active-file 
 	   (and (not arg) gnus-have-read-active-file)))
       (gnus-get-unread-articles (or arg (1+ gnus-level-subscribed)))))
-  (gnus-group-list-groups arg))
+  (gnus-group-list-groups))
 
 (defun gnus-group-get-new-news-this-group (&optional n)
   "Check for newly arrived news in the current group (and the N-1 next groups).
@@ -8931,17 +8938,17 @@ This will have permanent effect only in mail groups."
       (use-local-map gnus-article-mode-map)
       (setq buffer-read-only t)
       (buffer-disable-undo (current-buffer))
-      (run-hooks 'gnus-visual-mark-article-hook)
+      (and gnus-visual (run-hooks 'gnus-visual-mark-article-hook))
       (gnus-configure-windows 'summary))))
 
-(defun gnus-summary-edit-article-abort ()
-  "Abort changes to the current article."
+(defun gnus-summary-edit-article-postpone ()
+  "Postpone changes to the current article."
   (interactive)
   (gnus-article-mode)
   (use-local-map gnus-article-mode-map)
   (setq buffer-read-only t)
   (buffer-disable-undo (current-buffer))
-  (run-hooks 'gnus-visual-mark-article-hook)
+  (and gnus-visual (run-hooks 'gnus-visual-mark-article-hook))
   (gnus-configure-windows 'summary))
 
 (defun gnus-summary-fancy-query ()

@@ -193,6 +193,273 @@ pounce directly on the real variables themselves.")
       (defun face-list (&rest args)))
   )
 
+(defun gnus-highlight-selected-summary-xemacs ()
+  ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
+  ;; Highlight selected article in summary buffer
+  (if gnus-summary-selected-face
+      (save-excursion
+	(let* ((beg (progn (beginning-of-line) (point)))
+	       (end (progn (end-of-line) (point)))
+	       (to (max 1 (1- (or (previous-single-property-change
+				   end 'mouse-face nil beg) end))))
+	       (from (1+ (or (next-single-property-change 
+			      beg 'mouse-face nil end) beg))))
+	  (if (< to beg)
+	      (progn
+		(setq from beg)
+		(setq to end)))
+	  (if gnus-newsgroup-selected-overlay
+	      (delete-extent gnus-newsgroup-selected-overlay))
+	  (setq gnus-newsgroup-selected-overlay
+		(make-extent from to))
+	  (set-extent-face gnus-newsgroup-selected-overlay
+			   gnus-summary-selected-face)))))
+
+(defun gnus-summary-recenter-xemacs ()
+  (let* ((top (cond ((< (window-height) 4) 0)
+		    ((< (window-height) 7) 1)
+		    (t 2)))
+	 (height (- (window-height) 2))
+	 (bottom (save-excursion (goto-char (point-max))
+				 (forward-line (- height))
+				 (point)))
+	 (window (get-buffer-window (current-buffer))))
+    (and 
+     ;; The user has to want it,
+     gnus-auto-center-summary 
+     ;; the article buffer must be displayed,
+     (get-buffer-window gnus-article-buffer)
+     ;; Set the window start to either `bottom', which is the biggest
+     ;; possible valid number, or the second line from the top,
+     ;; whichever is the least.
+     (set-window-start
+      window (min bottom (save-excursion (forward-line (- top)) 
+					 (point)))))))
+
+(defun gnus-group-insert-group-line-info-xemacs (group)
+  (let ((entry (gnus-gethash group gnus-newsrc-hashtb)) 
+	(beg (point))
+	active info)
+    (if entry
+	(progn
+	  (setq info (nth 2 entry))
+	  (gnus-group-insert-group-line 
+	   nil group (nth 1 info) (nth 3 info) (car entry) (nth 4 info)))
+      (setq active (gnus-gethash group gnus-active-hashtb))
+	  
+      (gnus-group-insert-group-line 
+       nil group (if (member group gnus-zombie-list) gnus-level-zombie
+		   gnus-level-killed)
+       nil (if active (- (1+ (cdr active)) (car active)) 0) nil))
+    (save-excursion
+      (goto-char beg)
+      (remove-text-properties 
+       (1+ (gnus-point-at-bol)) (1+ (gnus-point-at-eol))
+       '(gnus-group nil)))))
+
+(defun gnus-summary-refer-article-xemacs (message-id)
+  "Refer article specified by MESSAGE-ID.
+NOTE: This command only works with newsgroups that use real or simulated NNTP."
+  (interactive "sMessage-ID: ")
+  (if (or (not (stringp message-id))
+	  (zerop (length message-id)))
+      ()
+    ;; Construct the correct Message-ID if necessary.
+    ;; Suggested by tale@pawl.rpi.edu.
+    (or (string-match "^<" message-id)
+	(setq message-id (concat "<" message-id)))
+    (or (string-match ">$" message-id)
+	(setq message-id (concat message-id ">")))
+    (let ((header (car (gnus-gethash (downcase message-id)
+				     gnus-newsgroup-dependencies))))
+      (if header
+	  (or (gnus-summary-goto-article (header-number header))
+	      ;; The header has been read, but the article had been
+	      ;; expunged, so we insert it again.
+	      (let ((beg (point)))
+		(gnus-summary-insert-line
+		 nil header 0 nil gnus-read-mark nil nil
+		 (header-subject header))
+		(save-excursion
+		  (goto-char beg)
+		  (remove-text-properties
+		   (1+ (gnus-point-at-bol)) (1+ (gnus-point-at-eol))
+		   '(gnus-number nil gnus-mark nil gnus-level nil)))
+		(forward-line -1)
+		(header-number header)))
+	(let ((gnus-override-method gnus-refer-article-method)
+	      (gnus-ancient-mark gnus-read-mark)
+	      (tmp-buf (get-buffer-create " *gnus refer"))
+	      (tmp-point (window-start
+			  (get-buffer-window gnus-article-buffer)))
+	      number)
+	  (and gnus-refer-article-method
+	       (or (gnus-server-opened gnus-refer-article-method)
+		   (gnus-open-server gnus-refer-article-method)))
+	  ;; Save the old article buffer.
+	  (save-excursion
+	    (set-buffer tmp-buf)
+	    (buffer-disable-undo (current-buffer))
+	    (insert-buffer-substring gnus-article-buffer))
+	  (prog1
+	      (if (gnus-article-prepare 
+		   message-id nil (gnus-read-header message-id))
+		  (progn
+		    (setq number (header-number gnus-current-headers))
+		    (gnus-rebuild-thread message-id)
+		    (gnus-summary-goto-subject number)
+		    (gnus-summary-recenter)
+		    (gnus-article-set-window-start 
+		     (cdr (assq number gnus-newsgroup-bookmarks)))
+		    message-id)
+		;; We restore the old article buffer.
+		(save-excursion
+		  (set-buffer gnus-article-buffer)
+		  (let ((buffer-read-only nil))
+		    (insert-buffer-substring tmp-buf)
+		    (and tmp-point
+			 (set-window-start (get-buffer-window (current-buffer))
+					   tmp-point))))
+		nil)
+	    (kill-buffer tmp-buf)))))))
+
+(defun gnus-summary-insert-pseudos-xemacs (pslist &optional not-view)
+  (let ((buffer-read-only nil)
+	(article (gnus-summary-article-number))
+	b)
+    (or (gnus-summary-goto-subject article)
+	(error (format "No such article: %d" article)))
+    (or gnus-newsgroup-headers-hashtb-by-number
+	(gnus-make-headers-hashtable-by-number))
+    (gnus-summary-position-cursor)
+    ;; If all commands are to be bunched up on one line, we collect
+    ;; them here.  
+    (if gnus-view-pseudos-separately
+	()
+      (let ((ps (setq pslist (sort pslist 'gnus-pseudos<)))
+	    files action)
+	(while ps
+	  (setq action (cdr (assq 'action (car ps))))
+	  (setq files (list (cdr (assq 'name (car ps)))))
+	  (while (and ps (cdr ps)
+		      (string= (or action "1")
+			       (or (cdr (assq 'action (car (cdr ps)))) "2")))
+	    (setq files (cons (cdr (assq 'name (car (cdr ps)))) files))
+	    (setcdr ps (cdr (cdr ps))))
+	  (if (not files)
+	      ()
+	    (if (not (string-match "%s" action))
+		(setq files (cons " " files)))
+	    (setq files (cons " " files))
+	    (and (assq 'execute (car ps))
+		 (setcdr (assq 'execute (car ps))
+			 (funcall (if (string-match "%s" action)
+				      'format 'concat)
+				  action 
+				  (mapconcat (lambda (f) f) files " ")))))
+	  (setq ps (cdr ps)))))
+    (if (and gnus-view-pseudos (not not-view))
+	(while pslist
+	  (and (assq 'execute (car pslist))
+	       (gnus-execute-command (cdr (assq 'execute (car pslist)))
+				     (eq gnus-view-pseudos 'not-confirm)))
+	  (setq pslist (cdr pslist)))
+      (save-excursion
+	(while pslist
+	  (gnus-summary-goto-subject (or (cdr (assq 'article (car pslist)))
+					 (gnus-summary-article-number)))
+	  (forward-line 1)
+	  (setq b (point))
+	  (insert "          " 
+		  (file-name-nondirectory (cdr (assq 'name (car pslist))))
+		  ": " (or (cdr (assq 'execute (car pslist))) "") "\n")
+	  (add-text-properties 
+	   b (1+ b) (list 'gnus-number gnus-reffed-article-number
+			  'gnus-mark gnus-unread-mark 
+			  'gnus-level 0
+			  'gnus-pseudo (car pslist)))
+	  ;; Fucking XEmacs redisplay bug with truncated lines.
+	  (goto-char b)
+	  (sit-for 0)
+	  ;; Grumble.. Fucking XEmacs stickyness of text properties.
+	  (remove-text-properties
+	   (1+ b) (1+ (gnus-point-at-eol))
+	   '(gnus-number nil gnus-mark nil gnus-level nil))
+	  (forward-line -1)
+	  (gnus-sethash (int-to-string gnus-reffed-article-number)
+			(car pslist) gnus-newsgroup-headers-hashtb-by-number)
+	  (setq gnus-reffed-article-number (1- gnus-reffed-article-number))
+	  (setq pslist (cdr pslist)))))))
+
+
+(defun gnus-copy-article-buffer-xemacs (&optional article-buffer)
+  (setq gnus-article-copy (get-buffer-create " *gnus article copy*"))
+  (buffer-disable-undo gnus-article-copy)
+  (or (memq gnus-article-copy gnus-buffer-list)
+      (setq gnus-buffer-list (cons gnus-article-copy gnus-buffer-list)))
+  (let ((article-buffer (or article-buffer gnus-article-buffer))
+	buf)
+    (if (and (get-buffer article-buffer)
+	     (buffer-name (get-buffer article-buffer)))
+	(save-excursion
+	  (set-buffer article-buffer)
+	  (widen)
+	  (setq buf (buffer-substring (point-min) (point-max)))
+	  (set-buffer gnus-article-copy)
+	  (erase-buffer)
+	  (insert (format "%s" buf))))))
+
+(defun gnus-article-push-button-xemacs (event)
+  "Check text under the mouse pointer for a callback function.
+If the text under the mouse pointer has a `gnus-callback' property,
+call it with the value of the `gnus-data' text property."
+  (interactive "e")
+  (set-buffer (window-buffer (event-window event)))
+  (let* ((pos (event-closest-point event))
+	 (data (get-text-property pos 'gnus-data))
+	 (fun (get-text-property pos 'gnus-callback)))
+    (if fun (funcall fun data))))
+
+;; Re-build the thread containing ID.
+(defun gnus-rebuild-thread-xemacs (id)
+  (let ((dep gnus-newsgroup-dependencies)
+	(buffer-read-only nil)
+	parent headers refs thread art)
+    (while (and id (setq headers
+			 (car (setq art (gnus-gethash (downcase id) 
+						      dep)))))
+      (setq parent art)
+      (setq id (and (setq refs (header-references headers))
+		    (string-match "\\(<[^>]+>\\) *$" refs)
+		    (substring refs (match-beginning 1) (match-end 1)))))
+    (setq thread (gnus-make-sub-thread (car parent)))
+    (gnus-rebuild-remove-articles thread)
+    (let ((beg (point)))
+      (gnus-summary-prepare-threads (list thread) 0)
+      (save-excursion
+	(while (and (>= (point) beg)
+		    (not (eobp)))
+	  (remove-text-properties
+	   (1+ (gnus-point-at-bol)) (1+ (gnus-point-at-eol))
+	   '(gnus-number nil gnus-mark nil gnus-level nil))
+	  (forward-line -1)))
+      (gnus-summary-update-lines beg (point)))))
+
+
+;; Fixed by Christopher Davis <ckd@loiosh.kei.com>.
+(defun gnus-article-add-button-xemacs (from to fun &optional data)
+  "Create a button between FROM and TO with callback FUN and data DATA."
+  (and gnus-article-button-face
+       (gnus-overlay-put (gnus-make-overlay from to) 'face gnus-article-button-face))
+  (add-text-properties from to
+		       (append
+			(and gnus-article-mouse-face
+			     (list 'mouse-face gnus-article-mouse-face))
+			(list 'gnus-callback fun)
+			(and data (list 'gnus-data data))
+			(list 'highlight t))))
+
+
 (defun gnus-ems-redefine ()
   (cond 
    ((string-match "XEmacs\\|Lucid" emacs-version)
@@ -200,268 +467,17 @@ pounce directly on the real variables themselves.")
     (fset 'gnus-mouse-face-function 'identity)
     (fset 'gnus-summary-make-display-table (lambda () nil))
     (fset 'gnus-visual-turn-off-edit-menu 'identity)
-
-    (defun gnus-highlight-selected-summary ()
-      ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
-      ;; Highlight selected article in summary buffer
-      (if gnus-summary-selected-face
-	  (save-excursion
-	    (let* ((beg (progn (beginning-of-line) (point)))
-		   (end (progn (end-of-line) (point)))
-		   (to (max 1 (1- (or (previous-single-property-change
-				       end 'mouse-face nil beg) end))))
-		   (from (1+ (or (next-single-property-change 
-				  beg 'mouse-face nil end) beg))))
-	      (if (< to beg)
-		  (progn
-		    (setq from beg)
-		    (setq to end)))
-	      (if gnus-newsgroup-selected-overlay
-		  (delete-extent gnus-newsgroup-selected-overlay))
-	      (setq gnus-newsgroup-selected-overlay
-		    (make-extent from to))
-	      (set-extent-face gnus-newsgroup-selected-overlay
-			       gnus-summary-selected-face)))))
-
-
-    (defun gnus-summary-recenter ()
-      (let* ((top (cond ((< (window-height) 4) 0)
-			((< (window-height) 7) 1)
-			(t 2)))
-	     (height (- (window-height) 2))
-	     (bottom (save-excursion (goto-char (point-max))
-				     (forward-line (- height))
-				     (point)))
-	     (window (get-buffer-window (current-buffer))))
-	(and 
-	 ;; The user has to want it,
-	 gnus-auto-center-summary 
-	 ;; the article buffer must be displayed,
-	 (get-buffer-window gnus-article-buffer)
-	 ;; Set the window start to either `bottom', which is the biggest
-	 ;; possible valid number, or the second line from the top,
-	 ;; whichever is the least.
-	 (set-window-start
-	  window (min bottom (save-excursion (forward-line (- top)) 
-					     (point)))))))
-
-    (defun gnus-group-insert-group-line-info (group)
-      (let ((entry (gnus-gethash group gnus-newsrc-hashtb)) 
-	    (beg (point))
-	    active info)
-	(if entry
-	    (progn
-	      (setq info (nth 2 entry))
-	      (gnus-group-insert-group-line 
-	       nil group (nth 1 info) (nth 3 info) (car entry) (nth 4 info)))
-	  (setq active (gnus-gethash group gnus-active-hashtb))
-	  
-	  (gnus-group-insert-group-line 
-	   nil group (if (member group gnus-zombie-list) gnus-level-zombie
-		       gnus-level-killed)
-	   nil (if active (- (1+ (cdr active)) (car active)) 0) nil))
-	(save-excursion
-	 (goto-char beg)
-	 (remove-text-properties 
-	  (1+ (gnus-point-at-bol)) (1+ (gnus-point-at-eol))
-	  '(gnus-group nil)))))
-
-    (defun gnus-copy-article-buffer (&optional article-buffer)
-      (setq gnus-article-copy (get-buffer-create " *gnus article copy*"))
-      (buffer-disable-undo gnus-article-copy)
-      (or (memq gnus-article-copy gnus-buffer-list)
-	  (setq gnus-buffer-list (cons gnus-article-copy gnus-buffer-list)))
-      (let ((article-buffer (or article-buffer gnus-article-buffer))
-	    buf)
-	(if (and (get-buffer article-buffer)
-		 (buffer-name (get-buffer article-buffer)))
-	    (save-excursion
-	      (set-buffer article-buffer)
-	      (widen)
-	      (setq buf (buffer-substring (point-min) (point-max)))
-	      (set-buffer gnus-article-copy)
-	      (erase-buffer)
-	      (insert (format "%s" buf))))))
-
-    (defun gnus-summary-refer-article (message-id)
-      "Refer article specified by MESSAGE-ID.
-NOTE: This command only works with newsgroups that use real or simulated NNTP."
-      (interactive "sMessage-ID: ")
-      (if (or (not (stringp message-id))
-	      (zerop (length message-id)))
-	  ()
-	;; Construct the correct Message-ID if necessary.
-	;; Suggested by tale@pawl.rpi.edu.
-	(or (string-match "^<" message-id)
-	    (setq message-id (concat "<" message-id)))
-	(or (string-match ">$" message-id)
-	    (setq message-id (concat message-id ">")))
-	(let ((header (car (gnus-gethash (downcase message-id)
-					 gnus-newsgroup-dependencies))))
-	  (if header
-	      (or (gnus-summary-goto-article (header-number header))
-		  ;; The header has been read, but the article had been
-		  ;; expunged, so we insert it again.
-		  (let ((beg (point)))
-		    (gnus-summary-insert-line
-		     nil header 0 nil gnus-read-mark nil nil
-		     (header-subject header))
-		    (save-excursion
-		      (goto-char beg)
-		      (remove-text-properties
-		       (1+ (gnus-point-at-bol)) (1+ (gnus-point-at-eol))
-		       '(gnus-number nil gnus-mark nil gnus-level nil)))
-		    (forward-line -1)
-		    (header-number header)))
-	    (let ((gnus-override-method gnus-refer-article-method)
-		  (gnus-ancient-mark gnus-read-mark)
-		  (tmp-buf (get-buffer-create " *gnus refer"))
-		  (tmp-point (window-start
-			      (get-buffer-window gnus-article-buffer)))
-		  number)
-	      (and gnus-refer-article-method
-		   (or (gnus-server-opened gnus-refer-article-method)
-		       (gnus-open-server gnus-refer-article-method)))
-	      ;; Save the old article buffer.
-	      (save-excursion
-		(set-buffer tmp-buf)
-		(buffer-disable-undo (current-buffer))
-		(insert-buffer-substring gnus-article-buffer))
-	      (prog1
-		  (if (gnus-article-prepare 
-		       message-id nil (gnus-read-header message-id))
-		      (progn
-			(setq number (header-number gnus-current-headers))
-			(gnus-rebuild-thread message-id)
-			(gnus-summary-goto-subject number)
-			(gnus-summary-recenter)
-			(gnus-article-set-window-start 
-			 (cdr (assq number gnus-newsgroup-bookmarks)))
-			message-id)
-		    ;; We restore the old article buffer.
-		    (save-excursion
-		      (set-buffer gnus-article-buffer)
-		      (let ((buffer-read-only nil))
-			(insert-buffer-substring tmp-buf)
-			(and tmp-point
-			     (set-window-start (get-buffer-window (current-buffer))
-					       tmp-point))))
-		    nil)
-		(kill-buffer tmp-buf)))))))
-
-    (defun gnus-summary-insert-pseudos (pslist &optional not-view)
-      (let ((buffer-read-only nil)
-	    (article (gnus-summary-article-number))
-	    b)
-	(or (gnus-summary-goto-subject article)
-	    (error (format "No such article: %d" article)))
-	(or gnus-newsgroup-headers-hashtb-by-number
-	    (gnus-make-headers-hashtable-by-number))
-	(gnus-summary-position-cursor)
-	;; If all commands are to be bunched up on one line, we collect
-	;; them here.  
-	(if gnus-view-pseudos-separately
-	    ()
-	  (let ((ps (setq pslist (sort pslist 'gnus-pseudos<)))
-		files action)
-	    (while ps
-	      (setq action (cdr (assq 'action (car ps))))
-	      (setq files (list (cdr (assq 'name (car ps)))))
-	      (while (and ps (cdr ps)
-			  (string= (or action "1")
-				   (or (cdr (assq 'action (car (cdr ps)))) "2")))
-		(setq files (cons (cdr (assq 'name (car (cdr ps)))) files))
-		(setcdr ps (cdr (cdr ps))))
-	      (if (not files)
-		  ()
-		(if (not (string-match "%s" action))
-		    (setq files (cons " " files)))
-		(setq files (cons " " files))
-		(and (assq 'execute (car ps))
-		     (setcdr (assq 'execute (car ps))
-			     (funcall (if (string-match "%s" action)
-					  'format 'concat)
-				      action 
-				      (mapconcat (lambda (f) f) files " ")))))
-	      (setq ps (cdr ps)))))
-	(if (and gnus-view-pseudos (not not-view))
-	    (while pslist
-	      (and (assq 'execute (car pslist))
-		   (gnus-execute-command (cdr (assq 'execute (car pslist)))
-					 (eq gnus-view-pseudos 'not-confirm)))
-	      (setq pslist (cdr pslist)))
-	  (save-excursion
-	    (while pslist
-	      (gnus-summary-goto-subject (or (cdr (assq 'article (car pslist)))
-					     (gnus-summary-article-number)))
-	      (forward-line 1)
-	      (setq b (point))
-	      (insert "          " (file-name-nondirectory 
-				    (cdr (assq 'name (car pslist))))
-		      ": " (or (cdr (assq 'execute (car pslist))) "") "\n")
-	      (add-text-properties 
-	       b (1+ b) (list 'gnus-number gnus-reffed-article-number
-			      'gnus-mark gnus-unread-mark 
-			      'gnus-level 0
-			      'gnus-pseudo (car pslist)))
-	      (remove-text-properties
-	       (1+ b) (1+ (gnus-point-at-eol))
-	       '(gnus-number nil gnus-mark nil gnus-level nil))
-	      (forward-line -1)
-	      (gnus-sethash (int-to-string gnus-reffed-article-number)
-			    (car pslist) gnus-newsgroup-headers-hashtb-by-number)
-	      (setq gnus-reffed-article-number (1- gnus-reffed-article-number))
-	      (setq pslist (cdr pslist)))))))
-
-
-    (defun gnus-article-push-button (event)
-      "Check text under the mouse pointer for a callback function.
-If the text under the mouse pointer has a `gnus-callback' property,
-call it with the value of the `gnus-data' text property."
-      (interactive "e")
-      (set-buffer (window-buffer (event-window event)))
-      (let* ((pos (event-closest-point event))
-	     (data (get-text-property pos 'gnus-data))
-	     (fun (get-text-property pos 'gnus-callback)))
-	(if fun (funcall fun data))))
-
-    ;; Re-build the thread containing ID.
-    (defun gnus-rebuild-thread (id)
-      (let ((dep gnus-newsgroup-dependencies)
-	    (buffer-read-only nil)
-	    parent headers refs thread art)
-	(while (and id (setq headers
-			     (car (setq art (gnus-gethash (downcase id) 
-							  dep)))))
-	  (setq parent art)
-	  (setq id (and (setq refs (header-references headers))
-			(string-match "\\(<[^>]+>\\) *$" refs)
-			(substring refs (match-beginning 1) (match-end 1)))))
-	(setq thread (gnus-make-sub-thread (car parent)))
-	(gnus-rebuild-remove-articles thread)
-	(let ((beg (point)))
-	  (gnus-summary-prepare-threads (list thread) 0)
-	  (save-excursion
-	    (while (and (>= (point) beg)
-			(not (eobp)))
-	      (remove-text-properties
-	       (1+ (gnus-point-at-bol)) (1+ (gnus-point-at-eol))
-	       '(gnus-number nil gnus-mark nil gnus-level nil))
-	      (forward-line -1)))
-	  (gnus-summary-update-lines beg (point)))))
-
-    ;; Fixed by Christopher Davis <ckd@loiosh.kei.com>.
-    (defun gnus-article-add-button (from to fun &optional data)
-      "Create a button between FROM and TO with callback FUN and data DATA."
-      (and gnus-article-button-face
-	   (gnus-overlay-put (gnus-make-overlay from to) 'face gnus-article-button-face))
-      (add-text-properties from to
-			   (append
-			    (and gnus-article-mouse-face
-				 (list 'mouse-face gnus-article-mouse-face))
-			    (list 'gnus-callback fun)
-			    (and data (list 'gnus-data data))
-			    (list 'highlight t))))
+    (fset 'gnus-highlight-selected-summary
+	  'gnus-highlight-selected-summary-xemacs)
+    (fset 'gnus-summary-recenter 'gnus-summary-recenter-xemacs)
+    (fset 'gnus-group-insert-group-line-info
+	  'gnus-group-insert-group-line-info-xemacs)
+    (fset 'gnus-copy-article-buffer 'gnus-copy-article-buffer-xemacs)
+    (fset 'gnus-summary-refer-article 'gnus-summary-refer-article-xemacs)
+    (fset 'gnus-summary-insert-pseudos 'gnus-summary-insert-pseudos-xemacs)
+    (fset 'gnus-article-push-button 'gnus-article-push-button-xemacs)
+    (fset 'gnus-rebuild-thread 'gnus-rebuild-thread-xemacs)
+    (fset 'gnus-article-add-button 'gnus-article-add-button-xemacs)
 
     (if (not gnus-visual)
 	()
