@@ -1,3 +1,25 @@
+2005-03-06  Kevin Greiner  <kevin.greiner@compsol.cc>
+
+	* gnus-start.el (gnus-convert-old-newsrc): Fixed numeric
+	comparison on string.
+
+	* gnus-agent.el (gnus-agent-long-article,
+	gnus-agent-short-article, gnus-agent-score): Renamed category
+	keywords to match gnus-cus.
+	(gnus-agent-summary-fetch-series): Modified to protect against
+	gnus-agent-summary-fetch-group clearing processable flags.
+	(gnus-agent-synchronize-group-flags): Update live group buffer as
+	synchronization may occur due to the user toggle the plugged
+	status.
+	(gnus-agent-fetch-group-1): Clear downloadable flag when article
+	successfully downloaded.
+	(gnus-agent-expire-group-1): Avoid using markers when the overview
+	is in ascending order; greatly improves performance.
+	(gnus-agent-regenerate-group): Use
+	gnus-agent-synchronize-group-flags to reset read status in both
+	gnus and server.
+	(gnus-agent-update-files-total-fetched-for): Fixed initial size.
+	
 2005-03-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el: Don't autoload former message-utils variables.
