@@ -52,6 +52,10 @@
 (eval-and-compile
   (autoload 'query-dig "dig"))
 
+;; autoload spam-report
+(eval-and-compile
+  (autoload 'spam-report-gmane "spam-report"))
+
 ;; autoload query-dns
 (eval-and-compile
   (autoload 'query-dns "dns"))
@@ -335,6 +339,9 @@ your main source of newsgroup names."
       (member processor (car (gnus-parameter-spam-process group)))
     nil))
 
+(defun spam-group-spam-processor-report-gmane-p (group)
+  (spam-group-processor-p group 'gnus-group-spam-exit-processor-report-gmane))
+
 (defun spam-group-spam-processor-bogofilter-p (group)
   (spam-group-processor-p group 'gnus-group-spam-exit-processor-bogofilter))
 
@@ -393,6 +400,10 @@ your main source of newsgroup names."
     (when (spam-group-spam-processor-blacklist-p gnus-newsgroup-name)
       (gnus-message 5 "Registering spam with the blacklist")
       (spam-blacklist-register-routine))
+
+    (when (spam-group-spam-processor-report-gmane-p gnus-newsgroup-name)
+      (gnus-message 5 "Registering spam with the Gmane report")
+      (spam-report-gmane-register-routine))
 
     (if spam-move-spam-nonspam-groups-only      
 	(when (not (spam-group-spam-contents-p gnus-newsgroup-name))
@@ -961,8 +972,14 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 	   (spam-enter-whitelist from))))))
 
 
-;;;; Bogofilter
+;;;; Spam-report glue
+(defun spam-report-gmane-register-routine ()
+  (spam-generic-register-routine
+   'spam-report-gmane
+   nil))
 
+
+;;;; Bogofilter
 (defun spam-check-bogofilter-headers (&optional score)
   (let ((header (message-fetch-field spam-bogofilter-header)))
       (when (and header

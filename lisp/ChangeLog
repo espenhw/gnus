@@ -1,4 +1,18 @@
 2003-04-16  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam-report.el (Module): new module for spam reporting
+
+	* gnus.el (spam-process): added
+	gnus-group-spam-exit-processor-report-gmane to the list of choices
+	(gnus-install-group-spam-parameters): defined new spam exit processor
+
+	* spam.el (autoload): autoload spam-report-gmane when needed
+	(spam-report-gmane-register-routine): glue for spam-report.el
+	(spam-group-spam-processor-report-gmane-p): glue for the
+	gnus-group-spam-exit-processor-report-gmane spam processor
+	(spam-summary-prepare-exit): check the report-gmane spam processor
+	and run spam-report-gmane-register-routine if it's active
+
 	From John Wiegley <johnw@gnu.org>
 
 	* spam.el (spam-bogofilter-score): check bogofilter headers before
