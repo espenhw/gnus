@@ -1,3 +1,9 @@
+2001-01-04  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Article Washing): Refer to `Customizing Articles' for
+	permanent changes.  Suggested by Russell Marks (russel dot marks
+	at ntlworld dot com).
+
 2001-01-03  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Article Washing): Mention `C-u g' as a sort of

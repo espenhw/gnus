@@ -7344,11 +7344,14 @@ We call this ``article washing'' for a really good reason.  Namely, the
 something else'', but normally results in something looking better.
 Cleaner, perhaps.
 
+@xref{Customizing Articles}, if you want to change how Gnus displays
+articles by default.
+
 @table @kbd
 
 @item C-u g
 This is not really washing, it's sort of the opposite of washing.  If
-you press this, you see the article exactly as it exists on disk or on
+you type this, you see the article exactly as it exists on disk or on
 the server.
 
 @item W l
