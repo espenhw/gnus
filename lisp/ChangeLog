@@ -1,3 +1,24 @@
+1999-12-21  Florian Weimer  <fw@s.netic.de>
+
+	* gnus-msg.el (gnus-group-posting-charset-alist): New layout.
+	(gnus-setup-message): No longer make `message-posting-charset'
+	buffer-local.
+	(gnus-setup-posting-charset): Reflect the new layout of
+	`gnus-group-posting-charset-alist' and `message-posting-charset'.
+
+	* message.el (message-send-mail): Bind `message-this-is-mail' and
+	`message-posting-charset'.
+	(message-send-news): Dito, and honour new layout of 
+	`message-posting-charset'.
+	(message-encode-message-body): Ignore `message-posting-charset'.
+	
+	* mm-bodies.el (mm-body-encoding): Consider
+	`message-posting-charset' when deciding whether to use 8bit.
+
+	* rfc2047.el (rfc2047-encode-message-header): Back out change.
+	(rfc2047-encodable-p): Now solely for headers; use
+	`message-posting-charset'.
+	
 1999-12-20 14:10:39  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnwarchive.el (nnwarchive-type-definition): Set default value.
