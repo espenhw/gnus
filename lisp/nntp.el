@@ -207,7 +207,10 @@ NOTE: This variable is never seen to work in Emacs 20 and XEmacs 21.")
   "*Hook run just before posting an article.  It is supposed to be used
 to insert Cancel-Lock headers.")
 
-(defvoo nntp-read-timeout 0.1
+(defvoo nntp-read-timeout (if (string-match "windows-nt\\|os/2\\|emx\\|cygwin"
+					    (symbol-name system-type))
+			      1.0
+			    0.1)
   "How long nntp should wait between checking for the end of output.
 Shorter values mean quicker response, but is more CPU intensive.")
 

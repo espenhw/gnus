@@ -1,3 +1,8 @@
+2003-01-25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nntp.el (nntp-read-timeout): Default to using a second delay
+	under Microsoft Windows.
+
 2003-01-24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnheader.el (nnheader-directory-separator-character): New
