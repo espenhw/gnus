@@ -1,3 +1,8 @@
+2002-10-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-send-mail): Make it possible to perform
+	edebug-defun.
+
 2002-10-18  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-art.el (gnus-button-man-handler): Change default to
