@@ -89,7 +89,7 @@
 	(nnslashdot-threaded-retrieve-headers articles group)
       (nnslashdot-sane-retrieve-headers articles group))))
   
-(deffoo nnslashdot-threaded-retrieve-headers (articles)
+(deffoo nnslashdot-threaded-retrieve-headers (articles group)
   (let ((last (car (last articles)))
 	(did nil)
 	(start 1)
