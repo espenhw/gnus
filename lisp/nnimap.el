@@ -36,8 +36,8 @@
 ;;
 ;; Todo, minor things:
 ;;
+;;   o Don't require half of Gnus -- backends should be standalone
 ;;   o Support escape characters in `message-tokenize-header'
-;;   o Split-fancy.
 ;;   o Support NOV nnmail-extra-headers.
 ;;   o Verify that we don't use IMAP4rev1 specific things (RFC2060 App B)
 ;;   o Dont uid fetch 1,* in nnimap-retrive-groups (slow)
@@ -54,7 +54,7 @@
 ;;   o IMAP2BIS compatibility? (RFC2061)
 ;;   o ACAP stuff (perhaps a different project, would be nice to ACAPify
 ;;     .newsrc.eld)
-;;   o What about Gnus's article editing, can we support it?
+;;   o What about Gnus's article editing, can we support it?  NO!
 ;;   o Use \Draft to support the draft group??
 
 ;;; Code:
@@ -67,7 +67,6 @@
 (require 'nnheader)
 (require 'mm-util)
 (require 'gnus)
-(require 'gnus-async)
 (require 'gnus-range)
 (require 'gnus-start)
 (require 'gnus-int)
@@ -268,27 +267,15 @@ restrict visible folders.")
   "Gnus callback the nnimap asynchronous callback should call.")
 (defvar nnimap-callback-buffer nil
   "Which buffer the asynchronous article prefetch callback should work in.")
-
-;; Various server variables.
+(defvar nnimap-server-buffer-alist nil)	;; Map server name to buffers.
+(defvar nnimap-current-server nil)	;; Current server
+(defvar nnimap-server-buffer nil)	;; Current servers' buffer
 
 
-;; Internal variables.
-(defvar nnimap-server-buffer-alist nil);; Map server name to buffers.
-(defvar nnimap-current-server nil);; Current server
-(defvar nnimap-server-buffer nil);; Current servers' buffer
 
 (nnoo-define-basics nnimap)
 
 ;; Utility functions:
-
-(defun nnimap-replace-in-string (string regexp to)
-  "Replace substrings in STRING matching REGEXP with TO."
-  (if (string-match regexp string)
-      (concat (substring string 0 (match-beginning 0))
-	      to
-	      (nnimap-replace-in-string (substring string (match-end 0))
-					regexp to))
-    string))
 
 (defsubst nnimap-get-server-buffer (server)
   "Return buffer for SERVER, if nil use current server."
@@ -309,7 +296,7 @@ If SERVER is nil, uses the current server."
 	 (old-uidvalidity (gnus-group-get-parameter gnusgroup 'uidvalidity)))
     (if old-uidvalidity
 	(if (not (equal old-uidvalidity new-uidvalidity))
-	    nil;; uidvalidity clash
+	    nil	;; uidvalidity clash
 	  (gnus-group-set-parameter gnusgroup 'uidvalidity new-uidvalidity)
 	  t)
       (gnus-group-add-parameter gnusgroup (cons 'uidvalidity new-uidvalidity))
@@ -715,12 +702,10 @@ function is generally only called when Gnus is shutting down."
 	  (or (member "\\NoSelect" (imap-mailbox-get 'list-flags mbx))
 	      (let ((info (nnimap-find-minmax-uid mbx 'examine)))
 		(when info
-		  ;; Escape SPC in mailboxes xxx relies on gnus internals
 		  (with-current-buffer nntp-server-buffer
-		    (insert (format "%s %d %d y\n"
-				    (nnimap-replace-in-string mbx " " "\\ ")
-				    (or (nth 2 info) 0)
-				    (max 1 (or (nth 1 info) 1)))))))))))
+                   (insert (format "\"%s\" %d %d y\n"
+                                   mbx (or (nth 2 info) 0)
+                                   (max 1 (or (nth 1 info) 1)))))))))))
     (gnus-message 5 "nnimap: Generating active list%s...done"
 		  (if (> (length server) 0) (concat " for " server) ""))
     t))
@@ -755,13 +740,11 @@ function is generally only called when Gnus is shutting down."
 	(or (member "\\NoSelect"
 		    (imap-mailbox-get 'list-flags group nnimap-server-buffer))
 	    (let ((info (nnimap-find-minmax-uid group 'examine)))
-	      ;; Escape SPC in mailboxes xxx relies on gnus internals
-	      (insert (format "211 %d %d %d %s\n" (or (nth 0 info) 0)
-			      (max 1 (or (nth 1 info) 1))
+	      (insert (format "\"%s\" %d %d y\n" group
 			      (or (nth 2 info) 0)
-			      (nnimap-replace-in-string group " " "\\ ")))))))
+			      (max 1 (or (nth 1 info) 1))))))))
     (gnus-message 5 "nnimap: Checking mailboxes...done")
-    'groups))
+    'active))
 
 (deffoo nnimap-request-update-info-internal (group info &optional server)
   (when (nnimap-possibly-change-group group server)
@@ -943,13 +926,11 @@ function is generally only called when Gnus is shutting down."
 			   (string= (downcase mailbox) "\\noselect"))
 			 (imap-mailbox-get 'list-flags mbx
 					   nnimap-server-buffer))
-	      ;; Escape SPC in mailboxes xxx relies on gnus internals
 	      (let ((info (nnimap-find-minmax-uid mbx 'examine)))
 		(when info
-		  (insert (format "%s %d %d y\n"
-				  (nnimap-replace-in-string mbx " " "\\ ")
-				  (or (nth 2 info) 0)
-				  (max 1 (or (nth 1 info) 1)))))))))
+                 (insert (format "\"%s\" %d %d y\n"
+                                 mbx (or (nth 2 info) 0)
+				 (max 1 (or (nth 1 info) 1)))))))))
       (gnus-message 5 "nnimap: Listing subscribed mailboxes%s%s...done"
 		    (if (> (length server) 0) " on " "") server))
     t))
@@ -1207,7 +1188,6 @@ sure of changing the value of `foo'."
   (buffer-disable-undo (get-buffer-create nnimap-debug))
   (mapc (lambda (f) (trace-function-background f nnimap-debug))
         '(
-	  nnimap-replace-in-string
 	  nnimap-possibly-change-server
 	  nnimap-verify-uidvalidity
 	  nnimap-find-minmax-uid
