@@ -61,6 +61,48 @@ If RANGE is a single range, return (RANGE). Otherwise, return RANGE."
       (setq list2 (cdr list2)))
     list1))
 
+(defun gnus-range-difference (range1 range2)
+  "Return the range of elements in RANGE1 that do not appear in RANGE2.
+Both ranges must be in ascending order."
+  (setq range1 (gnus-range-normalize range1))
+  (setq range2 (gnus-range-normalize range2))
+  (let* ((new-range (cons nil (copy-sequence range1)))
+         (r new-range)
+         (safe t))
+    (while (cdr r)
+      (let* ((r1 (cadr r))
+             (r2 (car range2))
+             (min1 (if (numberp r1) r1 (car r1)))
+             (max1 (if (numberp r1) r1 (cdr r1)))
+             (min2 (if (numberp r2) r2 (car r2)))
+             (max2 (if (numberp r2) r2 (cdr r2))))
+
+        (cond ((> min1 max1)
+               ;; Invalid range: may result from overlap condition (below)
+               ;; remove Invalid range
+               (setcdr r (cddr r)))
+              ((and (= min1 max1)
+                    (listp r1))
+               ;; Inefficient representation: may result from overlap condition (below)
+               (setcar (cdr r) min1))
+              ((not min2)
+               ;; All done with range2
+               (setq r nil))
+              ((< max1 min2)
+               ;; No overlap: range1 preceeds range2
+               (pop r))
+              ((< max2 min1)
+               ;; No overlap: range2 preceeds range1
+               (pop range2))
+              ((and (<= min2 min1) (<= max1 max2))
+               ;; Complete overlap: range1 removed
+               (setcdr r (cddr r)))
+              (t
+               (setcdr r (nconc (list (cons min1 (1- min2)) (cons (1+ max2) max1)) (cddr r)))))))
+    (cdr new-range)))
+
+
+
 ;;;###autoload
 (defun gnus-sorted-difference (list1 list2)
   "Return a list of elements of LIST1 that do not appear in LIST2.

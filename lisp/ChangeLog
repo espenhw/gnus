@@ -1,7 +1,8 @@
 2002-11-25  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+	From Kevin Greiner <kgreiner@xpediantsolutions.com>.
 
-	* gnus-sum.el (gnus-summary-insert-old-articles): Make result of
-	gnus-remove-from-range a list instead of a range.
+	* gnus-range.el (gnus-range-difference): New function.
+	* gnus-sum.el (gnus-summary-insert-old-articles): Use it.
 
 2002-11-24  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
