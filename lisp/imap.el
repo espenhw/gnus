@@ -435,6 +435,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 	cmd done)
     (while (and (not done) (setq cmd (pop cmds)))
       (message "Opening Kerberos 4 IMAP connection with `%s'..." cmd)
+      (erase-buffer)
       (let* ((port (or port imap-default-port))
 	     (coding-system-for-read imap-coding-system-for-read)
 	     (coding-system-for-write imap-coding-system-for-write)
