@@ -290,7 +290,8 @@ The following commands are available:
      (prog1 (1+ (point))
        ;; Insert the text.
        (eval gnus-server-line-format-spec))
-     (list 'gnus-server (intern gnus-tmp-name)))))
+     (list 'gnus-server (intern gnus-tmp-name)
+           'gnus-named-server (intern (gnus-method-to-server method))))))
 
 (defun gnus-enter-server-buffer ()
   "Set up the server buffer."
@@ -342,6 +343,12 @@ The following commands are available:
 
 (defun gnus-server-server-name ()
   (let ((server (get-text-property (gnus-point-at-bol) 'gnus-server)))
+    (and server (symbol-name server))))
+
+(defun gnus-server-named-server ()
+  "Returns a server name that matches one of the names returned by
+gnus-method-to-server."
+  (let ((server (get-text-property (gnus-point-at-bol) 'gnus-named-server)))
     (and server (symbol-name server))))
 
 (defalias 'gnus-server-position-point 'gnus-goto-colon)
