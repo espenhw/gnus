@@ -1,3 +1,8 @@
+2004-05-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-start.el (gnus-get-unread-articles): Do nothing for foreign
+	groups if the group level is higher than the specified value.
+
 2004-05-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-group.el (gnus-group-jump-to-group-prompt): Allow an alist.

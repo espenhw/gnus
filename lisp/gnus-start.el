@@ -1676,17 +1676,19 @@ newsgroup."
 
       (cond ((and method (eq method-type 'foreign))
 	     ;; These groups are foreign.  Check the level.
-	     (when (and (<= (gnus-info-level info) foreign-level)
-			(setq active (gnus-activate-group group 'scan)))
-	       ;; Let the Gnus agent save the active file.
-	       (when (and gnus-agent active (gnus-online method))
-		 (gnus-agent-save-group-info
-		  method (gnus-group-real-name group) active))
-	       (unless (inline (gnus-virtual-group-p group))
-		 (inline (gnus-close-group group)))
-	       (when (fboundp (intern (concat (symbol-name (car method))
-					      "-request-update-info")))
-		 (inline (gnus-request-update-info info method)))))
+	     (if (<= (gnus-info-level info) foreign-level)
+		 (when (and (<= (gnus-info-level info) foreign-level)
+			    (setq active (gnus-activate-group group 'scan)))
+		   ;; Let the Gnus agent save the active file.
+		   (when (and gnus-agent active (gnus-online method))
+		     (gnus-agent-save-group-info
+		      method (gnus-group-real-name group) active))
+		   (unless (inline (gnus-virtual-group-p group))
+		     (inline (gnus-close-group group)))
+		   (when (fboundp (intern (concat (symbol-name (car method))
+						  "-request-update-info")))
+		     (inline (gnus-request-update-info info method))))
+	       (setq active 'ignore)))
 	    ;; These groups are native or secondary.
 	    ((> (gnus-info-level info) level)
 	     ;; We don't want these groups.
