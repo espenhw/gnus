@@ -101,12 +101,14 @@ If no encoding was done, nil is returned."
     (cond
      ((eq bits '7bit)
       bits)
-     ((eq charset mail-parse-charset)
+     ((and (eq charset mail-parse-charset) (not mm-use-ultra-safe-encoding))
       bits)
      (t
       (let ((encoding (or encoding
 			  (cdr (assq charset mm-body-charset-encoding-alist))
 			  (mm-qp-or-base64))))
+	(when mm-use-ultra-safe-encoding
+	  (setq encoding (mm-safer-encoding encoding)))
 	(mm-encode-content-transfer-encoding encoding "text/plain")
 	encoding)))))
 
