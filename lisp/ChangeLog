@@ -1,3 +1,8 @@
+2003-12-08  Simon Josefsson  <jas@extundo.com>
+
+	* mml-smime.el (mml-smime-sign): Replace CRLF with LF in OpenSSL
+	output.  Reported by Arne J,Ax(Brgensen <arne@arnested.dk>.
+
 2003-12-07  Simon Josefsson  <jas@extundo.com>
 
 	* pgg-gpg.el (pgg-gpg-recipient-arg): Add.

@@ -34,6 +34,9 @@
     (customize-variable 'smime-keys)
     (error "No S/MIME keys configured, use customize to add your key"))
   (smime-sign-buffer (cdr (assq 'keyfile cont)))
+  (goto-char (point-min))
+  (while (search-forward "\r\n" nil t)
+    (replace-match "\n" t t))
   (goto-char (point-max)))
 
 (defun mml-smime-encrypt (cont)
