@@ -1,3 +1,15 @@
+2001-02-14 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el (gnus-define-group-parameter): Improved.
+
+	* gnus-sum.el (charset): Define parameter.
+	(ignored-charsets): Ditto.
+	(gnus-summary-setup-default-charset): Use them.
+
+	* gnus-start.el (gnus-read-descriptions-file): Use them.
+	
+	* gnus-cus.el (gnus-group-parameters): Remove them.
+
 2001-02-14 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-print-article): Redo highlight.
@@ -14,6 +26,7 @@
 	(to-list): Ditto.
 	* gnus-art.el (article-hide-boring-headers): Use them.
 	* gnus-msg.el (gnus-post-news): Ditto.
+	* gnus-cus.el (gnus-group-parameters): Remove them.
 
 2001-02-13 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

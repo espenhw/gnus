@@ -2661,14 +2661,8 @@ If FORCE is non-nil, the .newsrc file is read."
 			   (point) (progn (end-of-line) (point))))
 		     (name (symbol-name group))
 		     (charset
-		     (or (gnus-group-name-charset method name)
-			 (let ((alist gnus-group-charset-alist)
-			       elem charset)
-			   (while (setq elem (pop alist))
-			     (when (and name (string-match (car elem) name))
-			       (setq alist nil
-				     charset (cadr elem))))
-			   charset))))
+		      (or (gnus-group-name-charset method name)
+			  (gnus-parameter-charset name))))
 		(when (and str charset (featurep 'mule))
 		  (setq str (mm-decode-coding-string str charset)))
 		(set group str)))

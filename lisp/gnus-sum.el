@@ -840,24 +840,33 @@ which it may alter in any way.")
   :group 'gnus-summary
   :type 'regexp)
 
-(defcustom gnus-group-charset-alist
-  '(("^hk\\>\\|^tw\\>\\|\\<big5\\>" cn-big5)
-    ("^cn\\>\\|\\<chinese\\>" cn-gb-2312)
-    ("^fj\\>\\|^japan\\>" iso-2022-jp-2)
-    ("^tnn\\>\\|^pin\\>\\|^sci.lang.japan" iso-2022-7bit)
-    ("^relcom\\>" koi8-r)
-    ("^fido7\\>" koi8-r)
-    ("^\\(cz\\|hun\\|pl\\|sk\\|hr\\)\\>" iso-8859-2)
-    ("^israel\\>" iso-8859-1)
-    ("^han\\>" euc-kr)
-    ("^alt.chinese.text.big5\\>" chinese-big5)
-    ("^soc.culture.vietnamese\\>" vietnamese-viqr)
-    ("^\\(comp\\|rec\\|alt\\|sci\\|soc\\|news\\|gnu\\|bofh\\)\\>" iso-8859-1)
-    (".*" iso-8859-1))
+(gnus-define-group-parameter
+ charset
+ :function-document
+ "Return the default charset of GROUP."
+ :variable gnus-group-charset-alist
+ :variable-default 
+ '(("\\(^\\|:\\)hk\\>\\|\\(^\\|:\\)tw\\>\\|\\<big5\\>" cn-big5)
+   ("\\(^\\|:\\)cn\\>\\|\\<chinese\\>" cn-gb-2312)
+   ("\\(^\\|:\\)fj\\>\\|\\(^\\|:\\)japan\\>" iso-2022-jp-2)
+   ("\\(^\\|:\\)tnn\\>\\|\\(^\\|:\\)pin\\>\\|\\(^\\|:\\)sci.lang.japan" iso-2022-7bit)
+   ("\\(^\\|:\\)relcom\\>" koi8-r)
+   ("\\(^\\|:\\)fido7\\>" koi8-r)
+   ("\\(^\\|:\\)\\(cz\\|hun\\|pl\\|sk\\|hr\\)\\>" iso-8859-2)
+   ("\\(^\\|:\\)israel\\>" iso-8859-1)
+   ("\\(^\\|:\\)han\\>" euc-kr)
+   ("\\(^\\|:\\)alt.chinese.text.big5\\>" chinese-big5)
+   ("\\(^\\|:\\)soc.culture.vietnamese\\>" vietnamese-viqr)
+   ("\\(^\\|:\\)\\(comp\\|rec\\|alt\\|sci\\|soc\\|news\\|gnu\\|bofh\\)\\>" iso-8859-1)
+   (".*" iso-8859-1))
+ :variable-document
   "Alist of regexps (to match group names) and default charsets to be used when reading."
-  :type '(repeat (list (regexp :tag "Group")
-		       (symbol :tag "Charset")))
-  :group 'gnus-charset)
+  :variable-group gnus-charset
+  :variable-type '(repeat (list (regexp :tag "Group")
+				(symbol :tag "Charset")))
+  :parameter-type '(symbol :tag "Charset")
+  :parameter-document "\
+The default charset to use in the group.")
 
 (defcustom gnus-newsgroup-ignored-charsets '(unknown-8bit x-unknown)
   "List of charsets that should be ignored.
@@ -867,14 +876,29 @@ default charset will be used instead."
   :type '(repeat symbol)
   :group 'gnus-charset)
 
-(defcustom gnus-group-ignored-charsets-alist
-  '(("alt\\.chinese\\.text" iso-8859-1))
-  "Alist of regexps (to match group names) and charsets that should be ignored.
+(gnus-define-group-parameter
+ ignored-charsets
+ :type list
+ :function-document
+ "Return the ignored charsets of GROUP."
+ :variable gnus-group-ignored-charsets-alist
+ :variable-default 
+ '(("alt\\.chinese\\.text" iso-8859-1))
+ :variable-document
+ "Alist of regexps (to match group names) and charsets that should be ignored.
 When these charsets are used in the \"charset\" parameter, the
 default charset will be used instead."
-  :type '(repeat (cons (regexp :tag "Group")
-		       (repeat symbol)))
-  :group 'gnus-charset)
+ :variable-group gnus-charset
+ :variable-type '(repeat (cons (regexp :tag "Group")
+			       (repeat symbol)))
+ :parameter-type '(choice :tag "Ignored charsets" 
+			  :value nil
+			  (repeat (symbol)))
+ :parameter-document       "\
+List of charsets that should be ignored.
+
+When these charsets are used in the \"charset\" parameter, the
+default charset will be used instead.")
 
 (defcustom gnus-group-highlight-words-alist nil
   "Alist of group regexps and highlight regexps.
@@ -9898,35 +9922,16 @@ If REVERSE, save parts that do not match TYPE."
   "Setup newsgroup default charset."
   (if (equal gnus-newsgroup-name "nndraft:drafts")
       (setq gnus-newsgroup-charset nil)
-    (let* ((name (and gnus-newsgroup-name
-		      (gnus-group-real-name gnus-newsgroup-name)))
-	   (ignored-charsets
+    (let* ((ignored-charsets
 	    (or gnus-newsgroup-ephemeral-ignored-charsets
 		(append
 		 (and gnus-newsgroup-name
-		      (or (gnus-group-find-parameter gnus-newsgroup-name
-						     'ignored-charsets t)
-			  (let ((alist gnus-group-ignored-charsets-alist)
-				elem (charsets nil))
-			    (while (setq elem (pop alist))
-			      (when (and name
-					 (string-match (car elem) name))
-				(setq alist nil
-				      charsets (cdr elem))))
-			    charsets)))
+		      (gnus-parameter-ignored-charsets gnus-newsgroup-name))
 		 gnus-newsgroup-ignored-charsets))))
       (setq gnus-newsgroup-charset
 	    (or gnus-newsgroup-ephemeral-charset
 		(and gnus-newsgroup-name
-		     (or (gnus-group-find-parameter gnus-newsgroup-name 'charset)
-			 (let ((alist gnus-group-charset-alist)
-			       elem charset)
-			   (while (setq elem (pop alist))
-			     (when (and name
-					(string-match (car elem) name))
-			       (setq alist nil
-				     charset (cadr elem))))
-			   charset)))
+		     (gnus-parameter-charset gnus-newsgroup-name))
 		gnus-default-charset))
       (set (make-local-variable 'gnus-newsgroup-ignored-charsets)
 	   ignored-charsets))))

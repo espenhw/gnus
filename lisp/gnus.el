@@ -901,12 +901,21 @@ REST is a plist of following:
 		t)
 	       ((setq val (assq ',param params))
 		(cdr val))
+	       ((stringp ,variable)
+		(string-match ,variable group))
 	       (,variable
-		(string-match ,variable group)))))
+		(let ((alist ,variable)
+		      elem value)
+		  (while (setq elem (pop alist))
+		    (when (and name
+			       (string-match (car elem) name))
+		      (setq alist nil
+			    value (cdr elem))))
+		  (if (consp value) (car value) value))))))
        `(defun ,function (name)
 	  ,function-document
 	  (and name
-	       (or (gnus-group-find-parameter name ',param)
+	       (or (gnus-group-find-parameter name ',param ,(and type t))
 		   (let ((alist ,variable)
 			 elem value)
 		     (while (setq elem (pop alist))
