@@ -233,6 +233,7 @@ used as the line break code type of the coding system."
       (setq charsets (delq 'iso-2022-jp charsets)))
     (delete-duplicates charsets)
     (if (and (> (length charsets) 1)
+	     (fboundp 'find-coding-systems-for-charsets)
 	     (memq 'utf-8 (find-coding-systems-for-charsets charsets)))
 	'(utf-8)
       charsets)))

@@ -41,6 +41,7 @@
 		     rmail-summary-exists rmail-select-summary
 		     rmail-update-summary url-retrieve
 		     temp-directory babel-fetch babel-wash
+		     find-coding-systems-for-charsets
 		     ))
       (maybe-bind '(global-face-data
 		    mark-active transient-mark-mode mouse-selection-click-count
