@@ -67,6 +67,11 @@ If non-nil, this maildrop will be checked periodically for new mail."
   :group 'mail-source
   :type 'boolean)
 
+(defcustom mail-source-incoming-file-prefix "Incoming"
+  "Prefix for file name for storing incoming mail"
+  :group 'mail-source
+  :type 'string)
+
 (defcustom mail-source-report-new-mail-interval 5
   "Interval in minutes between checks for new mail."
   :group 'mail-source
@@ -296,7 +301,8 @@ Pass INFO on to CALLBACK."
 	  (let ((incoming
 		 (mail-source-make-complex-temp-name
 		  (expand-file-name
-		   "Incoming" mail-source-directory))))
+		   mail-source-incoming-file-prefix
+		   mail-source-directory))))
 	    (unless (file-exists-p (file-name-directory incoming))
 	      (make-directory (file-name-directory incoming) t))
 	    (rename-file mail-source-crash-box incoming t)))))))

@@ -1,4 +1,20 @@
+2000-08-13 18:53:08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-topic.el (gnus-topic-select-group): Touch the dribble
+	buffer.
+	(gnus-topic-hide-topic): Take a PERMANENT parameter.
+	(gnus-topic-show-topic): Ditto.
+
+	* gnus-dup.el (gnus-dup-suppress-articles): Do auto-expiry.
+
+2000-08-12 21:48:00  John H. Palmieri  <palmieri@math.washington.edu>
+
+	* mail-source.el (mail-source-incoming-file-prefix): New
+	variable. 
+
 2000-08-12 20:29:53  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-start.el (gnus-check-first-time-used): Clean up a bit.
 
 	* mailcap.el (mailcap-maybe-eval): Be even more warning.
 

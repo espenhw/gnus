@@ -137,6 +137,8 @@ seen in the same session."
     (gnus-dup-open))
   (gnus-message 6 "Suppressing duplicates...")
   (let ((headers gnus-newsgroup-headers)
+	(auto (and gnus-newsgroup-auto-expire
+		   (memq gnus-duplicate-mark gnus-auto-expirable-marks)))
 	number header)
     (while (setq header (pop headers))
       (when (and (intern-soft (mail-header-id header) gnus-dup-hashtb)
@@ -144,8 +146,10 @@ seen in the same session."
 	(setq gnus-newsgroup-unreads
 	      (delq (setq number (mail-header-number header))
 		    gnus-newsgroup-unreads))
-	(push (cons number gnus-duplicate-mark)
-	      gnus-newsgroup-reads))))
+	(if (not auto)
+	    (push (cons number gnus-duplicate-mark) gnus-newsgroup-reads)
+	  (push number gnus-newsgroup-expirable)
+	  (push (cons number gnus-expirable-mark) gnus-newsgroup-reads)))))
   (gnus-message 6 "Suppressing duplicates...done"))
 
 (defun gnus-dup-unsuppress-article (article)

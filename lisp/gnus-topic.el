@@ -1064,7 +1064,8 @@ If performed over a topic line, toggle folding the topic."
   (if (gnus-group-topic-p)
       (let ((gnus-group-list-mode
 	     (if all (cons (if (numberp all) all 7) t) gnus-group-list-mode)))
-	(gnus-topic-fold all))
+	(gnus-topic-fold all)
+	(gnus-dribble-touch))
     (gnus-group-select-group all)))
 
 (defun gnus-mouse-pick-topic (e)
@@ -1261,17 +1262,21 @@ If COPYP, copy the groups instead."
 	    (setq alist (cdr alist))))))
     (gnus-topic-update-topic)))
 
-(defun gnus-topic-hide-topic ()
-  "Hide the current topic."
-  (interactive)
+(defun gnus-topic-hide-topic (&optional permanent)
+  "Hide the current topic.
+If PERMANENT, make it stay hidden in subsequent sessions as well."
+  (interactive "P")
   (when (gnus-current-topic)
     (gnus-topic-goto-topic (gnus-current-topic))
+    (setcar (cddr (assoc (gnus-current-topic) gnus-topic-topology)) 'hidden)
     (gnus-topic-remove-topic nil nil)))
 
-(defun gnus-topic-show-topic ()
-  "Show the hidden topic."
-  (interactive)
+(defun gnus-topic-show-topic (&optional permanent)
+  "Show the hidden topic.
+If PERMANENT, make it stay shown in subsequent sessions as well."
+  (interactive "P")
   (when (gnus-group-topic-p)
+    (setcar (cddr (assoc (gnus-current-topic) gnus-topic-topology)) nil)
     (gnus-topic-remove-topic t nil)))
 
 (defun gnus-topic-mark-topic (topic &optional unmark)

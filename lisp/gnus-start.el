@@ -1112,29 +1112,30 @@ for new groups, and subscribe the new groups as zombies."
 
 (defun gnus-check-first-time-used ()
   (catch 'ended
-    (let ((files (list gnus-current-startup-file
-		       (concat gnus-current-startup-file ".el")
-		       (concat gnus-current-startup-file ".eld")
-		       gnus-startup-file
-		       (concat gnus-startup-file ".el")
-		       (concat gnus-startup-file ".eld"))))
-      (while files
-	(when (file-exists-p (pop files))
-	  (throw 'ended nil))))
+    ;; First check if any of the following files exist.  If they do,
+    ;; it's not the first time the user has used Gnus.
+    (dolist (file (list gnus-current-startup-file
+			(concat gnus-current-startup-file ".el")
+			(concat gnus-current-startup-file ".eld")
+			gnus-startup-file
+			(concat gnus-startup-file ".el")
+			(concat gnus-startup-file ".eld")))
+      (when (file-exists-p file)
+	(throw 'ended nil)))
     (gnus-message 6 "First time user; subscribing you to default groups")
     (unless (gnus-read-active-file-p)
       (let ((gnus-read-active-file t))
 	(gnus-read-active-file)))
     (setq gnus-newsrc-last-checked-date (current-time-string))
-    (let ((groups gnus-default-subscribed-newsgroups)
+    ;; Subscribe to the default newsgroups.
+    (let ((groups (or gnus-default-subscribed-newsgroups
+		      gnus-backup-default-subscribed-newsgroups))
 	  group)
-      (if (eq groups t)
-	  nil
-	(setq groups (or groups gnus-backup-default-subscribed-newsgroups))
+      (when (eq groups t)
+	;; If t, we subscribe (or not) all groups as if they were new.
 	(mapatoms
 	 (lambda (sym)
-	   (if (null (setq group (symbol-name sym)))
-	       ()
+	   (when (setq group (symbol-name sym))
 	     (let ((do-sub (gnus-matches-options-n group)))
 	       (cond
 		((eq do-sub 'subscribe)
@@ -1145,17 +1146,16 @@ for new groups, and subscribe the new groups as zombies."
 		(t
 		 (push group gnus-killed-list))))))
 	 gnus-active-hashtb)
-	(while groups
-	  (when (gnus-active (car groups))
+	(dolist (group groups)
+	  ;; Only subscribe the default groups that are activated.
+	  (when (gnus-active group)
 	    (gnus-group-change-level
-	     (car groups) gnus-level-default-subscribed gnus-level-killed))
-	  (setq groups (cdr groups)))
+	     group gnus-level-default-subscribed gnus-level-killed)))
 	(save-excursion
 	  (set-buffer gnus-group-buffer)
 	  (gnus-group-make-help-group))
 	(when gnus-novice-user
 	  (gnus-message 7 "`A k' to list killed groups"))))))
-
 
 (defun gnus-subscribe-group (group &optional previous method)
   "Subcribe GROUP and put it after PREVIOUS."
