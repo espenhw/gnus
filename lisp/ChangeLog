@@ -1,3 +1,12 @@
+2002-04-19  Jesper Harder  <harder@ifa.au.dk>
+
+	* nnkiboze.el (nnkiboze-request-scan): Call
+	nnkiboze-possibly-change-group.
+	(nnkiboze-generate-group): Use mm-with-unibyte to avoid encoding
+	problems.
+	(nnkiboze-generate-group): Set newsrc to the *highest* article
+	number kibozed, not the lowest.
+	
 2002-04-24  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Dan Christensen <jdc+news@uwo.ca>.
 
