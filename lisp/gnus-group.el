@@ -1894,12 +1894,13 @@ Return the name of the group if selection was successful."
      group
      `(-1 nil (,group
 	       ,gnus-level-default-subscribed nil nil ,method
-	       ,(append
-		 parameters
-		 (list
-		  (cons 'quit-config quit-config)
-		  (cons gnus-summary-buffer
-			gnus-current-window-configuration)))))
+	       ,(cons
+		 (if quit-config 
+		     (cons 'quit-config quit-config)
+		   (cons 'quit-config
+			 (cons gnus-summary-buffer
+			       gnus-current-window-configuration)))
+		 parameters)))
      gnus-newsrc-hashtb)
     (push method gnus-ephemeral-servers)
     (set-buffer gnus-group-buffer)
