@@ -3,6 +3,7 @@
 	* gnus-news.texi: Comment out comment stuff.
 	Don't use xref's, GNUS-NEWS look wrong.
 	Add nntp marks stuff.
+	Add (copied from Oort Gnus GNUS-NEWS).
 
 	* Makefile.in (GNUS-NEWS): Move to "..".
 
