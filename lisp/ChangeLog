@@ -1,3 +1,7 @@
+2000-04-23 23:27:25  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-view.el (mm-inline-message): Disable prepare-hook. 
+
 2000-04-23 00:32:32  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el: Fix copyright statements.
