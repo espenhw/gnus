@@ -917,6 +917,7 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
 
     ;; See whether we need to read the description file.
     (when (and (boundp 'gnus-group-line-format)
+	       (stringp gnus-group-line-format)
 	       (let ((case-fold-search nil))
 		 (string-match "%[-,0-9]*D" gnus-group-line-format))
 	       (not gnus-description-hashtb)

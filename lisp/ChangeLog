@@ -1,3 +1,8 @@
+2001-02-20 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-start.el (gnus-setup-news): Allow gnus-group-line-format to be
+	something special.
+
 2001-02-20 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnweb.el (nnweb-request-group): Set nnweb-group anyway.
