@@ -1,3 +1,9 @@
+2002-12-12  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-fetch-selected-article): Added call to
+	gnus-summary-update-download-mark to update the article in the
+	summary.
+
 2002-12-11  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus.el (gnus-summary-high-uncached-face,

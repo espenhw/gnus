@@ -824,9 +824,10 @@ This can be added to `gnus-select-article-hook' or
   (let ((gnus-command-method gnus-current-select-method))
     (when (and gnus-plugged (gnus-agent-method-p gnus-command-method))
       (when (gnus-agent-fetch-articles
-       gnus-newsgroup-name
+             gnus-newsgroup-name
 	     (list gnus-current-article))
-	(setq gnus-newsgroup-undownloaded (delq gnus-current-article gnus-newsgroup-undownloaded))))))
+	(setq gnus-newsgroup-undownloaded (delq gnus-current-article gnus-newsgroup-undownloaded))
+        (gnus-summary-update-download-mark gnus-current-article)))))
 
 ;;;
 ;;; Internal functions
