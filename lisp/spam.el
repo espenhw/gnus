@@ -1999,6 +1999,9 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 
 ;;{{{ Hashcash.
 
+(eval-when-compile
+  (autoload 'mail-check-payment "hashcash"))
+
 (condition-case nil
     (progn
       (require 'hashcash)
@@ -2007,9 +2010,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	"Check the headers for hashcash payments."
 	(mail-check-payment)))	 ;mail-check-payment returns a boolean
 
-  (file-error (progn
-		(defalias 'mail-check-payment 'ignore)
-		(defalias 'spam-check-hashcash 'ignore))))
+  (file-error))
 ;;}}}
 
 ;;{{{ BBDB
@@ -2019,88 +2020,88 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 
 ;; all this is done inside a condition-case to trap errors
 
-(condition-case nil
-    (progn
-      (require 'bbdb)
-      (require 'bbdb-com)
+(eval-when-compile
+  (autoload 'bbdb-buffer "bbdb")
+  (autoload 'bbdb-create-internal "bbdb")
+  (autoload 'bbdb-records "bbdb")
+  (autoload 'bbdb-search-simple "bbdb"))
 
-      ;; when the BBDB changes, we want to clear out our cache
-      (defun spam-clear-cache-BBDB (&rest immaterial)
-	(spam-clear-cache 'spam-use-BBDB))
+(eval-and-compile
+  (when (condition-case nil
+	    (progn
+	      (require 'bbdb)
+	      (require 'bbdb-com))
+	  (file-error
+	   (defalias 'spam-BBDB-register-routine 'ignore)
+	   (defalias 'spam-enter-ham-BBDB 'ignore)
+	   nil))
 
-      (add-hook 'bbdb-change-hook 'spam-clear-cache-BBDB)
+    ;; when the BBDB changes, we want to clear out our cache
+    (defun spam-clear-cache-BBDB (&rest immaterial)
+      (spam-clear-cache 'spam-use-BBDB))
 
-      (defun spam-enter-ham-BBDB (addresses &optional remove)
-	"Enter an address into the BBDB; implies ham (non-spam) sender"
-	(dolist (from addresses)
-	  (when (stringp from)
-	    (let* ((parsed-address (gnus-extract-address-components from))
-		   (name (or (nth 0 parsed-address) "Ham Sender"))
-		   (remove-function (if remove
-					'bbdb-delete-record-internal
-				      'ignore))
-		   (net-address (nth 1 parsed-address))
-		   (record (and net-address
-				(bbdb-search-simple nil net-address))))
-	      (when net-address
-		(gnus-message 6 "%s address %s %s BBDB"
-			      (if remove "Deleting" "Adding")
-			      from
-			      (if remove "from" "to"))
-		(if record
-		    (funcall remove-function record)
-		  (bbdb-create-internal name nil net-address nil nil
-					"ham sender added by spam.el")))))))
+    (add-hook 'bbdb-change-hook 'spam-clear-cache-BBDB)
 
-      (defun spam-BBDB-register-routine (articles &optional unregister)
-	(let (addresses)
-	  (dolist (article articles)
-	    (when (stringp (spam-fetch-field-from-fast article))
-	      (push (spam-fetch-field-from-fast article) addresses)))
-	  ;; now do the register/unregister action
-	  (spam-enter-ham-BBDB addresses unregister)))
+    (defun spam-enter-ham-BBDB (addresses &optional remove)
+      "Enter an address into the BBDB; implies ham (non-spam) sender"
+      (dolist (from addresses)
+	(when (stringp from)
+	  (let* ((parsed-address (gnus-extract-address-components from))
+		 (name (or (nth 0 parsed-address) "Ham Sender"))
+		 (remove-function (if remove
+				      'bbdb-delete-record-internal
+				    'ignore))
+		 (net-address (nth 1 parsed-address))
+		 (record (and net-address
+			      (bbdb-search-simple nil net-address))))
+	    (when net-address
+	      (gnus-message 6 "%s address %s %s BBDB"
+			    (if remove "Deleting" "Adding")
+			    from
+			    (if remove "from" "to"))
+	      (if record
+		  (funcall remove-function record)
+		(bbdb-create-internal name nil net-address nil nil
+				      "ham sender added by spam.el")))))))
 
-      (defun spam-BBDB-unregister-routine (articles)
-	(spam-BBDB-register-routine articles t))
+    (defun spam-BBDB-register-routine (articles &optional unregister)
+      (let (addresses)
+	(dolist (article articles)
+	  (when (stringp (spam-fetch-field-from-fast article))
+	    (push (spam-fetch-field-from-fast article) addresses)))
+	;; now do the register/unregister action
+	(spam-enter-ham-BBDB addresses unregister)))
 
-      (defun spam-check-BBDB ()
-	"Mail from people in the BBDB is classified as ham or non-spam"
-	(let ((who (message-fetch-field "from"))
-	      bbdb-cache bbdb-hashtable)
-	  (when spam-cache-lookups
-	    (setq bbdb-cache (gethash 'spam-use-BBDB spam-caches))
-	    (unless bbdb-cache
-	      (setq bbdb-cache
-		    ;; this is the expanded (bbdb-hashtable) macro
-		    ;; without the debugging support
-		    (with-current-buffer (bbdb-buffer)
-		      (save-excursion
-			(save-window-excursion
-			  (bbdb-records nil t)
-			  bbdb-hashtable))))
-	      (puthash 'spam-use-BBDB bbdb-cache spam-caches)))
-	  (when who
-	    (setq who (nth 1 (gnus-extract-address-components who)))
-	    (if
-		(if spam-cache-lookups
-		    (symbol-value
-		     (intern-soft who bbdb-cache))
-		  (bbdb-search-simple nil who))
-		t
-	      (if spam-use-BBDB-exclusive
-		  spam-split-group
-		nil))))))
+    (defun spam-BBDB-unregister-routine (articles)
+      (spam-BBDB-register-routine articles t))
 
-  (file-error (progn
-		(defalias 'bbdb-search-simple 'ignore)
-		(defalias 'bbdb-records 'ignore)
-		(defalias 'bbdb-buffer 'ignore)
-		(defalias 'spam-check-BBDB 'ignore)
-		(defalias 'spam-BBDB-register-routine 'ignore)
-		(defalias 'spam-enter-ham-BBDB 'ignore)
-		(defalias 'bbdb-create-internal 'ignore)
-		(defalias 'bbdb-delete-record-internal 'ignore)
-		(defalias 'bbdb-records 'ignore))))
+    (defun spam-check-BBDB ()
+      "Mail from people in the BBDB is classified as ham or non-spam"
+      (let ((who (message-fetch-field "from"))
+	    bbdb-cache bbdb-hashtable)
+	(when spam-cache-lookups
+	  (setq bbdb-cache (gethash 'spam-use-BBDB spam-caches))
+	  (unless bbdb-cache
+	    (setq bbdb-cache
+		  ;; this is the expanded (bbdb-hashtable) macro
+		  ;; without the debugging support
+		  (with-current-buffer (bbdb-buffer)
+		    (save-excursion
+		      (save-window-excursion
+			(bbdb-records nil t)
+			bbdb-hashtable))))
+	    (puthash 'spam-use-BBDB bbdb-cache spam-caches)))
+	(when who
+	  (setq who (nth 1 (gnus-extract-address-components who)))
+	  (if
+	      (if spam-cache-lookups
+		  (symbol-value
+		   (intern-soft who bbdb-cache))
+		(bbdb-search-simple nil who))
+	      t
+	    (if spam-use-BBDB-exclusive
+		spam-split-group
+	      nil)))))))
 
 ;;}}}
 
@@ -2175,65 +2176,60 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 
 ;;{{{ spam-stat
 
-(condition-case nil
-    (progn
-      (let ((spam-stat-install-hooks nil))
-	(require 'spam-stat))
+(eval-when-compile
+  (autoload 'spam-stat-buffer-change-to-non-spam "spam-stat")
+  (autoload 'spam-stat-buffer-change-to-spam "spam-stat")
+  (autoload 'spam-stat-buffer-is-non-spam "spam-stat")
+  (autoload 'spam-stat-buffer-is-spam "spam-stat")
+  (autoload 'spam-stat-load "spam-stat")
+  (autoload 'spam-stat-save "spam-stat")
+  (autoload 'spam-stat-split-fancy "spam-stat"))
 
-      (defun spam-check-stat ()
-	"Check the spam-stat backend for the classification of this message"
-	(let ((spam-stat-split-fancy-spam-group spam-split-group) ; override
-	      (spam-stat-buffer (buffer-name)) ; stat the current buffer
-	      category return)
-	  (spam-stat-split-fancy)))
+(eval-and-compile
+  (when (condition-case nil
+	    (let ((spam-stat-install-hooks nil))
+	      (require 'spam-stat))
+	  (file-error
+	   (defalias 'spam-stat-register-ham-routine 'ignore)
+	   (defalias 'spam-stat-register-spam-routine 'ignore)
+	   nil))
 
-      (defun spam-stat-register-spam-routine (articles &optional unregister)
-	(dolist (article articles)
-	  (let ((article-string (spam-get-article-as-string article)))
-	    (with-temp-buffer
-	      (insert article-string)
-	      (if unregister
-		  (spam-stat-buffer-change-to-non-spam)
+    (defun spam-check-stat ()
+      "Check the spam-stat backend for the classification of this message"
+      (let ((spam-stat-split-fancy-spam-group spam-split-group) ; override
+	    (spam-stat-buffer (buffer-name)) ; stat the current buffer
+	    category return)
+	(spam-stat-split-fancy)))
+
+    (defun spam-stat-register-spam-routine (articles &optional unregister)
+      (dolist (article articles)
+	(let ((article-string (spam-get-article-as-string article)))
+	  (with-temp-buffer
+	    (insert article-string)
+	    (if unregister
+		(spam-stat-buffer-change-to-non-spam)
 	      (spam-stat-buffer-is-spam))))))
 
-      (defun spam-stat-unregister-spam-routine (articles)
-	(spam-stat-register-spam-routine articles t))
+    (defun spam-stat-unregister-spam-routine (articles)
+      (spam-stat-register-spam-routine articles t))
 
-      (defun spam-stat-register-ham-routine (articles &optional unregister)
-	(dolist (article articles)
-	  (let ((article-string (spam-get-article-as-string article)))
-	    (with-temp-buffer
-	      (insert article-string)
-	      (if unregister
-		  (spam-stat-buffer-change-to-spam)
+    (defun spam-stat-register-ham-routine (articles &optional unregister)
+      (dolist (article articles)
+	(let ((article-string (spam-get-article-as-string article)))
+	  (with-temp-buffer
+	    (insert article-string)
+	    (if unregister
+		(spam-stat-buffer-change-to-spam)
 	      (spam-stat-buffer-is-non-spam))))))
 
-      (defun spam-stat-unregister-ham-routine (articles)
-	(spam-stat-register-ham-routine articles t))
+    (defun spam-stat-unregister-ham-routine (articles)
+      (spam-stat-register-ham-routine articles t))
 
-      (defun spam-maybe-spam-stat-load ()
-	(when spam-use-stat (spam-stat-load)))
+    (defun spam-maybe-spam-stat-load ()
+      (when spam-use-stat (spam-stat-load)))
 
-      (defun spam-maybe-spam-stat-save ()
-	(when spam-use-stat (spam-stat-save))))
-
-  (file-error (progn
-		(defalias 'spam-stat-load 'ignore)
-		(defalias 'spam-stat-save 'ignore)
-		(defalias 'spam-maybe-spam-stat-load 'ignore)
-		(defalias 'spam-maybe-spam-stat-save 'ignore)
-		(defalias 'spam-stat-register-ham-routine 'ignore)
-		(defalias 'spam-stat-unregister-ham-routine 'ignore)
-		(defalias 'spam-stat-register-spam-routine 'ignore)
-		(defalias 'spam-stat-unregister-spam-routine 'ignore)
-		(defalias 'spam-stat-buffer-is-spam 'ignore)
-		(defalias 'spam-stat-buffer-change-to-spam 'ignore)
-		(defalias 'spam-stat-buffer-is-non-spam 'ignore)
-		(defalias 'spam-stat-buffer-change-to-non-spam 'ignore)
-		(defalias 'spam-stat-split-fancy 'ignore)
-		(defalias 'spam-check-stat 'ignore))))
-
-
+    (defun spam-maybe-spam-stat-save ()
+      (when spam-use-stat (spam-stat-save)))))
 
 ;;}}}
 

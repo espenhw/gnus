@@ -1,5 +1,22 @@
 2004-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* lpath.el: Remove bbdb-create-internal, bbdb-records,
+	spam-BBDB-register-routine and spam-enter-ham-BBDB.
+
+	* nnrss.el (nnrss-string-as-multibyte): Redefine it as a macro in
+	order to silence the byte compiler.
+
+	* spam.el: Fix the way to silence the byte compiler, which
+	complained about bbdb-buffer, bbdb-create-internal, bbdb-records,
+	bbdb-search-simple, spam-BBDB-register-routine,
+	spam-enter-ham-BBDB, spam-stat-buffer-change-to-non-spam,
+	spam-stat-buffer-change-to-spam, spam-stat-buffer-is-non-spam,
+	spam-stat-buffer-is-spam, spam-stat-load,
+	spam-stat-register-ham-routine, spam-stat-register-spam-routine,
+	spam-stat-save and spam-stat-split-fancy.
+
+2004-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* canlock.el (canlock-password): Remove `:size 0' or `:size 1'
 	which may confuse users.
 	(canlock-password-for-verify): Ditto.
