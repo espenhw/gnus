@@ -91,6 +91,9 @@ message-generate-hashcash t) to enable.
 ** Gnus supports a new sort command in the Summary buffer: `C-c C-s C-t'
 (`gnus-summary-sort-by-recipient').
 
+** The `nnrss' back end now supports multilingual text.  Non-ASCII group
+names for the `nnrss' groups are also supported.  *Note RSS::.
+
 
 * For older news, see Gnus info node "New Features".
 
