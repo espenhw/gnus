@@ -162,7 +162,8 @@
 	pixmap file height beg i)
     (save-excursion
       (switch-to-buffer (gnus-get-buffer-create gnus-group-buffer))
-      (let ((buffer-read-only nil))
+      (let ((buffer-read-only nil)
+	    width height)
 	(erase-buffer)
 	(when (and dir
 		   (file-exists-p (setq file
