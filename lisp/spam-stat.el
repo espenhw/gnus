@@ -122,6 +122,7 @@
 
 
 ;;; Code:
+(require 'mail-parse)
 
 (defgroup spam-stat nil
   "Statistical spam detection for Emacs.
@@ -471,6 +472,13 @@ check the variable `spam-stat-score-data'."
 
 ;; Testing
 
+(defun spam-stat-strip-xref ()
+  "Strip the the Xref header."
+  (save-restriction
+    (mail-narrow-to-head)
+    (when (re-search-forward "^Xref:.*\n" nil t)
+      (delete-region (match-beginning 0) (match-end 0)))))
+
 (defun spam-stat-process-directory (dir func)
   "Process all the regular files in directory DIR using function FUNC."
   (let* ((files (directory-files dir t "^[^.]"))
@@ -484,6 +492,7 @@ check the variable `spam-stat-score-data'."
 	  (setq count (1+ count))
 	  (message "Reading %s: %.2f%%" dir (/ count max))
 	  (insert-file-contents f)
+	  (spam-stat-strip-xref)
 	  (funcall func)
 	  (erase-buffer))))))
 
