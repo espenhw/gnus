@@ -20981,8 +20981,9 @@ converts it to the X-Face format by using the
 header data as a string.
 
 @findex gnus-insert-random-x-face-header
-Calls @code{gnus-random-x-face} and inserts a @samp{X-Face} header
-with the randomly generated data.
+@code{gnus-insert-random-x-face-header} calls
+@code{gnus-random-x-face} and inserts a @samp{X-Face} header with the
+randomly generated data.
 
 @findex gnus-x-face-from-file
 @code{gnus-x-face-from-file} takes a GIF file as the parameter, and then
