@@ -157,6 +157,17 @@
 			  (setq i (1+ i)
 				start (1+ start)))
 			res)))))))))
+
+  (define-compiler-macro copy-list (&whole form list)
+    (if (and (fboundp 'copy-list)
+	     (subrp (symbol-function 'copy-list)))
+	form
+      `(let ((list ,list))
+	 (if (consp list)
+	     (let ((res nil))
+	       (while (consp list) (push (pop list) res))
+	       (prog1 (nreverse res) (setcdr res list)))
+	   (car list)))))
   )
 
 ;; If we are building w3 in a different directory than the source
