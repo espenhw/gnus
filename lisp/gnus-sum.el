@@ -7741,34 +7741,45 @@ delete these instead."
     (gnus-set-mode-line 'summary)
     not-deleted))
 
-(defun gnus-summary-edit-article (&optional force)
+(defun gnus-summary-edit-article (&optional arg)
   "Edit the current article.
 This will have permanent effect only in mail groups.
-If FORCE is non-nil, allow editing of articles even in read-only
+If ARG is nil, edit the decoded articles.
+If ARG is 1, edit the raw articles. 
+If ARG is 2, edit the raw articles even in read-only groups.
+Otherwise, allow editing of articles even in read-only
 groups."
   (interactive "P")
-  (save-excursion
-    (set-buffer gnus-summary-buffer)
-    (let ((mail-parse-charset gnus-newsgroup-charset)
-	  (mail-parse-ignored-charsets gnus-newsgroup-ignored-charsets))
-      (gnus-set-global-variables)
-      (when (and (not force)
-		 (gnus-group-read-only-p))
-	(error "The current newsgroup does not support article editing"))
-      (gnus-summary-show-article t)
-      (when (gnus-buffer-live-p gnus-article-buffer)
-	(with-current-buffer gnus-article-buffer
-	  (mm-enable-multibyte)))
-      (gnus-article-edit-article
-       'mime-to-mml
-       `(lambda (no-highlight)
-	  (let ((mail-parse-charset ',gnus-newsgroup-charset)
-		(mail-parse-ignored-charsets 
-		 ',gnus-newsgroup-ignored-charsets))
-	    (mml-to-mime)
-	    (gnus-summary-edit-article-done
-	     ,(or (mail-header-references gnus-current-headers) "")
-	     ,(gnus-group-read-only-p) ,gnus-summary-buffer no-highlight)))))))
+  (let (force raw)
+    (cond 
+     ((null arg))
+     ((eq arg 1) (setq raw t))
+     ((eq arg 2) (setq raw t
+		       force t))
+     (t (setq force t)))
+    (save-excursion
+      (set-buffer gnus-summary-buffer)
+      (let ((mail-parse-charset gnus-newsgroup-charset)
+	    (mail-parse-ignored-charsets gnus-newsgroup-ignored-charsets))
+	(gnus-set-global-variables)
+	(when (and (not force)
+		   (gnus-group-read-only-p))
+	  (error "The current newsgroup does not support article editing"))
+	(gnus-summary-show-article t)
+	(when (and (not raw) (gnus-buffer-live-p gnus-article-buffer))
+	  (with-current-buffer gnus-article-buffer
+	    (mm-enable-multibyte)))
+	(gnus-article-edit-article
+	 (if raw 'ignore 'mime-to-mml)
+	 `(lambda (no-highlight)
+	    (let ((mail-parse-charset ',gnus-newsgroup-charset)
+		  (mail-parse-ignored-charsets 
+		   ',gnus-newsgroup-ignored-charsets))
+	      ,(if (not raw) '(mml-to-mime))
+	      (gnus-summary-edit-article-done
+	       ,(or (mail-header-references gnus-current-headers) "")
+	       ,(gnus-group-read-only-p) 
+	       ,gnus-summary-buffer no-highlight))))))))
 
 (defalias 'gnus-summary-edit-article-postpone 'gnus-article-edit-exit)
 
