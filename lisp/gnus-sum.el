@@ -1421,7 +1421,8 @@ increase the score of each group you read."
     "u" gnus-article-date-ut
     "l" gnus-article-date-local
     "e" gnus-article-date-lapsed
-    "o" gnus-article-date-original)
+    "o" gnus-article-date-original
+    "s" gnus-article-date-user)
 
   (gnus-define-keys (gnus-summary-wash-empty-map "E" gnus-summary-wash-map)
     "t" gnus-article-remove-trailing-blank-lines
@@ -1622,7 +1623,8 @@ increase the score of each group you read."
 	["Local" gnus-article-date-local t]
 	["UT" gnus-article-date-ut t]
 	["Original" gnus-article-date-original t]
-	["Lapsed" gnus-article-date-lapsed t])
+	["Lapsed" gnus-article-date-lapsed t]
+	["User-defined" gnus-article-date-user t])
        ("Filter"
 	("Remove Blanks"
 	 ["Leading" gnus-article-strip-leading-blank-lines t]
@@ -3654,7 +3656,8 @@ If READ-ALL is non-nil, all articles in the group are selected."
 	 articles fetched-articles cached)
 
     (unless (gnus-check-server
-	     (setq gnus-current-select-method (gnus-find-method-for-group group)))
+	     (setq gnus-current-select-method 
+		   (gnus-find-method-for-group group)))
       (error "Couldn't open server"))
 
     (or (and entry (not (eq (car entry) t))) ; Either it's active...
@@ -5474,6 +5477,7 @@ article."
   (setq gnus-summary-buffer (current-buffer))
   (gnus-set-global-variables)
   (let ((article (gnus-summary-article-number))
+	(article-window (get-buffer-window gnus-article-buffer))
 	(endp nil))
     (gnus-configure-windows 'article)
     (if (eq (cdr (assq article gnus-newsgroup-reads)) gnus-canceled-mark)
@@ -5487,18 +5491,19 @@ article."
 	      (not (equal (car gnus-article-current) gnus-newsgroup-name)))
 	  ;; Selected subject is different from current article's.
 	  (gnus-summary-display-article article)
-	(gnus-eval-in-buffer-window gnus-article-buffer
-	  (setq endp (gnus-article-next-page lines)))
-	(when endp
-	  (cond (circular
-		 (gnus-summary-beginning-of-article))
-		(lines
-		 (gnus-message 3 "End of message"))
-		((null lines)
-		 (if (and (eq gnus-summary-goto-unread 'never)
-			  (not (gnus-summary-last-article-p article)))
-		     (gnus-summary-next-article)
-		   (gnus-summary-next-unread-article)))))))
+	(when article-window
+	  (gnus-eval-in-buffer-window gnus-article-buffer
+	    (setq endp (gnus-article-next-page lines)))
+	  (when endp
+	    (cond (circular
+		   (gnus-summary-beginning-of-article))
+		  (lines
+		   (gnus-message 3 "End of message"))
+		  ((null lines)
+		   (if (and (eq gnus-summary-goto-unread 'never)
+			    (not (gnus-summary-last-article-p article)))
+		       (gnus-summary-next-article)
+		     (gnus-summary-next-unread-article))))))))
     (gnus-summary-recenter)
     (gnus-summary-position-point)))
 
@@ -7035,15 +7040,16 @@ groups."
   "Query where the respool algorithm would put this article."
   (interactive)
   (gnus-set-global-variables)
-  (gnus-summary-select-article)
-  (save-excursion
-    (set-buffer gnus-article-buffer)
-    (save-restriction
-      (goto-char (point-min))
-      (search-forward "\n\n")
-      (narrow-to-region (point-min) (point))
-      (message "This message would go to %s"
-	       (mapconcat 'car (nnmail-article-group 'identity) ", ")))))
+  (let (gnus-mark-article-hook)
+    (gnus-summary-select-article)
+    (save-excursion
+      (set-buffer gnus-article-buffer)
+      (save-restriction
+	(goto-char (point-min))
+	(search-forward "\n\n")
+	(narrow-to-region (point-min) (point))
+	(message "This message would go to %s"
+		 (mapconcat 'car (nnmail-article-group 'identity) ", "))))))
 
 ;; Summary marking commands.
 

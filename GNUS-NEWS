@@ -99,3 +99,5 @@ from incoming mail before saving the mail.
  
     See `nnmail-prepare-incoming-header-hook'.
 
+*** The nnml mail backend now understands compressed article files.
+

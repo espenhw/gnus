@@ -43,7 +43,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.80"
+(defconst gnus-version-number "0.81"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -1141,10 +1141,12 @@ face."
 	gnus-article-hide-boring-headers
 	gnus-article-treat-overstrike
 	gnus-article-maybe-highlight
+	gnus-article-emphasize
 	gnus-article-display-x-face)
     '(gnus-article-hide-headers-if-wanted
       gnus-article-hide-boring-headers
       gnus-article-treat-overstrike
+      gnus-article-emphasize
       gnus-article-maybe-highlight))
   "Controls how the article buffer will look.
 
@@ -1465,7 +1467,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-article-date-original gnus-article-date-lapsed
       gnus-article-show-all-headers 
       gnus-article-edit-mode gnus-article-edit-article
-      gnus-article-edit-done gnus-decode-rfc1522)
+      gnus-article-edit-done gnus-decode-rfc1522 article-decode-rfc1522)
      ("gnus-int" gnus-request-type)
      ("gnus-start" gnus-newsrc-parse-options gnus-1 gnus-no-server-1
       gnus-dribble-enter)

@@ -264,24 +264,25 @@ all.  This may very well take some time.")
 	    (nnheader-article-to-file-alist nnml-current-directory)))
 
     (while (and articles is-old)
-      (setq article (concat nnml-current-directory 
-			    (int-to-string 
-			     (setq number (pop articles)))))
-      (when (setq mod-time (nth 5 (file-attributes article)))
-	(if (and (nnml-deletable-article-p newsgroup number)
-		 (setq is-old 
-		       (nnmail-expired-article-p newsgroup mod-time force
-						 nnml-inhibit-expiry)))
-	    (progn
-	      (nnheader-message 5 "Deleting article %s in %s..."
-				article newsgroup)
-	      (condition-case ()
-		  (funcall nnmail-delete-file-function article)
-		(file-error
-		 (push number rest)))
-	      (setq active-articles (delq number active-articles))
-	      (nnml-nov-delete-article newsgroup number))
-	  (push number rest))))
+      (when (setq article
+		  (assq (setq number (pop articles)) 
+			nnml-article-to-file-alist))
+	(setq article (concat nnml-current-directory (cdr article)))
+	(when (setq mod-time (nth 5 (file-attributes article)))
+	  (if (and (nnml-deletable-article-p newsgroup number)
+		   (setq is-old 
+			 (nnmail-expired-article-p newsgroup mod-time force
+						   nnml-inhibit-expiry)))
+	      (progn
+		(nnheader-message 5 "Deleting article %s in %s..."
+				  article newsgroup)
+		(condition-case ()
+		    (funcall nnmail-delete-file-function article)
+		  (file-error
+		   (push number rest)))
+		(setq active-articles (delq number active-articles))
+		(nnml-nov-delete-article newsgroup number))
+	    (push number rest)))))
     (let ((active (nth 1 (assoc newsgroup nnml-group-alist))))
       (when active
 	(setcar active (or (and active-articles

@@ -420,7 +420,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 (deffoo nntp-request-head (article &optional group server)
   (nntp-possibly-change-group group server)
   (when (nntp-send-command-and-decode
-	 "\r\n\\.\r\n" "HEAD"
+	 "\r?\n\\.\r?\n" "HEAD"
 	 (if (numberp article) (int-to-string article) article))
     (nntp-find-group-and-number)))
 
@@ -784,9 +784,13 @@ It will prompt for a password."
 	      (nntp-snarf-error-message)
 	      nil)
 	  (goto-char (point-max))
-	  (while (not (re-search-backward wait-for nil t))
-	    (nntp-accept-process-output process)
-	    (goto-char (point-max)))
+	  (let ((limit (point-min)))
+	    (while (not (re-search-backward wait-for limit t))
+	      ;; We assume that whatever we wait for is less than 1000 
+	      ;; characters long.
+	      (setq limit (max (- (point-max) 1000) (point-min)))
+	      (nntp-accept-process-output process)
+	      (goto-char (point-max))))
 	  (nntp-decode-text (not decode))
 	  (unless discard
 	    (save-excursion
@@ -812,9 +816,9 @@ It will prompt for a password."
   (save-excursion
     (set-buffer (or (nntp-find-connection-buffer nntp-server-buffer)
 		    nntp-server-buffer))
-    (let ((len (/ (point-max) 10000)))
-      (unless (zerop len)
-	(message "nntp reading%s" (make-string len ?.))))
+    (let ((len (/ (point-max) 1024)))
+      (unless (< len 10)
+	(message "nntp read: %dk" len)))
     (accept-process-output process 1)))
 
 (defun nntp-accept-response ()

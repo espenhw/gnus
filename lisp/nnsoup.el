@@ -386,7 +386,8 @@ The SOUP packet file name will be inserted at the %s.")
   (when (file-exists-p (concat nnsoup-tmp-directory "AREAS"))
     (save-excursion
       (set-buffer nntp-server-buffer)
-      (let ((areas (gnus-soup-parse-areas (concat nnsoup-tmp-directory "AREAS")))
+      (let ((areas (gnus-soup-parse-areas 
+		    (concat nnsoup-tmp-directory "AREAS")))
 	    entry number area lnum cur-prefix file)
 	;; Go through all areas in the new AREAS file.
 	(while (setq area (pop areas))
@@ -487,8 +488,8 @@ The SOUP packet file name will be inserted at the %s.")
 	 ;; There is no MSG file.
 	 ((null msg-buf)
 	  nil)
-       
-	 ;; We use the index file to find out where the article begins and ends. 
+	 ;; We use the index file to find out where the article 
+	 ;; begins and ends. 
 	 ((and (= (gnus-soup-encoding-index 
 		   (gnus-soup-area-encoding (nth 1 area)))
 		  ?c)

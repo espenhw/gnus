@@ -1,3 +1,72 @@
+Wed Jan 15 02:57:18 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-indent): Don't remove all groups from
+	topic. 
+	(gnus-topic-unindent): Ditto.
+
+	* gnus-sum.el (gnus-summary-respool-query): Don't mark anything as
+	read.
+
+	* gnus-art.el (gnus-button-alist): Move news:mesg-id up.
+
+	* gnus.el (gnus-article-display-hook): Emphasize by default.
+
+	* gnus-topic.el (gnus-topic-rename): Mark newsrc as dirty.
+
+	* gnus-sum.el (gnus-summary-next-page): When the article window
+	isn't displayed, don't scroll.
+
+Wed Jan 15 02:19:56 1997  Markus Linnala  <maage@ee.tut.fi>
+
+	* gnus-cite.el (gnus-cite-reply-regexp, gnus-cite-always-check):
+	New variables.
+
+Wed Jan 15 02:02:03 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (article-date-user): New command and keystroke.
+
+Wed Jan 15 02:01:15 1997  David Moore  <dmoore@ucsd.edu>
+
+	* gnus-art.el (gnus-article-time-format): New variable.
+	(article-make-date-line): Use it.
+
+Wed Jan 15 01:44:15 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-emphasis-alist): Allow emphasis around
+	sentences. 
+	(gnus-button-url-regexp): Don't allow empty URLs.
+
+Sun Jan 12 19:27:23 1997  Thor Kristoffersen  <thor@unik.no>
+
+	* nntp.el (nntp-request-head): Work when using rlogin. 
+
+Sun Jan 12 15:17:16 1997  Chris Bone  <bone@al.com.au>
+
+	* nntp.el (nntp-accept-process-output): Give numerical messages. 
+	(nntp-wait-for): Search less.
+
+Fri Jan 10 17:38:38 1997  Erik Toubro Nielsen  <erik@ifad.dk>
+
+	* gnus-art.el (gnus-Numeric-save-name): Doc fix.
+
+Thu Jan  9 21:51:59 1997  Dan Schmidt  <dfan@harmonixmusic.com>
+
+	* nnmail.el (nnmail-move-inbox): Quote password.
+
+Thu Jan  9 18:24:32 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-move-inbox): Don't nix out
+	nnmail-internal-password. 
+
+	* nnml.el (nnml-request-expire-articles): Also expire gzipped
+	articles. 
+
+	* gnus-art.el (article-emphasize): Wouldn't toggle.
+
+Thu Jan  9 18:18:26 1997  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.80 is released.
+
 Thu Jan  9 12:00:21 1997  Wesley Hardaker  <Wesley.Hardaker@sphys.unil.ch>
 
 	* acronym.el: New package.
@@ -25,7 +94,7 @@ Thu Jan  9 11:32:13 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-art.el: Redefine ems.
 
-Wed Jan  8 20:34:09 1997  John  <visigoth@naiad.fac.cs.cmu.edu>
+Wed Jan  8 20:34:09 1997  John McClary Prevost  <visigoth@naiad.fac.cs.cmu.edu>
 
 	* message.el (message-sendmail-f-is-evil): New variable.
 	(message-elide-elipsis): Ditto.

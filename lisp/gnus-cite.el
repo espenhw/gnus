@@ -36,6 +36,19 @@
   :group 'article)
   
 
+(defcustom gnus-cite-reply-regexp
+  "^\\(Subject: Re\\|In-Reply-To\\|References\\):"
+  "If headers match this regexp it is reasonable to believe that
+article has citations."
+  :group 'gnus-cite
+  :type 'string)
+
+(defcustom gnus-cite-always-check nil
+  "Check article always for citations. Set it t to check all articles."
+  :group 'gnus-cite
+  :type '(choice (const :tag "no" nil)
+		  (const :tag "yes" t)))
+
 (defcustom gnus-cited-text-button-line-format "%(%{[...]%}%)\n"
   "Format of cited text buttons."
   :group 'gnus-cite
@@ -394,7 +407,7 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 	      (setcdr m (cdddr m))
 	    (setq m (cdr m))))
 	marks))))
-	    
+
 (defun gnus-article-fill-cited-article (&optional force)
   "Do word wrapping in the current article."
   (interactive (list t))
@@ -565,15 +578,30 @@ See also the documentation for `gnus-article-highlight-citation'."
 	()
       (setq gnus-cite-article (cons (car gnus-article-current)
 				    (cdr gnus-article-current)))
-      (gnus-cite-parse))))
+      (gnus-cite-parse-wrapper))))
+
+(defun gnus-cite-parse-wrapper ()
+  ;; Wrap chopped gnus-cite-parse
+  (goto-char (point-min))
+  (unless (search-forward "\n\n" nil t)
+    (goto-char (point-max)))
+  (save-excursion 
+    (gnus-cite-parse-attributions))
+  ;; Try to avoid check citation if there is no reason to believe
+  ;; that article has citations
+  (if (or gnus-cite-always-check
+	  (save-excursion
+	    (re-search-backward gnus-cite-reply-regexp nil t))
+	  gnus-cite-loose-attribution-alist)
+      (progn (save-excursion
+	       (gnus-cite-parse))
+	     (save-excursion
+	       (gnus-cite-connect-attributions)))))
 
 (defun gnus-cite-parse ()
   ;; Parse and connect citation prefixes and attribution lines.
   
   ;; Parse current buffer searching for citation prefixes.
-  (goto-char (point-min))
-  (unless (search-forward "\n\n" nil t)
-    (goto-char (point-max)))
   (let ((line (1+ (count-lines (point-min) (point))))
 	(case-fold-search t)
 	(max (save-excursion
@@ -639,39 +667,52 @@ See also the documentation for `gnus-article-highlight-citation'."
 		 (setq current (car loop)
 		       loop (cdr loop))
 		 (setcdr current 
-			 (gnus-set-difference (cdr current) numbers))))))))
+			 (gnus-set-difference (cdr current) numbers)))))))))
+
+(defun gnus-cite-parse-attributions ()
+  (let (al-alist)
+    ;; Parse attributions
+    (while (re-search-forward gnus-cite-attribution-suffix (point-max) t)
+      (let* ((start (match-beginning 0))
+	     (end (match-end 0))
+	     (wrote (count-lines (point-min) end))
+	     (prefix (gnus-cite-find-prefix wrote))
+	     ;; Check previous line for an attribution leader.
+	     (tag (progn
+		    (beginning-of-line 1)
+		    (when (looking-at gnus-supercite-secondary-regexp)
+		      (buffer-substring (match-beginning 1)
+					(match-end 1)))))
+	     (in (progn
+		   (goto-char start)
+		   (and (re-search-backward gnus-cite-attribution-prefix
+					    (save-excursion
+					      (beginning-of-line 0)
+					      (point))
+					    t)
+			(not (re-search-forward gnus-cite-attribution-suffix
+						start t))
+			(count-lines (point-min) (1+ (point)))))))
+	(when (eq wrote in)
+	  (setq in nil))
+	(goto-char end)
+	;; don't add duplicates
+	(let ((al (buffer-substring (save-excursion (beginning-of-line 0)
+						    (1+ (point)))
+				    end)))
+	  (if (not (assoc al al-alist))
+	      (progn
+		(push (list wrote in prefix tag) 
+		      gnus-cite-loose-attribution-alist)
+		(push (cons al t) al-alist))))))))
+
+(defun gnus-cite-connect-attributions ()
+  ;; Connect attributions to citations
+
   ;; No citations have been connected to attribution lines yet.
   (setq gnus-cite-loose-prefix-alist (append gnus-cite-prefix-alist nil))
 
   ;; Parse current buffer searching for attribution lines.
-  (goto-char (point-min))
-  (search-forward "\n\n" nil t)
-  (while (re-search-forward gnus-cite-attribution-suffix (point-max) t)
-    (let* ((start (match-beginning 0))
-	   (end (match-end 0))
-	   (wrote (count-lines (point-min) end))
-	   (prefix (gnus-cite-find-prefix wrote))
-	   ;; Check previous line for an attribution leader.
-	   (tag (progn
-		  (beginning-of-line 1)
-		  (when (looking-at gnus-supercite-secondary-regexp)
-		    (buffer-substring (match-beginning 1)
-				      (match-end 1)))))
-	   (in (progn
-		 (goto-char start)
-		 (and (re-search-backward gnus-cite-attribution-prefix
-					  (save-excursion
-					    (beginning-of-line 0)
-					    (point))
-					  t)
-		      (not (re-search-forward gnus-cite-attribution-suffix
-					      start t))
-		      (count-lines (point-min) (1+ (point)))))))
-      (when (eq wrote in)
-	(setq in nil))
-      (goto-char end)
-      (push (list wrote in prefix tag)
-	    gnus-cite-loose-attribution-alist)))
   ;; Find exact supercite citations.
   (gnus-cite-match-attributions 'small nil
 				(lambda (prefix tag)

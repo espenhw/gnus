@@ -506,7 +506,9 @@ parameter.  It should return nil, `warn' or `delete'."
 	  nil
 	(if popmail
 	    (progn
-	      (setq nnmail-internal-password nnmail-pop-password)
+	      (when (and nnmail-pop-password
+			 nnmail-internal-password)
+		(setq nnmail-internal-password nnmail-pop-password))
 	      (when (and nnmail-pop-password-required
 			 (not nnmail-internal-password))
 		(setq nnmail-internal-password
@@ -548,7 +550,7 @@ parameter.  It should return nil, `warn' or `delete'."
 					 exec-directory)
 		       nil errors nil inbox tofile)
 		      (when nnmail-internal-password
-			(list nnmail-internal-password))))))
+			(list (prin1-to-string nnmail-internal-password)))))))
 		(if (not (buffer-modified-p errors))
 		    ;; No output => movemail won
 		    (progn

@@ -1198,6 +1198,7 @@ If COPYP, copy the groups instead."
     (when entry 
       (setcar entry new-name))
     (forward-line -1)
+    (gnus-dribble-touch)
     (gnus-group-list-groups)))
 
 (defun gnus-topic-indent (&optional unindent)
@@ -1214,7 +1215,9 @@ If UNINDENT, remove an indentation."
 	(gnus-topic-goto-topic topic)
 	(gnus-topic-kill-group)
 	(gnus-topic-create-topic
-	 topic parent nil (cdar (pop gnus-topic-killed-topics)))
+	 topic parent nil (cdaar gnus-topic-killed-topics))
+	(push (cdar gnus-topic-killed-topics) gnus-topic-alist)
+	(pop gnus-topic-killed-topics)
 	(or (gnus-topic-goto-topic topic)
 	    (gnus-topic-goto-topic parent))))))
 
@@ -1231,7 +1234,9 @@ If UNINDENT, remove an indentation."
       (gnus-topic-kill-group)
       (gnus-topic-create-topic
        topic grandparent (gnus-topic-next-topic parent)
-       (cdar (pop gnus-topic-killed-topics)))
+       (cdaar gnus-topic-killed-topics))
+      (push (cdar gnus-topic-killed-topics) gnus-topic-alist)
+      (pop gnus-topic-killed-topics)
       (gnus-topic-goto-topic topic))))
 
 (defun gnus-topic-list-active (&optional force)

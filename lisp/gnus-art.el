@@ -122,7 +122,7 @@ asynchronously.	 The compressed face will be piped to this command."
 
 (defcustom gnus-emphasis-alist
   (let ((format
-	 "\\(\\s-\\|^\\|[-\"\(]\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*\\)%s\\)\\(\\s-\\|[-?!.,;:\"\)]\\)")
+	 "\\(\\s-\\|^\\|[-\"\(]\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*[.,]?\\)%s\\)\\(\\s-\\|[-?!.,;:\"\)]\\)")
 	(types
 	 '(("_" "_" underline)
 	   ("/" "/" italic)
@@ -183,6 +183,12 @@ is the face used for highlighting."
 (defface gnus-emphasis-underline-bold-italic 
   '((t (:bold t :italic t :underline t)))
   "Face used for displaying underlined bold italic emphasized text (_/*word*/_)."
+  :group 'article)
+
+(defcustom gnus-article-time-format "%a, %b %d %Y %T %Z"
+  "Format for display of Date headers in article bodies.
+See `format-time-zone' for the possible values."
+  :type 'string
   :group 'article)
 
 (eval-and-compile
@@ -1127,6 +1133,13 @@ how much time has lapsed since DATE."
    ;; Get the original date from the article.
    ((eq type 'original)
     (concat "Date: " date "\n"))
+   ;; Let the user define the format.
+   ((eq type 'user)
+    (format-time-string gnus-article-time-format
+			(ignore-errors
+			  (gnus-encode-date
+			   (timezone-make-date-arpa-standard
+			    date nil "UT")))))
    ;; Do an X-Sent lapsed format.
    ((eq type 'lapsed)
     ;; If the date is seriously mangled, the timezone functions are
@@ -1199,6 +1212,11 @@ function and want to see what the date was before converting."
   (interactive (list t))
   (article-date-ut 'lapsed highlight))
 
+(defun article-date-user (&optional highlight)
+  "Convert the current article date to the user-defined format."
+  (interactive (list t))
+  (article-date-ut 'user highlight))
+
 (defun article-show-all ()
   "Show all hidden text in the article buffer."
   (interactive)
@@ -1213,7 +1231,7 @@ function and want to see what the date was before converting."
     (save-excursion
       (let ((alist gnus-emphasis-alist)
 	    (buffer-read-only nil)
-	    (props (append '(gnus-article-type emphasis)
+	    (props (append '(article-type emphasis)
 			   gnus-hidden-properties))
 	    regexp elem beg invisible visible face)
 	(goto-char (point-min))
@@ -1464,7 +1482,7 @@ The directory to save in defaults to `gnus-article-save-directory'."
 
 (defun gnus-Numeric-save-name (newsgroup headers &optional last-file)
   "Generate file name from NEWSGROUP, HEADERS, and optional LAST-FILE.
-If variable `gnus-use-long-file-name' is nil, it is ~/News/News.group/num.
+If variable `gnus-use-long-file-name' is non-nil, it is ~/News/News.group/num.
 Otherwise, it is like ~/News/news/group/num."
   (let ((default
 	  (expand-file-name
@@ -1557,6 +1575,8 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-strip-blank-lines
      article-date-local
      article-date-original
+     article-date-ut
+     article-date-user
      article-date-lapsed
      article-emphasize
      (article-show-all . gnus-article-show-all-headers))))
@@ -2418,18 +2438,18 @@ groups."
 
 ;;; Internal Variables:
 
-(defcustom gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?\\([-a-zA-Z0-9_=!?#$@~`%&*+|\\/:;.,]\\|\\w\\)*\\([-a-zA-Z0-9_=#$@~`%&*+|\\/]\\|\\w\\)"
+(defcustom gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?\\([-a-zA-Z0-9_=!?#$@~`%&*+|\\/:;.,]\\|\\w\\)+\\([-a-zA-Z0-9_=#$@~`%&*+|\\/]\\|\\w\\)"
   "Regular expression that matches URLs."
   :group 'article
   :type 'regexp)
 
 (defcustom gnus-button-alist 
-  `(("\\(<?\\(url: ?\\)?news:\\(//\\)?\\([^>\n\t ]*\\)>?\\)" 1 t
+  `(("\\(<?\\(url: ?\\)?news:\\([^>\n\t ]*\\)>?\\)" 1 t
+     gnus-button-message-id 3)
+    ("\\(<?\\(url: ?\\)?news:\\(//\\)?\\([^>\n\t ]*\\)>?\\)" 1 t
      gnus-button-fetch-group 4)
     ("\\bin\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2 
      t gnus-button-message-id 3)
-    ("\\(<?\\(url: ?\\)?news:\\([^>\n\t ]*\\)>?\\)" 1 t
-     gnus-button-message-id 3)
     ("\\(<URL: *\\)?mailto: *\\([^> \n\t]+\\)>?" 0 t gnus-url-mailto 2)
     ;; This is how URLs _should_ be embedded in text...
     ("<URL: *\\([^>]*\\)>" 0 t gnus-button-embedded-url 1)
