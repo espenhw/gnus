@@ -1,3 +1,10 @@
+2000-07-19  Kim-Minh Kaplan <kmkaplan@galaxy.fr>
+
+	* imap.el (imap-calculate-literal-size-first): New variable.
+	(imap-local-variables): Add it.
+	(imap-kerberos4-open): Set it.
+	(imap-send-command): Use it.
+
 2000-07-17 14:18:16  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mailcap.el (mailcap-mimetypes-parsed-p): New variable.

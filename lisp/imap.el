@@ -291,6 +291,7 @@ encoded mailboxes which doesn't translate into ISO-8859-1.")
 				 imap-failed-tags
 				 imap-tag
 				 imap-process
+				 imap-calculate-literal-size-first
 				 imap-mailbox-data))
 
 ;; Internal variables.
@@ -301,6 +302,7 @@ encoded mailboxes which doesn't translate into ISO-8859-1.")
 (defvar imap-port nil)
 (defvar imap-username nil)
 (defvar imap-password nil)
+(defvar imap-calculate-literal-size-first nil)
 (defvar imap-state 'closed 
   "IMAP state.
 Valid states are `closed', `initial', `nonauth', `auth', `selected'
@@ -445,7 +447,8 @@ If ARGS, PROMPT is used as an argument to `format'."
 	     response)
 	(when process
 	  (with-current-buffer buffer
-	    (setq imap-client-eol "\n")
+	    (setq imap-client-eol "\n"
+		  imap-calculate-literal-size-first t)
 	    (while (and (memq (process-status process) '(open run))
 			(goto-char (point-min))
                         ;; cyrus 1.6.x (13? < x <= 22) queries capabilities
@@ -1485,9 +1488,21 @@ on failure."
 	(cond ((stringp cmd)
 	       (setq cmdstr (concat cmdstr cmd)))
 	      ((bufferp cmd)
-	       (setq cmdstr 
-		     (concat cmdstr (format "{%d}" (with-current-buffer cmd
-						     (buffer-size)))))
+	       (let ((eol imap-client-eol)
+		     (calcfirst imap-calculate-literal-size-first)
+		     size)
+		 (with-current-buffer cmd
+		   (if calcfirst
+		       (setq size (buffer-size)))
+		   (when (not (equal eol "\r\n"))
+		     ;; XXX modifies buffer!
+		     (goto-char (point-min))
+		     (while (search-forward "\r\n" nil t)
+		       (replace-match eol)))
+		   (if (not calcfirst)
+		       (setq size (buffer-size))))
+		 (setq cmdstr 
+		       (concat cmdstr (format "{%d}" size))))
 	       (unwind-protect
 		   (progn
 		     (imap-send-command-1 cmdstr)
@@ -1498,11 +1513,6 @@ on failure."
 			     (stream imap-stream)
 			     (eol imap-client-eol))
 			 (with-current-buffer cmd
-			   (when (not (equal eol "\r\n"))
-			     ;; XXX modifies buffer!
-			     (goto-char (point-min))
-			     (while (search-forward "\r\n" nil t)
-			       (replace-match eol)))
 			   (and imap-log
 				(with-current-buffer (get-buffer-create
 						      imap-log)
