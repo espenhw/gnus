@@ -68,7 +68,9 @@
   "The Gnus registry."
   :group 'gnus)
 
-(defvar gnus-registry-hashtb nil
+(defvar gnus-registry-hashtb (make-hash-table 			    
+			      :size 256
+			      :test 'equal)
   "*The article registry by Message ID.")
 
 (defcustom gnus-registry-unfollowed-groups '("delayed" "drafts" "queue")

@@ -1,5 +1,8 @@
 2004-10-29  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* gnus-registry.el (gnus-registry-hashtb): create the registry
+	when package is loaded
+
 	* spam.el (spam-summary-score-preferred-header): global preference
 	for people who want to override the default SpamAssassin over
 	Bogofilter preference (when both are set)
