@@ -23141,8 +23141,7 @@ customizing the group parameters or the
 @code{gnus-spam-process-newsgroups} variable.  When this symbol is
 added to a group's @code{spam-process} parameter, the senders of
 ham-marked articles in @emph{ham} groups will be added to the
-whitelist.  Note that this ham processor has no effect in @emph{spam}
-or @emph{unclassified} groups.
+whitelist.
 
 @emph{WARNING} 
 
@@ -23207,8 +23206,7 @@ customizing the group parameters or the
 @code{gnus-spam-process-newsgroups} variable.  When this symbol is
 added to a group's @code{spam-process} parameter, the senders of
 ham-marked articles in @emph{ham} groups will be added to the
-BBDB.  Note that this ham processor has no effect in @emph{spam}
-or @emph{unclassified} groups.
+BBDB.
 
 @emph{WARNING} 
 
@@ -23420,8 +23418,7 @@ customizing the group parameters or the
 @code{gnus-spam-process-newsgroups} variable.  When this symbol is
 added to a group's @code{spam-process} parameter, the ham-marked
 articles in @emph{ham} groups will be added to the Bogofilter database
-of non-spam messages.  Note that this ham processor has no effect in
-@emph{spam} or @emph{unclassified} groups.
+of non-spam messages.
 
 @emph{WARNING} 
 
@@ -23577,8 +23574,7 @@ customizing the group parameters or the
 @code{gnus-spam-process-newsgroups} variable.  When this symbol is
 added to a group's @code{spam-process} parameter, the ham-marked
 articles in @emph{ham} groups will be added to the spam-stat database
-of non-spam messages.  Note that this ham processor has no effect in
-@emph{spam} or @emph{unclassified} groups.
+of non-spam messages.
 
 @emph{WARNING} 
 
@@ -23686,8 +23682,7 @@ customizing the group parameter or the
 @code{gnus-spam-process-newsgroups} variable.  When this symbol is added
 to a group's @code{spam-process} parameter, the ham-marked articles in
 @emph{ham} groups will be sent to the SpamOracle as samples of ham
-messages.  Note that this ham processor has no effect in @emph{spam} or
-@emph{unclassified} groups.
+messages.
 
 @emph{WARNING} 
 

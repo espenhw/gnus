@@ -1,3 +1,9 @@
+2004-04-07  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Blacklists and Whitelists, BBDB Whitelists)
+	(Bogofilter, spam-stat spam filtering, SpamOracle): old incorrect
+	warning about ham processors in spam groups removed
+
 2004-04-02  Teodor Zlatanov  <tzz@lifelogs.com>
 	From Hubert Chan <hubert@uhoreg.ca>
 
