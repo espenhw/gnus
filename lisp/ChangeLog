@@ -1,5 +1,12 @@
 2003-03-02  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
+	* nntp.el (nntp-possibly-change-group): Avoid calling
+	process-buffer on nil (Which happened when you lost your
+	connection while fetching); instead signal a "Server Closed
+	Connection" error.
+
+2003-03-02  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
 	* gnus-agent.el (gnus-agent-enable-expiration): New
 	variable. Either ENABLE or DISABLE.  Sets default behavior for
 	selecting which groups are expired.

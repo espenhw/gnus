@@ -1329,16 +1329,18 @@ password contained in '~/.nntp-authinfo'."
 
   (when group
     (let ((entry (nntp-find-connection-entry nntp-server-buffer)))
-      (when (not (equal group (caddr entry)))
-	(save-excursion
-	  (set-buffer (process-buffer (car entry)))
-	  (erase-buffer)
-	  (nntp-send-command "^[245].*\n" "GROUP" group)
-	  (setcar (cddr entry) group)
-	  (erase-buffer)
-	  (save-excursion
-	    (set-buffer nntp-server-buffer)
-	    (erase-buffer)))))))
+      (cond ((not entry)
+             (nntp-report "Server closed connection"))
+            ((not (equal group (caddr entry)))
+             (save-excursion
+               (set-buffer (process-buffer (car entry)))
+               (erase-buffer)
+               (nntp-send-command "^[245].*\n" "GROUP" group)
+               (setcar (cddr entry) group)
+               (erase-buffer)
+               (save-excursion
+                 (set-buffer nntp-server-buffer)
+                 (erase-buffer))))))))
 
 (defun nntp-decode-text (&optional cr-only)
   "Decode the text in the current buffer."
