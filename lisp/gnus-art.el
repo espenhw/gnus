@@ -5349,17 +5349,17 @@ guessing."
 ;; FIXME: Is is possible to implement this?  Else it should be removed here
 ;; and in `gnus-button-alist'.
 (defun gnus-button-handle-describe-key (url)
-  "Call describe-key when pushing the corresponing URL button."
+  "Call describe-key when pushing the corresponding URL button."
   (error "not implemented"))
 
 (defun gnus-button-handle-apropos (url)
-  "Call apropos when pushing the corresponing URL button."
+  "Call apropos when pushing the corresponding URL button."
   (apropos (gnus-replace-in-string url gnus-button-handle-describe-prefix "")))
 
 (defun gnus-button-handle-apropos-command (url)
-  "Call apropos when pushing the corresponing URL button."
-  (apropos-command (gnus-replace-in-string url
-					   gnus-button-handle-describe-prefix "")))
+  "Call apropos when pushing the corresponding URL button."
+  (apropos-command 
+   (gnus-replace-in-string url gnus-button-handle-describe-prefix "")))
 
 (defun gnus-button-handle-apropos-variable (url)
   "Call apropos when pushing the corresponding URL button."
