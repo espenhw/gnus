@@ -91,7 +91,7 @@
       (set-buffer nnslashdot-buffer)
       (let ((case-fold-search t))
 	(erase-buffer)
-	(when (= start 1)
+	(when (= (car articles) 1)
 	  (url-insert-file-contents (format nnslashdot-article-url sid))
 	  (setq buffer-file-name nil)
 	  (goto-char (point-min))
@@ -308,8 +308,10 @@
 	      (setq contents
 		    (buffer-substring
 		     (point)
-		     (re-search-forward
-		      "^<p>.*A href=http://slashdot.org/article.pl"))))
+		     (progn
+		       (re-search-forward
+			"^<p>.*A href=http://slashdot.org/article.pl")
+		       (match-beginning 0)))))
 	  (search-forward (format "<a name=\"%d\">" (1- article)))
 	  (setq contents
 		(buffer-substring

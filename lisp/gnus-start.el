@@ -1687,12 +1687,12 @@ newsgroup."
 	;; than once in this list.
 	(unless (member method methods)
 	  (condition-case ()
-	      (gnus-read-active-file-1 method)
+	      (gnus-read-active-file-1 method force)
 	    ;; We catch C-g so that we can continue past servers
 	    ;; that do not respond.
 	    (quit nil)))))))
 
-(defun gnus-read-active-file-1 (method)
+(defun gnus-read-active-file-1 (method force)
   (let (where mesg list-type)
     (setq where (nth 1 method)
 	  mesg (format "Reading active file%s via %s..."

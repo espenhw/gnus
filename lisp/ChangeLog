@@ -1,5 +1,8 @@
 1999-11-09 00:13:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnslashdot.el (nnslashdot-retrieve-headers): Skip the article
+	unless wanted.
+
 	* gnus-start.el (gnus-active-to-gnus-format): Catch errors.
 	(gnus-read-active-file-1): Separated into own function.
 	(gnus-read-active-file): Catch quits.
