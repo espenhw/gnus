@@ -1742,7 +1742,7 @@ is @samp{> }.
 @cindex yanking
 @cindex cited
 @cindex quoting
-When yanking text from a article which contains no text or already
+When yanking text from an article which contains no text or already
 cited text, each line will be prefixed with the contents of this
 variable.  The default is @samp{>}.  See also
 @code{message-yank-prefix}.

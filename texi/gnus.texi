@@ -16264,8 +16264,8 @@ limiting (or enabling) other users access to your mail boxes.  Not all
 @acronym{IMAP} servers support this, this function will give an error if it
 doesn't.
 
-To edit a ACL for a mailbox, type @kbd{G l}
-(@code{gnus-group-edit-nnimap-acl}) and you'll be presented with a ACL
+To edit an ACL for a mailbox, type @kbd{G l}
+(@code{gnus-group-edit-nnimap-acl}) and you'll be presented with an ACL
 editing window with detailed instructions.
 
 Some possible uses:
@@ -18276,7 +18276,7 @@ see any cycling.
 
 @item gnus-server-unopen-status
 @vindex gnus-server-unopen-status
-Perhaps not a Agent variable, but closely related to the Agent, this
+Perhaps not an Agent variable, but closely related to the Agent, this
 variable says what will happen if Gnus cannot open a server.  If the
 Agent is enabled, the default, @code{nil}, makes Gnus ask the user
 whether to deny the server or whether to unplug the agent.  If the
@@ -18286,7 +18286,7 @@ is only valid if the Agent is used.
 
 @item gnus-auto-goto-ignores
 @vindex gnus-auto-goto-ignores
-Another variable that isn't a Agent variable, yet so closely related
+Another variable that isn't an Agent variable, yet so closely related
 that most will look for it here, this variable tells the summary
 buffer how to maneuver around undownloaded (only headers stored in the
 agent) and unfetched (neither article nor headers stored) articles.
@@ -18946,7 +18946,7 @@ final ``header'' you can score on is @code{Followup}.  These score
 entries will result in new score entries being added for all follow-ups
 to articles that matches these score entries.
 
-Following this key is a arbitrary number of score entries, where each
+Following this key is an arbitrary number of score entries, where each
 score entry has one to four elements.
 @enumerate
 
@@ -23607,7 +23607,7 @@ Message Mode is able to request notifications from the receiver.
 @cindex RFC 1991
 @cindex RFC 2440
 RFC 1991 is the original @acronym{PGP} message specification,
-published as a Information RFC.  RFC 2440 was the follow-up, now
+published as an informational RFC.  RFC 2440 was the follow-up, now
 called Open PGP, and put on the Standards Track.  Both document a
 non-@acronym{MIME} aware @acronym{PGP} format.  Gnus supports both
 encoding (signing and encryption) and decoding (verification and
@@ -25826,7 +25826,7 @@ evaluate expressions using @kbd{M-:} or inspect variables using
 @cindex elp
 @cindex profile
 @cindex slow
-Sometimes, a problem do not directly generate a elisp error but
+Sometimes, a problem do not directly generate an elisp error but
 manifests itself by causing Gnus to be very slow.  In these cases, you
 can use @kbd{M-x toggle-debug-on-quit} and press @kbd{C-g} when things are
 slow, and then try to analyze the backtrace (repeating the procedure
