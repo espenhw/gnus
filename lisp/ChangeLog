@@ -1,3 +1,8 @@
+2003-03-31  Simon Josefsson  <jas@extundo.com>
+
+	* imap.el (imap-gssapi-program): Also try GNU SASL.
+	(imap-gssapi-open): Accept GNU SASL greeting.
+
 2003-03-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-prepare-threads): Add comment.

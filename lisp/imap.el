@@ -179,7 +179,12 @@ the list is tried until a successful connection is made."
   :group 'imap
   :type '(repeat string))
 
-(defcustom imap-gssapi-program '("imtest -m gssapi -u %l -p %p %s")
+(defcustom imap-gssapi-program (list
+				(concat "gsasl --client --connect %s:%p "
+					"--imap --application-data "
+					"--mechanism GSSAPI "
+					"--authentication-id %l")
+				"imtest -m gssapi -u %l -p %p %s")
   "List of strings containing commands for GSSAPI (krb5) authentication.
 %s is replaced with server hostname, %p with port to connect to, and
 %l with the value of `imap-default-user'.  The program should accept
@@ -548,7 +553,7 @@ sure of changing the value of `foo'."
 			(set-buffer buffer) ;; XXX "blue moon" nntp.el bug
 			(goto-char (point-min))
 			;; cyrus 1.6.x (13? < x <= 22) queries capabilities
-		        (or (while (looking-at "^C:")
+			(or (while (looking-at "^C:")
 			      (forward-line))
 			    t)
 			;; cyrus 1.6 imtest print "S: " before server greeting
@@ -558,7 +563,10 @@ sure of changing the value of `foo'."
 			(not (and (imap-parse-greeting)
 				  ;; success in imtest 1.6:
 				  (re-search-forward
-				   "^\\(Authenticat.*\\)" nil t)
+				   (concat "^\\(\\(Authenticat.*\\)\\|\\("
+					   "Client authentication "
+					   "finished.*\\)\\)")
+				   nil t)
 				  (setq response (match-string 1)))))
 	      (accept-process-output process 1)
 	      (sit-for 1))
