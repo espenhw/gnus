@@ -1,5 +1,6 @@
 ;;; canlock.el --- functions for Cancel-Lock feature
-;; Copyright (C) 1998, 1999, 2001 Free Software Foundation, Inc.
+
+;; Copyright (C) 1998, 1999, 2001, 2002 Free Software Foundation, Inc.
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news, cancel-lock, hmac, sha1, rfc2104
@@ -95,6 +96,13 @@ buffer does not look like a news message."
   :type 'boolean
   :group 'canlock)
 
+(eval-when-compile
+  (defmacro canlock-string-as-unibyte (string)
+    "Return a unibyte string with the same individual bytes as STRING."
+    (if (fboundp 'string-as-unibyte)
+	(list 'string-as-unibyte string)
+      string)))
+
 (defun canlock-sha1-with-openssl (message)
   "Make a SHA-1 digest of MESSAGE using OpenSSL."
   (let (default-enable-multibyte-characters)
@@ -112,7 +120,7 @@ buffer does not look like a news message."
 	  (replace-match (concat "\\\\x" (match-string 0))))
 	(insert "\"")
 	(goto-char (point-min))
-	(read (current-buffer))))))
+	(canlock-string-as-unibyte (read (current-buffer)))))))
 
 (defvar canlock-read-passwd nil)
 (defun canlock-read-passwd (prompt &rest args)
@@ -145,11 +153,13 @@ If ARGS, PROMPT is used as an argument to `format'."
 	(opad (mapconcat (lambda (char)
 			   (char-to-string (logxor 92 char)))
 			 password "")))
-    (base64-encode-string (funcall canlock-sha1-function
-				   (concat
-				    opad
-				    (funcall canlock-sha1-function
-					     (concat ipad message-id)))))))
+    (base64-encode-string
+     (funcall canlock-sha1-function
+	      (concat
+	       opad
+	       (funcall canlock-sha1-function
+			(concat ipad
+				(canlock-string-as-unibyte message-id))))))))
 
 (defun canlock-narrow-to-header ()
   "Narrow the buffer to the head of the message."
