@@ -1,3 +1,7 @@
+2001-12-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* canlock.el (canlock-sha1-with-openssl): Remove unused variable.
+
 2001-12-22 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-group.el (gnus-group-read-ephemeral-group): Call

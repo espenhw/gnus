@@ -1,4 +1,4 @@
-;;; canlock.el --- Functions for Cancel-Lock feature
+;;; canlock.el --- functions for Cancel-Lock feature
 ;; Copyright (C) 1998, 1999, 2001 Free Software Foundation, Inc.
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
@@ -102,8 +102,7 @@ buffer does not look like a news message."
       (let ((coding-system-for-read 'binary)
 	    (coding-system-for-write 'binary)
 	    selective-display
-	    (case-fold-search t)
-	    (str ""))
+	    (case-fold-search t))
 	(insert message)
 	(apply 'call-process-region (point-min) (point-max)
 	       canlock-openssl-program t t nil canlock-openssl-args)
