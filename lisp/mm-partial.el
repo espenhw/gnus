@@ -55,7 +55,11 @@
     phandles))
 
 ;;;###autoload
-(defun mm-inline-partial (handle)
+(defun mm-inline-partial (handle &optional no-display)
+  "Show the partial part of HANDLE.
+This function replaces the buffer of HANDLE with a buffer contains 
+the entire message.
+If NO-DISPLAY is nil, display it. Otherwise, do nothing after replacing."
   (let ((id (cdr (assq 'id (cdr (mm-handle-type handle))))) 
 	phandles
 	(b (point)) (n 1) total
@@ -103,6 +107,11 @@
 	      (error "Missing part %d" n))
 	    (mm-insert-part phandle)
 	    (goto-char (point-max))
+	    (when (not (eq 0 (skip-chars-backward "\r\n")))
+	      ;; remove tail blank spaces except one
+	      (if (looking-at "\r?\n")
+		  (goto-char (match-end 0)))
+	      (delete-region (point) (point-max)))
 	    (setq n (+ n 1))))
 	(unless total
 	  (error "Don't known the total number of"))
@@ -111,33 +120,34 @@
 	(kill-buffer (mm-handle-buffer handle))
 	(setcar handle (current-buffer))
 	(mm-handle-set-cache handle t)))
-    (save-excursion
-      (save-restriction
-	(narrow-to-region b b)
-	(mm-insert-part handle)
-	(let (gnus-article-mime-handles)
-	  (run-hooks 'gnus-article-decode-hook)
-	  (gnus-article-prepare-display)
-	  (setq handles gnus-article-mime-handles))
-	(when handles
-	  ;; It is in article buffer.
-	  (setq gnus-article-mime-handles
-		(nconc (if (listp (car gnus-article-mime-handles))
+    (unless no-display
+      (save-excursion
+	(save-restriction
+	  (narrow-to-region b b)
+	  (mm-insert-part handle)
+	  (let (gnus-article-mime-handles)
+	    (run-hooks 'gnus-article-decode-hook)
+	    (gnus-article-prepare-display)
+	    (setq handles gnus-article-mime-handles))
+	  (when handles
+	    ;; It is in article buffer.
+	    (setq gnus-article-mime-handles
+		  (nconc (if (listp (car gnus-article-mime-handles))
 			   gnus-article-mime-handles
-			 (list gnus-article-mime-handles))
-		       (if (listp (car handles)) 
-			   handles (list handles)))))
-	(mm-handle-set-undisplayer
-	 handle
-	 `(lambda ()
-	    (let (buffer-read-only)
-	      (condition-case nil
-		  ;; This is only valid on XEmacs.
-		  (mapcar (lambda (prop)
+			   (list gnus-article-mime-handles))
+			 (if (listp (car handles)) 
+			     handles (list handles)))))
+	  (mm-handle-set-undisplayer
+	   handle
+	   `(lambda ()
+	      (let (buffer-read-only)
+		(condition-case nil
+		    ;; This is only valid on XEmacs.
+		    (mapcar (lambda (prop)
 			    (remove-specifier
 			     (face-property 'default prop) (current-buffer)))
-			  '(background background-pixmap foreground))
-		(error nil))
-	      (delete-region ,(point-min-marker) ,(point-max-marker)))))))))
+			    '(background background-pixmap foreground))
+		  (error nil))
+		(delete-region ,(point-min-marker) ,(point-max-marker))))))))))
 
 ;; mm-partial.el ends here

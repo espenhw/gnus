@@ -168,12 +168,9 @@ If no encoding was done, nil is returned."
 	     ;; have been added by mailing list software.
 	     (save-excursion
 	       (goto-char (point-min))
-	       (if (re-search-forward "^[\t ]*$" nil t)
-		   (delete-region (point) (point-max))
-		 (goto-char (point-max)))
-	       (skip-chars-backward "\n\t ")
-	       (delete-region (point) (point-max))
-	       (point))))
+	       (while (re-search-forward "^[\t ]*\r?\n" nil t)
+		 (delete-region (match-beginning 0) (match-end 0)))
+	       (point-max))))
 	   ((memq encoding '(7bit 8bit binary))
 	    ;; Do nothing.
 	    )

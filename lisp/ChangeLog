@@ -1,3 +1,13 @@
+2000-04-27 15:27:54  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-send-mail-partially-limit): New variable.
+	(message-send-mail-partially): New function.
+	(message-send-mail): Use it.
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Remove 
+	all blank lines inside of base64.
+	* mm-partial.el (mm-inline-partial): Add an option. Remove tail
+	blank lines.
+
 2000-04-27 10:03:36  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml.el (mml-insert-tag): Match more special characters.

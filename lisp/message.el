@@ -889,6 +889,14 @@ The cdr of ech entry is a function for applying the face to a region.")
   mm-auto-save-coding-system
   "Coding system to compose mail.")
 
+(defcustom message-send-mail-partially-limit nil
+  "The limitation of messages sent as message/partial.
+The lower bound of message size in characters, beyond which the message 
+should be sent in several parts. *Nil means unlimited."
+  :group 'message-buffers
+  :type '(choice (const :tag "unlimited" nil)
+		 (integer 50000)))
+
 ;;; Internal variables.
 
 (defvar message-buffer-list nil)
@@ -2146,6 +2154,70 @@ It should typically alter the sending method in some way or other."
 	(eval (car actions)))))
     (pop actions)))
 
+(defun message-send-mail-partially ()
+  "Sendmail as message/partial."
+  (let ((p (goto-char (point-min)))
+	(tembuf (message-generate-new-buffer-clone-locals " message temp"))
+	(curbuf (current-buffer))
+	(id (message-make-message-id)) (n 1)
+	plist total  header required-mail-headers)
+    (while (not (eobp))
+      (if (< (point-max) (+ p message-send-mail-partially-limit))
+	  (goto-char (point-max))
+	(goto-char (+ p message-send-mail-partially-limit))
+	(beginning-of-line)
+	(if (<= (point) p) (end-of-line))) ;; In case of bad message.
+      (push p plist)
+      (setq p (point)))
+    (setq total (length plist))
+    (push (point-max) plist)
+    (setq plist (nreverse plist))
+    (unwind-protect
+	(save-excursion
+	  (setq p (pop plist))
+	  (while plist
+	    (set-buffer curbuf)
+	    (copy-to-buffer tembuf p (car plist))
+	    (set-buffer tembuf)
+	    (goto-char (point-min))
+	    (if header
+		(progn
+		  (goto-char (point-min))
+		  (narrow-to-region (point) (point))
+		  (insert header))
+	      (message-goto-eoh)
+	      (setq header (buffer-substring (point-min) (point)))
+	      (goto-char (point-min))
+	      (narrow-to-region (point) (point))
+	      (insert header)
+	      (message-remove-header "Mime-Version")
+	      (message-remove-header "Content-Type")
+	      (message-remove-header "Message-ID")
+	      (message-remove-header "Lines")
+	      (goto-char (point-max))
+	      (insert "Mime-Version: 1.0\n")
+	      (setq header (buffer-substring (point-min) (point-max))))
+	    (goto-char (point-max))
+	    (insert (format "Content-Type: message/partial; id=\"%s\"; number=%d; total=%d\n"
+			    id n total))
+	    (let ((mail-header-separator ""))
+	      (when (memq 'Message-ID message-required-mail-headers)
+		(insert "Message-ID: " (message-make-message-id) "\n"))
+	      (when (memq 'Lines message-required-mail-headers)
+		(let ((mail-header-separator ""))
+		  (insert "Lines: " (message-make-lines) "\n")))
+	      (message-goto-subject)
+	      (end-of-line)
+	      (insert (format " (%d/%d)" n total))
+	      (goto-char (point-max))
+	      (insert "\n")
+	      (widen)
+	      (funcall message-send-mail-function))
+	    (setq n (+ n 1))
+	    (setq p (pop plist))
+	    (erase-buffer)))
+      (kill-buffer tembuf))))
+
 (defun message-send-mail (&optional arg)
   (require 'mail-utils)
   (let* ((tembuf (message-generate-new-buffer-clone-locals " message temp"))
@@ -2192,7 +2264,11 @@ It should typically alter the sending method in some way or other."
 		     (or (message-fetch-field "cc")
 			 (message-fetch-field "to")))
 	    (message-insert-courtesy-copy))
-	  (funcall message-send-mail-function))
+	  (if (or (not message-send-mail-partially-limit)
+		  (< (point-max) message-send-mail-partially-limit)
+		  (not (y-or-n-p "The message size is too large, should it be sent partially?")))
+	      (funcall message-send-mail-function)
+	    (message-send-mail-partially)))
       (kill-buffer tembuf))
     (set-buffer mailbuf)
     (push 'mail message-sent-message-via)))
