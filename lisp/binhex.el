@@ -29,7 +29,7 @@
 (eval-when-compile (require 'cl))
 
 (if (not (fboundp 'char-int))
-    (fset 'char-int 'identity))
+    (defalias 'char-int 'identity))
 
 (defvar binhex-decoder-program "hexbin"
   "*Non-nil value should be a string that names a uu decoder.
@@ -198,15 +198,8 @@ If HEADER-ONLY is non-nil only decode header and return filename."
 	(save-excursion
 	  (goto-char start)
 	  (when (re-search-forward binhex-begin-line end t)
-	    (if (and (not (featurep 'xemacs))
-		     (boundp 'enable-multibyte-characters))
-		(let ((multibyte
-		       (default-value 'enable-multibyte-characters)))
-		  (setq-default enable-multibyte-characters nil)
-		  (setq work-buffer (generate-new-buffer " *binhex-work*"))
-		  (setq-default enable-multibyte-characters multibyte))
+	    (let (default-enable-multibyte-characters)
 	      (setq work-buffer (generate-new-buffer " *binhex-work*")))
-	    (buffer-disable-undo work-buffer)
 	    (beginning-of-line)
 	    (setq bits 0 counter 0)
 	    (while tmp
