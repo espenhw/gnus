@@ -1,3 +1,7 @@
+2000-11-22  dme@dme.org
+
+	* imap.el (imap-wait-for-tag): Message read info.
+
 2000-11-21 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml2015.el (mml2015-mailcrypt-encrypt): Ensure the part is encrypted.
