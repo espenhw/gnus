@@ -345,7 +345,7 @@ It uses the same syntax as the `gnus-split-methods' variable."
 			 (cons :value ("" "") regexp (repeat string))
 			 (sexp :value nil))))
 
-(defcustom gnus-unread-mark ?		;Whitespace
+(defcustom gnus-unread-mark ?  ;Whitespace
   "*Mark used for unread articles."
   :group 'gnus-summary-marks
   :type 'character)
@@ -460,7 +460,7 @@ It uses the same syntax as the `gnus-split-methods' variable."
   :group 'gnus-summary-marks
   :type 'character)
 
-(defcustom gnus-empty-thread-mark ?	;Whitespace
+(defcustom gnus-empty-thread-mark ?  ;Whitespace
   "*There is no thread under the article."
   :group 'gnus-summary-marks
   :type 'character)
@@ -2599,7 +2599,7 @@ marks of articles."
 	  (if (or (null gnus-summary-default-score)
 		  (<= (abs (- gnus-tmp-score gnus-summary-default-score))
 		      gnus-summary-zcore-fuzz))
-	      ?				;Whitespace
+	      ?  ;Whitespace
 	    (if (< gnus-tmp-score gnus-summary-default-score)
 		gnus-score-below-mark gnus-score-over-mark)))
 	 (gnus-tmp-replied
@@ -2664,7 +2664,7 @@ marks of articles."
 	 (if (or (null gnus-summary-default-score)
 		 (<= (abs (- score gnus-summary-default-score))
 		     gnus-summary-zcore-fuzz))
-	     ?				;Whitespace
+	     ?  ;Whitespace
 	   (if (< score gnus-summary-default-score)
 	       gnus-score-below-mark gnus-score-over-mark))
 	 'score))
@@ -3626,7 +3626,7 @@ If LINE, insert the rebuilt thread starting on line LINE."
   ;; using some other form will lead to serious barfage.
   (or (symbolp thread) (signal 'wrong-type-argument '(symbolp thread)))
   ;; (8% speedup to gnus-summary-prepare, just for fun :-)
-  (list 'byte-code "\10\211:\203\17\0\211@ ;\203\16\0A@@\207" ;
+  (list 'byte-code "\10\211:\203\17\0\211@;\203\16\0A@@\207" 
 	(vector thread) 2))
 
 (defsubst gnus-article-sort-by-number (h1 h2)
@@ -3953,7 +3953,7 @@ or a straight list of headers."
 	     (if (or (null gnus-summary-default-score)
 		     (<= (abs (- gnus-tmp-score gnus-summary-default-score))
 			 gnus-summary-zcore-fuzz))
-		 ?			;Whitespace
+		 ?  ;Whitespace
 	       (if (< gnus-tmp-score gnus-summary-default-score)
 		   gnus-score-below-mark gnus-score-over-mark))
 	     gnus-tmp-replied

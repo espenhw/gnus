@@ -1,5 +1,13 @@
 1999-12-04 01:34:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-thread-header): Fixed after indent.
+	Whitespace problems.
+
+	* gnus-win.el (gnus-configure-windows): Error fix.
+
+	* gnus-demon.el (gnus-demon-add-nntp-close-connection): Add the
+	right function.
+
 	* gnus.el: Fixed all the doc strings to match the FSF convetions.
 	Indent all functions.  Fix all comments to match the comment
 	conventions.  Double-space after full stop.

@@ -421,7 +421,7 @@ See the Gnus manual for an explanation of the syntax used.")
       (setq gnus-frame-split-p nil)
 
       (unless split
-	(error "No such setting: %s" setting))
+	(error "No such setting in `gnus-buffer-configuration': %s" setting))
 
       (if (and (setq all-visible (gnus-all-windows-visible-p split))
 	       (not force))

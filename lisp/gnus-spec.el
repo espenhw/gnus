@@ -546,7 +546,6 @@ If PROPS, insert the result."
 	(symbol-value (intern (format "gnus-%s-line-format-alist" type)))
 	insertable)))
 
-
 (provide 'gnus-spec)
 
 ;;; gnus-spec.el ends here

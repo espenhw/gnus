@@ -27,7 +27,8 @@
 
 (eval-when-compile (require 'cl))
 (eval-and-compile
-  (autoload 'pop3-movemail "pop3"))
+  (autoload 'pop3-movemail "pop3")
+  (autoload 'pop3-get-message-count "pop3"))
 (require 'format-spec)
 
 (defgroup mail-source nil

@@ -1028,7 +1028,7 @@ EXTRA is the possible non-standard header."
     (let ((buffer-read-only nil))
       ;; Set score.
       (gnus-summary-update-mark
-       (if (= n (or gnus-summary-default-score 0)) ? ;Whitespace
+       (if (= n (or gnus-summary-default-score 0)) ?  ;Whitespace
 	 (if (< n (or gnus-summary-default-score 0))
 	     gnus-score-below-mark gnus-score-over-mark))
        'score))

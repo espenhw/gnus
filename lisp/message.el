@@ -2032,10 +2032,12 @@ The text will also be indented the normal way."
 
 (defun message-send (&optional arg)
   "Send the message in the current buffer.
-If `message-interactive' is non-nil, wait for success indication
-or error messages, and inform user.
-Otherwise any failure is reported in a message back to
-the user from the mailer."
+If `message-interactive' is non-nil, wait for success indication or
+error messages, and inform user.
+Otherwise any failure is reported in a message back to the user from
+the mailer.
+The usage of ARG is defined by the instance that called Message.
+It should typically alter the sending method in some way or other."
   (interactive "P")
   ;; Make it possible to undo the coming changes.
   (undo-boundary)
