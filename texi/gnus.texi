@@ -595,7 +595,6 @@ The Article Buffer
 Composing Messages
 
 * Mail::                 Mailing and replying.
-* Post::                 Posting and following up.
 * Posting Server::       What server should you post via?
 * Mail and Post::        Mailing and posting at the same time.
 * Archived Messages::    Where Gnus stores the messages you've sent.
@@ -9589,7 +9588,6 @@ on your setup (@pxref{Posting Server}).
 
 @menu
 * Mail::                 Mailing and replying.
-* Post::                 Posting and following up.
 * Posting Server::       What server should you post via?
 * Mail and Post::        Mailing and posting at the same time.
 * Archived Messages::    Where Gnus stores the messages you've sent.
@@ -9624,31 +9622,6 @@ that have none when you do a @kbd{a}.
 The limitation of messages sent as message/partial.
 The lower bound of message size in characters, beyond which the message 
 should be sent in several parts. If it is nil, the size is unlimited.
-
-@end table
-
-
-@node Post
-@section Post
-
-Variables for composing news articles:
-
-@table @code
-@item gnus-sent-message-ids-file
-@vindex gnus-sent-message-ids-file
-Gnus will keep a @code{Message-ID} history file of all the mails it has
-sent.  If it discovers that it has already sent a mail, it will ask the
-user whether to re-send the mail.  (This is primarily useful when
-dealing with @sc{soup} packets and the like where one is apt to send the
-same packet multiple times.)  This variable says what the name of this
-history file is.  It is @file{~/News/Sent-Message-IDs} by default.  Set
-this variable to @code{nil} if you don't want Gnus to keep a history
-file.
-
-@item gnus-sent-message-ids-length
-@vindex gnus-sent-message-ids-length
-This variable says how many @code{Message-ID}s to keep in the history
-file.  It is 1000 by default.
 
 @end table
 

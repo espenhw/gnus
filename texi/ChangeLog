@@ -1,3 +1,7 @@
+2001-01-01 11:40:34  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (extensions): Removed.
+
 2000-12-31 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* texi2latex.el (latexi-translate-file): Understand uref.
