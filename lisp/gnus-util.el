@@ -455,12 +455,13 @@ jabbering all the time."
   :group 'gnus-start
   :type 'integer)
 
-;; Show message if message has a lower level than `gnus-verbose'.
-;; Guideline for numbers:
-;; 1 - error messages, 3 - non-serious error messages, 5 - messages
-;; for things that take a long time, 7 - not very important messages
-;; on stuff, 9 - messages inside loops.
 (defun gnus-message (level &rest args)
+  "If LEVEL is lower than `gnus-verbose' print ARGS using `message'.
+
+Guideline for numbers:
+1 - error messages, 3 - non-serious error messages, 5 - messages for things
+that take a long time, 7 - not very important messages on stuff, 9 - messages
+inside loops."
   (if (<= level gnus-verbose)
       (apply 'message args)
     ;; We have to do this format thingy here even if the result isn't
