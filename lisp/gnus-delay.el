@@ -107,17 +107,20 @@ DELAY is a string, giving the length of the time.  Possible values are:
       (while (setq article (pop articles))
 	(gnus-request-head article group)
 	(set-buffer nntp-server-buffer)
-	(unless (re-search-forward
-		 (concat "^" (regexp-quote gnus-delay-header) ":\\s-+"))
-	  (error "Couldn't find delay for article %d" article))
-	(setq deadline (nnheader-header-value))
-	(setq deadline (apply 'encode-time (parse-time-string deadline)))
-	(setq deadline (time-since deadline))
-	(when (and (>= (nth 0 deadline) 0)
-		   (>= (nth 1 deadline) 0))
-	  (message "Sending article %d" article)
-	  (gnus-draft-send article group)
-	  (message "Sending article %d...done" article))))))
+	(goto-char (point-min))
+	(if (re-search-forward
+	     (concat "^" (regexp-quote gnus-delay-header) ":\\s-+")
+	     nil t)
+	    (progn
+	      (setq deadline (nnheader-header-value))
+	      (setq deadline (apply 'encode-time (parse-time-string deadline)))
+	      (setq deadline (time-since deadline))
+	      (when (and (>= (nth 0 deadline) 0)
+			 (>= (nth 1 deadline) 0))
+		(message "Sending article %d" article)
+		(gnus-draft-send article group)
+		(message "Sending article %d...done" article)))
+	  (message "Delay header missing for article %d" article))))))
 
 ;;;###autoload
 (defun gnus-delay-initialize (&optional no-keymap no-check)
