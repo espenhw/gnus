@@ -1,3 +1,18 @@
+2003-02-24  Ted Zlatanov <tzz@lifelogs.com>
+	From Michael Shields  <shields@msrl.com>
+
+	* gnus-group.el (gnus-group-is-exiting-without-update-p): New.
+	* gnus-sum.el (gnus-summary-exit-no-update): Use it.
+	* gnus-sum.el (gnus-summary-expire-articles): Use it.
+	* spam.el (spam-summary-prepare-exit): Use it.
+	* gnus.el (gnus-install-group-spam-parameters): New.
+	* spam.el (spam-group-ham-processor-copy-p): New.
+	* spam.el (spam-summary-prepare-exit): Support for ham copying.
+	* spam.el (spam-mark-spam-as-expired-and-move-routine): Fix bug
+	that would cause the current message to be moved if the group had
+	no spam.
+	* spam.el (spam-ham-move-routine): New `copy' argument.
+
 2003-02-24  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 	From Martin Thornquist <martint@ifi.uio.no>
 

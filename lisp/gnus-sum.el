@@ -6467,14 +6467,13 @@ If FORCE (the prefix), also save the .newsrc file(s)."
   (interactive)
   (let* ((group gnus-newsgroup-name)
 	 (gnus-group-is-exiting-p t)
+	 (gnus-group-is-exiting-without-update-p t)
 	 (quit-config (gnus-group-quit-config group)))
     (when (or no-questions
 	      gnus-expert-user
 	      (gnus-y-or-n-p "Discard changes to this group and exit? "))
       (gnus-async-halt-prefetch)
-      (mapcar 'funcall
-	      (delq 'gnus-summary-expire-articles
-		    (copy-sequence gnus-summary-prepare-exit-hook)))
+      (run-hooks 'gnus-summary-prepare-exit-hook)
       (when (gnus-buffer-live-p gnus-article-buffer)
 	(save-excursion
 	  (set-buffer gnus-article-buffer)
@@ -9062,8 +9061,9 @@ This will be the case if the article has both been mailed and posted."
 (defun gnus-summary-expire-articles (&optional now)
   "Expire all articles that are marked as expirable in the current group."
   (interactive)
-  (when (gnus-check-backend-function
-	 'request-expire-articles gnus-newsgroup-name)
+  (when (and (not gnus-group-is-exiting-without-update-p)
+	     (gnus-check-backend-function
+	      'request-expire-articles gnus-newsgroup-name))
     ;; This backend supports expiry.
     (let* ((total (gnus-group-total-expirable-p gnus-newsgroup-name))
 	   (expirable (if total

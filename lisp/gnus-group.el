@@ -445,6 +445,7 @@ simple manner.")
 ;;; Internal variables
 
 (defvar gnus-group-is-exiting-p nil)
+(defvar gnus-group-is-exiting-without-update-p nil)
 (defvar gnus-group-sort-alist-function 'gnus-group-sort-flat
   "Function for sorting the group buffer.")
 
