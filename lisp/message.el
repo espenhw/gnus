@@ -424,6 +424,32 @@ always use the value."
 		 (const use)
 		 (const ask)))
 
+(defcustom message-subscribed-address-functions nil
+  "*Specifies functions for determining list subscription.
+If nil, do not attempt to determine list subscribtion with functions.
+If non-nil, this variable contains a list of functions which return
+regular expressions to match lists.  These functions can be used in
+conjunction with `message-subscribed-regexps' and
+`message-subscribed-addresses'."
+  :group 'message-interface
+  :type '(repeat sexp))
+
+(defcustom message-subscribed-addresses nil
+  "*Specifies a list of addresses the user is subscribed to.
+If nil, do not use any predefined list subscriptions.  This list of
+addresses can be used in conjuction with
+`message-subscribed-address-functions' and `message-subscribed-regexps'."
+  :group 'message-interface
+  :type '(repeat string))
+
+(defcustom message-subscribed-regexps nil
+  "*Specifies a list of addresses the user is subscribed to.
+If nil, do not use any predefined list subscriptions.  This list of
+regular expressions can be used in conjuction with
+`message-subscribed-address-functions' and `message-subscribed-addresses'."
+  :group 'message-interface
+  :type '(repeat regexp))
+
 (defcustom message-sendmail-f-is-evil nil
   "*Non-nil means don't add \"-f username\" to the sendmail command line.
 Doing so would be even more evil than leaving it out."
@@ -1468,6 +1494,7 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-f\C-n" 'message-goto-newsgroups)
   (define-key message-mode-map "\C-c\C-f\C-d" 'message-goto-distribution)
   (define-key message-mode-map "\C-c\C-f\C-f" 'message-goto-followup-to)
+  (define-key message-mode-map "\C-c\C-f\C-m" 'message-goto-mail-followup-to)
   (define-key message-mode-map "\C-c\C-f\C-k" 'message-goto-keywords)
   (define-key message-mode-map "\C-c\C-f\C-u" 'message-goto-summary)
   (define-key message-mode-map "\C-c\C-b" 'message-goto-body)
@@ -1547,6 +1574,7 @@ Point is left at the beginning of the narrowed-to region."
     ["Keywords" message-goto-keywords t]
     ["Newsgroups" message-goto-newsgroups t]
     ["Followup-To" message-goto-followup-to t]
+    ["Mail-Followup-To" message-goto-mail-followup-to t]
     ["Distribution" message-goto-distribution t]
     ["Body" message-goto-body t]
     ["Signature" message-goto-signature t]))
@@ -1570,6 +1598,7 @@ C-c C-f  move to a header field (and create it if there isn't):
 	 C-c C-f C-u  move to Summary	C-c C-f C-n  move to Newsgroups
 	 C-c C-f C-k  move to Keywords	C-c C-f C-d  move to Distribution
 	 C-c C-f C-f  move to Followup-To
+	 C-c C-f C-m  move to Mail-Followup-To
 C-c C-t  `message-insert-to' (add a To header to a news followup)
 C-c C-n  `message-insert-newsgroups' (add a Newsgroup header to a news reply)
 C-c C-b  `message-goto-body' (move to beginning of message text).
@@ -1720,6 +1749,11 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
   "Move point to the Followup-To header."
   (interactive)
   (message-position-on-field "Followup-To" "Newsgroups"))
+
+(defun message-goto-mail-followup-to ()
+  "Move point to the Mail-Followup-To header."
+  (interactive)
+  (message-position-on-field "Mail-Followup-To" "From"))
 
 (defun message-goto-keywords ()
   "Move point to the Keywords header."
@@ -2527,6 +2561,16 @@ It should typically alter the sending method in some way or other."
       (let ((message-deletable-headers
 	     (if news nil message-deletable-headers)))
 	(message-generate-headers message-required-mail-headers))
+      ;; Generate the Mail-Followup-To header if the header is not there...
+      (if (and (or message-subscribed-regexps
+		   message-subscribed-addresses
+		   message-subscribed-address-functions)
+	       (not (mail-fetch-field "mail-followup-to")))
+	  (message-generate-headers
+	   `(("Mail-Followup-To" . ,(message-make-mft))))
+	;; otherwise, delete the MFT header if the field is empty
+	(when (equal "" (mail-fetch-field "mail-followup-to"))
+	  (message-remove-header "Mail-Followup-To")))
       ;; Let the user do all of the above.
       (run-hooks 'message-header-hook))
     (unwind-protect
@@ -3536,6 +3580,29 @@ give as trustworthy answer as possible."
   "Return the domain name."
   (or mail-host-address
       (message-make-fqdn)))
+
+(defun message-make-mft ()
+  "Return the Mail-Followup-To header."
+  (let* ((msg-recipients (message-options-get 'message-recipients))
+	 (recipients
+	  (mapcar 'mail-strip-quoted-names
+		  (message-tokenize-header msg-recipients)))
+	 (mft-regexps (apply 'append message-subscribed-regexps
+			     (mapcar 'regexp-quote
+				     message-subscribed-addresses)
+			     (mapcar 'funcall
+				     message-subscribed-address-functions))))
+    (save-match-data
+      (when (eval (apply 'append '(or)
+			 (mapcar
+			  (function (lambda (regexp)
+				      (mapcar
+				       (function (lambda (recipient)
+						   `(string-match ,regexp
+								  ,recipient)))
+				       recipients)))
+			  mft-regexps)))
+	msg-recipients))))
 
 (defun message-generate-headers (headers)
   "Prepare article HEADERS.

@@ -2313,6 +2313,21 @@ This restriction may disappear in later versions of Gnus."
 ;;; Gnus Utility Functions
 ;;;
 
+(defun gnus-find-subscribed-addresses ()
+  "Return a regexp matching the addresses of all subscribed mail groups.
+It consists of the `to-address' or `to-list' parameter of all groups
+with a nil `not-subscribed' parameter."
+  (let ((addresses))
+    (mapc (lambda (entry)
+	    (let ((group (car entry)))
+	      (when (gnus-group-find-parameter group 'subscribed)
+		(let ((address (or
+				(gnus-group-fast-parameter group 'to-address)
+				(gnus-group-fast-parameter group 'to-list))))
+		  (when address
+		    (setq addresses (cons address addresses)))))))
+	  (cdr gnus-newsrc-alist))
+    (list (mapconcat 'regexp-quote addresses "\\|"))))
 
 (defmacro gnus-string-or (&rest strings)
   "Return the first element of STRINGS that is a non-blank string.

@@ -1,3 +1,15 @@
+2001-10-31 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+        From: Josh Huber <huber@alum.wpi.edu>
+
+	* message.el (message-subscribed-address-functions): New.
+	(message-subscribed-addresses): New.
+	(message-subscribed-regexps): New.
+	(message-goto-mail-followup-to): New.
+	(message-send-mail): Mail-Followup-To.
+	(message-make-mft): New.
+
+	* gnus.el (gnus-find-subscribed-addresses): New.
+
 2001-10-31 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mail-source.el (mail-source-fetch): If debug, don't regain signals.
