@@ -69,8 +69,8 @@
 		       (or (nth 1 rule)
 			   gnus-score-interactive-default-score)))
 	  (push (cons (mail-header-number gnus-advanced-headers)
-		       (or (nth 1 rule)
-			   gnus-score-interactive-default-score))
+		      (or (nth 1 rule)
+			  gnus-score-interactive-default-score))
 		gnus-newsgroup-scored)
 	  (when trace
 	    (push (cons "A file" rule)

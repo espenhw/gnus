@@ -482,7 +482,7 @@ See also the documentation for `gnus-article-highlight-citation'."
     ;; We got all the potential prefixes.  Now create
     ;; `gnus-cite-prefix-alist' containing the oldest prefix for each
     ;; line that appears at least gnus-cite-minimum-match-count
-    ;; times. First sort them by length.  Longer is older.
+    ;; times.  First sort them by length.  Longer is older.
     (setq alist (sort alist (lambda (a b)
 			      (> (length (car a)) (length (car b))))))
     (while alist
@@ -684,7 +684,7 @@ See also the documentation for `gnus-article-highlight-citation'."
     (let ((inhibit-point-motion-hooks t)
 	  from to)
       (goto-line number)
-      (unless (eobp) ;; Sometimes things become confused.
+      (unless (eobp);; Sometimes things become confused.
 	(forward-char (length prefix))
 	(skip-chars-forward " \t")
 	(setq from (point))
@@ -712,8 +712,8 @@ See also the documentation for `gnus-article-highlight-citation'."
 	      (t
 	       (gnus-add-text-properties 
 		(point) (progn (forward-line 1) (point))
-		 (nconc (list 'article-type 'cite)
-			gnus-hidden-properties))))))))
+		(nconc (list 'article-type 'cite)
+		       gnus-hidden-properties))))))))
 
 (defun gnus-cite-find-prefix (line)
   ;; Return citation prefix for LINE.

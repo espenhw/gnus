@@ -25,7 +25,7 @@
 ;;; Commentary:
 
 ;; The other access methods (nntp, nnspool, etc) are general news
-;; access methods. This module relies on Gnus and can not be used
+;; access methods.  This module relies on Gnus and can not be used
 ;; separately.
 
 ;;; Code:

@@ -87,7 +87,7 @@ isn't bound, the message will be used unconditionally.")
     ;; arrived.  
     (while (setq group (pop groups))
       (if (not (setq gactive (gnus-activate-group group)))
-	  () ; This group doesn't exist.
+	  ()				; This group doesn't exist.
 	(setq active (nth 1 (assoc group gnus-nocem-active)))
 	(when (and (not (< (cdr gactive) (car gactive))) ; Empty group.
 		   (or (not active)

@@ -100,12 +100,12 @@ well-known.  For this reason, Gnus provides a general function which
 does this easily for non-Lisp programmers.
 
   The `gnus-kill' function executes commands available in Summary Mode
-by their key sequences. `gnus-kill' should be called with FIELD,
+by their key sequences.  `gnus-kill' should be called with FIELD,
 REGEXP and optional COMMAND and ALL.  FIELD is a string representing
 the header field or an empty string.  If FIELD is an empty string, the
 entire article body is searched for.  REGEXP is a string which is
-compared with FIELD value. COMMAND is a string representing a valid
-key sequence in Summary mode or Lisp expression. COMMAND defaults to
+compared with FIELD value.  COMMAND is a string representing a valid
+key sequence in Summary mode or Lisp expression.  COMMAND defaults to
 '(gnus-summary-mark-as-read nil \"X\").  Make sure that COMMAND is
 executed in the Summary buffer.  If the second optional argument ALL
 is non-nil, the COMMAND is applied to articles which are already
@@ -343,7 +343,7 @@ If NEWSGROUP is nil, return the global kill file instead."
          ;; Ignores global KILL.
          (if (file-exists-p (gnus-newsgroup-kill-file gnus-newsgroup-name))
              (gnus-message 3 "Note: Ignoring %s.KILL; preferring .SCORE"
-			     gnus-newsgroup-name))
+			   gnus-newsgroup-name))
          0)
         ((or (file-exists-p (gnus-newsgroup-kill-file nil))
              (file-exists-p (gnus-newsgroup-kill-file gnus-newsgroup-name)))
@@ -362,7 +362,7 @@ Returns the number of articles marked as read."
     (setq gnus-newsgroup-kill-headers nil)
     ;; If there are any previously scored articles, we remove these
     ;; from the `gnus-newsgroup-headers' list that the score functions
-    ;; will see. This is probably pretty wasteful when it comes to
+    ;; will see.  This is probably pretty wasteful when it comes to
     ;; conses, but is, I think, faster than having to assq in every
     ;; single score function.
     (let ((files kill-files))
@@ -500,7 +500,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
     (save-excursion
       (save-window-excursion
 	;; Selected window must be summary buffer to execute keyboard
-	;; macros correctly. See command_loop_1.
+	;; macros correctly.  See command_loop_1.
 	(switch-to-buffer gnus-summary-buffer 'norecord)
 	(goto-char (point-min))		;From the beginning.
 	(let ((kill-list regexp)
@@ -532,7 +532,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 				(if prev
 				    (setcdr prev (cdr kill-list))
 				  (setq regexp (cdr regexp))))
-			  ;; Successful kill. Set the date to today.
+			  ;; Successful kill.  Set the date to today.
 			  (setcdr kill date)))
 		    ;; It's a permanent kill.
 		    (gnus-execute field kill command nil (not all)))
@@ -593,7 +593,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 		     (or (stringp value)
 			 (setq value (gnus-prin1-to-string value)))
 		     (setq did-kill (string-match regexp value)))
-		   (cond ((stringp form)	;Keyboard macro.
+		   (cond ((stringp form) ;Keyboard macro.
 			  (execute-kbd-macro form))
 			 ((gnus-functionp form)
 			  (funcall form))

@@ -1,3 +1,18 @@
+Sun Sep  8 12:24:11 1996  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* nntp.el (nntp-accept-process-output): Don't message so
+	obsessively. 
+
+	* gnus.el: Fixed indentation and stuff.
+
+Sun Sep  8 12:23:56 1996  Sudish Joseph  <sudish@mindspring.com>
+
+	* nnweb.el (nnweb-fetch-form): Return t.
+
+Sat Sep  7 15:15:42 1996  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.28 is released.
+
 Sat Sep  7 14:33:17 1996  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
 
 	* nntp.el (nntp-after-change-function-callback): Renamed.

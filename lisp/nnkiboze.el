@@ -89,8 +89,8 @@
 (deffoo nnkiboze-request-article (article &optional newsgroup server buffer)
   (nnkiboze-possibly-change-group newsgroup)
   (if (not (numberp article))
-      ;; This is a real kludge. It might not work at times, but it
-      ;; does no harm I think. The only alternative is to offer no
+      ;; This is a real kludge.  It might not work at times, but it
+      ;; does no harm I think.  The only alternative is to offer no
       ;; article fetching by message-id at all.
       (nntp-request-article article newsgroup gnus-nntp-server buffer)
     (let* ((header (gnus-summary-article-header article))
@@ -271,7 +271,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 		      (progn
 			(gnus-group-select-group nil)
 			(eq major-mode 'gnus-summary-mode))))
-	    () ; No unread articles, or we couldn't enter this group.
+	    ()				; No unread articles, or we couldn't enter this group.
 	  ;; We are now in the group where we want to be.
 	  (setq method (gnus-find-method-for-group gnus-newsgroup-name))
 	  (and (eq method gnus-select-method) (setq method nil))

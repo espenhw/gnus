@@ -53,7 +53,7 @@
 (defvar message-fcc-handler-function 'rmail-output
   "*A function called to save outgoing articles.
 This function will be called with the name of the file to store the
-article in. The default function is `rmail-output' which saves in Unix
+article in.  The default function is `rmail-output' which saves in Unix
 mailbox format.")
 
 ;;;###autoload
@@ -235,7 +235,7 @@ and respond with new To and Cc headers.")
 ;;;###autoload
 (defvar message-use-followup-to 'ask
   "*Specifies what to do with Followup-To header.
-If nil, ignore the header. If it is t, use its value, but query before
+If nil, ignore the header.  If it is t, use its value, but query before
 using the \"poster\" value.  If it is the symbol `ask', query the user
 whether to ignore the \"poster\" value.  If it is the symbol `use',
 always use the value.")
@@ -378,8 +378,8 @@ these lines.")
 		     (re-search-forward "^OR\\>" nil t)))
 	       (kill-buffer buffer))))
       ;; According to RFC822, "The field-name must be composed of printable
-      ;; ASCII characters (i.e. characters that have decimal values between
-      ;; 33 and 126, except colon)", i.e. any chars except ctl chars,
+      ;; ASCII characters (i. e., characters that have decimal values between
+      ;; 33 and 126, except colon)", i. e., any chars except ctl chars,
       ;; space, or colon.
       '(looking-at "[ \t]\\|[][!\"#$%&'()*+,-./0-9;<=>?@A-Z\\\\^_`a-z{|}~]+:"))
   "Set this non-nil if the system's mailer runs the header and body together.
@@ -1088,7 +1088,7 @@ name, rather than giving an automatic name."
 		     name-default))
 	     (default-directory
 	       (file-name-as-directory message-autosave-directory)))
-	  (rename-buffer name t)))))
+	(rename-buffer name t)))))
 
 (defun message-fill-yanked-message (&optional justifyp)
   "Fill the paragraphs of a message yanked into this one.
@@ -1217,21 +1217,21 @@ The text will also be indented the normal way."
   (save-excursion
     (let ((start (point))
 	  mark)
-    (if (not (re-search-forward message-signature-separator (mark t) t))
-	;; No signature here, so we just indent the cited text.
+      (if (not (re-search-forward message-signature-separator (mark t) t))
+	  ;; No signature here, so we just indent the cited text.
+	  (message-indent-citation)
+	;; Find the last non-empty line.
+	(forward-line -1)
+	(while (looking-at "[ \t]*$")
+	  (forward-line -1))
+	(forward-line 1)
+	(setq mark (set-marker (make-marker) (point)))
+	(goto-char start)
 	(message-indent-citation)
-      ;; Find the last non-empty line.
-      (forward-line -1)
-      (while (looking-at "[ \t]*$")
-	(forward-line -1))
-      (forward-line 1)
-      (setq mark (set-marker (make-marker) (point)))
-      (goto-char start)
-      (message-indent-citation)
-      ;; Enable undoing the deletion.
-      (undo-boundary)
-      (delete-region mark (mark t))
-      (set-marker mark nil)))))
+	;; Enable undoing the deletion.
+	(undo-boundary)
+	(delete-region mark (mark t))
+	(set-marker mark nil)))))
 
 
 
@@ -1470,7 +1470,7 @@ to find out how to use this."
        ;; yes, it does The Right Thing w.r.t. Resent-To and it's kin.
        ;;
        ;; in general, ALL of qmail-inject's defaults are perfect for simply
-       ;; reading a formatted (i.e., at least a To: or Resent-To header)
+       ;; reading a formatted (i. e., at least a To: or Resent-To header)
        ;; message from stdin.
        ;;
        ;; qmail also has the advantage of not having being raped by
@@ -1481,7 +1481,7 @@ to find out how to use this."
        ;; all this is way cool coz it lets us keep the arguments entirely
        ;; free for -inject-arguments -- a big win for the user and for us
        ;; since we don't have to play that double-guessing game and the user
-       ;; gets full control (no gestapo'ish -f's, for instance). --sj
+       ;; gets full control (no gestapo'ish -f's, for instance).  --sj
        message-qmail-inject-args)
     ;; qmail-inject doesn't say anything on it's stdout/stderr,
     ;; we have to look at the retval instead
@@ -1541,10 +1541,10 @@ to find out how to use this."
 	    (buffer-disable-undo (current-buffer))
 	    (erase-buffer) 
 	    ;; Avoid copying text props.
-	  (insert (format 
-		   "%s" (save-excursion
-			  (set-buffer messbuf)
-			  (buffer-string))))
+	    (insert (format 
+		     "%s" (save-excursion
+			    (set-buffer messbuf)
+			    (buffer-string))))
 	    ;; Remove some headers.
 	    (save-restriction
 	      (message-narrow-to-headers)
@@ -1592,7 +1592,7 @@ to find out how to use this."
 	 (save-excursion
 	   (if (string-match "^cmsg " (message-fetch-field "subject"))
 	       (y-or-n-p
-		"The control code \"cmsg \" is in the subject. Really post? ")
+		"The control code \"cmsg \" is in the subject.  Really post? ")
 	     t)))
 	;; Check for multiple identical headers.
 	(or (message-check-element 'multiple-headers)
@@ -1610,14 +1610,14 @@ to find out how to use this."
 			(setq found nil))))
 		(if found
 		    (y-or-n-p 
-		     (format "Multiple %s headers. Really post? " found))
+		     (format "Multiple %s headers.  Really post? " found))
 		  t))))
 	;; Check for Version and Sendsys.
 	(or (message-check-element 'sendsys)
 	    (save-excursion
 	      (if (re-search-forward "^Sendsys:\\|^Version:" nil t)
 		  (y-or-n-p
-		   (format "The article contains a %s command. Really post? "
+		   (format "The article contains a %s command.  Really post? "
 			   (buffer-substring (match-beginning 0) 
 					     (1- (match-end 0)))))
 		t)))
@@ -1654,7 +1654,7 @@ to find out how to use this."
 	    (save-excursion
 	      (if (re-search-forward "^Approved:" nil t)
 		  (y-or-n-p
-		   "The article contains an Approved header. Really post? ")
+		   "The article contains an Approved header.  Really post? ")
 		t)))
 	;; Check the Message-Id header.
 	(or (message-check-element 'message-id)
@@ -1666,7 +1666,7 @@ to find out how to use this."
 			 (string-match "@[^\\.]*\\." message-id))
 		    (y-or-n-p
 		     (format 
-		      "The Message-ID looks strange: \"%s\". Really post? "
+		      "The Message-ID looks strange: \"%s\".  Really post? "
 		      message-id))))))
 	;; Check the Subject header.
 	(or 
@@ -1791,13 +1791,13 @@ to find out how to use this."
        (save-excursion
 	 (if (re-search-forward "[\000-\007\013\015-\037\200-\237]" nil t)
 	     (y-or-n-p 
-	      "The article contains control characters. Really post? ")
+	      "The article contains control characters.  Really post? ")
 	   t)))
    ;; Check excessive size.
    (or (message-check-element 'size)
        (if (> (buffer-size) 60000)
 	   (y-or-n-p
-	    (format "The article is %d octets long. Really post? "
+	    (format "The article is %d octets long.  Really post? "
 		    (buffer-size)))
 	 t))
    ;; Check whether any new text has been added.
@@ -2099,7 +2099,7 @@ to find out how to use this."
 	  (goto-char fullname-start)
 	  (while (re-search-forward 
 		  "\\(\\=\\|[^\\]\\(\\\\\\\\\\)*\\)\\\\(\\(\\([^\\]\\|\\\\\\\\\\)*\\)\\\\)"
-		    nil 1)
+		  nil 1)
 	    (replace-match "\\1(\\3)" t)
 	    (goto-char fullname-start)))
 	(insert ")")))
@@ -2185,7 +2185,7 @@ Headers already prepared in the buffer are not modified."
 	       (message-delete-line))
 	  (pop headers)))
       ;; Go through all the required headers and see if they are in the
-      ;; articles already. If they are not, or are empty, they are
+      ;; articles already.  If they are not, or are empty, they are
       ;; inserted automatically - except for Subject, Newsgroups and
       ;; Distribution. 
       (while headers
@@ -2200,7 +2200,7 @@ Headers already prepared in the buffer are not modified."
 			(concat "^" (downcase (symbol-name header)) ":") 
 			nil t))
 		  (progn
-		    ;; The header was found. We insert a space after the
+		    ;; The header was found.  We insert a space after the
 		    ;; colon, if there is none.
 		    (if (/= (following-char) ? ) (insert " ") (forward-char 1))
 		    ;; Find out whether the header is empty...
@@ -2278,19 +2278,19 @@ Headers already prepared in the buffer are not modified."
 (defun message-insert-courtesy-copy ()
   "Insert a courtesy message in mail copies of combined messages."
   (let (newsgroups)
-  (save-excursion
-    (save-restriction
-      (message-narrow-to-headers)
-      (when (setq newsgroups (message-fetch-field "newsgroups"))
-	(goto-char (point-max))
-	(insert "Posted-To: " newsgroups "\n")))
-    (forward-line 1)
-    (when message-courtesy-message
-      (cond
-       ((string-match "%s" message-courtesy-message)
-	(insert (format message-courtesy-message newsgroups)))
-       (t
-	(insert message-courtesy-message)))))))
+    (save-excursion
+      (save-restriction
+	(message-narrow-to-headers)
+	(when (setq newsgroups (message-fetch-field "newsgroups"))
+	  (goto-char (point-max))
+	  (insert "Posted-To: " newsgroups "\n")))
+      (forward-line 1)
+      (when message-courtesy-message
+	(cond
+	 ((string-match "%s" message-courtesy-message)
+	  (insert (format message-courtesy-message newsgroups)))
+	 (t
+	  (insert message-courtesy-message)))))))
     
 ;;;
 ;;; Setting up a message buffer
@@ -2602,7 +2602,7 @@ Headers already prepared in the buffer are not modified."
 				    (lambda (addr) (cdr addr)) ccalist ", "))))
 		(when (string-match "^ +" (cdr ccs))
 		  (setcdr ccs (substring (cdr ccs) (match-end 0))))
-	      (push ccs follow-to))))))
+		(push ccs follow-to))))))
       (widen))
 
     (message-pop-to-buffer (message-buffer-name
@@ -3011,13 +3011,13 @@ Called from program, takes two arguments START and END
 which specify the range to operate on."
   (interactive "r")
   (save-excursion
-   (let ((end1 (make-marker)))
-     (move-marker end1 (max start end))
-     (goto-char (min start end))
-     (while (< (point) end1)
-       (or (looking-at "[_\^@- ]")
-	   (insert (following-char) "\b"))
-       (forward-char 1)))))
+    (let ((end1 (make-marker)))
+      (move-marker end1 (max start end))
+      (goto-char (min start end))
+      (while (< (point) end1)
+	(or (looking-at "[_\^@- ]")
+	    (insert (following-char) "\b"))
+	(forward-char 1)))))
 
 ;;;###autoload
 (defun unbold-region (start end)
@@ -3026,12 +3026,12 @@ Called from program, takes two arguments START and END
 which specify the range to operate on."
   (interactive "r")
   (save-excursion
-   (let ((end1 (make-marker)))
-     (move-marker end1 (max start end))
-     (goto-char (min start end)) 
-     (while (re-search-forward "\b" end1 t)
-       (if (eq (following-char) (char-after (- (point) 2)))
-	   (delete-char -2))))))
+    (let ((end1 (make-marker)))
+      (move-marker end1 (max start end))
+      (goto-char (min start end)) 
+      (while (re-search-forward "\b" end1 t)
+	(if (eq (following-char) (char-after (- (point) 2)))
+	    (delete-char -2))))))
 
 (defalias 'message-exchange-point-and-mark 'exchange-point-and-mark)
 

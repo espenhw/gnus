@@ -151,7 +151,7 @@ to be moved to.")
   "*Hook that will be run after the incoming mail has been transferred.
 The incoming mail is moved from `nnmail-spool-file' (which normally is
 something like \"/usr/spool/mail/$user\") to the user's home
-directory. This hook is called after the incoming mail box has been
+directory.  This hook is called after the incoming mail box has been
 emptied, and can be used to call any mail box programs you have
 running (\"xwatch\", etc.)
 

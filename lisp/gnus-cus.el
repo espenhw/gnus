@@ -335,9 +335,9 @@ should contain the name of the header.  The field actually contains a
 regular expression that should match the beginning of the header line,
 but if you don't know what a regular expression is, just write the
 name of the header.  The second field is the `Name' field, which
-determines how the header name (i.e. the part of the header left
+determines how the header name (i. e., the part of the header left
 of the `:') is displayed.  The third field is the `Content' field,
-which determines how the content (i.e. the part of the header right of
+which determines how the content (i. e., the part of the header right of
 the `:') is displayed.  
 
 If you leave the last `Header' field in the list empty, the `Name' and
@@ -452,7 +452,7 @@ Controls the highlighting of summary buffer lines.
 
 Below is a list of `Form'/`Face' pairs.  When deciding how a a
 particular summary line should be displayed, each form is
-evaluated. The content of the face field after the first true form is
+evaluated.  The content of the face field after the first true form is
 used.  You can change how those summary lines are displayed, by
 editing the face field.  
 
@@ -582,7 +582,7 @@ Controls the highlighting of group buffer lines.
 
 Below is a list of `Form'/`Face' pairs.  When deciding how a a
 particular group line should be displayed, each form is
-evaluated. The content of the face field after the first true form is
+evaluated.  The content of the face field after the first true form is
 used.  You can change how those group lines are displayed by
 editing the face field.  
 

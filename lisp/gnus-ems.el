@@ -90,10 +90,10 @@ asynchronously.	 The compressed face will be piped to this command.")
 		  (t 'mono)))
 	(error 'mono))
       "A symbol indicating the display Emacs is running under.
-The symbol should be one of `color', `grayscale' or `mono'. If Emacs
+The symbol should be one of `color', `grayscale' or `mono'.  If Emacs
 guesses this display attribute wrongly, either set this variable in
 your `~/.emacs' or set the resource `Emacs.displayType' in your
-`~/.Xdefaults'. See also `gnus-background-mode'.
+`~/.Xdefaults'.  See also `gnus-background-mode'.
 
 This is a meta-variable that will affect what default values other
 variables get.  You would normally not change this variable, but

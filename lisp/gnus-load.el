@@ -362,7 +362,7 @@ slower.")
   "An alist of valid select methods.
 The first element of each list lists should be a string with the name
 of the select method.  The other elements may be the category of
-this method (ie. `post', `mail', `none' or whatever) or other
+this method (i. e., `post', `mail', `none' or whatever) or other
 properties that this method has (like being respoolable).
 If you implement a new select method, all you should have to change is
 this variable.	I think.")

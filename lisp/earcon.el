@@ -193,10 +193,10 @@ If N is negative, move backward instead."
       (setq beg (point))
       (while (setq entry (pop alist))
 	(setq regexp (concat (regexp-quote earcon-prefix)
-			      ".*\\("
-			      (car entry)
-			      "\\).*"
-			      (regexp-quote earcon-suffix)))
+			     ".*\\("
+			     (car entry)
+			     "\\).*"
+			     (regexp-quote earcon-suffix)))
 	(goto-char beg)
 	(while (re-search-forward regexp nil t)
 	  (let* ((start (and entry (match-beginning 1)))

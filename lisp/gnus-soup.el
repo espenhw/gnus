@@ -47,7 +47,7 @@
 (defvar gnus-soup-packer "tar cf - %s | gzip > $HOME/Soupout%d.tgz"
   "Format string command for packing a SOUP packet.
 The SOUP files will be inserted where the %s is in the string.
-This string MUST contain both %s and %d. The file number will be
+This string MUST contain both %s and %d.  The file number will be
 inserted where %d appears.")
 
 (defvar gnus-soup-unpacker "gunzip -c %s | tar xvf -"
@@ -385,7 +385,7 @@ though the two last may be nil if they are missing."
 (defun gnus-soup-parse-replies (file)
   "Parse soup REPLIES file FILE.
 The result is a of vectors, each containing one entry from the REPLIES
-file. The vector contain three strings, [prefix name encoding]."
+file.  The vector contain three strings, [prefix name encoding]."
   (let (replies)
     (save-excursion
       (set-buffer (find-file-noselect file))
@@ -547,7 +547,7 @@ Return whether the unpacking was successful."
 		  (funcall message-send-news-function)))
 	       ((string= (gnus-soup-reply-kind (car replies)) "mail")
 		(gnus-message 5 "Sending mail to %s..."
-			 (mail-fetch-field "to"))
+			      (mail-fetch-field "to"))
 		(sit-for 1)
 		(message-send-mail))
 	       (t

@@ -677,7 +677,7 @@ articles in the topic and its subtopics."
 	  (forward-line -1)
 	  (when (setq alist (assoc (gnus-current-topic) gnus-topic-alist))
 	    (setcdr alist (gnus-delete-first group (cdr alist))))))
-      ;; If the group is subscribed. then we enter it into the topics.
+      ;; If the group is subscribed.  then we enter it into the topics.
       (when (and (< level gnus-level-zombie)
 		 (>= oldlevel gnus-level-zombie))
 	(let* ((prev (gnus-group-group-name))

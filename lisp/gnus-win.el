@@ -474,7 +474,7 @@ should have point."
 	  (setq win (get-buffer-window buf t)))
 	(if win
 	    (when (memq 'point split)
-		(setq all-visible win))
+	      (setq all-visible win))
 	  (setq all-visible nil)))
        (t
 	(when (eq type 'frame)

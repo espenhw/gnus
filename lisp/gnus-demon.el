@@ -87,7 +87,7 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's.")
   (interactive)
   (gnus-demon-cancel)
   (if (null gnus-demon-handlers)
-      () ; Nothing to do.
+      ()				; Nothing to do.
     ;; Set up timer.
     (setq gnus-demon-timer 
 	  (nnheader-run-at-time 

@@ -24,7 +24,7 @@
 ;;; Commentary:
 ;; This file provides access to sound effects in Gnus.
 ;; Prerelease:  This file is partially stripped to support earcons.el
-;; You can safely ignore most of it until Red Gnus. **Evil Laugh**
+;; You can safely ignore most of it until Red Gnus.  **Evil Laugh**
 ;;; Code:
 
 (if (null (boundp 'running-xemacs))
@@ -67,14 +67,14 @@
 
 
 ;;;###autoload
-;(defun gnus-audio-enable-sound ()
+					;(defun gnus-audio-enable-sound ()
 ;  "Enable Sound Effects for Gnus."
 ;  (interactive)
 ;  (setq gnus-audio-effects-enabled t)
 ;  (run-hooks gnus-audio-enable-hooks))
 
 ;;;###autoload
-;(defun gnus-audio-disable-sound ()
+					;(defun gnus-audio-disable-sound ()
 ;  "Disable Sound Effects for Gnus."
 ;  (interactive)
 ;  (setq gnus-audio-effects-enabled nil)
@@ -105,7 +105,7 @@
 
 
 ;;; The following isn't implemented yet, wait for Red Gnus
-;(defun gnus-audio-startrek-sounds ()
+					;(defun gnus-audio-startrek-sounds ()
 ;  "Enable sounds from Star Trek the original series."
 ;  (interactive)
 ;  (setq gnus-audio-busy-sound "working.au")

@@ -215,19 +215,19 @@
 (defun nnweb-encode-www-form-urlencoded (pairs)
   "Return PAIRS encoded for forms."
   (mapconcat 
-    (function
-      (lambda (data)
-        (concat (w3-form-encode-xwfu (car data)) "="
-                (w3-form-encode-xwfu (cdr data))))) pairs "&"))
+   (function
+    (lambda (data)
+      (concat (w3-form-encode-xwfu (car data)) "="
+	      (w3-form-encode-xwfu (cdr data))))) pairs "&"))
 
 (defun nnweb-fetch-form (url pairs)
   (let ((url-request-data (nnweb-encode-www-form-urlencoded pairs))
 	(url-request-method 'POST)
 	(url-request-extra-headers 
 	 '(("Content-type" . "application/x-www-form-urlencoded"))))
-    (prog1
-	(url-insert-file-contents url)
-      (setq buffer-file-name nil))))
+    (url-insert-file-contents url)
+    (setq buffer-file-name nil))
+  t)
 
 (defun nnweb-decode-entities ()
   (goto-char (point-min))
@@ -340,7 +340,8 @@
      ("threaded" . "0")
      ("showsort" . "score")
      ("agesign" . "1")
-     ("ageweight" . "1"))))
+     ("ageweight" . "1")))
+  t)
 
 ;;;
 ;;; InReference
@@ -362,7 +363,7 @@
 	  (goto-char (point-min))
 	  (search-forward "</pre><hr>" nil t)
 	  (delete-region (point-min) (point))
-	  ;(nnweb-decode-entities)
+					;(nnweb-decode-entities)
 	  (goto-char (point-min))
 	  (while (re-search-forward "^ +[0-9]+\\." nil t)
 	    (narrow-to-region 
@@ -463,7 +464,8 @@
 	   ("first" . "1")
 	   ("last" . "25")
 	   ("score" . "50")))))
-    (setq buffer-file-name nil)))
+    (setq buffer-file-name nil))
+  t)
 
 ;;;
 ;;; Alta Vista
@@ -550,7 +552,8 @@
 	   ("r" . "")
 	   ("d0" . "")
 	   ("d1" . "")))))
-    (setq buffer-file-name nil)))
+    (setq buffer-file-name nil))
+  )t
 
 (provide 'nnweb)
 

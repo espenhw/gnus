@@ -72,7 +72,7 @@ that name."
 		value))
 	(push (if (cdr value)
 		  (cons header (mapconcat #'identity (nreverse value) " "))
-		  (cons header (car value)))
+		(cons header (car value)))
 	      message-headers)))
     (goto-char top)
     (nreverse message-headers)))
@@ -117,10 +117,10 @@ If HEADER-ALIST is nil, the dynamically bound variable `headers' is used."
 HEADER-ALIST defaults to the dynamically bound variable `headers' if nil.
 See `mail-header' for the semantics of VALUE."
   (let* ((alist (or header-alist headers))
-	(entry (assq header alist)))
+	 (entry (assq header alist)))
     (if entry
 	(setf (cdr entry) value)
-	(nconc alist (list (cons header value)))))
+      (nconc alist (list (cons header value)))))
   value)
 
 (defsetf mail-header (header &optional header-alist) (value)
@@ -161,7 +161,7 @@ A key of nil has as its value a list of defaulted headers to ignore."
 			(mapcar #'car format-rules))))
     (dolist (rule format-rules)
       (let* ((header (car rule))
-	    (value (mail-header header)))
+	     (value (mail-header header)))
 	(cond ((null header) 'ignore)
 	      ((eq header t)
 	       (dolist (defaulted headers)
@@ -170,11 +170,11 @@ A key of nil has as its value a list of defaulted headers to ignore."
 			  (value (cdr defaulted)))
 		     (if (cdr rule)
 			 (funcall (cdr rule) header value)
-			 (funcall mail-header-format-function header value))))))
+		       (funcall mail-header-format-function header value))))))
 	      (value
 	       (if (cdr rule)
 		   (funcall (cdr rule) header value)
-		   (funcall mail-header-format-function header value))))))
+		 (funcall mail-header-format-function header value))))))
     (insert "\n")))
 
 (provide 'mailheader)

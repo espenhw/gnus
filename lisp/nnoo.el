@@ -92,7 +92,7 @@
       (while functions
 	(unless (fboundp (setq function
 			       (nnoo-symbol backend (nnoo-rest-symbol
-							 (car functions)))))
+						     (car functions)))))
 	  (eval `(deffoo ,function (&rest args)
 		   (,call-function ',backend ',(car functions) args))))
 	(pop functions)))))

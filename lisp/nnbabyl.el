@@ -398,7 +398,7 @@
 ;;; Internal functions.
 
 ;; If FORCE, delete article no matter how many X-Gnus-Newsgroup
-;; headers there are. If LEAVE-DELIM, don't delete the Unix mbox
+;; headers there are.  If LEAVE-DELIM, don't delete the Unix mbox
 ;; delimiter line.
 (defun nnbabyl-delete-mail (&optional force leave-delim)
   ;; Delete the current X-Gnus-Newsgroup line.
@@ -540,7 +540,7 @@
 	   (save-excursion
 	     (set-buffer nnbabyl-mbox-buffer)
 	     (= (buffer-size) (nnheader-file-size nnbabyl-mbox-file))))
-      () ; This buffer hasn't changed since we read it last.  Possibly.
+      ()				; This buffer hasn't changed since we read it last.  Possibly.
     (save-excursion
       (let ((delim (concat "^" nnbabyl-mail-delimiter))
 	    (alist nnbabyl-group-alist)

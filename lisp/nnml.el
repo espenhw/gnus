@@ -54,11 +54,11 @@
 (defvoo nnml-nov-is-evil nil
   "If non-nil, Gnus will never generate and use nov databases for mail groups.
 Using nov databases will speed up header fetching considerably.
-This variable shouldn't be flipped much. If you have, for some reason,
+This variable shouldn't be flipped much.  If you have, for some reason,
 set this to t, and want to set it to nil again, you should always run
-the `nnml-generate-nov-databases' command. The function will go
+the `nnml-generate-nov-databases' command.  The function will go
 through all nnml directories and generate nov databases for them
-all. This may very well take some time.")
+all.  This may very well take some time.")
 
 (defvoo nnml-prepare-save-mail-hook nil
   "Hook run narrowed to an article before saving.")
@@ -364,7 +364,7 @@ all. This may very well take some time.")
 	      (delete-region (progn (beginning-of-line) (point))
 			     (progn (forward-line 1) (point)))
 	    ;; The line isn't here, so we have to find out where
-	    ;; we should insert it. (This situation should never
+	    ;; we should insert it.  (This situation should never
 	    ;; occur, but one likes to make sure...)
 	    (while (and (looking-at "[0-9]+\t")
 			(< (string-to-int 
@@ -595,7 +595,7 @@ all. This may very well take some time.")
 				 (if (nnheader-be-verbose 5) nil 'nomesg))
 	    (setq first file)))
 	(setq ga (cdr ga))))
-    ;; Generate a nov line for this article. We generate the nov
+    ;; Generate a nov line for this article.  We generate the nov
     ;; line after saving, because nov generation destroys the
     ;; header. 
     (setq headers (nnml-parse-head chars))

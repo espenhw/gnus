@@ -56,7 +56,7 @@
 (defvoo nnsoup-packer "tar cf - %s | gzip > $HOME/Soupin%d.tgz"
   "Format string command for packing a SOUP packet.
 The SOUP files will be inserted where the %s is in the string.
-This string MUST contain both %s and %d. The file number will be
+This string MUST contain both %s and %d.  The file number will be
 inserted where %d appears.")
 
 (defvoo nnsoup-unpacker "gunzip -c %s | tar xvf -"
@@ -450,7 +450,7 @@ The SOUP packet file name will be inserted at the %s.")
 	 (buffer-name (concat " *nnsoup " file "*")))
     (or (get-buffer buffer-name)	; File aready loaded.
 	(when (file-exists-p (concat nnsoup-directory file))
-	  (save-excursion			; Load the file.
+	  (save-excursion		; Load the file.
 	    (set-buffer (get-buffer-create buffer-name))
 	    (buffer-disable-undo (current-buffer))
 	    (push (cons nnsoup-current-group (current-buffer)) nnsoup-buffers)

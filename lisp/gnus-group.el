@@ -137,7 +137,7 @@ output may end up looking strange when listing both alive and killed
 groups.
 
 If you use %o or %O, reading the active file will be slower and quite
-a bit of extra memory will be used. %D will also worsen performance.
+a bit of extra memory will be used.  %D will also worsen performance.
 Also note that if you change the format specification to include any
 of these specs, you must probably re-start Gnus to see them go into
 effect.")
@@ -908,12 +908,12 @@ If REGEXP, only list groups matching REGEXP."
        ;; Insert the text.
        (eval gnus-group-line-format-spec))
      `(gnus-group ,(gnus-intern-safe gnus-tmp-group gnus-active-hashtb)
-       gnus-unread ,(if (numberp number)
-			(string-to-int gnus-tmp-number-of-unread)
-		      t)
-       gnus-marked ,gnus-tmp-marked-mark
-       gnus-indentation ,gnus-group-indentation
-       gnus-level ,gnus-tmp-level))
+		  gnus-unread ,(if (numberp number)
+				   (string-to-int gnus-tmp-number-of-unread)
+				 t)
+		  gnus-marked ,gnus-tmp-marked-mark
+		  gnus-indentation ,gnus-group-indentation
+		  gnus-level ,gnus-tmp-level))
     (when (inline (gnus-visual-p 'group-highlight 'highlight))
       (forward-line -1)
       (run-hooks 'gnus-group-update-hook)
@@ -1390,7 +1390,7 @@ Return the name of the group is selection was successful."
 	  (goto-char b)
 	;; ... or insert the line.
 	(or
-	 t ;; Don't activate group.
+	 t;; Don't activate group.
 	 (gnus-active group)
 	 (gnus-activate-group group)
 	 (error "%s error: %s" group (gnus-status-message group)))
@@ -1607,7 +1607,7 @@ doing the deletion."
 		(format
 		 "Do you really want to delete %s%s? "
 		 group (if force " and all its contents" ""))))
-	  () ; Whew!
+	  ()				; Whew!
 	(gnus-message 6 "Deleting group %s..." group)
 	(if (not (gnus-request-delete-group group force))
 	    (gnus-error 3 "Couldn't delete group %s" group)
@@ -2000,9 +2000,9 @@ If REVERSE, sort in reverse order."
   "Sort the process/prefixed groups."
   (interactive (list current-prefix-arg gnus-group-sort-function))
   (let ((groups (gnus-group-process-prefix n)))
-  (funcall gnus-group-sort-selected-function
-	   groups (gnus-make-sort-function func) reverse)
-  (gnus-group-list-groups)))
+    (funcall gnus-group-sort-selected-function
+	     groups (gnus-make-sort-function func) reverse)
+    (gnus-group-list-groups)))
 
 (defun gnus-group-sort-selected-flat (groups func reverse)
   (let (entries infos)
@@ -2407,8 +2407,8 @@ of groups killed."
 		     (setq entry (gnus-gethash group gnus-newsrc-hashtb)))
 	    (gnus-undo-register
 	      `(progn
-		(gnus-group-goto-group ,(gnus-group-group-name))
-		(gnus-group-yank-group)))
+		 (gnus-group-goto-group ,(gnus-group-group-name))
+		 (gnus-group-yank-group)))
 	    (push (cons (car entry) (nth 2 entry))
 		  gnus-list-of-killed-groups))
 	  (gnus-group-change-level
@@ -2463,7 +2463,7 @@ is returned."
       (gnus-group-insert-group-line-info group)
       (gnus-undo-register
 	`(when (gnus-group-goto-group ,group)
-	  (gnus-group-kill-group 1))))
+	   (gnus-group-kill-group 1))))
     (forward-line -1)
     (gnus-group-position-point)
     (if (< (length out) 2) (car out) (nreverse out))))
@@ -2666,8 +2666,8 @@ to use."
 	     (setq desc (gnus-group-get-description group))
 	     (gnus-read-descriptions-file method))
 	 (gnus-message 1
-	  (or desc (gnus-gethash group gnus-description-hashtb)
-	      "No description available")))))
+		       (or desc (gnus-gethash group gnus-description-hashtb)
+			   "No description available")))))
 
 ;; Suggested by Per Abrahamsen <amanda@iesd.auc.dk>.
 (defun gnus-group-describe-all-groups (&optional force)

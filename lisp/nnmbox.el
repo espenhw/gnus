@@ -373,7 +373,7 @@
 ;;; Internal functions.
 
 ;; If FORCE, delete article no matter how many X-Gnus-Newsgroup
-;; headers there are. If LEAVE-DELIM, don't delete the Unix mbox
+;; headers there are.  If LEAVE-DELIM, don't delete the Unix mbox
 ;; delimiter line.
 (defun nnmbox-delete-mail (&optional force leave-delim)
   ;; Delete the current X-Gnus-Newsgroup line.

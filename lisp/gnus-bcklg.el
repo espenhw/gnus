@@ -65,7 +65,7 @@
 		       gnus-backlog-hashtb))
 	b)
     (if (memq ident gnus-backlog-articles)
-	() ; It's already kept.
+	()				; It's already kept.
       ;; Remove the oldest article, if necessary.
       (and (numberp gnus-keep-backlog)
 	   (>= (length gnus-backlog-articles) gnus-keep-backlog)
@@ -87,7 +87,7 @@
     (set-buffer (gnus-backlog-buffer))
     (goto-char (point-min))
     (if (zerop (buffer-size))
-	() ; The buffer is empty.
+	()				; The buffer is empty.
       (let ((ident (get-text-property (point) 'gnus-backlog))
 	    buffer-read-only)
 	;; Remove the ident from the list of articles.

@@ -438,7 +438,7 @@ automatically when it is selected.")
 	(i 32))
     (while (>= (setq i (1- i)) 0)
       (aset table i [??]))
-    ;; ... but not newline and cr, of course. (cr is necessary for the
+    ;; ... but not newline and cr, of course.  (cr is necessary for the
     ;; selective display).
     (aset table ?\n nil)
     (aset table ?\r nil)
@@ -1774,7 +1774,7 @@ The following commands are available:
 (defmacro gnus-summary-skip-intangible ()
   "If the current article is intangible, then jump to a different article."
   '(let ((to (get-text-property (point) 'gnus-intangible)))
-    (and to (gnus-summary-goto-subject to))))
+     (and to (gnus-summary-goto-subject to))))
 
 (defmacro gnus-summary-article-intangible-p ()
   "Say whether this article is intangible or not."
@@ -1851,7 +1851,7 @@ article number."
 				    (gnus-data-list t)))
 	 (level (gnus-data-level (car data))))
     (if (zerop level)
-	() ; This is a root.
+	()				; This is a root.
       ;; We search until we find an article with a level less than
       ;; this one.  That function has to be the parent.
       (while (and (setq data (cdr data))
@@ -1978,7 +1978,7 @@ This is all marks except unread, ticked, dormant, and expirable."
 (defun gnus-summary-last-article-p (&optional article)
   "Return whether ARTICLE is the last article in the buffer."
   (if (not (setq article (or article (gnus-summary-article-number))))
-      t ; All non-existant numbers are the last article. :-)
+      t					; All non-existant numbers are the last article.  :-)
     (not (cdr (gnus-data-find-list article)))))
 
 (defun gnus-make-thread-indent-array ()
@@ -2140,7 +2140,7 @@ the thread are to be displayed."
       number)))
 
 (defun gnus-summary-set-local-parameters (group)
- "Go through the local params of GROUP and set all variable specs in that list."
+  "Go through the local params of GROUP and set all variable specs in that list."
   (let ((params (gnus-group-find-parameter group))
 	elem)
     (while params
@@ -2641,8 +2641,8 @@ If NO-DISPLAY, don't generate a summary buffer."
 	(setq thread (cdr thread))
 	(while thread
 	  (unless (memq (setq thr (gnus-id-to-thread
-				      (gnus-root-id
-				       (mail-header-id (caar thread)))))
+				   (gnus-root-id
+				    (mail-header-id (caar thread)))))
 			roots)
 	    (push thr roots))
 	  (setq thread (cdr thread)))
@@ -2762,7 +2762,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	(setq thread (gnus-gethash last-id dep)))
       (when thread
 	(prog1
-	    thread ; We return this thread.
+	    thread			; We return this thread.
 	  (unless dont-remove
 	    (if (stringp (car thread))
 		(progn
@@ -2908,10 +2908,10 @@ Unscored articles will be counted as having a score of zero."
 	      (mapcar 'gnus-thread-total-score
 		      (cdr (gnus-gethash (mail-header-id root)
 					 gnus-newsgroup-dependencies)))
-		 (if (> (mail-header-number root) 0)
-		     (list (or (cdr (assq (mail-header-number root) 
-					  gnus-newsgroup-scored))
-			       gnus-summary-default-score 0))))
+	      (if (> (mail-header-number root) 0)
+		  (list (or (cdr (assq (mail-header-number root) 
+				       gnus-newsgroup-scored))
+			    gnus-summary-default-score 0))))
 	     (list gnus-summary-default-score)
 	     '(0))))
 
@@ -4194,13 +4194,13 @@ displayed, no centering will be performed."
     ;; The user has to want it.
     (when gnus-auto-center-summary
       (when (get-buffer-window gnus-article-buffer)
-       ;; Only do recentering when the article buffer is displayed,
-       ;; Set the window start to either `bottom', which is the biggest
-       ;; possible valid number, or the second line from the top,
-       ;; whichever is the least.
-       (set-window-start
-	window (min bottom (save-excursion 
-			     (forward-line (- top)) (point)))))
+	;; Only do recentering when the article buffer is displayed,
+	;; Set the window start to either `bottom', which is the biggest
+	;; possible valid number, or the second line from the top,
+	;; whichever is the least.
+	(set-window-start
+	 window (min bottom (save-excursion 
+			      (forward-line (- top)) (point)))))
       ;; Do horizontal recentering while we're at it.
       (when (and (get-buffer-window (current-buffer) t)
 		 (not (eq gnus-auto-center-summary 'vertical)))
@@ -5393,7 +5393,7 @@ fetch-old-headers verbiage, and so on."
 	       (not (eq gnus-build-sparse-threads 'more))
 	       (null gnus-thread-expunge-below)
 	       (not gnus-use-nocem)))
-      () ; Do nothing.
+      ()				; Do nothing.
     (push gnus-newsgroup-limit gnus-newsgroup-limits)
     (setq gnus-newsgroup-limit nil)
     (mapatoms
@@ -5875,7 +5875,7 @@ article massaging functions being run."
 	  gnus-visual)
       (gnus-summary-select-article nil 'force)))
   (gnus-summary-goto-subject gnus-current-article)
-;  (gnus-configure-windows 'article)
+					;  (gnus-configure-windows 'article)
   (gnus-summary-position-point))
 
 (defun gnus-summary-verbose-headers (&optional arg)
@@ -7153,7 +7153,7 @@ is non-nil or the Subject: of both articles are the same."
   (save-window-excursion
     (let ((gnus-article-buffer " *reparent*")
 	  (current-article (gnus-summary-article-number))
-	  ; first grab the marked article, otherwise one line up.
+					; first grab the marked article, otherwise one line up.
 	  (parent-article (if (not (null gnus-newsgroup-processable))
 			      (car gnus-newsgroup-processable)
 			    (save-excursion
@@ -7403,7 +7403,7 @@ Argument REVERSE means reverse order."
   (gnus-summary-sort 'author reverse))
 
 (defun gnus-summary-sort-by-subject (&optional reverse)
-  "Sort summary buffer by subject alphabetically. `Re:'s are ignored.
+  "Sort summary buffer by subject alphabetically.  `Re:'s are ignored.
 If case-fold-search is non-nil, case of letters is ignored.
 Argument REVERSE means reverse order."
   (interactive "P")
@@ -7680,7 +7680,7 @@ save those articles instead."
 	  (forward-line 1)
 	  (setq b (point))
 	  (insert "    " (file-name-nondirectory
-				(cdr (assq 'name (car pslist))))
+			  (cdr (assq 'name (car pslist))))
 		  ": " (or (cdr (assq 'execute (car pslist))) "") "\n")
 	  (setq e (point))
 	  (forward-line -1)		; back to `b'
@@ -7776,9 +7776,9 @@ save those articles instead."
 		  (t gnus-reffed-article-number))
 		 (current-buffer))
 	  (insert " Article retrieved.\n"))
-	;(when (and header
-	;	   (memq (mail-header-number header) gnus-newsgroup-sparse))
-	;  (setcar (gnus-id-to-thread id) nil))
+					;(when (and header
+					;	   (memq (mail-header-number header) gnus-newsgroup-sparse))
+					;  (setcar (gnus-id-to-thread id) nil))
 	(if (not (setq header (car (gnus-get-newsgroup-headers))))
 	    ()				; Malformed head.
 	  (unless (memq (mail-header-number header) gnus-newsgroup-sparse)

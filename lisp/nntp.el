@@ -115,7 +115,7 @@ lower value.")
 
 (defvoo nntp-xover-commands '("XOVER" "XOVERVIEW")
   "*List of strings that are used as commands to fetch NOV lines from a server.
-The strings are tried in turn until a positive response is gotten. If
+The strings are tried in turn until a positive response is gotten.  If
 none of the commands are successful, nntp will just grab headers one
 by one.")
 
@@ -134,7 +134,7 @@ If can be used to set up a server remotely, for instance.  Say you
 have an account at the machine \"other.machine\".  This machine has
 access to an NNTP server that you can't access locally.  You could
 then use this hook to rsh to the remote machine and start a proxy NNTP
-server there that you can connect to. See also `nntp-open-connection-function'")
+server there that you can connect to.  See also `nntp-open-connection-function'")
 
 (defvoo nntp-warn-about-losing-connection t
   "*If non-nil, beep when a server closes connection.")
@@ -287,7 +287,7 @@ server there that you can connect to. See also `nntp-open-connection-function'")
 		   (not (re-search-backward "^\\.\r?\n" (- (point) 4) t))))
 	  (nntp-accept-response)))
 
-      ;; Now all replies are received. We remove CRs.
+      ;; Now all replies are received.  We remove CRs.
       (goto-char (point-min))
       (while (search-forward "\r" nil t)
 	(replace-match "" t t))
@@ -712,7 +712,9 @@ It will prompt for a password."
   (save-excursion
     (set-buffer (or (nntp-find-connection-buffer nntp-server-buffer)
 		    nntp-server-buffer))
-    (message "nntp reading%s" (make-string (/ (point-max) 10000) ?.))
+    (let ((len (/ (point-max) 10000)))
+      (unless (zerop len)
+	(message "nntp reading%s" (make-string len ?.))))
     (accept-process-output process 1)))
 
 (defun nntp-accept-response ()
@@ -826,7 +828,7 @@ It will prompt for a password."
 		    (zerop (% count nntp-maximum-request)))
 	    (accept-process-output)
 	    ;; On some Emacs versions the preceding function has
-	    ;; a tendency to change the buffer. Perhaps. It's
+	    ;; a tendency to change the buffer.  Perhaps.  It's
 	    ;; quite difficult to reproduce, because it only
 	    ;; seems to happen once in a blue moon. 
 	    (set-buffer buf) 
@@ -881,7 +883,7 @@ It will prompt for a password."
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
 	    (goto-char (point-min))
-	    (and (looking-at "[23]") ; No error message.
+	    (and (looking-at "[23]")	; No error message.
 		 ;; We also have to look at the lines.  Some buggy
 		 ;; servers give back simple lines with just the
 		 ;; article number.  How... helpful.

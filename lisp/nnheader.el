@@ -158,7 +158,7 @@ on your system, you could say something like:
     (goto-char (point-min))
     (when naked
       (insert "\n"))
-    ;; Search to the beginning of the next header. Error messages
+    ;; Search to the beginning of the next header.  Error messages
     ;; do not begin with 2 or 3.
     (prog1
 	(when (or naked (re-search-forward "^[23][0-9]+ " nil t))
@@ -391,7 +391,7 @@ the line could be found."
 (defun nnheader-insert-references (references message-id)
   "Insert a References header based on REFERENCES and MESSAGE-ID."
   (if (and (not references) (not message-id)) 
-      ()	; This is illegal, but not all articles have Message-IDs.
+      ()				; This is illegal, but not all articles have Message-IDs.
     (mail-position-on-field "References")
     (let ((begin (save-excursion (beginning-of-line) (point)))
 	  (fill-column 78)
@@ -670,12 +670,12 @@ If FILE, find the \".../etc/PACKAGE\" file instead."
 (defvar efs-path-regexp)
 (defun nnheader-re-read-dir (path)
   "Re-read directory PATH if PATH is on a remote system."
-    (if (and (fboundp 'efs-re-read-dir) (boundp 'efs-path-regexp))
-	(when (string-match efs-path-regexp path)
-	  (efs-re-read-dir path))
-     (if (and (fboundp 'ange-ftp-re-read-dir) (boundp 'ange-ftp-path-format))
-      (when (string-match (car ange-ftp-path-format) path)
-	(ange-ftp-re-read-dir path)))))
+  (if (and (fboundp 'efs-re-read-dir) (boundp 'efs-path-regexp))
+      (when (string-match efs-path-regexp path)
+	(efs-re-read-dir path))
+    (if (and (fboundp 'ange-ftp-re-read-dir) (boundp 'ange-ftp-path-format))
+	(when (string-match (car ange-ftp-path-format) path)
+	  (ange-ftp-re-read-dir path)))))
 
 (defun nnheader-insert-file-contents-literally (filename &optional visit beg end replace)
   "Like `insert-file-contents', q.v., but only reads in the file.

@@ -584,7 +584,7 @@ commands:
 	  (setq buffer-read-only t)
 	  (gnus-add-current-to-buffer-list)
 	  (unless (eq major-mode 'gnus-article-mode)
-	      (gnus-article-mode))
+	    (gnus-article-mode))
 	  (current-buffer))
       (save-excursion
 	(set-buffer (get-buffer-create name))

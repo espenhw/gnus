@@ -108,7 +108,7 @@ If this variable is nil, then score entries that provide matches
 will be expired along with non-matching score entries.")
 
 (defvar gnus-orphan-score nil
-  "*All orphans get this score added. Set in the score file.")
+  "*All orphans get this score added.  Set in the score file.")
 
 (defvar gnus-decay-scores nil
   "*If non-nil, decay non-permanent scores.")
@@ -528,7 +528,7 @@ used as score."
      (if (eq 's score) nil score)	; Score
      (if (eq 'perm temporary)		; Temp
 	 nil
-        temporary)
+       temporary)
      (not (nth 3 entry)))		; Prompt
     ))
   
@@ -551,7 +551,7 @@ used as score."
 	    (setq max n))
 	(setq list (cdr list)))
       (setq max (+ max 4))		; %c, `:', SPACE, a SPACE at end
-      (setq n (/ (1- (window-width)) max))	; items per line
+      (setq n (/ (1- (window-width)) max)) ; items per line
       (setq width (/ (1- (window-width)) n)) ; width of each item
       ;; insert `n' items, each in a field of width `width' 
       (while alist
@@ -663,7 +663,7 @@ If optional argument `SILENT' is nil, show effect of score entry."
     (unless (eq date 'now)
       ;; Add the score entry to the score file.
       (when (= score gnus-score-interactive-default-score)
-	   (setq score nil))
+	(setq score nil))
       (let ((old (gnus-score-get header))
 	    elem)
 	(setq new
@@ -678,7 +678,7 @@ If optional argument `SILENT' is nil, show effect of score entry."
 	       (t (list match))))
 	;; We see whether we can collapse some score entries.
 	;; This isn't quite correct, because there may be more elements
-	;; later on with the same key that have matching elems... Hm.
+	;; later on with the same key that have matching elems...  Hm.
 	(if (and old
 		 (setq elem (assoc match old))
 		 (eq (nth 3 elem) (nth 3 new))
@@ -1357,7 +1357,7 @@ SCORE is the score to add."
             new-thread-ids (cdr new-thread-ids))
       (goto-char (point-min))
       (while (search-forward this-id nil t)
-        ;; found a match. remove this line
+        ;; found a match.  remove this line
 	(beginning-of-line)
 	(kill-line 1)))
 
@@ -1403,8 +1403,8 @@ SCORE is the score to add."
 	  ;; time than one would gain.
 	  (while articles
 	    (when (funcall match-func 
-			  (or (aref (caar articles) gnus-score-index) 0)
-			  match)
+			   (or (aref (caar articles) gnus-score-index) 0)
+			   match)
 	      (when trace 
 		(push (cons (car-safe (rassq alist gnus-score-cache)) kill)
 		      gnus-score-trace))
@@ -1474,7 +1474,7 @@ SCORE is the score to add."
 		((and found gnus-update-score-entry-dates) ;Match, update date.
 		 (gnus-score-set 'touched '(t) alist)
 		 (setcar (nthcdr 2 kill) now))
-		((and expire (< date expire))	;Old entry, remove.
+		((and expire (< date expire)) ;Old entry, remove.
 		 (gnus-score-set 'touched '(t) alist)
 		 (setcdr entries (cdr rest))
 		 (setq rest entries)))
@@ -1672,7 +1672,7 @@ SCORE is the score to add."
 		((and found gnus-update-score-entry-dates) ;Match, update date.
 		 (gnus-score-set 'touched '(t) alist)
 		 (setcar (nthcdr 2 kill) now))
-		((and expire (< date expire))	;Old entry, remove.
+		((and expire (< date expire)) ;Old entry, remove.
 		 (gnus-score-set 'touched '(t) alist)
 		 (setcdr entries (cdr rest))
 		 (setq rest entries)))
@@ -1920,7 +1920,7 @@ SCORE is the score to add."
   ;; Find all the words in the buffer and enter them into
   ;; the hashtable.
   (let ((syntab (syntax-table))
-	 word val)
+	word val)
     (goto-char (point-min))
     (unwind-protect
 	(progn
@@ -2363,7 +2363,7 @@ GROUP using BNews sys file syntax."
 	(setq sfiles (cdr sfiles)))
       (kill-buffer (current-buffer))
       ;; Slight kludge here - the last score file returned should be
-      ;; the local score file, whether it exists or not. This is so
+      ;; the local score file, whether it exists or not.  This is so
       ;; that any score commands the user enters will go to the right
       ;; file, and not end up in some global score file.
       (let ((localscore (gnus-score-file-name group)))
@@ -2442,7 +2442,7 @@ The list is determined from the variable gnus-score-file-alist."
       (while alist
 	(and (string-match (caar alist) group)
 	     ;; progn used just in case ("regexp") has no files
-	     ;; and score-files is still nil. -sj
+	     ;; and score-files is still nil.  -sj
 	     ;; this can be construed as a "stop searching here" feature :>
 	     ;; and used to simplify regexps in the single-alist 
 	     (progn
@@ -2605,7 +2605,7 @@ If ADAPT, return the home adaptive file instead."
   "Decay non-permanent scores in ALIST."
   (let ((times (- (gnus-time-to-day (current-time)) day))
 	kill entry updated score n)
-    (unless (zerop times) ;Done decays today already?
+    (unless (zerop times)		;Done decays today already?
       (while (setq entry (pop alist))
 	(when (stringp (car entry))
 	  (setq entry (cdr entry))

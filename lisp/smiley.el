@@ -79,7 +79,7 @@
     ("\\(;-+[>)}»]+\\)\\W" 1 "FaceWinking.xpm")
     ("\\(:-+[Vvµ]\\)\\W" 1 "FaceWry.xpm")
     ("\\([:|]-+P\\)\\W" 1 "FaceYukky.xpm"))
-  "Smileys with noses. These get less false matches.")
+  "Smileys with noses.  These get less false matches.")
 
 (defvar smiley-regexp-alist smiley-deformed-regexp-alist
   "A list of regexps to map smilies to real images.

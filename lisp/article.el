@@ -120,7 +120,7 @@ is the face used for highlighting.")
   (remove-text-properties b e gnus-hidden-properties)
   (when (memq 'intangible gnus-hidden-properties)
     (put-text-property (max (1- b) (point-min))
-			    b 'intangible nil)))
+		       b 'intangible nil)))
 
 (defun article-hide-text-type (b e type)
   "Hide text of TYPE between B and E."
@@ -133,7 +133,7 @@ is the face used for highlighting.")
    b e (cons 'article-type (cons type gnus-hidden-properties)))
   (when (memq 'intangible gnus-hidden-properties)
     (put-text-property (max (1- b) (point-min))
-			    b 'intangible nil)))
+		       b 'intangible nil)))
 
 (defun article-hide-text-of-type (type)
   "Hide text of TYPE in the current buffer."
@@ -604,7 +604,7 @@ always hide."
     ;; Check whether we have some limits to what we consider
     ;; to be a signature.
     (let ((limits (if (listp gnus-signature-limit) gnus-signature-limit
-		   (list gnus-signature-limit)))
+		    (list gnus-signature-limit)))
 	  limit limited)
       (while (setq limit (pop limits))
 	(if (or (and (integerp limit)
@@ -615,7 +615,7 @@ always hide."
 		     (funcall limit))
 		(and (stringp limit)
 		     (not (re-search-forward limit nil t))))
-	    () ; This limit did not succeed.
+	    ()				; This limit did not succeed.
 	  (setq limited t
 		limits nil)))
       (unless limited

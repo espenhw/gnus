@@ -282,7 +282,7 @@ there.")
 	  (while (and (looking-at "\\([^ ]+\\) +[0-9]+ ")
 		      (progn
 			;; We insert a .0 to make the list reader
-			;; interpret the number as a float. It is far
+			;; interpret the number as a float.  It is far
 			;; too big to be stored in a lisp integer. 
 			(goto-char (1- (match-end 0)))
 			(insert ".0")

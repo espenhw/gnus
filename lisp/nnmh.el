@@ -461,7 +461,7 @@
 
 (defun nnmh-update-gnus-unreads (group)
   ;; Go through the .nnmh-articles file and compare with the actual
-  ;; articles in this folder. The articles that are "new" will be
+  ;; articles in this folder.  The articles that are "new" will be
   ;; marked as unread by Gnus.
   (let* ((dir nnmh-current-directory)
 	 (files (sort (mapcar (function (lambda (name) (string-to-int name)))

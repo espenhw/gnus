@@ -270,10 +270,10 @@ If this times out we give up and assume that something has died..." )
   (process-send-string process command)
   (process-send-string process "\r\n"))
 
-(defun bbb-read-response (process) ; &optional return-response-string)
+(defun bbb-read-response (process)	; &optional return-response-string)
   "This function eats the initial response of OK or ERROR from the BBB."
   (let ((case-fold-search nil)
-	 match-end)
+	match-end)
     (goto-char bbb-read-point)
     (while (and (not (search-forward "\r\n" nil t))
 		(accept-process-output process bbb-timeout-secs))
@@ -328,7 +328,7 @@ If this times out we give up and assume that something has died..." )
 
 (defun bbb-build-mid-scores-alist (groupname)
   "this function can be called as part of the function to return the 
-list of score files to use. See the gnus variable 
+list of score files to use.  See the gnus variable 
 gnus-score-find-score-files-function.  
 
 *Note:*  If you want to use grouplens scores along with calculated scores, 
@@ -388,7 +388,7 @@ recommend using both scores and grouplens predictions together."
 	    cmd (concat cmd art "\r\n")
 	    mlist (cdr mlist)))
     (setq cmd (concat cmd ".\r\n"))
-  cmd))
+    cmd))
 
 (defun bbb-get-prediction-response (process)
   (let ((case-fold-search nil)
@@ -398,7 +398,7 @@ recommend using both scores and grouplens predictions together."
 		(accept-process-output process bbb-timeout-secs))
       (goto-char bbb-read-point))
     (setq match-end (point))
-    (goto-char (+ bbb-response-point 4))  ;; we ought to be right before OK
+    (goto-char (+ bbb-response-point 4));; we ought to be right before OK
     (bbb-build-response-alist)))
 
 ;; build-response-alist assumes that the cursor has been positioned at
@@ -440,8 +440,8 @@ recommend using both scores and grouplens predictions together."
 
 (defun bbb-get-pred ()
   (let ((tpred (string-to-number (buffer-substring  
-				      (match-beginning 2) 
-				      (match-end 2)))))
+				  (match-beginning 2) 
+				  (match-end 2)))))
     (if (> tpred 0)
 	(round (* grouplens-score-scale-factor (+ grouplens-score-offset  tpred)))
       1)))
@@ -624,7 +624,7 @@ recommend using both scores and grouplens predictions together."
   (if (and grouplens-rating-alist 
 	   (member gnus-newsgroup-name grouplens-newsgroups))
       (let ((bbb-process (bbb-connect-to-bbbd grouplens-bbb-host 
-					  grouplens-bbb-port))
+					      grouplens-bbb-port))
 	    (rate-command (bbb-build-rate-command grouplens-rating-alist)))
 	(if bbb-process
 	    (save-excursion 
@@ -680,15 +680,15 @@ recommend using both scores and grouplens predictions together."
   (gnus-summary-best-unread-article))
 
 (defun grouplens-summary-catchup-and-exit (rating)
-   "Mark all articles not marked as unread in this newsgroup as read, 
+  "Mark all articles not marked as unread in this newsgroup as read, 
     then exit.   If prefix argument ALL is non-nil, all articles are 
     marked as read."
-   (interactive "P")
-   (if rating
-       (bbb-summary-rate-article rating))
-   (if (numberp rating)
-       (gnus-summary-catchup-and-exit)
-     (gnus-summary-catchup-and-exit rating)))
+  (interactive "P")
+  (if rating
+      (bbb-summary-rate-article rating))
+  (if (numberp rating)
+      (gnus-summary-catchup-and-exit)
+    (gnus-summary-catchup-and-exit rating)))
 
 (defun grouplens-score-thread (score)
   "Raise the score of the articles in the current thread with SCORE."
@@ -737,7 +737,7 @@ recommend using both scores and grouplens predictions together."
 
 (defun bbb-time-float (timeval)
   (+ (* (car timeval) 65536) 
-	(cadr timeval)))
+     (cadr timeval)))
 
 (defun grouplens-do-time ()
   (when (member gnus-newsgroup-name grouplens-newsgroups)
@@ -834,12 +834,12 @@ recommend using both scores and grouplens predictions together."
              ;; or make a list
 	     (if (listp gnus-score-find-score-files-function)
 		 (setq gnus-score-find-score-files-function 
-		   (append 'bbb-build-mid-scores-alist      
-			   gnus-score-find-score-files-function ))
+		       (append 'bbb-build-mid-scores-alist      
+			       gnus-score-find-score-files-function ))
 	       (setq gnus-score-find-score-files-function 
 		     (list gnus-score-find-score-files-function 
 			   'bbb-build-mid-scores-alist))))
-	     ;; leave the gnus-score-find-score-files variable alone
+	    ;; leave the gnus-score-find-score-files variable alone
 	    ((eq gnus-grouplens-override-scoring 'separate)
 	     (add-hook 'gnus-select-group-hook 
 		       '(lambda() 

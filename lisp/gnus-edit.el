@@ -390,7 +390,7 @@ there.  If he does, it is up to you to figure out what they are named.")
 List of local variables to set when this score file is loaded.
 
 Using this entry can provide a convenient way to set variables that
-will affect the summary mode for only some specific groups, i.e. those
+will affect the summary mode for only some specific groups, i. e., those
 groups matched by the current score file.")
 	   (type . list)
 	   (data ((type . repeat)

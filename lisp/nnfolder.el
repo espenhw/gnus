@@ -686,14 +686,14 @@ time saver for large mailboxes.")
 	  ;; file entirely for mboxes.)
 	  (when (or nnfolder-ignore-active-file
 		    (< maxid 2))
-		(while (and (search-forward marker nil t)
-			    (re-search-forward number nil t))
-		  (let ((newnum (string-to-number (match-string 0))))
-		    (setq maxid (max maxid newnum))
-		    (setq minid (min minid newnum))))
-		(setcar active (max 1 (min minid maxid)))
-		(setcdr active (max maxid (cdr active)))
-		(goto-char (point-min)))
+	    (while (and (search-forward marker nil t)
+			(re-search-forward number nil t))
+	      (let ((newnum (string-to-number (match-string 0))))
+		(setq maxid (max maxid newnum))
+		(setq minid (min minid newnum))))
+	    (setcar active (max 1 (min minid maxid)))
+	    (setcdr active (max maxid (cdr active)))
+	    (goto-char (point-min)))
 
 	  ;; As long as we trust that the user will only insert unmarked mail
 	  ;; at the end, go to the end and search backwards for the last
@@ -709,7 +709,7 @@ time saver for large mailboxes.")
 		      (goto-char (point-min))))))
 
 	  ;; Keep track of the active number on our own, and insert it back
-	  ;; into the active list when we're done. Also, prime the pump to
+	  ;; into the active list when we're done.  Also, prime the pump to
 	  ;; cut down on the number of searches we do.
 	  (setq end (point-marker))
 	  (set-marker end (or (and (re-search-forward delim nil t)

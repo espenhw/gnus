@@ -28,7 +28,7 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
-(defconst gnus-version-number "0.28"
+(defconst gnus-version-number "0.29"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -605,7 +605,7 @@ If SYMBOL, return the value of that symbol in the group parameters."
   "Add parameter PARAM to GROUP."
   (let ((info (gnus-get-info group)))
     (if (not info)
-	() ; This is a dead group.  We just ignore it.
+	()				; This is a dead group.  We just ignore it.
       ;; Cons the new param to the old one and update.
       (gnus-group-set-info (cons param (gnus-info-params info))
 			   group 'params))))
@@ -614,7 +614,7 @@ If SYMBOL, return the value of that symbol in the group parameters."
   "Set parameter NAME to VALUE in GROUP."
   (let ((info (gnus-get-info group)))
     (if (not info)
-	() ; This is a dead group.  We just ignore it.
+	()				; This is a dead group.  We just ignore it.
       (let ((old-params (gnus-info-params info))
 	    (new-params (list (cons name value))))
 	(while old-params

@@ -434,23 +434,23 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 (defun nndoc-mime-digest-type-p ()
   (let ((case-fold-search t)
 	boundary-id b-delimiter entry)
-     (when (and
-	    (re-search-forward
-	     (concat "^Content-Type: *multipart/digest;[ \t\n]*[ \t]"
-		     "boundary=\"\\([^\"\n]*[^\" \t\n]\\)\"")
-	     nil t)
-	    (match-beginning 1))
-       (setq boundary-id (match-string 1)
-	     b-delimiter (concat "\n--" boundary-id "[\n \t]+"))
-       (setq entry (assq 'mime-digest nndoc-type-alist))
-       (setcdr entry
-	       (list
-		(cons 'head-end "^ ?$")
-		(cons 'body-begin "^ ?\n")
-		(cons 'article-begin b-delimiter)
-		(cons 'body-end-function 'nndoc-digest-body-end)
-		(cons 'file-end (concat "\n--" boundary-id "--[ \t]*$"))))
-       t)))
+    (when (and
+	   (re-search-forward
+	    (concat "^Content-Type: *multipart/digest;[ \t\n]*[ \t]"
+		    "boundary=\"\\([^\"\n]*[^\" \t\n]\\)\"")
+	    nil t)
+	   (match-beginning 1))
+      (setq boundary-id (match-string 1)
+	    b-delimiter (concat "\n--" boundary-id "[\n \t]+"))
+      (setq entry (assq 'mime-digest nndoc-type-alist))
+      (setcdr entry
+	      (list
+	       (cons 'head-end "^ ?$")
+	       (cons 'body-begin "^ ?\n")
+	       (cons 'article-begin b-delimiter)
+	       (cons 'body-end-function 'nndoc-digest-body-end)
+	       (cons 'file-end (concat "\n--" boundary-id "--[ \t]*$"))))
+      t)))
 
 (defun nndoc-standard-digest-type-p ()
   (when (and (re-search-forward (concat "^" (make-string 70 ?-) "\n\n") nil t)

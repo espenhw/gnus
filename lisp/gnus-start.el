@@ -1672,7 +1672,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	  ;; the `gnus-newsrc-hashtb' has been created.  While reading
 	  ;; the .newsrc file, Gnus will only use the information it
 	  ;; can find there for changing the data already read -
-	  ;; ie. reading the .newsrc file will not trash the data
+	  ;; i. e., reading the .newsrc file will not trash the data
 	  ;; already read (except for read articles).
 	  (save-excursion
 	    (gnus-message 5 "Reading %s..." newsrc-file)
@@ -1968,7 +1968,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	    entry mentry)
 	(while rc
 	  (or (null (nth 4 (car rc)))	; It's a native group.
-	      (assoc (caar rc) newsrc) ; It's already in the alist.
+	      (assoc (caar rc) newsrc)	; It's already in the alist.
 	      (if (setq entry (assoc (caar prev) newsrc))
 		  (setcdr (setq mentry (memq entry newsrc))
 			  (cons (car rc) (cdr mentry)))
@@ -2227,7 +2227,7 @@ If FORCE is non-nil, the .newsrc file is read."
 		(error
 		 (gnus-error 3.2 "Possible error in %s" file)
 		 nil))
-	      (or gnus-slave ; Slaves shouldn't delete these files.
+	      (or gnus-slave		; Slaves shouldn't delete these files.
 		  (condition-case ()
 		      (delete-file file)
 		    (error nil))))

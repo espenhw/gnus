@@ -337,7 +337,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 						   nobar-p)
   "Inserts a face at point if I can find one"
   ;; '(gnus-picons-insert-face-if-exists
-  ;     "Database" '("edu" "indiana" "cs") "Name")
+					;     "Database" '("edu" "indiana" "cs") "Name")
   ;; looks for:
   ;;  1. edu/indiana/cs/Name 
   ;;  2. edu/indiana/Name 

@@ -138,7 +138,7 @@ If given a prefix, mark all unpicked articles as read."
       (progn
         (gnus-summary-limit-to-articles nil)
         (when (or catch-up gnus-mark-unpicked-articles-as-read)
-              (gnus-summary-limit-mark-excluded-as-read))
+	  (gnus-summary-limit-mark-excluded-as-read))
         (gnus-summary-first-unread-article)
         (gnus-configure-windows 
 	 (if gnus-pick-display-summary 'article 'pick) t))
@@ -660,7 +660,7 @@ Two predefined functions are available:
   (gnus-get-tree-buffer))
 
 (defun gnus-tree-close (group)
-  ;(gnus-kill-buffer gnus-tree-buffer)
+					;(gnus-kill-buffer gnus-tree-buffer)
   )
 
 (defun gnus-highlight-selected-tree (article)

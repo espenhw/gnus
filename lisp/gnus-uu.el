@@ -62,21 +62,21 @@ following in your .emacs file:
 
   (setq gnus-uu-user-view-rules '((\"jpg$\\\\|gif$\" \"xli\")))
 
-Both these variables are lists of lists with two string elements. The
-first string is a regular expression. If the file name matches this
+Both these variables are lists of lists with two string elements.  The
+first string is a regular expression.  If the file name matches this
 regular expression, the command in the second string is executed with
 the file as an argument.
 
 If the command string contains \"%s\", the file name will be inserted
-at that point in the command string. If there's no \"%s\" in the
+at that point in the command string.  If there's no \"%s\" in the
 command string, the file name will be appended to the command string
 before executing.
 
 There are several user variables to tailor the behaviour of gnus-uu to
-your needs. First we have `gnus-uu-user-view-rules', which is the
+your needs.  First we have `gnus-uu-user-view-rules', which is the
 variable gnus-uu first consults when trying to decide how to view a
-file. If this variable contains no matches, gnus-uu examines the
-default rule variable provided in this package. If gnus-uu finds no
+file.  If this variable contains no matches, gnus-uu examines the
+default rule variable provided in this package.  If gnus-uu finds no
 match here, it uses `gnus-uu-user-view-rules-end' to try to make a
 match.")
 
@@ -188,7 +188,7 @@ Default is nil.")
 
 (defvar gnus-uu-ignore-default-view-rules nil
   "*Non-nil means that gnus-uu will ignore the default viewing rules.
-Only the user viewing rules will be consulted. Default is nil.")
+Only the user viewing rules will be consulted.  Default is nil.")
 
 (defvar gnus-uu-grabbed-file-functions nil
   "*Functions run on each file after successful decoding.
@@ -198,7 +198,7 @@ and `gnus-uu-grab-move'.")
 
 (defvar gnus-uu-ignore-default-archive-rules nil 
   "*Non-nil means that gnus-uu will ignore the default archive unpacking commands.  
-Only the user unpacking commands will be consulted. Default is nil.")
+Only the user unpacking commands will be consulted.  Default is nil.")
 
 (defvar gnus-uu-kill-carriage-return t
   "*Non-nil means that gnus-uu will strip all carriage returns from articles.
@@ -207,7 +207,7 @@ Default is t.")
 (defvar gnus-uu-view-with-metamail nil
   "*Non-nil means that files will be viewed with metamail.
 The gnus-uu viewing functions will be ignored and gnus-uu will try
-to guess at a content-type based on file name suffixes. Default
+to guess at a content-type based on file name suffixes.  Default
 it nil.")
 
 (defvar gnus-uu-unmark-articles-not-decoded nil
@@ -221,7 +221,7 @@ Default is nil.")
 (defvar gnus-uu-save-in-digest nil
   "*Non-nil means that gnus-uu, when asked to save without decoding, will save in digests.
 If this variable is nil, gnus-uu will just save everything in a 
-file without any embellishments. The digesting almost conforms to RFC1153 -
+file without any embellishments.  The digesting almost conforms to RFC1153 -
 no easy way to specify any meaningful volume and issue numbers were found, 
 so I simply dropped them.")
 
@@ -679,7 +679,7 @@ The headers will be included in the sequence they are matched.")
       (and scan (setq files (gnus-uu-scan-directory gnus-uu-work-dir))))
     (and save (gnus-uu-save-files files save))
     (if (eq gnus-uu-do-not-unpack-archives nil)
-      (setq files (gnus-uu-unpack-files files)))
+	(setq files (gnus-uu-unpack-files files)))
     (setq files (nreverse (gnus-uu-get-actions files)))
     (or not-insert (not gnus-insert-pseudo-articles)
 	(gnus-summary-insert-pseudos files save))))
@@ -943,7 +943,7 @@ The headers will be included in the sequence they are matched.")
   ;; ignores any leading "version numbers" thingies that they use in
   ;; the comp.binaries groups, and either replaces anything that looks
   ;; like "2/3" with "[0-9]+/[0-9]+" or, if it can't find something
-  ;; like that, replaces the last two numbers with "[0-9]+". This, in
+  ;; like that, replaces the last two numbers with "[0-9]+".  This, in
   ;; my experience, should get most postings of a series.
   (let ((count 2)
 	(vernum "v[0-9]+[a-z][0-9]+:")
@@ -1016,8 +1016,8 @@ The headers will be included in the sequence they are matched.")
 (defun gnus-uu-find-articles-matching 
   (&optional subject only-unread do-not-translate)
   ;; Finds all articles that matches the regexp SUBJECT.  If it is
-  ;; nil, the current article name will be used. If ONLY-UNREAD is
-  ;; non-nil, only unread articles are chosen. If DO-NOT-TRANSLATE is
+  ;; nil, the current article name will be used.  If ONLY-UNREAD is
+  ;; non-nil, only unread articles are chosen.  If DO-NOT-TRANSLATE is
   ;; non-nil, article names are not equalized before sorting.
   (let ((subject (or subject 
 		     (gnus-uu-reginize-string (gnus-summary-article-subject))))
@@ -1054,9 +1054,9 @@ The headers will be included in the sequence they are matched.")
 (defun gnus-uu-expand-numbers (string-list &optional translate)
   ;; Takes a list of strings and "expands" all numbers in all the
   ;; strings.  That is, this function makes all numbers equal length by
-  ;; prepending lots of zeroes before each number. This is to ease later
+  ;; prepending lots of zeroes before each number.  This is to ease later
   ;; sorting to find out what sequence the articles are supposed to be
-  ;; decoded in. Returns the list of expanded strings.
+  ;; decoded in.  Returns the list of expanded strings.
   (let ((out-list string-list)
 	string)
     (save-excursion
@@ -1092,14 +1092,14 @@ The headers will be included in the sequence they are matched.")
 ;; to apply to each article.
 ;;
 ;; The function to be called should take two parameters.  The first
-;; parameter is the article buffer. The function should leave the
-;; result, if any, in this buffer. Most treatment functions will just
+;; parameter is the article buffer.  The function should leave the
+;; result, if any, in this buffer.  Most treatment functions will just
 ;; generate files...
 ;;
 ;; The second parameter is the state of the list of articles, and can
 ;; have four values: `first', `middle', `last' and `first-and-last'.
 ;;
-;; The function should return a list. The list may contain the
+;; The function should return a list.  The list may contain the
 ;; following symbols:
 ;; `error' if an error occurred
 ;; `begin' if the beginning of an encoded file has been received
@@ -1443,7 +1443,7 @@ The headers will be included in the sequence they are matched.")
     action))
 
 (defun gnus-uu-treat-archive (file-path)
-  ;; Unpacks an archive. Returns t if unpacking is successful.
+  ;; Unpacks an archive.  Returns t if unpacking is successful.
   (let ((did-unpack t)
 	action command dir)
     (setq action (gnus-uu-choose-action 
@@ -1658,7 +1658,7 @@ The headers will be included in the sequence they are matched.")
 ;;;
 
 ;; Any function that is to be used as and encoding method will take two
-;; parameters: PATH-NAME and FILE-NAME. (E.g. "/home/gaga/spiral.jpg"
+;; parameters: PATH-NAME and FILE-NAME.  (E.g. "/home/gaga/spiral.jpg"
 ;; and "spiral.jpg", respectively.) The function should return nil if
 ;; the encoding wasn't successful.
 (defvar gnus-uu-post-encode-method 'gnus-uu-post-encode-uuencode
@@ -1682,15 +1682,15 @@ post the entire file.")
 (defvar gnus-uu-post-threaded nil
   "Non-nil means that gnus-uu will post the encoded file in a thread.
 This may not be smart, as no other decoder I have seen are able to
-follow threads when collecting uuencoded articles. (Well, I have seen
+follow threads when collecting uuencoded articles.  (Well, I have seen
 one package that does that - gnus-uu, but somehow, I don't think that 
 counts...) Default is nil.")
 
 (defvar gnus-uu-post-separate-description t
   "Non-nil means that the description will be posted in a separate article.
-The first article will typically be numbered (0/x). If this variable
+The first article will typically be numbered (0/x).  If this variable
 is nil, the description the user enters will be included at the 
-beginning of the first article, which will be numbered (1/x). Default 
+beginning of the first article, which will be numbered (1/x).  Default 
 is t.")
 
 (defvar gnus-uu-post-binary-separator "--binary follows this line--")
@@ -1811,7 +1811,7 @@ If no file has been included, the user will be asked for a file."
        (set-window-configuration gnus-uu-winconf-post-news)))
       
 ;; Asks for a file to encode, encodes it and inserts the result in
-;; the current buffer. Returns the file name the user gave.
+;; the current buffer.  Returns the file name the user gave.
 (defun gnus-uu-post-insert-binary ()
   (let ((uuencode-buffer-name "*uuencode buffer*")
 	file-path uubuf file-name)

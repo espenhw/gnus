@@ -273,45 +273,45 @@ call it with the value of the `gnus-data' text property."
 
 (defun gnus-xmas-group-menu-add ()
   (gnus-xmas-menu-add group
-    gnus-group-reading-menu gnus-group-group-menu gnus-group-misc-menu))
+		      gnus-group-reading-menu gnus-group-group-menu gnus-group-misc-menu))
 
 (defun gnus-xmas-summary-menu-add ()
   (gnus-xmas-menu-add summary
-    gnus-summary-misc-menu gnus-summary-kill-menu
-    gnus-summary-article-menu gnus-summary-thread-menu
-    gnus-summary-post-menu ))
+		      gnus-summary-misc-menu gnus-summary-kill-menu
+		      gnus-summary-article-menu gnus-summary-thread-menu
+		      gnus-summary-post-menu ))
 
 (defun gnus-xmas-article-menu-add ()
   (gnus-xmas-menu-add article
-    gnus-article-article-menu gnus-article-treatment-menu))
+		      gnus-article-article-menu gnus-article-treatment-menu))
 
 (defun gnus-xmas-score-menu-add ()
   (gnus-xmas-menu-add score
-    gnus-score-menu))
+		      gnus-score-menu))
 
 (defun gnus-xmas-pick-menu-add ()
   (gnus-xmas-menu-add pick
-    gnus-pick-menu))
+		      gnus-pick-menu))
 
 (defun gnus-xmas-binary-menu-add ()
   (gnus-xmas-menu-add binary
-    gnus-binary-menu))
+		      gnus-binary-menu))
 
 (defun gnus-xmas-tree-menu-add ()
   (gnus-xmas-menu-add tree
-    gnus-tree-menu))
+		      gnus-tree-menu))
 
 (defun gnus-xmas-server-menu-add ()
   (gnus-xmas-menu-add menu
-    gnus-server-server-menu gnus-server-connections-menu))
+		      gnus-server-server-menu gnus-server-connections-menu))
 
 (defun gnus-xmas-browse-menu-add ()
   (gnus-xmas-menu-add browse
-    gnus-browse-menu))
+		      gnus-browse-menu))
 
 (defun gnus-xmas-grouplens-menu-add ()
   (gnus-xmas-menu-add grouplens
-    gnus-grouplens-menu))
+		      gnus-grouplens-menu))
 
 (defun gnus-xmas-read-event-char ()
   "Get the next event."
@@ -320,7 +320,7 @@ call it with the value of the `gnus-data' text property."
     (while (not (key-press-event-p event))
       (setq event (next-event)))
     (cons (and (key-press-event-p event) 
-	      ; (numberp (event-key event))
+					; (numberp (event-key event))
 	       (event-to-character event)) 
 	  event)))
 
@@ -410,10 +410,10 @@ call it with the value of the `gnus-data' text property."
   ;; Fix by "jeff (j.d.) sparkes" <jsparkes@bnr.ca>.
   (defvar gnus-display-type (device-class)
     "A symbol indicating the display Emacs is running under.
-The symbol should be one of `color', `grayscale' or `mono'. If Emacs
+The symbol should be one of `color', `grayscale' or `mono'.  If Emacs
 guesses this display attribute wrongly, either set this variable in
 your `~/.emacs' or set the resource `Emacs.displayType' in your
-`~/.Xdefaults'. See also `gnus-background-mode'.
+`~/.Xdefaults'.  See also `gnus-background-mode'.
 
 This is a meta-variable that will affect what default values other
 variables get.  You would normally not change this variable, but

@@ -48,7 +48,7 @@ posting.")
 (defvar gnus-outgoing-message-group nil
   "*All outgoing messages will be put in this group.
 If you want to store all your outgoing mail and articles in the group
-\"nnml:archive\", you set this variable to that value. This variable
+\"nnml:archive\", you set this variable to that value.  This variable
 can also be a list of group names. 
 
 If you want to have greater control over what group to put each
@@ -810,7 +810,7 @@ The source file has to be in the Emacs load path."
       (setq olist (cdr olist)))
     (insert "\n\n")
     ;; Remove any null chars - they seem to cause trouble for some
-    ;; mailers. (Byte-compiled output from the stuff above.) 
+    ;; mailers.  (Byte-compiled output from the stuff above.) 
     (goto-char (point-min))
     (while (re-search-forward "[\000\200]" nil t)
       (replace-match "" t t))))

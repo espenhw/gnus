@@ -1220,7 +1220,7 @@ If optional ORIGINAL is non-nil, consider VALUE for the original value."
 	 current)
     (if face-tag 
 	(custom-put-text-property from (+ from (length (custom-tag custom)))
-			   'face (funcall face-tag field value)))
+				  'face (funcall face-tag field value)))
     (if original 
 	(custom-field-original-set field value))
     (while values
@@ -1465,8 +1465,8 @@ custom-face-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)"
 	 (from (point)))
     (custom-text-insert (custom-tag custom))
     (custom-add-text-properties from (point) 
-			 (list 'face face
-			       rear-nonsticky t))
+				(list 'face face
+				      rear-nonsticky t))
     (custom-documentation-insert custom)
     (custom-field-move field from (point))
     field))
@@ -1476,7 +1476,7 @@ custom-face-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)"
   (let ((from (custom-field-start field))
 	(custom (custom-field-custom field)))
     (custom-put-text-property from (+ from (length (custom-tag custom)))
-		       'face (custom-field-face field))))
+			      'face (custom-field-face field))))
 
 (defun custom-const-valid (custom value)
   "Non-nil if CUSTOM can validly have the value VALUE."
@@ -1923,7 +1923,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
          (tag (get-text-property pos 'custom-tag))
 	 (data (get-text-property pos 'custom-data)))
     (cond (data
-	    (funcall tag data))
+	   (funcall tag data))
 	  ((and (symbolp tag) (fboundp tag))
 	   (call-interactively tag))
 	  (field
@@ -2027,7 +2027,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
   "Save and exit customization buffer."
   (interactive "@")
   (save-excursion
-   (funcall custom-save))
+    (funcall custom-save))
   (kill-buffer (current-buffer)))
 
 (defun custom-save ()
@@ -2125,7 +2125,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
   ;; Read the screen content of FIELD.
   (custom-read (custom-field-custom field)
 	       (custom-buffer-substring-no-properties (custom-field-start field)
-					       (custom-field-end field))))
+						      (custom-field-end field))))
 
 ;; Fields are shown in a special `active' face when point is inside
 ;; it.  You activate the field by moving point inside (entering) it
@@ -2136,7 +2136,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
   (let ((before-change-functions nil)
 	(after-change-functions nil))
     (custom-put-text-property (custom-field-start field) (custom-field-end field)
-		       'face (custom-field-face field))))
+			      'face (custom-field-face field))))
 
 (defun custom-field-enter (field)
   ;; Activate FIELD.
@@ -2273,7 +2273,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
       (setq pos (1+ pos)))
     (if (eq pos len)
 	string
-    (substring string 0 pos))))
+      (substring string 0 pos))))
 
 (defun custom-insert-before (list old new)
   "In LIST insert before OLD a NEW element."
