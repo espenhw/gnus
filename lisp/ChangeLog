@@ -11,7 +11,7 @@
 	mm-with-unibyte-current-buffer-mule4): Use them.
 	(mm-find-mime-charset-region): Treat iso-2022-jp.
 
-2001-10-27  Dave Love  <fx@gnu.org>
+	From  Dave Love  <fx@gnu.org>:
 
 	* mm-util.el (mm-mime-mule-charset-alist): Make it correct by
 	construction.
