@@ -37,9 +37,11 @@
 ;; and the second one is Simon Josefsson's starttls.el which uses
 ;; "gnutls-cli" from GNUTLS.
 ;;
-;; If "gnutls-cli" is available, it is prefered by the code over
-;; "starttls".  Use `starttls-use-gnutls' to toggle between
-;; implementations if you have both tools installed.
+;; If "starttls" is available, it is prefered by the code over
+;; "gnutls-cli", for backwards compatibility.  Use
+;; `starttls-use-gnutls' to toggle between implementations if you have
+;; both tools installed.  It is recommended to use GNUTLS, though, as
+;; it performs more verification of the certificates.
 
 ;; The GNUTLS support require GNUTLS 0.9.90 (released 2003-10-08) or
 ;; later, from <http://www.gnu.org/software/gnutls/>, or "starttls"
