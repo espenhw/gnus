@@ -1,3 +1,8 @@
+2004-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* emacs-mime.texi (Encoding Customization): Fix
+	mm-coding-system-priorities entry.
+
 2004-06-28  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Setting Process Marks): Fix `M P a' entry.
