@@ -156,9 +156,9 @@ all.  This may very well take some time.")
 		     server nnml-directory)
     t)))
 
-(defun nnml-request-regenerate (server)
+(deffoo nnml-request-regenerate (server)
   (nnml-possibly-change-directory nil server)
-  (nnml-generate-nov-databases)
+  (nnml-generate-nov-databases server)
   t)
 
 (deffoo nnml-request-article (id &optional group server buffer)
@@ -707,13 +707,14 @@ all.  This may very well take some time.")
       (setq nnml-nov-buffer-alist (cdr nnml-nov-buffer-alist)))))
 
 ;;;###autoload
-(defun nnml-generate-nov-databases ()
+(defun nnml-generate-nov-databases (&optional server)
   "Generate NOV databases in all nnml directories."
-  (interactive)
+  (interactive (list (or (nnoo-current-server 'nnml) "")))
   ;; Read the active file to make sure we don't re-use articles
   ;; numbers in empty groups.
   (nnmail-activate 'nnml)
-  (nnml-open-server (or (nnoo-current-server 'nnml) ""))
+  (unless (nnml-server-opened server)
+    (nnml-open-server server))
   (setq nnml-directory (expand-file-name nnml-directory))
   ;; Recurse down the directories.
   (nnml-generate-nov-databases-1 nnml-directory nil t)

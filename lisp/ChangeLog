@@ -1,3 +1,15 @@
+2001-02-14 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-srvr.el (gnus-server-regenerate-server): Use gnus-get-function.
+
+	* nnagent.el (nnagent-request-regenerate): New.
+
+	* nnfolder.el (nnfolder-request-regenerate): Deffoo.
+
+	* nnml.el (nnml-generate-nov-databases): Accept argument
+	server. Don't open server if it is opened.
+	(nnml-request-regenerate): Use it. Change to deffoo.
+
 2001-02-14  Katsumi Yamaoka <yamaoka@jpl.org>
         Committed by ShengHuo ZHU  <zsh@cs.rochester.edu>
 

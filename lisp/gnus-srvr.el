@@ -838,15 +838,17 @@ buffer.
   (let ((server (gnus-server-server-name)))
     (unless server
       (error "No server on the current line"))
-    (if (not (gnus-check-backend-function
-	      'request-regenerate (car (gnus-server-to-method server))))
-	(error "This backend doesn't support regeneration")
-      (gnus-message 5 "Requesting regeneration of %s..." server)
-      (unless (gnus-open-server server)
-	(error "Couldn't open server"))
-      (if (gnus-request-regenerate server)
-	  (gnus-message 5 "Requesting regeneration of %s...done" server)
-	(gnus-message 5 "Couldn't regenerate %s" server)))))
+    (condition-case ()
+	(gnus-get-function (gnus-server-to-method server) 
+			   'request-regenerate)
+      (error
+	(error "This backend doesn't support regeneration")))
+    (gnus-message 5 "Requesting regeneration of %s..." server)
+    (unless (gnus-open-server server)
+      (error "Couldn't open server"))
+    (if (gnus-request-regenerate server)
+	(gnus-message 5 "Requesting regeneration of %s...done" server)
+      (gnus-message 5 "Couldn't regenerate %s" server))))
 
 (provide 'gnus-srvr)
 

@@ -554,7 +554,7 @@ all.  This may very well take some time.")
 	   (kill-buffer (current-buffer))
 	   t))))
 
-(defun nnfolder-request-regenerate (server)
+(deffoo nnfolder-request-regenerate (server)
   (nnfolder-possibly-change-group nil server)
   (nnfolder-generate-active-file)
   t)

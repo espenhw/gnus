@@ -192,6 +192,10 @@
   (nnoo-parent-function 'nnagent 'nnml-status-message
 			(list (nnagent-server server))))
 
+(deffoo nnagent-request-regenerate (server)
+  (nnoo-parent-function 'nnagent 'nnml-request-regenerate
+			(list (nnagent-server server))))
+
 ;; Use nnml functions for just about everything.
 (nnoo-import nnagent
   (nnml))
