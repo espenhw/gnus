@@ -1,5 +1,9 @@
 2002-04-27  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* nnrss.el (nnrss-insert-w3): Bind url-package-name and
+	url-package-version. Trivial change from Andrew J Cosgriff
+	<ajc@polydistortion.net>
+
 	* mm-decode.el (mm-save-part): Fill in file name when GUI saving
 	attachments. Trivial change from Peter 'Luna' Runestig
 	<peter@runestig.com>.

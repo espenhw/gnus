@@ -450,8 +450,13 @@ ARTICLE is the article number of the current headline.")
   "")
 
 (defun nnrss-insert-w3 (url)
-  (mm-with-unibyte-current-buffer
-    (mm-url-insert url)))
+  (let ((url-package-name 
+	 (gnus-replace-in-string 
+	  (gnus-replace-in-string gnus-version " v.*$" "")
+	  " " ""))
+	(url-package-version gnus-version-number))
+    (mm-with-unibyte-current-buffer
+      (mm-url-insert url))))
 
 (defun nnrss-decode-entities-unibyte-string (string)
   (mm-with-unibyte-buffer
