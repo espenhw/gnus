@@ -586,9 +586,8 @@
         W d     & Treat {\bf dumbquotes}.\\
         W e     & Treat {\bf emphasized} text.\\
         W h     & Treat {\bf HTML}.\\
-        W k     & Deuglify broken Outlook (Express) articles and redisplay.\\
         W l     & (w) Remove page breaks ({\bf\^{}L}) from the article.\\
-        W m     & Toggle {\bf MIME} processing.\\
+        W m     & {\bf Morse} decode article.\\
         W o     & Treat {\bf overstrike} or underline (\^{}H\_) in the article.\\
         W p     & Verify X-{\bf PGP}-Sig header.\\
         W q     & Treat {\bf quoted}-printable in the article.\\
@@ -606,6 +605,11 @@
         W G u   & {\bf Unfold} folded header lines.\\
         W G f   & {\bf Fold} all header lines.\\
         W G n   & Unfold {\bf Newsgroups:} and Follow-Up-To:.\\
+                                %
+        W Y c   & Repair broken {\bf citations}.\\
+        W Y a   & Repair broken {\bf attribution} lines.\\
+        W Y u   & {\bf Unwrap} broken citation lines.\\
+        W Y f   & Do a {\bf full} deuglification (W Y c, W Y a, W Y u).\\
       \end{keys}
       }
     }
@@ -632,6 +636,7 @@
       \begin{keys}{W D D}
         W D s   & (W g) Display {\bf smilies}.\\
         W D x   & (W f) Look for and display any X-{\bf Face} headers.\\
+        W D d   & Display any Face headers.\\
         W D n   & Toggle picons in {\bf Newsgroups} and Followup-To.\\
         W D m   & Toggle picons in {\bf mail} headers (To and Cc).\\
         W D f   & Toggle picons in {\bf From}.\\
@@ -668,9 +673,6 @@
         W W c   & Hide {\bf citation}.\\
         W W C-c & Hide {\bf citation} using a more intelligent algorithm.\\
         W W C   & Hide cited text in articles that aren't roots.\\
-                                %
-        W e     & {\bf Emphasize} article.\\
-                                %
         W H a   & Highlight {\bf all} parts. Calls W b, W H c, W H h, W H s.\\
         W H c   & Highlight article {\bf citations}.\\
         W H h   & Highlight article {\bf headers}.\\
@@ -682,9 +684,9 @@
 
   \newcommand{\MIMEArticleMode}{%
     {\esamepage
-      \begin{keys}{M-RET}
+      \begin{keys}{RET}
         RET     & (BUTTON-2) Toggle display of the MIME object.\\
-        v       & (M-RET) Prompt for a method and then view object using this method.\\
+        v       & Prompt for a method and then view object using this method.\\
         o       & Prompt for a filename and save the MIME object.\\
         C-o       & Prompt for a filename to save the MIME object to and remove it.\\
         c       & {\bf Copy} the MIME object to a new buffer and display this buffer.\\
