@@ -106,7 +106,7 @@ sub-process if this variable is set to nil."
   :type 'boolean
   :group 'starttls)
 
-(defcustom starttls-connect "- Simple Client Mode:"
+(defcustom starttls-connect "- Simple Client Mode:\n\n"
   "*Regular expression indicating successful connection.
 The default is what GNUTLS's \"gnutls-cli\" outputs."
   ;; cli.c:main() print this string when it is starting to run in the
@@ -215,7 +215,7 @@ specifying a port number to connect to."
 	(if done
 	    (progn
 	      (with-current-buffer buffer
-		(delete-region old-max (point-max)))
+		(delete-region old-max done))
 	      (setq done process))
 	  (delete-process process))))
     (message "Opening STARTTLS connection to `%s'...%s"
