@@ -1,3 +1,8 @@
+2000-11-03  Stefan Monnier  <monnier@cs.yale.edu>
+
+	* message.el (message-font-lock-keywords): Match a final newline
+	to help font-lock's multiline support.
+	
 2000-11-04 09:11:44  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnoo.el (nnoo-set): New function.
