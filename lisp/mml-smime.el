@@ -115,7 +115,7 @@
       (quit))
     result))
 
-(defun mml-smime-get-dns-ldap ()
+(defun mml-smime-get-ldap-cert ()
   ;; todo: deal with comma separated multiple recipients
   (let (result who bad cert)
     (condition-case ()
@@ -140,12 +140,12 @@
   (let (certs done)
     (while (not done)
       (ecase (read (gnus-completing-read-with-default
-		    "dns" "Fetch certificate from"
+		    "ldap" "Fetch certificate from"
 		    '(("dns") ("ldap") ("file")) nil t))
 	(dns (setq certs (append certs
 				 (mml-smime-get-dns-cert))))
 	(ldap (setq certs (append certs
-				 (mml-smime-get-dns-ldap))))
+				  (mml-smime-get-ldap-cert))))
 	(file (setq certs (append certs
 				  (mml-smime-get-file-cert)))))
       (setq done (not (y-or-n-p "Add more recipients? "))))

@@ -1,3 +1,9 @@
+2005-02-14  Simon Josefsson  <jas@extundo.com>
+
+	* mml-smime.el (mml-smime-get-ldap-cert): Renamed from
+	mml-smime-get-dns-ldap.
+	(mml-smime-encrypt-query): Use new function.  Default to ldap.
+
 2005-02-14  Arne J,Ax(Brgensen <arne@arnested.dk>
 
 	* smime.el: Require smime-ldap.
