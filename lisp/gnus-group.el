@@ -429,6 +429,11 @@ in the minibuffer prompt."
   :type '(choice (string :tag "Prompt string")
                  (const :tag "Empty" nil)))
 
+(defvar gnus-group-listing-limit 1000
+  "*A limit of the number of groups when listing.
+If the number of groups is larger than the limit, list them in a
+simple manner.")
+
 ;;; Internal variables
 
 (defvar gnus-group-sort-alist-function 'gnus-group-sort-flat
@@ -1187,32 +1192,40 @@ if it is a string, only list groups matching REGEXP."
   ;; suggested by Jack Vinson <vinson@unagi.cis.upenn.edu>.  It does
   ;; this by ignoring the group format specification altogether.
   (let (group)
-    (while groups
-      (setq group (pop groups))
-      (when (gnus-group-prepare-logic
-	     group
-	     (or (not regexp)
-		 (and (stringp regexp) (string-match regexp group))
-		 (and (functionp regexp) (funcall regexp group))))
-;;; 	(gnus-add-text-properties
-;;; 	 (point) (prog1 (1+ (point))
-;;; 		   (insert " " mark "     *: "
-;;; 			   (gnus-group-name-decode group
-;;; 						   (gnus-group-name-charset
-;;; 						    nil group))
-;;; 			   "\n"))
-;;; 	 (list 'gnus-group (gnus-intern-safe group gnus-active-hashtb)
-;;; 	       'gnus-unread t
-;;; 	       'gnus-level level))
-	(gnus-group-insert-group-line
-	 group level nil
-	 (let ((active (gnus-active group)))
-	   (if active
-	       (if (zerop (cdr active))
-		   0
-		 (- (1+ (cdr active)) (car active)))
-	     nil))
-	 (gnus-method-simplify (gnus-find-method-for-group group)))))))
+    (if (> (length groups) gnus-group-listing-limit)
+	(while groups
+	  (setq group (pop groups))
+	  (when (gnus-group-prepare-logic
+		 group
+		 (or (not regexp)
+		     (and (stringp regexp) (string-match regexp group))
+		     (and (functionp regexp) (funcall regexp group))))
+	    (gnus-add-text-properties
+	     (point) (prog1 (1+ (point))
+		       (insert " " mark "     *: "
+			       (gnus-group-name-decode group
+						       (gnus-group-name-charset
+							nil group))
+			       "\n"))
+	     (list 'gnus-group (gnus-intern-safe group gnus-active-hashtb)
+		   'gnus-unread t
+		   'gnus-level level))))
+      (while groups
+	(setq group (pop groups))
+	(when (gnus-group-prepare-logic
+	       group
+	       (or (not regexp)
+		   (and (stringp regexp) (string-match regexp group))
+		   (and (functionp regexp) (funcall regexp group))))
+	  (gnus-group-insert-group-line
+	   group level nil
+	   (let ((active (gnus-active group)))
+	     (if active
+		 (if (zerop (cdr active))
+		     0
+		   (- (1+ (cdr active)) (car active)))
+	       nil))
+	   (gnus-method-simplify (gnus-find-method-for-group group))))))))
 
 (defun gnus-group-update-group-line ()
   "Update the current line in the group buffer."

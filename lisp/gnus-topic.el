@@ -421,14 +421,17 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 	       (and (>= level gnus-level-killed)
 		    (<= lowest gnus-level-killed)))
       (gnus-group-prepare-flat-list-dead
-       (gnus-union
-	(and not-in-list
-	     (gnus-delete-if (lambda (group)
-			       (< (gnus-group-level group) gnus-level-killed))
-			     not-in-list))
-	(setq gnus-killed-list (sort gnus-killed-list 'string<)))
-       gnus-level-killed ?K
-       regexp))
+       (setq gnus-killed-list (sort gnus-killed-list 'string<))
+       gnus-level-killed ?K regexp)
+      (when not-in-list
+	(unless gnus-killed-hashtb
+	  (gnus-make-hashtable-from-killed))
+	(gnus-group-prepare-flat-list-dead
+	 (gnus-delete-if (lambda (group)
+			   (or (gnus-gethash group gnus-newsrc-hashtb)
+			       (gnus-gethash group gnus-killed-hashtb)))
+			 not-in-list)
+	 gnus-level-killed ?K regexp)))
 
     ;; Use topics.
     (prog1
