@@ -3796,7 +3796,9 @@ This command may read the active file."
 	(gnus-group-list-mode gnus-group-list-mode) ;; Save it.
 	func)
     (push last-command-event unread-command-events)
-    (push ?A unread-command-events)
+    (if (featurep 'xemacs)
+	(push (make-event 'key-press '(key ?A)) unread-command-events)
+      (push ?A unread-command-events))
     (let (gnus-pick-mode keys)
       (setq keys (if (featurep 'xemacs)
 		     (events-to-keys (read-key-sequence nil))
