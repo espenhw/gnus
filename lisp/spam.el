@@ -182,6 +182,25 @@ considered spam."
   :type 'boolean
   :group 'spam)
 
+(defcustom spam-install-hooks (or
+			       spam-use-dig
+			       spam-use-blacklist
+			       spam-use-whitelist 
+			       spam-use-whitelist-exclusive 
+			       spam-use-blackholes 
+			       spam-use-hashcash 
+			       spam-use-regex-headers 
+			       spam-use-bogofilter-headers 
+			       spam-use-bogofilter 
+			       spam-use-BBDB 
+			       spam-use-BBDB-exclusive 
+			       spam-use-ifile 
+			       spam-use-stat)
+  "Whether the spam hooks should be installed, default to t if one of
+the spam-use-* variables is set."
+  :group 'gnus-registry
+  :type 'boolean)
+
 (defcustom spam-split-group "spam"
   "Group name where incoming spam should be put by spam-split."
   :type 'string
@@ -387,8 +406,6 @@ your main source of newsgroup names."
 (defun spam-summary-prepare ()
   (spam-mark-junk-as-spam-routine))
 
-(add-hook 'gnus-summary-prepare-hook 'spam-summary-prepare)
-
 ;; The spam processors are invoked for any group, spam or ham or neither
 (defun spam-summary-prepare-exit ()
   (unless gnus-group-is-exiting-without-update-p
@@ -455,8 +472,6 @@ your main source of newsgroup names."
       (gnus-message 5 "Moving ham messages from spam group")
       (spam-ham-move-routine
        (gnus-parameter-ham-process-destination gnus-newsgroup-name)))))
-
-(add-hook 'gnus-summary-prepare-exit-hook 'spam-summary-prepare-exit)
 
 (defun spam-mark-junk-as-spam-routine ()
   ;; check the global list of group names spam-junk-mailgroups and the
@@ -644,8 +659,6 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (dolist (check spam-list-of-statistical-checks)
     (when (symbol-value check)
       (setq nnimap-split-download-body-default t))))
-
-(add-hook 'gnus-get-new-news-hook 'spam-setup-widening)
 
 
 ;;;; Regex headers
@@ -875,14 +888,11 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 	(when spam-use-stat (spam-stat-load)))
       
       (defun spam-maybe-spam-stat-save ()
-	(when spam-use-stat (spam-stat-save)))
-
-      ;; Add hooks for loading and saving the spam stats
-      (add-hook 'gnus-save-newsrc-hook 'spam-maybe-spam-stat-save)
-      (add-hook 'gnus-get-top-new-news-hook 'spam-maybe-spam-stat-load)
-      (add-hook 'gnus-startup-hook 'spam-maybe-spam-stat-load))
+	(when spam-use-stat (spam-stat-save))))
 
   (file-error (progn
+		(defalias 'spam-maybe-spam-stat-load 'ignore)
+		(defalias 'spam-maybe-spam-stat-save 'ignore)
 		(defalias 'spam-stat-register-ham-routine 'ignore)
 		(defalias 'spam-stat-register-spam-routine 'ignore)
 		(defalias 'spam-stat-buffer-is-spam 'ignore)
@@ -1062,6 +1072,34 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
    (lambda (article)
      (spam-bogofilter-register-with-bogofilter
       (spam-get-article-as-string article) nil))))
+
+
+;;;; Hooks
+
+(defun spam-install-hooks-function ()
+  "Install the spam.el hooks"
+  (interactive)
+  ;; Add hooks for loading and saving the spam stats
+  (when spam-use-stat
+    (add-hook 'gnus-save-newsrc-hook 'spam-maybe-spam-stat-save)
+    (add-hook 'gnus-get-top-new-news-hook 'spam-maybe-spam-stat-load)
+    (add-hook 'gnus-startup-hook 'spam-maybe-spam-stat-load))
+  (add-hook 'gnus-summary-prepare-exit-hook 'spam-summary-prepare-exit)
+  (add-hook 'gnus-summary-prepare-hook 'spam-summary-prepare)
+  (add-hook 'gnus-get-new-news-hook 'spam-setup-widening))
+
+(defun spam-unload-hook ()
+  "Uninstall the spam.el hooks"
+  (interactive)
+  (remove-hook 'gnus-save-newsrc-hook 'spam-maybe-spam-stat-save)
+  (remove-hook 'gnus-get-top-new-news-hook 'spam-maybe-spam-stat-load)
+  (remove-hook 'gnus-startup-hook 'spam-maybe-spam-stat-load)
+  (remove-hook 'gnus-summary-prepare-exit-hook 'spam-summary-prepare-exit)
+  (remove-hook 'gnus-summary-prepare-hook 'spam-summary-prepare)
+  (remove-hook 'gnus-get-new-news-hook 'spam-setup-widening))
+
+(when spam-install-hooks
+  (spam-install-hooks-function))
 
 (provide 'spam)
 

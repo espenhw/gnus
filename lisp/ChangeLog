@@ -4,6 +4,17 @@
 	(gnus-registry-add-group): use it
 	(gnus-registry-trim-articles-without-groups): new variable
 	(gnus-registry-delete-group): use it
+	(gnus-registry-unload-hook): uninstall all the hooks
+
+	* spam.el (spam-install-hooks-function, spam-unload-hook): new
+	functions so users that load spam.el for customization don't get
+	all the hooks installed
+	(spam-install-hooks): new variable, set to t by default if user
+	has one of the spam-use-* variables set
+
+	* spam-stat.el (spam-stat-install-hooks, spam-stat-unload-hook): new
+	functions so users that load spam-stat.el for customization don't get
+	all the hooks installed
 
 2003-05-30  Dave Love  <fx@gnu.org>
 

@@ -420,6 +420,19 @@ Returns the first place where the trail finds a group name."
 
   (add-hook 'gnus-summary-prepare-hook 'gnus-registry-register-message-ids))
 
+(defun gnus-registry-unload-hook ()
+  "Uninstall the registry hooks."
+  (interactive)
+  (remove-hook 'gnus-summary-article-move-hook 'gnus-register-action) 
+  (remove-hook 'gnus-summary-article-delete-hook 'gnus-register-action)
+  (remove-hook 'gnus-summary-article-expire-hook 'gnus-register-action)
+  (remove-hook 'nnmail-spool-hook 'gnus-register-spool-action)
+  
+  (remove-hook 'gnus-save-newsrc-hook 'gnus-registry-save)
+  (remove-hook 'gnus-read-newsrc-el-hook 'gnus-registry-read)
+
+  (remove-hook 'gnus-summary-prepare-hook 'gnus-registry-register-message-ids))
+
 (when gnus-registry-install
   (gnus-registry-install-hooks))
 

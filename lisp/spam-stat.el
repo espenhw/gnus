@@ -238,12 +238,6 @@ This uses `gnus-article-buffer'."
     (set-buffer gnus-original-article-buffer)
     (spam-stat-store-current-buffer)))
 
-(when spam-stat-install-hooks
-  (add-hook 'nnmail-prepare-incoming-message-hook
-	    'spam-stat-store-current-buffer)
-  (add-hook 'gnus-select-article-hook
-	    'spam-stat-store-gnus-article-buffer))
-
 ;; Data -- not using defstruct in order to save space and time
 
 (defvar spam-stat (make-hash-table :test 'equal)
@@ -566,6 +560,25 @@ COUNT defaults to 5"
 		      count)
 	       (remhash key spam-stat)))
 	   spam-stat))
+
+(defun spam-stat-install-hooks-function ()
+  "Install the spam-stat function hooks"
+  (interactive)
+  (add-hook 'nnmail-prepare-incoming-message-hook
+	    'spam-stat-store-current-buffer)
+  (add-hook 'gnus-select-article-hook
+	    'spam-stat-store-gnus-article-buffer))
+
+(when spam-stat-install-hooks
+  (spam-stat-install-hooks-function))
+
+(defun spam-stat-unload-hook ()
+  "Uninstall the spam-stat function hooks"
+  (interactive)
+  (remove-hook 'nnmail-prepare-incoming-message-hook
+	       'spam-stat-store-current-buffer)
+  (remove-hook 'gnus-select-article-hook
+	       'spam-stat-store-gnus-article-buffer))
 
 (provide 'spam-stat)
 
