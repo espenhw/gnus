@@ -152,7 +152,7 @@ If you want the replies to go to the @code{Sender} instead of the
 (setq message-reply-to-function
       (lambda ()
        (cond ((equal (mail-fetch-field "from") "somebody")
-               (mail-fetch-field "sender"))
+               (cons 'To (mail-fetch-field "sender")))
              (t
               nil))))
 @end lisp
