@@ -101,7 +101,11 @@ This variable is a list of mail source specifiers."
        (:mailbox "INBOX")
        (:predicate "UNSEEN UNDELETED")
        (:fetchflag "\Deleted")
-       (:dontexpunge)))
+       (:dontexpunge))
+      (webmail
+       (:wmtype hotmail)
+       (:user (or (user-login-name) (getenv "LOGNAME") (getenv "USER")))
+       (:password)))
     "Mapping from keywords to default values.
 All keywords that can be used must be listed here."))
 
@@ -110,7 +114,8 @@ All keywords that can be used must be listed here."))
     (directory mail-source-fetch-directory)
     (pop mail-source-fetch-pop)
     (maildir mail-source-fetch-maildir)
-    (imap mail-source-fetch-imap))
+    (imap mail-source-fetch-imap)
+    (webmail mail-source-fetch-webmail))
   "A mapping from source type to fetcher function.")
 
 (defvar mail-source-password-cache nil)
@@ -489,6 +494,16 @@ If ARGS, PROMPT is used as an argument to `format'."
 	(error (imap-error-text buf)))
       (kill-buffer buf)
       found)))
+
+(eval-and-compile
+  (autoload 'webmail-fetch "webmail"))
+
+(defun mail-source-fetch-webmail (source callback)
+  "Fetch for webmail source."
+  (mail-source-bind (webmail source)
+    (save-excursion
+      (webmail-fetch mail-source-crash-box wmtype user password)
+      (mail-source-callback callback (symbol-name wmtype)))))
 
 (provide 'mail-source)
 

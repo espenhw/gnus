@@ -1,3 +1,10 @@
+1999-11-22 04:35:43  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mail-source.el (mail-source-keyword-map): Add webmail.
+	(mail-source-fetcher-alist): Ditto.
+	(mail-source-fetch-webmail): New function.
+	* webmail.el: New file.
+
 1999-11-21 12:20:02  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnwarchive.el (nnwarchive-request-group): Print 0 if it is nil.
