@@ -1,3 +1,9 @@
+2003-06-07  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Article Buttons, Splitting in IMAP)
+	(Category Syntax, Picons): Preemptive strike by
+	alt.possesive.its.has.no.apostrophe.
+
 2003-06-03  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Fancy Mail Splitting): Explain some entries in

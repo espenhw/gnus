@@ -8761,17 +8761,17 @@ message ID or a mail address.  If it is one of the symbols @code{mid} or
 @code{mail}, Gnus will always assume that the string is a message ID or
 a mail address, respectively.  If this variable is set to the symbol
 @code{ask}, always query the user what do do.  If it is a function, this
-function will be called with the string as it's only argument.  The
+function will be called with the string as its only argument.  The
 function must return @code{mid}, @code{mail}, @code{invalid} or
 @code{ask}.  The default value is the function
 @code{gnus-button-mid-or-mail-heuristic}.
 
 @item gnus-button-mid-or-mail-heuristic
 @findex gnus-button-mid-or-mail-heuristic
-Function that guesses whether it's argument is a message ID or a mail
-address.  Returns @code{mid} it's a message IDs, @code{mail} if it's a
-mail address, @code{ask} if unsure and @code{invalid} if the string is
-invalid.
+Function that guesses whether its argument is a message ID or a mail
+address.  Returns @code{mid} if it's a message IDs, @code{mail} if
+it's a mail address, @code{ask} if unsure and @code{invalid} if the
+string is invalid.
 
 @item gnus-button-mid-or-mail-heuristic-alist
 @vindex gnus-button-mid-or-mail-heuristic-alist
@@ -16064,7 +16064,7 @@ Splitting is something Gnus users has loved and used for years, and now
 the rest of the world is catching up.  Yeah, dream on, not many
 @acronym{IMAP} server has server side splitting and those that have splitting
 seem to use some non-standard protocol.  This means that @acronym{IMAP}
-support for Gnus has to do it's own splitting.
+support for Gnus has to do its own splitting.
 
 And it does.
 
@@ -17596,7 +17596,7 @@ just don't give a damn.
 The above predicates apply to @emph{all} the groups which belong to the
 category.  However, if you wish to have a specific predicate for an
 individual group within a category, or you're just too lazy to set up a
-new category, you can enter a group's individual predicate in it's group
+new category, you can enter a group's individual predicate in its group
 parameters like so:
 
 @lisp
@@ -21585,7 +21585,7 @@ taken advantage of that.
 @end iftex
 
 So@dots{}  You want to slow down your news reader even more!  This is a
-good way to do so.  Its also a great way to impress people staring
+good way to do so.  It's also a great way to impress people staring
 over your shoulder as you read news.
 
 What are Picons?  To quote directly from the Picons Web site:
