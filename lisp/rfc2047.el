@@ -783,9 +783,6 @@ it, put the following line in your ~/.gnus.el file:
 (defvar rfc2047-quote-decoded-words-containing-tspecials nil
   "If non-nil, quote decoded words containing special characters.")
 
-(defvar rfc2047-quote-decoded-words-containing-tspecials nil
-  "If non-nil, quote decoded words containing special characters.")
-
 ;; Fixme: This should decode in place, not cons intermediate strings.
 ;; Also check whether it needs to worry about delimiting fields like
 ;; encoding.
