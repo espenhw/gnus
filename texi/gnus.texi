@@ -5825,20 +5825,23 @@ additional articles.
 @kindex / / (Summary)
 @findex gnus-summary-limit-to-subject
 Limit the summary buffer to articles that match some subject
-(@code{gnus-summary-limit-to-subject}).
+(@code{gnus-summary-limit-to-subject}). If given a prefix, exclude
+matching articles.
 
 @item / a
 @kindex / a (Summary)
 @findex gnus-summary-limit-to-author
 Limit the summary buffer to articles that match some author
-(@code{gnus-summary-limit-to-author}).
+(@code{gnus-summary-limit-to-author}). If given a prefix, exclude
+matching articles.
 
 @item / x
 @kindex / x (Summary)
 @findex gnus-summary-limit-to-extra
 Limit the summary buffer to articles that match one of the ``extra''
 headers (@pxref{To From Newsgroups})
-(@code{gnus-summary-limit-to-extra}).
+(@code{gnus-summary-limit-to-extra}). If given a prefix, exclude
+matching articles.
 
 @item / u
 @itemx x
