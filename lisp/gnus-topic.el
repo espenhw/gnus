@@ -1019,7 +1019,10 @@ articles in the topic and its subtopics."
       (when (gnus-visual-p 'topic-menu 'menu)
 	(gnus-topic-make-menu-bar))
       (gnus-set-format 'topic t)
-      (gnus-add-minor-mode 'gnus-topic-mode " Topic" gnus-topic-mode-map)
+      (gnus-add-minor-mode 'gnus-topic-mode " Topic"
+			   gnus-topic-mode-map nil (lambda (&rest junk)
+						     (interactive)
+						     (gnus-topic-mode nil t)))
       (add-hook 'gnus-group-catchup-group-hook 'gnus-topic-update-topic)
       (set (make-local-variable 'gnus-group-prepare-function)
 	   'gnus-group-prepare-topics)
