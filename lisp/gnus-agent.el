@@ -713,7 +713,7 @@ the actual number of articles toggled is returned."
 	   (coding-system-for-write nnheader-file-coding-system)
 	   (file-name-coding-system nnmail-pathname-coding-system)
 	   (file (gnus-agent-lib-file "active"))
-	   oactive)
+	   oactive-min)
       (gnus-make-directory (file-name-directory file))
       (with-temp-file file
 	;; Emacs got problem to match non-ASCII group in multibyte buffer.
@@ -723,14 +723,13 @@ the actual number of articles toggled is returned."
 	(goto-char (point-min))
 	(when (re-search-forward
 	       (concat "^" (regexp-quote group) " ") nil t)
-	  (delete-region (point-min) (match-beginning 0))
-	  (delete-region (progn 
-			   (forward-line 1)
-			   (point)) (point-max))
-	  (setq oactive (car-safe (cdr-safe (car-safe (nnmail-parse-active))))))
+          (save-excursion
+	    (read (current-buffer))                      ;; max
+	    (setq oactive-min (read (current-buffer))))  ;; min
+	  (gnus-delete-line))
 	(insert (format "%S %d %d y\n" (intern group)
 			(cdr active)
-			(or (car oactive) (car active))))
+			(or oactive-min (car active))))
 	(goto-char (point-max))
 	(while (search-backward "\\." nil t)
 	  (delete-char 1))))))

@@ -1,4 +1,10 @@
 2001-07-29  Simon Josefsson  <jas@extundo.com>
+	From Christoph Conrad <christoph.conrad@gmx.de>
+
+	* gnus-agent.el (gnus-agent-save-group-info): Don't destroy active
+	file.
+
+2001-07-29  Simon Josefsson  <jas@extundo.com>
 
 	* mm-view.el (mm-view-pkcs7-decrypt): Adhere to `mm-decrypt-option'.
 
