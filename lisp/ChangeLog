@@ -1,3 +1,8 @@
+2000-02-19  Simon Josefsson  <jas@pdc.kth.se>
+
+	* mail-source.el (mail-source-fetch-imap): Copy `imap-password'
+	into `mail-source-password-cache'.
+
 2000-02-17  Florian Weimer  <fw@deneb.cygnus.argh.org>
 
 	* mm-util.el (mm-mime-charset): Check for presence of
