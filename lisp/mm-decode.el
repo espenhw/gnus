@@ -36,7 +36,8 @@
   "Display of MIME in mail and news articles."
   :link '(custom-manual "(emacs-mime)Customization")
   :group 'mail
-  :group 'news)
+  :group 'news
+  :group 'multimedia)
 
 ;;; Convenience macros.
 
@@ -767,27 +768,29 @@ external if displayed external."
 	  (prog1
 	      (setq spec
 		    (ignore-errors
-		      (if (fboundp 'make-glyph)
-			  (cond
-			   ((equal type "xbm")
-			    ;; xbm images require special handling, since
-			    ;; the only way to create glyphs from these
-			    ;; (without a ton of work) is to write them
-			    ;; out to a file, and then create a file
-			    ;; specifier.
-			    (let ((file (make-temp-name
-					 (expand-file-name "emm.xbm"
-							   mm-tmp-directory))))
-			      (unwind-protect
-				  (progn
-				    (write-region (point-min) (point-max) file)
-				    (make-glyph (list (cons 'x file))))
-				(ignore-errors
-				  (delete-file file)))))
-			   (t
-			    (make-glyph
-			     (vector (intern type) :data (buffer-string)))))
-			(create-image (buffer-string) (intern type) 'data-p))))
+		     ;; Avoid testing `make-glyph' since W3 may define
+		     ;; a bogus version of it.
+		      (if (fboundp 'create-image)
+			  (create-image (buffer-string) (intern type) 'data-p)
+			(cond
+			 ((equal type "xbm")
+			  ;; xbm images require special handling, since
+			  ;; the only way to create glyphs from these
+			  ;; (without a ton of work) is to write them
+			  ;; out to a file, and then create a file
+			  ;; specifier.
+			  (let ((file (make-temp-name
+				       (expand-file-name "emm.xbm"
+							 mm-tmp-directory))))
+			    (unwind-protect
+				(progn
+				  (write-region (point-min) (point-max) file)
+				  (make-glyph (list (cons 'x file))))
+			      (ignore-errors
+			       (delete-file file)))))
+			 (t
+			  (make-glyph
+			   (vector (intern type) :data (buffer-string))))))))
 	    (mm-handle-set-cache handle spec))))))
 
 (defun mm-image-fit-p (handle)
