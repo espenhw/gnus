@@ -1029,12 +1029,12 @@ should be sent in several parts. If it is nil, the size is unlimited."
 		  (progn (forward-line ,(or n 1)) (point))))
 
 (defun message-unquote-tokens (elems)
-  "Remove leading and trailing double quotes (\") from quoted strings
-in list."
+  "Remove double quotes (\") from strings in list."
   (mapcar (lambda (item)
-            (if (string-match "^\"\\(.*\\)\"$" item)
-                (match-string 1 item)
-              item))
+            (while (string-match "^\\(.*\\)\"\\(.*\\)$" item)
+              (setq item (concat (match-string 1 item) 
+                                 (match-string 2 item))))
+            item)
           elems))
 
 (defun message-tokenize-header (header &optional separator)

@@ -1,3 +1,7 @@
+2000-07-03  Paul Stodghill <stodghil@CS.Cornell.EDU>
+
+	* message.el (message-unquote-tokens): Remove all quotes.
+
 2000-07-03 00:29:08  Julien Gilles  <julien.gilles@bcv01y01.vz.cit.alcatel.fr>
 
 	* gnus-ml.el: New file. 
