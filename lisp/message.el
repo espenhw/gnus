@@ -2128,8 +2128,8 @@ However, if `message-yank-prefix' is non-nil, insert that prefix on each line."
 	(indent-rigidly start (mark t) message-indentation-spaces)
       (save-excursion
 	(goto-char start)
-	  (while (< (point) (mark t))
-	  (if (looking-at ">")
+	(while (< (point) (mark t))
+	  (if (or (looking-at ">") (looking-at "^$"))
 	      (insert message-yank-cited-prefix)
  	    (insert message-yank-prefix))
  	  (forward-line 1))))
