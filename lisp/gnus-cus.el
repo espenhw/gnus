@@ -309,16 +309,26 @@ has been stored locally for at least this many days."
        gnus-agent-cat-days-until-old)
       (agent-enable-expiration
        (radio :tag "Expire in this Group or Topic" :value nil
-;              (const :format "Inherit " nil)
               (const :format "Enable " ENABLE)
               (const :format "Disable " DISABLE))
        "\nEnable, or disable, agent expiration in this group or topic."
-       gnus-agent-cat-enable-expiration) )
+       gnus-agent-cat-enable-expiration)
+      (agent-disable-undownloaded-faces
+       (boolean :tag "Disable Agent Faces")
+       "Have the summary buffer ignore the agent's undownloaded faces.
+These faces, when used, act as a warning that an article has not been
+fetched into either the agent nor the cache.  This is of most use to
+users who use the agent as a cache (i.e. they only operate on articles
+that have been downloaded).  Disable to display normal article faces
+even when the article hasn't been downloaded."
+       gnus-agent-cat-disable-undownloaded-faces))
     "Alist of group parameters that are not also topic parameters.
 
-Each entry has the form (NAME TYPE DOC), where NAME is the parameter
-itself (a symbol), TYPE is the parameters type (a sexp widget), and
-DOC is a documentation string for the parameter."))
+Each entry has the form (NAME TYPE DOC ACCESSOR), where NAME is the
+parameter itself (a symbol), TYPE is the parameters type (a sexp
+widget), DOC is a documentation string for the parameter, and ACCESSOR
+is a function (symbol) that extracts the current value from the
+category."))
 
 (defvar gnus-custom-params)
 (defvar gnus-custom-method)
@@ -878,16 +888,6 @@ articles in the thread.
 
 (eval-when-compile
   (defvar category-fields nil)
-  (defvar gnus-agent-cat-predicate nil)
-  (defvar gnus-agent-cat-score-file nil)
-  (defvar gnus-agent-cat-length-when-short nil)
-  (defvar gnus-agent-cat-length-when-long nil)
-  (defvar gnus-agent-cat-low-score nil)
-  (defvar gnus-agent-cat-high-score nil)
-  (defvar gnus-agent-cat-groups nil)
-  (defvar gnus-agent-cat-enable-expiration nil)
-  (defvar gnus-agent-cat-days-until-old nil)
-  (defvar gnus-agent-cat-name nil)
 )
 
 (defun gnus-trim-whitespace (s)
@@ -905,7 +905,8 @@ articles in the thread.
             (val (,field info))
             (deflt (if (,field defaults)
                        (concat " [" (gnus-trim-whitespace
-                                     (pp-to-string (,field defaults))) "]"))))
+                                     (pp-to-string (,field defaults))) "]")))
+            symb)
 
        (if (eq (car type) 'radio)
            (let* ((rtype (nreverse type))
@@ -928,13 +929,14 @@ articles in the thread.
 
        (widget-insert "\n")
 
-       (set (make-local-variable ',field)
-            (if val
-                (widget-create type :value val)
-              (widget-create type)))
-       (widget-put ,field :default val)
-       (widget-put ,field :accessor ',field)
-       (push ,field category-fields))))
+       (setq val (if val
+                     (widget-create type :value val)
+                   (widget-create type))
+             symb (set (make-local-variable ',field) val))
+
+       (widget-put symb :default val)
+       (widget-put symb :accessor ',field)
+       (push symb category-fields))))
 
 (defun gnus-agent-customize-category (category)
   "Edit the CATEGORY."
@@ -1001,28 +1003,32 @@ articles in the thread.
       ;; gnus-agent-cat-prepare-category-field as I don't want the
       ;; group list to appear when customizing a topic.
       (widget-insert "\n")
-      (set (make-local-variable 'gnus-agent-cat-groups)
-           (widget-create
-            `(choice
-              :format "%[Select Member Groups%]\n%v" :value ignore
-              (const :menu-tag "do not change" :tag "" :value ignore)
-              (checklist :entry-format "%b %v"
-                         :menu-tag "display group selectors"
-                         :greedy t
-                         :value ,(delq nil
-                                       (mapcar
-                                        (lambda (newsrc)
-                                          (car (member
-                                                (gnus-info-group newsrc)
-                                                (gnus-agent-cat-groups info))))
-                                        (cdr gnus-newsrc-alist)))
-                         ,@(mapcar (lambda (newsrc)
-                                     `(const ,(gnus-info-group newsrc)))
-                                   (cdr gnus-newsrc-alist))))))
+      
+      (let ((symb 
+             (set 
+              (make-local-variable 'gnus-agent-cat-groups)
+              (widget-create
+               `(choice
+                 :format "%[Select Member Groups%]\n%v" :value ignore
+                 (const :menu-tag "do not change" :tag "" :value ignore)
+                 (checklist :entry-format "%b %v"
+                            :menu-tag "display group selectors"
+                            :greedy t
+                            :value
+                            ,(delq nil
+                                   (mapcar
+                                    (lambda (newsrc)
+                                      (car (member
+                                            (gnus-info-group newsrc)
+                                            (gnus-agent-cat-groups info))))
+                                    (cdr gnus-newsrc-alist)))
+                            ,@(mapcar (lambda (newsrc)
+                                        `(const ,(gnus-info-group newsrc)))
+                                      (cdr gnus-newsrc-alist))))))))
 
-      (widget-put gnus-agent-cat-groups :default (gnus-agent-cat-groups info))
-      (widget-put gnus-agent-cat-groups :accessor 'gnus-agent-cat-groups)
-      (push gnus-agent-cat-groups category-fields)
+      (widget-put symb :default (gnus-agent-cat-groups info))
+      (widget-put symb :accessor 'gnus-agent-cat-groups)
+      (push symb category-fields))
 
       (widget-insert "\nExpiration Settings ")
 
