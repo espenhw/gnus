@@ -1,3 +1,14 @@
+2002-08-21  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* gnus.el (gnus-other-frame-parameters): New user option.
+	(gnus-other-frame-object): New variable.
+	(gnus-other-frame): Make it search for existing Gnus frame; don't
+	read new news; delete frame on exit.
+
+	* gnus-util.el (gnus-select-frame-set-input-focus): New function.
+
+	* lpath.el: Fbind w32-focus-frame and x-focus-frame.
+
 2002-08-20  Katsumi Yamaoka <yamaoka@jpl.org>
 	From 小関 吉則 (KOSEKI Yoshinori) <kose@meadowy.org>.
 

@@ -1264,6 +1264,29 @@ CHOICE is a list of the choice char and help message at IDX."
 	(kill-buffer buf))
     tchar))
 
+(defun gnus-select-frame-set-input-focus (frame)
+  "Select FRAME, raise it, and set input focus, if possible."
+  (cond ((featurep 'xemacs)
+	 (raise-frame frame)
+	 (select-frame frame)
+	 (focus-frame frame))
+	;; The function `select-frame-set-input-focus' won't set
+	;; the input focus under Emacs 21.2 and X window system.
+	;;((fboundp 'select-frame-set-input-focus)
+	;; (defalias 'gnus-select-frame-set-input-focus
+	;;   'select-frame-set-input-focus)
+	;; (select-frame-set-input-focus frame))
+	(t
+	 (raise-frame frame)
+	 (select-frame frame)
+	 (cond ((and (eq window-system 'x)
+		     (fboundp 'x-focus-frame))
+		(x-focus-frame frame))
+	       ((eq window-system 'w32)
+		(w32-focus-frame frame)))
+	 (when focus-follows-mouse
+	   (set-mouse-position frame (1- (frame-width frame)) 0)))))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

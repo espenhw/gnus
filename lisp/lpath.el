@@ -42,7 +42,8 @@
 	       url-insert-file-contents
 	       w3-coding-system-for-mime-charset w3-prepare-buffer w3-region
 	       w3m-charset-to-coding-system w3m-region
-	       widget-make-intangible x-defined-colors))
+	       widget-make-intangible x-defined-colors
+	       w32-focus-frame x-focus-frame))
 
 (maybe-bind '(adaptive-fill-first-line-regexp
 	      adaptive-fill-regexp babel-history babel-translations
@@ -130,6 +131,6 @@
   )
 
 (defun nnkiboze-score-file (a)
-)
+  )
 
 (provide 'lpath)
