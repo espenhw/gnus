@@ -126,18 +126,22 @@ Newsgroup must be selected before calling this function."
 	    'nov
 	  (while sequence
 	    (setq article (car sequence))
-	    (setq file (concat nnspool-current-directory 
-			       (int-to-string article)))
-	    (and (file-exists-p file)
-		 (progn
-		   (insert (format "221 %d Article retrieved.\n" article))
-		   (setq beg (point))
-		   (insert-file-contents file)
-		   (goto-char beg)
-		   (search-forward "\n\n" nil t)
-		   (forward-char -1)
-		   (insert ".\n")
-		   (delete-region (point) (point-max))))
+	    (if (stringp article)
+		(progn
+		  (format "221 %d Article retrieved.\n" 0)
+		  (nnspool-request-article article))
+	      (setq file (concat nnspool-current-directory 
+				 (int-to-string article)))
+	      (and (file-exists-p file)
+		   (progn
+		     (insert (format "221 %d Article retrieved.\n" article))
+		     (setq beg (point))
+		     (insert-file-contents file)
+		     (goto-char beg)
+		     (search-forward "\n\n" nil t)
+		     (forward-char -1)
+		     (insert ".\n")
+		     (delete-region (point) (point-max)))))
 	    (setq sequence (cdr sequence))
 	    
 	    (and do-message

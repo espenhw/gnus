@@ -27,7 +27,7 @@
 ;;; Code: 
 
 (require 'gnus)
-(require 'gnus-message)
+(require 'gnus-msg)
 
 ;; Default viewing action rules
 
@@ -1074,7 +1074,7 @@ so I simply dropped them.")
 
 (defun gnus-uu-part-number (article)
   (let ((subject (header-subject (gnus-get-header-by-number article))))
-    (if (string-match "([0-9]+ */[0-9]+)\\|([0-9]+ * of *[0-9]+)"
+    (if (string-match "[0-9]+ */[0-9]+\\|[0-9]+ * of *[0-9]+"
 		      subject)
 	(substring subject (match-beginning 0) (match-end 0))
       "")))

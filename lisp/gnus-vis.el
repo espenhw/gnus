@@ -495,6 +495,6 @@ To check for marks, e.g. to underline replied articles, use
 	   (easy-menu-add gnus-article-treatment-menu)) 
 	 gnus-article-mode-hook)))
 
-(provide 'gnus-visual)
+(provide 'gnus-vis)
 
 ;;; gnus-visual.el ends here

@@ -1,10 +1,69 @@
-Wed Apr 26 15:57:28 1995  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+Fri Apr 28 00:24:34 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
+
+	* gnus.el (gnus-set-mode-line): Would bug out on nil max-lens. 
+	(gnus-summary-read-group): Did not properly configure windows on
+	breaks. 
+
+Wed Apr 26 19:48:36 1995  Scott Byer  <byer@mv.us.adobe.com>
+
+	* gnus.el (gnus-group-get-new-news) Off by one with relation to
+        the fix in gnus-get-unread-articles.
+
+Thu Apr 27 23:46:32 1995  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* gnus.el (gnus-summary-next-article): Would bug out on nndigest
+	groups. 
+
+Thu Apr 27 13:45:21 1995  Scott Byer  <byer@mv.us.adobe.com>
+
+	* nnfolder.el (nnfolder-request-group) Fixed it so it returns an
+        active list even when the flag for not checking mail is t.
+
+	* gnus.el (gnus-get-unread-articles) Changed comparison with level
+        to < to fix fencepost error.  Forced active to nil in the case
+        where a foreign newsgroup shouldn't be activated.
+
+Wed Apr 26 19:48:36 1995  Scott Byer  <byer@mv.us.adobe.com>
+
+	* nnfolder.el (nnfolder-request-group) Small performance tweak.
+
+	* nnfolder.el (nnfolder-save-mail) Moved the code to kill previous
+        newsgroups headers into the loop, affects mail saved to multiple
+        folders so that they don't have multiple newsgroup markers
+        anymore.
+
+	* nnfolder.el (various) Made sure buffer needed saving before each
+        request.
+
+Thu Apr 27 22:34:13 1995  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* gnus.el (gnus-parse-newsrc-body): Would reverse the list of
+	groups if no .newsrc.eld file is present.
+	(gnus-parse-newsrc-body): Would subscribe unsubscribed groups.
+	(gnus-summary-mode-map): Many keymap changes.
+
+Thu Apr 27 21:45:05 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus-msg.el (gnus-inews-organization): Use the standard work
+	buffer.
+	(gnus-post-news): Did not use followup-to.
+
+Thu Apr 27 12:38:41 1995  Lars Magne Ingebrigtsen  <larsi@bera.ifi.uio.no>
+
+	* gnus-kill.el (gnus-apply-kill-file-internal): Give abetter error
+	massage on rn kill files.
+
+	* gnus.el (gnus-article-de-quoted-unreadable): No interactive spec.
+
+Wed Apr 26 15:57:28 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus-message.el (gnus-inews-check-post): Would warn about too
 	long lines when the last line didn't have a newline.
 
 	* gnus-score.el (gnus-score-string): Would loop forever on empty
 	matches. 
+
+	* gnus.el: 0.60 is released.
 
 Wed Apr 26 15:08:00 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
 

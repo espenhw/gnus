@@ -1314,7 +1314,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "Lars Magne Ingebrigtsen <larsi@ifi.uio.no>"
   "The mail address of the Gnus maintainer.")
 
-(defconst gnus-version "(ding) Gnus v0.60"
+(defconst gnus-version "(ding) Gnus v0.61"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1519,7 +1519,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
   (autoload 'mail-setup "sendmail")
   (autoload 'news-mail-other-window "rnewspost")
   (autoload 'news-reply-yank-original "rnewspost")
-  
+  (autoload 'news-caesar-buffer-body "rnewspost")
+
   (autoload 'rmail-insert-rmail-file-header "rmail")
   (autoload 'rmail-count-new-messages "rmail")
   (autoload 'rmail-show-message "rmail")
@@ -1531,11 +1532,11 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
   (autoload 'gnus-Folder-save-name "gnus-mh")
   (autoload 'gnus-folder-save-name "gnus-mh")
   
-  (autoload 'gnus-group-make-menu-bar "gnus-visual")
-  (autoload 'gnus-summary-make-menu-bar "gnus-visual")
-  (autoload 'gnus-article-make-menu-bar "gnus-visual")
-  (autoload 'gnus-visual-highlight-selected-summary "gnus-visual")
-  (autoload 'gnus-visual-summary-highlight-line "gnus-visual")
+  (autoload 'gnus-group-make-menu-bar "gnus-vis")
+  (autoload 'gnus-summary-make-menu-bar "gnus-vis")
+  (autoload 'gnus-article-make-menu-bar "gnus-vis")
+  (autoload 'gnus-visual-highlight-selected-summary "gnus-vis")
+  (autoload 'gnus-visual-summary-highlight-line "gnus-vis")
 
   (autoload 'gnus-uu-mark-by-regexp "gnus-uu" nil t)
   (autoload 'gnus-uu-mark-region "gnus-uu" nil t)
@@ -1584,27 +1585,27 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
   (autoload 'gnus-score-adaptive "gnus-score")
   (autoload 'gnus-score-remove-lines-adaptive "gnus-score")
 
-  (autoload 'gnus-summary-send-map "gnus-message" nil nil 'keymap)
-  (autoload 'gnus-group-post-news "gnus-message" nil t)
-  (autoload 'gnus-summary-post-news "gnus-message" nil t)
-  (autoload 'gnus-summary-followup "gnus-message" nil t)
-  (autoload 'gnus-summary-followup-with-original "gnus-message" nil t)
-  (autoload 'gnus-summary-followup-and-reply "gnus-message" nil t)
-  (autoload 'gnus-summary-followup-and-reply-with-original "gnus-message" nil t)
-  (autoload 'gnus-summary-cancel-article "gnus-message" nil t)
-  (autoload 'gnus-summary-supersede-article "gnus-message" nil t)
-  (autoload 'gnus-post-news "gnus-message" nil t)
-  (autoload 'gnus-inews-news "gnus-message" nil t)
-  (autoload 'gnus-cancel-news "gnus-message" nil t)
-  (autoload 'gnus-summary-reply "gnus-message" nil t)
-  (autoload 'gnus-summary-reply-with-original "gnus-message" nil t)
-  (autoload 'gnus-summary-mail-forward "gnus-message" nil t)
-  (autoload 'gnus-summary-mail-other-window "gnus-message" nil t)
-  (autoload 'gnus-mail-reply-using-mail "gnus-message")
-  (autoload 'gnus-mail-yank-original "gnus-message")
-  (autoload 'gnus-mail-send-and-exit "gnus-message")
-  (autoload 'gnus-mail-forward-using-mail "gnus-message")
-  (autoload 'gnus-mail-other-window-using-mail "gnus-message")
+  (autoload 'gnus-summary-send-map "gnus-msg" nil nil 'keymap)
+  (autoload 'gnus-group-post-news "gnus-msg" nil t)
+  (autoload 'gnus-summary-post-news "gnus-msg" nil t)
+  (autoload 'gnus-summary-followup "gnus-msg" nil t)
+  (autoload 'gnus-summary-followup-with-original "gnus-msg" nil t)
+  (autoload 'gnus-summary-followup-and-reply "gnus-msg" nil t)
+  (autoload 'gnus-summary-followup-and-reply-with-original "gnus-msg" nil t)
+  (autoload 'gnus-summary-cancel-article "gnus-msg" nil t)
+  (autoload 'gnus-summary-supersede-article "gnus-msg" nil t)
+  (autoload 'gnus-post-news "gnus-msg" nil t)
+  (autoload 'gnus-inews-news "gnus-msg" nil t)
+  (autoload 'gnus-cancel-news "gnus-msg" nil t)
+  (autoload 'gnus-summary-reply "gnus-msg" nil t)
+  (autoload 'gnus-summary-reply-with-original "gnus-msg" nil t)
+  (autoload 'gnus-summary-mail-forward "gnus-msg" nil t)
+  (autoload 'gnus-summary-mail-other-window "gnus-msg" nil t)
+  (autoload 'gnus-mail-reply-using-mail "gnus-msg")
+  (autoload 'gnus-mail-yank-original "gnus-msg")
+  (autoload 'gnus-mail-send-and-exit "gnus-msg")
+  (autoload 'gnus-mail-forward-using-mail "gnus-msg")
+  (autoload 'gnus-mail-other-window-using-mail "gnus-msg")
 
   )
 
@@ -2491,17 +2492,6 @@ If nothing is specified, use the variable gnus-overload-functions."
       (yes-or-no-p prompt)
     (message "")))
 
-;; Return a string of length POS+1 representing NUMber in reverse
-;; BASE. The resulting string will be left padded with zeds.
-(defun gnus-number-base-x (num pos base)
-  (if (< pos 0)
-      ""
-    (concat 
-     (char-to-string
-      (aref "zyxwvutsrqponmlkjihgfedcba9876543210" (/ num (expt base pos))))
-     (gnus-number-base-x 
-      (% num (expt base pos)) (1- pos) base))))
-
 ;; Check whether to use long file names.
 (defun gnus-use-long-file-name (symbol)
   ;; The variable has to be set...
@@ -3325,6 +3315,7 @@ If VISIBLE-ONLY is non-nil, the group won't be displayed if it isn't already."
 	  (or visible-only
 	      (let ((entry (cdr (gnus-gethash group gnus-newsrc-hashtb))))
 		(while (and entry
+			    (car entry)
 			    (not
 			     (gnus-goto-char
 			      (text-property-any
@@ -3593,10 +3584,10 @@ ADDRESS."
 (defun gnus-group-edit-group (group &optional part)
   "Edit the group on the current line."
   (interactive (list (gnus-group-group-name)))
-  (let ((done-func (lambda () 
-		     "Exit editing mode and update the information."
-		     (interactive)
-		     (gnus-group-edit-group-done 'part 'group)))
+  (let ((done-func '(lambda () 
+		      "Exit editing mode and update the information."
+		      (interactive)
+		      (gnus-group-edit-group-done 'part 'group)))
 	(part (or part 'info))
 	info)
     (if group (setq info (nth 2 (gnus-gethash group gnus-newsrc-hashtb)))
@@ -4037,15 +4028,16 @@ If ARG is non-nil, it should be a number between one and nine to
 specify which levels you are interested in re-scanning."
   (interactive "P")
   (run-hooks 'gnus-get-new-news-hook)
-  (if (and gnus-read-active-file (not arg))
-      (progn
-	(gnus-read-active-file)
-	(gnus-get-unread-articles (or arg (1+ gnus-level-subscribed))))
-    (let ((gnus-read-active-file nil))
-      (gnus-get-unread-articles (or arg (1+ gnus-level-subscribed)))))
-  (gnus-group-list-groups 
-   (or gnus-group-always-list-unread arg gnus-level-subscribed)
-   gnus-have-all-newsgroups))
+  (let ((level arg))
+    (if (and gnus-read-active-file (not level))
+	(progn
+	  (gnus-read-active-file)
+	  (gnus-get-unread-articles (or level (1+ gnus-level-subscribed))))
+      (let ((gnus-read-active-file nil))
+	(gnus-get-unread-articles (or level (1+ gnus-level-subscribed)))))
+    (gnus-group-list-groups 
+     (or gnus-group-always-list-unread level gnus-level-subscribed)
+     gnus-have-all-newsgroups)))
 
 (defun gnus-group-get-new-news-this-group (n)
   "Check for newly arrived news in the current group (and the N-1 next groups).
@@ -4533,8 +4525,10 @@ and the second element is the address."
 (defvar gnus-summary-interest-map nil)
 (defvar gnus-summary-process-map nil)
 (defvar gnus-summary-sort-map nil)
-(defvar gnus-summary-mgroup-map nil)
-(defvar gnus-summary-vsave-map nil)
+(defvar gnus-summary-backend-map nil)
+(defvar gnus-summary-save-map nil)
+(defvar gnus-summary-wash-map nil)
+(defvar gnus-summary-help-map nil)
 
 (put 'gnus-summary-mode 'mode-class 'special)
 
@@ -4725,6 +4719,8 @@ and the second element is the address."
   (define-key gnus-summary-exit-map "Q" 'gnus-summary-exit)
   (define-key gnus-summary-exit-map "Z" 'gnus-summary-exit)
   (define-key gnus-summary-exit-map "n" 'gnus-summary-catchup-and-goto-next-group)
+  (define-key gnus-summary-exit-map "R" 'gnus-summary-reselect-current-group)
+  (define-key gnus-summary-exit-map "G" 'gnus-summary-rescan-group)
 
 
   (define-prefix-command 'gnus-summary-article-map)
@@ -4744,19 +4740,52 @@ and the second element is the address."
   (define-key gnus-summary-article-map "c" 'gnus-summary-caesar-message)
   (define-key gnus-summary-article-map "g" 'gnus-summary-show-article)
   (define-key gnus-summary-article-map "t" 'gnus-summary-toggle-header)
-  (define-key gnus-summary-article-map "hh" 'gnus-article-hide-headers)
-  (define-key gnus-summary-article-map "hs" 'gnus-article-hide-signature)
-  (define-key gnus-summary-article-map "hc" 'gnus-article-hide-citation)
-  (define-key gnus-summary-article-map "ho" 'gnus-article-treat-overstrike)
-  (define-key gnus-summary-article-map "hw" 'gnus-article-word-wrap)
-  (define-key gnus-summary-article-map "hd" 'gnus-article-remove-cr)
-  (define-key gnus-summary-article-map "hq" 'gnus-article-de-quoted-unreadable)
-  (define-key gnus-summary-article-map "hf" 'gnus-article-display-x-face)
-  (define-key gnus-summary-article-map "ht" 'gnus-article-date-ut)
-  (define-key gnus-summary-article-map "h\C-t" 'gnus-article-date-local)
-  (define-key gnus-summary-article-map "hT" 'gnus-article-date-lapsed)
   (define-key gnus-summary-article-map "m" 'gnus-summary-toggle-mime)
   (define-key gnus-summary-article-map "s" 'gnus-summary-isearch-article)
+
+
+  (define-prefix-command 'gnus-summary-wash-map)
+  (define-key gnus-summary-mode-map "W" 'gnus-summary-wash-map)
+  (define-key gnus-summary-wash-map "h" 'gnus-article-hide-headers)
+  (define-key gnus-summary-wash-map "s" 'gnus-article-hide-signature)
+  (define-key gnus-summary-wash-map "c" 'gnus-article-hide-citation)
+  (define-key gnus-summary-wash-map "o" 'gnus-article-treat-overstrike)
+  (define-key gnus-summary-wash-map "w" 'gnus-article-word-wrap)
+  (define-key gnus-summary-wash-map "d" 'gnus-article-remove-cr)
+  (define-key gnus-summary-wash-map "q" 'gnus-article-de-quoted-unreadable)
+  (define-key gnus-summary-wash-map "f" 'gnus-article-display-x-face)
+  (define-key gnus-summary-wash-map "t" 'gnus-article-date-ut)
+  (define-key gnus-summary-wash-map "\C-t" 'gnus-article-date-local)
+  (define-key gnus-summary-wash-map "T" 'gnus-article-date-lapsed)
+
+
+  (define-prefix-command 'gnus-summary-help-map)
+  (define-key gnus-summary-mode-map "H" 'gnus-summary-help-map)
+  (define-key gnus-summary-help-map "v" 'gnus-version)
+  (define-key gnus-summary-help-map "f" 'gnus-summary-fetch-faq)
+  (define-key gnus-summary-help-map "d" 'gnus-summary-describe-group)
+  (define-key gnus-summary-help-map "h" 'gnus-summary-describe-briefly)
+  (define-key gnus-summary-help-map "i" 'gnus-info-find-node)
+
+
+  (define-prefix-command 'gnus-summary-backend-map)
+  (define-key gnus-summary-mode-map "B" 'gnus-summary-backend-map)
+  (define-key gnus-summary-backend-map "e" 'gnus-summary-expire-articles)
+  (define-key gnus-summary-backend-map "\177" 'gnus-summary-delete-article)
+  (define-key gnus-summary-backend-map "m" 'gnus-summary-move-article)
+  (define-key gnus-summary-backend-map "r" 'gnus-summary-respool-article)
+  (define-key gnus-summary-backend-map "w" 'gnus-summary-edit-article)
+  (define-key gnus-summary-backend-map "c" 'gnus-summary-copy-article)
+
+
+  (define-prefix-command 'gnus-summary-save-map)
+  (define-key gnus-summary-mode-map "O" 'gnus-summary-save-map)
+  (define-key gnus-summary-save-map "o" 'gnus-summary-save-article)
+  (define-key gnus-summary-save-map "m" 'gnus-summary-save-article-mail)
+  (define-key gnus-summary-save-map "r" 'gnus-summary-save-article-rmail)
+  (define-key gnus-summary-save-map "f" 'gnus-summary-save-article-file)
+  (define-key gnus-summary-save-map "h" 'gnus-summary-save-article-folder)
+  (define-key gnus-summary-save-map "p" 'gnus-summary-pipe-output)
 
 
   (define-prefix-command 'gnus-summary-extract-map)
@@ -4798,25 +4827,9 @@ and the second element is the address."
   (define-key gnus-summary-various-map "&" 'gnus-summary-execute-command)
   (define-key gnus-summary-various-map "T" 'gnus-summary-toggle-truncation)
   (define-key gnus-summary-various-map "e" 'gnus-summary-expand-window)
-  (define-key gnus-summary-various-map "S" 'gnus-summary-reselect-current-group)
-  (define-key gnus-summary-various-map "g" 'gnus-summary-rescan-group)
-  (define-key gnus-summary-various-map "V" 'gnus-version)
-  (define-key gnus-summary-various-map "f" 'gnus-summary-fetch-faq)
-  (define-key gnus-summary-various-map "d" 'gnus-summary-describe-group)
-  (define-key gnus-summary-various-map "?" 'gnus-summary-describe-briefly)
-  (define-key gnus-summary-various-map "i" 'gnus-info-find-node)
   (define-key gnus-summary-various-map "D" 'gnus-summary-enter-digest-group)
   (define-key gnus-summary-various-map "k" 'gnus-summary-edit-local-kill)
   (define-key gnus-summary-various-map "K" 'gnus-summary-edit-global-kill)
-
-  (define-prefix-command 'gnus-summary-vsave-map)
-  (define-key gnus-summary-various-map "o" 'gnus-summary-vsave-map)
-  (define-key gnus-summary-vsave-map "o" 'gnus-summary-save-article)
-  (define-key gnus-summary-vsave-map "m" 'gnus-summary-save-article-mail)
-  (define-key gnus-summary-vsave-map "r" 'gnus-summary-save-article-rmail)
-  (define-key gnus-summary-vsave-map "f" 'gnus-summary-save-article-file)
-  (define-key gnus-summary-vsave-map "h" 'gnus-summary-save-article-folder)
-  (define-key gnus-summary-vsave-map "p" 'gnus-summary-pipe-output)
 
   (define-key gnus-summary-various-map "S" 'gnus-summary-score-map)
 
@@ -4827,15 +4840,6 @@ and the second element is the address."
   (define-key gnus-summary-sort-map "s" 'gnus-summary-sort-by-subject)
   (define-key gnus-summary-sort-map "d" 'gnus-summary-sort-by-date)
   (define-key gnus-summary-sort-map "i" 'gnus-summary-sort-by-score)
-
-  (define-prefix-command 'gnus-summary-mgroup-map)
-  (define-key gnus-summary-various-map "m" 'gnus-summary-mgroup-map)
-  (define-key gnus-summary-mgroup-map "e" 'gnus-summary-expire-articles)
-  (define-key gnus-summary-mgroup-map "\177" 'gnus-summary-delete-article)
-  (define-key gnus-summary-mgroup-map "m" 'gnus-summary-move-article)
-  (define-key gnus-summary-mgroup-map "r" 'gnus-summary-respool-article)
-  (define-key gnus-summary-mgroup-map "w" 'gnus-summary-edit-article)
-  (define-key gnus-summary-mgroup-map "c" 'gnus-summary-copy-article)
 
   (define-key gnus-summary-mode-map "I" 'gnus-summary-increase-map)
   (define-key gnus-summary-mode-map "L" 'gnus-summary-lower-map)
@@ -5040,6 +5044,8 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 	     (gnus-group-next-unread-group 1)))
       nil)
      ((eq did-select 'quit)
+      (gnus-configure-windows 'summary)
+      (gnus-configure-windows 'newsgroup)
       (and (eq major-mode 'gnus-summary-mode)
 	   (not (equal (current-buffer) kill-buffer))
 	   (kill-buffer (current-buffer)))
@@ -5854,15 +5860,15 @@ If WHERE is `summary', the summary mode line format will be used."
 			       (- (frame-width) gnus-mode-non-string-length)))
 		 header) ;; passed as argument to any user-format-funcs
 	    (setq mode-string (eval mformat))
- 	    (if (< max-len 4) (setq max-len 4))
-	    (and (numberp max-len)
-		 (progn
-		   (if (> (length mode-string) max-len)
-		       (setq mode-string 
-			     (concat (substring mode-string 0 (- max-len 3))
-				     "...")))
-		   (setq mode-string (format (format "%%-%ds" max-len)
-					     mode-string))))))
+            (or (numberp max-len)
+		(setq max-len (length mode-string)))
+	    (if (< max-len 4) (setq max-len 4))
+	    (if (> (length mode-string) max-len)
+		(setq mode-string 
+		      (concat (substring mode-string 0 (- max-len 3))
+			      "...")))
+	    (setq mode-string (format (format "%%-%ds" max-len)
+				      mode-string))))
 	(setq mode-line-buffer-identification mode-string)
 	(set-buffer-modified-p t))))
 
@@ -6696,8 +6702,10 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	  (bury-buffer gnus-article-buffer))
       (setq gnus-current-select-method gnus-select-method)
       (pop-to-buffer gnus-group-buffer)
-      (gnus-group-jump-to-group group)
-      (gnus-group-next-group 1)
+      (if (eq method 'nndigest)
+	  ()
+	(gnus-group-jump-to-group group)
+	(gnus-group-next-group 1))
       (if (gnus-buffer-exists-p quit-buffer)
 	  (progn
 	    (switch-to-buffer quit-buffer)
@@ -6968,7 +6976,8 @@ If BACKWARD, the previous article is selected instead of the next."
 				   gnus-newsgroup-end)))
      ;; Go to next/previous group.
      (t
-      (gnus-summary-jump-to-group gnus-newsgroup-name)
+      (or (eq method 'nndigest)
+	  (gnus-summary-jump-to-group gnus-newsgroup-name))
       (let ((cmd (aref (this-command-keys) 0))
 	    (group 
 	     (if (eq gnus-keep-same-level 'best) 
@@ -9541,6 +9550,7 @@ This is in no way, shape or form meant as a replacement for real MIME
 processing, but is simply a stop-gap measure until MIME support is
 written."
   ;; Unquote quoted-printable from news articles.
+  (interactive)
   (save-excursion
     (set-buffer gnus-article-buffer)
     (let ((case-fold-search t)
@@ -11491,6 +11501,7 @@ If FORCE is non-nil, the .newsrc file is read."
   (let ((subscribe nil)
 	(read-list nil)
 	(line (1+ (count-lines (point-min) (point))))
+	(already-read (> (length gnus-newsrc-alist) 1))
 	newsgroup
 	p p2)
     (save-restriction
@@ -11591,15 +11602,17 @@ If FORCE is non-nil, the .newsrc file is read."
 		    (cons (list newsgroup 
 				(if subscribe
 				    gnus-level-default-subscribed 
-				  (if read-list gnus-level-default-subscribed
-				    (1+ gnus-level-default-subscribed)))
+				  (if read-list 
+				      (1+ gnus-level-default-subscribed)
+				    gnus-level-default-unsubscribed))
 				(nreverse read-list))
 			  gnus-newsrc-alist))))))
 	(setq line (1+ line))
-	(forward-line 1))))
-  (setq gnus-newsrc-alist (cdr gnus-newsrc-alist))
-  (gnus-make-hashtable-from-newsrc-alist)
-  nil)
+	(forward-line 1)))
+    (setq gnus-newsrc-alist (cdr gnus-newsrc-alist))
+    (and already-read (setq gnus-newsrc-alist (nreverse gnus-newsrc-alist)))
+    (gnus-make-hashtable-from-newsrc-alist)
+    nil))
 
 (defun gnus-parse-n-options (options)
   "Parse -n NEWSGROUPS options and return a cons of YES and NO regexps."

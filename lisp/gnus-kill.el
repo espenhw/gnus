@@ -372,6 +372,10 @@ Returns the number of articles marked as read."
 			   (setq form (condition-case nil 
 					  (read (current-buffer)) 
 					(error nil))))
+		    (or (listp form)
+			(error 
+			 "Illegal kill entry (possibly rn kill file?): %s"
+			 form))
 		    (if (or (eq (car form) 'gnus-kill)
 			    (eq (car form) 'gnus-raise)
 			    (eq (car form) 'gnus-lower))

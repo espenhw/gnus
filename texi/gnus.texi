@@ -3773,6 +3773,20 @@ Mark all articles, even the ticked ones, as read and then exit
 @findex gnus-summary-catchup-and-goto-next-group
 Mark all articles as read and go to the next group
 (@code{gnus-summary-catchup-and-goto-next-group}). 
+@item Z R
+@kindex Z R (Summary)
+@findex gnus-summary-reselect-current-group
+Exit this group, and then enter it again
+(@code{gnus-summary-reselect-current-group}).  If given a prefix, select
+all articles, both read and unread.
+@item Z G
+@itemx M-g
+@kindex Z G (Summary)
+@kindex M-g (Summary)
+@findex gnus-summary-rescan-group
+Exit the group, check for new articles in the group, and select the
+group (@code{gnus-summary-rescan-group}).  If given a prefix, select all
+articles, both read and unread.
 @end table
 
 @vindex gnus-exit-group-hook
@@ -3859,35 +3873,35 @@ If @code{gnus-save-all-headers} is non-@code{nil}, Gnus will not delete
 unwanted headers before saving the article.
 
 @table @kbd
-@item V o o
+@item O o
 @itemx o
-@kindex V o o (Summary)
+@kindex O o (Summary)
 @kindex o (Summary)
 @findex gnus-summary-save-article
 Save the current article using the default article saver
 (@code{gnus-summary-save-article}). 
-@item V o m
-@kindex V o m (Summary)
+@item O m
+@kindex O m (Summary)
 @findex gnus-summary-save-article-mail
 Save the current article in mail format
 (@code{gnus-summary-save-article-mail}). 
-@item V o r
-@kindex V o r (Summary)
+@item O r
+@kindex O r (Summary)
 @findex gnus-summary-save-article-mail
 Save the current article in rmail format
 (@code{gnus-summary-save-article-rmail}). 
-@item V o f
-@kindex V o f (Summary)
+@item O f
+@kindex O f (Summary)
 @findex gnus-summary-save-article-file
 Save the current article in plain file format
 (@code{gnus-summary-save-article-file}). 
-@item V o h
-@kindex V o h (Summary)
+@item O h
+@kindex O h (Summary)
 @findex gnus-summary-save-article-folder
 Save the current article in mh folder format
 (@code{gnus-summary-save-article-folder}). 
-@item V o p
-@kindex V o p (Summary)
+@item O p
+@kindex O p (Summary)
 @findex gnus-summary-pipe-output
 Save the current article in a pipe.  Uhm, like, what I mean is - Pipe
 the current article to a process (@code{gnus-summary-pipe-output}).
@@ -4321,36 +4335,36 @@ Toggle whether to run the article through @sc{mime} before displaying
 There's a battery of commands for washing the article buffer:
 
 @table @kbd
-@item A h h
-@kindex A h h (Summary)
+@item W h
+@kindex W h (Summary)
 @findex gnus-article-hide-headers
 Hide headers (@code{gnus-article-hide-headers}).
-@item A h s
-@kindex A h s (Summary)
+@item W s
+@kindex W s (Summary)
 @findex gnus-article-hide-signature
 Hide signature (@code{gnus-article-hide-signature}).
-@item A h c
-@kindex A h c (Summary)
+@item W c
+@kindex W c (Summary)
 @findex gnus-article-hide-citation
 Hide citation (@code{gnus-article-hide-citation}).
-@item A h o
-@kindex A h o (Summary)
+@item W o
+@kindex W o (Summary)
 @findex gnus-article-treat-overstrike
 Treat overstrike (@code{gnus-article-treat-overstrike}).
-@item A h w
-@kindex A h w (Summary)
+@item W w
+@kindex W w (Summary)
 @findex gnus-article-word-wrap
 Do word wrap (@code{gnus-article-word-wrap}).
-@item A h d
-@kindex A h d (Summary)
+@item W d
+@kindex W d (Summary)
 @findex gnus-article-remove-cr
 Remove CR (@code{gnus-article-remove-cr}).
-@item A h q
-@kindex A h q (Summary)
+@item W q
+@kindex W q (Summary)
 @findex gnus-article-de-quoted-unreadable
 Treat quoted-printable (@code{gnus-article-de-quoted-unreadable}).
-@item A h f
-@kindex A h f (Summary)
+@item W f
+@kindex W f (Summary)
 @findex gnus-article-display-x-face
 @findex gnus-article-x-face-command
 Look for and display any X-Face headers
@@ -5157,34 +5171,34 @@ All these commands (except the expiry and edit commands) use the
 process/prefix convention (@pxref{Process/Prefix}).
 
 @table @kbd
-@item V m e
-@kindex V m e (Summary)
+@item B e
+@kindex B e (Summary)
 @findex gnus-summary-expire-articles
 Expire all expirable articles in the group
 (@code{gnus-summary-expire-articles}).
-@item V m DEL
-@kindex V m DEL (Summary)
+@item B DEL
+@kindex B DEL (Summary)
 @findex gnus-summary-delete-articles
 Delete the mail article.  This is "delete" as in "delete it from your
 disk forever and ever, never to return again." Use with caution.
 (@code{gnus-summary-delete-article}).
-@item V m m
-@kindex V m m (Summary)
+@item B m
+@kindex B m (Summary)
 @findex gnus-summary-move-article
 Move the article from one mail group to another
 (@code{gnus-summary-move-article}). 
-@item V m c
-@kindex V m c (Summary)
+@item B c
+@kindex B c (Summary)
 @findex gnus-summary-copy-article
 Copy the article from one group (mail group or not) to a mail group
 (@code{gnus-summary-copy-article}).
-@item V m r
-@kindex V m r (Summary)
+@item B r
+@kindex B r (Summary)
 @findex gnus-summary-respool-article
 Respool the mail article (@code{gnus-summary-move-article}).
-@item V m w
+@item B w
 @itemx e
-@kindex V m w (Summary)
+@kindex B w (Summary)
 @kindex e (Summary)
 @findex gnus-summary-edit-article
 @kindex C-c C-c (Article)
@@ -5212,27 +5226,27 @@ care.
 @subsection Group Information
 
 @table @kbd
-@item V f
-@kindex V f (Summary)
+@item H f
+@kindex H f (Summary)
 @findex gnus-summary-fetch-faq
 @vindex gnus-group-faq-directory
 Try to fetch the FAQ (list of frequently asked questions) for the
 current group (@code{gnus-summary-fetch-faq}).  Gnus will try to get the
 FAQ from @code{gnus-group-faq-directory}, which is usually a directory
 on a remote machine. @code{ange-ftp} will be used for fetching the file.
-@item V d
-@kindex V d (Summary)
+@item H d
+@kindex H d (Summary)
 @findex gnus-summary-describe-group
 Give a brief description of the current group
 (@code{gnus-summary-describe-group}).  If given a prefix, force
 rereading the description from the server.
-@item V ?
-@kindex V ? (Summary)
+@item H h
+@kindex H h (Summary)
 @findex gnus-summary-describe-briefly
 Give a very brief description of the most important summary keystrokes
 (@code{gnus-summary-describe-briefly}). 
-@item V i
-@kindex V i (Summary)
+@item H i
+@kindex H i (Summary)
 @findex gnus-info-find-node
 Go to the Gnus info node (@code{gnus-info-find-node}).
 @end table
@@ -5282,20 +5296,6 @@ Toggle truncation of summary lines (@code{gnus-summary-toggle-truncation}).
 @kindex V e (Summary)
 @findex gnus-summary-expand-window
 Expand the summary buffer window (@code{gnus-summary-expand-window}).
-@item V S
-@kindex V S (Summary)
-@findex gnus-summary-reselect-current-group
-Exit this group, and then enter it again
-(@code{gnus-summary-reselect-current-group}).  If given a prefix, select
-all articles, both read and unread.
-@item V g
-@itemx M-g
-@kindex V g (Summary)
-@kindex M-g (Summary)
-@findex gnus-summary-rescan-group
-Exit the group, check for new articles in the group, and select the
-group (@code{gnus-summary-rescan-group}).  If given a prefix, select all
-articles, both read and unread.
 @end table
 
 @node The Article Buffer

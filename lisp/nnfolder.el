@@ -212,22 +212,22 @@ such things as moving mail.  All buffers always get killed upon server close.")
   (save-excursion
     (nnfolder-possibly-change-group group)
     (and (assoc group nnfolder-group-alist)
-	 (save-excursion
-	   (set-buffer nntp-server-buffer)
-	   (erase-buffer)
+	 (progn
 	   (if dont-check
 	       t
-	     (nnfolder-get-new-mail)
-	     (let ((active (assoc group nnfolder-group-alist)))
-	       ;; I've been getting stray 211 lines in my nnfolder active
-	       ;; file.  So, let's make sure that doesn't happen. -SLB
-	       (set-buffer nntp-server-buffer)
-	       (insert (format "211 %d %d %d %s\n" 
-			       (1+ (- (cdr (car (cdr active)))
-				      (car (car (cdr active)))))
-			       (car (car (cdr active)))
-			       (cdr (car (cdr active)))
-			       (car active))))
+	     (nnfolder-get-new-mail))
+	   (let* ((active (assoc group nnfolder-group-alist))
+		  (group (car active))
+		  (range (car (cdr active)))
+		  (minactive (car range))
+		  (maxactive (cdr range)))
+	     ;; I've been getting stray 211 lines in my nnfolder active
+	     ;; file.  So, let's make sure that doesn't happen. -SLB
+	     (set-buffer nntp-server-buffer)
+	     (erase-buffer)
+	     (insert (format "211 %d %d %d %s\n" 
+			     (1+ (- maxactive minactive))
+			     minactive maxactive group))
 	     t)))))
 
 ;; Don't close the buffer if we're not shutting down the server.  This way,
@@ -240,7 +240,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
   (save-excursion
     (set-buffer nnfolder-current-buffer)
     ;; If the buffer was modified, write the file out now.
-    (save-buffer)
+    (and (buffer-modified-p) (save-buffer))
     (if (or force
 	    nnfolder-always-close)
 	;; If we're shutting the server down, we need to kill the buffer and
@@ -297,7 +297,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 		  (nnfolder-delete-mail))
 	      (setq rest (cons (car articles) rest))))
 	(setq articles (cdr articles)))
-      (save-buffer)
+      (and (buffer-modified-p) (save-buffer))
       ;; Find the lowest active article in this group.
       (let* ((active (car (cdr (assoc newsgroup nnfolder-group-alist))))
 	     (marker (concat "\n" nnfolder-article-marker))
@@ -341,7 +341,9 @@ such things as moving mail.  All buffers always get killed upon server close.")
        (goto-char 1)
        (if (search-forward (nnfolder-article-string article) nil t)
 	   (nnfolder-delete-mail))
-       (and last (save-buffer))))
+       (and last 
+	    (buffer-modified-p)
+	    (save-buffer))))
     result))
 
 (defun nnfolder-request-accept-article (group &optional last)
@@ -365,7 +367,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
      (save-excursion
        (set-buffer nnfolder-current-buffer)
        (insert-buffer-substring buf)
-       (and last (save-buffer))
+       (and last (buffer-modified-p) (save-buffer))
        result)
      (nnmail-save-active nnfolder-group-alist nnfolder-active-file))
     result))
@@ -379,7 +381,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	nil
       (nnfolder-delete-mail t t)
       (insert-buffer-substring buffer)
-      (save-buffer)
+      (and (buffer-modified-p) (save-buffer))
       t)))
 
 
@@ -464,26 +466,28 @@ such things as moving mail.  All buffers always get killed upon server close.")
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art-list)
 
-    ;; Kill the previous newsgroup markers.
-    (goto-char (point-min))
-    (search-forward "\n\n" nil t)
-    (forward-line -1)
-    (while (re-search-backward (concat "^" nnfolder-article-marker) nil t)
-      (delete-region (point) (progn (forward-line 1) (point))))
-
     ;; Insert the mail into each of the destination groups.
     (while group-art-list
       (setq group-art (car group-art-list)
 	    group-art-list (cdr group-art-list))
+
+      ;; Kill the previous newsgroup markers.
+      (goto-char (point-min))
+      (search-forward "\n\n" nil t)
+      (forward-line -1)
+      (while (search-backward (concat "\n" nnfolder-article-marker) nil t)
+	(delete-region (point) (progn (forward-line 1) (point))))
+
+      ;; Insert the new newsgroup marker.
       (nnfolder-possibly-change-group (car group-art))
       (nnfolder-insert-newsgroup-line group-art)
       (let ((beg (point-min))
 	    (end (point-max))
 	    (obuf (current-buffer)))
-	(save-excursion
-	  (set-buffer nnfolder-current-buffer)
-	  (goto-char (point-max))
-	  (insert-buffer-substring obuf beg end))))
+	(set-buffer nnfolder-current-buffer)
+	(goto-char (point-max))
+	(insert-buffer-substring obuf beg end)
+	(set-buffer obuf)))
 
     ;; Did we save it anywhere?
     save-list))
@@ -555,9 +559,9 @@ such things as moving mail.  All buffers always get killed upon server close.")
 				 (1- (lsh 1 25))))
 	    (while (and (search-forward marker nil t)
 			(re-search-forward number nil t))
-	      (let (newnum (string-to-number (buffer-substring
+	      (let ((newnum (string-to-number (buffer-substring
 					      (match-beginning 0)
-					      (match-end 0))))
+					      (match-end 0)))))
 		(setq activenumber (max activenumber newnum))
 		(setq activemin (min activemin newnum))))
 	    (setcar active (min activemin activenumber))
@@ -616,8 +620,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	      (setq nnfolder-buffer-alist 
 		    (delq (car bufs) nnfolder-buffer-alist))
 	    (set-buffer (nth 1 (car bufs)))
-	    (and (buffer-modified-p)
-		 (save-buffer)))
+	    (and (buffer-modified-p) (save-buffer)))
 	  (setq bufs (cdr bufs)))))
     ;; (if incoming (delete-file incoming))
     ))
