@@ -1,3 +1,7 @@
+2003-04-17  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* make.bat: Cleaned up end-of-line characters.
+
 2003-04-17  Steve Youngs  <youngs@xemacs.org>
 
 	* Makefile.in (XEMACS): Use @EMACS@.
