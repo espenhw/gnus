@@ -25,7 +25,7 @@
 
 \ifx\pdfoutput\undefined
 \else
-\usepackage[pdftex,bookmarks]{hyperref}
+\usepackage[pdftex,bookmarks,colorlinks=true]{hyperref}
 \usepackage{thumbpdf}
 \pdfcompresslevel=9
 \fi
