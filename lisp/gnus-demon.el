@@ -74,6 +74,8 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
 (defvar gnus-demon-idle-time 0)
 (defvar gnus-demon-handler-state nil)
 (defvar gnus-demon-last-keys nil)
+(defvar gnus-inhibit-demon nil
+  "*If non-nil, no daemonic function will be run.")
 
 (eval-and-compile
   (autoload 'timezone-parse-date "timezone")
@@ -172,10 +174,12 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
     (setq gnus-demon-idle-time 0)
     (setq gnus-demon-idle-has-been-called nil))
   ;; Disable all daemonic stuff if we're in the minibuffer
-  (unless (window-minibuffer-p (selected-window))
+  (when (and (not (window-minibuffer-p (selected-window)))
+	     (not gnus-inhibit-demon))
     ;; Then we go through all the handler and call those that are
     ;; sufficiently ripe.
     (let ((handlers gnus-demon-handler-state)
+	  (gnus-inhibit-demon t)
 	  handler time idle)
       (while handlers
 	(setq handler (pop handlers))

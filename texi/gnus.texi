@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.35 Manual
+@settitle Gnus 5.4.36 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.35 Manual
+@title Gnus 5.4.36 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.35.
+This manual corresponds to Gnus 5.4.36.
 
 @end ifinfo
 
@@ -8240,12 +8240,12 @@ actually the case or not.
 
 That might seem quite naughty, but it does make sense most of the time.
 Let's say you have 10 groups subscribed to the server
-@samp{nepholococcygia.com}.  This server is located somewhere quite far
-away from you, the machine is quite, so it takes 1 minute just to find
-out that it refuses connection from you today.  If Gnus were to attempt
-to do that 10 times, you'd be quite annoyed, so Gnus won't attempt to do
-that.  Once it has gotten a single ``connection refused'', it will
-regard that server as ``down''.
+@samp{nephelococcygia.com}.  This server is located somewhere quite far
+away from you and the machine is quite slow, so it takes 1 minute just
+to find out that it refuses connection from you today.  If Gnus were to
+attempt to do that 10 times, you'd be quite annoyed, so Gnus won't
+attempt to do that.  Once it has gotten a single ``connection refused'',
+it will regard that server as ``down''.
 
 So, what happens if the machine was only feeling unwell temporarily?
 How do you test to see whether the machine has come up again?
@@ -12986,7 +12986,7 @@ daemons, you can use the @code{gnus-demon-cancel} function.
 Note that adding daemons can be pretty naughty if you overdo it.  Adding
 functions that scan all news and mail from all servers every two seconds
 is a sure-fire way of getting booted off any respectable system.  So
-behave. 
+behave.
 
 
 @node NoCeM

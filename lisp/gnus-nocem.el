@@ -100,6 +100,7 @@ matches an previously scanned and verified nocem message."
   "Scan all NoCeM groups for new NoCeM messages."
   (interactive)
   (let ((groups gnus-nocem-groups)
+	(gnus-inhibit-demon t)
 	group active gactive articles)
     (gnus-make-directory gnus-nocem-directory)
     ;; Load any previous NoCeM headers.

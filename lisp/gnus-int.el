@@ -331,7 +331,8 @@ If BUFFER, insert the article in that group."
 (defun gnus-request-scan (group method)
   "Request a SCAN being performed in GROUP from METHOD.
 If GROUP is nil, all groups on METHOD are scanned."
-  (let ((method (if group (gnus-find-method-for-group group) method)))
+  (let ((method (if group (gnus-find-method-for-group group) method))
+	(gnus-inhibit-demon t))
     (funcall (gnus-get-function method 'request-scan)
 	     (and group (gnus-group-real-name group)) (nth 1 method))))
 
@@ -410,6 +411,7 @@ If GROUP is nil, all groups on METHOD are scanned."
 (defun gnus-close-backends ()
   ;; Send a close request to all backends that support such a request.
   (let ((methods gnus-valid-select-methods)
+	(gnus-inhibit-demon t)
 	func method)
     (while (setq method (pop methods))
       (when (fboundp (setq func (intern

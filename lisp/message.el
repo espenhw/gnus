@@ -1655,7 +1655,8 @@ The text will also be indented the normal way."
 (defun message-kill-buffer ()
   "Kill the current buffer."
   (interactive)
-  (when (yes-or-no-p "Kill the buffer? ")
+  (when (or (not (buffer-modified-p))
+	    (yes-or-no-p "Message modified; kill anyway? "))
     (let ((actions message-kill-actions))
       (kill-buffer (current-buffer))
       (message-do-actions actions))))

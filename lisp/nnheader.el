@@ -57,8 +57,7 @@ on your system, you could say something like:
  (autoload 'mail-position-on-field "sendmail")
  (autoload 'message-remove-header "message")
  (autoload 'cancel-function-timers "timers")
- (autoload 'gnus-point-at-eol "gnus-util")
- (autoload 'gnus-buffer-live-p "gnus-util"))
+ (autoload 'gnus-point-at-eol "gnus-util"))
 
 ;;; Header access macros.
 
@@ -382,7 +381,7 @@ the line could be found."
 (defun nnheader-init-server-buffer ()
   "Initialize the Gnus-backend communication buffer."
   (save-excursion
-    (unless (gnus-buffer-live-p nntp-server-buffer)
+    (unless (buffer-live-p nntp-server-buffer)
       (setq nntp-server-buffer (get-buffer-create " *nntpd*")))
     (set-buffer nntp-server-buffer)
     (buffer-disable-undo (current-buffer))

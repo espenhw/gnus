@@ -133,7 +133,7 @@
 
 (deffoo nnweb-close-group (group &optional server)
   (nnweb-possibly-change-server group server)
-  (when (gnus-buffer-live-p nnweb-buffer)
+  (when (buffer-live-p nnweb-buffer)
     (save-excursion
       (set-buffer nnweb-buffer)
       (set-buffer-modified-p nil)
@@ -166,7 +166,7 @@
 
 (deffoo nnweb-close-server (&optional server)
   (when (and (nnweb-server-opened server)
-	     (gnus-buffer-live-p nnweb-buffer))
+	     (buffer-live-p nnweb-buffer))
     (save-excursion
       (set-buffer nnweb-buffer)
       (set-buffer-modified-p nil)
@@ -274,7 +274,7 @@
 
 (defun nnweb-init (server)
   "Initialize buffers and such."
-  (unless (gnus-buffer-live-p nnweb-buffer)
+  (unless (buffer-live-p nnweb-buffer)
     (setq nnweb-buffer
 	  (save-excursion
 	    (nnheader-set-temp-buffer
@@ -295,7 +295,7 @@
       t)))
 
 (defun nnweb-callback (buffer callback)
-  (when (gnus-buffer-live-p url-working-buffer)
+  (when (buffer-live-p url-working-buffer)
     (save-excursion
       (set-buffer url-working-buffer)
       (funcall (nnweb-definition 'article))

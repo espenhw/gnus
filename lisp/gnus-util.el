@@ -458,12 +458,6 @@ If N, return the Nth ancestor instead."
     (let ((ids (inline (gnus-split-references references))))
       (car (last ids (or n 1))))))
 
-(defsubst gnus-buffer-live-p (buffer)
-  "Say whether BUFFER is alive or not."
-  (and buffer
-       (get-buffer buffer)
-       (buffer-name (get-buffer buffer))))
-
 (defun gnus-horizontal-recenter ()
   "Recenter the current buffer horizontally."
   (if (< (current-column) (/ (window-width) 2))

@@ -908,7 +908,7 @@ SCORE is the score to add."
   "Add SCORE to all followups to the article in the current buffer."
   (interactive "P")
   (setq score (gnus-score-default score))
-  (when (gnus-buffer-live-p gnus-summary-buffer)
+  (when (buffer-live-p gnus-summary-buffer)
     (save-excursion
       (save-restriction
 	(message-narrow-to-headers)
@@ -923,7 +923,7 @@ SCORE is the score to add."
   "Add SCORE to all later articles in the thread the current buffer is part of."
   (interactive "P")
   (setq score (gnus-score-default score))
-  (when (gnus-buffer-live-p gnus-summary-buffer)
+  (when (buffer-live-p gnus-summary-buffer)
     (save-excursion
       (save-restriction
 	(goto-char (point-min))

@@ -172,7 +172,8 @@ Thank you for your help in stamping out bugs.
 	 (setq gnus-message-buffer (current-buffer))
 	 (make-local-variable 'gnus-newsgroup-name)
 	 (run-hooks 'gnus-message-setup-hook))
-       (gnus-configure-windows ,config t))))
+       (gnus-configure-windows ,config t)
+       (set-buffer-modified-p nil))))
 
 (defun gnus-inews-add-send-actions (winconf buffer article)
   (make-local-hook 'message-sent-hook)

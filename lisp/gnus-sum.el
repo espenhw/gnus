@@ -2262,7 +2262,7 @@ This is all marks except unread, ticked, dormant, and expirable."
 	(setq gnus-reffed-article-number reffed)
 	(setq gnus-current-score-file score-file)
 	;; The article buffer also has local variables.
-	(when (gnus-buffer-live-p gnus-article-buffer)
+	(when (buffer-live-p gnus-article-buffer)
 	  (set-buffer gnus-article-buffer)
 	  (setq gnus-summary-buffer summary))))))
 
@@ -3586,6 +3586,11 @@ or a straight list of headers."
   "Select newsgroup GROUP.
 If READ-ALL is non-nil, all articles in the group are selected."
   (let* ((entry (gnus-gethash group gnus-newsrc-hashtb))
+	 ;;!!! Dirty hack; should be removed.
+	 (gnus-summary-ignore-duplicates
+	  (if (eq (car (gnus-find-method-for-group group)) 'nnvirtual)
+	      t
+	    gnus-summary-ignore-duplicates))
 	 (info (nth 2 entry))
 	 articles fetched-articles cached)
 
@@ -4956,7 +4961,7 @@ which existed when entering the ephemeral is reset."
              ;; The `gnus-summary-buffer' variable may point
              ;; to the old summary buffer when using a single
              ;; article buffer.
-             (unless (gnus-buffer-live-p gnus-summary-buffer)
+             (unless (buffer-live-p gnus-summary-buffer)
                (set-buffer gnus-group-buffer))
              (set-buffer gnus-summary-buffer)
              (gnus-set-global-variables))))

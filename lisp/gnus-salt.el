@@ -129,7 +129,7 @@ It accepts the same format specs that `gnus-summary-line-format' does.")
 
 (defun gnus-pick-setup-message ()
   "Make Message do the right thing on exit."
-  (when (and (gnus-buffer-live-p gnus-summary-buffer)
+  (when (and (buffer-live-p gnus-summary-buffer)
 	     (save-excursion
 	       (set-buffer gnus-summary-buffer)
 	       gnus-pick-mode))

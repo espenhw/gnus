@@ -819,7 +819,9 @@ The following commands are available:
   "List newsgroups with level LEVEL or lower that have unread articles.
 Default is all subscribed groups.
 If argument UNREAD is non-nil, groups with no unread articles are also
-listed."
+listed.
+
+Also see the `gnus-group-use-permanent-levels' variable."
   (interactive
    (list (if current-prefix-arg
 	     (prefix-numeric-value current-prefix-arg)
@@ -2841,36 +2843,37 @@ If ARG is a number, it specifies which levels you are interested in
 re-scanning.  If ARG is non-nil and not a number, this will force
 \"hard\" re-reading of the active files from all servers."
   (interactive "P")
-  (run-hooks 'gnus-get-new-news-hook)
+  (let ((gnus-inhibit-demon t))
+    (run-hooks 'gnus-get-new-news-hook)
 
-  ;; Read any slave files.
-  (unless gnus-slave
-    (gnus-master-read-slave-newsrc))
+    ;; Read any slave files.
+    (unless gnus-slave
+      (gnus-master-read-slave-newsrc))
 
-  ;; We might read in new NoCeM messages here.
-  (when (and gnus-use-nocem
-	     (null arg))
-    (gnus-nocem-scan-groups))
-  ;; If ARG is not a number, then we read the active file.
-  (when (and arg (not (numberp arg)))
-    (let ((gnus-read-active-file t))
-      (gnus-read-active-file))
-    (setq arg nil)
+    ;; We might read in new NoCeM messages here.
+    (when (and gnus-use-nocem
+	       (null arg))
+      (gnus-nocem-scan-groups))
+    ;; If ARG is not a number, then we read the active file.
+    (when (and arg (not (numberp arg)))
+      (let ((gnus-read-active-file t))
+	(gnus-read-active-file))
+      (setq arg nil)
 
-    ;; If the user wants it, we scan for new groups.
-    (when (eq gnus-check-new-newsgroups 'always)
-      (gnus-find-new-newsgroups)))
+      ;; If the user wants it, we scan for new groups.
+      (when (eq gnus-check-new-newsgroups 'always)
+	(gnus-find-new-newsgroups)))
 
-  (setq arg (gnus-group-default-level arg t))
-  (if (and gnus-read-active-file (not arg))
-      (progn
-	(gnus-read-active-file)
-	(gnus-get-unread-articles arg))
-    (let ((gnus-read-active-file (if arg nil gnus-read-active-file)))
-      (gnus-get-unread-articles arg)))
-  (run-hooks 'gnus-after-getting-new-news-hook)
-  (gnus-group-list-groups (and (numberp arg)
-			       (max (car gnus-group-list-mode) arg))))
+    (setq arg (gnus-group-default-level arg t))
+    (if (and gnus-read-active-file (not arg))
+	(progn
+	  (gnus-read-active-file)
+	  (gnus-get-unread-articles arg))
+      (let ((gnus-read-active-file (if arg nil gnus-read-active-file)))
+	(gnus-get-unread-articles arg)))
+    (run-hooks 'gnus-after-getting-new-news-hook)
+    (gnus-group-list-groups (and (numberp arg)
+				 (max (car gnus-group-list-mode) arg)))))
 
 (defun gnus-group-get-new-news-this-group (&optional n)
   "Check for newly arrived news in the current group (and the N-1 next groups).

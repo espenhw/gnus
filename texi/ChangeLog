@@ -1,6 +1,7 @@
 Sun Mar 23 02:16:19 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Thwarting Email Spam): New.
+	(Unavailable Servers): Fix.
 
 Wed Mar 19 15:45:17 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
