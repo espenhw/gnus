@@ -823,7 +823,7 @@ History
 New Features
 
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
-* September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
+* September Gnus::     The Thing Formally Known As Gnus 5.2/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
 * Quassia Gnus::       Two times two is four, or Gnus 5.6/5.7.
 * Pterodactyl Gnus::   Pentad also starts with P, AKA Gnus 5.8/5.9.
@@ -4249,14 +4249,6 @@ Go to the next summary line of an unread article
 Go to the previous summary line of an unread article
 (@code{gnus-summary-prev-unread-subject}).
 
-@item G j
-@itemx j
-@kindex j (Summary)
-@kindex G j (Summary)
-@findex gnus-summary-goto-article
-Ask for an article number or @code{Message-ID}, and then go to that
-article (@code{gnus-summary-goto-article}).
-
 @item G g
 @kindex G g (Summary)
 @findex gnus-summary-goto-subject
@@ -4421,6 +4413,15 @@ command above in that you can pop as many previous articles off the
 history as you like, while @kbd{l} toggles the two last read articles.
 For a somewhat related issue (if you use these commands a lot),
 @pxref{Article Backlog}.
+
+@item G j
+@itemx j
+@kindex j (Summary)
+@kindex G j (Summary)
+@findex gnus-summary-goto-article
+Ask for an article number or @code{Message-ID}, and then go to that
+article (@code{gnus-summary-goto-article}).
+
 @end table
 
 
