@@ -5599,7 +5599,8 @@ groups."
     (set-window-configuration winconf)
     (set-buffer buf)
     (set-window-start (get-buffer-window buf) start)
-    (set-window-point (get-buffer-window buf) (point))))
+    (set-window-point (get-buffer-window buf) (point)))
+  (gnus-summary-show-article))
 
 (defun gnus-article-edit-exit ()
   "Exit the article editing without updating."
@@ -5620,7 +5621,8 @@ groups."
 	(save-current-buffer
 	  (set-buffer curbuf)
 	  (set-window-start (get-buffer-window (current-buffer)) window-start)
-	  (goto-char p))))))
+	  (goto-char p))))
+    (gnus-summary-show-article)))
 
 (defun gnus-article-edit-full-stops ()
   "Interactively repair spacing at end of sentences."
