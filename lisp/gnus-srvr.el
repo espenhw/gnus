@@ -395,9 +395,7 @@ The following commands are available:
 	  (progn
 	    ;; Remove the server from `gnus-opened-servers' since
 	    ;; it has never been opened with the new `info' yet.
-	    (setq gnus-opened-servers
-		  (delq (assoc (cdr entry) gnus-opened-servers)
-			gnus-opened-servers))
+	    (gnus-opened-servers-remove (cdr entry))
 	    (setcdr entry info))
 	(setq gnus-server-alist
 	      (nconc gnus-server-alist (list (cons server info))))))))
