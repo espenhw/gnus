@@ -1,3 +1,14 @@
+2002-02-09  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-start.el (gnus-read-descriptions-file): Use
+	gnus-default-charset.
+
+	* gnus.el (gnus-default-charset): Use it.
+	(gnus-group-charset-alist): Remove .*, Let gnus-default-charset be
+	the default.
+
+	* mm-util.el (mm-guess-mime-charset): New function.
+
 2002-02-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-treat-display-grey-xface): New variable.
