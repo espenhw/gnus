@@ -1460,6 +1460,8 @@ Initialized from `text-mode-syntax-table.")
 
 (defvar gnus-inhibit-hiding nil)
 
+(defvar gnus-article-edit-mode nil)
+
 ;;; Macros for dealing with the article buffer.
 
 (defmacro gnus-with-article-headers (&rest forms)
@@ -5480,7 +5482,6 @@ If given a prefix, show the hidden text instead."
 (defvar gnus-article-edit-done-function nil)
 
 (defvar gnus-article-edit-mode-map nil)
-(defvar gnus-article-edit-mode nil)
 
 ;; Should we be using derived.el for this?
 (unless gnus-article-edit-mode-map
