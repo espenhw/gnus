@@ -1,5 +1,13 @@
 2002-01-06  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
+	* gnus.el: Renamed gnus-summary-*-uncached-face as
+	gnus-summary-*-undownloaded-face to avoid confusing the agent with
+	the cache.
+
+	* gnus-sum.el: Ditto.
+
+2002-01-06  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
 	* gnus-agent.el (gnus-agent-fetch-group): Modified to permit execution
 	in either the group or summary buffer.  
 	New command "JS", in summary buffer, will fetch articles per the

@@ -672,7 +672,7 @@ be set in `.emacs' instead."
      ()))
   "Face used for normal interest ancient articles.")
 
-(defface gnus-summary-high-uncached-face
+(defface gnus-summary-high-undownloaded-face
    '((((class color)
        (background light))
       (:bold t :foreground "cyan4" :bold nil))
@@ -681,7 +681,7 @@ be set in `.emacs' instead."
      (t (:inverse-video t :bold t)))
   "Face used for high interest uncached articles.")
 
-(defface gnus-summary-low-uncached-face
+(defface gnus-summary-low-undownloaded-face
    '((((class color)
        (background light))
       (:italic t :foreground "cyan4" :bold nil))
@@ -690,7 +690,7 @@ be set in `.emacs' instead."
      (t (:inverse-video t :italic t)))
   "Face used for low interest uncached articles.")
 
-(defface gnus-summary-normal-uncached-face
+(defface gnus-summary-normal-undownloaded-face
    '((((class color)
        (background light))
       (:foreground "cyan4" :bold nil))
