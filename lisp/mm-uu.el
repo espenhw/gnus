@@ -500,11 +500,13 @@ value of `mm-uu-text-plain-type'."
 (defun mm-uu-dissect-text-parts (handle)
   "Dissect text parts and put uu handles into HANDLE."
   (let ((buffer (mm-handle-buffer handle))
-	children)
+	type children)
     (cond ((stringp buffer)
 	   (mapc 'mm-uu-dissect-text-parts (cdr handle)))
 	  ((bufferp buffer)
-	   (when (and (equal "text/plain" (mm-handle-media-type handle))
+	   (when (and (setq type (mm-handle-media-type handle))
+		      (stringp type)
+		      (string-match "\\`text/" type)
 		      (with-current-buffer buffer
 			(setq children
 			      (mm-uu-dissect t (mm-handle-type handle)))))

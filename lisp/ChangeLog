@@ -1,3 +1,7 @@
+2004-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-uu.el (mm-uu-dissect-text-parts): Support all text/* types.
+
 2004-10-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* gnus-art.el (gnus-mime-display-single): Call `mm-display-inline'
