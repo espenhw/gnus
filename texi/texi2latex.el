@@ -35,9 +35,11 @@
   "Translate."
   (interactive)
   (latexi-translate-file "gnus")
-  (latexi-translate-file "gnus-faq"))
+  (latexi-translate-file "gnus-faq")
+  (latexi-translate-file "message" t)
+  (latexi-translate-file "emacs-mime" t))
 
-(defun latexi-translate-file (file)
+(defun latexi-translate-file (file &optional as-a-chapter)
   "Translate file a LaTeX file."
   (let ((item-string "")
 	(item-stack nil)
@@ -102,15 +104,26 @@
 				  "ifnottex" "direntry"))
 		(latexi-discard-until command))
 	       ((member command '("subsection" "subsubsection"))
-		(latexi-switch-line command arg))
+		(if as-a-chapter
+		    (latexi-switch-line (format "sub%s" command) arg)
+		  (latexi-switch-line command arg)))
 	       ((member command '("chapter"))
-		(latexi-switch-line 
-		 (format 
-		  "gnus%s{\\epsfig{figure=ps/new-herd-%d,scale=.5}}"
-		   command (incf chapter))
-		 arg))
+		(if (string-match "Index" arg)
+		    (latexi-strip-line)
+		  (if as-a-chapter
+		      (latexi-switch-line "gnussection" arg)
+		    (latexi-switch-line 
+		     (format 
+		      "gnus%s{%s}" command
+		      (if (> (incf chapter) 10)
+			  ""
+			(format "\\epsfig{figure=ps/new-herd-%d,scale=.5}"
+				chapter)))
+		     arg))))
 	       ((member command '("section"))
-		(latexi-switch-line (format "gnus%s" command) arg))
+		(if as-a-chapter
+		    (latexi-switch-line "subsection" arg)
+		  (latexi-switch-line (format "gnus%s" command) arg)))
 	       ((member command '("cindex" "findex" "kindex" "vindex"))
 		(latexi-index-command command arg))
 	       ((member command '("*"))
@@ -120,7 +133,8 @@
 		(replace-match "" t t))
 	       ((equal command "node")
 		(latexi-strip-line)
-		(insert (format "\\label{%s}\n" arg)))
+		(unless (string-match "Index" arg)
+		  (insert (format "\\label{%s}\n" arg))))
 	       ((equal command "contents")
 		(latexi-strip-line)
 		;;(insert (format "\\tableofcontents\n" arg))
@@ -196,7 +210,9 @@
 		(insert "duppat{}"))
 	       ((equal command "settitle")
 		(latexi-strip-line)
-		(insert (format "\\newcommand{\\gnustitlename}{%s}\n" arg)))
+		(if (not as-a-chapter)
+		    (insert 
+		     (format "\\newcommand{\\gnustitlename}{%s}\n" arg))))
 	       ((equal command "title")
 		(latexi-strip-line)
 		(insert (format "\\gnustitlename{%s}\n" arg)))
@@ -213,7 +229,9 @@
 		(delete-char 1))
 	       ((equal command "include")
 		(latexi-strip-line)
-		(insert "\\input{gnus-faq.latexi}\n"))
+		(string-match "\\.texi" arg)
+		(insert (format "\\input{%s.latexi}\n" 
+				(substring arg 0 (match-beginning 0)))))
 	       ((equal command "noindent")
 		(latexi-strip-line)
 		(insert "\\noindent\n"))

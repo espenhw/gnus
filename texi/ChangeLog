@@ -1,3 +1,10 @@
+2001-09-27 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* Makefile.in: Illustrated manual.
+	* gnus.texi: Put message.texi and emacs-mime.texi in the
+	illustrated manual.
+	* texi2latex.el: Ditto.
+
 2001-09-27 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi: Remove the extra white-space.

@@ -17925,6 +17925,14 @@ the new score, which should be an integer.
 Gnus will try to decay scores once a day.  If you haven't run Gnus for
 four days, Gnus will decay the scores four times, for instance.
 
+@iftex
+@iflatex
+@chapter Message
+@include message.texi
+@chapter Emacs MIME
+@include emacs-mime.texi
+@end iflatex
+@end iftex
 
 @node Various
 @chapter Various
