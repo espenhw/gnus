@@ -866,7 +866,7 @@ automatically when it is selected."
      . gnus-summary-low-ancient-face)
     ((eq mark gnus-ancient-mark)
      . gnus-summary-normal-ancient-face)
-    (downloaded
+    ((and (boundp 'downloaded) downloaded)
      . gnus-agent-downloaded-article-face)
     ((and (> score default-high) (eq mark gnus-unread-mark))
      . gnus-summary-high-unread-face)
