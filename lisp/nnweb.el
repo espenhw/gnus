@@ -721,16 +721,17 @@ and `altavista'.")
   "Decode all HTML entities."
   (goto-char (point-min))
   (while (re-search-forward "&\\(#[0-9]+\\|[a-z]+\\);" nil t)
-    (replace-match (char-to-string 
-		    (if (eq (aref (match-string 1) 0) ?\#)
+    (let ((elem (if (eq (aref (match-string 1) 0) ?\#)
 			(let ((c
 			       (string-to-number (substring 
 						  (match-string 1) 1))))
 			  (if (mm-char-or-char-int-p c) c 32))
 		      (or (cdr (assq (intern (match-string 1))
 				     w3-html-entities))
-			  ?#)))
-		   t t)))
+			  ?#))))
+      (unless (stringp elem)
+	(setq elem (char-to-string elem)))
+      (replace-match elem t t))))
 
 (defun nnweb-decode-entities-string (str)
   (with-temp-buffer

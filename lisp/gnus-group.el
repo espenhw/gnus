@@ -1743,7 +1743,9 @@ Return the name of the group if selection was successful."
 	  (when (gnus-group-read-group t t group select-articles)
 	    group)
 	;;(error nil)
-	(quit nil)))))
+	(quit
+	 (message "Quit reading the ephemeral group")
+	 nil)))))
 
 (defun gnus-group-jump-to-group (group)
   "Jump to newsgroup GROUP."

@@ -351,7 +351,11 @@ noticing asynchronous data.")
 	     (t t)))
 	(error 
 	 (nnheader-report 'nntp "Couldn't open connection to %s: %s" 
-			  address err))))))
+			  address err))
+	(quit
+	 (message "Quit retrieving data from nntp")
+	 (signal 'quit nil)
+	 nil)))))
 
 (defsubst nntp-send-command (wait-for &rest strings)
   "Send STRINGS to server and wait until WAIT-FOR returns."
@@ -799,8 +803,9 @@ If SEND-IF-FORCE, only send authinfo to the server if the
 	   (or passwd
 	       nntp-authinfo-password
 	       (setq nntp-authinfo-password
-		     (mail-source-read-passwd (format "NNTP (%s@%s) password: "
-						      user nntp-address))))))))))
+		     (mail-source-read-passwd
+		      (format "NNTP (%s@%s) password: "
+			      user nntp-address))))))))))
 
 (defun nntp-send-nosy-authinfo ()
   "Send the AUTHINFO to the nntp server."
@@ -872,7 +877,10 @@ password contained in '~/.nntp-authinfo'."
                     (coding-system-for-write nntp-coding-system-for-write))
 		(funcall nntp-open-connection-function pbuffer))
 	    (error nil)
-	    (quit nil))))
+	    (quit
+	     (message "Quit opening connection")
+	     (signal 'quit nil)
+	     nil))))
     (when timer
       (nnheader-cancel-timer timer))
     (when (and (buffer-name pbuffer)

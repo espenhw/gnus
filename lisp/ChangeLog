@@ -1,3 +1,12 @@
+2000-10-03 19:55:55  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnweb.el (nnweb-decode-entities): Work for non-character
+	entities. 
+
+2000-09-26 09:20:08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el: Message the quit parts.
+
 2000-10-03 08:08:29  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mail-source.el (mail-source-fetch-maildir): Don't insert
@@ -202,6 +211,7 @@
 	(mm-inline-message): Test for `remove-specifier'; don't use
 	condition-case.
 
+>>>>>>> 5.672
 2000-09-24  Simon Josefsson  <simon@josefsson.org>
 
 	* nnimap.el (nnimap-request-accept-article): Remove From[^:] lines.

@@ -4302,7 +4302,9 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 		    (if (string-match "^[ \t]*$" input)
 			number input)))
 		 (t number))
-	      (quit nil))))))
+	      (quit
+	       (message "Quit getting the articles to read")
+	       nil))))))
     (setq select (if (stringp select) (string-to-number select) select))
     (if (or (null select) (zerop select))
 	select
