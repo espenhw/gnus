@@ -80,7 +80,6 @@ Optional argument FOLDER specifies folder name."
 
 (defun gnus-mh-mail-setup (to subject in-reply-to cc replybuffer actions)
   (let ((config (current-window-configuration))) 
-    (setq mh-show-buffer gnus-article-copy)
     (mh-find-path)
     (mh-send-sub (or to "") (or cc "") (or subject "") config)
     (goto-char (point-min))
@@ -90,6 +89,7 @@ Optional argument FOLDER specifies folder name."
     (setq gnus-mail-buffer (buffer-name (current-buffer)))
     (use-local-map (copy-keymap (current-local-map)))
     (local-set-key "\C-c\C-c" 'gnus-mh-mail-send-and-exit)
+    (setq mh-show-buffer gnus-article-copy)
     (setq mh-previous-window-config config)))
 
 (defun gnus-mh-mail-send-and-exit (&optional dont-send)

@@ -177,6 +177,17 @@ string itself is inserted.
 If the function returns nil, the `gnus-signature-file' variable will
 be used instead.")
 
+(defvar gnus-forward-start-separator 
+  "------- Start of forwarded message -------\n"
+  "*Delimiter inserted before forwarded messages.")
+
+(defvar gnus-forward-end-separator
+  "------- End of forwarded message -------\n"
+  "*Delimiter inserted after forwarded messages.")
+
+(defvar gnus-signature-before-forwarded-message t
+  "*If non-nil, put the signature before any included forwarded message.")
+
 (defvar gnus-required-headers
   '(From Date Newsgroups Subject Message-ID Organization Lines X-Newsreader)
   "*Headers to be generated or prompted for when posting an article.
@@ -1395,8 +1406,7 @@ organization."
   (let* ((organization 
 	  (or (getenv "ORGANIZATION")
 	      (if gnus-local-organization
-		  (if (and (symbolp gnus-local-organization)
-			   (fboundp gnus-local-organization))
+		  (if (gnus-functionp gnus-local-organization)
 		      (funcall gnus-local-organization gnus-newsgroup-name)
 		    gnus-local-organization))
 	      gnus-organization-file
@@ -1532,12 +1542,10 @@ mailer."
 	    (gnus-narrow-to-headers)
 	    (if (not followup)
 		;; This is a regular reply.
-		(if (and (symbolp gnus-reply-to-function)
-			 (fboundp gnus-reply-to-function))
+		(if (gnus-functionp gnus-reply-to-function)
 		    (setq follow-to (funcall gnus-reply-to-function group)))
 	      ;; This is a followup.
-	      (if (and (symbolp gnus-followup-to-function)
-		       (fboundp gnus-followup-to-function))
+	      (if (gnus-functionp gnus-followup-to-function)
 		  (save-excursion
 		    (setq follow-to
 			  (funcall gnus-followup-to-function group)))))
@@ -1642,6 +1650,7 @@ mailer."
 		end)
 	    (if (not (listp yank))
 		(progn
+		  ;; Just a single article being yanked.
 		  (save-excursion
 		    (mail-yank-original nil))
 		  (or mail-yank-hooks mail-citation-hook
@@ -1654,9 +1663,21 @@ mailer."
 		(save-excursion
 		  (gnus-copy-article-buffer)
 		  (mail-yank-original nil)
-		  (setq end (point)))
-		(or mail-yank-hooks mail-citation-hook
-		    (run-hooks 'news-reply-header-hook))
+		  (save-restriction
+		    (narrow-to-region (point-min) (point))
+		    (goto-char (mark))
+		    (let ((news-reply-yank-from
+			   (save-excursion 
+			     (set-buffer gnus-article-buffer)
+			     (or (mail-fetch-field "from") "(nobody)")))
+			  (news-reply-yank-message-id
+			   (save-excursion 
+			     (set-buffer gnus-article-buffer)
+			     (or (mail-fetch-field "message-id")
+				 "(unknown Message-ID)"))))
+		      (or mail-yank-hooks mail-citation-hook
+			  (run-hooks 'news-reply-header-hook))
+		      (setq end (point-max)))))
 		(goto-char end)
 		(setq yank (cdr yank))))
 	    (goto-char last))
@@ -1689,8 +1710,7 @@ If INHIBIT-PROMPT, never prompt for a Subject."
     (gnus-inews-insert-bfcc)
     (gnus-inews-insert-signature)
     (and gnus-post-prepare-function
-	 (symbolp gnus-post-prepare-function)
-	 (fboundp gnus-post-prepare-function)
+	 (gnus-functionp gnus-post-prepare-function)
 	 (funcall gnus-post-prepare-function group))
     (goto-char (point-min))
     (if group
@@ -1729,8 +1749,7 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 	    (save-restriction
 	      (set-buffer gnus-article-copy)
 	      (gnus-narrow-to-headers)
-	      (if (and (symbolp gnus-followup-to-function)
-		       (fboundp gnus-followup-to-function))
+	      (if (gnus-functionp gnus-followup-to-function)
 		  (save-excursion
 		    (setq follow-to
 			  (funcall gnus-followup-to-function group))))
@@ -1793,8 +1812,7 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 	  (gnus-inews-insert-signature)
 
 	  (and gnus-post-prepare-function
-	       (symbolp gnus-post-prepare-function)
-	       (fboundp gnus-post-prepare-function)
+	       (gnus-functionp gnus-post-prepare-function)
 	       (funcall gnus-post-prepare-function group))
 	  (run-hooks 'gnus-post-prepare-hook)
 
@@ -1973,7 +1991,6 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 		      (cdr reply)))))
 	  (and winconf (set-window-configuration winconf))))))
 
-
 (defun gnus-forward-make-subject (buffer)
   (save-excursion
     (set-buffer buffer)
@@ -1986,18 +2003,29 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 	    "] " (or (gnus-fetch-field "Subject") ""))))
 
 (defun gnus-forward-insert-buffer (buffer)
-  (let ((beg (goto-char (point-max))))
-    (insert "------- Start of forwarded message -------\n")
-    (insert-buffer-substring buffer)
-    (goto-char (point-max))
-    (insert "------- End of forwarded message -------\n")
-    ;; Suggested by Sudish Joseph <joseph@cis.ohio-state.edu>. 
-    (goto-char beg)
-    (while (setq beg (next-single-property-change (point) 'invisible))
-      (goto-char beg)
-      (delete-region beg (or (next-single-property-change 
-			      (point) 'invisible)
-			     (point-max))))))
+  (save-excursion
+    (save-restriction
+      (if gnus-signature-before-forwarded-message
+	  (goto-char (point-max))
+	(goto-char (point-min))
+	(re-search-forward
+	 (concat "^" (regexp-quote mail-header-separator) "$"))
+	(forward-line 1))
+      ;; Narrow to the area we are to insert.
+      (narrow-to-region (point) (point))
+      ;; Insert the separators and the forwarded buffer.
+      (insert gnus-forward-start-separator)
+      (insert-buffer-substring buffer)
+      (goto-char (point-max))
+      (insert gnus-forward-end-separator)
+      ;; Delete any invisible text.
+      (goto-char (point-min))
+      (let (beg)
+	(while (setq beg (next-single-property-change (point) 'invisible))
+	  (goto-char beg)
+	  (delete-region beg (or (next-single-property-change 
+				  (point) 'invisible)
+				 (point-max))))))))
 
 (defun gnus-mail-forward (&optional buffer)
   "Forward the current message to another user using mail."
@@ -2310,7 +2338,7 @@ Headers will be generated before sending."
 (defun gnus-inews-insert-gcc ()
   (let* ((group gnus-outgoing-message-group)
 	 (gcc (cond 
-	       ((and (symbolp group) (fboundp group))
+	       ((gnus-functionp group)
 		(funcall group))
 	       ((or (stringp group) (list group))
 		group))))
@@ -2446,8 +2474,9 @@ Headers will be generated before sending."
       (when (cond ((stringp match)
 		   ;; Regexp string match on the group name.
 		   (string-match match gnus-newsgroup-name))
-		  ((symbolp match)
-		   (cond ((fboundp match)
+		  ((or (symbolp match)
+		       (gnus-functionp match))
+		   (cond ((gnus-functionp match)
 			  ;; Function to be called.
 			  (funcall match))
 			 ((boundp match)
@@ -2469,8 +2498,9 @@ Headers will be generated before sending."
 	    (setq value-value
 		  (cond ((stringp value)
 			 value)
-			((symbolp value)
-			 (cond ((fboundp value)
+			((or (symbolp value)
+			     (gnus-functionp value))
+			 (cond ((gnus-functionp value)
 				(funcall value))
 			       ((boundp value)
 				(symbol-value value))))

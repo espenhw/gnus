@@ -222,12 +222,14 @@
 	   (assq (1+ lines) gnus-cite-attribution-alist)))
      gnus-button-message-id 3)
     ;; This is how URLs _should_ be embedded in text...
-    ("<URL:\\([^\n\r>]*\\)>" 0 t ,browse-url-browser-function 1)
+    ("<URL:\\([^\n\r>]*\\)>" 0 t gnus-button-url 1)
     ;; Next regexp stolen from highlight-headers.el.
     ;; Modified by Vladimir Alexiev.
-    (,gnus-button-url-regexp 0 t ,browse-url-browser-function 0)
+    (,gnus-button-url-regexp 0 t gnus-button-url 0)
     ("\\(<\\(url: \\)?news:\\([^>\n ]*\\)>\\)" 1 t
-     gnus-button-message-id 3))
+     gnus-button-message-id 3)
+    ("\\(<URL: *\\)?mailto: *\\([^ \n\t]+\\)>?" 0 t gnus-button-reply 2)
+    )
   "Alist of regexps matching buttons in article bodies.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
@@ -247,8 +249,7 @@ variable it the real callback function.")
     ("^\\(From\\|Reply-To\\): " ": *\\(.+\\)$" 1 t gnus-button-reply 0)
     ("^\\(Cc\\|To\\):" "[^ \t\n<>,()\"]+@[^ \t\n<>,()\"]+" 
      0 t gnus-button-mailto 0)
-    ("^X-[Uu][Rr][Ll]:" ,gnus-button-url-regexp 0 t
-     ,browse-url-browser-function 0))
+    ("^X-[Uu][Rr][Ll]:" ,gnus-button-url-regexp 0 t gnus-button-url 0))
   "Alist of headers and regexps to match buttons in article heads.
 
 This alist is very similar to `gnus-button-alist', except that each
@@ -1379,20 +1380,7 @@ specified by `gnus-button-alist'."
 	  (goto-char end))))
     (widen)))
 
-(defun gnus-netscape-open-url (url)
-  "Open URL in netscape, or start new scape with URL."
-  (let ((process
-	 (start-process 
-	  (concat "netscape " url) nil
-	  "netscape" "-remote"  (concat "openUrl(" url ")'"))))
-    (set-process-sentinel process 
-			  (` (lambda (process change)
-			       (or (eq (process-exit-status process) 0)
-				   (gnus-netscape-start-url (, url))))))))
 
-(defun gnus-netscape-start-url (url)
-  "Start netscape with URL."
-  (start-process (concat "netscape" url) nil "netscape" url))
 
 ;;; External functions:
 
@@ -1474,6 +1462,10 @@ specified by `gnus-button-alist'."
 (defun gnus-button-reply (address)
   ;; Reply to ADDRESS.
   (gnus-mail-reply t address))
+
+(defun gnus-button-url (address)
+  "Browse ADDRESS."
+  (funcall browse-url-browser-function address))
 
 ;;; Compatibility Functions:
 

@@ -1602,6 +1602,12 @@ Remove the mark from the current group
 @kindex M w (Group)
 @findex gnus-group-mark-region
 Mark all groups between point and mark (@code{gnus-group-mark-region}). 
+
+@item M r
+@kindex M r (Group)
+@findex gnus-group-mark-regexp
+Mark all groups that match some regular expression
+(@code{gnus-group-mark-regexp}).  
 @end table
 
 Also @xref{Process/Prefix}.
@@ -3447,7 +3453,7 @@ If you want this permanently enabled, you should add that minor mode to
 the hook for the group mode:
 
 @lisp
-(add-hook 'gnus-group-mode 'gnus-topic-mode)
+(add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
 @end lisp
 
 There are, in general, two methods for dividing the groups into topics.
@@ -3541,18 +3547,37 @@ definitions slightly.
 
 @table @kbd
 
-@item T c
-@kindex T c (Group)
+@item T n
+@kindex T n (Group)
 @findex gnus-topic-create-topic
 Create a new topic (@code{gnus-topic-create-subtopic}).  You will be
 prompted for a topic name and the name of the parent topic.
 
 @item T m
 @kindex T m (Group)
-@findex gnus-topic-move-to-topic
+@findex gnus-topic-move-group
 Move the current group to some other topic
-(@code{gnus-topic-move-to-topic}).  This command understands the
+(@code{gnus-topic-move-group}).  This command understands the
 process/prefix convention (@pxref{Process/Prefix}).
+
+@item T c
+@kindex T c (Group)
+@findex gnus-topic-copy-group
+Copy the current group to some other topic
+(@code{gnus-topic-copy-group}).  This command understands the
+process/prefix convention (@pxref{Process/Prefix}).
+
+@item T M
+@kindex T M (Group)
+@findex gnus-topic-move-matching
+Move all groups that match some regular expression to a topic
+(@code{gnus-topic-move-matching}). 
+
+@item T C
+@kindex T C (Group)
+@findex gnus-topic-copy-matching
+Copy all groups that match some regular expression to a topic
+(@code{gnus-topic-copy-matching}). 
 
 @item RET
 @kindex RET (Group)
@@ -3575,6 +3600,16 @@ Kill a group or topic (@code{gnus-topic-kill-group}).
 @findex gnus-topic-yank-group
 Yank the previosuly killed group or topic (@code{gnus-topic-yank-group}).
 Note that all topics will be yanked before all groups.
+
+@item T r
+@kindex T r (Group)
+@findex gnus-topic-rename
+Rename a topic (@code{gnus-topic-rename}). 
+
+@item T DEL
+@kindex T DEL (Group)
+@findex gnus-topic-delete
+Delete an empty topic (@code{gnus-topic-delete}). 
 
 @end table
 
@@ -4313,6 +4348,20 @@ which does the same for news articles (@pxref{Post}).
 
 The @code{Newsgroups} header is illegal in this list, while @code{To} is
 required, and @code{X-Mailer} can be added if you so should want.
+
+@findex gnus-forward-start-separator
+@item gnus-forward-start-separator
+Delimiter inserted before forwarded messages.
+
+@findex gnus-forward-end-separator
+@item gnus-forward-end-separator
+Delimiter inserted after forwarded messages.
+
+@findex gnus-signature-before-forwarded-message
+@item gnus-signature-before-forwarded-message
+If this variable is @code{t}, which it is by default, your personal
+signature will be inserted before the forwarded message.  If not, the
+forwarded message will be inserted first in the new mail.
 
 @end table
 
@@ -8424,9 +8473,9 @@ will get the special @code{mouse-face} property set, which means that it
 will be highlighted (with @code{gnus-mouse-face}) when you put the mouse
 pointer over it.
 
-Text inside the @samp{%[} and @samp{%]} specifiers will have their
+Text inside the @samp{%@{} and @samp{%@}} specifiers will have their
 normal faces set using @code{gnus-face-0}, which is @code{bold} by
-default.  If you say @samp{%1[} instead, you'll get @code{gnus-face-1}
+default.  If you say @samp{%1@{} instead, you'll get @code{gnus-face-1}
 instead, and so on.  Create as many faces as you wish.  The same goes
 for the @code{mouse-face} specs---you can say @samp{%3(hello%)} to have
 @samp{hello} mouse-highlighted with @code{gnus-mouse-face-3}.
@@ -8448,7 +8497,7 @@ Here's an alternative recipe for the group buffer:
 
 ;; Set the new & fancy format.
 (setq gnus-group-line-format 
-      "%M%S%3[%5y%]%2[:%] %(%1[%g%]%)\n")
+      "%M%S%3@{%5y%@}%2[:%] %(%1@{%g%@}%)\n")
 @end lisp
 
 I'm sure you'll be able to use this scheme to create totally unreadable
@@ -9074,7 +9123,7 @@ If you just need help, you are better off asking on
 
 @cindex gnu.emacs.gnus
 @cindex ding mailing list
-You can also ask on the ding mailing list---samp{ding@@ifi.uio.no}.
+You can also ask on the ding mailing list---@samp{ding@@ifi.uio.no}.
 Write to @samp{ding-request@@ifi.uio.no} to subscribe.
 
 

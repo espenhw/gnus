@@ -244,13 +244,12 @@ If the stream is opened, return T, otherwise return NIL."
   "Convert HEAD headers into NOV headers."
   (save-excursion
     (set-buffer nntp-server-buffer)
-    (let* ((gnus-newsgroup-dependencies (make-vector 100 0))
-	   (headers (gnus-get-newsgroup-headers))
+    (let* ((dependencies (make-vector 100 0))
+	   (headers (gnus-get-newsgroup-headers dependencies))
 	   header)
       (erase-buffer)
       (while headers
-	(setq header (car headers)
-	      headers (cdr headers))
+	(setq header (pop headers))
 	(insert (int-to-string (mail-header-number header)) "\t"
 		(or (mail-header-subject header) "") "\t"
 		(or (mail-header-from header) "") "\t"

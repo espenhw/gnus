@@ -476,7 +476,7 @@ nn*-request-list should have been called before calling this function."
 
 (defun nnmail-process-unix-mail-format (func)
   (let ((delim (concat "^" rmail-unix-mail-delimiter))
-	start message-id content-length end skip)
+	start message-id content-length end skip head-end)
     (if (not (and (re-search-forward delim nil t)
 		  (goto-char (match-beginning 0))))
 	;; Possibly wrong format?
@@ -505,7 +505,8 @@ nn*-request-list should have been called before calling this function."
 	  (insert "Message-ID: " (setq message-id (nnmail-message-id)) "\n"))
 	;; Look for a Content-Length header.
 	(goto-char (point-min))
-	(when (re-search-forward "^Content-Length: \\([0-9]+\\)" nil t)
+	(if (not (re-search-forward "^Content-Length: \\([0-9]+\\)" nil t))
+	    (setq content-length nil)
 	  (setq content-length (string-to-int (match-string 1)))
 	  ;; We destroy the header, since none of the backends ever 
 	  ;; use it, and we do not want to confuse other mailers by
@@ -515,6 +516,7 @@ nn*-request-list should have been called before calling this function."
 	;; Find the end of this article.
 	(goto-char (point-max))
 	(widen)
+	(setq head-end (point))
 	;; We try the Content-Length value.
 	(when content-length
 	  (forward-line 1)
@@ -528,6 +530,7 @@ nn*-request-list should have been called before calling this function."
 	    (goto-char end)
 	  ;; No Content-Length, so we find the beginning of the next 
 	  ;; article or the end of the buffer.
+	  (goto-char head-end)
 	  (if (re-search-forward delim nil t)
 	      (goto-char (match-beginning 0))
 	    (goto-char (point-max))))
@@ -575,7 +578,6 @@ nn*-request-list should have been called before calling this function."
 	;; Find the end of this article.
 	(goto-char (point-max))
 	(widen)
-	;; We try the Content-Length value.
 	(if (re-search-forward delim nil t)
 	    (beginning-of-line)
 	  (goto-char (point-max)))
@@ -603,7 +605,7 @@ FUNC will be called with the buffer narrowed to each mail."
 				       (not nnmail-resplit-incoming))
 				  (list (list group ""))
 				nnmail-split-methods))
-	start end content-length do-search message-id)
+	start end do-search message-id)
     (save-excursion
       ;; Open the message-id cache.
       (nnmail-cache-open)
