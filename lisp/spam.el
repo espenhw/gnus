@@ -144,7 +144,7 @@ are considered spam."
 
 (defcustom spam-use-regex-headers nil
   "Whether a header regular expression match should be used by spam-split.
-Also see the variable `spam-spam-regex-headers' and `spam-ham-regex-headers'."
+Also see the variables `spam-regex-headers-spam' and `spam-regex-headers-ham'."
   :type 'boolean
   :group 'spam)
 
