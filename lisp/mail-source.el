@@ -35,7 +35,7 @@
   "The mail-fetching library."
   :group 'gnus)
 
-(defcustom mail-sources '((file))
+(defcustom mail-sources nil
   "*Where the mail backends will look for incoming mail.
 This variable is a list of mail source specifiers.
 See Info node `(gnus)Mail Source Specifiers'."
