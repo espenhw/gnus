@@ -40,6 +40,9 @@
 (require 'gnus)	; for the definitions of group content classification and spam processors
 (require 'message)			;for the message-fetch-field functions
 
+;; for nnimap-split-download-body-default
+(eval-when-compile (require 'nnimap))
+
 ;; autoload executable-find
 (eval-and-compile
   ;; executable-find is not autoloaded in Emacs 20
@@ -612,7 +615,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 (defun spam-setup-widening ()
   (dolist (check spam-list-of-statistical-checks)
     (when (symbol-value check)
-      (setq nnimap-split-download-body t))))
+      (setq nnimap-split-download-body-default t))))
 
 (add-hook 'gnus-get-new-news-hook 'spam-setup-widening)
 
