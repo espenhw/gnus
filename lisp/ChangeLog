@@ -1,3 +1,10 @@
+1999-11-06 04:24:30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-date-ut): Keep the updated timer.
+
+	* gnus-msg.el (gnus-post-method): Doc fix.
+	(gnus-post-method): Change default.
+
 1999-11-06 04:12:13  Francisco Solsona  <flsc@hp.fciencias.unam.mx>
 
 	* message.el (message-newline-and-reformat): Improvements.

@@ -19609,6 +19609,11 @@ Allow "orphan" scores in the Agent scoring.
     just changed to.
 @end example
 
+
+@item
+Remove list identifiers from the subject in the summary when doing `^'
+and the like.
+
 @item
 Solve the halting problem.
 

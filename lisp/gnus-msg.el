@@ -33,12 +33,12 @@
 (require 'message)
 (require 'gnus-art)
 
-(defcustom gnus-post-method nil
+(defcustom gnus-post-method 'current
   "*Preferred method for posting USENET news.
 
 If this variable is `current', Gnus will use the \"current\" select
 method when posting.  If it is nil (which is the default), Gnus will
-use the native posting method of the server.
+use the native select method when posting.
 
 This method will not be used in mail groups and the like, only in
 \"real\" newsgroups.

@@ -4027,20 +4027,18 @@ or a straight list of headers."
 	 (memq number gnus-newsgroup-processable))))))
 
 (defun gnus-summary-remove-list-identifiers ()
-  "Remove list identifiers in `gnus-list-identifiers' from articles in
-the current group."
+  "Remove list identifiers in `gnus-list-identifiers' from articles in the current group."
   (let ((regexp (if (stringp gnus-list-identifiers)
 		    gnus-list-identifiers
 		  (mapconcat 'identity gnus-list-identifiers " *\\|"))))
-    (when regexp
-      (dolist (header gnus-newsgroup-headers)
-	(when (string-match (concat "\\(Re: +\\)?\\(" regexp " *\\)")
-			    (mail-header-subject header))
-	  (mail-header-set-subject
-	   header (concat (substring (mail-header-subject header)
-				     0 (match-beginning 2))
-			  (substring (mail-header-subject header)
-				     (match-end 2)))))))))
+    (dolist (header gnus-newsgroup-headers)
+      (when (string-match (concat "\\(Re: +\\)?\\(" regexp " *\\)")
+			  (mail-header-subject header))
+	(mail-header-set-subject
+	 header (concat (substring (mail-header-subject header)
+				   0 (match-beginning 2))
+			(substring (mail-header-subject header)
+				   (match-end 2))))))))
 
 (defun gnus-select-newsgroup (group &optional read-all select-articles)
   "Select newsgroup GROUP.

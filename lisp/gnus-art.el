@@ -1845,18 +1845,17 @@ should replace the \"Date:\" one, or should be added below it."
 	 (inhibit-point-motion-hooks t)
 	 pos
 	 bface eface)
-    (when (and date (not (string= date "")))
-      (save-excursion
-	(save-restriction
-	  (article-narrow-to-head)
-	  (when (re-search-forward tdate-regexp nil t)
-	    (setq bface (get-text-property (gnus-point-at-bol) 'face)
-		  date (or (get-text-property (gnus-point-at-bol)
-						'original-date)
-			     date)
-		  eface (get-text-property (1- (gnus-point-at-eol))
-					   'face))
-	    (forward-line 1))
+    (save-excursion
+      (save-restriction
+	(article-narrow-to-head)
+	(when (re-search-forward tdate-regexp nil t)
+	  (setq bface (get-text-property (gnus-point-at-bol) 'face)
+		date (or (get-text-property (gnus-point-at-bol)
+					    'original-date)
+			 date)
+		eface (get-text-property (1- (gnus-point-at-eol)) 'face))
+	  (forward-line 1))
+	(when (and date (not (string= date "")))
 	  (goto-char (point-min))
 	  (let ((buffer-read-only nil))
  	    ;; Delete any old Date headers.
