@@ -413,7 +413,7 @@ always query the user whether to use the value.  If it is the symbol
 		 (const use)
 		 (const ask)))
 
-(defcustom message-use-mail-followup-to t
+(defcustom message-use-mail-followup-to 'use
   "*Specifies what to do with Mail-Followup-To header.
 If nil, always ignore the header.  If it is the symbol `ask', always
 query the user whether to use the value.  If it is the symbol `use',

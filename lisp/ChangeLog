@@ -1,3 +1,8 @@
+2001-07-24 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-use-mail-followup-to): `t' is not a
+	documented value.
+
 2001-07-24 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-display-arrow): Test fboundp.
