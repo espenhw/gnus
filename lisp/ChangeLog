@@ -4,6 +4,7 @@
 	name in authinfo (.authinfo now support ports, no need for the
 	hack).
 	(nnimap-split-find-rule): Fix.
+	(nnimap-open-connection): Look for nnimap-server-address in authinfo.
 
 2000-07-03  Paul Stodghill <stodghil@CS.Cornell.EDU>
 
