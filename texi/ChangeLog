@@ -1,3 +1,8 @@
+2002-02-16  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnusref.tex (subsection*{Notes}): Update.
+	From: Felix Natter <fnatter@gmx.net>
+
 2002-02-14  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Document Groups): Addition.
