@@ -1,3 +1,8 @@
+2004-08-17  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* nnimap.el (nnimap-open-connection): add 'imaps' synonym to
+	'imap' for netrc parsing
+
 2004-08-16  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mailcap.el (mailcap-mime-data): Mark as risky.
