@@ -1,3 +1,10 @@
+2002-10-11  Simon Josefsson  <jas@extundo.com>
+
+	* mml2015.el (mml2015-pgg-decrypt, mml2015-pgg-clear-decrypt) 
+	(mml2015-pgg-verify, mml2015-pgg-clear-verify): Remove CR.
+
+	* mml1991.el (mml1991-pgg-sign): Remove CR.
+
 2002-10-10  Simon Josefsson  <jas@extundo.com>
 
 	* mml2015.el (mml2015-pgg-decrypt): Set gnus details even when

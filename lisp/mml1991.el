@@ -24,7 +24,7 @@
 
 ;;; Commentary:
 
-;; RCS: $Id: mml1991.el,v 6.14 2002/10/10 00:30:36 jas Exp $
+;; RCS: $Id: mml1991.el,v 6.15 2002/10/10 00:54:59 jas Exp $
 
 ;;; Code:
 
@@ -240,6 +240,9 @@
       (error "Encrypt error"))
     (kill-region (point-min) (point-max))
     (insert-buffer pgg-output-buffer)
+    (goto-char (point-min))
+    (while (re-search-forward "\r+$" nil t)
+      (replace-match "" t t))
     (quoted-printable-encode-region (point-min) (point-max))
     (goto-char (point-min))
     (if headers (insert headers))
