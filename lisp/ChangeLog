@@ -1,5 +1,10 @@
 2003-12-15  Simon Josefsson  <jas@extundo.com>
 
+	* sha1-el.el (sha1): Add defgroup.
+	(sha1-maximum-internal-length, sha1-program, sha1-use-external)
+	(sha1-program): Use 'sha1sum' from GNU CoreUtils instead of OpenSSL.
+	(sha1): Autoload.
+
 	* nndraft.el (nndraft-request-move-article): Copy definition of
 	nnmh-request-move-article instead of calling it, because the nnmh
 	version uses nnmh-request-article which isn't the same as the
