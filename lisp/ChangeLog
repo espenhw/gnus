@@ -13,6 +13,8 @@
 	* gnus-start.el (gnus-backup-startup-file): Fixed custom type.
 
 2003-02-24  Ted Zlatanov <tzz@lifelogs.com>
+	* spam.el: disabled spam-get-article-as-filename
+
 	From Michael Shields  <shields@msrl.com>
 
 	* gnus-group.el (gnus-group-is-exiting-without-update-p): New.

@@ -513,14 +513,15 @@ your main source of newsgroup names."
 	(setq article-buffer (get-buffer gnus-article-buffer))))
     article-buffer))
 
-(defun spam-get-article-as-filename (article)
-  (let ((article-filename))
-    (when (numberp article)
-      (nnml-possibly-change-directory (gnus-group-real-name gnus-newsgroup-name))
-      (setq article-filename (expand-file-name (int-to-string article) nnml-current-directory)))
-    (if (file-exists-p article-filename)
-	article-filename
-      nil)))
+;; disabled for now
+;; (defun spam-get-article-as-filename (article)
+;;   (let ((article-filename))
+;;     (when (numberp article)
+;;       (nnml-possibly-change-directory (gnus-group-real-name gnus-newsgroup-name))
+;;       (setq article-filename (expand-file-name (int-to-string article) nnml-current-directory)))
+;;     (if (file-exists-p article-filename)
+;; 	article-filename
+;;       nil)))
 
 (defun spam-fetch-field-from-fast (article)
   "Fetch the `from' field quickly, using the internal gnus-data-list function"
