@@ -339,7 +339,9 @@ be set in `.emacs' instead."
 					 (:type xbm :file "gnus-pointer.xbm"
 						:ascent center))))
 			      gnus-mode-line-image-cache)
-			    'help-echo "This is Gnus")
+			    'help-echo (format
+					"This is %s, %s."
+					gnus-version (gnus-emacs-version)))
 		      str)
 		     (list str))
 	    line)))
@@ -3904,21 +3906,19 @@ Disallow invalid group names."
 				      (cons (or default "") 0)
 				      'gnus-group-history)))
 	(let ((match (match-string 0 group)))
-	  ;; `/' may be okay (e.g. for nnimap), so ask the user:
-	  (unless (and (string-match "/" match)
+	  ;; Might be okay (e.g. for nnimap), so ask the user:
+	  (unless (and (not (string-match "^$\\|:" match))
 		       (message-y-or-n-p
 			"Proceed and create group anyway? " t
 "The group name \"" group "\" contains a forbidden character: \"" match "\".
 
 Usually, it's dangerous to create a group with this name, because it's not
-supported by all back ends and servers.  On some IMAP servers, it's valid to
-use the character \"/\".
-
-If you are really sure, you can proceed anyway and create the group.
+supported by all back ends and servers.  On IMAP servers it should work,
+though.  If you are really sure, you can proceed anyway and create the group.
 
 You may customize the variable `gnus-invalid-group-regexp', which currently is
 set to \"" gnus-invalid-group-regexp
-"\", if you want to get rid of this query."))
+"\", if you want to get rid of this query permanently."))
 	    (setq prefix (format "Invalid group name: \"%s\".  " group)
 		  group nil)))))
     group))
@@ -4058,7 +4058,7 @@ current display is used."
 (defun gnus (&optional arg dont-connect slave)
   "Read network news.
 If ARG is non-nil and a positive number, Gnus will use that as the
-startup level.	If ARG is non-nil and not a positive number, Gnus will
+startup level.  If ARG is non-nil and not a positive number, Gnus will
 prompt the user for the name of an NNTP server to use."
   (interactive "P")
   (unless (byte-code-function-p (symbol-function 'gnus))

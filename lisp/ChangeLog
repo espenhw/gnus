@@ -1,3 +1,9 @@
+2004-01-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.el (gnus-mode-line-buffer-identification): Show version in
+	help-echo.
+	(gnus-read-group): Allow most group names.  Changed warning.
+
 2004-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-dired.el (gnus-dired-mode-map): Change keymaps.
