@@ -1,3 +1,9 @@
+2004-11-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* dns.el (query-dns): Use sit-for to time instead of
+	accept-process-output, since that doesn't seem to work on udp
+	sockets. 
+
 2004-11-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-encode-region): Encode bogus delimiters.

@@ -386,6 +386,7 @@ If REVERSEP, look up an IP address."
 		      tcp-p))
 	  (while (and (zerop (buffer-size))
 		      (> times 0))
+	    (sit-for (/ step 1000.0))
 	    (accept-process-output process 0 step)
 	    (decf times step))
 	  (ignore-errors
