@@ -1354,6 +1354,8 @@ exceeding lisp nesting on huge groups.
  Is the "+" character illegal in newsgroup names?  Is there any way
  in Gnus to work around this?  (gnus 5.6.45 - XEmacs 20.4)
 
+ [It works in 5.8.8.]
+
 *  When `#F', do:
 
       Subject: Answer to your mails 01.01.1999-01.05.1999
