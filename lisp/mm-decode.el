@@ -356,7 +356,8 @@ external if displayed external."
 	    (setq file (expand-file-name (file-name-nondirectory filename)
 					 dir))
 	  (setq file (make-temp-name (expand-file-name "mm." dir))))
-	(write-region (point-min) (point-max) file nil 'nomesg)
+	(let ((coding-system-for-write mm-binary-coding-system))
+	  (write-region (point-min) (point-max) file nil 'nomesg))
 	(message "Viewing with %s" method)
 	(unwind-protect
 	    (setq process
