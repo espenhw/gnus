@@ -1,3 +1,12 @@
+1999-11-10 12:13:30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnultimate.el (nnultimate-retrieve-headers): Work for multi-page 
+	subjects.
+
+1999-11-10 11:33:23  Rajappa Iyer  <rajappa@mindspring.com>
+
+	* gnus-salt.el (gnus-pick-article-or-thread): Don't move point. 
+
 1999-11-10 05:22:56  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnultimate.el (nnultimate-open-server): Do address.

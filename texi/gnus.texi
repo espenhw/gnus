@@ -8954,8 +8954,7 @@ messages in one file per month:
 (setq gnus-message-archive-group
       '((if (message-news-p)
             "misc-news"
-          (concat "mail." (format-time-string
-                           "%Y-%m" (current-time))))))
+          (concat "mail." (format-time-string "%Y-%m")))))
 @end lisp
 
 (XEmacs 19.13 doesn't have @code{format-time-string}, so you'll have to

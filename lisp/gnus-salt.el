@@ -189,7 +189,10 @@ If ARG, pick the article/thread on that line instead."
   (when arg
     (gnus-pick-goto-article arg))
   (if gnus-thread-hide-subtree
-      (gnus-uu-mark-thread)
+      (progn
+	(save-excursion
+	  (gnus-uu-mark-thread))
+	(forward-line 1))
     (gnus-summary-mark-as-processable 1)))
 
 (defun gnus-pick-unmark-article-or-thread (&optional arg)
@@ -200,7 +203,8 @@ If ARG, unmark thread/article on that line instead."
   (when arg
     (gnus-pick-goto-article arg))
   (if gnus-thread-hide-subtree
-      (gnus-uu-unmark-thread)
+      (save-excursion
+	(gnus-uu-unmark-thread))
     (gnus-summary-unmark-as-processable 1)))
 
 (defun gnus-pick-mouse-pick (e)
