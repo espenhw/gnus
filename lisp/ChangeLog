@@ -1,5 +1,7 @@
 2004-12-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* mm-url.el (mm-url-predefined-programs): Add --silent arg to curl.
+
 	* gnus-group.el (gnus-group-expire-articles-1): Decode group name.
 	(gnus-group-set-current-level): Decode group name.
 
