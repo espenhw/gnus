@@ -3830,8 +3830,8 @@ If READ-ALL is non-nil, all articles in the group are selected."
 	  ;; default score.
 	  (when (and (eq (cdr type) 'score)
 		     gnus-save-score
-		     articles)
-	    (let* ((arts articles)
+		     list)
+	    (let* ((arts list)
 		   (prev (cons nil articles))
 		   (all prev))
 	      (while arts
@@ -3840,7 +3840,7 @@ If READ-ALL is non-nil, all articles in the group are selected."
 		    (setcdr prev (cdr arts))
 		  (setq prev arts))
 		(setq arts (cdr arts)))
-	      (setq articles (cdr all))))
+	      (setq list (cdr all))))
 
 	  (push (cons (cdr type)
 		      (if (memq (cdr type) uncompressed) list

@@ -37,8 +37,8 @@
 (defvoo nndoc-article-type 'guess
   "*Type of the file.
 One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
-`rfc934', `mime-digest', `standard-digest', `slack-digest',
-`clari-briefs' or `guess'.")
+`rfc934', `rfc822-forward', `mime-digest', `standard-digest',
+`slack-digest', `clari-briefs' or `guess'.")
 
 (defvoo nndoc-post-type 'mail
   "*Whether the nndoc group is `mail' or `post'.")
@@ -108,9 +108,9 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
      (generate-head-function . nndoc-generate-lanl-gov-head)
      (article-transform-function . nndoc-transform-lanl-gov-announce)
      (subtype preprints guess))
-    (x400-forward
+    (rfc822-forward
      (article-begin . "^\n")
-     (body-end-function . nndoc-x400-forward-body-end-function))
+     (body-end-function . nndoc-rfc822-forward-body-end-function))
     (guess
      (guess . t)
      (subtype nil))
@@ -420,13 +420,13 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	     (not (re-search-forward "^From:" nil t 2)))
     t))
 
-(defun nndoc-x400-forward-type-p ()
+(defun nndoc-rfc822-forward-type-p ()
   (save-restriction
     (message-narrow-to-head)
     (when (re-search-forward "^Content-Type: *message/rfc822" nil t)
       t)))
 
-(defun nndoc-x400-forward-body-end-function ()
+(defun nndoc-rfc822-forward-body-end-function ()
   (goto-char (point-max)))
 
 (defun nndoc-clari-briefs-type-p ()

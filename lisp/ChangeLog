@@ -1,3 +1,15 @@
+Tue Mar 18 00:35:06 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.28 is released.
+
+Mon Mar 17 18:36:11 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-update-marks): Use `list' instead of
+	`articles'.
+
+	* nndoc.el (nndoc-rfc822-forward-type-p): Renamed.
+	(nndoc-rfc822-forward-body-end-function): Ditto.
+
 Mon Mar 17 17:35:35 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.27 is released.
