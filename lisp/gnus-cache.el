@@ -393,7 +393,8 @@ Returns the list of articles removed."
     (save-excursion
       (setq gnus-cache-buffer
 	    (cons group
-		  (set-buffer (gnus-get-buffer-create " *gnus-cache-overview*"))))
+		  (set-buffer (gnus-get-buffer-create
+			       " *gnus-cache-overview*"))))
       (buffer-disable-undo (current-buffer))
       ;; Insert the contents of this group's cache overview.
       (erase-buffer)

@@ -43,7 +43,7 @@
 
 (nnoo-declare nnvirtual)
 
-(defvoo nnvirtual-always-rescan nil
+(defvoo nnvirtual-always-rescan t
   "*If non-nil, always scan groups for unread articles when entering a group.
 If this variable is nil (which is the default) and you read articles
 in a component group after the virtual group has been activated, the
@@ -259,12 +259,14 @@ to virtual article number.")
     (setq nnvirtual-current-group nil)
     (nnheader-report 'nnvirtual "No component groups in %s" group))
    (t
+    (setq nnvirtual-current-group group)
     (when (or (not dont-check)
 	      nnvirtual-always-rescan)
       (nnvirtual-create-mapping)
       (when nnvirtual-always-rescan
-	(nnvirtual-request-update-info group (gnus-get-info group))))
-    (setq nnvirtual-current-group group)
+	(nnvirtual-request-update-info
+	 (nnvirtual-current-group)
+	 (gnus-get-info (nnvirtual-current-group)))))
     (nnheader-insert "211 %d 1 %d %s\n"
 		     nnvirtual-mapping-len nnvirtual-mapping-len group))))
 

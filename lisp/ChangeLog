@@ -1,3 +1,28 @@
+Sat Aug 29 19:17:19 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.42 is released.
+
+1998-08-29 17:06:27  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Typo.
+
+1998-08-29 12:47:42  Tatsuya Ichikawa  <ichikawa@hv.epson.co.jp>
+
+	* gnus-agent.el: Use nnheader-insert-file-contents.
+
+1998-08-29 12:18:18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnvirtual.el (nnvirtual-request-group): Update the right group. 
+
+1998-08-27 16:46:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-data-compute-positions): Didn't work on hidden
+	threads.
+
+	* nnvirtual.el (nnvirtual-request-group): Work when always
+	updating. 
+	(nnvirtual-always-rescan): Default to t.
+
 Thu Aug 27 11:03:59 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.41 is released.

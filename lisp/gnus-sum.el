@@ -1740,7 +1740,7 @@ increase the score of each group you read."
        ["Send a bug report" gnus-bug t]
        ("Exit"
 	["Catchup and exit" gnus-summary-catchup-and-exit t]
-	["Catchup all and exit" gnus-summary-catchup-and-exit t]
+	["Catchup all and exit" gnus-summary-catchup-all-and-exit t]
 	["Catchup and goto next" gnus-summary-catchup-and-goto-next-group t]
 	["Exit group" gnus-summary-exit t]
 	["Exit group without updating" gnus-summary-exit-no-update t]
@@ -2037,13 +2037,14 @@ The following commands are available:
   (setq gnus-newsgroup-data-reverse nil)
   (let ((data gnus-newsgroup-data))
     (save-excursion
-      (goto-char (point-min))
-      (while data
-	(while (get-text-property (point) 'gnus-intangible)
-	  (forward-line 1))
-	(gnus-data-set-pos (car data) (+ (point) 3))
-	(setq data (cdr data))
-	(forward-line 1)))))
+      (gnus-save-hidden-threads
+	(goto-char (point-min))
+	(while data
+	  (while (get-text-property (point) 'gnus-intangible)
+	    (forward-line 1))
+	  (gnus-data-set-pos (car data) (+ (point) 3))
+	  (setq data (cdr data))
+	  (forward-line 1))))))
 
 (defun gnus-summary-article-pseudo-p (article)
   "Say whether this article is a pseudo article or not."
