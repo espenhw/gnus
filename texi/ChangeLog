@@ -1,3 +1,7 @@
+2000-11-01 09:12:24  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Finding the News): @env is not supported in texinfo 3.12.
+
 2000-10-31  Jorge Godoy <godoy@conectiva.com>
 
 	* gnus.texi: gnus-gpg document.

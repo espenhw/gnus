@@ -936,7 +936,7 @@ certainly be much faster.
 @cindex NNTPSERVER
 @cindex @sc{nntp} server
 If this variable is not set, Gnus will take a look at the
-@env{NNTPSERVER} environment variable.  If that variable isn't set,
+@code{NNTPSERVER} environment variable.  If that variable isn't set,
 Gnus will see whether @code{gnus-nntpserver-file}
 (@file{/etc/nntpserver} by default) has any opinions on the matter.  If
 that fails as well, Gnus will try to use the machine running Emacs as an @sc{nntp} server.  That's a long shot, though.
