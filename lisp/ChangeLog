@@ -1,3 +1,9 @@
+2002-04-22  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir-request-scan): typo: set
+	nnmaildir-get-new-mail, not nnmaildir-new-mail.  Don't call
+	nnmail-get-new-mail for 'find-new-groups.
+
 2002-04-21  Paul Jarc  <prj@po.cwru.edu>
 
 	* nnmaildir.el (nnmaildir-request-update-info,
