@@ -1001,9 +1001,9 @@ returned, if ITEMS is a symbol only it's value is returned."
 						   (list items))))))
       (if (listp items)
 	  (mapcar (lambda (item)
-		    (imap-mailbox-get-1 item mailbox))
+		    (imap-mailbox-get item mailbox))
 		  items)
-	(imap-mailbox-get-1 items mailbox)))))
+	(imap-mailbox-get items mailbox)))))
 
 (defun imap-mailbox-acl-get (&optional mailbox buffer)
   "Get ACL on mailbox from server in BUFFER."
@@ -1320,11 +1320,11 @@ on failure."
 		       (let ((process imap-process)
 			     (stream imap-stream))
 			 (with-current-buffer cmd
-			   (when (eq stream 'kerberos4)
+			   (when (not (equal imap-client-eol "\r\n"))
 			     ;; XXX modifies buffer!
 			     (goto-char (point-min))
 			     (while (search-forward "\r\n" nil t)
-			       (replace-match "\n")))
+			       (replace-match imap-client-eol)))
 			   (and imap-log
 				(with-current-buffer (get-buffer-create
 						      imap-log)
