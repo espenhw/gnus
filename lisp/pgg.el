@@ -78,7 +78,8 @@
        ,@body)))
 
 (defun pgg-temp-buffer-show-function (buffer)
-  (let ((window (split-window-vertically)))
+  (let ((window (or (get-buffer-window buffer 'visible)
+		    (split-window-vertically))))
     (set-window-buffer window buffer)
     (shrink-window-if-larger-than-buffer window)))
 
