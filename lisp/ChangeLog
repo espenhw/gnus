@@ -1,3 +1,8 @@
+2003-10-19  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-uu.el (gnus-uu-uustrip-article): Really strip directory
+	from file name.
+
 2003-10-18  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-save-parts-last-directory): Default

@@ -1438,9 +1438,9 @@ When called interactively, prompt for REGEXP."
 	  ;; This is the beginning of a uuencoded article.
 	  ;; We replace certain characters that could make things messy.
 	  (setq gnus-uu-file-name
-		(let ((nnheader-file-name-translation-alist
-		       '((?/ . ?,) (?  . ?_) (?* . ?_) (?$ . ?_))))
-		  (nnheader-translate-file-chars (match-string 1))))
+		(gnus-map-function
+		 mm-file-name-rewrite-functions 
+		 (file-name-nondirectory (match-string 1))))
 	  (replace-match (concat "begin 644 " gnus-uu-file-name) t t)
 
 	  ;; Remove any non gnus-uu-body-line right after start.
