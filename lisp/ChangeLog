@@ -1,3 +1,9 @@
+2003-01-07  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el: define 'ignore alias for spam-BBDB-register-routine,
+	spam-enter-ham-BBDB, and bbdb-create-internal initially to hush up warnings
+	(spam-ifile-all-categories): doc string fixed to be less than 80 chars
+
 2003-01-07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Added

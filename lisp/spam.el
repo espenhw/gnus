@@ -38,16 +38,17 @@
 
 (require 'gnus-uu)			; because of key prefix issues
 (require 'gnus)	; for the definitions of group content classification and spam processors
-
-;; FIXME!  We should not require `message' until we actually need
-;; them.  Best would be to declare needed functions as auto-loadable.
-(require 'message)
+(require 'message)			;for the message-fetch-field functions
 
 ;; Attempt to load BBDB macros
 (eval-when-compile
   (condition-case nil
       (require 'bbdb-com)
-    (file-error (defalias 'bbdb-search 'ignore))))
+    (file-error 
+     (defalias 'spam-BBDB-register-routine 'ignore)
+     (defalias 'spam-enter-ham-BBDB 'ignore)
+     (defalias 'bbdb-search 'ignore)
+     (defalias 'bbdb-create-internal 'ignore))))
 
 ;; autoload executable-find
 (eval-and-compile
@@ -126,8 +127,6 @@ The regular expression is matched against the address."
   :type 'string
   :group 'spam)
 
-;; FIXME!  The mailgroup list evidently depends on other choices made by the
-;; user, so the built-in default below is not likely to be appropriate.
 (defcustom spam-junk-mailgroups (cons spam-split-group '("mail.junk" "poste.pourriel"))
   "Mailgroups with spam contents.
 All unmarked article in such group receive the spam mark on group entry."
@@ -184,8 +183,9 @@ Such articles will be transmitted to `bogofilter -s' on group exit."
   :group 'spam-ifile)
 
 (defcustom spam-ifile-all-categories nil
-  "Whether the spam-split invocation of ifile will return all categories, or just spam.
-Set this to t if you want to use the spam-split invocation of ifile as your main source of newsgroup names."  
+  "Whether the ifile check will return all categories, or just spam.
+Set this to t if you want to use the spam-split invocation of ifile as
+your main source of newsgroup names."
   :type 'boolean
   :group 'spam-ifile)
 
@@ -281,10 +281,12 @@ articles before they get registered by Bogofilter."
 (defun spam-group-ham-processor-BBDB-p (group)
   (spam-group-processor-p group 'gnus-group-ham-exit-processor-BBDB))
 
-;;; Hooks dispatching.  A bit raw for now.
+;;; Summary entry and exit processing.
 
 (defun spam-summary-prepare ()
   (spam-mark-junk-as-spam-routine))
+
+(add-hook 'gnus-summary-prepare-hook 'spam-summary-prepare)
 
 (defun spam-summary-prepare-exit ()
   ;; The spam processors are invoked for any group, spam or ham or neither
@@ -312,7 +314,6 @@ articles before they get registered by Bogofilter."
     (when (spam-group-ham-processor-BBDB-p gnus-newsgroup-name)
       (spam-BBDB-register-routine))))
 
-(add-hook 'gnus-summary-prepare-hook 'spam-summary-prepare)
 (add-hook 'gnus-summary-prepare-exit-hook 'spam-summary-prepare-exit)
 
 (defun spam-mark-junk-as-spam-routine ()
@@ -365,6 +366,11 @@ articles before they get registered by Bogofilter."
       (mapc spam-func spam-articles))))	; we use mapc because unlike
 					; mapcar it discards the
 					; return values
+
+(eval-and-compile
+  (defalias 'spam-point-at-eol (if (fboundp 'point-at-eol)
+				   'point-at-eol
+				 'line-end-position)))
 
 (defun spam-get-article-as-string (article)
   (let ((article-string))
@@ -504,11 +510,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (file-error (progn
 		(setq spam-list-of-checks
 		      (delete (assoc 'spam-use-BBDB spam-list-of-checks)
-			      spam-list-of-checks))
-		(defun spam-check-BBDB ()
-		  message "spam-check-BBDB was invoked, but it shouldn't have")
-		(defun spam-BBDB-register-routine ()
-		  (spam-generic-register-routine nil nil)))))
+			      spam-list-of-checks)))))
 
 
 ;;;; ifile
@@ -603,11 +605,6 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
   (unless spam-blacklist-cache
     (setq spam-blacklist-cache (spam-parse-list spam-blacklist)))
   (and (spam-from-listed-p spam-blacklist-cache) spam-split-group))
-
-(eval-and-compile
-  (defalias 'spam-point-at-eol (if (fboundp 'point-at-eol)
-				   'point-at-eol
-				 'line-end-position)))
 
 (defun spam-parse-list (file)
   (when (file-readable-p file)
