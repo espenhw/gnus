@@ -810,9 +810,8 @@ If your Emacs implementation can't decode CHARSET, return nil."
 	     (memq 'gnus-unknown mail-parse-ignored-charsets))
 	(setq cs (mm-charset-to-coding-system mail-parse-charset)))
     (when cs
-      (when (and (eq cs 'ascii)
-		 mail-parse-charset)
-	(setq cs mail-parse-charset))
+      (when (eq cs 'ascii)
+	(setq cs (or mail-parse-charset 'raw-text)))
       (mm-decode-coding-string
        (cond
 	((char-equal ?B encoding)
