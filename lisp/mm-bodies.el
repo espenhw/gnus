@@ -168,8 +168,9 @@ If no encoding was done, nil is returned."
 	     ;; have been added by mailing list software.
 	     (save-excursion
 	       (goto-char (point-min))
-	       (re-search-forward "^[\t ]*$")
-	       (delete-region (point) (point-max))
+	       (if (re-search-forward "^[\t ]*$" nil t)
+		   (delete-region (point) (point-max))
+		 (goto-char (point-max)))
 	       (skip-chars-backward "\n\t ")
 	       (delete-region (point) (point-max))
 	       (point))))

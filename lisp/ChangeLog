@@ -1,3 +1,8 @@
+2000-04-21 19:38:43  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Don't remove
+	non-base64 text at the end if not found.
+
 2000-03-01  Simon Josefsson  <jas@pdc.kth.se>
 
 	* gnus-sum.el (gnus-read-move-group-name): 
