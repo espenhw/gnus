@@ -761,7 +761,7 @@ following hook:
 			header
 			(gnus-simplify-subject
 			 (mail-header-subject header) 're-only)))
-		     gnus-newsgroup-headers)))
+		     gnus-newsgroup-headers)))"
   :group 'gnus-group-select
   :type 'hook)
 

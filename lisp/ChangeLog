@@ -1,3 +1,11 @@
+2002-01-05  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-select-group-hook): Typo.
+
+	* rfc2047.el (rfc2047-decode-string): Return immediately if there
+	is no quoted-printable-encoded STRING.
+	From: Jesper Harder <harder@ifa.au.dk>
+
 2002-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-logo-color-alist): Added more colors from Luis. 
