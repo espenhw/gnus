@@ -1,3 +1,8 @@
+2003-02-04  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus-delay.el (gnus-delay-article): Really create
+	nndraft:delayed group if it doesn't exist.
+
 2003-02-04  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-search-article): Speed up by
