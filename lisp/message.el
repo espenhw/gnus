@@ -1480,15 +1480,15 @@ no, only reply back to the author."
   "A regexp that matches the separator before the text of a failed message.")
 
 (defvar message-field-fillers
-  '((To message-fill-address)
-    (Cc message-fill-address)
-    (From message-fill-address))
+  '((To message-fill-field-address)
+    (Cc message-fill-field-address)
+    (From message-fill-field-address))
   "Alist of header names/filler functions.")
 
 (defvar message-header-format-alist
   `((Newsgroups)
-    (To . message-fill-address)
-    (Cc . message-fill-address)
+    (To)
+    (Cc)
     (Subject)
     (In-Reply-To)
     (Fcc)
@@ -5030,6 +5030,7 @@ Headers already prepared in the buffer are not modified."
 		      (if formatter
 			  (funcall formatter header value)
 			(insert header-string ": " value))
+		      (message-fill-field)
 		      ;; We check whether the value was ended by a
 		      ;; newline.  If now, we insert one.
 		      (unless (bolp)
@@ -5042,7 +5043,8 @@ Headers already prepared in the buffer are not modified."
 		;; empty, we con't insert it anyway.
 		(unless optionalp
 		  (push header-string message-inserted-headers)
-		  (insert value)))
+		  (insert value)
+		  (message-fill-field)))
 	      ;; Add the deletable property to the headers that require it.
 	      (and (memq header message-deletable-headers)
 		   (progn (beginning-of-line) (looking-at "[^:]+: "))
@@ -5131,12 +5133,10 @@ If the current line has `message-yank-prefix', insert it on the new line."
     (error
      (split-line))))
 
-(defun message-fill-header (header value)
+(defun message-insert-header (header value)
   (insert (capitalize (symbol-name header))
 	  ": "
-	  (if (consp value) (car value) value)
-	  "\n")
-  (message-fill-field))
+	  (if (consp value) (car value) value)))
 
 (defun message-field-name ()
   (save-excursion
@@ -5227,12 +5227,13 @@ they are."
     (when message-this-is-news
       (while (< 998
 		(with-temp-buffer
-		  (message-fill-header header (mapconcat #'identity refs " "))
+		  (message-insert-header
+		   header (mapconcat #'identity refs " "))
 		  (buffer-size)))
 	(message-shorten-1 refs cut 1)))
     ;; Finally, collect the references back into a string and insert
     ;; it into the buffer.
-    (message-fill-header header (mapconcat #'identity refs " "))))
+    (message-insert-header header (mapconcat #'identity refs " "))))
 
 (defun message-position-point ()
   "Move point to where the user probably wants to find it."
