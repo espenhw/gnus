@@ -1,3 +1,8 @@
+2001-12-01 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-make-mft): Fix the m-s-a-file regexp.
+	From Paul Jarc <prj@po.cwru.edu>.
+	
 2001-11-30 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el: New variable message-subscribed-address-file;

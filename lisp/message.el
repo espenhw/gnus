@@ -3786,7 +3786,7 @@ give as trustworthy answer as possible."
 		      (setq end (point))
 		      (if (bolp) (setq end (1- end)))
 		      (setq item (regexp-quote (buffer-substring begin end)))
-		      (if re (setq re (concat re "\\)\\|\\(" item))
+		      (if re (setq re (concat re "\\|" item))
 			(setq re (concat "\\`\\(" item))))
 		    (and re (list (concat re "\\)\\'"))))))))
 	 (mft-regexps (apply 'append message-subscribed-regexps
