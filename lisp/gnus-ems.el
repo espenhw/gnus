@@ -48,8 +48,6 @@
   (autoload 'nnheader-find-etc-directory "nnheader"))
 
 (autoload 'smiley-region "smiley")
-;; Fixme: shouldn't require message
-(autoload 'message-text-with-property "message")
 
 (defun gnus-kill-all-overlays ()
   "Delete all overlays in the current buffer."
@@ -223,18 +221,24 @@
     glyph))
 
 (defun gnus-remove-image (image &optional category)
-  (let ((regions (message-text-with-property 'display))
-	start end)
-    (while regions
-      (setq start (caar regions)
-	    end (cdar regions)
-	    regions (cdr regions))
-      (when (and (equal (get-text-property start 'display) image)
-		 (equal (get-text-property start 'gnus-image-category)
-			category))
-	(put-text-property start end 'display nil)
-	(when (get-text-property start 'gnus-image-text-deletable)
-	  (delete-region start end))))))
+  "Remove the image matching IMAGE and CATEGORY found first."
+  (let ((start (point-min))
+	val end)
+    (while (and (not end)
+		(or (setq val (get-text-property start 'display))
+		    (and (setq start
+			       (next-single-property-change start 'display))
+			 (setq val (get-text-property start 'display)))))
+      (setq end (next-single-property-change start 'display))
+      (if (and (equal val image)
+	       (equal (get-text-property start 'gnus-image-category)
+		      category))
+	  (progn
+	    (put-text-property start end 'display nil)
+	    (when (get-text-property start 'gnus-image-text-deletable)
+	      (delete-region start end)))
+	(setq start end
+	      end nil)))))
 
 (provide 'gnus-ems)
 

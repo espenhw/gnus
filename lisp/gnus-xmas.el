@@ -837,12 +837,13 @@ Warning: Don't insert text immediately after the image."
   glyph)
 
 (defun gnus-xmas-remove-image (image &optional category)
+  "Remove the image matching IMAGE and CATEGORY found first."
   (map-extents
    (lambda (ext unused)
      (when (equal (extent-end-glyph ext) image)
        (set-extent-property ext 'invisible nil)
-       (set-extent-property ext 'end-glyph nil))
-     nil)
+       (set-extent-property ext 'end-glyph nil)
+       t))
    nil nil nil nil nil 'gnus-image category))
 
 (defun gnus-xmas-assq-delete-all (key alist)
