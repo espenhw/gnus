@@ -172,7 +172,7 @@
 	 (string-match (concat "[ \t]*<" (regexp-quote address) ">") from)
 	 (and (setq name (substring from 0 (match-beginning 0)))
 	      ;; Strip any quotes from the name.
-	      (string-match "\".*\"" name)
+	      (string-match "^\".*\"$" name)
 	      (setq name (substring name 1 (1- (match-end 0))))))
     ;; If not, then "address (name)" is used.
     (or name
