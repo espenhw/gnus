@@ -1,3 +1,12 @@
+2004-02-26  Jesper Harder  <harder@ifa.au.dk>
+
+	* spam-stat.el (spam-stat-washing-hook): New option.
+	(spam-stat-buffer-words): Use it.
+	(spam-stat-process-directory, spam-stat-test-directory): Use
+	insert-file-contents-literally.
+	(spam-stat-coding-system): New variable.
+	(spam-stat-load, spam-stat-save): Use it.
+
 2004-02-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* spam-report.el (spam-report-plug-agent): Quote

@@ -172,6 +172,11 @@ effect when spam-stat is invoked through spam.el."
   :type 'number
   :group 'spam-stat)
 
+(defcustom spam-stat-washing-hook nil
+  "Hook applied to each message before analysis."
+  :type 'hook
+  :group 'spam-stat)
+
 (defcustom spam-stat-process-directory-age 90
   "Max. age of files to be processed in directory, in days.
 When using `spam-stat-process-spam-directory' or
@@ -201,6 +206,10 @@ This is set by hooking into Gnus.")
 
 (defvar spam-stat-buffer-name " *spam stat buffer*"
   "Name of the `spam-stat-buffer'.")
+
+(defvar spam-stat-coding-system
+  (if (coding-system-p 'emacs-mule) 'emacs-mule 'raw-text)
+  "Coding system used for `spam-stat-file'.")
 
 ;; Hooking into Gnus
 
@@ -298,6 +307,7 @@ Use `spam-stat-ngood', `spam-stat-nbad', `spam-stat-good',
 
 (defun spam-stat-buffer-words ()
   "Return a hash table of words and number of occurences in the buffer."
+  (run-hooks 'spam-stat-washing-hook)
   (with-spam-stat-max-buffer-size
    (with-syntax-table spam-stat-syntax-table
      (goto-char (point-min))
@@ -377,27 +387,26 @@ Use `spam-stat-ngood', `spam-stat-nbad', `spam-stat-good',
 With a prefix argument save unconditionally."
   (interactive "P")
   (when (or force spam-stat-dirty)
-    (with-temp-buffer
-      (let ((standard-output (current-buffer))
-	    (font-lock-maximum-size 0))
-	(insert "(setq spam-stat-ngood "
-		(number-to-string spam-stat-ngood)
-		" spam-stat-nbad "
-		(number-to-string spam-stat-nbad)
-		" spam-stat (spam-stat-to-hash-table '(")
-	(maphash (lambda (word entry)
-		   (prin1 (list word
-				(spam-stat-good entry)
-				(spam-stat-bad entry))))
-		 spam-stat)
-	(insert ")))")
-	(write-file spam-stat-file)))
-    (setq spam-stat-dirty nil)))
+    (let ((coding-system-for-write spam-stat-coding-system))
+      (with-temp-file spam-stat-file
+	(let ((standard-output (current-buffer))
+	      (font-lock-maximum-size 0))
+	  (insert (format ";-*- coding: %s; -*-\n" spam-stat-coding-system))
+	  (insert (format "(setq spam-stat-ngood %d spam-stat-nbad %d
+spam-stat (spam-stat-to-hash-table '(" spam-stat-ngood spam-stat-nbad))
+	  (maphash (lambda (word entry)
+		     (prin1 (list word
+				  (spam-stat-good entry)
+				  (spam-stat-bad entry))))
+		   spam-stat)
+	  (insert ")))"))))
+	(setq spam-stat-dirty nil)))
 
 (defun spam-stat-load ()
   "Read the `spam-stat' hash table from disk."
   ;; TODO: maybe we should warn the user if spam-stat-dirty is t?
-  (load-file spam-stat-file)
+  (let ((coding-system-for-read spam-stat-coding-system))
+    (load-file spam-stat-file))
   (setq spam-stat-dirty nil))
 
 (defun spam-stat-to-hash-table (entries)
@@ -500,7 +509,7 @@ check the variable `spam-stat-score-data'."
 		      spam-stat-process-directory-age))
 	  (setq count (1+ count))
 	  (message "Reading %s: %.2f%%" dir (/ count max))
-	  (insert-file-contents f)
+	  (insert-file-contents-literally f)
 	  (spam-stat-strip-xref)
 	  (funcall func)
 	  (erase-buffer))))))
@@ -545,7 +554,7 @@ display non-spam files; otherwise display spam files."
 	  (setq count (1+ count))
 	  (message "Reading %.2f%%, score %.2f"
 	  	   (/ count max) (/ score count))
-	  (insert-file-contents f)
+	  (insert-file-contents-literally f)
 	  (setq buffer-score (spam-stat-score-buffer))
 	  (when (> buffer-score 0.9)
 	    (setq score (1+ score)))
