@@ -1324,7 +1324,7 @@ Return the name of the group is selection was successful."
 	       ,gnus-level-default-subscribed nil nil ,method
 	       ((quit-config .
 			     ,(if quit-config quit-config
-				(cons (current-buffer) 
+				(cons gnus-summary-buffer
 				      gnus-current-window-configuration))))))
      gnus-newsrc-hashtb)
     (set-buffer gnus-group-buffer)

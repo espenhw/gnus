@@ -1,3 +1,32 @@
+Tue Sep  3 05:30:02 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-async.el (gnus-async-prefetch-article): Reset async list
+	when the summary buffer is killed.
+
+	* gnus-xmas.el (gnus-xmas-modeline-glyph): Don't use glyph under
+	tty. 
+
+	* gnus-msg.el (gnus-copy-article-buffer): Deleted text in article
+	buffer. 
+
+Tue Sep  3 05:10:19 1996  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-sum.el (gnus-group-no-more-groups-hook): New variable.
+
+Tue Sep  3 04:44:31 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-exit): Would bug out when using a
+	single article buffer.
+
+Mon Sep  2 05:50:07 1996  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus-audio.el (gnus-audio-play): Give the sound-file argument as
+	ARG in addition to stdin.
+
+Mon Sep  2 05:28:26 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.23 is released.
+
 Mon Sep  2 05:16:46 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-audio.el: Renamed from "gnus-sound".

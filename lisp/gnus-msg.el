@@ -308,20 +308,28 @@ header line with the old Message-ID."
       (save-excursion
 	(set-buffer article-buffer)
 	(save-restriction
+	  ;; Copy over the (displayed) article buffer, delete
+	  ;; hidden text and remove text properties.
 	  (widen)
+	  (copy-to-buffer gnus-article-copy (point-min) (point-max))
+	  (set-buffer gnus-article-copy)
 	  (article-delete-text-of-type 'annotation)
-	  (setq contents (format "%s" (buffer-string)))
+	  (insert
+	   (prog1
+	       (format "%s" (buffer-string))
+	     (erase-buffer)))
+	  ;; Find the original headers.
 	  (set-buffer gnus-original-article-buffer)
 	  (goto-char (point-min))
 	  (while (looking-at message-unix-mail-delimiter)
 	    (forward-line 1))
 	  (setq beg (point))
 	  (setq end (or (search-forward "\n\n" nil t) (point)))
+	  ;; Delete the headers from the displayed articles.
 	  (set-buffer gnus-article-copy)
-	  (erase-buffer)
-	  (insert contents)
 	  (delete-region (goto-char (point-min))
 			 (or (search-forward "\n\n" nil t) (point)))
+	  ;; Insert the original article headers.
 	  (insert-buffer-substring gnus-original-article-buffer beg end)))
       gnus-article-copy)))
 

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.23 Manual
+@settitle Red Gnus 0.24 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -230,7 +230,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.23 Manual
+@title Red Gnus 0.24 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page

@@ -777,7 +777,8 @@ If HIDE, hide the text instead."
     (let* ((file (concat gnus-xmas-glyph-directory "gnus-pointer."
 			 (if (featurep 'xpm) "xpm" "xbm")))
 	   (glyph (make-glyph file)))
-      (when (file-exists-p file)
+      (when (and (featurep 'x)
+		 (file-exists-p file))
 	(set-glyph-face glyph 'modeline-buffer-id)
 	glyph))))
 

@@ -183,10 +183,10 @@ buffer configuration.")
     (draft . gnus-draft-buffer))
   "Mapping from short symbols to buffer names or buffer variables.")
 
+;;; Internal variables.
+
 (defvar gnus-current-window-configuration nil
   "The most recently set window configuration.")
-
-;;; Internal variables.
 
 (defvar gnus-created-frames nil)
 

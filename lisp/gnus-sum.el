@@ -419,6 +419,9 @@ variable.")
 The hook is intended to mark an article as read (or unread)
 automatically when it is selected.")
 
+(defvar gnus-group-no-more-groups-hook nil
+  "*A hook run when returning to group mode having no more (unread) groups.")
+
 ;;; Internal variables
 
 (defvar gnus-summary-display-table 
@@ -4437,6 +4440,11 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 		 (gnus-set-global-variables))
 		((eq major-mode 'gnus-article-mode)
 		 (save-excursion
+		   ;; The `gnus-summary-buffer' variable may point
+		   ;; to the old summary buffer when using a single
+		   ;; article buffer.
+		   (unless (gnus-buffer-live-p gnus-summary-buffer)
+		     (set-buffer gnus-group-buffer))
 		   (set-buffer gnus-summary-buffer)
 		   (gnus-set-global-variables))))
 	  (gnus-configure-windows (cdr quit-config) 'force)))
@@ -4631,7 +4639,8 @@ previous group instead."
 	    (gnus-message 5 "Returning to the group buffer")
 	    (setq entered t)
 	    (set-buffer current-buffer)
-	    (gnus-summary-exit))
+	    (gnus-summary-exit)
+	    (run-hooks 'gnus-group-no-more-groups-hook))
 	;; We try to enter the target group.
 	(gnus-group-jump-to-group target-group)
 	(let ((unreads (gnus-group-group-unread)))
@@ -5586,45 +5595,46 @@ If FORCE, force a digest interpretation.  If not, try
 to guess what the document format is."
   (interactive "P")
   (gnus-set-global-variables)
-  (save-excursion
-    (gnus-summary-select-article))
-  (let* ((name (format "%s-%d"
-		       (gnus-group-prefixed-name
-			gnus-newsgroup-name (list 'nndoc ""))
-		       (save-excursion
-			 (set-buffer gnus-summary-buffer)
-			 gnus-current-article)))
-	 (ogroup gnus-newsgroup-name)
-	 (params (append (gnus-info-params (gnus-get-info ogroup))
-			 (list (cons 'to-group ogroup))))
-	 (case-fold-search t)
-	 (buf (current-buffer))
-	 dig)
+  (let ((conf gnus-current-window-configuration))
     (save-excursion
-      (setq dig (nnheader-set-temp-buffer " *gnus digest buffer*"))
-      (insert-buffer-substring gnus-original-article-buffer)
-      ;; Remove lines that may lead nndoc to misinterpret the
-      ;; document type.
-      (narrow-to-region
-       (goto-char (point-min))
-       (or (search-forward "\n\n" nil t) (point)))
-      (goto-char (point-min))
-      (delete-matching-lines "^\\(Path\\):\\|^From ")
-      (widen))
-    (unwind-protect
-	(if (gnus-group-read-ephemeral-group
-	     name `(nndoc ,name (nndoc-address
-				 ,(get-buffer dig))
-			  (nndoc-article-type ,(if force 'digest 'guess))) t)
-	    ;; Make all postings to this group go to the parent group.
-	    (nconc (gnus-info-params (gnus-get-info name))
-		   params)
-	  ;; Couldn't select this doc group.
-	  (switch-to-buffer buf)
-	  (gnus-set-global-variables)
-	  (gnus-configure-windows 'summary)
-	  (gnus-message 3 "Article couldn't be entered?"))
-      (kill-buffer dig))))
+      (gnus-summary-select-article))
+    (setq gnus-current-window-configuration conf)
+    (let* ((name (format "%s-%d"
+			 (gnus-group-prefixed-name
+			  gnus-newsgroup-name (list 'nndoc ""))
+			 (save-excursion
+			   (set-buffer gnus-summary-buffer)
+			   gnus-current-article)))
+	   (ogroup gnus-newsgroup-name)
+	   (params (append (gnus-info-params (gnus-get-info ogroup))
+			   (list (cons 'to-group ogroup))))
+	   (case-fold-search t)
+	   (buf (current-buffer))
+	   dig)
+      (save-excursion
+	(setq dig (nnheader-set-temp-buffer " *gnus digest buffer*"))
+	(insert-buffer-substring gnus-original-article-buffer)
+	;; Remove lines that may lead nndoc to misinterpret the
+	;; document type.
+	(narrow-to-region
+	 (goto-char (point-min))
+	 (or (search-forward "\n\n" nil t) (point)))
+	(goto-char (point-min))
+	(delete-matching-lines "^\\(Path\\):\\|^From ")
+	(widen))
+      (unwind-protect
+	  (if (gnus-group-read-ephemeral-group
+	       name `(nndoc ,name (nndoc-address ,(get-buffer dig))
+			    (nndoc-article-type ,(if force 'digest 'guess))) t)
+	      ;; Make all postings to this group go to the parent group.
+	      (nconc (gnus-info-params (gnus-get-info name))
+		     params)
+	    ;; Couldn't select this doc group.
+	    (switch-to-buffer buf)
+	    (gnus-set-global-variables)
+	    (gnus-configure-windows 'summary)
+	    (gnus-message 3 "Article couldn't be entered?"))
+	(kill-buffer dig)))))
 
 (defun gnus-summary-read-document (n)
   "Open a new group based on the current article(s).

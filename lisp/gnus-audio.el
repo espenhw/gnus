@@ -89,17 +89,19 @@
 		      (concat gnus-audio-directory file))))
     (when (file-exists-p sound-file)
       (if gnus-audio-inline-sound
-	  (play-sound-file (concat gnus-audio-directory sound-file))
+	  (play-sound-file sound-file)
 	(cond ((string-match "\\.wav$" sound-file)
 	       (call-process gnus-audio-wav-player
-			     (concat gnus-audio-directory sound-file)
+			     sound-file
 			     0
-			     nil))
+			     nil
+			     sound-file))
 	      ((string-match "\\.au$" sound-file)
 	       (call-process gnus-audio-au-player
-			     (concat gnus-audio-directory sound-file)
+			     sound-file
 			     0
-			     nil)))))))
+			     nil
+			     sound-file)))))))
 
 
 ;;; The following isn't implemented yet, wait for Red Gnus
