@@ -1,3 +1,8 @@
+2002-02-24  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* nnheader.el (nnheader-find-nov-line): Changed midpoint
+	calculation to avoid integer overflow.
+
 2003-02-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-start.el (gnus-backup-startup-file): Fixed custom type.

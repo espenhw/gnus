@@ -489,7 +489,7 @@ the line could be found."
 	(prev (point-min))
 	num found)
     (while (not found)
-      (goto-char (/ (+ max min) 2))
+      (goto-char (+ min (/ (- max min) 2)))
       (beginning-of-line)
       (if (or (= (point) prev)
 	      (eobp))
