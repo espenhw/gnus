@@ -1,3 +1,17 @@
+2003-03-06  Jesper Harder  <harder@ifa.au.dk>
+
+	* nnimap.el (nnimap-request-accept-article): Use delete-region.
+
+	* html2text.el (html2text-clean-dtdd, html2text-delete-tags)
+	(html2text-delete-single-tag, html2text-clean-anchor)
+	(html2text-remove-tags): Use delete-region.
+	(html2text-fix-paragraphs): Simplify.
+
+	* mml1991.el (mml1991-mailcrypt-sign, mml1991-mailcrypt-encrypt)
+	(mml1991-gpg-sign, mml1991-gpg-encrypt, mml1991-pgg-sign)
+	(mml1991-pgg-encrypt, mml1991-pgg-encrypt): Use delete-region, not
+	kill-region.
+
 2003-03-04  John Paul Wallington  <jpw@gnu.org>
 
 	* gnus-agent.el (gnus-agent-enable-expiration)

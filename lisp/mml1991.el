@@ -1,5 +1,5 @@
-;;; mml-gpg-old.el --- Old PGP message format (RFC 1991) support for MML
-;; Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+;;; mml1991.el --- Old PGP message format (RFC 1991) support for MML
+;; Copyright (C) 1998, 1999, 2000, 2001, 2003 Free Software Foundation, Inc.
 
 ;; Author: Sascha Lüdecke <sascha@meta-x.de>,
 ;;	Simon Josefsson <simon@josefsson.org> (Mailcrypt interface, Gnus glue)
@@ -23,8 +23,6 @@
 ;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
-
-;; RCS: $Id: mml1991.el,v 6.16 2002/10/11 00:02:24 jas Exp $
 
 ;;; Code:
 
@@ -55,10 +53,9 @@
     ;; Save MIME Content[^ ]+: headers from signing
     (goto-char (point-min))
     (while (looking-at "^Content[^ ]+:") (forward-line))
-    (if (> (point) (point-min))
-	(progn
-	  (setq headers (buffer-string))
-	  (kill-region (point-min) (point))))
+    (unless (bobp)
+      (setq headers (buffer-string))
+      (delete-region (point-min) (point)))
     (goto-char (point-max))
     (unless (bolp)
       (insert "\n"))
@@ -76,7 +73,7 @@
 	(replace-match "" t t))
       (quoted-printable-encode-region (point-min) (point-max))
       (set-buffer text)
-      (kill-region (point-min) (point-max))
+      (delete-region (point-min) (point-max))
       (if headers (insert headers))
       (insert "\n")
       (insert-buffer signature)
@@ -98,9 +95,8 @@
     ;; Strip MIME Content[^ ]: headers since it will be ASCII ARMOURED
     (goto-char (point-min))
     (while (looking-at "^Content[^ ]+:") (forward-line))
-    (if (> (point) (point-min))
-	(progn
-	  (kill-region (point-min) (point))))
+    (unless (bobp)
+      (delete-region (point-min) (point)))
     (mm-with-unibyte-current-buffer-mule4
       (with-temp-buffer
 	(setq cipher (current-buffer))
@@ -121,7 +117,7 @@
 	(while (re-search-forward "\r+$" nil t)
 	  (replace-match "" t t))
 	(set-buffer text)
-	(kill-region (point-min) (point-max))
+	(delete-region (point-min) (point-max))
 	;;(insert "Content-Type: application/pgp-encrypted\n\n")
 	;;(insert "Version: 1\n\n")
 	(insert "\n")
@@ -140,10 +136,9 @@
     ;; Save MIME Content[^ ]+: headers from signing
     (goto-char (point-min))
     (while (looking-at "^Content[^ ]+:") (forward-line))
-    (if (> (point) (point-min))
-	(progn
-	  (setq headers (buffer-string))
-	  (kill-region (point-min) (point))))
+    (unless (bobp)
+      (setq headers (buffer-string))
+      (delete-region (point-min) (point)))
     (goto-char (point-max))
     (unless (bolp)
       (insert "\n"))
@@ -161,7 +156,7 @@
 	(replace-match "" t t))
       (quoted-printable-encode-region (point-min) (point-max))
       (set-buffer text)
-      (kill-region (point-min) (point-max))
+      (delete-region (point-min) (point-max))
       (if headers (insert headers))
       (insert "\n")
       (insert-buffer signature)
@@ -174,9 +169,8 @@
     ;; Strip MIME Content[^ ]: headers since it will be ASCII ARMOURED
     (goto-char (point-min))
     (while (looking-at "^Content[^ ]+:") (forward-line))
-    (if (> (point) (point-min))
-	(progn
-	  (kill-region (point-min) (point))))
+    (unless (bobp)
+      (delete-region (point-min) (point)))
     (mm-with-unibyte-current-buffer-mule4
       (with-temp-buffer
 	(flet ((gpg-encrypt-func 
@@ -209,7 +203,7 @@
 	(while (re-search-forward "\r+$" nil t)
 	  (replace-match "" t t))
 	(set-buffer text)
-	(kill-region (point-min) (point-max))
+	(delete-region (point-min) (point-max))
 	;;(insert "Content-Type: application/pgp-encrypted\n\n")
 	;;(insert "Version: 1\n\n")
 	(insert "\n")
@@ -230,7 +224,7 @@
     (unless (eobp) ;; no headers?
       (setq headers (buffer-substring (point-min) (point)))
       (forward-line) ;; skip header/body separator
-      (kill-region (point-min) (point)))
+      (delete-region (point-min) (point)))
     (quoted-printable-decode-region (point-min) (point-max))
     (unless (let ((pgg-default-user-id
 		   (or (message-options-get 'message-sender)
@@ -238,7 +232,7 @@
 	      (pgg-sign-region (point-min) (point-max) t))
       (pop-to-buffer pgg-errors-buffer)
       (error "Encrypt error"))
-    (kill-region (point-min) (point-max))
+    (delete-region (point-min) (point-max))
     (insert-buffer pgg-output-buffer)
     (goto-char (point-min))
     (while (re-search-forward "\r+$" nil t)
@@ -254,9 +248,8 @@
     ;; Strip MIME Content[^ ]: headers since it will be ASCII ARMOURED
     (goto-char (point-min))
     (while (looking-at "^Content[^ ]+:") (forward-line))
-    (if (> (point) (point-min))
-	(progn
-	  (kill-region (point-min) (point))))
+    (unless (bobp)
+      (delete-region (point-min) (point)))
     (unless (pgg-encrypt-region
 	     (point-min) (point-max) 
 	     (split-string
@@ -268,7 +261,7 @@
 	     sign)
       (pop-to-buffer pgg-errors-buffer)
       (error "Encrypt error"))
-    (kill-region (point-min) (point-max))
+    (delete-region (point-min) (point-max))
     ;;(insert "Content-Type: application/pgp-encrypted\n\n")
     ;;(insert "Version: 1\n\n")
     (insert "\n")

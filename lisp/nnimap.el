@@ -1445,7 +1445,7 @@ function is generally only called when Gnus is shutting down."
 		    ;; remove any 'From blabla' lines, some IMAP servers
 		    ;; reject the entire message otherwise.
 		    (when (looking-at "^From[^:]")
-		      (kill-region (point) (progn (forward-line) (point))))
+		      (delete-region (point) (progn (forward-line) (point))))
 		    ;; turn into rfc822 format (\r\n eol's)
 		    (while (search-forward "\n" nil t)
 		      (replace-match "\r\n"))

@@ -1,6 +1,5 @@
 ;;; html2text.el --- a simple html to plain text converter
-
-;; Copyright (C) 2002 Free Software Foundation, Inc.
+;; Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 
 ;; Author: Joakim Hove <hove@phys.ntnu.no>
 
@@ -287,9 +286,8 @@ formatting, and then moved afterward.")
     (while (< item-nr items)
       (setq item-nr (1+ item-nr))
       (re-search-forward "<dt>\\([ ]*\\)" (point-max) t)
-      (if (match-string 1)
-	  (kill-region (point) (- (point) (string-width (match-string 1))))
-	)
+      (when (match-string 1)
+	(delete-region (point) (- (point) (string-width (match-string 1)))))
       (let ((def-p1 (point))
 	    (def-p2 0))
 	(re-search-forward "\\([ ]*\\)\\(</dt>\\|<dd>\\)" (point-max) t)
@@ -299,25 +297,17 @@ formatting, and then moved afterward.")
 		     (mw2 (string-width (match-string 2)))
 		     (mw  (+ mw1 mw2)))
 		(goto-char (- (point) mw))
-		(kill-region (point) (+ (point) mw1))
-		(setq def-p2 (point))
-		)
-	      )
+		(delete-region (point) (+ (point) mw1))
+		(setq def-p2 (point))))
 	  (setq def-p2 (- (point) (string-width (match-string 2)))))
-	(put-text-property def-p1 def-p2 'face 'bold)
-	)
-      )
-    )
-  )
+	(put-text-property def-p1 def-p2 'face 'bold)))))
 
 (defun html2text-delete-tags (p1 p2 p3 p4)
-  (kill-region p1 p2)
-  (kill-region (- p3 (- p2 p1)) (- p4 (- p2 p1)))
-  )
+  (delete-region p1 p2)
+  (delete-region (- p3 (- p2 p1)) (- p4 (- p2 p1))))
 
 (defun html2text-delete-single-tag (p1 p2)
-  (kill-region p1 p2)
-  )
+  (delete-region p1 p2))
 
 (defun html2text-clean-hr (p1 p2)
   (html2text-delete-single-tag p1 p2)
@@ -379,7 +369,7 @@ formatting, and then moved afterward.")
   ;; surely improve upon this.
   (let* ((attr-list (html2text-get-attr p1 p2 "a"))
 	 (href (html2text-attr-value attr-list "href")))
-    (kill-region p1 p4)
+    (delete-region p1 p4)
     (when href
       (goto-char p1)
       (insert (substring href 1 -1 ))
@@ -446,17 +436,14 @@ fashion, quite close to pure guess-work. It does work in some cases though."
   ;; Removing lonely <br> on a single line, if they are left intact we
   ;; dont have any paragraphs at all.
   (html2text-buffer-head)
-  (while (< (point) (point-max))
+  (while (not (eobp))
     (let ((p1 (point)))
       (forward-paragraph 1)
       ;;(message "Kaller fix med p1=%s  p2=%s " p1 (1- (point))) (sleep-for 5)
       (html2text-fix-paragraph p1 (1- (point)))
       (goto-char p1)
-      (if (< (point) (point-max))
-	  (forward-paragraph 1))
-      )
-    )
-  )
+      (when (not (eobp))
+	(forward-paragraph 1)))))
 
 ;;
 ;; </Functions to be called to fix up paragraphs>
@@ -478,11 +465,7 @@ See the documentation for that variable."
     (while (re-search-forward (format "\\(</?%s[^>]*>\\)" tag) (point-max) t)
       (let ((p1 (point)))
 	(search-backward "<")
-	(kill-region (point) p1)
-	)
-      )
-    )
-  )
+	(delete-region (point) p1)))))
 
 (defun html2text-format-tags ()
   "See the variable \"html2text-format-tag-list\" for documentation"
