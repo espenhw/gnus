@@ -2,6 +2,7 @@
 
 	* spam.el (spam-ham-move-routine): use the process-mark instead of
 	gnus-current-article when moving articles
+	(spam-mark-spam-as-expired-and-move-routine): ditto, use the process-mark
 
 2003-02-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

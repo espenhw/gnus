@@ -421,8 +421,8 @@ your main source of newsgroup names."
       (when (eq (gnus-summary-article-mark article) gnus-spam-mark)
 	(gnus-summary-mark-article article gnus-expirable-mark)
 	(when (stringp group)
-	  (let ((gnus-current-article article))
-	    (gnus-summary-move-article nil group)))))))
+	  (gnus-summary-set-process-mark article)
+	  (gnus-summary-move-article nil group))))))
  
 (defun spam-ham-move-routine (&optional group)
   (let ((articles gnus-newsgroup-articles)
