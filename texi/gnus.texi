@@ -844,7 +844,6 @@ Image Enhancements
 * Picons::                      How to display pictures of what you're reading.
 * Smileys::                     Show all those happy faces the way they were meant to be shown.
 * X-Face::                      Display a funky, teensy black-and-white image.
-* Toolbar::                     Click'n'drool.
 * XVarious::                    Other XEmacsy Gnusey variables.
 
 Thwarting Email Spam
@@ -11557,6 +11556,9 @@ format or @sc{pgp/mime} or @sc{s/mime}.  For decoding such messages,
 see the @code{mm-verify-option} and @code{mm-decrypt-option} options
 (@pxref{Security}).
 
+@vindex gnus-message-replysign
+@vindex gnus-message-replyencrypt
+@vindex gnus-message-replysignencrypted
 Often, you would like to sign replies to people who send you signed
 messages.  Even more often, you might want to encrypt messages which
 are in reply to encrypted messages.  Gnus offers
@@ -20696,7 +20698,6 @@ Gnus has taken advantage of that.
 * Picons::                      How to display pictures of what you're reading.
 * Smileys::                     Show all those happy faces the way they were meant to be shown.
 * X-Face::                      Display a funky, teensy black-and-white image.
-* Toolbar::                     Click'n'drool.
 * XVarious::                    Other XEmacsy Gnusey variables.
 @end menu
 
@@ -20799,27 +20800,20 @@ In short---to use Smiley in Gnus, put the following in your
 (setq gnus-treat-display-smileys t)
 @end lisp
 
-Smiley maps text smiley faces---@samp{:-)}, @samp{:-=}, @samp{:-(} and
+Smiley maps text smiley faces---@samp{:-)}, @samp{8-)}, @samp{:-(} and
 the like---to pictures and displays those instead of the text smiley
 faces.  The conversion is controlled by a list of regexps that matches
 text and maps that to file names.
 
-@vindex smiley-nosey-regexp-alist
-@vindex smiley-deformed-regexp-alist
-Smiley supplies two example conversion alists by default:
-@code{smiley-deformed-regexp-alist} (which matches @samp{:)}, @samp{:(}
-and so on), and @code{smiley-nosey-regexp-alist} (which matches
-@samp{:-)}, @samp{:-(} and so on).
-
-The alist used is specified by the @code{smiley-regexp-alist} variable,
-which defaults to the value of @code{smiley-deformed-regexp-alist}.
-
-The first item in each element is the regexp to be matched; the second
-element is the regexp match group that is to be replaced by the picture;
-and the third element is the name of the file to be displayed.
+@vindex smiley-regexp-alist
+The alist used is specified by the @code{smiley-regexp-alist}
+variable.  The first item in each element is the regexp to be matched;
+the second element is the regexp match group that is to be replaced by
+the picture; and the third element is the name of the file to be
+displayed.
 
 The following variables customize where Smiley will look for these
-files, as well as the color to be used and stuff:
+files:
 
 @table @code
 
@@ -20827,25 +20821,9 @@ files, as well as the color to be used and stuff:
 @vindex smiley-data-directory
 Where Smiley will look for smiley faces files.
 
-@item smiley-flesh-color
-@vindex smiley-flesh-color
-Skin color.  The default is @samp{yellow}, which is really racist.
-
-@item smiley-features-color
-@vindex smiley-features-color
-Color of the features of the face.  The default is @samp{black}.
-
-@item smiley-tongue-color
-@vindex smiley-tongue-color
-Color of the tongue.  The default is @samp{red}.
-
-@item smiley-circle-color
-@vindex smiley-circle-color
-Color of the circle around the face.  The default is @samp{black}.
-
-@item smiley-mouse-face
-@vindex smiley-mouse-face
-Face used for mouse highlighting over the smiley face.
+@item gnus-smiley-file-types
+@vindex gnus-smiley-file-types
+List of suffixes on smiley file names to try.
 
 @end table
 
@@ -20942,38 +20920,6 @@ Using the last function would be something like this:
 @end lisp
 
 
-@node Toolbar
-@subsection Toolbar
-
-@table @code
-
-@iftex
-@iflatex
-\margindex{}
-@end iflatex
-@end iftex
-
-@item gnus-use-toolbar
-@vindex gnus-use-toolbar
-If @code{nil}, don't display toolbars.  If non-@code{nil}, it should be
-one of @code{default-toolbar}, @code{top-toolbar}, @code{bottom-toolbar},
-@code{right-toolbar}, or @code{left-toolbar}.
-
-@item gnus-group-toolbar
-@vindex gnus-group-toolbar
-The toolbar in the group buffer.
-
-@item gnus-summary-toolbar
-@vindex gnus-summary-toolbar
-The toolbar in the summary buffer.
-
-@item gnus-summary-mail-toolbar
-@vindex gnus-summary-mail-toolbar
-The toolbar in the summary buffer of mail groups.
-
-@end table
-
-
 @node XVarious
 @subsection Various XEmacs Variables
 
@@ -21001,15 +20947,37 @@ Valid values include @code{flame}, @code{pine}, @code{moss},
 A glyph displayed in all Gnus mode lines.  It is a tiny gnu head by
 default.
 
+@end table
+
+@subsubsection Toolbar
+
+@table @code
+
+@item gnus-use-toolbar
+@vindex gnus-use-toolbar
+If @code{nil}, don't display toolbars.  If non-@code{nil}, it should be
+one of @code{default-toolbar}, @code{top-toolbar}, @code{bottom-toolbar},
+@code{right-toolbar}, or @code{left-toolbar}.
+
+@item gnus-group-toolbar
+@vindex gnus-group-toolbar
+The toolbar in the group buffer.
+
+@item gnus-summary-toolbar
+@vindex gnus-summary-toolbar
+The toolbar in the summary buffer.
+
+@item gnus-summary-mail-toolbar
+@vindex gnus-summary-mail-toolbar
+The toolbar in the summary buffer of mail groups.
+
+@end table
+
 @iftex
 @iflatex
 \margindex{}
 @end iflatex
 @end iftex
-
-@end table
-
-
 
 
 @node Fuzzy Matching

@@ -1,3 +1,9 @@
+2003-01-23  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Signing and encrypting): Index.
+	(Smileys): Update.
+	(Toolbar): Move to XVarious because it's XEmacs specific.
+
 2003-01-22  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Picons): Update.
