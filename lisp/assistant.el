@@ -219,11 +219,11 @@
 	     (variable (cadr elem))
 	     (type (assistant-get-variable node variable 'type)))
 	(cond
-	 ((eq (car-safe type) :set)
+	 ((eq (car-safe type) :radio)
 	  (push
 	   (apply
 	    #'widget-create
-	    'checklist
+	    'radio-button-choice
 	    :assistant-variable variable
 	    :assistant-node node
 	    :value (assistant-get-variable node variable)
@@ -238,14 +238,14 @@
 			"node")))
 	    (cadr type))
 	   assistant-widgets))
-	 ((eq (car-safe type) :radio)
+	 ((eq (car-safe type) :set)
 	  (push
 	   (apply
 	    #'widget-create
-	    'radio-button-choice
+	    'set
 	    :assistant-variable variable
 	    :assistant-node node
-	    :value (assistant-get-variable node variable)
+	    :value (assistant-get-variable node variable nil t)
 	    :notify (lambda (widget &rest ignore)
 		      (assistant-set-variable
 		       (widget-get widget :assistant-node)
@@ -395,9 +395,12 @@
   (let ((bindings nil))
     (dolist (variable (assistant-get-all-variables))
       (setq variable (cadr variable))
-      (push (list (car variable) (if (eq (nth 3 variable) 'default)
-				     nil
-				   (nth 3 variable)))
+      (push (list (car variable) 
+		  (if (eq (nth 3 variable) 'default)
+		      nil
+		    (if (listp (nth 3 variable))
+			`(list ,@(nth 3 variable))
+		      (nth 3 variable))))
 	    bindings))
     (eval
      `(let ,bindings
