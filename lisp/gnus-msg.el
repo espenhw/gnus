@@ -1218,8 +1218,10 @@ this is a reply."
 			(message-tokenize-header gcc " ,")))
 	  ;; Copy the article over to some group(s).
 	  (while (setq group (pop groups))
-	    (gnus-check-server
-	     (setq method (gnus-inews-group-method group)))
+	    (unless (gnus-check-server
+		     (setq method (gnus-inews-group-method group)))
+	      (error "Can't open server %s" (if (stringp method) method
+					      (car method))))
 	    (unless (gnus-request-group group nil method)
 	      (gnus-request-create-group group method))
 	    (save-excursion
