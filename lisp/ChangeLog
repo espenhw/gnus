@@ -1,5 +1,10 @@
 2001-11-15  Per Abrahamsen  <abraham@dina.kvl.dk>
 
+	* gnus-art.el (gnus-article-wash-status-strings): Use
+	`copy-sequence', not `copy-seq'.
+
+2001-11-15  Per Abrahamsen  <abraham@dina.kvl.dk>
+	
 	* gnus-art.el (gnus-article-wash-status-strings): New constant.
 	(gnus-gnus-article-wash-status-entry): New function.
 	(gnus-article-wash-status): Use it.
