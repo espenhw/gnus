@@ -1,3 +1,17 @@
+2001-07-23  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* nnmail.el (nnmail-do-request-post): Util function to be used by
+	`nnchoke-request-post' for all nnmail-derived backends.
+
+	* nnml.el (nnml-request-post): Use it.
+
+	* gnus.el (gnus-valid-select-methods): nnml is a post-mail
+	backend, for it groks nnml-request-post.
+
+	* gnus-group.el (gnus-group-highlight, gnus-group-highlight-line):
+	Treat `mail-post' backends like `mail' backends, not like `news'
+	backends.
+
 2001-07-22 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-setup-message): make-local-hook.

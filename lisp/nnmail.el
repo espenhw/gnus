@@ -1131,6 +1131,28 @@ Return the number of characters in the body."
 
 ;;; Utility functions
 
+(defun nnmail-do-request-post (accept-func &optional server)
+  "Utility function to directly post a message to an nnmail-derived group.
+Calls ACCEPT-FUNC (which should be `nnchoke-request-accept-article')
+to actually put the message in the right group."
+  (let ((success t))
+    (dolist (mbx (message-unquote-tokens
+                  (message-tokenize-header
+                   (message-fetch-field "Newsgroups") ", ")) success)
+      (let ((to-newsgroup (gnus-group-prefixed-name mbx gnus-command-method)))
+	(or (gnus-active to-newsgroup)
+	    (gnus-activate-group to-newsgroup)
+	    (if (gnus-y-or-n-p (format "No such group: %s.  Create it? "
+				       to-newsgroup))
+		(or (and (gnus-request-create-group
+			  to-newsgroup gnus-command-method)
+			 (gnus-activate-group to-newsgroup nil nil
+					      gnus-command-method))
+		    (error "Couldn't create group %s" to-newsgroup)))
+	    (error "No such group: %s" to-newsgroup))
+	(unless (funcall accept-func mbx (nth 1 gnus-command-method))
+	  (setq success nil))))))
+
 (defun nnmail-split-fancy ()
   "Fancy splitting method.
 See the documentation for the variable `nnmail-split-fancy' for documentation."

@@ -1376,7 +1376,7 @@ slower."
     ("nnspool" post address)
     ("nnvirtual" post-mail virtual prompt-address)
     ("nnmbox" mail respool address)
-    ("nnml" mail respool address)
+    ("nnml" post-mail respool address)
     ("nnmh" mail respool address)
     ("nndir" post-mail prompt-address physical-address)
     ("nneething" none address prompt-address physical-address)

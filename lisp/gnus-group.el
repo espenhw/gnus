@@ -295,52 +295,52 @@ variable."
 		       (sexp :tag "Method"))))
 
 (defcustom gnus-group-highlight
-  '(;; News.
-    ((and (= unread 0) (not mailp) (eq level 1)) .
-     gnus-group-news-1-empty-face)
-    ((and (not mailp) (eq level 1)) .
-     gnus-group-news-1-face)
-    ((and (= unread 0) (not mailp) (eq level 2)) .
-     gnus-group-news-2-empty-face)
-    ((and (not mailp) (eq level 2)) .
-     gnus-group-news-2-face)
-    ((and (= unread 0) (not mailp) (eq level 3)) .
-     gnus-group-news-3-empty-face)
-    ((and (not mailp) (eq level 3)) .
-     gnus-group-news-3-face)
-    ((and (= unread 0) (not mailp) (eq level 4)) .
-     gnus-group-news-4-empty-face)
-    ((and (not mailp) (eq level 4)) .
-     gnus-group-news-4-face)
-    ((and (= unread 0) (not mailp) (eq level 5)) .
-     gnus-group-news-5-empty-face)
-    ((and (not mailp) (eq level 5)) .
-     gnus-group-news-5-face)
-    ((and (= unread 0) (not mailp) (eq level 6)) .
-     gnus-group-news-6-empty-face)
-    ((and (not mailp) (eq level 6)) .
-     gnus-group-news-6-face)
-    ((and (= unread 0) (not mailp)) .
-     gnus-group-news-low-empty-face)
-    ((and (not mailp)) .
-     gnus-group-news-low-face)
-    ;; Mail.
-    ((and (= unread 0) (eq level 1)) .
+  '(;; Mail.
+    ((and mailp (= unread 0) (eq level 1)) .
      gnus-group-mail-1-empty-face)
-    ((eq level 1) .
+    ((and mailp (eq level 1)) .
      gnus-group-mail-1-face)
-    ((and (= unread 0) (eq level 2)) .
+    ((and mailp (= unread 0) (eq level 2)) .
      gnus-group-mail-2-empty-face)
-    ((eq level 2) .
+    ((and mailp (eq level 2)) .
      gnus-group-mail-2-face)
-    ((and (= unread 0) (eq level 3)) .
+    ((and mailp (= unread 0) (eq level 3)) .
      gnus-group-mail-3-empty-face)
-    ((eq level 3) .
+    ((and mailp (eq level 3)) .
      gnus-group-mail-3-face)
-    ((= unread 0) .
+    ((and mailp (= unread 0)) .
      gnus-group-mail-low-empty-face)
+    ((and mailp) .
+     gnus-group-mail-low-face)
+    ;; News.
+    ((and (= unread 0) (eq level 1)) .
+     gnus-group-news-1-empty-face)
+    ((and (eq level 1)) .
+     gnus-group-news-1-face)
+    ((and (= unread 0) (eq level 2)) .
+     gnus-group-news-2-empty-face)
+    ((and (eq level 2)) .
+     gnus-group-news-2-face)
+    ((and (= unread 0) (eq level 3)) .
+     gnus-group-news-3-empty-face)
+    ((and (eq level 3)) .
+     gnus-group-news-3-face)
+    ((and (= unread 0) (eq level 4)) .
+     gnus-group-news-4-empty-face)
+    ((and (eq level 4)) .
+     gnus-group-news-4-face)
+    ((and (= unread 0) (eq level 5)) .
+     gnus-group-news-5-empty-face)
+    ((and (eq level 5)) .
+     gnus-group-news-5-face)
+    ((and (= unread 0) (eq level 6)) .
+     gnus-group-news-6-empty-face)
+    ((and (eq level 6)) .
+     gnus-group-news-6-face)
+    ((and (= unread 0)) .
+     gnus-group-news-low-empty-face)
     (t .
-       gnus-group-mail-low-face))
+     gnus-group-news-low-face))
   "*Controls the highlighting of group buffer lines.
 
 Below is a list of `Form'/`Face' pairs.  When deciding how a a
@@ -1364,14 +1364,18 @@ if it is a string, only list groups matching REGEXP."
 	 (info (nth 2 entry))
 	 (method (gnus-server-get-method group (gnus-info-method info)))
 	 (marked (gnus-info-marks info))
-	 (mailp (memq 'mail (assoc (symbol-name
-				    (car (or method gnus-select-method)))
-				   gnus-valid-select-methods)))
-	 (level (or (gnus-info-level info) gnus-level-killed))
-	 (score (or (gnus-info-score info) 0))
-	 (ticked (gnus-range-length (cdr (assq 'tick marked))))
-	 (group-age (gnus-group-timestamp-delta group))
-	 (inhibit-read-only t))
+	 (mailp (apply 'append
+                       (mapcar
+                        (lambda (x)
+                          (memq x (assoc (symbol-name
+                                          (car (or method gnus-select-method)))
+                                         gnus-valid-select-methods)))
+                        '(mail post-mail))))
+         (level (or (gnus-info-level info) gnus-level-killed))
+         (score (or (gnus-info-score info) 0))
+         (ticked (gnus-range-length (cdr (assq 'tick marked))))
+         (group-age (gnus-group-timestamp-delta group))
+         (inhibit-read-only t))
     ;; Eval the cars of the lists until we find a match.
     (while (and list
 		(not (eval (caar list))))

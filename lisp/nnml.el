@@ -370,23 +370,7 @@ all.  This may very well take some time.")
     result))
 
 (deffoo nnml-request-post (&optional server)
-  (let ((success t))
-    (dolist (mbx (message-unquote-tokens
-                  (message-tokenize-header
-                   (message-fetch-field "Newsgroups") ", ")) success)
-      (let ((to-newsgroup (gnus-group-prefixed-name mbx gnus-command-method)))
-	(or (gnus-active to-newsgroup)
-	    (gnus-activate-group to-newsgroup)
-	    (if (gnus-y-or-n-p (format "No such group: %s.  Create it? "
-				       to-newsgroup))
-		(or (and (gnus-request-create-group
-			  to-newsgroup gnus-command-method)
-			 (gnus-activate-group to-newsgroup nil nil
-					      gnus-command-method))
-		    (error "Couldn't create group %s" to-newsgroup)))
-	    (error "No such group: %s" to-newsgroup))
-	(unless (nnml-request-accept-article mbx (nth 1 gnus-command-method))
-	  (setq success nil))))))
+  (nnmail-do-request-post 'nnml-request-accept-article server))
 
 (deffoo nnml-request-replace-article (article group buffer)
   (nnml-possibly-change-directory group)
