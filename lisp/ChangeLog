@@ -1,3 +1,34 @@
+2000-02-15  Andrew Innes  <andrewi@gnu.org>
+
+	* nnmbox.el: Require gnus-range.
+	(nnmbox-group-building-active-articles): New variable.
+	(nnmbox-group-active-articles): New variable; this is a cache of
+	all active articles by group and number.
+	(nnmbox-in-header-p): New function.
+	(nnmbox-find-article): New function.
+	(nnmbox-record-active-article): New function.
+	(nnmbox-record-deleted-article): New function.
+	(nnmbox-is-article-active-p): New function.
+	(nnmbox-retrieve-headers): Use nnmbox-find-article.
+	(nnmbox-request-article): Ditto.  Also supply extra arg to
+	nnmbox-article-group-number.
+	(nnmbox-request-expire-articles): Ditto.
+	(nnmbox-request-move-article): Ditto.
+	(nnmbox-request-replace-article): Ditto.
+	(nnmbox-request-rename-group): Rename group entry in active
+	article cache.
+	(nnmbox-delete-mail): Update active article cache, unless article
+	is being replaced.
+	(nnmbox-possibly-change-newsgroup): Call nnmbox-read-mbox, rather
+	than partially duplicating it.
+	(nnmbox-article-group-number): Add extra `this-line' arg, to
+	handle articles belonging to multiple groups.
+	(nnmbox-save-mail): Update active article cache.
+	(nnmbox-read-mbox): Build active article cache when loading mbox.
+	Also do some repair work, if we find articles that are missing the
+	appropriate X-Gnus-Newsgroup lines in the header.  We can usually
+	reconstruct these from Xref info.
+	
 2000-12-04 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mail-source.el (mail-source-report-new-mail): Use
