@@ -88,7 +88,7 @@
     (let ((number (length sequence))
 	  (count 0)
 	  article art-string start stop)
-      (nnbabyl-possibly-change-newsgroup newsgroup)
+      (nnbabyl-possibly-change-newsgroup newsgroup server)
       (while sequence
 	(setq article (car sequence))
 	(setq art-string (nnbabyl-article-string article))
@@ -162,7 +162,7 @@
   nnbabyl-status-string)
 
 (defun nnbabyl-request-article (article &optional newsgroup server buffer)
-  (nnbabyl-possibly-change-newsgroup newsgroup)
+  (nnbabyl-possibly-change-newsgroup newsgroup server)
   (save-excursion
     (set-buffer nnbabyl-mbox-buffer)
     (goto-char (point-min))
@@ -205,7 +205,7 @@
       (cond 
        ((null active)
 	(nnheader-report 'nnbabyl "No such group: %s" group))
-       ((null (nnbabyl-possibly-change-newsgroup group))
+       ((null (nnbabyl-possibly-change-newsgroup group server))
 	(nnheader-report 'nnbabyl "No such group: %s" group))
        (dont-check
 	(nnheader-report 'nnbabyl "Selected group %s" group)
@@ -265,7 +265,7 @@
 
 (defun nnbabyl-request-expire-articles
   (articles newsgroup &optional server force)
-  (nnbabyl-possibly-change-newsgroup newsgroup)
+  (nnbabyl-possibly-change-newsgroup newsgroup server)
   (let* ((is-old t)
 	 rest)
     (nnmail-activate 'nnbabyl)
@@ -301,7 +301,7 @@
 
 (defun nnbabyl-request-move-article 
   (article group server accept-form &optional last)
-  (nnbabyl-possibly-change-newsgroup group)
+  (nnbabyl-possibly-change-newsgroup group server)
   (let ((buf (get-buffer-create " *nnbabyl move*"))
 	result)
     (and 
@@ -326,7 +326,8 @@
        (and last (save-buffer))))
     result))
 
-(defun nnbabyl-request-accept-article (group &optional last)
+(defun nnbabyl-request-accept-article (group &optional server last)
+  (nnbabyl-possibly-change-newsgroup group server)
   (let ((buf (current-buffer))
 	result beg)
     (and 
@@ -366,7 +367,7 @@
       t)))
 
 (defun nnbabyl-request-delete-group (group &optional force server)
-  (nnbabyl-possibly-change-newsgroup group)
+  (nnbabyl-possibly-change-newsgroup group server)
   ;; Delete all articles in GROUP.
   (if (not force)
       ()				; Don't delete the articles.
@@ -389,7 +390,7 @@
   t)
 
 (defun nnbabyl-request-rename-group (group new-name &optional server)
-  (nnbabyl-possibly-change-newsgroup group)
+  (nnbabyl-possibly-change-newsgroup group server)
   (save-excursion
     (set-buffer nnbabyl-mbox-buffer)
     (goto-char (point-min))
@@ -441,7 +442,10 @@
       (if (or force (not (re-search-forward "^X-Gnus-Newsgroup: " nil t)))
 	  (delete-region (point-min) (point-max))))))
 
-(defun nnbabyl-possibly-change-newsgroup (newsgroup)
+(defun nnbabyl-possibly-change-newsgroup (newsgroup &optional server)
+  (when (and server 
+	     (not (nnbabyl-server-opened server)))
+    (nnbabyl-open-server server))
   (if (or (not nnbabyl-mbox-buffer)
 	  (not (buffer-name nnbabyl-mbox-buffer)))
       (save-excursion (nnbabyl-read-mbox)))

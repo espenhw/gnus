@@ -31,6 +31,7 @@
 (require 'mail-utils)
 (require 'timezone)
 (require 'nnheader)
+(require 'message)
 
 (eval-when-compile (require 'cl))
 
@@ -909,6 +910,10 @@ beginning of a line.")
 	       (summary 0.25 point)
 	       (if gnus-carpal '(summary-carpal 4))
 	       ("*Shell Command Output*" 1.0)))
+    (bug
+     (vertical 1.0
+	       ("*Gnus Help Bug*" 0.5)
+	       ("*Gnus Bug*" 1.0 point)))
     (compose-bounce
      (vertical 1.0
 	       (article 0.5)
@@ -1688,7 +1693,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.62"
+(defconst gnus-version "September Gnus v0.63"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1966,6 +1971,7 @@ Thank you for your help in stamping out bugs.
       gnus-group-brew-soup gnus-brew-soup gnus-soup-add-article
       gnus-soup-send-replies gnus-soup-save-areas gnus-soup-pack-packet)
      ("nnsoup" nnsoup-pack-replies)
+     ("gnus-scomo" :interactive t gnus-score-mode)
      ("gnus-mh" gnus-mh-mail-setup gnus-summary-save-article-folder
       gnus-Folder-save-name gnus-folder-save-name)
      ("gnus-mh" :interactive t gnus-summary-save-in-folder)
@@ -4539,6 +4545,9 @@ If REGEXP, only list groups matching REGEXP."
 	 (gnus-server-to-method method))
 	((and (stringp (car method)) group)
 	 (gnus-server-extend-method group method))
+	((and method (not group)
+	      (equal (cadr method) ""))
+	 method)
 	(t
 	 (gnus-server-add-address method))))
 
@@ -6334,22 +6343,18 @@ If N is negative, this group and the N-1 previous groups will be checked."
       (setq group (car groups)
 	    groups (cdr groups))
       (gnus-group-remove-mark group)
-      (unless (gnus-get-new-news-in-group group)
+      (if (and group (gnus-activate-group group 'scan))
+	  (progn
+	    (gnus-get-unread-articles-in-group
+	     (gnus-get-info group) (gnus-active group) t)
+	    (gnus-close-group group)
+	    (gnus-group-update-group group))
 	(ding)
 	(gnus-message 3 "%s error: %s" group (gnus-status-message group))))
     (when gnus-goto-next-group-when-activating
       (gnus-group-next-unread-group 1 t))
     (gnus-summary-position-point)
     ret))
-
-(defun gnus-get-new-news-in-group (group)
-  (when (and group (gnus-activate-group group 'scan))
-    (gnus-get-unread-articles-in-group
-     (gnus-get-info group) (gnus-active group) t)
-    (gnus-close-group group)
-    (when (gnus-group-goto-group group)
-      (gnus-group-update-group-line))
-    t))
 
 (defun gnus-group-fetch-faq (group &optional faq-dir)
   "Fetch the FAQ for the current group."
@@ -13333,6 +13338,7 @@ The following commands are available:
 	      (if (gnus-request-article article group (current-buffer))
 		  (progn
 		    (and gnus-keep-backlog
+			 (numberp article)
 			 (gnus-backlog-enter-article
 			  group article (current-buffer)))
 		    'article))))
@@ -14880,6 +14886,9 @@ If GROUP is nil, all groups on METHOD are scanned."
   ;; Make sure there's a newline at the end of the article.
   (when (stringp method)
     (setq method (gnus-server-to-method method)))
+  (when (and (not method)
+	     (stringp group))
+    (setq method (gnus-find-method-for-group group)))
   (goto-char (point-max))
   (unless (bolp)
     (insert "\n"))
@@ -14887,6 +14896,7 @@ If GROUP is nil, all groups on METHOD are scanned."
 		(car (or method (gnus-find-method-for-group group))))))
     (funcall (intern (format "%s-request-accept-article" func))
 	     (if (stringp group) (gnus-group-real-name group) group)
+	     (cadr method)
 	     last)))
 
 (defun gnus-request-replace-article (article group buffer)
@@ -15605,7 +15615,8 @@ newsgroup."
     (setq gnus-killed-hashtb
 	  (gnus-make-hashtable
 	   (+ (length gnus-killed-list) (length gnus-zombie-list))))
-    (while (setq list (symbol-value (pop lists)))
+    (while (setq list (pop lists))
+      (setq list (symbol-value list))
       (while list
 	(gnus-sethash (car list) (pop list) gnus-killed-hashtb)))))
 

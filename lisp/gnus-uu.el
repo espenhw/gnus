@@ -476,9 +476,7 @@ The headers will be included in the sequence they are matched.")
 	 (progn
 	   (delete-region (point) (gnus-point-at-eol))
 	   (insert from)))
-    (if post
-	(gnus-forward-using-post)
-      (gnus-mail-forward))
+    (message-forward post)
     (delete-file file)
     (kill-buffer buf)
     (setq gnus-uu-digest-from-subject nil)))

@@ -651,15 +651,14 @@ If YANK is non-nil, include the original article."
 (defun gnus-bug ()
   "Send a bug report to the Gnus maintainers."
   (interactive)
-  (let ((winconf (current-window-configuration)))
+  (gnus-setup-message 'bug
     (delete-other-windows)
     (switch-to-buffer "*Gnus Help Bug*")
     (erase-buffer)
     (insert gnus-bug-message)
     (goto-char (point-min))
-    (gnus-setup-message 'bug
-      (message-pop-to-buffer "*Gnus Bug*")
-      (message-setup `((To . ,gnus-maintainer) (Subject . ""))))
+    (message-pop-to-buffer "*Gnus Bug*")
+    (message-setup `((To . ,gnus-maintainer) (Subject . "")))
     (push `(gnus-bug-kill-buffer) message-send-actions)
     (goto-char (point-min))
     (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
@@ -681,7 +680,8 @@ If YANK is non-nil, include the original article."
   "Attemps to go through the Gnus source file and report what variables have been changed.
 The source file has to be in the Emacs load path."
   (interactive)
-  (let ((files '("gnus.el" "gnus-msg.el" "gnus-score.el" "nnmail.el"))
+  (let ((files '("gnus.el" "gnus-msg.el" "gnus-score.el" "nnmail.el"
+		 "message.el"))
 	file dirs expr olist sym)
     (message "Please wait while we snoop your variables...")
     (sit-for 0)

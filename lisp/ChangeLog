@@ -1,4 +1,69 @@
+Wed Apr  3 18:23:35 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* message.el (message-insert-newsgroups): Capitilize Newsgroups.
+
+	* gnus.el (gnus-make-hashtable-from-killed): Wouldn't use
+	`gnus-zombie-list'. 
+
+	* nnfolder.el (nnfolder-group-pathname): New function; return the
+	right folder.
+
+	* gnus-score.el (gnus-score-find-bnews): Recognize "++" groups. 
+
+	* gnus-topic.el (gnus-topic-yank-group): Remain in the topic.
+
+	* gnus.el (gnus-get-new-news-in-group): Removed function.
+	(gnus-group-get-new-news-this-group): Update all instances of the
+	group. 
+
+	* gnus-topic.el (gnus-topic-unindent): Insert at the right place. 
+	(gnus-topic-next-topic): New function.
+	(gnus-topic-unindent): Would swallow sub-topics.
+	(gnus-topic-indent): Ditto.
+
+Wed Apr  3 17:18:08 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-bug): Wouldn't restore window conf.
+
+	* gnus.el (gnus-buffer-configuration): `bug' configuration.
+
+Tue Apr  2 22:33:25 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-scomo.el: New file.
+
+Tue Apr  2 12:31:48 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* message.el (bold-region): New function.
+	(unbold-region): New function.
+	(message-face-alist): New variable.
+	(message-mode): Add facemenu support.
+
+Tue Apr  2 20:46:11 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-required-mail-headers): `To' isn't
+	required. 
+	(message-ignored-news-headers): Remove Fcc headers.
+	(message-ignored-mail-headers): Ditto.
+
+	* gnus.el (gnus-request-article-this-buffer): Would bug out on
+	backlogs. 
+
+	* message.el (message-send-and-exit): Bury buffer.
+
+	* gnus-uu.el (gnus-uu-digest-mail-forward): Use `message'.
+
+	* nnfolder.el (nnfolder-close-group): Would try to `set-buffer'
+	nil. 
+
+	* gnus.el (gnus-server-get-method): Would return extended servers
+	too often.
+
+	* nnml.el (nnml-request-accept-article): Accept a server
+	parameter. 
+
 Tue Apr  2 15:05:14 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.62 is released.
 
 	* nnfolder.el (nnfolder-possibly-change-group): Make sure the
 	directory exists before writing file.

@@ -104,43 +104,42 @@ it.")
 
 ;;; Interface functions
 
-(defun nnfolder-retrieve-headers (sequence &optional newsgroup server fetch-old)
+(defun nnfolder-retrieve-headers (articles &optional group server fetch-old)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
     (let ((delim-string (concat "^" rmail-unix-mail-delimiter))
 	  article art-string start stop)
-      (when nnfolder-current-buffer
-	(nnfolder-possibly-change-group newsgroup server)
-	(set-buffer nnfolder-current-buffer)
-	(goto-char (point-min))
-	(if (stringp (car sequence))
-	    'headers
-	  (while sequence
-	    (setq article (car sequence))
-	    (setq art-string (nnfolder-article-string article))
-	    (set-buffer nnfolder-current-buffer)
-	    (if (or (search-forward art-string nil t)
-		    ;; Don't search the whole file twice!  Also, articles
-		    ;; probably have some locality by number, so searching
-		    ;; backwards will be faster.  Especially if we're at the
-		    ;; beginning of the buffer :-). -SLB
-		    (search-backward art-string nil t))
-		(progn
-		  (setq start (or (re-search-backward delim-string nil t)
-				  (point)))
-		  (search-forward "\n\n" nil t)
-		  (setq stop (1- (point)))
-		  (set-buffer nntp-server-buffer)
-		  (insert (format "221 %d Article retrieved.\n" article))
-		  (insert-buffer-substring nnfolder-current-buffer start stop)
-		  (goto-char (point-max))
-		  (insert ".\n")))
-	    (setq sequence (cdr sequence)))
+      (nnfolder-possibly-change-group group server)
+      (set-buffer nnfolder-current-buffer)
+      (goto-char (point-min))
+      (if (stringp (car articles))
+	  'headers
+	(while articles
+	  (setq article (car articles))
+	  (setq art-string (nnfolder-article-string article))
+	  (set-buffer nnfolder-current-buffer)
+	  (if (or (search-forward art-string nil t)
+		  ;; Don't search the whole file twice!  Also, articles
+		  ;; probably have some locality by number, so searching
+		  ;; backwards will be faster.  Especially if we're at the
+		  ;; beginning of the buffer :-). -SLB
+		  (search-backward art-string nil t))
+	      (progn
+		(setq start (or (re-search-backward delim-string nil t)
+				(point)))
+		(search-forward "\n\n" nil t)
+		(setq stop (1- (point)))
+		(set-buffer nntp-server-buffer)
+		(insert (format "221 %d Article retrieved.\n" article))
+		(insert-buffer-substring nnfolder-current-buffer start stop)
+		(goto-char (point-max))
+		(insert ".\n")))
+	  (setq articles (cdr articles)))
 
-	  (set-buffer nntp-server-buffer)
-	  (nnheader-fold-continuation-lines)
-	  'headers)))))
+	(set-buffer nntp-server-buffer)
+	(nnheader-fold-continuation-lines)
+	'headers))))
 
 (defun nnfolder-open-server (server &optional defs)
   (nnheader-change-server 'nnfolder server defs)
@@ -185,8 +184,8 @@ it.")
   (nnfolder-possibly-change-group nil server)
   nnfolder-status-string)
 
-(defun nnfolder-request-article (article &optional newsgroup server buffer)
-  (nnfolder-possibly-change-group newsgroup server)
+(defun nnfolder-request-article (article &optional group server buffer)
+  (nnfolder-possibly-change-group group server)
   (save-excursion
     (set-buffer nnfolder-current-buffer)
     (goto-char (point-min))
@@ -230,17 +229,15 @@ it.")
 	    t)
 	(let* ((active (assoc group nnfolder-group-alist))
 	       (group (car active))
-	       (range (cadr active))
-	       (minactive (car range))
-	       (maxactive (cdr range)))
+	       (range (cadr active)))
 	  (cond 
 	   ((null active)
 	    (nnheader-report 'nnfolder "No such group: %s" group))
 	   (t
 	    (nnheader-report 'nnfolder "Selected group %s" group)
 	    (nnheader-insert "211 %d %d %d %s\n" 
-			     (1+ (- maxactive minactive))
-			     minactive maxactive group))))))))
+			     (1+ (- (cdr range) (car range)))
+			     (car range) (cdr range) group))))))))
 
 (defun nnfolder-request-scan (&optional group server)
   (nnfolder-possibly-change-group group server)
@@ -270,16 +267,17 @@ it.")
   (when (or (assoc group nnfolder-buffer-alist)
 	    (equal group nnfolder-current-group))
     (nnfolder-possibly-change-group group server)
-    (save-excursion
-      (set-buffer nnfolder-current-buffer)
-      ;; If the buffer was modified, write the file out now.
-      (and (buffer-modified-p) (save-buffer))
-      ;; If we're shutting the server down, we need to kill the
-      ;; buffer and remove it from the open buffer list.  Or, of
-      ;; course, if we're trying to minimize our space impact.
-      (kill-buffer (current-buffer))
-      (setq nnfolder-buffer-alist (delq (assoc group nnfolder-buffer-alist)
-					nnfolder-buffer-alist))))
+    (when nnfolder-current-buffer
+      (save-excursion
+	(set-buffer nnfolder-current-buffer)
+	;; If the buffer was modified, write the file out now.
+	(and (buffer-modified-p) (save-buffer))
+	;; If we're shutting the server down, we need to kill the
+	;; buffer and remove it from the open buffer list.  Or, of
+	;; course, if we're trying to minimize our space impact.
+	(kill-buffer (current-buffer))
+	(setq nnfolder-buffer-alist (delq (assoc group nnfolder-buffer-alist)
+					  nnfolder-buffer-alist)))))
   (setq nnfolder-current-group nil
 	nnfolder-current-buffer nil)
   t)
@@ -381,7 +379,8 @@ it.")
 	    (save-buffer))))
     result))
 
-(defun nnfolder-request-accept-article (group &optional last)
+(defun nnfolder-request-accept-article (group &optional server last)
+  (nnfolder-possibly-change-group group server)
   (and (stringp group) (nnfolder-possibly-change-group group))
   (let ((buf (current-buffer))
 	result)
@@ -425,8 +424,7 @@ it.")
       ()				; Don't delete the articles.
     ;; Delete the file that holds the group.
     (condition-case nil
-	(delete-file (directory-file-name 
-		      (nnmail-group-pathname group nnfolder-directory)))
+	(delete-file (nnfolder-group-pathname group))
       (error nil)))
   ;; Remove the group from all structures.
   (setq nnfolder-group-alist 
@@ -446,8 +444,7 @@ it.")
 	     (progn
 	       (rename-file 
 		buffer-file-name
-		(directory-file-name
-		 (nnmail-group-pathname new-name nnfolder-directory)))
+		(nnfolder-group-pathname new-name))
 	       t)
 	   (error nil))
 	 ;; That went ok, so we change the internal structures.
@@ -498,8 +495,7 @@ it.")
     (nnfolder-possibly-activate-groups nil)
     (or (assoc group nnfolder-group-alist)
 	(not (file-exists-p
-	      (directory-file-name
-	       (nnmail-group-pathname group nnfolder-directory))))
+	      (nnfolder-group-pathname group)))
 	(progn
 	  (setq nnfolder-group-alist 
 		(cons (list group (cons 1 0)) nnfolder-group-alist))
@@ -536,8 +532,7 @@ it.")
 	(if inf
 	    ()
 	  (save-excursion
-	    (setq file (directory-file-name
-			(nnmail-group-pathname group nnfolder-directory)))
+	    (setq file (nnfolder-group-pathname group))
 	    (if (file-directory-p (file-truename file))
 		()
 	      (unless (file-exists-p file)
@@ -732,6 +727,16 @@ it.")
 	(nnfolder-read-folder file)
 	(nnfolder-close-group file))
       (message ""))))
+
+(defun nnfolder-group-pathname (group)
+  "Make pathname for GROUP."
+  (let ((dir (file-name-as-directory (expand-file-name nnfolder-directory))))
+    ;; If this file exists, we use it directly.
+    (if (or nnmail-use-long-file-names 
+	    (file-exists-p (concat dir group)))
+	(concat dir group)
+      ;; If not, we translate dots into slashes.
+      (concat dir (nnheader-replace-chars-in-string group ?. ?/)))))
 
 (provide 'nnfolder)
 

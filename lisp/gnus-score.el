@@ -2082,6 +2082,10 @@ GROUP using BNews sys file syntax."
 		 (search-forward "+")
 		 (forward-char -1)
 		 (insert "\\")))
+	  ;; Kludge to deal with "++" groups.
+	  (while (search-forward "++" nil t)
+	    (replace-match "\\+\\+" t t))
+	  (goto-char (point-min))
 	  ;; Translate "all" to ".*".
 	  (while (search-forward "all" nil t)
 	    (replace-match ".*" t t))

@@ -121,9 +121,9 @@
   (nndir-execute-nnmh-command
    `(nnmh-request-expire-articles ',articles nndir-group ,server ,force)))
 
-(defun nndir-request-accept-article (nndir-group &optional last)
+(defun nndir-request-accept-article (nndir-group &optional server last)
   (nndir-execute-nnmh-command
-   `(nnmh-request-accept-article nndir-group ,last)))
+   `(nnmh-request-accept-article nndir-group ,server ,last)))
 
 (defun nndir-close-group (nndir-group &optional server)
   t)

@@ -86,7 +86,7 @@
 		       (> number nnmail-large-newsgroup)))
 	   (count 0)
 	   beg article)
-      (nnmh-possibly-change-directory newsgroup)
+      (nnmh-possibly-change-directory newsgroup server)
       ;; We don't support fetching by Message-ID.
       (if (stringp (car articles))
 	  'headers
@@ -152,7 +152,7 @@
   nnmh-status-string)
 
 (defun nnmh-request-article (id &optional newsgroup server buffer)
-  (nnmh-possibly-change-directory newsgroup)
+  (nnmh-possibly-change-directory newsgroup server)
   (let ((file (if (stringp id)
 		  nil
 		(concat nnmh-current-directory (int-to-string id))))
@@ -242,7 +242,7 @@
   (nnmh-request-list server))
 
 (defun nnmh-request-expire-articles (articles newsgroup &optional server force)
-  (nnmh-possibly-change-directory newsgroup)
+  (nnmh-possibly-change-directory newsgroup server)
   (let* ((active-articles 
 	  (mapcar
 	   (function
@@ -294,7 +294,8 @@
        (file-error nil)))
     result))
 
-(defun nnmh-request-accept-article (group &optional last noinsert)
+(defun nnmh-request-accept-article (group &optional server last noinsert)
+  (nnmh-possibly-change-directory group server)
   (if (stringp group)
       (and 
        (nnmail-activate 'nnmh)
@@ -326,7 +327,7 @@
 	(setq nnmh-group-alist (cons (list group (setq active (cons 1 0)))
 				     nnmh-group-alist))
 	(nnmh-possibly-create-directory group)
-	(nnmh-possibly-change-directory group)
+	(nnmh-possibly-change-directory group server)
 	(let ((articles (mapcar
 			 (lambda (file)
 			   (string-to-int file))
@@ -339,7 +340,7 @@
   t)
 
 (defun nnmh-request-delete-group (group &optional force server)
-  (nnmh-possibly-change-directory group)
+  (nnmh-possibly-change-directory group server)
   ;; Delete all articles in GROUP.
   (if (not force)
       ()				; Don't delete the articles.
@@ -362,7 +363,7 @@
   t)
 
 (defun nnmh-request-rename-group (group new-name &optional server)
-  (nnmh-possibly-change-directory group)
+  (nnmh-possibly-change-directory group server)
   ;; Rename directory.
   (and (file-writable-p nnmh-current-directory)
        (condition-case ()
@@ -382,7 +383,10 @@
 
 ;;; Internal functions.
 
-(defun nnmh-possibly-change-directory (newsgroup)
+(defun nnmh-possibly-change-directory (newsgroup &optional server)
+  (when (and server 
+	     (not (nnmh-server-opened server)))
+    (nnmh-open-server server))
   (if newsgroup
       (let ((pathname (nnmail-group-pathname newsgroup nnmh-directory)))
 	(if (file-directory-p pathname)

@@ -27,6 +27,40 @@
 ;; consists mainly of large chunks of code from the sendmail.el,
 ;; gnus-msg.el and rnewspost.el files.
 
+;;; underline.el
+
+;; This code should be moved to underline.el (from which it is stolen). 
+
+;;;###autoload
+(defun bold-region (start end)
+  "Bold all nonblank characters in the region.
+Works by overstriking characters.
+Called from program, takes two arguments START and END
+which specify the range to operate on."
+  (interactive "r")
+  (save-excursion
+   (let ((end1 (make-marker)))
+     (move-marker end1 (max start end))
+     (goto-char (min start end))
+     (while (< (point) end1)
+       (or (looking-at "[_\^@- ]")
+	   (insert (following-char) "\b"))
+       (forward-char 1)))))
+
+;;;###autoload
+(defun unbold-region (start end)
+  "Remove all boldness (overstruck characters) in the region.
+Called from program, takes two arguments START and END
+which specify the range to operate on."
+  (interactive "r")
+  (save-excursion
+   (let ((end1 (make-marker)))
+     (move-marker end1 (max start end))
+     (goto-char (min start end)) 
+     (while (re-search-forward "\b" end1 t)
+       (if (eq (following-char) (char-after (- (point) 2)))
+	   (delete-char -2))))))
+
 ;;; Code:
 
 (eval-when-compile 
@@ -87,7 +121,7 @@ header, remove it from this list.")
 
 ;;;###autoload
 (defvar message-required-mail-headers 
-  '(From Date To Subject (optional . In-Reply-To) Message-ID Lines
+  '(From Date Subject (optional . In-Reply-To) Message-ID Lines
 	 (optional . X-Mailer))
   "*Headers to be generated or prompted for when mailing a message.
 RFC822 required that From, Date, To, Subject and Message-ID be
@@ -99,11 +133,11 @@ included.  Organization, Lines and X-Mailer are optional.")
 
 ;;;###autoload
 (defvar message-ignored-news-headers 
-  "^NNTP-Posting-Host:\\|^Xref:\\|^Bcc:\\|^Gcc:"
+  "^NNTP-Posting-Host:\\|^Xref:\\|^Bcc:\\|^Gcc:\\|^Fcc:"
   "*Regexp of headers to be removed unconditionally before posting.")
 
 ;;;###autoload
-(defvar message-ignored-mail-headers "^Gcc:"
+(defvar message-ignored-mail-headers "^Gcc:\\|^Fcc:"
   "*Regexp of headers to be removed unconditionally before mailing.")
 
 ;;;###autoload
@@ -199,6 +233,8 @@ If nil, ignore the header. If it is t, use its value, but ignore
 ignore the \"poster\" value.  If it is the symbol `use', always use
 the value.")
 
+(defvar gnus-post-method)
+(defvar gnus-select-method)
 ;;;###autoload
 (defvar message-post-method 
   (cond ((boundp 'gnus-post-method)
@@ -371,6 +407,15 @@ actually occur.")
 	  '("^\\(X-[A-Za-z0-9-]+\\|In-reply-to\\):.*"
 	    . font-lock-string-face)))
   "Additional expressions to highlight in Message mode.")
+
+(defvar message-face-alist
+  '((bold . bold-region)
+    (underline . underline-region)
+    (default . (lambda (b e) 
+		 (unbold-region b e)
+		 (ununderline-region b e))))
+  "Alist of mail and news faces for facemenu.
+The cdr of ech entry is a function for applying the face to a region.")
 
 (defvar message-send-hook nil
   "Hook run before sending messages.")
@@ -617,6 +662,16 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
   (setq buffer-offer-save t)
   (make-local-variable 'font-lock-defaults)
   (setq font-lock-defaults '(message-font-lock-keywords t))
+  (make-local-variable 'facemenu-add-face-function)
+  (make-local-variable 'facemenu-remove-face-function)
+  (setq facemenu-add-face-function
+	(lambda (face end)
+	  (let ((face-fun (cdr (assq face message-face-alist))))
+	    (if face-fun
+		(funcall face-fun (point) end)
+	      (error "Face %s not configured for %s mode" face mode-name)))
+	  "")
+	facemenu-remove-face-function t)
   (make-local-variable 'paragraph-separate)
   (make-local-variable 'paragraph-start)
   (setq paragraph-start (concat (regexp-quote mail-header-separator)
@@ -724,7 +779,7 @@ or the line sollowing `message-signature-separator'."
 (defun message-insert-newsgroups ()
   "Insert the Newsgroups header from the article being replied to."
   (interactive)
-  (message-position-on-field "newsgroups")
+  (message-position-on-field "Newsgroups")
   (insert (or (message-fetch-reply-field "newsgroups") "")))
 
 
@@ -927,8 +982,7 @@ prefix, and don't delete any headers."
 
 (defun message-remove-signature ()
   "Remove the signature from the text between point and mark.
-The text will also be indented the normal way.
-This function can be used in `message-citation-hook', for instance."
+The text will also be indented the normal way."
   (save-excursion
     (let ((start (point))
 	  mark)
@@ -954,25 +1008,24 @@ This function can be used in `message-citation-hook', for instance."
 ;;; Sending messages
 ;;;
 
-(defun message-send-and-exit (&optional arg)
-  "Send message like `message-send', then, if no errors, exit from mail buffer.
-Prefix arg means don't delete this window."
-  (interactive "P")
-  (message-send)
-  (bury-buffer (current-buffer))
-;  (message-bury arg)
-  )
+(defun message-send-and-exit ()
+  "Send message like `message-send', then, if no errors, exit from mail buffer."
+  (interactive)
+  (let ((buf (current-buffer)))
+    (message-send)
+    (bury-buffer buf)
+    (when (eq buf (current-buffer))
+      (message-bury buf))))
 
-(defun message-dont-send (&optional arg)
-  "Don't send the message you have been editing.
-Prefix arg means don't delete this window."
-  (interactive "P")
-  (message-bury arg))
+(defun message-dont-send ()
+  "Don't send the message you have been editing."
+  (interactive)
+  (message-bury (current-buffer)))
 
-(defun message-bury (arg)
+(defun message-bury (buffer)
   "Bury this mail buffer."
-  (let ((newbuf (other-buffer (current-buffer))))
-    (bury-buffer (current-buffer))
+  (let ((newbuf (other-buffer buffer)))
+    (bury-buffer buffer)
     (if (and (fboundp 'frame-parameters)
 	     (cdr (assq 'dedicated (frame-parameters)))
 	     (not (null (delq (selected-frame) (visible-frame-list)))))

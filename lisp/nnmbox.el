@@ -86,7 +86,7 @@
     (let ((number (length sequence))
 	  (count 0)
 	  article art-string start stop)
-      (nnmbox-possibly-change-newsgroup newsgroup)
+      (nnmbox-possibly-change-newsgroup newsgroup server)
       (while sequence
 	(setq article (car sequence))
 	(setq art-string (nnmbox-article-string article))
@@ -155,7 +155,7 @@
   nnmbox-status-string)
 
 (defun nnmbox-request-article (article &optional newsgroup server buffer)
-  (nnmbox-possibly-change-newsgroup newsgroup)
+  (nnmbox-possibly-change-newsgroup newsgroup server)
   (save-excursion
     (set-buffer nnmbox-mbox-buffer)
     (goto-char (point-min))
@@ -187,7 +187,7 @@
     (cond 
      ((null active)
       (nnheader-report 'nnmbox "No such group: %s" group))
-     ((null (nnmbox-possibly-change-newsgroup group))
+     ((null (nnmbox-possibly-change-newsgroup group server))
       (nnheader-report 'nnmbox "No such group: %s" group))
      (dont-check
       (nnheader-report 'nnmbox "Selected group %s" group)
@@ -234,7 +234,7 @@
 
 (defun nnmbox-request-expire-articles 
   (articles newsgroup &optional server force)
-  (nnmbox-possibly-change-newsgroup newsgroup)
+  (nnmbox-possibly-change-newsgroup newsgroup server)
   (let* ((is-old t)
 	 rest)
     (nnmail-activate 'nnmbox)
@@ -269,7 +269,7 @@
 
 (defun nnmbox-request-move-article
   (article group server accept-form &optional last)
-  (nnmbox-possibly-change-newsgroup group)
+  (nnmbox-possibly-change-newsgroup group server)
   (let ((buf (get-buffer-create " *nnmbox move*"))
 	result)
     (and 
@@ -296,7 +296,8 @@
        (and last (save-buffer))))
     result))
 
-(defun nnmbox-request-accept-article (group &optional last)
+(defun nnmbox-request-accept-article (group &optional server last)
+  (nnmbox-possibly-change-newsgroup group server)
   (let ((buf (current-buffer))
 	result)
     (goto-char (point-min))
@@ -335,7 +336,7 @@
       t)))
 
 (defun nnmbox-request-delete-group (group &optional force server)
-  (nnmbox-possibly-change-newsgroup group)
+  (nnmbox-possibly-change-newsgroup group server)
   ;; Delete all articles in GROUP.
   (if (not force)
       ()				; Don't delete the articles.
@@ -358,7 +359,7 @@
   t)
 
 (defun nnmbox-request-rename-group (group new-name &optional server)
-  (nnmbox-possibly-change-newsgroup group)
+  (nnmbox-possibly-change-newsgroup group server)
   (save-excursion
     (set-buffer nnmbox-mbox-buffer)
     (goto-char (point-min))
@@ -409,7 +410,10 @@
       (if (or force (not (re-search-forward "^X-Gnus-Newsgroup: " nil t)))
 	  (delete-region (point-min) (point-max))))))
 
-(defun nnmbox-possibly-change-newsgroup (newsgroup)
+(defun nnmbox-possibly-change-newsgroup (newsgroup &optional server)
+  (when (and server 
+	     (not (nnmbox-server-opened server)))
+    (nnmbox-open-server server))
   (if (or (not nnmbox-mbox-buffer)
 	  (not (buffer-name nnmbox-mbox-buffer)))
       (save-excursion

@@ -351,7 +351,8 @@ all. This may very well take some time.")
        (and last (nnml-save-nov))))
     result))
 
-(defun nnml-request-accept-article (group &optional last)
+(defun nnml-request-accept-article (group &optional server last)
+  (nnml-possibly-change-directory group server)
   (let (result)
     (if (stringp group)
 	(and 

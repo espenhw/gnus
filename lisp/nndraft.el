@@ -159,7 +159,8 @@
 (defun nndraft-request-associate-buffer (group)
   "Associate the current buffer with some article in the draft group."
   (let* ((gnus-verbose-backends nil)
-	 (article (cdr (nndraft-request-accept-article group t 'noinsert)))
+	 (article (cdr (nndraft-request-accept-article
+			group nndraft-current-server t 'noinsert)))
 	 (file (nndraft-article-filename article)))
     (setq buffer-file-name file)
     (setq buffer-auto-save-file-name (make-auto-save-file-name))
@@ -198,13 +199,13 @@
 	    (funcall nnmail-delete-file-function auto)))))
     res))
 
-(defun nndraft-request-accept-article (group &optional last noinsert)
+(defun nndraft-request-accept-article (group &optional server last noinsert)
   (let* ((point (point))
 	 (mode major-mode)
 	 (name (buffer-name))
 	 (gnus-verbose-backends nil)
 	 (gart (nndraft-execute-nnmh-command
-		`(nnmh-request-accept-article group ,last noinsert)))
+		`(nnmh-request-accept-article group ,server ,last noinsert)))
 	 (state
 	  (nndraft-article-filename (cdr gart) ".state")))
     ;; Write the "state" file.

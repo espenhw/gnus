@@ -326,6 +326,20 @@ articles in the topic and its subtopics."
       (setq topology (cdr topology)))
     (or result (and found parent))))
 
+(defun gnus-topic-next-topic (topic &optional previous)
+  "Return the next sibling of TOPIC."
+  (let ((topology gnus-topic-topology)
+	(parentt (cddr (gnus-topic-find-topology 
+			(gnus-topic-parent-topic topic))))
+	prev)
+    (while (and parentt
+		(not (equal (caaar parentt) topic)))
+      (setq prev (caaar parentt)
+	    parentt (cdr parentt)))
+    (if previous
+	prev
+      (caaadr parentt))))
+
 (defun gnus-topic-find-topology (topic &optional topology level remove)
   "Return the topology of TOPIC."
   (unless topology
@@ -849,7 +863,8 @@ group."
 	    (item (cdr (pop gnus-topic-killed-topics))))
 	(gnus-topic-create-topic
 	 (caar item) (gnus-topic-parent-topic previous) previous
-	 item))
+	 item)
+	(gnus-topic-goto-topic (caar item)))
     (let* ((prev (gnus-group-group-name))
 	   (gnus-topic-inhibit-change-level t)
 	   (gnus-group-indentation
@@ -982,8 +997,10 @@ If UNINDENT, remove an indentation."
       (when topic
 	(gnus-topic-goto-topic topic)
 	(gnus-topic-kill-group)
-	(gnus-topic-create-topic topic parent)
-	(gnus-topic-goto-topic topic)))))
+	(gnus-topic-create-topic
+	 topic parent nil (cdr (pop gnus-topic-killed-topics)))
+	(or (gnus-topic-goto-topic topic)
+	    (gnus-topic-goto-topic parent))))))
 
 (defun gnus-topic-unindent ()
   "Unindent a topic."
@@ -996,7 +1013,9 @@ If UNINDENT, remove an indentation."
     (when topic
       (gnus-topic-goto-topic topic)
       (gnus-topic-kill-group)
-      (gnus-topic-create-topic topic grandparent)
+      (gnus-topic-create-topic
+       topic grandparent (gnus-topic-next-topic parent)
+       (cdr (pop gnus-topic-killed-topics)))
       (gnus-topic-goto-topic topic))))
 
 (defun gnus-topic-list-active (&optional force)
