@@ -2883,7 +2883,7 @@ See also @code{gnus-group-ignored-charsets-alist}.
 
 @item posting-style
 @cindex posting-style
-You can store additional posting style information for this group only
+You can store additional posting style information for this group
 here (@pxref{Posting Styles}).  The format is that of an entry in the
 @code{gnus-posting-styles} alist, except that there's no regexp matching
 the group name (of course).  Style elements in this group parameter will
@@ -2896,6 +2896,7 @@ like this in the group parameters:
 @example
 (posting-style
   (name "Funky Name")
+  ("X-My-Header" "Funky Value")
   (signature "Funky Signature"))
 @end example
 
