@@ -213,120 +213,135 @@ on your system, you could say something like:
 
 ;; Parsing headers and NOV lines.
 
+(defsubst nnheader-remove-cr-followed-by-lf ()
+  (goto-char (point-max))
+  (while (search-backward "\r\n" nil t)
+    (delete-char 1)))
+
 (defsubst nnheader-header-value ()
   (skip-chars-forward " \t")
   (buffer-substring (point) (gnus-point-at-eol)))
 
-(defun nnheader-parse-head (&optional naked)
+(defun nnheader-parse-naked-head (&optional number)
+  ;; This function unfolds continuation lines in this buffer
+  ;; destructively.  When this side effect is unwanted, use
+  ;; `nnheader-parse-head' instead of this function.
   (let ((case-fold-search t)
-	(cur (current-buffer))
 	(buffer-read-only nil)
-	in-reply-to lines p ref)
-    (goto-char (point-min))
-    (when naked
-      (insert "\n"))
-    ;; Search to the beginning of the next header.  Error messages
-    ;; do not begin with 2 or 3.
+	(cur (current-buffer))
+	(p (point-min))
+	in-reply-to lines ref)
+    (nnheader-remove-cr-followed-by-lf)
+    (ietf-drums-unfold-fws)
+    (subst-char-in-region (point-min) (point-max) ?\t ? )
+    (goto-char p)
+    (insert "\n")
     (prog1
-	(when (or naked (re-search-forward "^[23][0-9]+ " nil t))
-	  ;; This implementation of this function, with nine
-	  ;; search-forwards instead of the one re-search-forward and
-	  ;; a case (which basically was the old function) is actually
-	  ;; about twice as fast, even though it looks messier.	 You
-	  ;; can't have everything, I guess.  Speed and elegance
-	  ;; don't always go hand in hand.
-	  (vector
-	   ;; Number.
-	   (if naked
-	       (progn
-		 (setq p (point-min))
-		 0)
-	     (prog1
-		 (read cur)
-	       (end-of-line)
-	       (setq p (point))
-	       (narrow-to-region (point)
-				 (or (and (search-forward "\n.\n" nil t)
-					  (- (point) 2))
-				     (point)))))
-	   ;; Subject.
-	   (progn
-	     (goto-char p)
-	     (if (search-forward "\nsubject:" nil t)
-		 (nnheader-header-value) "(none)"))
-	   ;; From.
-	   (progn
-	     (goto-char p)
-	     (if (search-forward "\nfrom:" nil t)
-		 (nnheader-header-value) "(nobody)"))
-	   ;; Date.
-	   (progn
-	     (goto-char p)
-	     (if (search-forward "\ndate:" nil t)
-		 (nnheader-header-value) ""))
-	   ;; Message-ID.
-	   (progn
-	     (goto-char p)
-	     (if (search-forward "\nmessage-id:" nil t)
-		 (buffer-substring
-		  (1- (or (search-forward "<" (gnus-point-at-eol) t)
-			  (point)))
-		  (or (search-forward ">" (gnus-point-at-eol) t) (point)))
-	       ;; If there was no message-id, we just fake one to make
-	       ;; subsequent routines simpler.
-	       (nnheader-generate-fake-message-id)))
-	   ;; References.
-	   (progn
-	     (goto-char p)
-	     (if (search-forward "\nreferences:" nil t)
-		 (nnheader-header-value)
-	       ;; Get the references from the in-reply-to header if there
-	       ;; were no references and the in-reply-to header looks
-	       ;; promising.
-	       (if (and (search-forward "\nin-reply-to:" nil t)
-			(setq in-reply-to (nnheader-header-value))
-			(string-match "<[^\n>]+>" in-reply-to))
-		   (let (ref2)
-		     (setq ref (substring in-reply-to (match-beginning 0)
-					  (match-end 0)))
-		     (while (string-match "<[^\n>]+>"
-					  in-reply-to (match-end 0))
-		       (setq ref2 (substring in-reply-to (match-beginning 0)
-					     (match-end 0)))
-		       (when (> (length ref2) (length ref))
-			 (setq ref ref2)))
-		     ref)
-		 nil)))
-	   ;; Chars.
-	   0
-	   ;; Lines.
-	   (progn
-	     (goto-char p)
-	     (if (search-forward "\nlines: " nil t)
-		 (if (numberp (setq lines (read cur)))
-		     lines 0)
-	       0))
-	   ;; Xref.
-	   (progn
-	     (goto-char p)
-	     (and (search-forward "\nxref:" nil t)
-		  (nnheader-header-value)))
+	;; This implementation of this function, with nine
+	;; search-forwards instead of the one re-search-forward and a
+	;; case (which basically was the old function) is actually
+	;; about twice as fast, even though it looks messier.  You
+	;; can't have everything, I guess.  Speed and elegance don't
+	;; always go hand in hand.
+	(vector
+	 ;; Number.
+	 (or number 0)
+	 ;; Subject.
+	 (progn
+	   (goto-char p)
+	   (if (search-forward "\nsubject:" nil t)
+	       (nnheader-header-value) "(none)"))
+	 ;; From.
+	 (progn
+	   (goto-char p)
+	   (if (search-forward "\nfrom:" nil t)
+	       (nnheader-header-value) "(nobody)"))
+	 ;; Date.
+	 (progn
+	   (goto-char p)
+	   (if (search-forward "\ndate:" nil t)
+	       (nnheader-header-value) ""))
+	 ;; Message-ID.
+	 (progn
+	   (goto-char p)
+	   (if (search-forward "\nmessage-id:" nil t)
+	       (buffer-substring
+		(1- (or (search-forward "<" (gnus-point-at-eol) t)
+			(point)))
+		(or (search-forward ">" (gnus-point-at-eol) t) (point)))
+	     ;; If there was no message-id, we just fake one to make
+	     ;; subsequent routines simpler.
+	     (nnheader-generate-fake-message-id)))
+	 ;; References.
+	 (progn
+	   (goto-char p)
+	   (if (search-forward "\nreferences:" nil t)
+	       (nnheader-header-value)
+	     ;; Get the references from the in-reply-to header if
+	     ;; there were no references and the in-reply-to header
+	     ;; looks promising.
+	     (if (and (search-forward "\nin-reply-to:" nil t)
+		      (setq in-reply-to (nnheader-header-value))
+		      (string-match "<[^\n>]+>" in-reply-to))
+		 (let (ref2)
+		   (setq ref (substring in-reply-to (match-beginning 0)
+					(match-end 0)))
+		   (while (string-match "<[^\n>]+>"
+					in-reply-to (match-end 0))
+		     (setq ref2 (substring in-reply-to (match-beginning 0)
+					   (match-end 0)))
+		     (when (> (length ref2) (length ref))
+		       (setq ref ref2)))
+		   ref)
+	       nil)))
+	 ;; Chars.
+	 0
+	 ;; Lines.
+	 (progn
+	   (goto-char p)
+	   (if (search-forward "\nlines: " nil t)
+	       (if (numberp (setq lines (read cur)))
+		   lines 0)
+	     0))
+	 ;; Xref.
+	 (progn
+	   (goto-char p)
+	   (and (search-forward "\nxref:" nil t)
+		(nnheader-header-value)))
+	 ;; Extra.
+	 (when nnmail-extra-headers
+	   (let ((extra nnmail-extra-headers)
+		 out)
+	     (while extra
+	       (goto-char p)
+	       (when (search-forward
+		      (concat "\n" (symbol-name (car extra)) ":") nil t)
+		 (push (cons (car extra) (nnheader-header-value))
+		       out))
+	       (pop extra))
+	     out)))
+      (goto-char p)
+      (delete-char 1))))
 
-	   ;; Extra.
-	   (when nnmail-extra-headers
-	     (let ((extra nnmail-extra-headers)
-		   out)
-	       (while extra
-		 (goto-char p)
-		 (when (search-forward
-			(concat "\n" (symbol-name (car extra)) ":") nil t)
-		   (push (cons (car extra) (nnheader-header-value))
-			 out))
-		 (pop extra))
-	       out))))
-      (when naked
-	(goto-char (point-min))
-	(delete-char 1)))))
+(defun nnheader-parse-head (&optional naked)
+  (let ((cur (current-buffer)) num beg end)
+    (when (if naked
+	      (setq num 0
+		    beg (point-min)
+		    end (point-max))
+	    (goto-char (point-min))
+	    ;; Search to the beginning of the next header.  Error
+	    ;; messages do not begin with 2 or 3.
+	    (when (re-search-forward "^[23][0-9]+ " nil t)
+	      (end-of-line)
+	      (setq num (read cur)
+		    beg (point)
+		    end (if (search-forward "\n.\n" nil t)
+			    (- (point) 2)
+			  (point)))))
+      (with-temp-buffer
+	(insert-buffer-substring cur beg end)
+	(nnheader-parse-naked-head num)))))
 
 (defmacro nnheader-nov-skip-field ()
   '(search-forward "\t" eol 'move))
@@ -615,6 +630,13 @@ the line could be found."
      (point-max)))
   (goto-char (point-min)))
 
+(defun nnheader-remove-body ()
+  "Remove the body from an article in this current buffer."
+  (goto-char (point-min))
+  (when (or (search-forward "\n\n" nil t)
+	    (search-forward "\n\r\n" nil t))
+    (delete-region (point) (point-max))))
+
 (defun nnheader-set-temp-buffer (name &optional noerase)
   "Set-buffer to an empty (possibly new) buffer called NAME with undo disabled."
   (set-buffer (get-buffer-create name))
@@ -834,9 +856,7 @@ without formatting."
 (defun nnheader-ms-strip-cr ()
   "Strip ^M from the end of all lines."
   (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward "\r$" nil t)
-      (delete-backward-char 1))))
+    (nnheader-remove-cr-followed-by-lf)))
 
 (defun nnheader-file-size (file)
   "Return the file size of FILE or 0."

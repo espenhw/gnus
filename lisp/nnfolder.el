@@ -1150,13 +1150,7 @@ This command does not work if you use short group names."
 	(if (search-forward "\n\n" e t) (setq e (1- (point)))))
       (with-temp-buffer
 	(insert-buffer-substring buf b e)
-	;; Fold continuation lines.
-	(goto-char (point-min))
-	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	  (replace-match " " t t))
-	;; Remove any tabs; they are too confusing.
-	(subst-char-in-region (point-min) (point-max) ?\t ? )
-	(let ((headers (nnheader-parse-head t)))
+	(let ((headers (nnheader-parse-naked-head)))
 	  (mail-header-set-chars headers chars)
 	  (mail-header-set-number headers number)
 	  headers)))))

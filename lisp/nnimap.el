@@ -528,10 +528,7 @@ If EXAMINE is non-nil the group is selected read-only."
        (with-temp-buffer
 	 (buffer-disable-undo)
 	 (insert headers)
-	 (nnheader-ms-strip-cr)
-	 (nnheader-fold-continuation-lines)
-	 (subst-char-in-region (point-min) (point-max) ?\t ? )
-	 (let ((head (nnheader-parse-head 'naked)))
+	 (let ((head (nnheader-parse-naked-head)))
 	   (mail-header-set-number head uid)
 	   (mail-header-set-chars head chars)
 	   (mail-header-set-lines head lines)

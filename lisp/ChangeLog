@@ -1,3 +1,26 @@
+2002-10-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* nnheader.el (nnheader-parse-naked-head): New function.
+	(nnheader-parse-head): Use the above function, in order to handle
+	continuation lines properly.
+	(nnheader-remove-body): New function.
+	(nnheader-remove-cr-followed-by-lf): New function.
+	(nnheader-ms-strip-cr): Use the above function.
+
+	* gnus-agent.el (gnus-agent-regenerate-group): Call
+	`nnheader-remove-body'; use `nnheader-parse-naked-head' instead of
+	`nnheader-parse-head'.
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Ditto.
+
+	* gnus-msg.el (gnus-inews-yank-articles): Do not unfold
+	continuation lines by itself; call `nnheader-parse-naked-head'
+	instead of `nnheader-parse-head'.
+	* nndiary.el (nndiary-parse-head): Ditto.
+	* nnfolder.el (nnfolder-parse-head): Ditto.
+	* nnimap.el (nnimap-retrieve-headers-progress): Ditto.
+	* nnmaildir.el (nnmaildir--update-nov): Ditto.
+	* nnml.el (nnml-parse-head): Ditto.
+
 2002-10-17  Steve Youngs  <youngs@xemacs.org>
 
 	* gnus-art.el (gnus-button-man-handler): Add 'manual-entry' for

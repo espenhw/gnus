@@ -1123,13 +1123,7 @@ all.  This may very well take some time.")
 	(narrow-to-region
 	 (goto-char (point-min))
 	 (if (search-forward "\n\n" nil t) (1- (point)) (point-max))))
-      ;; Fold continuation lines.
-      (goto-char (point-min))
-      (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	(replace-match " " t t))
-      ;; Remove any tabs; they are too confusing.
-      (subst-char-in-region (point-min) (point-max) ?\t ? )
-      (let ((headers (nnheader-parse-head t)))
+      (let ((headers (nnheader-parse-naked-head)))
 	(mail-header-set-chars headers chars)
 	(mail-header-set-number headers number)
 	headers))))

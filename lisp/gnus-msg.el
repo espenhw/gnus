@@ -719,8 +719,7 @@ yanked."
 	     (with-current-buffer gnus-article-copy
 	       (save-restriction
 		 (nnheader-narrow-to-headers)
-		 (ietf-drums-unfold-fws)
-		 (nnheader-parse-head t)))))
+		 (nnheader-parse-naked-head)))))
 	(message-yank-original)
 	(setq beg (or beg (mark t))))
       (when articles

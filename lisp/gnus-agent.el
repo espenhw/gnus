@@ -2031,11 +2031,8 @@ and GROUP without FORCE is not supported."
 	      (mm-with-unibyte-buffer
 		(nnheader-insert-file-contents
 		 (concat dir (number-to-string (car arts))))
-		(goto-char (point-min))
-		(if (search-forward "\n\n" nil t)
-		    (delete-region (point) (point-max))
-		  (goto-char (point-max)))
-		(setq header (nnheader-parse-head t)))
+		(nnheader-remove-body)
+		(setq header (nnheader-parse-naked-head)))
 	      (mail-header-set-number header (car arts))
 	      (nnheader-insert-nov header)
 	      (setq changed t)

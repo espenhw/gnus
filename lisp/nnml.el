@@ -701,16 +701,12 @@ marks file will be regenerated properly by Gnus.")
       (unless (zerop (buffer-size))
 	(narrow-to-region
 	 (goto-char (point-min))
-	 (if (re-search-forward "\n\r?\n" nil t) (1- (point)) (point-max))))
-      ;; Fold continuation lines.
-      (goto-char (point-min))
-      (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	(replace-match " " t t))
-      ;; Remove any tabs; they are too confusing.
-      (subst-char-in-region (point-min) (point-max) ?\t ? )
-      ;; Remove any ^M's; they are too confusing.
-      (subst-char-in-region (point-min) (point-max) ?\r ? )
-      (let ((headers (nnheader-parse-head t)))
+	 (if (search-forward "\n\n" nil t)
+	     (1- (point))
+	   (if (search-forward "\n\r\n" nil t)
+	       (- (point) 2)
+	     (point-max)))))
+      (let ((headers (nnheader-parse-naked-head)))
 	(mail-header-set-chars headers chars)
 	(mail-header-set-number headers number)
 	headers))))
