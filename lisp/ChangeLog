@@ -1,3 +1,8 @@
+2003-08-10  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-draft.el (gnus-draft-send-all-messages): ask if all drafts
+	should be sent unless gnus-expert-user is on
+
 2003-08-09  Jesper Harder  <harder@ifa.au.dk>
 
 	* pgg-gpg.el (pgg-gpg-extra-args): Fix customization type.

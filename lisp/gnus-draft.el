@@ -185,8 +185,12 @@
 (defun gnus-draft-send-all-messages ()
   "Send all the sendable drafts."
   (interactive)
-  (gnus-uu-mark-buffer)
-  (gnus-draft-send-message))
+  (when (or
+	 gnus-expert-user
+	 (gnus-y-or-n-p
+	  "Send all drafts? "))
+    (gnus-uu-mark-buffer)
+    (gnus-draft-send-message)))
 
 (defun gnus-group-send-queue ()
   "Send all sendable articles from the queue group."
