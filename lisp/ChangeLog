@@ -1,5 +1,10 @@
 2001-07-05  Colin Walters  <walters@cis.ohio-state.edu>
 
+	* rfc2047.el (rfc2047-encode-message-header): Don't include the
+	header name when folding.
+
+2001-07-05  Colin Walters  <walters@cis.ohio-state.edu>
+
 	* mm-decode.el (mm-inlined-types): Document relationship with
 	`mm-inline-media-tests'.
 	(mm-display-inline): Default to displaying as plain text if no
