@@ -8826,6 +8826,9 @@ delete these instead."
     (error "Couldn't open server"))
   ;; Compute the list of articles to delete.
   (let ((articles (sort (copy-sequence (gnus-summary-work-articles n)) '<))
+	(nnmail-expiry-target
+	 (or (gnus-group-find-parameter gnus-newsgroup-name 'expiry-target)
+	     nnmail-expiry-target))
 	not-deleted)
     (if (and gnus-novice-user
 	     (not (gnus-yes-or-no-p
