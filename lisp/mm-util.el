@@ -700,10 +700,10 @@ Equivalent to `progn' in XEmacs"
 
 (defun mm-insert-file-contents (filename &optional visit beg end replace
 					 inhibit)
-  "Like `insert-file-contents', q.v., but only reads in the file.
+  "Like `insert-file-contents', but only reads in the file.
 A buffer may be modified in several ways after reading into the buffer due
 to advanced Emacs features, such as file-name-handlers, format decoding,
-find-file-hooks, etc.
+`find-file-hooks', etc.
 If INHIBIT is non-nil, inhibit `mm-inhibit-file-name-handlers'.
   This function ensures that none of these modifications will take place."
   (let ((format-alist nil)
@@ -742,7 +742,8 @@ If INHIBIT is non-nil, inhibit `mm-inhibit-file-name-handlers'."
 	     (append mm-inhibit-file-name-handlers
 		     inhibit-file-name-handlers)
 	   inhibit-file-name-handlers)))
-    (append-to-file start end filename)))
+    (write-region start end filename t 'no-message)
+    (message "Appended to %s" filename)))
 
 (defun mm-write-region (start end filename &optional append visit lockname
 			      coding-system inhibit)

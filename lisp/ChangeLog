@@ -1,5 +1,8 @@
 2003-06-20  Jesper Harder  <harder@ifa.au.dk>
 
+	* mm-util.el (mm-append-to-file): Say "Appended to".  Suggested by
+	Dan Jacobson <jidanni@jidanni.org>.
+
 	* mm-view.el (mm-inline-message): Bind
 	gnus-original-article-buffer to the buffer in the mml handle
 	holding the message.
