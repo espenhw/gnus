@@ -1,3 +1,12 @@
+2004-01-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-decoce.el (mm-multiple-handles): Recognize a string as a mime
+	handle, as well as a list.
+
+	* mm-view.el (mm-w3m-cid-retrieve-1): Call itself recursively.
+	Suggested by ARISAWA Akihiro <ari@mbf.sphere.ne.jp>.
+	(mm-w3m-cid-retrieve): Simplify.
+
 2004-01-14  Kai Grossjohann  <kai@emptydomain.de>
 
 	* message.el (message-kill-to-signature): Allow prefix arg to
