@@ -96,7 +96,7 @@
   (interactive)
   (let ((article (gnus-summary-article-number)))
     (gnus-summary-mark-as-read article gnus-canceled-mark)
-    (gnus-draft-setup article gnus-newsgroup-name)
+    (gnus-draft-setup article gnus-newsgroup-name t)
     (set-buffer-modified-p t)
     (save-buffer)
     (let ((gnus-verbose-backends nil))
@@ -187,7 +187,7 @@
 ;;;!!!but for the time being, we'll just run this tiny function uncompiled.
 
 (progn
-  (defun gnus-draft-setup (narticle group)
+  (defun gnus-draft-setup (narticle group &optional restore)
     (gnus-setup-message 'forward
       (let ((article narticle))
 	(message-mail)
@@ -195,7 +195,7 @@
 	(if (not (gnus-request-restore-buffer article group))
 	    (error "Couldn't restore the article")
 	  ;; Insert the separator.
-	  (if (equal group "nndraft:queue")
+	  (if (and restore (equal group "nndraft:queue"))
 	      (mime-to-mml))
 	  (goto-char (point-min))
 	  (search-forward "\n\n")

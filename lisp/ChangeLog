@@ -1,3 +1,9 @@
+2000-04-24 18:14:12  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-draft.el (gnus-draft-setup): Restore mml only when
+	required.
+	(gnus-draft-edit-message): Require restoration.
+
 2000-04-24 16:51:04  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-score.el (gnus-score-headers): Copy gnus-newsgrou-scored
