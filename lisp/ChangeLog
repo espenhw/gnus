@@ -1,3 +1,8 @@
+2000-11-13 22:08:09  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml2015.el (mml2015-mailcrypt-sign): Remove "-" escape.
+	* mml.el (mml-generate-mime-1): Save cont. skip multipart attributes.
+
 2000-11-13 20:43:37  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-get-part): Don't call mm-insert-part.

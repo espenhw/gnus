@@ -396,11 +396,12 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	    (let ((mml-boundary (mml-compute-boundary cont)))
 	      (insert (format "Content-Type: multipart/%s; boundary=\"%s\"\n"
 			      type mml-boundary))
-	      ;; Skip `multipart' and `type' elements.
-	      (setq cont (cddr cont))
-	      (while cont
-		(insert "\n--" mml-boundary "\n")
-		(mml-generate-mime-1 (pop cont)))
+	      (let ((cont cont) part)
+		(while (setq part (pop cont))
+		  ;; Skip `multipart' and attributes.
+		  (when (and (consp part) (consp (cdr part)))
+		    (insert "\n--" mml-boundary "\n")
+		    (mml-generate-mime-1 part))))
 	      (insert "\n--" mml-boundary "--\n")))))
        (t
 	(error "Invalid element: %S" cont)))

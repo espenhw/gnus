@@ -210,7 +210,7 @@
 		   nil nil nil nil)
   (let ((boundary 
 	 (funcall mml-boundary-function (incf mml-multipart-number)))
-	hash)
+	hash point)
     (goto-char (point-min))
     (unless (re-search-forward "^-----BEGIN PGP SIGNED MESSAGE-----\r?$" nil t)
       (error "Cannot find signed begin line." ))
@@ -228,6 +228,7 @@
     (insert (format "\tmicalg=pgp-%s; protocol=\"application/pgp-signature\"\n"
 		    (downcase hash)))
     (insert (format "\n--%s\n" boundary))
+    (setq point (point))
     (goto-char (point-max))
     (unless (re-search-backward "^-----END PGP \\(SIGNATURE\\)-----\r?$" nil t)
       (error "Cannot find signature part." ))
@@ -238,6 +239,12 @@
       (error "Cannot find signature part." ))
     (replace-match "MESSAGE" t t nil 1)
     (goto-char (match-beginning 0))
+    (save-restriction
+      (narrow-to-region point (point))
+      (goto-char point)
+      (while (re-search-forward "^- -" nil t)
+	(replace-match "-" t t))
+      (goto-char (point-max)))
     (insert (format "--%s\n" boundary))
     (insert "Content-Type: application/pgp-signature\n\n")
     (goto-char (point-max))
