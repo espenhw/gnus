@@ -1,3 +1,11 @@
+2001-08-20 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnslashdot.el (nnslashdot-retrieve-headers-1): Replace
+	nnslashdot-*-retrieve-headers.
+	(nnslashdot-request-article): Fix for slashcode 2.2.
+	(nnslashdot-make-tuple): New.
+	(nnslashdot-read-groups): Use it.
+
 2001-08-20 01:34:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-expand-group-parameters): Don't alter the variable
@@ -151,7 +159,7 @@
 	* gnus.el (gnus-info-find-node): Take an argument.
 
 	* gnus-art.el (gnus-button-handle-info): New.
-	(gnus-url-unhex-string): Replace "+" to " ".
+	(gnus-url-unhex-string): Replace "+" with " ".
 
 2001-08-17 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
