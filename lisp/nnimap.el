@@ -734,7 +734,11 @@ If EXAMINE is non-nil the group is selected read-only."
     (with-current-buffer (get-buffer-create nnimap-server-buffer)
       (nnoo-change-server 'nnimap server defs))
     (or (and nnimap-server-buffer
-	     (imap-opened nnimap-server-buffer))
+	     (imap-opened nnimap-server-buffer)
+	     (if (memq imap-state '(auth select examine))
+		 t
+	       (imap-close nnimap-server-buffer)
+	       (nnimap-open-connection server)))
 	(nnimap-open-connection server))))
 
 (deffoo nnimap-server-opened (&optional server)

@@ -1,5 +1,8 @@
 2002-10-10  Simon Josefsson  <jas@extundo.com>
 
+	* nnimap.el (nnimap-open-server): Re-open server if it isn't in
+	auth, selected or examine state.
+
 	* pgg-gpg.el (pgg-gpg-verify-region): Filter out stuff into output
 	buffer and error buffer depending on type of information.
 
