@@ -1,3 +1,11 @@
+2003-03-18  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir-open-server,
+	nnmaildir-request-scan,
+	nnmaildir-request-create-group,
+	nnmaildir-request-delete-group): Replace create-directory with
+	target-prefix.
+
 2003-03-18  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-bodies.el (mm-decode-coding-region-safely): Don't use
@@ -38,7 +46,7 @@
 
 	* lpath.el (featurep): Bind mm-w3m-mode-map.
 
-2003-03-12  Paul Jarc  <prj@po.cwru.edu>
+2003-03-17  Paul Jarc  <prj@po.cwru.edu>
 
 	* nnmail.el (nnmail-cache-primary-mail-backend): Not all
 	'respool-able backends define a global nnchoke-get-new-mail
