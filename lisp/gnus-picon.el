@@ -59,6 +59,7 @@
 
 (require 'xpm)
 (require 'annotations)
+(eval-when-compile (require 'cl))
 
 (defvar gnus-picons-buffer "*Icon Buffer*"
   "Buffer name to display the icons in if gnus-picons-display-where is 'picons.")
@@ -84,8 +85,9 @@ see http://www.cs.indiana.edu/picons/ftp/index.html" )
 Some people may want to add \"unknown\" to this list."
 )
 
-(setq gnus-group-annotations nil)
-(setq gnus-article-annotations nil)
+(defvar gnus-group-annotations nil)
+(defvar gnus-article-annotations nil)
+(defvar gnus-x-face-annotations nil)
 
 (defun gnus-picons-remove (plist)
   (let ((listitem (car plist)))
@@ -116,8 +118,64 @@ Some people may want to add \"unknown\" to this list."
         ((stringp variable)
          variable)))
 
+(defvar gnus-picons-x-face-file-name 
+  (format "/tmp/picon-xface.%s.xbm" (user-login-name))
+  "The name of the file in which to store the converted X-face header.")
+
+(defvar gnus-picons-convert-x-face (format "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | pbmtoxbm > %s" gnus-picons-x-face-file-name)
+  "Command to convert the x-face header into a xbm file."
+)
+       
+(defun gnus-picons-article-display-x-face ()
+  "Display the x-face header bitmap in the 'gnus-picons-display-where buffer."
+  ;; delete any old ones.
+  (gnus-picons-remove gnus-x-face-annotations)
+  (setq gnus-x-face-annotations nil)
+  ;; display the new one.
+  (let ((gnus-article-x-face-command 'gnus-picons-display-x-face))
+    (gnus-article-display-x-face)))
+
+(defun gnus-picons-display-x-face (beg end)
+  "Function to display the x-face header in the picons window.
+To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
+  (interactive)
+  ;; convert the x-face header to a .xbm file
+  (let ((process-connection-type nil)
+      (process nil))
+    (process-kill-without-query
+     (setq process (start-process
+      "gnus-x-face" nil "sh" "-c" gnus-picons-convert-x-face)))
+    (process-send-region "gnus-x-face" beg end)
+    (process-send-eof "gnus-x-face")
+  ;; wait for it.
+    (while (not (equal (process-status process) 'exit))
+      (sleep-for .1)))
+  ;; display it
+  (save-excursion
+    (set-buffer (gnus-get-buffer-name gnus-picons-display-where))
+    (gnus-add-current-to-buffer-list)
+    (beginning-of-buffer)
+    (let ((iconpoint (point)))
+      (if (not (looking-at "^$"))
+        (if buffer-read-only
+            (progn 
+              (toggle-read-only)
+              (open-line 1)
+              (toggle-read-only)
+              )
+          (open-line 1)))
+      (end-of-line)
+      ;; append the annotation to gnus-article-annotations for deletion.
+      (setq gnus-x-face-annotations 
+          (append
+           (gnus-picons-try-to-find-face
+	    gnus-picons-x-face-file-name iconpoint)
+           gnus-x-face-annotations)))
+    ;; delete the tmp file
+    (delete-file gnus-picons-x-face-file-name)))
+
 (defun gnus-article-display-picons ()
-  "Display faces for an author and his/her domain in gnus-picons-display-where."
+"Display faces for an author and his/her domain in gnus-picons-display-where."
   (interactive)
   (if (and (featurep 'xpm) 
            (or (not (fboundp 'device-type)) (equal (device-type) 'x)))
@@ -134,6 +192,7 @@ Some people may want to add \"unknown\" to this list."
                                          "\\1") 
                       "\\." "/")) "/")))
           (switch-to-buffer (gnus-get-buffer-name gnus-picons-display-where))
+          (gnus-add-current-to-buffer-list)
           (beginning-of-buffer)
           (setq iconpoint (point))
           (if (not (looking-at "^$"))
@@ -185,6 +244,7 @@ Some people may want to add \"unknown\" to this list."
       (let
           ((iconpoint (point)))
         (switch-to-buffer (gnus-get-buffer-name gnus-picons-display-where))
+        (gnus-add-current-to-buffer-list)
         (beginning-of-buffer)
         (cond 
          ((listp gnus-group-annotations)
@@ -237,17 +297,12 @@ Some people may want to add \"unknown\" to this list."
     )
   )
   
-
 (defun gnus-picons-try-to-find-face (path ipoint)
   "If PATH exists, display it as a bitmap.  Returns t if succedded."
-  (if (file-exists-p path)
-      (progn
-;       (insert (format "yes: %s\n" path))
-        (setq gl (make-glyph path))
-        (set-glyph-face gl 'default)
-        (list (make-annotation gl ipoint 'text)))
-;    (insert (format "no:  %s\n" path))
-  nil))
+  (when (file-exists-p path)
+    (let ((gl (make-glyph path)))
+      (set-glyph-face gl 'default)
+      (list (make-annotation gl ipoint 'text)))))
 
 (defun gnus-picons-reverse-domain-path (str)
   "a/b/c/d -> d/c/b/a"
@@ -256,3 +311,7 @@ Some people may want to add \"unknown\" to this list."
     (concat (replace-in-string str "^.*/\\([_a-zA-Z0-9-]+\\)$" "\\1") "/"
             (gnus-picons-reverse-domain-path 
              (replace-in-string str "^\\(.*\\)/[_a-zA-Z0-9-]+$" "\\1")))))
+
+(provide 'gnus-picon)
+
+;;; gnus-picon.el ends here

@@ -190,6 +190,8 @@ If nil, the user will be asked for a duration.")
 (defvar gnus-internal-global-score-files nil)
 (defvar gnus-score-file-list nil)
 
+(defvar gnus-short-name-score-file-cache nil)
+
 (defvar gnus-score-help-winconf nil)
 (defvar gnus-adaptive-score-alist gnus-default-adaptive-score-alist)
 (defvar gnus-score-trace nil)
@@ -1865,7 +1867,8 @@ This mode is an extended emacs-lisp mode.
 (defun gnus-score-flush-cache ()
   "Flush the cache of score files."
   (interactive)
-  (setq gnus-score-cache nil)
+  (setq gnus-score-cache nil
+	gnus-short-name-score-file-cache nil)
   (gnus-message 6 "The score cache is now flushed"))
 
 (defun gnus-score-close ()
@@ -1950,7 +1953,11 @@ This mode is an extended emacs-lisp mode.
 	;; We do not use long file names, so we have to do some
 	;; directory traversing.  
 	(setq gnus-score-file-list 
-	      (cons nil (gnus-score-score-files-1 gnus-kill-files-directory)))
+	      (cons nil 
+		    (or gnus-short-name-score-file-cache
+			(setq gnus-short-name-score-file-cache
+			      (gnus-score-score-files-1
+			       gnus-kill-files-directory)))))
       ;; We want long file names.
       (when (or (not gnus-score-file-list)
 		(not (car gnus-score-file-list))

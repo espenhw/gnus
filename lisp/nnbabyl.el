@@ -32,6 +32,7 @@
 (require 'nnheader)
 (require 'rmail)
 (require 'nnmail)
+(eval-when-compile (require 'cl))
 
 (defvar nnbabyl-mbox-file (expand-file-name "~/RMAIL")
   "The name of the rmail box file in the users home directory.")

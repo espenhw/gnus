@@ -27,6 +27,7 @@
 ;;; Code:
 
 (require 'gnus)
+(eval-when-compile (require 'cl))
 
 (defvar gnus-kill-file-mode-hook nil
   "*A hook for Gnus kill file mode.")
@@ -577,9 +578,12 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 		     (or (stringp value)
 			 (setq value (prin1-to-string value)))
 		     (setq did-kill (string-match regexp value)))
-		   (if (stringp form)	;Keyboard macro.
-		       (execute-kbd-macro form)
-		     (funcall form))))
+		   (cond ((stringp form)	;Keyboard macro.
+			  (execute-kbd-macro form))
+			 ((gnus-functionp form)
+			  (funcall form))
+			 (t
+			  (eval form)))))
 	  ;; Search article body.
 	  (let ((gnus-current-article nil) ;Save article pointer.
 		(gnus-last-article nil)
@@ -606,26 +610,34 @@ marked as read or ticked are ignored."
   (save-excursion
     (let ((killed-no 0)
 	  function article header)
-      (if (or (null field) 
-	      (string-equal field "")
-	      (not (fboundp
-		    (setq function 
-			  (intern-soft 
-			   (concat "mail-header-" (downcase field)))))))
-	  (error "Unknown header field: \"%s\"" field)
-	;; Get access function of header filed.
-	(setq function `(lambda (h) (,function h)))
-	;; Starting from the current article.
-	(while (or (and (not article)
-			(setq article (gnus-summary-article-number))
-			t)
-		   (setq article 
-			 (gnus-summary-search-forward 
-			  (not ignore-marked) nil backward)))
-	  (and (or (null gnus-newsgroup-kill-headers)
-		   (memq article gnus-newsgroup-kill-headers))
-	       (vectorp (setq header (gnus-summary-article-header article)))
-	       (gnus-execute-1 function regexp form header)
-	       (setq killed-no (1+ killed-no))))
-	killed-no))))
+      (cond 
+       ;; Search body.
+       ((or (null field) 
+	    (string-equal field ""))
+	(setq function nil))
+       ;; Get access function of header field.
+       ((fboundp
+	 (setq function 
+	       (intern-soft 
+		(concat "mail-header-" (downcase field)))))
+	(setq function `(lambda (h) (,function h))))
+       ;; Signal error.
+       (t
+	(error "Unknown header field: \"%s\"" field)))
+      ;; Starting from the current article.
+      (while (or (and (not article)
+		      (setq article (gnus-summary-article-number))
+		      t)
+		 (setq article 
+		       (gnus-summary-search-forward 
+			(not ignore-marked) nil backward)))
+	(and (or (null gnus-newsgroup-kill-headers)
+		 (memq article gnus-newsgroup-kill-headers))
+	     (vectorp (setq header (gnus-summary-article-header article)))
+	     (gnus-execute-1 function regexp form header)
+	     (setq killed-no (1+ killed-no))))
+      killed-no)))
 
+(provide 'gnus-kill)
+
+;;; gnus-kill.el ends here

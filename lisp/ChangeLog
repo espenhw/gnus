@@ -1,8 +1,135 @@
+Fri Feb  9 09:56:45 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-picon.el (gnus-picons-convert-x-face): Changed to use
+	pbmplus, 
+
+	* gnus.el (gnus-buffer-configuration): One quote too many.
+
+	* gnus-kill.el (gnus-execute): Allow searching bodies.
+
+	* gnus.el (gnus-summary-execute-command): Accept "Body" searches.
+
+Fri Feb  9 09:44:04 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* nnmail.el (nnmail-time-since): Reversed time.
+
+	* nnml.el (nnml-request-expire-articles): Set lower limit
+	correctly. 
+
+Fri Feb  9 05:40:39 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nntp.el (nntp-open-server-semi-internal): Report errors better. 
+
+Thu Feb  8 00:36:09 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-jump-to-group): Don't jump to ephemeral
+	groups. 
+	(gnus-summary-catchup-and-goto-next-group): Allow quiet going.
+
+	* gnus-topic.el (gnus-topic-move-group): Allow removal of groups. 
+	(gnus-topic-remove-group): New command and keystroke.
+
+	* nnsoup.el (nnsoup-read-areas): Message.
+
+	* nndoc.el (nndoc-possibly-change-buffer): Return nil when the
+	file doesn't exist.
+	(nndoc-close-server): Really close.
+
+	* gnus.el (gnus-update-format-specifications): Would not update
+	format specs.
+
+	* gnus-topic.el (gnus-topic-remove-topic): Accept a list-level. 
+	(gnus-group-prepare-topics): List dead groups.
+
+Wed Feb  7 00:04:23 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-hide-thread): Hide the last thread.
+
+	* gnus-kill.el (gnus-kill): Provide.
+	(gnus-execute-1): Accept forms.
+
+	* nnheader.el (nnheader-temp-write): New macro.
+
+	* gnus-soup.el (gnus-soup-group-brew): Pack ticked.
+	(gnus-soup-write-replies): Be silent.
+
+	* gnus-msg.el (gnus-bug-mail-send-and-exit): Kill gnus-bug buffer
+	after sending.
+
+	* gnus.el (gnus-setup-news): Find new newsgroups even if
+	gnus-read-active-file is nil.
+
+	* gnus-soup.el (gnus-soup-group-brew): Would pack too few
+	articles. 
+
+	* nneething.el (nneething-request-type): New function.
+	(nneething-request-post): Removed.
+
+	* nnvirtual.el (nnvirtual-find-group-art): Never return `(nil)'.
+
+	* nndoc.el (nndoc-rnews-body-end): Really go to the end.
+
+	* nnsoup.el (nnsoup-read-areas): Would calculate new article
+	boundary +1.
+	(nnsoup-index-buffer): Check whether the file exists before
+	reading it. 
+	(nnsoup-retrieve-headers): Ditto.
+
+	* gnus-topic.el (gnus-topic-goto-missing-group): New function.
+
+Tue Feb  6 22:33:50 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-goto-missing-group-function): New variable.
+
+	* nnmail.el (nnmail-time-since): Don't alter time.
+	(nnmail-days-to-time): Would give wrong result.
+
+	* gnus.el (gnus-article-de-quoted-unreadable): Decode headers
+	before body.
+
+Tue Feb  6 09:51:14 1996  Morioka Tomohiko  <morioka@jaist.ac.jp>
+
+	* gnus.el (gnus-article-show-hidden-text): Don't use `(1+
+ 	(point))'. It does not work in Mule.
+
+Mon Feb  5 13:03:47 1996  Wes Hardaker  <hardaker@teal.ece.ucdavis.edu>
+
+        * gnus-picon.el (gnus-group-display-picons): Delete buffer on exit.
+        (gnus-article-display-picons): Ditto.
+
+Tue Feb  6 00:26:44 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-salt.el (gnus-tree-recenter): Recenter the tree buffer. 
+
+	* gnus-cite.el (gnus-article-toggle-cited-text): Bind
+	`buffer-read-only'. 
+
+	* gnus.el (gnus-configure-windows): Don't search all frames unless
+	when using a frame split.
+	(gnus-summary-mode-map): Change `W t'.
+
+Mon Feb  5 23:41:09 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-short-name-score-file-cache): New variable. 
+	(gnus-score-score-files): Use it.
+	(gnus-score-flush-cache): Ditto.
+
+Mon Feb  4 23:55:30 1996  Morioka Tomohiko  <morioka@jaist.ac.jp>
+
+	* gnus.el (gnus-configure-windows): Check minibuffer only frame.
+
+Mon Feb  5 22:36:24 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnsoup.el (nnsoup-old-functions): New variable.
+	(nnsoup-revert-variables): New command.
+
 Mon Feb  5 17:54:07 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
 
 	* nnvirtual.el (nnvirtual-update-marked): Copy empty mark lists.
 
 	* gnus.el (gnus-summary-read-group): Allow entry with no-display. 
+
+	* gnus.el: 0.36 is released.
 
 Sat Feb  3 11:56:53 1996  Steven L. Baur  <steve@miranova.com>
 
@@ -38,6 +165,8 @@ Sun Feb  4 16:22:20 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
 
 	* gnus.el (gnus-summary-edit-article): Make sure we're in the
 	summary buffer.
+
+	* gnus.el: 0.35 is released.
 
 Sun Feb  4 14:05:20 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
 

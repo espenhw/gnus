@@ -41,7 +41,7 @@
     ("\\.\\(wav\\|aiff\\|hcom\\|u[blw]\\|s[bfw]\\|voc\\|smp\\)$" 
      "sox -v .5 %s -t .au -u - > /dev/audio")
     ("\\.au$" "cat %s > /dev/audio")
-    ("\\.mid?i$" "playmidi -f")
+    ("\\.midi?$" "playmidi -f")
     ("\\.mod$" "str32")
     ("\\.ps$" "ghostview")
     ("\\.dvi$" "xdvi")

@@ -29,6 +29,7 @@
 (require 'nnheader)
 (require 'nnmh)
 (require 'nnml)
+(eval-when-compile (require 'cl))
 
 (eval-and-compile
   (autoload 'mail-send-and-exit "sendmail"))

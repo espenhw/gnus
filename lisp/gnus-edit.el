@@ -13,6 +13,7 @@
 
 (require 'custom)
 (require 'gnus-score)
+(eval-when-compile (require 'cl))
 
 (defconst gnus-score-custom-data
   '((tag . "Score")

@@ -25,6 +25,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
+
 (defvar gnus-mouse-2 [mouse-2])
 
 (defalias 'gnus-make-overlay 'make-overlay)

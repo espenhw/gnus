@@ -28,6 +28,7 @@
 (require 'gnus)
 (require 'gnus-msg)
 (require 'gnus-ems)
+(eval-when-compile (require 'cl))
 
 (eval-and-compile
   (autoload 'gnus-article-add-button "gnus-vis"))
@@ -334,12 +335,13 @@ always hide."
 
 (defun gnus-article-toggle-cited-text (region)
   "Toggle hiding the text in REGION."
-  (funcall
-   (if (text-property-any
-	(car region) (cdr region) 
-	(car gnus-hidden-properties) (cadr gnus-hidden-properties))
-       'remove-text-properties 'add-text-properties)
-   (car region) (cdr region) gnus-hidden-properties))
+  (let (buffer-read-only)
+    (funcall
+     (if (text-property-any
+	  (car region) (cdr region) 
+	  (car gnus-hidden-properties) (cadr gnus-hidden-properties))
+	 'remove-text-properties 'add-text-properties)
+     (car region) (cdr region) gnus-hidden-properties)))
 
 (defun gnus-article-hide-citation-maybe (&optional arg force)
   "Toggle hiding of cited text that has an attribution line.

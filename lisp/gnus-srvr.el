@@ -41,6 +41,8 @@ with some simple extensions.")
 
 ;;; Internal variables.
 
+(defvar gnus-inserted-opened-servers nil)
+
 (defconst gnus-server-line-format-alist
   (` ((?h how ?s)
       (?n name ?s)
@@ -176,8 +178,6 @@ The following commands are available:
       (when gnus-carpal 
 	(gnus-carpal-setup-buffer 'server)))))
 
-(fset 'gnus-server-position-point 'gnus-goto-colon)
-
 (defun gnus-server-prepare ()
   (setq gnus-server-mode-line-format-spec 
 	(gnus-parse-format gnus-server-mode-line-format 
@@ -188,8 +188,9 @@ The following commands are available:
   (let ((alist gnus-server-alist)
 	(buffer-read-only nil)
 	(opened gnus-opened-servers)
-	done server)
+	done server op-ser)
     (erase-buffer)
+    (setq gnus-inserted-opened-servers nil)
     ;; First we do the real list of servers.
     (while alist
       (push (cdr (setq server (pop alist))) done)
@@ -200,8 +201,10 @@ The following commands are available:
     (while opened 
       (unless (member (car (car opened)) done)
 	(gnus-server-insert-server-line 
-	 (format "%s:%s" (car (car (car opened))) (nth 1 (car (car opened))))
-	 (car (car opened))))
+	 (setq op-ser (format "%s:%s" (car (car (car opened))) 
+			      (nth 1 (car (car opened)))))
+	 (car (car opened)))
+	(push (list op-ser (caar opened)) gnus-inserted-opened-servers))
       (setq opened (cdr opened))))
   (goto-char (point-min))
   (gnus-server-position-point))
@@ -234,14 +237,15 @@ The following commands are available:
 
 (defun gnus-server-set-info (server info)
   ;; Enter a select method into the virtual server alist.
-  (gnus-dribble-enter 
-   (concat "(gnus-server-set-info \"" server "\" '"
-	   (prin1-to-string info) ")"))
-  (let* ((server (nth 1 info))
-	 (entry (assoc server gnus-server-alist)))
-    (if entry (setcdr entry info)
-      (setq gnus-server-alist
-	    (nconc gnus-server-alist (list (cons server info)))))))
+  (when (and server info)
+    (gnus-dribble-enter 
+     (concat "(gnus-server-set-info \"" server "\" '"
+	     (prin1-to-string info) ")"))
+    (let* ((server (nth 1 info))
+	   (entry (assoc server gnus-server-alist)))
+      (if entry (setcdr entry info)
+	(setq gnus-server-alist
+	      (nconc gnus-server-alist (list (cons server info))))))))
 
 ;;; Interactive server functions.
 
@@ -390,8 +394,10 @@ The following commands are available:
 (defun gnus-server-edit-server (server)
   "Edit the server on the current line."
   (interactive (list (gnus-server-server-name)))
-  (or server
-      (error "No server on current line"))
+  (unless server
+    (error "No server on current line"))
+  (unless (assoc server gnus-server-alist)
+    (error "This server can't be edited"))
   (let ((winconf (current-window-configuration)))
     (get-buffer-create gnus-server-edit-buffer)
     (gnus-configure-windows 'edit-server)

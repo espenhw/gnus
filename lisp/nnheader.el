@@ -308,6 +308,30 @@ Return the number of headers removed."
   (erase-buffer)
   (current-buffer))
 
+(defmacro nnheader-temp-write (file &rest forms)
+  "Create a new buffer, evaluate FORM there, and write the buffer to FILE."
+  `(save-excursion
+     (let ((nnheader-temp-file ,file)
+	   (nnheader-temp-cur-buffer
+	    (nnheader-set-temp-buffer
+	     (generate-new-buffer-name " *nnheader temp*"))))
+     (unless (file-directory-p (file-name-directory nnheader-temp-file))
+       (make-directory (file-name-directory nnheader-temp-file) t))
+       (unwind-protect
+	   (prog1
+	       (progn
+		 ,@forms)
+	     (when nnheader-temp-file
+	       (set-buffer nnheader-temp-cur-buffer)
+	       (write-region (point-min) (point-max) 
+			     nnheader-temp-file nil 'nomesg)))
+	 (when (buffer-name nnheader-temp-cur-buffer)
+	   (kill-buffer nnheader-temp-cur-buffer))))))
+
+(put 'nnheader-temp-write 'lisp-indent-function 1)
+(put 'nnheader-temp-write 'lisp-indent-hook 1)
+(put 'nnheader-temp-write 'edebug-form-spec '(file &rest form))
+
 (defvar jka-compr-compression-info-list)
 (defvar nnheader-numerical-files
   (if (boundp 'jka-compr-compression-info-list)

@@ -2462,9 +2462,12 @@ If YANK is non-nil, include the original article."
 (defun gnus-bug-mail-send-and-exit ()
   "Send the bug message and exit."
   (interactive)
-  (and (get-buffer "*Gnus Help Bug*")
-       (kill-buffer "*Gnus Help Bug*"))
-  (gnus-mail-send-and-exit))
+  (let ((cur (current-buffer)))
+    (and (get-buffer "*Gnus Help Bug*")
+	 (kill-buffer "*Gnus Help Bug*"))
+    (gnus-mail-send-and-exit)
+    (when (buffer-name cur)
+      (kill-buffer cur))))
 
 (defun gnus-debug ()
   "Attemps to go through the Gnus source file and report what variables have been changed.

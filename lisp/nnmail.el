@@ -311,24 +311,20 @@ parameter.  It should return nil, `warn' or `delete'.")
 
 (defun nnmail-days-to-time (days)
   "Convert DAYS into time."
-  (let ((seconds (* 1.0 days 60 60 24))
-	(rest (expt 2 16)))
-    (list (round (/ seconds rest))
-	  ;;;!!!Error error error.  I'm not a mathematician, though.
-	  (condition-case ()
-	      (% (round seconds) rest)
-	    (error 0)))))
+  (let* ((seconds (* 1.0 days 60 60 24))
+	 (rest (expt 2 16))
+	 (ms (round (/ seconds rest))))
+    (list ms (round (- seconds (* ms rest))))))
 
 (defun nnmail-time-since (time)
   "Return the time since TIME, which is either an internal time or a date."
+  (when (stringp time)
+    ;; Convert date strings to internal time.
+    (setq time (nnmail-date-to-time time)))
   (let* ((current (current-time))
-	 rest)
-    (when (stringp time)
-      (setq time (nnmail-date-to-time time)))
-    (setq rest (if (< (nth 1 current) (nth 1 time)) (expt 2 16)))
-    (setcar (cdr time) (- (+ (or rest 0) (nth 1 current)) (nth 1 time)))
-    (setcar time (- (+ (car current) (if rest -1 0)) (car time)))
-    time))
+	 (rest (if (< (nth 1 current) (nth 1 time)) (expt 2 16))))
+    (list (- (+ (car current) (if rest -1 0)) (car time))
+	  (- (+ (or rest 0) (nth 1 current)) (nth 1 time)))))
 
 ;; Function taken from rmail.el.
 (defun nnmail-move-inbox (inbox)

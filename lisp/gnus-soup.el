@@ -28,6 +28,7 @@
 
 (require 'gnus-msg)
 (require 'gnus)
+(eval-when-compile (require 'cl))
 
 ;;; User Variables:
 
@@ -256,18 +257,19 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
       ;; Return the MSG buf.
       msg-buf)))
 
-(defun gnus-soup-group-brew (group)
-  "Enter GROUP and add all articles to a SOUP package."
+(defun gnus-soup-group-brew (group &optional not-all)
+  "Enter GROUP and add all articles to a SOUP package.
+If NOT-ALL, don't pack ticked articles."
   (let ((gnus-expert-user t)
 	(gnus-large-newsgroup nil))
-    (when (gnus-summary-read-group group)
-      (let ((gnus-newsgroup-processable 
-	     (nreverse
-	      (gnus-sorted-complement 
-	       gnus-newsgroup-unreads
-	       (append gnus-newsgroup-dormant gnus-newsgroup-marked)))))
-	(gnus-soup-add-article nil)))
-    (gnus-summary-exit)))
+    (when (gnus-summary-read-group group nil t)
+      (let ((gnus-newsgroup-processable
+	     (if (not not-all)
+		 (reverse (append gnus-newsgroup-marked
+				  gnus-newsgroup-unreads))
+	       (reverse gnus-newsgroup-unreads))))
+	(gnus-soup-add-article nil))
+      (gnus-summary-exit))))
 
 (defun gnus-soup-insert-idx (offset header)
   ;; [number subject from date id references chars lines xref]
@@ -397,58 +399,37 @@ file. The vector contain three strings, [prefix name encoding]."
 	    (gnus-soup-parse-areas (concat gnus-soup-directory "AREAS")))))
 
 (defun gnus-soup-write-areas ()
-  "Write all areas to disk."
+  "Write the AREAS file."
   (interactive)
-  (if (not gnus-soup-areas)
-      ()
-    (save-excursion
-      (set-buffer (find-file-noselect
-		   (concat gnus-soup-directory "AREAS")))
-      (buffer-disable-undo (current-buffer))
-      (erase-buffer)
+  (when gnus-soup-areas
+    (nnheader-temp-write (concat gnus-soup-directory "AREAS")
       (let ((areas gnus-soup-areas)
 	    area)
-	(while areas
-	  (setq area (car areas)
-		areas (cdr areas))
-	  (insert (format "%s\t%s\t%s%s\n"
-			  (gnus-soup-area-prefix area)
-			  (gnus-soup-area-name area) 
-			  (gnus-soup-area-encoding area)
-			  (if (or (gnus-soup-area-description area) 
-				  (gnus-soup-area-number area))
-			      (concat "\t" (or (gnus-soup-area-description
-						area)
-					       "")
-				      (if (gnus-soup-area-number area)
-					  (concat "\t" 
-						  (int-to-string
-						   (gnus-soup-area-number 
-						    area)))
-					"")) "")))))
-      (write-region (point-min) (point-max)
-		    (concat gnus-soup-directory "AREAS") nil 'silent)
-      (set-buffer-modified-p nil)
-      (kill-buffer (current-buffer)))))
+	(while (setq area (pop areas))
+	  (insert
+	   (format 
+	    "%s\t%s\t%s%s\n"
+	    (gnus-soup-area-prefix area)
+	    (gnus-soup-area-name area) 
+	    (gnus-soup-area-encoding area)
+	    (if (or (gnus-soup-area-description area) 
+		    (gnus-soup-area-number area))
+		(concat "\t" (or (gnus-soup-area-description
+				  area) "")
+			(if (gnus-soup-area-number area)
+			    (concat "\t" (int-to-string 
+					  (gnus-soup-area-number area)))
+			  "")) ""))))))))
 
 (defun gnus-soup-write-replies (dir areas)
-  (or (file-directory-p dir)
-      (gnus-make-directory dir))
-  (save-excursion
-    (set-buffer (find-file-noselect (concat dir "REPLIES")))
-    (buffer-disable-undo (current-buffer))
-    (erase-buffer)
+  "Write a REPLIES file in DIR containing AREAS."
+  (nnheader-temp-write (concat dir "REPLIES")
     (let (area)
-      (while areas
-	(setq area (car areas)
-	      areas (cdr areas))
+      (while (setq area (pop areas))
 	(insert (format "%s\t%s\t%s\n"
 			(gnus-soup-reply-prefix area)
 			(gnus-soup-reply-kind area) 
-			(gnus-soup-reply-encoding area)))))
-    (write-region (point-min) (point-max) (concat dir "REPLIES") nil 'silent)
-    (set-buffer-modified-p nil)
-    (kill-buffer (current-buffer))))
+			(gnus-soup-reply-encoding area)))))))
 
 (defun gnus-soup-area (group)
   (gnus-soup-read-areas)

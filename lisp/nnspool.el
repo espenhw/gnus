@@ -29,6 +29,7 @@
 (require 'nnheader)
 (require 'nntp)
 (require 'timezone)
+(eval-when-compile (require 'cl))
 
 (defvar nnspool-inews-program news-inews-program
   "Program to post news.

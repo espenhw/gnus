@@ -309,10 +309,10 @@ all. This may very well take some time.")
 	      (nnml-nov-delete-article newsgroup number))
 	  (push number rest))))
     (let ((active (nth 1 (assoc newsgroup nnml-group-alist))))
-      (and active
-	   (setcar active (or (and active-articles
-				   (apply 'min active-articles))
-			      0)))
+      (when active
+	(setcar active (or (and active-articles
+				(apply 'min active-articles))
+			   (1+ (cdr active)))))
       (nnmail-save-active nnml-group-alist nnml-active-file))
     (nnml-save-nov)
     (message "")

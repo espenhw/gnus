@@ -325,9 +325,9 @@ Two predefined functions are available:
 (defun gnus-tree-recenter ()
   "Center point in the tree window."
   (let ((selected (selected-window))
-	(cur-window (get-buffer-window (current-buffer) t)))
-    (when cur-window
-      (select-window cur-window)
+	(tree-window (get-buffer-window gnus-tree-buffer t)))
+    (when tree-window
+      (select-window tree-window)
       (when gnus-selected-tree-overlay
 	(goto-char (or (gnus-overlay-end gnus-selected-tree-overlay) 1)))
       (let* ((top (cond ((< (window-height) 4) 0)
@@ -341,8 +341,8 @@ Two predefined functions are available:
 	;; possible valid number, or the second line from the top,
 	;; whichever is the least.
 	(set-window-start
-	 cur-window (min bottom (save-excursion 
-			      (forward-line (- top)) (point)))))
+	 tree-window (min bottom (save-excursion 
+				   (forward-line (- top)) (point)))))
       (select-window selected))))
 
 (defun gnus-get-tree-buffer ()

@@ -29,6 +29,7 @@
 (require 'nnheader)
 (require 'rmail)
 (require 'nnmail)
+(eval-when-compile (require 'cl))
 
 (defvar nndoc-article-type 'guess
   "*Type of the file.
@@ -46,7 +47,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
     (news
      (article-begin . "^Path:"))
     (rnews
-     (article-begin . "^#! *rnews +\\([0-9]\\)+ *\n")
+     (article-begin . "^#! *rnews +\\([0-9]+\\) *\n")
      (body-end-function . nndoc-rnews-body-end))
     (mbox 
      (article-begin . 
@@ -72,6 +73,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
     (slack-digest
      (article-begin . "^------------------------------*[\n \t]+")
      (head-end . "^ ?$")
+     (body-end-function . nndoc-digest-body-end)
      (body-begin . "^ ?$")
      (file-end . "^End of")
      (prepare-body . nndoc-prepare-digest-body))
@@ -219,24 +221,19 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 
 (defun nndoc-request-group (group &optional server dont-check)
   "Select news GROUP."
-  (save-excursion
-    (let (number)
-      (cond 
-       ((not (nndoc-possibly-change-buffer group server))
-	(nnheader-report 'nndoc "No such file or buffer: %s"
-			 nndoc-address))
-       (dont-check
-	(nnheader-report 'nndoc "Selected group %s" group)
-	t)
-       ((zerop (setq number (length nndoc-dissection-alist)))
-	(nndoc-close-group group)
-	(nnheader-report 'nndoc "No articles in group %s" group))
-       (t
-	(save-excursion
-	  (set-buffer nntp-server-buffer)
-	  (erase-buffer)
-	  (insert (format "211 %d %d %d %s\n" number 1 number group))
-	  t))))))
+  (let (number)
+    (cond 
+     ((not (nndoc-possibly-change-buffer group server))
+      (nnheader-report 'nndoc "No such file or buffer: %s"
+		       nndoc-address))
+     (dont-check
+      (nnheader-report 'nndoc "Selected group %s" group)
+      t)
+     ((zerop (setq number (length nndoc-dissection-alist)))
+      (nndoc-close-group group)
+      (nnheader-report 'nndoc "No articles in group %s" group))
+     (t
+      (nnheader-insert "211 %d %d %d %s\n" number 1 number group)))))
 
 (defun nndoc-request-type (group &optional article)
   (cond ((not article) 'unknown)
@@ -287,11 +284,10 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	  (and (stringp nndoc-address)
 	       (file-exists-p nndoc-address)
 	       (not (file-directory-p nndoc-address))))
-      (setq nndoc-group-alist 
-	    (cons (cons group (setq nndoc-current-buffer 
-				    (get-buffer-create 
-				     (concat " *nndoc " group "*"))))
-		  nndoc-group-alist))
+      (push (cons group (setq nndoc-current-buffer 
+			      (get-buffer-create 
+			       (concat " *nndoc " group "*"))))
+	    nndoc-group-alist)
       (setq nndoc-dissection-alist nil)
       (save-excursion
 	(set-buffer nndoc-current-buffer)
@@ -300,16 +296,20 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	(if (stringp nndoc-address)
 	    (insert-file-contents nndoc-address)
 	  (insert-buffer-substring nndoc-address)))))
-    (when (and nndoc-current-buffer
-	       (not nndoc-dissection-alist))
+    ;; Initialize the nndoc structures according to this new document.
+    (if (not (and nndoc-current-buffer
+		  (not nndoc-dissection-alist)))
+	(nndoc-close-server)
       (save-excursion
 	(set-buffer nndoc-current-buffer)
 	(nndoc-set-delims)
 	(nndoc-dissect-buffer)))
-    t))
+    ;; Return whether we managed to select a file.
+    nndoc-current-buffer))
 
 ;; MIME (RFC 1341) digest hack by Ulrik Dickow <dickow@nbi.dk>.
 (defun nndoc-guess-digest-type ()
+  "Guess what digest type the current document is."
   (let ((case-fold-search t)		; We match a bit too much, keep it simple.
 	boundary-id b-delimiter entry)
     (goto-char (point-min))
@@ -334,6 +334,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 ;		     (concat "\n--" boundary-id "\\(--\\)?[\n \t]+"))
 	       (cons 'file-end (concat "\n--" boundary-id "--[ \t]*$"))))
       'mime-digest)
+     ;; Standard digest.
      ((and (re-search-forward (concat "^" (make-string 70 ?-) "\n\n") nil t)
 	   (re-search-forward 
 	    (concat "\n\n" (make-string 30 ?-) "\n\n") nil t))
@@ -367,6 +368,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
     'digest)))
 
 (defun nndoc-set-delims ()
+  "Set the nndoc delimiter variables according to the type of the document."
   (let ((vars '(nndoc-file-begin 
 		nndoc-first-article 
 		nndoc-article-end nndoc-head-begin nndoc-head-end
@@ -381,6 +383,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
     (while (setq defs (cdr (assq nndoc-article-type nndoc-type-alist))
 		 guess (assq 'guess defs))
       (setq nndoc-article-type (funcall (cdr guess))))
+    ;; Set the nndoc variables.
     (while defs
       (set (intern (format "nndoc-%s" (car (car defs))))
 	   (cdr (pop defs))))))
@@ -391,6 +394,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
     (beginning-of-line)))
 
 (defun nndoc-dissect-buffer ()
+  "Go through the document and partition it into heads/bodies/articles."
   (let ((i 0)
 	(first t)
 	head-begin head-end body-begin body-end)
@@ -406,9 +410,9 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 		 (nndoc-search nndoc-first-article)
 	       (nndoc-search nndoc-article-begin))
 	(setq first nil)
-	(when nndoc-head-begin
-	  (nndoc-search nndoc-head-begin))
-	(if (and nndoc-file-end
+	(when nndoc-head-begin 
+ 	  (nndoc-search nndoc-head-begin))
+ 	(if (and nndoc-file-end
 		 (looking-at nndoc-file-end))
 	    (goto-char (point-max))
 	  (setq head-begin (point))
@@ -448,7 +452,8 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	  (and (re-search-backward nndoc-article-begin nil t)
 	       (setq end (point))
 	       (search-forward "\n\n" beg t)
-	       (re-search-backward "^Content-Length:[ \t]*\\([0-9]+\\) *$" end t)
+	       (re-search-backward
+		"^Content-Length:[ \t]*\\([0-9]+\\) *$" end t)
 	       (setq len (string-to-int (match-string 1)))
 	       (search-forward "\n\n" beg t)
 	       (or (= (setq len (+ (point) len)) (point-max))
@@ -458,9 +463,9 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
       (goto-char len))))
 
 (defun nndoc-rnews-body-end ()
-  (save-excursion
-    (and (re-search-backward nndoc-article-begin nil t)
-	 (goto-char (+ (point) (string-to-int (match-string 1)))))))  
+  (and (re-search-backward nndoc-article-begin nil t)
+       (forward-line 1)
+       (goto-char (+ (point) (string-to-int (match-string 1))))))
 
 (defun nndoc-transform-clari-briefs (article)
   (goto-char (point-min))

@@ -97,7 +97,7 @@ with some simple extensions.
 	      (list "Gnus")))
   (gnus-topic-enter-dribble))
 
-(defun gnus-group-prepare-topics (level &optional all lowest regexp list-topic)
+(defun gnus-group-prepare-topics (level &optional all lowest regexp list-topic topic-level)
   "List all newsgroups with unread articles of level LEVEL or lower, and
 use the `gnus-group-topics' to sort the groups.
 If ALL is non-nil, list groups that have no unread articles.
@@ -106,12 +106,11 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
   (let ((buffer-read-only nil)
         (lowest (or lowest 1))
 	tlist info)
-    
+
     (unless list-topic 
       (erase-buffer))
     
     ;; List dead groups?
-    (when nil
     (when (and (>= level gnus-level-zombie) (<= lowest gnus-level-zombie))
       (gnus-group-prepare-flat-list-dead 
        (setq gnus-zombie-list (sort gnus-zombie-list 'string<)) 
@@ -122,14 +121,16 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
       (gnus-group-prepare-flat-list-dead 
        (setq gnus-killed-list (sort gnus-killed-list 'string<))
        gnus-level-killed ?K
-       regexp)))
+       regexp))
     
     ;; Use topics.
     (when (< lowest gnus-level-zombie)
       (if list-topic
 	  (let ((top (gnus-topic-find-topology list-topic)))
-	    (gnus-topic-prepare-topic (cdr top) (car top) level all))
-	(gnus-topic-prepare-topic gnus-topic-topology 0 level all))))
+	    (gnus-topic-prepare-topic (cdr top) (car top)
+				      (or topic-level level) all))
+	(gnus-topic-prepare-topic gnus-topic-topology 0
+				  (or topic-level level) all))))
 
   (gnus-group-set-mode-line)
   (setq gnus-group-list-mode (cons level all))
@@ -148,7 +149,7 @@ articles in the topic and its subtopics."
 	 (topic (reverse topic))
 	 (all-entries entries)
 	 (unread 0)
-	 info entry end)
+	 info entry end active)
     ;; Insert any sub-topics.
     (while topic
       (incf unread
@@ -158,12 +159,18 @@ articles in the topic and its subtopics."
     (setq end (point))
     (goto-char beg)
     ;; Insert all the groups that belong in this topic.
-    (while (setq info (nth 2 (setq entry (pop entries))))
+    (while (setq entry (pop entries))
       (when visiblep 
-	(gnus-group-insert-group-line 
-	 (gnus-info-group info)
-	 (gnus-info-level info) (gnus-info-marks info) 
-	 (car entry) (gnus-info-method info)))
+	(if (stringp entry)
+	    (gnus-group-insert-group-line
+	     entry (if (member entry gnus-zombie-list) 8 9)
+	     nil (- (1+ (cdr (setq active (gnus-active entry))))
+		    (car active)) nil)
+	  (when (setq info (nth 2 entry))
+	    (gnus-group-insert-group-line 
+	     (gnus-info-group info)
+	     (gnus-info-level info) (gnus-info-marks info) 
+	     (car entry) (gnus-info-method info)))))
       (when (numberp (car entry))
 	(incf unread (car entry))))
     (goto-char beg)
@@ -180,19 +187,24 @@ articles in the topic and its subtopics."
 (defun gnus-topic-find-groups (topic &optional level all)
   "Return entries for all visible groups in TOPIC."
   (let ((groups (cdr (assoc topic gnus-topic-alist)))
-        info clevel unread group w lowest gtopic params visible-groups entry)
+        info clevel unread group lowest params visible-groups entry active)
     (setq lowest (or lowest 1))
     (setq level (or level 7))
     ;; We go through the newsrc to look for matches.
     (while groups
-      (setq entry (gnus-gethash (pop groups) gnus-newsrc-hashtb)
+      (setq entry (gnus-gethash (setq group (pop groups)) gnus-newsrc-hashtb)
 	    info (nth 2 entry)
-            group (gnus-info-group info)
 	    params (gnus-info-params info)
-            unread (car entry))
+	    active (gnus-active group)
+            unread (or (car entry)
+		       (and (not (equal group "dummy.group"))
+			    active
+			    (- (1+ (cdr active)) (car active))))
+	    clevel (or (gnus-info-level info)
+		       (if (member group gnus-zombie-list) 8 9)))
       (and 
        unread				; nil means that the group is dead.
-       (<= (setq clevel (gnus-info-level info)) level) 
+       (<= clevel level) 
        (>= clevel lowest)		; Is inside the level we want.
        (or all
 	   (and gnus-group-list-inactive-groups
@@ -207,10 +219,10 @@ articles in the topic and its subtopics."
 	   (memq 'visible params)
 	   (cdr (assq 'visible params)))
        ;; Add this group to the list of visible groups.
-       (push entry visible-groups)))
+       (push (or entry group) visible-groups)))
     (nreverse visible-groups)))
 
-(defun gnus-topic-remove-topic (&optional insert total-remove hide)
+(defun gnus-topic-remove-topic (&optional insert total-remove hide in-level)
   "Remove the current topic."
   (let ((topic (gnus-group-topic-name))
 	(level (gnus-group-topic-level))
@@ -226,13 +238,13 @@ articles in the topic and its subtopics."
 	(setcdr (cdr (car (cdr (gnus-topic-find-topology topic))))
 		(list hide)))
       (unless total-remove
-	(gnus-topic-insert-topic topic)))))
+	(gnus-topic-insert-topic topic in-level)))))
 
-(defun gnus-topic-insert-topic (topic)
+(defun gnus-topic-insert-topic (topic &optional level)
   "Insert TOPIC."
   (gnus-group-prepare-topics 
    (car gnus-group-list-mode) (cdr gnus-group-list-mode)
-   nil nil topic))
+   nil nil topic level))
   
 (defun gnus-topic-fold (&optional insert)
   "Remove/insert the current topic."
@@ -243,9 +255,10 @@ articles in the topic and its subtopics."
 	    (gnus-topic-remove-topic
 	     (or insert (not (gnus-topic-visible-p))))
 	  (let ((gnus-topic-topology gnus-topic-active-topology)
-		(gnus-topic-alist gnus-topic-active-alist))
+		(gnus-topic-alist gnus-topic-active-alist)
+		(gnus-group-list-mode (cons 5 t)))
 	    (gnus-topic-remove-topic
-	     (or insert (not (gnus-topic-visible-p))))))))))
+	     (or insert (not (gnus-topic-visible-p))) nil nil 9)))))))
 
 (defun gnus-group-topic-p ()
   "Return non-nil if the current line is a topic."
@@ -401,6 +414,26 @@ articles in the topic and its subtopics."
       (gnus-group-goto-group group)
       (gnus-group-position-point))))
 
+(defun gnus-topic-goto-missing-group (group) 
+  "Place point where GROUP is supposed to be inserted."
+  (let* ((topic (gnus-group-topic group))
+	 (groups (cdr (assoc topic gnus-topic-alist)))
+	 (g (cdr (member group groups)))
+	 (unfound t))
+    (while (and g unfound)
+      (when (gnus-group-goto-group (pop g))
+	(beginning-of-line)
+	(setq unfound nil)))
+    (when unfound
+      (setq g (cdr (member group (reverse groups))))
+      (while (and g unfound)
+	(when (gnus-group-goto-group (pop g))
+	  (forward-line 1)
+	  (setq unfound nil)))
+      (when unfound
+	(gnus-topic-goto-topic topic)
+	(forward-line 1)))))
+
 (defun gnus-topic-update-topic-line (&optional topic level)
   (unless topic
     (setq topic gnus-topic-topology)
@@ -517,6 +550,7 @@ articles in the topic and its subtopics."
    "#" gnus-topic-mark-topic
    "n" gnus-topic-create-topic
    "m" gnus-topic-move-group
+   "D" gnus-topic-remove-group
    "c" gnus-topic-copy-group
    "h" gnus-topic-hide-topic
    "s" gnus-topic-show-topic
@@ -534,6 +568,7 @@ articles in the topic and its subtopics."
        ("Groups"
 	["Copy" gnus-topic-copy-group t]
 	["Move" gnus-topic-move-group t]
+	["Remove" gnus-topic-remove-group t]
 	["Copy matching" gnus-topic-copy-matching t]
 	["Move matching" gnus-topic-move-matching t])
        ("Topics"
@@ -576,6 +611,7 @@ articles in the topic and its subtopics."
       (setq gnus-group-goto-next-group-function 
 	    'gnus-topic-goto-next-group)
       (setq gnus-group-change-level-function 'gnus-topic-change-level)
+      (setq gnus-goto-missing-group-function 'gnus-topic-goto-missing-group)
       (run-hooks 'gnus-topic-mode-hook)
       ;; We check the topology.
       (gnus-topic-check-topology))
@@ -654,19 +690,23 @@ group."
   (let ((groups (gnus-group-process-prefix n))
 	(topicl (assoc topic gnus-topic-alist))
 	entry)
-    (unless topicl
-      (error "No such topic: %s" topic))
     (mapcar (lambda (g) 
 	      (gnus-group-remove-mark g)
 	      (when (and
 		     (setq entry (assoc (gnus-group-topic g) gnus-topic-alist))
 		     (not copyp))
 		(setcdr entry (delete g (cdr entry))))
-	      (nconc topicl (list g)))
+	      (when topicl
+		(nconc topicl (list g))))
 	    groups)
     (gnus-group-position-point))
   (gnus-topic-enter-dribble)
   (gnus-group-list-groups))
+
+(defun gnus-topic-remove-group (n)
+  "Remove the current group the topic."
+  (interactive "P")
+  (gnus-topic-move-group n nil))
 
 (defun gnus-topic-copy-group (n topic)
   "Copy the current group to a topic."
@@ -882,7 +922,8 @@ If FORCE, always re-read the active file."
   (interactive "P")
   (gnus-topic-grok-active)
   (let ((gnus-topic-topology gnus-topic-active-topology)
-	(gnus-topic-alist gnus-topic-active-alist))
+	(gnus-topic-alist gnus-topic-active-alist)
+	gnus-killed-list gnus-zombie-list)
     (gnus-group-list-groups 9 nil 1)))
 
 (provide 'gnus-topic)

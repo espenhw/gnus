@@ -276,7 +276,8 @@ virtual group.")
   "Return the real group and article for virtual GROUP and ARTICLE."
   (nnvirtual-possibly-change-group group nil t)
   (let ((mart (assq article nnvirtual-mapping)))
-    (cons (cadr mart) (caddr mart))))
+    (when mart
+      (cons (cadr mart) (caddr mart)))))
 
 
 ;;; Internal functions.

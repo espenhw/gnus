@@ -180,7 +180,8 @@ variable to \"^nnml\".")
 
 (defun gnus-cache-enter-remove-article (article)
   "Mark ARTICLE for later possible removal."
-  (push article gnus-cache-removable-articles))
+  (when article
+    (push article gnus-cache-removable-articles)))
 
 (defun gnus-cache-possibly-remove-articles ()
   "Possibly remove some of the removable articles."

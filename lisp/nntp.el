@@ -29,6 +29,7 @@
 (require 'rnews)
 (require 'sendmail)
 (require 'nnheader)
+(eval-when-compile (require 'cl))
 
 (eval-and-compile
   (unless (fboundp 'open-network-stream)
@@ -424,7 +425,8 @@ servers."
 
 (defun nntp-server-opened (&optional server)
   "Say whether a connection to SERVER has been opened."
-  (and (equal server nntp-current-server)
+  (and (or (not server)
+	   (equal server nntp-current-server))
        nntp-server-buffer
        (buffer-name nntp-server-buffer)
        nntp-server-process
@@ -693,8 +695,8 @@ It will prompt for a password."
     (when proc 
       (delete-process (process-name proc)))
     (nntp-close-server server)
-    (setq nntp-status-string 
-	  (message "Connection timed out to server %s." server))
+    (nnheader-report
+     'nntp (message "Connection timed out to server %s" server))
     (ding)
     (sit-for 1)))
 
@@ -1058,19 +1060,21 @@ If SERVICE, this this as the port number."
 		       (nntp-wait-for-response "^[23].*\r?\n" 'slow)
 		     (error nil)
 		     (quit nil)))
-	     (or status (nntp-close-server-internal server))
-	     (and nntp-server-process
-		  (progn
-		    (set-process-sentinel 
-		     nntp-server-process 'nntp-default-sentinel)
-		    ;; You can send commands at startup like AUTHINFO here.
-		    ;; Added by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>
-		    (run-hooks 'nntp-server-opened-hook))))
+	     (unless status
+	       (nntp-close-server-internal server)
+	       (nnheader-report 
+		'nntp "Couldn't open connection to %s" server))
+	     (when nntp-server-process
+	       (set-process-sentinel 
+		nntp-server-process 'nntp-default-sentinel)
+	       ;; You can send commands at startup like AUTHINFO here.
+	       ;; Added by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>
+	       (run-hooks 'nntp-server-opened-hook)))
 	    ((null server)
-	     (setq nntp-status-string "NNTP server is not specified."))
+	     (nnheader-report 'nntp "NNTP server is not specified."))
 	    (t				; We couldn't open the server.
-	     (setq nntp-status-string 
-		   (buffer-substring (point-min) (point-max)))))
+	     (nnheader-report 
+	      'nntp (buffer-substring (point-min) (point-max)))))
       (and timer (cancel-timer timer))
       (message "")
       (or status

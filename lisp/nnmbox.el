@@ -32,6 +32,7 @@
 (require 'nnheader)
 (require 'rmail)
 (require 'nnmail)
+(eval-when-compile (require 'cl))
 
 (defvar nnmbox-mbox-file (expand-file-name "~/mbox")
   "The name of the mail box file in the user's home directory.")

@@ -103,7 +103,7 @@ The SOUP packet file name will be inserted at the %s.")
     (let ((areas (cddr (assoc nnsoup-current-group nnsoup-group-alist)))
 	  (articles sequence)
 	  (use-nov t)
-	  useful-areas this-area-seq)
+	  useful-areas this-area-seq msg-buf)
       (if (stringp (car sequence))
 	  ;; We don't support fetching by Message-ID.
 	  'headers
@@ -148,18 +148,19 @@ The SOUP packet file name will be inserted at the %s.")
 	      (while useful-areas
 		(goto-char (point-max))
 		(let ((b (point))
-		      (number (car (nth 1 (car useful-areas)))))
-		  (insert-buffer-substring
-		   (nnsoup-index-buffer
-		    (gnus-soup-area-prefix
-		     (nth 2 (car useful-areas)))))
-		  (goto-char b)
-		  ;; We have to remove the index number entires and
-		  ;; insert article numbers instead.
-		  (while (looking-at "[0-9]+")
-		    (replace-match (int-to-string number) t t)
-		    (incf number)
-		    (forward-line 1)))
+		      (number (car (nth 1 (car useful-areas))))
+		      (index-buffer (nnsoup-index-buffer
+				     (gnus-soup-area-prefix
+				      (nth 2 (car useful-areas))))))
+		  (when index-buffer
+		    (insert-buffer-substring index-buffer)
+		    (goto-char b)
+		    ;; We have to remove the index number entires and
+		    ;; insert article numbers instead.
+		    (while (looking-at "[0-9]+")
+		      (replace-match (int-to-string number) t t)
+		      (incf number)
+		      (forward-line 1))))
 		(setq useful-areas (cdr useful-areas)))
 	      'nov)
 	  ;; We insert HEADs.
@@ -167,19 +168,17 @@ The SOUP packet file name will be inserted at the %s.")
 	    (setq articles (car (car useful-areas))
 		  useful-areas (cdr useful-areas))
 	    (while articles
-	      (goto-char (point-max))
-	      (insert (format "221 %d Article retrieved.\n" (car articles)))
-	      (insert-buffer-substring
-	       (nnsoup-narrow-to-article 
-		(car articles) (cdr (car useful-areas)) 'head))
-	      (goto-char (point-max))
-	      (insert ".\n")
+	      (when (setq msg-buf
+			  (nnsoup-narrow-to-article 
+			   (car articles) (cdr (car useful-areas)) 'head))
+		(goto-char (point-max))
+		(insert (format "221 %d Article retrieved.\n" (car articles)))
+		(insert-buffer-substring msg-buf)
+		(goto-char (point-max))
+		(insert ".\n"))
 	      (setq articles (cdr articles))))
 
-	  ;; Fold continuation lines.
-	  (goto-char (point-min))
-	  (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	    (replace-match " " t t))
+	  (nnheader-fold-continuation-lines)
 	  'headers)))))
 
 (defun nnsoup-open-server (server &optional defs)
@@ -406,6 +405,7 @@ The SOUP packet file name will be inserted at the %s.")
       (while (setq area (pop areas))
 	;; Change the name to the permanent name and move the files.
 	(setq cur-prefix (nnsoup-next-prefix))
+	(message "Incorporating file %s..." cur-prefix)
 	(when (file-exists-p 
 	       (setq file (concat nnsoup-tmp-directory
 				  (gnus-soup-area-prefix area) ".IDX")))
@@ -427,12 +427,9 @@ The SOUP packet file name will be inserted at the %s.")
 		  nnsoup-group-alist)
 	  ;; There are already articles in this group, so we add this
 	  ;; info to the end of the entry.
-	  (let ((e (cddr entry)))
-	    (while (cdr e)
-	      (setq e (cdr e)))
-	    (setcdr e (list (list (cons (setq lnum (1+ (cdr (car (car e)))))
-					(+ lnum number)) 
-				  area))))
+	  (nconc entry (list (list (cons (1+ (setq lnum (cdadr entry)))
+					 (+ lnum number))
+				   area)))
 	  (setcdr (cadr entry) (+ lnum number)))))
     (nnsoup-write-active-file)))
 
@@ -462,12 +459,13 @@ The SOUP packet file name will be inserted at the %s.")
   (let* ((file (concat prefix (if message ".MSG" ".IDX")))
 	 (buffer-name (concat " *nnsoup " file "*")))
     (or (get-buffer buffer-name)	; File aready loaded.
-	(save-excursion			; Load the file.
-	  (set-buffer (get-buffer-create buffer-name))
-	  (buffer-disable-undo (current-buffer))
-	  (push (cons nnsoup-current-group (current-buffer)) nnsoup-buffers)
-	  (insert-file-contents (concat nnsoup-directory file))
-	  (current-buffer)))))
+	(when (file-exists-p (concat nnsoup-directory file))
+	  (save-excursion			; Load the file.
+	    (set-buffer (get-buffer-create buffer-name))
+	    (buffer-disable-undo (current-buffer))
+	    (push (cons nnsoup-current-group (current-buffer)) nnsoup-buffers)
+	    (insert-file-contents (concat nnsoup-directory file))
+	    (current-buffer))))))
 
 (defun nnsoup-file (prefix &optional message)
   (expand-file-name
@@ -493,10 +491,14 @@ The SOUP packet file name will be inserted at the %s.")
 (defun nnsoup-narrow-to-article (article &optional area head)
   (let* ((area (or area (nnsoup-article-to-area article nnsoup-current-group)))
 	 (prefix (gnus-soup-area-prefix (nth 1 area)))
-	 beg end msg-buf)
-    (setq msg-buf (nnsoup-index-buffer prefix 'msg))
+	 (msg-buf (nnsoup-index-buffer prefix 'msg))
+	 beg end)
     (save-excursion
       (cond
+       ;; There is no MSG file.
+       ((null msg-buf)
+	nil)
+       
        ;; We use the index file to find out where the article begins and ends. 
        ((and (= (gnus-soup-encoding-index 
 		 (gnus-soup-area-encoding (nth 1 area)))
@@ -581,12 +583,22 @@ The SOUP packet file name will be inserted at the %s.")
       (setq areas (cdr areas)))
     (and areas (car areas))))
 
+(defvar nnsoup-old-functions
+  (list gnus-inews-article-function send-mail-function))
+
 ;;;###autoload
 (defun nnsoup-set-variables ()
   "Use the SOUP methods for posting news and mailing mail."
   (interactive)
   (setq gnus-inews-article-function 'nnsoup-request-post)
   (setq send-mail-function 'nnsoup-request-mail))
+
+;;;###autoload
+(defun nnsoup-revert-variables ()
+  "Revert posting and mailing methods to the standard Emacs methods."
+  (interactive)
+  (setq gnus-inews-article-function (car nnsoup-old-functions))
+  (setq send-mail-function (cadr nnsoup-old-functions)))
 
 (defun nnsoup-store-reply (kind)
   ;; Mostly stolen from `sendmail.el'.
@@ -649,6 +661,7 @@ The SOUP packet file name will be inserted at the %s.")
 	    (while (re-search-forward "^#! *rnews" nil t)
 	      (incf num)))
 	  (message "Stored %d messages" num)))
+      (nnsoup-write-replies)
       (kill-buffer tembuf))))
 
 (defun nnsoup-kind-to-prefix (kind)

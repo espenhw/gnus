@@ -33,6 +33,7 @@
 (require 'nnheader)
 (require 'gnus)
 (require 'gnus-score)
+(eval-when-compile (require 'cl))
 
 (defvar nnkiboze-directory 
   (expand-file-name (or gnus-article-save-directory "~/News/"))

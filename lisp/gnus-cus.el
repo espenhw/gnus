@@ -29,6 +29,7 @@
 (require 'custom)
 (require 'gnus-ems)
 (require 'browse-url)
+(eval-when-compile (require 'cl))
 
 ;; The following is just helper functions and data, not ment to be set
 ;; by the user.
