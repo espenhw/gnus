@@ -64,6 +64,7 @@ all. This may very well take some time.")
 (defvar nnml-nov-file-name ".overview")
 
 (defvar nnml-current-directory nil)
+(defvar nnml-current-group nil)
 (defvar nnml-status-string "")
 (defvar nnml-nov-buffer-alist nil)
 (defvar nnml-group-alist nil)
@@ -84,6 +85,7 @@ all. This may very well take some time.")
    (list 'nnml-nov-is-evil nnml-nov-is-evil)
    (list 'nnml-nov-file-name nnml-nov-file-name)
    '(nnml-current-directory nil)
+   '(nnml-current-group nil)
    '(nnml-status-string "")
    '(nnml-nov-buffer-alist nil)
    '(nnml-group-alist nil)
@@ -93,7 +95,7 @@ all. This may very well take some time.")
 
 ;;; Interface functions.
 
-(defun nnml-retrieve-headers (sequence &optional newsgroup server)
+(defun nnml-retrieve-headers (sequence &optional newsgroup server fetch-old)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -104,7 +106,7 @@ all. This may very well take some time.")
       (if (stringp (car sequence))
 	  'headers
 	(nnml-possibly-change-directory newsgroup)
-	(if (nnml-retrieve-headers-with-nov sequence)
+	(if (nnml-retrieve-headers-with-nov sequence fetch-old)
 	    'nov
 	  (while sequence
 	    (setq article (car sequence))
@@ -173,15 +175,22 @@ all. This may very well take some time.")
 
 (defun nnml-request-article (id &optional newsgroup server buffer)
   (nnml-possibly-change-directory newsgroup)
-  (let ((file (if (stringp id)
-		  nil
-		(concat nnml-current-directory (int-to-string id))))
-	(nntp-server-buffer (or buffer nntp-server-buffer)))
-    (if (and (stringp file)
-	     (file-exists-p file)
-	     (not (file-directory-p file)))
-	(save-excursion
-	  (nnmail-find-file file)))))
+  (let* ((group-num (and (stringp id) (nnml-find-group-number id)))
+	 (number (if (numberp id) id (cdr group-num)))
+	 (file
+	  (and number
+	       (concat 
+		nnml-current-directory
+		(if (numberp id) 
+		    (int-to-string number)
+		  (car group-num)))))
+	 (nntp-server-buffer (or buffer nntp-server-buffer)))
+    (and file
+	 (file-exists-p file)
+	 (not (file-directory-p file))
+	 (save-excursion (nnmail-find-file file))
+	 ;; We return the article number.
+	 (cons newsgroup (string-to-int (file-name-nondirectory file))))))
 
 (defun nnml-request-group (group &optional server dont-check)
   (if (not (nnml-possibly-change-directory group))
@@ -190,7 +199,6 @@ all. This may very well take some time.")
 	nil)
     (if dont-check 
 	t
-      (nnml-get-new-mail group)
       (nnmail-activate 'nnml)
       (let ((active (nth 1 (assoc group nnml-group-alist))))
 	(save-excursion
@@ -202,6 +210,9 @@ all. This may very well take some time.")
 			    (max (1+ (- (cdr active) (car active))) 0)
 			    (car active) (cdr active) group))
 	    t))))))
+
+(defun nnml-request-scan (&optional group server)
+  (nnmail-get-new-mail 'nnml 'nnml-save-nov nnml-directory group))
 
 (defun nnml-close-group (group &optional server)
   t)
@@ -232,7 +243,6 @@ all. This may very well take some time.")
   t)
 
 (defun nnml-request-list (&optional server)
-  (if server (nnml-get-new-mail))
   (save-excursion
     (nnmail-find-file nnml-active-file)
     (setq nnml-group-alist (nnmail-get-active))))
@@ -281,7 +291,8 @@ all. This may very well take some time.")
 				     days)))))
 	      (progn
 		(and gnus-verbose-backends 
-		     (message "Deleting article %s..." article))
+		     (message "Deleting article %d in %s..."
+			      article newsgroup))
 		(condition-case ()
 		    (delete-file article)
 		  (file-error
@@ -386,7 +397,49 @@ all. This may very well take some time.")
 
 ;;; Internal functions
 
-(defun nnml-retrieve-headers-with-nov (articles)
+;; Find an article number in the current group given the Message-ID. 
+(defun nnml-find-group-number (id)
+  (save-excursion
+    (set-buffer (get-buffer-create " *nnml id*"))
+    (buffer-disable-undo (current-buffer))
+    (let ((alist nnml-group-alist)
+	  number)
+      ;; We want to look through all .overview files, but we want to
+      ;; start with the one in the current directory.  It seems most
+      ;; likely that the article we are looking for is in that group. 
+      (if (setq number (nnml-find-id nnml-current-group id))
+	  (cons nnml-current-group id)
+	;; It wasn't there, so we look through the other groups as well.
+	(while (and (not number)
+		    alist)
+	  (or (string= (car (car alist)) nnml-current-group)
+	      (setq number (nnml-find-id (car (car alist)) id)))
+	  (or number
+	      (setq alist (cdr alist))))
+	(and number
+	     (cons (car (car alist)) number))))))
+
+(defun nnml-find-id (group id)
+  (erase-buffer)
+  (insert-file-contents (nnmail-article-pathname group nnml-directory))
+  (let (number found)
+    (while (and (not found) 
+		(search-forward id nil t)) ; We find the ID.
+      ;; And the id is in the fourth field.
+      (if (search-backward 
+	   "\t" (save-excursion (beginning-of-line) (point)) t 4)
+	  (progn
+	    (beginning-of-line)
+	    (setq found t)
+	    ;; We return the article number.
+	    (setq number
+		  (condition-case ()
+		      (read (current-buffer))
+		    (error nil))))))
+    number))
+      
+
+(defun nnml-retrieve-headers-with-nov (articles &optional fetch-old)
   (if (or gnus-nov-is-evil nnml-nov-is-evil)
       nil
     (let ((first (car articles))
@@ -398,22 +451,28 @@ all. This may very well take some time.")
 	    (set-buffer nntp-server-buffer)
 	    (erase-buffer)
 	    (insert-file-contents nov)
-	    (goto-char (point-min))
-	    (while (and (not (eobp)) (< first (read (current-buffer))))
-	      (forward-line 1))
-	    (beginning-of-line)
-	    (if (not (eobp)) (delete-region 1 (point)))
-	    (while (and (not (eobp)) (>= last (read (current-buffer))))
-	      (forward-line 1))
-	    (beginning-of-line)
-	    (if (not (eobp)) (delete-region (point) (point-max)))
-	    t)))))
+	    (if (and fetch-old
+		     (not (numberp fetch-old)))
+		t			; Don't remove anything.
+	      (if fetch-old
+		  (setq first (max 1 (- first fetch-old))))
+	      (goto-char (point-min))
+	      (while (and (not (eobp)) (< first (read (current-buffer))))
+		(forward-line 1))
+	      (beginning-of-line)
+	      (if (not (eobp)) (delete-region 1 (point)))
+	      (while (and (not (eobp)) (>= last (read (current-buffer))))
+		(forward-line 1))
+	      (beginning-of-line)
+	      (if (not (eobp)) (delete-region (point) (point-max)))
+	      t))))))
 
 (defun nnml-possibly-change-directory (newsgroup &optional force)
   (if newsgroup
       (let ((pathname (nnmail-article-pathname newsgroup nnml-directory)))
 	(and (or force (file-directory-p pathname))
-	     (setq nnml-current-directory pathname)))
+	     (setq nnml-current-directory pathname
+		   nnml-current-group newsgroup)))
     t))
 
 (defun nnml-possibly-create-directory (group)
@@ -481,49 +540,6 @@ all. This may very well take some time.")
 		    (int-to-string (cdr active))))
       (setcdr active (1+ (cdr active))))
     (cdr active)))
-
-(defun nnml-get-new-mail (&optional group)
-  "Read new incoming mail."
-  (let* ((spools (nnmail-get-spool-files group))
-	 (group-in group)
-	 incoming incomings)
-    (if (or (not nnml-get-new-mail) (not nnmail-spool-file))
-	()
-      ;; We first activate all the groups.
-      (nnmail-activate 'nnml)
-      ;; The we go through all the existing spool files and split the
-      ;; mail from each.
-      (while spools
-	(and
-	 (file-exists-p (car spools))
-	 (> (nth 7 (file-attributes (car spools))) 0)
-	 (progn
-	   (and gnus-verbose-backends 
-		(message "nnml: Reading incoming mail..."))
-	   (if (not (setq incoming 
-			  (nnmail-move-inbox 
-			   (car spools) (concat nnml-directory "Incoming"))))
-	       ()
-	     (setq group (nnmail-get-split-group (car spools) group-in))
-	     (nnmail-split-incoming incoming 'nnml-save-mail nil group)
-	     (setq incomings (cons incoming incomings)))))
-	(setq spools (cdr spools)))
-      ;; If we did indeed read any incoming spools, we save all info. 
-      (if incoming 
-	  (progn
-	    (nnmail-save-active nnml-group-alist nnml-active-file)
-	    (nnml-save-nov)
-	    (run-hooks 'nnmail-read-incoming-hook)
-	    (and gnus-verbose-backends
-		 (message "nnml: Reading incoming mail...done"))))
-      (while incomings
-	(setq incoming (car incomings))
-	(and nnmail-delete-incoming
-	     (file-exists-p incoming)
-	     (file-writable-p incoming)
-	     (delete-file incoming))
-	(setq incomings (cdr incomings))))))
-
 
 (defun nnml-add-nov (group article line)
   "Add a nov line for the GROUP base."

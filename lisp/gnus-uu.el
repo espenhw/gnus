@@ -279,7 +279,9 @@ The headers will be included in the sequence they are matched.")
 (define-key gnus-uu-mark-map "r" 'gnus-uu-mark-region)
 (define-key gnus-uu-mark-map "R" 'gnus-uu-mark-by-regexp)
 (define-key gnus-uu-mark-map "t" 'gnus-uu-mark-thread)
+(define-key gnus-uu-mark-map "T" 'gnus-uu-unmark-thread)
 (define-key gnus-uu-mark-map "a" 'gnus-uu-mark-all)
+(define-key gnus-uu-mark-map "b" 'gnus-uu-mark-buffer)
 (define-key gnus-uu-mark-map "S" 'gnus-uu-mark-sparse)
 
 (define-prefix-command 'gnus-uu-extract-map)
@@ -473,7 +475,7 @@ The headers will be included in the sequence they are matched.")
       (gnus-summary-set-process-mark (car articles))
       (setq articles (cdr articles)))
     (message ""))
-  (gnus-summary-position-cursor))
+  (gnus-summary-position-point))
 
 (defun gnus-uu-mark-series ()
   "Mark the current series with the process mark."
@@ -484,10 +486,10 @@ The headers will be included in the sequence they are matched.")
       (gnus-summary-set-process-mark (car articles))
       (setq articles (cdr articles)))
     (message ""))
-  (gnus-summary-position-cursor))
+  (gnus-summary-position-point))
 
 (defun gnus-uu-mark-region (beg end)
-  "Marks all articles between point and mark."
+  "Set the process mark on all articles between point and mark."
   (interactive "r")
   (gnus-set-global-variables)
   (save-excursion
@@ -495,7 +497,12 @@ The headers will be included in the sequence they are matched.")
     (while (< (point) end)
       (gnus-summary-set-process-mark (gnus-summary-article-number))
       (forward-line 1)))
-  (gnus-summary-position-cursor))
+  (gnus-summary-position-point))
+
+(defun gnus-uu-mark-buffer ()
+  "Set the process mark on all articles in the buffer."
+  (interactive)
+  (gnus-uu-mark-region (point-min) (point-max)))
       
 (defun gnus-uu-mark-thread ()
   "Marks all articles downwards in this thread."
@@ -505,7 +512,18 @@ The headers will be included in the sequence they are matched.")
     (while (and (gnus-summary-set-process-mark (gnus-summary-article-number))
 		(zerop (gnus-summary-next-subject 1))
 		(> (gnus-summary-thread-level) level))))
-  (gnus-summary-position-cursor))
+  (gnus-summary-position-point))
+
+(defun gnus-uu-unmark-thread ()
+  "Unmarks all articles downwards in this thread."
+  (interactive)
+  (gnus-set-global-variables)
+  (let ((level (gnus-summary-thread-level)))
+    (while (and (gnus-summary-remove-process-mark
+		 (gnus-summary-article-number))
+		(zerop (gnus-summary-next-subject 1))
+		(> (gnus-summary-thread-level) level))))
+  (gnus-summary-position-point))
 
 (defun gnus-uu-mark-sparse ()
   "Mark all series that have some articles marked."
@@ -517,7 +535,7 @@ The headers will be included in the sequence they are matched.")
     (setq gnus-newsgroup-processable nil)
     (save-excursion
       (while marked
-	(and (setq headers (gnus-get-header-by-number (car marked)))
+	(and (setq headers (gnus-summary-article-header (car marked)))
 	     (setq subject (mail-header-subject headers)
 		   articles (gnus-uu-find-articles-matching 
 			     (gnus-uu-reginize-string subject))
@@ -528,7 +546,7 @@ The headers will be included in the sequence they are matched.")
 	  (setq articles (cdr articles)))
 	(setq marked (cdr marked)))
       (setq gnus-newsgroup-processable (nreverse total)))
-    (gnus-summary-position-cursor)))
+    (gnus-summary-position-point)))
 
 (defun gnus-uu-mark-all ()
   "Mark all articles in \"series\" order."
@@ -543,7 +561,7 @@ The headers will be included in the sequence they are matched.")
 	(if (not (memq number gnus-newsgroup-processable))
 	    (save-excursion (gnus-uu-mark-series)))
 	(forward-line 1))))
-  (gnus-summary-position-cursor))
+  (gnus-summary-position-point))
 
 ;; All PostScript functions written by Erik Selberg <speed@cs.washington.edu>. 
 
@@ -924,7 +942,7 @@ The headers will be included in the sequence they are matched.")
   ;; non-nil, only unread articles are chosen. If DO-NOT-TRANSLATE is
   ;; non-nil, article names are not equalized before sorting.
   (let ((subject (or subject 
-		     (gnus-uu-reginize-string (gnus-summary-subject-string))))
+		     (gnus-uu-reginize-string (gnus-summary-article-subject))))
 	list-of-subjects)
     (save-excursion
       (if (not subject)
@@ -934,7 +952,7 @@ The headers will be included in the sequence they are matched.")
 	      subj mark)
 	  (goto-char (point-min))
 	  (while (not (eobp))
-	    (and (setq subj (gnus-summary-subject-string))
+	    (and (setq subj (gnus-summary-article-subject))
 		 (string-match subject subj)
 		 (or (not only-unread)
 		     (= (setq mark (gnus-summary-article-mark)) 
@@ -1158,7 +1176,7 @@ The headers will be included in the sequence they are matched.")
     result-files))
 
 (defun gnus-uu-part-number (article)
-  (let ((subject (mail-header-subject (gnus-get-header-by-number article))))
+  (let ((subject (mail-header-subject (gnus-summary-article-header article))))
     (if (string-match "[0-9]+ */[0-9]+\\|[0-9]+ * of *[0-9]+"
 		      subject)
 	(substring subject (match-beginning 0) (match-end 0))

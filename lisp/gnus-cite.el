@@ -43,20 +43,20 @@ Set it to nil to parse all articles.")
   "Regexp matching the longest possible citation prefix on a line.")
 
 (defvar gnus-cite-max-prefix 20
-  "Maximal possible length for a citation prefix.")
+  "Maximum possible length for a citation prefix.")
 
 (defvar gnus-supercite-regexp 
   (concat "^\\(" gnus-cite-prefix-regexp "\\)? *"
 	  ">>>>> +\"\\([^\"\n]+\\)\" +==")
   "Regexp matching normal SuperCite attribution lines.
-The first regexp group should match a prefix added by another package.")
+The first grouping must match prefixes added by other packages.")
 
 (defvar gnus-supercite-secondary-regexp "^.*\"\\([^\"\n]+\\)\" +=="
   "Regexp matching mangled SuperCite attribution lines.
 The first regexp group should match the SuperCite attribution.")
 
 (defvar gnus-cite-minimum-match-count 2
-  "Minimal number of identical prefix'es before we believe it is a citation.")
+  "Minimum number of identical prefixes before we believe it's a citation.")
 
 ;see gnus-cus.el
 ;(defvar gnus-cite-face-list 
@@ -76,7 +76,7 @@ The first regexp group should match the SuperCite attribution.")
 (defvar gnus-cite-attribution-prefix "in article\\|in <"
   "Regexp matching the beginning of an attribution line.")
 
-(defvar gnus-cite-attribution-postfix
+(defvar gnus-cite-attribution-suffix
   "\\(wrote\\|writes\\|said\\|says\\):[ \t]*$"
   "Regexp matching the end of an attribution line.
 The text matching the first grouping will be used as a button.")
@@ -147,7 +147,7 @@ corresponding citation merged with `gnus-cite-attribution-face'.
 Text is considered cited if at least `gnus-cite-minimum-match-count'
 lines matches `gnus-cite-prefix-regexp' with the same prefix.  
 
-Lines matching `gnus-cite-attribution-postfix' and perhaps
+Lines matching `gnus-cite-attribution-suffix' and perhaps
 `gnus-cite-attribution-prefix' are considered attribution lines."
   (interactive (list 'force))
   ;; Create dark or light faces if necessary.
@@ -191,7 +191,7 @@ Lines matching `gnus-cite-attribution-postfix' and perhaps
 	      face (cdr (assoc prefix face-alist)))
 	;; Add attribution button.
 	(goto-line number)
-	(if (re-search-forward gnus-cite-attribution-postfix 
+	(if (re-search-forward gnus-cite-attribution-suffix 
 			       (save-excursion (end-of-line 1) (point))
 			       t)
 	    (gnus-article-add-button (match-beginning 1) (match-end 1)
@@ -242,7 +242,7 @@ See also the documentation for `gnus-article-highlight-citation'."
     (set-buffer gnus-article-buffer)
     (gnus-cite-parse-maybe force)
     (goto-char (point-min))
-    (search-forward "\n\n" nil t)
+    (search-forward "\n\n")
     (let ((start (point))
 	  (atts gnus-cite-attribution-alist)
 	  (buffer-read-only nil)
@@ -371,8 +371,8 @@ See also the documentation for `gnus-article-highlight-citation'."
 
   ;; Parse current buffer searching for attribution lines.
   (goto-char (point-min))
-  (search-forward "\n\n" nil t)
-  (while (re-search-forward gnus-cite-attribution-postfix (point-max) t)
+  (search-forward "\n\n")
+  (while (re-search-forward gnus-cite-attribution-suffix (point-max) t)
     (let* ((start (match-beginning 0))
 	   (end (match-end 0))
 	   (wrote (count-lines (point-min) end))
@@ -390,7 +390,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 					    (beginning-of-line 0)
 					    (point))
 					  t)
-		      (not (re-search-forward gnus-cite-attribution-postfix
+		      (not (re-search-forward gnus-cite-attribution-suffix
 					      start t))
 		      (count-lines (point-min) (1+ (point)))))))
       (if (eq wrote in)

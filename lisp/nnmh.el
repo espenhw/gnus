@@ -156,10 +156,10 @@
     (and (stringp file)
 	 (file-exists-p file)
 	 (not (file-directory-p file))
-	 (save-excursion (nnmail-find-file file)))))
+	 (save-excursion (nnmail-find-file file))
+	 (string-to-int (file-name-nondirectory file)))))
 
 (defun nnmh-request-group (group &optional server dont-check)
-  (and nnmh-get-new-mail (or dont-check (nnmh-get-new-mail group)))
   (let ((pathname (nnmh-article-pathname group nnmh-directory))
 	dir)
     (if (file-directory-p pathname)
@@ -193,12 +193,15 @@
       (setq nnmh-status-string "No such group")
       nil)))
 
+(defun nnmh-request-scan (&optional group server)
+  (nnmail-get-new-mail 'nnmh nil nnmh-directory group))      
+
 (defun nnmh-request-list (&optional server dir)
   (or dir
       (save-excursion
 	(set-buffer nntp-server-buffer)
 	(erase-buffer)
-	(setq dir (file-truename (file-name-as-directory nnmh-directory)))))
+	(setq dir (file-name-as-directory nnmh-directory))))
   (setq dir (expand-file-name dir))
   ;; Recurse down all directories.
   (let ((dirs (and (file-readable-p dir)
@@ -224,15 +227,13 @@
 	     (format 
 	      "%s %d %d y\n" 
 	      (progn
-		(string-match 
-		 (file-truename (file-name-as-directory 
-				 (expand-file-name nnmh-directory))) dir)
+		(string-match (file-name-as-directory 
+			       (expand-file-name nnmh-directory)) dir)
 		(nnmail-replace-chars-in-string
 		 (substring dir (match-end 0)) ?/ ?.))
 	      (apply (function max) files) 
 	      (apply (function min) files)))))))
   (setq nnmh-group-alist (nnmail-get-active))
-  (and server nnmh-get-new-mail (nnmh-get-new-mail))
   t)
 
 (defun nnmh-request-newgroups (date &optional server)
@@ -275,7 +276,8 @@
 				days))))
 	      (progn
 		(and gnus-verbose-backends 
-		     (message "Deleting article %s..." article))
+		     (message "Deleting article %d..." 
+			      article newsgroup))
 		(condition-case ()
 		    (delete-file article)
 		  (file-error
@@ -330,6 +332,25 @@
 			nil (if gnus-verbose-backends nil 'nomesg))
 	  t)
       (error nil))))
+
+(defun nnmh-request-create-group (group &optional server) 
+  (nnmail-activate 'nnmh)
+  (or (assoc group nnmh-group-alist)
+      (let (active)
+	(setq nnmh-group-alist (cons (list group (setq active (cons 1 0)))
+				     nnmh-group-alist))
+	(nnmh-possibly-create-directory group)
+	(nnmh-possibly-change-directory group)
+	(let ((articles (mapcar
+			 (lambda (file)
+			   (string-to-int file))
+			 (directory-files 
+			  nnmh-current-directory nil "^[0-9]+$"))))
+	  (and articles
+	       (progn
+		 (setcar active (apply 'min articles))
+		 (setcdr active (apply 'max articles)))))))
+  t)
 
 
 ;;; Internal functions.
@@ -403,47 +424,6 @@
     (if (file-directory-p (concat mail-dir group))
 	(concat mail-dir group "/")
       (concat mail-dir (nnmail-replace-chars-in-string group ?. ?/) "/"))))
-
-(defun nnmh-get-new-mail (&optional group)
-  "Read new incoming mail."
-  (let* ((spools (nnmail-get-spool-files group))
-	 (group-in group)
-	 incoming incomings)
-    (if (or (not nnmh-get-new-mail) (not nnmail-spool-file))
-	()
-      ;; We first activate all the groups.
-      (or nnmh-group-alist
-	  (nnmh-request-list))
-      ;; The we go through all the existing spool files and split the
-      ;; mail from each.
-      (while spools
-	(and
-	 (file-exists-p (car spools))
-	 (> (nth 7 (file-attributes (car spools))) 0)
-	 (progn
-	   (and gnus-verbose-backends 
-		(message "nnmh: Reading incoming mail..."))
-	   (if (not (setq incoming 
-			  (nnmail-move-inbox 
-			   (car spools) 
-			   (concat (file-name-as-directory nnmh-directory)
-				   "Incoming"))))
-	       ()
-	     (setq incomings (cons incoming incomings))
-	     (setq group (nnmail-get-split-group (car spools) group-in))
-	     (nnmail-split-incoming incoming 'nnmh-save-mail nil group))))
-	(setq spools (cdr spools)))
-      ;; If we did indeed read any incoming spools, we save all info. 
-      (if incoming 
-	  (message "nnmh: Reading incoming mail...done"))
-      (while incomings
-	(setq incoming (car incomings))
-	(and nnmail-delete-incoming
-	     (file-exists-p incoming)
-	     (file-writable-p incoming)
-	     (delete-file incoming))
-	(setq incomings (cdr incomings))))))
-      
 
 (defun nnmh-update-gnus-unreads (group)
   ;; Go through the .nnmh-articles file and compare with the actual

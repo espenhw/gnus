@@ -81,6 +81,7 @@ of the last successful match.")
 
 (defvar gnus-score-cache nil)
 (defvar gnus-scores-articles nil)
+(defvar gnus-scores-exclude-files nil)
 (defvar gnus-header-index nil)
 (defvar gnus-score-index nil)
 
@@ -322,7 +323,7 @@ used as score."
   (let ((article (gnus-summary-article-number))
 	headers)
     (if article
-	(if (and (setq headers (gnus-get-header-by-number article))
+	(if (and (setq headers (gnus-summary-article-header article))
 		 (vectorp headers))
 	    (aref headers (nth 1 (assoc header gnus-header-index)))
 	  (if no-err
@@ -612,13 +613,7 @@ SCORE is the score to add."
 					(gnus-score-load-file file)) 
 				      files))))
       (and eval (not global) (eval eval))
-      ;; We then expand any exclude-file directives.
-      (setq gnus-scores-exclude-files 
-	    (nconc 
-	     (mapcar 
-	      (lambda (sfile) 
-		(expand-file-name sfile (file-name-directory file)))
-	      exclude-files) gnus-scores-exclude-files))
+      (setq gnus-scores-exclude-files exclude-files)
       (if (not local)
 	  ()
 	(save-excursion
@@ -789,8 +784,6 @@ SCORE is the score to add."
   (let (scores)
     ;; PLM: probably this is not the best place to clear orphan-score
     (setq gnus-orphan-score nil)
-    (setq gnus-scores-articles nil)
-    (setq gnus-scores-exclude-files nil)
     ;; Load the score files.
     (while score-files
       (if (stringp (car score-files))
@@ -977,8 +970,11 @@ SCORE is the score to add."
 			  match)
 		 (progn
 		   (and trace (setq gnus-score-trace 
-				    (cons (cons (car (car articles)) kill)
-					  gnus-score-trace)))
+				    (cons
+				     (cons
+				      (car-safe (rassq alist gnus-score-cache))
+				      kill)
+				     gnus-score-trace)))
 		   (setq found t)
 		   (setcdr (car articles) (+ score (cdr (car articles))))))
 	    (setq articles (cdr articles)))
@@ -1028,8 +1024,11 @@ SCORE is the score to add."
 	     (funcall match-func match (timezone-make-date-sortable l))
 	     (progn
 	       (and trace (setq gnus-score-trace 
-				(cons (cons (car (car articles)) kill)
-				      gnus-score-trace)))
+				(cons
+				 (cons
+				  (car-safe (rassq alist gnus-score-cache))
+				  kill)
+				 gnus-score-trace)))
 	       (setq found t)
 	       (setcdr (car articles) (+ score (cdr (car articles))))))
 	    (setq articles (cdr articles)))
@@ -1120,8 +1119,12 @@ SCORE is the score to add."
 			(setcdr (car articles) (+ score (cdr (car articles))))
 			(setq found t)
 			(and trace (setq gnus-score-trace 
-					 (cons (cons (car (car articles)) kill)
-					       gnus-score-trace)))))
+					 (cons
+					  (cons
+					   (car-safe
+					    (rassq alist gnus-score-cache))
+					   kill)
+					  gnus-score-trace)))))
 		  ;; Update expire date
 		  (cond ((null date))	;Permanent entry.
 			(found		;Match, update date.
@@ -1334,10 +1337,13 @@ SCORE is the score to add."
 			       (setq art (car arts)
 				     arts (cdr arts))
 			       (setcdr art (+ score (cdr art)))
-			       (setq gnus-score-trace 
-				     (cons (cons (mail-header-number
-						  (car art)) kill)
-					   gnus-score-trace)))
+			       (setq gnus-score-trace
+				     (cons
+				      (cons
+				       (car-safe
+					(rassq alist gnus-score-cache))
+				       kill)
+				      gnus-score-trace)))
 			   (while arts
 			     (setq art (car arts)
 				   arts (cdr arts))
@@ -1355,9 +1361,13 @@ SCORE is the score to add."
 		      (setq art (car arts)
 			    arts (cdr arts))
 		      (setcdr art (+ score (cdr art)))
-		      (setq gnus-score-trace 
-			    (cons (cons (mail-header-number (car art)) kill)
-				  gnus-score-trace)))
+		      (setq gnus-score-trace
+			    (cons
+			     (cons
+			      (car-safe
+			       (rassq alist gnus-score-cache))
+			      kill)
+			     gnus-score-trace)))
 		  (while arts
 		    (setq art (car arts)
 			  arts (cdr arts))
@@ -1416,10 +1426,13 @@ SCORE is the score to add."
 			   (setq art (car arts)
 				 arts (cdr arts))
 			   (setcdr art (+ score (cdr art)))
-			   (setq gnus-score-trace 
-				 (cons (cons (mail-header-number
-					      (car art)) kill)
-				       gnus-score-trace)))
+			   (setq gnus-score-trace
+				 (cons
+				  (cons
+				   (car-safe
+				    (rassq alist gnus-score-cache))
+				   kill)
+				  gnus-score-trace)))
 		       (while arts
 			 (setq art (car arts)
 			       arts (cdr arts))
@@ -1500,8 +1513,7 @@ SCORE is the score to add."
 	(if (or (not elem)
 		(get-text-property (point) 'gnus-pseudo))
 	    ()
-	  (setq headers (gnus-get-header-by-number 
-			 (gnus-summary-article-number)))
+	  (setq headers (gnus-summary-article-header))
 	  (while (and elem headers)
 	    (setq match (funcall (car (car elem)) headers))
 	    (gnus-summary-score-entry 
@@ -1557,8 +1569,7 @@ SCORE is the score to add."
 	(if (or (not elem)
 		(get-text-property (gnus-point-at-bol) 'gnus-pseudo))
 	    ()
-	  (setq headers (gnus-get-header-by-number 
-			 (gnus-summary-article-number)))
+	  (setq headers (gnus-summary-article-header))
 	  (while elem
 	    (setq match (funcall (car (car elem)) headers))
 	    (gnus-summary-score-entry 
@@ -1567,8 +1578,7 @@ SCORE is the score to add."
 		     (< (length match) gnus-score-exact-adapt-limit))
 		 'e 's) 
 	     (nth 2 (car elem)) date nil t)
-	    (setq elem (cdr elem))))
-	(delete-region (point) (progn (forward-line 1) (point))))
+	    (setq elem (cdr elem)))))
       ;; Switch back to the old score file.
       (gnus-score-load-file cur-score))))
 
@@ -1620,7 +1630,7 @@ This mode is an extended emacs-lisp mode.
   "Find all score rules applied to this article."
   (interactive)
   (let ((gnus-newsgroup-headers
-	 (list (gnus-get-header-by-number (gnus-summary-article-number))))
+	 (list (gnus-summary-article-header)))
 	(gnus-newsgroup-scored nil)
 	(buf (current-buffer))
 	trace)
@@ -1632,7 +1642,8 @@ This mode is an extended emacs-lisp mode.
     (gnus-add-current-to-buffer-list)
     (erase-buffer)
     (while trace
-      (insert (format "%S\n" (cdr (car trace))))
+      (insert (format "%S  ->  %s\n"  (cdr (car trace))
+		      (file-name-nondirectory (car (car trace)))))
       (setq trace (cdr trace)))
     (goto-char (point-min))
     (pop-to-buffer buf)))

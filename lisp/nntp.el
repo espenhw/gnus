@@ -29,8 +29,6 @@
 (require 'sendmail)
 (require 'nnheader)
 
-(eval-when-compile (require 'cl))
-
 (eval-and-compile
   (autoload 'news-setup "rnewspost")
   (autoload 'news-reply-mode "rnewspost")
@@ -142,6 +140,8 @@ server there that you can connect to.")
 (defvar nntp-async-number 5
   "*How many articles should be prefetched when in asynchronous mode.")
 
+(defvar nntp-warn-about-losing-connection t
+  "*If non-nil, beep when a server closes connection.")
 
 
 
@@ -160,9 +160,6 @@ instead use `nntp-server-buffer'.")
   "Save the server response message.
 You'd better not use this variable in NNTP front-end program but
 instead call function `nntp-status-message' to get status message.")
-
-(defvar nntp-opened-connections nil
-  "All (possibly) opened connections.")
 
 (defvar nntp-server-xover 'try)
 (defvar nntp-server-list-active-group 'try)
@@ -209,7 +206,7 @@ instead call function `nntp-status-message' to get status message.")
 
 ;;; Interface functions.
 
-(defun nntp-retrieve-headers (sequence &optional newsgroup server)
+(defun nntp-retrieve-headers (sequence &optional newsgroup server fetch-old)
   "Retrieve the headers to the articles in SEQUENCE."
   (nntp-possibly-change-server newsgroup server)
   (save-excursion
@@ -217,7 +214,7 @@ instead call function `nntp-status-message' to get status message.")
     (erase-buffer)
     (if (and (not gnus-nov-is-evil) 
 	     (not nntp-nov-is-evil)
-	     (nntp-retrieve-headers-with-xover sequence))
+	     (nntp-retrieve-headers-with-xover sequence fetch-old))
         'nov
       (let ((number (length sequence))
 	    (count 0)
@@ -334,10 +331,7 @@ instead call function `nntp-status-message' to get status message.")
 	    'active)
 	'group))))
 
-(defun nntp-open-server (server &optional defs connectionless)
-  "Open the virtual server SERVER.
-If CONNECTIONLESS is non-nil, don't attempt to connect to any physical
-servers."
+(defun nntp-open-server (server &optional defs)
   (nnheader-init-server-buffer)
   (if (nntp-server-opened server)
       t
@@ -359,20 +353,16 @@ servers."
 	    (setq nntp-server-alist (delq state nntp-server-alist)))
 	(nnheader-set-init-variables nntp-server-variables defs)))
     (setq nntp-current-server server)
-    ;; We have now changed to the proper virtual server.  We then
-    ;; check that the physical server is opened.
-    (if (or (nntp-server-opened server)
-	    connectionless)
-	t
-      (if (member nntp-address nntp-timeout-servers)
-	  nil
-	;; We open a connection to the physical nntp server.
-	(run-hooks 'nntp-prepare-server-hook)
-	(nntp-open-server-semi-internal nntp-address nntp-port-number)))))
+    (or (nntp-server-opened server)
+	(progn
+	  (if (member nntp-address nntp-timeout-servers)
+	      nil
+	    (run-hooks 'nntp-prepare-server-hook)
+	    (nntp-open-server-semi-internal nntp-address nntp-port-number))))))
 
 (defun nntp-close-server (&optional server)
   "Close connection to SERVER."
-  (nntp-possibly-change-server nil server t)
+  (nntp-possibly-change-server nil server)
   (unwind-protect
       (progn
 	;; Un-set default sentinel function before closing connection.
@@ -391,13 +381,22 @@ servers."
 (defun nntp-request-close ()
   "Close all server connections."
   (let (proc)
-    (while nntp-opened-connections
-      (setq proc (pop nntp-opened-connections))
-      (and proc (delete-process proc)))
-    (and nntp-async-buffer
-	 (get-buffer nntp-async-buffer)
-	 (kill-buffer nntp-async-buffer))
+    (and nntp-async-process
+	 (progn
+	   (delete-process nntp-async-process)
+	   (and (get-buffer nntp-async-buffer)
+		(kill-buffer nntp-async-buffer))))
+    (while nntp-async-group-alist
+      (and (nth 3 (car nntp-async-group-alist))
+	   (delete-process (nth 3 (car nntp-async-group-alist))))
+      (setq nntp-async-group-alist (cdr nntp-async-group-alist)))
     (while nntp-server-alist
+      (and 
+       (setq proc (nth 1 (assq 'nntp-server-process (car nntp-server-alist))))
+       (delete-process proc))
+      (and 
+       (setq proc (nth 1 (assq 'nntp-async-process (car nntp-server-alist))))
+       (delete-process proc))
       (and (setq proc (nth 1 (assq 'nntp-async-buffer
 				   (car nntp-server-alist))))
 	   (buffer-name proc)
@@ -461,16 +460,19 @@ servers."
 		       (nntp-async-fetch-articles id)))))))
 
     (if found 
-	t
+	id
       ;; The article was not in the async buffer, so we fetch it now.
       (unwind-protect
 	  (progn
 	    (if buffer (set-process-buffer nntp-server-process buffer))
 	    (let ((nntp-server-buffer (or buffer nntp-server-buffer))
 		  (art (or (and (numberp id) (int-to-string id)) id)))
-	      ;; If NEmacs, end of message may look like: "\256\215" (".^M")
 	      (prog1
-		  (nntp-send-command "^\\.\r?\n" "ARTICLE" art)
+		  (and (nntp-send-command "^\\.\r?\n" "ARTICLE" art)
+		       (if (numberp id) 
+			   (cons nntp-current-group id)
+			 ;; We find out what the article number was.
+			 (nntp-find-group-and-number)))
 		(nntp-decode-text)
 		(and nntp-async-articles (nntp-async-fetch-articles id)))))
 	(if buffer (set-process-buffer 
@@ -489,8 +491,11 @@ servers."
   "Request head of article ID (message-id or number)."
   (nntp-possibly-change-server newsgroup server)
   (prog1
-      (nntp-send-command 
-       "^\\.\r?\n" "HEAD" (or (and (numberp id) (int-to-string id)) id))
+      (and (nntp-send-command 
+	    "^\\.\r?\n" "HEAD" (if (numberp id) (int-to-string id) id))
+	   (if (numberp id) id
+	     ;; We find out what the article number was.
+	     (nntp-find-group-and-number)))
     (nntp-decode-text)))
 
 (defun nntp-request-stat (id &optional newsgroup server)
@@ -532,10 +537,10 @@ servers."
 
 (defun nntp-request-group-description (group &optional server)
   "Get description of GROUP."
-  (nntp-possibly-change-server nil server)
-  (prog1
-      (nntp-send-command "^.*\r?\n" "XGTITLE" group)
-    (nntp-decode-text)))
+  (if (nntp-possibly-change-server nil server)
+      (prog1
+	  (nntp-send-command "^.*\r?\n" "XGTITLE" group)
+	(nntp-decode-text))))
 
 (defun nntp-close-group (group &optional server)
   (setq nntp-current-group nil)
@@ -622,7 +627,7 @@ post to this group instead.  If RESPECT-POSTER, heed the special
 	    ()
 	  (erase-buffer)
 	  (if post
-	      (news-setup nil subject nil (or follow-to group) nil)
+	      (news-setup nil subject nil group nil)
 	    (save-excursion
 	      (set-buffer article-buffer)
 	      (goto-char (point-min))
@@ -725,6 +730,7 @@ It will prompt for a password."
 	(setq servers (cdr servers)))
       (setq server (car (car servers))))
     (and server
+	 nntp-warn-about-losing-connection
 	 (progn
 	   (message "nntp: Connection closed to server %s" server)
 	   (ding)))))
@@ -878,7 +884,42 @@ It will prompt for a password."
 ;;; Low-Level Interface to NNTP Server.
 ;;; 
 
-(defun nntp-retrieve-headers-with-xover (sequence)
+(defun nntp-find-group-and-number ()
+  (save-excursion
+    (save-restriction
+      (set-buffer nntp-server-buffer)
+      (narrow-to-region (goto-char (point-min))
+			(or (search-forward "\n\n" nil t) (point-max)))
+      (goto-char (point-min))
+      ;; We first find the number by looking at the status line.
+      (let ((number (and (looking-at "2[0-9][0-9] +\\([0-9]+\\) ")
+			 (int-to-string 
+			  (buffer-substring (match-beginning 0)
+					    (match-end 0)))))
+	    group newsgroups xref)
+	;; Then we find the group name.
+	(setq group
+	      (cond 
+	       ;; If there is only one group in the Newsgroups header,
+	       ;; then it seems quite likely that this article comes
+	       ;; from that group, I'd say.
+	       ((and (setq newsgroups (mail-fetch-field "newsgroups"))
+		     (not (string-match "," newsgroups)))
+		newsgroups)
+	       ;; If there is more than one group in the Newsgroups
+	       ;; header, then the Xref header should be filled out.
+	       ;; We hazard a guess that the group that has this
+	       ;; article number in the Xref header is the one we are
+	       ;; looking for.  This might very well be wrong if this
+	       ;; article happens to have the same number in several
+	       ;; groups, but that's life. 
+	       ((and (setq xref (mail-fetch-field "xref"))
+		     (string-match (format "\\([^ :]+\\):%d" number) xref))
+		(substring xref (match-beginning 1) (match-end 1)))
+	       (t "")))
+	(cons group number)))))
+
+(defun nntp-retrieve-headers-with-xover (sequence &optional fetch-old)
   (erase-buffer)
   (cond 
 
@@ -887,9 +928,15 @@ It will prompt for a password."
     nil)
 
    ;; We don't care about gaps.
-   ((not nntp-nov-gap)
+   ((or (not nntp-nov-gap)
+	fetch-old)
     (nntp-send-xover-command 
-     (car sequence) (nntp-last-element sequence) 'wait)
+     (if fetch-old
+	 (if (numberp fetch-old) 
+	     (max 1 (- (car sequence) fetch-old)) 
+	   1)
+       (car sequence))
+     (nntp-last-element sequence) 'wait)
 
     (goto-char (point-min))
     (if (looking-at "[1-5][0-9][0-9] ")
@@ -989,14 +1036,7 @@ It will prompt for a password."
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
 	    (goto-char (point-min))
-	    (and (looking-at "[23]") ; No error message.
-		 ;; We also have to look at the lines.  Some buggy
-		 ;; servers give back simple lines with just the
-		 ;; article number.  How... helpful.
-		 (progn
-		   (forward-line 1)
-		   (looking-at "[0-9]+\t...")) ; More text after number.
-		 (setq nntp-server-xover (car commands))))
+	    (and (looking-at "[23]") (setq nntp-server-xover (car commands))))
 	  (setq commands (cdr commands)))
 	;; If none of the commands worked, we disable XOVER.
 	(if (eq nntp-server-xover 'try)
@@ -1120,7 +1160,6 @@ If SERVICE, this this as the port number."
 	    (setq nntp-address server)
 	    ;; It is possible to change kanji-fileio-code in this hook.
 	    (run-hooks 'nntp-server-hook)
-	    (push proc nntp-opened-connections)
 	    nntp-server-process)))))
 
 (defun nntp-open-network-stream (server)
@@ -1181,7 +1220,7 @@ defining this function as macro."
 		(sleep-for 1)
 		(message ""))
 	    (condition-case errorcode
-		(accept-process-output nntp-server-process 1)
+		(accept-process-output nntp-server-process)
 	      (error
 	       (cond ((string-equal "select error: Invalid argument" 
 				    (nth 1 errorcode))
@@ -1197,16 +1236,11 @@ defining this function as macro."
     (setq list (cdr list)))
   (car list))
 
-(defun nntp-possibly-change-server (newsgroup server &optional connectionless)
-  "Check whether the virtual server needs changing."
-  (if (and server
-	   (not (nntp-server-opened server)))
-      ;; This virtual server isn't open, so we (re)open it here.
-      (nntp-open-server server nil t))
-  (if (and newsgroup 
-	   (not (equal newsgroup nntp-current-group)))
-      ;; Set the proper current group.
-      (nntp-request-group newsgroup server)))
+(defun nntp-possibly-change-server (newsgroup server)
+  ;; We see whether it is necessary to change newsgroup.
+  (and newsgroup 
+       (not (equal newsgroup nntp-current-group))
+       (nntp-request-group newsgroup server)))
 
 (defun nntp-try-list-active (group)
   (nntp-list-active-group group)

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 @comment %**start of header (This is for running Texinfo on a region.)
 @setfilename gnus.info
-@settitle Gnus 5.0 Manual
+@settitle September Gnus Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -45,7 +45,7 @@ into another language, under the above conditions for modified versions.
 @iftex
 
 @titlepage
-@title Gnus Manual
+@title September Gnus Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -134,6 +134,7 @@ and won't be released until February.  Confused?  You will be.
 * Why?::                What's the point of Gnus?
 * Compatibility::       Just how compatible is Gnus with @sc{gnus}?
 * Conformity::          Gnus tries to conform to all standards.
+* Emacsen::             Gnus can be run on a few modern Emacsen.
 * Contributors::        Oodles of people.  
 * New Features::        Pointers to some of the new stuff in Gnus.
 * Newest Features::     Features so new that they haven't been written yet.
@@ -278,6 +279,40 @@ what The Way is, I'll change it.  Or not.
 
 If you ever see Gnus act noncompliantly to the texts mentioned above,
 don't hesitate to drop a note to Gnus Towers and let us know.
+
+
+@node Emacsen
+@section Emacsen
+@cindex Emacsen
+@cindex XEmacs
+@cindex Mule
+@cindex Emacs
+
+Gnus should work on Emacs 19.26 and up, XEmacs 19.12 and up and Mule.
+There are some vague differences in what Gnus does, though:
+
+@itemize @bullet
+
+@item
+The mouse-face on Gnus lines under Emacs and Mule is delimited to
+certain parts of the lines while they cover the entire line under
+XEmacs. 
+
+@item 
+The same with current-article marking -- XEmacs puts an underline under
+the entire article while Emacs and Mule are nicer and kinder.
+
+@item
+XEmacs features more graphics -- a logo and a toolbar.
+
+@item
+Citation highlighting us better under Emacs and Mule than under XEmacs.
+
+@item
+Emacs 19.26-19.28 have tangible hidden headers, which can be a bit
+confusing. 
+
+@end itemize
 
 
 @node Contributors
@@ -633,6 +668,7 @@ variables.
 * Finding the News::    Choosing a method for getting news.
 * The First Time::      What does Gnus do the first time you start it?
 * The Server is Down::  How can I read my mail then?
+* Slave Gnusii::        You can have more than one Gnus active at a time.
 * New Groups::          What is Gnus supposed to do with new groups?
 * Startup Files::       Those pesky startup files - @file{.newsrc}.
 * Auto Save::           Recovering from a crash.
@@ -666,10 +702,15 @@ If you want to read directly from the local spool, say:
 If you can use a local spool, you probably should, as it will almost
 certainly be much faster.
 
+@vindex gnus-nntpserver-file
+@cindex NNTPSERVER
+@cindex nntp server
 If this variable is not set, Gnus will take a look at the
-@code{NNTPSERVER} environment variable.  If that isn't set either, it
-will try to use the machine that is running Emacs as an @sc{nntp}
-server.
+@code{NNTPSERVER} environment variable.  If that variable isn't set,
+Gnus will see whether @code{gnus-nntpserver-file} (default
+@file{/etc/nntpserver}) has any opinions in the matter.  It that fails
+as well, Gnus will will try to use the machine that is running Emacs as
+an @sc{nntp} server.  That's a longshot, though.
 
 @vindex gnus-nntp-server
 If @code{gnus-nntp-server} is set, this variable will override
@@ -750,6 +791,46 @@ you do not want to continue unless you have some foreign groups that you
 want to read.  Even if you don't, Gnus will let you continue, but you'll
 find it difficult to actually do anything in the group buffer.  But,
 hey, that's your problem.  Blllrph!
+
+@findex gnus-no-server
+If you know that the server is definitely down, or you just want to read
+your mail without bothering with the server at all, you can use the
+@code{gnus-no-server} command to start Gnus.  That might come in handy
+if you're in a hurry as well.
+
+
+@node Slave Gnusii
+@section Slave Gnusii
+@cindex slave
+
+You might with to run more than one Emacs with more than one Gnus at the
+same time.  If you are using different @file{.newsrc} files (eg., if you
+are using the two different Gnusii to read from two different servers),
+that is no problem whatsoever.  You just do it.
+
+The problem appears when you want to run two Gnusii that uses the same
+@code{.newsrc} file.  
+
+To work around that problem some, we here at the Think-Tank at the Gnus
+Towers have come up with a new concept: @dfn{Master} and
+@dfn{servants}.  (We have applied for a patent on this concept, and have
+taken out a copyright on those words.  If you wish to use those words in
+conjunction with each other, you have to send ¢1 per usage to me.  Usage
+of the patent (@dfn{Master/Slave Relationships In Computer
+Applications}), that will be much more expensive, of course.)
+
+Anyways, you start one Gnus up the normal way with @kbd{M-x gnus} (or
+however you do it).  Each subsequent slave Gnusii should be started with
+@kbd{M-x gnus-slave}.  These slaves won't save normal @file{.newsrc}
+files, but some slave files that contains only information on what
+groups have been read in the slave session.  When a master Gnus starts,
+it will read (and delete) these slave files, incorporating all
+information from all of them.  (The slave files will be read in the
+sequence they were created, so the latest changes will have presedence.)
+
+Information from the slave files has, of course, presedence over the
+information in the normal (i. e., master) @code{.newsrc} file.
+
 
 @node New Groups
 @section New Groups
@@ -949,10 +1030,10 @@ and is certainly faster than @code{t} over slow lines.
 
 If this variable is @code{nil}, Gnus will as for group info in total
 lock-step, which isn't very fast.  If it is @code{some} and you use an
-NNTP server, Gnus will pump out commands as fast as it can, and read all
-the replies in one swoop.  This will normally result in better
+@sc{nntp} server, Gnus will pump out commands as fast as it can, and
+read all the replies in one swoop.  This will normally result in better
 performance, but if the server does not support the aforementioned
-@samp{LIST ACTIVE group} command, this isn't very nice to the server. 
+@samp{LIST ACTIVE group} command, this isn't very nice to the server.
 
 In any case, if you use @code{some} or @code{nil}, you should kill all
 groups that you aren't interested in.
@@ -1688,6 +1769,12 @@ this variable is @code{t}, @code{nntp} will pre-fetch all the articles
 that it can without bound.  If it is @code{nil}, no pre-fetching will be
 made.
 
+@item nntp-warn-about-losing-connection
+@vindex nntp-warn-about-losing-connection
+If this variable is non-@code{nil}, some noise will be made when a
+server closes connection.
+
+
 @end table
 
 @node nnspool
@@ -2297,18 +2384,21 @@ If @code{nnmail-keep-last-article} is non-@code{nil}, Gnus will never
 expire the final article in a mail newsgroup.  This is to make life
 easier for procmail users.
 
+@vindex gnus-total-expirable-newsgroups
 By the way, that line up there about Gnus never expiring non-expirable
 articles is a lie.  If you put @code{total-expire} in the group
 parameters, articles will not be marked as expirable, but all read
 articles will be put through the expiry process.  Use with extreme
-caution. 
+caution.  Even more dangerous is the
+@code{gnus-total-expirable-newsgroups} variable.  All groups that match
+this regexp will have all read articles put through the expiry process,
+which means that @emph{all} old mail articles in the groups in question
+will be deleted after a while.  Use with extreme caution, and don't come
+crying to me when you discover that the regexp you used matched the
+wrong group and all your important mail has disappeared.  Be a
+@emph{man}!  Or a @emph{woman}!  Whatever you feel more comfortable
+with!  So there!
 
-Note that at present, Gnus will not actually delete any expirable
-articles automatically.  You have to enter one of the expiry functions
-(eg. `C-c M-c-x' in the group buffer) to actually run articles through
-the expiry process.  Or you can add a call to the expiry function in the
-group exit hook.  Gnus will probably do all this automatically in the
-future. 
 
 @node Not Reading Mail
 @subsubsection Not Reading Mail
@@ -2544,7 +2634,7 @@ Any of the last three elements may be missing if they are not required.
 In fact, the vast majority of groups will normally only have the first
 three elements, which saves quite a lot of cons cells.
 
-At present, there's not much you can put in the group parameters list: 
+The group parameters stores information local to a particular group: 
 
 @table @code
 @item to-address
@@ -2577,11 +2667,26 @@ are read will be marked as expirable.  For an alternative approach,
 If this symbol is present, all read articles will be put through the
 expiry process, even if they are not marked as expirable.  Use with
 caution. 
+
+@item @var{(variable form)}
+You can use the group parameters to set variables local to the group you
+are entering.  Say you want to turn threading off in
+@samp{news.answers}.  You'd then put @code{(gnus-show-threads nil)} in
+the group parameters of that group.  @code{gnus-show-threads} will be
+made into a local variable in the summary buffer you enter, and the form
+@code{nil} will be @code{eval}ed there.  
+
+This can also be used as a group-specific hook function, if you'd like.
+If you want to hear a beep when you enter the group
+@samp{alt.binaries.pictures.furniture}, you could put something like
+@code{(dummy-variable (ding))} in the parameters of that group.
+@code{dummy-variable} will be set to the result of the @code{(ding)}
+form, but who cares?
+
 @end table
 
-If you want to change the group parameters (or anything else of the
-group info) you can use the @kbd{G E} to edit enter a buffer where you
-can edit the group info.
+If you want to change the group info you can use the @kbd{G E} command
+to enter a buffer where you can edit it.
 
 You usually don't want to edit the entire group info, so you'd be better
 off using the @kbd{G p} command to just edit the group parameters.
@@ -2897,6 +3002,7 @@ move around, read articles, post articles and reply to articles.
 * Reply Followup and Post::     Posting articles.
 * Canceling and Superseding::   "Whoops, I shouldn't have called him that."
 * Marking Articles::            Marking articles as read, expirable, etc.
+* Limiting::                    You can limit the summary buffer.
 * Threading::                   How threads are made.
 * Asynchronous Fetching::       Gnus might be able to pre-fetch articles.
 * Article Caching::             You may store articles in a cache.
@@ -2904,6 +3010,7 @@ move around, read articles, post articles and reply to articles.
 * Process/Prefix::              A convention used by many treatment commands.
 * Saving Articles::             Ways of customizing article saving.
 * Decoding Articles::           Gnus can treat series of (uu)encoded articles.
+* Article Treatment::           The article buffer can be mangled at will.
 * Various Article Stuff::       Various stuff dealing with articles.
 * Summary Sorting::             You can sort the summary buffer four ways.
 * Finding the Parent::          No child support? Get the parent.
@@ -3048,6 +3155,8 @@ elements you can play with:
 @table @samp
 @item G
 Group name.
+@item p
+Unprefixed group name.
 @item A
 Current article number.
 @item V
@@ -3263,12 +3372,14 @@ As you may have guessed, if @var{FORM} returns a non-@code{nil} value,
 @cindex article scrolling
 
 @table @kbd
+
 @item SPACE
 @kindex SPACE (Summary)
 @findex gnus-summary-next-page
 Pressing @kbd{SPACE} will scroll the current article forward one page,
 or, if you have come to the end of the current article, will choose the
 next article (@code{gnus-summary-next-page}).
+
 @item DEL
 @kindex DEL (Summary)
 @findex gnus-summary-prev-page
@@ -3278,6 +3389,7 @@ Scroll the current article back one page (@code{gnus-summary-prev-page}).
 @findex gnus-summary-scroll-up
 Scroll the current article one line forward
 (@code{gnus-summary-scroll-up}).
+
 @item A <
 @itemx <
 @kindex < (Summary)
@@ -3285,12 +3397,20 @@ Scroll the current article one line forward
 @findex gnus-summary-beginning-of-article
 Scroll to the beginning of the article
 (@code{gnus-summary-beginning-of-article}).
+
 @item A >
 @itemx >
 @kindex > (Summary)
 @kindex A > (Summary)
 @findex gnus-summary-end-of-article
 Scroll to the end of the article (@code{gnus-summary-end-of-article}).
+
+@item A s 
+@kindex A s (Summary)
+@findex gnus-summary-isearch-article
+Perform an isearch in the article buffer
+(@code{gnus-summary-isearch-article}). 
+
 @end table
 
 @node Reply Followup and Post
@@ -3311,6 +3431,7 @@ server.
 * Mail::                 Mailing & replying.
 * Post::                 Posting and following up.
 * Mail & Post::          Mailing and posting at the same time.
+* Drafts::               Postponing messages and rejected messages.
 @end menu
 
 @node Mail
@@ -3351,6 +3472,19 @@ Forward the current article to a newsgroup
 @findex gnus-summary-mail-other-window
 Send a mail to some other person
 (@code{gnus-summary-mail-other-window}).
+@item S D b
+@kindex S D b (Summary)
+@findex gnus-summary-resend-bounced-mail
+If you have sent a mail, but the mail was bounced back to you for some
+reason (wrong address, transient failure), you can use this command to
+resend that bounced mail (@code{gnus-summary-resend-bounced-mail}).  You
+will be popped into a mail buffer where you can edit the headers before
+sending the mail off again.  The headers that match the regexp
+@code{gnus-bounced-headers-junk} (default @samp{^Received:}) are
+automatically deleted first.  If you give a prefix to this command, and
+the bounced mail is a reply to some other mail, Gnus will try to fetch
+that mail and display it for easy perusal of its headers.  This might
+very well fail, though.
 @item S O m
 @kindex S O m (Summary)
 @findex gnus-uu-digest-mail-forward
@@ -3411,9 +3545,33 @@ List of regexps to match headers included in digested messages.  The
 headers will be included in the sequence they are matched.
 
 @item gnus-mail-hook
+@vindex gnus-mail-hook
 Hook called as the last thing after setting up a mail buffer.
 
+@item gnus-required-mail-headers
+@vindex gnus-required-mail-headers
+Gnus will generate headers in all outgoing mail instead of letting
+@code{sendmail} do it for us.  This makes it possible to do more neat
+stuff, like putting mail without sending it, do hairy @code{Fcc}
+handling, and much more.  This variable controls what headers Gnus will
+generate, and is of the exact same form as @code{gnus-required-headers},
+which does the same for news articles (@pxref{Post}). 
+
+The @code{Newsgroups} header is illegal in this list, while @code{To} is
+required, and @code{X-Mailer} can be added if you so should want.
+
 @end table
+
+@kindex C-c C-c (Mail)
+@kindex C-c C-p (Mail)
+@findex gnus-put-message
+You normally send a mail message by pressing @kbd{C-c C-c}.  However,
+you may wish to just put the mail message you have just written in your
+own local mail group instead of sending it.  Sounds quite unlikely, but
+I found that useful, so you can now also press @kbd{C-c C-p} to
+@dfn{put} the article in the current mail group, or, if there is no such
+thing, you will be prompted for a mail group, and then the article will
+be put there.  This means that the article is @dfn{not} mailed.  
 
 There are three "methods" for handling all mail.  The default is
 @code{sendmail}.  Some people like what @code{mh} does better, and some
@@ -3715,6 +3873,9 @@ Check for excessive size.
 Check whether there is any new text in the messages.
 @item signature
 Check the length of the signature
+@item approved
+Check whether the article has an @code{Approved} header, which is
+something only moderators should include.
 @end table
 
 @end table
@@ -3828,6 +3989,18 @@ to read the same article later when they read the news.  It is
 This is a string that will be prepended to all mails that are the result
 of using the variable described above.  
 
+@item gnus-outgoing-message-group 
+@vindex gnus-outgoing-message-group 
+All outgoing messages will be put in this group.  If you want to store
+all your outgoing mail and articles in the group @samp{nnml:archive},
+you set this variable to that value. This variable can also be a list of
+group names.
+
+If you want to have greater control over what group to put each
+message in, you can set this variable to a function that checks the
+current newsgroup name and then returns a suitable group name (or list
+of names).
+
 @end table
 
 You may want to do spell-checking on messages that you send out.  Or, if
@@ -3844,6 +4017,66 @@ spell-checking via the @code{ispell} package:
 If you want to insert some @sc{mime} headers into the articles you post,
 without doing any actual encoding, you could add
 @code{gnus-inews-insert-mime-headers} to @code{gnus-inews-article-hook}.
+
+
+@node Drafts
+@subsection Drafts
+@cindex drafts
+
+If you are writing a message (mail or news) and suddenly remember that
+you have a steak in the oven (or pesto in the food processor, you craazy
+vegetarians), you'll probably wish there was a method to save the
+message you are writing so that you can continue editing it some other
+day, and send it when you feel its finished.
+
+@kindex C-c C-d (Mail)
+@kindex C-c C-d (Post)
+@findex gnus-enter-into-draft-group
+@vindex gnus-group-draft-directory
+What you then do is simply push @kbd{C-c C-d}
+(@code{gnus-enter-into-draft-group}).  This will put the current
+(unfinished) message in a special draft group (which is implemented as
+an @code{nndir} group, if you absolutely have to know) called
+@samp{nndir:drafts}.  The variable @code{gnus-group-draft-directory}
+controls both the name of the group and the location -- the leaf element
+in the path will be used as the name of the group.
+
+If the group doesn't exist, it will be created and subscribed to.
+
+@findex gnus-summary-send-draft
+@kindex S D c
+When you want to continue editing, you simply enter the draft group and
+push @kbd{S D c} (@code{gnus-summary-send-draft}) to do that.  You will
+be placed in a buffer where you left off.
+
+Rejected articles will also be put in this draft group (@pxref{Rejected
+Articles}).
+
+@findex gnus-summary-send-all-drafts
+If you have lots of rejected messages you want to post (or mail) without
+doing further editing, you can use the @kbd{S D a} command
+(@code{gnus-summary-send-all-drafts}).  This command understands the
+process/prefix convention.  
+
+
+@node Rejected Articles
+@subsection Rejected Articles
+@cindex rejected articles
+
+Sometimes a news server will reject an article.  Perhaps the server
+doesn't like your face.  Perhaps it just feels miserable.  Perhaps there
+be demons.  Perhaps you have included too much cited text.  Perhaps the
+disk is full.  Perhaps the server is down.
+
+These situations are, of course, totally beyond the control of Gnus.
+(Gnus, of course, loves the way you look, always feels great, has angels
+fluttering around in it, doesn't care about how much cited text you
+include, never runs full and never goes down.)  So what Gnus does is
+saves these articles until some later time when the server feels better.
+
+The rejected articles will automatically be put in a special draft group
+(@pxref{Drafts}).  When the server comes back up again, you'd then
+typically enter that group and send all the articles off.
 
 
 @node Canceling and Superseding
@@ -4091,6 +4324,11 @@ Catchup the current group to point
 @findex gnus-summary-mark-region-as-read
 Mark all articles between point and mark as read
 (@code{gnus-summary-mark-region-as-read}). 
+@item M V k
+@kindex M V k (Summary)
+@findex gnus-summary-kill-below
+Kill all articles with scores below the default score (or below the
+numeric prefix) (@code{gnus-summary-kill-below}).
 @item M c
 @itemx M-u
 @kindex M c (Summary)
@@ -4115,35 +4353,6 @@ Set a bookmark in the current article
 @findex gnus-summary-remove-bookmark
 Remove the bookmark from the current article
 (@code{gnus-summary-remove-bookmark}).
-@item M M-r
-@itemx x
-@kindex M M-r (Summary)
-@kindex M-d (Summary)
-@findex gnus-summary-remove-lines-marked-as-read
-Expunge all deleted articles from the summary buffer
-(@code{gnus-summary-remove-lines-marked-as-read}). 
-@item M M-C-r
-@kindex M M-C-r (Summary)
-@findex gnus-summary-remove-lines-marked-with
-Ask for a mark and then expunge all articles that have been marked with
-that mark (@code{gnus-summary-remove-lines-marked-with}).
-@item M S
-@kindex M S (Summary)
-@findex gnus-summary-show-all-expunged
-Display all expunged articles (@code{gnus-summary-show-all-expunged}).
-@item M D
-@kindex M D (Summary)
-@findex gnus-summary-show-all-dormant
-Display all dormant articles (@code{gnus-summary-show-all-dormant}).
-@item M M-D
-@kindex M M-D (Summary)
-@findex gnus-summary-hide-all-dormant
-Hide all dormant articles (@code{gnus-summary-hide-all-dormant}).
-@item M V k
-@kindex M V k (Summary)
-@findex gnus-summary-kill-below
-Kill all articles with scores below the default score (or below the
-numeric prefix) (@code{gnus-summary-kill-below}).
 @item M V c
 @kindex M V c (Summary)
 @findex gnus-summary-clear-above
@@ -4167,6 +4376,7 @@ The @code{gnus-summary-goto-unread} variable controls what action should
 be taken after setting a mark.  If non-@code{nil}, point will move to
 the next/previous unread article.  If @code{nil}, point will just move
 one line up or down.
+
 
 @node Setting Process Marks
 @subsection Setting Process Marks
@@ -4205,6 +4415,11 @@ Mark articles in region (@code{gnus-uu-mark-region}).
 @findex gnus-uu-mark-thread
 Mark all articles in the current (sub)thread
 (@code{gnus-uu-mark-thread}).
+@item M P T
+@kindex M P T (Summary)
+@findex gnus-uu-unmark-thread
+Unmark all articles in the current (sub)thread
+(@code{gnus-uu-unmark-thread}).
 @item M P s
 @kindex M P s (Summary)
 @findex gnus-uu-mark-series
@@ -4218,7 +4433,91 @@ Mark all series that have already had some articles marked
 @kindex M P a (Summary)
 @findex gnus-uu-mark-all
 Mark all articles in series order (@code{gnus-uu-mark-series}).
+@item M P b
+@kindex M P b (Summary)
+@findex gnus-uu-mark-buffer
+Mark all articles in the buffer in the order they appear
+(@code{gnus-uu-mark-buffer}). 
 @end table
+
+
+@node Limiting
+@subsection Limiting
+
+It can be convenient to limit the summary buffer to just show some
+subset of the articles currently in the group.  The effect most limit
+commands have is to remove a few (or many) articles from the summary
+buffer. 
+
+@table @kbd
+
+@item M N u
+@itemx x
+@kindex M N u (Summary)
+@kindex x (Summary)
+@findex gnus-summary-limit-to-unread
+Limit the summary buffer to articles that are not marked as read
+(@code{gnus-summary-limit-to-unread}).  If given a prefix, limit the
+buffer to articles that are strictly unread.  This means that ticked and
+dormant articles will also be excluded.
+
+@item M N m
+@kindex M N m (Summary)
+@findex gnus-summary-limit-to-marks
+Ask for a mark and then limit to all articles that have not been marked
+with that mark (@code{gnus-summary-limit-to-marks}).
+
+@item M N n
+@kindex M N n (Summary)
+@findex 
+Limit the summary buffer to the current article
+(@code{gnus-summary-limit-to-articles}).  Uses the process/prefix
+convention (@pxref{Process/Prefix}).
+
+@item M N w
+@kindex M N w (Summary)
+@findex gnus-summary-pop-limit
+Pop the previous limit off the stack and restore it
+(@code{gnus-summary-pop-limit}).  If given a prefix, pop all limits off
+the stack.
+
+@item M N s
+@itemx /
+@kindex M N s (Summary)
+@kindex / (Summary)
+@findex gnus-summary-limit-to-subject
+Limit the summary buffer to articles that have a subject that matches a
+regexp (@code{gnus-summary-limit-to-subject}).
+
+@item M N v
+@kindex M N v (Summary)
+@findex gnus-summary-limit-to-score
+Limit the summary buffer to articles that have a score at or above some
+score (@code{gnus-summary-limit-to-score}).
+
+@item M S
+@kindex M S (Summary)
+@findex gnus-summary-show-all-expunged
+Display all expunged articles (@code{gnus-summary-show-all-expunged}).
+
+@item M N D
+@kindex M N D (Summary)
+@findex gnus-summary-limit-include-dormant
+Display all dormant articles (@code{gnus-summary-limit-include-dormant}).
+
+@item M N d
+@kindex M N d (Summary)
+@findex gnus-summary-limit-exclude-dormant
+Hide all dormant articles (@code{gnus-summary-limit-exclude-dormant}).
+
+@item M N c
+@kindex M N c (Summary)
+@findex gnus-summary-limit-exclude-childless-dormant
+Hide all dormant articles that have no children
+(@code{gnus-summary-limit-exclude-childless-dormant}). 
+
+
+
 
 @node Threading
 @section Threading
@@ -4247,17 +4546,19 @@ If this variable is @code{nil}, no threading will be done, and all of
 the rest of the variables here will have no effect.  Turning threading
 off will speed group selection up a bit, but it is sure to make reading
 slower and more awkward.
+
 @item gnus-fetch-old-headers
 @vindex gnus-fetch-old-headers
 If non-@code{nil}, Gnus will attempt to build old threads by fetching
 more old headers - headers to articles that are marked as read.  If you
 would like to display as few summary lines as possible, but still
 connect as many loose threads as possible, you should set this variable
-to @code{some}.  In either case, fetching old headers only works if the
-backend you are using carries overview files -- this would normally be
-@code{nntp}, @code{nnspool} and  @code{nnml}.  Also remember that if the
-root of the thread has been expired by the server, there's not much Gnus
-can do about that.
+to @code{some} or a number.  If you set it to a number, no more than
+that number of extra old headers will be fetched.  In either case,
+fetching old headers only works if the backend you are using carries
+overview files -- this would normally be @code{nntp}, @code{nnspool} and
+@code{nnml}.  Also remember that if the root of the thread has been
+expired by the server, there's not much Gnus can do about that.
 
 @item gnus-summary-gather-subject-limit
 Loose threads are gathered by comparing subjects of articles.  If this
@@ -4273,6 +4574,14 @@ everything in sight into one thread, which isn't very helpful.
 @cindex fuzzy article gathering
 If you set this variable to the special value @code{fuzzy}, Gnus will
 use a fuzzy string comparison algorithm on the subjects.
+
+@vindex gnus-summary-gather-exclude-subject
+Since loose thread gathering is done on subjects only, that might lead
+to many false hits, especially with certain common subjects like
+@samp{""} and @samp{"(none)"}.  To make the situation slightly better,
+you can use the regexp @code{gnus-summary-gather-exclude-subject} to say
+what subjects should be excluded from the gathering process.  The
+default is @samp{"^ *$\\|^(none)$"}.  
 
 @item gnus-summary-make-false-root
 @vindex gnus-summary-make-false-root
@@ -4359,8 +4668,13 @@ Increase the score of the current thread
 @item T #
 @kindex T # (Summary)
 @findex gnus-uu-mark-thread
-Mark the current thread with the process mark
+Set the process mark on the current thread
 (@code{gnus-uu-mark-thread}).
+@item T M-#
+@kindex T M-# (Summary)
+@findex gnus-uu-unmark-thread
+Remove the process mark from the current thread
+(@code{gnus-uu-unmark-thread}).
 @item T T
 @kindex T T (Summary)
 @findex gnus-summary-toggle-threads
@@ -5105,25 +5419,186 @@ So; there you are, reading your @emph{pseudo-articles} in your
 @emph{virtual newsgroup} from the @emph{virtual server}; and you think:
 Why isn't anything real anymore? How did we get here?
 
-@node Various Article Stuff 
-@section Various Article Stuff 
+
+@node Article Treatment
+@section Article Treatment
+
+Reading through this huge manual, you may have quite forgotten that the
+object of newsreaders are to actually, like, read what people have
+written.  Reading articles.  Unfortunately, people are quite bad at
+writing, so there are tons of functions and variables to make reading
+these articles easier.
+
+@menu
+* Article Highlighting::    You want to make the article look like fruit salad.
+* Article Hiding::          You also want to make certain info go away.
+* Article Mangling::        Lots of way-neat functions to make life better.
+* Article Date::            Grumble, UT!
+@end menu
+
+
+@node Article Highlighing
+@subsection Article Highlighting
+@cindex highlight
+
+Not only do you want your article buffer to look like fruit salad, but
+you want it to look like techicolor fruit salad.
 
 @table @kbd
+
+@item W H a
+@kindex W H a
+@findex gnus-article-highlight
+Highlight the current article (@code{gnus-article-highlight}).
+
+@item W H h
+@kindex W H h
+@findex gnus-article-highlight-headers
+@vindex gnus-header-face-alist
+Highlight the headers (@code{gnus-article-highlight-headers}).  The
+highlighting will be done according to the @code{gnus-header-face-alist}
+variable, which is a list where each element has the form @var{(regexp
+name content)}.  @var{regexp} is a regular expression for matching the
+header,  @var{name} is the face used for highling the header name and
+@var{content} is the face for highlighting the header value.  The first
+match made will be used.
+
+@item W H c
+@kindex W H c
+@findex gnus-article-highlight-citation
+Highlight cited text (@code{gnus-article-highlight-citation}). 
+
+Some variables to customize the citation highlights:
+
+@table @code
+@vindex gnus-cite-parse-max-size
+@item gnus-cite-parse-max-size
+If the article size if bigger than this variable (which is 25000 by
+default), no citation highlighting will be performed.  
+
+@item gnus-cite-prefix-regexp
+@vindex gnus-cite-prefix-regexp
+Regexp mathcing the longest possible citation prefix on a line. 
+
+@item gnus-cite-max-prefix
+@vindex gnus-cite-max-prefix
+Maximum possible length for a citation prefix (default 20).
+
+@item gnus-supercite-regexp
+@vindex gnus-supercite-regexp
+Regexp matching normal SuperCite attribution lines.  
+
+@item gnus-supercite-secondary-regexp
+@vindex gnus-supercite-secondary-regexp
+Regexp matching mangled SuperCite attribution lines.
+
+@item gnus-cite-minimum-match-count
+@vindex gnus-cite-minimum-match-count
+Minimum number of identical prefixes we have to see before we believe
+that it's a citation.
+
+@item gnus-cire-attribution-prefix
+@vindex gnus-cire-attribution-prefix
+Regexp matching the beginning of an attribution line.
+
+@item gnus-cite-addtribution-suffix
+@vindex gnus-cite-addtribution-suffix
+Regexp matching the end of an attribution line.
+
+@item gnus-cite-attribution-face
+@vindex gnus-cite-attribution-face
+Face used for attribution lines.  It is merged with the face for the
+cited text belonging to the attribution.
+
+@end table
+
+
+@item W H s
+@kindex W H s
+@vindex gnus-signature-separator
+@findex gnus-article-highlight-signature
+Highlight the signature (@code{gnus-article-highlight-signature}).
+Everything after @code{gnus-signature-separator} in an article will be
+considered a signature.
+
+@end table
+
+
+@node Article Hiding
+
+Or rather, hiding certain things in each article.  There usually is much
+to much gruft in most articles.  
+
+@table @kbd
+
+@item W W a
+@kindex W W a (Summary)
+@findex gnus-article-hide
+Do maximum hiding on the summary buffer (@kbd{gnus-article-hide}). 
+
+@item W W h
+@kindex W W h (Summary)
+@findex gnus-article-hide-headers
+Hide headers (@code{gnus-article-hide-headers}).  @xref{Hiding
+Headers}. 
+
+@item W W s
+@kindex W W s (Summary)
+@findex gnus-article-hide-signature
+Hide signature (@code{gnus-article-hide-signature}).
+
+@item W W c
+@kindex W W c (Summary)
+@findex gnus-article-hide-citation
+Hide citation (@code{gnus-article-hide-citation}).  Two variables for
+customizing the hiding:
+
+@table @code
+
+@item gnus-cite-hide-percentage
+@vindex gnus-cite-hide-percentage
+If the cited text is of a bigger percentage than this variable (default
+50), hide the cited text.
+
+@item gnus-cite-hide-absolute
+@vindex gnus-cite-hide-absolute
+The cited text must be have at least this length (default 10) before it
+is hidden.
+
+@end table
+
+Also see @xref{Article Highlighting} for further variables for
+citation customization.
+
+@end table
+
+@end table
+
+
+@node Article Washing
+@section Article Washin
+
+We call this "article washing" for a really good reason.  Namely, the
+@kbd{A} key was taken, so we had to use the @kbd{W} key instead.
+
+@dfn{Washing} is defined by us as "changing something from something to
+something else", but normally results in something looking better.
+Cleaner, perhaps.
+
+@table @kbd
+
 @item W l
 @kindex W l (Summary)
 @findex gnus-summary-stop-page-breaking
 Remove page breaks from the current article
 (@code{gnus-summary-stop-page-breaking}).
-@item A s 
-@kindex A s (Summary)
-@findex gnus-summary-isearch-article
-Perform an isearch in the article buffer
-(@code{gnus-summary-isearch-article}). 
+
 @item W r
 @kindex W r (Summary)
 @findex gnus-summary-caesar-message
 Do a Caesar rotate (rot13) on the article buffer
 (@code{gnus-summary-caesar-message}). 
+
 @item A g
 @kindex A g (Summary)
 @findex gnus-summary-show-article
@@ -5131,49 +5606,39 @@ Do a Caesar rotate (rot13) on the article buffer
 given a prefix, don't actually refetch any articles, just jump to the
 current article and configure the windows to display the current
 article.
+
 @item W t
 @kindex W t (Summary)
 @findex gnus-summary-toggle-header
 Toggle whether to display all headers in the article buffer
 (@code{gnus-summary-toggle-header}). 
+
 @item W m
 @kindex W m (Summary)
 @findex gnus-summary-toggle-mime
 Toggle whether to run the article through @sc{mime} before displaying
 (@code{gnus-summary-toggle-mime}).
-@end table
 
-There's a battery of commands for washing the article buffer:
-
-@table @kbd
-@item W W h
-@kindex W W h (Summary)
-@findex gnus-article-hide-headers
-Hide headers (@code{gnus-article-hide-headers}).
-@item W W s
-@kindex W W s (Summary)
-@findex gnus-article-hide-signature
-Hide signature (@code{gnus-article-hide-signature}).
-@item W W c
-@kindex W W c (Summary)
-@findex gnus-article-hide-citation
-Hide citation (@code{gnus-article-hide-citation}).
 @item W o
 @kindex W o (Summary)
 @findex gnus-article-treat-overstrike
 Treat overstrike (@code{gnus-article-treat-overstrike}).
+
 @item W w
 @kindex W w (Summary)
 @findex gnus-article-word-wrap
 Do word wrap (@code{gnus-article-word-wrap}).
+
 @item W c
 @kindex W c (Summary)
 @findex gnus-article-remove-cr
 Remove CR (@code{gnus-article-remove-cr}).
+
 @item W q
 @kindex W q (Summary)
 @findex gnus-article-de-quoted-unreadable
 Treat quoted-printable (@code{gnus-article-de-quoted-unreadable}).
+
 @item W f
 @kindex W f (Summary)
 @cindex x-face
@@ -5189,45 +5654,45 @@ If it is a function, this function will be called with the face as the
 argument. If the @code{gnus-article-x-face-too-ugly} (which is a regexp)
 matches the @code{From} header, the face will not be shown.
 
-@item W H a
-@kindex W H a
-@findex gnus-article-highlight
-Highlight the current article (@code{gnus-article-highlight}).
+@end table
 
-@item W H h
-@kindex W H h
-@findex gnus-article-highlight-headers
-Highlight the headers (@code{gnus-article-highlight-headers}).
+@node Article Date
+@section Article Date
 
-@item W H c
-@kindex W H c
-@findex gnus-article-highlight-citation
-Highlight cited text (@code{gnus-article-highlight-citation}).
+The date is most likely generated in some obscure timezone you've never
+heard of, so it's quite nice to be able to find out what the time was
+when the article was sent.
 
-@item W H s
-@kindex W H s
-@findex gnus-article-highlight-signature
-Highlight the signature (@code{gnus-article-highlight-signature}).
+@table @kbd
 
 @item W T u
-@kindex W T u
+@kindex W T u (Summary)
 @findex gnus-article-date-ut
 Display the date in UT (aka. GMT, aka ZULU)
 (@code{gnus-article-date-ut}). 
 
 @item W T l
-@kindex W T l
+@kindex W T l (Summary)
 @findex gnus-article-date-local
 Display the date in the local timezone (@code{gnus-article-date-local}).
 
 @item W T e
-@kindex W T e
+@kindex W T e (Summary)
 @findex gnus-article-date-lapsed
 Say how much time has (e)lapsed between the article was posted and now
 (@code{gnus-article-date-lapsed}).
 
+@item W T o
+@item W T o (Summary)
+@findex gnus-article-date-original
+Display the original date (@code{gnus-article-date-original}).  This can
+be useful if you normally use some other conversion function and is
+worried that it might be doing something totally wrong.  Say, claiming
+that the article was posted in 1854.  Although something like that is
+@emph{totally} impossible.  Don't you trust me? *titter*
 
 @end table
+
 
 @node Summary Sorting
 @section Summary Sorting
@@ -5266,6 +5731,7 @@ root-by-root basis, which might not be what you were looking for.  To
 toggle whether to use threading, type @kbd{T T} (@pxref{Thread
 Commands}).
 
+
 @node Finding the Parent
 @section Finding the Parent
 @cindex parent articles
@@ -5281,6 +5747,12 @@ can just press @kbd{^} or @kbd{A r}
 (@code{gnus-summary-refer-parent-article}).  If everything goes well,
 you'll get the parent.  If the parent is already displayed in the
 summary buffer, point will just move to this article.
+
+@findex gnus-summary-refer-references
+@kindex A R (Summary)
+You can have Gnus fetch all articles mentioned in the @code{References}
+header of the article by pushing @kbd{A R}
+(code{gnus-summary-refer-references}). 
 
 @findex gnus-summary-refer-article
 @kindex M-^ (Summary)
@@ -5298,6 +5770,13 @@ you can set @code{gnus-refer-article-method} to an @sc{nntp} method.  It
 would, perhaps, be best if the @sc{nntp} server you consult is the same
 as the one that keeps the spool you are reading from updated, but that's
 not really necessary.
+
+Most of the mail backends support fetching by @code{Message-ID}, but do
+not do a particularly excellent job of it.  That is, @code{nnmbox} and
+@code{nnbabyl} are able to locate articles from any groups, while
+@code{nnml} and @code{nnfolder} are only able to locate articles that
+have been posted to the current group.  (Anything else would be too time
+consuming.)  @code{nnmh} does not support this at all.
 
 @node Score Files
 @section Score Files
@@ -5866,7 +6345,7 @@ the @code{Xref} header.
 If you want to lower the score of articles that have been crossposted to
 more than, say, 3 groups:
 @lisp
-("xref" ("[^:\n]+:[0-9]+ +[^:\n]+:[0-9]+ +[^:\n]+:[0-9]+" -1000 nil r))
+("xref" (" +[^ ]+:[0-9]+ +[^ ]+:[0-9]+ +[^ ]+:[0-9]+" -1000 nil r))
 @end lisp
 @item Matching on the body
 This is generally not a very good idea - it takes a very long time.
@@ -6092,6 +6571,11 @@ Copy the article from one group (mail group or not) to a mail group
 Import a random file into the current mail newsgroup
 (@code{gnus-summary-import-article}).  You will be prompted for a file
 name, a @code{From} header and a @code{Subject} header.
+
+Something similar can be done by just starting to compose a mail
+message.  Instead of typing @kbd{C-c C-c} to mail it off, you can type
+@kbd{C-c C-p} instead.  This will put the message you have just created
+into the current mail group.
 
 @item B r
 @kindex B r (Summary)
@@ -6834,6 +7318,18 @@ frame attribute wrongly, either set this variable in your @file{~/.emacs} or
 set the resource @code{Emacs.backgroundMode} in your @file{~/.Xdefaults}. 
 `gnus-display-type'.
 
+@item nnheader-max-head-length
+@vindex nnheader-max-head-length
+When the backends read straight heads of articles, they all try to read
+as little as possible.  This variable (default @code{4096}) specifies
+the absolute max length the backends will try to read before giving up
+on finding a separator line between the head and the body.  If this
+variable is @code{nil}, there is no upper read bound.  If it is
+@code{t}, the backends won't try to read the articles piece by piece,
+but read the entire articles.  This makes sense with some versions of
+@code{ange-ftp}. 
+
+
 @end table
 
 @node Customization
@@ -7085,6 +7581,8 @@ they have a group, and they deliver info on that group and nothing more.
 In the examples and definitions I will refer to the imaginary backend
 @code{nnchoke}. 
 
+@cindex nnchoke
+
 @menu
 * Required Backend Functions::        Functions that must be implemented.
 * Optional Backend Functions::        Functions that need not be implemented.
@@ -7096,7 +7594,7 @@ In the examples and definitions I will refer to the imaginary backend
 
 @table @code
 
-@item (nnchoke-retrieve-headers ARTICLES &optional GROUP SERVER)
+@item (nnchoke-retrieve-headers ARTICLES &optional GROUP SERVER FETCH-OLD)
 
 @var{articles} is either a range of article numbers or a list of
 @code{Message-ID}s.  Current backends do not fully support either - only
@@ -7107,6 +7605,14 @@ The result data should either be HEADs or NOV lines, and the result
 value should either be @code{headers} or @code{nov} to reflect this.
 This might later be expanded to @code{various}, which will be a mixture
 of HEADs and NOV lines, but this is currently not supported by Gnus.  
+
+If @var{fetch-old} is non-@code{nil} it says to try to fetch "extra"
+headers, in some meaning of the word.  This is generally done by
+fetching (at most) @var{fetch-old} extra headers less than the smallest
+article number in @code{articles}, and fill in the gaps as well.  The
+presence of this parameter can be ignored if the backend finds it
+cumbersome to follow the request.  If this is non-@code{nil} and not a
+number, do maximum fetches.
 
 Here's an example HEAD:
 

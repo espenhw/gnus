@@ -32,12 +32,11 @@
 (eval-and-compile
   (autoload 'mail-send-and-exit "sendmail"))
 
+(defvar nndir-directory nil)
+
 
 
 (defconst nndir-version "nndir 1.0")
-
-(defvar nndir-current-directory nil
-  "Current news group directory.")
 
 (defvar nndir-status-string "")
 
@@ -46,77 +45,105 @@
 
 
 
+(defvar nndir-current-server nil)
+(defvar nndir-server-alist nil)
+(defvar nndir-server-variables 
+  (list
+   '(nndir-directory nil)
+   '(nndir-status-string "")
+   '(nndir-group-alist)))
+
+
+
 ;;; Interface functions.
 
 
-(defun nndir-retrieve-headers (sequence &optional newsgroup server)
+(defun nndir-retrieve-headers (sequence &optional group server fetch-old)
   (nndir-execute-nnml-command
-   '(nnml-retrieve-headers sequence group server) server))
+   (` (nnml-retrieve-headers 
+       (quote (, sequence)) (, group) (, server) (, fetch-old)))))
 
-(defun nndir-open-server (host &optional service)
-  "Open nndir backend."
-  (setq nndir-status-string "")
-  (nnheader-init-server-buffer))
+(defun nndir-open-server (server &optional defs)
+  (nnheader-init-server-buffer)
+  (if (equal server nndir-current-server)
+      t
+    (if nndir-current-server
+	(setq nndir-server-alist 
+	      (cons (list nndir-current-server
+			  (nnheader-save-variables nndir-server-variables))
+		    nndir-server-alist)))
+    (let ((state (assoc server nndir-server-alist)))
+      (if state 
+	  (progn
+	    (nnheader-restore-variables (nth 1 state))
+	    (setq nndir-server-alist (delq state nndir-server-alist)))
+	(nnheader-set-init-variables nndir-server-variables defs))
+      (or (assq 'nndir-directory defs)
+	  (setq nndir-directory server)))
+    (setq nndir-current-server server)))
 
 (defun nndir-close-server (&optional server)
-  "Close news server."
   t)
 
 (defun nndir-server-opened (&optional server)
-  "Return server process status, T or NIL.
-If the stream is opened, return T, otherwise return NIL."
   (and nntp-server-buffer
-       (get-buffer nntp-server-buffer)))
+       (get-buffer nntp-server-buffer)
+       nndir-current-server
+       (equal nndir-current-server server)))
 
 (defun nndir-status-message (&optional server)
-  "Return server status response as string."
   nndir-status-string)
 
-(defun nndir-request-article (id &optional newsgroup server buffer)
+(defun nndir-request-article (id &optional group server buffer)
   (nndir-execute-nnmh-command
-   '(nnmh-request-article id group server buffer) server))
+   (` (nnmh-request-article (, id) (, group) (, server) (, buffer)))))
 
 (defun nndir-request-group (group &optional server dont-check)
-  "Select news GROUP."
   (nndir-execute-nnmh-command
-   '(nnmh-request-group group "" dont-check) server))
+   (` (nnmh-request-group (, group) "" (, dont-check)))))
 
 (defun nndir-request-list (&optional server dir)
-  "Get list of active articles in all newsgroups."
   (nndir-execute-nnmh-command
-   '(nnmh-request-list nil dir) server))
+   (` (nnmh-request-list nil (, dir)))))
 
 (defun nndir-request-newgroups (date &optional server)
   (nndir-execute-nnmh-command
-   '(nnmh-request-newgroups date server) server))
+   (` (nnmh-request-newgroups (, date) (, server)))))
 
 (defun nndir-request-post (&optional server)
-  "Post a new news in current buffer."
   (mail-send-and-exit nil))
 
 (defalias 'nndir-request-post-buffer 'nnmail-request-post-buffer)
 
-(defun nndir-request-expire-articles (articles newsgroup &optional server force)
-  "Expire all articles in the ARTICLES list in group GROUP."
-  (setq nndir-status-string "nndir: expire not possible")
-  nil)
+(defun nndir-request-expire-articles 
+  (articles group &optional server force)
+  (nndir-execute-nnmh-command
+   (` (nnmh-request-expire-articles (, articles) (, group) 
+				    (, server) (, force)))))
+
+(defun nndir-request-accept-article (group &optional last)
+  (nndir-execute-nnmh-command
+   (` (nnmh-request-accept-article (, group) (, last)))))
 
 (defun nndir-close-group (group &optional server)
   t)
 
-(defun nndir-request-move-article (article group server accept-form)
-  (setq nndir-status-string "nndir: move not possible")
-  nil)
-
-(defun nndir-request-accept-article (group)
-  (setq nndir-status-string "nndir: accept not possible")
-  nil)
+(defun nndir-request-create-group (group &optional server)
+  (if (file-exists-p nndir-directory)
+      (if (file-directory-p nndir-directory)
+	  t
+	nil)
+    (condition-case ()
+	(progn
+	  (make-directory nndir-directory t)
+	  t)
+      (file-error nil))))
 
 
 ;;; Low-Level Interface
 
-(defun nndir-execute-nnmh-command (command server)
-  (let ((dir (expand-file-name server)))
+(defun nndir-execute-nnmh-command (command)
+  (let ((dir (expand-file-name nndir-directory)))
     (and (string-match "/$" dir)
 	 (setq dir (substring dir 0 (match-beginning 0))))
     (string-match "/[^/]+$" dir)
@@ -125,8 +152,8 @@ If the stream is opened, return T, otherwise return NIL."
 	  (nnmh-get-new-mail nil))
       (eval command))))
 
-(defun nndir-execute-nnml-command (command server)
-  (let ((dir (expand-file-name server)))
+(defun nndir-execute-nnml-command (command)
+  (let ((dir (expand-file-name nndir-directory)))
     (and (string-match "/$" dir)
 	 (setq dir (substring dir 0 (match-beginning 0))))
     (string-match "/[^/]+$" dir)

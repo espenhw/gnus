@@ -333,7 +333,7 @@ If NEWSGROUP is nil, return the global kill file instead."
   "Remove lines marked with MARKS."
   (save-excursion
     (set-buffer gnus-summary-buffer)
-    (gnus-summary-remove-lines-marked-with marks)))
+    (gnus-summary-limit-to-marks marks 'reverse)))
 
 (defun gnus-apply-kill-file-internal ()
   "Apply a kill file to the current newsgroup.
@@ -344,8 +344,6 @@ Returns the number of articles marked as read."
 	 (gnus-summary-inhibit-highlight t)
 	 beg)
     (setq gnus-newsgroup-kill-headers nil)
-    (or gnus-newsgroup-headers-hashtb-by-number
-	(gnus-make-headers-hashtable-by-number))
     ;; If there are any previously scored articles, we remove these
     ;; from the `gnus-newsgroup-headers' list that the score functions
     ;; will see. This is probably pretty wasteful when it comes to
@@ -388,8 +386,6 @@ Returns the number of articles marked as read."
 	    
 	      (message "Processing kill file %s...done" (car kill-files)))
 	    (setq kill-files (cdr kill-files)))))
-
-      (gnus-set-mode-line 'summary)
 
       (if beg
 	  (let ((nunreads (- unreads (length gnus-newsgroup-unreads))))
@@ -606,7 +602,7 @@ If optional 2nd argument IGNORE-MARKED is non-nil, articles which are
 marked as read or ticked are ignored."
   (save-excursion
     (let ((killed-no 0)
-	  function article header)
+	  function article)
       (if (or (null field) (string-equal field ""))
 	  (setq function nil)
 	;; Get access function of header filed.
@@ -622,12 +618,12 @@ marked as read or ticked are ignored."
 		      (setq article (gnus-summary-article-number))
 		      t)
 		 (setq article 
-		       (gnus-summary-search-subject 
-			backward (not ignore-marked))))
+		       (gnus-summary-search-forward 
+			(not ignore-marked) nil backward)))
 	(and (or (null gnus-newsgroup-kill-headers)
 		 (memq article gnus-newsgroup-kill-headers))
-	     (vectorp (setq header (gnus-get-header-by-number article)))
-	     (gnus-execute-1 function regexp form header)
+	     (gnus-execute-1 function regexp form 
+			     (gnus-summary-article-header article))
 	     (setq killed-no (1+ killed-no))))
       killed-no)))
 

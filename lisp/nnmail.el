@@ -196,7 +196,7 @@ Example:
     (mail . "mailer-daemon\\|postmaster"))
   "*Alist of abbreviations allowed in `nnmail-split-fancy'.")
 
-(defvar nnmail-delete-incoming t
+(defvar nnmail-delete-incoming nil
   "*If non-nil, the mail backends will delete incoming files after splitting.")
 
 (defvar nnmail-message-id-cache-length 1000
@@ -231,8 +231,6 @@ perfomed.")
 	      nil method-address))
     (save-excursion
       (set-buffer (get-buffer-create "*mail*"))
-      (mail-mode)
-      (local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
       (if (and (buffer-modified-p)
 	       (> (buffer-size) 0)
 	       (not (y-or-n-p "Unsent mail being composed; erase it? ")))
@@ -288,6 +286,7 @@ perfomed.")
 		      subject message-of 
 		      (if (zerop (length new-cc)) nil new-cc)
 		      article-buffer nil)
+	  (mail-mode)
 	  (auto-save-mode auto-save-default)
 	  ;; Note that "To" elements should already be in the message.
 	  (if (and follow-to (listp follow-to))
@@ -301,6 +300,9 @@ perfomed.")
 		   (car (car follow-to)) ": " (cdr (car follow-to)) "\n")
 		  (setq follow-to (cdr follow-to)))))
 	  (nnheader-insert-references references message-id)))
+      (use-local-map (copy-keymap (current-local-map)))
+      (local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
+      (local-set-key "\C-c\C-p" 'gnus-put-message)
       (current-buffer))))
 
 (defun nnmail-find-file (file)
@@ -484,7 +486,7 @@ nn*-request-list should have been called before calling this function."
 	     group))
     group))
 
-(defun nnmail-split-incoming (incoming func &optional dont-kill group)
+(defun nnmail-split-incoming (incoming func &optional exit-func group)
   "Go through the entire INCOMING file and pick out each individual mail.
 FUNC will be called with the buffer narrowed to each mail."
   (let ((delim (concat "^" rmail-unix-mail-delimiter))
@@ -566,9 +568,8 @@ FUNC will be called with the buffer narrowed to each mail."
 	    (goto-char end)))
       ;; Close the message-id cache.
       (nnmail-cache-close)
-      (if dont-kill
-	  (current-buffer)
-	(kill-buffer (current-buffer))))))
+      (if exit-func (funcall exit-func))
+      (kill-buffer (current-buffer)))))
 
 ;; Mail crossposts syggested by Brian Edmonds <edmonds@cs.ubc.ca>. 
 (defun nnmail-article-group (func)
@@ -871,6 +872,60 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	 (goto-char (point-max))
 	 (search-backward id nil t))))
 
+(defun nnmail-get-value (&rest args)
+  (let ((sym (intern (apply 'format args))))
+    (and (boundp sym)
+	 (symbol-value sym))))
+
+(defun nnmail-get-new-mail (method exit-func temp
+				   &optional group spool-func)
+  "Read new incoming mail."
+  (let* ((spools (nnmail-get-spool-files group))
+	 (group-in group)
+	 incoming incomings)
+    (if (or (not (nnmail-get-value "%s-get-new-mail" method))
+	    (not nnmail-spool-file))
+	() ; We don't want to look for new mail.
+      ;; We first activate all the groups.
+      (nnmail-activate method)
+      ;; The we go through all the existing spool files and split the
+      ;; mail from each.
+      (while spools
+	(and
+	 (file-exists-p (car spools))
+	 (> (nth 7 (file-attributes (car spools))) 0)
+	 (progn
+	   (and gnus-verbose-backends 
+		(message "%s: Reading incoming mail..." method))
+	   (if (not (setq incoming 
+			  (nnmail-move-inbox 
+			   (car spools) 
+			   (concat temp "Incoming"))))
+	       () ; There is no new mail.
+	     (setq group (nnmail-get-split-group (car spools) group-in))
+	     (nnmail-split-incoming 
+	      incoming (intern (format "%s-save-mail" method)) 
+	      spool-func group)
+	     (setq incomings (cons incoming incomings)))))
+	(setq spools (cdr spools)))
+      ;; If we did indeed read any incoming spools, we save all info. 
+      (if incoming 
+	  (progn
+	    (nnmail-save-active 
+	     (nnmail-get-value "%s-group-alist" method)
+	     (nnmail-get-value "%s-active-file" method))
+	    (and exit-func
+		 (funcall exit-func))
+	    (run-hooks 'nnmail-read-incoming-hook)
+	    (and gnus-verbose-backends
+		 (message "%s: Reading incoming mail...done" method))))
+      (while incomings
+	(setq incoming (car incomings))
+	(and nnmail-delete-incoming
+	     (file-exists-p incoming)
+	     (file-writable-p incoming)
+	     (delete-file incoming))
+	(setq incomings (cdr incomings))))))
 
 (provide 'nnmail)
 

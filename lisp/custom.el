@@ -264,8 +264,7 @@ If called interactively, prompts for a face and face attributes."
 ;; Put it in the Help menu, if possible.
 (if (string-match "XEmacs" emacs-version)
     ;; XEmacs (disabled because it doesn't work)
-    (and current-menubar
-	 (add-menu-item '("Help") "Customize..." 'customize nil))
+    (add-menu-item '("Help") "Customize..." 'customize nil)
   ;; Emacs 19.28 and earlier
   (global-set-key [ menu-bar help customize ]
 		  '("Customize..." . customize))

@@ -84,48 +84,46 @@
 	  (count 0)
 	  article art-string start stop)
       (nnmbox-possibly-change-newsgroup newsgroup)
-      (if (stringp (car sequence))
-	  'headers
-	(while sequence
-	  (setq article (car sequence))
-	  (setq art-string (nnmbox-article-string article))
-	  (set-buffer nnmbox-mbox-buffer)
-	  (if (or (search-forward art-string nil t)
-		  (progn (goto-char (point-min))
-			 (search-forward art-string nil t)))
-	      (progn
-		(setq start 
-		      (save-excursion
-			(re-search-backward 
-			 (concat "^" rmail-unix-mail-delimiter) nil t)
-			(point)))
-		(search-forward "\n\n" nil t)
-		(setq stop (1- (point)))
-		(set-buffer nntp-server-buffer)
-		(insert (format "221 %d Article retrieved.\n" article))
-		(insert-buffer-substring nnmbox-mbox-buffer start stop)
-		(goto-char (point-max))
-		(insert ".\n")))
-	  (setq sequence (cdr sequence))
-	  (setq count (1+ count))
-	  (and (numberp nnmail-large-newsgroup)
-	       (> number nnmail-large-newsgroup)
-	       (zerop (% count 20))
-	       gnus-verbose-backends
-	       (message "nnmbox: Receiving headers... %d%%"
-			(/ (* count 100) number))))
-
+      (while sequence
+	(setq article (car sequence))
+	(setq art-string (nnmbox-article-string article))
+	(set-buffer nnmbox-mbox-buffer)
+	(if (or (search-forward art-string nil t)
+		(progn (goto-char (point-min))
+		       (search-forward art-string nil t)))
+	    (progn
+	      (setq start 
+		    (save-excursion
+		      (re-search-backward 
+		       (concat "^" rmail-unix-mail-delimiter) nil t)
+		      (point)))
+	      (search-forward "\n\n" nil t)
+	      (setq stop (1- (point)))
+	      (set-buffer nntp-server-buffer)
+	      (insert (format "221 %d Article retrieved.\n" article))
+	      (insert-buffer-substring nnmbox-mbox-buffer start stop)
+	      (goto-char (point-max))
+	      (insert ".\n")))
+	(setq sequence (cdr sequence))
+	(setq count (1+ count))
 	(and (numberp nnmail-large-newsgroup)
 	     (> number nnmail-large-newsgroup)
+	     (zerop (% count 20))
 	     gnus-verbose-backends
-	     (message "nnmbox: Receiving headers...done"))
+	     (message "nnmbox: Receiving headers... %d%%"
+		      (/ (* count 100) number))))
 
-	;; Fold continuation lines.
-	(set-buffer nntp-server-buffer)
-	(goto-char (point-min))
-	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	  (replace-match " " t t))
-	'headers))))
+      (and (numberp nnmail-large-newsgroup)
+	   (> number nnmail-large-newsgroup)
+	   gnus-verbose-backends
+	   (message "nnmbox: Receiving headers...done"))
+
+      ;; Fold continuation lines.
+      (set-buffer nntp-server-buffer)
+      (goto-char (point-min))
+      (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+	(replace-match " " t t))
+      'headers)))
 
 (defun nnmbox-open-server (server &optional defs)
   (nnheader-init-server-buffer)
@@ -159,38 +157,37 @@
 
 (defun nnmbox-request-article (article &optional newsgroup server buffer)
   (nnmbox-possibly-change-newsgroup newsgroup)
-  (if (stringp article)
-      nil
-    (save-excursion
-      (set-buffer nnmbox-mbox-buffer)
-      (goto-char (point-min))
-      (if (search-forward (nnmbox-article-string article) nil t)
-	  (let (start stop)
-	    (re-search-backward (concat "^" rmail-unix-mail-delimiter) nil t)
-	    (setq start (point))
-	    (forward-line 1)
-	    (or (and (re-search-forward 
-		      (concat "^" rmail-unix-mail-delimiter) nil t)
-		     (forward-line -1))
-		(goto-char (point-max)))
-	    (setq stop (point))
-	    (let ((nntp-server-buffer (or buffer nntp-server-buffer)))
-	      (set-buffer nntp-server-buffer)
-	      (erase-buffer)
-	      (insert-buffer-substring nnmbox-mbox-buffer start stop)
-	      (goto-char (point-min))
-	      (while (looking-at "From ")
-		(delete-char 5)
-		(insert "X-From-Line: ")
-		(forward-line 1))
-	      t))))))
+  (save-excursion
+    (set-buffer nnmbox-mbox-buffer)
+    (goto-char (point-min))
+    (if (search-forward (nnmbox-article-string article) nil t)
+	(let (start stop)
+	  (re-search-backward (concat "^" rmail-unix-mail-delimiter) nil t)
+	  (setq start (point))
+	  (forward-line 1)
+	  (or (and (re-search-forward 
+		    (concat "^" rmail-unix-mail-delimiter) nil t)
+		   (forward-line -1))
+	      (goto-char (point-max)))
+	  (setq stop (point))
+	  (let ((nntp-server-buffer (or buffer nntp-server-buffer)))
+	    (set-buffer nntp-server-buffer)
+	    (erase-buffer)
+	    (insert-buffer-substring nnmbox-mbox-buffer start stop)
+	    (goto-char (point-min))
+	    (while (looking-at "From ")
+	      (delete-char 5)
+	      (insert "X-From-Line: ")
+	      (forward-line 1))
+	    (if (numberp article) 
+		(cons nnmbox-current-group article)
+	      (nnmbox-article-group-number)))))))
 
 (defun nnmbox-request-group (group &optional server dont-check)
   (save-excursion
     (if (nnmbox-possibly-change-newsgroup group)
 	(if dont-check
 	    t
-	  (nnmbox-get-new-mail group)
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
 	    (erase-buffer)
@@ -203,11 +200,26 @@
 			      (car active))))
 	    t)))))
 
+(defun nnmbox-request-scan (&optional group server)
+  (nnmbox-read-mbox)
+  (nnmail-get-new-mail 
+   'nnmbox 
+   (lambda ()
+     (save-excursion
+       (set-buffer nnmbox-mbox-buffer)
+       (save-buffer)))
+   nnmbox-mbox-file group
+   (lambda ()
+     (save-excursion
+       (let ((in-buf (current-buffer)))
+	 (set-buffer nnmbox-mbox-buffer)
+	 (goto-char (point-max))
+	 (insert-buffer-substring in-buf))))))
+
 (defun nnmbox-close-group (group &optional server)
   t)
 
 (defun nnmbox-request-list (&optional server)
-  (if server (nnmbox-get-new-mail))
   (save-excursion
     (or (nnmail-find-file nnmbox-active-file)
 	(progn
@@ -251,7 +263,8 @@
 			     days)))
 		(progn
 		  (and gnus-verbose-backends
-		       (message "Deleting article %s..." (car articles)))
+		       (message "Deleting article %d in %s..."
+				(car articles) newsgroup))
 		  (nnmbox-delete-mail))
 	      (setq rest (cons (car articles) rest))))
 	(setq articles (cdr articles)))
@@ -381,8 +394,19 @@
 	  (setq nnmbox-current-group newsgroup))))
 
 (defun nnmbox-article-string (article)
-  (concat "\nX-Gnus-Newsgroup: " nnmbox-current-group ":" 
-	  (int-to-string article) " "))
+  (if (numberp article)
+      (concat "\nX-Gnus-Newsgroup: " nnmbox-current-group ":" 
+	      (int-to-string article) " ")
+    (concat "\nMessage-ID: " article)))
+
+(defun nnmbox-article-group-number ()
+  (save-excursion
+    (goto-char (point-min))
+    (and (re-search-forward "^X-Gnus-Newsgroup: +\\([^:]+\\):\\([0-9]+\\) "
+			    nil t)
+	 (cons (buffer-substring (match-beginning 1) (match-end 1))
+	       (string-to-int
+		(buffer-substring (match-beginning 2) (match-end 2)))))))
 
 (defun nnmbox-save-mail (&optional group)
   "Called narrowed to an article."
@@ -454,54 +478,6 @@
 		  (narrow-to-region start end)
 		  (nnmbox-save-mail))))
 	  (goto-char end))))))
-
-(defun nnmbox-get-new-mail (&optional group)
-  "Read new incoming mail."
-  (let* ((spools (nnmail-get-spool-files group))
-	 (group-in group)
-	 incoming incomings)
-    (nnmbox-read-mbox)
-    (if (or (not nnmbox-get-new-mail) (not nnmail-spool-file))
-	()
-      ;; We go through all the existing spool files and split the
-      ;; mail from each.
-      (while spools
-	(and
-	 (file-exists-p (car spools))
-	 (> (nth 7 (file-attributes (car spools))) 0)
-	 (progn
-	   (and gnus-verbose-backends 
-		(message "nnmbox: Reading incoming mail..."))
-	   (if (not (setq incoming 
-			  (nnmail-move-inbox 
-			   (car spools) 
-			   (concat nnmbox-mbox-file "-Incoming"))))
-	       ()
-	     (setq incomings (cons incoming incomings))
-	     (save-excursion
-	       (setq group (nnmail-get-split-group (car spools) group-in))
-	       (let ((in-buf (nnmail-split-incoming 
-			      incoming 'nnmbox-save-mail t group)))
-		 (set-buffer nnmbox-mbox-buffer)
-		 (goto-char (point-max))
-		 (insert-buffer-substring in-buf)
-		 (kill-buffer in-buf))))))
-	(setq spools (cdr spools)))
-      ;; If we did indeed read any incoming spools, we save all info. 
-      (and (buffer-modified-p nnmbox-mbox-buffer) 
-	   (save-excursion
-	     (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
-	     (set-buffer nnmbox-mbox-buffer)
-	     (save-buffer)))
-      (if incomings (run-hooks 'nnmail-read-incoming-hook))
-      (while incomings
-	(setq incoming (car incomings))
-	(and nnmail-delete-incoming
-	     (file-exists-p incoming) 
-	     (file-writable-p incoming) 
-	     (delete-file incoming))
-	(setq incomings (cdr incomings))))))
-
 
 (provide 'nnmbox)
 

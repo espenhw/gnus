@@ -70,7 +70,7 @@
 
 ;;; Interface functions.
 
-(defun nneething-retrieve-headers (sequence &optional newsgroup server)
+(defun nneething-retrieve-headers (sequence &optional newsgroup server fetch-old)
   (nneething-possibly-change-directory newsgroup)
 
   (save-excursion

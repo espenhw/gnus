@@ -548,9 +548,7 @@ groups matched by the current score file.")
       (if entry 
 	  (mapcar 'gnus-score-custom-sanify (cdr entry))
 	(setq entry (assoc name gnus-score-alist))
-	(if (or (memq name '(files exclude-files local))
-		(and (eq name 'adapt)
-		     (not (symbolp (car (cdr entry))))))
+	(if (memq name '(files exclude-files local adapt))
 	    (cdr entry)
 	  (car (cdr entry)))))))
 
@@ -586,12 +584,9 @@ groups matched by the current score file.")
   (list (nth 0 entry)
 	(or (nth 1 entry) gnus-score-interactive-default-score)
 	(nth 2 entry)
-	(cond ((null (nth 3 entry))
-	       's)
-	      ((memq (nth 3 entry) '(before after at >= <=))
-	       (nth 3 entry))
-	      (t
-	       (intern (substring (symbol-name (nth 3 entry)) 0 1))))))
+	(if (null (nth 3 entry)) 
+	    's
+	  (intern (substring (symbol-name (nth 3 entry)) 0 1)))))
 
 (defvar gnus-score-cache nil)
 

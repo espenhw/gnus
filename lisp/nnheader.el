@@ -36,6 +36,11 @@
 
 ;;; Code:
 
+(require 'mail-utils)
+
+(defvar nnheader-max-head-length 4096
+  "*Max length of the head of articles.")
+
 (defalias 'nntp-header-number 'mail-header-number)
 (defmacro mail-header-number (header)
   "Return article number in HEADER."
@@ -188,12 +193,18 @@
 
 ;; Read the head of an article.
 (defun nnheader-insert-head (file)
-  (let ((beg 0)
-	(chop 1024))
-    (while (and (eq chop (nth 1 (nnheader-insert-file-contents-literally
-				 file nil beg (setq beg (+ chop beg)))))
-		(prog1 (not (search-backward "\n\n" nil t)) 
-		  (goto-char (point-max)))))))
+  (if (eq nnheader-max-head-length t)
+      ;; Just read the entire file.
+      (nnheader-insert-file-contents-literally file)
+    (let ((beg 0)
+	  (chop 1024))
+      ;; Read 1K blocks until we find a separator.
+      (while (and (eq chop (nth 1 (nnheader-insert-file-contents-literally
+				   file nil beg (setq beg (+ chop beg)))))
+		  (prog1 (not (search-backward "\n\n" nil t)) 
+		    (goto-char (point-max)))
+		  (or (null nnheader-max-head-length)
+		      (< beg nnheader-max-head-length)))))))
 
 (defun nnheader-article-p ()
   (goto-char (point-min))
@@ -339,19 +350,35 @@ The buffer is not selected, just returned to the caller."
       buf)))
 
 (defun nnheader-insert-references (references message-id)
-  (if (and (not references) (not message-id)) 
-      () ; This is illegal, but not all articles have Message-IDs.
-    (mail-position-on-field "References")
-    ;; Fold long references line to follow RFC1036.
-    (let ((begin (gnus-point-at-bol))
-	  (fill-column 78)
-	  (fill-prefix "\t"))
-      (if references (insert references))
-      (if (and references message-id) (insert " "))
-      (if message-id (insert message-id))
-      ;; The region must end with a newline to fill the region
-      ;; without inserting extra newline.
-      (fill-region-as-paragraph begin (1+ (point))))))
+  ;; Fold long references line to follow RFC1036.
+  (mail-position-on-field "References")
+  (let ((begin (save-excursion (beginning-of-line) (point)))
+	(fill-column 78)
+	(fill-prefix "\t"))
+    (if references (insert references))
+    (if (and references message-id) (insert " "))
+    (if message-id (insert message-id))
+    ;; The region must end with a newline to fill the region
+    ;; without inserting extra newline.
+    (fill-region-as-paragraph begin (1+ (point)))))
+
+(defun nnheader-remove-header (header &optional is-regexp)
+  (goto-char (point-min))
+  (let ((regexp (if is-regexp header (concat "^" header ":")))
+	(case-fold-search t))
+    (while (re-search-forward regexp nil t)
+      (delete-region
+       (match-beginning 0) 
+       ;; There might be a continuation header, so we have to search
+       ;; until we find a new non-continuation line.
+       (if (re-search-forward "^[^ \t]" nil t)
+	   (match-beginning 0)
+	 (point-max))))))
+
+(defun nnheader-set-temp-buffer (name)
+  (set-buffer (get-buffer-create name))
+  (buffer-disable-undo (current-buffer))
+  (erase-buffer))
 
 (provide 'nnheader)
 

@@ -86,9 +86,6 @@ such things as moving mail.  All buffers always get killed upon server close.")
 (defvar nnfolder-buffer-alist nil)
 (defvar nnfolder-active-timestamp nil)
 
-(defmacro nnfolder-article-string (article)
-  (` (concat "\n" nnfolder-article-marker (int-to-string (, article)) " ")))
-
 
 
 (defvar nnfolder-current-server nil)
@@ -188,31 +185,36 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 (defun nnfolder-request-article (article &optional newsgroup server buffer)
   (nnfolder-possibly-change-group newsgroup)
-  (if (stringp article)
-      nil
-    (save-excursion
-      (set-buffer nnfolder-current-buffer)
-      (goto-char (point-min))
-      (if (search-forward (nnfolder-article-string article) nil t)
-	  (let (start stop)
-	    (re-search-backward (concat "^" rmail-unix-mail-delimiter) nil t)
-	    (setq start (point))
-	    (forward-line 1)
-	    (or (and (re-search-forward 
-		      (concat "^" rmail-unix-mail-delimiter) nil t)
-		     (forward-line -1))
-		(goto-char (point-max)))
-	    (setq stop (point))
-	    (let ((nntp-server-buffer (or buffer nntp-server-buffer)))
-	      (set-buffer nntp-server-buffer)
-	      (erase-buffer)
-	      (insert-buffer-substring nnfolder-current-buffer start stop)
+  (save-excursion
+    (set-buffer nnfolder-current-buffer)
+    (goto-char (point-min))
+    (if (search-forward (nnfolder-article-string article) nil t)
+	(let (start stop)
+	  (re-search-backward (concat "^" rmail-unix-mail-delimiter) nil t)
+	  (setq start (point))
+	  (forward-line 1)
+	  (or (and (re-search-forward 
+		    (concat "^" rmail-unix-mail-delimiter) nil t)
+		   (forward-line -1))
+	      (goto-char (point-max)))
+	  (setq stop (point))
+	  (let ((nntp-server-buffer (or buffer nntp-server-buffer)))
+	    (set-buffer nntp-server-buffer)
+	    (erase-buffer)
+	    (insert-buffer-substring nnfolder-current-buffer start stop)
+	    (goto-char (point-min))
+	    (while (looking-at "From ")
+	      (delete-char 5)
+	      (insert "X-From-Line: ")
+	      (forward-line 1))
+	    (if (numberp article) 
+		(cons nnfolder-current-group article)
 	      (goto-char (point-min))
-	      (while (looking-at "From ")
-		(delete-char 5)
-		(insert "X-From-Line: ")
-		(forward-line 1))
-	      t))))))
+	      (search-forward (concat "\n" nnfolder-article-marker))
+	      (cons nnfolder-current-group
+		    (string-to-int 
+		     (buffer-substring 
+		      (point) (progn (end-of-line) (point)))))))))))
 
 (defun nnfolder-request-group (group &optional server dont-check)
   (save-excursion
@@ -222,7 +224,6 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	 (progn
 	   (if dont-check
 	       t
-	     (nnfolder-get-new-mail group)
 	     (let* ((active (assoc group nnfolder-group-alist))
 		    (group (car active))
 		    (range (car (cdr active)))
@@ -238,6 +239,22 @@ such things as moving mail.  All buffers always get killed upon server close.")
 				 (1+ (- maxactive minactive))
 				 minactive maxactive group))
 		 t)))))))
+
+(defun nnfolder-request-scan (&optional group server)
+  (nnmail-get-new-mail
+   'nnfolder 
+   (lambda ()
+     (let ((bufs nnfolder-buffer-alist))
+       (save-excursion
+	 (while bufs
+	   (if (not (buffer-name (nth 1 (car bufs))))
+	       (setq nnfolder-buffer-alist 
+		     (delq (car bufs) nnfolder-buffer-alist))
+	     (set-buffer (nth 1 (car bufs)))
+	     (and (buffer-modified-p) (save-buffer)))
+	   (setq bufs (cdr bufs))))))
+   nnfolder-directory
+   group))
 
 ;; Don't close the buffer if we're not shutting down the server.  This way,
 ;; we can keep the buffer in the group buffer cache, and not have to grovel
@@ -275,11 +292,11 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	(setq nnfolder-group-alist 
 	      (cons (list group (setq active (cons 1 0)))
 		    nnfolder-group-alist))
+	(nnfolder-possibly-change-group group)
 	(nnmail-save-active nnfolder-group-alist nnfolder-active-file)))
   t)
 
 (defun nnfolder-request-list (&optional server)
-  (if server (nnfolder-get-new-mail))
   (save-excursion
     (nnmail-find-file nnfolder-active-file)
     (setq nnfolder-group-alist (nnmail-get-active))))
@@ -320,7 +337,8 @@ such things as moving mail.  All buffers always get killed upon server close.")
 			     days)))
 		(progn
 		  (and gnus-verbose-backends
-		       (message "Deleting article %s..." (car articles)))
+		       (message "Deleting article %d..." 
+				(car articles) newsgroup))
 		  (nnfolder-delete-mail))
 	      (setq rest (cons (car articles) rest))))
 	(setq articles (cdr articles)))
@@ -412,6 +430,11 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 
 ;;; Internal functions.
+
+(defun nnfolder-article-string (article)
+  (if (numberp article)
+      (concat "\n" nnfolder-article-marker (int-to-string article) " ")
+    (concat "\nMessage-ID: " article)))
 
 (defun nnfolder-delete-mail (&optional force leave-delim)
   ;; Beginning of the article.
@@ -612,7 +635,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 					       (match-end 0)))))
 		(setq activenumber (max activenumber newnum))
 		(setq activemin (min activemin newnum))))
-	    (setcar active (max 1 (min activemin activenumber)))
+	    (setcar active (min activemin activenumber))
 	    (setcdr active (max activenumber (cdr active)))
 	    (goto-char (point-min))))
 
@@ -645,59 +668,6 @@ such things as moving mail.  All buffers always get killed upon server close.")
       ;; Make absolutely sure that the active list reflects reality!
       (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
       (current-buffer))))
-
-(defun nnfolder-get-new-mail (&optional group)
-  "Read new incoming mail."
-  (let* ((spools (nnmail-get-spool-files group))
-	 (group-in group)
-	 incomings incoming)
-    (if (or (not nnfolder-get-new-mail) (not nnmail-spool-file))
-	()
-      ;; We first activate all the groups.
-      (nnfolder-possibly-activate-groups nil)
-      ;; The we go through all the existing spool files and split the
-      ;; mail from each.
-      (while spools
-	(and
-	 (file-exists-p (car spools))
-	 (> (nth 7 (file-attributes (car spools))) 0)
-	 (progn
-	   (and gnus-verbose-backends 
-		(message "nnfolder: Reading incoming mail..."))
-	   (if (not (setq incoming 
-			  (nnmail-move-inbox 
-			   (car spools) 
-			   (concat (file-name-as-directory nnfolder-directory)
-				   "Incoming"))))
-	       ()
-	     (setq incomings (cons incoming incomings))
-	     (setq group (nnmail-get-split-group (car spools) group-in))
-	     (nnmail-split-incoming incoming 'nnfolder-save-mail nil group))))
-	(setq spools (cdr spools)))
-      ;; If we did indeed read any incoming spools, we save all info. 
-      (if incoming 
-	  (progn
-	    (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
-	    (run-hooks 'nnmail-read-incoming-hook)
-	    (and gnus-verbose-backends
-		 (message "nnfolder: Reading incoming mail...done"))))
-      (let ((bufs nnfolder-buffer-alist))
-	(save-excursion
-	  (while bufs
-	    (if (not (buffer-name (nth 1 (car bufs))))
-		(setq nnfolder-buffer-alist 
-		      (delq (car bufs) nnfolder-buffer-alist))
-	      (set-buffer (nth 1 (car bufs)))
-	      (and (buffer-modified-p) (save-buffer)))
-	    (setq bufs (cdr bufs)))))
-      (while incomings
-	(setq incoming (car incomings))
-	(and 
-	 nnmail-delete-incoming
-	 (file-writable-p incoming)
-	 (file-exists-p incoming)
-	 (delete-file incoming))
-	(setq incomings (cdr incomings))))))
 
 (provide 'nnfolder)
 

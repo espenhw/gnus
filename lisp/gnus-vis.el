@@ -27,9 +27,8 @@
 
 (require 'gnus)
 (require 'gnus-ems)
-(require 'easymenu)
+(require gnus-easymenu)
 (require 'custom)
-(require 'browse-url)
 
 (defvar gnus-group-menu-hook nil
   "*Hook run after the creation of the group mode menu.")
@@ -217,10 +216,10 @@
 	   gnus-cite-attribution-alist)
      gnus-button-message-id 3)
     ;; This is how URLs _should_ be embedded in text...
-    ("<URL:\\([^\n\r>]*\\)>" 0 t browse-url-browser-function 1)
+    ("<URL:\\([^\n\r>]*\\)>" 0 t gnus-button-url 1)
     ;; Next regexp stolen from highlight-headers.el.
     ;; Modified by Vladimir Alexiev.
-    ("\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-a-zA-Z0-9_=?#$@~`%&*+|\\/.,]*[-a-zA-Z0-9_=#$@~`%&*+|\\/]" 0 t browse-url-browser-function 0))
+    ("\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-a-zA-Z0-9_=?#$@~`%&*+|\\/.,]*[-a-zA-Z0-9_=#$@~`%&*+|\\/]" 0 t gnus-button-url 0))
   "Alist of regexps matching buttons in an article.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
@@ -233,6 +232,26 @@ PAR: is a number of a regexp grouping whose text will be passed to CALLBACK.
 
 CALLBACK can also be a variable, in that case the value of that
 variable it the real callback function.")
+
+;see gnus-cus.el
+;(eval-when-compile
+;  (defvar browse-url-browser-function))
+
+;see gnus-cus.el
+;(defvar gnus-button-url
+;  (cond ((boundp 'browse-url-browser-function) browse-url-browser-function)
+;	((fboundp 'w3-fetch) 'w3-fetch)
+;	((eq window-system 'x) 'gnus-netscape-open-url))
+;  "*Function to fetch URL.
+;The function will be called with one argument, the URL to fetch.
+;Useful values of this function are:
+
+;w3-fetch: 
+;   defined in the w3 emacs package by William M. Perry.
+;gnus-netscape-open-url:
+;   open url in existing netscape, start netscape if none found.
+;gnus-netscape-start-url:
+;   start new netscape with url.")
 
 
 
@@ -419,12 +438,16 @@ variable it the real callback function.")
 	  ["Set expirable mark" gnus-summary-mark-as-expirable t]
 	  ["Set bookmark" gnus-summary-set-bookmark t]
 	  ["Remove bookmark" gnus-summary-remove-bookmark t])
-	 ("Display"
-	  ["Remove lines marked as read" gnus-summary-remove-lines-marked-as-read t]
-	  ["Remove lines marked with..." gnus-summary-remove-lines-marked-with t]
-	  ["Show dormant articles" gnus-summary-show-all-dormant t]
-	  ["Hide dormant articles" gnus-summary-hide-all-dormant t]
-	  ["Show expunged articles" gnus-summary-show-all-expunged t])
+	 ("Limit"
+	  ["Unread" gnus-summary-limit-to-unread t]
+	  ["Marks" gnus-summary-limit-to-marks t]
+	  ["Score" gnus-summary-limit-to-score t]
+	  ["Subject" gnus-summary-limit-to-subject t]
+	  ["Non-dormant" gnus-summary-limit-exclude-dormant t]
+	  ["Articles" gnus-summary-limit-to-articles t]
+	  ["Pop limit" gnus-summary-pop-limit t]
+	  ["Show dormant" gnus-summary-limit-include-dormant t]
+	  ["Show expunged" gnus-summary-show-all-expunged t])
 	 ("Process mark"
 	  ["Set mark" gnus-summary-mark-as-processable t]
 	  ["Remove mark" gnus-summary-unmark-as-processable t]
@@ -433,6 +456,7 @@ variable it the real callback function.")
 	  ["Mark region" gnus-uu-mark-region t]
 	  ["Mark by regexp" gnus-uu-mark-by-regexp t]
 	  ["Mark all" gnus-uu-mark-all t]
+	  ["Mark buffer" gnus-uu-mark-buffer t]
 	  ["Mark sparse" gnus-uu-mark-sparse t]
 	  ["Mark thread" gnus-uu-mark-thread t]))
 	("Move"
@@ -619,6 +643,7 @@ variable it the real callback function.")
 	("Date"
 	 ["Local" gnus-article-date-local t]
 	 ["UT" gnus-article-date-ut t]
+	 ["Original" gnus-article-date-original t]
 	 ["Lapsed" gnus-article-date-lapsed t])
 	("Filter"
 	 ["Overstrike" gnus-article-treat-overstrike t]
@@ -659,6 +684,7 @@ variable it the real callback function.")
 	["Beginning of the article" gnus-summary-beginning-of-article t]
 	["End of the article" gnus-summary-end-of-article t]
 	["Fetch parent of article" gnus-summary-refer-parent-article t]
+	["Fetch referenced articles" gnus-summary-refer-references t]
 	["Fetch article with id..." gnus-summary-refer-article t]
 	["Redisplay" gnus-summary-show-article t]))
 
@@ -920,12 +946,12 @@ If nil, the user will be asked for a duration.")
 	 (end (progn (end-of-line) (point)))
 	 ;; now find out where the line starts and leave point there.
 	 (beg (progn (beginning-of-line) (point)))
-	 (score (or (cdr (assq (or (get-text-property beg 'gnus-number)
+	 (score (or (cdr (assq (or (gnus-summary-article-number)
 				   gnus-current-article)
 			       gnus-newsgroup-scored))
 		    gnus-summary-default-score 0))
 	 (default gnus-summary-default-score)
-	 (mark (get-text-property beg 'gnus-mark))
+	 (mark (gnus-summary-article-mark))
 	 (inhibit-read-only t))
     (while (and list (not (eval (car (car list)))))
       (setq list (cdr list)))
@@ -945,9 +971,9 @@ If nil, the user will be asked for a duration.")
     ("prev" . gnus-group-prev-unread-group)
     ("read" . gnus-group-read-group)
     ("select" . gnus-group-select-group)
-    ("catch-up" . gnus-group-catchup-current)
-    ("new-news" . gnus-group-get-new-news-this-group)
-    ("toggle-sub" . gnus-group-unsubscribe-current-group)
+    ("catch up" . gnus-group-catchup-current)
+    ("new news" . gnus-group-get-new-news-this-group)
+    ("toggle sub" . gnus-group-unsubscribe-current-group)
     ("subscribe" . gnus-group-unsubscribe-group)
     ("kill" . gnus-group-kill-group)
     ("yank" . gnus-group-yank-group)
@@ -961,7 +987,7 @@ If nil, the user will be asked for a duration.")
     ("post" . gnus-group-post-news)
     ("mail" . gnus-group-mail)
     ("rescan" . gnus-group-get-new-news)
-    ("browse-foreign" . gnus-group-browse-foreign)
+    ("browse foreign" . gnus-group-browse-foreign)
     ("exit" . gnus-group-exit)))
 
 (defvar gnus-carpal-summary-buffer-buttons
@@ -972,15 +998,15 @@ If nil, the user will be asked for a duration.")
     ("expirable" . gnus-summary-mark-as-expirable)
     "move"
     ("scroll" . gnus-summary-next-page)
-    ("next-unread" . gnus-summary-next-unread-article)
-    ("prev-unread" . gnus-summary-prev-unread-article)
+    ("next unread" . gnus-summary-next-unread-article)
+    ("prev unread" . gnus-summary-prev-unread-article)
     ("first" . gnus-summary-first-unread-article)
     ("best" . gnus-summary-best-unread-article)
     "article"
     ("headers" . gnus-summary-toggle-header)
     ("uudecode" . gnus-uu-decode-uu)
-    ("enter-digest" . gnus-summary-enter-digest-group)
-    ("fetch-parent" . gnus-summary-refer-parent-article)
+    ("enter digest" . gnus-summary-enter-digest-group)
+    ("fetch parent" . gnus-summary-refer-parent-article)
     "mail"
     ("move" . gnus-summary-move-article)
     ("copy" . gnus-summary-copy-article)
@@ -996,7 +1022,7 @@ If nil, the user will be asked for a duration.")
     ("cancel" . gnus-summary-cancel-article)
     "misc"
     ("exit" . gnus-summary-exit)
-    ("fed-up" . gnus-summary-catchup-and-goto-next-group)))
+    ("fed up" . gnus-summary-catchup-and-goto-next-group)))
 
 (defvar gnus-carpal-server-buffer-buttons 
   '(("add" . gnus-server-add-server)
@@ -1229,7 +1255,7 @@ to do the hiding.  See the documentation for those functions."
 			 (skip-chars-forward ": \t")
 			 (let ((from (point)))
 			   (goto-char end)
-			   (skip-chars-backward " \t\n")
+			   (skip-chars-backward " \t")
 			   (put-text-property from (point) 'face field-face)
 			   (setq field-found t))))))
 	    (goto-char begin)))))))
@@ -1298,6 +1324,22 @@ External references are things like message-ids and URLs, as specified by
 		(gnus-article-add-button start end 'gnus-button-push
 					 (set-marker (make-marker)
 						     from)))))))))
+(defun gnus-netscape-open-url (url)
+  "Open URL in netscape, or start new scape with URL."
+  (let ((process (start-process (concat "netscape " url)
+				nil
+				"netscape"
+				"-remote" 
+				(concat "openUrl(" url ")'"))))
+    (set-process-sentinel process 
+			  (` (lambda (process change)
+			       (or (eq (process-exit-status process) 0)
+				   (gnus-netscape-start-url (, url))))))))
+
+(defun gnus-netscape-start-url (url)
+  "Start netscape with URL."
+  (start-process (concat "netscape" url) nil "netscape" url))
+
 ;;; External functions:
 
 (defun gnus-article-add-button (from to fun &optional data)

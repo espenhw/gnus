@@ -1,4 +1,4 @@
-;;; gnus-cus.el --- User friendly customization of Gnus
+;; gnus-cus.el --- User friendly customization of Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 ;;
 ;; Author: Per Abrahamsen <abraham@iesd.auc.dk>

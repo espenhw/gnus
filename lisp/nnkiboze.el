@@ -50,7 +50,7 @@
 
 ;;; Interface functions.
 
-(defun nnkiboze-retrieve-headers (articles &optional group server)
+(defun nnkiboze-retrieve-headers (articles &optional group server fetch-old)
   (nnkiboze-possibly-change-newsgroups group)
   (if gnus-nov-is-evil
       nil
@@ -105,7 +105,7 @@ If the stream is opened, return T, otherwise return NIL."
       ;; does no harm I think. The only alternative is to offer no
       ;; article fetching by message-id at all.
       (nntp-request-article article newsgroup gnus-nntp-server buffer)
-    (let* ((header (gnus-get-header-by-number article))
+    (let* ((header (gnus-summary-article-header article))
 	   (xref (mail-header-xref header))
 	   igroup iarticle)
       (or xref (error "nnkiboze: No xref"))
@@ -145,13 +145,11 @@ If the stream is opened, return T, otherwise return NIL."
 (defun nnkiboze-close-group (group &optional server)
   (nnkiboze-possibly-change-newsgroups group)
   ;; Remove NOV lines of articles that are marked as read.
-  (if (or (not (file-exists-p (nnkiboze-nov-file-name)))
-	  (not (eq major-mode 'gnus-summary-mode)))
+  (if (not (file-exists-p (nnkiboze-nov-file-name)))
       ()
     (save-excursion
       (let ((unreads gnus-newsgroup-unreads)
-	    (unselected gnus-newsgroup-unselected)
-            (version-control 'never))
+	    (unselected gnus-newsgroup-unselected))
 	(set-buffer (get-buffer-create "*nnkiboze work*"))
 	(buffer-disable-undo (current-buffer))
 	(erase-buffer)
@@ -224,7 +222,6 @@ Finds out what articles are to be part of the nnkiboze groups."
 	 (regexp (nth 1 (nth 4 info)))
 	 (gnus-expert-user t)
 	 (gnus-large-newsgroup nil)
-	 (version-control 'never)
 	 (gnus-score-find-score-files-function 'nnkiboze-score-file)
  	 gnus-select-group-hook gnus-summary-prepare-hook 
 	 gnus-thread-sort-functions gnus-show-threads 
@@ -274,7 +271,8 @@ Finds out what articles are to be part of the nnkiboze groups."
 	    (if (> (car (car gnus-newsgroup-scored)) lowest)
 		(nnkiboze-enter-nov 
 		 nov-buffer
-		 (gnus-get-header-by-number (car (car gnus-newsgroup-scored)))
+		 (gnus-summary-article-header 
+		  (car (car gnus-newsgroup-scored)))
 		 (if method
 		     (gnus-group-prefixed-name gnus-newsgroup-name method)
 		   gnus-newsgroup-name)))
