@@ -300,7 +300,9 @@ mail with multiple parts is preferred to sending a Unicode one.")
   "Return the MIME charset corresponding to the given Mule CHARSET."
   (if (fboundp 'find-coding-systems-for-charsets)
       (let (mime)
-	(dolist (cs (find-coding-systems-for-charsets (list charset)))
+	(dolist (cs (sort-coding-systems
+		     (copy-sequence
+		      (find-coding-systems-for-charsets (list charset)))))
 	  (unless mime
 	    (when cs
 	      (setq mime (coding-system-get cs 'mime-charset)))))
