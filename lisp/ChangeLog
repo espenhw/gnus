@@ -1,3 +1,8 @@
+2005-02-24  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-sum.el (gnus-summary-caesar-message): Apply
+	`gnus-treat-article' after rotation.
+
 2005-02-22  Simon Josefsson  <jas@extundo.com>
 
 	* encrypt.el (encrypt-password-cache-expiry): Remove (use

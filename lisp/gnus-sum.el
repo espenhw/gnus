@@ -8953,7 +8953,9 @@ forward."
 	(let ((start (window-start))
 	      buffer-read-only)
 	  (message-caesar-buffer-body arg)
-	  (set-window-start (get-buffer-window (current-buffer)) start))))))
+	  (set-window-start (get-buffer-window (current-buffer)) start)))))
+  ;; Create buttons and stuff...
+  (gnus-treat-article nil))
 
 (defun gnus-summary-idna-message (&optional arg)
   "Decode IDNA encoded domain names in the current articles.
