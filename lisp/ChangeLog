@@ -1,3 +1,18 @@
+2001-03-18 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	
+	* gnus-sum.el (gnus-summary-show-all-headers):
+	gnus-article-show-all-headers is broken. Use
+	gnus-summary-toggle-header instead.
+	
+	* mml2015.el (mml2015-gpg-extract-from): No error.
+
+2001-03-18 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From Bj,Ax(Brn Mork <bmork@dod.no>.
+
+	* mml2015.el (mml2015-gpg-extract-from): New function.
+	(mml2015-gpg-verify): Use it.
+	(mml2015-gpg-clear-verify): Use it.
+
 2001-03-17 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-setup-fill-variables): Use

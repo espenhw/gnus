@@ -7611,7 +7611,7 @@ If ARG is a negative number, hide the unwanted header lines."
 (defun gnus-summary-show-all-headers ()
   "Make all header lines visible."
   (interactive)
-  (gnus-article-show-all-headers))
+  (gnus-summary-toggle-header 1))
 
 (defun gnus-summary-caesar-message (&optional arg)
   "Caesar rotate the current article by 13.
