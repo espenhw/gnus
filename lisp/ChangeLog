@@ -1,3 +1,7 @@
+2004-05-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-util.el (gnus-set-file-modes): Just ignore errors. 
+
 2004-05-23  Paul Stodghill  <stodghil@cs.cornell.edu>
 
 	* gnus-util.el (gnus-set-file-modes): New function.  (small
