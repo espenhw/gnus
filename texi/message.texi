@@ -745,7 +745,7 @@ care in handling it.
 PGP/MIME requires an external OpenPGP implementation, such as GNU
 Privacy Guard (@uref{http://www.gnupg.org/}).  It also requires an Emacs
 interface to it, such as Mailcrypt (available from
-@url{http://www.nb.net/~lbudney/linux/software/mailcrypt.html}) or
+@uref{http://www.nb.net/~lbudney/linux/software/mailcrypt.html}) or
 Florian Weimer's @code{gpg.el}.
 
 Creating your own OpenPGP key is described in detail in the
