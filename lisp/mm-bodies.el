@@ -278,7 +278,7 @@ use the supplied charset unconditionally."
 	    (mm-decode-coding-region-safely (point-min) (point-max)
 					    coding-system)))
 	(setq buffer-file-coding-system
-	      (if (boundp last-coding-system-used)
+	      (if (boundp 'last-coding-system-used)
 		  last-coding-system-used
 		coding-system))))))
 

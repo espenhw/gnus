@@ -2,6 +2,7 @@
 
 	* mm-bodies.el (mm-decode-body): last-coding-system-used doesn't
 	exist in XEmacs.
+	(mm-decode-body): Add missing quote.
 
 	* mm-uu.el (mm-uu-pgp-signed-extract-1): Set
 	buffer-file-coding-system.
