@@ -1,5 +1,7 @@
 2004-05-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* dgnushack.el: Autoload customize-set-variable for XEmacs.
+
 	* rfc2047.el (rfc2047-encodable-p): Don't move point.
 
 2004-05-25  Teodor Zlatanov  <tzz@lifelogs.com>
