@@ -388,8 +388,9 @@
     (insert "\")")
     ;; Convert point position commands.
     (goto-char (point-min))
-    (while (re-search-forward "%\\([-0-9]+\\)?C" nil t)
-      (replace-match "\"(point)\"" t t))
+    (let ((case-fold-search nil))
+      (while (re-search-forward "%\\([-0-9]+\\)?C" nil t)
+	(replace-match "\"(point)\"" t t)))
     ;; Convert TAB commands.
     (goto-char (point-min))
     (while (re-search-forward "%\\([-0-9]+\\)=" nil t)
