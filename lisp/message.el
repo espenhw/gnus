@@ -1509,7 +1509,7 @@ Point is left at the beginning of the narrowed-to region."
 
   (define-key message-mode-map "\C-c\C-t" 'message-insert-to)
   (define-key message-mode-map "\C-c\C-n" 'message-insert-newsgroups)
-  (define-key message-mode-map "\C-c\C-p" 'message-insert-or-toggle-importance)
+  (define-key message-mode-map "\C-c\C-u" 'message-insert-or-toggle-importance)
 
   (define-key message-mode-map "\C-c\C-y" 'message-yank-original)
   (define-key message-mode-map "\C-c\M-\C-y" 'message-yank-buffer)
@@ -1666,7 +1666,7 @@ C-c C-v  `message-delete-not-region' (remove the text outside the region).
 C-c C-z  `message-kill-to-signature' (kill the text up to the signature).
 C-c C-r  `message-caesar-buffer-body' (rot13 the message body).
 C-c C-a  `mml-attach-file' (attach a file as MIME).
-C-c C-p  `message-insert-or-toggle-importance'  (insert or cycle importance)
+C-c C-u  `message-insert-or-toggle-importance'  (insert or cycle importance)
 M-RET    `message-newline-and-reformat' (break the line and reformat)."
   (set (make-local-variable 'message-reply-buffer) nil)
   (make-local-variable 'message-send-actions)

@@ -1,3 +1,8 @@
+2001-11-17  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-mode, message-mode-map): Use C-c C-u for
+	Importance: instead of C-c C-p (used by SC).
+
 2001-11-16  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-insert-importance-high) 
