@@ -76,8 +76,7 @@ It accepts the same format specs that `gnus-summary-line-format' does."
     "u" gnus-pick-unmark-article-or-thread
     "." gnus-pick-article-or-thread
     gnus-down-mouse-2 gnus-pick-mouse-pick-region
-    "\r" gnus-pick-start-reading
-    ))
+    "\r" gnus-pick-start-reading))
 
 (defun gnus-pick-make-menu-bar ()
   (unless (boundp 'gnus-pick-menu)
@@ -431,6 +430,7 @@ Two predefined functions are available:
 (defvar gnus-selected-tree-overlay nil)
 
 (defvar gnus-tree-displayed-thread nil)
+(defvar gnus-tree-inhibit nil)
 
 (defvar gnus-tree-mode-map nil)
 (put 'gnus-tree-mode 'mode-class 'special)
@@ -481,15 +481,17 @@ Two predefined functions are available:
 (defun gnus-tree-read-summary-keys (&optional arg)
   "Read a summary buffer key sequence and execute it."
   (interactive "P")
-  (let ((buf (current-buffer))
-	win)
-    (set-buffer gnus-article-buffer)
-    (gnus-article-read-summary-keys arg nil t)
-    (when (setq win (get-buffer-window buf))
-      (select-window win)
-      (when gnus-selected-tree-overlay
-	(goto-char (or (gnus-overlay-end gnus-selected-tree-overlay) 1)))
-      (gnus-tree-minimize))))
+  (unless gnus-tree-inhibit
+    (let ((buf (current-buffer))
+	  (gnus-tree-inhibit t)
+	  win)
+      (set-buffer gnus-article-buffer)
+      (gnus-article-read-summary-keys arg nil t)
+      (when (setq win (get-buffer-window buf))
+	(select-window win)
+	(when gnus-selected-tree-overlay
+	  (goto-char (or (gnus-overlay-end gnus-selected-tree-overlay) 1)))
+	(gnus-tree-minimize)))))
 
 (defun gnus-tree-show-summary ()
   "Reconfigure windows to show summary buffer."

@@ -72,7 +72,7 @@
        (:prescript)
        (:postscript)
        (:server (getenv "MAILHOST"))
-       (:port "pop")
+       (:port 110)
        (:user (or (user-login-name) (getenv "LOGNAME") (getenv "USER")))
        (:program)
        (:function)
@@ -111,12 +111,17 @@ All keywords that can be used must be listed here."))
 
 (defmacro mail-source-bind (type-source &rest body)
   "Return a `let' form that binds all variables in source TYPE.
+TYPE-SOURCE is a list where the first element is the TYPE, and
+the second variable is the SOURCE.
 At run time, the mail source specifier SOURCE will be inspected,
 and the variables will be set according to it.  Variables not
 specified will be given default values.
 
 After this is done, BODY will be executed in the scope
-of the `let' form."
+of the `let' form.
+
+The variables bound and their default values are described by
+the `mail-source-keyword-map' variable."
   `(let ,(mail-source-bind-1 (car type-source))
      (mail-source-set-1 ,(cadr type-source))
      ,@body))
@@ -322,8 +327,7 @@ If ARGS, PROMPT is used as an argument to `format'."
     (let ((from (format "%s:%s:%s" server user port))
 	  (mail-source-string (format "pop:%s@%s" user server))
 	  result)
-      (when (and (not (eq authentication 'apop))
-		 (not program))
+      (when (not (eq authentication 'apop))
 	(setq password
 	      (or password
 		  (cdr (assoc from mail-source-password-cache))
@@ -364,8 +368,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 			       postscript
 			       (format-spec-make
 				?p password ?t mail-source-crash-box
-				?s server ?P port ?u user)))))
-	    1)
+				?s server ?P port ?u user))))))
 	;; We nix out the password in case the error
 	;; was because of a wrong password being given.
 	(setq mail-source-password-cache

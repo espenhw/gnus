@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.79 Manual
+@settitle Pterodactyl Gnus 0.80 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.79 Manual
+@title Pterodactyl Gnus 0.80 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.79.
+This manual corresponds to Pterodactyl Gnus 0.80.
 
 @end ifinfo
 
@@ -1975,7 +1975,7 @@ Add the current group to an @code{nnvirtual} group
 (@code{gnus-group-add-to-virtual}).  Uses the process/prefix convention.
 @end table
 
-@xref{Select Methods} for more information on the various select
+@xref{Select Methods}, for more information on the various select
 methods.
 
 @vindex gnus-activate-foreign-newsgroups
@@ -2879,7 +2879,7 @@ Sort the current topic alphabetically by backend name
 
 @end table
 
-@xref{Sorting Groups} for more information about group sorting.
+@xref{Sorting Groups}, for more information about group sorting.
 
 
 @node Topic Topology
@@ -6346,7 +6346,7 @@ default.
 
 @end table
 
-@xref{Customizing Articles} for how to highlight articles automatically.
+@xref{Customizing Articles}, for how to highlight articles automatically.
 
 
 @node Article Fontisizing
@@ -6400,7 +6400,7 @@ say something like:
 (copy-face 'red 'gnus-emphasis-italic)
 @end lisp
 
-@xref{Customizing Articles} for how to fontize articles automatically.
+@xref{Customizing Articles}, for how to fontize articles automatically.
 
 
 @node Article Hiding
@@ -6549,7 +6549,7 @@ hidden.  If you give a positive prefix, they will always hide.
 Also @pxref{Article Highlighting} for further variables for
 citation customization.
 
-@xref{Customizing Articles} for how to hide article elements
+@xref{Customizing Articles}, for how to hide article elements
 automatically.
 
 
@@ -6571,7 +6571,7 @@ Cleaner, perhaps.
 @kindex W l (Summary)
 @findex gnus-summary-stop-page-breaking
 Remove page breaks from the current article
-(@code{gnus-summary-stop-page-breaking}).  @xref{Misc Article} for page
+(@code{gnus-summary-stop-page-breaking}).  @xref{Misc Article}, for page
 delimiters.
 
 @item W r
@@ -6741,7 +6741,7 @@ body (@code{gnus-article-strip-trailing-space}).
 
 @end table
 
-@xref{Customizing Articles} for how to wash articles automatically.
+@xref{Customizing Articles}, for how to wash articles automatically.
 
 
 @node Article Buttons
@@ -6827,7 +6827,7 @@ Face used when the mouse cursor is over a button.
 
 @end table
 
-@xref{Customizing Articles} for how to buttonize articles automatically.
+@xref{Customizing Articles}, for how to buttonize articles automatically.
 
 
 @node Article Date
@@ -6874,8 +6874,16 @@ for a list of possible format specs.
 @findex gnus-start-date-timer
 @findex gnus-stop-date-timer
 Say how much time has elapsed between the article was posted and now
-(@code{gnus-article-date-lapsed}).  If you want to have this line
-updated continually, you can put
+(@code{gnus-article-date-lapsed}).  It looks something like:
+
+@example
+X-Sent: 29 years, 6 weeks, 4 days, 10 hours, 3 minutes, 28 seconds ago
+@end example
+
+An advantage of using Gnus to read mail is that it converts simple bugs
+into wonderful absurdities.
+
+If you want to have this line updated continually, you can put
 
 @lisp
 (gnus-start-date-timer)
@@ -6896,7 +6904,7 @@ that the article was posted in 1854.  Although something like that is
 
 @end table
 
-@xref{Customizing Articles} for how to display the date in your
+@xref{Customizing Articles}, for how to display the date in your
 preferred format automatically.
 
 
@@ -13055,6 +13063,10 @@ If you have really complicated score files, and do lots of batch
 scoring, then you might set this variable to @code{t}.  This will make
 Gnus save the scores into the @file{.newsrc.eld} file.
 
+If you do not set this to @code{t}, then manual scores (like those set
+with @kbd{V s} (@code{gnus-summary-set-score})) will not be preserved
+across group visits.
+
 @item gnus-score-interactive-default-score
 @vindex gnus-score-interactive-default-score
 Score used by all the interactive raise/lower commands to raise/lower
@@ -18684,6 +18696,10 @@ agent-downloaded articles in the group.
 @item
 Some nntp servers never respond when posting, so there should be a
 timeout for all commands.
+
+@item
+When stading on a topic line and `t'-ing, point goes to the last line.
+It should go somewhere else.
 
 @item
 Solve the halting problem.

@@ -600,7 +600,18 @@ This overrides entries in the mailcap file."
 	  (mm-insert-part handle)
 	  (prog1
 	      (setq spec
-		    (make-glyph `[,(intern type) :data ,(buffer-string)]))
+		    (ignore-errors
+		      (make-glyph
+		       (cond
+			((equal type "xbm")
+			 (let ((height 32)
+			       (width 32))
+			   (forward-line 2)
+			   (vector 'xbm :data (list height width
+						    (buffer-substring
+						     (point) (point-max))))))
+			(t
+			 (vector (intern type) :data (buffer-string)))))))
 	    (mm-handle-set-cache handle spec))))))
 
 (defun mm-image-fit-p (handle)

@@ -221,7 +221,7 @@
 	    (setq charset (mm-encode-body))
 	    (setq encoding (mm-body-encoding charset))
 	    (setq coded (buffer-string)))
-	(mm-with-unibyte-buffer
+	(with-temp-buffer
 	  (cond
 	   ((cdr (assq 'buffer cont))
 	    (insert-buffer-substring (cdr (assq 'buffer cont))))
@@ -446,6 +446,8 @@
     (dolist (elem (append (cdr (mm-handle-type handle))
 			  (cdr (mm-handle-disposition handle))))
       (insert " " (symbol-name (car elem)) "=\"" (cdr elem) "\""))
+    (when (mm-handle-disposition handle)
+      (insert " disposition=" (car (mm-handle-disposition handle))))
     (when buffer
       (insert " buffer=\"" (buffer-name buffer) "\""))
     (when (mm-handle-description handle)
@@ -464,8 +466,9 @@
     (define-key map "b" 'mml-attach-buffer)
     (define-key map "q" 'mml-quote-region)
     (define-key map "m" 'mml-insert-multipart)
-    (define-key map "q" 'mml-insert-part)
+    (define-key map "p" 'mml-insert-part)
     (define-key map "v" 'mml-validate)
+    (define-key map "P" 'mml-preview)
     (define-key main "\M-m" map)
     main))
 

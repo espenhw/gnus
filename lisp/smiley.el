@@ -309,11 +309,8 @@ Mouse button3 - menu"))
   (interactive)
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (goto-char (point-min))
-    ;; We skip the headers.
-    (unless (search-forward "\n\n" nil t)
-      (goto-char (point-max)))
-    (smiley-buffer (current-buffer) (point))))
+    (article-goto-body)
+    (smiley-buffer (current-buffer) (point-min) (point-max))))
 
 (provide 'smiley)
 

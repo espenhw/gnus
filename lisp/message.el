@@ -1370,7 +1370,7 @@ C-c C-e  message-elide-region (elide the text between point and mark).
 C-c C-v  message-delete-not-region (remove the text outside the region).
 C-c C-z  message-kill-to-signature (kill the text up to the signature).
 C-c C-r  message-caesar-buffer-body (rot13 the message body).
-C-c C-a  message-mime-attach-file (attach a file as MIME)."
+C-c C-a  mml-attach-file (attach a file as MIME)."
   (interactive)
   (kill-all-local-variables)
   (set (make-local-variable 'message-reply-buffer) nil)
@@ -2095,8 +2095,7 @@ the user from the mailer."
       (let ((message-deletable-headers
 	     (if news nil message-deletable-headers)))
 	(message-generate-headers message-required-mail-headers))
-      (let ((mail-parse-charset message-posting-charset))
-	(mail-encode-encoded-word-buffer))
+      (mail-encode-encoded-word-buffer)
       ;; Let the user do all of the above.
       (run-hooks 'message-header-hook))
     (unwind-protect

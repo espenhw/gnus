@@ -396,8 +396,6 @@ parameter.  It should return nil, `warn' or `delete'."
 (defvar nnmail-split-history nil
   "List of group/article elements that say where the previous split put messages.")
 
-(defvar nnmail-current-spool nil)
-
 (defvar nnmail-split-fancy-syntax-table nil
   "Syntax table used by `nnmail-split-fancy'.")
 (unless (syntax-table-p nnmail-split-fancy-syntax-table)
@@ -655,9 +653,7 @@ If SOURCE is a directory spec, try to return the group name component."
     (if (not (and (re-search-forward "^From " nil t)
 		  (goto-char (match-beginning 0))))
 	;; Possibly wrong format?
-	(progn
-	  (pop-to-buffer (nnheader-find-file-noselect nnmail-current-spool))
-	  (error "Error, unknown mail format! (Possibly corrupted.)"))
+	(error "Error, unknown mail format! (Possibly corrupted.)")
       ;; Carry on until the bitter end.
       (while (not (eobp))
 	(setq start (point)
@@ -742,9 +738,7 @@ If SOURCE is a directory spec, try to return the group name component."
     (if (not (and (re-search-forward delim nil t)
 		  (forward-line 1)))
 	;; Possibly wrong format?
-	(progn
-	  (pop-to-buffer (nnheader-find-file-noselect nnmail-current-spool))
-	  (error "Error, unknown mail format! (Possibly corrupted.)"))
+	(error "Error, unknown mail format! (Possibly corrupted.)")
       ;; Carry on until the bitter end.
       (while (not (eobp))
 	(setq start (point))
@@ -1347,7 +1341,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 		    (list nnmail-spool-file)))
 	 (group-in group)
 	 (i 0)
-	 nnmail-current-spool incoming incomings source)
+	 incoming incomings source)
     (when (and (nnmail-get-value "%s-get-new-mail" method)
 	       nnmail-spool-file)
       ;; We first activate all the groups.
@@ -1376,12 +1370,16 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	;; Hack to only fetch the contents of a single group's spool file.
 	(when (and (eq (car source) 'directory)
 		   group)
-	  (setq source (append source
-			       (list :predicate
-				     `(lambda (file)
-					(string-match 
-                                         ,(concat (regexp-quote group) "$")
-                                         file))))))
+	  (mail-source-bind (directory source)
+	    (setq source (append source
+				 (list
+				  :predicate
+				  `(lambda (file)
+				     (string-match 
+				      ,(concat
+					(regexp-quote (concat group suffix)) 
+					"$")
+				      file)))))))
 	(when nnmail-fetched-sources
 	  (if (member source nnmail-fetched-sources)
 	      (setq source nil)

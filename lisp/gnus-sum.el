@@ -4524,15 +4524,6 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	;; Update the group buffer.
 	(gnus-group-update-group group t)))))
 
-(defun gnus-methods-equal-p (m1 m2)
-  (let ((m1 (or m1 gnus-select-method))
-	(m2 (or m2 gnus-select-method)))
-    (or (equal m1 m2)
-	(and (eq (car m1) (car m2))
-	     (or (not (memq 'address (assoc (symbol-name (car m1))
-					    gnus-valid-select-methods)))
-		 (equal (nth 1 m1) (nth 1 m2)))))))
-
 (defvar gnus-newsgroup-none-id 0)
 
 (defun gnus-get-newsgroup-headers (&optional dependencies force-new)
@@ -7029,8 +7020,10 @@ If ARG is a negative number, hide the unwanted header lines."
     (save-restriction
       (let* ((buffer-read-only nil)
 	     (inhibit-point-motion-hooks t)
-	     (hidden (gnus-article-hidden-text-p 'headers))
-	     e)
+	     hidden e)
+	(save-restriction 
+	  (message-narrow-to-head)
+	  (setq hidden (gnus-article-hidden-text-p 'headers)))
 	(goto-char (point-min))
 	(when (search-forward "\n\n" nil t)
 	  (delete-region (point-min) (1- (point))))
@@ -9236,6 +9229,38 @@ treated as multipart/mixed."
       (let ((gnus-unbuttonized-mime-types nil))
 	(gnus-summary-show-article))
     (gnus-summary-show-article)))
+
+;;;
+;;; with article
+;;;
+
+(defmacro gnus-with-article (article &rest forms)
+  "Select ARTICLE and perform FORMS in the original article buffer.
+Then replace the article with the result."
+  `(progn
+     ;; We don't want the article to be marked as read.
+     (let (gnus-mark-article-hook)
+       (gnus-summary-select-article t t nil ,article))
+     (set-buffer gnus-original-article-buffer)
+     ,@forms
+     (if (not (gnus-check-backend-function
+	       'request-replace-article (car gnus-article-current)))
+	 (gnus-message 5 "Read-only group; not replacing")
+       (unless (gnus-request-replace-article
+		,article (car gnus-article-current)
+		(current-buffer) t)
+	 (error "Couldn't replace article")))
+     ;; The cache and backlog have to be flushed somewhat.
+     (when gnus-keep-backlog
+       (gnus-backlog-remove-article
+	(car gnus-article-current) (cdr gnus-article-current)))
+     (when gnus-use-cache
+       (gnus-cache-update-article
+	(car gnus-article-current) (cdr gnus-article-current)))))
+
+(put 'gnus-with-article 'lisp-indent-function 1)
+(put 'gnus-with-article 'edebug-form-spec '(form body))
+
 
 (gnus-ems-redefine)
 

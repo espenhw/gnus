@@ -1,3 +1,68 @@
+Thu Mar  4 01:38:00 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.80 is released.
+
+1999-03-02 16:04:30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mm-display-part): Narrow to the part itself. 
+
+	* gnus-sum.el (gnus-with-article): Moved here.
+
+	* mail-source.el (mail-source-fetch-pop): Ask for password even
+	when program.
+
+1999-02-28 13:16:12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-bug): Add description.
+
+	* mml.el (mml-insert-mml-markup): Insert disposition.
+
+	* message.el (message-send-mail): Always encode mail headers.
+
+	* smiley.el (gnus-smiley-display): Goto body.
+
+1999-02-28 13:15:47  Petr Konecny  <pekon@informatics.muni.cz>
+
+	* smiley.el (gnus-smiley-display): Don't search to blank line.
+
+1999-02-28 00:38:40  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-treat-article): Only run the highlight stuff
+	when requested.
+
+	* nnmail.el (nnmail-current-spool): Removed.
+
+	* gnus-salt.el (gnus-tree-inhibit): New varible.
+
+	* gnus.el (mm-util): Required.
+
+1999-02-27 23:44:52  paul stevenson  <spaul@mail.phy.ornl.gov>
+
+	* gnus-sum.el (gnus-summary-toggle-header): Narrow to head first. 
+
+1999-02-27 17:17:47  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-source.el (mail-source-bind): Doc fix.
+
+1999-02-26 20:35:57  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-mode): Doc fix.
+
+	* mm-encode.el (mm-content-transfer-encoding-defaults): Use 8bit
+	encoding. 
+
+	* gnus.el (gnus-methods-equal-p): Moved here.
+
+	* mail-source.el: pop at 110.
+
+	* pop3.el (pop3-movemail): Use write-region instead of
+	append-to-file to avoid excessive messaging.
+
+1999-02-27  lantz moore  <lmoore@contigo.com>
+
+	* nnmail.el (nnmail-get-new-mail): honor suffix for spool-files of 
+	type directory.
+
 Fri Feb 26 18:54:16 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.79 is released.

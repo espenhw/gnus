@@ -1,3 +1,16 @@
+1999-03-01 16:41:42  Rob Browning  <rlb@cs.utexas.edu>
+
+	* gnus.texi (Score Variables): Clarify.
+
+1999-02-26  Andreas Jaeger  <aj@arthur.rhein-neckar.de>
+
+	* gnus.texi: Add ',' after @xrefs.
+
+1999-02-26 20:54:34  Jason R. Mastaler  <jason@4b.org>
+
+	* gnus.texi (Article Date): Added joke by Colin Rafferty
+ 	(colin@xemacs.org).
+
 1999-02-26 08:26:10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Mail Source Specifiers): Fix.

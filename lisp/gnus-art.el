@@ -1,4 +1,3 @@
-
 ;;; gnus-art.el --- article mode commands for Gnus
 ;; Copyright (C) 1996,97,98,99 Free Software Foundation, Inc.
 
@@ -121,7 +120,7 @@
     "^X-Pgp-Public-Key-Url:" "^X-Auth:" "^X-From-Line:"
     "^X-Gnus-Article-Number:" "^X-Majordomo:" "^X-Url:" "^X-Sender:"
     "^X-Mailing-List:" "^MBOX-Line" "^Priority:" "^X-Pgp" "^X400-[-A-Za-z]+:"
-    "^Status:")
+    "^Status:" "^X-Gnus-Mail-Source:")
   "*All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."
@@ -620,167 +619,241 @@ on parts -- for instance, adding Vcard info to a database."
   "Whether to inhibit treatment.")
 
 (defcustom gnus-treat-highlight-signature '(or last (typep "text/x-vcard"))
-  "Highlight the signature."
+  "Highlight the signature.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
+(put 'gnus-treat-highlight-signature 'highlight t)
 
 (defcustom gnus-treat-buttonize t
-  "Add buttons."
+  "Add buttons.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
+(put 'gnus-treat-buttonize 'highlight t)
 
 (defcustom gnus-treat-buttonize-head 'head
-  "Add buttons to the head."
+  "Add buttons to the head.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
+(put 'gnus-treat-buttonize-head 'highlight t)
 
 (defcustom gnus-treat-emphasize t
-  "Emphasize text."
+  "Emphasize text.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
+(put 'gnus-treat-emphasize 'highlight t)
 
 (defcustom gnus-treat-strip-cr nil
-  "Remove carriage returns."
+  "Remove carriage returns.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-hide-headers 'head
-  "Hide headers."
+  "Hide headers.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-hide-boring-headers nil
-  "Hide boring headers."
+  "Hide boring headers.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-hide-signature nil
-  "Hide the signature."
+  "Hide the signature.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-fill-article nil
-  "Fill the article."
+  "Fill the article.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-hide-citation nil
-  "Hide cited text."
+  "Hide cited text.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-strip-pgp t
-  "Strip PGP signatures."
+  "Strip PGP signatures.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-strip-pem nil
-  "Strip PEM signatures."
+  "Strip PEM signatures.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-strip-banner t
   "Strip banners from articles.
-The banner to be stripped is specified in the `banner' group parameter."
+The banner to be stripped is specified in the `banner' group parameter.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-highlight-headers 'head
-  "Highlight the headers."
+  "Highlight the headers.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
+(put 'gnus-treat-highlight-headers 'highlight t)
 
 (defcustom gnus-treat-highlight-citation t
-  "Highlight cited text."
+  "Highlight cited text.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
+(put 'gnus-treat-highlight-citation 'highlight t)
 
 (defcustom gnus-treat-date-ut nil
-  "Display the Date in UT (GMT)."
+  "Display the Date in UT (GMT).
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-date-local nil
-  "Display the Date in the local timezone."
+  "Display the Date in the local timezone.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-date-lapsed nil
-  "Display the Date header in a way that says how much time has elapsed."
+  "Display the Date header in a way that says how much time has elapsed.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-date-original nil
-  "Display the date in the original timezone."
+  "Display the date in the original timezone.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-date-iso8601 nil
-  "Display the date in the ISO8601 format."
+  "Display the date in the ISO8601 format.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-date-user-defined nil
   "Display the date in a user-defined format.
-The format is defined by the `gnus-article-time-format' variable."
+The format is defined by the `gnus-article-time-format' variable.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-strip-trailing-blank-lines nil
-  "Strip trailing blank lines."
+  "Strip trailing blank lines.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-strip-leading-blank-lines nil
-  "Strip leading blank lines."
+  "Strip leading blank lines.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-strip-multiple-blank-lines nil
-  "Strip multiple blank lines."
+  "Strip multiple blank lines.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-strip-blank-lines nil
-  "Strip all blank lines."
+  "Strip all blank lines.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-overstrike t
-  "Treat overstrike highlighting."
+  "Treat overstrike highlighting.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
+(put 'gnus-treat-overstrike 'highlight t)
 
 (defcustom gnus-treat-display-xface (if (and gnus-xemacs (featurep 'xface))
 					'head nil)
-  "Display X-Face headers."
+  "Display X-Face headers.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
+(put 'gnus-treat-display-xface 'highlight t)
 
 (defcustom gnus-treat-display-smileys (if (and gnus-xemacs
 					       (featurep 'xpm))
 					  t nil)
-  "Display smileys."
+  "Display smileys.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
+(put 'gnus-treat-display-smileys 'highlight t)
 
 (defcustom gnus-treat-display-picons (if gnus-xemacs 'head nil)
-  "Display picons."
+  "Display picons.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
+(put 'gnus-treat-display-picons 'highlight t)
 
 (defcustom gnus-treat-capitalize-sentences nil
-  "Capitalize sentence-starting words."
+  "Capitalize sentence-starting words.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-fill-long-lines nil
-  "Fill long lines."
+  "Fill long lines.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-play-sounds nil
-  "Fill long lines."
+  "Fill long lines.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
@@ -858,34 +931,6 @@ Initialized from `text-mode-syntax-table.")
     (put-text-property
      (max (1- b) (point-min))
      b 'intangible (cddr (memq 'intangible props)))))
-
-(defmacro gnus-with-article (article &rest forms)
-  "Select ARTICLE and perform FORMS in the original article buffer.
-Then replace the article with the result."
-  `(progn
-     ;; We don't want the article to be marked as read.
-     (let (gnus-mark-article-hook)
-       (gnus-summary-select-article t t nil ,article))
-     (set-buffer gnus-original-article-buffer)
-     ,@forms
-     (if (not (gnus-check-backend-function
-	       'request-replace-article (car gnus-article-current)))
-	 (gnus-message 5 "Read-only group; not replacing")
-       (unless (gnus-request-replace-article
-		,article (car gnus-article-current)
-		(current-buffer) t)
-	 (error "Couldn't replace article")))
-     ;; The cache and backlog have to be flushed somewhat.
-     (when gnus-keep-backlog
-       (gnus-backlog-remove-article
-	(car gnus-article-current) (cdr gnus-article-current)))
-     (when gnus-use-cache
-       (gnus-cache-update-article
-	(car gnus-article-current) (cdr gnus-article-current)))))
-
-(put 'gnus-with-article 'lisp-indent-function 1)
-(put 'gnus-with-article 'edebug-form-spec '(form body))
-
 (defsubst gnus-article-unhide-text (b e)
   "Remove hidden text properties from region between B and E."
   (remove-text-properties b e gnus-hidden-properties)
@@ -2769,6 +2814,11 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		    (save-restriction
 		      (narrow-to-region (point) (1+ (point)))
 		      (mm-display-part handle)
+		      ;; We narrow to the part itself and
+		      ;; then call the treatment functions.
+		      (goto-char (point-min))
+		      (forward-line 1)
+		      (narrow-to-region (point) (point-max))
 		      (gnus-treat-article
 		       nil id
 		       (1- (length gnus-article-mime-handles))
@@ -4251,16 +4301,18 @@ For example:
 		 (while list
 		   (when (string-match (pop list) type)
 		     (throw 'found t)))))))
+	(highlightp (gnus-visual-p 'article-highlight 'highlight))
 	val elem)
-    (when (gnus-visual-p 'article-highlight 'highlight)
-      (gnus-run-hooks 'gnus-part-display-hook)
-      (while (setq elem (pop alist))
-	(setq val (symbol-value (car elem)))
-	(when (and (or (consp val)
-		       treated-type)
-		   (gnus-treat-predicate val))
-	  (save-restriction
-	    (funcall (cadr elem))))))))
+    (gnus-run-hooks 'gnus-part-display-hook)
+    (while (setq elem (pop alist))
+      (setq val (symbol-value (car elem)))
+      (when (and (or (consp val)
+		     treated-type)
+		 (gnus-treat-predicate val)
+		 (or (not (get (car elem) 'highlight))
+		     highlightp))
+	(save-restriction
+	  (funcall (cadr elem)))))))
 
 ;; Dynamic variables.
 (defvar part-number)
