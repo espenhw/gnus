@@ -1,3 +1,9 @@
+2003-08-07  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (gnus-header-face-alist): Revert previous change.
+	(gnus-header-newsgroups-face): Explain that it's only used for
+	crossposts.
+
 2003-08-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-registry.el (gnus-registry-max-entries): Fix customization

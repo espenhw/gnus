@@ -628,7 +628,9 @@ Obsolete; use the face `gnus-signature-face' for customizations instead."
      (:foreground "MidnightBlue" :italic t))
     (t
      (:italic t)))
-  "Face used for displaying newsgroups headers."
+  "Face used for displaying newsgroups headers.
+In the default setup this face is only used for crossposted
+articles."
   :group 'gnus-article-headers
   :group 'gnus-article-highlight)
 
@@ -660,7 +662,7 @@ Obsolete; use the face `gnus-signature-face' for customizations instead."
 (defcustom gnus-header-face-alist
   '(("From" nil gnus-header-from-face)
     ("Subject" nil gnus-header-subject-face)
-    ("Newsgroups" nil gnus-header-newsgroups-face)
+    ("Newsgroups:.*," nil gnus-header-newsgroups-face)
     ("" gnus-header-name-face gnus-header-content-face))
   "*Controls highlighting of article headers.
 
