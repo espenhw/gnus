@@ -90,7 +90,7 @@
 	  ;; Ok, there are new articles in this group, se we fetch the
 	  ;; headers.
 	  (save-excursion
-	    (let ((gnus-newsgroup-dependencies (make-vector 10 nil))
+	    (let ((dependencies (make-vector 10 nil))
 		  (buffer (nnheader-set-temp-buffer " *Gnus NoCeM*"))
 		  headers)
 	      (setq headers
@@ -103,8 +103,9 @@
 				       (car gactive))
 				     (cdr gactive))))
 			     group))
-			(gnus-get-newsgroup-headers-xover articles)
-		      (gnus-get-newsgroup-headers)))
+			(gnus-get-newsgroup-headers-xover 
+			 articles nil dependencies)
+		      (gnus-get-newsgroup-headers dependencies)))
 	      (while headers
 		;; We take a closer look on all articles that have
 		;; "@@NCM" in the subject.  

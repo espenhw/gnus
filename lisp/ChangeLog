@@ -1,3 +1,33 @@
+Wed Apr 10 00:25:17 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* nnvirtual.el (nnvirtual-close-group): Nix out variables.
+
+	* gnus-cache.el (gnus-cache-possibly-remove-article): Didn't work
+	in virtual groups.
+	(gnus-cache-possibly-enter-article): Ditto.
+
+	* message.el (message-do-fcc): Remove separator.
+
+	* gnus-nocem.el (gnus-nocem-scan-groups): Use own dependencies
+	hash table.
+
+Tue Apr  9 23:37:36 1996  Brad Miller  <bmiller@cs.umn.edu>
+
+	* gnus-gl.el: New version.
+
+Tue Apr  9 23:08:20 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el (gnus-article-de-quoted-unreadable): Downcase type.
+	(gnus-fetch-field): Inhibit point-motion hooks.
+
+Tue Apr  9 10:50:20 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-user-mail-address): Pick out <addrs>. 
+
+Tue Apr  9 07:46:47 1996  Lars Magne Ingebrigtsen  <lars@eyesodre.no>
+
+	* gnus.el: September Gnus v0.68 is released.
+
 Tue Apr  9 00:15:43 1996  Brad Miller  <bmiller@cs.umn.edu>
 
 	* gnus-gl.el: New version.

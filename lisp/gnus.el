@@ -1149,7 +1149,7 @@ with some simple extensions.
 %z   Article zcore (character)
 %t   Number of articles under the current thread (number).
 %e   Whether the thread is empty or not (character).
-%l   GroupLens score (number)
+%l   GroupLens score (string).
 %u   User defined specifier.  The next character in the format string should
      be a letter.  Gnus will call the function gnus-user-format-function-X,
      where X is the letter following %u.  The function will be passed the
@@ -1695,7 +1695,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.68"
+(defconst gnus-version "September Gnus v0.69"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2421,7 +2421,8 @@ Thank you for your help in stamping out bugs.
   "Return the value of the header FIELD of current article."
   (save-excursion
     (save-restriction
-      (let ((case-fold-search t))
+      (let ((case-fold-search t)
+	    (inhibit-point-motion-hooks t))
 	(nnheader-narrow-to-headers)
 	(mail-fetch-field field)))))
 
@@ -9127,14 +9128,15 @@ The resulting hash table is returned, or nil if no Xrefs were found."
   '(buffer-substring (point) (if (gnus-nov-skip-field) (1- (point)) eol)))
 
 ;; Goes through the xover lines and returns a list of vectors
-(defun gnus-get-newsgroup-headers-xover (sequence &optional force-new)
+(defun gnus-get-newsgroup-headers-xover (sequence &optional 
+						  force-new dependencies)
   "Parse the news overview data in the server buffer, and return a
 list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
   ;; Get the Xref when the users reads the articles since most/some
   ;; NNTP servers do not include Xrefs when using XOVER.
   (setq gnus-article-internal-prepare-hook '(gnus-article-get-xrefs))
   (let ((cur nntp-server-buffer)
-	(dependencies gnus-newsgroup-dependencies)
+	(dependencies (or dependencies gnus-newsgroup-dependencies))
 	number headers header)
     (save-excursion
       (set-buffer nntp-server-buffer)
@@ -13877,7 +13879,7 @@ or not."
 	  (buffer-read-only nil)
 	  (type (gnus-fetch-field "content-transfer-encoding")))
       (when (or force
-		(and type (string-match "quoted-printable" type)))
+		(and type (string-match "quoted-printable" (downcase type))))
 	(gnus-headers-decode-quoted-printable)
 	(goto-char (point-min))
 	(search-forward "\n\n" nil 'move)

@@ -1,3 +1,12 @@
+Tue Apr  9 23:41:15 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.texi (GroupLens): Moved.
+
+Tue Apr  9 06:50:30 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Contributors): Rewrite.
+	(Displaying Predictions): Further formatting.
+
 Tue Apr  9 00:17:33 1996  Brad Miller  <bmiller@cs.umn.edu>
 
 	* gnus.texi (GroupLens): New section.

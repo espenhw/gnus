@@ -226,6 +226,9 @@ virtual group.")
   (when (nnvirtual-possibly-change-group group server)
     ;; Copy (un)read articles.
     (nnvirtual-update-reads)
+    (setq nnvirtual-mapping nil
+	  nnvirtual-current-group nil
+	  nnvirtual-component-groups nil)
     ;; We copy the marks from this group to the component
     ;; groups here.
     (nnvirtual-update-marked))

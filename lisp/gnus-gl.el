@@ -120,7 +120,7 @@
 ;;; Code:
 
 (require 'gnus-score)
-(eval-and-compile (require 'cl))
+(require 'cl)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; User variables
@@ -128,10 +128,6 @@
 
 (defvar gnus-summary-grouplens-line-format
   "%U%R%z%l%I%(%[%4L: %-20,20n%]%) %s\n"
-  "*The line format spec in summary GroupLens mode buffers.")
-
-(defvar gnus-summary-grouplens-lab-line-format
-  "%U%R%z%uL%I%(%[%4L: %-20,20n%]%) %s\n"
   "*The line format spec in summary GroupLens mode buffers.")
 
 (defvar grouplens-pseudonym ""
@@ -162,25 +158,26 @@
 
 (defvar grouplens-score-offset 0
   "Offset the prediction by this value.  
-Setting this variable to -2 would have the following effect on grouplens 
-scores:
+Setting this variable to -2 would have the following effect on
+GroupLens scores:
+
    1   -->   -2
    2   -->   -1
    3   -->    0
    4   -->    1
    5   -->    2
    
-the reason a user might want to do this is to combine grouplens 
-predictions with scores calculated by other score methods")
+The reason is that a user might want to do this is to combine
+GroupLens predictions with scores calculated by other score methods.")
 
 (defvar grouplens-score-scale-factor 1
-  "This variable allow sthe user to magify the effect of grouplens scores. 
+  "This variable allows the user to magnify the effect of GroupLens scores. 
 The scale factor is applied after the offset.")
 
 (defvar gnus-grouplens-override-scoring t
   "Tell Grouplens to override the normal Gnus scoring mechanism.  
 If this variable is non-nill than Grouplens will completely override
-the normal scoring mechanism of Gnus.  When nil, Grouplens will not
+the normal scoring mechanism of Gnus.  When nil, GroupLens will not
 override the normal scoring mechanism so both can be used at once.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -212,11 +209,11 @@ override the normal scoring mechanism so both can be used at once.")
 (defvar bbb-alist nil)
 
 (defvar bbb-timeout-secs 10
-  "Number of seconds to wait for some response from the BBB before
-    we give up and assume that something has died..." )
+  "Number of seconds to wait for some response from the BBB.
+If this times out we give up and assume that something has died..." )
 
 (defvar grouplens-previous-article nil
-  "message-id of the last article read")
+  "Message-ID of the last article read.")
 
 (defvar bbb-read-point)
 (defvar bbb-response-point)
@@ -352,8 +349,8 @@ recommend using both scores and grouplens predictions together."
       (gnus-message 3 "Error: You are not logged in to a BBB")
     (gnus-message 5 "Fetching Predictions...")
     (let (predict-list
-	  (predict-command (build-predict-command midlist groupname 
-						  grouplens-bbb-token))
+	  (predict-command (bbb-build-predict-command midlist groupname 
+						      grouplens-bbb-token))
 	  (bbb-process (bbb-connect-to-bbbd grouplens-bbb-host 
 					    grouplens-bbb-port)))
       (if bbb-process
@@ -378,7 +375,7 @@ recommend using both scores and grouplens predictions together."
 	     (setq bbb-mid-list (cons this bbb-mid-list))))
     bbb-mid-list))
 
-(defun build-predict-command (mlist grpname token)
+(defun bbb-build-predict-command (mlist grpname token)
   (let ((cmd (concat "getpredictions " token " " grpname "\r\n"))
 	art)
     (while mlist
@@ -397,13 +394,13 @@ recommend using both scores and grouplens predictions together."
       (goto-char bbb-read-point))
     (setq match-end (point))
     (goto-char (+ bbb-response-point 4))  ;; we ought to be right before OK
-    (build-response-alist)))
+    (bbb-build-response-alist)))
 
 ;; build-response-alist assumes that the cursor has been positioned at
 ;; the first line of the list of mid/rating pairs.  For now we will
 ;; use a prediction of 99 to signify no prediction.  Ultimately, we
 ;; should just ignore messages with no predictions.
-(defun build-response-alist ()
+(defun bbb-build-response-alist ()
   (let ((resp nil)
 	(match-end (point)))
     (setq grouplens-current-hashtable (make-hash-table :test 'equal :size 100))
@@ -460,56 +457,58 @@ recommend using both scores and grouplens predictions together."
 
 (defvar gnus-tmp-score)
 (defun bbb-grouplens-score (header)
-  (let* ((rate-string (make-string 12 ? ))
-	 (mid (aref header (nth 1 (assoc "message-id" gnus-header-index))))
-	 (hashent (gethash mid grouplens-current-hashtable))
-	 (iscore gnus-tmp-score)
-	 (low (car (cdr hashent)))
-	 (high (car (cdr (cdr hashent)))))
-    (aset rate-string 0 ?|) 
-    (aset rate-string 11 ?|)
-    (unless (member grouplens-current-group grouplens-newsgroups)
-      (unless (equal grouplens-prediction-display 'prediction-num)
-	(cond ((< iscore 0)
-	       (setq iscore 1))
-	      ((> iscore 5)
-	       (setq iscore 5))))
-      (setq low 0) 
-      (setq high 0))
-    (if (and (bbb-valid-score iscore) 
-	     (not (null mid)))
-	(cond 
-	 ;; prediction-spot
-	 ((equal grouplens-prediction-display 'prediction-spot)
-	  (setq rate-string (bbb-fmt-prediction-spot rate-string iscore)))
-	 ;; confidence-interval
-	 ((equal grouplens-prediction-display 'confidence-interval)
-	  (setq rate-string (bbb-fmt-confidence-interval iscore low high)))
-	 ;; prediction-bar
-	 ((equal grouplens-prediction-display 'prediction-bar)
-	  (setq rate-string (bbb-fmt-prediction-bar rate-string iscore)))
-	 ;; confidence-bar
-	 ((equal grouplens-prediction-display 'confidence-bar)
-	  (setq rate-string (format "|   %4.2f   |" iscore)))
-	 ;; confidence-spot
-	 ((equal grouplens-prediction-display 'confidence-spot)
-	  (setq rate-string (format "|   %4.2f   |" iscore)))
-	 ;; prediction-num
-	 ((equal grouplens-prediction-display 'prediction-num)
-	  (setq rate-string (bbb-fmt-prediction-num iscore)))
-	 ;; confidence-plus-minus
-	 ((equal grouplens-prediction-display 'confidence-plus-minus)
-	       (setq rate-string (bbb-fmt-confidence-plus-minus iscore low high))
-	       )
-	 (t (gnus-message 3 "Invalid prediction display type")))
-      (aset rate-string 5 ?N) (aset rate-string 6 ?A))
-    rate-string))
+  (if (null gnus-grouplens-override-scoring)
+      (bbb-grouplens-other-score header)
+    (let* ((rate-string (make-string 12 ? ))
+	   (mid (aref header (nth 1 (assoc "message-id" gnus-header-index))))
+	   (hashent (gethash mid grouplens-current-hashtable))
+	   (iscore gnus-tmp-score)
+	   (low (car (cdr hashent)))
+	   (high (car (cdr (cdr hashent)))))
+      (aset rate-string 0 ?|) 
+      (aset rate-string 11 ?|)
+      (unless (member grouplens-current-group grouplens-newsgroups)
+	(unless (equal grouplens-prediction-display 'prediction-num)
+	  (cond ((< iscore 0)
+		 (setq iscore 1))
+		((> iscore 5)
+		 (setq iscore 5))))
+	(setq low 0) 
+	(setq high 0))
+      (if (and (bbb-valid-score iscore) 
+	       (not (null mid)))
+	  (cond 
+	   ;; prediction-spot
+	   ((equal grouplens-prediction-display 'prediction-spot)
+	    (setq rate-string (bbb-fmt-prediction-spot rate-string iscore)))
+	   ;; confidence-interval
+	   ((equal grouplens-prediction-display 'confidence-interval)
+	    (setq rate-string (bbb-fmt-confidence-interval iscore low high)))
+	   ;; prediction-bar
+	   ((equal grouplens-prediction-display 'prediction-bar)
+	    (setq rate-string (bbb-fmt-prediction-bar rate-string iscore)))
+	   ;; confidence-bar
+	   ((equal grouplens-prediction-display 'confidence-bar)
+	    (setq rate-string (format "|   %4.2f   |" iscore)))
+	   ;; confidence-spot
+	   ((equal grouplens-prediction-display 'confidence-spot)
+	    (setq rate-string (format "|   %4.2f   |" iscore)))
+	   ;; prediction-num
+	   ((equal grouplens-prediction-display 'prediction-num)
+	    (setq rate-string (bbb-fmt-prediction-num iscore)))
+	   ;; confidence-plus-minus
+	   ((equal grouplens-prediction-display 'confidence-plus-minus)
+	    (setq rate-string (bbb-fmt-confidence-plus-minus iscore low high))
+	    )
+	   (t (gnus-message 3 "Invalid prediction display type")))
+	(aset rate-string 5 ?N) (aset rate-string 6 ?A))
+      rate-string)))
 
 ;;
 ;; Gnus user format function that doesn't depend on
 ;; bbb-build-mid-scores-alist being used as the score function, but is
 ;; instead called from gnus-select-group-hook. -- LAB
-(defun gnus-user-format-function-L (header)
+(defun bbb-grouplens-other-score (header)
   (if (not (member grouplens-current-group grouplens-newsgroups))
       ;; Return an empty string
       ""
@@ -621,7 +620,7 @@ recommend using both scores and grouplens predictions together."
 	   (member gnus-newsgroup-name grouplens-newsgroups))
       (let ((bbb-process (bbb-connect-to-bbbd grouplens-bbb-host 
 					  grouplens-bbb-port))
-	    (rate-command (build-rate-command grouplens-rating-alist)))
+	    (rate-command (bbb-build-rate-command grouplens-rating-alist)))
 	(if bbb-process
 	    (save-excursion 
 	      (set-buffer (process-buffer bbb-process))
@@ -636,7 +635,7 @@ recommend using both scores and grouplens predictions together."
 	  (gnus-message 3 "No BBB connection")))
     (setq grouplens-rating-alist nil)))
 
-(defun build-rate-command (rate-alist)
+(defun bbb-build-rate-command (rate-alist)
   (let (this
 	(cmd (concat "putratings " grouplens-bbb-token 
 		     " " grouplens-current-group " \r\n")))
@@ -752,7 +751,7 @@ recommend using both scores and grouplens predictions together."
 ;;          BUG REPORTING
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst gnus-gl-version "gnus-gl.el 2.11")
+(defconst gnus-gl-version "gnus-gl.el 2.12")
 (defconst gnus-gl-maintainer-address "grouplens-bug@cs.umn.edu")
 (defun gnus-gl-submit-bug-report ()
   "Submit via mail a bug report on gnus-gl"
@@ -836,10 +835,10 @@ recommend using both scores and grouplens predictions together."
                   '(lambda() 
                      (bbb-build-mid-scores-alist gnus-newsgroup-name))))
       (make-local-variable 'gnus-summary-line-format)
-      (if (null gnus-grouplens-override-scoring)
-	
-	  (setq gnus-summary-line-format gnus-summary-grouplens-lab-line-format))
+      (setq gnus-summary-line-format 
+	    gnus-summary-grouplens-line-format)
       (make-local-variable 'gnus-summary-line-format-spec)
+      (setq gnus-summary-line-format-spec nil)
 
       ;; Set up the menu.
       (when (and menu-bar-mode

@@ -1381,32 +1381,40 @@ the user from the mailer."
 (defun message-do-fcc ()
   "Process Fcc headers in the current buffer."
   (let ((case-fold-search t)
+	(buf (current-buffer))
 	list file)
     (save-excursion
+      (set-buffer (get-buffer-create " *message temp*"))
+      (buffer-disable-undo (current-buffer))
+      (erase-buffer)
+      (insert-buffer-substring buf)
       (save-restriction
 	(message-narrow-to-headers)
 	(while (setq file (mail-fetch-field "fcc"))
 	  (push file list)
-	  (message-remove-header "fcc" nil t))
-	;; Process FCC operations.
-	(widen)
-	(while list
-	  (setq file (pop list))
-	  (if (string-match "^[ \t]*|[ \t]*\\(.*\\)[ \t]*$" file)
-	      ;; Pipe the article to the program in question.
-	      (call-process-region (point-min) (point-max) shell-file-name
-				   nil nil nil "-c" (match-string 1 file))
-	    ;; Save the article.
-	    (setq file (expand-file-name file))
-	    (unless (file-exists-p (file-name-directory file))
-	      (make-directory (file-name-directory file) t))
-	    (if (and message-fcc-handler-function
-		     (not (eq message-fcc-handler-function 'rmail-output)))
-		(funcall message-fcc-handler-function file)
-	      (if (and (file-readable-p file) (mail-file-babyl-p file))
-		  (rmail-output file 1)
-		(let ((mail-use-rfc822 t))
-		  (rmail-output file 1 t t))))))))))
+	  (message-remove-header "fcc" nil t)))
+      (goto-char (point-min))
+      (re-search-forward (concat "^" mail-header-separator "$"))
+      (replace-match "" t t)
+      ;; Process FCC operations.
+      (while list
+	(setq file (pop list))
+	(if (string-match "^[ \t]*|[ \t]*\\(.*\\)[ \t]*$" file)
+	    ;; Pipe the article to the program in question.
+	    (call-process-region (point-min) (point-max) shell-file-name
+				 nil nil nil "-c" (match-string 1 file))
+	  ;; Save the article.
+	  (setq file (expand-file-name file))
+	  (unless (file-exists-p (file-name-directory file))
+	    (make-directory (file-name-directory file) t))
+	  (if (and message-fcc-handler-function
+		   (not (eq message-fcc-handler-function 'rmail-output)))
+	      (funcall message-fcc-handler-function file)
+	    (if (and (file-readable-p file) (mail-file-babyl-p file))
+		(rmail-output file 1)
+	      (let ((mail-use-rfc822 t))
+		(rmail-output file 1 t t))))))
+      (kill-buffer (current-buffer)))))
 
 (defun message-cleanup-headers ()
   "Do various automatic cleanups of the headers."
@@ -1642,7 +1650,7 @@ give as trustworthy answer as possible."
 (defun message-user-mail-address ()
   "Return the pertinent part of `user-mail-address'."
   (when (string-match
-	 "\\(\\`\\|[ \t]\\)\\([^ \t@]+@[^ \t]+\\)\\(\\'\\|[ \t]\\)" 
+	 "\\(\\`\\|[ <\t]\\)\\([^ \t@]+@[^ \t]+\\)\\(\\'\\|[> \t]\\)" 
 	 user-mail-address)
     (match-string 2 user-mail-address)))
 

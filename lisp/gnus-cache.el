@@ -119,9 +119,8 @@ variable to \"^nnml\".")
       (let ((result (nnvirtual-find-group-art 
 		     (gnus-group-real-name group) article)))
 	(setq group (car result)
-	      article (cdr result)
 	      headers (copy-sequence headers))
-	(aset headers 0 article)))
+	(mail-header-set-number headers (cdr result))))
     (let ((number (mail-header-number headers))
 	  file dir)
       (when (and (> number 0)		; Reffed article.
@@ -131,7 +130,7 @@ variable to \"^nnml\".")
 		     (gnus-cache-member-of-class
 		      gnus-cache-enter-articles ticked dormant unread))
 		 (not (file-exists-p (setq file (gnus-cache-file-name
-						 group article)))))
+						 group number)))))
 	;; Possibly create the cache directory.
 	(or (file-exists-p (setq dir (file-name-directory file)))
 	    (gnus-make-directory dir))
@@ -141,7 +140,7 @@ variable to \"^nnml\".")
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
 	    (let ((gnus-use-cache nil))
-	      (gnus-request-article-this-buffer article group))
+	      (gnus-request-article-this-buffer number group))
 	    (when (> (buffer-size) 0)
 	      (write-region (point-min) (point-max) file nil 'quiet)
 	      (gnus-cache-change-buffer group)
@@ -179,7 +178,7 @@ variable to \"^nnml\".")
 	      ;; Update the active info.
 	      (set-buffer gnus-summary-buffer)
 	      (gnus-cache-update-active group number)
-	      (push number gnus-newsgroup-cached)
+	      (push article gnus-newsgroup-cached)
 	      (gnus-summary-update-secondary-mark article))
 	    t))))))
 
@@ -384,7 +383,16 @@ Returns the list of articles removed."
 (defun gnus-cache-possibly-remove-article (article ticked dormant unread 
 						   &optional force)
   "Possibly remove ARTICLE from the cache."
-  (let ((file (gnus-cache-file-name gnus-newsgroup-name article)))
+  (let ((group gnus-newsgroup-name)
+	(number article)
+	file)
+    ;; If this is a virtual group, we find the real group.
+    (when (gnus-virtual-group-p group)
+      (let ((result (nnvirtual-find-group-art 
+		     (gnus-group-real-name group) article)))
+	(setq group (car result)
+	      number (cdr result))))
+    (setq file (gnus-cache-file-name group number))
     (when (and (file-exists-p file)
 	       (or force
 		   (gnus-cache-member-of-class
@@ -393,8 +401,8 @@ Returns the list of articles removed."
 	(delete-file file)
 	(set-buffer (cdr gnus-cache-buffer))
 	(goto-char (point-min))
-	(if (or (looking-at (concat (int-to-string article) "\t"))
-		(search-forward (concat "\n" (int-to-string article) "\t")
+	(if (or (looking-at (concat (int-to-string number) "\t"))
+		(search-forward (concat "\n" (int-to-string number) "\t")
 				(point-max) t))
 	    (delete-region (progn (beginning-of-line) (point))
 			   (progn (forward-line 1) (point)))))

@@ -403,7 +403,7 @@ pounce directly on the real variables themselves.")
 
 (defun gnus-xmas-redefine ()
   "Redefine lots of Gnus functions for XEmacs."
-  (fset 'gnus-summary-make-display-table (lambda () nil))
+  (fset 'gnus-summary-make-display-table 'ignore)
   (fset 'gnus-visual-turn-off-edit-menu 'identity)
   (fset 'gnus-highlight-selected-summary
 	'gnus-xmas-highlight-selected-summary)
