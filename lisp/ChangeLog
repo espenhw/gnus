@@ -1,3 +1,43 @@
+2004-12-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnrss.el: Require rfc2047 and mml.
+	(nnrss-file-coding-system): New variable.
+	(nnrss-format-string): Redefine it as an inline function.
+	(nnrss-decode-group-name): New function.
+	(nnrss-string-as-multibyte): Remove.
+	(nnrss-retrieve-headers): Decode group name; don't use
+	nnrss-format-string.
+	(nnrss-request-group): Decode group name.
+	(nnrss-request-article): Decode group name; allow a Message-ID as
+	well as an article number; don't use nnrss-format-string; encode a
+	Message-ID string which may contain non-ASCII characters; use
+	mml-to-mime to compose a MIME article.
+	(nnrss-request-expire-articles): Decode group name.
+	(nnrss-request-delete-group): Decode group name.
+	(nnrss-fetch): Clarify error message.
+	(nnrss-read-server-data): Use insert-file-contents instead of load;
+	bind file-name-coding-system; use multibyte buffer.
+	(nnrss-save-server-data): Bind coding-system-for-write to the
+	value of nnrss-file-coding-system; bind file-name-coding-system;
+	add coding cookie.
+	(nnrss-read-group-data): Use insert-file-contents instead of load;
+	bind file-name-coding-system; use multibyte buffer.
+	(nnrss-save-group-data): Bind coding-system-for-write to the
+	value of nnrss-file-coding-system; bind file-name-coding-system.
+	(nnrss-decode-entities-string): Rename from n-d-e-unibyte-string;
+	make it work with non-ASCII text.
+	(nnrss-find-el): Make it work with old xml.el as well.
+
+2004-12-26  Tsuyoshi AKIHO  <akiho@kawachi.zaq.ne.jp>
+
+	* nnrss.el (nnrss-get-encoding): New function.
+	(nnrss-fetch): Use unibyte buffer initially; bind
+	coding-system-for-read while performing mm-url-insert; remove ^Ms;
+	decode contents according to the encoding attribute.
+	(nnrss-save-group-data): Add coding cookie.
+	(nnrss-mime-encode-string): New function.
+	(nnrss-check-group): Use it to encode subject and author.
+
 2004-12-23  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-check-BBDB): don't get the symbol-value of an
