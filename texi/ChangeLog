@@ -1,3 +1,7 @@
+1999-11-23 03:05:32  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Mail Source Specifiers): Add webmail.
+
 1999-11-19 12:15:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Slashdot): Addition.
