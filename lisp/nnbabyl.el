@@ -335,10 +335,13 @@
 	   (delete-region (point) (progn (forward-line 1) (point)))))
        (when nnmail-cache-accepted-message-ids
 	 (nnmail-cache-insert (nnmail-fetch-field "message-id")))
-       (setq result (car (nnbabyl-save-mail
-			  (if (stringp group)
-			      (list (cons group (nnbabyl-active-number group)))
-			    (nnmail-article-group 'nnbabyl-active-number)))))
+       (setq result
+	     (if (stringp group)
+		 (list (cons group (nnbabyl-active-number group)))
+	       (nnmail-article-group 'nnbabyl-active-number)))
+       (if (null result)
+	   (setq result 'junk)
+	 (setq result (car (nnbabyl-save-mail result))))
        (set-buffer nnbabyl-mbox-buffer)
        (goto-char (point-max))
        (search-backward "\n\^_")

@@ -87,24 +87,20 @@ save those articles instead."
 
 (defun gnus-summary-save-in-vm (&optional folder)
   (interactive)
-  (let ((default-name
-	  (funcall gnus-mail-save-name gnus-newsgroup-name
-		   gnus-current-headers gnus-newsgroup-last-mail)))
-    (setq folder
-	  (cond ((eq folder 'default) default-name)
-		(folder folder)
-		(t (gnus-read-save-file-name
-		    "Save %s in VM folder:" default-name))))
-    (gnus-make-directory (file-name-directory folder))
-    (set-buffer gnus-original-article-buffer)
+  (setq folder
+	(cond ((eq folder 'default) default-name)
+	      (folder folder)
+	      (t (gnus-read-save-file-name
+		  "Save %s in VM folder:" folder
+		  gnus-mail-save-name gnus-newsgroup-name
+		  gnus-current-headers 'gnus-newsgroup-last-mail))))
+  (gnus-eval-in-buffer-window gnus-original-article-buffer
     (save-excursion
       (save-restriction
 	(widen)
 	(let ((vm-folder (gnus-vm-make-folder)))
 	  (vm-save-message folder)
-	  (kill-buffer vm-folder))))
-    ;; Remember the directory name to save articles.
-    (setq gnus-newsgroup-last-mail folder)))
+	  (kill-buffer vm-folder))))))
 
 (provide 'gnus-vm)
 

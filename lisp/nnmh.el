@@ -301,8 +301,10 @@
 		 noinsert)))
 	(and
 	 (nnmail-activate 'nnmh)
-	 (car (nnmh-save-mail (nnmail-article-group 'nnmh-active-number)
-			      noinsert))))
+	 (let ((resu|t (nnmail-article-group 'nnmh-active-number)))
+	   (if (not result)
+	       'junk
+	     (car (nnmh-save-mail result noinsert))))))
     (when (and last nnmail-cache-accepted-message-ids)
       (nnmail-cache-close))))
 

@@ -1,6 +1,6 @@
 \input texinfo.tex
 
-@c $Id: widget.texi,v 1.87 1997/03/08 16:21:38 abraham Exp $
+@c $Id: widget.texi,v 1.93 1997/03/18 13:42:55 abraham Exp $
 
 @c %**start of header
 @setfilename widget
@@ -15,7 +15,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Emacs Widget Library
 
-Version: 1.59
+Version: 1.65
 
 @menu
 * Introduction::                
@@ -530,9 +530,28 @@ widgets current value is valid for the widget.  Otherwise, it should
 return the widget containing the invalid data, and set that widgets
 @code{:error} property to a string explaining the error.
 
+@item :tab-order
+Specify the order in which widgets are traversed with
+@code{widget-forward} or @code{widget-backward}.  This is only partially
+implemented.
+
+@enumerate a
+@item
+Widgets with tabbing order @code{-1} are ignored.
+
+@item 
+(Unimplemented) When on a widget with tabbing order @var{n}, go to the
+next widget in the buffer with tabbing order @var{n+1} or @code{nil},
+whichever comes first.
+
+@item
+When on a widget with no tabbing order specified, go to the next widget
+in the buffer with a positive tabbing order, or @code{nil}
+@end enumerate
+
 @item :parent
-The parent of a nested widget (e.g. a @code{menu-choice} item or an element of a
-@code{editable-list} widget). 
+The parent of a nested widget (e.g. a @code{menu-choice} item or an
+element of a @code{editable-list} widget).
 
 @item :sibling-args
 This keyword is only used for members of a @code{radio-button-choice} or

@@ -1,3 +1,29 @@
+Sun Mar 23 02:52:51 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.35 is released.
+
+Sun Mar 23 01:09:23 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-read-save-file-name): Tweaked definition.
+	(gnus-summary-save-in-rmail): Use it.
+	(gnus-summary-save-in-file): Ditto.
+	(gnus-summary-save-in-mail): Ditto.
+	(gnus-summary-save-body-in-file): Ditto.
+
+	* gnus-vm.el (gnus-summary-save-in-vm): Ditto.
+
+	* gnus-sum.el (gnus-summary-enter-digest-group): Add group param. 
+
+	* gnus-art.el (gnus-split-methods): New default.
+	(gnus-article-nndoc-name): New function.
+
+Sat Mar 22 15:47:14 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmh.el (nnmh-request-accept-article): Do 'junk.
+	* nnbabyl.el (nnbabyl-request-accept-article): Ditto.
+	* nnmbox.el (nnmbox-request-accept-article): Ditto.
+	* nnfolder.el (nnfolder-request-accept-article): Ditto.
+
 Sat Mar 22 15:42:53 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.34 is released.

@@ -323,7 +323,8 @@ LAST-FILE."
   :type 'function)
 
 (defcustom gnus-split-methods
-  '((gnus-article-archive-name))
+  '((gnus-article-archive-name)
+    (gnus-article-nndoc-name))
   "Variable used to suggest where articles are to be saved.
 For instance, if you would like to save articles related to Gnus in
 the file \"gnus-stuff\", and articles related to VM in \"vm-stuff\",
@@ -1393,60 +1394,80 @@ This format is defined by the `gnus-article-time-format' variable."
 	(set-buffer gnus-summary-buffer)
 	(funcall gnus-default-article-saver filename)))))
 
-(defun gnus-read-save-file-name (prompt default-name &optional filename)
-  (cond
-   ((eq filename 'default)
-    default-name)
-   (filename filename)
-   (t
-    (let* ((split-name (gnus-get-split-value gnus-split-methods))
-	   (prompt
-	    (format prompt (if (and gnus-number-of-articles-to-be-saved
-				    (> gnus-number-of-articles-to-be-saved 1))
-			       (format "these %d articles"
-				       gnus-number-of-articles-to-be-saved)
-			     "this article")))
-	   (file
-	    ;; Let the split methods have their say.
-	    (cond
-	     ;; No split name was found.
-	     ((null split-name)
-	      (read-file-name
-	       (concat prompt " (default "
-		       (file-name-nondirectory default-name) ") ")
-	       (file-name-directory default-name)
-	       default-name))
-	     ;; A single split name was found
-	     ((= 1 (length split-name))
-	      (let* ((name (car split-name))
-		     (dir (cond ((file-directory-p name)
-				 (file-name-as-directory name))
-				((file-exists-p name) name)
-				(t gnus-article-save-directory))))
-		(read-file-name
-		 (concat prompt " (default " name ") ")
-		 dir name)))
-	     ;; A list of splits was found.
-	     (t
-	      (setq split-name (nreverse split-name))
-	      (let (result)
-		(let ((file-name-history (nconc split-name file-name-history)))
-		  (setq result
-			(expand-file-name
-			 (read-file-name
-			  (concat prompt " (`M-p' for defaults) ")
-			  gnus-article-save-directory
-			  (car split-name))
-			 gnus-article-save-directory)))
-		(car (push result file-name-history)))))))
-      ;; Create the directory.
-      (gnus-make-directory (file-name-directory file))
-      ;; If we have read a directory, we append the default file name.
-      (when (file-directory-p file)
-	(setq file (concat (file-name-as-directory file)
-			   (file-name-nondirectory default-name))))
-      ;; Possibly translate some characters.
-      (nnheader-translate-file-chars file)))))
+(defun gnus-read-save-file-name (prompt &optional filename
+					function group headers variable)
+  (let ((default-name (funcall function group headers
+			       (symbol-value variable)))
+	result)
+    (setq
+     result
+     (cond
+      ((eq filename 'default)
+       default-name)
+      (filename filename)
+      (t
+       (let* ((split-name (gnus-get-split-value gnus-split-methods))
+	      (prompt
+	       (format prompt
+		       (if (and gnus-number-of-articles-to-be-saved
+				(> gnus-number-of-articles-to-be-saved 1))
+			   (format "these %d articles"
+				   gnus-number-of-articles-to-be-saved)
+			 "this article")))
+	      (file
+	       ;; Let the split methods have their say.
+	       (cond
+		;; No split name was found.
+		((null split-name)
+		 (read-file-name
+		  (concat prompt " (default "
+			  (file-name-nondirectory default-name) ") ")
+		  (file-name-directory default-name)
+		  default-name))
+		;; A single group name is returned.
+		((stringp split-name)
+		 (setq default-name
+		       (funcall function split-name headers
+				(symbol-value variable)))
+		 (read-file-name
+		  (concat prompt " (default "
+			  (file-name-nondirectory default-name) ") ")
+		  (file-name-directory default-name)
+		  default-name))
+		;; A single split name was found
+		((= 1 (length split-name))
+		 (let* ((name (car split-name))
+			(dir (cond ((file-directory-p name)
+				    (file-name-as-directory name))
+				   ((file-exists-p name) name)
+				   (t gnus-article-save-directory))))
+		   (read-file-name
+		    (concat prompt " (default " name ") ")
+		    dir name)))
+		;; A list of splits was found.
+		(t
+		 (setq split-name (nreverse split-name))
+		 (let (result)
+		   (let ((file-name-history
+			  (nconc split-name file-name-history)))
+		     (setq result
+			   (expand-file-name
+			    (read-file-name
+			     (concat prompt " (`M-p' for defaults) ")
+			     gnus-article-save-directory
+			     (car split-name))
+			    gnus-article-save-directory)))
+		   (car (push result file-name-history)))))))
+	 ;; Create the directory.
+	 (gnus-make-directory (file-name-directory file))
+	 ;; If we have read a directory, we append the default file name.
+	 (when (file-directory-p file)
+	   (setq file (concat (file-name-as-directory file)
+			      (file-name-nondirectory default-name))))
+	 ;; Possibly translate some characters.
+	 (nnheader-translate-file-chars file)))))
+    (gnus-make-directory (file-name-directory result))
+    (set variable result)))
 
 (defun gnus-article-archive-name (group)
   "Return the first instance of an \"Archive-name\" in the current buffer."
@@ -1455,25 +1476,26 @@ This format is defined by the `gnus-article-time-format' variable."
       (nnheader-concat gnus-article-save-directory
 		       (match-string 1)))))
 
+(defun gnus-article-nndoc-name (group)
+  "If GROUP is an nndoc group, return the name of the parent group."
+  (when (eq (car (gnus-find-method-for-group group)) 'nndoc)
+    (gnus-group-get-parameter group 'save-article-group)))
+
 (defun gnus-summary-save-in-rmail (&optional filename)
   "Append this article to Rmail file.
 Optional argument FILENAME specifies file name.
 Directory to save to is default to `gnus-article-save-directory'."
   (interactive)
   (gnus-set-global-variables)
-  (let ((default-name
-	  (funcall gnus-rmail-save-name gnus-newsgroup-name
-		   gnus-current-headers gnus-newsgroup-last-rmail)))
-    (setq filename (gnus-read-save-file-name
-		    "Save %s in rmail file:" default-name filename))
-    (gnus-make-directory (file-name-directory filename))
-    (gnus-eval-in-buffer-window gnus-save-article-buffer
-      (save-excursion
-	(save-restriction
-	  (widen)
-	  (gnus-output-to-rmail filename))))
-    ;; Remember the directory name to save articles
-    (setq gnus-newsgroup-last-rmail filename)))
+  (setq filename (gnus-read-save-file-name
+		  "Save %s in rmail file:" filename
+		  gnus-rmail-save-name gnus-newsgroup-name
+		  gnus-current-headers 'gnus-newsgroup-last-rmail))
+  (gnus-eval-in-buffer-window gnus-save-article-buffer
+    (save-excursion
+      (save-restriction
+	(widen)
+	(gnus-output-to-rmail filename)))))
 
 (defun gnus-summary-save-in-mail (&optional filename)
   "Append this article to Unix mail file.
@@ -1481,26 +1503,18 @@ Optional argument FILENAME specifies file name.
 Directory to save to is default to `gnus-article-save-directory'."
   (interactive)
   (gnus-set-global-variables)
-  (let ((default-name
-	  (funcall gnus-mail-save-name gnus-newsgroup-name
-		   gnus-current-headers gnus-newsgroup-last-mail)))
-    (setq filename (gnus-read-save-file-name
-		    "Save %s in Unix mail file:" default-name filename))
-    (setq filename
-	  (expand-file-name filename
-			    (and default-name
-				 (file-name-directory default-name))))
-    (gnus-make-directory (file-name-directory filename))
-    (gnus-eval-in-buffer-window gnus-save-article-buffer
-      (save-excursion
-	(save-restriction
-	  (widen)
-	  (if (and (file-readable-p filename)
-		   (mail-file-babyl-p filename))
-	      (gnus-output-to-rmail filename t)
-	    (gnus-output-to-mail filename)))))
-    ;; Remember the directory name to save articles.
-    (setq gnus-newsgroup-last-mail filename)))
+  (setq filename (gnus-read-save-file-name
+		  "Save %s in Unix mail file:" filename
+		  gnus-mail-save-name gnus-newsgroup-name
+		  gnus-current-headers 'gnus-newsgroup-last-mail))
+  (gnus-eval-in-buffer-window gnus-save-article-buffer
+    (save-excursion
+      (save-restriction
+	(widen)
+	(if (and (file-readable-p filename)
+		 (mail-file-babyl-p filename))
+	    (gnus-output-to-rmail filename t)
+	  (gnus-output-to-mail filename))))))
 
 (defun gnus-summary-save-in-file (&optional filename overwrite)
   "Append this article to file.
@@ -1508,22 +1522,18 @@ Optional argument FILENAME specifies file name.
 Directory to save to is default to `gnus-article-save-directory'."
   (interactive)
   (gnus-set-global-variables)
-  (let ((default-name
-	  (funcall gnus-file-save-name gnus-newsgroup-name
-		   gnus-current-headers gnus-newsgroup-last-file)))
-    (setq filename (gnus-read-save-file-name
-		    "Save %s in file:" default-name filename))
-    (gnus-make-directory (file-name-directory filename))
-    (gnus-eval-in-buffer-window gnus-save-article-buffer
-      (save-excursion
-	(save-restriction
-	  (widen)
-	  (when (and overwrite
-		     (file-exists-p filename))
-	    (delete-file filename))
-	  (gnus-output-to-file filename))))
-    ;; Remember the directory name to save articles.
-    (setq gnus-newsgroup-last-file filename)))
+  (setq filename (gnus-read-save-file-name
+		  "Save %s in file:" filename
+		  gnus-file-save-name gnus-newsgroup-name
+		  gnus-current-headers 'gnus-newsgroup-last-file))
+  (gnus-eval-in-buffer-window gnus-save-article-buffer
+    (save-excursion
+      (save-restriction
+	(widen)
+	(when (and overwrite
+		   (file-exists-p filename))
+	  (delete-file filename))
+	(gnus-output-to-file filename)))))
 
 (defun gnus-summary-write-to-file (&optional filename)
   "Write this article to a file.
@@ -1538,22 +1548,18 @@ Optional argument FILENAME specifies file name.
 The directory to save in defaults to `gnus-article-save-directory'."
   (interactive)
   (gnus-set-global-variables)
-  (let ((default-name
-	  (funcall gnus-file-save-name gnus-newsgroup-name
-		   gnus-current-headers gnus-newsgroup-last-file)))
-    (setq filename (gnus-read-save-file-name
-		    "Save %s body in file:" default-name filename))
-    (gnus-make-directory (file-name-directory filename))
-    (gnus-eval-in-buffer-window gnus-save-article-buffer
-      (save-excursion
-	(save-restriction
-	  (widen)
-	  (goto-char (point-min))
-	  (when (search-forward "\n\n" nil t)
-	    (narrow-to-region (point) (point-max)))
-	  (gnus-output-to-file filename))))
-    ;; Remember the directory name to save articles.
-    (setq gnus-newsgroup-last-file filename)))
+  (setq filename (gnus-read-save-file-name
+		  "Save %s body in file:" filename
+		  gnus-file-save-name gnus-newsgroup-name
+		  gnus-current-headers 'gnus-newsgroup-last-file))
+  (gnus-eval-in-buffer-window gnus-save-article-buffer
+    (save-excursion
+      (save-restriction
+	(widen)
+	(goto-char (point-min))
+	(when (search-forward "\n\n" nil t)
+	  (narrow-to-region (point) (point-max)))
+	(gnus-output-to-file filename)))))
 
 (defun gnus-summary-save-in-pipe (&optional command)
   "Pipe this article to subprocess."

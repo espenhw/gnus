@@ -13,7 +13,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Customization Library
 
-Version: 1.59
+Version: 1.65
 
 @menu
 * Introduction::                
@@ -646,6 +646,14 @@ convincing example.
 @item
 Add an `examples' section, with explained examples of custom type
 definitions. 
+
+@item
+Support selectable color themes.  I.e., change many faces by setting one
+variable.
+
+@item
+There should be a way to see only the "current" display when editing a
+face, and that should be "on" by default.
 
 @item
 Support undo using lmi's @file{gnus-undo.el}.

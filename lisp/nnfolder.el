@@ -377,12 +377,14 @@ time saver for large mailboxes.")
 	 (delete-region (point) (progn (forward-line 1) (point))))
        (when nnmail-cache-accepted-message-ids
 	 (nnmail-cache-insert (nnmail-fetch-field "message-id")))
-       (setq result
-	     (car (nnfolder-save-mail
-		   (if (stringp group)
-		       (list (cons group (nnfolder-active-number group)))
-		     (setq art-group
-			   (nnmail-article-group 'nnfolder-active-number)))))))
+       (setq result (if (stringp group)
+			(list (cons group (nnfolder-active-number group)))
+		      (setq art-group
+			    (nnmail-article-group 'nnfolder-active-number))))
+       (if (null result)
+	   (setq result 'junk)
+	 (setq result
+	       (car (nnfolder-save-mail result)))))
      (when last
        (save-excursion
 	 (nnfolder-possibly-change-folder (or (caar art-group) group))

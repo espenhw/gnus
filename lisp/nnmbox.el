@@ -306,10 +306,12 @@
 	 (delete-region (point) (progn (forward-line 1) (point))))
        (when nnmail-cache-accepted-message-ids
 	 (nnmail-cache-insert (nnmail-fetch-field "message-id")))
-       (setq result (nnmbox-save-mail
-		     (if (stringp group)
-			 (list (cons group (nnmbox-active-number group)))
-		       (nnmail-article-group 'nnmbox-active-number)))))
+       (setq result (if (stringp group)
+			(list (cons group (nnmbox-active-number group)))
+		      (nnmail-article-group 'nnmbox-active-number)))
+       (if (null result)
+	   (setq result 'junk)
+	 (setq result (car (nnmbox-save-mail result)))))
      (save-excursion
        (set-buffer nnmbox-mbox-buffer)
        (goto-char (point-max))
@@ -319,7 +321,7 @@
 	   (nnmail-cache-close))
 	 (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
 	 (save-buffer))))
-    (car result)))
+    result))
 
 (deffoo nnmbox-request-replace-article (article group buffer)
   (nnmbox-possibly-change-newsgroup group)

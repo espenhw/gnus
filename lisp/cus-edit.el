@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.59
+;; Version: 1.65
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -1803,9 +1803,19 @@ Leave point at the location of the call, or after the last expression."
 				   ':style 'toggle
 				   ':selected symbol)))
 
-(defun custom-group-menu-create (widget symbol)
-  "Ignoring WIDGET, create a menu entry for customization group SYMBOL."
-  (custom-menu-create symbol))
+(if (string-match "XEmacs" emacs-version)
+    ;; XEmacs can create menus dynamically.
+    (defun custom-group-menu-create (widget symbol)
+      "Ignoring WIDGET, create a menu entry for customization group SYMBOL."
+      `( ,(custom-unlispify-menu-entry symbol t)
+	 :filter (lambda (&rest junk)
+		   (cdr (custom-menu-create ',symbol)))))
+  ;; But emacs can't.
+  (defun custom-group-menu-create (widget symbol)
+    "Ignoring WIDGET, create a menu entry for customization group SYMBOL."
+    ;; Limit the nesting.
+    (let ((custom-menu-nesting (1- custom-menu-nesting)))
+      (custom-menu-create symbol))))
 
 (defun custom-menu-create (symbol &optional name)
   "Create menu for customization group SYMBOL.
@@ -1817,10 +1827,9 @@ The menu is in a format applicable to `easy-menu-define'."
   (let ((item (vector name
 		      `(custom-buffer-create '((,symbol custom-group)))
 		      t)))
-    (if (and (> custom-menu-nesting 0)
+    (if (and (>= custom-menu-nesting 0)
 	     (< (length (get symbol 'custom-group)) widget-menu-max-size))
-	(let ((custom-menu-nesting (1- custom-menu-nesting))
-	      (custom-prefix-list (custom-prefix-add symbol
+	(let ((custom-prefix-list (custom-prefix-add symbol
 						     custom-prefix-list)))
 	  (custom-load-symbol symbol)
 	  `(,(custom-unlispify-menu-entry symbol t)
@@ -1835,17 +1844,17 @@ The menu is in a format applicable to `easy-menu-define'."
       item)))
 
 ;;;###autoload
-(defun custom-menu-update ()
+(defun custom-menu-update (event)
   "Update customize menu."
-  (interactive)
+  (interactive "e")
   (add-hook 'custom-define-hook 'custom-menu-reset)
-  (let ((menu `(,(car custom-help-menu)
-		,(widget-apply '(custom-group) :custom-menu 'emacs)
-		,@(cdr (cdr custom-help-menu)))))
-    (if (fboundp 'add-submenu)
-	(add-submenu '("Options") menu)
+  (let* ((emacs (widget-apply '(custom-group) :custom-menu 'emacs))
+	 (menu `(,(car custom-help-menu)
+		 ,emacs
+		 ,@(cdr (cdr custom-help-menu)))))
+    (let ((map (easy-menu-create-keymaps (car menu) (cdr menu))))
       (define-key global-map [menu-bar help-menu customize-menu]
-	(cons (car menu) (easy-menu-create-keymaps (car menu) (cdr menu)))))))
+	(cons (car menu) map)))))
 
 ;;; Dependencies.
 

@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, extensions, faces, hypermedia
-;; Version: 1.59
+;; Version: 1.65
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -41,7 +41,7 @@
   :must-match :type-error :value-inline :inline :match-inline :greedy
   :button-face-get :button-face :value-face :keymap :entry-from
   :entry-to :help-echo :documentation-property :hide-front-space
-  :hide-rear-space) 
+  :hide-rear-space :tab-order) 
 
 ;; These autoloads should be deleted when the file is added to Emacs.
 (unless (fboundp 'load-gc)

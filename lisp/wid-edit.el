@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 1.59
+;; Version: 1.65
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -733,7 +733,11 @@ ARG may be negative to move backward."
 		       (button (goto-char button))
 		       (field (goto-char field))
 		       (t
-			(error "No buttons or fields found")))))))))
+			(error "No buttons or fields found"))))))
+	(setq button (widget-at (point)))
+	(if (and button (widget-get button :tab-order)
+		 (< (widget-get button :tab-order) 0))
+	    (setq arg (1+ arg))))))
   (while (< arg 0)
     (if (= (point-min) (point))
 	(forward-char 1))
@@ -767,7 +771,11 @@ ARG may be negative to move backward."
       (cond ((and button field)
 	     (goto-char (max button field)))
 	    (button (goto-char button))
-	    (field (goto-char field)))))
+	    (field (goto-char field)))
+      (setq button (widget-at (point)))
+      (if (and button (widget-get button :tab-order)
+	       (< (widget-get button :tab-order) 0))
+	  (setq arg (1- arg)))))
   (widget-echo-help (point))
   (run-hooks 'widget-move-hook))
 
@@ -2150,7 +2158,7 @@ It will read a file name from the minibuffer when activated."
 	 (file (file-name-nondirectory value))
 	 (menu-tag (widget-apply widget :menu-tag-get))
 	 (must-match (widget-get widget :must-match))
-	 (answer (read-file-name (concat menu-tag ": (defalt `" value "') ")
+	 (answer (read-file-name (concat menu-tag ": (default `" value "') ")
 				 dir nil must-match file)))
     (widget-value-set widget (abbreviate-file-name answer))
     (widget-apply widget :notify widget event)
@@ -2328,7 +2336,7 @@ It will read a directory name from the minibuffer when activated."
 (define-widget 'color-item 'choice-item
   "A color name (with sample)."
   :format "%v (%{sample%})\n"
-  :button-face-get 'widget-color-item-button-face-get)
+  :sample-face-get 'widget-color-item-button-face-get)
 
 (defun widget-color-item-button-face-get (widget)
   ;; We create a face from the value.
@@ -2341,7 +2349,7 @@ It will read a directory name from the minibuffer when activated."
   "Choose a color name (with sample)."
   :format "%[%t%]: %v"
   :tag "Color"
-  :value "default"
+  :value "black"
   :value-create 'widget-color-value-create
   :value-delete 'widget-children-value-delete
   :value-get 'widget-color-value-get

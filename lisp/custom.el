@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.59
+;; Version: 1.65
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -297,13 +297,17 @@ the default value for the SYMBOL."
 
 ;;; Menu support
 
-(defconst custom-help-menu '("Customize"
-			     ["Update menu..." custom-menu-update t]
-			     ["Group..." customize t]
-			     ["Variable..." customize-variable t]
-			     ["Face..." customize-face t]
-			     ["Saved..." customize-customized t]
-			     ["Apropos..." customize-apropos t])
+(defconst custom-help-menu
+  `("Customize"
+    ,(if (string-match "XEmacs" emacs-version)
+	 '("Emacs" :filter (lambda (&rest junk)
+			     (cdr (custom-menu-create 'emacs))))
+       ["Update menu..." custom-menu-update t])
+    ["Group..." customize t]
+    ["Variable..." customize-variable t]
+    ["Face..." customize-face t]
+    ["Saved..." customize-customized t]
+    ["Apropos..." customize-apropos t])
   "Customize menu")
 
 (defun custom-menu-reset ()
@@ -317,7 +321,8 @@ the default value for the SYMBOL."
 	    (easy-menu-create-keymaps (car custom-help-menu)
 				      (cdr custom-help-menu))))))
 
-(unless (string-match "XEmacs" emacs-version)
+(if (string-match "XEmacs" emacs-version)
+    (autoload 'custom-menu-create "cus-edit")
   (custom-menu-reset))
 
 ;;; The End.
