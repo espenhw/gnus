@@ -24780,7 +24780,7 @@ evaluate expressions using @kbd{M-:} or inspect variables using
 @cindex slow
 Sometimes, a problem do not directly generate a elisp error but
 manifests itself by causing Gnus to be very slow.  In these cases, you
-can use @kbd{M-x toggle-debug-on-quit} and press @kbd{C-j} when things are
+can use @kbd{M-x toggle-debug-on-quit} and press @kbd{C-g} when things are
 slow, and then try to analyze the backtrace (repeating the procedure
 helps isolating the real problem areas).  A fancier approach is to use
 the elisp profiler, ELP.  The profiler is (or should be) fully
