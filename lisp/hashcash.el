@@ -1,6 +1,6 @@
 ;;; hashcash.el --- Add hashcash payments to email
 
-;; Copyright (C) 2003, 2004 Free Software Foundation
+;; Copyright (C) 2003, 2004, 2005 Free Software Foundation
 ;; Copyright (C) 1997--2002 Paul E. Foley
 
 ;; Maintainer: Paul Foley <mycroft@actrix.gen.nz>
@@ -85,6 +85,11 @@ is used instead.")
 (defcustom hashcash-path (executable-find "hashcash")
   "*The path to the hashcash binary.")
 
+(defcustom hashcash-extra-generate-parameters nil
+  "*A list of parameter strings passed to `hashcash-path' when minting.
+For example, you may want to set this to '(\"-Z2\") to reduce header length."
+  :type '(repeat string))
+
 (defcustom hashcash-double-spend-database "hashcash.db"
   "*The path to the double-spending database.")
 
@@ -140,8 +145,9 @@ is used instead.")
       (save-excursion
 	(set-buffer (get-buffer-create " *hashcash*"))
 	(erase-buffer)
-	(call-process hashcash-path nil t nil
-		      "-m" "-q" "-b" (number-to-string val) str)
+	(apply 'call-process hashcash-path nil t nil
+	       "-m" "-q" "-b" (number-to-string val) str
+	       hashcash-extra-generate-parameters)
 	(goto-char (point-min))
 	(hashcash-token-substring))
     (error "No `hashcash' binary found")))
@@ -150,8 +156,10 @@ is used instead.")
   "Generate a hashcash payment by finding a VAL-bit collison on STR.
 Return immediately.  Call CALLBACK with process and result when ready."
   (if (> val 0)
-      (let ((process (start-process "hashcash" nil
-				    hashcash-path "-m" "-q" "-b" (number-to-string val) str)))
+      (let ((process (apply 'start-process "hashcash" nil
+			    hashcash-path "-m" "-q"
+			    "-b" (number-to-string val) str
+			    hashcash-extra-generate-parameters)))
 	(setq hashcash-process-alist (cons
 				      (cons process (current-buffer))
 				      hashcash-process-alist))
