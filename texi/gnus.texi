@@ -15462,7 +15462,7 @@ there is typically no sure way for the component back end to know this,
 and in that case @code{nnvirtual} tells Gnus that the article came from a
 not-news back end.  (Just to be on the safe side.)
 
-@kbd{C-c C-t} in the message buffer will insert the @code{Newsgroups}
+@kbd{C-c C-n} in the message buffer will insert the @code{Newsgroups}
 line from the article you respond to in these cases.
 
 
