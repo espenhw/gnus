@@ -1,7 +1,5 @@
 ;; Shut up.
 
-(defvar byte-compile-default-warnings)
-
 (defun maybe-fbind (args)
   (while args 
     (or (fboundp (car args))
@@ -12,7 +10,7 @@
     (progn 
       (defvar track-mouse nil)
       (maybe-fbind '(posn-point event-start x-popup-menu
-		     error-message-string facemenu-get-face window-at
+		     facemenu-get-face window-at
 		     coordinates-in-window-p compute-motion
 		     x-defined-colors easy-menu-create-keymaps)) 
       ;; XEmacs thinks writting compatible code is obsolete.
@@ -25,7 +23,7 @@
 		 device-class get-popup-menu-response event-object
 		 x-defined-colors read-color add-submenu set-font-family
 		 font-create-object set-font-size frame-device find-face
-		 set-extent-property make-extent)))
+		 set-extent-property make-extent characterp display-error)))
 
 (setq load-path (cons "." load-path))
 (require 'custom)

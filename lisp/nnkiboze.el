@@ -223,7 +223,8 @@ Finds out what articles are to be part of the nnkiboze groups."
     (when (file-exists-p newsrc-file)
       (load newsrc-file))
     (nnheader-temp-write nov-file
-      (insert-file-contents nov-file)
+      (when (file-exists-p nov-file)
+	(insert-file-contents nov-file))
       (setq nov-buffer (current-buffer))
       ;; Go through the active hashtb and add new all groups that match the 
       ;; kiboze regexp.

@@ -12649,6 +12649,10 @@ this variable:
 
 If this variable is @code{nil} (which is the default), the mode line
 strings won't be chopped off, and they won't be padded either.
+Note that the default is unlikely to be desirable, as even the
+percentage complete in the buffer may be crowded off the mode line;
+the user should configure this variable appropriately for their
+configuration.
 
 
 @node Highlighting and Menus

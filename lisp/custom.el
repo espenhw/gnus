@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.20
+;; Version: 1.24
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -541,7 +541,7 @@ See `defface' for the format of SPEC."
   "Customization of the One True Editor."
   :link '(custom-manual "(emacs)Top"))
 
-(defgroup customize nil
+(defgroup customize '((widgets custom-group))
   "Customization of the Customization support."
   :link '(custom-manual "(custom)Top")
   :link '(url-link :tag "Development Page" 
@@ -568,12 +568,18 @@ See `defface' for the format of SPEC."
 (defun custom-menu-reset ()
   "Reset customize menu."
   (remove-hook 'custom-define-hook 'custom-menu-reset)
-  (if (fboundp 'add-submenu)
-      (add-submenu '("Help") custom-help-menu)
-    (define-key global-map [menu-bar help-menu customize-menu]
-      (cons (car custom-help-menu)
-	    (easy-menu-create-keymaps (car custom-help-menu)
-				      (cdr custom-help-menu))))))
+  (cond ((fboundp 'add-submenu)
+	 ;; XEmacs with menus.
+	 (add-submenu '("Help") custom-help-menu))
+	((string-match "XEmacs" emacs-version)
+	 ;; XEmacs without menus.
+	 )
+	(t
+	 ;; Emacs.
+	 (define-key global-map [menu-bar help-menu customize-menu]
+	   (cons (car custom-help-menu)
+		 (easy-menu-create-keymaps (car custom-help-menu)
+					   (cdr custom-help-menu)))))))
 
 (custom-menu-reset)
 

@@ -13,7 +13,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Customization Library
 
-Version: 1.20
+Version: 1.24
 
 @menu
 * Introduction::                
@@ -637,6 +637,21 @@ Support undo using lmi's @file{gnus-undo.el}.
 
 @item
 Make it possible to append to `choice', `radio', and `set' options.
+
+@item
+There should be a way to exit the buffer.
+
+An @sc{open look} pushpin would do wonders.
+
+@item
+Ask whether set or modified variables should be saved in
+@code{kill-buffer-hook}. 
+
+Ditto for @code{kill-emacs-query-functions}.
+
+@item
+Command to check if there are any customization options that
+does not belong to an existing group. 
 
 @end itemize
 

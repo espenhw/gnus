@@ -188,7 +188,8 @@ all.  This may very well take some time.")
      (t
       (nnheader-report 'nnml "Article %s retrieved" id)
       ;; We return the article number.
-      (cons group (string-to-int (file-name-nondirectory path)))))))
+      (cons (if group-num (car group-num) group)
+	    (string-to-int (file-name-nondirectory path)))))))
 
 (deffoo nnml-request-group (group &optional server dont-check)
   (cond 

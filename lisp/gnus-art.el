@@ -1201,11 +1201,13 @@ how much time has lapsed since DATE."
     (concat "Date: " date "\n"))
    ;; Let the user define the format.
    ((eq type 'user)
-    (format-time-string gnus-article-time-format
-			(ignore-errors
-			  (gnus-encode-date
-			   (timezone-make-date-arpa-standard
-			    date nil "UT")))))
+    (concat 
+     (format-time-string gnus-article-time-format
+			 (ignore-errors
+			   (gnus-encode-date
+			    (timezone-make-date-arpa-standard
+			     date nil "UT"))))
+     "\n"))
    ;; Do an X-Sent lapsed format.
    ((eq type 'lapsed)
     ;; If the date is seriously mangled, the timezone functions are
@@ -1704,9 +1706,10 @@ If variable `gnus-use-long-file-name' is non-nil, it is
        ["Remove carriage return" gnus-article-remove-cr t]
        ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]))
 
-    (when (boundp 'gnus-summary-article-menu)
-      (define-key gnus-article-mode-map [menu-bar commands]
-	(cons "Commands" gnus-summary-article-menu)))
+    (when nil
+      (when (boundp 'gnus-summary-article-menu)
+	(define-key gnus-article-mode-map [menu-bar commands]
+	  (cons "Commands" gnus-summary-article-menu))))
 
     (when (boundp 'gnus-summary-post-menu)
       (define-key gnus-article-mode-map [menu-bar post]

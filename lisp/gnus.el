@@ -198,7 +198,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.9"
+(defconst gnus-version-number "5.4.10"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -1165,7 +1165,8 @@ If this variable is nil, screen refresh may be quicker."
 (defcustom gnus-mode-non-string-length nil
   "*Max length of mode-line non-string contents.
 If this is nil, Gnus will take space as is needed, leaving the rest
-of the modeline intact."
+of the modeline intact.  Note that the default of nil is unlikely
+to be desirable; see the manual for further details."
   :group 'gnus-various
   :type '(choice (const nil)
 		 integer))
@@ -2351,14 +2352,21 @@ If NEWSGROUP is nil, return the global kill file name instead."
   ;; "hello", and the select method is ("hello" (my-var "something"))
   ;; in the group "alt.alt", this will result in a new virtual server
   ;; called "hello+alt.alt".
-  (let ((entry
-	 (gnus-copy-sequence
-	  (if (gnus-server-equal method gnus-select-method) gnus-select-method
-	    (cdr (assoc (car method) gnus-server-alist))))))
-    (if (not entry)
-	method
-      (setcar (cdr entry) (concat (nth 1 entry) "+" group))
-      (nconc entry (cdr method)))))
+  (if (or (not (gnus-similar-server-opened method))
+	  (not (cddr method)))
+      method
+    `(,(car method) ,(concat (cadr method) "+" group)
+      (,(intern (format "%s-address" (car method))) ,(cadr method))
+      ,@(cddr method))))
+
+(defun gnus-similar-server-opened (method)
+  (let ((opened gnus-opened-servers))
+    (while (and method opened)
+      (when (and (equal (cadr method) (cadaar opened))
+		 (not (equal method (caar opened))))
+	(setq method nil))
+      (pop opened))
+    (not method)))
 
 (defun gnus-server-status (method)
   "Return the status of METHOD."
@@ -2388,7 +2396,7 @@ If NEWSGROUP is nil, return the global kill file name instead."
 	  (setq method
 		(cond ((stringp method)
 		       (gnus-server-to-method method))
-		      ((stringp (car method))
+		      ((stringp (cadr method))
 		       (gnus-server-extend-method group method))
 		      (t
 		       method)))

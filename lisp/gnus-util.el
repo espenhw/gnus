@@ -104,7 +104,7 @@
 
 (if (fboundp 'point-at-bol)
     (fset 'gnus-point-at-bol 'point-at-bol)
-  (defsubst gnus-point-at-bol ()
+  (defun gnus-point-at-bol ()
     "Return point at the beginning of the line."
     (let ((p (point)))
       (beginning-of-line)
@@ -114,7 +114,7 @@
 
 (if (fboundp 'point-at-eol)
     (fset 'gnus-point-at-eol 'point-at-eol)
-  (defsubst gnus-point-at-eol ()
+  (defun gnus-point-at-eol ()
     "Return point at the end of the line."
     (let ((p (point)))
       (end-of-line)

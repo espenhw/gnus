@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.20
+;; Version: 1.24
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -34,7 +34,7 @@
 	  (stringp sexp)
 	  (numberp sexp)
 	  (and (fboundp 'characterp)
-	       (funcall (intern "characterp") sexp)))
+	       (characterp sexp)))
       sexp
     (list 'quote sexp)))
 
@@ -926,7 +926,8 @@ Optional EVENT is the location for the menu."
     (cond ((eq state 'hidden)
 	   (error "Cannot set hidden variable."))
 	  ((setq val (widget-apply child :validate))
-	   (error "Invalid %S" val))
+	   (goto-char (widget-get val :from))
+	   (error "%s" (widget-get val :error)))
 	  ((eq form 'lisp)
 	   (set symbol (eval (setq val (widget-value child))))
 	   (put symbol 'customized-value (list val)))
@@ -946,7 +947,8 @@ Optional EVENT is the location for the menu."
     (cond ((eq state 'hidden)
 	   (error "Cannot set hidden variable."))
 	  ((setq val (widget-apply child :validate))
-	   (error "Invalid %S" val))
+	   (goto-char (widget-get val :from))
+	   (error "%s" (widget-get val :error)))
 	  ((eq form 'lisp)
 	   (put symbol 'saved-value (list (widget-value child)))
 	   (set symbol (eval (widget-value child))))
@@ -1072,7 +1074,6 @@ Optional EVENT is the location for the menu."
 (defun custom-face-format-handler (widget escape)
   ;; We recognize extra escape sequences.
   (let (child
-	(state (widget-get widget :custom-state))
 	(symbol (widget-get widget :value)))
     (cond ((eq escape ?s)
 	   (and (string-match "XEmacs" emacs-version)

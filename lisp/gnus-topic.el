@@ -642,7 +642,7 @@ articles in the topic and its subtopics."
   (let* ((tgroups (apply 'append (mapcar (lambda (entry) (cdr entry))
 					 gnus-topic-alist)))
 	 (entry (assoc (caar gnus-topic-topology) gnus-topic-alist))
-	 (newsrc gnus-newsrc-alist)
+	 (newsrc (cdr gnus-newsrc-alist))
 	 group)
     (while newsrc
       (unless (member (setq group (gnus-info-group (pop newsrc))) tgroups)
@@ -1287,6 +1287,7 @@ If performed on a topic, edit the topic parameters instead."
       ;; !!!Sometimes nil elements sneak into the alist,
       ;; for some reason or other.
       (setcar alist (delq nil (car alist)))
+      (setcar alist (delete "dummy.group" (car alist)))
       (gnus-topic-sort-topic (pop alist) func reverse))))
 
 (defun gnus-topic-sort-topic (topic func reverse)

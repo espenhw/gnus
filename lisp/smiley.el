@@ -224,10 +224,10 @@ above them."
 		  (set-extent-property ext 'start-open t)
 		  (set-extent-property ext 'invisible t)
 		  (set-extent-property ext 'keymap smiley-map)
-		  (set-extent-property ext 'mouse-face 'smiley-mouse-face)
+		  (set-extent-property ext 'mouse-face smiley-mouse-face)
 		  (set-extent-property ext 'intangible t)
 		  ;; set annotation params
-		  (set-extent-property ant 'mouse-face 'smiley-mouse-face)
+		  (set-extent-property ant 'mouse-face smiley-mouse-face)
 		  (set-extent-property ant 'keymap smiley-map)
 		  ;; remember each other
 		  (set-extent-property ant 'smiley-extent ext)
