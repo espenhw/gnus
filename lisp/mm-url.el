@@ -32,6 +32,7 @@
 (eval-when-compile (require 'cl))
 
 (require 'mm-util)
+(require 'gnus)
 
 (eval-and-compile
   (autoload 'executable-find "executable"))
@@ -77,6 +78,13 @@
 
 
 ;;; Internal variables
+
+(defvar mm-url-package-name
+  (gnus-replace-in-string
+   (gnus-replace-in-string gnus-version " v.*$" "")
+   " " "-"))
+
+(defvar	mm-url-package-version gnus-version-number)
 
 ;; Stolen from w3.
 (defvar mm-url-html-entities
@@ -266,7 +274,11 @@ This is taken from RFC 2396.")
 	  (insert-file-contents (substring url (1- (match-end 0))))
 	(mm-url-insert-file-contents-external url))
     (mm-url-load-url)
-    (let ((name buffer-file-name))
+    (let ((name buffer-file-name)
+	  (url-package-name (or mm-url-package-name
+				url-package-name))
+	  (url-package-version (or mm-url-package-version
+				   url-package-version)))
       (prog1
 	  (url-insert-file-contents url)
 	(save-excursion

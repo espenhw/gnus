@@ -1,5 +1,11 @@
 2002-04-27  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* mm-url.el (mm-url-package-name): New variable.
+	(mm-url-package-version): New variable.
+	(mm-url-insert-file-contents): Bind url-package-name and
+	url-package-version here.
+	* nnrss.el (nnrss-insert-w3): Move the bindings.
+
 	* nnrss.el (nnrss-insert-w3): Bind url-package-name and
 	url-package-version. Trivial change from Andrew J Cosgriff
 	<ajc@polydistortion.net>
