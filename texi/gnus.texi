@@ -4337,12 +4337,12 @@ One space for each thread level.
 @item <
 Twenty minus thread level spaces.
 @item U
-Unread.
+Unread. @xref{Read Articles}.
 
 @item R
 This misleadingly named specifier is the @dfn{secondary mark}.  This
 mark will say whether the article has been replied to, has been cached,
-or has been saved.
+or has been saved.  @xref{Other Marks}.
 
 @item i
 Score as a number (@pxref{Scoring}).

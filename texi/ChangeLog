@@ -1,3 +1,8 @@
+2001-12-26  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Summary Buffer Lines): Add xrefs.  Suggested by
+	Arcady Genkin <agenkin-dated-1010249095.131f22@thpoon.com>.
+
 2001-12-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (NNTP): Add a note for `nntp-prepare-post-hook'.
