@@ -1363,6 +1363,9 @@ of FILE placing the combined headers in nntp-server-buffer."
 	(setcdr (cadr prev) state)))
       (setq prev (cdr prev)))
     (setq gnus-agent-article-alist (cdr all))
+    (if dir
+	(gnus-make-directory dir)
+      (gnus-make-directory (gnus-agent-article-name "" group)))
     (with-temp-file (if dir
 			(expand-file-name ".agentview" dir)
 		      (gnus-agent-article-name ".agentview" group))

@@ -1,3 +1,7 @@
+2003-01-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-save-alist): Make directory.
+
 2002-12-31  Reiner Steib  <4uce.02.r.steib@gmx.net>
 
 	* gnus-sum.el (gnus-summary-limit-to-age): Make prompt string
