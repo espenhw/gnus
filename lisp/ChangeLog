@@ -1,3 +1,7 @@
+2003-01-26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Added M-& to marks. 
+
 2003-01-26  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-decode.el (mm-dissection-list): Remove.

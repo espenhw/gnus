@@ -2344,7 +2344,8 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	  ["Kill" gnus-summary-kill-process-mark t]
 	  ["Yank" gnus-summary-yank-process-mark
 	   gnus-newsgroup-process-stack]
-	  ["Save" gnus-summary-save-process-mark t]))
+	  ["Save" gnus-summary-save-process-mark t]
+	  ["Run command on marked..." gnus-summary-universal-argument t]))
 	("Scroll article"
 	 ["Page forward" gnus-summary-next-page
 	  ,@(if (featurep 'xemacs) '(t)
@@ -2399,7 +2400,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	["See old articles" gnus-summary-insert-old-articles t]
 	["See new articles" gnus-summary-insert-new-articles t]
 	["Filter articles..." gnus-summary-execute-command t]
-	["Run command on subjects..." gnus-summary-universal-argument t]
+	["Run command on articles..." gnus-summary-universal-argument t]
 	["Search articles forward..." gnus-summary-search-article-forward t]
 	["Search articles backward..." gnus-summary-search-article-backward t]
 	["Toggle line truncation" gnus-summary-toggle-truncation t]
