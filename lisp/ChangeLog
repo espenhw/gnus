@@ -1,3 +1,8 @@
+2001-11-29 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-write-active): Make sure sym is a cons
+	of integers.
+
 2001-11-29  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* message.el (message-newgroups-header-regexp)
