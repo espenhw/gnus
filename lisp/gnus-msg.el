@@ -572,7 +572,13 @@ header line with the old Message-ID."
 		(message-news (or to-group group))
 	      (set-buffer gnus-article-copy)
 	      (gnus-msg-treat-broken-reply-to)
-	      (message-followup (if (or newsgroup-p force-news) "" to-group)))
+	      (message-followup (if (or newsgroup-p force-news)
+				    (if (save-restriction
+					  (article-narrow-to-head)
+					  (message-fetch-field "newsgroups"))
+					nil
+				      "")
+				  to-group)))
 	  ;; The is mail.
 	  (if post
 	      (progn

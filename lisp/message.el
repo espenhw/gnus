@@ -338,8 +338,10 @@ The provided functions are:
   :type 'regexp)
 
 (defcustom message-cite-prefix-regexp
-  ;; ?-, ?_ or ?. MUST NOT be in syntax entry w.
-  "\\([ \t]*\\(\\w\\|[-_.]\\)+>+\\|[ \t]*[]>»|:}+]\\)+"
+  (if (string-match "[[:digit:]]" "1") ;; support POSIX?
+      "\\([ \t]*[-_.[:word:]]+>+\\|[ \t]*[]>»|:}+]\\)+" 
+    ;; ?-, ?_ or ?. MUST NOT be in syntax entry w.
+    "\\([ \t]*\\(\\w\\|[-_.]\\)+>+\\|[ \t]*[]>»|:}+]\\)+")
   "*Regexp matching the longest possible citation prefix on a line."
   :group 'message-insertion
   :type 'regexp)

@@ -1,3 +1,14 @@
+2001-04-10 08:01:15  Katsumi Yamaoka <yamaoka@jpl.org>
+	Committed by ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-post-news): Fill the Newsgroups header by the
+	newsgroup names when the original article is a news message.
+	
+2001-04-12 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-cite-prefix-regexp): Use POSIX regexp if
+	supported. Suggest by Jim Meyering <jim@meyering.net>.
+
 2001-04-02  Nevin Kapur  <nevin@jhu.edu>
 	Committed by Kai Gro,A_(Bjohann <Kai.Grossjohann@CS.Uni-Dortmund.DE>.
 
