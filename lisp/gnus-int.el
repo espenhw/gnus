@@ -53,13 +53,6 @@ server denied."
 		 (const :tag "Deny server" denied)
 		 (const :tag "Unplug Agent" offline)))
 
-(defcustom gnus-servers-that-use-local-marks '(nntp)
-  "A list of backends that store marks locally.  This means that
-  the backend is used to set its marks even when unplugged."
-  :version "21.4"
-  :group 'gnus-start
-  :type '(repeat symbol))
-
 (defvar gnus-internal-registry-spool-current-method nil
   "The current method, for the registry.")
 
@@ -420,11 +413,7 @@ If FETCH-OLD, retrieve all headers (or some subset thereof) in the group."
 
 (defun gnus-request-set-mark (group action)
   "Set marks on articles in the back end."
-  (let* ((gnus-command-method (gnus-find-method-for-group group))
-	 (gnus-agent (if (member (car gnus-command-method)
-				      gnus-servers-that-use-local-marks)
-			    nil
-			    gnus-agent)))
+  (let ((gnus-command-method (gnus-find-method-for-group group)))
     (if (not (gnus-check-backend-function
 	      'request-set-mark (car gnus-command-method)))
 	action
@@ -434,11 +423,7 @@ If FETCH-OLD, retrieve all headers (or some subset thereof) in the group."
 
 (defun gnus-request-update-mark (group article mark)
   "Allow the back end to change the mark the user tries to put on an article."
-  (let* ((gnus-command-method (gnus-find-method-for-group group))
-	 (gnus-agent (if (member (car gnus-command-method)
-				      gnus-servers-that-use-local-marks)
-			    nil
-			    gnus-agent)))
+  (let ((gnus-command-method (gnus-find-method-for-group group)))
     (if (not (gnus-check-backend-function
 	      'request-update-mark (car gnus-command-method)))
 	mark
