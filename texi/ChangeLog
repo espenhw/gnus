@@ -1,3 +1,8 @@
+2004-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Category Syntax):
+	gnus-agent-cat-enable-undownloaded-faces.
+
 2004-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.texi, gnus.texi, gnus-faq.texi: Update copyright.

@@ -17629,11 +17629,17 @@ an integer that overrides the value of
 @item gnus-agent-cat-length-when-long
 an integer that overrides the value of @code{gnus-agent-long-article}.
 
-@item gnus-agent-cat-disable-undownloaded-faces
-a symbol indicating whether the summary buffer should @emph{not} display
+@c @item gnus-agent-cat-disable-undownloaded-faces
+@c a symbol indicating whether the summary buffer should @emph{not} display
+@c undownloaded articles using the gnus-summary-*-undownloaded-face
+@c faces.  The symbol nil will enable the use of undownloaded faces while
+@c all other symbols disable them.
+
+@item gnus-agent-cat-enable-undownloaded-faces
+a symbol indicating whether the summary buffer should display
 undownloaded articles using the gnus-summary-*-undownloaded-face
-faces.  The symbol nil will enable the use of undownloaded faces while
-all other symbols disable them.
+faces.  The symbol nil will disable the use of undownloaded faces while
+all other symbols enable them.
 @end table
 
 The name of a category can not be changed once the category has been
