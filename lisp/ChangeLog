@@ -1,3 +1,8 @@
+2000-04-26 10:06:12  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnmbox.el (nnmbox-create-mbox): Use nnmbox-file-coding-system,
+	if nnmbox-file-coding-system-for-write is nil.
+
 2000-04-26 02:17:44  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-configure-posting-styles): Just remove the

@@ -519,7 +519,8 @@
 (defun nnmbox-create-mbox ()
   (when (not (file-exists-p nnmbox-mbox-file))
     (let ((nnmail-file-coding-system
-	   nnmbox-file-coding-system-for-write))
+	   (or nnmbox-file-coding-system-for-write
+	       nnmbox-file-coding-system)))
       (nnmail-write-region 1 1 nnmbox-mbox-file t 'nomesg))))
 
 (defun nnmbox-read-mbox ()

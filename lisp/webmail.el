@@ -23,6 +23,9 @@
 
 ;;; Commentary:
 
+;; Note: Now mail.yahoo.com provides POP3 service, the webmail
+;; fetching is not going to be supported.
+
 ;; Note: You need to have `url' and `w3' installed for this backend to
 ;; work. `w3' must be 4.0pre46+one-line-cookie patch or standalone
 ;; `url'.
