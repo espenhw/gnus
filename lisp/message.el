@@ -3516,38 +3516,46 @@ OTHER-HEADERS is an alist of header/value pairs."
 		 (equal (downcase mct) "poster"))
 	     (setq mct (or reply-to from)))))
 
-    (message-set-work-buffer)
-    (unless never-mct
-      (insert (or reply-to from "")))
-    (insert (if to (concat (if (bolp) "" ", ") to "") ""))
-    (insert (if mct (concat (if (bolp) "" ", ") mct) ""))
-    (insert (if cc (concat (if (bolp) "" ", ") cc) ""))
-    (goto-char (point-min))
-    (while (re-search-forward "[ \t]+" nil t)
-      (replace-match " " t t))
-    ;; Remove addresses that match `rmail-dont-reply-to-names'.
-    (let ((rmail-dont-reply-to-names message-dont-reply-to-names))
-      (insert (prog1 (rmail-dont-reply-to (buffer-string))
-		(erase-buffer))))
-    (goto-char (point-min))
-    ;; Perhaps "Mail-Copies-To: never" removed the only address?
-    (when (eobp)
-      (insert (or reply-to from "")))
-    (setq ccalist
-	  (mapcar
-	   (lambda (addr)
-	     (cons (mail-strip-quoted-names addr) addr))
-	   (message-tokenize-header (buffer-string))))
-    (let ((s ccalist))
-      (while s
-	(setq ccalist (delq (assoc (car (pop s)) s) ccalist))))
-    (setq follow-to (list (cons 'To (cdr (pop ccalist)))))
-    (when ccalist
-      (let ((ccs (cons 'Cc (mapconcat
-			    (lambda (addr) (cdr addr)) ccalist ", "))))
-	(when (string-match "^ +" (cdr ccs))
-	  (setcdr ccs (substring (cdr ccs) (match-end 0))))
-	(push ccs follow-to)))
+    (if (or (not wide)
+	    to-address)
+	(progn
+	  (setq follow-to (list (cons 'To (or to-address reply-to from))))
+	  (when (and wide mct)
+	    (push (cons 'Cc mct) follow-to)))
+      (let (ccalist)
+	(save-excursion
+	  (message-set-work-buffer)
+	  (unless never-mct
+	    (insert (or reply-to from "")))
+	  (insert (if to (concat (if (bolp) "" ", ") to "") ""))
+	  (insert (if mct (concat (if (bolp) "" ", ") mct) ""))
+	  (insert (if cc (concat (if (bolp) "" ", ") cc) ""))
+	  (goto-char (point-min))
+	  (while (re-search-forward "[ \t]+" nil t)
+	    (replace-match " " t t))
+	  ;; Remove addresses that match `rmail-dont-reply-to-names'.
+	  (let ((rmail-dont-reply-to-names message-dont-reply-to-names))
+	    (insert (prog1 (rmail-dont-reply-to (buffer-string))
+		      (erase-buffer))))
+	  (goto-char (point-min))
+	  ;; Perhaps "Mail-Copies-To: never" removed the only address?
+	  (when (eobp)
+	    (insert (or reply-to from "")))
+	  (setq ccalist
+		(mapcar
+		 (lambda (addr)
+		   (cons (mail-strip-quoted-names addr) addr))
+		 (message-tokenize-header (buffer-string))))
+	  (let ((s ccalist))
+	    (while s
+	      (setq ccalist (delq (assoc (car (pop s)) s) ccalist)))))
+	(setq follow-to (list (cons 'To (cdr (pop ccalist)))))
+	(when ccalist
+	  (let ((ccs (cons 'Cc (mapconcat
+				(lambda (addr) (cdr addr)) ccalist ", "))))
+	    (when (string-match "^ +" (cdr ccs))
+	      (setcdr ccs (substring (cdr ccs) (match-end 0))))
+	    (push ccs follow-to)))))
     follow-to))
 
 
