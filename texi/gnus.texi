@@ -11284,8 +11284,9 @@ Alter this script to fit find the @samp{movemail} you want to use.
 @item directory
 Get mail from several files in a directory.  This is typically used when
 you have procmail split the incoming mail into several files.  Setting
-@code{nnmail-scan-directory-mail-source-once} to non-nil force Gnus to
-scan the mail source only once.
+@code{nnmail-scan-directory-mail-source-once} to non-nil forces Gnus to
+scan the mail source only once. This is particularly useful if you want
+to scan mail groups at a specified level.
 
 Keywords:
 
