@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 1999-2001 Didier Verna.
 
-;; PRCS: $Id: nndiary.el 1.22 Tue, 04 Sep 2001 11:32:13 +0200 didier $
+;; PRCS: $Id: nndiary.el 1.26 Wed, 12 Sep 2001 15:23:27 +0200 didier $
 
 ;; Author:        Didier Verna <didier@xemacs.org>
 ;; Maintainer:    Didier Verna <didier@xemacs.org>
@@ -69,35 +69,39 @@
 ;; Usage:
 ;; =====
 
-;;  1/ Diary messages contain several `X-Diary-*' special headers.  You *must*
-;;     arrange that these messages be split in a private folder *before* Gnus
-;;     treat them.  You need this because Gnus is not able yet to manage
-;;     multiple backends for mail retrieval.  Getting them from a separate
-;;     source will compensate this misfeature to some extent, as we will see.
-;;     As an example, here's my procmailrc entry to store diary files in
-;;     ~/.nndiary (the default nndiary mail source file):
+;;  1/ NNDiary has two modes of operation: traditional (the default) and
+;;     autonomous.
+;;     a/ In traditional mode, NNDiary does not get new mail by itself.  You
+;;        have to move mails from your primary mail backend to nndiary
+;;        groups.
+;;     b/ In autonomous mode, NNDiary retrieves its own mail and handles it
+;;        independantly of your primary mail backend.  To use NNDiary in
+;;        autonomous mode, you have several things to do:
+;;           i/ Put (setq nndiary-get-new-mail t) in your gnusrc file.
+;;          ii/ Diary messages contain several `X-Diary-*' special headers.
+;;              You *must* arrange that these messages be split in a private
+;;              folder *before* Gnus treat them.  You need this because Gnus
+;;              is not able yet to manage multiple backends for mail
+;;              retrieval.  Getting them from a separate source will
+;;              compensate this misfeature to some extent, as we will see.
+;;              As an example, here's my procmailrc entry to store diary files
+;;              in ~/.nndiary (the default nndiary mail source file):
 ;;
-;;      :0 HD :
-;;      * ^X-Diary
-;;      .nndiary
-;;
+;;              :0 HD :
+;;              * ^X-Diary
+;;              .nndiary
+;;         iii/ Customize the variables `nndiary-mail-sources' and
+;;              `nndiary-split-methods'.  These are replacements for the usual
+;;              mail sources and split methods which, and will be used in
+;;              autonomous mode.  `nndiary-mail-sources' defaults to
+;;              '(file :path "~/.nndiary").
 ;;  2/ Install nndiary somewhere Emacs / Gnus can find it.  Normally, you
 ;;     *don't* have to '(require 'nndiary) anywhere.  Gnus will do so when
 ;;     appropriate as long as nndiary is somewhere in the load path.
-;;  3/ Now, customize nndiary: type `M-x customize-group', and then `nndiary'
-;;     at the prompt (note that if you have not restarted Emacs yet, you'll
-;;     have to the load the library by hand before being able to customize it).
-;;     In particular, you should customize the following options:
-;;     - `nndiary-mail-sources', which overrides the normal `mail-sources'
-;;       value for diary messages retrieving.  It defaults to
-;;       '(file :path "~/.nndiary").
-;;     - `nndiary-split-methods', which overrides the normal
-;;       `nnmail-split-methods' value for diary messages splitting.  You can
-;;       have all the diary groups you want (for example, I have a birthdays
-;;       group, and stuff like that).
-;;     - `nndiary-reminders', the list of times when you want to be reminded
-;;       of your appointements (e.g. 3 weeks before, then 2 days before, then
-;;       1 hour before and that's it).
+;;  3/ Now, customize the rest of nndiary.  In particular, you should
+;;     customize `nndiary-reminders', the list of times when you want to be
+;;     reminded of your appointements (e.g. 3 weeks before, then 2 days
+;;     before, then 1 hour before and that's it).
 ;;  4/ You *must* use the group timestamp feature of Gnus.  This adds a
 ;;     timestamp to each groups' parameters (please refer to the Gnus
 ;;     documentation ("Group Timestamp" info node) to see how it's done.
@@ -159,13 +163,15 @@
 ;; * Respooling doesn't work because contrary to the request-scan function,
 ;;   Gnus won't allow me to override the split methods when calling the
 ;;   respooling backend functions.
-;; * The time zone mechanism is subject to change.
+;; * There's a bug in the time zone mechanism with variable TZ locations.
 ;; * We could allow a keyword like `ask' in X-Diary-* headers, that would mean
-;;   "ask for value upon reception of the message". Suggested by Jody Klymak.
+;;   "ask for value upon reception of the message".
 ;; * We could add an optional header X-Diary-Reminders to specify a special
 ;;   reminders value for this message. Suggested by Jody Klymak.
-;; * Modify the request-accept-article function to make it prompt for diary
-;;   headers if they're missing.
+;; * We should check messages validity in other circumstances than just
+;;   moving an article from sonwhere else (request-accept). For instance, when
+;;   editing / saving and so on.
+
 
 ;; Remarks:
 ;; =======
@@ -224,7 +230,8 @@
   `((file :path ,(expand-file-name "~/.nndiary")))
   "*NNDiary specific mail sources.
 This variable is used by nndiary in place of the standard `mail-sources'
-variable.  These sources must contain diary messages ONLY."
+variable when `nndiary-get-new-mail' is set to non-nil.  These sources
+must contain diary messages ONLY."
   :group 'nndiary
   :group 'mail-source
   :type 'sexp)
@@ -232,7 +239,8 @@ variable.  These sources must contain diary messages ONLY."
 (defcustom nndiary-split-methods '(("diary" ""))
   "*NNDiary specific split methods.
 This variable is used by nndiary in place of the standard
-`nnmail-split-methods' variable."
+`nnmail-split-methods' variable when `nndiary-get-new-mail' is set to
+non-nil."
   :group 'nndiary
   :group 'nnmail-split
   :type '(choice (repeat :tag "Alist" (group (string :tag "Name") regexp))
@@ -304,6 +312,13 @@ The hooks will be called with the full group name as argument."
   :group 'nndiary
   :type 'hook)
 
+(defcustom nndiary-request-accept-article-hooks nil
+  "*Hooks to run before accepting an article.
+Executed near the beginning of `nndiary-request-accept-article'.
+The hooks will be called with the article in the current buffer."
+  :group 'nndiary
+  :type 'hook)
+
 (defcustom nndiary-check-directory-twice t
   "*If t, check directories twice to avoid NFS failures."
   :group 'nndiary
@@ -327,10 +342,11 @@ The hooks will be called with the full group name as argument."
     (expand-file-name "newsgroups" nndiary-directory)
   "Newsgroups description file for the nndiary backend.")
 
-(defvoo nndiary-get-new-mail t
+(defvoo nndiary-get-new-mail nil
   "Whether nndiary gets new mail and split it.
-Contrary to traditional mail backends, this variable should always be
-non-nil because nndiary uses its own mail-sources and split-methods.")
+Contrary to traditional mail backends, this variable can be set to t
+even if your primary mail backend also retreives mail. In such a case,
+NDiary uses its own mail-sources and split-methods.")
 
 (defvoo nndiary-nov-is-evil nil
   "If non-nil, Gnus will never use nov databases for nndiary groups.
@@ -352,7 +368,7 @@ all.  This may very well take some time.")
 ;; $Format: "(defconst nndiary-prcs-major-version \"$ProjectMajorVersion$\")"$
 (defconst nndiary-prcs-major-version "branch-0-2")
 ;; $Format: "(defconst nndiary-prcs-minor-version \"$ProjectMinorVersion$\")"$
-(defconst nndiary-prcs-minor-version "1")
+(defconst nndiary-prcs-minor-version "13")
 (defconst nndiary-version
   (let ((level nndiary-prcs-minor-version)
 	major minor status)
@@ -745,31 +761,34 @@ all.  This may very well take some time.")
 (deffoo nndiary-request-accept-article (group &optional server last)
   (nndiary-possibly-change-directory group server)
   (nnmail-check-syntax)
-  (let (result)
-    (when nnmail-cache-accepted-message-ids
-      (nnmail-cache-insert (nnmail-fetch-field "message-id")))
-    (if (stringp group)
+  (run-hooks 'nndiary-request-accept-article-hooks)
+  (when (nndiary-schedule)
+    (let (result)
+      (when nnmail-cache-accepted-message-ids
+	(nnmail-cache-insert (nnmail-fetch-field "message-id")))
+      (if (stringp group)
+	  (and
+	   (nnmail-activate 'nndiary)
+	   (setq result
+		 (car (nndiary-save-mail
+		       (list (cons group (nndiary-active-number group))))))
+	   (progn
+	     (nnmail-save-active nndiary-group-alist nndiary-active-file)
+	     (and last (nndiary-save-nov))))
 	(and
 	 (nnmail-activate 'nndiary)
-	 (setq result
-	       (car (nndiary-save-mail
-		     (list (cons group (nndiary-active-number group))))))
-	 (progn
+	 (if (and (not (setq result
+			     (nnmail-article-group 'nndiary-active-number)))
+		  (yes-or-no-p "Moved to `junk' group; delete article? "))
+	     (setq result 'junk)
+	   (setq result (car (nndiary-save-mail result))))
+	 (when last
 	   (nnmail-save-active nndiary-group-alist nndiary-active-file)
-	   (and last (nndiary-save-nov))))
-      (and
-       (nnmail-activate 'nndiary)
-       (if (and (not (setq result
-			   (nnmail-article-group 'nndiary-active-number)))
-		(yes-or-no-p "Moved to `junk' group; delete article? "))
-	   (setq result 'junk)
-	 (setq result (car (nndiary-save-mail result))))
-       (when last
-	 (nnmail-save-active nndiary-group-alist nndiary-active-file)
-	 (when nnmail-cache-accepted-message-ids
-	   (nnmail-cache-close))
-	 (nndiary-save-nov))))
-    result))
+	   (when nnmail-cache-accepted-message-ids
+	     (nnmail-cache-close))
+	   (nndiary-save-nov))))
+      result))
+  )
 
 (deffoo nndiary-request-post (&optional server)
   (nnmail-do-request-post 'nndiary-request-accept-article server))
@@ -1285,7 +1304,7 @@ all.  This may very well take some time.")
       val)))
 
 (defun nndiary-parse-schedule-value (str min-or-values max)
-  ;; Parse the schedule string STR.
+  ;; Parse the schedule string STR, or signal an error.
   ;; Signals are caught by `nndary-schedule'.
   (if (string-match "[ \t]*\\*[ \t]*" str)
       ;; unspecifyed
@@ -1339,15 +1358,18 @@ all.  This may very well take some time.")
     ))
 
 (defsubst nndiary-schedule ()
-  (mapcar
-   (lambda (elt)
-     (condition-case arg
-	 (nndiary-parse-schedule (nth 0 elt) (nth 1 elt) (nth 2 elt))
-       (t
-	(nnheader-report 'nndiary "X-Diary-%s header parse error: %s."
-			 (car elt) (cdr arg))
-	nil)))
-   nndiary-headers))
+  (let (head)
+    (condition-case arg
+	(mapcar
+	 (lambda (elt)
+	   (setq head (nth 0 elt))
+	   (nndiary-parse-schedule (nth 0 elt) (nth 1 elt) (nth 2 elt)))
+	 nndiary-headers)
+      (t
+       (nnheader-report 'nndiary "X-Diary-%s header parse error: %s."
+			head (cdr arg))
+       nil))
+    ))
 
 (defun nndiary-max (spec)
   ;; Returns the max of specification SPEC, or nil for permanent schedules.

@@ -1,13 +1,13 @@
 ;;; gnus-diary.el --- Wrapper around the NNDiary Gnus backend
 
-;; Copyright (C) 1999 Didier Verna.
+;; Copyright (C) 1999-2001 Didier Verna.
 
-;; PRCS: $Id: gnus-diary.el 1.8 Tue, 04 Sep 2001 11:32:13 +0200 didier $
+;; PRCS: $Id: gnus-diary.el 1.17 Wed, 12 Sep 2001 15:54:36 +0200 didier $
 
 ;; Author:        Didier Verna <didier@xemacs.org>
 ;; Maintainer:    Didier Verna <didier@xemacs.org>
 ;; Created:       Tue Jul 20 10:42:55 1999 under XEmacs 21.2 (beta 18)
-;; Last Revision: Wed Aug  8 14:38:14 2001
+;; Last Revision: Wed Sep 12 12:31:09 2001
 ;; Keywords:      calendar mail news
 
 ;; This file is part of NNDiary.
@@ -35,17 +35,17 @@
 ;; ===========
 
 ;; Gnus-Diary is a wrapper around the NNDiary Gnus backend.  It is here to
-;; make your nndiary-user life easier in differnet ways.  So, you don't have
+;; make your nndiary-user life easier in different ways.  So, you don't have
 ;; to use it if you don't want to.  But, really, you should.
 
-;; Gnus-Diary offers the following improvements on top of the NNDiary backend:
+;; Gnus-Diary offers the following features on top of the NNDiary backend:
 
-;; - A nice summary line format:
-;;   Displaying diary messages in standard summary line format (usually
-;;   something like "<From Joe>: <Subject>") is pretty useless.  Most of the
-;;   time, you're the one who wrote the message, and you mostly want to see
-;;   the event's date.  Gnus-Diary offers you a nice summary line format which
-;;   will do this.  By default, a summary line will appear like this:
+;;  - A nice summary line format:
+;;    Displaying diary messages in standard summary line format (usually
+;;    something like "<From Joe>: <Subject>") is pretty useless.  Most of the
+;;    time, you're the one who wrote the message, and you mostly want to see
+;;    the event's date.  Gnus-Diary offers you a nice summary line format
+;;    which will do this.  By default, a summary line will appear like this:
 ;;
 ;;     <Event Date>: <Subject> <Remaining time>
 ;;
@@ -70,6 +70,18 @@
 ;;    headers will be inserted automatically (but not filled with proper
 ;;    values yet).
 
+;;  - An interactive mail-to-diary convertion function:
+;;    The function `gnus-diary-check-message' ensures that the current message
+;;    contains all the required diary headers, and prompts you for values /
+;;    correction if needed.  This function is hooked in the nndiary backend so
+;;    that moving an article to an nndiary group will trigger it
+;;    automatically.  It is also bound to `C-c D c' in message-mode and
+;;    article-edit-mode in order to ease the process of converting a usual
+;;    mail to a diary one.  This function takes a prefix argument which will
+;;    force prompting of all diary headers, regardless of their
+;;    presence/validity.  That way, you can very easily reschedule a diary
+;;    message for instance.
+
 
 ;; Usage:
 ;; =====
@@ -84,22 +96,17 @@
 ;; Bugs / Todo:
 ;; ===========
 
-;; * Provide `gnus-group-diary-mail' and `gnus-group-post-diary-news' (or
-;;   something like that), that would do just like `gnus-group-mail' and
-;;   `gnus-group-post-news', but also prompt for diary header values with
-;;   completion etc.
-;; * Maybe not actually: we could just have a function that converts *any*
-;;   message to a diary one, by prompting the schedule. You could then forward
-;;   a message and make it a diary one etc.
 
 ;;; Code:
 
 (require 'nndiary)
+(require 'message)
+(require 'gnus-art)
 
 (defgroup gnus-diary nil
   "Utilities on top of the nndiary backend for Gnus.")
 
-(defcustom gnus-diary-summary-line-format "%U%R%z%I %uD: %(%s%) (%ud)\n"
+(defcustom gnus-diary-summary-line-format "%U%R%z %uD: %(%s%) (%ud)\n"
   "*Summary line format for nndiary groups."
   :type 'string
   :group 'gnus-diary
@@ -274,6 +281,8 @@ Optional prefix (or REVERSE argument) means sort in reverse order."
 				     'nndiary)]
 				"Sort by number")))
 
+
+
 ;; Group parameters autosetting =============================================
 
 (defun gnus-diary-update-group-parameters (group)
@@ -325,10 +334,127 @@ Optional prefix (or REVERSE argument) means sort in reverse order."
 (add-hook 'gnus-subscribe-newsgroup-hooks
 	  'gnus-diary-maybe-update-group-parameters)
 
+
+;; Diary Message Checking ===================================================
+
+(if (fboundp 'kill-entire-line)
+    (defun gnus-diary-kill-entire-line ()
+      (kill-entire-line))
+  (defun gnus-diary-kill-entire-line ()
+    (beginning-of-line)
+    (let ((kill-whole-line t))
+      (kill-line)))
+  )
+
+(defvar gnus-diary-header-value-history nil
+  ;; History variable for header value prompting
+  )
+
+(defun gnus-diary-narrow-to-headers ()
+  "Narrow the current buffer to the header part.
+Point is left at the beginning of the region.
+The buffer is assumed to contain a message, but the format is unknown."
+  (cond ((eq major-mode 'message-mode)
+	 (message-narrow-to-headers))
+	(t
+	 (goto-char (point-min))
+	 (when (search-forward "\n\n" nil t)
+	   (narrow-to-region (point-min) (- (point) 1))
+	   (goto-char (point-min))))
+	))
+
+(defun gnus-diary-add-header (str)
+  "Add a header to the current buffer.
+The buffer is assumed to contain a message, but the format is unknown."
+  (cond ((eq major-mode 'message-mode)
+	 (message-add-header str))
+	(t
+	 (save-restriction
+	   (gnus-diary-narrow-to-headers)
+	   (goto-char (point-max))
+	   (if (string-match "\n$" str)
+	       (insert str)
+	     (insert str ?\n))))
+	))
+
+(defun gnus-diary-check-message (arg)
+  "Ensure that the current message is a valid for NNDiary.
+This function checks that all NNDiary required headers are present and
+valid, and prompts for values / correction otherwise.
+
+If ARG (or prefix) is non-nil, force prompting for all fields."
+  (interactive "P")
+  (save-excursion
+    (mapcar
+     (lambda (head)
+       (let ((header (concat "X-Diary-" (car head)))
+	     (ask arg)
+	     value invalid)
+	 ;; First, try to find the header, and checks for validity:
+	 (save-restriction
+	   (gnus-diary-narrow-to-headers)
+	   (when (re-search-forward (concat "^" header ":") nil t)
+	     (unless (eq (char-after) ? )
+	       (insert " "))
+	     (setq value (buffer-substring (point) (point-at-eol)))
+	     (and (string-match "[ \t]*\\([^ \t]+\\)[ \t]*" value)
+		  (setq value (match-string 1 value)))
+	     (condition-case ()
+		 (nndiary-parse-schedule-value value
+					       (nth 1 head) (nth 2 head))
+	       (t
+		(setq invalid t)))
+	     ;; #### NOTE: this (along with the `gnus-diary-add-header'
+	     ;; function) could be rewritten in a better way, in particular
+	     ;; not to blindly remove an already present header and reinsert
+	     ;; it somewhere else afterwards.
+	     (when (or ask invalid)
+	       (gnus-diary-kill-entire-line))
+	     ))
+	 ;; Now, loop until a valid value is provided:
+	 (while (or ask (not value) invalid)
+	   (let ((prompt (concat (and invalid
+				      (prog1 "(current value invalid) "
+					(beep)))
+				 header
+				 (and (not value) " (defaults to `*')")
+				 ": ")))
+	     (setq value
+		   (if (listp (nth 1 head))
+		       (completing-read prompt (cons '("*" nil) (nth 1 head))
+					nil t value
+					gnus-diary-header-value-history "*")
+		     (read-string prompt value
+				  gnus-diary-header-value-history "*"))))
+	   (setq ask nil)
+	   (setq invalid nil)
+	   (condition-case ()
+	       (nndiary-parse-schedule-value value
+					     (nth 1 head) (nth 2 head))
+	     (t
+	      (setq invalid t))))
+	 (gnus-diary-add-header (concat header ": " value))
+	 ))
+     nndiary-headers)
+    ))
+
+(add-hook 'nndiary-request-accept-article-hooks
+	  (lambda () (gnus-diary-check-message nil)))
+
+(define-key message-mode-map "\C-cDc" 'gnus-diary-check-message)
+(define-key gnus-article-edit-mode-map "\C-cDc" 'gnus-diary-check-message)
+
+
+;; The end ==================================================================
+
 (defun gnus-diary-version ()
   "Current Diary backend version."
   (interactive)
   (message "NNDiary version %s" nndiary-version))
+
+(define-key message-mode-map "\C-cDv" 'gnus-diary-version)
+(define-key gnus-article-edit-mode-map "\C-cDv" 'gnus-diary-version)
+
 
 (provide 'gnus-diary)
 

@@ -1,3 +1,23 @@
+2001-09-12  Didier Verna  <didier@xemacs.org>
+
+	* nndiary.el: new version (0.2-b13).
+	* nndiary.el (nndiary-mail-sources): doc update.
+	* nndiary.el (nndiary-split-methods): ditto.
+	* nndiary.el (nndiary-request-accept-article-hooks): New.
+	* nndiary.el (nndiary-request-accept-article): use it, check
+	message validity.
+	* nndiary.el (nndiary-get-new-mail): changed default to nil.
+	* nndiary.el (nndiary-schedule): fix bug (misplaced
+	condition-case): it didn't return nil on error.
+	* gnus-diary.el: new version.
+	* gnus-diary.el (gnus-diary-summary-line-format): removed %I.
+	* gnus-diary.el (gnus-diary-header-value-history): New.
+	* gnus-diary.el (gnus-diary-narrow-to-headers): New.
+	* gnus-diary.el (gnus-diary-add-header): New.
+	* gnus-diary.el (gnus-diary-check-message): New.
+	* gnus-diary.el (message-mode-map): bind the above to `C-c D c'.
+	* gnus-diary.el (gnus-article-edit-mode-map): ditto.
+
 2001-09-10 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 	* gnus-sum.el (gnus-select-newsgroup): Make
@@ -18,8 +38,8 @@
 	(mm-attachment-override-types): Add
 	application/{x-,}pkcs7-signature.
 
-	* gnus-srvr.el (gnus-server-mode-hook, gnus-server-exit-hook) 
-	(gnus-server-line-format, gnus-server-mode-line-format) 
+	* gnus-srvr.el (gnus-server-mode-hook, gnus-server-exit-hook)
+	(gnus-server-line-format, gnus-server-mode-line-format)
 	(gnus-server-browse-in-group-buffer): Customize.
 
 2001-09-08 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -30,7 +50,7 @@
 	(nnml-marks-modtime): Use gnus-make-hashtable.
 
 	* nnfolder.el (nnfolder-marks-changed-p): Typo.
-	(nnfolder-request-expire-articles, nnfolder-save-marks) 
+	(nnfolder-request-expire-articles, nnfolder-save-marks)
 	(nnfolder-open-marks): Typo.
 	(nnfolder-save-marks, nnfolder-open-marks): Use gnus-sethash.
 	(nnfolder-marks-changed-p): Use gnus-gethash.
@@ -75,17 +95,17 @@
 
 	* nnml.el (nnml-filenames-are-evil): New variable.
 	(nnml-article-to-file-alist): Rename to ...
-	(nnml-current-group-article-to-file-alist): ... this.  
+	(nnml-current-group-article-to-file-alist): ... this.
 	Respect `nnml-filenames-are-evil'.
 	(nnml-active-number): Update.
 	(nnml-update-file-alist): Update.
 	(nnml-request-article): Use nnheader-article-to-file-alist.
 	(nnml-request-rename-group): Likewise.
-	
+
 2001-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-summary-insert-line): Fix.
-	
+
 2001-09-06  Bj,Av(Brn Torkelsson  <torkel@acc.umu.se>
 
 	* gnus-sum.el: Bind g-s-t-s to "W g".
@@ -172,19 +192,19 @@
 	gets alist from nov database if available.
 	(nnml-directory-articles): New function.
 	(nnml-article-to-file-alist): New function.
-	
+
 2001-08-30  Andrew Innes  <andrewi@gnu.org>
 
 	* mm-decode.el (mm-display-external): Use `name' as filename, if
 	`filename' attribute is not present.
-	
+
 2001-08-30  Andrew Innes  <andrewi@gnu.org>
 
 	* mail-source.el (mail-source-flash): New defcustom.
 	(mail-source-new-mail-p): Ring visible bell if appropriate.
 	(mail-source-start-idle-timer): Use unwind-protect to ensure idle
 	timer is cleared even if mail check signals an error.
-	
+
 2001-08-29 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-move-article): Only update marks of
@@ -199,7 +219,7 @@
 	* nnml.el (nnml-request-update-info): Fix message.
 	(nnml-open-marks): Ditto.
 
-	* nnfolder.el (nnfolder-request-update-info): 
+	* nnfolder.el (nnfolder-request-update-info):
 	(nnfolder-open-marks): Fix message.
 
 2001-08-25  Simon Josefsson  <jas@extundo.com>
@@ -253,7 +273,7 @@
 
 2001-08-24 16:05:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus-spec.el (gnus-compile): Don't compile gnus-version. 
+	* gnus-spec.el (gnus-compile): Don't compile gnus-version.
 
 	* gnus-group.el (gnus-update-group-mark-positions): Bind
 	gnus-group-update-hook to nil.
@@ -264,7 +284,7 @@
 
 2001-08-24 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-sum.el (gnus-summary-insert-line) 
+	* gnus-sum.el (gnus-summary-insert-line)
 	(gnus-summary-prepare-threads): gnus-tmp-lines should be a string.
 	From Martin Kretzschmar <Martin.Kretzschmar@inf.tu-dresden.de>
 
@@ -309,7 +329,7 @@
 	* gnus-sum.el (gnus-select-newsgroup): Clean up.
 	(gnus-summary-limit-children): Use 'identity instead of `all'.
 	(gnus-summary-limit-to-display-predicate): New command and
-	keystroke. 
+	keystroke.
 
 2001-08-23 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
@@ -332,7 +352,7 @@
 2001-08-22 00:06:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-visual-p): Define function before use of
-	function. 
+	function.
 
 2001-08-21 23:28:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -364,9 +384,9 @@
 2001-08-20 01:34:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-expand-group-parameters): Don't alter the variable
-	list. 
+	list.
 
-	* gnus-sum.el (gnus-summary-move-article): Don't select article. 
+	* gnus-sum.el (gnus-summary-move-article): Don't select article.
 
 2001-08-20  Simon Josefsson  <jas@extundo.com>
 
@@ -376,7 +396,7 @@
 2001-08-20 01:34:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-expand-group-parameters): Return the parameter
-	list. 
+	list.
 
 	* gnus-sum.el (gnus-summary-show-article): Doc fix.
 	(gnus-summary-show-article): Guess at charset if required.
@@ -398,15 +418,15 @@
 
 	* mm-view.el (mm-inline-text): Ignore vcard errors.
 
-	* gnus-art.el (gnus-ignored-headers): Added more junk headers. 
+	* gnus-art.el (gnus-ignored-headers): Added more junk headers.
 
 	* gnus-score.el (gnus-all-score-files): Use append instead of
-	nconc. 
+	nconc.
 
 	* gnus.el (gnus-splash-face): Doc fix.
 
 	* mm-decode.el (mm-mailcap-command): Use
-	mm-path-name-rewrite-functions. 
+	mm-path-name-rewrite-functions.
 	(mm-path-name-rewrite-functions): New variable.
 
 	* gnus-spec.el (gnus-parse-complex-format): React to ?=.
@@ -423,7 +443,7 @@
 	* gnus-ems.el (gnus-char-width): Moved here.
 
 	* gnus-sum.el (gnus-select-newsgroup): Set
-	gnus-newsgroup-articles. 
+	gnus-newsgroup-articles.
 	(gnus-unseen-mark): New variable.
 	(gnus-newsgroup-unseen): Ditto.
 	(gnus-newsgroup-seen): Ditto.
@@ -558,12 +578,12 @@
 
 2001-08-17 10:41:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus-agent.el (gnus-agent-fetch-group): Go online if offline. 
+	* gnus-agent.el (gnus-agent-fetch-group): Go online if offline.
 	(gnus-agent-summary-fetch-group): New command and keystroke.
 
 	* gnus-art.el (gnus-insert-mime-button): Tiny clean-up.
 	(gnus-mime-display-security): Make it respect
-	gnus-unbuttonized-mime-type-p. 
+	gnus-unbuttonized-mime-type-p.
 
 	* gnus-sum.el (gnus-articles-to-read): Comments.
 	(gnus-article-marked-p): New function.
@@ -597,7 +617,7 @@
 2001-05-21 17:11:46  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-srvr.el (gnus-server-browse-in-group-buffer): Default to
-	nil. 
+	nil.
 
 2001-08-15  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -607,7 +627,7 @@
 2001-08-15  Simon Josefsson  <jas@extundo.com>
 	From Pavel@Janik.cz (Pavel Jan,Bm(Bk)
 
-	* gnus-agent.el (gnus-agent-make-mode-line-string) 
+	* gnus-agent.el (gnus-agent-make-mode-line-string)
 	(gnus-agent-toggle-plugged): Use new API.
 
 2001-08-14  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
@@ -620,7 +640,7 @@
 
 	Support `recent' mark indicating newly arrived messages (to
 	separate from old but unread messages).
-	
+
 	* nnimap.el (nnimap-retrieve-groups): Push dummy article into
 	`nnmail-split-history' if recent is > 0.
 	(nnimap-request-update-info-internal): Update `recent' marks.
@@ -645,14 +665,14 @@
 2001-08-12  Simon Josefsson  <jas@extundo.com>
 	Suggested by Per Abrahamsen <abraham@dina.kvl.dk>
 
-	* gnus.el (gnus-summary-line-format, gnus-parameters): 
-	* gnus-gl.el (gnus-summary-grouplens-line-format): 
-	* gnus-salt.el (gnus-summary-pick-line-format): 
+	* gnus.el (gnus-summary-line-format, gnus-parameters):
+	* gnus-gl.el (gnus-summary-grouplens-line-format):
+	* gnus-salt.el (gnus-summary-pick-line-format):
 	* gnus-spec.el (gnus-format-specs): %n is 23 chars.
 
 2001-08-11 09:40:00  Karl Kleinpaste  <karl@charcoal.com>
 	Committed by Kai Gro,A_(Bjohann.
-	
+
 	* gnus-score.el (gnus-score-string): Fix `match' regexp
 	for `extra' header case.
 
@@ -681,7 +701,7 @@
 	* gnus-ml.el (turn-on-gnus-mailing-list-mode): Use
 	gnus-group-find-parameter. Suggested by Janne Rinta-Manty
 	<rintaman@cs.Helsinki.FI>.
-	
+
 	* mail-source.el (mail-source-movemail): The error buffer is
 	modified, but nothing in it.
 
@@ -739,11 +759,11 @@
 	gnus-summary-update-secondary-secondary-mark.
 	* gnus-sum.el (gnus-summary-edit-article-done): Ditto.
 	* gnus-sum.el (gnus-summary-reparent-thread): Ditto.
-	
+
 2001-08-07 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Misc -> Gnus.
-	
+
 	* gnus-group.el (gnus-group-make-menu-bar): Ditto.
 
 	* mm-uu.el (mm-uu-dissect): Autoload. From Gerd M,Av(Bllmann
@@ -853,7 +873,7 @@
 
 	* gnus-msg.el (gnus-post-method): Bind the value of
 	`gnus-post-method' to the group parameter if it is defined.
-	
+
 2001-08-02  Simon Josefsson  <jas@extundo.com>
 
 	* smime.el (smime-extra-arguments): Removed.
@@ -880,8 +900,8 @@
 
 2001-08-01  Gerd Moellmann  <gerd@gnu.org>
 
-	* mm-view.el (autoload): Don't autoload `diff-mode' if it's 
-	already fboundp.  Add INTERACTIVE arg to autoload form. 
+	* mm-view.el (autoload): Don't autoload `diff-mode' if it's
+	already fboundp.  Add INTERACTIVE arg to autoload form.
 
 2001-08-01 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
@@ -896,10 +916,10 @@
 2001-07-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-msg.el (gnus-post-method): Refer to `gnus-parameters'.
-	
+
 2001-07-31 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	Originally from Pavel Jan,Bm(Bk <Pavel@Janik.cz>
-	
+
 	* gnus-agent.el (gnus-agent-make-mode-line-string): New.
 	(gnus-agent-toggle-plugged): Use it.
 
@@ -958,8 +978,8 @@
 	* mail-source.el (top-level): Require message for message-directory.
 	(mail-source-directory): Change default to message-directory.
 
-	* smime.el (smime-keys, smime-CA-directory, smime-CA-file) 
-	(smime-certificate-directory, smime-openssl-program) 
+	* smime.el (smime-keys, smime-CA-directory, smime-CA-file)
+	(smime-certificate-directory, smime-openssl-program)
 	(smime-encrypt-cipher, smime-dns-server): Fix doc (leading "*").
 	(smime-extra-arguments): New variable.
 	(smime-dns-server): Fix customize group.
@@ -982,12 +1002,12 @@
 
 	Support S/MIME decryption.
 
-	* mm-decode.el (mm-inline-media-tests): 
+	* mm-decode.el (mm-inline-media-tests):
 	(mm-inlined-types):
 	(mm-automatic-display):
 	(mm-attachment-override-types): Add application/{x-,}pkcs7-mime.
 
-	* mm-view.el (mm-pkcs7-signed-magic): 
+	* mm-view.el (mm-pkcs7-signed-magic):
 	(mm-pkcs7-enveloped-magic): New variables.
 	(mm-view-pkcs7-get-type): New function; identify PKCS#7 type.
 	(mm-view-pkcs7): New function; mm viewer for PKCS#7 blobs.
@@ -1013,9 +1033,9 @@
 
 	* gnus-sum.el (gnus-summary-prepare-threads): If
 	gnus-sum-thread-tree-root is nil, use subject instead.
-	(gnus-sum-thread-tree-root, gnus-sum-thread-tree-single-indent) 
-	(gnus-sum-thread-tree-vertical, gnus-sum-thread-tree-indent) 
-	(gnus-sum-thread-tree-leaf-with-other) 
+	(gnus-sum-thread-tree-root, gnus-sum-thread-tree-single-indent)
+	(gnus-sum-thread-tree-vertical, gnus-sum-thread-tree-indent)
+	(gnus-sum-thread-tree-leaf-with-other)
 	(gnus-sum-thread-tree-single-leaf): Documentation.
 	(gnus-sum-thread-tree-single-indent): Allow nil.
 
@@ -1111,10 +1131,10 @@
 	* gnus-art.el (gnus-mime-view-part-as-type): Don't copy cache.
 
 2001-07-25 12:54:00  Danny Siu <dsiu@adobe.com>
-	
+
 	* gnus-sum.el (gnus-summary-prepare-threads): Shouldn't do tree
 	display (%B) for threads if threading is off.
- 
+
 2001-07-25 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Henrik Enberg <henrik@enberg.org>
 
@@ -1125,7 +1145,7 @@
 	* nnmail.el (nnmail-split-fancy-with-parent-ignore-groups): New
 	variable.
 	(nnmail-split-fancy-with-parent): Ignore certain groups.
-	
+
 2001-07-25 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-util.el (gnus-byte-compile): New.
