@@ -35,6 +35,7 @@
 	      adaptive-fill-regexp babel-history babel-translations
 	      default-enable-multibyte-characters
 	      display-time-mail-function imap-password mail-mode-hook
+	      filladapt-mode
 	      mc-pgp-always-sign
 	      nnoo-definition-alist
 	      url-current-callback-func url-be-asynchronous

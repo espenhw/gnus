@@ -1916,8 +1916,10 @@ Prefix arg means justify as well."
 (defun message-fill-paragraph (&optional arg)
   "Like `fill-paragraph'."
   (interactive (list (if current-prefix-arg 'full)))
-  (message-newline-and-reformat arg t)
-  t)
+  (if (and (boundp 'filladapt-mode) filladapt-mode)
+      nil
+    (message-newline-and-reformat arg t)
+    t))
 
 (defun message-insert-signature (&optional force)
   "Insert a signature.  See documentation for variable `message-signature'."
