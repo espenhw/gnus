@@ -1,5 +1,8 @@
 2002-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* flow-fill.el (fill-flowed): Don't infloop on too long fill
+	prefixes. 
+
 	* dns.el (query-dns): Protect against errors.
 
 	* gnus-msg.el (gnus-article-yanked-articles): New variable.
