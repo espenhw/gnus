@@ -12418,6 +12418,23 @@ functions is also affected by commonly understood variables
 This is the default, and simply connects to some port or other on the
 remote system.
 
+@findex nntp-open-tls-stream
+@item nntp-open-tls-stream
+Opens a connection to a server over a @dfn{secure} channel.  To use
+this you must have GNUTLS installed (see
+@uref{http://www.gnu.org/software/gnutls/}).  You then define a server
+as follows:
+
+@lisp
+;; "nntps" is port 563 and is predefined in our /etc/services
+;; however, gnutls-cli -p doesn't like named ports.
+;;
+(nntp "snews.bar.com"
+      (nntp-open-connection-function nntp-open-tls-stream)
+      (nntp-port-number )
+      (nntp-address "snews.bar.com"))
+@end lisp
+
 @findex nntp-open-ssl-stream
 @item nntp-open-ssl-stream
 Opens a connection to a server over a @dfn{secure} channel.  To use this
@@ -12426,10 +12443,8 @@ installed (@uref{ftp://ftp.psy.uq.oz.au/pub/Crypto/SSL}.  You then
 define a server as follows:
 
 @lisp
-;; Type `C-c C-c' after you've finished editing.
-;;
 ;; "snews" is port 563 and is predefined in our /etc/services
-;; however, openssl s_client -port doesn't like named ports
+;; however, openssl s_client -port doesn't like named ports.
 ;;
 (nntp "snews.bar.com"
       (nntp-open-connection-function nntp-open-ssl-stream)
@@ -12559,10 +12574,10 @@ affected.
 
 @item nntp-pre-command
 @vindex nntp-pre-command
-A command wrapper to use when connecting through a non native connection
-function (all except @code{nntp-open-network-stream} and
-@code{nntp-open-ssl-stream}.  This is where you would put a @samp{SOCKS}
-wrapper for instance.
+A command wrapper to use when connecting through a non native
+connection function (all except @code{nntp-open-network-stream},
+@code{nntp-open-tls-stream}, and @code{nntp-open-ssl-stream}.  This is
+where you would put a @samp{SOCKS} wrapper for instance.
 
 @item nntp-address
 @vindex nntp-address
@@ -12570,10 +12585,11 @@ The address of the @sc{nntp} server.
 
 @item nntp-port-number
 @vindex nntp-port-number
-Port number to connect to the @sc{nntp} server.  The default is @samp{nntp}.
-If you use @sc{nntp} over @sc{ssl}, you may want to use integer ports rather
-than named ports (i.e, use @samp{563} instead of @samp{snews}), because
-external SSL tools may not work with named ports.
+Port number to connect to the @sc{nntp} server.  The default is
+@samp{nntp}.  If you use @sc{nntp} over @sc{tls}/@sc{ssl}, you may
+want to use integer ports rather than named ports (i.e, use @samp{563}
+instead of @samp{snews} or @samp{nntps}), because external TLS/SSL
+tools may not work with named ports.
 
 @item nntp-end-of-line
 @vindex nntp-end-of-line
@@ -13190,7 +13206,7 @@ some reason or other, Gnus let you treat it similar to a POP server
 and fetches articles from a given @sc{imap} mailbox.  @xref{IMAP}, for
 more information.
 
-Note that for the Kerberos, GSSAPI, SSL/TLS and STARTTLS support you
+Note that for the Kerberos, GSSAPI, TLS/SSL and STARTTLS support you
 may need external programs and libraries, @xref{IMAP}.
 
 Keywords:
@@ -13202,7 +13218,7 @@ The name of the @sc{imap} server.  The default is taken from the
 
 @item :port
 The port number of the @sc{imap} server.  The default is @samp{143}, or
-@samp{993} for SSL/TLS connections.
+@samp{993} for TLS/SSL connections.
 
 @item :user
 The user name to give to the @sc{imap} server.  The default is the login
@@ -13215,8 +13231,8 @@ prompted.
 @item :stream
 What stream to use for connecting to the server, this is one of the
 symbols in @code{imap-stream-alist}.  Right now, this means
-@samp{gssapi}, @samp{kerberos4}, @samp{starttls}, @samp{ssl},
-@samp{shell} or the default @samp{network}.
+@samp{gssapi}, @samp{kerberos4}, @samp{starttls}, @samp{tls},
+@samp{ssl}, @samp{shell} or the default @samp{network}.
 
 @item :authentication
 Which authenticator to use for authenticating to the server, this is
@@ -15509,7 +15525,7 @@ manipulate mails stored on the @sc{imap} server.  This is the kind of
 usage explained in this section.
 
 A server configuration in @file{~/.gnus} with a few @sc{imap} servers
-might look something like the following. (Note that for SSL/TLS, you
+might look something like the following. (Note that for TLS/SSL, you
 need external programs and libraries, see below.)
 
 @lisp
@@ -15554,7 +15570,7 @@ server name if not specified.
 
 @item nnimap-server-port
 @vindex nnimap-server-port
-Port on server to contact.  Defaults to port 143, or 993 for SSL.
+Port on server to contact.  Defaults to port 143, or 993 for TLS/SSL.
 
 Note that this should be an integer, example server specification:
 
@@ -15588,7 +15604,7 @@ Example server specification:
 @vindex nnimap-stream
 The type of stream used to connect to your server.  By default, nnimap
 will detect and automatically use all of the below, with the exception
-of SSL/TLS. (@sc{imap} over SSL/TLS is being replaced by STARTTLS, which
+of TLS/SSL. (@sc{imap} over TLS/SSL is being replaced by STARTTLS, which
 can be automatically detected, but it's not widely deployed yet.)
 
 Example server specification:
@@ -15608,8 +15624,11 @@ Please note that the value of @code{nnimap-stream} is a symbol!
 @dfn{kerberos4:} Connect with Kerberos 4. Requires the @samp{imtest} program.
 @item
 @dfn{starttls:} Connect via the STARTTLS extension (similar to
-SSL).  Requires the external library @samp{starttls.el} and program
+TLS/SSL).  Requires the external library @samp{starttls.el} and program
 @samp{starttls}.
+@item
+@dfn{tls:} Connect through TLS.  Requires GNUTLS (the program
+@samp{gnutls-cli}).
 @item
 @dfn{ssl:} Connect through SSL.  Requires OpenSSL (the program
 @samp{openssl}) or SSLeay (@samp{s_client}).
@@ -15629,6 +15648,10 @@ restrictions on @sc{imap} commands, which might make Gnus seem to hang
 indefinitely if you have many articles in a mailbox.  The variable
 @code{imap-kerberos4-program} contain parameters to pass to the imtest
 program.
+
+For TLS connection, the @code{gnutls-cli} program from GNUTLS is
+needed.  It is available from
+@uref{http://www.gnu.org/software/gnutls/}.
 
 @vindex imap-ssl-program
 For SSL connections, the OpenSSL program is available from

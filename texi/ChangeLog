@@ -1,3 +1,9 @@
+2003-03-23  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Direct Functions, Common Variables)
+	(Mail Source Specifiers, IMAP): Add TLS wherever SSL is mentioned
+	now.
+
 2003-03-23  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Group Information, Article Washing)
