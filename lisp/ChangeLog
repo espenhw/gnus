@@ -1,3 +1,7 @@
+2001-11-01 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-charset-synonym-alist): Revert (some).
+
 2001-11-01 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-iso-8859-x-to-15-region): New.
