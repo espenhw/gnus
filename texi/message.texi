@@ -951,6 +951,15 @@ Insert a @code{To} header that contains the @code{Reply-To} or
 @code{From} header of the message you're following up
 (@code{message-insert-to}).
 
+@item C-c M-t
+@kindex C-c M-t
+@findex message-insert-wide-reply
+Insert @code{To} and @code{Cc} headers that contains addresses as if
+you were doing a wide reply to the original message
+(@code{message-insert-wide-reply}).  This usually means that all
+addresses from @code{To}, @code{From}/@code{Reply-To}, and @code{Cc}
+will be picked up.
+
 @item C-c C-n
 @kindex C-c C-n
 @findex message-insert-newsgroups
