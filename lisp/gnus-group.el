@@ -752,7 +752,7 @@ simple manner.")
 		 (gnus-check-backend-function
 		  'request-expire-articles
 		  (gnus-group-group-name))) gnus-group-marked)]
-       ["Set group level" gnus-group-set-current-level
+       ["Set group level..." gnus-group-set-current-level
 	(gnus-group-group-name)]
        ["Select quick" gnus-group-quick-select-group (gnus-group-group-name)]
        ["Customize" gnus-group-customize (gnus-group-group-name)]
@@ -822,22 +822,22 @@ simple manner.")
 	["Execute command" gnus-group-universal-argument
 	 (or gnus-group-marked (gnus-group-group-name))])
        ("Subscribe"
-	["Subscribe to a group" gnus-group-unsubscribe-group t]
+	["Subscribe to a group..." gnus-group-unsubscribe-group t]
 	["Kill all newsgroups in region" gnus-group-kill-region t]
 	["Kill all zombie groups" gnus-group-kill-all-zombies
 	 gnus-zombie-list]
 	["Kill all groups on level..." gnus-group-kill-level t])
        ("Foreign groups"
-	["Make a foreign group" gnus-group-make-group t]
-	["Add a directory group" gnus-group-make-directory-group t]
+	["Make a foreign group..." gnus-group-make-group t]
+	["Add a directory group..." gnus-group-make-directory-group t]
 	["Add the help group" gnus-group-make-help-group t]
 	["Add the archive group" gnus-group-make-archive-group t]
-	["Make a doc group" gnus-group-make-doc-group t]
-	["Make a web group" gnus-group-make-web-group t]
-	["Make a kiboze group" gnus-group-make-kiboze-group t]
-	["Make a virtual group" gnus-group-make-empty-virtual t]
-	["Add a group to a virtual" gnus-group-add-to-virtual t]
-	["Rename group" gnus-group-rename-group
+	["Make a doc group..." gnus-group-make-doc-group t]
+	["Make a web group..." gnus-group-make-web-group t]
+	["Make a kiboze group..." gnus-group-make-kiboze-group t]
+	["Make a virtual group..." gnus-group-make-empty-virtual t]
+	["Add a group to a virtual..." gnus-group-add-to-virtual t]
+	["Rename group..." gnus-group-rename-group
 	 (gnus-check-backend-function
 	  'request-rename-group (gnus-group-group-name))]
 	["Delete group" gnus-group-delete-group
@@ -851,7 +851,7 @@ simple manner.")
 	["Next unread same level" gnus-group-next-unread-group-same-level t]
 	["Previous unread same level"
 	 gnus-group-prev-unread-group-same-level t]
-	["Jump to group" gnus-group-jump-to-group t]
+	["Jump to group..." gnus-group-jump-to-group t]
 	["First unread group" gnus-group-first-unread-group t]
 	["Best unread group" gnus-group-best-unread-group t])
        ("Sieve"
@@ -887,7 +887,7 @@ simple manner.")
        ["Activate all groups" gnus-activate-all-groups t]
        ["Restart Gnus" gnus-group-restart t]
        ["Read init file" gnus-group-read-init-file t]
-       ["Browse foreign server" gnus-group-browse-foreign-server t]
+       ["Browse foreign server..." gnus-group-browse-foreign-server t]
        ["Enter server buffer" gnus-group-enter-server-mode t]
        ["Expire all expirable articles" gnus-group-expire-all-groups t]
        ["Generate any kiboze groups" nnkiboze-generate-groups t]

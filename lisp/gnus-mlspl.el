@@ -139,7 +139,7 @@ nnml:mail.foo:
 nnml:mail.others:
 \((split-spec . catch-all))
 
-Calling (gnus-group-split-fancy nil nil \"mail.misc\") returns:
+Calling (gnus-group-split-fancy nil nil \"mail.others\") returns:
 
 \(| (& (any \"\\\\(bar@femail\\\\.com\\\\|.*@femail\\\\.com\\\\)\"
 	   \"mail.bar\")

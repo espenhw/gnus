@@ -1087,18 +1087,18 @@ articles in the topic and its subtopics."
      '("Topics"
        ["Toggle topics" gnus-topic-mode t]
        ("Groups"
-	["Copy" gnus-topic-copy-group t]
-	["Move" gnus-topic-move-group t]
+	["Copy..." gnus-topic-copy-group t]
+	["Move..." gnus-topic-move-group t]
 	["Remove" gnus-topic-remove-group t]
-	["Copy matching" gnus-topic-copy-matching t]
+	["Copy matching..." gnus-topic-copy-matching t]
 	["Move matching" gnus-topic-move-matching t])
        ("Topics"
-	["Goto" gnus-topic-jump-to-topic t]
+	["Goto..." gnus-topic-jump-to-topic t]
 	["Show" gnus-topic-show-topic t]
 	["Hide" gnus-topic-hide-topic t]
 	["Delete" gnus-topic-delete t]
-	["Rename" gnus-topic-rename t]
-	["Create" gnus-topic-create-topic t]
+	["Rename..." gnus-topic-rename t]
+	["Create..." gnus-topic-create-topic t]
 	["Mark" gnus-topic-mark-topic t]
 	["Indent" gnus-topic-indent t]
 	["Sort" gnus-topic-sort-topics t]

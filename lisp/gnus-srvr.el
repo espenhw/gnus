@@ -105,7 +105,7 @@ If nil, a faster, but more primitive, buffer is used instead."
     (easy-menu-define
      gnus-server-server-menu gnus-server-mode-map ""
      '("Server"
-       ["Add" gnus-server-add-server t]
+       ["Add..." gnus-server-add-server t]
        ["Browse" gnus-server-read-server t]
        ["Scan" gnus-server-scan-server t]
        ["List" gnus-server-list-servers t]

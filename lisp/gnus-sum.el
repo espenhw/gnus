@@ -2068,7 +2068,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	      ["Rot 13" gnus-summary-caesar-message
 	       ,@(if (featurep 'xemacs) '(t)
 		   '(:help "\"Caesar rotate\" article by 13"))]
-	      ["Unix pipe" gnus-summary-pipe-message t]
+	      ["Unix pipe..." gnus-summary-pipe-message t]
 	      ["Add buttons" gnus-article-add-buttons t]
 	      ["Add buttons to head" gnus-article-add-buttons-to-head t]
 	      ["Stop page breaking" gnus-summary-stop-page-breaking t]
@@ -2264,7 +2264,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	 ["Author..." gnus-summary-limit-to-author t]
 	 ["Age..." gnus-summary-limit-to-age t]
 	 ["Extra..." gnus-summary-limit-to-extra t]
-	 ["Score" gnus-summary-limit-to-score t]
+	 ["Score..." gnus-summary-limit-to-score t]
 	 ["Display Predicate" gnus-summary-limit-to-display-predicate t]
 	 ["Unread" gnus-summary-limit-to-unread t]
 	 ["Non-dormant" gnus-summary-limit-exclude-dormant t]
