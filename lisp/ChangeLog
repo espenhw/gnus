@@ -7,6 +7,10 @@
 	(nnkiboze-generate-group): Set newsrc to the *highest* article
 	number kibozed, not the lowest.
 	
+2002-04-15  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (article-unsplit-urls): Allow trailing SPC.
+
 2002-04-24  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Dan Christensen <jdc+news@uwo.ca>.
 

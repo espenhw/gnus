@@ -2081,7 +2081,7 @@ If READ-CHARSET, ask for a coding system."
     (let ((buffer-read-only nil))
       (goto-char (point-min))
       (while (re-search-forward
-	      "^\\(\\(https?\\|ftp\\)://\\S-+\\)\n\\(\\S-+\\)" nil t)
+	      "^\\(\\(https?\\|ftp\\)://\\S-+\\) *\n\\(\\S-+\\)" nil t)
 	(replace-match "\\1\\3" t)))))
 
 (defun article-wash-html (&optional read-charset)
