@@ -7821,7 +7821,10 @@ without any article massaging functions being run."
 		"View as charset: "
 		(save-excursion
 		  (set-buffer gnus-article-buffer)
-		  (detect-coding-region (point) (point-max) t)))))
+		  (let ((coding-systems
+			 (detect-coding-region (point) (point-max))))
+		    (or (car-safe coding-systems)
+			coding-systems))))))
 	  (gnus-newsgroup-ignored-charsets 'gnus-all))
       (gnus-summary-select-article nil 'force)
       (let ((deps gnus-newsgroup-dependencies)

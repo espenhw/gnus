@@ -1,3 +1,9 @@
+2001-09-27 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From Daiki Ueno  <ueno@unixuser.org>
+
+	* gnus-sum.el (gnus-summary-show-article): The arglist of
+	detect-coding-region is incompatible.
+
 2001-09-26 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Katsuhiro Hermit Endo <hermit@koka-in.org>
 
