@@ -1,3 +1,11 @@
+2002-05-04  Simon Josefsson  <jas@extundo.com>
+
+	* emacs-mime.texi (Top): Change scope of manual to include users.
+	(Customization): Rename to Display Customization.
+	(MML Definition): Add cross references.
+	(Encoding Customization): New section.
+	(Charset Translation): More info and cross references.
+
 2002-05-01  Josh Huber  <huber@alum.wpi.edu>
 
 	* gnus.texi (Signing and encrypting): Fix doc.  Also, add a

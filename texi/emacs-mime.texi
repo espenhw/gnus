@@ -77,9 +77,10 @@ license to the document, as described in section 6 of the license.
 This manual documents the libraries used to compose and display
 @sc{mime} messages.
 
-This is not a manual meant for users; it's a manual directed at people
-who want to write functions and commands that manipulate @sc{mime}
-elements.
+This manual is directed at users who want to modify the behaviour of
+the MIME encoding/decoding process or want a more detailed picture of
+how the Emacs MIME library works, and people who want to write
+functions and commands that manipulate @sc{mime} elements.
 
 @sc{mime} is short for @dfn{Multipurpose Internet Mail Extensions}.
 This standard is documented in a number of RFCs; mainly RFC2045 (Format
@@ -839,12 +840,12 @@ other programs to do things based on the list of @dfn{handles} that are
 returned as a result of this analysis.
 
 @menu
-* Dissection::     Analyzing a @sc{mime} message.
-* Non-MIME::       Analyzing a non-@sc{mime} message.
-* Handles::        Handle manipulations.
-* Display::        Displaying handles.
-* Customization::  Variables that affect display.
-* New Viewers::    How to write your own viewers.
+* Dissection::             Analyzing a @sc{mime} message.
+* Non-MIME::               Analyzing a non-@sc{mime} message.
+* Handles::                Handle manipulations.
+* Display::                Displaying handles.
+* Display Customization::  Variables that affect display.
+* New Viewers::            How to write your own viewers.
 @end menu
 
 
@@ -999,8 +1000,8 @@ Prompt for a mailcap method to use to view the part.
 @end table
 
 
-@node Customization
-@section Customization
+@node Display Customization
+@section Display Customization
 
 @table @code
 
@@ -1140,6 +1141,7 @@ string containing the @sc{mime} message.
 * Simple MML Example::             An example MML document.
 * MML Definition::                 All valid MML elements.
 * Advanced MML Example::           Another example MML document.
+* Encoding Customization::         Variables that affect encoding.
 * Charset Translation::            How charsets are mapped from @sc{mule} to @sc{mime}.
 * Conversion::                     Going from @sc{mime} to MML and vice versa.
 * Flowed text::                    Soft and hard newlines.
@@ -1216,7 +1218,7 @@ Use the contents of the file in the body of the part
 
 @item charset
 The contents of the body of the part are to be encoded in the character
-set speficied (@code{Content-Type}).
+set speficied (@code{Content-Type}). @xref{Charset Translation}.
 
 @item name
 Might be used to suggest a file name if the part is to be saved
@@ -1228,7 +1230,8 @@ Valid values are @samp{inline} and @samp{attachment}
 
 @item encoding
 Valid values are @samp{7bit}, @samp{8bit}, @samp{quoted-printable} and
-@samp{base64} (@code{Content-Transfer-Encoding}).
+@samp{base64} (@code{Content-Transfer-Encoding}). @xref{Charset
+Translation}.
 
 @item description
 A description of the part (@code{Content-Description}).
@@ -1393,6 +1396,55 @@ This plain text part is an attachment.
 --=-=-=--
 @end example
 
+@node Encoding Customization
+@section Encoding Customization
+
+@table @code
+
+@item mm-body-charset-encoding-alist
+@vindex mm-body-charset-encoding-alist
+Mapping from MIME charset to encoding to use.  This variable is
+usually used except, e.g., when other requirements force a specific
+encoding (digitally signed messages require 7bit encodings).  The
+default is @code{((iso-2022-jp . 7bit) (iso-2022-jp-2 . 7bit))}.  As
+an example, if you do not want to have ISO-8859-1 characters
+quoted-printable encoded, you may add @code{(iso-8859-1 . 8bit)} to
+this variable.  You can override this setting on a per-message basis
+by using the @code{encoding} MML tag (@pxref{MML Definition}).
+
+@item mm-coding-system-priorities
+@vindex mm-coding-system-priorities
+Prioritize coding systems to use for outgoing messages.  The default
+is nil, which means to use the defaults in Emacs.  It is a list of
+coding system symbols (aliases of coding systems does not work, use
+@kbd{M-x describe-coding-system} to make sure you are not specifying
+an alias in this variable).  For example, if you have configured Emacs
+to use prefer UTF-8, but wish that outgoing messages should be sent in
+ISO-8859-1 if possible, you can set this variable to
+@code{(iso-latin-1)}.
+
+@item mm-content-transfer-encoding-defaults
+@vindex mm-content-transfer-encoding-defaults
+Mapping from MIME types to encoding to use.  This variable is usually
+used except, e.g., when other requirements force a safer encoding
+(digitally signed messages require 7bit encoding). Besides the normal
+MIME encodings, @code{qp-or-base64} may be used to indicate that for
+each case the most efficient of quoted-printable and base64 should be
+used.  You can override this setting on a per-message basis by using
+the @code{encoding} MML tag (@pxref{MML Definition}).
+
+@item mm-use-ultra-safe-encoding
+@vindex mm-use-ultra-safe-encoding
+When this is non-nil, it means that textual parts are encoded as
+quoted-printable if they contain lines longer than 76 characters or
+starting with "From " in the body.  Non-7bit encodings (8bit, binary)
+are generally disallowed.  This reduce the probability that a non-8bit
+clean MTA or MDA changes the message.  This should never be set
+directly, but bound by other functions when necessary (e.g., when
+encoding messages that are to be digitally signed).
+
+@end table
+
 @node Charset Translation
 @section Charset Translation
 @cindex charsets
@@ -1430,6 +1482,22 @@ for some reason, the part is split into several ones, so that each one
 can be encoded with a single @sc{mime} charset.  The part can only be
 split at line boundaries, though---if more than one @sc{mime} charset is
 required to encode a single line, it is not possible to encode the part.
+
+When running Emacs with @sc{mule} support, the preferences for which
+coding system to use is inherited from Emacs itself.  This means that
+if Emacs is set up to prefer UTF-8, it will be used when encoding
+messages.  You can modify this by altering the
+@code{mm-coding-system-priorities} variable though (@pxref{Encoding
+Customization}).
+
+The charset to be used can be overriden by setting the @code{charset}
+MML tag (@pxref{MML Definition}) when composing the message.
+
+The encoding of characters (quoted-printable, 8bit etc) is orthogonal
+to the discussion here, and is controlled by the variables
+@code{mm-body-charset-encoding-alist} and
+@code{mm-content-transfer-encoding-defaults} (@pxref{Encoding
+Customization}).
 
 @node Conversion
 @section Conversion
