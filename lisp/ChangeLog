@@ -1,4 +1,18 @@
+Wed Mar 27 05:06:16 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* message.el (message-remove-header): Allow reverse removal.
+	(message-news-p): Narrow to headers first. 
+	(message-checksum): New function.
+	(message-check-news-syntax): Check for new text.
+	(message-check-news-syntax): Do more checking.
+	(message-check-news-syntax): Deny posting of articles with empty
+	Subject lines or mangled From headers. 
+	(message-generate-headers): Didn't treat optional headers
+	properly. 
+
 Tue Mar 26 05:15:15 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: September Gnus v0.58 is released.
 
 	* gnus-cache.el (gnus-cache-retrieve-headers): Would bug out on
 	empty groups.

@@ -61,7 +61,7 @@ If `angles', they look like:
   '(subject-cmsg multiple-headers sendsys message-id from
 		 long-lines control-chars size new-text
 		 redirected-followup signature approved sender 
-		 empty empty-headers)
+		 empty empty-headers message-id from subject)
   "In non-nil, message will attempt to run some checks on outgoing posts.
 If this variable is t, message will check everything it can.  If it is
 a list, then those elements in that list will be checked.")
@@ -135,7 +135,7 @@ If nil, message won't autosave.")
   "*All headers that match this regexp will be deleted when resending a message.")
 
 ;;;###autoload
-(defvar message-ignored-cited-headers ":"
+(defvar message-ignored-cited-headers "."
   "Delete these headers from the messages you yank.")
 
 ;; Useful to set in site-init.el
@@ -273,6 +273,7 @@ full host name.")
 (defvar message-newsreader nil)
 (defvar message-mailer nil)
 (defvar message-sent-message-via nil)
+(defvar message-checksum nil)
 (defvar message-send-actions nil
   "A list of actions to be performed upon successful sending of a message.")
 
@@ -429,7 +430,7 @@ actually occur.")
       (substring subject (match-end 0))
     subject))
 
-(defun message-remove-header (header &optional is-regexp first)
+(defun message-remove-header (header &optional is-regexp first reverse)
   "Remove HEADER in the narrowed buffer.
 If REGEXP, HEADER is a regular expression.
 If FIRST, only remove the first instance of the header.
@@ -439,18 +440,28 @@ Return the number of headers removed."
 	(number 0)
 	(case-fold-search t)
 	last)
-    (while (and (re-search-forward regexp nil t)
+    (while (and (not (eobp))
 		(not last))
-      (incf number)
-      (when first
-	(setq last t))
-      (delete-region
-       (message-point-at-bol)
-       ;; There might be a continuation header, so we have to search
-       ;; until we find a new non-continuation line.
-       (if (re-search-forward "^[^ \t]" nil t)
-	   (goto-char (match-beginning 0))
-	 (point-max))))
+      (if (if reverse
+	      (not (looking-at regexp))
+	    (looking-at regexp))
+	  (progn
+	    (incf number)
+	    (when first
+	      (setq last t))
+	    (delete-region
+	     (point)
+	     ;; There might be a continuation header, so we have to search
+	     ;; until we find a new non-continuation line.
+	     (progn
+	       (forward-line 1)
+	       (if (re-search-forward "^[^ \t]" nil t)
+		   (goto-char (match-beginning 0))
+		 (point-max)))))
+	(forward-line 1)
+	(if (re-search-forward "^[^ \t]" nil t)
+	    (goto-char (match-beginning 0))
+	  (point-max))))
     number))
 
 (defun message-narrow-to-headers ()
@@ -476,14 +487,20 @@ Return the number of headers removed."
 
 (defun message-news-p ()
   "Say whether the current buffer contains a news message."
-  (mail-fetch-field "newsgroups"))
+  (save-excursion
+    (save-restriction
+      (message-narrow-to-headers)
+      (mail-fetch-field "newsgroups"))))
 
 (defun message-mail-p ()
   "Say whether the current buffer contains a mail message."
-  (or (mail-fetch-field "to")
-      (mail-fetch-field "cc")
-      (mail-fetch-field "bcc")))
-
+  (save-excursion
+    (save-restriction
+      (message-narrow-to-headers)
+      (or (mail-fetch-field "to")
+	  (mail-fetch-field "cc")
+	  (mail-fetch-field "bcc")))))
+    
 
 
 ;;;
@@ -564,10 +581,14 @@ C-c C-v  message-sent-via (add a Sent-via field for each To or CC)."
 				   "$\\|[ \t]*[-_][-_][-_]+$\\|"
 				   paragraph-separate))
   (make-local-variable 'message-reply-headers)
+  (setq message-reply-headers nil)
   (make-local-variable 'message-newsreader)
   (make-local-variable 'message-mailer)
   (make-local-variable 'message-post-method)
   (make-local-variable 'message-sent-message-via)
+  (setq message-sent-message-via nil)
+  (make-local-variable 'message-checksum)
+  (setq message-checksum nil)
   (run-hooks 'text-mode-hook 'message-mode-hook))
 
 
@@ -795,7 +816,8 @@ prefix, and don't delete any headers."
 	   (when message-indent-citation-function
 	     (if (listp message-indent-citation-function)
 		 message-indent-citation-function
-	       (list message-indent-citation-function)))))
+	       (list message-indent-citation-function))))
+	  (modified (buffer-modified-p)))
       ;; If the original message is in another window in the same frame,
       ;; delete that window to save screen space.
       ;; t means don't alter other frames.
@@ -818,7 +840,9 @@ prefix, and don't delete any headers."
       (goto-char (prog1 (mark t)
 		   (set-marker (mark-marker) (point) (current-buffer))))
       (unless (bolp)
-	(insert ?\n)))))
+	(insert ?\n))
+      (unless modified
+	(setq message-checksum (message-checksum))))))
 
 (defun message-insert-citation-line ()
   "Function that inserts a simple citation line."
@@ -919,7 +943,7 @@ the user from the mailer."
 				  (if (message-news-p) "main and news" "news")
 				"news")))
 	  (or (buffer-modified-p)
-	      (y-or-n-p "Message already sent; resend? ")))
+	      (y-or-n-p "No changes in the buffer; really send? ")))
     ;; Make it possible to undo the coming changes.
     (undo-boundary)
     (run-hooks 'message-send-hook)
@@ -1052,31 +1076,31 @@ the user from the mailer."
       (message-generate-headers message-required-news-headers)
       ;; Let the user do all of the above.
       (run-hooks 'message-header-hook))
-    ;; Insert the proper mail headers.
-    (unwind-protect
-	(save-excursion
-	  (set-buffer tembuf)
-	  (buffer-disable-undo (current-buffer))
-	  (erase-buffer)
-	  (insert-buffer-substring messbuf)
-	  (goto-char (point-max))
-	  ;; require one newline at the end.
-	  (or (= (preceding-char) ?\n)
-	      (insert ?\n))
-	  (let ((case-fold-search t))
-	    ;; Remove the delimeter.
-	    (goto-char (point-min))
-	    (re-search-forward
-	     (concat "^" (regexp-quote message-header-separator) "\n"))
-	    (replace-match "\n")
-	    (backward-char 1))
-	  (require (car method))
-	  (funcall (intern (format "%s-open-server" (car method)))
-		   (cadr method) (cddr method))
-	  (funcall (intern (format "%s-request-post"
-				   (car method)))))
-      (kill-buffer tembuf))
-    (push 'news message-sent-message-via)))
+    (when (message-check-news-syntax)
+      (unwind-protect
+	  (save-excursion
+	    (set-buffer tembuf)
+	    (buffer-disable-undo (current-buffer))
+	    (erase-buffer)
+	    (insert-buffer-substring messbuf)
+	    (goto-char (point-max))
+	    ;; require one newline at the end.
+	    (or (= (preceding-char) ?\n)
+		(insert ?\n))
+	    (let ((case-fold-search t))
+	      ;; Remove the delimeter.
+	      (goto-char (point-min))
+	      (re-search-forward
+	       (concat "^" (regexp-quote message-header-separator) "\n"))
+	      (replace-match "\n")
+	      (backward-char 1))
+	    (require (car method))
+	    (funcall (intern (format "%s-open-server" (car method)))
+		     (cadr method) (cddr method))
+	    (funcall (intern (format "%s-request-post"
+				     (car method)))))
+	(kill-buffer tembuf))
+      (push 'news message-sent-message-via))))
 
 ;;;
 ;;; Header generation & syntax checking.
@@ -1152,7 +1176,51 @@ the user from the mailer."
 	       (if (re-search-forward "^Approved:" nil t)
 		   (y-or-n-p
 		    "The article contains an Approved header. Really post? ")
-		 t))))))
+		 t)))
+	 ;; Check the Message-Id header.
+	 (or (message-check-element 'message-id)
+	     (save-excursion
+	       (let* ((case-fold-search t)
+		      (message-id (mail-fetch-field "message-id")))
+		 (or (not message-id)
+		     (and (string-match "@" message-id)
+			  (string-match "@[^\\.]*\\." message-id))
+		     (y-or-n-p
+		      (format 
+		       "The Message-ID looks strange: \"%s\". Really post? "
+		       message-id))))))
+	 ;; Check the Subject header.
+	 (or 
+	  (message-check-element 'subject)
+	  (save-excursion
+	    (let* ((case-fold-search t)
+		   (subject (mail-fetch-field "subject")))
+	      (or
+	       (and subject
+		    (not (string-match "\\`[ \t]*\\'" subject)))
+	       (progn
+		 (message 
+		  "The subject field is empty or missing.  Posting is denied.")
+		 nil)))))
+	 ;; Check the From header.
+	 (or (message-check-element 'from)
+	     (save-excursion
+	       (let* ((case-fold-search t)
+		      (from (mail-fetch-field "from")))
+		 (cond
+		  ((not from)
+		   (message "There is no From line.  Posting is denied.")
+		   nil)
+		  ((not (string-match "@[^\\.]*\\." from))
+		   (message
+		    "Denied posting -- the From looks strange: \"%s\"." from)
+		   nil)
+		  ((string-match "(.*).*(.*)" from)
+		   (message
+		    "Denied posting -- the From header looks strange: \"%s\"." 
+		    from)
+		   nil)
+		  (t t))))))))
     ;; Check for long lines.
     (or (message-check-element 'long-lines)
 	(save-excursion
@@ -1191,6 +1259,12 @@ the user from the mailer."
 	     (format "The article is %d octets long. Really post? "
 		     (buffer-size)))
 	  t))
+    ;; Check whether any new text has been added.
+    (or (message-check-element 'new-text)
+	(not message-checksum)
+	(not (eq (message-checksum) message-checksum))
+	(y-or-n-p
+	 "It looks like no new text has been added.  Really post? "))
     ;; Check the length of the signature.
     (or (message-check-element 'signature)
 	(progn
@@ -1211,6 +1285,15 @@ the user from the mailer."
        (if (listp message-syntax-checks)
 	   (memq type message-syntax-checks)
 	 t))))
+
+(defun message-checksum ()
+  "Return a \"checksum\" for the current buffer."
+  (let ((sum 0))
+    (save-excursion
+      (while (not (eobp))
+	(setq sum (logxor sum (following-char)))
+	(forward-char 1)))
+    sum))
 
 (defun message-do-fcc ()
   "Process Fcc headers in the current buffer."
@@ -1530,10 +1613,13 @@ Headers already prepared in the buffer are not modified."
 	(goto-char (point-min))
 	(setq elem (pop headers))
 	(if (consp elem)
-	    (setq header (car elem))
+	    (if (eq (car elem) 'optional)
+		(setq header (cdr elem))
+	      (setq header (car elem)))
 	  (setq header elem))
 	(when (or (not (re-search-forward 
-			(concat "^" (downcase (symbol-name header)) ":") nil t))
+			(concat "^" (downcase (symbol-name header)) ":") 
+			nil t))
 		  (progn
 		    ;; The header was found. We insert a space after the
 		    ;; colon, if there is none.
@@ -1593,7 +1679,8 @@ Headers already prepared in the buffer are not modified."
 	(when (and from 
 		   (not (message-check-element 'sender))
 		   (not (string=
-			 (downcase (cadr (mail-extract-address-components from)))
+			 (downcase
+			  (cadr (mail-extract-address-components from)))
 			 (downcase secure-sender)))
 		   (or (null sender)
 		       (not 
@@ -1632,7 +1719,7 @@ Headers already prepared in the buffer are not modified."
 	    ": "
 	    (if (consp value) (car value) value)
 	    "\n")
-    (fill-region-as-paragraph begin (1- (point)))))
+    (fill-region-as-paragraph begin (point))))
 
 (defun sendmail-synch-aliases ()
   (let ((modtime (nth 5 (file-attributes message-personal-alias-file))))
@@ -1714,7 +1801,8 @@ Headers already prepared in the buffer are not modified."
     (run-hooks 'message-header-setup-hook))
   (set-buffer-modified-p nil)
   (run-hooks 'message-setup-hook)
-  (message-position-point))
+  (message-position-point)
+  (undo-boundary))
 
 (defun message-set-auto-save-file-name ()
   "Associate the message buffer with a file in the drafts directory."
@@ -2047,7 +2135,7 @@ header line with the old Message-ID."
 				  (1- (point))
 				(point)))
     (goto-char (point-min))
-    (message-remove-header message-included-forward-headers t)
+    (message-remove-header message-included-forward-headers t nil t)
     (widen)
     (message-position-point)))
 

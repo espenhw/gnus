@@ -432,14 +432,6 @@ If SILENT, don't prompt the user."
 		   (current-buffer)))
 	  nil)))))
 
-(defun gnus-article-checksum ()
-  (let ((sum 0))
-    (save-excursion
-      (while (not (eobp))
-	(setq sum (logxor sum (following-char)))
-	(forward-char 1)))
-    sum))
-
 
 
 ;; Dummy to avoid byte-compile warning.
