@@ -512,6 +512,19 @@ the actual number of articles toggled is returned."
     (when (file-exists-p (gnus-agent-lib-file "active"))
       (delete-file (gnus-agent-lib-file "active"))))
 
+(defun gnus-agent-save-group-info (method group active)
+  (when (gnus-agent-method-p method)
+    (let* ((gnus-command-method method)
+	   (file (gnus-agent-lib-file "active")))
+      (gnus-make-directory (file-name-directory file))
+      (nnheader-temp-write file
+	(insert-file-contents file)
+	(goto-char (point-min))
+	(when (re-search-forward "^" (regexp-quote group) " " nil t)
+	  (gnus-delete-line))
+	(insert group " " (number-to-string (cdr active)) " "
+		(number-to-string (car active)) "\n")))))
+
 (defun gnus-agent-group-path (group)
   "Translate GROUP into a path."
   (if nnmail-use-long-file-names

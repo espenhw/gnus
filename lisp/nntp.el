@@ -167,7 +167,7 @@ server there that you can connect to.  See also
   "*Coding system to write to NNTP.")
 
 (defcustom nntp-authinfo-file "~/.authinfo"
-  "Docstring."
+  ".netrc-like file that holds nntp authinfo passwords."
   :type
   '(choice file
 	   (repeat :tag "Entries"

@@ -1371,6 +1371,7 @@ newsgroup."
 		info (inline (gnus-find-method-for-group
 			      (gnus-info-group info)))))
       (gnus-activate-group (gnus-info-group info) nil t))
+
     (let* ((range (gnus-info-read info))
 	   (num 0))
       ;; If a cache is present, we may have to alter the active info.
@@ -1482,6 +1483,10 @@ newsgroup."
 	  ;; These groups are foreign.  Check the level.
 	  (when (<= (gnus-info-level info) foreign-level)
 	    (setq active (gnus-activate-group group 'scan))
+	    ;; Let the Gnus agent save the active file.
+	    (when (and gnus-agent gnus-plugged)
+	      (gnus-agent-save-group-info
+	       method (gnus-group-real-name group) active))
 	    (unless (inline (gnus-virtual-group-p group))
 	      (inline (gnus-close-group group)))
 	    (when (fboundp (intern (concat (symbol-name (car method))
@@ -1682,11 +1687,10 @@ newsgroup."
 
 
 (defun gnus-ignored-newsgroups-has-to-p ()
-  "T only when gnus-ignored-newsgroups includes \"^to\\\\.\" as an element."
+  "Non-nil iff gnus-ignored-newsgroups includes \"^to\\\\.\" as an element."
   ;; note this regexp is the same as:
   ;; (concat (regexp-quote "^to\\.") "\\($\\|" (regexp-quote "\\|") "\\)")
-  (string-match "\\^to\\\\\\.\\($\\|\\\\|\\)"
-		gnus-ignored-newsgroups))
+  (string-match "\\^to\\\\\\.\\($\\|\\\\|\\)" gnus-ignored-newsgroups))
 
 ;; Read an active file and place the results in `gnus-active-hashtb'.
 (defun gnus-active-to-gnus-format (&optional method hashtb ignore-errors

@@ -7168,7 +7168,7 @@ latter case, they will be copied into the relevant groups."
     (gnus-summary-copy-article n nil method)))
 
 (defun gnus-summary-import-article (file)
-  "Import a random file into a mail newsgroup."
+  "Import an arbitrary file into a mail newsgroup."
   (interactive "fImport file: ")
   (let ((group gnus-newsgroup-name)
 	(now (current-time))

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.6.4 Manual
+@settitle Gnus 5.6.5 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.6.4 Manual
+@title Gnus 5.6.5 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.6.4.
+This manual corresponds to Gnus 5.6.5.
 
 @end ifinfo
 
@@ -1904,6 +1904,10 @@ search engine type and the search string.  Valid search engine types
 include @code{dejanews}, @code{altavista} and @code{reference}.
 @xref{Web Searches}.
 
+If you use the @code{dejanews} search engine, you can limit the search
+to a particular group by using a match string like
+@samp{~g alt.sysadmin.recovery shaving}.
+
 @item G DEL
 @kindex G DEL (Group)
 @findex gnus-group-delete-group
@@ -3257,8 +3261,12 @@ One space for each thread level.
 Twenty minus thread level spaces.
 @item U
 Unread.
+
 @item R
-Replied.
+This misleadingly named specifier is the @dfn{secondary mark}.  This
+mark will say whether the article has been replied to, has been cached,
+or has been saved.  
+
 @item i
 Score as a number (@pxref{Scoring}).
 @item z
@@ -4009,7 +4017,7 @@ followups, you can use the @kbd{/ D} command (@pxref{Limiting}).
 
 @item SPACE
 @vindex gnus-unread-mark
-Markes as unread (@code{gnus-unread-mark}).
+Marked as unread (@code{gnus-unread-mark}).
 
 @dfn{Unread articles} are articles that haven't been read at all yet.
 @end table
@@ -4332,7 +4340,8 @@ Invert the list of process marked articles
 @item M P R
 @kindex M P R (Summary)
 @findex gnus-uu-mark-by-regexp
-Mark articles by a regular expression (@code{gnus-uu-mark-by-regexp}).
+Mark articles that have a @code{Subject} header that matches a regular
+expression (@code{gnus-uu-mark-by-regexp}).
 
 @item M P r
 @kindex M P r (Summary)
@@ -8093,6 +8102,11 @@ You can also set @code{gnus-post-method} to a list of select methods.
 If that's the case, Gnus will always prompt you for what method to use
 for posting.
 
+Finally, if you want to always post using the same select method as
+you're reading from (which might be convenient if you're reading lots of
+groups from different private servers), you can set this variable to
+@code{current}. 
+
 
 @node Mail and Post
 @section Mail and Post
@@ -8967,17 +8981,17 @@ waiting for reply, and then reads all the replies.  This is controlled
 by the @code{nntp-maximum-request} variable, and is 400 by default.  If
 your network is buggy, you should set this to 1.
 
-@item nntp-connection-timeout
-@vindex nntp-connection-timeout
-If you have lots of foreign @code{nntp} groups that you connect to
-regularly, you're sure to have problems with @sc{nntp} servers not
-responding properly, or being too loaded to reply within reasonable
-time.  This is can lead to awkward problems, which can be helped
-somewhat by setting @code{nntp-connection-timeout}.  This is an integer
-that says how many seconds the @code{nntp} backend should wait for a
-connection before giving up.  If it is @code{nil}, which is the default,
-no timeouts are done.
-
+@c @item nntp-connection-timeout
+@c @vindex nntp-connection-timeout
+@c If you have lots of foreign @code{nntp} groups that you connect to
+@c regularly, you're sure to have problems with @sc{nntp} servers not
+@c responding properly, or being too loaded to reply within reasonable
+@c time.  This is can lead to awkward problems, which can be helped
+@c somewhat by setting @code{nntp-connection-timeout}.  This is an integer
+@c that says how many seconds the @code{nntp} backend should wait for a
+@c connection before giving up.  If it is @code{nil}, which is the default,
+@c no timeouts are done.
+@c 
 @c @item nntp-command-timeout
 @c @vindex nntp-command-timeout
 @c @cindex PPP connections
@@ -15688,7 +15702,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
-* Quassia Gnus::       Two times two is four, or Gnus 5.6.4.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6.5.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -16223,7 +16237,7 @@ Emphasized text can be properly fontisized:
 @node Quassia Gnus
 @subsubsection Quassia Gnus
 
-New features in Gnus 5.6.4:
+New features in Gnus 5.6.5:
 
 @itemize @bullet
 
@@ -17511,6 +17525,12 @@ A command to send a mail to the admin-address group param.
 @item
 A Date scoring type that will match if the article
 is less than a certain number of days old.
+
+@item
+New spec: %~(tab 56) to put point on column 56
+
+@item
+Allow Gnus Agent scoring to use normal score files.
 
 @item
 Solve the halting problem.

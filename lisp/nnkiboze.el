@@ -115,6 +115,8 @@
       (save-excursion
 	(set-buffer nntp-server-buffer)
 	(erase-buffer)
+	(unless (file-exists-p nov-file)
+	  (nnkiboze-request-scan group))
 	(if (not (file-exists-p nov-file))
 	    (nnheader-report 'nnkiboze "Can't select group %s" group)
 	  (nnheader-insert-file-contents nov-file)
@@ -224,7 +226,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 	 (gnus-verbose (min gnus-verbose 3))
  	 gnus-select-group-hook gnus-summary-prepare-hook
 	 gnus-thread-sort-functions gnus-show-threads
-	 gnus-visual gnus-suppress-duplicates)
+	 gnus-visual gnus-suppress-duplicates num-unread)
     (unless info
       (error "No such group: %s" group))
     ;; Load the kiboze newsrc file for this group.
@@ -267,7 +269,9 @@ Finds out what articles are to be part of the nnkiboze groups."
 	  (gnus-group-jump-to-group (caar newsrc))
 	  (gnus-message 3 "nnkiboze: Checking %s..." (caar newsrc))
 	  (setq ginfo (gnus-get-info (gnus-group-group-name))
-		orig-info (gnus-copy-sequence ginfo))
+		orig-info (gnus-copy-sequence ginfo)
+		num-unread (car (gnus-gethash (caar newsrc)
+					      gnus-newsrc-hashtb)))
 	  (unwind-protect
 	      (progn
 		;; We set all list of article marks to nil.  Since we operate
@@ -305,10 +309,13 @@ Finds out what articles are to be part of the nnkiboze groups."
 		       gnus-newsgroup-name))
 		    (setq gnus-newsgroup-scored (cdr gnus-newsgroup-scored)))
 		  ;; That's it.  We exit this group.
-		  (gnus-summary-exit-no-update)))
+		  (when (eq major-mode 'gnus-summary-mode)
+		    (kill-buffer (current-buffer)))))
 	    ;; Restore the proper info.
 	    (when ginfo
-	      (setcdr ginfo (cdr orig-info)))))
+	      (setcdr ginfo (cdr orig-info)))
+	    (setcar (gnus-gethash (caar newsrc) gnus-newsrc-hashtb)
+		    num-unread)))
 	(setcdr (car newsrc) (car active))
 	(gnus-message 3 "nnkiboze: Checking %s...done" (caar newsrc))
 	(setq newsrc (cdr newsrc))))
@@ -316,8 +323,11 @@ Finds out what articles are to be part of the nnkiboze groups."
     (nnheader-temp-write newsrc-file
       (insert "(setq nnkiboze-newsrc '")
       (gnus-prin1 nnkiboze-newsrc)
-      (insert ")\n"))
-    t))
+      (insert ")\n")))
+  (save-excursion
+    (set-buffer gnus-group-buffer)
+    (gnus-group-list-groups))
+  t)
 
 (defun nnkiboze-enter-nov (buffer header group)
   (save-excursion
@@ -342,7 +352,7 @@ Finds out what articles are to be part of the nnkiboze groups."
       ;; The first Xref has to be the group this article
       ;; really came for - this is the article nnkiboze
       ;; will request when it is asked for the article.
-      (insert group ":"
+      (insert " " group ":"
 	      (int-to-string (mail-header-number header)) " ")
       (while (re-search-forward " [^ ]+:[0-9]+" nil t)
 	(goto-char (1+ (match-beginning 0)))

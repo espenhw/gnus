@@ -773,8 +773,11 @@ Defaults to `text-mode-abbrev-table'.")
       (,(concat "^\\(X-[A-Za-z0-9-]+\\|In-Reply-To\\):" content)
        (1 'message-header-name-face)
        (2 'message-header-name-face))
-      (,(concat "^\\(" (regexp-quote mail-header-separator) "\\)$")
-       1 'message-separator-face)
+      ,@(if (and mail-header-separator
+		 (not (equal mail-header-separator "")))
+	    `((,(concat "^\\(" (regexp-quote mail-header-separator) "\\)$")
+	       1 'message-separator-face))
+	  nil)
       (,(concat "^[ \t]*"
 		"\\([" cite-prefix "]+[" cite-suffix "]*\\)?"
 		"[:>|}].*")
@@ -3404,7 +3407,7 @@ responses here are directed to other newsgroups."))
 	(unless (string-equal
 		 (downcase
 		  (or sender (cadr (mail-extract-address-components from))))
-		 (downcase (message-make-address)))
+		 (downcase (message-make-sender)))
 	  (error "This article is not yours"))
 	;; Make control message.
 	(setq buf (set-buffer (get-buffer-create " *message cancel*")))
@@ -3435,9 +3438,10 @@ header line with the old Message-ID."
   (let ((cur (current-buffer)))
     ;; Check whether the user owns the article that is to be superseded.
     (unless (string-equal
-	     (downcase (cadr (mail-extract-address-components
-			      (message-fetch-field "from"))))
-	     (downcase (message-make-address)))
+	     (downcase (or (message-fetch-field "sender")
+			   (cadr (mail-extract-address-components
+				  (message-fetch-field "from")))))
+	     (downcase (message-make-sender)))
       (error "This article is not yours"))
     ;; Get a normal message buffer.
     (message-pop-to-buffer (message-buffer-name "supersede"))
@@ -3721,7 +3725,8 @@ Do a `tab-to-tab-stop' if not in those headers."
 
 (defvar gnus-active-hashtb)
 (defun message-expand-group ()
-  "Expand the group name under point."  (let* ((b (save-excursion
+  "Expand the group name under point."
+  (let* ((b (save-excursion
 	      (save-restriction
 		(narrow-to-region
 		 (save-excursion
@@ -3731,7 +3736,8 @@ Do a `tab-to-tab-stop' if not in those headers."
 		 (point))
 		(skip-chars-backward "^, \t\n") (point))))
 	 (completion-ignore-case t)
-	 (string (buffer-substring b (point)))
+	 (string (buffer-substring b (progn (skip-chars-forward "^,\t\n ")
+					    (point))))
 	 (hashtb (and (boundp 'gnus-active-hashtb) gnus-active-hashtb))
 	 (completions (all-completions string hashtb))
 	 (cur (current-buffer))

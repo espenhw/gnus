@@ -242,7 +242,7 @@
   (nnmail-activate 'nnbabyl)
   (unless (assoc group nnbabyl-group-alist)
     (push (list group (cons 1 0))
-				    nnbabyl-group-alist)
+	  nnbabyl-group-alist)
     (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file))
   t)
 

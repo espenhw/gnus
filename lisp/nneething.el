@@ -1,4 +1,4 @@
-;;; nneething.el --- random file access for Gnus
+;;; nneething.el --- arbitrary file access for Gnus
 ;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>

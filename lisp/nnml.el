@@ -271,6 +271,11 @@ all.  This may very well take some time.")
 	article rest mod-time number)
     (nnmail-activate 'nnml)
 
+    (setq active-articles (sort active-articles '<))
+    ;; Articles not listed in active-articles are already gone,
+    ;; so don't try to expire them.
+    (setq articles (gnus-sorted-intersection articles active-articles))
+
     (while (and articles is-old)
       (when (setq article (nnml-article-to-file (setq number (pop articles))))
 	(when (setq mod-time (nth 5 (file-attributes article)))

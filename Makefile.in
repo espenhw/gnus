@@ -1,16 +1,17 @@
+lispdir = @lispdir@
 srcdir = @srcdir@
 
 @SET_MAKE@
-EMACS = emacs
+EMACS = @EMACS@
 XEMACS = xemacs
 
 all: lick info
 
 lick:
-	cd lisp && $(MAKE) EMACS=$(EMACS) all
+	cd lisp && $(MAKE) EMACS=$(EMACS) lispdir=$(lispdir) all
 
 install:
-	cd lisp && $(MAKE) EMACS=$(EMACS) install
+	cd lisp && $(MAKE) EMACS=$(EMACS) lispdir=$(lispdir) install
 	cd texi && $(MAKE) EMACS=$(EMACS) install
 
 # Rule for Lars and nobody else.

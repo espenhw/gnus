@@ -1,3 +1,10 @@
+Fri Apr 24 16:00:40 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Unread Articles): Typo.
+	(Summary Buffer Lines): Fix.
+	(Foreign Groups): Addition.
+	(Posting Server): Addition.
+
 Sat Mar 28 08:57:46 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Example Methods): Addition.

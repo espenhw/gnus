@@ -25,7 +25,7 @@
 
 ;; This package allows arbitrary undoing in Gnus buffers.  As all the
 ;; Gnus buffers aren't very text-oriented (what is in the buffers is
-;; just some random representation of the actual data), normal Emacs
+;; just some arbitrary representation of the actual data), normal Emacs
 ;; undoing doesn't work at all for Gnus.
 ;;
 ;; This package works by letting Gnus register functions for reversing

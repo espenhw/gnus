@@ -1,3 +1,56 @@
+Fri Apr 24 21:32:14 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.5 is released.
+
+Fri Apr 24 21:19:21 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-msg.el (gnus-post-method): Doc fix.
+	(gnus-post-method): Reversed semantics.
+
+1998-04-01  Jan Vroonhof  <vroonhof@math.ethz.ch>
+
+	* gnus-msg.el (gnus-post-method): Customized. Added 'native
+	option. In the function, added support for new value.
+
+Fri Apr 24 20:04:15 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmbox.el (nnmbox-request-create-group): New function.
+
+Sun Apr 12 07:55:16 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-agent.el (gnus-agent-save-group-info): Only do those that
+	are covered.
+
+Tue Apr  7 11:26:31 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-authinfo-file): Doc fix.
+
+1998-03-31  Ken Raeburn  <raeburn@cygnus.com>
+
+	* nnml.el (nnml-request-expire-articles): Sort active-articles,
+	then only expire the intersection of that set with the requested
+	articles.
+
+Wed Apr  1 16:01:44 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-supersede): Check Sender.
+	(message-cancel-news): Fix Sender check.
+
+Sun Mar 29 11:54:33 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnkiboze.el (nnkiboze-generate-group): Would mess up newsrs
+	hashtb. 
+	(nnkiboze-enter-nov): Created bogus Xrefs headers.
+
+	* gnus-agent.el (gnus-agent-save-group-info): New function.
+
+	* gnus-start.el (gnus-get-unread-articles): Use it.
+
+	* message.el (message-expand-group): Allow completion from in the
+	middle of strings.
+	(message-font-lock-keywords): Work when mail-header-separator is
+	"". 
+
 Sun Mar 29 09:56:00 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.4 is released.
