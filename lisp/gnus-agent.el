@@ -756,7 +756,10 @@ article's mark is toggled."
   (let ((gnus-command-method (gnus-find-method-for-group gnus-newsgroup-name)))
     (when (set (make-local-variable 'gnus-newsgroup-agentized) (gnus-agent-method-p gnus-command-method))
       (let* ((alist (gnus-agent-load-alist gnus-newsgroup-name))
-             (headers gnus-newsgroup-headers)
+             (headers (sort
+		       gnus-newsgroup-headers
+		       (lambda (a b)
+			 (< (mail-header-number a) (mail-header-number b)))))
              (undownloaded (list nil))
              (tail-undownloaded undownloaded)
              (unfetched (list nil))
