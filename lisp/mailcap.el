@@ -1,5 +1,5 @@
 ;;; mailcap.el --- MIME media types configuration
-;; Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 
 ;; Author: William M. Perry <wmperry@aventail.com>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -87,6 +87,9 @@
      ("emacs-lisp"
       (viewer . mailcap-maybe-eval)
       (type   . "application/emacs-lisp"))
+     ("x-emacs-lisp"
+      (viewer . mailcap-maybe-eval)
+      (type   . "application/x-emacs-lisp"))
      ("x-tar"
       (viewer . mailcap-save-binary-file)
       (non-viewer . t)

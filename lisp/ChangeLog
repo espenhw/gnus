@@ -9,6 +9,10 @@
 	* message.el (message-send-mail): Be talkative.
 
 	* mm-decode.el (mm-inlined-types): Add application/x-emacs-lisp.
+	(mm-automatic-display): Ditto.
+	
+	* mailcap.el (mailcap-mime-data): Ditto.
+	From: Reiner Steib <4uce.02.r.steib@gmx.net>
 
 2002-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
