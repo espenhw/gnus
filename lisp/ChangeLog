@@ -1,3 +1,7 @@
+1999-12-02 00:27:46  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-shorten-1): Use list.
+
 1999-12-01 21:59:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-msg.el (gnus-configure-posting-styles): Ignore nil

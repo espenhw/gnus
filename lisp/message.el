@@ -3205,8 +3205,8 @@ Headers already prepared in the buffer are not modified."
 
 (defun message-shorten-1 (list cut surplus)
   ;; Cut SURPLUS elements out of LIST, beginning with CUTth one.
-  (setcdr (nthcdr (- cut 2) refs)
-	  (nthcdr (+ (- cut 2) surplus 1) refs)))
+  (setcdr (nthcdr (- cut 2) list)
+	  (nthcdr (+ (- cut 2) surplus 1) list)))
 
 (defun message-shorten-references (header references)
   "Trim REFERENCES to be less than 31 Message-ID long, and fold them.
