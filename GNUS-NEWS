@@ -9,13 +9,19 @@ For older news, see Gnus info node "New Features".
 
 * Changes in No Gnus
 
-./gnus-news.texi:23: Cross reference to nonexistent node `RSS' (perhaps incorrect sectioning?).
-This file contains a list of news features Gnus.  It is supposed to be
-included in `gnus.texi'.  `GNUS-NEWS' is automatically generated from this
-file (see `gnus-news.el').
+** The nntp back end store article marks in `~/News/marks'.  The
+directory can be changed using the (customizable) variable
+`nntp-marks-directory', and marks can be disabled using the (backend)
+variable `nntp-marks-is-evil'.  The advantage of this is that you can
+copy `~/News/marks' (using rsync, scp or whatever) to another Gnus
+installation, and it will realize what articles you have read and
+marked.  The data in `~/News/marks' has priority over the same data
+in `~/.newsrc.eld'.  This means that if you downgrade to, say, Gnus
+5.10 and read mail and later come back to this Gnus version, your
+marks will be stale.  You can remove the `~/News/marks' content (even
+selectively) to remedy this.
 
 ** You can import and export your RSS subscriptions from OPML files.
-*Note RSS::.
 
 ** The option `mm-fill-flowed' can be used to disable treatment of
 format=flowed messages.  Also, flowed text is disabled when sending
