@@ -1,3 +1,13 @@
+Mon Oct 13 00:08:06 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Agent Commands): Addition.
+
+Sun Oct 12 16:50:23 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Article Washing): Addition.
+	(Group Highlighting): New.
+	(Canceling and Superseding): Addition.
+
 Wed Oct  1 18:37:55 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Startup Files): Addition.

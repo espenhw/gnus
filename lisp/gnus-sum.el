@@ -1206,6 +1206,7 @@ increase the score of each group you read."
     "I" gnus-summary-increase-score
     "L" gnus-summary-lower-score
     "\M-i" gnus-symbolic-argument
+    "h" gnus-summary-select-article-buffer
     
     "V" gnus-summary-score-map
     "X" gnus-uu-extract-map
@@ -1343,7 +1344,8 @@ increase the score of each group you read."
     "t" gnus-article-hide-headers
     "v" gnus-summary-verbose-headers
     "m" gnus-summary-toggle-mime
-    "h" gnus-article-treat-html)
+    "h" gnus-article-treat-html
+    "d" gnus-article-treat-dumbquotes)
 
   (gnus-define-keys (gnus-summary-wash-hide-map "W" gnus-summary-wash-map)
     "a" gnus-article-hide
@@ -1579,6 +1581,7 @@ increase the score of each group you read."
 	 ["All of the above" gnus-article-strip-blank-lines t]
 	 ["Leading space" gnus-article-strip-leading-space t])
 	["Overstrike" gnus-article-treat-overstrike t]
+	["Dumb quotes" gnus-article-treat-dumbquotes t]
 	["Emphasis" gnus-article-emphasize t]
 	["Word wrap" gnus-article-fill-cited-article t]
 	["CR" gnus-article-remove-cr t]
@@ -1636,6 +1639,7 @@ increase the score of each group you read."
        ("Cache"
 	["Enter article" gnus-cache-enter-article t]
 	["Remove article" gnus-cache-remove-article t])
+       ["Select article buffer" gnus-summary-select-article-buffer t]
        ["Enter digest buffer" gnus-summary-enter-digest-group t]
        ["Isearch article..." gnus-summary-isearch-article t]
        ["Beginning of the article" gnus-summary-beginning-of-article t]
@@ -4897,6 +4901,14 @@ displayed, no centering will be performed."
 	   (gnus-uncompress-range (cdr (assq 'tick marked))))))))
 
 ;; Various summary commands
+
+(defun gnus-summary-select-article-buffer ()
+  "Reconfigure windows to show article buffer."
+  (interactive)
+  (if (not (gnus-buffer-live-p gnus-article-buffer))
+      (error "There is no article buffer for this summary buffer")
+    (gnus-configure-windows 'article)
+    (select-window (get-buffer-window gnus-article-buffer))))
 
 (defun gnus-summary-universal-argument (arg)
   "Perform any operation on all articles that are process/prefixed."

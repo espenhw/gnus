@@ -61,6 +61,7 @@
 (defvar gnus-agent-spam-hashtb nil)
 (defvar gnus-agent-file-name nil)
 (defvar gnus-agent-send-mail-function nil)
+(defvar gnus-agent-article-file-coding-system 'no-conversion)
 
 ;; Dynamic variables
 (defvar gnus-headers)
@@ -303,7 +304,8 @@ agent minor mode in all Gnus buffers."
     (error "No group on the current line"))
   (let ((gnus-command-method (gnus-find-method-for-group group)))
     (gnus-agent-with-fetch
-      (gnus-agent-fetch-group-1 group gnus-command-method))))
+      (gnus-agent-fetch-group-1 group gnus-command-method)
+      (gnus-message 5 "Fetching %s...done" group))))
 
 (defun gnus-agent-add-group (category arg)
   "Add the current group to an agent category."
@@ -452,7 +454,8 @@ the actual number of articles toggled is returned."
     (let* ((gnus-command-method method)
 	   (file (gnus-agent-lib-file "active")))
       (gnus-make-directory (file-name-directory file))
-      (write-region (point-min) (point-max) file nil 'silent)
+      (let ((coding-system-for-write gnus-agent-article-file-coding-system))
+	(write-region (point-min) (point-max) file nil 'silent))
       (when (file-exists-p (gnus-agent-lib-file "groups"))
 	(delete-file (gnus-agent-lib-file "groups"))))))
 
@@ -466,7 +469,8 @@ the actual number of articles toggled is returned."
 
 (defun gnus-agent-group-path (group)
   "Translate GROUP into a path."
-  (nnheader-replace-chars-in-string group ?. ?/))
+  (nnheader-translate-file-chars
+   (nnheader-replace-chars-in-string group ?. ?/)))
 
 
 
@@ -758,6 +762,14 @@ the actual number of articles toggled is returned."
 (defun gnus-agent-article-name (article group)
   (concat (gnus-agent-directory) (gnus-agent-group-path group) "/"
 	  (if (stringp article) article (string-to-number article))))
+
+;;;###autoload
+(defun gnus-agent-batch-fetch ()
+  "Start Gnus and fetch session."
+  (interactive)
+  (gnus)
+  (gnus-agent-fetch-session)
+  (gnus-group-exit))
 
 (defun gnus-agent-fetch-session ()
   "Fetch all articles and headers that are eligible for fetching."

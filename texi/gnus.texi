@@ -1260,6 +1260,17 @@ Here's an example value for this variable that might look nice if the
 background is dark:
 
 @lisp
+(face-spec-set 'my-group-face-1 '((t (:foreground "Red" :bold t))))
+(face-spec-set 'my-group-face-2 '((t (:foreground "SeaGreen" :bold t))))
+(face-spec-set 'my-group-face-3 '((t (:foreground "SpringGreen" :bold t))))
+(face-spec-set 'my-group-face-4 '((t (:foreground "SteelBlue" :bold t))))
+(face-spec-set 'my-group-face-5 '((t (:foreground "SkyBlue" :bold t))))
+
+(setq gnus-group-highlight
+      '(((> unread 200) . my-group-face-1)
+	((and (< level 3) (zerop unread)) . my-group-face-2)
+	((< level 3) . my-group-face-3)
+	((zerop unread) . my-group-face-4)
 (setq gnus-group-highlight
       `(((> unread 200) . 
          ,(custom-face-lookup "Red" nil nil t nil nil))
@@ -1271,6 +1282,7 @@ background is dark:
          ,(custom-face-lookup "SteelBlue" nil nil t nil nil))
         (t . 
          ,(custom-face-lookup "SkyBlue" nil nil t nil nil))))
+	(t . my-group-face-5)))
 @end lisp
 
 Variables that are dynamically bound when the forms are evaluated
@@ -3642,7 +3654,12 @@ Scroll to the end of the article (@code{gnus-summary-end-of-article}).
 @kindex s (Summary)
 @findex gnus-summary-isearch-article
 Perform an isearch in the article buffer
-(@code{gnus-summary-isearch-article}). 
+(@code{gnus-summary-isearch-article}).
+
+@item h
+@kindex h (Summary)
+@findex gnus-summary-select-article-buffer
+Select the article buffer (@code{gnus-summary-select-article-buffer}).
 
 @end table
 
@@ -3866,11 +3883,16 @@ Well, you can't cancel mail, but you can cancel posts.
 Find the article you wish to cancel (you can only cancel your own
 articles, so don't try any funny stuff).  Then press @kbd{C} or @kbd{S
 c} (@code{gnus-summary-cancel-article}).  Your article will be
-canceled---machines all over the world will be deleting your article. 
+canceled---machines all over the world will be deleting your article.
+This command uses the process/prefix convention (@pxref{Process/Prefix}).
 
 Be aware, however, that not all sites honor cancels, so your article may
 live on here and there, while most sites will delete the article in
 question.
+
+Gnus will use the ``current'' select method when cancelling.  If you
+want to use the standard posting method, use the @samp{a} symbolic
+prefix (@pxref{Symbolic Prefixes}).
 
 If you discover that you have made some mistakes and want to do some
 corrections, you can post a @dfn{superseding} article that will replace
@@ -4358,6 +4380,10 @@ It can be convenient to limit the summary buffer to just show some
 subset of the articles currently in the group.  The effect most limit
 commands have is to remove a few (or many) articles from the summary
 buffer. 
+
+All limiting commands work on subsets of the articles already fetched
+from the servers.  None of these commands query the server for
+additional articles.
 
 @table @kbd
 
@@ -6268,6 +6294,11 @@ Toggle whether to run the article through @sc{mime} before displaying
 @findex gnus-article-treat-overstrike
 Treat overstrike (@code{gnus-article-treat-overstrike}).
 
+@item W d
+@kindex W d (Summary)
+@findex gnus-article-treat-dumbquotes
+Treat M******** sm*rtq**t*s (@code{gnus-article-treat-dumbquotes}).
+
 @item W w
 @kindex W w (Summary)
 @findex gnus-article-fill-cited-article
@@ -7674,6 +7705,8 @@ Remove the @code{Date} header if the article is less than three days
 old.
 @item long-to
 Remove the @code{To} header if it is very long.
+@item many-to
+Remove all @code{To} headers if there are more than one.
 @end table
 
 To include the four first elements, you could say something like;
@@ -7877,6 +7910,10 @@ This is the delimiter mentioned above.  By default, it is @samp{^L}
 
 @node Composing Messages
 @chapter Composing Messages
+@cindex composing messages
+@cindex messages
+@cindex mail
+@cindex sending mail
 @cindex reply
 @cindex followup
 @cindex post
@@ -8821,25 +8858,25 @@ that says how many seconds the @code{nntp} backend should wait for a
 connection before giving up.  If it is @code{nil}, which is the default,
 no timeouts are done.
 
-@item nntp-command-timeout
-@vindex nntp-command-timeout
-@cindex PPP connections
-@cindex dynamic IP addresses
-If you're running Gnus on a machine that has a dynamically assigned
-address, Gnus may become confused.  If the address of your machine
-changes after connecting to the @sc{nntp} server, Gnus will simply sit
-waiting forever for replies from the server.  To help with this
-unfortunate problem, you can set this command to a number.  Gnus will
-then, if it sits waiting for a reply from the server longer than that
-number of seconds, shut down the connection, start a new one, and resend
-the command.  This should hopefully be transparent to the user.  A
-likely number is 30 seconds.
-
-@item nntp-retry-on-break
-@vindex nntp-retry-on-break
-If this variable is non-@code{nil}, you can also @kbd{C-g} if Gnus
-hangs.  This will have much the same effect as the command timeout
-described above.
+@c @item nntp-command-timeout
+@c @vindex nntp-command-timeout
+@c @cindex PPP connections
+@c @cindex dynamic IP addresses
+@c If you're running Gnus on a machine that has a dynamically assigned
+@c address, Gnus may become confused.  If the address of your machine
+@c changes after connecting to the @sc{nntp} server, Gnus will simply sit
+@c waiting forever for replies from the server.  To help with this
+@c unfortunate problem, you can set this command to a number.  Gnus will
+@c then, if it sits waiting for a reply from the server longer than that
+@c number of seconds, shut down the connection, start a new one, and resend
+@c the command.  This should hopefully be transparent to the user.  A
+@c likely number is 30 seconds.
+@c 
+@c @item nntp-retry-on-break
+@c @vindex nntp-retry-on-break
+@c If this variable is non-@code{nil}, you can also @kbd{C-g} if Gnus
+@c hangs.  This will have much the same effect as the command timeout
+@c described above.
 
 @item nntp-server-hook
 @vindex nntp-server-hook
@@ -10730,7 +10767,8 @@ Virtual server variables:
 @item nnweb-type
 @vindex nnweb-type
 What search engine type is being used.  The currently supported types
-are @code{dejanews}, @code{altavista} and @code{reference}.
+are @code{dejanews}, @code{dejanewsold}, @code{altavista} and
+@code{reference}.
 
 @item nnweb-search
 @vindex nnweb-search
@@ -11298,6 +11336,15 @@ toggles the plugged/unplugged state of the Gnus Agent.
 * Summary Agent Commands::
 * Server Agent Commands::
 @end menu
+
+You can run a complete batch fetch from the command line with the
+following incantation:
+
+@cindex gnus-agent-batch-fetch
+@example
+$ emacs -batch -l ~/.gnus.el -f gnus-agent-batch-fetch
+@end example
+
 
 
 @node Group Agent Commands
@@ -14362,6 +14409,11 @@ valid places could be @code{article}, @code{summary}, or
 @samp{*scratch*} for all I care.  Just make sure that you've made the
 buffer visible using the standard Gnus window configuration
 routines---@pxref{Windows Configuration}.
+
+@item gnus-picons-group-excluded-groups
+@vindex gnus-picons-group-excluded-groups
+Groups that are matched by this regexp won't have their group icons
+displayed. 
 
 @end table
 

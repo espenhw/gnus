@@ -30,8 +30,8 @@
 
 (require 'cl)
 (require 'bytecomp)
-(push "." load-path)
 (push "~/lisp/custom" load-path)
+(push "." load-path)
 (require 'lpath)
 
 (defalias 'device-sound-enabled-p 'ignore)
@@ -67,7 +67,7 @@ Modify to suit your needs."))
 	file elc)
     (condition-case ()
 	(require 'w3-forms)
-      (error (setq files (delete "nnweb.el" files))))
+      (error (setq files (delete "nnweb.el" (delete "nnlistserv.el" files)))))
     (while (setq file (pop files))
       (when (or (and (not xemacs)
 		     (not (member file '("gnus-xmas.el" "gnus-picon.el"

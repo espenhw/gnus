@@ -2077,6 +2077,7 @@ SCORE is the score to add."
       (set-buffer gnus-summary-buffer)
       (gnus-score-load-file
        (or gnus-newsgroup-adaptive-score-file
+	   (gnus-home-score-file gnus-newsgroup-name t)
 	   (gnus-score-file-name
 	    gnus-newsgroup-name gnus-adaptive-file-suffix))))
     ;; Perform ordinary line scoring.

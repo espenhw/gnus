@@ -48,11 +48,17 @@
 (defvoo nnweb-type 'dejanews
   "What search engine type is being used.")
 
-(defvar nnweb-type-definition
+(defvoo nnweb-type-definition
   '((dejanews
      (article . nnweb-dejanews-wash-article)
      (map . nnweb-dejanews-create-mapping)
      (search . nnweb-dejanews-search)
+     (address . "http://xp9.dejanews.com/dnquery.xp")
+     (identifier . nnweb-dejanews-identity))
+    (dejanewsold
+     (article . nnweb-dejanews-wash-article)
+     (map . nnweb-dejanews-create-mapping)
+     (search . nnweb-dejanewsold-search)
      (address . "http://xp9.dejanews.com/dnquery.xp")
      (identifier . nnweb-dejanews-identity))
     (reference
@@ -453,6 +459,20 @@
    `(("query" . ,search)
      ("defaultOp" . "AND")
      ("svcclass" . "dncurrent")
+     ("maxhits" . "100")
+     ("format" . "verbose")
+     ("threaded" . "0")
+     ("showsort" . "score")
+     ("agesign" . "1")
+     ("ageweight" . "1")))
+  t)
+
+(defun nnweb-dejanewsold-search (search)
+  (nnweb-fetch-form
+   (nnweb-definition 'address)
+   `(("query" . ,search)
+     ("defaultOp" . "AND")
+     ("svcclass" . "dnold")
      ("maxhits" . "100")
      ("format" . "verbose")
      ("threaded" . "0")

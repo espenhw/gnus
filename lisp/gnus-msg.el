@@ -287,14 +287,17 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
     (push-mark)
     (goto-char beg)))
 
-(defun gnus-summary-cancel-article (n)
-  "Cancel an article you posted."
-  (interactive "P")
+(defun gnus-summary-cancel-article (&optional n symp)
+  "Cancel an article you posted.
+Uses the process-prefix convention.  If given the symbolic
+prefix `a', cancel using the standard posting method; if not
+post using the current select method."
+  (interactive (gnus-interactive "P\ny"))
   (gnus-set-global-variables)
   (let ((articles (gnus-summary-work-articles n))
 	(message-post-method
 	 `(lambda (arg)
-	    (gnus-post-method nil ,gnus-newsgroup-name)))
+	    (gnus-post-method (not (eq symp 'a)) ,gnus-newsgroup-name)))
 	article)
     (while (setq article (pop articles))
       (when (gnus-summary-select-article t nil nil article)
@@ -983,9 +986,8 @@ this is a reply."
 	 (group (or group gnus-newsgroup-name ""))
 	 (gcc-self-val
 	  (and gnus-newsgroup-name
-	       (setq gcc-self-val
-		     (gnus-group-find-parameter
-		      gnus-newsgroup-name 'gcc-self))))
+	       (gnus-group-find-parameter
+		gnus-newsgroup-name 'gcc-self)))
 	 result 
 	 (groups
 	  (cond

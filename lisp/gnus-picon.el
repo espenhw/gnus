@@ -84,6 +84,11 @@ Some people may want to add \"unknown\" to this list."
   :type 'boolean
   :group 'picons)
 
+(defcustom gnus-picons-group-excluded-groups nil
+  "*If this regexp matches the group name, group picons will be disabled."
+  :type 'regexp
+  :group 'picons)
+
 (defcustom gnus-picons-x-face-file-name
   (format "/tmp/picon-xface.%s.xbm" (user-login-name))
   "*The name of the file in which to store the converted X-face header."
@@ -139,6 +144,10 @@ please tell me so that we can list it."
 		 (string))
   :group 'picons)
 
+(defface gnus-picons-xbm-face '((t (:foreground "black" :background "white")))
+  "Face to show X face"
+  :group 'picons)
+
 ;;; Internal variables:
 
 (defvar gnus-picons-processes-alist nil
@@ -155,8 +164,7 @@ List of pairs (KEY . NAME) where KEY is (USER HOST DBS) and NAME is an URL.")
 (defvar gnus-article-annotations nil
   "List of annotations added/removed when selecting an article")
 (defvar gnus-x-face-annotations nil
-  "List of annotations added/removed when selecting an article with an
-X-Face.")
+  "List of annotations added/removed when selecting an article with an X-Face.")
 
 (defvar gnus-picons-jobs-alist nil
   "List of jobs that still need be done.
@@ -285,7 +293,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
       (process-send-eof process))))
 
 (defun gnus-article-display-picons ()
-  "Display faces for an author and his/her domain in gnus-picons-display-where."
+  "Display faces for an author and her domain in gnus-picons-display-where."
   (interactive)
   (let (from at-idx)
     (when (and (featurep 'xpm)
@@ -335,16 +343,20 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
   "Display icons for the group in the gnus-picons-display-where buffer."
   (interactive)
   (when (and (featurep 'xpm)
-	     (or (not (fboundp 'device-type)) (equal (device-type) 'x)))
+	     (or (not (fboundp 'device-type)) (equal (device-type) 'x))
+	     (or (null gnus-picons-group-excluded-groups)
+		 (not (string-match gnus-picons-group-excluded-groups
+				    gnus-newsgroup-name))))
     (save-excursion
       (gnus-picons-prepare-for-annotations 'gnus-group-annotations)
       (if (null gnus-picons-piconsearch-url)
 	  (setq gnus-group-annotations
 		(gnus-picons-display-pairs
-		 (gnus-picons-lookup-pairs (reverse (message-tokenize-header
-						     (gnus-group-real-name gnus-newsgroup-name) 
-						     "."))
-					   gnus-picons-news-directories)
+		 (gnus-picons-lookup-pairs
+		  (reverse (message-tokenize-header
+			    (gnus-group-real-name gnus-newsgroup-name) 
+			    "."))
+		  gnus-picons-news-directories)
 		 t "."))
 	(push (list 'gnus-group-annotations 'search nil
 		    (message-tokenize-header 
@@ -418,27 +430,20 @@ none, and whose CDR is the corresponding element of DOMAINS."
   "Display picons in list PAIRS."
   (let ((domain-p (and gnus-picons-display-as-address dot-p))
 	pair picons)
-    (if (and bar-p domain-p right-p)
-	(setq picons (gnus-picons-display-glyph
-		      (gnus-picons-try-face gnus-xmas-glyph-directory
-					    "bar.")
-		      nil right-p)))
-    (while pairs
-      (setq pair (pop pairs)
-	    picons (nconc picons
-			  (gnus-picons-display-picon-or-name (car pair)
-							     (cadr pair)
-							     right-p)
+    (when (and bar-p domain-p right-p)
+      (setq picons (gnus-picons-display-glyph
+		    (let ((gnus-picons-file-suffixes '("xbm")))
+		      (gnus-picons-try-face
+		       gnus-xmas-glyph-directory "bar."))
+		    nil right-p)))
+    (while (setq pair (pop pairs))
+      (setq picons (nconc picons
+			  (gnus-picons-display-picon-or-name
+			   (car pair) (cadr pair) right-p)
 			  (if (and domain-p pairs)
 			      (list (gnus-picons-make-annotation
 				     (vector 'string :data dot-p)
 				     nil 'text nil nil nil right-p))))))
-    (if (and bar-p domain-p (not right-p))
-	(setq picons (nconc picons
-			    (gnus-picons-display-glyph
-			     (gnus-picons-try-face gnus-xmas-glyph-directory
-						   "bar.")
-			     nil right-p))))
     picons))
 
 (defun gnus-picons-try-face (dir &optional filebase)
@@ -447,21 +452,24 @@ none, and whose CDR is the corresponding element of DOMAINS."
 	 (key (concat dir filebase))
 	 (glyph (cdr (assoc key gnus-picons-glyph-alist)))
 	 (suffixes gnus-picons-file-suffixes)
-	 f)
-    (while (and suffixes (null glyph))
-      (when (file-exists-p (setq f (expand-file-name (concat filebase
-								 (pop suffixes))
-							 dir)))
-	(setq glyph (make-glyph f))
+	 f suf)
+    (while (setq suf (pop suffixes))
+      (when (file-exists-p (setq f (expand-file-name
+				    (concat filebase suf)
+				    dir)))
+	(setq suffixes nil
+	      glyph (make-glyph f))
+	(when (equal suf "xbm")
+	  (set-glyph-face glyph 'gnus-picons-xbm-face))
 	(push (cons key glyph) gnus-picons-glyph-alist)))
     glyph))
 
 (defun gnus-picons-display-glyph (glyph &optional part rightp)
-  (let ((new (gnus-picons-make-annotation glyph (point)
-					  'text nil nil nil rightp)))
+  (let ((new (gnus-picons-make-annotation
+	      glyph (point) 'text nil nil nil rightp)))
     (when (and part gnus-picons-display-as-address)
-      (set-annotation-data new (cons new
-				     (make-glyph (vector 'string :data part))))
+      (set-annotation-data
+       new (cons new (make-glyph (vector 'string :data part))))
       (set-annotation-action new 'gnus-picons-action-toggle))
     (nconc
      (list new)
@@ -721,8 +729,10 @@ none, and whose CDR is the corresponding element of DOMAINS."
 							 (pop job)))
 		  ((eq 'bar tag)
 		   (gnus-picons-network-display-internal
-		    sym-ann (gnus-picons-try-face gnus-xmas-glyph-directory
-						  "bar.")
+		    sym-ann
+		    (let ((gnus-picons-file-suffixes '("xbm")))
+		      (gnus-picons-try-face
+		       gnus-xmas-glyph-directory "bar."))
 		    nil (pop job)))
 		  ((eq 'search tag);; (SYM-ANN 'search USER ADDRS DBS RIGHT-P)
 		   (gnus-picons-network-search

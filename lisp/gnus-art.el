@@ -129,13 +129,14 @@ this list."
 (defcustom gnus-boring-article-headers '(empty followup-to reply-to)
   "Headers that are only to be displayed if they have interesting data.
 Possible values in this list are `empty', `newsgroups', `followup-to',
-`reply-to', and `date'."
+`reply-to', `date', `long-to', and `many-to'."
   :type '(set (const :tag "Headers with no content." empty)
 	      (const :tag "Newsgroups with only one group." newsgroups)
 	      (const :tag "Followup-to identical to newsgroups." followup-to)
 	      (const :tag "Reply-to identical to from." reply-to)
 	      (const :tag "Date less than four days old." date)
-	      (const :tag "Very long To header." long-to))
+	      (const :tag "Very long To header." long-to)
+	      (const :tag "Multiple To headers." many-to))
   :group 'gnus-article-hiding)
 
 (defcustom gnus-signature-separator '("^-- $" "^-- *$")
@@ -618,6 +619,7 @@ Initialized from `text-mode-syntax-table.")
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
   (interactive (gnus-article-hidden-arg))
+  (current-buffer)
   (if (gnus-article-check-hidden-text 'headers arg)
       ;; Show boring headers as well.
       (gnus-article-show-hidden-text 'boring-headers)
@@ -747,7 +749,21 @@ always hide."
 	     ((eq elem 'long-to)
 	      (let ((to (message-fetch-field "to")))
 		(when (> (length to) 1024)
-		  (gnus-article-hide-header "to")))))))))))
+		  (gnus-article-hide-header "to"))))
+	     ((eq elem 'many-to)
+	      (let ((to-count 0))
+		(goto-char (point-min))
+		(while (re-search-forward "^to:" nil t)
+		  (setq to-count (1+ to-count)))
+		(when (> to-count 1)
+		  (while (> to-count 0)
+		    (goto-char (point-min))
+		    (save-restriction
+		      (re-search-forward "^to:" nil nil to-count)
+		      (forward-line -1)
+		      (narrow-to-region (point) (point-max))
+		      (gnus-article-hide-header "to"))
+		    (setq to-count (1- to-count)))))))))))))
 
 (defun gnus-article-hide-header (header)
   (save-excursion
@@ -762,7 +778,29 @@ always hide."
 	   (point-max)))
        'boring-headers))))
 
-;; Written by Per Abrahamsen <amanda@iesd.auc.dk>.
+(defun article-treat-dumbquotes ()
+  "Translate M******** sm*rtq**t*s into proper text."
+  (interactive)
+  (article-translate-characters "\221\222\223\223" "`'\"\""))
+
+(defun article-translate-characters (from to)
+  "Translate all characters in the body of the article according to FROM and TO.
+FROM is a string of characters to translate from; to is a string of
+characters to translate to."
+  (save-excursion
+    (goto-char (point-min))
+    (when (search-forward "\n\n" nil t)
+      (let ((buffer-read-only nil)
+	    (x (make-string 225 ?x))
+	    (i -1))
+	(while (< (incf i) (length x))
+	  (aset x i i))
+	(setq i 0)
+	(while (< i (length from))
+	  (aset x (aref from i) (aref to i))
+	  (incf i))
+	(translate-region (point) (point-max) x)))))
+
 (defun article-treat-overstrike ()
   "Translate overstrikes into bold text."
   (interactive)
@@ -1424,7 +1462,9 @@ This format is defined by the `gnus-article-time-format' variable."
     (let ((gnus-visible-headers
 	   (or gnus-saved-headers gnus-visible-headers))
 	  (gnus-article-buffer save-buffer))
-      (gnus-article-hide-headers 1 t)))
+      (save-excursion
+	(set-buffer save-buffer)
+	(article-hide-headers 1 t))))
   (save-window-excursion
     (if (not gnus-default-article-saver)
 	(error "No default saver is defined")
@@ -1747,6 +1787,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-date-user
      article-date-lapsed
      article-emphasize
+     article-treat-dumbquotes
      (article-show-all . gnus-article-show-all-headers))))
 
 ;;;
@@ -2572,7 +2613,7 @@ groups."
     ("\\bnews:\\([^>\n\t ]*@[^>\n\t ]*\\)" 0 t gnus-button-message-id 1)
     ("\\(\\b<\\(url: ?\\)?news:\\(//\\)?\\([^>\n\t ]*\\)>\\)" 1 t
      gnus-button-fetch-group 4)
-    ("\\bnews:\\(//\\)?\\([^>\n\t ]+\\)" 0 t gnus-button-fetch-group 2)
+    ("\\bnews:\\(//\\)?\\([^'\">\n\t ]+\\)" 0 t gnus-button-fetch-group 2)
     ("\\bin\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2
      t gnus-button-message-id 3)
     ("\\(<URL: *\\)mailto: *\\([^> \n\t]+\\)>" 0 t gnus-url-mailto 2)

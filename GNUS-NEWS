@@ -53,3 +53,13 @@ limit.
 
 *** \\1-expressions are now valid in `nnmail-split-methods'.
 
+*** The `custom-face-lookup' function has been removed.  
+If you used this function in your initialization files, you must
+rewrite them to use `face-spec-set' instead.
+
+*** Cancelling now uses the current select method.  Symbolic prefix
+`a' forces normal posting method.
+
+*** New command to translate M******** sm*rtq**t*s into proper text
+-- `W d'.
+

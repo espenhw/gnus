@@ -746,3 +746,17 @@ home-brewed stuff for better reliability.
 * add a way to select which NoCeM type to apply -- spam, troll, etc.
 
 * nndraft-request-group should tally autosave files.
+
+* implement nntp-retry-on-break and nntp-command-timeout.
+
+* gnus-article-highlight-limit that says when not to highlight (long)
+articles.
+
+* (nnoo-set SERVER VARIABLE VALUE)
+
+* nn*-spool-methods
+
+* interrupitng agent fetching of articles should save articles.
+
+* command to open a digest group, and copy all the articles there to the
+current group.

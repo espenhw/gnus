@@ -2714,7 +2714,10 @@ of groups killed."
 		  gnus-list-of-killed-groups)
 	    (setcdr (cdr entry) (cdddr entry)))
 	   ((member group gnus-zombie-list)
-	    (setq gnus-zombie-list (delete group gnus-zombie-list)))))
+	    (setq gnus-zombie-list (delete group gnus-zombie-list))))
+	  ;; There may be more than one instance displayed.
+	  (while (gnus-group-goto-group group)
+	    (gnus-delete-line)))
 	(gnus-make-hashtable-from-newsrc-alist)))
 
     (gnus-group-position-point)

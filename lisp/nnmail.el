@@ -1194,7 +1194,6 @@ Return the number of characters in the body."
 
 ;;; Utility functions
 
-;; Written by byer@mv.us.adobe.com (Scott Byer).
 (defun nnmail-make-complex-temp-name (prefix)
   (let ((newname (make-temp-name prefix))
 	(newprefix prefix))

@@ -1,3 +1,86 @@
+Thu Nov  6 20:43:05 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.13 is released.
+
+Thu Nov  6 20:30:14 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnlistserv.el: New backend.
+
+Thu Nov  6 01:53:51 1997  Stefan Waldherr  <swa@cs.cmu.edu>
+
+	* nnweb.el (nnweb-dejanewsold-search): New function.
+
+Thu Nov  6 01:52:43 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-change-level): Really delete multiple
+	instances. 
+
+Wed Nov  5 14:04:54 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-update-topic-line): Possibly fix nil
+	numbers. 
+
+	* gnus-sum.el (gnus-summary-show-article): New command and
+	keystroke. 
+
+Tue Nov  4 06:29:58 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-score.el (gnus-score-adaptive): Use the home score file.
+
+Sat Oct 25 05:52:22 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-article-save): Hide headers in the right
+	buffer.
+
+	* gnus-picon.el (gnus-picons-xbm-face): New face.
+
+Sat Oct 25 00:39:42 1997  Lars Balker Rasmussen  <lbr@mjolner.dk>
+
+	* gnus-art.el (gnus-article-fill-paragraph): New command and
+	keystroke. 
+
+1997-10-16  Colin Rafferty  <craffert@ml.com>
+
+	* message.el (message-make-fqdn): Made certain that user-mail is
+		  not nil.
+
+Sat Oct 25 00:18:32 1997  David S. Goldberg  <dsg@linus.mitre.org>
+
+	* gnus-art.el (article-hide-boring-headers): Use many-to.
+
+Fri Oct 24 23:48:39 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-picon.el (gnus-picons-display-pairs): Don't add two bars.
+	(gnus-picons-try-face): Set the foreground color on the bar.
+	(gnus-picons-group-exluded-groups): New variable.
+	(gnus-group-display-picons): Use it.
+
+Mon Oct 13 00:01:35 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-agent.el (gnus-agent-group-path): Translate file chars.
+	(gnus-agent-batch-fetch): New command.
+	(gnus-agent-fetch-group): Message.
+
+Sun Oct 12 23:54:55 1997  ISO-2022-JP  <ichikawa@hv.epson.co.jp>
+
+	* gnus-agent.el (gnus-agent-article-file-coding-system): New
+	variable. 
+
+Sun Oct 12 16:46:11 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* dgnushack.el (lpath): Reversed.
+
+	* gnus-msg.el (gnus-summary-cancel-article): Use sym prefix.
+
+	* gnus-art.el (article-translate-characters): New function.
+	(article-treat-dumbquotes): New command and keystroke.
+
+Sun Oct  5 20:09:31 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-button-alist): No ' and " in News:.
+
+	* gnus-msg.el (gnus-inews-insert-archive-gcc): Comp warn.
+
 Sat Oct  4 00:53:55 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.12 is released.
