@@ -4339,7 +4339,8 @@ If no internal viewer is available, use an external viewer."
   (gnus-article-part-wrapper n 'gnus-mime-copy-part))
 
 (defun gnus-article-view-part-as-charset (n)
-  "Copy MIME part N, which is the numerical prefix."
+  "View MIME part N using a specified charset.
+N is the numerical prefix."
   (interactive "p")
   (gnus-article-part-wrapper n 'gnus-mime-view-part-as-charset))
 

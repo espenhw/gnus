@@ -1,3 +1,8 @@
+2003-09-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-article-view-part-as-charset): Doc fix,
+	suggested by Norbert Koch <viteno@xemacs.org>.
+
 2003-09-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-topic.el (gnus-topic-goto-missing-topic): Revert 2003-02-09
