@@ -1,3 +1,9 @@
+2000-07-15  Simon Josefsson  <simon@josefsson.org>
+
+	* gnus.texi (nnimap-authinfo-file):
+	(gnus-invalid-group-regexp): Add.
+	(Mail Source Specifiers): Fix.
+
 2000-07-12 19:37:19  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Article Washing): Add keystroke `t'.
