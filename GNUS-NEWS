@@ -1,5 +1,14 @@
 ** Gnus changes.
 
+*** The Gnus alpha distribution no longer bundles Custom and Widget.
+If your Emacs doesn't come with these libraries, fetch them from
+<URL:http://www.dina.kvl.dk/~abraham/custom/>.  You also then need to
+add the following to the lisp/dgnushack.el file:
+
+     (push "~/lisp/custom" load-path)
+
+Modify to suit your needs.
+
 *** New functionality for using Gnus as an offline newsreader has been
 added.  A plethora of new commands and modes have been added.  See the
 Gnus manual for the full story.

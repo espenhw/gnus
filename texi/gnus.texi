@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.7 Manual
+@settitle Quassia Gnus 0.8 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -309,7 +309,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.7 Manual
+@title Quassia Gnus 0.8 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -345,7 +345,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.7.
+This manual corresponds to Quassia Gnus 0.8.
 
 @end ifinfo
 
@@ -999,6 +999,11 @@ A hook run as the very last thing after starting up Gnus
 @vindex gnus-started-hook
 A hook that is run as the very last thing after starting up Gnus
 successfully.
+
+@item gnus-started-hook
+@vindex gnus-started-hook
+A hook that is run after reading the @file{.newsrc} file(s), but before
+generating the group buffer.
 
 @item gnus-check-bogus-newsgroups
 @vindex gnus-check-bogus-newsgroups

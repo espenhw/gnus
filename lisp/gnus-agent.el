@@ -243,11 +243,21 @@ and `message-send-mail-function' variables, and install the Gnus
 agent minor mode in all Gnus buffers."
   (interactive)
   (add-hook 'gnus-before-startup-hook 'gnus-open-agent)
+  (add-hook 'gnus-setup-news-hook 'gnus-agent-queue-setup)
   (unless gnus-agent-send-mail-function 
     (setq gnus-agent-send-mail-function message-send-mail-function
 	  message-send-mail-function 'gnus-agent-send-mail))
   (unless gnus-agent-covered-methods
     (setq gnus-agent-covered-methods (list gnus-select-method))))
+
+(defun gnus-agent-queue-setup ()
+  "Make sure the queue group exists."
+  (unless (gnus-gethash "nndraft:queue" gnus-newsrc-hashtb)
+    (gnus-request-create-group "queue" '(nndraft ""))
+    (let ((gnus-level-default-subscribed 1))
+      (gnus-subscribe-group "nndraft:queue" nil '(nndraft "")))
+    (gnus-group-set-parameter
+     "nndraft:queue" 'gnus-dummy '((gnus-draft-mode)))))
 
 (defun gnus-agent-send-mail ()
   (if gnus-plugged
@@ -256,7 +266,7 @@ agent minor mode in all Gnus buffers."
     (re-search-forward
      (concat "^" (regexp-quote mail-header-separator) "\n"))
     (replace-match "\n")
-    (gnus-request-accept-article "nndraft:drafts")))
+    (gnus-request-accept-article "nndraft:queue")))
 
 ;;;
 ;;; Group mode commands

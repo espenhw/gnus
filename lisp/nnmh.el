@@ -199,13 +199,15 @@
   (let ((dirs (and (file-readable-p dir)
 		   (> (nth 1 (file-attributes (file-chase-links dir))) 2)
 		   (directory-files dir t nil t)))
-	dir)
+	rdir)
     ;; Recurse down directories.
-    (while (setq dir (pop dirs))
-      (when (and (not (member (file-name-nondirectory dir) '("." "..")))
-		 (file-directory-p dir)
-		 (file-readable-p dir))
-	(nnmh-request-list-1 dir))))
+    (while (setq rdir (pop dirs))
+      (when (and (not (member (file-name-nondirectory rdir) '("." "..")))
+		 (file-directory-p rdir)
+		 (file-readable-p rdir)
+		 (equal (file-truename rdir)
+			(file-truename dir)))
+	(nnmh-request-list-1 rdir))))
   ;; For each directory, generate an active file line.
   (unless (string= (expand-file-name nnmh-toplev) dir)
     (let ((files (mapcar

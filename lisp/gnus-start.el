@@ -348,6 +348,11 @@ This hook is called as the first thing when Gnus is started."
   :group 'gnus-start
   :type 'hook)
 
+(defcustom gnus-setup-news-hook nil
+  "A hook after reading the .newsrc file, but before generating the buffer."
+  :group 'gnus-start
+  :type 'hook)
+
 (defcustom gnus-get-new-news-hook nil
   "A hook run just before Gnus checks for new news."
   :group 'gnus-group-new
@@ -690,6 +695,7 @@ prompt the user for the name of an NNTP server to use."
 
 	  ;; Do the actual startup.
 	  (gnus-setup-news nil level dont-connect)
+	  (run-hooks 'gnus-setup-news-hook)
 	  (gnus-start-draft-setup)
 	  ;; Generate the group buffer.
 	  (gnus-group-list-groups level)

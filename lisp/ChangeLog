@@ -1,3 +1,27 @@
+Sat Sep 20 23:23:49 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.8 is released.
+
+Sat Sep 20 20:41:16 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-setup-news-hook): New hook.
+
+	* gnus-agent.el (gnus-agentize): Really set up queue group.
+	(gnus-open-agent): Setup queue here.
+
+Sat Sep 20 20:23:07 1997  Matt Simmons  <simmonmt@acm.org>
+
+	* message.el (message-set-auto-save-file-name): Make things work
+	without drafts.
+
+Sat Sep 20 18:32:02 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmh.el (nnmh-request-list-1): Check for links to ".".
+
+	* nndraft.el (nndraft-possibly-change-group): New function.
+
+	* gnus-agent.el (gnus-agent-queue-setup): New function.
+
 Thu Sep 18 04:54:59 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.7 is released.

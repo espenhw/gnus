@@ -31,6 +31,7 @@
 (require 'cl)
 (require 'bytecomp)
 (push "." load-path)
+(push "~/lisp/custom" load-path)
 (require 'lpath)
 
 (defalias 'device-sound-enabled-p 'ignore)

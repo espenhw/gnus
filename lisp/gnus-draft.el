@@ -88,7 +88,7 @@
   (interactive)
   (gnus-set-global-variables)
   (let ((article (gnus-summary-article-number)))
-    (gnus-draft-setup article)
+    (gnus-draft-setup article gnus-newsgroup-name)
     (push
      `((lambda ()
 	 (when (buffer-name (get-buffer ,gnus-summary-buffer))
@@ -112,7 +112,8 @@
 
 (defun gnus-draft-send (article)
   "Send message ARTICLE."
-  (gnus-draft-setup article)
+  (message "In gnus-draft-send, article is %s" article)
+  (gnus-draft-setup article "nndraft:queue")
   (message-send-and-exit))
 
 (defun gnus-draft-send-all-messages ()
@@ -122,15 +123,15 @@
   (gnus-draft-send-message))
 
 (defun gnus-group-send-drafts ()
-  "Send all sendable articles from the draft group."
+  "Send all sendable articles from the queue group."
   (interactive)
-  (gnus-request-group "nndraft:drafts")
+  (gnus-request-group "nndraft:queue")
   (save-excursion
     (let ((articles (nndraft-articles))
 	  (unsendable (gnus-uncompress-range
 		       (cdr (assq 'unsend
 				  (gnus-info-marks
-				   (gnus-get-info "nndraft:drafts"))))))
+				   (gnus-get-info "nndraft:queue"))))))
 	  article)
       (while (setq article (pop articles))
 	(unless (memq article unsendable)
@@ -138,12 +139,13 @@
 
 ;;; Utility functions
 
-(defun gnus-draft-setup (article)
+(defun gnus-draft-setup (article group)
+  (message "In gnus-draft-setup, article is %s %s" article group)
   (gnus-setup-message 'forward
     (message-mail)
     (erase-buffer)
-    (if (not (gnus-request-restore-buffer
-	      article (or gnus-newsgroup-name "nndraft:drafts")))
+    (message "Article is %s" article)
+    (if (not (gnus-request-restore-buffer article group))
 	(error "Couldn't restore the article")
       ;; Insert the separator.
       (goto-char (point-min))
@@ -160,4 +162,3 @@
 (provide 'gnus-draft)
 
 ;;; gnus-draft.el ends here
-
