@@ -925,7 +925,7 @@ If REGEXP, only list groups matching REGEXP."
 	      params (gnus-info-params info)
 	      newsrc (cdr newsrc)
 	      unread (car (gnus-gethash group gnus-newsrc-hashtb)))
-	(and unread			; This group might be bogus
+	(and unread			; This group might be unchecked
 	     (or (not regexp)
 		 (string-match regexp group))
 	     (<= (setq clevel (gnus-info-level info)) level)

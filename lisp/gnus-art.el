@@ -2832,7 +2832,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 (defun gnus-mime-view-part-as-type ()
   "Choose a MIME media type, and view the part as such."
   (interactive
-   (list (completing-read "View as MIME type: " mailcap-mime-types)))
+   (list (completing-read "View as MIME type: "
+			  (mapcar 'list (mailcap-mime-types)))))
   (gnus-article-check-buffer)
   (let ((handle (get-text-property (point) 'gnus-data)))
     (gnus-mm-display-part handle)))

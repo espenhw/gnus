@@ -1,3 +1,16 @@
+1999-12-04 08:31:10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-view-part-as-type): mailcap-mime-types is 
+	a function, not a variable.
+
+1999-12-04 08:14:08  Max Froumentin  <masmef@maths.bath.ac.uk>
+
+	* gnus-score.el (gnus-score-body): Widen before requesting.
+
+1999-12-04 08:06:13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-prepare-flat): Comment fix.
+
 1999-12-04 03:01:55  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mail-source.el (mail-source-fetch-webmail): Bind

@@ -1510,6 +1510,13 @@ newsgroup."
       ;; be reached) we just set the number of unread articles in this
       ;; newsgroup to t.  This means that Gnus thinks that there are
       ;; unread articles, but it has no idea how many.
+
+      ;; To be more explicit:
+      ;; >0 for an active group with messages
+      ;; 0 for an active group with no unread messages
+      ;; nil for non-foreign groups that the user has requested not be checked
+      ;; t for unchecked foreign groups or bogus groups, or groups that can't
+      ;;   be checked, for one reason or other.
       (if (and (setq method (gnus-info-method info))
 	       (not (inline
 		      (gnus-server-equal

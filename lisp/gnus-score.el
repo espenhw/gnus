@@ -1661,8 +1661,8 @@ score in GNUS-NEWSGROUP-SCORED by SCORE."
 	  (while articles
 	    (setq article (mail-header-number (caar articles)))
 	    (gnus-message 7 "Scoring article %s of %s..." article last)
+	    (widen)
 	    (when (funcall request-func article gnus-newsgroup-name)
-	      (widen)
 	      (goto-char (point-min))
 	      ;; If just parts of the article is to be searched, but the
 	      ;; backend didn't support partial fetching, we just narrow
