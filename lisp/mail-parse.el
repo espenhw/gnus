@@ -59,7 +59,10 @@
 (defalias 'mail-narrow-to-head 'ietf-drums-narrow-to-header)
 (defalias 'mail-quote-string 'ietf-drums-quote-string)
 
+(defalias 'mail-header-fold-field 'rfc2047-fold-field)
+(defalias 'mail-header-unfold-field 'rfc2047-unfold-field)
 (defalias 'mail-header-narrow-to-field 'rfc2047-narrow-to-field)
+
 (defalias 'mail-encode-encoded-word-region 'rfc2047-encode-region)
 (defalias 'mail-encode-encoded-word-buffer 'rfc2047-encode-message-header)
 (defalias 'mail-encode-encoded-word-string 'rfc2047-encode-string)

@@ -338,6 +338,13 @@ The buffer may be narrowed."
 	(insert "?=")
 	(forward-line 1)))))
 
+(defun rfc2047-fold-field ()
+  "Fold the current line."
+  (save-excursion
+    (save-restriction
+      (rfc2047-narrow-to-field)
+      (rfc2047-fold-region (point-min) (point-max)))))
+
 (defun rfc2047-fold-region (b e)
   "Fold long lines in region B to E."
   (save-restriction
@@ -345,11 +352,13 @@ The buffer may be narrowed."
     (goto-char (point-min))
     (let ((break nil)
 	  (qword-break nil)
+	  (first t)
 	  (bol (save-restriction
 		 (widen)
 		 (gnus-point-at-bol))))
       (while (not (eobp))
-	(when (and (or break qword-break) (> (- (point) bol) 76))
+	(when (and (or break qword-break)
+		   (> (- (point) bol) 76))
 	  (goto-char (or break qword-break))
 	  (setq break nil
 		qword-break nil)
@@ -359,7 +368,8 @@ The buffer may be narrowed."
 	  (setq bol (1- (point)))
 	  ;; Don't break before the first non-LWSP characters.
 	  (skip-chars-forward " \t")
-	  (unless (eobp) (forward-char 1)))
+	  (unless (eobp)
+	    (forward-char 1)))
 	(cond
 	 ((eq (char-after) ?\n)
 	  (forward-char 1)
@@ -373,7 +383,10 @@ The buffer may be narrowed."
 	  (forward-char 1))
 	 ((memq (char-after) '(?  ?\t))
 	  (skip-chars-forward " \t")
-	  (setq break (1- (point))))
+	  (if first
+	      ;; Don't break just after the header name.
+	      (setq first nil)
+	    (setq break (1- (point)))))
 	 ((not break)
 	  (if (not (looking-at "=\\?[^=]"))
 	      (if (eq (char-after) ?=)
@@ -383,7 +396,8 @@ The buffer may be narrowed."
 	    (skip-chars-forward "^ \t\n\r")))
 	 (t
 	  (skip-chars-forward "^ \t\n\r"))))
-      (when (and (or break qword-break) (> (- (point) bol) 76))
+      (when (and (or break qword-break)
+		 (> (- (point) bol) 76))
 	(goto-char (or break qword-break))
 	(setq break nil
 	      qword-break nil)
@@ -393,7 +407,15 @@ The buffer may be narrowed."
 	(setq bol (1- (point)))
 	;; Don't break before the first non-LWSP characters.
 	(skip-chars-forward " \t")
-	(unless (eobp) (forward-char 1))))))
+	(unless (eobp)
+	  (forward-char 1))))))
+
+(defun rfc2047-unfold-field ()
+  "Fold the current line."
+  (save-excursion
+    (save-restriction
+      (rfc2047-narrow-to-field)
+      (rfc2047-unfold-region (point-min) (point-max)))))
 
 (defun rfc2047-unfold-region (b e)
   "Unfold lines in region B to E."

@@ -362,7 +362,7 @@ Esample: (_/*word*/_)."
   "Face used for displaying highlighted words."
   :group 'gnus-article-emphasis)
 
-(defface gnus-body-separator-face
+(defface gnus-body-boundary-face
   '((((class color)
       (background dark))
      (:background "white")
@@ -1635,10 +1635,14 @@ unfolded."
   (interactive)
   (gnus-with-article-headers
     (goto-char (point-max))
-    (insert (make-string (1- (window-width)) ? )
+    (let ((start (point)))
+    (insert "X-Boundary: ")
+    (gnus-add-text-properties start (point) '(invisible t intangible t))
+    (insert (make-string (1- (window-width)) ?-)
 	    "\n")
-    (put-text-property (point) (progn (forward-line -1) (point))
-		       'face 'gnus-body-separator-face)))
+    ;;(put-text-property (point) (progn (forward-line -1) (point))
+    ;; 'face 'gnus-body-bondary-face)
+    )))
 
 (defun article-fill-long-lines ()
   "Fill lines that are wider than the window width."

@@ -1,3 +1,17 @@
+2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* rfc2047.el (rfc2047-fold-line): New function.
+	(rfc2047-unfold-line): Ditto.
+	(rfc2047-fold-region): Don't fold just after the header name. 
+
+	* mail-parse.el (mail-header-fold-line): New alias.
+	(mail-header-unfold-line): Ditto.
+
+	* gnus-art.el (gnus-body-boundary-face): Renamed.
+	(gnus-article-treat-body-boundary): Use it.
+	(gnus-article-treat-body-boundary): Use an invisible header and a
+	line of underline characters.
+
 2001-12-30  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* ietf-drums.el (ietf-drums-parse-addresses): Recover from errors.
