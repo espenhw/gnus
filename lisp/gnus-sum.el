@@ -11257,14 +11257,6 @@ If REVERSE, save parts that do not match TYPE."
 	     (not (gnus-summary-article-sparse-p (mail-header-number header))))
 	;; We have found the header.
 	header
-      ;; If this is a sparse article, we have to nix out its
-      ;; previous entry in the thread hashtb.
-      (when (and header
-		 (gnus-summary-article-sparse-p (mail-header-number header)))
-	(let* ((parent (gnus-parent-id (mail-header-references header)))
-	       (thread (and parent (gnus-id-to-thread parent))))
-	  (when thread
-	    (delq (assq header thread) thread))))
       ;; We have to really fetch the header to this article.
       (save-excursion
 	(set-buffer nntp-server-buffer)

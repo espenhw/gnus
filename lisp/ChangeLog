@@ -1,3 +1,9 @@
+2004-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-sum.el (gnus-read-header): Don't remove a header for the
+	parent article of a sparse article in the thread hashtb.  From
+	Stefan Wiens <s.wi@gmx.net>.
+
 2004-03-12  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* imap.el (imap-store-password): New variable.
