@@ -51,7 +51,7 @@ with some simple extensions.
 
 The following specs are understood:
 
-%h backend
+%h back end
 %n name
 %w address
 %s status
@@ -346,8 +346,8 @@ The following commands are available:
     (and server (symbol-name server))))
 
 (defun gnus-server-named-server ()
-  "Returns a server name that matches one of the names returned by
-gnus-method-to-server."
+  "Return a server name that matches one of the names returned by
+`gnus-method-to-server'."
   (let ((server (get-text-property (point-at-bol) 'gnus-named-server)))
     (and server (symbol-name server))))
 
@@ -730,10 +730,10 @@ gnus-method-to-server."
 	  (if (eq (car method) 'nntp)
 	      (while (not (eobp))
 		(ignore-errors
-		  (push (cons 
-			 (buffer-substring 
+		  (push (cons
+			 (buffer-substring
 			  (point)
-			  (progn 
+			  (progn
 			    (skip-chars-forward "^ \t")
 			    (point)))
 			 (let ((last (read cur)))
@@ -905,7 +905,7 @@ buffer.
     (beginning-of-line)
     (let ((name (get-text-property (point) 'gnus-group)))
       (when (re-search-forward ": \\(.*\\)$" (point-at-eol) t)
-	(concat (gnus-method-to-server-name gnus-browse-current-method) ":" 
+	(concat (gnus-method-to-server-name gnus-browse-current-method) ":"
 		(or name
 		    (match-string-no-properties 1)))))))
 
@@ -980,7 +980,7 @@ buffer.
 	(gnus-get-function (gnus-server-to-method server)
 			   'request-regenerate)
       (error
-	(error "This backend doesn't support regeneration")))
+	(error "This back end doesn't support regeneration")))
     (gnus-message 5 "Requesting regeneration of %s..." server)
     (unless (gnus-open-server server)
       (error "Couldn't open server"))

@@ -161,14 +161,14 @@ This variable says how many characters this will be."
   :group 'spam-stat)
 
 (defcustom spam-stat-split-fancy-spam-group "mail.spam"
-  "Name of the group where spam should be stored, if
-`spam-stat-split-fancy' is used in fancy splitting rules.  Has no
-effect when spam-stat is invoked through spam.el."
+  "Name of the group where spam should be stored.
+If `spam-stat-split-fancy' is used in fancy splitting rules.  Has
+no effect when spam-stat is invoked through spam.el."
   :type 'string
   :group 'spam-stat)
 
 (defcustom spam-stat-split-fancy-spam-threshhold 0.9
-  "Spam score threshhold in spam-stat-split-fancy."
+  "Spam score threshold in spam-stat-split-fancy."
   :type 'number
   :group 'spam-stat)
 
@@ -296,7 +296,7 @@ Use `spam-stat-ngood', `spam-stat-nbad', `spam-stat-good',
 ;; Parsing
 
 (defmacro with-spam-stat-max-buffer-size (&rest body)
-  "Narrows the buffer down to the first 4k characters, then evaluates BODY."
+  "Narrow the buffer down to the first 4k characters, then evaluate BODY."
   `(save-restriction
      (when (> (- (point-max)
 		 (point-min))
@@ -306,7 +306,7 @@ Use `spam-stat-ngood', `spam-stat-nbad', `spam-stat-good',
      ,@body))
 
 (defun spam-stat-buffer-words ()
-  "Return a hash table of words and number of occurences in the buffer."
+  "Return a hash table of words and number of occurrences in the buffer."
   (run-hooks 'spam-stat-washing-hook)
   (with-spam-stat-max-buffer-size
    (with-syntax-table spam-stat-syntax-table
@@ -356,7 +356,7 @@ Use `spam-stat-ngood', `spam-stat-nbad', `spam-stat-good',
    (lambda (word count)
      (let ((entry (gethash word spam-stat)))
        (if (not entry)
-	   (error "This buffer has unknown words in it.")
+	   (error "This buffer has unknown words in it")
 	 (spam-stat-set-good entry (- (spam-stat-good entry) count))
 	 (spam-stat-set-bad entry (+ (spam-stat-bad entry) count))
 	 (spam-stat-set-score entry (spam-stat-compute-score entry))
@@ -372,7 +372,7 @@ Use `spam-stat-ngood', `spam-stat-nbad', `spam-stat-good',
    (lambda (word count)
      (let ((entry (gethash word spam-stat)))
        (if (not entry)
-	   (error "This buffer has unknown words in it.")
+	   (error "This buffer has unknown words in it")
 	 (spam-stat-set-good entry (+ (spam-stat-good entry) count))
 	 (spam-stat-set-bad entry (- (spam-stat-bad entry) count))
 	 (spam-stat-set-score entry (spam-stat-compute-score entry))
@@ -383,7 +383,7 @@ Use `spam-stat-ngood', `spam-stat-nbad', `spam-stat-good',
 ;; Saving and Loading
 
 (defun spam-stat-save (&optional force)
-  "Save the `spam-stat' hash table as lisp file.
+  "Save the `spam-stat' hash table as Lisp file.
 With a prefix argument save unconditionally."
   (interactive "P")
   (when (or force spam-stat-dirty)
@@ -587,7 +587,7 @@ COUNT defaults to 5"
   (setq spam-stat-dirty t))
 
 (defun spam-stat-install-hooks-function ()
-  "Install the spam-stat function hooks"
+  "Install the spam-stat function hooks."
   (interactive)
   (add-hook 'nnmail-prepare-incoming-message-hook
 	    'spam-stat-store-current-buffer)
@@ -598,7 +598,7 @@ COUNT defaults to 5"
   (spam-stat-install-hooks-function))
 
 (defun spam-stat-unload-hook ()
-  "Uninstall the spam-stat function hooks"
+  "Uninstall the spam-stat function hooks."
   (interactive)
   (remove-hook 'nnmail-prepare-incoming-message-hook
 	       'spam-stat-store-current-buffer)

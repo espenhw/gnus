@@ -3,7 +3,7 @@
 ;; Copyright (C) 2000, 2001 Free Software Foundation, Inc.
 
 ;; Author: Julien Gilles  <jgilles@free.fr>
-;; Keywords: news
+;; Keywords: news, mail
 
 ;; This file is part of GNU Emacs.
 
@@ -117,7 +117,7 @@ If FORCE is non-nil, replace the old ones."
 	  (t (gnus-message 1 "no list-help in this group")))))
 
 (defun gnus-mailing-list-subscribe ()
-  "Subscribe"
+  "Subscribe."
   (interactive)
   (let ((list-subscribe
 	 (with-current-buffer gnus-original-article-buffer
@@ -126,7 +126,7 @@ If FORCE is non-nil, replace the old ones."
 	  (t (gnus-message 1 "no list-subscribe in this group")))))
 
 (defun gnus-mailing-list-unsubscribe ()
-  "Unsubscribe"
+  "Unsubscribe."
   (interactive)
   (let ((list-unsubscribe
 	 (with-current-buffer gnus-original-article-buffer
@@ -144,7 +144,7 @@ If FORCE is non-nil, replace the old ones."
 	  (t (gnus-message 1 "no list-post in this group")))))
 
 (defun gnus-mailing-list-owner ()
-  "Mail to the owner"
+  "Mail to the owner."
   (interactive)
   (let ((list-owner
 	 (with-current-buffer gnus-original-article-buffer
@@ -153,7 +153,7 @@ If FORCE is non-nil, replace the old ones."
 	  (t (gnus-message 1 "no list-owner in this group")))))
 
 (defun gnus-mailing-list-archive ()
-  "Browse archive"
+  "Browse archive."
   (interactive)
   (require 'browse-url)
   (let ((list-archive

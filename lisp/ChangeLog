@@ -8,6 +8,13 @@
 
 2004-02-27  Jesper Harder  <harder@ifa.au.dk>
 
+	* spam-stat.el: Pedantic docstring and whitespace fixes (courtesy
+	of checkdoc.el).
+	* nnrss.el: do.
+	* gnus-mlspl.el: do.
+	* gnus-ml.el: do.
+	* gnus-srvr.el: do.
+
 	* nnrss.el (nnrss-opml-export): Turn on sgml-mode.
 
 2004-02-27  Kevin Ryde  <user42@zip.com.au>  (tiny change)
