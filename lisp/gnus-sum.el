@@ -4151,7 +4151,6 @@ If SELECT-ARTICLES, only select those articles from GROUP."
     (setq gnus-newsgroup-name group)
     (setq gnus-newsgroup-unselected nil)
     (setq gnus-newsgroup-unreads (gnus-list-of-unread-articles group))
-    (gnus-summary-set-local-parameters group)
     (gnus-summary-setup-default-charset)
 
     ;; Adjust and set lists of article marks.
