@@ -100,7 +100,10 @@ used to 899, you would say something along these lines:
 			    (not (string= gnus-default-nntp-server "")))
 		       gnus-default-nntp-server)
 		   (system-name)))
-   (if (equal gnus-nntp-service "nntp") nil (list gnus-nntp-service)))
+   (if (or (null gnus-nntp-service)
+	   (equal gnus-nntp-service "nntp"))
+       nil 
+     (list gnus-nntp-service)))
   "*Default method for selecting a newsgroup.
 This variable should be a list, where the first element is how the
 news is to be fetched, the second is the address. 
@@ -1351,7 +1354,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "Gnus v5.0.2"
+(defconst gnus-version "Gnus v5.0.3"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1727,7 +1730,6 @@ Thank you for your help in stamping out bugs.
   (autoload 'gnus-mail-send-and-exit "gnus-msg")
   (autoload 'gnus-mail-forward-using-mail "gnus-msg")
   (autoload 'gnus-mail-other-window-using-mail "gnus-msg")
-  (autoload 'gnus-article-mail-with-original "gnus-msg")
   (autoload 'gnus-article-mail "gnus-msg")
   (autoload 'gnus-bug "gnus-msg" nil t)
 
@@ -9928,16 +9930,16 @@ The number of articles marked as read is returned."
 		      (append gnus-newsgroup-marked gnus-newsgroup-dormant)))
 	    ;; We actually mark all articles as canceled, which we
 	    ;; have to do when using auto-expiry or adaptive scoring. 
-	    (let ((unreads (length gnus-newsgroup-unreads)))
-	      (gnus-summary-show-all-threads)
-	      (if (gnus-summary-first-subject (not all))
-		  (while (and 
-			  (if to-here (< (point) to-here) t)
-			  (gnus-summary-mark-article-as-read gnus-catchup-mark)
-			  (gnus-summary-search-subject nil (not all)))))
-	      (- unreads (length gnus-newsgroup-unreads))
-	      (or to-here
-		  (setq gnus-newsgroup-unreads gnus-newsgroup-marked)))))
+	    (gnus-summary-show-all-threads)
+	    (if (gnus-summary-first-subject (not all))
+		(while (and 
+			(if to-here (< (point) to-here) t)
+			(gnus-summary-mark-article-as-read gnus-catchup-mark)
+			(gnus-summary-search-subject nil (not all)))))
+	    (or to-here
+		(setq gnus-newsgroup-unreads
+		      (append gnus-newsgroup-marked
+			      gnus-newsgroup-dormant)))))
     (let ((method (gnus-find-method-for-group gnus-newsgroup-name)))
       (if (and (not to-here) (eq 'nnvirtual (car method)))
 	  (nnvirtual-catchup-group
@@ -9947,7 +9949,7 @@ The number of articles marked as read is returned."
 (defun gnus-summary-catchup-to-here (&optional all)
   "Mark all unticked articles before the current one as read.
 If ALL is non-nil, also mark ticked and dormant articles as read."
-  (interactive)
+  (interactive "P")
   (gnus-set-global-variables)
   (save-excursion
     (and (zerop (forward-line -1))
@@ -9959,7 +9961,7 @@ If ALL is non-nil, also mark ticked and dormant articles as read."
 
 (defun gnus-summary-catchup-all (&optional quietly)
   "Mark all articles in this newsgroup as read."
-  (interactive)
+  (interactive "P")
   (gnus-set-global-variables)
   (gnus-summary-catchup t quietly))
 
@@ -9976,7 +9978,7 @@ If prefix argument ALL is non-nil, all articles are marked as read."
 
 (defun gnus-summary-catchup-all-and-exit (&optional quietly)
   "Mark all articles in this newsgroup as read, and then exit."
-  (interactive)
+  (interactive "P")
   (gnus-set-global-variables)
   (gnus-summary-catchup-and-exit t quietly))
 
@@ -10665,8 +10667,6 @@ is initialized from the SAVEDIR environment variable."
   (define-key gnus-article-mode-map "h" 'gnus-article-show-summary)
   (define-key gnus-article-mode-map "s" 'gnus-article-show-summary)
   (define-key gnus-article-mode-map "\C-c\C-m" 'gnus-article-mail)
-  (define-key gnus-article-mode-map 
-    "\C-c\C-M" 'gnus-article-mail-with-original)
   (define-key gnus-article-mode-map "?" 'gnus-article-describe-briefly)
   (define-key gnus-article-mode-map gnus-mouse-2 'gnus-article-push-button)
   (define-key gnus-article-mode-map "\r" 'gnus-article-press-button)
@@ -10727,7 +10727,6 @@ The following commands are available:
 \\[gnus-article-refer-article]\t Go to the article referred to by an article id near point
 \\[gnus-article-show-summary]\t Display the summary buffer
 \\[gnus-article-mail]\t Send a reply to the address near point
-\\[gnus-article-mail-with-original]\t Send a reply to the address near point; include the original article
 \\[gnus-article-describe-briefly]\t Describe the current mode briefly
 \\[gnus-info-find-node]\t Go to the Gnus info node"
   (interactive)

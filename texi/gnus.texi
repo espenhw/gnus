@@ -3528,8 +3528,12 @@ This required header will be prompted for if not present already.
 This required header says which newsgroups the article is to be posted
 to.  If it isn't present already, it will be prompted for.
 @item Organization
+@cindex organization
+@vindex gnus-local-organization
+@vindex gnus-organization-file
 This optional header will be filled out depending on the
-@code{gnus-local-organization} variable.
+@code{gnus-local-organization} variable.  @code{gnus-organization-file}
+will be used if that variable is nil.
 @item Lines
 This optional header will be computed by Gnus.
 @item Message-ID
@@ -4250,9 +4254,10 @@ more old headers - headers to articles that are marked as read.  If you
 would like to display as few summary lines as possible, but still
 connect as many loose threads as possible, you should set this variable
 to @code{some}.  In either case, fetching old headers only works if the
-select method you are using supports @sc{xover}.  Also remember that if
-the root of the thread has been expired by the server, there's not much
-Gnus can do about that.
+backend you are using carries overview files -- this would normally be
+@code{nntp}, @code{nnspool} and  @code{nnml}.  Also remember that if the
+root of the thread has been expired by the server, there's not much Gnus
+can do about that.
 
 @item gnus-summary-gather-subject-limit
 Loose threads are gathered by comparing subjects of articles.  If this
@@ -6387,12 +6392,8 @@ If point is in the neighborhood of a @code{Message-Id} and you press
 @item C-c C-m
 @kindex C-c C-m (Article)
 @findex gnus-article-mail
-Send a reply to the address near point (@code{gnus-article-mail}). 
-@item C-c C-M
-@kindex C-c C-M (Article)
-@findex gnus-article-mail-with-original
-Send a reply to the address near point and include the original article
-(@code{gnus-article-mail-with-original}). 
+Send a reply to the address near point (@code{gnus-article-mail}).  If
+given a prefix, include the mail.
 @item s
 @kindex s (Article)
 @findex gnus-article-show-summary

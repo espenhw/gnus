@@ -880,8 +880,6 @@ If nil, the user will be asked for a duration.")
 	["Show summary" gnus-article-show-summary t]
 	["Fetch Message-ID at point" gnus-article-refer-article t]
 	["Mail to address at point" gnus-article-mail t]
-	["Mail to address at point and include original"
-	 gnus-article-mail-with-original t]
 	))
 
      (easy-menu-define

@@ -1249,17 +1249,19 @@ a program specified by the rest of the value."
 
 (defun gnus-inews-user-name ()
   "Return user's network address as \"NAME@DOMAIN (FULL-NAME)\"."
-  (let ((full-name (gnus-inews-full-name)))
+  (let ((full-name (gnus-inews-full-name))
+	(address (if (or gnus-user-login-name gnus-use-generic-from
+			 gnus-local-domain (getenv "DOMAINNAME"))
+		     (concat (gnus-inews-login-name) "@"
+			     (gnus-inews-domain-name gnus-use-generic-from))
+		   user-mail-address))) 
     (or gnus-user-from-line
-	(concat (if (or gnus-user-login-name gnus-use-generic-from
-			gnus-local-domain (getenv "DOMAINNAME"))
-		    (concat (gnus-inews-login-name) "@"
-			    (gnus-inews-domain-name gnus-use-generic-from))
-		  user-mail-address)
+	(concat address
 		;; User's full name.
-		(cond ((string-equal full-name "") "")
-		      ((string-equal full-name "&") ;Unix hack.
+		(cond ((string-equal full-name "&") ;Unix hack.
 		       (concat " (" (user-login-name) ")"))
+		      ((string-match "[^ ]+@[^ ]+ +(.*)" address)
+		       "")
 		      (t
 		       (concat " (" full-name ")")))))))
 
@@ -1681,11 +1683,6 @@ If YANK is non-nil, include the original article."
 	 (progn
 	   (switch-to-buffer gnus-summary-buffer)
 	   (funcall gnus-mail-reply-method yank address)))))
-
-(defun gnus-article-mail-with-original ()
-  "Send a reply to the address near point and include the original article."
-  (interactive)
-  (gnus-article-mail 'yank))
 
 (defun gnus-bug ()
   "Send a bug report to the Gnus maintainers."

@@ -1,4 +1,37 @@
+Fri Sep 15 11:09:52 1995  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-summary-catchup): Would make all dormants read. 
+
+	* gnus-msg.el (gnus-article-mail-with-original): Removed function.
+
+Wed Sep 13 17:50:12 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el (custom-type-properties): List with uninitialized
+	fields are valid (required for `gnus-score-customize' to work).
+
+Fri Sep 15 09:31:21 1995  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-summary-catchup-all): Wrong interactive spec.
+	(gnus-select-method): Would sometimes set select method with a
+	bogus service value.
+
+Thu Sep 14 06:07:37 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* nnmail.el (nnmail-request-post-buffer): Would bug out under
+	XEmacs. 
+
+Thu Sep 14 06:04:52 1995  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-ems.el (gnus-set-text-properties-xemacs): Wrong definition.
+
+Thu Sep 14 03:44:27 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus-msg.el (gnus-inews-user-name): Check for too-verbose
+		user-mail-address variables.
+
 Wed Sep 13 05:38:21 1995  Lars Magne Ingebrigtsen  <larsi@surt.ifi.uio.no>
+
+	* gnus.el: 5.0.2 is released.
 
 	* nntp.el (nntp-async-fetch-articles): Wouldn't allow entry into
 		groups.	

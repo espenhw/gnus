@@ -257,14 +257,14 @@ perfomed.")
 		   (setq message-of
 			 (concat (if stop-pos (substring from 0 stop-pos) from)
 				 "'s message of " date))))
-	    (setq cc (mail-strip-quoted-names (mail-fetch-field "cc")))
-	    (setq to (mail-strip-quoted-names (mail-fetch-field "to")))
+	    (setq cc (mail-strip-quoted-names (or (mail-fetch-field "cc") "")))
+	    (setq to (mail-strip-quoted-names (or (mail-fetch-field "to") "")))
 	    (setq new-cc (rmail-dont-reply-to 
 			  (concat (or to "")
 				  (if cc (concat (if to ", " "") cc) ""))))
 	    (let ((rmail-dont-reply-to-names 
 		   (regexp-quote (mail-strip-quoted-names
-				  (or method-address reply-to from)))))
+				  (or method-address reply-to from "")))))
 	      (setq new-cc (rmail-dont-reply-to new-cc)))
 	    (setq subject (mail-header-subject header))
 	    (or (string-match "^[Rr][Ee]:" subject)

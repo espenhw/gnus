@@ -689,7 +689,23 @@ reading."
 This function is supposed to be called from `nntp-server-opened-hook'.
 It will prompt for a password."
   (nntp-send-command "^.*\r?\n" "AUTHINFO USER" (user-login-name))
-  (nntp-send-command "^.*\r?\n" "AUTHINFO PASS" (read-string "NNTP password: ")))
+  (nntp-send-command "^.*\r?\n" "AUTHINFO PASS" 
+		     (read-string "NNTP password: ")))
+
+(defun nntp-send-authinfo-from-file ()
+  "Send the AUTHINFO to the nntp server.
+This function is supposed to be called from `nntp-server-opened-hook'.
+It will prompt for a password."
+  (and (file-exists-p "~/.nntp-authinfo")
+       (save-excursion
+	 (set-buffer (get-buffer-create " *tull*"))
+	 (insert-file-contents "~/.nntp-authinfo")
+	 (goto-char (point-min))
+	 (nntp-send-command "^.*\r?\n" "AUTHINFO USER" (user-login-name))
+	 (nntp-send-command "^.*\r?\n" "AUTHINFO PASS" 
+			    (buffer-substring (point)
+					      (progn (end-of-line) (point))))
+	 (kill-buffer (current-buffer)))))
 
 (defun nntp-default-sentinel (proc status)
   "Default sentinel function for NNTP server process."

@@ -470,7 +470,7 @@ hierarchy the new entry should be added.  CUSTOM is the entry to add."
 	  ;; A lisp list.
 	  (quote . custom-list-quote)
 	  (valid . (lambda (c d)
-		     (and (listp d) (not (eq custom-nil(car d))))))
+		     (listp d)))
 	  (extract . custom-list-extract))
     (group (type . default)
 	   ;; See `custom-match'.

@@ -69,6 +69,19 @@
 ;; We do not byte-compile this file, because error messages are such a
 ;; bore.  
 
+(defun gnus-set-text-properties-xemacs (start end props &optional buffer)
+  "You should NEVER use this function.  It is ideologically blasphemous.
+It is provided only to ease porting of broken FSF Emacs programs."
+  (if (and (stringp buffer) (not (setq buffer (get-buffer buffer))))
+      nil
+    (map-extents (lambda (extent ignored)
+		   (remove-text-properties 
+		    start end
+		    (list (extent-property extent 'text-prop) nil)
+		    buffer))
+		 buffer start end nil nil 'text-prop)
+    (add-text-properties start end props buffer)))
+
 (eval
  '(progn
     (if (string-match "XEmacs\\|Lucid" emacs-version)
@@ -132,24 +145,13 @@ pounce directly on the real variables themselves."))
       (or (face-differs-from-default-p 'underline)
 	  (funcall 'set-face-underline-p 'underline t))
 
-      (defun set-text-properties (start end props &optional buffer)
-	"You should NEVER use this function.  It is ideologically blasphemous.
-It is provided only to ease porting of broken FSF Emacs programs."
-	(if (and (stringp buffer) (not (setq buffer (get-buffer buffer))))
-	    nil
-	  (map-extents (symbol-function
-			(lambda (extent ignored)
-			  (remove-text-properties 
-			   start end
-			   (list (extent-property extent 'text-prop) nil)
-			   buffer)))
-		       buffer start end nil nil 'text-prop)
-	  (add-text-properties start end props buffer)))
-
       (defalias 'gnus-make-overlay 'make-extent)
       (defalias 'gnus-overlay-put 'set-extent-property)
       (defun gnus-move-overlay (extent start end &optional buffer)
 	(set-extent-endpoints extent start end))
+      
+      (require 'text-props)
+      (fset 'set-text-properties 'gnus-set-text-properties-xemacs)
 
       (or (boundp 'standard-display-table) (setq standard-display-table nil))
       (or (boundp 'read-event) (fset 'read-event 'next-command-event))
@@ -536,6 +538,7 @@ call it with the value of the `gnus-data' text property."
     (fset 'gnus-rebuild-thread 'gnus-rebuild-thread-xemacs)
     (fset 'gnus-article-add-button 'gnus-article-add-button-xemacs)
     (fset 'gnus-window-top-edge 'gnus-window-top-edge-xemacs)
+    (fset 'set-text-properties 'gnus-set-text-properties-xemacs)
 
     (or (fboundp 'appt-select-lowest-window)
 	(fset 'appt-select-lowest-window 
