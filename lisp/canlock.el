@@ -45,8 +45,6 @@
   (require 'cl))
 
 (autoload 'sha1-binary "sha1-el")
-(autoload 'sha1-encode-binary "sha1")
-(autoload 'base64-encode "base64")
 
 (defgroup canlock nil
   "The Cancel-Lock feature."
@@ -54,16 +52,14 @@
 
 (defcustom canlock-sha1-function 'sha1-binary
   "Function to call to make a SHA-1 message digest."
-  :type '(radio (function-item sha1-encode-binary)
-		(function-item sha1-binary)
+  :type '(radio (function-item sha1-binary)
 		(function-item canlock-sha1-with-openssl)
 		(function :tag "Other"))
   :group 'canlock)
 
 (defcustom canlock-sha1-function-for-verify canlock-sha1-function
   "Function to call to make a SHA-1 message digest for verifying."
-  :type '(radio (function-item sha1-encode-binary)
-		(function-item sha1-binary)
+  :type '(radio (function-item sha1-binary)
 		(function-item canlock-sha1-with-openssl)
 		(function :tag "Other"))
   :group 'canlock)
