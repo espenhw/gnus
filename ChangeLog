@@ -1,3 +1,8 @@
+2002-01-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* etc/gnus/describe-group.xpm: Set pixels of first line to
+	background color. A bug in Emacs?
+
 2001-12-18  Josh Huber  <huber@alum.wpi.edu>
 
 	* ChangeLog, todo: (oops) changed buffer-file-coding-system back
