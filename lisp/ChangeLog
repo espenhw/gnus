@@ -1,3 +1,17 @@
+2001-06-23  Simon Josefsson  <jas@extundo.com>
+	From Samuel Tardieu <sam@inf.enst.fr>
+
+	* smime.el (smime-keys): Support additional certificates.
+	(smime-make-certfiles): New function.
+	(smime-sign-region): Use previous variables.
+	(smime-get-certfiles): New function.
+	(smime-sign-buffer): Use it.
+	(smime-verify-region): Support both CAfile and CApath.
+
+2001-06-23  Simon Josefsson  <jas@extundo.com>
+
+	* smime.el (smime-decrypt-region): Perhaps work.
+
 2001-06-22 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-copy-article-buffer): Typo.

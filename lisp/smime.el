@@ -120,9 +120,12 @@
 
 (defcustom smime-keys nil
   "Map mail addresses to a file containing Certificate (and private key).
-The file is assumed to be in PEM format and not encrypted."
+The file is assumed to be in PEM format. You can also associate additional
+certificates to be sent with every message to each address."
   :type '(repeat (list (string :tag "Mail address")
-		       (file :tag "File name")))
+		       (file :tag "File name")
+		       (repeat :tag "Additional certificate files"
+			       (file :tag "File name"))))
   :group 'smime)
 
 (defcustom smime-CA-directory nil
@@ -206,22 +209,32 @@ If nil, use system defaults."
     (4 (message "OpenSSL: An error occurred decrypting or verifying the message.") nil)
     (t (error "Unknown OpenSSL exitcode") nil)))
 
+(defun smime-make-certfiles (certfiles)
+  (if certfiles
+      (append (list "-certfile" (expand-file-name (car certfiles)))
+	      (smime-make-certfiles (cdr certfiles)))))
+
 ;; Sign+encrypt region
 
-(defun smime-sign-region (b e keyfile)
-  "Sign region with certified key in KEYFILE.
+(defun smime-sign-region (b e keyfiles)
+  "Sign region with certified key in KEYFILES.
 If signing fails, the buffer is not modified.  Region is assumed to
-have proper MIME tags.  KEYFILE is expected to contain a PEM encoded
-private key and certificate."
-  (let ((buffer (generate-new-buffer (generate-new-buffer-name " *smime*")))
+have proper MIME tags.  KEYFILES is expected to contain a PEM encoded
+private key and certificate as its car, and a list of additional certificates
+to include in its caar."
+  (let ((keyfile (car keyfiles))
+	(certfiles (and (cdr keyfiles) (cadr keyfiles)))
+	(buffer (generate-new-buffer (generate-new-buffer-name " *smime*")))
 	(passphrase (smime-ask-passphrase)))
     (if passphrase
 	(setenv "GNUS_SMIME_PASSPHRASE" passphrase))
     (prog1
 	(when (apply 'smime-call-openssl-region b e buffer "smime" "-sign" 
 		     "-signer" (expand-file-name keyfile)
-		     (if passphrase
-			 (list "-passin" "env:GNUS_SMIME_PASSPHRASE")))
+		     (append
+		      (smime-make-certfiles certfiles)
+		      (if passphrase
+			  (list "-passin" "env:GNUS_SMIME_PASSPHRASE"))))
 	  (delete-region b e)
 	  (insert-buffer buffer)
 	  (when (looking-at "^MIME-Version: 1.0$")
@@ -253,6 +266,14 @@ is expected to contain of a PEM encoded certificate."
 	(insert-buffer buffer))
       (kill-buffer buffer))))
 
+(defun smime-get-certfiles (keyfile keys)
+  (if keys
+      (let ((curkey (car keys))
+	    (otherkeys (cdr keys)))
+	(if (string= keyfile (cadr curkey))
+	    (caddr curkey)
+	  (smime-get-certfiles keyfile otherkeys)))))
+
 ;; Sign+encrypt buffer
 
 (defun smime-sign-buffer (&optional keyfile buffer)
@@ -262,11 +283,12 @@ KEYFILE should contain a PEM encoded key and certificate."
   (with-current-buffer (or buffer (current-buffer))
     (smime-sign-region
      (point-min) (point-max)
-     (or keyfile
-	 (smime-get-key-by-email
-	  (completing-read "Sign using which signature? " smime-keys nil nil
-			   (and (listp (car-safe smime-keys))
-				(caar smime-keys))))))))
+     (if keyfile
+	 (list keyfile (smime-get-certfiles keyfile smime-keys))
+       (smime-get-key-by-email
+	(completing-read "Sign using which signature? " smime-keys nil nil
+			 (and (listp (car-safe smime-keys))
+			      (cdr smime-keys))))))))
 
 (defun smime-encrypt-buffer (&optional certfiles buffer)
   "S/MIME encrypt BUFFER for recipients specified in CERTFILES.
@@ -285,12 +307,13 @@ nil."
 
 (defun smime-verify-region (b e)
   (let ((buffer (get-buffer-create smime-details-buffer))
-	(CAs (cond (smime-CA-file
-		    (list "-CAfile" (expand-file-name smime-CA-file)))
-		   (smime-CA-directory
-		    (list "-CApath" (expand-file-name smime-CA-directory)))
-		   (t
-		    (error "No CA configured.")))))
+	(CAs (append (if smime-CA-file
+			 (list "-CAfile"
+			       (expand-file-name smime-CA-file)))
+		     (if smime-CA-directory
+			 (list "-CApath"
+			       (expand-file-name smime-CA-directory))))))
+    (unless CAs (error "No CA configured."))
     (with-current-buffer buffer
       (erase-buffer))
     (if (apply 'smime-call-openssl-region b e buffer "smime" "-verify"
@@ -316,10 +339,11 @@ nil."
 	(setenv "GNUS_SMIME_PASSPHRASE" passphrase))
     (when (apply 'smime-call-openssl-region
 		 b e buffer "smime" "-decrypt" 
-		 "-recip" (list keyfile)
+		 "-recip" keyfile
 		 (if passphrase
 		     (list "-passin" "env:GNUS_SMIME_PASSPHRASE" )))
-      )
+      (delete-region b e)
+      (insert-buffer buffer))
     (if passphrase
 	(setenv "GNUS_SMIME_PASSPHRASE" "" t))
     (with-current-buffer (get-buffer-create smime-details-buffer)
