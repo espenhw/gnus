@@ -375,16 +375,15 @@ formatting, and then moved afterward.")
   )
 
 (defun html2text-clean-anchor (p1 p2 p3 p4)
-  ;; If someone can explain how to make the URL clickable
-  ;; I will surely improve upon this.
+  ;; If someone can explain how to make the URL clickable I will
+  ;; surely improve upon this.
   (let* ((attr-list (html2text-get-attr p1 p2 "a"))
 	 (href (html2text-attr-value attr-list "href")))
     (kill-region p1 p4)
-    (goto-char p1)
-    (insert (substring href 1 -1 ))
-    (put-text-property p1 (point) 'face 'bold)
-    )
-  )
+    (when href
+      (goto-char p1)
+      (insert (substring href 1 -1 ))
+      (put-text-property p1 (point) 'face 'bold))))
 
 ;;
 ;; </Functions to be called to format a tag-pair>

@@ -1,5 +1,8 @@
 2002-02-23  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* html2text.el (html2text-clean-anchor): If there is no HREF,
+	insert nothing.
+	
 	* mml.el (mml-generate-mime-1): Add cdr.
 	From: andre@slamdunknetworks.com
 
