@@ -21308,9 +21308,11 @@ the following keyboard commands:
 @table @kbd
 
 @item M-d
+@itemx M s x
 @itemx S x
 @kindex M-d
 @kindex S x
+@kindex M s x
 @findex gnus-summary-mark-as-spam
 (@code{gnus-summary-mark-as-spam})
 
@@ -21318,7 +21320,9 @@ Mark current article as spam, showing it with the @samp{H} mark.
 Whenever you see a spam article, make sure to mark its summary line
 with @kbd{M-d} before leaving the group.
 
-@item S t
+@item M s t
+@itemx S t
+@kindex M s t
 @kindex S t
 @findex spam-bogofilter-score
 (@code{spam-bogofilter-score}
@@ -21329,17 +21333,6 @@ properly.
 @xref{Bogofilter}.
 
 @end table
-
-@strong{FIXME!  The justification for @kbd{M-d} is that this is what Paul Graham
-suggests in his original article, and what Eric Raymond's patch for Mutt
-uses.  But more importantly, that binding was still free in Summary mode!}
-
-@strong{FIXME!  Lars has not blessed the following key bindings yet.  It looks
-convenient that the score analysis command uses a sequence ending with the
-letter @kbd{t}, so it nicely parallels @kbd{B t} or @kbd{V t}.  @kbd{M-d} is a kind of
-"alternate" @kbd{d}, it is also the sequence suggested in Paul Graham article,
-and also in Eric Raymond's patch for Mutt.  @kbd{S x} might be the more
-official key binding for @kbd{M-d}.}
 
 Gnus can learn from the spam you get.  All you have to do is collect
 your spam in one or more spam groups, and set the variable
