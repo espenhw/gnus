@@ -942,7 +942,7 @@ variable (@pxref{Hard and Soft Newlines, ,Hard and Soft Newlines,
 emacs, Emacs Manual}) when encoding a message, and the
 ``format=flowed'' Content-Type parameter when decoding a message.
 
-On encoding text, if @code{use-hard-newlines} is enabled, lines
+On encoding text, regardless of @code{use-hard-newlines}, lines
 terminated by soft newline characters are filled together and wrapped
 after the column decided by @code{fill-flowed-encode-column}.
 Quotation marks (matching @samp{^>* ?}) are respected.  The variable
