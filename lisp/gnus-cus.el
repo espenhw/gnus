@@ -28,6 +28,7 @@
 
 (require 'wid-edit)
 (require 'gnus-score)
+(require 'gnus-topic)
 
 ;;; Widgets:
 
@@ -173,10 +174,11 @@ DOC is a documentation string for the parameter.")
 (defvar gnus-custom-params)
 (defvar gnus-custom-method)
 (defvar gnus-custom-group)
+(defvar gnus-custom-topic)
 
-(defun gnus-group-customize (group)
-  "Edit the group on the current line."
-  (interactive (list (gnus-group-group-name)))
+(defun gnus-group-customize (group topic)
+  "Edit the group or topicon the current line."
+  (interactive (list (gnus-group-group-name) (gnus-group-topic-name)))
   (let (info
 	(types (mapcar (lambda (entry)
 			 `(cons :format "%v%h\n"
@@ -184,9 +186,11 @@ DOC is a documentation string for the parameter.")
 				(const :format "" ,(nth 0 entry))
 				,(nth 1 entry)))
 		       gnus-group-parameters)))
-    (unless group
+    (unless (or group topic)
       (error "No group on current line"))
-    (unless (setq info (gnus-get-info group))
+    (when (and group topic)
+      (error "Both a group an topic on current line"))
+    (unless (or topic (setq info (gnus-get-info group)))
       (error "Killed group; can't be edited"))
     ;; Ready.
     (kill-buffer (gnus-get-buffer-create "*Gnus Customize*"))
@@ -194,13 +198,20 @@ DOC is a documentation string for the parameter.")
     (gnus-custom-mode)
     (make-local-variable 'gnus-custom-group)
     (setq gnus-custom-group group)
+    (make-local-variable 'gnus-custom-topic)
+    (setq gnus-custom-topic topic)
     (widget-insert "Customize the ")
-    (widget-create 'info-link
-		   :help-echo "Push me to learn more."
-		   :tag "group parameters"
-		   "(gnus)Group Parameters")
+    (if group 
+	(widget-create 'info-link
+		       :help-echo "Push me to learn more."
+		       :tag "group parameters"
+		       "(gnus)Group Parameters")
+      (widget-create 'info-link
+		     :help-echo "Push me to learn more."
+		     :tag  "topic parameters"
+		     "(gnus)Topic Parameters"))
     (widget-insert " for <")
-    (widget-insert group)
+    (widget-insert (or group topic))
     (widget-insert "> and press ")
     (widget-create 'push-button
 		   :tag "done"
@@ -210,15 +221,17 @@ DOC is a documentation string for the parameter.")
     (make-local-variable 'gnus-custom-params)
     (setq gnus-custom-params
 	  (widget-create 'group
-			 :value (gnus-info-params info)
+			 :value (if group 
+				    (gnus-info-params info)
+				  (gnus-topic-parameters topic))
 			 `(set :inline t
 			       :greedy t
 			       :tag "Parameters"
 			       :format "%t:\n%h%v"
 			       :doc "\
 These special paramerters are recognized by Gnus.
-Check the [ ] for the parameters you want to apply to this group, then
-edit the value to suit your taste."
+Check the [ ] for the parameters you want to apply to this group or
+to the groups in this topic, then edit the value to suit your taste."
 			       ,@types)
 			 '(repeat :inline t
 				  :tag "Variables"
@@ -244,26 +257,30 @@ form, but who cares?"
 			 '(repeat :inline t
 				  :tag "Unknown entries"
 				  sexp)))
-    (widget-insert "\n\nYou can also edit the ")
-    (widget-create 'info-link
-		   :tag "select method"
-		   :help-echo "Push me to learn more about select methods."
-		   "(gnus)Select Methods")
-    (widget-insert " for the group.\n")
-    (setq gnus-custom-method
-	  (widget-create 'sexp
-			 :tag "Method"
-			 :value (gnus-info-method info)))
+    (when group
+      (widget-insert "\n\nYou can also edit the ")
+      (widget-create 'info-link
+		     :tag "select method"
+		     :help-echo "Push me to learn more about select methods."
+		     "(gnus)Select Methods")
+      (widget-insert " for the group.\n")
+      (setq gnus-custom-method
+	    (widget-create 'sexp
+			   :tag "Method"
+			   :value (gnus-info-method info))))
     (use-local-map widget-keymap)
     (widget-setup)))
 
 (defun gnus-group-customize-done (&rest ignore)
   "Apply changes and bury the buffer."
   (interactive)
-  (gnus-group-edit-group-done 'params gnus-custom-group
-			      (widget-value gnus-custom-params))
-  (gnus-group-edit-group-done 'method gnus-custom-group
-			      (widget-value gnus-custom-method))
+  (if gnus-custom-topic
+      (gnus-topic-set-parameters gnus-custom-topic 
+				 (widget-value gnus-custom-params))
+    (gnus-group-edit-group-done 'params gnus-custom-group
+				(widget-value gnus-custom-params))
+    (gnus-group-edit-group-done 'method gnus-custom-group
+				(widget-value gnus-custom-method)))
   (bury-buffer))
 
 ;;; Score Customization:

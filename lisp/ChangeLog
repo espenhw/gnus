@@ -1,3 +1,160 @@
+Sun Nov  8 01:00:16 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.41 is released.
+
+1998-11-08 00:52:38  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* mm-decode.el (mm-dissect-multipart): Quote regexp.
+
+1998-10-29  Sudish Joseph  <sj@eng.mindspring.net>
+
+	* gnus.el (gnus-short-group-name): When shortening foreign select
+	methods, do not scan for plusses beyond the first colon.
+
+1998-11-07  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-agent.el (gnus-agent-save-group-info): Cater for group info 
+	lines where `group' is the last thing on the line.
+
+1998-11-08 00:35:09  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-view-part): Do alternative.
+	(gnus-mime-display-alternative): Insert marker.
+
+1998-11-07 14:33:46  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-dissect-multipart): Quote regexp.
+
+	* nnmail.el (nnmail-expired-article-p): Protect against bogus
+	dates. 
+
+	* gnus-cus.el (gnus-topic): Required.
+
+	* nnheader.el (nnheader-parse-nov): Parse extra.
+	(nnheader-nov-parse-extra): New macro.
+
+1998-10-31 12:33:22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-view-part): Internal move.
+
+1998-10-28  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-cus-new.el (gnus-custom-topic): New free variable.
+	(gnus-group-customize): Support editing topic parameters.
+
+1998-10-29 12:09:20  Karl Kleinpaste  <karl@jprc.com>
+
+	* gnus-sum.el (gnus-summary-from-or-to-or-newsgroups): Add
+	indicators. 
+
+1998-10-29 11:31:11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mm-display-part): Return.
+	(gnus-article-view-part): Only go if external.
+	(gnus-article-dumbquotes-map): Do 205.
+
+	* mm-decode.el (mm-display-part): Return what was done.
+
+	* message.el (message-buffer-naming-style): New variable.
+	(message-generate-new-buffers): Extended.
+	(message-buffer-naming-style): Removed.
+	(message-buffer-name): Use it.
+	(message-do-send-housekeeping): Rename new styling.
+
+	* gnus-sum.el (gnus-summary-recenter): Allow
+	gnus-auto-center-summary to be a number.
+
+Wed Nov  4 02:24:39 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* pop3.el (pop3-open-server): Use "binary" instead of
+ 	"no-conversion".
+
+Sun Nov  1 01:26:42 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-srvr.el (gnus-browse-foreign-server): Set
+ 	gnus-browse-current-method to the result of gnus-server-to-method.
+
+Thu Oct 29 01:47:44 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-util.el (gnus-pull): Another optional argument.
+	* nnweb.el (nnweb-request-delete-group): Delete from
+	nnweb-group-alist and update active file.
+
+Thu Oct 29 01:05:08 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-group.el (gnus-group-make-group): Accept group of new
+	method.
+
+Wed Oct 28 02:19:16 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-fetch-group-1): Update dribble.
+
+Tue Oct 27 11:59:31 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-view.el (mm-inline-text): Postion of html portion.
+	
+1998-10-29 10:26:54  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nntp.el (nntp-list-active-group): Waited for short strings.
+	(nntp-send-mode-reader): Ditto.
+	(nntp-open-connection): Ditto.
+
+	* gnus-int.el (gnus-request-group-articles): New function.
+
+	* nntp.el (nntp-request-listgroup): New function.
+	(nntp-request-group-articles): Renamed.
+
+1998-10-27 10:37:52  Karl Kleinpaste  <karl@jprc.com>
+
+	* nnheader.el (nnheader-parse-nov): Supply extra.
+
+1998-10-26 23:03:48  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-button-push): Don't go to
+	gnus-article-buffer. 
+
+	* mm-view.el (mm-inline-image): Add a newline.
+
+	* gnus-start.el (gnus-check-first-time-used): Check more.
+
+1998-10-26 23:03:29  Francois Felix Ingrand  <felix@laas.fr>
+
+	* gnus-start.el (gnus-check-first-time-used): Check current.
+
+1998-10-26 22:07:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-util.el (mm-find-charset-region): New function.
+
+	* ietf-drums.el (ietf-drums-narrow-to-header): Work when no header.
+
+	* gnus-art.el (gnus-mime-button-menu): Fix.
+
+1998-10-26 22:07:43  Michael Welsh Duggan  <md5i@cs.cmu.edu>
+
+	* gnus-art.el (gnus-mime-button-menu): New definition.
+
+1998-10-26 01:46:11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-decode-charset): Downcase charset.
+	(article-decode-charset): Pass on type.
+	(article-decode-charset): Check nil charsets.
+	(article-remove-cr): Translate CR to LF.
+	(gnus-ignored-mime-types): Default to nil.
+
+	* nnheader.el (nnheader-insert-nov): Work when not Xref.
+
+	* gnus-sum.el (gnus-ignored-from-addresses): Default to
+	user-mail-address. 
+	(gnus-nov-parse-extra): Didn't return right thing.
+
+1998-10-25 23:25:27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-xmas.el: Use compiled-function-p.
+
+Mon Oct 26 14:37:19 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-copy-Yo-buffer): Make it works when no header.
+
 Sun Oct 25 23:11:44 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.40 is released.
@@ -460,7 +617,7 @@ Sun Oct 18 13:59:07 1998  Kurt Swanson  <ksw@dna.lth.se>
 
 	* gnus-draft.el (gnus-draft-send): Allow mail.
 
-1998-10-10  SL Baur  <steve@altair.xemacs.org>
+1998-10-10 -SL Baur  <steve@altair.xemacs.org>
 
 	* message.el (message-check): Move message-check macro above where 
 	it is first used.
@@ -994,7 +1151,7 @@ Fri Sep 11 18:23:34 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.27 is released.
 
-1998-09-11 12:42:07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+1998-09-11 12:42:07  Lars Magne Ingebrigtsen- <larsi@gnus.org>
 
 	* mm-decode.el (mm-alternative-precedence): New variable.
 	(mm-preferred-alternative): New function.

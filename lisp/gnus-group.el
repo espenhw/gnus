@@ -1815,7 +1815,7 @@ ADDRESS."
     (gnus-read-method "From method: ")))
 
   (when (stringp method)
-    (setq method (gnus-server-to-method method)))
+    (setq method (or (gnus-server-to-method method) method)))
   (let* ((meth (when (and method
 			  (not (gnus-server-equal method gnus-select-method)))
 		 (if address (list (intern method) address)

@@ -896,11 +896,12 @@ ARG is passed to the first function."
       (setq alist (delq entry alist)))
     alist))
 
-(defmacro gnus-pull (key alist)
+(defmacro gnus-pull (key alist &optional assoc-p)
   "Modify ALIST to be without KEY."
   (unless (symbolp alist)
     (error "Not a symbol: %s" alist))
-  `(setq ,alist (delq (assq ,key ,alist) ,alist)))
+  (let ((fun (if assoc-p 'assoc 'assq)))
+    `(setq ,alist (delq (,fun ,key ,alist) ,alist))))
 
 (defun gnus-globalify-regexp (re)
   "Returns a regexp that matches a whole line, iff RE matches a part of it."

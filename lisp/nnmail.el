@@ -1642,7 +1642,9 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	    ((numberp days)
 	     (setq days (days-to-time days))
 	     ;; Compare the time with the current time.
-	     (time-less-p days (time-since time)))))))
+	     (condition-case ()
+		 (time-less-p days (time-since time))
+	       (error nil)))))))
 
 (defvar nnmail-read-passwd nil)
 (defun nnmail-read-passwd (prompt &rest args)
@@ -1774,7 +1776,11 @@ If ARGS, PROMPT is used as an argument to `format'."
 (defun nnmail-pop3-movemail (inbox crashbox)
   "Function to move mail from INBOX on a pop3 server to file CRASHBOX."
   (let ((pop3-maildrop
-         (substring inbox (match-end (string-match "^po:" inbox)))))
+         (substring inbox (match-end (string-match "^po:" inbox))))
+	(pop3-password
+	 (or nnmail-pop-password
+	     (nnmail-read-passwd
+	      (format "Password for %s: " inbox)))))
     (pop3-movemail crashbox)))
 
 (defun nnmail-within-headers-p ()

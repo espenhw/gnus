@@ -558,7 +558,7 @@ the actual number of articles toggled is returned."
 		(gnus-delete-line))
 	      (insert group " " (number-to-string (cdr active)) " "
 		      (number-to-string (car active)) " y\n"))
-	  (when (re-search-forward (concat (regexp-quote group) " ") nil t)
+	  (when (re-search-forward (concat (regexp-quote group) "\\($\\| \\)") nil t)
 	    (gnus-delete-line))
 	  (insert-buffer-substring nntp-server-buffer))))))
 
@@ -982,7 +982,11 @@ the actual number of articles toggled is returned."
       (gnus-agent-fetch-articles
        group (gnus-uncompress-range (cdr arts)))
       (setq marks (delq arts (gnus-info-marks info)))
-      (gnus-info-set-marks info marks))))
+      (gnus-info-set-marks info marks)
+      (gnus-dribble-enter
+       (concat "(gnus-group-set-info '"
+	       (gnus-prin1-to-string info)
+	       ")")))))
 
 ;;;
 ;;; Agent Category Mode

@@ -46,7 +46,7 @@
       (set-extent-property annot 'mm t)
       (set-extent-property annot 'duplicable t)
       (mm-handle-set-undisplayer handle annot))
-    (insert " ")))
+    (insert " \n")))
 
 (defun mm-inline-text (handle)
   (let ((type (cadr (split-string (car (mm-handle-type handle)) "/")))
@@ -85,8 +85,8 @@
 	  (require 'url)
 	  (save-window-excursion
 	    (w3-region (point-min) (point-max))
-	    (setq text (buffer-string))))
-	(mm-insert-inline handle text)))
+	    (setq text (buffer-string)))))
+      (mm-insert-inline handle text))
      ((or (equal type "enriched")
 	  (equal type "richtext"))
       (save-excursion

@@ -222,6 +222,21 @@ See also `with-temp-file' and `with-output-to-string'."
 (put 'mm-with-unibyte-buffer 'lisp-indent-function 0)
 (put 'mm-with-unibyte-buffer 'edebug-form-spec '(body))
 
+(defun mm-find-charset-region (b e)
+  "Return a list of charsets in the region."
+  (if enable-multibyte-characters
+      (find-charset-region b e)
+    ;; We are in a unibyte buffer, so we futz around a bit.
+    (save-excursion
+      (save-restriction
+	(narrow-to-region b e)
+	(goto-char (point-min))
+	(let ((entry (assoc current-language-environment language-info-alist)))
+	  (skip-chars-forward "\0-\177")
+	  (if (eobp)
+	      '(ascii)
+	    (list 'ascii (car (last (assq 'charset entry))))))))))
+
 (provide 'mm-util)
 
 ;;; mm-util.el ends here

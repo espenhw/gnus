@@ -298,6 +298,16 @@ on your system, you could say something like:
 	   (if (numberp num) num 0)))
      (or (eobp) (forward-char 1))))
 
+(defmacro nnheader-nov-parse-extra ()
+  '(let (out string)
+     (while (not (memq (char-after) '(?\n nil)))
+       (setq string (nnheader-nov-field))
+       (when (string-match "^\\([^ :]+\\): " string)
+	 (push (cons (intern (match-string 1 string))
+		     (substring string (match-end 0)))
+	       out)))
+     out))
+
 (defun nnheader-parse-nov ()
   (let ((eol (gnus-point-at-eol)))
     (vector
@@ -313,7 +323,7 @@ on your system, you could say something like:
      (if (eq (char-after) ?\n)
 	 nil
        (nnheader-nov-field))		; misc
-     )))
+     (nnheader-nov-parse-extra))))	; extra
 
 (defun nnheader-insert-nov (header)
   (princ (mail-header-number header) (current-buffer))
@@ -330,9 +340,11 @@ on your system, you could say something like:
   (insert "\t")
   (princ (or (mail-header-lines header) 0) (current-buffer))
   (insert "\t")
+  (when (mail-header-xref header)
+    (insert "Xref: " (mail-header-xref header)))
   (when (or (mail-header-xref header)
 	    (mail-header-extra header))
-    (insert "Xref: " (mail-header-xref header) "\t"))
+    (insert "\t"))
   (when (mail-header-extra header)
     (let ((extra (mail-header-extra header)))
       (while extra

@@ -434,7 +434,7 @@ call it with the value of the `gnus-data' text property."
   (defun gnus-byte-code (func)
     "Return a form that can be `eval'ed based on FUNC."
     (let ((fval (indirect-function func)))
-      (if (byte-code-function-p fval)
+      (if (compiled-function-p fval)
 	  (list 'funcall fval)
 	(cons 'progn (cdr (cdr fval))))))
 

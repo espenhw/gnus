@@ -551,6 +551,7 @@ displayed by the first non-nil matching CONTENT face."
   '(("\202" ",")
     ("\203" "f")
     ("\204" ",,")
+    ("\205" "...")
     ("\213" "<")
     ("\214" "OE")
     ("\205" "...")
@@ -567,7 +568,7 @@ displayed by the first non-nil matching CONTENT face."
     ("\264" "'"))
   "Table for MS-to-Latin1 translation.")
 
-(defcustom gnus-ignored-mime-types '("text/x-vcard")
+(defcustom gnus-ignored-mime-types nil
   "List of MIME types that should be ignored by Gnus."
   :group 'gnus-mime
   :type '(repeat regexp))
@@ -578,7 +579,8 @@ displayed by the first non-nil matching CONTENT face."
   :type '(choice (const :tag "Off" nil)
 		 (const :tag "On" t)
 		 (const :tag "Last" last)
-		 (integer :tag "Less")))
+		 (integer :tag "Less")
+		 (sexp :tag "Predicate")))
 
 ;;; Internal variables
 
@@ -925,13 +927,16 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
 	  (end-of-line 2))))))
 
 (defun article-remove-cr ()
-  "Remove carriage returns from an article."
+  "Translate CRLF pairs into LF, and then CR into LF.."
   (interactive)
   (save-excursion
     (let ((buffer-read-only nil))
       (goto-char (point-min))
+      (while (search-forward "\r$" nil t)
+	(replace-match "" t t))
+      (goto-char (point-min))
       (while (search-forward "\r" nil t)
-	(replace-match "" t t)))))
+	(replace-match "\n" t t)))))
 
 (defun article-remove-trailing-blank-lines ()
   "Remove all trailing blank lines from the article."
@@ -1032,6 +1037,8 @@ If PROMPT (the prefix), prompt for a coding system to use."
 			(gnus-group-find-parameter
 			 gnus-newsgroup-name 'charset))))
 	     buffer-read-only)
+	(when charset
+	  (setq charset (downcase charset)))
 	(goto-char (point-max))
 	(widen)
 	(forward-line 1)
@@ -1040,7 +1047,8 @@ If PROMPT (the prefix), prompt for a coding system to use."
 		  (equal (car ctl) "text/plain"))
 	  (mm-decode-body
 	   charset (and cte (intern (downcase
-				     (gnus-strip-whitespace cte))))))))))
+				     (gnus-strip-whitespace cte))))
+	   (car ctl)))))))
 
 (defun article-decode-encoded-words ()
   "Remove encoded-word encoding from headers."
@@ -2235,7 +2243,16 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 (defun gnus-mime-button-menu (event)
   "Construct a context-sensitive menu of MIME commands."
   (interactive "e")
-  )
+  (let ((response (x-popup-menu 
+                  t `("MIME Part" 
+                      ("" ,@(mapcar (lambda (c)
+                                      (cons (caddr c) (car c)))
+                                    gnus-mime-button-commands)))))
+        (pos (event-start event)))
+    (when response
+      (set-buffer (window-buffer (posn-window pos)))
+      (goto-char (posn-point pos))
+      (funcall response))))
 
 (defun gnus-mime-view-all-parts ()
   "View all the MIME parts."
@@ -2303,8 +2320,10 @@ If ALL-HEADERS is non-nil, no headers are hidden."
       (error "No such part"))
     (let ((handle (cdr (assq n gnus-article-mime-handle-alist))))
       (gnus-article-goto-part n)
-      (gnus-set-window-start)
-      (gnus-mm-display-part handle))))
+      (if (equal (car handle) "multipart/alternative")
+	  (gnus-article-press-button)
+	(when (eq (gnus-mm-display-part handle) 'internal)
+	  (gnus-set-window-start))))))
 
 (defun gnus-mm-display-part (handle)
   "Display HANDLE and fix MIME button."
@@ -2314,8 +2333,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (delete-region (gnus-point-at-bol) (progn (forward-line 1) (point)))
     (gnus-insert-mime-button
      handle id (list (not (mm-handle-displayed-p handle))))
-    (mm-display-part handle)
-    (goto-char point)))
+    (prog1
+	(mm-display-part handle)
+      (goto-char point))))
 
 (defun gnus-article-goto-part (n)
   "Go to MIME part N."
@@ -2383,7 +2403,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (while (setq handle (pop handles))
       (if (stringp (car handle))
 	  (if (equal (car handle) "multipart/alternative")
-	      (gnus-mime-display-alternative (cdr handle))
+	      (let ((id (1+ (length gnus-article-mime-handle-alist))))
+		(push (cons id handle) gnus-article-mime-handle-alist)
+		(gnus-mime-display-alternative (cdr handle) nil nil id))
 	    (gnus-mime-display-mixed (cdr handle)))
 	(gnus-mime-display-single handle)))))
 
@@ -2420,17 +2442,42 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	  (mm-insert-inline handle (mm-get-part handle))
 	  (goto-char (point-max))))))))
 
-(defun gnus-mime-display-alternative (handles &optional preferred ibegend)
+(defun gnus-mime-display-alternative (handles &optional preferred ibegend id)
   (let* ((preferred (mm-preferred-alternative handles preferred))
 	 (ihandles handles)
 	 (point (point))
-	 handle buffer-read-only from props begend)
+	 handle buffer-read-only from props begend not-pref)
     (save-restriction
       (when ibegend
 	(narrow-to-region (car ibegend) (cdr ibegend))
 	(delete-region (point-min) (point-max))
 	(mm-remove-parts handles))
       (setq begend (list (point-marker)))
+      ;; Do the toggle.
+      (unless (setq not-pref (cadr (member preferred ihandles)))
+	(setq not-pref (car ihandles)))
+      (gnus-add-text-properties
+       (setq from (point))
+       (progn
+	 (insert (format "%d.  " id))
+	 (point))
+       `(gnus-callback
+	 (lambda (handles)
+	   (gnus-mime-display-alternative
+	    ',ihandles ,(if (stringp (car not-pref))
+			    (car not-pref)
+			  (car (mm-handle-type not-pref)))
+	    ',begend ,id))
+	 local-map ,gnus-mime-button-map
+	 ,gnus-mouse-face-prop ,gnus-article-mouse-face
+	 face ,gnus-article-button-face
+	 keymap ,gnus-mime-button-map
+	 gnus-part ,id
+	 gnus-data ,handle))
+      (widget-convert-button 'link from (point)
+			     :action 'gnus-widget-press-button
+			     :button-keymap gnus-widget-button-keymap)
+      ;; Do the handles
       (while (setq handle (pop handles))
 	(gnus-add-text-properties
 	 (setq from (point))
@@ -2447,11 +2494,12 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	      ',ihandles ,(if (stringp (car handle))
 			      (car handle)
 			    (car (mm-handle-type handle)))
-	      ',begend))
+	      ',begend ,id))
 	   local-map ,gnus-mime-button-map
 	   ,gnus-mouse-face-prop ,gnus-article-mouse-face
 	   face ,gnus-article-button-face
 	   keymap ,gnus-mime-button-map
+	   gnus-part ,id
 	   gnus-data ,handle))
 	(widget-convert-button 'link from (point)
 			       :action 'gnus-widget-press-button
@@ -3376,7 +3424,6 @@ specified by `gnus-button-alist'."
 (defun gnus-button-push (marker)
   ;; Push button starting at MARKER.
   (save-excursion
-    (set-buffer gnus-article-buffer)
     (goto-char marker)
     (let* ((entry (gnus-button-entry))
 	   (inhibit-point-motion-hooks t)

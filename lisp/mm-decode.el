@@ -145,7 +145,7 @@
 (defun mm-dissect-multipart (ctl)
   (goto-char (point-min))
   (let* ((boundary (concat "\n--" (mail-content-type-get ctl 'boundary)))
-	(close-delimiter (concat boundary "--[ \t]*$"))
+	(close-delimiter (concat (regexp-quote boundary) "--[ \t]*$"))
 	start parts 
 	(end (save-excursion	
 	       (goto-char (point-max))
@@ -174,7 +174,7 @@
     (let ((obuf (current-buffer))
 	  beg)
       (goto-char (point-min))
-      (search-forward "\n\n" nil t)
+      (search-forward-regexp "^\n" nil t)
       (setq beg (point))
       (set-buffer (generate-new-buffer " *mm*"))
       (insert-buffer-substring obuf beg)
@@ -185,7 +185,9 @@
   (eq (mm-user-method type) 'inline))
 
 (defun mm-display-part (handle &optional no-default)
-  "Display the MIME part represented by HANDLE."
+  "Display the MIME part represented by HANDLE.
+Returns nil if the part is removed; inline if displayed inline;
+external if displayed external."
   (save-excursion
     (mailcap-parse-mailcaps)
     (if (mm-handle-displayed-p handle)
@@ -203,10 +205,13 @@
 	    (if (and (not user-method)
 		     (not method)
 		     (equal "text" (car (split-string type))))
-		(mm-insert-inline handle (mm-get-part handle))
+		(progn
+		  (mm-insert-inline handle (mm-get-part handle))
+		  'inline)
 	      (mm-display-external
 	       handle (or user-method method
-			  'mailcap-save-binary-file)))))))))
+			  'mailcap-save-binary-file))
+	      'external)))))))
 
 (defun mm-display-external (handle method)
   "Display HANDLE using METHOD."

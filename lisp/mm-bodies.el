@@ -43,7 +43,7 @@ If no encoding was done, nil is returned."
   (save-excursion
     (goto-char (point-min))
     (let ((charsets
-	   (delq 'ascii (find-charset-region (point-min) (point-max))))
+	   (delq 'ascii (mm-find-charset-region (point-min) (point-max))))
 	  charset)
       (cond
        ;; No encoding.
@@ -121,16 +121,15 @@ If no encoding was done, nil is returned."
 	(funcall encoding (point-min) (point-max))
       (error nil)))
    (t
-    (message "Unknown encoding %s; defaulting to 8bit" encoding)
-    )))
+    (message "Unknown encoding %s; defaulting to 8bit" encoding))))
 
-(defun mm-decode-body (charset &optional encoding)
+(defun mm-decode-body (charset &optional encoding type)
   "Decode the current article that has been encoded with ENCODING.
 The characters in CHARSET should then be decoded."
   (setq charset (or charset rfc2047-default-charset))
   (save-excursion
     (when encoding
-      (mm-decode-content-transfer-encoding encoding))
+      (mm-decode-content-transfer-encoding encoding type))
     (when (featurep 'mule)
       (let (mule-charset)
 	(when (and charset

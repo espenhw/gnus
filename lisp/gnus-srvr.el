@@ -550,9 +550,9 @@ The following commands are available:
 
 (defun gnus-browse-foreign-server (server &optional return-buffer)
   "Browse the server SERVER."
-  (setq gnus-browse-current-method server)
+  (setq gnus-browse-current-method (gnus-server-to-method server))
   (setq gnus-browse-return-buffer return-buffer)
-  (let* ((method (gnus-server-to-method server))
+  (let* ((method gnus-browse-current-method)
 	 (gnus-select-method method)
 	 groups group)
     (gnus-message 5 "Connecting to %s..." (nth 1 method))

@@ -269,6 +269,14 @@ this group uses will be queried."
       (funcall (gnus-get-function gnus-command-method func)
 	       (gnus-group-real-name group) (nth 1 gnus-command-method)))))
 
+(defun gnus-request-group-articles (group)
+  "Request a list of existing articles in GROUP."
+  (let ((gnus-command-method (gnus-find-method-for-group group))
+	(func 'request-group-articles))
+    (when (gnus-check-backend-function func group)
+      (funcall (gnus-get-function gnus-command-method func)
+	       (gnus-group-real-name group) (nth 1 gnus-command-method)))))
+
 (defun gnus-close-group (group)
   "Request the GROUP be closed."
   (let ((gnus-command-method (inline (gnus-find-method-for-group group))))

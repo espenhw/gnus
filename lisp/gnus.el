@@ -254,7 +254,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.40"
+(defconst gnus-version-number "0.41"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -2585,22 +2585,18 @@ just the host name."
     ;; separate foreign select method from group name and collapse.
     ;; if method contains a server, collapse to non-domain server name,
     ;; otherwise collapse to select method
-    (when (string-match ":" group)
-      (cond ((string-match "+" group)
-	     (let* ((plus (string-match "+" group))
-		    (colon (string-match ":" group (or plus 0)))
-		    (dot (string-match "\\." group)))
-	       (setq foreign (concat
-			      (substring group (+ 1 plus)
-					 (cond ((null dot) colon)
-					       ((< colon dot) colon)
-					       ((< dot colon) dot)))
-			      ":")
-		     group (substring group (+ 1 colon)))))
-	    (t
-	     (let* ((colon (string-match ":" group)))
-	       (setq foreign (concat (substring group 0 (+ 1 colon)))
-		     group (substring group (+ 1 colon)))))))
+    (let* ((colon  (string-match ":" group))
+	   (server (and colon (substring group 0 colon)))
+	   (plus   (and server (string-match "+" server))))
+      (when server
+	(cond (plus
+	       (setq foreign (substring server (+ 1 plus)
+					(string-match "\\." server))
+		     group (substring group (+ 1 colon))))
+	       (t
+		(setq foreign server
+		      group (substring group (+ 1 colon)))))
+	(setq foreign (concat foreign ":"))))
     ;; collapse group name leaving LEVELS uncollapsed elements
     (while group
       (if (and (string-match "\\." group) (> levels 0))

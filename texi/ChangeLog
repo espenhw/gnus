@@ -1,3 +1,12 @@
+1998-11-07 17:18:07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Gnus Reference Guide): Renamed.
+
+1998-10-26 22:03:08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Article Washing): Fix.
+	(MIME Commands): Change.
+
 1998-10-25 01:51:56  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Headers): Addition.

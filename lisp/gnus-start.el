@@ -1103,10 +1103,16 @@ for new groups, and subscribe the new groups as zombies."
     got-new))
 
 (defun gnus-check-first-time-used ()
-  (if (or (file-exists-p gnus-startup-file)
-	  (file-exists-p (concat gnus-startup-file ".el"))
-	  (file-exists-p (concat gnus-startup-file ".eld")))
-      nil
+  (catch 'ended
+    (let ((files (list gnus-current-startup-file
+		       (concat gnus-current-startup-file ".el")
+		       (concat gnus-current-startup-file ".eld")
+		       gnus-startup-file
+		       (concat gnus-startup-file ".el")
+		       (concat gnus-startup-file ".eld"))))
+      (while files
+	(when (file-exists-p (pop files))
+	  (throw 'ended nil))))
     (gnus-message 6 "First time user; subscribing you to default groups")
     (unless (gnus-read-active-file-p)
       (let ((gnus-read-active-file t))

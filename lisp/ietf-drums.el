@@ -226,7 +226,7 @@
   "Narrow to the header section in the current buffer."
   (narrow-to-region
    (goto-char (point-min))
-   (if (search-forward "\n\n" nil 1)
+   (if (re-search-forward "^\n" nil 1)
        (1- (point))
      (point-max)))
   (goto-char (point-min)))

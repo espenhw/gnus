@@ -22,6 +22,10 @@ rem
 rem which will allow the batch file to accept an unlimited number of
 rem parameters.
 
+rem Clear PWD so emacs doesn't get confused
+set GNUS_PWD_SAVE=%PWD%
+set PWD=
+
 if "%1" == "" goto usage
 
 cd lisp
@@ -54,4 +58,7 @@ echo                    eg. d:\emacs\19.34
 echo        copy indicates that the compiled files should be copied to your
 echo             emacs lisp, info, and etc directories
 
+rem Restore PWD so whoever called this batch file doesn't get confused
+set PWD=%GNUS_PWD_SAVE%
+set GNUS_PWD_SAVE=
 :end

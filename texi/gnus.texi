@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.40 Manual
+@settitle Pterodactyl Gnus 0.41 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.40 Manual
+@title Pterodactyl Gnus 0.41 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.40.
+This manual corresponds to Pterodactyl Gnus 0.41.
 
 @end ifinfo
 
@@ -3447,7 +3447,7 @@ headers are used instead.
 
 @vindex nnmail-extra-headers
 A related variable is @code{nnmail-extra-headers}, which controls when
-to include extra headers when generating active files.
+to include extra headers when generating overview (@sc{nov}) files.
 
 In summary, you'd typically do something like the following:
 
@@ -3639,6 +3639,9 @@ set this variable to @code{nil} to get the normal Emacs scrolling
 action.  This will also inhibit horizontal re-centering of the summary
 buffer, which might make it more inconvenient to read extremely long
 threads.
+
+This variable can also be a number.  In that case, center the window at
+the given number of lines from the top.
 
 @end table
 
@@ -3901,7 +3904,7 @@ goes out to all people listed in the @code{To}, @code{From} (or
 @kindex S W (Summary)
 @findex gnus-summary-wide-reply-with-original
 Mail a wide reply to the current article and include the original
-message (@code{gnus-summary-reply-with-original}).  This command uses
+message (@code{gnus-summary-wide-reply-with-original}).  This command uses
 the process/prefix convention.
 
 @item S o m
@@ -6569,7 +6572,9 @@ when filling.
 @item W c
 @kindex W c (Summary)
 @findex gnus-article-remove-cr
-Remove CR (i. e., @samp{^M}s on the end of the lines)
+Translate CRLF pairs (i. e., @samp{^M}s on the end of the lines) into LF
+(this takes care of DOS line endings), and then translate any remaining
+CRs into LF (this takes care of Mac line endings)
 (@code{gnus-article-remove-cr}).
 
 @item W q
@@ -6917,7 +6922,14 @@ Relevant variables:
 @vindex gnus-ignored-mime-types
 This is a list of regexps.  @sc{mime} types that match a regexp from
 this list will be completely ignored by Gnus.  The default value is
-@code{("text/x-vcard")}.
+@code{nil}.
+
+To have all Vcards be ignored, you'd say something like this:
+
+@lisp
+(setq gnus-ignored-mime-types
+      '("text/x-vcard"))
+@end lisp
 
 @end table
 
@@ -14401,6 +14413,15 @@ and so on.  Create as many faces as you wish.  The same goes for the
 @code{mouse-face} specs---you can say @samp{%3(hello%)} to have
 @samp{hello} mouse-highlighted with @code{gnus-mouse-face-3}.
 
+Text inside the @samp{%<} and @samp{%>} specifiers will get the special
+@code{balloon-help} property set to @code{gnus-balloon-face-0}. If you say
+@samp{%1<}, you'll get @code{gnus-balloon-face-1} and so on. The
+@code{gnus-balloon-face-*} variables should be either strings or
+symbols naming functions that return a string. Under @code{balloon-help-mode},
+when the mouse passes over text with this property set, a balloon window 
+will appear and display the string. Please refer to the doc string of
+@code{balloon-help-mode} for more information on this.
+
 Here's an alternative recipe for the group buffer:
 
 @lisp
@@ -15882,7 +15903,7 @@ but at the common table.@*
 * Terminology::                    We use really difficult, like, words here.
 * Customization::                  Tailoring Gnus to your needs.
 * Troubleshooting::                What you might try if things do not work.
-* A Programmers Guide to Gnus::    Rilly, rilly technical stuff.
+* Gnus Reference Guide::           Rilly, rilly technical stuff.
 * Emacs for Heathens::             A short introduction to Emacsian terms.
 * Frequently Asked Questions::     A question-and-answer session.
 @end menu
@@ -18303,6 +18324,11 @@ The documentation should mention pop3.el, fetchmail, smtpmail and why
 po:username often fails.
 
 @item
+Fetch by Message-ID from dejanews.
+
+<URL:http://search.dejanews.com/msgid.xp?MID=%3C62h9l9$hm4@@basement.replay.com%3E&fmt=raw>
+
+@item
 Solve the halting problem.
 
 @c TODO
@@ -18769,8 +18795,8 @@ Write to @samp{ding-request@@gnus.org} to subscribe.
 
 
 @page
-@node A Programmers Guide to Gnus
-@section A Programmer@'s Guide to Gnus
+@node Gnus Reference Guide
+@section Gnus Reference Guide
 
 It is my hope that other people will figure out smart stuff that Gnus
 can do, and that other people will write those smart things as well.  To

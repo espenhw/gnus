@@ -1,5 +1,5 @@
 ;;; nntp.el --- nntp access for Gnus
-;;; Copyright (C) 1987-90,92-97 Free Software Foundation, Inc.
+;;; Copyright (C) 1987-90,92-98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -270,9 +270,9 @@ If this variable is nil, which is the default, no timers are set.")
 	  (nntp-decode-text (not decode))
 	  (unless discard
 	    (save-excursion
-	      (set-buffer buffer)
-	      (goto-char (point-max))
-	      (insert-buffer-substring (process-buffer process))
+ 	      (set-buffer buffer)
+ 	      (goto-char (point-max))
+ 	      (insert-buffer-substring (process-buffer process))
 	      ;; Nix out "nntp reading...." message.
 	      (when nntp-have-messaged
 		(setq nntp-have-messaged nil)
@@ -614,9 +614,14 @@ If this variable is nil, which is the default, no timers are set.")
 	   (setq nntp-server-list-active-group t)))))
 
 (deffoo nntp-list-active-group (group &optional server)
-  "Return the active info on GROUP (which can be a regexp."
+  "Return the active info on GROUP (which can be a regexp)."
   (nntp-possibly-change-group nil server)
-  (nntp-send-command "^.*\r?\n" "LIST ACTIVE" group))
+  (nntp-send-command "^\\.*\r?\n" "LIST ACTIVE" group))
+
+(deffoo nntp-request-group-articles (group &optional server)
+  "Return the list of existing articles in GROUP."
+  (nntp-possibly-change-group nil server)
+  (nntp-send-command "^\\.*\r?\n" "LISTGROUP" group))
 
 (deffoo nntp-request-article (article &optional group server buffer command)
   (nntp-possibly-change-group group server)
@@ -745,7 +750,7 @@ If this variable is nil, which is the default, no timers are set.")
 This function is supposed to be called from `nntp-server-opened-hook'.
 It will make innd servers spawn an nnrpd process to allow actual article
 reading."
-  (nntp-send-command "^.*\r?\n" "MODE READER"))
+  (nntp-send-command "^\\.*\r?\n" "MODE READER"))
 
 (defun nntp-send-authinfo (&optional send-if-force)
   "Send the AUTHINFO to the nntp server.
@@ -853,7 +858,7 @@ password contained in '~/.nntp-authinfo'."
     (when (and (buffer-name pbuffer)
 	       process)
       (process-kill-without-query process)
-      (nntp-wait-for process "^.*\n" buffer nil t)
+      (nntp-wait-for process "^\\.*\n" buffer nil t)
       (if (memq (process-status process) '(open run))
 	  (prog1
 	      (caar (push (list process buffer nil) nntp-connection-alist))
@@ -1111,7 +1116,6 @@ password contained in '~/.nntp-authinfo'."
 	  (delete-char -1))
 	(goto-char (point-min))
 	(delete-matching-lines "^\\.$\\|^[1-5][0-9][0-9] ")
-	;;(copy-to-buffer nntp-server-buffer (point-min) (point-max))
 	t))))
 
   nntp-server-xover)

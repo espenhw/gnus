@@ -242,14 +242,15 @@ nil means let mailer mail back a message to report errors."
   :group 'message-mail
   :type 'boolean)
 
-(defcustom message-generate-new-buffers t
+(defcustom message-generate-new-buffers 'unique
   "*Non-nil means that a new message buffer will be created whenever `message-setup' is called.
 If this is a function, call that function with three parameters:  The type,
 the to address and the group name.  (Any of these may be nil.)  The function
 should return the new buffer name."
   :group 'message-buffers
   :type '(choice (const :tag "off" nil)
-		 (const :tag "on" t)
+		 (const :tag "unique" unique)
+		 (const :tag "unsuniqueent" unsent)
 		 (function fun)))
 
 (defcustom message-kill-buffer-on-exit nil
@@ -652,6 +653,13 @@ mail aliases off.")
 If nil, Message won't auto-save."
   :group 'message-buffers
   :type 'directory)
+
+(defcustom message-buffer-naming-style 'unique
+  "*The way new message buffers are named.
+Valid valued are `unique' and `unsent'."
+  :group 'message-buffers
+  :type '(choice (const :tag "unique" unique)
+		 (const :tag "unsent" unsent)))
 
 ;;; Internal variables.
 ;;; Well, not really internal.
@@ -3140,9 +3148,19 @@ Headers already prepared in the buffer are not modified."
    ((message-functionp message-generate-new-buffers)
     (funcall message-generate-new-buffers type to group))
    ;; Generate a new buffer name The Message Way.
-   (message-generate-new-buffers
+   ((eq message-generate-new-buffers 'unique)
     (generate-new-buffer-name
      (concat "*" type
+	     (if to
+		 (concat " to "
+			 (or (car (mail-extract-address-components to))
+			     to) "")
+	       "")
+	     (if (and group (not (string= group ""))) (concat " on " group) "")
+	     "*")))
+   ((eq message-generate-new-buffers 'unsent)
+    (generate-new-buffer-name
+     (concat "*unsent " type
 	     (if to
 		 (concat " to "
 			 (or (car (mail-extract-address-components to))
@@ -3185,7 +3203,7 @@ Headers already prepared in the buffer are not modified."
   ;; Rename the buffer.
   (if message-send-rename-function
       (funcall message-send-rename-function)
-    (when (string-match "\\`\\*" (buffer-name))
+    (when (string-match "\\`\\*\\(unsent \\)?" (buffer-name))
       (rename-buffer
        (concat "*sent " (substring (buffer-name) (match-end 0))) t)))
   ;; Push the current buffer onto the list.
