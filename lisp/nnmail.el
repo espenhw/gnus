@@ -342,11 +342,12 @@ discarded after running the split process."
   :type 'hook)
 
 (defcustom nnmail-large-newsgroup 50
-  "*The number of the articles which indicates a large newsgroup.
+  "*The number of the articles which indicates a large newsgroup or nil.
 If the number of the articles is greater than the value, verbose
 messages will be shown to indicate the current status."
   :group 'nnmail-various
-  :type 'integer)
+  :type '(choice (const :tag "infinite" nil)
+                 (number :tag "count")))
 
 (defcustom nnmail-split-fancy "mail.misc"
   "Incoming mail can be split according to this fancy variable.
