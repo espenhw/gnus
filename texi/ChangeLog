@@ -1,3 +1,7 @@
+2003-10-12  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Group Mail Splitting): Markup fix.
+
 2003-10-03  Jesper Harder  <harder@ifa.au.dk>
 
 	* emacs-mime.texi (Files and Directories): Update.

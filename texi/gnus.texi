@@ -14123,7 +14123,7 @@ splits like this:
 parameters will be scanned to generate the output split.
 @var{no-crosspost} can be used to disable cross-posting; in this case, a
 single @code{|} split will be output.  @var{catch-all} is the fall back
-fancy split, used like @var{gnus-group-split-default-catch-all-group}.
+fancy split, used like @code{gnus-group-split-default-catch-all-group}.
 If @var{catch-all} is @code{nil}, or if @var{split-regexp} matches the
 empty string in any selected group, no catch-all split will be issued.
 Otherwise, if some group has @var{split-spec} set to @code{catch-all},
