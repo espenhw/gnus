@@ -49,11 +49,6 @@
 ;; for nnimap-split-download-body-default
 (eval-when-compile (require 'nnimap))
 
-;; autoload executable-find
-(eval-and-compile
-  ;; executable-find is not autoloaded in Emacs 20
-  (autoload 'executable-find "executable"))
-
 ;; autoload query-dig
 (eval-and-compile
   (autoload 'query-dig "dig"))

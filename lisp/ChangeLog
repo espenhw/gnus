@@ -1,3 +1,18 @@
+2004-01-05  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* netrc.el: autoload password-read
+	(netrc): new configuration group
+	(netrc-encoding-method, netrc-openssl-path): configuration
+	variables for encoding and decoding of files with symmetric
+	ciphers
+	(netrc-encode): assistant function to encode a file with
+	netrc-encoding-method
+	(netrc-parse): added interactive parameter, added optional
+	decoding if netrc-encoding-method is non-nil but otherwise
+	behavior is standard
+
+	* spam.el: remove executable-find autoload
+
 2004-01-05  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-registry.el: Remove Emacs 20 hash table compatibility code.

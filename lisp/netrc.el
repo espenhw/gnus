@@ -31,10 +31,67 @@
 ;;; Code:
 
 ;;;
-;;; .netrc and .authinforc parsing
+;;; .netrc and .authinfo rc parsing
 ;;;
 
+;; autoload password
+(eval-and-compile
+  (autoload 'password-read "password"))
+
+(defgroup netrc nil
+ "Netrc configuration.")
+
+(defcustom netrc-encoding-method nil
+  "Decoding method used for the netrc file.
+Use the OpenSSL symmetric ciphers here.  Leave nil for no
+decoding.  Encode the file with netrc-encode, but make sure you
+have set netrc-encoding-method to a non-nil value."
+  :type '(choice
+	  (const :tag "DES-3" "des3")
+	  (const :tag "IDEA" "idea")
+	  (const :tag "RC4" "rc4")
+	  (string :tag "Explicit cipher name")
+	  (const :tag "None" nil))
+  :group 'netrc)
+
+(defcustom netrc-openssl-path (executable-find "openssl")
+  "File path of the OpenSSL shell."
+  :type '(choice (file :tag "Location of openssl")
+		 (const :tag "openssl is not installed" nil))
+  :group 'netrc)
+
+(defun netrc-encode (plain-file encoded-file)
+  (interactive "fPlain File: \nFEncoded File: ")
+  "Encode FILE to ENCODED-FILE with netrc-encoding-method cipher."
+  (when (and (file-exists-p plain-file)
+	     (stringp encoded-file)
+	     netrc-encoding-method
+	     netrc-openssl-path)
+    (let ((buffer-file-coding-system 'binary)
+	  (coding-system-for-read 'binary)
+	  (coding-system-for-write 'binary)
+	  (password 
+	   (password-read
+	    (format "OpenSSL Password for cipher %s? "
+		    netrc-encoding-method)
+	    (format "netrc-openssl-password-%s"
+		    netrc-encoding-method))))
+      (when password
+	(with-temp-buffer
+	  (insert-file-contents plain-file)
+	  (setenv "NETRC_OPENSSL_PASSWORD" password)
+	  (shell-command-on-region 
+	   (point-min) 
+	   (point-max)
+	   (format "%s %s -pass env:NETRC_OPENSSL_PASSWORD -e"
+		   netrc-openssl-path
+		   netrc-encoding-method)
+	   t
+	   t)
+	  (write-file encoded-file t))))))
+
 (defun netrc-parse (file)
+  (interactive "fFile to Parse: ")
   "Parse FILE and return an list of all entries in the file."
   (when (file-exists-p file)
     (with-temp-buffer
@@ -42,7 +99,29 @@
 		      "password" "account" "macdef" "force"
 		      "port"))
 	    alist elem result pair)
-	(insert-file-contents file)
+	(if (and netrc-encoding-method
+		 netrc-openssl-path)
+	    (let ((buffer-file-coding-system 'binary)
+		  (coding-system-for-read 'binary)
+		  (coding-system-for-write 'binary)
+		  (password 
+		   (password-read
+		    (format "OpenSSL Password for cipher %s? "
+			    netrc-encoding-method)
+		    (format "netrc-openssl-password-%s" 
+			    netrc-encoding-method))))
+	      (when password
+		(insert-file-contents file)
+		(setenv "NETRC_OPENSSL_PASSWORD" password)
+		(shell-command-on-region
+		 (point-min) 
+		 (point-max)
+		 (format "%s %s -pass env:NETRC_OPENSSL_PASSWORD -d"
+			 netrc-openssl-path
+			 netrc-encoding-method)
+		 t
+		 t)))
+	  (insert-file-contents file))
 	(goto-char (point-min))
 	;; Go through the file, line by line.
 	(while (not (eobp))
