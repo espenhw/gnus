@@ -146,6 +146,7 @@
       (forward-line 1))))
 
 (defun mml-unsecure-message ()
+  "Remove security related MML tags from message."
   (interactive)
   (save-excursion
     (goto-char (point-max))
