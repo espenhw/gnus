@@ -1688,8 +1688,7 @@ If SCAN, request a scan of that group as well."
       (cond ((and method (eq method-type 'foreign))
 	     ;; These groups are foreign.  Check the level.
 	     (if (<= (gnus-info-level info) foreign-level)
-		 (when (and (<= (gnus-info-level info) foreign-level)
-			    (setq active (gnus-activate-group group 'scan)))
+		 (when (setq active (gnus-activate-group group 'scan))
 		   ;; Let the Gnus agent save the active file.
 		   (when (and gnus-agent active (gnus-online method))
 		     (gnus-agent-save-group-info

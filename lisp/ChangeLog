@@ -1,3 +1,13 @@
+2004-11-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nntp.el (nntp-request-update-info): Return nil if
+	nntp-marks-is-evil is true so that gnus-get-unread-articles-in-group
+	may not call gnus-activate-group which uselessly issues the GROUP
+	commands for all nntp groups and wastes time.  Reported by Romain
+	Francoise <romain@orebokech.com>.
+
+	* gnus-start.el (gnus-get-unread-articles): Remove redundant test.
+
 2004-11-15  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-art.el (gnus-header-button-alist): Handle URLs in OpenPGP:
