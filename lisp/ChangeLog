@@ -1,3 +1,7 @@
+2000-10-20 19:55:59  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-inline-part): Check validity of charset.
+
 2000-10-18  Dave Love  <fx@gnu.org>
 
 	* mail-source.el (mm-util): Require.

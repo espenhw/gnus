@@ -3061,9 +3061,11 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		  (read-coding-system "Charset: ")))))
       (forward-line 2)
       (mm-insert-inline handle
-			(if charset 
-			    (mm-decode-coding-string
-			     contents (mm-charset-to-coding-system charset))
+			(if (and charset 
+				 (setq charset (mm-charset-to-coding-system 
+						charset))
+				 (not (eq charset 'ascii)))
+			    (mm-decode-coding-string contents charset)
 			  contents))
       (goto-char b))))
 
