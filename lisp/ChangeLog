@@ -1,3 +1,69 @@
+Sat May 31 15:41:09 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.56 is released.
+
+Sat May 31 14:51:37 1997  Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
+
+	* message.el (message-make-in-reply-to): Make valid In-Reply-To.
+
+Sat May 31 14:45:54 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-header-button-alist): Check for URLs in the
+	Subject. 
+
+Sat May 31 14:42:53 1997  Hrvoje Niksic <hniksic@srce.hr>
+
+	* gnus-xmas.el: Cleanup.
+
+Sat May 31 14:34:39 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-output-to-file): Return t.
+
+Sat May 31 14:14:40 1997  Guy Geens <Guy.Geens@elis.rug.ac.be>
+
+	* gnus-score.el (gnus-decay-score): Make decay work on negative
+	scores. 
+
+Sat May 31 14:07:53 1997  Kurt Swanson <kurt@dna.lth.se>
+
+	* nnmail.el (nnmail-article-group): Handle junk properly.
+
+Sat May 31 14:03:32 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-limit-children): Typo.  Wouldn't
+	marked NoCeM'ed out messages as read.
+
+Sat May 31 13:46:49 1997  Darren Stalder  <torin@daft.com>
+
+	* gnus-util.el (gnus-encode-date): Fix time zone.
+
+Sat May 31 13:38:02 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-move.el (gnus-move-group-to-server): Don't sort nil lists.
+
+Tue May 27 16:03:12 1997  Paul Franklin  <paul@cs.washington.edu>
+
+	* nnmail.el (nnmail-keep-last-article): clarify docstring
+
+Tue May 27 15:03:30 1997  Danny Siu  <dsiu@adobe.com>
+
+	* gnus-picon.el (gnus-group-display-picons): use
+ 	gnus-group-real-name so that picons for foreign groups display
+ 	correctly.
+
+Fri May 30 22:03:39 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-mode): Nix out topic missing group
+ 	function when switching off.
+
+	* gnus-salt.el (gnus-pick-start-reading): Don't prompt.
+
+Mon May 26 11:49:53 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-hack-decode-rfc1522): New function.
+
+	* gnus-sum.el (gnus-parse-headers-hook): New default.
+
 Sun May 25 17:08:16 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.55 is released.

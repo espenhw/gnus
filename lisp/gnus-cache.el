@@ -463,7 +463,7 @@ Returns the list of articles removed."
 	(gnus-cache-update-active group (car (last articles))))
       articles)))
 
-(defun gnus-cache-braid-nov (group cached)
+(defun gnus-cache-braid-nov (group cached &optional file)
   (let ((cache-buf (get-buffer-create " *gnus-cache*"))
 	beg end)
     (gnus-cache-save-buffers)
@@ -471,7 +471,7 @@ Returns the list of articles removed."
       (set-buffer cache-buf)
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
-      (insert-file-contents (gnus-cache-file-name group ".overview"))
+      (insert-file-contents (or file (gnus-cache-file-name group ".overview")))
       (goto-char (point-min))
       (insert "\n")
       (goto-char (point-min)))

@@ -508,21 +508,8 @@ call it with the value of the `gnus-data' text property."
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-setup-group-toolbar)
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-setup-summary-toolbar)
 
-  (add-hook 'gnus-summary-mode-hook 'gnus-xmas-switch-horizontal-scrollbar-off)
-
-  (when (and (<= emacs-major-version 19)
-	     (<= emacs-minor-version 13))
-    (setq gnus-article-x-face-too-ugly (when (eq (device-type) 'tty)
-					 "."))
-    (fset 'gnus-highlight-selected-summary
-	  'gnus-xmas-highlight-selected-summary)
-    (fset 'gnus-group-remove-excess-properties
-	  'gnus-xmas-group-remove-excess-properties)
-    (fset 'gnus-topic-remove-excess-properties
-	  'gnus-xmas-topic-remove-excess-properties)
-    (fset 'gnus-mode-line-buffer-identification 'identity)
-    (unless (boundp 'shell-command-switch)
-      (setq shell-command-switch "-c"))))
+  (add-hook 'gnus-summary-mode-hook
+	    'gnus-xmas-switch-horizontal-scrollbar-off))
 
 
 ;;; XEmacs logo and toolbar.
@@ -532,37 +519,37 @@ call it with the value of the `gnus-data' text property."
   ;; Insert the message.
   (setq gnus-xmas-glyph-directory (message-xmas-find-glyph-directory "gnus"))
   (erase-buffer)
-  (let ((logo (and gnus-xmas-glyph-directory
-		   (concat
-		    (file-name-as-directory gnus-xmas-glyph-directory)
-		    "gnus."
-		    (if (featurep 'xpm) "xpm" "xbm"))))
-	(xpm-color-symbols
-	 (and (featurep 'xpm)
-	      (append `(("thing" ,(car gnus-xmas-logo-colors))
-			("shadow" ,(cadr gnus-xmas-logo-colors)))
-		      xpm-color-symbols))))
-    (if (and (featurep 'xpm)
-	     (not (equal (device-type) 'tty))
-	     logo
-	     (file-exists-p logo))
-	(progn
-	  (setq logo (make-glyph logo))
-	  (insert " ")
-	  (set-extent-begin-glyph (make-extent (point) (point)) logo)
-	  (goto-char (point-min))
-	  (while (not (eobp))
-	    (insert (make-string (/ (max (- (window-width) (or x 35)) 0) 2)
-				 ? ))
-	    (forward-line 1))
-	  (goto-char (point-min))
-	  (let* ((pheight (+ 20 (count-lines (point-min) (point-max))))
-		 (wheight (window-height))
-		 (rest (- wheight pheight)))
-	    (insert (make-string (max 0 (* 2 (/ rest 3))) ?\n))))
-
-      (insert
-       (format "              %s
+  (cond
+   ((and (console-on-window-system-p)
+	 (or (featurep 'xpm)
+	     (featurep 'xbm)))
+    (let* ((logo-xpm (expand-file-name "gnus.xpm" gnus-xmas-glyph-directory))
+	   (logo-xbm (expand-file-name "gnus.xbm" gnus-xmas-glyph-directory))
+	   (glyph (make-glyph
+		   (list
+		    (vector 'xpm
+			    ':file logo-xpm
+			    ':color-symbols
+			    `(("thing" . ,(car gnus-xmas-logo-colors))
+			      ("shadow" . ,(cadr gnus-xmas-logo-colors))
+			      ("background" . ,(face-background 'default))))
+		    (vector 'xbm :file logo-xbm)
+		    (vector 'nothing)))))
+      (insert " ")
+      (set-extent-begin-glyph (make-extent (point) (point)) glyph)
+      (goto-char (point-min))
+      (while (not (eobp))
+	(insert (make-string (/ (max (- (window-width) (or x 35)) 0) 2)
+			     ?\ ))
+	(forward-line 1)))
+    (goto-char (point-min))
+    (let* ((pheight (+ 20 (count-lines (point-min) (point-max))))
+	   (wheight (window-height))
+	   (rest (- wheight pheight)))
+      (insert (make-string (max 0 (* 2 (/ rest 3))) ?\n))))
+   (t
+    (insert
+     (format "              %s
           _    ___ _             _
           _ ___ __ ___  __    _ ___
           __   _     ___    __  ___
@@ -582,23 +569,21 @@ call it with the value of the `gnus-data' text property."
           __
 
 "
-	       ""))
-      ;; And then hack it.
-      (gnus-indent-rigidly (point-min) (point-max)
-			   (/ (max (- (window-width) (or x 46)) 0) 2))
-      (goto-char (point-min))
-      (forward-line 1)
-      (let* ((pheight (count-lines (point-min) (point-max)))
-	     (wheight (window-height))
-	     (rest (- wheight pheight)))
-	(insert (make-string (max 0 (* 2 (/ rest 3))) ?\n))))
-    ;; Fontify some.
+	     ""))
+    ;; And then hack it.
+    (gnus-indent-rigidly (point-min) (point-max)
+			 (/ (max (- (window-width) (or x 46)) 0) 2))
     (goto-char (point-min))
-    (put-text-property (point-min) (point-max) 'face 'gnus-splash-face)
-    (goto-char (point-min))
-    (setq modeline-buffer-identification
-	  (list (concat gnus-version ": *Group*")))
-    (set-buffer-modified-p t)))
+    (forward-line 1)
+    (let* ((pheight (count-lines (point-min) (point-max)))
+	   (wheight (window-height))
+	   (rest (- wheight pheight)))
+      (insert (make-string (max 0 (* 2 (/ rest 3))) ?\n)))
+    ;; Paint it.
+    (put-text-property (point-min) (point-max) 'face 'gnus-splash-face)))
+  (setq modeline-buffer-identification
+	(list (concat gnus-version ": *Group*")))
+  (set-buffer-modified-p t))
 
 
 ;;; The toolbar.
@@ -753,33 +738,45 @@ XEmacs compatibility workaround."
       (set-extent-begin-glyph
        (make-extent (point) (1+ (point))) xface-glyph))))
 
-(defvar gnus-xmas-pointer-glyph
-  (progn
-    (setq gnus-xmas-glyph-directory (message-xmas-find-glyph-directory "gnus"))
-    (make-pointer-glyph (concat gnus-xmas-glyph-directory "gnus-pointer."
-				(if (featurep 'xpm) "xpm" "xbm")))))
+;;(defvar gnus-xmas-pointer-glyph
+;;  (progn
+;;    (setq gnus-xmas-glyph-directory (message-xmas-find-glyph-directory
+;;                                     "gnus"))
+;;    (let ((file-xpm (expand-file-name "gnus-pointer.xpm"
+;;				      gnus-xmas-glyph-directory))
+;;	  (file-xbm (expand-file-name "gnus-pointer.xbm"
+;;				      gnus-xmas-glyph-directory)))
+;;      (make-pointer-glyph
+;;       (list (vector 'xpm ':file file-xpm)
+;;	     (vector 'xbm ':file file-xbm))))))
 
 (defvar gnus-xmas-modeline-left-extent
   (let ((ext (copy-extent modeline-buffer-id-left-extent)))
-    ;(set-extent-property ext 'pointer gnus-xmas-pointer-glyph)
+;    (set-extent-property ext 'pointer gnus-xmas-pointer-glyph)
     ext))
 
 (defvar gnus-xmas-modeline-right-extent
   (let ((ext (copy-extent modeline-buffer-id-right-extent)))
-    ;(set-extent-property ext 'pointer gnus-xmas-pointer-glyph)
+;    (set-extent-property ext 'pointer gnus-xmas-pointer-glyph)
     ext))
 
 (defvar gnus-xmas-modeline-glyph
   (progn
     (setq gnus-xmas-glyph-directory (message-xmas-find-glyph-directory "gnus"))
-    (let* ((file (concat gnus-xmas-glyph-directory "gnus-pointer."
-			 (if (featurep 'xpm) "xpm" "xbm")))
-	   (glyph (make-glyph file)))
-      (when (and (featurep 'x)
-		 (file-exists-p file))
-	(set-glyph-face glyph 'modeline-buffer-id)
-	(set-glyph-property glyph 'image (cons 'tty "Gnus:"))
-	glyph))))
+    (let* ((file-xpm (expand-file-name "gnus-pointer.xpm"
+				    gnus-xmas-glyph-directory))
+	   (file-xbm (expand-file-name "gnus-pointer.xbm"
+				    gnus-xmas-glyph-directory))
+	   (glyph (make-glyph
+		   (list
+		    ;; Let's try a nifty XPM
+		    (vector 'xpm ':file file-xpm)
+		    ;; Then a not-so-nifty XBM
+		    (vector 'xbm ':file file-xbm)
+		    ;; Then the simple string
+		    (vector 'string ':data "Gnus:")))))
+      (set-glyph-face glyph 'modeline-buffer-id)
+      glyph)))
 
 (defun gnus-xmas-mode-line-buffer-identification (line)
   (let ((line (car line))

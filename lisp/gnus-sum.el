@@ -618,7 +618,7 @@ is not run if `gnus-visual' is nil."
   :type 'hook)
 
 (defcustom gnus-parse-headers-hook
-  (list 'gnus-decode-rfc1522)
+  (list 'gnus-hack-decode-rfc1522 'gnus-decode-rfc1522)
   "*A hook called before parsing the headers."
   :group 'gnus-various
   :type 'hook)
@@ -6052,7 +6052,7 @@ fetch-old-headers verbiage, and so on."
 		      (mail-header-id (car thread))))
 		(progn
 		  (setq gnus-newsgroup-reads
-			(delq number gnus-newsgroup-unreads))
+			(delq number gnus-newsgroup-reads))
 		  t))))
 	  ;; Nope, invisible article.
 	  0

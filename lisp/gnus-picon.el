@@ -342,11 +342,13 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	  (setq gnus-group-annotations
 		(gnus-picons-display-pairs
 		 (gnus-picons-lookup-pairs (reverse (message-tokenize-header
-						     gnus-newsgroup-name "."))
+						     (gnus-group-real-name gnus-newsgroup-name) 
+						     "."))
 					   gnus-picons-news-directories)
 		 t "."))
 	(push (list 'gnus-group-annotations 'search nil
-		    (message-tokenize-header gnus-newsgroup-name ".")
+		    (message-tokenize-header 
+		     (gnus-group-real-name gnus-newsgroup-name) ".")
 		    (if (listp gnus-picons-news-directories)
 			gnus-picons-news-directories
 		      (list gnus-picons-news-directories))

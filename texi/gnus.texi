@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.55 Manual
+@settitle Gnus 5.4.56 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.55 Manual
+@title Gnus 5.4.56 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.55.
+This manual corresponds to Gnus 5.4.56.
 
 @end ifinfo
 
@@ -12233,10 +12233,11 @@ definition of that function:
 
 @lisp
 (defun gnus-decay-score (score)
+  "Decay SCORE according to `gnus-score-decay-constant' and `gnus-score-decay-scale'."
   (floor
    (- score
       (* (if (< score 0) 1 -1)
-         (min score
+         (min (abs score)
               (max gnus-score-decay-constant
                    (* (abs score)
                       gnus-score-decay-scale)))))))
@@ -14120,6 +14121,7 @@ Michael Ernst,
 Luc Van Eycken,
 Sam Falkner,
 Paul Franklin, 
+Guy Geens,
 Arne Georg Gleditsch,
 David S. Goldberg,
 D. Hall, 
@@ -14181,6 +14183,7 @@ Paul D. Smith,
 Jeff Sparkes,
 Toby Speight,
 Michael Sperber,
+Darren Stalder,
 Richard Stallman,
 Greg Stark, 
 Paul Stodghill,

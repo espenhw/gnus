@@ -1,0 +1,11 @@
+-*- Text -*-
+The Gnus-realated top node.
+
+File: dir	Node: Top	This is the Gnus Info tree
+
+* Menu: 
+
+* Gnus: (gnus).		The news reader Gnus.
+* Message: (message).	The Message sending thingamabob.
+* Widget: (widget).	The Widget library.
+* Custom: (custom).	The Custom library.

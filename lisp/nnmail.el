@@ -112,7 +112,9 @@ If nil, the first match found will be used."
 
 ;; Added by gord@enci.ucalgary.ca (Gordon Matzigkeit).
 (defcustom nnmail-keep-last-article nil
-  "If non-nil, nnmail will never delete the last expired article in a directory.
+  "If non-nil, nnmail will never delete/move a group's last article.
+It can be marked expirable, so it will be deleted when it is no longer last.
+
 You may need to set this variable if other programs are putting
 new mail into folder numbers that Gnus has marked as expired."
   :group 'nnmail-procmail
@@ -569,7 +571,7 @@ parameter.  It should return nil, `warn' or `delete'."
 		      (nnmail-read-passwd
 		       (format "Password for %s: "
 			       (substring inbox (+ popmail 3))))))
-	      (message "Getting mail from post office ..."))
+	      (message "Getting mail from the post office..."))
 	  (when (or (and (file-exists-p tofile)
 			 (/= 0 (nnheader-file-size tofile)))
 		    (and (file-exists-p inbox)
@@ -1056,7 +1058,7 @@ FUNC will be called with the group name to determine the article number."
 	      ;; to do?  Just remove the `junk' spec.  Don't really
 	      ;; see anything else to do...
 	      (let (elem)
-		(while (setq elem (assq 'junk split))
+		(while (setq elem (car (memq 'junk split)))
 		  (setq split (delq elem split))))
 	      (when split
 		(setq group-art
@@ -1093,7 +1095,7 @@ FUNC will be called with the group name to determine the article number."
 	  ;; to do?  Just remove the `junk' spec.  Don't really
 	  ;; see anything else to do...
 	  (let (elem)
-	    (while (setq elem (assq 'junk group-art))
+	    (while (setq elem (car (memq 'junk group-art)))
 	      (setq group-art (delq elem group-art)))
 	    (nreverse group-art)))))))
 

@@ -937,7 +937,8 @@ articles in the topic and its subtopics."
 	  (if (null arg) (not gnus-topic-mode)
 	    (> (prefix-numeric-value arg) 0)))
     ;; Infest Gnus with topics.
-    (when gnus-topic-mode
+    (if (not gnus-topic-mode)
+	(setq gnus-goto-missing-group-function nil)
       (when (gnus-visual-p 'topic-menu 'menu)
 	(gnus-topic-make-menu-bar))
       (setq gnus-topic-line-format-spec

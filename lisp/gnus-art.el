@@ -866,6 +866,18 @@ always hide."
 		  (process-send-region "article-x-face" beg end)
 		  (process-send-eof "article-x-face"))))))))))
 
+(defun gnus-hack-decode-rfc1522 ()
+  "Emergency hack function for avoiding problems when decoding."
+  (let ((buffer-read-only nil))
+    (goto-char (point-min))
+    ;; Remove encoded TABs.
+    (while (search-forward "=09" nil t)
+      (replace-match " " t t))
+    ;; Remove encoded newlines.
+    (goto-char (point-min))
+    (while (search-forward "=10" nil t)
+      (replace-match " " t t))))
+
 (defalias 'gnus-decode-rfc1522 'article-decode-rfc1522)
 (defalias 'gnus-article-decode-rfc1522 'article-decode-rfc1522)
 (defun article-decode-rfc1522 ()
@@ -2044,7 +2056,8 @@ Provided for backwards compatibility."
       ;; save it to file.
       (goto-char (point-max))
       (insert "\n")
-      (append-to-file (point-min) (point-max) file-name))))
+      (append-to-file (point-min) (point-max) file-name)
+      t)))
 
 (defun gnus-narrow-to-page (&optional arg)
   "Narrow the article buffer to a page.
@@ -2584,6 +2597,7 @@ variable it the real callback function."
     ("^\\(Cc\\|To\\):" "[^ \t\n<>,()\"]+@[^ \t\n<>,()\"]+"
      0 t gnus-button-mailto 0)
     ("^X-[Uu][Rr][Ll]:" ,gnus-button-url-regexp 0 t gnus-button-url 0)
+    ("^Subject:" ,gnus-button-url-regexp 0 t gnus-button-url 0)
     ("^[^:]+:" ,gnus-button-url-regexp 0 t gnus-button-url 0)
     ("^[^:]+:" "\\(<\\(url: \\)?news:\\([^>\n ]*\\)>\\)" 1 t
      gnus-button-message-id 3))

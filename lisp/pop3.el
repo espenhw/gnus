@@ -148,7 +148,7 @@ Return the response string if optional second argument is non-nil."
       (set-buffer (process-buffer process))
       (goto-char pop3-read-point)
       (while (not (search-forward "\r\n" nil t))
-	(accept-process-output process)
+	(accept-process-output process 3)
 	(goto-char pop3-read-point))
       (setq match-end (point))
       (goto-char pop3-read-point)
@@ -298,7 +298,7 @@ This function currently does nothing.")
     (save-excursion
       (set-buffer (process-buffer process))
       (while (not (re-search-forward "^\\.\r\n" nil t))
-	(accept-process-output process)
+	(accept-process-output process 3)
 	;; bill@att.com ... to save wear and tear on the heap
 	(if (> (buffer-size)  20000) (sleep-for 1))
 	(if (> (buffer-size)  50000) (sleep-for 1))

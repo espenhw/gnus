@@ -2484,9 +2484,10 @@ to find out how to use this."
 	(let ((stop-pos
 	       (string-match "  *at \\|  *@ \\| *(\\| *<" from)))
 	  (concat (if stop-pos (substring from 0 stop-pos) from)
-		  "'s message of "
+		  "'s message of \""
 		  (if (or (not date) (string= date ""))
-		      "(unknown date)" date)))))))
+		      "(unknown date)" date)
+		  "\""))))))
 
 (defun message-make-distribution ()
   "Make a Distribution header."
