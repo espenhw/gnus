@@ -803,7 +803,7 @@ is a spool.  If not using procmail, return GROUP."
 	  (when (and (or (bobp)
 			 (save-excursion
 			   (forward-line -1)
-			   (= (char-after (point)) ?\n)))
+			   (= (following-char) ?\n)))
 		     (save-excursion
 		       (forward-line 1)
 		       (while (looking-at ">From \\|From ")
@@ -832,7 +832,7 @@ is a spool.  If not using procmail, return GROUP."
 	  (when (and (or (bobp)
 			 (save-excursion
 			   (forward-line -1)
-			   (= (char-after (point)) ?\n)))
+			   (= (following-char) ?\n)))
 		     (save-excursion
 		       (forward-line 1)
 		       (while (looking-at ">From \\|From ")
@@ -1653,11 +1653,11 @@ If ARGS, PROMPT is used as an argument to `format'."
 	(goto-char (point-min))
 	(while (re-search-forward "[^ \t=]+" nil t)
 	  (setq name (match-string 0))
-	  (if (not (= (char-after (point)) ?=))
+	  (if (not (= (following-char) ?=))
 	      ;; Implied "yes".
 	      (setq value "yes")
 	    (forward-char 1)
-	    (if (not (= (char-after (point)) ?\"))
+	    (if (not (= (following-char) ?\"))
 		(if (not (looking-at "[^ \t]"))
 		    ;; Implied "no".
 		    (setq value "no")

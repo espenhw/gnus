@@ -242,7 +242,7 @@ above them."
   (save-excursion
     (goto-char start)
     (when (and (re-search-backward "[()]" nil t)
-	       (= (char-after (point)) ?\()
+	       (= (following-char) ?\()
 	       (goto-char end)
 	       (or (not (re-search-forward "[()]" nil t))
 		   (= (char-after (1- (point))) ?\()))

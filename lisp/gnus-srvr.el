@@ -691,7 +691,7 @@ buffer.
     (save-excursion
       (beginning-of-line)
       ;; If this group it killed, then we want to subscribe it.
-      (when (= (char-after (point)) ?K)
+      (when (= (following-char) ?K)
 	(setq sub t))
       (setq group (gnus-browse-group-name))
       ;; Make sure the group has been properly removed before we

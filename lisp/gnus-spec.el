@@ -388,9 +388,9 @@
 	     (t
 	      nil)))
 	;; User-defined spec -- find the spec name.
-	(when (= (setq spec (char-after (point))) ?u)
+	(when (= (setq spec (following-char)) ?u)
 	  (forward-char 1)
-	  (setq user-defined (char-after (point))))
+	  (setq user-defined (following-char)))
 	(forward-char 1)
 	(delete-region spec-beg (point))
 

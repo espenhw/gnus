@@ -762,7 +762,7 @@ always hide."
     (when (search-forward "\n\n" nil t)
       (let ((buffer-read-only nil))
 	(while (search-forward "\b" nil t)
-	  (let ((next (char-after (point)))
+	  (let ((next (following-char))
 		(previous (char-after (- (point) 2))))
 	    ;; We do the boldification/underlining by hiding the
 	    ;; overstrikes and putting the proper text property
@@ -795,7 +795,7 @@ always hide."
 	    (adaptive-fill-mode t))
 	(while (not (eobp))
 	  (and (>= (current-column) (min fill-column (window-width)))
-	       (/= (char-before (point)) ?:)
+	       (/= (preceding-char) ?:)
 	       (fill-paragraph nil))
 	  (end-of-line 2))))))
 
@@ -932,7 +932,7 @@ or not."
   (interactive "r")
   (goto-char from)
   (while (search-forward "=" to t)
-    (cond ((eq (char-after (point)) ?\n)
+    (cond ((eq (following-char) ?\n)
 	   (delete-char -1)
 	   (delete-char 1))
 	  ((looking-at "[0-9A-F][0-9A-F]")

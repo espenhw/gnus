@@ -921,12 +921,12 @@ The cdr of ech entry is a function for applying the face to a region.")
 			       (not paren))))
 		 (push (buffer-substring beg (point)) elems)
 		 (setq beg (match-end 0)))
-		((= (char-after (point)) ?\")
+		((= (following-char) ?\")
 		 (setq quoted (not quoted)))
-		((and (= (char-after (point)) ?\()
+		((and (= (following-char) ?\()
 		      (not quoted))
 		 (setq paren t))
-		((and (= (char-after (point)) ?\))
+		((and (= (following-char) ?\))
 		      (not quoted))
 		 (setq paren nil))))
 	(nreverse elems)))))
@@ -1832,7 +1832,7 @@ the user from the mailer."
 	    (message-remove-header message-ignored-mail-headers t))
 	  (goto-char (point-max))
 	  ;; require one newline at the end.
-	  (or (= (char-before (point)) ?\n)
+	  (or (= (preceding-char) ?\n)
 	      (insert ?\n))
 	  (when (and news
 		     (or (message-fetch-field "cc")
@@ -2009,7 +2009,7 @@ to find out how to use this."
 	      (message-remove-header message-ignored-news-headers t))
 	    (goto-char (point-max))
 	    ;; require one newline at the end.
-	    (or (= (char-before (point)) ?\n)
+	    (or (= (preceding-char) ?\n)
 		(insert ?\n))
 	    (let ((case-fold-search t))
 	      ;; Remove the delimiter.
@@ -2676,7 +2676,7 @@ Headers already prepared in the buffer are not modified."
 		  (progn
 		    ;; The header was found.  We insert a space after the
 		    ;; colon, if there is none.
-		    (if (/= (char-after (point)) ? ) (insert " ") (forward-char 1))
+		    (if (/= (following-char) ? ) (insert " ") (forward-char 1))
 		    ;; Find out whether the header is empty...
 		    (looking-at "[ \t]*$")))
 	  ;; So we find out what value we should insert.
@@ -2784,7 +2784,7 @@ Headers already prepared in the buffer are not modified."
       (goto-char (point-min))
       (while (not (eobp))
 	(skip-chars-forward "^,\"" (point-max))
-	(if (or (= (char-after (point)) ?,)
+	(if (or (= (following-char) ?,)
 		(eobp))
 	    (when (not quoted)
 	      (if (and (> (current-column) 78)
@@ -2831,7 +2831,7 @@ Headers already prepared in the buffer are not modified."
     (search-backward ":" )
     (widen)
     (forward-char 1)
-    (if (= (char-after (point)) ? )
+    (if (= (following-char) ? )
 	(forward-char 1)
       (insert " ")))
    (t
@@ -3528,7 +3528,7 @@ which specify the range to operate on."
       (goto-char (min start end))
       (while (< (point) end1)
 	(or (looking-at "[_\^@- ]")
-	    (insert (char-after (point)) "\b"))
+	    (insert (following-char) "\b"))
 	(forward-char 1)))))
 
 ;;;###autoload
@@ -3542,7 +3542,7 @@ which specify the range to operate on."
       (move-marker end1 (max start end))
       (goto-char (min start end))
       (while (re-search-forward "\b" end1 t)
-	(if (eq (char-after (point)) (char-after (- (point) 2)))
+	(if (eq (following-char) (char-after (- (point) 2)))
 	    (delete-char -2))))))
 
 (defalias 'message-exchange-point-and-mark 'exchange-point-and-mark)
