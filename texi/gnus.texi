@@ -20990,13 +20990,13 @@ randomly generated data.
 converts the file to X-Face format by using the
 @code{gnus-convert-image-to-x-face-command} shell command.
 
-Here's how you would typically use the second function.  Put something
+Here's how you would typically use the first function.  Put something
 like the following in your @file{.gnus.el} file:
 
 @lisp
 (setq message-required-news-headers
       (nconc message-required-news-headers
-             (list '(X-Face . gnus-insert-random-x-face-header))))
+             (list '(X-Face . gnus-random-x-face))))
 @end lisp
 
 Using the last function would be something like this:
