@@ -3433,12 +3433,6 @@ The dribble file will be saved, though (@pxref{Auto Save}).
 @code{gnus-after-exiting-gnus-hook} is called as the final item when
 exiting Gnus.
 
-@findex gnus-unload
-@cindex unloading
-If you wish to completely unload Gnus and all its adherents, you can use
-the @code{gnus-unload} command.  This command is also very handy when
-trying to customize meta-variables.
-
 Note:
 
 @quotation

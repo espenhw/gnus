@@ -1,3 +1,7 @@
+2003-03-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Exiting Gnus): Removed gnus-unload.
+
 2003-03-31  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (IMAP): Add.
