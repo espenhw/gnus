@@ -29,6 +29,7 @@
 (require 'gnus-ems)
 (require 'easymenu)
 (require 'custom)
+(require 'browse-url)
 
 (defvar gnus-group-menu-hook nil
   "*Hook run after the creation of the group mode menu.")
@@ -216,10 +217,10 @@
 	   gnus-cite-attribution-alist)
      gnus-button-message-id 3)
     ;; This is how URLs _should_ be embedded in text...
-    ("<URL:\\([^\n\r>]*\\)>" 0 t gnus-button-url 1)
+    ("<URL:\\([^\n\r>]*\\)>" 0 t browse-url-browser-function 1)
     ;; Next regexp stolen from highlight-headers.el.
     ;; Modified by Vladimir Alexiev.
-    ("\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-a-zA-Z0-9_=?#$@~`%&*+|\\/.,]*[-a-zA-Z0-9_=#$@~`%&*+|\\/]" 0 t gnus-button-url 0))
+    ("\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-a-zA-Z0-9_=?#$@~`%&*+|\\/.,]*[-a-zA-Z0-9_=#$@~`%&*+|\\/]" 0 t browse-url-browser-function 0))
   "Alist of regexps matching buttons in an article.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
@@ -232,26 +233,6 @@ PAR: is a number of a regexp grouping whose text will be passed to CALLBACK.
 
 CALLBACK can also be a variable, in that case the value of that
 variable it the real callback function.")
-
-;see gnus-cus.el
-;(eval-when-compile
-;  (defvar browse-url-browser-function))
-
-;see gnus-cus.el
-;(defvar gnus-button-url
-;  (cond ((boundp 'browse-url-browser-function) browse-url-browser-function)
-;	((fboundp 'w3-fetch) 'w3-fetch)
-;	((eq window-system 'x) 'gnus-netscape-open-url))
-;  "*Function to fetch URL.
-;The function will be called with one argument, the URL to fetch.
-;Useful values of this function are:
-
-;w3-fetch: 
-;   defined in the w3 emacs package by William M. Perry.
-;gnus-netscape-open-url:
-;   open url in existing netscape, start netscape if none found.
-;gnus-netscape-start-url:
-;   start new netscape with url.")
 
 
 
@@ -1248,7 +1229,7 @@ to do the hiding.  See the documentation for those functions."
 			 (skip-chars-forward ": \t")
 			 (let ((from (point)))
 			   (goto-char end)
-			   (skip-chars-backward " \t")
+			   (skip-chars-backward " \t\n")
 			   (put-text-property from (point) 'face field-face)
 			   (setq field-found t))))))
 	    (goto-char begin)))))))
@@ -1317,22 +1298,6 @@ External references are things like message-ids and URLs, as specified by
 		(gnus-article-add-button start end 'gnus-button-push
 					 (set-marker (make-marker)
 						     from)))))))))
-(defun gnus-netscape-open-url (url)
-  "Open URL in netscape, or start new scape with URL."
-  (let ((process (start-process (concat "netscape " url)
-				nil
-				"netscape"
-				"-remote" 
-				(concat "openUrl(" url ")'"))))
-    (set-process-sentinel process 
-			  (` (lambda (process change)
-			       (or (eq (process-exit-status process) 0)
-				   (gnus-netscape-start-url (, url))))))))
-
-(defun gnus-netscape-start-url (url)
-  "Start netscape with URL."
-  (start-process (concat "netscape" url) nil "netscape" url))
-
 ;;; External functions:
 
 (defun gnus-article-add-button (from to fun &optional data)

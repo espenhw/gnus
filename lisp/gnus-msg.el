@@ -1328,8 +1328,10 @@ domain is undefined, the domain name is got from it."
 	      (t domain)))
     (if (string-match "\\." (system-name))
 	(system-name)
-      (substring user-mail-address 
-		 (1+ (string-match "@" user-mail-address))))))
+      (if (string-match "@\\([^ ]+\\)\\($\\| \\)" user-mail-address)
+	  (substring user-mail-address 
+		     (match-beginning 1) (match-end 1))
+	"bogus-domain"))))
 
 (defun gnus-inews-full-address ()
   (let ((domain (gnus-inews-domain-name))

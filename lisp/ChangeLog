@@ -1,3 +1,18 @@
+Tue Dec  5 04:05:27 1995  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-summary-set-process-mark): Make sure each article
+	is only process-marked once.
+	(gnus-summary-sort-by-author): Also allow sorting of
+	pseudo-articles. 
+	(gnus-summary-sort-by-subject): Ditto.
+
+Sat Nov 18 03:09:37 1995  Lars Magne Ingebrigtsen  <larsi@surt.ifi.uio.no>
+
+	* nntp.el (nntp-open-server): Accept a second optional parameter
+	for just changing virtual server.  Doc fix.
+	(nntp-possibly-change-server): Use it.
+	(nntp-close-server): Ditto.
+
 Fri Nov  3 03:16:04 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
 
 	* gnus.el (gnus-summary-refer-article): Would mark oddly.

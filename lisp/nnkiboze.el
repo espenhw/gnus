@@ -149,7 +149,8 @@ If the stream is opened, return T, otherwise return NIL."
       ()
     (save-excursion
       (let ((unreads gnus-newsgroup-unreads)
-	    (unselected gnus-newsgroup-unselected))
+	    (unselected gnus-newsgroup-unselected)
+            (version-control 'never))
 	(set-buffer (get-buffer-create "*nnkiboze work*"))
 	(buffer-disable-undo (current-buffer))
 	(erase-buffer)
@@ -222,6 +223,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 	 (regexp (nth 1 (nth 4 info)))
 	 (gnus-expert-user t)
 	 (gnus-large-newsgroup nil)
+	 (version-control 'never)
 	 (gnus-score-find-score-files-function 'nnkiboze-score-file)
  	 gnus-select-group-hook gnus-summary-prepare-hook 
 	 gnus-thread-sort-functions gnus-show-threads 
