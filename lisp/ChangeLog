@@ -1,3 +1,7 @@
+2001-01-01 00:52:44  Ed L. Cashin  <ecashin@coe.uga.edu>
+
+	* gnus-sum.el (gnus-summary-expire-articles): Save excursion.
+
 2000-12-31 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* qp.el (quoted-printable-decode-region): Don't backward-char.
