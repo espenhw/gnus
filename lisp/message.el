@@ -3706,11 +3706,13 @@ OTHER-HEADERS is an alist of header/value pairs."
                    message-use-followup-to
                    (or (not (eq message-use-followup-to 'ask))
                        (message-y-or-n-p
-		        (concat "Obey Mail-Followup-To: " mft "? ") t "\
-You should normally obey the Mail-Followup-To: header.
+		        (concat "Obey Mail-Followup-To? ") t "\
+You should normally obey the Mail-Followup-To: header.  In this
+article, it has the value of
 
-	`Mail-Followup-To: " mft "'
-directs your response to " (if (string-match "," mft)
+" mft "
+
+which directs your response to " (if (string-match "," mft)
 			       "the specified addresses"
 			     "that address only") ".
 
@@ -3754,7 +3756,6 @@ responses here are directed to other addresses.")))
 	      (setcdr ccs (substring (cdr ccs) (match-end 0))))
 	    (push ccs follow-to)))))
     follow-to))
-
 
 ;;;###autoload
 (defun message-reply (&optional to-address wide)
