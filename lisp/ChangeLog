@@ -1,3 +1,7 @@
+2004-12-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-group.el (gnus-group-make-rss-group): Exclude `/'s.
+
 2004-12-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnrss.el (nnrss-get-encoding): Fix regexp.

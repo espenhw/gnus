@@ -2627,9 +2627,12 @@ If there is, use Gnus to create an nnrss group"
       (setq url (read-from-minibuffer "URL to Search for RSS: ")))
   (let ((feedinfo (nnrss-discover-feed url)))
     (if feedinfo
-	(let ((title (read-from-minibuffer "Title: "
-					   (cdr (assoc 'title
-						       feedinfo))))
+	(let ((title (gnus-newsgroup-savable-name
+		      (read-from-minibuffer "Title: "
+					    (gnus-newsgroup-savable-name
+					     (or (cdr (assoc 'title
+							     feedinfo))
+						 "")))))
 	      (desc  (read-from-minibuffer "Description: "
 					   (cdr (assoc 'description
 						       feedinfo))))
