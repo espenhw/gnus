@@ -1,3 +1,8 @@
+2000-10-30 08:52:50  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml-sec.el (mml-pgpmime-sign-buffer): Use mml2015-sign.
+	(mml-pgpmime-encrypt-buffer): Use mml2015-encrypt.
+
 2000-10-30 08:38:12  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml2015.el: Shut up.

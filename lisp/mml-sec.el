@@ -71,11 +71,11 @@
       (error "Encryption failed... inspect message logs for errors"))))
 
 (defun mml-pgpmime-sign-buffer (cont)
-  (or (mml2015-mailcrypt-sign cont)
+  (or (mml2015-sign cont)
       (error "Signing failed... inspect message logs for errors")))
 
 (defun mml-pgpmime-encrypt-buffer (cont)
-  (or (mml2015-mailcrypt-encrypt cont)
+  (or (mml2015-encrypt cont)
       (error "Encryption failed... inspect message logs for errors")))
 
 (defun mml-secure-part-smime-sign ()
