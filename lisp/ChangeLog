@@ -1,3 +1,7 @@
+2000-10-30  Ed L Cashin <ecashin@coe.uga.edu>
+
+	* gnus-sum.el (gnus-summary-expire-articles): Save point.
+
 2000-10-30 08:52:50  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml-sec.el (mml-pgpmime-sign-buffer): Use mml2015-sign.

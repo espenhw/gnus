@@ -7740,19 +7740,19 @@ This will be the case if the article has both been mailed and posted."
 		(setq es (gnus-request-expire-articles
 			  expirable gnus-newsgroup-name)))
 	    (setq es (gnus-request-expire-articles
-		      expirable gnus-newsgroup-name))))
-	(unless total
-	  (setq gnus-newsgroup-expirable es))
-	;; We go through the old list of expirable, and mark all
-	;; really expired articles as nonexistent.
-	(unless (eq es expirable)	;If nothing was expired, we don't mark.
-	  (let ((gnus-use-cache nil))
-	    (while expirable
-	      (unless (memq (car expirable) es)
-		(when (gnus-data-find (car expirable))
-		  (gnus-summary-mark-article
-		   (car expirable) gnus-canceled-mark)))
-	      (setq expirable (cdr expirable)))))
+		      expirable gnus-newsgroup-name)))
+	  (unless total
+	    (setq gnus-newsgroup-expirable es))
+	  ;; We go through the old list of expirable, and mark all
+	  ;; really expired articles as nonexistent.
+	  (unless (eq es expirable)	;If nothing was expired, we don't mark.
+	    (let ((gnus-use-cache nil))
+	      (while expirable
+		(unless (memq (car expirable) es)
+		  (when (gnus-data-find (car expirable))
+		    (gnus-summary-mark-article
+		     (car expirable) gnus-canceled-mark)))
+		(setq expirable (cdr expirable))))))
 	(gnus-message 6 "Expiring articles...done")))))
 
 (defun gnus-summary-expire-articles-now ()
