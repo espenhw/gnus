@@ -1,26 +1,28 @@
-;;; -*- Mode: Emacs-Lisp -*- 
-;;; message-utils.el -- Utils for message-mode
-;;; Revision: 0.8
-;;; $Id: message-utils.el,v 1.17 2000/06/19 10:29:25 schauer Exp $
+;;; message-utils.el -- utils for message-mode
+
+;; Copyright (C) 2002 Free Software Foundation, Inc.
 
 ;; Author: Holger Schauer <Holger.Schauer@gmx.de>
 ;; Keywords: utils message 
 
-;;; This program is free software; you can redistribute it and/or modify
-;;; it under the terms of the GNU General Public License as published by
-;;; the Free Software Foundation; either version 2 of the License, or
-;;; (at your option) any later version.
-;;;
-;;; This program is distributed in the hope that it will be useful,
-;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;;; GNU General Public License for more details.
-;;;
-;;; You should have received a copy of the GNU General Public License
-;;; along with this program; if not, write to the Free Software
-;;; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+;; This file is part of GNU Emacs.
 
-;;; Summary:
+;; GNU Emacs is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2 of the License, or
+;; (at your option) any later version.
+;;
+;; GNU Emacs is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
+
+;;; Commentary:
 
 ;; This file contains some small additions to message mode:
 ;;    * inserting files in a message and explicit marking it 
@@ -31,10 +33,11 @@
 ;;    * a function for cross-post and followup-to messages
 ;;    * replace To: header with contents of Cc: or Bcc: header.
 ;;
-;; Where to get this file: 
+
+;; This file is adopt from the link below when the revision is 0.8.
 ;;  http://www.coling.uni-freiburg.de/~schauer/resources/emacs/message-utils.el.gz
 
-;;; Installation:
+;;; Installation: (TODO: merge into message.el)
 
 ;; .. is easy as in most cases. Add this file to where your
 ;; Emacs can find it and add
@@ -70,28 +73,9 @@
 ;;  (easy-menu-add-item nil '("Field") 
 ;;   [ "X-No-Archive:" message-add-archive-header t ]))
 
-
+;;; Code:
 
 (require 'message)
-
-;;; **************
-;;; Preliminaries
-
-;; Incantations to make custom stuff work without customize, e.g. on
-;; XEmacs 19.14 or GNU Emacs 19.34. Stolen from htmlize.el by Hrovje Niksic.
-(eval-and-compile
-  (condition-case ()
-      (require 'custom)
-    (error nil))
-  (if (and (featurep 'custom) (fboundp 'custom-declare-variable))
-      nil ;; We've got what we needed
-    ;; We have the old custom-library, hack around it!
-    (defmacro defgroup (&rest args)
-      nil)
-    (defmacro defcustom (var value doc &rest args) 
-      (` (defvar (, var) (, value) (, doc))))
-    (defmacro defface (face value doc &rest stuff)
-      `(make-face ,face))))
 
 ;;; **************
 ;;; Inserting and marking ...
@@ -388,3 +372,4 @@ With prefix-argument just set Follow-Up, don't cross-post."
 ;;; provide ourself
 (provide 'message-utils)
 
+;;; message-utils.el ends here

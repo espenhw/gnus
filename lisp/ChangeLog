@@ -1,4 +1,6 @@
 2002-02-15  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	
+	* message-utils.el: Adopt the file.
 
 	* message-utils.el: New file.
 	From Holger Schauer <Holger.Schauer@gmx.de>
