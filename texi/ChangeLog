@@ -4,6 +4,7 @@
 	(gnus-invalid-group-regexp): Add.
 	(Mail Source Specifiers): Fix.
 	(IMAP): Fix.
+	(Agent Basics): Fix.
 
 2000-07-12 19:37:19  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
