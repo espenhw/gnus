@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.4 Manual
+@settitle Quassia Gnus 0.5 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -309,7 +309,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.4 Manual
+@title Quassia Gnus 0.5 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -345,7 +345,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.4.
+This manual corresponds to Quassia Gnus 0.5.
 
 @end ifinfo
 
@@ -4720,6 +4720,28 @@ Hook run before parsing any headers.  The default value is
 @code{(gnus-decode-rfc1522)}, which means that QPized headers will be
 slightly decoded in a hackish way.  This is likely to change in the
 future when Gnus becomes @sc{MIME}ified.
+
+@item gnus-alter-header-function
+@vindex gnus-alter-header-function
+If non-@code{nil}, this function will be called to allow alteration of
+article header structures.  The function is called with one parameter,
+the article header vector, which it may alter in any way.  For instance,
+if you have a mail-to-news gateway which alters the @code{Message-ID}s
+in systematic ways (by adding prefixes and such), you can use this
+variable to un-scramble the @code{Message-ID}s so that they are more
+meaningful.  Here's one example:
+
+@lisp
+(setq gnus-alter-header-function 'my-alter-message-id)
+
+(defun my-alter-message-id (header)
+  (let ((id (mail-header-id header)))
+    (when (string-match
+           "\\(<[^<>@]*\\)\\.?cygnus\\..*@\\([^<>@]*>\\)" id)
+      (mail-header-set-id
+       (concat (match-string 1 id) "@" (match-string 2 id))
+       header))))
+@end lisp
 
 @end table
 

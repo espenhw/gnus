@@ -165,8 +165,10 @@
      '("Agent"
        ["Toggle plugged" gnus-agent-toggle-plugged t]
        ["List categories" gnus-enter-category-buffer t]
+       ["Send drafts" gnus-group-send-drafts gnus-plugged]
        ("Fetch"
-	["Group" gnus-agent-fetch-group t])))))
+	["All" gnus-agent-fetch-session gnus-plugged]
+	["Group" gnus-agent-fetch-group gnus-plugged])))))
 
 (defvar gnus-agent-summary-mode-map (make-sparse-keymap))
 (gnus-define-keys gnus-agent-summary-mode-map

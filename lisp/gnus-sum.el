@@ -738,6 +738,10 @@ mark:    The articles mark."
   :type '(repeat (cons (sexp :tag "Form" nil)
 		       face)))
 
+(defcustom gnus-alter-header-function nil
+  "Function called to allow alteration of article header structures.
+The function is called with one parameter, the article header vector,
+which it may alter in any way.")
 
 ;;; Internal variables
 
@@ -2519,9 +2523,10 @@ If NO-DISPLAY, don't generate a summary buffer."
     (while (and group
 		(null (setq result
 			    (let ((gnus-auto-select-next nil))
-			      (gnus-summary-read-group-1
-			       group show-all no-article
-			       kill-buffer no-display))))
+			      (or (gnus-summary-read-group-1
+				   group show-all no-article
+				   kill-buffer no-display)
+				  (setq show-all nil)))))
 		(eq gnus-auto-select-next 'quietly))
       (set-buffer gnus-group-buffer)
       (if (not (equal group (gnus-group-group-name)))
@@ -4275,6 +4280,12 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 		   (nnheader-header-value)))))
 	  (when (equal id ref)
 	    (setq ref nil))
+
+	  (when gnus-alter-header-function
+	    (funcall gnus-alter-header-function header)
+	    (setq id (mail-header-id header)
+		  ref (gnus-parent-id (mail-header-references header))))
+    
 	  ;; We do the threading while we read the headers.  The
 	  ;; message-id and the last reference are both entered into
 	  ;; the same hash table.  Some tippy-toeing around has to be
@@ -4352,11 +4363,10 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	  (setq header
 		(vector
 		 number			; number
-		 ;; 1997/5/4 by MORIOKA Tomohiko <morioka@jaist.ac.jp>
 		 (funcall
 		  gnus-unstructured-field-decoder (gnus-nov-field)) ; subject
 		 (funcall
-		  gnus-structured-field-decoder (gnus-nov-field))   ; from
+		  gnus-structured-field-decoder (gnus-nov-field)) ; from
 		 (gnus-nov-field)	; date
 		 (setq id (or (gnus-nov-field)
 			      (nnheader-generate-fake-message-id))) ; id
@@ -4379,6 +4389,11 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 
       (widen))
 
+    (when gnus-alter-header-function
+      (funcall gnus-alter-header-function header)
+      (setq id (mail-header-id header)
+	    ref (gnus-parent-id (mail-header-references header))))
+    
     ;; We build the thread tree.
     (when (equal id ref)
       ;; This article refers back to itself.  Naughty, naughty.

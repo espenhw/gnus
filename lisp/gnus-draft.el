@@ -138,7 +138,7 @@
 
 ;;; Utility functions
 
-(defun gnus-draft-setup (article &optional group)
+(defun gnus-draft-setup (article)
   (gnus-setup-message 'forward
     (message-mail)
     (erase-buffer)

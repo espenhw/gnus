@@ -1,3 +1,7 @@
+Mon Sep 15 23:10:05 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Customizing Threading): Addition.
+
 Sun Sep 14 21:59:07 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Outgoing Messages): New.
