@@ -1,3 +1,4 @@
+datadir = @datadir@
 infodir = @infodir@
 prefix = @prefix@
 srcdir = @srcdir@

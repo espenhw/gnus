@@ -1,3 +1,8 @@
+2001-05-17  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* etc/Makefile.in (datadir): Set this variable, like in the other
+	Makefile.in's.  Patch from Gaute B Strokkenes <gs234@cam.ac.uk>.
+
 2001-02-11 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* GNUS-NEWS: Copyright and others.
