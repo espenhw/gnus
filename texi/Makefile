@@ -1,5 +1,6 @@
 TEXI2DVI=texi2dvi
-MAKEINFO=emacs -batch -q -no-site-file gnus.texi -l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
+EMACS=emacs
+MAKEINFO=$(EMACS) -batch -q -no-site-file gnus.texi -l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
 # MAKEINFO=makeinfo -o gnus gnus.texi
 
 all: gnus

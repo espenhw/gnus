@@ -252,8 +252,9 @@
 	      (string-to-int name)))
 	   (directory-files nnmh-current-directory nil "^[0-9]+$" t)))
 	 (max-article (and active-articles (apply 'max active-articles)))
+	 (is-old t)
 	 article rest mod-time)
-    (while articles
+    (while (and articles is-old)
       (setq article (concat nnmh-current-directory 
 			    (int-to-string (car articles))))
       (if (setq mod-time (nth 5 (file-attributes article)))
@@ -262,10 +263,11 @@
 		       (not (= (car articles) max-article)))
 		   (not (equal mod-time '(0 0)))
 		   (or force
-		       (> (nnmail-days-between
-			   (current-time-string)
-			   (current-time-string mod-time))
-			  days)))
+		       (setq is-old
+			     (> (nnmail-days-between
+				 (current-time-string)
+				 (current-time-string mod-time))
+				days))))
 	      (progn
 		(and gnus-verbose-backends (message "Deleting %s..." article))
 		(condition-case ()
@@ -275,7 +277,7 @@
 	    (setq rest (cons (car articles) rest))))
       (setq articles (cdr articles)))
     (message "")
-    rest))
+    (nconc rest articles)))
 
 (defun nnmh-close-group (group &optional server)
   t)
@@ -413,7 +415,8 @@
 		(message "nnmh: Reading incoming mail..."))
 	   (setq incoming 
 		 (nnmail-move-inbox 
-		  (car spools) (concat nnmh-directory "Incoming")))
+		  (car spools) (concat (file-name-as-directory nnmh-directory)
+				       "Incoming")))
 	   (setq incomings (cons incoming incomings))
 	   (setq group (nnmail-get-split-group (car spools) group-in))
 	   (nnmail-split-incoming incoming 'nnmh-save-mail nil group)))

@@ -38,6 +38,25 @@
    ((string-match "XEmacs\\|Lucid" emacs-version)
     ;; XEmacs definitions.
 
+    (defvar gnus-summary-highlight
+      '(((> score default) . bold)
+	((< score default) . italic))
+      "*Alist of `(FORM . FACE)'.
+Summary lines are highlighted with the FACE for the first FORM which
+evaluate to a non-nil value.  
+
+Point will be at the beginning of the line when FORM is evaluated.
+The following can be used for convenience:
+
+score:   (gnus-summary-article-score)
+default: gnus-summary-default-score
+below:   gnus-summary-mark-below
+
+To check for marks, e.g. to underline replied articles, use
+`gnus-summary-article-mark': 
+
+   ((= (gnus-summary-article-mark) gnus-replied-mark) . underline)")
+
     (setq gnus-mouse-2 [button2])
     (setq gnus-easymenu 'auc-menu)
 
@@ -54,6 +73,9 @@
 	      (if props
 		  (put-text-property start end (car props) (cdr props) buffer)
 		(remove-text-properties start end ())))))
+
+    (defvar gnus-header-face-alist 
+      '(("" bold italic)))
     
     (or (fboundp 'make-overlay) (fset 'make-overlay 'make-extent))
     (or (fboundp 'overlay-put) (fset 'overlay-put 'set-extent-property))
@@ -62,6 +84,25 @@
           (set-extent-endpoints extent start end)))
     (or (boundp 'standard-display-table) (setq standard-display-table nil))
     (or (boundp 'read-event) (fset 'read-event 'next-command-event))
+
+    (setq gnus-display-type 
+	  (let ((display-resource 
+		 (x-get-resource ".displayType" "DisplayType" 'string)))
+	    (cond (display-resource (intern (downcase display-resource)))
+		  ((x-display-color-p) 'color)
+		  ((x-display-grayscale-p) 'grayscale)
+		  (t 'mono))))
+
+    (setq gnus-background-mode 
+	  (let ((bg-resource 
+		 (x-get-resource ".backgroundMode" "BackgroundMode" 'string))
+		(params (frame-parameters)))
+	    (cond (bg-resource (intern (downcase bg-resource)))
+;		  ((< (apply '+ (x-color-values
+;				 (cdr (assq 'background-color params))))
+;		      (/ (apply '+ (x-color-values "white")) 3))
+;		   'dark)
+		  (t 'light))))
 
     (if (not gnus-visual)
 	()
@@ -132,9 +173,9 @@
   (cond 
    ((string-match "XEmacs\\|Lucid" emacs-version)
     ;; XEmacs definitions.
-    (fset 'gnus-set-mouse-face (lambda (string) string))
-
+    (fset 'gnus-set-mouse-face 'identity)
     (fset 'gnus-summary-make-display-table (lambda () nil))
+    (fset 'gnus-visual-turn-off-edit-menu 'identity)
 
     (defun gnus-highlight-selected-summary ()
       ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
@@ -283,6 +324,69 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 					       tmp-point))))
 		    nil)
 		(kill-buffer tmp-buf)))))))
+
+    (defun gnus-summary-insert-pseudos (pslist &optional not-view)
+      (let ((buffer-read-only nil)
+	    (article (gnus-summary-article-number))
+	    b)
+	(or (gnus-summary-goto-subject article)
+	    (error (format "No such article: %d" article)))
+	(or gnus-newsgroup-headers-hashtb-by-number
+	    (gnus-make-headers-hashtable-by-number))
+	(gnus-summary-position-cursor)
+	;; If all commands are to be bunched up on one line, we collect
+	;; them here.  
+	(if gnus-view-pseudos-separately
+	    ()
+	  (let ((ps (setq pslist (sort pslist 'gnus-pseudos<)))
+		files action)
+	    (while ps
+	      (setq action (cdr (assq 'action (car ps))))
+	      (setq files (list (cdr (assq 'name (car ps)))))
+	      (while (and ps (cdr ps)
+			  (string= (or action "1")
+				   (or (cdr (assq 'action (car (cdr ps)))) "2")))
+		(setq files (cons (cdr (assq 'name (car (cdr ps)))) files))
+		(setcdr ps (cdr (cdr ps))))
+	      (if (not files)
+		  ()
+		(if (not (string-match "%s" action))
+		    (setq files (cons " " files)))
+		(setq files (cons " " files))
+		(and (assq 'execute (car ps))
+		     (setcdr (assq 'execute (car ps))
+			     (funcall (if (string-match "%s" action)
+					  'format 'concat)
+				      action 
+				      (mapconcat (lambda (f) f) files " ")))))
+	      (setq ps (cdr ps)))))
+	(if (and gnus-view-pseudos (not not-view))
+	    (while pslist
+	      (and (assq 'execute (car pslist))
+		   (gnus-execute-command (cdr (assq 'execute (car pslist)))
+					 (eq gnus-view-pseudos 'not-confirm)))
+	      (setq pslist (cdr pslist)))
+	  (save-excursion
+	    (while pslist
+	      (gnus-summary-goto-subject (or (cdr (assq 'article (car pslist)))
+					     (gnus-summary-article-number)))
+	      (forward-line 1)
+	      (setq b (point))
+	      (insert "          " (file-name-nondirectory 
+				    (cdr (assq 'name (car pslist))))
+		      ": " (or (cdr (assq 'execute (car pslist))) "") "\n")
+	      (add-text-properties 
+	       b (1+ b) (list 'gnus-number gnus-reffed-article-number
+			      'gnus-mark gnus-unread-mark 
+			      'gnus-level 0
+			      'gnus-pseudo (car pslist)))
+	      (remove-text-properties (b) (gnus-point-at-eol)
+				      '(gnus-number nil gnus-mark nil gnus-level nil))
+	      (forward-line -1)
+	      (gnus-sethash (int-to-string gnus-reffed-article-number)
+			    (car pslist) gnus-newsgroup-headers-hashtb-by-number)
+	      (setq gnus-reffed-article-number (1- gnus-reffed-article-number))
+	      (setq pslist (cdr pslist)))))))
 
 
 

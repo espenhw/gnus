@@ -493,7 +493,6 @@ instead call function `nntp-status-message' to get status message.")
 
 (defun nntp-request-group (group &optional server dont-check)
   "Select GROUP."
-  (and nntp-async-articles (nntp-async-request-group group))
   (nntp-send-command "^.*\r?\n" "GROUP" group)
   (save-excursion
     (set-buffer nntp-server-buffer)
@@ -501,6 +500,7 @@ instead call function `nntp-status-message' to get status message.")
     (looking-at "[23]")))
 
 (defun nntp-request-asynchronous (group &optional server articles)
+  (and nntp-async-articles (nntp-async-request-group group))
   (and 
    nntp-async-number
    (if (not (or (nntp-async-server-opened)

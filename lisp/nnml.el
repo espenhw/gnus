@@ -269,8 +269,9 @@ all. This may very well take some time.")
 	      (string-to-int name)))
 	   (directory-files nnml-current-directory nil "^[0-9]+$" t)))
 	 (max-article (and active-articles (apply 'max active-articles)))
+	 (is-old t)
 	 article rest mod-time)
-    (while articles
+    (while (and articles is-old)
       (setq article (concat nnml-current-directory 
 			    (int-to-string (car articles))))
       (if (setq mod-time (nth 5 (file-attributes article)))
@@ -279,10 +280,11 @@ all. This may very well take some time.")
 		       (not (= (car articles) max-article)))
 		   (not (equal mod-time '(0 0)))
 		   (or force
-		       (> (nnmail-days-between
-			   (current-time-string)
-			   (current-time-string mod-time))
-			  days)))
+		       (setq is-old
+			     (> (nnmail-days-between
+				 (current-time-string)
+				 (current-time-string mod-time))
+				days))))
 	      (progn
 		(and gnus-verbose-backends (message "Deleting %s..." article))
 		(condition-case ()
@@ -301,7 +303,7 @@ all. This may very well take some time.")
       (nnmail-save-active nnml-group-alist nnml-active-file))
     (nnml-save-nov)
     (message "")
-    rest))
+    (nconc rest articles)))
 
 (defun nnml-request-move-article 
   (article group server accept-form &optional last)

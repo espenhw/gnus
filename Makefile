@@ -9,4 +9,4 @@ some:
 	cd lisp; $(MAKE) EMACS=$(EMACS) some
 
 info:
-	cd texi; $(MAKE) all
+	cd texi; $(MAKE) EMACS=$(EMACS) all

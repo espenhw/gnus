@@ -295,11 +295,13 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 (defalias 'nnfolder-request-post-buffer 'nnmail-request-post-buffer)
 
-(defun nnfolder-request-expire-articles (articles newsgroup &optional server force)
+(defun nnfolder-request-expire-articles 
+  (articles newsgroup &optional server force)
   (nnfolder-possibly-change-group newsgroup)
   (let* ((days (or (and nnmail-expiry-wait-function
 			(funcall nnmail-expiry-wait-function newsgroup))
 		   nnmail-expiry-wait))
+	 (is-old t)
 	 rest)
     (save-excursion 
       (set-buffer nnfolder-current-buffer)
@@ -307,11 +309,12 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	(goto-char (point-min))
 	(if (search-forward (nnfolder-article-string (car articles)) nil t)
 	    (if (or force
-		    (> (nnmail-days-between 
-			(current-time-string)
-			(buffer-substring 
-			 (point) (progn (end-of-line) (point))))
-		       days))
+		    (setq is-old
+			  (> (nnmail-days-between 
+			      (current-time-string)
+			      (buffer-substring 
+			       (point) (progn (end-of-line) (point))))
+			     days)))
 		(progn
 		  (and gnus-verbose-backends
 		       (message "Deleting: %s" (car articles)))
@@ -333,7 +336,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 						  (match-end 0))))))
 	(setcar active activemin))
       (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
-      rest)))
+      (nconc rest articles))))
 
 (defun nnfolder-request-move-article
   (article group server accept-form &optional last)

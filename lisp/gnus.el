@@ -1075,6 +1075,11 @@ This hook is run before any variables are set in the summary buffer.")
 (defvar gnus-article-mode-hook nil
   "*A hook for Gnus article mode.")
 
+(defun gnus-summary-exit-hook nil
+  "*A hook called on exit from the summary buffer.
+It calls `gnus-summary-expire-articles' by default.")
+(add-hook 'gnus-summary-exit-hook 'gnus-summary-expire-articles)
+
 (defvar gnus-open-server-hook nil
   "*A hook called just before opening connection to the news server.")
 
@@ -1205,6 +1210,17 @@ variable.")
 The hook is intended to mark an article as read (or unread)
 automatically when it is selected.")
 
+;; Remove any hilit infestation.
+(add-hook 'gnus-startup-hook
+	  (lambda ()
+	    (remove-hook 'gnus-summary-prepare-hook
+			 'hilit-rehighlight-buffer-quietly)
+	    (remove-hook 'gnus-summary-prepare-hook 'hilit-install-line-hooks)
+	    (setq gnus-mark-article-hook '(gnus-summary-mark-unread-as-read))
+	    (remove-hook 'gnus-article-prepare-hook
+			 'hilit-rehighlight-buffer-quietly)))
+
+
 
 ;; Internal variables
 
@@ -1322,10 +1338,10 @@ variable (string, integer, character, etc).")
 
 (defvar gnus-have-read-active-file nil)
 
-(defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls & Boys)"
+(defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.92"
+(defconst gnus-version "(ding) Gnus v0.93"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1748,6 +1764,14 @@ Thank you for your help in stamping out bugs.
 (defun gnus-truncate-string (str width)
   (substring str 0 width))
 
+;; Added by Geoffrey T. Dairiki <dairiki@u.washington.edu>. A safe way
+;; to limit the length of a string. This function is necessary since
+;; `(substr "abc" 0 30)' pukes with "Args out of range".
+(defsubst gnus-limit-string (str width)
+  (if (> (length str) width)
+      (substring str 0 width)
+    str))
+
 (defsubst gnus-simplify-subject-re (subject)
   "Remove \"Re:\" from subject lines."
   (let ((case-fold-search t))
@@ -1898,9 +1922,7 @@ Thank you for your help in stamping out bugs.
 (defun gnus-format-max-width (form length)
   (let* ((val (eval form))
 	 (valstr (if (numberp val) (int-to-string val) val)))
-    (if (> (length valstr) length)
- 	(substring valstr 0 length)
-      valstr)))
+    (gnus-limit-string valstr length)))
 
 (defun gnus-set-mouse-face (string)
   ;; Set mouse face property on STRING.
@@ -3164,7 +3186,7 @@ prompt the user for the name of an NNTP server to use."
              written by 
      Masanobu UMEDA
 
-      A Praxis Release
+       A Praxis Release
       larsi@ifi.uio.no
 " 
 	   gnus-version))
@@ -4997,7 +5019,8 @@ buffer.
       (kill-buffer (current-buffer)))
   (if gnus-browse-return-buffer
       (gnus-configure-windows 'server)
-    (gnus-configure-windows 'group)))
+    (gnus-configure-windows 'group)
+    (gnus-group-list-groups nil)))
 
 (defun gnus-browse-describe-briefly ()
   "Give a one line description of the group mode commands."
@@ -5266,6 +5289,8 @@ buffer.
   (define-prefix-command 'gnus-summary-backend-map)
   (define-key gnus-summary-mode-map "B" 'gnus-summary-backend-map)
   (define-key gnus-summary-backend-map "e" 'gnus-summary-expire-articles)
+  (define-key gnus-summary-backend-map "\M-\C-e" 
+    'gnus-summary-expire-articles-now)
   (define-key gnus-summary-backend-map "\177" 'gnus-summary-delete-article)
   (define-key gnus-summary-backend-map "m" 'gnus-summary-move-article)
   (define-key gnus-summary-backend-map "r" 'gnus-summary-respool-article)
@@ -5691,21 +5716,6 @@ If NO-ARTICLE is non-nil, no article is selected initially."
     ;; Suggested by sven@tde.LTH.Se (Sven Mattisson).
     (goto-char (point-min))
     (run-hooks 'gnus-summary-prepare-hook)))
-
-(defun gnus-subject-equal (s1 s2)
-  (cond 
-   ((numberp gnus-summary-gather-subject-limit)
-    (string= (if (> (length s1) gnus-summary-gather-subject-limit)
-		 (substring s1 0 gnus-summary-gather-subject-limit)
-	       s1)
-	     (if (> (length s2) gnus-summary-gather-subject-limit)
-		 (substring s2 0 gnus-summary-gather-subject-limit)
-	       s2)))
-   ((eq 'fuzzy gnus-summary-gather-subject-limit)
-    (string= (gnus-simplify-subject-fuzzy s1)
-	     (gnus-simplify-subject-fuzzy s2)))
-   (t
-    (string= s1 s2))))
 
 (defun gnus-gather-threads (threads)
   "Gather threads that have lost their roots."
@@ -7032,7 +7042,7 @@ searched for."
 			       gnus-unread-mark))
 		       (or (not subject)
 			   (and (setq psubject (gnus-summary-subject-string))
-				(gnus-subject-eq subject psubject))))))
+				(gnus-subject-equal subject psubject))))))
 	   (if backward (if (bobp) nil (forward-char -1) t)
 	     (if (eobp) nil (forward-char 1) t)))))
     (if did
@@ -7041,7 +7051,7 @@ searched for."
 	  (get-text-property (point) 'gnus-number)
 	(gnus-summary-position-cursor)))))
 
-(defun gnus-subject-eq (s1 s2)
+(defun gnus-subject-equal (s1 s2)
   (cond
    ((null gnus-summary-gather-subject-limit)
     (equal (gnus-simplify-subject-re s1)
@@ -7050,8 +7060,8 @@ searched for."
     (equal (gnus-simplify-subject-fuzzy s1)
 	   (gnus-simplify-subject-fuzzy s2)))
    ((numberp gnus-summary-gather-subject-limit)
-    (equal (substring s1 gnus-summary-gather-subject-limit)
-	   (substring s2 gnus-summary-gather-subject-limit)))
+    (equal (gnus-limit-string s1 gnus-summary-gather-subject-limit)
+	   (gnus-limit-string s2 gnus-summary-gather-subject-limit)))
    (t
     (equal s1 s2))))
     
@@ -7321,12 +7331,15 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	 (mode major-mode)
 	 (buf (current-buffer)))
     (gnus-summary-update-info) ; Make all changes in this group permanent.
+    (set-buffer buf)
+    (run-hooks 'gnus-summary-exit-hook)
+    (and gnus-use-cache (gnus-cache-possibly-remove-articles))
     ;; Make sure where I was, and go to next newsgroup.
+    (set-buffer gnus-group-buffer)
     (or quit-config
 	(progn
 	  (gnus-group-jump-to-group group)
 	  (gnus-group-next-unread-group 1)))
-    (and gnus-use-cache (gnus-cache-possibly-remove-articles))
     (if temporary
 	nil				;Nothing to do.
       ;; We set all buffer-local variables to nil. It is unclear why
@@ -7651,6 +7664,7 @@ be displayed."
 	  (set-buffer gnus-summary-buffer)
 	  (if (or (null gnus-current-article)
 		  (null gnus-article-current)
+		  (null (get-buffer gnus-article-buffer))
 		  (not (eq article (cdr gnus-article-current)))
 		  (not (equal (car gnus-article-current) gnus-newsgroup-name))
 		  force)
@@ -8176,11 +8190,19 @@ article. If BACKWARD (the prefix) is non-nil, search backward instead."
    (goto-char (point-max))
    (and gnus-break-pages (gnus-narrow-to-page))))
 
-(defun gnus-summary-show-article ()
-  "Force re-fetching of the current article."
-  (interactive)
+(defun gnus-summary-show-article (no-refetch)
+  "Force re-fetching of the current article.
+If the prefix argument NO-REFETCH is non-nil, no actual refetch will
+be performed.  The current article will simply be redisplayed."
+  (interactive "P")
   (gnus-set-global-variables)
-  (gnus-summary-select-article gnus-have-all-headers t))
+  (if (not no-refetch)
+      (gnus-summary-select-article gnus-have-all-headers t)
+    (or gnus-current-article
+	(error "There is no current article"))
+    (gnus-summary-goto-subject gnus-current-article)
+    (gnus-configure-windows 'article)
+    (gnus-summary-position-cursor)))
 
 (defun gnus-summary-verbose-headers (arg)
   "Toggle permanent full header display.
@@ -8528,6 +8550,19 @@ functions. (Ie. mail newsgroups at present.)"
 	      (gnus-summary-mark-as-read (car expirable) gnus-canceled-mark))
 	  (setq expirable (cdr expirable))))))
 
+(defun gnus-summary-expire-articles-now ()
+  "Expunge all expirable articles in the current group.
+This means that *all* articles that are marked as expirable will be
+deleted forever, right now."
+  (interactive)
+  (or gnus-expert-user
+      (gnus-y-or-n-p
+       "Are you really, really, really sure you want to expunge? ")
+      (error "Phew!"))
+  (let ((nnmail-expiry-wait 0)
+	(nnmail-expiry-wait-function nil))
+    (gnus-summary-expire-articles)))
+
 ;; Suggested by Jack Vinson <vinson@unagi.cis.upenn.edu>.
 (defun gnus-summary-delete-article (n)
   "Delete the N next (mail) articles.
@@ -8571,7 +8606,8 @@ This will have permanent effect only in mail groups."
        'request-replace-article gnus-newsgroup-name)
       (error "The current newsgroup does not support article editing."))
   (gnus-summary-select-article t)
-  (other-window 1)
+  (gnus-configure-windows 'article)
+  (select-window (get-buffer-window gnus-article-buffer))
   (gnus-message 6 "C-c C-c to end edits")
   (setq buffer-read-only nil)
   (text-mode)
@@ -9251,7 +9287,6 @@ even ticked and dormant ones."
   "Display all the hidden articles that are marked as dormant."
   (interactive)
   (let ((buffer-read-only nil))
-    (goto-char (point-min))
     (let ((dormant gnus-newsgroup-dormant)
 	  headers h)
       (while dormant
@@ -9260,6 +9295,7 @@ even ticked and dormant ones."
 		 (setq headers (cons h headers))))
 	(setq dormant (cdr dormant)))
       (or headers (error "No dormant articles hidden."))
+      (goto-char (point-min))
       (save-excursion 
 	(gnus-summary-update-lines 
 	 (point)
@@ -13254,6 +13290,7 @@ score files in the \"/ftp.some-where:/pub/score\" directory.
  	  (setq dir (expand-file-name
  		     (concat gnus-kill-files-directory
  			     (gnus-replace-chars-in-string group ?. ?/))))
+	  (setq dir (gnus-replace-chars-in-string dir ?: ?/))
 	  (setq suffix (car suffixes)
 		suffixes (cdr suffixes))
 	  (if (file-exists-p (concat dir "/" suffix))
@@ -13303,7 +13340,7 @@ GROUP using BNews sys file syntax."
 	  (delete-region (1+ (point)) (point-min)))
 	;; If short file names were used, we have to translate slashes.
 	(goto-char (point-min))
-	(while (search-forward "/" nil t)
+	(while (re-search-forward "[/:]" nil t)
 	  (replace-match "." t t))
 	;; Translate "all" to ".*".
 	(while (search-forward "all" nil t)

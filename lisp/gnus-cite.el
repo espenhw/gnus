@@ -92,8 +92,7 @@ It is merged with the face for the cited text belonging to the attribution.")
   "Names of light colors.")
 
 (defvar gnus-face-dark-name-list
-  '("violetred3" "violetred2" "violetred1" "violetred3" "deepskyblue3" "deepskyblue2" "deepskyblue1" "deepskyblue"
-    "dark salmon" "firebrick"
+  '("dark salmon" "firebrick"
     "dark green" "dark orange" "dark khaki" "dark violet"
     "dark turquoise")
   "Names of dark colors.")

@@ -1,4 +1,67 @@
+Mon Jul 10 10:44:46 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus-ems.el (gnus-ems-redefine): Redefine for XEmacs.
+
+	* gnus.el (gnus-summary-expire-articles-now): New function and
+	keystrokem by popular demand.
+	(gnus-summary-exit-hook): New variable.
+
+	* gnus-vis.el (gnus-visual-turn-off-edit-menus): New function.
+
+	* nnml.el (nnml-request-expire-articles): When you have found one
+	new article, the rest are probably also new, so stop checking,
+	already. 
+	* nnbabyl.el (nnbabyl-request-expire-articles): Ditto.
+	* nnfolder.el (nnfolder-request-expire-articles): Ditto.
+	* nnmh.el (nnmh-request-expire-articles): Ditto.
+	* nnmbox.el (nnmbox-request-expire-articles): Ditto.
+
+	* gnus-ems.el: Setq gnus-display-type and gnus-background-mode for
+	XEmacs. 
+
+	* gnus-vis.el (gnus-summary-highlight): Defvarred twice. 
+
+	* gnus-uu.el (gnus-uu-uustrip-article): Remove any non-body line
+	after the begin line. 
+
+Sun Jul  9 15:01:58 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus-uu.el (gnus-uu-get-actions): Substitute "file" for
+	"gnus-uu-archive". 
+
+	* gnus-vis.el (gnus-group-make-menu-bar): Disable the Edit menu in
+	all Gnus modes. 
+
+	* gnus-msg.el (gnus-insert-mime-headers): New function.
+	(gnus-inews-insert-headers): Make deletable headers italic. 
+	(gnus-inews-check-post): Stricter From header checks. 
+
+	* gnus.el (gnus-subject-equal): Would bug out on numerical
+	gather-limits. 
+	(gnus-limit-string): New function. 
+	(gnus-score-score-files): Translate the ":" to "/".
+	(gnus-score-find-bnews): Ditto.
+	('gnus-startup-hook): Remove all hilit hooks by default. 
+
+	* gnus-score.el (gnus-default-adaptive-score-alist): Don't let
+	ticks affect adaptive score. 
+
+	* gnus-msg.el ('rmail): Require rmail. 
+
+	* gnus-mh.el (gnus-mail-reply-using-mhe): Make sure the To isn't
+	empty. 
+
+	* gnus-msg.el (gnus-inews-news): Don't restore window config if
+	article is rejected. 
+
+	* gnus.el (gnus-summary-show-article): Now takes a prefix.
+	(gnus-browse-exit): List all groups on exit.
+	(gnus-summary-edit-article): Make sure the article buffer is the
+	selected window before editing. 
+
 Sat Jul  8 16:57:03 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.92 is released.
 
 	* gnus.el (gnus-summary-fetch-faq): Get the real name.
 	(gnus-summary-fetch-faq): Don't do the config thing unless the

@@ -263,8 +263,9 @@ Ricardo Nassif did the proof-reading.
 @item
 Kevin Davidson came up with the name @dfn{ding}, so blame him.
 @item 
-Stainless Steel Rat, Jack Vinson, Daniel Quinlan, Ilja Weis, Frank D. Cringle 
- and Andrew Eskilsson have all contributed code and suggestions.
+Stainless Steel Rat, Jack Vinson, Daniel Quinlan, Ilja Weis, Frank D.
+Cringle, Geoffrey T. Dairiki and Andrew Eskilsson have all contributed
+code and suggestions.
 @end itemize
 
 
@@ -274,7 +275,7 @@ Stainless Steel Rat, Jack Vinson, Daniel Quinlan, Ilja Weis, Frank D. Cringle
 
 @c Written by Sudish Joseph
 
-@code{gnus-visual} can be used to highlight the summary buffer.  It
+@code{gnus-vis} can be used to highlight the summary buffer.  It
 offers far more flexibility than hilit (since it has access to more
 data; eg. the article score) in deciding how to highlight a given
 article.  Also, hilit gets confused by the way Gnus manipulates the
@@ -282,7 +283,7 @@ summary buffer, leading to errors.  Such errors may be detected by
 looking for any hilit-specific functions in the @code{*Backtrace*}
 buffer.  If such a reference exists, you should be using the code below.
 
-You can also get @code{gnus-visual} to highlight the article buffer, so
+You can also get @code{gnus-vis} to highlight the article buffer, so
 you should get rid of all hilit-specific Gnus calls.
 
 Add the code below to your @file{.gnus} file to remove all the hilit
@@ -291,7 +292,7 @@ crud:
 @lisp
 (add-hook 'gnus-startup-hook
           '(lambda ()
-             ;; gnus-visual is far better for summary highlighting
+             ;; gnus-vis is far better for summary highlighting
              ;; also, hilit cannot handle a (ding) summary and will
              ;; crash on you
              (remove-hook 'gnus-summary-prepare-hook
@@ -1987,11 +1988,18 @@ in @code{nnmail-procmail-directory}.  To arrive at the file name to put
 the incoming mail in, append @code{nnmail-procmail-suffix} to the group
 name.  The mail backends will read the mail from these files.
 
-@vindex nnail-resplit-incoming
+@vindex nnmail-resplit-incoming
 When Gnus reads a file called @file{mail.misc.spool}, this mail will be
 put in the @code{mail.misc}, as one would expect.  However, if you want
 Gnus to split the mail the normal way, you could set
-@code{nnail-resplit-incoming} to @code{t}.
+@code{nnmail-resplit-incoming} to @code{t}.
+
+@vindex nnmail-keep-last-article
+If you use @code{procmail}, you should set
+@code{nnmail-keep-last-article} to non-@code{nil}, to prevent Gnus from
+ever expiring the final article in a mail newsgroup. This is quite,
+quite important.
+
 
 @node Expiring Old Mail Articles
 @subsubsection Expiring Old Mail Articles
@@ -2654,7 +2662,7 @@ move around, read articles, post articles and reply to articles.
 * Paging the Article::          Scrolling the current article.
 * Reply Followup and Post::     Posting articles.
 * Canceling and Superseding::   "Whoops, I shouldn't have called him that."
-* Ticking and Marking::         Marking articles as read, expirable, etc.
+* Marking Articles::            Marking articles as read, expirable, etc.
 * Threading::                   How threads are made.
 * Asynchronous Fetching::       Gnus might be able to pre-fetch articles.
 * Article Caching::             You may store articles in a cache.
@@ -3574,10 +3582,17 @@ You may want to do spell-checking on messages that you send out.  Or, if
 you don't want to spell-check by hand, you could add automatic
 spell-checking via the @code{ispell} package:
 
+@vindex news-inews-hook
 @lisp
 (add-hook 'news-inews-hook 'ispell-message)	;For news posts
 (add-hook 'mail-send-hook 'ispell-message)	;for mail posts via sendmail
 @end lisp
+
+@findex gnus-inews-insert-mime-headers
+If you want to insert some @sc{mime} headers into the articles you post,
+without doing any actual encoding, you could add
+@code{gnus-inews-insert-mime-headers} to @code{gnus-inews-article-hook}.
+
 
 @node Canceling and Superseding
 @section Canceling Articles
@@ -3634,8 +3649,8 @@ The previous article will be canceled/superseded.
 
 Just remember, kids: There is no 'c' in 'supersede'.
 
-@node Ticking and Marking
-@section Ticking and Marking
+@node Marking Articles
+@section Marking Articles
 @cindex article marking
 @cindex article ticking
 @cindex marks
@@ -4256,7 +4271,9 @@ group and return you to the group buffer.
 @kindex q (Summary)
 @findex gnus-summary-exit
 Exit the current group and update all information on the group
-(@code{gnus-summary-exit}).
+(@code{gnus-summary-exit}).  @code{gnus-summary-exit-hook} is called
+before doing much of the exiting, and calls
+@code{gnus-summary-expire-articles} by default.
 @item Z E
 @itemx Q
 @kindex Z E (Summary)
@@ -4855,7 +4872,10 @@ Do a Caesar rotate (rot13) on the article buffer
 @item A g
 @kindex A g (Summary)
 @findex gnus-summary-show-article
-Select the current article (@code{gnus-summary-show-article}).
+(Re)fetch the current article (@code{gnus-summary-show-article}). If
+given a prefix, don't actually refetch any articles, just jump to the
+current article and configure the windows to display the current
+article.
 @item A t
 @kindex A t (Summary)
 @findex gnus-summary-toggle-header
@@ -5693,6 +5713,14 @@ process/prefix convention (@pxref{Process/Prefix}).
 @findex gnus-summary-expire-articles
 Expire all expirable articles in the group
 (@code{gnus-summary-expire-articles}).
+
+@item B M-C-e
+@kindex B M-C-e (Summary)
+@findex gnus-summary-expire-articles-now
+Expunge all the expirable articles in the group
+(@code{gnus-summary-expire-articles-now}). This means that @strong{all}
+articles that are eligeble for expiry in the current group will
+disappear forever into that big @file{/dev/null} in the sky.
 
 @item B DEL
 @kindex B DEL (Summary)

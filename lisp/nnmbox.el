@@ -232,6 +232,7 @@
   (let* ((days (or (and nnmail-expiry-wait-function
 			(funcall nnmail-expiry-wait-function newsgroup))
 		   nnmail-expiry-wait))
+	 (is-old t)
 	 rest)
     (save-excursion 
       (set-buffer nnmbox-mbox-buffer)
@@ -239,11 +240,12 @@
 	(goto-char (point-min))
 	(if (search-forward (nnmbox-article-string (car articles)) nil t)
 	    (if (or force
-		    (> (nnmail-days-between 
-			(current-time-string)
-			(buffer-substring 
-			 (point) (progn (end-of-line) (point))))
-		       days))
+		    (setq is-old
+			  (> (nnmail-days-between 
+			      (current-time-string)
+			      (buffer-substring 
+			       (point) (progn (end-of-line) (point))))
+			     days)))
 		(progn
 		  (and gnus-verbose-backends
 		       (message "Deleting: %s" (car articles)))
@@ -260,7 +262,7 @@
 	  (setcar active (1+ (car active)))
 	  (goto-char (point-min))))
       (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
-      rest)))
+      (nconc rest articles))))
 
 (defun nnmbox-request-move-article
   (article group server accept-form &optional last)

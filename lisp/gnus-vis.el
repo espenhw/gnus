@@ -127,17 +127,19 @@ The latter can be used like this:
 		 (list "Subject" nil 
 		       (custom-face-lookup "red" nil nil t t nil))
 		 (list "Newsgroups:.*," nil
-		       (custom-face-lookup "firebrick" nil nil t t nil))
-		 (list "" 'bold
+		       (custom-face-lookup "yellow" nil nil t t nil))
+		 (list "" 
+		       (custom-face-lookup "cyan" nil nil t nil nil)
 		       (custom-face-lookup "green" nil nil nil t nil))))
 	(t
 	 (list (list "From" nil 
-		       (custom-face-lookup "red" nil nil t t nil))
+		       (custom-face-lookup "RoyalBlue" nil nil t t nil))
 		 (list "Subject" nil 
 		       (custom-face-lookup "firebrick" nil nil t t nil))
 		 (list "Newsgroups:.*," nil
-		       (custom-face-lookup "firebrick" nil nil t t nil))
-		 (list "" 'bold
+		       (custom-face-lookup "dark orange" nil nil t t nil))
+		 (list ""
+		       (custom-face-lookup "purple" nil nil t nil nil)
 		       (custom-face-lookup "DarkGreen" nil nil nil t nil)))))
   "Alist of headers and faces used for highlighting them.
 The entries in the list has the form `(REGEXP NAME CONTENT)', where
@@ -159,25 +161,6 @@ will be used.")
 				    gnus-mouse-face
 				  'highlight)
   "Face used when the mouse is over the button.")
-
-(defvar gnus-summary-highlight
-  '(((> score default) . bold)
-    ((< score default) . italic))
-  "*Alist of `(FORM . FACE)'.
-Summary lines are highlighted with the FACE for the first FORM which
-evaluate to a non-nil value.  
-
-Point will be at the beginning of the line when FORM is evaluated.
-The following can be used for convenience:
-
-score:   (gnus-summary-article-score)
-default: gnus-summary-default-score
-below:   gnus-summary-mark-below
-
-To check for marks, e.g. to underline replied articles, use
-`gnus-summary-article-mark': 
-
-   ((= (gnus-summary-article-mark) gnus-replied-mark) . underline)")
 
 (defvar gnus-signature-face 'italic
   "Face used for signature.")
@@ -229,9 +212,15 @@ highlight-headers-follow-url-netscape:
 ;;; gnus-menu
 ;;;
 
+(defun gnus-visual-turn-off-edit-menu (type)
+  (define-key (symbol-value (intern (format "gnus-%s-mode-map" type)))
+    [menu-bar edit] 'undefined))
+
 ;; Newsgroup buffer
 
 (defun gnus-group-make-menu-bar ()
+  (gnus-visual-turn-off-edit-menu 'group)
+
   (easy-menu-define
    gnus-group-reading-menu
    gnus-group-mode-map
@@ -328,6 +317,8 @@ highlight-headers-follow-url-netscape:
 
 ;; Server mode
 (defun gnus-server-make-menu-bar ()
+  (gnus-visual-turn-off-edit-menu 'server)
+
   (easy-menu-define
    gnus-server-menu
    gnus-server-mode-map
@@ -345,6 +336,8 @@ highlight-headers-follow-url-netscape:
 
 ;; Browse mode
 (defun gnus-browse-make-menu-bar ()
+  (gnus-visual-turn-off-edit-menu 'browse)
+
   (easy-menu-define
    gnus-browse-menu
    gnus-browse-mode-map
@@ -357,6 +350,7 @@ highlight-headers-follow-url-netscape:
 
 ;; Summary buffer
 (defun gnus-summary-make-menu-bar ()
+  (gnus-visual-turn-off-edit-menu 'summary)
 
   (easy-menu-define
    gnus-summary-mark-menu
@@ -628,6 +622,7 @@ highlight-headers-follow-url-netscape:
  
 ;; Article buffer
 (defun gnus-article-make-menu-bar ()
+  (gnus-visual-turn-off-edit-menu 'summary)
 
  (easy-menu-define
    gnus-article-article-menu

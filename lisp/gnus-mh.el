@@ -86,11 +86,11 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
     (setq buffer (current-buffer))
     (save-excursion
       (save-restriction
-	(or gnus-user-login-name ; we need this
+	(or gnus-user-login-name	; we need this
 	    (setq gnus-user-login-name (or (getenv "USER")
 					   (getenv "LOGNAME"))))
 
-	(gnus-article-show-all-headers) ;; so colors are happy
+	(gnus-article-show-all-headers);; so colors are happy
 	;; lots of junk to avoid mh-send deleting other windows
 	(setq from (gnus-fetch-field "from")
 	      subject (let ((subject (or (gnus-fetch-field "subject")
@@ -114,8 +114,8 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
 	(setq mh-show-buffer buffer)))
 
     (mh-find-path)
-    (mh-send-sub to (or cc "") 
-		 (or subject "(None)") config) ;; Erik Selberg 1/23/94
+    (mh-send-sub (or to "") (or cc "") 
+		 (or subject "(None)") config);; Erik Selberg 1/23/94
 
     (let ((draft (current-buffer))
 	  (gnus-mail-buffer (current-buffer))
@@ -124,9 +124,9 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
 	  (gnus-configure-windows 'reply)
 	(gnus-configure-windows 'reply-yank))
       (setq mail-buf gnus-mail-buffer)
-      (pop-to-buffer mail-buf) ;; always in the display, so won't have window probs
+      (pop-to-buffer mail-buf);; always in the display, so won't have window probs
       (switch-to-buffer draft)
-      (kill-buffer mail-buf) ;; mh-e don't use it!
+      (kill-buffer mail-buf);; mh-e don't use it!
       )
 
     ;;    (mh-send to (or cc "") subject);; shouldn't use according to mhe
@@ -146,7 +146,7 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
     (setq mh-previous-window-config config)
     )
 
-    ;; Then, yank original article if requested.
+  ;; Then, yank original article if requested.
   (if yank
       (let ((last (point)))
 	(mh-yank-cur-msg)
@@ -161,17 +161,17 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
   (let* ((to (read-string "To: "))
 	 (cc (read-string "Cc: "))
 	 (buffer (or buffer gnus-article-buffer))
-	 (config (current-window-configuration)) ;; need to add this - erik
+	 (config (current-window-configuration));; need to add this - erik
 	 (subject (gnus-forward-make-subject buffer)))
     (setq mh-show-buffer buffer)
     (mh-find-path)
-    (mh-send-sub to (or cc "") (or subject "(None)") config) ;; Erik Selberg 1/23/94
+    (mh-send-sub to (or cc "") (or subject "(None)") config);; Erik Selberg 1/23/94
     (let ((draft (current-buffer))
 	  (gnus-mail-buffer (current-buffer))
 	  mail-buf)
       (gnus-configure-windows 'reply-yank)
       (setq mail-buf (eval (cdr (assq 'mail gnus-window-to-buffer))))
-      (pop-to-buffer mail-buf) ;; always in the display, so won't have window probs
+      (pop-to-buffer mail-buf);; always in the display, so won't have window probs
       (switch-to-buffer draft)
       )
     (save-excursion

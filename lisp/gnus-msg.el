@@ -28,6 +28,7 @@
 (require 'gnus)
 (require 'sendmail)
 (require 'gnus-ems)
+(require 'rmail)
 
 (defvar gnus-organization-file "/usr/lib/news/organization"
   "*Local news organization file.")
@@ -701,9 +702,11 @@ will attempt to use the foreign server to post the article."
     (or server-running
 	(gnus-close-server (gnus-find-method-for-group gnus-newsgroup-name)))
     (let ((conf gnus-prev-winconf))
-      (bury-buffer)
-      ;; Restore last window configuration.
-      (and conf (not error) (set-window-configuration conf)))))
+      (if (not error)
+	  (progn
+	    (bury-buffer)
+	    ;; Restore last window configuration.
+	    (and conf (set-window-configuration conf)))))))
 
 (defun gnus-inews-check-post ()
   "Check whether the post looks ok."
@@ -770,12 +773,19 @@ will attempt to use the foreign server to post the article."
 	     (save-excursion
 	       (let* ((case-fold-search t)
 		      (from (mail-fetch-field "from")))
-		 (or (not from)
-		     (and (string-match "@" from)
-			  (string-match "@[^\\.]*\\." from))
-		     (gnus-yes-or-no-p
-		      (format "The From looks strange: \"%s\". Really post? "
-			      from)))))))))
+		 (cond
+		  ((not from)
+		   (gnus-yes-or-no-p "There is no From line. Really post? "))
+		  ((not (string-match "@[^\\.]*\\." from))
+		   (gnus-yes-or-no-p
+		    (format 
+		     "The address looks strange: \"%s\". Really post? " from)))
+		  ((string-match "(.*).*(.*)")
+		   (gnus-yes-or-no-p
+		    (format
+		     "The From header looks strange: \"%s\". Really post? " 
+		     from)))))))
+	 )))
     ;; Check for long lines.
     (or (gnus-check-before-posting 'long-lines)
 	(save-excursion
@@ -991,7 +1001,7 @@ Headers in `gnus-required-headers' will be generated."
 	(goto-char (point-min))
 	(and (re-search-forward 
 	      (concat "^" (symbol-name (car headers)) ": *") nil t)
-	     (get-text-property (1+ (match-end 0)) 'gnus-deletable)
+	     (get-text-property (1+ (match-beginning 0)) 'gnus-deletable)
 	     (gnus-delete-line))
 	(setq headers (cdr headers))))
     ;; Insert new Sender if the From is strange. 
@@ -1050,18 +1060,19 @@ Headers in `gnus-required-headers' will be generated."
 		      (read-from-minibuffer
 		       (format "Empty header for %s; enter value: " header))))
 	    ;; Finally insert the header.
-	    (if (bolp)
-		(save-excursion
-		  (goto-char (point-max))
-		  (insert (symbol-name header) ": ")
-		  ;; Add the deletable property to the headers that require it.
-		  (if (memq header gnus-deletable-headers)
-		      (add-text-properties 
-		       (point) (progn (insert value) (point))
-		       '(gnus-deletable t) (current-buffer))
-		    (insert value))
-		  (insert "\n"))
-	      (replace-match value t t))))
+	    (save-excursion
+	      (if (bolp)
+		  (progn
+		    (goto-char (point-max))
+		    (insert (symbol-name header) ": " value "\n")
+		    (forward-line -1))
+		(replace-match value t t))
+	      ;; Add the deletable property to the headers that require it.
+	      (and (memq header gnus-deletable-headers)
+		   (progn (beginning-of-line) (looking-at "[^:]+: "))
+		   (add-text-properties 
+		    (point) (match-end 0)
+		    '(gnus-deletable t face italic) (current-buffer))))))
       (setq headers (cdr headers)))))
 
 (defun gnus-inews-insert-signature ()
@@ -1096,6 +1107,22 @@ nil."
 		(insert signature))
 	      (goto-char (point-max))
 	      (or (bolp) (insert "\n"))))))))
+
+;; Written by "Mr. Per Persson" <pp@solace.mh.se>.
+(defun gnus-inews-insert-mime-headers ()
+  (or (mail-position-on-field "Mime-Version")
+      (insert "1.0")
+  (cond ((save-excursion
+	   (beginning-of-buffer)
+	   (re-search-forward "[\200-\377]" nil t))
+	 (or (mail-position-on-field "Content-Type")
+	     (insert "text/plain; charset=ISO-8859-1"))
+	 (or (mail-position-on-field "Content-Transfer-Encoding")
+	     (insert "8bit")))
+	(t (or (mail-position-on-field "Content-Type")
+	     (insert "text/plain; charset=US-ASCII"))
+	   (or (mail-position-on-field "Content-Transfer-Encoding")
+	       (insert "7bit"))))))
 
 (defun gnus-inews-do-fcc ()
   "Process FCC: fields in current article buffer.

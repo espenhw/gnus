@@ -35,7 +35,7 @@
 
 (defvar gnus-default-adaptive-score-alist
   '((gnus-unread-mark)
-    (gnus-ticked-mark (from 4))
+    (gnus-ticked-mark)
     (gnus-dormant-mark (from 5))
     (gnus-del-mark (from -4) (subject -1))
     (gnus-read-mark (from 4) (subject 2))
@@ -282,10 +282,10 @@ of the last successful match.")
 (defun gnus-summary-header (header)
   ;; Return HEADER for current articles, or error.
   (let ((article (gnus-summary-article-number))
-	header)
+	headers)
     (if article
-	(if (setq header (gnus-get-header-by-number article))
-	    (aref header (nth 1 (assoc header gnus-header-index)))
+	(if (setq headers (gnus-get-header-by-number article))
+	    (aref headers (nth 1 (assoc header gnus-header-index)))
 	  (error "Pseudo-articles can't be scored"))
       (error "No article on current line"))))
 

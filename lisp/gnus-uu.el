@@ -802,7 +802,9 @@ The headers will be included in the sequence they are matched.")
       (setq name (cdr (assq 'name (car files))))
       (and 
        (setq action (gnus-uu-get-action name))
-       (setcar files (nconc (list (cons 'action action)
+       (setcar files (nconc (list (if (string= action "gnus-uu-archive")
+				      (cons 'action "file")
+				    (cons 'action action))
 				  (cons 'execute (if (string-match "%" action)
 						     (format action name)
 						   (concat action " " name))))
@@ -1184,10 +1186,15 @@ The headers will be included in the sequence they are matched.")
 
 	  (if (looking-at gnus-uu-begin-string)
 	      (progn 
-		(setq name-end (match-end 1))
-
+		(setq name-end (match-end 1)
+		      name-beg (match-beginning 1))
+		;; Remove any non gnus-uu-body-line right after start.
+		(forward-line 1)
+		(or (looking-at gnus-uu-body-line)
+		    (gnus-delete-line))
+ 
 		; Replace any slashes and spaces in file names before decoding
-		(goto-char (setq name-beg (match-beginning 1)))
+		(goto-char name-beg)
 		(while (re-search-forward "/" name-end t)
 		  (replace-match ","))
 		(goto-char name-beg)
@@ -1369,10 +1376,10 @@ The headers will be included in the sequence they are matched.")
   ;; Go through FILES and look for files to unpack. 
   (let* ((totfiles (gnus-uu-ls-r gnus-uu-work-dir))
 	 (ofiles files)
-	 file did-unpack)
-    (gnus-uu-add-file totfiles)
+	 file did-unpack file-entry)
+    (gnus-uu-add-file totfiles) 
     (while files
-      (setq file (cdr (assq 'name (car files))))
+      (setq file (cdr (setq file-entry (assq 'name (car files)))))
       (if (and (not (member file ignore))
 	       (equal (gnus-uu-get-action (file-name-nondirectory file))
 		      "gnus-uu-archive"))
