@@ -1,5 +1,7 @@
 2003-02-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnmail.el: Removed gnus-util autoload.
+
 	* gnus.el: Use gnus-prin1-to-string throughout.
 
 	* gnus-util.el (gnus-prin1-to-string): Bind print-length and

@@ -36,8 +36,6 @@
 (require 'mm-util)
 
 (eval-and-compile
-  (autoload 'gnus-error "gnus-util")
-  (autoload 'gnus-buffer-live-p "gnus-util")
   (autoload 'gnus-add-buffer "gnus"))
 
 (defgroup nnmail nil
