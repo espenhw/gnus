@@ -1,4 +1,8 @@
-2000-11-22  dme@dme.org
+2000-11-22 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-send-mail): Use buffer-substring-no-properties.
+
+2000-11-22  David Edmondson <dme@dme.org>
 
 	* imap.el (imap-wait-for-tag): Message read info.
 
