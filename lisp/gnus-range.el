@@ -189,9 +189,19 @@ LIST1 and LIST2 have to be sorted over <."
 RANGE1 and RANGE2 have to be sorted over <."
   (let* (out
          (min1 (car range1))
-         (max1 (if (numberp min1) min1 (prog1 (cdr min1) (setq min1 (car min1)))))
+         (max1 (if (numberp min1) 
+                   (if (numberp (cdr range1))
+                       (prog1 (cdr range1)
+                         (setq range1 nil)) min1)
+                 (prog1 (cdr min1)
+                   (setq min1 (car min1)))))
          (min2 (car range2))
-         (max2 (if (numberp min2) min2 (prog1 (cdr min2) (setq min2 (car min2))))))
+         (max2 (if (numberp min2)
+                   (if (numberp (cdr range2))
+                       (prog1 (cdr range2) 
+                         (setq range2 nil)) min2) 
+                 (prog1 (cdr min2)
+                   (setq min2 (car min2))))))
     (setq range1 (cdr range1)
           range2 (cdr range2))
     (while (and min1 min2)
@@ -218,7 +228,12 @@ RANGE1 and RANGE2 have to be sorted over <."
         (setq min2 (car range2)
               max2 (if (numberp min2) min2 (prog1 (cdr min2) (setq min2 (car min2))))
               range2 (cdr range2))))
-    (nreverse out)))
+    (cond ((cdr out)
+        (nreverse out))
+          ((numberp (car out))
+           out)
+          (t
+           (car out)))))
 
 ;;;###autoload
 (defalias 'gnus-set-sorted-intersection 'gnus-sorted-nintersection)
@@ -628,6 +643,7 @@ LIST is a sorted list."
 
 (defun gnus-range-map (func range)
   "Apply FUNC to each value contained by RANGE."
+  (setq range (gnus-range-normalize range))
   (while range
     (let ((span (pop range)))
       (if (numberp span)
