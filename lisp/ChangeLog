@@ -1,3 +1,8 @@
+2004-06-12  YAGI Tatsuya  <ynyaaa@ybb.ne.jp>  (tiny change)
+
+	* gnus-art.el (gnus-article-next-page): Fix the way to find a real
+	end-of-buffer.
+
 2004-06-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-ignored-supersedes-headers): Add Approved. 
