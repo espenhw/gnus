@@ -1,3 +1,9 @@
+2001-05-03 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnrss.el (nnrss-request-expire-articles): Calculate # of days
+	correctly.
+	(nnrss-check-group): Use time.
+
 2001-05-01 19:21:19 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
 
 	* gnus.el: Oort Gnus v0.03 is released.

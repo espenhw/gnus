@@ -196,7 +196,8 @@
       (when (setq e (assq art nnrss-group-data))
       (if (nnmail-expired-article-p
 	   group
-	   (if (listp (setq days (nth 1 e))) days (days-to-time days))
+	   (if (listp (setq days (nth 1 e))) days 
+	     (days-to-time (- days (time-to-days '(0 0)))))
 	   force)
 	  (setq nnrss-group-data (delq e nnrss-group-data)
 		changed t))))
@@ -382,7 +383,7 @@
 	 (push
 	  (list
 	   (incf nnrss-group-max)
-	   (time-to-days (current-time))
+	   (current-time)
 	   url
 	   (and subject (nnrss-decode-entities-unibyte-string subject))
 	   (and author (nnrss-decode-entities-unibyte-string author))
