@@ -683,14 +683,14 @@ care in handling it.
 
 @subsection Using PGP/MIME
 
-PGP/MIME require an external PGP implementation, such as GNU Privacy
-Gaurd (@code{http://www.gnupg.org/}.  It also require a Emacs interface
+PGP/MIME require an external OpenPGP implementation, such as GNU Privacy
+Guard (@code{http://www.gnupg.org/}.  It also require a Emacs interface
 to it, such as Mailcrypt (available from
 @code{http://www.nb.net/~lbudney/linux/software/mailcrypt.html}) or
 Florian Weimer's @code{gpg.el}.
 
-Creating your own PGP key is described in detail in various PGP
-documentation, so we refer to it.
+Creating your own OpenPGP key is described in detail in the
+documentation of your OpenPGP implementation, so we refer to it.
 
 @node Various Commands
 @section Various Commands

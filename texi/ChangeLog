@@ -1,3 +1,7 @@
+2000-11-12  Florian Weimer  <fw@deneb.enyo.de>
+
+	* message.texi (Security): Fixed typo, change "PGP" to "OpenPGP".
+
 2000-11-12  David Edmondson  <dme@dme.org>
 
 	* gnus.texi: remove `gnus-cite-prefix-regexp'.
