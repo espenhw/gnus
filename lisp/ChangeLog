@@ -1,5 +1,8 @@
 2004-06-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* mm-view.el (mm-inline-render-with-function): Use multibyte
+	buffer; decode html source by charset.
+
 	* mm-encode.el (mm-content-transfer-encoding-defaults): Doc fix.
 
 	* mm-util.el (mm-mime-mule-charset-alist): Add the windows-1251

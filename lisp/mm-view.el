@@ -299,11 +299,14 @@
        (buffer-string)))))
 
 (defun mm-inline-render-with-function (handle func &rest args)
-  (let ((source (mm-get-part handle)))
+  (let ((source (mm-get-part handle))
+	(charset (mail-content-type-get (mm-handle-type handle) 'charset)))
     (mm-insert-inline
      handle
-     (mm-with-unibyte-buffer
-       (insert source)
+     (mm-with-multibyte-buffer
+       (insert (if charset
+		   (mm-decode-string source charset)
+		 source))
        (apply func args)
        (buffer-string)))))
 
