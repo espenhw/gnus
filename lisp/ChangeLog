@@ -1,3 +1,8 @@
+2002-11-06  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-draft.el (gnus-draft-setup): Set gnus-message-group-art to
+	allow editing of drafts from an nnvirtual group.
+
 2002-11-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nndraft.el (nndraft-request-article): Replace emacs-mule with
