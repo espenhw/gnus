@@ -37,7 +37,6 @@
 
 (eval-when-compile (require 'cl))
 
-;;;###autoload
 (defvar gnus-directory (or (getenv "SAVEDIR") "~/News/")
   "*Directory variable from which all other Gnus file variables are derived.")
 
@@ -1731,7 +1730,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.23"
+(defconst gnus-version-number "5.2.24"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -8424,14 +8423,23 @@ Unscored articles will be counted as having a score of zero."
 	 (gnus-thread-total-score-1 (list thread)))))
 
 (defun gnus-thread-total-score-1 (root)
-  ;; This function find the total score of the thread below ROOT.
+  ;; This function finds the total score of the thread below ROOT.
   (setq root (car root))
-  (apply gnus-thread-score-function
-	 (or (cdr (assq (mail-header-number root) gnus-newsgroup-scored))
-	     gnus-summary-default-score 0)
-	 (mapcar 'gnus-thread-total-score
-		 (cdr (gnus-gethash (mail-header-id root)
-				    gnus-newsgroup-dependencies)))))
+  (let ((number (mail-header-number root)))
+    (if (and (not (memq number gnus-newsgroup-limit))
+	     (not (memq number gnus-newsgroup-sparse)))
+	;; This article shouldn't be counted.
+	(apply gnus-thread-score-function
+	       (mapcar 'gnus-thread-total-score
+		       (cdr (gnus-gethash (mail-header-id root)
+					  gnus-newsgroup-dependencies))))
+      ;; This article should be counted.
+      (apply gnus-thread-score-function
+	     (or (cdr (assq number gnus-newsgroup-scored))
+		 gnus-summary-default-score 0)
+	     (mapcar 'gnus-thread-total-score
+		     (cdr (gnus-gethash (mail-header-id root)
+					gnus-newsgroup-dependencies)))))))
 
 ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
 (defvar gnus-tmp-prev-subject nil)
@@ -13479,8 +13487,8 @@ The directory to save in defaults to `gnus-article-save-directory'."
     "\r" gnus-article-press-button
     "\t" gnus-article-next-button
     "\M-\t" gnus-article-prev-button
-    "<" beginning-of-bnuffer
-    ">" end-of-bnuffer
+    "<" beginning-of-buffer
+    ">" end-of-buffer
     "\C-c\C-b" gnus-bug)
 
   (substitute-key-definition
@@ -16047,7 +16055,7 @@ newsgroup."
       (while list
 	(gnus-sethash (car list) (pop list) gnus-killed-hashtb)))))
 
-(defun gnus-activate-group (group &optional scan dont-check &optional method)
+(defun gnus-activate-group (group &optional scan dont-check method)
   ;; Check whether a group has been activated or not.
   ;; If SCAN, request a scan of that group as well.
   (let ((method (or method (gnus-find-method-for-group group)))
@@ -16062,7 +16070,7 @@ newsgroup."
 		(gnus-request-scan group method))
 	   t)
 	 (condition-case ()
-	     (gnus-request-group group dont-check)
+	     (gnus-request-group group dont-check method)
 	;   (error nil)
 	   (quit nil))
 	 (save-excursion

@@ -450,20 +450,22 @@ on your system, you could say something like:
       file 
     ;; We translate -- but only the file name.  We leave the directory
     ;; alone.
-    (let* ((new (if (string-match "/[^/]+\\'" file)
-		    ;; This is needed on NT's and stuff.
-		    (substring file (1+ (match-beginning 0)))
-		  ;; Fall back on this.
-		  (file-name-nondirectory file)))
-	   (len (length new))
-	   (i 0)
-	   trans)
+    (let* ((i 0)
+	   trans leaf path len)
+      (if (string-match "/[^/]+\\'" file)
+	  ;; This is needed on NT's and stuff.
+	  (setq leaf (substring file (1+ (match-beginning 0)))
+		path (substring file 0 (1+ (match-beginning 0))))
+	;; Fall back on this.
+	(setq leaf (file-name-nondirectory file)
+	      path (file-name-directory file)))
+      (setq len (length leaf))
       (while (< i len)
-	(when (setq trans (cdr (assq (aref new i)
+	(when (setq trans (cdr (assq (aref leaf i)
 				     nnheader-file-name-translation-alist)))
-	  (aset new i trans))
+	  (aset leaf i trans))
 	(incf i))
-      (concat (file-name-directory file) new))))
+      (concat path leaf))))
 
 (defun nnheader-report (backend &rest args)
   "Report an error from the BACKEND.

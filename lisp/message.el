@@ -152,7 +152,6 @@ should return the new buffer name.")
   "*Non-nil means that the message buffer will be killed after sending a message.")
 
 (defvar gnus-local-organization)
-;;;###autoload
 (defvar message-user-organization 
   (or (and (boundp 'gnus-local-organization)
 	   gnus-local-organization)
@@ -834,8 +833,6 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
   (if (fboundp 'mail-abbrevs-setup)
       (mail-abbrevs-setup)
     (funcall (intern "mail-aliases-setup")))
-  (define-key message-mode-map "\C-n" 'abbrev-hacking-next-line)
-  (define-key message-mode-map "\M->" 'abbrev-hacking-end-of-buffer)
   (run-hooks 'text-mode-hook 'message-mode-hook))
 
 
@@ -2807,7 +2804,7 @@ you."
     ;; We remove everything before the bounced mail.
     (delete-region 
      (point-min)
-     (if (re-search-forward "[^ \t]*:" nil t)
+     (if (re-search-forward "^[^ \n\t]+:" nil t)
 	 (match-beginning 0)
        (point)))
     (save-restriction

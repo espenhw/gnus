@@ -326,10 +326,10 @@ always hide."
 	  (when marks
 	    (setq end (caar marks)))
 	  ;; Skip past lines we want to leave visible.
-	  (when (and beg gnus-cited-lines-visible)
+	  (when (and beg end gnus-cited-lines-visible)
 	    (goto-char beg)
 	    (forward-line gnus-cited-lines-visible)
-	    (if (> (point) end)
+	    (if (>= (point) end)
 		(setq beg nil)
 	      (setq beg (point-marker))))
 	  (when (and beg end)

@@ -216,7 +216,7 @@
      t gnus-button-message-id 3)
     ("\\(<?\\(url: ?\\)?news:\\([^>\n\t ]*\\)>?\\)" 1 t
      gnus-button-message-id 3)
-    ("\\(<URL: *\\)?mailto: *\\([^ \n\t]+\\)>?" 0 t gnus-button-reply 2)
+    ("\\(<URL: *\\)?mailto: *\\([^> \n\t]+\\)>?" 0 t gnus-button-reply 2)
     ;; This is how URLs _should_ be embedded in text...
     ("<URL: *\\([^\n\r>]*\\)>" 0 t gnus-button-url 1)
     ;; Next regexp stolen from highlight-headers.el.
@@ -340,8 +340,8 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
       gnus-group-group-menu gnus-group-mode-map ""
       '("Groups"
 	("Listing"
-	 ["List subscribed groups" gnus-group-list-groups t]
-	 ["List all groups" gnus-group-list-all-groups t]
+	 ["List unread subscribed groups" gnus-group-list-groups t]
+	 ["List (un)subscribed groups" gnus-group-list-all-groups t]
 	 ["List killed groups" gnus-group-list-killed gnus-killed-list]
 	 ["List zombie groups" gnus-group-list-zombies gnus-zombie-list]
 	 ["List level..." gnus-group-list-level t]

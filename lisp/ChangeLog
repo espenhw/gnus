@@ -1,3 +1,62 @@
+Fri Jun 21 16:36:03 1996  Christoph Wedler  <wedler@fmi.uni-passau.de>
+
+	* gnus-picon.el (gnus-picons-insert-face-if-exists): Total change.
+	Didn't conform with the conventions for picon databases.  Still a
+	bit (MISC must be searched for explicitly), but otherwise we would
+	always see the MISC/unknown face.  Faster.
+	(gnus-article-display-picons): Use accordingly.
+	(gnus-group-display-picons): Use accordingly.
+	(gnus-picons-try-to-find-face): Optional argument for not using
+	`gnus-picons-glyph-alist'--otherwise we would always see the same
+        x-face.
+	(gnus-picons-display-x-face): Use it.
+	(gnus-picons-reverse-domain-path): Deletia.
+
+Fri Jun 21 15:14:33 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-vis.el (gnus-group-make-menu-bar): Fix the menu bar
+	slightly. 
+
+	* gnus.el (gnus-thread-total-score-1): Didn't count right.
+
+	* message.el (message-bounce): Would not skip past all blank
+	lines. 
+
+	* gnus.el (gnus-directory): Removed autoload.
+	(gnus-activate-group): Pass the `method' argument on.
+
+Fri Jun 21 09:41:53 1996  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-vis.el (gnus-button-alist): Exclude > from mailto button. 
+
+Fri Jun 21 09:37:39 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-article-mode-map): `end-of-bnuffer'.  :-)
+
+Fri Jun 21 09:34:29 1996  Philippe Troin  <ptroin@compass-da.com>
+
+	* gnus.el (gnus-thread-total-score-1): Don't count non-displayed
+	articles. 
+
+Fri Jun 21 09:21:11 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnheader.el (nnheader-translate-file-chars): Would give faulty
+ 	results on NTs.
+
+Fri Jun 21 09:08:48 1996  Philippe Troin  <ptroin@compass-da.com>
+
+	* gnus-cite.el (gnus-article-hide-citation): Would sometimes bug
+	out. 
+
+Fri Jun 21 09:01:51 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-copy-article-buffer): Would include text
+	properties on XEmacs.
+
+Thu Jun 20 18:38:07 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-mode): Took `C-n' expansion out.
+
 Thu Jun 20 18:35:22 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.el: Gnus v5.2.23 is released.
