@@ -278,7 +278,6 @@ all. This may very well take some time.")
   (nnml-possibly-change-directory newsgroup)
   (let* ((active-articles 
 	  (nnheader-directory-articles nnml-current-directory))
-	 (max-article (and active-articles (apply 'max active-articles)))
 	 (is-old t)
 	 article rest mod-time number)
     (nnmail-activate 'nnml)

@@ -1,3 +1,38 @@
+Sat Mar  9 01:58:10 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-msg.el (gnus-tokenize-header): Wouldn't do the right thing
+	under XEmacs.
+
+Sat Mar  9 00:16:54 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-change-level): Insert groups in the
+	proper topic.
+	(gnus-topic-group-indentation): New function.
+	(gnus-topic-prepare-topic): Would do incorrect tallies.
+
+Fri Mar  8 23:15:05 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* nnvirtual.el (nnvirtual-create-mapping): Would enter each
+	article twice into the marks lists, possibly.
+	(nnvirtual-update-marked): Would "forget" marks.
+
+	* gnus.el (gnus-select-newsgroup): Create unsingle article buffer
+	on group entry.
+
+	* gnus-cache.el (gnus-cache-remove-article): Move forwards.
+	(gnus-cache-retrieve-headers): Would retrieve wrong headers. 
+
+Fri Mar  8 19:18:29 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-summary-increase-score): Defaults were used
+	incorrectly. 
+	(gnus-score-edit-current-scores): Changed name.
+
+	* gnus.el (gnus-gnus-to-quick-newsrc-format): Don't crete so much
+	string garbage.
+
+	* gnus-xmas.el (gnus-xmas-menu-add): New macro.
+
 Fri Mar  8 00:03:14 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.el (gnus-group-yank-group): Would bug out on groups with

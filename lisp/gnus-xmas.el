@@ -239,33 +239,45 @@ call it with the value of the `gnus-data' text property."
               (select-window lowest-window)
               (setq window-search nil)))))))
 
+(defmacro gnus-xmas-menu-add (type &rest menus)
+  `(gnus-xmas-menu-add-1 ',type ',menus))
+(put 'gnus-xmas-menu-add 'lisp-indent-function 1)
+(put 'gnus-xmas-menu-add 'lisp-indent-hook 1)
+
+(defun gnus-xmas-menu-add-1 (type menus)
+  (when (and menu-bar-mode
+	     (gnus-visual-p (intern (format "%s-menu" type)) 'menu))
+    (while menus
+      (easy-menu-add (symbol-value (pop menus))))))
+
 (defun gnus-xmas-group-menu-add ()
-  (easy-menu-add gnus-group-reading-menu)
-  (easy-menu-add gnus-group-group-menu)
-  (easy-menu-add gnus-group-misc-menu))
+  (gnus-xmas-menu-add group
+    gnus-group-reading-menu gnus-group-group-menu gnus-group-misc-menu))
 
 (defun gnus-xmas-summary-menu-add ()
-  (easy-menu-add gnus-summary-article-menu)
-  (easy-menu-add gnus-summary-thread-menu)
-  (easy-menu-add gnus-summary-misc-menu)
-  (easy-menu-add gnus-summary-post-menu)
-  (easy-menu-add gnus-summary-kill-menu)) 
+  (gnus-xmas-menu-add summary
+    gnus-summary-article-menu gnus-summary-thread-menu
+    gnus-summary-misc-menu gnus-summary-post-menu gnus-summary-kill-menu))
 
 (defun gnus-xmas-article-menu-add ()
-  (easy-menu-add gnus-article-article-menu)
-  (easy-menu-add gnus-article-treatment-menu))
+  (gnus-xmas-menu-add article
+    gnus-article-article-menu gnus-article-treatment-menu))
 
 (defun gnus-xmas-pick-menu-add ()
-  (easy-menu-add gnus-pich-menu))
+  (gnus-xmas-menu-add pick
+    gnus-pick-menu))
 
 (defun gnus-xmas-binary-menu-add ()
-  (easy-menu-add gnus-binary-menu))
+  (gnus-xmas-menu-add binary
+    gnus-binary-menu))
 
 (defun gnus-xmas-tree-menu-add ()
-  (easy-menu-add gnus-tree-menu))
+  (gnus-xmas-menu-add tree
+    gnus-tree-menu))
 
 (defun gnus-xmas-grouplens-menu-add ()
-  (easy-menu-add gnus-grouplens-menu))
+  (gnus-xmas-menu-add grouplens
+    gnus-grouplens-menu))
 
 (defun gnus-xmas-read-event-char ()
   "Get the next event."

@@ -69,7 +69,8 @@ less space and be faster as a result.")
 		     summary-menu group-menu article-menu
 		     tree-highlight menu highlight
 		     browse-menu server-menu
-		     page-marker))
+		     page-marker tree-menu binary-menu pick-menu
+		     grouplens-menu))
 		  (name . gnus-visual)
 		  (type . toggle))
 		 ((tag . "WWW Browser")

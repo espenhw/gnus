@@ -411,8 +411,7 @@ also do this by calling this function from the bottom of the Group
 buffer."
   (interactive "P")
   (let ((gnus-newsgroup-name nil)
-	(group (unless arg (gnus-group-group-name)))
-	subject)
+	(group (unless arg (gnus-group-group-name))))
     ;; We might want to prompt here.
     (when (and gnus-interactive-post
 	       (not gnus-expert-user))
@@ -719,8 +718,7 @@ method to use."
   ;; Mail the message if To, Bcc or Cc exists.
   (let* ((types '("to" "bcc" "cc"))
 	 (ty types)
-	 (buffer (current-buffer))
-	 fcc)
+	 (buffer (current-buffer)))
     (save-restriction
       (widen)
       (gnus-inews-narrow-to-headers)
@@ -1028,7 +1026,7 @@ called."
   (let* ((beg 0)
 	 (separator (or separator ","))
 	 (regexp
-	  (format "[ \t]*\\([^%s]+\\)?\\(%s\\|\\'\\)" separator separator))
+	  (format "[ \t]*\\([^%s]+\\)?\\([%s]+\\|\\'\\)" separator separator))
 	 elems)
     (while (and (string-match regexp header beg)
 		(< beg (length header)))
@@ -1785,7 +1783,7 @@ Customize the variable gnus-mail-forward-method to use another mailer."
   (interactive "sResend message to: ")
   (gnus-summary-select-article)
   (save-excursion
-    (let (resent beg)
+    (let (beg)
       ;; We first set up a normal mail buffer.
       (nnheader-set-temp-buffer " *Gnus resend*")
       ;; This code from sendmail.el
@@ -2157,8 +2155,8 @@ If INHIBIT-PROMPT, never prompt for a Subject."
       (let ((group (gnus-group-real-name (or group gnus-newsgroup-name)))
 	    (cur (cons (current-buffer) (cdr gnus-article-current)))
 	    (winconf (current-window-configuration))
-	    from subject date reply-to message-of
-	    references message-id sender follow-to sendto elt 
+	    from subject date message-of
+	    references message-id follow-to sendto elt 
 	    followup-to distribution newsgroups gnus-warning)
 	(set-buffer (get-buffer-create gnus-post-news-buffer))
 	(news-reply-mode)
@@ -2403,8 +2401,7 @@ If INHIBIT-PROMPT, never prompt for a Subject."
   (interactive)
   (let ((reply gnus-article-reply)
 	(winconf gnus-prev-winconf)
-	(group gnus-newsgroup-name)
-	buf)
+	(group gnus-newsgroup-name))
     
     (or (and group (not (gnus-group-read-only-p group)))
 	(setq group (read-string "Put in group: " nil
@@ -2790,7 +2787,7 @@ Headers will be generated before sending."
       (nnheader-narrow-to-headers)
       (let ((gcc (or gcc (mail-fetch-field "gcc" nil t)))
 	    (cur (current-buffer))
-	    end groups group method)
+	    groups group method)
 	(when gcc
 	  (nnheader-remove-header "gcc")
 	  (widen)
@@ -2966,11 +2963,10 @@ Headers will be generated before sending."
   (gnus-set-global-variables)
   (unless (equal gnus-newsgroup-name (gnus-draft-group))
     (error "This function can only be used in the draft buffer"))
-  (let (buf point)
+  (let (buf)
     (if (not (setq buf (gnus-request-restore-buffer 
 			(gnus-summary-article-number) gnus-newsgroup-name)))
 	(error "Couldn't restore the article")
-      (setq point (point))
       (switch-to-buffer buf)
       (gnus-inews-modify-mail-mode-map)
       (when (eq major-mode 'news-reply-mode)

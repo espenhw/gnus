@@ -235,7 +235,7 @@ of the last successful match.")
  "m" gnus-score-set-mark-below
  "x" gnus-score-set-expunge-below
  "R" gnus-summary-rescore
- "e" gnus-score-edit-alist
+ "e" gnus-score-edit-current-scores
  "f" gnus-score-edit-file
  "t" gnus-score-find-trace
  "C" gnus-score-customize)
@@ -313,7 +313,7 @@ used as score."
 		     (aref (symbol-name gnus-score-default-type) 0)))
 	 (pchar (and gnus-score-default-duration
 		     (aref (symbol-name gnus-score-default-duration) 0)))
-	 entry temporary end type match)
+	 entry temporary type match)
 
     ;; First we read the header to score.
     (while (not hchar)
@@ -336,8 +336,8 @@ used as score."
     (when (/= (downcase hchar) hchar)
       ;; This was a majuscle, so we end reading and set the defaults.
       (if mimic (message "%c %c" prefix hchar) (message ""))
-      (setq tchar (or gnus-score-default-type ?s)
-	    pchar (or gnus-score-default-duration ?t)))
+      (setq tchar (or tchar ?s)
+	    pchar (or pchar ?t)))
     
     ;; We continue reading - the type.
     (while (not tchar)
@@ -366,7 +366,7 @@ used as score."
       ;; It was a majuscle, so we end reading and the the default.
       (if mimic (message "%c %c %c" prefix hchar tchar)
 	(message ""))
-      (setq pchar (or gnus-score-default-duration ?p)))
+      (setq pchar (or pchar ?p)))
 
     ;; We continue reading.
     (while (not pchar)
@@ -726,7 +726,7 @@ SCORE is the score to add."
   (gnus-score-load-file file)
   (gnus-set-mode-line 'summary))
 
-(defun gnus-score-edit-alist (file)
+(defun gnus-score-edit-current-scores (file)
   "Edit the current score alist."
   (interactive (list gnus-current-score-file))
   (let ((winconf (current-window-configuration)))

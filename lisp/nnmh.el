@@ -249,7 +249,6 @@
 	    (lambda (name)
 	      (string-to-int name)))
 	   (directory-files nnmh-current-directory nil "^[0-9]+$" t)))
-	 (max-article (and active-articles (apply 'max active-articles)))
 	 (is-old t)
 	 article rest mod-time)
     (nnmail-activate 'nnmh)

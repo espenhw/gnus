@@ -102,8 +102,9 @@ If ALL is non-nil, list groups that have no unread articles.
 If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
   (set-buffer gnus-group-buffer)
   (let ((buffer-read-only nil)
-        (lowest (or lowest 1))
-	tlist info)
+        (lowest (or lowest 1)))
+
+    (setq gnus-topic-tallied-groups nil)
 
     (unless gnus-topic-alist
       (gnus-topic-check-topology))
@@ -124,7 +125,6 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
        gnus-level-killed ?K
        regexp))
 
-    (setq gnus-topic-tallied-groups nil)
     ;; Use topics.
     (when (< lowest gnus-level-zombie)
       (if list-topic
@@ -177,7 +177,7 @@ articles in the topic and its subtopics."
 	     (car entry) (gnus-info-method info)))))
       (when (and (listp entry)
 		 (numberp (car entry))
-		 (not (member (gnus-info-group info)
+		 (not (member (gnus-info-group (setq info (nth 2 entry)))
 			      gnus-topic-tallied-groups)))
 	(push (gnus-info-group info) gnus-topic-tallied-groups)
 	(incf unread (car entry))))
@@ -455,12 +455,12 @@ articles in the topic and its subtopics."
 	 (visiblep (eq (nth 1 type) 'visible))
 	 (all-entries entries)
 	 (unread 0)
-	 info entry end)
+	 entry)
     ;; Tally any sub-topics.
     (while topic
       (incf unread (gnus-topic-update-topic-line (pop topic) (1+ level))))
     ;; Tally all the groups that belong in this topic.
-    (while (setq info (nth 2 (setq entry (pop entries))))
+    (while (setq entry (pop entries))
       (when (numberp (car entry))
 	(incf unread (car entry))))
     ;; Insert the topic line.
@@ -483,7 +483,7 @@ articles in the topic and its subtopics."
 				gnus-have-read-active-file))))
       (let ((gnus-read-active-file t))
 	(gnus-read-active-file)))
-    (let (topology groups alist)
+    (let (groups)
       ;; Get a list of all groups available.
       (mapatoms (lambda (g) (when (symbol-value g)
 			      (push (symbol-name g) groups)))
@@ -501,7 +501,7 @@ articles in the topic and its subtopics."
 (defun gnus-topic-grok-active-1 (topology groups)
   (let* ((name (caar topology))
 	 (prefix (concat "^" (regexp-quote name)))
-	 tgroups nprefix ntopology group)
+	 tgroups ntopology group)
     (while (and groups
 		(string-match prefix (setq group (car groups))))
       (if (not (string-match "\\." group (match-end 0)))
@@ -623,6 +623,9 @@ articles in the topic and its subtopics."
 	    'gnus-topic-goto-next-group)
       (setq gnus-group-change-level-function 'gnus-topic-change-level)
       (setq gnus-goto-missing-group-function 'gnus-topic-goto-missing-group)
+      (make-local-variable 'gnus-group-indentation-function)
+      (setq gnus-group-indentation-function
+	    'gnus-topic-group-indentation)
       ;; We check the topology.
       (gnus-topic-check-topology)
       (run-hooks 'gnus-topic-mode-hook))
@@ -726,6 +729,13 @@ group."
 	 (completing-read "Copy to topic: " gnus-topic-alist nil t)))
   (gnus-topic-move-group n topic t))
 
+(defun gnus-topic-group-indentation ()
+  (make-string 
+   (* gnus-topic-indent-level
+      (or (save-excursion
+	    (gnus-topic-goto-topic (gnus-group-parent-topic))
+	    (gnus-group-topic-level)) 0)) ? ))
+
 (defun gnus-topic-change-level (group level oldlevel)
   "Run when changing levels to enter/remove groups from topics."
   (when (and gnus-topic-mode 
@@ -740,8 +750,34 @@ group."
     ;; If the group is subscribed. then we enter it into the topics.
     (when (and (< level gnus-level-zombie)
 	       (>= oldlevel gnus-level-zombie))
-      (let ((entry (assoc (caar gnus-topic-topology) gnus-topic-alist)))
-	(setcdr entry (cons group (cdr entry)))))))
+      (let* ((prev (gnus-group-group-name))
+	     (gnus-topic-inhibit-change-level t)
+	     (gnus-group-indentation
+	      (make-string 
+	       (* gnus-topic-indent-level
+		  (or (save-excursion
+			(gnus-topic-goto-topic (gnus-group-parent-topic))
+			(gnus-group-topic-level)) 0)) ? ))
+	     (yanked (list group))
+	     alist)
+	;; Then we enter the yanked groups into the topics they belong
+	;; to. 
+	(setq alist (assoc (save-excursion
+			     (forward-line -1)
+			     (gnus-group-parent-topic))
+			   gnus-topic-alist))
+	(when (stringp yanked)
+	  (setq yanked (list yanked)))
+	(if (not prev)
+	    (nconc alist yanked)
+	  (if (not (cdr alist))
+	      (setcdr alist (nconc yanked (cdr alist)))
+	    (while (cdr alist)
+	      (when (equal (cadr alist) prev)
+		(setcdr alist (nconc yanked (cdr alist)))
+		(setq alist nil))
+	      (setq alist (cdr alist))))))
+      (gnus-topic-update-topic))))
 
 (defun gnus-topic-goto-next-group (group props)
   "Go to group or the next group after group."
@@ -795,7 +831,7 @@ group."
 		(or (save-excursion
 		      (gnus-topic-goto-topic (gnus-group-parent-topic))
 		      (gnus-group-topic-level)) 0)) ? ))
-	   yanked group alist)
+	   yanked alist)
       ;; We first yank the groups the normal way...
       (setq yanked (gnus-group-yank-group arg))
       ;; Then we enter the yanked groups into the topics they belong

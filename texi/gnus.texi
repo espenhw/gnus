@@ -2649,9 +2649,9 @@ for adopted articles.
 @item \]
 Closing bracket, which is normally @samp{\]}, but can also be @samp{>}
 for adopted articles.
-@item <
-One space for each thread level.
 @item >
+One space for each thread level.
+@item <
 Twenty minus thread level spaces.
 @item U
 Unread.
@@ -9462,10 +9462,10 @@ Make a different score file the current
 
 @item V e
 @kindex V e (Summary)
-@findex gnus-score-edit-alist
-Edit the current score file (@code{gnus-score-edit-alist}).  You will be
-popped into a @code{gnus-score-mode} buffer (@pxref{Score File
-Editing}).
+@findex gnus-score-edit-current-scores
+Edit the current score file (@code{gnus-score-edit-current-scores}).
+You will be popped into a @code{gnus-score-mode} buffer (@pxref{Score
+File Editing}).
 
 @item V f
 @kindex V f (Summary)
@@ -9749,10 +9749,6 @@ then a regexp match is done.
 
 This means that if you have some score entries that you want to apply to
 all groups, then you put those entries in the @file{all.SCORE} file. 
-
-If @code{gnus-use-long-file-name} is non-@code{nil}, this won't work
-very will.  It will find stuff like @file{gnu/all/SCORE}, but will not
-find files like @file{not/gnu/all/SCORE}. 
 
 @item gnus-score-find-hierarchical
 @findex gnus-score-find-hierarchical
@@ -10043,6 +10039,8 @@ you.
 
 @end table
 
+Type @kbd{M-x gnus-score-mode} to use this mode.
+
 @vindex gnus-score-mode-hook
 @code{gnus-score-menu-hook} is run in score mode buffers.
 
@@ -10064,8 +10062,8 @@ You turn on this ability by setting @code{gnus-use-adaptive-scoring} to
 
 @vindex gnus-default-adaptive-score-alist
 To give you complete control over the scoring process, you can customize
-the @code{gnus-default-adaptive-score-alist} variable.  By default, it
-looks something like this:
+the @code{gnus-default-adaptive-score-alist} variable.  For instance, it
+might look something like this:
 
 @lisp
 (defvar gnus-default-adaptive-score-alist
@@ -10085,7 +10083,7 @@ looks something like this:
 As you see, each element in this alist has a mark as a key (either a
 variable name or a ``real'' mark---a character).  Following this key is
 a random number of header/score pairs.  If there are no header/score
-pairs following the key, not adaptive scoring will be done on articles
+pairs following the key, no adaptive scoring will be done on articles
 that have that key as the article mark.  For instance, articles with
 @code{gnus-unread-mark} in the example above will not get adaptive score
 entries.
@@ -10117,9 +10115,9 @@ article.  If the match is made, the @code{Message-ID} of the article is
 added to the @code{thread} rule.  (Think about it.  I'd recommend two
 aspirins afterwards.)
 
-If you use this scheme, you should set @code{mark-below} to something
-small---like -300, perhaps, to avoid having small random changes result
-in articles getting marked as read.
+If you use this scheme, you should set the score file atom @code{mark}
+to something small---like -300, perhaps, to avoid having small random
+changes result in articles getting marked as read.
 
 After using adaptive scoring for a week or so, Gnus should start to
 become properly trained and enhance the authors you like best, and kill

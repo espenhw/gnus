@@ -1495,10 +1495,10 @@ The headers will be included in the sequence they are matched.")
   ;; Go through FILES and look for files to unpack. 
   (let* ((totfiles (gnus-uu-ls-r gnus-uu-work-dir))
 	 (ofiles files)
-	 file did-unpack file-entry)
+	 file did-unpack)
     (gnus-uu-add-file totfiles) 
     (while files
-      (setq file (cdr (setq file-entry (assq 'name (car files)))))
+      (setq file (cdr (assq 'name (car files))))
       (if (and (not (member file ignore))
 	       (equal (gnus-uu-get-action (file-name-nondirectory file))
 		      "gnus-uu-archive"))

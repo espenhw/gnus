@@ -256,7 +256,8 @@ Two predefined functions are available:
   (unless (boundp 'gnus-tree-menu)
     (easy-menu-define
      gnus-tree-menu gnus-tree-mode-map ""
-     '("Tree"))))
+     '("Tree"
+       ["Select article" gnus-tree-select-article t]))))
 
 (defun gnus-tree-mode ()
   "Major mode for displaying thread trees."
@@ -526,7 +527,7 @@ Two predefined functions are available:
   (let* ((dummy (stringp (car thread)))
 	 (do (or dummy
 		 (memq (mail-header-number (car thread)) gnus-tmp-limit)))
-	 col beg)
+	 beg)
     (if (not do)
 	;; We don't want this article.
 	(setq thread (cdr thread))

@@ -241,14 +241,17 @@ variable to \"^nnml\".")
   "Retrieve the headers for ARTICLES in GROUP."
   (let* ((cached 
 	  (setq gnus-newsgroup-cached (gnus-cache-articles-in-group group)))
-	 (articles (gnus-sorted-complement articles cached))
+	 (uncached-articles (gnus-sorted-intersection
+			     (gnus-sorted-complement articles cached)
+			     articles))
 	 (cache-file (gnus-cache-file-name group ".overview"))
 	 type)
     ;; We first retrieve all the headers that we don't have in 
     ;; the cache.
     (let ((gnus-use-cache nil))
       (setq type (and articles 
-		      (gnus-retrieve-headers articles group fetch-old))))
+		      (gnus-retrieve-headers 
+		       uncached-articles group fetch-old))))
     (gnus-cache-save-buffers)
     ;; Then we insert the cached headers.
     (save-excursion
@@ -270,7 +273,8 @@ variable to \"^nnml\".")
 	type)
        (t
 	;; We braid HEADs.
-	(gnus-cache-braid-heads group cached)
+	(gnus-cache-braid-heads group (gnus-sorted-intersection
+				       cached articles))
 	type)))))
 
 (defun gnus-cache-enter-article (&optional n)
@@ -307,6 +311,7 @@ Returns the list of articles removed."
 	(push article out))
       (gnus-summary-remove-process-mark article)
       (gnus-summary-update-secondary-mark article))
+    (gnus-summary-next-subject 1)
     (gnus-summary-position-point)
     (nreverse out)))
 

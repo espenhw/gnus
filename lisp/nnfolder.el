@@ -93,7 +93,7 @@ it.")
     (nnfolder-inhibit-expiry ,nnfolder-inhibit-expiry) 
     (nnfolder-current-group nil)
     (nnfolder-prepare-save-mail-hook nil)
-    (nnfolder-ignore-active-file nil)
+    (nnfolder-ignore-active-file ,nnfolder-ignore-active-file)
     (nnfolder-current-buffer nil)
     (nnfolder-status-string "")
     (nnfolder-group-alist nil)
@@ -642,36 +642,32 @@ it.")
     (set-buffer (setq nnfolder-current-buffer 
 		      (nnheader-find-file-noselect file nil 'raw)))
     (buffer-disable-undo (current-buffer))
-    (let ((delim (concat "^" rmail-unix-mail-delimiter))
-	  (marker (concat "\n" nnfolder-article-marker))
-	  (number "[0-9]+")
-	  (active (cadr (assoc nnfolder-current-group 
-				   nnfolder-group-alist)))
-	  activenumber activemin start end)
+    (let* ((delim (concat "^" rmail-unix-mail-delimiter))
+	   (marker (concat "\n" nnfolder-article-marker))
+	   (number "[0-9]+")
+	   (active (cadr (assoc nnfolder-current-group 
+				nnfolder-group-alist)))
+	   ;; Set min to Big Number.
+	   (min (max (1- (lsh 1 23)) (1- (lsh 1 24)) (1- (lsh 1 25)))) 
+	   (max (cdr active))
+	   start end)
       (goto-char (point-min))
-      ;;
+
       ;; Anytime the active number is 1 or 0, it is suspect.  In that case,
       ;; search the file manually to find the active number.  Or, of course,
       ;; if we're being paranoid.  (This would also be the place to build
       ;; other lists from the header markers, such as expunge lists, etc., if
       ;; we ever desired to abandon the active file entirely for mboxes.)
-      (setq activenumber (cdr active))
-      (if (or nnfolder-ignore-active-file
-	      (< activenumber 2))
-	  (progn
-	    (setq activemin (max (1- (lsh 1 23)) 
-				 (1- (lsh 1 24)) 
-				 (1- (lsh 1 25))))
-	    (while (and (search-forward marker nil t)
-			(re-search-forward number nil t))
-	      (let ((newnum (string-to-number (buffer-substring
-					       (match-beginning 0)
-					       (match-end 0)))))
-		(setq activenumber (max activenumber newnum))
-		(setq activemin (min activemin newnum))))
-	    (setcar active (max 1 (min activemin activenumber)))
-	    (setcdr active (max activenumber (cdr active)))
-	    (goto-char (point-min))))
+      (when (or nnfolder-ignore-active-file
+		(< max 2))
+	(while (and (search-forward marker nil t)
+		    (re-search-forward number nil t))
+	  (let ((newnum (string-to-number (match-string 0))))
+	    (setq max (max max newnum))
+	    (setq min (min min newnum))))
+	(setcar active (max 1 (min min max)))
+	(setcdr active (max max (cdr active)))
+	(goto-char (point-min)))
 
       ;; Keep track of the active number on our own, and insert it back into
       ;; the active list when we're done. Also, prime the pump to cut down on
@@ -709,7 +705,7 @@ it.")
   (interactive)
   (nnmail-activate 'nnfolder)
   (let ((files (directory-files nnfolder-directory))
-	file group)
+	file)
     (while (setq file (pop files))
       (when (nnheader-mail-file-mbox-p file)
 	(nnheader-message 5 "Adding group %s..." file)

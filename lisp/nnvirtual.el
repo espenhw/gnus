@@ -66,13 +66,12 @@ virtual group.")
     (save-excursion
       (if (stringp (car articles))
 	  'headers
-	(let ((map nnvirtual-mapping)
-	      (vbuf (nnheader-set-temp-buffer 
+	(let ((vbuf (nnheader-set-temp-buffer 
 		     (get-buffer-create " *virtual headers*")))
 	      (unfetched (mapcar (lambda (g) (list g))
 				 nnvirtual-component-groups))
 	      (system-name (system-name))
-	      beg cgroup active article result prefix)
+	      cgroup article result prefix)
 	  (while articles
 	    (setq article (assq (pop articles) nnvirtual-mapping))
 	    (when (and (setq cgroup (cadr article))
@@ -249,7 +248,7 @@ virtual group.")
   (when (nnvirtual-possibly-change-group group server)
     (let ((map nnvirtual-mapping)
 	  (marks (mapcar (lambda (m) (list (cdr m))) gnus-article-mark-lists))
-	  reads marks mr m op)
+	  reads mr m op)
       (while map
 	(setq m (pop map))
 	(unless (nth 3 m)
@@ -349,8 +348,11 @@ virtual group.")
 (defun nnvirtual-update-marked ()
   "Copy marks from the virtual group to the component groups."
   (let ((mark-lists gnus-article-mark-lists)
-	(uncompressed '(score bookmark))
-	type list calist mart cgroups)
+	type list mart cgroups)
+    (when (and gnus-summary-buffer
+	       (get-buffer gnus-summary-buffer)
+	       (buffer-name (get-buffer gnus-summary-buffer)))
+      (set-buffer gnus-summary-buffer))
     (while mark-lists
       (setq type (cdar mark-lists))
       (setq list (symbol-value (intern (format "gnus-newsgroup-%s"
@@ -395,7 +397,7 @@ virtual group.")
 		       (when active
 			 (setq div (/ (float (car active)) 
 				      (if (zerop (cdr active))
-					  1 (cdr active))))
+					  1 (cdr active)) ))
 			 (mapcar (lambda (n) 
 				   (list (* div (- n (car active)))
 					 g n (and (memq n unreads) t)
@@ -406,6 +408,10 @@ virtual group.")
 		 (< (car m1) (car m2)))))
 	 (i 0))
     (setq nnvirtual-mapping map)
+    ;; Nix out any old marks.
+    (let ((marks gnus-article-mark-lists))
+      (set (intern (format "gnus-newsgroup-%s" (car (pop marks)))) nil))
+    ;; Copy in all marks from the component groups.
     (while (setq m (pop map))
       (setcar m (setq article (incf i)))
       (when (setq marks (nth 4 m))
@@ -416,8 +422,6 @@ virtual group.")
 				      (car (rassq (pop marks)
 						  gnus-article-mark-lists))))))
 	       (cons article (symbol-value list))))))))
-		     
-	       
 
 (provide 'nnvirtual)
 

@@ -58,9 +58,8 @@
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
-    (let* ((file nil)
-	   (buf (get-buffer-create " *draft headers*"))
-	   beg article)
+    (let* ((buf (get-buffer-create " *draft headers*"))
+	   article)
       (set-buffer buf)
       (buffer-disable-undo (current-buffer))
       (erase-buffer)

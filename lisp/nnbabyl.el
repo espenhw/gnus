@@ -243,11 +243,10 @@
 
 (defun nnbabyl-request-create-group (group &optional server) 
   (nnmail-activate 'nnbabyl)
-  (or (assoc group nnbabyl-group-alist)
-      (let (active)
-	(setq nnbabyl-group-alist (cons (list group (setq active (cons 1 0)))
-					nnbabyl-group-alist))
-	(nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)))
+  (unless (assoc group nnbabyl-group-alist)
+    (setq nnbabyl-group-alist (cons (list group (cons 1 0))
+				    nnbabyl-group-alist))
+    (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file))
   t)
 
 (defun nnbabyl-request-list (&optional server)

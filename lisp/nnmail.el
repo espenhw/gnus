@@ -693,8 +693,7 @@ FUNC will be called with the buffer narrowed to each mail."
 					   nnmail-use-procmail)
 				       (not nnmail-resplit-incoming))
 				  (list (list group ""))
-				nnmail-split-methods))
-	start end do-search message-id)
+				nnmail-split-methods)))
     (save-excursion
       ;; Open the message-id cache.
       (nnmail-cache-open)
