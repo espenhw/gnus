@@ -1,5 +1,5 @@
 ;;; gnus-ems.el --- functions for making Gnus work under different Emacsen
-;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -33,7 +33,7 @@
   "Non-nil if running under XEmacs.")
 
 (defvar gnus-mouse-2 [mouse-2])
-(defvar gnus-mouse-3 [mouse-3])
+(defvar gnus-down-mouse-3 [down-mouse-3])
 (defvar gnus-down-mouse-2 [down-mouse-2])
 (defvar gnus-widget-button-keymap nil)
 (defvar gnus-mode-line-modified

@@ -1,5 +1,5 @@
 ;;; mm-decode.el --- Functions for decoding MIME things
-;; Copyright (C) 1998 Free Software Foundation, Inc.
+;; Copyright (C) 1998,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;;	MORIOKA Tomohiko <morioka@jaist.ac.jp>
@@ -82,6 +82,7 @@
     ("text/richtext" mm-inline-text t)
     ("text/html" mm-inline-text (locate-library "w3"))
     ("message/delivery-status" mm-inline-text t)
+    ("text/.*" mm-inline-text t)
     ("audio/wav" mm-inline-audio
      (and (or (featurep 'nas-sound) (featurep 'native-sound))
 	  (device-sound-enabled-p)))
@@ -272,9 +273,7 @@ external if displayed external."
 	      (progn
 		(set-buffer (generate-new-buffer "*mm*"))
 		(setq method nil))
-	    (insert-buffer-substring (mm-handle-buffer handle))
-	    (mm-decode-content-transfer-encoding
-	     (mm-handle-encoding handle) (car (mm-handle-type handle)))
+	    (mm-insert-part handle)
 	    (let ((win (get-buffer-window cur t)))
 	      (when win
 		(select-window win)))
@@ -283,23 +282,25 @@ external if displayed external."
 	  (mm-set-buffer-file-coding-system mm-binary-coding-system)
 	  (insert-buffer-substring cur)
 	  (message "Viewing with %s" method)
-	  (let ((mm (current-buffer)))
+	  (let ((mm (current-buffer))
+		(non-viewer (assoc "non-viewer"
+				   (mailcap-mime-info
+				    (car (mm-handle-type handle)) t))))
 	    (unwind-protect
 		(if method
 		    (funcall method)
 		  (mm-save-part handle))
-	      (mm-handle-set-undisplayer handle mm))))
+	      (unless non-viewer
+		(mm-handle-set-undisplayer handle mm)))))
       ;; The function is a string to be executed.
-      (insert-buffer-substring (mm-handle-buffer handle))
-      (mm-decode-content-transfer-encoding
-       (mm-handle-encoding handle) (car (mm-handle-type handle)))
+      (mm-insert-part handle)
       (let* ((dir (make-temp-name (expand-file-name "emm." mm-tmp-directory)))
 	     (filename (mail-content-type-get
 			(mm-handle-disposition handle) 'filename))
 	     (needsterm (assoc "needsterm"
 			       (mailcap-mime-info
 				(car (mm-handle-type handle)) t)))
-	     process file)
+	     process file buffer)
 	;; We create a private sub-directory where we store our files.
 	(make-directory dir)
 	(set-file-modes dir 448)
@@ -317,11 +318,12 @@ external if displayed external."
 				     "-e" shell-file-name "-c"
 				     (format method
 					     (mm-quote-arg file)))
-		    (start-process "*display*" (generate-new-buffer "*mm*")
+		    (start-process "*display*"
+				   (setq buffer (generate-new-buffer "*mm*"))
 				   shell-file-name
 				   "-c" (format method
 						(mm-quote-arg file)))))
-	  (mm-handle-set-undisplayer handle (cons file process)))
+	  (mm-handle-set-undisplayer handle (cons file buffer)))
 	(message "Displaying %s..." (format method file))))))
 
 (defun mm-remove-parts (handles)
@@ -378,7 +380,7 @@ external if displayed external."
 		(delete-directory (file-name-directory (car object)))
 	      (error nil))
 	    (condition-case ()
-		(kill-process (cdr object))
+		(kill-buffer (cdr object))
 	      (error nil)))
 	   ((bufferp object)
 	    (when (buffer-live-p object)
@@ -473,11 +475,21 @@ This overrides entries in the mailcap file."
 (defun mm-get-part (handle)
   "Return the contents of HANDLE as a string."
   (mm-with-unibyte-buffer
-    (insert-buffer-substring (mm-handle-buffer handle))
-    (mm-decode-content-transfer-encoding
-     (mm-handle-encoding handle)
-     (car (mm-handle-type handle)))
+    (mm-insert-part handle)
     (buffer-string)))
+
+(defun mm-insert-part (handle)
+  "Insert the contents of HANDLE in the current buffer."
+  (let ((cur (current-buffer)))
+    (save-excursion
+      (mm-with-unibyte-buffer
+	(insert-buffer-substring (mm-handle-buffer handle))
+	(mm-decode-content-transfer-encoding
+	 (mm-handle-encoding handle)
+	 (car (mm-handle-type handle)))
+	(let ((temp (current-buffer)))
+	  (set-buffer cur)
+	  (insert-buffer temp))))))
 
 (defvar mm-default-directory nil)
 
@@ -496,10 +508,7 @@ This overrides entries in the mailcap file."
 			   (or mm-default-directory default-directory))))
     (setq mm-default-directory (file-name-directory file))
     (mm-with-unibyte-buffer
-      (insert-buffer-substring (mm-handle-buffer handle))
-      (mm-decode-content-transfer-encoding
-       (mm-handle-encoding handle)
-       (car (mm-handle-type handle)))
+      (mm-insert-part handle)
       (when (or (not (file-exists-p file))
 		(yes-or-no-p (format "File %s already exists; overwrite? "
 				     file)))
@@ -509,7 +518,16 @@ This overrides entries in the mailcap file."
              (if (equal "text" (car (split-string
                                      (car (mm-handle-type handle)) "/")))
                  buffer-file-coding-system
-               'binary)))
+               'binary))
+	    ;; Don't re-compress .gz & al.  Arguably we should make
+	    ;; `file-name-handler-alist' nil, but that would chop
+	    ;; ange-ftp which it's reasonable to use here.
+	    (inhibit-file-name-operation 'write-region)
+	    (inhibit-file-name-handlers
+	     (if (equal (car (mm-handle-type handle))
+			"application/octet-stream")
+		 (cons 'jka-compr-handler inhibit-file-name-handlers)
+	       inhibit-file-name-handlers)))
         (write-region (point-min) (point-max) file))))))
 
 (defun mm-pipe-part (handle)
@@ -518,10 +536,7 @@ This overrides entries in the mailcap file."
 	 (command
 	  (read-string "Shell command on MIME part: " mm-last-shell-command)))
     (mm-with-unibyte-buffer
-      (insert-buffer-substring (mm-handle-buffer handle))
-      (mm-decode-content-transfer-encoding
-       (mm-handle-encoding handle)
-       (car (mm-handle-type handle)))
+      (mm-insert-part handle)
       (shell-command-on-region (point-min) (point-max) command nil))))
 
 (defun mm-interactively-view-part (handle)
@@ -575,10 +590,7 @@ This overrides entries in the mailcap file."
 	   (t type)))
     (or (mm-handle-cache handle)
 	(mm-with-unibyte-buffer
-	  (insert-buffer-substring (mm-handle-buffer handle))
-	  (mm-decode-content-transfer-encoding
-	   (mm-handle-encoding handle)
-	   (car (mm-handle-type handle)))
+	  (mm-insert-part handle)
 	  (prog1
 	      (setq spec
 		    (make-glyph `[,(intern type) :data ,(buffer-string)]))

@@ -1,5 +1,5 @@
 ;;; gnus-art.el --- article mode commands for Gnus
-;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97,98,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -125,7 +125,7 @@ If `gnus-visible-headers' is non-nil, this variable will be ignored."
   :group 'gnus-article-hiding)
 
 (defcustom gnus-visible-headers
-  "From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-From:\\|X-Sent:"
+  "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^[BGF]?Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-From:\\|^X-Sent:"
   "*All headers that do not match this regexp will be hidden.
 This variable can also be a list of regexp of headers to remain visible.
 If this variable is non-nil, `gnus-ignored-headers' will be ignored."
@@ -1451,7 +1451,9 @@ If TYPE is `local', convert to local time; if it is `lapsed', output
 how much time has lapsed since DATE."
   (interactive (list 'ut t))
   (let* ((header (or header
-		     (mail-header-date gnus-current-headers)
+		     (mail-header-date (save-excursion
+					 (set-buffer gnus-summary-buffer)
+					 gnus-current-headers))
 		     (message-fetch-field "date")
 		     ""))
 	 (date (if (vectorp header) (mail-header-date header)
@@ -1604,7 +1606,8 @@ function and want to see what the date was before converting."
 	   (when (eq major-mode 'gnus-article-mode)
 	     (goto-char (point-min))
 	     (when (re-search-forward "^X-Sent:" nil t)
-	       (article-date-lapsed t)))))))))
+	       (article-date-lapsed t))))
+	 nil 'visible)))))
 
 (defun gnus-start-date-timer (&optional n)
   "Start a timer to update the X-Sent header in the article buffers.
@@ -2335,7 +2338,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (setq gnus-mime-button-map (make-sparse-keymap))
   (set-keymap-parent gnus-mime-button-map gnus-article-mode-map)
   (define-key gnus-mime-button-map gnus-mouse-2 'gnus-article-push-button)
-  (define-key gnus-mime-button-map gnus-mouse-3 'gnus-mime-button-menu)
+  (define-key gnus-mime-button-map gnus-down-mouse-3 'gnus-mime-button-menu)
   (mapcar (lambda (c)
 	    (define-key gnus-mime-button-map (cadr c) (car c)))
 	  gnus-mime-button-commands))
@@ -2343,17 +2346,18 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 (defun gnus-mime-button-menu (event)
   "Construct a context-sensitive menu of MIME commands."
   (interactive "e")
-  (gnus-article-check-buffer)
-  (let ((response (x-popup-menu 
-                  t `("MIME Part" 
-                      ("" ,@(mapcar (lambda (c)
-                                      (cons (caddr c) (car c)))
-                                    gnus-mime-button-commands)))))
-        (pos (event-start event)))
-    (when response
+  (save-excursion
+    (let ((pos (event-start event)))
       (set-buffer (window-buffer (posn-window pos)))
       (goto-char (posn-point pos))
-      (funcall response))))
+      (gnus-article-check-buffer)
+      (let ((response (x-popup-menu 
+		       t `("MIME Part" 
+			   ("" ,@(mapcar (lambda (c)
+					   (cons (caddr c) (car c)))
+					 gnus-mime-button-commands))))))
+	(if response
+	    (funcall response))))))
 
 (defun gnus-mime-view-all-parts (&optional handles)
   "View all the MIME parts."
@@ -2678,8 +2682,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		    (not (gnus-unbuttonized-mime-type-p type)))
 	    (gnus-article-insert-newline)
 	    (gnus-insert-mime-button
-	     handle id (list (or display
-				 (and not-attachment text))))
+	     handle id (list (or display (and not-attachment text))))
 	    (gnus-article-insert-newline)
 	    (gnus-article-insert-newline)
 	    (setq move t)))

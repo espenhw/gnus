@@ -1,5 +1,5 @@
 ;;; rfc2231.el --- Functions for decoding rfc2231 headers
-;; Copyright (C) 1998 Free Software Foundation, Inc.
+;; Copyright (C) 1998,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; This file is part of GNU Emacs.
@@ -45,6 +45,9 @@ The list will be on the form
 			(mail-header-remove-comments string)))
       (let ((table (copy-syntax-table ietf-drums-syntax-table)))
 	(modify-syntax-entry ?\' "w" table)
+	;; The following isn't valid, but one should be liberal
+	;; in what one receives.
+	(modify-syntax-entry ?\: "w" table)
 	(set-syntax-table table))
       (setq c (char-after))
       (when (and (memq c ttoken)

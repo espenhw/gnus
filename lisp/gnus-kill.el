@@ -1,5 +1,5 @@
 ;;; gnus-kill.el --- kill commands for Gnus
-;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>

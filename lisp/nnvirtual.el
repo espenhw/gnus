@@ -1,5 +1,5 @@
 ;;; nnvirtual.el --- virtual newsgroups access for Gnus
-;; Copyright (C) 1994,95,96,97,98 Free Software Foundation, Inc.
+;; Copyright (C) 1994,95,96,97,98,99 Free Software Foundation, Inc.
 
 ;; Author: David Moore <dmoore@ucsd.edu>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>

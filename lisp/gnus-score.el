@@ -1,5 +1,5 @@
 ;;; gnus-score.el --- scoring code for Gnus
-;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99 Free Software Foundation, Inc.
 
 ;; Author: Per Abrahamsen <amanda@iesd.auc.dk>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -1236,7 +1236,7 @@ EXTRA is the possible non-standard header."
 	(setq gnus-score-alist nil)
       ;; Read file.
       (with-temp-buffer
-	(let ((coding-system-for-write score-mode-coding-system))
+	(let ((coding-system-for-read score-mode-coding-system))
 	  (insert-file-contents file))
 	(goto-char (point-min))
 	;; Only do the loading if the score file isn't empty.

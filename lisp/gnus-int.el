@@ -1,5 +1,5 @@
 ;;; gnus-int.el --- backend interface functions for Gnus
-;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97,98,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -320,11 +320,11 @@ If FETCH-OLD, retrieve all headers (or some subset thereof) in the group."
   "Set marks on articles in the backend."
   (let ((gnus-command-method (gnus-find-method-for-group group)))
     (if (not (gnus-check-backend-function
-             'request-set-mark (car gnus-command-method)))
-       action
+	      'request-set-mark (car gnus-command-method)))
+	action
       (funcall (gnus-get-function gnus-command-method 'request-set-mark)
-              (gnus-group-real-name group) action
-              (nth 1 gnus-command-method)))))
+	       (gnus-group-real-name group) action
+	       (nth 1 gnus-command-method)))))
 
 (defun gnus-request-update-mark (group article mark)
   "Allow the backend to change the mark the user tries to put on an article."

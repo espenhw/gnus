@@ -1,5 +1,5 @@
 ;;; gnus-cache.el --- cache interface for Gnus
-;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -568,7 +568,7 @@ $ emacs -batch -l ~/.emacs -l gnus -f gnus-jog-cache"
   "Read the cache active file."
   (gnus-make-directory gnus-cache-directory)
   (if (or (not (file-exists-p gnus-cache-active-file))
-	  (not (zerop (nth 7 (file-attributes gnus-cache-active-file))))
+	  (zerop (nth 7 (file-attributes gnus-cache-active-file)))
 	  force)
       ;; There is no active file, so we generate one.
       (gnus-cache-generate-active)

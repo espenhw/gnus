@@ -1,5 +1,5 @@
 ;;; nnmail.el --- mail support functions for the Gnus mail backends
-;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news, mail
@@ -454,7 +454,7 @@ parameter.  It should return nil, `warn' or `delete'."
   :group 'nnmail
   :type '(repeat symbol))
 
-(defcustom nnmail-split-header-length-limit 1024
+(defcustom nnmail-split-header-length-limit 512
   "Header lines longer than this limit are excluded from the split function."
   :group 'nnmail
   :type 'integer)
@@ -1067,10 +1067,10 @@ FUNC will be called with the group name to determine the article number."
 	;; existence to process.
 	(goto-char (point-min))
 	(while (not (eobp))
-	  (end-of-line)
-	  (if (> (current-column) nnmail-split-header-length-limit)
-	      (delete-region (point) (progn (end-of-line) (point)))
-	    (forward-line 1)))
+	  (unless (< (move-to-column nnmail-split-header-length-limit)
+		     nnmail-split-header-length-limit)
+	    (delete-region (point) (progn (end-of-line) (point))))
+	  (forward-line 1))
 	;; Allow washing.
 	(goto-char (point-min))
 	(run-hooks 'nnmail-split-hook)

@@ -1,5 +1,5 @@
 ;;; qp.el --- Quoted-Printable functions
-;; Copyright (C) 1998 Free Software Foundation, Inc.
+;; Copyright (C) 1998,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; This file is part of GNU Emacs.
@@ -32,22 +32,31 @@
   (save-excursion
     (goto-char from)
     (while (search-forward "=" to t)
-      (cond ((eq (char-after) ?\n)
-	     (delete-char -1)
-	     (delete-char 1))
-	    ((and
-	      (memq (char-after) quoted-printable-encoding-characters)
-	      (memq (char-after (1+ (point)))
-		    quoted-printable-encoding-characters))
-	     (subst-char-in-region
-	      (1- (point)) (point) ?=
-	      (string-to-number
-	       (buffer-substring (point) (+ 2 (point)))
-	       16))
-	     (delete-char 2))
-	    ((looking-at "=")
-	     (delete-char 1))
-	    ((message "Malformed MIME quoted-printable message"))))))
+      (cond
+       ;; End of the line.
+       ((eq (char-after) ?\n)
+	(delete-char -1)
+	(delete-char 1))
+       ;; Encoded character.
+       ((and
+	 (memq (char-after) quoted-printable-encoding-characters)
+	 (memq (char-after (1+ (point)))
+	       quoted-printable-encoding-characters))
+	(subst-char-in-region
+	 (1- (point)) (point) ?=
+	 (string-to-number
+	  (buffer-substring (point) (+ 2 (point)))
+	  16))
+	(delete-char 2))
+       ;; Quoted equal sign.
+       ((eq (char-after) ?=)
+	(delete-char 1))
+       ;; End of buffer.
+       ((eobp)
+	(delete-char -1))
+       ;; Invalid.
+       (t
+	(message "Malformed MIME quoted-printable message"))))))
 
 (defun quoted-printable-decode-string (string)
  "Decode the quoted-printable-encoded STRING and return the results."

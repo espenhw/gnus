@@ -1,5 +1,5 @@
 ;;; gnus-sum.el --- summary mode commands for Gnus
-;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97,98,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -4296,11 +4296,27 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 		(setq arts (cdr arts)))
 	      (setq list (cdr all))))
 
+         (when (gnus-check-backend-function 'request-set-mark 
+                                            gnus-newsgroup-name)
+           ;; score & bookmark are not proper flags (they are cons cells)
+           ;; cache is a internal gnus flag
+           (unless (memq (cdr type) '(cache score bookmark))
+             (let* ((old (cdr (assq (cdr type) (gnus-info-marks info))))
+                    (del (gnus-remove-from-range old list))
+                    (add (gnus-remove-from-range list old)))
+               (if add
+                   (push (list add 'add (list (cdr type))) delta-marks))
+               (if del
+                   (push (list del 'del (list (cdr type))) delta-marks)))))
+         
 	  (push (cons (cdr type)
 		      (if (memq (cdr type) uncompressed) list
 			(gnus-compress-sequence
 			 (set symbol (sort list '<)) t)))
 		newmarked)))
+
+      (if delta-marks
+         (gnus-request-set-mark gnus-newsgroup-name delta-marks))
 
       ;; Enter these new marks into the info of the group.
       (if (nthcdr 3 info)
@@ -5230,6 +5246,10 @@ If FORCE (the prefix), also save the .newsrc file(s)."
 gnus-exit-group-hook is called with no arguments if that value is non-nil."
   (interactive)
   (gnus-set-global-variables)
+  (when (gnus-buffer-live-p gnus-article-buffer)
+    (save-excursion
+      (set-buffer gnus-article-buffer)
+      (mm-destroy-parts gnus-article-mime-handles)))
   (gnus-kill-save-kill-buffer)
   (gnus-async-halt-prefetch)
   (let* ((group gnus-newsgroup-name)
@@ -5237,6 +5257,12 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	 (mode major-mode)
          (group-point nil)
 	 (buf (current-buffer)))
+    (unless quit-config
+      ;; Do adaptive scoring, and possibly save score files.
+      (when gnus-newsgroup-adaptive
+	(gnus-score-adaptive))
+      (when gnus-use-scoring
+	(gnus-score-save)))
     (gnus-run-hooks 'gnus-summary-prepare-exit-hook)
     ;; If we have several article buffers, we kill them at exit.
     (unless gnus-single-article-buffer
@@ -5255,12 +5281,7 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
     ;; Make all changes in this group permanent.
     (unless quit-config
       (gnus-run-hooks 'gnus-exit-group-hook)
-      (gnus-summary-update-info)
-      ;; Do adaptive scoring, and possibly save score files.
-      (when gnus-newsgroup-adaptive
-	(gnus-score-adaptive))
-      (when gnus-use-scoring
-	(gnus-score-save)))
+      (gnus-summary-update-info))
     (gnus-close-group group)
     ;; Make sure where we were, and go to next newsgroup.
     (set-buffer gnus-group-buffer)
@@ -5275,10 +5296,6 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
     (setq group-point (point))
     (if temporary
 	nil				;Nothing to do.
-      (when (gnus-buffer-live-p gnus-article-buffer)
-	(save-excursion
-	  (set-buffer gnus-article-buffer)
-	  (mm-destroy-parts gnus-article-mime-handles)))
       ;; If we have several article buffers, we kill them at exit.
       (unless gnus-single-article-buffer
 	(gnus-kill-buffer gnus-article-buffer)
@@ -5322,8 +5339,9 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	      gnus-expert-user
 	      (gnus-y-or-n-p "Discard changes to this group and exit? "))
       (gnus-async-halt-prefetch)
-      (gnus-run-hooks (delq 'gnus-summary-expire-articles 
-			    (copy-list gnus-summary-prepare-exit-hook)))
+      (mapcar 'funcall
+	      (delq 'gnus-summary-expire-articles 
+		    (copy-list gnus-summary-prepare-exit-hook)))
       (when (gnus-buffer-live-p gnus-article-buffer)
 	(save-excursion
 	  (set-buffer gnus-article-buffer)
@@ -9120,6 +9138,14 @@ save those articles instead."
 	       (gnus-info-set-read ',info ',(gnus-info-read info))
 	       (gnus-get-unread-articles-in-group ',info (gnus-active ,group))
 	       (gnus-group-update-group ,group t))))
+       ;; Propagate the read marks to the backend.
+       (if (gnus-check-backend-function 'request-set-mark group)
+           (let ((del (gnus-remove-from-range (gnus-info-read info) read))
+                 (add (gnus-remove-from-range read (gnus-info-read info))))
+             (when (or add del)
+               (gnus-request-set-mark
+                group (delq nil (list (if add (list add 'add '(read)))
+                                      (if del (list del 'del '(read)))))))))
 	;; Enter this list into the group info.
 	(gnus-info-set-read info read)
 	;; Set the number of unread articles in gnus-newsrc-hashtb.

@@ -1,5 +1,5 @@
 ;;; message.el --- composing mail and news messages
-;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97,98,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: mail, news
@@ -483,8 +483,7 @@ the signature is inserted."
 
 ;;;###autoload
 (defcustom message-yank-prefix "> "
-  "*Prefix inserted on the lines of yanked messages.
-nil means use indentation."
+  "*Prefix inserted on the lines of yanked messages."
   :type 'string
   :group 'message-insertion)
 
@@ -4215,7 +4214,7 @@ TYPE is the MIME type to use."
 
 (defun message-encode-message-body ()
   (let ((mm-default-charset message-default-charset)
-	lines multipart-p)
+	lines multipart-p content-type-p)
     (message-goto-body)
     (save-restriction
       (narrow-to-region (point) (point-max))
@@ -4237,6 +4236,9 @@ TYPE is the MIME type to use."
       (when lines
 	(insert lines))
       (setq multipart-p 
+	    (re-search-backward "^Content-Type: multipart/" nil t))
+      (goto-char (point-max))
+      (setq content-type-p
 	    (re-search-backward "^Content-Type: multipart/" nil t)))
     (save-restriction
       (message-narrow-to-headers-or-head)
@@ -4245,7 +4247,17 @@ TYPE is the MIME type to use."
     (when multipart-p
       (message-goto-body)
       (insert "This is a MIME multipart message.  If you are reading\n")
-      (insert "this, you shouldn't.\n"))))
+      (insert "this, you shouldn't.\n"))
+    ;; We always make sure that the message has a Content-Type header.
+    ;; This is because some broken MTAs and MUAs get awfully confused
+    ;; when confronted with a message with a MIME-Version header and
+    ;; without a Content-Type header.  For instance, Solaris'
+    ;; /usr/bin/mail.
+    (unless content-type-p
+      (goto-char (point-min))
+      (re-search-forward "^MIME-Version:")
+      (forward-line 1)
+      (insert "Content-Type: text/plain; charset=us-ascii\n"))))
 
 (provide 'message)
 

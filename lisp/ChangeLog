@@ -1,3 +1,141 @@
+Fri Jan 15 20:50:38 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.70 is released.
+
+1999-01-15 00:06:04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-save-part): Use mm-get-part.
+	(mm-insert-part): New function.
+	(mm-get-part): Use it.
+	(mm-get-image): Ditto.
+	(mm-display-external): Ditto.
+
+	* mm-view.el (mm-inline-text): Ditto.
+
+	* gnus-move.el (gnus-move-group-to-server): Protect against nil
+	ranges. 
+
+	* mm-decode.el (mm-display-external): Save the buffer.
+	(mm-remove-part): Kill it.
+
+	* qp.el (quoted-printable-decode-region): Do the right thing at eobp.
+
+	* nnagent.el (nnagent-request-set-mark): Defined stub.
+
+1999-01-14 23:05:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-score.el (gnus-score-load-score-alist): Bind
+	coding-system-for-read.
+
+	* gnus-sum.el (gnus-summary-exit): Do adaptive scoring before
+	prepare-exit-hook. 
+
+	* mm-view.el (mm-setup-w3): Require w3.
+
+1999-01-13  Kiyokazu SUTO  <suto@merry.xmath.ous.ac.jp>
+
+	* lisp/nnspool.el (nnspool-retrieve-headers): Protect against empty
+	body.
+
+1999-01-14 21:17:35  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-encode.el: Ditto.
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Message the
+	error. 
+
+	* mailcap.el (mailcap-mime-data): SAFER ps.
+
+	* message.el (message-encode-message-body): Always insert a
+	Content-Type header.
+
+	* mm-decode.el (mm-inline-media-tests): Default all text/* to be
+	shown inline.
+
+	* mm-view.el (mm-inline-text): Handle all sorts of text.
+
+	* mailcap.el (mailcap-mime-data): non-viewer for viewers that
+	don't view.
+
+	* mm-decode.el (mm-display-external): Use it.
+
+	* gnus-art.el (gnus-visible-headers): Added bcc, gcc, fcc.
+
+	* mm-decode.el (mm-save-part): Removed double code.
+
+1999-01-12  Dave Love  <fx@gnu.org>
+
+	* mm-decode.el (mm-save-part): Avoid doubly-compressed
+	application/octet-stream .gz & al files with jka-compr.
+
+1999-01-12  Dave Love  <fx@gnu.org>
+
+	* gnus-ems.el (gnus-down-mouse-3): New variable.
+	* gnus-art.el (gnus-mime-button-map): Use it.
+	(gnus-mime-button-menu): Set the clicked-on buffer initially.
+
+1999-01-13 19:41:57  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mailcap.el (mailcap-mime-data): Added ImageMagic and ee.
+
+1999-01-12 17:34:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-picon.el (gnus-picons-kill-buffer): Don't kill article
+	buffers.
+
+	* gnus-sum.el (gnus-summary-exit): Destroy all MIME.
+
+	* gnus-cache.el (gnus-cache-read-active): Reversed check.
+
+1999-01-12 17:18:25  Matt Armstrong  <matta@geoworks.com>
+
+	* mml.el (mml-parameter-string): Strip directory component.
+
+1999-01-12 17:02:58  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-use-demon): Removed.
+
+1999-01-12 05:53:23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnmail.el (nnmail-article-group): Don't infloop.
+
+1999-01-11  Colin Rafferty  <colin@xemacs.org>
+
+	* gnus-art.el (article-update-date-lapsed): Made it work with
+	picons, and make it update on all visible frames.
+	(article-date-ut): Get summary-buffer's current-headers.
+
+1999-01-12 07:20:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-picon.el (gnus-picons-setup-buffer): Don't set major mode. 
+	(gnus-picons-setup-p): New variable.
+
+1999-01-11 02:13:12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnmail.el (nnmail-split-header-length-limit): Lowered to 512.
+
+1999-01-04 12:58:13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-exit-no-update): Don't use run-hooks. 
+	(gnus-summary-exit-no-update): Use mapcar.
+
+1999-01-02 14:36:32  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-agent.el (gnus-category-write): Make directory.
+
+1998-09-26 19:39:31 Simon Josefsson <jas@pdc.kth.se>
+
+	* gnus-sum.el (gnus-update-read-articles): 
+	(gnus-update-marks): Request backend update of mark.
+
+1999-01-03 15:29:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-bodies.el (mm-body-encoding): Use mm-find.
+
+1999-01-03 15:28:27  Kim-Minh Kaplan  <kmkaplan@western.fr>
+
+	* gnus-picon.el (gnus-article-display-picons): Fix.
+
 Sun Jan  3 13:32:02 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.69 is released.

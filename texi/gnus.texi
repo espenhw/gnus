@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.69 Manual
+@settitle Pterodactyl Gnus 0.70 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.69 Manual
+@title Pterodactyl Gnus 0.70 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.69.
+This manual corresponds to Pterodactyl Gnus 0.70.
 
 @end ifinfo
 
@@ -3474,7 +3474,14 @@ headers are used instead.
 
 @vindex nnmail-extra-headers
 A related variable is @code{nnmail-extra-headers}, which controls when
-to include extra headers when generating overview (@sc{nov}) files.
+to include extra headers when generating overview (@sc{nov}) files.  If
+you have old overview files, you should regenerate them after changing
+this variable.
+
+@vindex gnus-summary-line-format
+You also have to instruct Gnus to display the data by changing the
+@code{%n} spec to the @code{%f} spec in the
+@code{gnus-summary-line-format} variable.
 
 In summary, you'd typically do something like the following:
 
@@ -14747,16 +14754,8 @@ should have a frame parameter alist as the size spec.
 Reference Manual}.  Under XEmacs, a frame property list will be
 accepted, too---for instance, @code{(height 5 width 15 left -1 top 1)}
 is such a plist.
-
-Here's a list of all possible keys for
-@code{gnus-buffer-configuration}:
-
-@code{group}, @code{summary}, @code{article}, @code{server},
-@code{browse}, @code{message}, @code{pick}, @code{info},
-@code{summary-faq}, @code{edit-group}, @code{edit-server},
-@code{edit-score}, @code{post}, @code{reply}, @code{forward},
-@code{reply-yank}, @code{mail-bounce}, @code{draft}, @code{pipe},
-@code{bug}, @code{compose-bounce}, and @code{score-trace}.
+The list of all possible keys for @code{gnus-buffer-configuration} can
+be found in its default value.
 
 Note that the @code{message} key is used for both
 @code{gnus-group-mail} and @code{gnus-summary-mail-other-window}.  If
@@ -14770,6 +14769,20 @@ might be used:
                                (if (buffer-live-p gnus-summary-buffer)
                                    '(summary 0.5))
                                (group 1.0)))))
+@end lisp
+
+One common desire for a multiple frame split is to have a separate frame 
+for composing mail and news while leaving the original frame intact.  To 
+accomplish that, something like the following can be done:
+
+@lisp
+(message (frame 1.0
+                (if (not (buffer-live-p gnus-summary-buffer))
+                    (car (cdr (assoc 'group gnus-buffer-configuration)))
+                  (car (cdr (assoc 'summary gnus-buffer-configuration))))
+                (vertical ((user-position . t) (top . 1) (left . 1)
+                           (name . "Message"))
+                          (message 1.0 point))))
 @end lisp
 
 @findex gnus-add-configuration
@@ -15088,10 +15101,6 @@ time.  Modified by the @var{idle} parameter, of course.
 (When I say ``minute'' here, I really mean @code{gnus-demon-timestep}
 seconds.  This is 60 by default.  If you change that variable,
 all the timings in the handlers will be affected.)
-
-@vindex gnus-use-demon
-To set the whole thing in motion, though, you have to set
-@code{gnus-use-demon} to @code{t}.
 
 So, if you want to add a handler, you could put something like this in
 your @file{.gnus} file:
@@ -16382,6 +16391,7 @@ Russ Allbery,
 Peter Arius,
 Matt Armstrong,
 Marc Auslander,
+Miles Bader,
 Frank Bennett,
 Robert Bihlmeyer,
 Chris Bone,
@@ -16412,6 +16422,7 @@ Joev Dubach,
 Michael Welsh Duggan,
 Dave Edmondson,
 Paul Eggert,
+Karl Eichwalder,
 Enami Tsugutomo, @c Enami
 Michael Ernst,
 Luc Van Eycken,
@@ -16426,6 +16437,7 @@ Guy Geens,
 Arne Georg Gleditsch,
 David S. Goldberg,
 Michelangelo Grigni,
+Dale Hagglund,
 D. Hall,
 Magnus Hammerin,
 Kenichi Handa, @c Handa
@@ -16456,6 +16468,7 @@ Thor Kristoffersen,
 Jens Lautenbacher,
 Martin Larose,
 Seokchan Lee, @c Lee
+Joerg Lenneis,
 Carsten Leonhardt,
 James LewisMoss,
 Christian Limpach,
@@ -16487,6 +16500,7 @@ Stephen Peters,
 Jens-Ulrik Holger Petersen,
 Ulrich Pfeifer,
 Matt Pharr,
+Andy Piper,
 John McClary Prevost,
 Bill Pringlemeir,
 Mike Pullen,
@@ -16499,6 +16513,7 @@ Renaud Rioboo,
 Roland B. Roberts,
 Bart Robinson,
 Christian von Roques,
+Markus Rost,
 Jason Rumney,
 Wolfgang Rupprecht,
 Jay Sachs,
@@ -16521,6 +16536,7 @@ Darren Stalder,
 Richard Stallman,
 Greg Stark,
 Sam Steingold,
+Jonas Steverud,
 Paul Stodghill,
 Kurt Swanson,
 Samuel Tardieu,
@@ -16537,9 +16553,12 @@ Stefan Waldherr,
 Pete Ware,
 Barry A. Warsaw,
 Christoph Wedler,
-Joe Wells
+Joe Wells,
+Lee Willis,
+Katsumi Yamaoka @c Yamaoka
 and
-Katsumi Yamaoka, @c Yamaoka.
+Lloyd Zusman.
+
 
 For a full overview of what each person has done, the ChangeLogs
 included in the Gnus alpha distributions should give ample reading
@@ -18450,6 +18469,10 @@ po:username often fails.
 Fetch by Message-ID from dejanews.
 
 <URL:http://search.dejanews.com/msgid.xp?MID=%3C62h9l9$hm4@@basement.replay.com%3E&fmt=raw>
+
+@item
+A spec for the group line format to display the number of
+agent-downloaded articles in the group.
 
 @item
 Solve the halting problem.

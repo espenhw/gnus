@@ -1,3 +1,7 @@
+1999-01-12 07:14:12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (To From Newsgroups): Addition.
+
 1999-01-03 13:54:51  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Group Agent Commands): Addition.

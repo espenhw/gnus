@@ -1,5 +1,5 @@
 ;;; gnus-agent.el --- unplugged support for Gnus
-;; Copyright (C) 1997,98 Free Software Foundation, Inc.
+;; Copyright (C) 1997,98,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; This file is part of GNU Emacs.
@@ -1158,6 +1158,7 @@ The following commands are available:
   "Write the category alist."
   (setq gnus-category-predicate-cache nil
 	gnus-category-group-cache nil)
+  (gnus-make-directory (nnheader-concat gnus-agent-directory "lib"))
   (with-temp-file (nnheader-concat gnus-agent-directory "lib/categories")
     (prin1 gnus-category-alist (current-buffer))))
 

@@ -1,5 +1,5 @@
 ;;; mm-view.el --- Functions for viewing MIME objects
-;; Copyright (C) 1998 Free Software Foundation, Inc.
+;; Copyright (C) 1998,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; This file is part of GNU Emacs.
@@ -42,6 +42,7 @@
 (defvar mm-w3-setup nil)
 (defun mm-setup-w3 ()
   (unless mm-w3-setup
+    (require 'w3)
     (w3-do-setup)
     (require 'url)
     (require 'w3-vars)
@@ -52,19 +53,6 @@
   (let ((type (cadr (split-string (car (mm-handle-type handle)) "/")))
 	text buffer-read-only)
     (cond
-     ((equal type "plain")
-      (setq text (mm-get-part handle))
-      (let ((b (point))
-	    (charset (mail-content-type-get
-		      (mm-handle-type handle) 'charset)))
-	(insert (mm-decode-string text charset))
-	(save-restriction
-	  (narrow-to-region b (point))
-	  (mm-handle-set-undisplayer
-	   handle
-	   `(lambda ()
-	      (let (buffer-read-only)
-		(delete-region ,(point-min-marker) ,(point-max-marker))))))))
      ((equal type "html")
       (mm-setup-w3)
       (setq text (mm-get-part handle))
@@ -93,23 +81,25 @@
 	  (equal type "richtext"))
       (save-excursion
 	(mm-with-unibyte-buffer
-	  (insert-buffer-substring (mm-handle-buffer handle))
-	  (mm-decode-content-transfer-encoding
-	   (mm-handle-encoding handle)
-	   (car (mm-handle-type handle)))
+	  (mm-insert-part handle)
 	  (save-window-excursion
 	    (enriched-decode (point-min) (point-max))
 	    (setq text (buffer-string)))))
       (mm-insert-inline handle text))
      (t
-      (save-excursion
-	(mm-with-unibyte-buffer
-	  (insert-buffer-substring (mm-handle-buffer handle))
-	  (mm-decode-content-transfer-encoding
-	   (mm-handle-encoding handle)
-	   (car (mm-handle-type handle)))
-	  (setq text (buffer-string))))
-      (mm-insert-inline handle text)))))
+      (setq text (mm-get-part handle))
+      (let ((b (point))
+	    (charset (mail-content-type-get
+		      (mm-handle-type handle) 'charset)))
+	(insert (mm-decode-string text charset))
+	(save-restriction
+	  (narrow-to-region b (point))
+	  (mm-handle-set-undisplayer
+	   handle
+	   `(lambda ()
+	      (let (buffer-read-only)
+		(delete-region ,(point-min-marker)
+			       ,(point-max-marker)))))))))))
 
 (defun mm-insert-inline (handle text)
   "Insert TEXT inline from HANDLE."

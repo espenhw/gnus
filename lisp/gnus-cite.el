@@ -1,5 +1,5 @@
 ;;; gnus-cite.el --- parse citations in articles for Gnus
-;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99 Free Software Foundation, Inc.
 
 ;; Author: Per Abhiddenware; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

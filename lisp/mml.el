@@ -1,5 +1,5 @@
 ;;; mml.el --- A package for parsing and validating MML documents
-;; Copyright (C) 1998 Free Software Foundation, Inc.
+;; Copyright (C) 1998,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; This file is part of GNU Emacs.
@@ -310,10 +310,11 @@
 
 (defun mml-insert-mime-headers (cont type charset encoding)
   (let (parameters disposition description)
+    (setq parameters
+	  (mml-parameter-string
+	   cont '(name access-type expiration size permission)))
     (when (or charset
-	      (setq parameters
-		    (mml-parameter-string
-		     cont '(name access-type expiration size permission)))
+	      parameters
 	      (not (equal type "text/plain")))
       (when (consp charset)
 	(error
@@ -325,11 +326,11 @@
       (when parameters
 	(insert parameters))
       (insert "\n"))
+    (setq parameters
+	  (mml-parameter-string
+	   cont '(filename creation-date modification-date read-date)))
     (when (or (setq disposition (cdr (assq 'disposition cont)))
-	      (setq parameters
-		    (mml-parameter-string
-		     cont '(filename creation-date modification-date
-				     read-date))))
+	      parameters)
       (insert "Content-Disposition: " (or disposition "inline"))
       (when parameters
 	(insert parameters))
@@ -345,6 +346,9 @@
 	value type)
     (while (setq type (pop types))
       (when (setq value (cdr (assq type cont)))
+	;; Strip directory component from the filename parameter. 
+	(when (eq type 'filename)
+	  (setq value (file-name-nondirectory value)))
 	(setq string (concat string ";\n "
 			     (mail-header-encode-parameter
 			      (symbol-name type) value)))))

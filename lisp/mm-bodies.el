@@ -1,5 +1,5 @@
 ;;; mm-bodies.el --- Functions for decoding MIME things
-;; Copyright (C) 1998 Free Software Foundation, Inc.
+;; Copyright (C) 1998,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;;	MORIOKA Tomohiko <morioka@jaist.ac.jp>
@@ -103,7 +103,8 @@ If no encoding was done, nil is returned."
       '7bit))
    (t
     ;; Mule version
-    (if (and (null (delq 'ascii (find-charset-region (point-min) (point-max))))
+    (if (and (null (delq 'ascii
+			 (mm-find-charset-region (point-min) (point-max))))
 	     ;;!!!The following is necessary because the function
 	     ;;!!!above seems to return the wrong result under
 	     ;;!!!Emacs 20.3.  Sometimes.
@@ -120,7 +121,7 @@ If no encoding was done, nil is returned."
 
 (defun mm-decode-content-transfer-encoding (encoding &optional type)
   (prog1
-      (condition-case ()
+      (condition-case error
 	  (cond
 	   ((eq encoding 'quoted-printable)
 	    (quoted-printable-decode-region (point-min) (point-max)))
@@ -138,7 +139,9 @@ If no encoding was done, nil is returned."
 	    (funcall encoding (point-min) (point-max)))
 	   (t
 	    (message "Unknown encoding %s; defaulting to 8bit" encoding)))
-	(error nil))
+	(error
+	 (message "Error while decoding: %s" error)
+	 nil))
     (when (and
 	   (memq encoding '(base64 x-uuencode x-binhex))
 	   (equal type "text/plain"))

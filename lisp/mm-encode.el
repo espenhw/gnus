@@ -1,5 +1,5 @@
 ;;; mm-encode.el --- Functions for encoding MIME things
-;; Copyright (C) 1998 Free Software Foundation, Inc.
+;; Copyright (C) 1998,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;;	MORIOKA Tomohiko <morioka@jaist.ac.jp>
@@ -66,9 +66,11 @@
       (goto-char (point-min))
       (while (search-forward "\n" nil t)
 	(replace-match "\r\n" t t)))
-    (condition-case ()
+    (condition-case error
 	(base64-encode-region (point-min) (point-max))
-      (error nil)))
+      (error
+       (message "Error while decoding: %s" error)
+       nil)))
    ((memq encoding '(7bit 8bit binary))
     )
    ((null encoding)

@@ -1,5 +1,5 @@
 ;;; nnagent.el --- offline backend for Gnus
-;; Copyright (C) 1997,98 Free Software Foundation, Inc.
+;; Copyright (C) 1997,98,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news, mail
@@ -112,6 +112,9 @@
 (deffoo nnagent-request-post (&optional server)
   (gnus-agent-insert-meta-information 'news gnus-command-method)
   (gnus-request-accept-article "nndraft:queue" nil t t))
+
+(deffoo nnagent-request-set-mark (group action server)
+  action)
 
 ;; Use nnml functions for just about everything.
 (nnoo-import nnagent

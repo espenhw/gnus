@@ -1,5 +1,5 @@
 ;;; gnus-demon.el --- daemonic Gnus behaviour
-;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -115,8 +115,7 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
 		   (nth 2 handler)))
 	   gnus-demon-handlers))
     (setq gnus-demon-idle-time 0)
-    (setq gnus-demon-idle-has-been-called nil)
-    (setq gnus-use-demon t)))
+    (setq gnus-demon-idle-has-been-called nil)))
 
 (gnus-add-shutdown 'gnus-demon-cancel 'gnus)
 
@@ -126,7 +125,6 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
   (when gnus-demon-timer
     (nnheader-cancel-timer gnus-demon-timer))
   (setq gnus-demon-timer nil
-	gnus-use-demon nil
 	gnus-demon-idle-has-been-called nil)
   (condition-case ()
       (nnheader-cancel-function-timers 'gnus-demon)

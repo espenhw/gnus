@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Pterodactyl Message 0.69 Manual
+@settitle Pterodactyl Message 0.70 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -42,7 +42,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Message 0.69 Manual
+@title Pterodactyl Message 0.70 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -83,7 +83,7 @@ Message mode buffers.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Pterodactyl Message 0.69.  Message is
+This manual corresponds to Pterodactyl Message 0.70.  Message is
 distributed with the Gnus distribution bearing the same version number
 as this manual.
 
@@ -487,7 +487,6 @@ When you are replying to or following up an article, you normally want
 to quote the person you are answering.  Inserting quoted text is done by
 @dfn{yanking}, and each quoted line you yank will have
 @code{message-yank-prefix} prepended to it.  The default is @samp{> }.
-If it is @code{nil}, just indent the message.
 
 @item message-indentation-spaces
 @vindex message-indentation-spaces

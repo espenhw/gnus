@@ -1,5 +1,5 @@
 ;;; mailcap.el --- Functions for displaying MIME parts
-;; Copyright (C) 1998 Free Software Foundation, Inc.
+;; Copyright (C) 1998,99 Free Software Foundation, Inc.
 
 ;; Author: William M. Perry <wmperry@aventail.com>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -51,6 +51,7 @@
       (type . "application/x-x509-user-cert"))
      ("octet-stream"
       (viewer . mailcap-save-binary-file)
+      (non-viewer . t)
       (type ."application/octet-stream"))
      ("dvi"
       (viewer . "open %s")
@@ -70,6 +71,7 @@
       (type   . "application/emacs-lisp"))
      ("x-tar"
       (viewer . mailcap-save-binary-file)
+      (non-viewer . t)
       (type   . "application/x-tar"))
      ("x-latex"
       (viewer . tex-mode)
@@ -93,6 +95,7 @@
       (type   . "application/tex"))
      ("zip"
       (viewer . mailcap-save-binary-file)
+      (non-viewer . t)
       (type   . "application/zip")
       ("copiousoutput"))
      ("pdf"
@@ -103,7 +106,7 @@
       (type   . "application/postscript")
       (test   . (eq (mm-device-type) 'ns)))
      ("postscript"
-      (viewer . "ghostview %s")
+      (viewer . "ghostview -dSAFER %s")
       (type . "application/postscript")
       (test   . (eq (mm-device-type) 'x))
       ("needsx11"))
@@ -118,6 +121,7 @@
       (type   . "audio/x-mpeg"))
      (".*"
       (viewer . mailcap-save-binary-file)
+      (non-viewer . t)
       (test   . (or (featurep 'nas-sound)
 		      (featurep 'native-sound)))
       (type   . "audio/*"))
@@ -168,6 +172,16 @@
       (viewer . "aopen %s")
       (type   . "image/*")
       (test   . (eq (mm-device-type) 'ns)))
+     (".*"
+      (viewer . "display %s")
+      (type . "image/*")
+      (test   . (eq (mm-device-type) 'x))
+      ("needsx11"))
+     (".*"
+      (viewer . "ee %s")
+      (type . "image/*")
+      (test   . (eq (mm-device-type) 'x))
+      ("needsx11"))
      (".*"
       (viewer . "xv -perfect %s")
       (type . "image/*")

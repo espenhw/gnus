@@ -1,5 +1,5 @@
 ;;; nnspool.el --- spool access for GNU Emacs
-;; Copyright (C) 1988,89,90,93,94,95,96,97,98 Free Software Foundation, Inc.
+;; Copyright (C) 198,998,89,90,93,94,95,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; 	Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -136,9 +136,14 @@ there.")
 	      (setq beg (point))
 	      (inline (nnheader-insert-head file))
 	      (goto-char beg)
-	      (search-forward "\n\n" nil t)
-	      (forward-char -1)
-	      (insert ".\n")
+	      (if (search-forward "\n\n" nil t)
+		  (progn
+		    (forward-char -1)
+		    (insert ".\n"))
+		(goto-char (point-max))
+		(if (bolp)
+		    (insert ".\n")
+		  (insert "\n.\n")))
 	      (delete-region (point) (point-max)))
 
 	    (and do-message

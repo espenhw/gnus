@@ -1,5 +1,5 @@
 ;;; gnus-picon.el --- displaying pretty icons in Gnus
-;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97,98,99 Free Software Foundation, Inc.
 
 ;; Author: Wes Hardaker <hardaker@ece.ucdavis.edu>
 ;; Keywords: news xpm annotation glyph faces
@@ -159,6 +159,7 @@ please tell me so that we can list it."
 
 ;;; Internal variables:
 
+(defvar gnus-picons-setup-p nil)
 (defvar gnus-picons-processes-alist nil
   "Picons processes currently running and their environment.")
 (defvar gnus-picons-glyph-alist nil
@@ -212,7 +213,8 @@ arguments necessary for the job.")
 
 (defun gnus-picons-kill-buffer ()
   (let ((buf (get-buffer (gnus-picons-buffer-name))))
-    (when (buffer-live-p buf)
+    (when (and (buffer-live-p buf)
+	       (string-match "Picons" (buffer-name buf)))
       (kill-buffer buf))))
 
 (defun gnus-picons-setup-buffer ()
@@ -220,13 +222,13 @@ arguments necessary for the job.")
     (save-excursion
       (if (and (get-buffer name)
 	       (with-current-buffer name
-		 (eq major-mode 'gnus-picons-mode)))
+		 gnus-picons-setup-p))
 	  (set-buffer name)
 	(set-buffer (gnus-get-buffer-create name))
 	(buffer-disable-undo)
 	(setq buffer-read-only t)
 	(run-hooks 'gnus-picons-setup-hook)
-	(setq major-mode 'gnus-picons-mode)
+	(set (make-local-variable 'gnus-picons-setup-p) t)
 	(add-hook 'gnus-summary-prepare-exit-hook 'gnus-picons-kill-buffer))
       (current-buffer))))
 
@@ -322,14 +324,13 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	  (gnus-picons-prepare-for-annotations)
 	  (gnus-group-display-picons)
 	  (unless gnus-picons-display-article-move-p
-	    (save-restriction
-	      (let ((buffer-read-only nil))
-		(when (re-search-forward "^From: " nil t)
-		  (narrow-to-region (point) (gnus-point-at-eol))
-		  (when (search-forward from nil t)
-		    (gnus-put-text-property
-		     (match-beginning 0) (match-end 0)
-		     'invisible t))))))
+	    (let ((buffer-read-only nil)
+		  (case-fold-search t))
+	      (when (re-search-forward "^From *: *" nil t)
+		(when (search-forward from (gnus-point-at-eol) t)
+		  (gnus-put-text-property
+		   (match-beginning 0) (match-end 0)
+		   'invisible t)))))
 	  (if (null gnus-picons-piconsearch-url)
 	      (progn
 		(gnus-picons-display-pairs (gnus-picons-lookup-pairs
@@ -344,7 +345,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 		 (gnus-picons-lookup-user username addrs)
 		 username t))
 	    (push (list 'gnus-article-annotations 'search username addrs
-			gnus-picons-domain-directories t)
+			gnus-picons-domain-directories t (point-marker))
 		  gnus-picons-jobs-alist)
 	    (gnus-picons-next-job)))))))
 
@@ -359,7 +360,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
     (let* ((newsgroups (mail-fetch-field "newsgroups"))
 	   (groups
 	    (if (or gnus-picons-display-article-move-p
-		    (not newsgroups))(mail-fetch-field "newsgroups")
+		    (not newsgroups))
 		(list (gnus-group-real-name gnus-newsgroup-name))
 	      (split-string newsgroups ",")))
 	   group)
@@ -367,15 +368,17 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	(gnus-picons-prepare-for-annotations)
 	(while (setq group (pop groups))
 	  (unless gnus-picons-display-article-move-p
-	    (save-restriction
-	      (let ((buffer-read-only nil))
+	    (let ((buffer-read-only nil)
+		  (case-fold-search t))
+	      (goto-char (point-min))
+	      (if (and (re-search-forward "^Newsgroups *: *" nil t)
+		       (search-forward group (gnus-point-at-eol) t))
+		  (gnus-put-text-property
+		   (match-beginning 0) (match-end 0)
+		   'invisible t)
 		(goto-char (point-min))
-		(when (re-search-forward "^Newsgroups:" nil t)
-		  (narrow-to-region (point) (gnus-point-at-eol))
-		  (when (search-forward group nil t)
-		    (gnus-put-text-property
-		     (match-beginning 0) (match-end 0)
-		     'invisible t))))))
+		(search-forward "\n\n")
+		(backward-char 1))))
 	  (if (null gnus-picons-piconsearch-url)
 	      (gnus-picons-display-pairs
 	       (gnus-picons-lookup-pairs
@@ -387,7 +390,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 			(if (listp gnus-picons-news-directories)
 			    gnus-picons-news-directories
 			  (list gnus-picons-news-directories))
-			nil)
+			nil (point-marker))
 		  gnus-picons-jobs-alist)
 	    (gnus-picons-next-job))
 
@@ -572,85 +575,98 @@ none, and whose CDR is the corresponding element of DOMAINS."
 
 (defun gnus-picons-parse-value (name)
   (goto-char (point-min))
-  (re-search-forward (concat "<strong>"
+  (if (re-search-forward (concat "<strong>"
 			     (regexp-quote name)
-			     "</strong> *= *<kbd> *\\([^ <][^<]*\\) *</kbd>"))
-  (buffer-substring (match-beginning 1) (match-end 1)))
+			     "</strong> *= *<kbd> *\\([^ <][^<]*\\) *</kbd>")
+			 nil t)
+      (buffer-substring (match-beginning 1) (match-end 1))))
 
 (defun gnus-picons-parse-filenames ()
   ;; returns an alist of ((USER ADDRS DB) . URL)
-  (let* ((case-fold-search t)
-	 (user (gnus-picons-parse-value "user"))
-	 (host (gnus-picons-parse-value "host"))
-	 (dbs (message-tokenize-header (gnus-picons-parse-value "db") " "))
-	 (start-re
-	  (concat
-	   ;; dbs
-	   "^\\(" (mapconcat 'identity dbs "\\|") "\\)/"
-	   ;; host
-	   "\\(\\(" (replace-in-string host "\\." "/\\|" t) "/\\|MISC/\\)*\\)"
-	   ;; user
-	   "\\(" (regexp-quote user) "\\|unknown\\)/"
-	   "face\\."))
-	 cur-db cur-host cur-user types res)
+  (let ((case-fold-search t)
+	(user (gnus-picons-parse-value "user"))
+	(host (gnus-picons-parse-value "host"))
+	(dbs (message-tokenize-header (gnus-picons-parse-value "db") " "))
+	start-re cur-db cur-host cur-user types res)
     ;; now point will be somewhere in the header.  Find beginning of
     ;; entries
-    (re-search-forward "<p>[ \t\n]*")
-    (while (re-search-forward start-re nil t)
-      (setq cur-db (buffer-substring (match-beginning 1) (match-end 1))
-	    cur-host (buffer-substring (match-beginning 2) (match-end 2))
-	    cur-user (buffer-substring (match-beginning 4) (match-end 4))
-	    cur-host (nreverse (message-tokenize-header cur-host "/")))
-      ;; XXX - KLUDGE: there is a blank picon in news/MISC/unknown
-      (unless (and (string-equal cur-db "news")
-		   (string-equal cur-user "unknown")
-		   (equal cur-host '("MISC")))
-	;; ok now we have found an entry (USER HOST DB), find the
-	;; corresponding picon URL
-	(save-restriction
-	  ;; restrict region to this entry
-	  (narrow-to-region (point) (search-forward "<br>"))
-	  (goto-char (point-min))
-	  (setq types gnus-picons-file-suffixes)
-	  (while (and types
-		      (not (re-search-forward
-			    (concat "<a[ \t\n]+href=\"\\([^\"]*\\."
-				    (regexp-quote (car types)) "\\)\"")
-			    nil t)))
-	    (pop types))
-	  (push (cons (list cur-user cur-host cur-db)
-		      (buffer-substring (match-beginning 1) (match-end 1)))
-		res))))
-    (nreverse res)))
+    (when (and user host dbs)
+      (setq start-re
+	    (concat
+	     ;; dbs
+	     "^\\(" (mapconcat 'identity dbs "\\|") "\\)/"
+	     ;; host
+	     "\\(\\(" (replace-in-string host "\\." "/\\|" t) "/\\|MISC/\\)*\\)"
+	     ;; user
+	     "\\(" (regexp-quote user) "\\|unknown\\)/"
+	     "face\\."))
+      (re-search-forward "<p>[ \t\n]*")
+      (while (re-search-forward start-re nil t)
+	(setq cur-db (buffer-substring (match-beginning 1) (match-end 1))
+	      cur-host (buffer-substring (match-beginning 2) (match-end 2))
+	      cur-user (buffer-substring (match-beginning 4) (match-end 4))
+	      cur-host (nreverse (message-tokenize-header cur-host "/")))
+	;; XXX - KLUDGE: there is a blank picon in news/MISC/unknown
+	(unless (and (string-equal cur-db "news")
+		     (string-equal cur-user "unknown")
+		     (equal cur-host '("MISC")))
+	  ;; ok now we have found an entry (USER HOST DB), find the
+	  ;; corresponding picon URL
+	  (save-restriction
+	    ;; restrict region to this entry
+	    (narrow-to-region (point) (search-forward "<br>"))
+	    (goto-char (point-min))
+	    (setq types gnus-picons-file-suffixes)
+	    (while (and types
+			(not (re-search-forward
+			      (concat "<a[ \t\n]+href=\"\\([^\"]*\\."
+				      (regexp-quote (car types)) "\\)\"")
+			      nil t)))
+	      (pop types))
+	    (push (cons (list cur-user cur-host cur-db)
+			(buffer-substring (match-beginning 1) (match-end 1)))
+		  res))))
+      (nreverse res))))
 
 ;;; picon network display functions :
 
-(defun gnus-picons-network-display-internal (sym-ann glyph part right-p)
-  (gnus-picons-display-picon-or-name glyph part right-p)
+(defun gnus-picons-network-display-internal (sym-ann glyph part right-p marker)
+  (let ((buf (marker-buffer marker))
+	(pos (marker-position marker)))
+    (if (and buf pos)
+	(save-excursion
+	  (set-buffer buf)
+	  (goto-char pos)
+	  (gnus-picons-display-picon-or-name glyph part right-p))))
   (gnus-picons-next-job-internal))
 
-(defun gnus-picons-network-display-callback (url part sym-ann right-p)
+(defun gnus-picons-network-display-callback (url part sym-ann right-p marker)
   (let ((glyph (gnus-picons-make-glyph (cdr (assoc url-current-mime-type
 						   w3-image-mappings)))))
     (kill-buffer (current-buffer))
     (push (cons url glyph) gnus-picons-glyph-alist)
     ;; only do the job if it has not been preempted.
     (if (equal gnus-picons-job-already-running
-	       (list sym-ann 'picon url part right-p))
-	(gnus-picons-network-display-internal sym-ann glyph part right-p)
+	       (list sym-ann 'picon url part right-p marker))
+	(gnus-picons-network-display-internal sym-ann glyph part right-p marker)
       (gnus-picons-next-job-internal))))
 
-(defun gnus-picons-network-display (url part sym-ann right-p)
+(defun gnus-picons-network-display (url part sym-ann right-p marker)
   (let ((cache (assoc url gnus-picons-glyph-alist)))
     (if (or cache (null url))
-	(gnus-picons-network-display-internal sym-ann (cdr cache) part right-p)
+	(gnus-picons-network-display-internal
+	 sym-ann (cdr cache) part right-p marker)
       (gnus-picons-url-retrieve url 'gnus-picons-network-display-callback
-				(list url part sym-ann right-p)))))
+				(list url part sym-ann right-p marker)))))
 
 ;;; search job functions
 
+(defun gnus-picons-display-bar-p ()
+  (and (not (eq gnus-picons-display-where 'article))
+       gnus-picons-display-as-address))
+
 (defun gnus-picons-network-search-internal (user addrs dbs sym-ann right-p
-						 &optional fnames)
+						 marker &optional fnames)
   (let (curkey dom pfx url dbs-tmp cache new-jobs)
     ;; First do the domain search
     (dolist (part (if right-p
@@ -679,8 +695,8 @@ none, and whose CDR is the corresponding element of DOMAINS."
 	(push (setq cache (cons curkey url)) gnus-picons-url-alist))
       ;; Put this glyph in the job list
       (if (and (not (eq dom part)) gnus-picons-display-as-address)
-	  (push (list sym-ann "." right-p) new-jobs))
-      (push (list sym-ann 'picon (cdr cache) part right-p) new-jobs))
+	  (push (list sym-ann "." right-p marker) new-jobs))
+      (push (list sym-ann 'picon (cdr cache) part right-p marker) new-jobs))
     ;; next, the user search
     (when user
       (setq curkey (list user dom gnus-picons-user-directories))
@@ -702,27 +718,30 @@ none, and whose CDR is the corresponding element of DOMAINS."
 	    (push (setq cache (cons curkey (cdr picon)))
 		  gnus-picons-url-alist)))
       (if (and gnus-picons-display-as-address new-jobs)
-	  (push (list sym-ann "@" right-p) new-jobs))
-      (push (list sym-ann 'picon (cdr cache) user right-p) new-jobs))
-    (if (and gnus-picons-display-as-address (not right-p))
-	(push (list sym-ann 'bar right-p) new-jobs))
+	  (push (list sym-ann "@" right-p marker) new-jobs))
+      (push (list sym-ann 'picon (cdr cache) user right-p marker) new-jobs))
+    (if (and (gnus-picons-display-bar-p) (not right-p))
+	(push (list sym-ann 'bar right-p marker) new-jobs))
     ;; only put the jobs in the queue if this job has not been preempted.
     (if (equal gnus-picons-job-already-running
-	       (list sym-ann 'search user addrs dbs right-p))
+	       (list sym-ann 'search user addrs dbs right-p marker))
 	(setq gnus-picons-jobs-alist
-	      (nconc (if (and gnus-picons-display-as-address right-p)
-			 (list (list sym-ann 'bar right-p)))
+	      (nconc (if (and (gnus-picons-display-bar-p) right-p)
+			 (list (list sym-ann 'bar right-p marker)))
 		     (nreverse new-jobs)
 		     gnus-picons-jobs-alist)))
     (gnus-picons-next-job-internal)))
 
-(defun gnus-picons-network-search-callback (user addrs dbs sym-ann right-p)
-  (gnus-picons-network-search-internal user addrs dbs sym-ann right-p
-				       (prog1 (gnus-picons-parse-filenames)
-					 (kill-buffer (current-buffer)))))
+(defun gnus-picons-network-search-callback (user addrs dbs sym-ann right-p
+						 marker)
+  (gnus-picons-network-search-internal
+   user addrs dbs sym-ann right-p marker
+   (prog1
+       (gnus-picons-parse-filenames)
+     (kill-buffer (current-buffer)))))
 
 ;; Initiate a query on the picon database
-(defun gnus-picons-network-search (user addrs dbs sym-ann right-p)
+(defun gnus-picons-network-search (user addrs dbs sym-ann right-p marker)
   (let* ((host (mapconcat 'identity addrs "."))
 	 (key (list (or user "unknown") host (if user
 						  gnus-picons-user-directories
@@ -740,8 +759,9 @@ none, and whose CDR is the corresponding element of DOMAINS."
 				     dbs)
 				   "+"))
 	 'gnus-picons-network-search-callback
-	 (list user addrs dbs sym-ann right-p))
-      (gnus-picons-network-search-internal user addrs dbs sym-ann right-p))))
+	 (list user addrs dbs sym-ann right-p marker))
+      (gnus-picons-network-search-internal
+       user addrs dbs sym-ann right-p marker))))
 
 ;;; Main jobs dispatcher function
 
@@ -752,22 +772,22 @@ none, and whose CDR is the corresponding element of DOMAINS."
 	   (tag (pop job)))
       (when tag
 	(cond
-	 ((stringp tag);; (SYM-ANN "..." RIGHT-P)
+	 ((stringp tag);; (SYM-ANN "..." RIGHT-P MARKER)
 	  (gnus-picons-network-display-internal
-	   sym-ann nil tag (pop job)))
-	 ((eq 'bar tag)
+	   sym-ann nil tag (pop job) (pop job)))
+	 ((eq 'bar tag);; (SYM-ANN 'bar RIGHT-P MARKER)
 	  (gnus-picons-network-display-internal
 	   sym-ann
 	   (let ((gnus-picons-file-suffixes '("xbm")))
 	     (gnus-picons-try-face
 	      gnus-xmas-glyph-directory "bar."))
-	   nil (pop job)))
-	 ((eq 'search tag);; (SYM-ANN 'search USER ADDRS DBS RIGHT-P)
+	   nil (pop job) (pop job)))
+	 ((eq 'search tag);; (SYM-ANN 'search USER ADDRS DBS RIGHT-P MARKER)
 	  (gnus-picons-network-search
-	   (pop job) (pop job) (pop job) sym-ann (pop job)))
-	 ((eq 'picon tag);; (SYM-ANN 'picon URL PART RIGHT-P)
+	   (pop job) (pop job) (pop job) sym-ann (pop job) (pop job)))
+	 ((eq 'picon tag);; (SYM-ANN 'picon URL PART RIGHT-P MARKER)
 	  (gnus-picons-network-display
-	   (pop job) (pop job) sym-ann (pop job)))
+	   (pop job) (pop job) sym-ann (pop job) (pop job)))
 	 (t
 	  (setq gnus-picons-job-already-running nil)
 	  (error "Unknown picon job tag %s" tag)))))))
