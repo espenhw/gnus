@@ -35,7 +35,7 @@
 (defun mm-inline-image (handle)
   (let ((annot (make-annotation (mm-get-image handle) nil 'text))
 	buffer-read-only)
-    (mm-insert-inline handle ".\n")
+    (mm-insert-inline handle "\n")
     (set-extent-property annot 'mm t)
     (set-extent-property annot 'duplicable t)))
 
@@ -94,6 +94,7 @@
 	(insert (mm-decode-string text charset))
 	(save-restriction
 	  (narrow-to-region b (point))
+	  (set-text-properties (point-min) (point-max) nil)
 	  (mm-handle-set-undisplayer
 	   handle
 	   `(lambda ()

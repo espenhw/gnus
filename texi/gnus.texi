@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.70 Manual
+@settitle Pterodactyl Gnus 0.71 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.70 Manual
+@title Pterodactyl Gnus 0.71 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.70.
+This manual corresponds to Pterodactyl Gnus 0.71.
 
 @end ifinfo
 
@@ -18473,6 +18473,10 @@ Fetch by Message-ID from dejanews.
 @item
 A spec for the group line format to display the number of
 agent-downloaded articles in the group.
+
+@item
+Some nntp servers never respond when posting, so there should be a
+timeout for all commands.
 
 @item
 Solve the halting problem.

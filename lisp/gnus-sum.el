@@ -797,24 +797,16 @@ which it may alter in any way.")
   :group 'gnus-summary
   :type 'regexp)
 
-(defcustom gnus-default-charset 'iso-8859-1
-  "Default charset assumed to be used when viewing non-ASCII characters.")
-
-(defcustom gnus-newsgroup-default-charset-alist 
-  '(("^hk\\>\\|^tw\\>\\|\\<big5\\>" . cn-big5)
-    ("^cn\\>\\|\\<chinese\\>" . cn-gb-2312)
-    ("^fj\\>\\|^japan\\>" . iso-2022-jp-2)
-    ("^relcom\\>" . koi8-r))
-  "Alist of Regexps (to match group names) and default charsets to be applied."
-  :type '(repeat (cons (regexp :tag "Group")
+(defcustom gnus-group-charset-alist 
+  '(("^hk\\>\\|^tw\\>\\|\\<big5\\>" cn-big5)
+    ("^cn\\>\\|\\<chinese\\>" cn-gb-2312)
+    ("^fj\\>\\|^japan\\>" iso-2022-jp-2)
+    ("^relcom\\>" koi8-r)
+    (".*" iso-8859-1))
+  "Alist of regexps (to match group names) and default charsets to be used."
+  :type '(repeat (list (regexp :tag "Group")
 		       (symbol :tag "Charset")))
-  :group 'gnus)
-
-(defcustom gnus-newsgroup-iso-8859-1-forced-regexp 
-  "^tw\\>\\|^hk\\>\\|^cn\\>\\|\\<chinese\\>"
-  "Regexp of newsgroup in which ISO-8859-1 is forced to other charset."
-  :type 'regexp
-  :group 'gnus)
+  :group 'gnus-charset)
 
 ;;; Internal variables
 
@@ -1004,9 +996,7 @@ variable (string, integer, character, etc).")
 (defvar gnus-have-all-headers nil)
 (defvar gnus-last-article nil)
 (defvar gnus-newsgroup-history nil)
-
-(defvar gnus-newsgroup-default-charset gnus-default-charset)
-(defvar gnus-newsgroup-iso-8859-1-forced nil)
+(defvar gnus-newsgroup-charset nil)
 
 (defconst gnus-summary-local-variables
   '(gnus-newsgroup-name
@@ -1039,7 +1029,7 @@ variable (string, integer, character, etc).")
     gnus-cache-removable-articles gnus-newsgroup-cached
     gnus-newsgroup-data gnus-newsgroup-data-reverse
     gnus-newsgroup-limit gnus-newsgroup-limits
-    gnus-newsgroup-default-charset gnus-newsgroup-iso-8859-1-forced)
+    gnus-newsgroup-charset)
   "Variables that are buffer-local to the summary buffers.")
 
 ;; Byte-compiler warning.
@@ -2413,8 +2403,7 @@ marks of articles."
 	  (gac gnus-article-current)
 	  (reffed gnus-reffed-article-number)
 	  (score-file gnus-current-score-file)
-	  (default-charset gnus-newsgroup-default-charset)
-	  (iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
+	  (default-charset gnus-newsgroup-charset))
       (save-excursion
 	(set-buffer gnus-group-buffer)
 	(setq gnus-newsgroup-name name
@@ -2428,8 +2417,7 @@ marks of articles."
 	      gnus-original-article-buffer original
 	      gnus-reffed-article-number reffed
 	      gnus-current-score-file score-file
-	      gnus-newsgroup-default-charset default-charset
-	      gnus-newsgroup-iso-8859-1-forced iso-8859-1-forced)
+	      gnus-newsgroup-charset default-charset)
 	;; The article buffer also has local variables.
 	(when (gnus-buffer-live-p gnus-article-buffer)
 	  (set-buffer gnus-article-buffer)
@@ -2505,8 +2493,7 @@ marks of articles."
 (defun gnus-summary-from-or-to-or-newsgroups (header)
   (let ((to (cdr (assq 'To (mail-header-extra header))))
 	(newsgroups (cdr (assq 'Newsgroups (mail-header-extra header))))
-	(rfc2047-default-charset gnus-newsgroup-default-charset)
-	(mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
+	(mail-parse-charset gnus-newsgroup-charset))
     (cond
      ((and to
 	   gnus-ignored-from-addresses
@@ -3672,7 +3659,7 @@ Unscored articles will be counted as having a score of zero."
   (> (gnus-thread-total-score h1) (gnus-thread-total-score h2)))
 
 (defun gnus-thread-total-score (thread)
-  ;;  This function find the total score of THREAD.
+  ;; This function find the total score of THREAD.
   (cond ((null thread)
 	 0)
 	((consp thread)
@@ -4025,7 +4012,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
     (setq gnus-newsgroup-name group)
     (setq gnus-newsgroup-unselected nil)
     (setq gnus-newsgroup-unreads (gnus-list-of-unread-articles group))
-    (gnus-newsgroup-setup-default-charset)
+    (gnus-summary-setup-default-charset)
 
     ;; Adjust and set lists of article marks.
     (when info
@@ -4553,8 +4540,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	     (save-excursion (set-buffer gnus-summary-buffer)
 			     gnus-newsgroup-dependencies)))
 	headers id end ref
-	(rfc2047-default-charset gnus-newsgroup-default-charset)
-	(mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
+	(mail-parse-charset gnus-newsgroup-charset))
     (save-excursion
       (set-buffer nntp-server-buffer)
       ;; Translate all TAB characters into SPACE characters.
@@ -4707,8 +4693,7 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
   ;; Get the Xref when the users reads the articles since most/some
   ;; NNTP servers do not include Xrefs when using XOVER.
   (setq gnus-article-internal-prepare-hook '(gnus-article-get-xrefs))
-  (let ((rfc2047-default-charset gnus-newsgroup-default-charset)
-	(mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced)
+  (let ((mail-parse-charset gnus-newsgroup-charset)
 	(cur nntp-server-buffer)
 	(dependencies (or dependencies gnus-newsgroup-dependencies))
 	number headers header)
@@ -5514,8 +5499,7 @@ in."
 (defun gnus-summary-describe-briefly ()
   "Describe summary mode commands briefly."
   (interactive)
-  (gnus-message 6
-		(substitute-command-keys "\\<gnus-summary-mode-map>\\[gnus-summary-next-page]:Select  \\[gnus-summary-next-unread-article]:Forward  \\[gnus-summary-prev-unread-article]:Backward  \\[gnus-summary-exit]:Exit  \\[gnus-info-find-node]:Run Info	 \\[gnus-summary-describe-briefly]:This help")))
+  (gnus-message 6 (substitute-command-keys "\\<gnus-summary-mode-map>\\[gnus-summary-next-page]:Select  \\[gnus-summary-next-unread-article]:Forward  \\[gnus-summary-prev-unread-article]:Backward  \\[gnus-summary-exit]:Exit  \\[gnus-info-find-node]:Run Info	 \\[gnus-summary-describe-briefly]:This help")))
 
 ;; Walking around group mode buffer from summary mode.
 
@@ -6822,7 +6806,6 @@ Optional argument BACKWARD means do search for backward.
   (require 'gnus-async)
   (require 'gnus-art)
   (let ((gnus-select-article-hook nil)	;Disable hook.
-	(gnus-article-display-hook nil)
 	(gnus-mark-article-hook nil)	;Inhibit marking as read.
 	(gnus-use-article-prefetch nil)
 	(gnus-xmas-force-redisplay nil)	;Inhibit XEmacs redisplay.
@@ -7005,7 +6988,6 @@ article massaging functions being run."
     (require 'gnus-art)
     ;; Bind the article treatment functions to nil.
     (let ((gnus-have-all-headers t)
-	  gnus-article-display-hook
 	  gnus-article-prepare-hook
 	  gnus-article-decode-hook
 	  gnus-display-mime-function
@@ -7055,10 +7037,12 @@ If ARG is a negative number, hide the unwanted header lines."
 	(goto-char (point-min))
 	(setq e (1- (or (search-forward "\n\n" nil t) (point-max)))))
       (insert-buffer-substring gnus-original-article-buffer 1 e)
-      (let ((article-inhibit-hiding t))
-	(gnus-run-hooks 'gnus-article-display-hook))
-      (when (or (not hidden) (and (numberp arg) (< arg 0)))
-	(gnus-article-hide-headers)))))
+      (narrow-to-region (point-min) (point))
+      (if (or (not hidden) (and (numberp arg) (< arg 0)))
+	  (let ((gnus-treat-hide-headers nil)
+		(gnus-treat-hide-boring-headers nil))
+	    (gnus-treat-article 'head))
+	(gnus-treat-article 'head)))))
 
 (defun gnus-summary-show-all-headers ()
   "Make all header lines visible."
@@ -7588,7 +7572,8 @@ groups."
 	(unless no-highlight
 	  (save-excursion
 	    (set-buffer gnus-article-buffer)
-	    (gnus-run-hooks 'gnus-article-display-hook)
+	    ;;;!!! Fix this -- article should be rehighlighted.
+	    ;;;(gnus-run-hooks 'gnus-article-display-hook)
 	    (set-buffer gnus-original-article-buffer)
 	    (gnus-request-article
 	     (cdr gnus-article-current)
@@ -9180,44 +9165,25 @@ save those articles instead."
 	   (gnus-summary-exit))
 	 buffers)))))
 
-(defun gnus-newsgroup-setup-default-charset ()
+(defun gnus-summary-setup-default-charset ()
   "Setup newsgroup default charset."
-  (let ((name (and gnus-newsgroup-name 
-		   (string-match "[^:]+$" gnus-newsgroup-name)
-		   (match-string 0 gnus-newsgroup-name))))
-    (setq gnus-newsgroup-default-charset
+  (let ((name (and gnus-newsgroup-name
+		   (gnus-group-real-name gnus-newsgroup-name))))
+    (setq gnus-newsgroup-charset
 	  (or (and gnus-newsgroup-name
-		   (or (gnus-group-find-parameter 
-			gnus-newsgroup-name 'charset)
-		       (let ((alist gnus-newsgroup-default-charset-alist) 
+		   (or (gnus-group-find-parameter gnus-newsgroup-name 'charset)
+		       (let ((alist gnus-group-charset-alist) 
 			     elem (charset nil))
-			 (while alist
-			   (if (and name
-				    (string-match 
-				     (car (setq elem (pop alist)))
-				     name))
-			       (setq alist nil
-				     charset (cdr elem))))
+			 (while (setq elem (pop alist))
+			   (when (and name
+				      (string-match (car elem) name))
+			     (setq alist nil
+				   charset (cadr elem))))
 			 charset)))
-	      gnus-default-charset))
-    (setq gnus-newsgroup-iso-8859-1-forced 
-	  (and gnus-newsgroup-name
-	       (or (gnus-group-find-parameter
-		    gnus-newsgroup-name 'iso-8859-1-forced)
-		   (and name
-			(string-match  gnus-newsgroup-iso-8859-1-forced-regexp 
-				       name))))))
-  (if (stringp gnus-newsgroup-default-charset)
-      (setq gnus-newsgroup-default-charset
-	    (intern (downcase gnus-newsgroup-default-charset))))
-  (setq gnus-newsgroup-iso-8859-1-forced
-	(if (stringp gnus-newsgroup-iso-8859-1-forced)
-	    (intern (downcase gnus-newsgroup-iso-8859-1-forced))
-	  (and gnus-newsgroup-iso-8859-1-forced
-	       gnus-newsgroup-default-charset))))
+	      gnus-default-charset))))
   
 ;;;
-;;; MIME Commands
+;;; Mime Commands
 ;;;
 
 (defun gnus-summary-display-buttonized (&optional show-all-parts)

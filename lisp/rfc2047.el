@@ -32,9 +32,7 @@
 (require 'qp)
 (require 'mm-util)
 (require 'ietf-drums)
-
-(defvar rfc2047-default-charset 'iso-8859-1
-  "Default MIME charset -- does not need encoding.")
+(require 'mail-prsvr)
 
 (defvar rfc2047-header-encoding-alist
   '(("Newsgroups" . nil)
@@ -130,16 +128,16 @@ Should be called narrowed to the head of the message."
 		 ;; Hm.
 		 (t))))
 	    (goto-char (point-max)))))
-      (when rfc2047-default-charset
+      (when mail-parse-charset
 	(encode-coding-region (point-min) (point-max)
-			      rfc2047-default-charset)))))
+			      mail-parse-charset)))))
 
 (defun rfc2047-encodable-p ()
   "Say whether the current (narrowed) buffer contains characters that need encoding."
   (let ((charsets (mapcar
 		   'mm-mule-charset-to-mime-charset
 		   (mm-find-charset-region (point-min) (point-max))))
-	(cs (list 'us-ascii rfc2047-default-charset))
+	(cs (list 'us-ascii mail-parse-charset))
 	found)
     (while charsets
       (unless (memq (pop charsets) cs)
@@ -268,13 +266,13 @@ Should be called narrowed to the head of the message."
 		   (prog1
 		       (match-string 0)
 		     (delete-region (match-beginning 0) (match-end 0)))))
-	  (when (and (mm-multibyte-p) rfc2047-default-charset)
-	    (mm-decode-coding-region b e rfc2047-default-charset))
+	  (when (and (mm-multibyte-p) mail-parse-charset)
+	    (mm-decode-coding-region b e mail-parse-charset))
 	  (setq b (point)))
 	(when (and (mm-multibyte-p)
-		   rfc2047-default-charset
-		   (not (eq rfc2047-default-charset 'us-ascii)))
-	  (mm-decode-coding-region b (point-max) rfc2047-default-charset))))))
+		   mail-parse-charset
+		   (not (eq mail-parse-charset 'us-ascii)))
+	  (mm-decode-coding-region b (point-max) mail-parse-charset))))))
 
 (defun rfc2047-decode-string (string)
   "Decode the quoted-printable-encoded STRING and return the results."
@@ -305,11 +303,11 @@ Return WORD if not."
   "Decode STRING that uses CHARSET with ENCODING.
 Valid ENCODINGs are \"B\" and \"Q\".
 If your Emacs implementation can't decode CHARSET, it returns nil."
-  (let ((cs (let ((mm-default-charset rfc2047-default-charset))
-	      (mm-charset-to-coding-system charset))))
+  (let ((cs (mm-charset-to-coding-system charset)))
     (when cs
-      (when (eq cs 'ascii)
-	(setq cs rfc2047-default-charset))
+      (when (and (eq cs 'ascii)
+		 mail-parse-charset)
+	(setq cs mail-parse-charset))
       (mm-decode-coding-string
        (cond
 	((equal "B" encoding)

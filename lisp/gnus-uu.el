@@ -1204,9 +1204,10 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 				       &optional sloppy limit no-errors)
   (let ((state 'first)
 	(gnus-asynchronous nil)
+	(gnus-inhibit-treatment t)
 	has-been-begin article result-file result-files process-state
 	gnus-summary-display-article-function
-	gnus-article-display-hook gnus-article-prepare-hook
+	gnus-article-prepare-hook
 	article-series files)
 
     (while (and articles

@@ -31,7 +31,7 @@
 
 ;; To use:
 ;; (require 'smiley)
-;; (add-hook 'gnus-article-display-hook 'gnus-smiley-display t)
+;; (setq gnus-treat-display-smileys t)
 
 ;; The smilies were drawn by Joe Reiss <jreiss@vt.edu>.
 

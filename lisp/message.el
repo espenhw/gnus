@@ -886,10 +886,6 @@ The cdr of ech entry is a function for applying the face to a region.")
    (t nil))
   "Coding system to compose mail.")
 
-(defvar message-default-charset 'iso-8859-1
-  "Default charset assumed to be used when viewing non-ASCII characters.
-This variable is used only in non-Mule Emacsen.")
-
 ;;; Internal variables.
 
 (defvar message-buffer-list nil)
@@ -897,6 +893,7 @@ This variable is used only in non-Mule Emacsen.")
 (defvar message-this-is-mail nil)
 (defvar message-draft-article nil)
 (defvar message-mime-part nil)
+(defvar message-posting-charset nil)
 
 ;; Byte-compiler warning
 (defvar gnus-active-hashtb)
@@ -2111,7 +2108,8 @@ the user from the mailer."
       (let ((message-deletable-headers
 	     (if news nil message-deletable-headers)))
 	(message-generate-headers message-required-mail-headers))
-      (mail-encode-encoded-word-buffer)
+      (let ((mail-parse-charset message-posting-charset))
+	(mail-encode-encoded-word-buffer))
       ;; Let the user do all of the above.
       (run-hooks 'message-header-hook))
     (unwind-protect
@@ -2285,7 +2283,8 @@ to find out how to use this."
 	(message-narrow-to-headers)
 	;; Insert some headers.
 	(message-generate-headers message-required-news-headers)
-	(mail-encode-encoded-word-buffer)
+	(let ((mail-parse-charset message-posting-charset))
+	  (mail-encode-encoded-word-buffer))
 	;; Let the user do all of the above.
 	(run-hooks 'message-header-hook))
       (message-cleanup-headers)
@@ -4213,8 +4212,7 @@ TYPE is the MIME type to use."
 	   type (prin1-to-string file))))
 
 (defun message-encode-message-body ()
-  (let ((mm-default-charset message-default-charset)
-	lines multipart-p content-type-p)
+  (let (lines multipart-p content-type-p)
     (message-goto-body)
     (save-restriction
       (narrow-to-region (point) (point-max))
@@ -4239,7 +4237,7 @@ TYPE is the MIME type to use."
 	    (re-search-backward "^Content-Type: multipart/" nil t))
       (goto-char (point-max))
       (setq content-type-p
-	    (re-search-backward "^Content-Type: multipart/" nil t)))
+	    (re-search-backward "^Content-Type:" nil t)))
     (save-restriction
       (message-narrow-to-headers-or-head)
       (message-remove-first-header "Content-Type")

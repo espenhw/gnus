@@ -46,18 +46,6 @@
    (t nil))
   "100% text coding system, for removing ^M.")
 
-(defvar mm-default-coding-system nil
-  "The default coding system to use.")  
-
-(defvar mm-known-charsets '(iso-8859-1)
-  "List of known charsets.
-Use this under non-Mule Emacsen to specify which charsets your Emacs
-can display.  Also see `mm-default-charset'.")
-
-(defvar mm-default-charset 'iso-8859-1
-  "Default charset assumed to be used when viewing non-ASCII characters.
-This variable is used only in non-Mule Emacsen.")
-
 (defvar mm-mime-mule-charset-alist
   '((us-ascii ascii)
     (iso-8859-1 latin-iso8859-1)
@@ -145,8 +133,9 @@ This variable is used only in non-Mule Emacsen.")
     dest)
   "Charset/coding system alist.")
 
-;;;Internal variable
-(defvar mm-charset-iso-8859-1-forced nil)
+;;; Internal variables:
+
+;;; Functions:
 
 (defun mm-mule-charset-to-mime-charset (charset)
   "Return the MIME charset corresponding to MULE CHARSET."
@@ -166,9 +155,6 @@ If optional argument LBT (`unix', `dos' or `mac') is specified, it is
 used as the line break code type of the coding system."
   (when (stringp charset)
     (setq charset (intern (downcase charset))))
-  (if (and mm-charset-iso-8859-1-forced 
-	   (eq charset 'iso-8859-1))
-      (setq charset mm-charset-iso-8859-1-forced))
   (setq charset
 	(or (cdr (assq charset mm-charset-coding-system-alist))
 	    charset))
@@ -176,9 +162,7 @@ used as the line break code type of the coding system."
     (setq charset (intern (format "%s-%s" charset lbt))))
   (cond
    ;; Running in a non-MULE environment.
-   ((and (null (mm-get-coding-system-list))
-	 (or (eq charset mm-default-charset)
-	     (memq charset mm-known-charsets)))
+   ((null (mm-get-coding-system-list))
     charset)
    ;; ascii
    ((eq charset 'us-ascii)
@@ -216,12 +200,6 @@ used as the line break code type of the coding system."
 (defun mm-mime-charset (charset b e)
   (if (fboundp 'coding-system-get)
       (or
-       (and
-	mm-default-coding-system
-	(let ((safe (coding-system-get mm-default-coding-system
-				       'safe-charsets)))
-	  (or (eq safe t) (memq charset safe)))
-	(coding-system-get mm-default-coding-system 'mime-charset))
        (coding-system-get
 	(get-charset-property charset 'prefered-coding-system)
 	'mime-charset)
@@ -289,6 +267,10 @@ See also `with-temp-file' and `with-output-to-string'."
 	  (if (eobp)
 	      '(ascii)
 	    (list 'ascii (car (last (assq 'charset entry)))))))))))
+
+(defun mm-read-charset (prompt)
+  "Return a charset."
+  (completing-read prompt mm-mime-mule-charset-alist nil t))
 
 (provide 'mm-util)
 

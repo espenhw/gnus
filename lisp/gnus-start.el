@@ -721,7 +721,7 @@ prompt the user for the name of an NNTP server to use."
   (unless (gnus-gethash "nndraft:drafts" gnus-newsrc-hashtb)
     (let ((gnus-level-default-subscribed 1))
       (gnus-subscribe-group "nndraft:drafts" nil '(nndraft "")))
-    (gnus-group-set-parameter "nndraft:drafts" 'charset "nil")
+    (gnus-group-set-parameter "nndraft:drafts" 'charset nil)
     (gnus-group-set-parameter
      "nndraft:drafts" 'gnus-dummy '((gnus-draft-mode)))))
 
@@ -1711,12 +1711,6 @@ newsgroup."
 		(gnus-message 5 "%sdone" mesg))))))
 	(setq methods (cdr methods))))))
 
-(defun gnus-ignored-newsgroups-has-to-p ()
-  "Non-nil iff gnus-ignored-newsgroups includes \"^to\\\\.\" as an element."
-  ;; note this regexp is the same as:
-  ;; (concat (regexp-quote "^to\\.") "\\($\\|" (regexp-quote "\\|") "\\)")
-  (string-match "\\^to\\\\\\.\\($\\|\\\\|\\)" gnus-ignored-newsgroups))
-
 ;; Read an active file and place the results in `gnus-active-hashtb'.
 (defun gnus-active-to-gnus-format (&optional method hashtb ignore-errors
 					     real-active)
@@ -1734,13 +1728,11 @@ newsgroup."
 			      (gnus-make-hashtable 4096)))))))
     ;; Delete unnecessary lines.
     (goto-char (point-min))
-    (cond ((gnus-ignored-newsgroups-has-to-p)
-	   (delete-matching-lines gnus-ignored-newsgroups))
-	  ((string= gnus-ignored-newsgroups "")
-	   (delete-matching-lines "^to\\."))
-	  (t
-	   (delete-matching-lines (concat "^to\\.\\|"
-					  gnus-ignored-newsgroups))))
+    (cond
+     ((string= gnus-ignored-newsgroups "")
+      (delete-matching-lines "^to\\."))
+     (t
+      (delete-matching-lines (concat "^to\\.\\|" gnus-ignored-newsgroups))))
 
     ;; Make the group names readable as a lisp expression even if they
     ;; contain special characters.

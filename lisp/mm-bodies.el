@@ -51,7 +51,7 @@ If no encoding was done, nil is returned."
       (save-excursion
 	(goto-char (point-min))
 	(if (re-search-forward "[^\x0-\x7f]" nil t)
-	    mm-default-charset
+	    (mm-read-charset "Charset used in the article: ")
 	  ;; The logic in `mml-generate-mime-1' confirms that it's OK
 	  ;; to return nil here.
 	  nil))
@@ -152,7 +152,7 @@ If no encoding was done, nil is returned."
 (defun mm-decode-body (charset &optional encoding type)
   "Decode the current article that has been encoded with ENCODING.
 The characters in CHARSET should then be decoded."
-  (setq charset (or charset rfc2047-default-charset))
+  (setq charset (or charset mail-parse-charset))
   (save-excursion
     (when encoding
       (mm-decode-content-transfer-encoding encoding type))
@@ -165,12 +165,12 @@ The characters in CHARSET should then be decoded."
 					;in XEmacs
 		   enable-multibyte-characters
 		   (or (not (eq mule-charset 'ascii))
-		       (setq mule-charset rfc2047-default-charset)))
+		       (setq mule-charset mail-parse-charset)))
 	  (mm-decode-coding-region (point-min) (point-max) mule-charset))))))
 
 (defun mm-decode-string (string charset)
   "Decode STRING with CHARSET."
-  (setq charset (or charset rfc2047-default-charset))
+  (setq charset (or charset mail-parse-charset))
   (or
    (when (featurep 'mule)
      (let (mule-charset)
@@ -178,7 +178,7 @@ The characters in CHARSET should then be decoded."
 		  (setq mule-charset (mm-charset-to-coding-system charset))
 		  enable-multibyte-characters
 		  (or (not (eq mule-charset 'ascii))
-		      (setq mule-charset rfc2047-default-charset)))
+		      (setq mule-charset mail-parse-charset)))
 	 (mm-decode-coding-string string mule-charset))))
    string))
 

@@ -108,6 +108,16 @@ the second with the current group name.")
     (name . user-full-name))
   "*Mapping from style parameters to variables.")
 
+(defcustom gnus-group-posting-charset-alist 
+  '(("^no\\." iso-8859-1)
+    (".*" iso-8859-1)
+    (message-this-is-mail nil)
+    )
+  "Alist of regexps (to match group names) and default charsets to be unencoded when posting."
+  :type '(repeat (list (regexp :tag "Group")
+		       (symbol :tag "Charset")))
+  :group 'gnus-charset)
+
 ;;; Internal variables.
 
 (defvar gnus-inhibit-posting-styles nil
@@ -201,10 +211,25 @@ Thank you for your help in stamping out bugs.
 	 (set (make-local-variable 'gnus-message-group-art)
 	      (cons ,group ,article))
 	 (set (make-local-variable 'gnus-newsgroup-name) ,group)
+	 (set (make-local-variable 'message-posting-charset)
+	      (gnus-setup-posting-charset ,group))
 	 (gnus-run-hooks 'gnus-message-setup-hook))
        (gnus-add-buffer)
        (gnus-configure-windows ,config t)
        (set-buffer-modified-p nil))))
+
+(defun gnus-setup-posting-charset (group)
+  (let ((alist gnus-group-posting-charset-alist)
+	elem)
+    (catch 'found
+      (while (setq elem (pop alist))
+	(when (or (and (stringp (car alist))
+		       (string-match (car alist) group))
+		  (and (gnus-functionp (car alist))
+		       (funcall (car alist) group))
+		  (and (symbolp (car alist))
+		       (symbol-value (car alist))))
+	  (throw 'found (cadr alist)))))))
 
 (defun gnus-inews-add-send-actions (winconf buffer article)
   (make-local-hook 'message-sent-hook)

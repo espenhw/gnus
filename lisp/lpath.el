@@ -45,8 +45,7 @@
 		    mouse-selection-click-count-buffer buffer-display-table
 		    font-lock-defaults user-full-name user-login-name
 		    gnus-newsgroup-name gnus-article-x-face-too-ugly
-		    gnus-newsgroup-default-charset
-		    gnus-newsgroup-iso-8859-1-forced
+		    gnus-newsgroup-charset
 		    mail-mode-hook enable-multibyte-characters
 		    adaptive-fill-first-line-regexp adaptive-fill-regexp
 		    url-current-mime-headers buffer-file-coding-system

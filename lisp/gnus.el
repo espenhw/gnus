@@ -41,6 +41,11 @@
   :group 'news
   :group 'mail)
 
+(defgroup gnus-charset nil
+  "Group character set issues."
+  :link '(custom-manual "(gnus)Charsets")
+  :group 'gnus)
+
 (defgroup gnus-cache nil
   "Cache interface."
   :group 'gnus)
@@ -254,7 +259,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.70"
+(defconst gnus-version-number "0.71"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -1407,59 +1412,6 @@ face."
   :group 'gnus-visual
   :type 'face)
 
-(defcustom gnus-article-display-hook
-  (if (and (string-match "XEmacs" emacs-version)
-	   (featurep 'xface))
-      '(gnus-article-hide-headers-if-wanted
-	gnus-article-hide-boring-headers
-	gnus-article-treat-overstrike
-	gnus-article-maybe-highlight
-	gnus-article-display-x-face)
-    '(gnus-article-hide-headers-if-wanted
-      gnus-article-hide-boring-headers
-      gnus-article-treat-overstrike
-      gnus-article-maybe-highlight))
-  "*Controls how the article buffer will look.
-
-If you leave the list empty, the article will appear exactly as it is
-stored on the disk.  The list entries will hide or highlight various
-parts of the article, making it easier to find the information you
-want."
-  :group 'gnus-article-highlight
-  :group 'gnus-visual
-  :type 'hook
-  :options '(gnus-article-add-buttons
-	     gnus-article-add-buttons-to-head
-	     gnus-article-emphasize
-	     gnus-article-fill-cited-article
-	     gnus-article-remove-cr
-	     gnus-article-de-quoted-unreadable
-	     gnus-summary-stop-page-breaking
-	     ;; gnus-summary-caesar-message
-	     ;; gnus-summary-verbose-headers
-	     gnus-article-hide
-	     gnus-article-hide-headers
-	     gnus-article-hide-boring-headers
-	     gnus-article-hide-signature
-	     gnus-article-hide-citation
-	     gnus-article-hide-pgp
-	     gnus-article-hide-pem
-	     gnus-article-highlight
-	     gnus-article-highlight-headers
-	     gnus-article-highlight-citation
-	     gnus-article-highlight-signature
-	     gnus-article-date-ut
-	     gnus-article-date-local
-	     gnus-article-date-lapsed
-	     gnus-article-date-original
-	     gnus-article-remove-trailing-blank-lines
-	     gnus-article-strip-leading-blank-lines
-	     gnus-article-strip-multiple-blank-lines
-	     gnus-article-strip-blank-lines
-	     gnus-article-treat-overstrike
-	     gnus-article-display-x-face
-	     gnus-smiley-display))
-
 (defcustom gnus-article-save-directory gnus-directory
   "*Name of the directory articles will be saved in (default \"~/News\")."
   :group 'gnus-article-saving
@@ -1467,6 +1419,23 @@ want."
 
 (defvar gnus-plugged t
   "Whether Gnus is plugged or not.")
+
+(defcustom gnus-default-charset 'iso-8859-1
+  "Default charset assumed to be used when viewing non-ASCII characters.
+This variable is overridden on a group-to-group basis by the
+gnus-group-charset-alist variable and is only used on groups not
+covered by that variable."
+  :type 'symbol
+  :group 'gnus-charset)
+
+(defcustom gnus-default-posting-charset nil
+  "Default charset assumed to be used when posting non-ASCII characters.
+This variable is overridden on a group-to-group basis by the
+gnus-group-posting-charset-alist variable and is only used on groups not
+covered by that variable.
+If nil, no default charset is assumed when posting."
+  :type 'symbol
+  :group 'gnus-charset)
 
 
 ;;; Internal variables
@@ -1755,7 +1724,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-article-next-page gnus-article-prev-page
       gnus-request-article-this-buffer gnus-article-mode
       gnus-article-setup-buffer gnus-narrow-to-page
-      gnus-article-delete-invisible-text)
+      gnus-article-delete-invisible-text gnus-treat-article)
      ("gnus-art" :interactive t
       gnus-article-hide-headers gnus-article-hide-boring-headers
       gnus-article-treat-overstrike gnus-article-word-wrap

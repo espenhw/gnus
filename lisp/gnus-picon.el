@@ -36,10 +36,8 @@
 
 (defgroup picons nil
   "Show pictures of people, domains, and newsgroups (XEmacs).
-For this to work, you must add gnus-group-display-picons to the
-gnus-summary-display-hook or to the gnus-article-display-hook
-depending on what gnus-picons-display-where is set to.  You must
-also add gnus-article-display-picons to gnus-article-display-hook."
+For this to work, you must switch on the `gnus-treat-display-picons'
+variable."
   :group 'gnus-visual)
 
 (defcustom gnus-picons-display-where 'picons

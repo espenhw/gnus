@@ -36,6 +36,7 @@
 
 ;;; Code:
 
+(require 'mail-prsvr)
 (require 'ietf-drums)
 (require 'rfc2231)
 (require 'rfc2047)
