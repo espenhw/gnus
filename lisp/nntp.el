@@ -982,7 +982,7 @@ password contained in '~/.nntp-authinfo'."
       (if (memq (following-char) '(?4 ?5))
 	  ;; wants credentials?
 	  (if (looking-at "480")
-	      (nntp-handle-authinfo nntp-process-to-buffer)
+	      (nntp-handle-authinfo process)
 	    ;; report error message.
 	    (nntp-snarf-error-message)
 	    (nntp-do-callback nil))
