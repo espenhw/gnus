@@ -3151,7 +3151,7 @@ prefix, and don't delete any headers."
 (defun message-yank-buffer (buffer)
   "Insert BUFFER into the current buffer and quote it."
   (interactive "bYank buffer: ")
-  (let ((message-reply-buffer buffer))
+  (let ((message-reply-buffer (get-buffer buffer)))
     (save-window-excursion
       (message-yank-original))))
 
@@ -3555,7 +3555,7 @@ It should typically alter the sending method in some way or other."
   "Perform all actions in ACTIONS."
   ;; Now perform actions on successful sending.
   (while actions
-    (ignore-errors
+    (progn ;; jah ignore-errors 
       (cond
        ;; A simple function.
        ((functionp (car actions))
