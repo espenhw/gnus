@@ -198,7 +198,7 @@ used as the line break code type of the coding system."
 
 (defun mm-multibyte-p ()
   "Say whether multibyte is enabled."
-  (and (fboundp 'enable-multibyte-characters)
+  (and (boundp 'enable-multibyte-characters)
        enable-multibyte-characters))
 
 (provide 'mm-util)
