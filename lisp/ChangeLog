@@ -1,3 +1,10 @@
+2000-11-02 09:33:01  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-newsgroup-variables): New variable.
+	(gnus-summary-mode): Make them local variables. 
+	(gnus-set-global-variables): Globalize them.
+	(gnus-summary-exit): Kill them.
+
 2000-11-02  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* rfc2047.el (rfc2047-encoded-word-regexp): Allow empty encoded
