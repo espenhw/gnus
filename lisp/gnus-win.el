@@ -198,7 +198,7 @@ See the Gnus manual for an explanation of the syntax used.")
 
 (defcustom gnus-configure-windows-hook nil
   "*A hook called when configuring windows."
-  :group 'gnus-windowns
+  :group 'gnus-windows
   :type 'hook)
 
 ;;; Internal variables.
