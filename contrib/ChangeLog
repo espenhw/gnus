@@ -1,4 +1,16 @@
+2000-11-08  Bj,Av(Brn Torkelsson  <torkel@hpc2n.umu.se>
+
+	* gpg.el: In Xemacs it is called point-at-eol, not
+	line-end-position
+
+	* gpg.el (gpg-key-lessp): use string-lessp instead of
+	compare-strings (not available on XEmacs)
+	
 2000-11-16  Simon Josefsson  <sj@extundo.com>
 
 	* gpg.el (gpg-command-verify-cleartext): New variable.
 	(gpg-verify-cleartext): New function.
+	
+;; Local Variables:
+;; coding: iso-2022-7bit
+;; End:

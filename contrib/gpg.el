@@ -7,7 +7,7 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-15
 
-;; $Id: gpg.el,v 1.1 2000/11/04 12:22:17 zsh Exp $
+;; $Id: gpg.el,v 1.2 2000/11/18 20:57:13 jas Exp $
 
 ;; This file is NOT (yet?) part of GNU Emacs.
 
@@ -111,6 +111,10 @@
 (require 'timer)
 (eval-when-compile 
   (require 'cl))
+
+
+(if (featurep 'xemacs)
+	  (defalias 'line-end-position 'point-at-eol))
 
 ;;;; Customization:
 
@@ -1079,12 +1083,7 @@ documentation for details)."
 
 (defun gpg-key-lessp (a b)
   "Returns t if primary user ID of A is less than B."
-  (let ((res (compare-strings (gpg-key-primary-user-id a) 0 nil
-			      (gpg-key-primary-user-id b) 0 nil
-			      t)))
-    (if (eq res t)
-	nil
-      (< res 0))))
+  (string-lessp (gpg-key-primary-user-id a) (gpg-key-primary-user-id b) ))
 
 ;;; Accessing the key database:
 
