@@ -1,3 +1,24 @@
+2001-07-09 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nntp.el (nntp-send-command, nntp-send-command-nodelete):
+	(nntp-send-command-and-decode): Use gnus-point-at-bol.
+
+2001-07-09 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From  Paul Jarc <prj@po.cwru.edu> 
+
+	* message.el (message-use-mail-followup-to): New variable.
+	(message-get-reply-headers): Use it.
+
+2001-07-04  Gerd Moellmann  <gerd@gnu.org>
+
+	* nnheader.el (nnheader-init-server-buffer): Make sure the
+	*nntpd* buffer is made multibyte instead of a random buffer.
+	
+2001-07-09 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-get-newsgroup-headers-xover): Get headers only
+	when it returns headers.
+
 2001-07-07  Simon Josefsson  <jas@extundo.com>
 
 	* rfc2047.el (rfc2047-encode-message-header): Skip header when
@@ -65,6 +86,7 @@
 	* nntp.el (nntp-send-command-nodelete): ditto.
 	* nntp.el (nntp-send-command-and-decode): ditto.
 
+>>>>>>> 6.485
 2001-06-30  YAGI Tatsuya  <yagi@is.titech.ac.jp>
 
 	* gnus-start.el (gnus-check-first-time-used): Use `if' instead of

@@ -5171,7 +5171,7 @@ Return a list of headers that match SEQUENCE (see
 	(let ((gnus-nov-is-evil t))
 	  (nconc
 	   (nreverse headers)
-	   (when (gnus-retrieve-headers sequence group)
+	   (when (eq (gnus-retrieve-headers sequence group) 'headers)
 	     (gnus-get-newsgroup-headers))))))))
 
 (defun gnus-article-get-xrefs ()

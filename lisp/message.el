@@ -401,7 +401,7 @@ and respond with new To and Cc headers."
   :group 'message-interface
   :type '(choice function (const nil)))
 
-(defcustom message-use-followup-to t
+(defcustom message-use-followup-to 'ask
   "*Specifies what to do with Followup-To header.
 If nil, always ignore the header.  If it is t, use its value, but
 query before using the \"poster\" value.  If it is the symbol `ask',
@@ -412,6 +412,16 @@ always query the user whether to use the value.  If it is the symbol
 		 (const :tag "use & query" t)
 		 (const use)
 		 (const ask)))
+
+(defcustom message-use-mail-followup-to t
+  "*Specifies what to do with Mail-Followup-To header.
+If nil, always ignore the header.  If it is the symbol `ask', always
+query the user whether to use the value.  If it is the symbol `use',
+always use the value."
+  :group 'message-interface
+  :type '(choice (const :tag "ignore" nil)
+                (const use)
+                (const ask)))
 
 (defcustom message-sendmail-f-is-evil nil
   "*Non-nil means don't add \"-f username\" to the sendmail command line.
@@ -4019,7 +4029,7 @@ OTHER-HEADERS is an alist of header/value pairs."
 	  mct (message-fetch-field "mail-copies-to")
 	  reply-to (message-fetch-field "reply-to")
 	  mrt (message-fetch-field "mail-reply-to")
-	  mft (and message-use-followup-to
+	  mft (and message-use-mail-followup-to
                    (message-fetch-field "mail-followup-to")))
 
     ;; Handle special values of Mail-Copies-To.
@@ -4044,9 +4054,8 @@ OTHER-HEADERS is an alist of header/value pairs."
 	(save-excursion
 	  (message-set-work-buffer)
           (if (and mft
-                   message-use-followup-to
                    wide
-                   (or (not (eq message-use-followup-to 'ask))
+                   (or (not (eq message-use-mail-followup-to 'ask))
                        (message-y-or-n-p
 		        (concat "Obey Mail-Followup-To? ") t "\
 You should normally obey the Mail-Followup-To: header.  In this
@@ -4058,8 +4067,12 @@ which directs your response to " (if (string-match "," mft)
 			       "the specified addresses"
 			     "that address only") ".
 
-If a message is posted to several mailing lists, Mail-Followup-To is
-often used to direct the following discussion to one list only,
+Most commonly, Mail-Followup-To is used by a mailing list poster to
+express that responses should be sent to just the list, and not the
+poster as well.
+
+If a message is posted to several mailing lists, Mail-Followup-To may
+also be used to direct the following discussion to one list only,
 because discussions that are spread over several lists tend to be
 fragmented and very difficult to follow.
 
