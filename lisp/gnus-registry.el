@@ -118,7 +118,10 @@ way."
   :group 'gnus-registry
   :type 'boolean)
 
-(defcustom gnus-registry-cache-file "~/.gnus.registry.eld"
+(defcustom gnus-registry-cache-file 
+  (nnheader-concat 
+   (or gnus-dribble-directory gnus-home-directory "~/") 
+   ".gnus.registry.eld")
   "File where the Gnus registry will be stored."
   :group 'gnus-registry
   :type 'file)
@@ -338,6 +341,10 @@ way."
 is obtained from the registry.  This function can be used as an entry
 in `nnmail-split-fancy' or `nnimap-split-fancy', for example like
 this: (: gnus-registry-split-fancy-with-parent) 
+
+This function tracks ALL backends, unlike
+`nnmail-split-fancy-with-parent' which tracks only nnmail
+messages.
 
 For a message to be split, it looks for the parent message in the
 References or In-Reply-To header and then looks in the registry to

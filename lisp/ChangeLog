@@ -1,3 +1,9 @@
+2004-03-29  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-cache-file): updated to use
+	gnus-dribble-directory OR gnus-home-directory OR ~
+	(gnus-registry-split-fancy-with-parent): fixed doc
+
 2004-03-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-exchange-point-and-mark): Use
