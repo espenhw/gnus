@@ -1,3 +1,12 @@
+2000-05-03 08:09:14  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): A better junk
+	detect.
+	* mml.el (mml-parse-singlepart-with-multiple-charsets): Save 
+	restriciton.
+	(mml-parse-1): Warning message.
+	(mml-preview): Disable multibyte.
+
 2000-05-03  Dave Love  <fx@gnu.org>
 
 	* gnus.el (gnus-group-startup-message): Add newline before image.

@@ -170,6 +170,10 @@ If no encoding was done, nil is returned."
 	       (goto-char (point-min))
 	       (while (re-search-forward "^[\t ]*\r?\n" nil t)
 		 (delete-region (match-beginning 0) (match-end 0)))
+	       (goto-char (point-max))
+	       (when (re-search-backward "^[A-Za-z0-9+/]+=*[\t ]*$" nil t)
+		 (forward-line)
+		 (delete-region (point) (point-max)))
 	       (point-max))))
 	   ((memq encoding '(7bit 8bit binary))
 	    ;; Do nothing.

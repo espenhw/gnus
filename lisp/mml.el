@@ -127,7 +127,7 @@ one charsets.")
 		       (not
 			(y-or-n-p
 			 (format
-			  "Warning: Your message contains %d parts.  Really send? "
+			  "Warning: Your message contains more than %d parts.  Really send? "
 			  (length nstruct)))))
 	      (error "Edit your message to use only one charset"))
 	    (setq struct (nconc nstruct struct)))))))
@@ -138,56 +138,57 @@ one charsets.")
 (defun mml-parse-singlepart-with-multiple-charsets 
   (orig-tag beg end &optional use-ascii)
   (save-excursion
-    (narrow-to-region beg end)
-    (goto-char (point-min))
-    (let ((current (or (mm-mime-charset (mm-charset-after))
-		       (and use-ascii 'us-ascii)))
-	  charset struct space newline paragraph)
-      (while (not (eobp))
-	(cond
-	 ;; The charset remains the same.
-	 ((or (eq (setq charset (mm-mime-charset (mm-charset-after))) 
-		  'us-ascii)
-	      (and use-ascii (not charset))
-	      (eq charset current)))
-	 ;; The initial charset was ascii.
-	 ((eq current 'us-ascii)
-	  (setq current charset
-		space nil
-		newline nil
-		paragraph nil))
-	 ;; We have a change in charsets.
-	 (t
-	  (push (append
-		 orig-tag
-		 (list (cons 'contents
-			     (buffer-substring-no-properties
-			      beg (or paragraph newline space (point))))))
-		struct)
-	  (setq beg (or paragraph newline space (point))
-		current charset
-		space nil
-		newline nil
-		paragraph nil)))
-	;; Compute places where it might be nice to break the part.
-	(cond
-	 ((memq (following-char) '(?  ?\t))
-	  (setq space (1+ (point))))
-	 ((eq (following-char) ?\n)
-	  (setq newline (1+ (point))))
-	 ((and (eq (following-char) ?\n)
-	       (not (bobp))
-	       (eq (char-after (1- (point))) ?\n))
-	  (setq paragraph (point))))
-	(forward-char 1))
-      ;; Do the final part.
-      (unless (= beg (point))
-	(push (append orig-tag
-		      (list (cons 'contents
-				  (buffer-substring-no-properties
-				   beg (point)))))
-	      struct))
-      struct)))
+    (save-restriction
+      (narrow-to-region beg end)
+      (goto-char (point-min))
+      (let ((current (or (mm-mime-charset (mm-charset-after))
+			 (and use-ascii 'us-ascii)))
+	    charset struct space newline paragraph)
+	(while (not (eobp))
+	  (cond
+	   ;; The charset remains the same.
+	   ((or (eq (setq charset (mm-mime-charset (mm-charset-after))) 
+		    'us-ascii)
+		(and use-ascii (not charset))
+		(eq charset current)))
+	   ;; The initial charset was ascii.
+	   ((eq current 'us-ascii)
+	    (setq current charset
+		  space nil
+		  newline nil
+		  paragraph nil))
+	   ;; We have a change in charsets.
+	   (t
+	    (push (append
+		   orig-tag
+		   (list (cons 'contents
+			       (buffer-substring-no-properties
+				beg (or paragraph newline space (point))))))
+		  struct)
+	    (setq beg (or paragraph newline space (point))
+		  current charset
+		  space nil
+		  newline nil
+		  paragraph nil)))
+	  ;; Compute places where it might be nice to break the part.
+	  (cond
+	   ((memq (following-char) '(?  ?\t))
+	    (setq space (1+ (point))))
+	   ((eq (following-char) ?\n)
+	    (setq newline (1+ (point))))
+	   ((and (eq (following-char) ?\n)
+		 (not (bobp))
+		 (eq (char-after (1- (point))) ?\n))
+	    (setq paragraph (point))))
+	  (forward-char 1))
+	;; Do the final part.
+	(unless (= beg (point))
+	  (push (append orig-tag
+			(list (cons 'contents
+				    (buffer-substring-no-properties
+				     beg (point)))))
+		struct))
+	struct))))
 
 (defun mml-read-tag ()
   "Read a tag and return the contents."
@@ -805,7 +806,8 @@ If RAW, don't highlight the article."
 	 (concat "^" (regexp-quote mail-header-separator) "\n") nil t)
 	(replace-match "\n"))
     (mml-to-mime)
-    (unless raw
+    (if raw
+	(mm-disable-multibyte)
       (let ((gnus-newsgroup-charset (car message-posting-charset)))
 	(run-hooks 'gnus-article-decode-hook)
 	(let ((gnus-newsgroup-name "dummy"))
