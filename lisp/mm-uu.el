@@ -26,8 +26,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
 (require 'mail-parse)
-(require 'message)
 (require 'nnheader)
 (require 'mm-decode)
 (require 'mailcap)
