@@ -1,3 +1,14 @@
+2001-08-25 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnweb.el (nnweb-type-definition): Use google raw file.
+	(nnweb-google-parse-1): Ditto.
+	(nnweb-google-identity): Ditto.
+	(nnweb-reference-wash-article): Move nnweb-decode-entities here.
+	(nnweb-altavista-wash-article): Ditto.
+	(nnweb-request-article): Remove nnweb-decode-entities.
+
+	* nnml.el: Require 'gnus.
+
 2001-08-25  Simon Josefsson  <jas@extundo.com>
 
 	* nnml.el (nnml-marks-is-evil): Add doc.

@@ -63,9 +63,12 @@ and `altavista'.")
 (defvar nnweb-type-definition
   '(
     (dejanews ;; bought by google.com
-     (article . nnweb-google-wash-article)
-     (id . "http://groups.google.com/groups?as_umsgid=%s")
-     (reference . nnweb-google-reference)
+     ;;(article . nnweb-google-wash-article)
+     ;;(id . "http://groups.google.com/groups?as_umsgid=%s")
+     (article . ignore)
+     (id . "http://groups.google.com/groups?selm=%s&output=gplain")
+     ;;(reference . nnweb-google-reference)
+     (reference . identity)
      (map . nnweb-google-create-mapping)
      (search . nnweb-google-search)
      (address . "http://groups.google.com/groups")
@@ -189,7 +192,7 @@ and `altavista'.")
 		       (when (string-match "^<\\(.*\\)>$" article)
 			 (setq art (match-string 1 article)))
 		       (when (and fetch art)
-			 (setq url (format fetch article))
+			 (setq url (format fetch art))
 			 (mm-with-unibyte-current-buffer
 			   (nnweb-fetch-url url))
 			 (if (nnweb-definition 'reference t)
@@ -197,8 +200,7 @@ and `altavista'.")
 				   (funcall (nnweb-definition
 					     'reference) article)))))))
 	(unless nnheader-callback-function
-	  (funcall (nnweb-definition 'article))
-	  (nnweb-decode-entities))
+	  (funcall (nnweb-definition 'article)))
 	(nnheader-report 'nnweb "Fetched article %s" article)
 	(cons group (and (numberp article) article))))))
 
@@ -572,6 +574,7 @@ and `altavista'.")
 	(while (search-forward "," nil t)
 	  (replace-match " " t t)))
       (widen)
+      (nnweb-decode-entities)
       (set-marker body nil))))
 
 (defun nnweb-reference-search (search)
@@ -676,7 +679,8 @@ and `altavista'.")
       (while (re-search-forward "<A.*\\?id@\\([^\"]+\\)\">[0-9]+</A>" nil t)
 	(replace-match "&lt;\\1&gt; " t)))
     (widen)
-    (nnweb-remove-markup)))
+    (nnweb-remove-markup)
+    (nnweb-decode-entities)))
 
 (defun nnweb-altavista-search (search &optional part)
   (url-insert-file-contents
@@ -731,7 +735,7 @@ and `altavista'.")
 	(case-fold-search t)
 	(active (cadr (assoc nnweb-group nnweb-group-alist)))
 	Subject Score Date Newsgroups From
-	map url)
+	map url mid)
     (unless active
       (push (list nnweb-group (setq active (cons 1 0))
 		  nnweb-type nnweb-search)
@@ -739,10 +743,10 @@ and `altavista'.")
     ;; Go through all the article hits on this page.
     (goto-char (point-min))
     (while (re-search-forward
-	    "a href=/groups\\(\\?[^ \">]*selm=[^ \">]*\\)" nil t)
-      (setq url
-	    (concat (nnweb-definition 'address)
-		    (match-string 1)))
+	    "a href=/groups\\(\\?[^ \">]*selm=\\([^ &\">]+\\)\\)" nil t)
+      (setq mid (match-string 2)
+	    url (format 
+		 "http://groups.google.com/groups?selm=%s&output=gplain" mid))
       (narrow-to-region (search-forward ">" nil t)
 			(search-forward "</a>" nil t))
       (nnweb-remove-markup)
@@ -777,7 +781,7 @@ and `altavista'.")
 	   (cdr active) (if Newsgroups
 			    (concat  "(" Newsgroups ") " Subject)
 			  Subject)
-	   From Date Message-ID
+	   From Date (or Message-ID mid)
 	   nil 0 0 url))
 	 map)
 	(nnweb-set-hashtb (cadar map) (car map))))
@@ -825,7 +829,7 @@ and `altavista'.")
 
 (defun nnweb-google-identity (url)
   "Return an unique identifier based on URL."
-  (if (string-match "seld=\\([0-9]+\\)" url)
+  (if (string-match "selm=\\([^ &>]+\\)" url)
       (match-string 1 url)
     url))
 

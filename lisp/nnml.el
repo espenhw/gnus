@@ -32,6 +32,7 @@
 
 ;;; Code:
 
+(require 'gnus)
 (require 'nnheader)
 (require 'nnmail)
 (require 'nnoo)
