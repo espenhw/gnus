@@ -1,5 +1,10 @@
 2002-04-29  Simon Josefsson  <jas@extundo.com>
 
+	* nnimap.el (nnimap-retrieve-groups): Don't send STATUS when
+	n-r-g-a is disabled.
+
+2002-04-29  Simon Josefsson  <jas@extundo.com>
+
 	* nnimap.el (nnimap-split-fancy): Fix doc.
 	(nnimap-split-fancy): Fix doc.
 

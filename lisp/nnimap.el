@@ -970,23 +970,24 @@ function is generally only called when Gnus is shutting down."
 	  (imap-mailbox-put 'uidnext nil group nnimap-server-buffer)
 	  (or (member "\\NoSelect" (imap-mailbox-get 'list-flags group
 						     nnimap-server-buffer))
-	      (let ((info (nnimap-find-minmax-uid group 'examine)))
+	      (let* ((info (nnimap-find-minmax-uid group 'examine))
+		     (str (format "\"%s\" %d %d y\n" group
+				  (or (nth 2 info) 0)
+				  (max 1 (or (nth 1 info) 1)))))
 		(when (> (or (imap-mailbox-get 'recent group
 					       nnimap-server-buffer) 0)
 			 0)
 		  (push (list (cons group 0)) nnmail-split-history))
-		(insert
-		 (cdr
+		(insert str)
+		(when nnimap-retrieve-groups-asynchronous
 		  (gnus-sethash
 		   group
 		   (cons (or (imap-mailbox-get
 			      'uidnext group nnimap-server-buffer)
 			     (imap-mailbox-status
 			      group 'uidnext nnimap-server-buffer))
-			 (format "\"%s\" %d %d y\n" group
-				 (or (nth 2 info) 0)
-				 (max 1 (or (nth 1 info) 1))))
-		   nnimap-mailbox-info))))))))
+			 str)
+		   nnimap-mailbox-info)))))))
     (gnus-message 5 "nnimap: Checking mailboxes...done")
     'active))
 
