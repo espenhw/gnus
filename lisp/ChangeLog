@@ -1,3 +1,13 @@
+2001-12-16  Simon Josefsson  <jas@extundo.com>
+	Inspired by code by Bernhard Walle <Bernhard.Walle@gmx.de>.
+
+	* gnus-sum.el (gnus-summary-muttprint-program): New variable.
+	(gnus-summary-save-map): Add muttprint.
+	(gnus-summary-make-menu-bar): Ditto.
+	(gnus-summary-muttprint): New function.
+
+	* gnus-art.el (gnus-summary-pipe-to-muttprint): New function.
+
 2001-12-14 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* uudecode.el (uudecode-decode-region-internal): Speedup by using

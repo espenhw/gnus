@@ -2763,6 +2763,13 @@ The directory to save in defaults to `gnus-article-save-directory'."
       (shell-command-on-region (point-min) (point-max) command nil)))
   (setq gnus-last-shell-command command))
 
+(defun gnus-summary-pipe-to-muttprint (&optional command)
+  "Pipe this article to muttprint."
+  (setq command (read-string
+		 "Print using command: " gnus-summary-muttprint-program
+		 nil gnus-summary-muttprint-program))
+  (gnus-summary-save-in-pipe command))
+
 ;;; Article file names when saving.
 
 (defun gnus-capitalize-newsgroup (newsgroup)

@@ -998,6 +998,11 @@ that were fetched.  Say, for nnultimate groups."
   :group 'gnus-summary
   :type '(choice boolean regexp))
 
+(defcustom gnus-summary-muttprint-program "muttprint"
+  "Command (and optional arguments) used to run Muttprint."
+  :group 'gnus-summary
+  :type 'string)
+
 ;;; Internal variables
 
 (defvar gnus-summary-display-cache nil)
@@ -1801,6 +1806,7 @@ increase the score of each group you read."
     "h" gnus-summary-save-article-folder
     "v" gnus-summary-save-article-vm
     "p" gnus-summary-pipe-output
+    "P" gnus-summary-muttprint
     "s" gnus-soup-add-article)
 
   (gnus-define-keys (gnus-summary-mime-map "K" gnus-summary-mode-map)
@@ -1929,6 +1935,7 @@ increase the score of each group you read."
 	      ["Save body in file" gnus-summary-save-article-body-file t]
 	      ["Pipe through a filter" gnus-summary-pipe-output t]
 	      ["Add to SOUP packet" gnus-soup-add-article t]
+	      ["Print with Muttprint" gnus-summary-muttprint t]
 	      ["Print" gnus-summary-print-article t])
 	     ("Backend"
 	      ["Respool article..." gnus-summary-respool-article t]
@@ -9945,6 +9952,17 @@ save those articles instead."
   (require 'gnus-art)
   (let ((gnus-default-article-saver 'gnus-summary-save-body-in-file))
     (gnus-summary-save-article arg)))
+
+(defun gnus-summary-muttprint (&optional arg)
+  "Print the current article using Muttprint.
+If N is a positive number, save the N next articles.
+If N is a negative number, save the N previous articles.
+If N is nil and any articles have been marked with the process mark,
+save those articles instead."
+  (interactive "P")
+  (require 'gnus-art)
+  (let ((gnus-default-article-saver 'gnus-summary-pipe-to-muttprint))
+    (gnus-summary-save-article arg t)))
 
 (defun gnus-summary-pipe-message (program)
   "Pipe the current article through PROGRAM."
