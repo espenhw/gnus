@@ -283,11 +283,11 @@ for XEmacs."
 	(when image
 	  (goto-char (point-min))
 	  (re-search-forward "^From:" nil 'move)
- 	  (while (get-text-property (point) 'display)
- 	    (goto-char (next-single-property-change (point) 'display)))
 	  (gnus-add-wash-type 'xface)
 	  (gnus-add-image 'xface image)
-	  (insert-image image))))))
+	  (insert-image image " ")
+	  (put-text-property (1- (point)) (point) 
+			     'gnus-image-text-deletable t))))))
 
 ;;; Image functions.
 
@@ -304,7 +304,9 @@ for XEmacs."
 (defun gnus-remove-image (image)
   (dolist (position (message-text-with-property 'display))
     (when (equal (get-text-property position 'display) image)
-      (put-text-property position (1+ position) 'display nil))))
+      (put-text-property position (1+ position) 'display nil)
+      (if (get-text-property position 'gnus-image-text-deletable)
+	  (delete-region position (1+ position))))))
 
 (provide 'gnus-ems)
 

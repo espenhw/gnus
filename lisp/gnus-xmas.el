@@ -676,7 +676,11 @@ XEmacs compatibility workaround."
       (set-glyph-face xface-glyph 'gnus-x-face)
 
       (gnus-article-goto-header "from")
-      (gnus-put-image xface-glyph " ")
+      ;;(gnus-put-image xface-glyph " ")
+      (let ((extent (make-extent (1- (point)) (point))))
+	(set-extent-property extent 'gnus-image t)
+	(set-extent-property extent 'duplicable t)
+	(set-extent-property extent 'end-glyph xface-glyph))
       (gnus-add-wash-type 'xface)
       (gnus-add-image 'xface xface-glyph))))
 

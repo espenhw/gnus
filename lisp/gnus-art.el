@@ -1700,7 +1700,7 @@ unfolded."
     (while (gnus-article-goto-header "newsgroups\\|followup-to")
       (save-restriction
 	(mail-header-narrow-to-field)
-	(while (search-forward "," nil t)
+	(while (re-search-forward ", *" nil t)
 	  (replace-match ", " t t))
 	(mail-header-fold-field)
 	(goto-char (point-max))))))

@@ -1,3 +1,16 @@
+2002-01-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-ems.el (gnus-article-display-xface): Show xface in the
+	order of headers (Actually, it is called in a reversed order). Add
+	'gnus-image-text-deletable property.
+	(gnus-remove-image): Remove text with such a property.
+
+	* gnus-xmas.el (gnus-xmas-article-display-xface): Don't use
+	gnus-put-image.
+	
+	* gnus-art.el (gnus-article-treat-fold-newsgroups): Replace ", *"
+	with ", "
+
 2002-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-fun.el (gnus-convert-gray-x-face-to-xpm): Renamed.
@@ -21,7 +34,7 @@
 	temporary files.
 	(gnus-xmas-put-image): Use end-glyph. Make text invisible.
 	(gnus-xmas-remove-image): Make text visible, remove glyph.
-	
+
 	* gnus-picon.el (gnus-picon-transform-newsgroups)
 	(gnus-picon-transform-address): Insert spec backward, due to the
 	incompatibility of gnus-xmas-put-image.
