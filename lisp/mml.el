@@ -628,7 +628,8 @@ contents of this part.")
       ;; Quote parts.
       (while (re-search-forward
 	      "<#/?!*\\(multipart\\|part\\|external\\)" nil t)
-	(goto-char (match-beginning 1))
+	;; Insert ! after the #.
+	(goto-char (+ (match-beginning 0) 2))
 	(insert "!")))))
 
 (defun mml-insert-tag (name &rest plist)
