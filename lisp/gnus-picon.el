@@ -160,29 +160,30 @@ GLYPH can be either a glyph or a string."
 	  spec file)
       (dolist (address addresses)
 	(setq address (car address))
-	(setq spec (split-string address "[.@]"))
-	(when (setq file (gnus-picon-find-face
-			  address gnus-picon-user-directories))
-	  (setcar spec (gnus-picon-create-glyph file)))
-	(dotimes (i (1- (length spec)))
+	(when (stringp address)
+	  (setq spec (split-string address "[.@]"))
 	  (when (setq file (gnus-picon-find-face
-			    (concat "unknown@"
-				    (mapconcat
-				     'identity (nthcdr (1+ i) spec) "."))
-			    gnus-picon-domain-directories t))
-	    (setcar (nthcdr (1+ i) spec) (gnus-picon-create-glyph file))))
-	
-	(gnus-article-goto-header header)
-	(mail-header-narrow-to-field)
-	(when (search-forward address nil t)
-	  (delete-region (match-beginning 0) (match-end 0))
-	  (while spec
-	    (gnus-picon-insert-glyph (pop spec))
-	    (when spec
-	      (if (not first)
-		  (insert ".")
-		(insert "@")
-		(setq first nil)))))))))
+			    address gnus-picon-user-directories))
+	    (setcar spec (gnus-picon-create-glyph file)))
+	  (dotimes (i (1- (length spec)))
+	    (when (setq file (gnus-picon-find-face
+			      (concat "unknown@"
+				      (mapconcat
+				       'identity (nthcdr (1+ i) spec) "."))
+			      gnus-picon-domain-directories t))
+	      (setcar (nthcdr (1+ i) spec) (gnus-picon-create-glyph file))))
+	  
+	  (gnus-article-goto-header header)
+	  (mail-header-narrow-to-field)
+	  (when (search-forward address nil t)
+	    (delete-region (match-beginning 0) (match-end 0))
+	    (while spec
+	      (gnus-picon-insert-glyph (pop spec))
+	      (when spec
+		(if (not first)
+		    (insert ".")
+		  (insert "@")
+		  (setq first nil))))))))))
 
 (defun gnus-picon-transform-newsgroups (header)
   (interactive)

@@ -1,5 +1,7 @@
 2001-12-30  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-picon.el (gnus-picon-transform-address): Skip bad addresses.
+
 	* gnus-art.el (gnus-with-article-headers): Move to here. Define
 	the macro then use it.
 
