@@ -1365,25 +1365,7 @@ Point is left at the beginning of the narrowed-to region."
 
   (define-key message-mode-map "\C-c\C-a" 'mml-attach-file)
 
-  (define-key message-mode-map "\t" 'message-tab)
-
-  ;; Emacs 21 toolbar
-  (when (and (fboundp 'find-image) (boundp 'auto-raise-tool-bar-buttons))
-    (let ((message-help
-	   (find-image '((:type xpm :file "message-help-up.xpm")
-			 (:type xbm :file "message-help-up.xbm"))))
-	  (message-spell
-	   (find-image '((:type xpm :file "message-spell-up.xpm")
-			 (:type xbm :file "message-spell-up.xbm")))))
-      (if message-help
-	  (define-key message-mode-map [tool-bar message-help]
-	    `(menu-item "Message mode documentation"
-			,(lambda () (info "(message)Top"))
-			:image ,message-help)))
-      (if message-spell
-	  (define-key message-mode-map [tool-bar message-spell]
-	    `(menu-item "Spell-check message" ispell-message
-			:image ,message-spell))))))
+  (define-key message-mode-map "\t" 'message-tab))
 
 (easy-menu-define
  message-mode-menu message-mode-map "Message Menu."
@@ -4293,6 +4275,10 @@ which specify the range to operate on."
 	    (delete-char -2))))))
 
 (defalias 'message-exchange-point-and-mark 'exchange-point-and-mark)
+
+;; Support for toolbar
+(when (string-match "XEmacs\\|Lucid" emacs-version)
+  (require 'messagexmas))
 
 ;;; Group name completion.
 
