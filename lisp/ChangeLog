@@ -1,3 +1,11 @@
+2003-02-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (popup-menu): Compiler macro for Emacs 20.
+	(gnus-article-refer-article): Use gnus-point-at-(b|e)ol instead of
+	point-at-(b|e)ol which aren't available in Emacs 20.
+
+	* gnus-registry.el (puthash): Alias to cl-puthash for Emacs 20.
+
 2002-02-23  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-start.el (gnus-activate-group): Re-enabled the catch error
