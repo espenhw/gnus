@@ -1888,6 +1888,7 @@ and GROUP without FORCE is not supported."
 
 ;;;###autoload
 (defun gnus-agent-batch ()
+  "Start Gnus, send queue and fetch session."
   (interactive)
   (let ((init-file-user "")
 	(gnus-always-read-dribble-file t))
