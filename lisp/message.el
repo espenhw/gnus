@@ -5183,8 +5183,9 @@ which specify the range to operate on."
   :group 'message
   :type '(alist :key-type regexp :value-type function))
 
-(defcustom message-tab-body-function 'indent-relative
-  "*Function to execute when `message-tab' (TAB) is executed in the body."
+(defcustom message-tab-body-function nil
+  "*Function to execute when `message-tab' (TAB) is executed in the body.
+If nil, the function bound in `text-mode-map' or `global-map' is executed."
   :group 'message
   :type 'function)
 
@@ -5198,7 +5199,10 @@ those headers."
 		(let ((mail-abbrev-mode-regexp (caar alist)))
 		  (not (mail-abbrev-in-expansion-header-p))))
       (setq alist (cdr alist)))
-    (funcall (or (cdar alist) message-tab-body-function))))
+    (funcall (or (cdar alist) message-tab-body-function
+		 (lookup-key text-mode-map "\t")
+		 (lookup-key global-map "\t")
+		 'indent-relative))))
 
 (defun message-expand-group ()
   "Expand the group name under point."

@@ -1,3 +1,9 @@
+2001-11-30 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-tab-body-function): Set to nil.
+	(message-tab): Use text-mode-map or global-map.
+	Suggested by Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>.
+	
 2001-11-30  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-agent.el (gnus-agent-fetch-headers): Use gnus-range-add
