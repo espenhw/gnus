@@ -2380,7 +2380,7 @@ It should typically alter the sending method in some way or other."
     (pop actions)))
 
 (defun message-send-mail-partially ()
-  "Sendmail as message/partial."
+  "Send mail as message/partial."
   ;; replace the header delimiter with a blank line
   (goto-char (point-min))
   (re-search-forward
@@ -2508,7 +2508,7 @@ It should typically alter the sending method in some way or other."
 	    (message-insert-courtesy-copy))
 	  (if (or (not message-send-mail-partially-limit)
 		  (< (point-max) message-send-mail-partially-limit)
-		  (not (y-or-n-p "The message size is too large, should it be sent partially? ")))
+		  (not (y-or-n-p "Message exceeds message-send-mail-partially-limit, send in parts? ")))
 	      (mm-with-unibyte-current-buffer
 		(message "Sending via mail...")
 		(funcall message-send-mail-function))
