@@ -1,3 +1,7 @@
+2000-10-09  Gerd Moellmann  <gerd@gnu.org>
+
+	* smiley-ems.el (smiley-update-cache):  Use `:ascent center'.
+
 2000-10-09  Simon Josefsson  <simon@josefsson.org>
 
 	* nnimap.el (nnimap-group-overview-filename): Create directory for
