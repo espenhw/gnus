@@ -2811,7 +2811,7 @@ example:
          (gnus-show-threads nil)
          (gnus-use-scoring nil)
          (gnus-summary-line-format
-          "%U%R%z%I%(%[%d:%ub%-20,20f%]%) %s\n")
+          "%U%R%z%I%(%[%d:%ub%-23,23f%]%) %s\n")
          (gcc-self . t)
          (display . all))
 
@@ -4051,7 +4051,7 @@ the colon after performing an operation.  (Of course, Gnus wouldn't be
 Gnus if it wasn't possible to change this.  Just write a new function
 @code{gnus-goto-colon} which does whatever you like with the cursor.)
 
-The default string is @samp{%U%R%z%I%(%[%4L: %-20,20n%]%) %s\n}.
+The default string is @samp{%U%R%z%I%(%[%4L: %-23,23n%]%) %s\n}.
 
 The following format specification characters are understood:
 
@@ -4229,7 +4229,7 @@ In summary, you'd typically put something like the following in
       '(To Newsgroups))
 (setq nnmail-extra-headers gnus-extra-headers)
 (setq gnus-summary-line-format
-      "%U%R%z%I%(%[%4L: %-20,20f%]%) %s\n")
+      "%U%R%z%I%(%[%4L: %-23,23f%]%) %s\n")
 (setq gnus-ignored-from-addresses
       "Your Name Here")
 @end lisp
@@ -17329,7 +17329,7 @@ Prediction +/- confidence.
 @item gnus-summary-grouplens-line-format
 The summary line format used in GroupLens-enhanced summary buffers.  It
 accepts the same specs as the normal summary line format (@pxref{Summary
-Buffer Lines}).  The default is @samp{%U%R%z%l%I%(%[%4L: %-20,20n%]%)
+Buffer Lines}).  The default is @samp{%U%R%z%l%I%(%[%4L: %-23,23n%]%)
 %s\n}.
 
 @item grouplens-bbb-host
