@@ -1,3 +1,7 @@
+2004-02-03  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-list-of-processors): fixed spamassassin variable names
+
 2004-02-03  Jesper Harder  <harder@ifa.au.dk>
 
 	* spam.el (spam-check-spamoracle, spam-spamoracle-learn): Fix
