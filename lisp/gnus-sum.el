@@ -7872,12 +7872,13 @@ to save in."
   (ps-despool filename))
 
 (defun gnus-summary-show-article (&optional arg)
-  "Force re-fetching of the current article.
+  "Force redisplaying of the current article.
 If ARG (the prefix) is a number, show the article with the charset
 defined in `gnus-summary-show-article-charset-alist', or the charset
 input.
 If ARG (the prefix) is non-nil and not a number, show the raw article
-without any article massaging functions being run."
+without any article massaging functions being run.  Normally, the key strokes 
+are `C-u g'."
   (interactive "P")
   (cond
    ((numberp arg)
