@@ -18005,8 +18005,8 @@ the download status of each article so that you always know which
 articles will be available when unplugged.
 
 The first visual effect is the @samp{%O} spec.  If you customize
-gnus-summary-line-format to include this specifier, you will add a
-single character field that indicates an article's download status.
+@code{gnus-summary-line-format} to include this specifier, you will add
+a single character field that indicates an article's download status.
 Articles that have been fetched into either the Agent or the Cache,
 will display @code{gnus-downloaded-mark} (defaults to @samp{+}).  All
 other articles will display @code{gnus-undownloaded-mark} (defaults to
@@ -18036,8 +18036,8 @@ faces will be obscured by the undownloaded faces.  If this is your
 situation, you have two choices available.  First, you can completely
 disable the undownload faces by customizing
 @code{gnus-summary-highlight} to delete the three cons-cells that
-refer to the gnus-summary*-undownloaded-face faces.  Second, if you
-prefer to take a more fine-grained approach, you may set the
+refer to the @code{gnus-summary-*-undownloaded-face} faces.  Second, if
+you prefer to take a more fine-grained approach, you may set the
 @code{agent-disable-undownloaded-faces} group parameter to t.  This
 parameter, like all other agent parameters, may be set on an Agent
 Category (@pxref{Agent Categories}), a Group Topic (@pxref{Topic
