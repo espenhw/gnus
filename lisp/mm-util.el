@@ -213,7 +213,9 @@ used as the line break code type of the coding system."
 If POS is nil, it defauls to the current point.
 If POS is out of range, the value is nil.
 If the charset is `composition', return the actual one."
-  (let ((charset (charset-after pos)))
+  (let ((charset (if (fboundp 'charset-after)
+		     (charset-after pos)
+		   (char-charset (char-after pos)))))
     (if (eq charset 'composition)
 	(let ((p (or pos (point))))
 	  (cadr (find-charset-region p (1+ p))))

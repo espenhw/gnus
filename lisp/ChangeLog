@@ -1,3 +1,7 @@
+1999-12-12 10:17:42  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-charset-after): `charset-after' may not be defined.
+
 1999-12-12  Florian Weimer  <fw@s.netic.de>
 
 	* rfc2047.el (rfc2047-encodable-p): New parameter header used to
