@@ -1,3 +1,8 @@
+2003-02-17  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Add MIME/Multipart
+	submenu.
+
 2003-02-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mail-source.el (mail-source-fetch): Reverse the return value of

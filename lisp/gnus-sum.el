@@ -2066,7 +2066,18 @@ increase the score of each group you read."
 	      ["View all" gnus-mime-view-all-parts t]
 	      ["Verify and Decrypt" gnus-summary-force-verify-and-decrypt t]
 	      ["Encrypt body" gnus-article-encrypt-body t]
-	      ["Extract all parts" gnus-summary-save-parts t])
+	      ["Extract all parts" gnus-summary-save-parts t]
+	      ("Multipart"
+	       ["Repair multipart" gnus-summary-repair-multipart t]
+	       ["Add buttons" gnus-summary-display-buttonized t]
+	       ["Pipe part" gnus-article-pipe-part t]
+	       ["Inline part" gnus-article-inline-part t]
+	       ["Encrypt body" gnus-article-encrypt-body t]
+	       ["View part externally" gnus-article-view-part-externally t]
+	       ["View part with charset" gnus-article-view-part-as-charset t]
+	       ["Copy part" gnus-article-copy-part t]
+	       ["Save part" gnus-article-save-part t]
+	       ["View part" gnus-article-view-part t]))
 	     ("Date"
 	      ["Local" gnus-article-date-local t]
 	      ["ISO8601" gnus-article-date-iso8601 t]
