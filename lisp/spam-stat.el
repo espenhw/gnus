@@ -433,17 +433,15 @@ The default score for unknown words is stored in
 These are the words whose spam-stat differs the most from 0.5.
 The list returned contains elements of the form \(WORD SCORE DIFF),
 where DIFF is the difference between SCORE and 0.5."
-  (with-spam-stat-max-buffer-size
-   (with-syntax-table spam-stat-syntax-table
-     (let (result word score)
-       (maphash	(lambda (word ignore)
-		  (setq score (spam-stat-score-word word)
-			result (cons (list word score (abs (- score 0.5)))
-				     result)))
-		(spam-stat-buffer-words))
-       (setq result (sort result (lambda (a b) (< (nth 2 b) (nth 2 a)))))
-       (setcdr (nthcdr 14 result) nil)
-       result))))
+  (let (result word score)
+    (maphash (lambda (word ignore)
+	       (setq score (spam-stat-score-word word)
+		     result (cons (list word score (abs (- score 0.5)))
+				  result)))
+	     (spam-stat-buffer-words))
+    (setq result (sort result (lambda (a b) (< (nth 2 b) (nth 2 a)))))
+    (setcdr (nthcdr 14 result) nil)
+    result))
 
 (defun spam-stat-score-buffer ()
   "Return a score describing the spam-probability for this buffer."

@@ -3,6 +3,8 @@
 	* spam-stat.el (spam-stat-test-directory): New optional argument
 	displays a list of files detected.  Suggested by Andrew Cohen
 	<cohen@andy.bu.edu>.
+	(spam-stat-buffer-words-with-scores): Don't narrow and change
+	syntax table here.  Reported by Andrew Cohen <cohen@andy.bu.edu>.
 
 2004-01-20  Teodor Zlatanov  <tzz@lifelogs.com>  
 
