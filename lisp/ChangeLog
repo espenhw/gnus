@@ -1,3 +1,7 @@
+2000-04-22 22:51:46  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* webmail.el: Hotmail fix. Add a debug function.
+
 2000-04-23 00:32:32  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (t): M-down and M-up.

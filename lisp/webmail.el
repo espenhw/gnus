@@ -74,6 +74,8 @@
      (login-url
       "http://%s/cgi-bin/dologin?login=%s&passwd=%s&enter=Sign+in&sec=no&curmbox=ACTIVE&_lang=&js=yes&id=2&tw=-10000&beta="
       webmail-aux user password)
+     (login-snarf . webmail-hotmail-login)
+     (list-url "%s" webmail-aux)
      (list-snarf . webmail-hotmail-list)
      (article-snarf . webmail-hotmail-article)
      (trash-url 
@@ -189,9 +191,27 @@
 
 (defvar webmail-type nil)
 
+(defvar webmail-error-function nil)
+
+(defvar webmail-debug-file "~/.emacs-webmail-debug")
+
 ;;; Interface functions
 
+(defun webmail-debug (str)
+  (with-temp-buffer
+    (insert "\n---------------- A bug at " str " ------------------\n")
+    (mapcar #'(lambda (sym) 
+		(if (boundp sym)
+		    (pp `(setq ,sym ',(eval sym)) (current-buffer))))
+	    '(webmail-type user))
+    (insert "---------------- webmail buffer ------------------\n\n")
+    (insert-buffer-substring webmail-buffer)
+    (insert "\n---------------- end of buffer ------------------\n\n")
+    (append-to-file (point-min) (point-max) webmail-debug-file)))
+
 (defun webmail-error (str)
+  (if webmail-error-function
+      (funcall webmail-error-function str))
   (message "%s HTML has changed; please get a new version of webmail (%s)"
 	   webmail-type str)
   (error "%s HTML has changed; please get a new version of webmail (%s)"
@@ -374,6 +394,19 @@
       (setq webmail-aux (match-string 1))
     (webmail-error "open@1")))
 
+(defun webmail-hotmail-login ()
+  (let (site)
+    (goto-char (point-min))
+    (if (re-search-forward 
+	 "https?://\\([^/]+hotmail\\.msn\\.com\\)/cgi-bin/" nil t)
+	(setq site (match-string 1))
+      (webmail-error "login@1"))
+    (goto-char (point-min))
+    (if (re-search-forward 
+	 "\\(/cgi-bin/HoTMaiL\\?[^\"]*curmbox=ACTIVE[^\"]*\\)" nil t)
+	(setq webmail-aux (concat "http://" site (match-string 1)))
+      (webmail-error "login@2"))))
+
 (defun webmail-hotmail-list ()
   (let (site url newp)
     (goto-char (point-min))
@@ -382,7 +415,7 @@
       (webmail-error "maybe your w3 version is too old"))
     (goto-char (point-min))
     (if (re-search-forward 
-	 "action=\"https?://\\([^/]+\\)/cgi-bin/HoTMaiL" nil t)
+	 "https?://\\([^/]+hotmail\\.msn\\.com\\)/cgi-bin/" nil t)
 	(setq site (match-string 1))
       (webmail-error "list@1"))
     (goto-char (point-min))
