@@ -3139,10 +3139,11 @@ documentation for the function `mail-source-touch-pop'."
 (defun message-canlock-generate ()
   "Return a string that is non-trival to guess.
 Do not use this for anything important, it is cryptographically weak."
-  (sha1 (concat (message-unique-id)
-		(format "%x%x%x" (random) (random t) (random))
-		(prin1-to-string (recent-keys))
-		(prin1-to-string (garbage-collect)))))
+  (let (sha1-maximum-internal-length)
+    (sha1 (concat (message-unique-id)
+		  (format "%x%x%x" (random) (random t) (random))
+		  (prin1-to-string (recent-keys))
+		  (prin1-to-string (garbage-collect))))))
 
 (defun message-canlock-password ()
   "The password used by message for cancel locks.

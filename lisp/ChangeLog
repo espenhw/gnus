@@ -1,3 +1,8 @@
+2002-09-04  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-canlock-generate): Make sure sha1 doesn't
+	call external programs.
+
 2002-09-03  Simon Josefsson  <jas@extundo.com>
 
 	* nntp.el (nntp-wait-for-string): Dont infloop if process died.
