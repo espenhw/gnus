@@ -4374,15 +4374,36 @@ If ARG, allow editing of the cancellation message."
 	      message-id (message-fetch-field "message-id" t)
 	      distribution (message-fetch-field "distribution")))
       ;; Make sure that this article was written by the user.
-      (unless (or (message-gnksa-enable-p 'cancel-messages)
-		  (and sender
-		       (string-equal
-			(downcase sender)
-			(downcase (message-make-sender))))
-		  (string-equal
-		   (downcase (cadr (mail-extract-address-components from)))
-		   (downcase (cadr (mail-extract-address-components
-				    (message-make-from))))))
+      (unless (or
+	       ;; Canlock-logic as suggested by Per Abrahamsen
+	       ;; <abraham@dina.kvl.dk>
+	       ;;
+	       ;; IF article has cancel-lock THEN
+	       ;;   IF we can load canlock THEN
+	       ;;      IF we can verify it THEN
+	       ;;         issue cancel
+	       ;;      ELSE
+	       ;;         error: cancellock: article is not yours
+	       ;;   ELSE
+	       ;;      error: message is cancel locked
+	       ;; ELSE
+	       ;;   Use old rules, comparing sender...
+	       (if (message-fetch-field "Cancel-Lock")
+		   (if (ignore-errors (require 'canlock))
+		       (if (null (canlock-verify))
+			   t
+			 (error "Failed to verify Cancel-lock: This article is not yours"))
+		     (error "This article is cancel locked, the `canlock.el' library is required."))
+		 nil)
+	       (message-gnksa-enable-p 'cancel-messages)
+	       (and sender
+		    (string-equal
+		     (downcase sender)
+		     (downcase (message-make-sender))))
+	       (string-equal
+		(downcase (cadr (mail-extract-address-components from)))
+		(downcase (cadr (mail-extract-address-components
+				 (message-make-from))))))
 	(error "This article is not yours"))
       (when (yes-or-no-p "Do you really want to cancel this article? ")
 	;; Make control message.

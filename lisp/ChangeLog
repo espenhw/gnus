@@ -1,5 +1,8 @@
 2001-10-20  Simon Josefsson  <jas@extundo.com>
 
+	* message.el (message-cancel-news): Support cancel-locks.
+	Suggested by Per Abrahamsson.
+
 	* nnml.el (nnml-marks-changed-p): Use `equal' when comparing
 	conses.  From David Z Maze <dmaze@MIT.EDU>.
 
