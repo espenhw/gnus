@@ -1,3 +1,11 @@
+2003-04-15  Michael Shields  <shields@msrl.com>
+
+	* gnus.texi (Group Parameters, Hiding Headers): Document that
+	the broken-reply-to group parameter now also affects header
+	hiding.
+	* gnus.texi (Summary Mail Commands): Suggest setting the
+	broken-reply-to parameter if you find yourself using `B r'.
+
 2003-04-16  Simon Josefsson  <jas@extundo.com>
 
 	* emacs-mime.texi (MML Definition): Add sender tag.

@@ -2745,10 +2745,11 @@ of whether it has any unread articles.
 @item broken-reply-to
 @cindex broken-reply-to
 Elements like @code{(broken-reply-to . t)} signals that @code{Reply-To}
-headers in this group are to be ignored.  This can be useful if you're
-reading a mailing list group where the listserv has inserted
-@code{Reply-To} headers that point back to the listserv itself.  This is
-broken behavior.  So there!
+headers in this group are to be ignored, and for the header to be hidden
+if @code{reply-to} is part of @code{gnus-boring-article-headers}.  This
+can be useful if you're reading a mailing list group where the listserv
+has inserted @code{Reply-To} headers that point back to the listserv
+itself.  That is broken behavior.  So there!
 
 @item to-group
 @cindex to-group
@@ -5214,6 +5215,10 @@ command uses the process/prefix convention.
 @findex gnus-summary-reply-broken-reply-to
 Mail a reply to the author of the current article but ignore the
 @code{Reply-To} field (@code{gnus-summary-reply-broken-reply-to}).
+If you need this because a mailing list incorrectly sets a
+@code{Reply-To} header pointing to the list, you probably want to set
+the @code{broken-reply-to} group parameter instead, so things will work
+correctly.  @xref{Group Parameters}.
 
 @item S B R
 @kindex S B R (Summary)
@@ -10685,7 +10690,8 @@ Remove the @code{Followup-To} header if it is identical to the
 @code{Newsgroups} header.
 @item reply-to
 Remove the @code{Reply-To} header if it lists the same address as the
-@code{From} header.
+@code{From} header, or if the @code{broken-reply-to} group parameter is
+set.
 @item newsgroups
 Remove the @code{Newsgroups} header if it only contains the current group
 name.
