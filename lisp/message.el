@@ -3921,7 +3921,8 @@ OTHER-HEADERS is an alist of header/value pairs."
 	  mct (message-fetch-field "mail-copies-to")
 	  reply-to (message-fetch-field "reply-to")
 	  mrt (message-fetch-field "mail-reply-to")
-	  mft (message-fetch-field "mail-followup-to"))
+	  mft (and message-use-followup-to
+                   (message-fetch-field "mail-followup-to")))
 
     ;; Handle special values of Mail-Copies-To.
     (when mct
@@ -3933,15 +3934,14 @@ OTHER-HEADERS is an alist of header/value pairs."
 		 (equal (downcase mct) "poster"))
 	     (setq mct (or mrt reply-to from)))))
 
-    (if (and (or (not message-use-followup-to)
-                 (not mft))
+    (if (and (not mft)
              (or (not wide)
                  to-address))
 	(progn
 	  (setq follow-to (list (cons 'To (or to-address mrt reply-to from))))
-	  (when (and (and wide (or mft mct))
-		     (not (member (cons 'To (or mft mct)) follow-to)))
-	    (push (cons 'Cc (or mft mct)) follow-to)))
+	  (when (and (and wide mct)
+		     (not (member (cons 'To mct) follow-to)))
+	    (push (cons 'Cc mct) follow-to)))
       (let (ccalist)
 	(save-excursion
 	  (message-set-work-buffer)

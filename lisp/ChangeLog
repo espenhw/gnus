@@ -1,3 +1,8 @@
+2001-02-18 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From Paul Jarc <prj@po.cwru.edu>.
+
+	* message.el (message-get-reply-headers): More fixes.
+
 2001-02-17  Paul Jarc <prj@po.cwru.edu>
 	Committed by ShengHuo ZHU  <zsh@cs.rochester.edu>
 
