@@ -1,3 +1,7 @@
+2004-01-04  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Spam ELisp Package Configuration Examples): Markup fixes.
+
 2004-01-03  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Spam ELisp Package Sequence of Events): explain more

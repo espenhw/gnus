@@ -22939,8 +22939,10 @@ spam.  It is recommended that you leave it off.
 @cindex spam configuration examples
 @cindex spam
 
+@subsubheading Ted's setup
+
+From Ted Zlatanov <tzz@@lifelogs.com>.
 @example
-;; Ted Zlatanov <tzz@@lifelogs.com>
 
 ;; for gnus-registry-split-fancy-with-parent and spam autodetection
 ;; see gnus-registry.el for more information
@@ -23020,27 +23022,24 @@ spam.  It is recommended that you leave it off.
 
 @end example
 
-@example
-;; from Reiner Steib <4.uce.03.r.s@@nurfuerspam.de>
-* Using `spam.el' on an IMAP server with a statistical filter on the
-  server
+@subsubheading Using @file{spam.el} on an IMAP server with a statistical filter on the server
 
-** Background
- 
-My provider has set up bogofilter (in combination with DCC) on the
-mail server (IMAP).  Recognized spam goes to "spam.detected", the rest
-goes through the normal filter rules, i.e. to "some.folder" or to
-"INBOX".  Training on false positives or negatives is done by copying
-or moving the article to "training.ham" or "training.spam"
-respectively.  A cron job on the server feeds those to bogofilter with
-the suitable ham or spam options and deletes them from the
-"training.ham" and "training.spam" folders.
+From Reiner Steib <reiner.steib@@gmx.de>.
 
-** Setup
+My provider has set up bogofilter (in combination with @acronym{DCC}) on
+the mail server (@acronym{IMAP}).  Recognized spam goes to
+@samp{spam.detected}, the rest goes through the normal filter rules,
+i.e. to @samp{some.folder} or to @samp{INBOX}.  Training on false
+positives or negatives is done by copying or moving the article to
+@samp{training.ham} or @samp{training.spam} respectively.  A cron job on
+the server feeds those to bogofilter with the suitable ham or spam
+options and deletes them from the @samp{training.ham} and
+@samp{training.spam} folders.
 
-With the following entries in `gnus-parameters', `spam.el' does most
-of the job for me:
+With the following entries in @code{gnus-parameters}, @code{spam.el}
+does most of the job for me:
 
+@lisp
    ("nnimap:spam\\.detected"
     (gnus-article-sort-functions '(gnus-article-sort-by-chars))
     (ham-process-destination "nnimap:INBOX" "nnimap:training.ham")
@@ -23048,53 +23047,57 @@ of the job for me:
    ("nnimap:\\(INBOX\\|other-folders\\)"
     (spam-process-destination . "nnimap:training.spam")
     (spam-contents gnus-group-spam-classification-ham))
+@end lisp
 
-*** The Spam folder:
+@itemize 
 
-  In the folder "spam.detected", I have to check for false positives
-  (i.e. legitimate mails, that were wrongly judged as spam by
-  bogofilter or DCC).
-  
-  Because of the `gnus-group-spam-classification-spam' entry, all
-  messages are marked as spam (with `$').  When I find a false
-  positive, I mark the message with some other mark (see `ham-marks'
-  in the manual: `C-h i d gnus RET i ham-mark RET').  On group exit,
-  those messages are copied to both groups, "INBOX" (were I want to
-  have the article) and "training.ham" (for training bogofilter) and
-  deleted from the "spam.detected" folder.
+@item @b{The Spam folder:}
 
-  The sort-by-chars entry simplifies detection of false positives for
-  me.  I receive lots of worms [1] (sweN, ...), that all have a
-  similar size.  Grouping them by size (i.e. chars) makes finding
-  other false positives easier.
+In the folder @samp{spam.detected}, I have to check for false positives
+(i.e. legitimate mails, that were wrongly judged as spam by
+bogofilter or DCC).
 
-*** Ham folders:
+Because of the @code{gnus-group-spam-classification-spam} entry, all
+messages are marked as spam (with @code{$}).  When I find a false
+positive, I mark the message with some other ham mark (@code{ham-marks},
+@ref{Spam ELisp Package Global Variables}).  On group exit, those
+messages are copied to both groups, @samp{INBOX} (were I want to have
+the article) and @samp{training.ham} (for training bogofilter) and
+deleted from the @samp{spam.detected} folder.
 
-  In my ham folders, I just hit `S x' (`gnus-summary-mark-as-spam')
-  whenever I see an unrecognized spam mail (false negative).  On group
-  exit, those messages are moved to "training.ham".
+The @code{gnus-article-sort-by-chars} entry simplifies detection of
+false positives for me.  I receive lots of worms (sweN, @dots{}), that all
+have a similar size.  Grouping them by size (i.e. chars) makes finding
+other false positives easier.  (Of course worms aren't @i{spam}
+(@acronym{UCE}, @acronym{UBE}) strictly speaking.  Anyhow, bogofilter is
+an excellent tool for filtering those unwanted mails for me.)
 
-* Reporting spam articles in Gmane [2] groups with `spam-report.el'
+@item @b{Ham folders:}
 
-With following entry in `gnus-parameters', `S x'
-(`gnus-summary-mark-as-spam') marks articles in gmane.* groups as spam
-and reports the to Gmane at group exit: 
+In my ham folders, I just hit @kbd{S x}
+(@code{gnus-summary-mark-as-spam}) whenever I see an unrecognized spam
+mail (false negative).  On group exit, those messages are moved to
+@samp{training.ham}.
+@end itemize
 
+@subsubheading Reporting spam articles in Gmane groups with @code{spam-report.el}
+
+From Reiner Steib <reiner.steib@@gmx.de>.
+
+With following entry in @code{gnus-parameters}, @kbd{S x}
+(@code{gnus-summary-mark-as-spam}) marks articles in @code{gmane.*}
+groups as spam and reports the to Gmane at group exit:
+
+@lisp
    ("^gmane\\."
     (spam-process (gnus-group-spam-exit-processor-report-gmane)))
+@end lisp
 
 Additionally, I use `(setq spam-report-gmane-use-article-number nil)'
 because I don't read the groups directly from news.gmane.org, but
 through my local news server (leafnode).  I.e. the article numbers are
-not the same as on news.gmane.org, thus `spam-report.el' has to check
-the "X-Report-Spam" header to find the correct number.
-
-[1] Of course worms aren't "spam" (UCE, UBE) strictly speaking.
-    Anyhow, bogofilter is an excellent tool for filtering those
-    unwanted mails for me.
-
-[2] <URL:http://gmane.org/>
-@end example
+not the same as on news.gmane.org, thus @code{spam-report.el} has to check
+the @code{X-Report-Spam} header to find the correct number.
 
 @node Blacklists and Whitelists
 @subsubsection Blacklists and Whitelists
