@@ -3751,7 +3751,9 @@ the id of the parent article (if any)."
 	  (push header gnus-newsgroup-headers)
 	  (if (memq number gnus-newsgroup-unselected)
 	      (progn
-		(push number gnus-newsgroup-unreads)
+		(setq gnus-newsgroup-unselected
+		      (gnus-add-to-sorted-list gnus-newsgroup-unreads
+					       number))
 		(setq gnus-newsgroup-unselected
 		      (delq number gnus-newsgroup-unselected)))
 	    (push number gnus-newsgroup-ancient)))))))
@@ -4407,7 +4409,9 @@ or a straight list of headers."
 	    (setq gnus-newsgroup-unreads
 		  (delq number gnus-newsgroup-unreads))
 	    (if gnus-newsgroup-auto-expire
-		(push number gnus-newsgroup-expirable)
+		(setq gnus-newsgroup-expirable
+		      (gnus-add-to-sorted-list 
+		       gnus-newsgroup-expirable number))
 	      (push (cons number gnus-low-score-mark)
 		    gnus-newsgroup-reads))))
 
@@ -4862,9 +4866,9 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	       (gnus-uncompress-range (gnus-active group))
 	       (gnus-cache-articles-in-group group))
 	    ;; Select only the "normal" subset of articles.
-	    (sort (append gnus-newsgroup-dormant gnus-newsgroup-marked
-			  (copy-sequence gnus-newsgroup-unreads))
-		  '<)))
+	    (gnus-sorted-nunion  
+	     (gnus-sorted-union gnus-newsgroup-dormant gnus-newsgroup-marked)
+	     gnus-newsgroup-unreads)))
 	 (scored-list (gnus-killed-articles gnus-newsgroup-killed articles))
 	 (scored (length scored-list))
 	 (number (length articles))
@@ -9182,11 +9186,17 @@ Iff NO-EXPIRE, auto-expiry will be inhibited."
 	(setq gnus-newsgroup-expirable (delq article gnus-newsgroup-expirable))
 	(setq gnus-newsgroup-reads (delq article gnus-newsgroup-reads))
 	(cond ((= mark gnus-ticked-mark)
-	       (push article gnus-newsgroup-marked))
+	       (setq gnus-newsgroup-marked
+		     (gnus-add-to-sorted-list gnus-newsgroup-marked 
+					      article)))
 	      ((= mark gnus-dormant-mark)
-	       (push article gnus-newsgroup-dormant))
+	       (setq gnus-newsgroup-dormant
+		     (gnus-add-to-sorted-list gnus-newsgroup-dormant 
+					      article)))
 	      (t
-	       (push article gnus-newsgroup-unreads)))
+	       (setq gnus-newsgroup-unreads
+		     (gnus-add-to-sorted-list gnus-newsgroup-unreads 
+					      article))))
 	(gnus-pull article gnus-newsgroup-reads)
 
 	;; See whether the article is to be put in the cache.
@@ -9296,9 +9306,10 @@ Iff NO-EXPIRE, auto-expiry will be inhibited."
   "Enter ARTICLE in the pertinent lists and remove it from others."
   ;; Make the article expirable.
   (let ((mark (or mark gnus-del-mark)))
-    (if (= mark gnus-expirable-mark)
-	(push article gnus-newsgroup-expirable)
-      (setq gnus-newsgroup-expirable (delq article gnus-newsgroup-expirable)))
+    (setq gnus-newsgroup-expirable
+	  (if (= mark gnus-expirable-mark)
+	      (gnus-add-to-sorted-list gnus-newsgroup-expirable article)
+	    (delq article gnus-newsgroup-expirable)))
     ;; Remove from unread and marked lists.
     (setq gnus-newsgroup-unreads (delq article gnus-newsgroup-unreads))
     (setq gnus-newsgroup-marked (delq article gnus-newsgroup-marked))
@@ -9326,11 +9337,14 @@ Iff NO-EXPIRE, auto-expiry will be inhibited."
 	(gnus-dup-unsuppress-article article))
 
       (cond ((= mark gnus-ticked-mark)
-	     (push article gnus-newsgroup-marked))
+	     (setq gnus-newsgroup-marked
+		   (gnus-add-to-sorted-list gnus-newsgroup-marked article)))
 	    ((= mark gnus-dormant-mark)
-	     (push article gnus-newsgroup-dormant))
+	     (setq gnus-newsgroup-dormant
+		   (gnus-add-to-sorted-list gnus-newsgroup-dormant article)))
 	    (t
-	     (push article gnus-newsgroup-unreads)))
+	     (setq gnus-newsgroup-unreads
+		   (gnus-add-to-sorted-list gnus-newsgroup-unreads article))))
       (gnus-pull article gnus-newsgroup-reads)
       t)))
 
@@ -10377,7 +10391,9 @@ If REVERSE, save parts that do not match TYPE."
 	  (gnus-data-enter
 	   after-article gnus-reffed-article-number
 	   gnus-unread-mark b (car pslist) 0 (- e b))
-	  (push gnus-reffed-article-number gnus-newsgroup-unreads)
+	  (setq gnus-newsgroup-unreads
+		(gnus-add-to-sorted-list gnus-newsgroup-unreads
+					 gnus-reffed-article-number))
 	  (setq gnus-reffed-article-number (1- gnus-reffed-article-number))
 	  (setq pslist (cdr pslist)))))))
 
@@ -10842,7 +10858,7 @@ If ALL is non-nil, already read articles become readable.
 If ALL is a number, fetch this number of articles."
   (interactive "P")
   (prog1
-      (let ((old (mapcar 'car gnus-newsgroup-data))
+      (let ((old (sort (mapcar 'car gnus-newsgroup-data) '<))
 	    older len)
 	(setq older
 	      (gnus-sorted-difference
@@ -10872,14 +10888,14 @@ If ALL is a number, fetch this number of articles."
 	(if (not older)
 	    (message "No old news.")
 	  (gnus-summary-insert-articles older)
-	  (gnus-summary-limit (gnus-sorted-union older old))))
+	  (gnus-summary-limit (gnus-sorted-nunion old older))))
     (gnus-summary-position-point)))
 
 (defun gnus-summary-insert-new-articles ()
   "Insert all new articles in this group."
   (interactive)
   (prog1
-      (let ((old (mapcar 'car gnus-newsgroup-data))
+      (let ((old (sort (mapcar 'car gnus-newsgroup-data) '<))
 	    (old-active gnus-newsgroup-active)
 	    (nnmail-fetched-sources (list t))
 	    i new)
@@ -10894,8 +10910,8 @@ If ALL is a number, fetch this number of articles."
 	  (setq new (nreverse new))
 	  (gnus-summary-insert-articles new)
 	  (setq gnus-newsgroup-unreads
-		(append gnus-newsgroup-unreads new))
-	  (gnus-summary-limit (gnus-union old new))))
+		(gnus-sorted-nunion gnus-newsgroup-unreads new))
+	  (gnus-summary-limit (gnus-sorted-nunion old new))))
     (gnus-summary-position-point)))
 
 (gnus-summary-make-all-marking-commands)

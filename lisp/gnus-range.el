@@ -535,6 +535,18 @@ LIST is a sorted list."
     (if item (push item range))
     (reverse range)))
 
+;;;###autoload
+(defun gnus-add-to-sorted-list (list num)
+  "Add NUM into sorted LIST by side effect."
+  (let* ((top (cons nil list))
+	 (prev top))
+    (while (and list (< (car list) num))
+      (setq prev list
+	    list (cdr list)))
+    (unless (eq (car list) num)
+      (setcdr prev (cons num list)))
+    (cdr top)))
+
 (provide 'gnus-range)
 
 ;;; gnus-range.el ends here

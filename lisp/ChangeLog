@@ -1,5 +1,19 @@
 2002-01-31  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-cache.el (gnus-summary-insert-cached-articles): Use
+	gnus-summary-limit.
+
+	* gnus-range.el (gnus-add-to-sorted-list): New function.
+	* gnus-sum.el (gnus-mark-article-as-read): Use it.
+	(gnus-mark-article-as-unread): Ditto.
+	(gnus-summary-mark-article-as-unread): Ditto.
+	(gnus-build-get-header): Ditto.
+	(gnus-summary-prepare-threads): Ditto.
+	(gnus-summary-insert-pseudos): Ditto.
+	(gnus-articles-to-read): Use gnus-sorted-union and gnus-sorted-nunion.
+	(gnus-summary-insert-new-articles): Use gnus-sorted-nunion.
+	(gnus-summary-insert-old-articles): Ditto.
+
 	* gnus-msg.el (gnus-posting-styles): Add new format of header.
 	(gnus-configure-posting-styles): Support the new format.
 

@@ -1,5 +1,5 @@
 ;;; gnus-cache.el --- cache interface for Gnus
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -363,10 +363,13 @@ Returns the list of articles removed."
   (interactive)
   (let ((cached (sort (copy-sequence gnus-newsgroup-cached) '>))
 	(gnus-verbose (max 6 gnus-verbose)))
-    (unless cached
-      (gnus-message 3 "No cached articles for this group"))
-    (while cached
-      (gnus-summary-goto-subject (pop cached) t))))
+    (if (not cached)
+	(gnus-message 3 "No cached articles for this group")
+      (save-excursion
+	(while cached
+	  (gnus-summary-goto-subject (pop cached) t)))
+      (gnus-summary-limit (append gnus-newsgroup-cached gnus-newsgroup-limit))
+      (gnus-summary-position-point))))
 
 (defun gnus-summary-limit-include-cached ()
   "Limit the summary buffer to articles that are cached."
