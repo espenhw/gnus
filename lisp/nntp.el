@@ -1998,7 +1998,7 @@ Please refer to the following variables to customize the connection:
 		group (nntp-marks-directory server)))))
     (condition-case err
 	(progn
-	  (nntp-possibly-create-directory group)
+	  (nntp-possibly-create-directory group server)
 	  (with-temp-file file
 	    (erase-buffer)
 	    (gnus-prin1 nntp-marks)
