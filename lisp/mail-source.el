@@ -482,15 +482,16 @@ Return the number of files that were found."
 		     (funcall function source callback)
 		   (error
 		    (if (and (not mail-source-ignore-errors)
-			     (yes-or-no-p
-			      (format "Mail source %s error (%s).  Continue? "
-				      (if (memq ':password source)
-					  (let ((s (copy-sequence source)))
-					    (setcar (cdr (memq ':password s)) 
-						    "********")
-					    s)
-					source)
-				      (cadr err))))
+			     (not
+			      (yes-or-no-p
+			       (format "Mail source %s error (%s).  Continue? "
+				       (if (memq ':password source)
+					   (let ((s (copy-sequence source)))
+					     (setcar (cdr (memq ':password s)) 
+						     "********")
+					     s)
+					 source)
+				       (cadr err)))))
 		      (error "Cannot get new mail"))
 		    0)))))))))
 

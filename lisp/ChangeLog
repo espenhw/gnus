@@ -1,3 +1,8 @@
+2003-02-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-source.el (mail-source-fetch): Reverse the return value of
+	the continuation question.
+
 2003-02-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nndraft.el (nndraft-request-move-article): Bind
