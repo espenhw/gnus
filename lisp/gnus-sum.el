@@ -8833,6 +8833,10 @@ delete these instead."
       ;; Delete the articles.
       (setq not-deleted (gnus-request-expire-articles
 			 articles gnus-newsgroup-name 'force))
+      (when (and gnus-agent gnus-agent-cache
+		 (gnus-sorted-difference articles not-deleted))
+	(gnus-agent-expire (gnus-sorted-difference articles not-deleted)
+			   gnus-newsgroup-name 'force))
       (while articles
 	(gnus-summary-remove-process-mark (car articles))
 	;; The backend might not have been able to delete the article

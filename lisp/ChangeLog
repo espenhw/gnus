@@ -1,5 +1,8 @@
 2002-05-29  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-sum.el (gnus-summary-delete-article): Agent expire deleted
+	articles.
+
 	* gnus.el (gnus-agent-cache): Doc fix.
 	(gnus-agent): Change default to t.
 
