@@ -1,3 +1,11 @@
+2003-06-20  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi: Add @command.
+
+	* texi2latex.el (latexi-translate-file): Add @command and @:.
+
+	* gnus.texi (Face): Use @uref.
+
 2003-06-19  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Sieve Commands, Agent Basics, SpamOracle): @xref

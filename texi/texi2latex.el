@@ -144,6 +144,8 @@
 		(insert "\\\\"))
 	       ((equal command "sp")
 		(replace-match "" t t))
+	       ((equal command ":")
+		(replace-match "" t t))
 	       ((member command '("deffn" "defvar" "defun"))
 		(replace-match "" t t))
 	       ((equal command "node")
@@ -276,7 +278,7 @@
 	    (latexi-exchange-command (concat "gnus" command) arg))
 	   ((member command '("sc" "file" "dfn" "emph" "kbd" "key" "uref"
 			      "code" "samp" "var" "strong" "i"
-			      "result" "email" "env" "r"))
+			      "result" "email" "env" "r" "command"))
 	    (goto-char (match-beginning 0))
 	    (delete-char 1)
 	    (insert "\\gnus"))

@@ -53,6 +53,7 @@
 
 \newcommand{\gnustt}[1]{{\gnusselectttfont{}#1}}
 \newcommand{\gnuscode}[1]{\gnustt{#1}}
+\newcommand{\gnuscommand}[1]{\gnustt{#1}}
 \newcommand{\gnusenv}[1]{\gnustt{#1}}
 \newcommand{\gnussamp}[1]{``{\fontencoding{OT1}\gnusselectttfont{}#1}''}
 \newcommand{\gnuslisp}[1]{\gnustt{#1}}
@@ -21693,7 +21694,7 @@ represent the author of the message.
 @cindex face
 @findex gnus-article-display-face
 The contents of a @code{Face} header must be a base64 encoded PNG image.
-See @url{http://quimby.gnus.org/circus/face/} for the precise
+See @uref{http://quimby.gnus.org/circus/face/} for the precise
 specifications.
 
 Gnus provides a few convenience functions and variables to allow
