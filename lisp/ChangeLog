@@ -1,5 +1,9 @@
 2000-09-24  Simon Josefsson  <simon@josefsson.org>
 
+	* gnus-group.el (gnus-group-nnimap-edit-acl): Check if server support ACL's.
+
+	* nnimap.el (nnimap-acl-get): Check capability.
+
 	* mail-source.el (mail-source-imap-file-coding-system): New variable.
 	(mail-source-fetch-imap): Use it.
 

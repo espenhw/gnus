@@ -1150,7 +1150,8 @@ function is generally only called when Gnus is shutting down."
 
 (defun nnimap-acl-get (mailbox server)
   (when (nnimap-possibly-change-server server)
-    (imap-mailbox-acl-get mailbox nnimap-server-buffer)))
+    (and (imap-capability 'ACL nnimap-server-buffer)
+	 (imap-mailbox-acl-get mailbox nnimap-server-buffer))))
 
 (defun nnimap-acl-edit (mailbox method old-acls new-acls)
   (when (nnimap-possibly-change-server (cadr method))
