@@ -57,12 +57,12 @@ inline @acronym{PGP} signed messages.
 @item @acronym{ANSI} @acronym{SGR} control sequences can be transformed
 using @kbd{W A}.
 
+@acronym{ANSI} sequences are used in some Chinese hierarchies for
+highlighting articles (@code{gnus-article-treat-ansi-sequences}).
+
 @item International host names (@acronym{IDNA}) can now be decoded
 inside article bodies using @kbd{W i}
 (@code{gnus-summary-idna-message}).
-
-@acronym{ANSI} sequences are used in some Chinese hierarchies for
-highlighting articles (@code{gnus-article-treat-ansi-sequences}).
 
 @item Gnus includes an Emacs Lisp @acronym{SASL} library.
 
