@@ -241,7 +241,8 @@ any confusion."
   :group 'message-interface
   :type 'regexp)
 
-(defcustom message-subject-re-regexp "^[ \t]*\\([Rr][Ee]:[ \t]*\\)*[ \t]*"
+(defcustom message-subject-re-regexp
+  "^[ \t]*\\([Rr][Ee]\\(\\[[0-9]*\\]\\)*:[ \t]*\\)*[ \t]*"
   "*Regexp matching \"Re: \" in the subject line."
   :group 'message-various
   :type 'regexp)
