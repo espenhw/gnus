@@ -96,8 +96,8 @@ manual.
 @node Interface
 @chapter Interface
 
-When a program (or a person) wants to respond to a message -- reply,
-follow up, forward, cancel -- the program (or person) should just put
+When a program (or a person) wants to respond to a message---reply,
+follow up, forward, cancel---the program (or person) should just put
 point in the buffer where the message is and call the required command.
 @code{Message} will then pop up a new @code{message} mode buffer with
 appropriate headers filled out, and the user can edit the message before
@@ -1272,7 +1272,7 @@ installed.
 @section Message Headers
 
 Message is quite aggressive on the message generation front.  It has to
-be -- it's a combined news and mail agent.  To be able to send combined
+be---it's a combined news and mail agent.  To be able to send combined
 messages, it has to generate all headers itself (instead of letting the
 mail/news system do it) to ensure that mail and news copies of messages
 look sufficiently similar.
@@ -1311,7 +1311,7 @@ values:
 
 @table @code
 @item nil
-Just the address -- @samp{king@@grassland.com}.
+Just the address---@samp{king@@grassland.com}.
 
 @item parens
 @samp{king@@grassland.com (Elvis Parsley)}.
@@ -1987,7 +1987,7 @@ message is a message of type @var{type}.
 
 @item function
 A function to be called if @var{predicate} returns non-@code{nil}.
-@var{function} is called with one parameter -- the prefix.
+@var{function} is called with one parameter---the prefix.
 @end table
 
 @lisp

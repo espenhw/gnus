@@ -1,3 +1,9 @@
+2004-03-05  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.texi: Use m-dash consistently.
+
+	* emacs-mime.texi: do.
+
 2004-03-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (POP before SMTP): New node.
