@@ -210,7 +210,8 @@ used (which currently is nil, unless you use a statistical
 spam.el test); if this variable is another non-nil value bodies
 will be downloaded."
   :group 'nnimap
-  :type 'boolean)
+  :type '(choice (const :tag "Let system decide" deault)
+		 boolean))
 
 ;; Performance / bug workaround variables
 
