@@ -6524,11 +6524,6 @@ previous group instead."
   (let ((current-group gnus-newsgroup-name)
 	(current-buffer (current-buffer))
 	entered)
-   ;; First we semi-exit this group to update Xrefs and all variables.
-    ;; We can't do a real exit, because the window conf must remain
-    ;; the same in case the user is prompted for info, and we don't
-    ;; want the window conf to change before that...
-    (gnus-summary-exit t)
     (while (not entered)
       ;; Then we find what group we are supposed to enter.
       (set-buffer gnus-group-buffer)
@@ -6553,10 +6548,18 @@ previous group instead."
 	(let ((unreads (gnus-group-group-unread)))
 	  (if (and (or (eq t unreads)
 		       (and unreads (not (zerop unreads))))
-		   (gnus-summary-read-group
-		    target-group nil no-article
-		    (and (buffer-name current-buffer) current-buffer)
-		    nil backward))
+		   (progn
+		     ;; Now we semi-exit this group to update Xrefs
+		     ;; and all variables.  We can't do a real exit,
+		     ;; because the window conf must remain the same
+		     ;; in case the user is prompted for info, and we
+		     ;; don't want the window conf to change before
+		     ;; that...
+		     (gnus-summary-exit t)
+		     (gnus-summary-read-group
+		      target-group nil no-article
+		      (and (buffer-name current-buffer) current-buffer)
+		      nil backward)))
 	      (setq entered t)
 	    (setq current-group target-group
 		  target-group nil)))))))
