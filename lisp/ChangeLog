@@ -1,3 +1,8 @@
+2003-11-13  Alex Schroeder  <alex@gnu.org>
+
+	* nnrss.el (nnrss-check-group): Use dc:contributor if neither
+	rss:author nor dc:creator is provided.
+
 2003-11-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-decode.el (mm-dissect-buffer): Save start="<id>" value
