@@ -1,3 +1,9 @@
+2004-05-18  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (gnus-article-followup-with-original)
+	(gnus-article-reply-with-original): gnus-mark-active-p ->
+	gnus-region-active-p.
+
 2004-05-17  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-summary-prepare-exit): fix messages, so they show
