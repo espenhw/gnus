@@ -1,3 +1,15 @@
+2002-01-10  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-expire): Do not remove article from
+	alist when keeping fetched article file.
+	(gnus-agent-retrieve-headers): When parsing response for article
+	numbers, use the same algorithm as gnus-agent-braid-nov to protect
+	against garbage in the server's response.
+
+	* gnus-int.el (gnus-request-expire-articles,
+	gnus-request-move-article): Only expire when the group's server
+	has been agentized.
+
 2003-01-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-cite.el (gnus-cite-delete-overlays): Protect against
