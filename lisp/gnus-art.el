@@ -5097,6 +5097,7 @@ variable it the real callback function."
     ("^X-[Uu][Rr][Ll]:" ,gnus-button-url-regexp 0 t browse-url 0)
     ("^Subject:" ,gnus-button-url-regexp 0 t browse-url 0)
     ("^[^:]+:" ,gnus-button-url-regexp 0 t browse-url 0)
+    ("^[^:]+:" "\\bmailto:\\([-a-zA-Z.@_+0-9%=?]+\\)" 0 t gnus-url-mailto 1)
     ("^[^:]+:" "\\(<\\(url: \\)?news:\\([^>\n ]*\\)>\\)" 1 t
      gnus-button-message-id 3))
   "*Alist of headers and regexps to match buttons in article heads.
