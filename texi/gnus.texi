@@ -26,6 +26,7 @@
 \makeindex
 \begin{document}
 
+\newcommand{\gnusversionname}{Oort Gnus v.}
 \newcommand{\gnuschaptername}{}
 \newcommand{\gnussectionname}{}
 
@@ -52,6 +53,7 @@
 \newcommand{\gnusvar}[1]{{\fontsize{10pt}{10}\selectfont\textsl{\textsf{#1}}}}
 \newcommand{\gnussc}[1]{\textsc{#1}}
 \newcommand{\gnustitle}[1]{{\huge\textbf{#1}}}
+\newcommand{\gnusversion}[1]{{\small\textit{#1}}}
 \newcommand{\gnusauthor}[1]{{\large\textbf{#1}}}
 \newcommand{\gnusresult}[1]{\gnustt{=> #1}}
 
@@ -69,7 +71,7 @@
 \newcommand{\gnusbraceleft}{{$>$}}
 \newcommand{\gnusbraceright}{{$>$}}
 
-\newcommand{\gnushead}{\raisebox{-1cm}{\epsfig{figure=ps/gnus-head.ps,height=1cm}}}
+\newcommand{\gnushead}{\raisebox{-1cm}{\epsfig{figure=ps/gnus-head,height=1cm}}}
 \newcommand{\gnusinteresting}{
 \marginpar[\mbox{}\hfill\gnushead]{\gnushead}
 }
@@ -108,7 +110,7 @@
 }
 
 \newcommand{\gnusicon}[1]{
-\marginpar[\mbox{}\hfill\raisebox{-1.5cm}{\epsfig{figure=ps/#1-up.ps,height=1.5cm}}]{\raisebox{-1cm}{\epsfig{figure=ps/#1-up.ps,height=1cm}}}
+\marginpar[\mbox{}\hfill\raisebox{-1.5cm}{\epsfig{figure=ps/#1-up,height=1.5cm}}]{\raisebox{-1cm}{\epsfig{figure=ps/#1-up,height=1cm}}}
 }
 
 \newcommand{\gnuspicon}[1]{
@@ -188,9 +190,9 @@
 {
 \ifodd\count0
 \mbox{} \hfill
-\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo.ps,height=1cm}}
+\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo,height=1cm}}
 \else
-\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo.ps,height=1cm}}
+\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo,height=1cm}}
 \hfill \mbox{}
 \fi
 }
@@ -212,9 +214,9 @@
 {
 \ifodd\count0
 \mbox{} \hfill
-\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo.ps,height=1cm}}
+\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo,height=1cm}}
 \else
-\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo.ps,height=1cm}}
+\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo,height=1cm}}
 \hfill \mbox{}
 \fi
 }
@@ -236,9 +238,9 @@
 {
 \ifodd\count0
 \mbox{} \hfill
-\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo.ps,height=1cm}}
+\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo,height=1cm}}
 \else
-\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo.ps,height=1cm}}
+\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo,height=1cm}}
 \hfill \mbox{}
 \fi
 }
@@ -259,10 +261,10 @@
 \parindent=0cm
 \addtolength{\textheight}{2cm}
 
-\gnustitle{\gnustitlename}\\
+\gnustitle{\gnustitlename}\hfill\gnusversion{\gnusversionname}\\
 \rule{15cm}{1mm}\\
 \vfill
-\hspace*{0cm}\epsfig{figure=ps/gnus-big-logo.ps,height=15cm}
+\hspace*{0cm}\epsfig{figure=ps/gnus-big-logo,height=15cm}
 \vfill
 \rule{15cm}{1mm}\\
 \gnusauthor{by Lars Magne Ingebrigtsen}
@@ -274,7 +276,7 @@
 
 \thispagestyle{empty}
 
-Copyright \copyright{} 1995, 1996, 1997, 1998, 1999, 2000
+Copyright \copyright{} 1995, 1996, 1997, 1998, 1999, 2000, 2001
 Free Software Foundation, Inc.
 
 
@@ -303,7 +305,8 @@ license to the document, as described in section 6 of the license.
 
 This file documents Gnus, the GNU Emacs newsreader.
 
-Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000 Free Software Foundation, Inc.
+Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001 
+        Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
@@ -332,7 +335,8 @@ license to the document, as described in section 6 of the license.
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1995, 1996, 1997, 1998, 1999, 2000 Free Software Foundation, Inc.
+Copyright @copyright{} 1995, 1996, 1997, 1998, 1999, 2000, 2001
+        Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
@@ -1613,7 +1617,7 @@ long as Gnus is active.
 @iftex
 @iflatex
 \gnusfigure{The Group Buffer}{320}{
-\put(75,50){\epsfig{figure=ps/group.ps,height=9cm}}
+\put(75,50){\epsfig{figure=ps/group,height=9cm}}
 \put(120,37){\makebox(0,0)[t]{Buffer name}}
 \put(120,38){\vector(1,2){10}}
 \put(40,60){\makebox(0,0)[r]{Mode line}}
@@ -3317,7 +3321,7 @@ groups or the sex groups---or both!  Go wild!
 @iftex
 @iflatex
 \gnusfigure{Group Topics}{400}{
-\put(75,50){\epsfig{figure=ps/group-topic.ps,height=9cm}}
+\put(75,50){\epsfig{figure=ps/group-topic,height=9cm}}
 }
 @end iflatex
 @end iftex
@@ -4092,8 +4096,8 @@ You can have as many summary buffers open as you wish.
 @iftex
 @iflatex
 \gnusfigure{The Summary Buffer}{180}{
-\put(0,0){\epsfig{figure=ps/summary.ps,width=7.5cm}}
-\put(445,0){\makebox(0,0)[br]{\epsfig{figure=ps/summary-article.ps,width=7.5cm}}}
+\put(0,0){\epsfig{figure=ps/summary,width=7.5cm}}
+\put(445,0){\makebox(0,0)[br]{\epsfig{figure=ps/summary-article,width=7.5cm}}}
 }
 @end iflatex
 @end iftex
@@ -5905,10 +5909,10 @@ There are four possible values:
 @iftex
 @iflatex
 \gnusfigure{The Summary Buffer}{390}{
-\put(0,0){\epsfig{figure=ps/summary-adopt.ps,width=7.5cm}}
-\put(445,0){\makebox(0,0)[br]{\epsfig{figure=ps/summary-empty.ps,width=7.5cm}}}
-\put(0,400){\makebox(0,0)[tl]{\epsfig{figure=ps/summary-none.ps,width=7.5cm}}}
-\put(445,400){\makebox(0,0)[tr]{\epsfig{figure=ps/summary-dummy.ps,width=7.5cm}}}
+\put(0,0){\epsfig{figure=ps/summary-adopt,width=7.5cm}}
+\put(445,0){\makebox(0,0)[br]{\epsfig{figure=ps/summary-empty,width=7.5cm}}}
+\put(0,400){\makebox(0,0)[tl]{\epsfig{figure=ps/summary-none,width=7.5cm}}}
+\put(445,400){\makebox(0,0)[tr]{\epsfig{figure=ps/summary-dummy,width=7.5cm}}}
 }
 @end iflatex
 @end iftex
@@ -19429,7 +19433,7 @@ cleared every time you exit Gnus.  Defaults to @code{t}.
 
 @iftex
 @iflatex
-\gnusfig{-3cm}{0.5cm}{\epsfig{figure=ps/BigFace.ps,height=20cm}}
+\gnusfig{-3cm}{0.5cm}{\epsfig{figure=ps/BigFace,height=20cm}}
 \input{smiley}
 @end iflatex
 @end iftex
@@ -20592,7 +20596,7 @@ You can click on buttons instead of using the keyboard
 
 @iftex
 @iflatex
-\gnusfig{-28cm}{0cm}{\epsfig{figure=ps/september.ps,height=20cm}}
+\gnusfig{-28cm}{0cm}{\epsfig{figure=ps/september,height=20cm}}
 @end iflatex
 @end iftex
 
@@ -20734,7 +20738,7 @@ Layout}).
 Mail can be re-scanned by a daemonic process (@pxref{Daemons}).
 @iftex
 @iflatex
-\marginpar[\mbox{}\hfill\epsfig{figure=ps/fseptember.ps,height=5cm}]{\epsfig{figure=ps/fseptember.ps,height=5cm}}
+\marginpar[\mbox{}\hfill\epsfig{figure=ps/fseptember,height=5cm}]{\epsfig{figure=ps/fseptember,height=5cm}}
 @end iflatex
 @end iftex
 
@@ -20829,7 +20833,7 @@ New features in Gnus 5.4/5.5:
 
 @iftex
 @iflatex
-\gnusfig{-5.5cm}{-4cm}{\epsfig{figure=ps/red.ps,height=20cm}}
+\gnusfig{-5.5cm}{-4cm}{\epsfig{figure=ps/red,height=20cm}}
 @end iflatex
 @end iftex
 
@@ -20958,7 +20962,7 @@ Cached articles can be pulled into the groups (@pxref{Summary Generation
 Commands}).
 @iftex
 @iflatex
-\marginpar[\mbox{}\hfill\epsfig{figure=ps/fred.ps,width=3cm}]{\epsfig{figure=ps/fred.ps,width=3cm}}
+\marginpar[\mbox{}\hfill\epsfig{figure=ps/fred,width=3cm}]{\epsfig{figure=ps/fred,width=3cm}}
 @end iflatex
 @end iftex
 

@@ -66,12 +66,81 @@ EPS= gnus-big-logo.ps  gnus-head.ps
 PSFILES= $(SCREEN_PS) $(HERDS_PS) $(ETC_PS) $(PICONS_PS) $(XFACE_PS)	\
 $(SMILIES_PS) $(MISC_PS) $(EPS)
 
+SCREEN_PDF= group-topic.pdf group.pdf server.pdf summary-adopt.pdf	\
+summary-article-c-ug.pdf summary-article.pdf summary-dummy.pdf		\
+summary-empty.pdf summary-none.pdf summary-unthreaded.pdf summary.pdf
+
+HERDS_PDF= gnus-herd-bw.pdf gnus-herd-new.pdf new-herd-1.pdf	\
+new-herd-10.pdf new-herd-2.pdf new-herd-3.pdf new-herd-4.pdf	\
+new-herd-5.pdf new-herd-6.pdf new-herd-7.pdf new-herd-8.pdf	\
+new-herd-9.pdf new-herd-section.pdf new-herd.pdf new-herd2.pdf
+
+MISC_PDF= ered.pdf eseptember.pdf fred.pdf fseptember.pdf larsi.pdf	\
+red.pdf september.pdf
+
+ETC_PDF= bar.pdf gnus-group-catchup-current-up.pdf			\
+gnus-group-catchup-current.pdf gnus-group-describe-group-up.pdf		\
+gnus-group-exit-up.pdf gnus-group-get-new-news-this-group-up.pdf	\
+gnus-group-get-new-news-up.pdf gnus-group-kill-group-up.pdf		\
+gnus-group-subscribe-up.pdf gnus-group-unsubscribe-up.pdf		\
+gnus-summary-caesar-message-up.pdf gnus-summary-cancel-article-up.pdf	\
+gnus-summary-catchup-and-exit-up.pdf gnus-summary-catchup-up.pdf	\
+gnus-summary-exit-up.pdf gnus-summary-followup-up.pdf			\
+gnus-summary-followup-with-original-up.pdf				\
+gnus-summary-mail-copy-up.pdf gnus-summary-mail-delete-up.pdf		\
+gnus-summary-mail-forward-up.pdf gnus-summary-mail-get-up.pdf		\
+gnus-summary-mail-originate-up.pdf gnus-summary-mail-reply-up.pdf	\
+gnus-summary-mail-save-up.pdf gnus-summary-next-unread-up.pdf		\
+gnus-summary-post-news-up.pdf gnus-summary-prev-unread-up.pdf		\
+gnus-summary-reply-up.pdf gnus-summary-reply-with-original-up.pdf	\
+gnus-summary-save-article-file-up.pdf gnus-summary-save-article-up.pdf	\
+gnus-uu-decode-uu-up.pdf gnus-uu-post-news-up.pdf gnus.pdf
+
+PICONS_PDF= picons-att.pdf picons-berkeley.pdf picons-caltech.pdf	\
+picons-canada.pdf picons-cr.pdf picons-cygnus.pdf picons-gnu.pdf	\
+picons-gov.pdf picons-laurie.pdf picons-mit.pdf picons-nasa.pdf		\
+picons-qmw.pdf picons-rms.pdf picons-ruu.pdf picons-seuu.pdf		\
+picons-stanford.pdf picons-sun.pdf picons-ubc.pdf picons-ufl.pdf	\
+picons-uio.pdf picons-unit.pdf picons-upenn.pdf picons-wesleyan.pdf	\
+picons-yale.pdf
+
+XFACE_PDF= xface-abrahamsen.pdf xface-aichner.pdf xface-blanks.pdf	\
+xface-cosgriff.pdf xface-drazen.pdf xface-gertzfield.pdf		\
+xface-goldberg.pdf xface-graf.pdf xface-hardaker.pdf xface-hedbor.pdf	\
+xface-ingrand.pdf xface-kaplan.pdf xface-karlheg.pdf			\
+xface-kleinpaste.pdf xface-kyle.pdf xface-love.pdf xface-moll.pdf	\
+xface-niksic.pdf xface-olsen.pdf xface-patch.pdf xface-petersen.pdf	\
+xface-pjf.pdf xface-riocreux.pdf xface-schauer.pdf xface-simmonmt.pdf	\
+xface-simmons.pdf xface-siu.pdf xface-smb.pdf xface-sobek.pdf		\
+xface-thomas.pdf xface-valdis.pdf xface-verna1.pdf xface-verna2.pdf	\
+xface-yamaoka.pdf
+
+SMILIES_PDF= BigFace.pdf smiley-FaceAngry.pdf smiley-FaceDevilish.pdf	\
+smiley-FaceGoofy.pdf smiley-FaceGrinning.pdf smiley-FaceHappy.pdf	\
+smiley-FaceIronic.pdf smiley-FaceKOed.pdf smiley-FaceNyah.pdf		\
+smiley-FaceSad.pdf smiley-FaceStartled.pdf smiley-FaceStraight.pdf	\
+smiley-FaceTalking.pdf smiley-FaceTasty.pdf smiley-FaceWinking.pdf	\
+smiley-FaceWry.pdf smiley-FaceYukky.pdf smiley-WideFaceAse1.pdf		\
+smiley-WideFaceAse2.pdf smiley-WideFaceAse3.pdf				\
+smiley-WideFaceSmile.pdf smiley-WideFaceWeep.pdf
+
+EPS_PDF= gnus-big-logo.pdf  gnus-head.pdf
+
+PDFFILES= $(SCREEN_PDF) $(HERDS_PDF) $(ETC_PDF) $(PICONS_PDF)	\
+$(XFACE_PDF) $(SMILIES_PDF) $(MISC_PDF) $(EPS_PDF)
+
 all: $(PSFILES) $(EPS)
 
-.SUFFIXES: .ps .eps .xbm .xpm .png .tif .gif 
+pdf: $(PDFFILES)
+
+.ps.pdf:
+	epstopdf $<
+
+.SUFFIXES: .pdf .ps .eps .xbm .xpm .png .tif .gif 
 
 clean:
 	rm -f $(PSFILES)
+	rm -f $(PDFFILES)
 
 veryclean: clean
 
