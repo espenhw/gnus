@@ -41,6 +41,8 @@ automatically."
 		 directory)
   :group 'gnus-xmas)
 
+;;(format "%02x%02x%02x" 114 66 20) "724214"
+
 (defvar gnus-xmas-logo-color-alist
   '((flame "#cc3300" "#ff2200")
     (pine "#c0cc93" "#f8ffb8")
@@ -52,7 +54,7 @@ automatically."
     (grape "#b264cc" "#cf7df")
     (labia "#cc64c2" "#fd7dff")
     (berry "#cc6485" "#ff7db5")
-    (dino "#8e4900" "#911e1e")
+    (dino "#724214" "#1e3f03")
     (neutral "#b4b4b4" "#878787")
     (september "#bf9900" "#ffcc00"))
   "Color alist used for the Gnus logo.")

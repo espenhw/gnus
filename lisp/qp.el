@@ -56,27 +56,29 @@
    (quoted-printable-decode-region (point-min) (point-max))
    (buffer-string)))
 
-(defun quoted-printable-encode-region (from to)
-  "QP-encode the region between FROM and TO."
+(defun quoted-printable-encode-region (from to &optional fold)
+  "QP-encode the region between FROM and TO.
+If FOLD, fold long lines."
   (interactive "r")
   (save-excursion
     (save-restriction
       (narrow-to-region from to)
       (goto-char (point-min))
-      (while (re-search-forward "[\000-\007\013\015-\037\200-\237=]" nil t)
+      (while (re-search-forward "[\000-\007\013\015-\037\200-\377_=]" nil t)
 	(insert
 	 (prog1
-	     (format "=%x" (char-after (1- (point))))
+	     (upcase (format "=%x" (char-after (1- (point)))))
 	   (delete-char -1))))
-      ;; Fold long lines.
-      (goto-char (point-min))
-      (end-of-line)
-      (while (> (current-column) 72)
-	(beginning-of-line)
-	(forward-char 72)
-	(search-backward "=" (- (point) 2) t)
-	(insert "=\n")
-	(end-of-line)))))
+      (when fold
+	;; Fold long lines.
+	(goto-char (point-min))
+	(end-of-line)
+	(while (> (current-column) 72)
+	  (beginning-of-line)
+	  (forward-char 72)
+	  (search-backward "=" (- (point) 2) t)
+	  (insert "=\n")
+	  (end-of-line))))))
 
 (defun quoted-printable-encode-string (string)
  "QP-encode STRING and return the results."

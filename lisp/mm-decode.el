@@ -1,7 +1,8 @@
-;;; mm-decode.el --- Function for decoding MIME things
+;;; mm-decode.el --- Functions for decoding MIME things
 ;; Copyright (C) 1998 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
+;;	MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; This file is not yet part of GNU Emacs.
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify

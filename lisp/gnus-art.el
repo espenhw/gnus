@@ -949,6 +949,7 @@ characters to translate to."
   "Decode all MIME-encoded words in the article."
   (interactive)
   (save-excursion
+    (set-buffer gnus-article-buffer)
     (let ((inhibit-point-motion-hooks t)
 	  buffer-read-only)
       (mm-decode-words-region (point-min) (point-max)))))

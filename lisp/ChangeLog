@@ -1,3 +1,27 @@
+Sun Aug 30 15:28:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.8 is released.
+
+1998-08-30 12:23:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-send-mail): Encode headers.
+
+	* qp.el (quoted-printable-encode-region): Encode 8-bit words.
+	(quoted-printable-encode-region): Upcase.
+
+	* message.el (message-default-charset): New variable.
+
+	* qp.el (quoted-printable-encode-region): Optional param FOLD.
+
+	* message.el (message-narrow-to-field): Changed name.
+
+	* mm-encode.el: New file.
+
+	* message.el (message-narrow-to-header): New function.
+
+	* gnus-art.el (gnus-article-decode-mime-words): Place point in the 
+	right buffer.
+
 Sun Aug 30 12:15:54 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.7 is released.

@@ -39,6 +39,7 @@
 (if (string-match "XEmacs\\|Lucid" emacs-version)
     (require 'mail-abbrevs)
   (require 'mailabbrev))
+(require 'mm-encode)
 
 (defgroup message '((user-mail-address custom-variable)
 		    (user-full-name custom-variable))
@@ -848,6 +849,7 @@ The cdr of ech entry is a function for applying the face to a region.")
 
 ;;; Internal variables.
 
+(defvar message-default-charset nil)
 (defvar message-buffer-list nil)
 (defvar message-this-is-news nil)
 (defvar message-this-is-mail nil)
@@ -1022,6 +1024,20 @@ The cdr of ech entry is a function for applying the face to a region.")
 	 (value (mail-fetch-field header nil (not not-all))))
     (when value
       (nnheader-replace-chars-in-string value ?\n ? ))))
+
+(defun message-narrow-to-field ()
+  "Narrow the buffer to the header on the current line."
+  (beginning-of-line)
+  (narrow-to-region
+   (point)
+   (progn
+     (forward-line 1)
+     (if (re-search-forward "^[^ \n\t]" nil t)
+	 (progn
+	   (beginning-of-line)
+	   (point))
+       (point-max))))
+  (goto-char (point-min)))
 
 (defun message-add-header (&rest headers)
   "Add the HEADERS to the message header, skipping those already present."
@@ -2004,6 +2020,7 @@ the user from the mailer."
       (let ((message-deletable-headers
 	     (if news nil message-deletable-headers)))
 	(message-generate-headers message-required-mail-headers))
+      (mm-encode-message-header)
       ;; Let the user do all of the above.
       (run-hooks 'message-header-hook))
     (unwind-protect
@@ -2174,6 +2191,7 @@ to find out how to use this."
       (message-narrow-to-headers)
       ;; Insert some headers.
       (message-generate-headers message-required-news-headers)
+      (mm-encode-message-header)
       ;; Let the user do all of the above.
       (run-hooks 'message-header-hook))
     (message-cleanup-headers)
