@@ -493,7 +493,8 @@ Return the number of files that were found."
 	    (when (file-exists-p mail-source-crash-box)
 	      (message "Processing mail from %s..." mail-source-crash-box)
 	      (setq found (mail-source-callback
-			   callback mail-source-crash-box)))
+			   callback mail-source-crash-box))
+	      (mail-source-delete-crash-box))
 	    (+ found
 	       (if (or debug-on-quit debug-on-error)
 		   (funcall function source callback)
@@ -543,33 +544,33 @@ If CONFIRM is non-nil, ask for confirmation before removing a file."
 	  (delete-file ffile))))))
 
 (defun mail-source-callback (callback info)
-  "Call CALLBACK on the mail file, and then remove the mail file.
-Pass INFO on to CALLBACK."
+  "Call CALLBACK on the mail file.  Pass INFO on to CALLBACK."
   (if (or (not (file-exists-p mail-source-crash-box))
 	  (zerop (nth 7 (file-attributes mail-source-crash-box))))
       (progn
 	(when (file-exists-p mail-source-crash-box)
 	  (delete-file mail-source-crash-box))
 	0)
-    (prog1
-	(funcall callback mail-source-crash-box info)
-      (when (file-exists-p mail-source-crash-box)
-	;; Delete or move the incoming mail out of the way.
-	(if (eq mail-source-delete-incoming t)
-	    (delete-file mail-source-crash-box)
-	  (let ((incoming
-		 (mm-make-temp-file
-		  (expand-file-name
-		   mail-source-incoming-file-prefix
-		   mail-source-directory))))
-	    (unless (file-exists-p (file-name-directory incoming))
-	      (make-directory (file-name-directory incoming) t))
-	    (rename-file mail-source-crash-box incoming t)
-	    ;; remove old incoming files?
-	    (when (natnump mail-source-delete-incoming)
-	      (mail-source-delete-old-incoming
-	       mail-source-delete-incoming
-	       mail-source-delete-old-incoming-confirm))))))))
+    (funcall callback mail-source-crash-box info)))
+
+(defun mail-source-delete-crash-box ()
+  (when (file-exists-p mail-source-crash-box)
+    ;; Delete or move the incoming mail out of the way.
+    (if (eq mail-source-delete-incoming t)
+	(delete-file mail-source-crash-box)
+      (let ((incoming
+	     (mm-make-temp-file
+	      (expand-file-name
+	       mail-source-incoming-file-prefix
+	       mail-source-directory))))
+	(unless (file-exists-p (file-name-directory incoming))
+	  (make-directory (file-name-directory incoming) t))
+	(rename-file mail-source-crash-box incoming t)
+	;; remove old incoming files?
+	(when (natnump mail-source-delete-incoming)
+	  (mail-source-delete-old-incoming
+	   mail-source-delete-incoming
+	   mail-source-delete-old-incoming-confirm))))))
 
 (defun mail-source-movemail (from to)
   "Move FROM to TO using movemail."
@@ -683,7 +684,8 @@ Pass INFO on to CALLBACK."
 	  (prog1
 	      (mail-source-callback callback path)
 	    (mail-source-run-script
-	     postscript (format-spec-make ?t mail-source-crash-box)))
+	     postscript (format-spec-make ?t mail-source-crash-box))
+	    (mail-source-delete-crash-box))
 	0))))
 
 (defun mail-source-fetch-directory (source callback)
@@ -698,8 +700,9 @@ Pass INFO on to CALLBACK."
 	(when (and (file-regular-p file)
 		   (funcall predicate file)
 		   (mail-source-movemail file mail-source-crash-box))
-	  (incf found (mail-source-callback callback file))))
-      (mail-source-run-script postscript (format-spec-make ?t path))
+	  (incf found (mail-source-callback callback file))
+	  (mail-source-run-script postscript (format-spec-make ?t path))
+	  (mail-source-delete-crash-box)))
       found)))
 
 (defun mail-source-fetch-pop (source callback)
@@ -763,7 +766,8 @@ Pass INFO on to CALLBACK."
 	      (mail-source-run-script
 	       postscript
 	       (format-spec-make ?p password ?t mail-source-crash-box
-				 ?s server ?P port ?u user))))
+				 ?s server ?P port ?u user))
+	      (mail-source-delete-crash-box)))
 	;; We nix out the password in case the error
 	;; was because of a wrong password being given.
 	(setq mail-source-password-cache
@@ -946,7 +950,8 @@ This only works when `display-time' is enabled."
 				  ;; MMDF mail format
 				  (insert "\001\001\001\001\n"))
 				(delete-file file)))))
-	      (incf found (mail-source-callback callback file))))))
+	      (incf found (mail-source-callback callback file))
+	      (mail-source-delete-crash-box)))))
       found)))
 
 (eval-and-compile
@@ -1012,6 +1017,7 @@ This only works when `display-time' is enabled."
 		  (goto-char (point-max))))
 	      (nnheader-ms-strip-cr))
 	    (incf found (mail-source-callback callback server))
+	    (mail-source-delete-crash-box)
 	    (when (and remove fetchflag)
 	      (setq remove (nreverse remove))
 	      (imap-message-flags-add
@@ -1057,7 +1063,8 @@ This only works when `display-time' is enabled."
 	  (push (cons (format "webmail:%s:%s" subtype user) password)
 		mail-source-password-cache)))
       (webmail-fetch mail-source-crash-box subtype user password)
-      (mail-source-callback callback (symbol-name subtype)))))
+      (mail-source-callback callback (symbol-name subtype))
+      (mail-source-delete-crash-box))))
 
 (provide 'mail-source)
 

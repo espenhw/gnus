@@ -1,5 +1,13 @@
 2004-05-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* mail-source.el (mail-source-delete-crash-box): Refactor.
+	(mail-source-fetch): Use it.
+	(mail-source-fetch-file): Ditto.
+	(mail-source-fetch-directory): Run postscript in loop. 
+	(mail-source-fetch-pop): Delete.
+	(mail-source-fetch-maildir): Ditto.
+	(mail-source-fetch-imap): Ditto.
+
 	* imap.el (imap-authenticators): Comment out sasl.
 
 	* message.el (message-skip-to-next-address): New function.
