@@ -170,6 +170,9 @@
       (pop ast))
     (car ast)))
 
+(defun assistant-node-name (node)
+  (assistant-get node "node"))
+
 (defun assistant-previous-node-text (node)
   (format "<< Go back to %s" node))
 
@@ -210,6 +213,10 @@
 	(setcar (nthcdr 3 elem) value)))))
     
 (defun assistant-render-text (text node)
+  (unless (and text node)
+    (gnus-error 
+     5 
+     "The assistant was asked to render invalid text or node data"))
   (dolist (elem text)
     (if (stringp elem)
 	;; Ordinary text
@@ -279,10 +286,12 @@
 	(inhibit-read-only t)
 	(previous assistant-current-node)
 	(buffer-read-only nil))
+    (unless node
+      (gnus-error 5 "The node for %s could not be found" node-name))
     (set (make-local-variable 'assistant-widgets) nil)
     (assistant-set-defaults node)
     (if (equal (assistant-get node "type") "interstitial")
-	(assistant-render-node (assistant-find-next-node node-name))
+	(assistant-render-node (nth 0 (assistant-find-next-nodes node-name)))
       (setq assistant-current-node node-name)
       (when previous
 	(push previous assistant-previous-nodes))
@@ -301,9 +310,11 @@
 		   (assistant-set-defaults (assistant-find-node node) 'force)
 		   (assistant-render-node node)))
        "Reset")
-      (insert " ")
-      (assistant-node-button 'next (assistant-find-next-node))
       (insert "\n")
+      (dolist (nnode (assistant-find-next-nodes))
+	(assistant-node-button 'next nnode)
+	(insert "\n"))
+
       (goto-char (point-min))
       (assistant-make-read-only))))
 
@@ -373,15 +384,34 @@
 	  (error "%s" result))))
     (assistant-set node "save" t)))
 
-(defun assistant-find-next-node (&optional node)
+;; (defun assistant-find-next-node (&optional node)
+;;   (let* ((node (assistant-find-node (or node assistant-current-node)))
+;; 	 (node-name (assistant-node-name node))
+;; 	 (nexts (assistant-get-list node "next"))
+;; 	 next elem applicable)
+
+;;     (while (setq elem (pop nexts))
+;;       (when (assistant-eval (car (cadr elem)))
+;; 	(setq applicable (cons elem applicable))))
+
+;;     ;; return the first thing we can
+;;     (cadr (cadr (pop applicable)))))
+
+(defun assistant-find-next-nodes (&optional node)
   (let* ((node (assistant-find-node (or node assistant-current-node)))
 	 (nexts (assistant-get-list node "next"))
-	 next elem)
-    (while (and (setq elem (cadr (pop nexts)))
-		(not next))
-      (when (setq next (assistant-eval (car elem)))
-	(setq next (or (cadr elem) next))))
-    next))
+	 next elem applicable return)
+
+    (while (setq elem (pop nexts))
+      (when (assistant-eval (car (cadr elem)))
+	(setq applicable (cons elem applicable))))
+
+    ;; return the first thing we can
+    
+    (while (setq elem (pop applicable))
+      (push (cadr (cadr elem)) return))
+
+    return))
 
 (defun assistant-get-all-variables ()
   (let ((variables nil))

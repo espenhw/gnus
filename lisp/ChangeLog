@@ -1,3 +1,12 @@
+2004-06-03  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* assistant.el (assistant-node-name): new convenience function
+	(assistant-render-text, assistant-render-node): error handling,
+	plus handle multiple next nodes
+	(assistant-find-next-node): commented out for now
+	(assistant-find-next-nodes): new function, returns list of next
+	nodes
+
 2004-06-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mail-source.el (mail-source-directory): Fix doc-string.
