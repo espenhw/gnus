@@ -781,7 +781,9 @@ nor t, Gnus will select the following unread newsgroup.	 In
 particular, if the value is the symbol `quietly', the next unread
 newsgroup will be selected without any confirmation, and if it is
 `almost-quietly', the next group will be selected without any
-confirmation if you are located on the last article in the group.")
+confirmation if you are located on the last article in the group.
+Finally, if this variable is `slightly-quietly', the `Z n' command
+will go to the next group without confirmation.")
 
 (defvar gnus-auto-select-same nil
   "*If non-nil, select the next article with the same subject.")
@@ -1671,7 +1673,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.31"
+(defconst gnus-version "September Gnus v0.32"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1959,7 +1961,7 @@ Thank you for your help in stamping out bugs.
       gnus-server-make-menu-bar gnus-article-make-menu-bar
       gnus-browse-make-menu-bar gnus-highlight-selected-summary
       gnus-summary-highlight-line gnus-carpal-setup-buffer
-      gnus-group-highlight
+      gnus-group-highlight-line
       gnus-article-add-button gnus-insert-next-page-button
       gnus-insert-prev-page-button gnus-visual-turn-off-edit-menu)
      ("gnus-vis" :interactive t
@@ -4144,6 +4146,7 @@ prompt the user for the name of an NNTP server to use."
 	  (gnus-setup-news nil level)
 	  ;; Generate the group buffer.
 	  (gnus-group-list-groups level)
+	  (gnus-group-first-unread-group)
 	  (gnus-configure-windows 'group)
 	  (gnus-group-set-mode-line))))))
 
@@ -4652,7 +4655,7 @@ increase the score of each group you read."
 	  (if (member gnus-tmp-group gnus-group-marked)
 	      gnus-process-mark ? ))
 	 (buffer-read-only nil)
-	 header)			; passed as parameter to user-funcs.
+	 header gnus-tmp-header)			; passed as parameter to user-funcs.
     (beginning-of-line)
     (add-text-properties
      (point)
@@ -9393,14 +9396,13 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	 (mode major-mode)
 	 (buf (current-buffer)))
     (run-hooks 'gnus-summary-prepare-exit-hook)
-    ;; Make all changes in this group permanent.
-    (gnus-summary-update-info)
-    (set-buffer buf)
     (when gnus-use-cache
       (gnus-cache-possibly-remove-articles)
       (gnus-cache-save-buffers))
     (when gnus-use-trees
       (gnus-tree-close group))
+    ;; Make all changes in this group permanent.
+    (gnus-summary-update-info)
     ;; Make sure where I was, and go to next newsgroup.
     (set-buffer gnus-group-buffer)
     (or quit-config
@@ -9803,7 +9805,7 @@ be displayed."
   "Obsolete function."
   nil)
 
-(defun gnus-summary-next-article (&optional unread subject backward)
+(defun gnus-summary-next-article (&optional unread subject backward push)
   "Select the next article.
 If UNREAD, only unread articles are selected.
 If SUBJECT, only articles with SUBJECT are selected.
@@ -9847,6 +9849,8 @@ If BACKWARD, the previous article is selected instead of the next."
 	 ((not gnus-auto-select-next)
 	  (gnus-message 7 "No more%s articles" (if unread " unread" "")))
 	 ((or (eq gnus-auto-select-next 'quietly)
+	      (and (eq gnus-auto-select-next 'slightly-quietly)
+		   push)
 	      (and (eq gnus-auto-select-next 'almost-quietly)
 		   (gnus-summary-last-article-p)))
 	  ;; Select quietly.

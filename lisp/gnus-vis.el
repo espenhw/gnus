@@ -1334,7 +1334,7 @@ do the highlighting.  See the documentation for those functions."
 	      entry regexp header-face field-face from hpoints fpoints)
 	  (while (setq entry (pop alist))
 	    (goto-char (point-min))
-	    (setq regexp (concat "^" (nth 0 entry))
+	    (setq regexp (concat "^\\(" (nth 0 entry) "\\)")
 		  header-face (nth 1 entry)
 		  field-face (nth 2 entry))
 	    (while (and (re-search-forward regexp nil t)

@@ -1,5 +1,7 @@
+@tex
 \input texinfo                  @c -*-texinfo-*-
-@comment %**start of header (This is for running Texinfo on a region.)
+@end tex
+
 @setfilename gnus.info
 @settitle September Gnus Manual
 @synindex fn cp
@@ -9,12 +11,80 @@
 @finalout
 @end iftex
 @setchapternewpage odd
-@c      @smallbook
-@comment %**end of header (This is for running Texinfo on a region.)
-@tex
-\overfullrule=0pt
-%\global\baselineskip 30pt      % For printing in double spaces
-@end tex
+
+@iftex
+@iflatex
+\documentstyle[a4,pagestyle]{book}
+\input{epsf}
+%\addtolength{\oddsidemargin}{2cm}
+%\addtolength{\evensidemargin}{2cm}
+\makeindex
+\begin{document}
+
+\newcommand{\gnuscode}[1]{{\tt #1}}
+\newcommand{\gnussamp}[1]{{\tt #1}}
+\newcommand{\gnuslisp}[1]{{\tt #1}}
+\newcommand{\gnuskbd}[1]{{`\tt #1'}}
+\newcommand{\gnusfile}[1]{{`\tt #1'}}
+\newcommand{\gnusdfn}[1]{{\em #1}}
+\newcommand{\gnusstrong}[1]{{\bf #1}}
+\newcommand{\gnusemph}[1]{{\em #1}}
+\newcommand{\gnusvar}[1]{{\sl #1}}
+\newcommand{\gnussc}[1]{{\sc #1}}
+\newcommand{\gnustitle}[1]{{\huge #1}}
+\newcommand{\gnusauthor}[1]{{\huge #1}}
+\newcommand{\gnusbullet}{{.}}
+
+\newenvironment{codelist}%
+{\begin{list}{}{
+}
+}{\end{list}}
+
+\newenvironment{kbdlist}%
+{\begin{list}{}{
+}
+}{\end{list}}
+
+\newenvironment{dfnlist}%
+{\begin{list}{}{
+}
+}{\end{list}}
+
+\newenvironment{stronglist}%
+{\begin{list}{}{
+}
+}{\end{list}}
+
+\newenvironment{samplist}%
+{\begin{list}{}{
+}
+}{\end{list}}
+
+\newenvironment{varlist}%
+{\begin{list}{}{
+}
+}{\end{list}}
+
+\newenvironment{emphlist}%
+{\begin{list}{}{
+}
+}{\end{list}}
+
+\newpagestyle{gnus}%
+{
+{\underline{\makebox{\hfill}}}
+}
+{
+\ifodd\count0
+% \epsfbox{foot-gnus.ps} hei \hfill \arabic{page}
+\else
+\arabic{page} \hfill hei % \epsfbox{foot-gnus}
+\fi
+}
+\pagestyle{gnus}
+
+@end iflatex
+@end iftex
 
 @ifinfo
 
@@ -44,16 +114,12 @@ into another language, under the above conditions for modified versions.
 
 @iftex
 
-@tex
-
-
-@end tex
-
 @titlepage
 @title September Gnus Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
+
 @vskip 0pt plus 1filll
 Copyright @copyright{} 1995 Free Software Foundation, Inc. 
 
@@ -69,19 +135,45 @@ permission notice identical to this one.
 Permission is granted to copy and distribute translations of this manual
 into another language, under the above conditions for modified versions.
 
-Cover art by Etienne Suvasa.
 @end titlepage
 @page
 
 @end iftex
 
+
 @node Top
 @top The Gnus Newsreader
+
+@ifinfo
 
 You can read news (and mail) from within Emacs by using Gnus.  The news
 can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
+
+@end ifinfo
+
+@iftex
+
+Gnus is the advanced, self-documenting, customizable, extensible
+unreal-time newsreader for GNU Emacs.  
+
+Oops.  That sounds oddly familiar, so let's start over again to avoid
+being accused of plagiarism:
+
+Gnus is a message-reading laboratory.  It will let you look at just
+about anything as if it were a newsgroup.  You can read mail with it,
+you can browse directories with it, you can @code{ftp} with it---you can
+even read news with it, if you feel like it.
+
+Gnus tries to empower people who read news the same way Emacs empowers
+people who edit text.  Gnus sets no limits to what the user should be
+allowed to do.  Users are encouraged to extend Gnus to behave like they
+want it to behave.  A program should not control people; people should
+be empowered to do what they want by using (or abusing) the program.
+
+@end iftex
+
 
 @menu
 * History::                 How Gnus got where it is today.
@@ -101,6 +193,7 @@ luck.
 * Key Index::               Key Index.
 @end menu
 
+
 @node History
 @chapter History
 
@@ -115,18 +208,18 @@ distribution point for the new and spiffy versions of Gnus, also know as
 The Site That Destroys Newsrcs And Drives People Mad.
 
 During the first extended alpha period of develpment, the new Gnus was
-called "(ding) Gnus".  @dfn{(ding)}, is, of course, short for @dfn{ding
+called ``(ding) Gnus''.  @dfn{(ding)}, is, of course, short for @dfn{ding
 is not Gnus}, which is a total and utter lie, but who cares? (Besides,
-the "Gnus" in this abbreviation should probably be pronounced "news" as
+the ``Gnus'' in this abbreviation should probably be pronounced ``news'' as
 UMEDA intended, which makes it a more appropriate name, don't you
 think?)
 
 In any case, after spending all that energy with coming up with a new
 and spiffy name, we decided that the name was @emph{too} spiffy, so we
-renamamed it back again to "Gnus".  But in mixed case.  "Gnus" vs.
-"@sc{gnus}".  New vs. old.
+renamamed it back again to ``Gnus''.  But in mixed case.  ``Gnus'' vs.
+``@sc{gnus}''.  New vs. old.
 
-Incidentally, the next Gnus generation will be called "September Gnus",
+Incidentally, the next Gnus generation will be called ``September Gnus'',
 and won't be released until February.  Confused?  You will be.
 
 @menu
@@ -139,21 +232,22 @@ and won't be released until February.  Confused?  You will be.
 * Newest Features::     Features so new that they haven't been written yet.
 @end menu
 
+
 @node Why?
 @section Why?
 
 What's the point of Gnus?  
 
-I want to provide a "rad", "happening", "way cool" and "hep" newsreader,
-that lets you do anything you can think of.  That was my original
-motivation, but while working on Gnus, it has become clear to me that
-this generation of newsreaders really belong in the stone age.
+I want to provide a ``rad'', ``happening'', ``way cool'' and ``hep''
+newsreader, that lets you do anything you can think of.  That was my
+original motivation, but while working on Gnus, it has become clear to
+me that this generation of newsreaders really belong in the stone age.
 Newsreaders haven't developed much since the infancy of the net.  If the
 volume continues to rise with the current rate of increase, all current
 newsreaders will be pretty much useless.  How do you deal with
-newsgroups that have hundreds (or thousands) of new articles each day? 
+newsgroups that have hundreds (or thousands) of new articles each day?
 
-Gnus offer no real solutions to these questions, but I would very much
+Gnus offers no real solutions to these questions, but I would very much
 like to see Gnus being used as a testing ground for new methods of
 reading and fetching news.  Expanding on Umeda-san's wise decision to
 separate the newsreader from the backends, Gnus now offers a simple
@@ -163,6 +257,7 @@ everywhere I can imagine useful.  By doing so, I'm inviting every one of
 you to explore and invent new ways of reading news.
 
 May Gnus never be complete. @kbd{C-u 100 M-x hail-emacs}. 
+
 
 @node Compatibility
 @section Compatibility
@@ -257,7 +352,7 @@ Gnus does no MIME handling, and this standard-to-be seems to think that
 MIME is the bees' knees, so we have major breakage here.
 
 @item X-Newsreader
-This is considered to be a "vanity header", while I consider it to be
+This is considered to be a ``vanity header'', while I consider it to be
 consumer information.  After seeing so many badly formatted articles
 coming from @code{tin} and @code{Netscape} I know not to use either of
 those for posting articles.  I would not have known that if it wasn't
@@ -337,12 +432,12 @@ The new Gnus version couldn't have been done without the help of all the
 people on the (ding) mailing list.  Every day for months I have gotten
 tens of nice bug reports from them, filling me with joy, every single
 one of them.  Smooches.  The people on the list have been tried beyond
-endurance, what with my "oh, that's a neat idea <type type>, yup, I'll
+endurance, what with my ``oh, that's a neat idea <type type>, yup, I'll
 release it right away <ship off> no wait, that doesn't work at all <type
 type>, yup, I'll ship that one off right away <ship off> no, wait, that
-absolutely does not work" policy for releases.  Micro$oft---bah.
-Amateurs.  I'm @emph{much} worse.  (Or is that "worser"? "much worser"?
-"worsest"?)
+absolutely does not work'' policy for releases.  Micro$oft---bah.
+Amateurs.  I'm @emph{much} worse.  (Or is that ``worser''? ``much worser''?
+``worsest''?)
 
 I would like to take this opportunity to thank the Academy for...  oops,
 wrong show.
@@ -472,7 +567,7 @@ The uudecode functions have been expanded and generalized
 
 @item
 You can still post uuencoded articles, which was a little-known feature
-of @sc{gnus}' past (@pxref{Uuencoding & Posting}).
+of @sc{gnus}' past.
 
 @item
 Fetching parents (and other articles) now actually works without
@@ -610,7 +705,7 @@ HEAD format.
 @item level
 @cindex levels
 Each group is subscribed at some @dfn{level} or other (1-9).  The ones
-that have a lower level are "more" subscribed than the groups with a
+that have a lower level are ``more'' subscribed than the groups with a
 higher level.  In fact, groups on levels 1-5 are considered
 @dfn{subscribed}; 6-7 are @dfn{unsubscribed}; 8 are @dfn{zombies}; and 9
 are @dfn{killed}.  Commands for listing groups and scanning for new
@@ -756,7 +851,7 @@ something useful.
 
 Since she hasn't, Gnus will just subscribe you to a few randomly picked
 groups (i.e., @samp{*.newusers}).  (@dfn{Random} is here defined as
-"whatever Lars thinks you should read".)
+``whatever Lars thinks you should read''.)
 
 You'll also be subscribed to the Gnus documentation group, which should
 help you with most common problems.  
@@ -779,7 +874,7 @@ will happen whether the server doesn't actually exist (i.e., you have
 given the wrong address) or the server has just momentarily taken ill
 for some reason or other.  
 
-If Gnus says "nntp server on <your server> can't be opened.  Continue?",
+If Gnus says ``nntp server on <your server> can't be opened.  Continue?'',
 you do not want to continue unless you have some foreign groups that you
 want to read.  Even if you don't, Gnus will let you continue, but you'll
 find it difficult to actually do anything in the group buffer.  But,
@@ -829,8 +924,8 @@ information in the normal (i. e., master) @code{.newsrc} file.
 @section Fetching a Group
 
 @findex gnus-fetch-group
-It it sometime convenient to be able to just say "I want to read this
-group and I don't care whether Gnus has been started or not".  This is
+It it sometime convenient to be able to just say ``I want to read this
+group and I don't care whether Gnus has been started or not''.  This is
 perhaps more useful for people who write code than for users, but the
 command @code{gnus-fetch-group} provides this functionality in any
 case.  It takes the group name as a paramenter.
@@ -959,7 +1054,7 @@ issue an @code{ask-server} command to each of the select methods, and
 subscribe them (or not) using the normal methods.  This might be handy
 if you are monitoring a few servers for new groups.  A side effect is
 that startup will take much longer, so you can meditate while waiting.
-Use the mantra "dingnusdingnusdingnus" to achieve permanent happiness.
+Use the mantra ``dingnusdingnusdingnus'' to achieve permanent happiness.
 
 @node Startup Files
 @section Startup Files
@@ -1269,7 +1364,7 @@ into the buffer just like information from any other specifier.
 @end table
 
 @cindex *
-All the "number-of" specs will be filled with an asterisk (@samp{*}) if
+All the ``number-of'' specs will be filled with an asterisk (@samp{*}) if
 no info is available---for instance, if it is a non-activated foreign
 group, or a bogus (or semi-bogus) native group.
 
@@ -1670,7 +1765,7 @@ listed.
 @vindex gnus-group-use-permament-levels
 If @code{gnus-group-use-permament-levels} is non-@code{nil}, once you
 give a level prefix to @kbd{g} or @kbd{l}, all subsequent commands will
-use this level as the "work" level.
+use this level as the ``work'' level.
 
 @vindex gnus-activate-level
 Gnus will normally just activate groups that are on level
@@ -1859,7 +1954,7 @@ group will be created from from @code{gnus-group-archive-directory}.
 @kindex G k (Group)
 @findex gnus-group-make-kiboze-group
 Make a kiboze group.  You will be prompted for a name, for a regexp to
-match groups to be "included" in the kiboze group, and a series of
+match groups to be ``included'' in the kiboze group, and a series of
 strings to match on headers (@code{gnus-group-make-kiboze-group}).
 
 @item G D
@@ -1911,7 +2006,7 @@ The different methods all have their peculiarities, of course.
 * nndir::            You can read a directory as if it was a newsgroup.
 * nneething::        Dired?  Who needs dired?
 * nndoc::            Single files can be the basis of a group.
-* SOUP::             Reading @sc{SOUP} packets "offline".
+* SOUP::             Reading @sc{SOUP} packets ``offline''.
 * Reading Mail::     Reading your personal mail with Gnus.
 @end menu
 
@@ -2223,13 +2318,13 @@ you enter it---it'll have much the same effect.
 @cindex @code{nnkiboze}
 @cindex kibozing
 
-@dfn{Kibozing} is defined by @sc{oed} as "grepping through (parts of)
-the news feed".  @code{nnkiboze} is a backend that will do this for you.  Oh
+@dfn{Kibozing} is defined by @sc{oed} as ``grepping through (parts of)
+the news feed''.  @code{nnkiboze} is a backend that will do this for you.  Oh
 joy!  Now you can grind any @sc{nntp} server down to a halt with useless
 requests!  Oh happiness!
 
 The address field of the @code{nnkiboze} method is, as with
-@code{nnvirtual}, a regexp to match groups to be "included" in the
+@code{nnvirtual}, a regexp to match groups to be ``included'' in the
 @code{nnkiboze} group.  There most similarities between @code{nnkiboze}
 and @code{nnvirtual} ends.
 
@@ -2286,7 +2381,7 @@ over at @samp{sina} as a newsgroup.  Distributed news ahoy!
 
 @code{nndir} will use @sc{nov} files if they are present.
 
-@code{nndir} is a "read-only" backend---you can't delete or expire
+@code{nndir} is a ``read-only'' backend---you can't delete or expire
 articles with this method.  You can use @code{nnmh} or @code{nnml} for
 whatever you use @code{nndir} for, so you could switch to any of those
 methods if you feel the need to have a non-read-only @code{nndir}.
@@ -2302,7 +2397,7 @@ pretends that any random directory is a newsgroup.  Strange, but true.
 
 When @code{nneething} is presented with a directory, it will scan this
 directory and assign article numbers to each file.  When you enter such a
-group, @code{nneething} must create "headers" that Gnus can use.  After
+group, @code{nneething} must create ``headers'' that Gnus can use.  After
 all, Gnus is a newsreader, in case you're forgetting. @code{nneething}
 does this in a two-step process.  First, it snoops each file in question.
 If the file looks like an article (i.e., the first few lines look like
@@ -2400,7 +2495,7 @@ The standard (RFC 1153) digest format.
 Non-standard digest format---matches most things, but does it badly. 
 @end table
 
-You can also use the special "file type" @code{guess}, which means that
+You can also use the special ``file type'' @code{guess}, which means that
 @code{nndoc} will try to guess what file type it is looking at.
 @code{digest} means that @code{nndoc} should guess what digest type the
 file is. 
@@ -2441,7 +2536,7 @@ and @code{news}.
 @cindex @sc{SOUP}
 @cindex offline
 
-In the PC world people often talk about "offline" newsreaders.  These
+In the PC world people often talk about ``offline'' newsreaders.  These
 are thingies that are combined reader/news transport monstrosities.
 With built-in modem programs.  Yecchh!  
 
@@ -2618,12 +2713,12 @@ shouldn't even have documented it.  Drats!  Too late!
 @item nnsoup-replies-index-type
 @vindex nnsoup-replies-index-type
 The index type of the replies packet.  The is @samp{?n}, which means
-"none".  Don't fiddle with this one either!
+``none''.  Don't fiddle with this one either!
 
 @item nnsoup-active-file
 @vindex nnsoup-active-file
-Where @code{nnsoup} stores lots of information.  This is not an "active
-file" in the @code{nntp} sense; it's an Emacs Lisp file.  If you lose
+Where @code{nnsoup} stores lots of information.  This is not an ``active
+file'' in the @code{nntp} sense; it's an Emacs Lisp file.  If you lose
 this file or mess it up in any way, you're dead.  The default is
 @file{~/SOUP/active}.
 
@@ -2689,7 +2784,7 @@ depends on what format you want to store your mail in.
 @menu
 * Creating Mail Groups::         How to create mail groups.
 * Fancy Mail Splitting::         Gnus can do hairy splitting of incoming mail.
-* Mail & Procmail::              Reading mail groups that procmail create.
+* Mail and Procmail::            Reading mail groups that procmail create.
 * Expiring Old Mail Articles::   Getting rid of unwanted mail.
 * Not Reading Mail::             Using mail backends for reading other files.
 * nnmbox::                       Using the (quite) standard Un*x mbox.
@@ -2811,8 +2906,8 @@ Gnus gives you all the opportunity you could possibly want for shooting
 yourself in the foot.  Let's say you create a group that will contain
 all the mail you get from your boss.  And then you accidentally
 unsubscribe from the group.  Gnus will still put all the mail from your
-boss in the unsubscribed group, and so, when your boss mails you "Have
-that report ready by Monday or you're fired!", you'll never see it and,
+boss in the unsubscribed group, and so, when your boss mails you ``Have
+that report ready by Monday or you're fired!'', you'll never see it and,
 come Tuesday, you'll still believe that you're gainfully employed while
 you really should be out collecting empty bottles to save up for next
 month's rent money.
@@ -2869,7 +2964,7 @@ some add @code{X-Gnus-Group} headers; most rename the Unix mbox
 
 @vindex nnmail-crosspost
 The mail backends all support cross-posting.  If several regexps match,
-the mail will be "cross-posted" to all those groups.
+the mail will be ``cross-posted'' to all those groups.
 @code{nnmail-crosspost} says whether to use this mechanism or not.  Note
 that no articles are crossposted to the general (@samp{""}) group. 
 
@@ -2953,14 +3048,15 @@ as specified by the variable @code{nnmail-split-abbrev-alist}.  This is
 an alist of cons cells, where the car of the cells contains the key, and
 the cdr contains a string.
 
-@node Mail & Procmail
-@subsubsection Mail & Procmail
+@node Mail and Procmail
+@subsubsection Mail and Procmail
 @cindex procmail
 
-Many people use @code{procmail} to split incoming mail into groups.  If
-you do that, you should set @code{nnmail-spool-file} to @code{procmail}
-to ensure that the mail backends never ever try to fetch mail by
-themselves.
+Many people use @code{procmail} (or some other mail filter program or
+external delivery agent---@code{slocal}, @code{elm}, etc) to split
+incoming mail into groups.  If you do that, you should set
+@code{nnmail-spool-file} to @code{procmail} to ensure that the mail
+backends never ever try to fetch mail by themselves.
 
 This also means that you probably don't want to set
 @code{nnmail-split-methods} either, which has some, perhaps, unexpected
@@ -3023,7 +3119,7 @@ different approach to mail reading.
 Gnus basically considers mail just to be news that has been received in
 a rather peculiar manner.  It does not think that it has the power to
 actually change the mail, or delete any mail messages.  If you enter a
-mail group, and mark articles as "read", or kill them in some other
+mail group, and mark articles as ``read'', or kill them in some other
 fashion, the mail articles will still exist on the system.  I repeat:
 Gnus will not delete your old, read mail.  Unless you ask it to, of
 course.
@@ -3078,7 +3174,7 @@ everywhere else:
                6))))
 @end lisp
 
-The group names that this function is fed are "unadorned" group
+The group names that this function is fed are ``unadorned'' group
 names---no @samp{"nnml:"} prefixes and the like.
 
 The @code{nnmail-expiry-wait} variable and
@@ -3213,7 +3309,7 @@ in your account, you should not use this backend.  As each mail gets its
 own file, you might very well occupy thousands of inodes within a few
 weeks.  If this is no problem for you, and it isn't a problem for you
 having your friendly systems administrator walking around, madly,
-shouting "Who is eating all my inodes?! Who? Who!?!", then you should
+shouting ``Who is eating all my inodes?! Who? Who!?!'', then you should
 know that this is probably the fastest format to use.  You do not have
 to trudge through a big mbox file just to read your new mail.
 
@@ -3324,7 +3420,7 @@ If non-@code{nil}, @code{nnfolder} will read incoming mail.
 @findex nnfolder-generate-active-file
 @kindex M-x nnfolder-generate-active-file
 If you have lots of @code{nnfolder}-like files you'd like to read with
-@code{nnfolder}, you can use the @key{M-x nnfolder-generate-active-file}
+@code{nnfolder}, you can use the @kbd{M-x nnfolder-generate-active-file}
 command to make @code{nnfolder} aware of all likely files in
 @code{nnfolder-directory}.
 
@@ -3373,7 +3469,7 @@ or not.  Let's say there's a group on the server that is called
 @samp{fa.4ad-l}.  This is a real newsgroup, but the server has gotten
 the articles from a mail-to-news gateway.  Posting directly to this
 group is therefore impossible---you have to send mail to the mailing
-list address instead.  Also @xref{Mail & Post}.
+list address instead. 
 
 @item to-list
 @cindex to-list
@@ -4128,7 +4224,7 @@ move around, read articles, post articles and reply to articles.
 * Choosing Articles::           Reading articles.
 * Paging the Article::          Scrolling the current article.
 * Reply Followup and Post::     Posting articles.
-* Canceling and Superseding::   "Whoops, I shouldn't have called him that."
+* Canceling and Superseding::   ``Whoops, I shouldn't have called him that.''
 * Marking Articles::            Marking articles as read, expirable, etc.
 * Limiting::                    You can limit the summary buffer.
 * Threading::                   How threads are made.
@@ -4263,7 +4359,7 @@ into the summary just like information from any other summary specifier.
 
 The @samp{%U} (status), @samp{%R} (replied) and @samp{%z} (zcore) specs
 have to be handled with care.  For reasons of efficiency, Gnus will
-compute what column these characters will end up in, and "hard-code"
+compute what column these characters will end up in, and ``hard-code''
 that.  This means that it is illegal to have these specs after a
 variable-length spec.  Well, you might not be arrested, but your summary
 buffer will look strange, which is bad enough.
@@ -4373,7 +4469,9 @@ return to the group buffer.  If this variable is neither @code{t} nor
 any unread articles or not.  As a special case, if this variable is
 @code{quietly}, Gnus will select the next group without asking for
 confirmation.  If this variable is @code{almost-quietly}, the same will
-happen only if you are located on the last article in the group.  Also
+happen only if you are located on the last article in the group.
+Finally, if this variable is @code{slightly-quietly}, the @kbd{Z n}
+command will go to the next group without confirmation.  Also
 @xref{Group Levels}.
 
 @item gnus-auto-select-same
@@ -4384,7 +4482,7 @@ particularly useful if you use a threaded display.
 
 @item gnus-summary-check-current
 @vindex gnus-summary-check-current
-If non-@code{nil}, all the "unread" movement commands will not proceed
+If non-@code{nil}, all the ``unread'' movement commands will not proceed
 to the next (or previous) article if the current article is unread.
 Instead, they will choose the current article.
 
@@ -4600,7 +4698,7 @@ server.
 * Mail::                 Mailing & replying.
 * Post::                 Posting and following up.
 * Posting Server::       What server should you post via?
-* Mail & Post::          Mailing and posting at the same time.
+* Mail and Post::        Mailing and posting at the same time.
 * Archived Messages::    Where Gnus stores the messages you've sent.
 * Posting Styles::       An easier way to configure some key elements.
 * Drafts::               Postponing messages and rejected messages.
@@ -4791,7 +4889,7 @@ I found that useful, so you can now also press @kbd{C-c C-p} to
 thing, you will be prompted for a mail group, and then the article will
 be put there.  This means that the article is @dfn{not} mailed.  
 
-There are three "methods" for handling all mail.  The default is
+There are three ``methods'' for handling all mail.  The default is
 @code{sendmail}.  Some people like what @code{mh} does better, and some
 people prefer @code{vm}.
 
@@ -4886,8 +4984,7 @@ process/prefix convention.
 @kindex S u (Summary)
 @findex gnus-uu-post-news
 Uuencode a file, split it into parts, and post it as a series
-(@code{gnus-uu-post-news}). 
-@c (@pxref{Uuencoding & Posting}). 
+(@code{gnus-uu-post-news}). (@pxref{Uuencoding and Posting}). 
 @end table
 
 @vindex gnus-required-headers
@@ -4976,7 +5073,7 @@ If it is the symbol @code{use}, always use the value.
 
 @item gnus-followup-to-function
 @vindex gnus-followup-to-function
-This variable is most useful in mail groups, where "following up" really
+This variable is most useful in mail groups, where ``following up'' really
 means sending a mail to a list address.  Gnus uses the normal methods to
 determine where follow-ups are to go, but you can change the behavior
 to suit your needs by fiddling with this variable.
@@ -5150,7 +5247,7 @@ then set the @code{gnus-post-method} to some other method:
 Now, if you've done this, and then this server rejects your article, or
 this server is down, what do you do then?  To override this variable you
 can use a non-zero prefix to the @kbd{C-c C-c} command to force using
-the "current" server for posting.
+the ``current'' server for posting.
 
 If you give a zero prefix (i. e., @kbd{C-u 0 C-c C-c}) to that command,
 Gnus will prompt you for what method to use for posting.  
@@ -5160,8 +5257,8 @@ If that's the case, Gnus will always prompt you for what method to use
 for posting. 
 
 
-@node Mail & Post
-@subsection Mail & Post
+@node Mail and Post
+@subsection Mail and Post
 
 Commands for sending mail and post at the same time:
 
@@ -5327,7 +5424,7 @@ Gnus provides a few different methods for storing the mail you send.
 The default method is to use the @dfn{archive virtual server} to store
 the mail.
 
-@vindex gnus-message-archive-method 
+@vindex gnus-message-archive-method
 @code{gnus-message-archive-method} says what virtual server Gnus is to
 use to store sent messages.  It is @code{(nnfolder "archive"
 (nnfolder-directory "~/Mail/archive/"))} by default, but you can use any
@@ -5357,7 +5454,7 @@ Messages will be saved in that group.
 @item a list of strings
 Messages will be saved in all those groups.
 @item an alist of regexps, functions and forms
-When a key "matches", the result is used.
+When a key ``matches'', the result is used.
 @end itemize
 
 Let's illustrate:
@@ -5383,7 +5480,7 @@ Save to different groups based on what group you are in:
 More complex stuff:
 @lisp
 (setq gnus-message-archive-group 
-      '((if (eq major-mode news-reply-mode) "misc-news" "misc-mail)))
+      '((if (eq major-mode news-reply-mode) "misc-news" "misc-mail")))
 @end lisp       
 
 This last one is the default.
@@ -5392,7 +5489,7 @@ Now, when you send a message off, it will be stored in the appropriate
 group.  (If you want to disable storing for just one particular article,
 you can just remove the @code{Gcc} header that has been inserted.)  The
 archive group will appear in the group buffer the next time you start
-Gnus, or the next time you press @key{F} in the group buffer.  You can
+Gnus, or the next time you press @kbd{F} in the group buffer.  You can
 enter it and read the articles in it just like you'd read any other
 group.  If the group gets really big and annoying, you can simply rename
 if (using @kbd{G r} in the group buffer) to something nice --
@@ -5478,7 +5575,7 @@ variable:
 
 As you might surmise from this example, this alist consists of several
 @dfn{styles}.  Each style will be applicable if the first element
-"matches", in some form or other.  The entire alist will be iterated
+``matches'', in some form or other.  The entire alist will be iterated
 over, from the beginning towards the end, and each match will be
 applied, which means that attributes in later styles that match override
 the same attributes in earlier matching styles.  So
@@ -5801,7 +5898,7 @@ Articles that are stored in the article cache will be marked with an
 @samp{*} in the second column (@code{gnus-cached-mark}).
 
 @item 
-Articles that are "saved" (in some manner or other; not necessarily
+Articles that are ``saved'' (in some manner or other; not necessarily
 religously) are marked with an @samp{S} in the second column
 (@code{gnus-saved-mark}.  
 
@@ -5822,7 +5919,7 @@ marked with the process mark have a @samp{#} in the second column.
 
 @end itemize
 
-You might have noticed that most of these "non-readedness" marks appear
+You might have noticed that most of these ``non-readedness'' marks appear
 in the second column by default.  So if you have a cached, saved,
 replied article that you have process-marked, what will that look like?
 
@@ -6191,7 +6288,7 @@ articles that belong in the same thread together.  This will leave
 is missing from the thread.  (These gaps appear like normal summary
 lines.  If you select a gap, Gnus will try to fetch the article in
 question.)  If this variable is @code{t}, Gnus will display all these
-"gaps" without regard for whether they are useful for completing the
+``gaps'' without regard for whether they are useful for completing the
 thread or not.  Finally, if this variable is @code{more}, Gnus won't cut
 off sparse leaf nodes that don't lead anywhere.  This variable is
 @code{nil} by default.
@@ -6250,7 +6347,7 @@ default is @samp{"^ *$\\|^(none)$"}.
 @item gnus-summary-thread-gathering-function
 @vindex gnus-summary-thread-gathering-function
 Gnus gathers threads by looking at @code{Subject} headers.  This means
-that totally unrelated articles may end up in the same "thread", which
+that totally unrelated articles may end up in the same ``thread'', which
 is confusing.  An alternate approach is to look at all the
 @code{Message-ID}s in all the @code{References} headers to find
 matches.  This will ensure that no gathered threads ever includes
@@ -7014,7 +7111,7 @@ prompt.  In addition, the result of the operation itself will be used if
 the function or form called returns a string or a list of strings. 
 
 You basically end up with a list of file names that might be used when
-saving the current article.  (All "matches" will be used.)  You will
+saving the current article.  (All ``matches'' will be used.)  You will
 then be prompted for what you really want to use as a name, with file
 name completion over the results from applying this variable.
 
@@ -7072,7 +7169,7 @@ encoded in some way or other.  Gnus can decode them for you.
 
 All these functions use the process/prefix convention
 (@pxref{Process/Prefix}) for finding out what articles to work on, with
-the extension that a "single article" means "a single series".  Gnus can
+the extension that a ``single article'' means ``a single series''.  Gnus can
 find out by itself what articles belong to a series, decode all the
 articles and unpack/view/save the resulting file(s).
 
@@ -7086,7 +7183,7 @@ will find all the articles that match the regexp @samp{^cat.gif
 
 Subjects that are nonstandard, like @samp{cat.gif (2/3) Part 6 of a
 series}, will not be properly recognized by any of the automatic viewing
-commands, and you have to mark the articles manually with @key{#}.
+commands, and you have to mark the articles manually with @kbd{#}.
 
 @node Uuencoded Articles
 @subsection Uuencoded Articles
@@ -7204,7 +7301,7 @@ Adjective, not verb.
 @menu 
 * Rule Variables::          Variables that say how a file is to be viewed.
 * Other Decode Variables::  Other decode variables.
-* Uuencoding & Posting::    Variables for customizing uuencoding.
+* Uuencoding and Posting::  Variables for customizing uuencoding.
 @end menu
 
 @node Rule Variables
@@ -7335,8 +7432,8 @@ simply dropped them.
 
 @end table
 
-@node Uuencoding & Posting
-@subsubsection Uuencoding & Posting
+@node Uuencoding and Posting
+@subsubsection Uuencoding and Posting
 
 @table @code
 
@@ -7344,7 +7441,7 @@ simply dropped them.
 @vindex gnus-uu-post-include-before-composing
 Non-@code{nil} means that @code{gnus-uu} will ask for a file to encode
 before you compose the article.  If this variable is @code{t}, you can
-either include an encoded file with @key{C-c C-i} or have one included
+either include an encoded file with @kbd{C-c C-i} or have one included
 for you when you post the article.
 
 @item gnus-uu-post-length
@@ -7384,7 +7481,7 @@ This unpacking process is recursive, so if the archive contains archives
 of archives, it'll all be unpacked.
 
 Finally, Gnus will normally insert a @dfn{pseudo-article} for each
-extracted file into the summary buffer.  If you go to these "articles",
+extracted file into the summary buffer.  If you go to these ``articles'',
 you will be prompted for a command to run (usually Gnus will make a
 suggestion), and then the command will be run.
 
@@ -7452,9 +7549,10 @@ Highlight the headers (@code{gnus-article-highlight-headers}).  The
 highlighting will be done according to the @code{gnus-header-face-alist}
 variable, which is a list where each element has the form @var{(regexp
 name content)}.  @var{regexp} is a regular expression for matching the
-header,  @var{name} is the face used for highling the header name and
+header, @var{name} is the face used for highlighting the header name and
 @var{content} is the face for highlighting the header value.  The first
-match made will be used.
+match made will be used.  Note that @var{regexp} shouldn't have @samp{^}
+prepended---Gnus will add one.
 
 @item W H c
 @kindex W H c (Summary)
@@ -7603,7 +7701,7 @@ in @code{gnus-article-display-hook} (@pxref{Customizing Articles}).
 
 @end table
 
-All these "hiding" commands are toggles, but if you give a negative
+All these ``hiding'' commands are toggles, but if you give a negative
 prefix to these commands, they will show what they have previously
 hidden.  If you give a positive prefix, they will always hide.
 
@@ -7624,11 +7722,11 @@ regexp.  If it matches, the text in question is not a signature.
 @cindex washing
 @cindex article washing
 
-We call this "article washing" for a really good reason.  Namely, the
+We call this ``article washing'' for a really good reason.  Namely, the
 @kbd{A} key was taken, so we had to use the @kbd{W} key instead.
 
-@dfn{Washing} is defined by us as "changing something from something to
-something else", but normally results in something looking better.
+@dfn{Washing} is defined by us as ``changing something from something to
+something else'', but normally results in something looking better.
 Cleaner, perhaps.
 
 @table @kbd
@@ -7650,7 +7748,7 @@ Do a Caesar rotate (rot13) on the article buffer
 @findex gnus-summary-show-article
 (Re)fetch the current article (@code{gnus-summary-show-article}).  If
 given a prefix, fetch the current article, but don't run any of the
-article treatment functions.  This will give you a "raw" article, just
+article treatment functions.  This will give you a ``raw'' article, just
 the way it came from the server.
 
 @item W t
@@ -8083,7 +8181,7 @@ Variables related to the display are:
 @table @code
 @item gnus-tree-brackets
 @vindex gnus-tree-brackets
-This is used for differentiating between "real" articles and "sparse"
+This is used for differentiating between ``real'' articles and ``sparse''
 articles.  The format is @var{((real-open . real-close) (sparse-open
 . sparse-close) (dummy-open . dummy-close))}, and the default is
 @code{((?[ . ?]) (?( . ?)) (?@{ . ?@}))}.
@@ -8169,8 +8267,8 @@ disappear forever into that big @file{/dev/null} in the sky.
 @item B DEL
 @kindex B DEL (Summary)
 @findex gnus-summary-delete-articles
-Delete the mail article.  This is "delete" as in "delete it from your
-disk forever and ever, never to return again." Use with caution.
+Delete the mail article.  This is ``delete'' as in ``delete it from your
+disk forever and ever, never to return again.'' Use with caution.
 (@code{gnus-summary-delete-article}).
 
 @item B m
@@ -8339,7 +8437,7 @@ If the current article is a collection of other articles (for instance,
 a digest), you might use this command to enter a group based on the that
 article (@code{gnus-summary-enter-digest-group}).  Gnus will try to
 guess what article type is currently displayed unless you give a prefix
-to this command, which forces a "digest" interpretation.  Basically,
+to this command, which forces a ``digest'' interpretation.  Basically,
 whenever you see a message that is a collection of other messages on
 some format, you @kbd{A D} and read these messages in a more convenient
 fashion. 
@@ -8685,7 +8783,7 @@ To enter the server buffer, user the @kbd{^}
 * Server Buffer Format::   You can customize the look of this buffer.
 * Server Commands::        Commands to manipulate servers.
 * Example Methods::        Examples server specifications.
-* Servers & Methods::      You can use server names as select methods.
+* Servers ant Methods::    You can use server names as select methods.
 * Unavailable Servers::    Some servers you try to contact may be down.
 @end menu
 
@@ -8794,8 +8892,8 @@ Here's the method for the public spool:
       (nnmh-get-new-mail nil))
 @end lisp
 
-@node Servers & Methods
-@section Servers & Methods
+@node Servers and Methods
+@section Servers and Methods
 
 Wherever you would normally use a select method
 (eg. @code{gnus-secondary-select-method}, in the group select method,
@@ -8809,7 +8907,7 @@ over.
 
 If a server seems to be unreachable, Gnus will mark that server as
 @code{denied}.  That means that any subsequent attempt to make contact
-with that server will just be ignored.  "It can't be opened," Gnus will
+with that server will just be ignored.  ``It can't be opened,'' Gnus will
 tell you, without making the least effort to see whether that is
 actually the case or not.  
 
@@ -8819,8 +8917,8 @@ Let's say you have 10 groups subscribed to the server
 away from you, the machine is quite, so it takes 1 minute just to find
 out that it refuses connection from you today.  If Gnus were to attempt
 to do that 10 times, you'd be quite annoyed, so Gnus won't attempt to do
-that.  Once it has gotten a single "connection refused", it will regard
-that server as "down".
+that.  Once it has gotten a single ``connection refused'', it will regard
+that server as ``down''.
 
 So, what happens if the machine was only feeling unwell temporarily?
 How do you test to see whether the machine has come up again?
@@ -9123,7 +9221,7 @@ temporary score entry: @kbd{L s s t}.  Pretty easy.
 To make things a bit more complicated, there are shortcuts.  If you use
 a capital letter on either the second or third keys, Gnus will use
 defaults for the remaining one or two keystrokes.  The defaults are
-"substring" and "temporary".  So @kbd{I A} is the same as @kbd{I a s t},
+``substring'' and ``temporary''.  So @kbd{I A} is the same as @kbd{I a s t},
 and @kbd{I a R} is the same as @kbd{I a r t}.
 
 @vindex gnus-score-mimic-keymap
@@ -9198,12 +9296,6 @@ If you have really complicated score files, and do lots of batch
 scoring, then you might set this variable to @code{t}.  This will make
 Gnus save the scores into the @file{.newsrc.eld} file.
 
-@item gnus-save-score
-@vindex gnus-save-score
-If you have really complicated score files, and do lots of batch
-scoring, then you might set this variable to @code{t}.  This will make
-Gnus save the scores into the @file{.newsrc.eld} file.
-
 @item gnus-score-interactive-default-score
 @vindex gnus-score-interactive-default-score
 Score used by all the interactive raise/lower commands to raise/lower
@@ -9266,7 +9358,7 @@ This variable can also be a list of functions.  In that case, all these
 functions will be called, and all the returned lists of score files will
 be applied.  These functions can also return lists of score alists
 directly.  In that case, the functions that return these non-file score
-alists should probably be placed before the "real" score file functions,
+alists should probably be placed before the ``real'' score file functions,
 to ensure that the last score file returned is the local score file.
 Phu. 
 
@@ -9343,7 +9435,7 @@ will perform the match on the body of the article, @samp{Head} will
 perform the match on the head of the article, and @samp{All} will
 perform the match on the entire article.  Note that using any of these
 last three keys will slow down group entry @emph{considerably}.  The
-final "header" you can score on is @samp{Followup}.  These score entries
+final ``header'' you can score on is @samp{Followup}.  These score entries
 will result in new score entries being added for all follow-ups to
 articles that matches these score entries.
 
@@ -9553,7 +9645,7 @@ looks something like this:
 @end lisp
 
 As you see, each element in this alist has a mark as a key (either a
-variable name or a "real" mark---a character).  Following this key is a
+variable name or a ``real'' mark---a character).  Following this key is a
 random number of header/score pairs.  
 
 To take @code{gnus-del-mark} as an example---this alist says that all
@@ -9621,7 +9713,7 @@ article.
 
 @item gnus-score-followup-thread
 @findex gnus-score-followup-thread
-This will add a score to all articles that appear in a thread "below"
+This will add a score to all articles that appear in a thread ``below''
 your own article.
 @end table
 
@@ -9697,7 +9789,7 @@ rest as read, and expunge them to boot.
 @section Global Score Files
 @cindex global score files
 
-Sure, other newsreaders have "global kill files".  These are usually
+Sure, other newsreaders have ``global kill files''.  These are usually
 nothing more than a single kill file that applies to all groups, stored
 in the user's home directory.  Bah!  Puny, weak newsreaders!
 
@@ -9818,7 +9910,7 @@ Edit the general kill file (@code{gnus-summary-edit-global-kill}).
 A kill file for the group @samp{soc.motss} is normally called
 @file{soc.motss.KILL}.  The suffix appended to the group name to get
 this file name is detailed by the @code{gnus-kill-file-name} variable.
-The "global" kill file (not in the score file sense of "global", of
+The ``global'' kill file (not in the score file sense of ``global'', of
 course) is called just @file{KILL}.
 
 @vindex gnus-kill-save-kill-file
@@ -9837,7 +9929,7 @@ kills.
 * Formatting Variables::       How to control the look of the buffers.
 * Windows Configuration::      Configuring the Gnus buffer windows.
 * Buttons::                    Get tendonitis in ten easy steps!
-* Compilation & Init File::    How to speed Gnus up.
+* Compilation and Init File::  How to speed Gnus up.
 * Daemons::                    Gnus can do things behind your back.
 * NoCeM::                      How to avoid spam and other fatty foods.
 * Various Various::            Things that are really various.
@@ -9853,8 +9945,8 @@ kills.
 @vindex gnus-novice-user
 If this variable is non-@code{nil}, you are either a newcomer to the
 World of Usenet, or you are very cautious, which is a nice thing to be,
-really.  You will be given questions of the type "Are you sure you want
-to do this?" before doing anything dangerous.  This is @code{t} by
+really.  You will be given questions of the type ``Are you sure you want
+to do this?'' before doing anything dangerous.  This is @code{t} by
 default. 
 
 @item gnus-expert-user
@@ -9896,8 +9988,8 @@ Here's an example format spec (from the group buffer): @samp{"%M%S%5y:
 lots of percentages everywhere.  
 
 Each @samp{%} element will be replaced by some string or other when the
-buffer in question is generated.  @samp{%5y} means "insert the @samp{y}
-spec, and pad with spaces to get a 5-character field".  Just like a
+buffer in question is generated.  @samp{%5y} means ``insert the @samp{y}
+spec, and pad with spaces to get a 5-character field''.  Just like a
 normal format spec, almost.
 
 You can also say @samp{%6,4y}, which means that the field will never be
@@ -9909,9 +10001,9 @@ will get the special @code{mouse-face} property set, which means that it
 will be highlighted (with @code{gnus-mouse-face}) when you put the mouse
 pointer over it.
 
-Text inside the @samp{%@{} and @samp{%@}} specifiers will have their
+Text inside the @samp{%[} and @samp{%]} specifiers will have their
 normal faces set using @code{gnus-face-0}, which is @code{bold} by
-default.  If you say @samp{%1@{} instead, you'll get @code{gnus-face-1}
+default.  If you say @samp{%1[} instead, you'll get @code{gnus-face-1}
 instead, and so on.  Create as many faces as you wish.  The same goes
 for the @code{mouse-face} specs---you can say @samp{%3(hello%)} to have
 @samp{hello} mouse-highlighted with @code{gnus-mouse-face-3}.
@@ -10129,7 +10221,7 @@ You might want to have several frames as well.  No prob---just use the
 @end lisp
 
 This split will result in the familiar summary/article window
-configuration in the first (or "main") frame, while a small additional
+configuration in the first (or ``main'') frame, while a small additional
 frame will be created where picons will be shown.  As you can see,
 instead of the normal @samp{1.0} top-level spec, each additional split
 should have a frame parameter alist as the size spec.
@@ -10215,8 +10307,8 @@ is either a cons cell where the car contains a text to be displayed and
 the cdr contains a function symbol, or a simple string.
 
 
-@node Compilation & Init File
-@section Compilation & Init File
+@node Compilation and Init File
+@section Compilation and Init File
 @cindex compilation
 @cindex init file
 @cindex byte-compilation
@@ -10303,7 +10395,7 @@ the function will then be called once every day somewhere near that
 time.  Modified by the @var{idle} parameter, of course.
 
 @vindex gnus-demon-timestep
-(When I say "minute" here, I really mean @code{gnus-demon-timestep}
+(When I say ``minute'' here, I really mean @code{gnus-demon-timestep}
 seconds.  This is @samp{60} by default.  If you change that variable,
 all the timings in the handlers will be affected.)
 
@@ -10681,7 +10773,7 @@ time.
 
 It is also important to remember that I have no memory whatsoever.  If
 you send a bug report, and I send you a reply, and then you send back
-just "No, it's not! Moron!", I will have no idea what you are insulting
+just ``No, it's not! Moron!'', I will have no idea what you are insulting
 me about.  Always overexplain everything.  It's much easier for all of
 us---if I don't have all the information I need, I will just mail you
 and ask for more info, and everything takes more time.
@@ -10703,7 +10795,7 @@ touch.  Say hello to your cats from me.
 
 My @strong{ghod}---I just can't stand goodbyes.  Sniffle.
 
-Ol' Chuck Reznikoff said it pretty well, so I leave the floor to him:
+Ol' Charles Reznikoff said it pretty well, so I leave the floor to him:
 
 @quotation
 @strong{Te Deum}
@@ -10769,7 +10861,7 @@ examples of the latter we have @code{nntp-port-number} and
 
 When Gnus asks for information from a backend---say @code{nntp}---on
 something, it will normally include a virtual server name in the
-function parameters.  (If not, the backend should use the "current"
+function parameters.  (If not, the backend should use the ``current''
 virtual server.)  For instance, @code{nntp-request-list} takes a virtual
 server as its only (optional) parameter.  If this virtual server hasn't
 been opened, the function should fail.
@@ -10797,13 +10889,13 @@ always check whether are present before attempting to call.
 All these functions are expected to return data in the buffer
 @code{nntp-server-buffer} (@samp{" *nntpd*"}), which is somewhat
 unfortunately named, but we'll have to live with it.  When I talk about
-"resulting data", I always refer to the data in that buffer.  When I
-talk about "return value", I talk about the function value returned by
+``resulting data'', I always refer to the data in that buffer.  When I
+talk about ``return value'', I talk about the function value returned by
 the function call.
 
 Some backends could be said to be @dfn{server-forming} backends, and
 some might be said to not be.  The latter are backends that generally
-only operate on one group at a time, and have no concept of "server" --
+only operate on one group at a time, and have no concept of ``server'' --
 they have a group, and they deliver info on that group and nothing more.
 
 In the examples and definitions I will refer to the imaginary backend
@@ -11081,7 +11173,7 @@ There should be no result data from this function.
 
 @item (nnchoke-request-type GROUP &optional ARTICLE)
 
-When the user issues commands for "sending news" (@kbd{F} in the summary
+When the user issues commands for ``sending news'' (@kbd{F} in the summary
 buffer, for instance), Gnus has to know whether the article the user is
 following up is news or mail.  This function should return @code{news}
 if @var{article} in @var{group} is news, @code{mail} if it is mail and
@@ -11192,8 +11284,8 @@ This function should move @var{article} (which is a number) from
 
 This function should ready the article in question for moving by
 removing any header lines it has added to the article, and generally
-should "tidy up" the article.  Then it should @code{eval}
-@var{accept-form} in the buffer where the "tidy" article is.  This will
+should ``tidy up'' the article.  Then it should @code{eval}
+@var{accept-form} in the buffer where the ``tidy'' article is.  This will
 do the actual copying.  If this @code{eval} returns a non-@code{nil}
 value, the article should be removed.
 
@@ -11225,7 +11317,7 @@ There should be no data returned.
 
 This function should delete @var{group}.  If @var{force}, it should
 really delete all the articles in the group, and then delete the group
-itself.  (If there is such a thing as "the group itself".)
+itself.  (If there is such a thing as ``the group itself''.)
 
 There should be no data returned.
 
@@ -11325,11 +11417,11 @@ corresponds to the @sc{nov} format in a mysterious fashion.  One could
 almost suspect that the author looked at the @sc{nov} specification and
 just shamelessly @emph{stole} the entire thing, and one would be right.
 
-@dfn{Header} is a severly overloaded term.  "Header" is used in RFC1036
+@dfn{Header} is a severly overloaded term.  ``Header'' is used in RFC1036
 to talk about lines in the head of an article (eg., @code{From}).  It is
-used by many people as a synonym for "head"---"the header and the
-body".  (That should be avoided, in my opinion.)  And Gnus uses a format
-interanally that it calls "header", which is what I'm talking about
+used by many people as a synonym for ``head''---``the header and the
+body''.  (That should be avoided, in my opinion.)  And Gnus uses a format
+interanally that it calls ``header'', which is what I'm talking about
 here.  This is a 9-element vector, basically, with each header (ouch)
 having one slot. 
 
@@ -11351,7 +11443,7 @@ using it a lot and have elaborated on it greatly.
 
 The question is simple: If you have a large amount of objects that are
 identified by numbers (say, articles, to take a @emph{wild} example)
-that you want to callify as being "included", a normal sequence isn't
+that you want to callify as being ``included'', a normal sequence isn't
 very useful.  (A 200,000 length sequence is a bit long-winded.)
 
 The solution is as simple as the question: You just collapse the
@@ -11531,9 +11623,9 @@ description   = <string>
 
 Believe it or not, but some people who use Gnus haven't really used
 Emacs much before they embarked on their journey on the Gnus Love Boat.
-If you are one of those unfortunates whom "@kbd{M-C-a}", "kill the
-region", and "set @code{gnus-flargblossen} to an alist where the key is
-a regexp that is used for matching on the group name" are magical
+If you are one of those unfortunates whom ``@kbd{M-C-a}'', ``kill the
+region'', and ``set @code{gnus-flargblossen} to an alist where the key is
+a regexp that is used for matching on the group name'' are magical
 phrases with little or no meaning, then this appendix is for you.  If
 you are already familiar with Emacs, just ignore this and go fondle your
 cat instead.
@@ -11559,28 +11651,28 @@ Yes, when you use Emacs, you are apt to use the control key, the shift
 key and the meta key a lot.  This is very annoying to some people
 (notably @code{vi}le users), and the rest of us just love the hell out
 of it.  Just give up and submit.  Emacs really does stand for
-"Escape-Meta-Alt-Control-Shift", and not "Editin Macros", as you may
+``Escape-Meta-Alt-Control-Shift'', and not ``Editing Macros'', as you may
 have heard from other disreputable sources (like the Emacs author).
 
 The shift key is normally located near your pinky fingers, and are
 normally used to get capital letters and stuff.  You probably use it all
-the time.  The control key is normally marked "CTRL" or something like
+the time.  The control key is normally marked ``CTRL'' or something like
 that.  The meta key is, funnily enough, never marked as such on any
-keyboards.  The one I'm curretly at has a key that's marked "Alt", which
+keyboards.  The one I'm curretly at has a key that's marked ``Alt'', which
 is the meta key on this keyboard.  It's usually located somewhere to the
 left hand side of the keyboard, usually on the bottom row.
 
-Now, us Emacs people doesn't say "press the meta-control-m key", because
-that's just too inconvenient.  We say "press the @kbd{M-C-m} key".
-@kbd{M-} is the prefix that means "meta" and "C-" is the prefix that
-means "control".  So "press @kbd{C-k}" means "press down the control
-key, and hold it down while you press @kbd{k}".  "Press @kbd{M-C-k}"
-means "press down and hold down the meta key and the control key and
-then press @kbd{k}".  Simple, ay?
+Now, us Emacs people doesn't say ``press the meta-control-m key'', because
+that's just too inconvenient.  We say ``press the @kbd{M-C-m} key''.
+@kbd{M-} is the prefix that means ``meta'' and ``C-'' is the prefix that
+means ``control''.  So ``press @kbd{C-k}'' means ``press down the control
+key, and hold it down while you press @kbd{k}''.  ``Press @kbd{M-C-k}''
+means ``press down and hold down the meta key and the control key and
+then press @kbd{k}''.  Simple, ay?
 
 This is somewhat complicated by the fact that not all keyboards have a
-meta key.  In that case you can use the "escape" key.  Then @kbd{M-k}
-means "press escape, release escape, press @kbd{k}".  That's much more
+meta key.  In that case you can use the ``escape'' key.  Then @kbd{M-k}
+means ``press escape, release escape, press @kbd{k}''.  That's much more
 work than if you have a meta key, so if that's the case, I respectfully
 suggest you get a real keyboard with a meta key.  You can't live without
 it.
@@ -11611,16 +11703,16 @@ write the following:
 (setq gnus-florgbnize 4)
 @end lisp
 
-This function (really "special form") @code{setq} is the one that can
+This function (really ``special form'') @code{setq} is the one that can
 set a variable to some value.  This is really all you need to know.  Now
 you can go and fill your @code{.emacs} file with lots of these to change
 how Gnus works.
 
 If you have put that thing in your @code{.emacs} file, it will be read
-and @code{eval}ed (which is lispese for "run") the next time you start
+and @code{eval}ed (which is lispese for ``run'') the next time you start
 Emacs.  If you want to change the variable right away, simply say
 @kbd{C-x C-e} after the closing parenthesis.  That will @code{eval} the
-previous "form", which here is a simple @code{setq} statement.
+previous ``form'', which here is a simple @code{setq} statement.
 
 Go ahead---just try it, if you're located at your Emacs.  After you
 @kbd{C-x C-e}, you will see @samp{4} appear in the echo area, which
@@ -11628,15 +11720,15 @@ is the return value of the form you @code{eval}ed.
 
 Some pitfalls:
 
-If the manual says "set @code{gnus-read-active-file} to @code{some}",
+If the manual says ``set @code{gnus-read-active-file} to @code{some}'',
 that means:
 
 @lisp
 (setq gnus-read-active-file 'some)
 @end lisp
 
-On the other hand, if the manual says "set @code{gnus-nntp-server} to
-@samp{"nntp.ifi.uio.no"}", that means:
+On the other hand, if the manual says ``set @code{gnus-nntp-server} to
+@samp{"nntp.ifi.uio.no"}'', that means:
 
 @lisp
 (setq gnus-nntp-server "nntp.ifi.uio.no")
@@ -11660,9 +11752,11 @@ former).  The manual is unambiguous, but it can be confusing.
 @contents
 @bye
 
-
-@c Local Variables:
-@c outline-regexp: "@chap\\|@\\(sub\\)*section\\|@appendix \\|@appendix\\(sub\\)*sec\\|\^L"
+@iftex
+@iflatex
+\end{document}
+@end iflatex
+@end iftex
+
 @c End:
 
-

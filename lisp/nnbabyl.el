@@ -203,6 +203,8 @@
   (let ((active (cadr (assoc group nnbabyl-group-alist))))
     (save-excursion
       (cond 
+       ((null active)
+	(nnheader-report 'nnbabyl "No such group: %s" group))
        ((null (nnbabyl-possibly-change-newsgroup group))
 	(nnheader-report 'nnbabyl "No such group: %s" group))
        (dont-check
@@ -212,15 +214,9 @@
 	(nnheader-report 'nnbabyl "Empty group %s" group))
        (t
 	(nnheader-report 'nnbabyl "Selected group %s" group)
-	(save-excursion
-	  (set-buffer nntp-server-buffer)
-	  (erase-buffer)
-	  (insert (format "211 %d %d %d %s\n" 
-			  (1+ (- (cdr (car (cdr active)))
-				 (car (car (cdr active)))))
-			  (car (car (cdr active)))
-			  (cdr (car (cdr active)))
-			  (car active))))
+	(nnheader-insert "211 %d %d %d %s\n" 
+			 (1+ (- (cdr active) (car active)))
+			 (car active) (cdr active) group)
 	t)))))
 
 (defun nnbabyl-request-scan (&optional group server)
@@ -462,7 +458,8 @@
       (if (assoc newsgroup nnbabyl-group-alist)
 	  (setq nnbabyl-current-group newsgroup)
 	(setq nnbabyl-status-string "No such group in file")
-	nil)))
+	nil)
+    t))
 
 (defun nnbabyl-article-string (article)
   (if (numberp article)

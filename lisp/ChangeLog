@@ -1,4 +1,37 @@
+Fri Jan 26 07:47:59 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el (gnus): Goto the first unread group.
+
+Thu Jan 25 18:27:03 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: Autoload `gnus-group-highlight-line'.
+
+	* gnus-vis.el (gnus-article-highlight-headers): Wrap the regexp in
+	parentheses.
+
+	* nnmbox.el (nnmbox-request-group): Don't bug out on non-existant
+	groups. 
+	* nnbabyl.el (nnbabyl-request-group): Ditto.
+	(nnbabyl-possibly-change-newsgroup): Return t.
+
+	* gnus.el (gnus-group-insert-group-line): Define gnus-tmp-header. 
+
+	* gnus-msg.el (gnus-mail-parse-comma-list): New function.
+	(gnus-mail-reply): Use it.
+	(gnus-mail-reply): Merge follow-to headers.
+
+	* gnus-score.el (gnus-summary-score-map): New implementation.
+
+	* gnus.el (gnus-summary-exit): Remove articles before updating. 
+	(gnus-summary-next-article): Accept a param to force slightly.
+
+Thu Jan 25 08:41:44 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* nnml.el (nnml-deletable-article-p): Always responed with nil.
+
 Thu Jan 25 08:45:52 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: 0.31 is released.
 
 	* nnmail.el (nnmail-insert-lines): Would return negative lines
 	numbers. 

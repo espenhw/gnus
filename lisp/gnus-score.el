@@ -171,23 +171,20 @@ of the last successful match.")
 
 ;;; Summary mode score maps.
 
-(defvar gnus-summary-score-map nil)
-
-(define-prefix-command 'gnus-summary-score-map)
-(define-key gnus-summary-mode-map "V" 'gnus-summary-score-map)
-(define-key gnus-summary-score-map "s" 'gnus-summary-set-score)
-(define-key gnus-summary-score-map "a" 'gnus-summary-score-entry)
-(define-key gnus-summary-score-map "S" 'gnus-summary-current-score)
-(define-key gnus-summary-score-map "c" 'gnus-score-change-score-file)
-(define-key gnus-summary-score-map "m" 'gnus-score-set-mark-below)
-(define-key gnus-summary-score-map "x" 'gnus-score-set-expunge-below)
-(define-key gnus-summary-score-map "R" 'gnus-summary-rescore)
-(define-key gnus-summary-score-map "e" 'gnus-score-edit-alist)
-(define-key gnus-summary-score-map "f" 'gnus-score-edit-file)
-(define-key gnus-summary-score-map "t" 'gnus-score-find-trace)
-(define-key gnus-summary-score-map "C" 'gnus-score-customize)
-
-
+(gnus-define-keys
+ (gnus-summary-score-map "V" gnus-summary-mode-map)
+ "V" gnus-summary-score-map
+ "s" gnus-summary-set-score
+ "a" gnus-summary-score-entry
+ "S" gnus-summary-current-score
+ "c" gnus-score-change-score-file
+ "m" gnus-score-set-mark-below
+ "x" gnus-score-set-expunge-below
+ "R" gnus-summary-rescore
+ "e" gnus-score-edit-alist
+ "f" gnus-score-edit-file
+ "t" gnus-score-find-trace
+ "C" gnus-score-customize)
 
 ;; Summary score file commands
 
@@ -1919,13 +1916,15 @@ This mode is an extended emacs-lisp mode.
   (let ((files (directory-files (expand-file-name dir) t nil t))
 	(regexp (gnus-score-file-regexp))
 	out file)
-    (while files
-      (setq file (pop files))
+    (while (setq file (pop files))
       (cond 
+       ;; Ignore "." and "..".
        ((string-match "/\\.\\.?\\'" file)
 	nil)
+       ;; Recurse down directories.
        ((file-directory-p file)
 	(setq out (nconc (gnus-score-score-files-1 file) out)))
+       ;; Add files to the list of score files.
        ((string-match regexp file)
 	(push file out))))
     out))

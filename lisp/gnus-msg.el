@@ -1856,7 +1856,7 @@ mailer."
 			(mapcar
 			 (lambda (addr)
 			   (cons (mail-strip-quoted-names addr) addr))
-			 (nreverse (mail-parse-comma-list))))
+			 (nreverse (gnus-mail-parse-comma-list))))
 		  (let ((s ccalist))
 		    (while s
 		      (setq ccalist (delq (assoc (car (pop s)) s) ccalist)))))
@@ -1900,15 +1900,26 @@ mailer."
 	(gnus-inews-insert-gcc)
 	(gnus-inews-insert-archive-gcc)
 
-	(if (and follow-to (listp follow-to))
-	    (progn
+	(when (and follow-to (listp follow-to))
+	  (let (beg)
+	    (gnus-inews-narrow-to-headers)
+	    (re-search-forward "^To:" nil t)
+	    (beginning-of-line)
+	    (forward-line 1)
+	    (setq beg (point))
+	    ;; Insert the rest of the Follow-To headers.
+	    (while follow-to
 	      (goto-char (point-min))
-	      (re-search-forward "^To:" nil t)
-	      (beginning-of-line)
-	      (forward-line 1)
-	      (while follow-to
-		(insert (car (car follow-to)) ": " (cdr (car follow-to)) "\n")
-		(setq follow-to (cdr follow-to)))))
+	      (if (not (re-search-forward 
+			(concat "^" (caar follow-to) ": *") nil t))
+		  (progn
+		    (goto-char beg)
+		    (insert (caar follow-to) ": " (cdar follow-to) "\n"))
+		(unless (eolp)
+		  (insert ", "))
+		(insert (cdar follow-to)))
+	      (setq follow-to (cdr follow-to)))
+	    (widen)))
 	(nnheader-insert-references references message-id)
 
 	;; Now the headers should be ok, so we do the yanking.
@@ -1959,6 +1970,33 @@ mailer."
 	(run-hooks 'gnus-mail-hook)
 	;; Mark this buffer as unchanged.
 	(set-buffer-modified-p nil)))))
+
+(defun gnus-mail-parse-comma-list ()
+  (let (accumulated
+	beg)
+    (skip-chars-forward " ")
+    (while (not (eobp))
+      (setq beg (point))
+      (skip-chars-forward "^,")
+      (while (zerop
+	      (save-excursion 
+		(save-restriction
+		  (let ((i 0))
+		    (narrow-to-region beg (point))
+		    (goto-char beg)
+		    (logand (progn
+			      (while (search-forward "\"" nil t)
+				(incf i))
+			      (if (zerop i) 2 i)) 2)))))
+	(skip-chars-forward ",")
+	(skip-chars-forward "^,"))
+      (skip-chars-backward " ")
+      (setq accumulated
+	    (cons (buffer-substring beg (point))
+		  accumulated))
+      (skip-chars-forward "^,")
+      (skip-chars-forward ", "))
+    accumulated))
 
 (defun gnus-new-news (&optional group inhibit-prompt)
   "Set up a *post-news* buffer that points to GROUP.

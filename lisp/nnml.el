@@ -285,6 +285,10 @@ all. This may very well take some time.")
 	 article rest mod-time number)
     (nnmail-activate 'nnml)
 
+    (unless nnml-article-file-alist
+      (setq nnml-article-file-alist
+	    (nnheader-article-to-file-alist nnml-current-directory)))
+
     (while (and articles is-old)
       (setq article (concat nnml-current-directory 
 			    (int-to-string 

@@ -182,6 +182,8 @@
 (defun nnmbox-request-group (group &optional server dont-check)
   (let ((active (cadr (assoc group nnmbox-group-alist))))
     (cond 
+     ((null active)
+      (nnheader-report 'nnmbox "No such group: %s" group))
      ((null (nnmbox-possibly-change-newsgroup group))
       (nnheader-report 'nnmbox "No such group: %s" group))
      (dont-check
@@ -192,10 +194,9 @@
       (nnheader-insert "211 0 0 0 %s\n" group))
      (t
       (nnheader-report 'nnmbox "Selected group %s" group)
-      (nnheader-insert
-       "211 %d %d %d %s\n" 
-       (1+ (- (cdadr active) (caadr active)))
-       (cadr active) (cdadr active) (car active))
+      (nnheader-insert "211 %d %d %d %s\n" 
+		       (1+ (- (cdr active) (car active)))
+		       (car active) (cdr active) group)
       t))))
 
 (defun nnmbox-request-scan (&optional group server)
@@ -423,7 +424,8 @@
       (nnmail-activate 'nnmbox))
   (if newsgroup
       (if (assoc newsgroup nnmbox-group-alist)
-	  (setq nnmbox-current-group newsgroup))))
+	  (setq nnmbox-current-group newsgroup))
+    t))
 
 (defun nnmbox-article-string (article)
   (if (numberp article)
