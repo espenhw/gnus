@@ -24,6 +24,8 @@
 	(message-subject-trailing-was-regexp): New variables.
 	(message-to-list-only): Added doc-string and menu entry.
 
+	* message-utils.el: Removed.  Functions are now in message.el.
+
 2002-09-16  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-article-reply-with-original,
