@@ -862,20 +862,21 @@ be set in `.emacs' instead."
    ((and
      (fboundp 'find-image)
      (display-graphic-p)
-     (let ((image (find-image
-		   `((:type xpm :file "gnus.xpm"
-			    :color-symbols
-			    (("thing" . ,(car gnus-logo-colors))
-			     ("shadow" . ,(cadr gnus-logo-colors))
-			     ("background" . ,(face-background 'default))))
-		     (:type pbm :file "gnus.pbm"
-			    ;; Account for the pbm's blackground.
-			    :background ,(face-foreground 'gnus-splash-face)
-			    :foreground ,(face-background 'default))
-		     (:type xbm :file "gnus.xbm"
-			    ;; Account for the xbm's blackground.
-			    :background ,(face-foreground 'gnus-splash-face)
-			    :foreground ,(face-background 'default))))))
+     (let* ((data-directory (nnheader-find-etc-directory "gnus"))
+	    (image (find-image
+		    `((:type xpm :file "gnus.xpm"
+			     :color-symbols
+			     (("thing" . ,(car gnus-logo-colors))
+			      ("shadow" . ,(cadr gnus-logo-colors))
+			      ("background" . ,(face-background 'default))))
+		      (:type pbm :file "gnus.pbm"
+			     ;; Account for the pbm's blackground.
+			     :background ,(face-foreground 'gnus-splash-face)
+			     :foreground ,(face-background 'default))
+		      (:type xbm :file "gnus.xbm"
+			     ;; Account for the xbm's blackground.
+			     :background ,(face-foreground 'gnus-splash-face)
+			     :foreground ,(face-background 'default))))))
        (when image
 	 (let ((size (image-size image)))
 	   (insert-char ?\n (max 0 (round (- (window-height)
