@@ -78,6 +78,7 @@
   (let ((b (point-marker))
 	buffer-read-only)
     (put-image (mm-get-image handle) b)
+    (insert "\n\n")
     (mm-handle-set-undisplayer
      handle
      `(lambda ()
