@@ -50,6 +50,7 @@
 ;; * Allow each mark directory in a group to have its own inode for mark
 ;;   files, to accommodate AFS.
 ;; * Improve generated Xrefs, so crossposts are detectable.
+;; * Improve readability.
 
 ;;; Code:
 
@@ -388,7 +389,7 @@ by nnmaildir-request-article.")
 		nov-end (mapconcat
 			  (lambda (extra)
 			    (setq field (symbol-name (car extra))
-				  val (cdr field))
+				  val (cdr extra))
 			    (nnmaildir--tab-to-space field)
 			    (nnmaildir--tab-to-space val)
 			    (concat field ": " val))

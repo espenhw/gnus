@@ -1,4 +1,10 @@
 2002-09-23  Paul Jarc  <prj@po.cwru.edu>
+	From Josh Huber.
+
+	* nnmaildir.el (nnmaildir--update-nov): fix wrong-type error when
+	nnmail-extra-headers is non-nil.
+
+2002-09-23  Paul Jarc  <prj@po.cwru.edu>
 
 	* nnmaildir.el: Store article numbers persistently.  General
 	revision.
