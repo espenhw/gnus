@@ -331,7 +331,7 @@ The buffer may be narrowed."
 	  (goto-char (or break qword-break))
 	  (setq break nil
 		qword-break nil)
-	  (if (looking-at " \t")
+	  (if (looking-at "[ \t]")
 	      (insert "\n")
 	    (insert "\n "))
 	  (setq bol (1- (point)))
@@ -365,7 +365,7 @@ The buffer may be narrowed."
 	(goto-char (or break qword-break))
 	(setq break nil
 	      qword-break nil)
-	  (if (looking-at " \t")
+	  (if (looking-at "[ \t]")
 	      (insert "\n")
 	    (insert "\n "))
 	(setq bol (1- (point)))
