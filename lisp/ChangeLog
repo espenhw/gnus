@@ -1,3 +1,14 @@
+1999-12-09 20:39:49  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-charset-after): New function.
+	(mm-find-mime-charset-region): Set charsets after
+ 	delete-duplicates and use find-coding-systems-region.
+	(mm-find-charset-region): Remove composition.
+	
+	* mm-bodies.el (mm-encode-body): Use mm-charset-after.
+
+	* mml.el (mml-parse-singlepart-with-multiple-charsets): Ditto.
+	
 1999-12-09 17:47:56  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-find-mime-charset-region): Revoke last change.

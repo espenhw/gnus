@@ -133,14 +133,14 @@ one charsets.")
   (save-excursion
     (narrow-to-region beg end)
     (goto-char (point-min))
-    (let ((current (or (mm-mime-charset (char-charset (following-char)))
+    (let ((current (or (mm-mime-charset (mm-charset-after))
 		       (and use-ascii 'us-ascii)))
 	  charset struct space newline paragraph)
       (while (not (eobp))
 	(cond
 	 ;; The charset remains the same.
-	 ((or (eq (setq charset (mm-mime-charset
-				 (char-charset (following-char)))) 'us-ascii)
+	 ((or (eq (setq charset (mm-mime-charset (mm-charset-after))) 
+		  'us-ascii)
 	      (and use-ascii (not charset))
 	      (eq charset current)))
 	 ;; The initial charset was ascii.

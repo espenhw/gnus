@@ -208,6 +208,17 @@ used as the line break code type of the coding system."
   (or (get-charset-property charset 'prefered-coding-system)
       (get-charset-property charset 'preferred-coding-system)))
 
+(defun mm-charset-after (&optional pos)
+  "Return charset of a character in current buffer at position POS.
+If POS is nil, it defauls to the current point.
+If POS is out of range, the value is nil.
+If the charset is `composition', return the actual one."
+  (let ((charset (charset-after pos)))
+    (if (eq charset 'composition)
+	(let ((p (or pos (point))))
+	  (cadr (find-charset-region p (1+ p))))
+      charset)))
+
 (defun mm-mime-charset (charset)
   "Return the MIME charset corresponding to the MULE CHARSET."
   (if (fboundp 'coding-system-get)
@@ -230,10 +241,10 @@ used as the line break code type of the coding system."
 				(mm-find-charset-region b e)))))
     (when (memq 'iso-2022-jp-2 charsets)
       (setq charsets (delq 'iso-2022-jp charsets)))
-    (delete-duplicates charsets)
+    (setq charsets (delete-duplicates charsets))
     (if (and (> (length charsets) 1)
-	     (fboundp 'find-coding-systems-for-charsets)
-	     (memq 'utf-8 (find-coding-systems-for-charsets charsets)))
+	     (fboundp 'find-coding-systems-region)
+	     (memq 'utf-8 (find-coding-systems-region b e)))
 	'(utf-8)
       charsets)))
 
@@ -293,7 +304,8 @@ See also `with-temp-file' and `with-output-to-string'."
   (cond
    ((and (mm-multibyte-p)
  	 (fboundp 'find-charset-region))
-    (find-charset-region b e))
+    ;; Remove composition since the base charsets have been included.
+    (delq 'composition (find-charset-region b e)))
    ((not (boundp 'current-language-environment))
     (save-excursion
       (save-restriction

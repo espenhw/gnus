@@ -80,7 +80,7 @@ If no encoding was done, nil is returned."
 		      (not (mm-coding-system-equal
 			    charset buffer-file-coding-system)))
 	      (while (not (eobp))
-		(if (eq (char-charset (char-after)) 'ascii)
+		(if (eq (mm-charset-after) 'ascii)
 		    (when start
 		      (save-restriction
 			(narrow-to-region start (point))
