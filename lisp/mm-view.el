@@ -216,15 +216,16 @@ commands to this map, add them to `w3m-minor-mode-map' instead of this
 map.")))
 
 (defun mm-w3m-local-map-property ()
-  (if (or (featurep 'xemacs)
-	  (>= emacs-major-version 21))
-      (list 'keymap w3m-minor-mode-map)
-    (list 'local-map
-	  (or mm-w3m-mode-map
-	      (progn
-		(setq mm-w3m-mode-map (copy-keymap w3m-minor-mode-map))
-		(set-keymap-parent mm-w3m-mode-map gnus-article-mode-map)
-		mm-w3m-mode-map)))))
+  (when (and (boundp 'w3m-minor-mode-map) w3m-minor-mode-map)
+    (if (or (featurep 'xemacs)
+	    (>= emacs-major-version 21))
+	(list 'keymap w3m-minor-mode-map)
+      (list 'local-map
+	    (or mm-w3m-mode-map
+		(progn
+		  (setq mm-w3m-mode-map (copy-keymap w3m-minor-mode-map))
+		  (set-keymap-parent mm-w3m-mode-map gnus-article-mode-map)
+		  mm-w3m-mode-map))))))
 
 (defun mm-inline-text-html-render-with-w3m (handle)
   "Render a text/html part using emacs-w3m."

@@ -1,5 +1,8 @@
 2002-10-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* mm-view.el (mm-w3m-local-map-property): Make it work with older
+	versions of emacs-w3m than 1.3.3.
+
 	* lpath.el: Bind w3m-minor-mode-map.
 
 	* mm-view.el (mm-w3m-mode-command-alist)
