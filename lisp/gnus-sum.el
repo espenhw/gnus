@@ -8540,6 +8540,37 @@ read."
     (gnus-summary-catchup all))
   (gnus-summary-next-group))
 
+;;;
+;;; with article
+;;;
+
+(defmacro gnus-with-article (article &rest forms)
+  "Select ARTICLE and perform FORMS in the original article buffer.
+Then replace the article with the result."
+  `(progn
+     ;; We don't want the article to be marked as read.
+     (let (gnus-mark-article-hook)
+       (gnus-summary-select-article t t nil ,article))
+     (set-buffer gnus-original-article-buffer)
+     ,@forms
+     (if (not (gnus-check-backend-function
+	       'request-replace-article (car gnus-article-current)))
+	 (gnus-message 5 "Read-only group; not replacing")
+       (unless (gnus-request-replace-article
+		,article (car gnus-article-current)
+		(current-buffer) t)
+	 (error "Couldn't replace article")))
+     ;; The cache and backlog have to be flushed somewhat.
+     (when gnus-keep-backlog
+       (gnus-backlog-remove-article
+	(car gnus-article-current) (cdr gnus-article-current)))
+     (when gnus-use-cache
+       (gnus-cache-update-article
+	(car gnus-article-current) (cdr gnus-article-current)))))
+
+(put 'gnus-with-article 'lisp-indent-function 1)
+(put 'gnus-with-article 'edebug-form-spec '(form body))
+
 ;; Thread-based commands.
 
 (defun gnus-summary-articles-in-thread (&optional article)
@@ -9545,37 +9576,6 @@ treated as multipart/mixed."
       (let ((gnus-unbuttonized-mime-types nil))
 	(gnus-summary-show-article))
     (gnus-summary-show-article)))
-
-;;;
-;;; with article
-;;;
-
-(defmacro gnus-with-article (article &rest forms)
-  "Select ARTICLE and perform FORMS in the original article buffer.
-Then replace the article with the result."
-  `(progn
-     ;; We don't want the article to be marked as read.
-     (let (gnus-mark-article-hook)
-       (gnus-summary-select-article t t nil ,article))
-     (set-buffer gnus-original-article-buffer)
-     ,@forms
-     (if (not (gnus-check-backend-function
-	       'request-replace-article (car gnus-article-current)))
-	 (gnus-message 5 "Read-only group; not replacing")
-       (unless (gnus-request-replace-article
-		,article (car gnus-article-current)
-		(current-buffer) t)
-	 (error "Couldn't replace article")))
-     ;; The cache and backlog have to be flushed somewhat.
-     (when gnus-keep-backlog
-       (gnus-backlog-remove-article
-	(car gnus-article-current) (cdr gnus-article-current)))
-     (when gnus-use-cache
-       (gnus-cache-update-article
-	(car gnus-article-current) (cdr gnus-article-current)))))
-
-(put 'gnus-with-article 'lisp-indent-function 1)
-(put 'gnus-with-article 'edebug-form-spec '(form body))
 
 ;;;
 ;;; Generic summary marking commands

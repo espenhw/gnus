@@ -1,3 +1,7 @@
+2000-05-09 13:23:50  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-with-article): Define it before use it.
+
 2000-05-08 22:34:19  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-supersede): Use mime-to-mml.
