@@ -538,7 +538,7 @@ FUNC will be called with the group name to determine the article number."
   (let ((methods nnmail-split-methods)
 	(obuf (current-buffer))
 	(beg (point-min))
-	end found group-art)
+	end group-art)
     (if (and (sequencep methods) (= (length methods) 1))
 	;; If there is only just one group to put everything in, we
 	;; just return a list with just this one method in.

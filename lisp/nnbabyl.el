@@ -77,8 +77,7 @@
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
-    (let ((file nil)
-	  (number (length sequence))
+    (let ((number (length sequence))
 	  (count 0)
 	  article art-string start stop)
       (nnbabyl-possibly-change-newsgroup newsgroup)
@@ -229,7 +228,7 @@
   (let* ((days (or (and nnmail-expiry-wait-function
 			(funcall nnmail-expiry-wait-function newsgroup))
 		   nnmail-expiry-wait))
-	 article rest)
+	 rest)
     (save-excursion 
       (set-buffer nnbabyl-mbox-buffer)
       (while articles
@@ -497,7 +496,6 @@
 (defun nnbabyl-get-new-mail (&optional group)
   "Read new incoming mail."
   (let* ((spools (nnmail-get-spool-files group))
-	 (all-spools spools)
 	 (group-in group)
 	 incoming incomings)
     (nnbabyl-read-mbox)

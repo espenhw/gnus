@@ -66,7 +66,7 @@
 	()
       (setq gnus-group-mode-hook
 	    (cons
-	     (lambda ()
+	     '(lambda ()
 	       (easy-menu-add gnus-group-reading-menu)
 	       (easy-menu-add gnus-group-group-menu)
 	       (easy-menu-add gnus-group-post-menu)
@@ -75,7 +75,7 @@
 	     gnus-group-mode-hook))
       (setq gnus-summary-mode-hook
 	    (cons
-	     (lambda ()
+	     '(lambda ()
 	       (easy-menu-add gnus-summary-mark-menu)
 	       (easy-menu-add gnus-summary-move-menu)
 	       (easy-menu-add gnus-summary-article-menu)
@@ -87,7 +87,7 @@
 	     gnus-summary-mode-hook))
       (setq gnus-article-mode-hook
 	    (cons
-	     (lambda ()
+	     '(lambda ()
 	       (easy-menu-add gnus-article-article-menu)
 	       (easy-menu-add gnus-article-treatment-menu))
 	     gnus-article-mode-hook)))
@@ -133,8 +133,10 @@
     ;; XEmacs definitions.
     (fset 'gnus-set-mouse-face (lambda (string) string))
 
-    (defun gnus-summary-make-display-table ()
-      )
+    (fset 'gnus-summary-make-display-table (lambda () nil))
+
+    (provide 'gnus)
+    (require 'gnus-vis)
 
     (defun gnus-highlight-selected-summary ()
       ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
@@ -152,13 +154,142 @@
 		    (setq from beg)
 		    (setq to end)))
 	      (if gnus-newsgroup-selected-overlay
- 		  (delete-extent gnus-newsgroup-selected-overlay))
- 	      (setq gnus-newsgroup-selected-overlay
- 		    (make-extent from to))
- 	      (set-extent-face gnus-newsgroup-selected-overlay
- 			       gnus-summary-selected-face)))))
+		  (delete-extent gnus-newsgroup-selected-overlay))
+	      (setq gnus-newsgroup-selected-overlay
+		    (make-extent from to))
+	      (set-extent-face gnus-newsgroup-selected-overlay
+			       gnus-summary-selected-face)))))
+
+
+    (defun gnus-summary-recenter ()
+      (let* ((top (cond ((< (window-height) 4) 0)
+			((< (window-height) 7) 1)
+			(t 2)))
+	     (height (- (window-height) 2))
+	     (bottom (save-excursion (goto-char (point-max))
+				     (forward-line (- height))
+				     (point)))
+	     (window (get-buffer-window (current-buffer))))
+	(and 
+	 ;; The user has to want it,
+	 gnus-auto-center-summary 
+	 ;; the article buffer must be displayed,
+	 (get-buffer-window gnus-article-buffer)
+	 ;; Set the window start to either `bottom', which is the biggest
+	 ;; possible valid number, or the second line from the top,
+	 ;; whichever is the least.
+	 (set-window-start
+	  window (min bottom (save-excursion (forward-line (- top)) 
+					     (point)))))))
+
+    (defun gnus-group-insert-group-line-info (group)
+      (let ((entry (gnus-gethash group gnus-newsrc-hashtb)) 
+	    (beg (point))
+	    active info)
+	(if entry
+	    (progn
+	      (setq info (nth 2 entry))
+	      (gnus-group-insert-group-line 
+	       nil group (nth 1 info) (nth 3 info) (car entry) (nth 4 info)))
+	  (setq active (gnus-gethash group gnus-active-hashtb))
+	  
+	  (gnus-group-insert-group-line 
+	   nil group (if (member group gnus-zombie-list) gnus-level-zombie
+		       gnus-level-killed)
+	   nil (if active (- (1+ (cdr active)) (car active)) 0) nil))
+	(save-excursion
+	 (goto-char beg)
+	 (remove-text-properties 
+	  (1+ (gnus-point-at-bol)) (1+ (gnus-point-at-eol))
+	  '(gnus-group nil)))))
+
+    (defun gnus-copy-article-buffer (&optional article-buffer)
+      (setq gnus-article-copy (get-buffer-create " *gnus article copy*"))
+      (buffer-disable-undo gnus-article-copy)
+      (or (memq gnus-article-copy gnus-buffer-list)
+	  (setq gnus-buffer-list (cons gnus-article-copy gnus-buffer-list)))
+      (let ((article-buffer (or article-buffer gnus-article-buffer))
+	    buf)
+	(if (and (get-buffer article-buffer)
+		 (buffer-name (get-buffer article-buffer)))
+	    (save-excursion
+	      (set-buffer article-buffer)
+	      (widen)
+	      (setq buf (buffer-substring (point-min) (point-max)))
+	      (set-buffer gnus-article-copy)
+	      (erase-buffer)
+	      (insert (format "%s" buf))))))
+
+    (defun gnus-summary-refer-article (message-id)
+      "Refer article specified by MESSAGE-ID.
+NOTE: This command only works with newsgroups that use real or simulated NNTP."
+      (interactive "sMessage-ID: ")
+      (if (or (not (stringp message-id))
+	      (zerop (length message-id)))
+	  ()
+	;; Construct the correct Message-ID if necessary.
+	;; Suggested by tale@pawl.rpi.edu.
+	(or (string-match "^<" message-id)
+	    (setq message-id (concat "<" message-id)))
+	(or (string-match ">$" message-id)
+	    (setq message-id (concat message-id ">")))
+	(let ((header (car (gnus-gethash (downcase message-id)
+					 gnus-newsgroup-dependencies))))
+	  (if header
+	      (or (gnus-summary-goto-article (header-number header))
+		  ;; The header has been read, but the article had been
+		  ;; expunged, so we insert it again.
+		  (let ((beg (point)))
+		    (gnus-summary-insert-line
+		     nil header 0 nil gnus-read-mark nil nil
+		     (header-subject header))
+		    (save-excursion
+		      (goto-char beg)
+		      (remove-text-properties
+		       (1+ (gnus-point-at-bol)) (1+ (gnus-point-at-eol))
+		       '(gnus-number nil gnus-mark nil gnus-level nil)))
+		    (forward-line -1)
+		    (header-number header)))
+	    (let ((gnus-override-method gnus-refer-article-method)
+		  (gnus-ancient-mark gnus-read-mark)
+		  (tmp-buf (get-buffer-create " *gnus refer"))
+		  (tmp-point (window-start
+			      (get-buffer-window gnus-article-buffer)))
+		  number)
+	      (and gnus-refer-article-method
+		   (or (gnus-server-opened gnus-refer-article-method)
+		       (gnus-open-server gnus-refer-article-method)))
+	      ;; Save the old article buffer.
+	      (save-excursion
+		(set-buffer tmp-buf)
+		(buffer-disable-undo (current-buffer))
+		(insert-buffer-substring gnus-article-buffer))
+	      (prog1
+		  (if (gnus-article-prepare 
+		       message-id nil (gnus-read-header message-id))
+		      (progn
+			(setq number (header-number gnus-current-headers))
+			(gnus-rebuild-thread message-id)
+			(gnus-summary-goto-subject number)
+			(gnus-summary-recenter)
+			(gnus-article-set-window-start 
+			 (cdr (assq number gnus-newsgroup-bookmarks)))
+			message-id)
+		    ;; We restore the old article buffer.
+		    (save-excursion
+		      (set-buffer gnus-article-buffer)
+		      (let ((buffer-read-only nil))
+			(insert-buffer-substring tmp-buf)
+			(and tmp-point
+			     (set-window-start (get-buffer-window (current-buffer))
+					       tmp-point))))
+		    nil)
+		(kill-buffer tmp-buf)))))))
+
+
 
     )
+
    ((boundp 'MULE)
     ;; Mule definitions
     (if (not (fboundp 'truncate-string))
@@ -180,14 +311,16 @@
       )
     (defalias 'gnus-truncate-string 'truncate-string)
 
-    (defun gnus-format-max-width (form length)
-      (let* ((val (eval form))
-	     (valstr (if (numberp val) (int-to-string val) val)))
-	(if (> (length valstr) length)
-	    (truncate-string valstr length)
-	  valstr)))
+    (fset 
+     'gnus-format-max-width 
+     (lambda (form length)
+       (let* ((val (eval form))
+	      (valstr (if (numberp val) (int-to-string val) val)))
+	 (if (> (length valstr) length)
+	     (truncate-string valstr length)
+	   valstr))))
 
-    (defun gnus-summary-make-display-table ())
+    (fset 'gnus-summary-make-display-table (lambda () nil))
     )
    ))
 

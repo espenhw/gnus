@@ -429,7 +429,6 @@ The headers will be included in the sequence they are matched.")
   (interactive "P")
   (let ((gnus-uu-save-in-digest t)
 	(file (make-temp-name (concat gnus-uu-tmp-dir "forward")))
-	(winconf (current-window-configuration))
 	buf)
     (gnus-uu-decode-save n file)
     (gnus-uu-add-file file)
@@ -841,7 +840,7 @@ The headers will be included in the sequence they are matched.")
   ;; my experience, should get most postings of a series.
   (let ((count 2)
 	(vernum "v[0-9]+[a-z][0-9]+:")
-	reg beg)
+	beg)
     (save-excursion
       (set-buffer (get-buffer-create gnus-uu-output-buffer-name))
       (buffer-disable-undo (current-buffer))
@@ -887,7 +886,7 @@ The headers will be included in the sequence they are matched.")
   ;; returned. 
   ;; Failing that, articles that have subjects that are part of the
   ;; same "series" as the current will be returned.
-  (let (articles process)
+  (let (articles)
   (cond 
    (n
     (let ((backward (< n 0))
@@ -915,7 +914,7 @@ The headers will be included in the sequence they are matched.")
   ;; non-nil, article names are not equalized before sorting.
   (let ((subject (or subject 
 		     (gnus-uu-reginize-string (gnus-summary-subject-string))))
-	beg end list-of-subjects)
+	list-of-subjects)
     (save-excursion
       (if (not subject)
 	  ()
@@ -951,7 +950,7 @@ The headers will be included in the sequence they are matched.")
   ;; sorting to find out what sequence the articles are supposed to be
   ;; decoded in. Returns the list of expanded strings.
   (let ((out-list string-list)
-	string pos num)
+	string)
     (save-excursion
       (set-buffer (get-buffer-create gnus-uu-output-buffer-name))
       (buffer-disable-undo (current-buffer))
@@ -1029,10 +1028,8 @@ The headers will be included in the sequence they are matched.")
 (defun gnus-uu-grab-articles 
   (articles process-function &optional sloppy limit no-errors)
   (let ((state 'first) 
-	(wrong-type t)
-	has-been-begin has-been-end 
-	article result-file result-files process-state article-buffer
-	begin-article)
+	has-been-begin article result-file result-files process-state 
+	article-buffer)
  
     (if (not (gnus-server-opened gnus-current-select-method))
 	(progn
@@ -1089,9 +1086,7 @@ The headers will be included in the sequence they are matched.")
 		    (delete-file result-file)))
 	    (if (memq 'begin process-state)
 		(setq result-file (car process-state)))
-	    (setq begin-article article)
-	    (setq has-been-begin t)
-	    (setq has-been-end nil)))
+	    (setq has-been-begin t)))
 
       (if (memq 'end process-state)
 	  (progn
@@ -1099,7 +1094,6 @@ The headers will be included in the sequence they are matched.")
 	    (setq result-files (cons (list (cons 'name result-file)
 					   (cons 'article article))
 				     result-files))
-	    (setq has-been-end t)
 	    (setq has-been-begin nil)
 	    (and limit (= (length result-files) limit)
 		 (setq articles nil))))
@@ -1110,11 +1104,9 @@ The headers will be included in the sequence they are matched.")
 		    (delete-file result-file)))
 
       (if (not (memq 'wrong-type process-state))
-	  (setq wrong-type nil)
+	  ()
 	(if gnus-uu-unmark-articles-not-decoded
 	    (gnus-summary-tick-article article t)))
-
-      (if sloppy (setq wrong-type nil))
 
       (if (and (not has-been-begin)
 	       (not sloppy)
@@ -1253,7 +1245,7 @@ The headers will be included in the sequence they are matched.")
 			    nil t)
 			   (forward-line 1)))
 
-		     (condition-case err
+		     (condition-case nil
 			 (process-send-region gnus-uu-uudecode-process 
 					      start-char (point))
 		       (error 
@@ -1328,7 +1320,7 @@ The headers will be included in the sequence they are matched.")
 (defun gnus-uu-treat-archive (file-path)
   ;; Unpacks an archive. Returns t if unpacking is successful.
   (let ((did-unpack t)
-	action command files file file-name dir)
+	action command dir)
     (setq action (gnus-uu-choose-action 
 		  file-path (append gnus-uu-user-archive-rules
 				    (if gnus-uu-ignore-default-archive-rules
@@ -1338,7 +1330,6 @@ The headers will be included in the sequence they are matched.")
     (if (not action) (error "No unpackers for the file %s" file-path))
 
     (string-match "/[^/]*$" file-path)
-    (setq file-name (substring file-path (1+ (match-beginning 0))))
     (setq dir (substring file-path 0 (match-beginning 0)))
 
     (if (member action gnus-uu-destructive-archivers)
@@ -1429,7 +1420,7 @@ The headers will be included in the sequence they are matched.")
     out))
 
 (defun gnus-uu-check-correct-stripped-uucode (start end)
-  (let (found beg length short)
+  (let (found beg length)
     (if (not gnus-uu-correct-stripped-uucode)
 	()
       (goto-char start)
@@ -1686,7 +1677,7 @@ If no file has been included, the user will be asked for a file."
 	       (if (memq 'Message-ID gnus-required-headers)
 		   gnus-required-headers
 		 (cons 'Message-ID gnus-required-headers)))
-	      gnus-inews-article-hook elem)
+	      gnus-inews-article-hook)
 
 	  (setq gnus-inews-article-hook (if (listp gnus-inews-article-hook)
 					    gnus-inews-article-hook
@@ -1712,7 +1703,7 @@ If no file has been included, the user will be asked for a file."
 ;; the current buffer. Returns the file name the user gave.
 (defun gnus-uu-post-insert-binary ()
   (let ((uuencode-buffer-name "*uuencode buffer*")
-	file-path post-buf uubuf file-name)
+	file-path uubuf file-name)
 
     (setq file-path (read-file-name 
 		     "What file do you want to encode? "))
@@ -1745,7 +1736,7 @@ If no file has been included, the user will be asked for a file."
 	(encoded-buffer-name "*encoded buffer*")
 	(top-string "[ cut here %s (%s %d/%d) %s gnus-uu ]")
 	(separator (concat mail-header-separator "\n\n"))
-	file uubuf length parts header i end beg
+	uubuf length parts header i end beg
 	beg-line minlen buf post-buf whole-len beg-binary end-binary)
 
     (setq post-buf (current-buffer))

@@ -328,9 +328,7 @@ Returns the number of articles marked as read."
 			   (gnus-newsgroup-kill-file gnus-newsgroup-name)))
 	 (unreads (length gnus-newsgroup-unreads))
 	 (gnus-summary-inhibit-highlight t)
-	 (mark-below (or gnus-summary-mark-below gnus-summary-default-score 0))
-	 (expunge-below gnus-summary-expunge-below)
-	 form beg)
+	 beg)
     (setq gnus-newsgroup-kill-headers nil)
     (or gnus-newsgroup-headers-hashtb-by-number
 	(gnus-make-headers-hashtable-by-number))
@@ -586,7 +584,7 @@ If optional 2nd argument IGNORE-MARKED is non-nil, articles which are
 marked as read or ticked are ignored."
   (save-excursion
     (let ((killed-no 0)
-	  function header article)
+	  function article)
       (if (or (null field) (string-equal field ""))
 	  (setq function nil)
 	;; Get access function of header filed.

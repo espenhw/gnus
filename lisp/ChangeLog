@@ -1,4 +1,36 @@
+Sun Jul  2 14:11:14 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* nnvirtual.el (nnvirtual-catchup-group): Would kill the group
+	buffer. 
+
+	* gnus-ems.el (gnus-ems-redefine): Redefine insertion of group
+	lines to avoid that awfol front-stickyness of extents. 
+	(gnus-ems-redefine): Redefine gnus-copy-article-buffer.
+	(gnus-ems-redefine): Redefine gnus-summary-refer-article. 
+
+	* nnml.el (nnml-request-expire-articles): Would delete everything
+	over ange-ftp. 
+
+	* gnus-ems.el (gnus-ems-redefine): Really redefine
+	gnus-highlight-selected-summary. 
+
+	* gnus-ems.el (gnus-ems-redefine): Redefine gnus-summary-recenter. 
+
+Sun Jul  2 13:02:19 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: Removed tons of unreferenced local variables from all
+	files. 
+	(gnus-read-active-file): When using several nntp servers, the
+	native nntp server often would not be consulted for an active
+	file. 
+
+Sun Jul  2 12:03:18 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-group-make-articles-read): name instead of group. 
+
 Sat Jul  1 16:04:13 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.90 is released.
 
 	* gnus.el (gnus-summary-edit-article-done): No arguments to
 	buffer-disable-undo. 

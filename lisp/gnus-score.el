@@ -552,7 +552,6 @@ SCORE is the score to add."
     (let ((mark (car (gnus-score-get 'mark alist)))
 	  (expunge (car (gnus-score-get 'expunge alist)))
 	  (mark-and-expunge (car (gnus-score-get 'mark-and-expunge alist)))
-	  (read-only (gnus-score-get 'read-only alist))
 	  (files (gnus-score-get 'files alist))
 	  (exclude-files (gnus-score-get 'exclude-files alist))
           (orphan (car (gnus-score-get 'orphan alist)))
@@ -834,7 +833,6 @@ SCORE is the score to add."
 ;; Orphan functions written by plm@atcmp.nl (Peter Mutsaers).
 (defun gnus-score-orphans (score)
   (let ((new-thread-ids (gnus-get-new-thread-ids gnus-scores-articles))
-        (index (nth 1 (assoc "references" gnus-header-index)))
         alike articles art arts this last this-id)
     
     (setq gnus-scores-articles (sort gnus-scores-articles 'gnus-score-string<)
@@ -891,7 +889,7 @@ SCORE is the score to add."
 
 (defun gnus-score-integer (scores header now expire &optional trace)
   (let ((gnus-score-index (nth 1 (assoc header gnus-header-index)))
-	alike last this art entries alist articles)
+	entries alist)
 
     ;; Find matches.
     (while scores
@@ -910,8 +908,7 @@ SCORE is the score to add."
 				   (eq type '>=) (eq type '=))
 			       type
 			     (error "Illegal match type: %s" type)))
-	       (articles gnus-scores-articles)
-	       arts art)
+	       (articles gnus-scores-articles))
 	  ;; Instead of doing all the clever stuff that
 	  ;; `gnus-score-string' does to minimize searches and stuff,
 	  ;; I will assume that people generally will put so few
@@ -941,7 +938,7 @@ SCORE is the score to add."
 
 (defun gnus-score-date (scores header now expire &optional trace)
   (let ((gnus-score-index (nth 1 (assoc header gnus-header-index)))
-	alike last this art entries alist articles)
+	entries alist)
 
     ;; Find matches.
     (while scores
@@ -962,7 +959,7 @@ SCORE is the score to add."
 		      ((eq type 'at) 'string=)
 		      (t (error "Illegal match type: %s" type))))
 	       (articles gnus-scores-articles)
-	       arts art l)
+	       l)
 	  ;; Instead of doing all the clever stuff that
 	  ;; `gnus-score-string' does to minimize searches and stuff,
 	  ;; I will assume that people generally will put so few
@@ -1003,7 +1000,7 @@ SCORE is the score to add."
 				 ((string= "body" (downcase header))
 				  'gnus-request-body)
 				 (t 'gnus-request-article)))
-	     alike this art entries alist ofunc article)
+	     entries alist ofunc article)
 	;; Not all backends support partial fetching.  In that case,
 	;; we just fetch the entire article.
 	(or (gnus-check-backend-function request-func gnus-newsgroup-name)
@@ -1054,8 +1051,7 @@ SCORE is the score to add."
 				   (eq type 'string) (eq type 'String))
 			       'search-forward)
 			      (t
-			       (error "Illegal match type: %s" type))))
-		       arts art)
+			       (error "Illegal match type: %s" type)))))
 		  (goto-char (point-min))
 		  (if (funcall search-func match nil t)
 		      ;; Found a match, update scores.

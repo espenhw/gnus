@@ -277,6 +277,7 @@ all. This may very well take some time.")
 	  (if (and (or (not nnmail-keep-last-article)
 		       (not max-article)
 		       (not (= (car articles) max-article)))
+		   (not (equal mod-time '(0 0)))
 		   (or force
 		       (> (nnmail-days-between
 			   (current-time-string)
@@ -469,18 +470,15 @@ all. This may very well take some time.")
 	  (setq active (cons 1 0))
 	  (setq nnml-group-alist (cons (list group active) nnml-group-alist))))
     (setcdr active (1+ (cdr active)))
-    (let (file)
-      (while (file-exists-p
-	      (setq file (concat (nnmail-article-pathname 
-				  group nnml-directory)
-				 (int-to-string (cdr active)))))
-	(setcdr active (1+ (cdr active)))))
+    (while (file-exists-p
+	    (concat (nnmail-article-pathname group nnml-directory)
+		    (int-to-string (cdr active))))
+      (setcdr active (1+ (cdr active))))
     (cdr active)))
 
 (defun nnml-get-new-mail (&optional group)
   "Read new incoming mail."
   (let* ((spools (nnmail-get-spool-files group))
-	 (all-spools spools)
 	 (group-in group)
 	 incoming incomings)
     (if (or (not nnml-get-new-mail) (not nnmail-spool-file))

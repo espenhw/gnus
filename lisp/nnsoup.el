@@ -94,11 +94,10 @@ The SOUP packet file name will be inserted at the %s.")
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
-    (let ((count 0)
-	  (areas (cdr (assoc nnsoup-current-group nnsoup-group-alist)))
+    (let ((areas (cdr (assoc nnsoup-current-group nnsoup-group-alist)))
 	  (articles sequence)
 	  (use-nov t)
-	  beg article useful-areas this-area-seq)
+	  useful-areas this-area-seq)
       (if (stringp (car sequence))
 	  'headers
 	;; We go through all the areas and find which files the
@@ -489,8 +488,7 @@ The SOUP packet file name will be inserted at the %s.")
   (let ((tembuf (generate-new-buffer " sendmail temp"))
 	(case-fold-search nil)
 	(mailbuf (current-buffer))
-	delimline
-	prefix)
+	delimline)
     (save-excursion
       (set-buffer tembuf)
       (erase-buffer)
@@ -506,8 +504,7 @@ The SOUP packet file name will be inserted at the %s.")
       (replace-match "\n")
       (backward-char 1)
       (setq delimline (point-marker))
-      (if mail-aliases
-	  (expand-mail-aliases (point-min) delimline))
+      (if mail-aliases (expand-mail-aliases (point-min) delimline))
       (goto-char (point-min))
       ;; ignore any blank lines in the header
       (while (and (re-search-forward "\n\n\n*" delimline t)

@@ -301,10 +301,8 @@ If the stream is opened, return T, otherwise return NIL."
   (let* ((group (gnus-group-prefixed-name group (list 'nnvirtual "")))
 	 (info (nth 2 (gnus-gethash group gnus-newsrc-hashtb)))
 	 (groups nnvirtual-current-groups)
-	 (i 1)
-	 (total 0)
 	 (offset 0)
-	 reads unread igroup itotal itreads ireads)
+	 reads unread igroup itotal ireads)
     ;; The virtual group doesn't exist. (?)
     (or info (error "No such group: %s" group))
     (setq nnvirtual-current-mapping nil)
@@ -452,8 +450,9 @@ If the stream is opened, return T, otherwise return NIL."
   (nnvirtual-possibly-change-newsgroups group server)
   (let ((gnus-group-marked nnvirtual-current-groups)
 	(gnus-expert-user t))
-    (set-buffer gnus-group-buffer)
-    (gnus-group-catchup-current nil all)))
+    (save-excursion
+      (set-buffer gnus-group-buffer)
+      (gnus-group-catchup-current nil all))))
 
 (provide 'nnvirtual)
 

@@ -419,7 +419,7 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 			  (cons (current-buffer) gnus-current-article))))
 	    (from (and header (header-from header)))
 	    (winconf (current-window-configuration))
-	    follow-to real-group)
+	    real-group)
 	(and gnus-interactive-post
 	     (not gnus-expert-user)
 	     post (not group)
@@ -443,10 +443,9 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 		     (if (and (boundp 'gnus-followup-to-function)
 			      gnus-followup-to-function
 			      gnus-article-copy)
-			 (setq follow-to
-			       (save-excursion
-				 (set-buffer gnus-article-copy)
-				 (funcall gnus-followup-to-function group)))))
+			 (save-excursion
+			   (set-buffer gnus-article-copy)
+			   (funcall gnus-followup-to-function group))))
 		 gnus-use-followup-to))
 	  (if post
 	      (gnus-configure-windows 'post)
@@ -1077,8 +1076,7 @@ nil."
     (let ((signature 
 	   (or (and gnus-signature-function
 		    (funcall gnus-signature-function gnus-newsgroup-name))
-	       gnus-signature-file))
-	  b)
+	       gnus-signature-file)))
       (if (and signature
 	       (or (file-exists-p signature)
 		   (string-match " " signature)
@@ -1382,12 +1380,11 @@ mailer."
 (defun gnus-mail-reply-using-mail (&optional yank to-address)
   (save-excursion
     (set-buffer gnus-summary-buffer)
-    (let ((info (nth 2 (gnus-gethash gnus-newsgroup-name gnus-newsrc-hashtb)))
-	  (group (gnus-group-real-name gnus-newsgroup-name))
+    (let ((group (gnus-group-real-name gnus-newsgroup-name))
 	  (cur (cons (current-buffer) (cdr gnus-article-current)))
 	  (winconf (current-window-configuration))
-	  from subject date to reply-to message-of
-	  references message-id sender follow-to cc sendto elt)
+	  from subject date reply-to message-of
+	  references message-id sender follow-to sendto elt)
       (set-buffer (get-buffer-create gnus-mail-buffer))
       (mail-mode)
       (make-local-variable 'gnus-article-reply)
@@ -1422,7 +1419,6 @@ mailer."
 			      "Re: none"))
 	    (or (string-match "^[Rr][Ee]:" subject)
 		(setq subject (concat "Re: " subject)))
-	    (setq cc (mail-fetch-field "cc"))
 	    (setq reply-to (mail-fetch-field "reply-to"))
 	    (setq references (mail-fetch-field "references"))
 	    (setq message-id (mail-fetch-field "message-id"))

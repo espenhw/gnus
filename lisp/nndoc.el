@@ -91,7 +91,7 @@
     (set-buffer nntp-server-buffer)
     (erase-buffer)
     (let ((prev 2)
-	  article p beg end lines)
+	  article p beg lines)
       (nndoc-possibly-change-buffer newsgroup server)
       (if (stringp (car sequence))
 	  'headers
@@ -119,7 +119,6 @@
 			  (and (re-search-forward nndoc-article-end nil t)
 			       (goto-char (match-beginning 0)))
 			  (goto-char (point-max)))))
-	    (setq end (point))
 
 	    (set-buffer nntp-server-buffer)
 	    (insert (format "221 %d Article retrieved.\n" article))

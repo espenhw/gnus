@@ -225,6 +225,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 	 (gnus-score-find-score-files-function 'nnkiboze-score-file)
  	 gnus-select-group-hook gnus-summary-prepare-hook 
 	 gnus-thread-sort-functions gnus-show-threads 
+	 gnus-visual
 	 method nnkiboze-newsrc nov-buffer gname newsrc active
 	 ginfo lowest)
     (setq nnkiboze-current-score-group group)

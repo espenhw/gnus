@@ -80,7 +80,7 @@
 	   (count 0)
 	   (large (and (numberp nnmail-large-newsgroup)
 		       (> number nnmail-large-newsgroup)))
-	   beg article file)
+	   article file)
 
       (if (stringp (car sequence))
 	  'headers
@@ -209,7 +209,6 @@
   ;; Read nneething-active and nneething-map
   (let ((map-file (nneething-map-file))
 	(files (directory-files nneething-directory))
-	(dir (file-name-as-directory nneething-directory))
 	touched)
     (if (file-exists-p map-file)
 	(condition-case nil

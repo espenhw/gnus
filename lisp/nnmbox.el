@@ -79,10 +79,9 @@
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
-    (let ((file nil)
-	  (number (length sequence))
+    (let ((number (length sequence))
 	  (count 0)
-	  beg article art-string start stop)
+	  article art-string start stop)
       (nnmbox-possibly-change-newsgroup newsgroup)
       (if (stringp (car sequence))
 	  'headers
@@ -103,7 +102,6 @@
 		(setq stop (1- (point)))
 		(set-buffer nntp-server-buffer)
 		(insert (format "221 %d Article retrieved.\n" article))
-		(setq beg (point))
 		(insert-buffer-substring nnmbox-mbox-buffer start stop)
 		(goto-char (point-max))
 		(insert ".\n")))
@@ -233,7 +231,7 @@
   (let* ((days (or (and nnmail-expiry-wait-function
 			(funcall nnmail-expiry-wait-function newsgroup))
 		   nnmail-expiry-wait))
-	 article rest)
+	 rest)
     (save-excursion 
       (set-buffer nnmbox-mbox-buffer)
       (while articles
@@ -294,7 +292,7 @@
 
 (defun nnmbox-request-accept-article (group &optional last)
   (let ((buf (current-buffer))
-	result beg)
+	result)
     (goto-char (point-min))
     (if (looking-at "X-From-Line: ")
 	(replace-match "From ")
@@ -450,7 +448,6 @@
 (defun nnmbox-get-new-mail (&optional group)
   "Read new incoming mail."
   (let* ((spools (nnmail-get-spool-files group))
-	 (all-spools spools)
 	 (group-in group)
 	 incoming incomings)
     (nnmbox-read-mbox)

@@ -260,6 +260,7 @@
 	  (if (and (or (not nnmail-keep-last-article)
 		       (not max-article)
 		       (not (= (car articles) max-article)))
+		   (not (equal mod-time '(0 0)))
 		   (or force
 		       (> (nnmail-days-between
 			   (current-time-string)
@@ -349,9 +350,8 @@
 	     
 (defun nnmh-save-mail ()
   "Called narrowed to an article."
-  (let ((group-art (nreverse (nnmail-article-group 'nnmh-active-number)))
-	chars nov-line lines hbeg hend)
-    (setq chars (nnmail-insert-lines))
+  (let ((group-art (nreverse (nnmail-article-group 'nnmh-active-number))))
+    (nnmail-insert-lines)
     (nnmail-insert-xref group-art)
     (run-hooks 'nnmh-prepare-save-mail-hook)
     (goto-char (point-min))
@@ -379,12 +379,10 @@
   "Compute the next article number in GROUP."
   (let ((active (car (cdr (assoc group nnmh-group-alist)))))
     (setcdr active (1+ (cdr active)))
-    (let (file)
-      (while (file-exists-p
-	      (setq file (concat (nnmh-article-pathname 
-				  group nnmh-directory)
-				 (int-to-string (cdr active)))))
-	(setcdr active (1+ (cdr active)))))
+    (while (file-exists-p
+	    (concat (nnmh-article-pathname group nnmh-directory)
+		    (int-to-string (cdr active))))
+      (setcdr active (1+ (cdr active))))
     (cdr active)))
 
 (defun nnmh-article-pathname (group mail-dir)
@@ -397,7 +395,6 @@
 (defun nnmh-get-new-mail (&optional group)
   "Read new incoming mail."
   (let* ((spools (nnmail-get-spool-files group))
-	 (all-spools spools)
 	 (group-in group)
 	 incoming incomings)
     (if (or (not nnmh-get-new-mail) (not nnmail-spool-file))

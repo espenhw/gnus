@@ -149,7 +149,7 @@ Lines matching `gnus-cite-attribution-postfix' and perhaps
 	  (alist gnus-cite-prefix-alist)
 	  (faces gnus-cite-face-list)
 	  (inhibit-point-motion-hooks t)
-	  face entry prefix skip numbers number face-alist end)
+	  face entry prefix skip numbers number face-alist)
       ;; Loop through citation prefixes.
       (while alist
 	(setq entry (car alist)
@@ -282,7 +282,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	       (goto-char (point-max))
 	       (re-search-backward gnus-signature-separator nil t)
 	       (point)))
-	alist entry prefix start begin end numbers)
+	alist entry start begin end numbers prefix)
     ;; Get all potential prefixes in `alist'.
     (while (< (point) max)
       ;; Each line.
@@ -399,7 +399,7 @@ See also the documentation for `gnus-article-highlight-citation'."
      (concat "\\`" (regexp-quote prefix) ".+")))
   ;; Remove loose prefixes with too few lines.
   (let ((alist gnus-cite-loose-prefix-alist)
-	entry prefix)
+	entry)
     (while alist
       (setq entry (car alist)
 	    alist (cdr alist))
@@ -435,7 +435,7 @@ See also the documentation for `gnus-article-highlight-citation'."
   ;; TAG is the SuperCite tag on the attribution line.
   (let ((atts gnus-cite-loose-attribution-alist)
 	(case-fold-search t)
-	att wrote in prefix tag regexp limit smallest best size aprefix)
+	att wrote in prefix tag regexp limit smallest best size)
     (while atts
       (setq att (car atts)
 	    atts (cdr atts)
@@ -494,7 +494,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 (defun gnus-cite-find-loose (prefix)
   ;; Return a list of loose attribution lines prefixed by PREFIX.
   (let* ((atts gnus-cite-loose-attribution-alist)
-	 att line lines candidate)
+	 att line lines)
     (while atts
       (setq att (car atts)
 	    line (car att)

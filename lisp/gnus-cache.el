@@ -265,8 +265,7 @@
     (kill-buffer cache-buf)))
 
 (defun gnus-cache-braid-heads (group cached)
-  (let ((cache-buf (get-buffer-create " *gnus-cache*"))
-	beg end)
+  (let ((cache-buf (get-buffer-create " *gnus-cache*")))
     (save-excursion
       (set-buffer cache-buf)
       (buffer-disable-undo (current-buffer))
