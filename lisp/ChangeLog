@@ -1,5 +1,164 @@
-Sun Dec 10 10:38:47 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+Thu Dec 14 10:48:51 1995  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
+	* gnus.el (gnus-summary-toggle-header): Don't do that hook dance.
+
+Thu Dec 14 10:02:08 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus-xmas.el (gnus-xmas-read-event-char): New function.
+
+	* gnus.el (gnus-summary-last-subject): New function.
+	(gnus-summary-next-article): Understand all key events.
+	(gnus-summary-walk-group-buffer): New function.
+	(gnus-read-event-char): New function.
+
+Wed Dec 13 16:06:29 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-new-mail, gnus-mail-reply): Didn't insert
+	Gcc. 
+
+	* gnus-score.el (gnus-score-load-file): Allow `adapt-file' atom. 
+	(gnus-score-adaptive): Use it.
+
+	* gnus.el (gnus-group-visible-select-group): New command and
+	keystroke. 
+	(gnus-read-save-file-name): Extend the syntax of
+	`gnus-split-methods'.
+	(gnus-article-archive-name): New function.
+	(gnus-split-methods): New default; use function above.
+	(gnus-summary-update-secondary-mark): Update highlighting after
+	setting secondary marks.
+
+	* nnfolder.el (nnfolder-request-group): Don't load all nnfolder
+	groups on startup.
+
+Tue Dec 12 19:48:55 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-insert-group-line): Number of marked (etc)
+	didn't work.
+
+Tue Dec 12 19:37:05 1995  Timo Metzemakers  <metzemakers@labri.u-bordeaux.fr>
+
+	* gnus.el (gnus-summary-reselect-current-group): Really reselect
+	the group. 
+
+Tue Dec 12 10:38:05 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmail.el (nnmail-days-to-time): Would result in short expiry
+	times in groups with veeery long expiry times.
+
+	* gnus-vis.el (gnus-summary-highlight-line): Bind `number'.
+
+	* gnus-score.el (gnus-score-find-bnews): Protect agains bogus
+	score file names.
+
+	* gnus.el (gnus-activate-all-groups): New command and keystroke.
+
+	* gnus-vis.el (gnus-article-prev-button): New command and keystroke.
+
+	* gnus-cache.el (gnus-cache-generate-nov-databases): New command. 
+
+	* gnus-score.el (gnus-score-load-file): Accept
+	`thread-mark-and-expunge' atom.
+
+	* gnus.el (gnus-newsgroup-saved): New variable.
+	(gnus-summary-set-saved-mark): New function.
+	(gnus-kill-summary-on-exit): New variable.
+	(gnus-dead-summary-mode): New minor mode.
+	(gnus-deaden-summary, gnus-summary-wake-up-the-dead): New
+	functions. 
+	(gnus-summary-catchup-and-goto-next-group): Respect
+	`gnus-auto-select-next', etc. 
+	(gnus-article-hide-headers): New implementation.
+	(gnus-article-header-rank): New function.
+	(gnus-article-header-less): Ditto.
+	(gnus-visible-headers, gnus-ignored-headers): Can now be lists of
+	regexps. 
+	(gnus-thread-expunge-below): New variable.
+	(gnus-expunge-thread): New variable.
+
+	* gnus-mh.el (gnus-summary-save-in-folder): There is no
+	`mh-search-path'. 
+
+Mon Dec 11 07:21:25 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-article-sort-functions): New variable.
+	(gnus-article-sort-by-number, gnus-article-sort-by-author,
+	gnus-article-sort-by-subject, gnus-article-sort-by-date, 
+	(gnus-article-sort-by-score): New functions.
+	(gnus-thread-sort-by-number, gnus-thread-sort-by-author,
+	gnus-thread-sort-by-subject, gnus-thread-sort-by-date,
+	gnus-thread-sort-by-score, gnus-summary-sort-by-number,
+	gnus-summary-sort-by-author, gnus-summary-sort-by-subject,
+	gnus-summary-sort-by-date, gnus-summary-sort-by-score,
+	gnus-summary-sort):  New implementations.
+	(gnus-summary-mode-line-format): Doc fix.
+	(gnus-insert-pseudo-articles): New variable.
+	(gnus-activate-level): New variable.
+	(gnus-get-unread-articles): Use it.
+
+	* nnkiboze.el (nnkiboze-request-delete-group): New function.
+
+	* gnus.el (gnus-subscribe-killed): New function.
+	(gnus-group-kill-group): Make mass group slaughter faster.
+	(gnus-group-kill-level): New command and keystroke.
+
+	* gnus-cache.el (gnus-cache-generate-active): Messed up the active
+	file. 
+
+	* gnus.el (gnus-summary-update-secondary-mark): New function.
+	(gnus-cached-mark): New variable.
+	(gnus-gmt-to-local): Removed function.
+	(gnus-narrow-to-page): New implementation.
+
+	* gnus-cache.el (gnus-cache-enter-article): New command and
+	keystroke. 
+	(gnus-cache-remove-article): Ditto.
+	(gnus-passive-cache): New variable.
+	(gnus-cached-article-p): New function.
+
+	* gnus.el (gnus-summary-mode-line-format,
+	gnus-article-mode-line-format, gnus-group-mode-line-format):
+	Include the buffer name in all mode lines.
+
+	* gnus-topic.el (gnus-topic-yank-group, gnus-topic-kill-group):
+	Allow kill/yank inside and in between topics.
+
+	* gnus.el (gnus-request-type): Wouldn't work.
+
+Sun Dec 10 13:16:49 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-topic.el (gnus-topic-insert-topic-line): Remove old text
+	properties before setting new.
+
+	* nnml.el: Understand jka-compr.
+	(nnml-generate-nov-databases): Would make empty group disappear. 
+
+	* nnheader.el (nnheader-numerical-short-files): New variable.
+	(nnheader-numerical-full-files): Ditto.
+
+	* gnus-msg.el (gnus-summary-resend-message): Rename old Resent-*
+	headers. 
+
+	* gnus-cache.el (gnus-cache-retrieve-headers): Allow fetching of
+	old headers. 
+
+	* nnmail.el (nnmail-get-spool-files): Don't ditch procmail
+	symlinks. 
+
+	* gnus-msg.el (gnus-inews-insert-signature): Don't insert
+	signature if mail-signature.
+
+	* gnus.el (gnus-group-make-help-group): Find gnus-tut in the etc
+	directory. 
+
+Sun Dec 10 12:29:54 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el (gnus-article-date-ut): Bugged out on pseudos.
+
+Sun Dec 10 10:38:47 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: 0.21 is released.
+	
 	* gnus.el (gnus-backlog-shutdown): New function.
 	(gnus-backlog-buffer): Would return a list the first time called. 
 

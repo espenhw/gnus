@@ -65,7 +65,8 @@ less space and be faster as a result.")
 		    (summary-highlight 
 		     article-highlight 
 		     summary-menu group-menu article-menu
-		     browse-menu server-menu))
+		     browse-menu server-menu
+		     page-marker))
 		  (name . gnus-visual)
 		  (type . toggle))
 		 ((tag . "WWW Browser")

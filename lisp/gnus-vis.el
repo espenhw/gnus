@@ -956,8 +956,8 @@ If nil, the user will be asked for a duration.")
 	 (end (progn (end-of-line) (point)))
 	 ;; now find out where the line starts and leave point there.
 	 (beg (progn (beginning-of-line) (point)))
-	 (score (or (cdr (assq (or (gnus-summary-article-number)
-				   gnus-current-article)
+	 (article (gnus-summary-article-number))
+	 (score (or (cdr (assq (or article gnus-current-article)
 			       gnus-newsgroup-scored))
 		    gnus-summary-default-score 0))
 	 (default gnus-summary-default-score)
@@ -1179,20 +1179,31 @@ call it with the value of the `gnus-data' text property."
 	 (fun (get-text-property (point) 'gnus-callback)))
     (if fun (funcall fun data))))
 
-;; Suggested by Arne Elofsson <arne@hodgkin.mbi.ucla.edu>
-(defun gnus-article-next-button ()
-  "Move point to next button."
-  (interactive)
-  (if (get-text-property (point) 'gnus-callback)
-      (goto-char (next-single-property-change (point) 'gnus-callback
-					      nil (point-max))))
-  (let ((pos (next-single-property-change (point) 'gnus-callback)))
-    (if pos
-	(goto-char pos)
-      (setq pos (next-single-property-change (point-min) 'gnus-callback))
-      (if pos
-	  (goto-char pos)
-	(error "No buttons found")))))
+(defun gnus-article-prev-button (n)
+  "Move point to N buttons backward.
+If N is negative, move forward instead."
+  (interactive "p")
+  (gnus-article-next-button (- n)))
+
+(defun gnus-article-next-button (n)
+  "Move point to N buttons forward.
+If N is negative, move backward instead."
+  (interactive "p")
+  (let ((function (if (< n 0) 'prev-single-property-change
+		    'next-single-property-change))
+	(limit (if (< n 0) (point-min) (point-max))))
+    (setq n (abs n))
+    (while (and (not (= limit (point)))
+		(> n 0))
+      ;; Skip past the current button.
+      (when (get-text-property (point) 'gnus-callback)
+	(goto-char (funcall function (point) 'gnus-callback nil limit)))
+      ;; Go to the next (or previous) button.
+      (funcall function (point) 'gnus-callback nil limit)
+      (decf n))
+    (unless (zerop n)
+      (gnus-message 5 "No more buttons"))
+    n))
 
 (defun gnus-article-highlight (&optional force)
   "Highlight current article.
@@ -1466,6 +1477,33 @@ specified by `gnus-button-alist'."
 (defun gnus-button-url (address)
   "Browse ADDRESS."
   (funcall browse-url-browser-function address))
+
+;;; Next/prev buttons in the article buffer.
+
+(defvar gnus-next-page-line-format "%{%(Next page...%)%}\n")
+(defvar gnus-prev-page-line-format "%{%(Previous page...%)%}\n")
+
+(defvar gnus-prev-page-map nil)
+(unless gnus-prev-page-map
+  (setq gnus-prev-page-map (make-sparse-keymap))
+  (define-key gnus-prev-page-map "\n" 'gnus-article-prev-page))
+
+(defun gnus-insert-prev-page-button ()
+  (let ((buffer-read-only nil))
+    (gnus-remove-text-with-property 'gnus-prev)
+    (gnus-eval-format gnus-prev-page-line-format nil
+		      `(gnus-prev t local-map ,gnus-prev-page-map))))
+
+(defvar gnus-next-page-map nil)
+(unless gnus-next-page-map
+  (setq gnus-next-page-map (make-sparse-keymap))
+  (define-key gnus-next-page-map "\n" 'gnus-article-next-page))
+
+(defun gnus-insert-next-page-button ()
+  (let ((buffer-read-only nil))
+    (gnus-remove-text-with-property 'gnus-next)
+    (gnus-eval-format gnus-next-page-line-format nil
+		      `(gnus-next t local-map ,gnus-next-page-map))))
 
 ;;; Compatibility Functions:
 

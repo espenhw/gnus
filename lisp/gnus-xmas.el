@@ -224,6 +224,15 @@ call it with the value of the `gnus-data' text property."
   (easy-menu-add gnus-article-article-menu)
   (easy-menu-add gnus-article-treatment-menu))
 
+(defun gnus-xmas-read-event-char ()
+  "Get the next event."
+  (let ((event (next-event)))
+    (while (timeout-event-p event)
+      (setq event (next-event)))
+    (cons (and (key-press-event-p event) 
+	       (numberp (event-key event))
+	       (event-to-character event)) 
+	  event)))
 
 (defun gnus-xmas-define ()
   (setq gnus-mouse-2 [button2])
@@ -244,7 +253,6 @@ call it with the value of the `gnus-data' text property."
   (fset 'set-text-properties 'gnus-xmas-set-text-properties)
 
   (or (boundp 'standard-display-table) (setq standard-display-table nil))
-  (or (boundp 'read-event) (fset 'read-event 'next-command-event))
 
   (defvar gnus-mouse-face-prop 'highlight)
 
@@ -302,8 +310,7 @@ pounce directly on the real variables themselves.")
 
 
 (defun gnus-xmas-redefine ()
-
-
+  "Redefine lots of Gnus functions for XEmacs."
   (fset 'gnus-summary-make-display-table (lambda () nil))
   (fset 'gnus-visual-turn-off-edit-menu 'identity)
   (fset 'gnus-highlight-selected-summary
@@ -316,6 +323,8 @@ pounce directly on the real variables themselves.")
   (fset 'gnus-article-add-button 'gnus-xmas-article-add-button)
   (fset 'gnus-window-top-edge 'gnus-xmas-window-top-edge)
   (fset 'set-text-properties 'gnus-xmas-set-text-properties)
+  (fset 'gnus-read-event-char 'gnus-xmas-read-event-char)
+  (fset 'gnus-group-startup-message 'gnus-xmas-group-startup-message)
 
   (or (fboundp 'appt-select-lowest-window)
       (fset 'appt-select-lowest-window 
@@ -349,56 +358,75 @@ pounce directly on the real variables themselves.")
 	    (setq path (cdr path))))
 	gnus-xmas-glyph-directory)))
 
-(defun gnus-xmas-group-startup (&optional x y)
+(defun gnus-xmas-group-startup-message (&optional x y)
   "Insert startup message in current buffer."
   ;; Insert the message.
+  (gnus-xmas-find-glyph-directory)
   (erase-buffer)
-  (if (featurep 'xpm)
-      (progn
-	(set-glyph-property gnus-xmas-logo 'image  "~/tmp/gnus.xpm")
-	(set-glyph-image gnus-xmas-logo "~/tmp/gnus.xpm" 'global 'x)
+  (let ((file (and gnus-xmas-glyph-directory
+		   (concat 
+		    (file-name-as-directory gnus-xmas-glyph-directory)
+		    "gnus.xpm"))))
+    (if (and (featurep 'xpm)
+	     file (file-exists-p file))
+	(progn
+	  (set-glyph-property gnus-xmas-logo 'image file)
+	  (set-glyph-image gnus-xmas-logo file 'global 'x)
 
-	(insert " ")
-	(set-extent-begin-glyph (make-extent (point) (point)) gnus-xmas-logo)
-	(insert "
-   Gnus * A newsreader for Emacsen
- A Praxis Release * larsi@ifi.uio.no")
-	(goto-char (point-min))
-	(while (not (eobp))
-	  (insert (make-string (/ (max (- (window-width) (or x 35)) 0) 2)
-			       ? ))
-	  (forward-line 1))
-	(goto-char (point-min))
-	;; +4 is fuzzy factor.
-	(insert-char ?\n (/ (max (- (window-height) (or y 24)) 0) 2)))
+	  (insert " ")
+	  (set-extent-begin-glyph (make-extent (point) (point)) gnus-xmas-logo)
+	  (goto-char (point-min))
+	  (while (not (eobp))
+	    (insert (make-string (/ (max (- (window-width) (or x 35)) 0) 2)
+				 ? ))
+	    (forward-line 1))
+	  (goto-char (point-min))
+	  (let* ((pheight (+ 20 (count-lines (point-min) (point-max))))
+		 (wheight (window-height))
+		 (rest (- wheight pheight)))
+	    (insert (make-string (max 0 (* 2 (/ rest 3))) ?\n))))
 
-    (insert
-     (format "
-     %s
-           A newsreader 
-      for GNU Emacs
+      (insert
+       (format "              %s
+          _    ___ _             _      
+          _ ___ __ ___  __    _ ___     
+          __   _     ___    __  ___     
+              _           ___     _     
+             _  _ __             _      
+             ___   __            _      
+                   __           _       
+                    _      _   _        
+                   _      _    _        
+                      _  _    _         
+                  __  ___               
+                 _   _ _     _          
+                _   _                   
+              _    _                    
+             _    _                     
+            _                         
+          __                             
 
-        Based on GNUS 
-             written by 
-     Masanobu UMEDA
-
-       A Praxis Release
-      larsi@ifi.uio.no
 " 
-	     gnus-version))
-    ;; And then hack it.
-    ;; 18 is the longest line.
-    (indent-rigidly (point-min) (point-max) 
-		    (/ (max (- (window-width) (or x 28)) 0) 2))
+	       ""))
+      ;; And then hack it.
+      (gnus-indent-rigidly (point-min) (point-max) 
+			   (/ (max (- (window-width) (or x 46)) 0) 2))
+      (goto-char (point-min))
+      (forward-line 1)
+      (let* ((pheight (count-lines (point-min) (point-max)))
+	     (wheight (window-height))
+	     (rest (- wheight pheight)))
+	(insert (make-string (max 0 (* 2 (/ rest 3))) ?\n))))
+    ;; Fontify some.
     (goto-char (point-min))
-    ;; +4 is fuzzy factor.
-    (insert-char ?\n (/ (max (- (window-height) (or y 12)) 0) 2)))
+    (and (search-forward "Praxis" nil t)
+	 (put-text-property (match-beginning 0) (match-end 0) 'face 'bold))
+    (goto-char (point-min))
+    (let* ((mode-string (gnus-group-set-mode-line)))
+      (setq mode-line-buffer-identification 
+	    (list (concat gnus-version (substring (car mode-string) 4))))
+      (set-buffer-modified-p t))))
 
-  ;; Fontify some.
-  (goto-char (point-min))
-  (search-forward "Praxis")
-  (put-text-property (match-beginning 0) (match-end 0) 'face 'bold)
-  (goto-char (point-min)))
 
 ;;; The toolbar.
 

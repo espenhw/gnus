@@ -633,7 +633,8 @@ The headers will be included in the sequence they are matched.")
       (setq files (gnus-uu-unpack-files files)))
     (gnus-uu-add-file (mapcar (lambda (file) (cdr (assq 'name file))) files))
     (setq files (nreverse (gnus-uu-get-actions files)))
-    (or not-insert (gnus-summary-insert-pseudos files save))))
+    (or not-insert (not gnus-insert-pseudo-articles)
+	(gnus-summary-insert-pseudos files save))))
 
 ;; Return a list of files in dir.
 (defun gnus-uu-scan-directory (dir)

@@ -241,11 +241,11 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
     (add-text-properties 
      (point)
      (prog1 (1+ (point)) 
-       (eval gnus-topic-line-format-spec))
+       (eval gnus-topic-line-format-spec)
+       (gnus-group-remove-excess-properties))
      (list 'gnus-topic name
 	   'gnus-topic-level level
-	   'gnus-topic-visible visiblep))
-    (gnus-group-remove-excess-properties)))
+	   'gnus-topic-visible visiblep))))
 
 (defun gnus-topic-previous-topic (topic)
   "Return the previous topic on the same level as TOPIC."
@@ -526,22 +526,47 @@ group."
 (defun gnus-topic-kill-group (&optional n discard)
   "Kill the next N groups."
   (interactive "P")
-  (if (not (gnus-group-topic-p))
-      (gnus-group-kill-group n discard)
-    (let ((topic (gnus-group-topic-name)))
-      (gnus-topic-remove-topic nil t)
-      (push (gnus-topic-find-topology topic nil nil gnus-topic-topology)
-	    gnus-topic-killed-topics))))
+  (if (gnus-group-topic-p)
+      (let ((topic (gnus-group-topic-name)))
+	(gnus-topic-remove-topic nil t)
+	(push (gnus-topic-find-topology topic nil nil gnus-topic-topology)
+	      gnus-topic-killed-topics))
+    ;; We first kill the groups the normal way...
+    (let ((killed (gnus-group-kill-group n discard))
+	  group alist)
+      ;; Then we remove the killed groups from the topics they belong to.
+      (when (stringp killed)
+	(setq killed (list killed)))
+      (while killed
+	(when (setq alist (assoc (gnus-group-topic (setq group (pop killed)))
+				 gnus-topic-alist))
+	  (setcdr alist (delete group (cdr alist))))))))
   
 (defun gnus-topic-yank-group (&optional arg)
   "Yank the last topic."
   (interactive "p")
-  (if (null gnus-topic-killed-topics)
-      (gnus-group-yank-group arg)
-    (let ((previous (gnus-group-parent-topic))
-	  (item (nth 1 (pop gnus-topic-killed-topics))))
-      (gnus-topic-create-topic
-       (car item) (gnus-topic-parent-topic previous) previous))))
+  (if gnus-topic-killed-topics
+      (let ((previous (gnus-group-parent-topic))
+	    (item (nth 1 (pop gnus-topic-killed-topics))))
+	(gnus-topic-create-topic
+	 (car item) (gnus-topic-parent-topic previous) previous))
+    ;; We first yank the groups the normal way...
+    (let* ((topic (gnus-group-parent-topic))
+	   (prev (gnus-group-group-name))
+	   (alist (assoc topic gnus-topic-alist))
+	   (yanked (gnus-group-yank-group arg))
+	   group)
+      ;; Then we enter the yanked groups in the topics they belong to.
+      (when (stringp yanked)
+	(setq yanked (list yanked)))
+      (if (not prev)
+	  (nconc alist yanked)
+	(setq alist (cdr alist))
+	(while (cdr alist)
+	  (when (equal (car (cdr alist)) prev)
+	    (setcdr alist (nconc yanked (cdr alist)))
+	    (setq alist nil))
+	  (setq alist (cdr alist)))))))
 
 (defun gnus-topic-hide-topic ()
   "Hide all subtopics under the current topic."

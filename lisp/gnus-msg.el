@@ -530,7 +530,7 @@ Type \\[describe-mode] in the buffer to get a list of commands."
   "Return non-nil if GROUP (and ARTICLE) come from a news server."
   (or (gnus-member-of-valid 'post group) ; Ordinary news group.
       (and (gnus-member-of-valid 'post-mail group) ; Combined group.
-	   (eq (gnus-request-type group article) 'post))))
+	   (eq (gnus-request-type group article) 'news))))
 	   
 (defun gnus-inews-news (&optional use-group-method)
   "Send a news message.
@@ -1553,7 +1553,7 @@ Customize the variable gnus-mail-forward-method to use another mailer."
   (interactive "sResend message to: ")
   (gnus-summary-select-article)
   (save-excursion
-    (let (resent)
+    (let (resent beg)
       ;; We first set up a normal mail buffer.
       (nnheader-set-temp-buffer " *Gnus resend*")
       ;; This code from sendmail.el
@@ -1565,8 +1565,7 @@ Customize the variable gnus-mail-forward-method to use another mailer."
       (insert mail-header-separator "\n")
       ;; Insert our usual headers.
       (gnus-inews-narrow-to-headers)
-      (let ((headers '(From Date To)))
-	(gnus-inews-insert-headers headers))
+      (gnus-inews-insert-headers '(From Date To))
       (goto-char (point-min))
       ;; Rename them all to "Resent-*".
       (while (re-search-forward "^[A-Za-z]" nil t)
@@ -1575,12 +1574,17 @@ Customize the variable gnus-mail-forward-method to use another mailer."
       (widen)
       (forward-line)
       (delete-region (point) (point-max))
+      (setq beg (point))
       ;; Insert the message to be resent.
       (insert-buffer-substring gnus-original-article-buffer)
       (goto-char (point-min))
       (search-forward "\n\n")
       (forward-char -1)
       (insert mail-header-separator)
+      ;; Rename all old ("Also-")Resent headers.
+      (while (re-search-backward "^\\(Also-\\)?Resent-" beg t)
+	(beginning-of-line)
+	(insert "Also-"))
       ;; Send it.
       (mail-send)
       (kill-buffer (current-buffer)))))
@@ -1628,6 +1632,7 @@ mailer."
     (pop-to-buffer gnus-mail-buffer)
     (erase-buffer)
     (gnus-mail-setup 'new to subject)
+    (gnus-inews-insert-gcc)
     (run-hooks 'gnus-mail-hook)))
 
 (defun gnus-mail-reply (&optional yank to-address followup)
@@ -1739,6 +1744,7 @@ mailer."
 	(setq gnus-in-reply-to message-of)
 
 	(auto-save-mode auto-save-default)
+	(gnus-inews-insert-gcc)
 
 	(if (and follow-to (listp follow-to))
 	    (progn
@@ -1821,6 +1827,7 @@ If INHIBIT-PROMPT, never prompt for a Subject."
     (insert "\n\n")
 
     (gnus-inews-insert-bfcc)
+    (gnus-inews-insert-gcc)
     (gnus-inews-insert-signature)
     (and gnus-post-prepare-function
 	 (gnus-functionp gnus-post-prepare-function)
@@ -1981,7 +1988,8 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 		  (insert to))))
 
 	  (gnus-inews-insert-bfcc)
-
+	  (gnus-inews-insert-gcc)
+    
 	  ;; Now the headers should be ok, so we do the yanking.
 	  (goto-char (point-min))
 	  (re-search-forward
@@ -2449,17 +2457,20 @@ Headers will be generated before sending."
       (insert gnus-author-copy))))
 
 (defun gnus-inews-insert-gcc ()
-  (let* ((group gnus-outgoing-message-group)
-	 (gcc (cond 
-	       ((gnus-functionp group)
-		(funcall group))
-	       ((or (stringp group) (list group))
-		group))))
-    (when gcc
-      (insert "Gcc: "
-	      (if (stringp group) group
-		(mapconcat 'identity group " "))
-	      "\n"))))
+  (save-excursion
+    (save-restriction
+      (gnus-inews-narrow-to-headers)
+      (let* ((group gnus-outgoing-message-group)
+	     (gcc (cond 
+		   ((gnus-functionp group)
+		    (funcall group))
+		   ((or (stringp group) (list group))
+		    group))))
+	(when gcc
+	  (insert "Gcc: "
+		  (if (stringp group) group
+		    (mapconcat 'identity group " "))
+		  "\n"))))))
 
 ;;; Handling rejected (and postponed) news.
 

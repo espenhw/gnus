@@ -300,9 +300,13 @@ perfomed.")
 
 (defun nnmail-days-to-time (days)
   "Convert DAYS into time."
-  (let ((seconds (round (* days 60 60 24)))
+  (let ((seconds (* 1.0 days 60 60 24))
 	(rest (expt 2 16)))
-  (list (/ seconds rest) (% seconds rest))))
+    (list (round (/ seconds rest))
+	  ;;;!!!Error error error.  I'm not a mathematician, though.
+	  (condition-case ()
+	      (% (round seconds) rest)
+	    (error 0)))))
 
 (defun nnmail-time-since (time)
   "Return the time since DATE."
@@ -840,12 +844,10 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 					(file-truename nnmail-crash-box))) 0))
 		    (list nnmail-crash-box))))
       ;; Remove any directories that inadvertantly match the procmail
-      ;; suffix, which might happen if the suffix is "".  We also
-      ;; ditch symlinks. 
+      ;; suffix, which might happen if the suffix is "". 
       (while p
-	(and (or (file-directory-p (car p))
-		 (file-symlink-p (car p)))
-	     (setq procmails (delete (car p) procmails)))
+	(when (file-directory-p (car p))
+	  (setq procmails (delete (car p) procmails)))
 	(setq p (cdr p)))
       ;; Return the list of spools.
       (append 

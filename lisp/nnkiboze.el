@@ -190,6 +190,19 @@ If the stream is opened, return T, otherwise return NIL."
 
 (defalias 'nnkiboze-request-post 'nntp-request-post)
 
+(defun nnkiboze-request-delete-group (group &optional force server)
+  (nnkiboze-possibly-change-newsgroups group)
+  (when force
+     (let ((files (list (nnkiboze-nov-file-name)
+			(concat nnkiboze-directory group ".newsrc")
+			(nnkiboze-score-file group))))
+       (while files
+	 (and (file-exists-p (car files))
+	      (file-writable-p (car files))
+	      (delete-file (car files)))
+	 (setq files (cdr files)))))
+  (setq nnkiboze-current-group nil))
+
 
 ;;; Internal functions.
 

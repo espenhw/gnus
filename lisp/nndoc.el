@@ -128,29 +128,29 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
 ;;; Interface functions
 
 (defun nndoc-retrieve-headers (articles &optional newsgroup server fetch-old)
-  (nndoc-possibly-change-buffer newsgroup server)
-  (save-excursion
-    (set-buffer nntp-server-buffer)
-    (erase-buffer)
-    (let (article entry)
-      (if (stringp (car articles))
-	  'headers
-	(while articles
-	  (setq entry (cdr (assq (setq article (pop articles))
-				 nndoc-dissection-alist)))
-	  (insert (format "221 %d Article retrieved.\n" article))
-	  (insert-buffer-substring
-	   nndoc-current-buffer (car entry) (nth 1 entry))
-	  (goto-char (point-max))
-	  (or (= (char-after (1- (point))) ?\n) (insert "\n"))
-	  (insert (format "Lines: %d\n" (nth 4 entry)))
-	  (insert ".\n"))
+  (when (nndoc-possibly-change-buffer newsgroup server)
+    (save-excursion
+      (set-buffer nntp-server-buffer)
+      (erase-buffer)
+      (let (article entry)
+	(if (stringp (car articles))
+	    'headers
+	  (while articles
+	    (setq entry (cdr (assq (setq article (pop articles))
+				   nndoc-dissection-alist)))
+	    (insert (format "221 %d Article retrieved.\n" article))
+	    (insert-buffer-substring
+	     nndoc-current-buffer (car entry) (nth 1 entry))
+	    (goto-char (point-max))
+	    (or (= (char-after (1- (point))) ?\n) (insert "\n"))
+	    (insert (format "Lines: %d\n" (nth 4 entry)))
+	    (insert ".\n"))
 
-	;; Fold continuation lines.
-	(goto-char (point-min))
-	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	  (replace-match " " t t))
-	'headers))))
+	  ;; Fold continuation lines.
+	  (goto-char (point-min))
+	  (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+	    (replace-match " " t t))
+	  'headers)))))
 
 (defun nndoc-open-server (server &optional defs)
   (nnheader-init-server-buffer)
@@ -277,12 +277,12 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
 	(if (stringp nndoc-address)
 	    (insert-file-contents nndoc-address)
 	  (insert-buffer-substring nndoc-address)))))
-    (save-excursion
-      (set-buffer nndoc-current-buffer)
-      (nndoc-set-delims)
-      (nndoc-dissect-buffer))
-    t))
-
+    (when nndoc-current-buffer
+      (save-excursion
+	(set-buffer nndoc-current-buffer)
+	(nndoc-set-delims)
+	(nndoc-dissect-buffer))
+      t)))
 
 ;; MIME (RFC 1341) digest hack by Ulrik Dickow <dickow@nbi.dk>.
 (defun nndoc-guess-digest-type ()
@@ -427,8 +427,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
 (defun nndoc-rnews-body-end ()
   (save-excursion
     (and (re-search-backward nndoc-article-begin nil t)
-	 (goto-char (+ (point) (string-to-int (match-string 1)))))))
-  
+	 (goto-char (+ (point) (string-to-int (match-string 1)))))))  
 
 (provide 'nndoc)
 

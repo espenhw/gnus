@@ -693,6 +693,9 @@ SCORE is the score to add."
 	  (exclude-files (gnus-score-get 'exclude-files alist))
           (orphan (car (gnus-score-get 'orphan alist)))
 	  (adapt (gnus-score-get 'adapt alist))
+	  (thread-mark-and-expunge
+	   (car (gnus-score-get 'thread-mark-and-expunge alist)))
+	  (adapt-file (car (gnus-score-get 'adapt-file)))
 	  (local (gnus-score-get 'local alist))
 	  (eval (car (gnus-score-get 'eval alist))))
       ;; We do not respect eval and files atoms from global score
@@ -701,7 +704,8 @@ SCORE is the score to add."
 	   (setq lists (apply 'append lists
 			      (mapcar (lambda (file)
 					(gnus-score-load-file file)) 
-				      files))))
+				      (if adapt-file (cons adapt-file files)
+					files)))))
       (and eval (not global) (eval eval))
       ;; We then expand any exclude-file directives.
       (setq gnus-scores-exclude-files 
@@ -734,10 +738,14 @@ SCORE is the score to add."
 		  (t
 		   ;;(setq gnus-newsgroup-adaptive gnus-use-adaptive-scoring)
 		   gnus-default-adaptive-score-alist)))
+      (setq gnus-thread-expunge-below 
+	    (or thread-mark-and-expunge gnus-thread-expunge-below))
       (setq gnus-summary-mark-below 
 	    (or mark mark-and-expunge gnus-summary-mark-below))
       (setq gnus-summary-expunge-below 
-	    (or expunge mark-and-expunge gnus-summary-expunge-below)))
+	    (or expunge mark-and-expunge gnus-summary-expunge-below))
+      (setq gnus-newsgroup-adaptive-score-file 
+	    (or adapt-file gnus-newsgroup-adaptive-score-file)))
     (setq gnus-current-score-file file)
     (setq gnus-score-alist alist)
     lists))
@@ -1597,8 +1605,10 @@ SCORE is the score to add."
 	  (setq elem (cdr elem)))
 	(setq malist (cdr malist)))
       ;; We change the score file to the adaptive score file.
-      (gnus-score-load-file (gnus-score-file-name 
-			     gnus-newsgroup-name gnus-adaptive-file-suffix))
+      (gnus-score-load-file 
+       (or gnus-newsgroup-adaptive-score-file
+	   (gnus-score-file-name 
+	    gnus-newsgroup-name gnus-adaptive-file-suffix)))
       ;; The we score away.
       (while data
 	(setq elem (cdr (assq (gnus-data-mark (car data)) alist)))
@@ -1837,46 +1847,46 @@ GROUP using BNews sys file syntax."
 	(insert (car sfiles))
 	(goto-char (point-min))
 	;; First remove the suffix itself.
-	(re-search-forward (concat "." score-regexp))
-	(replace-match "" t t) 
-	(goto-char (point-min))
-	(if (looking-at (regexp-quote kill-dir))
-	    ;; If the file name was just "SCORE", `klen' is one character
-	    ;; too much.
-	    (delete-char (min (1- (point-max)) klen))
-	  (goto-char (point-max))
-	  (search-backward "/")
-	  (delete-region (1+ (point)) (point-min)))
-	;; If short file names were used, we have to translate slashes.
-	(goto-char (point-min))
-	(while (re-search-forward "[/:]" nil t)
-	  (replace-match "." t t))
-	;; Cludge to get rid of "nntp+" problems.
-	(goto-char (point-min))
-	(and (looking-at "nn[a-z]+\\+")
-	     (progn
-	       (search-forward "+")
-	       (forward-char -1)
-	       (insert "\\")))
-	;; Translate "all" to ".*".
-	(while (search-forward "all" nil t)
-	  (replace-match ".*" t t))
-	(goto-char (point-min))
-	;; Deal with "not."s.
-	(if (looking-at "not.")
-	    (progn
-	      (setq not-match t)
-	      (setq regexp (buffer-substring 5 (point-max))))
-	  (setq regexp (buffer-substring 1 (point-max)))
-	  (setq not-match nil))
-	;; Finally - if this resulting regexp matches the group name,
-	;; we add this score file to the list of score files
-	;; applicable to this group.
-	(if (or (and not-match
-		     (not (string-match regexp group)))
-		(and (not not-match)
-		     (string-match regexp group)))
-	    (setq ofiles (cons (car sfiles) ofiles)))
+	(when (re-search-forward (concat "." score-regexp) nil t)
+	  (replace-match "" t t) 
+	  (goto-char (point-min))
+	  (if (looking-at (regexp-quote kill-dir))
+	      ;; If the file name was just "SCORE", `klen' is one character
+	      ;; too much.
+	      (delete-char (min (1- (point-max)) klen))
+	    (goto-char (point-max))
+	    (search-backward "/")
+	    (delete-region (1+ (point)) (point-min)))
+	  ;; If short file names were used, we have to translate slashes.
+	  (goto-char (point-min))
+	  (while (re-search-forward "[/:]" nil t)
+	    (replace-match "." t t))
+	  ;; Cludge to get rid of "nntp+" problems.
+	  (goto-char (point-min))
+	  (and (looking-at "nn[a-z]+\\+")
+	       (progn
+		 (search-forward "+")
+		 (forward-char -1)
+		 (insert "\\")))
+	  ;; Translate "all" to ".*".
+	  (while (search-forward "all" nil t)
+	    (replace-match ".*" t t))
+	  (goto-char (point-min))
+	  ;; Deal with "not."s.
+	  (if (looking-at "not.")
+	      (progn
+		(setq not-match t)
+		(setq regexp (buffer-substring 5 (point-max))))
+	    (setq regexp (buffer-substring 1 (point-max)))
+	    (setq not-match nil))
+	  ;; Finally - if this resulting regexp matches the group name,
+	  ;; we add this score file to the list of score files
+	  ;; applicable to this group.
+	  (if (or (and not-match
+		       (not (string-match regexp group)))
+		  (and (not not-match)
+		       (string-match regexp group)))
+	      (setq ofiles (cons (car sfiles) ofiles))))
 	(setq sfiles (cdr sfiles)))
       (kill-buffer (current-buffer))
       ;; Slight kludge here - the last score file returned should be

@@ -70,6 +70,8 @@ all. This may very well take some time.")
 (defvar nnml-group-alist nil)
 (defvar nnml-active-timestamp nil)
 
+(defvar nnml-generate-active-function 'nnml-generate-active-info)
+
 
 
 ;; Server variables.
@@ -231,11 +233,8 @@ all. This may very well take some time.")
 				     nnml-group-alist))
 	(nnml-possibly-create-directory group)
 	(nnml-possibly-change-directory group)
-	(let ((articles (mapcar
-			 (lambda (file)
-			   (string-to-int file))
-			 (directory-files 
-			  nnml-current-directory nil "^[0-9]+$"))))
+	(let ((articles 
+	       (nnheader-directory-articles nnml-current-directory )))
 	  (and articles
 	       (progn
 		 (setcar active (apply 'min articles))
@@ -261,11 +260,7 @@ all. This may very well take some time.")
 (defun nnml-request-expire-articles (articles newsgroup &optional server force)
   (nnml-possibly-change-directory newsgroup)
   (let* ((active-articles 
-	  (mapcar
-	   (function
-	    (lambda (name)
-	      (string-to-int name)))
-	   (directory-files nnml-current-directory nil "^[0-9]+$" t)))
+	  (nnheader-directory-articles nnml-current-directory))
 	 (max-article (and active-articles (apply 'max active-articles)))
 	 (is-old t)
 	 article rest mod-time number)
@@ -386,21 +381,20 @@ all. This may very well take some time.")
 
 (defun nnml-request-delete-group (group &optional force server)
   (nnml-possibly-change-directory group)
-  ;; Delete all articles in GROUP.
-  (if (not force)
-      ()				; Don't delete the articles.
+  (when force
+    ;; Delete all articles in GROUP.
     (let ((articles 
 	   (directory-files 
 	    nnml-current-directory t
-	    (concat "^[0-9]+$\\|" (regexp-quote nnml-nov-file-name) "$"))))
+	    (concat nnheader-numerical-short-files
+		    "\\|" (regexp-quote nnml-nov-file-name) "$")))
+	  article)
       (while articles 
-	(and (file-writable-p (car articles))
-	     (progn
-	       (and gnus-verbose-backends
-		    (message (message "Deleting article %s in %s..."
-				      (car articles) group)))
-	       (funcall nnmail-delete-file-function (car articles))))
-	(setq articles (cdr articles))))
+	(setq article (pop articles))
+	(when (file-writable-p article)
+	  (when gnus-verbose-backends
+	    (message "Deleting article %s in %s..." article group))
+	  (funcall nnmail-delete-file-function article))))
     ;; Try to delete the directory itself.
     (condition-case ()
 	(delete-directory nnml-current-directory)
@@ -685,75 +679,90 @@ all. This may very well take some time.")
       (setq nnml-nov-buffer-alist (cdr nnml-nov-buffer-alist)))))
 
 ;;;###autoload
-(defun nnml-generate-nov-databases (dir)
+(defun nnml-generate-nov-databases ()
   "Generate nov databases in all nnml directories."
-  (interactive 
-   (progn   
-     (setq nnml-group-alist nil)
-     (list nnml-directory)))
+  (interactive)
+  ;; Read the active file to make sure we don't re-use articles 
+  ;; numbers in empty groups.
+  (nnmail-activate 'nnml)
   (nnml-open-server (or nnml-current-server ""))
-  (let ((dirs (directory-files dir t nil t)))
+  (setq nnml-directory (expand-file-name nnml-directory))
+  ;; Recurse down the directories.
+  (nnml-generate-nov-databases-1 nnml-directory)
+  ;; Save the active file.
+  (nnmail-save-active nnml-group-alist nnml-active-file))
+
+(defun nnml-generate-nov-databases-1 (dir)
+  (setq dir (file-name-as-directory dir))
+  ;; We descend recursively 
+  (let ((dirs (directory-files dir t nil t))
+	dir)
     (while dirs 
-      (if (and (not (string-match "/\\.\\.$" (car dirs)))
-	       (not (string-match "/\\.$" (car dirs)))
-	       (file-directory-p (car dirs)))
-	  (nnml-generate-nov-databases (car dirs)))
-      (setq dirs (cdr dirs))))
+      (setq dir (pop dirs))
+      (when (and (not (string-match "/\\.\\.?$" dir))
+		 (file-directory-p dir))
+	(nnml-generate-nov-databases-1 dir))))
+  ;; Do this directory.
   (let ((files (sort
 		(mapcar
-		 (function
-		  (lambda (name)
-		    (string-to-int name)))
+		 (lambda (name) (string-to-int name))
 		 (directory-files dir nil "^[0-9]+$" t))
-		(function <)))
-	(nov (concat dir "/" nnml-nov-file-name))
-	(nov-buffer (get-buffer-create "*nov*"))
+		'<)))
+    (when files
+      (funcall nnml-generate-active-function dir)
+      ;; Generate the nov file.
+      (nnml-generate-nov-file dir files))))
+
+(defun nnml-generate-active-info (dir)
+  ;; Update the active info for this group.
+  (let ((group (nnmail-replace-chars-in-string 
+		(substring dir (length nnml-directory))
+		?/ ?.)))
+    (setq nnml-group-alist (delq (assoc group nnml-group-alist)))
+    (push (list group
+		(cons (car files)
+		      (let ((f files))
+			(while (cdr f) (setq f (cdr f)))
+			(car f))))
+	  nnml-group-alist)))
+
+(defun nnml-generate-nov-file (dir files)
+  (let ((nov (concat dir "/" nnml-nov-file-name))
+	(nov-buffer (get-buffer-create " *nov*"))
 	nov-line chars)
-    (if files
-	(setq nnml-group-alist 
-	      (cons (list (nnmail-replace-chars-in-string 
-			   (substring (expand-file-name dir)
-				      (length (expand-file-name 
-					       nnml-directory)))
-			   ?/ ?.)
-			  (cons (car files)
-				(let ((f files))
-				  (while (cdr f) (setq f (cdr f)))
-				  (car f))))
-		    nnml-group-alist)))
-    (if files
-	(save-excursion
-	  (set-buffer nntp-server-buffer)
-	  (if (file-exists-p nov)
-	      (funcall nnmail-delete-file-function nov))
+    (save-excursion
+      ;; Init the nov buffer.
+      (set-buffer nov-buffer)
+      (buffer-disable-undo (current-buffer))
+      (erase-buffer)
+      (set-buffer nntp-server-buffer)
+      ;; Delete the old NOV file.
+      (when (file-exists-p nov)
+	(funcall nnmail-delete-file-function nov))
+      (while files
+	(erase-buffer)
+	(insert-file-contents (concat dir "/" (int-to-string (car files))))
+	(narrow-to-region 
+	 (goto-char (point-min))
+	 (progn
+	   (search-forward "\n\n" nil t)
+	   (setq chars (- (point-max) (point)))
+	   (1- (point))))
+	(when (and (not (= 0 chars))	; none of them empty files...
+		   (not (= (point-min) (point-max))))
+	  (goto-char (point-min))
+	  (setq nov-line (nnml-make-nov-line chars))
 	  (save-excursion
 	    (set-buffer nov-buffer)
-	    (buffer-disable-undo (current-buffer))
-	    (erase-buffer))
-	  (while files
-	    (erase-buffer)
-	    (insert-file-contents (concat dir "/" (int-to-string (car files))))
-	    (narrow-to-region 
-	     (goto-char (point-min))
-	     (save-excursion
-	       (search-forward "\n\n" nil t)
-	       (setq chars (- (point-max) (point)))
-	       (point)))
- 	    (when (and (not (= 0 chars))	; none of them empty files...
-		       (not (= (point-min) (point-max))))
-	      (setq nov-line (nnml-make-nov-line chars))
-	      (save-excursion
-		(set-buffer nov-buffer)
-		(goto-char (point-max))
-		(insert (int-to-string (car files)) nov-line)))
-	    (widen)
-	    (setq files (cdr files)))
-	  (save-excursion
-	    (set-buffer nov-buffer)
-	    (write-region 1 (point-max) (expand-file-name nov) nil
-			  'nomesg)
-	    (kill-buffer (current-buffer)))))
-    (nnmail-save-active nnml-group-alist nnml-active-file)))
+	    (goto-char (point-max))
+	    (insert (int-to-string (car files)) nov-line)))
+	(widen)
+	(setq files (cdr files)))
+      (save-excursion
+	(set-buffer nov-buffer)
+	(write-region 1 (point-max) (expand-file-name nov) nil
+		      'nomesg)
+	(kill-buffer (current-buffer))))))
 
 (defun nnml-nov-delete-article (group article)
   (save-excursion

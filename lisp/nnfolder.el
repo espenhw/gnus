@@ -221,26 +221,21 @@ such things as moving mail.  All buffers always get killed upon server close.")
 (defun nnfolder-request-group (group &optional server dont-check)
   (save-excursion
     (nnmail-activate 'nnfolder)
-    (nnfolder-possibly-change-group group)
-    (and (assoc group nnfolder-group-alist)
-	 (progn
-	   (if dont-check
-	       t
-	     (let* ((active (assoc group nnfolder-group-alist))
-		    (group (car active))
-		    (range (car (cdr active)))
-		    (minactive (car range))
-		    (maxactive (cdr range)))
-	       ;; I've been getting stray 211 lines in my nnfolder active
-	       ;; file.  So, let's make sure that doesn't happen. -SLB
-	       (set-buffer nntp-server-buffer)
-	       (erase-buffer)
-	       (if (not active)
-		   ()
-		 (insert (format "211 %d %d %d %s\n" 
-				 (1+ (- maxactive minactive))
-				 minactive maxactive group))
-		 t)))))))
+    (when (assoc group nnfolder-group-alist)
+      (if dont-check
+	  t
+	(let* ((active (assoc group nnfolder-group-alist))
+	       (group (car active))
+	       (range (car (cdr active)))
+	       (minactive (car range))
+	       (maxactive (cdr range)))
+	  (set-buffer nntp-server-buffer)
+	  (erase-buffer)
+	  (when active
+	    (insert (format "211 %d %d %d %s\n" 
+			    (1+ (- maxactive minactive))
+			    minactive maxactive group))
+	    t))))))
 
 (defun nnfolder-request-scan (&optional group server)
   (nnmail-get-new-mail

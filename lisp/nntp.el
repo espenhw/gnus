@@ -613,6 +613,15 @@ It will make innd servers spawn an nnrpd process to allow actual article
 reading."
   (nntp-send-command "^.*\r?\n" "MODE READER"))
 
+(defun nntp-send-nosy-authinfo ()
+  "Send the AUTHINFO to the nntp server.
+This function is supposed to be called from `nntp-server-opened-hook'.
+It will prompt for a password."
+  (nntp-send-command "^.*\r?\n" "AUTHINFO USER"
+		     (read-string "NNTP user name: "))
+  (nntp-send-command "^.*\r?\n" "AUTHINFO PASS" 
+		     (read-string "NNTP password: ")))
+
 (defun nntp-send-authinfo ()
   "Send the AUTHINFO to the nntp server.
 This function is supposed to be called from `nntp-server-opened-hook'.

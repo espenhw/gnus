@@ -394,6 +394,32 @@ Return the number of headers removed."
   (buffer-disable-undo (current-buffer))
   (erase-buffer))
 
+(defvar jka-compr-compression-info-list)
+(defvar nnheader-numerical-files
+  (if (boundp 'jka-compr-compression-info-list)
+      (concat "\\([0-9]+\\)\\(" 
+	      (mapconcat (lambda (i) (aref i 0))
+			 jka-compr-compression-info-list "\\|")
+	      "\\)?")
+    "[0-9]+$")
+  "Regexp that match numerical files.")
+
+(defvar nnheader-numerical-short-files (concat "^" nnheader-numerical-files)
+  "Regexp that matches numerical file names.")
+
+(defvar nnheader-numerical-full-files (concat "/" nnheader-numerical-files)
+  "Regexp that matches numerical full file paths.")
+
+(defun nnheader-file-to-number (file)
+  (if (not (boundp 'jka-compr-compression-info-list))
+      (string-to-int file)
+    (string-match nnheader-numerical-short-files file)
+    (match-string 1 file)))
+
+(defun nnheader-directory-articles (dir)
+  (mapcar 'nnheader-file-to-number
+	  (directory-files dir nil nnheader-numerical-short-files t)))
+
 (provide 'nnheader)
 
 ;;; nnheader.el ends here
