@@ -1,3 +1,8 @@
+2003-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-xmas.el (gnus-xmas-group-startup-message): Bind the oort
+	color as `gnus-group-startup-message' does.
+
 2003-01-05  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el: fixed line lengths to 80 chars or less

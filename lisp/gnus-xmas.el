@@ -480,6 +480,7 @@ call it with the value of the `gnus-data' text property."
 			    :color-symbols
 			    (("thing" . ,(car gnus-logo-colors))
 			     ("shadow" . ,(cadr gnus-logo-colors))
+			     ("oort" . "#eeeeee")
 			     ("background" . ,(face-background 'default)))])
 			 ((featurep 'xbm)
 			  `[xbm :file ,logo-xbm])
