@@ -1,3 +1,8 @@
+2003-10-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-make-fqdn): Bind case-fold-search.
+	Suggested by Christopher Richards <richards@CS.Princeton.EDU>.
+
 2003-10-23  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.el (spam-process-destination, ham-process-destination):
