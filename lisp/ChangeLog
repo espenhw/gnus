@@ -1,3 +1,15 @@
+2003-05-14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* rfc2047.el (rfc2047-encodable-p): Use the header charset. 
+
+	* gnus-sum.el (gnus-summary-reselect-current-group): Supply
+	leave-hidden. 
+
+2003-05-14  Jonathan Kamens  <jik@kamens.brookline.ma.us>
+
+	* gnus-sum.el (gnus-summary-exit): Added `leave-hidden'.  (Tiny
+	patch.) 
+
 2003-05-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-registry.el (gnus-registry-store-extra-entry): Use

@@ -6393,7 +6393,7 @@ The prefix argument ALL means to select all articles."
   (let ((current-subject (gnus-summary-find-for-reselect))
 	(group gnus-newsgroup-name))
     (setq gnus-newsgroup-begin nil)
-    (gnus-summary-exit)
+    (gnus-summary-exit nil 'leave-hidden)
     ;; We have to adjust the point of group mode buffer because
     ;; point was moved to the next unread newsgroup by exiting.
     (gnus-summary-jump-to-group group)
@@ -6456,7 +6456,7 @@ If FORCE (the prefix), also save the .newsrc file(s)."
       (gnus-save-newsrc-file)
     (gnus-dribble-save)))
 
-(defun gnus-summary-exit (&optional temporary)
+(defun gnus-summary-exit (&optional temporary leave-hidden)
   "Exit reading current newsgroup, and then return to group selection mode.
 `gnus-exit-group-hook' is called with no arguments if that value is non-nil."
   (interactive)
@@ -6546,11 +6546,14 @@ If FORCE (the prefix), also save the .newsrc file(s)."
 	(when (eq mode 'gnus-summary-mode)
 	  (gnus-kill-buffer buf)))
       (setq gnus-current-select-method gnus-select-method)
-      (pop-to-buffer gnus-group-buffer)
+      (if leave-hidden
+	  (set-buffer gnus-group-buffer)
+	(pop-to-buffer gnus-group-buffer))
       (if (not quit-config)
 	  (progn
 	    (goto-char group-point)
-	    (gnus-configure-windows 'group 'force))
+	    (unless leave-hidden
+	      (gnus-configure-windows 'group 'force)))
 	(gnus-handle-ephemeral-exit quit-config))
       ;; Clear the current group name.
       (unless quit-config

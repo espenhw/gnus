@@ -255,7 +255,8 @@ The buffer may be narrowed."
   (require 'message)			; for message-posting-charset
   (let ((charsets
 	 (mm-find-mime-charset-region (point-min) (point-max))))
-    (and charsets (not (equal charsets (list message-posting-charset))))))
+    (and charsets
+	 (not (equal charsets (list (car message-posting-charset)))))))
 
 ;; Use this syntax table when parsing into regions that may need
 ;; encoding.  Double quotes are string delimiters, backslash is
