@@ -1,5 +1,11 @@
 2002-05-04  Simon Josefsson  <jas@extundo.com>
 
+	* emacs-mime.texi: Move two chapters "Interface Functions" and
+	"Basic Functions" after the Decoding and Encoding chapters.  (No
+	text modified.)
+
+2002-05-04  Simon Josefsson  <jas@extundo.com>
+
 	* emacs-mime.texi (Top): Change scope of manual to include users.
 	(Customization): Rename to Display Customization.
 	(MML Definition): Add cross references.
