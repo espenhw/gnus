@@ -3311,7 +3311,9 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 		 (nnheader-nov-read-integer) ; chars
 		 (nnheader-nov-read-integer) ; lines
 		 (unless (eobp)
-		   (nnheader-nov-field)) ; misc
+		   (if (looking-at "Xref: ")
+		       (goto-char (match-end 0)))
+		   (nnheader-nov-field)) ; Xref
 		 (nnheader-nov-parse-extra)))) ; extra
 
       (widen))

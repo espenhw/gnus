@@ -2337,9 +2337,13 @@ score file entries for articles to include in the group."
 	(push (cons header regexps) scores))
       scores)))
   (gnus-group-make-group group "nnkiboze" address)
-  (with-temp-file (gnus-score-file-name (concat "nnkiboze:" group))
-    (let (emacs-lisp-mode-hook)
-      (pp scores (current-buffer)))))
+  (let* ((score-file (gnus-score-file-name (concat "nnkiboze:" group)))
+	 (score-dir (file-name-directory score-file)))
+    (unless (file-exists-p score-dir)
+      (make-directory score-dir))
+    (with-temp-file score-file
+      (let (emacs-lisp-mode-hook)
+	(pp scores (current-buffer))))))
 
 (defun gnus-group-add-to-virtual (n vgroup)
   "Add the current group to a virtual group."
