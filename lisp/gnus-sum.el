@@ -5845,6 +5845,9 @@ Given a prefix, will force an `article' buffer configuration."
 
 (defun gnus-summary-display-article (article &optional all-header)
   "Display ARTICLE in article buffer."
+  (when (gnus-buffer-live-p gnus-article-buffer)
+    (with-current-buffer gnus-article-buffer
+      (mm-enable-multibyte-mule4)))
   (gnus-set-global-variables)
   (if (null article)
       nil
@@ -5894,9 +5897,6 @@ be displayed."
 	      force)
 	  ;; The requested article is different from the current article.
 	  (progn
-	    (when (gnus-buffer-live-p gnus-article-buffer)
-	      (with-current-buffer gnus-article-buffer
-		(mm-enable-multibyte-mule4)))
 	    (gnus-summary-display-article article all-headers)
 	    (when (gnus-buffer-live-p gnus-article-buffer)
 	       (with-current-buffer gnus-article-buffer
@@ -6241,9 +6241,6 @@ is a number, it is the line the article is to be displayed on."
 	     gnus-newsgroup-limit))
     current-prefix-arg
     t))
-  (when (gnus-buffer-live-p gnus-article-buffer)
-    (with-current-buffer gnus-article-buffer
-      (mm-enable-multibyte-mule4)))
   (prog1
       (if (and (stringp article)
 	       (string-match "@" article))

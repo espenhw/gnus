@@ -1,3 +1,15 @@
+2000-10-08 08:57:13  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el, gnus-ems.el, gnus-start.el: Remove gnus-xemacs.
+	* gnus-ems.el: Autoload smiley.
+	* gnus-art.el (gnus-treat-display-smileys): Default value in Emacs 21.
+
+2000-10-08 08:45:48  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-display-article): Enable multibyte.
+	(gnus-summary-select-article): Don't enable multibyte here.
+	(gnus-summary-goto-article): Ditto.
+
 2000-10-08 Christoph Conrad <christoph.conrad@gmx.de>
 
 	* gnus-draft.el (gnus-draft-send-message): Typo.

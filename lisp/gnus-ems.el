@@ -30,16 +30,12 @@
 
 ;;; Function aliases later to be redefined for XEmacs usage.
 
-(eval-and-compile
-  (defvar gnus-xemacs (featurep 'xemacs)
-    "Non-nil if running under XEmacs."))
-
 (defvar gnus-mouse-2 [mouse-2])
 (defvar gnus-down-mouse-3 [down-mouse-3])
 (defvar gnus-down-mouse-2 [down-mouse-2])
 (defvar gnus-widget-button-keymap nil)
 (defvar gnus-mode-line-modified
-  (if (or gnus-xemacs
+  (if (or (featurep 'xemacs)
 	  (< emacs-major-version 20))
       '("--**-" . "-----")
     '("**" "--")))
@@ -49,7 +45,10 @@
   (autoload 'gnus-xmas-redefine "gnus-xmas")
   (autoload 'appt-select-lowest-window "appt"))
 
-(autoload 'gnus-smiley-display "smiley-ems") ; override XEmacs version
+(if (featurep 'xemacs)
+    (autoload 'gnus-smiley-display "smiley")
+  (autoload 'gnus-smiley-display "smiley-ems") ; override XEmacs version
+)
 
 ;;; Mule functions.
 
@@ -62,7 +61,7 @@
        valstr)))
 
 (eval-and-compile
-  (if gnus-xemacs
+  (if (featurep 'xemacs)
       (gnus-xmas-define)
     (defvar gnus-mouse-face-prop 'mouse-face
       "Property used for highlighting mouse regions.")))
@@ -90,7 +89,7 @@
 
 (defun gnus-ems-redefine ()
   (cond
-   (gnus-xemacs
+   ((featurep 'xemacs)
     (gnus-xmas-redefine))
 
    ((featurep 'mule)
