@@ -120,17 +120,22 @@ The file is assumed to be in PEM format and not encrypted."
 		       (file :tag "File name")))
   :group 'smime)
 
-(defcustom smime-CA-directory ""
+(defcustom smime-CA-directory nil
   "Directory containing certificates for CAs you trust.
 Directory should contain files (in PEM format) named to the X.509
-hash of the certificate."
+hash of the certificate.  This can be done using OpenSSL such as:
+
+$ ln -s ca.pem `openssl x509 -noout -hash -in ca.pem`
+
+where `ca.pem' is the file containing a PEM encoded X.509 CA
+certificate."
   :type '(choice (const :tag "none" nil)
 		 directory)
   :group 'smime)
 
-(defcustom smime-CA-file ""
+(defcustom smime-CA-file nil
   "Files containing certificates for CAs you trust.
-File should be in PEM format."
+File should contain certificates in PEM format."
   :type '(choice (const :tag "none" nil)
 		 file)
   :group 'smime)
@@ -138,10 +143,10 @@ File should be in PEM format."
 (defcustom smime-certificate-directory "~/Mail/certs/"
   "Directory containing other people's certificates.
 It should contain files named to the X.509 hash of the certificate,
-and the files themself should be in PEM format.
-The S/MIME library provide simple functionality for fetching
-certificates into this directory, so there is no need to populate it
-manually."
+and the files themself should be in PEM format."
+;The S/MIME library provide simple functionality for fetching
+;certificates into this directory, so there is no need to populate it
+;manually.
   :type 'directory
   :group 'smime)
 

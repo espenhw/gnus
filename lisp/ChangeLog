@@ -1,5 +1,10 @@
 2001-01-15  Simon Josefsson  <simon@josefsson.org>
 
+	* smime.el (smime-CA-directory, smime-CA-file): Change default to
+	nil, improve documentation.
+	(smime-certificate-directory): Comment out false hints (until it
+	is implemented).
+
 	* mml-smime.el (mml-smime-sign): Place user in customize buffer if
 	there aren't any keys.
 	(mml-smime-verify): If smime-CA-{file,directory} set, also try to
