@@ -71,8 +71,8 @@ Value is what BODY returns."
   '(("Newsgroups" . nil)
     ("Followup-To" . nil)
     ("Message-ID" . nil)
-    ("\\(Resent-\\)?\\(From\\|Cc\\|To\\|Bcc\\|Reply-To\\|Sender\\)" .
-     address-mime)
+    ("\\(Resent-\\)?\\(From\\|Cc\\|To\\|Bcc\\|Reply-To\\|Sender\
+\\|Mail-Followup-To\\|Mail-Copies-To\\)" . address-mime)
     (t . mime))
   "*Header/encoding method alist.
 The list is traversed sequentially.  The keys can either be
@@ -133,9 +133,7 @@ quoted-printable and base64 respectively.")
    (progn
      (forward-line 1)
      (if (re-search-forward "^[^ \n\t]" nil t)
-	 (progn
-	   (beginning-of-line)
-	   (point))
+	 (rfc2047-point-at-bol)
        (point-max))))
   (goto-char (point-min)))
 
