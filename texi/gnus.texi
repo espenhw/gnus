@@ -13570,10 +13570,13 @@ Gnus will read the mail spool when you activate a mail group.  The mail
 file is first copied to your home directory.  What happens after that
 depends on what format you want to store your mail in.
 
-There are five different mail back ends in the standard Gnus, and more
+There are six different mail back ends in the standard Gnus, and more
 back ends are available separately.  The mail back end most people use
-(because it is the fastest and most flexible) is @code{nnml}
-(@pxref{Mail Spool}).
+(because it is possibly the fastest) is @code{nnml} (@pxref{Mail
+Spool}).  You might notice that only five back ends are listed below;
+@code{nnmaildir}'s documentation has not yet been completely
+incorporated into this manual.  Until it is, you can find it at
+@uref{http://multivac.cwru.edu./nnmaildir/}.
 
 @menu
 * Unix Mail Box::               Using the (quite) standard Un*x mbox.
@@ -14004,6 +14007,62 @@ If you have groups that are expected to have a massive amount of
 messages, @code{nnfolder} is not the best choice, but if you receive
 only a moderate amount of mail, @code{nnfolder} is probably the most
 friendly mail back end all over.
+
+@item nnmaildir
+
+@code{nnmaildir} is largely similar to @code{nnml}, with some notable
+differences.  Each message is stored in a separate file, but the
+filename is unrelated to the article number in Gnus.  @code{nnmaildir}
+also stores the equivalent of @code{nnml}'s overview files in one file
+per article, so it uses about twice as many inodes as @code{nnml}.  (Use
+@code{df -i} to see how plentiful your inode supply is.)  If this slows
+you down or takes up very much space, consider switching to ReiserFS
+(@uref{http://www.namesys.com/}) or another non-block-structured
+filesystem.
+
+Since maildirs don't require locking for delivery, the maildirs you use
+as groups can also be the maildirs your mail is directly delivered to.
+This means you can skip Gnus's mail splitting if your mail is already
+organized into different mailboxes during delivery.  A @code{directory}
+entry in @code{mail-sources} would have a similar effect, but would
+require one set of mailboxes for spooling deliveries (in mbox format,
+thus damaging message bodies), and another set to be used as groups (in
+whatever format you like).  A maildir has a built-in spool, in the
+@code{new/} subdirectory.  Beware that currently, mail moved from
+@code{new/} to @code{cur/} instead of via mail splitting will undergo
+treatment such as duplicate checking.
+
+An article will not necessarily keep the same number across Gnus
+sessions; articles are renumbered starting from 1 for each Gnus session
+(more precisely, each time you open the @code{nnmaildir} server).  This
+way, you don't get gaps in your article number ranges, and when entering
+large groups, Gnus is likely to give a more accurate article count.  The
+price is that @code{nnmaildir} doesn't work with the cache or agent.
+This will probably be changed in the future.
+
+@code{nnmaildir} stores article marks for a given group in the
+corresponding maildir, in a way designed so that it's easy to manipulate
+them from outside Gnus.  You can tar up a maildir, unpack it somewhere
+else, and still have your marks.  @code{nnml} also stores marks, but
+it's not as easy to work with them from outside Gnus as with
+@code{nnmaildir}.
+
+For configuring expiry and other things, @code{nnmaildir} uses group
+parameters slightly different from those of other mail backends.
+
+@code{nnmaildir} uses a significant amount of memory to speed things up.
+(It keeps in memory some of the things that @code{nnml} stores in files
+and that @code{nnmh} repeatedly parses out of message files.)  If this
+is a problem for you, you can set the @code{nov-cache-size} group
+parameter to somthing small (0 would probably not work, but 1 probably
+would) to make it use less memory.
+
+Startup and shutdown are likely to be slower with @code{nnmaildir} than
+with other backends.  Everything in between is likely to be faster,
+depending in part on your filesystem.
+
+@code{nnmaildir} does not use @code{nnoo}, so you cannot use @code{nnoo}
+to write an @code{nnmaildir}-derived backend.
 
 @end table
 
