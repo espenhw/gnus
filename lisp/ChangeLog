@@ -1,3 +1,9 @@
+2000-10-03 21:20:31  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-action-alist): New variable.
+	(gnus-mime-action-on-part): Use it.
+	(gnus-mime-button-commands): Add command ".".
+
 2000-10-03 20:37:42  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-mime-inline-part): Support prefix argument.

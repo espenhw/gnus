@@ -654,6 +654,20 @@ used."
 		:value undisplayed-alternative)
 	  (function)))
 
+(defcustom gnus-mime-action-alist
+  '(("save to file" . gnus-mime-save-part)
+    ("display as text" . gnus-mime-inline-part)
+    ("view the part" . gnus-mime-view-part)
+    ("pipe to command" . gnus-mime-pipe-part)
+    ("toggle display" . gnus-article-press-button)
+    ("view as type" . gnus-mime-view-part-as-type)
+    ("internalize type" . gnus-mime-internalize-part)
+    ("externalize type" . gnus-mime-externalize-part))
+  "An alist of actions that run on the MIME attachment."
+  :group 'gnus-article-mime
+  :type '(repeat (cons (string :tag "name")
+		       (function))))
+
 ;;;
 ;;; The treatment variables
 ;;;
@@ -2889,7 +2903,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (gnus-mime-inline-part "i" "View As Text, In This Buffer")
     (gnus-mime-internalize-part "E" "View Internally")
     (gnus-mime-externalize-part "e" "View Externally")
-    (gnus-mime-pipe-part "|" "Pipe To Command...")))
+    (gnus-mime-pipe-part "|" "Pipe To Command...")
+    (gnus-mime-action-on-part "." "Take action on the part")))
 
 (defun gnus-article-mime-part-status ()
   (if gnus-article-mime-handle-alist-1
@@ -3064,6 +3079,16 @@ In no internal viewer is available, use an external viewer."
     (if (mm-handle-undisplayer handle)
 	(mm-remove-part handle)
       (mm-display-part handle))))
+
+(defun gnus-mime-action-on-part (&optional action)
+  "Do something with the MIME attachment at \(point\)."
+  (interactive
+   (list (completing-read "Action: " gnus-mime-action-alist)))
+  (gnus-article-check-buffer)
+  (let ((action-pair (assoc action gnus-mime-action-alist)))
+    (if action-pair
+	(funcall (cdr action-pair)))))
+
 
 (defun gnus-article-part-wrapper (n function)
   (save-current-buffer
