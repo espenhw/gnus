@@ -1731,7 +1731,8 @@ FILE and places the combined headers into `nntp-server-buffer'."
 (defun gnus-agent-read-agentview (file)
   "Load FILE and do a `read' there."
   (with-temp-buffer
-    (ignore-errors
+    (condition-case nil
+      (progn
         (nnheader-insert-file-contents file)
         (goto-char (point-min))
         (let ((alist (read (current-buffer)))
@@ -1740,6 +1741,8 @@ FILE and places the combined headers into `nntp-server-buffer'."
               changed-version)
 
           (cond
+           ((< version 2)
+            (error "gnus-agent-read-agentview no longer supports version %d.  Stop gnus, manually evaluate gnus-agent-convert-to-compressed-agentview, then restart gnus."))
            ((= version 0)
             (let ((inhibit-quit t)
                   entry)
@@ -1773,7 +1776,8 @@ FILE and places the combined headers into `nntp-server-buffer'."
           (when changed-version
             (let ((gnus-agent-article-alist alist))
               (gnus-agent-save-alist gnus-agent-read-agentview)))
-        alist))))
+          alist))
+      (file-error nil))))
 
 (defun gnus-agent-save-alist (group &optional articles state)
   "Save the article-state alist for GROUP."
@@ -3461,7 +3465,6 @@ If REREAD is not nil, downloaded articles are marked as unread."
                     (gnus-message 3 "Ignoring unexpected input")
                     (sit-for 1)
                     t)))))
-
   (when group
       (gnus-message 5 "Regenerating in %s" group)
       (let* ((gnus-command-method (or gnus-command-method
@@ -3694,49 +3697,6 @@ If CLEAN, obsolete (ignore)."
 
 (defun gnus-agent-group-covered-p (group)
   (gnus-agent-method-p (gnus-group-method group)))
-
-(add-hook 'gnus-group-prepare-hook
-          (lambda ()
-            'gnus-agent-do-once
-
-            (when (listp gnus-agent-expire-days)
-              (beep)
-              (beep)
-              (gnus-message 1 "WARNING: gnus-agent-expire-days no longer\
- supports being set to a list.")(sleep-for 3)
-              (gnus-message 1 "Change your configuration to set it to an\
- integer.")(sleep-for 3)
-              (gnus-message 1 "I am now setting group parameters on each\
- group to match the configuration that the list offered.")
-
-              (save-excursion
-                (let ((groups (gnus-group-listed-groups)))
-                  (while groups
-                    (let* ((group (pop groups))
-                           (days gnus-agent-expire-days)
-                           (day (catch 'found
-                                  (while days
-                                    (when (eq 0 (string-match
-                                                 (caar days)
-                                                 group))
-                                      (throw 'found (cadar days)))
-                                    (setq days (cdr days)))
-                                  nil)))
-                      (when day
-                        (gnus-group-set-parameter group 'agent-days-until-old
-                                                  day))))))
-
-              (let ((h gnus-group-prepare-hook))
-                (while h
-                  (let ((func (pop h)))
-                    (when (and (listp func)
-                               (eq (cadr (caddr func)) 'gnus-agent-do-once))
-                      (remove-hook 'gnus-group-prepare-hook func)
-                      (setq h nil)))))
-
-              (gnus-message 1 "I have finished setting group parameters on\
- each group. You may now customize your groups and/or topics to control the\
- agent."))))
 
 (provide 'gnus-agent)
 
