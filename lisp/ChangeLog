@@ -1,5 +1,10 @@
 2004-02-09  Jesper Harder  <harder@ifa.au.dk>
 
+	* imap.el (imap-parse-flag-list, imap-parse-body-extension)
+	(imap-parse-body): Fix format string mismatch.
+
+	* gnus-score.el (gnus-summary-increase-score): do.
+
 	* nnrss.el (nnrss-close): New function.
 
 2004-02-08  Jesper Harder  <harder@ifa.au.dk>
@@ -24,10 +29,10 @@
 	* message.el (message-generate-headers-first): Don't quote nil
 	and t in docstrings.
 
-	* imap.el (imap-id): do. 
+	* imap.el (imap-id): do.
 
 	* gnus-agent.el (gnus-agent-consider-all-articles)
-	(gnus-agent-queue-mail): do.		 
+	(gnus-agent-queue-mail): do.
 
 2004-02-05  Reiner Steib  <Reiner.Steib@gmx.de>
 

@@ -627,7 +627,7 @@ file for the command instead of the current score file."
 	      (gnus-score-insert-help "Match permanence" char-to-perm 2)))
 
 	  (gnus-score-kill-help-buffer)
-	  (if mimic (message "%c %c %c" prefix hchar tchar pchar)
+	  (if mimic (message "%c %c %c %c" prefix hchar tchar pchar)
 	    (message ""))
 	  (unless (setq temporary (cadr (assq pchar char-to-perm)))
 	    ;; Deal with der(r)ided superannuated paradigms.
