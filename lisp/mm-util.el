@@ -460,7 +460,7 @@ If the charset is `composition', return the actual one."
     (mm-mule-charset-to-mime-charset charset)))
 
 (defun mm-delete-duplicates (list)
-  "Simple  substitute for CL `delete-duplicates', testing with `equal'."
+  "Simple substitute for CL `delete-duplicates', testing with `equal'."
   (let (result head)
     (while list
       (setq head (car list))
@@ -692,7 +692,7 @@ START, END and FILENAME.  START and END are buffer positions
 saying what text to write.
 Optional fourth argument specifies the coding system to use when
 encoding the file.
-If INHIBIT is non-nil, inhibit mm-inhibit-file-name-handlers."
+If INHIBIT is non-nil, inhibit `mm-inhibit-file-name-handlers'."
   (let ((coding-system-for-write
 	 (or codesys mm-text-coding-system-for-write
 	     mm-text-coding-system))
@@ -710,7 +710,7 @@ If INHIBIT is non-nil, inhibit mm-inhibit-file-name-handlers."
 			      coding-system inhibit)
 
   "Like `write-region'.
-If INHIBIT is non-nil, inhibit mm-inhibit-file-name-handlers."
+If INHIBIT is non-nil, inhibit `mm-inhibit-file-name-handlers'."
   (let ((coding-system-for-write
 	 (or coding-system mm-text-coding-system-for-write
 	     mm-text-coding-system))
@@ -736,7 +736,7 @@ If INHIBIT is non-nil, inhibit mm-inhibit-file-name-handlers."
 
 (if (fboundp 'detect-coding-region)
     (defun mm-detect-coding-region (start end)
-      "Like 'detect-coding-region' except returning the best one."
+      "Like `detect-coding-region' except returning the best one."
       (let ((coding-systems
 	     (detect-coding-region (point) (point-max))))
 	(or (car-safe coding-systems)

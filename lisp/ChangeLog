@@ -1,3 +1,8 @@
+2003-02-07  John Paul Wallington  <jpw@gnu.org>
+
+	* mm-util.el (mm-delete-duplicates, mm-append-to-file)
+	(mm-write-region, mm-detect-coding-region): Doc fixes.
+
 2003-02-07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mail-source.el (mail-source-fetch): Ignore errors.
