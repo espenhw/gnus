@@ -8335,6 +8335,9 @@ try to match the headers to what you have (@pxref{Picons}).
 Smileys are those little @samp{:-)} symbols that people like to litter
 their messages with (@pxref{Smileys}).
 
+All these functions are toggles--if the elements already exist,
+they'll be removed.
+
 @table @kbd
 @item W D x
 @kindex W D x (Summary)
@@ -19579,6 +19582,9 @@ obtaining and installing the picons databases, point your Web browser at @*
 picons to be installed into a location pointed to by
 @code{gnus-picons-database}.
 
+If you are using Debian GNU/Linux, saying @samp{apt-get install
+picons.*} will install the picons where Gnus can find them.
+
 
 @node Picon Requirements
 @subsubsection Picon Requirements
@@ -19895,8 +19901,8 @@ the @code{From} header, the face will not be shown.
 The default action under Emacs 20 is to fork off the @code{display}
 program@footnote{@code{display} is from the ImageMagick package.  For
 the @code{uncompface} and @code{icontopbm} programs look for a package
-like `compface' or `faces-xface' on a GNU/Linux system.}  to view the
-face.
+like @code{compface} or @code{faces-xface} on a GNU/Linux system.}  to
+view the face.
 
 Under XEmacs or Emacs 21+ with suitable image support, the default
 action is to display the face before the @code{From} header.  (It's
@@ -20232,6 +20238,7 @@ but at the common table.@*
 @chapter Appendices
 
 @menu
+* XEmacs::                      Requirements for installing under XEmacs.
 * History::                     How Gnus got where it is today.
 * On Writing Manuals::          Why this is not a beginner's guide.
 * Terminology::                 We use really difficult, like, words here.
@@ -20241,6 +20248,18 @@ but at the common table.@*
 * Emacs for Heathens::          A short introduction to Emacsian terms.
 * Frequently Asked Questions::
 @end menu
+
+
+@node XEmacs
+@section XEmacs
+@cindex XEmacs
+@cindex Installing under XEmacs
+
+XEmacs is distributed as a collection of packages.  You should install
+whatever packages the Gnus XEmacs package requires.  The current
+requirements are @samp{gnus}, @samp{w3}, @samp{mh-e},
+@samp{mailcrypt}, @samp{rmail}, @samp{eterm}, @samp{mail-lib},
+@samp{xemacs-base}, and @samp{fsf-compat}.
 
 
 @node History

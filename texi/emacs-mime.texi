@@ -251,6 +251,10 @@ Fold the header under point.
 @findex mail-header-unfold-field
 Unfold the header under point.
 
+@item mail-header-field-value
+@findex mail-header-field-value
+Return the value of the field under point.
+
 @item mail-encode-encoded-word-region
 @findex mail-encode-encoded-word-region
 Encode the non-ASCII words in the region.  For instance,
