@@ -1,3 +1,8 @@
+2001-04-13  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Sorting Groups): Note `C-k' and `C-y' for manually
+	moving groups around.
+
 2001-04-07  Ryan Yeske <rcyeske@vcn.bc.ca>
 
 	* gnus.texi (Splitting in IMAP): Fix.

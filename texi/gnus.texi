@@ -3023,6 +3023,8 @@ Sort the groups alphabetically by backend name
 
 @end table
 
+And finally, note that you can use @kbd{C-k} and @kbd{C-y} to manually
+move groups around.
 
 
 @node Group Maintenance
