@@ -1,3 +1,8 @@
+2004-01-05  Karl Pfl,Ad(Bsterer  <sigurd@12move.de>
+
+	* mml.el (mml-minibuffer-read-disposition): Show attachment type
+	in prompt (tiny change)
+
 2004-01-06  Steve Youngs  <sryoungs@bigpond.net.au>
 
 	* messagexmas.el (message-xmas-redefine): Alias
