@@ -42,6 +42,8 @@ Permission is granted to copy and distribute translations of this manual
 into another language, under the above conditions for modified versions.
 @end ifinfo
 
+@iftex
+
 @titlepage
 @title (ding) Gnus Manual
 
@@ -65,6 +67,8 @@ into another language, under the above conditions for modified versions.
 Cover art by Etienne Suvasa.
 @end titlepage
 @page
+
+@end iftex
 
 @node Top
 @top The Gnus Newsreader
@@ -3672,15 +3676,15 @@ All the following marks mark articles as read.
 
 @table @samp
 @item D
-Articles that are marked as read.  They have a @samp{D}
+Articles that are marked as read.  They have a @samp{r}
 (@code{gnus-del-mark}) in the first column.  These are articles that the
 user has marked as read more or less manually.
 @item d
-Articles that are actually read are marked with @samp{d}
+Articles that are actually read are marked with @samp{R}
 (@code{gnus-read-mark}). 
 @item A
 Articles that were marked as read in previous sessions are now
-@dfn{ancient} and marked with @samp{A} (@code{gnus-ancient-mark}). 
+@dfn{old} and marked with @samp{O} (@code{gnus-ancient-mark}). 
 @item K
 Marked as killed (@code{gnus-killed-mark}).
 @item X
@@ -3723,8 +3727,9 @@ before you've finished reading the thesis.  You can then set a bookmark
 in the article, and Gnus will jump to this bookmark the next time it
 encounters the article.
 
-All articles that you have replied to or made a followup to will be
-marked with an @samp{R} in the second column (@code{gnus-replied-mark}). 
+All articles that you have replied to or made a followup to (i.e., have
+answered) will be marked with an @samp{A} in the second column
+(@code{gnus-replied-mark}).
 
 @vindex gnus-not-empty-thread-mark
 @vindex gnus-empty-thread-mark
@@ -4882,6 +4887,7 @@ Remove CR (@code{gnus-article-remove-cr}).
 Treat quoted-printable (@code{gnus-article-de-quoted-unreadable}).
 @item W f
 @kindex W f (Summary)
+@cindex x-face
 @findex gnus-article-display-x-face
 @findex gnus-article-x-face-command
 @vindex gnus-article-x-face-command
@@ -6406,6 +6412,7 @@ The list may contain the symbols @code{group}, @code{article} and
 that mode line updated with information that may be pertinent.  If this
 variable is @code{nil}, screen refresh may be quicker.
 
+@cindex display-time
 @item gnus-mode-non-string-length
 @vindex gnus-mode-non-string-length
 By default, Gnus displays information on the current article in the mode

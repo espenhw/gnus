@@ -782,9 +782,9 @@ for the groups to be sorted.  Pre-made functions include
   "*Mark used for ticked articles.")
 (defvar gnus-dormant-mark ??
   "*Mark used for dormant articles.")
-(defvar gnus-del-mark ?D
+(defvar gnus-del-mark ?r
   "*Mark used for del'd articles.")
-(defvar gnus-read-mark ?d
+(defvar gnus-read-mark ?R
   "*Mark used for read articles.")
 (defvar gnus-expirable-mark ?E
   "*Mark used for expirable articles.")
@@ -796,11 +796,11 @@ for the groups to be sorted.  Pre-made functions include
   "*Mark used for articles with a low score.")
 (defvar gnus-catchup-mark ?C
   "*Mark used for articles that are caught up.")
-(defvar gnus-replied-mark ?R
+(defvar gnus-replied-mark ?A
   "*Mark used for articles that have been replied to.")
 (defvar gnus-process-mark ?# 
   "*Process mark.")
-(defvar gnus-ancient-mark ?A
+(defvar gnus-ancient-mark ?O
   "*Mark used for ancient articles.")
 (defvar gnus-canceled-mark ?G
   "*Mark used for canceled articles.")
@@ -1340,7 +1340,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.94"
+(defconst gnus-version "(ding) Gnus v0.95"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -3619,10 +3619,12 @@ If FIRST-TOO, the current line is also eligible as a target."
 					      (point) 'gnus-level)
 					     gnus-level-subscribed)))))
 			 (or (not level)
-			     (let ((lev (get-text-property (point) 'gnus-level)))
-			       (if (and lev (<= lev level))
+			     (let ((lev (get-text-property (point)
+							   'gnus-level)))
+			       (if (and lev (= lev level))
 				   t
-				 (if (< lev low)
+				 (if (and (< lev low)
+					  (< level low))
 				     (progn
 				       (setq low lev)
 				       (setq pos (point))))
@@ -3757,7 +3759,8 @@ If argument ALL is non-nil, already read articles become readable."
     (or (gnus-server-opened method)
 	(gnus-open-server method)
 	(error "Unable to contact server: %s" (gnus-status-message method)))
-    (if activate (gnus-request-group group))
+    (if activate (or (gnus-request-group group)
+		     (error "Couldn't request group")))
     (condition-case ()
 	(gnus-group-read-group t t group)
       (error nil)
@@ -3927,7 +3930,8 @@ ADDRESS."
      (concat "(gnus-group-set-info '" (prin1-to-string (cdr info)) ")"))
     (gnus-group-insert-group-line-info nname)
 
-    (require (intern method))
+    (if (assoc method gnus-valid-select-methods)
+	(require (intern method)))
     (and (gnus-check-backend-function 'request-create-group nname)
 	 (gnus-request-create-group nname))))
 
@@ -5568,7 +5572,8 @@ The following commands are available:
 	  gnus-empty-thread-mark)
       number)))
 
-(defun gnus-summary-read-group (group &optional show-all no-article kill-buffer)
+(defun gnus-summary-read-group 
+  (group &optional show-all no-article kill-buffer)
   "Start reading news in newsgroup GROUP.
 If SHOW-ALL is non-nil, already read articles are also listed.
 If NO-ARTICLE is non-nil, no article is selected initially."
@@ -5613,7 +5618,8 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 	  (progn
 	    (set-buffer gnus-group-buffer)
 	    (gnus-group-jump-to-group group)
-	    (gnus-group-next-unread-group 1))
+	    (gnus-group-next-unread-group 1)
+	    (gnus-configure-windows 'group))
 	(if (not (buffer-name (car quit-config)))
 	    (gnus-configure-windows 'group)
 	  (set-buffer (car quit-config))
@@ -7328,9 +7334,9 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 						  gnus-newsgroup-name))))
 	 (mode major-mode)
 	 (buf (current-buffer)))
+    (run-hooks 'gnus-summary-exit-hook)
     (gnus-summary-update-info) ; Make all changes in this group permanent.
     (set-buffer buf)
-    (run-hooks 'gnus-summary-exit-hook)
     (and gnus-use-cache (gnus-cache-possibly-remove-articles))
     ;; Make sure where I was, and go to next newsgroup.
     (set-buffer gnus-group-buffer)
@@ -7459,12 +7465,14 @@ previous group instead."
 	    (gnus-summary-exit))
 	;; We try to enter the target group.
 	(gnus-group-jump-to-group target-group)
-	(if (and (not (zerop (gnus-group-group-unread)))
-		 (gnus-summary-read-group
-		  target-group nil no-article current-buffer))
-	    (setq entered t)
-	  (setq current-group target-group
-		target-group nil))))))
+	(let ((unreads (gnus-group-group-unread)))
+	  (if (and (or (eq t unreads)
+		       (and unreads (not (zerop unreads))))
+		   (gnus-summary-read-group
+		    target-group nil no-article current-buffer))
+	      (setq entered t)
+	    (setq current-group target-group
+		  target-group nil)))))))
 
 (defun gnus-summary-next-group-old (&optional no-article group backward)
   "Exit current newsgroup and then select next unread newsgroup.
@@ -7670,7 +7678,8 @@ be displayed."
 	      (progn
 		(gnus-summary-display-article article all-headers)
 		(setq did article))
-	    (if all-headers (gnus-article-show-all-headers))
+	    (if (or all-headers gnus-show-all-headers) 
+		(gnus-article-show-all-headers))
 	    nil))
       (if did 
 	  (gnus-article-set-window-start 
@@ -7996,18 +8005,17 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 		(header-number header)))
 	(let ((gnus-override-method gnus-refer-article-method)
 	      (gnus-ancient-mark gnus-read-mark)
-	      (tmp-buf (get-buffer-create " *gnus refer"))
 	      (tmp-point (window-start
 			  (get-buffer-window gnus-article-buffer)))
-	      number)
+	      number tmp-buf)
 	  (and gnus-refer-article-method
 	       (or (gnus-server-opened gnus-refer-article-method)
 		   (gnus-open-server gnus-refer-article-method)))
 	  ;; Save the old article buffer.
 	  (save-excursion
-	    (set-buffer tmp-buf)
-	    (buffer-disable-undo (current-buffer))
-	    (insert-buffer-substring gnus-article-buffer))
+	    (set-buffer gnus-article-buffer)
+	    (gnus-kill-buffer " *temp Article*")
+	    (setq tmp-buf (rename-buffer " *temp Article*")))
 	  (prog1
 	      (if (gnus-article-prepare 
 		   message-id nil (gnus-read-header message-id))
@@ -8021,14 +8029,14 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 		    message-id)
 		;; We restore the old article buffer.
 		(save-excursion
-		  (set-buffer gnus-article-buffer)
+		  (kill-buffer gnus-article-buffer)
+		  (set-buffer tmp-buf)
+		  (rename-buffer gnus-article-buffer)
 		  (let ((buffer-read-only nil))
-		    (insert-buffer-substring tmp-buf)
 		    (and tmp-point
 			 (set-window-start (get-buffer-window (current-buffer))
 					   tmp-point))))
-		nil)
-	    (kill-buffer tmp-buf)))))))
+		(kill-buffer tmp-buf))))))))
 
 (defun gnus-summary-enter-digest-group ()
   "Enter a digest group based on the current article."
@@ -8973,6 +8981,7 @@ marked."
 
     ;; See whether the article is to be put in the cache.
     (and gnus-use-cache
+	 (not (= mark gnus-canceled-mark))
 	 (save-excursion
 	   (gnus-cache-possibly-enter-article 
 	    gnus-newsgroup-name article 
@@ -10022,7 +10031,7 @@ is initialized from the SAVEDIR environment variable."
   ;; Duplicate almost all summary keystrokes in the article mode map.
   (let ((commands 
 	 (list 
-	  " " "\177" "\r" "n" "p" "N" "P" "\M-\C-n" "\M-\C-p"
+	  " " "\177" "n" "p" "N" "P" "\M-\C-n" "\M-\C-p"
 	  "\M-n" "\M-p" "." "," "\M-s" "\M-r" "<" ">" "j" "^" "\M-^"
 	  "u" "!" "U" "d" "D" "E" "\M-u" "\M-U" "k" "\C-k" "\M-\C-k"
 	  "\M-\C-l" "e" "#" "\M-#" "\M-\C-t" "\M-\C-s" "\M-\C-h"
@@ -10288,6 +10297,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		  ;; Suggested by Jim Sisolak
 		  ;; <sisolak@trans4.neep.wisc.edu>.
 		  (gnus-set-global-variables)
+		  (setq gnus-have-all-headers 
+			(or all-headers gnus-show-all-headers))
 		  (and gnus-use-cache 
 		       (gnus-cache-possibly-enter-article
 			group article
@@ -10295,9 +10306,6 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 			(memq article gnus-newsgroup-marked)
 			(memq article gnus-newsgroup-dormant)
 			(memq article gnus-newsgroup-unreads)))))
-	    ;; gnus-have-all-headers must be either T or NIL.
-	    (setq gnus-have-all-headers
-		  (not (not (or all-headers gnus-show-all-headers))))
 	    ;; Hooks for getting information from the article.
 	    ;; This hook must be called before being narrowed.
 	    (let (buffer-read-only)
@@ -12681,11 +12689,7 @@ If FORCE is non-nil, the .newsrc file is read."
   ;; from the variable gnus-newsrc-alist.
   (and (or gnus-newsrc-alist gnus-killed-list)
        gnus-current-startup-file
-       (let ((make-backup-files t)
-	     (version-control nil)
-	     (require-final-newline t)) ;Don't ask even if requested.
-	 ;; You can stop or change version control of backup file.
-	 ;; Suggested by jason@violet.berkeley.edu.
+       (progn
 	 (run-hooks 'gnus-save-newsrc-hook)
 	 (save-excursion
 	   (if (or (not gnus-dribble-buffer)
@@ -12703,14 +12707,13 @@ If FORCE is non-nil, the .newsrc file is read."
 				 gnus-current-startup-file)))
 	     ;; Quickly loadable .newsrc.
 	     (set-buffer (get-buffer-create " *Gnus-newsrc*"))
+	     (set-visited-file-name (concat gnus-current-startup-file ".eld"))
 	     (gnus-add-current-to-buffer-list)
 	     (buffer-disable-undo (current-buffer))
 	     (erase-buffer)
 	     (gnus-message 5 "Saving %s.eld..." gnus-current-startup-file)
 	     (gnus-gnus-to-quick-newsrc-format)
-	     (write-region 1 (point-max) 
-			   (concat gnus-current-startup-file ".eld") 
-			   nil 'nomesg)
+	     (save-buffer)
 	     (kill-buffer (current-buffer))
 	     (gnus-message 5 "Saving %s.eld...done" gnus-current-startup-file)
 	     (gnus-dribble-delete-file))))))
@@ -12744,6 +12747,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	info ranges range)
     (save-excursion
       (set-buffer (create-file-buffer gnus-startup-file))
+      (set-visited-file-name gnus-startup-file)
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
       ;; Write options.
@@ -12775,7 +12779,7 @@ If FORCE is non-nil, the .newsrc file is read."
 			(if ranges (insert ","))))))
 	      (insert "\n")))
 	(setq newsrc (cdr newsrc)))
-      (write-region 1 (point-max) gnus-current-startup-file nil 'nomesg)
+      (save-buffer)
       (kill-buffer (current-buffer)))))
 
 (defun gnus-read-all-descriptions-files ()

@@ -1,12 +1,59 @@
-Tue Jul 11 09:36:28 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+Thu Jul 13 00:14:09 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* nndoc.el (nndoc-type-to-regexp): Some digests do not start with
+	the required over-long --- line.
+
+	* gnus.el (gnus-article-prepare): Didn't set gnus-have-all-headers
+	in the right buffer.
+	(gnus-read-mark): Swicthed marks around.
+	(gnus-summary-next-group): Would barf on unactivated groups.
+
+	* gnus-vis.el (gnus-visual-score-map): Turn score menus off. 
+
+Wed Jul 12 21:02:22 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-save-newsrc-file): Allow backups of files. 
+	(gnus-gnus-to-newsrc-format): Ditto.
+	(gnus-article-mode-map): Don't use summary buffer def for return. 
+
+	* gnus-ems.el: set-text-properties did not work for XEmacs.
+
+	* gnus-uu.el (gnus-uu-initialize): Don't check for generated files
+	- this would delete any previously decoded files. 
+	(gnus-uu-output-buffer-name): Changed name. 
+	(gnus-uu-initialize): Maintain an alist of tmp dirs.
+
+	* gnus.el (gnus-group-search-forward): Would also find group with
+	a lower level than LEVEL.
+
+	* nntp.el: `telnet' was autoloaded as a non-interactive function. 
+
+	* gnus.el (gnus-summary-next-group): Configure windows properly on
+	`C-g'.
+	(gnus-summary-refer-article): Make sure overlays are copied by
+	renaming the buffer.
+
+	* gnus-msg.el (gnus-inews-insert-mime-headers): Bind
+	mail-header-separator to "".
+
+Tue Jul 11 16:38:32 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-summary-exit): Run the exit hook before updating
+	info. 
+
+Tue Jul 11 09:36:28 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.94 is released.
 
 	* gnus-msg.el (gnus-debug): A `sit-for' may sometimes change
 	active buffer.
 
+	* nn*.el: Fix in expire article which would nix out the active
+	file. 
+
 	* gnus-ems.el (gnus-ems-redefine): Mule redefinition.
 
 	* gnus.el (gnus-summary-respool-article): Didn't allow respooling.
-	
 
 	* gnus-uu.el (gnus-uu-command): Also escape !s.
 

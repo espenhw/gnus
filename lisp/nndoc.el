@@ -42,7 +42,7 @@
 	      "^------------------------------*[\n \t]+"
 	      "^------------------------------[\n \t]+"
 	      nil "^ ?$"   
-	      "^-----------------------------------------*[\n \t]+"
+	      "^------------------------------*[\n \t]+"
 	      "^End of"))
   "Regular expressions for articles of the various types.")
 
@@ -238,7 +238,7 @@
      ;; `source' is either a string (a file name) or a buffer object. 
      (buf
       (setq nndoc-current-buffer buf))
-     ;; It's a totally new group. 
+     ;; It's a totally new group.    
      ((or (and (bufferp nndoc-address)
 	       (buffer-name nndoc-address))
 	  (and (stringp nndoc-address)

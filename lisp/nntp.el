@@ -34,8 +34,8 @@
   (autoload 'news-reply-mode "rnewspost")
   (autoload 'nnmail-request-post-buffer "nnmail")
   (autoload 'cancel-timer "timer")
-  (autoload 'telnet "telnet")
-  (autoload 'telnet-send-input "telnet")
+  (autoload 'telnet "telnet" nil t)
+  (autoload 'telnet-send-input "telnet" nil t)
   (autoload 'timezone-parse-date "timezone"))
 
 (defvar nntp-server-hook nil

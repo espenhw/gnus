@@ -549,76 +549,80 @@ highlight-headers-follow-url-netscape:
   )
 
 (defun gnus-visual-score-map (type)
-  (let ((headers '(("author" "from" string)
-		   ("subject" "subject" string)
-		   ("article body" "body" string)
-		   ("article head" "head" string)
-		   ("xref" "xref" string)
-		   ("lines" "lines" number)
-		   ("followups to author" "followup" string)))
-	(types '((number ("less than" <)
-			 ("greater than" >)
-			 ("equal" =))
-		 (string ("substring" s)
-			 ("exact string" e)
-			 ("fuzzy string" f)
-			 ("regexp" r))))
-	(perms '(("temporary" (current-time-string))
-		 ("permanent" nil)
-		 ("immediate" now)))
-	header)
-    (list 
-    (apply 
-     'nconc
-     (list
-      (if (eq type 'lower)
-	  "Lower score"
-	"Increase score"))
-     (let (outh)
-       (while headers
-	 (setq header (car headers))
-	 (setq outh 
-	       (cons 
-		(apply 
-		 'nconc
-		 (list (car header))
-		 (let ((ts (cdr (assoc (nth 2 header) types)))
-		       outt)
-		   (while ts
-		     (setq outt
-			   (cons 
-			     (apply 
-			      'nconc
-			      (list (car (car ts)))
-			      (let ((ps perms)
-				    outp)
-				(while ps
-				  (setq outp
-					(cons
-					 (vector
-					  (car (car ps)) 
-					  (list
-					   'gnus-summary-score-entry
-					   (nth 1 header)
-					   (if (or (string= (nth 1 header) "head")
-						   (string= (nth 1 header) "body"))
-					       ""
-					     (list 'gnus-summary-header 
-						   (nth 1 header)))
-					   (list 'quote (nth 1 (car ts)))
-					   (list 'gnus-score-default nil)
-					   (nth 1 (car ps))
-					   t)
-					  t)
-					 outp))
-				  (setq ps (cdr ps)))
-				(list (nreverse outp))))
-			     outt))
-		     (setq ts (cdr ts)))
-		   (list (nreverse outt))))
-		outh))
-	 (setq headers (cdr headers)))
-       (list (nreverse outh)))))))
+  (if t
+      nil
+    (let ((headers '(("author" "from" string)
+		     ("subject" "subject" string)
+		     ("article body" "body" string)
+		     ("article head" "head" string)
+		     ("xref" "xref" string)
+		     ("lines" "lines" number)
+		     ("followups to author" "followup" string)))
+	  (types '((number ("less than" <)
+			   ("greater than" >)
+			   ("equal" =))
+		   (string ("substring" s)
+			   ("exact string" e)
+			   ("fuzzy string" f)
+			   ("regexp" r))))
+	  (perms '(("temporary" (current-time-string))
+		   ("permanent" nil)
+		   ("immediate" now)))
+	  header)
+      (list 
+       (apply 
+	'nconc
+	(list
+	 (if (eq type 'lower)
+	     "Lower score"
+	   "Increase score"))
+	(let (outh)
+	  (while headers
+	    (setq header (car headers))
+	    (setq outh 
+		  (cons 
+		   (apply 
+		    'nconc
+		    (list (car header))
+		    (let ((ts (cdr (assoc (nth 2 header) types)))
+			  outt)
+		      (while ts
+			(setq outt
+			      (cons 
+			       (apply 
+				'nconc
+				(list (car (car ts)))
+				(let ((ps perms)
+				      outp)
+				  (while ps
+				    (setq outp
+					  (cons
+					   (vector
+					    (car (car ps)) 
+					    (list
+					     'gnus-summary-score-entry
+					     (nth 1 header)
+					     (if (or (string= (nth 1 header) 
+							      "head")
+						     (string= (nth 1 header)
+							      "body"))
+						 ""
+					       (list 'gnus-summary-header 
+						     (nth 1 header)))
+					     (list 'quote (nth 1 (car ts)))
+					     (list 'gnus-score-default nil)
+					     (nth 1 (car ps))
+					     t)
+					    t)
+					   outp))
+				    (setq ps (cdr ps)))
+				  (list (nreverse outp))))
+			       outt))
+			(setq ts (cdr ts)))
+		      (list (nreverse outt))))
+		   outh))
+	    (setq headers (cdr headers)))
+	  (list (nreverse outh))))))))
  
 ;; Article buffer
 (defun gnus-article-make-menu-bar ()
@@ -814,7 +818,7 @@ highlight-headers-follow-url-netscape:
   (define-key gnus-carpal-mode-map gnus-mouse-2 'gnus-carpal-mouse-select))
 
 (defun gnus-carpal-mode ()
-  "Major mode clicking buttons.
+  "Major mode for clicking buttons.
 
 All normal editing commands are switched off.
 \\<gnus-carpal-mode-map>

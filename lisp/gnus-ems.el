@@ -71,7 +71,10 @@ To check for marks, e.g. to underline replied articles, use
 	(defun set-text-properties (start end props &optional buffer)
 	  (if (or (null buffer) (bufferp buffer))
 	      (if props
-		  (put-text-property start end (car props) (cdr props) buffer)
+		  (while props
+		    (put-text-property 
+		     start end (car props) (nth 1 props) buffer)
+		    (setq props (nthcdr 2 props)))
 		(remove-text-properties start end ())))))
 
     (defvar gnus-header-face-alist 

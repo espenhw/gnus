@@ -166,8 +166,12 @@ If called interactively, prompts for a face and face attributes."
   (condition-case nil (set-face-foreground face foreground) (error nil))
   (condition-case nil (set-face-background face background) (error nil))
   (condition-case nil (set-face-stipple face stipple) (error nil))
-  (funcall (if bold-p 'make-face-bold 'make-face-unbold) face nil t)
-  (funcall (if italic-p 'make-face-italic 'make-face-unitalic) face nil t)
+  (if (string-match "XEmacs" emacs-version)
+      (progn
+	(funcall (if bold-p 'make-face-bold 'make-face-unbold) face)
+	(funcall (if italic-p 'make-face-italic 'make-face-unitalic) face))
+    (funcall (if bold-p 'make-face-bold 'make-face-unbold) face nil t)
+    (funcall (if italic-p 'make-face-italic 'make-face-unitalic) face nil t))
   (set-face-underline-p face underline-p)
   (and (interactive-p) (redraw-display))))
 

@@ -1110,19 +1110,20 @@ nil."
 
 ;; Written by "Mr. Per Persson" <pp@solace.mh.se>.
 (defun gnus-inews-insert-mime-headers ()
-  (or (mail-position-on-field "Mime-Version")
-      (insert "1.0")
-  (cond ((save-excursion
-	   (beginning-of-buffer)
-	   (re-search-forward "[\200-\377]" nil t))
-	 (or (mail-position-on-field "Content-Type")
-	     (insert "text/plain; charset=ISO-8859-1"))
-	 (or (mail-position-on-field "Content-Transfer-Encoding")
-	     (insert "8bit")))
-	(t (or (mail-position-on-field "Content-Type")
-	     (insert "text/plain; charset=US-ASCII"))
-	   (or (mail-position-on-field "Content-Transfer-Encoding")
-	       (insert "7bit"))))))
+  (let ((mail-header-separator ""))
+    (or (mail-position-on-field "Mime-Version")
+	(insert "1.0")
+	(cond ((save-excursion
+		 (beginning-of-buffer)
+		 (re-search-forward "[\200-\377]" nil t))
+	       (or (mail-position-on-field "Content-Type")
+		   (insert "text/plain; charset=ISO-8859-1"))
+	       (or (mail-position-on-field "Content-Transfer-Encoding")
+		   (insert "8bit")))
+	      (t (or (mail-position-on-field "Content-Type")
+		     (insert "text/plain; charset=US-ASCII"))
+		 (or (mail-position-on-field "Content-Transfer-Encoding")
+		     (insert "7bit")))))))
 
 (defun gnus-inews-do-fcc ()
   "Process FCC: fields in current article buffer.

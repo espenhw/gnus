@@ -92,7 +92,7 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
 
 	(gnus-article-show-all-headers);; so colors are happy
 	;; lots of junk to avoid mh-send deleting other windows
-	(setq from (gnus-fetch-field "from")
+	(setq from (or (gnus-fetch-field "from") "")
 	      subject (let ((subject (or (gnus-fetch-field "subject")
 					 "(None)")))
 			(if (and subject
