@@ -45,7 +45,7 @@ pdf: gnus.pdf message.pdf refcard.pdf emacs-mime.pdf
 	rm -f gnustmp.*
 
 .dvi.ps :
-	TEXINPUTS=$(srcdir):$$TEXINPUTS $(DVIPS) -t $(PAPERTYPE) -f $< > $@
+	TEXPICTS=$(srcdir) $(DVIPS) -t $(PAPERTYPE) -f $< > $@
 
 .texi.pdf :
 	sed -e '/@iflatex/,/@end iflatex/d' $< > gnustmp.texi 
@@ -83,7 +83,7 @@ gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi: $(srcdir)/gnus.tex
 .latexi.dvi-x:
 	make gnusconfig.tex
 	make tmps
-	rm -f gnus.aux
+	rm -f gnus.aux gnus.toc
 	cp $< gnus.tmplatexi
 	TEXINPUTS=$(srcdir):$$TEXINPUTS $(LATEX) gnus.tmplatexi
 	$(srcdir)/splitindex
@@ -102,7 +102,7 @@ gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi: $(srcdir)/gnus.tex
 	make gnusconfig.tex
 	make tmps
 	cd ps; make pdf
-	rm -f gnus.aux
+	rm -f gnus.aux gnus.toc
 	cp $< gnus.tmplatexi
 	TEXINPUTS=$(srcdir):$$TEXINPUTS $(PDFLATEX) gnus.tmplatexi
 	$(srcdir)/splitindex
@@ -118,7 +118,7 @@ gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi: $(srcdir)/gnus.tex
 	mv gnus.pdf $@
 
 latexps: gnus.dvi-x
-	TEXINPUTS=$(srcdir):$$TEXINPUTS $(DVIPS) -t a4 -f $< > gnus.ps
+	TEXPICTS=$(srcdir) $(DVIPS) -t a4 -f $< > gnus.ps
 
 latexpdf: gnus.pdf-x
 	mv gnus.pdf-x gnus.pdf
@@ -130,10 +130,10 @@ gnus-manual-standard.latexi: gnus.latexi
 	sed 's/,a4paper/,letterpaper/' $< > $@
 
 gnus-manual-a4.ps.gz: gnus-manual-a4.dvi-x
-	TEXINPUTS=$(srcdir):$$TEXINPUTS $(DVIPS) -t a4 -f $< | gzip -c > $@
+	TEXPICTS=$(srcdir) $(DVIPS) -t a4 -f $< | gzip -c > $@
 
 gnus-manual-standard.ps.gz: gnus-manual-standard.dvi-x
-	TEXINPUTS=$(srcdir):$$TEXINPUTS $(DVIPS) -t letter -f $< | gzip -c > $@
+	TEXPICTS=$(srcdir) $(DVIPS) -t letter -f $< | gzip -c > $@
 
 pdfs: gnus-manual-a4.pdf-x gnus-manual-standard.pdf-x
 	mv gnus-manual-a4.pdf-x gnus-manual-a4.pdf

@@ -1,3 +1,10 @@
+2001-10-12 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* Makefile.in (.dvi.ps): Use TEXPICTS.
+	(.latexi.dvi-x): Remove gnus.toc as well.
+
+	* gnuslogo-refcard.eps: Remove BeginProcSet.
+
 2001-10-12  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Misc Group Stuff): Add UTF-8.
