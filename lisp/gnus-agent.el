@@ -344,8 +344,8 @@ manipulated as follows:
               (let* ((--category--temp-- (make-symbol "--category--"))
                      (--value--temp-- (make-symbol "--value--")))
                 (list (list --category--temp--) ; temporary-variables
-                      (list category)   ; value-forms
-                      (list --value--temp--) ; store-variables
+                      (list category)		; value-forms
+                      (list --value--temp--)	; store-variables
                       (let* ((category --category--temp--) ; store-form
                              (value --value--temp--))
                         (list (quote gnus-agent-cat-set-property)
@@ -368,17 +368,17 @@ manipulated as follows:
 (gnus-agent-cat-defaccessor
  gnus-agent-cat-high-score                 agent-high-score)
 (gnus-agent-cat-defaccessor
- gnus-agent-cat-length-when-long           agent-length-when-long)
+ gnus-agent-cat-length-when-long           agent-long-article)
 (gnus-agent-cat-defaccessor
- gnus-agent-cat-length-when-short          agent-length-when-short)
+ gnus-agent-cat-length-when-short          agent-short-article)
 (gnus-agent-cat-defaccessor
  gnus-agent-cat-low-score                  agent-low-score)
 (gnus-agent-cat-defaccessor
  gnus-agent-cat-predicate                  agent-predicate)
 (gnus-agent-cat-defaccessor
- gnus-agent-cat-score-file                 agent-score-file)
+ gnus-agent-cat-score-file                 agent-score)
 (gnus-agent-cat-defaccessor
- gnus-agent-cat-enable-undownloaded-faces agent-enable-undownloaded-faces)
+ gnus-agent-cat-enable-undownloaded-faces  agent-enable-undownloaded-faces)
 
 
 ;; This form is equivalent to defsetf except that it calls make-symbol
@@ -1144,20 +1144,22 @@ downloadable."
   (when gnus-newsgroup-processable
     (setq gnus-newsgroup-downloadable
           (let* ((dl gnus-newsgroup-downloadable)
-                 (gnus-newsgroup-downloadable
-		  (sort (gnus-copy-sequence gnus-newsgroup-processable) '<))
-                 (fetched-articles (gnus-agent-summary-fetch-group)))
-            ;; The preceeding call to (gnus-agent-summary-fetch-group)
-            ;; updated gnus-newsgroup-downloadable to remove each
-            ;; article successfully fetched.
+		 (processable (sort (gnus-copy-sequence gnus-newsgroup-processable) '<))
+                 (gnus-newsgroup-downloadable processable))
+	    (gnus-agent-summary-fetch-group)
 
-            ;; For each article that I processed, remove its
-            ;; processable mark IF the article is no longer
-            ;; downloadable (i.e. it's already downloaded)
-            (dolist (article gnus-newsgroup-processable)
-              (unless (memq article gnus-newsgroup-downloadable)
-                (gnus-summary-remove-process-mark article)))
-            (gnus-sorted-ndifference dl fetched-articles)))))
+            ;; For each article that I processed that is no longer
+            ;; undownloaded, remove its processable mark.
+
+	    (mapc #'gnus-summary-remove-process-mark 
+		  (gnus-sorted-ndifference gnus-newsgroup-processable gnus-newsgroup-undownloaded))
+
+            ;; The preceeding call to (gnus-agent-summary-fetch-group)
+            ;; updated the temporary gnus-newsgroup-downloadable to
+            ;; remove each article successfully fetched.  Now, I
+            ;; update the real gnus-newsgroup-downloadable to only
+            ;; include undownloaded articles.
+	    (gnus-sorted-ndifference dl (gnus-sorted-ndifference processable gnus-newsgroup-undownloaded))))))
 
 (defun gnus-agent-summary-fetch-group (&optional all)
   "Fetch the downloadable articles in the group.
@@ -1250,7 +1252,13 @@ This can be added to `gnus-select-article-hook' or
 				  'gnus-range-add
 				'gnus-remove-from-range)
 			      (cdr info-marks)
-			      range)))))))))
+			      range))))))))
+
+      ;;Marks can be synchronized at any time by simply toggling from
+      ;;unplugged to plugged.  If that is what is happening right now, make
+      ;;sure that the group buffer is up to date.
+          (when (gnus-buffer-live-p gnus-group-buffer)
+            (gnus-group-update-group group t)))
     nil))
 
 (defun gnus-agent-save-active (method)
@@ -2423,9 +2431,11 @@ modified) original contents, they are first saved to their own file."
                         (dolist (article marked-articles)
                           (gnus-summary-set-agent-mark article t))
                         (dolist (article fetched-articles)
-                          (if gnus-agent-mark-unread-after-downloaded
-                              (gnus-summary-mark-article
-			       article gnus-unread-mark))
+                          (when gnus-agent-mark-unread-after-downloaded
+			    (setq gnus-newsgroup-downloadable
+				  (delq article gnus-newsgroup-downloadable))
+			    (gnus-summary-mark-article
+			     article gnus-unread-mark))
                           (when (gnus-summary-goto-subject article nil t)
                             (gnus-summary-update-download-mark article)))
                         (dolist (article unfetched-articles)
@@ -3074,7 +3084,7 @@ FORCE is equivalent to setting the expiration predicates to true."
 	 ;; information with this list.  For example, a flag indicating
 	 ;; that a particular article MUST BE KEPT.  To do this, I'm
 	 ;; going to transform the elements to look like (article#
-	 ;; fetch_date keep_flag NOV_entry_marker) Later, I'll reverse
+	 ;; fetch_date keep_flag NOV_entry_position) Later, I'll reverse
 	 ;; the process to generate the expired article alist.
 
 	 ;; Convert the alist elements to (article# fetch_date nil
@@ -3106,15 +3116,15 @@ FORCE is equivalent to setting the expiration predicates to true."
 	   (gnus-message 7 "gnus-agent-expire: Loading overview...")
 	   (nnheader-insert-file-contents nov-file)
 	   (goto-char (point-min))
-
+	
 	   (let (p)
 	     (while (< (setq p (point)) (point-max))
 	       (condition-case nil
 		   ;; If I successfully read an integer (the plus zero
-		   ;; ensures a numeric type), prepend a marker entry
+		   ;; ensures a numeric type), append the position
 		   ;; to the list
 		   (push (list (+ 0 (read (current-buffer))) nil nil
-			       (set-marker (make-marker) p))
+			       p)
 			 dlist)
 		 (error
 		  (gnus-message 1 "gnus-agent-expire: read error \
@@ -3166,15 +3176,39 @@ line." (point) nov-file)))
 		   (setq first (cdr first)
 			 secnd (cdr secnd))
 		   (setcar first (or (car first)
-				     (car secnd))) ; NOV_entry_marker
+				     (car secnd))) ; NOV_entry_position
 
 		   (setcdr dlist (cddr dlist)))
 	       (setq dlist (cdr dlist)))))
+
+	 ;; Check the order of the entry positions.  They should be in
+	 ;; ascending order.  If they aren't, the positions must be
+	 ;; converted to markers.
+	 (when (let ((dlist dlist)
+		     (prev-pos -1)
+		     pos)
+		 (while dlist
+		   (if (setq pos (nth 3 (pop dlist)))
+		       (if (< pos prev-pos)
+			   (throw 'sort-results 'unsorted)
+			 (setq prev-pos pos)))))
+	   (gnus-message 7 "gnus-agent-expire: Unsorted overview; inserting markers to compensate.")
+	   (mapcar (lambda (entry)
+		     (let ((pos (nth 3 entry)))
+		       (if pos
+			   (setf (nth 3 entry)
+				 (set-marker (make-marker)
+					     pos)))))
+		   dlist))
+
 	 (gnus-message 7 "gnus-agent-expire: Merging entries... Done")
 
 	 (let* ((len (float (length dlist)))
 		(alist (list nil))
-		(tail-alist alist))
+		(tail-alist alist)
+		(position-offset 0)
+		)
+
 	   (while dlist
 	     (let ((new-completed (truncate (* 100.0
 					       (/ (setq cnt (1+ cnt))
@@ -3251,13 +3285,18 @@ missing NOV entry.  Run gnus-agent-regenerate-group to restore it.")))
 
 		   (when marker
 		     (push "NOV entry removed" actions)
-		     (goto-char marker)
+
+		     (goto-char (if (markerp marker)
+				    marker
+				  (- marker position-offset)))
 
 		     (incf nov-entries-deleted)
 
-		     (let ((from (point-at-bol))
-			   (to (progn (forward-line 1) (point))))
-		       (incf bytes-freed (- to from))
+		     (let* ((from (point-at-bol))
+			    (to (progn (forward-line 1) (point)))
+			    (freed (- to from)))
+		       (incf bytes-freed freed)
+		       (incf position-offset freed)
 		       (delete-region from to)))
 
 		   ;; If considering all articles is set, I can only
@@ -3284,9 +3323,9 @@ expiration tests failed." group article-number)
 		  tail-alist (cons article-number fetch-date)))
 		)
 
-	       ;; Clean up markers as I want to recycle this buffer
-	       ;; over several groups.
-	       (when marker
+	       ;; Remove markers as I intend to reuse this buffer again.
+	       (when (and marker
+			  (markerp marker))
 		 (set-marker marker nil))
 
 	       (setq dlist (cdr dlist))))
@@ -3767,7 +3806,7 @@ If REREAD is not nil, downloaded articles are marked as unread."
 			      (gnus-delete-line)
 			      (setq nov-arts (cdr nov-arts))
 			      (gnus-message 4 "gnus-agent-regenerate-group: NOV\
-entry of article %s deleted." l1))
+ entry of article %s deleted." l1))
 			     ((not l2)
 			      nil)
 			     ((< l1 l2)
@@ -3900,16 +3939,19 @@ entry of article %s deleted." l1))
 	      (gnus-agent-possibly-alter-active group group-active)))))
 
       (when (and reread gnus-agent-article-alist)
-	(gnus-make-ascending-articles-unread
-	 group
-	 (if (listp reread)
-	     reread
-	   (delq nil (mapcar (function (lambda (c)
-					 (cond ((eq reread t)
-						(car c))
-					       ((cdr c)
-						(car c)))))
-			     gnus-agent-article-alist))))
+	(gnus-agent-synchronize-group-flags 
+	 group 
+	 (list (list
+		(if (listp reread)
+		    reread
+		  (delq nil (mapcar (function (lambda (c)
+						(cond ((eq reread t)
+						       (car c))
+						      ((cdr c)
+						       (car c)))))
+				    gnus-agent-article-alist)))
+		'del '(read)))
+	 gnus-command-method)
 
 	(when regenerated
 	  (gnus-agent-update-files-total-fetched-for group nil)))
@@ -3995,7 +4037,7 @@ agent has fetched."
 						   (number-to-string file)
 						 file)))) 0))))
 	       (setq delta sum))
-	   (let ((sum 0.0)
+	   (let ((sum (- (nth 2 entry)))
 		 (info (directory-files-and-attributes path nil "^-?[0-9]+$" t))
 		 file)
 	     (while (setq file (pop info))
