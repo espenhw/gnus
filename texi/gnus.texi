@@ -8815,7 +8815,8 @@ Related variables and functions include
 @vindex gnus-button-tex-level
 Controls the display of references to TeX or LaTeX stuff, e.g. for CTAN
 URLs.  See the variables @code{gnus-ctan-url},
-@code{gnus-button-ctan-handler} and
+@code{gnus-button-ctan-handler},
+@code{gnus-button-ctan-directory-regexp}, and
 @code{gnus-button-handle-ctan-bogus-regexp}.
 
 @end table
