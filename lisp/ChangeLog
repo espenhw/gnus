@@ -64,8 +64,8 @@
 
 	* mml.el (mime-to-mml): Ditto.
 
-	* rfc2047.el (rfc2047-quote-decoded-words-containing-tspecials):
-	New variable.
+	* rfc2047.el (rfc2047-encode-parameter): Use ietf-drums-tspecials.
+	(rfc2047-quote-decoded-words-containing-tspecials): New variable.
 	(rfc2047-decode-region): Quote decoded words containing special
 	characters when rfc2047-quote-decoded-words-containing-tspecials
 	is non-nil.
