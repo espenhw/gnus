@@ -1,3 +1,7 @@
+2002-02-01  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-int.el (gnus-request-accept-article): Use gnus-get-function.
+
 2002-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-view.el (mm-w3m-mode-dont-bind-keys): New variable.
