@@ -3367,29 +3367,27 @@ of groups killed."
 	  (message "Killed group %s" group))
       ;; If there are lots and lots of groups to be killed, we use
       ;; this thing instead.
-      (let (entry)
-	(setq groups (nreverse groups))
-	(while groups
-	  (gnus-group-remove-mark (setq group (pop groups)))
-	  (gnus-delete-line)
-	  (push group gnus-killed-list)
-	  (setq gnus-newsrc-alist
-		(delq (assoc group gnus-newsrc-alist)
-		      gnus-newsrc-alist))
-	  (when gnus-group-change-level-function
-	    (funcall gnus-group-change-level-function
-		     group gnus-level-killed 3))
-	  (cond
-	   ((setq entry (gnus-gethash group gnus-newsrc-hashtb))
-	    (push (cons (car entry) (nth 2 entry))
-		  gnus-list-of-killed-groups)
-	    (setcdr (cdr entry) (cdddr entry)))
-	   ((member group gnus-zombie-list)
-	    (setq gnus-zombie-list (delete group gnus-zombie-list))))
-	  ;; There may be more than one instance displayed.
-	  (while (gnus-group-goto-group group)
-	    (gnus-delete-line)))
-	(gnus-make-hashtable-from-newsrc-alist)))
+      (dolist (group (nreverse groups))
+	(gnus-group-remove-mark group)
+	(gnus-delete-line)
+	(push group gnus-killed-list)
+	(setq gnus-newsrc-alist
+	      (delq (assoc group gnus-newsrc-alist)
+		    gnus-newsrc-alist))
+	(when gnus-group-change-level-function
+	  (funcall gnus-group-change-level-function
+		   group gnus-level-killed 3))
+	(cond
+	 ((setq entry (gnus-gethash group gnus-newsrc-hashtb))
+	  (push (cons (car entry) (nth 2 entry))
+		gnus-list-of-killed-groups)
+	  (setcdr (cdr entry) (cdddr entry)))
+	 ((member group gnus-zombie-list)
+	  (setq gnus-zombie-list (delete group gnus-zombie-list))))
+	;; There may be more than one instance displayed.
+	(while (gnus-group-goto-group group)
+	  (gnus-delete-line)))
+      (gnus-make-hashtable-from-newsrc-alist))
 
     (gnus-group-position-point)
     (if (< (length out) 2) (car out) (nreverse out))))
