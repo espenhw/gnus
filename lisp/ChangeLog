@@ -1,5 +1,10 @@
 2005-03-13  Steve Youngs  <steve@sxemacs.org>
 
+	* gnus-async.el: Require timer-funcs at compile time when in
+	XEmacs for `run-with-idle-timer'.
+
+2005-03-13  Steve Youngs  <steve@sxemacs.org>
+
 	* lisp/gnus.el: Don't try and mark `gnus-agent-save-groups' as an
 	autoloaded function.
 	From: Andrey Slusar <anrays@gmail.com>.
