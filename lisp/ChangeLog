@@ -1,3 +1,8 @@
+2001-12-30  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnrss.el (nnrss-check-group): Find the correct tag, because
+	xml.el is changed.
+
 2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-article-treat-unfold-headers): Only fold when
