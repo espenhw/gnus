@@ -32,13 +32,19 @@
   '(("variable" assistant-variable-reader)
     ("validate" assistant-sexp-reader)
     ("result" assistant-list-reader)
-    ("next" assistant-list-reader)))
+    ("next" assistant-list-reader)
+    ("text" assistant-text-reader)))
+
+(defface assistant-field-face '((t (:bold t)))
+  "Face used for editable fields."
+  :group 'gnus-article-emphasis)
 
 ;;; Internal variables
 
 (defvar assistant-data nil)
 (defvar assistant-current-node nil)
 (defvar assistant-previous-node nil)
+(defvar assistant-widgets nil)
 
 (defun assistant-parse-buffer ()
   (let (results command value)
@@ -66,6 +72,22 @@
       (push (list command (assistant-reader command value))
 	    results))
     (assistant-segment (nreverse results))))
+
+(defun assistant-text-reader (text)
+  (with-temp-buffer
+    (insert text)
+    (goto-char (point-min))
+    (let ((start (point))
+	  (sections nil))
+      (while (re-search-forward "@\\([^{]+\\){\\([^}]+\\)}" nil t)
+	(push (buffer-substring start (match-beginning 0))
+	      sections)
+	(push (list (match-string 1) (match-string 2))
+	      sections)
+	(setq start (point)))
+      (push (buffer-substring start (point-max))
+	    sections)
+      (nreverse sections))))
 
 ;; Segment the raw assistant data into a list of nodes.
 (defun assistant-segment (list)
@@ -159,14 +181,45 @@
       (setcar (nthcdr 3 variable)
 	      (eval (nth 2 variable))))))
 
+(defun assistant-get-variable (node variable)
+  (let ((variables (assistant-get-list node "variable"))
+	(result nil))
+    (while (and (setq elem (pop variables))
+		(not result))
+      (setq elem (cadr elem))
+      (when (eq (intern variable) (car elem))
+	(setq result (format "%s" (nth 3 elem)))))
+    result))
+    
+(defun assistant-set-variable (node variable value)
+  (let ((variables (assistant-get-list node "variable")))
+    (while (setq elem (pop variables))
+      (setq elem (cadr elem))
+      (when (eq (intern variable) (car elem))
+	(setcar (nthcdr 3 elem) value)))))
+    
+(defun assistant-render-text (text node)
+  (dolist (elem text)
+    (if (stringp elem)
+	(insert elem)
+      (push 
+       (widget-create
+	'editable-field
+	:value-face 'assistant-field-face
+	:assistant-variable (cadr elem)
+	(assistant-get-variable node (cadr elem)))
+       assistant-widgets))))
+
 (defun assistant-render-node (node-name)
   (let ((node (assistant-find-node node-name)))
+    (set (make-local-variable 'assistant-widgets) nil)
     (assistant-set-defaults node)
     (setq assistant-current-node node-name)
     (erase-buffer)
     (insert (cadar assistant-data) "\n\n")
     (insert node-name "\n\n")
-    (insert (assistant-get node "text") "\n\n")
+    (assistant-render-text (assistant-get node "text") node)
+    (insert "\n\n")
     (when assistant-previous-node
       (assistant-node-button 'previous assistant-previous-node))
     (assistant-node-button 'next (assistant-find-next-node))
@@ -184,6 +237,7 @@
 	       (let* ((node (widget-get widget :assistant-node))
 		      (type (widget-get widget :assistant-type)))
 		 (when (eq type 'next)
+		   (assistant-get-widget-values)
 		   (assistant-validate))
 		 (if (null node)
 		     (assistant-finish)
@@ -199,11 +253,18 @@
       (when 
 	  (cond
 	   ((eq type :number)
-	    (not (numberp value)))
+	    (string-match "[^0-9]" value))
 	   (t
 	    nil))
 	(error "%s is not of type %s: %s"
 	       (car variable) type value)))))
+
+(defun assistant-get-widget-values ()
+  (let ((node (assistant-find-node assistant-current-node)))
+    (dolist (widget assistant-widgets)
+      (assistant-set-variable
+       node (widget-get widget :assistant-variable)
+       (widget-value widget)))))
 
 (defun assistant-validate ()
   (let* ((node (assistant-find-node assistant-current-node))
@@ -249,3 +310,5 @@
 	     (nreverse results))))
 
 (provide 'assistant)
+
+;;; assistant.el ends here
