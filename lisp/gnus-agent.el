@@ -188,6 +188,21 @@ See Info node `(gnus)Server Buffer'."
   :type '(repeat symbol)
   :group 'gnus-agent)
 
+(defcustom gnus-agent-queue-mail t
+  "Whether and when outgoing mail should be queued by the agent.  When
+`always', always queue outgoing mail.  When `nil', never queue.
+Otherwise, queue if and only if unplugged."
+  :group 'gnus-agent
+  :type '(radio (const :format "Always" always)
+		(const :format "Never" nil)
+		(const :format "When plugged" t)))
+
+(defcustom gnus-agent-prompt-send-queue nil
+  "If non-nil, `gnus-group-send-queue' will prompt if called when
+unplugged."
+  :group 'gnus-agent
+  :type 'boolean)
+
 ;;; Internal variables
 
 (defvar gnus-agent-history-buffers nil)
@@ -343,11 +358,9 @@ manipulated as follows:
 (gnus-agent-cat-defaccessor
  gnus-agent-cat-score-file                 agent-score-file)
 (gnus-agent-cat-defaccessor
- gnus-agent-cat-disable-undownloaded-faces agent-disable-undownloaded-faces)
-(gnus-agent-cat-defaccessor
  gnus-agent-cat-enable-undownloaded-faces agent-enable-undownloaded-faces)
 
-(eval-when-compile
+(eval-and-compile
   (defsetf gnus-agent-cat-groups (category) (groups)
     (list 'gnus-agent-set-cat-groups category groups)))
 
@@ -642,7 +655,8 @@ Optional arg GROUP-NAME allows to specify another group."
      'gnus-dummy '((gnus-draft-mode)))))
 
 (defun gnus-agent-send-mail ()
-  (if gnus-plugged
+  (if (or (not gnus-agent-queue-mail)
+	  (and gnus-plugged (not (eq gnus-agent-queue-mail 'always))))
       (funcall gnus-agent-send-mail-function)
     (goto-char (point-min))
     (re-search-forward
@@ -1074,10 +1088,6 @@ Optional arg ALL, if non-nil, means to fetch all articles."
                    (setq gnus-newsgroup-downloadable
                          (delq article gnus-newsgroup-downloadable))
 
-                   ;; The downloadable mark is implemented as a
-                   ;; type of read mark.  Therefore, marking the
-                   ;; article as unread is sufficient to clear
-                   ;; its downloadable flag.  
                    (gnus-summary-mark-article article gnus-unread-mark))
                   (was-marked-downloadable
                    (gnus-summary-set-agent-mark article t)))
@@ -1102,89 +1112,75 @@ This can be added to `gnus-select-article-hook' or
 ;;; Internal functions
 ;;;
 
-;;; NOTES:
-;;; The agent's active range is defined as follows:
-;;;  If the agent has no record of the group, use the actual active
-;;;    range.
-;;;  If the agent has a record, set the agent's active range to
-;;;    include the max limit of the actual active range.
-;;;  When expiring, update the min limit to match the smallest of the
-;;;    min article not expired or the min actual active range.
-
 (defun gnus-agent-save-active (method)
-  (gnus-agent-save-active-1 method 'gnus-active-to-gnus-format))
-
-(defun gnus-agent-save-active-1 (method function)
   (when (gnus-agent-method-p method)
     (let* ((gnus-command-method method)
 	   (new (gnus-make-hashtable (count-lines (point-min) (point-max))))
 	   (file (gnus-agent-lib-file "active")))
-      (funcall function nil new)
+      (gnus-active-to-gnus-format nil new)
       (gnus-agent-write-active file new)
       (erase-buffer)
       (nnheader-insert-file-contents file))))
 
-(defun gnus-agent-write-active (file new &optional literal-replacement)
-  (let ((old new))
-    (when (and (not literal-replacement)
-               (file-exists-p file))
-      (setq old (gnus-make-hashtable (count-lines (point-min) (point-max))))
-      (with-temp-buffer
-        (nnheader-insert-file-contents file)
-        (gnus-active-to-gnus-format nil old))
-      ;; Iterate over the current active groups, the current active
-      ;; range may expand, but NOT CONTRACT, the agent's active range.
-      (mapatoms
-       (lambda (nsym)
-         (let ((new-active (and nsym (boundp nsym) (symbol-value nsym))))
-           (when new-active
-             (let* ((osym       (intern (symbol-name nsym) old))
-                    (old-active (and (boundp osym) (symbol-value osym))))
-               (if old-active
-                   (let ((new-min (car new-active))
-                         (old-min (car old-active))
-                         (new-max (cdr new-active))
-                         (old-max (cdr old-active)))
-                     (if (and (integerp new-min)
-                              (< new-min old-min))
-                         (setcar old-active new-min))
-                     (if (and (integerp new-max)
-                              (> new-max old-max))
-                         (setcdr old-active new-max)))
-                 (set osym new-active))))))
-       new))
+(defun gnus-agent-write-active (file new)
     (gnus-make-directory (file-name-directory file))
     (let ((nnmail-active-file-coding-system gnus-agent-file-coding-system))
       ;; The hashtable contains real names of groups.  However, do NOT
       ;; add the foreign server prefix as gnus-active-to-gnus-format
       ;; will add it while reading the file.
-      (gnus-write-active-file file old nil))))
+      (gnus-write-active-file file new nil)))
 
-(defun gnus-agent-possibly-alter-active (group active)
+(defun gnus-agent-possibly-alter-active (group active &optional info)
   "Possibly expand a group's active range to include articles
 downloaded into the agent."
-
-;; I can't use the agent's active file here as there is no practical
-;; mechanism to update the active ranges in that file as the oldest
-;; articles are removed from the agent.
   (let* ((gnus-command-method (or gnus-command-method
-                                  (gnus-find-method-for-group group)))
-         (alist (gnus-agent-load-alist group)))
+                                  (gnus-find-method-for-group group))))
+    (when (gnus-agent-method-p gnus-command-method)
+      (let* ((local (gnus-agent-get-local group))
+             (active-min (car active))
+             (active-max (cdr active))
+             (agent-min (or (car local) active-min))
+             (agent-max (or (cdr local) active-max)))
 
-    (let ((new-min (or (caar gnus-agent-article-alist)
-                       (car active)))
-          (new-max (or (caar (last gnus-agent-article-alist))
-                       (cdr active))))
+        (when (< agent-min active-min)
+          (setcar active agent-min))
 
-        (when (< new-min (car active))
-          (setcar active new-min))
-        (when (> new-max (cdr active))
-          (setcdr active new-max)))))
+        (when (> agent-max active-max)
+          (setcdr active agent-max))
 
-(defun gnus-agent-save-groups (method)
-  (gnus-agent-save-active-1 method 'gnus-groups-to-gnus-format))
+        (when (and info (< agent-max (- active-min 100)))
+          ;; I'm expanding the active range by such a large amount
+          ;; that there is a gap of more than 100 articles between the
+          ;; last article known to the agent and the first article
+          ;; currently available on the server.  This gap contains
+          ;; articles that have been lost, mark them as read so that
+          ;; gnus doesn't waste resources trying to fetch them.
+
+          ;; NOTE: I don't do this for smaller gaps (< 100) as I don't
+          ;; want to modify the local file everytime someone restarts
+          ;; gnus.  The small gap will cause a tiny performance hit
+          ;; when gnus tries, and fails, to retrieve the articles.
+          ;; Still that should be smaller than opening a buffer,
+          ;; printing this list to the buffer, and then writing it to a
+          ;; file.
+
+          (let ((read (gnus-info-read info)))
+            (gnus-info-set-read 
+             info 
+             (gnus-range-add 
+              read 
+              (list (cons (1+ agent-max) 
+                          (1- active-min))))))
+
+          ;; Lie about the agent's local range for this group to
+          ;; disable the set read each time this server is opened.
+          ;; NOTE: Opening this group will restore the valid local
+          ;; range but it will also expand the local range to
+          ;; incompass the new active range.
+          (gnus-agent-set-local group agent-min (1- active-min)))))))
 
 (defun gnus-agent-save-group-info (method group active)
+  "Update a single group's active range in the agent's copy of the server's active file."
   (when (gnus-agent-method-p method)
     (let* ((gnus-command-method method)
 	   (coding-system-for-write nnheader-file-coding-system)
@@ -1782,7 +1778,7 @@ FILE and places the combined headers into `nntp-server-buffer'."
             (gnus-agent-save-alist gnus-agent-read-agentview)))
         alist))))
 
-(defun gnus-agent-save-alist (group &optional articles state dir)
+(defun gnus-agent-save-alist (group &optional articles state)
   "Save the article-state alist for GROUP."
   (let* ((file-name-coding-system nnmail-pathname-coding-system)
 	 (prev (cons nil gnus-agent-article-alist))
@@ -1801,12 +1797,13 @@ FILE and places the combined headers into `nntp-server-buffer'."
 	(setcdr (cadr prev) state)))
       (setq prev (cdr prev)))
     (setq gnus-agent-article-alist (cdr all))
-    (if dir
-	(gnus-make-directory dir)
-      (gnus-make-directory (gnus-agent-article-name "" group)))
-    (with-temp-file (if dir
-			(expand-file-name ".agentview" dir)
-		      (gnus-agent-article-name ".agentview" group))
+
+    (gnus-agent-set-local group 
+                          (caar gnus-agent-article-alist) 
+                          (caar (last gnus-agent-article-alist)))
+
+    (gnus-make-directory (gnus-agent-article-name "" group))
+    (with-temp-file (gnus-agent-article-name ".agentview" group)
       (cond ((eq gnus-agent-article-alist-save-format 1)
              (princ gnus-agent-article-alist (current-buffer)))
             ((eq gnus-agent-article-alist-save-format 2)
@@ -1831,6 +1828,138 @@ FILE and places the combined headers into `nntp-server-buffer'."
       (insert "\n")
       (princ gnus-agent-article-alist-save-format (current-buffer))
       (insert "\n"))))
+
+(defvar gnus-agent-article-local nil)
+(defvar gnus-agent-file-loading-local nil)
+
+(defun gnus-agent-load-local (&optional method)
+  "Load the METHOD'S local file.  The local file contains min/max
+article counts for each of the method's subscribed groups."
+  (let ((gnus-command-method (or method gnus-command-method)))
+    (setq gnus-agent-article-local
+          (gnus-cache-file-contents
+           (gnus-agent-lib-file "local")
+           'gnus-agent-file-loading-local
+           'gnus-agent-read-and-cache-local))))
+
+(defun gnus-agent-read-and-cache-local (file)
+  "Load and read FILE then bind its contents to
+gnus-agent-article-local.  If that variable had `dirty' (also known as
+modified) original contents, they are first saved to their own file."
+
+  (if (and gnus-agent-article-local
+           (symbol-value (intern "+dirty" gnus-agent-article-local)))
+      (gnus-agent-save-local))
+  (gnus-agent-read-local file))
+
+(defun gnus-agent-read-local (file)
+  "Load FILE and do a `read' there."
+  (let ((obarray (gnus-make-hashtable (count-lines (point-min) (point-max))))
+        (line 1))
+        (with-temp-buffer
+          (condition-case nil
+              (nnheader-insert-file-contents file)
+            (file-error))
+
+          (goto-char (point-min))
+          ;; Skip any comments at the beginning of the file (the only place where they may appear)
+          (while (= (following-char) ?\;)
+            (forward-line 1)
+            (setq line (1+ line)))
+
+          (while (not (eobp))
+            (condition-case err
+                (let (group 
+                      min
+                      max
+                      (cur (current-buffer)))
+                  (setq group (read cur)
+                        min (read cur)
+                        max (read cur))
+
+                  (when (stringp group)
+                    (setq group (intern group obarray)))
+
+                  ;; NOTE: The '+ 0' ensure that min and max are both numerics.
+                  (set group (cons (+ 0 min) (+ 0 max))))
+              (error
+               (gnus-message 3 "Warning - invalid agent local: %s on line %d: " file line (error-message-string err))))
+            (forward-line 1)
+            (setq line (1+ line))))
+      
+    (set (intern "+dirty" obarray) nil)
+    (set (intern "+method" obarray) gnus-command-method)
+    obarray))
+
+(defun gnus-agent-save-local (&optional force)
+  "Save gnus-agent-article-local under it method's agent.lib directory."
+  (let ((obarray gnus-agent-article-local))
+    (when (and obarray
+               (or force (symbol-value (intern "+dirty" obarray))))
+      (let* ((gnus-command-method (symbol-value (intern "+method" obarray)))
+             ;; NOTE: gnus-command-method is used within gnus-agent-lib-file.
+             (dest (gnus-agent-lib-file "local")))
+        (gnus-make-directory (gnus-agent-lib-file ""))
+        (with-temp-file dest
+          (let ((gnus-command-method (symbol-value (intern "+method" obarray)))
+                (file-name-coding-system nnmail-pathname-coding-system)
+                (coding-system-for-write
+                 gnus-agent-file-coding-system)
+                print-level print-length item article
+                (standard-output (current-buffer)))
+            (mapatoms (lambda (symbol)
+                        (cond ((not (boundp symbol))
+                               nil)
+                              ((member (symbol-name symbol) '("+dirty" "+method"))
+                               nil)
+                              (t
+                               (prin1 symbol)
+                               (let ((range (symbol-value symbol)))
+                                 (princ " ")
+                                 (princ (car range))
+                                 (princ " ")
+                                 (princ (cdr range))
+                                 (princ "\n"))))))))))))
+
+(defun gnus-agent-get-local (group)
+  (let* ((gmane (gnus-group-real-name group))
+         (gnus-command-method (gnus-find-method-for-group group))
+         (local (gnus-agent-load-local))
+         (symb (intern gmane local))
+         (minmax (and (boundp symb) (symbol-value symb))))
+    (unless minmax
+      ;; Bind these so that gnus-agent-load-alist doesn't change the
+      ;; current alist (i.e. gnus-agent-article-alist)
+      (let* ((gnus-agent-article-alist gnus-agent-article-alist)
+             (gnus-agent-file-loading-cache gnus-agent-file-loading-cache)
+             (alist (gnus-agent-load-alist group)))
+        (when alist
+          (setq minmax
+                (cons (caar alist)
+                      (caar (last alist))))
+          (gnus-agent-set-local group (car minmax) (cdr minmax) 
+                                gmane gnus-command-method local))))
+    minmax))
+
+(defun gnus-agent-set-local (group min max &optional gmane method local)
+  (let* ((gmane (or gmane (gnus-group-real-name group)))
+         (gnus-command-method (or method (gnus-find-method-for-group group)))
+         (local (or local (gnus-agent-load-local)))
+         (symb (intern gmane local))
+         (minmax (and (boundp symb) (symbol-value symb))))
+    
+    (if (cond ((and minmax
+                    (or (not (eq min (car minmax)))
+                        (not (eq max (cdr minmax)))))
+               (setcar minmax min)
+               (setcdr minmax max)
+               t)
+              (minmax
+               nil)
+              (t
+               (set symb (cons min max))
+               t))
+        (set (intern "+dirty" local) t))))
 
 (defun gnus-agent-article-name (article group)
   (expand-file-name article
@@ -2591,8 +2720,7 @@ FORCE is equivalent to setting the expiration predicates to true."
                     (save-excursion
                       (gnus-agent-expire-group-1
                        group overview (gnus-gethash-safe group orig)
-                       articles force))
-                    (gnus-agent-write-active active-file orig t)))
+                       articles force))))
               (kill-buffer overview))))
       (gnus-message 4 (gnus-agent-expire-done-message)))))
 
@@ -2912,12 +3040,7 @@ expiration tests failed." group article-number)
           (let ((inhibit-quit t))
             (unless (equal alist gnus-agent-article-alist)
               (setq gnus-agent-article-alist alist)
-              (gnus-agent-save-alist group)
-
-              ;; The active list changed, set the agent's active range
-              ;; to match the beginning of the list.
-              (if alist
-                  (setcar active (caar alist))))
+              (gnus-agent-save-alist group))
 
             (when (buffer-modified-p)
               (let ((coding-system-for-write
@@ -2977,8 +3100,7 @@ articles in every agentized group."))
                         (when active
                           (save-excursion
                             (gnus-agent-expire-group-1
-                             expiring-group overview active articles force)))))
-                    (gnus-agent-write-active active-file orig t))))
+                             expiring-group overview active articles force))))))))
             (kill-buffer overview))
           (gnus-agent-expire-unagentized-dirs)
           (gnus-message 4 (gnus-agent-expire-done-message))))))
@@ -3321,16 +3443,19 @@ If REREAD is not nil, downloaded articles are marked as unread."
                  def
                select)))
          (catch 'mark
-           (while (let ((c (read-char-exclusive 
-                            "Mark as unread: (n)one / (a)ll / all (d)ownloaded articles? (n)"
-                            )))
+           (while (let (c
+                        (cursor-in-echo-area t)
+                        (echo-keystrokes 0))
+                    (message "Mark as unread: (n)one / (a)ll / all (d)ownloaded articles? (n) ")
+                    (setq c (read-char-exclusive))
+
                     (cond ((or (eq c ?\r) (eq c ?n) (eq c ?N))
                            (throw 'mark nil))
                           ((or (eq c ?a) (eq c ?A))
                            (throw 'mark t))
                           ((or (eq c ?d) (eq c ?D))
                            (throw 'mark 'some)))
-                    (message "Ignoring unexpected input")
+                    (gnus-message 3 "Ignoring unexpected input")
                     (sit-for 1)
                     t)))))
 
@@ -3499,17 +3624,7 @@ If REREAD is not nil, downloaded articles are marked as unread."
 
               (let ((group (gnus-group-real-name group))
                     (group-active (gnus-active group)))
-                (when group-active
-                  (let ((new-min (or (caar gnus-agent-article-alist)
-                                     (car group-active)))
-                        (new-max (or (caar (last gnus-agent-article-alist))
-                                     (cdr group-active))))
-
-                    (when (< new-min (car group-active))
-                      (setcar group-active new-min))
-             
-                    (when (> new-max (cdr group-active))
-                      (setcdr group-active new-max))))))))
+                (gnus-agent-possibly-alter-active group group-active)))))
 
         (when (and reread gnus-agent-article-alist)
           (gnus-make-ascending-articles-unread
