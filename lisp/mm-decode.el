@@ -718,10 +718,12 @@ external if displayed external."
 			   (or filename name "")
 			   (or mm-default-directory default-directory))))
     (setq mm-default-directory (file-name-directory file))
-    (when (or (not (file-exists-p file))
-	      (yes-or-no-p (format "File %s already exists; overwrite? "
-				   file)))
-      (mm-save-part-to-file handle file))))
+    (and (or (not (file-exists-p file))
+	     (yes-or-no-p (format "File %s already exists; overwrite? "
+				  file)))
+	 (progn
+	   (mm-save-part-to-file handle file)
+	   file))))
 
 (defun mm-save-part-to-file (handle file)
   (mm-with-unibyte-buffer

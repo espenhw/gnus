@@ -1,3 +1,13 @@
+2000-11-02 23:35:50  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-save-part): Return the filename.
+	* gnus-sum.el (gnus-summary-edit-article): Remove a hack.
+	* gnus-art.el (gnus-mime-save-part-and-strip): New function.
+	(gnus-mime-action-alist): Use it.
+	(gnus-mime-button-commands): USe it.
+	* mm-extern.el (mm-extern-local-file): Error when the file is gone.
+	(mm-inline-external-body): unwind-protect.
+
 2000-11-02 21:08:49  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-insert-mime-button): Show url.

@@ -50,7 +50,9 @@
     (unless name
       (error "The filename is not specified."))
     (mm-disable-multibyte-mule4)
-    (mm-insert-file-contents name nil nil nil nil t)))
+    (if (file-exists-p name)
+	(mm-insert-file-contents name nil nil nil nil t)
+      (error "The file is gone."))))
 
 (defun mm-extern-url (handle)
   (erase-buffer)
@@ -131,11 +133,13 @@ If NO-DISPLAY is nil, display it. Otherwise, do nothing after replacing."
 	(error "Multipart external body is not supported."))
       (save-excursion ;; single part
 	(set-buffer (setq buf (mm-handle-buffer handles)))
-	(condition-case err
-	    (funcall func handle)
-	  (error 
-	   (mm-destroy-parts handles)
-	   (error err)))
+	(let (good)
+	  (unwind-protect
+	      (progn
+		(funcall func handle)
+		(setq good t))
+	    (unless good
+	      (mm-destroy-parts handles))))
 	(mm-handle-set-cache handle handles))
       (push handles gnus-article-mime-handles))
     (unless no-display

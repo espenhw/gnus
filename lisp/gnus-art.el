@@ -659,6 +659,7 @@ used."
 
 (defcustom gnus-mime-action-alist
   '(("save to file" . gnus-mime-save-part)
+    ("save and strip" . gnus-mime-save-part-and-strip)
     ("display as text" . gnus-mime-inline-part)
     ("view the part" . gnus-mime-view-part)
     ("pipe to command" . gnus-mime-pipe-part)
@@ -2923,6 +2924,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (gnus-mime-view-part "v" "View Interactively...")
     (gnus-mime-view-part-as-type "t" "View As Type...")
     (gnus-mime-save-part "o" "Save...")
+    (gnus-mime-save-part-and-strip "\C-o" "Save and Strip")
     (gnus-mime-copy-part "c" "View As Text, In Other Buffer")
     (gnus-mime-inline-part "i" "View As Text, In This Buffer")
     (gnus-mime-internalize-part "E" "View Internally")
@@ -2973,6 +2975,77 @@ If ALL-HEADERS is non-nil, no headers are hidden."
       (if (stringp (car handles))
 	  (gnus-mime-view-all-parts (cdr handles))
 	(mapcar 'mm-display-part handles)))))
+
+(defun gnus-mime-save-part-and-strip ()
+  "Save the MIME part under point then replace it with an external body."
+  (interactive)
+  (gnus-article-check-buffer)
+  (let* ((data (get-text-property (point) 'gnus-data)) 
+	 (file (mm-save-part data))
+	 param)
+    (when file
+      (with-current-buffer (mm-handle-buffer data)
+	(erase-buffer)
+	(insert "Content-Type: " (mm-handle-media-type data))
+	(mml-insert-parameter-string (cdr (mm-handle-type data))
+				     '(charset))
+	(insert "\n")
+	(insert "Content-ID: " (message-make-message-id) "\n")
+	(insert "Content-Transfer-Encoding: binary\n")
+	(insert "\n"))
+      (setcdr data
+	      (cdr (mm-make-handle nil 
+				   `("message/external-body"
+				     (access-type . "LOCAL-FILE")
+				     (name . ,file)))))
+      (set-buffer gnus-summary-buffer)
+      (gnus-article-edit-article
+       `(lambda () 
+	   (erase-buffer)
+	   (let ((mail-parse-charset (or gnus-article-charset 
+					 ',gnus-newsgroup-charset))
+		 (mail-parse-ignored-charsets 
+		  (or gnus-article-ignored-charsets
+		      ',gnus-newsgroup-ignored-charsets))
+		 (mbl mml-buffer-list))
+	     (insert-buffer gnus-original-article-buffer)
+	     (save-restriction
+	       (message-narrow-to-head)
+	       (message-remove-header "Content-Type")
+	       (message-remove-header "MIME-Version")
+	       (message-remove-header "Content-Transfer-Encoding")
+	       (mail-decode-encoded-word-region (point-min) (point-max))
+	       (goto-char (point-max)))
+	     (forward-char 1)
+	     (delete-region (point) (point-max))
+	     (setq mml-buffer-list nil)
+	     (if (stringp (car gnus-article-mime-handles))
+		 (mml-insert-mime gnus-article-mime-handles)
+	       (mml-insert-mime gnus-article-mime-handles t))
+	     (mm-destroy-parts gnus-article-mime-handles)
+	     (setq gnus-article-mime-handles nil)
+	     (make-local-hook 'kill-buffer-hook)
+	     (let ((mbl1 mml-buffer-list))
+	       (setq mml-buffer-list mbl)
+	       (set (make-local-variable 'mml-buffer-list) mbl1))
+	     (add-hook 'kill-buffer-hook 'mml-destroy-buffers t t)))
+       `(lambda (no-highlight)
+	  (let ((mail-parse-charset (or gnus-article-charset
+					',gnus-newsgroup-charset))
+		(message-options message-options)
+		(message-options-set-recipient)
+		(mail-parse-ignored-charsets  
+		 (or gnus-article-ignored-charsets
+		     ',gnus-newsgroup-ignored-charsets)))
+	   (mml-to-mime)
+	   (mml-destroy-buffers)
+	   (remove-hook 'kill-buffer-hook 
+			'mml-destroy-buffers t)
+	   (kill-local-variable 'mml-buffer-list))
+	  (gnus-summary-edit-article-done
+	   ,(or (mail-header-references gnus-current-headers) "")
+	   ,(gnus-group-read-only-p) 
+	   ,gnus-summary-buffer no-highlight))))))
 
 (defun gnus-mime-save-part ()
   "Save the MIME part under point."
