@@ -1849,8 +1849,20 @@ ADDRESS."
       (gnus-request-create-group nname nil args))
     t))
 
-(defun gnus-group-delete-group (group &optional force)
-  "Delete the current group.  Only meaningful with mail groups.
+(defun gnus-group-delete-groups (&optional arg)
+  "Delete the current group.  Only meaningful with editable groups."
+  (interactive "P")
+  (let ((n (length (gnus-group-process-prefix arg))))
+    (when (gnus-yes-or-no-p
+	   (if (= n 1)
+	       "Delete this 1 group? "
+	     (format "Delete these %d groups? " n)))
+      (gnus-group-iterate arg
+	(lambda (group)
+	  (gnus-group-delete-group group nil t))))))
+
+(defun gnus-group-delete-group (group &optional force no-prompt)
+  "Delete the current group.  Only meaningful with editable groups.
 If FORCE (the prefix) is non-nil, all the articles in the group will
 be deleted.  This is \"deleted\" as in \"removed forever from the face
 of the Earth\".	 There is no undo.  The user will be prompted before
@@ -1863,10 +1875,11 @@ doing the deletion."
   (unless (gnus-check-backend-function 'request-delete-group group)
     (error "This backend does not support group deletion"))
   (prog1
-      (if (not (gnus-yes-or-no-p
-		(format
-		 "Do you really want to delete %s%s? "
-		 group (if force " and all its contents" ""))))
+      (if (and (not no-prompt)
+	       (not (gnus-yes-or-no-p
+		     (format
+		      "Do you really want to delete %s%s? "
+		      group (if force " and all its contents" "")))))
 	  ()				; Whew!
 	(gnus-message 6 "Deleting group %s..." group)
 	(if (not (gnus-request-delete-group group force))

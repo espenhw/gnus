@@ -1216,7 +1216,7 @@ if not identical.
 The Emacs @sc{mime} library implements handling of various elements
 according to a (somewhat) large number of RFCs, drafts and standards
 documents.  This chapter lists the relevant ones.  They can all be
-fetched from @samp{http://www.stud.ifi.uio.no/~larsi/notes/}.
+fetched from @samp{http://quimby.gnus.org/notes/}.
 
 @table @dfn
 @item RFC822

@@ -344,7 +344,7 @@
 	(erase-buffer)
 	(insert contents)
 	(goto-char (point-min))
-	(while (search-forward "<br><br>" nil t)
+	(while (re-search-forward "\\(<br>\r?\\)+" nil t)
 	  (replace-match "<p>" t t))
 	(goto-char (point-min))
 	(insert "Content-Type: text/html\nMIME-Version: 1.0\n")
