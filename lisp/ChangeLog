@@ -1,5 +1,9 @@
 2002-02-14  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-sum.el (gnus-summary-move-article): Select-article only
+	when gnus-move-split-methods is non-nil. And we don't render or
+	mark the article.
+
 	* gnus-fun.el (gnus-shell-command-to-string): New function.
 	(gnus-shell-command-on-region): New function.
 	(gnus-random-x-face): Use them.
