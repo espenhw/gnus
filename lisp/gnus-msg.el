@@ -100,7 +100,7 @@ the second with the current group name.")
 (defvar gnus-posting-styles nil
   "*Alist of styles to use when posting.")
 
-(defcustom gnus-group-posting-charset-alist
+(defcustom gnus-group-posting-charset-alist 
   '(("^no\\." iso-8859-1)
     (message-this-is-mail nil)
     ("^de\\." nil)
