@@ -4898,7 +4898,7 @@ command understands the process/prefix convention
 @end table
 
 Also @xref{Header Commands, ,Header Commands, message, The Message
-Manual} for more information.
+Manual}, for more information.
 
 
 @node Summary Post Commands
@@ -4983,7 +4983,7 @@ Uuencode a file, split it into parts, and post it as a series
 @end table
 
 Also @xref{Header Commands, ,Header Commands, message, The Message
-Manual} for more information.
+Manual}, for more information.
 
 
 @node Summary Message Commands
