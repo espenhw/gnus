@@ -1,3 +1,8 @@
+2003-12-16  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* nnmail.el (nnmail-split-fancy): The widget now supports
+	restrictions. 
+
 2003-12-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnheader.el (nnheader-find-etc-directory): Find the newest one.

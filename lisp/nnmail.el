@@ -419,6 +419,11 @@ This is copy of the `lazy' widget in Emacs 21.4 provided for compatibility."
                             (choice :tag "Match"
                                     regexp 
                                     (symbol :value mail))
+                            (repeat :inline t
+                                    :tag "Restrictions"
+                                    (group :inline t
+                                           (const :format "" -)
+                                           regexp))
                             nnmail-split-fancy)
                       (const :tag "Junk (delete mail)" junk)))
 
