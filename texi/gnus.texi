@@ -15952,7 +15952,7 @@ Unlike Parmenides the @acronym{IMAP} designers has decided that things that
 doesn't exist actually does exist.  More specifically, @acronym{IMAP} has
 this concept of marking articles @code{Deleted} which doesn't actually
 delete them, and this (marking them @code{Deleted}, that is) is what
-nnimap does when you delete a article in Gnus (with @kbd{B DEL} or
+nnimap does when you delete an article in Gnus (with @kbd{B DEL} or
 similar).
 
 Since the articles aren't really removed when we mark them with the
@@ -18183,7 +18183,7 @@ Creating/deleting nnimap groups when unplugged.
 Technical note: the synchronization algorithm does not work by ``pushing''
 all local flags to the server, but rather incrementally update the
 server view of flags by changing only those flags that were changed by
-the user.  Thus, if you set one flag on a article, quit the group and
+the user.  Thus, if you set one flag on an article, quit the group and
 re-select the group and remove the flag; the flag will be set and
 removed from the server when you ``synchronize''.  The queued flag
 operations can be found in the per-server @code{flags} file in the Agent
@@ -25202,7 +25202,7 @@ the valid values.
 Gnus supports Cancel Locks in News.
 
 This means a header @samp{Cancel-Lock} is inserted in news posting.  It is
-used to determine if you wrote a article or not (for cancelling and
+used to determine if you wrote an article or not (for cancelling and
 superseding).  Gnus generates a random password string the first time
 you post a message, and saves it in your @file{~/.emacs} using the Custom
 system.  While the variable is called @code{canlock-password}, it is not
