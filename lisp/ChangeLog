@@ -10,6 +10,7 @@
 
 	* gnus-art.el (gnus-with-article-headers): Move to here. Define
 	the macro then use it.
+	(gnus-treatment-function-alist): Treat picons earlier.
 
 2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
