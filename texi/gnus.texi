@@ -9629,12 +9629,6 @@ headers will be included in the sequence they are matched.
 If non-@code{nil}, add a @code{to-list} group parameter to mail groups
 that have none when you do a @kbd{a}.
 
-@item message-send-mail-partially-limit
-@vindex message-send-mail-partially-limit
-The limitation of messages sent as message/partial.
-The lower bound of message size in characters, beyond which the message 
-should be sent in several parts. If it is nil, the size is unlimited.
-
 @end table
 
 

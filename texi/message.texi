@@ -1023,6 +1023,12 @@ the default), these headers will be removed before mailing when sending
 messages via MH.  Set it to @code{nil} if your MH can handle these
 headers.
 
+@item message-send-mail-partially-limit
+@vindex message-send-mail-partially-limit
+The limitation of messages sent as message/partial.
+The lower bound of message size in characters, beyond which the message 
+should be sent in several parts. If it is nil, the size is unlimited.
+
 @end table
 
 
