@@ -39,9 +39,16 @@
 (require 'dns)
 (require 'message)
 
-;; BBDB autoloads
-(autoload 'bbdb-search "bbdb-com")
 (autoload 'bbdb-records "bbdb-com")
+
+;; Attempt to load BBDB macros
+(eval-when-compile
+  (condition-case nil
+      (require 'bbdb-com)
+    (error)))
+
+;; autoload executable-find
+(autoload 'executable-find "executable")
 
 ;;; Main parameters.
 
@@ -408,16 +415,6 @@ The regular expression is matched against the address.")
   "Regexp for spam markups in headers.
 Markup from spam recognisers, as well as `Xref', are to be removed from
 articles before they get registered by Bogofilter.")
-
-;; FIXME!  I do not know if Gnus has a compatibility function for
-;; `executable-find'.  Here is a possible mantra for portability,
-;; until Lars decides how we really should do it.
-(unless (fboundp 'executable-find)
-  (if (fboundp 'locate-file)
-      (defun executable-find (command)
-	(locate-file command exec-path))
-    (autoload 'executable-find "executable")))
-;; End of portability mantra for `executable-find'.
 
 (defvar spam-bogofilter-path (executable-find "bogofilter")
   "File path of the Bogofilter executable program.
