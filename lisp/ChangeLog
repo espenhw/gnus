@@ -1,3 +1,9 @@
+2000-04-18 12:28:24  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnwarchive.el (nnwarchive-type-definition): New egroups html.
+	(nnwarchive-egroups-*): Ditto.
+	(nnwarchive-url): Unibyte buffer and single line cookie.
+
 2000-04-14 18:50:04  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-char-or-char-int-p): New alias.

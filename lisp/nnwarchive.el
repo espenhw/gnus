@@ -61,20 +61,20 @@
   '((egroups
      (address . "www.egroups.com")
      (open-url 
-      "http://www.egroups.com/register?method=loginAction&email=%s&password=%s" 
+      "http://www.egroups.com/login.cgi?&login_email=%s&login_password=%s" 
       nnwarchive-login nnwarchive-passwd)
      (list-url 
-      "http://www.egroups.com/UserGroupsPage?")
+      "http://www.egroups.com/mygroups")
      (list-dissect . nnwarchive-egroups-list)
      (list-groups . nnwarchive-egroups-list-groups)
      (xover-url 
-      "http://www.egroups.com/group/%s/?fetchForward=1&start=%d" group aux)
+      "http://www.egroups.com/message/%s/%d" group aux)
      (xover-last-url 
-      "http://www.egroups.com/group/%s/?fetchForward=1" group)
+      "http://www.egroups.com/message/%s/" group)
      (xover-page-size . 13)
      (xover-dissect . nnwarchive-egroups-xover)
      (article-url 
-      "http://www.egroups.com/group/%s/%d.html?raw=1" group article)
+      "http://www.egroups.com/message/%s/%d?source=1" group article)
      (article-dissect . nnwarchive-egroups-article)
      (authentication . t)
      (article-offset . 0)
@@ -287,31 +287,29 @@
   t)
 
 (deffoo nnwarchive-open-server (server &optional defs connectionless)
+  (nnoo-change-server 'nnwarchive server defs)
   (nnwarchive-init server)
-  (if (nnwarchive-server-opened server)
-      t
-    (nnoo-change-server 'nnwarchive server defs)
-    (when nnwarchive-authentication
-      (setq nnwarchive-login
-	    (or nnwarchive-login
-		(read-string
+  (when nnwarchive-authentication
+    (setq nnwarchive-login
+	  (or nnwarchive-login
+	      (read-string
 		 (format "Login at %s: " server)
 		 user-mail-address)))
-      (setq nnwarchive-passwd
-	    (or nnwarchive-passwd
-		(mail-source-read-passwd
-		 (format "Password for %s at %s: " 
-			 nnwarchive-login server)))))
-    (unless nnwarchive-groups
-      (nnwarchive-read-groups))
-    (save-excursion
-      (set-buffer nnwarchive-buffer)
-      (erase-buffer)
-      (if nnwarchive-open-url
-	  (nnwarchive-url nnwarchive-open-url))
-      (if nnwarchive-open-dissect
-	  (funcall nnwarchive-open-dissect)))
-    t))
+    (setq nnwarchive-passwd
+	  (or nnwarchive-passwd
+	      (mail-source-read-passwd
+	       (format "Password for %s at %s: " 
+		       nnwarchive-login server)))))
+  (unless nnwarchive-groups
+    (nnwarchive-read-groups))
+  (save-excursion
+    (set-buffer nnwarchive-buffer)
+    (erase-buffer)
+    (if nnwarchive-open-url
+	(nnwarchive-url nnwarchive-open-url))
+    (if nnwarchive-open-dissect
+	(funcall nnwarchive-open-dissect)))
+  t)
 
 (nnoo-define-skeleton nnwarchive)
 
@@ -389,14 +387,16 @@
     expr)))
 
 (defun nnwarchive-url (xurl)
-  (let ((url-confirmation-func 'identity))
-    (cond 
-     ((eq (car xurl) 'post)
-      (pop xurl)
-      (nnwarchive-fetch-form (car xurl) (nnwarchive-eval (cdr xurl))))
-     (t
-      (nnweb-insert (apply 'format (nnwarchive-eval xurl)))))))
-
+  (mm-with-unibyte-current-buffer
+    (let ((url-confirmation-func 'identity)
+	  (url-cookie-multiple-line nil))
+      (cond 
+       ((eq (car xurl) 'post)
+	(pop xurl)
+	(nnwarchive-fetch-form (car xurl) (nnwarchive-eval (cdr xurl))))
+       (t
+	(nnweb-insert (apply 'format (nnwarchive-eval xurl))))))))
+  
 (defun nnwarchive-generate-active ()
   (save-excursion
     (set-buffer nntp-server-buffer)
@@ -424,7 +424,7 @@
 	(erase-buffer)
 	(nnwarchive-url nnwarchive-xover-last-url)
 	(goto-char (point-min))
-	(when (re-search-forward "of \\([0-9]+\\)</title>" nil t)
+	(when (re-search-forward "of \\([0-9]+\\)[ \t\n\r]*</title>" nil t)
 	  (setq articles (string-to-number (match-string 1)))) 
 	(let ((elem (assoc group nnwarchive-groups)))
 	  (if elem
@@ -442,16 +442,11 @@
 	group description elem articles)
     (goto-char (point-min))
     (while 
-	(re-search-forward
-	 "/group/\\([^/]+\\)/info\\.html[^>]+>[^>]+>[\040\t]*-[\040\t]*\\([^<]+\\)<"
-	 nil t)
+	(re-search-forward "href=\"/group/\\([^/\"\> ]+\\)" nil t)
       (setq group (match-string 1)
 	    description (match-string 2))
-      (forward-line 1)
-      (when (re-search-forward ">\\([0-9]+\\)<" nil t)
-	(setq articles (string-to-number (match-string 1)))) 
       (if (setq elem (assoc group nnwarchive-groups))
-	  (setcar (cdr elem) articles)
+	  (setcar (cdr elem) 0)
 	(push (list group articles description) nnwarchive-groups))))
   t)
 
@@ -459,7 +454,7 @@
   (let (article subject from date)
     (goto-char (point-min))
     (while (re-search-forward
-	    "<a href=\"/group/\\([^/]+\\)/\\([0-9]+\\)\\.html[^>]+>\\([^<]+\\)<"
+	    "<a href=\"/group/\\([^/]+\\)/\\([0-9]+\\)[^>]+>\\([^<]+\\)<"
 	    nil t)
       (setq group  (match-string 1)
 	    article (string-to-number (match-string 2))
