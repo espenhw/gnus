@@ -1823,6 +1823,24 @@ This only makes sense for mail groups."
    "The spam classification (spam, ham, or neither) of this group.
 When a spam group is entered, all unread articles are marked as spam.")
 
+  (gnus-define-group-parameter
+   spam-resend-to
+   :type list
+   :function-document
+   "The address to get spam resent (through spam-report-resend)."
+   :variable gnus-spam-resend-to
+   :variable-default nil
+   :variable-document
+   "The address to get spam resent (through spam-report-resend)."
+   :variable-group spam
+   :variable-type '(repeat
+		    (list :tag "Group address for resending spam"
+			  (regexp :tag "Group")
+			  (string :tag "E-mail address for resending spam (requires the spam-use-resend exit processor)")))
+   :parameter-type 'string :tag "E-mail address for resending spam (requires the spam-use-resend exit processor)"
+   :parameter-document
+   "The address to get spam resent (through spam-report-resend).")
+
   (defvar gnus-group-spam-exit-processor-ifile "ifile"
     "OBSOLETE: The ifile summary exit spam processor.")
 
@@ -1879,19 +1897,6 @@ Only applicable to non-spam (unclassified and ham) groups.")
      :value nil
      (list :tag "Spam Summary Exit Processor Choices"
 	   (set
-	    (variable-item gnus-group-spam-exit-processor-ifile)
-	    (variable-item gnus-group-spam-exit-processor-stat)
-	    (variable-item gnus-group-spam-exit-processor-bogofilter)
-	    (variable-item gnus-group-spam-exit-processor-blacklist)
-	    (variable-item gnus-group-spam-exit-processor-spamoracle)
-	    (variable-item gnus-group-spam-exit-processor-report-gmane)
-	    (variable-item gnus-group-ham-exit-processor-bogofilter)
-	    (variable-item gnus-group-ham-exit-processor-ifile)
-	    (variable-item gnus-group-ham-exit-processor-stat)
-	    (variable-item gnus-group-ham-exit-processor-whitelist)
-	    (variable-item gnus-group-ham-exit-processor-BBDB)
-	    (variable-item gnus-group-ham-exit-processor-spamoracle)
-	    (variable-item gnus-group-ham-exit-processor-copy)
 	    (const :tag "Spam: Bogofilter"    (spam spam-use-bogofilter))
 	    (const :tag "Spam: Blacklist"     (spam spam-use-blacklist))
 	    (const :tag "Spam: Bsfilter"      (spam spam-use-bsfilter))
@@ -1911,7 +1916,20 @@ Only applicable to non-spam (unclassified and ham) groups.")
 	    (const :tag "Ham: Spam-stat"      (ham spam-use-stat))
 	    (const :tag "Ham: SpamAssassin"   (ham spam-use-spamassassin))
 	    (const :tag "Ham: CRM114"         (ham spam-use-crm114))
-	    (const :tag "Ham: Whitelist"      (ham spam-use-whitelist)))))
+	    (const :tag "Ham: Whitelist"      (ham spam-use-whitelist))
+	    (variable-item gnus-group-spam-exit-processor-ifile)
+	    (variable-item gnus-group-spam-exit-processor-stat)
+	    (variable-item gnus-group-spam-exit-processor-bogofilter)
+	    (variable-item gnus-group-spam-exit-processor-blacklist)
+	    (variable-item gnus-group-spam-exit-processor-spamoracle)
+	    (variable-item gnus-group-spam-exit-processor-report-gmane)
+	    (variable-item gnus-group-ham-exit-processor-bogofilter)
+	    (variable-item gnus-group-ham-exit-processor-ifile)
+	    (variable-item gnus-group-ham-exit-processor-stat)
+	    (variable-item gnus-group-ham-exit-processor-whitelist)
+	    (variable-item gnus-group-ham-exit-processor-BBDB)
+	    (variable-item gnus-group-ham-exit-processor-spamoracle)
+	    (variable-item gnus-group-ham-exit-processor-copy))))
    :function-document
    "Which spam or ham processors will be applied when the summary is exited."
    :variable gnus-spam-process-newsgroups
@@ -1928,19 +1946,6 @@ spam processing, associated with the appropriate processor."
 		  (regexp :tag "Group Regexp")
 		  (set 
 		   :tag "Spam/Ham Summary Exit Processor"
-		   (variable-item gnus-group-spam-exit-processor-ifile)
-		   (variable-item gnus-group-spam-exit-processor-stat)
-		   (variable-item gnus-group-spam-exit-processor-bogofilter)
-		   (variable-item gnus-group-spam-exit-processor-blacklist)
-		   (variable-item gnus-group-spam-exit-processor-spamoracle)
-		   (variable-item gnus-group-spam-exit-processor-report-gmane)
-		   (variable-item gnus-group-ham-exit-processor-bogofilter)
-		   (variable-item gnus-group-ham-exit-processor-ifile)
-		   (variable-item gnus-group-ham-exit-processor-stat)
-		   (variable-item gnus-group-ham-exit-processor-whitelist)
-		   (variable-item gnus-group-ham-exit-processor-BBDB)
-		   (variable-item gnus-group-ham-exit-processor-spamoracle)
-		   (variable-item gnus-group-ham-exit-processor-copy)
 		   (const :tag "Spam: Bogofilter"    (spam spam-use-bogofilter))
 		   (const :tag "Spam: Blacklist"     (spam spam-use-blacklist))
 		   (const :tag "Spam: Bsfilter"	     (spam spam-use-bsfilter))
@@ -1959,7 +1964,20 @@ spam processing, associated with the appropriate processor."
 		   (const :tag "Ham: Spam Oracle"    (ham spam-use-spamoracle))
 		   (const :tag "Ham: SpamAssassin"   (ham spam-use-spamassassin))
 		   (const :tag "Ham: CRM114"         (ham spam-use-crm114))
-		   (const :tag "Ham: Whitelist"	     (ham spam-use-whitelist)))))
+		   (const :tag "Ham: Whitelist"	     (ham spam-use-whitelist))
+		   (variable-item gnus-group-spam-exit-processor-ifile)
+		   (variable-item gnus-group-spam-exit-processor-stat)
+		   (variable-item gnus-group-spam-exit-processor-bogofilter)
+		   (variable-item gnus-group-spam-exit-processor-blacklist)
+		   (variable-item gnus-group-spam-exit-processor-spamoracle)
+		   (variable-item gnus-group-spam-exit-processor-report-gmane)
+		   (variable-item gnus-group-ham-exit-processor-bogofilter)
+		   (variable-item gnus-group-ham-exit-processor-ifile)
+		   (variable-item gnus-group-ham-exit-processor-stat)
+		   (variable-item gnus-group-ham-exit-processor-whitelist)
+		   (variable-item gnus-group-ham-exit-processor-BBDB)
+		   (variable-item gnus-group-ham-exit-processor-spamoracle)
+		   (variable-item gnus-group-ham-exit-processor-copy))))
 
    :parameter-document
    "Which spam or ham processors will be applied when the summary is exited.")

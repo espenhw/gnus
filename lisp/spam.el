@@ -713,16 +713,16 @@ finds ham or spam.")
     nil))
 
 (defvar spam-list-of-processors
-  ;; note the CRM114, resend and gmane processors are not defined in gnus.el
-  '((gnus-group-spam-exit-processor-report-gmane spam spam-use-gmane)
-    (gnus-group-spam-exit-processor-report-resend spam spam-use-resend)
+  ;; note the nil processors are not defined in gnus.el
+  '((nil spam spam-use-gmane)
+    (nil spam spam-use-resend)
     (gnus-group-spam-exit-processor-bogofilter   spam spam-use-bogofilter)
     (gnus-group-spam-exit-processor-bsfilter	 spam spam-use-bsfilter)
     (gnus-group-spam-exit-processor-blacklist    spam spam-use-blacklist)
     (gnus-group-spam-exit-processor-ifile        spam spam-use-ifile)
     (gnus-group-spam-exit-processor-stat         spam spam-use-stat)
     (gnus-group-spam-exit-processor-spamoracle   spam spam-use-spamoracle)
-    (gnus-group-spam-exit-processor-crm114       spam spam-use-crm114)
+    (nil spam spam-use-crm114)
     (gnus-group-spam-exit-processor-spamassassin spam spam-use-spamassassin)
     (gnus-group-ham-exit-processor-ifile         ham spam-use-ifile)
     (gnus-group-ham-exit-processor-bogofilter    ham spam-use-bogofilter)
@@ -733,80 +733,33 @@ finds ham or spam.")
     (gnus-group-ham-exit-processor-copy          ham spam-use-ham-copy)
     (gnus-group-ham-exit-processor-spamassassin  ham spam-use-spamassassin)
     (gnus-group-ham-exit-processor-spamoracle    ham spam-use-spamoracle)
-    (gnus-group-ham-exit-processor-crm114        ham spam-use-crm114))
+    (nil ham spam-use-crm114))
   "The `spam-list-of-processors' list.
-This list contains pairs associating a ham/spam exit processor
-variable with a classification and a spam-use-* variable.")
+This list contains pairs associating the obsolete ham/spam exit
+processor variables with a classification and a spam-use-*
+variable.  When the processor variable is nil, just the
+classification and spam-use-* check variable are used.")
 
-(defun spam-group-processor-p (group processor)
+(defun spam-group-processor-p (group check &optional classification)
+  "Checks if GROUP has a CHECK with CLASSIFICATION registered.
+Also accepts the obsolete processors, which can be found in
+gnus.el and in spam-list-of-processors."
   (if (and (stringp group)
-	   (symbolp processor))
-      (or (member processor (nth 0 (gnus-parameter-spam-process group)))
-	  (spam-group-processor-multiple-p
-	   group
-	   (cdr-safe (assoc processor spam-list-of-processors))))
+	   (symbolp check))
+      (let ((old-style (assq check spam-list-of-processors))
+	    (parameters (nth 0 (gnus-parameter-spam-process group)))
+	    found)
+	(if old-style  ; old-style processor
+	    (spam-group-processor-p group (nth 2 old-style) (nth 1 old-style))
+	  ;; now search for the parameter
+	  (dolist (parameter parameters)
+	    (when (and (null found)
+		       (listp parameter)
+		       (eq classification (nth 0 parameter))
+		       (eq check (nth 1 parameter)))
+	      (setq found t)))
+	  found))
     nil))
-
-(defun spam-group-processor-multiple-p (group processor-info)
-  (let* ((classification (nth 0 processor-info))
-	 (check (nth 1 processor-info))
-	 (parameters (nth 0 (gnus-parameter-spam-process group)))
-	 found)
-    (dolist (parameter parameters)
-      (when (and (null found)
-		 (listp parameter)
-		 (eq classification (nth 0 parameter))
-		 (eq check (nth 1 parameter)))
-	(setq found t)))
-    found))
-
-(defun spam-group-spam-processor-report-gmane-p (group)
-  (spam-group-processor-p group 'gnus-group-spam-exit-processor-report-gmane))
-
-(defun spam-group-spam-processor-report-resend-p (group)
-  (spam-group-processor-p group 'gnus-group-spam-exit-processor-report-resend))
-
-(defun spam-group-spam-processor-bogofilter-p (group)
-  (spam-group-processor-p group 'gnus-group-spam-exit-processor-bogofilter))
-
-(defun spam-group-spam-processor-blacklist-p (group)
-  (spam-group-processor-p group 'gnus-group-spam-exit-processor-blacklist))
-
-(defun spam-group-spam-processor-ifile-p (group)
-  (spam-group-processor-p group 'gnus-group-spam-exit-processor-ifile))
-
-(defun spam-group-ham-processor-ifile-p (group)
-  (spam-group-processor-p group 'gnus-group-ham-exit-processor-ifile))
-
-(defun spam-group-spam-processor-spamoracle-p (group)
-  (spam-group-processor-p group 'gnus-group-spam-exit-processor-spamoracle))
-
-(defun spam-group-spam-processor-crm114-p (group)
-  (spam-group-processor-p group 'gnus-group-spam-exit-processor-crm114))
-
-(defun spam-group-ham-processor-bogofilter-p (group)
-  (spam-group-processor-p group 'gnus-group-ham-exit-processor-bogofilter))
-
-(defun spam-group-spam-processor-stat-p (group)
-  (spam-group-processor-p group 'gnus-group-spam-exit-processor-stat))
-
-(defun spam-group-ham-processor-stat-p (group)
-  (spam-group-processor-p group 'gnus-group-ham-exit-processor-stat))
-
-(defun spam-group-ham-processor-whitelist-p (group)
-  (spam-group-processor-p group 'gnus-group-ham-exit-processor-whitelist))
-
-(defun spam-group-ham-processor-BBDB-p (group)
-  (spam-group-processor-p group 'gnus-group-ham-exit-processor-BBDB))
-
-(defun spam-group-ham-processor-copy-p (group)
-  (spam-group-processor-p group 'gnus-group-ham-exit-processor-copy))
-
-(defun spam-group-ham-processor-spamoracle-p (group)
-  (spam-group-processor-p group 'gnus-group-ham-exit-processor-spamoracle))
-
-(defun spam-group-ham-processor-crm114-p (group)
-  (spam-group-processor-p group 'gnus-group-ham-exit-processor-crm114))
 
 (defun spam-report-articles-gmane (n)
   "Report the current message as spam via Gmane.
@@ -821,7 +774,9 @@ Respects the process/prefix convention."
 Respects the process/prefix convention.  Also see
 `spam-report-resend-to'."
   (interactive "P")
-  (let ((articles (gnus-summary-work-articles n)))
+  (let ((spam-report-resend-to 
+	 (gnus-parameter-spam-resend-to gnus-newsgroup-name))
+	(articles (gnus-summary-work-articles n)))
     (spam-report-resend articles)
     (dolist (article articles)
       (gnus-summary-remove-process-mark article))))
@@ -938,7 +893,7 @@ Will not return a nil score."
 	    (classification (nth 1 processor-param))
 	    (check (nth 2 processor-param)))
 	(when (and (eq 'spam classification)
-		   (spam-group-processor-p gnus-newsgroup-name processor))
+		   (spam-group-processor-p gnus-newsgroup-name check classification))
 	  (spam-register-routine classification check))))
 
     (unless (and spam-move-spam-nonspam-groups-only
@@ -969,10 +924,10 @@ Will not return a nil score."
 	      (classification (nth 1 processor-param))
 	      (check (nth 2 processor-param)))
 	  (when (and (eq 'ham classification)
-		     (spam-group-processor-p gnus-newsgroup-name processor))
+		     (spam-group-processor-p gnus-newsgroup-name check classification))
 	    (spam-register-routine classification check)))))
 
-    (when (spam-group-ham-processor-copy-p gnus-newsgroup-name)
+    (when (spam-group-processor-p gnus-newsgroup-name 'ham 'spam-use-ham-copy)
       (let ((num
 	     (spam-ham-copy-routine
 	      (gnus-parameter-ham-process-destination gnus-newsgroup-name))))
@@ -2152,7 +2107,8 @@ REMOVE not nil, remove the ADDRESSES."
     (apply 'spam-report-gmane articles)))
 
 (defun spam-report-resend-register-routine (articles)
-  (spam-report-resend articles))
+  (let ((spam-report-resend-to (gnus-parameter-spam-resend-to gnus-newsgroup-name)))
+	(spam-report-resend articles)))
 
 
 ;;;; Bogofilter

@@ -1,5 +1,38 @@
 2004-05-24  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* spam.el (spam-list-of-processors): use nil for nonexistent processors
+	(spam-group-processor-p): fixed function so it works properly
+	(spam-group-processor-multiple-p)
+	(spam-group-spam-processor-report-gmane-p)
+	(spam-group-spam-processor-report-resend-p)
+	(spam-group-spam-processor-bogofilter-p)
+	(spam-group-spam-processor-blacklist-p)
+	(spam-group-spam-processor-ifile-p)
+	(spam-group-ham-processor-ifile-p)
+	(spam-group-spam-processor-spamoracle-p)
+	(spam-group-spam-processor-crm114-p)
+	(spam-group-ham-processor-bogofilter-p)
+	(spam-group-spam-processor-stat-p)
+	(spam-group-ham-processor-stat-p)
+	(spam-group-ham-processor-whitelist-p)
+	(spam-group-ham-processor-BBDB-p)
+	(spam-group-ham-processor-spamoracle-p)
+	(spam-group-ham-processor-copy-p): functions removed with some
+	prejudice against unneeded code
+	(spam-report-articles-resend)
+	(spam-report-resend-register-routine): allow the group/topic
+	spam-resend-to value to override spam-report-resend-to
+	(spam-summary-prepare-exit): invoke spam-group-processor-p
+	properly now
+
+	* spam-report.el (spam-report-resend-to, spam-report-resend):
+	start with resend-to set to nil, and then ask the user if
+	necessary.  From Daniel Pittman <daniel@rimspace.net>.
+
+	* gnus.el (spam-resend-to): new group/topic parameter
+	(spam-process): move the OBSOLETE processors to the end of the
+	choices.
+
 	* spam-report.el (spam-report-resend): spam-report-resend takes a
 	list of articles, not separate article numbers.  From Daniel
 	Pittman <daniel@rimspace.net>.

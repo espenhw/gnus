@@ -79,11 +79,10 @@ The function must accept the arguments `host' and `report'."
   :type 'file
   :group 'spam-report)
 
-(defcustom spam-report-resend-to (or 
-				  (when (length user-mail-address) 
-				    user-mail-address)
-				  "nonexistent-user-please-fix@invalid.domain")
-  "Email address that spam articles are resent to when reporting."
+(defcustom spam-report-resend-to nil
+  "Email address that spam articles are resent to when reporting.
+If not set, the user will be prompted to enter a value which will be
+saved for future use."
   :type 'string
   :group 'spam-report)
 
@@ -99,6 +98,10 @@ undo that change.")
     (gnus-message 6 
 		  "Reporting spam article %d to <%s>..." 
 		  article spam-report-resend-to)
+    (unless spam-report-resend-to
+      (customize-set-variable 
+       spam-report-resend-to
+       (read-from-minibuffer "email address to resend SPAM to? ")))
     ;; This is ganked from the `gnus-summary-resend-message' function.
     ;; It involves rendering the SPAM, which is undesirable, but there does
     ;; not seem to be a nicer way to achieve this.
@@ -133,6 +136,7 @@ undo that change.")
 		(spam-report-url-ping host report))
 	    (gnus-message 3 "Could not find X-Report-Spam in article %d..."
 			  article)))))))
+
 
 (defun spam-report-url-ping (host report)
   "Ping a host through HTTP, addressing a specific GET resource using
