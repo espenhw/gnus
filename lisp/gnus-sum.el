@@ -8203,10 +8203,9 @@ re-spool using this method."
   (gnus-summary-move-article n nil nil 'crosspost))
 
 (defcustom gnus-summary-respool-default-method nil
-  "Default method for respooling an article.
+  "Default method type for respooling an article.
 If nil, use to the current newsgroup method."
-  :type '(choice (gnus-select-method :value (nnml ""))
-		 (const nil))
+  :type 'symbol
   :group 'gnus-summary-mail)
 
 (defun gnus-summary-respool-article (&optional n method)
