@@ -11017,7 +11017,10 @@ information about the removed @acronym{MIME} object
 @item c (Article)
 @kindex c (Article)
 Copy the @acronym{MIME} object to a fresh buffer and display this buffer
-(@code{gnus-mime-copy-part}).  Compressed files like @file{.gz} and
+(@code{gnus-mime-copy-part}).  If given a prefix, copy the raw contents
+without decoding.  If given a numerical prefix, you can do semi-manual
+charset stuff (see @code{gnus-summary-show-article-charset-alist} in
+@ref{Paging the Article}).  Compressed files like @file{.gz} and
 @file{.bz2} are automatically decompressed if
 @code{auto-compression-mode} is enabled (@pxref{Compressed Files,,
 Accessing Compressed Files, emacs, The Emacs Editor}).
@@ -11037,7 +11040,10 @@ Insert the contents of the @acronym{MIME} object into the buffer
 the raw contents without decoding.  If given a numerical prefix, you can
 do semi-manual charset stuff (see
 @code{gnus-summary-show-article-charset-alist} in @ref{Paging the
-Article}).
+Article}).  Compressed files like @file{.gz} and @file{.bz2} are
+automatically decompressed depending on @code{jka-compr} regardless of
+@code{auto-compression-mode} (@pxref{Compressed Files,, Accessing
+Compressed Files, emacs, The Emacs Editor}).
 
 @findex gnus-mime-view-part-internally
 @item E (Article)
