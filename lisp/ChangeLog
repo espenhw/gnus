@@ -1,3 +1,10 @@
+2004-02-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-setup-fill-variables): Add mml tags to
+	paragraph-start and paragraph-separate.  Suggested by Andrew Korty
+	<ajk@iu.edu>.
+	(message-mode): Don't modify paragraph-separate there.
+
 2004-02-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* compface.el (uncompface-use-external): Default to undecided.

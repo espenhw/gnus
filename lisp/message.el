@@ -2438,11 +2438,6 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
   (set (make-local-variable 'message-checksum) nil)
   (set (make-local-variable 'message-mime-part) 0)
   (message-setup-fill-variables)
-  (set
-   (make-local-variable 'paragraph-separate)
-   (format "\\(%s\\)\\|\\(%s\\)"
-	   paragraph-separate
-	   "<#!*/?\\(multipart\\|part\\|external\\|mml\\|secure\\)"))
   ;; Allow using comment commands to add/remove quoting.
   (set (make-local-variable 'comment-start) message-yank-prefix)
   (if (featurep 'xemacs)
@@ -2494,7 +2489,9 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
 	   "---+$\\|"		   ; delimiters for forwarded messages
 	   page-delimiter "$\\|"	; spoiler warnings
 	   ".*wrote:$\\|"		; attribution lines
-	   quote-prefix-regexp "$"))	; empty lines in quoted text
+	   quote-prefix-regexp "$\\|"	; empty lines in quoted text
+					; mml tags
+	   "<#!*/?\\(multipart\\|part\\|external\\|mml\\|secure\\)"))
     (setq paragraph-separate paragraph-start)
     (setq adaptive-fill-regexp
 	  (concat quote-prefix-regexp "\\|" adaptive-fill-regexp))
