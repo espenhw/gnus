@@ -1,5 +1,10 @@
 2003-03-27  Paul Jarc  <prj@po.cwru.edu>
 
+	* gnus.texi (Comparing Mail Back Ends): Note nnmaildir's
+	incompatibilities more prominently.
+
+2003-03-27  Paul Jarc  <prj@po.cwru.edu>
+
 	* gnus.texi (Maildir): Note nnmail-expiry-target incompatibility.
 
 2003-03-27  Jesper Harder  <harder@ifa.au.dk>

@@ -15030,6 +15030,10 @@ friendly mail back end all over.
 
 @item nnmaildir
 
+For configuring expiry and other things, @code{nnmaildir} uses
+incompatible group parameters, slightly different from those of other
+mail back ends.
+
 @code{nnmaildir} is largely similar to @code{nnml}, with some notable
 differences.  Each message is stored in a separate file, but the
 filename is unrelated to the article number in Gnus.  @code{nnmaildir}
@@ -15059,9 +15063,6 @@ else, and still have your marks.  @code{nnml} also stores marks, but
 it's not as easy to work with them from outside Gnus as with
 @code{nnmaildir}.
 
-For configuring expiry and other things, @code{nnmaildir} uses group
-parameters slightly different from those of other mail back ends.
-
 @code{nnmaildir} uses a significant amount of memory to speed things up.
 (It keeps in memory some of the things that @code{nnml} stores in files
 and that @code{nnmh} repeatedly parses out of message files.)  If this
@@ -15071,8 +15072,8 @@ would) to make it use less memory.  This caching will probably be
 removed in the future.
 
 Startup is likely to be slower with @code{nnmaildir} than with other
-back ends.  Everything in between is likely to be faster, depending in
-part on your file system.
+back ends.  Everything else is likely to be faster, depending in part
+on your file system.
 
 @code{nnmaildir} does not use @code{nnoo}, so you cannot use @code{nnoo}
 to write an @code{nnmaildir}-derived back end.
