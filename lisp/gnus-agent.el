@@ -1840,7 +1840,7 @@ The following commands are available:
 	  (erase-buffer)
 	  (let ((nnheader-file-coding-system
 		 gnus-agent-file-coding-system))
-	    (nnheader-insert-file-contents file))
+	    (nnheader-insert-nov-file file (car articles)))
 	  (nnheader-find-nov-line (car articles))
 	  (while (not (eobp))
 	    (when (looking-at "[0-9]")

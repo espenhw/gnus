@@ -6,7 +6,7 @@
 
 	* gnus-agent.el (gnus-agent-retrieve-headers): Use
 	nnheader-find-nov-line to speed up. Use nreverse, because it is
-	sorted.
+	sorted. Use nnheader-insert-nov-file.
 
 2002-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
