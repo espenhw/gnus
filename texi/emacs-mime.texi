@@ -9,7 +9,9 @@
 @direntry
 * Emacs MIME: (emacs-mime).   The MIME de/composition library.
 @end direntry
+@iflatex
 @documentencoding ISO-8859-1
+@end iflatex
 @iftex
 @finalout
 @end iftex
