@@ -273,7 +273,8 @@
 	  '(t)
 	(mm-set-handle-multipart-parameter 
 	 mm-security-handle 'gnus-details 
-	 (buffer-string mml2015-result-buffer))
+	 (with-current-buffer mml2015-result-buffer
+	   (buffer-string)))
 	nil))))
 
 (defun mml2015-gpg-decrypt (handle ctl)
@@ -313,7 +314,8 @@
 	  (unless (gpg-verify message signature mml2015-result-buffer)
 	    (mm-set-handle-multipart-parameter 
 	     mm-security-handle 'gnus-details 
-	     (buffer-string mml2015-result-buffer))
+	     (with-current-buffer mml2015-result-buffer
+	       (buffer-string)))
 	    (mm-set-handle-multipart-parameter 
 	     mm-security-handle 'gnus-info "Failed")
 	    (throw 'error handle))))
