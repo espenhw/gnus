@@ -1,3 +1,9 @@
+2001-08-18 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnslashdot.el (nnslashdot-threaded-retrieve-headers):
+	slashdot 2.2 (not fully fixed yet).
+	(nnslashdot-request-article): Ditto.
+
 2001-08-18  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-util.el (gnus-remassoc, gnus-update-alist-soft): Moved from

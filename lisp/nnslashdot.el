@@ -110,8 +110,8 @@
 	  (nnweb-insert (format nnslashdot-article-url
 				(nnslashdot-sid-strip sid)) t)
 	  (goto-char (point-min))
-	  (search-forward "Posted by ")
-	  (when (looking-at "<a[^>]+>\\([^<]+\\)")
+	  (re-search-forward "Posted by[ \t\r\n]+")
+	  (when (looking-at "<a[^>]+>[ \t\r\n]*\\([^<\r\n]+\\)")
 	    (setq from (nnweb-decode-entities-string (match-string 1))))
 	  (search-forward " on ")
 	  (setq date (nnslashdot-date-to-date
@@ -217,8 +217,8 @@
 	(nnweb-insert (format nnslashdot-article-url
 			      (nnslashdot-sid-strip sid)) t)
 	(goto-char (point-min))
-	(search-forward "Posted by ")
-	(when (looking-at "<a[^>]+>\\([^<]+\\)")
+	(re-search-forward "Posted by[ \t\r\n]+")
+	(when (looking-at "<a[^>]+>[ \t\n\r]*\\([^<\r\n]+\\)")
 	  (setq from (nnweb-decode-entities-string (match-string 1))))
 	(search-forward " on ")
 	(setq date (nnslashdot-date-to-date
@@ -226,7 +226,7 @@
 	(forward-line 2)
 	(setq lines (count-lines (point)
 				 (re-search-forward
-				  "A href=\"\\(http://slashdot.org\\)?/article")))
+				  "&lt;&nbsp; <A href=\"\\(http://slashdot.org\\)?/article")))
 	(push
 	 (cons
 	  1
@@ -340,14 +340,15 @@
 	    (when (numberp article)
 	      (if (= article 1)
 		  (progn
-		    (re-search-forward "Posted by *<[^>]+>[^>]*<[^>]+> *on ")
+		    (re-search-forward 
+		     "Posted by[ \t\r\n]+<[^>]+>[ \t\r\n]*[^>]*[ \t\r\n]*<[^>]+> *[ \t\r\n]*on ")
 		    (search-forward "<BR>")
 		    (setq contents
 			  (buffer-substring
 			   (point)
 			   (progn
 			     (re-search-forward
-			      "<p>.*A href=\"\\(http://slashdot.org\\)?/article")
+			      "&lt;&nbsp;[ \t\r\n]*<A HREF=\"\\(\\(http:\\)?//slashdot\\.org\\)?/article")
 			     (match-beginning 0)))))
 		(search-forward (format "<a name=\"%d\">" (1- article)))
 		(setq contents
