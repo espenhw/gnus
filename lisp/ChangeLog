@@ -1,3 +1,9 @@
+2003-06-20  Jesper Harder  <harder@ifa.au.dk>
+
+	* mm-view.el (mm-inline-message): Bind
+	gnus-original-article-buffer to the buffer in the mml handle
+	holding the message.
+
 2003-06-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (sender, from): No need to bind them.

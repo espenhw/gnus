@@ -439,7 +439,8 @@ map.")))
 	      gnus-article-prepare-hook
 	      (gnus-newsgroup-charset
 	       (or charset gnus-newsgroup-charset)))
-	  (run-hooks 'gnus-article-decode-hook)
+	  (let ((gnus-original-article-buffer (mm-handle-buffer handle)))
+	    (run-hooks 'gnus-article-decode-hook))
 	  (gnus-article-prepare-display)
 	  (setq handles gnus-article-mime-handles))
 	(goto-char (point-min))
