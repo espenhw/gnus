@@ -1001,24 +1001,6 @@ Prompt for a mailcap method to use to view the part.
 
 @table @code
 
-@item mm-inline-text-html-renderer
-@findex mm-inline-text-html-render-with-w3
-@findex mm-inline-text-html-render-with-w3m
-This function will be used to convert the HTML to the text.  There are
-two pre-defined functions: @code{mm-inline-text-html-render-with-w3},
-which uses Emacs/w3; and @code{mm-inline-text-html-render-with-w3m},
-which uses emacs-w3m (see @uref{http://emacs-w3m.namazu.org/} for more
-information about emacs-w3m).  The function will be called with a MIME
-handle as the argument.
-
-@item mm-inline-text-html-with-images
-Some HTML mails might have the trick of spammers using @samp{<img>} tags.
-It is likely to be intended to verify whether you have read the mail.
-You can prevent your personal informations from leaking by setting this
-option to @code{nil} (which is the default).  It is currently ignored by
-Emacs/w3.  For emacs-w3m, you may use the command @kbd{t} on the image
-anchor to show an image even if it is @code{nil}.
-
 @item mm-inline-media-tests
 This is an alist where the key is a @sc{mime} type, the second element
 is a function to display the part @dfn{inline} (i.e., inside Emacs), and
@@ -1079,6 +1061,29 @@ as an attachment, that can be accomplished by setting this variable to a
 list containing that type.  For example assuming @code{mm-inlined-types}
 includes @samp{text/.*}, then including @samp{text/html} in this
 variable will cause @samp{text/html} parts to be treated as attachments.
+
+@item mm-inline-text-html-renderer
+@findex mm-inline-text-html-render-with-w3
+@findex mm-inline-text-html-render-with-w3m
+This function will be used to convert the HTML to the text.  There are
+two pre-defined functions: @code{mm-inline-text-html-render-with-w3},
+which uses Emacs/w3; and @code{mm-inline-text-html-render-with-w3m},
+which uses emacs-w3m (see @uref{http://emacs-w3m.namazu.org/} for more
+information about emacs-w3m).  The function will be called with a MIME
+handle as the argument.
+
+@item mm-inline-text-html-with-images
+Some HTML mails might have the trick of spammers using @samp{<img>} tags.
+It is likely to be intended to verify whether you have read the mail.
+You can prevent your personal informations from leaking by setting this
+option to @code{nil} (which is the default).  It is currently ignored by
+Emacs/w3.  For emacs-w3m, you may use the command @kbd{t} on the image
+anchor to show an image (or @kbd{T} for loading all images) even if it
+is @code{nil}.
+
+@item mm-inline-text-html-with-w3m-keymap
+You can use emacs-w3m command keys in the inlined text/html part by
+setting this option to non-@code{nil}.  The default value is @code{t}.
 
 @end table
 
