@@ -1,3 +1,24 @@
+2004-03-02  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-cus.el (gnus-agent-customize-category): Removed
+	ignore-errors macro reference that required cl to be loaded at
+	run-time.
+
+	* gnus-range.el (gnus-sorted-range-intersection): Now accepts
+	single-interval range of the form (min . max).  Previously the
+	range had to look like ((min . max)).  Likewise, return
+	(min . max) rather than ((min . max)).
+	(gnus-range-map): Use gnus-range-normalize to accept
+	single-interval range.
+
+	* gnus-sum.el (gnus-summary-highlight-line): Articles stored in
+	the cache, but not the agent, now appear with their usual face.
+
+	* dgnushack.el (loaddir): New variable that is bound to the
+	directory containing the dgnushack.el file. Use loaddir, rather
+	than srcdir, to update load-path. Change lets dgnushack compile
+	code in directories other than GNUS/lisp.
+
 2004-03-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Don't bind w3m-safe-url-regexp.
