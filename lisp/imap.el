@@ -390,7 +390,7 @@ human readable response text (a string).")
 
 (defvar imap-continuation nil
   "Non-nil indicates that the server emitted a continuation request.
-The actually value is really the text on the continuation line.")
+The actual value is really the text on the continuation line.")
 
 (defvar imap-callbacks nil
   "List of response tags and callbacks, on the form `(number . function)'.
