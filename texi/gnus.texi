@@ -13389,16 +13389,35 @@ Example:
 @item nnimap-stream
 @vindex nnimap-stream
 The type of stream used to connect to your server.  By default, nnimap
-will detect and use kerberos4 automatically, but not SSL connections.
+will detect and automatically use all of the below, with the exception
+of SSL. (SSL is being replaced by STARTTLS, which can be automatically
+detected, but it's not widely deployed yet).
 
 @itemize @bullet
 @item
-@dfn{kerberos4:} Uses the `imtest' program.
+@dfn{gssapi:} Connect with GSSAPI (usually kerberos 5). Require the
+@samp{imtest} program.
 @item
-@dfn{ssl:} Uses OpenSSL or SSLeay.
+@dfn{kerberos4:} Connect with kerberos 4. Require the @samp{imtest} program.
+@item
+@dfn{starttls:} Connect via the STARTTLS extension (similar to
+SSL). Require the external library @samp{starttls.el} and program
+@samp{starttls}.
+@item
+@dfn{ssl:} Connect through SSL. Require OpenSSL (the
+program @samp{openssl}) or SSLeay (@samp{s_client}).
 @item
 @dfn{network:} Plain, TCP/IP network connection.
 @end itemize
+
+The @samp{imtest} program is shipped with Cyrus IMAPD, nnimap support
+both @samp{imtest} version 1.5.x and version 1.6.x.
+
+For SSL connections, the OpenSSL program is available from
+@file{http://www.openssl.org/}. OpenSSL was formerly known as SSLeay,
+and nnimap support it too - altough the most recent versions of SSLeay,
+0.9.x, are known to have serious bugs making it useless. Earlier
+versions, especially 0.8.x, of SSLeay are known to work.
 
 @item nnimap-authenticator
 @vindex nnimap-authenticator
@@ -13408,7 +13427,14 @@ will use the most secure authenticator your server is capable of.
 
 @itemize @bullet
 @item
-@dfn{kerberos4:} Kerberos authentication.
+@dfn{gssapi:} GSSAPI (usually kerberos 5) authentication. Require
+external program @code{imtest}.
+@item
+@dfn{kerberos4:} Kerberos authentication. Require external program
+@code{imtest}.
+@item
+@dfn{digest-md5:} Encrypted username/password via DIGEST-MD5. Require
+external library @code{digest-md5.el}.
 @item
 @dfn{cram-md5:} Encrypted username/password via CRAM-MD5.
 @item
