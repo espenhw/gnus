@@ -32,7 +32,6 @@
 (eval-and-compile
   (autoload 'news-setup "rnewspost")
   (autoload 'news-reply-mode "rnewspost")
-  (autoload 'nnmail-request-post-buffer "nnmail")
   (autoload 'cancel-timer "timer")
   (autoload 'telnet "telnet" nil t)
   (autoload 'telnet-send-input "telnet" nil t)

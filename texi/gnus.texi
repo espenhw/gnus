@@ -7596,6 +7596,9 @@ kills.
 * Interactive::                Making Gnus ask you many questions.
 * Windows Configuration::      Configuring the Gnus buffer windows.
 * Buttons::                    Get tendonitis in ten easy steps!
+* Compilation & Init File::    How to speed Gnus up.
+* Daemons::                    Gnus can do things behind your back.
+* NoCeM::                      How to avoid spam and other fatty foods.
 * Various Various::            Things that are really various.
 @end menu
 
@@ -7785,6 +7788,135 @@ Buttons in the browse buffer.
 All the @code{buttons} variables are lists.  The elements in these list
 is either a cons cell where the car contains a text to be displayed and
 the cdr contains a function symbol, or a simple string.
+
+
+@node Compilation & Init File
+@section Compilation & Init File
+@cindex compilation
+@cindex init file
+@cindex byte-compilation
+
+@vindex gnus-init-file
+@findex gnus-compile
+When Gnus starts up, it will read the Gnus init file
+@code{gnus-init-file}, which is @file{.gnus} by default.  It is
+recommended that you keep any Gnus-related functions that you have
+written in that file.  If you want to byte-compile the file, Gnus offers
+the handy @kbd{M-x gnus-compile} function that will do that for you. 
+
+That's not really why that function was written, though.
+
+Remember all those line format specification variables?
+@code{gnus-summary-line-format}, @code{gnus-group-line-format}, and so
+on.  Now, Gnus will of course heed whatever these variables are, but,
+unfortunately, changing them will mean a quite significant slow-down.
+(The default values of these variables have byte-compiled functions
+associated with them, while the user-generated versions do not, of
+course.) 
+
+To help with this, you can run @code{gnus-compile} after you've fiddled
+around with the variables and feel that you're (kind of) satisfied.
+This will result in the new specs being byte-compiled, and you'll get
+top speed again.
+
+The result of these byte-compilations will be written to
+@file{.gnus.elc} by default.
+
+Note that Gnus will read @file{.gnus.elc} instead of @file{.gnus} if
+@file{.gnus.elc} exists, so if you change @file{.gnus}, you should
+remove @file{.gnus.elc}.
+
+
+@node Daemons
+@section Daemons
+@cindex demons
+@cindex daemons
+
+Gnus, being larger than any program ever written (allegedly), does lots
+of strange stuff that you may wish to have done while you're not
+present.  For instance, you may want it to check for new mail once in a
+while.  Or you may want it to close down all connections to all servers
+when you leave Emacs idle.  And stuff like that.
+
+Gnus will let you do stuff like that by defining various
+@dfn{handlers}.  Each handler consists of three elements:  A
+@var{function}, a @var{time}, and an @var{idle} parameter.
+
+Here's an example of a handler that closes connections when Emacs has
+been idle for thirty minutes:
+
+@lisp
+(gnus-demon-close-connections nil 30)
+@end lisp
+
+Here's a handler that scans for PGP headers every hour when Emacs is
+idle: 
+
+@lisp
+(gnus-demon-scan-pgp 60 t)
+@end lisp
+
+This @var{time} parameter and than @var{idle} parameter works together
+in a strange, but wonderful fashion.  Basically, if @var{idle} is
+@code{nil}, then the function will be called every @var{time} minutes.
+
+If @var{idle} is @code{t}, then the function will be called after
+@var{time} minutes only if Emacs is idle.  So if Emacs is never idle,
+the function will never be called.  But once Emacs goes idle, the
+function will be called every @var{time} minutes.
+
+If @var{idle} is a number and @var{time} is a number, the function will
+be called every @var{time} minutes only when Emacs has been idle for
+@var{idle} minutes.
+
+If @var{idle} is a number and @var{time} is @code{nil}, the function
+will be called once every time Emacs has been idle for @var{idle}
+minutes.  
+
+And if @var{time} is a string, it should look like @samp{"07:31"}, and
+the function will then be called once every day somewhere near that
+time.  Modified by the @var{idle} parameter, of course.
+
+@vindex gnus-demon-timestep
+(When I say "minute" here, I really mean @code{gnus-demon-timestep}
+seconds.  This is @samp{60} by default.  If you change that variable,
+all the timings in the handlers will be affected.)
+
+So, if you want to add a handler, you could put something like this in
+your @file{.gnus} file:
+
+@findex gnus-demon-add-handler
+@lisp
+(gnus-demon-add-handler 'gnus-demon-close-connections nil 30)
+@end lisp
+
+@findex gnus-demon-add-nocem
+@findex gnus-demon-add-scanmail
+@findex gnus-demon-add-disconnection
+Some ready-made functions to do this has been created:
+@code{gnus-demon-add-nocem}, @code{gnus-demon-add-disconnection}, and
+@code{gnus-demon-add-scanmail}.  Just put those functions in your
+@file{.gnus} if you want those abilities.
+
+@findex gnus-demon-init
+@findex gnus-demon-cancel
+@vindex gnus-demon-handlers
+If you add handlers to @code{gnus-demon-handlers} directly, you should
+run @code{gnus-demon-init} to make the changes take hold.  To cancel all
+daemons, you can use the @code{gnus-demon-cancel} function.
+
+Note that adding daemons can be pretty naughty if you overdo it.  Adding
+functions that scan all news and mail from all servers every two seconds
+is a sure-fire way of getting booted off any respectable system.  So
+behave. 
+
+
+@node NoCeM
+@section NoCeM
+@cindex nocem
+@cindex spam
+
+
 
 @node Various Various
 @section Various Various

@@ -17,6 +17,3 @@ refcard.dvi: refcard.tex
 
 clean:
 	rm -f gnus.*.bak gnus.ky gnus.cp gnus.aux gnus.fn gnus.dvi gnus.cps gnus.kys gnus.log gnus.pg gnus.tp gnus.vr gnus.toc
-
-clean:
-	rm -f gnus.*.bak gnus.ky gnus.cp gnus.aux gnus.fn gnus.dvi gnus.cps gnus.kys gnus.log gnus.pg gnus.tp gnus.vr gnus.toc

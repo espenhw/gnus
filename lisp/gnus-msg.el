@@ -691,6 +691,15 @@ will attempt to use the foreign server to post the article."
 		    (format
 		     "The From header looks strange: \"%s\". Really post? " 
 		     from)))
+		  ((string-match "<[^>]+> *$" from)
+		   (let ((name (substring from 0 (match-beginning 0))))
+		     (or 
+		      (string-match "^ *\"[^\"]*\" *$" name)
+		      (not (string-match "[][.!()<>@,;:\\]" name))
+		      (gnus-y-or-n-p
+		       (format
+			"The From header name has bogus characters.  Really post? " 
+			from)))))
 		  (t t)))))
 	 )))
     ;; Check for long lines.
@@ -1755,7 +1764,7 @@ mailer."
 	    ;; Deny sending copy if there's a negative X-Mail-Copy-To
 	    ;; header. 
 	    (if x-mail
-		(if (and (string= xmail "never")
+		(if (and (string= x-mail "never")
 			 (not (eq gnus-auto-mail-to-author 'force)))
 		    (setq to nil)
 		  (setq to x-mail)))

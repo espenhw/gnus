@@ -60,7 +60,7 @@ number.")
   "The name of the topic on the current line."
   (get-text-property (gnus-point-at-bol) 'gnus-topic))
 
-(defun gnus-group-prepare-topics (level &optional all lowest regexp)
+(defun gnus-group-prepare-topics (level &optional all lowest regexp topic)
   "List all newsgroups with unread articles of level LEVEL or lower, and
 use the `gnus-group-topics' to sort the groups.
 If ALL is non-nil, list groups that have no unread articles.
@@ -70,7 +70,7 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
         (lowest (or lowest 1))
 	tlist info)
     
-    (erase-buffer)
+    (or topic (erase-buffer))
     
     ;; List dead groups?
     (and (>= level 8) (<= lowest 8)
@@ -85,7 +85,7 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
     
     ;; Use topics
     (if (< lowest 8)
-        (let ((topics (gnus-topic-find-groups))
+        (let ((topics (gnus-topic-find-groups topic))
               topic how)
           (erase-buffer)
           (while topics
@@ -126,10 +126,14 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
   (setq gnus-group-list-mode (cons level all))
   (run-hooks 'gnus-group-prepare-hook))
 
-(defun gnus-topic-find-groups ()
+(defun gnus-topic-find-groups (&optional topic)
+  "Find all topics and all groups in all topics.
+If TOPIC, just find the groups in that topic."
   (let ((newsrc (cdr gnus-newsrc-alist))
 	(topics (mapcar (lambda (e) (list (car e)))
 			gnus-group-topics))
+	(topic-alist (if topic (list (assoc topic gnus-group-topics))
+		       gnus-group-topics))
         info clevel unread group w lowest level all gtopic)
     (setq lowest (or lowest 1))
     ;; We go through the newsrc to look for matches.
@@ -152,13 +156,15 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 	 (setq gtopic (cdr (assq 'topic (nth 5 info))))
 	 ;; On match, we add it.
 	 (and (stringp gtopic) 
+	      (or (not topic)
+		  (string= gtopic topic))
 	      (if (setq e (assoc gtopic topics))
 		  (setcdr e (cons info (cdr e)))
 		(setq topics (cons (list gtopic info) topics))))
 	 ;; We look through the topic alist for further matches, if
 	 ;; needed.  
 	 (if (or (not gnus-topic-unique) (not (stringp gtopic)))
-	     (let ((ts gnus-group-topics))
+	     (let ((ts topic-alist))
 	       (while ts
 		 (if (string-match (nth 1 (car ts)) group)
 		     (progn
@@ -169,22 +175,34 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
     topics))
 
 (defun gnus-topic-remove-topic ()
+  "Remove the current topic."
   (let ((topic (gnus-group-topic-name))
 	buffer-read-only)
-    (setq gnus-topics-not-listed (cons topic gnus-topics-not-listed))
-    (forward-line 1)
-    (delete-region (point) 
-		   (or (next-single-property-change (point) 'gnus-topic)
-		       (point-max)))))
+    (if (not topic) 
+	()
+      (setq gnus-topics-not-listed (cons topic gnus-topics-not-listed))
+      (forward-line 1)
+      (delete-region (point) 
+		     (or (next-single-property-change (point) 'gnus-topic)
+			 (point-max))))))
+
+(defun gnus-topic-insert-topic (topic)
+  "Insert TOPIC."
+  (gnus-group-prepare-topics 
+  (car gnus-group-list-mode) (cdr gnus-group-list-mode)
+  nil nil topic))
   
 (defun gnus-topic-fold ()
+  "Remove/insert the current topic."
   (let ((topic (gnus-group-topic-name))) 
-    (save-excursion
-      (if (not (member topic gnus-topics-not-listed))
-	  (gnus-topic-remove-topic)
-	(forward-line 1)
-	(gnus-topic-insert-topic
-	 topic (gnus-group-default-level) 
-	 (cdr gnus-group-list-mode))))))
+    (if (not topic)
+	()				; Nothing to do.
+      (save-excursion
+	(if (not (member topic gnus-topics-not-listed))
+	    ;; If the topic is visible, we remove it.
+	    (gnus-topic-remove-topic) 
+	  ;; If not, we insert it.
+	  (forward-line 1)
+	  (gnus-topic-insert-topic topic))))))
 
 ;;; gnus-topic.el ends here

@@ -471,21 +471,20 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 	    (set icon nil)
 	  (set icon (toolbar-make-button-list
 		     up (and (file-exists-p down) down)
-		     (and (file-exists-p disabled) disabled))))))))
+		     (and (file-exists-p disabled) disabled))))
+	dir))))
 
 (defun gnus-xmas-setup-group-toolbar ()
-  (if (not gnus-use-toolbar)
-      ()
-    (gnus-xmas-setup-toolbar gnus-group-toolbar)
-    (set-specifier (symbol-value gnus-use-toolbar)
-		   (cons (current-buffer) gnus-group-toolbar))))
+  (and gnus-use-toolbar
+       (gnus-xmas-setup-toolbar gnus-group-toolbar)
+       (set-specifier (symbol-value gnus-use-toolbar)
+		      (cons (current-buffer) gnus-group-toolbar))))
 
 (defun gnus-xmas-setup-summary-toolbar ()
-  (if (not gnus-use-toolbar)
-      ()
-    (gnus-xmas-setup-toolbar gnus-summary-toolbar)
-    (set-specifier (symbol-value gnus-use-toolbar)
-		   (cons (current-buffer) gnus-summary-toolbar))))
+  (and gnus-use-toolbar
+       (gnus-xmas-setup-toolbar gnus-summary-toolbar)
+       (set-specifier (symbol-value gnus-use-toolbar)
+		      (cons (current-buffer) gnus-summary-toolbar))))
 
 
 ;;; gnus-xmas.el ends here

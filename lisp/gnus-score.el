@@ -1662,6 +1662,11 @@ This mode is an extended emacs-lisp mode.
   (setq gnus-score-cache nil)
   (gnus-message 6 "The score cache is now flushed"))
 
+(defun gnus-score-close ()
+  "Clear all internal score variables."
+  (setq gnus-score-cache nil
+	gnus-internal-global-score-files nil))
+
 (provide 'gnus-score)
 
 ;;; gnus-score.el ends here
