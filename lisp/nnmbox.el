@@ -550,26 +550,31 @@
 	  (when (and (re-search-backward
 		      (format "^X-Gnus-Newsgroup: %s:\\([0-9]+\\) "
 			      (caar alist)) nil t)
-		     (>= (setq number
-			       (string-to-number
-				(buffer-substring
-				 (match-beginning 1) (match-end 1))))
-			 (cdadar alist)))
-	    (setcdr (cadar alist) (1+ number)))
+		     (> (setq number
+			      (string-to-number
+			       (buffer-substring
+				(match-beginning 1) (match-end 1))))
+			(cdadar alist)))
+	    (setcdr (cadar alist) number))
 	  (setq alist (cdr alist)))
 
 	(goto-char (point-min))
 	(while (re-search-forward delim nil t)
 	  (setq start (match-beginning 0))
-	  (when (not (search-forward "\nX-Gnus-Newsgroup: "
-				     (save-excursion
-				       (setq end
-					     (or
-					      (and
-					       (re-search-forward delim nil t)
-					       (match-beginning 0))
-					      (point-max))))
-				     t))
+	  (unless (search-forward
+		   "\nX-Gnus-Newsgroup: "
+		   (save-excursion
+		     (setq end
+			   (or
+			    (and
+			     ;; skip to end of headers first, since mail
+			     ;; which has been respooled has additional
+			     ;; "From nobody" lines.
+			     (search-forward "\n\n" nil t)
+			     (re-search-forward delim nil t)
+			     (match-beginning 0))
+			    (point-max))))
+		   t)
 	    (save-excursion
 	      (save-restriction
 		(narrow-to-region start end)

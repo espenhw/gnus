@@ -36,17 +36,11 @@
 (require 'gnus)
 (require 'nnmail)
 (require 'mm-util)
-(require 'nnweb)
 (eval-when-compile
   (ignore-errors
-    (require 'w3)
-    (require 'url)
-    (require 'w3-forms)))
+    (require 'nnweb)))
 ;; Report failure to find w3 at load time if appropriate.
-(eval '(progn
-	 (require 'w3)
-	 (require 'url)
-	 (require 'w3-forms)))
+(eval '(require 'nnweb))
 
 (nnoo-declare nnslashdot)
 

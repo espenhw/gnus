@@ -44,7 +44,7 @@
 ;;; 1998-09-25  renamed from hmac.el to rfc2104.el, also renamed functions
 ;;; 1999-10-23  included in pgnus
  
-(require 'cl)
+(eval-when-compile (require 'cl))
 
 ;; Magic character for inner HMAC round. 0x36 == 54 == '6'
 (defconst rfc2104-ipad ?\x36)

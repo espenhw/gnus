@@ -39,7 +39,7 @@
 (require 'gnus-start)
 (require 'gnus-sum)
 (require 'gnus-msg)
-(require 'cl)
+(eval-when-compile (require 'cl))
 
 (nnoo-declare nnvirtual)
 
@@ -691,7 +691,7 @@ based on the marks on the component groups."
     ;; Into all-unreads we put (g unreads).
     ;; Into all-marks we put (g marks).
     ;; We also increment cnt and tot here, and compute M (max of sizes).
-    (mapc (lambda (g)
+    (mapcar (lambda (g)
 	    (setq active (gnus-activate-group g)
 		  min (car active)
 		  max (cdr active))

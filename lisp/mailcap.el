@@ -26,8 +26,7 @@
 
 ;;; Code:
 
-(eval-and-compile
-  (require 'cl))
+(eval-when-compile (require 'cl))
 (require 'mail-parse)
 
 (defvar mailcap-parse-args-syntax-table
@@ -694,7 +693,7 @@ this type is returned."
 	passed)
        (t
 	;; MUST make a copy *sigh*, else we modify mailcap-mime-data
-	(setq viewer (copy-tree viewer))
+	(setq viewer (copy-sequence viewer))
 	(let ((view (assq 'viewer viewer))
 	      (test (assq 'test viewer)))
 	  (if view (setcdr view (mailcap-unescape-mime-test (cdr view) info)))

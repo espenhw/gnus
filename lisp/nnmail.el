@@ -1181,7 +1181,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	     partial regexp)
 	(if (symbolp value)
 	    (setq value (cdr (assq value nnmail-split-abbrev-alist))))
-	(if (string= ".*" (substring value 0 2))
+	(if (and (>= (length value) 2)
+		 (string= ".*" (substring value 0 2)))
 	    (setq value (substring value 2)
 		  partial ""))
 	(setq regexp (concat "^\\(\\("

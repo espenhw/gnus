@@ -40,6 +40,12 @@ This variable is a list of mail source specifiers."
   :group 'mail-source
   :type 'sexp)
 
+(defcustom mail-source-primary-source nil
+  "*Primary source for incoming mail.
+If non-nil, this maildrop will be checked periodically for new mail."
+  :group 'mail-source
+  :type 'sexp)
+
 (defcustom mail-source-crash-box "~/.emacs-mail-crash-box"
   "File where mail will be stored while processing it."
   :group 'mail-source
@@ -60,10 +66,23 @@ This variable is a list of mail source specifiers."
   :group 'mail-source
   :type 'boolean)
 
+(defcustom mail-source-report-new-mail-interval 5
+  "Interval in minutes between checks for new mail."
+  :group 'mail-source
+  :type 'number)
+
+(defcustom mail-source-idle-time-delay 5
+  "Number of idle seconds to wait before checking for new mail."
+  :group 'mail-source
+  :type 'number)
+
 ;;; Internal variables.
 
 (defvar mail-source-string ""
   "A dynamically bound string that says what the current mail source is.")
+
+(defvar mail-source-new-mail-available nil
+  "Flag indicating when new mail is available.")
 
 (eval-and-compile
   (defvar mail-source-common-keyword-map
@@ -464,6 +483,9 @@ If ARGS, PROMPT is used as an argument to `format'."
 		(push (cons from password) mail-source-password-cache)))
 	    (prog1
 		(mail-source-callback callback server)
+	      ;; Update display-time's mail flag, if relevant.
+	      (if (equal source mail-source-primary-source)
+		  (setq mail-source-new-mail-available nil))
 	      (mail-source-run-script
 	       postscript
 	       (format-spec-make ?p password ?t mail-source-crash-box
@@ -474,6 +496,109 @@ If ARGS, PROMPT is used as an argument to `format'."
 	      (delq (assoc from mail-source-password-cache)
 		    mail-source-password-cache))
 	0))))
+
+(defun mail-source-check-pop (source)
+  "Check whether there is new mail."
+  (mail-source-bind (pop source)
+    (let ((from (format "%s:%s:%s" server user port))
+	  (mail-source-string (format "pop:%s@%s" user server))
+	  result)
+      (when (eq authentication 'password)
+	(setq password
+	      (or password
+		  (cdr (assoc from mail-source-password-cache))
+		  (mail-source-read-passwd
+		   (format "Password for %s at %s: " user server))))
+	(unless (assoc from mail-source-password-cache)
+	  (push (cons from password) mail-source-password-cache)))
+      (when server
+	(setenv "MAILHOST" server))
+      (setq result
+	    (cond
+	     ;; No easy way to check whether mail is waiting for these.
+	     (program)
+	     (function)
+	     ;; The default is to use pop3.el.
+	     (t
+	      (let ((pop3-password password)
+		    (pop3-maildrop user)
+		    (pop3-mailhost server)
+		    (pop3-port port)
+		    (pop3-authentication-scheme
+		     (if (eq authentication 'apop) 'apop 'pass)))
+		(save-excursion (pop3-get-message-count))))))
+      (if result
+	  ;; Inform display-time that we have new mail.
+	  (setq mail-source-new-mail-available (> result 0))
+	;; We nix out the password in case the error
+	;; was because of a wrong password being given.
+	(setq mail-source-password-cache
+	      (delq (assoc from mail-source-password-cache)
+		    mail-source-password-cache)))
+      result)))
+
+(defun mail-source-new-mail-p ()
+  "Handler for `display-time' to indicate when new mail is available."
+  ;; Only report flag setting; flag is updated on a different schedule.
+  mail-source-new-mail-available)
+
+
+(defvar mail-source-report-new-mail nil)
+(defvar mail-source-report-new-mail-timer nil)
+(defvar mail-source-report-new-mail-idle-timer nil)
+
+(eval-when-compile (require 'timer))
+
+(defun mail-source-start-idle-timer ()
+  ;; Start our idle timer if necessary, so we delay the check until the
+  ;; user isn't typing.
+  (unless mail-source-report-new-mail-idle-timer
+    (setq mail-source-report-new-mail-idle-timer
+	  (run-with-idle-timer
+	   mail-source-idle-time-delay
+	   nil
+	   (lambda ()
+	     (setq mail-source-report-new-mail-idle-timer nil)
+	     (mail-source-check-pop mail-source-primary-source))))
+    ;; Since idle timers created when Emacs is already in the idle
+    ;; state don't get activated until Emacs _next_ becomes idle, we
+    ;; need to force our timer to be considered active now.  We do
+    ;; this by being naughty and poking the timer internals directly
+    ;; (element 0 of the vector is nil if the timer is active).
+    (aset mail-source-report-new-mail-idle-timer 0 nil)))
+
+(defun mail-source-report-new-mail (arg)
+  "Toggle whether to report when new mail is available.
+This only works when `display-time' is enabled."
+  (interactive "P")
+  (if (not mail-source-primary-source)
+      (error "Need to set `mail-source-primary-source' to check for new mail."))
+  (let ((on (if (null arg)
+		(not mail-source-report-new-mail)
+	      (> (prefix-numeric-value arg) 0))))
+    (setq mail-source-report-new-mail on)
+    (and mail-source-report-new-mail-timer
+	 (cancel-timer mail-source-report-new-mail-timer))
+    (and mail-source-report-new-mail-idle-timer
+	 (cancel-timer mail-source-report-new-mail-idle-timer))
+    (setq mail-source-report-new-mail-timer nil)
+    (setq mail-source-report-new-mail-idle-timer nil)
+    (if on
+	(progn
+	  (require 'time)
+	  (setq display-time-mail-function #'mail-source-new-mail-p)
+	  ;; Set up the main timer.
+	  (setq mail-source-report-new-mail-timer
+		(run-at-time t (* 60 mail-source-report-new-mail-interval)
+			     #'mail-source-start-idle-timer))
+	  ;; When you get new mail, clear "Mail" from the mode line.
+	  (add-hook 'nnmail-post-get-new-mail-hook
+		    'display-time-event-handler)
+	  (message "Mail check enabled"))
+      (setq display-time-mail-function nil)
+      (remove-hook 'nnmail-post-get-new-mail-hook
+		   'display-time-event-handler)
+      (message "Mail check disabled"))))
 
 (defun mail-source-fetch-maildir (source callback)
   "Fetcher for maildir sources."

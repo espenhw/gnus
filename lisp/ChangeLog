@@ -1,3 +1,67 @@
+1999-12-04 01:14:55  YAMAMOTO Kouji  <kouji@pobox.com>
+
+	* nnmail.el (nnmail-split-it): I redefined nnmail-split-fancy's
+ 	value to divide received mails into my favorite groups and I met
+ 	an error.  It takes place if the length of a element "VALUE" in
+ 	nnmail-split-fancy is less than two.
+
+1999-10-10  Robert Bihlmeyer  <robbe@orcus.priv.at>
+
+	* mml.el (mml-insert-part): New function.
+
+1999-09-29 04:48:14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* lpath.el: Add `sc-cite-regexp'.
+
+1999-12-02  Dave Love  <fx@gnu.org>
+
+	* mm-decode.el: Customize.
+
+1999-12-03  Dave Love  <fx@gnu.org>
+
+	* nnslashdot.el, nnultimate.el: Don't lose at compile time when
+	the W3 stuff isn't available.
+
+1999-12-03  Dave Love  <fx@gnu.org>
+
+	* imap.el, mailcap.el, nnvirtual.el, rfc2104.el: Don't require cl
+	at runtime.
+
+1999-12-04 00:47:35  Dan Christensen  <jdc@jhu.edu>
+
+	* gnus-score.el (gnus-score-headers): Fix orphan scoring.
+
+1999-12-01  Andrew Innes  <andrewi@gnu.org>
+
+	* nnmbox.el (nnmbox-read-mbox): Count messages correctly, and
+	don't be fooled by "From nobody" lines added by respooling.
+
+	* pop3.el (pop3-movemail): Write crashbox in binary.
+	(pop3-get-message-count): New function.
+
+	* mail-source.el (mail-source-primary-source): New variable.
+	(mail-source-report-new-mail-interval): New variable.
+	(mail-source-idle-time-delay): New variable.
+	(mail-source-new-mail-available): New internal variable.
+	(mail-source-fetch-pop): Clear new mail flag, when mail from
+	primary source has been fetched.
+	(mail-source-check-pop): New function.
+	(mail-source-new-mail-p): New function.
+	(mail-source-start-idle-timer): New function.
+	(mail-source-report-new-mail): New function.
+	(mail-source-report-new-mail): New internal variable.
+	(mail-source-report-new-mail-timer): New internal variable.
+	(mail-source-report-new-mail-idle-timer): New internal variables.
+
+1999-12-04 00:39:34  Andreas Schwab  <schwab@suse.de>
+
+	* gnus-cus.el (gnus-group-customize): Customize fix.
+
+1999-12-04 00:38:24  Andrea Arcangeli  <andrea@suse.de>
+
+	* message.el (message-send-mail-with-sendmail): Use
+	message-make-address. 
+
 Fri Dec  3 20:34:11 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v5.8.2 is released.
@@ -1142,6 +1206,11 @@ Mon Sep 27 15:18:05 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* message.el (message-send): More helpful error message if sending
 	fails
+
+1999-09-06  Robert Bihlmeyer  <robbe@orcus.priv.at>
+
+	* gnus-score.el (gnus-summary-increase-score): "Lars" was broken
+	in newer emacsen, where ?r isn't equal 114.
 
 Fri Aug 27 13:17:48 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 

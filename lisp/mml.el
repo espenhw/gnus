@@ -714,6 +714,12 @@ TYPE is the MIME type to use."
   (mml-insert-empty-tag "multipart" 'type type)
   (forward-line -1))
 
+(defun mml-insert-part (&optional type)
+  (interactive
+   (list (mml-minibuffer-read-type "")))
+  (mml-insert-tag 'part 'type type 'disposition "inline")
+  (forward-line -1))
+
 (defun mml-preview (&optional raw)
  "Display current buffer with Gnus, in a new buffer.
 If RAW, don't highlight the article."

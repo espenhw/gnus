@@ -132,8 +132,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
 (eval-and-compile
-  (require 'cl)
   (autoload 'open-ssl-stream "ssl")
   (autoload 'base64-decode-string "base64")
   (autoload 'base64-encode-string "base64")
@@ -619,7 +619,7 @@ necessery. If nil, the buffer name is generated."
   (with-current-buffer (get-buffer-create buffer)
     (if (imap-opened buffer)
 	(imap-close buffer))
-    (mapc 'make-variable-buffer-local imap-local-variables)
+    (mapcar 'make-variable-buffer-local imap-local-variables)
     (imap-disable-multibyte)
     (buffer-disable-undo)
     (setq imap-server (or server imap-server))
@@ -2180,7 +2180,7 @@ literals. Return nil if no complete line has arrived."
 (when imap-debug ; (untrace-all)
   (require 'trace)
   (buffer-disable-undo (get-buffer-create imap-debug))
-  (mapc (lambda (f) (trace-function-background f imap-debug)) 
+  (mapcar (lambda (f) (trace-function-background f imap-debug)) 
         '(
 imap-read-passwd
 imap-utf7-encode

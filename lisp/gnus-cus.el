@@ -342,7 +342,7 @@ like.  If you want to hear a beep when you enter a group, you could
 put something like `(dummy-variable (ding))' in the parameters of that
 group.  `dummy-variable' will be set to the result of the `(ding)'
 form, but who cares?"
-				  (cons :format "%v" :value (nil .  nil)
+				  (list :format "%v" :value (nil nil)
 					 (symbol :tag "Variable")
 					 (sexp :tag
 					       "Value")))

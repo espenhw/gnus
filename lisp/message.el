@@ -2214,10 +2214,7 @@ the user from the mailer."
 		     ;; But some systems are more broken with -f, so
 		     ;; we'll let users override this.
 		     (if (null message-sendmail-f-is-evil)
-			 (list "-f"
-			       (if (null user-mail-address)
-				   (user-login-name)
-				 user-mail-address)))
+			 (list "-f" (message-make-address)))
 		     ;; These mean "report errors by mail"
 		     ;; and "deliver in background".
 		     (if (null message-interactive) '("-oem" "-odb"))

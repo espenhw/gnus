@@ -28,6 +28,12 @@
 (require 'mailcap)
 (require 'mm-bodies)
 
+(defgroup mime-display ()
+    "Display of MIME in mail and news articles."
+  :link '(custom-manual "(emacs-mime)Customization")
+  :group 'mail
+  :group 'news)
+
 ;;; Convenience macros.
 
 (defmacro mm-handle-buffer (handle)
@@ -64,7 +70,7 @@
   `(list ,buffer ,type ,encoding ,undisplayer
 	 ,disposition ,description ,cache ,id))
 
-(defvar mm-inline-media-tests
+(defcustom mm-inline-media-tests
   '(("image/jpeg"
      mm-inline-image
      (lambda (handle)
@@ -132,32 +138,48 @@
     ("multipart/alternative" ignore identity)
     ("multipart/mixed" ignore identity)
     ("multipart/related" ignore identity))
-  "Alist of media types/test that say whether the media types can be displayed inline.")
+  "Alist of media types/tests saying whether types can be displayed inline."
+  :type '(repeat (list (string :tag "MIME type")
+		       (function :tag "Display function")
+		       (function :tag "Display test")))
+  :group 'mime-display)
 
-(defvar mm-inlined-types
+(defcustom mm-inlined-types
   '("image/.*" "text/.*" "message/delivery-status" "message/rfc822"
     "application/pgp-signature")
-  "List of media types that are to be displayed inline.")
+  "List of media types that are to be displayed inline."
+  :type '(repeat string)
+  :group 'mime-display)
   
-(defvar mm-automatic-display
+(defcustom mm-automatic-display
   '("text/plain" "text/enriched" "text/richtext" "text/html"
     "text/x-vcard" "image/.*" "message/delivery-status" "multipart/.*"
     "message/rfc822" "text/x-patch" "application/pgp-signature")
-  "A list of MIME types to be displayed automatically.")
+  "A list of MIME types to be displayed automatically."
+  :type '(repeat string)
+  :group 'mime-display)
 
-(defvar mm-attachment-override-types '("text/x-vcard")
-  "Types that should have \"attachment\" ignored if they can be displayed inline.")
+(defcustom mm-attachment-override-types '("text/x-vcard")
+  "Types to have \"attachment\" ignored if they can be displayed inline."
+  :type '(repeat string)
+  :group 'mime-display)
 
-(defvar mm-inline-override-types nil
-  "Types that should be treated as attachments even if they can be displayed inline.")
+(defcustom mm-inline-override-types nil
+  "Types to be treated as attachments even if they can be displayed inline."
+  :type '(repeat string)
+  :group 'mime-display)
 
-(defvar mm-inline-override-types nil
-  "Types that should be treated as attachments even if they can be displayed inline.")
+(defcustom mm-inline-override-types nil
+  "Types to be treated as attachments even if they can be displayed inline."
+  :type '(repeat string)
+  :group 'mime-display)
 
-(defvar mm-automatic-external-display nil
-  "List of MIME type regexps that will be displayed externally automatically.")
+(defcustom mm-automatic-external-display nil
+  "List of MIME type regexps that will be displayed externally automatically."
+  :type '(repeat string)
+  :group 'mime-display)
 
-(defvar mm-discouraged-alternatives nil
+(defcustom mm-discouraged-alternatives nil
   "List of MIME types that are discouraged when viewing multipart/alternative.
 Viewing agents are supposed to view the last possible part of a message,
 as that is supposed to be the richest.  However, users may prefer other
@@ -166,7 +188,9 @@ for instance, text/html parts are very unwanted, and text/richtech are
 somewhat unwanted, then the value of this variable should be set
 to:
 
- (\"text/html\" \"text/richtext\")")
+ (\"text/html\" \"text/richtext\")"
+  :type '(repeat string)
+  :group 'mime-display)
 
 (defvar mm-tmp-directory
   (cond ((fboundp 'temp-directory) (temp-directory))
@@ -174,8 +198,10 @@ to:
 	("/tmp/"))
   "Where mm will store its temporary files.")
 
-(defvar mm-inline-large-images nil
-  "If non-nil, then all images fit in the buffer.")
+(defcustom mm-inline-large-images nil
+  "If non-nil, then all images fit in the buffer."
+  :type 'boolean
+  :group 'mime-display)
 
 ;;; Internal variables.
 
