@@ -1,5 +1,10 @@
 2005-01-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* mm-decode.el (mm-insert-part): Switch the multibyteness of data
+	which will be inserted according to the multibyteness of a buffer
+	rather than the type of contents.  Suggested by ARISAWA Akihiro
+	<ari@mbf.ocn.ne.jp>.
+
 	* nnrss.el (nnrss-find-el): Check carefully whether there's a list
 	of string which old xml.el may return rather than a string.
 
