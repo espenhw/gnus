@@ -2104,8 +2104,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	  (setq who (nth 1 (gnus-extract-address-components who)))
 	  (if
 	      (if spam-cache-lookups
-		  (symbol-value
-		   (intern-soft (downcase who) bbdb-cache))
+		  (intern-soft (downcase who) bbdb-cache)
 		(bbdb-search-simple nil who))
 	      t
 	    (if spam-use-BBDB-exclusive

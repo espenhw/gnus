@@ -1,3 +1,8 @@
+2004-12-23  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-check-BBDB): don't get the symbol-value of an
+	imaginary variable
+
 2004-12-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-spec.el (gnus-spec-tab): Make a Lisp form which works
