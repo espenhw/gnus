@@ -4167,28 +4167,28 @@ If ARG, allow editing of the cancellation message."
   (interactive "P")
   (unless (message-news-p)
     (error "This is not a news article; canceling is impossible"))
-  (when (yes-or-no-p "Do you really want to cancel this article? ")
-    (let (from newsgroups message-id distribution buf sender)
-      (save-excursion
-	;; Get header info from original article.
-	(save-restriction
-	  (message-narrow-to-head-1)
-	  (setq from (message-fetch-field "from")
-		sender (message-fetch-field "sender")
-		newsgroups (message-fetch-field "newsgroups")
-		message-id (message-fetch-field "message-id" t)
-		distribution (message-fetch-field "distribution")))
-	;; Make sure that this article was written by the user.
-	(unless (or (message-gnksa-enable-p 'cancel-messages)
-		    (and sender
-			 (string-equal
-			  (downcase sender)
-			  (downcase (message-make-sender))))
-		    (string-equal
-		     (downcase (cadr (mail-extract-address-components from)))
-		     (downcase (cadr (mail-extract-address-components
-				      (message-make-from))))))
-	  (error "This article is not yours"))
+  (let (from newsgroups message-id distribution buf sender)
+    (save-excursion
+      ;; Get header info from original article.
+      (save-restriction
+	(message-narrow-to-head-1)
+	(setq from (message-fetch-field "from")
+	      sender (message-fetch-field "sender")
+	      newsgroups (message-fetch-field "newsgroups")
+	      message-id (message-fetch-field "message-id" t)
+	      distribution (message-fetch-field "distribution")))
+      ;; Make sure that this article was written by the user.
+      (unless (or (message-gnksa-enable-p 'cancel-messages)
+		  (and sender
+		       (string-equal
+			(downcase sender)
+			(downcase (message-make-sender))))
+		  (string-equal
+		   (downcase (cadr (mail-extract-address-components from)))
+		   (downcase (cadr (mail-extract-address-components
+				    (message-make-from))))))
+	(error "This article is not yours"))
+      (when (yes-or-no-p "Do you really want to cancel this article? ")
 	;; Make control message.
 	(if arg
 	    (message-news)
