@@ -1674,7 +1674,7 @@ newsgroup."
 		     'foreign)))
 	(push (cons method method-type) type-cache))
 
-      (cond ((eq method-type 'foreign)
+      (cond ((and method (eq method-type 'foreign))
 	     ;; These groups are foreign.  Check the level.
 	     (when (and (<= (gnus-info-level info) foreign-level)
 			(setq active (gnus-activate-group group 'scan)))
