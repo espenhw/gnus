@@ -1,8 +1,13 @@
 2001-08-24 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-sum.el (gnus-summary-insert-line) 
+	(gnus-summary-prepare-threads): gnus-tmp-lines should be a string.
+	From Martin Kretzschmar <Martin.Kretzschmar@inf.tu-dresden.de>
+
 	* gnus-spec.el (gnus-correct-substring): Take optional END.
 
 	* nnrss.el (nnrss-request-article): Remove \n.
+	(nnrss-retrieve-headers): Lines number is -1.
 
 2001-08-24  Simon Josefsson  <jas@extundo.com>
 

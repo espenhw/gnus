@@ -204,8 +204,8 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 		    (format "<%d@%s.nnrss>" (car e) group)
 		    "\t" ;; id
 		    "\t" ;; refs
-		    "0" "\t" ;; chars
-		    "0" "\t" ;; lines
+		    "-1" "\t" ;; chars
+		    "-1" "\t" ;; lines
 		    "" "\t" ;; Xref
 		    (if (and (nth 6 e)
 			     (memq nnrss-description-field
