@@ -427,8 +427,7 @@ by you.")
 
 (defun mml2015-gpg-extract-signature-details ()
   (goto-char (point-min))
-  (if (and (eq mml2015-use 'gpg)
-	   (boundp 'gpg-unabbrev-trust-alist))
+  (if (boundp 'gpg-unabbrev-trust-alist)
       (let* ((expired (re-search-forward
 		       "^\\[GNUPG:\\] SIGEXPIRED$"
 		       nil t))
@@ -737,11 +736,14 @@ by you.")
 	  (mm-insert-part signature))
 	(if (condition-case err
 		(prog1
-		    (pgg-verify-region (point-min) (point-max) signature-file t)
+		    (pgg-verify-region (point-min) (point-max) 
+				       signature-file t)
 		  (mm-set-handle-multipart-parameter
 		   mm-security-handle 'gnus-details
-		   (with-current-buffer pgg-output-buffer
-		     (buffer-string))))
+		   (concat (with-current-buffer pgg-output-buffer
+			     (buffer-string))
+			   (with-current-buffer pgg-errors-buffer
+			     (buffer-string)))))
 	      (error
 	       (mm-set-handle-multipart-parameter
 		mm-security-handle 'gnus-details (mml2015-format-error err))
@@ -754,7 +756,7 @@ by you.")
 	      (delete-file signature-file)
 	      (mm-set-handle-multipart-parameter
 	       mm-security-handle 'gnus-info
-	       (with-current-buffer pgg-output-buffer
+	       (with-current-buffer pgg-errors-buffer
 		 (mml2015-gpg-extract-signature-details))))
 	  (delete-file signature-file)
 	  (mm-set-handle-multipart-parameter
@@ -771,8 +773,10 @@ by you.")
 		  (pgg-verify-region (point-min) (point-max) nil t))
 	      (mm-set-handle-multipart-parameter
 	       mm-security-handle 'gnus-details
-	       (with-current-buffer mml2015-result-buffer
-		 (buffer-string))))
+	       (concat (with-current-buffer pgg-output-buffer
+			 (buffer-string))
+		       (with-current-buffer pgg-errors-buffer
+			 (buffer-string)))))
 	  (error
 	   (mm-set-handle-multipart-parameter
 	    mm-security-handle 'gnus-details (mml2015-format-error err))
@@ -783,7 +787,7 @@ by you.")
 	   nil))
 	(mm-set-handle-multipart-parameter
 	 mm-security-handle 'gnus-info
-	 (with-current-buffer pgg-output-buffer
+	 (with-current-buffer pgg-errors-buffer
 	   (mml2015-gpg-extract-signature-details)))
       (mm-set-handle-multipart-parameter
        mm-security-handle 'gnus-info "Failed"))))

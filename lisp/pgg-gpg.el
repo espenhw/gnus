@@ -192,14 +192,13 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
     (pgg-gpg-process-region start end nil pgg-gpg-program args)
     (with-current-buffer pgg-errors-buffer
       (goto-char (point-min))
-      (while (re-search-forward "^gpg: " nil t)
-	(replace-match ""))
+      (while (re-search-forward "^gpg: \\(.*\\)\n" nil t)
+	(with-current-buffer pgg-output-buffer
+	  (insert-buffer-substring pgg-errors-buffer
+				   (match-beginning 1) (match-end 0)))
+	(delete-region (match-beginning 0) (match-end 0)))
       (goto-char (point-min))
-      (prog1 (re-search-forward "^\\[GNUPG:] GOODSIG\\>" nil t)
-	(goto-char (point-min))
-	(delete-matching-lines "^warning\\|\\[GNUPG:]")
-	(set-buffer pgg-output-buffer)
-	(insert-buffer-substring pgg-errors-buffer)))))
+      (re-search-forward "^\\[GNUPG:] GOODSIG\\>" nil t))))
 
 (defun pgg-gpg-insert-key ()
   "Insert public key at point."

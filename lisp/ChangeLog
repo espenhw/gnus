@@ -1,5 +1,16 @@
 2002-10-10  Simon Josefsson  <jas@extundo.com>
 
+	* pgg-gpg.el (pgg-gpg-verify-region): Filter out stuff into output
+	buffer and error buffer depending on type of information.
+
+	* mml2015.el (mml2015-gpg-extract-signature-details): Parse
+	--status-fd stuff even if gpg.el is not used (revert earlier
+	change).
+	(mml2015-pgg-{clear-,}verify): Store both output and errors as
+	gnus details.
+	(mml2015-pgg-{clear-,}verify): Extract signature info from errors
+	buffer.
+
 	* pgg.el (pgg-verify-region): Use it.
 
 	* pgg-def.el (pgg-query-keyserver): New variable.
