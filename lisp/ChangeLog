@@ -1,3 +1,14 @@
+2002-01-18  Simon Josefsson  <jas@extundo.com>
+
+	* imap.el (imap-starttls-p): Don't check for binary.
+	(imap-gssapi-auth-p): Ditto.
+	(imap-kerberos4-auth-p): Ditto.
+	(imap-open): Change logic.  Iterate through all possible streams,
+	instead of bailing out after first failure.  Move authenticator
+	decision to `imap-authenticate'.
+	(imap-authenticate): Change logic, now finds the authenticator to
+	use, was previously in `imap-open'.
+
 2002-01-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-fun.el (gnus-grab-cam-x-face): New function.
