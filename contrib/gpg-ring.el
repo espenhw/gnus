@@ -7,7 +7,7 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-28
 
-;; $Id: gpg-ring.el,v 6.1 2000/10/31 21:31:31 zsh Exp $
+;; $Id: gpg-ring.el,v 1.1 2000/11/04 12:22:17 zsh Exp $
 
 ;; This file is NOT (yet?) part of GNU Emacs.
 
@@ -28,11 +28,10 @@
 
 
 
-;;;; Code:
+;;; Code:
 
 (require 'gpg)
-(eval-when-compile 
-  (require 'cl))
+(eval-when-compile (require 'cl))
 
 ;;;; Customization:
 

@@ -89,7 +89,7 @@
 ;; These notices must be retained in any copies of any part of this
 ;; documentation and/or software.
 
-;;; Code: ---------------------------------------------------------------------
+;;; Code:
 
 (defvar md5-program "md5sum"
   "*Program that reads a message on its standard input and writes an

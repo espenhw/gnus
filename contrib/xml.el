@@ -1,4 +1,4 @@
-;; @(#) xml.el --- XML parser
+;;; xml.el --- XML parser
 
 ;; Copyright (C) 2000, 2001 Free Software Foundation, Inc.
 

@@ -7,7 +7,7 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-15
 
-;; $Id: gpg.el,v 1.10 2001/01/14 04:44:54 zsh Exp $
+;; $Id: gpg.el,v 1.11 2001/01/19 02:04:46 zsh Exp $
 
 ;; This file is NOT (yet?) part of GNU Emacs.
 
@@ -106,11 +106,10 @@
 ;; function (bound to `C-h l' by default).
 
 
-;;;; Code:
+;;; Code:
 
 (require 'timer)
-(eval-when-compile 
-  (require 'cl))
+(eval-when-compile (require 'cl))
 
 (eval-and-compile 
   (defalias 'gpg-point-at-eol
