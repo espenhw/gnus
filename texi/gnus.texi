@@ -21970,6 +21970,11 @@ functionality
 Write the @code{spam-check-blackbox} function.  It should return
 @samp{nil} or @code{spam-split-group}.  See the existing
 @code{spam-check-*} functions for examples of what you can do.
+
+Make sure to add @code{spam-use-blackbox} to
+@code{spam-list-of-statistical-checks} if Blackbox is a statistical
+mail analyzer that needs the full message body to operate.
+
 @end enumerate
 
 For processing spam and ham messages, provide the following:

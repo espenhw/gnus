@@ -1,3 +1,8 @@
+2003-02-28  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Extending the spam elisp package): added mention of
+	spam-list-of-statistical-checks
+
 2003-02-27  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi: Remove the dependence on ssl.el.
