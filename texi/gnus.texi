@@ -8147,8 +8147,8 @@ hierarchy uses @code{iso-2022-jp-2}.
 
 @vindex gnus-group-charset-alist
 This knowledge is encoded in the @code{gnus-group-charset-alist}
-variable, which is an alist of regexps (to match full group names) and
-default charsets to be used when reading these groups.
+variable, which is an alist of regexps (use the first item to match full
+group names) and default charsets to be used when reading these groups.
 
 In addition, some people do use soi-disant @sc{mime}-aware agents that
 aren't.  These blithely mark messages as being in @code{iso-8859-1} even
