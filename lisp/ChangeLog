@@ -1,3 +1,8 @@
+2001-09-02 23:12:48  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnslashdot.el (nnslashdot-retrieve-headers-1): Get references
+	right, and get all the comments.
+
 2001-09-02  Simon Josefsson  <jas@extundo.com>
 	Suggested by Dan Christensen <jdc+news@uwo.ca>
 

@@ -171,14 +171,15 @@
 	    (setq date
 		  (nnslashdot-date-to-date
 		   (buffer-substring (point) (progn (skip-chars-forward "^()<>\n\r") (point)))))
-	    (setq lines (/ (abs (- (search-forward "<td ")
+	    (setq lines (/ (abs (- (search-forward "<td")
 				   (search-forward "</td>")))
 			   70))
-	    (forward-line 4)
-	    (setq parent
-		  (if (looking-at ".*cid=\\([0-9]+\\)")
-		      (match-string 1)
-		    nil))
+	    (if (not
+		 (re-search-forward ".*cid=\\([0-9]+\\)\">Parent</A>" nil t))
+		(setq parent nil)
+	      (setq parent (match-string 1))
+	      (when (string= parent "0")
+		(setq parent nil)))
 	    (push
 	     (cons
 	      article

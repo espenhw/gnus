@@ -911,7 +911,7 @@ and `altavista'.")
   "Insert the contents from an URL in the current buffer.
 If FOLLOW-REFRESH is non-nil, redirect refresh url in META."
   (let ((name buffer-file-name))
-    (if follow-refresh
+    (if follow-refresh 
 	(save-restriction
 	  (narrow-to-region (point) (point))
 	  (url-insert-file-contents url)
