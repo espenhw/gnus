@@ -1,3 +1,9 @@
+2004-09-29  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Hashcash): changed location of library, also mention
+	that payments can be verified and fix the name of the
+	hashcash-path variable
+
 2004-09-23  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-faq.texi ([5.12]): Use 5.10 instead of 5.10.0.

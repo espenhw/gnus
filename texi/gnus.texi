@@ -22487,10 +22487,10 @@ spam.  And here is the nifty function:
 @cindex hashcash
 
 A novel technique to fight spam is to require senders to do something
-costly for each message they send.  This has the obvious drawback that
-you cannot rely on everyone in the world using this technique,
-since it is not part of the Internet standards, but it may be useful
-in smaller communities.
+costly and demonstrably unique for each message they send.  This has
+the obvious drawback that you cannot rely on everyone in the world
+using this technique, since it is not part of the Internet standards,
+but it may be useful in smaller communities.
 
 While the tools in the previous section work well in practice, they
 work only because the tools are constantly maintained and updated as
@@ -22520,8 +22520,7 @@ like:
 (add-hook 'message-send-hook 'mail-add-payment)
 @end lisp
 
-The @file{hashcash.el} library can be found in the Gnus development
-contrib directory or at
+The @file{hashcash.el} library can be found in Gnus or at
 @uref{http://users.actrix.gen.nz/mycroft/hashcash.el}.
 
 You will need to set up some additional variables as well:
@@ -22544,16 +22543,22 @@ that is needed.  It can also contain @samp{(@var{addr} @var{string}
 @var{amount})} cells, where the @var{string} is the string to use
 (normally the email address or newsgroup name is used).
 
-@item hashcash
-@vindex hashcash
-Where the @code{hashcash} binary is installed.
+@item hashcash-path
+@vindex hashcash-path
+Where the @code{hashcash} binary is installed.  This variable should
+be automatically set by @code{executable-find}, but if it's nil
+(usually because the @code{hashcash} binary is not in your path)
+you'll get a warning when you check hashcash payments and an error
+when you generate hashcash payments.
 
 @end table
 
-Currently there is no built in functionality in Gnus to verify
-hashcash cookies, it is expected that this is performed by your hand
-customized mail filtering scripts.  Improvements in this area would be
-a useful contribution, however.
+Gnus can verify hashcash cookies, although this can also be done by
+hand customized mail filtering scripts.  To verify a hashcash cookie
+in a message, use the @code{mail-check-payment} function in the
+@code{hashcash.el} library.  You can also use the @code{spam.el}
+package with the @code{spam-use-hashcash} backend to validate hashcash
+cookies in incoming mail and filter mail accordingly.
 
 @node Filtering Spam Using The Spam ELisp Package
 @subsection Filtering Spam Using The Spam ELisp Package
