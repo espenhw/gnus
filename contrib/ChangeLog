@@ -1,7 +1,6 @@
 2000-11-30 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gpg.el: Use itimer if xemacs.
-	(gpg-make-temp-file): Use expand-file-name.
+	* gpg.el: (gpg-make-temp-file): Use expand-file-name.
 	(gpg-point-at-eol): New function.
 	(gpg-call-process): Use it.
 	(gpg-key-list-keys-parse-line): Ditto.
