@@ -35,7 +35,8 @@
 (require 'mail-parse)
 (require 'mailcap)
 (require 'mm-bodies)
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl)
+                   (require 'term))
 
 (eval-and-compile
   (autoload 'mm-inline-partial "mm-partial")
@@ -276,6 +277,11 @@ Ready-made functions include
   "The default directory where mm will save files.
 If not set, `default-directory' will be used."
   :type 'directory
+  :group 'mime-display)
+
+(defcustom mm-external-terminal-program "xterm"
+  "The program to start an external terminal."
+  :type 'string
   :group 'mime-display)
 
 ;;; Internal variables.
@@ -613,12 +619,23 @@ external if displayed external."
 	  (message "Viewing with %s" method)
 	  (cond (needsterm
 		 (unwind-protect
-		     (start-process "*display*" nil
-				    "xterm"
-				    "-e" shell-file-name
-				    shell-command-switch
-				    (mm-mailcap-command
-				     method file (mm-handle-type handle)))
+                     (if window-system
+                         (start-process "*display*" nil
+                                        mm-external-terminal-program
+                                        "-e" shell-file-name
+                                        shell-command-switch
+                                        (mm-mailcap-command
+                                         method file (mm-handle-type handle)))
+                       (require 'term)
+                       (switch-to-buffer 
+                        (make-term "display"
+                                   shell-file-name
+                                   nil
+                                   shell-command-switch
+                                   (mm-mailcap-command
+                                    method file (mm-handle-type handle))))
+                       (term-mode)
+                       (term-char-mode))
 		   (mm-handle-set-external-undisplayer handle (cons file buffer)))
 		 (message "Displaying %s..." (format method file))
 		 'external)
