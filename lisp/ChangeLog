@@ -1,3 +1,11 @@
+2002-05-29  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.el (gnus-agent-cache): Doc fix.
+	(gnus-agent): Change default to t.
+
+	* gnus-agent.el (gnus-agent-expire): Make it accept optional
+	ARTICLES, GROUP and FORCE parameters.
+
 2002-05-28  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-group.el (gnus-group-line-format): Doc fix.
