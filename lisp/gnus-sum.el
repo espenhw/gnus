@@ -6955,12 +6955,9 @@ Returns how many articles were removed."
 	(gnus-summary-limit articles))
     (gnus-summary-position-point)))
 
-(defun gnus-summary-limit-to-score (&optional score)
+(defun gnus-summary-limit-to-score (score)
   "Limit to articles with score at or above SCORE."
-  (interactive "P")
-  (setq score (if score
-		  (prefix-numeric-value score)
-		(or gnus-summary-default-score 0)))
+  (interactive "NLimit to articles with score of at least: ")
   (let ((data gnus-newsgroup-data)
 	articles)
     (while data

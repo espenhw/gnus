@@ -1,3 +1,9 @@
+2001-10-20  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-sum.el (gnus-summary-limit-to-score): Prompt for score if
+	not supplied via prefix arg.  From Lisp, make arg mandatory.
+	Suggested by Frank Schmitt.
+
 2001-10-20  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* message.el (message-do-auto-fill): Avoid calling
@@ -7,7 +13,7 @@
 	From Paul Jarc <prj@po.cwru.edu>.
 	
 	* message.el (message-get-reply-headers): Restructure the logic
-	and add comments.
+	and add comments.  From Paul Jarc <prj@po.cwru.edu>.
 
 2001-10-20  Simon Josefsson  <jas@extundo.com>
 
