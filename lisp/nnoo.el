@@ -257,7 +257,7 @@ All functions will return nil and report an error."
   (let ((functions '(retrieve-headers
 		     request-close request-article
 		     open-group request-group close-group
-		     request-list request-post))
+		     request-list request-post request-list-newsgroups))
 	function fun)
     (while (setq function (pop functions))
       (when (not (fboundp (setq fun (nnoo-symbol backend function))))

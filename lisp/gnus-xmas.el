@@ -403,57 +403,13 @@ call it with the value of the `gnus-data' text property."
       (if (compiled-function-p fval)
 	  (list 'funcall fval)
 	(cons 'progn (cdr (cdr fval))))))
-      
-  ;; Fix by "jeff (j.d.) sparkes" <jsparkes@bnr.ca>.
-  (defvar gnus-display-type (device-class)
-    "A symbol indicating the display Emacs is running under.
-The symbol should be one of `color', `grayscale' or `mono'.  If Emacs
-guesses this display attribute wrongly, either set this variable in
-your `~/.emacs' or set the resource `Emacs.displayType' in your
-`~/.Xdefaults'.  See also `gnus-background-mode'.
-
-This is a meta-variable that will affect what default values other
-variables get.  You would normally not change this variable, but
-pounce directly on the real variables themselves.")
-
 
   (fset 'gnus-x-color-values 
 	(if (fboundp 'x-color-values)
 	    'x-color-values
 	  (lambda (color)
 	    (color-instance-rgb-components
-	     (make-color-instance color)))))
-    
-  (defvar gnus-background-mode 
-    (let* ((bg-resource 
-	    (condition-case ()
-		(x-get-resource ".backgroundMode" "BackgroundMode" 'string)
-	      (error nil)))
-	   (params (frame-parameters))
-	   (color (condition-case ()
-		      (or (assq 'background-color params)
-			  (color-instance-name
-			   (specifier-instance
-			    (face-background 'default))))
-		    (error nil))))
-      (cond (bg-resource (intern (downcase bg-resource)))
-	    ((and color
-		  (< (apply '+ (gnus-x-color-values color))
-		     (/ (apply '+ (gnus-x-color-values "white")) 3)))
-	     'dark)
-	    (t 'light)))
-    "A symbol indicating the Emacs background brightness.
-The symbol should be one of `light' or `dark'.
-If Emacs guesses this frame attribute wrongly, either set this variable in
-your `~/.emacs' or set the resource `Emacs.backgroundMode' in your
-`~/.Xdefaults'.
-See also `gnus-display-type'.
-
-This is a meta-variable that will affect what default values other
-variables get.  You would normally not change this variable, but
-pounce directly on the real variables themselves.")
-  )
-
+	     (make-color-instance color))))))
 
 
 (defun gnus-xmas-redefine ()

@@ -1,3 +1,7 @@
+Fri Oct 11 12:38:59 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.texi (Adaptive Scoring): Addition.
+
 Tue Oct  8 13:16:41 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* Makefile (all): Make custom.

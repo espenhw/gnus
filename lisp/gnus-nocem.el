@@ -30,7 +30,7 @@
 (require 'gnus-art)
 (require 'gnus-range)
 
-(defgroup 'gnus-nocem nil
+(defgroup gnus-nocem nil
   "NoCeM pseudo-cancellation treatment"
   :group 'gnus-score)
 

@@ -1483,6 +1483,8 @@ newsgroup."
 		    (gnus-active-to-gnus-format method gnus-active-hashtb))
 		   (t
 		    (gnus-groups-to-gnus-format method gnus-active-hashtb))))))
+	     ((null method)
+	      t)
 	     (t
 	      (if (not (gnus-request-list method))
 		  (unless (equal method gnus-message-archive-method)

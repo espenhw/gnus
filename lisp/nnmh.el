@@ -382,6 +382,8 @@
 	(setq nnmh-current-directory nil)
 	t))))
 
+(nnoo-define-skeleton nnmh)
+
 
 ;;; Internal functions.
 

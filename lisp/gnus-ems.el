@@ -80,49 +80,7 @@
       "String or function to be executed to display an X-Face header.
 If it is a string, the command will be executed in a sub-shell
 asynchronously.	 The compressed face will be piped to this command.")
-
-    ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
-    (defvar gnus-display-type 
-      (condition-case nil
-	  (let ((display-resource (x-get-resource ".displayType" "DisplayType")))
-	    (cond (display-resource (intern (downcase display-resource)))
-		  ((x-display-color-p) 'color)
-		  ((x-display-grayscale-p) 'grayscale)
-		  (t 'mono)))
-	(error 'mono))
-      "A symbol indicating the display Emacs is running under.
-The symbol should be one of `color', `grayscale' or `mono'.  If Emacs
-guesses this display attribute wrongly, either set this variable in
-your `~/.emacs' or set the resource `Emacs.displayType' in your
-`~/.Xdefaults'.  See also `gnus-background-mode'.
-
-This is a meta-variable that will affect what default values other
-variables get.  You would normally not change this variable, but
-pounce directly on the real variables themselves.")
-
-    (defvar gnus-background-mode 
-      (condition-case nil
-	  (let ((bg-resource (x-get-resource ".backgroundMode"
-					     "BackgroundMode"))
-		(params (frame-parameters)))
-	    (cond (bg-resource (intern (downcase bg-resource)))
-		  ((and (cdr (assq 'background-color params))
-			(< (apply '+ (x-color-values
-				      (cdr (assq 'background-color params))))
-			   (* (apply '+ (x-color-values "white")) .6)))
-		   'dark)
-		  (t 'light)))
-	(error 'light))
-      "A symbol indicating the Emacs background brightness.
-The symbol should be one of `light' or `dark'.
-If Emacs guesses this frame attribute wrongly, either set this variable in
-your `~/.emacs' or set the resource `Emacs.backgroundMode' in your
-`~/.Xdefaults'.
-See also `gnus-display-type'.
-
-This is a meta-variable that will affect what default values other
-variables get.  You would normally not change this variable, but
-pounce directly on the real variables themselves."))
+)
 
   (cond 
    ((string-match "XEmacs\\|Lucid" emacs-version)

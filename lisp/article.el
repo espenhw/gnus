@@ -41,7 +41,7 @@
     "^Approved:" "^Sender:" "^Received:" "^Mail-from:") 
   "All headers that match this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
-If `article-visible-headers' is non-nil, this variable will be ignored."
+If `gnus-visible-headers' is non-nil, this variable will be ignored."
   :type '(choice :custom-show nil
 		 regexp
 		 (repeat regexp))
@@ -54,7 +54,7 @@ If `article-visible-headers' is non-nil, this variable will be ignored."
     "^Gnus-Warning:" "^Resent-")
   "All headers that do not match this regexp will be hidden.
 This variable can also be a list of regexp of headers to remain visible.
-If this variable is non-nil, `gnus-article-ignored-headers' will be ignored."
+If this variable is non-nil, `gnus-ignored-headers' will be ignored."
   :type '(choice :custom-show nil
 		 (repeat regexp)
 		 regexp)
@@ -333,7 +333,7 @@ always hide."
 	     ((eq elem 'date)
 	      (let ((date (message-fetch-field "date")))
 		(when (and date
-			   (< (gnus-days-between date (current-time-string))
+			   (< (gnus-days-between (current-time-string) date)
 			      4))
 		  (article-hide-header "date")))))))))))
 

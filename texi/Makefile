@@ -2,6 +2,7 @@ TEXI2DVI=texi2dvi
 EMACS=emacs
 MAKEINFO=$(EMACS) -batch -q -no-site-file
 INFOSWI=-l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
+XINFOSWI=-eval '(find-file "custom.texi")' -l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
 LATEX=latex
 DVIPS=dvips
 PERL=perl
@@ -11,16 +12,16 @@ all: gnus message custom widget
 most: texi2latexi.elc latex latexps
 
 gnus: gnus.texi
-	$(MAKEINFO) gnus.texi $(INFOSWI)
+	$(MAKEINFO) gnus.texi $(XINFOSWI)
 
 custom: custom.texi
-	$(MAKEINFO) custom.texi $(INFOSWI)
+	$(MAKEINFO) custom.texi $(XINFOSWI)
 
 widget: widget.texi
-	$(MAKEINFO) widget.texi $(INFOSWI)
+	$(MAKEINFO) widget.texi $(XINFOSWI)
 
 message: message.texi
-	$(MAKEINFO) message.texi $(INFOSWI)
+	$(MAKEINFO) message.texi $(XINFOSWI)
 
 dvi: gnus.dvi message.dvi
 
@@ -46,6 +47,8 @@ clean:
 makeinfo: 
 	makeinfo -o gnus gnus.texi	
 	makeinfo -o message message.texi	
+	makeinfo -o widget widget.texi	
+	makeinfo -o custom custom.texi	
 
 texi2latexi.elc:
 	$(EMACS) -batch -l bytecomp -f batch-byte-recompile-directory

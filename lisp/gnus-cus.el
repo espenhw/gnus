@@ -215,7 +215,7 @@ edit the value to suit your taste."
 			       ,@types)
 			 '(repeat :inline t
 				  :tag "Variables"
-				  :format "%t:\n%h%v%i"
+				  :format "%t:\n%h%v%i\n\n"
 				  :doc "\
 Set variables local to the group you are entering.  
 
@@ -232,7 +232,11 @@ form, but who cares?"
 				  (group :value (nil nil)
 					 (symbol :tag "Variable")
 					 (sexp :tag
-					       "Value")))))
+					       "Value")))
+			 
+			 '(repeat :inline t
+				  :tag "Unknown entries"
+				  sexp)))
     (widget-insert "\n\nYou can also edit the ")
     (widget-create 'info-link 
 		   :tag "select method"
@@ -350,7 +354,8 @@ The value of this entry should be a list of `(VAR VALUE)' pairs.
 Each VAR will be made buffer-local to the current summary buffer,
 and set to the value specified.  This is a convenient, if somewhat
 strange, way of setting variables in some groups if you don't like
-hooks much."))
+hooks much.")
+    (touched (sexp :format "Touched\n") "Internal variable."))
   "Alist of valid symbolic score parameters.  
 
 Each entry has the form (NAME TYPE DOC), where NAME is the parameter
@@ -424,7 +429,10 @@ each score entry has four elements:
 				       :tag ,tag
 				       :doc ,doc
 				       :format "%t:\n%h%v%i\n\n"
-				       ,group))))
+				       (choice :format "%v"
+					       :value ("" nil nil s)
+					       ,group
+					       sexp)))))
   widget)
 
 (define-widget 'gnus-score-integer 'group
@@ -618,7 +626,10 @@ articles in the thread may not have complete `References' headers.
 Note that using this may lead to undeterministic scores of the
 articles in the thread.
 ")
-				     ,@types)))
+				     ,@types)
+			 '(repeat :inline t
+				  :tag "Unknown entries"
+				  sexp)))
     (use-local-map widget-keymap)
     (widget-setup)))
 

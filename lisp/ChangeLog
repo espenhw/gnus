@@ -1,3 +1,51 @@
+Thu Oct 10 23:36:32 1996  Jan Vroonhof  <vroonhof@math.ethz.ch>
+
+	* gnus-nocem.el (gnus-nocem): Typo.
+
+Thu Oct 10 23:16:57 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-group.el (gnus-group-clear-data-on-native-groups): Only
+	clear data on native groups.
+
+Thu Oct 10 14:11:18 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-cus.el (gnus-group-customize): Allow unknown entries.
+	(gnus-score-customize): Ditto.
+	(gnus-score-string-convert): Ditto.
+	(gnus-score-parameters): Added `touched'.
+
+Thu Oct 10 23:06:42 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-start.el (gnus-read-active-file): Don't bug out on null
+	methods. 
+
+Thu Oct 10 22:29:05 1996  Randell Jesup  <Randell.Jesup@scala.com>
+
+	* article.el (article-hide-boring-headers): Reversed `date'
+	check. 
+
+Thu Oct 10 15:24:08 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-xmas.el (gnus-xmas-define): Removed gnus-display-type.
+
+	* gnus-group.el (gnus-group-new-mail): Strip prefix.
+
+	* nnmail.el (nnmail-new-mail-p): Didn't work.
+
+	* gnus-score.el (gnus-score-adaptive): Use
+	gnus-adaptive-word-score-alist. 
+
+	* nnoo.el (nnoo-define-skeleton-1): Define
+	request-list-newsgroups. 
+
+	* nnweb.el (w3-forms): Removed.
+
+	* gnus-uu.el (gnus-uu-digest-mail-forward): Use directory form. 
+
+Tue Oct  8 14:30:53 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.49 is released.
+
 Tue Oct  8 00:15:04 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus-nocem.el: Added customize support.

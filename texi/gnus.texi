@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.49 Manual
+@settitle Red Gnus 0.50 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.49 Manual
+@title Red Gnus 0.50 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -7084,7 +7084,8 @@ By default this hook just contains @code{gnus-article-hide-headers},
 millions, of functions you can put in this hook.  For an overview of
 functions @pxref{Article Highlighting}, @pxref{Article Hiding},
 @pxref{Article Washing}, @pxref{Article Buttons} and @pxref{Article
-Date}.
+Date}.  Note that the order of functions in this hook might affect
+things, so you may have to fiddle a bit to get the desired results. 
 
 You can, of course, write your own functions.  The functions are called
 from the article buffer, and you can do anything you like, pretty much.
@@ -8800,6 +8801,10 @@ articles you have read to disappear after a while:
 Another way to have auto-expiry happen is to have the element
 @code{auto-expire} in the group parameters of the group. 
 
+If you use adaptive scoring (@pxref{Adaptive Scoring}) and
+auto-expiring, you'll have problems.  Auto-expiring and adaptive scoring
+doesn't really mix very well.  
+
 @vindex nnmail-expiry-wait
 The @code{nnmail-expiry-wait} variable supplies the default time an
 expirable article has to live.  The default is seven days.  
@@ -9585,12 +9590,45 @@ A file format called @sc{soup} has been developed for transporting news
 and mail from servers to home machines and back again.  It can be a bit
 fiddly.
 
+First some terminology:
+
+@table @dfn
+
+@item server
+This is the machine that is connected to the outside world and where you
+get news and/or mail from.
+
+@item home machine
+This is the machine that you want to do the actual reading and responding
+on.  It is typically not connected to the rest of the world in any way.
+
+@item packet
+Something that contains messages and/or commands.  There are two kinds
+of packets:
+
+@table @dfn
+@item message packets
+These are packets made at the server, and typically contains lots of
+messages for you to read.  These are called @file{SoupoutX.tgz} by
+default, where @var{X} is a number.
+
+@item response packets
+These are packets made at the home machine, and typically contains
+replies that you've written.  These are called @file{SoupinX.tgz} by
+default, where @var{X} is a number.
+
+@end table
+
+@end table
+
+
 @enumerate
 
 @item
 You log in on the server and create a @sc{soup} packet.  You can either
-use a dedicated @sc{soup} thingie, or you can use Gnus to create the
-packet with the @kbd{O s} command.
+use a dedicated @sc{soup} thingie (like the @code{awk} program), or you
+can use Gnus to create the packet with its @sc{soup} commands (@kbd{O
+s} and/or @kbd{G s b}; and then @kbd{G s p}) (@pxref{SOUP Commands}).
 
 @item 
 You transfer the packet home.  Rail, boat, car or modem will do fine.
@@ -9599,11 +9637,12 @@ You transfer the packet home.  Rail, boat, car or modem will do fine.
 You put the packet in your home directory.
 
 @item
-You fire up Gnus using the @code{nnsoup} backend as the native server.
+You fire up Gnus on your home machine using the @code{nnsoup} backend as
+the native or secondary server.
 
 @item
 You read articles and mail and answer and followup to the things you
-want.
+want (@pxref{SOUP Replies}).
 
 @item 
 You do the @kbd{G s r} command to pack these replies into a @sc{soup}
@@ -9633,6 +9672,8 @@ reading and Gnus for packing/sending these @sc{soup} packets.
 @node SOUP Commands
 @subsubsection SOUP Commands
 
+These are commands for creating and manipulating @sc{soup} packets.
+
 @table @kbd
 @item G s b
 @kindex G s b (Group)
@@ -9644,7 +9685,7 @@ process/prefix convention.
 @item G s w
 @kindex G s w (Group)
 @findex gnus-soup-save-areas
-Save all data files (@code{gnus-soup-save-areas}).
+Save all @sc{soup} data files (@code{gnus-soup-save-areas}).
 
 @item G s s
 @kindex G s s (Group)
@@ -9667,7 +9708,7 @@ Pack all replies into a replies packet (@code{nnsoup-pack-replies}).
 @findex gnus-soup-add-article
 This summary-mode command adds the current article to a @sc{soup} packet
 (@code{gnus-soup-add-article}).  It understands the process/prefix
-convention. 
+convention (@pxref{Process/Prefix}). 
 
 @end table
 
@@ -10859,6 +10900,11 @@ If you have marked 10 articles with the same subject with
 @code{gnus-del-mark}, the rule for that mark will be applied ten times.
 That means that that subject will get a score of ten times -1, which
 should be, unless I'm much mistaken, -10.
+
+If you have auto-expirable (mail) groups (@pxref{Expiring Mail}), all
+the read articles will be marked with the @samp{E} mark.  This'll
+probably make adaptive scoring slightly impossible, so auto-expiring and
+adaptive scoring doesn't really mix very well.
 
 The headers you can score on are @code{from}, @code{subject},
 @code{message-id}, @code{references}, @code{xref}, @code{lines},
@@ -13850,7 +13896,7 @@ Boring headers can be hidden (@pxref{Article Hiding}).
 
 @lisp
 (add-hook 'gnus-article-display-hook 
-          'gnus-article-hide-boring-headers)
+          'gnus-article-hide-boring-headers t)
 @end lisp
 
 @item
@@ -14024,7 +14070,7 @@ Really do unbinhexing.
 And much, much, much more.  There is more to come than has already been
 implemented.  (But that's always true, isn't it?)
 
-@file{<URL:http://www.ifi.uio.no/~larsi/sgnus/todo>} is where the actual
+@file{<URL:http://www.ifi.uio.no/~larsi/rgnus/todo>} is where the actual
 up-to-the-second todo list is located, so if you're really curious, you
 could point your Web browser over that-a-way.
 

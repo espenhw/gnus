@@ -434,7 +434,7 @@ The headers will be included in the sequence they are matched.")
   "Digests and forwards all articles in this series."
   (interactive "P")
   (let ((gnus-uu-save-in-digest t)
-	(file (make-temp-name (concat gnus-uu-tmp-dir "forward")))
+	(file (make-temp-name (nnheader-concat gnus-uu-tmp-dir "forward")))
 	buf subject from newsgroups)
     (setq gnus-uu-digest-from-subject nil)
     (gnus-uu-decode-save n file)

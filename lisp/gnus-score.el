@@ -2041,7 +2041,7 @@ SCORE is the score to add."
 			 (setq score
 			       (cdr (assq 
 				     (gnus-data-mark d)
-				     gnus-default-adaptive-word-score-alist))))
+				     gnus-adaptive-word-score-alist))))
 		    ;; This article has a mark that should lead to
 		    ;; adaptive word rules, so we insert the subject
 		    ;; and find all words in that string.

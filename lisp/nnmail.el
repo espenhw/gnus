@@ -1197,7 +1197,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 				   &optional group spool-func)
   "Read new incoming mail."
   ;; Nix out the previous split history.
-  (setq nnmail-split-history nil)
+  (unless group
+    (setq nnmail-split-history nil))
   (let* ((spools (nnmail-get-spool-files group))
 	 (group-in group)
 	 incoming incomings spool)
@@ -1388,7 +1389,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
   (let ((his nnmail-split-history)
 	found)
     (while his
-      (when (member group (pop his))
+      (when (assoc group (pop his))
 	(setq found t
 	      his nil)))
     found))

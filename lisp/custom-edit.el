@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 0.992
+;; Version: 0.993
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -538,7 +538,7 @@ Optional EVENT is the location for the menu."
     (cond ((eq escape ?s)
 	   (setq child (widget-create-child-and-convert 
 			widget 'custom-level
-			:format "(%[sample%])\n"
+			:format "(%[show%])\n"
 			:button-face symbol)))
 	  (t 
 	   (custom-format-handler widget escape)))

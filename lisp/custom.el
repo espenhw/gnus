@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 0.992
+;; Version: 0.993
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -62,7 +62,9 @@
 (defun custom-declare-variable (symbol value doc &rest args)
   "Like `defcustom', but SYMBOL and VALUE are evaluated as notmal arguments."
   (unless (default-boundp symbol)
-    (set-default symbol (eval value)))
+    (set-default symbol (if (get symbol 'saved-value)
+			    (eval (car (get symbol 'saved-value)))
+			  (eval value))))
   (put symbol 'factory-value (list value))
   (when doc
     (put symbol 'variable-documentation doc))
@@ -111,8 +113,10 @@ information."
 (defun custom-declare-face (face spec doc &rest args)
   "Like `defface', but FACE is evaluated as a normal argument."
   (put face 'factory-face spec)
-  (let ((value (or (get face 'saved-face) spec)))
-    (custom-face-display-set face value))
+  (unless (facep face)
+    ;; If the user has already created the face, respect that.
+    (let ((value (or (get face 'saved-face) spec)))
+      (custom-face-display-set face value)))
   (when doc
     (put face 'face-documentation doc))
   (while args 
@@ -327,24 +331,22 @@ If FRAME is nil, set the default face."
     (let* ((name (nth 0 atts))
 	   (value (nth 1 atts))
 	   (fun (nth 2 (assq name custom-face-attributes))))
-      (setq atts (cdr (cdr atts))) 
-      (funcall fun face value))))
+      (setq atts (cdr (cdr atts)))
+      (condition-case nil
+	  (funcall fun face value)
+	(error nil)))))
 
 (defun custom-set-face-bold (face value &optional frame)
   "Set the bold property of FACE to VALUE."
-  (condition-case nil
-      (if value
-	  (make-face-bold face frame)
-	(make-face-unbold face frame))
-    (error nil)))
+  (if value
+      (make-face-bold face frame)
+    (make-face-unbold face frame)))
 
 (defun custom-set-face-italic (face value &optional frame)
   "Set the italic property of FACE to VALUE."
-  (condition-case nil
-      (if value
-	  (make-face-italic face frame)
-	(make-face-unitalic face frame))
-    (error nil)))
+  (if value
+      (make-face-italic face frame)
+    (make-face-unitalic face frame)))
 
 ;;;###autoload
 (defun custom-initialize-faces (&optional frame)
@@ -368,7 +370,6 @@ for that symbol."
   (while args 
     (let ((symbol (nth 0 args))
 	  (value (nth 1 args)))
-      (set-default symbol (eval value))
       (put symbol 'saved-value (list value)))
     (setq args (cdr (cdr args)))))
 
@@ -381,8 +382,7 @@ See `defface' for the format of SPEC."
   (while args
     (let ((face (nth 0 args))
 	  (spec (nth 1 args)))
-      (put face 'saved-face spec)
-      (custom-face-display-set face spec))
+      (put face 'saved-face spec))
     (setq args (cdr (cdr args)))))
 
 ;;; Meta Customization

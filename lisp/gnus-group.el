@@ -1397,7 +1397,7 @@ already."
   (get-text-property (gnus-point-at-bol) 'gnus-unread))
 
 (defun gnus-group-new-mail (group)
-  (if (nnmail-new-mail-p group)
+  (if (nnmail-new-mail-p (gnus-group-real-name group))
       gnus-new-mail-mark
     ? ))
 
@@ -2458,7 +2458,8 @@ If REVERSE, sort in reverse order."
     (let ((alist (cdr gnus-newsrc-alist))
 	  info)
       (while (setq info (pop alist))
-	(gnus-info-clear-data info))
+	(when (gnus-group-native-p (gnus-info-group info))
+	  (gnus-info-clear-data info)))
       (gnus-get-unread-articles))))
 
 (defun gnus-info-clear-data (info)
