@@ -376,16 +376,21 @@
   "Return a form that pads EL to PAD-WIDTH accounting for multi-column
 characters correctly. This is because `format' may pad to columns or to
 characters when given a pad value."
-  (let ((pad (abs pad-width)))
+  (let ((pad (abs pad-width))
+	(side (< 0 pad-width)))
     (if (symbolp el)
 	`(let ((need (- ,pad (gnus-correct-length ,el))))
 	   (if (> need 0)
-	       (concat ,el (make-string need ?\ ))
+	       (concat ,(when side '(make-string need ?\ ))
+		       ,el
+		       ,(when (not side) '(make-string need ?\ )))
 	     ,el))
       `(let* ((val (eval ,el))
 	      (need (- ,pad (gnus-correct-length ,el))))
 	 (if (> need 0)
-	     (concat ,el (make-string need ?\ ))
+	     (concat ,(when side '(make-string need ?\ ))
+		     ,el
+		     ,(when (not side) '(make-string need ?\ )))
 	   ,el)))))
 
 (defun gnus-parse-format (format spec-alist &optional insert)
