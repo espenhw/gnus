@@ -55,14 +55,25 @@
 (defvoo nnweb-directory (nnheader-concat gnus-directory "nnweb/")
   "Where nnweb will save its files.")
 
-(defvoo nnweb-type 'dejanews
+(defvoo nnweb-type 'google
   "What search engine type is being used.
-Valid types include `dejanews', `dejanewsold', `reference',
+Valid types include `google', `dejanews', `dejanewsold', `reference',
 and `altavista'.")
 
 (defvar nnweb-type-definition
   '(
-    (dejanews ;; bought by google.com
+    (google
+     ;;(article . nnweb-google-wash-article)
+     ;;(id . "http://groups.google.com/groups?as_umsgid=%s")
+     (article . ignore)
+     (id . "http://groups.google.com/groups?selm=%s&output=gplain")
+     ;;(reference . nnweb-google-reference)
+     (reference . identity)
+     (map . nnweb-google-create-mapping)
+     (search . nnweb-google-search)
+     (address . "http://groups.google.com/groups")
+     (identifier . nnweb-google-identity))
+    (dejanews ;; alias of google
      ;;(article . nnweb-google-wash-article)
      ;;(id . "http://groups.google.com/groups?as_umsgid=%s")
      (article . ignore)
@@ -136,6 +147,8 @@ and `altavista'.")
 
 (deffoo nnweb-request-scan (&optional group server)
   (nnweb-possibly-change-server group server)
+  (if nnweb-ephemeral-p
+      (setq nnweb-hashtb (gnus-make-hashtable 4095)))
   (funcall (nnweb-definition 'map))
   (unless nnweb-ephemeral-p
     (nnweb-write-active)
@@ -305,10 +318,11 @@ and `altavista'.")
       (nnweb-open-server server)))
   (unless nnweb-group-alist
     (nnweb-read-active))
+  (unless nnweb-hashtb
+    (setq nnweb-hashtb (gnus-make-hashtable 4095)))
   (when group
     (when (and (not nnweb-ephemeral-p)
-	       (not (equal group nnweb-group)))
-      (setq nnweb-hashtb (gnus-make-hashtable 4095))
+	       (equal group nnweb-group))
       (nnweb-request-group group nil t))))
 
 (defun nnweb-init (server)
@@ -754,7 +768,7 @@ and `altavista'.")
       (setq Subject (buffer-string))
       (goto-char (point-max))
       (widen)
-      (forward-line 2)
+      (forward-line 1)
       (when (looking-at "<br><font[^>]+>")
 	(goto-char (match-end 0)))
       (if (not (looking-at "<a[^>]+>"))
