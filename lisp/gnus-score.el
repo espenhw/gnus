@@ -2562,7 +2562,9 @@ GROUP using BNews sys file syntax."
 	      (delete-char (min (1- (point-max)) klen))
 	    (goto-char (point-max))
 	    (if (search-backward (string directory-sep-char) nil t)
-		(delete-region (1+ (point)) (point-min))))
+		(delete-region (1+ (point)) (point-min))
+	      (gnus-message 1 "Can't find directory separator in %s"
+			    (car sfiles))))
 	  ;; If short file names were used, we have to translate slashes.
 	  (goto-char (point-min))
 	  (let ((regexp (concat

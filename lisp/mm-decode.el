@@ -337,9 +337,14 @@ The original alist is not modified.  See also `destructive-alist-to-plist'."
 		cte (mail-fetch-field "content-transfer-encoding")
 		cd (mail-fetch-field "content-disposition")
 		description (mail-fetch-field "content-description")
-		from (cadr (mail-extract-address-components
-			    (or (mail-fetch-field "from") "")))
-		id (mail-fetch-field "content-id"))))
+		from (mail-fetch-field "from")
+		id (mail-fetch-field "content-id"))
+	  ;; FIXME: In some circumstances, this code is running within
+	  ;; an unibyte macro.  mail-extract-address-components
+	  ;; creates unibyte buffers. This `if', though not a perfect
+	  ;; solution, avoids most of them.
+	  (if from
+	      (setq from (cadr (mail-extract-address-components from))))))
       (when cte
 	(setq cte (mail-header-strip cte)))
       (if (or (not ctl)

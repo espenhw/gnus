@@ -1,3 +1,11 @@
+2001-03-07 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-score.el (gnus-score-find-bnews): Print messages on illegal
+	SCORE paths.
+
+	* mm-decode.el (mm-dissect-buffer): Call
+	mail-extract-address-components only if necessary.
+
 2001-03-06 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-score.el (gnus-score-find-bnews): Maybe there is no
