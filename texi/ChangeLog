@@ -1,3 +1,7 @@
+2002-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Saving Articles): Addition.
+
 2002-12-30  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Blackholes): added information on query-dig and

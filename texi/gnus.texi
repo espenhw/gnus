@@ -3201,6 +3201,12 @@ Sort the group buffer by group rank
 Sort the group buffer alphabetically by back end name
 (@code{gnus-group-sort-groups-by-method}).
 
+@item G S n
+@kindex G S n (Group)
+@findex gnus-group-sort-groups-by-real-name
+Sort the group buffer alphabetically by real (unprefixed) group name
+(@code{gnus-group-sort-groups-by-real-name}).
+
 @end table
 
 All the commands below obey the process/prefix convention
@@ -3247,6 +3253,12 @@ Sort the groups by group rank
 @findex gnus-group-sort-selected-groups-by-method
 Sort the groups alphabetically by back end name
 (@code{gnus-group-sort-selected-groups-by-method}).
+
+@item G P n
+@kindex G P n (Group)
+@findex gnus-group-sort-selected-groups-by-real-name
+Sort the groups alphabetically by real (unprefixed) group name
+(@code{gnus-group-sort-selected-groups-by-real-name}).
 
 @item G P s
 @kindex G P s (Group)
@@ -7163,6 +7175,8 @@ Save the current article in a VM folder
 @findex gnus-summary-pipe-output
 Save the current article in a pipe.  Uhm, like, what I mean is---Pipe
 the current article to a process (@code{gnus-summary-pipe-output}).
+If given a symbolic prefix (@pxref{Symbolic Prefixes}), include the
+complete headers in the piped output.
 
 @item O P
 @kindex O P (Summary)
