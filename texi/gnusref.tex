@@ -1,7 +1,7 @@
 %% include file for the Gnus refcard and booklet
 
 \def\progver{5.10}\def\refver{5.10-1} % program and refcard versions
-\def\date{Dec 15th, 2002}
+\def\date{Jan, 2003}
 \def\author{Gnus Bugfixing Girls + Boys $<$bugs@gnus.org$>$}
 
 %%
@@ -37,7 +37,7 @@
     Copyright \copyright\ 1995 Vladimir Alexiev
     $<$vladimir@cs.ualberta.ca$>$.\\*
     Copyright \copyright\ 2000 Felix Natter $<$fnatter@gmx.net$>$.\\*
-    Copyright \copyright\ 2001, 2002 \author.\\*
+    Copyright \copyright\ 2001, 2002, 2003 \author.\\*
     Created from the Gnus manual Copyright \copyright\ 1994 Lars Magne
     Ingebrigtsen.\\*
     and the Emacs Help Bindings feature (C-h b).\\*
@@ -331,7 +331,7 @@
   \newcommand{\GroupTopicsGeneral}{%
     {\esamepage
       Topics are ``categories'' for groups. Press t in the group-buffer to
-      toggle gnus-topic-mode (C-c C-i g Group Topics RET).
+      toggle gnus-topic-mode (C-c C-i g Group Topics RET).\\*
       \begin{keys}{C-c C-x}
         T n     & Prompt for topic {\bf name} and create it.\\
         T m     & {\bf Move} the current group to some other topic [p/p].\\
@@ -488,6 +488,7 @@
         C-c C-s C-c & Sort the summary-buffer by length.\\
         C-c C-s C-n & Sort the summary-buffer by article {\bf number}.\\
         C-c C-s C-s & Sort the summary-buffer by {\bf subject}.\\
+        C-c C-s C-r & Sort the summary-buffer {\bf randomly}.\\
         C-c C-s C-o & Sort the summary-buffer using the default method.\\
       \end{keys}
       With a prefix these functions sort in reverse order.
@@ -791,6 +792,7 @@
       /x   & Limit depending on ``extra'' headers.\\
       /u   & (x) Limit to {\bf unread} articles.
       [Prefix: also exclude ticked and dormant articles]\\
+      /.   & Limit to unseen articles.\\
       /m   & Limit to articles marked with specified {\bf mark}.\\
       /t   & Ask for a number and exclude articles younger than that many days.
       [Prefix: exclude older articles]\\
@@ -835,7 +837,7 @@
 \newcommand{\PostReplyetc}{% formerly \Ssubmap
   {\esamepage
     These commands put you in a separate news or mail buffer. See the section
-    about composing messages for more information.
+    about composing messages for more information.\\*
                                 %After
                                 %editing the article, send it by pressing C-c C-c.  If you are in a
                                 %foreign group and want to post the article using the foreign server, give
@@ -1010,7 +1012,7 @@
   }
 
 \newcommand{\MsgCompositionGeneral}{%
-  Press C-c ? in the composition-buffer to get this information.
+  Press C-c ? in the composition-buffer to get this information.\\*
   {\esamepage
     \begin{keys}{C-c C-m}
                                 % sending
@@ -1038,7 +1040,7 @@
   }
 
 \newcommand{\MsgCompositionMovementArticle}{%
-  The following functions create the header-field if necessary.
+  The following functions create the header-field if necessary.\\*
   {\esamepage
     \begin{keys}{C-c C-f C-u}
       C-c TAB & Move to \textbf{signature}.\\

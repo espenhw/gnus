@@ -1,5 +1,11 @@
 2003-01-05  Jesper Harder  <harder@ifa.au.dk>
 
+	* refcard.tex: Fix pagebreak.
+
+	* gnusref.tex: Additions and fixes.
+
+	* booklet.tex: Add missing sections.
+
 	* gnus.texi (Mail Group Commands): Fix typo.
 	(XEmacs): Add sh-script.
 	(Article Washing): Fix.
