@@ -4815,6 +4815,9 @@ The prefix argument ALL means to select all articles."
 		   (not non-destructive))
 	  (setq gnus-newsgroup-scored nil))
 	;; Set the new ranges of read articles.
+	(save-excursion
+	  (set-buffer gnus-group-buffer)
+	  (gnus-undo-force-boundary))
 	(gnus-update-read-articles
 	 group (append gnus-newsgroup-unreads gnus-newsgroup-unselected))
 	;; Set the current article marks.
@@ -8448,7 +8451,8 @@ save those articles instead."
     (gnus-article-setup-buffer)
     (set-buffer gnus-article-buffer)
     (setq buffer-read-only nil)
-    (let ((command (if automatic command (read-string "Command: " command))))
+    (let ((command (if automatic command
+		     (read-string "Command: " (cons command 0)))))
       (erase-buffer)
       (insert "$ " command "\n\n")
       (if gnus-view-pseudo-asynchronously
@@ -8641,7 +8645,6 @@ save those articles instead."
 	(push (cons prev (cdr active)) read))
       (save-excursion
 	(set-buffer gnus-group-buffer)
-	(gnus-undo-force-boundary)
 	(gnus-undo-register
 	  `(progn
 	     (gnus-info-set-marks ',info ',(gnus-info-marks info) t)

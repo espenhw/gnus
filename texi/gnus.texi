@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.50 Manual
+@settitle Gnus 5.4.51 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.50 Manual
+@title Gnus 5.4.51 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.50.
+This manual corresponds to Gnus 5.4.51.
 
 @end ifinfo
 
@@ -5229,6 +5229,23 @@ This variable is @code{((gnus-article-archive-name))} by default, which
 means that Gnus will look at the articles it saves for an
 @code{Archive-name} line and use that as a suggestion for the file
 name. 
+
+Here's an example function to clean up file names somewhat.  If you have
+lots of mail groups that are called things like
+@samp{nnml:mail.whatever}, you may want to chop off the beginning of
+these group names before creating the file name to save to.  The
+following will do just that:
+
+1@lisp
+(defun my-save-name (group)
+  (when (string-match "^nnml:mail." group)
+    (substring group (match-end 0))))
+
+(setq gnus-split-methods
+      '((gnus-article-archive-name)
+        (my-save-name)))
+@end lisp
+
 
 @vindex gnus-use-long-file-name
 Finally, you have the @code{gnus-use-long-file-name} variable.  If it is

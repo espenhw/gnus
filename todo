@@ -668,3 +668,6 @@ to be able to post in them (using the current select method).
 
 * allow the user to specify the presedence of the secondary marks.  Also
 allow them to be displayed separately.
+
+* gnus-summary-save-in-pipe should concatenate the results from
+the processes when doing a process marked pipe.

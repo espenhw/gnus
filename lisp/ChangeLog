@@ -1,3 +1,93 @@
+Thu May  8 17:37:38 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.51 is released.
+
+Thu May  8 15:58:43 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-execute-command): Place point at start of
+	prompt. 
+
+	* gnus-int.el (gnus-request-replace-article): Don't bug out on
+	unknown groups.
+
+	* gnus-sum.el (gnus-summary-update-info): Force undo boundary here.
+	(gnus-update-read-articles): ... and not here.
+
+	* gnus-art.el (article-display-x-face): Would only show one X-Face.
+
+Wed May  7 05:23:20 1997  Kim-Minh Kaplan  <kimminh.kaplan@utopia.eunet.fr>
+
+	* gnus-picon.el: (gnus-picons-url-alist): new variable.
+	(gnus-picons-jobs-alist): new variable.
+	(gnus-picons-remove): clean this new variable. FIXME: race
+	condition.
+	(gnus-picons-job-already-running): new variable.
+	(gnus-article-display-picons): use the job queue if using the
+	network.
+	(gnus-group-display-picons): ditto.
+	(gnus-picons-make-path): function deleted.
+	(gnus-picons-lookup-internal): modified accordingly.
+	(gnus-picons-lookup-user-internal): take the LETs out of the
+	loops.
+	(gnus-picons-lookup-pairs): take constant calculation outside of
+	loop.
+	(gnus-picons-display-picon-or-name): use COND instead of nested IFs
+	(gnus-picons-display-pairs): take the LET outside of loop.
+	(gnus-picons-try-face): ditto.
+	(gnus-picons-users-image-alist): variable deleted.
+	(gnus-picons-clear-cache): don't clear it.
+	(gnus-picons-retrieve-limit): variable deleted.
+	(gnus-picons-url-retrieve): clear url-request-method
+	(gnus-picons-retrieve-user-callback): function deleted.
+	(gnus-picons-retrieve-user): function deleted.
+	(gnus-picons-retrieve-domain-callback): function deleted
+	(gnus-picons-retrieve-domain-internal): function deleted.
+	(gnus-picons-parse-value): new function.
+	(gnus-picons-parse-filenames): new function.
+	(gnus-picons-network-display-internal): new function.
+	(gnus-picons-network-display-callback): new function.
+	(gnus-picons-network-display): new function.
+	(gnus-picons-network-search-internal): new function.
+	(gnus-picons-network-search-callback): new function.
+	(gnus-picons-network-search): new function.
+	(gnus-picons-next-job-internal): new function.
+	(gnus-picons-next-job): new function.
+
+Wed May  7 22:14:32 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-setup-news): Don't fold case.
+
+Sat May  3 16:55:25 1997  Kim-Minh Kaplan  <kimminh.kaplan@utopia.eunet.fr>
+
+	* gnus-picon.el: * gnus-picons-clear-cache-on-shutdown: new variable.
+	* gnus-picons-piconsearch-cache-user: variable deleted.
+	* gnus-picons-clear-cache: new function.
+	* gnus-picons-close: only clear cache if
+ 	gnus-picons-clear-cache-on-shutdown.
+	* gnus-picons-url-retrieve: set url-package-name and
+ 	url-package-version.
+	* gnus-picons-users-image-alist: new variable.
+	* gnus-picons-retrieve-user-callback: use it.
+	* Added support for network retrieval of picons.
+	* gnus-picons-map: removed.
+	* gnus-picons-remove: removed case to handle processes.
+	* gnus-picons-processes-alist: new variable
+	* gnus-picons-x-face-sentinel: simplified.  Use processes alist.
+	* gnus-picons-display-x-face: explicitly request an xface image.
+	Always call gnus-picons-prepare-for-annotations.  Use processes
+	alist.
+	* gnus-picons-lookup-internal: new function.
+	* gnus-picons-lookup: use it.
+	* gnus-picons-lookup-user-internal: ditto.
+	* gnus-picons-display-picon-or-name: no more xface-p argument.
+	* gnus-picons-try-suffixes: removed.
+	* gnus-picons-try-face: new function.  Does the caching in
+	gnus-picons-glyph-alist.
+	* gnus-picons-try-to-find-face: take a glyph argument instead of a
+	path.  No more xface-p argument.  Only use one annotation even if
+	gnus-picons-display-as-address.
+	* gnus-picons-toggle-extent: changed into an annotation action.
+
 Sat May  3 00:59:39 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.50 is released.

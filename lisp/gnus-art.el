@@ -844,9 +844,9 @@ always hide."
 		    ;; Has to be present.
 		    (re-search-forward "^X-Face: " nil t))
 	  ;; We now have the area of the buffer where the X-Face is stored.
-	  (let ((beg (point))
-		(end (1- (re-search-forward "^\\($\\|[^ \t]\\)" nil t))))
-	    (save-excursion
+	  (save-excursion
+	    (let ((beg (point))
+		  (end (1- (re-search-forward "^\\($\\|[^ \t]\\)" nil t))))
 	      ;; We display the face.
 	      (if (symbolp gnus-article-x-face-command)
 		  ;; The command is a lisp function, so we call it.

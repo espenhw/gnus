@@ -3594,14 +3594,15 @@ Do a `tab-to-tab-stop' if not in those headers."
       (insert string)
       (if (not comp)
 	  (message "No matching groups")
-	(pop-to-buffer "*Completions*")
-	(buffer-disable-undo (current-buffer))
-	(let ((buffer-read-only nil))
-	  (erase-buffer)
-	  (let ((standard-output (current-buffer)))
-	    (display-completion-list (sort completions 'string<)))
-	  (goto-char (point-min))
-	  (pop-to-buffer cur)))))))
+	(save-selected-window
+	  (pop-to-buffer "*Completions*")
+	  (buffer-disable-undo (current-buffer))
+	  (let ((buffer-read-only nil))
+	    (erase-buffer)
+	    (let ((standard-output (current-buffer)))
+	      (display-completion-list (sort completions 'string<)))
+	    (goto-char (point-min))
+	    (delete-region (point) (progn (forward-line 3) (point))))))))))
 
 ;;; Help stuff.
 
