@@ -1,3 +1,9 @@
+2001-08-08 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-tab): Use the current value of
+	indent-line-function.
+	(message-mode): Bind indent-line-function to indent-relative.
+
 2001-08-08  Simon Josefsson  <jas@extundo.com>
 
 	* imap.el (imap-gssapi-auth-p, imap-kerberos4-auth-p): Also check
