@@ -1244,7 +1244,9 @@ for new groups, and subscribe the new groups as zombies."
 	(unless (gnus-group-foreign-p group)
 	  (if (= level gnus-level-zombie)
 	      (push group gnus-zombie-list)
-	    (unless (= oldlevel gnus-level-killed)
+	    (if (= oldlevel gnus-level-killed)
+		;; Remove from active hashtb.
+		(unintern group gnus-active-hashtb)
 	      ;; Don't add it into killed-list if it was killed.
 	      (push group gnus-killed-list)))))
        (t
