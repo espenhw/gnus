@@ -1,3 +1,7 @@
+1999-11-27 17:15:00  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi: Typo fixes and @sc.
+
 1999-11-26 16:59:29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (On Writing Manuals): New.
