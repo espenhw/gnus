@@ -626,11 +626,17 @@ The following commands are available:
       (setq groups (sort groups
 			 (lambda (l1 l2)
 			   (string< (car l1) (car l2)))))
-      (let ((buffer-read-only nil))
+      (let ((buffer-read-only nil) charset)
 	(while groups
 	  (setq group (car groups))
-	  (insert
-	   (format "K%7d: %s\n" (cdr group) (car group)))
+	  (setq charset (gnus-group-name-charset method group))
+	  (gnus-add-text-properties
+	   (point)
+	   (prog1 (1+ (point))
+	     (insert
+	      (format "K%7d: %s\n" (cdr group)
+		      (gnus-group-name-decode (car group) charset))))
+	   (list 'gnus-group (car group)))
 	  (setq groups (cdr groups))))
       (switch-to-buffer (current-buffer))
       (goto-char (point-min))
@@ -718,11 +724,12 @@ buffer.
 (defun gnus-browse-group-name ()
   (save-excursion
     (beginning-of-line)
-    (when (re-search-forward ": \\(.*\\)$" (gnus-point-at-eol) t)
-      (gnus-group-prefixed-name
-       ;; Remove text props.
-       (format "%s" (match-string 1))
-       gnus-browse-current-method))))
+    (let ((name (get-text-property (point) 'gnus-group)))
+      (when (re-search-forward ": \\(.*\\)$" (gnus-point-at-eol) t)
+	(gnus-group-prefixed-name
+	 (or name
+	     (format "%s" (match-string 1)))
+	 gnus-browse-current-method)))))
 
 (defun gnus-browse-unsubscribe-group ()
   "Toggle subscription of the current group in the browse buffer."

@@ -394,6 +394,24 @@ ticked: The number of ticked articles."
   :group 'gnus-group-icons
   :type '(repeat (cons (sexp :tag "Form") file)))
 
+(defcustom gnus-group-name-charset-method-alist nil
+  "*Alist for method and the charset for group names.
+
+For example:
+    (((nntp \"news.com.cn\") . cn-gb-2312))
+"
+  :group 'gnus-charset
+  :type '(repeat (cons (sexp :tag "Method") (symbol :tag "Charset"))))
+
+(defcustom gnus-group-name-charset-group-alist nil
+  "*Alist for group regexp and the charset for group names.
+
+For example:
+    ((\"\\.com\\.cn:\" . cn-gb-2312))
+"
+  :group 'gnus-charset
+  :type '(repeat (cons (regexp :tag "Group") (symbol :tag "Charset"))))
+
 ;;; Internal variables
 
 (defvar gnus-group-sort-alist-function 'gnus-group-sort-flat
@@ -874,6 +892,25 @@ The following commands are available:
     (when gnus-carpal
       (gnus-carpal-setup-buffer 'group))))
 
+(defsubst gnus-group-name-charset (method group)
+  (if (null method)
+      (setq method (gnus-find-method-for-group group)))
+  (let ((item (assoc method gnus-group-name-charset-method-alist))
+	(alist gnus-group-name-charset-group-alist)
+	result)
+    (if item 
+	(cdr item)
+      (while (setq item (pop alist))
+	(if (string-match (car item) group)
+	    (setq alist nil
+		  result (cdr item))))
+      result)))
+
+(defsubst gnus-group-name-decode (string charset)
+  (if (and charset (featurep 'mule))
+      (mm-decode-coding-string string charset)
+    string))
+
 (defun gnus-group-list-groups (&optional level unread lowest)
   "List newsgroups with level LEVEL or lower that have unread articles.
 Default is all subscribed groups.
@@ -1017,16 +1054,24 @@ If REGEXP, only list groups matching REGEXP."
 	  (when (string-match regexp group)
 	    (gnus-add-text-properties
 	     (point) (prog1 (1+ (point))
-		       (insert " " mark "     *: " group "\n"))
+		       (insert " " mark "     *: "
+			       (gnus-group-name-decode group 
+						       (gnus-group-name-charset
+							nil group)) 
+			       "\n"))
 	     (list 'gnus-group (gnus-intern-safe group gnus-active-hashtb)
 		   'gnus-unread t
 		   'gnus-level level))))
       ;; This loop is used when listing all groups.
       (while groups
+	(setq group (pop groups))
 	(gnus-add-text-properties
 	 (point) (prog1 (1+ (point))
 		   (insert " " mark "     *: "
-			   (setq group (pop groups)) "\n"))
+			   (gnus-group-name-decode group 
+						   (gnus-group-name-charset
+						    nil group)) 
+			   "\n"))
 	 (list 'gnus-group (gnus-intern-safe group gnus-active-hashtb)
 	       'gnus-unread t
 	       'gnus-level level))))))
@@ -1078,7 +1123,11 @@ If REGEXP, only list groups matching REGEXP."
 						    gnus-tmp-marked number
 						    gnus-tmp-method)
   "Insert a group line in the group buffer."
-  (let* ((gnus-tmp-active (gnus-active gnus-tmp-group))
+  (let* ((gnus-tmp-method
+	  (gnus-server-get-method gnus-tmp-group gnus-tmp-method)) 
+	 (group-name-charset (gnus-group-name-charset gnus-tmp-method
+						      gnus-tmp-group))
+	 (gnus-tmp-active (gnus-active gnus-tmp-group))
 	 (gnus-tmp-number-total
 	  (if gnus-tmp-active
 	      (1+ (- (cdr gnus-tmp-active) (car gnus-tmp-active)))
@@ -1095,10 +1144,14 @@ If REGEXP, only list groups matching REGEXP."
 		((<= gnus-tmp-level gnus-level-unsubscribed) ?U)
 		((= gnus-tmp-level gnus-level-zombie) ?Z)
 		(t ?K)))
-	 (gnus-tmp-qualified-group (gnus-group-real-name gnus-tmp-group))
+	 (gnus-tmp-qualified-group 
+	  (gnus-group-name-decode (gnus-group-real-name gnus-tmp-group)
+				  group-name-charset))
 	 (gnus-tmp-newsgroup-description
 	  (if gnus-description-hashtb
-	      (or (gnus-gethash gnus-tmp-group gnus-description-hashtb) "")
+	      (or (gnus-group-name-decode
+		   (gnus-gethash gnus-tmp-group gnus-description-hashtb) 
+		   group-name-charset) "")
 	    ""))
 	 (gnus-tmp-moderated
 	  (if (and gnus-moderated-hashtb
@@ -1107,8 +1160,6 @@ If REGEXP, only list groups matching REGEXP."
 	 (gnus-tmp-moderated-string
 	  (if (eq gnus-tmp-moderated ?m) "(m)" ""))
 	 (gnus-tmp-group-icon "==&&==")
-	 (gnus-tmp-method
-	  (gnus-server-get-method gnus-tmp-group gnus-tmp-method)) ;
 	 (gnus-tmp-news-server (or (cadr gnus-tmp-method) ""))
 	 (gnus-tmp-news-method (or (car gnus-tmp-method) ""))
 	 (gnus-tmp-news-method-string
@@ -3040,10 +3091,14 @@ entail asking the server for the groups."
 	group)
     (erase-buffer)
     (while groups
+      (setq group (pop groups))
       (gnus-add-text-properties
        (point) (prog1 (1+ (point))
 		 (insert "       *: "
-			 (setq group (pop groups)) "\n"))
+			 (gnus-group-name-decode group 
+						 (gnus-group-name-charset
+						  nil group))
+			 "\n"))
        (list 'gnus-group (gnus-intern-safe group gnus-active-hashtb)
 	     'gnus-unread t
 	     'gnus-level (inline (gnus-group-level group)))))
@@ -3202,8 +3257,12 @@ to use."
     (mapatoms
      (lambda (group)
        (setq b (point))
-       (insert (format "      *: %-20s %s\n" (symbol-name group)
-		       (symbol-value group)))
+       (let ((charset (gnus-group-name-charset nil group)))
+	 (insert (format "      *: %-20s %s\n" 
+			 (gnus-group-name-decode
+			  (symbol-name group) charset)
+			 (gnus-group-name-decode
+			  (symbol-value group) charset))))
        (gnus-add-text-properties
 	b (1+ b) (list 'gnus-group group
 		       'gnus-unread t 'gnus-marked nil
@@ -3578,7 +3637,11 @@ or `gnus-group-catchup-group-hook'."
 	  (when (funcall predicate group)
 	    (gnus-add-text-properties
 	     (point) (prog1 (1+ (point))
-		       (insert " " mark "     *: " group "\n"))
+		       (insert " " mark "     *: " 
+			       (gnus-group-name-decode group 
+						       (gnus-group-name-charset
+							nil group))
+			       "\n"))
 	     (list 'gnus-group (gnus-intern-safe group gnus-active-hashtb)
 		   'gnus-unread t
 		   'gnus-level level)))))))

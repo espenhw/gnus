@@ -584,7 +584,7 @@ deleted.  Point is left where the deleted region was."
   ;; Change group.
   (when (and group
 	     (not (equal group nnfolder-current-group)))
-    (let ((pathname-coding-system nnmail-pathname-coding-system))
+    (let ((file-name-coding-system nnmail-pathname-coding-system))
       (nnmail-activate 'nnfolder)
       (when (and (not (assoc group nnfolder-group-alist))
 		 (not (file-exists-p

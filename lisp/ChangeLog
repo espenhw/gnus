@@ -1,3 +1,39 @@
+2000-05-16 17:55:57  Karl Kleinpaste <karl@charcoal.com>
+
+	* gnus-util.el (gnus-put-text-property-excluding-newlines): Improve.
+
+2000-05-16 16:22:17  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-group.el (gnus-group-name-charset-method-alist): New variable.
+	(gnus-group-name-charset-group-alist): Ditto.
+	(gnus-group-name-charset): New function.
+	(gnus-group-name-decode): New function.
+	(gnus-group-insert-group-line): Use them.
+	(gnus-group-prepare-flat-list-dead): Ditto.
+	(gnus-group-list-active): Ditto.
+	(gnus-group-describe-all-groups): Ditto.
+	(gnus-group-prepare-flat-list-dead-predicate): Ditto.
+	* gnus-srvr.el: (gnus-browse-foreign-server): Decode group name and 
+	add gnus-group property.
+	(gnus-browse-group-name): Read gnus-group property.
+	
+2000-05-16 15:27:08  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnfolder.el (nnfolder-possibly-change-group): Use
+	file-name-coding-system instead of pathname-coding-system.
+	* nnmail.el (nnmail-find-file): Ditto.
+	(nnmail-write-region): Ditto.
+	* nnmh.el (nnmh-retrieve-headers): Ditto.
+	(nnmh-request-article): Ditto.
+	(nnmh-request-group): Ditto.
+	(nnmh-request-list): Ditto.
+	(nnmh-possibly-change-directory): Ditto.
+	(nnmh-active-number): Ditto.
+	* nnml.el (nnml-possibly-change-directory): Ditto.
+	(nnml-request-list): Ditto.
+	(nnml-request-article): Ditto.
+	(nnml-retrieve-headers): Ditto.
+	
 2000-05-16  Simon Josefsson  <jas@pdc.kth.se>
 
 	* nnimap.el (nnimap-request-accept-article): Don't unselect
