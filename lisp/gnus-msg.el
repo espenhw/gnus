@@ -101,7 +101,7 @@ the second with the current group name.")
   "*Alist of styles to use when posting.")
 
 (defcustom gnus-group-posting-charset-alist
-  '(("^\\(no\\|fr\\|dk\\)\\.[^,]*" iso-8859-1 (iso-8859-1))
+  '(("^\\(no\\|fr\\|dk\\)\\.[^,]*\\(,[ \t\n]*\\(no\\|fr\\|dk\\)\\.[^,]*\\)*$" iso-8859-1 (iso-8859-1))
     (message-this-is-mail nil nil)
     (message-this-is-news nil t))
   "Alist of regexps and permitted unencoded charsets for posting.
@@ -116,18 +116,18 @@ nil (always encode using quoted-printable) or t (always use 8bit).
 
 Note that any value other tha nil for HEADER infringes some RFCs, so
 use this option with care."
-  :type '(repeat (list 
+  :type '(repeat (list :tag "Permitted unencoded charsets"
 		  (choice :tag "Where"
 		   (regexp :tag "Group")
 		   (const :tag "Mail message" :value message-this-is-mail)
 		   (const :tag "News article" :value message-this-is-news))
 		  (choice :tag "Header"
-		   (const :tag "Always encoded" nil)
-		   (symbol :tag "Permitted charset"))
+		   (const :tag "None" nil)
+		   (symbol :tag "Charset"))
 		  (choice :tag "Body"
-			  (const :tag "Any charset" :value t)
-			  (const :tag "Always encoded" :value nil)
-			  (repeat :tag "Permitted charsets"
+			  (const :tag "Any" :value t)
+			  (const :tag "None" :value nil)
+			  (repeat :tag "Charsets"
 				  (symbol :tag "Charset")))))
   :group 'gnus-charset)
 
