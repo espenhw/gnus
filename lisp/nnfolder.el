@@ -161,7 +161,8 @@ all.  This may very well take some time.")
   (nnmail-activate 'nnfolder t)
   (gnus-make-directory nnfolder-directory)
   (unless (or gnus-nov-is-evil nnfolder-nov-is-evil)
-    (gnus-make-directory nnfolder-nov-directory))
+    (and nnfolder-nov-directory
+	 (gnus-make-directory nnfolder-nov-directory)))
   (cond
    ((not (file-exists-p nnfolder-directory))
     (nnfolder-close-server)
