@@ -505,7 +505,7 @@ articles in the topic and its subtopics."
       (let ((data (cadr (gnus-topic-find-topology topic))))
 	(setcdr data
 		(list (if insert 'visible 'invisible)
-		      (if hide 'hide nil)
+		      hide
 		      (cadddr data))))
       (if total-remove
 	  (setq gnus-topic-alist
@@ -544,15 +544,16 @@ articles in the topic and its subtopics."
     (gnus-topic-update-unreads name unread)
     (beginning-of-line)
     ;; Insert the text.
-    (gnus-add-text-properties
-     (point)
-     (prog1 (1+ (point))
-       (eval gnus-topic-line-format-spec))
-     (list 'gnus-topic (intern name)
-	   'gnus-topic-level level
-	   'gnus-topic-unread unread
-	   'gnus-active active-topic
-	   'gnus-topic-visible visiblep))))
+    (if shownp
+	(gnus-add-text-properties
+	 (point)
+	 (prog1 (1+ (point))
+	   (eval gnus-topic-line-format-spec))
+	 (list 'gnus-topic (intern name)
+	       'gnus-topic-level level
+	       'gnus-topic-unread unread
+	       'gnus-active active-topic
+	       'gnus-topic-visible visiblep)))))
 
 (defun gnus-topic-update-unreads (topic unreads)
   (setq gnus-topic-unreads (delq (assoc topic gnus-topic-unreads)
@@ -1260,13 +1261,13 @@ If COPYP, copy the groups instead."
   (interactive)
   (when (gnus-current-topic)
     (gnus-topic-goto-topic (gnus-current-topic))
-    (gnus-topic-remove-topic nil nil 'hidden)))
+    (gnus-topic-remove-topic nil nil)))
 
 (defun gnus-topic-show-topic ()
   "Show the hidden topic."
   (interactive)
   (when (gnus-group-topic-p)
-    (gnus-topic-remove-topic t nil 'shown)))
+    (gnus-topic-remove-topic t nil)))
 
 (defun gnus-topic-mark-topic (topic &optional unmark)
   "Mark all groups in the topic with the process mark."

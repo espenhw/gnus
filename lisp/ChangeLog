@@ -1,3 +1,10 @@
+2000-06-06 13:28:53  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-topic.el (gnus-topic-remove-topic): Set hidden.
+	(gnus-topic-insert-topic-line): Use shownp.
+	(gnus-topic-hide-topic): Don't use hidden.
+	(gnus-topic-show-topic): Don't use hidden.
+
 2000-06-05 22:25:12  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-cache.el (gnus-cache-possibly-enter-article): Bind coding
