@@ -8044,7 +8044,15 @@ latter case, they will be copied into the relevant groups."
       (erase-buffer)
       (nnheader-insert-file-contents file)
       (goto-char (point-min))
-      (unless (nnheader-article-p)
+      (if (nnheader-article-p)
+          (save-restriction
+            (goto-char (point-min))
+            (search-forward "\n\n" nil t)
+            (narrow-to-region (point-min) (1- (point)))
+            (goto-char (point-min))
+            (unless (re-search-forward "^date:" nil t)
+              (goto-char (point-max))
+              (insert "Date: " (message-make-date (nth 5 atts)) "\n")))
 	;; This doesn't look like an article, so we fudge some headers.
 	(setq atts (file-attributes file)
 	      lines (count-lines (point-min) (point-max)))
