@@ -805,7 +805,7 @@ password contained in '~/.nntp-authinfo'."
 
 (defun nntp-open-connection (buffer)
   "Open a connection to PORT on ADDRESS delivering output to BUFFER."
-  (gnus-run-hooks 'nntp-prepare-server-hook)
+  (run-hooks 'nntp-prepare-server-hook)
   (let* ((pbuffer (nntp-make-process-buffer buffer))
 	 (process
 	  (condition-case ()
@@ -826,7 +826,7 @@ password contained in '~/.nntp-authinfo'."
 	      (erase-buffer)
 	      (set-buffer nntp-server-buffer)
 	      (let ((nnheader-callback-function nil))
-		(gnus-run-hooks 'nntp-server-opened-hook))))
+		(run-hooks 'nntp-server-opened-hook))))
 	(when (buffer-name (process-buffer process))
 	  (kill-buffer (process-buffer process)))
 	nil))))

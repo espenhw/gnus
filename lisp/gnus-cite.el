@@ -519,7 +519,7 @@ percent and at least `gnus-cite-hide-absolute' lines of the body is
 cited text with attributions.  When called interactively, these two
 variables are ignored.
 See also the documentation for `gnus-article-highlight-citation'."
-  (interactive (append (gnus-article-hidden-arg) (list 'force)))
+  (interactive (list (gnus-article-hidden-arg) 'force))
   (unless (gnus-article-check-hidden-text 'cite arg)
     (save-excursion
       (set-buffer gnus-article-buffer)

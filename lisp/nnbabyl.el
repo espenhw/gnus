@@ -503,7 +503,7 @@
   (nnbabyl-insert-lines)
   (nnmail-insert-xref group-art)
   (nnbabyl-insert-newsgroup-line group-art)
-  (gnus-run-hooks 'nnbabyl-prepare-save-mail-hook)
+  (run-hooks 'nnbabyl-prepare-save-mail-hook)
   group-art)
 
 (defun nnbabyl-insert-newsgroup-line (group-art)

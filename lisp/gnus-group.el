@@ -264,7 +264,10 @@ variable."
   `(("(ding) mailing list mirrored at sunsite.auc.dk"
      "emacs.ding"
      (nntp "sunsite.auc.dk"
-			(nntp-address "sunsite.auc.dk")))
+	   (nntp-address "sunsite.auc.dk")))
+    ("gnus-bug archive"
+     "gnus-bug"
+     (nndir "/ftp@ftp.ifi.uio.no:/pub/emacs/gnus/gnus-bug/"))
     ("Gnus help group"
      "gnus-help"
      (nndoc "gnus-help"

@@ -1,10 +1,63 @@
+Sat Feb 21 00:51:22 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.30 is released.
+
+Sat Feb 21 00:09:14 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-mark-article): Don't do anything if
+	the mark doesn't change.
+
+	* gnus-art.el (gnus-article-prepare): Don't enter article into
+	cache. 
+
+	* gnus-sum.el (gnus-summary-reparent-thread): Don't mark as read.
+	(gnus-summary-mark-article): Don't do cache things here.
+
+	* gnus-util.el (gnus-parse-netrc): Skip past macdefs.
+
+Fri Feb 20 22:56:22 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-srvr.el (gnus-browse-unsubscribe-group): Wouldn't allow
+	unsubscription. 
+
+	* gnus-sum.el (gnus-summary-insert-subject): Allow inserting
+	articles outside limits.
+
+	* gnus-start.el (gnus-dribble-enter): Update mode line.
+
+	* gnus-srvr.el (gnus-browse-unsubscribe-group): Allow
+	unsubscription. 
+
+	* gnus-picon.el (gnus-article-display-picons): Check that the
+	extents are live first.
+
+Thu Feb 19 15:13:44 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-useful-groups): Include gnus-bug.
+
+Thu Feb 19 02:28:17 1998  Jens-Ulrik Holger Petersen  <petersen@kurims.kyoto-u.ac.jp>
+
+	* gnus.el (gnus-group-history): Defined twice.
+
+Thu Feb 19 01:58:47 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-get-newsgroup-headers): Just use the header
+	value. 
+	(gnus-summary-exit): Set global vars.
+
+Tue Feb 17 07:17:49 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-stop-page-breaking): Mark page as no
+	longer broken.
+	(gnus-summary-exit): Purge the real name.
+
 Tue Feb 17 07:00:43 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.29 is released.
 
 Tue Feb 17 06:15:03 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
-	* nnmail.el (nnmail-purge-split-history): List if alists, not
+	* nnmail.el (nnmail-purge-split-history): List of alists, not
 	alist. 
 
 Mon Feb 16 20:22:04 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>

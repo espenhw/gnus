@@ -572,8 +572,8 @@ time saver for large mailboxes.")
     (setq save-list group-art-list)
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art-list)
-    (gnus-run-hooks 'nnmail-prepare-save-mail-hook)
-    (gnus-run-hooks 'nnfolder-prepare-save-mail-hook)
+    (run-hooks 'nnmail-prepare-save-mail-hook)
+    (run-hooks 'nnfolder-prepare-save-mail-hook)
 
     ;; Insert the mail into each of the destination groups.
     (while (setq group-art (pop group-art-list))
@@ -783,7 +783,7 @@ time saver for large mailboxes.")
 (defun nnfolder-save-buffer ()
   "Save the buffer."
   (when (buffer-modified-p)
-    (gnus-run-hooks 'nnfolder-save-buffer-hook)
+    (run-hooks 'nnfolder-save-buffer-hook)
     (gnus-make-directory (file-name-directory (buffer-file-name)))
     (save-buffer)))
 

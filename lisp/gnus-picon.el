@@ -317,7 +317,8 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	  ;; wrongly placed.  Move them here
 	  (if (eq gnus-picons-display-where 'article)
 	      (dolist (ext gnus-group-annotations)
-		(set-extent-endpoints ext (point) (point))))
+		(when (extent-live-p ext)
+		  (set-extent-endpoints ext (point) (point)))))
 	  (if (null gnus-picons-piconsearch-url)
 	      (setq gnus-article-annotations
 		    (nconc gnus-article-annotations

@@ -429,8 +429,8 @@
   (unless noinsert
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art))
-  (gnus-run-hooks 'nnmail-prepare-save-mail-hook)
-  (gnus-run-hooks 'nnmh-prepare-save-mail-hook)
+  (run-hooks 'nnmail-prepare-save-mail-hook)
+  (run-hooks 'nnmh-prepare-save-mail-hook)
   (goto-char (point-min))
   (while (looking-at "From ")
     (replace-match "X-From-Line: ")

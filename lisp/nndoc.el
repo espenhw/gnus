@@ -285,7 +285,7 @@ from the document.")
 	(if (stringp nndoc-address)
 	    (nnheader-insert-file-contents nndoc-address)
 	  (insert-buffer-substring nndoc-address))
-	(gnus-run-hooks 'nndoc-open-document-hook))))
+	(run-hooks 'nndoc-open-document-hook))))
     ;; Initialize the nndoc structures according to this new document.
     (when (and nndoc-current-buffer
 	       (not nndoc-dissection-alist))

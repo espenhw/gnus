@@ -880,17 +880,24 @@ ARG is passed to the first function."
 	    (unless (eobp)
 	      (setq elem (buffer-substring
 			  (point) (progn (forward-sexp 1) (point))))
-	      (if (member elem tokens)
-		  (progn
-		    ;; Tokens that don't have a following value are ignored.
-		    (when (and pair (cdr pair))
-		      (push pair alist))
-		    (setq pair (list elem)))
+	      (cond
+	       ((equal elem "macdef")
+		;; We skip past the macro definition.
+		(widen)
+		(while (and (zerop (forward-line 1))
+			    (looking-at "$")))
+		(narrow-to-region (point) (point)))
+	       ((member elem tokens)
+		;; Tokens that don't have a following value are ignored.
+		(when (and pair (cdr pair))
+		  (push pair alist))
+		(setq pair (list elem)))
+	       (t
 		;; Values that haven't got a preceding token are ignored.
 		(when pair
 		  (setcdr pair elem)
 		  (push pair alist)
-		  (setq pair nil)))))
+		  (setq pair nil))))))
 	  (push alist result)
 	  (setq alist nil
 		pair nil)

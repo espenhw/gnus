@@ -246,7 +246,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.29"
+(defconst gnus-version-number "0.30"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Quassia Gnus v%s" gnus-version-number)
@@ -1391,7 +1391,6 @@ want."
 
 ;; Variable holding the user answers to all method prompts.
 (defvar gnus-method-history nil)
-(defvar gnus-group-history nil)
 
 ;; Variable holding the user answers to all mail method prompts.
 (defvar gnus-mail-method-history nil)
@@ -1682,7 +1681,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 ;;; gnus-sum.el thingies
 
 
-(defcustom gnus-summary-line-format "%U\%R\%z\%I\%(%[%4L: %-20,20n%]%) %s\n"
+(defcustom gnus-summary-line-format "%U%R%z%I%(%[%4L: %-20,20n%]%) %s\n"
   "*The format specification of the lines in the summary buffer.
 
 It works along the same lines as a normal formatting string,

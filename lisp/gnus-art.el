@@ -2107,15 +2107,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		;; <sisolak@trans4.neep.wisc.edu>.
 		(gnus-set-global-variables)
 		(setq gnus-have-all-headers
-		      (or all-headers gnus-show-all-headers))
-		(and gnus-use-cache
-		     (vectorp (gnus-summary-article-header article))
-		     (gnus-cache-possibly-enter-article
-		      group article
-		      (gnus-summary-article-header article)
-		      (memq article gnus-newsgroup-marked)
-		      (memq article gnus-newsgroup-dormant)
-		      (memq article gnus-newsgroup-unreads)))))
+		      (or all-headers gnus-show-all-headers))))
 	    (when (or (numberp article)
 		      (stringp article))
 	      ;; Hooks for getting information from the article.
@@ -2399,7 +2391,7 @@ Argument LINES specifies lines to be scrolled down."
 This means that PGP stuff, signatures, cited text and (some)
 headers will be hidden.
 If given a prefix, show the hidden text instead."
-  (interactive (list current-prefix-arg 'force))
+  (interactive (append (gnus-article-hidden-arg) (list 'force)))
   (gnus-article-hide-headers arg)
   (gnus-article-hide-pgp arg)
   (gnus-article-hide-citation-maybe arg force)

@@ -345,7 +345,7 @@ there.")
       (nnheader-report 'nnspool "%s" (buffer-string))
       (message "nnspool: %s" nnspool-status-string)
       (ding)
-      (gnus-run-hooks 'nnspool-rejected-article-hook))))
+      (run-hooks 'nnspool-rejected-article-hook))))
 
 (defun nnspool-retrieve-headers-with-nov (articles &optional fetch-old)
   (if (or gnus-nov-is-evil nnspool-nov-is-evil)

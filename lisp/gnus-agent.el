@@ -620,7 +620,8 @@ the actual number of articles toggled is returned."
 	    (if (not (re-search-forward "^Message-ID: *<\\([^>\n]+\\)>" nil t))
 		(setq id "No-Message-ID-in-article")
 	      (setq id (buffer-substring (match-beginning 1) (match-end 1))))
-	    (let ((coding-system-for-write gnus-agent-article-file-coding-system))
+	    (let ((coding-system-for-write
+		   gnus-agent-article-file-coding-system))
 	      (write-region (point-min) (point-max)
 			    (concat dir (number-to-string (caar pos)))
 			    nil 'silent))

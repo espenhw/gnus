@@ -700,15 +700,16 @@ buffer.
       ;; If this group it killed, then we want to subscribe it.
       (when (= (following-char) ?K)
 	(setq sub t))
-      (when (cadr (gnus-gethash (setq group (gnus-browse-group-name))
-			  gnus-newsrc-hashtb))
+      (setq group (gnus-browse-group-name))
+      (when (and sub
+		 (cadr (gnus-gethash group gnus-newsrc-hashtb)))
 	(error "Group already subscribed"))
-      ;; Make sure the group has been properly removed before we
-      ;; subscribe to it.
-      (gnus-kill-ephemeral-group group)
       (delete-char 1)
       (if sub
 	  (progn
+	    ;; Make sure the group has been properly removed before we
+	    ;; subscribe to it.
+	    (gnus-kill-ephemeral-group group)
 	    (gnus-group-change-level
 	     (list t group gnus-level-default-subscribed
 		   nil nil (if (gnus-server-equal

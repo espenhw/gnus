@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.29 Manual
+@settitle Quassia Gnus 0.30 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -313,7 +313,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.29 Manual
+@title Quassia Gnus 0.30 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -349,7 +349,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.29.
+This manual corresponds to Quassia Gnus 0.30.
 
 @end ifinfo
 
@@ -5042,8 +5042,8 @@ say something like:
 
 @lisp
 (setq gnus-thread-sort-functions
-      '((lambda (t1 t2) 
-          (not (gnus-thread-sort-by-number t2 t1)))
+      '((lambda (t1 t2)
+          (not (gnus-thread-sort-by-number t1 t2)))
         gnus-thread-sort-by-score))
 @end lisp
 
@@ -8891,7 +8891,7 @@ In this example, both login name and password have been supplied for the
 former server, while the latter has only the login name listed, and the
 user will be prompted for the password.
 
-Remember to not leave the @file{~/.netrc} world-readable.
+Remember to not leave the @file{~/.authinforc} file world-readable.
 
 @item nntp-server-action-alist 
 @vindex nntp-server-action-alist 

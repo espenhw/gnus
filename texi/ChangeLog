@@ -1,3 +1,11 @@
+1998-02-18  Jason R Mastaler  <jason@4b.org>
+
+	* gnus.texi: Corrected typo.
+
+Thu Feb 19 02:20:29 1998  Francois Felix Ingrand  <felix@laas.fr>
+
+	* gnus.texi (Sorting): Fix order of args.
+
 Sun Feb 15 23:04:02 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (NNTP): Change.

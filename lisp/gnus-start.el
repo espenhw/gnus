@@ -759,6 +759,9 @@ prompt the user for the name of an NNTP server to use."
       (insert string "\n")
       (set-window-point (get-buffer-window (current-buffer)) (point-max))
       (bury-buffer gnus-dribble-buffer)
+      (save-excursion
+	(set-buffer gnus-group-buffer)
+	(gnus-group-set-mode-line))
       (set-buffer obuf))))
 
 (defun gnus-dribble-touch ()

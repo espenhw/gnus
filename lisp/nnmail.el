@@ -752,7 +752,7 @@ is a spool.  If not using procmail, return GROUP."
       (goto-char (point-min))
       (when (looking-at ">From ")
 	(replace-match "X-From-Line: ") )
-      (gnus-run-hooks 'nnmail-prepare-incoming-header-hook)
+      (run-hooks 'nnmail-prepare-incoming-header-hook)
       (goto-char (point-max))
       ;; Find the Message-ID header.
       (save-excursion
@@ -912,7 +912,7 @@ is a spool.  If not using procmail, return GROUP."
 	  ;; having a (possibly) faulty header.
 	  (beginning-of-line)
 	  (insert "X-"))
-	(gnus-run-hooks 'nnmail-prepare-incoming-header-hook)
+	(run-hooks 'nnmail-prepare-incoming-header-hook)
 	;; Find the end of this article.
 	(goto-char (point-max))
 	(widen)
@@ -987,7 +987,7 @@ is a spool.  If not using procmail, return GROUP."
 	      (insert "Original-")))
 	  (forward-line 1)
 	  (insert "Message-ID: " (setq message-id (nnmail-message-id)) "\n"))
-	(gnus-run-hooks 'nnmail-prepare-incoming-header-hook)
+	(run-hooks 'nnmail-prepare-incoming-header-hook)
 	;; Find the end of this article.
 	(goto-char (point-max))
 	(widen)
@@ -1024,7 +1024,7 @@ FUNC will be called with the buffer narrowed to each mail."
       (nnheader-insert-file-contents incoming)
       (unless (zerop (buffer-size))
 	(goto-char (point-min))
-	(save-excursion (gnus-run-hooks 'nnmail-prepare-incoming-hook))
+	(save-excursion (run-hooks 'nnmail-prepare-incoming-hook))
 	;; Handle both babyl, MMDF and unix mail formats, since movemail will
 	;; use the former when fetching from a mailbox, the latter when
 	;; fetching from a file.
@@ -1066,7 +1066,7 @@ FUNC will be called with the group name to determine the article number."
 	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
 	  (replace-match " " t t))
 	;; Allow washing.
-	(gnus-run-hooks 'nnmail-split-hook)
+	(run-hooks 'nnmail-split-hook)
 	(if (and (symbolp nnmail-split-methods)
 		 (fboundp nnmail-split-methods))
 	    (let ((split
@@ -1494,7 +1494,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (message-fetch-field header))))
 
 (defun nnmail-check-duplication (message-id func artnum-func)
-  (gnus-run-hooks 'nnmail-prepare-incoming-message-hook)
+  (run-hooks 'nnmail-prepare-incoming-message-hook)
   ;; If this is a duplicate message, then we do not save it.
   (let* ((duplication (nnmail-cache-id-exists-p message-id))
 	 (case-fold-search t)
@@ -1551,7 +1551,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       ;; We first activate all the groups.
       (nnmail-activate method)
       ;; Allow the user to hook.
-      (gnus-run-hooks 'nnmail-pre-get-new-mail-hook)
+      (run-hooks 'nnmail-pre-get-new-mail-hook)
       ;; Open the message-id cache.
       (nnmail-cache-open)
       ;; The we go through all the existing spool files and split the
@@ -1596,12 +1596,12 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	 (nnmail-get-value "%s-active-file" method))
 	(when exit-func
 	  (funcall exit-func))
-	(gnus-run-hooks 'nnmail-read-incoming-hook)
+	(run-hooks 'nnmail-read-incoming-hook)
 	(nnheader-message 3 "%s: Reading incoming mail...done" method))
       ;; Close the message-id cache.
       (nnmail-cache-close)
       ;; Allow the user to hook.
-      (gnus-run-hooks 'nnmail-post-get-new-mail-hook)
+      (run-hooks 'nnmail-post-get-new-mail-hook)
       ;; Delete all the temporary files.
       (while incomings
 	(setq incoming (pop incomings))
@@ -1739,6 +1739,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 	(princ "\n")))))
 
 (defun nnmail-purge-split-history (group)
+  "Remove all instances of GROUP from `nnmail-split-history'."
   (let ((history nnmail-split-history)
 	prev)
     (while history

@@ -1321,7 +1321,7 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (unless (string-match "XEmacs" emacs-version)
     (set (make-local-variable 'font-lock-defaults)
 	 '(message-font-lock-keywords t)))
-  (gnus-run-hooks 'text-mode-hook 'message-mode-hook))
+  (run-hooks 'text-mode-hook 'message-mode-hook))
 
 
 
@@ -1855,7 +1855,7 @@ the user from the mailer."
     (let ((inhibit-read-only t))
       (put-text-property (point-min) (point-max) 'read-only nil))
     (message-fix-before-sending)
-    (gnus-run-hooks 'message-send-hook)
+    (run-hooks 'message-send-hook)
     (message "Sending...")
     (let ((alist message-send-method-alist)
 	  (success t)
@@ -1875,7 +1875,7 @@ the user from the mailer."
 	(message-do-fcc)
 	;;(when (fboundp 'mail-hist-put-headers-into-history)
 	;; (mail-hist-put-headers-into-history))
-	(gnus-run-hooks 'message-sent-hook)
+	(run-hooks 'message-sent-hook)
 	(message "Sending...done")
 	;; Mark the buffer as unmodified and delete autosave.
 	(set-buffer-modified-p nil)
@@ -1936,7 +1936,7 @@ the user from the mailer."
 	     (if news nil message-deletable-headers)))
 	(message-generate-headers message-required-mail-headers))
       ;; Let the user do all of the above.
-      (gnus-run-hooks 'message-header-hook))
+      (run-hooks 'message-header-hook))
     (unwind-protect
 	(save-excursion
 	  (set-buffer tembuf)
@@ -1981,7 +1981,7 @@ the user from the mailer."
       (replace-match "\n")
       (backward-char 1)
       (setq delimline (point-marker))
-      (gnus-run-hooks 'message-send-mail-hook)
+      (run-hooks 'message-send-mail-hook)
       ;; Insert an extra newline if we need it to work around
       ;; Sun's bug that swallows newlines.
       (goto-char (1+ delimline))
@@ -2037,7 +2037,7 @@ to find out how to use this."
   (re-search-forward
    (concat "^" (regexp-quote mail-header-separator) "\n"))
   (replace-match "\n")
-  (gnus-run-hooks 'message-send-mail-hook)
+  (run-hooks 'message-send-mail-hook)
   ;; send the message
   (case
       (let ((coding-system-for-write 'binary))
@@ -2084,7 +2084,7 @@ to find out how to use this."
 		(concat "^" (symbol-name (car headers)) ": *") nil t)
 	       (message-delete-line))
 	  (pop headers))))
-    (gnus-run-hooks 'message-send-mail-hook)
+    (run-hooks 'message-send-mail-hook)
     ;; Pass it on to mh.
     (mh-send-letter)))
 
@@ -2106,7 +2106,7 @@ to find out how to use this."
       ;; Insert some headers.
       (message-generate-headers message-required-news-headers)
       ;; Let the user do all of the above.
-      (gnus-run-hooks 'message-header-hook))
+      (run-hooks 'message-header-hook))
     (message-cleanup-headers)
     (if (not (message-check-news-syntax))
 	(progn
@@ -2138,7 +2138,7 @@ to find out how to use this."
 	       (concat "^" (regexp-quote mail-header-separator) "\n"))
 	      (replace-match "\n")
 	      (backward-char 1))
-	    (gnus-run-hooks 'message-send-news-hook)
+	    (run-hooks 'message-send-news-hook)
 	    ;;(require (car method))
 	    ;;(funcall (intern (format "%s-open-server" (car method)))
 	    ;;(cadr method) (cddr method))
@@ -3104,14 +3104,14 @@ Headers already prepared in the buffer are not modified."
        (delq 'Lines
 	     (delq 'Subject
 		   (copy-sequence message-required-mail-headers))))))
-  (gnus-run-hooks 'message-signature-setup-hook)
+  (run-hooks 'message-signature-setup-hook)
   (message-insert-signature)
   (save-restriction
     (message-narrow-to-headers)
-    (gnus-run-hooks 'message-header-setup-hook))
+    (run-hooks 'message-header-setup-hook))
   (set-buffer-modified-p nil)
   (setq buffer-undo-list nil)
-  (gnus-run-hooks 'message-setup-hook)
+  (run-hooks 'message-setup-hook)
   (message-position-point)
   (undo-boundary))
 

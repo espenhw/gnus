@@ -4345,10 +4345,12 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    ;; Message-ID.
 	    (progn
 	      (goto-char p)
-	      (setq id (if (search-forward "\nmessage-id:" nil t)
-			   (buffer-substring
-			    (1- (or (search-forward "<" nil t) (point)))
-			    (or (search-forward ">" nil t) (point)))
+	      (setq id (if (re-search-forward
+			    "^message-id: *\\(<[^\n\t> ]>\\)" nil t)
+			   ;; We do it this way to make sure the Message-ID
+			   ;; is (somewhat) syntactically valid.
+			   (buffer-substring (match-beginning 0)
+					     (match-end 0))
 			 ;; If there was no message-id, we just fake one
 			 ;; to make subsequent routines simpler.
 			 (nnheader-generate-fake-message-id))))
@@ -4627,8 +4629,13 @@ This is meant to be called in `gnus-article-internal-prepare-hook'."
 
 (defun gnus-summary-insert-subject (id &optional old-header use-old-header)
   "Find article ID and insert the summary line for that article."
-  (let ((header (if (and old-header use-old-header)
-		    old-header (gnus-read-header id)))
+  (let ((header (cond ((and old-header use-old-header)
+		       old-header)
+		      ((and (numberp id)
+			    (gnus-number-to-header id))
+		       (gnus-number-to-header id))
+		      (t
+		       (gnus-read-header id))))
 	(number (and (numberp id) id))
 	pos d)
     (when header
@@ -4650,6 +4657,7 @@ This is meant to be called in `gnus-article-internal-prepare-hook'."
 	    (delq (setq number (mail-header-number header))
 		  gnus-newsgroup-sparse))
       (setq gnus-newsgroup-ancient (delq number gnus-newsgroup-ancient))
+      (push number gnus-newsgroup-limit)
       (gnus-rebuild-thread (mail-header-id header))
       (gnus-summary-goto-subject number nil t))
     (when (and (numberp number)
@@ -5062,6 +5070,7 @@ If FORCE (the prefix), also save the .newsrc file(s)."
   "Exit reading current newsgroup, and then return to group selection mode.
 gnus-exit-group-hook is called with no arguments if that value is non-nil."
   (interactive)
+  (gnus-set-global-variables)
   (gnus-kill-save-kill-buffer)
   (let* ((group gnus-newsgroup-name)
 	 (quit-config (gnus-group-quit-config gnus-newsgroup-name))
@@ -5082,7 +5091,7 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
     (when gnus-use-trees
       (gnus-tree-close group))
     ;; Remove entries for this group.
-    (nnmail-purge-split-history group)
+    (nnmail-purge-split-history (gnus-group-real-name group))
     ;; Make all changes in this group permanent.
     (unless quit-config
       (gnus-run-hooks 'gnus-exit-group-hook)
@@ -6851,7 +6860,8 @@ forward."
     (when (gnus-visual-p 'page-marker)
       (let ((buffer-read-only nil))
 	(gnus-remove-text-with-property 'gnus-prev)
-	(gnus-remove-text-with-property 'gnus-next)))))
+	(gnus-remove-text-with-property 'gnus-next))
+      (setq gnus-page-broken nil))))
 
 (defun gnus-summary-move-article (&optional n to-newsgroup
 					    select-method action)
@@ -7698,32 +7708,35 @@ marked."
 		    (= mark gnus-duplicate-mark))))
        (setq mark gnus-expirable-mark))
   (let* ((mark (or mark gnus-del-mark))
-	 (article (or article (gnus-summary-article-number))))
-    (unless article
-      (error "No article on current line"))
-    (if (not (if (or (= mark gnus-unread-mark)
-		     (= mark gnus-ticked-mark)
-		     (= mark gnus-dormant-mark))
-		 (gnus-mark-article-as-unread article mark)
-	       (gnus-mark-article-as-read article mark)))
+	 (article (or article (gnus-summary-article-number)))
+	 (old-mark (gnus-summary-article-mark article)))
+    (if (eq mark old-mark)
 	t
-      ;; See whether the article is to be put in the cache.
-      (and gnus-use-cache
-	   (not (= mark gnus-canceled-mark))
-	   (vectorp (gnus-summary-article-header article))
-	   (save-excursion
-	     (gnus-cache-possibly-enter-article
-	      gnus-newsgroup-name article
-	      (gnus-summary-article-header article)
-	      (= mark gnus-ticked-mark)
-	      (= mark gnus-dormant-mark) (= mark gnus-unread-mark))))
+      (unless article
+	(error "No article on current line"))
+      (if (not (if (or (= mark gnus-unread-mark)
+		       (= mark gnus-ticked-mark)
+		       (= mark gnus-dormant-mark))
+		   (gnus-mark-article-as-unread article mark)
+		 (gnus-mark-article-as-read article mark)))
+	  t
+	;; See whether the article is to be put in the cache.
+	(and gnus-use-cache
+	     (not (= mark gnus-canceled-mark))
+	     (vectorp (gnus-summary-article-header article))
+	     (save-excursion
+	       (gnus-cache-possibly-enter-article
+		gnus-newsgroup-name article
+		(gnus-summary-article-header article)
+		(= mark gnus-ticked-mark)
+		(= mark gnus-dormant-mark) (= mark gnus-unread-mark))))
 
-      (when (gnus-summary-goto-subject article nil t)
-	(let ((buffer-read-only nil))
-	  (gnus-summary-show-thread)
-	  ;; Fix the mark.
-	  (gnus-summary-update-mark mark 'unread)
-	  t)))))
+	(when (gnus-summary-goto-subject article nil t)
+	  (let ((buffer-read-only nil))
+	    (gnus-summary-show-thread)
+	    ;; Fix the mark.
+	    (gnus-summary-update-mark mark 'unread)
+	    t))))))
 
 (defun gnus-summary-update-secondary-mark (article)
   "Update the secondary (read, process, cache) mark."
@@ -8130,7 +8143,9 @@ is non-nil or the Subject: of both articles are the same."
 			 (gnus-summary-article-header parent-article))))
 	(unless (and message-id (not (equal message-id "")))
 	  (error "No message-id in desired parent"))
-	(gnus-summary-select-article t t nil current-article)
+	;; We don't want the article to be marked as read.
+	(let (gnus-mark-article-hook)
+	  (gnus-summary-select-article t t nil current-article))
 	(set-buffer gnus-original-article-buffer)
 	(let ((buf (format "%s" (buffer-string))))
 	  (nnheader-temp-write nil
@@ -8938,7 +8953,9 @@ save those articles instead."
       (when buffers
 	(map-y-or-n-p
 	 "Update summary buffer %s? "
-	 (lambda (buf) (switch-to-buffer buf) (gnus-summary-exit))
+	 (lambda (buf)
+	   (switch-to-buffer buf)
+	   (gnus-summary-exit))
 	 buffers)))))
 
 (gnus-ems-redefine)

@@ -463,8 +463,8 @@
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art)
     (nnmbox-insert-newsgroup-line group-art)
-    (gnus-run-hooks 'nnmail-prepare-save-mail-hook)
-    (gnus-run-hooks 'nnmbox-prepare-save-mail-hook)
+    (run-hooks 'nnmail-prepare-save-mail-hook)
+    (run-hooks 'nnmbox-prepare-save-mail-hook)
     group-art))
 
 (defun nnmbox-insert-newsgroup-line (group-art)
