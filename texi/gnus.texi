@@ -20052,6 +20052,9 @@ well as numerous other things).
 Luis Fernandes---design and graphics.
 
 @item
+Joe Reiss---creator of the smiley faces.
+
+@item
 Justin Sheehy--the FAQ maintainer.
 
 @item
