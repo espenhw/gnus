@@ -45,6 +45,7 @@
 (eval-when-compile
   (condition-case nil
       (require 'bbdb-com)
+    (file-error (defalias 'bbdb-search 'ignore))
     (error)))
 
 ;; autoload executable-find
@@ -278,6 +279,11 @@ The regular expression is matched against the address.")
     (when who
       (setq who (regexp-quote (cadr (gnus-extract-address-components who))))
       (if (bbdb-search (bbdb-records) nil nil who) nil spam-split-group))))
+
+;; let spam-check-bbdb be nil if the BBDB can't be loaded
+(condition-case nil
+    (require 'bbdb)
+  (file-error (defalias 'spam-check-bbdb 'ignore)))
 
 (defun spam-check-blacklist ()
   ;; FIXME!  Should it detect when file timestamps change?
