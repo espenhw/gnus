@@ -525,17 +525,19 @@ always hide."
 (defun gnus-article-toggle-cited-text (args)
   "Toggle hiding the text in REGION."
   (let* ((region (car args))
+	 (beg (car region))
+	 (end (cdr region))
 	 (start (cadr args))
 	 (hidden
 	  (text-property-any
-	   (car region) (1- (cdr region))
+	   beg (1- end)
 	   (car gnus-hidden-properties) (cadr gnus-hidden-properties)))
 	 (inhibit-point-motion-hooks t)
 	 buffer-read-only)
     (funcall
      (if hidden
 	 'remove-text-properties 'gnus-add-text-properties)
-     (car region) (cdr region) gnus-hidden-properties)
+     beg end gnus-hidden-properties)
     (save-excursion
       (goto-char start)
       (gnus-delete-line)
