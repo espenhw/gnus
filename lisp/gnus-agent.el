@@ -416,7 +416,12 @@ manipulated as follows:
 						     buffer))))
 	    minor-mode-map-alist))
     (when (eq major-mode 'gnus-group-mode)
-      (gnus-agent-toggle-plugged gnus-plugged))
+      (let ((init-plugged gnus-plugged))
+        ;; g-a-t-p does nothing when gnus-plugged isn't changed.
+        ;; Therefore, make certain that the current value does not
+        ;; match the desired initial value.
+        (setq gnus-plugged :unknown)
+        (gnus-agent-toggle-plugged init-plugged)))
     (gnus-run-hooks 'gnus-agent-mode-hook
 		    (intern (format "gnus-agent-%s-mode-hook" buffer)))))
 
@@ -2110,11 +2115,13 @@ The following commands are available:
                 (mapcar
                  (lambda (c)
                    (setcdr c
-                           (mapcar*
-                            (lambda (valu symb)
-                              (cons symb valu))
-                            (cdr c)
-                            '(agent-predicate agent-score-file agent-groups)))
+                           (delq nil
+                                 (mapcar*
+                                  (lambda (valu symb)
+                                    (if valu
+                                        (cons symb valu)))
+                                  (cdr c)
+                                  '(agent-predicate agent-score-file agent-groups))))
                    c)
                  old-list)))))
          (list (gnus-agent-cat-make 'default)))))

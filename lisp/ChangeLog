@@ -1,3 +1,11 @@
+2003-03-03  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-mode): Fixed the mode line reports
+	'plugged' when actually 'unplugged' bug.
+	(gnus-category-read): Ignore nil values when converting an
+	old-format category so that the new-format category will default
+	those attributes to the global variables.
+
 2003-03-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mail-source.el (mail-source-delete-old-incoming-confirm): Fixed
