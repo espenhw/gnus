@@ -1,3 +1,8 @@
+2003-10-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-update-date-lapsed): Make sure point
+	doesn't move around (much).
+
 2003-07-28  Vasily Korytov  <deskpot@myrealbox.com>
 
 	* mail-source.el (mail-source-keyword-map): List "cur" before
