@@ -245,7 +245,7 @@ to:
     ("application/pkcs7-signature" mml-smime-verify "S/MIME" nil)
     ("application/x-pkcs7-signature" mml-smime-verify "S/MIME" nil)))
 
-(defcustom mm-verify-option 'known
+(defcustom mm-verify-option nil
   "Option of verifying signed parts.
 `never', not verify; `always', always verify; 
 `known', only verify known protocols. Otherwise, ask user."
@@ -261,7 +261,7 @@ to:
 (defvar mm-decrypt-function-alist
   '(("application/pgp-encrypted" mml2015-decrypt "PGP" mml2015-decrypt-test)))
 
-(defcustom mm-decrypt-option 'known
+(defcustom mm-decrypt-option nil
   "Option of decrypting signed parts.
 `never', not decrypt; `always', always decrypt; 
 `known', only decrypt known protocols. Otherwise, ask user."

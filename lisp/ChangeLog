@@ -1,3 +1,9 @@
+2000-11-10 17:11:22  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-verify-option): Set default to nil.
+	(mm-decrypt-option): Ditto.
+	* gnus-art.el (article-verify-x-pgp-sig): New function.
+
 2000-11-10 09:01:25  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-mime-display-alternative): Show button if no

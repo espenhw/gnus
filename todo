@@ -1,6 +1,8 @@
 ;; Also know as the "wish list".  Some are done. For the others, no
 ;; promise when to be implemented.
 
+* Emphasis delimiters show when `W W c'.
+
 * Parsing of the common list confirmation requests so that Gnus can
    prepare the response with a single command.  Including LISTSERV
    periodic ping messages and the like.

@@ -1568,6 +1568,7 @@ increase the score of each group you read."
     "t" gnus-summary-toggle-header
     "v" gnus-summary-verbose-headers
     "H" gnus-article-strip-headers-in-body
+    "p" gnus-article-verify-x-pgp-sig
     "d" gnus-article-treat-dumbquotes)
 
   (gnus-define-keys (gnus-summary-wash-hide-map "W" gnus-summary-wash-map)
@@ -1752,6 +1753,7 @@ increase the score of each group you read."
               ["Verbose header" gnus-summary-verbose-headers t]
               ["Toggle header" gnus-summary-toggle-header t]
 	      ["Html" gnus-article-wash-html t]
+	      ["Verify X-PGP-Sig" gnus-article-verify-x-pgp-sig t]
 	      ["HZ" gnus-article-decode-HZ t])
              ("Output"
               ["Save in default format" gnus-summary-save-article t]
