@@ -1,3 +1,8 @@
+2003-06-13  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
+
+	* nnimap.el (nnimap-split-articles): Narrow the right buffer to
+	the headers.  From Niklas Morberg <niklas.morberg@axis.com>.
+
 2003-06-12  Dave Love  <fx@gnu.org>
 
 	* nnheader.el (nnheader-functionp): Deleted.

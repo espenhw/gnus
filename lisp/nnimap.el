@@ -1271,7 +1271,7 @@ function is generally only called when Gnus is shutting down."
 			    nnimap-split-download-body-default
 			  nnimap-split-download-body)
 			(and (nnimap-request-article article)
-			     (mail-narrow-to-head))
+			     (with-current-buffer nntp-server-buffer (mail-narrow-to-head)))
 		      (nnimap-request-head article))
 		;; copy article to right group(s)
 		(setq removeorig nil)
