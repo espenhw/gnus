@@ -1,3 +1,18 @@
+2003-10-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-mark-regexp): Jump to groups.
+
+2003-10-16  Ed L. Cashin  <ecashin@uga.edu>
+
+	* imap.el (imap-interactive-login): Set imap-password to nil if
+	login fails.
+
+2003-10-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-inserted-headers): New variable.
+	(message-mode): Make local.
+	(message-mode): Set all the local action variables to nil.	
+
 2003-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-decode.el (mm-inline-text-html-with-images): Doc fix.
