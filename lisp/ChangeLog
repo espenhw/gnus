@@ -1,4 +1,9 @@
 2002-02-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnrss.el (nnrss-content-function): New variable.
+	(nnrss-request-article): Use it.
+
+2002-02-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	
 	* gnus.el: Add article-unsplit-urls.
 	* gnus-sum.el: Ditto.
