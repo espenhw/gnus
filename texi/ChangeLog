@@ -1,3 +1,8 @@
+2001-10-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (NNTP): Added documentation for
+	`nntp-prepare-post-hook'.
+	
 2001-10-29  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Customizing Articles): Sort list. Remove

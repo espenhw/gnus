@@ -11371,6 +11371,18 @@ parameter, Gnus will use that function to establish the connection.
 Five pre-made functions are supplied.  These functions can be grouped in
 two categories: direct connection functions (three pre-made), and
 indirect ones (two pre-made).
+
+@item nntp-prepare-post-hook
+@vindex nntp-prepare-post-hook
+A hook run just before posting an article.  If there is no
+@code{Message-ID} header in the article and the news server provides the
+recommended ID, it will be added to the article before running this
+hook.  It is useful to make @code{Cancel-Lock} headers even if you
+inhibit Gnus to add a @code{Message-ID} header, you could say:
+
+@lisp
+(add-hook 'nntp-prepare-post-hook 'canlock-insert-header)
+@end lisp
 @end table
 
 @menu
