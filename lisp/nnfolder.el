@@ -35,6 +35,7 @@
 (require 'nnoo)
 (eval-when-compile (require 'cl))
 (require 'gnus-util)
+(require 'gnus-range)
 
 (nnoo-declare nnfolder)
 
@@ -373,7 +374,14 @@ all.  This may very well take some time.")
 		       (buffer-substring
 			(point) (progn (end-of-line) (point)))
 		       force nnfolder-inhibit-expiry))
-	    (nnheader-message 5 "Deleting article %d..."
+	    (unless (eq nnmail-expiry-target 'delete)
+	      (with-temp-buffer
+		(nnfolder-request-article (car maybe-expirable) 
+					  newsgroup server (current-buffer))
+		(let ((nnml-current-directory nil))
+		  (nnmail-expiry-target-group
+		   nnmail-expiry-target newsgroup))))
+	    (nnheader-message 5 "Deleting article %d in %s..."
 			      (car maybe-expirable) newsgroup)
 	    (nnfolder-delete-mail)
 	    (unless (or gnus-nov-is-evil nnfolder-nov-is-evil)

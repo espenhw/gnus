@@ -1,3 +1,16 @@
+2000-11-29 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnfolder.el (nnfolder-request-expire-articles): expiry-target.
+	
+	* nnbabyl.el (nnbabyl-request-expire-articles): Ditto.
+	
+	* nnmbox.el (nnmbox-request-expire-articles): Ditto.
+
+2000-11-22  Jan Nieuwenhuizen  <janneke@gnu.org>
+
+	* nnmh.el (nnmh-request-expire-articles): Implemented
+	expiry-target for nnmh backend.
+
 2000-11-30  Simon Josefsson  <sj@extundo.com>
 
 	* mm-decode.el (mm-security-from): New variable.
