@@ -804,6 +804,9 @@ with potentially long computations."
 
 (eval-when-compile
   (when (featurep 'xemacs)
+    ;; The XEmacs version of rmail requires tm, however tm was taken
+    ;; over to SEMI and FLIM long ago.  So, there may be those who
+    ;; have not installed tm.
     (require 'alist)
     (provide 'tm-view))
   (require 'rmail)
