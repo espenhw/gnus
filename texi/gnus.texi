@@ -16448,7 +16448,7 @@ with network protocols, including the protocol exchange in
 problem.
 
 @vindex imap-log
-Because this protocol dump generate potentially large buffers, it is
+Because this protocol dump generates potentially large buffers, it is
 not enabled by default.  You can enable it by toggling @code{imap-log}
 as follows:
 
@@ -16456,10 +16456,10 @@ as follows:
 (setq imap-log t)
 @end lisp
 
-This instruct the @code{imap.el} package to dump sent to the server,
-and everything received from the server.  The output is stored in the
-buffer @samp{*imap-log*}.  Look for error messages, which sometimes
-are tagged with the keyword @code{BAD}.
+This instructs the @code{imap.el} package to dump everything sent to
+the server, and everything received from the server.  The output is
+stored in the buffer @samp{*imap-log*}.  Look for error messages,
+which sometimes are tagged with the keyword @code{BAD}.
 
 @node Other Sources
 @section Other Sources
