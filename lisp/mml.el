@@ -145,12 +145,15 @@ one charsets.")
 			 (and use-ascii 'us-ascii)))
 	    charset struct space newline paragraph)
 	(while (not (eobp))
+	  (setq charset (mm-mime-charset (mm-charset-after)))
 	  (cond
 	   ;; The charset remains the same.
-	   ((or (eq (setq charset (mm-mime-charset (mm-charset-after))) 
-		    'us-ascii)
-		(and use-ascii (not charset))
-		(eq charset current)))
+	   ((eq charset 'us-ascii))
+	   ((or (and use-ascii (not charset))
+		(eq charset current))
+	    (setq space nil
+		  newline nil
+		  paragraph nil))
 	   ;; The initial charset was ascii.
 	   ((eq current 'us-ascii)
 	    (setq current charset
@@ -174,12 +177,12 @@ one charsets.")
 	  (cond
 	   ((memq (following-char) '(?  ?\t))
 	    (setq space (1+ (point))))
-	   ((eq (following-char) ?\n)
-	    (setq newline (1+ (point))))
 	   ((and (eq (following-char) ?\n)
 		 (not (bobp))
 		 (eq (char-after (1- (point))) ?\n))
-	    (setq paragraph (point))))
+	    (setq paragraph (point)))
+	   ((eq (following-char) ?\n)
+	    (setq newline (1+ (point)))))
 	  (forward-char 1))
 	;; Do the final part.
 	(unless (= beg (point))

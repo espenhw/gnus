@@ -1,3 +1,9 @@
+2000-05-11 11:08:03  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (mml-parse-singlepart-with-multiple-charsets): Set space,
+	newline and paragraph to nil when got a non-ascii character. Test
+	paragraph before newline.
+
 2000-05-10 12:17:58  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* qp.el (quoted-printable-encode-region): Bind tab-width to 1. Set
