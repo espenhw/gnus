@@ -99,8 +99,12 @@
     "^-----BEGIN PGP SIGNATURE-----\r?$")
   "Armor headers.")
 
+(defalias 'pgg-char-int (if (fboundp 'char-int)
+			    'char-int
+			  'identity))
+
 (defmacro pgg-format-key-identifier (string)
-  `(mapconcat (lambda (c) (format "%02X" (char-int c)))
+  `(mapconcat (lambda (c) (format "%02X" (pgg-char-int c)))
 	      ,string "")
   ;; `(upcase (apply #'format "%02x%02x%02x%02x%02x%02x%02x%02x"
   ;;                 (string-to-int-list ,string)))
@@ -114,10 +118,10 @@
 	 0))
 
 (defmacro pgg-byte-after (&optional pos)
-  `(char-int (char-after ,(or pos `(point)))))
+  `(pgg-char-int (char-after ,(or pos `(point)))))
 
 (defmacro pgg-read-byte ()
-  `(char-int (char-after (prog1 (point) (forward-char)))))
+  `(pgg-char-int (char-after (prog1 (point) (forward-char)))))
 
 (defmacro pgg-read-bytes-string (nbytes)
   `(buffer-substring
@@ -125,7 +129,7 @@
 	      (forward-char ,nbytes))))
 
 (defmacro pgg-read-bytes (nbytes)
-  `(mapcar #'char-int (pgg-read-bytes-string ,nbytes))
+  `(mapcar #'pgg-char-int (pgg-read-bytes-string ,nbytes))
   ;; `(string-to-int-list (pgg-read-bytes-string ,nbytes))
   )
 
@@ -135,7 +139,7 @@
      (pgg-read-bytes-string (- (point-max) (point)))))
 
 (defmacro pgg-read-body (ptag)
-  `(mapcar #'char-int (pgg-read-body-string ,ptag))
+  `(mapcar #'pgg-char-int (pgg-read-body-string ,ptag))
   ;; `(string-to-int-list (pgg-read-body-string ,ptag))
   )
 
@@ -460,13 +464,12 @@
 			   (match-beginning 0))))
 	 (checksum (buffer-substring (point) (+ 4 (point)))))
     (delete-region marker (point-max))
-    (mime-decode-region (point-min) marker "base64")
-    (when (fboundp 'pgg-parse-crc24-string )
+    (base64-decode-region (point-min) marker)
+    (when (fboundp 'pgg-parse-crc24-string)
       (or pgg-ignore-packet-checksum
 	  (string-equal
-	   (funcall (mel-find-function 'mime-encode-string "base64")
-		    (pgg-parse-crc24-string
-		     (buffer-string)))
+	   (base64-encode-string (pgg-parse-crc24-string
+				  (buffer-string)))
 	   checksum)
 	  (error "PGP packet checksum does not match")))))
 
@@ -485,12 +488,17 @@
 (defun pgg-parse-armor (string)
   (with-temp-buffer
     (buffer-disable-undo)
-    (set-buffer-multibyte nil)
+    (if (fboundp 'set-buffer-multibyte)
+	(set-buffer-multibyte nil))
     (insert string)
     (pgg-decode-armor-region (point-min)(point))))
 
+(defalias 'pgg-string-as-unibyte (if (fboundp 'string-as-unibyte)
+				     'string-as-unibyte
+				   'identity))
+
 (defun pgg-parse-armor-region (start end)
-  (pgg-parse-armor (string-as-unibyte (buffer-substring start end))))
+  (pgg-parse-armor (pgg-string-as-unibyte (buffer-substring start end))))
 
 (provide 'pgg-parse)
 

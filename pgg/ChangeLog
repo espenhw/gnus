@@ -1,5 +1,25 @@
 2002-09-28  Simon Josefsson  <jas@extundo.com>
 
+	* pgg.el (pgg-temporary-file-directory): New variable.
+	(pgg-set-buffer-multibyte): Defalias.
+	(pgg-verify-region): Use it.
+
+	* pgg-pgp5.el (pgg-pgp5-process-region, pgg-scheme-verify-region)
+	(pgg-scheme-snarf-keys-region): Use pgg-temporary-file-directory.
+
+	* pgg-parse.el (pgg-char-int): Defalias.
+	(pgg-format-key-identifier, pgg-byte-after, pgg-read-byte) 
+	(pgg-read-bytes, pgg-read-body): Use it.
+	(pgg-decode-packets): Don't use MEL, use base64-*.
+	(pgg-parse-armor): Don't assume set-buffer-multibyte exists.
+	(pgg-string-as-unibyte): Defalias.
+	(pgg-parse-armor-region): Use it.
+
+	* pgg-gpg.el (pgg-gpg-process-region): Use
+	pgg-temporary-file-directory.
+
+	* luna.el: Don't def-edebug.
+
 	* pgg-pgp5.el (pgg-scheme-verify-region): Inline
 	binary-write-decoded-region from MEL.
 

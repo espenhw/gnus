@@ -176,13 +176,13 @@ The optional 5th BODY is the body of the method."
 
 (put 'luna-define-method 'lisp-indent-function 'defun)
 
-(def-edebug-spec luna-define-method
-  (&define name [&optional &or ":before" ":after" ":around"]
-	   ((arg symbolp)
-	    [&rest arg]
-	    [&optional ["&optional" arg &rest arg]]
-	    &optional ["&rest" arg])
-	   def-body))
+;(def-edebug-spec luna-define-method
+;  (&define name [&optional &or ":before" ":after" ":around"]
+;	   ((arg symbolp)
+;	    [&rest arg]
+;	    [&optional ["&optional" arg &rest arg]]
+;	    &optional ["&rest" arg])
+;	   def-body))
 
 
 ;; Return a list of method functions named SERVICE registered in the

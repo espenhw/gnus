@@ -41,6 +41,11 @@
     (require 'w3)
     (require 'url)))
 
+(defvar pgg-temporary-file-directory
+  (cond ((fboundp 'temp-directory) (temp-directory))
+	((boundp 'temporary-file-directory) temporary-file-directory)
+	("/tmp/")))
+
 (in-calist-package 'pgg)
 
 (defun pgg-field-match-method-with-containment
@@ -245,6 +250,9 @@
   `(with-current-buffer pgg-output-buffer
      (if (zerop (buffer-size)) nil ,@body t)))
 
+(defalias pgg-set-buffer-multibyte (if (fboundp 'set-buffer-multibyte)
+				       'set-buffer-multibyte
+				     'identity))
 
 ;;; @ interface functions
 ;;;
@@ -311,7 +319,7 @@ signer's public key from `pgg-default-keyserver-address'."
 	  (if (null signature) nil
 	    (with-temp-buffer
 	      (buffer-disable-undo)
-	      (set-buffer-multibyte nil)
+	      (pgg-set-buffer-multibyte nil)
 	      (insert-file-contents signature)
 	      (cdr (assq 2 (pgg-decode-armor-region
 			    (point-min)(point-max)))))))
