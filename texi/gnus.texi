@@ -5547,6 +5547,10 @@ Gnus will use the ``current'' select method when canceling.  If you
 want to use the standard posting method, use the @samp{a} symbolic
 prefix (@pxref{Symbolic Prefixes}).
 
+Gnus ensures that only you can cancel your own messages using a
+@code{Cancel-Lock} header (@pxref{Canceling News, Canceling News, ,
+message, Message Manual}).
+
 If you discover that you have made some mistakes and want to do some
 corrections, you can post a @dfn{superseding} article that will replace
 your original article.
