@@ -1,3 +1,7 @@
+2000-05-03 14:11:23  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-encode): Test the validity of coding-system.
+
 2000-05-03 11:35:15  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2047.el (rfc2047-encode-message-header): Encode field by
