@@ -1,3 +1,10 @@
+2002-05-13  Josh Huber  <huber@alum.wpi.edu>
+
+	* mml.el (mml-generate-mime-1): Fix mml generation for signed only
+	messages. From Hans de Graaff <hans@degraaff.org>.
+	* nnml.el (nnml-request-accept-article): Pass in the group name to
+	nnmail-cache-insert, since it's available.
+
 2002-05-10  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nndoc.el (nndoc-mime-digest-type-p): Set proper file-end.
