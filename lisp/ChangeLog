@@ -1,5 +1,8 @@
 2003-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-newline-and-reformat): Place a boundary
+	before filling.
+
 	* nnimap.el (nnimap-split-fancy): Ditto.
 
 	* gnus-sum.el (gnus-summary-line-message-size): Ditto.

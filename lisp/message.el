@@ -2702,6 +2702,7 @@ Prefix arg means justify as well."
 	(delete-region (point) (re-search-forward "[ \t]*"))
 	(when (and quoted (not bolp))
 	  (insert quoted leading-space)))
+      (undo-boundary)
       (if quoted
 	  (let* ((adaptive-fill-regexp
 		  (regexp-quote (concat quoted leading-space)))
