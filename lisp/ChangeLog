@@ -1,6 +1,9 @@
 2001-12-06 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* nnrss.el: Use mm-url. Don't depend on nnweb, url, w3.
+	* dgnushack.el (dgnushack-compile): nnrss.el and
+	nnslashdot.el don't depend on nnweb, url, w3.
+
+	* nnrss.el: Use mm-url. 
 
 2001-12-06 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

@@ -236,8 +236,7 @@ Modify to suit your needs."))
       (error
        (message "No w3: %s %s" code (locate-library "w3-forms"))
        (dolist (file '("nnweb.el" "nnlistserv.el" "nnultimate.el"
-		       "nnslashdot.el" "nnwarchive.el" "webmail.el"
-		       "nnwfm.el" "nnrss.el"))
+		       "nnwarchive.el" "webmail.el" "nnwfm.el"))
 	 (setq files (delete file files)))))
     (condition-case code
 	(require 'mh-e)
