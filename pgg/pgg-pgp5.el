@@ -25,7 +25,6 @@
 
 ;;; Code:
 
-(require 'mel) ; binary-to-text-funcall, binary-write-decoded-region
 (eval-when-compile (require 'pgg))
 
 (defgroup pgg-pgp5 ()
@@ -211,7 +210,9 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
     (unwind-protect
 	(progn
 	  (set-default-file-modes 448)
-	  (binary-write-decoded-region start end orig-file))
+	  (let ((coding-system-for-write 'binary)
+		jka-compr-compression-info-list jam-zcat-filename-list)
+	    (write-region start end orig-file)))
       (set-default-file-modes orig-mode))
     (when (stringp signature)
       (copy-file signature (setq signature (concat orig-file ".asc")))

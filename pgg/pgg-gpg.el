@@ -25,7 +25,6 @@
 
 ;;; Code:
 
-(require 'mel) ; binary-to-text-funcall
 (eval-when-compile (require 'pgg))
 
 (defgroup pgg-gpg ()
