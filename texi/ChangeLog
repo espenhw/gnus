@@ -1,3 +1,8 @@
+2001-03-04 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From "Yair Friedman (Jerusalem)" <YAIRFR@amdocs.com>
+
+	* infohack.el (infohack): Set max-lisp-eval-depth to 600+.
+
 2001-03-03  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Posting Styles): Posting styles have (NAME VALUE),
