@@ -31,9 +31,12 @@
 
 (defvar nndoc-article-type 'guess
   "*Type of the file.
-One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
-`forward', `mime-digest', `standard-digest', `slack-digest', or
+One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
+`mime-digest', `standard-digest', `slack-digest', `clari-briefs' or
 `guess'.")
+
+(defvar nndoc-post-type 'mail
+  "*Whether the nndoc group is `mail' or `post'.")
 
 (defvar nndoc-type-alist 
   `((mmdf 
@@ -81,7 +84,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
      (article-begin . ,(concat "\n\n" (make-string 30 ?-) "\n\n"))
      (prepare-body . nndoc-prepare-digest-body)
      (body-end-function . nndoc-digest-body-end)
-     (file-end . "^End of .* Digest"))
+     (file-end . "^End of .*digest.*[0-9].*\n\\*\\*"))
     (guess 
      (guess . nndoc-guess-type))
     (digest
@@ -146,17 +149,17 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
 	(if (stringp (car articles))
 	    'headers
 	  (while articles
-	    (setq entry (cdr (assq (setq article (pop articles))
-				   nndoc-dissection-alist)))
-	    (insert (format "221 %d Article retrieved.\n" article))
-	    (if nndoc-generate-head
-		(funcall nndoc-generate-head article)
-	      (insert-buffer-substring
-	       nndoc-current-buffer (car entry) (nth 1 entry)))
-	    (goto-char (point-max))
-	    (or (= (char-after (1- (point))) ?\n) (insert "\n"))
-	    (insert (format "Lines: %d\n" (nth 4 entry)))
-	    (insert ".\n"))
+	    (when (setq entry (cdr (assq (setq article (pop articles))
+					 nndoc-dissection-alist)))
+	      (insert (format "221 %d Article retrieved.\n" article))
+	      (if nndoc-generate-head
+		  (funcall nndoc-generate-head article)
+		(insert-buffer-substring
+		 nndoc-current-buffer (car entry) (nth 1 entry)))
+	      (goto-char (point-max))
+	      (or (= (char-after (1- (point))) ?\n) (insert "\n"))
+	      (insert (format "Lines: %d\n" (nth 4 entry)))
+	      (insert ".\n")))
 
 	  (nnheader-fold-continuation-lines)
 	  'headers)))))
@@ -233,6 +236,11 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
 	  (erase-buffer)
 	  (insert (format "211 %d %d %d %s\n" number 1 number group))
 	  t))))))
+
+(defun nndoc-request-type (group &optional article)
+  (cond ((not article) 'unknown)
+        (nndoc-post-type nndoc-post-type)
+        (t 'unknown)))
 
 (defun nndoc-close-group (group &optional server)
   (nndoc-possibly-change-buffer group server)
@@ -399,25 +407,28 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
 	(setq first nil)
 	(when nndoc-head-begin
 	  (nndoc-search nndoc-head-begin))
-	(setq head-begin (point))
-	(nndoc-search (or nndoc-head-end "^$"))
-	(setq head-end (point))
-	(nndoc-search (or nndoc-body-begin "^\n"))
-	(setq body-begin (point))
-	(or (and nndoc-body-end-function
-		 (funcall nndoc-body-end-function))
-	    (and nndoc-body-end
-		 (nndoc-search nndoc-body-end))
-	    (nndoc-search nndoc-article-begin)
-	    (progn
-	      (goto-char (point-max))
-	      (when nndoc-file-end
-		(and (re-search-backward nndoc-file-end nil t)
-		     (beginning-of-line)))))
-	(setq body-end (point))
-	(push (list (incf i) head-begin head-end body-begin body-end
-		    (count-lines body-begin body-end))
-	      nndoc-dissection-alist)))))
+	(if (and nndoc-file-end
+		 (looking-at nndoc-file-end))
+	    (goto-char (point-max))
+	  (setq head-begin (point))
+	  (nndoc-search (or nndoc-head-end "^$"))
+	  (setq head-end (point))
+	  (nndoc-search (or nndoc-body-begin "^\n"))
+	  (setq body-begin (point))
+	  (or (and nndoc-body-end-function
+		   (funcall nndoc-body-end-function))
+	      (and nndoc-body-end
+		   (nndoc-search nndoc-body-end))
+	      (nndoc-search nndoc-article-begin)
+	      (progn
+		(goto-char (point-max))
+		(when nndoc-file-end
+		  (and (re-search-backward nndoc-file-end nil t)
+		       (beginning-of-line)))))
+	  (setq body-end (point))
+	  (push (list (incf i) head-begin head-end body-begin body-end
+		      (count-lines body-begin body-end))
+		nndoc-dissection-alist))))))
 
 (defun nndoc-prepare-digest-body ()
   "Unquote quoted non-separators in digests."

@@ -180,7 +180,7 @@
 	      (nnmbox-article-group-number)))))))
 
 (defun nnmbox-request-group (group &optional server dont-check)
-  (let ((active (assoc group nnmbox-group-alist)))
+  (let ((active (cadr (assoc group nnmbox-group-alist))))
     (cond 
      ((null (nnmbox-possibly-change-newsgroup group))
       (nnheader-report 'nnmbox "No such group: %s" group))
@@ -501,7 +501,8 @@
       (let ((delim (concat "^" rmail-unix-mail-delimiter))
 	    start end)
 	(set-buffer (setq nnmbox-mbox-buffer 
-			  (find-file-noselect nnmbox-mbox-file nil 'raw)))
+			  (nnheader-find-file-noselect
+			   nnmbox-mbox-file nil 'raw)))
 	(buffer-disable-undo (current-buffer))
 	(goto-char (point-min))
 	(while (re-search-forward delim nil t)

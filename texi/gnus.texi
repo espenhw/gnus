@@ -1250,6 +1250,9 @@ Select from where.
 A string that looks like @samp{<%s:%n>} if a foreign select method is
 used.
 
+@item P
+Indentation based on the level of the topic (@pxref{Group Topics}). 
+
 @item c
 @vindex gnus-group-uncollapsed-levels
 Short (collapsed) group name.  The @code{gnus-group-uncollapsed-levels}
@@ -1872,8 +1875,9 @@ Make a group based on some file or other
 (@code{gnus-group-make-doc-group}).  If you give a prefix to this
 command, you will be prompted for a file name and a file type.
 Currently supported types are @code{babyl}, @code{mbox}, @code{digest},
-@code{mmdf}, @code{news}, @code{rnews}, and @code{forward}.  If you run
-this command without a prefix, Gnus will guess at the file type.
+@code{mmdf}, @code{news}, @code{rnews}, @code{clari-briefs}, and
+@code{forward}.  If you run this command without a prefix, Gnus will
+guess at the file type.
 
 @item G DEL
 @kindex G DEL (Group)
@@ -2365,8 +2369,8 @@ The babyl (rmail) mail box.
 
 @item mbox
 The standard Unix mbox file.
-@cindex MMDF mail box
 
+@cindex MMDF mail box
 @item mmdf
 The MMDF mail box format.
 
@@ -2421,7 +2425,14 @@ Virtual server variables:
 @item nndoc-article-type
 @vindex nndoc-article-type
 This should be one of @code{mbox}, @code{babyl}, @code{digest},
-@code{mmdf}, @code{forward}, or @code{guess}.
+@code{mmdf}, @code{forward}, @code{news}, @code{rnews},
+@code{mime-difest}, @code{clari-briefs}, or @code{guess}.
+
+@item nndoc-post-type
+@vindex nndoc-post-type
+This variable says whether Gnus is to consider the group a news group or
+a mail group.  There are two legal values:  @code{mail} (the default)
+and @code{news}.
 @end table
 
 
@@ -3073,7 +3084,10 @@ names---no @samp{"nnml:"} prefixes and the like.
 The @code{nnmail-expiry-wait} variable and
 @code{nnmail-expiry-wait-function} function can be either a number (not
 necessarily an integer) or the symbols @code{immediate} or
-@code{never}. 
+@code{never}.  
+
+You can also use the @code{expiry-wait} group parameter to selectively
+change the expiry period (@pxref{Group Parameters}).
 
 @vindex nnmail-keep-last-article
 If @code{nnmail-keep-last-article} is non-@code{nil}, Gnus will never
@@ -3843,6 +3857,8 @@ Level.
 Number of groups in the topic.
 @item a
 Number of unread articles in the topic.
+@item A 
+Number of unread articles in the topic and all its subtopics. 
 @end table
 
 
@@ -3969,12 +3985,6 @@ setting it in any other startup files will have no effect.
 This topology shows what topics are sub-topics of what topics (right),
 and which topics are visible.  Two settings are currently
 allowed---@code{visible} and @code{invisible}.
-
-@vindex gnus-topic-hide-subtopics
-If @code{gnus-topic-hide-subtopics} is non-@code{nil} (which it is by
-default), sub-topics will be folded along with any groups that belong to
-the topic.  If this variable is @code{nil}, all topics will always be
-visible, even though the parent topics are folded.
 
 
 @node Misc Group Stuff
@@ -5534,16 +5544,35 @@ If you save the buffer the normal way (@kbd{C-x C-s}, for instance), the
 article will be saved there.  (Auto-save files also go to the draft
 group.) 
 
-The draft group is a special draft group (which is implemented as an
+The draft group is a special group (which is implemented as an
 @code{nndraft} group, if you absolutely have to know) called
 @samp{nndraft:drafts}.  The variable @code{gnus-draft-group-directory}
 controls both the name of the group and the location---the leaf element
 in the path will be used as the name of the group.  What makes this
 group special is that you can't tick any articles in it or mark any
-articles as read---all articles in the group are permanently unread.  
+articles as read---all articles in the group are permanently unread.
 
 If the group doesn't exist, it will be created and you'll be subscribed
 to it.
+
+@findex gnus-dissociate-buffer-from-draft
+@kindex C-c M-d (Mail)
+@kindex C-c M-d (Post)
+@findex gnus-associate-buffer-with-draft
+@kindex C-c C-d (Mail)
+@kindex C-c C-d (Post)
+If you're writing some super-secret message that you later want to
+encode with PGP before sending, you may wish to turn the auto-saving
+(and association with the draft group) off.  You never know who might be
+interested in reading all your extremely valuable and terribly horrible
+and interesting secrets.  The @kbd{C-c M-d}
+(@code{gnus-dissociate-buffer-from-draft}) command does that for you.
+If you change your mind and want to turn the auto-saving back on again,
+@kbd{C-c C-d} (@code{gnus-associate-buffer-with-draft} does that.
+
+@vindex gnus-use-draft
+To leave association with the draft group off by default, set
+@code{gnus-use-draft} to @code{nil}.  It is @code{t} by default. 
 
 @findex gnus-summary-send-draft
 @kindex S D c (Summary)
@@ -6391,8 +6420,7 @@ summary buffer is otherwise unthreaded.
 @kindex T ^ (Summary)
 @findex gnus-summary-reparent-thread
 Make the current article the child of the marked (or previous) article
-(@code{gnus-summary-reparent-thread}.  The change will not be visible
-until the next group retrieval.
+(@code{gnus-summary-reparent-thread}.
 
 @end table
 
@@ -8009,18 +8037,22 @@ There are a few variables to customize the tree display, of course:
 
 @table @code
 @item gnus-tree-mode-hook
+@vindex gnus-tree-mode-hook
 A hook called in all tree mode buffers.
 
 @item gnus-tree-mode-line-format
+@vindex gnus-tree-mode-line-format
 A format string for the mode bar in the tree mode buffers.  The default
 is @samp{"Gnus: %%b [%A] %Z"}.  For a list of legal specs, @xref{Summary
 Buffer Mode Line}. 
 
 @item gnus-selected-tree-face
+@vindex gnus-selected-tree-face
 Face used for highlighting the selected article in the tree buffer.  The
 default is @code{modeline}.
 
 @item gnus-tree-line-format
+@vindex gnus-tree-line-format
 A format string for the tree nodes.  The name is a bit of a misnomer,
 though---it doesn't define a line, but just the node.  The default value
 is @samp{"%(%[%3,3n%]%)"}, which displays the first three characters of
@@ -8050,24 +8082,28 @@ Variables related to the display are:
 
 @table @code
 @item gnus-tree-brackets
+@vindex gnus-tree-brackets
 This is used for differentiating between "real" articles and "sparse"
 articles.  The format is @var{((real-open . real-close) (sparse-open
 . sparse-close) (dummy-open . dummy-close))}, and the default is
 @code{((?[ . ?]) (?( . ?)) (?@{ . ?@}))}.
 
 @item gnus-tree-parent-child-edges
+@vindex gnus-tree-parent-child-edges
 This is a list that contains the characters used for connecting parent
 nodes to their children.  The default is @code{(?- ?\\ ?|)}. 
 
 @end table
 
 @item gnus-tree-minimize-window
+@vindex gnus-tree-minimize-window
 If this variable is non-@code{nil}, Gnus will try to keep the tree
 buffer as small as possible to allow more room for the other Gnus
 windows.  If this variable is a number, the tree buffer will never be
 higher than that number.  The default is @code{t}.
 
 @item gnus-generate-tree-function
+@vindex gnus-generate-tree-function
 @findex gnus-generate-horizontal-tree
 @findex gnus-generate-vertical-tree
 The function that actually generates the thread tree.  Two predefined
@@ -9472,6 +9508,15 @@ Save the changes you have made and return to the summary buffer
 Insert the current date in numerical format
 (@code{gnus-score-edit-insert-date}).  This is really the day number, if
 you were wondering.
+
+@item C-c C-p
+@kindex C-c C-p (Score)
+@findex gnus-score-pretty-print
+The adaptive score files are saved in an unformatted fashion.  If you
+intend to read one of these files, you want to @dfn{pretty print} it
+first.  This command (@code{gnus-score-pretty-print}) does that for
+you. 
+
 @end table
 
 @node Adaptive Scoring

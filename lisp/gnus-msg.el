@@ -154,6 +154,9 @@ the group.")
 	   "drafts"))
   "*The directory where draft messages will be stored.")
 
+(defvar gnus-use-draft t
+  "*Whether Gnus should use the draft group.")
+
 (defvar gnus-posting-styles nil
   "*Alist of styles to use when posting.")
 
@@ -319,7 +322,7 @@ headers.")
 ;;; Internal variables.
 
 (defvar gnus-post-news-buffer "*post-news*")
-(defvar gnus-mail-buffer "*mail*")
+(defvar gnus-mail-buffer "*Mail Gnus*")
 (defvar gnus-article-copy nil)
 (defvar gnus-reply-subject nil)
 (defvar gnus-newsgroup-followup nil)
@@ -1094,7 +1097,7 @@ called."
 		(condition-case ()
 		    (save-excursion
 		      (set-buffer (, (buffer-name)))
-		      (gnus-put-in-draft-group nil 'silent))
+		      (gnus-associate-buffer-with-draft nil 'silent))
 		  (error 
 		   (ding)
 		   (gnus-message 
@@ -1135,7 +1138,7 @@ called."
       (run-hooks 'gnus-message-sent-hook)
       ;; If the posting was unsuccessful (that it, it was rejected) we
       ;; put it into the draft group.
-      (or result (gnus-put-in-draft-group))
+      (or result (gnus-associate-buffer-with-draft))
       result)))
 
 (defun gnus-inews-cleanup-headers ()
@@ -1973,7 +1976,7 @@ If INHIBIT-PROMPT, never prompt for a Subject."
     (gnus-configure-posting-styles)
     (news-setup nil subject nil (and group (gnus-group-real-name group)) nil)
     ;; Associate this buffer with the draft group.
-    (gnus-associate-buffer-with-draft)
+    (gnus-enter-buffer-into-draft)
     (goto-char (point-min))
 
     (unless (re-search-forward 
@@ -2012,7 +2015,7 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 	(set-buffer (get-buffer-create gnus-post-news-buffer))
 	(news-reply-mode)
 	;; Associate this buffer with the draft group.
-	(gnus-associate-buffer-with-draft)
+	(gnus-enter-buffer-into-draft)
 	(if (and (buffer-modified-p)
 		 (> (buffer-size) 0)
 		 (not (gnus-y-or-n-p 
@@ -2552,7 +2555,8 @@ Headers will be generated before sending."
   (use-local-map (copy-keymap (current-local-map)))
   (local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
   (local-set-key "\C-c\C-p" 'gnus-put-message)
-  (local-set-key "\C-c\C-d" 'gnus-put-in-draft-group))
+  (local-set-key "\C-c\M-d" 'gnus-dissociate-buffer-from-draft)
+  (local-set-key "\C-c\C-d" 'gnus-associate-buffer-with-draft))
 
 (defun gnus-mail-setup (type &optional to subject in-reply-to cc
 			     replybuffer actions)
@@ -2583,7 +2587,7 @@ Headers will be generated before sending."
     (t 'gnus-sendmail-mail-setup))
    to subject in-reply-to cc replybuffer actions)
   ;; Associate this mail buffer with the draft group.
-  (gnus-associate-buffer-with-draft))
+  (gnus-enter-buffer-into-draft))
 
 (defun gnus-sendmail-mail-setup (to subject in-reply-to cc replybuffer actions)
   (mail-mode)
@@ -2732,7 +2736,7 @@ Headers will be generated before sending."
     (gnus-check-server method)
     group))
 
-(defun gnus-put-in-draft-group (&optional generate silent)
+(defun gnus-associate-buffer-with-draft (&optional generate silent)
   "Enter the current buffer into the draft group."
   (interactive)
   (when (gnus-request-accept-article (gnus-make-draft-group) t)
@@ -2741,21 +2745,29 @@ Headers will be generated before sending."
       (gnus-mail-send-and-exit 'dont-send))
     (set-buffer-modified-p nil)))
 
-(defun gnus-associate-buffer-with-draft ()
-  (save-excursion
-    ;; Make sure the draft group exists.
-    (gnus-make-draft-group)
-    ;; Associate the buffer with the draft group.
-    (let ((article (gnus-request-associate-buffer (gnus-draft-group))))
-      ;; Arrange for deletion of the draft after successful sending.
-      (make-local-variable 'gnus-message-sent-hook)
-      (setq gnus-message-sent-hook
-	    (list
-	     `(lambda ()
-		(let ((gnus-verbose-backends nil))
-		  (gnus-request-expire-articles 
-		   (quote ,(list article))
-		   ,(gnus-draft-group) t))))))))
+(defun gnus-enter-buffer-into-draft ()
+  (when gnus-use-draft
+    (save-excursion
+      ;; Make sure the draft group exists.
+      (gnus-make-draft-group)
+      ;; Associate the buffer with the draft group.
+      (let ((article (gnus-request-associate-buffer (gnus-draft-group))))
+	;; Arrange for deletion of the draft after successful sending.
+	(make-local-variable 'gnus-message-sent-hook)
+	(setq gnus-message-sent-hook
+	      (list
+	       `(lambda ()
+		  (let ((gnus-verbose-backends nil))
+		    (gnus-request-expire-articles 
+		     (quote ,(list article))
+		     ,(gnus-draft-group) t)))))))))
+
+(defun gnus-dissociate-buffer-from-draft ()
+  "Disable auto-saving and association to the draft group of the current buffer."
+  (interactive)
+  (run-hooks gnus-message-sent-hook)
+  (setq buffer-file-name nil)
+  (setq buffer-auto-save-file-name nil))
 
 (defun gnus-summary-send-draft ()
   "Enter a mail/post buffer to edit and send the draft."
@@ -2772,7 +2784,7 @@ Headers will be generated before sending."
       (gnus-inews-modify-mail-mode-map)
       (when (eq major-mode 'news-reply-mode)
 	(local-set-key "\C-c\C-c" 'gnus-inews-news))
-      (gnus-associate-buffer-with-draft) 
+      (gnus-enter-buffer-into-draft) 
       ;; Insert the separator.
       (goto-char (point-min))
       (search-forward "\n\n")

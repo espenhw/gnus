@@ -34,6 +34,9 @@
 (defvar nnsoup-directory "~/SOUP/"
   "*SOUP packet directory.")
 
+(defvar nnsoup-tmp-directory "/tmp/"
+  "*Where nnsoup will store temporary files.")
+
 (defvar nnsoup-replies-directory (concat nnsoup-directory "replies/")
   "*Directory where outgoing packets will be composed.")
 
@@ -69,6 +72,7 @@ The SOUP packet file name will be inserted at the %s.")
 
 (defvar nnsoup-status-string "")
 (defvar nnsoup-group-alist nil)
+(defvar nnsoup-current-prefix 0)
 (defvar nnsoup-replies-list nil)
 (defvar nnsoup-buffers nil)
 (defvar nnsoup-current-group nil)
@@ -80,11 +84,11 @@ The SOUP packet file name will be inserted at the %s.")
 (defvar nnsoup-current-server nil)
 (defvar nnsoup-server-alist nil)
 (defvar nnsoup-server-variables 
-  (list 
-   (list 'nnsoup-directory nnsoup-directory)
-   (list 'nnsoup-active-file nnsoup-active-file)
-   '(nnsoup-status-string "")
-   '(nnsoup-group-alist nil)))
+  `((nnsoup-directory ,nnsoup-directory)
+    (nnsoup-active-file ,nnsoup-active-file)
+    (nnsoup-status-string "")
+    (nnsoup-current-prefix 0)
+    (nnsoup-group-alist nil)))
 
 
 
@@ -95,7 +99,7 @@ The SOUP packet file name will be inserted at the %s.")
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
-    (let ((areas (cdr (assoc nnsoup-current-group nnsoup-group-alist)))
+    (let ((areas (cddr (assoc nnsoup-current-group nnsoup-group-alist)))
 	  (articles sequence)
 	  (use-nov t)
 	  useful-areas this-area-seq)
@@ -239,19 +243,14 @@ The SOUP packet file name will be inserted at the %s.")
 (defun nnsoup-request-group (group &optional server dont-check)
   (nnsoup-possibly-change-group group)
   (if dont-check 
-      ()
-    (let ((area (cdr (assoc group nnsoup-group-alist)))
-	  min max)
-      (save-excursion
-	(set-buffer nntp-server-buffer)
-	(erase-buffer)
-	(setq min (car (car (car area))))
-	(while (cdr area)
-	  (setq area (cdr area)))
-	(setq max (cdr (car (car area))))
-	(insert (format "211 %d %d %d %s\n" 
-			(max (1+ (- max min)) 0) min max group)))))
-  t)
+      t
+    (let ((active (cadr (assoc group nnsoup-group-alist))))
+      (if (not active)
+	  (nnheader-report 'nnsoup "No such group: %s" group)
+	(nnheader-insert 
+	 "211 %d %d %d %s\n" 
+	 (max (1+ (- (cdr active) (car active))) 0) 
+	 (car active) (cdr active) group)))))
 
 (defun nnsoup-request-type (group &optional article)
   (nnsoup-possibly-change-group group)
@@ -281,19 +280,13 @@ The SOUP packet file name will be inserted at the %s.")
     (set-buffer nntp-server-buffer)
     (erase-buffer)
     (let ((alist nnsoup-group-alist)
-	  min)
-      (while alist
-	(setq min (car (car (nth 1 (car alist)))))
-	(insert (format "%s %d %d y\n" (car (car alist))
-			(let ((areas (car alist)))
-			  (while (cdr areas)
-			    (setq areas (cdr areas)))
-			  (cdr (car (car areas)))) min))
-	(setq alist (cdr alist)))
+	  entry)
+      (while (setq entry (pop alist))
+	(insert (format "%s %d %d y\n" (car entry)
+			(cdadr entry) (caadr entry))))
       t)))
 
 (defun nnsoup-request-scan (group &optional server)
-  (or nnsoup-group-alist (nnsoup-read-areas))
   (nnsoup-unpack-packets))
 
 (defun nnsoup-request-newgroups (date &optional server)
@@ -313,7 +306,8 @@ The SOUP packet file name will be inserted at the %s.")
 (defun nnsoup-request-expire-articles (articles group &optional server force)
   (nnsoup-possibly-change-group group)
   (let* ((total-infolist (assoc group nnsoup-group-alist))
-	 (infolist (cdr total-infolist))
+	 (active (cadr total-infolist))
+	 (infolist (cddr total-infolist))
 	 info range-list mod-time prefix)
     (while infolist
       (setq info (pop infolist)
@@ -331,18 +325,22 @@ The SOUP packet file name will be inserted at the %s.")
 	(when (condition-case nil
 		  (progn
 		    (nnheader-message 
-		     5 "Deleting %s..." (nnsoup-file prefix t))
-		    (sit-for 1)
+		     5 "Deleting %s..." (nnsoup-file prefix))
 		    (when (file-exists-p (nnsoup-file prefix))
 		      (delete-file (nnsoup-file prefix)))
+		    (nnheader-message 
+		     5 "Deleting %s..." (nnsoup-file prefix t))
 		    (when (file-exists-p (nnsoup-file prefix t))
 		      (delete-file (nnsoup-file prefix t)))
 		    t)
 		(error nil))
-	  (setcdr total-infolist (delq info (cdr total-infolist)))
+	  (setcdr (cdr total-infolist) (delq info (cddr total-infolist)))
 	  (setq articles (gnus-sorted-complement articles range-list))))
       (when (not mod-time)
-	(setcdr total-infolist (delq info (cdr total-infolist)))))
+	(setcdr (cdr total-infolist) (delq info (cddr total-infolist)))))
+    (if (cddr total-infolist)
+	(setcar active (car (car (cdr (car (cdr (cdr total-infolist)))))))
+      (setcar active (1+ (cdr active))))
     (nnsoup-write-active-file)
     ;; Return the articles that weren't expired.
     articles))
@@ -356,10 +354,23 @@ The SOUP packet file name will be inserted at the %s.")
     t))
 
 (defun nnsoup-read-active-file ()
-  (if (file-exists-p nnsoup-active-file)
-      (condition-case ()
-	  (load nnsoup-active-file)
-	(error nil))))
+  (setq nnsoup-group-alist)
+  (when (file-exists-p nnsoup-active-file)
+    (condition-case ()
+	(load nnsoup-active-file)
+      (error nil))
+    ;; Be backwards compatible.
+    (when (and nnsoup-group-alist
+	       (not (atom (caadar nnsoup-group-alist))))
+      (let ((alist nnsoup-group-alist)
+	    entry e min max)
+	(while (setq e (cdr (setq entry (pop alist))))
+	  (setq min (caaar e))
+	  (while (cdr e)
+	    (setq e (cdr e)))
+	  (setq max (cdaar e))
+	  (setcdr entry (cons (cons min max) (cdr entry))))))
+    nnsoup-group-alist))
 
 (defun nnsoup-write-active-file ()
   (when nnsoup-group-alist
@@ -368,37 +379,60 @@ The SOUP packet file name will be inserted at the %s.")
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
       (insert (format "(setq nnsoup-group-alist '%S)\n" nnsoup-group-alist))
+      (insert (format "(setq nnsoup-current-prefix %d)\n"
+		      nnsoup-current-prefix))
       (write-region (point-min) (point-max) nnsoup-active-file
 		    nil 'silent)
       (kill-buffer (current-buffer)))))
 
+(defun nnsoup-next-prefix ()
+  "Return the next free prefix."
+  (let (prefix)
+    (while (or (file-exists-p 
+		(nnsoup-file (setq prefix (int-to-string
+					   nnsoup-current-prefix))))
+	       (file-exists-p (nnsoup-file prefix t)))
+      (incf nnsoup-current-prefix))
+    (incf nnsoup-current-prefix)
+    prefix))
+
 (defun nnsoup-read-areas ()
   (save-excursion
     (set-buffer nntp-server-buffer)
-    (let ((areas (gnus-soup-parse-areas (concat nnsoup-directory "AREAS")))
-	  entry number area lnum)
+    (let ((areas (gnus-soup-parse-areas (concat nnsoup-tmp-directory "AREAS")))
+	  entry number area lnum cur-prefix file)
       ;; Go through all areas in the new AREAS file.
-      (while areas
-	(setq area (car areas)
-	      areas (cdr areas))
+      (while (setq area (pop areas))
+	;; Change the name to the permanent name and move the files.
+	(setq cur-prefix (nnsoup-next-prefix))
+	(when (file-exists-p 
+	       (setq file (concat nnsoup-tmp-directory
+				  (gnus-soup-area-prefix area) ".IDX")))
+	  (rename-file file (nnsoup-file cur-prefix)))
+	(when (file-exists-p 
+	       (setq file (concat nnsoup-tmp-directory 
+				  (gnus-soup-area-prefix area) ".MSG")))
+	  (rename-file file (nnsoup-file cur-prefix t)))
+	(gnus-soup-set-area-prefix area cur-prefix)
 	;; Find the number of new articles in this area.
 	(setq number (nnsoup-number-of-articles area))
 	(if (not (setq entry (assoc (gnus-soup-area-name area)
 				    nnsoup-group-alist)))
 	    ;; If this is a new area (group), we just add this info to
 	    ;; the group alist. 
-	    (setq nnsoup-group-alist
-		  (cons (list (gnus-soup-area-name area)
-			      (list (cons 1 number) area))
-			nnsoup-group-alist))
+	    (push (list (gnus-soup-area-name area)
+			(cons 1 number)
+			(list (cons 1 number) area))
+		  nnsoup-group-alist)
 	  ;; There are already articles in this group, so we add this
 	  ;; info to the end of the entry.
-	  (let ((e (cdr entry)))
+	  (let ((e (cddr entry)))
 	    (while (cdr e)
 	      (setq e (cdr e)))
 	    (setcdr e (list (list (cons (setq lnum (1+ (cdr (car (car e)))))
 					(+ lnum number)) 
-				  area)))))))
+				  area))))
+	  (setcdr (cadr entry) (+ lnum number)))))
     (nnsoup-write-active-file)))
 
 (defun nnsoup-number-of-articles (area)
@@ -442,16 +476,18 @@ The SOUP packet file name will be inserted at the %s.")
   (nnsoup-index-buffer prefix 'msg))
 
 (defun nnsoup-unpack-packets ()
+  "Unpack all packets in `nnsoup-packet-directory'."
   (let ((packets (directory-files
 		  nnsoup-packet-directory t nnsoup-packet-regexp))
-	msg)
-    (while packets
-      (message (setq msg (format "nnsoup: unpacking %s..." (car packets))))
-      (gnus-soup-unpack-packet nnsoup-directory nnsoup-unpacker (car packets))
-      (delete-file (car packets))
-      (nnsoup-read-areas)
-      (message "%sdone" msg)
-      (setq packets (cdr packets)))))
+	packet msg)
+    (while (setq packet (pop packets))
+      (message (setq msg (format "nnsoup: unpacking %s..." packet)))
+      (if (not (gnus-soup-unpack-packet 
+		nnsoup-tmp-directory nnsoup-unpacker packet))
+	  (message "Couldn't unpack %s" packet)
+	(delete-file packet)
+	(nnsoup-read-areas)
+	(message "%sdone" msg)))))
 
 (defun nnsoup-narrow-to-article (article &optional area head)
   (let* ((area (or area (nnsoup-article-to-area article nnsoup-current-group)))
@@ -539,7 +575,7 @@ The SOUP packet file name will be inserted at the %s.")
 
 (defun nnsoup-article-to-area (article group)
   "Return the area that ARTICLE in GROUP is located in."
-  (let ((areas (cdr (assoc group nnsoup-group-alist))))
+  (let ((areas (cddr (assoc group nnsoup-group-alist))))
     (while (and areas (< (cdr (car (car areas))) article))
       (setq areas (cdr areas)))
     (and areas (car areas))))
@@ -663,14 +699,17 @@ The SOUP packet file name will be inserted at the %s.")
 			  (car files) (match-beginning 1)
 			  (match-end 1))))
       (if (not (setq elem (assoc group active)))
-	  (push (list group (list (cons 1 lines) 
-				  (vector ident group "ncm" "" lines)))
+	  (push (list group (cons 1 lines)
+		      (list (cons 1 lines) 
+			    (vector ident group "ncm" "" lines)))
 		active)
-	(setcdr elem (cons (list (cons (setq min (1+ (cdr (car (car
-								(cdr elem))))))
-				       (+ min lines))
-				 (vector ident group "ncm" "" lines))
-			   (cdr elem))))
+	(nconc elem
+	       (list
+		(list (cons (setq min (1+ (cdr (car (car
+						     (cdr elem))))))
+			    (+ min lines))
+		      (vector ident group "ncm" "" lines))))
+	(setcdr (cadr elem) (+ min lines)))
       (setq files (cdr files)))
     (message "")
     (setq nnsoup-group-alist active)

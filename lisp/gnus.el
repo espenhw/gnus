@@ -1489,6 +1489,14 @@ The default function `gnus-summary-highlight-line' will
 highlight the line according to the `gnus-summary-highlight'
 variable.")
 
+(defvar gnus-group-update-hook '(gnus-group-highlight-line)
+  "*A hook called when a group line is changed.
+The hook will not be called if `gnus-visual' is nil.
+
+The default function `gnus-group-highlight-line' will
+highlight the line according to the `gnus-group-highlight'
+variable.")
+
 (defvar gnus-mark-article-hook (list 'gnus-summary-mark-unread-as-read)
   "*A hook called when an article is selected for the first time.
 The hook is intended to mark an article as read (or unread)
@@ -1512,7 +1520,12 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
 
 ;; Internal variables
 
+(defvar gnus-topic-indentation "") ;; Obsolete variable.
+
 (defvar gnus-override-subscribe-method nil)
+
+(defvar gnus-group-goto-next-group-function nil
+  "Function to override finding the next group after listing groups.")
 
 (defconst gnus-article-mark-lists
   '((marked . tick) (replied . reply)
@@ -1526,7 +1539,7 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
 (defvar gnus-newsgroup-selected-overlay nil)
 
 (defvar gnus-inhibit-hiding nil)
-(defvar gnus-topic-indentation "")
+(defvar gnus-group-indentation "")
 (defvar gnus-inhibit-limiting nil)
 
 (defvar gnus-article-mode-map nil)
@@ -1579,7 +1592,7 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
     (?p gnus-tmp-process-marked ?c)
     (?s gnus-tmp-news-server ?s)
     (?n gnus-tmp-news-method ?s)
-    (?P gnus-topic-indentation ?s)
+    (?P gnus-group-indentation ?s)
     (?z gnus-tmp-news-method-string ?s)
     (?u gnus-tmp-user-defined ?s)))
 
@@ -1658,7 +1671,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.30"
+(defconst gnus-version "September Gnus v0.31"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1946,6 +1959,7 @@ Thank you for your help in stamping out bugs.
       gnus-server-make-menu-bar gnus-article-make-menu-bar
       gnus-browse-make-menu-bar gnus-highlight-selected-summary
       gnus-summary-highlight-line gnus-carpal-setup-buffer
+      gnus-group-highlight
       gnus-article-add-button gnus-insert-next-page-button
       gnus-insert-prev-page-button gnus-visual-turn-off-edit-menu)
      ("gnus-vis" :interactive t
@@ -2065,6 +2079,10 @@ Thank you for your help in stamping out bugs.
 (defmacro gnus-group-unread (group)
   "Get the currently computed number of unread articles in GROUP."
   `(car (gnus-gethash ,group gnus-newsrc-hashtb)))
+
+(defmacro gnus-group-entry (group)
+  "Get the newsrc entry for GROUP."
+  `(gnus-gethash ,group gnus-newsrc-hashtb))
 
 (defmacro gnus-active (group)
   "Get active info on GROUP."
@@ -2283,7 +2301,7 @@ Thank you for your help in stamping out bugs.
 (defun gnus-group-line-format-spec ()
   (insert gnus-tmp-marked-mark gnus-tmp-subscribed
 	  gnus-tmp-process-marked
-	  gnus-topic-indentation
+	  gnus-group-indentation
 	  (format "%5s: " gnus-tmp-number-of-unread))
   (put-text-property
    (point)
@@ -4246,32 +4264,36 @@ listed."
   (gnus-group-setup-buffer)		;May call from out of group buffer
   (gnus-update-format-specifications)
   (let ((case-fold-search nil)
+	(props (text-properties-at (gnus-point-at-bol)))
 	(group (gnus-group-group-name)))
     (funcall gnus-group-prepare-function level unread lowest)
     (if (zerop (buffer-size))
 	(gnus-message 5 gnus-no-groups-message)
-      (goto-char (point-min))
-      (if (not group)
-	  ;; Go to the first group with unread articles.
-	  (gnus-group-search-forward nil nil nil t)
-	;; Find the right group to put point on.  If the current group
-	;; has disappeared in the new listing, try to find the next
-	;; one.	 If no next one can be found, just leave point at the
-	;; first newsgroup in the buffer.
-	(if (not (gnus-goto-char
-		  (text-property-any
-		   (point-min) (point-max)
-		   'gnus-group (gnus-intern-safe group gnus-active-hashtb))))
-	    (let ((newsrc (nthcdr 3 (gnus-gethash group gnus-newsrc-hashtb))))
-	      (while (and newsrc
-			  (not (gnus-goto-char
-				(text-property-any
-				 (point-min) (point-max) 'gnus-group
-				 (gnus-intern-safe
-				  (car (car newsrc)) gnus-active-hashtb)))))
-		(setq newsrc (cdr newsrc)))
-	      (or newsrc (progn (goto-char (point-max))
-				(forward-line -1))))))
+      (goto-char (point-max))
+      (when (or (not gnus-group-goto-next-group-function)
+		(not (funcall gnus-group-goto-next-group-function 
+			      group props)))
+	(if (not group)
+	    ;; Go to the first group with unread articles.
+	    (gnus-group-search-forward t)
+	  ;; Find the right group to put point on.  If the current group
+	  ;; has disappeared in the new listing, try to find the next
+	  ;; one.	 If no next one can be found, just leave point at the
+	  ;; first newsgroup in the buffer.
+	  (if (not (gnus-goto-char
+		    (text-property-any
+		     (point-min) (point-max)
+		     'gnus-group (gnus-intern-safe group gnus-active-hashtb))))
+	      (let ((newsrc (cdddr (gnus-gethash group gnus-newsrc-hashtb))))
+		(while (and newsrc
+			    (not (gnus-goto-char
+				  (text-property-any
+				   (point-min) (point-max) 'gnus-group
+				   (gnus-intern-safe
+				    (car (car newsrc)) gnus-active-hashtb)))))
+		  (setq newsrc (cdr newsrc)))
+		(or newsrc (progn (goto-char (point-max))
+				  (forward-line -1)))))))
       ;; Adjust cursor point.
       (gnus-group-position-point))))
 
@@ -4287,7 +4309,6 @@ If ALL is non-nil, list groups that have no unread articles.
 If LOWEST is non-nil, list all newsgroups of level LOWEST or higher.
 If REGEXP, only list groups matching REGEXP."
   (set-buffer gnus-group-buffer)
-  (setq gnus-topic-indentation "")
   (let ((buffer-read-only nil)
 	(newsrc (cdr gnus-newsrc-alist))
 	(lowest (or lowest 1))
@@ -4548,6 +4569,7 @@ increase the score of each group you read."
   "Update the current line in the group buffer."
   (let* ((buffer-read-only nil)
 	 (group (gnus-group-group-name))
+	 (gnus-group-indentation (gnus-group-group-indentation))
 	 (entry (and group (gnus-gethash group gnus-newsrc-hashtb))))
     (and entry
 	 (not (gnus-ephemeral-group-p group))
@@ -4578,9 +4600,6 @@ increase the score of each group you read."
        (if (setq active (gnus-active group))
 	   (- (1+ (cdr active)) (car active)) 0)
        nil))))
-
-;; Dummy function redefined when running under XEmacs.
-(defalias 'gnus-group-remove-excess-properties 'ignore)
 
 (defun gnus-group-insert-group-line
   (gnus-tmp-group gnus-tmp-level gnus-tmp-marked number
@@ -4645,7 +4664,12 @@ increase the score of each group you read."
 			(string-to-int gnus-tmp-number-of-unread)
 		      t)
        gnus-marked ,gnus-tmp-marked-mark
+       gnus-indentation ,gnus-group-indentation
        gnus-level ,gnus-tmp-level))
+    (when (gnus-visual-p 'group-highlight 'highlight)
+      (forward-line -1)
+      (run-hooks 'gnus-group-update-hook)
+      (forward-line))
     ;; Allow XEmacs to remove front-sticky text properties.
     (gnus-group-remove-excess-properties)))
 
@@ -4673,8 +4697,9 @@ already."
 			  loc (point-max) 'gnus-group ident))
 	  (setq found t)
 	  (goto-char loc)
-	  (gnus-delete-line)
-	  (gnus-group-insert-group-line-info group)
+	  (let ((gnus-group-indentation (gnus-group-group-indentation)))
+	    (gnus-delete-line)
+	    (gnus-group-insert-group-line-info group))
 	  (setq loc (1+ loc)))
 	(if (or found visible-only)
 	    ()
@@ -4693,7 +4718,8 @@ already."
 	      (setq entry (cdr entry)))
 	    (or entry (goto-char (point-max))))
 	  ;; Finally insert the line.
-	  (gnus-group-insert-group-line-info group))
+	  (let ((gnus-group-indentation (gnus-group-group-indentation)))
+	    (gnus-group-insert-group-line-info group)))
 	(gnus-group-set-mode-line)))))
 
 (defun gnus-group-set-mode-line ()
@@ -4724,6 +4750,10 @@ already."
 (defun gnus-group-group-level ()
   "Get the level of the newsgroup on the current line."
   (get-text-property (gnus-point-at-bol) 'gnus-level))
+
+(defun gnus-group-group-indentation ()
+  "Get the indentation of the newsgroup on the current line."
+  (or (get-text-property (gnus-point-at-bol) 'gnus-indentation) ""))
 
 (defun gnus-group-group-unread ()
   "Get the number of unread articles of the newsgroup on the current line."
@@ -4824,7 +4854,7 @@ If UNMARK, remove the mark instead."
       (goto-char beg)
       (- num (gnus-group-mark-group num unmark)))))
 
-(defun gnus-group-mark-buffer (unmark)
+(defun gnus-group-mark-buffer (&optional unmark)
   "Mark all groups in the buffer.
 If UNMARK, remove the mark instead."
   (interactive "P")
@@ -6805,6 +6835,9 @@ The following commands are available:
 (defmacro gnus-data-number (data)
   `(car ,data))
 
+(defmacro gnus-data-set-number (data number)
+  `(setcar ,data ,number))
+
 (defmacro gnus-data-mark (data)
   `(nth 1 ,data))
 
@@ -7583,11 +7616,14 @@ If NO-DISPLAY, don't generate a summary buffer."
 		      (delq number gnus-newsgroup-unselected)))
 	    (push number gnus-newsgroup-ancient)))))))
 
-(defun gnus-summary-update-article (article)
+(defun gnus-summary-update-article (article &optional header)
   "Update ARTICLE in the summary buffer."
-  (let ((id (mail-header-id (gnus-summary-article-header article))))
+  (let ((id (mail-header-id (gnus-summary-article-header article)))
+	(data (gnus-data-find article)))
     (setcar (gnus-id-to-thread id) nil)
-    (gnus-summary-insert-subject id)))
+    (gnus-summary-insert-subject id)
+    ;; Set the (possibly) new article number in the data structure.
+    (gnus-data-set-number data (gnus-id-to-article id))))
 
 (defun gnus-rebuild-thread (id)
   "Rebuild the thread containing ID."
@@ -10790,7 +10826,8 @@ re-spool using this method.
 For this function to work, both the current newsgroup and the
 newsgroup that you want to move to have to support the `request-move'
 and `request-accept' functions."
-  (interactive (list current-prefix-arg nil nil 'move))
+  (interactive "P")
+  (unless action (setq action 'move))
   (gnus-set-global-variables)
   ;; Check whether the source group supports the required functions.
   (cond ((and (eq action 'move)
@@ -10821,8 +10858,8 @@ and `request-accept' functions."
       (set (intern (format "gnus-current-%s-group" action)) to-newsgroup))
     (setq to-method (if select-method (list select-method "")
 		      (gnus-find-method-for-group to-newsgroup)))
-    (when (equal to-newsgroup gnus-newsgroup-name)
-      (error "Can't %s to the same group you're already in" action))
+    ;;(when (equal to-newsgroup gnus-newsgroup-name)
+    ;;(error "Can't %s to the same group you're already in" action))
     ;; Check the method we are to move this article to...
     (or (gnus-check-backend-function 'request-accept-article (car to-method))
 	(error "%s does not support article copying" (car to-method)))
@@ -11915,9 +11952,7 @@ with that article."
   "Make current article child of the marked (or previous) article.
 
 Note that the re-threading will only work if `gnus-thread-ignore-subject'
-is non-nil or the Subject: of both articles are the same.
-
-The change will not be visible until the next group retrieval."
+is non-nil or the Subject: of both articles are the same."
   (interactive)
   (or (not (gnus-group-read-only-p))
       (error "The current newsgroup does not support article editing."))
@@ -11955,6 +11990,7 @@ The change will not be visible until the next group retrieval."
 	    (error "Couldn't replace article."))
 	(set-buffer gnus-summary-buffer)
 	(gnus-summary-unmark-all-processable)
+	(gnus-summary-rethread-current)
 	(message "Article %d is now the child of article %d."
 		 current-article parent-article)))))
 
@@ -12817,103 +12853,107 @@ The following commands are available:
 
 (defun gnus-request-article-this-buffer (article group)
   "Get an article and insert it into this buffer."
-  (let (sparse)
-    (prog1
-	(save-excursion
-	  (if (get-buffer gnus-original-article-buffer)
-	      (set-buffer (get-buffer gnus-original-article-buffer))
-	    (set-buffer (get-buffer-create gnus-original-article-buffer))
-	    (buffer-disable-undo (current-buffer))
-	    (setq major-mode 'gnus-original-article-mode)
-	    (setq buffer-read-only t)
-	    (gnus-add-current-to-buffer-list))
+  (prog1
+      (save-excursion
+	(if (get-buffer gnus-original-article-buffer)
+	    (set-buffer (get-buffer gnus-original-article-buffer))
+	  (set-buffer (get-buffer-create gnus-original-article-buffer))
+	  (buffer-disable-undo (current-buffer))
+	  (setq major-mode 'gnus-original-article-mode)
+	  (setq buffer-read-only t)
+	  (gnus-add-current-to-buffer-list))
 
-	  (setq group (or group gnus-newsgroup-name))
+	(setq group (or group gnus-newsgroup-name))
 
-	  ;; Open server if it has closed.
-	  (gnus-check-server (gnus-find-method-for-group group))
+	;; Open server if it has closed.
+	(gnus-check-server (gnus-find-method-for-group group))
 
-	  ;; Using `gnus-request-article' directly will insert the article into
-	  ;; `nntp-server-buffer' - so we'll save some time by not having to
-	  ;; copy it from the server buffer into the article buffer.
+	;; Using `gnus-request-article' directly will insert the article into
+	;; `nntp-server-buffer' - so we'll save some time by not having to
+	;; copy it from the server buffer into the article buffer.
 
-	  ;; We only request an article by message-id when we do not have the
-	  ;; headers for it, so we'll have to get those.
-	  (and (stringp article)
-	       (let ((gnus-override-method gnus-refer-article-method))
-		 (gnus-read-header article)))
+	;; We only request an article by message-id when we do not have the
+	;; headers for it, so we'll have to get those.
+	(when (stringp article)
+	  (let ((gnus-override-method gnus-refer-article-method))
+	    (gnus-read-header article)))
 
-	  ;; If the article number is negative, that means that this article
-	  ;; doesn't belong in this newsgroup (possibly), so we find its
-	  ;; message-id and request it by id instead of number.
-	  (if (not (numberp article))
-	      ()
-	    (save-excursion
-	      (set-buffer gnus-summary-buffer)
-	      (let ((header (gnus-summary-article-header article)))
-		(if (< article 0)
-		    (cond 
-		     ((memq article gnus-newsgroup-sparse)
-		      ;; This is a sparse gap article.
-		      (setq article (mail-header-id header)))
-		     ((vectorp header)
-		      ;; It's a real article.
-		      (setq article (mail-header-id header)))
-		     (t
-		      ;; It is an extracted pseudo-article.
-		      (setq article 'pseudo)
-		      (gnus-request-pseudo-article header))))
+	;; If the article number is negative, that means that this article
+	;; doesn't belong in this newsgroup (possibly), so we find its
+	;; message-id and request it by id instead of number.
+	(when (numberp article)
+	  (save-excursion
+	    (set-buffer gnus-summary-buffer)
+	    (let ((header (gnus-summary-article-header article)))
+	      (if (< article 0)
+		  (cond 
+		   ((memq article gnus-newsgroup-sparse)
+		    ;; This is a sparse gap article.
+		    (setq article (mail-header-id header)))
+		   ((vectorp header)
+		    ;; It's a real article.
+		    (setq article (mail-header-id header)))
+		   (t
+		    ;; It is an extracted pseudo-article.
+		    (setq article 'pseudo)
+		    (gnus-request-pseudo-article header))))
 		
-		(let ((method (gnus-find-method-for-group 
-			       gnus-newsgroup-name)))
-		  (if (not (eq (car method) 'nneething))
-		      ()
-		    (let ((dir (concat (file-name-as-directory (nth 1 method))
-				       (mail-header-subject header))))
-		      (if (file-directory-p dir)
-			  (progn
-			    (setq article 'nneething)
-			    (gnus-group-enter-directory dir)))))))))
+	      (let ((method (gnus-find-method-for-group 
+			     gnus-newsgroup-name)))
+		(if (not (eq (car method) 'nneething))
+		    ()
+		  (let ((dir (concat (file-name-as-directory (nth 1 method))
+				     (mail-header-subject header))))
+		    (if (file-directory-p dir)
+			(progn
+			  (setq article 'nneething)
+			  (gnus-group-enter-directory dir)))))))))
 
-	  (cond
-	   ;; We first check `gnus-original-article-buffer'.
-	   ((and (equal (car gnus-original-article) group)
-		 (eq (cdr gnus-original-article) article))
-	    ;; We don't have to do anything, since it's already where we
-	    ;; want it.
-	    'article)
-	   ;; Check the backlog.
-	   ((and gnus-keep-backlog
-		 (gnus-backlog-request-article group article (current-buffer)))
-	    'article)
-	   ;; Check the cache.
-	   ((and gnus-use-cache
-		 (numberp article)
-		 (gnus-cache-request-article article group))
-	    'article)
-	   ;; Get the article and put into the article buffer.
-	   ((or (stringp article) (numberp article))
-	    (let ((gnus-override-method
-		   (and (stringp article) gnus-refer-article-method))
-		  (buffer-read-only nil))
-	      (erase-buffer)
-	      (gnus-kill-all-overlays)
-	      (if (gnus-request-article article group (current-buffer))
-		  (progn
-		    (and gnus-keep-backlog
-			 (gnus-backlog-enter-article
-			  group article (current-buffer)))
-		    'article))))
-	   ;; It was a pseudo.
-	   (t article)))
-      (unless sparse
-	(setq gnus-original-article (cons group article))
-	(unless (equal (buffer-name (current-buffer))
-		       (buffer-name (get-buffer gnus-original-article-buffer)))
-	  (let (buffer-read-only)
+	(cond
+	 ;; We first check `gnus-original-article-buffer'.
+	 ((and (equal (car gnus-original-article) group)
+	       (eq (cdr gnus-original-article) article))
+	  ;; We don't have to do anything, since it's already where we
+	  ;; want it.
+	  'article)
+	 ;; Check the backlog.
+	 ((and gnus-keep-backlog
+	       (gnus-backlog-request-article group article (current-buffer)))
+	  'article)
+	 ;; Check the cache.
+	 ((and gnus-use-cache
+	       (numberp article)
+	       (gnus-cache-request-article article group))
+	  'article)
+	 ;; Get the article and put into the article buffer.
+	 ((or (stringp article) (numberp article))
+	  (let ((gnus-override-method
+		 (and (stringp article) gnus-refer-article-method))
+		(buffer-read-only nil))
 	    (erase-buffer)
 	    (gnus-kill-all-overlays)
-	    (insert-buffer-substring gnus-original-article-buffer)))))))
+	    (if (gnus-request-article article group (current-buffer))
+		(progn
+		  (and gnus-keep-backlog
+		       (gnus-backlog-enter-article
+			group article (current-buffer)))
+		  'article))))
+	 ;; It was a pseudo.
+	 (t article)))
+
+    ;; Take the article from the original article buffer
+    ;; and place it in the buffer it's supposed to be in.
+    (setq gnus-original-article (cons group article))
+    (unless (equal (buffer-name (current-buffer))
+		   (buffer-name (get-buffer gnus-original-article-buffer)))
+      (let (buffer-read-only)
+	(erase-buffer)
+	(gnus-kill-all-overlays)
+	(insert-buffer-substring gnus-original-article-buffer)))
+    
+    ;; Update sparse articles.
+    (when (memq article gnus-newsgroup-sparse)
+      (gnus-summary-update-article article))))
 
 (defun gnus-read-header (id)
   "Read the headers of article ID and enter them into the Gnus system."
@@ -14166,8 +14206,8 @@ If CONFIRM is non-nil, the user will be asked for an NNTP server."
        (gnus-open-server gnus-select-method)
        (gnus-y-or-n-p
 	(format
-	 "%s open error: '%s'.	Continue? "
-	 (nth 1 gnus-select-method)
+	 "%s (%s) open error: '%s'.	Continue? "
+	 (car gnus-select-method) (cadr gnus-select-method)
 	 (gnus-status-message gnus-select-method)))
        (progn
 	 (gnus-message 1 "Couldn't open server on %s"
@@ -15181,14 +15221,15 @@ Returns whether the updating was successful."
 ;; Get the active file(s) from the backend(s).
 (defun gnus-read-active-file ()
   (gnus-group-set-mode-line)
-  (let ((methods (cons gnus-message-archive-method
-		       (if (gnus-check-server gnus-select-method)
-			   ;; The native server is available.
-			   (cons gnus-select-method 
-				 gnus-secondary-select-methods)
-			 ;; The native server is down, so we just do the
-			 ;; secondary ones.
-			 gnus-secondary-select-methods)))
+  (let ((methods (nconc (copy-sequence
+			 (if (gnus-check-server gnus-select-method)
+			     ;; The native server is available.
+			     (cons gnus-select-method 
+				   gnus-secondary-select-methods)
+			   ;; The native server is down, so we just do the
+			   ;; secondary ones.
+			   gnus-secondary-select-methods))
+			(list gnus-message-archive-method)))
 	list-type)
     (setq gnus-have-read-active-file nil)
     (save-excursion
@@ -15236,9 +15277,10 @@ Returns whether the updating was successful."
 	     (t
 	      (if (not (gnus-request-list method))
 		  (progn
-		    (gnus-message 1 "Cannot read active file from %s server."
-				  (car method))
-		    (ding))
+		    (unless (equal method gnus-message-archive-method)
+		      (gnus-message 1 "Cannot read active file from %s server."
+				    (car method))
+		      (ding)))
 		(gnus-active-to-gnus-format method)
 		;; We mark this active file as read.
 		(setq gnus-have-read-active-file

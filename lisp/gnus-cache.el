@@ -187,10 +187,11 @@ variable to \"^nnml\".")
     (let ((arts gnus-cache-removable-articles)
 	  ga)
       (while arts
-	(setq ga (nnvirtual-find-group-art gnus-newsgroup-name (pop arts)))
-	(let ((gnus-cache-removable-articles (list (cdr ga)))
-	      (gnus-newsgroup-name (car ga)))
-	  (gnus-cache-possibly-remove-articles-1))))
+	(when (setq ga (nnvirtual-find-group-art
+			gnus-newsgroup-name (pop arts)))
+	  (let ((gnus-cache-removable-articles (list (cdr ga)))
+		(gnus-newsgroup-name (car ga)))
+	    (gnus-cache-possibly-remove-articles-1)))))
     (setq gnus-cache-removable-articles nil)))
 
 (defun gnus-cache-possibly-remove-articles-1 ()

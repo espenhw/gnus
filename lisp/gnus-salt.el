@@ -591,8 +591,7 @@ Two predefined functions are available:
     (set-buffer gnus-tree-buffer)
     (when (setq region (gnus-tree-article-region article))
       (when (or (not gnus-selected-tree-overlay)
-		(and (fboundp 'extent-detached-p)
-		     (extent-detached-p gnus-selected-tree-overlay)))
+		(gnus-extent-detached-p gnus-selected-tree-overlay))
 	;; Create a new overlay.
 	(gnus-overlay-put
 	 (setq gnus-selected-tree-overlay (gnus-make-overlay 1 2))

@@ -451,8 +451,13 @@ all. This may very well take some time.")
 
 (defun nnml-deletable-article-p (group article)
   "Say whether ARTICLE in GROUP can be deleted."
-  (or (not nnmail-keep-last-article)
-      (not (eq (cdr (nth 1 (assoc group nnml-group-alist))) article))))
+  (let (file path)
+    (when (setq file (cdr (assq article nnml-article-file-alist)))
+      (setq path (concat nnml-current-directory file))
+      (and (file-writable-p path)
+	   (or (not nnmail-keep-last-article)
+	       (not (eq (cdr (nth 1 (assoc group nnml-group-alist))) 
+			article)))))))
 
 ;; Find an article number in the current group given the Message-ID. 
 (defun nnml-find-group-number (id)

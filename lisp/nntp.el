@@ -1086,10 +1086,11 @@ If SERVICE, this this as the port number."
     (save-excursion
       (set-buffer nntp-server-buffer)
       (cond
-       ((setq proc
-	      (condition-case nil
-		  (funcall nntp-open-server-function server)
-		(error nil)))
+       ((and (setq proc
+		   (condition-case nil
+		       (funcall nntp-open-server-function server)
+		     (error nil)))
+	     (memq (process-status proc) '(open run)))
 	(setq nntp-server-process proc)
 	(setq nntp-address server)
 	;; Suggested by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>.

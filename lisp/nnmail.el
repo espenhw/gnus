@@ -451,7 +451,7 @@ nn*-request-list should have been called before calling this function."
 	    ((string-match (concat "^" (expand-file-name
 					(file-name-as-directory
 					 nnmail-procmail-directory))
-				   "\\(.*\\)" nnmail-procmail-suffix "$")
+				   "\\([^/]*\\)" nnmail-procmail-suffix "$")
 			   (expand-file-name file))
 	     (substring (expand-file-name file)
 			(match-beginning 1) (match-end 1)))
@@ -760,7 +760,7 @@ Return the number of characters in the body."
       (goto-char (point-min))
       (when (search-forward "\n\n" nil t) 
 	(setq chars (- (point-max) (point)))
-	(setq lines (- (count-lines (point) (point-max)) 1))
+	(setq lines (count-lines (point) (point-max)))
 	(forward-char -1)
 	(save-excursion
 	  (when (re-search-backward "^Lines: " nil t)
@@ -851,6 +851,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	    ;; If procmail is used to get incoming mail, the files
 	    ;; are stored in this directory.
 	    (and (file-exists-p nnmail-procmail-directory)
+		 (or (eq nnmail-spool-file 'procmail)
+		     nnmail-use-procmail)
 		 (directory-files 
 		  nnmail-procmail-directory 
 		  t (concat (if group group "")
@@ -869,7 +871,11 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       ;; Return the list of spools.
       (append 
        crash
-       (cond ((listp nnmail-spool-file)
+       (cond ((and group
+		   (or (eq nnmail-spool-file 'procmail)
+		       nnmail-use-procmail))
+	      procmails)
+	     ((listp nnmail-spool-file)
 	      (append nnmail-spool-file procmails))
 	     ((stringp nnmail-spool-file)
 	      (cons nnmail-spool-file procmails))

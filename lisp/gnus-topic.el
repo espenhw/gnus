@@ -34,7 +34,7 @@
 (defvar gnus-topic-mode-hook nil
   "Hook run in topic mode buffers.")
 
-(defvar gnus-topic-line-format "%i[ %(%{%n%}%) -- %a ]%v\n"
+(defvar gnus-topic-line-format "%i[ %(%{%n%}%) -- %A ]%v\n"
   "Format of topic lines.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
@@ -44,6 +44,7 @@ with some simple extensions.
 %v  Nothing if the topic is visible, \"...\" otherwise.
 %g  Number of groups in the topic.
 %a  Number of unread articles in the groups in the topic.
+%A  Number of unread articles in the groups in the topic and its subtopics.
 ")
 
 (defvar gnus-group-topic-topics-only nil
@@ -51,9 +52,6 @@ with some simple extensions.
 
 (defvar gnus-topic-unique t
   "*If non-nil, each group will only belong to one topic.")
-
-(defvar gnus-topic-hide-subtopics t
-  "*If non-nil, hide subtopics along with groups.")
 
 ;; Internal variables.
 
@@ -66,7 +64,8 @@ with some simple extensions.
     (?v visible ?s)
     (?i indentation ?s)
     (?g number-of-groups ?d)
-    (?a number-of-articles ?d)
+    (?a (gnus-topic-articles-in-topic entries) ?d)
+    (?A total-number-of-articles ?d)
     (?l level ?d)))
 
 (defvar gnus-topic-line-format-spec nil)
@@ -103,7 +102,6 @@ use the `gnus-group-topics' to sort the groups.
 If ALL is non-nil, list groups that have no unread articles.
 If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
   (set-buffer gnus-group-buffer)
-  (setq gnus-topic-indentation "")
   (let ((buffer-read-only nil)
         (lowest (or lowest 1))
 	tlist info)
@@ -135,32 +133,45 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
   (setq gnus-group-list-mode (cons level all))
   (run-hooks 'gnus-group-prepare-hook))
 
-(defun gnus-topic-prepare-topic (topic level &optional list-level all)
-  "Insert TOPIC into the group buffer."
+(defun gnus-topic-prepare-topic (topic level &optional list-level all silent)
+  "Insert TOPIC into the group buffer.
+If SILENT, don't insert anything.  Return the number of unread
+articles in the topic and its subtopics."
   (let* ((type (pop topic))
 	 (entries (gnus-topic-find-groups (car type) list-level all))
-	 (visiblep (eq (nth 1 type) 'visible))
-	 info entry)
-    ;; Insert the topic line.
-    (gnus-topic-insert-topic-line 
-     (car type) visiblep
-     (not (eq (nth 2 type) 'hidden))
-     level entries)
-    (when visiblep
-      ;; Insert all the groups that belong in this topic.
-      (while entries
-	(setq entry (pop entries)
-	      info (nth 2 entry))
+	 (visiblep (and (eq (nth 1 type) 'visible) (not silent)))
+	 (gnus-group-indentation (make-string (* 2 level) ? ))
+	 (beg (progn (beginning-of-line) (point)))
+	 (topic (reverse topic))
+	 (unread 0)
+	 info entry end)
+    ;; Insert any sub-topics.
+    (while topic
+      (incf unread
+	    (gnus-topic-prepare-topic 
+	     (pop topic) (1+ level) list-level all
+	     (not visiblep))))
+    (setq end (point))
+    (goto-char beg)
+    ;; Insert all the groups that belong in this topic.
+    (while (setq info (nth 2 (setq entry (pop entries))))
+      (when visiblep 
 	(gnus-group-insert-group-line 
 	 (gnus-info-group info)
 	 (gnus-info-level info) (gnus-info-marks info) 
-	 (car entry) (gnus-info-method info))))
-    ;; Insert any sub-topics.
-    (when (or visiblep
-	      (and (not gnus-topic-hide-subtopics)
-		   (eq (nth 2 type) 'shown)))
-      (while topic
-	(gnus-topic-prepare-topic (pop topic) (1+ level) list-level all)))))
+	 (car entry) (gnus-info-method info)))
+      (when (numberp (car entry))
+	(incf unread (car entry))))
+    (goto-char beg)
+    ;; Insert the topic line.
+    (unless silent
+      (gnus-extent-start-open (point))
+      (gnus-topic-insert-topic-line 
+       (car type) visiblep
+       (not (eq (nth 2 type) 'hidden))
+       level entries unread))
+    (goto-char end)
+    unread))
 
 (defun gnus-topic-find-groups (topic &optional level all)
   "Return entries for all visible groups in TOPIC."
@@ -240,20 +251,20 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
   "Return non-nil if the current topic is visible."
   (get-text-property (gnus-point-at-bol) 'gnus-topic-visible))
 
-(defun gnus-topic-insert-topic-line (name visiblep shownp level entries)
-  (let* ((visible (if (and visiblep shownp) "" "..."))
+(defun gnus-topic-insert-topic-line (name visiblep shownp level entries 
+					  &optional unread)
+  (let* ((visible (if visiblep "" "..."))
 	 (indentation (make-string (* 2 level) ? ))
-	 (number-of-articles (gnus-topic-articles-in-topic entries))
+	 (total-number-of-articles unread)
 	 (number-of-groups (length entries))
 	 (active-topic (eq gnus-topic-alist gnus-topic-active-alist)))
-    (setq gnus-topic-indentation "")
     (beginning-of-line)
     ;; Insert the text.
     (add-text-properties 
      (point)
      (prog1 (1+ (point)) 
        (eval gnus-topic-line-format-spec)
-       (gnus-group-remove-excess-properties))
+       (gnus-topic-remove-excess-properties))
      (list 'gnus-topic name
 	   'gnus-topic-level level
 	   'gnus-active active-topic
@@ -367,10 +378,14 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
     out))
 
 (defun gnus-topic-goto-topic (topic)
-  (goto-char (point-min))
-  (while (and (not (equal topic (gnus-group-topic-name)))
-	      (zerop (forward-line 1))))
-  (gnus-group-topic-name))
+  (let ((orig (point)))
+    (goto-char (point-min))
+    (while (and (not (equal topic (gnus-group-topic-name)))
+		(zerop (forward-line 1))))
+    (or (gnus-group-topic-name)
+	(progn
+	  (goto-char orig)
+	  nil))))
   
 (defun gnus-topic-update-topic ()
   (when (and (eq major-mode 'gnus-group-mode)
@@ -381,20 +396,33 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
       (gnus-group-goto-group group)
       (gnus-group-position-point))))
 
-(defun gnus-topic-update-topic-line ()
-  (let* ((buffer-read-only nil)
-	 (topic (gnus-group-topic-name))
-	 (entry (gnus-topic-find-topology topic))
-	 (level (car entry))
-	 (type (nth 1 entry))
-	 (entries (gnus-topic-find-groups (car type)))
-	 (visiblep (eq (nth 1 type) 'visible)))
+(defun gnus-topic-update-topic-line (&optional topic level)
+  (unless topic
+    (setq topic gnus-topic-topology)
+    (setq level 0))
+  (let* ((type (pop topic))
+	 (buffer-read-only nil)
+	 (entries (gnus-topic-find-groups 
+		   (car type) (car gnus-group-list-mode)
+		   (cdr gnus-group-list-mode)))
+	 (visiblep (eq (nth 1 type) 'visible))
+	 (unread 0)
+	 info entry end)
+    ;; Tally any sub-topics.
+    (while topic
+      (incf unread (gnus-topic-update-topic-line (pop topic) (1+ level))))
+    ;; Tally all the groups that belong in this topic.
+    (while (setq info (nth 2 (setq entry (pop entries))))
+      (when (numberp (car entry))
+	(incf unread (car entry))))
     ;; Insert the topic line.
-    (when topic
-      (gnus-delete-line)
+    (when (gnus-topic-goto-topic (car type))
       (gnus-topic-insert-topic-line 
        (car type) visiblep
-       (not (eq (nth 2 type) 'hidden)) level entries))))
+       (not (eq (nth 2 type) 'hidden))
+       level entries unread)
+      (gnus-delete-line))
+    unread))
 
 (defun gnus-topic-grok-active (&optional force)
   "Parse all active groups and create topic structures for them."
@@ -521,7 +549,6 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
     (setq gnus-topic-mode 
 	  (if (null arg) (not gnus-topic-mode)
 	    (> (prefix-numeric-value arg) 0)))
-    (make-local-variable 'gnus-group-prepare-function)
     ;; Infest Gnus with topics.
     (when gnus-topic-mode
       (when (and menu-bar-mode
@@ -536,7 +563,11 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 	(push (cons 'gnus-topic-mode gnus-topic-mode-map)
 	      minor-mode-map-alist))
       (add-hook 'gnus-summary-exit-hook 'gnus-topic-update-topic)
+      (make-local-variable 'gnus-group-prepare-function)
       (setq gnus-group-prepare-function 'gnus-group-prepare-topics)
+      (make-local-variable 'gnus-group-goto-next-group-function)
+      (setq gnus-group-goto-next-group-function 
+	    'gnus-topic-goto-next-group)
       (setq gnus-group-change-level-function 'gnus-topic-change-level)
       (run-hooks 'gnus-topic-mode-hook)
       ;; We check the topology.
@@ -652,6 +683,31 @@ group."
       (let ((entry (assoc (caar gnus-topic-topology) gnus-topic-alist)))
 	(setcdr entry (cons group (cdr entry)))))))
 
+(defun gnus-topic-goto-next-group (group props)
+  "Go to group or the next group after group."
+  (if (null group)
+      (gnus-topic-goto-topic (cadr (memq 'gnus-topic props)))
+    (if (gnus-group-goto-group group)
+	t
+      ;; The group is no longer visible.
+      (let* ((list (assoc (gnus-group-topic group) gnus-topic-alist))
+	     (after (cdr (member group (cdr list)))))
+	;; First try to put point on a group after the current one.
+	(while (and after
+		    (not (gnus-group-goto-group (car after))))
+	  (setq after (cdr after)))
+	;; Then try to put point on a group before point.
+	(unless after
+	  (setq after (cdr (member group (reverse (cdr list)))))
+	  (while (and after 
+		      (not (gnus-group-goto-group (car after))))
+	    (setq after (cdr after))))
+	;; Finally, just put point on the topic.
+	(unless after
+	  (gnus-topic-goto-topic (car list))
+	  (setq after nil))
+	t))))
+
 (defun gnus-topic-kill-group (&optional n discard)
   "Kill the next N groups."
   (interactive "P")
@@ -672,6 +728,11 @@ group."
 	 (car item) (gnus-topic-parent-topic previous) previous))
     (let* ((prev (gnus-group-group-name))
 	   (gnus-topic-inhibit-change-level t)
+	   (gnus-group-indentation
+	    (make-string 
+	     (* 2 (or (save-excursion
+			(gnus-topic-goto-topic (gnus-group-parent-topic))
+			(gnus-group-topic-level)) 0)) ? ))
 	   yanked group alist)
       ;; We first yank the groups the normal way...
       (setq yanked (gnus-group-yank-group arg))
@@ -786,7 +847,8 @@ If UNINDENT, remove an indentation."
       (when topic
 	(gnus-topic-goto-topic topic)
 	(gnus-topic-kill-group)
-	(gnus-topic-create-topic topic parent)))))
+	(gnus-topic-create-topic topic parent)
+	(gnus-topic-goto-topic topic)))))
 
 (defun gnus-topic-unindent ()
   "Unindent a topic."
@@ -799,7 +861,8 @@ If UNINDENT, remove an indentation."
     (when topic
       (gnus-topic-goto-topic topic)
       (gnus-topic-kill-group)
-      (gnus-topic-create-topic topic grandparent))))
+      (gnus-topic-create-topic topic grandparent)
+      (gnus-topic-goto-topic topic))))
 
 (defun gnus-topic-list-active (&optional force)
   "List all groups that Gnus knows about in a topicsified fashion.

@@ -330,7 +330,7 @@ used as score."
     (gnus-score-kill-help-buffer)
     (if mimic (message "%c %c %c" prefix hchar tchar pchar)
       (message ""))
-    (unless (setq temporary (assq pchar char-to-perm))
+    (unless (setq temporary (cadr (assq pchar char-to-perm)))
       (if mimic 
 	  (error "%c %c %c %c" prefix hchar tchar pchar)
 	(error "")))
@@ -1712,14 +1712,20 @@ SCORE is the score to add."
 ;;; Score mode.
 ;;;
 
-(defvar gnus-score-mode-map nil)
-(defvar gnus-score-mode-hook nil)
+(defvar gnus-score-mode-hook nil
+  "*Hook run in score mode buffers.")
 
-(if gnus-score-mode-map
-    ()
+(defvar gnus-score-menu-hook nil
+  "*Hook run after creating the score mode menu.")
+
+(defvar gnus-score-mode-map nil)
+(unless gnus-score-mode-map
   (setq gnus-score-mode-map (copy-keymap emacs-lisp-mode-map))
-  (define-key gnus-score-mode-map "\C-c\C-c" 'gnus-score-edit-done)
-  (define-key gnus-score-mode-map "\C-c\C-d" 'gnus-score-edit-insert-date))
+  (gnus-define-keys 
+   gnus-score-mode-map
+   "\C-c\C-c" gnus-score-edit-done
+   "\C-c\C-d" gnus-score-edit-insert-date
+   "\C-c\C-p" gnus-score-pretty-print))
 
 (defun gnus-score-mode ()
   "Mode for editing score files.
@@ -1729,16 +1735,39 @@ This mode is an extended emacs-lisp mode.
   (interactive)
   (kill-all-local-variables)
   (use-local-map gnus-score-mode-map)
+  (when (and menu-bar-mode
+	     (gnus-visual-p 'score-menu 'menu))
+    (gnus-score-make-menu-bar))
   (set-syntax-table emacs-lisp-mode-syntax-table)
   (setq major-mode 'gnus-score-mode)
   (setq mode-name "Score")
   (lisp-mode-variables nil)
   (run-hooks 'emacs-lisp-mode-hook 'gnus-score-mode-hook))
 
+(defun gnus-score-make-menu-bar ()
+  (unless (boundp 'gnus-score-menu)
+    (easy-menu-define
+     gnus-score-menu gnus-score-mode-map ""
+     '("Score"
+       ["Exit" gnus-score-edit-done t]
+       ["Insert date" gnus-score-edit-insert-date t]
+       ["Format" gnus-score-pretty-print t]
+       ))
+    (run-hooks 'gnus-score-menu-hook)))
+
 (defun gnus-score-edit-insert-date ()
   "Insert date in numerical format."
   (interactive)
   (insert (int-to-string (gnus-day-number (current-time-string)))))
+
+(defun gnus-score-pretty-print ()
+  "Format the current score file."
+  (interactive)
+  (goto-char (point-min))
+  (let ((form (read (current-buffer))))
+    (erase-buffer)
+    (pp form (current-buffer)))
+  (goto-char (point-min)))
 
 (defun gnus-score-edit-done ()
   "Save the score file and return to the summary buffer."
@@ -1748,9 +1777,9 @@ This mode is an extended emacs-lisp mode.
     (gnus-make-directory (file-name-directory (buffer-file-name)))
     (save-buffer)
     (kill-buffer (current-buffer))
+    (and winconf (set-window-configuration winconf))
     (gnus-score-remove-from-cache bufnam)
-    (gnus-score-load-file bufnam)
-    (and winconf (set-window-configuration winconf))))
+    (gnus-score-load-file bufnam)))
 
 (defun gnus-score-find-trace ()
   "Find all score rules that applies to the current article."

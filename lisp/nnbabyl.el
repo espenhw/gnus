@@ -200,7 +200,7 @@
 	      (nnbabyl-article-group-number)))))))
 
 (defun nnbabyl-request-group (group &optional server dont-check)
-  (let ((active (assoc group nnbabyl-group-alist)))
+  (let ((active (cadr (assoc group nnbabyl-group-alist))))
     (save-excursion
       (cond 
        ((null (nnbabyl-possibly-change-newsgroup group))

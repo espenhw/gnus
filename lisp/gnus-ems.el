@@ -30,6 +30,11 @@
 (defalias 'gnus-overlay-put 'overlay-put)
 (defalias 'gnus-move-overlay 'move-overlay)
 (defalias 'gnus-overlay-end 'overlay-end)
+(defalias 'gnus-extent-detached-p 'ignore)
+(defalias 'gnus-group-remove-excess-properties 'ignore)
+(defalias 'gnus-topic-remove-excess-properties 'ignore)
+(defalias 'gnus-extent-start-open 'ignore)
+
 
 (eval-and-compile 
   (autoload 'gnus-xmas-define "gnus-xmas")

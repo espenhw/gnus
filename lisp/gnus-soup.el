@@ -75,31 +75,33 @@ format.")
 ;;; Access macros:
 
 (defmacro gnus-soup-area-prefix (area)
-  (` (aref (, area) 0)))
+  `(aref ,area 0))
+(defmacro gnus-soup-set-area-prefix (area prefix)
+  `(aset ,area 0 ,prefix))
 (defmacro gnus-soup-area-name (area)
-  (` (aref (, area) 1)))
+  `(aref ,area 1))
 (defmacro gnus-soup-area-encoding (area)
-  (` (aref (, area) 2)))
+  `(aref ,area 2))
 (defmacro gnus-soup-area-description (area)
-  (` (aref (, area) 3)))
+  `(aref ,area 3))
 (defmacro gnus-soup-area-number (area)
-  (` (aref (, area) 4)))
+  `(aref ,area 4))
 (defmacro gnus-soup-area-set-number (area value)
-  (` (aset (, area) 4 (, value))))
+  `(aset ,area 4 ,value))
 
 (defmacro gnus-soup-encoding-format (encoding)
-  (` (aref (, encoding) 0)))
+  `(aref ,encoding 0))
 (defmacro gnus-soup-encoding-index (encoding)
-  (` (aref (, encoding) 1)))
+  `(aref ,encoding 1))
 (defmacro gnus-soup-encoding-kind (encoding)
-  (` (aref (, encoding) 2)))
+  `(aref ,encoding 2))
 
 (defmacro gnus-soup-reply-prefix (reply)
-  (` (aref (, reply) 0)))
+  `(aref ,reply 0))
 (defmacro gnus-soup-reply-kind (reply)
-  (` (aref (, reply) 1)))
+  `(aref ,reply 1))
 (defmacro gnus-soup-reply-encoding (reply)
-  (` (aref (, reply) 2)))
+  `(aref ,reply 2))
 
 ;;; Commands:
 
@@ -134,13 +136,13 @@ move those articles instead."
 	(setq headers (gnus-summary-article-header (car articles)))
 	;; Put the article in a buffer.
 	(set-buffer tmp-buf)
-	(gnus-request-article-this-buffer 
-	 (car articles) gnus-newsgroup-name)
-	(gnus-soup-store gnus-soup-directory prefix headers
-			 gnus-soup-encoding-type 
-			 gnus-soup-index-type)
-	(gnus-soup-area-set-number area
-	 (1+ (or (gnus-soup-area-number area) 0)))
+	(when (gnus-request-article-this-buffer 
+	       (car articles) gnus-newsgroup-name)
+	  (gnus-soup-store gnus-soup-directory prefix headers
+			   gnus-soup-encoding-type 
+			   gnus-soup-index-type)
+	  (gnus-soup-area-set-number 
+	   area (1+ (or (gnus-soup-area-number area) 0))))
 	;; Mark article as read. 
 	(set-buffer gnus-summary-buffer)
 	(gnus-summary-remove-process-mark (car articles))

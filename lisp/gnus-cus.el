@@ -62,7 +62,7 @@ If `visual' is disabled, there will be no menus and few faces.  Most of
 the visual customization options below will be ignored.  GNUS will use
 less space and be faster as a result.")
 		  (default . 
-		    (summary-highlight 
+		    (summary-highlight group-highlight
 		     article-highlight 
 		     summary-menu group-menu article-menu
 		     tree-highlight menu highlight

@@ -254,6 +254,38 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 ;(eval-when-compile
 ;  (defvar browse-url-browser-function))
 
+;;; Group mode highlighting.
+
+(defvar gnus-group-highlight
+  (cond 
+   ((not (eq gnus-display-type 'color))
+    '((mailp . bold)
+      ((= unread 0) . italic)))
+   ((eq gnus-background-mode 'dark)
+    `(((not mailp) .
+       ,(custom-face-lookup "ForestGreen" nil nil t nil nil))
+      ((zerop unread) .
+       ,(custom-face-lookup "Blue" nil nil t nil nil))))
+   (t
+    `(((not mailp) .
+       ,(custom-face-lookup "ForestGreen" nil nil t nil nil))
+      ((zerop unread) .
+       ,(custom-face-lookup "Blue" nil nil t nil nil)))))
+  "Group lines are highlighted with the FACE for the first FORM which
+evaluate to a non-nil value.  
+
+Point will be at the beginning of the line when FORM is evaluated.
+Variables bound when these forms are evaluated include:
+
+group: The group name.
+unread: The number of unread articles.
+method: The select method.
+mailp: Whether the select method is a mail method.
+level: The level of the group.
+score: The score of the group.
+")
+
+
 ;;; Internal variables.
 
 (defvar gnus-button-marker-list nil)
@@ -1000,6 +1032,36 @@ If nil, the user will be asked for a duration.")
 	  (funcall gnus-summary-highlight-line-function article face))))
     (goto-char p)))
 
+(defun gnus-group-highlight-line ()
+  "Highlight the current line according to `gnus-group-highlight'."
+  (let* ((list gnus-group-highlight)
+	 (p (point))
+	 (end (progn (end-of-line) (point)))
+	 ;; now find out where the line starts and leave point there.
+	 (beg (progn (beginning-of-line) (point)))
+	 (group (gnus-group-group-name))
+	 (entry (gnus-group-entry group))
+	 (unread (if (numberp (car entry)) (car entry) 0))
+	 (info (nth 2 entry))
+	 (method (gnus-server-get-method group (gnus-info-method info)))
+	 (mailp (memq 'mail (assoc (symbol-name
+				    (car (or method gnus-select-method)))
+				   gnus-valid-select-methods)))
+	 (level (gnus-info-level info))
+	 (score (gnus-info-score info))
+	 (inhibit-read-only t))
+    ;; Eval the cars of the lists until we find a match.
+    (while (and list
+		(not (eval (caar list))))
+      (setq list (cdr list)))
+    (let ((face (cdar list)))
+      (unless (eq face (get-text-property beg 'face))
+	(put-text-property 
+	 beg end 'face 
+	 (setq face (if (boundp face) (symbol-value face) face)))
+	(gnus-extent-start-open beg)))
+    (goto-char p)))
+
 ;;;
 ;;; gnus-carpal
 ;;;
@@ -1227,7 +1289,7 @@ If N is negative, move backward instead."
       (when (get-text-property (point) 'gnus-callback)
 	(goto-char (funcall function (point) 'gnus-callback nil limit)))
       ;; Go to the next (or previous) button.
-      (funcall function (point) 'gnus-callback nil limit)
+      (gnus-goto-char (funcall function (point) 'gnus-callback nil limit))
       (decf n))
     (unless (zerop n)
       (gnus-message 5 "No more buttons"))

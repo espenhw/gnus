@@ -138,6 +138,17 @@ It is provided only to ease porting of broken FSF Emacs programs."
      '(gnus-topic nil gnus-topic-level nil gnus-topic-visible nil))
     (goto-char end)))
 		  
+(defun gnus-xmas-topic-remove-excess-properties ()
+  (let ((end (point))
+	(beg (progn (forward-line -1) (point))))
+    (remove-text-properties beg end '(gnus-group nil))
+    (goto-char end)))
+
+(defun gnus-xmas-extent-start-open (point)
+  (map-extents (lambda (extent arg)
+		 (set-extent-property extent 'start-open t))
+	       nil point (min (1+ (point)) (point-max))))
+		  
 (defun gnus-xmas-copy-article-buffer (&optional article-buffer)
   (setq gnus-article-copy (get-buffer-create " *gnus article copy*"))
   (buffer-disable-undo gnus-article-copy)
@@ -168,11 +179,6 @@ call it with the value of the `gnus-data' text property."
 
 (defun gnus-xmas-move-overlay (extent start end &optional buffer)
   (set-extent-endpoints extent start end))
-
-(defun gnus-xmas-make-overlay (from to &optional buf)
-  (let ((extent (make-extent from to buf)))
-    (set-extent-property extent 'detachable nil)
-    extent))
 
 ;; Fixed by Christopher Davis <ckd@loiosh.kei.com>.
 (defun gnus-xmas-article-add-button (from to fun &optional data)
@@ -289,10 +295,11 @@ call it with the value of the `gnus-data' text property."
   (or (face-differs-from-default-p 'underline)
       (funcall (intern "set-face-underline-p") 'underline t))
 
-  (fset 'gnus-make-overlay 'gnus-xmas-make-overlay)
+  (fset 'gnus-make-overlay 'make-extent)
   (fset 'gnus-overlay-put 'set-extent-property)
   (fset 'gnus-move-overlay 'gnus-xmas-move-overlay)
   (fset 'gnus-overlay-end 'extent-end-position)
+  (fset 'gnus-extent-detached-p 'extent-detached-p)
       
   (fset 'set-text-properties 'gnus-xmas-set-text-properties)
 
@@ -374,6 +381,9 @@ pounce directly on the real variables themselves.")
   (fset 'gnus-summary-recenter 'gnus-xmas-summary-recenter)
   (fset 'gnus-group-remove-excess-properties
 	'gnus-xmas-group-remove-excess-properties)
+  (fset 'gnus-topic-remove-excess-properties
+	'gnus-xmas-topic-remove-excess-properties)
+  (fset 'gnus-extent-start-open 'gnus-xmas-extent-start-open)
   (fset 'gnus-copy-article-buffer 'gnus-xmas-copy-article-buffer)
   (fset 'gnus-article-push-button 'gnus-xmas-article-push-button)
   (fset 'gnus-article-add-button 'gnus-xmas-article-add-button)
@@ -406,7 +416,7 @@ pounce directly on the real variables themselves.")
 	(while path
 	  (setq dir (concat
 		     (file-name-directory (directory-file-name (car path)))
-		     "etc/"))
+		     "etc/gnus/"))
 	  (if (and (file-exists-p dir)
 		   (file-directory-p dir)
 		   (file-exists-p (concat dir "gnus-group-exit-icon-up.xpm")))
