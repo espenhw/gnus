@@ -437,7 +437,8 @@ Mule4 only."
     ;; Remove eight-bit-*, treat them as ascii.
     (let ((css (find-charset-region b e)))
       (mapcar (lambda (cs) (setq css (delq cs css)))
-	      '(composition eight-bit-control eight-bit-graphic))
+	      '(composition eight-bit-control eight-bit-graphic
+			    control-1))
       css))
    (t
 ;; We are in a unibyte buffer or XEmacs non-mule, so we futz around a bit.
