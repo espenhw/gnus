@@ -1940,7 +1940,13 @@ Prefix arg means justify as well."
 
 (defun message-do-auto-fill ()
   "Like `do-auto-fill', but don't fill in message header."
-  (when (> (point) (save-excursion (rfc822-goto-eoh)))
+  (when (> (point) (save-excursion 
+		     (goto-char (point-min))
+		     (if (re-search-forward
+			  (concat "^" (regexp-quote mail-header-separator)
+				  "\n") nil t)
+			 (match-beginning 0)
+		       (point-max))))
     (do-auto-fill)))
 
 (defun message-insert-signature (&optional force)

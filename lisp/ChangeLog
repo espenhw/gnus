@@ -1,3 +1,8 @@
+2001-10-20  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* message.el (message-do-auto-fill): Avoid calling
+	'rfc822-goto-eoh'. 
+
 2001-10-20  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Paul Jarc <prj@po.cwru.edu>.
 	
