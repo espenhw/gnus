@@ -1,3 +1,32 @@
+Tue Sep  1 10:29:33 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.13 is released.
+
+1998-09-01 09:14:33  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-util.el (gnus-strip-whitespace): Already defined.
+	Removed. 
+
+	* gnus-art.el (gnus-article-decode-charset): Strip whitespace.
+
+	* gnus-util.el (gnus-strip-whitespace): New function.
+
+	* mm-util.el (mm-content-type-charset): Downcase.
+
+1998-08-31 23:04:29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-decode-charset): Accept a prefix.
+	(gnus-article-decode-charset): Don't fetch all headers.
+
+	* mm-util.el (mm-read-coding-system): New function.
+
+	* mm-bodies.el (mm-decode-body): Check the right charset.
+
+	* gnus-sum.el (gnus-summary-mode-line-format): Ditto.
+
+	* gnus-art.el (gnus-article-mode-line-format): Use short group
+	format. 
+
 Mon Aug 31 23:03:13 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.12 is released.

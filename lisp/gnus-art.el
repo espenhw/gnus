@@ -399,7 +399,7 @@ beginning of a line."
   :type 'regexp
   :group 'gnus-article-various)
 
-(defcustom gnus-article-mode-line-format "Gnus: %%b %S"
+(defcustom gnus-article-mode-line-format "Gnus: %g %S"
   "*The format specification for the article mode line.
 See `gnus-summary-mode-line-format' for a closer description."
   :type 'string
@@ -955,21 +955,30 @@ characters to translate to."
 	  buffer-read-only)
       (rfc2047-decode-region (point-min) (point-max)))))
 
-(defun gnus-article-decode-charset ()
-  "Decode charset-encoded text in the article."
-  (interactive)
+(defun gnus-article-decode-charset (&optional prompt)
+  "Decode charset-encoded text in the article.
+If PROMPT (the prefix), prompt for a coding system to use."
+  (interactive "P")
   (save-excursion
     (set-buffer gnus-article-buffer)
     (let* ((inhibit-point-motion-hooks t)
-	   (ct (message-fetch-field "Content-Type"))
-	   (cte (message-fetch-field "Content-Transfer-Encoding"))
-	   (charset (and ct (mm-content-type-charset ct)))
+	   (ct (message-fetch-field "Content-Type" t))
+	   (cte (message-fetch-field "Content-Transfer-Encoding" t))
+	   (charset (cond
+		     (prompt
+		      (mm-read-coding-system "Charset to decode: "))
+		     (ct
+		      (mm-content-type-charset ct))
+		     (gnus-newsgroup-name
+		      (gnus-group-find-parameter
+		       gnus-newsgroup-name 'charset))))
 	   buffer-read-only)
       (save-restriction
 	(goto-char (point-min))
 	(search-forward "\n\n" nil 'move)
 	(narrow-to-region (point) (point-max))
-	(mm-decode-body charset (and cte (intern (downcase cte))))))))
+	(mm-decode-body
+	 charset (and cte (intern (downcase (gnus-strip-whitespace cte)))))))))
 
 (defalias 'gnus-decode-rfc1522 'article-decode-rfc1522)
 (defalias 'gnus-article-decode-rfc1522 'article-decode-rfc1522)

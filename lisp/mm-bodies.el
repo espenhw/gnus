@@ -94,7 +94,7 @@ The characters in CHARSET should then be decoded."
 		   (setq mule-charset (mm-charset-to-coding-system charset))
 		   (not (mm-coding-system-equal
 			 buffer-file-coding-system mule-charset)))
-	  (mm-decode-coding-region (point-min) (point-max) charset))))))
+	  (mm-decode-coding-region (point-min) (point-max) mule-charset))))))
 
 (provide 'mm-bodies)
 

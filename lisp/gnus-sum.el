@@ -504,7 +504,7 @@ with some simple extensions.
   :group 'gnus-threading
   :type 'string)
 
-(defcustom gnus-summary-mode-line-format "Gnus: %%b [%A] %Z"
+(defcustom gnus-summary-mode-line-format "Gnus: %g [%A] %Z"
   "*The format specification for the summary mode line.
 It works along the same lines as a normal formatting string,
 with some simple extensions:

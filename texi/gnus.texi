@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.12 Manual
+@settitle Pterodactyl Gnus 0.13 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.12 Manual
+@title Pterodactyl Gnus 0.13 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.12.
+This manual corresponds to Pterodactyl Gnus 0.13.
 
 @end ifinfo
 
@@ -2120,6 +2120,11 @@ are arbitrary comments on the group.  They are currently ignored by
 Gnus, but provide a place for you to store information on particular
 groups.
 
+@item charset
+Elements that look like @code{(charset . iso-8859-1)} will make
+@code{iso-8859-1} the default charset; that is, the charset that will be 
+used for all articles that do not specify a charset.
+
 @item @var{(variable form)}
 You can use the group parameters to set variables local to the group you
 are entering.  If you want to turn threading off in @samp{news.answers},
@@ -3193,6 +3198,7 @@ You can have as many summary buffers open as you wish.
 * Saving Articles::             Ways of customizing article saving.
 * Decoding Articles::           Gnus can treat series of (uu)encoded articles.
 * Article Treatment::           The article buffer can be mangled at will.
+* MIME Commands::               Doing MIMEy things with the articles.
 * Article Commands::            Doing various things with the article buffer.
 * Summary Sorting::             Sorting the summary buffer in various ways.
 * Finding the Parent::          No child support? Get the parent.
@@ -6757,6 +6763,31 @@ This means that if there are more than 200 lines after the signature
 separator, or the text after the signature separator is matched by
 the regular expression @samp{^---*Forwarded article}, then it isn't a
 signature after all.
+
+
+@node MIME Commands
+@section MIME Commands
+@cindex MIME decoding
+
+@table @kbd
+@item W M w
+@kindex W M w (Summary)
+Decode RFC2047-encoded words in the article headers
+(@code{gnus-article-decode-mime-words}).
+
+@item W M c
+@kindex W M c (Summary)
+Decode encoded article bodies as well as charsets
+(@code{gnus-article-decode-charset}).
+
+This command looks in the @code{Content-Type} header to determine the
+charset.  If there is no such header in the article, you can give it a
+prefix, which will prompt for the charset to decode as.  In regional
+groups where people post using some common encoding (but do not include
+MIME headers), you can set the @code{charset} group/topic parameter to
+the required charset (@pxref{Group Parameters}).
+
+@end table
 
 
 @node Article Commands
@@ -14358,7 +14389,8 @@ Do highlights in the group buffer.
 @item summary-highlight
 Do highlights in the summary buffer.
 @item article-highlight
-Do highlights in the article buffer.
+Do highlights according to @code{gnus-article-display-hook} in the
+article buffer.
 @item highlight
 Turn on highlighting in all buffers.
 @item group-menu

@@ -10,26 +10,26 @@ XEMACS = xemacs21
 all: lick info
 
 lick:
-	cd lisp && $(MAKE) EMACS=$(EMACS) lispdir=$(lispdir) all
+	cd lisp && $(MAKE) EMACS="$(EMACS)" lispdir="$(lispdir)" all
 
 install:
-	cd lisp && $(MAKE) EMACS=$(EMACS) lispdir=$(lispdir) install
-	cd texi && $(MAKE) EMACS=$(EMACS) install
+	cd lisp && $(MAKE) EMACS="$(EMACS)" lispdir="$(lispdir)" install
+	cd texi && $(MAKE) EMACS="$(EMACS)" install
 
 # Rule for Lars and nobody else.
 some:
-	cd lisp && $(MAKE) EMACS=$(EMACS) some
+	cd lisp && $(MAKE) EMACS="$(EMACS)" some
 l:
-	cd lisp && $(MAKE) EMACS=$(EMACS) clever
+	cd lisp && $(MAKE) EMACS="$(EMACS)" clever
 
 info:
-	cd texi && $(MAKE) EMACS=$(EMACS) all
+	cd texi && $(MAKE) EMACS="$(EMACS)" all
 
 clean:
 	rm -f */*.orig */*.rej *.orig *.rej
 
 xsome:
-	cd lisp && $(MAKE) EMACS=$(XEMACS) some
+	cd lisp && $(MAKE) EMACS="$(XEMACS)" some
 
 elclean:
 	rm lisp/*.elc

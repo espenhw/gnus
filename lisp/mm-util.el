@@ -170,7 +170,13 @@ used as the line break code type of the coding system."
 (defun mm-content-type-charset (header)
   "Return the charset parameter from HEADER."
   (when (string-match "charset *= *\"? *\\([-0-9a-zA-Z_]+\\)\"? *$" header)
-    (intern (match-string 1 header))))
+    (intern (downcase (match-string 1 header)))))
+
+(defun mm-read-coding-system (prompt)
+  "Prompt the user for a coding system."
+  (completing-read
+   prompt (mapcar (lambda (s) (list (symbol-name (car s))))
+		  mm-mime-mule-charset-alist)))
 
 (provide 'mm-util)
 
