@@ -1,3 +1,7 @@
+2003-02-27  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi: Remove the dependence on ssl.el.
+
 2003-02-26  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.texi (Mail Variables): Add

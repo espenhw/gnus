@@ -12384,10 +12384,9 @@ remote system.
 
 @findex nntp-open-ssl-stream
 @item nntp-open-ssl-stream
-Opens a connection to a server over a @dfn{secure} channel.  To use
-this you must have OpenSSL (@uref{http://www.openssl.org}) or SSLeay
-installed (@uref{ftp://ftp.psy.uq.oz.au/pub/Crypto/SSL}, and you also
-need @file{ssl.el} (from the W3 distribution, for instance).  You then
+Opens a connection to a server over a @dfn{secure} channel.  To use this
+you must have OpenSSL (@uref{http://www.openssl.org}) or SSLeay
+installed (@uref{ftp://ftp.psy.uq.oz.au/pub/Crypto/SSL}.  You then
 define a server as follows:
 
 @lisp
@@ -15318,8 +15317,7 @@ SSL).  Requires the external library @samp{starttls.el} and program
 @samp{starttls}.
 @item
 @dfn{ssl:} Connect through SSL.  Requires OpenSSL (the program
-@samp{openssl}) or SSLeay (@samp{s_client}) as well as the external
-library @samp{ssl.el}.
+@samp{openssl}) or SSLeay (@samp{s_client}).
 @item
 @dfn{shell:} Use a shell command to start @sc{imap} connection.
 @item
@@ -15344,8 +15342,7 @@ and nnimap support it too - although the most recent versions of
 SSLeay, 0.9.x, are known to have serious bugs making it
 useless. Earlier versions, especially 0.8.x, of SSLeay are known to
 work. The variable @code{imap-ssl-program} contain parameters to pass
-to OpenSSL/SSLeay.  You also need @samp{ssl.el} (from the W3
-distribution, for instance).
+to OpenSSL/SSLeay.
 
 @vindex imap-shell-program
 @vindex imap-shell-host
