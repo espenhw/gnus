@@ -52,7 +52,7 @@
     (mm-disable-multibyte-mule4)
     (if (file-exists-p name)
 	(mm-insert-file-contents name nil nil nil nil t)
-      (error "The file is gone."))))
+      (error (format "File %s is gone." name)))))
 
 (defun mm-extern-url (handle)
   (erase-buffer)
