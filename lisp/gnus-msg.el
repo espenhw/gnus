@@ -138,7 +138,7 @@ See Info node `(gnus)Posting Styles'."
   :type 'boolean)
 
 (defvar gnus-inews-mark-gcc-as-read nil
-  "Obsoleted variable. Use `gnus-gcc-mark-as-read' instead.")
+  "Obsolete variable. Use `gnus-gcc-mark-as-read' instead.")
 
 (make-obsolete-variable 'gnus-inews-mark-gcc-as-read 
 			'gnus-gcc-mark-as-read)
