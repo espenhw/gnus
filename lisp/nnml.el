@@ -312,12 +312,15 @@ all.  This may very well take some time.")
     (and
      (nnml-deletable-article-p group article)
      (nnml-request-article article group server)
-     (save-excursion
-       (set-buffer buf)
-       (insert-buffer-substring nntp-server-buffer)
-       (setq result (eval accept-form))
-       (kill-buffer (current-buffer))
-       result)
+     (let (nnml-current-directory 
+	   nnml-current-group 
+	   nnml-article-file-alist)
+       (save-excursion
+	 (set-buffer buf)
+	 (insert-buffer-substring nntp-server-buffer)
+	 (setq result (eval accept-form))
+	 (kill-buffer (current-buffer))
+	 result))
      (progn
        (nnml-possibly-change-directory group server)
        (condition-case ()

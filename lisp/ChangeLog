@@ -1,3 +1,8 @@
+1999-12-09 12:05:28  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnml.el (nnml-request-move-article): Save nnml-current-directory
+	and nnml-article-file-alist.
+
 1999-12-09 10:20:07  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-group.el (gnus-group-get-new-news-this-group): Binding
