@@ -1,3 +1,8 @@
+2003-06-19  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Sieve Commands, Agent Basics, SpamOracle): @xref
+	fixes.
+
 2003-06-18  Didier Verna  <didier@xemacs.org>
 
 	* gnus.texi (Face): New node.

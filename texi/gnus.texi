@@ -4348,7 +4348,7 @@ if address "sender" "owner-ding@@hpc.uh.edu" @{
 @}
 @end example
 
-@xref{Top, ,Top, sieve, Emacs Sieve}.
+@xref{Top, Emacs Sieve, Top, sieve, Emacs Sieve}.
 
 @table @kbd
 
@@ -17366,7 +17366,7 @@ all @code{nntp} and @code{nnimap} servers in @code{gnus-select-method} and
 Decide on download policy.  It's fairly simple once you decide whether
 you are going to use agent categories, topic parameters, and/or group
 parameters to implement your policy.  If you're new to gnus, it
-is probably best to start with a category @xref{Agent Categories}.
+is probably best to start with a category, @xref{Agent Categories}.
 
 Both topic parameters (@pxref{Topic Parameters}) and agent categories
 (@pxref{Agent Categories}) provide for setting a policy that applies
@@ -22453,7 +22453,7 @@ specify different spam checks for your nnmail split vs. your nnimap
 split.  Go crazy.
 
 You still have to have specific checks such as
-@code{spam-use-regex-headers} set to t, even if you specifically
+@code{spam-use-regex-headers} set to @code{t}, even if you specifically
 invoke @code{spam-split} with the check.  The reason is that when
 loading @file{spam.el}, some conditional loading is done depending on
 what @code{spam-use-xyz} variables you have set.
@@ -22953,7 +22953,8 @@ characteristics of your spam mails.  Using the @emph{add} mode
 SpamOracle.  This can be done by pressing @kbd{|} in the Summary buffer
 and pipe the mail to a SpamOracle process or using @file{spam.el}'s
 spam- and ham-processors, which is much more convenient.  For a
-detailed description of spam- and ham-processors, see @xref{Filtering Spam Using The Spam ELisp Package}.
+detailed description of spam- and ham-processors, @xref{Filtering Spam
+Using The Spam ELisp Package}.
 
 @defvar gnus-group-spam-exit-processor-spamoracle
 Add this symbol to a group's @code{spam-process} parameter by
@@ -23904,7 +23905,7 @@ Luis Fernandes---design and graphics.
 Joe Reiss---creator of the smiley faces.
 
 @item
-Justin Sheehy--the @acronym{FAQ} maintainer.
+Justin Sheehy---the @acronym{FAQ} maintainer.
 
 @item
 Erik Naggum---help, ideas, support, code and stuff.
