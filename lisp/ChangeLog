@@ -1,3 +1,14 @@
+2000-08-20  Simon Josefsson  <simon@josefsson.org>
+
+	* nnimap.el (nnimap-before-find-minmax-bugworkaround): New
+	function, thanks to Lloyd Zusman for debugging.
+	(nnimap-request-group): 
+	(nnimap-request-list): 
+	(nnimap-retrieve-groups): 
+	(nnimap-request-newgroups): Use it.
+
+	* nnimap.el (nnimap-request-article-part): Less verbose.
+
 2000-08-19  Andreas Jaeger  <aj@suse.de>
 
 	* lpath.el ((string-match "XEmacs" emacs-version)): Remove

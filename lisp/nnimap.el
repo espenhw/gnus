@@ -330,6 +330,14 @@ If SERVER is nil, uses the current server."
       (gnus-group-add-parameter gnusgroup (cons 'uidvalidity new-uidvalidity))
       t)))
 
+(defun nnimap-before-find-minmax-bugworkaround ()
+  "Function called before iterating through mailboxes with
+`nnimap-find-minmax-uid'."
+  ;; XXX this is for UoW imapd problem, it doesn't notice new mail in
+  ;; currently selected mailbox without a re-select/examine.
+  (or (null (imap-current-mailbox nnimap-server-buffer))
+      (imap-mailbox-unselect nnimap-server-buffer)))
+
 (defun nnimap-find-minmax-uid (group &optional examine)
   "Find lowest and highest active article nummber in GROUP.
 If EXAMINE is non-nil the group is selected read-only."
@@ -643,7 +651,7 @@ function is generally only called when Gnus is shutting down."
 				  nnimap-server-buffer))
 		     article)))
       (when article
-	(gnus-message 9 "nnimap: Fetching (part of) article %d..." article)
+	(gnus-message 10 "nnimap: Fetching (part of) article %d..." article)
 	(if (not nnheader-callback-function)
 	    (with-current-buffer (or to-buffer nntp-server-buffer)
 	      (erase-buffer)
@@ -653,7 +661,7 @@ function is generally only called when Gnus is shutting down."
                                            (nth 2 (car data))
                                          data))))
               (nnheader-ms-strip-cr)
-	      (gnus-message 9 "nnimap: Fetching (part of) article %d...done"
+	      (gnus-message 10 "nnimap: Fetching (part of) article %d...done"
 			    article)
 	      (if (bobp)
 		  (nnheader-report 'nnimap "No such article: %s"
@@ -696,6 +704,7 @@ function is generally only called when Gnus is shutting down."
 		   group (gnus-server-to-method (format "nnimap:%s" server))))
    server)
   (when (nnimap-possibly-change-group group server)
+    (nnimap-before-find-minmax-bugworkaround)
     (let (info)
       (cond (fast group)
 	    ((null (setq info (nnimap-find-minmax-uid group t)))
@@ -739,6 +748,7 @@ function is generally only called when Gnus is shutting down."
       (erase-buffer))
     (gnus-message 5 "nnimap: Generating active list%s..."
 		  (if (> (length server) 0) (concat " for " server) ""))
+    (nnimap-before-find-minmax-bugworkaround)
     (with-current-buffer nnimap-server-buffer
       (dolist (pattern (nnimap-pattern-to-list-arguments nnimap-list-pattern))
 	(dolist (mbx (funcall nnimap-request-list-method
@@ -780,6 +790,7 @@ function is generally only called when Gnus is shutting down."
     (gnus-message 5 "nnimap: Checking mailboxes...")
     (with-current-buffer nntp-server-buffer
       (erase-buffer)
+      (nnimap-before-find-minmax-bugworkaround)
       (dolist (group groups)
 	(gnus-message 7 "nnimap: Checking mailbox %s" group)
 	(or (member "\\NoSelect"
@@ -981,6 +992,7 @@ function is generally only called when Gnus is shutting down."
       (gnus-message 5 "nnimap: Listing subscribed mailboxes%s%s..."
 		    (if (> (length server) 0) " on " "") server)
       (erase-buffer)
+      (nnimap-before-find-minmax-bugworkaround)
       (dolist (pattern (nnimap-pattern-to-list-arguments
 			nnimap-list-pattern))
 	(dolist (mbx (imap-mailbox-lsub "*" (car pattern) nil 
@@ -1243,6 +1255,7 @@ sure of changing the value of `foo'."
 	  nnimap-possibly-change-server
 	  nnimap-verify-uidvalidity
 	  nnimap-find-minmax-uid
+	  nnimap-before-find-minmax-bugworkaround
 	  nnimap-possibly-change-group
 	  ;;nnimap-replace-whitespace
 	  nnimap-retrieve-headers-progress
