@@ -1,3 +1,8 @@
+2000-05-05 10:32:27  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-show-article): Remove en/disable multibyte.
+	(gnus-summary-select-article): Add en/disable multibyte.
+
 2000-05-05 02:47:23  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-edit-article): Enable multibyte.

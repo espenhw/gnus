@@ -5837,7 +5837,14 @@ be displayed."
 	      force)
 	  ;; The requested article is different from the current article.
 	  (progn
+	    (when (gnus-buffer-live-p gnus-article-buffer)
+	      (with-current-buffer gnus-article-buffer
+		(mm-enable-multibyte)))
 	    (gnus-summary-display-article article all-headers)
+	    (when (gnus-buffer-live-p gnus-article-buffer)
+	      (with-current-buffer gnus-article-buffer
+		(if (not gnus-article-decoded-p) ;; a local variable
+		    (mm-disable-multibyte))))
 	    (when (or all-headers gnus-show-all-headers)
 	      (gnus-article-show-all-headers))
 	    (gnus-article-set-window-start
@@ -7187,16 +7194,8 @@ without any article massaging functions being run."
 	   (or (cdr (assq arg gnus-summary-show-article-charset-alist))
 	       (read-coding-system "Charset: ")))
 	  (gnus-newsgroup-ignored-charsets 'gnus-all))
-      (when (gnus-buffer-live-p gnus-article-buffer)
-	(save-excursion
-	  (set-buffer gnus-article-buffer)
-	  (mm-enable-multibyte)))
       (gnus-summary-select-article nil 'force)))
    ((not arg)
-    (when (gnus-buffer-live-p gnus-article-buffer)
-      (save-excursion
-	(set-buffer gnus-article-buffer)
-	(mm-enable-multibyte)))
     ;; Select the article the normal way.
     (gnus-summary-select-article nil 'force))
    (t
@@ -7215,11 +7214,7 @@ without any article massaging functions being run."
 	(save-excursion
 	  (set-buffer gnus-article-buffer)
 	  (mm-destroy-parts gnus-article-mime-handles)))
-      (gnus-summary-select-article nil 'force)
-      (when (gnus-buffer-live-p gnus-article-buffer)
-	(save-excursion
-	  (set-buffer gnus-article-buffer)
-	  (mm-disable-multibyte))))))
+      (gnus-summary-select-article nil 'force))))
   (gnus-summary-goto-subject gnus-current-article)
   (gnus-summary-position-point))
 
