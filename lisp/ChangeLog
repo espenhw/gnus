@@ -1,3 +1,7 @@
+2001-03-07 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-set-auto-save-file-name): Save a copy.
+
 2001-03-07 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-score.el (gnus-score-find-bnews): Print messages on illegal
