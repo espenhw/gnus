@@ -11334,7 +11334,8 @@ If REVERSE, save parts that do not match TYPE."
 	 (default-high gnus-summary-default-high-score)
 	 (default-low gnus-summary-default-low-score)
 	 (uncached (and gnus-summary-use-undownloaded-faces
-                        (memq article gnus-newsgroup-undownloaded))))
+                        (memq article gnus-newsgroup-undownloaded)
+                        (not (memq article gnus-newsgroup-cached)))))
     (let ((face (funcall (gnus-summary-highlight-line-0))))
       (unless (eq face (get-text-property beg 'face))
 	(gnus-put-text-property-excluding-characters-with-faces
