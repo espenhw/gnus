@@ -1,5 +1,8 @@
 2002-09-27  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-art.el (gnus-article-mode-syntax-table): Make M-. work in
+	article buffers.
+
 	* nnimap.el (nnimap-fixup-unread-after-getting-new-news): Autoload
 	it just in case.
 	(nnimap-update-unseen): New function; update unseen count in
