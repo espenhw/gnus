@@ -720,6 +720,7 @@ candidates:
 `empty-article'     Allow you to post an empty article;
 `quoted-text-only'  Allow you to post quoted text only;
 `multiple-copies'   Allow you to post multiple copies.")
+;; `cancel-messages'   Allow you to cancel or supersede others' messages.
 
 (defsubst message-gnksa-enable-p (feature)
   (or (not (listp message-shoot-gnksa-feet))
@@ -4175,7 +4176,8 @@ If ARG, allow editing of the cancellation message."
 		message-id (message-fetch-field "message-id" t)
 		distribution (message-fetch-field "distribution")))
 	;; Make sure that this article was written by the user.
-	(unless (or (and sender
+	(unless (or (message-gnksa-enable-p 'cancel-messages)
+		    (and sender
 			 (string-equal
 			  (downcase sender)
 			  (downcase (message-make-sender))))
@@ -4190,7 +4192,7 @@ If ARG, allow editing of the cancellation message."
 	  (setq buf (set-buffer (get-buffer-create " *message cancel*"))))
 	(erase-buffer)
 	(insert "Newsgroups: " newsgroups "\n"
-               "From: " from "\n"
+		"From: " from "\n"
 		"Subject: cmsg cancel " message-id "\n"
 		"Control: cancel " message-id "\n"
 		(if distribution
@@ -4217,7 +4219,8 @@ header line with the old Message-ID."
 	(sender (message-fetch-field "sender"))
 	(from (message-fetch-field "from")))
     ;; Check whether the user owns the article that is to be superseded.
-    (unless (or (and sender
+    (unless (or (message-gnksa-enable-p 'cancel-messages)
+		(and sender
 		     (string-equal
 		      (downcase sender)
 		      (downcase (message-make-sender))))

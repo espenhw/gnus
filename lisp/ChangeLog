@@ -1,3 +1,8 @@
+2001-02-08 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-cancel-news): Allow to shoot foot.
+	(message-supersede): Ditto.
+
 2001-02-08  Tommi Vainikainen <thv@iki.fi> 
 
 	* gnus-sum.el (gnus-simplify-subject-re): Use
