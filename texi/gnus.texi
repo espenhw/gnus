@@ -7133,10 +7133,11 @@ Signature}.
 @kindex W W l (Summary)
 @findex gnus-article-hide-list-identifiers
 @vindex gnus-list-identifiers
-Strip list identifiers specified in @code{gnus-list-identifiers}.
-These are strings some mailing list servers add to the beginning of
-all @code{Subject} headers---for example, @samp{[zebra 4711]}.  Any
-leading @samp{Re: } is skipped before stripping.
+Strip list identifiers specified in @code{gnus-list-identifiers}.  These
+are strings some mailing list servers add to the beginning of all
+@code{Subject} headers---for example, @samp{[zebra 4711]}.  Any leading
+@samp{Re: } is skipped before stripping. @code{gnus-list-identifiers}
+may not contain @code{\\(..\\)}.
 
 @table @code
 
@@ -12056,7 +12057,8 @@ Some list servers add an identifier---for example, @samp{(idm)}---to the
 beginning of all @code{Subject} headers.  I'm sure that's nice for
 people who use stone age mail readers.  This function will remove
 strings that match the @code{nnmail-list-identifiers} regexp, which can
-also be a list of regexp.
+also be a list of regexp.  @code{nnmail-list-identifiers} may not contain
+@code{\\(..\\)}.
 
 For instance, if you want to remove the @samp{(idm)} and the
 @samp{nagnagnag} identifiers:
