@@ -1,3 +1,10 @@
+2003-03-20  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-use-idna): Disable if UTF-8 unavailable.
+	(message-idna-to-ascii-rhs): Use it.
+
+	* gnus-art.el (gnus-use-idna): Disable if UTF-8 unavailable.
+
 2003-03-19  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-group-ham-mark-p, spam-group-spam-mark-p) 

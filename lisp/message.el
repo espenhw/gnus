@@ -1288,7 +1288,11 @@ no, only reply back to the author."
   :link '(custom-manual "(message)News Headers")
   :type 'string)
 
-(defcustom message-use-idna 'ask
+(defcustom message-use-idna (and (condition-case nil (require 'idna)
+				   (file-error))
+				 (fboundp 'coding-system-p)
+				 (coding-system-p 'utf-8)
+				 'ask)
   "Whether to encode non-ASCII in domain names into ASCII according to IDNA."
   :group 'message-headers
   :type '(choice (const :tag "Ask" ask)
@@ -4685,7 +4689,7 @@ I.e., calling it on a Subject: header is useless."
   "Possibly IDNA encode non-ASCII domain names in From:, To: and Cc: headers.
 See `message-idna-encode'."
   (interactive)
-  (when (condition-case nil (require 'idna) (file-error))
+  (when message-use-idna
     (save-excursion
       (save-restriction
 	(message-narrow-to-head)
