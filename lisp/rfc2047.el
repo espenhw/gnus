@@ -305,6 +305,7 @@ Should be called narrowed to the head of the message."
 	  (setq break nil)
 	  (insert "\n ")
 	  ;; Don't break before the first non-LWSP characters.
+	  (skip-chars-forward " \t")
 	  (forward-char 1)))
 	(unless (eobp)
 	  (forward-char 1))))))
