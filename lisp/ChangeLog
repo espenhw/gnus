@@ -1,3 +1,7 @@
+2004-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Improved "Washing" menu.
+
 2004-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-user-agent): Moved here.
