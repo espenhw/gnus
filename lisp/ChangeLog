@@ -1,3 +1,9 @@
+2001-05-16  Simon Josefsson  <simon@josefsson.org>
+	From Raymond Scholz <ray-2001@zonix.de>
+
+	* gnus-art.el (gnus-mime-view-part-as-charset): 
+	(gnus-mime-internalize-part): Doc fixes.
+
 2001-05-11  Simon Josefsson  <simon@josefsson.org>
 
 	* gnus-start.el (gnus-ignored-newsgroups): Also ignore NNTP type

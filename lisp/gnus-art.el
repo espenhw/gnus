@@ -3475,7 +3475,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	(goto-char b)))))
 
 (defun gnus-mime-view-part-as-charset (&optional handle arg)
-  "Insert the MIME part under point into the current buffer."
+  "Insert the MIME part under point into the current buffer using the
+specified charset."
   (interactive (list nil current-prefix-arg))
   (gnus-article-check-buffer)
   (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
@@ -3510,7 +3511,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 
 (defun gnus-mime-internalize-part (&optional handle)
   "View the MIME part under point with an internal viewer.
-In no internal viewer is available, use an external viewer."
+If no internal viewer is available, use an external viewer."
   (interactive)
   (gnus-article-check-buffer)
   (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
