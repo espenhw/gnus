@@ -6037,7 +6037,7 @@ positives are possible."
     ("\\(\\b<\\(url:[>\n\t ]*\\)?\\(nntp\\|news\\):[>\n\t ]*\\(//\\)?\\([^>\n\t ]*\\)>\\)"
      1 (>= gnus-button-message-level 0) gnus-button-fetch-group 5)
     ("\\b\\(nntp\\|news\\):\\(//\\)?\\([^'\">\n\t ]+\\)"
-     0 (>= gnus-button-message-level 0) gnus-button-handle-news 3)
+     0 (>= gnus-button-message-level 0) gnus-button-fetch-group 3)
     ;; RFC 2392 (Don't allow `/' in domain part --> CID)
     ("\\bmid:\\(//\\)?\\([^'\">\n\t ]+@[^'\">\n\t /]+\\)"
      0 (>= gnus-button-message-level 0) gnus-button-message-id 2)

@@ -1,3 +1,7 @@
+2004-05-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-button-alist): Revert previous change.
+
 2004-05-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-idna-to-ascii-rhs-1): Fix typo.
