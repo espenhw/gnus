@@ -1,3 +1,8 @@
+2003-01-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+	Trivial patch from Norbert Koch <nk@viteno.net>.
+
+	* gnus-msg.el (gnus-gcc-externalize-attachments): Fix typo.
+
 2003-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-generate-headers): Let header formatters do
@@ -13,7 +18,7 @@
 
 2003-01-02  Pete Kazmier  <pete@kazmier.com>
 
-	* gnus-art.el (gnus-treat-predicate): Check condition first. 
+	* gnus-art.el (gnus-treat-predicate): Check condition first.
 
 2003-01-02  Jesper Harder  <harder@ifa.au.dk>
 
@@ -28,13 +33,13 @@
 	nicer draft buffer summary.
 
 	* gnus-xmas.el (gnus-xmas-read-event-char): Take an optional
-	parameter. 
+	parameter.
 
 	* gnus-art.el (article-wash-html): Clean up.
 	(article-wash-html): Typo fix.
 
 	* gnus-msg.el (gnus-summary-mail-forward): Clean up.
-	(gnus-summary-mail-forward): To many lists of lists. 
+	(gnus-summary-mail-forward): To many lists of lists.
 
 	* gnus-art.el (article-wash-html): Clean up.
 
@@ -44,9 +49,9 @@
 
 2003-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* message.el (message-check-news-header-syntax): Allow posting. 
+	* message.el (message-check-news-header-syntax): Allow posting.
 	(message-check-news-header-syntax): Fix logic for sure, this
-	time. 
+	time.
 
 2003-01-02  Matthieu Moy  <Matthieu.Moy@imag.fr>
 
@@ -72,7 +77,7 @@
 
 	* gnus-sum.el (gnus-summary-goto-subjects): New function.
 	(gnus-summary-insert-dormant-articles): New command and
-	keystroke. 
+	keystroke.
 
 	* gnus-cache.el (gnus-summary-insert-cached-articles): Use new
 	function for mass insertion of subjects.
@@ -92,17 +97,17 @@
 2003-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-group-parameter-value): Take an extra param.
-	(gnus-group-fast-parameter): Let group param results be nil. 
+	(gnus-group-fast-parameter): Let group param results be nil.
 
 	* gnus-art.el (gnus-article-forward-header): New function.
-	(article-date-ut): Use it to remove continuation date headers. 
+	(article-date-ut): Use it to remove continuation date headers.
 
 	* gnus-sum.el (gnus-summary-walk-group-buffer): Supply prompt to
-	read-event. 
+	read-event.
 	(gnus-summary-remove-bookmark): Clean up.
 	(gnus-summary-set-bookmark): Clean up.
 
-	* gnus-util.el (gnus-read-event-char): Take an optional prompt. 
+	* gnus-util.el (gnus-read-event-char): Take an optional prompt.
 
 	* gnus.el (gnus-group-startup-message): Bind data-directory to
 	the Gnus etc directory.

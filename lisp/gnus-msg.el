@@ -154,7 +154,7 @@ See Info node `(gnus)Posting Styles'."
   "Should local-file attachments be included as external parts in Gcc copies?
 If it is `all', attach files as external parts;
 if a regexp and matches the Gcc group name, attach files as external parts;
-If nil, attach files as normal parts."
+if nil, attach files as normal parts."
   :version "21.1"
   :group 'gnus-message
   :type '(choice (const nil :tag "None")
@@ -1627,7 +1627,7 @@ this is a reply."
 		    group))))
 	(when gcc
 	  (insert "Gcc: "
-		  (if (stringp gcc) 
+		  (if (stringp gcc)
 		      (if (string-match " " gcc)
 			  (concat "\"" gcc "\"")
 			gcc)
@@ -1823,7 +1823,7 @@ this is a reply."
       (setq results (delq name (delq address results)))
       ;; make-local-hook is not obsolete in Emacs 20 or XEmacs.
       (make-local-hook 'message-setup-hook)
-      (setq results (sort results (lambda (x y) 
+      (setq results (sort results (lambda (x y)
 				    (string-lessp (car x) (car y)))))
       (dolist (result results)
 	(add-hook 'message-setup-hook
