@@ -1,3 +1,8 @@
+2004-07-02  Jesper Harder  <harder@ifa.au.dk>
+
+	* nnrss.el (nnrss-read-group-data): Fix off-by-one error.  From
+	Joakim Verona <joakim@verona.se>.
+
 2004-06-30  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-trim): don't allow a negative
