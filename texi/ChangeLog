@@ -1,3 +1,10 @@
+2004-05-10  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (MIME Commands): Added
+	gnus-mime-display-multipart-as-mixed,
+	gnus-mime-display-multipart-alternative-as-mixed,
+	gnus-mime-display-multipart-related-as-mixed.
+
 2004-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (SpamAssassin backend): Add it to the detailmenu.
