@@ -773,9 +773,7 @@ article's mark is toggled."
 		   (gnus-agent-append-to-list tail a)))))
 
 	(while headers
-	  (let ((h (mail-header-number (car headers))))
-            (pop headers)
-            (gnus-agent-append-to-list tail h)))
+          (gnus-agent-append-to-list tail (mail-header-number (pop headers))))
 	(setq gnus-newsgroup-undownloaded (cdr undownloaded))))))
 
 (defun gnus-agent-catchup ()
@@ -1581,7 +1579,6 @@ of FILE placing the combined headers in nntp-server-buffer."
           (setq gnus-newsgroup-dependencies
                 (or gnus-newsgroup-dependencies
                     (make-vector (length articles) 0)))
-
           (setq gnus-newsgroup-headers
                 (or gnus-newsgroup-headers
                     (gnus-get-newsgroup-headers-xover articles nil nil
@@ -1619,7 +1616,8 @@ of FILE placing the combined headers in nntp-server-buffer."
             (let ((arts (list nil)))
               (let ((arts-tail arts)
                     (alist (gnus-agent-load-alist group))
-                    (marked-articles marked-articles))
+                    (marked-articles marked-articles)
+                    (gnus-newsgroup-headers gnus-newsgroup-headers))
                 (while (setq gnus-headers (pop gnus-newsgroup-headers))
                   (let ((num (mail-header-number gnus-headers)))
                     ;; Determine if this article is already in the cache
@@ -1653,6 +1651,7 @@ of FILE placing the combined headers in nntp-server-buffer."
 
                 (let ((unfetched-articles (gnus-sorted-ndifference (cdr arts) fetched-articles)))
                   (if gnus-newsgroup-active
+                      ;; Update the summary buffer
                       (progn
                         (dolist (article marked-articles)
                           (when (gnus-summary-goto-subject article nil t)
@@ -1664,6 +1663,9 @@ of FILE placing the combined headers in nntp-server-buffer."
                             (gnus-summary-update-download-mark article)))
                         (dolist (article unfetched-articles)
                           (gnus-summary-mark-article article gnus-canceled-mark)))
+
+                    ;; Update the group buffer.
+
                     ;; When some, or all, of the marked articles came
                     ;; from the download mark.  Remove that mark.  I
                     ;; didn't do this earlier as I only want to remove
@@ -2084,7 +2086,21 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
 				     (gnus-agent-directory)
 				     (gnus-agent-group-path expiring-group) "/"))
 			       (active
-				(gnus-gethash-safe expiring-group orig)))
+				(gnus-gethash-safe expiring-group orig))
+                               (day (if (numberp day)
+                                        day
+                                      (let (found
+                                            (days gnus-agent-expire-days))
+                                        (debug)
+                                        (catch 'found
+                                          (while (and (not found)
+                                                      days)
+                                            (when (eq 0 (string-match (caar days) expiring-group))
+                                              (throw 'found (- (time-to-days (current-time)) (cadar days))))
+                                            (pop days))
+                                          ;; No regexp matched so set a limit that will block expiration in this group
+                                          0)))))
+                                        
 			  (when active
 			    (gnus-agent-load-alist expiring-group)
 			    (gnus-message 5 "Expiring articles in %s" expiring-group)
@@ -2238,17 +2254,7 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
 
 					     ;; We now have the arrival day, so we see
 					     ;; whether it's old enough to be expired.
-					     ((< fetch-date
-						 (if (numberp day)
-						     day
-						   (let (found
-							 (days gnus-agent-expire-days))
-						     (while (and (not found)
-								 days)
-						       (when (eq 0 (string-match (caar days) expiring-group))
-							 (setq found (cadar days)))
-						       (pop days))
-						     found)))
+					     ((< fetch-date day)
 					      'expired)
 					     (force
 					      'forced)))

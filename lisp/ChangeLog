@@ -5,7 +5,10 @@
 	whose article number was negative.
 	(gnus-agent-fetch-group-1): When executed in the group's summary
 	buffer, refresh each downloaded line to update the status flag and
-	font.
+	font.  Preserve the value of gnus-newsgroup-headers so that
+	gnus-agent-fetch-articles can split the requests by size.
+	(gnus-agent-expire): Corrected day calculation for when
+	gnus-agent-expire-days contains a list.
 
 2003-01-14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
