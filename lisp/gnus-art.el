@@ -560,8 +560,7 @@ The following additional specs are available:
   :type 'hook
   :group 'gnus-article-various)
 
-(defvar gnus-article-hide-pgp-hook nil)
-(make-obsolete-variable 'gnus-article-hide-pgp-hook 
+(make-obsolete-variable 'gnus-article-hide-pgp-hook
 			"This variable is obsolete in Gnus 5.10.")
 
 (defcustom gnus-article-button-face 'bold
