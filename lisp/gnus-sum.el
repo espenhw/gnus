@@ -1,5 +1,5 @@
 ;;; gnus-sum.el --- summary mode commands for Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -2293,7 +2293,8 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	 ["Catchup all" gnus-summary-catchup-all t]
 	 ["Catchup to here" gnus-summary-catchup-to-here t]
 	 ["Catchup from here" gnus-summary-catchup-from-here t]
-	 ["Catchup region" gnus-summary-mark-region-as-read t]
+	 ["Catchup region" gnus-summary-mark-region-as-read 
+	  (gnus-mark-active-p)]
 	 ["Mark excluded" gnus-summary-limit-mark-excluded-as-read t])
 	("Mark Various"
 	 ["Tick" gnus-summary-tick-article-forward t]
@@ -2327,8 +2328,8 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	 ["Remove all marks" gnus-summary-unmark-all-processable t]
 	 ["Mark above" gnus-uu-mark-over t]
 	 ["Mark series" gnus-uu-mark-series t]
-	 ["Mark region" gnus-uu-mark-region t]
-	 ["Unmark region" gnus-uu-unmark-region t]
+	 ["Mark region" gnus-uu-mark-region (gnus-mark-active-p)]
+	 ["Unmark region" gnus-uu-unmark-region (gnus-mark-active-p)]
 	 ["Mark by regexp..." gnus-uu-mark-by-regexp t]
 	 ["Unmark by regexp..." gnus-uu-unmark-by-regexp t]
 	 ["Mark all" gnus-uu-mark-all t]

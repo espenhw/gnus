@@ -1,5 +1,8 @@
 2003-01-13  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus-sum.el (gnus-summary-make-menu-bar): Deactivate items if
+	mark is not active.
+
 	* gnus-msg.el (gnus-inews-do-gcc): Comment.
 
 	* gnus-ems.el (gnus-mark-active-p): New function.
