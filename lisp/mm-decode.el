@@ -100,20 +100,23 @@
 (defcustom mm-text-html-renderer
   (cond ((locate-library "w3") 'w3)
 	((locate-library "w3m") 'w3m)
+	((executable-find "w3m") 'w3m-standalone)
 	((executable-find "links") 'links)
 	((executable-find "lynx") 'lynx)
 	(t 'html2text))
   "Render of HTML contents.
 It is one of defined renderer types, or a rendering function.
 The defined renderer types are:
-`w3'   : using Emacs/W3;
-`w3m'  : using emacs-w3m;
-`links': using links;
-`lynx' : using lynx;
-`html2text' : using html2text;
-nil    : using external viewer."
+`w3'   : use Emacs/W3;
+`w3m'  : use emacs-w3m;
+`w3m-standalone': use w3m;
+`links': use links;
+`lynx' : use lynx;
+`html2text' : use html2text;
+nil    : use external viewer."
   :type '(choice (const w3)
 		 (const w3m)
+		 (const w3m-standalone)
 		 (const links)
 		 (const lynx)
 		 (const html2text)

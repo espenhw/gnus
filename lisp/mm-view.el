@@ -54,7 +54,7 @@
 (defvar mm-text-html-washer-alist
   '((w3  . gnus-article-wash-html-with-w3)
     (w3m . gnus-article-wash-html-with-w3m)
-    (w3m-standalone mm-inline-render-with-stdin nil
+    (w3m-standalone mm-inline-wash-with-stdin nil
 		    "w3m" "-dump" "-T" "text/html")
     (links mm-inline-wash-with-file
 	   mm-links-remove-leading-blank

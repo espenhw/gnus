@@ -1,5 +1,10 @@
 2003-12-28  Jesper Harder  <harder@ifa.au.dk>
 
+	* mm-view.el (mm-text-html-washer-alist): Use
+	mm-inline-wash-with-stdin for w3m-standalone.
+
+	* mm-decode.el (mm-text-html-renderer): Add w3m-standalone.
+
 	* mml1991.el (mml1991-pgg-encrypt): Decode according to CTE before
 	encrypting.
 
@@ -7,7 +12,6 @@
 
 	* mml1991.el (mml1991-pgg-sign): Use unibyte when re-encoding.
 	From Ivan Boldyrev <boldyrev@uiggm.nsc.ru> (tiny change).
-
 
 2003-12-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
