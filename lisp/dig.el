@@ -170,10 +170,13 @@ Optional arguments are passed to `dig-invoke'."
 
 ;; named for consistency with query-dns in dns.el
 (defun query-dig (domain &optional
-		   query-type query-class query-option dig-option server)
-  "Query addresses of a DOMAIN using dig, by calling `dig-invoke' and `dig-extract-rr'.
-Optional arguments are passed to `dig-invoke' and `dig-extract-rr'.  Returns nil for a nonexistent domain."
-(let ((buffer (dig-invoke domain query-type query-class query-option dig-option server)))
+			 query-type query-class query-option dig-option server)
+  "Query addresses of a DOMAIN using dig.
+It works by calling `dig-invoke' and `dig-extract-rr'.  Optional
+arguments are passed to `dig-invoke' and `dig-extract-rr'.  Returns
+nil for domain/class/type queries that results in no data."
+(let ((buffer (dig-invoke domain query-type query-class
+			  query-option dig-option server)))
   (when buffer
     (switch-to-buffer buffer)
     (let ((digger (dig-extract-rr domain query-type query-class)))
