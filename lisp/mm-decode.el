@@ -1455,6 +1455,10 @@ If RECURSIVE, search recursively."
        (or (listp (car handles))
 	   (stringp (car handles)))))
 
+(defun mm-complicated-handles (handles)
+  (and (listp (car handles))
+       (> (length handles) 1)))
+
 (defun mm-merge-handles (handles1 handles2)
   (append
    (if (listp (car handles1))

@@ -3988,6 +3988,9 @@ and `gnus-mime-delete-part', and not provided at run-time normally."
   (gnus-article-check-buffer)
   (when (gnus-group-read-only-p)
     (error "The current group does not support deleting of parts"))
+  (when (mm-complicated-handles gnus-article-mime-handles)
+    (error "\
+The current article has a complicated MIME structure, giving up..."))
   (when (gnus-yes-or-no-p "\
 Deleting parts may malfunction or destroy the article; continue? ")
     (let* ((data (get-text-property (point) 'gnus-data))
@@ -4019,6 +4022,9 @@ Replace it with some information about the removed part."
   (gnus-article-check-buffer)
   (when (gnus-group-read-only-p)
     (error "The current group does not support deleting of parts"))
+  (when (mm-complicated-handles gnus-article-mime-handles)
+    (error "\
+The current article has a complicated MIME structure, giving up..."))
   (when (gnus-yes-or-no-p "\
 Deleting parts may malfunction or destroy the article; continue? ")
     (let* ((data (get-text-property (point) 'gnus-data))

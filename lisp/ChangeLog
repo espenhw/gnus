@@ -1,3 +1,11 @@
+2004-03-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-decode.el (mm-complicated-handles): New function reviving
+	former definition of mm-multiple-handles.
+
+	* gnus-art.el (gnus-mime-save-part-and-strip): Use it.
+	(gnus-mime-delete-part): Use it.
+
 2004-03-09  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-read-local): Bind
