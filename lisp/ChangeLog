@@ -5,6 +5,7 @@
 	(gnus-agent-regenerate-group): Ditto.
 	(gnus-agent-regenerate): Ditto.
 	(gnus-agent-write-active): Ditto.
+	Suggested by Katsumi Yamaoka <yamaoka@jpl.org>
 
 2002-01-14  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
