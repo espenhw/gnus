@@ -1,3 +1,9 @@
+2000-10-31 17:32:02  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml2015.el: Wrap gpg.el.
+	* gpg.el (gpg-verify): The last argument of apply is a list.
+	(gpg-encrypt): Add passphrase as a parameter.
+
 2000-10-31 17:28:45  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gpg.el: New file.

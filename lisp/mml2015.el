@@ -28,13 +28,49 @@
 (eval-when-compile (require 'cl))
 (require 'mm-decode)
 
+(defvar mml2015-use (or (progn (ignore-errors
+				 (load "mc-toplev"))
+			       (and (fboundp 'mc-encrypt-generic)
+				    (fboundp 'mc-sign-generic)
+				    (fboundp 'mc-cleanup-recipient-headers)
+				    'mailcrypt))
+			(progn
+			  (ignore-errors
+			    (require 'gpg))
+			  (and (fboundp 'gpg-sign-detached)
+			       'gpg)))
+  "The package used for PGP/MIME.")
+
+(defvar mml2015-function-alist
+  '((mailcrypt mml2015-mailcrypt-sign
+	       mml2015-mailcrypt-encrypt
+	       mml2015-mailcrypt-verify
+	       mml2015-mailcrypt-decrypt)
+    (gpg mml2015-gpg-sign
+	 mml2015-gpg-encrypt
+	 mml2015-gpg-verify
+	 mml2015-gpg-decrypt))
+  "Alist of PGP/MIME functions.")
+
+(defvar mml2015-result-buffer nil)
+
+;;; mailcrypt wrapper
+
+(eval-and-compile
+  (autoload 'mailcrypt-decrypt "mailcrypt")
+  (autoload 'mailcrypt-verify "mailcrypt")
+  (autoload 'mc-encrypt-generic "mc-toplev")
+  (autoload 'mc-cleanup-recipient-headers "mc-toplev")
+  (autoload 'mc-sign-generic "mc-toplev"))
+
+(eval-when-compile
+  (defvar mc-default-scheme)
+  (defvar mc-schemes))
+
 (defvar mml2015-decrypt-function 'mailcrypt-decrypt)
 (defvar mml2015-verify-function 'mailcrypt-verify)
-(defvar mml2015-encrypt-function 'mml2015-mailcrypt-encrypt)
-(defvar mml2015-sign-function 'mml2015-mailcrypt-sign)
 
-;;;###autoload
-(defun mml2015-decrypt (handle ctl)
+(defun mml2015-mailcrypt-decrypt (handle ctl)
   (let (child handles result)
     (unless (setq child (mm-find-part-by-type (cdr handle) 
 					      "application/octet-stream"))
@@ -56,8 +92,7 @@
        (substring alg (match-end 0))
      alg)))
 
-;;;###autoload
-(defun mml2015-verify (handle ctl)
+(defun mml2015-mailcrypt-verify (handle ctl)
   (let (part)
     (unless (setq part (mm-find-raw-part-by-type 
 			 ctl "application/pgp-signature" t))
@@ -75,16 +110,8 @@
 	(error "Corrupted pgp-signature part."))
       (mm-insert-part part)
       (unless (funcall mml2015-verify-function)
-	(error "Verify error.")))))
-
-(eval-and-compile
-  (autoload 'mc-encrypt-generic "mc-toplev")
-  (autoload 'mc-cleanup-recipient-headers "mc-toplev")
-  (autoload 'mc-sign-generic "mc-toplev"))
-
-(eval-when-compile
-  (defvar mc-default-scheme)
-  (defvar mc-schemes))
+	(error "Verify error.")))
+    handle))
 
 (defun mml2015-mailcrypt-sign (cont)
   (mc-sign-generic (message-options-get 'message-sender)
@@ -145,13 +172,167 @@
     (insert (format "--%s--\n" boundary))
     (goto-char (point-max))))
 
+;;; gpg wrapper
+
+(eval-and-compile
+  (autoload 'gpg-decrypt "gpg")
+  (autoload 'gpg-verify "gpg")
+  (autoload 'gpg-sign-detached "gpg")
+  (autoload 'gpg-sign-encrypt "gpg")
+  (autoload 'gpg-passphrase-read "gpg"))
+
+(defun mml2015-gpg-passphrase ()
+  (or (message-options-get 'gpg-passphrase)
+      (message-options-set 'gpg-passphrase (gpg-passphrase-read))))
+
+(defun mml2015-gpg-decrypt-1 ()
+  (let ((cipher (current-buffer)) plain result)
+    (if (with-temp-buffer
+	  (prog1
+	      (gpg-decrypt cipher (setq plain (current-buffer))  
+			   mml2015-result-buffer nil)
+	    (set-buffer cipher)
+	    (erase-buffer)
+	    (insert-buffer plain)))
+	'(t)
+      ;; Some wrong with the return value, check plain text buffer.
+      (if (> (point-max) (point-min))
+	  '(t)
+	(pop-to-buffer mml2015-result-buffer)
+	nil))))
+
+(defun mml2015-gpg-decrypt (handle ctl)
+  (let ((mml2015-decrypt-function 'mml2015-gpg-decrypt-1))
+    (mml2015-mailcrypt-decrypt handle ctl)))
+
+(defun mml2015-gpg-verify (handle ctl)
+  (let (part message signature)
+    (unless (setq part (mm-find-raw-part-by-type 
+			 ctl "application/pgp-signature" t))
+      (error "Corrupted pgp-signature part."))
+    (with-temp-buffer
+      (setq message (current-buffer))
+      (insert part)
+      (with-temp-buffer
+	(setq signature (current-buffer))
+	(unless (setq part (mm-find-part-by-type 
+			    (cdr handle) "application/pgp-signature"))
+	  (error "Corrupted pgp-signature part."))
+	(mm-insert-part part)
+	(unless (gpg-verify message signature mml2015-result-buffer)
+	  (pop-to-buffer mml2015-result-buffer)
+	  (error "Verify error.")))))
+  handle)
+
+(defun mml2015-gpg-sign (cont)
+  (let ((boundary 
+	 (funcall mml-boundary-function (incf mml-multipart-number)))
+	(text (current-buffer)) signature)
+    (goto-char (point-max))
+    (unless (bolp)
+      (insert "\n"))
+    (with-temp-buffer
+      (unless (gpg-sign-detached text (setq signature (current-buffer))
+				 mml2015-result-buffer 
+				 nil
+				 (message-options-get 'message-sender)
+				 t t) ; armor & textmode
+	(unless (> (point-max) (point-min))
+	  (pop-to-buffer mml2015-result-buffer)
+	  (error "Sign error.")))
+      (set-buffer text)
+      (goto-char (point-min))
+      (insert (format "Content-Type: multipart/signed; boundary=\"%s\";\n"
+		      boundary))
+      ;;; FIXME: what is the micalg?
+      (insert "\tmicalg=pgp-sha1; protocol=\"application/pgp-signature\"\n")
+      (insert (format "\n--%s\n" boundary))
+      (goto-char (point-max))
+      (insert (format "\n--%s\n" boundary))
+      (insert "Content-Type: application/pgp-signature\n\n")
+      (insert-buffer signature)
+      (goto-char (point-max))
+      (insert (format "--%s--\n" boundary))
+      (goto-char (point-max)))))
+
+(defun mml2015-gpg-encrypt (cont)
+  (let ((boundary 
+	 (funcall mml-boundary-function (incf mml-multipart-number)))
+	(text (current-buffer))
+	cipher)
+    (with-temp-buffer
+      (unless (gpg-sign-encrypt 
+	       text (setq cipher (current-buffer))
+	       mml2015-result-buffer 
+	       (split-string
+		(or 
+		 (message-options-get 'message-recipients)
+		 (message-options-set 'message-recipients
+				      (read-string "Recipients: ")))
+		"[ \f\t\n\r\v,]+")
+	       nil
+  	       (message-options-get 'message-sender)
+	       t t) ; armor & textmode
+	(unless (> (point-max) (point-min))
+	  (pop-to-buffer mml2015-result-buffer)
+	  (error "Encrypt error.")))
+      (set-buffer text)
+      (delete-region (point-min) (point-max))
+      (insert (format "Content-Type: multipart/encrypted; boundary=\"%s\";\n"
+		      boundary))
+      (insert "\tprotocol=\"application/pgp-encrypted\"\n\n")
+      (insert (format "--%s\n" boundary))
+      (insert "Content-Type: application/pgp-encrypted\n\n")
+      (insert "Version: 1\n\n")
+      (insert (format "--%s\n" boundary))
+      (insert "Content-Type: application/octet-stream\n\n")
+      (insert-buffer cipher)
+      (goto-char (point-max))
+      (insert (format "--%s--\n" boundary))
+      (goto-char (point-max)))))
+
+;;; General wrapper
+
+(defun mml2015-clean-buffer ()
+  (if (gnus-buffer-live-p mml2015-result-buffer)
+      (with-current-buffer mml2015-result-buffer
+	(erase-buffer)
+	t)
+    (setq mml2015-result-buffer
+	  (gnus-get-buffer-create "*MML2015 Result*"))
+    nil))
+
+;;;###autoload
+(defun mml2015-decrypt (handle ctl)
+  (mml2015-clean-buffer)
+  (let ((func (nth 4 (assq mml2015-use mml2015-function-alist))))
+    (if func
+	(funcall func handle ctl)
+      handle)))
+
+;;;###autoload
+(defun mml2015-verify (handle ctl)
+  (mml2015-clean-buffer)
+  (let ((func (nth 3 (assq mml2015-use mml2015-function-alist))))
+    (if func
+	(funcall func handle ctl)
+      handle)))
+
 ;;;###autoload
 (defun mml2015-encrypt (cont)
-  (funcall mml2015-encrypt-function cont))
+  (mml2015-clean-buffer)
+  (let ((func (nth 2 (assq mml2015-use mml2015-function-alist))))
+    (if func
+	(funcall func cont)
+      (error "Cannot find encrypt function."))))
 
 ;;;###autoload
 (defun mml2015-sign (cont)
-  (funcall mml2015-sign-function cont))
+  (mml2015-clean-buffer)
+  (let ((func (nth 1 (assq mml2015-use mml2015-function-alist))))
+    (if func
+	(funcall func cont)
+      (error "Cannot find sign function."))))
 
 (provide 'mml2015)
 

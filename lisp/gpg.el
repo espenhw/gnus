@@ -7,7 +7,7 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-15
 
-;; $Id: gpg.el,v 1.4 2000/05/28 12:41:08 fw Exp fw $
+;; $Id: gpg.el,v 6.1 2000/10/31 21:31:31 zsh Exp $
 
 ;; This file is NOT (yet?) part of GNU Emacs.
 
@@ -799,10 +799,14 @@ buffer RESULT for details."
 	   res)
       (with-temp-file sig-file 
 	(buffer-disable-undo)
-	(apply 'insert-buffer-substring signature))
+	(apply 'insert-buffer-substring (if (listp signature)
+					    signature
+					  (list signature))))
       (with-temp-file msg-file 
 	(buffer-disable-undo)
-	(apply 'insert-buffer-substring message))
+	(apply 'insert-buffer-substring (if (listp message)
+					    message
+					  (list message))))
       (setq res (apply 'call-process-region 
 		       (point-min) (point-min) ; no data
 		       cmd
@@ -912,7 +916,7 @@ TEXTMODE if requested."
 
 ;;;###autoload
 (defun gpg-encrypt
-  (plaintext ciphertext result recipients &optional armor textmode)
+  (plaintext ciphertext result recipients &optional passphrase armor textmode)
   "Encrypt buffer PLAINTEXT, and store CIPHERTEXT in that buffer.
 RECIPIENTS is a list of key IDs used for encryption.  Returns t if
 everything worked out well, nil otherwise.  Consult buffer RESULT for
