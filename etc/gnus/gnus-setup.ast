@@ -20,3 +20,7 @@ Choose the method Gnus will use to send mail:
 @variable{outbound}
 
 @end text
+
+@ignore
+   arch-tag: 6b7b200b-9169-4b44-8b32-b73773fa71af
+@end ignore
