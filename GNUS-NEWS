@@ -53,7 +53,7 @@ picons, install the picons database from
 
 and point `gnus-picon-databases' to that location.
 
-** If the new option `gnus-treat-body-boundary' is non-nil, a boundary 
+** If the new option `gnus-treat-body-boundary' is `body', a boundary 
 line is drawn at the end of the headers.
 
 ** Retrieval of charters and control messages
