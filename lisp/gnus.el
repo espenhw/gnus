@@ -1468,7 +1468,7 @@ is not run if `gnus-visual' is nil.")
 
 (defvar gnus-parse-headers-hook nil
   "*A hook called before parsing the headers.")
-(add-hook 'gnus-parse-headers-hook 'gnus-headers-decode-quoted-printable)
+(add-hook 'gnus-parse-headers-hook 'gnus-decode-rfc1522)
 
 (defvar gnus-exit-group-hook nil
   "*A hook called when exiting (not quitting) summary mode.")
@@ -1718,7 +1718,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.84"
+(defconst gnus-version "September Gnus v0.85"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -11497,7 +11497,7 @@ latter case, they will be copied into the relevant groups."
       (gnus-request-accept-article group nil t)
       (kill-buffer (current-buffer)))))
 
-(defun gnus-summary-expire-articles ()
+(defun gnus-summary-expire-articles (&optional now)
   "Expire all articles that are marked as expirable in the current group."
   (interactive)
   (gnus-set-global-variables)
@@ -11509,8 +11509,9 @@ latter case, they will be copied into the relevant groups."
 			  (gnus-list-of-read-articles gnus-newsgroup-name)
 			(setq gnus-newsgroup-expirable
 			      (sort gnus-newsgroup-expirable '<))))
-	   (expiry-wait (gnus-group-get-parameter
-			 gnus-newsgroup-name 'expiry-wait))
+	   (expiry-wait (if now 'immediate
+			  (gnus-group-get-parameter
+			   gnus-newsgroup-name 'expiry-wait)))
 	   es)
       (when expirable
 	;; There are expirable articles in this group, so we run them
@@ -11547,9 +11548,7 @@ deleted forever, right now."
       (gnus-y-or-n-p
        "Are you really, really, really sure you want to delete all these messages? ")
       (error "Phew!"))
-  (let ((nnmail-expiry-wait 'immediate)
-	(nnmail-expiry-wait-function nil))
-    (gnus-summary-expire-articles)))
+  (gnus-summary-expire-articles t))
 
 ;; Suggested by Jack Vinson <vinson@unagi.cis.upenn.edu>.
 (defun gnus-summary-delete-article (&optional n)
@@ -13956,22 +13955,28 @@ always hide."
 		(process-send-region "gnus-x-face" beg end)
 		(process-send-eof "gnus-x-face")))))))))
 
-(defun gnus-headers-decode-quoted-printable ()
+(defalias 'gnus-header-decode-quoted-printable 'gnus-decode-rfc1522)
+(defun gnus-decode-rfc1522 ()
   "Hack to remove QP encoding from headers."
   (let ((case-fold-search t)
 	(inhibit-point-motion-hooks t)
 	(buffer-read-only nil)
 	string)
-    (goto-char (point-min))
-    (while (re-search-forward "=\\?iso-8859-1\\?q\\?\\([^?\t\n]*\\)\\?=" nil t)
-      (setq string (match-string 1))
-      (narrow-to-region (match-beginning 0) (match-end 0))
-      (delete-region (point-min) (point-max))
-      (insert string)
-      (gnus-mime-decode-quoted-printable (goto-char (point-min)) (point-max))
-      (subst-char-in-region (point-min) (point-max) ?_ ? )
-      (widen)
-      (goto-char (point-min)))))
+    (save-restriction
+      (narrow-to-region
+       (goto-char (point-min))
+       (or (search-forward "\n\n" nil t) (point-max)))
+
+      (while (re-search-forward 
+	      "=\\?iso-8859-1\\?q\\?\\([^?\t\n]*\\)\\?=" nil t)
+	(setq string (match-string 1))
+	(narrow-to-region (match-beginning 0) (match-end 0))
+	(delete-region (point-min) (point-max))
+	(insert string)
+	(gnus-mime-decode-quoted-printable (goto-char (point-min)) (point-max))
+	(subst-char-in-region (point-min) (point-max) ?_ ? )
+	(widen)
+	(goto-char (point-min))))))
 
 (defun gnus-article-de-quoted-unreadable (&optional force)
   "Do a naive translation of a quoted-printable-encoded article.
@@ -13986,7 +13991,7 @@ or not."
     (let ((case-fold-search t)
 	  (buffer-read-only nil)
 	  (type (gnus-fetch-field "content-transfer-encoding")))
-      (gnus-headers-decode-quoted-printable)
+      (gnus-decode-rfc1522)
       (when (or force
 		(and type (string-match "quoted-printable" (downcase type))))
 	(goto-char (point-min))

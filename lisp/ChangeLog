@@ -1,4 +1,23 @@
+Wed May 15 03:52:50 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnspool.el (nnspool-open-server): Use directory file name. 
+
+	* gnus-topic.el (gnus-topic-create-topic): Changed prompt.
+
+Tue May 14 03:16:43 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-decode-rfc1522): Only decode headers; changed
+	name. 
+
+	* nnmail.el (nnmail-get-spool-files): Anchor matches.
+
+	* gnus.el (gnus-summary-expire-articles-now): Didn't work in group
+	with group params.
+	(gnus-summary-expire-articles): Accept `now' parameter.
+
 Sun May 12 01:29:12 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no (Lars Magne Ingebrigtsen)>
+
+	* gnus.el: September Gnus v0.84 is released.
 
 	* gnus-xmas.el (gnus-xmas-summary-recenter): Protect against evil.
 

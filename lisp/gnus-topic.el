@@ -695,7 +695,7 @@ group."
 (defun gnus-topic-create-topic (topic parent &optional previous full-topic)
   (interactive 
    (list
-    (read-string "Create topic: ")
+    (read-string "New topic: ")
     (gnus-group-parent-topic)))
   ;; Check whether this topic already exists.
   (when (gnus-topic-find-topology topic)

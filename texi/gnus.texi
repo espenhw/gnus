@@ -6064,11 +6064,12 @@ the cross reference mechanism.
 @cindex LIST overview.fmt
 @cindex overview.fmt
 To check whether your @sc{nntp} server includes the @code{Xref} header
-in its overview files, try @samp{telnet your.nntp.server nntp} and then
-say @samp{LIST overview.fmt}.  This may not work, but if it does, and
-the last line you get does not read @samp{Xref:full}, then you should
-shout and whine at your news admin until she includes the @code{Xref}
-header in the overview files.
+in its overview files, try @samp{telnet your.nntp.server nntp},
+@samp{MODE READER} on @code{inn} servers, and then say @samp{LIST
+overview.fmt}.  This may not work, but if it does, and the last line you
+get does not read @samp{Xref:full}, then you should shout and whine at
+your news admin until she includes the @code{Xref} header in the
+overview files.
 
 @vindex gnus-nov-is-evil
 If you want Gnus to get the @code{Xref}s right all the time, you have to

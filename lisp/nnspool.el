@@ -157,7 +157,9 @@ there.")
     (nnspool-close-server)
     (nnheader-report 'nnspool "Spool directory doesn't exist: %s"
 		     nnspool-spool-directory))
-   ((not (file-directory-p (file-truename nnspool-spool-directory)))
+   ((not (file-directory-p
+	  (directory-file-name
+	   (file-truename nnspool-spool-directory))))
     (nnspool-close-server)
     (nnheader-report 'nnspool "Not a directory: %s" nnspool-spool-directory))
    (t
