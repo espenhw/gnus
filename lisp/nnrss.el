@@ -254,7 +254,7 @@ ARTICLE is the article number of the current headline.")
   "Fetch URL and put it in a the expected Lisp structure."
   (with-temp-buffer
     ;;some CVS versions of url.el need this to close the connection quickly
-    (let* (xmlform htmlform)
+    (let (xmlform htmlform)
       ;; bit o' work necessary for w3 pre-cvs and post-cvs
       (if local
 	  (let ((coding-system-for-read 'binary))

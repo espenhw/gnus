@@ -1525,7 +1525,7 @@ newsgroup."
 	     active)))))
 
 (defun gnus-get-unread-articles-in-group (info active &optional update)
-  (when active
+  (when (and info active)
     ;; Allow the backend to update the info in the group.
     (when (and update
 	       (gnus-request-update-info

@@ -1,3 +1,8 @@
+2004-05-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-start.el (gnus-get-unread-articles-in-group): Don't do
+	stuff for non-living group.s
+
 2004-05-18  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-art.el (gnus-article-followup-with-original)
