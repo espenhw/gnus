@@ -881,7 +881,7 @@ environment variable MIMETYPES if set; otherwise use a default path."
       (while (not (eobp))
 	(skip-chars-forward " \t\n")
 	(setq save-pos (point))
-	(skip-chars-forward "^ \t")
+	(skip-chars-forward "^ \t\n")
 	(downcase-region save-pos (point))
 	(setq type (buffer-substring save-pos (point)))
 	(while (not (eolp))
