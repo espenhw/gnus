@@ -25,7 +25,6 @@
 
 ;;; Code:
 
-(require 'mel) ; binary-to-text-funcall, binary-write-decoded-region
 (eval-when-compile (require 'pgg))
 
 (defgroup pgg-pgp ()
@@ -53,24 +52,13 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
   :group 'pgg-pgp
   :type 'string)
 
-(eval-and-compile
-  (luna-define-class pgg-scheme-pgp (pgg-scheme)))
-
 (defvar pgg-pgp-user-id nil
   "PGP ID of your default identity.")
 
-(defvar pgg-scheme-pgp-instance nil)
-
-;;;###autoload
-(defun pgg-make-scheme-pgp ()
-  (or pgg-scheme-pgp-instance
-      (setq pgg-scheme-pgp-instance
-	    (luna-make-entity 'pgg-scheme-pgp))))
-
 (defun pgg-pgp-process-region (start end passphrase program args)
   (let* ((errors-file-name
-	  (concat temporary-file-directory
-		  (make-temp-name "pgg-errors")))
+	  (expand-file-name (make-temp-name "pgg-errors")  
+			    pgg-temporary-file-directory))
 	 (args
 	  (append args
 		  pgg-pgp-extra-args
@@ -89,10 +77,12 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
       (setenv "PGPPASSFD" "0"))
     (unwind-protect
 	(progn
-	  (setq process
-		(apply #'binary-funcall
-		       #'start-process-shell-command "*PGP*" output-buffer
-		       program args))
+	  (let ((coding-system-for-read 'binary)
+		(coding-system-for-write 'binary))
+	    (setq process
+		  (apply #'funcall
+			 #'start-process-shell-command "*PGP*" output-buffer
+			 program args)))
 	  (set-process-sentinel process #'ignore)
 	  (when passphrase
 	    (process-send-string process (concat passphrase "\n")))
@@ -121,8 +111,8 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
 	  (delete-file errors-file-name)
 	(file-error nil)))))
 
-(luna-define-method pgg-scheme-lookup-key ((scheme pgg-scheme-pgp)
-						  string &optional type)
+(defun pgg-pgp-lookup-key (string &optional type)
+  "Search keys associated with STRING."
   (let ((args (list "+batchmode" "+language=en" "-kv" string)))
     (with-current-buffer (get-buffer-create pgg-output-buffer)
       (buffer-disable-undo)
@@ -139,8 +129,8 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
 		 (buffer-substring (point)(progn (end-of-line) (point)))))
 	 2))))))
 
-(luna-define-method pgg-scheme-encrypt-region ((scheme pgg-scheme-pgp)
-					       start end recipients)
+(defun pgg-pgp-encrypt-region (start end recipients)
+  "Encrypt the current region between START and END."
   (let* ((pgg-pgp-user-id (or pgg-pgp-user-id pgg-default-user-id))
 	 (args
 	  `("+encrypttoself=off +verbose=1" "+batchmode"
@@ -153,25 +143,25 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
     (pgg-pgp-process-region start end nil pgg-pgp-program args)
     (pgg-process-when-success nil)))
 
-(luna-define-method pgg-scheme-decrypt-region ((scheme pgg-scheme-pgp)
-					       start end)
+(defun pgg-pgp-decrypt-region (start end)
+  "Decrypt the current region between START and END."
   (let* ((pgg-pgp-user-id (or pgg-pgp-user-id pgg-default-user-id))
 	 (passphrase
 	  (pgg-read-passphrase
 	   (format "PGP passphrase for %s: " pgg-pgp-user-id)
-	   (pgg-scheme-lookup-key scheme pgg-pgp-user-id 'encrypt)))
+	   (pgg-pgp-lookup-key pgg-pgp-user-id 'encrypt)))
 	 (args
 	  '("+verbose=1" "+batchmode" "+language=us" "-f")))
     (pgg-pgp-process-region start end passphrase pgg-pgp-program args)
     (pgg-process-when-success nil)))
 
-(luna-define-method pgg-scheme-sign-region ((scheme pgg-scheme-pgp)
-					    start end &optional clearsign)
+(defun pgg-pgp-sign-region (start end &optional clearsign)
+  "Make detached signature from text between START and END."
   (let* ((pgg-pgp-user-id (or pgg-pgp-user-id pgg-default-user-id))
 	 (passphrase
 	  (pgg-read-passphrase
 	   (format "PGP passphrase for %s: " pgg-pgp-user-id)
-	   (pgg-scheme-lookup-key scheme pgg-pgp-user-id 'sign)))
+	   (pgg-pgp-lookup-key pgg-pgp-user-id 'sign)))
 	 (args
 	  (list (if clearsign "-fast" "-fbast")
 		"+verbose=1" "+language=us" "+batchmode"
@@ -190,8 +180,8 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
 	       (cdr (assq 'key-identifier packet))
 	       passphrase)))))))
 
-(luna-define-method pgg-scheme-verify-region ((scheme pgg-scheme-pgp)
-					      start end &optional signature)
+(defun pgg-pgp-verify-region (start end &optional signature)
+  "Verify region between START and END as the detached signature SIGNATURE."
   (let* ((basename (expand-file-name "pgg" temporary-file-directory))
 	 (orig-file (make-temp-name basename))
 	 (args '("+verbose=1" "+batchmode" "+language=us"))
@@ -219,7 +209,8 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
 		       (progn (beginning-of-line 2)
 			      (point)))))))
 
-(luna-define-method pgg-scheme-insert-key ((scheme pgg-scheme-pgp))
+(defun pgg-pgp-insert-key ()
+  "Insert public key at point."
   (let* ((pgg-pgp-user-id (or pgg-pgp-user-id pgg-default-user-id))
 	 (args
 	  (list "+verbose=1" "+batchmode" "+language=us" "-kxaf"
@@ -227,8 +218,8 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
     (pgg-pgp-process-region (point)(point) nil pgg-pgp-program args)
     (insert-buffer-substring pgg-output-buffer)))
 
-(luna-define-method pgg-scheme-snarf-keys-region ((scheme pgg-scheme-pgp)
-						  start end)
+(defun pgg-pgp-snarf-keys-region (start end)
+  "Add all public keys in region between START and END to the keyring."
   (let* ((pgg-pgp-user-id (or pgg-pgp-user-id pgg-default-user-id))
 	 (basename (expand-file-name "pgg" temporary-file-directory))
 	 (key-file (make-temp-name basename))

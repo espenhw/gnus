@@ -1,5 +1,10 @@
 2002-10-01  Simon Josefsson  <jas@extundo.com>
 
+	* pgg-pgp.el: Don't require mel.  Don't use luna.
+	(pgg-scheme-pgp-instance, pgg-make-scheme-pgp): Remove.
+	(pgg-pgp-process-region): Use expand-file-name instead of concat.
+	(pgg-pgp-process-region): Don't use binary-funcall.
+
 	* pgg-pgp5.el (pgg-pgp5-process-region): Don't use binary-funcall.
 
 	* pgg-gpg.el (pgg-gpg-process-region): Use expand-file-name
