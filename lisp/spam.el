@@ -765,7 +765,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 
 (defun spam-check-blackholes ()
   "Check the Received headers for blackholed relays."
-  (let ((headers (message-fetch-field "received"))
+  (let ((headers (nnmail-fetch-field "received"))
 	ips matches)
     (when headers
       (with-temp-buffer
@@ -848,7 +848,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 
   (defun spam-check-BBDB ()
     "Mail from people in the BBDB is classified as ham or non-spam"
-    (let ((who (message-fetch-field "from")))
+    (let ((who (nnmail-fetch-field "from")))
       (when who
 	(setq who (cadr (gnus-extract-address-components who)))
 	(if (bbdb-search-simple nil who)
@@ -1049,7 +1049,7 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
       (nreverse contents))))
 
 (defun spam-from-listed-p (cache)
-  (let ((from (message-fetch-field "from"))
+  (let ((from (nnmail-fetch-field "from"))
 	found)
     (while cache
       (let ((address (pop cache)))
@@ -1093,7 +1093,7 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 
 ;;;; Bogofilter
 (defun spam-check-bogofilter-headers (&optional score)
-  (let ((header (message-fetch-field spam-bogofilter-header)))
+  (let ((header (nnmail-fetch-field spam-bogofilter-header)))
     (when header			; return nil when no header
       (if score				; scoring mode
 	  (if (string-match "spamicity=\\([0-9.]+\\)" header)
