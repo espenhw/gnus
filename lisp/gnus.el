@@ -1832,50 +1832,50 @@ This only makes sense for mail groups."
 When a spam group is entered, all unread articles are marked as spam.")
 
   (defvar gnus-group-spam-exit-processor-ifile "ifile"
-    "The ifile summary exit spam processor.")
+    "OBSOLETE: The ifile summary exit spam processor.")
 
   (defvar gnus-group-spam-exit-processor-stat "stat"
-    "The spam-stat summary exit spam processor.")
+    "OBSOLETE: The spam-stat summary exit spam processor.")
 
   (defvar gnus-group-spam-exit-processor-bogofilter "bogofilter"
-    "The Bogofilter summary exit spam processor.")
+    "OBSOLETE: The Bogofilter summary exit spam processor.")
 
   (defvar gnus-group-spam-exit-processor-blacklist "blacklist"
-    "The Blacklist summary exit spam processor.")
+    "OBSOLETE: The Blacklist summary exit spam processor.")
 
   (defvar gnus-group-spam-exit-processor-report-gmane "report-gmane"
-    "The Gmane reporting summary exit spam processor.
+    "OBSOLETE: The Gmane reporting summary exit spam processor.
 Only applicable to NNTP groups with articles from Gmane.  See spam-report.el")
 
   (defvar gnus-group-spam-exit-processor-spamoracle "spamoracle-spam"
-    "The spamoracle summary exit spam processor.")
+    "OBSOLETE: The spamoracle summary exit spam processor.")
 
   (defvar gnus-group-ham-exit-processor-ifile "ifile-ham"
-    "The ifile summary exit ham processor.
+    "OBSOLETE: The ifile summary exit ham processor.
 Only applicable to non-spam (unclassified and ham) groups.")
 
   (defvar gnus-group-ham-exit-processor-bogofilter "bogofilter-ham"
-    "The Bogofilter summary exit ham processor.
+    "OBSOLETE: The Bogofilter summary exit ham processor.
 Only applicable to non-spam (unclassified and ham) groups.")
 
   (defvar gnus-group-ham-exit-processor-stat "stat-ham"
-    "The spam-stat summary exit ham processor.
+    "OBSOLETE: The spam-stat summary exit ham processor.
 Only applicable to non-spam (unclassified and ham) groups.")
 
   (defvar gnus-group-ham-exit-processor-whitelist "whitelist"
-    "The whitelist summary exit ham processor.
+    "OBSOLETE: The whitelist summary exit ham processor.
 Only applicable to non-spam (unclassified and ham) groups.")
 
   (defvar gnus-group-ham-exit-processor-BBDB "bbdb"
-    "The BBDB summary exit ham processor.
+    "OBSOLETE: The BBDB summary exit ham processor.
 Only applicable to non-spam (unclassified and ham) groups.")
 
   (defvar gnus-group-ham-exit-processor-copy "copy"
-    "The ham copy exit ham processor.
+    "OBSOLETE: The ham copy exit ham processor.
 Only applicable to non-spam (unclassified and ham) groups.")
 
   (defvar gnus-group-ham-exit-processor-spamoracle "spamoracle-ham"
-    "The spamoracle summary exit ham processor.
+    "OBSOLETE: The spamoracle summary exit ham processor.
 Only applicable to non-spam (unclassified and ham) groups.")
 
   (gnus-define-group-parameter
@@ -1891,15 +1891,28 @@ Only applicable to non-spam (unclassified and ham) groups.")
 	    (variable-item gnus-group-spam-exit-processor-stat)
 	    (variable-item gnus-group-spam-exit-processor-bogofilter)
 	    (variable-item gnus-group-spam-exit-processor-blacklist)
-	    (variable-item gnus-group-spam-exit-processor-report-gmane)
 	    (variable-item gnus-group-spam-exit-processor-spamoracle)
+	    (variable-item gnus-group-spam-exit-processor-report-gmane)
 	    (variable-item gnus-group-ham-exit-processor-bogofilter)
 	    (variable-item gnus-group-ham-exit-processor-ifile)
 	    (variable-item gnus-group-ham-exit-processor-stat)
 	    (variable-item gnus-group-ham-exit-processor-whitelist)
 	    (variable-item gnus-group-ham-exit-processor-BBDB)
+	    (variable-item gnus-group-ham-exit-processor-spamoracle)
 	    (variable-item gnus-group-ham-exit-processor-copy)
-	    (variable-item gnus-group-ham-exit-processor-spamoracle))))
+	    (const :tag "Spam: Gmane Report"  (spam spam-use-gmane))
+	    (const :tag "Spam: Bogofilter"    (spam spam-use-bogofilter))
+	    (const :tag "Spam: Blacklist"     (spam spam-use-blacklist))
+	    (const :tag "Spam: ifile"         (spam spam-use-ifile))
+	    (const :tag "Spam: Spam-stat"     (spam spam-use-stat))
+	    (const :tag "Spam: Spam Oracle"   (spam spam-use-spamoracle))
+	    (const :tag "Ham: ifile"          (ham spam-use-ifile))
+	    (const :tag "Ham: Bogofilter"     (ham spam-use-bogofilter))
+	    (const :tag "Ham: Spam-stat"      (ham spam-use-stat))
+	    (const :tag "Ham: Whitelist"      (ham spam-use-whitelist))
+	    (const :tag "Ham: BBDB"           (ham spam-use-BBDB))
+	    (const :tag "Ham: Copy"           (ham spam-use-ham-copy))
+	    (const :tag "Ham: Spam Oracle"    (ham spam-use-spamoracle)))))
    :function-document
    "Which spam or ham processors will be applied when the summary is exited."
    :variable gnus-spam-process-newsgroups
@@ -1928,7 +1941,21 @@ spam processing, associated with the appropriate processor."
 		   (variable-item gnus-group-ham-exit-processor-whitelist)
 		   (variable-item gnus-group-ham-exit-processor-BBDB)
 		   (variable-item gnus-group-ham-exit-processor-spamoracle)
-		   (variable-item gnus-group-ham-exit-processor-copy))))
+		   (variable-item gnus-group-ham-exit-processor-copy)
+		   (const :tag "Spam: Gmane Report"  (spam spam-use-gmane))
+		   (const :tag "Spam: Bogofilter"    (spam spam-use-bogofilter))
+		   (const :tag "Spam: Blacklist"     (spam spam-use-blacklist))
+		   (const :tag "Spam: ifile"         (spam spam-use-ifile))
+		   (const :tag "Spam: Spam-stat"     (spam spam-use-stat))
+		   (const :tag "Spam: Spam Oracle"   (spam spam-use-spamoracle))
+		   (const :tag "Ham: ifile"          (ham spam-use-ifile))
+		   (const :tag "Ham: Bogofilter"     (ham spam-use-bogofilter))
+		   (const :tag "Ham: Spam-stat"      (ham spam-use-stat))
+		   (const :tag "Ham: Whitelist"      (ham spam-use-whitelist))
+		   (const :tag "Ham: BBDB"           (ham spam-use-BBDB))
+		   (const :tag "Ham: Copy"           (ham spam-use-ham-copy))
+		   (const :tag "Ham: Spam Oracle"    (ham spam-use-spamoracle)))))
+
    :parameter-document
    "Which spam or ham processors will be applied when the summary is exited.")
 

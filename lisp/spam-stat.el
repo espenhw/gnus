@@ -183,6 +183,9 @@ effect when spam-stat is invoked through spam.el."
   "Syntax table used when processing mails for statistical analysis.
 The important part is which characters are word constituents.")
 
+(defvar spam-stat-dirty nil
+  "Whether the spam-stat database needs saving.")
+
 (defvar spam-stat-buffer nil
   "Buffer to use for scoring while splitting.
 This is set by hooking into Gnus.")
@@ -341,7 +344,8 @@ Use `spam-stat-ngood', `spam-stat-nbad', `spam-stat-good',
 	 (setq entry (spam-stat-make-entry 0 count)))
        (spam-stat-set-score entry (spam-stat-compute-score entry))
        (puthash word entry spam-stat)))
-   (spam-stat-buffer-words)))
+   (spam-stat-buffer-words))
+  (setq spam-stat-dirty t))
 
 (defun spam-stat-buffer-is-non-spam ()
   "Consider current buffer to be a new non-spam mail."
@@ -354,7 +358,8 @@ Use `spam-stat-ngood', `spam-stat-nbad', `spam-stat-good',
 	 (setq entry (spam-stat-make-entry count 0)))
        (spam-stat-set-score entry (spam-stat-compute-score entry))
        (puthash word entry spam-stat)))
-   (spam-stat-buffer-words)))
+   (spam-stat-buffer-words))
+  (setq spam-stat-dirty t))
 
 (defun spam-stat-buffer-change-to-spam ()
   "Consider current buffer no longer normal mail but spam."
@@ -369,7 +374,8 @@ Use `spam-stat-ngood', `spam-stat-nbad', `spam-stat-good',
 	 (spam-stat-set-bad entry (+ (spam-stat-bad entry) count))
 	 (spam-stat-set-score entry (spam-stat-compute-score entry))
 	 (puthash word entry spam-stat))))
-   (spam-stat-buffer-words)))
+   (spam-stat-buffer-words))
+  (setq spam-stat-dirty t))
 
 (defun spam-stat-buffer-change-to-non-spam ()
   "Consider current buffer no longer spam but normal mail."
@@ -384,32 +390,37 @@ Use `spam-stat-ngood', `spam-stat-nbad', `spam-stat-good',
 	 (spam-stat-set-bad entry (- (spam-stat-bad entry) count))
 	 (spam-stat-set-score entry (spam-stat-compute-score entry))
 	 (puthash word entry spam-stat))))
-   (spam-stat-buffer-words)))
+   (spam-stat-buffer-words))
+  (setq spam-stat-dirty t))
 
 ;; Saving and Loading
 
-(defun spam-stat-save ()
+(defun spam-stat-save (&optional force)
   "Save the `spam-stat' hash table as lisp file."
   (interactive)
-  (with-temp-buffer
-    (let ((standard-output (current-buffer))
-	  (font-lock-maximum-size 0))
-      (insert "(setq spam-stat-ngood "
-              (number-to-string spam-stat-ngood)
-              " spam-stat-nbad "
-              (number-to-string spam-stat-nbad)
-              " spam-stat (spam-stat-to-hash-table '(")
-      (maphash (lambda (word entry)
-		 (prin1 (list word
-			      (spam-stat-good entry)
-			      (spam-stat-bad entry))))
-	       spam-stat)
-      (insert ")))")
-    (write-file spam-stat-file))))
+  (when (or force spam-stat-dirty)
+    (with-temp-buffer
+      (let ((standard-output (current-buffer))
+	    (font-lock-maximum-size 0))
+	(insert "(setq spam-stat-ngood "
+		(number-to-string spam-stat-ngood)
+		" spam-stat-nbad "
+		(number-to-string spam-stat-nbad)
+		" spam-stat (spam-stat-to-hash-table '(")
+	(maphash (lambda (word entry)
+		   (prin1 (list word
+				(spam-stat-good entry)
+				(spam-stat-bad entry))))
+		 spam-stat)
+	(insert ")))")
+	(write-file spam-stat-file)))
+    (setq spam-stat-dirty nil)))
 
 (defun spam-stat-load ()
   "Read the `spam-stat' hash table from disk."
-  (load-file spam-stat-file))
+  ;; TODO: maybe we should warn the user if spam-stat-dirty is t?
+  (load-file spam-stat-file)
+  (setq spam-stat-dirty nil))
 
 (defun spam-stat-to-hash-table (entries)
   "Turn list ENTRIES into a hash table and store as `spam-stat'.
@@ -432,7 +443,8 @@ This deletes all the statistics."
   (interactive)
   (setq spam-stat (make-hash-table :test 'equal)
 	spam-stat-ngood 0
-	spam-stat-nbad 0))
+	spam-stat-nbad 0)
+  (setq spam-stat-dirty t))
 
 ;; Scoring buffers
 

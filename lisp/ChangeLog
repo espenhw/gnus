@@ -1,3 +1,68 @@
+2003-11-25  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-blacklist-ignored-regexes): new variable, so
+	blacklisting can ignore certain regular expressions (e.g. the
+	user's e-mail address)
+	(spam-bogofilter-spam-strong-switch,
+	spam-bogofilter-ham-strong-switch): options used when articles are
+	already registered as the opposite classification
+	(spam-old-ham-articles, spam-old-spam-articles): lists of ham and
+	spam articles, generated when a summary buffer is entered, and
+	consulted when it's exited so we know what articles are changing
+	state from spam to ham or vice-versa
+	(spam-xor): everyone needs a little convenience
+	(spam-list-of-processors): lookup table for old-style spam/ham
+	exits processors
+	(spam-group-processor-p): support old-style and new-style spam/ham
+	exit processors
+	(spam-group-processor-multiple-p): handle new-style spam/hamn exit
+	processors
+	(spam-summary-prepare): use spam-old-{ham,spam}-articles; change
+	logic to iterate over list of processors instead of manual
+	individual lookup, unregister any articles that change from ham to
+	spam or vice-versa in the course of the summary buffer usage; use
+	the new spam-register-routine
+	(spam-ham-copy-routine, spam-ham-move-routine,
+	spam-mark-spam-as-expired-and-move-routine): check that the list
+	of groups is not nil, because apply doesn't like to apply a
+	function across nil
+	(spam-registration-functions): variable for looking up spam/ham
+	registration/unregistration functions based on a spam-use-* symbol
+	(spam-classification-valid-p, spam-process-type-valid-p)
+	(spam-registration-check-valid-p)
+	(spam-unregistration-check-valid-p): convenience functions
+	(spam-registration-function, spam-unregistration-function): look
+	up the registration/unregistration function based on a
+	classification and the check (spam-use-* symbol)
+	(spam-list-articles): generate list of spam/ham articles from a
+	given list of articles
+	(spam-register-routine): do the heavy work of registering and
+	unregistering articles, using all the articles in the group or
+	specific ones as needed
+	(spam-generic-register-routine): removed, no longer used
+	(spam-log-unregistration-needed-p, spam-log-undo-registration):
+	handle article registration/unregistration with a given spam/ham
+	processor and group
+	(BBDB, ifile, spam-stat, blacklists, whitelists, spam-report,
+	bogofilter, spamoracle): rewrite registration/unregistration
+	functions to take a list of articles and the unregister option.
+	Much hilarity ensues.
+
+	* spam-stat.el (spam-stat-dirty): new variable, set when the stats
+	database is modified
+	(spam-stat-buffer-is-spam, spam-stat-buffer-is-non-spam)
+	(spam-stat-buffer-change-to-spam, spam-stat-to-hash-table)
+	(spam-stat-buffer-change-to-non-spam): set spam-stat-dirty when
+	needed
+	(spam-stat-save): respect spam-stat-dirty, unless the force
+	parameter is specified
+	(spam-stat-load): clear spam-stat-dirty
+
+	* gnus.el (gnus-install-group-spam-parameters): marked the
+	old-style exit processors as obsolete in the docs, added the
+	new-style exit processors while the old ones are still allowed
+
+
 2003-11-25  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-art.el (article-hide-boring-headers): Don't hide Reply-To
