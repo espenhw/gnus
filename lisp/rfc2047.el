@@ -137,8 +137,7 @@ Should be called narrowed to the head of the message."
 		      method (cdr elem))))
 	    (cond
 	     ((eq method 'mime)
-	      (rfc2047-encode-region (point-min) (point-max))
-	      (rfc2047-fold-region (point-min) (point-max)))
+	      (rfc2047-encode-region (point-min) (point-max)))
 	     ((eq method 'default)
 	      (if (and (featurep 'mule)
 		       mail-parse-charset)
@@ -166,83 +165,79 @@ Should be called narrowed to the head of the message."
 
 (defun rfc2047-dissect-region (b e)
   "Dissect the region between B and E into words."
-  (let ((all-specials (concat ietf-drums-tspecials " \t\n\r"))
-	(special-list (mapcar 'identity ietf-drums-tspecials))
-	(blank-list '(?  ?\t ?\n ?\r))
-	words current cs state mail-parse-mule-charset)
+  (let ((word-chars "-A-Za-z0-9!*+/") 
+	;; Not using ietf-drums-specials-token makes life simple.
+	mail-parse-mule-charset
+	words point current 
+	result word)
     (save-restriction
       (narrow-to-region b e)
       (goto-char (point-min))
-      (skip-chars-forward all-specials)
-      (setq b (point))
+      (skip-chars-forward "\000-\177")
       (while (not (eobp))
-	(cond
-	 ((not state)
-	  (setq state 'word)
-	  (if (not (eq (setq cs (mm-charset-after)) 'ascii))
-	      (setq current cs))
-	  (setq b (point)))
-	 ((eq state 'blank)
-	  (cond 
-	   ((memq (char-after) special-list)
-	    (setq state nil))
-	   ((memq (char-after) blank-list))
-	   (t
-	    (setq state 'word)
-	    (unless b
-		(setq b (point)))
-	    (if (not (eq (setq cs (mm-charset-after)) 'ascii))
-		(setq current cs)))))
-	 ((eq state 'word)
-	  (cond 
-	   ((memq (char-after) special-list)
-	    (setq state nil)
-	    (push (list b (point) current) words)
-	    (setq current nil))
-	   ((memq (char-after) blank-list)
-	    (setq state 'blank)
-	    (if (not current)
-		(setq b nil)
-	      (push (list b (point) current) words)
-	      (setq b (point))
-	      (setq current nil)))
-	   ((or (eq (setq cs (mm-charset-after)) 'ascii)
-		(if current
-		    (eq current cs)
-		  (setq current cs))))
-	   (t
-	    (push (list b (point) current) words)
-	    (setq current cs)
-	    (setq b (point))))))
-	(if state
-	    (forward-char)
-	  (skip-chars-forward all-specials)))
-      (if (eq state 'word)
-	  (push (list b (point) current) words)))
-    words))
+	(setq point (point))
+	(skip-chars-backward word-chars b)
+	(unless (eq b (point))
+	  (push (cons (buffer-substring b (point)) nil) words)) 
+	(setq b (point))
+	(goto-char point)
+	(setq current (mm-charset-after))
+	(forward-char 1)
+	(skip-chars-forward word-chars)
+	(while (and (not (eobp))
+		    (eq (mm-charset-after) current))
+	  (forward-char 1)
+	  (skip-chars-forward word-chars))
+	(unless (eq b (point))
+	  (push (cons (buffer-substring b (point)) current) words)) 
+	(setq b (point))
+	(skip-chars-forward "\000-\177"))
+      (unless (eq b (point))
+	(push (cons (buffer-substring b (point)) nil) words)))
+    ;; merge adjacent words
+    (setq word (pop words))
+    (while word
+      (if (and (cdr word) 
+	       (caar words)
+	       (not (cdar words))
+	       (string-match "^[ \t]+$" (caar words)))
+	  (if (eq (cdr (nth 1 words)) (cdr word))
+	      (progn
+		(setq word (cons (concat 
+				  (car (nth 1 words)) (caar words) 
+				  (car word))
+				 (cdr word)))
+		(pop words)
+		(pop words))
+	    (push (cons (concat (caar words) (car word)) (cdr word))
+		  result)
+	    (pop words)
+	    (setq word (pop words)))
+	(push word result)
+	(setq word (pop words))))
+    result))
 
 (defun rfc2047-encode-region (b e)
   "Encode all encodable words in REGION."
-  (let ((words (rfc2047-dissect-region b e))
-	beg end current word)
-    (while (setq word (pop words))
-      (if (and (eq (nth 2 word) current)
-	       (eq beg (nth 1 word)))
-	  (setq beg (nth 0 word))
-	(when current
-	  (if (and (eq beg (nth 1 word)) (nth 2 word))
-	      (progn
-		;; There might be a bug in Emacs Mule.
-		;; A space must be inserted before encoding.
-		(goto-char beg)
-		(insert " ")
-		(rfc2047-encode (1+ beg) (1+ end) current))
-	    (rfc2047-encode beg end current)))
-	(setq current (nth 2 word)
-	      beg (nth 0 word)
-	      end (nth 1 word))))
-    (when current
-      (rfc2047-encode beg end current))))
+  (let ((words (rfc2047-dissect-region b e)) word)
+    (save-restriction
+      (narrow-to-region b e)
+      (delete-region (point-min) (point-max))
+      (while (setq word (pop words))
+	(if (not (cdr word))
+	    (insert (car word))
+	  (rfc2047-fold-region (gnus-point-at-bol) (point))
+	  (goto-char (point-max))
+	  (if (> (- (point) (save-restriction
+			      (widen)
+			      (gnus-point-at-bol))) 76)
+	      (insert "\n "))
+	  ;; Insert blank between encoded words
+	  (if (eq (char-before) ?=) (insert " ")) 
+	  (rfc2047-encode (point) 
+			  (progn (insert (car word)) (point))
+			  (cdr word))))
+      (rfc2047-fold-region (point-min) (point-max)))))
 
 (defun rfc2047-encode-string (string)
   "Encode words in STRING."
@@ -292,23 +287,51 @@ Should be called narrowed to the head of the message."
     (goto-char (point-min))
     (let ((break nil))
       (while (not (eobp))
+	(when (and break
+		 (> (- (point) (save-restriction
+				 (widen)
+				 (gnus-point-at-bol))) 76))
+	      (goto-char break)
+	      (setq break nil)
+	      (insert "\n ")
+	      ;; Don't break before the first non-LWSP characters.
+	      (skip-chars-forward " \t")
+	      (forward-char 1))
 	(cond
 	 ((memq (char-after) '(?  ?\t))
-	  (setq break (point)))
-	 ((and (not break)
-	       (looking-at "=\\?"))
-	  (setq break (point)))
-	 ((and break
-	       (looking-at "\\?=")
-	       (> (- (point) (gnus-point-at-bol)) 76))
-	  (goto-char break)
-	  (setq break nil)
-	  (insert "\n ")
-	  ;; Don't break before the first non-LWSP characters.
 	  (skip-chars-forward " \t")
-	  (forward-char 1)))
-	(unless (eobp)
-	  (forward-char 1))))))
+	  (setq break (1- (point))))
+	 ((not break)
+	  (if (not (looking-at "=\\?"))
+	      (skip-chars-forward "^ \t=")
+	    (setq break (point))
+	    (skip-chars-forward "^ \t")))
+	 (t
+	  (skip-chars-forward "^ \t")))))))
+
+(defun rfc2047-unfold-region (b e)
+  "Fold the long lines in the region."
+  (save-restriction
+    (narrow-to-region b e)
+    (goto-char (point-min))
+    (let ((bol (save-restriction
+		 (widen)
+		 (gnus-point-at-bol)))
+	  (eol (gnus-point-at-eol))
+	  leading)
+      (forward-line 1)
+      (while (not (eobp))
+	(looking-at "[ \t]*")
+	(setq leading (- (match-end 0) (match-beginning 0)))
+	(if (< (- (gnus-point-at-eol) bol leading) 76)
+	    (progn
+	      (goto-char eol)
+	      (delete-region eol (progn 
+				   (skip-chars-forward "[ \t\n\r]+")
+				   (1- (point)))))
+	  (setq bol (gnus-point-at-bol)))
+	(setq eol (gnus-point-at-eol))
+	(forward-line 1)))))
 
 (defun rfc2047-b-encode-region (b e)
   "Encode the header contained in REGION with the B encoding."
@@ -332,14 +355,14 @@ Should be called narrowed to the head of the message."
 	    (subst-char-in-region (point-min) (point-max) ?  ?_)
 	    (setq alist nil))
 	  (pop alist))
-	(goto-char (point-min))
-	(while (not (eobp))
+	(goto-char (1+ (point-min)))
+	(while (and (not (bobp)) (not (eobp)))
 	  (goto-char (min (point-max) (save-restriction
 					(widen)
 					;; THe QP encapsulation is about 20. 
 					(+ 56 (gnus-point-at-bol)))))
 	  (search-backward "=" (- (point) 2) t)
-	  (unless (eobp)
+	  (unless (or (bobp) (eobp))
 	    (insert "\n")))))))
 
 ;;;
@@ -382,7 +405,8 @@ Should be called narrowed to the head of the message."
 		   mail-parse-charset
 		   (not (eq mail-parse-charset 'us-ascii))
 		   (not (eq mail-parse-charset 'gnus-decoded)))
-	  (mm-decode-coding-region b (point-max) mail-parse-charset))))))
+	  (mm-decode-coding-region b (point-max) mail-parse-charset))
+	(rfc2047-unfold-region (point-min) (point-max))))))
 
 (defun rfc2047-decode-string (string)
   "Decode the quoted-printable-encoded STRING and return the results."

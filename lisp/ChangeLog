@@ -1,3 +1,14 @@
+2000-10-09 20:09:11  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-encode-message-header): Move fold into
+	encode-region.
+	(rfc2047-dissect-region): Rewrite.
+	(rfc2047-encode-region): Rewrite.
+	(rfc2047-fold-region): Fold 
+	(rfc2047-unfold-region): New function.
+	(rfc2047-decode-region): Use it.
+	(rfc2047-q-encode-region): Don't break at bob.
+
 2000-10-09 17:12:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nntp.el (nntp-open-connection): Kill process buffer when quit.
