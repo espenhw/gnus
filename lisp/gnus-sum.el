@@ -8436,14 +8436,17 @@ forward."
       (save-excursion
 	(save-restriction
 	  (widen)
-	  (let ((start (window-start))
-		(end (window-end))
+	  (let ((pos (window-start))
 		buffer-read-only)
-	    (goto-char start)
-	    (while (re-search-forward "·" end t)
+	    (goto-char (point-min))
+	    (when (message-goto-body)
+	      (gnus-narrow-to-body))
+	    (goto-char (point-min))
+	    (while (re-search-forward "·" (point-max) t)
 	      (replace-match "."))
-	    (unmorse-region start end)
-	    (set-window-start (get-buffer-window (current-buffer)) start)))))))
+	    (unmorse-region (point-min) (point-max))
+	    (widen)
+	    (set-window-start (get-buffer-window (current-buffer)) pos)))))))
 
 (defun gnus-summary-stop-page-breaking ()
   "Stop page breaking in the current article."
