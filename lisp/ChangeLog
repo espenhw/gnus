@@ -1,5 +1,11 @@
 2003-05-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-summary-find-next): Indent.
+	(gnus-summary-find-prev): Ditto.
+	(gnus-summary-catchup): Doc fix.
+	(gnus-summary-mark-current-read-and-unread-as-read): New function.
+	(gnus-summary-catchup): Really mark after point.
+
 	* gnus-util.el (gnus-user-date): Use %d instead of %m.
 	(gnus-user-date): Use floating point time so that we don't get
 	overflows. 
