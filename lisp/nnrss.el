@@ -274,13 +274,15 @@ ARTICLE is the article number of the current headline.")
       ;; why w3-parse-buffer fails to parse some well-formed xml and
       ;; fix it.
 
-      (condition-case err
+      (condition-case nil
 	  (setq xmlform (xml-parse-region (point-min) (point-max)))
-	(error (if (fboundp 'w3-parse-buffer)
-		   (setq htmlform (caddar (w3-parse-buffer
-					   (current-buffer))))
-		 (message "nnrss: Not valid XML and w3 parse not available (%s)"
-			  url))))
+	(error
+	 (condition-case err
+	     (setq htmlform (caddar (w3-parse-buffer
+				     (current-buffer))))
+	   (error
+	    (message "nnrss: %s: Not valid XML and w3-parse doesn't work: %s"
+		     url err)))))
       (if htmlform
 	  htmlform
 	xmlform))))

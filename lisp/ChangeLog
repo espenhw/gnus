@@ -1,3 +1,8 @@
+2004-12-15  Maciek Pasternacki  <maciekp@japhy.fnord.org>  (tiny change)
+
+	* nnrss.el (nnrss-fetch): Signal an error if w3-parse-buffer also
+	failed.
+
 2004-12-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-group.el (gnus-group-delete-group): Decode group name.
