@@ -1,3 +1,83 @@
+2002-12-11  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus.el (gnus-summary-high-uncached-face,
+	gnus-summary-normal-uncached-face, gnus-summary-low-uncached-face)
+	New faces.
+
+	* gnus-agent.el (gnus-agent-downloaded-article-face): REMOVED.  I
+	added this on 2002-11-23 but it just wasn't working out as
+	intended.  The idea isn't entirely dead, three new faces
+	gnus-summary-*-uncached-face are being added to gnus.el to provide
+	the basis for an improved implementation.
+	(gnus-agent-read-servers): Undo the change made on 2002-11-23. The
+	proper file to open is lib/servers.
+	(gnus-summary-set-agent-mark): Expanded documentation.  Unmarking
+	(i.e. removing the article from gnus-newsgroup-downloadable) will
+	now restore the article's default mark rather than simply setting
+	no mark.
+	(gnus-agent-get-undownloaded-list): Corrected documentation.
+	Added code to set new summary local variable,
+	gnus-newsgroup-agentized.  Reworked impl so that it doesn't create
+	a temporary list.  No longer sets gnus-newsgroup-downloadable.
+	(gnus-agent-summary-fetch-group): Keep gnus-newsgroup-undownloaded
+	up to date.  Call new gnus-summary-update-download-mark to keep
+	summary buffer up-to-date.
+	(gnus-agent-fetch-selected-article): Keep
+	gnus-newsgroup-undownloaded up to date.
+	(gnus-agent-fetch-articles): Return list of articles that were
+	successfully fetched.
+	(gnus-agent-check-overview-buffer): No more thingatpt.
+	(gnus-agent-expire): No longer deletes NOV entries of unread
+	articles.
+	(gnus-agent-unread-articles): New function.
+	(gnus-agent-regenerate-group): The article number must be
+	terminated by a tab character.  Added more messages to report
+	repairs.  Inhibit quits while writing changes so it is now safe
+	have to quit regeneration.  Renamed gnus-tmp-downloaded back to
+	downloaded to 1) resolve the unbound references and 2) avoid
+	confusing this list with the gnus-tmp-downloaded in gnus-sum.el
+
+	* gnus-art.el (gnus-article-prepare): The agent
+	downloaded/undownloaded mark is no longer stored as the article's
+	mark.
+
+	* gnus-salt.el (gnus-tree-highlight-node): Added uncached as
+	gnus-summary-highlight may use it.  Added downloaded as
+	gnus-summary-highlight was using it.
+
+	* gnus-sum.el (gnus-undownloaded-mark): Changed from ?@ to ?- as
+	the download mark now follows Kai's +/- convention.
+	(gnus-downloaded-mark): Added ?+ mark.
+	(gnus-summary-highlight): Added rules to select
+	gnus-summary-high-uncached-face,
+	gnus-summary-normal-uncached-face, and
+	gnus-summary-low-uncached-face.  Removed the
+	gnus-agent-downloaded-article-face.
+	(gnus-summary-line-format-alist): Implemented the download flag
+	format (?O) as named in the manual.  This implementation displays
+	either gnus-undownloaded-mark, gnus-downloaded-mark, or
+	gnus-no-mark.
+	(gnus-newsgroup-agentized): New local variable that identifies
+	which groups are agentized.  While the agent is now on by default,
+	you don't have to agentize every server that you use.
+	(gnus-update-summary-mark-positions): Completed support for the
+	download type of mark.
+	(gnus-summary-insert-line): Added undownloaded to the parameters.
+	(gnus-summary-prepare-threads): Set gnus-tmp-downloaded for
+	reference by the gnus-summary-line-format-spec.
+
+	* nntp.el (nntp-with-open-group): This macro handles dropped or
+	broken connections by opening a new connection and repeating the
+	failed command.
+	(nntp-retrieve-headers-with-xover): Some NNTP servers respond to
+	XOVER commands preceeding the active articles with the nov entry
+	of the first available article.  When gnus connected to such a
+	server, the unexpected nov entry would result in duplicate lines
+	in the agent's overview file.  This patch fixes the duplicate
+	lines problem and improves performance by skipping over all
+	articles IDs that preceed the first nov entry in the server's
+	reply.
+	
 2002-12-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-tmp-downloaded): New internal variable.
@@ -193,7 +273,9 @@
 	(gnus-agent-article-alist): Format change.  Add documentation.
 	(gnus-agent-summary-mode-map): New keybinding `J s' for fetching
 	process-marked articles.
-	(gnus-agent-summary-fetch-series): Command for `J s'.
+	(gnus-agent-summary-fetch-series): Command for `J s'.  Articles
+	in the series are individually fetched to minimize lose of 
+	content due to an error/quit.
 	(gnus-agent-synchronize-flags-server, gnus-agent-add-server): Use
 	gnus-message instead of message.
 	(gnus-agent-read-servers): Use file lib/methods instead of
@@ -201,13 +283,14 @@
 	(gnus-summary-set-agent-mark): Adapt to new agent-alist format.
 	(gnus-agent-get-undownloaded-list): Remove articles that appear to
 	come from the agent.  This means that they are not downloaded.
-	TODO: Correct?
 	(gnus-agent-fetch-selected-article): Don't use history.
 	(gnus-agent-save-history, gnus-agent-enter-history)
 	(gnus-agent-article-in-history-p, gnus-agent-history-path):
 	Removed function; history is not used anymore.
 	(gnus-agent-fetch-articles): Fix handling of crossposted articles.
-	(gnus-agent-crosspost): TODO: What happened here?
+	(gnus-agent-crosspost): Started rewrite then realized that a typo
+	in gnus-agent-fetch-articles ensures that this function is never 
+	called.  This will need to be fixed later.
 	(gnus-agent-check-overview-buffer): Some sanity checks on the
 	agent overview buffer.  This is a safety net used during
 	development.
@@ -230,8 +313,20 @@
 	GROUP, FORCE.  Do not restrict usage.
 	(gnus-agent-uncached-articles): New function.
 	(gnus-agent-retrieve-headers): Use it.
-	(gnus-agent-regenerate-group): Rewrite.  TODO: Why?
-	(gnus-agent-regenerate): Ditto.  TODO: Why?
+	(gnus-agent-regenerate-group): No longer needs to be called from 
+	gnus-agent-regenerate.  Individual groups may be regenerated. The 
+	regeneration code now fixes duplicate, and mis-ordered, NOV entries.
+	The article fetch dates are validated in the article alist.  The 
+	article alist is pruned of entries that do not reference existing
+	NOV entries.  All changes are computed then applied with 
+	inhibit-quit bound to t.  As a result, it is now safe to quit out of 
+	regeneration.  The optional clean parameter has been replaced with
+	an optional reread parameter.  Clean is no longer necessary as 
+	regeneration gets the appropriate setting from
+	gnus-agent-consider-all-articles.  The new reread parameter will 
+	result in fetched, or all, articles being marked as unread.
+	(gnus-agent-regenerate): Removed code to regenerate the history
+	file as it is no longer used.
 
 	* gnus-start.el (gnus-make-ascending-articles-unread): New
 	function, for efficient mass-marking.
@@ -244,8 +339,12 @@
 	line.
 	(gnus-summary-highlight-line): Use new face for downloaded
 	articles.
-	(gnus-summary-insert-old-articles): TODO: What does this change
-	do?
+	(gnus-summary-insert-old-articles): Improved performance by 
+	replacing the initial LIST of older articles with a compressed
+	RANGE of older articles.  Some servers appear to lie about 
+	their active range so the original list could contain millions
+	of article numbers.  The range is not expanded into a list 
+	until the optional ALL parameter has been applied.
 
 2002-11-18  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
