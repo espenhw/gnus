@@ -31,6 +31,7 @@
 (eval-when-compile (require 'cl))
 (require 'mm-decode)
 (require 'mm-util)
+(require 'mml)
 
 (defvar mml2015-use (or
 		     (progn
@@ -329,7 +330,7 @@
 			(or (y-or-n-p "Sign the message? ")
 			    'not))))
 	     'never)))
-    (mm-with-unibyte-current-buffer-mule4
+    (mm-with-unibyte-current-buffer
       (mc-encrypt-generic
        (or (message-options-get 'message-recipients)
 	   (message-options-set 'message-recipients
@@ -581,7 +582,7 @@
 	 (funcall mml-boundary-function (incf mml-multipart-number)))
 	(text (current-buffer))
 	cipher)
-    (mm-with-unibyte-current-buffer-mule4
+    (mm-with-unibyte-current-buffer
       (with-temp-buffer
 	;; set up a function to call the correct gpg encrypt routine
 	;; with the right arguments. (FIXME: this should be done
