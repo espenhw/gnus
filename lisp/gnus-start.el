@@ -365,8 +365,7 @@ This hook is called as the first thing when Gnus is started."
   :type 'hook)
 
 (defcustom gnus-after-getting-new-news-hook
-  (when (gnus-boundp 'display-time-timer)
-    '(display-time-event-handler))
+  '(gnus-display-time-event-handler)
   "*A hook run after Gnus checks for new news when Gnus is already running."
   :group 'gnus-group-new
   :type 'hook)
@@ -2674,6 +2673,11 @@ If this variable is nil, don't do anything."
 		 (file-exists-p gnus-default-directory))
 	    (file-name-as-directory (expand-file-name gnus-default-directory))
 	  default-directory)))
+
+(defun gnus-display-time-event-handler ()
+  "Like `display-time-event-handler', but test `display-time-timer'."
+  (when (gnus-boundp 'display-time-timer)
+    (display-time-event-handler)))
 
 (provide 'gnus-start)
 
