@@ -2,6 +2,7 @@
 
 	* nnultimate.el (nnultimate-retrieve-headers): Work with american
 	dates. 
+	(nnultimate-retrieve-headers): Wrong ordering.
 
 1999-11-11 07:31:51  Matt Pharr  <mmp@graphics.stanford.edu>
 

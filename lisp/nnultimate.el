@@ -138,7 +138,7 @@
 		(setcdr table nil)
 		(setq table (nnultimate-find-forum-table contents)))
 	      (setq contents (cdr (nth 2 (car (nth 2 table)))))
-	      (setq total-contents (nconc contents total-contents))
+	      (setq total-contents (nconc total-contents contents))
 	      (incf current-page))
 	    ;;(setq total-contents (nreverse total-contents))
 	    (dolist (art (cdr elem))
