@@ -1,3 +1,8 @@
+2000-09-10  Dave Love  <fx@gnu.org>
+
+	* message.el: Require mail-abbrevs for XEmacs for a problem with
+	keybinding despite the autoloads for it.
+
 2000-09-08  Simon Josefsson  <simon@josefsson.org>
 
 	* imap.el (imap-kerberos4-open): Erase more (fixes race condition?).
