@@ -1,3 +1,12 @@
+1999-04-18  Didier Verna  <verna@inf.enst.fr>
+
+	* gnus.texi (Article treatment): document the new variable
+	`gnus-article-date-lapsed-new-header'.
+
+1999-04-26  Robert Bihlmeyer  <robbe@orcus.priv.at>
+
+	* gnus.texi (Posting Styles): Typo.
+
 1999-04-18 12:46:33  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Summary Score Commands): Typo.

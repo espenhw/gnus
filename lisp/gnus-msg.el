@@ -135,9 +135,10 @@ the second with the current group name.")
 The buffer below is a mail buffer.  When you press `C-c C-c', it will
 be sent to the Gnus Bug Exterminators.
 
-At the bottom of the buffer you'll see lots of variable settings.
-Please do not delete those.  They will tell the Bug People what your
-environment is, so that it will be easier to locate the bugs.
+The thing near the bottom of the buffer is how the environment
+settings will be included in the mail.  Please do not delete that.
+They will tell the Bug People what your environment is, so that it
+will be easier to locate the bugs.
 
 If you have found a bug that makes Emacs go \"beep\", set
 debug-on-error to t (`M-x set-variable RET debug-on-error RET t RET')
@@ -220,6 +221,7 @@ Thank you for your help in stamping out bugs.
 
 (defun gnus-setup-posting-charset (group)
   (let ((alist gnus-group-posting-charset-alist)
+	(group (or group ""))
 	elem)
     (when group
       (catch 'found
@@ -1171,9 +1173,10 @@ this is a reply."
 (defun gnus-message-insert-stylings ()
   (let (val)
     (save-excursion
-      (message-goto-eoh)
       (while (setq val (pop gnus-message-style-insertions))
 	(when (cdr val)
+	  (message-remove-header (car val))
+	  (message-goto-eoh)
 	  (insert (car val) ": " (cdr val) "\n"))
 	(gnus-pull (car val) gnus-message-style-insertions t)))))
 

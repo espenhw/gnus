@@ -1,3 +1,71 @@
+Sat May  1 20:27:43 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.84 is released.
+
+1999-05-01 22:23:21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-bug-message): Mime change.
+
+1999-04-22  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-sum.el (gnus-update-marks): Process null mark lists.
+
+1999-04-21  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Recognize
+ 	`x-uue'.
+
+1999-03-04  Aaron M. Ucko  <amu@mit.edu>
+
+	* mail-source.el (mail-source-fetch-pop): Only prompt for password
+	when authentication is 'password.
+
+1999-05-01 22:17:55    <pinard@iro.umontreal.ca>
+
+	* gnus-win.el (gnus-configure-windows): Accept a setting.
+
+1999-04-21 20:51:13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-util.el (mm-quote-arg): Moved here.
+
+	* mm-decode.el (mm-quote-arg): Quote more chars.
+
+1999-04-18 20:12:49  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnheader.el (nnheader-parse-head): Message-ID in In-Reply-To
+	with newlines would create buggy .nov files.
+
+	* gnus-art.el (gnus-article-date-lapsed-new-header): Default to nil.
+
+	* qp.el (quoted-printable-encode-region): Encode whitespace at the 
+	end of lines.
+
+	* message.el (message-mode): Doc fix.
+
+	* gnus-art.el (article-hide-headers): Delete the hidden headers. 
+
+	* gnus-msg.el (gnus-setup-posting-charset): Default group to "". 
+
+	* gnus-art.el (article-date-ut): Rewrite.
+
+	* mm-decode.el (mm-preferred-alternative-precedence): Reverse the
+	order. 
+
+	* gnus-msg.el (gnus-message-insert-stylings): Remove duplicate
+	headers. 
+
+	* gnus-art.el (gnus-article-date-lapsed-new-header): Doc fix. 
+
+1999-04-18  Didier Verna  <verna@inf.enst.fr>
+
+	* gnus-art.el (gnus-article-date-lapsed-new-header): new variable.
+	(article-date-ut): use it.
+
+1999-04-18 20:06:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-source.el (mail-source-fetch-pop): Call script
+	asynchronously. 
+
 Sun Apr 18 12:40:04 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.83 is released.

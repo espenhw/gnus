@@ -1446,6 +1446,7 @@ increase the score of each group you read."
     "e" gnus-summary-end-of-article
     "^" gnus-summary-refer-parent-article
     "r" gnus-summary-refer-parent-article
+    "D" gnus-summary-enter-digest-group
     "R" gnus-summary-refer-references
     "T" gnus-summary-refer-thread
     "g" gnus-summary-show-article
@@ -4264,13 +4265,14 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	(uncompressed '(score bookmark killed))
 	type list newmarked symbol delta-marks)
     (when info
-      ;; Add all marks lists that are non-nil to the list of marks lists.
+      ;; Add all marks lists to the list of marks lists.
       (while (setq type (pop types))
-	(when (setq list (symbol-value
+	(setq list (symbol-value
 			  (setq symbol
 				(intern (format "gnus-newsgroup-%s"
 						(car type))))))
 
+	(when list
 	  ;; Get rid of the entries of the articles that have the
 	  ;; default score.
 	  (when (and (eq (cdr type) 'score)
@@ -4285,7 +4287,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 		    (setcdr prev (cdr arts))
 		  (setq prev arts))
 		(setq arts (cdr arts)))
-	      (setq list (cdr all))))
+	      (setq list (cdr all)))))
 
 	  (when (gnus-check-backend-function 'request-set-mark
 					     gnus-newsgroup-name)
@@ -4301,11 +4303,13 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 		(if del
 		    (push (list del 'del (list (cdr type))) delta-marks)))))
 	  
+	(when list
 	  (push (cons (cdr type)
 		      (if (memq (cdr type) uncompressed) list
 			(gnus-compress-sequence
 			 (set symbol (sort list '<)) t)))
 		newmarked)))
+	
 
       (when delta-marks
 	(unless (gnus-check-group gnus-newsgroup-name)
@@ -7027,7 +7031,7 @@ If ARG is a negative number, hide the unwanted header lines."
 	     (inhibit-point-motion-hooks t)
 	     hidden e)
 	(save-restriction 
-	  (message-narrow-to-head)
+	  (article-narrow-to-head)
 	  (setq hidden (gnus-article-hidden-text-p 'headers)))
 	(goto-char (point-min))
 	(when (search-forward "\n\n" nil t)

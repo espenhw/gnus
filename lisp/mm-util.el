@@ -286,6 +286,19 @@ See also `with-temp-file' and `with-output-to-string'."
 	    mm-mime-mule-charset-alist)
     nil t)))
 
+(defun mm-quote-arg (arg)
+  "Return a version of ARG that is safe to evaluate in a shell."
+  (let ((pos 0) new-pos accum)
+    ;; *** bug: we don't handle newline characters properly
+    (while (setq new-pos (string-match "[]*[;!'`\"$\\& \t{} |()<>]" arg pos))
+      (push (substring arg pos new-pos) accum)
+      (push "\\" accum)
+      (push (list (aref arg new-pos)) accum)
+      (setq pos (1+ new-pos)))
+    (if (= pos 0)
+        arg
+      (apply 'concat (nconc (nreverse accum) (list (substring arg pos)))))))
+
 (provide 'mm-util)
 
 ;;; mm-util.el ends here

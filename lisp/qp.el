@@ -74,14 +74,24 @@ matched by that regexp."
     (save-restriction
       (narrow-to-region from to)
       (mm-encode-body)
+      ;; Encode all the non-ascii and control characters.
       (goto-char (point-min))
       (while (and (skip-chars-forward
 		   (or class "^\000-\007\013\015-\037\200-\377="))
 		  (not (eobp)))
 	(insert
 	 (prog1
-	     (upcase (format "=%x" (char-after)))
+	     (upcase (format "=%02x" (char-after)))
 	   (delete-char 1))))
+      ;; Encode white space at the end of lines.
+      (goto-char (point-min))
+      (while (re-search-forward "[ \t]+$" nil t)
+	(goto-char (match-beginning 0))
+	(while (not (eolp))
+	  (insert
+	   (prog1
+	       (upcase (format "=%02x" (char-after)))
+	     (delete-char 1)))))
       (when fold
 	;; Fold long lines.
 	(goto-char (point-min))

@@ -166,7 +166,7 @@ If no encoding was done, nil is returned."
 	    )
 	   ((null encoding)
 	    )
-	   ((eq encoding 'x-uuencode)
+	   ((memq encoding '(x-uuencode x-uue))
 	    (funcall mm-uu-decode-function (point-min) (point-max)))
 	   ((eq encoding 'x-binhex)
 	    (funcall mm-uu-binhex-decode-function (point-min) (point-max)))
@@ -178,7 +178,7 @@ If no encoding was done, nil is returned."
 	 (message "Error while decoding: %s" error)
 	 nil))
     (when (and
-	   (memq encoding '(base64 x-uuencode x-binhex))
+	   (memq encoding '(base64 x-uuencode x-uue x-binhex))
 	   (equal type "text/plain"))
       (goto-char (point-min))
       (while (search-forward "\r\n" nil t)

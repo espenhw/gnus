@@ -243,11 +243,12 @@ on your system, you could say something like:
 	       ;; promising.
 	       (if (and (search-forward "\nin-reply-to: " nil t)
 			(setq in-reply-to (nnheader-header-value))
-			(string-match "<[^>]+>" in-reply-to))
+			(string-match "<[^\n>]+>" in-reply-to))
 		   (let (ref2)
 		     (setq ref (substring in-reply-to (match-beginning 0)
 					  (match-end 0)))
-		     (while (string-match "<[^>]+>" in-reply-to (match-end 0))
+		     (while (string-match "<[^\n>]+>"
+					  in-reply-to (match-end 0))
 		       (setq ref2 (substring in-reply-to (match-beginning 0)
 					     (match-end 0)))
 		       (when (> (length ref2) (length ref))

@@ -408,48 +408,50 @@ See the Gnus manual for an explanation of the syntax used.")
 (defvar gnus-frame-split-p nil)
 
 (defun gnus-configure-windows (setting &optional force)
-  (setq gnus-current-window-configuration setting)
-  (setq force (or force gnus-always-force-window-configuration))
-  (setq setting (gnus-windows-old-to-new setting))
-  (let ((split (if (symbolp setting)
-		   (cadr (assq setting gnus-buffer-configuration))
-		 setting))
-	all-visible)
+  (if (window-configuration-p setting)
+      (set-window-configuration setting)
+    (setq gnus-current-window-configuration setting)
+    (setq force (or force gnus-always-force-window-configuration))
+    (setq setting (gnus-windows-old-to-new setting))
+    (let ((split (if (symbolp setting)
+		     (cadr (assq setting gnus-buffer-configuration))
+		   setting))
+	  all-visible)
 
-    (setq gnus-frame-split-p nil)
+      (setq gnus-frame-split-p nil)
 
-    (unless split
-      (error "No such setting: %s" setting))
+      (unless split
+	(error "No such setting: %s" setting))
 
-    (if (and (setq all-visible (gnus-all-windows-visible-p split))
-	     (not force))
-	;; All the windows mentioned are already visible, so we just
-	;; put point in the assigned buffer, and do not touch the
-	;; winconf.
-	(select-window all-visible)
+      (if (and (setq all-visible (gnus-all-windows-visible-p split))
+	       (not force))
+	  ;; All the windows mentioned are already visible, so we just
+	  ;; put point in the assigned buffer, and do not touch the
+	  ;; winconf.
+	  (select-window all-visible)
 
-      ;; Either remove all windows or just remove all Gnus windows.
-      (let ((frame (selected-frame)))
-	(unwind-protect
-	    (if gnus-use-full-window
-		;; We want to remove all other windows.
-		(if (not gnus-frame-split-p)
-		    ;; This is not a `frame' split, so we ignore the
-		    ;; other frames.
-		    (delete-other-windows)
-		  ;; This is a `frame' split, so we delete all windows
-		  ;; on all frames.
-		  (gnus-delete-windows-in-gnusey-frames))
-	      ;; Just remove some windows.
-	      (gnus-remove-some-windows)
-	      (switch-to-buffer nntp-server-buffer))
-	  (select-frame frame)))
+	;; Either remove all windows or just remove all Gnus windows.
+	(let ((frame (selected-frame)))
+	  (unwind-protect
+	      (if gnus-use-full-window
+		  ;; We want to remove all other windows.
+		  (if (not gnus-frame-split-p)
+		      ;; This is not a `frame' split, so we ignore the
+		      ;; other frames.
+		      (delete-other-windows)
+		    ;; This is a `frame' split, so we delete all windows
+		    ;; on all frames.
+		    (gnus-delete-windows-in-gnusey-frames))
+		;; Just remove some windows.
+		(gnus-remove-some-windows)
+		(switch-to-buffer nntp-server-buffer))
+	    (select-frame frame)))
 
-      (switch-to-buffer nntp-server-buffer)
-      (let (gnus-window-frame-focus)
-	(gnus-configure-frame split (get-buffer-window (current-buffer)))
-	(when gnus-window-frame-focus
-	  (select-frame (window-frame gnus-window-frame-focus)))))))
+	(switch-to-buffer nntp-server-buffer)
+	(let (gnus-window-frame-focus)
+	  (gnus-configure-frame split (get-buffer-window (current-buffer)))
+	  (when gnus-window-frame-focus
+	    (select-frame (window-frame gnus-window-frame-focus))))))))
 
 (defun gnus-delete-windows-in-gnusey-frames ()
   "Do a `delete-other-windows' in all frames that have Gnus windows."

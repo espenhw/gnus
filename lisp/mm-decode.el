@@ -456,19 +456,6 @@ This overrides entries in the mailcap file."
   "Say whether HANDLE is displayed or not."
   (mm-handle-undisplayer handle))
 
-(defun mm-quote-arg (arg)
-  "Return a version of ARG that is safe to evaluate in a shell."
-  (let ((pos 0) new-pos accum)
-    ;; *** bug: we don't handle newline characters properly
-    (while (setq new-pos (string-match "[;!'`\"$\\& \t{} |()<>]" arg pos))
-      (push (substring arg pos new-pos) accum)
-      (push "\\" accum)
-      (push (list (aref arg new-pos)) accum)
-      (setq pos (1+ new-pos)))
-    (if (= pos 0)
-        arg
-      (apply 'concat (nconc (nreverse accum) (list (substring arg pos)))))))
-
 ;;;
 ;;; Functions for outputting parts
 ;;;
@@ -586,7 +573,8 @@ This overrides entries in the mailcap file."
 
 (defun mm-preferred-alternative-precedence (handles)
   "Return the precedence based on HANDLES and mm-discouraged-alternatives."
-  (let ((seq (mapcar (lambda (h) (car (mm-handle-type h))) handles)))
+  (let ((seq (nreverse (mapcar (lambda (h)
+				 (car (mm-handle-type h))) handles))))
     (dolist (disc (reverse mm-discouraged-alternatives))
       (dolist (elem (copy-sequence seq))
 	(when (string-match disc elem)

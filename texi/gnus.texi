@@ -2,7 +2,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.83 Manual
+@settitle Pterodactyl Gnus 0.84 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -319,7 +319,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.83 Manual
+@title Pterodactyl Gnus 0.84 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -355,7 +355,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.83.
+This manual corresponds to Pterodactyl Gnus 0.84.
 
 @end ifinfo
 
@@ -4757,7 +4757,7 @@ Exclude all dormant articles from the limit
 @item / M
 @kindex / M (Summary)
 @findex gnus-summary-limit-exclude-marks
-Exclude all marked articles (@code{gnus-summary-limit-exclude-marks}). 
+Exclude all marked articles (@code{gnus-summary-limit-exclude-marks}).
 
 @item / T
 @kindex / T (Summary)
@@ -6927,8 +6927,12 @@ Say how much time has elapsed between the article was posted and now
 (@code{gnus-article-date-lapsed}).  It looks something like:
 
 @example
-X-Sent: 29 years, 6 weeks, 4 days, 10 hours, 3 minutes, 28 seconds ago
+X-Sent: 9 years, 6 weeks, 4 days, 9 hours, 3 minutes, 28 seconds ago
 @end example
+
+The value of @code{gnus-article-date-lapsed-new-header} determines
+whether this header will just be added below the old Date one, or will
+replace it.
 
 An advantage of using Gnus to read mail is that it converts simple bugs
 into wonderful absurdities.
@@ -7812,8 +7816,10 @@ Pull all cached articles (for the current group) into the summary buffer
 
 @table @kbd
 
-@item C-d
+@item A D
+@itemx C-d
 @kindex C-d (Summary)
+@kindex A D (Summary)
 @findex gnus-summary-enter-digest-group
 If the current article is a collection of other articles (for instance,
 a digest), you might use this command to enter a group based on the that
@@ -8874,7 +8880,7 @@ any case, if this returns a non-@code{nil} value, then the style is said
 to @dfn{match}.
 
 Each style may contain a arbitrary amount of @dfn{attributes}.  Each
-attribute consists of a @var{(name . value)} pair.  The attribute name
+attribute consists of a @var{(name value)} pair.  The attribute name
 can be one of @code{signature}, @code{signature-file},
 @code{organization}, @code{address}, @code{name} or @code{body}.  The
 attribute name can also be a string.  In that case, this will be used as
@@ -10181,7 +10187,7 @@ Keywords:
 
 @table @code
 @item :path
-The path of the directory where the mails are stored.  The default is 
+The path of the directory where the mails are stored.  The default is
 @samp{~/Maildir/new}.
 
 If you sometimes look at your mail through a pop3 daemon before fetching
@@ -10835,7 +10841,7 @@ depends on what format you want to store your mail in.
 There are five different mail backends in the standard Gnus, and more
 backends are available separately.  The mail backend most people use
 (because it is the fastest and most flexible) is @code{nnml}
-(@pxref{Mail Spool}).  
+(@pxref{Mail Spool}).
 
 @menu
 * Unix Mail Box::               Using the (quite) standard Un*x mbox.
@@ -16589,7 +16595,7 @@ Emacsen.
 Gnus is developed in a two-phased cycle.  The first phase involves much
 discussion on the @samp{ding@@gnus.org} mailing list, where people
 propose changes and new features, post patches and new backends.  This
-phase is called the @dfn{alpha} phase, since the Gnusae released in this 
+phase is called the @dfn{alpha} phase, since the Gnusae released in this
 phase are @dfn{alpha releases}, or (perhaps more commonly in other
 circles) @dfn{snapshots}.  During this phase, Gnus is assumed to be
 unstable and should not be used by casual users.  Gnus alpha releases
@@ -16610,13 +16616,13 @@ lossage of mail if an alpha release hiccups while handling the mail.
 
 The division of discussion between the ding mailing list and the Gnus
 newsgroup is not purely based on publicity concerns.  It's true that
-having people write about the horrible things that an alpha Gnus release 
+having people write about the horrible things that an alpha Gnus release
 can do (sometimes) in a public forum may scare people off, but more
 importantly, talking about new experimental features that have been
 introduced may confuse casual users.  New features are frequently
 introduced, fiddled with, and judged to be found wanting, and then
 either discarded or totally rewritten.  People reading the mailing list
-usually keep up with these rapid changes, whille people on the newsgroup 
+usually keep up with these rapid changes, whille people on the newsgroup
 can't be assumed to do so.
 
 

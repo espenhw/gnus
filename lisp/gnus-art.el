@@ -596,6 +596,14 @@ on parts -- for instance, adding Vcard info to a database."
 (defcustom gnus-mime-multipart-functions nil
   "An alist of MIME types to functions to display them.")
 
+(defcustom gnus-article-date-lapsed-new-header nil
+  "Whether the X-Sent and Date headers can coexist.
+When using `gnus-treat-date-lapsed', the \"X-Sent:\" header will
+either replace the old \"Date:\" header (if this variable is nil), or
+be added below it (otherwise)."
+  :group 'gnus-article-headers
+  :type 'boolean)
+
 ;;;
 ;;; The treatment variables
 ;;;
@@ -861,7 +869,7 @@ See the manual for details."
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-play-sounds nil
-  "Fill long lines.
+  "Play sounds.
 Valid values are nil, t, `head', `last', an integer or a predicate.
 See the manual for details."
   :group 'gnus-article-treat
@@ -1007,78 +1015,59 @@ Initialized from `text-mode-syntax-table.")
     i))
 
 (defun article-hide-headers (&optional arg delete)
-  "Toggle whether to hide unwanted headers and possibly sort them as well.
-If given a negative prefix, always show; if given a positive prefix,
-always hide."
-  (interactive (gnus-article-hidden-arg))
-  (current-buffer)
-  (if (gnus-article-check-hidden-text 'headers arg)
-      ;; Show boring headers as well.
-      (gnus-article-show-hidden-text 'boring-headers)
-    ;; This function might be inhibited.
-    (unless gnus-inhibit-hiding
-      (save-excursion
-	(save-restriction
-	  (let ((buffer-read-only nil)
-		(case-fold-search t)
-		(props (nconc (list 'article-type 'headers)
-			      gnus-hidden-properties))
-		(max (1+ (length gnus-sorted-header-list)))
-		(ignored (when (not gnus-visible-headers)
-			   (cond ((stringp gnus-ignored-headers)
-				  gnus-ignored-headers)
-				 ((listp gnus-ignored-headers)
-				  (mapconcat 'identity gnus-ignored-headers
-					     "\\|")))))
-		(visible
-		 (cond ((stringp gnus-visible-headers)
-			gnus-visible-headers)
-		       ((and gnus-visible-headers
-			     (listp gnus-visible-headers))
-			(mapconcat 'identity gnus-visible-headers "\\|"))))
-		(inhibit-point-motion-hooks t)
-		beg)
-	    ;; First we narrow to just the headers.
-	    (goto-char (point-min))
-	    ;; Hide any "From " lines at the beginning of (mail) articles.
-	    (while (looking-at "From ")
-	      (forward-line 1))
-	    (unless (bobp)
-	      (if delete
-		  (delete-region (point-min) (point))
-		(gnus-article-hide-text (point-min) (point) props)))
-	    ;; Then treat the rest of the header lines.
-	    (narrow-to-region
-	     (point)
-	     (if (search-forward "\n\n" nil t) ; if there's a body
-		 (progn (forward-line -1) (point))
-	       (point-max)))
-	    ;; Then we use the two regular expressions
-	    ;; `gnus-ignored-headers' and `gnus-visible-headers' to
-	    ;; select which header lines is to remain visible in the
-	    ;; article buffer.
-	    (goto-char (point-min))
-	    (while (re-search-forward "^[^ \t]*:" nil t)
-	      (beginning-of-line)
-	      ;; Mark the rank of the header.
-	      (put-text-property
-	       (point) (1+ (point)) 'message-rank
-	       (if (or (and visible (looking-at visible))
-		       (and ignored
-			    (not (looking-at ignored))))
-		   (gnus-article-header-rank)
-		 (+ 2 max)))
-	      (forward-line 1))
-	    (message-sort-headers-1)
-	    (when (setq beg (text-property-any
-			     (point-min) (point-max) 'message-rank (+ 2 max)))
-	      ;; We make the unwanted headers invisible.
-	      (if delete
-		  (delete-region beg (point-max))
-		;; Suggested by Sudish Joseph <joseph@cis.ohio-state.edu>.
-		(gnus-article-hide-text-type beg (point-max) 'headers))
-	      ;; Work around XEmacs lossage.
-	      (put-text-property (point-min) beg 'invisible nil))))))))
+  "Hide unwanted headers and possibly sort them as well."
+  (interactive)
+  ;; This function might be inhibited.
+  (unless gnus-inhibit-hiding
+    (save-excursion
+      (save-restriction
+	(let ((buffer-read-only nil)
+	      (case-fold-search t)
+	      (max (1+ (length gnus-sorted-header-list)))
+	      (ignored (when (not gnus-visible-headers)
+			 (cond ((stringp gnus-ignored-headers)
+				gnus-ignored-headers)
+			       ((listp gnus-ignored-headers)
+				(mapconcat 'identity gnus-ignored-headers
+					   "\\|")))))
+	      (visible
+	       (cond ((stringp gnus-visible-headers)
+		      gnus-visible-headers)
+		     ((and gnus-visible-headers
+			   (listp gnus-visible-headers))
+		      (mapconcat 'identity gnus-visible-headers "\\|"))))
+	      (inhibit-point-motion-hooks t)
+	      beg)
+	  ;; First we narrow to just the headers.
+	  (article-narrow-to-head)
+	  ;; Hide any "From " lines at the beginning of (mail) articles.
+	  (while (looking-at "From ")
+	    (forward-line 1))
+	  (unless (bobp)
+	    (delete-region (point-min) (point)))
+	  ;; Then treat the rest of the header lines.
+	  ;; Then we use the two regular expressions
+	  ;; `gnus-ignored-headers' and `gnus-visible-headers' to
+	  ;; select which header lines is to remain visible in the
+	  ;; article buffer.
+	  (while (re-search-forward "^[^ \t]*:" nil t)
+	    (beginning-of-line)
+	    ;; Mark the rank of the header.
+	    (put-text-property
+	     (point) (1+ (point)) 'message-rank
+	     (if (or (and visible (looking-at visible))
+		     (and ignored
+			  (not (looking-at ignored))))
+		 (gnus-article-header-rank)
+	       (+ 2 max)))
+	    (forward-line 1))
+	  (message-sort-headers-1)
+	  (when (setq beg (text-property-any
+			   (point-min) (point-max) 'message-rank (+ 2 max)))
+	    ;; We delete the unwanted headers.
+	    (add-text-properties (point-min) (+ 5 (point-min))
+				 '(article-type headers dummy-invisible t))
+	    (delete-region beg (point-max))))))))
 
 (defun article-hide-boring-headers (&optional arg)
   "Toggle hiding of headers that aren't very interesting.
@@ -1710,7 +1699,8 @@ means show, 0 means toggle."
   "Say whether the current buffer contains hidden text of type TYPE."
   (let ((pos (text-property-any (point-min) (point-max) 'article-type type)))
     (while (and pos
-		(not (get-text-property pos 'invisible)))
+		(not (get-text-property pos 'invisible))
+		(not (get-text-property pos 'dummy-invisible)))
       (setq pos
 	    (text-property-any (1+ pos) (point-max) 'article-type type)))
     (if pos
@@ -1748,7 +1738,9 @@ If HIDE, hide the text instead."
 (defun article-date-ut (&optional type highlight header)
   "Convert DATE date to universal time in the current article.
 If TYPE is `local', convert to local time; if it is `lapsed', output
-how much time has lapsed since DATE."
+how much time has lapsed since DATE. For `lapsed', the value of
+`gnus-article-date-lapsed-new-header' says whether the \"X-Sent:\" header
+should replace the \"Date:\" one, or should be added below it."
   (interactive (list 'ut t))
   (let* ((header (or header
 		     (mail-header-date (save-excursion
@@ -1756,38 +1748,50 @@ how much time has lapsed since DATE."
 					 gnus-current-headers))
 		     (message-fetch-field "date")
 		     ""))
+	 (tdate-regexp "^Date:[ \t]\\|^X-Sent:[ \t]")
+ 	 (date-regexp
+	  (cond
+	   ((not gnus-article-date-lapsed-new-header)
+	    tdate-regexp)
+	   ((eq type 'lapsed)
+	    "^X-Sent:[ \t]")
+	   (t
+	    "^Date:[ \t]")))
 	 (date (if (vectorp header) (mail-header-date header)
 		 header))
-	 (date-regexp "^Date:[ \t]\\|^X-Sent:[ \t]")
 	 (inhibit-point-motion-hooks t)
-	 bface eface newline)
+	 (newline t)
+	 bface eface)
     (when (and date (not (string= date "")))
       (save-excursion
 	(save-restriction
 	  (article-narrow-to-head)
+	  (when (re-search-forward tdate-regexp nil t)
+	    (setq bface (get-text-property (gnus-point-at-bol) 'face)
+		  eface (get-text-property (1- (gnus-point-at-eol))
+					   'face))
+	    (forward-line 1))
+	  (goto-char (point-min))
 	  (let ((buffer-read-only nil))
-	    ;; Delete any old Date headers.
-	    (if (re-search-forward date-regexp nil t)
-		(progn
-		  (setq bface (get-text-property (gnus-point-at-bol) 'face)
-			eface (get-text-property (1- (gnus-point-at-eol))
-						 'face))
+ 	    ;; Delete any old Date headers.
+ 	    (while (re-search-forward date-regexp nil t)
+	      (if newline
 		  (delete-region (progn (beginning-of-line) (point))
 				 (progn (end-of-line) (point)))
-		  (beginning-of-line))
-	      (goto-char (point-max))
-	      (setq newline t))
+		(delete-region (progn (beginning-of-line) (point))
+			       (progn (forward-line 1) (point))))
+	      (setq newline nil))
 	    (insert (article-make-date-line date type))
+	    (when newline
+	      (insert "\n")
+	      (forward-line -1))
 	    ;; Do highlighting.
 	    (beginning-of-line)
 	    (when (looking-at "\\([^:]+\\): *\\(.*\\)$")
 	      (put-text-property (match-beginning 1) (1+ (match-end 1))
 				 'face bface)
 	      (put-text-property (match-beginning 2) (match-end 2)
-				 'face eface))
-	    (when newline
-	      (end-of-line)
-	      (insert "\n"))))))))
+				 'face eface))))))))
 
 (defun article-make-date-line (date type)
   "Return a DATE line of TYPE."
