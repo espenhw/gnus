@@ -1,5 +1,9 @@
 2002-05-04  Simon Josefsson  <jas@extundo.com>
 
+	* emacs-mime.texi (Encoding Customization): Fix.
+
+2002-05-04  Simon Josefsson  <jas@extundo.com>
+
 	* emacs-mime.texi: Move two chapters "Interface Functions" and
 	"Basic Functions" after the Decoding and Encoding chapters.  (No
 	text modified.)

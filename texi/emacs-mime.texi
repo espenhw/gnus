@@ -692,7 +692,8 @@ coding system symbols (aliases of coding systems does not work, use
 an alias in this variable).  For example, if you have configured Emacs
 to use prefer UTF-8, but wish that outgoing messages should be sent in
 ISO-8859-1 if possible, you can set this variable to
-@code{(iso-latin-1)}.
+@code{(iso-latin-1)}. You can override this setting on a per-message
+basis by using the @code{charset} MML tag (@pxref{MML Definition}).
 
 @item mm-content-transfer-encoding-defaults
 @vindex mm-content-transfer-encoding-defaults
