@@ -1,3 +1,8 @@
+2003-12-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-set-current-level): Signal errors on
+	topic lines.
+
 2003-12-31  Jeremy Maitin-Shepard  <jbms@attbi.com>
 
 	* mml.el (mml-generate-mime-1): Use mml-compute-boundary (tiny

@@ -3217,15 +3217,18 @@ Uses the process/prefix convention."
   (interactive
    (list
     current-prefix-arg
-    (string-to-int
-     (let ((s (read-string
-	       (format "Level (default %s): "
-		       (or (gnus-group-group-level)
-			   gnus-level-default-subscribed)))))
-       (if (string-match "^\\s-*$" s)
-	   (int-to-string (or (gnus-group-group-level)
-			      gnus-level-default-subscribed))
-	 s)))))
+    (progn
+      (unless (gnus-group-group-name)
+	(error "No group on the current line"))
+      (string-to-int
+       (let ((s (read-string
+		 (format "Level (default %s): "
+			 (or (gnus-group-group-level)
+			     gnus-level-default-subscribed)))))
+	 (if (string-match "^\\s-*$" s)
+	     (int-to-string (or (gnus-group-group-level)
+				gnus-level-default-subscribed))
+	   s))))))
   (unless (and (>= level 1) (<= level gnus-level-killed))
     (error "Invalid level: %d" level))
   (let ((groups (gnus-group-process-prefix n))
