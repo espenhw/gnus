@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.48 Manual
+@settitle Red Gnus 0.49 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.48 Manual
+@title Red Gnus 0.49 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -13450,7 +13450,7 @@ D. Hall,
 Magnus Hammerin,
 Raja R. Harinath,
 Marc Horowitz,
-Ishikawa Ichiro,
+Ishikawa Ichiro, @c Ishikawa
 Francois Felix Ingrand,
 Lee Iverson, 
 Fred Johansen, 
@@ -13461,12 +13461,12 @@ Nat Makarevitch,
 Timo Metzemakers,
 Richard Mlynarik,
 Lantz Moore,
-MORIOKA Tomohiko,
+Morioka Tomohiko, @c Morioka
 Hrvoje Niksic,
 Andy Norman,
 Ken Olstad,
-Masaharu Onishi,
-Hideki Ono,
+Masaharu Onishi, @c Onishi
+Hideki Ono, @c Ono
 Ulrich Pfeifer,
 Colin Rafferty,
 Bart Robinson,
@@ -13487,7 +13487,7 @@ Barry A. Warsaw,
 Christoph Wedler,
 Joe Wells,
 and
-Katsumi Yamaoka.
+Katsumi Yamaoka. @c Yamaoka
 
 Apologies to everybody that I've forgotten, of which there are many, I'm
 sure.  

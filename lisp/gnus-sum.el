@@ -25,13 +25,12 @@
 
 ;;; Code:
 
-(require 'gnus-load)
+(require 'gnus)
 (require 'gnus-group)
 (require 'gnus-spec)
 (require 'gnus-range)
 (require 'gnus-int)
 (require 'gnus-undo)
-(require 'gnus)
 
 (defgroup gnus-summary nil
   "Summary buffers."
@@ -732,28 +731,47 @@ automatically when it is selected."
   "Face used for normal interest ancient articles.")
   
 (defface gnus-summary-high-unread-face
-  '((((class color)
-      (background dark))
-     (:foreground "PaleGreen" :bold t))
-    (((class color)
-      (background light))
-     (:foreground "DarkGreen" :bold t))
-    (t 
+  '((t 
      (:bold t)))
   "Face used for high interest unread articles.")
 
 (defface gnus-summary-low-unread-face
-  '((((class color)
-      (background dark))
-     (:foreground "PaleGreen" :italic t))
-    (((class color)
-      (background light))
-     (:foreground "DarkGreen" :italic t))
-    (t 
+  '((t 
      (:italic t)))
   "Face used for low interest unread articles.")
 
 (defface gnus-summary-normal-unread-face
+  '((t 
+     ()))
+  "Face used for normal interest unread articles.")
+  
+(defface gnus-summary-high-read-face
+  '((((class color)
+      (background dark))
+     (:foreground "PaleGreen"
+		  :bold t))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen"
+		  :bold t))
+    (t 
+     (:bold t)))
+  "Face used for high interest read articles.")
+
+(defface gnus-summary-low-read-face
+  '((((class color)
+      (background dark))
+     (:foreground "PaleGreen"
+		  :italic t))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen"
+		  :italic t))
+    (t 
+     (:italic t)))
+  "Face used for low interest read articles.")
+
+(defface gnus-summary-normal-read-face
   '((((class color)
       (background dark))
      (:foreground "PaleGreen"))
@@ -761,21 +779,6 @@ automatically when it is selected."
       (background light))
      (:foreground "DarkGreen"))
     (t 
-     ()))
-  "Face used for normal interest unread articles.")
-  
-(defface gnus-summary-high-read-face
-  '((t 
-     (:bold t)))
-  "Face used for high interest read articles.")
-
-(defface gnus-summary-low-read-face
-  '((t 
-     (:italic t)))
-  "Face used for low interest read articles.")
-
-(defface gnus-summary-normal-read-face
-  '((t 
      ()))
   "Face used for normal interest read articles.")
 
@@ -6608,7 +6611,7 @@ latter case, they will be copied into the relevant groups."
 		(method
 		 (gnus-completing-read 
 		  methname "What backend do you want to use when respooling?"
-		  methods nil t nil 'gnus-method-history))
+		  methods nil t nil 'gnus-mail-method-history))
 		ms)
 	   (cond
 	    ((zerop (length (setq ms (gnus-servers-using-backend method))))

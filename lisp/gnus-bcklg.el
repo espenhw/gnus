@@ -25,7 +25,7 @@
 
 ;;; Code:
 
-(require 'gnus-load)
+(require 'gnus)
 
 ;;;
 ;;; Buffering of read articles.

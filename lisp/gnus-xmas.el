@@ -25,7 +25,6 @@
 
 ;;; Code:
 
-(require 'gnus-load)
 (require 'text-props)
 (defvar menu-bar-mode (featurep 'menubar))
 (require 'messagexmas)
@@ -579,8 +578,7 @@ pounce directly on the real variables themselves.")
 	(insert (make-string (max 0 (* 2 (/ rest 3))) ?\n))))
     ;; Fontify some.
     (goto-char (point-min))
-    (when (search-forward "Praxis" nil t)
-      (put-text-property (match-beginning 0) (match-end 0) 'face 'bold))
+    (put-text-property (point-min) (point-max) 'face 'gnus-splash-face)
     (goto-char (point-min))
     (setq modeline-buffer-identification 
 	  (list (concat gnus-version ": *Group*")))

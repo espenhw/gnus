@@ -25,12 +25,11 @@
 
 ;;; Code:
 
-(require 'gnus-load)
+(require 'gnus)
 (require 'gnus-int)
 (require 'gnus-range)
 (require 'gnus-sum)
 (require 'gnus-start)
-(require 'gnus)
 
 (defgroup gnus-cache nil
   "Cache interface."

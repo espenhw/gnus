@@ -1,3 +1,35 @@
+Tue Oct  8 00:15:04 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-nocem.el: Added customize support.
+
+Tue Oct  8 11:48:25 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-group.el (gnus-group-mail-3-empty-face): Use magenta4.
+
+	* gnus.el (gnus-short-group-name): Would bug out on complex group
+	names. 
+	(gnus-splash-face): New face.
+	(gnus-group-startup-message): Use it.
+
+	* nnvirtual.el (nnvirtual-request-group): Respect
+	`always-rescan'. 
+
+	* gnus-load.el: Removed.
+
+	* gnus.el (gnus-check-backend-function): Require before
+	checking... 
+
+	* gnus-sum.el (gnus-summary-respool-article): Use it.
+
+	* gnus-load.el (gnus-mail-method-history): New variable.
+
+	* gnus-sum.el (gnus-summary-normal-unread-face): Use default
+	face. 
+
+Mon Oct  7 15:00:58 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.48 is released.
+
 Mon Oct  7 02:24:02 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus-sum.el: Added customize support.

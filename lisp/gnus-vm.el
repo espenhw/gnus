@@ -34,7 +34,6 @@
 (require 'message)
 (require 'gnus)
 (require 'gnus-msg)
-(require 'gnus-load)
 
 (eval-when-compile
   (autoload 'vm-mode "vm")

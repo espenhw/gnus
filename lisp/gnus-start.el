@@ -25,7 +25,6 @@
 
 ;;; Code:
 
-(require 'gnus-load)
 (require 'gnus)
 (require 'gnus-win)
 (require 'gnus-int)

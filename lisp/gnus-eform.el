@@ -25,9 +25,8 @@
 
 ;;; Code:
 
-(require 'gnus-load)
-(require 'gnus-win)
 (require 'gnus)
+(require 'gnus-win)
 
 ;;;
 ;;; Editing forms

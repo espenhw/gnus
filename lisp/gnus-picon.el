@@ -25,7 +25,7 @@
 
 ;;; Code:
 
-(require 'gnus-load)
+(require 'gnus)
 (require 'xpm)
 (require 'annotations)
 

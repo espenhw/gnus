@@ -25,7 +25,6 @@
 
 ;;; Code:
 
-(require 'gnus-load)
 (require 'gnus)
 
 (defcustom gnus-open-server-hook nil

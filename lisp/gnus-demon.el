@@ -25,10 +25,9 @@
 
 ;;; Code:
 
-(require 'gnus-load)
+(require 'gnus)
 (require 'gnus-int)
 (require 'nnheader)
-(require 'gnus)
 (eval-and-compile
   (if (string-match "XEmacs" (emacs-version))
       (require 'itimer)

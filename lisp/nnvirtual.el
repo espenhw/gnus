@@ -216,7 +216,8 @@ virtual group.")
     (setq nnvirtual-current-group nil)
     (nnheader-report 'nnvirtual "No component groups in %s" group))
    (t
-    (unless dont-check
+    (when (or (not dont-check)
+	      nnvirtual-always-rescan)
       (nnvirtual-create-mapping))
     (setq nnvirtual-current-group group)
     (let ((len (length nnvirtual-mapping)))

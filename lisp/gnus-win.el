@@ -25,7 +25,7 @@
 
 ;;; Code:
 
-(require 'gnus-load)
+(require 'gnus)
 
 (defvar gnus-use-full-window t
   "*If non-nil, use the entire Emacs screen.")

@@ -25,7 +25,7 @@
 
 ;;; Code:
 
-(require 'gnus-load)
+(require 'gnus)
 (require 'gnus-start)
 (require 'nnmail)
 (require 'gnus-spec)
@@ -279,10 +279,10 @@ variable."
 (defface gnus-group-news-1-face 
   '((((class color)
       (background dark))
-     (:foreground "PaleTurquoise"))
+     (:foreground "PaleTurquoise" :bold t))
     (((class color)
       (background light))
-     (:foreground "ForestGreen"))
+     (:foreground "ForestGreen" :bold t))
     (t
      ()))
   "Level 1 newsgroup face.")
@@ -290,15 +290,26 @@ variable."
 (defface gnus-group-news-1-empty-face
   '((((class color)
       (background dark))
-     (:foreground "PaleTurquoise" :italic t))
+     (:foreground "PaleTurquoise"))
     (((class color)
       (background light))
-     (:foreground "ForestGreen" :italic t))
+     (:foreground "ForestGreen"))
     (t
-     (:italic t)))
+     ()))
   "Level 1 empty newsgroup face.")
 
 (defface gnus-group-news-2-face 
+  '((((class color)
+      (background dark))
+     (:foreground "turquoise" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "CadetBlue4" :bold t))
+    (t
+     ()))
+  "Level 2 newsgroup face.")
+
+(defface gnus-group-news-2-empty-face
   '((((class color)
       (background dark))
      (:foreground "turquoise"))
@@ -307,20 +318,20 @@ variable."
      (:foreground "CadetBlue4"))
     (t
      ()))
-  "Level 2 newsgroup face.")
-
-(defface gnus-group-news-2-empty-face
-  '((((class color)
-      (background dark))
-     (:foreground "turquoise" :italic t))
-    (((class color)
-      (background light))
-     (:foreground "CadetBlue4" :italic t))
-    (t
-     (:italic t)))
   "Level 2 empty newsgroup face.")
 
 (defface gnus-group-news-3-face 
+  '((((class color)
+      (background dark))
+     (:bold t))
+    (((class color)
+      (background light))
+     (:bold t))
+    (t
+     ()))
+  "Level 3 newsgroup face.")
+
+(defface gnus-group-news-3-empty-face
   '((((class color)
       (background dark))
      ())
@@ -329,20 +340,20 @@ variable."
      ())
     (t
      ()))
-  "Level 3 newsgroup face.")
-
-(defface gnus-group-news-3-empty-face
-  '((((class color)
-      (background dark))
-     ( :italic t))
-    (((class color)
-      (background light))
-     ( :italic t))
-    (t
-     (:italic t)))
   "Level 3 empty newsgroup face.")
 
 (defface gnus-group-news-low-face 
+  '((((class color)
+      (background dark))
+     (:foreground "DarkTurquoise" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen" :bold t))
+    (t
+     ()))
+  "Low level newsgroup face.")
+
+(defface gnus-group-news-low-empty-face
   '((((class color)
       (background dark))
      (:foreground "DarkTurquoise"))
@@ -351,17 +362,6 @@ variable."
      (:foreground "DarkGreen"))
     (t
      ()))
-  "Low level newsgroup face.")
-
-(defface gnus-group-news-low-empty-face
-  '((((class color)
-      (background dark))
-     (:foreground "DarkTurquoise" :italic t))
-    (((class color)
-      (background light))
-     (:foreground "DarkGreen" :italic t))
-    (t
-     (:italic t)))
   "Low level empty newsgroup face.")
 
 (defface gnus-group-mail-1-face 
@@ -378,10 +378,10 @@ variable."
 (defface gnus-group-mail-1-empty-face
   '((((class color)
       (background dark))
-     (:foreground "aquamarine1" :bold t :italic t))
+     (:foreground "aquamarine1"))
     (((class color)
       (background light))
-     (:foreground "DeepPink3" :bold t :italic t))
+     (:foreground "DeepPink3"))
     (t
      (:italic t :bold t)))
   "Level 1 empty mailgroup face.")
@@ -400,12 +400,12 @@ variable."
 (defface gnus-group-mail-2-empty-face
   '((((class color)
       (background dark))
-     (:foreground "aquamarine2" :bold t :italic t))
+     (:foreground "aquamarine2" :bold t))
     (((class color)
       (background light))
-     (:foreground "HotPink3" :bold t :italic t))
+     (:foreground "HotPink3" :bold t))
     (t
-     (:italic t :bold t)))
+     (:bold t)))
   "Level 2 empty mailgroup face.")
 
 (defface gnus-group-mail-3-face 
@@ -414,7 +414,7 @@ variable."
      (:foreground "aquamarine3" :bold t))
     (((class color)
       (background light))
-     (:foreground "dark magenta" :bold t))
+     (:foreground "magenta4" :bold t))
     (t
      (:bold t)))
   "Level 3 mailgroup face.")
@@ -422,12 +422,12 @@ variable."
 (defface gnus-group-mail-3-empty-face
   '((((class color)
       (background dark))
-     (:foreground "aquamarine3" :bold t :italic t))
+     (:foreground "aquamarine3"))
     (((class color)
       (background light))
-     (:foreground "dark magenta" :bold t :italic t))
+     (:foreground "magenta4"))
     (t
-     (:italic t :bold t)))
+     ()))
   "Level 3 empty mailgroup face.")
 
 (defface gnus-group-mail-low-face 
@@ -444,12 +444,12 @@ variable."
 (defface gnus-group-mail-low-empty-face
   '((((class color)
       (background dark))
-     (:foreground "aquamarine4" :italic t :bold t))
+     (:foreground "aquamarine4" :bold t))
     (((class color)
       (background light))
-     (:foreground "DeepPink4" :italic t :bold t))
+     (:foreground "DeepPink4" :bold t))
     (t
-     (:italic t :bold t)))
+     (:bold t)))
   "Low level empty mailgroup face.")
 
 (defcustom gnus-group-highlight
@@ -473,19 +473,19 @@ variable."
     ;; Mail.
     ((and (= unread 0) (eq level 1)) .
      gnus-group-mail-1-empty-face)
-    ((and (eq level 1)) .
+    ((eq level 1) .
      gnus-group-mail-1-face)
     ((and (= unread 0) (eq level 2)) .
      gnus-group-mail-2-empty-face)
-    ((and (eq level 2)) .
+    ((eq level 2) .
      gnus-group-mail-2-face)
     ((and (= unread 0) (eq level 3)) .
      gnus-group-mail-3-empty-face)
-    ((and (eq level 3)) .
+    ((eq level 3) .
      gnus-group-mail-3-face)
-    ((and (= unread 0)) .
+    ((= unread 0) .
      gnus-group-mail-low-empty-face)
-    ((and) .
+    (t .
      gnus-group-mail-low-face))
   "Controls the highlighting of group buffer lines. 
 

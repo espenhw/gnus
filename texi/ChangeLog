@@ -1,3 +1,7 @@
+Tue Oct  8 13:16:41 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* Makefile (all): Make custom.
+
 Wed Oct  2 01:32:49 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Group Timestamps): New.

@@ -26,11 +26,10 @@
 
 ;;; Code:
 
-(require 'gnus-load)
+(require 'gnus)
 (require 'gnus-ems)
 (require 'message)
 (require 'gnus-art)
-(require 'gnus)
 
 ;; Added by Sudish Joseph <joseph@cis.ohio-state.edu>.
 (defvar gnus-post-method nil
@@ -760,7 +759,7 @@ If YANK is non-nil, include the original article."
   "Attempts to go through the Gnus source file and report what variables have been changed.
 The source file has to be in the Emacs load path."
   (interactive)
-  (let ((files '("gnus-load.el" "gnus-sum.el" "gnus-group.el"
+  (let ((files '("gnus.el" "gnus-sum.el" "gnus-group.el"
 		 "gnus-art.el" "gnus-start.el"
 		 "gnus-msg.el" "gnus-score.el" "gnus-win.el"
 		 "nnmail.el" "message.el"))

@@ -30,9 +30,8 @@
 
 ;;; Code:
 
-(require 'gnus-load)
-(require 'gnus-art)
 (require 'gnus)
+(require 'gnus-art)
 
 (defgroup gnus-duplicate nil
   "Suppression of duplicate articles."

@@ -31,7 +31,6 @@
 ;; Register nndb with known select methods.
 
 (require 'gnus)
-(require 'gnus-load)
 (require 'nnmail)
 
 (setq gnus-valid-select-methods

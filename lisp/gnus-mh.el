@@ -33,10 +33,9 @@
 
 ;;; Code:
 
-(require 'gnus-load)
+(require 'gnus)
 (require 'mh-e)
 (require 'mh-comp)
-(require 'gnus)
 (require 'gnus-msg)
 (require 'gnus-sum)
 

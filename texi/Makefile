@@ -6,12 +6,18 @@ LATEX=latex
 DVIPS=dvips
 PERL=perl
 
-all: gnus message
+all: gnus message custom widget
 
 most: texi2latexi.elc latex latexps
 
 gnus: gnus.texi
 	$(MAKEINFO) gnus.texi $(INFOSWI)
+
+custom: custom.texi
+	$(MAKEINFO) custom.texi $(INFOSWI)
+
+widget: widget.texi
+	$(MAKEINFO) widget.texi $(INFOSWI)
 
 message: message.texi
 	$(MAKEINFO) message.texi $(INFOSWI)

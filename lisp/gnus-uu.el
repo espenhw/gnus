@@ -26,7 +26,7 @@
 
 ;;; Code: 
 
-(require 'gnus-load)
+(require 'gnus)
 (require 'gnus-art)
 (require 'message)
 (require 'gnus-msg)

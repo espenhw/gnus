@@ -26,10 +26,9 @@
 
 ;;; Code:
 
-(require 'gnus-load)
+(require 'gnus)
 (require 'gnus-group)
 (require 'gnus-start)
-(require 'gnus)
 
 (defvar gnus-topic-mode nil
   "Minor mode for Gnus group buffers.")

@@ -25,16 +25,22 @@
 
 ;;; Code:
 
-(require 'gnus-load)
+(require 'gnus)
 (require 'nnmail)
 (require 'gnus-art)
 (require 'gnus-range)
 
-(defvar gnus-nocem-groups 
-  '("alt.nocem.misc" "news.admin.net-abuse.announce")
-  "*List of groups that will be searched for NoCeM messages.")
+(defgroup 'gnus-nocem nil
+  "NoCeM pseudo-cancellation treatment"
+  :group 'gnus-score)
 
-(defvar gnus-nocem-issuers 
+(defcustom gnus-nocem-groups 
+  '("alt.nocem.misc" "news.admin.net-abuse.announce")
+  "List of groups that will be searched for NoCeM messages."
+  :group 'gnus-nocem
+  :type '(repeat (string :tag "Group")))
+
+(defcustom gnus-nocem-issuers 
  '("AutoMoose-1" "Automoose-1"   ; CancelMoose[tm]
    "rbraver@ohww.norman.ok.us"   ; Robert Braver
    "clewis@ferret.ocunix.on.ca;" ; Chris Lewis
@@ -42,19 +48,28 @@
    "snowhare@xmission.com"       ; Benjamin "Snowhare" Franz
    "red@redpoll.mrfs.oh.us (Richard E. Depew)"
    )
-  "*List of NoCeM issuers to pay attention to.")
+  "List of NoCeM issuers to pay attention to."
+  :group 'gnus-nocem
+  :type '(repeat string))
 
-(defvar gnus-nocem-directory 
+(defcustom gnus-nocem-directory 
   (nnheader-concat gnus-article-save-directory "NoCeM/")
-  "*Directory where NoCeM files will be stored.")
+  "*Directory where NoCeM files will be stored."
+  :group 'gnus-nocem
+  :type 'directory)
 
-(defvar gnus-nocem-expiry-wait 15
-  "*Number of days to keep NoCeM headers in the cache.")
+(defcustom gnus-nocem-expiry-wait 15
+  "*Number of days to keep NoCeM headers in the cache."
+  :group 'gnus-nocem
+  :type 'integer)
 
-(defvar gnus-nocem-verifyer 'mc-verify
+(defcustom gnus-nocem-verifyer 'mc-verify
   "*Function called to verify that the NoCeM message is valid.
 One likely value is `mc-verify'.  If the function in this variable
-isn't bound, the message will be used unconditionally.")
+isn't bound, the message will be used unconditionally."
+  :group 'gnus-nocem
+  :type '(radio (function-item mc-verify)
+		(function :tag "other")))
 
 ;;; Internal variables
 

@@ -26,11 +26,10 @@
 
 ;;; Code:
 
-(require 'gnus-load)
+(require 'gnus)
 (require 'gnus-art)
 (require 'message)
 (require 'gnus-start)
-(require 'gnus)
 (require 'gnus-range)
 
 ;;; User Variables:

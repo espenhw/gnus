@@ -25,11 +25,10 @@
 
 ;;; Code:
 
-(require 'gnus-load)
+(require 'gnus)
 (require 'gnus-start)
 (require 'gnus-int)
 (require 'gnus-range)
-(require 'gnus)
 
 ;;;
 ;;; Moving by comparing Message-ID's.

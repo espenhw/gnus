@@ -25,9 +25,8 @@
 
 ;;; Code:
 
-(require 'gnus-load)
-(require 'gnus-spec)
 (require 'gnus)
+(require 'gnus-spec)
 (require 'gnus-group)
 (require 'gnus-int)
 (require 'gnus-range)
