@@ -1,3 +1,25 @@
+2004-05-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-encode-function-alist): Renamed from
+	`rfc2047-encoding-function-alist' in order to avoid conflicting
+	with the old version.
+	(rfc2047-encode-region): Concatenate words containing non-ASCII
+	characters in structured fields; don't encode space-delimited
+	ASCII words even in unstructured fields; don't break words at
+	char-category boundaries.
+	(rfc2047-encode-1): New function.
+	(rfc2047-encode): Use it; encode text so that it occupies the
+	maximum width within 76-column; work correctly on Q encoding for
+	iso-2022-* charsets.
+	(rfc2047-fold-region): Use existing whitespace for LWSP; make it
+	sure not to break a line just after the header name.
+	(rfc2047-b-encode-region): Removed.
+	(rfc2047-b-encode-string): New function.
+	(rfc2047-q-encode-region): Removed.
+	(rfc2047-q-encode-string): New function.
+
+	* mm-util.el (mm-replace-in-string): New function.
+
 2004-05-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-msg.el (gnus-inews-make-draft-meta-information): Really

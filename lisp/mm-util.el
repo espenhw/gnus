@@ -66,6 +66,10 @@
 		(aset string idx to))
 	      (setq idx (1+ idx)))
 	    string)))
+     (replace-in-string
+      . (lambda (string regexp rep &optional literal)
+	  "See `replace-regexp-in-string', only the order of args differs."
+	  (replace-regexp-in-string regexp rep string nil literal)))
      (string-as-unibyte . identity)
      (string-make-unibyte . identity)
      (string-as-multibyte . identity)
