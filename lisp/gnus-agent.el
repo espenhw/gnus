@@ -584,10 +584,10 @@ manipulated as follows:
 ;;;###autoload
 (defun gnus-agentize ()
   "Allow Gnus to be an offline newsreader.
-The normal usage of this command is to put the following as the
-last form in your `.gnus.el' file:
 
-\(gnus-agentize)
+The gnus-agentize function is now called internally by gnus when
+gnus-agent is set.  If you wish to avoid calling gnus-agentize,
+customize gnus-agent to nil.
 
 This will modify the `gnus-setup-news-hook', and
 `message-send-mail-real-function' variables, and install the Gnus agent
@@ -2494,8 +2494,9 @@ FORCE is equivalent to setting the expiration predicates to true."
            (cons dir 
                  (symbol-value 'gnus-agent-expire-current-dirs))))
 
-    (if (eq 'DISABLE (gnus-agent-find-parameter group 
-                                                'agent-enable-expiration))
+    (if (and (not force)
+             (eq 'DISABLE (gnus-agent-find-parameter group 
+                                                     'agent-enable-expiration)))
         (gnus-message 5 "Expiry skipping over %s" group)
       (gnus-message 5 "Expiring articles in %s" group)
       (gnus-agent-load-alist group)
