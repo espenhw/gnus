@@ -131,6 +131,8 @@ If no encoding was done, nil is returned."
 
 (defun mm-body-encoding (charset &optional encoding)
   "Do Content-Transfer-Encoding and return the encoding of the current buffer."
+  (when (stringp encoding)
+    (setq encoding (intern (downcase encoding))))
   (let ((bits (mm-body-7-or-8))
 	(longp (mm-long-lines-p 1000)))
     (require 'message)
