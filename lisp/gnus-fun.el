@@ -239,6 +239,22 @@ colors of the displayed X-Faces."
     (gnus-convert-image-to-gray-x-face (concat file ".gif") 3)
     (delete-file (concat file ".gif"))))
 
+(defun gnus-respond-to-confirmation ()
+  "Respond to a Gmane confirmation message."
+  (interactive)
+  (gnus-summary-show-article 'raw)
+  (set-buffer gnus-article-buffer)
+  (let ((buffer-read-only nil))
+    (goto-char (point-min))
+    (gnus-article-goto-header "Original-To")
+    (replace-match "To:"))
+  (message-wide-reply)
+  (goto-char (point-min))
+  (gnus-article-goto-header "Cc")
+  (replace-match "From:")
+  (message-goto-body)
+  (delete-region (point) (point-max)))
+
 (provide 'gnus-fun)
 
 ;;; gnus-fun.el ends here

@@ -172,25 +172,25 @@
 		    datel nil))
 	    (pop datel))
 	  (when date
-	    (setq date (delete "" (split-string
-				   date "[-, \n\t\r    ]")))
-	    (if (or (member "AM" date)
-		    (member "PM" date))
-		(setq date (format
-			    "%s %s %s %s"
-			    (nth 1 date)
-			    (if (and (>= (length (nth 0 date)) 3)
-				     (assoc (downcase
-					     (substring (nth 0 date) 0 3))
-					    parse-time-months))
-				(substring (nth 0 date) 0 3)
-			      (car (rassq (string-to-number (nth 0 date))
-					  parse-time-months)))
-			    (nth 2 date) (nth 3 date)))
-	      (setq date (format "%s %s %s %s"
-				 (car (rassq (string-to-number (nth 1 date))
-					     parse-time-months))
-				 (nth 0 date) (nth 2 date) (nth 3 date)))))
+	    (setq date (delete "" (split-string date "[-, \n\t\r    ]")))
+	    (setq date
+		  (if (or (member "AM" date)
+			  (member "PM" date))
+		      (format
+		       "%s %s %s %s"
+		       (nth 1 date)
+		       (if (and (>= (length (nth 0 date)) 3)
+				(assoc (downcase
+					(substring (nth 0 date) 0 3))
+				       parse-time-months))
+			   (substring (nth 0 date) 0 3)
+			 (car (rassq (string-to-number (nth 0 date))
+				     parse-time-months)))
+		       (nth 2 date) (nth 3 date))
+		    (format "%s %s %s %s"
+			    (car (rassq (string-to-number (nth 1 date))
+					parse-time-months))
+			    (nth 0 date) (nth 2 date) (nth 3 date)))))
 	  (push
 	   (cons
 	    article

@@ -1,3 +1,11 @@
+2002-02-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-fun.el (gnus-respond-to-confirmation): New command.
+
+2002-02-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnultimate.el (nnultimate-retrieve-headers): Clean up.
+
 2002-02-18  Paul Jarc  <prj@po.cwru.edu>
 
 	* gnus-util.el (gnus-parent-id): Ignore trailing whitespace in the
