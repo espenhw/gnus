@@ -1,3 +1,13 @@
+2001-03-06 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-score.el (gnus-score-find-bnews): Maybe there is no
+	directory part.
+	(gnus-score-search-global-directories): Use file-directory-p.
+
+	* gnus-score.el (gnus-score-score-files-1): Use
+	gnus-kill-files-directory.
+	From Adrian Aichner <adrian@xemacs.org>.
+
 2001-03-05 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el (charset): Move here from gnus-sum.el.

@@ -2522,7 +2522,8 @@ score in GNUS-NEWSGROUP-SCORED by SCORE."
 	(push file out))))
     (or out
 	;; Return a dummy value.
-	(list "~/News/this.file.does.not.exist.SCORE"))))
+	(list (expand-file-name "this.file.does.not.exist.SCORE"
+				gnus-kill-files-directory)))))
 
 (defun gnus-score-file-regexp ()
   "Return a regexp that match all score files."
@@ -2560,8 +2561,8 @@ GROUP using BNews sys file syntax."
 	      ;; too much.
 	      (delete-char (min (1- (point-max)) klen))
 	    (goto-char (point-max))
-	    (search-backward (string directory-sep-char))
-	    (delete-region (1+ (point)) (point-min)))
+	    (if (search-backward (string directory-sep-char) nil t)
+		(delete-region (1+ (point)) (point-min))))
 	  ;; If short file names were used, we have to translate slashes.
 	  (goto-char (point-min))
 	  (let ((regexp (concat
@@ -2800,7 +2801,7 @@ The list is determined from the variable gnus-score-file-alist."
   (let (out)
     (while files
       ;; #### /$ Unix-specific?
-      (if (string-match "/$" (car files))
+      (if (file-directory-p (car files))
 	  (setq out (nconc (directory-files
 			    (car files) t
 			    (concat (gnus-score-file-regexp) "$"))))
