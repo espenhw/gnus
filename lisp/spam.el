@@ -1070,7 +1070,8 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
     (let ((score (or (spam-check-bogofilter-headers t)
 		     (spam-check-bogofilter t))))
       (message "Spamicity score %s" score)
-      (or score "0"))))
+      (or score "0"))
+    (gnus-summary-show-article)))
 
 (defun spam-check-bogofilter (&optional score)
   "Check the Bogofilter backend for the classification of this message"

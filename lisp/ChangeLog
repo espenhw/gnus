@@ -1,3 +1,8 @@
+2003-07-07  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-bogofilter-score): redisplay article normally
+	after spam-bogofilter-score is called
+
 2003-07-06  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.el (message-send-mail-with-sendmail): Handle
