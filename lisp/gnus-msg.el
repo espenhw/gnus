@@ -649,9 +649,9 @@ header line with the old Message-ID."
 (defun gnus-post-method (arg group &optional silent)
   "Return the posting method based on GROUP and ARG.
 If SILENT, don't prompt the user."
-  (let ((group-method
-	 (or (car (gnus-group-find-parameter group 'gnus-post-method t))
-	     (gnus-find-method-for-group group))))
+  (let ((gnus-post-method (or (gnus-parameter-post-method group)
+			      gnus-post-method))
+	(group-method (gnus-find-method-for-group group)))
     (cond
      ;; If the group-method is nil (which shouldn't happen) we use
      ;; the default method.

@@ -1582,6 +1582,28 @@ Use with caution.")
  :parameter-document "\
 The default charset to use in the group.")
 
+(gnus-define-group-parameter
+ post-method
+ :type list
+ :function-document
+ "Return a posting method for GROUP."
+ :variable gnus-post-method-alist
+ :variable-document
+ "Alist of regexps (to match group names) and method to be used when
+posting an article."
+ :variable-group gnus-group-foreign
+ :parameter-type
+ '(choice :tag "Posting Method"
+	  (const nil)
+	  (const current)
+	  (const native)
+	  (list :convert-widget
+		(lambda (widget)
+		  (list 'sexp :tag "Methods"
+			:value gnus-select-method))))
+ :parameter-document
+ "Posting method for this group.")
+
 (defcustom gnus-group-uncollapsed-levels 1
   "Number of group name elements to leave alone when making a short group name."
   :group 'gnus-group-visual

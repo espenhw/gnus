@@ -1,3 +1,12 @@
+2001-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.el (post-method): New group parameter.  It also provides
+	the user option `gnus-post-method-alist' and the internal function
+	`gnus-parameter-post-method'.
+
+	* gnus-msg.el (gnus-post-method): Bind the value of
+	`gnus-post-method' to the group parameter if it is defined.
+	
 2001-08-02  Simon Josefsson  <jas@extundo.com>
 
 	* smime.el (smime-extra-arguments): Removed.
