@@ -1,6 +1,7 @@
 2004-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-msg.el (gnus-summary-resend-message-edit): Call mime-to-mml.
+	Suggested by Hiroshi Fujishima <pooh@nature.tsukuba.ac.jp>.
 
 2004-01-25  Paul Jarc  <prj@po.cwru.edu>
 
