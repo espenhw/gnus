@@ -1,6 +1,7 @@
 2001-08-17 14:24:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Group Parameters): Document regexp substitution. 
+	(Group Parameters): Addition.
 
 2001-08-11 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Nevin Kapur <nevin@jhu.edu>

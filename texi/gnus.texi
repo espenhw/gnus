@@ -2702,7 +2702,33 @@ Display all articles, both read and unread.
 @item default
 Display the default visible articles, which normally includes unread and
 ticked articles.
+
+@item an array
+Display articles that satisfy a predicate.
+
+Here are some examples:
+
+@table @code
+@item [unread]
+Display only unread articles.
+
+@item [not expire]
+Display everything except expirable articles.
+
+@item [and (not reply) (not expirable)]
+Display everything except expirable and articles you've already
+responded to.
 @end table
+
+The available operators are @code{not}, @code{and} and @code{or}.
+Predicates include @code{tick}, @code{unsend}, @code{undownload},
+@code{unread}, @code{read}, @code{dormant}, @code{}, @code{}, @code{},
+@code{expire}, @code{reply}, @code{killed}, @code{bookmark},
+@code{score}, @code{save}, @code{cache}, @code{forward}, and
+@code{recent}.
+
+@end table
+
 
 @item comment
 Elements that look like @code{(comment . "This is a comment")}
