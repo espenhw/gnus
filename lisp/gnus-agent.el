@@ -2139,7 +2139,6 @@ The articles on which the expiration process runs are selected as follows:
   if ARTICLES is a list, just those articles.
 FORCE is equivalent to setting the expiration predicates to true."
   (interactive)
-(debug)
 
   (if (not group)
       (gnus-agent-expire articles group force)

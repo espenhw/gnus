@@ -1,3 +1,7 @@
+2003-02-26  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-expire-group): Remove debug.
+
 2003-02-25  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.el (message-sendmail-envelope-from): New option.
