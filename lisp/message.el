@@ -299,6 +299,11 @@ The provided functions are:
   :group 'message-forwarding
   :type 'boolean)
 
+(defcustom message-forward-show-mml t
+  "*If non-nil, forward messages are shown as mml.  Otherwise, forward messages are unchanged."
+  :group 'message-forwarding
+  :type 'boolean)
+
 (defcustom message-forward-before-signature t
   "*If non-nil, put forwarded message before signature, else after."
   :group 'message-forwarding
@@ -844,7 +849,7 @@ Defaults to `text-mode-abbrev-table'.")
 		"\\([" cite-prefix "]+[" cite-suffix "]*\\)?"
 		"[:>|}].*")
        (0 'message-cited-text-face))
-      ("<#/?\\(multipart\\|part\\|external\\).*>"
+      ("<#/?\\(multipart\\|part\\|external\\|mml\\).*>"
        (0 'message-mml-face))))
   "Additional expressions to highlight in Message mode.")
 
@@ -3997,9 +4002,12 @@ the message."
   "Forward the current message via mail.
 Optional NEWS will use news to forward instead of mail."
   (interactive "P")
-  (let ((cur (current-buffer))
-	(subject (message-make-forward-subject))
-	art-beg)
+  (let* ((cur (current-buffer))
+	 (subject (if message-forward-show-mml
+		      (message-make-forward-subject)
+		    (mail-decode-encoded-word-string
+		     (message-make-forward-subject))))
+	 art-beg)
     (if news
 	(message-news nil subject)
       (message-mail nil subject))
@@ -4009,17 +4017,27 @@ Optional NEWS will use news to forward instead of mail."
         (message-goto-body)
       (goto-char (point-max)))
     (if message-forward-as-mime
-	(insert "\n\n<#part type=message/rfc822 disposition=inline>\n")
+	(if message-forward-show-mml
+	    (insert "\n\n<#mml type=message/rfc822 disposition=inline>\n")
+	  (insert "\n\n<#part type=message/rfc822 disposition=inline"
+		  " buffer=\"" (buffer-name cur) "\">\n"))
       (insert "\n-------------------- Start of forwarded message --------------------\n"))
     (let ((b (point))
 	  e)
-      (mml-insert-buffer cur)
+      (if message-forward-show-mml
+	  (insert-buffer-substring cur)
+	(unless message-forward-as-mime
+	  (mml-insert-buffer cur)))
       (setq e (point))
       (if message-forward-as-mime
-	  (insert "<#/part>\n")
+	  (if message-forward-show-mml
+	      (insert "<#/mml>\n")
+	    (insert "<#/part>\n"))
 	(insert "\n-------------------- End of forwarded message --------------------\n"))
-      (when (and (not current-prefix-arg)
-		 message-forward-ignored-headers)
+      (when (and (or message-forward-show-mml
+		     (not message-forward-as-mime))
+	     (not current-prefix-arg)
+	     message-forward-ignored-headers)
 	(save-restriction
 	  (narrow-to-region b e)
 	  (goto-char b)

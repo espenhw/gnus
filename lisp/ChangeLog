@@ -1,3 +1,14 @@
+2000-04-27 20:32:06  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-summary-mail-forward): Use ARG.
+	(gnus-summary-post-forward): Ditto.
+	* message.el (message-forward-show-mml): New variable.
+	(message-forward): Use it.
+	* mml.el (mml-parse-1): Add tag mml.
+	(mml-read-part): Ditto.
+	(mml-generate-mime): Support reentance.
+	(mml-generate-mime-1): Support mml tag.
+
 2000-04-27  Dave Love  <fx@gnu.org>
 
 	* gnus-art.el: Don't bother to require custom, browse-url.

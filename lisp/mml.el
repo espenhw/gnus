@@ -94,12 +94,12 @@ one charsets.")
 	(push (nconc (mml-read-tag) (list (cons 'contents (mml-read-part))))
 	      struct))
        (t
-	(if (looking-at "<#part")
+	(if (or (looking-at "<#part") (looking-at "<#mml"))
 	    (setq tag (mml-read-tag))
 	  (setq tag (list 'part '(type . "text/plain"))
 		warn t))
 	(setq point (point)
-	      contents (mml-read-part)
+	      contents (mml-read-part (eq 'mml (car tag)))
 	      charsets (mm-find-mime-charset-region point (point)))
 	(when (memq nil charsets)
 	  (if (or (memq 'unknown-encoding mml-confirmation-set)
@@ -204,14 +204,17 @@ one charsets.")
     (skip-chars-forward " \t\n")
     (cons (intern name) (nreverse contents))))
 
-(defun mml-read-part ()
-  "Return the buffer up till the next part, multipart or closing part or multipart."
+(defun mml-read-part (&optional mml)
+  "Return the buffer up till the next part, multipart or closing part or multipart.
+If MML is non-nil, return the buffer up till the colsing message."
   (let ((beg (point)))
     ;; If the tag ended at the end of the line, we go to the next line.
     (when (looking-at "[ \t]*\n")
       (forward-line 1))
     (if (re-search-forward
-	 "<#\\(/\\)?\\(multipart\\|part\\|external\\)." nil t)
+	 (if mml
+	     "<#\\(/\\)\\(mml\\)."
+	   "<#\\(/\\)?\\(multipart\\|part\\|external\\|mml\\).") nil t)
 	(prog1
 	    (buffer-substring-no-properties beg (match-beginning 0))
 	  (if (or (not (match-beginning 1))
@@ -228,7 +231,7 @@ one charsets.")
 (defun mml-generate-mime ()
   "Generate a MIME message based on the current MML document."
   (let ((cont (mml-parse))
-	(mml-multipart-number 0))
+	(mml-multipart-number mml-multipart-number))
     (if (not cont)
 	nil
       (with-temp-buffer
@@ -241,7 +244,7 @@ one charsets.")
 
 (defun mml-generate-mime-1 (cont)
   (cond
-   ((eq (car cont) 'part)
+   ((or (eq (car cont) 'part) (eq (car cont) 'mml))
     (let (coded encoding charset filename type)
       (setq type (or (cdr (assq 'type cont)) "text/plain"))
       (if (member (car (split-string type "/")) '("text" "message"))
@@ -252,6 +255,8 @@ one charsets.")
 	     ((and (setq filename (cdr (assq 'filename cont)))
 		   (not (equal (cdr (assq 'nofile cont)) "yes")))
 	      (mm-insert-file-contents filename))
+	     ((eq 'mml (car cont))
+	      (insert (cdr (assq 'contents cont))))
 	     (t
 	      (save-restriction
 		(narrow-to-region (point) (point))
@@ -259,22 +264,21 @@ one charsets.")
 		;; Remove quotes from quoted tags.
 		(goto-char (point-min))
 		(while (re-search-forward
-			"<#!+/?\\(part\\|multipart\\|external\\)" nil t)
+			"<#!+/?\\(part\\|multipart\\|external\\|mml\\)" nil t)
 		  (delete-region (+ (match-beginning 0) 2)
 				 (+ (match-beginning 0) 3))))))
-	    (when (string= (car (split-string type "/")) "message")
-	      ;; message/rfc822 parts have to have their heads encoded.
-	      (save-restriction
-		(message-narrow-to-head)
-		(let ((rfc2047-header-encoding-alist nil))
-		  (mail-encode-encoded-word-buffer))))
-	    (setq charset (mm-encode-body))
-	    (setq encoding (mm-body-encoding
-			    charset
-			    (if (string= (car (split-string type "/"))
-					 "message")
-				'8bit
-			      (cdr (assq 'encoding cont)))))
+	    (cond 
+	     ((eq (car cont) 'mml)
+	      (let ((mml-boundary (funcall mml-boundary-function
+					   (incf mml-multipart-number))))
+		(mml-to-mime))
+	      (setq encoding (mm-body-7-or-8)))
+	     ((string= (car (split-string type "/")) "message")
+	      (setq encoding (mm-body-7-or-8)))
+	     (t 
+	      (setq charset (mm-encode-body))
+	      (setq encoding (mm-body-encoding
+			      charset (cdr (assq 'encoding cont))))))
 	    (setq coded (buffer-string)))
 	(mm-with-unibyte-buffer
 	  (cond
@@ -666,7 +670,7 @@ one charsets.")
       (goto-char (point-min))
       ;; Quote parts.
       (while (re-search-forward
-	      "<#/?!*\\(multipart\\|part\\|external\\)" nil t)
+	      "<#/?!*\\(multipart\\|part\\|external\\|mml\\)" nil t)
 	;; Insert ! after the #.
 	(goto-char (+ (match-beginning 0) 2))
 	(insert "!")))))
