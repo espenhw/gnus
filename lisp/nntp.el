@@ -29,6 +29,7 @@
 (require 'nnheader)
 (require 'nnoo)
 (require 'gnus-util)
+(require 'gnus)
 
 (nnoo-declare nntp)
 

@@ -1,3 +1,8 @@
+2004-08-18  Jesper Harder  <harder@ifa.au.dk>
+
+	* nntp.el: Add (require 'gnus) due to reference to
+	`gnus-directory'.  Reported by Matt Swift <swift@alum.mit.edu>.
+
 2004-08-18  Florian Weimer  <fw@deneb.enyo.de>
 
 	* gnus-sum.el (gnus-summary-force-verify-and-decrypt): Bind
