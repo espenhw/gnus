@@ -7714,7 +7714,7 @@ the same manner:
 @table @kbd
 @item K b
 @kindex K b (Summary)
-Make all the @sc{mime} parts have buttons in from of them.  This is
+Make all the @sc{mime} parts have buttons in front of them.  This is
 mostly useful if you wish to save (or perform other actions) on inlined
 parts.
 
