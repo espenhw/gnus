@@ -1,3 +1,7 @@
+2000-09-13 23:58:40  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* webmail.el: Hotmail updated. Add X-Gnus-Webmail.
+
 2000-09-13 21:41:25  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-article-setup-buffer): Set

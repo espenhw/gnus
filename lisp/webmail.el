@@ -77,8 +77,8 @@
      (login-url
       "http://%s/cgi-bin/dologin?login=%s&passwd=%s&enter=Sign+in&sec=no&curmbox=ACTIVE&_lang=&js=yes&id=2&tw=-10000&beta="
       webmail-aux user password)
-     (login-snarf . webmail-hotmail-login)
-     (list-url "%s" webmail-aux)
+     ;;(login-snarf . webmail-hotmail-login)
+     ;;(list-url "%s" webmail-aux)
      (list-snarf . webmail-hotmail-list)
      (article-snarf . webmail-hotmail-article)
      (trash-url 
@@ -407,7 +407,7 @@
       (webmail-error "login@1"))
     (goto-char (point-min))
     (if (re-search-forward 
-	 "\\(/cgi-bin/HoTMaiL\\?[^\"]*curmbox=ACTIVE[^\"]*\\)" nil t)
+	 "\\(/cgi-bin/HoTMaiL\\?[^\"]*a=b[^\"]*\\)" nil t)
 	(setq webmail-aux (concat "http://" site (match-string 1)))
       (webmail-error "login@2"))))
 
@@ -463,7 +463,10 @@
   (goto-char (point-min))
   (insert "\n\n")
   (if (not (looking-at "\n*From "))
-      (insert "From nobody " (current-time-string) "\n"))
+      (insert "From nobody " (current-time-string) "\n")
+    (forward-line))
+  (insert "X-Gnus-Webmail: " (symbol-value 'user)
+	  "@" (symbol-name webmail-type) "\n")
   (mm-append-to-file (point-min) (point-max) file))
 
 (defun webmail-hotmail-article-old (file id)
@@ -557,8 +560,10 @@
       (goto-char (point-min))
       ;; Some blank line to seperate mails.
       (insert "\n\nFrom nobody " (current-time-string) "\n")
+      (insert "X-Gnus-Webmail: " (symbol-value 'user)
+	      "@" (symbol-name webmail-type) "\n")
       (if id
-	  (insert (format "Message-ID: <%s@hotmail.com>\n" id)))
+	  (insert (format "X-Message-ID: <%s@hotmail.com>\n" id)))
       (unless (looking-at "$") 
 	(if (search-forward "\n\n" nil t)
 	    (forward-line -1)
@@ -686,8 +691,10 @@
       (goto-char (point-min))
       ;; Some blank line to seperate mails.
       (insert "\n\nFrom nobody " (current-time-string) "\n")
+      (insert "X-Gnus-Webmail: " (symbol-value 'user)
+	      "@" (symbol-name webmail-type) "\n")
       (if id
-	  (insert (format "Message-ID: <%s@yahoo.com>\n" id)))
+	  (insert (format "X-Message-ID: <%s@yahoo.com>\n" id)))
       (unless (looking-at "$") 
 	(if (search-forward "\n\n" nil t)
 	    (forward-line -1)
@@ -860,8 +867,10 @@
       (goto-char (point-min))
       ;; Some blank line to seperate mails.
       (insert "\n\nFrom nobody " (current-time-string) "\n")
+      (insert "X-Gnus-Webmail: " (symbol-value 'user)
+	      "@" (symbol-name webmail-type) "\n")
       (if id
-	  (insert (format "Message-ID: <%s@%s>\n" id webmail-address)))
+	  (insert (format "X-Message-ID: <%s@%s>\n" id webmail-address)))
       (unless (looking-at "$") 
 	(if (search-forward "\n\n" nil t)
 	    (forward-line -1)
@@ -986,8 +995,10 @@
       (goto-char (point-min))
       ;; Some blank line to seperate mails.
       (insert "\n\nFrom nobody " (current-time-string) "\n")
+      (insert "X-Gnus-Webmail: " (symbol-value 'user)
+	      "@" (symbol-name webmail-type) "\n")
       (if id
-	  (insert (format "Message-ID: <%s@%s>\n" id webmail-address)))
+	  (insert (format "X-Message-ID: <%s@%s>\n" id webmail-address)))
       (unless (looking-at "$") 
 	(if (search-forward "\n\n" nil t)
 	    (forward-line -1)
@@ -1066,6 +1077,8 @@
       (replace-match "\n"))
     (goto-char (point-min))
     (insert "\n\nFrom nobody " (current-time-string) "\n")
+    (insert "X-Gnus-Webmail: " (symbol-value 'user)
+	    "@" (symbol-name webmail-type) "\n")
     (mm-append-to-file (point-min) (point-max) file)))
 
 (provide 'webmail)
