@@ -185,8 +185,8 @@ displayed, no centering will be performed."
   ;; Setup the display table -- like gnus-summary-setup-display-table,
   ;; but done in an XEmacsish way.
   (let ((table (make-display-table))
-	;; Nix out all the control chars...
 	(i 32))
+    ;; Nix out all the control chars...
     (while (>= (setq i (1- i)) 0)
       (aset table i [??]))
     ;; ... but not newline and cr, of course.  (cr is necessary for the
@@ -197,8 +197,8 @@ displayed, no centering will be performed."
     (let ((i 256))
       (while (>= (setq i (1- i)) 127)
 	;; Only modify if the entry is nil.
-	(or (aref table i)
-	    (aset table i [??]))))
+	(unless (aref table i)
+	  (aset table i [??]))))
     (add-spec-to-specifier current-display-table table (current-buffer) nil)))
 
 (defun gnus-xmas-add-hook (hook function &optional append local)

@@ -1,3 +1,36 @@
+Wed Apr  2 14:12:45 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.40 is released.
+
+Wed Apr  2 13:17:16 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-check-bogus-newsgroups): Supply a help
+	param. 
+	
+	* message.el (message-bounce): Remove the right portion of
+	"simple" bounces.
+
+	* gnus-art.el (gnus-read-save-file-name): Would bug out when
+	saving multiple articles.
+
+	* gnus-sum.el (gnus-summary-update-article-line): Insert the
+	correct subject.
+
+Tue Apr  1 11:21:48 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-score.el (gnus-score-find-hierarchical): Translate file
+	chars. 
+
+	* gnus-topic.el (gnus-topic-goto-missing-topic): Bugola.
+	(gnus-topic-forward-topic): New function.
+	(gnus-topic-goto-missing-topic): Use it.
+
+	* nnmh.el (nnmh-active-number): Make sure the directory exist.
+	(nnmh-request-accept-article): Bizarre problem.
+
+	* gnus-topic.el (gnus-topic-goto-missing-group): Don't double
+	topics. 
+
 Mon Mar 31 17:30:10 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.39 is released.

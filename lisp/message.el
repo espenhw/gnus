@@ -3392,8 +3392,7 @@ you."
 	     (forward-line 2))
 	(and (re-search-forward message-unsent-separator nil t)
 	     (forward-line 1))
-	(and (search-forward "\n\n" nil t)
-	     (re-search-forward "^Return-Path:.*\n" nil t)))
+	(re-search-forward "^Return-Path:.*\n" nil t))
     ;; We remove everything before the bounced mail.
     (delete-region
      (point-min)

@@ -254,6 +254,20 @@ with some simple extensions.
 	prev
       (caaadr parentt))))
 
+(defun gnus-topic-forward-topic (num)
+  "Go to the next topic on the same level as the current one."
+  (let* ((topic (gnus-current-topic))
+	 (way (if (< num 0) 'gnus-topic-previous-topic
+		'gnus-topic-next-topic))
+	 (num (abs num)))
+    (while (and (not (zerop num))
+		(setq topic (funcall way topic)))
+      (when (gnus-topic-goto-topic topic)
+	(decf num)))
+    (unless (zerop num)
+      (goto-char (point-max)))
+    num))
+
 (defun gnus-topic-find-topology (topic &optional topology level remove)
   "Return the topology of TOPIC."
   (unless topology
@@ -557,8 +571,8 @@ articles in the topic and its subtopics."
 	(when (gnus-group-goto-group (pop g) t)
 	  (forward-line 1)
 	  (setq unfound nil)))
-      (when unfound
-	(gnus-topic-goto-missing-topic topic)
+      (when (and unfound
+		 (not (gnus-topic-goto-missing-topic topic)))
 	(gnus-topic-insert-topic-line
 	 topic t t (car (gnus-topic-find-topology topic)) nil 0)))))
 
@@ -571,10 +585,14 @@ articles in the topic and its subtopics."
 	   (tp (reverse (cddr top))))
       (while (not (equal (caaar tp) topic))
 	(setq tp (cdr tp)))
+      (pop tp)
       (while (and tp
-		  (not (gnus-topic-goto-topic (caar (pop tp))))))
-      (unless tp
-	(gnus-topic-goto-missing-topic (cadr top))))))
+		  (not (gnus-topic-goto-topic (caaar tp))))
+	(pop tp))
+      (if tp
+	  (gnus-topic-forward-topic 1)
+	(gnus-topic-goto-missing-topic (caadr top))))
+    nil))
 
 (defun gnus-topic-update-topic-line (topic-name &optional reads)
   (let* ((top (gnus-topic-find-topology topic-name))

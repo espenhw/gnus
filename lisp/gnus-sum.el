@@ -2193,8 +2193,8 @@ This is all marks except unread, ticked, dormant, and expirable."
   ;; We start from the standard display table, if any.
   (let ((table (or (copy-sequence standard-display-table)
 		   (make-display-table)))
-	;; Nix out all the control chars...
 	(i 32))
+    ;; Nix out all the control chars...
     (while (>= (setq i (1- i)) 0)
       (aset table i [??]))
     ;; ... but not newline and cr, of course.  (cr is necessary for the
@@ -2205,8 +2205,8 @@ This is all marks except unread, ticked, dormant, and expirable."
     (let ((i 256))
       (while (>= (setq i (1- i)) 127)
 	;; Only modify if the entry is nil.
-	(or (aref table i)
-	    (aset table i [??]))))
+	(unless (aref table i)
+	  (aset table i [??]))))
     (setq buffer-display-table table)))
 
 (defun gnus-summary-setup-buffer (group)
@@ -2948,7 +2948,8 @@ If NO-DISPLAY, don't generate a summary buffer."
 		   (gnus-data-find-list
 		    article
 		    (gnus-data-list t)))))
-	      (error ""))
+	      ;; Error on the side of excessive subjects.
+	      (error (mail-header-subject header)))
 	    (mail-header-subject header))
 	   (mail-header-subject header)
 	 "")

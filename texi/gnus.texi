@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.39 Manual
+@settitle Gnus 5.4.40 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.39 Manual
+@title Gnus 5.4.40 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.39.
+This manual corresponds to Gnus 5.4.40.
 
 @end ifinfo
 
@@ -641,8 +641,10 @@ Use the mantra ``dingnusdingnusdingnus'' to achieve permanent bliss.
 What Gnus does when it encounters a new group is determined by the
 @code{gnus-subscribe-newsgroup-method} variable.
 
-This variable should contain a function.  Some handy pre-fab values
-are:
+This variable should contain a function.  This function will be called
+with the name of the new group as the only parameter.
+
+Some handy pre-fab functions are:
 
 @table @code
 
@@ -4727,7 +4729,7 @@ number, you could do something like:
 (setq gnus-thread-sort-functions 
       '(gnus-thread-sort-by-number
         gnus-thread-sort-by-subject
-        gnus-thread-sort-by-score))
+        gnus-thread-sort-by-total-score))
 @end lisp
 
 The threads that have highest score will be displayed first in the
@@ -13437,7 +13439,7 @@ The biggest problem I have with email spam is that it comes in under
 false pretenses.  I press @kbd{g} and Gnus merrily informs me that I
 have 10 new emails.  I say ``Golly gee!  Happy is me!'' and selects the
 mail group, only to find two pyramid schemes, seven advertisements
-``New!  Miracle tonic for growing full, lustrouos hair on your toes!''
+(``New!  Miracle tonic for growing full, lustrouos hair on your toes!'')
 and one mail asking me to repent and find some god.
 
 This is annoying.
@@ -13472,6 +13474,20 @@ This says that all mail to this address is suspect, but if it has a
 @code{Subject} that starts with a @samp{Re:} or has a @code{References}
 header, it's probably ok.  All the rest goes to the @samp{spam} group.
 (This idea probably comes from Tim Pierce.)
+
+In addition, many mail spammers talk directly to your @code{smtp} server
+and do not include your email address explicitly in the @code{To}
+header.  Why they do this is unknown---perhaps it's to thwart this
+twarting scheme?  In any case, this is trivial to deal with---you just
+put anything not addressed to you in the @samp{spam} group by ending
+your fancy split rule in this way:
+
+@lisp
+(
+ ...
+ (to "larsi" "misc")
+ "spam")
+@end lisp
 
 In my experience, this will sort virtually everything into the right
 group.  You still have to check the @samp{spam} group from time to time to
@@ -13969,6 +13985,7 @@ Andre Deparade,
 Ulrik Dickow,
 Dave Disser,
 Joev Dubach,
+Michael Welsh Duggan,
 Paul Eggert,
 Michael Ernst,
 Luc Van Eycken,
@@ -14021,6 +14038,7 @@ John McClary Prevost,
 Colin Rafferty,
 Bart Robinson,
 Jason Rumney,
+Dewey M. Sasser,
 Loren Schall,
 Dan Schmidt,
 Ralph Schleicher,
@@ -14029,6 +14047,7 @@ Randal L. Schwartz,
 Danny Siu, 
 Paul D. Smith,
 Jeff Sparkes,
+Toby Speight,
 Michael Sperber,
 Richard Stallman,
 Greg Stark, 
@@ -15035,6 +15054,7 @@ backends (this is written in stone), the format of the score files
 and general method of operations.
 
 @menu 
+* Gnus Utility Functions::   Common functions and variable to use.
 * Backend Interface::        How Gnus communicates with the servers.
 * Score File Syntax::        A BNF definition of the score file standard.
 * Headers::                  How Gnus stores headers internally.
@@ -15043,6 +15063,114 @@ and general method of operations.
 * Emacs/XEmacs Code::        Gnus can be run under all modern Emacsen.
 * Various File Formats::     Formats of files that Gnus use.
 @end menu
+
+
+@node Gnus Utility Functions
+@subsection Gnus Utility Functions
+@cindex Gnus utility functions
+@cindex utility functions
+@cindex functions
+@cindex internal variables
+
+When writing small functions to be run from hooks (and stuff), it's
+vital to have access to the Gnus internal functions and variables.
+Below is a list of the most common ones.
+
+@table @code
+
+@item gnus-newsgroup-name
+@vindex gnus-newsgroup-name
+This variable holds the name of the current newsgroup.
+
+@item gnus-find-method-for-group
+@findex gnus-find-method-for-group
+A function that returns the select method for @var{group}.
+
+@item gnus-group-real-name
+@findex gnus-group-real-name
+Takes a full (prefixed) Gnus group name, and returns the unprefixed
+name.
+
+@item gnus-group-prefixed-name
+@findex gnus-group-prefixed-name
+Takes an unprefixed group name and a select method, and returns the full
+(prefixed) Gnus group name.
+
+@item gnus-get-info
+@findex gnus-get-info
+Return the group info list for @var{group}.
+
+@item gnus-add-current-to-buffer-list
+@findex gnus-add-current-to-buffer-list
+Add the current buffer to the list of buffers to be killed on Gnus
+exit.
+
+@item gnus-continuum-version
+@findex gnus-continuum-version
+Take a Gnus version string as a parameter and returns a floating point
+number.  Earlier versions will always get a lower number than later
+versions.
+
+@item gnus-group-read-only-p
+@findex gnus-group-read-only-p
+Say whether @var{group} is read-only or not.
+
+@item gnus-news-group-p
+@findex gnus-news-group-p
+Say whether @var{group} came from a news backend.
+
+@item gnus-ephemeral-group-p
+@findex gnus-ephemeral-group-p
+Say whether @var{group} is ephemeral or not.
+
+@item gnus-server-to-method
+@findex gnus-server-to-method
+Return the select method corresponding to @var{server}.
+
+@item gnus-server-equal
+@findex gnus-server-equal
+Say whether two virtual servers are equal.
+
+@item gnus-group-native-p
+@findex gnus-group-native-p
+Say whether @var{group} is native or not.
+
+@item gnus-group-secondary-p
+@findex gnus-group-secondary-p
+Say whether @var{group} is secondary or not.
+
+@item gnus-group-foreign-p
+@findex gnus-group-foreign-p
+Say whether @var{group} is foreign or not.
+
+@item group-group-find-parameter
+@findex group-group-find-parameter
+Return the parameter list of @var{group}.  If given a second parameter,
+return the value of that parameter for @var{group}.
+
+@item gnus-group-set-parameter
+@findex gnus-group-set-parameter
+Takes three parameters; @var{group}, @var{parameter} and @var{value}.
+
+@item gnus-narrow-to-body
+@findex gnus-narrow-to-body
+Narrow the current buffer to the body of the article.
+
+@item gnus-check-backend-function
+@findex gnus-check-backend-function
+Takes two parameters, @var{function} and @var{group}.  If the backend
+@var{group} comes from supports @var{function}, return non-@code{nil}.
+
+@lisp
+(gnus-check-backend-function "request-scan" "nnml:misc")
+=> t
+@end lisp
+
+@item gnus-read-method
+@findex gnus-read-method
+Prompt the user for a select method.
+
+@end table
 
 
 @node Backend Interface
@@ -16041,6 +16169,67 @@ parameters    = "(" *elisp-forms ")"
 Actually that @samp{marks} rule is a fib.  A @samp{marks} is a
 @samp{<string>} consed on to a @samp{range}, but that's a bitch to say
 in pseudo-BNF.
+
+If you have a Gnus info and want to access the elements, Gnus offers a
+series of macros for getting/setting these elements.
+
+@table @code
+@item gnus-info-group
+@itemx gnus-info-set-group
+@findex gnus-info-group
+@findex gnus-info-set-group
+Get/set the group name.
+
+@item gnus-info-rank
+@itemx gnus-info-set-rank
+@findex gnus-info-rank
+@findex gnus-info-set-rank
+Get/set the group rank.
+
+@item gnus-info-level
+@itemx gnus-info-set-level
+@findex gnus-info-level
+@findex gnus-info-set-level
+Get/set the group level.
+
+@item gnus-info-score
+@itemx gnus-info-set-score
+@findex gnus-info-score
+@findex gnus-info-set-score
+Get/set the group score.
+
+@item gnus-info-read
+@itemx gnus-info-set-read
+@findex gnus-info-read
+@findex gnus-info-set-read
+Get/set the ranges of read articles.
+
+@item gnus-info-marks
+@itemx gnus-info-set-marks
+@findex gnus-info-marks
+@findex gnus-info-set-marks
+Get/set the lists of ranges of marked articles.
+
+@item gnus-info-method
+@itemx gnus-info-set-method
+@findex gnus-info-method
+@findex gnus-info-set-method
+Get/set the group select method.
+
+@item gnus-info-params
+@itemx gnus-info-set-params
+@findex gnus-info-params
+@findex gnus-info-set-params
+Get/set the group parameters.
+@end table
+
+All the getter functions take one parameter---the info list.  The setter
+functions take two parameters---the info list and the new value.
+
+The last three elements in the group info aren't mandatory, so it may be
+necessary to extend the group info before setting the element.  If this
+is necessary, you can just pass on a non-@code{nil} third parameter to
+the three final setter functions to have this happen automatically.
 
 
 @node Emacs/XEmacs Code

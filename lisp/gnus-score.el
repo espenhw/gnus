@@ -2502,8 +2502,9 @@ This includes the score file for the group and all its parents."
 	all
       (mapcar
        (lambda (file)
-	 (concat (file-name-directory file) prefix
-		 (file-name-nondirectory file)))
+	 (nnheader-translate-file-chars
+	  (concat (file-name-directory file) prefix
+		  (file-name-nondirectory file))))
        all))))
 
 (defun gnus-score-file-rank (file)

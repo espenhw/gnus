@@ -623,3 +623,6 @@ article numerical order.
 bind to a key.
 
 * sorting by score is wrong when using sparse threads.
+
+* a command to fetch an arbitrary article -- without having to be
+in the summary buffer.

@@ -1398,13 +1398,15 @@ This format is defined by the `gnus-article-time-format' variable."
 
 (defun gnus-read-save-file-name (prompt &optional filename
 					function group headers variable)
-  (let ((default-name (funcall function group headers
-			       (symbol-value variable)))
+  (let ((default-name
+	  (funcall function group headers (symbol-value variable)))
 	result)
     (setq
      result
      (cond
       ((eq filename 'default)
+       default-name)
+      ((eq filename t)
        default-name)
       (filename filename)
       (t

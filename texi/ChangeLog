@@ -1,3 +1,14 @@
+Wed Apr  2 11:48:44 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Sorting): Use total score.
+
+Tue Apr  1 11:44:57 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Subscription Methods): Addition.
+	(Group Info): Addition.
+	(Gnus Utility Functions): New.
+	(Thwarting Email Spam): Addition.
+
 Mon Mar 31 16:15:54 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* message.texi (Various Message Variables): Addition.

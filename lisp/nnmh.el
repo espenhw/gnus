@@ -301,11 +301,11 @@
 		 noinsert)))
 	(and
 	 (nnmail-activate 'nnmh)
-	 (let ((resu|t (nnmail-article-group 'nnmh-active-number)))
-	   (if (and (null result)
+	 (let ((res (nnmail-article-group 'nnmh-active-number)))
+	   (if (and (null res)
 		    (yes-or-no-p "Moved to `junk' group; delete article? "))
 	       'junk
-	     (car (nnmh-save-mail result noinsert))))))
+	     (car (nnmh-save-mail res noinsert))))))
     (when (and last nnmail-cache-accepted-message-ids)
       (nnmail-cache-close))))
 
@@ -443,21 +443,22 @@
 
 (defun nnmh-active-number (group)
   "Compute the next article number in GROUP."
-  (let ((active (cadr (assoc group nnmh-group-alist))))
+  (let ((active (cadr (assoc group nnmh-group-alist)))
+	(dir (nnmail-group-pathname group nnmh-directory)))
     (unless active
       ;; The group wasn't known to nnmh, so we just create an active
       ;; entry for it.
       (setq active (cons 1 0))
       (push (list group active) nnmh-group-alist)
+      (unless (file-exists-p dir)
+	(make-directory dir))
       ;; Find the highest number in the group.
       (let ((files (sort
 		    (mapcar
 		     (lambda (f)
 		       (string-to-int f))
-		     (directory-files
-		      (nnmail-group-pathname group nnmh-directory)
-		      nil "^[0-9]+$"))
-		     '>)))
+		     (directory-files dir nil "^[0-9]+$"))
+		    '>)))
 	(when files
 	  (setcdr active (car files)))))
     (setcdr active (1+ (cdr active)))
