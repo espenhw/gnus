@@ -102,9 +102,15 @@ List of pairs (KEY . GLYPH) where KEY is either a filename or an URL.")
 
 ;;; Functions:
 
+(defsubst gnus-picon-split-address (address)
+  (setq address (split-string address "@"))
+  (if (cdr address)
+      (cons (car address) (split-string (nth 1 address) "\\."))
+    (split-string (car address) "\\.")))
+
 (defun gnus-picon-find-face (address directories &optional exact)
   (let* ((databases gnus-picon-databases)
-	 (address (split-string address "[.@]"))
+	 (address (gnus-picon-split-address address))
 	 (user (pop address))
 	 database directory found instance base)
     (while (and (not found)
@@ -156,12 +162,12 @@ GLYPH can be either a glyph or a string."
   (gnus-with-article-headers
     (let ((addresses
 	   (mail-header-parse-addresses (mail-fetch-field header)))
-	  (first t)
-	  spec file)
+	  first spec file)
       (dolist (address addresses)
-	(setq address (car address))
+	(setq address (car address)
+	      first t)
 	(when (stringp address)
-	  (setq spec (split-string address "[.@]"))
+	  (setq spec (gnus-picon-split-address address))
 	  (when (setq file (gnus-picon-find-face
 			    address gnus-picon-user-directories))
 	    (setcar spec (gnus-picon-create-glyph file)))

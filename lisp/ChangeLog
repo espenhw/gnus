@@ -3,6 +3,10 @@
 	* ietf-drums.el (ietf-drums-parse-addresses): Recover from errors.
 
 	* gnus-picon.el (gnus-picon-transform-address): Skip bad addresses.
+	(gnus-picon-split-address): New function.
+	(gnus-picon-find-face): Use it.
+	(gnus-picon-transform-address): Use it. Set first to t for each
+	address.
 
 	* gnus-art.el (gnus-with-article-headers): Move to here. Define
 	the macro then use it.
