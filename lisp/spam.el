@@ -198,6 +198,13 @@ Such articles will be transmitted to `bogofilter -s' on group exit."
   :type 'string
   :group 'spam-ifile)
 
+(defcustom spam-ifile-ham-category nil
+  "Name of the ham ifile category.  If nil, the current group name will
+be used."
+  :type '(choice (string :tag "Use a fixed category")
+                (const :tag "Use the current group name"))
+  :group 'spam-ifile)
+
 (defcustom spam-ifile-all-categories nil
   "Whether the ifile check will return all categories, or just spam.
 Set this to t if you want to use the spam-split invocation of ifile as
@@ -644,7 +651,7 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
    nil
    (lambda (article)
      (spam-ifile-register-with-ifile 
-      (spam-get-article-as-string article) nil))))
+      (spam-get-article-as-string article) spam-ifile-ham-category))))
 
 
 ;;;; spam-stat

@@ -1,6 +1,8 @@
 2003-01-21  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-group-ham-processor-bogofilter-p): fixed bug
+	(spam-ifile-register-ham-routine, spam-ifile-ham-category): new
+	option to make ifile a purely binary classifier
 
 2003-01-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
