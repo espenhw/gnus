@@ -1006,6 +1006,13 @@ If RAW, don't highlight the article."
 				   "*MIME preview of ") (buffer-name))))
       (erase-buffer)
       (insert-buffer buf)
+      (let ((message-deletable-headers (if (message-news-p)
+					   nil
+					 message-deletable-headers)))
+	(message-generate-headers
+	 (copy-sequence (if (message-news-p)
+			    message-required-news-headers
+			  message-required-mail-headers))))
       (if (re-search-forward
 	   (concat "^" (regexp-quote mail-header-separator) "\n") nil t)
 	  (replace-match "\n"))

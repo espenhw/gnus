@@ -1,5 +1,7 @@
 2002-05-25  Simon Josefsson  <jas@extundo.com>
 
+	* mml.el (mml-preview): Generate some headers.
+
 	* gnus.el (gnus-large-newsgroup): Fix :type.
 
 	* nnimap.el (nnimap-nov-is-evil): Change default to t (because the
