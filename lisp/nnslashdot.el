@@ -194,8 +194,9 @@
     (save-excursion
       (set-buffer nntp-server-buffer)
       (erase-buffer)
-      (dolist (header nnslashdot-headers)
-	(nnheader-insert-nov (cdr header))))
+      (mm-with-unibyte-current-buffer
+       (dolist (header nnslashdot-headers)
+	 (nnheader-insert-nov (cdr header)))))
     'nov))
 
 (deffoo nnslashdot-sane-retrieve-headers (articles group)
@@ -291,8 +292,9 @@
     (save-excursion
       (set-buffer nntp-server-buffer)
       (erase-buffer)
-      (dolist (header nnslashdot-headers)
-	(nnheader-insert-nov (cdr header))))
+      (mm-with-unibyte-current-buffer
+	(dolist (header nnslashdot-headers)
+	  (nnheader-insert-nov (cdr header)))))
     'nov))
 
 (deffoo nnslashdot-request-group (group &optional server dont-check)
@@ -349,17 +351,18 @@
       (save-excursion
 	(set-buffer (or buffer nntp-server-buffer))
 	(erase-buffer)
-	(insert contents)
-	(goto-char (point-min))
-	(while (re-search-forward "\\(<br>\r?\\)+" nil t)
-	  (replace-match "<p>" t t))
-	(goto-char (point-min))
-	(insert "Content-Type: text/html\nMIME-Version: 1.0\n")
-	(insert "Newsgroups: " (caddr (assoc group nnslashdot-groups))
-		"\n")
-	(let ((header (cdr (assq article nnslashdot-headers))))
-	  (nnheader-insert-header header))
-	(nnheader-report 'nnslashdot "Fetched article %s" article)
+	(mm-with-unibyte-current-buffer
+	  (insert contents)
+	  (goto-char (point-min))
+	  (while (re-search-forward "\\(<br>\r?\\)+" nil t)
+	    (replace-match "<p>" t t))
+	  (goto-char (point-min))
+	  (insert "Content-Type: text/html\nMIME-Version: 1.0\n")
+	  (insert "Newsgroups: " (caddr (assoc group nnslashdot-groups))
+		  "\n")
+	  (let ((header (cdr (assq article nnslashdot-headers))))
+	    (nnheader-insert-header header))
+	  (nnheader-report 'nnslashdot "Fetched article %s" article))
 	(cons group article)))))
 
 (deffoo nnslashdot-close-server (&optional server)
