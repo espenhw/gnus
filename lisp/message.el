@@ -4098,8 +4098,12 @@ regexp varstr."
     (insert new)
     (goto-char (point-min))
     (widen)
-    (delete-char -1)
-    (insert "Mime-Version: 1.0\n")))
+    (forward-line -1)
+    (let ((beg (point))
+	  (line (buffer-substring (point) (progn (forward-line 1) (point)))))
+      (delete-region beg (point))
+      (insert "Mime-Version: 1.0\n")
+      (insert line))))
     
 (run-hooks 'message-load-hook)
 
