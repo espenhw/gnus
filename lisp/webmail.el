@@ -123,7 +123,7 @@
      (login-url
       content 
       ("%s" webmail-aux)
-      "user=%s&pw=%s&autologout=60&go="
+      "member_name=%s&pw=%s&go=&priv_opt_MyDeja99="
       user password)
      (list-url "http://www.deja.com/rg_gotomail.xp")
      (list-snarf . webmail-my-deja-list)
