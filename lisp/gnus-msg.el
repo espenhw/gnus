@@ -268,6 +268,20 @@ Gcc: header for archiving purposes."
   t)
 
 ;;;###autoload
+(defun gnus-button-mailto (address)
+  "Mail to ADDRESS."
+  (set-buffer (gnus-copy-article-buffer))
+  (gnus-setup-message 'message
+    (message-reply address)))
+
+;;;###autoload
+(defun gnus-button-reply (&optional to-address wide)
+  "Like `message-reply'."
+  (interactive)
+  (gnus-setup-message 'message
+    (message-reply to-address wide)))
+
+;;;###autoload
 (define-mail-user-agent 'gnus-user-agent
   'gnus-msg-mail 'message-send-and-exit
   'message-kill-buffer 'message-send-hook)

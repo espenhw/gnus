@@ -38,6 +38,10 @@
 (require 'wid-edit)
 (require 'mm-uu)
 
+(autoload 'gnus-msg-mail "gnus-msg" nil t)
+(autoload 'gnus-button-mailto "gnus-msg")
+(autoload 'gnus-button-reply "gnus-msg" nil t)
+
 (defgroup gnus-article nil
   "Article display."
   :link '(custom-manual "(gnus)The Article Buffer")
@@ -5000,7 +5004,7 @@ forbidden in URL encoding."
       (setq to (gnus-url-unhex-string url)))
     (setq args (cons (list "to" to) args)
           subject (cdr-safe (assoc "subject" args)))
-    (message-mail)
+    (gnus-msg-mail)
     (while args
       (setq func (intern-soft (concat "message-goto-" (downcase (caar args)))))
       (if (fboundp func)
@@ -5011,13 +5015,6 @@ forbidden in URL encoding."
     (if subject
         (message-goto-body)
       (message-goto-subject))))
-
-(defun gnus-button-mailto (address)
-  "Mail to ADDRESS."
-  (set-buffer (gnus-copy-article-buffer))
-  (message-reply address))
-
-(defalias 'gnus-button-reply 'message-reply)
 
 (defun gnus-button-embedded-url (address)
   "Activate ADDRESS with `browse-url'."
