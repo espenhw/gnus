@@ -1,5 +1,8 @@
 2001-10-19  Simon Josefsson  <jas@extundo.com>
 
+	* Makefile.in (clean): rm gnus.out.
+	(distclean): rm gnusconfig.tex (moved from "clean").
+
 	* gnus.texi (Using MIME): s/mime/MIME/ for PDF version.
 
 2001-10-19  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
