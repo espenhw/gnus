@@ -1,3 +1,7 @@
+2000-04-25 21:23:54  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* webmail.el: Fix yahoo mail.
+
 2000-04-25 20:12:17  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2047.el (rfc2047-dissect-region): Don't include LWS ahead of

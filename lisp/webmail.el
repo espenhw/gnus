@@ -82,21 +82,21 @@
       "%s&login=%s&f=33792&curmbox=ACTIVE&_lang=&foo=inbox&js=&page=&%s=on&_HMaction=MoveTo&tobox=trAsH&nullbox=" 
       webmail-aux user id))
     (yahoo
-     (paranoid cookie post)
+     (paranoid agent cookie post)
      (address . "mail.yahoo.com")
      (open-url "http://mail.yahoo.com/")
      (open-snarf . webmail-yahoo-open)
      (login-url;; yahoo will not accept GET
       content 
       ("%s" webmail-aux)
-      ".tries=1&.src=ym&.last=&promo=&lg=us&.intl=us&.bypass=&.chkP=Y&.done=http%%253a%%2F%%2Fedit.yahoo.com%%2Fconfig%%2Fmail%%253f.intl%%3D&login=%s&passwd=%s" 
+      ".tries=&.src=ym&.last=&promo=&.intl=&.bypass=&.partner=&.chkP=Y&.done=&login=%s&passwd=%s"
       user password)
      (login-snarf . webmail-yahoo-login)
      (list-url "%s&rb=Inbox&YN=1" webmail-aux)
      (list-snarf . webmail-yahoo-list)
      (article-snarf . webmail-yahoo-article)
      (trash-url 
-      "%s/ym/us/ShowFolder?YY=52107&inc=50&order=down&sort=date&pos=0&box=Inbox&DEL=Delete&destBox=&Mid=%s&destBox2="
+      "%s/ym/ShowFolder?YY=52107&inc=50&order=down&sort=date&pos=0&box=Inbox&DEL=Delete&destBox=&Mid=%s&destBox2="
       webmail-aux id))
     (netaddress
      (paranoid cookie post)
@@ -580,11 +580,11 @@
 
 (defun webmail-yahoo-login ()
   (goto-char (point-min))
-  (if (re-search-forward "http://[a-zA-Z][0-9]\\.mail\\.yahoo\\.com/" nil t)
+  (if (re-search-forward "http://[^/]+[0-9]\\.mail\\.yahoo\\.com/" nil t)
       (setq webmail-aux (match-string 0))
     (webmail-error "login@1"))
   (if (re-search-forward "YY=[0-9]+" nil t)
-      (setq webmail-aux (concat webmail-aux "ym/us/ShowFolder?"
+      (setq webmail-aux (concat webmail-aux "ym/ShowFolder?"
 				(match-string 0)))
     (webmail-error "login@2")))
 
@@ -600,7 +600,7 @@
       (webmail-error "list@1"))
     (goto-char (point-min))
     (while (re-search-forward 
-	    "bgcolor=\"#eeeeee\"\\|href=\"\\(/ym/us/ShowLetter\\?MsgId=\\([^&]+\\)&[^\"]*\\)\""
+	    "bgcolor=\"#eeeeee\"\\|href=\"\\(/ym/ShowLetter\\?MsgId=\\([^&]+\\)&[^\"]*\\)\""
 	    nil t)
       (if (setq url (match-string 1))
 	  (progn
