@@ -14427,7 +14427,7 @@ it's not as easy to work with them from outside Gnus as with
 @code{nnmaildir}.
 
 For configuring expiry and other things, @code{nnmaildir} uses group
-parameters slightly different from those of other mail backends.
+parameters slightly different from those of other mail back ends.
 
 @code{nnmaildir} uses a significant amount of memory to speed things up.
 (It keeps in memory some of the things that @code{nnml} stores in files
@@ -14437,11 +14437,11 @@ parameter to somthing small (0 would probably not work, but 1 probably
 would) to make it use less memory.
 
 Startup and shutdown are likely to be slower with @code{nnmaildir} than
-with other backends.  Everything in between is likely to be faster,
+with other back ends.  Everything in between is likely to be faster,
 depending in part on your filesystem.
 
 @code{nnmaildir} does not use @code{nnoo}, so you cannot use @code{nnoo}
-to write an @code{nnmaildir}-derived backend.
+to write an @code{nnmaildir}-derived back end.
 
 @end table
 
@@ -22703,9 +22703,31 @@ are reading.
 
 @item back end
 @cindex back end
-Gnus gets fed articles from a number of back ends, both news and mail
-back ends.  Gnus does not handle the underlying media, so to speak---this
-is all done by the back ends.
+Gnus considers mail and news to be mostly the same, really.  The only
+difference is how to access the actual articles.  News articles are
+commonly fetched via the protocol NNTP, whereas mail messages could be
+read from a file on the local disk.  The internal architecture of Gnus
+thus comprises a `front end' and a number of `back ends'.  Internally,
+when you enter a group (by hitting @key{RET}, say), you thereby invoke
+a function in the front end in Gnus.  The front end then `talks' to a
+back end and says things like ``Give me the list of articles in the foo
+group'' or ``Show me article number 4711''.
+
+So a back end mainly defines either a protocol (the @code{nntp} back end
+accesses news via NNTP, the @code{nnimap} back end accesses mail via
+IMAP) or a file format and directory layout (the @code{nnspool} back end
+accesses news via the common `spool directory' format, the @code{nnml}
+back end access mail via a file format and directory layout that's
+quite similar).
+
+Gnus does not handle the underlying media, so to speak---this is all
+done by the back ends.  A back end is a collection of functions to
+access the articles.
+
+However, sometimes the term `back end' is also used where `server'
+would have been more appropriate.  And then there is the term `select
+method' which can mean either.  The Gnus terminology can be quite
+confusing.
 
 @item native
 @cindex native
