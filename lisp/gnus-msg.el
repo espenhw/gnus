@@ -70,12 +70,13 @@ of names)."
 		 (function)))
 
 (defcustom gnus-mailing-list-groups nil
-  "*Regexp matching groups that are really mailing lists.
+  "*If non-nil a regexp matching groups that are really mailing lists.
 This is useful when you're reading a mailing list that has been
 gatewayed to a newsgroup, and you want to followup to an article in
 the group."
   :group 'gnus-message
-  :type 'regexp)
+  :type '(choice (regexp)
+		 (const nil)))
 
 (defcustom gnus-add-to-list nil
   "*If non-nil, add a `to-list' parameter automatically."

@@ -1,3 +1,12 @@
+2003-03-27  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-article-loose-mime)
+	(gnus-article-emulate-mime): Move to gnus-article-mime customize
+	group.
+
+	* gnus-msg.el (gnus-mailing-list-groups): Fix customize type and
+	doc string.
+
 2003-03-26  Kevin Ryde <user42@zip.com.au>
 
 	* gnus-sum.el (gnus-summary-find-for-reselect): Renamed from
