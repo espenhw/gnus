@@ -4090,6 +4090,18 @@ something like:
       "%M\%S\%p\%P\%5y: %(%-40,40g%) %6,6~(cut 2)d\n")
 @end lisp
 
+If you would like greater control of the time format, you can use a
+user-defined format spec.  Something like the following should do the
+trick: 
+
+@lisp
+(setq gnus-group-line-format
+      "%M\%S\%p\%P\%5y: %(%-40,40g%) %Ud\n")
+(defun gnus-user-format-function-d (headers)
+  (let ((time (gnus-group-timestamp gnus-tmp-group)))
+    (format-time-string "%b %d  %H:%M" time)))
+@end lisp
+            
 
 @node File Commands
 @subsection File Commands

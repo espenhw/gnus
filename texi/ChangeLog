@@ -1,3 +1,8 @@
+2002-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Group Timestamp): Addition.  Example from Andras
+	BALI. 
+
 2002-01-01  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Conformity): Add and fix.
