@@ -1,3 +1,7 @@
+2003-03-18 00:38:22 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+
+	* gnus.el: Oort Gnus v0.16 is released.
+
 2003-03-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* lpath.el (featurep): Bind mm-w3m-mode-map.
