@@ -1,3 +1,8 @@
+2003-04-22  Paul Jarc  <prj@po.cwru.edu>
+
+	* gnus-util.el (gnus-merge): Added "type" argument to match CL
+	merge and gnus-sum.el's expectations.
+
 2003-04-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-button-url-regexp): Added nntp.
@@ -64,8 +69,8 @@
 
 	* nnmail.el (nnmail-split-fancy-with-parent): docstring fix
 
-	* gnus-registry.el (gnus-registry-clear) 
-	(gnus-registry-fetch-group, gnus-registry-grep-in-list) 
+	* gnus-registry.el (gnus-registry-clear)
+	(gnus-registry-fetch-group, gnus-registry-grep-in-list)
 	(gnus-registry-split-fancy-with-parent): new functions
 	(gnus-register-spool-action, gnus-register-action): simplified the format
 	(gnus-registry): new customization group
@@ -86,7 +91,7 @@
 
 2003-04-17  Mike Woolley  <mike@ariel.co.uk>
 
-	* gnus-sum.el (gnus-sum-thread-tree-false-root): New variable. 
+	* gnus-sum.el (gnus-sum-thread-tree-false-root): New variable.
 
 2003-04-15  Michael Shields  <shields@msrl.com>
 
@@ -117,9 +122,9 @@
 
 2003-04-16  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-registry.el (gnus-register-action) 
-	(gnus-register-spool-action, hashtable-to-alist) 
-	(gnus-registry-translate-from-alist, alist-to-hashtable) 
+	* gnus-registry.el (gnus-register-action)
+	(gnus-register-spool-action, hashtable-to-alist)
+	(gnus-registry-translate-from-alist, alist-to-hashtable)
 	(gnus-registry-translate-to-alist, gnus-registry-headers-hashtb):
 	new variables and function fixes
 
