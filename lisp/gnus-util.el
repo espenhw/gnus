@@ -1093,11 +1093,17 @@ Return the modified alist."
 	(remove-text-properties start end properties object))
     t))
 
-(defun gnus-string-equal (x y)
-  "Like `string-equal', except it compares case-insensitively."
-  (and (= (length x) (length y))
-       (or (string-equal x y)
-	   (string-equal (downcase x) (downcase y)))))
+(if (fboundp 'compare-strings)
+    ;; Reduce consing.  (Assume multibyte conversion `compare-strings'
+    ;; can do isn't relevant.)
+    (defun gnus-string-equal (x y)
+      "Like `string-equal', except it compares case-insensitively."
+      (eq t (compare-strings x nil nil y nil nil t)))
+  (defun gnus-string-equal (x y)
+    "Like `string-equal', except it compares case-insensitively."
+    (and (= (length x) (length y))
+	 (or (string-equal x y)
+	     (string-equal (downcase x) (downcase y))))))
 
 (defcustom gnus-use-byte-compile t
   "If non-nil, byte-compile crucial run-time codes.
@@ -1354,8 +1360,6 @@ Return nil otherwise."
 				 display))
 	      display)))))
 
-(provide 'gnus-util)
-
 (defmacro gnus-mapcar (function seq1 &rest seqs2_n)
   "Apply FUNCTION to each element of the sequences, and make a list of the results.
 If there are several sequences, FUNCTION is called with that many arguments,
@@ -1389,5 +1393,21 @@ sequence, this is like `mapcar'.  With several, it is like the Common Lisp
 		   ,@(apply 'nconc (mapcar (lambda (h) (list h (list 'cdr h))) heads))))
 	   (cdr ,result)))
     `(mapcar ,function ,seq1)))
+
+(if (fboundp 'merge)
+    (defalias 'gnus-merge 'merge)
+  ;; Adapted from cl-seq.el
+  (defun gnus-merge (list1 list2 pred)
+    "Destructively merge lists LIST1 and LIST2 to produce a new list.
+Ordering of the elements is preserved according to PRED, a `less-than'
+predicate on the elements."
+    (let ((res nil))
+      (while (and list1 list2)
+	(if (funcall pred (car list2) (car list1))
+	    (push (pop list2) res)
+	  (push (pop list1) res)))
+      (nconc (nreverse res) list1 list2))))
+
+(provide 'gnus-util)
 
 ;;; gnus-util.el ends here
