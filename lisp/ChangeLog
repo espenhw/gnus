@@ -1,3 +1,9 @@
+2002-07-23  Karl Kleinpaste  <karl@charcoal.com>
+
+	* gnus-sum.el (gnus-summary-delete-article): Force
+	nnmail-expiry-target to 'delete, so that absolute deletion
+	happens when absolute deletion is requested.
+
 2002-07-21  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Nevin Kapur <nevin@jhu.edu>.
 
