@@ -1295,7 +1295,12 @@ Return nil otherwise."
     (if (or (framep object)
 	    (and (windowp object)
 		 (setq object (window-frame object))))
-	(frame-parameter object 'display))))
+	(let ((display (frame-parameter object 'display)))
+	  (if (and (stringp display)
+		   ;; Exclude invalid display names.
+		   (string-match "\\`[^:]*:[0-9]+\\(\\.[0-9]+\\)?\\'"
+				 display))
+	      display)))))
 
 (provide 'gnus-util)
 
