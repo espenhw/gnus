@@ -1575,7 +1575,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 			 ',spool-func
 			 (if (equal file orig-file)
 			     nil
-			   (nnmail-get-split-group orig-file ,source))
+			   (nnmail-get-split-group orig-file ',source))
 			 ',(intern (format "%s-active-number" method))))))
 	  (incf total new)
 	  (incf i)))
