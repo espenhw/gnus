@@ -1142,6 +1142,10 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 			 nil
 			 spam-whitelist-unregister-routine
 			 nil)
+    (spam-use-ham-copy   nil
+			 nil
+			 nil
+			 nil)
     (spam-use-BBDB	 spam-BBDB-register-routine
 			 nil
 			 spam-BBDB-unregister-routine
@@ -1313,6 +1317,7 @@ functions")
     (if (< 0 count)
 	nil
       decision)))
+
 
 ;;; check if a ham- or spam-processor registration needs to be undone
 (defun spam-log-unregistration-needed-p (id type classification check)
