@@ -392,6 +392,10 @@ manipulated as follows:
 (defmacro gnus-agent-append-to-list (tail value)
   `(setq ,tail (setcdr ,tail (cons ,value nil))))
 
+(defmacro gnus-agent-message (level &rest args)
+  `(if (<= ,level gnus-verbose)
+       (message ,@args)))
+
 ;;;
 ;;; Mode infestation
 ;;;
@@ -1023,6 +1027,15 @@ This can be added to `gnus-select-article-hook' or
 ;;; Internal functions
 ;;;
 
+;;; NOTES:
+;;; The agent's active range is defined as follows:
+;;;  If the agent has no record of the group, use the actual active
+;;;    range.
+;;;  If the agent has a record, set the agent's active range to
+;;;    include the max limit of the actual active range.
+;;;  When expiring, update the min limit to match the smallest of the
+;;;    min article not expired or the min actual active range.
+
 (defun gnus-agent-save-active (method)
   (gnus-agent-save-active-1 method 'gnus-active-to-gnus-format))
 
@@ -1036,32 +1049,41 @@ This can be added to `gnus-select-article-hook' or
       (erase-buffer)
       (nnheader-insert-file-contents file))))
 
-(defun gnus-agent-write-active (file new)
-  (let ((orig (gnus-make-hashtable (count-lines (point-min) (point-max))))
-	(file (gnus-agent-lib-file "active"))
-	elem osym)
-    (when (file-exists-p file)
+(defun gnus-agent-write-active (file new &optional literal-replacement)
+  (let ((old new))
+    (when (and (not literal-replacement)
+               (file-exists-p file))
+      (setq old (gnus-make-hashtable (count-lines (point-min) (point-max))))
       (with-temp-buffer
-	(nnheader-insert-file-contents file)
-	(gnus-active-to-gnus-format nil orig))
+        (nnheader-insert-file-contents file)
+        (gnus-active-to-gnus-format nil old))
+      ;; Iterate over the current active groups, the current active
+      ;; range may expand, but NOT CONTRACT, the agent's active range.
       (mapatoms
-       (lambda (sym)
-	 (when (and sym (boundp sym))
-	   (if (and (boundp (setq osym (intern (symbol-name sym) orig)))
-		    (setq elem (symbol-value osym)))
-	       (progn
-		 (if (and (integerp (car (symbol-value sym)))
-			  (> (car elem) (car (symbol-value sym))))
-		     (setcar elem (car (symbol-value sym))))
-		 (if (integerp (cdr (symbol-value sym)))
-		     (setcdr elem (cdr (symbol-value sym)))))
-	     (set (intern (symbol-name sym) orig) (symbol-value sym)))))
+       (lambda (nsym)
+         (let ((new-active (and nsym (boundp nsym) (symbol-value nsym))))
+           (when new-active
+             (let* ((osym       (intern (symbol-name nsym) old))
+                    (old-active (and (boundp osym) (symbol-value osym))))
+               (if old-active
+                   (let ((new-min (car new-active))
+                         (old-min (car old-active))
+                         (new-max (cdr new-active))
+                         (old-max (cdr old-active)))
+                     (if (and (integerp new-min)
+                              (< new-min old-min))
+                         (setcar old-active new-min))
+                     (if (and (integerp new-max)
+                              (> new-max old-max))
+                         (setcdr old-active new-max)))
+                 (set osym new-active))))))
        new))
     (gnus-make-directory (file-name-directory file))
     (let ((nnmail-active-file-coding-system gnus-agent-file-coding-system))
-      ;; The hashtable contains real names of groups,  no more prefix
-      ;; removing, so set `full' to `t'.
-      (gnus-write-active-file file orig t))))
+      ;; The hashtable contains real names of groups.  However, do NOT
+      ;; add the foreign server prefix as gnus-active-to-gnus-format
+      ;; will add it while reading the file.
+      (gnus-write-active-file file old nil))))
 
 (defun gnus-agent-save-groups (method)
   (gnus-agent-save-active-1 method 'gnus-groups-to-gnus-format))
@@ -1072,23 +1094,24 @@ This can be added to `gnus-select-article-hook' or
 	   (coding-system-for-write nnheader-file-coding-system)
 	   (file-name-coding-system nnmail-pathname-coding-system)
 	   (file (gnus-agent-lib-file "active"))
-	   oactive-min)
+	   oactive-min oactive-max)
       (gnus-make-directory (file-name-directory file))
       (with-temp-file file
 	;; Emacs got problem to match non-ASCII group in multibyte buffer.
 	(mm-disable-multibyte)
 	(when (file-exists-p file)
-	  (nnheader-insert-file-contents file))
-	(goto-char (point-min))
-	(when (re-search-forward
-	       (concat "^" (regexp-quote group) " ") nil t)
-	  (save-excursion
-	    (read (current-buffer))                      ;; max
-	    (setq oactive-min (read (current-buffer))))  ;; min
-	  (gnus-delete-line))
+	  (nnheader-insert-file-contents file)
+
+          (goto-char (point-min))
+          (when (re-search-forward
+                 (concat "^" (regexp-quote group) " ") nil t)
+            (save-excursion
+              (setq oactive-max (read (current-buffer)) ;; max
+                    oactive-min (read (current-buffer)))) ;; min
+            (gnus-delete-line)))
 	(insert (format "%S %d %d y\n" (intern group)
-			(cdr active)
-			(or oactive-min (car active))))
+			(max (or oactive-max (cdr active)) (cdr active))
+                        (min (or oactive-min (car active)) (car active))))
 	(goto-char (point-max))
 	(while (search-backward "\\." nil t)
 	  (delete-char 1))))))
@@ -2406,24 +2429,21 @@ FORCE is equivalent to setting the expiration predicates to true."
               (overview (gnus-get-buffer-create " *expire overview*"))
               orig)
           (unwind-protect
-              (when (file-exists-p (gnus-agent-lib-file "active"))
-                (with-temp-buffer
-                  (nnheader-insert-file-contents
-                   (gnus-agent-lib-file "active"))
-                  (gnus-active-to-gnus-format
-                   gnus-command-method
-                   (setq orig (gnus-make-hashtable
-                               (count-lines (point-min) (point-max))))))
-                (save-excursion
-                  (gnus-agent-expire-group-1
-                   group overview (gnus-gethash-safe group orig)
-                   articles force)))
+              (let ((active-file (gnus-agent-lib-file "active")))
+                (when (file-exists-p active-file)
+                  (with-temp-buffer
+                    (nnheader-insert-file-contents active-file)
+                    (gnus-active-to-gnus-format
+                     gnus-command-method
+                     (setq orig (gnus-make-hashtable
+                                 (count-lines (point-min) (point-max))))))
+                  (save-excursion
+                    (gnus-agent-expire-group-1
+                     group overview (gnus-gethash-safe group orig)
+                     articles force))
+                  (gnus-agent-write-active active-file orig t)))
             (kill-buffer overview))))
     (gnus-message 4 "Expiry...done")))
-
-(defmacro gnus-agent-message (level &rest args)
-  `(if (<= ,level gnus-verbose)
-       (message ,@args)))
 
 (defun gnus-agent-expire-group-1 (group overview active articles force)
   ;; Internal function - requires caller to have set
@@ -2694,7 +2714,8 @@ missing NOV entry.  Run gnus-agent-regenerate-group to restore it.")))
 
                   ;; If considering all articles is set, I can only
                   ;; expire article IDs that are no longer in the
-                  ;; active range.
+                  ;; active range (That is, articles that preceed the
+                  ;; first article in the new alist).
                   (if (and gnus-agent-consider-all-articles
                            (>= article-number (car active)))
                       ;; I have to keep this ID in the alist
@@ -2726,7 +2747,12 @@ expiration tests failed." article-number)
           (let ((inhibit-quit t))
             (unless (equal alist gnus-agent-article-alist)
               (setq gnus-agent-article-alist alist)
-              (gnus-agent-save-alist group))
+              (gnus-agent-save-alist group)
+
+              ;; The active list changed, set the agent's active range
+              ;; to match the beginning of the list.
+              (if alist
+                  (setcar active (caar alist))))
 
             (when (buffer-modified-p)
               (let ((coding-system-for-write
@@ -2767,23 +2793,24 @@ articles in every agentized group."))
           (setq overview (gnus-get-buffer-create " *expire overview*"))
           (unwind-protect
               (while (setq gnus-command-method (pop methods))
-                (when (file-exists-p (gnus-agent-lib-file "active"))
-                  (with-temp-buffer
-                    (nnheader-insert-file-contents
-                     (gnus-agent-lib-file "active"))
-                    (gnus-active-to-gnus-format
-                     gnus-command-method
-                     (setq orig (gnus-make-hashtable
-                                 (count-lines (point-min) (point-max))))))
-                  (dolist (expiring-group (gnus-groups-from-server
-                                           gnus-command-method))
-                    (let* ((active
-                            (gnus-gethash-safe expiring-group orig)))
+                (let ((active-file (gnus-agent-lib-file "active")))
+                  (when (file-exists-p active-file)
+                    (with-temp-buffer
+                      (nnheader-insert-file-contents active-file)
+                      (gnus-active-to-gnus-format
+                       gnus-command-method
+                       (setq orig (gnus-make-hashtable
+                                   (count-lines (point-min) (point-max))))))
+                    (dolist (expiring-group (gnus-groups-from-server
+                                             gnus-command-method))
+                      (let* ((active
+                              (gnus-gethash-safe expiring-group orig)))
                                         
-                      (when active
-                        (save-excursion
-                          (gnus-agent-expire-group-1
-                           expiring-group overview active articles force)))))))
+                        (when active
+                          (save-excursion
+                            (gnus-agent-expire-group-1
+                             expiring-group overview active articles force)))))
+                    (gnus-agent-write-active active-file orig t))))
             (kill-buffer overview))
           (gnus-agent-expire-unagentized-dirs)
           (gnus-message 4 "Expiry...done")))))
@@ -2811,21 +2838,32 @@ articles in every agentized group."))
 	 (checker
 	  (function
 	   (lambda (d)
+             "Given a directory, check it and its subdirectories for 
+              membership in the keep hash.  If it isn't found, add 
+              it to to-remove." 
 	     (let ((files (directory-files d))
 		   file)
 	       (while (setq file (pop files))
-		 (cond ((equal file ".")
+		 (cond ((equal file ".") ; Ignore self
 			nil)
-		       ((equal file "..")
+		       ((equal file "..") ; Ignore parent
 			nil)
-		       ((equal file ".overview")
+		       ((equal file ".overview") 
+                        ;; Directory must contain .overview to be
+                        ;; agent's cache of a group.
 			(let ((d (file-name-as-directory d))
 			      r)
+                          ;; Search ancestor's for last directory NOT
+                          ;; found in keep hash.
 			  (while (not (gnus-gethash
 				       (setq d (file-name-directory d)) keep))
 			    (setq r d
 				  d (directory-file-name d)))
-			  (if r
+                          ;; if ANY ancestor was NOT in keep hash and
+                          ;; it it's already in to-remove, add it to
+                          ;; to-remove.                          
+			  (if (and r
+                                   (not (member r to-remove)))
 			      (push r to-remove))))
 		       ((file-directory-p (setq file (nnheader-concat d file)))
 			(funcall checker file)))))))))
