@@ -20,7 +20,6 @@
 	* gnus-srvr.el (gnus-browse-foreign-server): Use both `read' and
  	`buffer-substring'.
 
->>>>>>> 5.132
 1999-11-06 04:24:30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (article-date-ut): Keep the updated timer.

@@ -625,8 +625,9 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
   (interactive)
   (gnus-save-hidden-threads
     (let ((level (gnus-summary-thread-level)))
-      (while (and (gnus-summary-set-process-mark (gnus-summary-article-number))
-		  (zerop (gnus-summary-next-subject 1))
+      (while (and (gnus-summary-set-process-mark
+		   (gnus-summary-article-number))
+		  (zerop (gnus-summary-next-subject 1 nil t))
 		  (> (gnus-summary-thread-level) level)))))
   (gnus-summary-position-point))
 

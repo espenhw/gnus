@@ -214,7 +214,7 @@ asynchronously.	 The compressed face will be piped to this command."
 
 (defcustom gnus-emphasis-alist
   (let ((format
-	 "\\(\\s-\\|^\\|[-\"]\\|\\s(\\|\\s)\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*[.,]?\\)%s\\)\\(\\s-\\|[-?!.,;:\"]\\|\\s(\\|\\s)\\)")
+	 "\\(\\s-\\|^\\|[-\"]\\|\\s(\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*[.,]?\\)%s\\)\\(\\s-\\|[-,;:\"]\\s-\\|[?!.]+\\s-\\|\\s)\\)")
 	(types
 	 '(("_" "_" underline)
 	   ("/" "/" italic)
@@ -265,7 +265,7 @@ is the face used for highlighting."
   :group 'gnus-article-emphasis)
 
 (defface gnus-emphasis-underline-italic '((t (:italic t :underline t)))
-  "Face used for displaying underlined italic emphasized text (_*word*_)."
+  "Face used for displaying underlined italic emphasized text (_/word/_)."
   :group 'gnus-article-emphasis)
 
 (defface gnus-emphasis-bold-italic '((t (:bold t :italic t)))
@@ -4536,18 +4536,8 @@ For example:
 (defvar length)
 (defun gnus-treat-predicate (val)
   (cond
-   (condition
-    (eq condition val))
    ((null val)
     nil)
-   ((eq val t)
-    t)
-   ((eq val 'head)
-    nil)
-   ((eq val 'last)
-    (eq part-number total-parts))
-   ((numberp val)
-    (< length val))
    ((and (listp val)
 	 (stringp (car val)))
     (apply 'gnus-or (mapcar `(lambda (s)
@@ -4563,9 +4553,19 @@ For example:
        ((eq pred 'not)
 	(not (gnus-treat-predicate (car val))))
        ((eq pred 'typep)
-	(equal (cadr val) type))
+	(equal (car val) type))
        (t
 	(error "%S is not a valid predicate" pred)))))
+   (condition
+    (eq condition val))
+   ((eq val t)
+    t)
+   ((eq val 'head)
+    nil)
+   ((eq val 'last)
+    (eq part-number total-parts))
+   ((numberp val)
+    (< length val))
    (t
     (error "%S is not a valid value" val))))
 
