@@ -1224,16 +1224,17 @@ This command does not work if you use short group names."
 (defun nnfolder-open-marks (group server)
   (let ((file (nnfolder-group-marks-pathname group)))
     (if (file-exists-p file)
-	(setq nnfolder-marks (condition-case err
-				 (with-temp-buffer
-				   (gnus-sethash file
-						 (nth 5 (file-attributes file))
-						 nnfolder-marks-modtime)
-				   (nnheader-insert-file-contents file)
-				   (read (current-buffer)))
-			       (error (or (gnus-yes-or-no-p
-					   (format "Error reading nnfolder marks file %s (%s).  Continuing will use marks from .newsrc.eld.  Continue? " file err))
-					  (error "Cannot read nnfolder marks file %s (%s)" file err)))))
+	(condition-case err
+	    (with-temp-buffer
+	      (gnus-sethash file (nth 5 (file-attributes file)) 
+			    nnfolder-marks-modtime)
+	      (nnheader-insert-file-contents file)
+	      (setq nnfolder-marks (read (current-buffer)))
+	      (dolist (el gnus-article-unpropagated-mark-lists)
+		(setq nnfolder-marks (gnus-remassoc el nnfolder-marks))))
+	  (error (or (gnus-yes-or-no-p
+		      (format "Error reading nnfolder marks file %s (%s).  Continuing will use marks from .newsrc.eld.  Continue? " file err))
+		     (error "Cannot read nnfolder marks file %s (%s)" file err))))
       ;; User didn't have a .marks file.  Probably first time
       ;; user of the .marks stuff.  Bootstrap it from .newsrc.eld.
       (let ((info (gnus-get-info
@@ -1243,6 +1244,8 @@ This command does not work if you use short group names."
 	(nnheader-message 7 "Bootstrapping marks for %s..." group)
 	(setq nnfolder-marks (gnus-info-marks info))
 	(push (cons 'read (gnus-info-read info)) nnfolder-marks)
+	(dolist (el gnus-article-unpropagated-mark-lists)
+	  (setq nnfolder-marks (gnus-remassoc el nnfolder-marks)))
 	(nnfolder-save-marks group server)))))
 
 (provide 'nnfolder)

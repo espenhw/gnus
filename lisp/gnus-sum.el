@@ -696,7 +696,7 @@ This variable is local to the summary buffers."
 (defcustom gnus-summary-mode-hook nil
   "*A hook for Gnus summary mode.
 This hook is run before any variables are set in the summary buffer."
-  :options '(turn-on-gnus-mailing-list-mode)
+  :options '(turn-on-gnus-mailing-list-mode gnus-pick-mode)
   :group 'gnus-summary-various
   :type 'hook)
 
@@ -4811,6 +4811,10 @@ If SELECT-ARTICLES, only select those articles from GROUP."
   (or (cadr (assq mark gnus-article-special-mark-lists))
       'list))
 
+(defun gnus-article-unpropagatable-p (mark)
+  "Return whether MARK should be propagated to backend."
+  (memq mark gnus-article-unpropagated-mark-lists))
+
 (defun gnus-adjust-marked-articles (info)
   "Set all article lists and remove all marks that are no longer valid."
   (let* ((marked-lists (gnus-info-marks info))
@@ -4870,7 +4874,6 @@ If SELECT-ARTICLES, only select those articles from GROUP."
   "Enter the various lists of marked articles into the newsgroup info list."
   (let ((types gnus-article-mark-lists)
 	(info (gnus-get-info gnus-newsgroup-name))
-	(uncompressed '(score bookmark killed seen))
 	type list newmarked symbol delta-marks)
     (when info
       ;; Add all marks lists to the list of marks lists.
@@ -4902,27 +4905,20 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 		    (gnus-add-to-range list gnus-newsgroup-unseen)
 		  (gnus-compress-sequence gnus-newsgroup-articles))))
 
-	(unless (memq (cdr type) uncompressed)
+	(when (eq (gnus-article-mark-to-type (cdr type)) 'list)
 	  (setq list (gnus-compress-sequence (set symbol (sort list '<)) t)))
 
-	(when (gnus-check-backend-function
-	       'request-set-mark gnus-newsgroup-name)
-	  ;; propagate flags to server, with the following exceptions:
-	  ;; uncompressed:s are not proper flags (they are cons cells)
-	  ;; cache is a internal gnus flag
-	  ;; download are local to one gnus installation (well)
-	  ;; unsend are for nndraft groups only
-	  ;; xxx: generality of this?  this suits nnimap anyway
-	  (unless (memq (cdr type) (append '(cache download unsend)
-					   uncompressed))
-	    (let* ((old (cdr (assq (cdr type) (gnus-info-marks info))))
-		   (del (gnus-remove-from-range (gnus-copy-sequence old) list))
-		   (add (gnus-remove-from-range
-			 (gnus-copy-sequence list) old)))
-	      (when add
-		(push (list add 'add (list (cdr type))) delta-marks))
-	      (when del
-		(push (list del 'del (list (cdr type))) delta-marks)))))
+	(when (and (gnus-check-backend-function
+		    'request-set-mark gnus-newsgroup-name)
+		   (not (gnus-article-unpropagatable-p (cdr type))))
+	  (let* ((old (cdr (assq (cdr type) (gnus-info-marks info))))
+		 (del (gnus-remove-from-range (gnus-copy-sequence old) list))
+		 (add (gnus-remove-from-range
+		       (gnus-copy-sequence list) old)))
+	    (when add
+	      (push (list add 'add (list (cdr type))) delta-marks))
+	    (when del
+	      (push (list del 'del (list (cdr type))) delta-marks))))
 
 	(when list
 	  (push (cons (cdr type) list) newmarked)))

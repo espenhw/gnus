@@ -1800,8 +1800,22 @@ covered by that variable."
 
 (defconst gnus-article-special-mark-lists
   '((seen range)
+    (killed range)
     (bookmark tuple)
     (score tuple)))
+
+;; Propagate flags to server, with the following exceptions:
+;; `seen' is private to each gnus installation
+;; `cache' is a internal gnus flag for each gnus installation
+;; `download' is a agent flag private to each gnus installation
+;; `unsend' are for nndraft groups only
+;; `score' is not a proper mark
+(defconst gnus-article-unpropagated-mark-lists 
+  '(seen cache download unsend score)
+  "Marks that shouldn't be propagated to backends.
+Typical marks are those that make no sense in a standalone backend,
+such as a mark that says whether an article is stored in the cache
+(which doesn't make sense in a standalone backend).")
 
 (defvar gnus-headers-retrieved-by nil)
 (defvar gnus-article-reply nil)

@@ -1,3 +1,22 @@
+2001-09-22  Simon Josefsson  <jas@extundo.com>
+
+	* nnml.el (nnml-open-marks): Remove unpropagatable marks.
+
+	* nnfolder.el (nnfolder-open-marks): Ditto.
+
+	* gnus-sum.el (gnus-article-unpropagatable-p): New function.
+	(gnus-update-marks): Use it.
+	(gnus-update-marks): Use `gnus-article-mark-to-type' instead of
+	hardcoded list.
+
+	* gnus.el (gnus-article-special-mark-lists): Add killed.
+	(gnus-article-unpropagated-mark-lists): New constant.
+
+2001-09-22  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-sum.el (gnus-summary-mode-hook): Add gnus-pick-mode as
+	custom option.
+
 2001-09-23  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-draft.el (gnus-draft-setup): Add mark in backend as well.
