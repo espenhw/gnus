@@ -6307,8 +6307,7 @@ displayed, no centering will be performed."
 		      ((< (window-height) 7) 1)
 		      (t (if (numberp gnus-auto-center-summary)
 			     gnus-auto-center-summary
-                           (/ (1- (window-height)) 2))
-                           )))
+                           (/ (1- (window-height)) 2)))))
 	   (height (1- (window-height)))
 	   (bottom (save-excursion (goto-char (point-max))
 				   (forward-line (- height))
