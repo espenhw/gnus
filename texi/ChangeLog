@@ -1,3 +1,8 @@
+2001-11-17  Simon Josefsson  <jas@extundo.com>
+
+	* message.texi (Insertion): Use C-c C-u for Importance: instead of
+	C-c C-p (used by SC).
+
 2001-11-15  Simon Josefsson  <jas@extundo.com>
 
 	* message.texi (Insertion): Add C-c C-p,

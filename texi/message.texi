@@ -481,8 +481,8 @@ Insert a signature at the end of the buffer
 @findex message-insert-headers
 Insert the message headers (@code{message-insert-headers}).
 
-@item C-c C-p
-@kindex C-c C-p
+@item C-c C-u
+@kindex C-c C-u
 @findex message-insert-or-toggle-importance
 This inserts the @samp{Importance:} header with a value of
 @samp{high}.  This header is used to signal the importance of the
