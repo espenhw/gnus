@@ -1,3 +1,11 @@
+2002-02-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-summary-make-menu-bar): Fix typo.
+	From Stefan Reich,Av(Br <xsteve@riic.at>.
+
+	* nnagent.el (nnagent-request-expire-articles): Don't delete
+	files.
+
 2002-02-05  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-gen-unsubscribed-mft): New function.
@@ -8776,6 +8784,10 @@
 
 	* ChangeLog: Moved to ChangeLog.1.
 
+    Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
+  Copying and distribution of this file, with or without modification,
+  are permitted provided the copyright notice and this notice are preserved.
+	
 ;; Local Variables:
 ;; coding: iso-2022-7bit
 ;; End:

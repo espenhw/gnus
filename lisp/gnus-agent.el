@@ -325,7 +325,7 @@ If this is `ask' the hook will query the user."
        ["Mark as downloadable" gnus-agent-mark-article t]
        ["Unmark as downloadable" gnus-agent-unmark-article t]
        ["Toggle mark" gnus-agent-toggle-mark t]
-       ["Fetch downloadable" gnus-aget-summary-fetch-group t]
+       ["Fetch downloadable" gnus-agent-summary-fetch-group t]
        ["Catchup undownloaded" gnus-agent-catchup t]))))
 
 (defvar gnus-agent-server-mode-map (make-sparse-keymap))

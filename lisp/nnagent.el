@@ -167,6 +167,9 @@
 	t)
       'nov)))
 
+(deffoo nnagent-request-expire-articles (articles group &optional server force)
+  articles)
+
 (deffoo nnagent-request-group (group &optional server dont-check)
   (nnoo-parent-function 'nnagent 'nnml-request-group
 			(list group (nnagent-server server) dont-check)))
@@ -190,10 +193,6 @@
 (deffoo nnagent-request-delete-group (group &optional force server)
   (nnoo-parent-function 'nnagent 'nnml-request-delete-group
 			(list group force (nnagent-server server))))
-
-(deffoo nnagent-request-expire-articles (articles group &optional server force)
-  (nnoo-parent-function 'nnagent 'nnml-request-expire-articles
-			(list articles group (nnagent-server server) force)))
 
 (deffoo nnagent-request-list (&optional server)
   (nnoo-parent-function 'nnagent 'nnml-request-list
