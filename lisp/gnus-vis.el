@@ -1423,7 +1423,6 @@ specified by `gnus-button-alist'."
    from to
    (nconc (and gnus-article-mouse-face
 	       (list gnus-mouse-face-prop gnus-article-mouse-face))
-	  (list 'invisible nil)
 	  (list 'gnus-callback fun)
 	  (and data (list 'gnus-data data)))))
 

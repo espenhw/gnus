@@ -37,10 +37,12 @@
 (defvar nnml-directory "~/Mail/"
   "Mail spool directory.")
 
-(defvar nnml-active-file (concat nnml-directory "active")
+(defvar nnml-active-file 
+  (concat (file-name-as-directory nnml-directory) "active")
   "Mail active file.")
 
-(defvar nnml-newsgroups-file (concat nnml-directory "newsgroups")
+(defvar nnml-newsgroups-file 
+  (concat (file-name-as-directory nnml-directory) "newsgroups")
   "Mail newsgroups description file.")
 
 (defvar nnml-get-new-mail t

@@ -503,7 +503,9 @@ servers."
 	    (let ((nntp-server-buffer (or buffer nntp-server-buffer))
 		  (art (or (and (numberp id) (int-to-string id)) id)))
 	      (prog1
-		  (and (nntp-send-command "^\\.\r?\n" "ARTICLE" art)
+		  (and (nntp-send-command 
+			;; A bit odd regexp to ensure working over rlogin.
+			"^\\.\\(\r?\n\\|\r$\\)" "ARTICLE" art)
 		       (if (numberp id) 
 			   (cons nntp-current-group id)
 			 ;; We find out what the article number was.
@@ -882,7 +884,7 @@ It will prompt for a password."
 	(setq wait t)
 	(while wait
 	  (goto-char (point-max))
-	  (forward-line -1)
+	  (if (bolp) (forward-line -1) (beginning-of-line))
 	  (if (looking-at regexp)
 	      (setq wait nil)
 	    (when nntp-debug-read

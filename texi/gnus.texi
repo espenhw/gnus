@@ -8295,6 +8295,10 @@ as specified by the variable @code{nnmail-split-abbrev-alist}.  This is
 an alist of cons cells, where the car of the cells contains the key, and
 the cdr contains a string.
 
+@vindex nnmail-split-fancy-syntax-table
+@code{nnmail-split-fancy-syntax-table} is the syntax table in effect
+when all this splitting is performed.
+
 
 @node Mail and Procmail
 @subsection Mail and Procmail
@@ -10043,6 +10047,9 @@ Type @kbd{M-x gnus-score-mode} to use this mode.
 
 @vindex gnus-score-mode-hook
 @code{gnus-score-menu-hook} is run in score mode buffers.
+
+In the summary buffer you can use commands like @kbd{V f} and @kbd{V
+e} to begin editing score files.
 
 
 @node Adaptive Scoring

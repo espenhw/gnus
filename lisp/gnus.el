@@ -1349,8 +1349,9 @@ course.)")
   "Property list to use for hiding text.")
 
 (defvar gnus-modtime-botch nil
-  "*Non-nil means .newsrc should be deleted prior to save.  Its use is
-due to the bogus appearance that .newsrc was modified on disc.")
+  "*Non-nil means .newsrc should be deleted prior to save.  
+Its use is due to the bogus appearance that .newsrc was modified on
+disc.")
 
 ;; Hooks.
 
@@ -1551,9 +1552,6 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
 (defvar gnus-server-alist nil
   "List of available servers.")
 
-(defvar gnus-topic-active-topology nil)
-(defvar gnus-topic-active-alist nil)
-
 (defvar gnus-group-indentation-function nil)
 
 (defvar gnus-topic-indentation "") ;; Obsolete variable.
@@ -1717,7 +1715,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.51"
+(defconst gnus-version "September Gnus v0.52"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -3104,39 +3102,25 @@ If RE-ONLY is non-nil, strip leading `Re:'s only."
 	gnus-active-hashtb nil
 	gnus-moderated-list nil
 	gnus-description-hashtb nil
+	gnus-current-headers nil
+	gnus-thread-indent-array nil
 	gnus-newsgroup-headers nil
 	gnus-newsgroup-name nil
 	gnus-server-alist nil
 	gnus-group-list-mode nil
-	gnus-topic-active-topology nil
-	gnus-topic-active-alist nil
 	gnus-opened-servers nil
 	gnus-current-select-method nil)
-  ;; Reset any score variables.
-  (when gnus-use-scoring 
-    (gnus-score-close))
+  (gnus-shutdown 'gnus)
   ;; Kill the startup file.
   (and gnus-current-startup-file
        (get-file-buffer gnus-current-startup-file)
        (kill-buffer (get-file-buffer gnus-current-startup-file)))
-  ;; Save any cache buffers.
-  (when gnus-use-cache 
-    (gnus-cache-save-buffers))
   ;; Clear the dribble buffer.
   (gnus-dribble-clear)
-  ;; Close down NoCeM.
-  (when gnus-use-nocem 
-    (gnus-nocem-close))
-  ;; Shut down the demons.
-  (when gnus-use-demon
-    (gnus-demon-cancel))
   ;; Kill global KILL file buffer.
   (when (get-file-buffer (gnus-newsgroup-kill-file nil))
     (kill-buffer (get-file-buffer (gnus-newsgroup-kill-file nil))))
   (gnus-kill-buffer nntp-server-buffer)
-  ;; Backlog.
-  (when gnus-keep-backlog
-    (gnus-backlog-shutdown))
   ;; Kill Gnus buffers.
   (while gnus-buffer-list
     (gnus-kill-buffer (pop gnus-buffer-list)))
@@ -4180,9 +4164,10 @@ If ARG is non-nil and not a positive number, Gnus will
 prompt the user for the name of an NNTP server to use.
 As opposed to `gnus', this command will not connect to the local server."
   (interactive "P")
+  (let ((gnus-group-use-permanent-levels t))
+    (gnus (or arg (1- gnus-level-default-subscribed)) t slave))
   (make-local-variable 'gnus-group-use-permanent-levels)
-  (setq gnus-group-use-permanent-levels t)
-  (gnus (or arg (1- gnus-level-default-subscribed)) t slave))
+  (setq gnus-group-use-permanent-levels t))
 
 ;;;###autoload
 (defun gnus-slave (&optional arg)
@@ -5415,6 +5400,7 @@ of the Earth\".	 There is no undo."
 	  (gnus-message 6 "Deleting group %s...done" group)
 	  (gnus-group-goto-group group)
 	  (gnus-group-kill-group 1 t)
+	  (gnus-sethash group nil gnus-active-hashtb)
 	  t))
     (gnus-group-position-point)))
 
@@ -6536,18 +6522,12 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
 	  gnus-expert-user
 	  (gnus-y-or-n-p "Are you sure you want to quit reading news? "))
     (run-hooks 'gnus-exit-gnus-hook)
-    ;; Close down GroupLens.
-    (when gnus-use-grouplens
-      (bbb-logout))
     ;; Offer to save data from non-quitted summary buffers.
     (gnus-offer-save-summaries)
     ;; Save the newsrc file(s).
     (gnus-save-newsrc-file)
     ;; Kill-em-all.
     (gnus-close-backends)
-    ;; Shut down the cache.
-    (when gnus-use-cache
-      (gnus-cache-close))
     ;; Reset everything.
     (gnus-clear-system)
     ;; Allow the user to do things after cleaning up.
@@ -6581,9 +6561,6 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
       (gnus-remove-some-windows))
     (gnus-dribble-save)
     (gnus-close-backends)
-    ;; Shut down the cache.
-    (when gnus-use-cache
-      (gnus-cache-close))
     (gnus-clear-system)
     ;; Allow the user to do things after cleaning up.
     (run-hooks 'gnus-after-exiting-gnus-hook)))
@@ -12349,7 +12326,9 @@ Return the article number moved to, or nil if moving was impossible."
 	   (gnus-summary-article-intangible-p))
       (let ((beg (point)))
 	(while (and (zerop (forward-line 1))
-		    (not (gnus-summary-article-intangible-p))))
+		    (not (gnus-summary-article-intangible-p))
+		    (not (zerop (save-excursion 
+				  (gnus-summary-thread-level))))))
 	(if (eobp)
 	    (progn
 	      (goto-char beg)
@@ -13172,7 +13151,8 @@ The following commands are available:
 	;; message-id and request it by id instead of number.
 	(when (and (numberp article)
 		   gnus-summary-buffer
-		   (buffer-name gnus-summary-buffer))
+		   (get-buffer gnus-summary-buffer)
+		   (buffer-name (get-buffer gnus-summary-buffer)))
 	  (save-excursion
 	    (set-buffer gnus-summary-buffer)
 	    (let ((header (gnus-summary-article-header article)))
@@ -13234,11 +13214,11 @@ The following commands are available:
 
     ;; Take the article from the original article buffer
     ;; and place it in the buffer it's supposed to be in.
-    (setq gnus-original-article (cons group article))
     (when (and (get-buffer gnus-article-buffer)
 	       (equal (buffer-name (current-buffer))
 		      (buffer-name (get-buffer gnus-article-buffer))))
       (save-excursion
+	(setq gnus-original-article (cons group article))
 	(if (get-buffer gnus-original-article-buffer)
 	    (set-buffer (get-buffer gnus-original-article-buffer))
 	  (set-buffer (get-buffer-create gnus-original-article-buffer))
@@ -13811,6 +13791,17 @@ always hide."
 	     (point-min) (point-max)
 	     (nconc (list 'gnus-type 'signature)
 		    gnus-hidden-properties))))))))
+
+(defun gnus-article-strip-leading-blank-lines ()
+  "Remove all blank lines from the beginning of the article."
+  (interactive)
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (let (buffer-read-only)
+      (goto-char (point-min))
+      (when (search-forward "\n\n" nil t)
+	(while (looking-at "[ \t]$")
+	  (gnus-delete-line))))))
 
 (defun gnus-narrow-to-signature ()
   "Narrow to the signature."
@@ -16218,10 +16209,11 @@ If FORCE is non-nil, the .newsrc file is read."
 
 (defun gnus-gnus-to-newsrc-format ()
   ;; Generate and save the .newsrc file.
-  (let ((newsrc (cdr gnus-newsrc-alist))
-	info ranges range)
-    (save-excursion
-      (set-buffer (create-file-buffer gnus-current-startup-file))
+  (save-excursion
+    (set-buffer (create-file-buffer gnus-current-startup-file))
+    (let ((newsrc (cdr gnus-newsrc-alist))
+	  (standard-output (current-buffer))
+	  info ranges range)
       (setq buffer-file-name gnus-current-startup-file)
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
@@ -16238,18 +16230,18 @@ If FORCE is non-nil, the .newsrc file is read."
 	    (insert " ")
 	    (if (not (listp (cdr ranges)))
 		(if (= (car ranges) (cdr ranges))
-		    (insert (int-to-string (car ranges)))
-		  (insert (int-to-string (car ranges)) "-"
-			  (int-to-string (cdr ranges))))
+		    (princ (car ranges))
+		  (princ (car ranges))
+		  (insert "-")
+		  (princ (cdr ranges)))
 	      (while ranges
 		(setq range (car ranges)
 		      ranges (cdr ranges))
 		(if (or (atom range) (= (car range) (cdr range)))
-		    (insert (int-to-string
-			     (or (and (atom range) range)
-				 (car range))))
-		  (insert (int-to-string (car range)) "-"
-			  (int-to-string (cdr range))))
+		    (princ (or (and (atom range) range) (car range)))
+		  (princ (car range))
+		  (insert "-")
+		  (princ (cdr range)))
 		(if ranges (insert ",")))))
 	  (insert "\n")))
       (make-local-variable 'version-control)
@@ -16403,6 +16395,25 @@ If FORCE is non-nil, the .newsrc file is read."
 
 
 ;;;
+;;; Shutdown
+;;;
+
+(defvar gnus-shutdown-alist nil)
+
+(defun gnus-add-shutdown (function &rest symbols)
+  "Run FUNCTION whenever one of SYMBOLS is shut down."
+  (push (cons function symbols) gnus-shutdown-alist))
+
+(defun gnus-shutdown (symbol)
+  "Shut down everything that waits for SYMBOL."
+  (let ((alist gnus-shutdown-alist)
+	entry)
+    (while (setq entry (pop alist))
+      (when (memq symbol (cdr entry))
+	(funcall (car entry))))))
+
+
+;;;
 ;;; Buffering of read articles.
 ;;;
 
@@ -16424,6 +16435,8 @@ If FORCE is non-nil, the .newsrc file is read."
   "Initialize backlog variables."
   (unless gnus-backlog-hashtb
     (setq gnus-backlog-hashtb (make-vector 1023 0))))
+
+(gnus-add-shutdown 'gnus-backlog-shutdown 'gnus)
 
 (defun gnus-backlog-shutdown ()
   "Clear all backlog variables and buffers."

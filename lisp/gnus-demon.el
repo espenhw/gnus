@@ -99,6 +99,8 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's.")
     (setq gnus-demon-idle-has-been-called nil)
     (setq gnus-use-demon t)))
 
+(gnus-add-shutdown 'gnus-demon-cancel 'gnus)
+
 (defun gnus-demon-cancel ()
   "Cancel any Gnus daemons."
   (interactive)

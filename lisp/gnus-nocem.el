@@ -215,6 +215,8 @@
 	  (setq entry (cdr entry))))
       (setq alist (cdr alist)))))
 
+(gnus-add-shutdown 'gnus-nocem-close 'gnus)
+
 (defun gnus-nocem-close ()
   "Clear internal NoCeM variables."
   (setq gnus-nocem-alist nil

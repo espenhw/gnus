@@ -204,8 +204,8 @@ GROUP: Mail will be stored in GROUP (a string).
 \(& SPLIT...): Process each SPLIT expression.
 
 FIELD must match a complete field name.  VALUE must match a complete
-word according to the fundamental mode syntax table.  You can use .*
-in the regexps to match partial field names or words.
+word according to the `nnmail-split-fancy-syntax-table' syntax table.
+You can use .* in the regexps to match partial field names or words.
 
 FIELD and VALUE can also be lisp symbols, in that case they are expanded
 as specified in `nnmail-split-abbrev-alist'.
@@ -260,6 +260,10 @@ narrowed to the article in question with the Message-ID as a
 parameter.  It should return nil, `warn' or `delete'.")
 
 ;;; Internal variables.
+
+(defvar nnmail-split-fancy-syntax-table
+  (copy-syntax-table (standard-syntax-table))
+  "Syntax table used by `nnmail-split-fancy'.")
 
 
 
@@ -531,7 +535,7 @@ nn*-request-list should have been called before calling this function."
       (if (re-search-forward delim nil t)
 	  (when (or (looking-at "[^\n :]+ *:")
 		    (looking-at delim)
-		    (looking-at (concat ">" delim)))
+		    (looking-at (concat ">" rmail-unix-mail-delimiter)))
 	    (forward-line -1)
 	    (setq found 'yes))
 	(setq found 'no)))
@@ -593,17 +597,6 @@ nn*-request-list should have been called before calling this function."
 	;; message separator or a blank line followed by the separator.
 	;; The blank line should probably be deleted.  If neither of the
 	;; three is met, the content-length header is probably invalid.
-	(when content-length
-	  (forward-line 1)
-	  (setq skip (+ (point) content-length))
-	  (when (or (= skip (point-max))
-		    (and (< skip (point-max))
-			 (goto-char skip)
-			 (or (looking-at delim)
-			     (and (looking-at 
-				   (concat "[ \t]*\n\\(" delim "\\)"))
-				  (setq skip (match-beginning 1))))))
-	    (setq end skip)))
 	(when content-length
 	  (forward-line 1)
 	  (setq skip (+ (point) content-length))
@@ -830,7 +823,12 @@ Return the number of characters in the body."
 (defun nnmail-split-fancy ()
   "Fancy splitting method.
 See the documentation for the variable `nnmail-split-fancy' for documentation."
-  (nnmail-split-it nnmail-split-fancy))
+  (let ((syntab (syntax-table)))
+    (unwind-protect
+	(progn
+	  (set-syntax-table nnmail-split-fancy-syntax-table)
+	  (nnmail-split-it nnmail-split-fancy))
+      (set-syntax-table syntab))))
 
 (defvar nnmail-split-cache nil)
 ;; Alist of split expressions their equivalent regexps.
@@ -1058,9 +1056,9 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	  (beginning-of-line)
 	  (insert "Original-"))
 	(beginning-of-line)
-	(insert "Message-ID: " newid "\n")
-	(insert "Gnus-Warning: This is a duplication of message "
-		message-id "\n")
+	(insert 
+	 "Message-ID: " newid "\n"
+	 "Gnus-Warning: This is a duplicate of message " message-id "\n")
 	(nnmail-cache-insert newid)
 	(funcall func)))
      (t

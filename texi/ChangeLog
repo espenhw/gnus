@@ -1,3 +1,7 @@
+Sat Mar  9 07:00:48 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Fancy Mail Splitting): Addition.
+
 Sat Mar  9 00:32:23 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus.texi (Summary Buffer Lines): Change.

@@ -304,6 +304,8 @@ The scale factor is applied after the offset.")
     (if (looking-at "[0-9]+")
 	(buffer-substring token-pos (match-end 0)))))
 
+(gnus-add-shutdown 'bbb-logout 'gnus)
+
 (defun bbb-logout ()
   "logout of bbb session"
   (let ((bbb-process 

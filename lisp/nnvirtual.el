@@ -80,7 +80,7 @@ virtual group.")
 		       (gnus-request-group cgroup t))
 	      (setq prefix (gnus-group-real-prefix cgroup))
 	      (when (setq result (gnus-retrieve-headers 
-				  (list (caddr article)) cgroup fetch-old))
+				  (list (caddr article)) cgroup nil))
 		(set-buffer nntp-server-buffer)
 		(if (zerop (buffer-size))
 		    (nconc (assq cgroup unfetched) (list (caddr article)))

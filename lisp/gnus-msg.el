@@ -1017,7 +1017,8 @@ called."
 				  gnus-inews-sent-ids))
 	    (setcdr end nil))
 	  (nnheader-temp-write gnus-sent-message-ids-file
-	    (prin1 `(setq gnus-inews-sent-ids ',gnus-inews-sent-ids)))
+	    (prin1 `(setq gnus-inews-sent-ids ',gnus-inews-sent-ids)
+		   (current-buffer)))
 	  nil)))))
 
 (defun gnus-tokenize-header (header &optional separator)
@@ -1227,62 +1228,61 @@ This function can be used in `mail-citation-hook', for instance."
   ;; Correct newsgroups field: change sequence of spaces to comma and 
   ;; eliminate spaces around commas.  Eliminate imbedded line breaks.
   (goto-char (point-min))
-  (if (re-search-forward "^Newsgroups: +" nil t)
-      (save-restriction
-	(narrow-to-region
-	 (point)
-	 (if (re-search-forward "^[^ \t]" nil t)
-	     (match-beginning 0)
-	   (forward-line 1)
-	   (point)))
-	(goto-char (point-min))
-	(while (re-search-forward "\n[ \t]+" nil t)
-	  (replace-match " " t t))	;No line breaks (too confusing)
-	(goto-char (point-min))
-	(while (re-search-forward "[ \t\n]*,[ \t\n]*\\|[ \t]+" nil t)
-	  (replace-match "," t t))
-	(goto-char (point-min))
-	;; Remove a trailing comma.
-	(if (re-search-forward ",$" nil t)
-	    (replace-match "" t t))))
-
+  (when (re-search-forward "^Newsgroups: +" nil t)
+    (save-restriction
+      (narrow-to-region
+       (point)
+       (if (re-search-forward "^[^ \t]" nil t)
+	   (match-beginning 0)
+	 (forward-line 1)
+	 (point)))
+      (goto-char (point-min))
+      (while (re-search-forward "\n[ \t]+" nil t)
+	(replace-match " " t t))	;No line breaks (too confusing)
+      (goto-char (point-min))
+      (while (re-search-forward "[ \t\n]*,[ \t\n]*\\|[ \t]+" nil t)
+	(replace-match "," t t))
+      (goto-char (point-min))
+      ;; Remove trailing commas.
+      (when (re-search-forward ",+$" nil t)
+	(replace-match "" t t))))
+ 
   ;; Added by Per Abrahamsen <abraham@iesd.auc.dk>.
   ;; Help save the the world!
-  (or 
-   gnus-expert-user
-   (let ((newsgroups (mail-fetch-field "newsgroups"))
-	 (followup-to (mail-fetch-field "followup-to"))
-	 groups to)
-     (if (and newsgroups
-	      (string-match "," newsgroups) (not followup-to))
-	 (progn
-	   (while (string-match "," newsgroups)
-	     (setq groups
-		   (cons (list (substring newsgroups 0 (match-beginning 0)))
-			 groups))
-	     (setq newsgroups (substring newsgroups (match-end 0))))
-	   (setq groups (nreverse (cons (list newsgroups) groups)))
-
-	   (setq to (completing-read 
-		     "Followups to: (default all groups) " groups))
-	   (if (> (length to) 0)
-	       (progn
-		 (goto-char (point-min))
-		 (insert "Followup-To: " to "\n")))))))
+  (unless gnus-expert-user
+    (let ((newsgroups (mail-fetch-field "newsgroups"))
+	  (followup-to (mail-fetch-field "followup-to"))
+	  to)
+      (when (and newsgroups (string-match "," newsgroups)
+		 (not followup-to)
+		 (not
+		  (zerop
+		   (length
+		    (setq to (completing-read 
+			      "Followups to: (default all groups) " 
+			      (mapcar (lambda (g) (list g))
+				      (cons "poster" 
+					    (gnus-tokenize-header 
+					     newsgroups)))))))))
+	(goto-char (point-min))
+	(insert "Followup-To: " to "\n"))))
 
   ;; Cleanup Followup-To.
   (goto-char (point-min))
-  (if (search-forward-regexp "^Followup-To: +" nil t)
-      (save-restriction
-	(narrow-to-region
-	 (point)
-	 (if (re-search-forward "^[^ \t]" nil 'end)
-	     (match-beginning 0)
-	   (point-max)))
-	(goto-char (point-min))
-	(replace-regexp "\n[ \t]+" " ") ;No line breaks (too confusing)
-	(goto-char (point-min))
-	(replace-regexp "[ \t\n]*,[ \t\n]*\\|[ \t]+" ","))))
+  (when (search-forward-regexp "^Followup-To: +" nil t)
+    (save-restriction
+      (narrow-to-region
+       (point)
+       (if (re-search-forward "^[^ \t]" nil 'end)
+	   (match-beginning 0)
+	 (point-max)))
+      (goto-char (point-min))
+      ;; No line breaks (too confusing)
+      (while (re-search-forward "\n[ \t]+" nil t )
+	(replace-match " " t ))
+      (goto-char (point-min))
+      (while (re-search-forward "[ \t\n]*,[ \t\n]*\\|[ \t]+" nil t)
+	(replace-match "," t t)))))
 
 (defun gnus-inews-remove-headers ()
   (let ((case-fold-search t)
@@ -1812,7 +1812,8 @@ Customize the variable gnus-mail-forward-method to use another mailer."
       (forward-char -1)
       (save-restriction
 	(narrow-to-region beg (point))
-	(nnheader-remove-header gnus-ignored-resent-headers t))
+	(nnheader-remove-header gnus-ignored-resent-headers t)
+	(goto-char (point-max)))
       (insert mail-header-separator)
       ;; Rename all old ("Also-")Resent headers.
       (while (re-search-backward "^\\(Also-\\)?Resent-" beg t)
@@ -3056,6 +3057,11 @@ Headers will be generated before sending."
     (unless (looking-at "$")
       (forward-line 2)))
    (sit-for 0)))
+
+(gnus-add-shutdown 'gnus-inews-close 'gnus)
+
+(defun gnus-inews-close ()
+  (setq gnus-inews-sent-ids nil))
   
 ;;; Allow redefinition of functions.
 

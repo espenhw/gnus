@@ -56,6 +56,9 @@ with some simple extensions.
 
 ;; Internal variables.
 
+(defvar gnus-topic-active-topology nil)
+(defvar gnus-topic-active-alist nil)
+
 (defvar gnus-topic-killed-topics nil)
 (defvar gnus-topic-inhibit-change-level nil)
 (defvar gnus-topic-tallied-groups nil)
@@ -336,6 +339,14 @@ articles in the topic and its subtopics."
 				     (and remove top)))))
 	(setq topology (cdr topology)))
       result)))
+
+(gnus-add-shutdown 'gnus-topic-close 'gnus)
+
+(defun gnus-topic-close ()
+  (setq gnus-topic-active-topology nil
+	gnus-topic-active-alist nil
+	gnus-topic-killed-topics nil
+	gnus-topic-tallied-groups nil))
 
 (defun gnus-topic-check-topology ()  
   ;; The first time we set the topology to whatever we have
@@ -670,7 +681,7 @@ group."
 	(gnus-topic-fold all))
     (gnus-group-read-group all no-article group)))
 
-(defun gnus-topic-create-topic (topic parent &optional previous)
+(defun gnus-topic-create-topic (topic parent &optional previous full-topic)
   (interactive 
    (list
     (read-string "Create topic: ")
@@ -681,7 +692,8 @@ group."
     (error "Topic aleady exists"))
   (unless parent
     (setq parent (caar gnus-topic-topology)))
-  (let ((top (cdr (gnus-topic-find-topology parent))))
+  (let ((top (cdr (gnus-topic-find-topology parent)))
+	(full-topic (or full-topic `((,topic visible)))))
     (unless top
       (error "No such parent topic: %s" parent))
     (if previous
@@ -689,8 +701,8 @@ group."
 	  (while (and (cdr top)
 		      (not (equal (caaadr top) previous)))
 	    (setq top (cdr top)))
-	  (setcdr top (cons (list (list topic 'visible)) (cdr top))))
-      (nconc top (list (list (list topic 'visible)))))
+	  (setcdr top (cons full-topic (cdr top))))
+      (nconc top (list full-topic)))
     (unless (assoc topic gnus-topic-alist)
       (push (list topic) gnus-topic-alist)))
   (gnus-topic-enter-dribble)
@@ -717,10 +729,16 @@ group."
   (gnus-topic-enter-dribble)
   (gnus-group-list-groups))
 
-(defun gnus-topic-remove-group (n)
-  "Remove the current group the topic."
-  (interactive "P")
-  (gnus-topic-move-group n nil))
+(defun gnus-topic-remove-group ()
+  "Remove the current group from the topic."
+  (interactive)
+  (let ((topicl (assoc (gnus-group-parent-topic) gnus-topic-alist))
+	(group (gnus-group-group-name))
+	(buffer-read-only nil))
+    (when (and topicl group)
+      (gnus-delete-line)
+      (delq (gnus-group-group-name) topicl))
+    (gnus-group-position-point)))
 
 (defun gnus-topic-copy-group (n topic)
   "Copy the current group to a topic."
@@ -820,9 +838,10 @@ group."
   (interactive "p")
   (if gnus-topic-killed-topics
       (let ((previous (gnus-group-parent-topic))
-	    (item (nth 1 (pop gnus-topic-killed-topics))))
+	    (item (cdr (pop gnus-topic-killed-topics))))
 	(gnus-topic-create-topic
-	 (car item) (gnus-topic-parent-topic previous) previous))
+	 (caar item) (gnus-topic-parent-topic previous) previous
+	 item))
     (let* ((prev (gnus-group-group-name))
 	   (gnus-topic-inhibit-change-level t)
 	   (gnus-group-indentation
@@ -870,7 +889,7 @@ group."
   "Mark all groups in the topic with the process mark."
   (interactive (list (gnus-group-parent-topic)))
   (save-excursion
-    (let ((groups (gnus-topic-find-groups topic)))
+    (let ((groups (gnus-topic-find-groups topic 9 t)))
       (while groups
 	(funcall (if unmark 'gnus-group-remove-mark 'gnus-group-set-mark)
 		 (gnus-info-group (nth 2 (pop groups))))))))

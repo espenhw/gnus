@@ -1046,9 +1046,7 @@ SCORE is the score to add."
       (setq scores news
 	    news nil)
       (when (and gnus-summary-default-score
-		 scores
-		 (> (length gnus-newsgroup-headers)
-		    (length gnus-newsgroup-scored)))
+		 scores)
 	(let* ((entries gnus-header-index)
 	       (now (gnus-day-number (current-time-string)))
 	       (expire (and gnus-score-expiry-days
@@ -1896,10 +1894,14 @@ This mode is an extended emacs-lisp mode.
 	gnus-short-name-score-file-cache nil)
   (gnus-message 6 "The score cache is now flushed"))
 
+(gnus-add-shutdown 'gnus-score-close 'gnus)
+
 (defun gnus-score-close ()
   "Clear all internal score variables."
   (setq gnus-score-cache nil
-	gnus-internal-global-score-files nil))
+	gnus-internal-global-score-files nil
+	gnus-score-file-list nil
+	gnus-score-file-alist-cache nil))
 
 ;; Summary score marking commands.
 
@@ -1980,9 +1982,12 @@ This mode is an extended emacs-lisp mode.
 	(setq gnus-score-file-list 
 	      (cons nil 
 		    (or gnus-short-name-score-file-cache
-			(setq gnus-short-name-score-file-cache
-			      (gnus-score-score-files-1
-			       gnus-kill-files-directory)))))
+			(prog2
+			    (gnus-message 6 "Finding all score files...")
+			    (setq gnus-short-name-score-file-cache
+				  (gnus-score-score-files-1
+				   gnus-kill-files-directory))
+			  (gnus-message 6 "Finding all score files...done")))))
       ;; We want long file names.
       (when (or (not gnus-score-file-list)
 		(not (car gnus-score-file-list))
@@ -2012,7 +2017,9 @@ This mode is an extended emacs-lisp mode.
        ;; Add files to the list of score files.
        ((string-match regexp file)
 	(push file out))))
-    out))
+    (or out
+	;; Return a dummy value.
+	(list "~/News/this.file.does.not.exist.SCORE"))))
        
 (defun gnus-score-file-regexp ()
   "Return a regexp that match all score files."

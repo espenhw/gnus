@@ -271,12 +271,12 @@ If NOT-ALL, don't pack ticked articles."
 		   (gnus-range-length (cdr (assq 'tick (gnus-info-marks 
 							(nth 2 entry)))))))
       (when (gnus-summary-read-group group nil t)
-	(let ((gnus-newsgroup-processable
+	(setq gnus-newsgroup-processable
+	      (reverse
 	       (if (not not-all)
-		   (reverse (append gnus-newsgroup-marked
-				    gnus-newsgroup-unreads))
-		 (reverse gnus-newsgroup-unreads))))
-	  (gnus-soup-add-article nil))
+		   (append gnus-newsgroup-marked gnus-newsgroup-unreads)
+		 gnus-newsgroup-unreads)))
+	(gnus-soup-add-article nil)
 	(gnus-summary-exit)))))
 
 (defun gnus-soup-insert-idx (offset header)

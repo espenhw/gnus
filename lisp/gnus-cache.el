@@ -68,6 +68,8 @@ variable to \"^nnml\".")
   "Initialize the cache."
   (gnus-cache-read-active))
 
+(gnus-add-shutdown 'gnus-cache-close 'gnus)
+
 (defun gnus-cache-close ()
   "Shut down the cache."
   (gnus-cache-write-active)
@@ -303,6 +305,7 @@ If not given a prefix, use the process marked articles instead.
 Returns the list of articles removed."
   (interactive "P")
   (gnus-set-global-variables)
+  (gnus-cache-change-buffer gnus-newsgroup-name)
   (let ((articles (gnus-summary-work-articles n))
 	article out)
     (while articles
