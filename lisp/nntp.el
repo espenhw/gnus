@@ -1,4 +1,3 @@
-;;; nntp.el --- nntp access for Gnus
 ;; Copyright (C) 1987,88,89,90,92,93,94,95,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -175,7 +174,8 @@ server there that you can connect to.")
       (let ((number (length articles))
 	    (count 0)
 	    (received 0)
-	    (last-point (point-min)))
+	    (last-point (point-min))
+	    (nntp-inhibit-erase t))
 	;; Send HEAD command.
 	(while articles
 	  (nntp-send-command 
@@ -372,6 +372,13 @@ It will prompt for a password."
    nntp-address nntp-port-number nntp-server-buffer
    wait-for nnheader-callback-function))
 
+(defun nntp-send-command-nodelete (wait-for &rest strings)
+  "Send STRINGS to server and wait until WAIT-FOR returns."
+  (nntp-retrieve-data
+   (mapconcat 'identity strings " ") 
+   nntp-address nntp-port-number nntp-server-buffer
+   wait-for nnheader-callback-function))
+
 (defun nntp-send-command-and-decode (wait-for &rest strings)
   "Send STRINGS to server and wait until WAIT-FOR returns."
   (unless nnheader-callback-function
@@ -387,7 +394,7 @@ It will prompt for a password."
   "Send the current buffer to server and wait until WAIT-FOR returns."
   (unless nnheader-callback-function
     (save-excursion
-      (set-buffer nntp-server-buffer)
+      (set-buffer (nntp-find-connection-buffer nntp-server-buffer))
       (erase-buffer)))
   (nntp-encode-text)
   (process-send-region (nntp-find-connection nntp-server-buffer)
@@ -416,6 +423,12 @@ It will prompt for a password."
 (defun nntp-find-connection-entry (buffer)
   "Return the entry for the connection to BUFFER."
   (assq (nntp-find-connection buffer) nntp-connection-alist))
+
+(defun nntp-find-connection-buffer (buffer)
+  "Return the process connection buffer tied to BUFFER."
+  (let ((process (nntp-find-connection buffer)))
+    (when process
+      (process-buffer process))))
 
 (defun nntp-open-connection (buffer)
   "Open a connection to PORT on ADDRESS delivering output to BUFFER."
@@ -542,7 +555,7 @@ It will prompt for a password."
       (nntp-accept-process-output process)
       (goto-char (point-min)))
     (prog1
-	(if (looking-at "[345]")
+	(if (looking-at "[45]")
 	    (progn
 	      (nntp-snarf-error-message)
 	      nil)
@@ -553,6 +566,7 @@ It will prompt for a password."
 	  (nntp-decode-text (not decode))
 	  (save-excursion
 	    (set-buffer buffer)
+	    (goto-char (point-max))
 	    (insert-buffer-substring (process-buffer process))
 	    t))
       (erase-buffer))))
@@ -564,8 +578,9 @@ It will prompt for a password."
 (defun nntp-accept-process-output (process)
   "Wait for output from PROCESS and message some dots."
   (save-excursion
-    (set-buffer nntp-server-buffer)
-    (message "nntp reading%s" (make-string (/ (point-max) 100) ?.))
+    (set-buffer (or (nntp-find-connection-buffer nntp-server-buffer)
+		    nntp-server-buffer))
+    (message "nntp reading%s" (make-string (/ (point-max) 1000) ?.))
     (accept-process-output process 1)))
 
 (defun nntp-accept-response ()
@@ -617,6 +632,7 @@ It will prompt for a password."
     (insert "." nntp-end-of-line)))
 
 (defun nntp-retrieve-headers-with-xover (articles &optional fetch-old)
+  (set-buffer nntp-server-buffer)
   (erase-buffer)
   (cond 
 
@@ -722,14 +738,14 @@ It will prompt for a password."
 	;; If `nntp-server-xover' is a string, then we just send this
 	;; command.
 	(if wait-for-reply
-	    (nntp-send-command "\r\n\\.\r\n" nntp-server-xover range)
+	    (nntp-send-command-nodelete "\r\n\\.\r\n" nntp-server-xover range)
 	  ;; We do not wait for the reply.
-	  (nntp-send-command "\r\n\\.\r\n" nntp-server-xover range))
+	  (nntp-send-command-nodelete "\r\n\\.\r\n" nntp-server-xover range))
       (let ((commands nntp-xover-commands))
 	;; `nntp-xover-commands' is a list of possible XOVER commands.
 	;; We try them all until we get at positive response. 
 	(while (and commands (eq nntp-server-xover 'try))
-	  (nntp-send-command "\r\n\\.\r\n" (car commands) range)
+	  (nntp-send-command-nodelete "\r\n\\.\r\n" (car commands) range)
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
 	    (goto-char (point-min))
@@ -814,12 +830,6 @@ It will prompt for a password."
 		 (mapconcat 'identity
 			    nntp-rlogin-parameters " ")))))
     proc))
-
-(defun nntp-find-connection-buffer (buffer)
-  "Return the process connection buffer tied to BUFFER."
-  (let ((process (nntp-find-connection buffer)))
-    (when process
-      (process-buffer process))))
 
 (provide 'nntp)
 

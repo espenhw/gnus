@@ -1,3 +1,9 @@
+Sat Aug  3 17:35:36 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Group Parameters): Addition.
+	(Home Score File): New.
+	(Topic Parameters): New.
+
 Wed Jul 31 15:34:12 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (are): Fix.

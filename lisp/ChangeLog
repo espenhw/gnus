@@ -1,3 +1,50 @@
+Sun Aug  4 00:17:51 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-wait-for): Goto point-max before inserting.
+	(nntp-retrieve-headers): Didn't inhibit Erasure.
+
+	* gnus-eform.el (gnus-edit-form-mode-map): Buggy.
+
+	* nntp.el (nntp-send-command-nodelete): New function.
+
+Sat Aug  3 22:21:24 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* article.el (article-date-ut): Wouldn't do anything much.
+
+	* nntp.el (nntp-wait-for): Wouldn't allow posting.
+
+	* nnmail.el (nnmail-delete-incoming): Set to nil.
+
+Sat Aug  3 01:31:24 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-home-score-file): New variable.
+	(gnus-home-score-file): New function.
+	(gnus-hierarchial-home-score-file): New function.
+	(gnus-possibly-score-headers): Use `adapt-file' param.
+	(gnus-home-adapt-file): New variable.
+	(gnus-hierarchial-home-adapt-file): New function.
+
+	* gnus-load.el (gnus-original-article-buffer): Moved here.
+
+	* gnus-sum.el (gnus-article-mark): New macro.
+	(gnus-summary-prepare-unthreaded): Use it.
+	(gnus-summary-prepare-threads): Ditto.
+
+	* gnus-win.el (gnus-buffer-configuration): New `edit-article'
+	setting. 
+
+	* gnus-sum.el (gnus-summary-edit-article): Don't move point in the
+	article buffer.
+	(gnus-summary-edit-article-done): Don't move point after editing.
+	(gnus-summary-edit-article-postpone): Removed.
+	(gnus-summary-update-article-line): New function.
+
+	* gnus-art.el (gnus-article-edit-mode-map): Buggy map.
+
+Fri Aug  2 22:36:40 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.4 is released.
+
 Wed Jul 31 15:23:54 1996  Ken Olstad  <ken@mn.cheyenne.com>
 
 	* gnus-xmas.el (gnus-xmas-redefine): Disbale XFace when running

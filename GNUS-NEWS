@@ -12,3 +12,25 @@ Gnus.
 article mode line.
 
 *** gnus.el has been split into many smaller files.
+
+*** Suppression of duplicate articles based on Message-ID.
+
+(setq gnus-suppress-duplicates t)
+
+*** New variables for specifying what score and adapt files
+are to be considered home score and adapt files.  See
+`gnus-home-score-file' and `gnus-home-adapt-files'.
+
+*** Groups can inherit group parameters from parent topics.
+
+*** Article editing has been revamped and is now usable.
+
+*** Signatures can be recognized in more intelligent fashions.
+See `gnus-signature-separator' and `gnus-signature-limit'.
+
+*** Summary pick mode has been made to look more nn-like.
+Line numbers are displayed and the `.' command can be
+used to pick articles.
+
+*** Commands for moving the .newsrc.eld from one server to
+another have been added.

@@ -105,7 +105,7 @@ with some simple extensions.
 %i    Number of ticked and dormant (integer)
 %T    Number of ticked articles (integer)
 %R    Number of read articles (integer)
-%t    Total number of articles (integer)
+%t    Estimated total number of articles (integer)
 %y    Number of unread, unticked articles (integer)
 %G    Group name (string)
 %g    Qualified group name (string)
@@ -197,7 +197,6 @@ variable.")
   "Function to override finding the next group after listing groups.")
 
 (defvar gnus-group-edit-buffer nil)
-(defvar gnus-edit-form-buffer nil)
 
 (defvar gnus-group-line-format-alist
   `((?M gnus-tmp-marked-mark ?c)

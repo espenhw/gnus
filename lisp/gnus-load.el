@@ -417,6 +417,7 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
 
 ;;; Internal variables
 
+(defvar gnus-original-article-buffer " *Original Article*")
 (defvar gnus-newsgroup-name nil)
 
 (defvar gnus-current-select-method nil

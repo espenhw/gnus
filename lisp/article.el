@@ -656,7 +656,8 @@ If TYPE is `local', convert to local time; if it is `lapsed', output
 how much time has lapsed since DATE."
   (interactive (list 'ut t))
   (let* ((header (or header (message-fetch-field "date") ""))
-	 (date (and (vectorp header) (mail-header-date header)))
+	 (date (if (vectorp header) (mail-header-date header)
+		 header))
 	 (date-regexp "^Date: \\|^X-Sent: ")
 	 (now (current-time))
 	 (inhibit-point-motion-hooks t)

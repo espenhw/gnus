@@ -443,7 +443,6 @@ automatically when it is selected.")
 
 ;;; Internal variables
 
-(defvar gnus-original-article-buffer " *Original Article*")
 (defvar gnus-original-article nil)
 (defvar gnus-article-internal-prepare-hook nil)
 
@@ -1378,6 +1377,15 @@ This is all marks except unread, ticked, dormant, and expirable."
 	   (= mark gnus-dormant-mark)
 	   (= mark gnus-expirable-mark))))
 
+(defmacro gnus-article-mark (number)
+  `(cond
+    ((memq ,number gnus-newsgroup-unreads) gnus-unread-mark)
+    ((memq ,number gnus-newsgroup-marked) gnus-ticked-mark)
+    ((memq ,number gnus-newsgroup-dormant) gnus-dormant-mark)
+    ((memq ,number gnus-newsgroup-expirable) gnus-expirable-mark)
+    (t (or (cdr (assq ,number gnus-newsgroup-reads))
+	   gnus-ancient-mark))))
+
 ;; Saving hidden threads.
 
 (put 'gnus-save-hidden-threads 'lisp-indent-function 0)
@@ -2053,6 +2061,34 @@ If NO-DISPLAY, don't generate a summary buffer."
 		      (delq number gnus-newsgroup-unselected)))
 	    (push number gnus-newsgroup-ancient)))))))
 
+(defun gnus-summary-update-article-line (article header)
+  "Update the line for ARTICLE using HEADERS."
+  (let* ((id (mail-header-id header))
+	 (thread (gnus-id-to-thread id)))
+    (unless thread
+      (error "Article in no thread"))
+    ;; Update the thread.
+    (setcar thread header)
+    (gnus-summary-goto-subject article)
+    (let* ((datal (gnus-data-find-list article))
+	   (data (car datal))
+	   (length (when (cdr datal)
+		     (- (gnus-data-pos data)
+			(gnus-data-pos (cadr datal)))))
+	   (buffer-read-only nil)
+	   (level (gnus-summary-thread-level)))
+      (gnus-delete-line)
+      (gnus-summary-insert-line
+       header level nil (gnus-article-mark article)
+       (memq article gnus-newsgroup-replied)
+       (memq article gnus-newsgroup-expirable)
+       (mail-header-subject header)
+       nil (cdr (assq article gnus-newsgroup-scored))
+       (memq article gnus-newsgroup-processable))
+      (when length
+	(gnus-data-update-list
+	 (cdr datal) (- length (- (gnus-data-pos data) (point))))))))
+     
 (defun gnus-summary-update-article (article &optional iheader)
   "Update ARTICLE in the summary buffer."
   (set-buffer gnus-summary-buffer)
@@ -2545,15 +2581,7 @@ or a straight list of headers."
 	      (setq gnus-tmp-dummy-line nil))
 
 	    ;; Compute the mark.
-	    (setq
-	     gnus-tmp-unread
-	     (cond
-	      ((memq number gnus-newsgroup-unreads) gnus-unread-mark)
-	      ((memq number gnus-newsgroup-marked) gnus-ticked-mark)
-	      ((memq number gnus-newsgroup-dormant) gnus-dormant-mark)
-	      ((memq number gnus-newsgroup-expirable) gnus-expirable-mark)
-	      (t (or (cdr (assq number gnus-newsgroup-reads))
-		     gnus-ancient-mark))))
+	    (setq gnus-tmp-unread (gnus-article-mark number))
 
 	    (push (gnus-data-make number gnus-tmp-unread (1+ (point))
 				  gnus-tmp-header gnus-tmp-level)
@@ -2663,14 +2691,7 @@ or a straight list of headers."
 	    (push (cons number gnus-low-score-mark)
 		  gnus-newsgroup-reads)))
 
-	(setq mark
-	      (cond
-	       ((memq number gnus-newsgroup-marked) gnus-ticked-mark)
-	       ((memq number gnus-newsgroup-dormant) gnus-dormant-mark)
-	       ((memq number gnus-newsgroup-unreads) gnus-unread-mark)
-	       ((memq number gnus-newsgroup-expirable) gnus-expirable-mark)
-	       (t (or (cdr (assq number gnus-newsgroup-reads))
-		      gnus-ancient-mark))))
+	(setq mark (gnus-article-mark number))
 	(setq gnus-newsgroup-data
 	      (cons (gnus-data-make number mark (1+ (point)) header 0)
 		    gnus-newsgroup-data))
@@ -5690,66 +5711,47 @@ groups."
     (when (and (not force)
 	       (gnus-group-read-only-p))
       (error "The current newsgroup does not support article editing."))
-    (gnus-summary-select-article t nil t)
-    (gnus-configure-windows 'article)
-    (select-window (get-buffer-window gnus-article-buffer))
-    (gnus-message 6 "C-c C-c to end edits")
-    (setq buffer-read-only nil)
-    (gnus-article-edit-mode)
-    (buffer-enable-undo)
-    (widen)
-    (goto-char (point-min))
-    (search-forward "\n\n" nil t)))
+    ;; Select article if needed.
+    (unless (eq (gnus-summary-article-number)
+		gnus-current-article)
+      (gnus-summary-select-article t))
+    (gnus-article-edit-article
+     `(lambda ()
+	(gnus-summary-edit-article-done
+	 ,(mail-header-references gnus-current-headers)
+	 ,(gnus-group-read-only-p) ,gnus-summary-buffer)))))
 
-(defun gnus-summary-edit-article-done ()
+(defun gnus-summary-edit-article-done (references read-only buffer)
   "Make edits to the current article permanent."
   (interactive)
-  (if (gnus-group-read-only-p)
-      (progn
-	(let ((beep (not (eq major-mode 'text-mode))))
-	  (gnus-summary-edit-article-postpone)
-	  (when beep
-	    (gnus-error
-	     3 "The current newsgroup does not support article editing."))))
-    (let ((buf (format "%s" (buffer-string))))
-      (erase-buffer)
-      (insert buf)
-      (if (not (gnus-request-replace-article
-		(cdr gnus-article-current) (car gnus-article-current)
-		(current-buffer)))
-	  (error "Couldn't replace article.")
-	(gnus-article-mode)
-	(use-local-map gnus-article-mode-map)
-	(setq buffer-read-only t)
-	(buffer-disable-undo (current-buffer))
-	(gnus-configure-windows 'summary)
-	(gnus-summary-update-article (cdr gnus-article-current))
-	(when gnus-use-cache
-	  (gnus-cache-update-article 	
-	   (car gnus-article-current) (cdr gnus-article-current)))
-	(when gnus-keep-backlog
-	  (gnus-backlog-remove-article 
-	   (car gnus-article-current) (cdr gnus-article-current))))
-      (save-excursion
-	(when (get-buffer gnus-original-article-buffer)
-	  (set-buffer gnus-original-article-buffer)
-	  (setq gnus-original-article nil)))
-      (setq gnus-article-current nil
-	    gnus-current-article nil)
-      (run-hooks 'gnus-article-display-hook)
-      (and (gnus-visual-p 'summary-highlight 'highlight)
-	   (run-hooks 'gnus-visual-mark-article-hook)))))
-
-(defun gnus-summary-edit-article-postpone ()
-  "Postpone changes to the current article."
-  (interactive)
-  (gnus-article-mode)
-  (use-local-map gnus-article-mode-map)
-  (setq buffer-read-only t)
-  (buffer-disable-undo (current-buffer))
-  (gnus-configure-windows 'summary)
-  (and (gnus-visual-p 'summary-highlight 'highlight)
-       (run-hooks 'gnus-visual-mark-article-hook)))
+  ;; Replace the article.
+  (if (and (not read-only)
+	   (not (gnus-request-replace-article
+		 (cdr gnus-article-current) (car gnus-article-current)
+		 (current-buffer))))
+      (error "Couldn't replace article.")
+    ;; Update the summary buffer.
+    (if (equal (message-tokenize-header references " ")
+	       (message-tokenize-header
+		(message-fetch-field "references") " "))
+	;; We only have to update this line.
+	(save-restriction
+	  (message-narrow-to-head)
+	  (let ((header (nnheader-parse-head t)))
+	    (set-buffer buffer)
+	    (mail-header-set-number header (cdr gnus-article-current))
+	    (gnus-summary-update-article-line
+	     (cdr gnus-article-current) header)))
+      ;; Update threads.
+      (set-buffer buffer)
+      (gnus-summary-update-article (cdr gnus-article-current)))
+    ;; Prettify the article buffer again.
+    (save-excursion
+      (set-buffer gnus-article-buffer)
+      (run-hooks 'gnus-article-display-hook))
+    ;; Prettify the summary buffer line.
+    (when (gnus-visual-p 'summary-highlight 'highlight)
+      (run-hooks 'gnus-visual-mark-article-hook))))
 
 (defun gnus-summary-edit-wash (key)
   "Perform editing command in the article buffer."
@@ -5761,7 +5763,7 @@ groups."
   (message "")
   (gnus-summary-edit-article)
   (execute-kbd-macro (concat (this-command-keys) key))
-  (gnus-summary-edit-article-done))
+  (gnus-article-edit-done))
 
 ;;; Respooling
 

@@ -1161,13 +1161,16 @@ how much time has lapsed since DATE."
 (defvar gnus-article-edit-mode-hook nil
   "*Hook run in article edit mode buffers.")
 
+(defvar gnus-article-edit-done-function nil)
+
 (defvar gnus-article-edit-mode-map nil)
 
 (unless gnus-article-edit-mode-map 
   (setq gnus-article-edit-mode-map (copy-keymap text-mode-map))
 
   (gnus-define-keys gnus-article-edit-mode-map
-    "\C-c\C-c" 'gnus-summary-edit-article-done)
+    "\C-c\C-c" gnus-article-edit-done
+    "\C-c\C-k" gnus-article-edit-exit)
 
   (gnus-define-keys (gnus-article-edit-wash-map
 		     "\C-c\C-w" gnus-article-edit-mode-map)
@@ -1182,10 +1185,62 @@ This is an extended text-mode.
   (kill-all-local-variables)
   (setq major-mode 'gnus-article-edit-mode)
   (setq mode-name "Article Edit")
-  (make-local-variable 'minor-mode-alist)
   (use-local-map gnus-article-edit-mode-map)
+  (make-local-variable 'gnus-article-edit-done-function)
+  (make-local-variable 'gnus-prev-winconf)
+  (setq buffer-read-only nil)
+  (buffer-enable-undo)
+  (widen)
   (run-hooks 'text-mode 'gnus-article-edit-mode-hook))
 
+(defun gnus-article-edit-article (exit-func)
+  "Start editing the contents of the current article buffer."
+  (let ((winconf (current-window-configuration)))
+    (set-buffer gnus-article-buffer)
+    (gnus-article-edit-mode)
+    (gnus-configure-windows 'edit-article)
+    (setq gnus-article-edit-done-function exit-func)
+    (setq gnus-prev-winconf winconf)
+    (gnus-message 6 "C-c C-c to end edits")))
+
+(defun gnus-article-edit-done ()
+  "Update the article edits and exit."
+  (interactive)
+  (let ((func gnus-article-edit-done-function)
+	(buf (current-buffer)))
+    (gnus-article-edit-exit)
+    (save-excursion
+      (set-buffer buf)
+      (let ((buffer-read-only nil))
+	(funcall func)))))
+
+(defun gnus-article-edit-exit ()
+  "Exit the article editing without updating."
+  (interactive)
+      ;; We remove all text props from the article buffer.
+    (let ((buf (format "%s" (buffer-string)))
+	  (p (point))
+	  (window-start (window-start)))
+      (erase-buffer)
+      (insert buf)
+      (goto-char p)
+      (set-window-start (selected-window) window-start))
+    (let ((winconf gnus-prev-winconf))
+      (gnus-article-mode)
+      ;; The cache and backlog have to be flushed somewhat.
+      (when gnus-use-cache
+	(gnus-cache-update-article 	
+	 (car gnus-article-current) (cdr gnus-article-current)))
+      (when gnus-keep-backlog
+	(gnus-backlog-remove-article 
+	 (car gnus-article-current) (cdr gnus-article-current)))
+      ;; Flush original article as well.
+      (save-excursion
+	(when (get-buffer gnus-original-article-buffer)
+	  (set-buffer gnus-original-article-buffer)
+	  (setq gnus-original-article nil)))
+      (set-window-configuration winconf)))
+      
 (defun gnus-article-edit-full-stops ()
   "Interactively repair spacing at end of sentences."
   (interactive)

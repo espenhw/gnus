@@ -970,7 +970,8 @@ Number of ticked articles.
 Number of read articles.
 
 @item t
-Total number of articles.
+Estimated total number of articles.  (This is really @var{max-number}
+minus @var{min-number} plus 1.)
 
 @item y
 Number of unread, unticked, non-dormant articles.
@@ -1730,9 +1731,16 @@ The value can either be a number of days (not necessarily an integer) or
 the symbols @code{never} or @code{immediate}.
 
 @item score-file
+@cindex score file group parameter
 Elements that look like @code{(score-file . "file")} will make
-@samp{file} into the current score file for the group in question.  This
+@file{file} into the current score file for the group in question.  This
 means that all score commands you issue will end up in that file. 
+
+@item adapt-file
+@cindex adapt file group parameter
+Elements that look like @code{(adapt-file . "file")} will make
+@file{file} into the current adaptive file for the group in question.
+All adaptive score entries will be put into this file.
 
 @item admin-address
 When unsubscribing to a mailing list you should never send the
@@ -1760,11 +1768,9 @@ form, but who cares?
 
 @end table
 
-If you want to change the group info you can use the @kbd{G E} command
-to enter a buffer where you can edit it.
+Use the @kbd{G p} command to edit group parameters of a group.
 
-You usually don't want to edit the entire group info, so you'd be better
-off using the @kbd{G p} command to just edit the group parameters.
+Also @xref{Topic Parameters}.
 
 
 @node Listing Groups
@@ -2143,6 +2149,7 @@ the hook for the group mode:
 * Topic Variables::    How to customize the topics the Lisp Way.
 * Topic Commands::     Interactive E-Z commands.
 * Topic Topology::     A map of the world.
+* Topic Parameters::   Parameters that apply to all groups in a topic.
 @end menu
 
 
@@ -2296,11 +2303,8 @@ List all groups that Gnus knows about in a topics-ified way
 @cindex group parameters
 @cindex topic parameters
 @cindex parameters
-Edit the topic parameters (@code{gnus-topic-edit-parameters}).  All
-groups in the topic will inherit group parameters from the parent (and
-ancestor) topic parameters.  Group parameters (of course) override topic
-parameters, and topic parameters in sub-topics override topic parameters
-in super-topics.  You know.  Normal inheretance rules.
+Edit the topic parameters (@code{gnus-topic-edit-parameters}).
+@xref{Topic Parameters}.
 
 @end table
 
@@ -2315,14 +2319,14 @@ So, let's have a look at an example group buffer:
 @example
 Gnus
   Emacs -- I wuw it!
-       3: comp.emacs
-       2: alt.religion.emacs
+     3: comp.emacs
+     2: alt.religion.emacs
     Naughty Emacs
      452: alt.sex.emacs
        0: comp.talk.emacs.recovery
   Misc
-       8: comp.binaries.fractals
-      13: comp.sources.unix
+     8: comp.binaries.fractals
+    13: comp.sources.unix
 @end example
 
 So, here we have one top-level topic, two topics under that, and one
@@ -2346,6 +2350,56 @@ setting it in any other startup files will have no effect.
 This topology shows what topics are sub-topics of what topics (right),
 and which topics are visible.  Two settings are currently
 allowed---@code{visible} and @code{invisible}.
+
+
+@node Topic Parameters
+@subsection Topic Parameters
+
+All groups in a topic will inherit group parameters from the parent (and
+ancestor) topic parameters.  All legal group parameters are legal topic
+parameters (@pxref{Group Parameters}).  
+
+Group parameters (of course) override topic parameters, and topic
+parameters in sub-topics override topic parameters in super-topics.  You
+know.  Normal inheretance rules.  (@dfn{Rules} is here a noun, not a
+verb, although you may feel free to disagree with me here.)
+
+@example
+Gnus
+  Emacs
+     3: comp.emacs
+     2: alt.religion.emacs
+   452: alt.sex.emacs
+    Relief
+     452: alt.sex.emacs
+       0: comp.talk.emacs.recovery
+  Misc
+     8: comp.binaries.fractals
+    13: comp.sources.unix
+   452: alt.sex.emacs
+@end example
+
+Now, the @samp{Emacs} topic has the topic parameter 
+@code{(score-file . "emacs.SCORE")}; the @samp{Relief} topic has the topic
+parameter @code{(score-file . "relief.SCORE")}; and the @samp{Misc}
+topic has the topic parameter @code{(score-file . "emacs.SCORE")}.  In
+addition, @samp{alt.religion.emacs} has the group parameter
+@code{(score-file . "religion.SCORE")}.
+
+Now, when you enter @samp{alt.sex.emacs} in the @samp{Relief} topic, you
+will get the @file{relief.SCORE} home score file.  If you enter the same
+group in the @samp{Emacs} topic, you'll get the @file{emacs.SCORE} home
+score file.  If you enter @samp{alt.religion.emacs}, you'll get the
+@file{religion.SCORE} home score file.  
+
+This seems rather simple and self-evident, doesn't it?  Well, yes.  But
+there are some problems, especially with the @code{total-expiry}
+parameter.  Say you have a mail group in two topics; one with
+@code{total-expiry} and one without.  What happens when you do @kbd{M-x
+gnus-expire-all-expirable-groups}?  Gnus has no way of telling which one
+of these topics you mean to expire articles from, so anything may
+happen.  In fact, I hereby declare that it is @dfn{undefined} what
+happens.  You just have to be careful if you do stuff like that.
 
 
 @node Misc Group Stuff
@@ -9161,6 +9215,7 @@ silently to help keep the sizes of the score files down.
 * Score File Format::        What a score file may contain.
 * Score File Editing::       You can edit score files by hand as well.
 * Adaptive Scoring::         Big Sister Gnus @emph{knows} what you read.
+* Home Score File::          How to say where new score entries are to go.
 * Followups To Yourself::    Having Gnus notice when people answer you.
 * Scoring Tips::             How to score effectively.
 * Reverse Scoring::          That problem child of old is not problem.
@@ -9919,6 +9974,95 @@ the length of the match is less than
 @code{gnus-score-exact-adapt-limit}, exact matching will be used.  If
 this variable is @code{nil}, exact matching will always be used to avoid
 this problem.
+
+
+@node Home Score File
+@section Home Score File
+
+The score file where new score file entries will go is calle the
+@dfn{home score file}.  This is normally (and by default) the score file
+for the group itself.  For instance, the home score file for
+@samp{gnu.emacs.gnus} is @file{gnu.emacs.gnus.SCORE}.
+
+However, this may not be what you want.  It is often convenient to share
+a common home score file among many groups---all @samp{emacs} groups
+could perhaps use the same home score file.
+
+@vindex gnus-home-score-file
+The variable that controls this is @code{gnus-home-score-file}.  It can
+be:
+
+@enumerate
+@item
+A string.  Then this file will be used as the home score file for all
+groups. 
+
+@item
+A function. The result of this function will be used as the home score
+file.  The function will be called with the name of the group as the
+parameter. 
+
+@item
+A list.  The elements in this list can be:
+
+@enumerate
+@item 
+@var{(regexp . file-name)}.  If the @var{regexp} matches the group name,
+the @var{file-name} will will be used as the home score file.
+
+@item 
+A function. If the function returns non-nil, the result will be used as
+the home score file.
+
+@item 
+A string.  Use the string as the home score file.
+@end enumerate
+
+The list will be traversed from the beginning towards the end looking
+for matches.
+
+@end enumerate
+
+So, if you want to use just a single score file, you could say:
+
+@lisp
+(setq gnus-home-score-file
+      "my-total-score-file.SCORE")
+@end lisp
+
+If you want to use @file{gnu.SCORE} for all @samp{gnu} groups and
+@file{rec.SCORE} for all @samp{rec} groups (and so on), you can say:
+
+@lisp
+(setq gnus-home-score-file
+      'gnus-hierarchial-home-score-file)
+@end lisp
+
+This is a ready-made function provided for your convenience.
+
+If you want to have one score file for the @samp{emacs} groups and
+another for the @samp{comp} groups, while letting all other groups use
+their own home score files:
+
+@lisp
+(setq gnus-home-score-file
+      ;; All groups that match the regexp "\\.emacs"
+      '("\\.emacs" . "emacs.SCORE")
+      ;; All the comp groups in one score file
+       ("^comp" . "comp.SCORE"))
+@end lisp
+   
+@vindex gnus-home-adapt-file
+@code{gnus-home-adapt-file} works exactly the same way as
+@code{gnus-home-score-file}, but says what the home adaptive score file
+is instead.  All new adaptive file entries will go into the file
+specified by this variable, and the same syntax is allowed.
+
+In addition to using @code{gnus-home-score-file} and
+@code{gnus-home-adapt-file}, you can also use group parameters
+(@pxref{Group Parameters}) and topic parameters (@pxref{Topic
+Parameters}) to achieve much the same.  Group and topic parameters take
+presedence over this variable.
 
 
 @node Followups To Yourself

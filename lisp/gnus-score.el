@@ -110,6 +110,37 @@ will be expired along with non-matching score entries.")
 (defvar gnus-orphan-score nil
   "*All orphans get this score added. Set in the score file.")
 
+(defvar gnus-home-score-file nil
+  "Variable to control where interative score entries are to go.
+It can be:
+
+ * A string
+   This file file will be used as the home score file.
+
+ * A function
+   The result of this function will be used as the home score file.
+
+ * A list
+   The elements in this list can be:
+
+   * `(regexp . file-name)'
+     If the `regexp' matches the group name, the `file-name' will
+     will be used as the home score file.
+
+   * A function.
+     If the function returns non-nil, the result will be used
+     as the home score file.
+
+   * A string.
+     Use the string as the home score file.
+
+   The list will be traversed from the beginning towards the end looking
+   for matches.")
+
+(defvar gnus-home-adapt-file nil
+  "Variable to control where new adaptive score entries are to go.
+This variable allows the same syntax as `gnus-home-score-file'.")
+
 (defvar gnus-default-adaptive-score-alist  
   '((gnus-kill-file-mark)
     (gnus-unread-mark)
@@ -2191,6 +2222,7 @@ The list is determined from the variable gnus-score-file-alist."
 
 (defun gnus-possibly-score-headers (&optional trace)
   (let ((funcs gnus-score-find-score-files-function)
+	(group gnus-newsgroup-name)
 	score-files)
     ;; Make sure funcs is a list.
     (and funcs
@@ -2198,19 +2230,32 @@ The list is determined from the variable gnus-score-file-alist."
 	 (setq funcs (list funcs)))
     ;; Get the initial score files for this group.
     (when funcs 
-      (setq score-files (gnus-score-find-alist gnus-newsgroup-name)))
+      (setq score-files (gnus-score-find-alist group)))
+    ;; Add any home adapt files.
+    (let ((home (gnus-home-score-file group t)))
+      (when home
+	(push home score-files)
+	(setq gnus-newsgroup-adaptive-score-file home)))
+    ;; Check whether there is a `adapt-file' group parameter.
+    (let ((param-file (gnus-group-get-parameter group 'adapt-file)))
+      (when param-file
+	(push param-file score-files)
+	(setq gnus-newsgroup-adaptive-score-file param-file)))
     ;; Go through all the functions for finding score files (or actual
     ;; scores) and add them to a list.
     (while funcs
       (when (gnus-functionp (car funcs))
 	(setq score-files 
-	      (nconc score-files (funcall (car funcs) gnus-newsgroup-name))))
+	      (nconc score-files (funcall (car funcs) group))))
       (setq funcs (cdr funcs)))
+    ;; Add any home score files.
+    (let ((home (gnus-home-score-file group)))
+      (when home
+	(setq score-files (nconc score-files (list home)))))
     ;; Check whether there is a `score-file' group parameter.
-    (let ((param-file (gnus-group-get-parameter 
-		       gnus-newsgroup-name 'score-file)))
+    (let ((param-file (gnus-group-get-parameter group 'score-file)))
       (when param-file
-	(push param-file score-files)))
+	(setq score-files (nconc score-files (list param-file)))))
     ;; Do the scoring if there are any score files for this group.
     (when score-files
       (gnus-score-headers score-files trace))))
@@ -2259,6 +2304,48 @@ The list is determined from the variable gnus-score-file-alist."
       (gnus-message 1 "New score file entries will be case insensitive.")
     (gnus-message 1 "New score file entries will be case sensitive.")))
 
+;;; Home score file.
+
+(defun gnus-home-score-file (group &optional adapt)
+  "Return the home score file for GROUP.
+If ADAPT, return the home adaptive file instead."
+  (let ((list (if adapt gnus-home-adapt-file gnus-home-score-file))
+	elem found)
+    ;; Make sure we have a list.
+    (unless (listp list)
+      (setq list (list list)))
+    ;; Go through the list and look for matches.
+    (while (and (not found)
+		(setq elem (pop list)))
+      (setq found
+	    (cond
+	     ;; Simple string.
+	     ((stringp elem)
+	      elem)
+	     ;; Function.
+	     ((gnus-functionp elem)
+	      (funcall elem group))
+	     ;; Regexp-file cons
+	     ((consp elem)
+	      (when (string-match (car elem) group)
+		(cdr elem))))))
+    (when found
+      (nnheader-concat gnus-kill-files-directory found))))
+
+(defun gnus-hierarchial-home-score-file (group)
+  "Return the score file of the top-level hierarchy of GROUP."
+  (if (string-match "^[^.]+\\." group)
+      (concat (match-string 0 group) "all." gnus-score-file-suffix)
+    ;; Group name without any dots.
+    (concat group ".all." gnus-score-file-suffix)))
+      
+(defun gnus-hierarchial-home-adapt-file (group)
+  "Return the adapt file of the top-level hierarchy of GROUP."
+  (if (string-match "^[^.]+\\." group)
+      (concat (match-string 0 group) "all." gnus-adaptive-file-suffix)
+    ;; Group name without any dots.
+    (concat group ".all." gnus-adaptive-file-suffix)))
+      
 (provide 'gnus-score)
 
 ;;; gnus-score.el ends here

@@ -28,18 +28,20 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
-(defconst gnus-version-number "0.4"
+(defconst gnus-version-number "0.5"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
   "Version string for this version of Gnus.")
 
-;;; Splash screen.
+(defvar gnus-inhibit-startup-message nil
+  "*If non-nil, the startup message will not be displayed.")
+
+;;; Internal variables
 
 (defvar gnus-group-buffer "*Group*")
 
-(defvar gnus-inhibit-startup-message nil
-  "*If non-nil, the startup message will not be displayed.")
+;;; Splash screen.
 
 (defun gnus-splash ()
   (save-excursion
