@@ -32,9 +32,6 @@
 (eval-when-compile (require 'cl))
 
 (require 'mailheader)
-(condition-case nil
-    (require 'rmail)
-  (t (message "Ignore any errors about rmail from this file")))
 (require 'nnheader)
 (require 'timezone)
 (require 'easymenu)
@@ -542,6 +539,7 @@ If stringp, use this; if non-nil, use no host name (user name only)."
 (define-widget 'message-header-lines 'text
   "All header lines must be LFD terminated."
   :valid-regexp "^\\'"
+  :format "%t:\n%v"
   :error "All header lines must be newline terminated")
 
 (defcustom message-default-headers ""
@@ -776,6 +774,8 @@ Defaults to `text-mode-abbrev-table'.")
 		"[>|}].*")
        (0 'message-cited-text-face))))
   "Additional expressions to highlight in Message mode.")
+
+(put 'message-mode 'font-lock-defaults '(message-font-lock-keywords t))
 
 (defvar message-face-alist
   '((bold . bold-region)
@@ -1262,8 +1262,6 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (setq major-mode 'message-mode)
   (setq mode-name "Message")
   (setq buffer-offer-save t)
-  (make-local-variable 'font-lock-defaults)
-  (setq font-lock-defaults '(message-font-lock-keywords t))
   (make-local-variable 'facemenu-add-face-function)
   (make-local-variable 'facemenu-remove-face-function)
   (setq facemenu-add-face-function

@@ -859,7 +859,7 @@ See also the documentation for `gnus-article-highlight-citation'."
   ;; At line NUMBER, ignore PREFIX and add FACE to the rest of the line.
   (when face
     (let ((inhibit-point-motion-hooks t)
-	  from to)
+	  from to overlay)
       (goto-line number)
       (unless (eobp)			; Sometimes things become confused.
 	(forward-char (length prefix))

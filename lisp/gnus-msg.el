@@ -217,8 +217,7 @@ Thank you for your help in stamping out bugs.
 If ARG, post to the group under point.
 If ARG is 1, prompt for a group name."
   (interactive "P")
-  ;; Bind this variable here to make message mode hooks
-  ;; work ok.
+  ;; Bind this variable here to make message mode hooks work ok.
   (let ((gnus-newsgroup-name
 	 (if arg
 	     (if (= 1 (prefix-numeric-value arg))

@@ -1282,7 +1282,7 @@ how much time has lapsed since DATE."
 		 header))
 	 (date-regexp "^Date:[ \t]\\|^X-Sent:[ \t]")
 	 (inhibit-point-motion-hooks t)
-	 bface eface)
+	 bface eface newline)
     (when (and date (not (string= date "")))
       (save-excursion
 	(save-restriction
@@ -1297,7 +1297,8 @@ how much time has lapsed since DATE."
 		  (delete-region (progn (beginning-of-line) (point))
 				 (progn (end-of-line) (point)))
 		  (beginning-of-line))
-	      (goto-char (point-max)))
+	      (goto-char (point-max))
+	      (setq newline t))
 	    (insert (article-make-date-line date type))
 	    ;; Do highlighting.
 	    (beginning-of-line)
@@ -1305,7 +1306,10 @@ how much time has lapsed since DATE."
 	      (put-text-property (match-beginning 1) (1+ (match-end 1))
 				 'face bface)
 	      (put-text-property (match-beginning 2) (match-end 2)
-				 'face eface))))))))
+				 'face eface))
+	    (when newline
+	      (end-of-line)
+	      (insert "\n"))))))))
 
 (defun article-make-date-line (date type)
   "Return a DATE line of TYPE."
@@ -1411,24 +1415,29 @@ function and want to see what the date was before converting."
 (defun article-update-date-lapsed ()
   "Function to be run from a timer to update the lapsed time line."
   (save-excursion
-    (when (gnus-buffer-live-p gnus-article-buffer)
-      (set-buffer gnus-article-buffer)
-      (goto-char (point-min))
-      (when (re-search-forward "^X-Sent:" nil t)
-	(article-date-lapsed t)))))
+    (ignore-errors
+      (when (gnus-buffer-live-p gnus-article-buffer)
+	(set-buffer gnus-article-buffer)
+	(goto-char (point-min))
+	(when (re-search-forward "^X-Sent:" nil t)
+	  (article-date-lapsed t))))))
 
-(defun gnus-start-date-timer ()
-  "Start a timer to update the X-Sent header in the article buffers."
-  (interactive)
+(defun gnus-start-date-timer (&optional n)
+  "Start a timer to update the X-Sent header in the article buffers.
+The numerical prefix says how frequently (in seconds) the function
+is to run."
+  (interactive "p")
+  (unless n
+    (setq n 1))
   (gnus-stop-date-timer)
   (setq article-lapsed-timer 
-	(nnheader-run-at-time 1 1 'article-update-date-lapsed)))
+	(nnheader-run-at-time 1 n 'article-update-date-lapsed)))
 
 (defun gnus-stop-date-timer ()
   "Stop the X-Sent timer."
   (interactive)
   (when article-lapsed-timer
-    (nnheader-delete-timer article-lapsed-timer)
+    (nnheader-cancel-timer article-lapsed-timer)
     (setq article-lapsed-timer nil)))
 
 (defun article-date-user (&optional highlight)
@@ -1610,7 +1619,8 @@ Directory to save to is default to `gnus-article-save-directory'."
     (save-excursion
       (save-restriction
 	(widen)
-	(gnus-output-to-rmail filename)))))
+	(gnus-output-to-rmail filename))))
+  filename)
 
 (defun gnus-summary-save-in-mail (&optional filename)
   "Append this article to Unix mail file.
@@ -1628,7 +1638,8 @@ Directory to save to is default to `gnus-article-save-directory'."
 	(if (and (file-readable-p filename)
 		 (mail-file-babyl-p filename))
 	    (gnus-output-to-rmail filename t)
-	  (gnus-output-to-mail filename))))))
+	  (gnus-output-to-mail filename)))))
+  filename)
 
 (defun gnus-summary-save-in-file (&optional filename overwrite)
   "Append this article to file.
@@ -1646,7 +1657,8 @@ Directory to save to is default to `gnus-article-save-directory'."
 	(when (and overwrite
 		   (file-exists-p filename))
 	  (delete-file filename))
-	(gnus-output-to-file filename)))))
+	(gnus-output-to-file filename))))
+  filename)
 
 (defun gnus-summary-write-to-file (&optional filename)
   "Write this article to a file.
@@ -1671,7 +1683,8 @@ The directory to save in defaults to `gnus-article-save-directory'."
 	(goto-char (point-min))
 	(when (search-forward "\n\n" nil t)
 	  (narrow-to-region (point) (point-max)))
-	(gnus-output-to-file filename)))))
+	(gnus-output-to-file filename))))
+  filename)
 
 (defun gnus-summary-save-in-pipe (&optional command)
   "Pipe this article to subprocess."
@@ -2559,6 +2572,28 @@ groups."
 (defun gnus-article-edit-done (&optional arg)
   "Update the article edits and exit."
   (interactive "P")
+  (save-excursion
+    (save-restriction
+      (widen)
+      (goto-char (point-min))
+      (when (search-forward "\n\n" nil 1)
+	(let ((lines (count-lines (point) (point-max)))
+	      (length (- (point-max) (point)))
+	      (case-fold-search t)
+	      (body (copy-marker (point))))
+	  (goto-char (point-min))
+	  (when (re-search-forward "^content-length:[ \t]\\([0-9]+\\)" body t)
+	    (delete-region (match-beginning 1) (match-end 1))
+	    (insert (number-to-string length)))
+	  (goto-char (point-min))
+	  (when (re-search-forward
+		 "^x-content-length:[ \t]\\([0-9]+\\)" body t)
+	    (delete-region (match-beginning 1) (match-end 1))
+	    (insert (number-to-string length)))
+	  (goto-char (point-min))
+	  (when (re-search-forward "^lines:[ \t]\\([0-9]+\\)" body t)
+	    (delete-region (match-beginning 1) (match-end 1))
+	    (insert (number-to-string lines)))))))
   (let ((func gnus-article-edit-done-function)
 	(buf (current-buffer))
 	(start (window-start)))

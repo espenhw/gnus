@@ -810,7 +810,7 @@ The following commands are available:
     (or level gnus-group-default-list-level gnus-level-subscribed))))
 
 (defun gnus-group-setup-buffer ()
-  (switch-to-buffer (get-buffer-create gnus-group-buffer))
+  (set-buffer (get-buffer-create gnus-group-buffer))
   (unless (eq major-mode 'gnus-group-mode)
     (gnus-add-current-to-buffer-list)
     (gnus-group-mode)
@@ -1417,9 +1417,9 @@ Take into consideration N (the prefix) and the list of marked groups."
 	  (n (abs n))
 	  group groups)
       (save-excursion
-	(while (and (> n 0)
-		    (setq group (gnus-group-group-name)))
-	  (push group groups)
+	(while (> n 0)
+	  (if (setq group (gnus-group-group-name))
+	      (push group groups))
 	  (setq n (1- n))
 	  (gnus-group-next-group way)))
       (nreverse groups)))
@@ -2403,16 +2403,15 @@ If REVERSE, sort in reverse order."
 
 (defun gnus-group-catchup-current (&optional n all)
   "Mark all articles not marked as unread in current newsgroup as read.
-If prefix argument N is numeric, the ARG next newsgroups will be
+If prefix argument N is numeric, the next N newsgroups will be
 caught up.  If ALL is non-nil, marked articles will also be marked as
 read.  Cross references (Xref: header) of articles are ignored.
-The difference between N and actual number of newsgroups that were
-caught up is returned."
+The number of newsgroups that this function was unable to catch
+up is returned."
   (interactive "P")
-  (unless (gnus-group-group-name)
-    (error "No group on the current line"))
   (let ((groups (gnus-group-process-prefix n))
 	(ret 0))
+    (unless groups (error "No groups selected"))
     (if (not
 	 (or (not gnus-interactive-catchup) ;Without confirmation?
 	     gnus-expert-user

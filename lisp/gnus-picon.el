@@ -255,7 +255,7 @@ annotations.  Sets buffer to `gnus-picons-display-where'."
 	 (annot (cdr env)))
     (setq gnus-picons-processes-alist
 	  (remassq process gnus-picons-processes-alist))
-    (when annot
+    (when (annotationp annot)
       (set-annotation-glyph annot
 			    (make-glyph gnus-picons-x-face-file-name))
       (if (memq annot gnus-x-face-annotations)

@@ -214,8 +214,9 @@ on your system, you could say something like:
 	     (goto-char p)
 	     (if (search-forward "\nmessage-id:" nil t)
 		 (buffer-substring
-		  (1- (or (search-forward "<" nil t) (point)))
-		  (or (search-forward ">" nil t) (point)))
+		  (1- (or (search-forward "<" (gnus-point-at-eol) t)
+			  (point)))
+		  (or (search-forward ">" (gnus-point-at-eol) t) (point)))
 	       ;; If there was no message-id, we just fake one to make
 	       ;; subsequent routines simpler.
 	       (nnheader-generate-fake-message-id)))

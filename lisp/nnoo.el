@@ -219,7 +219,10 @@
       (nconc bstate (list (cons current state))))))
 
 (defsubst nnoo-current-server-p (backend server)
-  (equal (nnoo-current-server backend) server))
+  (equal (nnoo-current-server backend)
+	 (if nnoo-parent-backend
+	     (format "%s+%s" nnoo-parent-backend server)
+	   server)))
 
 (defun nnoo-current-server (backend)
   (nth 1 (assq backend nnoo-state-alist)))

@@ -445,7 +445,8 @@ Can be used to turn version control on or off."
 	      (push prefix prefixes)
 	      (message "Descend hierarchy %s? ([y]nsq): "
 		       (substring prefix 1 (1- (length prefix))))
-	      (while (not (memq (setq ans (read-char)) '(?y ?\n ?\r ?n ?s ?q)))
+	      (while (not (memq (setq ans (read-char-exclusive))
+				'(?y ?\n ?\r ?n ?s ?q)))
 		(ding)
 		(message "Descend hierarchy %s? ([y]nsq): "
 			 (substring prefix 1 (1- (length prefix)))))
@@ -473,7 +474,8 @@ Can be used to turn version control on or off."
 		       (setq groups (cdr groups))))
 		    (t nil)))
 	  (message "Subscribe %s? ([n]yq)" (car groups))
-	  (while (not (memq (setq ans (read-char)) '(?y ?\n ?\r ?q ?n)))
+	  (while (not (memq (setq ans (read-char-exclusive))
+			    '(?y ?\n ?\r ?q ?n)))
 	    (ding)
 	    (message "Subscribe %s? ([n]yq)" (car groups)))
 	  (setq group (car groups))
@@ -851,11 +853,12 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
       (gnus-read-newsrc-file rawfile))
 
     ;; Make sure the archive server is available to all and sundry.
-    (setq gnus-server-alist (delq (assoc "archive" gnus-server-alist)
-				  gnus-server-alist))
-    (when (gnus-archive-server-wanted-p)
-      (push (cons "archive" gnus-message-archive-method)
-	    gnus-server-alist))
+    (when gnus-message-archive-method
+      (setq gnus-server-alist (delq (assoc "archive" gnus-server-alist)
+				    gnus-server-alist))
+      (when (gnus-archive-server-wanted-p)
+	(push (cons "archive" gnus-message-archive-method)
+	      gnus-server-alist)))
 
     ;; If we don't read the complete active file, we fill in the
     ;; hashtb here.
@@ -2195,11 +2198,12 @@ If FORCE is non-nil, the .newsrc file is read."
 	      (push (cons (concat
 			   "^" (buffer-substring
 				(1+ (match-beginning 0))
-				(match-end 0)))
+				(match-end 0))
+			   "\\($\\|\\.\\)")
 			  'ignore)
 		    out)
 	    ;; There was no bang, so this is a "yes" spec.
-	    (push (cons (concat "^" (match-string 0))
+	    (push (cons (concat "^" (match-string 0) "\\($\\|\\.\\)")
 			'subscribe)
 		  out))))
 
@@ -2254,9 +2258,9 @@ If FORCE is non-nil, the .newsrc file is read."
 	(print-escape-newlines t))
     (insert ";; -*- emacs-lisp -*-\n")
     (insert ";; Gnus startup file.\n")
-    (insert
-     ";; Never delete this file - touch .newsrc instead to force Gnus\n")
-    (insert ";; to read .newsrc.\n")
+    (insert "\
+;; Never delete this file -- if you want to force Gnus to read the
+;; .newsrc file (if you have one), touch .newsrc instead.\n")
     (insert "(setq gnus-newsrc-file-version "
 	    (prin1-to-string gnus-version) ")\n")
     (let* ((gnus-killed-list

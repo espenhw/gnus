@@ -381,7 +381,7 @@ Cache the result as a text property stored in DATE."
 (defun gnus-date-iso8601 (header)
   "Convert the date field in HEADER to YYMMDDTHHMMSS"
   (condition-case ()
-      (gnus-time-iso8601 (gnus-date-get-time header))
+      (gnus-time-iso8601 (gnus-date-get-time (mail-header-date header)))
     (error "")))
 
 (defun gnus-mode-string-quote (string)
@@ -528,12 +528,11 @@ Timezone package is used."
 
 (defun gnus-kill-all-overlays ()
   "Delete all overlays in the current buffer."
-  (unless gnus-xemacs
-    (let* ((overlayss (overlay-lists))
-	   (buffer-read-only nil)
-	   (overlays (delq nil (nconc (car overlayss) (cdr overlayss)))))
-      (while overlays
-	(delete-overlay (pop overlays))))))
+  (let* ((overlayss (overlay-lists))
+	 (buffer-read-only nil)
+	 (overlays (delq nil (nconc (car overlayss) (cdr overlayss)))))
+    (while overlays
+      (delete-overlay (pop overlays)))))
 
 (defvar gnus-work-buffer " *gnus work*")
 
@@ -580,8 +579,9 @@ Timezone package is used."
 
 (defun gnus-prin1 (form)
   "Use `prin1' on FORM in the current buffer.
-Bind `print-quoted' to t while printing."
+Bind `print-quoted' and `print-readably' to t while printing."
   (let ((print-quoted t)
+	(print-readably t)
 	print-level print-length)
     (prin1 form (current-buffer))))
 

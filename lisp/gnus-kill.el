@@ -676,10 +676,7 @@ marked as read or ticked are ignored."
 ;;;###autoload
 (defun gnus-batch-score ()
   "Run batched scoring.
-Usage: emacs -batch -l gnus -f gnus-batch-score <newsgroups> ...
-Newsgroups is a list of strings in Bnews format.  If you want to score
-the comp hierarchy, you'd say \"comp.all\".  If you would not like to
-score the alt hierarchy, you'd say \"!alt.all\"."
+Usage: emacs -batch -l ~/.emacs -l gnus -f gnus-batch-score"
   (interactive)
   (let* ((gnus-newsrc-options-n
 	  (gnus-newsrc-parse-options
@@ -689,7 +686,7 @@ score the alt hierarchy, you'd say \"!alt.all\"."
 	 (nnmail-spool-file nil)
 	 (gnus-use-dribble-file nil)
 	 (gnus-batch-mode t)
-	 group newsrc entry
+	 info group newsrc entry
 	 ;; Disable verbose message.
 	 gnus-novice-user gnus-large-newsgroup
 	 gnus-options-subscribe gnus-auto-subscribed-groups
@@ -699,14 +696,13 @@ score the alt hierarchy, you'd say \"!alt.all\"."
     (gnus-slave)
     ;; Apply kills to specified newsgroups in command line arguments.
     (setq newsrc (cdr gnus-newsrc-alist))
-    (while (setq group (car (pop newsrc)))
-      (setq entry (gnus-gethash group gnus-newsrc-hashtb))
-      (when (and (<= (gnus-info-level (car newsrc)) gnus-level-subscribed)
+    (while (setq info (pop newsrc))
+      (setq group (gnus-info-group info)
+	    entry (gnus-gethash group gnus-newsrc-hashtb))
+      (when (and (<= (gnus-info-level info) gnus-level-subscribed)
 		 (and (car entry)
 		      (or (eq (car entry) t)
-			  (not (zerop (car entry)))))
-		 ;;(eq (gnus-matches-options-n group) 'subscribe)
-		 )
+			  (not (zerop (car entry))))))
 	(gnus-summary-read-group group nil t nil t)
 	(when (eq (current-buffer) (get-buffer gnus-summary-buffer))
 	  (gnus-summary-exit))))

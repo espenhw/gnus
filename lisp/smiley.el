@@ -150,7 +150,6 @@ above them."
   :type 'face
   :group 'smiley)
 
-
 (defvar smiley-glyph-cache nil)
 (defvar smiley-running-xemacs (string-match "XEmacs" emacs-version))
 
@@ -158,6 +157,14 @@ above them."
  "Keymap to toggle smiley states.")
 
 (define-key smiley-map [(button2)] 'smiley-toggle-extent)
+(define-key smiley-map [(button3)] 'smiley-popup-menu)
+
+(defun smiley-popup-menu (e)
+  (interactive "e")
+  (popup-menu
+   `("Smilies" 
+     ["Toggle This Smiley" (smiley-toggle-extent ,e) t]
+     ["Toggle All Smilies" (smiley-toggle-extents ,e) t])))
 
 (defun smiley-create-glyph (smiley pixmap)
   (and
@@ -201,6 +208,23 @@ above them."
 	    (reveal-annotation ant)
 	    (set-extent-property ext 'invisible t)))))))
 
+(defun smiley-toggle-extents (e)
+  (interactive "e")
+  (map-extents
+   '(lambda (e void)
+      (let (ant)
+	(if (annotationp (setq ant (extent-property e 'smiley-annotation)))
+	    (progn
+	      (if (eq (extent-property e 'invisible) nil)
+		  (progn
+		    (reveal-annotation ant)
+		    (set-extent-property e 'invisible t)
+		    )
+		(hide-annotation ant)
+		(set-extent-property e 'invisible nil))))
+	nil))
+   (event-buffer e)))
+
 ;;;###autoload
 (defun smiley-buffer (&optional buffer st nd)
   (interactive)
@@ -214,6 +238,12 @@ above them."
 		     smiley-regexp-alist))
 	    (case-fold-search nil)
 	    entry regexp beg group file)
+	(map-extents
+	 '(lambda (e void)
+	    (when (or (extent-property e 'smiley-extent)
+		      (extent-property e 'smiley-annotation))
+	      (delete-extent e)))
+	 buffer st nd)
 	(goto-char (or st (point-min)))
 	(setq beg (point))
 	;; loop through alist
@@ -243,7 +273,14 @@ above them."
 		  (set-extent-property ant 'keymap smiley-map)
 		  ;; remember each other
 		  (set-extent-property ant 'smiley-extent ext)
-		  (set-extent-property ext 'smiley-annotation ant))
+		  (set-extent-property ext 'smiley-annotation ant)
+		  ;; Help
+		  (set-extent-property ext 'balloon-help
+				       "Mouse button2 - toggle smiley
+Mouse button3 - menu")
+		  (set-extent-property ant 'balloon-help
+				       "Mouse button2 - toggle smiley
+Mouse button3 - menu"))
 		(when (smiley-end-paren-p start end)
 		  (make-annotation ")" end 'text))
 		(goto-char end)))))))))

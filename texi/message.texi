@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Message 0.16 Manual
+@settitle Message 0.17 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -39,7 +39,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Message 0.16 Manual
+@title Message 0.17 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -67,19 +67,20 @@ into another language, under the above conditions for modified versions.
 @node Top
 @top Message
 
-All message composition (both mail and news) takes place in Message mode
-buffers.
+All message composition from Gnus (both mail and news) takes place in
+Message mode buffers.
 
 @menu
 * Interface::         Setting up message buffers.
 * Commands::          Commands you can execute in message mode buffers.
 * Variables::         Customizing the message buffers.
 * Compatibility::     Making Message backwards compatible.
+* Appendices::        More technical things.
 * Index::             Variable, function and concept index.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Message 0.16.  Message is distributed with
+This manual corresponds to Message 0.17.  Message is distributed with
 the Gnus distribution bearing the same version number as this manual
 has. 
 
@@ -116,7 +117,7 @@ The @code{message-mail} command pops up a new message buffer.
 
 Two optional parameters are accepted: The first will be used as the
 @code{To} header and the second as the @code{Subject} header.  If these
-aren't present, those two headers will be empty.
+are @code{nil}, those two headers will be empty.
 
 
 @node New News Message
@@ -127,7 +128,7 @@ The @code{message-news} command pops up a new message buffer.
 
 This function accepts two optional parameters.  The first will be used
 as the @code{Newsgroups} header and the second as the @code{Subject}
-header.  If these aren't present, those two headers will be empty.
+header.  If these are @code{nil}, those two headers will be empty.
 
 
 @node Reply
@@ -138,9 +139,9 @@ The @code{message-reply} function pops up a message buffer that's a
 reply to the message in the current buffer.
 
 @vindex message-reply-to-function
-Message uses the normal methods to determine where replies are to go,
-but you can change the behavior to suit your needs by fiddling with the
-@code{message-reply-to-function} variable.
+Message uses the normal methods to determine where replies are to go
+(@pxref{Responding}), but you can change the behavior to suit your needs
+by fiddling with the @code{message-reply-to-function} variable.
 
 If you want the replies to go to the @code{Sender} instead of the
 @code{From}, you could do something like this:
@@ -411,7 +412,12 @@ Yank the message that's being replied to into the message buffer
 @item C-c C-q
 @kindex C-c C-q 
 @findex message-fill-yanked-message
-Fill the yanked message (@code{message-fill-yanked-message}). 
+Fill the yanked message (@code{message-fill-yanked-message}).  Warning:
+Can severely mess up the yanked text if its quoting conventions are
+strange.  You'll quickly get a feel for when it's safe, though.  Anyway,
+just remember that @kbd{C-x u} (@code{undo}) is available and you'll be
+all right.
+
 
 @item C-c C-w
 @kindex C-c C-w 
@@ -431,7 +437,15 @@ removed.
 @item message-citation-line-function
 @vindex message-citation-line-function
 Function called to insert the citation line.  The default is
-@code{message-insert-citation-line}. 
+@code{message-insert-citation-line}, which will lead to citation lines
+that look like:
+
+@example
+Hallvard B Furuseth <h.b.furuseth@usit.uio.no> writes:
+@end example
+
+Point will be at the beginning of the body of the message when this
+function is called.
 
 @item message-yank-prefix
 @vindex message-yank-prefix
@@ -453,7 +467,8 @@ Number of spaces to indent yanked messages.
 @findex sc-cite-original
 @cindex Supercite
 Function for citing an original message.  The default is
-@code{message-cite-original}.  You can also set it to
+@code{message-cite-original}, which simply inserts the original message
+and prepends @samp{> } to each line.  You can also set it to
 @code{sc-cite-original} to use Supercite.
 
 @item message-indent-citation-function
@@ -638,10 +653,11 @@ expansions have to be done explicitly.
 @node Message Headers
 @section Message Headers
 
-Message is quite aggressive on the message generation front.  It has
-to be -- it's a combined news and mail agent.  To be able to send
-combined messages, it has to generate all headers itself to ensure that
-mail and news copies of messages look sufficiently similar.
+Message is quite aggressive on the message generation front.  It has to
+be -- it's a combined news and mail agent.  To be able to send combined
+messages, it has to generate all headers itself (instead of letting the
+mail/news system do it) to ensure that mail and news copies of messages
+look sufficiently similar.
 
 @table @code
 
@@ -729,8 +745,9 @@ instead, set this variable to @code{message-send-mail-with-mh}.
 @vindex message-mh-deletable-headers
 Most versions of MH doesn't like being fed messages that contain the
 headers in this variable.  If this variable is non-@code{nil} (which is
-the default), these headers will be removed before mailing.  Set it to
-@code{nil} if your MH can handle these headers.
+the default), these headers will be removed before mailing when sending
+messages via MH.  Set it to @code{nil} if your MH can handle these
+headers.
 
 @end table
 
@@ -926,7 +943,8 @@ Function used to send the current buffer as news.  The default is
 
 @item message-post-method
 @vindex message-post-method
-Method used for posting a prepared news message.
+Gnusish @dfn{select method} (see the Gnus manual for details) used for
+posting a prepared news message.
 
 @end table
 
@@ -1170,6 +1188,74 @@ into account, you can put the following in your @code{.emacs} file:
 
 This will initialize many Message variables from the values in the
 corresponding mail variables.
+
+
+@node Appendices
+@chapter Appendices
+
+@menu
+* Responses::          Standard rules for determining where responses go.
+@end menu
+
+
+@node Responses
+@section Responses
+
+To determine where a message is to go, the following algorithm is used
+by default.
+
+@table @def
+@item reply
+A @dfn{reply} is when you want to respond @emph{just} to the person who
+sent the message via mail.  There will only be one recipient.  To
+determine who the recipient will be, the following headers are
+consulted, in turn:
+
+@table @code
+@item Reply-To
+
+@item From
+@end table
+
+
+@item wide reply
+A @dfn{wide reply} is a mail response that includes @emph{all} entities
+mentioned in the message you are responded to.  All mailboxes from the
+following headers will be concatenated to form the outgoing
+@code{To}/@code{Cc} headers:
+
+@table
+@item From
+(unless there's a @code{Reply-To}, in which case that is used instead).
+
+@item Cc
+
+@item To
+@end table
+
+If a @code{Mail-Copies-To} header is present, it will also be included
+in the list of mailboxes.  If this header is @samp{never}, that means
+that the @code{From} (or @code{Reply-To}) mailbox will be suppressed.
+
+
+@item followup
+A @dfn{followup} is a response sent via news.  The following headers
+(listed in order of precedence) determine where the response is to be
+sent:
+
+@table @code
+
+@item Followup-To
+
+@item Newsgroups
+
+@end table
+
+If a @code{Mail-Copies-To} header is present, it will be used as the
+basis of the new @code{Cc} header, except if this header is
+@samp{never}.
+
+@end table
 
 
 

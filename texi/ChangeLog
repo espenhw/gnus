@@ -1,3 +1,18 @@
+Wed Nov 26 12:57:00 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.texi (Insertion): Addition.
+
+Wed Nov 26 12:55:15 1997  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
+
+	* message.texi (Insertion): Addition.
+
+Wed Nov 26 12:36:08 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.texi (Responses): New.
+	(Appendices): New.
+
+	* gnus.texi (Group Info): Fix.
+
 Tue Nov 25 17:53:55 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Article Date): Addition.

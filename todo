@@ -775,3 +775,7 @@ X characters in the body.
 * Move all prompting to the new `M-n' default style.
 
 * have nntp cache the authinfo passwords.
+
+* command to display all dormant articles.
+
+* gnus-auto-select-next makeover -- list of things it should do.

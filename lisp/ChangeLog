@@ -1,3 +1,144 @@
+Wed Nov 26 17:40:57 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.17 is released.
+
+Wed Nov 26 16:04:25 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-move-article): Don't work on canceled
+	articles. 
+
+	* gnus-start.el (gnus-subscribe-hierarchical-interactive): Use
+	`read-char-exclusive'. 
+
+	* gnus-sum.el (gnus-summary-mode): Localize
+	gnus-summary-dummy-line-format. 
+
+	* nnml.el (nnml-open-nov): Check that the file exists before
+	inserting it. 
+
+	* gnus-art.el (article-date-ut): Insert a newline if needed.
+
+	* gnus-score.el (gnus-score-edit-current-scores): Protect against
+	nil score files.
+
+	* gnus-start.el (gnus-newsrc-parse-options): Be more correct --
+	match only hierarchies.
+	(gnus-gnus-to-quick-newsrc-format): Changed warning.
+
+Wed Nov 26 15:47:40 1997  Greg Klanderman  <greg@alphatech.com>
+
+	* messagexmas.el (message-xmas-maybe-fontify): New definition.
+
+Wed Nov 26 15:43:53 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-setup-news): Protect against nil
+	gnus-message-archive-method. 
+
+1997-11-26  Christoph Wedler  <wedler@fmi.uni-passau.de>
+
+	* gnus-art.el (gnus-article-edit-done): Update headers "Lines:",
+	"Content-Length:" and "X-Content-Length:" when present.
+
+Wed Nov 26 15:08:17 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-process-unix-mail-format): Pop to the right
+	buffer on error.
+	(nnmail-process-mmdf-mail-format): Ditto.
+
+Wed Nov 26 13:54:04 1997  Joe Reiss  <jreiss@sprynet.com>
+
+	* gnus-art.el (gnus-summary-save-in-rmail): Return the name of the
+	file.
+
+Wed Nov 26 13:50:01 1997  Alastair Burt <alastair.burt@dfki.de>
+
+	* smiley.el: Balloon help, etc.
+
+Wed Nov 26 13:45:35 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-util.el (gnus-kill-all-overlays): Remove check for XEmacs. 
+
+1997-09-30  Dave Love  <d.love@dl.ac.uk>
+
+	* message.el: Don't require rmail.
+
+Wed Nov 26 13:37:50 1997  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-group.el (gnus-group-setup-buffer): set-buffer.
+
+Wed Nov 26 13:31:54 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-score.el (gnus-score-load-file): Don't create empty score
+	files when doing decays.
+
+Wed Nov 26 13:28:04 1997  Renaud Rioboo  <rioboo@calfor.lip6.fr>
+
+	* nnmail.el (nnmail-move-inbox): Only bind default-directory when
+	calling external function.
+
+Wed Nov 26 13:03:45 1997  IWAMURO Motonori  <iwa@mmp.fujitsu.co.jp>
+
+	* gnus-kill.el (gnus-batch-score): Newsrc thinko.
+
+Wed Nov 26 10:31:17 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnheader.el (nnheader-parse-head): Would break on Message-ID's
+	that spanned several lines.
+
+	* gnus-util.el (gnus-date-iso8601): Didn't pick out the date
+	header. 
+
+	* gnus-demon.el (gnus-demon-scan-mail): Clean inboxes.
+
+1997-11-25  Christoph Wedler  <wedler@fmi.uni-passau.de>
+
+	* gnus-picon.el (gnus-picons-x-face-sentinel): Would bug out in
+	headers with two X-Face lines.
+
+Wed Nov 26 08:54:26 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-update-info): Would use wrong group
+	name. 
+
+1997-11-26  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-spec.el (gnus-compile): Avoid multiple `c*addr's.
+	(gnus-compile): Require `bytecomp'.
+
+1997-11-25  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-util.el (gnus-prin1): Bind `print-readably' to t.
+
+	* gnus-xmas.el (gnus-xmas-kill-all-overlays): New function.
+	(gnus-xmas-define): Use it.
+
+	* gnus-art.el (gnus-stop-date-timer): Use `nnheader-cancel-timer'.
+
+	* message.el (message-header-lines): Specify format.
+
+	* gnus-xmas.el (gnus-xmas-move-overlay): Use BUFFER.
+	(gnus-byte-code): Use `indirect-function'.
+
+	* gnus-cite.el (gnus-cite-add-face): Would assign free variable.
+
+Wed Nov 26 08:31:28 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-stop-date-timer): Cancel instead of delete. 
+	(gnus-start-date-timer): Use the numerical prefix.
+
+Tue Nov 25 20:03:34 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-draft.el (gnus-group-send-drafts): Activate group first.
+
+Tue Nov 25 19:57:55 1997  Dan Christensen  <jdc@chow.mat.jhu.edu>
+
+	* gnus-group.el (gnus-group-process-prefix): Skip topics.
+
+Tue Nov 25 19:54:00 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-move.el (gnus-move-group-to-server): Protect agains
+	nil-ness. 
+
 Tue Nov 25 19:03:38 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.16 is released.

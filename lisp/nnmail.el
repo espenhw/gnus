@@ -445,6 +445,8 @@ parameter.  It should return nil, `warn' or `delete'."
 (defvar nnmail-split-history nil
   "List of group/article elements that say where the previous split put messages.")
 
+(defvar nnmail-current-spool nil)
+
 (defvar nnmail-pop-password nil
   "*Password to use when reading mail from a POP server, if required.")
 
@@ -616,17 +618,17 @@ parameter.  It should return nil, `warn' or `delete'."
 	      (save-excursion
 		(setq errors (generate-new-buffer " *nnmail loss*"))
 		(buffer-disable-undo errors)
-		(let ((default-directory "/"))
-		  (if (nnheader-functionp nnmail-movemail-program)
-		      (condition-case err
-			  (progn
-			    (funcall nnmail-movemail-program inbox tofile)
-			    (setq result 0))
-			(error
-			 (save-excursion
-			   (set-buffer errors)
-			   (insert (prin1-to-string err))
-			   (setq result 255))))
+		(if (nnheader-functionp nnmail-movemail-program)
+		    (condition-case err
+			(progn
+			  (funcall nnmail-movemail-program inbox tofile)
+			  (setq result 0))
+		      (error
+		       (save-excursion
+			 (set-buffer errors)
+			 (insert (prin1-to-string err))
+			 (setq result 255))))
+		  (let ((default-directory "/"))
 		    (setq result
 			  (apply
 			   'call-process
@@ -877,7 +879,7 @@ is a spool.  If not using procmail, return GROUP."
 		  (goto-char (match-beginning 0))))
 	;; Possibly wrong format?
 	(progn
-	  (pop-to-buffer (current-buffer))
+	  (pop-to-buffer (find-file-noselect nnmail-current-spool))
 	  (error "Error, unknown mail format! (Possibly corrupted.)"))
       ;; Carry on until the bitter end.
       (while (not (eobp))
@@ -964,7 +966,7 @@ is a spool.  If not using procmail, return GROUP."
 		  (forward-line 1)))
 	;; Possibly wrong format?
 	(progn
-	  (pop-to-buffer (current-buffer))
+	  (pop-to-buffer (find-file-noselect nnmail-current-spool))
 	  (error "Error, unknown mail format! (Possibly corrupted.)"))
       ;; Carry on until the bitter end.
       (while (not (eobp))
@@ -1550,7 +1552,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
     (setq nnmail-split-history nil))
   (let* ((spools (nnmail-get-spool-files group))
 	 (group-in group)
-	 incoming incomings spool)
+	 nnmail-current-spool incoming incomings spool)
     (when (and (nnmail-get-value "%s-get-new-mail" method)
 	       nnmail-spool-file)
       ;; We first activate all the groups.
@@ -1572,6 +1574,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	  (nnheader-message 3 "%s: Reading incoming mail..." method)
 	  (when (and (nnmail-move-inbox spool)
 		     (file-exists-p nnmail-crash-box))
+	    (setq nnmail-current-spool spool)
 	    ;; There is new mail.  We first find out if all this mail
 	    ;; is supposed to go to some specific group.
 	    (setq group (nnmail-get-split-group spool group-in))

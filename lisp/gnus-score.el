@@ -1008,19 +1008,21 @@ SCORE is the score to add."
 (defun gnus-score-edit-current-scores (file)
   "Edit the current score alist."
   (interactive (list gnus-current-score-file))
-  (let ((winconf (current-window-configuration)))
-    (when (buffer-name gnus-summary-buffer)
-      (gnus-score-save))
-    (gnus-make-directory (file-name-directory file))
-    (setq gnus-score-edit-buffer (find-file-noselect file))
-    (gnus-configure-windows 'edit-score)
-    (gnus-score-mode)
-    (setq gnus-score-edit-exit-function 'gnus-score-edit-done)
-    (make-local-variable 'gnus-prev-winconf)
-    (setq gnus-prev-winconf winconf))
-  (gnus-message
-   4 (substitute-command-keys
-      "\\<gnus-score-mode-map>\\[gnus-score-edit-exit] to save edits")))
+  (if (not gnus-current-score-file)
+      (error "No current score file")
+    (let ((winconf (current-window-configuration)))
+      (when (buffer-name gnus-summary-buffer)
+	(gnus-score-save))
+      (gnus-make-directory (file-name-directory file))
+      (setq gnus-score-edit-buffer (find-file-noselect file))
+      (gnus-configure-windows 'edit-score)
+      (gnus-score-mode)
+      (setq gnus-score-edit-exit-function 'gnus-score-edit-done)
+      (make-local-variable 'gnus-prev-winconf)
+      (setq gnus-prev-winconf winconf))
+    (gnus-message
+     4 (substitute-command-keys
+	"\\<gnus-score-mode-map>\\[gnus-score-edit-exit] to save edits"))))
 
 (defun gnus-score-edit-file (file)
   "Edit a score file."
@@ -1096,6 +1098,7 @@ SCORE is the score to add."
 	  (eval (car (gnus-score-get 'eval alist))))
       ;; Perform possible decays.
       (when (and gnus-decay-scores
+		 (or cached (file-exists-p file))
 		 (or (not decay)
 		     (gnus-decay-scores alist decay)))
 	(gnus-score-set 'touched '(t) alist)

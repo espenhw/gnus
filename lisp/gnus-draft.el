@@ -88,14 +88,14 @@
   "Enter a mail/post buffer to edit and send the draft."
   (interactive)
   (let ((article (gnus-summary-article-number)))
+    (gnus-summary-mark-as-read article gnus-canceled-mark)
     (gnus-draft-setup article gnus-newsgroup-name)
     (push
      `((lambda ()
 	 (when (buffer-name (get-buffer ,gnus-summary-buffer))
 	   (save-excursion
 	     (set-buffer (get-buffer ,gnus-summary-buffer))
-	     (gnus-cache-possibly-remove-article ,article nil nil nil t)
-	     (gnus-summary-mark-as-read ,article gnus-canceled-mark)))))
+	     (gnus-cache-possibly-remove-article ,article nil nil nil t)))))
      message-send-actions)))
 
 (defun gnus-draft-send-message (&optional n)
@@ -124,7 +124,7 @@
 (defun gnus-group-send-drafts ()
   "Send all sendable articles from the queue group."
   (interactive)
-  (gnus-request-group "nndraft:queue")
+  (gnus-activate-group "nndraft:queue")
   (save-excursion
     (let ((articles (nndraft-articles))
 	  (unsendable (gnus-uncompress-range

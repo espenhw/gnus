@@ -113,18 +113,18 @@ Update the .newsrc.eld file to reflect the change of nntp server."
 	  (goto-char (point-min))
 	  (while (looking-at
 		  "^[0-9]+\t[^\t]*\t[^\t]*\t[^\t]*\t\\([^\t]*\\)\t")
-	    (setq to-article
-		  (gnus-gethash
-		   (buffer-substring (match-beginning 1) (match-end 1))
-		   hashtb))
-	    ;; Add this article to the list of read articles.
-	    (push to-article to-reads)
-	    ;; See if there are any marks and then add them.
-	    (when (setq mark (assq (read (current-buffer)) marks))
-	      (setq marks (delq mark marks))
-	      (setcar mark to-article)
-	      (push mark to-marks))
-	    (forward-line 1))
+	    (when (setq to-article
+			(gnus-gethash
+			 (buffer-substring (match-beginning 1) (match-end 1))
+			 hashtb))
+	      ;; Add this article to the list of read articles.
+	      (push to-article to-reads)
+	      ;; See if there are any marks and then add them.
+	      (when (setq mark (assq (read (current-buffer)) marks))
+		(setq marks (delq mark marks))
+		(setcar mark to-article)
+		(push mark to-marks))
+	      (forward-line 1)))
 	  ;; Now we know what the read articles are and what the
 	  ;; article marks are.  We transform the information
 	  ;; into the Gnus info format.

@@ -244,7 +244,13 @@ call it with the value of the `gnus-data' text property."
       (funcall fun data))))
 
 (defun gnus-xmas-move-overlay (extent start end &optional buffer)
-  (set-extent-endpoints extent start end))
+  (set-extent-endpoints extent start end buffer))
+
+(defun gnus-xmas-kill-all-overlays ()
+  "Delete all extents in the current buffer."
+  (map-extents (lambda (extent ignore)
+		 (delete-extent extent)
+		 nil)))
 
 ;; Fixed by Christopher Davis <ckd@loiosh.kei.com>.
 (defun gnus-xmas-article-add-button (from to fun &optional data)
@@ -414,13 +420,13 @@ call it with the value of the `gnus-data' text property."
   (fset 'gnus-overlay-put 'set-extent-property)
   (fset 'gnus-move-overlay 'gnus-xmas-move-overlay)
   (fset 'gnus-overlay-end 'extent-end-position)
+  (fset 'gnus-kill-all-overlays 'gnus-xmas-kill-all-overlays)
   (fset 'gnus-extent-detached-p 'extent-detached-p)
   (fset 'gnus-add-text-properties 'gnus-xmas-add-text-properties)
   (fset 'gnus-put-text-property 'gnus-xmas-put-text-property)
   (fset 'gnus-deactivate-mark 'ignore)
   (fset 'gnus-window-edges 'window-pixel-edges)
 
-  (require 'text-props)
   (if (and (<= emacs-major-version 19)
  	   (< emacs-minor-version 14))
       (fset 'gnus-set-text-properties 'gnus-xmas-set-text-properties))
@@ -445,8 +451,8 @@ call it with the value of the `gnus-data' text property."
 
   (defun gnus-byte-code (func)
     "Return a form that can be `eval'ed based on FUNC."
-    (let ((fval (symbol-function func)))
-      (if (byte-code-function-p fval)
+    (let ((fval (indirect-function func)))
+      (if (compiled-function-p fval)
 	  (list 'funcall fval)
 	(cons 'progn (cdr (cdr fval))))))
 

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.16 Manual
+@settitle Quassia Gnus 0.17 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -313,7 +313,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.16 Manual
+@title Quassia Gnus 0.17 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -349,7 +349,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.16.
+This manual corresponds to Quassia Gnus 0.17.
 
 @end ifinfo
 
@@ -414,6 +414,9 @@ If you want to start Gnus in a different frame, you can use the command
 If things do not go smoothly at startup, you have to twiddle some
 variables in your @file{~/.gnus} file.  This file is similar to
 @file{~/.emacs}, but is read when gnus starts.
+
+If you puzzle at any terms used in this manual, please refer to the
+terminology section (@pxref{Terminology}).
 
 @menu
 * Finding the News::    Choosing a method for getting news.
@@ -1697,6 +1700,8 @@ to 5.  The default is 6.
 @node Group Score
 @section Group Score
 @cindex group score
+@cindex group rank
+@cindex rank
 
 You would normally keep important groups on high levels, but that scheme
 is somewhat restrictive.  Don't you wish you could have Gnus sort the
@@ -2229,12 +2234,12 @@ Sort by group level.
 
 @item gnus-group-sort-by-score
 @findex gnus-group-sort-by-score
-Sort by group score.
+Sort by group score.  @xref{Group Score}.
 
 @item gnus-group-sort-by-rank
 @findex gnus-group-sort-by-rank
 Sort by group score and then the group level.  The level and the score
-are, when taken together, the group's @dfn{rank}. 
+are, when taken together, the group's @dfn{rank}.  @xref{Group Score}.
 
 @item gnus-group-sort-by-unread
 @findex gnus-group-sort-by-unread
@@ -2278,13 +2283,13 @@ Sort the group buffer by group level
 @kindex G S v (Group)
 @findex gnus-group-sort-groups-by-score
 Sort the group buffer by group score
-(@code{gnus-group-sort-groups-by-score}). 
+(@code{gnus-group-sort-groups-by-score}).  @xref{Group Score}.
 
 @item G S r
 @kindex G S r (Group)
 @findex gnus-group-sort-groups-by-rank
 Sort the group buffer by group rank
-(@code{gnus-group-sort-groups-by-rank}). 
+(@code{gnus-group-sort-groups-by-rank}).  @xref{Group Score}.
 
 @item G S m
 @kindex G S m (Group)
@@ -2321,13 +2326,13 @@ Sort the process/prefixed groups in the group buffer by group level
 @kindex G P v (Group)
 @findex gnus-group-sort-selected-groups-by-score
 Sort the process/prefixed groups in the group buffer by group score
-(@code{gnus-group-sort-selected-groups-by-score}).
+(@code{gnus-group-sort-selected-groups-by-score}).  @xref{Group Score}.
 
 @item G P r
 @kindex G P r (Group)
 @findex gnus-group-sort-selected-groups-by-rank
 Sort the process/prefixed groups in the group buffer by group rank
-(@code{gnus-group-sort-selected-groups-by-rank}).
+(@code{gnus-group-sort-selected-groups-by-rank}).  @xref{Group Score}.
 
 @item G P m
 @kindex G P m (Group)
@@ -2747,13 +2752,13 @@ Sort the current topic by group level
 @kindex T S v (Topic)
 @findex gnus-topic-sort-groups-by-score
 Sort the current topic by group score
-(@code{gnus-topic-sort-groups-by-score}). 
+(@code{gnus-topic-sort-groups-by-score}).  @xref{Group Score}.
 
 @item T S r
 @kindex T S r (Topic)
 @findex gnus-topic-sort-groups-by-rank
 Sort the current topic by group rank
-(@code{gnus-topic-sort-groups-by-rank}). 
+(@code{gnus-topic-sort-groups-by-rank}).  @xref{Group Score}.
 
 @item T S m
 @kindex T S m (Topic)
@@ -11827,6 +11832,14 @@ all the time.  This command will flush the cache
 
 @end table
 
+You can do scoring from the command line by saying something like:
+
+@findex gnus-batch-score
+@cindex batch scoring
+@example
+$ emacs -batch -l ~/.emacs -l gnus -f gnus-batch-score
+@end example
+
 
 @node Score Variables
 @section Score Variables
@@ -15315,6 +15328,7 @@ Brad Howes,
 François Felix Ingrand,
 Ishikawa Ichiro, @c Ishikawa
 Lee Iverson, 
+Iwamuro Motonori, @c Iwamuro
 Rajappa Iyer,
 Andreas Jaeger,
 Randell Jesup,
@@ -16147,6 +16161,12 @@ is rather large, as you might surmise.
 A group that exists in the @file{.newsrc} file, but isn't known to the
 server (i.e.,  it isn't in the active file), is a @emph{bogus group}.
 This means that the group probably doesn't exist (any more).
+
+@item activating
+@cindex activating groups
+The act of asking the server for info on a group and computing the
+number of unread articles is called @dfn{activating the group}.
+Un-activated groups are listed with @samp{*} in the group buffer.
 
 @item server 
 @cindex server
@@ -17520,11 +17540,13 @@ second is a more complex one:
 
 The first element is the @dfn{group name}---as Gnus knows the group,
 anyway.  The second element is the @dfn{subscription level}, which
-normally is a small integer.  The third element is a list of ranges of
-read articles.  The fourth element is a list of lists of article marks
-of various kinds.  The fifth element is the select method (or virtual
-server, if you like).  The sixth element is a list of @dfn{group
-parameters}, which is what this section is about.
+normally is a small integer.  (It can also be the @dfn{rank}, which is a
+cons cell where the @code{car} is the level and the @code{cdr} is the
+score.)  The third element is a list of ranges of read articles.  The
+fourth element is a list of lists of article marks of various kinds.
+The fifth element is the select method (or virtual server, if you like).
+The sixth element is a list of @dfn{group parameters}, which is what
+this section is about.
 
 Any of the last three elements may be missing if they are not required.
 In fact, the vast majority of groups will normally only have the first
@@ -17533,11 +17555,14 @@ three elements, which saves quite a lot of cons cells.
 Here's a BNF definition of the group info format:
 
 @example
-info          = "(" group space level space read 
+info          = "(" group space ralevel space read 
                 [ "" / [ space marks-list [ "" / [ space method [ "" /
                 space parameters ] ] ] ] ] ")" 
 group         = quote <string> quote
+ralevel       = rank / level
 level         = <integer in the range of 1 to inf>
+rank          = "(" level "." score ")"
+score         = <integer in the range of 1 to inf>
 read          = range
 marks-lists   = nil / "(" *marks ")"
 marks         = "(" <string> range ")"
@@ -17563,7 +17588,7 @@ Get/set the group name.
 @itemx gnus-info-set-rank
 @findex gnus-info-rank
 @findex gnus-info-set-rank
-Get/set the group rank.
+Get/set the group rank (@pxref{Group Score}).
 
 @item gnus-info-level
 @itemx gnus-info-set-level
@@ -17575,7 +17600,7 @@ Get/set the group level.
 @itemx gnus-info-set-score
 @findex gnus-info-score
 @findex gnus-info-set-score
-Get/set the group score.
+Get/set the group score (@pxref{Group Score}).
 
 @item gnus-info-read
 @itemx gnus-info-set-read

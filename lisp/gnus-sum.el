@@ -1940,6 +1940,8 @@ The following commands are available:
   (setq gnus-newsgroup-name group)
   (make-local-variable 'gnus-summary-line-format)
   (make-local-variable 'gnus-summary-line-format-spec)
+  (make-local-variable 'gnus-summary-dummy-line-format)
+  (make-local-variable 'gnus-summary-dummy-line-format-spec)
   (make-local-variable 'gnus-summary-mark-positions)
   (make-local-hook 'post-command-hook)
   (add-hook 'post-command-hook 'gnus-clear-inboxes-moved nil t)
@@ -4975,38 +4977,39 @@ The prefix argument ALL means to select all articles."
 (defun gnus-summary-update-info (&optional non-destructive)
   (save-excursion
     (let ((group gnus-newsgroup-name))
-      (when gnus-newsgroup-kill-headers
-	(setq gnus-newsgroup-killed
-	      (gnus-compress-sequence
-	       (nconc
-		(gnus-set-sorted-intersection
-		 (gnus-uncompress-range gnus-newsgroup-killed)
-		 (setq gnus-newsgroup-unselected
-		       (sort gnus-newsgroup-unselected '<)))
-		(setq gnus-newsgroup-unreads
-		      (sort gnus-newsgroup-unreads '<)))
-	       t)))
-      (unless (listp (cdr gnus-newsgroup-killed))
-	(setq gnus-newsgroup-killed (list gnus-newsgroup-killed)))
-      (let ((headers gnus-newsgroup-headers))
-	(when (and (not gnus-save-score)
-		   (not non-destructive))
-	  (setq gnus-newsgroup-scored nil))
-	;; Set the new ranges of read articles.
-	(save-excursion
+      (when group
+	(when gnus-newsgroup-kill-headers
+	  (setq gnus-newsgroup-killed
+		(gnus-compress-sequence
+		 (nconc
+		  (gnus-set-sorted-intersection
+		   (gnus-uncompress-range gnus-newsgroup-killed)
+		   (setq gnus-newsgroup-unselected
+			 (sort gnus-newsgroup-unselected '<)))
+		  (setq gnus-newsgroup-unreads
+			(sort gnus-newsgroup-unreads '<)))
+		 t)))
+	(unless (listp (cdr gnus-newsgroup-killed))
+	  (setq gnus-newsgroup-killed (list gnus-newsgroup-killed)))
+	(let ((headers gnus-newsgroup-headers))
+	  (when (and (not gnus-save-score)
+		     (not non-destructive))
+	    (setq gnus-newsgroup-scored nil))
+	  ;; Set the new ranges of read articles.
+	  (save-excursion
+	    (set-buffer gnus-group-buffer)
+	    (gnus-undo-force-boundary))
+	  (gnus-update-read-articles
+	   group (append gnus-newsgroup-unreads gnus-newsgroup-unselected))
+	  ;; Set the current article marks.
+	  (gnus-update-marks)
+	  ;; Do the cross-ref thing.
+	  (when gnus-use-cross-reference
+	    (gnus-mark-xrefs-as-read group headers gnus-newsgroup-unreads))
+	  ;; Do not switch windows but change the buffer to work.
 	  (set-buffer gnus-group-buffer)
-	  (gnus-undo-force-boundary))
-	(gnus-update-read-articles
-	 group (append gnus-newsgroup-unreads gnus-newsgroup-unselected))
-	;; Set the current article marks.
-	(gnus-update-marks)
-	;; Do the cross-ref thing.
-	(when gnus-use-cross-reference
-	  (gnus-mark-xrefs-as-read group headers gnus-newsgroup-unreads))
-	;; Do not switch windows but change the buffer to work.
-	(set-buffer gnus-group-buffer)
-	(unless (gnus-ephemeral-group-p gnus-newsgroup-name)
-	  (gnus-group-update-group group))))))
+	  (unless (gnus-ephemeral-group-p group)
+	    (gnus-group-update-group group)))))))
 
 (defun gnus-summary-save-newsrc (&optional force)
   "Save the current number of read/marked articles in the dribble buffer.
@@ -6872,9 +6875,9 @@ and `request-accept' functions."
 	((eq action 'copy)
 	 (save-excursion
 	   (set-buffer copy-buf)
-	   (gnus-request-article-this-buffer article gnus-newsgroup-name)
-	   (gnus-request-accept-article
-	    to-newsgroup select-method (not articles))))
+	   (when (gnus-request-article-this-buffer article gnus-newsgroup-name)
+	     (gnus-request-accept-article
+	      to-newsgroup select-method (not articles)))))
 	;; Crosspost the article.
 	((eq action 'crosspost)
 	 (let ((xref (message-tokenize-header
