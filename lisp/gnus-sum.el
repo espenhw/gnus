@@ -4552,6 +4552,24 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	      'gnus-not-ignore)
 	     ((arrayp display)
 	      (gnus-summary-display-make-predicate (mapcar 'identity display)))
+	     ((numberp display)
+	      ;; The following is probably the "correct" solution, but
+	      ;; it makes Gnus fetch all headers and then limit the
+	      ;; articles (which is slow), so instead we hack the
+	      ;; select-articles parameter instead. -- Simon Josefsson
+	      ;; <jas@kth.se>
+	      ;;
+	      ;; (gnus-byte-compile
+	      ;;  `(lambda () (> number ,(- (cdr (gnus-active group))
+	      ;; 			 display)))))
+	      (setq select-articles
+		    (gnus-uncompress-range
+		     (cons (let ((tmp (- (cdr (gnus-active group)) display)))
+			     (if (> tmp 0)
+				 tmp
+			       1))
+			   (cdr (gnus-active group)))))
+	      nil)
 	     (t
 	      nil))))
       

@@ -1,3 +1,12 @@
+2001-10-31  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-cus.el (gnus-group-parameters): Support integer `display'
+	parameter.
+
+	* gnus-sum.el (gnus-select-newsgroup): If group parameter
+	`display' is a number (and C-u wasn't used to enter group), only
+	fetch that number of articles.
+
 2001-10-31  Matt Armstrong  <matt@lickey.com>
 
 	* gnus.el (gnus-find-subscribed-addresses): Doc fix:

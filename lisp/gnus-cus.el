@@ -178,12 +178,17 @@ you to put the admin address somewhere convenient.")
     (display (choice :tag "Display"
 		     :value default
 		     (const all)
+		     (integer)
 		     (const default)
 		     (sexp  :tag "Other")) "\
 Which articles to display on entering the group.
 
 `all'
      Display all articles, both read and unread.
+
+`integer'
+     Display the last NUMBER articles in the group.  This is the same as
+     entering the group with C-u NUMBER.
 
 `default'
      Display the default visible articles, which normally includes
