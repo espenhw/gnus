@@ -1,3 +1,9 @@
+2002-05-01  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-retrieve-groups): Use separate data for each
+	server.
+	(nnimap-mailbox-info): defvar instead of defvoo.
+
 2002-05-01 20:09:21 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
 
 	* gnus.el: Oort Gnus v0.06 is released.

@@ -377,7 +377,7 @@ restrict visible folders.")
 
 ;; Internal variables:
 
-(defvoo nnimap-mailbox-info (gnus-make-hashtable 997))
+(defvar nnimap-mailbox-info (gnus-make-hashtable 997))
 (defvar nnimap-debug nil
   "Name of buffer to record debugging info.
 For example: (setq nnimap-debug \"*nnimap-debug*\")")
@@ -966,7 +966,8 @@ function is generally only called when Gnus is shutting down."
 	    (setq slowgroups groups)
 	  (dolist (group groups)
 	    (gnus-message 7 "nnimap: Checking mailbox %s" group)
-	    (add-to-list (if (gnus-gethash-safe group nnimap-mailbox-info)
+	    (add-to-list (if (gnus-gethash-safe (concat server group)
+						nnimap-mailbox-info)
 			     'asyncgroups
 			   'slowgroups)
 			 (list group (imap-mailbox-status-asynch
@@ -977,10 +978,12 @@ function is generally only called when Gnus is shutting down."
 		  new old)
 	      (when (imap-ok-p (imap-wait-for-tag tag nnimap-server-buffer))
 		(if (nnimap-string-lessp-numerical
-		     (car (gnus-gethash group nnimap-mailbox-info))
+		     (car (gnus-gethash
+			   (concat server group) nnimap-mailbox-info))
 		     (imap-mailbox-get 'uidnext group nnimap-server-buffer))
 		    (push (list group) slowgroups)
-		  (insert (cdr (gnus-gethash group nnimap-mailbox-info))))))))
+		  (insert (cdr (gnus-gethash (concat server group)
+					     nnimap-mailbox-info))))))))
 	(dolist (group slowgroups)
 	  (if nnimap-retrieve-groups-asynchronous
 	      (setq group (car group)))
@@ -999,7 +1002,7 @@ function is generally only called when Gnus is shutting down."
 		(insert str)
 		(when nnimap-retrieve-groups-asynchronous
 		  (gnus-sethash
-		   group
+		   (concat server group)
 		   (cons (or (imap-mailbox-get
 			      'uidnext group nnimap-server-buffer)
 			     (imap-mailbox-status
