@@ -1,3 +1,7 @@
+2001-01-15  Simon Josefsson  <simon@josefsson.org>
+
+	* message.texi (Security): Requires OpenSSL 0.9.6+.
+
 2001-01-13  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Mail): Move explanation of
