@@ -1,3 +1,7 @@
+2003-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-util.el (gnus-faces-at): Simplify.
+
 2003-02-13  Teodor Zlatanov  <tzz@bwh.harvard.edu>
 
 	* spam.el (spam-ham-move-routine) 

@@ -696,23 +696,18 @@ and `print-level' to nil."
 	   b (setq b (next-single-property-change b 'gnus-face nil end))
 	   prop val))))))
 
-(defmacro gnus-faces-at (pos)
-  "Return a list of faces at POS."
+(defmacro gnus-faces-at (position)
+  "Return a list of faces at POSITION."
   (if (featurep 'xemacs)
-      `(let* ((pos ,pos)
-	      (faces (list (get-text-property pos 'face))))
-	 (mapcar-extents
-	  (lambda (extent)
-	    (pushnew (extent-property extent 'face) faces))
-	  nil (current-buffer) pos pos)
-	 (delq nil faces))
-    `(let* ((pos ,pos)
-	    (faces (list (get-text-property pos 'face)))
-	    (overlays (overlays-at pos)))
-       (while overlays
-	 (pushnew (plist-get (overlay-properties (pop overlays)) 'face)
-		  faces))
-       (delq nil faces))))
+      `(let ((pos ,position))
+	 (mapcar-extents 'extent-face
+			 nil (current-buffer) pos pos nil 'face))
+    `(let ((pos ,position))
+       (delq nil (cons (get-text-property pos 'face)
+		       (mapcar
+			(lambda (overlay)
+			  (overlay-get overlay 'face))
+			(overlays-at pos)))))))
 
 ;;; Protected and atomic operations.  dmoore@ucsd.edu 21.11.1996
 ;;; The primary idea here is to try to protect internal datastructures
