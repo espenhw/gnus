@@ -333,7 +333,7 @@ nn*-request-list should have been called before calling this function."
     ;; Go through all groups from the active list.
     (save-excursion
       (set-buffer nntp-server-buffer)
-      (goto-char 1)
+      (goto-char (point-min))
       (while (re-search-forward 
 	      "^\\([^ \t]+\\)[ \t]+\\([0-9]+\\)[ \t]+\\([0-9]+\\)" nil t)
 	(setq group-assoc
@@ -375,13 +375,13 @@ nn*-request-list should have been called before calling this function."
   "Go through the entire INCOMING file and pick out each individual mail.
 FUNC will be called with the buffer narrowed to each mail."
   (let ((delim (concat "^" rmail-unix-mail-delimiter))
-	start)
+	start end)
     (save-excursion
       (set-buffer (get-buffer-create " *nnmail incoming*"))
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
       (insert-file-contents incoming)
-      (goto-char 1)
+      (goto-char (point-min))
       (save-excursion (run-hooks 'nnmail-prepare-incoming-hook))
       ;; Go to the beginning of the first mail...
       (if (and (re-search-forward delim nil t)
@@ -392,6 +392,8 @@ FUNC will be called with the buffer narrowed to each mail."
 	    ;; Skip all the headers in case there are more "From "s...
 	    (if (not (search-forward "\n\n" nil t))
 		(forward-line 1))
+	    ;; Go to the beginning of the next article - or to the end
+	    ;; of the buffer.  
 	    (if (re-search-forward delim nil t)
 		(goto-char (match-beginning 0))
 	      (goto-char (point-max)))
@@ -399,7 +401,9 @@ FUNC will be called with the buffer narrowed to each mail."
 	      (save-restriction
 		(narrow-to-region start (point))
 		(goto-char (point-min))
-		(funcall func)))))
+		(funcall func)
+		(setq end (point-max))))
+	    (goto-char end)))
       (if dont-kill
 	  (current-buffer)
 	(kill-buffer (current-buffer))))))

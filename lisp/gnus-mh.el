@@ -81,10 +81,6 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
 
 	(gnus-article-show-all-headers) ;; so colors are happy
 	;; lots of junk to avoid mh-send deleting other windows
-	(if gnus-split-window 
-	      (split-window-vertically)
-	  )
-
 	(setq from (gnus-fetch-field "from")
 	      subject (let ((subject (or (gnus-fetch-field "subject")
 					 "(None)")))
@@ -108,10 +104,20 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
 	)) ;; save excursion/restriction
 
     (mh-find-path)
-    (if gnus-split-window
-	(mh-send-sub to (or cc "") (or subject "(None)") config);; Erik Selberg 1/23/94
-      (mh-send to (or cc "") subject);; shouldn't use according to mhe
+    (mh-send-sub to (or cc "") (or subject "(None)") config) ;; Erik Selberg 1/23/94
+
+    (let ((draft (current-buffer))
+	  mail-buf)
+      (if (not yank)
+	  (gnus-configure-windows 'reply)
+	(gnus-configure-windows 'reply-yank))
+      (setq mail-buf (cdr (assq 'mail gnus-window-to-buffer)))
+      (pop-to-buffer mail-buf) ;; always in the display, so won't have window probs
+      (switch-to-buffer draft)
+      (kill-buffer mail-buf) ;; mh-e don't use it!
       )
+
+    ;;    (mh-send to (or cc "") subject);; shouldn't use according to mhe
     
     ;; note - current buffer is now draft!
     (save-excursion
@@ -147,21 +153,20 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
  	subject
 	(config (current-window-configuration))) ;; need to add this - erik
     ;;(gnus-article-show-all-headers)
-    (if gnus-split-window
-	(progn
-	  (pop-to-buffer gnus-article-buffer)
-	  (split-window-vertically)
-	  (setq buffer (current-buffer))
-	  ))
     (setq subject
 	  (concat "[" gnus-newsgroup-name "] "
 		  ;;(mail-strip-quoted-names (gnus-fetch-field "From")) ": "
 		  (or (gnus-fetch-field "subject") "")))
     (setq mh-show-buffer buffer)
     (mh-find-path)
-    (if gnus-split-window
-	(mh-send-sub to (or cc "") subject config)
-      (mh-send to (or cc "") subject)
+    (mh-send-sub to (or cc "") (or subject "(None)") config) ;; Erik Selberg 1/23/94
+    (let ((draft (current-buffer))
+	  mail-buf)
+      (gnus-configure-windows 'reply-yank)
+      (setq mail-buf (cdr (assq 'mail gnus-window-to-buffer)))
+      (pop-to-buffer mail-buf) ;; always in the display, so won't have window probs
+      (switch-to-buffer draft)
+      (kill-buffer mail-buf) ;; mh-e don't use it!
       )
     (save-excursion
       (goto-char (point-max))

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 @comment %**start of header (This is for running Texinfo on a region.)
 @setfilename gnus
-@settitle Gnus 0.54 Manual
+@settitle Gnus 0.70 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -788,6 +788,7 @@ long as Gnus is active.
 * Selecting a Group::      Actually reading news.
 * Group Subscribing::      Unsubscribing, killing, subscribing.
 * Group Levels::           Levels? What are those, then?
+* Marking Groups::         You can mark groups for later processing.
 * Foreign Groups::         How to create foreign groups.
 * Group Parameters::       Each group may have different parameters set.
 * Listing Groups::         Gnus can list various subsets of the groups.
@@ -963,6 +964,11 @@ Jump to the unread group with the lowest level
 Jump to the first group with unread articles
 (@code{gnus-group-first-unread-group}).  
 @end table
+
+@vindex gnus-group-goto-unread
+If @code{gnus-group-goto-unread} is @code{nil}, all the movement
+commands will move to the next group, not the next unread group.  Even
+the commands that say they move to the next unread group. 
 
 @node Selecting a Group
 @section Selecting a Group
@@ -1152,6 +1158,39 @@ All groups with a level less than or equal to
 @code{gnus-group-default-list-level} will be listed in the group buffer
 by default.
 
+@node Marking Groups
+@section Marking Groups
+@cindex marking groups
+
+If you want to perform some action on several groups, and they appear
+subsequently in the group buffer, you would normally just give a
+numerical prefix to the command.  Most group commands will then do your
+bidding on those groups.
+
+However, if the groups are not in sequential order, you can still
+perform an action on several groups.  You simply mark the groups first,
+and then execute the command.  
+
+@table @kbd
+@item #
+@kindex # (Group)
+@item G m
+@kindex G m (Group)
+@findex gnus-group-mark-group
+Set the mark on the current group (@code{gnus-group-mark-group}). 
+@item M-#
+@kindex M-# (Group)
+@item G u
+@kindex G u (Group)
+@findex gnus-group-unmark-group
+Remove the mark from the current group
+(@code{gnus-group-unmark-group}). 
+@item G w
+@kindex G w (Group)
+@findex gnus-group-mark-region
+Mark all groups between point and mark (@code{gnus-group-mark-region}). 
+@end table
+
 @node Foreign Groups
 @section Foreign Groups
 @cindex foreign groups
@@ -1163,10 +1202,10 @@ personal mail group.
 
 A foreign group (or any group, really) is specified by a @dfn{name} and
 a @dfn{select method}.  To take the latter first, a select method is a
-list where the first element says what backend to use (eg. nntp,
-nnspool, nnml) and the second element is the @dfn{server name}.  There
-may be additional elements in the select method, where the value may
-have special meaning for the backend in question.
+list where the first element says what backend to use (eg. @code{nntp},
+@code{nnspool}, @code{nnml}) and the second element is the @dfn{server
+name}.  There may be additional elements in the select method, where the
+value may have special meaning for the backend in question.
 
 One could say that a select method defines a @dfn{virtual server} - so
 we do just that (@pxref{The Server Buffer}).
@@ -1184,49 +1223,54 @@ Here are some commands for making and editing general foreign groups,
 and some commands to ease the creation of some special-purpose groups:
 
 @table @kbd
-@item M m
-@kindex M m (Group)
+@item G m
+@kindex G m (Group)
 @findex gnus-group-make-group
 Make a new group (@code{gnus-group-make-group}).  Gnus will prompt you
 for a name, a method and possibly an @dfn{address}.  For an easier way
 to subscribe to @sc{nntp} groups, @xref{Browse Foreign Server}.
-@item M e
-@kindex M e (Group)
+@item G e
+@kindex G e (Group)
 @findex gnus-group-edit-group-method
 Enter a buffer where you can edit the select method of the current
 group (@code{gnus-group-edit-group-method}).
-@item M p
-@kindex M p (Group)
+@item G p
+@kindex G p (Group)
 @findex gnus-group-edit-group-parameters
 Enter a buffer where you can edit the group parameters
 (@code{gnus-group-edit-group-parameters}). 
-@item M E
-@kindex M E (Group)
+@item G E
+@kindex G E (Group)
 @findex gnus-group-edit-group
 Enter a buffer where you can edit the group info
 (@code{gnus-group-edit-group}).
-@item M d
-@kindex M d (Group)
+@item G d
+@kindex G d (Group)
 @findex gnus-group-make-directory-group
 Make a directory group.  You will be prompted for a directory name
 (@code{gnus-group-make-directory-group}).  
-@item M h 
-@kindex M h (Group)
+@item G h 
+@kindex G h (Group)
 @findex gnus-group-make-help-group
 Make the (ding) Gnus help group (@code{gnus-group-make-help-group}).
-@item M a
-@kindex M a (Group)
+@item G a
+@kindex G a (Group)
 @findex gnus-group-make-archive-group
 @vindex gnus-group-archive-directory
 Make the (ding) Gnus archive group
 (@code{gnus-group-make-archive-group}).  The archive group will be
 fetched from @code{gnus-group-archive-directory}.
-@item M k
-@kindex M k (Group)
+@item G k
+@kindex G k (Group)
 @findex gnus-group-make-kiboze-group
 Make a kiboze group.  You will be prompted for a name, for a regexp to
 match groups to be "included" in the kiboze group, and a series of
 strings to match on headers (@code{gnus-group-make-kiboze-group}).
+@item G v
+@kindex G v (Group)
+@findex gnus-group-add-to-virtual
+Add the current group to an @code{nnvirtual} group
+(@code{gnus-group-add-to-virtual}).  Uses the process/prefix convention.
 @end table
 
 The different methods all have their peculiarities, of course.
@@ -1723,7 +1767,7 @@ The folders are located in @code{nnfolder-directory}, say,
 @file{~/Mail/}.  There are three folders, @file{foo}, @file{bar} and
 @file{mail.baz}.
 
-Go to the group buffer and type @kbd{M m}.  When prompted, answer
+Go to the group buffer and type @kbd{G m}.  When prompted, answer
 @samp{foo} for the name and @samp{nnfolder} for the method.  Repeat
 twice for the two other groups, @samp{bar} and @samp{mail.baz}.  Be sure
 to include all your mail groups.
@@ -1800,6 +1844,12 @@ If @code{nnmail-keep-last-article} is non-@code{nil}, Gnus will never
 expire the final article in a mail newsgroup.  This is to make life
 easier for procmail users.
 
+By the way, that line up there about Gnus never expiring non-expirable
+articles is a lies.  If you put @code{total-expire} in the group
+parameters, articles will not be marked as expirable, but all read
+articles will be put through the expiry process.  Use with extreme
+caution. 
+
 @node Not Reading Mail
 @subsubsection Not Reading Mail
 
@@ -1819,8 +1869,8 @@ This might be too much, if, for instance, you are reading mail quite
 happily with @code{nnml} and just want to peek at some old @sc{rmail}
 file you have stashed away with @code{nnbabyl}.  All backends have
 variables called backend-@code{get-new-mail}.  If you want to disable
-the @code{nnbabyl} mail reading, you just set
-@code{nnbabyl-get-new-mail} to @code{nil}. 
+the @code{nnbabyl} mail reading, you edit the virtual server for the
+group to have a setting where @code{nnbabyl-get-new-mail} to @code{nil}.
 
 @node nnmbox
 @subsubsection nnmbox
@@ -1832,6 +1882,8 @@ the @code{nnbabyl} mail reading, you just set
 The @dfn{nnmbox} backend will use the standard Un*x mbox file to store
 mail.  @code{nnmbox} will add extra headers to each mail article to say
 which group it belongs in.
+
+Virtual server settings:
 
 @table @code
 @item nnmbox-mbox-file
@@ -1858,6 +1910,8 @@ into groups.
 The @dfn{nnbabyl} backend will use a babyl mail box to store mail.
 @code{nnbabyl} will add extra headers to each mail article to say which
 group it belongs in.
+
+Virtual server settings:
 
 @table @code
 @item nnbabyl-mbox-file
@@ -1904,6 +1958,8 @@ splitting.  It has to create lots of files, and it also generates
 @sc{nov} databases for the incoming mails.  This makes is the fastest
 backend when it comes to reading mail.
 
+Virtual server settings:
+
 @table @code
 @item nnml-directory
 @vindex nnml-directory
@@ -1948,6 +2004,8 @@ might take a while to complete.
 @code{nnmh} a @emph{much} slower backend than @code{nnml}, but it also
 makes it easier to write procmail scripts for.
 
+Virtual server settings:
+
 @table @code
 @item nnmh-directory
 All @code{nnmh} directories will be located under this directory.
@@ -1965,6 +2023,8 @@ If non-@code{nil}, @code{nnmh} will read incoming mail.
 file.  Each file is in the standard Un*x mbox format.  @code{nnfolder}
 will add extra headers to keep track of article numbers and arrival
 dates.
+
+Virtual server settings:
 
 @table @code
 @item nnfolder-directory
@@ -2032,14 +2092,20 @@ IF the group parameter list contains an element like @code{(to-group
 If this symbol is present in the group parameter list, all articles that
 are read will be marked as expirable.  For an alternative approach,
 @xref{Expiring Old Mail Articles}.
+
+@item total-expire
+@cindex total-expire
+If this symbol is present, all read articles will be put through the
+expiry process, even if they are not marked as expirable.  Use with
+caution. 
 @end table
 
 If you want to change the group parameters (or anything else of the
-group info) you can use the @kbd{M E} to edit enter a buffer where you
+group info) you can use the @kbd{G E} to edit enter a buffer where you
 can edit the group info.
 
 You usually don't want to edit the entire group info, so you'd be better
-off using the @kbd{M p} command to just edit the group parameters.
+off using the @kbd{G p} command to just edit the group parameters.
 
 @node Listing Groups
 @section Listing Groups
@@ -2049,8 +2115,8 @@ These commands all list various slices of the groups that are available.
 
 @table @kbd
 @item l
-@itemx G s
-@kindex G s (Group)
+@itemx A s
+@kindex A s (Group)
 @kindex l (Group)
 @findex gnus-group-list-groups
 List all groups that have unread articles
@@ -2058,8 +2124,8 @@ List all groups that have unread articles
 command will list only groups of level ARG and lower.  By default, it
 only lists groups of level five or lower (ie. just subscribed groups).
 @item L
-@itemx G u
-@kindex G u (Group)
+@itemx A u
+@kindex A u (Group)
 @kindex L (Group)
 @findex gnus-group-list-all-groups
 List all groups, whether they have unread articles or not
@@ -2067,21 +2133,21 @@ List all groups, whether they have unread articles or not
 this command will list only groups of level ARG and lower.  By default,
 it lists groups of level seven or lower (ie. just subscribed and
 unsubscribed groups).
-@item G k
-@kindex G k (Group)
+@item A k
+@kindex A k (Group)
 @findex gnus-group-list-killed
 List all killed groups (@code{gnus-group-list-killed}).
-@item G z
-@kindex G z (Group)
+@item A z
+@kindex A z (Group)
 @findex gnus-group-list-zombies
 List all zombie groups (@code{gnus-group-list-zombies}).
-@item G m
-@kindex G m (Group)
+@item A m
+@kindex A m (Group)
 @findex gnus-group-list-matching
 List all subscribed groups with unread articles that match a regexp
 (@code{gnus-group-list-matching}). 
-@item G M
-@kindex G M (Group)
+@item A M
+@kindex A M (Group)
 @findex gnus-group-list-all-matching
 List groups that match a regexp (@code{gnus-group-list-all-matching}).
 @end table
@@ -2224,9 +2290,12 @@ plastic chair.
 @item g
 @kindex g (Group)
 @findex gnus-group-get-new-news
-Check server for new articles. 
-If the numeric prefix is used, this command will check only groups of
-level ARG and lower (@code{gnus-group-get-new-news}).
+@vindex gnus-group-always-list-unread
+Check server for new articles.  If the numeric prefix is used, this
+command will check only groups of level ARG and lower
+(@code{gnus-group-get-new-news}).  If
+@code{gnus-group-always-list-unread} is @code{nil}, only groups of level
+ARG and lower will be displayed.
 @item M-g
 @kindex M-g (Group)
 @findex gnus-group-get-new-news-this-group
@@ -2659,16 +2728,16 @@ be used for marking articles as read.
 This hook is run after selecting an article.  It is meant to be used for
 highlighting the article in some way.  It is not run if
 @code{gnus-visual} is @code{nil}.
-@item gnus-visual-summary-update-hook
-@vindex gnus-visual-summary-update-hook
+@item gnus-summary-update-hook
+@vindex gnus-summary-update-hook
 This hook is called when a summary line is changed.  It is not run if
 @code{gnus-visual} is @code{nil}.
 @item gnus-summary-selected-face
 @vindex gnus-summary-selected-face
 This is the face (or @dfn{font} as some people call it) that is used to
 highlight the current article in the summary buffer.
-@item gnus-visual-summary-highlight
-@vindex gnus-visual-summary-highlight
+@item gnus-summary-highlight
+@vindex gnus-summary-highlight
 Summary lines are highlighted according to this variable, which is a
 list where the elements are on the format @code{(FORM . FACE)}.  If you
 would, for instance, like ticked articles to be italic and high-scored
@@ -2755,7 +2824,8 @@ Mail a reply to the author of the current article
 @kindex S R (Summary)
 @findex gnus-summary-reply-with-original
 Mail a reply to the author of the current article and include the
-original message (@code{gnus-summary-reply-with-original}).
+original message (@code{gnus-summary-reply-with-original}).  This
+command uses the process/prefix convention.
 @item S o m
 @kindex S o m (Summary)
 @findex gnus-summary-mail-forward
@@ -2826,6 +2896,72 @@ the head of the outgoing mail.
 @vindex gnus-mail-send-method
 This variable says how a mail should be mailed.  It uses the function in
 the @code{send-mail-function} variable as the default.
+
+@item gnus-uu-digest-headers
+@vindex gnus-uu-digest-headers
+List of regexps to match headers included in digested messages.  The
+headers will be included in the sequence they are matched.
+
+@end table
+
+There are three "methods" for handling all mail.  The default is
+@code{sendmail}.  Some people like what @code{mh} does better, and some
+people prefer @code{vm}.
+
+Three variables for customizing what to use when:
+
+@table @code
+
+@vindex gnus-mail-reply-method
+@item gnus-mail-reply-method
+This function is used to compose replys.  The three functions avaibale
+are:
+
+@findex gnus-mail-reply-using-vm
+@findex gnus-mail-reply-using-mhe
+@findex gnus-mail-reply-using-mail
+@itemize @bullet
+@item 
+@code{gnus-mail-reply-using-mail} (sendmail)
+@item 
+@code{gnus-mail-reply-using-mhe} (mh)
+@item
+@code{gnus-mail-reply-using-vm} (vm)
+@end itemize
+
+@vindex gnus-mail-forward-method
+@item gnus-mail-forward-method
+This function is used to forward messages.  The three functions avaibale
+are:
+
+@findex gnus-mail-forward-using-vm
+@findex gnus-mail-forward-using-mhe
+@findex gnus-mail-forward-using-mail
+@itemize @bullet
+@item 
+@code{gnus-mail-forward-using-mail} (sendmail)
+@item 
+@code{gnus-mail-forward-using-mhe} (mh)
+@item
+@code{gnus-mail-forward-using-vm} (vm)
+@end itemize
+
+@vindex gnus-mail-other-window-method
+@item gnus-mail-other-window-method
+This function is used to send mails.  The three functions avaibale are:
+
+@findex gnus-mail-other-window-using-vm
+@findex gnus-mail-other-window-using-mhe
+@findex gnus-mail-other-window-using-mail
+@itemize @bullet
+@item 
+@code{gnus-mail-other-window-using-mail} (sendmail)
+@item 
+@code{gnus-mail-other-window-using-mhe} (mh)
+@item
+@code{gnus-mail-other-window-using-vm} (vm)
+@end itemize
+
 @end table
 
 
@@ -2854,7 +2990,8 @@ Post a followup to the current article (@code{gnus-summary-followup}).
 @kindex F (Summary)
 @findex gnus-summary-followup-with-original
 Post a followup to the current article and include the original message
-(@code{gnus-summary-followup-with-original}). 
+(@code{gnus-summary-followup-with-original}).   This command uses the
+process/prefix convention.
 @item S u
 @kindex S u (Summary)
 @findex gnus-uu-post-news
@@ -3028,6 +3165,7 @@ Post a followup and send a reply to the current article
 @findex gnus-summary-followup-and-reply-with-original
 Post a followup and send a reply to the current article and include the
 original message (@code{gnus-summary-followup-and-reply-with-original}).
+This command uses the process/prefix convention.
 @end table
 
 Here's a list of variables that are relevant to both mailing and
@@ -3829,6 +3967,16 @@ all articles, both read and unread.
 Exit the group, check for new articles in the group, and select the
 group (@code{gnus-summary-rescan-group}).  If given a prefix, select all
 articles, both read and unread.
+@item Z N
+@kindex Z N (Summary)
+@findex gnus-summary-next-group
+Exit the group and go to the next group
+(@code{gnus-summary-next-group}). 
+@item Z P
+@kindex Z P (Summary)
+@findex gnus-summary-prev-group
+Exit the group and go to the previous group
+(@code{gnus-summary-prev-group}). 
 @end table
 
 @vindex gnus-exit-group-hook
@@ -3977,6 +4125,10 @@ article in.  The default is @code{gnus-numeric-save-name}.
 @vindex gnus-summary-save-in-folder
 Save the article to an MH folder using @code{rcvstore} from the MH
 library.
+@item gnus-summary-save-in-vm
+@vindex gnus-summary-save-in-vm
+Save the article in a VM folder.  You have to have the VM mail
+reader to use this setting.
 @end table
 
 All of these functions, except for the last one, will save the article
@@ -4441,6 +4593,10 @@ Sort by subject (@code{gnus-summary-sort-by-subject}).
 @kindex V s d (Summary)
 @findex gnus-summary-sort-by-date
 Sort by date (@code{gnus-summary-sort-by-date}).
+@item V s i
+@kindex V s i (Summary)
+@findex gnus-summary-sort-by-score
+Sort by date (@code{gnus-summary-sort-by-score}).
 @end table
 
 These functions will work both when you use threading and when you don't
@@ -4600,6 +4756,11 @@ Increase the current subject temporarily
 @findex gnus-summary-raise-by-subject
 Increase the current subject permanently
 (@code{gnus-summary-raise-by-subject}).
+@item I s i 
+@kindex I s i  (Summary)
+@findex gnus-summary-immediately-raise-by-subject
+Increase the current subject immediately
+(@code{gnus-summary-immediately-raise-by-subject}).
 @item I a t
 @kindex I a t (Summary)
 @findex gnus-summary-temporarily-raise-by-author
@@ -4610,6 +4771,11 @@ Increase the current author temporarily
 @findex gnus-summary-raise-by-author
 Increase the current author permanently
 (@code{gnus-summary-raise-by-author}).
+@item I a i 
+@kindex I a i  (Summary)
+@findex gnus-summary-immediately-raise-by-author
+Increase the current author immediately
+(@code{gnus-summary-immediately-raise-by-author}).
 @item I b t
 @kindex I b t (Summary)
 @findex gnus-summary-temporarily-raise-by-body
@@ -4621,6 +4787,11 @@ operation.
 @findex gnus-summary-raise-by-body
 Increase based on a match on the body of an article
 (@code{gnus-summary-raise-by-body}). This is a very slow operation
+@item I b i 
+@kindex I b i  (Summary)
+@findex gnus-summary-immediately-raise-by-body
+Increase based on a match on the body of an article
+(@code{gnus-summary-immediately-raise-by-body}). This is a very slow operation
 @item I i t
 @kindex I i t (Summary)
 @findex gnus-summary-temporarily-raise-by-id
@@ -4631,6 +4802,11 @@ Increase the current message-id temporarily
 @findex gnus-summary-raise-by-id
 Increase the current message-id permanently
 (@code{gnus-summary-raise-by-id}).
+@item I i i 
+@kindex I i i  (Summary)
+@findex gnus-summary-immediately-raise-by-id
+Increase the current message-id immediately
+(@code{gnus-summary-immediately-raise-by-id}).
 @item I t t
 @kindex I t t (Summary)
 @findex gnus-summary-temporarily-raise-by-thread
@@ -4641,6 +4817,11 @@ Increase the current thread temporarily
 @findex gnus-summary-raise-by-thread
 Increase the current thread permanently
 (@code{gnus-summary-raise-by-thread}).
+@item I t i 
+@kindex I t i  (Summary)
+@findex gnus-summary-immediately-raise-by-thread
+Increase the current thread immediately
+(@code{gnus-summary-immediately-raise-by-thread}).
 @item I x t
 @kindex I x t (Summary)
 @findex gnus-summary-temporarily-raise-by-xref
@@ -4651,6 +4832,11 @@ Increase the current xref temporarily
 @findex gnus-summary-raise-by-xref
 Increase the current xref permanently
 (@code{gnus-summary-raise-by-xref}).
+@item I x i 
+@kindex I x i  (Summary)
+@findex gnus-summary-immediately-raise-by-xref
+Increase the current xref immediately
+(@code{gnus-summary-immediately-raise-by-xref}).
 @item I f t
 @kindex I f t (Summary)
 @findex gnus-summary-temporarily-raise-followups-to-author
@@ -4661,6 +4847,11 @@ Increase followups to the current author temporarily
 @findex gnus-summary-raise-followups-to-author
 Increase followups to the current author permanently
 (@code{gnus-summary-raise-followups-to-author}).
+@item I f i 
+@kindex I f i  (Summary)
+@findex gnus-summary-immediately-raise-followups-to-author
+Increase followups to the current author immediately
+(@code{gnus-summary-immediately-raise-followups-to-author}).
 @end table
 
 Commands for lowering the score:
@@ -4676,6 +4867,11 @@ Lower the current subject temporarily
 @findex gnus-summary-lower-by-subject
 Lower the current subject permanently
 (@code{gnus-summary-lower-by-subject}).
+@item L s i 
+@kindex L s i  (Summary)
+@findex gnus-summary-immediately-lower-by-subject
+Lower the current subject immediately
+(@code{gnus-summary-immediately-lower-by-subject}).
 @item L a t
 @kindex L a t (Summary)
 @findex gnus-summary-temporarily-lower-by-author
@@ -4686,6 +4882,11 @@ Lower the current author temporarily
 @findex gnus-summary-lower-by-author
 Lower the current author permanently
 (@code{gnus-summary-lower-by-author}).
+@item L a i 
+@kindex L a i  (Summary)
+@findex gnus-summary-immediately-lower-by-author
+Lower the current author immediately
+(@code{gnus-summary-immediately-lower-by-author}).
 @item L b t
 @kindex L b t (Summary)
 @findex gnus-summary-temporarily-lower-by-body
@@ -4697,6 +4898,11 @@ operation.
 @findex gnus-summary-lower-by-body
 Lower based on a match on the article body
 (@code{gnus-summary-lower-by-body}).  This is a very slow operation.
+@item L b i 
+@kindex L b i  (Summary)
+@findex gnus-summary-immediately-lower-by-body
+Lower based on a match on the article body
+(@code{gnus-summary-immediately-lower-by-body}).  This is a very slow operation.
 @item L i t
 @kindex L i t (Summary)
 @findex gnus-summary-temporarily-lower-by-id
@@ -4707,6 +4913,11 @@ Lower the current message-id temporarily
 @findex gnus-summary-lower-by-id
 Lower the current message-id permanently
 (@code{gnus-summary-lower-by-id}).
+@item L i i 
+@kindex L i i  (Summary)
+@findex gnus-summary-immediately-lower-by-id
+Lower the current message-id immediately
+(@code{gnus-summary-immediately-lower-by-id}).
 @item L t t
 @kindex L t t (Summary)
 @findex gnus-summary-temporarily-lower-by-thread
@@ -4717,6 +4928,11 @@ Lower the current thread temporarily
 @findex gnus-summary-lower-by-thread
 Lower the current thread permanently
 (@code{gnus-summary-lower-by-thread}).
+@item L t i 
+@kindex L t i  (Summary)
+@findex gnus-summary-immediately-lower-by-thread
+Lower the current thread immediately
+(@code{gnus-summary-immediately-lower-by-thread}).
 @item L x t
 @kindex L x t (Summary)
 @findex gnus-summary-temporarily-lower-by-xref
@@ -4727,6 +4943,11 @@ Lower the current xref temporarily
 @findex gnus-summary-lower-by-xref
 Lower the current xref permanently
 (@code{gnus-summary-lower-by-xref}).
+@item L x i 
+@kindex L x i  (Summary)
+@findex gnus-summary-immediately-lower-by-xref
+Lower the current xref immediately
+(@code{gnus-summary-immediately-lower-by-xref}).
 @item L f t
 @kindex L f t (Summary)
 @findex gnus-summary-temporarily-lower-followups-to-author
@@ -4737,6 +4958,11 @@ Lower followups to the current author temporarily
 @findex gnus-summary-lower-followups-to-author
 Lower followups to the current author permanently
 (@code{gnus-summary-lower-followups-to-author}).
+@item L f i 
+@kindex L f i  (Summary)
+@findex gnus-summary-immediately-lower-followups-to-author
+Lower followups to the current author immediately
+(@code{gnus-summary-immediately-lower-followups-to-author}).
 @end table
 
 @node Score Variables
@@ -4744,6 +4970,10 @@ Lower followups to the current author permanently
 @cindex score variables
 
 @table @code
+@item gnus-use-scoring
+@vindex gnus-use-scoring
+If @code{nil}, Gnus will not check for score files, and will not, in
+general, do any score-related work.
 @item gnus-kill-killed
 @vindex gnus-kill-killed
 If this variable is @code{nil}, Gnus will never apply score files to
@@ -4947,7 +5177,15 @@ parents will get this number added to their scores.
 This entry controls the adaptive scoring.  If it is @code{t}, the
 default adaptive scoring rules will be used.  If it is @code{ignore}, no
 adaptive scoring will be performed on this group.  If it is a list, this
-list will be used as the adaptive scoring rules.
+list will be used as the adaptive scoring rules.  If it isn't present,
+or is something other than @code{t} or @code{ignore}, the default
+adaptive scoring rules will be used.  If you want to use adaptive
+scoring on most groups, you'd set @code{gnus-use-adaptive-scoring} to
+@code{t}, and insert an @code{(adapt ignore)} in the groups where you do
+not want adaptive scoring.  If you only want adaptive scoring in a few
+groups, you'd set @code{gnus-use-adaptive-scoring} to @code{nil}, and
+insert @code{(adapt t)} in the score files of the groups where you want
+it. 
 @end table
 
 @node Score File Editing
@@ -5027,6 +5265,10 @@ the authors you like least, without you having to say so explicitly.
 You can control what groups the adaptive scoring is to be performed on
 by using the score files (@pxref{Score File Format}).  This will also
 let you use different rules in different groups.
+
+@vindex gnus-adaptive-file-suffix
+The adaptive score entries will be put into a file where the name is the
+group name with @code{gnus-adaptive-file-suffix} appended.
 
 @node Scoring Tips
 @subsection Scoring Tips
@@ -5700,6 +5942,7 @@ Here's the method for the public spool:
 @menu
 * Interactive::                Making Gnus ask you many questions.
 * Windows Configuration::      Configuring the Gnus buffer windows.
+* Buttons::                    Get tendonitis in ten easy steps!
 * Various Various::            Things that are really various.
 @end menu
 
@@ -5742,38 +5985,140 @@ No, there's nothing here about X, so be quiet.
 @vindex gnus-use-full-window
 If non-@code{nil}, Gnus will delete all other windows and occupy the
 entire Emacs screen by itself.  It is @code{t} by default.
-@item gnus-window-configuration
-@vindex gnus-window-configuration
-This variable describes how much space each Gnus buffer should be given,
-compared to the other Gnus buffers.  Here's an example:
+
+@item gnus-buffer-configuration
+@vindex gnus-buffer-configuration
+This variable describes how much space each Gnus buffer should be given.
+Here's an excerpt of this variable:
 
 @lisp
-(setq gnus-window-configuration
-  '((summary (0 1 0))
-    (groups (1 0 0))
-    (article (0 3 10))))
+((group ([group 1.0 point] 
+	 (if gnus-carpal [group-carpal 4])))
+ (article ([summary 0.25 point] 
+	   [article 1.0])))
 @end lisp
 
-This variable is a list of lists, where each of these small lists is on
-the form @var{(action (g s a))}.  As you can see, there are three
-possible @var{action}s - @code{group} (which is what happens when
-you first start Gnus, or returns from the summary buffer),
-@code{summary} (which is what happens when there are no unread articles
-in the group, and @code{article} (which is what happens when there
-is an unread article in the group). 
+This is an alist.  The @dfn{key} is a symbol that names some action or
+other.  For instance, when displaying the group buffer, the window
+configuration function will use @code{group} as the key.  A full list of
+possible names is listed below.
 
-We see that in the first two actions, the respective buffers will fill
-the screen, and in the last, the article buffer will take ten lines for
-each three the summary buffer gets.
+The @dfn{value} is a @dfn{rule} that says how much space each buffer
+should occupy.  To take the @code{article} rule as an example -
 
-@findex gnus-window-configuration-split
-This variable can also have a function as its value.  In that case,
-whenever Gnus tries to configure the Gnus buffers, that function will be
-called with the @var{action} as its parameter.  There is one pre-made
-function supplied, @code{gnus-window-configuration-split}, which may be
-suitable if you have a very wide Emacs window, and want to have the
-summary buffer and the article buffer side by side.
+@lisp
+(article ([summary 0.25 point] 
+	  [article 1.0]))
+@end lisp
+
+This rule says that the summary buffer should occupy 25% of the screen,
+and that it is placed over the article buffer.  As you may have noticed,
+100% + 25% is actually 125% (yup, I saw y'all reaching for that
+calculator there).  However, the special number @code{1.0} is used to
+signal that this buffer should soak up all the rest of the space
+avaiable after the rest of the buffers have taken whatever they need.  
+There should be only one buffer with the @code{1.0} size spec.
+
+Point will be put in the buffer that has the optional third element
+@code{point}. 
+
+Here's a more complicated example:
+
+@lisp
+(article ([group 4]
+          [summary 0.25 point]
+          (if gnus-carpal [summary-carpal 4])
+          [article 1.0])
+@end lisp
+
+If the size spec is an integer instead of a floating point number, 
+then that number will be used to say how many lines a buffer should
+occupy, not a percentage.
+
+If an element is a list instead of a vector, this list will be
+@code{eval}ed.  If the result is non-@code{nil}, it will be used.  This
+means that there will be three buffers if @code{gnus-carpal} is
+@code{nil}, and four buffers if @code{gnus-carpal} is non-@code{nil}. 
+
+Not complicated enough for you?  Well, try this on for size:
+
+@lisp
+(article ([group 1.0]
+          [gnus-carpal 4])
+         ((horizontal 0.5)
+          [summary 0.25 point]
+          [summary-carpal 4]
+          [article 1.0]))
+@end lisp
+
+Whoops.  Two buffers with the mystery 100% tag.  And what's that
+@code{horizontal} thingie?  
+
+If the first element in one of the rule lists is a list with
+@code{horizontal} as the first element, Gnus will split the window
+horizontally, giving you two windows side-by-side.  Inside each of these
+strips you may carry on all you like in the normal fashion.  The number
+following @code{horizontal} says what percentage of the screen is to be
+given to this strip.  
+
+For each horizontal split, there @emph{must} be one element that has the
+100% tag.  The splitting is never accurate, and this buffer will eat any
+leftover lines from the splits. 
+
+Here's a list of all possible keys:
+
+@code{group}, @code{summary}, @code{article}, @code{server},
+@code{browse}, @code{group-mail}, @code{summary-mail},
+@code{summary-reply}, @code{info}, @code{summary-faq},
+@code{edit-group}, @code{edit-server}, @code{reply}, @code{reply-yank},
+@code{followup}, @code{followup-yank}.  
+
 @end table
+
+@node Buttons
+@section Buttons
+@cindex buttons
+@cindex mouse
+@cindex click
+
+Those new-fangled @dfn{mouse} contraptions is very popular with the
+young, hep kids who don't want to learn the proper way to do things
+these days.  Why, I remember way back in the summer of '89, when I was
+using Emacs on a Tops 20 system.  Three hundred users on one single
+machine, and every user was running Simula compilers.  Bah!
+
+Right.
+
+@vindex gnus-carpal
+Well, you can make Gnus display bufferfuls of buttons you can click to
+do anything by setting @code{gnus-carpal} to @code{t}.  Pretty simple,
+really.  Tell the chiropractor I sent you.
+
+
+@table @code
+@item gnus-carpal-mode-hook
+@vindex gnus-carpal-mode-hook
+Hook run in all carpal mode buffers.
+@item gnus-carpal-button-face
+@vindex gnus-carpal-button-face
+Face used on buttons.
+@item gnus-carpal-group-buffer-buttons
+@vindex gnus-carpal-group-buffer-buttons
+Buttons in the group buffer.
+@item gnus-carpal-summary-buffer-buttons
+@vindex gnus-carpal-summary-buffer-buttons
+Buttons in the summary buffer.
+@item gnus-carpal-server-buffer-buttons
+@vindex gnus-carpal-server-buffer-buttons
+Buttons in the server buffer.
+@item gnus-carpal-browse-buffer-buttons
+@vindex gnus-carpal-browse-buffer-buttons
+Buttons in the browse buffer.
+@end table
+
+All the @code{buttons} variables are lists.  The elements in these list
+is either a cons cell where the car contains a text to be displayed and
+the cdr contains a function symbol, or a simple string.
 
 @node Various Various
 @section Various Various
@@ -5781,6 +6126,13 @@ summary buffer and the article buffer side by side.
 @cindex highlights
 
 @table @code
+@item gnus-verbose
+@vindex gnus-verbose
+This variable is an integer between zero and ten.  The higher the value,
+the more messages will be displayed.  If this variable is zero, Gnus
+will never flash any messages, if it is seven, most important messages
+will be shown, and if it is ten, Gnus won't ever shut up, but will flash
+so many messages it will make your head swim.
 @item gnus-updated-mode-lines
 @vindex gnus-updated-mode-lines
 This is a list of buffers that should keep their mode lines updated.
@@ -5826,13 +6178,13 @@ section is designed to give general pointers on how to customize Gnus
 for some quite common situations.
 
 @menu
-* Slow @sc{nntp} Connection::      You run a local Emacs and get the news elsewhere.
+* Slow NNTP Connection::      You run a local Emacs and get the news elsewhere.
 * Slow Terminal Connection::  You run a remote Emacs.
 * Little Disk Space::         You feel that having large setup files is icky.
 * Slow Machine::              You feel like buying a faster machine.
 @end menu
 
-@node Slow @sc{nntp} Connection
+@node Slow NNTP Connection
 @section Slow @sc{nntp} Connection
 
 If you run Emacs on a machine locally, and get your news from a machine

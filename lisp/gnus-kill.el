@@ -59,9 +59,9 @@
   (define-key gnus-kill-file-mode-map
     "\C-c\C-k\C-a" 'gnus-kill-file-kill-by-author)
   (define-key gnus-kill-file-mode-map
-    "\C-c\C-k\C-a" 'gnus-kill-file-kill-by-thread)
+    "\C-c\C-k\C-t" 'gnus-kill-file-kill-by-thread)
   (define-key gnus-kill-file-mode-map 
-    "\C-c\C-k\C-a" 'gnus-kill-file-kill-by-xref)
+    "\C-c\C-k\C-x" 'gnus-kill-file-kill-by-xref)
   (define-key gnus-kill-file-mode-map
     "\C-c\C-a" 'gnus-kill-file-apply-buffer)
   (define-key gnus-kill-file-mode-map

@@ -1,15 +1,34 @@
-;;; gnus-cite.el --- Highlight GNUS article.
+;;; gnus-cite.el --- parse citations in articles for Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Per Abrahamsen <abraham@iesd.auc.dk>
 ;; Keywords: news, mail
+
+;; This file is part of GNU Emacs.
+
+;; GNU Emacs is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2, or (at your option)
+;; any later version.
+
+;; GNU Emacs is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to
+;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ;;; Commentary:
 
 ;;; Code:
 
 (require 'gnus)
-(require 'gnus-vis)
+
+(eval-and-compile
+  (autoload 'gnus-article-add-button "gnus-vis")
+  )
 
 ;;; Customization:
 
@@ -55,14 +74,28 @@ The text matching the first grouping will be used as a button.")
   "Face used for attribution lines.
 It is merged with the face for the cited text belonging to the attribution.")
 
-(defvar gnus-cite-hide-percentage 30
+(defvar gnus-cite-hide-percentage 50
   "Only hide cited text if it is larger than this percent of the body.")
 
-(defvar gnus-cite-hide-absolute 5
+(defvar gnus-cite-hide-absolute 10
   "Only hide cited text if there is at least this number of cited lines.")
 
+(defvar gnus-face-light-name-list
+  '("light blue" "light cyan" "light yellow" "light pink"
+    "pale green" "beige" "orange" "magenta" "violet" "medium purple"
+    "turquoise")
+  "Names of light colors.")
+
+(defvar gnus-face-dark-name-list
+  '("blue" "dark salmon" "firebrick"
+    "dark green" "dark orange" "dark khaki" "dark violet"
+    "dark turquoise")
+  "Names of dark colors.")
 
 ;;; Internal Variables:
+
+(defvar gnus-article-length nil)
+;; Length of article last time we parsed it.
 
 (defvar gnus-cite-prefix-alist nil)
 ;; Alist of citation prefixes.  
@@ -113,6 +146,7 @@ Lines matching `gnus-cite-attribution-postfix' and perhaps
     (let ((buffer-read-only nil)
 	  (alist gnus-cite-prefix-alist)
 	  (faces gnus-cite-face-list)
+	  (inhibit-point-motion-hooks t)
 	  face entry prefix skip numbers number face-alist end)
       ;; Loop through citation prefixes.
       (while alist
@@ -166,6 +200,7 @@ See the documentation for `gnus-article-highlight-citation'."
     (gnus-cite-parse-maybe)
     (let ((buffer-read-only nil)
 	  (alist gnus-cite-prefix-alist)
+	  (inhibit-point-motion-hooks t)
 	  numbers number)
       (while alist
 	(setq numbers (cdr (car alist))
@@ -175,8 +210,8 @@ See the documentation for `gnus-article-highlight-citation'."
 		numbers (cdr numbers))
 	  (goto-line number)
 	  (or (assq number gnus-cite-attribution-alist)
-	      (put-text-property (point) (progn (forward-line 1) (point))
-				 'invisible t)))))))
+	      (add-text-properties (point) (progn (forward-line 1) (point))
+				   gnus-hidden-properties)))))))
 
 (defun gnus-article-hide-citation-maybe (&optional force)
   "Hide cited text that has an attribution line.
@@ -194,6 +229,7 @@ See also the documentation for `gnus-article-highlight-citation'."
     (let ((start (point))
 	  (atts gnus-cite-attribution-alist)
 	  (buffer-read-only nil)
+	  (inhibit-point-motion-hooks t)
 	  (hiden 0)
 	  total)
       (goto-char (point-max))
@@ -216,8 +252,9 @@ See also the documentation for `gnus-article-highlight-citation'."
 		      total (cdr total))
 		(goto-line hiden)
 		(or (assq hiden gnus-cite-attribution-alist)
-		    (put-text-property (point) (progn (forward-line 1) (point))
-				       'invisible t)))))))))
+		    (add-text-properties (point) 
+					 (progn (forward-line 1) (point))
+					 gnus-hidden-properties)))))))))
 
 ;;; Internal functions:
 
@@ -467,7 +504,8 @@ See also the documentation for `gnus-article-highlight-citation'."
 (defun gnus-cite-add-face (number prefix face)
   ;; At line NUMBER, ignore PREFIX and add FACE to the rest of the line.
   (if face
-      (let (from to)
+      (let ((inhibit-point-motion-hooks t)
+	    from to)
 	(goto-line number)
 	(forward-char (length prefix))
 	(skip-chars-forward " \t")
@@ -483,18 +521,19 @@ See also the documentation for `gnus-article-highlight-citation'."
     (set-buffer gnus-article-buffer)
     (let ((buffer-read-only nil)
 	  (numbers (cdr (assoc prefix gnus-cite-prefix-alist)))
+	  (inhibit-point-motion-hooks t)
 	  number)
       (while numbers
 	(setq number (car numbers)
 	      numbers (cdr numbers))
 	(goto-line number)
 	(cond ((get-text-property (point) 'invisible)
-	       (put-text-property (point) (progn (forward-line 1) (point))
-				  'invisible nil))
+	       (remove-text-properties (point) (progn (forward-line 1) (point))
+				       gnus-hidden-properties))
 	      ((assq number gnus-cite-attribution-alist))
 	      (t
-	       (put-text-property (point) (progn (forward-line 1) (point))
-				  'invisible t)))))))
+	       (add-text-properties (point) (progn (forward-line 1) (point))
+				    gnus-hidden-properties)))))))
 
 (defun gnus-cite-find-prefix (line)
   ;; Return citation prefix for LINE.

@@ -32,7 +32,7 @@
 (defvar nnspool-inews-program news-inews-program
   "Program to post news.")
 
-(defvar nnspool-inews-switches '("-h")
+(defvar nnspool-inews-switches '("-S" "-h")
   "Switches for nnspool-request-post to pass to `inews' for posting news.")
 
 (defvar nnspool-spool-directory news-path
@@ -152,7 +152,7 @@ Newsgroup must be selected before calling this function."
 	  (and do-message (message "NNSPOOL: Receiving headers... done"))
 	  
 	  ;; Fold continuation lines.
-	  (goto-char 1)
+	  (goto-char (point-min))
 	  (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
 	    (replace-match " " t t))
 	  'headers)))))

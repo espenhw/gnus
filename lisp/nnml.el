@@ -133,7 +133,7 @@ all. This may very well take some time.")
 	     (message "nnml: Receiving headers... done"))
 
 	;; Fold continuation lines.
-	(goto-char 1)
+	(goto-char (point-min))
 	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
 	  (replace-match " " t t))
 	'headers))))
@@ -386,7 +386,7 @@ all. This may very well take some time.")
 	    (set-buffer nntp-server-buffer)
 	    (erase-buffer)
 	    (insert-file-contents nov)
-	    (goto-char 1)
+	    (goto-char (point-min))
 	    (while (and (not (eobp)) (< first (read (current-buffer))))
 	      (forward-line 1))
 	    (beginning-of-line)
@@ -472,30 +472,52 @@ all. This may very well take some time.")
 
 (defun nnml-get-new-mail ()
   "Read new incoming mail."
-  (let (incoming)
-    (if (and nnml-get-new-mail nnmail-spool-file
-	     (file-exists-p nnmail-spool-file)
-	     (> (nth 7 (file-attributes nnmail-spool-file)) 0))
-	(progn
-	  (and gnus-verbose-backends 
-	       (message "nnml: Reading incoming mail..."))
-	  (setq incoming 
-		(nnmail-move-inbox nnmail-spool-file 
-				   (concat nnml-directory "Incoming")))
-	  (nnml-request-list)
-	  (setq nnml-group-alist (nnmail-get-active))
-	  (nnmail-split-incoming incoming 'nnml-save-mail)
-	  (nnmail-save-active nnml-group-alist nnml-active-file)
-	  (nnml-save-nov)
-	  (run-hooks 'nnmail-read-incoming-hook)
-	  ;; The following has been commented away, just to make sure
-	  ;; that nobody ever loses any mail. If you feel safe that
-	  ;; nnml will never do anything strange, just remove those
-	  ;; two semicolons, and avoid having lots of "Incoming*"
-	  ;; files. 
-;;         (delete-file incoming)
-	  (and gnus-verbose-backends
-	       (message "nnml: Reading incoming mail...done"))))))
+  (let ((spools (if (listp nnmail-spool-file) nnmail-spool-file
+		  (list nnmail-spool-file)))
+	incoming incomings)
+    (if (or (not nnml-get-new-mail) (not nnmail-spool-file))
+	()
+      ;; We first activate all the groups.
+      (nnml-request-list)
+      (setq nnml-group-alist (nnmail-get-active))
+      ;; The we go through all the existing spool files and split the
+      ;; mail from each.
+      (while spools
+	(and
+	 (file-exists-p (car spools))
+	 (> (nth 7 (file-attributes (car spools))) 0)
+	 (progn
+	   (and gnus-verbose-backends 
+		(message "nnml: Reading incoming mail..."))
+	   (setq incoming 
+		 (nnmail-move-inbox 
+		  (car spools) (concat nnml-directory "Incoming")))
+	   (nnmail-split-incoming incoming 'nnml-save-mail)
+	   (setq incomings (cons incoming incomings))
+	   ;; The following has been commented away, just to make sure
+	   ;; that nobody ever loses any mail. If you feel safe that
+	   ;; nnml will never do anything strange, just remove those
+	   ;; two semicolons, and avoid having lots of "Incoming*"
+	   ;; files. 
+	   ;; (delete-file incoming)
+	   ))
+	(setq spools (cdr spools)))
+      ;; If we did indeed read any incoming spools, we save all info. 
+      (if incoming 
+	  (progn
+	    (nnmail-save-active nnml-group-alist nnml-active-file)
+	    (nnml-save-nov)
+	    (run-hooks 'nnmail-read-incoming-hook)
+	    (and gnus-verbose-backends
+		 (message "nnml: Reading incoming mail...done"))))
+      (while incomings
+	;; The following has been commented away, just to make sure
+	;; that nobody ever loses any mail. If you feel safe that
+	;; nnfolder will never do anything strange, just remove those
+	;; two semicolons, and avoid having lots of "Incoming*"
+	;; files. 
+	;; (and (file-writable-p incoming) (delete-file incoming))
+	(setq incomings (cdr incomings))))))
 
 
 (defun nnml-add-nov (group article line)
@@ -640,7 +662,7 @@ all. This may very well take some time.")
 	  (while files
 	    (erase-buffer)
 	    (insert-file-contents (concat dir "/" (int-to-string (car files))))
-	    (goto-char 1)
+	    (goto-char (point-min))
 	    (narrow-to-region 1 (save-excursion (search-forward "\n\n" nil t)
 						(setq chars (- (point-max) 
 							       (point)))
@@ -664,7 +686,7 @@ all. This may very well take some time.")
 (defun nnml-nov-delete-article (group article)
   (save-excursion
     (set-buffer (nnml-open-nov group))
-    (goto-char 1)
+    (goto-char (point-min))
     (if (re-search-forward (concat "^" (int-to-string article) "\t") nil t)
 	(delete-region (match-beginning 0) (progn (forward-line 1) (point))))
     t))

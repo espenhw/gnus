@@ -1,7 +1,8 @@
-;;; gnus-visual: display-oriented parts of Gnus.
+;;; gnus-vis --- display-oriented parts of Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; 	Per Abrahamsen <abraham@iesd.auc.dk>
 ;; Keywords: news
 
 ;; This file is part of GNU Emacs.
@@ -25,12 +26,14 @@
 ;;; Code:
 
 (require 'gnus)
-(require (if gnus-xemacs 'auc-menu 'easymenu))
+(require gnus-easymenu)
+
+;;; summary highligts
 
 (defvar gnus-summary-selected-face 'underline
   "*Face used for highlighting the current article in the summary buffer.")
 
-(defvar gnus-visual-summary-highlight
+(defvar gnus-summary-highlight
   '(((> score default) . bold)
     ((< score default) . italic))
   "*Alist of `(FORM . FACE)'.
@@ -49,12 +52,81 @@ To check for marks, e.g. to underline replied articles, use
 
    ((= (gnus-summary-article-mark) gnus-replied-mark) . underline)")
 
+;;; article highlights
+
+(defvar gnus-make-foreground t
+  "Non nil means foreground color to highlight citations.")
+
+(defvar gnus-article-button-face 'bold
+  "Face used for text buttons.")
+
+(defvar gnus-article-mouse-face (if (boundp 'gnus-mouse-face)
+				    gnus-mouse-face
+				  'highlight)
+  "Face used when the mouse is over the button.")
+
+(defvar gnus-header-face-alist '(("" bold italic))
+  "Alist of headers and faces used for highlighting them.
+The entries in the list has the form `(REGEXP NAME CONTENT)', where
+REGEXP is a regeular expression matching the beginning of the header,
+NAME is the face used for highlighting the header name and CONTENT is
+the face used for highlighting the header content. 
+
+The first non-nil NAME or CONTENT with a matching REGEXP in the list
+will be used.") 
+
+(defvar gnus-signature-face 'italic
+  "Face used for signature.")
+
+(defvar gnus-button-alist 
+  '(("in\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2 
+     (assq (count-lines (point-min) (match-end 0)) 
+	   gnus-cite-attribution-alist)
+     gnus-button-message-id 3)
+    ;; This is how URLs _should_ be embedded in text...
+    ("<URL:\\([^\n\r>]*\\)>" 0 t gnus-button-url 1)
+    ;; Next regexp stolen from highlight-headers.el
+    ("\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-a-zA-Z0-9_=?#$@~`%&*+|\\/.,]+" 0 t
+     gnus-button-url 0))
+  "Alist of regexps matching buttons in an article.
+
+Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
+REGEXP: is the string matching text around the button,
+BUTTON: is the number of the regexp grouping actually matching the button,
+FORM: is a lisp expression which must eval to true for the button to
+be added, 
+CALLBACK: is the function to call when the user push this button, and each
+PAR: is a number of a regexp grouping whose text will be passed to CALLBACK.
+
+CALLBACK can also be a variable, in that case the value of that
+variable it the real callback function.")
+
+(defvar gnus-button-url (cond ((fboundp 'w3-fetch)
+			       'w3-fetch)
+			      ((fboundp 'highlight-headers-follow-url-netscape)
+			       'highlight-headers-follow-url-netscape)
+			      (t nil))
+  "Function to fetch URL.  
+The function will be called with one argument, the URL to fetch.
+Useful values of this function are:
+
+w3-fetch: 
+   defined in the w3 emacs package by William M. Perry.
+highlight-headers-follow-url-netscape: 
+   from `highlight-headers.el' for loading NetScape 1.1.")
+
+
+
 (eval-and-compile
-  (autoload 'nnkiboze-generate-groups "nnkiboze"))
+  (autoload 'nnkiboze-generate-groups "nnkiboze")
+  (autoload 'gnus-cite-parse-maybe "gnus-cite" nil t))
+
+;;;
+;;; gnus-menu
+;;;
 
 ;; Newsgroup buffer
 
-;; Make a menu bar item.
 (defun gnus-group-make-menu-bar ()
   (easy-menu-define
    gnus-group-reading-menu
@@ -91,6 +163,10 @@ To check for marks, e.g. to underline replied articles, use
       ["Group apropos" gnus-group-apropos t]
       ["Group and description apropos" gnus-group-description-apropos t]
       ["List groups matching..." gnus-group-list-matching t])
+     ("Mark"
+      ["Mark group" gnus-group-mark-group t]
+      ["Unmark group" gnus-group-unmark-group t]
+      ["Mark region" gnus-group-mark-region t])
      ("Subscribe"
       ["Subscribe to random group" gnus-group-unsubscribe-group t]
       ["Kill all newsgroups in region" gnus-group-kill-region t]
@@ -127,6 +203,7 @@ To check for marks, e.g. to underline replied articles, use
      ["Restart Gnus" gnus-group-restart t]
      ["Read init file" gnus-group-read-init-file t]
      ["Browse foreign server" gnus-group-browse-foreign-server t]
+     ["Enter server buffer" gnus-group-enter-server-mode t]
      ["Edit the global kill file" gnus-group-edit-global-kill t]
      ["Expire all expirable articles" gnus-group-expire-all-groups t]
      ["Generate any kiboze groups" nnkiboze-generate-groups t]
@@ -141,6 +218,34 @@ To check for marks, e.g. to underline replied articles, use
      ))
 
   )
+
+;; Server mode
+(defun gnus-server-make-menu-bar ()
+  (easy-menu-define
+   gnus-server-menu
+   gnus-server-mode-map
+   ""
+   '("Server"
+     ["Add" gnus-server-add-server t]
+     ["Browse" gnus-server-read-server t]
+     ["List" gnus-server-list-servers t]
+     ["Kill" gnus-server-kill-server t]
+     ["Yank" gnus-server-yank-server t]
+     ["Copy" gnus-server-copy-server t]
+     ["Edit" gnus-server-edit-server t]
+     ["Exit" gnus-server-exit t]
+     )))
+
+;; Browse mode
+(defun gnus-browse-make-menu-bar ()
+  (easy-menu-define
+   gnus-browse-menu
+   gnus-browse-mode-map
+   ""
+   '("Browse"
+     ["Subscribe" gnus-browse-unsubscribe-current-group t]
+     ["Exit" gnus-browse-exit t]
+     )))
 
 ;; Summary buffer
 (defun gnus-summary-make-menu-bar ()
@@ -249,6 +354,7 @@ To check for marks, e.g. to underline replied articles, use
      ("Mail articles"
       ["Respool article" gnus-summary-respool-article t]
       ["Move article" gnus-summary-move-article t]
+      ["Copy article" gnus-summary-copy-article t]
       ["Edit article" gnus-summary-edit-article t]
       ["Delete article" gnus-summary-delete-article t])
      ))
@@ -279,7 +385,8 @@ To check for marks, e.g. to underline replied articles, use
       ["Sort by number" gnus-summary-sort-by-number t]
       ["Sort by author" gnus-summary-sort-by-author t]
       ["Sort by subject" gnus-summary-sort-by-subject t]
-      ["Sort by date" gnus-summary-sort-by-date t])
+      ["Sort by date" gnus-summary-sort-by-date t]
+      ["Sort by score" gnus-summary-sort-by-score t])
      ("Exit"
       ["Catchup and exit" gnus-summary-catchup-and-exit t]
       ["Catchup and goto next" gnus-summary-catchup-and-goto-next-group t]
@@ -337,6 +444,8 @@ To check for marks, e.g. to underline replied articles, use
       gnus-summary-temporarily-raise-by-thread t]
      ["Raise score with current crossposting" 
       gnus-summary-temporarily-raise-by-xref t]
+     ["Raise score for followups to current author"
+      gnus-summary-temporarily-raise-followups-to-author t]
      ["Permanently raise score with current subject"
       gnus-summary-raise-by-subject t]
      ["Permanently raise score with current author" 
@@ -353,6 +462,8 @@ To check for marks, e.g. to underline replied articles, use
       gnus-summary-temporarily-lower-by-thread t]
      ["Lower score with current crossposting" 
       gnus-summary-temporarily-lower-by-xref t]
+     ["Lower score for followups to current author"
+      gnus-summary-temporarily-lower-followups-to-author t]
      ["Permanently lower score with current subject"
       gnus-summary-lower-by-subject t]
      ["Permanently lower score with current author" 
@@ -395,35 +506,21 @@ To check for marks, e.g. to underline replied articles, use
      ))
  )
 
-(if gnus-xemacs
-    (defun gnus-visual-highlight-selected-summary ()
-      (if gnus-summary-selected-face
-	  (save-excursion
-	    (let* ((beg (progn (beginning-of-line) (point)))
-		   (end (progn (end-of-line) (point)))
-		   (from (or
-			  (next-single-property-change beg 'mouse-face nil end)
-			  beg))
-		   (to (or (next-single-property-change from 'mouse-face nil end)
-			   end)))
-	      (if gnus-newsgroup-selected-overlay
-		  (move-overlay gnus-newsgroup-selected-overlay 
-				from to (current-buffer))
-		(setq gnus-newsgroup-selected-overlay (make-overlay from to))
-		(overlay-put gnus-newsgroup-selected-overlay 'face 
-			     gnus-summary-selected-face))))))
+;;;
+;;; summary highlights
+;;;
 
-(defun gnus-visual-highlight-selected-summary ()
+(defun gnus-highlight-selected-summary ()
     ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
     ;; Highlight selected article in summary buffer
     (if gnus-summary-selected-face
 	(save-excursion
 	  (let* ((beg (progn (beginning-of-line) (point)))
 		 (end (progn (end-of-line) (point)))
-		 (to (max 1 (1- (previous-single-property-change
-				 end 'mouse-face nil beg))))
-		 (from (1+ (next-single-property-change 
-			    beg 'mouse-face nil end))))
+		 (to (max 1 (1- (or (previous-single-property-change
+				     end 'mouse-face nil beg) end))))
+		 (from (1+ (or (next-single-property-change 
+				beg 'mouse-face nil end) beg))))
 	    (if (< to beg)
 		(progn
 		  (setq from beg)
@@ -434,13 +531,12 @@ To check for marks, e.g. to underline replied articles, use
 	      (setq gnus-newsgroup-selected-overlay (make-overlay from to))
 	      (overlay-put gnus-newsgroup-selected-overlay 'face 
 			   gnus-summary-selected-face))))))
-)
 
 
 ;; New implementation by Christian Limpach <Christian.Limpach@nice.ch>.
-(defun gnus-visual-summary-highlight-line ()
-  "Highlight current line according to `gnus-visual-summary-highlight'."
-  (let* ((list gnus-visual-summary-highlight)
+(defun gnus-summary-highlight-line ()
+  "Highlight current line according to `gnus-summary-highlight'."
+  (let* ((list gnus-summary-highlight)
 	 (p (point))
 	 (end (progn (end-of-line) (point)))
 	 ;; now find out where the line starts and leave point there.
@@ -450,52 +546,449 @@ To check for marks, e.g. to underline replied articles, use
 			       gnus-newsgroup-scored))
 		    gnus-summary-default-score 0))
 	 (default gnus-summary-default-score)
-	 (mark (get-text-property beg 'gnus-mark))
+	 (mark (car (cdr (get-text-property beg 'gnus))))
 	 (inhibit-read-only t))
     (while (and list (not (eval (car (car list)))))
       (setq list (cdr list)))
     (let ((face (and list (cdr (car list)))))
       ;; BUG! For some reason the text properties of the first
       ;; characters get mangled.
-      (or (eq face (get-text-property (+ beg 10) 'face))
+      (or (eobp)
+	  (eq face (get-text-property beg 'face))
 	  (put-text-property beg end 'face face)))
     (goto-char p)))
 
-(defvar mode-motion-hook nil)
-(defun gnus-install-mouse-tracker ()
-  (require 'mode-motion)
-  (setq mode-motion-hook 'mode-motion-highlight-line))
+;;;
+;;; gnus-carpal
+;;;
 
-(if (not gnus-xemacs)
-    ()
-  (setq gnus-group-mode-hook
-	(cons
-	 (lambda ()
-	   (easy-menu-add gnus-group-reading-menu)
-	   (easy-menu-add gnus-group-group-menu)
-	   (easy-menu-add gnus-group-post-menu)
-	   (easy-menu-add gnus-group-misc-menu)
-           (gnus-install-mouse-tracker)) 
-	 gnus-group-mode-hook))
-  (setq gnus-summary-mode-hook
-	(cons
-	 (lambda ()
-	   (easy-menu-add gnus-summary-mark-menu)
-	   (easy-menu-add gnus-summary-move-menu)
-	   (easy-menu-add gnus-summary-article-menu)
-	   (easy-menu-add gnus-summary-thread-menu)
-	   (easy-menu-add gnus-summary-misc-menu)
-	   (easy-menu-add gnus-summary-post-menu)
-	   (easy-menu-add gnus-summary-kill-menu)
-           (gnus-install-mouse-tracker)) 
-	 gnus-summary-mode-hook))
-  (setq gnus-article-mode-hook
-	(cons
-	 (lambda ()
-	   (easy-menu-add gnus-article-article-menu)
-	   (easy-menu-add gnus-article-treatment-menu)) 
-	 gnus-article-mode-hook)))
+(defvar gnus-carpal-group-buffer-buttons
+  '(("next" . gnus-group-next-unread-group)
+    ("prev" . gnus-group-prev-unread-group)
+    ("read" . gnus-group-read-group)
+    ("select" . gnus-group-select-group)
+    ("catch up" . gnus-group-catchup-current)
+    ("new news" . gnus-group-get-new-news-this-group)
+    ("toggle sub" . gnus-group-unsubscribe-current-group)
+    ("subscribe" . gnus-group-unsubscribe-group)
+    ("kill" . gnus-group-kill-group)
+    ("yank" . gnus-group-yank-group)
+    ("describe" . gnus-group-describe-group)
+    "list"
+    ("subscribed" . gnus-group-list-groups)
+    ("all" . gnus-group-list-all-groups)
+    ("killed" . gnus-group-list-killed)
+    ("zombies" . gnus-group-list-zombies)
+    ("matching" . gnus-group-list-matching)
+    ("post" . gnus-group-post-news)
+    ("mail" . gnus-group-mail)
+    ("new news" . gnus-group-get-new-news)
+    ("browse foreign" . gnus-group-browse-foreign)
+    ("exit" . gnus-group-exit)))
+
+(defvar gnus-carpal-summary-buffer-buttons
+  '("mark" 
+    ("read" . gnus-summary-mark-as-read-forward)
+    ("tick" . gnus-summary-tick-article-forward)
+    ("clear" . gnus-summary-clear-mark-forward)
+    ("expirable" . gnus-summary-mark-as-expirable)
+    "move"
+    ("scroll" . gnus-summary-next-page)
+    ("next unread" . gnus-summary-next-unread-article)
+    ("prev unread" . gnus-summary-prev-unread-article)
+    ("first" . gnus-summary-first-unread-article)
+    ("best" . gnus-summary-best-unread-article)
+    "article"
+    ("headers" . gnus-summary-toggle-header)
+    ("uudecode" . gnus-uu-decode-uu)
+    ("enter digest" . gnus-summary-enter-digest-group)
+    ("fetch parent" . gnus-summary-refer-parent-article)
+    "mail"
+    ("move" . gnus-summary-move-article)
+    "threads"
+    ("lower" . gnus-summary-lower-thread)
+    ("kill" . gnus-summary-kill-thread)
+    "post"
+    ("post" . gnus-summary-post-news)
+    ("mail" . gnus-summary-mail)
+    ("followup" . gnus-summary-followup-with-original)
+    ("reply" . gnus-summary-reply-with-original)
+    ("cancel" . gnus-summary-cancel-article)
+    "misc"
+    ("exit" . gnus-summary-exit)
+    ("fed up" . gnus-summary-catchup-and-goto-next)))
+
+(defvar gnus-carpal-server-buffer-buttons 
+  '(("add" . gnus-server-add-server)
+    ("browse" . gnus-server-browse-server)
+    ("list" . gnus-server-list-servers)
+    ("kill" . gnus-server-kill-server)
+    ("yank" . gnus-server-yank-server)
+    ("copy" . gnus-server-copy-server)
+    ("exit" . gnus-server-exit)))
+
+(defvar gnus-carpal-browse-buffer-buttons
+  '(("subscribe" . gnus-browse-unsubscribe-current-group)
+    ("exit" . gnus-browse-exit)))
+
+(defvar gnus-carpal-group-buffer "*Carpal Group*")
+(defvar gnus-carpal-summary-buffer "*Carpal Summary*")
+(defvar gnus-carpal-server-buffer "*Carpal Server*")
+(defvar gnus-carpal-browse-buffer "*Carpal Browse*")
+
+(defvar gnus-carpal-attached-buffer nil)
+
+(defvar gnus-carpal-mode-hook nil
+  "*Hook run in carpal mode buffers.")
+
+(defvar gnus-carpal-button-face 'bold
+  "*Face used on carpal buttons.")
+
+(defvar gnus-carpal-mode-map nil)
+(put 'gnus-carpal-mode 'mode-class 'special)
+
+(if gnus-carpal-mode-map
+    nil
+  (setq gnus-carpal-mode-map (make-keymap))
+  (suppress-keymap gnus-carpal-mode-map)
+  (define-key gnus-carpal-mode-map " " 'gnus-carpal-select)
+  (define-key gnus-carpal-mode-map "\r" 'gnus-carpal-select)
+  (define-key gnus-carpal-mode-map [mouse-2] 'gnus-carpal-mouse-select))
+
+(defun gnus-carpal-mode ()
+  "Major mode clicking buttons.
+
+All normal editing commands are switched off.
+\\<gnus-carpal-mode-map>
+The following commands are available:
+
+\\{gnus-carpal-mode-map}"
+  (interactive)
+  (kill-all-local-variables)
+  (setq mode-line-modified "-- ")
+  (setq major-mode 'gnus-carpal-mode)
+  (setq mode-name "Gnus Carpal")
+  (setq mode-line-process nil)
+  (use-local-map gnus-carpal-mode-map)
+  (buffer-disable-undo (current-buffer))
+  (setq buffer-read-only t)
+  (make-local-variable 'gnus-carpal-attached-buffer)
+  (run-hooks 'gnus-carpal-mode-hook))
+
+(defun gnus-carpal-setup-buffer (type)
+  (let ((buffer (symbol-value (intern (format "gnus-carpal-%s-buffer" type)))))
+    (if (get-buffer buffer)
+	()
+      (save-excursion
+	(set-buffer (get-buffer-create buffer))
+	(gnus-carpal-mode)
+	(setq gnus-carpal-attached-buffer 
+	      (intern (format "gnus-%s-buffer" type)))
+	(gnus-add-current-to-buffer-list)
+	(let ((buttons (symbol-value 
+			(intern (format "gnus-carpal-%s-buffer-buttons"
+					type))))
+	      (buffer-read-only nil)
+	      button)
+	  (while buttons
+	    (setq button (car buttons)
+		  buttons (cdr buttons))
+	    (if (stringp button)
+		(insert button " ")
+	      (set-text-properties
+	       (point)
+	       (progn (insert (car button)) (point))
+	       (list 'gnus-callback (cdr button)
+		     'face gnus-carpal-button-face
+		     'mouse-face 'highlight))
+	      (insert " ")))
+	  (let ((fill-column (- (window-width) 2)))
+	    (fill-region (point-min) (point-max)))
+	  (set-window-point (get-buffer-window (current-buffer)) 
+			    (point-min)))))))
+
+(defun gnus-carpal-select ()
+  "Select the button under point."
+  (interactive)
+  (let ((func (get-text-property (point) 'gnus-callback)))
+    (if (null func)
+	()
+      (pop-to-buffer (symbol-value gnus-carpal-attached-buffer))
+      (call-interactively func))))
+
+(defun gnus-carpal-mouse-select (event)
+  "Select the button under the mouse pointer."
+  (interactive "e")
+  (mouse-set-point event)
+  (gnus-carpal-select))
+
+;;; 
+;;; article highlights
+;;;
+
+;; Written by Per Abrahamsen <abraham@iesd.auc.dk>.
+
+;;; Internal Variables:
+
+(defvar gnus-button-regexp nil)
+;; Regexp matching any of the regexps from `gnus-button-alist'.
+
+(defvar gnus-button-last nil)
+;; The value of `gnus-button-alist' when `gnus-button-regexp' was build.
+
+;;; Commands:
+
+(defun gnus-article-push-button (event)
+  "Check text under the mouse pointer for a callback function.
+If the text under the mouse pointer has a `gnus-callback' property,
+call it with the value of the `gnus-data' text property."
+  (interactive "e")
+  (set-buffer (window-buffer (posn-window (event-start event))))
+  (let* ((pos (posn-point (event-start event)))
+         (data (get-text-property pos 'gnus-data))
+	 (fun (get-text-property pos 'gnus-callback)))
+      (if fun (funcall fun data))))
+
+(defun gnus-article-press-button ()
+  "Check text at point for a callback function.
+If the text at point has a `gnus-callback' property,
+call it with the value of the `gnus-data' text property."
+  (interactive)
+  (let* ((data (get-text-property (point) 'gnus-data))
+	 (fun (get-text-property (point) 'gnus-callback)))
+      (if fun (funcall fun data))))
+
+;; Suggested by Arne Elofsson <arne@hodgkin.mbi.ucla.edu>
+(defun gnus-article-next-button ()
+  "Move point to next button."
+  (interactive)
+  (if (get-text-property (point) 'gnus-callback)
+      (goto-char (next-single-property-change (point) 'gnus-callback
+				       nil (point-max))))
+  (let ((pos (next-single-property-change (point) 'gnus-callback)))
+    (if pos
+	(goto-char pos)
+      (setq pos (next-single-property-change (point-min) 'gnus-callback))
+      (if pos
+	  (goto-char pos)
+	(error "No buttons found")))))
+
+(defun gnus-article-highlight ()
+  "Highlight current article.
+This function calls `gnus-article-highlight-headers',
+`gnus-article-highlight-citation', 
+`gnus-article-highlight-signature', and `gnus-article-add-buttons' to
+do the highlighting.  See the documentation for those functions."
+  (interactive)
+  (gnus-article-highlight-headers)
+  (gnus-article-highlight-citation)
+  (gnus-article-highlight-signature)
+  (gnus-article-add-buttons))
+
+(defun gnus-article-hide ()
+  "Hide current article.
+This function calls `gnus-article-hide-headers',
+`gnus-article-hide-citation-maybe', and `gnus-article-hide-signature'
+to do the hiding.  See the documentation for those functions." 
+  (interactive)
+  (gnus-article-hide-headers)
+  (gnus-article-hide-citation-maybe)
+  (gnus-article-hide-signature))
+
+(defun gnus-article-highlight-headers ()
+  "Highlight article headers as specified by `gnus-header-face-alist'."
+  (interactive)
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (goto-char (point-min))
+    (search-forward "\n\n")
+    (beginning-of-line 0)
+    (while (not (bobp))
+      (let ((alist gnus-header-face-alist)
+	    (buffer-read-only nil)
+	    (case-fold-search t)
+	    (end (point))
+	    (inhibit-point-motion-hooks t)
+	    begin entry regexp header-face field-face header-found field-found)
+	(re-search-backward "^[^ \t]" nil t)
+	(setq begin (point))
+	(while alist
+	  (setq entry (car alist)
+		regexp (nth 0 entry)
+		header-face (nth 1 entry)
+		field-face (nth 2 entry)
+		alist (cdr alist))
+	  (if (looking-at regexp)
+	      (let ((from (point)))
+		(skip-chars-forward "^:\n")
+		(and (not header-found)
+		     header-face
+		     (progn
+		       (put-text-property  from (point) 'face header-face)
+		       (setq header-found t)))
+		(and (not field-found)
+		     field-face
+		     (progn 
+		       (skip-chars-forward ": \t")
+		       (let ((from (point)))
+			 (goto-char end)
+			 (skip-chars-backward " \t")
+			 (put-text-property from (point) 'face field-face)
+			 (setq field-found t))))))
+	  (goto-char begin))))))
+
+(defun gnus-article-highlight-signature ()
+  "Highlight the signature in an article.
+It does this by highlighting everything after
+`gnus-signature-separator' using `gnus-signature-face'." 
+  (interactive)
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (let ((buffer-read-only nil)
+	  (inhibit-point-motion-hooks t))
+      (goto-char (point-max))
+      (and (re-search-backward gnus-signature-separator nil t)
+	   gnus-signature-face
+	   (let ((start (match-beginning 0))
+		 (end (match-end 0)))
+	     (gnus-article-add-button start end 'gnus-signature-toggle end)
+	     (overlay-put (make-overlay end (point-max))
+			  'face gnus-signature-face))))))
+
+(defun gnus-article-hide-signature ()
+  "Hide the signature in an article.
+It does this by making everything after `gnus-signature-separator' invisible."
+  (interactive)
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (let ((buffer-read-only nil))
+      (goto-char (point-max))
+      (and (re-search-backward gnus-signature-separator nil t)
+	   gnus-signature-face
+	   (add-text-properties (match-end 0) (point-max)
+				gnus-hidden-properties)))))
+
+(defun gnus-article-add-buttons ()
+  "Find external references in article and make them to buttons.
+
+External references are things like message-ids and URLs, as specified by 
+`gnus-button-alist'."
+  (interactive)
+  (if (eq gnus-button-last gnus-button-alist)
+      ()
+    (setq gnus-button-regexp (mapconcat 'car gnus-button-alist  "\\|")
+	  gnus-button-last gnus-button-alist))
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (gnus-cite-parse-maybe)
+    (let ((buffer-read-only nil)
+	  (inhibit-point-motion-hooks t)
+	  (case-fold-search t))
+      (goto-char (point-min))
+      (search-forward "\n\n")
+      (while (re-search-forward gnus-button-regexp nil t)
+	(goto-char (match-beginning 0))
+	(let* ((from (point))
+	       (entry (gnus-button-entry))
+	       (start (match-beginning (nth 1 entry)))
+	       (end (match-end (nth 1 entry)))
+	       (form (nth 2 entry))
+	       marker)
+	  (goto-char (match-end 0))
+	  (if (eval form)
+	      (gnus-article-add-button start end 'gnus-button-push
+				       (set-marker (make-marker)
+						   from))))))))
+
+;;; External functions:
+
+(defun gnus-article-add-button (from to fun &optional data)
+  "Create a button between FROM and TO with callback FUN and data DATA."
+  (add-text-properties from to
+		       (append (if gnus-article-button-face
+				   (list 'face gnus-article-button-face))
+			       (if gnus-article-mouse-face
+				   (list 'mouse-face gnus-article-mouse-face))
+			       (list 'gnus-callback fun)
+			       (if data (list 'gnus-data data)))))
+
+;;; Internal functions:
+
+(defun gnus-signature-toggle (end)
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (let ((buffer-read-only nil))
+      (if (get-text-property end 'invisible)
+	  (remove-text-properties end (point-max) gnus-hidden-properties)
+	(add-text-properties end (point-max) gnus-hidden-properties)))))
+
+(defun gnus-make-face (color)
+  ;; Create entry for face with background COLOR.
+  (let ((name (intern (concat "gnus " color))))
+    (make-face name)
+    (if gnus-make-foreground
+	(set-face-foreground name color)
+      (set-face-background name color))
+    name))
+
+(defun gnus-button-entry ()
+  ;; Return the first entry in `gnus-button-alist' matching this place.
+  (let ((alist gnus-button-alist)
+	(entry nil))
+    (while alist
+      (setq entry (car alist)
+	    alist (cdr alist))
+      (if (looking-at (car entry))
+	  (setq alist nil)
+	(setq entry nil)))
+    entry))
+
+(defun gnus-button-push (marker)
+  ;; Push button starting at MARKER.
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (goto-char marker)
+    (let* ((entry (gnus-button-entry))
+	   (inhibit-point-motion-hooks t)
+	   (fun (nth 3 entry))
+	   (args (mapcar (lambda (group) 
+			   (let ((string (buffer-substring
+					  (match-beginning group)
+					  (match-end group))))
+			   (set-text-properties 0 (length string) nil string)
+			   string))
+			 (nthcdr 4 entry))))
+      (cond ((fboundp fun)
+	     (apply fun args))
+	    ((and (boundp fun)
+		  (fboundp (symbol-value fun)))
+	     (apply (symbol-value fun) args))
+	    (t
+	     (message "You must define `%S' to use this button"
+		      (cons fun args)))))))
+
+(defun gnus-button-message-id (message-id)
+  ;; Push on MESSAGE-ID.
+  (save-excursion
+    (set-buffer gnus-summary-buffer)
+    (gnus-summary-refer-article message-id)))
+
+;;; Compatibility Functions:
+
+(or (fboundp 'rassoc)
+    ;; Introduced in Emacs 19.29.
+    (defun rassoc (elt list)
+      "Return non-nil if ELT is `equal' to the cdr of an element of LIST.
+The value is actually the element of LIST whose cdr is ELT."
+      (let (result)
+	(while list
+	  (setq result (car list))
+	  (if (equal (cdr result) elt)
+	      (setq list nil)
+	    (setq result nil
+		  list (cdr list))))
+	result)))
 
 (provide 'gnus-vis)
 
-;;; gnus-visual.el ends here
+;;; gnus-vis.el ends here

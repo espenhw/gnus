@@ -107,7 +107,7 @@
 	   (message "nnmh: Receiving headers... done"))
 
       ;; Fold continuation lines.
-      (goto-char 1)
+      (goto-char (point-min))
       (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
 	(replace-match " " t t))
       'headers)))
@@ -193,6 +193,7 @@
   (setq dir (expand-file-name dir))
   ;; Recurse down all directories.
   (let ((dirs (and (file-readable-p dir)
+		   (> (nth 1 (file-attributes (file-chase-links dir))) 2)
 		   (directory-files dir t nil t))))
     (while dirs 
       (if (and (not (string-match "/\\.\\.$" (car dirs)))
@@ -377,21 +378,41 @@
 
 (defun nnmh-get-new-mail ()
   "Read new incoming mail."
-  (let (incoming)
-    (if (and nnmh-get-new-mail nnmail-spool-file
-	     (file-exists-p nnmail-spool-file)
-	     (> (nth 7 (file-attributes nnmail-spool-file)) 0))
-	(progn
-	  (message "nnmh: Reading incoming mail...")
-	  (setq incoming 
-		(nnmail-move-inbox nnmail-spool-file
-				   (concat nnmh-directory "Incoming")))
-	  (nnmh-request-list)
-	  (setq nnmh-group-alist (nnmail-get-active))
-	  (nnmail-split-incoming incoming 'nnmh-save-mail)
-	  (run-hooks 'nnmail-read-incoming-hook)
-;;         (delete-file incoming)
-	  (message "nnmh: Reading incoming mail...done")))))
+  (let ((spools (if (listp nnmail-spool-file) nnmail-spool-file
+		  (list nnmail-spool-file)))
+	incoming incomings)
+    (if (or (not nnmh-get-new-mail) (not nnmail-spool-file))
+	()
+      ;; We first activate all the groups.
+      (nnmh-request-list)
+      (setq nnmh-group-alist (nnmail-get-active))
+      ;; The we go through all the existing spool files and split the
+      ;; mail from each.
+      (while spools
+	(and
+	 (file-exists-p (car spools))
+	 (> (nth 7 (file-attributes (car spools))) 0)
+	 (progn
+	   (and gnus-verbose-backends 
+		(message "nnmh: Reading incoming mail..."))
+	   (setq incoming 
+		 (nnmail-move-inbox 
+		  (car spools) (concat nnmh-directory "Incoming")))
+	   (setq incomings (cons incoming incomings))
+	   (nnmail-split-incoming incoming 'nnmh-save-mail)))
+	(setq spools (cdr spools)))
+      ;; If we did indeed read any incoming spools, we save all info. 
+      (if incoming 
+	  (message "nnmh: Reading incoming mail...done"))
+      (while incomings
+	;; The following has been commented away, just to make sure
+	;; that nobody ever loses any mail. If you feel safe that
+	;; nnfolder will never do anything strange, just remove those
+	;; two semicolons, and avoid having lots of "Incoming*"
+	;; files. 
+	;; (and (file-writable-p incoming) (delete-file incoming))
+	(setq incomings (cdr incomings))))))
+      
 
 (defun nnmh-update-gnus-unreads (group)
   ;; Go through the .nnmh-articles file and compare with the actual

@@ -86,7 +86,7 @@
 	(setq art-string (nnmbox-article-string article))
 	(set-buffer nnmbox-mbox-buffer)
 	(if (or (search-forward art-string nil t)
-		(progn (goto-char 1)
+		(progn (goto-char (point-min))
 		       (search-forward art-string nil t)))
 	    (progn
 	      (setq start 
@@ -117,7 +117,7 @@
 	   (message "nnmbox: Receiving headers... done"))
 
       ;; Fold continuation lines.
-      (goto-char 1)
+      (goto-char (point-min))
       (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
 	(replace-match " " t t))
       'headers)))
@@ -156,7 +156,7 @@
       nil
     (save-excursion
       (set-buffer nnmbox-mbox-buffer)
-      (goto-char 1)
+      (goto-char (point-min))
       (if (search-forward (nnmbox-article-string article) nil t)
 	  (let (start stop)
 	    (re-search-backward (concat "^" rmail-unix-mail-delimiter) nil t)
@@ -230,7 +230,7 @@
     (save-excursion 
       (set-buffer nnmbox-mbox-buffer)
       (while articles
-	(goto-char 1)
+	(goto-char (point-min))
 	(if (search-forward (nnmbox-article-string (car articles)) nil t)
 	    (if (or force
 		    (> (nnmail-days-between 
@@ -278,7 +278,7 @@
        result)
      (save-excursion
        (set-buffer nnmbox-mbox-buffer)
-       (goto-char 1)
+       (goto-char (point-min))
        (if (search-forward (nnmbox-article-string article) nil t)
 	   (nnmbox-delete-mail))
        (and last (save-buffer))))
@@ -314,7 +314,7 @@
   (nnmbox-possibly-change-newsgroup group)
   (save-excursion
     (set-buffer nnmbox-mbox-buffer)
-    (goto-char 1)
+    (goto-char (point-min))
     (if (not (search-forward (nnmbox-article-string article) nil t))
 	nil
       (nnmbox-delete-mail t t)
@@ -439,35 +439,48 @@
 	  (goto-char end))))))
 
 (defun nnmbox-get-new-mail ()
-  (let (incoming)
+  "Read new incoming mail."
+  (let ((spools (if (listp nnmail-spool-file) nnmail-spool-file
+		  (list nnmail-spool-file)))
+	incoming incomings)
     (nnmbox-read-mbox)
-    (if (and nnmail-spool-file nnmbox-get-new-mail
-	     (file-exists-p nnmail-spool-file)
-	     (> (nth 7 (file-attributes nnmail-spool-file)) 0))
-	(progn
-	  (and gnus-verbose-backends
-	       (message "nnmbox: Reading incoming mail..."))
-	  (setq incoming 
-		(nnmail-move-inbox nnmail-spool-file
-				   (concat nnmbox-mbox-file "-Incoming")))
-	  (save-excursion
-	    (let ((in-buf (nnmail-split-incoming 
-			   incoming 'nnmbox-save-mail t)))
-	      (set-buffer nnmbox-mbox-buffer)
-	      (goto-char (point-max))
-	      (insert-buffer-substring in-buf)
-	      (kill-buffer in-buf)))
-	  (run-hooks 'nnmail-read-incoming-hook)
-	  (and gnus-verbose-backends
-	       (message "nnmbox: Reading incoming mail...done"))))
-    (and (buffer-modified-p nnmbox-mbox-buffer) 
-	 (save-excursion
-	   (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
-	   (set-buffer nnmbox-mbox-buffer)
-	   (save-buffer)))
-;    (if incoming
-;	(delete-file incoming))
-    ))
+    (if (or (not nnmbox-get-new-mail) (not nnmail-spool-file))
+	()
+      ;; We go through all the existing spool files and split the
+      ;; mail from each.
+      (while spools
+	(and
+	 (file-exists-p (car spools))
+	 (> (nth 7 (file-attributes (car spools))) 0)
+	 (progn
+	   (and gnus-verbose-backends 
+		(message "nnmbox: Reading incoming mail..."))
+	   (setq incoming 
+		 (nnmail-move-inbox 
+		  (car spools) (concat nnmbox-mbox-file "-Incoming")))
+	   (save-excursion
+	     (let ((in-buf (nnmail-split-incoming 
+			    incoming 'nnmbox-save-mail t)))
+	       (set-buffer nnmbox-mbox-buffer)
+	       (goto-char (point-max))
+	       (insert-buffer-substring in-buf)
+	       (kill-buffer in-buf)))))
+	(setq spools (cdr spools)))
+      ;; If we did indeed read any incoming spools, we save all info. 
+      (and (buffer-modified-p nnmbox-mbox-buffer) 
+	   (save-excursion
+	     (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
+	     (set-buffer nnmbox-mbox-buffer)
+	     (save-buffer)))
+      (while incomings
+	;; The following has been commented away, just to make sure
+	;; that nobody ever loses any mail. If you feel safe that
+	;; nnfolder will never do anything strange, just remove those
+	;; two semicolons, and avoid having lots of "Incoming*"
+	;; files. 
+	;; (and (file-writable-p incoming) (delete-file incoming))
+	(setq incomings (cdr incomings))))))
+
 
 (provide 'nnmbox)
 

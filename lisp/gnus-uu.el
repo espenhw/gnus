@@ -221,6 +221,12 @@ file without any embellishments. The digesting almost conforms to RFC1153 -
 no easy way to specify any meaningful volume and issue numbers were found, 
 so I simply dropped them.")
 
+(defvar gnus-uu-digest-headers 
+  '("^Date:" "^From:" "^To:" "^Cc:" "^Subject:" "^Message-ID:" "^Keywords:"
+    "^Summary:" "^References:")
+  "*List of regexps to match headers included in digested messages.
+The headers will be included in the sequence they are matched.")
+
 (defvar gnus-uu-save-separate-articles nil
   "*Non-nil means that gnus-uu will save articles in separate files.")
 
@@ -257,6 +263,54 @@ so I simply dropped them.")
 
 (defconst gnus-uu-highest-article-number 1)
 (defvar gnus-uu-default-dir default-directory)
+
+;; Keymaps
+
+(defvar gnus-uu-extract-map nil)
+(defvar gnus-uu-extract-view-map nil)
+(defvar gnus-uu-mark-map nil)
+
+  (define-prefix-command 'gnus-uu-mark-map)
+  (define-key gnus-summary-mark-map "p" 'gnus-uu-mark-map)
+  (define-key gnus-uu-mark-map "p" 'gnus-summary-mark-as-processable)
+  (define-key gnus-uu-mark-map "u" 'gnus-summary-unmark-as-processable)
+  (define-key gnus-uu-mark-map "U" 'gnus-summary-unmark-all-processable)
+  (define-key gnus-uu-mark-map "s" 'gnus-uu-mark-series)
+  (define-key gnus-uu-mark-map "r" 'gnus-uu-mark-region)
+  (define-key gnus-uu-mark-map "R" 'gnus-uu-mark-by-regexp)
+  (define-key gnus-uu-mark-map "t" 'gnus-uu-mark-thread)
+  (define-key gnus-uu-mark-map "a" 'gnus-uu-mark-all)
+  (define-key gnus-uu-mark-map "S" 'gnus-uu-mark-sparse)
+
+  (define-prefix-command 'gnus-uu-extract-map)
+  (define-key gnus-summary-mode-map "X" 'gnus-uu-extract-map)
+;  (define-key gnus-uu-extract-map "x" 'gnus-uu-extract-any)
+;  (define-key gnus-uu-extract-map "m" 'gnus-uu-extract-mime)
+  (define-key gnus-uu-extract-map "u" 'gnus-uu-decode-uu)
+  (define-key gnus-uu-extract-map "U" 'gnus-uu-decode-uu-and-save)
+  (define-key gnus-uu-extract-map "s" 'gnus-uu-decode-unshar)
+  (define-key gnus-uu-extract-map "S" 'gnus-uu-decode-unshar-and-save)
+  (define-key gnus-uu-extract-map "o" 'gnus-uu-decode-save)
+  (define-key gnus-uu-extract-map "O" 'gnus-uu-decode-save)
+  (define-key gnus-uu-extract-map "b" 'gnus-uu-decode-binhex)
+  (define-key gnus-uu-extract-map "B" 'gnus-uu-decode-binhex)
+  (define-key gnus-uu-extract-map "p" 'gnus-uu-decode-postscript)
+  (define-key gnus-uu-extract-map "P" 'gnus-uu-decode-postscript-and-save)
+
+  (define-prefix-command 'gnus-uu-extract-view-map)
+  (define-key gnus-uu-extract-map "v" 'gnus-uu-extract-view-map)
+  (define-key gnus-uu-extract-view-map "u" 'gnus-uu-decode-uu-view)
+  (define-key gnus-uu-extract-view-map "U" 'gnus-uu-decode-uu-and-save-view)
+  (define-key gnus-uu-extract-view-map "s" 'gnus-uu-decode-unshar-view)
+  (define-key gnus-uu-extract-view-map "S" 'gnus-uu-decode-unshar-and-save-view)
+  (define-key gnus-uu-extract-view-map "o" 'gnus-uu-decode-save-view)
+  (define-key gnus-uu-extract-view-map "O" 'gnus-uu-decode-save-view)
+  (define-key gnus-uu-extract-view-map "b" 'gnus-uu-decode-binhex-view)
+  (define-key gnus-uu-extract-view-map "B" 'gnus-uu-decode-binhex-view)
+  (define-key gnus-uu-extract-view-map "p" 'gnus-uu-decode-postscript-view)
+  (define-key gnus-uu-extract-view-map "P" 'gnus-uu-decode-postscript-and-save-view)
+  
+
 
 ;; Commands.
 
@@ -368,8 +422,8 @@ so I simply dropped them.")
   (gnus-uu-initialize)
   (let ((gnus-uu-save-in-digest t)
 	(file (concat gnus-uu-work-dir (make-temp-name "forward")))
+	(winconf (current-window-configuration))
 	buf)
-    (setq gnus-winconf-post-news (current-window-configuration))
     (gnus-uu-decode-save n file)
     (gnus-uu-add-file file)
     (setq buf (switch-to-buffer (get-buffer-create " *gnus-uu-forward*")))
@@ -595,17 +649,16 @@ so I simply dropped them.")
 	 (save-excursion
 	   (save-restriction
 	     (set-buffer buffer)
-	     (goto-char 1)
+	     (goto-char (point-min))
 	     (re-search-forward "\n\n")
 	     (setq body (buffer-substring (1- (point)) (point-max)))
 	     (narrow-to-region 1 (point))
-	     (setq headers (list "Date:" "From:" "To:" "Cc:" "Subject:"
-				 "Message-ID:" "Keywords:" "Summary:"))
+	     (setq headers gnus-uu-digest-headers)
 	     (while headers
 	       (setq headline (car headers))
 	       (setq headers (cdr headers))
-	       (goto-char 1)
-	       (if (re-search-forward (concat "^" headline ".*$") nil t)
+	       (goto-char (point-min))
+	       (if (re-search-forward (concat headline ".*$") nil t)
 		   (setq sorthead 
 			 (concat sorthead (buffer-substring 
 					   (match-beginning 0)
@@ -658,7 +711,7 @@ so I simply dropped them.")
     (save-excursion
       (set-buffer buffer)
       (widen)
-      (goto-char 1)
+      (goto-char (point-min))
       (if (not (re-search-forward gnus-uu-binhex-begin-line nil t))
 	  (if (not (re-search-forward gnus-uu-binhex-body-line nil t))
 	      (setq state (list 'wrong-type))))
@@ -694,7 +747,7 @@ so I simply dropped them.")
 	start-char end-char file-name)
     (save-excursion
      (set-buffer process-buffer)
-     (goto-char 1)
+     (goto-char (point-min))
      (if (not (re-search-forward gnus-uu-postscript-begin-string nil t))
 	 (setq state (list 'wrong-type))
        (beginning-of-line)
@@ -769,7 +822,7 @@ so I simply dropped them.")
       (setq beg 1)
 
       (setq case-fold-search nil)
-      (goto-char 1)
+      (goto-char (point-min))
       (if (looking-at vernum)
 	  (progn
 	    (replace-match vernum t t)
@@ -878,16 +931,16 @@ so I simply dropped them.")
 	(erase-buffer)
 	(insert (car (car string-list)))
 	;; Translate multiple spaces to one space.
-	(goto-char 1)
+	(goto-char (point-min))
 	(while (re-search-forward "[ \t]+" nil t)
 	  (replace-match " "))
 	;; Translate all characters to "a".
-	(goto-char 1)
+	(goto-char (point-min))
 	(if translate 
 	    (while (re-search-forward "[A-Za-z]" nil t)
 	      (replace-match "a" t t)))
 	;; Expand numbers.
-	(goto-char 1)
+	(goto-char (point-min))
 	(while (re-search-forward "[0-9]+" nil t)
 	  (replace-match  
 	   (format "%06d" 
@@ -1055,7 +1108,7 @@ so I simply dropped them.")
 	    (widen)
 	    (erase-buffer)
 	    (insert-buffer-substring article-buffer)
-	    (goto-char 1))))
+	    (goto-char (point-min)))))
 
     (if result-files
 	()
@@ -1092,13 +1145,13 @@ so I simply dropped them.")
       (let ((case-fold-search nil)
 	    (buffer-read-only nil))
 
-	(goto-char 1)
+	(goto-char (point-min))
 
 	(if gnus-uu-kill-carriage-return
 	    (progn
 	      (while (search-forward "\r" nil t)
 		(delete-backward-char 1))
-	      (goto-char 1)))
+	      (goto-char (point-min))))
 
 	(if (not (re-search-forward gnus-uu-begin-string nil t))
 	    (if (not (re-search-forward gnus-uu-body-line nil t))
@@ -1199,7 +1252,7 @@ so I simply dropped them.")
 	start-char)
     (save-excursion
      (set-buffer process-buffer)
-     (goto-char 1)
+     (goto-char (point-min))
      (if (not (re-search-forward gnus-uu-shar-begin-string nil t))
 	 (setq state (list 'wrong-type))
        (beginning-of-line)
@@ -1214,7 +1267,7 @@ so I simply dropped them.")
 (defun gnus-uu-find-name-in-shar ()
   (let ((oldpoint (point))
 	res)
-    (goto-char 1)
+    (goto-char (point-min))
     (if (re-search-forward gnus-uu-shar-name-marker nil t)
 	(setq res (buffer-substring (match-beginning 1) (match-end 1))))
     (goto-char oldpoint)
@@ -1392,6 +1445,7 @@ so I simply dropped them.")
   (gnus-uu-add-file gnus-uu-work-dir)
   (if (not (file-directory-p gnus-uu-work-dir)) 
       (make-directory gnus-uu-work-dir))
+  (set-file-modes gnus-uu-work-dir 448)
   (setq gnus-uu-work-dir (concat gnus-uu-work-dir "/")))
 
 ;; Kills the temporary uu buffers, kills any processes, etc.
@@ -1539,7 +1593,7 @@ The user will be asked for a file name."
 (defun gnus-uu-post-encode-uuencode (path file-name)
   (if (gnus-uu-post-encode-file "uuencode" path file-name)
       (progn
-	(goto-char 1)
+	(goto-char (point-min))
 	(forward-line 1)
 	(while (re-search-forward " " nil t)
 	  (replace-match "`"))
@@ -1561,16 +1615,15 @@ The user will be asked for a file name."
 
 ;; Adds MIME headers.
 (defun gnus-uu-post-make-mime (file-name encoding)
-  (goto-char 1)
+  (goto-char (point-min))
   (insert (format "Content-Type: %s; name=\"%s\"\n" 
 		  (gnus-uu-choose-action file-name gnus-uu-ext-to-mime-list) 
 		  file-name))
   (insert (format "Content-Transfer-Encoding: %s\n\n" encoding))
   (save-restriction
     (set-buffer gnus-post-news-buffer)
-    (goto-char 1)
-    (re-search-forward (regexp-quote mail-header-separator))
-    (beginning-of-line)
+    (goto-char (point-min))
+    (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
     (forward-line -1)
     (narrow-to-region 1 (point))
     (or (mail-fetch-field "mime-version")
@@ -1612,7 +1665,7 @@ If no file has been included, the user will be asked for a file."
 		(cons
 		 '(lambda ()
 		    (save-excursion
-		      (goto-char 1)
+		      (goto-char (point-min))
 		      (if (re-search-forward "^Message-ID: \\(.*\\)$" nil t)
 			  (setq gnus-uu-post-message-id 
 				(buffer-substring 
@@ -1667,10 +1720,11 @@ If no file has been included, the user will be asked for a file."
 
     (setq post-buf (current-buffer))
 
-    (goto-char 1)
+    (goto-char (point-min))
     (if (not (re-search-forward 
 	      (if gnus-uu-post-separate-description 
-		  gnus-uu-post-binary-separator 
+		  (concat "^" (regexp-quote gnus-uu-post-binary-separator)
+			  "$")
 		(concat "^" (regexp-quote mail-header-separator) "$")) nil t))
 	(error "Internal error: No binary/header separator"))
     (beginning-of-line)
@@ -1682,7 +1736,7 @@ If no file has been included, the user will be asked for a file."
       (set-buffer (setq uubuf (get-buffer-create encoded-buffer-name)))
       (erase-buffer)
       (insert-buffer-substring post-buf beg-binary end-binary)
-      (goto-char 1)
+      (goto-char (point-min))
       (setq length (count-lines 1 (point-max)))
       (setq parts (/ length gnus-uu-post-length))
       (if (not (< (% length gnus-uu-post-length) 4))
@@ -1692,13 +1746,13 @@ If no file has been included, the user will be asked for a file."
 	(forward-line -1))
     (kill-region (point) (point-max))
 
-    (goto-char 1)
+    (goto-char (point-min))
     (re-search-forward 
      (concat "^" (regexp-quote mail-header-separator) "$") nil t)
     (beginning-of-line)
     (setq header (buffer-substring 1 (point)))
 
-    (goto-char 1)
+    (goto-char (point-min))
     (if (not gnus-uu-post-separate-description)
 	()
       (if (and (not threaded) (re-search-forward "^Subject: " nil t))
@@ -1729,7 +1783,7 @@ If no file has been included, the user will be asked for a file."
 		 (make-string 
 		  (if (= 0 (% whole-len 2)) (1- minlen) minlen) ?-)))
 
-	(goto-char 1)
+	(goto-char (point-min))
 	(if (not (re-search-forward "^Subject: " nil t))
 	    ()
 	  (if (not threaded)
@@ -1755,12 +1809,14 @@ If no file has been included, the user will be asked for a file."
 	(insert "\n")
 	(setq beg end)
 	(setq i (1+ i))
-	(goto-char 1)
+	(goto-char (point-min))
 	(re-search-forward
 	 (concat "^" (regexp-quote mail-header-separator) "$") nil t)
 	(beginning-of-line)
 	(forward-line 2)
-	(if (re-search-forward gnus-uu-post-binary-separator nil t)
+	(if (re-search-forward 
+	     (concat "^" (regexp-quote gnus-uu-post-binary-separator) "$")
+	     nil t)
 	    (progn 
 	      (replace-match "")
 	      (forward-line 1)))

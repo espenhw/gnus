@@ -139,7 +139,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
       ;; Fold continuation lines.
       (set-buffer nntp-server-buffer)
-      (goto-char 1)
+      (goto-char (point-min))
       (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
 	(replace-match " " t t))
       'headers)))
@@ -285,7 +285,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
     (save-excursion 
       (set-buffer nnfolder-current-buffer)
       (while articles
-	(goto-char 1)
+	(goto-char (point-min))
 	(if (search-forward (nnfolder-article-string (car articles)) nil t)
 	    (if (or force
 		    (> (nnmail-days-between 
@@ -340,7 +340,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
      (save-excursion
        (nnfolder-possibly-change-group group)
        (set-buffer nnfolder-current-buffer)
-       (goto-char 1)
+       (goto-char (point-min))
        (if (search-forward (nnfolder-article-string article) nil t)
 	   (nnfolder-delete-mail))
        (and last 
@@ -378,7 +378,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
   (nnfolder-possibly-change-group group)
   (save-excursion
     (set-buffer nnfolder-current-buffer)
-    (goto-char 1)
+    (goto-char (point-min))
     (if (not (search-forward (nnfolder-article-string article) nil t))
 	nil
       (nnfolder-delete-mail t t)
@@ -599,33 +599,54 @@ such things as moving mail.  All buffers always get killed upon server close.")
       (current-buffer))))
 
 (defun nnfolder-get-new-mail ()
-  (let (incoming)
-    (if (and nnmail-spool-file
-	     nnfolder-get-new-mail
-	     (file-exists-p nnmail-spool-file)
-	     (> (nth 7 (file-attributes nnmail-spool-file)) 0))
-	(progn
-	  (and gnus-verbose-backends
-	       (message "nnfolder: Reading incoming mail..."))
-	  (setq incoming 
-		(nnmail-move-inbox nnmail-spool-file
-				   (concat nnfolder-directory "Incoming")))
-	  (nnmail-split-incoming incoming 'nnfolder-save-mail)
-	  (run-hooks 'nnmail-read-incoming-hook)
-	  (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
-	  (and gnus-verbose-backends
-	       (message "nnfolder: Reading incoming mail...done"))))
-    (let ((bufs nnfolder-buffer-alist))
-      (save-excursion
-	(while bufs
-	  (if (not (buffer-name (nth 1 (car bufs))))
-	      (setq nnfolder-buffer-alist 
-		    (delq (car bufs) nnfolder-buffer-alist))
-	    (set-buffer (nth 1 (car bufs)))
-	    (and (buffer-modified-p) (save-buffer)))
-	  (setq bufs (cdr bufs)))))
-    ;; (if incoming (delete-file incoming))
-    ))
+  "Read new incoming mail."
+  (let ((spools (if (listp nnmail-spool-file) nnmail-spool-file
+		   (list nnmail-spool-file)))
+	incomings incoming)
+    (if (or (not nnfolder-get-new-mail) (not nnmail-spool-file))
+	()
+      ;; We first activate all the groups.
+      (nnfolder-request-list)
+      (setq nnfolder-group-alist (nnmail-get-active))
+      ;; The we go through all the existing spool files and split the
+      ;; mail from each.
+      (while spools
+	(and
+	 (file-exists-p (car spools))
+	 (> (nth 7 (file-attributes (car spools))) 0)
+	 (progn
+	   (and gnus-verbose-backends 
+		(message "nnfolder: Reading incoming mail..."))
+	   (setq incoming 
+		 (nnmail-move-inbox 
+		  (car spools) (concat nnfolder-directory "Incoming")))
+	   (setq incomings (cons incoming incomings))
+	   (nnmail-split-incoming incoming 'nnfolder-save-mail)))
+	(setq spools (cdr spools)))
+      ;; If we did indeed read any incoming spools, we save all info. 
+      (if incoming 
+	  (progn
+	    (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
+	    (run-hooks 'nnmail-read-incoming-hook)
+	    (and gnus-verbose-backends
+		 (message "nnfolder: Reading incoming mail...done"))))
+      (let ((bufs nnfolder-buffer-alist))
+	(save-excursion
+	  (while bufs
+	    (if (not (buffer-name (nth 1 (car bufs))))
+		(setq nnfolder-buffer-alist 
+		      (delq (car bufs) nnfolder-buffer-alist))
+	      (set-buffer (nth 1 (car bufs)))
+	      (and (buffer-modified-p) (save-buffer)))
+	    (setq bufs (cdr bufs)))))
+      (while incomings
+	;; The following has been commented away, just to make sure
+	;; that nobody ever loses any mail. If you feel safe that
+	;; nnfolder will never do anything strange, just remove those
+	;; two semicolons, and avoid having lots of "Incoming*"
+	;; files. 
+	;; (and (file-writable-p incoming) (delete-file incoming))
+	(setq incomings (cdr incomings))))))
 
 (provide 'nnfolder)
 

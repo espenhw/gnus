@@ -31,6 +31,7 @@
 (require 'nntp)
 (require 'nnheader)
 (require 'gnus)
+(require 'gnus-score)
 
 (defvar nnkiboze-directory 
   (expand-file-name (or gnus-article-save-directory "~/News/"))
@@ -62,7 +63,7 @@
 	    (set-buffer nntp-server-buffer)
 	    (erase-buffer)
 	    (insert-file-contents nov)
-	    (goto-char 1)
+	    (goto-char (point-min))
 	    (while (and (not (eobp)) (< first (read (current-buffer))))
 	      (forward-line 1))
 	    (beginning-of-line)

@@ -1,0 +1,94 @@
+;;; gnus-ems --- functions for making Gnus work under different Emacsii
+;; Copyright (C) 1995 Free Software Foundation, Inc.
+
+;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; Keywords: news
+
+;; This file is part of GNU Emacs.
+
+;; GNU Emacs is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2, or (at your option)
+;; any later version.
+
+;; GNU Emacs is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to
+;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+
+;;; Commentary:
+
+;;; Code:
+
+(defvar gnus-mouse-2 [mouse-2])
+(defvar gnus-easymenu 'easymenu)
+
+;; We do not byte-compile this file, because error messages are such a
+;; bore.  
+
+(eval
+ '(cond 
+   ((string-match "XEmacs\\|Lucid" emacs-version)
+    ;; XEmacs definitions.
+
+    (setq gnus-mouse-2 [button2])
+    (setq gnus-easymenu 'auc-menu)
+
+    (or (memq 'underline (list-faces))
+	(make-face 'underline))
+    (or (face-differs-from-default-p 'underline)
+	(set-face-underline-p 'underline t))
+    (or (fboundp 'set-text-properties)
+	(defun set-text-properties (start end props &optional buffer)
+	  (if props
+	      (put-text-property start end (car props) (cadr props) buffer)
+	    (remove-text-properties start end ()))))
+  
+    (setq ad-activate-on-definition t)
+    (ad-start-advice)
+    (ad-activate-defined-function)
+    (defadvice gnus-set-mouse-face (around gnus-xemacs-set-mouse-face preact)
+      string)
+
+    (if (not gnus-visual)
+	()
+      (setq gnus-group-mode-hook
+	    (cons
+	     (lambda ()
+	       (easy-menu-add gnus-group-reading-menu)
+	       (easy-menu-add gnus-group-group-menu)
+	       (easy-menu-add gnus-group-post-menu)
+	       (easy-menu-add gnus-group-misc-menu)
+	       (gnus-install-mouse-tracker)) 
+	     gnus-group-mode-hook))
+      (setq gnus-summary-mode-hook
+	    (cons
+	     (lambda ()
+	       (easy-menu-add gnus-summary-mark-menu)
+	       (easy-menu-add gnus-summary-move-menu)
+	       (easy-menu-add gnus-summary-article-menu)
+	       (easy-menu-add gnus-summary-thread-menu)
+	       (easy-menu-add gnus-summary-misc-menu)
+	       (easy-menu-add gnus-summary-post-menu)
+	       (easy-menu-add gnus-summary-kill-menu)
+	       (gnus-install-mouse-tracker)) 
+	     gnus-summary-mode-hook))
+      (setq gnus-article-mode-hook
+	    (cons
+	     (lambda ()
+	       (easy-menu-add gnus-article-article-menu)
+	       (easy-menu-add gnus-article-treatment-menu))
+	     gnus-article-mode-hook)))
+
+    (defun gnus-install-mouse-tracker ()
+      (require 'mode-motion)
+      (setq mode-motion-hook 'mode-motion-highlight-line)))
+   ))
+
+(provide 'gnus-ems)
+
+;;; gnus-ems.el ends here

@@ -84,7 +84,7 @@ Newsgroup must be selected before calling this function."
 	(setq sequence (cdr sequence)))
 
       ;; Fold continuation lines.
-      (goto-char 1)
+      (goto-char (point-min))
       (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
 	(replace-match " " t t))
       'headers)))

@@ -33,7 +33,9 @@
   (autoload 'news-setup "rnewspost")
   (autoload 'news-reply-mode "rnewspost")
   (autoload 'nnmail-request-post-buffer "nnmail")
-  (autoload 'cancel-timer "timer"))
+  (autoload 'cancel-timer "timer")
+  (autoload 'telnet "telnet")
+  (autoload 'telnet-send-input "telnet"))
 
 (defvar nntp-server-hook nil
   "*Hooks for the NNTP server.
@@ -179,6 +181,7 @@ instead call function `nntp-status-message' to get status message.")
    (list 'nntp-connection-timeout nntp-connection-timeout)
    (list 'nntp-news-default-headers nntp-news-default-headers)
    (list 'nntp-prepare-server-hook nntp-prepare-server-hook) 
+   (list 'nntp-async-number nntp-async-number)
    '(nntp-async-process nil)
    '(nntp-async-buffer nil)
    '(nntp-async-articles nil)
@@ -241,7 +244,7 @@ instead call function `nntp-status-message' to get status message.")
 	(if (looking-at "^[23]")
 	    (while (progn
 		     (goto-char (- (point-max) 3))
-		     (not (looking-at "^\\.\r$")))
+		     (not (looking-at "^\\.\r?$")))
 	      (nntp-accept-response)))
 	(and (numberp nntp-large-newsgroup)
 	     (> number nntp-large-newsgroup)
@@ -299,7 +302,7 @@ instead call function `nntp-status-message' to get status message.")
 	      (if (looking-at "^[23]")
 		  (while (progn
 			   (goto-char (- (point-max) 3))
-			   (not (looking-at "^\\.\r$")))
+			   (not (looking-at "^\\.\r?$")))
 		    (nntp-accept-response)))))
 
 	;; Now all replies are received. We remove CRs.
@@ -449,7 +452,7 @@ instead call function `nntp-status-message' to get status message.")
 		  (art (or (and (numberp id) (int-to-string id)) id)))
 	      ;; If NEmacs, end of message may look like: "\256\215" (".^M")
 	      (prog1
-		  (nntp-send-command "^\\.\r$" "ARTICLE" art)
+		  (nntp-send-command "^\\.\r?$" "ARTICLE" art)
 		(nntp-decode-text)
 		(and nntp-async-articles (nntp-async-fetch-articles id)))))
 	(if buffer (set-process-buffer 
@@ -461,7 +464,7 @@ instead call function `nntp-status-message' to get status message.")
   (prog1
       ;; If NEmacs, end of message may look like: "\256\215" (".^M")
       (nntp-send-command
-       "^\\.\r$" "BODY" (or (and (numberp id) (int-to-string id)) id))
+       "^\\.\r?$" "BODY" (or (and (numberp id) (int-to-string id)) id))
     (nntp-decode-text)))
 
 (defun nntp-request-head (id &optional newsgroup server)
@@ -469,43 +472,49 @@ instead call function `nntp-status-message' to get status message.")
   (nntp-possibly-change-server newsgroup server)
   (prog1
       (nntp-send-command 
-       "^\\.\r$" "HEAD" (or (and (numberp id) (int-to-string id)) id))
+       "^\\.\r?$" "HEAD" (or (and (numberp id) (int-to-string id)) id))
     (nntp-decode-text)))
 
 (defun nntp-request-stat (id &optional newsgroup server)
   "Request STAT of article ID (message-id or number)."
   (nntp-possibly-change-server newsgroup server)
   (nntp-send-command 
-   "^[23].*\r$" "STAT" (or (and (numberp id) (int-to-string id)) id)))
+   "^[23].*\r?$" "STAT" (or (and (numberp id) (int-to-string id)) id)))
 
 (defun nntp-request-group (group &optional server dont-check)
   "Select GROUP."
-  (nntp-send-command "^.*\r$" "GROUP" group)
+  (nntp-send-command "^.*\r?$" "GROUP" group)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (goto-char (point-min))
     (looking-at "[23]")))
 
 (defun nntp-request-asynchronous (group &optional server articles)
-  (or (nntp-async-server-opened)
-      (nntp-async-open-server)
-      (error "Can't open second connection to %s" nntp-address))
-  (setq nntp-async-articles articles)
-  (setq nntp-async-fetched nil)
-  (save-excursion
-    (set-buffer nntp-async-buffer)
-    (erase-buffer))
-  (nntp-async-send-strings "GROUP" group)
-  t)
+  (and 
+   nntp-async-number
+   (if (not (or (nntp-async-server-opened)
+		(nntp-async-open-server)))
+       (progn
+	 (message "Can't open second connection to %s" nntp-address)
+	 (ding)
+	 (setq nntp-async-articles nil)
+	 (sit-for 2))
+     (setq nntp-async-articles articles)
+     (setq nntp-async-fetched nil)
+     (save-excursion
+       (set-buffer nntp-async-buffer)
+       (erase-buffer))
+     (nntp-async-send-strings "GROUP" group)
+     t)))
 
 (defun nntp-list-active-group (group &optional server)
-  (nntp-send-command "^.*\r$" "LIST ACTIVE" group))
+  (nntp-send-command "^.*\r?$" "LIST ACTIVE" group))
 
 (defun nntp-request-group-description (group &optional server)
   "Get description of GROUP."
   (if (nntp-possibly-change-server nil server)
       (prog1
-	  (nntp-send-command "^.*\r$" "XGTITLE" group)
+	  (nntp-send-command "^.*\r?$" "XGTITLE" group)
 	(nntp-decode-text))))
 
 (defun nntp-close-group (group &optional server)
@@ -515,14 +524,14 @@ instead call function `nntp-status-message' to get status message.")
   "List active groups."
   (nntp-possibly-change-server nil server)
   (prog1
-      (nntp-send-command "^\\.\r$" "LIST")
+      (nntp-send-command "^\\.\r?$" "LIST")
     (nntp-decode-text)))
 
 (defun nntp-request-list-newsgroups (&optional server)
   "List groups."
   (nntp-possibly-change-server nil server)
   (prog1
-      (nntp-send-command "^\\.\r$" "LIST NEWSGROUPS")
+      (nntp-send-command "^\\.\r?$" "LIST NEWSGROUPS")
     (nntp-decode-text)))
 
 (defun nntp-request-newgroups (date &optional server)
@@ -536,30 +545,30 @@ instead call function `nntp-status-message' to get status message.")
 		  (substring 
 		   (aref date 3) 3 5) (substring (aref date 3) 6 8))))
     (prog1
-	(nntp-send-command "^\\.\r$" "NEWGROUPS" time-string)
+	(nntp-send-command "^\\.\r?$" "NEWGROUPS" time-string)
       (nntp-decode-text))))
 
 (defun nntp-request-list-distributions (&optional server)
   "List distributions."
   (nntp-possibly-change-server nil server)
   (prog1
-      (nntp-send-command "^\\.\r$" "LIST DISTRIBUTIONS")
+      (nntp-send-command "^\\.\r?$" "LIST DISTRIBUTIONS")
     (nntp-decode-text)))
 
 (defun nntp-request-last (&optional newsgroup server)
   "Decrease the current article pointer."
   (nntp-possibly-change-server newsgroup server)
-  (nntp-send-command "^[23].*\r$" "LAST"))
+  (nntp-send-command "^[23].*\r?$" "LAST"))
 
 (defun nntp-request-next (&optional newsgroup server)
   "Advance the current article pointer."
   (nntp-possibly-change-server newsgroup server)
-  (nntp-send-command "^[23].*\r$" "NEXT"))
+  (nntp-send-command "^[23].*\r?$" "NEXT"))
 
 (defun nntp-request-post (&optional server)
   "Post the current buffer."
   (nntp-possibly-change-server nil server)
-  (if (nntp-send-command "^[23].*\r$" "POST")
+  (if (nntp-send-command "^[23].*\r?$" "POST")
       (progn
 	(nntp-encode-text)
 	(nntp-send-region-to-server (point-min) (point-max))
@@ -661,14 +670,14 @@ post to this group instead.  If RESPECT-POSTER, heed the special
 This function is supposed to be called from `nntp-server-opened-hook'.
 It will make innd servers spawn an nnrpd process to allow actual article
 reading."
-  (nntp-send-command "^.*\r$" "MODE READER"))
+  (nntp-send-command "^.*\r?$" "MODE READER"))
 
 (defun nntp-send-authinfo ()
   "Send the AUTHINFO to the nntp server.
 This function is supposed to be called from `nntp-server-opened-hook'.
 It will prompt for a password."
-  (nntp-send-command "^.*\r$" "AUTHINFO USER" (user-login-name))
-  (nntp-send-command "^.*\r$" "AUTHINFO PASS" (read-string "NNTP password: ")))
+  (nntp-send-command "^.*\r?$" "AUTHINFO USER" (user-login-name))
+  (nntp-send-command "^.*\r?$" "AUTHINFO PASS" (read-string "NNTP password: ")))
 
 (defun nntp-default-sentinel (proc status)
   "Default sentinel function for NNTP server process."
@@ -766,7 +775,7 @@ It will prompt for a password."
 	(nntp-wait-for-response response)
       t)))
 
-(defun nntp-wait-for-response (regexp)
+(defun nntp-wait-for-response (regexp &optional slow)
   "Wait for server response which matches REGEXP."
   (save-excursion
     (let ((status t)
@@ -786,12 +795,23 @@ It will prompt for a password."
       (nntp-accept-response)
       (while wait
 	(goto-char (point-min))
-	(cond ((looking-at "[23]")
-	       (setq wait nil))
-	      ((looking-at "[45]")
-	       (setq status nil)
-	       (setq wait nil))
-	      (t (nntp-accept-response))))
+	(if slow
+	    (progn
+	      (cond ((re-search-forward "^[23][0-9][0-9]" nil t)
+		     (setq wait nil))
+		    ((re-search-forward "^[45][0-9][0-9]" nil t)
+		     (setq status nil)
+		     (setq wait nil))
+		    (t (nntp-accept-response)))
+	      (if (not wait) (delete-region (point-min) 
+					    (progn (beginning-of-line)
+						   (point)))))
+	  (cond ((looking-at "[23]")
+		 (setq wait nil))
+		((looking-at "[45]")
+		 (setq status nil)
+		 (setq wait nil))
+		(t (nntp-accept-response)))))
       ;; Save status message.
       (end-of-line)
       (setq nntp-status-string
@@ -833,13 +853,13 @@ It will prompt for a password."
 			 (nntp-last-element sequence))))
       (prog1
 	  (if (stringp nntp-server-xover)
-	      (nntp-send-command "^\\.\r$" nntp-server-xover range)
+	      (nntp-send-command "^\\.\r?$" nntp-server-xover range)
 	    (let ((commands nntp-xover-commands))
 	      (while (and commands (eq nntp-server-xover 'try))
-		(nntp-send-command "^\\.\r$" (car commands) range)
+		(nntp-send-command "^\\.\r?$" (car commands) range)
 		(save-excursion
 		  (set-buffer nntp-server-buffer)
-		  (goto-char 1)
+		  (goto-char (point-min))
 		  (if (looking-at "[23]") 
 		      (setq nntp-server-xover (car commands))))
 		(setq commands (cdr commands)))
@@ -910,7 +930,7 @@ If SERVICE, this this as the port number."
 	   (setq nntp-address server)
 	   (setq status
 		 (condition-case nil
-		     (nntp-wait-for-response "^[23].*\r$")
+		     (nntp-wait-for-response "^[23].*\r?$" 'slow)
 		   (error nil)
 		   (quit nil)))
 	   (or status (nntp-close-server-internal server))
@@ -960,6 +980,24 @@ If SERVICE, this this as the port number."
     (process-send-string proc (mapconcat (lambda (s) s) nntp-rlogin-parameters
 					 " "))
     (process-send-string proc "\n")))
+
+(defun nntp-telnet-to-machine
+  (let (b)
+    (telnet "localhost")
+    (goto-char (point-min))
+    (while (not (re-search-forward "^login: *" nil t))
+      (sit-for 1)
+      (goto-char (point-min)))
+    (goto-char (point-max))
+    (insert "larsi")
+    (telnet-send-input)
+    (setq b (point))
+    (while (not (re-search-forward ">" nil t))
+      (sit-for 1)
+      (goto-char b))
+    (goto-char (point-max))
+    (insert "ls")
+    (telnet-send-input)))
 
 (defun nntp-close-server-internal (&optional server)
   "Close connection to news server."
@@ -1035,8 +1073,10 @@ defining this function as macro."
   (let ((nntp-server-process nil)
 	(nntp-server-buffer nntp-async-buffer))
     (nntp-open-server-semi-internal nntp-address nntp-port-number)
-    (setq nntp-async-process nntp-server-process)
-    (set-process-buffer nntp-async-process nntp-async-buffer)))
+    (if (not (setq nntp-async-process nntp-server-process))
+	(progn
+	  (setq nntp-async-number nil))
+      (set-process-buffer nntp-async-process nntp-async-buffer))))
 
 (defun nntp-async-fetch-articles (article)
   (if (stringp article)

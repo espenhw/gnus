@@ -38,8 +38,11 @@
 
 (defvar nndigest-group-alist nil)
 
-(defconst nndigest-separator 
+(defvar nndigest-separator 
   "^------------------------------[\n \t]*\n[^ ]+: ")
+
+(defvar nndigest-first-article-separator 
+  "^------------------------------*[\n \t]*\n[^ ]+: ")
 
 
 
@@ -74,7 +77,7 @@
 	(setq sequence (cdr sequence)))
 
       ;; Fold continuation lines.
-      (goto-char 1)
+      (goto-char (point-min))
       (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
 	(replace-match " " t t))
       'headers)))
@@ -120,6 +123,8 @@
       (set-buffer nndigest-current-buffer)
       (widen)
       (goto-char (point-min))
+      (if (re-search-forward nndigest-first-article-separator nil t)
+	  (setq num 1))
       (while (re-search-forward nndigest-separator nil t)
 	(setq num (1+ num)))
       (set-buffer nntp-server-buffer)
@@ -174,9 +179,9 @@
     (set-buffer nndigest-current-buffer)
     (widen)
     (goto-char (point-min))
-    (while (and (not (zerop article))
-		(re-search-forward nndigest-separator nil t))
-      (setq article (1- article)))
+    (re-search-forward nndigest-first-article-separator nil t)
+    (while (and (not (zerop (setq article (1- article))))
+		(re-search-forward nndigest-separator nil t)))
     (if (zerop article)
 	(progn
 	  (goto-char (match-end 0))

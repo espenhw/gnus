@@ -27,6 +27,27 @@
 
 (require 'gnus)
 
+(defvar gnus-score-find-score-files-function 'gnus-score-find-bnews
+  "*Function used to find SCORE files.
+The function will be called with the group name as the argument, and
+should return a list of score files to apply to that group.  The score
+files do not actually have to exist.
+
+Predefined values are:
+
+gnus-score-find-single: Only apply the group's own SCORE file.
+gnus-score-find-hierarchical: Also apply SCORE files from parent groups.
+gnus-score-find-bnews: Apply SCORE files whose names matches.
+
+See the documentation to these functions for more information.
+
+This variable can also be a list of functions to be called.  Each
+function should either return a list of score files, or a list of
+score alists.")
+
+(defvar gnus-adaptive-file-suffix "ADAPT"
+  "*Suffix of the adaptive score files.")
+
 (defvar gnus-score-expiry-days 7
   "*Number of days before unused score file entries are expired.")
 
@@ -49,8 +70,9 @@
 
 ;; Internal variables.
 
+(defvar gnus-internal-global-score-files nil)
+(defvar gnus-score-file-list nil)
 (defvar gnus-current-score-file nil)
-
 (defvar gnus-adaptive-score-alist gnus-default-adaptive-score-alist)
 
 (defvar gnus-score-alist nil
@@ -75,8 +97,6 @@ of the last succesful match.")
 (defvar gnus-header-index nil)
 (defvar gnus-score-index nil)
 
-(defvar gnus-winconf-edit-score nil)
-
 (autoload 'gnus-uu-ctl-map "gnus-uu" nil nil 'keymap)
 
 ;;; Summary mode score maps.
@@ -84,6 +104,7 @@ of the last succesful match.")
 (defvar gnus-summary-score-map nil)
 (defvar gnus-summary-increase-map nil)
 (defvar gnus-summary-inc-subject-map nil)
+(defvar gnus-summary-inc-fuzzy-map nil)
 (defvar gnus-summary-inc-author-map nil)
 (defvar gnus-summary-inc-body-map nil)
 (defvar gnus-summary-inc-id-map nil)
@@ -92,6 +113,7 @@ of the last succesful match.")
 (defvar gnus-summary-inc-fol-map nil)
 (defvar gnus-summary-lower-map nil)
 (defvar gnus-summary-low-subject-map nil)
+(defvar gnus-summary-low-fuzzy-map nil)
 (defvar gnus-summary-low-author-map nil)
 (defvar gnus-summary-low-body-map nil)
 (defvar gnus-summary-low-id-map nil)
@@ -121,14 +143,25 @@ of the last succesful match.")
   (define-key gnus-summary-increase-map "S" 'gnus-summary-temporarily-raise-by-subject)
   (define-key gnus-summary-inc-subject-map "s" 'gnus-summary-temporarily-raise-by-subject)
   (define-key gnus-summary-inc-subject-map "S" 'gnus-summary-raise-by-subject)
+  (define-key gnus-summary-inc-subject-map "i" 'gnus-summary-immediately-raise-by-subject)
   (define-key gnus-summary-inc-subject-map "t" 'gnus-summary-temporarily-raise-by-subject)
   (define-key gnus-summary-inc-subject-map "p" 'gnus-summary-raise-by-subject)
+
+  (define-prefix-command 'gnus-summary-inc-fuzzy-map)
+  (define-key gnus-summary-increase-map "z" gnus-summary-inc-fuzzy-map)
+  (define-key gnus-summary-increase-map "Z" 'gnus-summary-temporarily-raise-by-fuzzy)
+  (define-key gnus-summary-inc-fuzzy-map "z" 'gnus-summary-temporarily-raise-by-fuzzy)
+  (define-key gnus-summary-inc-fuzzy-map "Z" 'gnus-summary-raise-by-fuzzy)
+  (define-key gnus-summary-inc-fuzzy-map "i" 'gnus-summary-immediately-raise-by-fuzzy)
+  (define-key gnus-summary-inc-fuzzy-map "t" 'gnus-summary-temporarily-raise-by-fuzzy)
+  (define-key gnus-summary-inc-fuzzy-map "p" 'gnus-summary-raise-by-fuzzy)
 
   (define-prefix-command 'gnus-summary-inc-author-map)
   (define-key gnus-summary-increase-map "a" 'gnus-summary-inc-author-map)
   (define-key gnus-summary-increase-map "A" 'gnus-summary-temporarily-raise-by-author)
   (define-key gnus-summary-inc-author-map "a" 'gnus-summary-temporarily-raise-by-author)
   (define-key gnus-summary-inc-author-map "A" 'gnus-summary-raise-by-author)
+  (define-key gnus-summary-inc-author-map "i" 'gnus-summary-immediately-raise-by-author)
   (define-key gnus-summary-inc-author-map "t" 'gnus-summary-temporarily-raise-by-author)
   (define-key gnus-summary-inc-author-map "p" 'gnus-summary-raise-by-author)
 
@@ -137,6 +170,7 @@ of the last succesful match.")
   (define-key gnus-summary-increase-map "B" 'gnus-summary-temporarily-raise-by-body)
   (define-key gnus-summary-inc-body-map "b" 'gnus-summary-temporarily-raise-by-body)
   (define-key gnus-summary-inc-body-map "B" 'gnus-summary-raise-by-body)
+  (define-key gnus-summary-inc-body-map "i" 'gnus-summary-immediately-raise-by-body)
   (define-key gnus-summary-inc-body-map "t" 'gnus-summary-temporarily-raise-by-body)
   (define-key gnus-summary-inc-body-map "p" 'gnus-summary-raise-by-body)
 
@@ -145,6 +179,7 @@ of the last succesful match.")
   (define-key gnus-summary-increase-map "I" 'gnus-summary-temporarily-raise-by-id)
   (define-key gnus-summary-inc-id-map "i" 'gnus-summary-temporarily-raise-by-id)
   (define-key gnus-summary-inc-id-map "I" 'gnus-summary-raise-by-id)
+  (define-key gnus-summary-inc-id-map "i" 'gnus-summary-immediately-raise-by-id)
   (define-key gnus-summary-inc-id-map "t" 'gnus-summary-temporarily-raise-by-id)
   (define-key gnus-summary-inc-id-map "p" 'gnus-summary-raise-by-id)
 
@@ -153,6 +188,7 @@ of the last succesful match.")
   (define-key gnus-summary-increase-map "T" 'gnus-summary-temporarily-raise-by-thread)
   (define-key gnus-summary-inc-thread-map "t" 'gnus-summary-temporarily-raise-by-thread)
   (define-key gnus-summary-inc-thread-map "T" 'gnus-summary-raise-by-thread)
+  (define-key gnus-summary-inc-thread-map "i" 'gnus-summary-immediately-raise-by-thread)
   (define-key gnus-summary-inc-thread-map "t" 'gnus-summary-temporarily-raise-by-thread)
   (define-key gnus-summary-inc-thread-map "p" 'gnus-summary-raise-by-thread)
 
@@ -161,15 +197,17 @@ of the last succesful match.")
   (define-key gnus-summary-increase-map "X" 'gnus-summary-temporarily-raise-by-xref)
   (define-key gnus-summary-inc-xref-map "x" 'gnus-summary-temporarily-raise-by-xref)
   (define-key gnus-summary-inc-xref-map "X" 'gnus-summary-raise-by-xref)
+  (define-key gnus-summary-inc-xref-map "i" 'gnus-summary-immediately-raise-by-xref)
   (define-key gnus-summary-inc-xref-map "t" 'gnus-summary-temporarily-raise-by-xref)
   (define-key gnus-summary-inc-xref-map "p" 'gnus-summary-raise-by-xref)
 
   (define-prefix-command 'gnus-summary-inc-fol-map)
   (define-key gnus-summary-increase-map "f" 'gnus-summary-inc-fol-map)
-  (define-key gnus-summary-increase-map "F" 'gnus-summary-raise-followups-to-author)
-  (define-key gnus-summary-inc-fol-map "f" 'gnus-summary-raise-followups-to-author)
+  (define-key gnus-summary-increase-map "F" 'gnus-summary-temporarily-raise-followups-to-author)
+  (define-key gnus-summary-inc-fol-map "f" 'gnus-summary-temporarily-raise-followups-to-author)
   (define-key gnus-summary-inc-fol-map "F" 'gnus-summary-raise-followups-to-author)
-  (define-key gnus-summary-inc-fol-map "t" 'gnus-summary-raise-followups-to-author)
+  (define-key gnus-summary-inc-fol-map "i" 'gnus-summary-immediately-raise-followups-to-author)
+  (define-key gnus-summary-inc-fol-map "t" 'gnus-summary-temporarily-raise-followups-to-author)
   (define-key gnus-summary-inc-fol-map "p" 'gnus-summary-raise-followups-to-author)
 
 
@@ -185,14 +223,25 @@ of the last succesful match.")
   (define-key gnus-summary-lower-map "S" 'gnus-summary-temporarily-lower-by-subject)
   (define-key gnus-summary-low-subject-map "s" 'gnus-summary-temporarily-lower-by-subject)
   (define-key gnus-summary-low-subject-map "S" 'gnus-summary-lower-by-subject)
+  (define-key gnus-summary-low-subject-map "i" 'gnus-summary-immediately-lower-by-subject)
   (define-key gnus-summary-low-subject-map "t" 'gnus-summary-temporarily-lower-by-subject)
   (define-key gnus-summary-low-subject-map "p" 'gnus-summary-lower-by-subject)
+
+  (define-prefix-command 'gnus-summary-low-fuzzy-map)
+  (define-key gnus-summary-lower-map "z" 'gnus-summary-low-fuzzy-map)
+  (define-key gnus-summary-lower-map "Z" 'gnus-summary-temporarily-lower-by-fuzzy)
+  (define-key gnus-summary-low-fuzzy-map "z" 'gnus-summary-temporarily-lower-by-fuzzy)
+  (define-key gnus-summary-low-fuzzy-map "Z" 'gnus-summary-lower-by-fuzzy)
+  (define-key gnus-summary-low-fuzzy-map "i" 'gnus-summary-immediately-lower-by-fuzzy)
+  (define-key gnus-summary-low-fuzzy-map "t" 'gnus-summary-temporarily-lower-by-fuzzy)
+  (define-key gnus-summary-low-fuzzy-map "p" 'gnus-summary-lower-by-fuzzy)
 
   (define-prefix-command 'gnus-summary-low-body-map)
   (define-key gnus-summary-lower-map "b" 'gnus-summary-low-body-map)
   (define-key gnus-summary-lower-map "B" 'gnus-summary-temporarily-lower-by-body)
   (define-key gnus-summary-low-body-map "b" 'gnus-summary-temporarily-lower-by-body)
   (define-key gnus-summary-low-body-map "B" 'gnus-summary-lower-by-body)
+  (define-key gnus-summary-low-body-map "i" 'gnus-summary-immediately-lower-by-body)
   (define-key gnus-summary-low-body-map "t" 'gnus-summary-temporarily-lower-by-body)
   (define-key gnus-summary-low-body-map "p" 'gnus-summary-lower-by-body)
 
@@ -201,6 +250,7 @@ of the last succesful match.")
   (define-key gnus-summary-lower-map "A" 'gnus-summary-temporarily-lower-by-author)
   (define-key gnus-summary-low-author-map "a" 'gnus-summary-temporarily-lower-by-author)
   (define-key gnus-summary-low-author-map "A" 'gnus-summary-lower-by-author)
+  (define-key gnus-summary-low-author-map "i" 'gnus-summary-immediately-lower-by-author)
   (define-key gnus-summary-low-author-map "t" 'gnus-summary-temporarily-lower-by-author)
   (define-key gnus-summary-low-author-map "p" 'gnus-summary-lower-by-author)
 
@@ -209,6 +259,7 @@ of the last succesful match.")
   (define-key gnus-summary-lower-map "I" 'gnus-summary-temporarily-lower-by-id)
   (define-key gnus-summary-low-id-map "i" 'gnus-summary-temporarily-lower-by-id)
   (define-key gnus-summary-low-id-map "I" 'gnus-summary-lower-by-id)
+  (define-key gnus-summary-low-id-map "i" 'gnus-summary-immediately-lower-by-id)
   (define-key gnus-summary-low-id-map "t" 'gnus-summary-temporarily-lower-by-id)
   (define-key gnus-summary-low-id-map "p" 'gnus-summary-lower-by-id)
 
@@ -217,6 +268,7 @@ of the last succesful match.")
   (define-key gnus-summary-lower-map "T" 'gnus-summary-temporarily-lower-by-thread)
   (define-key gnus-summary-low-thread-map "t" 'gnus-summary-temporarily-lower-by-thread)
   (define-key gnus-summary-low-thread-map "T" 'gnus-summary-lower-by-thread)
+  (define-key gnus-summary-low-thread-map "i" 'gnus-summary-immediately-lower-by-thread)
   (define-key gnus-summary-low-thread-map "t" 'gnus-summary-temporarily-lower-by-thread)
   (define-key gnus-summary-low-thread-map "p" 'gnus-summary-lower-by-thread)
 
@@ -225,15 +277,17 @@ of the last succesful match.")
   (define-key gnus-summary-lower-map "X" 'gnus-summary-temporarily-lower-by-xref)
   (define-key gnus-summary-low-xref-map "x" 'gnus-summary-temporarily-lower-by-xref)
   (define-key gnus-summary-low-xref-map "X" 'gnus-summary-lower-by-xref)
+  (define-key gnus-summary-low-xref-map "i" 'gnus-summary-immediately-lower-by-xref)
   (define-key gnus-summary-low-xref-map "t" 'gnus-summary-temporarily-lower-by-xref)
   (define-key gnus-summary-low-xref-map "p" 'gnus-summary-lower-by-xref)
 
   (define-prefix-command 'gnus-summary-low-fol-map)
   (define-key gnus-summary-lower-map "f" 'gnus-summary-low-fol-map)
-  (define-key gnus-summary-lower-map "F" 'gnus-summary-lower-followups-to-author)
-  (define-key gnus-summary-low-fol-map "f" 'gnus-summary-lower-followups-to-author)
+  (define-key gnus-summary-lower-map "F" 'gnus-summary-temporarily-lower-followups-to-author)
+  (define-key gnus-summary-low-fol-map "f" 'gnus-summary-temporarily-lower-followups-to-author)
   (define-key gnus-summary-low-fol-map "F" 'gnus-summary-lower-followups-to-author)
-  (define-key gnus-summary-low-fol-map "t" 'gnus-summary-lower-followups-to-author)
+  (define-key gnus-summary-low-fol-map "i" 'gnus-summary-immediately-lower-followups-to-author)
+  (define-key gnus-summary-low-fol-map "t" 'gnus-summary-temporarily-lower-followups-to-author)
   (define-key gnus-summary-low-fol-map "p" 'gnus-summary-lower-followups-to-author)
 
 
@@ -257,7 +311,9 @@ HEADER is the header being scored.
 MATCH is the string we are looking for.
 TYPE is a flag indicating if it is a regexp or substring.
 SCORE is the score to add.
-DATE is the expire date."
+DATE is the expire date, or nil for no expire, or 'now for immediate expire.
+If optional argument `PROMPT' is non-nil, allow user to edit match.
+If optional argument `SILENT' is nil, show effect of score entry."
   (interactive
    (list (completing-read "Header: "
 			  gnus-header-index
@@ -266,48 +322,59 @@ DATE is the expire date."
 	 (read-string "Match: ")
 	 (y-or-n-p "Use regexp match? ")
 	 (prefix-numeric-value current-prefix-arg)
-	 (if (y-or-n-p "Expire kill? ")
-	     (current-time-string)
-	   nil)))
+	 (cond ((not (y-or-n-p "Add to SCORE file? "))
+		'now)
+	       ((y-or-n-p "Expire kill? ")
+		(current-time-string))
+	       (t nil))))
   (let ((score (gnus-score-default score))
 	(header (downcase header)))
     (and prompt (setq match (read-string 
 			     (format "Match %s on %s, %s: " 
-				     (if date "temp" "permanent") 
+				     (cond ((eq date 'now)
+					    "now")
+					   ((stringp date)
+					    "temp")
+					   (t "permanent"))
 				     header
 				     (if (< score 0) "lower" "raise"))
 			     match)))
     (and (>= (nth 1 (assoc header gnus-header-index)) 0)
 	 (not silent)
 	 (gnus-summary-score-effect header match type score))
-    (and (= score gnus-score-interactive-default-score)
-	 (setq score nil))
-    (let ((new (cond (type
-		  (list match score (and date (gnus-day-number date)) type))
-		 (date
-		  (list match score (gnus-day-number date)))
-		 (score
-		  (list match score))
-		 (t
-		  (list match))))
-	  (old (gnus-score-get header))
-	  elem)
-      ;; We see whether we can collapse some score entries.
-      ;; This isn't quite correct, because there may be more elements
-      ;; later on with the same key that have matching elems... Hm.
-      (if (and old
-	       (setq elem (assoc match old))
-	       (eq (nth 3 elem) (nth 3 new))
-	       (or (and (numberp (nth 2 elem)) (numberp (nth 2 new)))
-		   (and (not (nth 2 elem)) (not (nth 2 new)))))
-	  ;; Yup, we just add this new score to the old elem.
-	  (setcar (cdr elem) (+ (or (nth 1 elem) 
-				    gnus-score-interactive-default-score)
-				(or (nth 1 new)
-				    gnus-score-interactive-default-score)))
-	;; Nope, we have to add a new elem.
-	(gnus-score-set header (if old (cons new old) (list new)))))
-    (gnus-score-set 'touched '(t))))
+    (if (eq date 'now)
+	()
+      (and (= score gnus-score-interactive-default-score)
+	   (setq score nil))
+      (let ((new (cond ((eq type 'f)
+		    (list (gnus-simplify-subject-fuzzy match)
+			  score (and date (gnus-day-number date)) type))
+		   (type
+		    (list match score (and date (gnus-day-number date)) type))
+		   (date
+		    (list match score (gnus-day-number date)))
+		   (score
+		    (list match score))
+		   (t
+		    (list match))))
+	    (old (gnus-score-get header))
+	    elem)
+	;; We see whether we can collapse some score entries.
+	;; This isn't quite correct, because there may be more elements
+	;; later on with the same key that have matching elems... Hm.
+	(if (and old
+		 (setq elem (assoc match old))
+		 (eq (nth 3 elem) (nth 3 new))
+		 (or (and (numberp (nth 2 elem)) (numberp (nth 2 new)))
+		     (and (not (nth 2 elem)) (not (nth 2 new)))))
+	    ;; Yup, we just add this new score to the old elem.
+	    (setcar (cdr elem) (+ (or (nth 1 elem) 
+				      gnus-score-interactive-default-score)
+				  (or (nth 1 new)
+				      gnus-score-interactive-default-score)))
+	  ;; Nope, we have to add a new elem.
+	  (gnus-score-set header (if old (cons new old) (list new)))))
+      (gnus-score-set 'touched '(t)))))
 
 (defun gnus-summary-score-effect (header match type score)
   "Simulate the effect of a score file entry.
@@ -326,14 +393,18 @@ SCORE is the score to add."
     (or (and (stringp match) (> (length match) 0))
       (error "No match"))
     (goto-char (point-min))
-    (let ((regexp (if type
-		      match
-		    (concat "\\`.*" (regexp-quote match) ".*\\'"))))
+    (let ((regexp (cond ((eq type 'f)
+			 (gnus-simplify-subject-fuzzy match))
+			(type match)
+			(t (concat "\\`.*" (regexp-quote match) ".*\\'")))))
       (while (not (eobp))
 	(let ((content (gnus-summary-header header))
 	      (case-fold-search t))
 	  (and content
-	       (if (string-match regexp content)
+	       (if (if (eq type 'f)
+		       (string-equal (gnus-simplify-subject-fuzzy content)
+				     regexp)
+		     (string-match regexp content))
 		   (gnus-summary-raise-score score))))
 	(beginning-of-line 2)))))
 
@@ -354,6 +425,68 @@ SCORE is the score to add."
 	   (gnus-summary-score-entry
 	    "xref" (concat " " group ":") nil score date t)))))
 
+(defun gnus-summary-immediately-lower-by-subject (level)
+  "Immediately lower score by LEVEL for current subject.
+See `gnus-score-expiry-days'."
+  (interactive "P")
+  (gnus-summary-score-entry
+   "subject" (gnus-simplify-subject-re (gnus-summary-header "subject"))
+   nil (- (gnus-score-default level)) 'now t))
+
+(defun gnus-summary-immediately-lower-by-fuzzy (level)
+  "Immediately lower score by LEVEL for current fuzzy subject.
+See `gnus-score-expiry-days'."
+  (interactive "P")
+  (gnus-summary-score-entry
+   "subject" (gnus-summary-header "subject")
+   'f (- (gnus-score-default level)) 'now))
+
+(defun gnus-summary-immediately-lower-by-author (level)
+  "Immediately lower score by LEVEL for current author.
+See `gnus-score-expiry-days'."
+  (interactive "P")
+  (gnus-summary-score-entry
+   "from" (gnus-summary-header "from") nil (- (gnus-score-default level)) 
+   'now t))
+
+(defun gnus-summary-immediately-lower-by-body (level)
+  "Immediately lower score by LEVEL for a match on the body of the article.
+See `gnus-score-expiry-days'."
+  (interactive "P")
+  (error "Not yet implemented")
+  (gnus-summary-score-entry 
+   "body" "" nil (- (gnus-score-default level)) 'now t))
+
+(defun gnus-summary-immediately-lower-by-id (level)
+  "Immediately lower score by LEVEL for current message-id.
+See `gnus-score-expiry-days'."
+  (interactive "P")
+  (gnus-summary-score-entry
+   "message-id" (gnus-summary-header "message-id") 
+   nil (- (gnus-score-default level)) 'now))
+
+(defun gnus-summary-immediately-lower-by-xref (level)
+  "Immediately lower score by LEVEL for current xref.
+See `gnus-score-expiry-days'."
+  (interactive "P")
+  (gnus-summary-score-crossposting (- (gnus-score-default level)) 'now))
+
+(defun gnus-summary-immediately-lower-by-thread (level)
+  "Immediately lower score by LEVEL for current thread.
+See `gnus-score-expiry-days'."
+  (interactive "P")
+  (gnus-summary-score-entry
+   "references" (gnus-summary-header "message-id")
+   nil (- (gnus-score-default level)) 'now))
+
+(defun gnus-summary-immediately-lower-followups-to-author (level)
+  "Lower score by LEVEL for all followups to the current author."
+  (interactive "P")
+  (error "Not yet implemented")
+  (gnus-summary-score-entry 
+   "followup" (gnus-summary-header "from") 
+   nil (- (gnus-score-default level)) 'now t t))
+
 (defun gnus-summary-temporarily-lower-by-subject (level)
   "Temporarily lower score by LEVEL for current subject.
 See `gnus-score-expiry-days'."
@@ -362,6 +495,15 @@ See `gnus-score-expiry-days'."
    "subject" (gnus-simplify-subject-re (gnus-summary-header "subject"))
    nil (- (gnus-score-default level))
    (current-time-string) t))
+
+(defun gnus-summary-temporarily-lower-by-fuzzy (level)
+  "Temporarily lower score by LEVEL for current fuzzy subject.
+See `gnus-score-expiry-days'."
+  (interactive "P")
+  (gnus-summary-score-entry
+   "subject" (gnus-summary-header "subject")
+   'f (- (gnus-score-default level))
+   (current-time-string)))
 
 (defun gnus-summary-temporarily-lower-by-author (level)
   "Temporarily lower score by LEVEL for current author.
@@ -402,6 +544,13 @@ See `gnus-score-expiry-days'."
    "references" (gnus-summary-header "message-id")
    nil (- (gnus-score-default level)) (current-time-string)))
 
+(defun gnus-summary-temporarily-lower-followups-to-author (level)
+  "Lower score by LEVEL for all followups to the current author."
+  (interactive "P")
+  (gnus-summary-score-entry 
+   "followup" (gnus-summary-header "from")
+   nil (- (gnus-score-default level)) (current-time-string) t t))
+
 (defun gnus-summary-lower-by-subject (level)
   "Lower score by LEVEL for current subject."
   (interactive "P")
@@ -409,6 +558,14 @@ See `gnus-score-expiry-days'."
    "subject" (gnus-simplify-subject-re (gnus-summary-header "subject"))
    nil (- (gnus-score-default level)) 
    nil t))
+
+(defun gnus-summary-lower-by-fuzzy (level)
+  "Lower score by LEVEL for current fuzzy subject."
+  (interactive "P")
+  (gnus-summary-score-entry
+   "subject" (gnus-summary-header "subject")
+   'f (- (gnus-score-default level)) 
+   nil))
 
 (defun gnus-summary-lower-by-author (level)
   "Lower score by LEVEL for current author."
@@ -440,7 +597,67 @@ See `gnus-score-expiry-days'."
   (interactive "P")
   (gnus-summary-score-entry 
    "followup" (gnus-summary-header "from")
-   nil (gnus-score-default level) (current-time-string) t t))
+   nil (- (gnus-score-default level)) nil t t))
+
+(defun gnus-summary-immediately-raise-by-subject (level)
+  "Immediately raise score by LEVEL for current subject.
+See `gnus-score-expiry-days'."
+  (interactive "P")
+  (gnus-summary-score-entry
+   "subject" (gnus-simplify-subject-re (gnus-summary-header "subject"))
+   nil level 'now t))
+
+(defun gnus-summary-immediately-raise-by-fuzzy (level)
+  "Immediately raise score by LEVEL for current fuzzy subject.
+See `gnus-score-expiry-days'."
+  (interactive "P")
+  (gnus-summary-score-entry
+   "subject" (gnus-summary-header "subject")
+   'f level 'now))
+
+(defun gnus-summary-immediately-raise-by-author (level)
+  "Immediately raise score by LEVEL for current author.
+See `gnus-score-expiry-days'."
+  (interactive "P")
+  (gnus-summary-score-entry
+   "from" (gnus-summary-header "from") nil level 'now t))
+
+(defun gnus-summary-immediately-raise-by-body (level)
+  "Immediately raise score by LEVEL for a match on the body of the article.
+See `gnus-score-expiry-days'."
+  (interactive "P")
+  (error "Not yet implemented")
+  (gnus-summary-score-entry "body" "" nil level 'now t))
+
+(defun gnus-summary-immediately-raise-by-id (level)
+  "Immediately raise score by LEVEL for current message-id.
+See `gnus-score-expiry-days'."
+  (interactive "P")
+  (gnus-summary-score-entry
+   "message-id" (gnus-summary-header "message-id") 
+   nil level 'now))
+
+(defun gnus-summary-immediately-raise-by-xref (level)
+  "Immediately raise score by LEVEL for current xref.
+See `gnus-score-expiry-days'."
+  (interactive "P")
+  (gnus-summary-score-crossposting level 'now))
+
+(defun gnus-summary-immediately-raise-by-thread (level)
+  "Immediately raise score by LEVEL for current thread.
+See `gnus-score-expiry-days'."
+  (interactive "P")
+  (gnus-summary-score-entry
+   "references" (gnus-summary-header "message-id")
+   nil level 'now))
+
+(defun gnus-summary-immediately-raise-followups-to-author (level)
+  "Raise score by LEVEL for all followups to the current author."
+  (interactive "P")
+  (error "Not yet implemented")
+  (gnus-summary-score-entry 
+   "followup" (gnus-summary-header "from")
+   nil (gnus-score-default level) 'now t t))
 
 (defun gnus-summary-temporarily-raise-by-subject (level)
   "Temporarily raise score by LEVEL for current subject.
@@ -449,6 +666,14 @@ See `gnus-score-expiry-days'."
   (gnus-summary-score-entry
    "subject" (gnus-simplify-subject-re (gnus-summary-header "subject"))
    nil level (current-time-string) t))
+
+(defun gnus-summary-temporarily-raise-by-fuzzy (level)
+  "Temporarily raise score by LEVEL for current fuzzy subject.
+See `gnus-score-expiry-days'."
+  (interactive "P")
+  (gnus-summary-score-entry
+   "subject" (gnus-summary-header "subject")
+   'f level (current-time-string)))
 
 (defun gnus-summary-temporarily-raise-by-author (level)
   "Temporarily raise score by LEVEL for current author.
@@ -485,12 +710,26 @@ See `gnus-score-expiry-days'."
    "references" (gnus-summary-header "message-id")
    nil level (current-time-string)))
 
+(defun gnus-summary-temporarily-raise-followups-to-author (level)
+  "Raise score by LEVEL for all followups to the current author."
+  (interactive "P")
+  (gnus-summary-score-entry 
+   "followup" (gnus-summary-header "from")
+   nil (gnus-score-default level) (current-time-string) t t))
+
 (defun gnus-summary-raise-by-subject (level)
   "Raise score by LEVEL for current subject."
   (interactive "P")
   (gnus-summary-score-entry
    "subject" (gnus-simplify-subject-re (gnus-summary-header "subject"))
    nil level nil t))
+
+(defun gnus-summary-raise-by-fuzzy (level)
+  "Raise score by LEVEL for current fuzzy subject."
+  (interactive "P")
+  (gnus-summary-score-entry
+   "subject" (gnus-summary-header "subject")
+   nil level nil))
 
 (defun gnus-summary-raise-by-author (level)
   "Raise score by LEVEL for current author."
@@ -519,7 +758,7 @@ See `gnus-score-expiry-days'."
   (interactive "P")
   (gnus-summary-score-entry 
    "followup" (gnus-summary-header "from")
-   nil (gnus-score-default level) (current-time-string) t t))
+   nil (gnus-score-default level) nil t t))
 
 
 
@@ -582,9 +821,7 @@ See `gnus-score-expiry-days'."
 
 (defun gnus-score-change-score-file (file)
   "Change current score alist."
-  (interactive
-   (list (completing-read "Score file: " gnus-score-cache)))
-  (setq gnus-current-score-file file)
+  (interactive (list (completing-read "Score file: " gnus-score-cache)))
   (gnus-score-load-file file)
   (gnus-set-mode-line 'summary))
 
@@ -592,11 +829,14 @@ See `gnus-score-expiry-days'."
   "Edit the current score alist."
   (interactive (list gnus-current-score-file))
   (and (buffer-name gnus-summary-buffer) (gnus-score-save))
-  (setq gnus-winconf-edit-score (current-window-configuration))
-  (gnus-configure-windows 'article)
-  (pop-to-buffer (find-file-noselect file))
-  (message (substitute-command-keys 
-	    "\\<gnus-score-mode-map>\\[gnus-score-edit-done] to save edits"))
+  (let ((winconf (current-window-configuration)))
+    (gnus-configure-windows 'article)
+    (pop-to-buffer (find-file-noselect file))
+    (make-local-variable 'gnus-prev-winconf)
+    (setq gnus-prev-winconf winconf))
+  (gnus-message 
+   4 (substitute-command-keys 
+      "\\<gnus-score-mode-map>\\[gnus-score-edit-done] to save edits"))
   (gnus-score-mode))
   
 (defun gnus-score-edit-file (file)
@@ -604,11 +844,14 @@ See `gnus-score-expiry-days'."
   (interactive 
    (list (read-file-name "Edit score file: " gnus-kill-files-directory)))
   (and (buffer-name gnus-summary-buffer) (gnus-score-save))
-  (setq gnus-winconf-edit-score (current-window-configuration))
-  (gnus-configure-windows 'article)
-  (pop-to-buffer (find-file-noselect file))
-  (message (substitute-command-keys 
-	    "\\<gnus-score-mode-map>\\[gnus-score-edit-done] to save edits"))
+  (let ((winconf (current-window-configuration)))
+    (gnus-configure-windows 'article)
+    (pop-to-buffer (find-file-noselect file))
+    (make-local-variable 'gnus-prev-winconf)
+    (setq gnus-prev-winconf winconf))
+  (gnus-message 
+   4 (substitute-command-keys 
+      "\\<gnus-score-mode-map>\\[gnus-score-edit-done] to save edits"))
   (gnus-score-mode))
   
 (defun gnus-score-load-file (file)
@@ -664,15 +907,18 @@ See `gnus-score-expiry-days'."
 				      files))))
       (and eval (not global) (eval eval))
       (setq gnus-scores-exclude-files exclude-files)
-      (if orphan (setq gnus-orphan-score (car orphan)))
+      (if orphan (setq gnus-orphan-score orphan))
       (setq gnus-adaptive-score-alist
 	    (cond ((equal adapt '(t))
+		   (setq gnus-newsgroup-adaptive t)
 		   gnus-default-adaptive-score-alist)
 		  ((equal adapt '(ignore))
-		   nil)
+		   (setq gnus-newsgroup-adaptive nil))
 		  ((consp adapt)
+		   (setq gnus-newsgroup-adaptive t)
 		   adapt)
 		  (t
+		   (setq gnus-newsgroup-adaptive gnus-use-adaptive-scoring)
 		   gnus-default-adaptive-score-alist)))
       (setq gnus-summary-mark-below 
 	    (or mark mark-and-expunge gnus-summary-mark-below))
@@ -713,7 +959,7 @@ See `gnus-score-expiry-days'."
 			  (read (current-buffer))
 			(error 
 			 (progn
-			   (message "Problem with score file %s" file)
+			   (gnus-message 3 "Problem with score file %s" file)
 			   (ding) 
 			   (sit-for 2)
 			   nil))))))
@@ -729,7 +975,7 @@ See `gnus-score-expiry-days'."
    ((null alist)
     nil)
    ((not (consp alist))
-    (message "Score file is not a list: %s" file)
+    (gnus-message 1 "Score file is not a list: %s" file)
     (ding)
     nil)
    (t
@@ -737,11 +983,11 @@ See `gnus-score-expiry-days'."
 	  err)
       (while (and a (not err))
 	(cond ((not (listp (car a)))
-	       (message "Illegal score element %s in %s" (car a) file)
+	       (gnus-message 3 "Illegal score element %s in %s" (car a) file)
 	       (setq err t))
 	      ((and (stringp (car (car a)))
 		    (not (listp (nth 1 (car a)))))
-	       (message "Illegal header match %s in %s" (nth 1 (car a)) file)
+	       (gnus-message 3 "Illegal header match %s in %s" (nth 1 (car a)) file)
 	       (setq err t))
 	      (t
 	       (setq a (cdr a)))))
@@ -790,12 +1036,20 @@ See `gnus-score-expiry-days'."
 		score (cdr entry))
 	  (if (or (not (equal (gnus-score-get 'touched score) '(t)))
 		  (gnus-score-get 'read-only score)
-		  (not (file-writable-p file)))
+		  (and (file-exists-p file)
+		       (not (file-writable-p file))))
 	      ()
 	    (setq score (setcdr entry (delq (assq 'touched score) score)))
 	    (erase-buffer)
 	    (let (emacs-lisp-mode-hook)
-	      (pp score (current-buffer)))
+	      (if (string-match (concat gnus-adaptive-file-suffix) file)
+		  ;; This is an adaptive score file, so we do not run
+		  ;; it through `pp'.  These files can get huge, and
+		  ;; are not meant to be edited by human hands.
+		  (insert (format "%S" score))
+		;; This is a normal score file, so we print it very
+		;; prettily. 
+		(pp score (current-buffer))))
 	    (gnus-make-directory (file-name-directory file))
 	    (write-region (point-min) (point-max) file nil 'silent))))
       (kill-buffer (current-buffer)))))
@@ -835,7 +1089,7 @@ See `gnus-score-expiry-days'."
 	     (expire (- now gnus-score-expiry-days))
 	     (headers gnus-newsgroup-headers)
 	     entry header)
-	(message "Scoring...")
+	(gnus-message 5 "Scoring...")
 	;; Create articles, an alist of the form `(HEADER . SCORE)'.
 	(while headers
 	  (setq header (car headers)
@@ -881,7 +1135,7 @@ See `gnus-score-expiry-days'."
 			  gnus-newsgroup-scored)))
 	  (setq gnus-scores-articles (cdr gnus-scores-articles)))
 
-	(message "Scoring...done")))))
+	(gnus-message 5 "Scoring...done")))))
 
 
 (defun gnus-get-new-thread-ids (articles)
@@ -984,8 +1238,9 @@ See `gnus-score-expiry-days'."
 	  ;; matches on numbers that any cleverness will take more
 	  ;; time than one would gain.
 	  (while articles
-	    (and (funcall match-func match 
-			  (or (aref (car (car articles)) gnus-score-index) 0))
+	    (and (funcall match-func 
+			  (or (aref (car (car articles)) gnus-score-index) 0)
+			  match)
 		 (progn
 		   (setq found t)
 		   (setcdr (car articles) (+ score (cdr (car articles))))))
@@ -1070,7 +1325,7 @@ See `gnus-score-expiry-days'."
 	      (setq request-func 'gnus-request-article)))
 	(while articles
 	  (setq article (header-number (car (car articles))))
-	  (message "Scoring on article %s..." article)
+	  (gnus-message 7 "Scoring on article %s..." article)
 	  (if (not (funcall request-func article gnus-newsgroup-name))
 	      ()
 	    (widen)
@@ -1137,8 +1392,14 @@ See `gnus-score-expiry-days'."
 (defun gnus-score-followup (scores header now expire)
   ;; Insert the unique article headers in the buffer.
   (let ((gnus-score-index (nth 1 (assoc header gnus-header-index)))
+	(current-score-file gnus-current-score-file)
 	;; gnus-score-index is used as a free variable.
 	alike last this art entries alist articles)
+
+    ;; Change score file to the adaptive score file.  All entries that
+    ;; this function makes will be put into this file.
+    (gnus-score-load-file (gnus-score-file-name 
+			   gnus-newsgroup-name gnus-adaptive-file-suffix))
 
     (setq gnus-scores-articles (sort gnus-scores-articles 'gnus-score-string<)
 	  articles gnus-scores-articles)
@@ -1215,7 +1476,9 @@ See `gnus-score-expiry-days'."
 		 (gnus-score-set 'touched '(t) alist)
 		 (setcdr entries (cdr rest))
 		 (setq rest entries)))
-	  (setq entries rest))))))
+	  (setq entries rest))))
+    ;; We change the score file back to the previous one.
+    (gnus-score-load-file current-score-file)))
 
 (defun gnus-score-add-followups (header score)
   (save-excursion
@@ -1225,15 +1488,15 @@ See `gnus-score-expiry-days'."
      (current-time-string) nil t)))
 
 
-(defun gnus-score-string (scores header now expire)
-  ;; Score ARTICLES according to HEADER in SCORES.
+(defun gnus-score-string (score-list header now expire)
+  ;; Score ARTICLES according to HEADER in SCORE-LIST.
   ;; Update matches entries to NOW and remove unmatched entried older
   ;; than EXPIRE.
   
   ;; Insert the unique article headers in the buffer.
   (let ((gnus-score-index (nth 1 (assoc header gnus-header-index)))
 	;; gnus-score-index is used as a free variable.
-	alike last this art entries alist articles)
+	alike last this art entries alist articles scores fuzzy)
 
     ;; Sorting the articles costs os O(N*log N) but will allow us to
     ;; only match with each unique header.  Thus the actual matching
@@ -1267,7 +1530,8 @@ See `gnus-score-expiry-days'."
 	   (insert last ?\n)			
 	   (put-text-property (1- (point)) (point) 'articles alike)))
   
-    ;; Find matches.
+    ;; Find ordinary matches.
+    (setq scores score-list) 
     (while scores
       (setq alist (car scores)
 	    scores (cdr scores)
@@ -1289,41 +1553,96 @@ See `gnus-score-expiry-days'."
 		      ((or (= dmt ?e) (= dmt ?s) (= dmt ?f)) 'search-forward)
 		      (t (error "Illegal match type: %s" type))))
 	       arts art)
-	  (goto-char (point-min))
-	  (if (= dmt ?e)
-	      (while (and (not (eobp)) 
-			  (funcall search-func match nil t))
-		(and (= (progn (beginning-of-line) (point))
-			(match-beginning 0))
-		     (= (progn (end-of-line) (point))
-			(match-end 0))
-		     (progn
-		       (setq found (setq arts (get-text-property 
-					       (point) 'articles)))
-		       ;; Found a match, update scores.
-		       (while arts
-			 (setq art (car arts)
-			       arts (cdr arts))
-			 (setcdr art (+ score (cdr art))))))
-		(forward-line 1))
-	    (and (string= match "") (setq match "\n"))
-	    (while (funcall search-func match nil t)
-	      (end-of-line)
-	      (setq found (setq arts (get-text-property (point) 'articles)))
-	      ;; Found a match, update scores.
-	      (while arts
-		(setq art (car arts)
-		      arts (cdr arts))
-		(setcdr art (+ score (cdr art))))))
-	  ;; Update expire date
-	  (cond ((null date))		;Permanent entry.
-		(found			;Match, update date.
-		 (gnus-score-set 'touched '(t) alist)
-		 (setcar (nthcdr 2 kill) now))
-		((< date expire) ;Old entry, remove.
-		 (gnus-score-set 'touched '(t) alist)
-		 (setcdr entries (cdr rest))
-		 (setq rest entries)))
+	  (if (= dmt ?f)
+	      (setq fuzzy t)
+	    (goto-char (point-min))
+	    (if (= dmt ?e)
+		(while (and (not (eobp)) 
+			    (funcall search-func match nil t))
+		  (and (= (progn (beginning-of-line) (point))
+			  (match-beginning 0))
+		       (= (progn (end-of-line) (point))
+			  (match-end 0))
+		       (progn
+			 (setq found (setq arts (get-text-property 
+						 (point) 'articles)))
+			 ;; Found a match, update scores.
+			 (while arts
+			   (setq art (car arts)
+				 arts (cdr arts))
+			   (setcdr art (+ score (cdr art))))))
+		  (forward-line 1))
+	      (and (string= match "") (setq match "\n"))
+	      (while (funcall search-func match nil t)
+		(end-of-line)
+		(setq found (setq arts (get-text-property (point) 'articles)))
+		;; Found a match, update scores.
+		(while arts
+		  (setq art (car arts)
+			arts (cdr arts))
+		  (setcdr art (+ score (cdr art))))))
+	    ;; Update expire date
+	    (cond ((null date))		;Permanent entry.
+		  (found		;Match, update date.
+		   (gnus-score-set 'touched '(t) alist)
+		   (setcar (nthcdr 2 kill) now))
+		  ((< date expire)	;Old entry, remove.
+		   (gnus-score-set 'touched '(t) alist)
+		   (setcdr entries (cdr rest))
+		   (setq rest entries))))
+	  (setq entries rest))))
+  
+    ;; Find fuzzy matches.
+    (setq scores (and fuzzy score-list))
+    (if fuzzy (gnus-simplify-buffer-fuzzy))
+    (while scores
+      (setq alist (car scores)
+	    scores (cdr scores)
+	    entries (assoc header alist))
+      (while (cdr entries)		;First entry is the header index.
+	(let* ((rest (cdr entries))		
+	       (kill (car rest))
+	       (match (nth 0 kill))
+	       (type (or (nth 3 kill) 's))
+	       (score (or (nth 1 kill) gnus-score-interactive-default-score))
+	       (date (nth 2 kill))
+	       (found nil)
+	       (mt (aref (symbol-name type) 0))
+	       (case-fold-search 
+		(not (or (= mt ?R) (= mt ?S) (= mt ?E) (= mt ?F))))
+	       (dmt (downcase mt))
+	       (search-func 
+		(cond ((= dmt ?r) 're-search-forward)
+		      ((or (= dmt ?e) (= dmt ?s) (= dmt ?f)) 'search-forward)
+		      (t (error "Illegal match type: %s" type))))
+	       arts art)
+	  (if (/= dmt ?f)
+	      ()
+	    (goto-char (point-min))
+	    (while (and (not (eobp)) 
+			(funcall search-func match nil t))
+	      (and (= (progn (beginning-of-line) (point))
+		      (match-beginning 0))
+		   (= (progn (end-of-line) (point))
+		      (match-end 0))
+		   (progn
+		     (setq found (setq arts (get-text-property 
+					     (point) 'articles)))
+		     ;; Found a match, update scores.
+		     (while arts
+		       (setq art (car arts)
+			     arts (cdr arts))
+		       (setcdr art (+ score (cdr art))))))
+	      (forward-line 1))
+	    ;; Update expire date
+	    (cond ((null date))		;Permanent entry.
+		  (found		;Match, update date.
+		   (gnus-score-set 'touched '(t) alist)
+		   (setcar (nthcdr 2 kill) now))
+		  ((< date expire)	;Old entry, remove.
+		   (gnus-score-set 'touched '(t) alist)
+		   (setcdr entries (cdr rest))
+		   (setq rest entries))))
 	  (setq entries rest))))))
 
 (defun gnus-score-string< (a1 a2)
@@ -1380,11 +1699,15 @@ See `gnus-score-expiry-days'."
 			   (downcase (symbol-name (car (car elem)))))))
 	  (setq elem (cdr elem)))
 	(setq malist (cdr malist)))
+      ;; We change the score file to the adaptive score file.
+      (gnus-score-load-file (gnus-score-file-name 
+			     gnus-newsgroup-name gnus-adaptive-file-suffix))
       ;; The we score away.
       (goto-char (point-min))
       (while (not (eobp))
 	(setq elem (cdr (assq (gnus-summary-article-mark) alist)))
-	(if (not elem)
+	(if (or (not elem)
+		(get-text-property (point) 'gnus-pseudo))
 	    ()
 	  (setq headers (gnus-get-header-by-number 
 			 (gnus-summary-article-number)))
@@ -1419,10 +1742,14 @@ See `gnus-score-expiry-days'."
 	(setq malist (cdr malist)))
       ;; The we score away.
       (goto-char (point-min))
+      ;; We change the score file to the adaptive score file.
+      (gnus-score-load-file (gnus-score-file-name 
+			     gnus-newsgroup-name gnus-adaptive-file-suffix))
       (while (re-search-forward marks nil t)
 	(beginning-of-line)
 	(setq elem (cdr (assq (gnus-summary-article-mark) alist)))
-	(if (not elem)
+	(if (or (not elem)
+		(get-text-property (gnus-point-at-bol) 'gnus-pseudo))
 	    ()
 	  (setq headers (gnus-get-header-by-number 
 			 (gnus-summary-article-number)))
@@ -1468,13 +1795,210 @@ This mode is an extended emacs-lisp mode.
 (defun gnus-score-edit-done ()
   "Save the score file and return to the summary buffer."
   (interactive)
-  (let ((bufnam (buffer-file-name (current-buffer))))
+  (let ((bufnam (buffer-file-name (current-buffer)))
+	(winconf gnus-prev-winconf))
     (save-buffer)
     (kill-buffer (current-buffer))
-    (and gnus-winconf-edit-score
-	 (set-window-configuration gnus-winconf-edit-score))
+    (and winconf (set-window-configuration winconf))
     (gnus-score-remove-from-cache bufnam)
     (gnus-score-load-file bufnam)))
+
+;;; Finding score files. 
+
+(defvar gnus-global-score-files nil
+  "*List of global score files and directories.
+Set this variable if you want to use people's score files.  One entry
+for each score file or each score file directory.  Gnus will decide
+by itself what score files are applicable to which group.
+
+Say you want to use the single score file
+\"/ftp.ifi.uio.no@ftp:/pub/larsi/ding/score/soc.motss.SCORE\" and all
+score files in the \"/ftp.some-where:/pub/score\" directory.
+
+ (setq gnus-global-score-files
+       '(\"/ftp.ifi.uio.no:/pub/larsi/ding/score/soc.motss.SCORE\"
+         \"/ftp.some-where:/pub/score\"))")
+
+(defun gnus-score-score-files (group)
+  "Return a list of all possible score files."
+  ;; Search and set any global score files.
+  (and gnus-global-score-files 
+       (or gnus-internal-global-score-files
+	   (gnus-score-search-global-directories gnus-global-score-files)))
+  ;; Fix the kill-file dir variable.
+  (setq gnus-kill-files-directory 
+	(file-name-as-directory
+	 (or gnus-kill-files-directory "~/News/")))
+  ;; If er can't read it, there's no score files.
+  (if (not (file-readable-p gnus-kill-files-directory))
+      (setq gnus-score-file-list nil)
+    (if (gnus-use-long-file-name 'not-score)
+	;; We want long file names.
+	(if (or (not gnus-score-file-list)
+		(gnus-file-newer-than gnus-kill-files-directory
+				      (car gnus-score-file-list)))
+	      (setq gnus-score-file-list 
+		    (cons (nth 5 (file-attributes gnus-kill-files-directory))
+			  (nreverse 
+			   (directory-files 
+			    gnus-kill-files-directory t 
+			    (gnus-score-file-regexp))))))
+      ;; We do not use long file names, so we have to do some
+      ;; directory traversing.  
+      (let ((dir (expand-file-name
+		  (concat gnus-kill-files-directory
+			  (gnus-replace-chars-in-string group ?. ?/))))
+	    (mdir (length (expand-file-name gnus-kill-files-directory)))
+	    (suffixes (list gnus-score-file-suffix gnus-adaptive-file-suffix))
+	    files suffix)
+	(while suffixes
+	  (setq suffix (car suffixes)
+		suffixes (cdr suffixes))
+	  (if (file-exists-p (concat dir "/" suffix))
+	      (setq files (list (concat dir "/" suffix))))
+	  (while (>= (1+ (length dir)) mdir)
+	    (and (file-exists-p (concat dir "/all/" suffix))
+		 (setq files (cons (concat dir "/all/" suffix) files)))
+	    (string-match "/[^/]*$" dir)
+	    (setq dir (substring dir 0 (match-beginning 0)))))
+	(setq gnus-score-file-list 
+	      (cons nil (nreverse files)))))
+    (cdr gnus-score-file-list)))
+
+(defun gnus-score-file-regexp ()
+  (concat "\\(" gnus-score-file-suffix 
+	  "\\|" gnus-adaptive-file-suffix "\\)$"))
+	
+(defun gnus-score-find-bnews (group)
+  "Return a list of score files for GROUP.
+The score files are those files in the ~/News directory which matches
+GROUP using BNews sys file syntax."
+  (let* ((sfiles (append (gnus-score-score-files group)
+			 gnus-internal-global-score-files))
+	 (kill-dir (file-name-as-directory 
+		    (expand-file-name gnus-kill-files-directory)))
+	 (klen (length kill-dir))
+	 ofiles not-match regexp)
+    (save-excursion
+      (set-buffer (get-buffer-create "*gnus score files*"))
+      (buffer-disable-undo (current-buffer))
+      ;; Go through all score file names and create regexp with them
+      ;; as the source.  
+      (while sfiles
+	(erase-buffer)
+	(insert (car sfiles))
+	(goto-char (point-min))
+	;; First remove the suffix itself.
+	(re-search-forward (concat "." (gnus-score-file-regexp)))
+	(replace-match "" t t) 
+	(goto-char (point-min))
+	(if (looking-at (regexp-quote kill-dir))
+	    ;; If the file name was just "SCORE", `klen' is one character
+	    ;; too much.
+	    (delete-char (min (1- (point-max)) klen))
+	  (goto-char (point-max))
+	  (search-backward "/")
+	  (delete-region (1+ (point)) (point-min)))
+	;; Translate "all" to ".*".
+	(while (search-forward "all" nil t)
+	  (replace-match ".*" t t))
+	(goto-char (point-min))
+	;; Deal with "not."s.
+	(if (looking-at "not.")
+	    (progn
+	      (setq not-match t)
+	      (setq regexp (buffer-substring 5 (point-max))))
+	  (setq regexp (buffer-substring 1 (point-max)))
+	  (setq not-match nil))
+	;; Finally - if this resulting regexp matches the group name,
+	;; we add this score file to the list of score files
+	;; applicable to this group.
+	(if (or (and not-match
+		     (not (string-match regexp group)))
+		(and (not not-match)
+		     (string-match regexp group)))
+	    (setq ofiles (cons (car sfiles) ofiles)))
+	(setq sfiles (cdr sfiles)))
+      (kill-buffer (current-buffer))
+      ;; Slight kludge here - the last score file returned should be
+      ;; the local score file, whether it exists or not. This is so
+      ;; that any score commands the user enters will go to the right
+      ;; file, and not end up in some global score file.
+      (let ((localscore
+	     (expand-file-name
+	      (if (gnus-use-long-file-name 'not-score)
+		  (concat gnus-kill-files-directory group "." 
+			  gnus-score-file-suffix)
+		(concat gnus-kill-files-directory
+			(gnus-replace-chars-in-string group ?. ?/)
+			"/" gnus-score-file-suffix)))))
+	(and (member localscore ofiles)
+	     (delete localscore ofiles))
+	(setq ofiles (cons localscore ofiles)))
+      (nreverse ofiles))))
+
+(defun gnus-score-find-single (group)
+  "Return list containing the score file for GROUP."
+  (list (gnus-score-file-name group)))
+
+(defun gnus-score-find-hierarchical (group)
+  "Return list of score files for GROUP.
+This includes the score file for the group and all its parents."
+  (let ((all (copy-sequence '(nil)))
+	(start 0))
+    (while (string-match "\\." group (1+ start))
+      (setq start (match-beginning 0))
+      (setq all (cons (substring group 0 start) all)))
+    (setq all (cons group all))
+    (mapcar 'gnus-score-file-name (nreverse all))))
+
+(defun gnus-possibly-score-headers ()
+  (let ((func gnus-score-find-score-files-function)
+	score-files scores)
+    (and func (not (listp func))
+	 (setq func (list func)))
+    ;; Go through all the functions for finding score files (or actual
+    ;; scores) and add them to a list.
+    (while func
+      (and (symbolp (car func))
+	   (fboundp (car func))
+	   (setq score-files 
+		 (nconc score-files (funcall (car func) gnus-newsgroup-name))))
+      (setq func (cdr func)))
+    (if score-files (gnus-score-headers score-files))))
+
+(defun gnus-score-file-name (newsgroup &optional suffix)
+  "Return the name of a score file for NEWSGROUP."
+  (let ((suffix (or suffix gnus-score-file-suffix)))
+    (cond  ((or (null newsgroup)
+		(string-equal newsgroup ""))
+	    ;; The global score file is placed at top of the directory.
+	    (expand-file-name 
+	     suffix (or gnus-kill-files-directory "~/News")))
+	   ((gnus-use-long-file-name 'not-score)
+	    ;; Append ".SCORE" to newsgroup name.
+	    (expand-file-name (concat newsgroup "." suffix)
+			      (or gnus-kill-files-directory "~/News")))
+	   (t
+	    ;; Place "SCORE" under the hierarchical directory.
+	    (expand-file-name (concat (gnus-newsgroup-directory-form newsgroup)
+				      "/" suffix)
+			      (or gnus-kill-files-directory "~/News"))))))
+
+(defun gnus-score-search-global-directories (files)
+  "Scan all global score directories for score files."
+  ;; Set the variable `gnus-internal-global-score-files' to all
+  ;; available global score files.
+  (interactive (list gnus-global-score-files))
+  (let (out)
+    (while files
+      (if (string-match "/$" (car files))
+	  (setq out (nconc (directory-files 
+			    (car files) t
+			    (concat (gnus-score-file-regexp) "$"))))
+	(setq out (cons (car files) out)))
+      (setq files (cdr files)))
+    (setq gnus-internal-global-score-files out)))
 
 (provide 'gnus-score)
 

@@ -1,4 +1,187 @@
+Mon May 15 18:29:20 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
+
+	* gnus.el (gnus-summary-insert-line): Make sure Lines is a number.
+	
+	(gnus-summary-select-article): Don't scroll to the end of the
+	article buffer.
+
+Mon May 15 16:38:04 1995  Lars Magne Ingebrigtsen  <larsi@drott.ifi.uio.no>
+
+	* gnus.el (gnus-summary-sort): Hide threads after sorting, if that
+	is wanted. 
+
+Sun May 14 01:10:51 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-verbose): New variable.
+	(gnus-group-mark-group): Stop when there are no more groups to go. 
+	(gnus-group-search-forward): Message when attempting to go too far
+	back. 
+
+	* gnus.el: Use it.
+	(gnus-group-add-to-virtual): New command and keystroke.
+
+	* gnus-vm.el: Did not load vm.
+
+	* gnus.el (gnus-summary-mode-map): New keystroke for saving with
+	vm. 
+
+	* gnus-score.el (gnus-score-load-file): (adapt t) will work
+	independently of gnus-use-adaptive-scoring.
+
+	* gnus.el (gnus-summary-recenter): New implementation.
+
+Sat May 13 19:52:35 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-nov-parse-line): Would not read Xrefs.
+
+	* gnus-score.el (gnus-score-save): Don't pp adaptive score files. 
+	(gnus-score-adaptive): Put adaptive entries in a separate score
+	file. 
+	(gnus-score-followup): Put entries into the adaptive score file. 
+
+	* gnus.el (gnus-use-scoring): New variable.
+
+Sat May 13 11:16:31 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
+
+	* gnus.el (gnus-summary-refer-article): Mark fetched articles as
+	read. 
+	(gnus-summary-catchup): Mark articles as expirable when they are
+	supposed to be.
+	(gnus-group-expire-articles): Allow `total-expire'.
+	(gnus-summary-reselect-current-group): Kill the summary buffer
+	before reselecting.
+
+	* gnus-vis.el (gnus-summary-highlight-line): Would occationally
+	bug out. 
+
+	* gnus.el (gnus-summary-prepare-threads): Do right number of
+	sub-threads under adopted (etc) articles.
+	(gnus-read-descriptions-file): Don't barf on strange formats. 
+
+	* gnus-score.el (gnus-score-adaptive): Ignore pseudos.
+	(gnus-score-remove-lines-adaptive): Ditto.
+
+	* nnml.el (nnml-get-new-mail): Handle a list of spool files. 
+
+	* gnus.el (gnus-windows-old-to-new): Translate 3.13-selects to 4.1
+	symbols. 
+	(gnus-request-article-this-buffer): Always check whether the
+	connection is down.
+	(gnus-summary-save-article): Did not init hashtb.
+	(gnus-matches-options-n): Reversed comparison.
+	(gnus-configure-windows): Use the horizontal spec.
+	(gnus-group-goto-unread): New variable.
+	(gnus-group-next-unread-group): Use it.
+
+	* gnus-cache.el (gnus-cache-retrieve-headers): Don't barf if the
+	cache file doesn't exist.
+
+Thu May 11 12:03:10 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-simplify-buffer-fuzzy): New function.
+	(gnus-simplify-subject-fuzzy): Use it.
+
+	* gnus-score.el: Support fuzzy matches.
+
+Sat May 13 11:09:30 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
+
+	* gnus.el (gnus-newsrc-to-gnus-format): New implementation. 
+
+Wed May 10 08:42:21 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el (gnus-format-max-width): Don't choke on numbers.
+
+	* nnmh.el (nnmh-request-list): Don't chase links.
+
+	* gnus.el (gnus-parse-n-options): Would reverse the 'ignore and
+	strings. 
+	(gnus-summary-remove-lines-marked-as-read): Also count
+	gnus-ancient-marks as a read mark.
+
+	* nnspool.el (nnspool-inews-switches): Added the no-sig switch.
+
+	* gnus.el (gnus-summary-sort): Don't recurse for all time. 
+
+Wed May 10 07:01:42 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus-msg.el (gnus-summary-cancel-article): Remove process marks
+	after cancelling. 
+
+	* gnus.el (gnus-summary-show-all-dormant): Update lines.
+	(gnus-summary-show-all-expunged): Ditto.
+	(gnus-group-process-prefix): Did not understand C-u C-u prefixes
+	and the like. 
+	(gnus-group-catchup-current): Advance to the next unread group.
+	(gnus-summary-catchup): Mark articles at exit if adaptive scoring
+	is used. 
+	(gnus-server-edit-server): Did not configure windows properly.
+
+	* gnus.el: 0.67 is released. 
+
+Tue May  9 10:18:16 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus-vis.el (gnus-article-press-button): New function.
+
+	* gnus.el (gnus-article-mode-map): Bind it.
+
+	* gnus-cite.el (gnus-cite-hide-percentage): Upped to 50% (like
+	inews). 
+	(gnus-cite-hide-absolute): Upped to 10 lines.
+
+	* gnus-vis.el (gnus-face-dark-name-list): Some colors was not
+	available everywhere.  New colors suggested by
+	John Salmon <johns@mullet.anu.edu.au>.
+	(gnus-article-highlight-headers): Turn of `buffer-read-only'.
+	(gnus-button-message-id): Do not switch to the summary buffer
+	first. 
+
+	* gnus.el: (gnus-article-add-button): Added autoload.
+	(gnus-article-hide-citation): Replace with autoload from
+	`gnus-cite.el'.
+
+Wed May 10 06:49:33 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus-vis.el: Name changes from gnus-visual-summary-* to
+	gnus-summary-*. 
+
+Tue May  9 10:18:16 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus-score.el (gnus-summary-immediately-*): Added functions and
+	keybidnings. 
+
+Wed May 10 06:01:34 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus.el (gnus-windows-old-to-new): Applied '+ to wrong list. 
+
+Tue May  9 12:26:34 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-uu.el (gnus-uu-digest-headers): New variable.
+	(gnus-uu-save-article): Use it.
+
+	* gnus-vis.el (gnus-carpal-setup-buffer): Did not work at all. 
+
+	* gnus.el (gnus-get-unread-articles): Would un-activate already
+	activated groups from secondary servers.
+	(gnus-group-transpose-groups): New implementation.
+	(gnus-group-yank-group): Allow moving even to the end of the
+	buffer. 
+
+	* nnbabyl.el: General tune-up and serious bug-fix all over.
+
+	* gnus.el (gnus-parse-newsrc-body): Would create two dummy.groups
+	when no .newsrc.eld files existed.
+	(gnus-summary-setup-buffer): Be really sure that we want to return
+	to the old buffer.
+
+	* nnbabyl.el (nnbabyl-read-mbox): Insert "OPTIONS" in empty babyl
+	files. 
+
+	* gnus.el (gnus-group-change-level): Insert new groups at the end
+	of the group alist.
+
 Tue May  9 04:49:53 1995  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+        * gnus.el: 0.66 is released.
 
 	* gnus.el (gnus-rebuild-remove-articles): Would make all articles
 	read and go to the wrong article.
