@@ -1,3 +1,7 @@
+2002-01-25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-agent.el (gnus-agent-save-alist): Optimized.
+
 2002-01-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dgnushack.el: Commented out the experimental code.

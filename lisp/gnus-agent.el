@@ -1123,14 +1123,23 @@ the actual number of articles toggled is returned."
 
 (defun gnus-agent-save-alist (group &optional articles state dir)
   "Save the article-state alist for GROUP."
-  (let ((file-name-coding-system nnmail-pathname-coding-system)
-	print-level print-length item)
-    (dolist (art articles)
-      (if (setq item (memq art gnus-agent-article-alist))
-	  (setcdr item state)
-	(push (cons art state) gnus-agent-article-alist)))
-    (setq gnus-agent-article-alist 
-	  (sort gnus-agent-article-alist 'car-less-than-car))
+  (let* ((file-name-coding-system nnmail-pathname-coding-system)
+	 (prev (cons nil gnus-agent-article-alist))
+	 (all prev)
+	 print-level print-length item)
+    (while (setq article (pop articles))
+      (while (and (cdr prev)
+		 (< (caadr prev) article))
+	(setq prev (cdr prev)))
+      (cond
+       ((not (cdr prev))
+	(setcdr prev (list (cons article state))))
+       ((> (caadr prev) article)
+	(setcdr prev (cons (cons article state) (cdr prev))))
+       ((= (caadr prev) article)
+	(setcdr (cadr prev) state))
+       (setq prev (cdr prev))))
+    (setq gnus-agent-article-alist (cdr all))
     (with-temp-file (if dir
 			(expand-file-name ".agentview" dir)
 		      (gnus-agent-article-name ".agentview" group))
