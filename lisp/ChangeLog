@@ -4,9 +4,10 @@
 	(message-do-auto-fill): Use it.
 	(message-beginning-of-line): New function.  Goes to beginning of
 	header value (i.e., end of header name), or to beginning of line
-	if already at beginning of value.
+	if already at beginning of value.  Behaves like
+	`beginning-of-line' when in message body.
 	(message-mode-map): Bind it.
-	
+
 2001-11-08  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-msg.el (gnus-posting-styles): Add doc.
