@@ -706,13 +706,15 @@ It will prompt for a password."
 	  (delete-char -1))
 	(goto-char (point-min))
 	(delete-matching-lines "^\\.$\\|^[1-5][0-9][0-9] ")
-	(copy-to-buffer nntp-server-buffer (point-min) (point-max))))))
+	;;(copy-to-buffer nntp-server-buffer (point-min) (point-max))
+	t))))
 
   nntp-server-xover)
 
 (defun nntp-send-xover-command (beg end &optional wait-for-reply)
   "Send the XOVER command to the server."
   (let ((range (format "%d-%d" beg end))
+	(curbuf (current-buffer))
 	(nntp-inhibit-erase t))
     (if (stringp nntp-server-xover)
 	;; If `nntp-server-xover' is a string, then we just send this
