@@ -1,5 +1,5 @@
 ;;; gnus-sum.el --- summary mode commands for Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -7429,7 +7429,8 @@ to save in."
 		(gnus-run-hooks 'gnus-ps-print-hook)
 		(save-excursion
 		  (ps-spool-buffer-with-faces))))
-	  (kill-buffer buffer)))))
+	  (kill-buffer buffer))))
+    (gnus-summary-remove-process-mark article))
   (ps-despool filename))
 
 (defun gnus-summary-show-article (&optional arg)
