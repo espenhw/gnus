@@ -1,5 +1,8 @@
 2002-01-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* message.el (message-make-from): Don't quote fullname.
+	From: Bj,Ax(Brn Mork <bmork@dod.no>
+
 	* gnus-group.el (gnus-group-suspend): Don't kill message buffers.
 	From: <andre@slamdunknetworks.com>
 
