@@ -3012,14 +3012,26 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (interactive)
   (gnus-article-check-buffer)
   (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
-	 contents
+	 contents charset
 	 (b (point))
 	 buffer-read-only)
     (if (mm-handle-undisplayer handle)
 	(mm-remove-part handle)
       (setq contents (mm-get-part handle))
+      (cond
+       ((not current-prefix-arg)
+	(setq charset (or (mail-content-type-get
+			   (mm-handle-type handle) 'charset)
+			  gnus-newsgroup-charset)))
+       ((numberp current-prefix-arg)
+	(setq charset
+	      (or (cdr (assq current-prefix-arg 
+			     gnus-summary-show-article-charset-alist))
+		  (read-coding-system "Charset: ")))))
       (forward-line 2)
-      (mm-insert-inline handle contents)
+      (mm-insert-inline handle (if charset 
+				   (mm-decode-coding-string contents charset)
+				 contents))
       (goto-char b))))
 
 (defun gnus-mime-externalize-part (&optional handle)

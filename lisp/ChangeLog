@@ -1,3 +1,7 @@
+2000-10-03 20:37:42  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-inline-part): Support prefix argument.
+
 2000-10-03  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* lpath.el: "." is in the load-path because dgnushack.el.
