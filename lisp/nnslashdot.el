@@ -109,9 +109,9 @@
 				(nnslashdot-sid-strip sid)) t)
 	  (goto-char (point-min))
 	  (re-search-forward "Posted by[ \t\r\n]+")
-	  (when (looking-at "<a[^>]+>[ \t\r\n]*\\([^<\r\n]+\\)")
-	    (setq from (nnweb-decode-entities-string (match-string 1))))
-	  (search-forward " on ")
+	  (when (looking-at "\\(<a[^>]+>\\)?[ \t\r\n]*\\([^<\r\n]+\\)")
+	    (setq from (nnweb-decode-entities-string (match-string 2))))
+	  (search-forward "on ")
 	  (setq date (nnslashdot-date-to-date
 		      (buffer-substring (point) (1- (search-forward "<")))))
 	  (setq lines (/ (- (point)
@@ -252,7 +252,7 @@
 	      (if (= article 1)
 		  (progn
 		    (re-search-forward 
-		     "Posted by[ \t\r\n]+\\(<[^>]+>[ \t\r\n]*[^>]*[ \t\r\n]*<[^>]+> *[ \t\r\n]*\\)?on ")
+		     "Posted by")
 		    (search-forward "<BR>")
 		    (setq contents
 			  (buffer-substring
