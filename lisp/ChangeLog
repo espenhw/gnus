@@ -1,3 +1,8 @@
+2003-04-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-next-page-1): New function.
+	(gnus-article-next-page): Use it.
+
 2003-04-15  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-split): added save-restriction to save-excursion
