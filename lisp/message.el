@@ -2674,8 +2674,8 @@ to find out how to use this."
 	(message-generate-headers message-required-news-headers)
 	;; Let the user do all of the above.
 	(run-hooks 'message-header-hook))
-      (if group-name-charset
-	  (setq message-syntax-checks
+      (when group-name-charset
+	(setq message-syntax-checks
 	      (cons '(valid-newsgroups . disabled)
 		    message-syntax-checks)))
       (message-cleanup-headers)
@@ -2858,87 +2858,100 @@ to find out how to use this."
 	    (hashtb (and (boundp 'gnus-active-hashtb)
 			 gnus-active-hashtb))
 	    errors)
-       (if (or (not hashtb)
-	       (not (boundp 'gnus-read-active-file))
-	       (not gnus-read-active-file)
-	       (eq gnus-read-active-file 'some))
-	   t
-	 (while groups
-	   (when (and (not (boundp (intern (car groups) hashtb)))
-		      (not (equal (car groups) "poster")))
-	     (push (car groups) errors))
-	   (pop groups))
-	 (if (not errors)
+       (while groups
+	 (when (and (not (boundp (intern (car groups) hashtb)))
+		    (not (equal (car groups) "poster")))
+	   (push (car groups) errors))
+	 (pop groups))
+       (cond
+	;; Gnus is not running.
+	((or (not hashtb)
+	     (not (boundp 'gnus-read-active-file)))
+	 t)
+	;; We don't have all the group names.
+	((and (or (not gnus-read-active-file)
+		  (eq gnus-read-active-file 'some))
+	      errors)
+	 (y-or-n-p
+	  (format
+	   "Really post to %s possibly unknown group%s: %s? "
+	   (if (= (length errors) 1) "this" "these")
+	   (if (= (length errors) 1) "" "s")
+	   (mapconcat 'identity errors ", "))))
+	;; There were no errors.
+	((not errors)
+	 t)
+	;; There are unknown groups.
+	(t
+	 (y-or-n-p
+	  (format
+	   "Really post to %s unknown group%s: %s? "
+	   (if (= (length errors) 1) "this" "these")
+	   (if (= (length errors) 1) "" "s")
+	   (mapconcat 'identity errors ", ")))))))
+     ;; Check the Newsgroups & Followup-To headers for syntax errors.
+     (message-check 'valid-newsgroups
+       (let ((case-fold-search t)
+	     (headers '("Newsgroups" "Followup-To"))
+	     header error)
+	 (while (and headers (not error))
+	   (when (setq header (mail-fetch-field (car headers)))
+	     (if (or
+		  (not
+		   (string-match
+		    "\\`\\([-+_&.a-zA-Z0-9]+\\)?\\(,[-+_&.a-zA-Z0-9]+\\)*\\'"
+		    header))
+		  (memq
+		   nil (mapcar
+			(lambda (g)
+			  (not (string-match "\\.\\'\\|\\.\\." g)))
+			(message-tokenize-header header ","))))
+		 (setq error t)))
+	   (unless error
+	     (pop headers)))
+	 (if (not error)
 	     t
 	   (y-or-n-p
-	    (format
-	     "Really post to %s unknown group%s: %s? "
-	     (if (= (length errors) 1) "this" "these")
-	     (if (= (length errors) 1) "" "s")
-	     (mapconcat 'identity errors ", ")))))))
-   ;; Check the Newsgroups & Followup-To headers for syntax errors.
-   (message-check 'valid-newsgroups
-     (let ((case-fold-search t)
-	   (headers '("Newsgroups" "Followup-To"))
-	   header error)
-       (while (and headers (not error))
-	 (when (setq header (mail-fetch-field (car headers)))
-	   (if (or
-		(not
-		 (string-match
-		  "\\`\\([-+_&.a-zA-Z0-9]+\\)?\\(,[-+_&.a-zA-Z0-9]+\\)*\\'"
-		  header))
-		(memq
-		 nil (mapcar
-		      (lambda (g)
-			(not (string-match "\\.\\'\\|\\.\\." g)))
-		      (message-tokenize-header header ","))))
-	       (setq error t)))
-	 (unless error
-	   (pop headers)))
-       (if (not error)
-	   t
-	 (y-or-n-p
-	  (format "The %s header looks odd: \"%s\".  Really post? "
-		  (car headers) header)))))
-   (message-check 'repeated-newsgroups
-     (let ((case-fold-search t)
-	   (headers '("Newsgroups" "Followup-To"))
-	   header error groups group)
-       (while (and headers
-		   (not error))
-	 (when (setq header (mail-fetch-field (pop headers)))
-	   (setq groups (message-tokenize-header header ","))
-	   (while (setq group (pop groups))
-	     (when (member group groups)
-	       (setq error group
-		     groups nil)))))
-       (if (not error)
-	   t
-	 (y-or-n-p
-	  (format "Group %s is repeated in headers.  Really post? " error)))))
-   ;; Check the From header.
-   (message-check 'from
-     (let* ((case-fold-search t)
-	    (from (message-fetch-field "from"))
-	    ad)
-       (cond
-	((not from)
-	 (message "There is no From line.  Posting is denied.")
-	 nil)
-	((or (not (string-match
-		   "@[^\\.]*\\."
-		   (setq ad (nth 1 (mail-extract-address-components
-				    from))))) ;larsi@ifi
-	     (string-match "\\.\\." ad) ;larsi@ifi..uio
-	     (string-match "@\\." ad)	;larsi@.ifi.uio
-	     (string-match "\\.$" ad)	;larsi@ifi.uio.
-	     (not (string-match "^[^@]+@[^@]+$" ad)) ;larsi.ifi.uio
-	     (string-match "(.*).*(.*)" from)) ;(lars) (lars)
-	 (message
-	  "Denied posting -- the From looks strange: \"%s\"." from)
-	 nil)
-	(t t))))))
+	    (format "The %s header looks odd: \"%s\".  Really post? "
+		    (car headers) header)))))
+     (message-check 'repeated-newsgroups
+       (let ((case-fold-search t)
+	     (headers '("Newsgroups" "Followup-To"))
+	     header error groups group)
+	 (while (and headers
+		     (not error))
+	   (when (setq header (mail-fetch-field (pop headers)))
+	     (setq groups (message-tokenize-header header ","))
+	     (while (setq group (pop groups))
+	       (when (member group groups)
+		 (setq error group
+		       groups nil)))))
+	 (if (not error)
+	     t
+	   (y-or-n-p
+	    (format "Group %s is repeated in headers.  Really post? " error)))))
+     ;; Check the From header.
+     (message-check 'from
+       (let* ((case-fold-search t)
+	      (from (message-fetch-field "from"))
+	      ad)
+	 (cond
+	  ((not from)
+	   (message "There is no From line.  Posting is denied.")
+	   nil)
+	  ((or (not (string-match
+		     "@[^\\.]*\\."
+		     (setq ad (nth 1 (mail-extract-address-components
+				      from))))) ;larsi@ifi
+	       (string-match "\\.\\." ad) ;larsi@ifi..uio
+	       (string-match "@\\." ad)	;larsi@.ifi.uio
+	       (string-match "\\.$" ad)	;larsi@ifi.uio.
+	       (not (string-match "^[^@]+@[^@]+$" ad)) ;larsi.ifi.uio
+	       (string-match "(.*).*(.*)" from)) ;(lars) (lars)
+	   (message
+	    "Denied posting -- the From looks strange: \"%s\"." from)
+	   nil)
+	  (t t))))))
 
 (defun message-check-news-body-syntax ()
   (and
