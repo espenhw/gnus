@@ -10199,7 +10199,7 @@ on this field, and a command to be executed if the match is made
 string, the match is done on the entire article.  If given a prefix,
 search backward instead.
 
-For instance, @kbd{& RET some.*string #} will put the process mark on
+For instance, @kbd{& RET some.*string RET #} will put the process mark on
 all articles that have heads or bodies that match @samp{some.*string}.
 
 @item M-&

@@ -1,3 +1,7 @@
+2003-08-16  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Searching for Articles): Fix example.
+
 2003-08-08  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Kibozed Groups): Fix.
