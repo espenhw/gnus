@@ -1,3 +1,8 @@
+2004-06-30  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-trim): don't allow a negative
+	trim value
+
 2004-01-25  Paul Jarc  <prj@po.cwru.edu>
 
 	* nnmaildir.el (nnmaildir--condcase, nnmaildir--enoent-p):
@@ -76,7 +81,7 @@
 	* message.el (message-idna-to-ascii-rhs-1): Don't choke on
 	invalid addresses.
 
-2004-06-21  Teodor Zlatanov  <tzz@bwh.harvard.edu>
+2004-06-21  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el: section markers changed, TODO list revised
 	(spam-backends): new master list of all installed backends

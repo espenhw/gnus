@@ -269,9 +269,11 @@ way."
   (if (null gnus-registry-max-entries)
       alist				; just return the alist
     ;; else, when given max-entries, trim the alist
-    (let ((timehash (make-hash-table 			    
+    (let* ((timehash (make-hash-table
 		     :size 4096
-		     :test 'equal)))
+		     :test 'equal))
+	  (trim-length (- (length alist) gnus-registry-max-entries))
+	  (trim-length (if (natnump trim-length) trim-length 0)))
       (maphash
        (lambda (key value)
 	 (puthash key (gnus-registry-fetch-extra key 'mtime) timehash))
@@ -280,7 +282,7 @@ way."
       ;; we use the return value of this setq, which is the trimmed alist
       (setq alist
 	    (nthcdr
-	     (- (length alist) gnus-registry-max-entries)
+	     trim-length
 	     (sort alist 
 		   (lambda (a b)
 		     (time-less-p 
@@ -387,7 +389,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		   sender)
 	  (maphash
 	   (lambda (key value)
-	     (let ((this-sender (cdr 
+	     (let ((this-sender (cdr
 				 (gnus-registry-fetch-extra key 'sender))))
 	       (when (and single-match
 			  this-sender
