@@ -51,6 +51,19 @@ These parameters are generated in Content-Disposition header if exists."
   :type '(repeat (symbol :tag "Parameter"))
   :group 'message)
 
+(defvar mml-tweak-type-alist nil
+  "A list of (TYPE . FUNCTION) for tweaking MML parts.
+TYPE is a string containing a regexp to match the MIME type.  FUNCTION
+is a Lisp function which is called with the MML handle to tweak the
+part.  This variable is used only when no TWEAK parameter exists in
+the MML handle.")
+
+(defvar mml-tweak-function-alist nil
+  "A list of (NAME . FUNCTION) for tweaking MML parts.
+NAME is a string containing the name of the TWEAK parameter in the MML
+handle.  FUNCTION is a Lisp function which is called with the MML
+handle to tweak the part.")
+
 (defvar mml-generate-multipart-alist nil
   "*Alist of multipart generation functions.
 Each entry has the form (NAME . FUNCTION), where
@@ -312,6 +325,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	 (or mm-use-ultra-safe-encoding (assq 'sign cont))))
     (save-restriction
       (narrow-to-region (point) (point))
+      (mml-tweak-part cont)
       (cond
        ((or (eq (car cont) 'part) (eq (car cont) 'mml))
 	(let ((raw (cdr (assq 'raw cont)))
@@ -916,6 +930,27 @@ If RAW, don't highlight the article."
   "Validate the current MML document."
   (interactive)
   (mml-parse))
+
+(defun mml-tweak-part (cont)
+  "Tweak a MML part."
+  (let ((tweak (cdr (assq 'tweak cont)))
+	func)
+    (cond
+     (tweak
+      (setq func
+	    (or (cdr (assoc tweak mml-tweak-function-alist))
+		(intern tweak))))
+     (mml-tweak-type-alist
+      (let ((alist mml-tweak-type-alist)
+	    (type (or (cdr (assq 'type cont)) "text/plain")))
+	(while alist
+	  (if (string-match (caar alist) type)
+	      (setq func (cdar alist)
+		    alist nil)
+	    (setq alist (cdr alist)))))))
+    (if func
+	(funcall func cont)
+      cont)))
 
 (provide 'mml)
 
