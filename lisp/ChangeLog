@@ -1,3 +1,15 @@
+1999-12-23  Florian Weimer  <fw@s.netic.de>
+
+	* smiley.el: Declare file coding system as iso-8859-1.
+
+	* nnultimate.el: Dito.
+
+	* message.el: Dito.
+
+	* gnus-cite.el: Dito.
+
+	* gnus-spec.el: Dito.
+
 1999-12-21  Florian Weimer  <fw@s.netic.de>
 
 	* gnus-msg.el (gnus-group-posting-charset-alist): New layout.
