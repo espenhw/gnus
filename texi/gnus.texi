@@ -2951,6 +2951,18 @@ that group.  @code{gnus-show-threads} will be made into a local variable
 in the summary buffer you enter, and the form @code{nil} will be
 @code{eval}ed there.
 
+Note that this feature sets the variable locally to the summary buffer.
+But some variables are evaluated in the article buffer, or in the
+message buffer (of a reply or followup or otherwise newly created
+message).  As a workaround, it might help to add the variable in
+question to @code{gnus-newsgroup-variables}.  @xref{Various Summary
+Stuff}.  So if you want to set @code{message-from-style} via the group
+parameters, then you may need the following statement elsewhere in your
+@file{~/.gnus} file:
+@lisp
+(add-to-list 'gnus-newsgroup-variables 'message-from-style)
+@end lisp
+
 @vindex gnus-list-identifiers
 A use for this feature, is to remove a mailing list identifier tag in
 the subject fields of articles.   E.g. if the news group
@@ -2959,7 +2971,6 @@ the subject fields of articles.   E.g. if the news group
 removed from the article subjects in the summary buffer for the group by
 putting @code{(gnus-list-identifiers "DOCBOOK-APPS:")} into the group
 parameters for the group.
-
 
 This can also be used as a group-specific hook function, if you'd like.
 If you want to hear a beep when you enter a group, you could put
