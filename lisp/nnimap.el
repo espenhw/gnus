@@ -866,6 +866,10 @@ function is generally only called when Gnus is shutting down."
 	(or (member "\\NoSelect"
 		    (imap-mailbox-get 'list-flags group nnimap-server-buffer))
 	    (let ((info (nnimap-find-minmax-uid group 'examine)))
+	      (when (> (or (imap-mailbox-get 'recent group 
+					     nnimap-server-buffer) 0)
+		       0)
+		(push (list (cons group 0)) nnmail-split-history))
 	      (insert (format "\"%s\" %d %d y\n" group
 			      (or (nth 2 info) 0)
 			      (max 1 (or (nth 1 info) 1))))))))
@@ -902,9 +906,10 @@ function is generally only called when Gnus is shutting down."
 	    (gnus-info-set-read info seen)))
 
 	(mapcar (lambda (pred)
-		  (when (and (nnimap-mark-permanent-p (cdr pred))
-			     (member (nnimap-mark-to-flag (cdr pred))
-				     (imap-mailbox-get 'flags)))
+		  (when (or (eq (cdr pred) 'recent)
+			    (and (nnimap-mark-permanent-p (cdr pred))
+				 (member (nnimap-mark-to-flag (cdr pred))
+					 (imap-mailbox-get 'flags))))
 		    (gnus-info-set-marks
 		     info
 		     (nnimap-update-alist-soft
@@ -950,6 +955,8 @@ function is generally only called when Gnus is shutting down."
 		marks)
 	    ;; cache flags are pointless on the server
 	    (setq cmdmarks (delq 'cache cmdmarks))
+	    ;; recent marks can't be set
+	    (setq cmdmarks (delq 'recent cmdmarks))
 	    (when nnimap-importantize-dormant
 	      ;; flag dormant articles as ticked
 	      (if (memq 'dormant cmdmarks)
@@ -1293,6 +1300,7 @@ function is generally only called when Gnus is shutting down."
 		'((read . "SEEN")
 		  (tick . "FLAGGED")
 		  (draft . "DRAFT")
+		  (recent . "RECENT")
 		  (reply . "ANSWERED")))
 	 (cons (cdr pair)
 	       (format "KEYWORD gnus-%s" (symbol-name (cdr pair))))))
@@ -1311,6 +1319,7 @@ to be used within a IMAP SEARCH query."
 		'((read . "\\Seen")
 		  (tick . "\\Flagged")
 		  (draft . "\\Draft")
+		  (recent . "\\Recent")
 		  (reply . "\\Answered")))
 	 (cons (cdr pair)
 	       (format "gnus-%s" (symbol-name (cdr pair))))))

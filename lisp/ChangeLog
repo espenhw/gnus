@@ -1,4 +1,26 @@
 2001-08-12  Simon Josefsson  <jas@extundo.com>
+	Suggested by Kai.Grossjohann@CS.Uni-Dortmund.DE
+
+	Support `recent' mark indicating newly arrived messages (to
+	separate from old but unread messages).
+	
+	* nnimap.el (nnimap-retrieve-groups): Push dummy article into
+	`nnmail-split-history' if recent is > 0.
+	(nnimap-request-update-info-internal): Update `recent' marks.
+	(nnimap-request-set-mark): Never set `recent' marks.
+	(nnimap-mark-to-predicate-alist, nnimap-mark-to-flag-alist): Add
+	recent.
+
+	* gnus-sum.el (gnus-recent-mark): New mark.
+	(gnus-newsgroup-recent): New variable.
+	(gnus-summary-local-variables): Add gnus-newsgroup-recent.
+	(gnus-summary-prepare-threads): Mark recent articles.
+	(gnus-summary-add-mark): Support recent.
+	(gnus-summary-update-secondary-mark): Support recent.
+
+	* gnus.el (gnus-article-mark-lists): Add recent.
+
+2001-08-12  Simon Josefsson  <jas@extundo.com>
 
 	* mm-bodies.el (mm-decode-content-transfer-encoding): Returns
 	whether successful decoding took place.  Add doc.
