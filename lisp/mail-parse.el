@@ -51,6 +51,7 @@
 (defalias 'mail-header-parse-addresses 'drums-parse-addresses)
 (defalias 'mail-header-parse-date 'drums-parse-date)
 (defalias 'mail-narrow-to-head 'drums-narrow-to-header)
+(defalias 'mail-quote-string 'drums-quote-string)
 
 (defalias 'mail-header-narrow-to-field 'rfc2047-narrow-to-field)
 (defalias 'mail-encode-encoded-word-region 'rfc2047-encode-region)

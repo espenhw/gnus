@@ -265,7 +265,6 @@
      (nnmbox-request-article article group server)
      (save-excursion
        (set-buffer buf)
-       (buffer-disable-undo (current-buffer))
        (erase-buffer)
        (insert-buffer-substring nntp-server-buffer)
        (goto-char (point-min))

@@ -63,6 +63,7 @@
 
 (defvar mm-dissection-list nil)
 (defvar mm-last-shell-command "")
+(defvar mm-content-id-alist nil)
 
 ;;; Convenience macros.
 
@@ -86,7 +87,7 @@
 (defun mm-dissect-buffer (&optional no-strict-mime)
   "Dissect the current buffer and return a list of MIME handles."
   (save-excursion
-    (let (ct ctl type subtype cte cd description)
+    (let (ct ctl type subtype cte cd description id result)
       (save-restriction
 	(mail-narrow-to-head)
 	(when (and (or no-strict-mime
@@ -95,22 +96,28 @@
 	  (setq ctl (mail-header-parse-content-type ct)
 		cte (mail-fetch-field "content-transfer-encoding")
 		cd (mail-fetch-field "content-disposition")
-		description (mail-fetch-field "content-description"))))
+		description (mail-fetch-field "content-description")
+		id (mail-fetch-field "content-id"))))
       (when ctl
 	(setq type (split-string (car ctl) "/"))
 	(setq subtype (cadr type)
 	      type (pop type))
-	(cond
-	 ((equal type "multipart")
-	  (mm-dissect-multipart ctl))
-	 (t
-	  (mm-dissect-singlepart
-	   ctl
-	   (and cte (intern (downcase (mail-header-remove-whitespace
-				       (mail-header-remove-comments
-					cte)))))
-	   no-strict-mime
-	   (and cd (mail-header-parse-content-disposition cd)))))))))
+	(setq
+	 result
+	 (cond
+	  ((equal type "multipart")
+	   (mm-dissect-multipart ctl))
+	  (t
+	   (mm-dissect-singlepart
+	    ctl
+	    (and cte (intern (downcase (mail-header-remove-whitespace
+					(mail-header-remove-comments
+					 cte)))))
+	    no-strict-mime
+	    (and cd (mail-header-parse-content-disposition cd))))))
+	(when id
+	  (push (cons id result) mm-content-id-alist))
+	result))))
 
 (defun mm-dissect-singlepart (ctl cte &optional force cdl description)
   (when (or force
@@ -346,6 +353,10 @@ This overrides entries in the mailcap file."
 		prec nil))
 	(pop h)))
     result))
+
+(defun mm-get-content-id (id)
+  "Return the handle(s) referred to by ID."
+  (cdr (assoc id mm-content-id-alist)))
 
 (provide 'mm-decode)
 

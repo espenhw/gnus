@@ -777,8 +777,6 @@ find-file-hooks, etc.
   `(let ((new (generate-new-buffer " *nnheader replace*"))
 	 (cur (current-buffer))
 	 (start (point-min)))
-     (set-buffer new)
-     (buffer-disable-undo (current-buffer))
      (set-buffer cur)
      (goto-char (point-min))
      (while (,(if regexp 're-search-forward 'search-forward)

@@ -986,7 +986,6 @@ FUNC will be called with the buffer narrowed to each mail."
     (save-excursion
       ;; Insert the incoming file.
       (set-buffer (get-buffer-create " *nnmail incoming*"))
-      (buffer-disable-undo (current-buffer))
       (erase-buffer)
       (nnheader-insert-file-contents incoming)
       (unless (zerop (buffer-size))
@@ -1441,7 +1440,6 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (set-buffer
        (setq nnmail-cache-buffer
 	     (get-buffer-create " *nnmail message-id cache*")))
-      (buffer-disable-undo (current-buffer))
       (when (file-exists-p nnmail-message-id-cache-file)
 	(nnheader-insert-file-contents nnmail-message-id-cache-file))
       (set-buffer-modified-p nil)

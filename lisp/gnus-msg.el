@@ -362,7 +362,6 @@ header line with the old Message-ID."
   ;; if ARTICLE-BUFFER is nil, gnus-article-buffer is used
   ;; this buffer should be passed to all mail/news reply/post routines.
   (setq gnus-article-copy (gnus-get-buffer-create " *gnus article copy*"))
-  (buffer-disable-undo gnus-article-copy)
   (save-excursion
     (set-buffer gnus-article-copy)
     (mm-enable-multibyte))
@@ -399,7 +398,7 @@ header line with the old Message-ID."
 			 (or (search-forward "\n\n" nil t) (point)))
 	  ;; Insert the original article headers.
 	  (insert-buffer-substring gnus-original-article-buffer beg end)
-	  (gnus-article-decode-encoded-words)))
+	  (article-decode-encoded-words)))
       gnus-article-copy)))
 
 (defun gnus-post-news (post &optional group header article-buffer yank subject
@@ -832,7 +831,6 @@ The source file has to be in the Emacs load path."
     ;; Go through all the files looking for non-default values for variables.
     (save-excursion
       (set-buffer (gnus-get-buffer-create " *gnus bug info*"))
-      (buffer-disable-undo (current-buffer))
       (while files
 	(erase-buffer)
 	(when (and (setq file (locate-library (pop files)))

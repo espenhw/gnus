@@ -40,6 +40,7 @@
   (require 'mailabbrev))
 (require 'mail-parse)
 (require 'mm-bodies)
+(require 'mm-encode)
 
 (defgroup message '((user-mail-address custom-variable)
 		    (user-full-name custom-variable))
@@ -2556,7 +2557,6 @@ to find out how to use this."
 	list file)
     (save-excursion
       (set-buffer (get-buffer-create " *message temp*"))
-      (buffer-disable-undo (current-buffer))
       (erase-buffer)
       (insert-buffer-substring buf)
       (save-restriction
@@ -3548,7 +3548,6 @@ responses here are directed to other newsgroups."))
 	  (error "This article is not yours"))
 	;; Make control message.
 	(setq buf (set-buffer (get-buffer-create " *message cancel*")))
-	(buffer-disable-undo (current-buffer))
 	(erase-buffer)
 	(insert "Newsgroups: " newsgroups "\n"
 		"From: " (message-make-from) "\n"
@@ -3739,7 +3738,6 @@ Optional NEWS will use news to forward instead of mail."
 	  beg)
       ;; We first set up a normal mail buffer.
       (set-buffer (get-buffer-create " *message resend*"))
-      (buffer-disable-undo (current-buffer))
       (erase-buffer)
       (message-setup `((To . ,address)))
       ;; Insert our usual headers.

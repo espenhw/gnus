@@ -752,7 +752,6 @@ backend for the messages.")
 				 (string-to-int (match-string 1 f2)))))))
 	active group lines ident elem min)
     (set-buffer (get-buffer-create " *nnsoup work*"))
-    (buffer-disable-undo (current-buffer))
     (while files
       (nnheader-message 5 "Doing %s..." (car files))
       (erase-buffer)

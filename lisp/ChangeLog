@@ -1,3 +1,59 @@
+Sun Sep 13 09:37:37 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.30 is released.
+
+1998-09-13 08:00:41  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-decode-encoded-words): Use it.
+	(gnus-decode-header-function): New variable.
+
+	* gnus-sum.el (gnus-nov-parse-line): Use it.
+	(gnus-decode-encoded-word-function): New variable.
+
+	* gnus-msg.el (gnus-copy-article-buffer): Decode the right
+	buffer. 
+
+	* gnus-art.el (gnus-insert-mime-button): Use widget.
+	(gnus-widget-press-button): New function.
+	(gnus-article-prev-button): Removed.
+	(gnus-article-next-button): Ditto.
+	(gnus-article-add-button): Ditto.
+
+	* gnus.el (gnus-article-mode-map): Inherit from widget.
+	(gnus-article-mode-map): No, don't.
+
+	* mm-decode.el (mm-dissect-buffer): Store Content-ID things.
+	(mm-content-id-alist): New variable.
+	(mm-get-content-id): New function.
+
+	* gnus-art.el (gnus-request-article-this-buffer): Only decode
+	articles if we are fetching to the article buffer.
+
+1998-09-13 07:58:59  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-move-article): Don't decode accepting
+	articles. 
+
+1998-09-13 07:23:28  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-util.el (mm-mime-charset): Try to use safe-charsets.
+	(mm-default-mime-charset): New variable.
+
+	* rfc2047.el (rfc2047-dissect-region): Dissect using tspecials. 
+
+	* drums.el (drums-quote-string): Reversed test.
+
+1998-09-12 14:29:21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-util.el (mm-insert-rfc822-headers): Possibly not quote
+	string. 
+
+	* drums.el (drums-quote-string): New function.
+
+	* rfc2047.el (rfc2047-encode-message-header): Goto point-min.
+	(rfc2047-b-encode-region): Chop lines.
+	(rfc2047-q-encode-region): Ditto.
+
 Sat Sep 12 13:27:15 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.29 is released.

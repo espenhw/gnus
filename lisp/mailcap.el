@@ -294,6 +294,7 @@ not.")
 (defun mailcap-parse-mailcaps (&optional path force)
   "Parse out all the mailcaps specified in a unix-style path string PATH.
 If FORCE, re-parse even if already parsed."
+  (interactive)
   (when (or (not mailcap-parsed-p)
 	    force)
     (cond

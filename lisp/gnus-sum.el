@@ -761,6 +761,9 @@ mark:    The articles mark."
 The function is called with one parameter, the article header vector,
 which it may alter in any way.")
 
+(defvar gnus-decode-encoded-word-function 'mail-decode-encoded-word-string
+  "Variable that says which function should be used to decode a string with encoded words.")
+
 ;;; Internal variables
 
 (defvar gnus-article-mime-handles nil)
@@ -3052,8 +3055,10 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 	  (setq header
 		(make-full-mail-header
 		 number			; number
-		 (mail-decode-encoded-word-string (gnus-nov-field)) ; subject
-		 (mail-decode-encoded-word-string (gnus-nov-field)) ; from
+		 (funcall gnus-decode-encoded-word-function
+			  (gnus-nov-field)) ; subject
+		 (funcall gnus-decode-encoded-word-function
+			  (gnus-nov-field)) ; from
 		 (gnus-nov-field)	; date
 		 (or (gnus-nov-field)
 		     (nnheader-generate-fake-message-id)) ; id
@@ -4396,13 +4401,15 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (progn
 	      (goto-char p)
 	      (if (search-forward "\nsubject: " nil t)
-		  (mail-decode-encoded-word-string (nnheader-header-value))
+		  (funcall gnus-decode-encoded-word-function
+			   (nnheader-header-value))
 		"(none)"))
 	    ;; From.
 	    (progn
 	      (goto-char p)
 	      (if (search-forward "\nfrom: " nil t)
-		  (mail-decode-encoded-word-string (nnheader-header-value))
+		  (funcall gnus-decode-encoded-word-function
+			   (nnheader-header-value))
 		"(nobody)"))
 	    ;; Date.
 	    (progn
@@ -6928,7 +6935,7 @@ and `request-accept' functions."
 	   (set-buffer copy-buf)
 	   (when (gnus-request-article-this-buffer article gnus-newsgroup-name)
 	     (gnus-request-accept-article
-	      to-newsgroup select-method (not articles)))))
+	      to-newsgroup select-method (not articles) t))))
 	;; Crosspost the article.
 	((eq action 'crosspost)
 	 (let ((xref (message-tokenize-header
@@ -7136,7 +7143,6 @@ latter case, they will be copied into the relevant groups."
 	(error "Can't read %s" file))
     (save-excursion
       (set-buffer (gnus-get-buffer-create " *import file*"))
-      (buffer-disable-undo (current-buffer))
       (erase-buffer)
       (insert-file-contents file)
       (goto-char (point-min))

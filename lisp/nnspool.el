@@ -419,7 +419,6 @@ there.")
 (defun nnspool-find-id (id)
   (save-excursion
     (set-buffer (get-buffer-create " *nnspool work*"))
-    (buffer-disable-undo (current-buffer))
     (erase-buffer)
     (ignore-errors
       (call-process "grep" nil t nil (regexp-quote id) nnspool-history-file))

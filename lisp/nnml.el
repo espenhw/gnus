@@ -502,7 +502,6 @@ all.  This may very well take some time.")
 (defun nnml-find-group-number (id)
   (save-excursion
     (set-buffer (get-buffer-create " *nnml id*"))
-    (buffer-disable-undo (current-buffer))
     (let ((alist nnml-group-alist)
 	  number)
       ;; We want to look through all .overview files, but we want to

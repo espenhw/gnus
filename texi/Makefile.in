@@ -31,7 +31,7 @@ most: texi2latex.elc latex latexps
 	  makeinfo -o $* $<; \
 	fi
 
-dvi: gnus.dvi message.dvi refcard.dvi
+dvi: gnus.dvi message.dvi refcard.dvi emacs-mime.dvi
 
 .texi.dvi :
 	$(PERL) -n -e 'print unless (/\@iflatex/ .. /\@end iflatex/)' $< > gnustmp.texi
@@ -115,7 +115,7 @@ distclean:
 
 install:
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(infodir)
-	@for file in gnus message; do \
+	@for file in gnus message emacs-info; do \
 	  for ifile in `echo $$file $$file-[0-9] $$file-[0-9][0-9]`; do \
 	    if test -f $$ifile; then \
 	      echo " $(INSTALL_DATA) $$ifile $(infodir)/$$ifile"; \

@@ -231,6 +231,12 @@
      (point-max)))
   (goto-char (point-min)))
 
+(defun drums-quote-string (string)
+  "Quote string if it needs quoting to be displayed in a header."
+  (if (not (string-match (concat "[^" drums-atext-token "]") string))
+      (concat "\"" string "\"")
+    string))
+
 (provide 'drums)
 
 ;;; drums.el ends here

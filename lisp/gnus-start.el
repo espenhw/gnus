@@ -2424,7 +2424,6 @@ If FORCE is non-nil, the .newsrc file is read."
       (gnus-message 7 "Reading slave newsrcs...")
       (save-excursion
 	(set-buffer (gnus-get-buffer-create " *gnus slave*"))
-	(buffer-disable-undo (current-buffer))
 	(setq slave-files
 	      (sort (mapcar (lambda (file)
 			      (list (nth 5 (file-attributes file)) file))

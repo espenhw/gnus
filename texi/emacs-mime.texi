@@ -6,7 +6,7 @@
 @synindex vr cp
 @synindex pg cp
 @c @direntry
-@c * Emacs Mime: (emacs-mime).   The MIME de/composition library.
+@c * Emacs MIME: (emacs-mime).   The MIME de/composition library.
 @c @end direntry
 @iftex
 @finalout
@@ -68,7 +68,7 @@ into another language, under the above conditions for modified versions.
 @end tex
 
 @node Top
-@top Emacs Mime
+@top Emacs MIME
 
 This manual documents the libraries used to compose and display
 @sc{mime} messages.
@@ -98,8 +98,8 @@ read at least RFC2045 and RFC2047.
 This chapter describes the basic, ground-level functions for parsing and
 handling.  Covered here is parsing @code{From} lines, removing comments
 from header lines, decoding encoded words, parsing date headers and so
-on.  High-level functionality is dealt with in the @pxref{Decoding and
-Viewing} chapter.
+on.  High-level functionality is dealt with in the next chapter
+(@pxref{Decoding and Viewing}).
 
 @menu
 * mail-parse::   The generalized @sc{mime} and mail interface.
@@ -109,6 +109,7 @@ Viewing} chapter.
 * time-date::    Functions for parsing dates and manipulating time.
 * qp::           Quoted-Printable en/decoding.
 * base64::       Base64 en/decoding.
+* mailcap::      How parts are displayed is specified by the @file{.mailcap} file
 @end menu
 
 
@@ -164,7 +165,6 @@ Here's an example:
 @example
 (mail-header-parse-content-type
  "image/gif; name=\"b980912.gif\"")
-
 => ("image/gif" (name . "b980912.gif"))
 @end example
 
@@ -181,7 +181,6 @@ Returns the value of the attribute.
 @example
 (mail-content-type-get
  '("image/gif" (name . "b980912.gif")) 'name)
-
 => "b980912.gif"
 @end example
 
@@ -192,7 +191,6 @@ Return a comment-free version of a header.
 @example
 (mail-header-remove-comments
  "Gnus/5.070027 (Pterodactyl Gnus v0.27) (Finnish Landrace)")
-
 => "Gnus/5.070027  "
 @end example
 
@@ -236,7 +234,7 @@ the one described above.
 @example
 (mail-header-parse-addresses
  "Hrvoje Niksic <hniksic@@srce.hr>, Steinar Bang <sb@@metis.no>")
- => (("hniksic@@srce.hr" . "Hrvoje Niksic")
+=> (("hniksic@@srce.hr" . "Hrvoje Niksic")
      ("sb@@metis.no" . "Steinar Bang"))
 @end example
 
@@ -593,6 +591,45 @@ decoded, @code{nil} is returned.
 @end table
 
 
+@node mailcap
+@section mailcap
+
+The @file{~/.mailcap} file is parsed by most @sc{mime}-aware message
+handlers and describes how elements are supposed to be displayed.
+Here's an example file:
+
+@example
+image/*; xv -8 %s
+audio/x-pn-realaudio; rvplayer %s
+@end example
+
+This says that all image files should be displayed with @samp{xv}, and
+that realaudio files should be played by @samp{rvplayer}.
+
+The @code{mailcap} library parses this file, and provides functions for
+matching types.
+
+@table @code
+@item mailcap-mime-data
+@vindex mailcap-mime-data
+This variable is an alist of alists containing backup viewing rules.
+
+@end table
+
+Interface functions:
+
+@table @code
+@item mailcap-parse-mailcaps
+@findex mailcap-parse-mailcaps
+Parse the @code{~/.mailcap} file.
+
+@item mailcap-mime-info
+Takes a @sc{mime} type as its argument and returns the matching viewer.
+
+@end table
+
+
+
 
 @node Decoding and Viewing
 @chapter Decoding and Viewing
@@ -602,12 +639,12 @@ higher level.
 
 The main idea is to first analyze a @sc{mime} article, and then allow
 other programs to do things based on the list of @dfn{handles} that are
-returned as a result of this analyze.
+returned as a result of this analyzation.
 
 @menu
-* Dissection::          Analyzing a @sc{mime} message.
-* Handles::             Handle manipulations.
-* Display::             Displaying handles.
+* Dissection::  Analyzing a @sc{mime} message.
+* Handles::     Handle manipulations.
+* Display::     Displaying handles.
 @end menu
 
 
@@ -659,6 +696,9 @@ Return the parsed @code{Content-Disposition} of the part.
 @findex mm-handle-disposition
 Return the description of the part.
 
+@item mm-get-content-id
+Returns the handle(s) referred to by @code{Content-ID}.
+
 @end table
 
 
@@ -703,6 +743,7 @@ Prompt for a mailcap method to use to view the part.
 @end table
  
 
+ 
 @node Index
 @chapter Index
 @printindex cp

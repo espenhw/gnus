@@ -37,6 +37,7 @@
 (require 'mail-parse)
 (require 'mm-decode)
 (require 'mm-view)
+(require 'wid-edit)
 
 (defgroup gnus-article nil
   "Article display."
@@ -542,6 +543,9 @@ displayed by the first non-nil matching CONTENT face."
   :group 'gnus-article-headers
   :type 'function)
 
+(defvar gnus-decode-header-function 'mail-decode-encoded-word-region
+  "Function used to decode headers.")
+
 ;;; Internal variables
 
 (defvar article-lapsed-timer nil)
@@ -990,7 +994,7 @@ If PROMPT (the prefix), prompt for a coding system to use."
 	(buffer-read-only nil))
     (save-restriction
       (message-narrow-to-head)
-      (mail-decode-encoded-word-region (point-min) (point-max)))))
+      (funcall gnus-decode-header-function (point-min) (point-max)))))
 
 (defun article-de-quoted-unreadable (&optional force)
   "Translate a quoted-printable-encoded article.
@@ -1866,19 +1870,18 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 
 (put 'gnus-article-mode 'mode-class 'special)
 
+(set-keymap-parent gnus-article-mode-map widget-keymap)
+
 (gnus-define-keys gnus-article-mode-map
   " " gnus-article-goto-next-page
   "\177" gnus-article-goto-prev-page
   [delete] gnus-article-goto-prev-page
+  "\r" widget-button-press
   "\C-c^" gnus-article-refer-article
   "h" gnus-article-show-summary
   "s" gnus-article-show-summary
   "\C-c\C-m" gnus-article-mail
   "?" gnus-article-describe-briefly
-  gnus-mouse-2 gnus-article-push-button
-  "\r" gnus-article-press-button
-  "\t" gnus-article-next-button
-  "\M-\t" gnus-article-prev-button
   "e" gnus-article-edit
   "<" beginning-of-buffer
   ">" end-of-buffer
@@ -2179,7 +2182,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 (defun gnus-insert-mime-button (handle)
   (let ((gnus-tmp-name (mail-content-type-get (mm-handle-type handle) 'name))
 	(gnus-tmp-type (car (mm-handle-type handle)))
-	(gnus-tmp-description (mm-handle-description handle)))
+	(gnus-tmp-description (mm-handle-description handle))
+	b e)
     (setq gnus-tmp-name
       (if gnus-tmp-name
 	  (concat " (" gnus-tmp-name ")")
@@ -2188,12 +2192,19 @@ If ALL-HEADERS is non-nil, no headers are hidden."
       (if gnus-tmp-description
 	  (concat " (" gnus-tmp-description ")")
 	""))
+    (setq b (point))
     (gnus-eval-format
      gnus-mime-button-line-format gnus-mime-button-line-format-alist
      `(local-map ,gnus-mime-button-map
 		 keymap ,gnus-mime-button-map
 		 gnus-callback mm-display-part
-		 gnus-data ,handle))))
+		 gnus-data ,handle))
+    (setq e (point))
+    (widget-convert-text 'link b e b e :action 'gnus-widget-press-button)))
+
+(defun gnus-widget-press-button (elems el)
+  (goto-char (widget-get elems :from))
+  (gnus-article-press-button))
 
 (defun gnus-display-mime ()
   "Insert MIME buttons in the buffer."
@@ -2666,10 +2677,10 @@ If given a prefix, show the hidden text instead."
 	  (let (buffer-read-only)
 	    (erase-buffer)
 	    (insert-buffer-substring gnus-article-buffer))
-	  (setq gnus-original-article (cons group article))))
+	  (setq gnus-original-article (cons group article)))
 
-      ;; Decode charsets.
-      (run-hooks 'gnus-article-decode-hook)
+	;; Decode charsets.
+	(run-hooks 'gnus-article-decode-hook))
       
       ;; Update sparse articles.
       (when (and do-update-line
@@ -2943,40 +2954,6 @@ call it with the value of the `gnus-data' text property."
     (when fun
       (funcall fun data))))
 
-(defun gnus-article-prev-button (n)
-  "Move point to N buttons backward.
-If N is negative, move forward instead."
-  (interactive "p")
-  (gnus-article-next-button (- n)))
-
-(defun gnus-article-next-button (n)
-  "Move point to N buttons forward.
-If N is negative, move backward instead."
-  (interactive "p")
-  (let ((function (if (< n 0) 'previous-single-property-change
-		    'next-single-property-change))
-	(inhibit-point-motion-hooks t)
-	(backward (< n 0))
-	(limit (if (< n 0) (point-min) (point-max))))
-    (setq n (abs n))
-    (while (and (not (= limit (point)))
-		(> n 0))
-      ;; Skip past the current button.
-      (when (get-text-property (point) 'gnus-callback)
-	(goto-char (funcall function (point) 'gnus-callback nil limit)))
-      ;; Go to the next (or previous) button.
-      (gnus-goto-char (funcall function (point) 'gnus-callback nil limit))
-      ;; Put point at the start of the button.
-      (when (and backward (not (get-text-property (point) 'gnus-callback)))
-	(goto-char (funcall function (point) 'gnus-callback nil limit)))
-      ;; Skip past intangible buttons.
-      (when (get-text-property (point) 'intangible)
-	(incf n))
-      (decf n))
-    (unless (zerop n)
-      (gnus-message 5 "No more buttons"))
-    n))
-
 (defun gnus-article-highlight (&optional force)
   "Highlight current article.
 This function calls `gnus-article-highlight-headers',
@@ -3159,7 +3136,9 @@ specified by `gnus-button-alist'."
    (nconc (and gnus-article-mouse-face
 	       (list gnus-mouse-face-prop gnus-article-mouse-face))
 	  (list 'gnus-callback fun)
-	  (and data (list 'gnus-data data)))))
+	  (and data (list 'gnus-data data))))
+  (widget-convert-text 'link from to from to
+		       :action 'gnus-widget-press-button))
 
 ;;; Internal functions:
 

@@ -24,6 +24,16 @@
 
 ;;; Code:
 
+(require 'mail-parse)
+
+(defun mm-insert-rfc822-headers (charset encoding)
+  "Insert text/plain headers with CHARSET and ENCODING."
+  (insert "MIME-Version: 1.0\n")
+  (insert "Content-Type: text/plain; charset="
+	  (mail-quote-string (downcase (symbol-name charset))) "\n")
+  (insert "Content-Transfer-Encoding: "
+	  (downcase (symbol-name encoding)) "\n"))
+
 (provide 'mm-encode)
 
 ;;; mm-encode.el ends here

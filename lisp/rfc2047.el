@@ -30,6 +30,7 @@
 	(require 'base64))))
 (require 'qp)
 (require 'mm-util)
+(require 'drums)
 
 (defvar rfc2047-default-charset 'iso-8859-1
   "Default MIME charset -- does not need encoding.")
@@ -107,6 +108,7 @@ Should be called narrowed to the head of the message."
   (interactive "*")
   (when (featurep 'mule)
     (save-excursion
+      (goto-char (point-min))
       (let ((alist rfc2047-header-encoding-alist)
 	    elem method)
 	(while (not (eobp))
@@ -146,7 +148,7 @@ Should be called narrowed to the head of the message."
     (save-restriction
       (narrow-to-region b e)
       (goto-char (point-min))
-      (while (re-search-forward "[^ \t\n]+" nil t)
+      (while (re-search-forward (concat "[^" drums-tspecials " \t\n]+") nil t)
 	(push
 	 (list (match-beginning 0) (match-end 0)
 	       (car
@@ -187,28 +189,31 @@ Should be called narrowed to the head of the message."
 		       'B))
 	 (start (concat
 		 "=?" (downcase (symbol-name mime-charset)) "?"
-		 (downcase (symbol-name encoding)) "?")))
+		 (downcase (symbol-name encoding)) "?"))
+	 (first t))
     (save-restriction
       (narrow-to-region b e)
       (mm-encode-coding-region b e mime-charset)
       (funcall (cdr (assq encoding rfc2047-encoding-function-alist))
 	       (point-min) (point-max))
       (goto-char (point-min))
-      (insert start)
-      (goto-char (point-max))
-      (insert "?=")
-      ;; Encoded words can't be more than 75 chars long, so we have to
-      ;; split the long ones up.
-      (end-of-line)
-      (while (> (current-column) 74)
-	(beginning-of-line)
-	(forward-char 73)
-	(insert "?=\n " start)
-	(end-of-line)))))
+      (while (not (eobp))
+	(unless first
+	  (insert " "))
+	(setq first nil)
+	(insert start)
+	(end-of-line)
+	(insert "?=")
+	(forward-line 1)))))
 
 (defun rfc2047-b-encode-region (b e)
   "Encode the header contained in REGION with the B encoding."
-  (base64-encode-region b e t))
+  (base64-encode-region b e t)
+  (goto-char (point-min))
+  (while (not (eobp))
+    (goto-char (min (point-max) (+ 64 (point))))
+    (unless (eobp)
+      (insert "\n"))))
 
 (defun rfc2047-q-encode-region (b e)
   "Encode the header contained in REGION with the Q encoding."
@@ -219,15 +224,22 @@ Should be called narrowed to the head of the message."
 	(while alist
 	  (when (looking-at (caar alist))
 	    (quoted-printable-encode-region b e nil (cdar alist))
-	    (subst-char-in-region (point-min) (point-max) ?  ?_))
-	  (pop alist))))))
+	    (subst-char-in-region (point-min) (point-max) ?  ?_)
+	    (setq alist nil))
+	  (pop alist))
+	(goto-char (point-min))
+	(while (not (eobp))
+	  (forward-char 64)
+	  (search-backward "=" nil (- (point) 2))
+	  (unless (eobp)
+	    (insert "\n")))))))
 
 ;;;
 ;;; Functions for decoding RFC2047 messages
 ;;;
 
 (defvar rfc2047-encoded-word-regexp
-  "=\\?\\([^][\000-\040()<>@,\;:\\\"/?.=]+\\)\\?\\(B\\|Q\\)\\?\\([!->@-~ ]+\\)\\?=")
+  "=\\?\\([^][\000-\040()<>@,\;:\\\"/?.=]+\\)\\?\\(B\\|Q\\)\\?\\([!->@-~ +]+\\)\\?=")
 
 (defun rfc2047-decode-region (start end)
   "Decode MIME-encoded words in region between START and END."

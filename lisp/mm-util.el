@@ -24,6 +24,9 @@
 
 ;;; Code:
 
+(defvar mm-default-coding-system nil
+  "The default coding system to use.")  
+
 (defvar mm-known-charsets '(iso-8859-1)
   "List of known charsets.")
 
@@ -160,17 +163,15 @@ used as the line break code type of the coding system."
   (when (fboundp 'set-buffer-multibyte)
     (set-buffer-multibyte t)))
 
-(defun mm-insert-rfc822-headers (charset encoding)
-  "Insert text/plain headers with CHARSET and ENCODING."
-  (insert "MIME-Version: 1.0\n")
-  (insert "Content-Type: text/plain; charset=\""
-	  (downcase (symbol-name charset)) "\"\n")
-  (insert "Content-Transfer-Encoding: "
-	  (downcase (symbol-name encoding)) "\n"))
-
 (defun mm-mime-charset (charset b e)
   (if (fboundp 'coding-system-get)
       (or
+       (and
+	mm-default-coding-system
+	(let ((safe (coding-system-get mm-default-coding-system
+				       'safe-charsets)))
+	  (or (eq safe t) (memq charset safe)))
+	(coding-system-get mm-default-coding-system 'mime-charset))
        (coding-system-get
 	(get-charset-property charset 'prefered-coding-system)
 	'mime-charset)

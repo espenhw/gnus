@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.29"
+(defconst gnus-version-number "0.30"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -781,7 +781,6 @@ used to 899, you would say something along these lines:
       (and (file-readable-p gnus-nntpserver-file)
 	   (save-excursion
 	     (set-buffer (gnus-get-buffer-create " *gnus nntp*"))
-	     (buffer-disable-undo (current-buffer))
 	     (insert-file-contents gnus-nntpserver-file)
 	     (let ((name (buffer-string)))
 	       (prog1

@@ -70,24 +70,23 @@
 		 ,(set-marker (make-marker) (point-min))
 		 ,(set-marker (make-marker) (point-max)))))))))
      ((equal type "html")
-      (save-window-excursion
-	(save-excursion
-	  (w3-do-setup)
-	  (mm-with-unibyte-buffer
-	    (insert-buffer-substring (mm-handle-buffer handle))
-	    (mm-decode-content-transfer-encoding (mm-handle-encoding handle))
-	    (require 'url)
-	    (save-window-excursion
-	      (w3-region (point-min) (point-max))
-	      (setq text (buffer-string))))
-	  (let ((b (point)))
-	    (insert text)
-	    (mm-handle-set-undisplayer
-	     handle
-	     `(lambda ()
-		(let (buffer-read-only)
-		  (delete-region ,(set-marker (make-marker) b)
-				 ,(set-marker (make-marker) (point))))))))))
+      (save-excursion
+	(w3-do-setup)
+	(mm-with-unibyte-buffer
+	  (insert-buffer-substring (mm-handle-buffer handle))
+	  (mm-decode-content-transfer-encoding (mm-handle-encoding handle))
+	  (require 'url)
+	  (save-window-excursion
+	    (w3-region (point-min) (point-max))
+	    (setq text (buffer-string))))
+	(let ((b (point)))
+	  (insert text)
+	  (mm-handle-set-undisplayer
+	   handle
+	   `(lambda ()
+	      (let (buffer-read-only)
+		(delete-region ,(set-marker (make-marker) b)
+			       ,(set-marker (make-marker) (point)))))))))
      )))
 
 (defun mm-inline-audio (handle)
