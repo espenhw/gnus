@@ -1,7 +1,7 @@
 ;;; gnus-mlspl.el --- a group params-based mail splitting mechanism
-;; Copyright (C) 1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1998-2000 Free Software Foundation, Inc.
 
-;; Author: Alexandre Oliva <oliva@dcc.unicamp.br>
+;; Author: Alexandre Oliva <oliva@lsd.ic.unicamp.br>
 ;; Keywords: news, mail
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -134,7 +134,7 @@ Calling (gnus-group-split-fancy nil nil \"mail.misc\") returns:
 		       (memq group groups))
 		  (and (stringp groups)
 		       (string-match groups group)))
-	  (let ((split-spec (cdr (assoc 'split-spec params))) group-clean)
+	  (let ((split-spec (assoc 'split-spec params)) group-clean)
 	    ;; Remove backend from group name
 	    (setq group-clean (string-match ":" group))
 	    (setq group-clean
@@ -142,12 +142,13 @@ Calling (gnus-group-split-fancy nil nil \"mail.misc\") returns:
 		      (substring group (1+ group-clean))
 		    group))
 	    (if split-spec
-		(if (eq split-spec 'catch-all)
-		    ;; Emit catch-all only when requested
-		    (when catch-all
-		      (setq catch-all group-clean))
-		  ;; Append split-spec to the main split
-		  (push split-spec split))
+		(when (setq split-spec (cdr split-spec))
+		  (if (eq split-spec 'catch-all)
+		      ;; Emit catch-all only when requested
+		      (when catch-all
+			(setq catch-all group-clean))
+		    ;; Append split-spec to the main split
+		    (push split-spec split)))
 	      ;; Let's deduce split-spec from other params
 	      (let ((to-address (cdr (assoc 'to-address params)))
 		    (to-list (cdr (assoc 'to-list params)))

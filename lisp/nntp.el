@@ -1,5 +1,5 @@
 ;;; nntp.el --- nntp access for Gnus
-;;; Copyright (C) 1987, 88, 89, 90, 92, 93, 94, 95, 96, 97, 98, 99
+;;; Copyright (C) 1987-1990,1992-2000
 ;;;   Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>

@@ -1,5 +1,5 @@
 ;;; gnus-sum.el --- summary mode commands for Gnus
-;; Copyright (C) 1996,97,98,99 Free Software Foundation, Inc.
+;; Copyright (C) 1996-2000 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -3370,17 +3370,19 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
        (memq article gnus-newsgroup-expirable)
        ;; Only insert the Subject string when it's different
        ;; from the previous Subject string.
-       (if (gnus-subject-equal
-	    (condition-case ()
-		(mail-header-subject
-		 (gnus-data-header
-		  (cadr
-		   (gnus-data-find-list
-		    article
-		    (gnus-data-list t)))))
-	      ;; Error on the side of excessive subjects.
-	      (error ""))
-	    (mail-header-subject header))
+       (if (and
+	    gnus-show-threads
+	    (gnus-subject-equal
+	     (condition-case ()
+		 (mail-header-subject
+		  (gnus-data-header
+		   (cadr
+		    (gnus-data-find-list
+		     article
+		     (gnus-data-list t)))))
+	       ;; Error on the side of excessive subjects.
+	       (error ""))
+	     (mail-header-subject header)))
 	   ""
 	 (mail-header-subject header))
        nil (cdr (assq article gnus-newsgroup-scored))

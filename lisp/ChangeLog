@@ -1,3 +1,35 @@
+2000-04-21 16:07:07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el: Update all the copyright notices.
+
+2000-04-21 15:38:06  Vladimir Volovich  <vvv@vvv.vsu.ru>
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Remove
+	non-base64 text at the end.
+
+2000-04-21 15:21:30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-bodies.el (mm-body-charset-encoding-alist): defcustomized. 
+
+2000-04-21 15:15:41  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnheader.el: Don't autoload cancel-function-timers.
+
+	* message.el (message-fetch-field): Fold case.
+
+2000-04-21 15:11:09  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* message.el (message-forward-before-signature): New variable.
+
+2000-04-21 15:10:31  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
+
+	* gnus-mlspl.el: Fix stuff.
+
+2000-04-21 14:41:09  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-update-article-line): Don't hide
+	subjects when unthreaded.
+
 2000-04-21 14:11:39  David S. Goldberg  <dsg@mitre.org>
 
 	* gnus-art.el (gnus-boring-article-headers): Work on long CCs as

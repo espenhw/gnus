@@ -1,5 +1,5 @@
 ;;; message.el --- composing mail and news messages
-;; Copyright (C) 1996,97,98,99 Free Software Foundation, Inc.
+;; Copyright (C) 1996-2000 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: mail, news
@@ -295,6 +295,11 @@ The provided functions are:
 
 (defcustom message-forward-as-mime t
   "*If non-nil, forward messages as an inline/rfc822 MIME section.  Otherwise, directly inline the old message in the forwarded message."
+  :group 'message-forwarding
+  :type 'boolean)
+
+(defcustom message-forward-before-signature t
+  "*If non-nil, put forwarded message before signature, else after."
   :group 'message-forwarding
   :type 'boolean)
 
@@ -1057,6 +1062,7 @@ The cdr of ech entry is a function for applying the face to a region.")
 (defun message-fetch-field (header &optional not-all)
   "The same as `mail-fetch-field', only remove all newlines."
   (let* ((inhibit-point-motion-hooks t)
+	 (case-fold-search t)
 	 (value (mail-fetch-field header nil (not not-all))))
     (when value
       (while (string-match "\n[\t ]+" value)
@@ -3900,7 +3906,9 @@ Optional NEWS will use news to forward instead of mail."
       (message-mail nil subject))
     ;; Put point where we want it before inserting the forwarded
     ;; message.
-    (message-goto-body)
+    (if message-forward-before-signature
+        (message-goto-body)
+      (goto-char (point-max)))
     (if message-forward-as-mime
 	(insert "\n\n<#part type=message/rfc822 disposition=inline>\n")
       (insert "\n-------------------- Start of forwarded message --------------------\n"))

@@ -1,5 +1,5 @@
 ;;; rfc1843.el --- HZ (rfc1843) decoding
-;; Copyright (c) 1998,99 Free Software Foundation, Inc.
+;; Copyright (c) 1998-2000 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Keywords: news HZ HZ+

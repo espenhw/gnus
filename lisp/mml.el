@@ -1,5 +1,5 @@
 ;;; mml.el --- A package for parsing and validating MML documents
-;; Copyright (C) 1998,99 Free Software Foundation, Inc.
+;; Copyright (C) 1998-2000 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; This file is part of GNU Emacs.
@@ -31,14 +31,12 @@
 (eval-and-compile
   (autoload 'message-make-message-id "message"))
 
-(defvar mml-generate-multipart-alist
-  nil
+(defvar mml-generate-multipart-alist nil
   "*Alist of multipart generation functions.
-
 Each entry has the form (NAME . FUNCTION), where
-NAME: is a string containing the name of the part (without the 
+NAME is a string containing the name of the part (without the 
 leading \"/multipart/\"),
-FUNCTION: is a Lisp function which is called to generate the part.
+FUNCTION is a Lisp function which is called to generate the part.
 
 The Lisp function has to supply the appropriate MIME headers and the
 contents of this part.")

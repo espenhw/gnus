@@ -1,5 +1,5 @@
 ;;; webmail.el --- interfacing with web mail
-;; Copyright (C) 1999 Free Software Foundation, Inc.
+;; Copyright (C) 1999-2000 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Keywords: hotmail netaddress my-deja netscape

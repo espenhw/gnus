@@ -1,5 +1,5 @@
 ;;; nnslashdot.el --- interfacing with Slashdot
-;; Copyright (C) 1999 Free Software Foundation, Inc.
+;; Copyright (C) 1999-2000 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news

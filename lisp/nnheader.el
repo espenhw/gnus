@@ -1,6 +1,6 @@
 ;;; nnheader.el --- header access macros for Gnus and its backends
 
-;; Copyright (C) 1987, 88, 89, 90, 93, 94, 95, 96, 97, 98, 99
+;; Copyright (C) 1987-1990,1993-2000
 ;;   Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -50,7 +50,6 @@ on your system, you could say something like:
   (autoload 'nnmail-message-id "nnmail")
   (autoload 'mail-position-on-field "sendmail")
   (autoload 'message-remove-header "message")
-  (autoload 'cancel-function-timers "timers")
   (autoload 'gnus-point-at-eol "gnus-util")
   (autoload 'gnus-delete-line "gnus-util")
   (autoload 'gnus-buffer-live-p "gnus-util"))

@@ -1,6 +1,5 @@
 ;;; gnus.el --- a newsreader for GNU Emacs
-;; Copyright (C) 1987, 88, 89, 90, 93, 94, 95, 96, 97, 98, 99
-;;   Free Software Foundation, Inc.
+;; Copyright (C) 1987-1990,1993-2000 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -1666,7 +1665,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-cache-possibly-remove-articles gnus-cache-request-article
       gnus-cache-retrieve-headers gnus-cache-possibly-alter-active
       gnus-cache-enter-remove-article gnus-cached-article-p
-      gnus-cache-open gnus-cache-close gnus-cache-update-article)
+      gnus-cache-open gnus-cache-close gnus-cache-update-article
+      gnus-cache-articles-in-group)
      ("gnus-cache" :interactive t gnus-jog-cache gnus-cache-enter-article
       gnus-cache-remove-article gnus-summary-insert-cached-articles)
      ("gnus-score" :interactive t
