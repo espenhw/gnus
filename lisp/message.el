@@ -1430,7 +1430,8 @@ no, only reply back to the author."
 		 (const :tag "Always" t)))
 
 (defcustom message-generate-hashcash nil
-  "*Whether to generate X-Hashcash: headers."
+  "*Whether to generate X-Hashcash: headers.
+You must have the \"hashcash\" binary installed, see `hashcash-path'."
   :group 'message-headers
   :link '(custom-manual "(message)Mail Headers")
   :type 'boolean)

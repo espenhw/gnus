@@ -1,3 +1,7 @@
+2004-10-04  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-generate-hashcash): Doc fix.
+
 2004-10-02  Kevin Greiner  <kgreiner@compsol.cc>
 
 	* nnagent.el (nnagent-request-type): Bind gnus-agent to nil to
