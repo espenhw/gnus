@@ -12207,6 +12207,8 @@ buffer, and you should be able to enter any of the groups displayed.
 
 @node Server Variables
 @subsection Server Variables
+@cindex server variables
+@cindex server parameters
 
 One sticky point when defining variables (both on back ends and in Emacs
 in general) is that some variables are typically initialized from other
@@ -12231,6 +12233,7 @@ manual, but here's an example @code{nnml} definition:
       (nnml-newsgroups-file "~/my-mail/newsgroups"))
 @end lisp
 
+Server variables are often called @dfn{server parameters}.
 
 @node Servers and Methods
 @subsection Servers and Methods
