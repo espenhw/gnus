@@ -1,3 +1,9 @@
+2001-10-20  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	From Paul Jarc <prj@po.cwru.edu>.
+	
+	* message.el (message-get-reply-headers): Restructure the logic
+	and add comments.
+
 2001-10-20  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-cancel-news): Support cancel-locks.
