@@ -1,5 +1,7 @@
 2001-10-05  Simon Josefsson  <jas@extundo.com>
 
+	* nnheader.el (gnus-verbose-backends, gnus-nov-is-evil): Custom.
+
 	* gnus-sum.el (gnus-summary-move-article): Also activate new groups.
 
 	* nnfolder.el (nnfolder-normalize-buffer): Don't insert \n\n in

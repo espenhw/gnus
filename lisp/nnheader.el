@@ -42,6 +42,20 @@
   (autoload 'gnus-intersection "gnus-range")
   (autoload 'gnus-sorted-complement "gnus-range"))
 
+(defcustom gnus-verbose-backends 7
+  "Integer that says how verbose the Gnus backends should be.
+The higher the number, the more messages the Gnus backends will flash
+to say what it's doing.  At zero, the Gnus backends will be totally
+mute; at five, they will display most important messages; and at ten,
+they will keep on jabbering all the time."
+  :group 'gnus-start
+  :type 'integer)
+
+(defcustom gnus-nov-is-evil nil
+  "If non-nil, Gnus backends will never output headers in the NOV format."
+  :group 'gnus-server
+  :type 'boolean)
+
 (defvar nnheader-max-head-length 4096
   "*Max length of the head of articles.
 
@@ -468,10 +482,6 @@ the line could be found."
 ;; Various cruft the backends and Gnus need to communicate.
 
 (defvar nntp-server-buffer nil)
-(defvar gnus-verbose-backends 7
-  "*A number that says how talkative the Gnus backends should be.")
-(defvar gnus-nov-is-evil nil
-  "If non-nil, Gnus backends will never output headers in the NOV format.")
 (defvar news-reply-yank-from nil)
 (defvar news-reply-yank-message-id nil)
 
