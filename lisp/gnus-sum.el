@@ -7076,10 +7076,13 @@ If BACKWARD, search backward instead."
 	 current-prefix-arg))
   (if (string-equal regexp "")
       (setq regexp (or gnus-last-search-regexp ""))
-    (setq gnus-last-search-regexp regexp))
-  (if (gnus-summary-search-article regexp backward)
-      (gnus-summary-show-thread)
-    (error "Search failed: \"%s\"" regexp)))
+    (setq gnus-last-search-regexp regexp)
+    (setq gnus-last-article gnus-current-article))
+  (let ((gnus-last-article gnus-last-article))
+    ;; Intentionally don't move the last article.
+    (if (gnus-summary-search-article regexp backward)
+	(gnus-summary-show-thread)
+      (error "Search failed: \"%s\"" regexp))))
 
 (defun gnus-summary-search-article-backward (regexp)
   "Search for an article containing REGEXP backward."
