@@ -1,6 +1,6 @@
 ;;; nneething.el --- arbitrary file access for Gnus
 
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
 ;;	Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -272,11 +272,11 @@ included.")
     (insert-buffer-substring nneething-work-buffer)
     (goto-char (point-max))))
 
-(defun nneething-make-head (file &optional buffer)
+(defun nneething-make-head (file &optional buffer extra-msg)
   "Create a head by looking at the file attributes of FILE."
   (let ((atts (file-attributes file)))
     (insert
-     "Subject: " (file-name-nondirectory file) "\n"
+     "Subject: " (file-name-nondirectory file) (or extra-msg "") "\n"
      "Message-ID: <nneething-"
      (int-to-string (incf nneething-message-id-number))
      "@" (system-name) ">\n"
@@ -344,18 +344,22 @@ included.")
       (nneething-make-head file) t)
      (t
       ;; We examine the file.
-      (nnheader-insert-head file)
-      (if (nnheader-article-p)
-	  (delete-region
-	   (progn
-	     (goto-char (point-min))
-	     (or (and (search-forward "\n\n" nil t)
+      (condition-case ()
+	  (progn
+	    (nnheader-insert-head file)
+	    (if (nnheader-article-p)
+		(delete-region
+		 (progn
+		   (goto-char (point-min))
+		   (or (and (search-forward "\n\n" nil t)
 		      (1- (point)))
-		 (point-max)))
-	   (point-max))
-	(goto-char (point-min))
-	(nneething-make-head file (current-buffer))
-	(delete-region (point) (point-max)))
+		       (point-max)))
+		 (point-max))
+	      (goto-char (point-min))
+	      (nneething-make-head file (current-buffer))
+	      (delete-region (point) (point-max))))
+	(file-error
+	 (nneething-make-head file (current-buffer) " (unreadable)")))
       t))))
 
 (defun nneething-file-name (article)
