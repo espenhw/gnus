@@ -1,3 +1,7 @@
+2004-06-28  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Setting Process Marks): Fix `M P a' entry.
+
 2004-06-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Article Highlighting): Add

@@ -6246,7 +6246,7 @@ Mark all series that have already had some articles marked
 @item M P a
 @kindex M P a (Summary)
 @findex gnus-uu-mark-all
-Mark all articles in series order (@code{gnus-uu-mark-series}).
+Mark all articles in series order (@code{gnus-uu-mark-all}).
 
 @item M P b
 @kindex M P b (Summary)
