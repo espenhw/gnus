@@ -1,3 +1,7 @@
+1999-11-11 14:32:48  Steinar Bang  <sb@metis.no>
+
+	* nnweb.el (nnweb-type-definition): /=dnc
+
 1999-11-11 10:58:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnultimate.el (nnultimate-retrieve-headers): Work with american

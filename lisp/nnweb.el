@@ -57,18 +57,18 @@
 Valid types include `dejanews', `dejanewsold', `reference',
 and `altavista'.")
 
-(defvoo nnweb-type-definition
+(defvar nnweb-type-definition
   '((dejanews
      (article . nnweb-dejanews-wash-article)
      (map . nnweb-dejanews-create-mapping)
      (search . nnweb-dejanews-search)
-     (address . "http://x8.dejanews.com/dnquery.xp")
+     (address . "http://www.deja.com/=dnc/qs.xp")
      (identifier . nnweb-dejanews-identity))
     (dejanewsold
      (article . nnweb-dejanews-wash-article)
      (map . nnweb-dejanews-create-mapping)
      (search . nnweb-dejanewsold-search)
-     (address . "http://x8.dejanews.com/dnquery.xp")
+     (address . "http://wwww.deja.com/dnquery.xp")
      (identifier . nnweb-dejanews-identity))
     (reference
      (article . nnweb-reference-wash-article)
@@ -131,11 +131,14 @@ and `altavista'.")
 	     (not (equal group nnweb-group))
 	     (not nnweb-ephemeral-p))
     (let ((info (assoc group nnweb-group-alist)))
-      (setq nnweb-group group)
-      (setq nnweb-type (nth 2 info))
-      (setq nnweb-search (nth 3 info))
-      (unless dont-check
-	(nnweb-read-overview group))))
+      (when info
+	(setq nnweb-group group)
+	(setq nnweb-type (nth 2 info))
+	(setq nnweb-search (nth 3 info))
+	(unless dont-check
+	  (nnweb-read-overview group)))))
+  (unless dont-check
+    (nnweb-request-scan group))
   (cond
    ((not nnweb-articles)
     (nnheader-report 'nnweb "No matching articles"))
@@ -432,17 +435,24 @@ and `altavista'.")
       (replace-match "" t t))))
 
 (defun nnweb-dejanews-search (search)
-  (nnweb-fetch-form
-   (nnweb-definition 'address)
-   `(("query" . ,search)
-     ("defaultOp" . "AND")
-     ("svcclass" . "dncurrent")
-     ("maxhits" . "100")
-     ("format" . "verbose2")
-     ("threaded" . "0")
-     ("showsort" . "date")
-     ("agesign" . "1")
-     ("ageweight" . "1")))
+  (nnweb-insert
+   (concat
+    (nnweb-definition 'address)
+    "?"
+    (nnweb-encode-www-form-urlencoded
+     `(("ST" . "PS")
+       ("svcclass" . "dnyr")
+       ("QRY" . ,search)
+       ("defaultOp" . "AND")
+       ("DBS" . "1")
+       ("OP" . "dnquery.xp")
+       ("LNG" . "ALL")
+       ("maxhits" . "100")
+       ("threaded" . "0")
+       ("format" . "verbose2")
+       ("showsort" . "date")
+       ("agesign" . "1")
+       ("ageweight" . "1")))))
   t)
 
 (defun nnweb-dejanewsold-search (search)

@@ -83,7 +83,7 @@
 	   headers article subject score from date lines parent point
 	   contents tinfo fetchers map elem a href garticles topic old-max
 	   inc datel table string current-page total-contents pages
-	   farticles forum-contents parse furl-fetched)
+	   farticles forum-contents parse furl-fetched mmap farticle)
       (setq map mapping)
       (while (and (setq article (car articles))
 		  map)
@@ -288,7 +288,7 @@
 	 (furl "forumdisplay.cgi?action=topics&number=%d&DaysPrune=1000")
 	 (furls (list (concat nnultimate-address (format furl sid))))
 	 contents forum-contents furl-fetched a subject href
-	 garticles topic tinfo old-max inc)
+	 garticles topic tinfo old-max inc parse)
     (with-temp-buffer
       (while furls
 	(erase-buffer)
