@@ -1,3 +1,14 @@
+2000-12-30 00:17:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-make-date-line): Get the hours right.
+	(gnus-ignored-headers): More hiding.
+
+	* nnmail.el (nnmail-expiry-wait): Not an integer.
+
+	* message.el (message-goto-body): Only expand abbrev when called
+	interactively. 
+	(message-make-lines): Use it.
+
 2000-12-29 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-inews-yank-articles): Reparse headers.

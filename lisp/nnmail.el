@@ -145,7 +145,7 @@ number of days) -- this doesn't have to be an integer.  This variable
 can also be `immediate' and `never'."
   :group 'nnmail-expire
   :type '(choice (const immediate)
-		 (integer :tag "days")
+		 (number :tag "days")
 		 (const never)))
 
 (defcustom nnmail-expiry-wait-function nil

@@ -128,7 +128,8 @@
     "^X-Notes-Item:" "^X-MS-TNEF-Correlator:" "^x-uunet-gateway:"
     "^X-Received:" "^Content-length:" "X-precedence:"
     "^X-Authenticated-User:" "^X-Comment" "^X-Report:" "^X-Abuse-Info:"
-    "^X-HTTP-Proxy:" "^X-Mydeja-Info:")
+    "^X-HTTP-Proxy:" "^X-Mydeja-Info:" "^X-Copyright" "^X-No-Markup:"
+    "^X-Abuse-Info:")
   "*All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."
@@ -2260,9 +2261,9 @@ should replace the \"Date:\" one, or should be added below it."
 	 " "
 	 (number-to-string (nth 5 dtime))
 	 " at "
-	 (number-to-string (nth 0 dtime))
+	 (format "%02d" (nth 2 dtime))
 	 ":"
-	 (number-to-string (nth 1 dtime)))))
+	 (format "%02d" (nth 1 dtime)))))
      (t
       (error "Unknown conversion type: %s" type)))))
 

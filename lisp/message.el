@@ -1667,10 +1667,12 @@ M-RET    message-newline-and-reformat (break the line and reformat)."
   (interactive)
   (message-position-on-field "Summary" "Subject"))
 
-(defun message-goto-body ()
+(defun message-goto-body (&optional interactivep)
   "Move point to the beginning of the message body."
-  (interactive)
-  (if (looking-at "[ \t]*\n") (expand-abbrev))
+  (interactive (list t))
+  (when (and interactivep
+	     (looking-at "[ \t]*\n"))
+    (expand-abbrev))
   (goto-char (point-min))
   (or (search-forward (concat "\n" mail-header-separator "\n") nil t)
       (search-forward "\n\n" nil t)))
@@ -3184,10 +3186,7 @@ If NOW, use that time instead."
   (save-excursion
     (save-restriction
       (widen)
-      (goto-char (point-min))
-      (re-search-forward
-       (concat "^" (regexp-quote mail-header-separator) "$"))
-      (forward-line 1)
+      (message-goto-body)
       (int-to-string (count-lines (point) (point-max))))))
 
 (defun message-make-in-reply-to ()
