@@ -388,9 +388,9 @@ call it with the value of the `gnus-data' text property."
   (defalias 'gnus-put-text-property 'gnus-xmas-put-text-property)
   (defalias 'gnus-deactivate-mark 'ignore)
   (defalias 'gnus-window-edges 'window-pixel-edges)
-  
+
   (if (and (<= emacs-major-version 19)
- 	   (< emacs-minor-version 14))
+	   (< emacs-minor-version 14))
       (defalias 'gnus-set-text-properties 'gnus-xmas-set-text-properties))
 
   (unless (boundp 'standard-display-table)
@@ -444,8 +444,8 @@ call it with the value of the `gnus-data' text property."
   (when (or (< emacs-major-version 21)
 	    (and (= emacs-major-version 21)
 		 (< emacs-minor-version 3)))
-    (defalias gnus-completing-read gnus-xmas-completing-read))
-  
+    (defalias 'gnus-completing-read 'gnus-xmas-completing-read))
+
   ;; These ones are not defcutom'ed, sometimes not even defvar'ed. They
   ;; probably should. If that is done, the code below should then be moved
   ;; where each variable is defined, in order not to mess with user settings.
@@ -822,7 +822,7 @@ XEmacs compatibility workaround."
 		  (insert file)
 		(insert-file-contents file))
 	      (make-glyph
-	       (vector 
+	       (vector
 		(or (intern type)
 		    (mm-image-type-from-buffer))
 		:data (buffer-string))))))
@@ -837,7 +837,7 @@ Warning: Don't insert text immediately after the image."
 	extent)
     (if (and (bobp) (not string))
 	(setq string " "))
-    (if string 
+    (if string
 	(insert string)
       (setq begin (1- begin)))
     (setq extent (make-extent begin (point)))
