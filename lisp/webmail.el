@@ -380,12 +380,41 @@
 		(let (id)
 		  (if (string-match "msg=\\([^&]+\\)" url)
 		      (setq id (match-string 1 url)))
-		  (push (cons id (concat "http://" site url)) 
+		  (push (cons id (concat "http://" site url "&raw=0")) 
 			webmail-articles)))
 	    (setq newp nil))
 	(setq newp t)))))
 
+;; Thank victor@idaccr.org (Victor S. Miller) for raw=0
+
 (defun webmail-hotmail-article (file id)
+  (goto-char (point-min))
+  (if (not (search-forward "<pre>" nil t))
+      (webmail-error "article@3"))
+  (skip-chars-forward "\n\r\t ")
+  (delete-region (point-min) (point))
+  (if (not (search-forward "</pre>" nil t))
+      (webmail-error "article@3.1"))
+  (delete-region (match-beginning 0) (point-max))
+  (nnweb-remove-markup)
+  (nnweb-decode-entities)
+  (goto-char (point-min))
+  (while (re-search-forward "\r\n?" nil t)
+    (replace-match "\n"))
+  (save-restriction
+    (goto-char (point-min))
+    (mail-narrow-to-head)
+    (if (mail-fetch-field "message-id")
+	(setq id nil)))
+  (goto-char (point-min))
+  (insert "\n\n")
+  (if (not (looking-at "\n*From "))
+      (insert "From nobody " (current-time-string) "\n"))
+  (if id
+      (insert (format "Message-ID: <%s@hotmail.com>\n" id)))
+  (mm-append-to-file (point-min) (point-max) file))
+
+(defun webmail-hotmail-article-old (file id)
   (let (p attachment count mime hotmail-direct)
     (save-restriction
       (webmail-encode-8bit)

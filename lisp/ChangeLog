@@ -1,3 +1,11 @@
+1999-12-18 14:08:48  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* webmail.el (webmail-hotmail-article): Snarf the raw file.
+
+1999-12-18 14:08:12  Victor S. Miller  <victor@idaccr.org>
+
+	* webmail.el (webmail-hotmail-list): raw=0.
+
 1999-12-18 11:14:51  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-enter-history): Back-compatible in
