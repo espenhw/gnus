@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.6.22 Manual
+@settitle Gnus 5.6.23 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.6.22 Manual
+@title Gnus 5.6.23 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.6.22.
+This manual corresponds to Gnus 5.6.23.
 
 @end ifinfo
 
@@ -2652,8 +2652,13 @@ convention (@pxref{Process/Prefix}).
 @findex gnus-topic-remove-group
 Remove a group from the current topic (@code{gnus-topic-remove-group}).
 This command is mainly useful if you have the same group in several
-topics and wish to remove it from one of the topics.
-The command uses the process/prefix convention
+topics and wish to remove it from one of the topics.  You may also
+remove a group from all topics, but in that case, Gnus will add it to
+the root topic the next time you start Gnus.  In fact, all new groups
+(which, naturally, don't belong to any topic) will show up in the root
+topic. 
+
+This command uses the process/prefix convention
 (@pxref{Process/Prefix}).
 
 @item T M
@@ -15851,7 +15856,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
-* Quassia Gnus::       Two times two is four, or Gnus 5.6.22.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6.23.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -16386,7 +16391,7 @@ Emphasized text can be properly fontisized:
 @node Quassia Gnus
 @subsubsection Quassia Gnus
 
-New features in Gnus 5.6.22:
+New features in Gnus 5.6.23:
 
 @itemize @bullet
 

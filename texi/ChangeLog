@@ -1,3 +1,7 @@
+Tue Jun 30 16:11:27 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Topic Commands): Addition.
+
 Mon Jun 29 21:46:13 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Article Keymap): Typo.

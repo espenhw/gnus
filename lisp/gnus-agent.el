@@ -1254,13 +1254,13 @@ The following commands are available:
   (interactive)
   (let ((methods gnus-agent-covered-methods)
 	(day (- (gnus-time-to-day (current-time)) gnus-agent-expire-days))
-	(expiry-hashtb (gnus-make-hashtable 1023))
 	gnus-command-method sym group articles
 	history overview file histories elem art nov-file low info
 	unreads marked article)
     (save-excursion
       (setq overview (get-buffer-create " *expire overview*"))
       (while (setq gnus-command-method (pop methods))
+	(let ((expiry-hashtb (gnus-make-hashtable 1023)))
 	(gnus-agent-open-history)
 	(set-buffer
 	 (setq gnus-agent-current-history
@@ -1319,7 +1319,7 @@ The following commands are available:
 				 (< art article)))
 		   (if (file-exists-p
 			(gnus-agent-article-name
-			 (number-to-string article) group))
+			 (number-to-string art) group))
 		       (forward-line 1)
 		     ;; Remove old NOV lines that have no articles.
 		     (gnus-delete-line)))
@@ -1362,7 +1362,7 @@ The following commands are available:
 	    (gnus-delete-line))
 	  (gnus-agent-save-history)
 	  (gnus-agent-close-history))
-	(gnus-message 4 "Expiry...done")))))
+	(gnus-message 4 "Expiry...done"))))))
 
 ;;;###autoload
 (defun gnus-agent-batch ()

@@ -946,7 +946,7 @@ ARG is passed to the first function."
   "Delete elements from LIST that satisfy PREDICATE."
   (let (out)
     (while list
-      (when (funcall predicate (car list))
+      (unless (funcall predicate (car list))
 	(push (car list) out))
       (pop list))
     (nreverse out)))

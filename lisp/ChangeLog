@@ -1,3 +1,34 @@
+Wed Jul  1 13:33:26 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.23 is released.
+
+Wed Jul  1 12:52:32 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-record-command): Give more precise time info. 
+	(nntp-next-result-arrived-p): Look for the end of error lines.
+
+Wed Jul  1 12:24:06 1998  François Pinard  <pinard@iro.umontreal.ca>
+
+	* gnus-util.el (gnus-delete-if): Would do the opposite.
+
+Wed Jul  1 01:53:31 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-build-sparse-threads): Didn't work at all.
+
+Tue Jun 30 15:56:54 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-send-authinfo): Store the user name.
+	(nntp-authinfo-user): New variable.
+
+	* gnus-sum.el (gnus-summary-limit-mark-excluded-as-read): Would
+	mark some articles as unread.
+
+	* gnus-agent.el (gnus-agent-expire): Don't sort lines.
+
+Tue Jun 30 15:56:31 1998  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-agent.el (gnus-agent-expire): Use a fresh hash table.
+
 Mon Jun 29 22:49:49 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.22 is released.

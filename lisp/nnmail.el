@@ -1755,8 +1755,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 
 (defun nnmail-purge-split-history (group)
   "Remove all instances of GROUP from `nnmail-split-history'."
-  (let ((history nnmail-split-history)
-	prev)
+  (let ((history nnmail-split-history))
     (while history
       (setcar history (gnus-delete-if (lambda (e) (string= (car e) group))
 				      (car history)))
