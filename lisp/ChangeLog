@@ -1,5 +1,10 @@
 2002-05-22  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-msg.el (gnus-confirm-mail-reply-to-news)
+	(gnus-summary-reply): Ask for confirmation when replying to news.
+	Defaults to not ask.  From Benjamin Rutt
+	<rutt+news@cis.ohio-state.edu>.
+
 	* nnimap.el (nnimap-nov-is-evil): Improve doc.
 
 2002-05-21  Simon Josefsson  <jas@extundo.com>

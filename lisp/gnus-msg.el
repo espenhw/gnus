@@ -239,6 +239,13 @@ See also the `mml-default-encrypt-method' variable."
   :group 'gnus-message
   :type 'boolean)
 
+(defcustom gnus-confirm-mail-reply-to-news nil
+  "If non-nil, Gnus requests confirmation when replying to news.
+This is done because new users often reply by misstake when reading
+news."
+  :group 'gnus-message
+  :type 'boolean)
+
 ;;; Internal variables.
 
 (defvar gnus-inhibit-posting-styles nil
@@ -978,51 +985,56 @@ If VERY-WIDE, make a very wide reply."
   (interactive
    (list (and current-prefix-arg
 	      (gnus-summary-work-articles 1))))
-  (let* ((article
-	  (if (listp (car yank))
-	      (caar yank)
-	    (car yank)))
-	 (gnus-article-reply (or article (gnus-summary-article-number)))
-	 (headers ""))
-    ;; Stripping headers should be specified with mail-yank-ignored-headers.
-    (when yank
-      (gnus-summary-goto-subject article))
-    (gnus-setup-message (if yank 'reply-yank 'reply)
-      (if (not very-wide)
-	  (gnus-summary-select-article)
-	(dolist (article very-wide)
-	  (gnus-summary-select-article nil nil nil article)
-	  (save-excursion
-	    (set-buffer (gnus-copy-article-buffer))
-	    (gnus-msg-treat-broken-reply-to)
-	    (save-restriction
-	      (message-narrow-to-head)
-	      (setq headers (concat headers (buffer-string)))))))
-      (set-buffer (gnus-copy-article-buffer))
-      (gnus-msg-treat-broken-reply-to gnus-msg-force-broken-reply-to)
-      (save-restriction
-	(message-narrow-to-head)
-	(when very-wide
-	  (erase-buffer)
-	  (insert headers))
-	(goto-char (point-max)))
-      (mml-quote-region (point) (point-max))
-      (message-reply nil wide)
+  ;; Allow user to require confirmation before replying by mail to the
+  ;; author of a news article.
+  (when (or (not (gnus-news-group-p gnus-newsgroup-name))
+	    (not gnus-confirm-mail-reply-to-news)
+	    (y-or-n-p "Really reply by mail to article author? "))
+    (let* ((article
+	    (if (listp (car yank))
+		(caar yank)
+	      (car yank)))
+	   (gnus-article-reply (or article (gnus-summary-article-number)))
+	   (headers ""))
+      ;; Stripping headers should be specified with mail-yank-ignored-headers.
       (when yank
-	(gnus-inews-yank-articles yank))
-      (when (or gnus-message-replysign gnus-message-replyencrypt)
-	(let (signed encrypted)
-	  (save-excursion
-	    (set-buffer gnus-article-buffer)
-	    (setq signed (memq 'signed gnus-article-wash-types))
-	    (setq encrypted (memq 'encrypted gnus-article-wash-types)))
-	  (cond ((and gnus-message-replysign signed)
-		 (mml-secure-message mml-default-sign-method 'sign))
-		((and gnus-message-replyencrypt encrypted)
-		 (mml-secure-message mml-default-encrypt-method
-				     (if gnus-message-replysignencrypted
-					 'signencrypt
-				       'encrypt)))))))))
+	(gnus-summary-goto-subject article))
+      (gnus-setup-message (if yank 'reply-yank 'reply)
+	(if (not very-wide)
+	    (gnus-summary-select-article)
+	  (dolist (article very-wide)
+	    (gnus-summary-select-article nil nil nil article)
+	    (save-excursion
+	      (set-buffer (gnus-copy-article-buffer))
+	      (gnus-msg-treat-broken-reply-to)
+	      (save-restriction
+		(message-narrow-to-head)
+		(setq headers (concat headers (buffer-string)))))))
+	(set-buffer (gnus-copy-article-buffer))
+	(gnus-msg-treat-broken-reply-to gnus-msg-force-broken-reply-to)
+	(save-restriction
+	  (message-narrow-to-head)
+	  (when very-wide
+	    (erase-buffer)
+	    (insert headers))
+	  (goto-char (point-max)))
+	(mml-quote-region (point) (point-max))
+	(message-reply nil wide)
+	(when yank
+	  (gnus-inews-yank-articles yank))
+	(when (or gnus-message-replysign gnus-message-replyencrypt)
+	  (let (signed encrypted)
+	    (save-excursion
+	      (set-buffer gnus-article-buffer)
+	      (setq signed (memq 'signed gnus-article-wash-types))
+	      (setq encrypted (memq 'encrypted gnus-article-wash-types)))
+	    (cond ((and gnus-message-replysign signed)
+		   (mml-secure-message mml-default-sign-method 'sign))
+		  ((and gnus-message-replyencrypt encrypted)
+		   (mml-secure-message mml-default-encrypt-method
+				       (if gnus-message-replysignencrypted
+					   'signencrypt
+					 'encrypt))))))))))
 
 (defun gnus-summary-reply-with-original (n &optional wide)
   "Start composing a reply mail to the current message.
