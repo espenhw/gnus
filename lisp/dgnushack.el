@@ -189,10 +189,10 @@
 	(t (concat filename ".elc"))))
 
 (require 'bytecomp)
-(if (featurep 'xemacs)
-    (require 'byte-optimize)
-  (require 'byte-opt))
 ;; To avoid having defsubsts and inlines happen.
+;(if (featurep 'xemacs)
+;    (require 'byte-optimize)
+;  (require 'byte-opt))
 ;(defun byte-optimize-inline-handler (form)
 ;  "byte-optimize-handler for the `inline' special-form."
 ;  (cons 'progn (cdr form)))

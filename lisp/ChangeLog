@@ -1,7 +1,6 @@
 2002-01-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* dgnushack.el: Require `byte-optimize' rather than `byte-opt' for
-	XEmacs.
+	* dgnushack.el: Commented out the experimental code.
 
 2002-01-25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
