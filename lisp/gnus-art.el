@@ -2656,12 +2656,12 @@ This format is defined by the `gnus-article-time-format' variable."
   (interactive (list t))
   (article-date-ut 'iso8601 highlight))
 
-(defun article-show-all ()
-  "Show all hidden text in the article buffer."
-  (interactive)
-  (save-excursion
-    (let ((buffer-read-only nil))
-      (gnus-article-unhide-text (point-min) (point-max)))))
+;; (defun article-show-all ()
+;;   "Show all hidden text in the article buffer."
+;;   (interactive)
+;;   (save-excursion
+;;     (let ((buffer-read-only nil))
+;;       (gnus-article-unhide-text (point-min) (point-max)))))
 
 (defun article-remove-leading-whitespace ()
   "Remove excessive whitespace from all headers."
@@ -3169,7 +3169,8 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-emphasize
      article-treat-dumbquotes
      article-normalize-headers
-     (article-show-all . gnus-article-show-all-headers))))
+;;     (article-show-all . gnus-article-show-all-headers)
+     )))
 
 ;;;
 ;;; Gnus article mode

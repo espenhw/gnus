@@ -1,3 +1,14 @@
+2002-01-14  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el: We don't need gnus-article-show-all-headers.
+
+	* gnus-art.el (article-show-all, gnus-article-show-all-header): 
+	Ditto.
+
+	* gnus-sum.el (gnus-summary-select-article): Don't call
+	show-all-headers, because hidden headers are not hidden text any
+	more.
+
 2002-01-13  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-newline-and-reformat): Use `newline' instead

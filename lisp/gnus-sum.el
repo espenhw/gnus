@@ -6536,20 +6536,21 @@ be displayed."
 		   (or (null gnus-current-article)
 		       (not (eq gnus-current-article article))))
 	      force)
-       ;; The requested article is different from the current article.
+	  ;; The requested article is different from the current article.
 	  (progn
 	    (gnus-summary-display-article article all-headers)
 	    (when (gnus-buffer-live-p gnus-article-buffer)
 	      (with-current-buffer gnus-article-buffer
 		(if (not gnus-article-decoded-p) ;; a local variable
 		    (mm-disable-multibyte))))
-	    (when (or all-headers gnus-show-all-headers)
-	      (gnus-article-show-all-headers))
+;;; Hidden headers are not hidden text any more.
+;;	    (when (or all-headers gnus-show-all-headers)
+;;	      (gnus-article-show-all-headers))
 	    (gnus-article-set-window-start
 	     (cdr (assq article gnus-newsgroup-bookmarks)))
 	    article)
-	(when (or all-headers gnus-show-all-headers)
-	  (gnus-article-show-all-headers))
+;;	(when (or all-headers gnus-show-all-headers)
+;;	  (gnus-article-show-all-headers))
 	'old))))
 
 (defun gnus-summary-force-verify-and-decrypt ()
