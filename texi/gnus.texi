@@ -8025,6 +8025,8 @@ Hide @sc{pem} (privacy enhanced messages) cruft
 @item W W B
 @kindex W W B (Summary)
 @findex gnus-article-strip-banner
+@vindex gnus-article-banner-alist
+@vindex gnus-article-address-banner-alist
 @cindex banner
 @cindex OneList
 @cindex stripping advertisements
@@ -8040,6 +8042,30 @@ removed, or the symbol @code{signature}, meaning that the (last)
 signature should be removed, or other symbol, meaning that the
 corresponding regular expression in @code{gnus-article-banner-alist} is
 used.
+
+Regardless of a group, you can hide things like advertisements only when
+the sender of an article has a certain mail address specified in
+@code{gnus-article-address-banner-alist}.
+
+@table @code
+
+@item gnus-article-address-banner-alist
+@vindex gnus-article-address-banner-alist
+Alist of mail addresses and banners.  Each element has the form
+@code{(ADDRESS . BANNER)}, where ADDRESS is a regexp matching a mail
+address in the From header, BANNER is one of a symbol @code{signature},
+an item in @code{gnus-article-banner-alist}, a regexp and @code{nil}.
+If ADDRESS matches author's mail address, it will remove things like
+advertisements.  For example, if a sender has the mail address
+@samp{hail@@yoo-hoo.co.jp} and there is a banner something like
+@samp{Do You Yoo-hoo!?} in all articles he sends, you can use the
+following element to remove them:
+
+@lisp
+("@@yoo-hoo\.co\.jp\\'" . "\n_+\nDo You Yoo-hoo!\\?\n.*\n.*\n")
+@end lisp
+
+@end table
 
 @item W W c
 @kindex W W c (Summary)
