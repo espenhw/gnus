@@ -4545,7 +4545,8 @@ or a straight list of headers."
 	gnus-tmp-number gnus-tmp-opening-bracket gnus-tmp-closing-bracket
 	tree-stack)
 
-    (setq gnus-tmp-prev-subject nil)
+    (setq gnus-tmp-prev-subject nil
+          gnus-tmp-thread-tree-header-string "")
 
     (if (vectorp (car threads))
 	;; If this is a straight (sic) list of headers, then a
