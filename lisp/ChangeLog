@@ -1,3 +1,8 @@
+2003-03-12  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir-request-update-info): Pretend missing
+	articles are marked 'read, so we get correct article counts.
+
 2003-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-insert-mime-button): Exclude a newline from

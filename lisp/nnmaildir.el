@@ -41,8 +41,6 @@
 ;;   copying, restoring, etc.
 ;;
 ;; Todo:
-;; * Artificially add nonexistent article to the 'read range, to fix the
-;;   wrong-count problem.
 ;; * Replace create-directory with target-prefix, so the maildirs can be in
 ;;   the same directory as the symlinks, starting with, e.g., ".".
 ;; * Add a hook for when moving messages from new/ to cur/, to support
@@ -849,9 +847,9 @@ by nnmaildir-request-article.")
 
 (defun nnmaildir-request-update-info (gname info &optional server)
   (let ((group (nnmaildir--prepare server gname))
-	pgname flist all always-marks never-marks old-marks dotfile num dir
+	pgname flist always-marks never-marks old-marks dotfile num dir
 	markdirs marks mark ranges markdir article read end new-marks ls
-	old-mmth new-mmth mtime mark-sym deactivate-mark)
+	old-mmth new-mmth mtime mark-sym existing missing deactivate-mark)
     (catch 'return
       (unless group
 	(setf (nnmaildir--srv-error nnmaildir--cur-server)
@@ -868,6 +866,13 @@ by nnmaildir-request-article.")
 	    old-marks (cons old-marks (gnus-info-marks info))
 	    always-marks (nnmaildir--param pgname 'always-marks)
 	    never-marks (nnmaildir--param pgname 'never-marks)
+	    existing (nnmaildir--grp-nlist group)
+	    existing (mapcar 'car existing)
+	    existing (nreverse existing)
+	    existing (gnus-compress-sequence existing 'always-list)
+	    missing (list (cons 1 (nnmaildir--group-maxnum
+				   nnmaildir--cur-server group)))
+	    missing (gnus-range-difference missing existing)
 	    dir (nnmaildir--srv-dir nnmaildir--cur-server)
 	    dir (nnmaildir--srvgrp-dir dir gname)
 	    dir (nnmaildir--nndir dir)
@@ -885,13 +890,7 @@ by nnmaildir-request-article.")
 	 (catch 'got-ranges
 	   (if (memq mark-sym never-marks) (throw 'got-ranges nil))
 	   (when (memq mark-sym always-marks)
-	     (unless all
-	       (setq all (nnmaildir--grp-nlist group)
-		     all (mapcar 'car all)
-		     all (nreverse all)
-		     all (gnus-compress-sequence all 'always-list)
-		     all (cons 'dummy-mark-symbol all)))
-	     (setq ranges (cdr all))
+	     (setq ranges existing)
 	     (throw 'got-ranges nil))
 	   (setq mtime (nth 5 (file-attributes markdir)))
 	   (set (intern mark new-mmth) mtime)
@@ -910,7 +909,7 @@ by nnmaildir-request-article.")
 	 (if (eq mark-sym 'read) (setq read ranges)
 	   (if ranges (setq marks (cons (cons mark-sym ranges) marks)))))
        markdirs)
-      (gnus-info-set-read info read)
+      (gnus-info-set-read info (gnus-range-add read missing))
       (gnus-info-set-marks info marks 'extend)
       (setf (nnmaildir--grp-mmth group) new-mmth)
       info)))
