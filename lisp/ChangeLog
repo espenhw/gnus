@@ -1,3 +1,10 @@
+2002-02-21  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-dependencies-add-header): If replaced, don't
+	rebuild.
+	(gnus-summary-edit-article-done): Gnus-get-newsgroup-headers takes
+	nil as dependencies as well.
+
 2002-02-20  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nndoc.el (nndoc-dissect-mime-parts-sub): Fix MIME-Version header

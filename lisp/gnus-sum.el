@@ -3530,8 +3530,8 @@ If NO-DISPLAY, don't generate a summary buffer."
 		  (setq threads nil)
 		  (throw 'infloop t))
 		(unless (car (symbol-value refs))
-	     ;; These threads do not refer back to any other articles,
-		  ;; so they're roots.
+		  ;; These threads do not refer back to any other
+		  ;; articles, so they're roots.
 		  (setq threads (append (cdr (symbol-value refs)) threads))))
 	      gnus-newsgroup-dependencies)))
     threads))
@@ -3551,7 +3551,7 @@ entered.
 Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
   (let* ((id (mail-header-id header))
 	 (id-dep (and id (intern id dependencies)))
-	 ref ref-dep ref-header)
+	 ref ref-dep ref-header replaced)
     ;; Enter this `header' in the `dependencies' table.
     (cond
      ((not id-dep)
@@ -3568,7 +3568,8 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
      (force-new
       ;; Overrides an existing entry;
       ;; just set the header part of the entry.
-      (setcar (symbol-value id-dep) header))
+      (setcar (symbol-value id-dep) header)
+      (setq replaced t))
 
      ;; Renames the existing `header' to a unique Message-ID.
      ((not gnus-summary-ignore-duplicates)
@@ -3591,7 +3592,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 	       (or (mail-header-xref header) "")))
       (setq header nil)))
 
-    (when header
+    (when (and header (not replaced))
       ;; First check that we are not creating a References loop.
       (setq ref (gnus-parent-id (mail-header-references header)))
       (while (and ref
@@ -8836,10 +8837,7 @@ groups."
 		    (insert ".\n")
 		    (let ((nntp-server-buffer (current-buffer)))
 		      (setq header (car (gnus-get-newsgroup-headers
-					 (save-excursion
-					   (set-buffer gnus-summary-buffer)
-					   gnus-newsgroup-dependencies)
-					 t))))
+					 nil t))))
 		    (save-excursion
 		      (set-buffer gnus-summary-buffer)
 		      (gnus-data-set-header
