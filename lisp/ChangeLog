@@ -1,3 +1,8 @@
+2001-08-04  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* nnmail.el (nnmail-split-fancy-with-parent): Correct `mapconcat'
+	syntax.
+
 2001-08-03 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-find-charset-region): Remove control-1.

@@ -1484,7 +1484,10 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	 (references nil)
 	 (res nil)
 	 (regexp (if (consp nnmail-split-fancy-with-parent-ignore-groups)
-		     (mapconcat 'nnmail-split-fancy-with-parent-ignore-groups " *\\|")
+		     (mapconcat
+		      (lambda (x) (format "\\(%s\\)" x))
+		      nnmail-split-fancy-with-parent-ignore-groups
+		      "\\|")
 		   nnmail-split-fancy-with-parent-ignore-groups)))
     (when refstr
       (setq references (nreverse (gnus-split-references refstr)))
