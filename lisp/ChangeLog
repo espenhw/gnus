@@ -1,3 +1,7 @@
+2001-09-15  Michael Welsh Duggan <md5i@cs.cmu.edu>
+
+	* gnus-spec.el (gnus-parse-format): Don't treat %c as %C.
+
 2001-09-13  Martin Kretzschmar  <Martin.Kretzschmar@inf.tu-dresden.de>
 
 	* gnus-spec.el (gnus-correct-substring): Still stopped one

@@ -373,12 +373,13 @@ characters when given a pad value."
   ;; the text between them will have the mouse-face text property.
   ;; If the FORMAT string contains the specifiers %[ and %], the text between
   ;; them will have the balloon-help text property.
-  (if (string-match
+  (let ((case-fold-search nil))
+    (if (string-match
        "\\`\\(.*\\)%[0-9]?[{(«]\\(.*\\)%[0-9]?[»})]\\(.*\n?\\)\\'"
        format)
       (gnus-parse-complex-format format spec-alist)
-    ;; This is a simple format.
-    (gnus-parse-simple-format format spec-alist insert)))
+      ;; This is a simple format.
+      (gnus-parse-simple-format format spec-alist insert))))
 
 (defun gnus-parse-complex-format (format spec-alist)
   (save-excursion
