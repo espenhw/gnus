@@ -292,7 +292,7 @@ stream.")
 			      kerberos4
 			      digest-md5
 			      cram-md5
-			      sasl
+			      ;;sasl
 			      login
 			      anonymous)
   "Priority of authenticators to consider when authenticating to server.")
