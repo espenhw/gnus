@@ -1,3 +1,8 @@
+2000-09-20 17:37:46  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-default-charset): Set default value in
+	non-MULE XEmacsen as iso-8859-1.
+
 2000-09-20 12:02:24  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-demon.el: Use (featurep 'xemacs).
