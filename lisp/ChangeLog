@@ -1,3 +1,7 @@
+2000-05-03  Dave Love  <fx@gnu.org>
+
+	* gnus.el (gnus-group-startup-message): Add newline before image.
+
 2000-05-02 21:34:10  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2047.el (rfc2047-encode-message-header): Check the coding-system.
