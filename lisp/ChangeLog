@@ -1,3 +1,7 @@
+2000-06-08  Simon Josefsson  <simon@josefsson.org>
+
+	* gnus-cus.el (gnus-extra-group-parameters): Add uidvalidity.
+
 2000-06-08 12:34:26  Urban Engberg <ue@ccieurope.com>
 
 	* gnus-demon.el (gnus-demon-scan-mail): Bind nnmail-fetched-sources.

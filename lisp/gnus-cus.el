@@ -256,7 +256,9 @@ Each entry has the form (NAME TYPE DOC), where NAME is the parameter
 itself (a symbol), TYPE is the parameters type (a sexp widget), and
 DOC is a documentation string for the parameter.")
 
-(defconst gnus-extra-group-parameters nil
+(defconst gnus-extra-group-parameters
+  '((uidvalidity (string :tag "IMAP uidvalidity") "\
+Server-assigned value attached to IMAP groups, used to maintain consistency."))
   "Alist of group parameters that are not also topic parameters.
 
 Each entry has the form (NAME TYPE DOC), where NAME is the parameter
