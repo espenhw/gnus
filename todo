@@ -1505,6 +1505,5 @@ exceeding lisp nesting on huge groups.
 ;; Local Variables:
 ;; mode: outline
 ;; coding: iso-2022-7bit
-;; buffer-file-coding-system: iso-2022-7bit
 ;; paragraph-separate: "[ 	]*$"
 ;; End:

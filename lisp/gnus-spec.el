@@ -676,7 +676,6 @@ If PROPS, insert the result."
 
 ;; Local Variables:
 ;; coding: iso-8859-1
-;; buffer-file-coding-system: iso-8859-1
 ;; End:
 
 ;;; gnus-spec.el ends here

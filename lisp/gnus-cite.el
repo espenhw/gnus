@@ -1005,7 +1005,6 @@ See also the documentation for `gnus-article-highlight-citation'."
 
 ;; Local Variables:
 ;; coding: iso-8859-1
-;; buffer-file-coding-system: iso-8859-1
 ;; End:
 
 ;;; gnus-cite.el ends here

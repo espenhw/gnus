@@ -1,3 +1,9 @@
+2001-12-18  Josh Huber  <huber@alum.wpi.edu>
+
+	* ChangeLog, ChangeLog.1, nnwfm.el, smiley.el:
+	* gnus-cite.el, gnus-delay.el, gnus-spec.el, message.el:
+	* mml1991.el, nnultimate.el: Removed buffer-file-coding-system tag.
+
 2001-12-18 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* ChangeLog,  ChangeLog.1, nnwfm.el,  gnus-smiley.el:
@@ -6704,5 +6710,4 @@
 
 ;; Local Variables:
 ;; coding: iso-2022-7bit
-;; buffer-file-coding-system: iso-2022-7bit
 ;; End:
