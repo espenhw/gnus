@@ -1,3 +1,8 @@
+2002-02-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-treat-display-grey-xface): Default to nil
+	under NTEmacs 21.
+
 2002-02-14  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-move-article): Select-article only
