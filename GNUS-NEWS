@@ -8,6 +8,9 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** References and X-Draft-Headers are no longer generated when you
+   start composing messages.
+
 ** Improved anti-speam features.
 
 ** Easy inclusion of X-Faces headers.
