@@ -34,7 +34,6 @@
 	* emacs-mime.texi (Customization): Move emacs-w3m stuff backward;
 	added documentation for `mm-inline-text-html-with-w3m-keymap'.
 
->>>>>>> 6.280
 2002-01-28  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Agent Expiry): Addition.
