@@ -1690,6 +1690,8 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	     (ignore-errors (time-less-p days (time-since time))))))))
 
 (defun nnmail-expiry-target-group (target group)
+  ;; Do not invoke this from nntp-server-buffer!  At least nnfolder clears
+  ;; that buffer if the nnfolder group isn't selected.
   (let (nnmail-cache-accepted-message-ids)
     ;; Don't enter Message-IDs into cache.
     ;; Let users hack it in TARGET function.

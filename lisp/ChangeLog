@@ -1,3 +1,9 @@
+2001-09-26  Simon Josefsson  <jas@extundo.com>
+
+	* nnmail.el (nnmail-expiry-target-group): Add doc warning.
+
+	* nnimap.el (nnimap-expiry-target): Use temp buffer.
+
 2001-09-26 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-cus.el (gnus-group-parameters): Display as sexp.

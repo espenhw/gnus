@@ -1147,9 +1147,9 @@ function is generally only called when Gnus is shutting down."
 
 (defun nnimap-expiry-target (arts group server)
   (unless (eq nnmail-expiry-target 'delete)
-    (with-current-buffer nntp-server-buffer
+    (with-temp-buffer
       (dolist (art (gnus-uncompress-sequence arts))
-	(nnimap-request-article art group server)
+	(nnimap-request-article art group server  (current-buffer))
 	;; hints for optimization in `nnimap-request-accept-article'
 	(let ((nnimap-current-move-article art)
 	      (nnimap-current-move-group group)
