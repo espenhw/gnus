@@ -14,6 +14,8 @@
 	string-xor into ntlm-string-xor.  Suggested by
 	Jesper Harder <harder@myrealbox.com>.
 
+	* ntlm.el: Don't include poem.
+
 	* md4.el (print-int32, print-string-hexa): Remove.  Suggested by
 	Jesper Harder <harder@myrealbox.com>.
 
