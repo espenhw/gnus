@@ -3208,7 +3208,10 @@ If NOW, use that time instead."
       (setq sign "-")
       (setq zone (- zone)))
     (concat
-     (format-time-string "%a, %d" now)
+     ;; The day name of the %a spec is locale-specific.  Pfff.
+     (format "%s, " (capitalize (car (rassoc (nth 6 (decode-time now))
+					     parse-time-weekdays))))
+     (format-time-string "%d" now)
      ;; The month name of the %b spec is locale-specific.  Pfff.
      (format " %s "
 	     (capitalize (car (rassoc (nth 4 (decode-time now))

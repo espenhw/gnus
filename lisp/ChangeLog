@@ -1,3 +1,7 @@
+2001-06-22  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-make-date): Workaround locale for weekdays.
+
 2001-06-21 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-goto-body): Return nil if not found. (revert!)
