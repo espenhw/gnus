@@ -4818,14 +4818,13 @@ not have a face in `gnus-article-boring-faces'."
   "Read article specified by message-id around point."
   (interactive)
   (save-excursion
-    (re-search-backward "<?news:\\|<" (gnus-point-at-bol) t)
-    (cond ((re-search-forward
-	    gnus-button-mid-or-mail-regexp (gnus-point-at-eol) t)
-	    (let ((msg-id (concat "<" (match-string 0) ">")))
-	      (set-buffer gnus-summary-buffer)
-	      (gnus-summary-refer-article msg-id)))
-	  (t
-	    (error "No references around point")))))
+    (re-search-backward "[ \t]\\|^" (gnus-point-at-bol) t)
+    (re-search-forward "<?news:<?\\|<" (gnus-point-at-eol) t)
+    (if (re-search-forward "[^@ ]+@[^ \t>]+" (gnus-point-at-eol) t)
+	(let ((msg-id (concat "<" (match-string 0) ">")))
+	  (set-buffer gnus-summary-buffer)
+	  (gnus-summary-refer-article msg-id))
+      (error "No references around point"))))
 
 (defun gnus-article-show-summary ()
   "Reconfigure windows to show summary buffer."

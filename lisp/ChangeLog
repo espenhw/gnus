@@ -1,3 +1,7 @@
+2003-03-01  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (gnus-article-refer-article): Be more permissive.
+
 2003-03-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* spam.el: Fix typo.
