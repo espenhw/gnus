@@ -89,19 +89,11 @@
 
 (defvar pgg-passphrase-cache (make-vector 7 0))
 
-(defvar pgg-read-passphrase nil)
 (defun pgg-read-passphrase (prompt &optional key)
-  (if (not pgg-read-passphrase)
-      (if (functionp 'read-passwd)
-	  (setq pgg-read-passphrase 'read-passwd)
-	(if (load "passwd" t)
-	    (setq pgg-read-passphrase 'read-passwd)
-	  (autoload 'ange-ftp-read-passwd "ange-ftp")
-	  (setq pgg-read-passphrase 'ange-ftp-read-passwd))))
   (or (and pgg-cache-passphrase
 	   key (setq key (pgg-truncate-key-identifier key))
 	   (symbol-value (intern-soft key pgg-passphrase-cache)))
-      (funcall pgg-read-passphrase prompt)))
+      (read-passwd prompt)))
 
 (defun pgg-add-passphrase-cache (key passphrase)
   (setq key (pgg-truncate-key-identifier key))

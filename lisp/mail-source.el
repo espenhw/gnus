@@ -654,22 +654,6 @@ Pass INFO on to CALLBACK."
       (not (zerop (nth 7 (file-attributes from))))
       (delete-file from)))
 
-(defvar mail-source-read-passwd nil)
-(defun mail-source-read-passwd (prompt &rest args)
-  "Read a password using PROMPT.
-If ARGS, PROMPT is used as an argument to `format'."
-  (let ((prompt
-	 (if args
-	     (apply 'format prompt args)
-	   prompt)))
-    (unless mail-source-read-passwd
-      (if (or (fboundp 'read-passwd) (load "passwd" t))
-	  (setq mail-source-read-passwd 'read-passwd)
-	(unless (fboundp 'ange-ftp-read-passwd)
-	  (autoload 'ange-ftp-read-passwd "ange-ftp"))
-	(setq mail-source-read-passwd 'ange-ftp-read-passwd)))
-    (funcall mail-source-read-passwd prompt)))
-
 (defun mail-source-fetch-with-program (program)
   (zerop (call-process shell-file-name nil nil nil
 		       shell-command-switch program)))
@@ -742,7 +726,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 	(setq password
 	      (or password
 		  (cdr (assoc from mail-source-password-cache))
-		  (mail-source-read-passwd
+		  (read-passwd
 		   (format "Password for %s at %s: " user server)))))
       (when server
 	(setenv "MAILHOST" server))
@@ -806,7 +790,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 	(setq password
 	      (or password
 		  (cdr (assoc from mail-source-password-cache))
-		  (mail-source-read-passwd
+		  (read-passwd
 		   (format "Password for %s at %s: " user server))))
 	(unless (assoc from mail-source-password-cache)
 	  (push (cons from password) mail-source-password-cache)))
@@ -1064,7 +1048,7 @@ This only works when `display-time' is enabled."
 	      (or password
 		  (cdr (assoc (format "webmail:%s:%s" subtype user)
 			      mail-source-password-cache))
-		  (mail-source-read-passwd
+		  (read-passwd
 		   (format "Password for %s at %s: " user subtype))))
 	(when (and password
 		   (not (assoc (format "webmail:%s:%s" subtype user)

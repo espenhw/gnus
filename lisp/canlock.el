@@ -125,22 +125,6 @@ buffer does not look like a news message."
   "Make a SHA-1 digest of MESSAGE as a unibyte string of length 20 bytes."
   (canlock-string-as-unibyte (funcall canlock-sha1-function message)))
 
-(defvar canlock-read-passwd nil)
-(defun canlock-read-passwd (prompt &rest args)
-  "Read a password using PROMPT.
-If ARGS, PROMPT is used as an argument to `format'."
-  (let ((prompt
-	 (if args
-	     (apply 'format prompt args)
-	   prompt)))
-    (unless canlock-read-passwd
-      (if (or (fboundp 'read-passwd) (load "passwd" t))
-	  (setq canlock-read-passwd 'read-passwd)
-	(unless (fboundp 'ange-ftp-read-passwd)
-	  (autoload 'ange-ftp-read-passwd "ange-ftp"))
-	(setq canlock-read-passwd 'ange-ftp-read-passwd)))
-    (funcall canlock-read-passwd prompt)))
-
 (defun canlock-make-cancel-key (message-id password)
   "Make a Cancel-Key header."
   (when (> (length password) 20)
@@ -231,7 +215,7 @@ message."
 	    (message "There are no Message-ID(s)")
 	  (unless password
 	    (setq password (or canlock-password
-			       (canlock-read-passwd
+			       (read-passwd
 				"Password for Canlock: "))))
 	  (if (or (not (stringp password)) (zerop (length password)))
 	      (message "Password for Canlock is bad")
@@ -284,7 +268,7 @@ nil instead of to signal an error by setting the option
 	  (error "%s" errmsg))
 
       (setq password (or canlock-password-for-verify
-			 (canlock-read-passwd "Password for Canlock: ")))
+			 (read-passwd "Password for Canlock: ")))
       (if (or (not (stringp password)) (zerop (length password)))
 	  (progn
 	    (setq errmsg "Password for Canlock is bad")

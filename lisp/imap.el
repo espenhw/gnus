@@ -416,22 +416,6 @@ sure of changing the value of `foo'."
   (when (fboundp 'set-buffer-multibyte)
     (set-buffer-multibyte nil)))
 
-(defun imap-read-passwd (prompt &rest args)
-  "Read a password using PROMPT.
-If ARGS, PROMPT is used as an argument to `format'."
-  (let ((prompt (if args
-		    (apply 'format prompt args)
-		  prompt)))
-    (funcall (if (or (fboundp 'read-passwd)
-		     (and (load "subr" t)
-			  (fboundp 'read-passwd))
-		     (and (load "passwd" t)
-			  (fboundp 'read-passwd)))
-		 'read-passwd
-	       (autoload 'ange-ftp-read-passwd "ange-ftp")
-	       'ange-ftp-read-passwd)
-	     prompt)))
-
 (defsubst imap-utf7-encode (string)
   (if imap-use-utf7
       (and string
@@ -771,7 +755,7 @@ Returns t if login was successful, nil otherwise."
 				"'): ")
 			(or user imap-default-user))))
 	(setq passwd (or imap-password
-			 (imap-read-passwd
+			 (read-passwd
 			  (concat "IMAP password for " user "@"
 				  imap-server " (using authenticator `"
 				  (symbol-name imap-auth) "'): "))))
@@ -2644,7 +2628,6 @@ Return nil if no complete line has arrived."
   (buffer-disable-undo (get-buffer-create imap-debug-buffer))
   (mapcar (lambda (f) (trace-function-background f imap-debug-buffer))
 	  '(
-	    imap-read-passwd
 	    imap-utf7-encode
 	    imap-utf7-decode
 	    imap-error-text

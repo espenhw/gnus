@@ -41,7 +41,6 @@
 (require 'gnus-bcklg)
 (require 'nnmail)
 (require 'mm-util)
-(require 'mail-source)
 (require 'mm-url)
 
 (nnoo-declare nnwarchive)
@@ -286,7 +285,7 @@
 		 user-mail-address)))
     (setq nnwarchive-passwd
 	  (or nnwarchive-passwd
-	      (mail-source-read-passwd
+	      (read-passwd
 	       (format "Password for %s at %s: "
 		       nnwarchive-login server)))))
   (unless nnwarchive-groups

@@ -166,23 +166,6 @@ Valid states are `closed', `initial', `nonauth', and `auth'.")
   (when (fboundp 'set-buffer-multibyte)
     (set-buffer-multibyte nil)))
 
-(defun sieve-manage-read-passwd (prompt &rest args)
-  "Read a password using PROMPT.
-If ARGS, PROMPT is used as an argument to `format'."
-  (let ((prompt (if args
-		    (apply 'format prompt args)
-		  prompt)))
-    (funcall (if (or (fboundp 'read-passwd)
-		     (and (load "subr" t)
-			  (fboundp 'read-passwd))
-		     (and (load "passwd" t)
-			  (fboundp 'read-passwd)))
-		 'read-passwd
-	       (autoload 'ange-ftp-read-passwd "ange-ftp")
-	       'ange-ftp-read-passwd)
-	     prompt)))
-
-
 ;; Uses the dynamically bound `reason' variable.
 (defvar reason)
 (defun sieve-manage-interactive-login (buffer loginfunc)
@@ -202,7 +185,7 @@ Returns t if login was successful, nil otherwise."
 				sieve-manage-server ": ")
 			(or user sieve-manage-default-user))))
 	(setq passwd (or sieve-manage-password
-			 (sieve-manage-read-passwd
+			 (read-passwd
 			  (concat "Managesieve password for " user "@"
 				  sieve-manage-server ": "))))
 	(when (and user passwd)
