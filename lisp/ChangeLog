@@ -1,3 +1,7 @@
+1999-10-26 23:27:44  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-dissect-buffer): CTE may come without CTL.
+
 1999-10-26 21:44:05  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-srvr.el (gnus-browse-foreign-server): Use

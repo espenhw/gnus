@@ -190,7 +190,11 @@ to:
       (if (or (not ctl)
 	      (not (string-match "/" (car ctl))))
 	  (mm-dissect-singlepart
-	   '("text/plain") nil no-strict-mime
+	   '("text/plain") 
+	   (and cte (intern (downcase (mail-header-remove-whitespace
+				       (mail-header-remove-comments
+					cte)))))
+	   no-strict-mime
 	   (and cd (ignore-errors (mail-header-parse-content-disposition cd)))
 	   description)
 	(setq type (split-string (car ctl) "/"))
