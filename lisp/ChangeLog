@@ -1,3 +1,7 @@
+2002-06-06  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-send-mail-with-sendmail): Improve error message.
+
 2002-06-06  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* message.el (message-interactive): Change default from nil to t.
