@@ -1,3 +1,9 @@
+2004-12-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-news.texi: Addition.
+
+	* gnus.texi (RSS): Addition.
+
 2004-12-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (.texi): Set LANG=C to avoid NLS translations.
