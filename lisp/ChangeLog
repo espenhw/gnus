@@ -2,6 +2,7 @@
 
 	* message.el (message-check-news-header-syntax): Check long
 	header lines.
+	(message-check-news-header-syntax): Update `start'.
 
 	* gnus-group.el (gnus-group-expire-articles): Doc fix.
 	(gnus-group-line-format): %U.

@@ -3776,12 +3776,14 @@ Otherwise, generate and save a value for `canlock-password' first."
      (let ((start (point))
 	   found)
        (while (and (not found)
-		   (re-search-forward "^[^ \t:]+: " nil t))
+		   (re-search-forward "^\\([^ \t:]+\\): " nil t))
 	 (when (> (- (point) start) 998)
 	   (setq found t))
+	 (setq start (match-beginning 0))
 	 (forward-line 1))
        (if found
-	   (y-or-n-p "You have a header that's too long.  Really post? ")
+	   (y-or-n-p (format "Your %s header is too long.  Really post? "
+			     (match-string 1)))
 	 t)))
    ;; Check for multiple identical headers.
    (message-check 'multiple-headers
