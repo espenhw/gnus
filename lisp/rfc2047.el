@@ -427,8 +427,7 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 		      (progn
 			(rfc2047-encode start end)
 			(setq last-encoded t))
-		    (setq last-encoded nil))
-		  )))
+		    (setq last-encoded nil)))))
 	    (error
 	     (error "Invalid data for rfc2047 encoding: %s"
 		    (mm-replace-in-string orig-text "[ \t\n]+" " ")))))))
