@@ -794,7 +794,7 @@ used."
 (defcustom gnus-treat-highlight-signature '(or last (typep "text/x-vcard"))
   "Highlight the signature.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles'."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 (put 'gnus-treat-highlight-signature 'highlight t)

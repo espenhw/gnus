@@ -746,6 +746,8 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
 
 (defun mml-mode (&optional arg)
   "Minor mode for editing MML.
+MML is the MIME Meta Language, a minor mode for composing MIME articles.
+See Info node `(emacs-mime)Composing'.
 
 \\{mml-mode-map}"
   (interactive "P")
