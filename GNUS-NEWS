@@ -8,6 +8,9 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** The revised Gnus FAQ is included in the manual.
+See the info node "Frequently Asked Questions".
+
 ** Upgrading from previous (stable) version if you have used Oort.
 
 If you have tried Oort (the unstable Gnus branch leading to this
