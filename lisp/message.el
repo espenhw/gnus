@@ -3975,13 +3975,15 @@ than 988 characters long, and if they are not, trim them until they are."
 (defun message-beginning-of-line (&optional n)
   "Move point to beginning of header value or to beginning of line."
   (interactive "p")
-  (let* ((here (point))
-	 (bol (progn (beginning-of-line n) (point)))
-	 (eol (gnus-point-at-eol))
-	 (eoh (re-search-forward ": *" eol t)))
-    (if (equal here eoh)
-	(goto-char bol)
-      (goto-char eoh))))
+  (if (message-point-in-header-p)
+      (let* ((here (point))
+	     (bol (progn (beginning-of-line n) (point)))
+	     (eol (gnus-point-at-eol))
+	     (eoh (re-search-forward ": *" eol t)))
+	(if (equal here eoh)
+	    (goto-char bol)
+	  (goto-char eoh)))
+    (beginning-of-line n)))
 
 (defun message-buffer-name (type &optional to group)
   "Return a new (unique) buffer name based on TYPE and TO."
