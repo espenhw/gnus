@@ -33,6 +33,7 @@
 (eval-when-compile (require 'cl))
 (require 'wid-edit)
 (require 'mm-util)
+(require 'nnheader)
 
 ;; Make sure it was the right mm-util.
 (unless (fboundp 'mm-guess-mime-charset)

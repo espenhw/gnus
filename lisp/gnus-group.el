@@ -4123,8 +4123,7 @@ This command may read the active file."
 	      (setq gnus-newsgroup-unselected
 		    (nreverse gnus-newsgroup-unselected)))))
       (gnus-activate-group group)
-      (gnus-group-make-articles-read group
-				     (list article))
+      (gnus-group-make-articles-read group (list article))
       (when (gnus-group-auto-expirable-p group)
 	(gnus-add-marked-articles
 	 group 'expire (list article))))))

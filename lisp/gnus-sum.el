@@ -1715,7 +1715,8 @@ increase the score of each group you read."
 
   (gnus-define-keys (gnus-summary-buffer-map "Y" gnus-summary-mode-map)
     "g" gnus-summary-prepare
-    "c" gnus-summary-insert-cached-articles)
+    "c" gnus-summary-insert-cached-articles
+    "d" gnus-summary-insert-dormant-articles)
 
   (gnus-define-keys (gnus-summary-exit-map "Z" gnus-summary-mode-map)
     "c" gnus-summary-catchup-and-exit
@@ -2358,6 +2359,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	("Regeneration"
 	 ["Regenerate" gnus-summary-prepare t]
 	 ["Insert cached articles" gnus-summary-insert-cached-articles t]
+	 ["Insert dormant articles" gnus-summary-insert-dormant-articles t]
 	 ["Toggle threading" gnus-summary-toggle-threads t])
 	["See old articles" gnus-summary-insert-old-articles t]
 	["See new articles" gnus-summary-insert-new-articles t]
@@ -6727,6 +6729,14 @@ If optional argument UNREAD is non-nil, only unread article is selected."
   (interactive "p")
   (gnus-summary-next-subject (- n) t))
 
+(defun gnus-summary-goto-subjects (articles)
+  "Insert the subject header for ARTICLES in the current buffer."
+  (save-excursion
+    (dolist (article articles)
+      (gnus-summary-goto-subject articles t)))
+  (gnus-summary-limit (append articles gnus-newsgroup-limit))
+  (gnus-summary-position-point))
+  
 (defun gnus-summary-goto-subject (article &optional force silent)
   "Go the subject line of ARTICLE.
 If FORCE, also allow jumping to articles not currently shown."
@@ -7496,6 +7506,14 @@ article."
     (prog1
 	(gnus-summary-limit (nconc articles gnus-newsgroup-limit))
       (gnus-summary-position-point))))
+
+(defun gnus-summary-insert-dormant-articles ()
+  "Insert all the dormat articles for this group into the current buffer."
+  (interactive)
+  (let ((gnus-verbose (max 6 gnus-verbose)))
+    (if (not gnus-newsgroup-dormant)
+	(gnus-message 3 "No cached articles for this group")
+      (gnus-summary-goto-subjects gnus-newsgroup-dormant))))
 
 (defun gnus-summary-limit-include-dormant ()
   "Display all the hidden articles that are marked as dormant.

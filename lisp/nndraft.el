@@ -153,9 +153,10 @@
   t)
 
 (defun nndraft-generate-headers ()
-  (message-generate-headers
-   (message-headers-to-generate
-    message-required-headers message-draft-headers nil)))
+  (save-excursion
+    (message-generate-headers
+     (message-headers-to-generate
+      message-required-headers message-draft-headers nil))))
 
 (deffoo nndraft-request-associate-buffer (group)
   "Associate the current buffer with some article in the draft group."

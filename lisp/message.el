@@ -188,7 +188,8 @@ Checks include `subject-cmsg', `multiple-headers', `sendsys',
 `new-text', `quoting-style', `redirected-followup', `signature',
 `approved', `sender', `empty', `empty-headers', `message-id', `from',
 `subject', `shorten-followup-to', `existing-newsgroups',
-`buffer-file-name', `unchanged', `newsgroups', `reply-to'."
+`buffer-file-name', `unchanged', `newsgroups', `reply-to',
+'continuation-headers'."
   :group 'message-news
   :type '(repeat sexp))			; Fixme: improve this
 
@@ -3903,6 +3904,18 @@ Otherwise, generate and save a value for `canlock-password' first."
 	   (if (= (length errors) 1) "this" "these")
 	   (if (= (length errors) 1) "" "s")
 	   (mapconcat 'identity errors ", ")))))))
+   ;; Check continuation headers.
+   (message-check 'continuation-headers
+     (goto-char (point-min))
+     (while (re-search-forward "^[^ \\n][^:\\n]*$" nil t)
+       (if (y-or-n-p "You have line in your headers without : and not \
+beginning by a continuation caracter. Add one ?")
+	     (progn
+	       (goto-char (match-beginning 0))
+	       (insert " "))
+	   (if (y-or-n-p "Send anyway ?")
+	       t
+	     nil))))
    ;; Check the Newsgroups & Followup-To headers for syntax errors.
    (message-check 'valid-newsgroups
      (let ((case-fold-search t)

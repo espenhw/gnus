@@ -1,3 +1,14 @@
+2003-01-02  Matthieu Moy  <Matthieu.Moy@imag.fr>
+
+	* message.el (message-check-news-header-syntax): Check syntax of
+	continuation headers.
+
+2003-01-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-button-url-regexp,
+	(gnus-button-mid-or-mail-regexp, gnus-button-alist,
+	(gnus-header-button-alist): Regexps are case insensitive here.
+
 2003-01-02  Simon Josefsson  <jas@extundo.com>
 
 	* dig.el (query-dig): Doc fix.
@@ -8,6 +19,17 @@
 	summary buffer line, not just the download mark.
 
 2003-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-goto-subjects): New function.
+	(gnus-summary-insert-dormant-articles): New command and
+	keystroke. 
+
+	* gnus-cache.el (gnus-summary-insert-cached-articles): Use new
+	function for mass insertion of subjects.
+
+	* nndraft.el (nndraft-generate-headers): Don't move point.
+
+	* gnus.el (nnheader): Require nnheader.
 
 	* nndraft.el (nndraft-request-associate-buffer): Use
 	make-local-variable.

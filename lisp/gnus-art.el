@@ -5340,8 +5340,8 @@ groups."
 
 (defcustom gnus-button-url-regexp
   (if (string-match "[[:digit:]]" "1") ;; support POSIX?
-      "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-a-zA-Z0-9_=!?#$@~`%&*+|\\/:;.,[:word:]]+[-a-zA-Z0-9_=#$@~`%&*+|\\/[:word:]]\\)"
-    "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?\\([-a-zA-Z0-9_=!?#$@~`%&*+|\\/:;.,]\\|\\w\\)+\\([-a-zA-Z0-9_=#$@~`%&*+|\\/]\\|\\w\\)\\)")
+      "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-z0-9_.]+:[0-9]*\\)?[-a-z0-9_=!?#$@~`%&*+|\\/:;.,[:word:]]+[-a-z0-9_=#$@~`%&*+|\\/[:word:]]\\)"
+    "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-z0-9_.]+:[0-9]*\\)?\\([-a-z0-9_=!?#$@~`%&*+|\\/:;.,]\\|\\w\\)+\\([-a-z0-9_=#$@~`%&*+|\\/]\\|\\w\\)\\)")
   "Regular expression that matches URLs."
   :group 'gnus-article-buttons
   :type 'regexp)
@@ -5393,7 +5393,7 @@ The function must take one argument, the string naming the URL."
 		 (regexp :tag "Other")))
 
 (defcustom gnus-button-mid-or-mail-regexp
-  (concat "\\b\\(<?[a-zA-Z0-9][^<>\")!;:,{}\n\t ]*@"
+  (concat "\\b\\(<?[a-z0-9][^<>\")!;:,{}\n\t ]*@"
 	  gnus-button-valid-fqdn-regexp
 	  ">?\\)\\b")
   "Regular expression that matches a message ID or a mail address."
@@ -5557,7 +5557,7 @@ positives are possible."
     ("\\bin\\( +article\\| +message\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2
      t gnus-button-message-id 3)
     ("\\(<URL: *\\)mailto: *\\([^> \n\t]+\\)>" 0 t gnus-url-mailto 2)
-    ("mailto:\\([-a-zA-Z.@_+0-9%=?]+\\)" 0 t gnus-url-mailto 1)
+    ("mailto:\\([-a-z.@_+0-9%=?]+\\)" 0 t gnus-url-mailto 1)
     ("\\bmailto:\\([^ \n\t]+\\)" 0 t gnus-url-mailto 1)
     ;; CTAN
     ("\\bCTAN:[ \t\n]*\\([^>)!;:,\n\t ]*\\)" 0 (>= gnus-button-tex-level 1)
@@ -5596,12 +5596,12 @@ positives are possible."
      (and (>= gnus-button-man-level 1) (< gnus-button-man-level 3))
      gnus-button-handle-man 1)
     ;; more man pages: resolv.conf(5), iso_8859-1(7), xterm(1x)
-    ("\\b\\([a-zA-Z][-_.a-zA-Z0-9]+\\)([1-9])\\W" 0
+    ("\\b\\([a-z][-_.a-z0-9]+\\)([1-9])\\W" 0
      (and (>= gnus-button-man-level 3) (< gnus-button-man-level 5))
      gnus-button-handle-man 1)
     ;; even more: Apache::PerlRun(3pm), PDL::IO::FastRaw(3pm),
     ;; SoWWWAnchor(3iv), XSelectInput(3X11)
-    ("\\b\\([a-zA-Z][-_.:a-zA-Z0-9]+\\)([1-9][X1a-z]*)\\W" 0
+    ("\\b\\([a-z][-_.:a-z0-9]+\\)([1-9][X1a-z]*)\\W" 0
      (>= gnus-button-man-level 5) gnus-button-handle-man 1)
     ;; MID or mail: To avoid too many false positives we don't try to catch
     ;; all kind of allowed MIDs or mail addresses.  Domain part must contain
@@ -5613,8 +5613,8 @@ positives are possible."
   "*Alist of regexps matching buttons in article bodies.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
-REGEXP: is the string matching text around the button (can also be lisp
-expression evaluating to a string),
+REGEXP: is the string (case insensitive) matching text around the button (can
+also be lisp expression evaluating to a string),
 BUTTON: is the number of the regexp grouping actually matching the button,
 FORM: is a lisp expression which must eval to true for the button to
 be added,
@@ -5641,7 +5641,7 @@ variable it the real callback function."
     ("^X-[Uu][Rr][Ll]:" gnus-button-url-regexp 0 t browse-url 0)
     ("^Subject:" gnus-button-url-regexp 0 t browse-url 0)
     ("^[^:]+:" gnus-button-url-regexp 0 t browse-url 0)
-    ("^[^:]+:" "\\bmailto:\\([-a-zA-Z.@_+0-9%=?]+\\)" 0 t gnus-url-mailto 1)
+    ("^[^:]+:" "\\bmailto:\\([-a-z.@_+0-9%=?]+\\)" 0 t gnus-url-mailto 1)
     ("^[^:]+:" "\\(<\\(url: \\)?news:\\([^>\n ]*\\)>\\)" 1 t
      gnus-button-message-id 3))
   "*Alist of headers and regexps to match buttons in article heads.
