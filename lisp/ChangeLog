@@ -1,3 +1,8 @@
+2002-02-21  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir-request-expire-articles): Use
+	nnmail-expiry-wait* if expire-age parameter is not set.
+
 2002-02-21  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-group.el (gnus-group-sort-groups-by-real-name): New
@@ -25,7 +30,7 @@
 
 	* mm-decode.el (mm-inlined-types): Add application/x-emacs-lisp.
 	(mm-automatic-display): Ditto.
-	
+
 	* mailcap.el (mailcap-mime-data): Ditto.
 	From: Reiner Steib <4uce.02.r.steib@gmx.net>
 

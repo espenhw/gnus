@@ -1472,7 +1472,11 @@ by nnmaildir-request-article.")
 	    pgname (nnmaildir--grp-get-pname group))
       (if (nnmaildir--param pgname 'read-only)
 	  (throw 'return (gnus-uncompress-range ranges)))
-      (setq time (or (nnmaildir--param pgname 'expire-age) 604800))
+      (setq time (or (nnmaildir--param pgname 'expire-age)
+		     (* 86400 ;; seconds per day
+			(or (and nnmail-expiry-wait-function
+				 (funcall nnmail-expiry-wait-function gname))
+			    nnmail-expiry-wait))))
       (if (or force (integerp time)) nil
 	(throw 'return (gnus-uncompress-range ranges)))
       (setq boundary (current-time)
