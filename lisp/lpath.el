@@ -25,6 +25,7 @@
 	       charsetp
 	       coding-system-p
 	       propertize make-mode-line-mouse2-map
+	       make-mode-line-mouse-map
 	       rmail-select-summary rmail-summary-exists rmail-update-summary
 	       sc-cite-regexp set-font-family set-font-size temp-directory
 	       string-as-multibyte
