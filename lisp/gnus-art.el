@@ -1148,7 +1148,7 @@ See Info node `(gnus)Customizing Articles' for details."
   :type gnus-article-treat-custom)
 (put 'gnus-treat-overstrike 'highlight t)
 
-(defcustom gnus-treat-ansi-sequences t
+(defcustom gnus-treat-ansi-sequences (if (locate-library "ansi-color") t)
   "Treat ANSI SGR control sequences.
 Valid values are nil, t, `head', `last', an integer or a predicate.
 See Info node `(gnus)Customizing Articles' for details."

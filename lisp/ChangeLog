@@ -1,3 +1,7 @@
+2004-01-06  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-treat-ansi-sequences): Changed default.
+
 2004-01-07  Steve Youngs  <sryoungs@bigpond.net.au>
 
 	* run-at-time.el (run-at-time-saved): Move to after the definition
