@@ -123,8 +123,7 @@ it's not cached."
 	  (overview-file (gnus-cache-file-name
 			  (car gnus-cache-buffer) ".overview")))
       ;; write the overview only if it was modified
-      (when (and (buffer-live-p buffer)
-		 (buffer-modified-p buffer))
+      (when (and (buffer-live-p buffer) (buffer-modified-p buffer))
 	(with-current-buffer buffer
 	  (if (> (buffer-size) 0)
 	      ;; Non-empty overview, write it to a file.
