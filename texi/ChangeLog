@@ -1,3 +1,9 @@
+2001-07-24  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Duplicates): Make split method regexp more specific,
+	in case other `Gnus-Warning' headers are added in the future.
+	Suggested by Karl Kleinpaste.
+
 2001-07-23 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Karl Kleinpaste <karl@charcoal.com>
 

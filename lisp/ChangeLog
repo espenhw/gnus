@@ -1,3 +1,8 @@
+2001-07-24  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-delay.el (gnus-delay-default-hour): New variable.
+	(gnus-delay-article): Allow specific date in YYYY-MM-DD format.
+
 2001-07-23 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Karl Kleinpaste <karl@charcoal.com>
 
