@@ -1,6 +1,7 @@
 ;;; canlock.el --- functions for Cancel-Lock feature
 
-;; Copyright (C) 1998, 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2001, 2002, 2003, 2004
+;; Free Software Foundation, Inc.
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news, cancel-lock, hmac, sha1, rfc2104
@@ -43,7 +44,7 @@
 (eval-when-compile
   (require 'cl))
 
-(autoload 'sha1-binary "sha1-el")
+(autoload 'sha1 "sha1-el")
 (autoload 'base64-encode-string "base64")
 (autoload 'mail-fetch-field "mail-utils")
 (defvar mail-header-separator)
@@ -51,35 +52,6 @@
 (defgroup canlock nil
   "The Cancel-Lock feature."
   :group 'applications)
-
-(defcustom canlock-sha1-function 'sha1-binary
-  "Function to call to make a SHA-1 message digest."
-  :type '(radio (function-item sha1-binary)
-		(function-item canlock-sha1-with-openssl)
-		(function :tag "Other"))
-  :group 'canlock)
-
-(defcustom canlock-sha1-function-for-verify canlock-sha1-function
-  "Function to call to make a SHA-1 message digest for verifying."
-  :type '(radio (function-item sha1-binary)
-		(function-item canlock-sha1-with-openssl)
-		(function :tag "Other"))
-  :group 'canlock)
-
-(defcustom canlock-openssl-program "openssl"
-  "Name of OpenSSL program."
-  :type 'string
-  :group 'canlock)
-
-(defcustom canlock-openssl-args '("sha1")
-  "Arguments passed to the OpenSSL program."
-  :type 'sexp
-  :group 'canlock)
-
-(defcustom canlock-ignore-errors nil
-  "If non-nil, ignore any error signals."
-  :type 'boolean
-  :group 'canlock)
 
 (defcustom canlock-password nil
   "Password to use when signing a Cancel-Lock or a Cancel-Key header."
@@ -99,25 +71,6 @@ buffer does not look like a news message."
   :type 'boolean
   :group 'canlock)
 
-(defun canlock-sha1-with-openssl (message)
-  "Make a SHA-1 digest of MESSAGE using OpenSSL."
-  (let (default-enable-multibyte-characters)
-    (with-temp-buffer
-      (let ((coding-system-for-read 'binary)
-	    (coding-system-for-write 'binary)
-	    selective-display
-	    (case-fold-search t))
-	(insert message)
-	(apply 'call-process-region (point-min) (point-max)
-	       canlock-openssl-program t t nil canlock-openssl-args)
-	(goto-char (point-min))
-	(insert "\"")
-	(while (re-search-forward "\\([0-9a-f][0-9a-f]\\)" nil t)
-	  (replace-match "\\\\x\\1"))
-	(insert "\"")
-	(goto-char (point-min))
-	(read (current-buffer))))))
-
 (eval-when-compile
   (defmacro canlock-string-as-unibyte (string)
     "Return a unibyte string with the same individual bytes as STRING."
@@ -127,7 +80,7 @@ buffer does not look like a news message."
 
 (defun canlock-sha1 (message)
   "Make a SHA-1 digest of MESSAGE as a unibyte string of length 20 bytes."
-  (canlock-string-as-unibyte (funcall canlock-sha1-function message)))
+  (sha1 message nil nil 'binary))
 
 (defun canlock-make-cancel-key (message-id password)
   "Make a Cancel-Key header."
@@ -242,14 +195,10 @@ message."
 (defun canlock-verify (&optional buffer)
   "Verify Cancel-Lock or Cancel-Key in BUFFER.
 If BUFFER is nil, the current buffer is assumed.  Signal an error if
-it fails.  You can modify the behavior of this function to return non-
-nil instead of to signal an error by setting the option
-`canlock-ignore-errors' to non-nil."
+it fails."
   (interactive)
-  (let ((canlock-sha1-function (or canlock-sha1-function-for-verify
-				   canlock-sha1-function))
-	keys locks errmsg id-for-key id-for-lock password
-	key-for-key key-for-lock match)
+  (let (keys locks errmsg id-for-key id-for-lock password
+	     key-for-key key-for-lock match)
     (save-excursion
       (when buffer
 	(set-buffer buffer))
@@ -265,21 +214,12 @@ nil instead of to signal an error by setting the option
 		id-for-lock (mail-fetch-field "Message-ID"))
 	  (or id-for-key id-for-lock
 	      (setq errmsg "There are no Message-ID(s)")))))
-
     (if errmsg
-	(if canlock-ignore-errors
-	    errmsg
-	  (error "%s" errmsg))
-
+	(error "%s" errmsg)
       (setq password (or canlock-password-for-verify
 			 (read-passwd "Password for Canlock: ")))
       (if (or (not (stringp password)) (zerop (length password)))
-	  (progn
-	    (setq errmsg "Password for Canlock is bad")
-	    (if canlock-ignore-errors
-		errmsg
-	      (error "%s" errmsg)))
-
+	  (error "Password for Canlock is bad")
 	(when keys
 	  (when id-for-key
 	    (setq key-for-key (canlock-make-cancel-key id-for-key password))
@@ -287,7 +227,6 @@ nil instead of to signal an error by setting the option
 	      (setq match (string-equal key-for-key (pop keys)))))
 	  (setq keys (if match "good" "bad")))
 	(setq match nil)
-
 	(when locks
 	  (when id-for-lock
 	    (setq key-for-lock
@@ -297,7 +236,6 @@ nil instead of to signal an error by setting the option
 	    (when (and locks (not match))
 	      (setq match (string-equal key-for-lock (pop locks)))))
 	  (setq locks (if match "good" "bad")))
-
 	(prog1
 	    (when (member "bad" (list keys locks))
 	      "bad")
