@@ -1,3 +1,8 @@
+2005-02-11  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-delete-group): small bug leaves
+	an ID in the registry even if it has no groups
+
 2005-02-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-mime-jka-compr-maybe-uncompress): Remove;
