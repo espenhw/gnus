@@ -275,7 +275,7 @@ your main source of newsgroup names."
   (spam-group-processor-p group 'gnus-group-ham-exit-processor-ifile))
 
 (defun spam-group-ham-processor-bogofilter-p (group)
-  (spam-group-processor-p group 'gnus-group-ham-exit-processor-ifile))
+  (spam-group-processor-p group 'gnus-group-ham-exit-processor-bogofilter))
 
 (defun spam-group-spam-processor-stat-p (group)
   (spam-group-processor-p group 'gnus-group-spam-exit-processor-stat))

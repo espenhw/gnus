@@ -1,3 +1,7 @@
+2003-01-21  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-group-ham-processor-bogofilter-p): fixed bug
+
 2003-01-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mml-sec.el (mml-secure-sign-pgpauto): Renamed.
