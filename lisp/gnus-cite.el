@@ -30,6 +30,7 @@
 
 (require 'gnus)
 (require 'gnus-range)
+(require 'gnus-art)
 (require 'message)	; for message-cite-prefix-regexp
 
 ;;; Customization:
