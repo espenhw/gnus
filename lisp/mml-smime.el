@@ -23,6 +23,8 @@
 
 ;;; Commentary:
 
+;; todo: move s/mime code from mml-sec.el here.
+
 ;;; Code:
 
 (require 'smime)
@@ -30,33 +32,6 @@
 (defun mml-smime-verify (handle ctl)
   (smime-verify-buffer)
   handle)
-
-;;;###autoload
-(defun mml-smime-sign (cont)
-  ;; FIXME: You have to input the sender.
-  (when (null smime-keys)
-    (error "Please use M-x customize RET smime RET to configure SMIME"))
-  (smime-sign-buffer)
-  (goto-char (point-min))
-  (when (looking-at "^MIME-Version: 1.0")
-    (forward-line 1)
-    (delete-region (point-min) (point)))
-  (goto-char (point-max)))
-  
-;;;###autoload
-(defun mml-smime-encrypt (cont)
-  ;; FIXME: You have to input the receiptant.
-  ;; FIXME: Should encrypt to myself so I can read it??
-  (smime-encrypt-buffer)
-  (goto-char (point-min))
-  (when (looking-at "^MIME-Version: 1.0")
-    (forward-line 1)
-    (delete-region (point-min) (point)))
-  (goto-char (point-max)))
-
-;;;###autoload
-(defun mml-smime-setup ()
-  )
 
 (provide 'mml-smime)
 

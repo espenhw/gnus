@@ -225,6 +225,7 @@ to:
 (defvar mm-dissect-default-type "text/plain")
 
 (autoload 'mml2015-verify "mml2015")
+(autoload 'mml-smime-verify "mml-smime")
 
 (defvar mm-verify-function-alist
   '(("application/pgp-signature" mml2015-verify "PGP")

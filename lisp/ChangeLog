@@ -1,5 +1,10 @@
 2000-11-05  Simon Josefsson  <sj@extundo.com>
 
+	* mml-smime.el (mml-smime-sign): Not used.
+	(mml-smime-encrypt): Ditto.
+
+	* mm-decode.el (mml-smime-verify): Autoload mml-smime.
+
 	Verify S/MIME signature support.
 	
 	* mm-decode.el (mm-inline-media-tests): Add
