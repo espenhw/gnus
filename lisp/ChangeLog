@@ -1,3 +1,21 @@
+2000-08-05  Simon Josefsson <simon@josefsson.org>
+
+	Make GCC to remote groups work when unplugged
+	(postpone GCC until message is actually sent).
+
+	* gnus-draft.el (gnus-draft-send): Call `gnus-agent-restore-gcc'.
+
+	* gnus-agent.el (gnus-agent-possibly-do-gcc): 
+	(gnus-agent-restore-gcc): 
+	(gnus-agent-possibly-save-gcc): New functions.
+
+	* gnus-msg.el (gnus-inews-add-send-actions): Use
+	`gnus-agent-possibly-do-gcc' if Agentized.
+	(gnus-inews-add-send-actions): Add `gnus-agent-possibly-save-gcc'
+	to `message-header-hook'.
+
+	* gnus.el (gnus-agent-gcc-header): New variable.
+
 2000-07-13  Simon Josefsson <simon@josefsson.org>
 
 	Asks the user to synch flags with server when you plug in.

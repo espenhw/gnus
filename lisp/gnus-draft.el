@@ -31,6 +31,7 @@
 (require 'message)
 (require 'gnus-msg)
 (require 'nndraft)
+(require 'gnus-agent)
 (eval-when-compile (require 'cl))
 
 ;;; Draft minor mode
@@ -142,6 +143,8 @@
 	(setq type (ignore-errors (read (current-buffer)))
 	      method (ignore-errors (read (current-buffer))))
 	(message-remove-header gnus-agent-meta-information-header)))
+    ;; Let Agent restore any GCC lines and have message.el perform them.
+    (gnus-agent-restore-gcc)
     ;; Then we send it.  If we have no meta-information, we just send
     ;; it and let Message figure out how.
     (when (and (or (null method)

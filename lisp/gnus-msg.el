@@ -276,7 +276,11 @@ the Gcc: header for archiving purposes."
 
 (defun gnus-inews-add-send-actions (winconf buffer article)
   (make-local-hook 'message-sent-hook)
-  (add-hook 'message-sent-hook 'gnus-inews-do-gcc nil t)
+  (add-hook 'message-sent-hook (if gnus-agent 'gnus-agent-possibly-do-gcc
+				 'gnus-inews-do-gcc) nil t)
+  (when gnus-agent
+    (make-local-hook 'message-header-hook)
+    (add-hook 'message-header-hook 'gnus-agent-possibly-save-gcc nil t))
   (setq message-post-method
 	`(lambda (arg)
 	   (gnus-post-method arg ,gnus-newsgroup-name)))

@@ -378,6 +378,27 @@ be a select method."
     (while (search-backward "\n" nil t)
       (replace-match "\\n" t t))))
 
+(defun gnus-agent-restore-gcc ()
+  "Restore GCC field from saved header."
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward (concat gnus-agent-gcc-header ":") nil t)
+      (replace-match "Gcc:" 'fixedcase))))
+  
+(defun gnus-agent-possibly-save-gcc ()
+  "Save GCC if Gnus is unplugged."
+  (unless gnus-plugged
+    (save-excursion
+      (goto-char (point-min))
+      (let ((case-fold-search t))
+	(while (re-search-forward "^gcc:" nil t)
+	  (replace-match (concat gnus-agent-gcc-header ":") 'fixedcase))))))
+
+(defun gnus-agent-possibly-do-gcc ()
+  "Do GCC if Gnus is plugged."
+  (when gnus-plugged
+    (gnus-inews-do-gcc)))
+
 ;;;
 ;;; Group mode commands
 ;;;
