@@ -7434,6 +7434,12 @@ to save in."
 	      (copy-to-buffer buffer (point-min) (point-max))
 	      (set-buffer buffer)
 	      (gnus-article-delete-invisible-text)
+	      (when (gnus-visual-p 'article-highlight 'highlight)
+		;; Copy-to-buffer doesn't copy overlay.  So redo
+		;; highlight.
+		(let ((gnus-article-buffer buffer))
+		  (gnus-article-highlight-citation t)
+		  (gnus-article-highlight-signature)))
 	      (let ((ps-left-header
 		     (list
 		      (concat "("
