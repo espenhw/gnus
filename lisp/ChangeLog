@@ -1,4 +1,24 @@
+Sat Oct 14 11:58:47 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-remove-lines-marked-with): Try to go to
+	the article from whence we came.
+
+Fri Oct 13 15:05:50 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el (gnus-sort-threads): Keep the user informed.
+
+Sat Oct 14 01:53:57 1995  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmh.el (nnmh-request-list): Stil wouldn't recurse properly. 
+
+Fri Oct 13 10:37:57 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-configure-windows): Would possibly bug out when
+ 	the minibuffer was active and in a different frame.
+
 Fri Oct 13 01:27:15 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: 5.0.7 is released.
 
 	* nnmh.el (nnmh-request-list): Wouldn't recurse down symlinks. 
 

@@ -1349,7 +1349,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "Gnus v5.0.7"
+(defconst gnus-version "Gnus v5.0.8"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2494,10 +2494,11 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
     (or r (error "No such setting: %s" setting))
 
     (if (and (not force) (setq all-visible (gnus-all-windows-visible-p r)))
-	;; All the windows mentioned are already visibe, so we just
+	;; All the windows mentioned are already visible, so we just
 	;; put point in the assigned buffer, and do not touch the
 	;; winconf. 
-	(select-window (get-buffer-window all-visible))
+	(select-window (get-buffer-window all-visible t))
+	 
 
       ;; Either remove all windows or just remove all Gnus windows.
       (if gnus-use-full-window
@@ -2588,7 +2589,7 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
       ;; Finally, we pop to the buffer that's supposed to have point. 
       (or jump-buffer (error "Missing `point' in spec for %s" setting))
 
-      (select-window (get-buffer-window jump-buffer))
+      (select-window (get-buffer-window jump-buffer t))
       (set-buffer jump-buffer))))
 
 (defun gnus-all-windows-visible-p (rule)
@@ -6384,8 +6385,11 @@ If NO-ARTICLE is non-nil, no article is selected initially."
   ;; Sort threads as specified in `gnus-thread-sort-functions'.
   (let ((fun gnus-thread-sort-functions))
     (while fun
+      (gnus-message 6 "Sorting with %S..." fun)
       (setq threads (sort threads (car fun))
 	    fun (cdr fun))))
+  (if gnus-thread-sort-functions
+      (gnus-message 6 "Sorting...done"))
   threads)
 
 ;; Written by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>.
@@ -9743,6 +9747,7 @@ even ticked and dormant ones."
   ;; Fix by Sudish Joseph <joseph@cis.ohio-state.edu>.
   (gnus-set-global-variables)
   (let ((buffer-read-only nil)
+	(orig-article (gnus-summary-article-number))
 	(marks (concat "^[" marks "]")))
     (goto-char (point-min))
     (if gnus-newsgroup-adaptive
@@ -9763,11 +9768,12 @@ even ticked and dormant ones."
 	       (gnus-summary-subject-string)))
 	    ()
 	  (forward-line -1)
-	  (gnus-delete-line)))))
-  (or (zerop (buffer-size))
-      (if (eobp)
-	  (gnus-summary-prev-subject 1)
-	(gnus-summary-position-cursor))))
+	  (gnus-delete-line))))
+    (or (zerop (buffer-size))
+	(gnus-summary-goto-subject orig-article)
+	(if (eobp)
+	    (gnus-summary-prev-subject 1)
+	  (gnus-summary-position-cursor)))))
 
 (defun gnus-summary-expunge-below (&optional score)
   "Remove articles with score less than SCORE."

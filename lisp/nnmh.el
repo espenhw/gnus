@@ -224,8 +224,9 @@
 	     (format 
 	      "%s %d %d y\n" 
 	      (progn
-		(string-match (file-name-as-directory 
-			       (expand-file-name nnmh-directory)) dir)
+		(string-match 
+		 (file-truename (file-name-as-directory 
+				 (expand-file-name nnmh-directory))) dir)
 		(nnmail-replace-chars-in-string
 		 (substring dir (match-end 0)) ?/ ?.))
 	      (apply (function max) files) 
