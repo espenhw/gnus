@@ -2241,7 +2241,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-draft" :interactive t gnus-draft-mode gnus-group-send-queue)
      ("gnus-mlspl" gnus-group-split gnus-group-split-fancy)
      ("gnus-mlspl" :interactive t gnus-group-split-setup
-      gnus-group-split-update))))
+      gnus-group-split-update)
+     ("gnus-delay" gnus-delay-initialize))))
 
 ;;; gnus-sum.el thingies
 
