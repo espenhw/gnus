@@ -5186,7 +5186,8 @@ For example:
 
 (defvar gnus-mime-security-button-map
   (let ((map (make-sparse-keymap)))
-    (set-keymap-parent map gnus-article-mode-map)
+    ;; Not for Emacs 21: fixme better.
+    ;;(set-keymap-parent map gnus-article-mode-map)
     (define-key map gnus-mouse-2 'gnus-article-push-button)
     (define-key map "\r" 'gnus-article-press-button)
     map))
@@ -5283,12 +5284,13 @@ For example:
     (gnus-eval-format
      gnus-mime-security-button-line-format 
      gnus-mime-security-button-line-format-alist
-     `(local-map ,gnus-mime-security-button-map
-		 keymap ,gnus-mime-security-button-map
-		 gnus-callback gnus-mime-security-press-button
-		 gnus-line-format ,gnus-mime-security-button-line-format 
-		 article-type annotation
-		 gnus-data ,handle))
+     `(keymap ,gnus-mime-security-button-map
+	      ;; Not for Emacs 21: fixme better.
+	      ;;local-map ,gnus-mime-security-button-map
+	      gnus-callback gnus-mime-security-press-button
+	      gnus-line-format ,gnus-mime-security-button-line-format 
+	      article-type annotation
+	      gnus-data ,handle))
     (setq e (point))
     (widget-convert-button
      'link b e
