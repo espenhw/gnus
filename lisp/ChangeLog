@@ -1,3 +1,8 @@
+2002-11-26  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus-sum.el (gnus-summary-insert-old-articles): Remove
+	superfluous function call.
+
 2002-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-agent.el: Autoload number-at-point instead.
