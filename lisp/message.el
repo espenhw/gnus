@@ -1550,7 +1550,8 @@ no, only reply back to the author."
   (autoload 'gnus-groups-from-server "gnus")
   (autoload 'rmail-output "rmailout")
   (autoload 'gnus-delay-article "gnus-delay")
-  (autoload 'gnus-make-local-hook "gnus-util"))
+  (autoload 'gnus-make-local-hook "gnus-util")
+  (autoload 'gnus-extract-address-components "gnus-util"))
 
 
 
@@ -6055,7 +6056,7 @@ news, Source is the list of newsgroups is was posted to."
 	 (prefix
 	  (if group
 	      (gnus-group-decoded-name group)
-	    (or (and from (cdr (mail-header-parse-address from)))
+	    (or (and from (car (gnus-extract-address-components from)))
 		"(nowhere)"))))
     (concat "["
 	    (if message-forward-decoded-p
