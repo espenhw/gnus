@@ -244,9 +244,10 @@
 	(setq message-post-method
 	      `(lambda (arg)
 		 (gnus-post-method arg ,(car ga))))
-	(message-add-action
-	 `(gnus-add-mark ,(car ga) 'replied ,(cadr ga))
-	 'send)))))
+	(unless (equal (cadr ga) "")
+	  (message-add-action
+	   `(gnus-add-mark ,(car ga) 'replied ,(cadr ga))
+	   'send))))))
 
 (defun gnus-draft-article-sendable-p (article)
   "Say whether ARTICLE is sendable."

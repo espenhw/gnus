@@ -1,3 +1,8 @@
+2001-09-14  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-draft.el (gnus-draft-setup): Don't set mark when there
+	isn't an article to set it on (e.g. when you `a' in a group).
+
 2001-09-12  Pavel Jan,Bm(Bk  <Pavel@Janik.cz>
 
 	* mm-util.el (mm-charset-synonym-alist): add windows-1250 so we
