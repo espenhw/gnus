@@ -1,3 +1,7 @@
+2000-04-20 21:22:10  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-draft.el (gnus-draft-setup): Restore to mml.
+
 2000-04-21 01:24:41  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* flow-fill.el: Renamed from fill-flowed.

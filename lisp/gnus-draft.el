@@ -193,6 +193,8 @@
 	(if (not (gnus-request-restore-buffer article group))
 	    (error "Couldn't restore the article")
 	  ;; Insert the separator.
+	  (if (equal group "nndraft:queue")
+	      (mime-to-mml))
 	  (goto-char (point-min))
 	  (search-forward "\n\n")
 	  (forward-char -1)
