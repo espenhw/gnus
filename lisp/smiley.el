@@ -428,12 +428,9 @@ With arg, turn displaying on if and only if arg is positive."
 With arg, turn displaying on if and only if arg is positive."
   (interactive "P")
   (save-excursion
-    (set-buffer gnus-article-buffer)
-    (save-restriction
-      (widen)
-      (article-goto-body)
-      (let (buffer-read-only)
-	(smiley-toggle-buffer arg (current-buffer) (point) (point-max))))))
+    (article-goto-body)
+    (let (buffer-read-only)
+      (smiley-toggle-buffer arg (current-buffer) (point) (point-max)))))
 
 (provide 'smiley)
 

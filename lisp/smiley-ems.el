@@ -146,13 +146,10 @@ With arg, turn displaying on if and only if arg is positive."
 With arg, turn displaying on if and only if arg is positive."
   (interactive "P")
   (save-excursion
-    (set-buffer gnus-article-buffer)
-    (save-restriction
-      (widen)
-      (article-goto-body)
-      (smiley-region (point-min) (point-max))
-      (if (and (numberp arg) (<= arg 0))
-	  (smiley-toggle-buffer arg)))))
+    (article-goto-body)
+    (smiley-region (point) (point-max))
+    (if (and (numberp arg) (<= arg 0))
+	(smiley-toggle-buffer arg))))
 
 (provide 'smiley)
 

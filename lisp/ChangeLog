@@ -1,5 +1,10 @@
 2001-02-21 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* smiley.el (gnus-smiley-display): Don't do widening.
+
+	* smiley-ems.el (gnus-smiley-display): Don't do widening. Smiley
+	within body.
+
 	* gnus-msg.el (gnus-inews-do-gcc): Activate group anyway.
 
 	* gnus-art.el (gnus-mime-display-multipart-alternative-as-mixed):
