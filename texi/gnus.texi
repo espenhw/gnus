@@ -18668,6 +18668,13 @@ Return an empty string if the field is equal to the specified value.
 @item form
 Use the specified form as the field value when the @samp{@@} spec is
 used.
+
+Here's an example:
+
+@lisp
+"~(form (current-time-string))@"
+@end lisp
+
 @end table
 
 Let's take an example.  The @samp{%o} spec in the summary mode lines
