@@ -141,8 +141,8 @@ the safe url names.  The value of the variable `w3m-safe-url-regexp'
 will be bound with this value.  You may set this value to nil if you
 consider all the urls to be safe."
   :type '(choice (regexp :tag "Regexp")
-		 (const :tag "All URLs are safe" nil)
-  :group 'mime-display))
+		 (const :tag "All URLs are safe" nil))
+  :group 'mime-display)
 
 (defcustom mm-inline-text-html-with-w3m-keymap t
   "If non-nil, use emacs-w3m command keys in the article buffer."

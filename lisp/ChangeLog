@@ -1,4 +1,9 @@
 2002-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+	Trivial patch from Itai Zukerman <zukerman@math-hat.com>.
+
+	* mm-decode.el (mm-w3m-safe-url-regexp): Fix parenthesis.
+
+2002-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-decode-region): Remove newlines between
 	decoded words.
