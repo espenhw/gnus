@@ -1,3 +1,7 @@
+2001-08-29 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* flow-fill.el (fill-flowed): eol might be point-max.
+
 2001-08-27  Simon Josefsson  <jas@extundo.com>
 
 	* nnml.el (nnml-request-update-info): Fix message.

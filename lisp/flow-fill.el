@@ -95,7 +95,7 @@
 	  (unless sig
 	    (let ((fill-prefix (when quote (concat quote " "))))
 	      (fill-region (fill-flowed-point-at-bol)
-			   (1+ (fill-flowed-point-at-eol))
+			   (min (1+ (fill-flowed-point-at-eol)) (point-max))
 			   'left 'nosqueeze))))))))
 
 (provide 'flow-fill)
