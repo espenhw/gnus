@@ -588,10 +588,12 @@ command whose response triggered the error."
 				  (nntp-kill-buffer buffer))))))))
 		(unwind-protect
 		    (setq nntp-with-open-group-internal
-			  (condition-case nil
+                          (condition-case nil
 			      (progn ,@forms)
 			    (quit
-			     (nntp-close-server))))
+			     (nntp-close-server)
+                             (signal 'quit nil)))
+                          )
 		  (when timer
 		    (nnheader-cancel-timer timer)))
 		nil))
