@@ -897,6 +897,7 @@ articles in the thread.
   (defvar gnus-agent-cat-days-until-old)
   (defvar gnus-agent-cat-predicate)
   (defvar gnus-agent-cat-groups)
+  (defvar gnus-agent-cat-disable-undownloaded-faces)
 )
 
 (defun gnus-trim-whitespace (s)

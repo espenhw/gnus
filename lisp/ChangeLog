@@ -1,3 +1,8 @@
+2003-12-18  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-cus.el (defvar): defvar
+	gnus-agent-cat-disable-undownloaded-faces.
+
 2003-12-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-forward-subject-name-subject): Use
