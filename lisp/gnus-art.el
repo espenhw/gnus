@@ -4772,15 +4772,15 @@ not have a face in `gnus-article-boring-faces'."
 (defun gnus-article-refer-article ()
   "Read article specified by message-id around point."
   (interactive)
-  (let ((point (point)))
-    (search-forward ">" nil t)		;Move point to end of "<....>".
-    (if (re-search-backward "\\(<[^<> \t\n]+>\\)" nil t)
-	(let ((message-id (gnus-replace-in-string (match-string 1) "<news:" "<" )))
-	  (goto-char point)
-	  (set-buffer gnus-summary-buffer)
-	  (gnus-summary-refer-article message-id))
-      (goto-char (point))
-      (error "No references around point"))))
+  (save-excursion
+    (re-search-backward "<?news:\\|<" (point-at-bol) t)
+    (cond ((re-search-forward
+	    gnus-button-mid-or-mail-regexp (point-at-eol) t)
+	    (let ((msg-id (concat "<" (match-string 0) ">")))
+	      (set-buffer gnus-summary-buffer)
+	      (gnus-summary-refer-article msg-id)))
+	  (t
+	    (error "No references around point")))))
 
 (defun gnus-article-show-summary ()
   "Reconfigure windows to show summary buffer."

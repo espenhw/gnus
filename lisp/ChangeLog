@@ -1,3 +1,8 @@
+2003-02-22  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus-art.el (gnus-article-refer-article): Grok more message id
+	formats.  From Karl Pfl,Ad(Bsterer <sigurd@12move.de>.
+
 2003-02-22  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-decode.el (mm-path-name-rewrite-functions): Doc fix: don't
