@@ -1855,7 +1855,7 @@ The following commands are available:
   (make-local-variable 'gnus-summary-line-format-spec)
   (make-local-variable 'gnus-summary-mark-positions)
   (make-local-hook 'post-command-hook)
-  (gnus-add-hook 'post-command-hook 'gnus-clear-inboxes-moved nil t)
+  (add-hook 'post-command-hook 'gnus-clear-inboxes-moved nil t)
   (run-hooks 'gnus-summary-mode-hook)
   (gnus-update-format-specifications nil 'summary 'summary-mode 'summary-dummy)
   (gnus-update-summary-mark-positions))
@@ -5128,7 +5128,7 @@ previous group instead."
 	  (progn
 	    (gnus-message 5 "Returning to the group buffer")
 	    (setq entered t)
-	    (when (buffer-live-p current-buffer)
+	    (when (gnus-buffer-live-p current-buffer)
 	      (set-buffer current-buffer)
 	      (gnus-summary-exit))
 	    (run-hooks 'gnus-group-no-more-groups-hook))
@@ -6133,9 +6133,11 @@ Return how many articles were fetched."
       (gnus-summary-position-point)
       n)))
 
-(defun gnus-summary-refer-article (message-id)
-  "Fetch an article specified by MESSAGE-ID."
-  (interactive "sMessage-ID: ")
+(defun gnus-summary-refer-article (message-id &optional arg)
+  "Fetch an article specified by MESSAGE-ID.
+If ARG (the prefix), fetch the article using `gnus-refer-article-method'
+or `gnus-select-method', no matter what backend the article comes from."
+  (interactive "sMessage-ID: \nP")
   (when (and (stringp message-id)
 	     (not (zerop (length message-id))))
     ;; Construct the correct Message-ID if necessary.
@@ -6157,8 +6159,11 @@ Return how many articles were fetched."
 	      (gnus-summary-update-article (mail-header-number header))))
 	;; We fetch the article
 	(let ((gnus-override-method
-	       (and (gnus-news-group-p gnus-newsgroup-name)
-		    gnus-refer-article-method))
+	       (cond ((gnus-news-group-p gnus-newsgroup-name)
+		      gnus-refer-article-method)
+		     (arg
+		      (or gnus-refer-article-method gnus-select-method))
+		     (t nil)))
 	      number)
 	  ;; Start the special refer-article method, if necessary.
 	  (when (and gnus-refer-article-method
@@ -6480,6 +6485,7 @@ article massaging functions being run."
 	  gnus-article-display-hook
 	  gnus-article-prepare-hook
 	  gnus-break-pages
+	  gnus-show-mime
 	  gnus-visual)
       (gnus-summary-select-article nil 'force)))
   (gnus-summary-goto-subject gnus-current-article)
@@ -6777,7 +6783,11 @@ and `request-accept' functions."
       (gnus-summary-remove-process-mark article))
     ;; Re-activate all groups that have been moved to.
     (while to-groups
-      (gnus-activate-group (pop to-groups)))
+      (save-excursion
+	(set-buffer gnus-group-buffer)
+	(when (gnus-group-goto-group (car to-groups) t)
+	  (gnus-group-get-new-news-this-group 1))
+	(pop to-groups)))
 
     (gnus-kill-buffer copy-buf)
     (gnus-summary-position-point)

@@ -626,7 +626,7 @@ the result."
 	  (setq entry (assoc (car article) carticles))
 	  (setcdr entry (cons (cdr article) (cdr entry))))
 	(setq i (1+ i))))
-    (mapc '(lambda (x) (setcdr x (nreverse (cdr x))))
+    (mapc (lambda (x) (setcdr x (nreverse (cdr x))))
 	  carticles)
     carticles))
 

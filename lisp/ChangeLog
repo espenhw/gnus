@@ -1,3 +1,72 @@
+Thu Apr 10 22:07:46 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.43 is released.
+
+Thu Apr 10 21:47:08 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-save-newsrc-file): Message less.
+
+Thu Apr 10 21:35:45 1997  ISO-2022-JP  <morioka@jaist.ac.jp>
+
+	* gnus-sum.el (gnus-summary-show-article): Bind gnus-show-mime. 
+
+Thu Apr 10 21:26:19 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Removed gnus-add-hook.
+
+Thu Apr  3 21:08:57 1997  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-xmas.el (gnus-xmas-summary-set-display-table): Don't change
+	the values that are non-nil in the default table.
+	(gnus-xmas-add-hook): Removed it.
+
+Thu Apr 10 20:44:46 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-article-show-summary): Error better.
+
+	* message.el (message-indent-citation): Tippy-foot when deleting
+	leading empty lines.
+
+	* gnus-sum.el (gnus-summary-move-article): Update group lines. 
+
+	* gnus-srvr.el (gnus-server-exit): Configure windows.
+
+	* gnus-group.el: Added gnus-version to help map.
+
+Thu Apr 10 20:41:11 1997  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-xmas.el: Customized.
+
+Thu Apr 10 19:58:40 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-next-group): Selected deleted group. 
+
+	* gnus-art.el (article-treat-overstrike): Don't bug out on empty
+	articles. 
+
+Thu Apr 10 19:52:27 1997  David Moore  <dmoore@ucsd.edu>
+
+	* nnvirtual.el (nnvirtual-partition-sequence): Style fix.
+
+Thu Apr 10 19:45:30 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-group-kill-group): Kill more carefully.
+
+Tue Apr  8 23:02:30 1997  Michael Welsh Duggan  <md5i@schenley.com>
+
+	* message.el (message-insert-to): Fetch reply field.
+
+Tue Apr  8 21:41:13 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-refer-article): Accept prefix.
+
+Sun Apr  6 14:08:03 1997  Steven L Baur  <steve@altair.xemacs.org>
+
+	* gnus-xmas.el (gnus-xmas-summary-set-display-table): Add
+	missing paren.
+	(gnus-xmas-summary-set-display-table): current-display-table can
+	be nil.
+
 Sun Apr  6 23:17:21 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.42 is released.
@@ -18,11 +87,6 @@ Sun Apr  6 22:26:52 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Sun Apr  6 21:46:05 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.41 is released.
-
-Thu Apr  3 21:08:57 1997  Hrvoje Niksic  <hniksic@srce.hr>
-
-	* gnus-xmas.el (gnus-xmas-summary-set-display-table): Don't change
-	the values that are non-nil in the default table.
 
 Sun Apr  6 20:58:38 1997  Kim-Minh Kaplan  <kimminh.kaplan@utopia.eunet.fr>
 

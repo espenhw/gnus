@@ -29,10 +29,17 @@
 (defvar menu-bar-mode (featurep 'menubar))
 (require 'messagexmas)
 
-(defvar gnus-xmas-glyph-directory nil
+(defgroup gnus-xmas nil
+  "XEmacsoid support for Gnus"
+  :group 'gnus)
+
+(defcustom gnus-xmas-glyph-directory nil
   "*Directory where Gnus logos and icons are located.
 If this variable is nil, Gnus will try to locate the directory
-automatically.")
+automatically."
+  :type '(choice (const :tag "autodetect" nil)
+		 directory)
+  :group 'gnus-xmas)
 
 (defvar gnus-xmas-logo-color-alist
   '((flame "#cc3300" "#ff2200")
@@ -49,20 +56,26 @@ automatically.")
     (september "#bf9900" "#ffcc00"))
   "Color alist used for the Gnus logo.")
 
-(defvar gnus-xmas-logo-color-style 'flame
-  "Color styles used for the Gnus logo.")
+(defcustom gnus-xmas-logo-color-style 'flame
+  "Color styles used for the Gnus logo."
+  :type '(choice (const flame) (const pine) (const moss)
+		 (const irish) (const sky) (const tin)
+		 (const velvet) (const grape) (const labia)
+		 (const berry) (const neutral) (const september))
+  :group 'gnus-xmas)
 
 (defvar gnus-xmas-logo-colors
   (cdr (assq gnus-xmas-logo-color-style gnus-xmas-logo-color-alist))
   "Colors used for the Gnus logo.")
 
-(defvar gnus-article-x-face-command
+(defcustom gnus-article-x-face-command
   (if (featurep 'xface)
       'gnus-xmas-article-display-xface
     "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -")
   "String or function to be executed to display an X-Face header.
 If it is a string, the command will be executed in a sub-shell
-asynchronously.	 The compressed face will be piped to this command.")
+asynchronously.	 The compressed face will be piped to this command."
+  :type '(choice string function))
 
 ;;; Internal variables.
 
@@ -137,9 +150,11 @@ It is provided only to ease porting of broken FSF Emacs programs."
     (set-extent-face gnus-newsgroup-selected-overlay
 		     gnus-summary-selected-face)))
 
-(defvar gnus-xmas-force-redisplay nil
+(defcustom gnus-xmas-force-redisplay nil
   "If non-nil, force a redisplay before recentering the summary buffer.
-This is ugly, but it works around a bug in `window-displayed-height'.")
+This is ugly, but it works around a bug in `window-displayed-height'."
+  :type 'boolean
+  :group 'gnus-xmas)
 
 (defun gnus-xmas-switch-horizontal-scrollbar-off ()
   (when (featurep 'scrollbar)
@@ -195,17 +210,14 @@ displayed, no centering will be performed."
     (aset table ?\n nil)
     (aset table ?\r nil)
     ;; We nix out any glyphs over 126 that are not set already.
-    (let ((i 256))
-      (while (>= (setq i (1- i)) 127)
-	;; Only modify if the default entry is nil.
-	(when (or (not default-table)
-		  (not (aref default-table i)))
-	  (aset table i [??]))))
+    (when default-table
+      (let ((i 256))
+	(while (>= (setq i (1- i)) 127)
+	  ;; Only modify if the default entry is nil.
+	  (unless (aref default-table i)
+	    (aset table i [??])))))
     ;; Can't use `set-specifier' because of a bug in 19.14 and earlier
     (add-spec-to-specifier current-display-table table (current-buffer) nil)))
-
-(defun gnus-xmas-add-hook (hook function &optional append local)
-  (add-hook hook function))
 
 (defun gnus-xmas-add-text-properties (start end props &optional object)
   (add-text-properties start end props object)
@@ -478,7 +490,6 @@ call it with the value of the `gnus-data' text property."
   (fset 'gnus-appt-select-lowest-window
 	'gnus-xmas-appt-select-lowest-window)
   (fset 'gnus-mail-strip-quoted-names 'gnus-xmas-mail-strip-quoted-names)
-  (fset 'gnus-add-hook 'gnus-xmas-add-hook)
   (fset 'gnus-character-to-event 'character-to-event)
   (fset 'gnus-mode-line-buffer-identification
 	'gnus-xmas-mode-line-buffer-identification)
@@ -596,13 +607,18 @@ call it with the value of the `gnus-data' text property."
 
 ;;; The toolbar.
 
-(defvar gnus-use-toolbar (if (featurep 'toolbar)
-			     'default-toolbar
-			   nil)
+(defcustom gnus-use-toolbar (if (featurep 'toolbar)
+				'default-toolbar
+			      nil)
   "*If nil, do not use a toolbar.
 If it is non-nil, it must be a toolbar.  The five legal values are
 `default-toolbar', `top-toolbar', `bottom-toolbar',
-`right-toolbar', and `left-toolbar'.")
+`right-toolbar', and `left-toolbar'."
+  :type '(choice (const default-toolbar)
+		 (const top-toolbar) (const bottom-toolbar)
+		 (const left-toolbar) (const right-toolbar)
+		 (const :tag "no toolbar" nil))
+  :group 'gnus-xmas)
 
 (defvar gnus-group-toolbar
   '([gnus-group-get-new-news gnus-group-get-new-news t "Get new news"]
@@ -712,10 +728,9 @@ XEmacs compatibility workaround."
    'call-process-region (point-min) (point-max) command t '(t nil) nil
    args))
 
-(unless (find-face 'gnus-x-face)
-  (copy-face 'default 'gnus-x-face)
-  (set-face-foreground 'gnus-x-face "black")
-  (set-face-background 'gnus-x-face "white"))
+(defface gnus-x-face '((t (:foreground "black" :background "white")))
+  "Face to show X face"
+  :group 'gnus-xmas)
 
 (defun gnus-xmas-article-display-xface (beg end)
   "Display any XFace headers in the current article."

@@ -180,7 +180,7 @@ Thank you for your help in stamping out bugs.
 
 (defun gnus-inews-add-send-actions (winconf buffer article)
   (make-local-hook 'message-sent-hook)
-  (gnus-add-hook 'message-sent-hook 'gnus-inews-do-gcc nil t)
+  (add-hook 'message-sent-hook 'gnus-inews-do-gcc nil t)
   (setq message-post-method
 	`(lambda (arg)
 	   (gnus-post-method arg ,gnus-newsgroup-name)))

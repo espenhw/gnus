@@ -549,7 +549,8 @@ ticked: The number of ticked articles."
 
   (gnus-define-keys (gnus-group-help-map "H" gnus-group-mode-map)
     "d" gnus-group-describe-group
-    "f" gnus-group-fetch-faq)
+    "f" gnus-group-fetch-faq
+    "v" gnus-version)
 
   (gnus-define-keys (gnus-group-sub-map "S" gnus-group-mode-map)
     "l" gnus-group-set-current-level
@@ -763,7 +764,7 @@ The following commands are available:
   (gnus-update-format-specifications nil 'group 'group-mode)
   (gnus-update-group-mark-positions)
   (make-local-hook 'post-command-hook)
-  (gnus-add-hook 'post-command-hook 'gnus-clear-inboxes-moved nil t)
+  (add-hook 'post-command-hook 'gnus-clear-inboxes-moved nil t)
   (when gnus-use-undo
     (gnus-undo-mode 1))
   (run-hooks 'gnus-group-mode-hook))

@@ -226,7 +226,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.42"
+(defconst gnus-version-number "5.4.43"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -258,7 +258,6 @@ be set in `.emacs' instead."
   (defalias 'gnus-topic-remove-excess-properties 'ignore)
   (defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
   (defalias 'gnus-mail-strip-quoted-names 'mail-strip-quoted-names)
-  (defalias 'gnus-add-hook 'add-hook)
   (defalias 'gnus-character-to-event 'identity)
   (defalias 'gnus-add-text-properties 'add-text-properties)
   (defalias 'gnus-put-text-property 'put-text-property)

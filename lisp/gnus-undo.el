@@ -102,7 +102,7 @@
       (push (cons 'gnus-undo-mode gnus-undo-mode-map)
 	    minor-mode-map-alist))
     (make-local-hook 'post-command-hook)
-    (gnus-add-hook 'post-command-hook 'gnus-undo-boundary nil t)
+    (add-hook 'post-command-hook 'gnus-undo-boundary nil t)
     (add-hook 'gnus-summary-exit-hook 'gnus-undo-boundary)
     (run-hooks 'gnus-undo-mode-hook)))
 

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.42 Manual
+@settitle Gnus 5.4.43 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.42 Manual
+@title Gnus 5.4.43 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.42.
+This manual corresponds to Gnus 5.4.43.
 
 @end ifinfo
 
@@ -2910,8 +2910,10 @@ a prefix, force Gnus to re-read the description from the server.
 Describe all groups (@code{gnus-group-describe-all-groups}).  If given a
 prefix, force Gnus to re-read the description file from the server.
 
-@item V
+@item H v
+@itemx V
 @kindex V (Group)
+@kindex H v (Group)
 @cindex version
 @findex gnus-version
 Display current Gnus version numbers (@code{gnus-version}).
@@ -6331,6 +6333,10 @@ matter what group it belongs to.  @kbd{M-^}
 that look something like @samp{<38o6up$6f2@@hymir.ifi.uio.no>}.  You
 have to get it all exactly right.  No fuzzy searches, I'm afraid.
 
+The current select method will be used when fetching by
+@code{Message-ID} from non-news select method, but you can override this
+by giving this command a prefix.
+
 @vindex gnus-refer-article-method
 If the group you are reading is located on a backend that does not
 support fetching by @code{Message-ID} very well (like @code{nnspool}),
@@ -6574,7 +6580,10 @@ nodes to their children.  The default is @code{(?- ?\\ ?|)}.
 If this variable is non-@code{nil}, Gnus will try to keep the tree
 buffer as small as possible to allow more room for the other Gnus
 windows.  If this variable is a number, the tree buffer will never be
-higher than that number.  The default is @code{t}.
+higher than that number.  The default is @code{t}.  Note that if you
+have several windows displayed side-by-side in a frame and the tree
+buffer is one of these, minimizing the tree window will also resize all
+other windows that are displayed next to it.
 
 @item gnus-generate-tree-function
 @vindex gnus-generate-tree-function
@@ -16270,6 +16279,11 @@ This sort of thing has been done for bunches of functions.  Gnus does
 not redefine any native Emacs functions while running under XEmacs---it
 does this @code{defalias} thing with Gnus equivalents instead.  Cleaner
 all over.
+
+In the cases when the XEmacs function interface was obviously
+cleaner, I used it instead.  For example @code{gnus-region-active-p}
+is an alias for @code{region-active-p} in XEmacs, whereas in Emacs
+it is a function.
 
 Of course, I could have chosen XEmacs as my native platform and done
 mapping functions the other way around.  But I didn't.  The performance

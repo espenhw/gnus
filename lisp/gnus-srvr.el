@@ -314,9 +314,9 @@ The following commands are available:
 (defun gnus-server-exit ()
   "Return to the group buffer."
   (interactive)
+  (run-hooks 'gnus-server-exit-hook)
   (kill-buffer (current-buffer))
-  (switch-to-buffer gnus-group-buffer)
-  (run-hooks 'gnus-server-exit-hook))
+  (gnus-configure-windows 'group t))
 
 (defun gnus-server-list-servers ()
   "List all available servers."

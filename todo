@@ -629,3 +629,10 @@ in the summary buffer.
 
 * a new nncvs backend.  Each group would show an article, using
 version branches as threading, checkin date as the date, etc.
+
+* http://www.dejanews.com/forms/dnsetfilter_exp.html ?
+This filter allows one to construct advance queries on the Dejanews
+database such as specifying start and end dates, subject, author,
+and/or newsgroup name.
+
+* new Date header scoring type -- older, newer

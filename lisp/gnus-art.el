@@ -744,26 +744,27 @@ always hide."
   (interactive)
   (save-excursion
     (goto-char (point-min))
-    (re-search-forward "\n\n")
-    (let ((buffer-read-only nil))
-      (while (search-forward "\b" nil t)
-	(let ((next (following-char))
-	      (previous (char-after (- (point) 2))))
-	  ;; We do the boldification/underlining by hiding the
-	  ;; overstrikes and putting the proper text property
-	  ;; on the letters.
-	  (cond
-	   ((eq next previous)
-	    (gnus-article-hide-text-type (- (point) 2) (point) 'overstrike)
-	    (put-text-property (point) (1+ (point)) 'face 'bold))
-	   ((eq next ?_)
-	    (gnus-article-hide-text-type (1- (point)) (1+ (point)) 'overstrike)
-	    (put-text-property
-	     (- (point) 2) (1- (point)) 'face 'underline))
-	   ((eq previous ?_)
-	    (gnus-article-hide-text-type (- (point) 2) (point) 'overstrike)
-	    (put-text-property
-	     (point) (1+ (point)) 'face 'underline))))))))
+    (when (search-forward "\n\n" nil t)
+      (let ((buffer-read-only nil))
+	(while (search-forward "\b" nil t)
+	  (let ((next (following-char))
+		(previous (char-after (- (point) 2))))
+	    ;; We do the boldification/underlining by hiding the
+	    ;; overstrikes and putting the proper text property
+	    ;; on the letters.
+	    (cond
+	     ((eq next previous)
+	      (gnus-article-hide-text-type (- (point) 2) (point) 'overstrike)
+	      (put-text-property (point) (1+ (point)) 'face 'bold))
+	     ((eq next ?_)
+	      (gnus-article-hide-text-type
+	       (1- (point)) (1+ (point)) 'overstrike)
+	      (put-text-property
+	       (- (point) 2) (1- (point)) 'face 'underline))
+	     ((eq previous ?_)
+	      (gnus-article-hide-text-type (- (point) 2) (point) 'overstrike)
+	      (put-text-property
+	       (point) (1+ (point)) 'face 'underline)))))))))
 
 (defun article-fill ()
   "Format too long lines."
@@ -2142,8 +2143,10 @@ Argument LINES specifies lines to be scrolled down."
 (defun gnus-article-show-summary ()
   "Reconfigure windows to show summary buffer."
   (interactive)
-  (gnus-configure-windows 'article)
-  (gnus-summary-goto-subject gnus-current-article))
+  (if (not (gnus-buffer-live-p gnus-summary-buffer))
+      (error "There is no summary buffer for this article buffer")
+    (gnus-configure-windows 'article)
+    (gnus-summary-goto-subject gnus-current-article)))
 
 (defun gnus-article-describe-briefly ()
   "Describe article mode commands briefly."

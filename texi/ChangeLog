@@ -1,3 +1,11 @@
+Thu Apr 10 21:25:14 1997  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus.texi (Emacs/XEmacs Code): Addition.
+
+Thu Apr 10 20:45:47 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Group Information): Fix.
+
 Wed Apr  2 11:48:44 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Sorting): Use total score.

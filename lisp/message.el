@@ -1330,7 +1330,7 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
 (defun message-insert-to ()
   "Insert a To header that points to the author of the article being replied to."
   (interactive)
-  (let ((co (message-fetch-field "mail-copies-to")))
+  (let ((co (message-fetch-reply-field "mail-copies-to")))
     (when (and co
 	       (equal (downcase co) "never"))
       (error "The user has requested not to have copies sent via mail")))
@@ -1515,14 +1515,20 @@ However, if `message-yank-prefix' is non-nil, insert that prefix on each line."
   (let ((start (point)))
     ;; Remove unwanted headers.
     (when message-ignored-cited-headers
-      (save-restriction
-	(narrow-to-region
-	 (goto-char start)
-	 (if (search-forward "\n\n" nil t)
-	     (1- (point))
-	   (point)))
-	(message-remove-header message-ignored-cited-headers t)
-	(goto-char (point-max))))
+      (let (all-removed)
+	(save-restriction
+	  (narrow-to-region
+	   (goto-char start)
+	   (if (search-forward "\n\n" nil t)
+	       (1- (point))
+	     (point)))
+	  (message-remove-header message-ignored-cited-headers t)
+	  (when (= (point-min) (point-max))
+	    (setq all-removed t))
+	  (goto-char (point-max)))
+	(if all-removed
+	    (goto-char start)
+	  (forward-line 1))))
     ;; Delete blank lines at the start of the buffer.
     (while (and (point-min)
 		(eolp)

@@ -2174,9 +2174,9 @@ If FORCE is non-nil, the .newsrc file is read."
 	    (gnus-slave-save-newsrc)
 	  ;; Save .newsrc.
 	  (when gnus-save-newsrc-file
-	    (gnus-message 5 "Saving %s..." gnus-current-startup-file)
+	    (gnus-message 8 "Saving %s..." gnus-current-startup-file)
 	    (gnus-gnus-to-newsrc-format)
-	    (gnus-message 5 "Saving %s...done" gnus-current-startup-file))
+	    (gnus-message 8 "Saving %s...done" gnus-current-startup-file))
 	  ;; Save .newsrc.eld.
 	  (set-buffer (get-buffer-create " *Gnus-newsrc*"))
 	  (make-local-variable 'version-control)
