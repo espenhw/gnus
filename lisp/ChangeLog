@@ -1,3 +1,14 @@
+2001-03-17 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-setup-fill-variables): Use
+	fill-paragraph-function.
+	(message-fill-paragraph): Take an argument.
+	(message-newline-and-reformat): Take another argument.
+
+2001-03-16 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (rmail-output): It is in rmailout.el not rmail.el.
+
 2001-03-16 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-forward): local-variable-p takes an extra

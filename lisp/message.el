@@ -1094,7 +1094,7 @@ Except if it is nil, use Gnus native MUA; if it is t, use
   (autoload 'gnus-request-post "gnus-int")
   (autoload 'gnus-alive-p "gnus-util")
   (autoload 'gnus-group-name-charset "gnus-group")
-  (autoload 'rmail-output "rmail"))
+  (autoload 'rmail-output "rmailout"))
 
 
 
@@ -1452,7 +1452,7 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-v" 'message-delete-not-region)
   (define-key message-mode-map "\C-c\C-z" 'message-kill-to-signature)
   (define-key message-mode-map "\M-\r" 'message-newline-and-reformat)
-  (define-key message-mode-map "\M-q" 'message-fill-paragraph)
+  ;;(define-key message-mode-map "\M-q" 'message-fill-paragraph)
 
   (define-key message-mode-map "\C-c\C-a" 'mml-attach-file)
 
@@ -1600,6 +1600,8 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
 
 (defun message-setup-fill-variables ()
   "Setup message fill variables."
+  (set (make-local-variable 'fill-paragraph-function) 
+       'message-fill-paragraph)
   (make-local-variable 'paragraph-separate)
   (make-local-variable 'paragraph-start)
   (make-local-variable 'adaptive-fill-regexp)
@@ -1799,9 +1801,10 @@ With the prefix argument FORCE, insert the header anyway."
     (unless (bolp)
       (insert "\n"))))
 
-(defun message-newline-and-reformat (&optional not-break)
-  "Insert four newlines, and then reformat if inside quoted text."
-  (interactive)
+(defun message-newline-and-reformat (&optional arg not-break)
+  "Insert four newlines, and then reformat if inside quoted text.
+Prefix arg means justify as well."
+  (interactive (list (if current-prefix-arg 'full)))
   (let (quoted point beg end leading-space bolp)
     (setq point (point))
     (beginning-of-line)
@@ -1877,14 +1880,15 @@ With the prefix argument FORCE, insert the header anyway."
 		 (regexp-quote (concat quoted leading-space)))
 		 (adaptive-fill-first-line-regexp
 		  adaptive-fill-regexp ))
-	    (fill-paragraph nil))
-	(fill-paragraph nil))
+	    (fill-paragraph arg))
+	(fill-paragraph arg))
       (if point (goto-char point)))))
 
-(defun message-fill-paragraph ()
+(defun message-fill-paragraph (&optional arg)
   "Like `fill-paragraph'."
-  (interactive)
-  (message-newline-and-reformat t))
+  (interactive (list (if current-prefix-arg 'full)))
+  (message-newline-and-reformat arg t)
+  t)
 
 (defun message-insert-signature (&optional force)
   "Insert a signature.  See documentation for variable `message-signature'."
