@@ -11312,7 +11312,7 @@ The password to give to the POP server.  If not specified, the user is
 prompted.
 
 @item :program
-The program to use to fetch mail from the POP server.  This is should be
+The program to use to fetch mail from the POP server.  This should be
 a @code{format}-like string.  Here's an example:
 
 @example
@@ -11456,6 +11456,31 @@ Which authenticator to use for authenticating to the server, this is one
 of the symbols in @code{imap-authenticator-alist}.  Right now, this
 means @samp{kerberos4}, @samp{cram-md5}, @samp{anonymous} or the default
 @samp{login}.
+
+@item :program
+When using the `shell' :stream, the contents of this variable is
+mapped into the `imap-shell-program' variable.  This should be a
+@code{format}-like string (or list of strings).  Here's an example:
+
+@example
+ssh %s imapd
+@end example
+
+The valid format specifier characters are:
+
+@table @samp
+@item s
+The name of the server.
+
+@item l
+User name from `imap-default-user'.
+
+@item p
+The port number of the server.
+@end table
+
+The values used for these specs are taken from the values you give the
+corresponding keywords.
 
 @item :mailbox
 The name of the mailbox to get mail from.  The default is @samp{INBOX}

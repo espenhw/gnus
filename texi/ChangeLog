@@ -1,3 +1,8 @@
+2001-01-24  Simon Josefsson  <sj@extundo.com>
+
+	* gnus.texi (Mail Source Specifiers): Add IMAP :program, fix POP
+	:program typo.
+
 2001-01-15 16:15:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (The Active File): Only old versionf of leafnode
