@@ -823,8 +823,9 @@ When called interactively, prompt for REGEXP."
    (gnus-uu-save-separate-articles
     (save-excursion
       (set-buffer buffer)
-      (gnus-write-buffer
-       (concat gnus-uu-saved-article-name gnus-current-article))
+      (let ((coding-system-for-write mm-text-coding-system))
+	(gnus-write-buffer
+	 (concat gnus-uu-saved-article-name gnus-current-article)))
       (cond ((eq in-state 'first) (list gnus-uu-saved-article-name 'begin))
 	    ((eq in-state 'first-and-last) (list gnus-uu-saved-article-name
 						 'begin 'end))
@@ -951,7 +952,8 @@ When called interactively, prompt for REGEXP."
 		(with-current-buffer gnus-uu-digest-buffer
 		  (erase-buffer)
 		  (insert-buffer "*gnus-uu-pre*"))
-	      (gnus-write-buffer gnus-uu-saved-article-name)))
+	      (let ((coding-system-for-write mm-text-coding-system))
+		(gnus-write-buffer gnus-uu-saved-article-name))))
 	  (save-excursion
 	    (set-buffer "*gnus-uu-body*")
 	    (goto-char (point-max))
@@ -963,8 +965,10 @@ When called interactively, prompt for REGEXP."
 		(with-current-buffer gnus-uu-digest-buffer
 		  (goto-char (point-max))
 		  (insert-buffer "*gnus-uu-body*"))
-	      (write-region
-	       (point-min) (point-max) gnus-uu-saved-article-name t))))
+	      (let ((coding-system-for-write mm-text-coding-system) 
+		    (file-name-coding-system nnmail-pathname-coding-system))
+		(write-region
+		 (point-min) (point-max) gnus-uu-saved-article-name t)))))
 	(gnus-kill-buffer "*gnus-uu-pre*")
 	(gnus-kill-buffer "*gnus-uu-body*")
 	(push 'end state))

@@ -336,7 +336,8 @@ If NOT-ALL, don't pack ticked articles."
       (while (setq prefix (pop prefixes))
 	(erase-buffer)
 	(insert (format "(setq gnus-soup-prev-prefix %d)\n" (cdr prefix)))
-	(gnus-write-buffer (concat (car prefix) gnus-soup-prefix-file))))))
+	(let ((coding-system-for-write mm-text-coding-system))
+	  (gnus-write-buffer (concat (car prefix) gnus-soup-prefix-file)))))))
 
 (defun gnus-soup-pack (dir packer)
   (let* ((files (mapconcat 'identity

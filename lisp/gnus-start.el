@@ -2503,7 +2503,8 @@ If FORCE is non-nil, the .newsrc file is read."
 	   (make-temp-name (concat gnus-current-startup-file "-slave-")))
 	  (modes (ignore-errors
 		   (file-modes (concat gnus-current-startup-file ".eld")))))
-      (gnus-write-buffer slave-name)
+      (let ((coding-system-for-write gnus-startup-file-coding-system))
+	(gnus-write-buffer slave-name))
       (when modes
 	(set-file-modes slave-name modes)))))
 

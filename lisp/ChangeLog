@@ -1,3 +1,14 @@
+2000-06-05 22:25:12  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Bind coding
+	system.
+	* gnus-soup.el (gnus-soup-write-prefixes): Ditto.
+	* gnus-start.el (gnus-slave-save-newsrc): Ditto.
+	* gnus-util.el (gnus-output-to-rmail): Ditto.
+	(gnus-output-to-mail): Ditto.
+	(gnus-write-buffer): Ditto.
+	* gnus-uu.el (gnus-uu-save-article): Ditto.
+
 2000-06-04 15:05:16  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-read-from-minibuffer): Typo.
