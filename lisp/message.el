@@ -5190,7 +5190,8 @@ which specify the range to operate on."
 
 (defun message-tab ()
   "Complete names according to `message-completion-alist'.
-Do an `indent-relative' if not in those headers."
+Execute function specified by `message-tab-body-function' when not in
+those headers."
   (interactive)
   (let ((alist message-completion-alist))
     (while (and alist

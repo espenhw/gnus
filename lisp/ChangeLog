@@ -3,6 +3,8 @@
 	* message.el (message-newgroups-header-regexp)
 	(message-completion-alist, message-tab-body-function): Use
 	defcustom rather than defvar.
+	(message-tab): Mention `message-tab-body-function' in doc.
+	Suggested by Karl Eichwalder.
 
 2001-11-28 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
