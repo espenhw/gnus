@@ -1418,39 +1418,39 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
   "Decode charset-encoded text in the article.
 If PROMPT (the prefix), prompt for a coding system to use."
   (interactive "P")
+  (let ((inhibit-point-motion-hooks t) (case-fold-search t)
+	buffer-read-only
+	(mail-parse-charset gnus-newsgroup-charset)
+	(mail-parse-ignored-charsets 
+	 (save-excursion (condition-case nil
+			     (set-buffer gnus-summary-buffer)
+			   (error))
+			 gnus-newsgroup-ignored-charsets))
+	ct cte ctl charset)
   (save-excursion
     (save-restriction
       (article-narrow-to-head)
-      (let* ((inhibit-point-motion-hooks t)
-	     (case-fold-search t)
-	     (ct (message-fetch-field "Content-Type" t))
-	     (cte (message-fetch-field "Content-Transfer-Encoding" t))
-	     (ctl (and ct (ignore-errors
-			    (mail-header-parse-content-type ct))))
-	     (charset (cond
-		       (prompt
-			(mm-read-coding-system "Charset to decode: "))
-		       (ctl
-			(mail-content-type-get ctl 'charset))))
-	     (mail-parse-charset gnus-newsgroup-charset)
-	     (mail-parse-ignored-charsets 
-	      (save-excursion (condition-case nil
-				  (set-buffer gnus-summary-buffer)
-				(error))
-			      gnus-newsgroup-ignored-charsets))
-	     buffer-read-only)
-	(if (and ctl (not (string-match "/" (car ctl)))) 
-	    (setq ctl nil))
-	(goto-char (point-max))
-	(widen)
-	(forward-line 1)
-	(narrow-to-region (point) (point-max))
-	(when (and (or (not ctl)
-		       (equal (car ctl) "text/plain")))
-	  (mm-decode-body
-	   charset (and cte (intern (downcase
-				     (gnus-strip-whitespace cte))))
-	   (car ctl)))))))
+      (setq ct (message-fetch-field "Content-Type" t)
+	    cte (message-fetch-field "Content-Transfer-Encoding" t)
+	    ctl (and ct (ignore-errors
+			  (mail-header-parse-content-type ct)))
+	    charset (cond
+		     (prompt
+		      (mm-read-coding-system "Charset to decode: "))
+		     (ctl
+		      (mail-content-type-get ctl 'charset))))
+      (if (and ctl (not (string-match "/" (car ctl)))) 
+	  (setq ctl nil))
+      (goto-char (point-max)))
+    (forward-line 1)
+    (save-restriction
+      (narrow-to-region (point) (point-max))
+      (when (and (or (not ctl)
+		     (equal (car ctl) "text/plain")))
+	(mm-decode-body
+	 charset (and cte (intern (downcase
+				   (gnus-strip-whitespace cte))))
+	 (car ctl)))))))
 
 (defun article-decode-encoded-words ()
   "Remove encoded-word encoding from headers."
