@@ -1,3 +1,11 @@
+2001-08-19  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Getting Started Reading Mail): Use (nnml "") rather
+	than (nnml "private") as the example server specification.  This
+	way, the example group names a few paragraphs further down are
+	correct, and I expect that most people are going to use the empty
+	string as name, anyway.  Please holler if that is wrong.
+
 2001-08-18  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Optional Backend Functions): Remove `set'

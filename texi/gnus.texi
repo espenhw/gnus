@@ -11415,8 +11415,7 @@ For instance, if you want to use @code{nnml} (which is a "one file per
 mail" backend), you could put the following in your @file{.gnus} file:
 
 @lisp
-(setq gnus-secondary-select-methods
-      '((nnml "private")))
+(setq gnus-secondary-select-methods '((nnml "")))
 @end lisp
 
 Now, the next time you start Gnus, this backend will be queried for new
