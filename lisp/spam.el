@@ -100,6 +100,13 @@ The regular expression is matched against the address."
   :type 'boolean
   :group 'spam)
 
+(defcustom spam-use-whitelist-exclusive nil
+  "Whether whitelist-exclusive should be used by spam-split.
+Exclusive whitelisting means that all messages from senders not in the whitelist
+are considered spam."
+  :type 'boolean
+  :group 'spam)
+
 (defcustom spam-use-blackholes nil
   "Whether blackholes should be used by spam-split."
   :type 'boolean
@@ -125,6 +132,13 @@ Enable this if you want Gnus to invoke Bogofilter on new messages."
 
 (defcustom spam-use-BBDB nil
   "Whether BBDB should be used by spam-split."
+  :type 'boolean
+  :group 'spam)
+
+(defcustom spam-use-BBDB-exclusive nil
+  "Whether BBDB-exclusive should be used by spam-split.
+Exclusive BBDB means that all messages from senders not in the BBDB are 
+considered spam."
   :type 'boolean
   :group 'spam)
 
@@ -635,12 +649,15 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
        (spam-enter-ham-BBDB (spam-fetch-field-from-fast article)))))
 
   (defun spam-check-BBDB ()
-    "Mail from people in the BBDB is never considered spam"
+    "Mail from people in the BBDB is classified as ham or non-spam"
     (let ((who (message-fetch-field "from")))
       (when who
 	(setq who (cadr (gnus-extract-address-components who)))
 	(if (bbdb-search-simple nil who)
-	    nil spam-split-group)))))
+	    t 
+	  (if spam-use-BBDB-exclusive
+	      spam-split-group
+	    nil))))))
 
   (file-error (progn
 		(defalias 'bbdb-search-simple 'ignore)
@@ -794,12 +811,16 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
     (insert address "\n")
     (save-buffer)))
 
-;;; returns nil if the sender is in the whitelist, spam-split-group otherwise
+;;; returns t if the sender is in the whitelist, nil or spam-split-group otherwise
 (defun spam-check-whitelist ()
   ;; FIXME!  Should it detect when file timestamps change?
   (unless spam-whitelist-cache
     (setq spam-whitelist-cache (spam-parse-list spam-whitelist)))
-  (if (spam-from-listed-p spam-whitelist-cache) nil spam-split-group))
+  (if (spam-from-listed-p spam-whitelist-cache) 
+      t
+    (if spam-use-whitelist-exclusive
+	spam-split-group
+      nil)))
 
 (defun spam-check-blacklist ()
   ;; FIXME!  Should it detect when file timestamps change?

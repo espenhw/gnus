@@ -1,7 +1,11 @@
 2003-02-05  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-check-BBDB): no need to regexp-quote the argument
-	of bbdb-search-simple
+	of bbdb-search-simple, use spam-use-BBDB-exclusive
+	(spam-check-whitelist): use spam-use-whitelist-exclusive
+	(spam-use-whitelist-exclusive): new variable affecting
+	spam-use-whitelist
+	(spam-use-BBDB-exclusive): new variable affecting spam-use-BBDB
 
 2003-02-05  Simon Josefsson  <jas@extundo.com>
 
