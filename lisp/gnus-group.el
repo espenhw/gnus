@@ -3892,6 +3892,8 @@ If GROUP, edit that local kill file instead."
   (interactive)
   (gnus-save-newsrc-file))
 
+(eval-when-compile (defvar gnus-backlog-articles))
+
 (defun gnus-group-suspend ()
   "Suspend the current Gnus session.
 In fact, cleanup buffers except for group mode buffer.
@@ -3909,6 +3911,7 @@ The hook `gnus-suspend-gnus-hook' is called before actually suspending."
 			      (eq major-mode 'message-mode))))
 		(gnus-kill-buffer buf)))
 	    (gnus-buffers))
+    (setq gnus-backlog-articles nil)
     (gnus-kill-gnus-frames)
     (when group-buf
       (bury-buffer group-buf)

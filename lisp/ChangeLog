@@ -1,3 +1,7 @@
+2003-10-10  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-group.el (gnus-group-suspend): Reset gnus-backlog-articles.
+
 2003-10-08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* dns.el (query-dns): Don't error out on malformed resolv files.
