@@ -5223,7 +5223,7 @@ groups."
   :type 'regexp)
 
 (defcustom gnus-button-alist
-  `(("<\\(url:[>\n\t ]*?\\)?\\(nntp\\|news\\):[>\n\t ]*\\([^>\n\t ]*@[^>\n\t ]*\\)>"
+  '(("<\\(url:[>\n\t ]*?\\)?\\(nntp\\|news\\):[>\n\t ]*\\([^>\n\t ]*@[^>\n\t ]*\\)>"
      0 t gnus-button-handle-news 3)
     ("\\b\\(nntp\\|news\\):\\([^>\n\t ]*@[^>)!;:,\n\t ]*\\)" 0 t
      gnus-button-handle-news 2)
@@ -5246,7 +5246,8 @@ groups."
   "*Alist of regexps matching buttons in article bodies.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
-REGEXP: is the string matching text around the button,
+REGEXP: is the string matching text around the button (can also be lisp 
+expression evaluating to a string),
 BUTTON: is the number of the regexp grouping actually matching the button,
 FORM: is a lisp expression which must eval to true for the button to
 be added,
@@ -5265,14 +5266,14 @@ variable it the real callback function."
 			       (integer :tag "Regexp group")))))
 
 (defcustom gnus-header-button-alist
-  `(("^\\(References\\|Message-I[Dd]\\):" "<[^<>]+>"
+  '(("^\\(References\\|Message-I[Dd]\\):" "<[^<>]+>"
      0 t gnus-button-message-id 0)
     ("^\\(From\\|Reply-To\\):" ": *\\(.+\\)$" 1 t gnus-button-reply 1)
     ("^\\(Cc\\|To\\):" "[^ \t\n<>,()\"]+@[^ \t\n<>,()\"]+"
      0 t gnus-button-mailto 0)
-    ("^X-[Uu][Rr][Ll]:" ,gnus-button-url-regexp 0 t browse-url 0)
-    ("^Subject:" ,gnus-button-url-regexp 0 t browse-url 0)
-    ("^[^:]+:" ,gnus-button-url-regexp 0 t browse-url 0)
+    ("^X-[Uu][Rr][Ll]:" gnus-button-url-regexp 0 t browse-url 0)
+    ("^Subject:" gnus-button-url-regexp 0 t browse-url 0)
+    ("^[^:]+:" gnus-button-url-regexp 0 t browse-url 0)
     ("^[^:]+:" "\\bmailto:\\([-a-zA-Z.@_+0-9%=?]+\\)" 0 t gnus-url-mailto 1)
     ("^[^:]+:" "\\(<\\(url: \\)?news:\\([^>\n ]*\\)>\\)" 1 t
      gnus-button-message-id 3))
@@ -5485,7 +5486,7 @@ specified by `gnus-button-alist'."
 			       (match-beginning 0))
 			  (point-max)))
 	    (goto-char beg)
-	    (while (re-search-forward (nth 1 entry) end t)
+	    (while (re-search-forward (eval (nth 1 entry)) end t)
 	      ;; Each match within a header.
 	      (let* ((entry (cdr entry))
 		     (start (match-beginning (nth 1 entry)))
