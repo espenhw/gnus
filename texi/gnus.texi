@@ -11069,7 +11069,7 @@ The @samp{getmail} script would look something like the following:
 #  flu@@iki.fi
 
 MOVEMAIL=/usr/lib/emacs/20.3/i386-redhat-linux/movemail
-TMP=~/Mail/tmp
+TMP=$HOME/Mail/tmp
 rm -f $TMP; $MOVEMAIL $MAIL $TMP >/dev/null && cat $TMP
 @end example
 
