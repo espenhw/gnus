@@ -8,6 +8,11 @@ For older news, see Gnus info node "New Features".
 
 * Changes in No Gnus
 
+** IMAP identity (RFC 2971) is support.
+
+By default, Gnus do not send any information about itself, but you can
+customize it using `nnimap-id'.
+
 
 * For older news, see Gnus info node "New Features".
 
