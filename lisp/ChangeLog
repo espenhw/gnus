@@ -1,3 +1,8 @@
+2001-12-30  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-with-article-headers): Move to here. Define
+	the macro then use it.
+
 2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-body-separator-face): New variable.

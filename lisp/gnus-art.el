@@ -1246,6 +1246,21 @@ Initialized from `text-mode-syntax-table.")
 
 (defvar gnus-inhibit-hiding nil)
 
+;;; Macros for dealing with the article buffer.
+
+(defmacro gnus-with-article-headers (&rest forms)
+  `(save-excursion
+     (set-buffer gnus-article-buffer)
+     (save-restriction
+       (let ((buffer-read-only nil)
+	     (inhibit-point-motion-hooks t)
+	     (case-fold-search t))
+	 (article-narrow-to-head)
+	 ,@forms))))
+
+(put 'gnus-with-article-headers 'lisp-indent-function 0)
+(put 'gnus-with-article-headers 'edebug-form-spec '(body))
+
 (defsubst gnus-article-hide-text (b e props)
   "Set text PROPS on the B to E region, extending `intangible' 1 past B."
   (gnus-add-text-properties-when 'article-type nil b e props)
@@ -5789,21 +5804,6 @@ For example:
      handle 'gnus-region
      (cons (set-marker (make-marker) (point-min))
 	   (set-marker (make-marker) (point-max))))))
-
-;;; Macros for dealing with the article buffer.
-
-(defmacro gnus-with-article-headers (&rest forms)
-  `(save-excursion
-     (set-buffer gnus-article-buffer)
-     (save-restriction
-       (let ((buffer-read-only nil)
-	     (inhibit-point-motion-hooks t)
-	     (case-fold-search t))
-	 (article-narrow-to-head)
-	 ,@forms))))
-
-(put 'gnus-with-article-headers 'lisp-indent-function 0)
-(put 'gnus-with-article-headers 'edebug-form-spec '(body))
 
 (defun gnus-article-goto-header (header)
   (re-search-forward (concat "^" header ":") nil t))
