@@ -1726,11 +1726,12 @@ If PROMPT (the prefix), prompt for a coding system to use."
       (article-narrow-to-head)
       (funcall gnus-decode-header-function (point-min) (point-max)))))
 
-(defun article-de-quoted-unreadable (&optional force)
+(defun article-de-quoted-unreadable (&optional force read-charset)
   "Translate a quoted-printable-encoded article.
 If FORCE, decode the article whether it is marked as quoted-printable
-or not."
-  (interactive (list 'force))
+or not.
+If READ-CHARSET, ask for a coding system."
+  (interactive (list 'force current-prefix-arg))
   (save-excursion
     (let ((buffer-read-only nil) type charset)
       (if (gnus-buffer-live-p gnus-original-article-buffer)
@@ -1745,6 +1746,8 @@ or not."
 				 (mail-content-type-get ctl 'charset)))
 	      (if (stringp charset)
 		  (setq charset (intern (downcase charset)))))))
+      (if read-charset
+	  (setq charset (read-coding-system "Charset: " charset)))
       (unless charset
 	(setq charset gnus-newsgroup-charset))
       (when (or force
@@ -1754,10 +1757,11 @@ or not."
 	(quoted-printable-decode-region
 	 (point) (point-max) (mm-charset-to-coding-system charset))))))
 
-(defun article-de-base64-unreadable (&optional force)
+(defun article-de-base64-unreadable (&optional force read-charset)
   "Translate a base64 article.
-If FORCE, decode the article whether it is marked as base64 not."
-  (interactive (list 'force))
+If FORCE, decode the article whether it is marked as base64 not.
+If READ-CHARSET, ask for a coding system."
+  (interactive (list 'force current-prefix-arg))
   (save-excursion
     (let ((buffer-read-only nil) type charset)
       (if (gnus-buffer-live-p gnus-original-article-buffer)
@@ -1772,6 +1776,8 @@ If FORCE, decode the article whether it is marked as base64 not."
 				 (mail-content-type-get ctl 'charset)))
 	      (if (stringp charset)
 		  (setq charset (intern (downcase charset)))))))
+      (if read-charset
+	  (setq charset (read-coding-system "Charset: " charset)))
       (unless charset
 	(setq charset gnus-newsgroup-charset))
       (when (or force
@@ -1795,9 +1801,10 @@ If FORCE, decode the article whether it is marked as base64 not."
     (let ((buffer-read-only nil))
       (rfc1843-decode-region (point-min) (point-max)))))
 
-(defun article-wash-html ()
-  "Format an html article."
-  (interactive)
+(defun article-wash-html (&optional read-charset)
+  "Format an html article.
+If READ-CHARSET, ask for a coding system."
+  (interactive "P")
   (save-excursion
     (let ((buffer-read-only nil)
 	  charset)
@@ -1811,6 +1818,8 @@ If FORCE, decode the article whether it is marked as base64 not."
 				 (mail-content-type-get ctl 'charset)))
 	      (if (stringp charset)
 		  (setq charset (intern (downcase charset)))))))
+      (if read-charset
+	  (setq charset (read-coding-system "Charset: " charset)))
       (unless charset
 	(setq charset gnus-newsgroup-charset))
       (article-goto-body)

@@ -34,10 +34,6 @@
 
 ;;; Widgets:
 
-;; There should be special validation for this.
-(define-widget 'gnus-email-address 'string
-  "An email address")
-
 (defun gnus-custom-mode ()
   "Major mode for editing Gnus customization buffers.
 

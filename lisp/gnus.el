@@ -30,6 +30,7 @@
 (eval '(run-hooks 'gnus-load-hook))
 
 (eval-when-compile (require 'cl))
+(require 'wid-edit)
 (require 'mm-util)
 
 (defgroup gnus nil
@@ -888,8 +889,9 @@ REST is a plist of following:
 	 (variable-document (or (plist-get rest :variable-document) ""))
 	 (variable-group (plist-get rest :variable-group))
 	 (variable-type (or (plist-get rest :variable-type)
-			    `(quote (repeat (list (regexp :tag "Group")
-						  ,parameter-type)))))
+			    `(quote (repeat
+				     (list (regexp :tag "Group")
+					   ,(car (cdr parameter-type)))))))
 	 (variable-default (plist-get rest :variable-default)))
     (list
      'progn
@@ -1457,6 +1459,10 @@ to be desirable; see the manual for further details."
   :group 'gnus-various
   :type '(choice (const nil)
 		 integer))
+
+;; There should be special validation for this.
+(define-widget 'gnus-email-address 'string
+  "An email address")
 
 (gnus-define-group-parameter
  to-address
