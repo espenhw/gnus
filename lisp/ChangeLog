@@ -1,3 +1,9 @@
+2000-09-15 14:03:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-topic.el (gnus-topic-find-groups): Add recursive parameter.
+	(gnus-topic-mark-topic): Ditto.
+	(gnus-topic-unmark-topic): Ditto.
+
 2000-09-15 09:01:40  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-treat-display-xface): By default, Emacs 21
