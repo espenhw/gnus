@@ -1543,6 +1543,34 @@ course.)"
 This happens even if they are not marked as expirable.
 Use with caution.")
 
+(gnus-define-group-parameter
+ charset
+ :function-document
+ "Return the default charset of GROUP."
+ :variable gnus-group-charset-alist
+ :variable-default 
+ '(("\\(^\\|:\\)hk\\>\\|\\(^\\|:\\)tw\\>\\|\\<big5\\>" cn-big5)
+   ("\\(^\\|:\\)cn\\>\\|\\<chinese\\>" cn-gb-2312)
+   ("\\(^\\|:\\)fj\\>\\|\\(^\\|:\\)japan\\>" iso-2022-jp-2)
+   ("\\(^\\|:\\)tnn\\>\\|\\(^\\|:\\)pin\\>\\|\\(^\\|:\\)sci.lang.japan" iso-2022-7bit)
+   ("\\(^\\|:\\)relcom\\>" koi8-r)
+   ("\\(^\\|:\\)fido7\\>" koi8-r)
+   ("\\(^\\|:\\)\\(cz\\|hun\\|pl\\|sk\\|hr\\)\\>" iso-8859-2)
+   ("\\(^\\|:\\)israel\\>" iso-8859-1)
+   ("\\(^\\|:\\)han\\>" euc-kr)
+   ("\\(^\\|:\\)alt.chinese.text.big5\\>" chinese-big5)
+   ("\\(^\\|:\\)soc.culture.vietnamese\\>" vietnamese-viqr)
+   ("\\(^\\|:\\)\\(comp\\|rec\\|alt\\|sci\\|soc\\|news\\|gnu\\|bofh\\)\\>" iso-8859-1)
+   (".*" iso-8859-1))
+ :variable-document
+  "Alist of regexps (to match group names) and default charsets to be used when reading."
+  :variable-group gnus-charset
+  :variable-type '(repeat (list (regexp :tag "Group")
+				(symbol :tag "Charset")))
+  :parameter-type '(symbol :tag "Charset")
+  :parameter-document "\
+The default charset to use in the group.")
+
 (defcustom gnus-group-uncollapsed-levels 1
   "Number of group name elements to leave alone when making a short group name."
   :group 'gnus-group-visual

@@ -861,34 +861,6 @@ which it may alter in any way.")
   :group 'gnus-summary
   :type 'regexp)
 
-(gnus-define-group-parameter
- charset
- :function-document
- "Return the default charset of GROUP."
- :variable gnus-group-charset-alist
- :variable-default 
- '(("\\(^\\|:\\)hk\\>\\|\\(^\\|:\\)tw\\>\\|\\<big5\\>" cn-big5)
-   ("\\(^\\|:\\)cn\\>\\|\\<chinese\\>" cn-gb-2312)
-   ("\\(^\\|:\\)fj\\>\\|\\(^\\|:\\)japan\\>" iso-2022-jp-2)
-   ("\\(^\\|:\\)tnn\\>\\|\\(^\\|:\\)pin\\>\\|\\(^\\|:\\)sci.lang.japan" iso-2022-7bit)
-   ("\\(^\\|:\\)relcom\\>" koi8-r)
-   ("\\(^\\|:\\)fido7\\>" koi8-r)
-   ("\\(^\\|:\\)\\(cz\\|hun\\|pl\\|sk\\|hr\\)\\>" iso-8859-2)
-   ("\\(^\\|:\\)israel\\>" iso-8859-1)
-   ("\\(^\\|:\\)han\\>" euc-kr)
-   ("\\(^\\|:\\)alt.chinese.text.big5\\>" chinese-big5)
-   ("\\(^\\|:\\)soc.culture.vietnamese\\>" vietnamese-viqr)
-   ("\\(^\\|:\\)\\(comp\\|rec\\|alt\\|sci\\|soc\\|news\\|gnu\\|bofh\\)\\>" iso-8859-1)
-   (".*" iso-8859-1))
- :variable-document
-  "Alist of regexps (to match group names) and default charsets to be used when reading."
-  :variable-group gnus-charset
-  :variable-type '(repeat (list (regexp :tag "Group")
-				(symbol :tag "Charset")))
-  :parameter-type '(symbol :tag "Charset")
-  :parameter-document "\
-The default charset to use in the group.")
-
 (defcustom gnus-newsgroup-ignored-charsets '(unknown-8bit x-unknown)
   "List of charsets that should be ignored.
 When these charsets are used in the \"charset\" parameter, the

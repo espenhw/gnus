@@ -1,3 +1,7 @@
+2001-03-05 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el (charset): Move here from gnus-sum.el.
+
 2001-03-04 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml.el (mml-preview): Disable local map.
