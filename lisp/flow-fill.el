@@ -45,6 +45,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
+
 (eval-and-compile
   (defalias 'fill-flowed-point-at-bol
 	(if (fboundp 'point-at-bol)
