@@ -1,3 +1,44 @@
+Sat Aug 22 10:28:25 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.39 is released.
+
+1998-08-22 10:06:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-ignored-headers): Added more headers.
+
+1998-08-21 02:49:56  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnweb.el (nnweb-type): Doc fix.
+
+	* gnus-sum.el (gnus-summary-set-process-mark): Move to the right
+	article. 
+
+1998-08-20 23:10:01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnmail.el (nnmail-spool-file): Allow lists of files.
+
+1998-08-20  Per Starback  <starback@update.uu.se>
+
+	* gnus/gnus-start.el (gnus-check-first-time-used): Change current
+	buffer before creating help group.
+
+1998-08-20 01:33:08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-message-style-insertions): New variable.
+	(gnus-message-insert-stylings): New function.
+	(gnus-configure-posting-styles): Use them.
+
+	* gnus-topic.el (gnus-topic-mode): Don't alter summary-exit-hook. 
+
+	* gnus-sum.el (gnus-select-newsgroup): Don't update group.
+
+	* gnus-msg.el (gnus-setup-message): Bind message-mode-hook.
+	(gnus-inhibit-posting-styles): New variable.
+	(gnus-summary-reply): Use it.
+	(gnus-configure-posting-styles): Ditto.
+
+	* gnus-group.el (gnus-group-suspend): Don't kill dribble buffer. 
+
 Thu Aug 20 00:28:35 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.38 is released.

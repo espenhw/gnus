@@ -3167,7 +3167,7 @@ The hook gnus-suspend-gnus-hook is called before actually suspending."
   ;; Kill Gnus buffers except for group mode buffer.
   (let ((group-buf (get-buffer gnus-group-buffer)))
     (mapcar (lambda (buf)
-	      (unless (equal buf group-buf)
+	      (unless (member buf (list group-buf gnus-dribble-buffer))
 		(kill-buffer buf)))
 	    (gnus-buffers))
     (gnus-kill-gnus-frames)

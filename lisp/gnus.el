@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.6.38"
+(defconst gnus-version-number "5.6.39"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -2270,9 +2270,11 @@ that that variable is buffer-local to the summary buffers."
 	 (gnus-server-to-method method))
 	((equal method gnus-select-method)
 	 gnus-select-method)
-	((and (stringp (car method)) group)
+	((and (stringp (car method))
+	      group)
 	 (gnus-server-extend-method group method))
-	((and method (not group)
+	((and method
+	      (not group)
 	      (equal (cadr method) ""))
 	 method)
 	(t

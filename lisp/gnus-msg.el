@@ -110,6 +110,9 @@ the second with the current group name.")
 
 ;;; Internal variables.
 
+(defvar gnus-inhibit-posting-styles nil
+  "Inhibit the use of posting styles.")
+
 (defvar gnus-message-buffer "*Mail Gnus*")
 (defvar gnus-article-copy nil)
 (defvar gnus-last-posting-server nil)
@@ -185,7 +188,8 @@ Thank you for your help in stamping out bugs.
 	   (,article (and gnus-article-reply (gnus-summary-article-number)))
 	   (,group gnus-newsgroup-name)
 	   (message-header-setup-hook
-	    (copy-sequence message-header-setup-hook)))
+	    (copy-sequence message-header-setup-hook))
+	   (message-mode-hook (copy-sequence message-mode-hook)))
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-gcc)
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-archive-gcc)
        (add-hook 'message-mode-hook 'gnus-configure-posting-styles)
@@ -599,7 +603,8 @@ automatically."
   ;; Stripping headers should be specified with mail-yank-ignored-headers.
   (when yank
     (gnus-summary-goto-subject (car yank)))
-  (let ((gnus-article-reply t))
+  (let ((gnus-article-reply t)
+	(gnus-inhibit-posting-styles t))
     (gnus-setup-message (if yank 'reply-yank 'reply)
       (gnus-summary-select-article)
       (set-buffer (gnus-copy-article-buffer))
@@ -1062,73 +1067,86 @@ this is a reply."
 
 ;;; Posting styles.
 
+(defvar gnus-message-style-insertions nil)
+
 (defun gnus-configure-posting-styles ()
   "Configure posting styles according to `gnus-posting-styles'."
-  (let ((styles gnus-posting-styles)
-	(gnus-newsgroup-name (or gnus-newsgroup-name ""))
-	style match variable attribute value value-value)
-    ;; Go through all styles and look for matches.
-    (while styles
-      (setq style (pop styles)
-	    match (pop style))
-      (when (cond ((stringp match)
-		   ;; Regexp string match on the group name.
-		   (string-match match gnus-newsgroup-name))
-		  ((or (symbolp match)
-		       (gnus-functionp match))
-		   (cond ((gnus-functionp match)
-			  ;; Function to be called.
-			  (funcall match))
-			 ((boundp match)
-			  ;; Variable to be checked.
-			  (symbol-value match))))
-		  ((listp match)
-		   ;; This is a form to be evaled.
-		   (eval match)))
-	;; We have a match, so we set the variables.
-	(while style
-	  (setq attribute (pop style)
-		value (cadr attribute)
-		variable nil)
-	  ;; We find the variable that is to be modified.
-	  (if (and (not (stringp (car attribute)))
-                   (not (eq 'body (car attribute)))
-		   (not (setq variable (cdr (assq (car attribute) 
-						  gnus-posting-style-alist)))))
-	      (message "Couldn't find attribute %s" (car attribute))
-	    ;; We get the value.
-	    (setq value-value
-		  (cond ((stringp value)
-			 value)
-			((or (symbolp value)
-			     (gnus-functionp value))
-			 (cond ((gnus-functionp value)
-				(funcall value))
-			       ((boundp value)
-				(symbol-value value))))
-			((listp value)
-			 (eval value))))
-	    (if variable
-		;; This is an ordinary variable.
-		(set (make-local-variable variable) value-value)
-              ;; This is either a body or a header to be inserted in the
-              ;; message.
- 	      (when value-value
-		(let ((attr (car attribute)))
-		  (make-local-variable 'message-setup-hook)
-                  (if (eq 'body attr)
+  (unless gnus-inhibit-posting-styles
+    (let ((styles gnus-posting-styles)
+	  (gnus-newsgroup-name (or gnus-newsgroup-name ""))
+	  style match variable attribute value value-value)
+      (make-local-variable 'gnus-message-style-insertions)
+      ;; Go through all styles and look for matches.
+      (while styles
+	(setq style (pop styles)
+	      match (pop style))
+	(when (cond ((stringp match)
+		     ;; Regexp string match on the group name.
+		     (string-match match gnus-newsgroup-name))
+		    ((or (symbolp match)
+			 (gnus-functionp match))
+		     (cond ((gnus-functionp match)
+			    ;; Function to be called.
+			    (funcall match))
+			   ((boundp match)
+			    ;; Variable to be checked.
+			    (symbol-value match))))
+		    ((listp match)
+		     ;; This is a form to be evaled.
+		     (eval match)))
+	  ;; We have a match, so we set the variables.
+	  (while style
+	    (setq attribute (pop style)
+		  value (cadr attribute)
+		  variable nil)
+	    ;; We find the variable that is to be modified.
+	    (if (and (not (stringp (car attribute)))
+		     (not (eq 'body (car attribute)))
+		     (not (setq variable
+				(cdr (assq (car attribute) 
+					   gnus-posting-style-alist)))))
+		(message "Couldn't find attribute %s" (car attribute))
+	      ;; We get the value.
+	      (setq value-value
+		    (cond ((stringp value)
+			   value)
+			  ((or (symbolp value)
+			       (gnus-functionp value))
+			   (cond ((gnus-functionp value)
+				  (funcall value))
+				 ((boundp value)
+				  (symbol-value value))))
+			  ((listp value)
+			   (eval value))))
+	      (if variable
+		  ;; This is an ordinary variable.
+		  (set (make-local-variable variable) value-value)
+		;; This is either a body or a header to be inserted in the
+		;; message.
+		(when value-value
+		  (let ((attr (car attribute)))
+		    (make-local-variable 'message-setup-hook)
+		    (if (eq 'body attr)
+			(add-hook 'message-setup-hook
+				  `(lambda ()
+				     (save-excursion
+				       (message-goto-body)
+				       (insert ,value-value))))
 		      (add-hook 'message-setup-hook
-				`(lambda ()
-				   (save-excursion
-				     (message-goto-body)
-				     (insert ,value-value))))
-		    (add-hook
-		     'message-setup-hook
-		     `(lambda ()
-			(save-excursion
-			  (message-goto-eoh)
-			  (insert ,(if (stringp attr) attr (symbol-name attr))
-				  ": " ,value-value "\n"))))))))))))))
+				'gnus-message-insert-stylings)
+		      (push (cons (if (stringp attr) attr
+				    (symbol-name attr))
+				  value-value)
+			    gnus-message-style-insertions))))))))))))
+
+(defun gnus-message-insert-stylings ()
+  (let (val)
+    (save-excursion
+      (message-goto-eoh)
+      (while (setq val (pop gnus-message-style-insertions))
+	(when (cdr val)
+	  (insert (car val) ": " (cdr val) "\n"))
+	(gnus-pull (car val) gnus-message-style-insertions)))))
 
 ;;; Allow redefinition of functions.
 

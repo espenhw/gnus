@@ -46,7 +46,9 @@
   "Where nnweb will save its files.")
 
 (defvoo nnweb-type 'dejanews
-  "What search engine type is being used.")
+  "What search engine type is being used.
+Valid types include `dejanews', `dejanewsold', `reference',
+and `altavista'.")
 
 (defvoo nnweb-type-definition
   '((dejanews

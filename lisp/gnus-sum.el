@@ -3879,8 +3879,6 @@ If SELECT-ARTICLES, only select those articles from GROUP."
     (setq gnus-newsgroup-processable nil)
 
     (gnus-update-read-articles group gnus-newsgroup-unreads)
-    (unless (gnus-ephemeral-group-p gnus-newsgroup-name)
-      (gnus-group-update-group group))
 
     (if (setq articles select-articles)
 	(setq gnus-newsgroup-unselected
@@ -7590,6 +7588,7 @@ the actual number of articles marked is returned."
 	      (delq article gnus-newsgroup-processable)))
   (when (gnus-summary-goto-subject article)
     (gnus-summary-show-thread)
+    (gnus-summary-goto-subject article)
     (gnus-summary-update-secondary-mark article)))
 
 (defun gnus-summary-remove-process-mark (article)
@@ -7597,6 +7596,7 @@ the actual number of articles marked is returned."
   (setq gnus-newsgroup-processable (delq article gnus-newsgroup-processable))
   (when (gnus-summary-goto-subject article)
     (gnus-summary-show-thread)
+    (gnus-summary-goto-subject article)
     (gnus-summary-update-secondary-mark article)))
 
 (defun gnus-summary-set-saved-mark (article)

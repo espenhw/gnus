@@ -1090,8 +1090,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 		     (gnus-uu-reginize-string (gnus-summary-article-subject))))
 	list-of-subjects)
     (save-excursion
-      (if (not subject)
-	  ()
+      (when subject
 	;; Collect all subjects matching subject.
 	(let ((case-fold-search t)
 	      (data gnus-newsgroup-data)

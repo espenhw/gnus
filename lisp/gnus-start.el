@@ -254,8 +254,6 @@ for your decision; `gnus-subscribe-killed' kills all new groups;
 		(function-item gnus-subscribe-zombies)
 		function))
 
-;; Suggested by a bug report by Hallvard B Furuseth.
-;; <h.b.furuseth@usit.uio.no>.
 (defcustom gnus-subscribe-options-newsgroup-method
   'gnus-subscribe-alphabetically
   "*This function is called to subscribe newsgroups mentioned on \"options -n\" lines.
@@ -1054,13 +1052,13 @@ for new groups, and subscribe the new groups as zombies."
     ;; Go through both primary and secondary select methods and
     ;; request new newsgroups.
     (while (setq method (gnus-server-get-method nil (pop methods)))
-      (setq new-newsgroups nil)
-      (setq gnus-override-subscribe-method method)
+      (setq new-newsgroups nil
+	    gnus-override-subscribe-method method)
       (when (and (gnus-check-server method)
 		 (gnus-request-newgroups date method))
 	(save-excursion
-	  (setq got-new t)
-	  (setq hashtb (gnus-make-hashtable 100))
+	  (setq got-new t
+		hashtb (gnus-make-hashtable 100))
 	  (set-buffer nntp-server-buffer)
 	  ;; Enter all the new groups into a hashtable.
 	  (gnus-active-to-gnus-format method hashtb 'ignore))
@@ -1139,7 +1137,9 @@ for new groups, and subscribe the new groups as zombies."
 	    (gnus-group-change-level
 	     (car groups) gnus-level-default-subscribed gnus-level-killed))
 	  (setq groups (cdr groups)))
-	(gnus-group-make-help-group)
+	(save-excursion
+	  (set-buffer gnus-group-buffer)
+	  (gnus-group-make-help-group))
 	(when gnus-novice-user
 	  (gnus-message 7 "`A k' to list killed groups"))))))
 

@@ -627,7 +627,7 @@ articles in the topic and its subtopics."
 	 (parent (gnus-topic-parent-topic topic-name))
 	 (all-entries entries)
 	 (unread 0)
-	 old-unread entry)
+	 old-unread entry new-unread)
     (when (gnus-topic-goto-topic (car type))
       ;; Tally all the groups that belong in this topic.
       (if reads
@@ -643,12 +643,14 @@ articles in the topic and its subtopics."
        (car type) (gnus-topic-visible-p)
        (not (eq (nth 2 type) 'hidden))
        (gnus-group-topic-level) all-entries unread)
-      (gnus-delete-line))
+      (gnus-delete-line)
+      (forward-line -1)
+      (setq new-unread (gnus-group-topic-unread)))
     (when parent
       (forward-line -1)
       (gnus-topic-update-topic-line
        parent
-       (max 0 (- (or old-unread 0) (or (gnus-group-topic-unread) 0)))))
+       (- (or old-unread 0) (or new-unread 0))))
     unread))
 
 (defun gnus-topic-group-indentation ()
@@ -984,7 +986,6 @@ articles in the topic and its subtopics."
 	(gnus-topic-make-menu-bar))
       (gnus-set-format 'topic t)
       (gnus-add-minor-mode 'gnus-topic-mode " Topic" gnus-topic-mode-map)
-      (add-hook 'gnus-summary-exit-hook 'gnus-topic-update-topic)
       (add-hook 'gnus-group-catchup-group-hook 'gnus-topic-update-topic)
       (set (make-local-variable 'gnus-group-prepare-function)
 	   'gnus-group-prepare-topics)

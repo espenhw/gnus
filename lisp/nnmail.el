@@ -182,7 +182,8 @@ used as incoming mailboxes.
 If this variable is a directory (i. e., it's name ends with a \"/\"),
 treat all files in that directory as incoming spool files."
   :group 'nnmail-files
-  :type 'file)
+  :type '(choice (file :tag "File")
+		 (repeat :tag "Files" file)))
 
 (defcustom nnmail-crash-box "~/.gnus-crash-box"
   "File where Gnus will store mail while processing it."
