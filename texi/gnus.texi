@@ -12256,27 +12256,26 @@ If you're saving lots of articles in the cache by using persistent
 articles, you may want to create a virtual server to read the cache.
 
 First you need to add a new server.  The @kbd{a} command does that.  It
-would probably be best to use @code{nnspool} to read the cache.  You
-could also use @code{nnml} or @code{nnmh}, though.
+would probably be best to use @code{nnml} to read the cache.  You
+could also use @code{nnspool} or @code{nnmh}, though.
 
-Type @kbd{a nnspool RET cache RET}.
+Type @kbd{a nnml RET cache RET}.
 
-You should now have a brand new @code{nnspool} virtual server called
+You should now have a brand new @code{nnml} virtual server called
 @samp{cache}.  You now need to edit it to have the right definitions.
 Type @kbd{e} to edit the server.  You'll be entered into a buffer that
 will contain the following:
 
 @lisp
-(nnspool "cache")
+(nnml "cache")
 @end lisp
 
 Change that to:
 
 @lisp
-(nnspool "cache"
-         (nnspool-spool-directory "~/News/cache/")
-         (nnspool-nov-directory "~/News/cache/")
-         (nnspool-active-file "~/News/cache/active"))
+(nnml "cache"
+         (nnml-directory "~/News/cache/")
+         (nnml-active-file "~/News/cache/active"))
 @end lisp
 
 Type @kbd{C-c C-c} to return to the server buffer.  If you now press
