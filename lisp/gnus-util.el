@@ -1238,7 +1238,7 @@ SPEC is a predicate specifier that contains stuff like `or', `and',
     (list 'local-map map))))
 
 (defun gnus-completing-read (prompt table &optional predicate require-match
-				    history inherit-input-method)
+				    history)
   (when (and history
 	     (not (boundp history)))
     (set history nil))
@@ -1251,8 +1251,7 @@ SPEC is a predicate specifier that contains stuff like `or', `and',
    require-match
    nil
    history
-   (car (symbol-value history))
-   inherit-input-method))
+   (car (symbol-value history))))
 
 (provide 'gnus-util)
 
