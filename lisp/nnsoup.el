@@ -541,7 +541,7 @@ The SOUP packet file name will be inserted at the %s.")
    ((= format ?n)
     "^#! *rnews +[0-9]+ *$")
    ((= format ?m)
-    (concat "^" rmail-unix-mail-delimiter))
+    (concat "^" message-unix-mail-delimiter))
    ((= format ?M)
     "^\^A\^A\^A\^A\n")
    (t

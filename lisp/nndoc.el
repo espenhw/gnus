@@ -27,7 +27,7 @@
 ;;; Code:
 
 (require 'nnheader)
-(require 'rmail)
+(require 'message)
 (require 'nnmail)
 (require 'nnoo)
 (eval-when-compile (require 'cl))
@@ -54,7 +54,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
      (body-end-function . nndoc-rnews-body-end))
     (mbox 
      (article-begin . 
-		    ,(let ((delim (concat "^" rmail-unix-mail-delimiter)))
+		    ,(let ((delim (concat "^" message-unix-mail-delimiter)))
 		       (if (string-match "\n\\'" delim)
 			   (substring delim 0 (match-beginning 0))
 			 delim)))
@@ -308,7 +308,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
   "Guess what document type is in the current buffer."
   (goto-char (point-min))
   (cond 
-   ((looking-at rmail-unix-mail-delimiter)
+   ((looking-at message-unix-mail-delimiter)
     'mbox)
    ((looking-at "\^A\^A\^A\^A$")
     'mmdf)

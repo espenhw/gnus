@@ -31,7 +31,6 @@
 ;;; Code:
 
 (require 'nnheader)
-(require 'rmail)
 (require 'nnmail)
 (require 'gnus)
 (require 'nnoo)

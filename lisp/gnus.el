@@ -1533,6 +1533,9 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
 
 ;; Internal variables
 
+;; Dummy variable.
+(defvar gnus-use-generic-from nil)
+
 (defvar gnus-thread-indent-array nil)
 (defvar gnus-thread-indent-array-level gnus-thread-indent-level)
 
@@ -1540,6 +1543,9 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
 
 (defvar gnus-method-history nil)
 ;; Variable holding the user answers to all method prompts.
+
+(defvar gnus-group-history nil)
+;; Variable holding the user answers to all group prompts.
 
 (defvar gnus-server-alist nil
   "List of available servers.")
@@ -1707,7 +1713,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.78"
+(defconst gnus-version "September Gnus v0.79"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2537,25 +2543,31 @@ Thank you for your help in stamping out bugs.
 (defun gnus-update-summary-mark-positions ()
   "Compute where the summary marks are to go."
   (save-excursion
+    (when (and gnus-summary-buffer
+	       (get-buffer gnus-summary-buffer)
+	       (buffer-name (get-buffer gnus-summary-buffer)))
+      (set-buffer gnus-summary-buffer))
     (let ((gnus-replied-mark 129)
 	  (gnus-score-below-mark 130)
 	  (gnus-score-over-mark 130)
 	  (thread nil)
 	  (gnus-visual nil)
+	  (spec gnus-summary-line-format-spec)
 	  pos)
       (gnus-set-work-buffer)
-      (gnus-summary-insert-line
-       [0 "" "" "" "" "" 0 0 ""]  0 nil 128 t nil "" nil 1)
-      (goto-char (point-min))
-      (setq pos (list (cons 'unread (and (search-forward "\200" nil t)
-					 (- (point) 2)))))
-      (goto-char (point-min))
-      (push (cons 'replied (and (search-forward "\201" nil t) (- (point) 2)))
-	    pos)
-      (goto-char (point-min))
-      (push (cons 'score (and (search-forward "\202" nil t) (- (point) 2)))
-	    pos)
-      (setq gnus-summary-mark-positions pos))))
+      (let ((gnus-summary-line-format-spec spec))
+	(gnus-summary-insert-line
+	 [0 "" "" "" "" "" 0 0 ""]  0 nil 128 t nil "" nil 1)
+	(goto-char (point-min))
+	(setq pos (list (cons 'unread (and (search-forward "\200" nil t)
+					   (- (point) 2)))))
+	(goto-char (point-min))
+	(push (cons 'replied (and (search-forward "\201" nil t) (- (point) 2)))
+	      pos)
+	(goto-char (point-min))
+	(push (cons 'score (and (search-forward "\202" nil t) (- (point) 2)))
+	      pos)
+	(setq gnus-summary-mark-positions pos)))))
 
 (defun gnus-update-group-mark-positions ()
   (save-excursion
@@ -3627,7 +3639,9 @@ simple-first is t, first argument is already simplified."
 
 (defun gnus-completing-read (default prompt &rest args)
   ;; Like `completing-read', except that DEFAULT is the default argument.
-  (let* ((prompt (concat prompt " (default " default ") "))
+  (let* ((prompt (if default 
+		     (concat prompt " (default " default ") ")
+		   (concat prompt " ")))
 	 (answer (apply 'completing-read prompt args)))
     (if (or (null answer) (zerop (length answer)))
 	default
@@ -5174,6 +5188,7 @@ Take into consideration N (the prefix) and the list of marked groups."
       (nreverse groups)))
    ((and (boundp 'transient-mark-mode)
 	 transient-mark-mode
+	 (boundp 'mark-active)
 	 mark-active)
     ;; Work on the region between point and mark.
     (let ((max (max (point) (mark)))
@@ -5283,7 +5298,9 @@ Returns whether the fetching was successful or not."
   (interactive
    (list (completing-read
 	  "Group: " gnus-active-hashtb nil
-	  (memq gnus-select-method gnus-have-read-active-file))))
+	  (memq gnus-select-method gnus-have-read-active-file)
+	  nil
+	  'gnus-group-history)))
 
   (when (equal group "")
     (error "Empty group name"))
@@ -6090,7 +6107,9 @@ group line."
   (interactive
    (list (completing-read
 	  "Group: " gnus-active-hashtb nil
-	  (memq gnus-select-method gnus-have-read-active-file))))
+	  (memq gnus-select-method gnus-have-read-active-file)
+	  nil 
+	  'gnus-group-history)))
   (let ((newsrc (gnus-gethash group gnus-newsrc-hashtb)))
     (cond
      ((string-match "^[ \t]$" group)
@@ -11597,6 +11616,12 @@ groups."
 	(when gnus-use-cache
 	  (gnus-cache-update-article 
 	   (cdr gnus-article-current) (car gnus-article-current))))
+      (save-excursion
+	(when (get-buffer gnus-original-article-buffer)
+	  (set-buffer gnus-original-article-buffer)
+	  (setq gnus-original-article nil)))
+      (setq gnus-article-current nil
+	    gnus-current-article nil)
       (run-hooks 'gnus-article-display-hook)
       (and (gnus-visual-p 'summary-highlight 'highlight)
 	   (run-hooks 'gnus-visual-mark-article-hook)))))
@@ -12863,7 +12888,7 @@ save those articles instead."
   "Read a group name."
   (let* ((split-name (gnus-get-split-value gnus-move-split-methods))
 	 (prom
-	  (format "Where do you want to %s %s? "
+	  (format "Where do you want to %s %s?"
 		  prompt
 		  (if (> (length articles) 1)
 		      (format "these %d articles" (length articles))
@@ -12871,19 +12896,19 @@ save those articles instead."
 	 (to-newsgroup
 	  (cond
 	   ((null split-name)
-	    (completing-read
-	     (concat prom
-		     (if default
-			 (format "(default %s) " default)
-		       ""))
-	     gnus-active-hashtb nil nil prefix))
+	    (gnus-completing-read default prom
+				  gnus-active-hashtb nil nil prefix
+				  'gnus-group-history))
 	   ((= 1 (length split-name))
-	    (completing-read prom gnus-active-hashtb
-			     nil nil (cons (car split-name) 0)))
+	    (gnus-completing-read (car split-name) prom gnus-active-hashtb
+				  nil nil nil
+				  'gnus-group-history))
 	   (t
-	    (completing-read
-	     prom (mapcar (lambda (el) (list el)) (nreverse split-name)))))))
-
+	    (gnus-completing-read nil prom 
+				  (mapcar (lambda (el) (list el))
+					  (nreverse split-name))
+				  nil nil nil
+				  'gnus-group-history)))))
     (when to-newsgroup
       (if (or (string= to-newsgroup "")
 	      (string= to-newsgroup prefix))

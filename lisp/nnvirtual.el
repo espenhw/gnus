@@ -197,7 +197,10 @@ virtual group.")
 	     ;; Add this group to the list of component groups.
 	     (setq nnvirtual-component-groups
 		   (cons group 
-			 (delete group nnvirtual-component-groups))))))
+			 (delete group nnvirtual-component-groups)))))
+      (setq nnvirtual-component-groups
+	    (delete (nnvirtual-current-group)
+		    nnvirtual-component-groups)))
     (if (not nnvirtual-component-groups)
 	(nnheader-report 'nnvirtual "No component groups: %s" server)
       t)))
@@ -318,17 +321,7 @@ virtual group.")
 	   header)
       (erase-buffer)
       (while (setq header (pop headers))
-	(insert (int-to-string (mail-header-number header)) "\t"
-		(or (mail-header-subject header) "") "\t"
-		(or (mail-header-from header) "") "\t"
-		(or (mail-header-date header) "") "\t"
-		(or (mail-header-id header) "") "\t"
-		(or (mail-header-references header) "") "\t"
-		(int-to-string (or (mail-header-chars header) 0)) "\t"
-		(int-to-string (or (mail-header-lines header) 0)) "\t"
-		(if (mail-header-xref header) 
-		    (concat "Xref: " (mail-header-xref header) "\t")
-		  "") "\n")))))
+))))
 
 (defun nnvirtual-possibly-change-server (server)
   (or (not server)
@@ -403,12 +396,10 @@ virtual group.")
 				     g n (and (memq n unreads) t)
 				     (inline (nnvirtual-marks n marks))))
 			     (gnus-uncompress-range active))))
-		 (setq nnvirtual-component-groups
-		       (delete (nnvirtual-current-group)
-			       nnvirtual-component-groups))))
+		 nnvirtual-component-groups))
 	       (lambda (m1 m2)
 		 (< (car m1) (car m2)))))
-    (i 0))
+	 (i 0))
     (setq nnvirtual-mapping map)
     ;; Set the virtual article numbers.
     (while (setq m (pop map))

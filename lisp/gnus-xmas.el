@@ -380,10 +380,12 @@ pounce directly on the real variables themselves.")
 		(x-get-resource ".backgroundMode" "BackgroundMode" 'string)
 	      (error nil)))
 	   (params (frame-parameters))
-	   (color (or (assq 'background-color params)
-		      (color-instance-name
-		       (specifier-instance
-			(face-background 'default))))))
+	   (color (condition-case ()
+		      (or (assq 'background-color params)
+			  (color-instance-name
+			   (specifier-instance
+			    (face-background 'default))))
+		    (error nil))))
       (cond (bg-resource (intern (downcase bg-resource)))
 	    ((and color
 		  (< (apply '+ (gnus-x-color-values color))

@@ -7347,14 +7347,6 @@ A function called to save outgoing articles.  This function will be
 called with the same of the file to store the article in. The default
 function is @code{rmail-output} which saves in the Unix mailbox format.
 
-@item gnus-mail-self-blind 
-@vindex gnus-mail-self-blind 
-Non-@code{nil} means insert a BCC header in all outgoing articles
-pointing to yourself.  This will result you receiving a copy of the
-article mailed to yourself.  The BCC header is inserted when the post
-buffer is initialized, so you can remove or alter the BCC header to
-override the default.
-
 @item gnus-outgoing-message-group 
 @vindex gnus-outgoing-message-group 
 All outgoing messages will be put in this group.  If you want to store

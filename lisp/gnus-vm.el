@@ -31,6 +31,7 @@
 ;;; Code:
 
 (require 'sendmail)
+(require 'message)
 (require 'gnus)
 (require 'gnus-msg)
 
@@ -112,7 +113,7 @@ save those articles instead."
 (defun gnus-mail-forward-using-vm (&optional buffer)
   "Forward the current message to another user using vm."
   (let* ((gnus-buffer (or buffer (current-buffer)))
-	 (subject (gnus-forward-make-subject gnus-buffer)))
+	 (subject (message-make-forward-subject)))
     (or (featurep 'win-vm)
 	(if gnus-use-full-window
 	    (pop-to-buffer gnus-article-buffer)

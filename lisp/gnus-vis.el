@@ -388,14 +388,13 @@ ticked: The number of ticked articles in the group.
 	       (memq (gnus-group-group-name) gnus-group-marked))]
 	 ["Unmark all" gnus-group-unmark-all-groups gnus-group-marked]
 	 ["Mark regexp..." gnus-group-mark-regexp t]
-	 ["Mark region" gnus-group-mark-region (region-exists-p)]
+	 ["Mark region" gnus-group-mark-region t]
 	 ["Mark buffer" gnus-group-mark-buffer t]
 	 ["Execute command" gnus-group-universal-argument
 	  (or gnus-group-marked (gnus-group-group-name))])
 	("Subscribe"
 	 ["Subscribe to random group" gnus-group-unsubscribe-group t]
-	 ["Kill all newsgroups in region" gnus-group-kill-region
-	  (region-exists-p)]
+	 ["Kill all newsgroups in region" gnus-group-kill-region t]
 	 ["Kill all zombie groups" gnus-group-kill-all-zombies
 	  gnus-zombie-list]
 	 ["Kill all groups on level..." gnus-group-kill-level t])
@@ -495,8 +494,7 @@ ticked: The number of ticked articles in the group.
 	 ["Catchup" gnus-summary-catchup t]
 	 ["Catchup all" gnus-summary-catchup-all t]
 	 ["Catchup to here" gnus-summary-catchup-to-here t]
-	 ["Catchup region" gnus-summary-mark-region-as-read
-	  (region-exists-p)]
+	 ["Catchup region" gnus-summary-mark-region-as-read t]
 	 ["Mark excluded" gnus-summary-limit-mark-excluded-as-read t])
 	("Various"
 	 ["Tick" gnus-summary-tick-article-forward t]
@@ -525,7 +523,7 @@ ticked: The number of ticked articles in the group.
 	 ["Remove all marks" gnus-summary-unmark-all-processable t]
 	 ["Mark above" gnus-uu-mark-over t]
 	 ["Mark series" gnus-uu-mark-series t]
-	 ["Mark region" gnus-uu-mark-region (region-exists-p)]
+	 ["Mark region" gnus-uu-mark-region t]
 	 ["Mark by regexp..." gnus-uu-mark-by-regexp t]
 	 ["Mark all" gnus-uu-mark-all t]
 	 ["Mark buffer" gnus-uu-mark-buffer t]

@@ -131,7 +131,7 @@
   "Expires ARTICLES from GROUP on SERVER.
 If FORCE, delete regardless of exiration date, otherwise use normal
 expiry mechanism."
-  (let (msg)
+  (let (msg art)
     (nntp-possibly-change-server group server) ;;-
     (while articles
       (setq art (pop articles))
@@ -159,7 +159,8 @@ expiry mechanism."
   "Move ARTICLE (a number) from GROUP on SERVER.
 Evals ACCEPT-FORM in current buffer, where the article is.
 Optional LAST is ignored."
-  (let ((artbuf (get-buffer-create " *nndb move*")))
+  (let ((artbuf (get-buffer-create " *nndb move*"))
+	result)
     (and
      (nndb-request-article article group server artbuf)
      (save-excursion

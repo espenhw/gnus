@@ -180,8 +180,9 @@ buffer."
 		 (not gnus-expert-user))
 	(setq gnus-newsgroup-name
 	      (setq group 
-		    (completing-read "Group: " gnus-active-hashtb nil nil
-				     (cons (or group "") 0)))))
+		    (gnus-completing-read group "Group:"
+					  gnus-active-hashtb nil nil nil
+					  'gnus-group-history))))
       (gnus-post-news 'post group))))
 
 (defun gnus-summary-post-news ()
@@ -243,7 +244,8 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
       (when (gnus-summary-select-article t nil nil article)
 	(when (gnus-eval-in-buffer-window 
 	       gnus-original-article-buffer (message-cancel-news))
-	  (gnus-summary-mark-as-read article gnus-canceled-mark))
+	  (gnus-summary-mark-as-read article gnus-canceled-mark)
+	  (gnus-cache-remove-article 1))
 	(gnus-article-hide-headers-if-wanted))
       (gnus-summary-remove-process-mark article))))
 
@@ -253,10 +255,15 @@ This is done simply by taking the old article and adding a Supersedes
 header line with the old Message-ID."
   (interactive)
   (gnus-set-global-variables)
-  (gnus-setup-message 'reply-yank
-    (gnus-summary-select-article t)
-    (set-buffer gnus-original-article-buffer)
-    (message-supersede)))
+  (let ((article (gnus-summary-article-number)))
+    (gnus-setup-message 'reply-yank
+      (gnus-summary-select-article t)
+      (set-buffer gnus-original-article-buffer)
+      (message-supersede)
+      (push
+       `((lambda ()
+	   (gnus-cache-possibly-remove-article ,article nil nil nil t)))
+       message-send-actions))))
 
 
 

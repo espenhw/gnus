@@ -39,7 +39,6 @@
 
 (require 'mail-utils)
 (require 'sendmail)
-(require 'rmail)
 (eval-when-compile (require 'cl))
 
 (defvar nnheader-max-head-length 4096
@@ -132,6 +131,117 @@ on your system, you could say something like:
   "Create a new mail header structure initialized with INIT."
   (make-vector 9 init))
 
+;; Parsing headers and NOV lines.
+
+(defsubst nnheader-header-value ()
+  (buffer-substring (match-end 0) (gnus-point-at-eol)))
+
+(defvar nnheader-newsgroup-none-id 1)
+
+(defun nnheader-parse-head ()
+  (let ((case-fold-search t)
+	end ref in-reply-to lines p cur)
+    (goto-char (point-min))
+    ;; Search to the beginning of the next header. Error messages
+    ;; do not begin with 2 or 3.
+    (when (re-search-forward "^[23][0-9]+ " nil t)
+      ;; This implementation of this function, with nine
+      ;; search-forwards instead of the one re-search-forward and
+      ;; a case (which basically was the old function) is actually
+      ;; about twice as fast, even though it looks messier.	 You
+      ;; can't have everything, I guess.  Speed and elegance
+      ;; doesn't always go hand in hand.
+      (vector
+       ;; Number.
+       (prog1
+	   (read cur)
+	 (end-of-line)
+	 (setq p (point))
+	 (narrow-to-region (point)
+			   (or (and (search-forward "\n.\n" nil t)
+				    (- (point) 2))
+			       (point))))
+       ;; Subject.
+       (progn
+	 (goto-char p)
+	 (if (search-forward "\nsubject: " nil t)
+	     (nnheader-header-value) "(none)"))
+       ;; From.
+       (progn
+	 (goto-char p)
+	 (if (search-forward "\nfrom: " nil t)
+	     (nnheader-header-value) "(nobody)"))
+       ;; Date.
+       (progn
+	 (goto-char p)
+	 (if (search-forward "\ndate: " nil t)
+	     (nnheader-header-value) ""))
+       ;; Message-ID.
+       (progn
+	 (goto-char p)
+	 (if (search-forward "\nmessage-id: " nil t)
+	     (nnheader-header-value)
+	   ;; If there was no message-id, we just fake one to make
+	   ;; subsequent routines simpler.
+	   (concat "none+"
+		   (int-to-string
+		    (incf nnheader-newsgroup-none-id)))))
+       ;; References.
+       (progn
+	 (goto-char p)
+	 (if (search-forward "\nreferences: " nil t)
+	     (nnheader-header-value)
+	   ;; Get the references from the in-reply-to header if there
+	   ;; were no references and the in-reply-to header looks
+	   ;; promising.
+	   (if (and (search-forward "\nin-reply-to: " nil t)
+		    (setq in-reply-to (nnheader-header-value))
+		    (string-match "<[^>]+>" in-reply-to))
+	       (substring in-reply-to (match-beginning 0)
+			  (match-end 0))
+	     "")))
+       ;; Chars.
+       0
+       ;; Lines.
+       (progn
+	 (goto-char p)
+	 (if (search-forward "\nlines: " nil t)
+	     (if (numberp (setq lines (read cur)))
+		 lines 0)
+	   0))
+       ;; Xref.
+       (progn
+	 (goto-char p)
+	 (and (search-forward "\nxref: " nil t)
+	      (nnheader-header-value)))))))
+
+(defun nnheader-insert-nov (header)
+  (princ (mail-header-number header) (current-buffer))
+  (insert 
+   "\t"
+   (or (mail-header-subject header) "") "\t"
+   (or (mail-header-from header) "") "\t"
+   (or (mail-header-date header) "") "\t"
+   (or (mail-header-id header) "") "\t"
+   (or (mail-header-references header) "") "\t")
+  (princ (or (mail-header-chars header) 0) (current-buffer))
+  (insert "\t")
+  (princ (or (mail-header-lines header) 0) (current-buffer))
+  (insert "\t")
+  (when (mail-header-xref header) 
+    (insert "Xref: " (mail-header-xref header) "\t"))
+  (insert "\n"))
+
+(defun nnheader-insert-article-line (article)
+  (goto-char (point-min))
+  (insert "220 ")
+  (princ article (current-buffer))
+  (insert " Article retrieved.\n")
+  (search-forward "\n\n" nil 'move)
+  (delete-region (point) (point-max))
+  (forward-char -1)
+  (insert "."))
+
 ;; Various cruft the backends and Gnus need to communicate.
 
 (defvar nntp-server-buffer nil)
@@ -172,19 +282,21 @@ on your system, you could say something like:
 
 (defun nnheader-insert-head (file)
   "Insert the head of the article."
-  (if (eq nnheader-max-head-length t)
-      ;; Just read the entire file.
-      (insert-file-contents-literally file)
-    ;; Read 1K blocks until we find a separator.
-    (let ((beg 0)
-	  format-alist 
-	  (chop 1024))
-      (while (and (eq chop (nth 1 (insert-file-contents
-				   file nil beg (incf beg chop))))
-		  (prog1 (not (search-forward "\n\n" nil t)) 
-		    (goto-char (point-max)))
-		  (or (null nnheader-max-head-length)
-		      (< beg nnheader-max-head-length)))))))
+  (when (file-exists-p file)
+    (if (eq nnheader-max-head-length t)
+	;; Just read the entire file.
+	(insert-file-contents-literally file)
+      ;; Read 1K blocks until we find a separator.
+      (let ((beg 0)
+	    format-alist 
+	    (chop 1024))
+	(while (and (eq chop (nth 1 (insert-file-contents
+				     file nil beg (incf beg chop))))
+		    (prog1 (not (search-forward "\n\n" nil t)) 
+		      (goto-char (point-max)))
+		    (or (null nnheader-max-head-length)
+			(< beg nnheader-max-head-length))))))
+    t))
 
 (defun nnheader-article-p ()
   "Say whether the current buffer looks like an article."
@@ -358,7 +470,7 @@ without formatting."
       (insert-file-contents-literally file)
       (goto-char (point-min))
       (prog1
-	  (looking-at rmail-unix-mail-delimiter)
+	  (looking-at message-unix-mail-delimiter)
 	(kill-buffer (current-buffer))))))
 
 (defun nnheader-replace-chars-in-string (string from to)

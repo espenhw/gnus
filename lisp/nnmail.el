@@ -26,7 +26,6 @@
 ;;; Code:
 
 (require 'nnheader)
-(require 'rmail)
 (require 'timezone)
 (require 'sendmail)
 (require 'message)
@@ -530,13 +529,13 @@ nn*-request-list should have been called before calling this function."
 (defun nnmail-search-unix-mail-delim ()
   "Put point at the beginning of the next message."
   (let ((case-fold-search t)
-	(delim (concat "^" rmail-unix-mail-delimiter))
+	(delim (concat "^" message-unix-mail-delimiter))
 	found)
     (while (not found)
       (if (re-search-forward delim nil t)
 	  (when (or (looking-at "[^\n :]+ *:")
 		    (looking-at delim)
-		    (looking-at (concat ">" rmail-unix-mail-delimiter)))
+		    (looking-at (concat ">" message-unix-mail-delimiter)))
 	    (forward-line -1)
 	    (setq found 'yes))
 	(setq found 'no)))
@@ -544,7 +543,7 @@ nn*-request-list should have been called before calling this function."
 
 (defun nnmail-process-unix-mail-format (func)
   (let ((case-fold-search t)
-	(delim (concat "^" rmail-unix-mail-delimiter))
+	(delim (concat "^" message-unix-mail-delimiter))
 	start message-id content-length end skip head-end)
     (goto-char (point-min))
     (if (not (and (re-search-forward delim nil t)

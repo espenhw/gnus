@@ -342,7 +342,9 @@ there.")
   (if (or gnus-nov-is-evil nnspool-nov-is-evil)
       nil
     (let ((nov (nnheader-group-pathname 
-		nnspool-current-group nnspool-nov-directory ".overview")))
+		nnspool-current-group nnspool-nov-directory ".overview"))
+	  (arts articles)
+	  last)
       (if (not (file-exists-p nov))
 	  ()
 	(save-excursion
@@ -366,7 +368,37 @@ there.")
 		  (forward-line 1))
 	      (delete-region (point) (point-max))
 	      ;; If the buffer is empty, this wasn't very successful.
-	      (not (zerop (buffer-size))))))))))
+	      (unless (zerop (buffer-size))
+		;; We check what the last article number was.  The NOV file
+		;; may be out of sync with the articles in the group.
+		(forward-line -1)
+		(setq last (read (current-buffer)))
+		(if (= last (car articles))
+		    ;; Yup, it's all there.
+		    t
+		  ;; Perhaps not.  We try to find the missing articles.
+		  (while (and arts
+			      (<= last (car arts)))
+		    (pop arts))
+		  ;; The articles in `arts' are missing from the buffer.
+		  (while arts
+		    (nnspool-insert-nov-head (pop arts)))
+		  t)))))))))
+
+(defun nnspool-insert-nov-head (article)
+  "Read the head of ARTICLE, convert to NOV headers, and insert."
+  (save-excursion
+    (let ((cur (current-buffer))
+	  buf)
+      (setq buf (nnheader-set-temp-buffer " *nnspool head*"))
+      (when (nnheader-insert-head
+	     (nnspool-article-pathname nnspool-current-group article))
+	(nnheader-insert-article-line article)
+	(let ((headers (nnheader-parse-head)))
+	  (set-buffer cur)
+	  (goto-char (point-max))
+	  (nnheader-insert-nov headers)))
+      (kill-buffer buf))))
 
 (defun nnspool-find-nov-line (article)
   (let ((max (point-max))

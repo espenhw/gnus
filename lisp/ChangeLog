@@ -1,4 +1,77 @@
+Wed Apr 24 04:04:54 1996  Lars Magne Ingebrigtsen  <larsi@trym.ifi.uio.no>
+
+	* message.el (message-syntax-checks): Doc fix. 
+
+Wed Apr 24 05:08:10 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el (gnus-group-process-prefix): Make sure `mark-active' is
+	bound. 
+
+Wed Apr 24 05:06:42 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-xmas.el (gnus-xmas-define): Would make compilation
+	difficult. 
+
+Wed Apr 24 02:20:08 1996  Lars Magne Ingebrigtsen  <larsi@trym.ifi.uio.no>
+
+	* message.el (message-unsent-separator): New variable.
+
+	* gnus.el (gnus-summary-edit-article-done): Nix out original
+	article. 
+
+Wed Apr 24 01:31:17 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus-vis.el (gnus-summary-make-menu-bar): Used
+	`region-exists-p'. 
+
+Wed Apr 24 00:11:28 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-unix-mail-delimiter): New variable.
+
+	* nnbabyl.el (nnbabyl-check-mbox): New command.
+
+	* nnspool.el (nnspool-insert-nov-head): New function.
+	(nnspool-retrieve-headers-with-nov): Use it to protect against
+ 	unsynched NOV files.
+
+	* nnheader.el (nnheader-insert-nov): New function.
+	(nnheader-parse-head): New function.
+	(nnheader-insert-article-line): New function.
+
+Tue Apr 23 22:55:57 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-cancel-news): Disable syntax checks.
+	(message-do-fcc): Didn't quote separator.
+
+	* gnus.el (gnus-update-summary-mark-positions): Use local format
+	spec when computing.
+
+	* gnus-msg.el (gnus-summary-cancel-article): Remove article from
+	cache after cancelling.
+	(gnus-summary-supersede-article): Ditto.
+
+Tue Apr 23 12:05:21 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el (gnus-group-history): New variable.
+	(gnus-completing-read): Handle null default arg.
+	(gnus-group-jump-to-group): Use them.
+	(gnus-group-unsubscribe-group): Ditto.
+	(gnus-read-move-group-name): Ditto.
+
+	* gnus-msg.el (gnus-group-post-news): Use `gnus-group-history' and
+	`gnus-completing-read'. 
+
+Tue Apr 23 22:39:37 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnml.el (nnml-active-number): Protect against corrupt active
+	files. 
+
+	* nnvirtual.el (nnvirtual-open-server): Don't allow recursive
+	groups. 
+
 Tue Apr 23 00:13:22 1996  Lars Magne Ingebrigtsen  <larsi@trym.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.78 is released.
 
 	* gnus.el (gnus-get-newsgroup-headers): Run
 	`gnus-parse-headers-hook'. 

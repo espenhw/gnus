@@ -70,7 +70,7 @@ Otherwise, most addresses look like `angles', but they look like
 (defvar message-syntax-checks nil
   "Controls what syntax checks should not be performed on outgoing posts.
 To disable checking of long signatures, for instance, add
- `(signature . disable)' to this list.
+ `(signature . disabled)' to this list.
 
 Don't touch this variable unless you really know what you're doing.
 
@@ -371,6 +371,55 @@ The cdr of ech entry is a function for applying the face to a region.")
   "Hook run after sending messages.")
 
 ;;; Internal variables.
+
+;;; Regexp matching the delimiter of messages in UNIX mail format
+;;; (UNIX From lines), minus the initial ^.  
+(defvar message-unix-mail-delimiter
+  (let ((time-zone-regexp
+	 (concat "\\([A-Z]?[A-Z]?[A-Z][A-Z]\\( DST\\)?"
+		 "\\|[-+]?[0-9][0-9][0-9][0-9]"
+		 "\\|"
+		 "\\) *")))
+    (concat
+     "From "
+
+     ;; Username, perhaps with a quoted section that can contain spaces.
+     "\\("
+     "[^ \n]*"
+     "\\(\\|\".*\"[^ \n]*\\)"
+     "\\|<[^<>\n]+>"
+     "\\)  ?"
+
+     ;; The time the message was sent.
+     "\\([^ \n]*\\) *"			; day of the week
+     "\\([^ ]*\\) *"			; month
+     "\\([0-9]*\\) *"			; day of month
+     "\\([0-9:]*\\) *"			; time of day
+
+     ;; Perhaps a time zone, specified by an abbreviation, or by a
+     ;; numeric offset.
+     time-zone-regexp
+
+     ;; The year.
+     " [0-9][0-9]\\([0-9]*\\) *"
+
+     ;; On some systems the time zone can appear after the year, too.
+     time-zone-regexp
+
+     ;; Old uucp cruft.
+     "\\(remote from .*\\)?"
+
+     "\n")))
+
+(defvar message-unsent-separator
+  (concat "^ *---+ +Unsent message follows +---+ *$\\|"
+	  "^ *---+ +Returned message +---+ *$\\|"
+	  "^Start of returned message$\\|"
+	  "^ *---+ +Original message +---+ *$\\|"
+	  "^ *--+ +begin message +--+ *$\\|"
+	  "^ *---+ +Original message follows +---+ *$\\|"
+	  "^|? *---+ +Message text follows: +---+ *|?$")
+  "A regexp that matches the separator before the text of a failed message.")
 
 (defvar message-header-format-alist 
   `((Newsgroups)
@@ -1392,9 +1441,11 @@ the user from the mailer."
 
 (defun message-check-element (type)
   "Returns non-nil if this type is not to be checked."
-  (let ((able (assq type message-syntax-checks)))
-    (and (consp able)
-	 (eq (cdr able) 'disabled))))
+  (if (eq message-syntax-checks 'dont-check-for-anything-just-trust-me)
+      nil
+    (let ((able (assq type message-syntax-checks)))
+      (and (consp able)
+	   (eq (cdr able) 'disabled)))))
 
 (defun message-checksum ()
   "Return a \"checksum\" for the current buffer."
@@ -1421,7 +1472,7 @@ the user from the mailer."
 	  (push file list)
 	  (message-remove-header "fcc" nil t)))
       (goto-char (point-min))
-      (re-search-forward (concat "^" mail-header-separator "$"))
+      (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
       (replace-match "" t t)
       ;; Process FCC operations.
       (while list
@@ -1945,7 +1996,7 @@ Headers already prepared in the buffer are not modified."
   ;; Allow mail alias things.
   (if (fboundp 'mail-abbrevs-setup)
       (mail-abbrevs-setup)
-    (mail-aliases-setup))
+    (funcall (intern "mail-aliases-setup")))
   (set-buffer-modified-p nil)
   (run-hooks 'message-setup-hook)
   (message-position-point)
@@ -2207,7 +2258,7 @@ Headers already prepared in the buffer are not modified."
 	      mail-header-separator "\n"
 	      "This is a cancel message from " from ".\n")
       (message "Canceling your article...")
-      (let (message-syntax-checks)
+      (let ((message-syntax-checks 'dont-check-for-anything-just-trust-me))
 	(funcall message-send-news-function))
       (message "Canceling your article...done")
       (kill-buffer buf))))
@@ -2363,7 +2414,7 @@ you."
     (or (and boundary
 	     (re-search-forward boundary nil t)
 	     (forward-line 2))
-	(and (re-search-forward mail-unsent-separator nil t)
+	(and (re-search-forward message-unsent-separator nil t)
 	     (forward-line 1))
 	(and (search-forward "\n\n" nil t)
 	     (re-search-forward "^Return-Path:.*\n" nil t)))

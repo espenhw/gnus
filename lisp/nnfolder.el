@@ -33,7 +33,7 @@
 ;;; Code:
 
 (require 'nnheader)
-(require 'rmail)
+(require 'message)
 (require 'nnmail)
 (require 'nnoo)
 (eval-when-compile (require 'cl))
@@ -94,7 +94,7 @@ it.")
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
-    (let ((delim-string (concat "^" rmail-unix-mail-delimiter))
+    (let ((delim-string (concat "^" message-unix-mail-delimiter))
 	  article art-string start stop)
       (nnfolder-possibly-change-group group server)
       (set-buffer nnfolder-current-buffer)
@@ -162,11 +162,11 @@ it.")
     (goto-char (point-min))
     (if (search-forward (nnfolder-article-string article) nil t)
 	(let (start stop)
-	  (re-search-backward (concat "^" rmail-unix-mail-delimiter) nil t)
+	  (re-search-backward (concat "^" message-unix-mail-delimiter) nil t)
 	  (setq start (point))
 	  (forward-line 1)
 	  (or (and (re-search-forward 
-		    (concat "^" rmail-unix-mail-delimiter) nil t)
+		    (concat "^" message-unix-mail-delimiter) nil t)
 		   (forward-line -1))
 	      (goto-char (point-max)))
 	  (setq stop (point))
@@ -438,23 +438,20 @@ it.")
     (concat "\nMessage-ID: " article)))
 
 (defun nnfolder-delete-mail (&optional force leave-delim)
-  ;; Beginning of the article.
+  "Delete the message that point is in."
   (save-excursion
-    (save-restriction
-      (narrow-to-region
-       (save-excursion
-	 (re-search-backward (concat "^" rmail-unix-mail-delimiter) nil t)
-	 (if leave-delim (progn (forward-line 1) (point))
-	   (match-beginning 0)))
-       (progn
-	 (forward-line 1)
-	 (or (and (re-search-forward (concat "^" rmail-unix-mail-delimiter) 
-				     nil t)
-		  (if (and (not (bobp)) leave-delim)
-		      (progn (forward-line -2) (point))
-		    (match-beginning 0)))
-	     (point-max))))
-      (delete-region (point-min) (point-max)))))
+    (delete-region
+     (save-excursion
+       (re-search-backward (concat "^" message-unix-mail-delimiter) nil t)
+       (if leave-delim (progn (forward-line 1) (point))
+	 (match-beginning 0)))
+     (progn
+       (forward-line 1)
+       (if (re-search-forward (concat "^" message-unix-mail-delimiter) nil t)
+	   (if (and (not (bobp)) leave-delim)
+	       (progn (forward-line -2) (point))
+	     (match-beginning 0))
+	 (point-max))))))
 
 (defun nnfolder-possibly-change-group (group &optional server)
   (when (and server
@@ -522,7 +519,7 @@ it.")
 	  (if group (list (list group "")) nnmail-split-methods))
 	 (group-art-list
 	  (nreverse (nnmail-article-group 'nnfolder-active-number)))
-	 (delim (concat "^" rmail-unix-mail-delimiter))
+	 (delim (concat "^" message-unix-mail-delimiter))
 	 save-list group-art)
     (goto-char (point-min))
     ;; This might come from somewhere else.
@@ -628,7 +625,7 @@ it.")
     (set-buffer (setq nnfolder-current-buffer 
 		      (nnheader-find-file-noselect file nil 'raw)))
     (buffer-disable-undo (current-buffer))
-    (let* ((delim (concat "^" rmail-unix-mail-delimiter))
+    (let* ((delim (concat "^" message-unix-mail-delimiter))
 	   (marker (concat "\n" nnfolder-article-marker))
 	   (number "[0-9]+")
 	   (active (cadr (assoc nnfolder-current-group 

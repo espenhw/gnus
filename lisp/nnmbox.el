@@ -30,7 +30,7 @@
 ;;; Code:
 
 (require 'nnheader)
-(require 'rmail)
+(require 'message)
 (require 'nnmail)
 (require 'nnoo)
 (eval-when-compile (require 'cl))
@@ -89,7 +89,7 @@
 	      (setq start 
 		    (save-excursion
 		      (re-search-backward 
-		       (concat "^" rmail-unix-mail-delimiter) nil t)
+		       (concat "^" message-unix-mail-delimiter) nil t)
 		      (point)))
 	      (search-forward "\n\n" nil t)
 	      (setq stop (1- (point)))
@@ -149,11 +149,11 @@
     (goto-char (point-min))
     (if (search-forward (nnmbox-article-string article) nil t)
 	(let (start stop)
-	  (re-search-backward (concat "^" rmail-unix-mail-delimiter) nil t)
+	  (re-search-backward (concat "^" message-unix-mail-delimiter) nil t)
 	  (setq start (point))
 	  (forward-line 1)
 	  (or (and (re-search-forward 
-		    (concat "^" rmail-unix-mail-delimiter) nil t)
+		    (concat "^" message-unix-mail-delimiter) nil t)
 		   (forward-line -1))
 	      (goto-char (point-max)))
 	  (setq stop (point))
@@ -378,12 +378,12 @@
     (save-restriction
       (narrow-to-region
        (save-excursion
-	 (re-search-backward (concat "^" rmail-unix-mail-delimiter) nil t)
+	 (re-search-backward (concat "^" message-unix-mail-delimiter) nil t)
 	 (if leave-delim (progn (forward-line 1) (point))
 	   (match-beginning 0)))
        (progn
 	 (forward-line 1)
-	 (or (and (re-search-forward (concat "^" rmail-unix-mail-delimiter) 
+	 (or (and (re-search-forward (concat "^" message-unix-mail-delimiter) 
 				     nil t)
 		  (if (and (not (bobp)) leave-delim)
 		      (progn (forward-line -2) (point))
@@ -432,7 +432,7 @@
   (let* ((nnmail-split-methods 
 	  (if group (list (list group "")) nnmail-split-methods))
 	 (group-art (nreverse (nnmail-article-group 'nnmbox-active-number)))
-	 (delim (concat "^" rmail-unix-mail-delimiter)))
+	 (delim (concat "^" message-unix-mail-delimiter)))
     (goto-char (point-min))
     ;; This might come from somewhere else.
     (unless (looking-at delim)
@@ -485,7 +485,7 @@
 	     (= (buffer-size) (nth 7 (file-attributes nnmbox-mbox-file)))))
       ()
     (save-excursion
-      (let ((delim (concat "^" rmail-unix-mail-delimiter))
+      (let ((delim (concat "^" message-unix-mail-delimiter))
 	    (alist nnmbox-group-alist)
 	    start end number)
 	(set-buffer (setq nnmbox-mbox-buffer 

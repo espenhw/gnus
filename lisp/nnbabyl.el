@@ -596,6 +596,30 @@
   (while (search-forward "\^_" nil t)
     (replace-match "?" t t)))
 
+(defun nnbabyl-check-mbox ()
+  "Go through the nnbabyl mbox and make sure that no article numbers are reused."
+  (interactive)
+  (let ((idents (make-vector 1000 0))
+	id)
+    (save-excursion
+      (when (or (not nnbabyl-mbox-buffer)
+		(not (buffer-name nnbabyl-mbox-buffer)))
+	(nnbabyl-read-mbox))
+      (set-buffer nnbabyl-mbox-buffer)
+      (goto-char (point-min))
+      (while (re-search-forward "^X-Gnus-Newsgroup: \\([^ ]+\\) "  nil t)
+	(if (intern-soft (setq id (match-string 1)) idents)
+	    (progn
+	      (delete-region (progn (beginning-of-line) (point))
+			     (progn (forward-line 1) (point)))
+	      (nnheader-message 7 "Moving %s..." id)
+	      (nnbabyl-save-mail))
+	  (intern id idents)))
+      (when (buffer-modified-p (current-buffer))
+	(save-buffer))
+      (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)
+      (message ""))))
+
 (provide 'nnbabyl)
 
 ;;; nnbabyl.el ends here

@@ -581,10 +581,20 @@ all. This may very well take some time.")
   (let ((active (cadr (assoc group nnml-group-alist))))
     ;; The group wasn't known to nnml, so we just create an active
     ;; entry for it.   
-    (or active
-	(progn
-	  (setq active (cons 1 0))
-	  (setq nnml-group-alist (cons (list group active) nnml-group-alist))))
+    (unless active
+      ;; Perhaps the active file was corrupt?  See whether
+      ;; there are any articles in this group.
+      (unless nnml-article-file-alist
+	(setq nnml-article-file-alist
+	      (sort
+	       (nnheader-article-to-file-alist nnml-current-directory)
+	       (lambda (a1 a2) (< (car a1) (car a2))))))
+      (setq active
+	    (if nnml-article-file-alist
+		(cons (caar nnml-article-file-alist)
+		      (car (last nnml-article-file-alist)))
+	      (cons 1 0)))
+      (setq nnml-group-alist (cons (list group active) nnml-group-alist)))
     (setcdr active (1+ (cdr active)))
     (while (file-exists-p
 	    (concat (nnmail-group-pathname group nnml-directory)
