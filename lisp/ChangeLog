@@ -1,3 +1,14 @@
+2001-08-30 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnml.el (nnml-check-directory-twice): Remove.
+	(nnml-retrieve-headers): Ditto.
+	(nnml-article-to-file): Use nnheader-directory-files-is-safe.
+
+2001-08-30  Andrew Innes  <andrewi@gnu.org>
+
+	* nnheader.el (nnheader-directory-files-is-safe): No need to read
+	directory twice on Windows, or on GNU Emacs-21.
+
 2001-08-30  Andrew Innes  <andrewi@gnu.org>
 
 	* nnml.el (nnml-request-article): Use nnml-article-to-file-alist.

@@ -114,9 +114,6 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
 (defvoo nnml-generate-active-function 'nnml-generate-active-info)
 
 (defvar nnml-nov-buffer-file-name nil)
-(defvar nnml-check-directory-twice t
-  "If t, to make sure nothing went wrong when reading over NFS --
-check twice.")
 
 (defvoo nnml-file-coding-system nnmail-file-coding-system)
 
@@ -137,12 +134,7 @@ check twice.")
 	     (number (length sequence))
 	     (count 0)
 	     (file-name-coding-system nnmail-pathname-coding-system)
-	     beg article
-	     (nnml-check-directory-twice
-	      (and nnml-check-directory-twice
-		   ;; To speed up, disable it in some case.
-		   (or (not (numberp nnmail-large-newsgroup))
-		       (<= number nnmail-large-newsgroup)))))
+	     beg article)
 	(if (stringp (car sequence))
 	    'headers
 	  (if (nnml-retrieve-headers-with-nov sequence fetch-old)
@@ -533,8 +525,8 @@ check twice.")
   (let (file)
     (if (setq file (cdr (assq article nnml-article-file-alist)))
 	(expand-file-name file nnml-current-directory)
-      (if nnml-check-directory-twice
-      ;; Just to make sure nothing went wrong when reading over NFS --
+      (if (not nnheader-directory-files-is-safe)
+	  ;; Just to make sure nothing went wrong when reading over NFS --
 	  ;; check once more.
 	  (when (file-exists-p
 		 (setq file (expand-file-name (number-to-string article)
