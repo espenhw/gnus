@@ -412,6 +412,17 @@ By default, the region is treated as containing addresses (see
 	 (start (concat
 		 "=?" (downcase (symbol-name mime-charset)) "?"
 		 (downcase (symbol-name encoding)) "?"))
+	 (factor (case mime-charset
+		   ((iso-8859-5 iso-8859-7 iso-8859-8 koi8-r) 1)
+		   (utf-8 4)
+		   (t 8)))
+	 ;; encoded-words must not be longer than 75 characters,
+	 ;; including charset, encoding etc.  This leaves us with
+	 ;; 75 - (length start) - 2 - 2 characters.  The last 2 is for
+	 ;; possible base64 padding.  In the worst case (iso-2022-*)
+	 ;; each character expands to 8 bytes which is expanded by a
+	 ;; factor of 4/3 by base64 encoding.
+	 (length (floor (- 75 (length start) 4) (* factor (/ 4.0 3.0))))
 	 (first t))
     (if mime-charset
 	(save-restriction
@@ -420,7 +431,7 @@ By default, the region is treated as containing addresses (see
 	    ;; break into lines before encoding
 	    (goto-char (point-min))
 	    (while (not (eobp))
-	      (goto-char (min (point-max) (+ 15 (point))))
+	      (goto-char (min (point-max) (+ length (point))))
 	      (unless (eobp)
 		(insert ?\n))))
 	  (if (and (mm-multibyte-p)
