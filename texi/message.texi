@@ -328,6 +328,7 @@ will be removed before popping up the buffer.  The default is
 * Various Commands::    Various things.
 * Sending::             Actually sending the message.
 * Mail Aliases::        How to use mail aliases.
+* Spelling::            Having Emacs check your spelling.
 @end menu
 
 
@@ -842,6 +843,51 @@ on) headers and press @kbd{SPC} to expand the alias.
 No expansion will be performed upon sending of the message---all
 expansions have to be done explicitly.
 
+
+@node Spelling
+@section Spelling
+@cindex spelling
+@findex ispell-message
+
+There are two popular ways to have Emacs spell-check your messages:
+@code{ispell} and @code{flyspell}.  @code{ispell} is the older and
+probably more popular package.  You typically first write the message,
+and then run the entire thing through @code{ispell} and fix all the
+typos.  To have this happen automatically when you send a message, put
+something like the following in your @file{.emacs} file:
+
+@lisp
+(add-hook 'message-send-hook 'ispell-message)
+@end lisp
+
+@vindex ispell-message-dictionary-alist
+If you're in the habit of writing in different languages, this can be
+controlled by the @code{ispell-message-dictionary-alist} variable:
+
+@lisp
+(setq ispell-message-dictionary-alist
+      '(("^Newsgroups:.*\\bde\\." . "deutsch8")
+	(".*" . "default")))
+@end lisp
+
+@code{ispell} depends on having the external @samp{ispell} command
+installed.
+
+The other popular method is using @code{flyspell}.  This package checks
+your spelling while you're writing, and marks any mis-spelled words in
+various ways.
+
+To use @code{flyspell}, put something like the following in your
+@file{.emacs} file:
+
+@lisp
+(defun my-message-setup-routine ()
+  (flyspell-mode 1))
+(add-hook 'message-setup-hook 'my-message-setup-routine)
+@end lisp
+
+@code{flyspell} depends on having the external @samp{ispell} command
+installed.
 
 
 @node Variables
