@@ -2,6 +2,7 @@
 
 	* gnus-agent.el (gnus-agent-add-server): Redraw the line.
 	(gnus-agent-remove-server): Ditto.
+	(autoload): gnus-server-update-server.
 
 	* gnus-srvr.el (gnus-server-line-format): Add %a.
 	(gnus-server-line-format-alist): Add gnus-tmp-agent.
