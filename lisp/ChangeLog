@@ -1,3 +1,9 @@
+2002-12-18  Paul Jarc  <prj@po.cwru.edu>
+
+	* gnus-int.el (gnus-request-update-info): Artificially add
+	(1 . (1- min)) to the read range, in case the backend doesn't
+	store marks for nonexistent articles.
+
 2002-12-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* binhex.el (binhex-insert-char): Eval-and-compile.
