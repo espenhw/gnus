@@ -1,5 +1,11 @@
 2001-08-19 16:14:41  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-spec.el (gnus-complex-form-to-spec): Insert Lisp to match
+	the positional spec.
+	(gnus-parse-complex-format): React to %C.
+
+	* gnus-ems.el (gnus-char-width): Moved here.
+
 	* gnus-sum.el (gnus-select-newsgroup): Set
 	gnus-newsgroup-articles. 
 	(gnus-unseen-mark): New variable.

@@ -136,7 +136,7 @@
 (defvar gnus-summary-mode-line-format-spec nil)
 (defvar gnus-group-mode-line-format-spec nil)
 
-;;; Phew.  All that gruft is over, fortunately.
+;;; Phew.  All that gruft is over with, fortunately.
 
 ;;;###autoload
 (defun gnus-update-format (var)
@@ -251,12 +251,6 @@
     'balloon-help
     ,(intern (format "gnus-balloon-face-%d" type))))
 
-(eval-and-compile
-  (defalias 'gnus-char-width
-    (if (fboundp 'char-width)
-	'char-width
-      (lambda (ch) 1)))) ;; A simple hack.
-
 (defun gnus-correct-length (string)
   "Return the correct width of STRING."
   (let ((length 0))
@@ -325,16 +319,34 @@
   "Return a form that cuts CUT-WIDTH off of EL."
   (let ((cut (abs cut-width)))
     (if (symbolp el)
-	`(if (> (length ,el) ,cut)
+	`(if (> (,(if gnus-use-correct-string-widths
+		      'gnus-correct-length
+		    'length) ,el) ,cut)
 	     ,(if (< cut-width 0)
-		  `(substring ,el 0 (- (length el) ,cut))
-		`(substring ,el ,cut))
+		  `(,(if gnus-use-correct-string-widths
+			 'gnus-correct-substring
+		       'substring) ,el 0
+		       (- (,(if gnus-use-correct-string-widths
+				'gnus-correct-length
+			      'length) el) ,cut))
+		`(,(if gnus-use-correct-string-widths
+		       'gnus-correct-substring
+		     'substring) ,el ,cut))
 	   ,el)
       `(let ((val (eval ,el)))
-	 (if (> (length val) ,cut)
+	 (if (> (,(if gnus-use-correct-string-widths
+		      'gnus-correct-length
+		    'length) val) ,cut)
 	     ,(if (< cut-width 0)
-		  `(substring val 0 (- (length val) ,cut))
-		`(substring val ,cut))
+		  `(,(if gnus-use-correct-string-widths
+			 'gnus-correct-substring
+		       'substring) val 0
+		       (- (,(if gnus-use-correct-string-widths
+				'gnus-correct-length
+			      'length) val) ,cut))
+		`(,(if gnus-use-correct-string-widths
+		       'gnus-correct-substring
+		     'substring) val ,cut))
 	   val)))))
 
 (defun gnus-tilde-ignore-form (el ignore-value)
@@ -369,6 +381,7 @@
       (replace-match "\\\"" nil t))
     (goto-char (point-min))
     (insert "(\"")
+    ;; Convert all font specs into font spec lists.
     (while (re-search-forward "%\\([0-9]+\\)?\\([«»{}()]\\)" nil t)
       (let ((number (if (match-beginning 1)
 			(match-string 1) "0"))
@@ -380,10 +393,16 @@
 				   (cond ((= delim ?\() "mouse")
 					 ((= delim ?\{) "face")
 					 (t "balloon"))
-				   " " number " \""))
+				   " " number " \"")
+			   t t)
 	  (replace-match "\")\""))))
     (goto-char (point-max))
     (insert "\")")
+    ;; Convert point position commands.
+    (goto-char (point-min))
+    (while (re-search-forward "%\\([-0-9]+\\)?C" nil t)
+      (replace-match "\"(point)\"" t t))
+    ;; Convert the buffer into the spec.
     (goto-char (point-min))
     (let ((form (read (current-buffer))))
       (cons 'progn (gnus-complex-form-to-spec form spec-alist)))))
@@ -392,11 +411,15 @@
   (delq nil
 	(mapcar
 	 (lambda (sform)
-	   (if (stringp sform)
-	       (gnus-parse-simple-format sform spec-alist t)
+	   (cond
+	    ((stringp sform)
+	     (gnus-parse-simple-format sform spec-alist t))
+	    ((eq (car sform) 'point)
+	     `(gnus-put-text-property (1- (point)) (point) 'gnus-position t))
+	    (t
 	     (funcall (intern (format "gnus-%s-face-function" (car sform)))
 		      (gnus-complex-form-to-spec (cddr sform) spec-alist)
-		      (nth 1 sform))))
+		      (nth 1 sform)))))
 	 form)))
 
 (defun gnus-parse-simple-format (format spec-alist &optional insert)

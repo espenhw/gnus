@@ -70,6 +70,12 @@
        valstr)))
 
 (eval-and-compile
+  (defalias 'gnus-char-width
+    (if (fboundp 'char-width)
+	'char-width
+      (lambda (ch) 1)))) ;; A simple hack.
+
+(eval-and-compile
   (if (featurep 'xemacs)
       (gnus-xmas-define)
     (defvar gnus-mouse-face-prop 'mouse-face

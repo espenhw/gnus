@@ -182,7 +182,10 @@
 
 (defun gnus-goto-colon ()
   (beginning-of-line)
-  (search-forward ":" (gnus-point-at-eol) t))
+  (let ((eol (gnus-point-at-eol)))
+    (goto-char (or (text-property-any (point) eol 'gnus-position t)
+		   (search-forward ":" eol t)
+		   (point)))))
 
 (defun gnus-remove-text-with-property (prop)
   "Delete all text in the current buffer with text property PROP."
