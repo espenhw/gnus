@@ -1192,7 +1192,11 @@ It is a string, such as \"PGP\". If nil, ask user."
   :type 'string
   :group 'mime-security)
 
-(defcustom gnus-article-wash-function 'gnus-article-wash-html-with-w3
+(defcustom gnus-article-wash-function 
+  (cond ((locate-library "w3")
+	 'gnus-article-wash-html-with-w3)
+	((locate-library "w3m")
+	 'gnus-article-wash-html-with-w3m))
   "Function used for converting HTML into text."
   :type '(radio (function-item gnus-article-wash-html-with-w3)
 		(function-item gnus-article-wash-html-with-w3m))
@@ -2084,8 +2088,9 @@ If READ-CHARSET, ask for a coding system."
 
 (defun gnus-article-wash-html-with-w3m ()
   "Wash the current buffer with w3m."
-  (shell-command-on-region
-   (point) (point-max) "w3m -T text/html" t t))
+  (mm-setup-w3m)
+  (w3m-region (point) (point-max))
+  (setq mm-w3m-minor-mode t))
   
 (defun article-hide-list-identifiers ()
   "Remove list identifies from the Subject header.

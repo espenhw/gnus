@@ -1,3 +1,9 @@
+2002-01-25  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-article-wash-html-with-w3m): Call w3m-region.
+	(gnus-article-wash-function): use locate-library to decide which
+	to use.
+
 2002-01-25  Simon Josefsson  <jas@extundo.com>
 
 	* pop3.el (pop3-munge-message-separator): Work if no date.  From
@@ -62,7 +68,7 @@
 2002-01-24  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-request-article): Make sure it is not
-	empty file.
+	an empty file.
 
 	* nnweb.el (url): Ignore errors when request url.
 
