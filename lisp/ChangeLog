@@ -1,3 +1,34 @@
+2004-09-09  Kevin Greiner  <kgreiner@compsol.cc>
+	* gnus-agent.el (gnus-agent-cat-groups): rewrote avoiding defsetf
+	to avoid run-time CL dependencies.
+	(gnus-agent-unfetch-articles): New function.
+	(gnus-agent-fetch-headers): Use gnus-agent-braid-nov to validate
+	article numbers even when local .overview file is missing.
+	(gnus-agent-read-article-number): New function. Only accepts
+	27-bit article numbers.
+	(gnus-agent-copy-nov-line, gnus-agent-uncached-articles): Use
+	gnus-agent-read-article-number.
+	(gnus-agent-braid-nov): Rewrote to validate article numbers coming
+	from backend while recognizing that article numbers in .overview
+	must be valid.
+	(gnus-agent-update-files-total-fetched-for): Use
+	directory-files-and-attributes to improve performance.
+	* gnus-int.el (gnus-request-move-article): Use
+	gnus-agent-unfetch-articles in place of gnus-agent-expire to
+	improve performance.
+
+	* gnus-start.el (gnus-convert-old-newsrc): Changed message text as
+	some users confused by references to .newsrc when they only have a
+	.newsrc.eld file.
+	(gnus-convert-mark-converter-prompt,
+	gnus-convert-converter-needs-prompt): Fixed use of property list.
+	* legacy-gnus-agent.el (gnus-agent-convert-to-compressed-agentview-prompt):
+	New function. Used internally to only display 'gnus converting
+	files' message when actually necessary.
+
+	* gnus-sum.el (): Removed (require 'gnus-agent) as required
+	methods now autoloaded.
+
 2004-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-summary-insert-subject): Remove list
