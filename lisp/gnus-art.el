@@ -1795,9 +1795,10 @@ unfolded."
 	  (while (not (eobp))
 	    (end-of-line)
 	    (when (>= (current-column) (min fill-column width))
-	      (narrow-to-region (point) (gnus-point-at-bol))
-	      (fill-paragraph nil)
-	      (goto-char (point-max))
+	      (narrow-to-region (min (1+ (point)) (point-max)) (gnus-point-at-bol))
+              (let ((goback (point-marker)))
+                (fill-paragraph nil)
+                (goto-char (marker-position goback)))
 	      (widen))
 	    (forward-line 1)))))))
 
