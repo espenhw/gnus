@@ -32,7 +32,7 @@
 
 (if (featurep 'xemacs)
     (progn
-      (maybe-fbind '(delete-overlay
+      (maybe-fbind '(delete-overlay detect-coding-string
 		     event-click-count event-end event-start
 		     find-coding-systems-for-charsets
 		     find-coding-systems-region find-coding-systems-string

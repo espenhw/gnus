@@ -1,3 +1,10 @@
+2004-01-13  Jesper Harder  <harder@ifa.au.dk>
+
+	* lpath.el: Add detect-coding-system.
+
+	* dgnushack.el (dgnushack-compile): Remove obsolete check for
+	cus-edit.
+
 2004-01-13  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-score.el (gnus-score-edit-all-score): Fix prototype.
