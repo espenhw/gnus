@@ -1,3 +1,8 @@
+2002-02-13  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir--article-count): If the group is
+	completely empty, report minimum article number as 1 instead of 0.
+
 2002-02-13  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-get-predicate): Use nconc.

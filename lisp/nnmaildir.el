@@ -33,10 +33,10 @@
 ;;   ignored; no need for -generate-nov-databases.
 ;; * Perfect reliability: [C-g] will never corrupt its data in memory,
 ;;   and SIGKILL will never corrupt its data in the filesystem.
-;; * We make it easy to manipulate marks, etc., from outside Gnus.
+;; * We use the filesystem as a database, so that, e.g., it's easy to
+;;   manipulate marks from outside Gnus.
 ;; * All information about a group is stored in the maildir, for easy
 ;;   backup, copying, restoring, etc.
-;; * We use the filesystem as a database.
 ;;
 ;; Todo:
 ;; * Don't force article renumbering, so nnmaildir can be used with
@@ -464,7 +464,7 @@ by nnmaildir-request-article.")
 
 (defun nnmaildir--article-count (group)
   (let ((ct 0)
-        (min 0))
+        (min 1))
     (setq group (nnmaildir--grp-get-lists group)
           group (nnmaildir--lists-get-nlist group))
     (while group
