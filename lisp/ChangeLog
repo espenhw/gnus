@@ -2,6 +2,10 @@
 
 	* spam.el (spam-ham-copy-or-move-routine): do not delete if copy
 	is t, also don't intepret the list of groups as a list of lists
+	(spam-mark-spam-as-expired-and-move-routine)
+	(spam-ham-copy-or-move-routine): delete articles only if 1 or
+	more groups were specified (and "copy" was specified for
+	spam-ham-copy-or-move-routine)
 
 2003-10-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 

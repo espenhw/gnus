@@ -567,10 +567,11 @@ spamoracle database."
 	  (gnus-summary-copy-article nil group))))
 
     ;; now delete the articles
-    (dolist (article tomove)
-      (gnus-summary-set-process-mark article))
-    (when tomove
-      (gnus-summary-delete-article nil)))
+    (when (and (listp groups) (< 0 (length groups)))
+      (dolist (article tomove)
+	(gnus-summary-set-process-mark article))
+      (when tomove
+	(gnus-summary-delete-article nil))))
 
   (gnus-summary-yank-process-mark))
  
@@ -592,12 +593,13 @@ spamoracle database."
 	  (gnus-summary-set-process-mark article))
 	(gnus-summary-copy-article nil group)))
   
-    ;; now delete the articles, unless copy is t
+    ;; now delete the articles, unless copy is t, and when there was a group
     (unless copy
-      (dolist (article todo)
-	(gnus-summary-set-process-mark article))
-      (when todo
-	(gnus-summary-delete-article nil))))
+      (when (and (listp groups) (< 0 (length groups)))
+	(dolist (article todo)
+	  (gnus-summary-set-process-mark article))
+	(when todo
+	  (gnus-summary-delete-article nil)))))
   
   (gnus-summary-yank-process-mark))
  
