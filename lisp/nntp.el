@@ -576,17 +576,15 @@ command whose response triggered the error."
 					      nntp-server-buffer))
 				    (buffer  (and process
 						  (process-buffer process))))
-					; when I an able to identify
-					; the connection to the server
-					; AND I've received NO reponse
-					; for nntp-connection-timeout
-					; seconds.
+				;; When I an able to identify the
+				;; connection to the server AND I've
+				;; received NO reponse for
+				;; nntp-connection-timeout seconds.
 				(when (and buffer (eq 0 (buffer-size buffer)))
-					; Close the connection.	 Take
-					; no other action as the
-					; accept input code will
-					; handle the closed
-					; connection.
+				  ;; Close the connection.  Take no
+				  ;; other action as the accept input
+				  ;; code will handle the closed
+				  ;; connection.
 				  (nntp-kill-buffer buffer))))))))
 		(unwind-protect
 		    (setq nntp-with-open-group-internal
