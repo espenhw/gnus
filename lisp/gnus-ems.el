@@ -25,7 +25,6 @@
 ;;; Code:
 
 (defvar gnus-mouse-2 [mouse-2])
-(defvar gnus-easymenu 'easymenu)
 (defvar gnus-group-mode-hook ())
 (defvar gnus-summary-mode-hook ())
 (defvar gnus-article-mode-hook ())
@@ -133,7 +132,6 @@ pounce directly on the real variables themselves."))
       ;; XEmacs definitions.
 
       (setq gnus-mouse-2 [button2])
-      (setq gnus-easymenu 'auc-menu)
 
       (or (memq 'underline (list-faces))
 	  (and (fboundp 'make-face)
@@ -361,7 +359,7 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 	b)
     (or (gnus-summary-goto-subject article)
 	(error (format "No such article: %d" article)))
-    (gnus-summary-position-cursor)
+    (gnus-summary-position-point)
     ;; If all commands are to be bunched up on one line, we collect
     ;; them here.  
     (if gnus-view-pseudos-separately
@@ -398,7 +396,11 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 	(while pslist
 	  (gnus-summary-goto-subject (or (cdr (assq 'article (car pslist)))
 					 (gnus-summary-article-number)))
-	  (forward-line 1)
+	  (gnus-data-enter
+	   (gnus-summary-article-number)
+	   gnus-reffed-article-number gnus-unread-mark 
+	   (progn (forward-line 1) (point))
+	   (car pslist) 0)
 	  (setq b (point))
 	  (insert "          " 
 		  (file-name-nondirectory (cdr (assq 'name (car pslist))))
@@ -416,8 +418,8 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 	   (1+ b) (1+ (gnus-point-at-eol))
 	   '(gnus-number nil gnus-mark nil gnus-level nil))
 	  (forward-line -1)
-	  (gnus-sethash (int-to-string gnus-reffed-article-number)
-			(car pslist) gnus-newsgroup-headers-hashtb-by-number)
+	  (setq gnus-newsgroup-unreads
+		(cons gnus-reffed-article-number gnus-newsgroup-unreads))
 	  (setq gnus-reffed-article-number (1- gnus-reffed-article-number))
 	  (setq pslist (cdr pslist)))))))
 

@@ -976,7 +976,7 @@ Headers in `gnus-required-headers' will be generated."
 	(Path (gnus-inews-path))
 	(Subject nil)
 	(Newsgroups nil)
-	(In-Reply-To (gnus-inews-in-reply-yo))
+	(In-Reply-To (gnus-inews-in-reply-to))
 	(To nil)
 	(Distribution nil)
 	(Lines (gnus-inews-lines))
@@ -1571,7 +1571,8 @@ mailer."
 	(run-hooks 'gnus-mail-hook)))))
 
 (defun gnus-new-news (&optional group)
-  (let (subject)
+  (let ((winconf (current-window-configuration))
+	subject)
     (and gnus-interactive-post
 	 (not gnus-expert-user)
 	 (not group)
@@ -1580,10 +1581,12 @@ mailer."
 		 (setq group 
 		       (completing-read "Group: " gnus-active-hashtb)))
 	   (setq subject (read-string "Subject: "))))
-    (pop-to-buffer "*post-news*")  
+    (pop-to-buffer gnus-post-news-buffer)  
     (erase-buffer)
     (news-reply-mode)
     (news-setup nil subject nil group nil)
+    (make-local-variable 'gnus-prev-winconf)
+    (setq gnus-prev-winconf winconf)
     (local-set-key "\C-c\C-c" 'gnus-inews-news)))
 
 (defun gnus-news-followup (&optional yank group)
@@ -1600,7 +1603,7 @@ mailer."
 	    from subject date reply-to message-of
 	    references message-id sender follow-to sendto elt 
 	    followup-to distribution)
-	(set-buffer (get-buffer-create gnus-mail-buffer))
+	(set-buffer (get-buffer-create gnus-post-news-buffer))
 	(news-reply-mode)
 	(if (and (buffer-modified-p)
 		 (> (buffer-size) 0)

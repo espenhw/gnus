@@ -1450,7 +1450,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.3"
+(defconst gnus-version "September Gnus v0.4"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -3414,6 +3414,8 @@ The following commands are available:
     (or level gnus-group-default-list-level gnus-level-subscribed))))
   
 
+(defvar gnus-tmp-prev-perm nil)
+
 ;;;###autoload
 (defun gnus-no-server (&optional arg)
   "Read network news.
@@ -3423,8 +3425,12 @@ If ARG is non-nil and not a positive number, Gnus will
 prompt the user for the name of an NNTP server to use.
 As opposed to `gnus', this command will not connect to the local server."
   (interactive "P")
-  (setq gnus-group-use-permanent-levels t)
-  (gnus (or arg (1- gnus-level-default-subscribed)) t))
+  (let ((perm
+	 (cons gnus-group-use-permanent-levels gnus-group-default-list-level)))
+    (setq gnus-tmp-prev-perm nil)
+    (setq gnus-group-use-permanent-levels t)
+    (gnus (or arg (1- gnus-level-default-subscribed)) t)
+    (setq gnus-tmp-prev-perm perm)))
 
 ;;;###autoload
 (defun gnus-slave (&optional arg)
@@ -3447,6 +3453,11 @@ prompt the user for the name of an NNTP server to use."
     (gnus-clear-system)
 
     (nnheader-init-server-buffer)
+    ;; We do this if `gnus-no-server' has been run.
+    (if gnus-tmp-prev-perm 
+	(setq gnus-group-use-permanent-levels (car gnus-tmp-prev-perm)
+	      gnus-group-default-list-level (cdr gnus-tmp-prev-perm)
+	      gnus-tmp-prev-perm nil))
     (gnus-read-init-file)
 
     (setq gnus-slave slave)
@@ -3522,8 +3533,8 @@ prompt the user for the name of an NNTP server to use."
           __                             
 
 
-      Gnus * A newsreader for Emacsen
-    A Praxis release * larsi@ifi.uio.no
+%s * A newsreader for Emacsen
+     A Praxis release * larsi@ifi.uio.no
 " 
 	   gnus-version))
   ;; And then hack it.
@@ -5088,9 +5099,9 @@ If N is negative, this group and the N-1 previous groups will be checked."
 	    "Faq dir: " (and (listp gnus-group-faq-directory) 
 			     gnus-group-faq-directory))))))
   (or faq-dir
-      (if (listp gnus-group-faq-directory)
-	  (car gnus-group-faq-directory)
-	gnus-group-faq-directory))
+      (setq faq-dir (if (listp gnus-group-faq-directory)
+                        (car gnus-group-faq-directory)
+                      gnus-group-faq-directory)))
   (or group (error "No group name given"))
   (let ((file (concat (file-name-as-directory faq-dir)
 		      (gnus-group-real-name group))))
@@ -6248,7 +6259,7 @@ article number."
 
 (defun gnus-summary-insert-line 
   (sformat header level current unread replied expirable subject-or-nil
-	   &optional dummy score)
+	   &optional dummy score process)
   (or sformat (setq sformat gnus-summary-line-format-spec))
   (let* ((indentation (aref gnus-thread-indent-array level))
 	 (lines (mail-header-lines header))
@@ -6259,7 +6270,9 @@ article number."
 		      gnus-summary-zcore-fuzz)) ? 
 	    (if (< score gnus-summary-default-score)
 		gnus-score-below-mark gnus-score-over-mark)))
-	 (replied (if replied gnus-replied-mark ? ))
+	 (replied (cond (process gnus-process-mark)
+			(replied gnus-replied-mark)
+			(t gnus-unread-mark)))
 	 (from (mail-header-from header))
 	 (name (cond 
 		((string-match "(.+)" from)
@@ -6876,9 +6889,7 @@ or a straight list of headers."
 		 (not (zerop level))
 		 gnus-tmp-prev-subject
 		 (not (gnus-subject-equal gnus-tmp-prev-subject subject)))
-	    (setq new-roots (if (cdr (car thread))
-				(nconc new-roots (list (car thread)))
-			      new-roots)
+	    (setq new-roots (nconc new-roots (list (car thread)))
 		  thread-end t
 		  header nil))
 	   ((and gnus-newsgroup-limit
@@ -6944,7 +6955,8 @@ or a straight list of headers."
 		(and (eq gnus-summary-make-false-root 'adopt)
 		     (= level 1)
 		     (memq number gnus-tmp-gathered))
-		(cdr (assq number gnus-newsgroup-scored))))
+		(cdr (assq number gnus-newsgroup-scored))
+		(memq number gnus-newsgroup-processable)))
 
 	     (setq gnus-newsgroup-data 
 		   (cons (gnus-data-make number mark (- (point) 4)
@@ -7004,7 +7016,8 @@ or a straight list of headers."
 	 nil header 0 nil mark (memq number gnus-newsgroup-replied)
 	 (memq number gnus-newsgroup-expirable)
 	 (mail-header-subject header) nil
-	 (cdr (assq number gnus-newsgroup-scored))))))))
+	 (cdr (assq number gnus-newsgroup-scored))
+	 (memq number gnus-newsgroup-processable)))))))
 
 (defun gnus-select-newsgroup (group &optional read-all)
   "Select newsgroup GROUP.
@@ -11595,18 +11608,20 @@ Provided for backwards compatability."
     (and (process-status "gnus-x-face")
 	 (delete-process "gnus-x-face"))
     (let ((inhibit-point-motion-hooks t)
-	  (case-fold-search nil))
+	  (case-fold-search nil)
+	  from)
       (save-restriction
 	(goto-char (point-min))
 	(search-forward "\n\n")
 	(narrow-to-region (point-min) (point))
 	(goto-char (point-min))
+	(setq from (mail-fetch-field "from"))
 	(if (not (and gnus-article-x-face-command
 		      (or force
 			  (not gnus-article-x-face-too-ugly)
-			  (and gnus-article-x-face-too-ugly
+			  (and gnus-article-x-face-too-ugly from
 			       (not (string-match gnus-article-x-face-too-ugly
-						  (mail-fetch-field "from")))))
+						  from))))
 		      (progn
 			(goto-char (point-min))
 			(re-search-forward "^X-Face: " nil t))))

@@ -1,4 +1,15 @@
+Tue Sep 26 01:36:17 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
+
+	* gnus.el (gnus-summary-prepare-threads): New roots would be
+		ignored. 
+
+	* gnus-msg.el (gnus-new-news): Didn't save winconf.
+
+	* gnus.el (gnus-group-fetch-faq): Didn't really work.
+
 Mon Sep 25 22:43:22 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
+
+	* gnus.el: 0.3 is released.
 
 	* gnus-msg.el (gnus-inews-insert-headers): Heed
 		check-before-posting. 

@@ -85,6 +85,7 @@
 				 (gnus-find-method-for-group group))
 			   (and (or (gnus-server-opened group-method)
 				    (gnus-open-server group-method))
+				(gnus-request-group group t)
 				(gnus-retrieve-headers articles group)))))
 	      (save-excursion
 		(set-buffer nntp-server-buffer)
