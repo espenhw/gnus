@@ -783,7 +783,7 @@ PARENT is the message-ID of the parent summary line, or nil for none."
       (let ((part-counter 0)
 	    part-begin part-end eof-flag)
 	(while (string-match "\
-^\\(Lines\\|Content-\\(Type\\|Transfer-Encoding\\)\\):.*\n\\([ \t].*\n\\)*"
+^\\(Lines\\|Content-\\(Type\\|Transfer-Encoding\\|Disposition\\)\\):.*\n\\([ \t].*\n\\)*"
 			     article-insert)
 	  (setq article-insert (replace-match "" t t article-insert)))
 	(let ((case-fold-search nil))
