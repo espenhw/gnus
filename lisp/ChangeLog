@@ -2,6 +2,9 @@
 
 	* nnimap.el (nnimap-fixup-unread-after-getting-new-news): Autoload
 	it just in case.
+	(nnimap-update-unseen): New function; update unseen count in
+	`n-m-info'.
+	(nnimap-close-group): Call it.
 
 	* gnus-start.el (gnus-setup-news-hook): Add n-f-u-a-g-n-n.
 	(gnus-after-getting-new-news-hook): Ditto.

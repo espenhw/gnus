@@ -871,10 +871,22 @@ function is generally only called when Gnus is shutting down."
 	     (nnheader-report 'nnimap "Group %s selected" group)
 	     t)))))
 
+(defun nnimap-update-unseen (group &optional server)
+  "Update the unseen count in `nnimap-mailbox-info'."
+  (gnus-sethash
+   (gnus-group-prefixed-name group server)
+   (let ((old (gnus-gethash (gnus-group-prefixed-name group server) 
+			    nnimap-mailbox-info)))
+     (list (nth 0 old) (nth 1 old)
+	   (imap-mailbox-status group 'unseen nnimap-server-buffer)
+	   (nth 3 old)))
+   nnimap-mailbox-info))
+
 (defun nnimap-close-group (group &optional server)
   (with-current-buffer nnimap-server-buffer
     (when (and (imap-opened)
 	       (nnimap-possibly-change-group group server))
+      (nnimap-update-unseen group server)
       (case nnimap-expunge-on-close
 	(always (progn
 		  (imap-mailbox-expunge nnimap-close-asynchronous)
