@@ -41,19 +41,8 @@
   :group 'pgg-gpg
   :type 'string)
 
-(eval-and-compile
-  (luna-define-class pgg-scheme-gpg (pgg-scheme)))
-
 (defvar pgg-gpg-user-id nil
   "GnuPG ID of your default identity.")
-
-(defvar pgg-scheme-gpg-instance nil)
-
-;;;###autoload
-(defun pgg-make-scheme-gpg ()
-  (or pgg-scheme-gpg-instance
-      (setq pgg-scheme-gpg-instance
-	    (luna-make-entity 'pgg-scheme-gpg))))
 
 (defun pgg-gpg-process-region (start end passphrase program args)
   (let* ((output-file-name
@@ -118,8 +107,8 @@
 	     (substring (match-string 0) -8)))
        passphrase)))
 
-(luna-define-method pgg-scheme-lookup-key ((scheme pgg-scheme-gpg)
-					   string &optional type)
+(defun pgg-gpg-lookup-key (string &optional type)
+  "Search keys associated with STRING."
   (let ((args (list "--with-colons" "--no-greeting" "--batch"
 		    (if type "--list-secret-keys" "--list-keys")
 		    string)))
@@ -133,8 +122,8 @@
 				     (progn (end-of-line)(point)))
 		   ":")) 8)))))
 
-(luna-define-method pgg-scheme-encrypt-region ((scheme pgg-scheme-gpg)
-					       start end recipients)
+(defun pgg-gpg-encrypt-region (start end recipients)
+  "Encrypt the current region between START and END."
   (let* ((pgg-gpg-user-id (or pgg-gpg-user-id pgg-default-user-id))
 	 (args
 	  `("--batch" "--armor" "--always-trust" "--encrypt"
@@ -149,13 +138,13 @@
       (pgg-gpg-process-region start end nil pgg-gpg-program args))
     (pgg-process-when-success)))
 
-(luna-define-method pgg-scheme-decrypt-region ((scheme pgg-scheme-gpg)
-					       start end)
+(defun pgg-gpg-decrypt-region (start end)
+  "Decrypt the current region between START and END."
   (let* ((pgg-gpg-user-id (or pgg-gpg-user-id pgg-default-user-id))
 	 (passphrase
 	  (pgg-read-passphrase
 	   (format "GnuPG passphrase for %s: " pgg-gpg-user-id)
-	   (pgg-scheme-lookup-key scheme pgg-gpg-user-id 'encrypt)))
+	   (pgg-gpg-lookup-key pgg-gpg-user-id 'encrypt)))
 	 (args '("--batch" "--decrypt")))
     (pgg-gpg-process-region start end passphrase pgg-gpg-program args)
     (with-current-buffer pgg-errors-buffer
@@ -163,13 +152,13 @@
       (goto-char (point-min))
       (re-search-forward "^\\[GNUPG:] DECRYPTION_OKAY\\>" nil t))))
 
-(luna-define-method pgg-scheme-sign-region ((scheme pgg-scheme-gpg)
-					    start end &optional cleartext)
+(defun pgg-gpg-sign-region (start end &optional cleartext)
+  "Make detached signature from text between START and END."
   (let* ((pgg-gpg-user-id (or pgg-gpg-user-id pgg-default-user-id))
 	 (passphrase
 	  (pgg-read-passphrase
 	   (format "GnuPG passphrase for %s: " pgg-gpg-user-id)
-	   (pgg-scheme-lookup-key scheme pgg-gpg-user-id 'sign)))
+	   (pgg-gpg-lookup-key pgg-gpg-user-id 'sign)))
 	 (args
 	  (list (if cleartext "--clearsign" "--detach-sign")
 		"--armor" "--batch" "--verbose"
@@ -182,8 +171,8 @@
       (pgg-gpg-possibly-cache-passphrase passphrase))
     (pgg-process-when-success)))
 
-(luna-define-method pgg-scheme-verify-region ((scheme pgg-scheme-gpg)
-					      start end &optional signature)
+(defun pgg-gpg-verify-region (start end &optional signature)
+  "Verify region between START and END as the detached signature SIGNATURE."
   (let ((args '("--batch" "--verify")))
     (when (stringp signature)
       (setq args (append args (list signature))))
@@ -200,15 +189,16 @@
 	(set-buffer pgg-output-buffer)
 	(insert-buffer-substring pgg-errors-buffer)))))
 
-(luna-define-method pgg-scheme-insert-key ((scheme pgg-scheme-gpg))
+(defun pgg-gpg-insert-key ()
+  "Insert public key at point."
   (let* ((pgg-gpg-user-id (or pgg-gpg-user-id pgg-default-user-id))
 	 (args (list "--batch" "--export" "--armor"
 		     pgg-gpg-user-id)))
     (pgg-gpg-process-region (point)(point) nil pgg-gpg-program args)
     (insert-buffer-substring pgg-output-buffer)))
 
-(luna-define-method pgg-scheme-snarf-keys-region ((scheme pgg-scheme-gpg)
-						  start end)
+(defun pgg-gpg-snarf-keys-region (start end)
+  "Add all public keys in region between START and END to the keyring."
   (let ((args '("--import" "--batch" "-")) status)
     (pgg-gpg-process-region start end nil pgg-gpg-program args)
     (set-buffer pgg-errors-buffer)
