@@ -102,6 +102,9 @@
 
 ;;; Code:
 
+(require 'dig)
+(eval-when-compile (require 'cl))
+
 (defgroup smime nil
   "S/MIME configuration.")
 
@@ -141,6 +144,13 @@ manually."
   "Name of OpenSSL binary."
   :type 'string
   :group 'smime)
+
+(defcustom smime-dns-server nil
+  "DNS server to query certificates from.
+If nil, use system defaults."
+  :type '(choice (const :tag "System defaults")
+		 string)
+  :group 'dig)
 
 ;; OpenSSL wrappers.
 
@@ -262,6 +272,34 @@ Uses current buffer if BUFFER is nil, queries user of KEYFILE is nil."
 	  (completing-read "Decrypt with which key? " smime-keys nil nil
 			   (and (listp (car-safe smime-keys)) 
 				(caar smime-keys))))))))
+
+;; Find certificates
+
+(defun smime-mail-to-domain (mailaddr)
+  (if (string-match "@" mailaddr)
+      (replace-match "." 'fixedcase 'literal mailaddr)
+    mailaddr))
+
+(defun smime-cert-by-dns (mail)
+  (let* ((dig-dns-server smime-dns-server)
+	 (digbuf (dig-invoke (smime-mail-to-domain mail) "cert" nil nil "+vc"))
+	 (retbuf (generate-new-buffer (format "*certificate for %s*" mail)))
+	 (certrr (with-current-buffer digbuf
+		   (dig-extract-rr (smime-mail-to-domain mail) "cert")))
+	 (cert (and certrr (dig-rr-get-pkix-cert certrr))))
+      (if cert
+	  (with-current-buffer retbuf
+	    (insert "-----BEGIN CERTIFICATE-----\n")
+	    (let ((i 0) (len (length cert)))
+	      (while (> (- len 64) i)
+		(insert (substring cert i (+ i 64)) "\n")
+		(setq i (+ i 64)))
+	      (insert (substring cert i len) "\n"))
+	    (insert "-----END CERTIFICATE-----\n"))
+	(kill-buffer retbuf)
+	(setq retbuf nil))
+      (kill-buffer digbuf)
+      retbuf))
 
 ;; User interface.
 
