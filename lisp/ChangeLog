@@ -14,6 +14,8 @@
 
 2003-03-20  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* rfc2231.el (rfc2231-decode-encoded-string): Downcase charset.
+	
 	* mm-url.el (mm-url-insert): Move url-current-object stuff into
 	mm-url-insert-file-contents.
 

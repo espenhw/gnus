@@ -151,9 +151,9 @@ These look like \"us-ascii'en-us'This%20is%20%2A%2A%2Afun%2A%2A%2A\"."
       ;; Encode using the charset, if any.
       (when (and (mm-multibyte-p)
 		 (> (length elems) 1)
-		 (not (equal (intern (car elems)) 'us-ascii)))
+		 (not (equal (intern (downcase (car elems))) 'us-ascii)))
 	(mm-decode-coding-region (point-min) (point-max)
-				 (intern (car elems))))
+				 (intern (downcase (car elems)))))
       (buffer-string))))
 
 (defun rfc2231-encode-string (param value)
