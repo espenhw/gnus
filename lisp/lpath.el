@@ -16,7 +16,7 @@
 	       find-image font-create-object gnus-mule-get-coding-system
 	       font-lock-set-defaults
 	       image-size image-type-available-p insert-image
-	       make-temp-file
+	       make-temp-file message-xmas-redefine
 	       mail-aliases-setup mm-copy-tree
 	       mule-write-region-no-coding-system put-image
 	       ring-elements
@@ -84,7 +84,7 @@
 		 events-to-keys face-doc-string find-face frame-device
 		 frame-property get-popup-menu-response glyph-height
 		 glyph-property glyph-width glyphp make-annotation
-		 make-event message-xmas-redefine
+		 make-event
 		 make-color-instance make-extent make-glyph make-gui-button
 		 make-image-specifier map-extents next-command-event
 		 pp-to-string read-color set-extent-property
