@@ -1,3 +1,7 @@
+2000-04-27 09:06:29  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-bug): Avoid attaching the external buffer.
+
 2000-04-27 00:58:43  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-inline-media-tests): Add message/partial.

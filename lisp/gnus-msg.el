@@ -869,10 +869,12 @@ If YANK is non-nil, include the original article."
 	       (stringp nntp-server-type))
       (insert nntp-server-type))
     (insert "\n\n\n\n\n")
-    (save-excursion
-      (set-buffer (gnus-get-buffer-create " *gnus environment info*"))
-      (gnus-debug))
-    (insert "<#part type=application/x-emacs-lisp buffer=\" *gnus environment info*\" disposition=inline description=\"User settings\"><#/part>")
+    (let (text)
+      (save-excursion
+	(set-buffer (gnus-get-buffer-create " *gnus environment info*"))
+	(gnus-debug)
+	(setq text (buffer-string)))
+      (insert "<#part type=application/x-emacs-lisp disposition=inline description=\"User settings\">\n" text "\n<#/part>"))
     (goto-char (point-min))
     (search-forward "Subject: " nil t)
     (message "")))
