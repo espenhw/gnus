@@ -899,7 +899,7 @@ function is generally only called when Gnus is shutting down."
 	  ;; find split rule for this server / inbox
 	  (when (setq rule (nnimap-split-find-rule server inbox))
 	    ;; iterate over articles
-	    (dolist (article (imap-search nnimap-split-predicate)
+	    (dolist (article (imap-search nnimap-split-predicate))
 	      (when (nnimap-request-head article)
 		;; copy article to right group(s)
 		(setq removeorig nil)
