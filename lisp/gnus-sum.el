@@ -8284,28 +8284,31 @@ If optional argument UNMARK is negative, mark articles as unread instead."
 If N is negative, mark backward instead.  If UNMARK is non-nil, remove
 the process mark instead.  The difference between N and the actual
 number of articles marked is returned."
-  (interactive "p")
-  (let ((backward (< n 0))
-	(n (abs n)))
-    (while (and
-	    (> n 0)
-	    (if unmark
+  (interactive "P")
+  (if (and (null n) (gnus-region-active-p))
+      (gnus-uu-mark-region (region-beginning) (region-end) unmark)
+    (setq n (prefix-numeric-value n))
+    (let ((backward (< n 0))
+	  (n (abs n)))
+      (while (and
+	      (> n 0)
+	      (if unmark
 		(gnus-summary-remove-process-mark
 		 (gnus-summary-article-number))
-	      (gnus-summary-set-process-mark (gnus-summary-article-number)))
-	    (zerop (gnus-summary-next-subject (if backward -1 1) nil t)))
-      (setq n (1- n)))
-    (when (/= 0 n)
-      (gnus-message 7 "No more articles"))
-    (gnus-summary-recenter)
-    (gnus-summary-position-point)
-    n))
+		(gnus-summary-set-process-mark (gnus-summary-article-number)))
+	      (zerop (gnus-summary-next-subject (if backward -1 1) nil t)))
+	(setq n (1- n)))
+      (when (/= 0 n)
+	(gnus-message 7 "No more articles"))
+      (gnus-summary-recenter)
+      (gnus-summary-position-point)
+      n)))
 
 (defun gnus-summary-unmark-as-processable (n)
   "Remove the process mark from the next N articles.
 If N is negative, unmark backward instead.  The difference between N and
 the actual number of articles unmarked is returned."
-  (interactive "p")
+  (interactive "P")
   (gnus-summary-mark-as-processable n t))
 
 (defun gnus-summary-unmark-all-processable ()

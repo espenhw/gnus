@@ -1,5 +1,8 @@
 2001-02-04 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-sum.el (gnus-summary-mark-as-processable): Understand
+	active region.
+
 	* gnus-start.el (gnus-group-change-level): Remove from both
 	gnus-zombie-list and gnus-killed-list.
 
