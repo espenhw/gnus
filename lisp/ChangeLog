@@ -1,3 +1,10 @@
+2001-09-07  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-group.el (gnus-group-sort-groups): Unmark all groups.
+	(gnus-group-sort-selected-groups): Ditto.  Suggested by Harry
+	Putnam <reader@newsguy.com>.
+	(gnus-group-sort-selected-groups): Touch dribble file.
+
 2001-09-07 Raja R Harinath  <harinath@cs.umn.edu>
 
 	* nnml.el (nnml-filenames-are-evil): New variable.

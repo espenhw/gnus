@@ -2625,6 +2625,7 @@ If REVERSE (the prefix), reverse the sorting order."
   (interactive (list gnus-group-sort-function current-prefix-arg))
   (funcall gnus-group-sort-alist-function
 	   (gnus-make-sort-function func) reverse)
+  (gnus-group-unmark-all-groups)
   (gnus-group-list-groups)
   (gnus-dribble-touch))
 
@@ -2691,7 +2692,9 @@ If REVERSE, sort in reverse order."
   (let ((groups (gnus-group-process-prefix n)))
     (funcall gnus-group-sort-selected-function
 	     groups (gnus-make-sort-function func) reverse)
-    (gnus-group-list-groups)))
+    (gnus-group-unmark-all-groups)
+    (gnus-group-list-groups)
+    (gnus-dribble-touch)))
 
 (defun gnus-group-sort-selected-flat (groups func reverse)
   (let (entries infos)
