@@ -405,7 +405,7 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 			      'gnus-level 0
 			      'gnus-pseudo (car pslist)))
 	      (remove-text-properties
-	       b (gnus-point-at-eol)
+	       (1+ b) (1+ (gnus-point-at-eol))
 	       '(gnus-number nil gnus-mark nil gnus-level nil))
 	      (forward-line -1)
 	      (gnus-sethash (int-to-string gnus-reffed-article-number)

@@ -134,6 +134,7 @@ Possible values:
 	    (insert (format "221 %d Article retrieved.\n" article))
 	    (insert-buffer-substring nndoc-current-buffer beg p)
 	    (goto-char (point-max))
+	    (or (= (char-after (1- (point))) ?\n) (insert "\n"))
 	    (insert (format "Lines: %d\n" lines))
 	    (insert ".\n"))
 
@@ -200,6 +201,19 @@ Possible values:
 	      (goto-char (point-min))
 	      (while (re-search-forward "^- -"nil t)
 		(replace-match "-" t t))))
+	;; Some assholish digests do not have a blank line after the
+	;; headers. Aargh!
+	(goto-char (point-min))
+	(if (search-forward "\n\n" nil t)
+	    () ; We let this one pass.
+	  (if (re-search-forward "^[ \t]+$" nil t)
+	      (replace-match "" t t) ; We nix out a line of blanks.
+	    (while (and (looking-at "[^ ]+:")
+			(zerop (forward-line 1))))
+	    ;; We just insert a couple of lines. If you read digests
+	    ;; that are so badly formatted, you don't deserve any
+	    ;; better. Blphphpht!
+	    (insert "\n\n")))
 	t))))
 
 (defun nndoc-request-group (group &optional server dont-check)
@@ -291,7 +305,7 @@ Possible values:
 	(goto-char (point-min))
 	(if (and
 	     (re-search-forward
-	      (concat "\n\n\\|^Content-Type: multipart/digest;[ \t\n]*[ \t]"
+	      (concat "\n\n\\|^Content-Type: *multipart/digest;[ \t\n]*[ \t]"
 		      "boundary=\"\\([^\"\n]*[^\" \t\n]\\)\"")
 	      nil t)
 	     (match-beginning 1))

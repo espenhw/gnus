@@ -216,20 +216,13 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 (defun nnfolder-request-group (group &optional server dont-check)
   (save-excursion
+    (nnmail-activate 'nnfolder)
     (nnfolder-possibly-change-group group)
     (and (assoc group nnfolder-group-alist)
 	 (progn
 	   (if dont-check
 	       t
-	     (nnfolder-get-new-mail group))
-	   (let ((timestamp (nth 5 (file-attributes nnfolder-active-file))))
-	     ;; Make sure we get the latest active file
-	     (if (or (not nnfolder-active-timestamp)
-		     (> (nth 0 timestamp) (nth 0 nnfolder-active-timestamp))
-		     (> (nth 1 timestamp) (nth 1 nnfolder-active-timestamp)))
-		 (progn
-		   (setq nnfolder-active-timestamp timestamp)
-		   (nnmail-activate 'nnfolder)))
+	     (nnfolder-get-new-mail group)
 	     (let* ((active (assoc group nnfolder-group-alist))
 		    (group (car active))
 		    (range (car (cdr active)))

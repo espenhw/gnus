@@ -109,6 +109,10 @@ several files - eg. \".spool[0-9]*\".")
 (defvar nnmail-resplit-incoming nil
   "*If non-nil, re-split incoming procmail sorted mail.")
 
+(defvar nnmail-movemail-program "movemail"
+  "*A command to be executed to move mail from the inbox.
+The default is \"movemail\".")
+
 (defvar nnmail-read-incoming-hook nil
   "*Hook that will be run after the incoming mail has been transferred.
 The incoming mail is moved from `nnmail-spool-file' (which normally is
@@ -389,7 +393,7 @@ perfomed.")
 		 (setq errors (generate-new-buffer " *nnmail loss*"))
 		 (buffer-disable-undo errors)
 		 (call-process
-		  (expand-file-name "movemail" exec-directory)
+		  (expand-file-name nnmail-movemail-program exec-directory)
 		  nil errors nil inbox tofile)
 		 (if (not (buffer-modified-p errors))
 		     ;; No output => movemail won

@@ -216,7 +216,8 @@
        (and (file-exists-p file)
 	    (not (file-directory-p file))
 	    (insert-file-contents file))
-       (set-visited-file-name file)))))
+       (set-visited-file-name file)
+       (set-buffer-modified-p nil)))))
 
 (provide 'nnheader)
 

@@ -128,8 +128,8 @@ of the last successful match.")
 	 (char-to-header 
 	  '((?a "from" nil nil string)
 	    (?s "subject" nil nil string)
-	    (?b "body" "" nil string)
-	    (?h "head" "" nil string)
+	    (?b "body" "" nil body-string)
+	    (?h "head" "" nil body-string)
 	    (?i "message-id" nil t string)
 	    (?t "references" "message-id" t string)
 	    (?x "xref" nil nil string)
@@ -141,6 +141,8 @@ of the last successful match.")
 	    (?e e "exact string" string)
 	    (?f f "fuzzy string" string)
 	    (?r r "regexp string" string)
+	    (?s s "substring" body-string)
+	    (?r s "regexp string" body-string)
 	    (?b before "before date" date)
 	    (?a at "at date" date) 
 	    (?n now "this date" date)
@@ -282,15 +284,19 @@ of the last successful match.")
       (setq alist (cdr alist))))
   (select-window (get-buffer-window gnus-summary-buffer)))
 
-(defun gnus-summary-header (header)
+(defun gnus-summary-header (header &optional no-err)
   ;; Return HEADER for current articles, or error.
   (let ((article (gnus-summary-article-number))
 	headers)
     (if article
 	(if (setq headers (gnus-get-header-by-number article))
 	    (aref headers (nth 1 (assoc header gnus-header-index)))
-	  (error "Pseudo-articles can't be scored"))
-      (error "No article on current line"))))
+	  (if no-err
+	      nil
+	    (error "Pseudo-articles can't be scored")))
+      (if no-err
+	  (error "No article on current line")
+	nil))))
 
 (defun gnus-summary-score-entry 
   (header match type score date &optional prompt silent)
@@ -401,7 +407,7 @@ SCORE is the score to add."
 			(type match)
 			(t (concat "\\`.*" (regexp-quote match) ".*\\'")))))
       (while (not (eobp))
-	(let ((content (gnus-summary-header header))
+	(let ((content (gnus-summary-header header 'noerr))
 	      (case-fold-search t))
 	  (and content
 	       (if (if (eq type 'f)

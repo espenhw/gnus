@@ -1,4 +1,49 @@
-Fri Aug  4 03:44:13 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+Sat Aug  5 00:12:33 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-summary-next-article): Don't bug out on the end of
+	the group buffer.
+
+	* nnmail.el (nnmail-move-inbox): Use it.
+
+	* gnus.el (gnus-summary-best-unread-article): Would go to articles
+	below the default score before the articles with default score.
+
+	* gnus-score.el (gnus-summary-increase-score): Only allow
+	substring and regexp on body.
+
+	* gnus.el (gnus-score-find-alist): Would produce recursive lists.
+	(gnus-summary-mode-map): Changed mucho keys.
+
+	* gnus-score.el (gnus-summary-header): Don't give errors when
+	doing score-effect. 
+
+	* gnus.el (gnus-group-apropos): Ignore nil actives.
+	(gnus-remove-some-windows): Would bug out.
+	(gnus-update-group-mark-positions): New function.
+	(gnus-group-mark-group): Follow the group line spec on process
+	marks. 
+
+	* nndoc.el (nndoc-retrieve-headers): Did not do Lines right with
+	digests that had a non-blank separator line.
+	(nndoc-request-article): Did not do anything right with the above.
+	(nndoc-set-header-dependent-regexps): Did not like more than a
+	single space after Content-Type.
+
+Fri Aug  4 23:56:58 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* nnfolder.el (nnfolder-request-group): Be sure to activate. 
+
+Fri Aug  4 23:50:12 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus-ems.el (gnus-ems-redefine): XEmacs insertion of pseudos was
+	buggy. 
+
+Fri Aug  4 22:34:20 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-newsgroup-reads): New variable. Used throughout
+	the file.
+
+Fri Aug  4 03:44:13 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
 
 	* gnus.el: 0.99.5 is released. (Hah!)
 
