@@ -15,6 +15,7 @@ lick:
 install:
 	cd lisp && $(MAKE) EMACS="$(EMACS)" lispdir="$(lispdir)" install
 	cd texi && $(MAKE) EMACS="$(EMACS)" install
+	cd etc && $(MAKE) EMACS="$(EMACS)" install
 
 # Rule for Lars and nobody else.
 some:

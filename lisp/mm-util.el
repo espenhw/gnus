@@ -1,4 +1,4 @@
-;;; mm-util.el --- Utility functions for MIME things
+;;; mm-util.el --- Utility functions for Mule and low level things
 ;; Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -522,6 +522,16 @@ If INHIBIT is non-nil, inhibit mm-inhibit-file-name-handlers."
 		     inhibit-file-name-handlers)
 	   inhibit-file-name-handlers)))
     (write-region start end filename append visit lockname)))
+
+(defun mm-image-load-path (&optional package)
+  (let (dir result)
+    (dolist (path load-path (nreverse result))
+      (if (file-directory-p
+	   (setq dir (concat (file-name-directory
+			      (directory-file-name path))
+			     "etc/" (or package "gnus/"))))
+	  (push dir result))
+      (push path result))))
 
 (provide 'mm-util)
 

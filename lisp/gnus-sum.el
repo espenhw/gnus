@@ -2053,7 +2053,8 @@ increase the score of each group you read."
 	   (default-value 'tool-bar-mode)
 	   (not gnus-summary-tool-bar-map))
       (setq gnus-summary-tool-bar-map
-	    (let ((tool-bar-map (make-sparse-keymap)))
+	    (let ((tool-bar-map (make-sparse-keymap))
+		  (load-path (mm-image-load-path)))
 	      (tool-bar-add-item-from-menu
 	       'gnus-summary-prev-unread "prev-ur" gnus-summary-mode-map)
 	      (tool-bar-add-item-from-menu

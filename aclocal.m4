@@ -96,6 +96,17 @@ AC_DEFUN(AC_PATH_LISPDIR, [
   AC_SUBST(lispdir)
 ])
 
+AC_DEFUN(AC_PATH_ETCDIR, [
+  AC_ARG_WITH(etcdir,[  --with-etcdir=DIR       Where to install etc files], etcdir=${withval})
+  AC_MSG_CHECKING([where etc files should go])
+  if test -z "$etcdir"; then
+    dnl Set default value
+    etcdir="\$(lispdir)/../etc"
+  fi
+  AC_MSG_RESULT($etcdir)
+  AC_SUBST(etcdir)
+])
+
 dnl
 dnl Check whether a function exists in a library
 dnl All '_' characters in the first argument are converted to '-'

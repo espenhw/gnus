@@ -36,7 +36,8 @@ install: clever
 
 install-el:
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(lispdir)
-	for p in *.el; do \
+	cd $(srcdir) \
+	&& for p in *.el; do \
 	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p"; \
 	  $(INSTALL_DATA) $$p $(lispdir)/$$p; \
 	done

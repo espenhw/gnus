@@ -1,5 +1,13 @@
 2000-12-22 02:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* mm-util.el (mm-image-load-path): New function.
+
+	* gnus-group.el (gnus-group-make-tool-bar): Use it.
+	
+	* gnus-sum.el (gnus-summary-make-tool-bar): Use it.
+	
+	* message.el (message-tool-bar-map): Use it.
+
 	* Makefile.in (install-el): New.
 
 2000-12-21  Katsumi Yamaoka  <yamaoka@jpl.org>

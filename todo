@@ -2,6 +2,8 @@
 ;; promise when to be implemented.
 
 * Understand mail-user-agent. Maybe gnus-mail-user-agent.
+  
+  [Done]
 
 * Emphasis delimiters show when `W W c'.
 
@@ -89,6 +91,8 @@
   I'd really rather that the content not be left lying around
   unencrypted.  Hook into article acquisition the way jka-compr
   supposedly does, to auto-decrypt every message read.
+
+  [See Support for encrypted folders.]
 
 * Baby's First Mail In Gnus.  Some set of functions that the
   new-to-mail-in-Gnus user can invoke which will query the user

@@ -19,6 +19,7 @@ AC_CHECK_PROG(MAKEINFO, makeinfo, makeinfo, no)
 AC_CHECK_PROG(EMACS, emacs, emacs, xemacs)
 
 AC_PATH_LISPDIR
+AC_PATH_ETCDIR
 AC_CHECK_W3
 
-AC_OUTPUT(Makefile lisp/Makefile texi/Makefile)
+AC_OUTPUT(Makefile lisp/Makefile texi/Makefile etc/Makefile)

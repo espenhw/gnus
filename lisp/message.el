@@ -4572,7 +4572,8 @@ which specify the range to operate on."
       (setq message-tool-bar-map
 	    (and (fboundp 'tool-bar-add-item-from-menu)
 		 tool-bar-mode
-		 (let ((tool-bar-map (copy-keymap tool-bar-map)))
+		 (let ((tool-bar-map (copy-keymap tool-bar-map))
+		       (load-path (mm-image-load-path)))
 		   ;; Zap some items which aren't so relevant and take
 		   ;; up space.
 		   (dolist (key '(print-buffer kill-buffer save-buffer 

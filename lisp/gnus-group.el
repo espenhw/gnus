@@ -881,7 +881,8 @@ in the minibuffer prompt."
 	   (default-value 'tool-bar-mode)
 	   (not gnus-group-toolbar-map))
       (setq gnus-group-toolbar-map
-	    (let ((tool-bar-map (make-sparse-keymap)))
+	    (let ((tool-bar-map (make-sparse-keymap))
+		  (load-path (mm-image-load-path)))
 	      (tool-bar-add-item-from-menu
 	       'gnus-group-get-new-news "get-news" gnus-group-mode-map)
 	      (tool-bar-add-item-from-menu
