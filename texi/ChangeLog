@@ -1,6 +1,14 @@
 2003-05-01  Jesper Harder  <harder@ifa.au.dk>
 
-	* gnus.texi: Markup and formatting improvements.
+	* gnus.texi (Wide Characters): Proportional -> fixed width.
+
+	* texi2latex.el (latexi-translate-file): Add @syncodeindex.
+
+	* gnus.texi: Markup and formatting improvements.  
+	Use @syncodeindex for merging indexes to get the same font for
+	@defvar and @vindex entries.  Be more consistent about the case
+	of index entries.
+	
 
 2003-04-30  Reiner Steib  <Reiner.Steib@gmx.de>
 

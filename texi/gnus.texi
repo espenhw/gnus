@@ -2,9 +2,9 @@
 
 @setfilename gnus
 @settitle Gnus Manual
-@synindex fn cp
-@synindex vr cp
-@synindex pg cp
+@syncodeindex fn cp
+@syncodeindex vr cp
+@syncodeindex pg cp
 @dircategory Emacs
 @direntry
 * Gnus: (gnus).         The newsreader Gnus.
@@ -2725,7 +2725,7 @@ If you do an @kbd{a} command in a mail group and you don't have a
 sending the message.
 
 @findex gnus-mailing-list-mode
-@cindex Mail List Groups
+@cindex mail list groups
 If this variable is set, @code{gnus-mailing-list-mode} is turned on when
 entering summary buffer.
 
@@ -10588,6 +10588,8 @@ This happens to also be the default action defined in
 
 @node Mailing List
 @section Mailing List
+@cindex mailing list
+@cindex RFC 2396
 
 @kindex A M (summary)
 @findex gnus-mailing-list-insinuate
@@ -11181,7 +11183,7 @@ article buffer.
 
 @vindex gnus-article-decode-hook
 @item gnus-article-decode-hook
-@cindex MIME
+@cindex @acronym{MIME}
 Hook used to decode @acronym{MIME} articles.  The default value is
 @code{(article-decode-charset article-decode-encoded-words)}
 
@@ -12547,7 +12549,7 @@ can be used.
 
 @item nntp-xover-commands
 @vindex nntp-xover-commands
-@cindex nov
+@cindex @acronym{NOV}
 @cindex XOVER
 List of strings used as commands to fetch @acronym{NOV} lines from a
 server.  The default value of this variable is @code{("XOVER"
@@ -13103,7 +13105,7 @@ links.  If that's the case for you, set
 variable is @code{add-name-to-file} by default.)
 
 @kindex M-x nnmail-split-history
-@kindex nnmail-split-history
+@findex nnmail-split-history
 If you wish to see where the previous mail split put the messages, you
 can use the @kbd{M-x nnmail-split-history} command.  If you wish to see
 where re-spooling messages would put the messages, you can use
@@ -13723,8 +13725,8 @@ use this hook to notify any mail watch programs, if you want to.
 @vindex nnmail-split-hook
 @item nnmail-split-hook
 @findex gnus-article-decode-encoded-words
-@findex RFC 1522 decoding
-@findex RFC 2047 decoding
+@cindex RFC 1522 decoding
+@cindex RFC 2047 decoding
 Hook run in the buffer where the mail headers of each message is kept
 just before the splitting based on these headers is done.  The hook is
 free to modify the buffer contents in any way it sees fit---the buffer
@@ -15941,7 +15943,7 @@ external library @code{digest-md5.el}.
 @end itemize
 
 @item nnimap-expunge-on-close
-@cindex Expunging
+@cindex expunging
 @vindex nnimap-expunge-on-close
 Unlike Parmenides the @acronym{IMAP} designers has decided that things that
 doesn't exist actually does exist.  More specifically, @acronym{IMAP} has
@@ -16000,7 +16002,7 @@ In this case, you would not want the per-user dormant flag showing up
 as ticked for other users.
 
 @item nnimap-expunge-search-string
-@cindex Expunging
+@cindex expunging
 @vindex nnimap-expunge-search-string
 
 This variable contain the @acronym{IMAP} search command sent to server when
@@ -16077,7 +16079,7 @@ splitting is disabled!
 No nnmail equivalent.
 
 @item nnimap-split-rule
-@cindex Splitting, rules
+@cindex splitting, rules
 @vindex nnimap-split-rule
 
 New mail found in @code{nnimap-split-inbox} will be split according to
@@ -16274,8 +16276,8 @@ INBOX.mailbox).
 @subsection Expunging mailboxes
 @cindex expunging
 
-@cindex Expunge
-@cindex Manual expunging
+@cindex expunge
+@cindex manual expunging
 @kindex G x
 @findex gnus-group-nnimap-expunge
 
@@ -17199,9 +17201,9 @@ their @acronym{NOV} lines removed from the @acronym{NOV} file.
 @section Gnus Unplugged
 @cindex offline
 @cindex unplugged
-@cindex Agent
-@cindex Gnus Agent
-@cindex Gnus Unplugged
+@cindex agent
+@cindex Gnus agent
+@cindex Gnus unplugged
 
 In olden times (ca. February '88), people used to run their newsreaders
 on big machines with permanent connections to the net.  News transport
@@ -17972,8 +17974,8 @@ sense if you are using a nntp or nnimap back end.
 @kindex M-x gnus-agent-expire
 @kindex M-x gnus-agent-expire-group
 @findex gnus-agent-expire-group
-@cindex Agent expiry
-@cindex Gnus Agent expiry
+@cindex agent expiry
+@cindex Gnus agent expiry
 @cindex expiry
 
 The Agent back end, @code{nnagent}, doesn't handle expiry. Well, at
@@ -18007,8 +18009,8 @@ commands, @code{gnus-agent-regenerate} and
 @node Agent Regeneration
 @subsection Agent Regeneration
 
-@cindex Agent Regeneration
-@cindex Gnus Agent Regeneration
+@cindex agent regeneration
+@cindex Gnus agent regeneration
 @cindex regeneration
 
 The local data structures used by @code{nnagent} may become corrupted
@@ -18980,7 +18982,7 @@ key will lead to creation of @file{ADAPT} files.)
 @end table
 @end enumerate
 
-@cindex Score File Atoms
+@cindex score file atoms
 @item mark
 The value of this entry should be a number.  Any articles with a score
 lower than this number will be marked as read.
@@ -20589,7 +20591,7 @@ This is the soft tabulator.
 @node Wide Characters
 @subsection Wide Characters
 
-Proportional fonts in most countries have characters of the same width.
+Fixed width fonts in most countries have characters of the same width.
 Some countries, however, use Latin characters mixed with wider
 characters---most notable East Asian countries.
 
@@ -23256,7 +23258,7 @@ but at the common table.@*
 @node XEmacs
 @section XEmacs
 @cindex XEmacs
-@cindex Installing under XEmacs
+@cindex installing under XEmacs
 
 XEmacs is distributed as a collection of packages.  You should install
 whatever packages the Gnus XEmacs package requires.  The current
@@ -23499,7 +23501,7 @@ various changes to the format of news articles.  The Gnus towers will
 look into implementing the changes when the draft is accepted as an RFC.
 
 @item MIME - RFC 2045-2049 etc
-@cindex MIME
+@cindex @acronym{MIME}
 All the various @acronym{MIME} RFCs are supported.
 
 @item Disposition Notifications - RFC 2298
@@ -24621,8 +24623,7 @@ this now has changed to
                    :suffix ".in")))
 @end lisp
 
-More information is available in the info doc at Select Methods ->
-Getting Mail -> Mail Sources
+@xref{Mail Source Specifiers}.
 
 @item
 Gnus is now a @acronym{MIME}-capable reader.  This affects many parts of
@@ -24660,7 +24661,7 @@ Gnus can now read @acronym{IMAP} mail via @code{nnimap}.
 
 @node Oort Gnus
 @subsubsection Oort Gnus
-@cindex Oort
+@cindex Oort Gnus
 
 New features in Gnus 5.10:
 
@@ -24710,7 +24711,7 @@ Single-part yenc encoded attachments can be decoded.
 @item
 Picons
 
-The picons code has been reimplemented to work in GNU Emacs -- some of
+The picons code has been reimplemented to work in GNU Emacs---some of
 the previous options have been removed or renamed.
 
 Picons are small ``personal icons'' representing users, domain and
@@ -24774,7 +24775,7 @@ The nndoc back end now supports mailman digests and exim bounces.
 
 @item
 Gnus supports RFC 2369 mailing list headers, and adds a number of 
-related commands in mailing list groups.
+related commands in mailing list groups.  @xref{Mailing List}.
 
 @item
 The Date header can be displayed in a format that can be read aloud
@@ -24789,11 +24790,12 @@ diffs are automatically highlighted in groups matching
 @code{mm-uu-diff-groups-regexp}
 
 @item
-TLS wrapper shipped with Gnus
+@acronym{TLS} wrapper shipped with Gnus
 
-TLS/SSL is now supported in @acronym{IMAP} and @acronym{NNTP} via
-@file{tls.el} and GNUTLS.  The old TLS/SSL support via (external third
-party) @file{ssl.el} and OpenSSL still works.
+@acronym{TLS}/@acronym{SSL} is now supported in @acronym{IMAP} and
+@acronym{NNTP} via @file{tls.el} and GNUTLS.  The old
+@acronym{TLS}/@acronym{SSL} support via (external third party)
+@file{ssl.el} and OpenSSL still works.
 
 @item
 New @file{make.bat} for compiling and installing Gnus under MS Windows
@@ -24808,10 +24810,10 @@ the second parameter.
 automatic recognition of XEmacs and GNU Emacs, generates
 @file{gnus-load.el}, checks if errors occur while compilation and
 generation of info files and reports them at the end of the build
-process. It now uses @command{makeinfo} if it is available and falls
+process. It now uses @code{makeinfo} if it is available and falls
 back to @file{infohack.el} otherwise.  @file{make.bat} should now
 install all files which are necessary to run Gnus and be generally a
-complete replacement for the @command{configure; make; make install}
+complete replacement for the @code{configure; make; make install}
 cycle used under Unix systems.
 
 The new @file{make.bat} makes @file{make-x.bat} superfluous, so it has
@@ -25072,10 +25074,10 @@ in the Agent, it won't get downloaded once more.  @code{(setq
 gnus-agent-cache nil)} reverts to the old behavior.
 
 @item
-Gnus supports the ``format=flowed'' (RFC 2646) parameter.
-
-On composing messages, it is enabled by @code{use-hard-newlines}.  Decoding
-format=flowed was present but not documented in earlier versions.
+Gnus supports the ``format=flowed'' (RFC 2646) parameter.  On
+composing messages, it is enabled by @code{use-hard-newlines}.
+Decoding format=flowed was present but not documented in earlier
+versions.
 
 @item
 Gnus supports the generation of RFC 2298 Disposition Notification requests.
@@ -25186,7 +25188,7 @@ Gnus supports @acronym{PGP} (RFC 1991/2440), @acronym{PGP/MIME} (RFC
 2015/3156) and @acronym{S/MIME} (RFC 2630-2633).
 
 It needs an external @acronym{S/MIME} and OpenPGP implementation, but no
-additional lisp libraries.  This add several menu items to the
+additional Lisp libraries.  This add several menu items to the
 Attachments menu, and @kbd{C-c RET} key bindings, when composing
 messages.  This also obsoletes @code{gnus-article-hide-pgp-hook}.
 
@@ -25393,7 +25395,7 @@ A collection of such lines, or a collection of heads.  Or even a
 collection of @acronym{NOV} lines.
 
 @item @acronym{NOV}
-@cindex nov
+@cindex @acronym{NOV}
 When Gnus enters a group, it asks the back end for the headers of all
 unread articles in the group.  Most servers support the News OverView
 format, which is more compact and much faster to read and parse than the
@@ -25870,8 +25872,8 @@ Says whether @var{group} is secondary or not.
 @findex gnus-group-foreign-p
 Says whether @var{group} is foreign or not.
 
-@item group-group-find-parameter
-@findex group-group-find-parameter
+@item gnus-group-find-parameter
+@findex gnus-group-find-parameter
 Returns the parameter list of @var{group}.  If given a second parameter,
 returns the value of that parameter for @var{group}.
 

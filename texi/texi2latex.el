@@ -101,7 +101,7 @@
 				  "summarycontents" "bye"
 				  "top" "iftex" "cartouche" 
 				  "iflatex" "finalout" "vskip"
-				  "dircategory" "group"))
+				  "dircategory" "group" "syncodeindex"))
 		(latexi-strip-line))
 	       ((member command '("menu" "tex" "ifinfo" "ignore" 
 				  "ifnottex" "direntry"))
