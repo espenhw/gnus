@@ -89,86 +89,87 @@
 	startats s)
     (save-excursion
       (set-buffer nnslashdot-buffer)
-      (erase-buffer)
-      (when (= start 1)
-	(url-insert-file-contents (format nnslashdot-article-url sid))
-	(setq buffer-file-name nil)
-	(goto-char (point-min))
-	(search-forward "Posted by ")
-	(when (looking-at "<a[^>]+>\\([^<]+\\)")
-	  (setq from (match-string 1)))
-	(search-forward " on ")
-	(setq date (nnslashdot-date-to-date
-		    (buffer-substring (point) (1- (search-forward "<")))))
-	(forward-line 2)
-	(setq lines (count-lines (point)
-				 (search-forward
-				  "A href=http://slashdot.org/article.pl")))
-	(push
-	 (cons
-	  1
-	  (make-full-mail-header
-	   1 group from date (concat "<" sid "%1@slashdot>")
-	   "" 0 lines nil nil))
-	 headers)
-	(goto-char (point-max))
-	(while (re-search-backward "startat=\\([0-9]+\\)" nil t)
-	  (setq s (match-string 1))
-	  (unless (memq s startats)
-	    (push s startats)))
-	(unless startats
-	  (push 1 startats)))
-      (setq startats (sort startats '<))
-      (while (and (setq start (pop startats))
-		  (< start last))
-	(setq point (goto-char (point-max)))
-	(url-insert-file-contents
-	 (format nnslashdot-comments-url sid nnslashdot-threshold start))
-	(setq buffer-file-name nil)
-	(goto-char point)
-	(while (re-search-forward
-		"<a name=\"\\([0-9]+\\)\"><b>\\([^<]+\\)</b>.*score:\\([^)]+\\))"
-		nil t)
-	  (setq article (string-to-number (match-string 1))
-		subject (match-string 2)
-		score (match-string 3))
-	  (when (string-match "^Re: *" subject)
-	    (setq subject (concat "Re: " (substring subject (match-end 0)))))
-	  (forward-line 1)
-	  (if (looking-at "by <a[^>]+>\\([^<]+\\)</a>[ \t\n]*.*(\\([^)]+\\))")
-	      (setq from (concat (match-string 1) " <" (match-string 2) ">"))
-	    (looking-at "by \\(.+\\) on ")
+      (let ((case-fold-search t))
+	(erase-buffer)
+	(when (= start 1)
+	  (url-insert-file-contents (format nnslashdot-article-url sid))
+	  (setq buffer-file-name nil)
+	  (goto-char (point-min))
+	  (search-forward "Posted by ")
+	  (when (looking-at "<a[^>]+>\\([^<]+\\)")
 	    (setq from (match-string 1)))
-	  (goto-char (- (match-end 0) 5))
 	  (search-forward " on ")
-	  (setq date
-		(nnslashdot-date-to-date
-		 (buffer-substring (point) (progn (end-of-line) (point)))))
-	  (setq lines (/ (abs (- (search-forward "<td ")
-				 (search-forward "</td>")))
-			 70))
+	  (setq date (nnslashdot-date-to-date
+		      (buffer-substring (point) (1- (search-forward "<")))))
 	  (forward-line 2)
-	  (setq parent
-		(if (looking-at ".*cid=\\([0-9]+\\)")
-		    (match-string 1)
-		  nil))
-	  (setq did t)
+	  (setq lines (count-lines (point)
+				   (search-forward
+				    "A href=http://slashdot.org/article.pl")))
 	  (push
 	   (cons
-	    (1+ article)
+	    1
 	    (make-full-mail-header
-	     (1+ article) subject
-	     from date
-	     (concat "<" sid "%"
-		     (number-to-string (1+ article)) 
-		     "@slashdot>")
-	     (if parent
-		 (concat "<" sid "%"
-			 (number-to-string (1+ (string-to-number parent)))
-			 "@slashdot>")
-	       "")
-	     0 (string-to-number score) nil nil))
-	   headers))))
+	     1 group from date (concat "<" sid "%1@slashdot>")
+	     "" 0 lines nil nil))
+	   headers)
+	  (goto-char (point-max))
+	  (while (re-search-backward "startat=\\([0-9]+\\)" nil t)
+	    (setq s (match-string 1))
+	    (unless (memq s startats)
+	      (push s startats)))
+	  (unless startats
+	    (push 1 startats)))
+	(setq startats (sort startats '<))
+	(while (and (setq start (pop startats))
+		    (< start last))
+	  (setq point (goto-char (point-max)))
+	  (url-insert-file-contents
+	   (format nnslashdot-comments-url sid nnslashdot-threshold start))
+	  (setq buffer-file-name nil)
+	  (goto-char point)
+	  (while (re-search-forward
+		  "<a name=\"\\([0-9]+\\)\"><b>\\([^<]+\\)</b>.*score:\\([^)]+\\))"
+		  nil t)
+	    (setq article (string-to-number (match-string 1))
+		  subject (match-string 2)
+		  score (match-string 3))
+	    (when (string-match "^Re: *" subject)
+	      (setq subject (concat "Re: " (substring subject (match-end 0)))))
+	    (forward-line 1)
+	    (if (looking-at "by <a[^>]+>\\([^<]+\\)</a>[ \t\n]*.*(\\([^)]+\\))")
+		(setq from (concat (match-string 1) " <" (match-string 2) ">"))
+	      (looking-at "by \\(.+\\) on ")
+	      (setq from (match-string 1)))
+	    (goto-char (- (match-end 0) 5))
+	    (search-forward " on ")
+	    (setq date
+		  (nnslashdot-date-to-date
+		   (buffer-substring (point) (progn (end-of-line) (point)))))
+	    (setq lines (/ (abs (- (search-forward "<td ")
+				   (search-forward "</td>")))
+			   70))
+	    (forward-line 2)
+	    (setq parent
+		  (if (looking-at ".*cid=\\([0-9]+\\)")
+		      (match-string 1)
+		    nil))
+	    (setq did t)
+	    (push
+	     (cons
+	      (1+ article)
+	      (make-full-mail-header
+	       (1+ article) subject
+	       from date
+	       (concat "<" sid "%"
+		       (number-to-string (1+ article)) 
+		       "@slashdot>")
+	       (if parent
+		   (concat "<" sid "%"
+			   (number-to-string (1+ (string-to-number parent)))
+			   "@slashdot>")
+		 "")
+	       0 (string-to-number score) nil nil))
+	     headers)))))
     (setq nnslashdot-headers
 	  (sort headers (lambda (s1 s2) (< (car s1) (car s2)))))
     (save-excursion
@@ -338,25 +339,25 @@
 
 (deffoo nnslashdot-request-list (&optional server)
   (nnslashdot-possibly-change-server nil server)
-  (let ((case-fold-search t)
-	(number 0)
+  (let ((number 0)
 	sid elem description articles gname)
     (while (> (- nnslashdot-group-number number) 0)
       (with-temp-buffer
-	(url-insert-file-contents (format nnslashdot-active-url number))
-	(setq buffer-file-name nil)
-	(goto-char (point-min))
-	(while (re-search-forward
-		"article.pl\\?sid=\\([^&]+\\).*<b>\\([^<]+\\)</b>" nil t)
-	  (setq sid (match-string 1)
-		description (match-string 2))
-	  (forward-line 1)
-	  (when (re-search-forward "<b>\\([0-9]+\\)</b>" nil t)
-	    (setq articles (string-to-number (match-string 1))))
-	  (setq gname (concat description " (" sid ")"))
-	  (if (setq elem (assoc gname nnslashdot-groups))
-	      (setcar (cdr elem) articles)
-	    (push (list gname articles sid) nnslashdot-groups))))
+	(let ((case-fold-search t))
+	  (url-insert-file-contents (format nnslashdot-active-url number))
+	  (setq buffer-file-name nil)
+	  (goto-char (point-min))
+	  (while (re-search-forward
+		  "article.pl\\?sid=\\([^&]+\\).*<b>\\([^<]+\\)</b>" nil t)
+	    (setq sid (match-string 1)
+		  description (match-string 2))
+	    (forward-line 1)
+	    (when (re-search-forward "<b>\\([0-9]+\\)</b>" nil t)
+	      (setq articles (string-to-number (match-string 1))))
+	    (setq gname (concat description " (" sid ")"))
+	    (if (setq elem (assoc gname nnslashdot-groups))
+		(setcar (cdr elem) articles)
+	      (push (list gname articles sid) nnslashdot-groups)))))
       (incf number 30))
     (nnslashdot-write-groups)
     (nnslashdot-generate-active)

@@ -2,6 +2,8 @@
 
 	* nnslashdot.el (nnslashdot-request-article): Search better on
 	first article.
+	(nnslashdot-request-list): Fold case.
+	(nnslashdot-retrieve-headers): Ditto.
 
 1999-11-08 05:33:15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
