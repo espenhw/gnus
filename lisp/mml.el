@@ -1,5 +1,5 @@
 ;;; mml.el --- A package for parsing and validating MML documents
-;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -1078,10 +1078,15 @@ Should be adopted if code in `message-send-mail' is changed."
     (message-position-on-field "Mail-Followup-To" "X-Draft-From")
     (insert (message-make-mail-followup-to))))
 
+(defvar mml-preview-buffer nil)
+
 (defun mml-preview (&optional raw)
   "Display current buffer with Gnus, in a new buffer.
 If RAW, don't highlight the article."
   (interactive "P")
+  (setq mml-preview-buffer (generate-new-buffer
+			    (concat (if raw "*Raw MIME preview of "
+				      "*MIME preview of ") (buffer-name))))
   (save-excursion
     (let* ((buf (current-buffer))
 	   (message-options message-options)
@@ -1093,11 +1098,9 @@ If RAW, don't highlight the article."
 					   (message-fetch-field "Newsgroups")))
 					message-posting-charset)))
       (message-options-set-recipient)
-      (pop-to-buffer (generate-new-buffer
-		      (concat (if raw "*Raw MIME preview of "
-				"*MIME preview of ") (buffer-name))))
       (when (boundp 'gnus-buffers)
-	(push (current-buffer) gnus-buffers))
+	(push mml-preview-buffer gnus-buffers))
+      (set-buffer mml-preview-buffer)
       (erase-buffer)
       (insert-buffer-substring buf)
       (mml-preview-insert-mail-followup-to)
@@ -1144,7 +1147,11 @@ If RAW, don't highlight the article."
 		     (lambda (event)
 		       (interactive "@e")
 		       (widget-button-press (widget-event-point event) event)))
-      (goto-char (point-min)))))
+      (goto-char (point-min))))
+  (if (and (boundp 'gnus-buffer-configuration)
+	   (assq 'mml-preview gnus-buffer-configuration))
+      (gnus-configure-windows 'mml-preview)
+    (pop-to-buffer mml-preview-buffer)))
 
 (defun mml-validate ()
   "Validate the current MML document."

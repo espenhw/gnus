@@ -1,5 +1,5 @@
 ;;; gnus-win.el --- window configuration functions for Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -164,8 +164,12 @@ used to display Gnus windows."
 	       (article 0.5)
 	       (message 1.0 point)))
     (display-term
-      (vertical 1.0
-		("*display*" 1.0))))
+     (vertical 1.0
+	       ("*display*" 1.0)))
+    (mml-preview
+     (vertical 1.0
+	       (message 0.5)
+	       (mml-preview 1.0 point))))
   "Window configuration for all possible Gnus buffers.
 See the Gnus manual for an explanation of the syntax used.")
 
@@ -193,7 +197,8 @@ See the Gnus manual for an explanation of the syntax used.")
     (info . gnus-info-buffer)
     (category . gnus-category-buffer)
     (article-copy . gnus-article-copy)
-    (draft . gnus-draft-buffer))
+    (draft . gnus-draft-buffer)
+    (mml-preview . mml-preview-buffer))
   "Mapping from short symbols to buffer names or buffer variables.")
 
 (defcustom gnus-configure-windows-hook nil
