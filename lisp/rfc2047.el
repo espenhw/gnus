@@ -121,15 +121,6 @@ quoted-printable and base64 respectively.")
     (nil . ignore))
   "Alist of RFC2047 encodings to encoding functions.")
 
-(defvar rfc2047-q-encoding-alist
-  '(("\\(Resent-\\)?\\(From\\|Cc\\|To\\|Bcc\\|Reply-To\\|Sender\\):"
-     . "-A-Za-z0-9!*+/" )
-    ;; = (\075), _ (\137), ? (\077) are used in the encoded word.
-    ;; Avoid using 8bit characters.
-    ;; Equivalent to "^\000-\007\011\013\015-\037\200-\377=_?"
-    ("." . "\010\012\014\040-\074\076\100-\136\140-\177"))
-  "Alist of header regexps and valid Q characters.")
-
 ;;;
 ;;; Functions for encoding RFC2047 messages
 ;;;
@@ -207,7 +198,7 @@ Should be called narrowed to the head of the message."
 	     ((eq method 'address-mime)
 	      (rfc2047-encode-region (point) (point-max)))
 	     ((eq method 'mime)
-	      (let (rfc2047-encoding-type)
+	      (let ((rfc2047-encoding-type 'mime))
 		(rfc2047-encode-region (point) (point-max))))
 	     ((eq method 'default)
 	      (if (and (featurep 'mule)
@@ -384,7 +375,7 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 (defun rfc2047-encode-string (string)
   "Encode words in STRING.
 By default, the string is treated as containing addresses (see
-`rfc2047-special-chars')."
+`rfc2047-encoding-type')."
   (with-temp-buffer
     (insert string)
     (rfc2047-encode-region (point-min) (point-max))
@@ -393,7 +384,7 @@ By default, the string is treated as containing addresses (see
 (defun rfc2047-encode (b e)
   "Encode the word(s) in the region B to E.
 By default, the region is treated as containing addresses (see
-`rfc2047-special-chars')."
+`rfc2047-encoding-type')."
   (let* ((mime-charset (mm-find-mime-charset-region b e))
 	 (cs (if (> (length mime-charset) 1)
 		 ;; Fixme: Instead of this, try to break region into
@@ -553,16 +544,16 @@ By default, the region is treated as containing addresses (see
   (save-excursion
     (save-restriction
       (narrow-to-region (goto-char b) e)
-      (let ((alist rfc2047-q-encoding-alist)
-	    (bol (save-restriction
+      (let ((bol (save-restriction
 		   (widen)
 		   (rfc2047-point-at-bol))))
-	(while alist
-	  (when (looking-at (caar alist))
-	    (quoted-printable-encode-region b e nil (cdar alist))
-	    (subst-char-in-region (point-min) (point-max) ?  ?_)
-	    (setq alist nil))
-	  (pop alist))
+	(quoted-printable-encode-region
+	 b e nil
+	 ;; = (\075), _ (\137), ? (\077) are used in the encoded word.
+	 ;; Avoid using 8bit characters.
+	 ;; Equivalent to "^\000-\007\011\013\015-\037\200-\377=_?"
+	 "\010\012\014\040-\074\076\100-\136\140-\177")
+	(subst-char-in-region (point-min) (point-max) ?  ?_)
 	;; The size of QP encapsulation is about 20, so set limit to
 	;; 56=76-20.
 	(unless (< (- (point-max) (point-min)) 56)
