@@ -21374,21 +21374,24 @@ only operate on one group at a time, and have no concept of ``server''
 -- they have a group, and they deliver info on that group and nothing
 more.
 
-Gnus identifies each message by way of group name and article number.
-A few remarks about these article numbers might be useful.  First of
-all, the numbers are positive integers.  Secondly, it is not allowed for
-later articles to `re-use' older article numbers.  That is, if a group
-has ever contained a message numbered 42, then no other message may get
-that number, or Gnus will get mightily confused.@footnote{??? Is this
-still true with the nnchoke-request-*-mark* functions?}  Third, article
-numbers must be assigned in order of arrival in the group; this is not
-necessarily the same as the date of the message.
+Gnus identifies each message by way of group name and article number.  A
+few remarks about these article numbers might be useful.  First of all,
+the numbers are positive integers.  Secondly, it is normally not
+possible for later articles to `re-use' older article numbers without
+confusing Gnus.  That is, if a group has ever contained a message
+numbered 42, then no other message may get that number, or Gnus will get
+mightily confused.@footnote{See the function
+@code{nnchoke-request-update-info}, @ref{Optional Backend Functions}.}
+Third, article numbers must be assigned in order of arrival in the
+group; this is not necessarily the same as the date of the message.
 
 The previous paragraph already mentions all the `hard' restrictions that
 article numbers must fulfill.  But it seems that it might be useful to
 assign @emph{consecutive} article numbers, for Gnus gets quite confused
 if there are holes in the article numbering sequence.  However, due to
-the `no-reuse' restriction, holes cannot be avoided altogether.
+the `no-reuse' restriction, holes cannot be avoided altogether.  It's
+also useful for the article numbers to start at 1 to avoid running out
+of numbers as long as possible.
 
 In the examples and definitions I will refer to the imaginary backend
 @code{nnchoke}.
