@@ -1201,8 +1201,8 @@ If REGEXP, only list groups matching REGEXP."
 		  gnus-level ,gnus-tmp-level))
     (forward-line -1)
     (when (inline (gnus-visual-p 'group-highlight 'highlight))
-      (gnus-run-hooks 'gnus-group-update-hook)
-      (forward-line))
+      (gnus-run-hooks 'gnus-group-update-hook))
+    (forward-line)
     ;; Allow XEmacs to remove front-sticky text properties.
     (gnus-group-remove-excess-properties)))
 
