@@ -755,7 +755,7 @@ be set in `.emacs' instead."
 	   (when image
 	     (newline)			; Have somewhere for cursor to
 					; go, not stretched over image.
-	     (insert-image image " ")
+	     (insert-image image)
 	     (goto-char (point-min))
 	     (while (not (eobp))
 	       (insert (make-string (/ (max (- (window-width) (or x 35)) 0) 2)
