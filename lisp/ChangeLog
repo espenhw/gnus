@@ -1,3 +1,30 @@
+2001-08-30  Andrew Innes  <andrewi@gnu.org>
+
+	* nnml.el (nnml-request-article): Use nnml-article-to-file-alist.
+	(nnml-request-rename-group): Ditto.
+	(nnml-active-number): Ditto.
+	(nnml-request-create-group): Use nnml-directory-articles.
+	(nnml-request-expire-articles): Use nnml-directory-articles, which
+	gets list from nov database if available.
+	(nnml-get-nov-buffer): New function.
+	(nnml-open-nov): Use it.
+	(nnml-update-file-alist): Use nnml-article-to-file-alist, which
+	gets alist from nov database if available.
+	(nnml-directory-articles): New function.
+	(nnml-article-to-file-alist): New function.
+	
+2001-08-30  Andrew Innes  <andrewi@gnu.org>
+
+	* mm-decode.el (mm-display-external): Use `name' as filename, if
+	`filename' attribute is not present.
+	
+2001-08-30  Andrew Innes  <andrewi@gnu.org>
+
+	* mail-source.el (mail-source-flash): New defcustom.
+	(mail-source-new-mail-p): Ring visible bell if appropriate.
+	(mail-source-start-idle-timer): Use unwind-protect to ensure idle
+	timer is cleared even if mail check signals an error.
+	
 2001-08-29 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-move-article): Only update marks of

@@ -224,6 +224,11 @@ If non-nil, this maildrop will be checked periodically for new mail."
   :group 'mail-source
   :type 'sexp)
 
+(defcustom mail-source-flash t
+  "*If non-nil, flash periodically when mail is available."
+  :group 'mail-source
+  :type 'boolean)
+
 (defcustom mail-source-crash-box "~/.emacs-mail-crash-box"
   "File where mail will be stored while processing it."
   :group 'mail-source
@@ -744,6 +749,10 @@ If ARGS, PROMPT is used as an argument to `format'."
 
 (defun mail-source-new-mail-p ()
   "Handler for `display-time' to indicate when new mail is available."
+  ;; Flash (ie. ring the visible bell) if mail is available.
+  (if (and mail-source-flash mail-source-new-mail-available)
+      (let ((visible-bell t))
+	(ding)))
   ;; Only report flag setting; flag is updated on a different schedule.
   mail-source-new-mail-available)
 
@@ -766,8 +775,9 @@ If ARGS, PROMPT is used as an argument to `format'."
 	   mail-source-idle-time-delay
 	   nil
 	   (lambda ()
-	     (mail-source-check-pop mail-source-primary-source)
-	     (setq mail-source-report-new-mail-idle-timer nil))))
+	     (unwind-protect
+		 (mail-source-check-pop mail-source-primary-source)
+	       (setq mail-source-report-new-mail-idle-timer nil)))))
     ;; Since idle timers created when Emacs is already in the idle
     ;; state don't get activated until Emacs _next_ becomes idle, we
     ;; need to force our timer to be considered active now.  We do

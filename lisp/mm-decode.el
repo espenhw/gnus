@@ -621,8 +621,11 @@ external if displayed external."
 	(mm-insert-part handle)
 	(let* ((dir (make-temp-name
 		     (expand-file-name "emm." mm-tmp-directory)))
-	       (filename (mail-content-type-get
-			  (mm-handle-disposition handle) 'filename))
+	       (filename (or 
+			  (mail-content-type-get
+			   (mm-handle-disposition handle) 'filename)
+ 			  (mail-content-type-get
+ 			   (mm-handle-type handle) 'name)))
 	       (mime-info (mailcap-mime-info
 			   (mm-handle-media-type handle) t))
 	       (needsterm (or (assoc "needsterm" mime-info)
