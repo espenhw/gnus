@@ -13900,10 +13900,10 @@ If non-@code{nil}, ignore errors when reading mail from a mail source.
 
 @item mail-source-directory
 @vindex mail-source-directory
-Directory where files (if any) will be stored.  The default is
-@file{~/Mail/}.  At present, the only thing this is used for is to say
-where the incoming files will be stored if the previous variable is
-@code{nil}.
+Directory where incoming mail source files (if any) will be stored.  The
+default is @file{~/Mail/}.  At present, the only thing this is used for
+is to say where the incoming files will be stored if the variable
+@code{mail-source-delete-incoming} is @code{nil} or a number.
 
 @item mail-source-incoming-file-prefix
 @vindex mail-source-incoming-file-prefix
