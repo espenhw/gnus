@@ -1,10 +1,9 @@
 ;;; nnmail.el --- mail mbox access for Gnus
-
-;; Copyright (C) 1994 Free Software Foundation, Inc.
+;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
-;; Keywords: news
+;; Keywords: news, mail
 
 ;; This file is part of GNU Emacs.
 
@@ -32,6 +31,11 @@
 (defvar nnmail-split-methods
   '(("mail.misc" ""))
   "nnmail will split incoming mail into the groups detailed in this variable.")
+
+;; Suggested by Erik Selberg <speed@cs.washington.edu>.
+(defvar nnmail-crosspost t
+  "If non-nil, do crossposting if several split methods match the mail.
+If nil, the first match found will be used.")
 
 (defvar nnmail-mbox-file (expand-file-name "~/mbox")
   "The name of the mail box file in the users home directory.")
@@ -78,6 +82,11 @@ Eg.
 	   (lambda () 
 	     (start-process \"mailsend\" nil 
 			    \"/local/bin/mailsend\" \"read\" \"mbox\"))))")
+
+;; Suggested by Erik Selberg <speed@cs.washington.edu>.
+(defvar nnmail-prepare-incoming-hook nil
+  "Hook called before treating incoming mail.
+The hook is run in a buffer with all the new, incoming mail.")
 
 (defvar nnmail-large-newsgroup 50
   "*The number of the articles which indicates a large newsgroup.
@@ -219,7 +228,7 @@ If the stream is opened, return T, otherwise return NIL."
 
 (defun nnmail-request-list-newsgroups (&optional server)
   "List newsgroups (defined in NNTP2)."
-  (setq nntp-status-string "NNMAIL: LIST NEWSGROUPS is not implemented.")
+  (setq nnmail-status-string "NNMAIL: LIST NEWSGROUPS is not implemented.")
   nil)
 
 (defun nnmail-request-post (&optional server)
@@ -289,10 +298,12 @@ If the stream is opened, return T, otherwise return NIL."
 	  ))
       (current-buffer))))
 
-(defun nnmail-request-expire-articles (articles newsgroup &optional server)
+(defun nnmail-request-expire-articles (articles newsgroup &optional server force)
   "Expire all articles in the ARTICLES list in group GROUP.
 The list of unexpired articles will be returned (ie. all articles that
-were too fresh to be expired)."
+were too fresh to be expired).
+If FORCE is non-nil, the ARTICLES will be deleted without looking at
+the date."
   (nnmail-possibly-change-newsgroup newsgroup)
   (let* ((days (or (and nnmail-expiry-wait-function
 			(funcall nnmail-expiry-wait-function newsgroup))
@@ -315,10 +326,11 @@ were too fresh to be expired)."
       (while articles
 	(goto-char 1)
 	(if (and (search-forward (nnmail-article-string (car articles)) nil t)
-		 (setq mod-time (read (current-buffer)))
-		 (or (< (car mod-time) (car day-time))
-		     (and (= (car mod-time) (car day-time))
-			  (< (car (cdr mod-time)) (car (cdr day-time))))))
+		 (or force
+		     (setq mod-time (read (current-buffer)))
+		     (or (< (car mod-time) (car day-time))
+			 (and (= (car mod-time) (car day-time))
+			      (< (car (cdr mod-time)) (car (cdr day-time)))))))
 	    (progn
 	      (message "Deleting: %s" article)
 	      (nnmail-delete-mail))
@@ -366,12 +378,18 @@ were too fresh to be expired)."
 	   (progn
 	     (search-forward "\n\n" nil t)
 	     (forward-line -1)
+	     (save-excursion
+	       (while (re-search-backward "^X-Gnus-Newsgroup: " beg t)
+		 (delete-region
+		  (point)
+		  (progn
+		    (forward-line 1)
+		    (point)))))
 	     (setq result (nnmail-insert-newsgroup-line group beg (point))))
 	 (setq result (nnmail-choose-mail beg (point-max))))
        (save-buffer)
        result)
      (nnmail-save-active))
-    (debug)
     result))
 
 
@@ -470,13 +488,16 @@ were too fresh to be expired)."
 	(while (and (not found) methods)
 	  (if (re-search-backward (car (cdr (car methods))) beg t)
 	      (progn
+		(goto-char end)
 		(setq result (nnmail-insert-newsgroup-line 
 			      (car (car methods)) beg end))
 		(setq found t))
 	    (setq methods (cdr methods))))
 	(if (not found)
-	    (setq result (nnmail-insert-newsgroup-line 
-			  (car (car nnmail-split-methods)) beg end)))))
+	    (progn
+	      (goto-char end)
+	      (setq result (nnmail-insert-newsgroup-line 
+			    (car (car nnmail-split-methods)) beg end))))))
     result))
 
 (defun nnmail-insert-newsgroup-line (group beg end)
@@ -493,26 +514,34 @@ were too fresh to be expired)."
     (cons group (cdr active))))
 
 (defun nnmail-split-region (beg end)
-  (goto-char beg)
-  (let ((delim (concat "^" rmail-unix-mail-delimiter))
-	start stop)
-    (while (re-search-forward delim nil t)
-      (setq start (point))
-      (search-forward "\n\n" nil t)
-      (save-excursion
-	(forward-char -1)
-	(if (not (save-excursion (re-search-backward "^Lines:" start t)))
-	    (insert 
-	     (format "Lines: %d\n" 
-		     (count-lines 
-		      (point) 
-		      (or (re-search-forward rmail-unix-mail-delimiter nil t)
-			  (point-max)))))))
-      (setq stop (1- (point)))
-      (if (not (search-backward "X-Gnus-Newsgroup: " start t))
-	  (nnmail-choose-mail start stop)))))
+  (save-excursion
+    (save-restriction
+      (goto-char beg)
+      (narrow-to-region beg end)
+      (let ((delim (concat "^" rmail-unix-mail-delimiter))
+	    start)
+	(while (re-search-forward delim nil t)
+	  (setq start (match-beginning 0))
+	  (search-forward "\n\n" nil t)
+	  (forward-char -1)
+	  (save-excursion
+	    (if (not (save-excursion (re-search-backward "^Lines:" start t)))
+		(insert 
+		 (format "Lines: %d\n" 
+			 (- (count-lines 
+			     (point) 
+			     (or (save-excursion
+				   (and (re-search-forward
+					 rmail-unix-mail-delimiter nil t)
+					(match-beginning 0)))
+				 (point-max)))
+			    2)))))
+	  (if (not (search-backward "\nX-Gnus-Newsgroup: " start t))
+	      (nnmail-choose-mail start (point))))))))
 
 (defun nnmail-read-mbox ()
+  (if (not (file-exists-p nnmail-mbox-file))
+      (write-region 1 1 nnmail-mbox-file t 'nomesg))
   (if (and nnmail-mbox-buffer
 	   (get-buffer nnmail-mbox-buffer)
 	   (buffer-name nnmail-mbox-buffer)
@@ -532,6 +561,10 @@ were too fresh to be expired)."
     (goto-char (point-max))
     (let ((start (point)))
       (insert-file-contents incoming)
+      (save-excursion
+	(save-restriction
+	  (narrow-to-region start (point-max))
+	  (run-hooks 'nnmail-prepare-incoming-hook)))
       (nnmail-split-region start (point-max)))))
 
 (defun nnmail-get-active ()

@@ -1,5 +1,5 @@
 ;;; (ding) Gnus: a newsreader for GNU Emacs
-;; Copyright (C) 1987,88,89,90,93,94 Free Software Foundation, Inc.
+;; Copyright (C) 1987,88,89,90,93,94,95 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;;	Lars Ingebrigtsen <larsi@ifi.uio.no>
@@ -35,9 +35,13 @@
 
 (require 'mail-utils)
 (require 'rnews)
-(require 'nnheader)
 (require 'rmail)
+(require 'timezone)
+
+(require 'nnheader)
 (require 'nnmail)
+
+;; Customization variables
 
 (defvar gnus-select-method 
   (list 'nntp (or (getenv "NNTPSERVER") 
@@ -46,7 +50,7 @@
 		      gnus-default-nntp-server)
 		  (system-name))
 	"nntp")
-  "*Default method for selecting a newsgroup.
+  "Default method for selecting a newsgroup.
 This variable should be a list, where the first element is how the
 news is to be fetched, the second is the address, and the optional
 third element is the \"port number\", if nntp is used.
@@ -62,9 +66,9 @@ If you want to use your local spool, say:
 
 If you use this variable, you must set `gnus-nntp-server' to nil.")
 
-;; By Sudish Joseph <joseph@cis.ohio-state.edu>.
+;; Added by Sudish Joseph <joseph@cis.ohio-state.edu>.
 (defvar gnus-post-method nil
-  "*Preferred method for posting USENET news.
+  "Preferred method for posting USENET news.
 If this variable is nil, GNUS will use the current method to decide
 which method to use when posting.  If it is non-nil, it will override
 the current method. This method will not be used in mail groups and
@@ -74,11 +78,11 @@ The value must be a valid method as discussed in the documentation of
 `gnus-select-method'.")
 
 (defvar gnus-default-nntp-server nil
-  "*Specify a default NNTP server.
+  "Specify a default NNTP server.
 This variable should be defined in paths.el.")
 
 (defvar gnus-secondary-servers nil
-  "*List of NNTP servers that the user can choose between interactively.
+  "List of NNTP servers that the user can choose between interactively.
 The list should contain lists, where each list contains the name of
 the server. To make Gnus query you for a server, you have to give
 `gnus' a non-numeric prefix - `C-u M-x gnus', in short.")
@@ -94,21 +98,21 @@ This is an obsolete variable, which is scarcely used. If you use an
 nntp server for your newsgroup and want to change the port number
 used to 899, you would say something along these lines:
 
-(setq gnus-select-method '(nntp "my.nntp.server" 899))")
+(setq gnus-select-method '(nntp \"my.nntp.server\" 899))")
 
 (defvar gnus-startup-file "~/.newsrc"
-  "*Your `.newsrc' file.  Use `.newsrc-SERVER' instead if it exists.")
+  "Your `.newsrc' file.  Use `.newsrc-SERVER' instead if it exists.")
 
 (defvar gnus-signature-file "~/.signature"
-  "*Your `.signature' file.")
+  "Your `.signature' file.")
 
 (defvar gnus-init-file "~/.gnus"
-  "*Your Gnus elisp startup file.
+  "Your Gnus elisp startup file.
 If a file with the .el or .elc suffixes exist, they will be read
 instead.") 
 
 (defvar gnus-default-subscribed-newsgroups nil
-  "*This variable lists what newsgroups should be susbcribed the first time Gnus is used.
+  "This variable lists what newsgroups should be susbcribed the first time Gnus is used.
 It should be a list of strings.
 If it is `t', Gnus will not do anything special the first time it is
 started; it'll just use the normal newsgroups subscription methods.")
@@ -118,24 +122,24 @@ started; it'll just use the normal newsgroups subscription methods.")
   "Default default new newsgroups the first time Gnus is run.")
 
 (defvar gnus-post-prepare-function nil
-  "*Function that is run after a post buffer has been prepared.
+  "Function that is run after a post buffer has been prepared.
 It is called with the name of the newsgroup that is posted to. It
 might be use, for instance, for inserting signatures based on the
 newsgroup name. (In that case, `gnus-signature-file' and
 `mail-signature' should both be set to nil).")
 
 (defvar gnus-use-cross-reference t
-  "*Non-nil means that cross referenced articles will be marked as read.
+  "Non-nil means that cross referenced articles will be marked as read.
 If nil, ignore cross references.  If t, mark articles as read in
 all newsgroups.")
 
-(defvar gnus-use-followup-to t
-  "*Specifies what to do with Followup-To field.
+(defvar gnus-use-followup-to 'use
+  "Specifies what to do with Followup-To field.
 If nil, ignore the field. If it is t, use its value, but ignore 
 `poster'. If it is neither nil nor t, always use the value.")
 
 (defvar gnus-followup-to-function nil
-  "*A variable that contains a function that returns a followup address.
+  "A variable that contains a function that returns a followup address.
 The function will be called in the buffer of the article that is being
 followed up. The buffer will be narrowed to the headers of the
 article. To pick header fields, one might use `mail-fetch-field'.  The
@@ -154,17 +158,17 @@ Here's an example `gnus-followup-to-function':
 		   (mail-fetch-field \"from\"))))))")
 
 (defvar gnus-reply-to-function nil
-  "*A variable that contains a function that returns a reply address.
+  "A variable that contains a function that returns a reply address.
 See the `gnus-followup-to-function' variable for an explanation of how
 this variable is used.")
 
-(defvar gnus-large-newsgroup 50
-  "*The number of articles which indicates a large newsgroup.
+(defvar gnus-large-newsgroup 200
+  "The number of articles which indicates a large newsgroup.
 If the number of articles in a newsgroup is greater than the value,
 confirmation is required for selecting the newsgroup.")
 
 (defvar gnus-author-copy (getenv "AUTHORCOPY")
-  "*Name of the file the article will be saved before it is posted using the FCC: field.
+  "Name of the file the article will be saved before it is posted using the FCC: field.
 Initialized from the AUTHORCOPY environment variable.
 
 Articles are saved using a function specified by the the variable
@@ -176,23 +180,26 @@ possible to save an article in an MH folder as follows:
 \(setq gnus-author-copy \"|/usr/local/lib/mh/rcvstore +Article\")")
 
 (defvar gnus-author-copy-saver (function rmail-output)
-  "*A function called with a file name to save an author copy to.
+  "A function called with a file name to save an author copy to.
 The default function is `rmail-output' which saves in Unix mailbox format.")
 
 (defvar gnus-use-long-file-name (not (memq system-type '(usg-unix-v xenix)))
-  "*Non-nil means that the default name of a file to save articles in is the newsgroup name.
+  "Non-nil means that the default name of a file to save articles in is the newsgroup name.
 If it's nil, the directory form of the newsgroup name is used instead.")
 
 (defvar gnus-article-save-directory (getenv "SAVEDIR")
-  "*Name of the directory articles will be saved in (default \"~/News\").
+  "Name of the directory articles will be saved in (default \"~/News\").
 Initialized from the SAVEDIR environment variable.")
 
 (defvar gnus-kill-files-directory (getenv "SAVEDIR")
-  "*Name of the directory where kill files will be stored (default \"~/News\").
+  "Name of the directory where kill files will be stored (default \"~/News\").
 Initialized from the SAVEDIR environment variable.")
 
+(defvar gnus-kill-expiry-days 7
+  "*Number of days before unused kill file entries are expired.")
+
 (defvar gnus-default-article-saver (function gnus-summary-save-in-rmail)
-  "*A function to save articles in your favorite format.
+  "A function to save articles in your favorite format.
 The function must be interactively callable (in other words, it must
 be an Emacs command).
 
@@ -204,23 +211,29 @@ Gnus provides the following functions:
 * gnus-summary-save-in-file (article format).")
 
 (defvar gnus-rmail-save-name (function gnus-plain-save-name)
-  "*A function generating a file name to save articles in Rmail format.
+  "A function generating a file name to save articles in Rmail format.
 The function is called with NEWSGROUP, HEADERS, and optional LAST-FILE.")
 
 (defvar gnus-mail-save-name (function gnus-plain-save-name)
-  "*A function generating a file name to save articles in Unix mail format.
+  "A function generating a file name to save articles in Unix mail format.
 The function is called with NEWSGROUP, HEADERS, and optional LAST-FILE.")
 
 (defvar gnus-folder-save-name (function gnus-folder-save-name)
-  "*A function generating a file name to save articles in MH folder.
+  "A function generating a file name to save articles in MH folder.
 The function is called with NEWSGROUP, HEADERS, and optional LAST-FOLDER.")
 
 (defvar gnus-file-save-name (function gnus-numeric-save-name)
-  "*A function generating a file name to save articles in article format.
+  "A function generating a file name to save articles in article format.
 The function is called with NEWSGROUP, HEADERS, and optional LAST-FILE.")
 
 (defvar gnus-kill-file-name "KILL"
-  "*Suffix of the kill files.")
+  "Suffix of the kill files.")
+
+(defvar gnus-visual t
+  "*If non-nil, will do various highlighting.
+If nil, no mouse highlight (or any other) will be performed. This
+might speed up Gnus some when generating large Newsgroup and Summary
+buffers.")
 
 (defvar gnus-novice-user t
   "*Non-nil means that you are a usenet novice.
@@ -232,7 +245,7 @@ required.")
 And that means *anything*.")
 
 (defvar gnus-keep-same-level nil
-  "*Non-nil means that the next newsgroup after the current will be on the same level.
+  "Non-nil means that the next newsgroup after the current will be on the same level.
 When you type, for instance, `n' after reading the last article in the
 current newsgroup, you will go to the next newsgroup. If this variable
 is nil, the next newsgroup will be the next from the Newsgroup
@@ -242,7 +255,7 @@ available, the next newsgroup with the lowest possible level higher
 than the current level.")
 
 (defvar gnus-gather-loose-threads t
-  "*Non-nil means sub-threads from a common thread will be gathered.
+  "Non-nil means sub-threads from a common thread will be gathered.
 If the root of a thread has expired or been read in a previous
 session, the information necessary to build a complete thread has been
 lost. Instead of having many small sub-threads from this original thread
@@ -251,7 +264,7 @@ scattered all over the Summary buffer, Gnus will gather them. If the
 present them as one thread with a new root.")
 
 (defvar gnus-summary-make-false-root 'adopt
-  "*nil means that Gnus won't print dummy roots of threads in the summary buffer.
+  "nil means that Gnus won't print dummy roots of threads in the summary buffer.
 If `gnus-gather-loose-threads' is non-nil, Gnus will try to gather all
 loose sub-threads from an original thread into one large thread. If
 this variable is nil, these sub-threads will not get a common root,
@@ -259,24 +272,26 @@ but will just be presented after one another. If this variable is
 `dummy', Gnus will create a dummy root that will have all the
 sub-threads as children.
 If this variable is `adopt', Gnus will make one of the \"children\"
-the parent and mark all the step-children as such.")
+the parent and mark all the step-children as such.
+If this variable is `empty', the \"children\" are printed with empty
+subject fields.")
 
 (defvar gnus-check-new-newsgroups t
-  "*Non-nil means that Gnus will add new newsgroups at startup.
+  "Non-nil means that Gnus will add new newsgroups at startup.
 If this variable is nil, then you have to tell Gnus explicitly to
 check for new newsgroups with \\<gnus-group-mode-map>\\[gnus-find-new-newsgroups].")
 
 (defvar gnus-check-bogus-newsgroups nil
-  "*Non-nil means that Gnus will check and delete bogus newsgroup at startup.
+  "Non-nil means that Gnus will check and delete bogus newsgroup at startup.
 If this variable is nil, then you have to tell Gnus explicitly to
 check for bogus newsgroups with \\<gnus-group-mode-map>\\[gnus-group-check-bogus-groups].")
 
 (defvar gnus-read-active-file t
-  "*Non-nil means that Gnus will read the entire active file at startup.
+  "Non-nil means that Gnus will read the entire active file at startup.
 If this variable is nil, Gnus will only read parts of the active file.")
 
 (defvar gnus-activate-foreign-newsgroups nil
-  "*If nil, Gnus will not check foreign newsgroups at startup.
+  "If nil, Gnus will not check foreign newsgroups at startup.
 If it is non-nil, it should be a number between one and nine. Foreign
 newsgroups that have a level lower or equal to this number will be
 activated on startup. For instance, if you want to active all
@@ -288,7 +303,7 @@ but you won't be told how many unread articles there are in the
 newsgroups.")
 
 (defvar gnus-save-newsrc-file t
-  "*Non-nil means that Gnus will save a .newsrc file.
+  "Non-nil means that Gnus will save a .newsrc file.
 Gnus always saves its own startup file, which is called \".newsrc.el\".
 The file called \".newsrc\" is in a format that can be readily
 understood by other newsreaders. If you don't plan on using other
@@ -303,26 +318,34 @@ subscription methods become meaningless. You should always set
 `gnus-check-new-newsgroups' to nil if you set this variable to nil.") 
 
 (defvar gnus-interactive-catchup t
-  "*Require your confirmation when catching up a newsgroup if non-nil.")
+  "Require your confirmation when catching up a newsgroup if non-nil.")
 
 (defvar gnus-interactive-post t
-  "*Newsgroup and subject will be asked for if non-nil.")
+  "Newsgroup and subject will be asked for if non-nil.")
 
 (defvar gnus-interactive-exit t
-  "*Require your confirmation when exiting Gnus if non-nil.")
+  "Require your confirmation when exiting Gnus if non-nil.")
 
 (defvar gnus-kill-killed t
-  "*If non-nil, Gnus will apply kill files to already \"killed\" articles.
+  "If non-nil, Gnus will apply kill files to already \"killed\" articles.
 If it is nil, Gnus will never apply kill files to articles that have
 already been through the kill process, which might very well save lots
 of time.")
 
+;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
+(defvar gnus-summary-same-subject ""
+  "String indicating that the current article has the same subject as the previous.")
+
+(defvar gnus-summary-default-interest nil
+  "Default article interest level.
+If this variable is nil, interest levels will not be used.")
+
 (defvar gnus-user-login-name nil
-  "*The login name of the user.
+  "The login name of the user.
 Got from the function `user-login-name' if undefined.")
 
 (defvar gnus-user-full-name nil
-  "*The full name of the user.
+  "The full name of the user.
 Got from the NAME environment variable if undefined.")
 
 (defvar gnus-show-mime nil
@@ -332,19 +355,19 @@ Got from the NAME environment variable if undefined.")
   "*Show conversation threads in Summary Mode if non-nil.")
 
 (defvar gnus-thread-hide-subtree nil
-  "*Non-nil means hide thread subtrees initially.
+  "Non-nil means hide thread subtrees initially.
 If non-nil, you have to run the command `gnus-summary-show-thread' by
 hand or by using `gnus-select-article-hook' to show hidden threads.")
 
 (defvar gnus-thread-hide-killed t
-  "*Non-nil means hide killed thread subtrees automatically.")
+  "Non-nil means hide killed thread subtrees automatically.")
 
 (defvar gnus-thread-ignore-subject nil
-  "*Don't take care of subject differences, but only references if non-nil.
+  "Don't take care of subject differences, but only references if non-nil.
 If it is non-nil, some commands work with subjects do not work properly.")
 
 (defvar gnus-thread-indent-level 4
-  "*Indentation of thread subtrees.")
+  "Indentation of thread subtrees.")
 
 ;; jwz: nuke newsgroups whose name is all digits - that means that
 ;; some loser has let articles get into the root of the news spool,
@@ -357,7 +380,7 @@ If it is non-nil, some commands work with subjects do not work properly.")
 			 "[][\"#'();\\]"	; bogus characters
 			 )
 		       "\\|"))
-  "*A regexp to match uninteresting newsgroups in the active file.
+  "A regexp to match uninteresting newsgroups in the active file.
 Any lines in the active file matching this regular expression are
 removed from the newsgroup list before anything else is done to it,
 thus making them effectively non-existant.")
@@ -367,12 +390,13 @@ thus making them effectively non-existant.")
   "All header lines that match this regexp will be hidden.
 Also see `gnus-visible-headers'.")
 
-(defvar gnus-visible-headers "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|Followup-To:\\|Organization:"
+(defvar gnus-visible-headers "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:"
   "All header lines that do not match this regexp will be hidden.
 Also see `gnus-ignored-headers'.")
 
 (defvar gnus-sorted-header-list
-  '("^From:" "^Subject:" "^Newsgroups:" "^Date:" "^Organization:")
+  '("^From:" "^Subject:" "^Summary:" "^Keywords:" "^Newsgroups:" 
+    "^Date:" "^Organization:")
   "This variable is a list of regular expressions.
 If it is non-nil, header lines that match the regular expressions will
 be placed first in the Article buffer in the sequence specified by
@@ -383,7 +407,7 @@ this list.")
   ;; changed by jwz because it's not so nice to do "Lines: 0" by default.
   ;; and to remove Path, since it's incorrect for Gnus to try
   ;; and generate that - it is the responsibility of inews or nntpd.
-  "*All required fields for articles you post.
+  "All required fields for articles you post.
 RFC977 and RFC1036 require From, Date, Newsgroups, Subject, Message-ID
 and Path fields.  Organization, Lines and X-Newsreader are optional.
 If you want Gnus not to insert some field, remove it from this
@@ -399,16 +423,16 @@ variable.")
   "The startup message will not be displayed if this function is non-nil.")
 
 (defvar gnus-auto-extend-newsgroup t
-  "*Extend visible articles to forward and backward if non-nil.")
+  "Extend visible articles to forward and backward if non-nil.")
 
 (defvar gnus-auto-select-first t
-  "*Select the first unread article automagically if non-nil.
+  "Select the first unread article automagically if non-nil.
 If you want to prevent automatic selection of the first unread article
 in some newsgroups, set the variable to nil in `gnus-select-group-hook'
 or `gnus-apply-kill-hook'.")
 
 (defvar gnus-auto-select-next t
-  "*Select the next newsgroup automagically if non-nil.
+  "Select the next newsgroup automagically if non-nil.
 If the value is t and the next newsgroup is empty, Gnus will exit
 Summary mode and go back to Group mode.  If the value is neither nil
 nor t, Gnus will select the following unread newsgroup.  Especially, if
@@ -416,13 +440,13 @@ the value is the symbol `quietly', the next unread newsgroup will be
 selected without any confirmations.")
 
 (defvar gnus-auto-select-same nil
-  "*Select the next article with the same subject automagically if non-nil.")
+  "Select the next article with the same subject automagically if non-nil.")
 
 (defvar gnus-auto-center-summary t
   "*Always center the current summary in Gnus Summary window if non-nil.")
 
 (defvar gnus-auto-mail-to-author nil
-  "*Insert `To: author' of the article when following up if non-nil.
+  "Insert `To: author' of the article when following up if non-nil.
 Mail is sent using the function specified by the variable
 `gnus-mail-send-method'.")
 
@@ -431,13 +455,13 @@ Mail is sent using the function specified by the variable
 Page delimiter is specified by the variable `gnus-page-delimiter'.")
 
 (defvar gnus-page-delimiter "^\^L"
-  "*Regexp describing line-beginnings that separate pages of news article.")
+  "Regexp describing line-beginnings that separate pages of news article.")
 
 (defvar gnus-digest-show-summary t
-  "*Show a summary of undigestified messages if non-nil.")
+  "Show a summary of undigestified messages if non-nil.")
 
 (defvar gnus-digest-separator "^Subject:[ \t]"
-  "*Regexp that separates messages in a digest article.")
+  "Regexp that separates messages in a digest article.")
 
 (defvar gnus-use-full-window t
   "*Non-nil means to take up the entire screen of Emacs.")
@@ -446,7 +470,7 @@ Page delimiter is specified by the variable `gnus-page-delimiter'.")
   '((summary (0 1 0))
     (newsgroups (1 0 0))
     (article (0 3 10)))
-  "*Specify window configurations for each action.
+  "Specify window configurations for each action.
 The format of the variable is either a list of (ACTION (G S A)), where
 G, S, and A are the relative height of Group, Summary, and Article
 windows, respectively, or a list of (ACTION FUNCTION), where FUNCTION
@@ -454,37 +478,37 @@ is a function that will be called with ACTION as an argument. ACTION
 can be `summary', `newsgroups', or `article'.")
 
 (defvar gnus-show-mime-method (function metamail-buffer)
-  "*Function to process a MIME message.
+  "Function to process a MIME message.
 The function is expected to process current buffer as a MIME message.")
 
 (defvar gnus-mail-reply-method
   (function gnus-mail-reply-using-mail)
-  "*Function to compose reply mail.
+  "Function to compose reply mail.
 The function `gnus-mail-reply-using-mail' uses usual sendmail mail
 program.  The function `gnus-mail-reply-using-mhe' uses the MH-E mail
 program.  You can use yet another program by customizing this variable.")
 
 (defvar gnus-mail-forward-method
   (function gnus-mail-forward-using-mail)
-  "*Function to forward current message to another user.
+  "Function to forward current message to another user.
 The function `gnus-mail-reply-using-mail' uses usual sendmail mail
 program.  You can use yet another program by customizing this variable.")
 
 (defvar gnus-mail-other-window-method
   (function gnus-mail-other-window-using-mail)
-  "*Function to compose mail in other window.
+  "Function to compose mail in other window.
 The function `gnus-mail-other-window-using-mail' uses the usual sendmail
 mail program.  The function `gnus-mail-other-window-using-mhe' uses the MH-E
 mail program.  You can use yet another program by customizing this variable.")
 
 (defvar gnus-mail-send-method send-mail-function
-  "*Function to mail a message too which is being posted as an article.
+  "Function to mail a message too which is being posted as an article.
 The message must have To: or Cc: field.  The default is copied from
 the variable `send-mail-function'.")
 
 (defvar gnus-subscribe-newsgroup-method
   (function gnus-subscribe-zombies)
-  "*Function called with a newsgroup name when new newsgroup is found.
+  "Function called with a newsgroup name when new newsgroup is found.
 The function `gnus-subscribe-randomly' inserts a new newsgroup a the
 beginning of newsgroups.  The function `gnus-subscribe-alphabetically'
 inserts it in strict alphabetic order.  The function
@@ -495,7 +519,7 @@ order.  The function `gnus-subscribe-interactively' asks for your decision.")
 ;; <h.b.furuseth@usit.uio.no>. 
 (defvar gnus-subscribe-options-newsgroup-method
   (function gnus-subscribe-alphabetically)
-  "*This function is called to subscribe newsgroups mentioned on \"options -n\" lines.
+  "This function is called to subscribe newsgroups mentioned on \"options -n\" lines.
 If, for instance, you want to subscribe to all newsgroups in the
 \"no\" and \"alt\" hierarchies, you'd put the following in your
 .newsrc file:
@@ -505,47 +529,73 @@ options -n no.all alt.all
 Gnus will the subscribe all new newsgroups in these hierarchies with
 the subscription method in this variable.")
 
+;; Mark variables suggested by Thomas Michanek
+;; <Thomas.Michanek@telelogic.se>. 
+(defvar gnus-unread-mark " "
+  "Mark used for unread articles.")
+
+(defvar gnus-read-mark "D"
+  "Mark used for read articles.")
+
+(defvar gnus-ticked-mark "-"
+  "Mark used for ticked articles.")
+
+(defvar gnus-dormant-mark "+"
+  "Mark used for dormant articles.")
+
+(defvar gnus-killed-mark "K"
+  "Mark used for killed articles.")
+
+(defvar gnus-kill-file-mark "X"
+  "Mark used for articles killed by kill files.")
+
+(defvar gnus-catchup-mark "C"
+  "Mark used for articles that are caught up.")
+
 (defvar gnus-group-mode-hook nil
-  "*A hook for Gnus Group Mode.")
+  "A hook for Gnus Group Mode.")
 
 (defvar gnus-summary-mode-hook nil
-  "*A hook for Gnus Summary Mode.")
+  "A hook for Gnus Summary Mode.")
 
 (defvar gnus-article-mode-hook nil
-  "*A hook for Gnus Article Mode.")
+  "A hook for Gnus Article Mode.")
 
 (defvar gnus-kill-file-mode-hook nil
-  "*A hook for Gnus KILL File Mode.")
+  "A hook for Gnus KILL File Mode.")
 
 (defvar gnus-open-server-hook nil
-  "*A hook called just before opening connection to news server.")
+  "A hook called just before opening connection to news server.")
 
 (defvar gnus-startup-hook nil
-  "*A hook called at startup time.
+  "A hook called at startup time.
 This hook is called after Gnus is connected to the NNTP server. So, it
 is possible to change the behavior of Gnus according to the selected
 NNTP server.")
 
 (defvar gnus-group-prepare-hook nil
-  "*A hook called after the newsgroup list is created in the Newsgroup buffer.
+  "A hook called after the newsgroup list is created in the Newsgroup buffer.
 If you want to modify the Newsgroup buffer, you can use this hook.")
 
 (defvar gnus-summary-prepare-hook nil
-  "*A hook called after summary list is created in the Summary buffer.
+  "A hook called after summary list is created in the Summary buffer.
 If you want to modify the Summary buffer, you can use this hook.")
 
 (defvar gnus-article-prepare-hook nil
-  "*A hook called after an article is prepared in the Article buffer.
+  "A hook called after an article is prepared in the Article buffer.
 If you want to run a special decoding program like nkf, use this hook.")
 
-(defvar gnus-article-display-hook '(gnus-article-hide-headers-if-wanted)
+(defvar gnus-article-display-hook nil
   "A hook called after the article is displayed in the Article buffer.
 The hook is designed to change the contents of the Article
 buffer. Typical functions that this hook may contain are
-`gnus-article-hide-headers' and `gnus-article-hide-signature'.")
+`gnus-article-hide-headers' (hide selected headers),
+`gnus-article-hide-signature' (hide signature) and
+`gnus-article-treat-overstrike' (turn \"^H_\" into bold characters).")
+(add-hook 'gnus-article-display-hook 'gnus-article-hide-headers-if-wanted)
 
 (defvar gnus-select-group-hook nil
-  "*A hook called when a newsgroup is selected.
+  "A hook called when a newsgroup is selected.
 If you want to sort Summary buffer by date and then by subject, you
 can use the following hook:
 
@@ -556,15 +606,15 @@ can use the following hook:
 	  (gnus-keysort-headers
 	   (function string-lessp)
 	    (lambda (a)
-	      (gnus-sortable-date (gnus-header-date a))))
+	      (gnus-sortable-date (header-date a))))
 	  ;; Then sort by subject string ignoring `Re:'.
 	  ;; If case-fold-search is non-nil, case of letters is ignored.
 	  (gnus-keysort-headers
 	   (function string-lessp)
 	    (lambda (a)
 	      (if case-fold-search
-		  (downcase (gnus-simplify-subject (gnus-header-subject a) t))
-		(gnus-simplify-subject (gnus-header-subject a) t)))))))
+		  (downcase (gnus-simplify-subject (header-subject a) t))
+		(gnus-simplify-subject (header-subject a) t)))))))
 
 If you'd like to simplify subjects like the
 `gnus-summary-next-same-subject' command does, you can use the
@@ -577,13 +627,13 @@ following hook:
 		     (header-set-subject
 		      header
 		      (gnus-simplify-subject
-		       (gnus-header-subject header) 're-only)))
+		       (header-subject header) 're-only)))
 		  gnus-newsgroup-headers))))
 ")
 
 (defvar gnus-select-article-hook
   '(gnus-summary-show-thread)
-  "*A hook called when an article is selected.
+  "A hook called when an article is selected.
 The default hook shows conversation thread subtrees of the selected
 article automatically using `gnus-summary-show-thread'.
 
@@ -598,7 +648,7 @@ use the following hook:
 		 (gnus-summary-rmail-digest))
 		((and (string-equal \"comp.text\" gnus-newsgroup-name)
 		      (string-match \"^TeXhax Digest\"
-				    (gnus-header-subject gnus-current-headers)))
+				    (header-subject gnus-current-headers)))
 		 (gnus-summary-rmail-digest)
 		 )))))")
 
@@ -610,7 +660,7 @@ use the following hook:
 	  (progn
 	    (mail-position-on-field "Reply-to")
 	    (insert (gnus-fetch-field "From"))))))
-  "*A hook called when reading digest messages using Rmail.
+  "A hook called when reading digest messages using Rmail.
 This hook can be used to modify incomplete digest articles as follows
 \(this is the default):
 
@@ -624,11 +674,11 @@ This hook can be used to modify incomplete digest articles as follows
 		(insert (gnus-fetch-field \"From\")))))))")
 
 (defvar gnus-rmail-digest-hook nil
-  "*A hook called when reading digest messages using Rmail.
+  "A hook called when reading digest messages using Rmail.
 This hook is intended to customize Rmail mode for reading digest articles.")
 
 (defvar gnus-apply-kill-hook '(gnus-apply-kill-file)
-  "*A hook called when a newsgroup is selected and summary list is prepared.
+  "A hook called when a newsgroup is selected and summary list is prepared.
 This hook is intended to apply a KILL file to the selected newsgroup.
 The function `gnus-apply-kill-file' is called by default.
 
@@ -645,37 +695,42 @@ following hook:
 		 (gnus-kill \"Subject\" \"rmgroup\")
 		 (gnus-expunge \"X\"))))))")
 
+(defvar gnus-visual-mark-article-hook 'gnus-visual-highlight-selected-summary
+  "Hook run after selecting an article in the Summary buffer.
+It is meant to be used for highlighting the article in some way. It is
+not run if `gnus-visual' is nil.")
+
 (defvar gnus-prepare-article-hook (list (function gnus-inews-insert-signature))
-  "*A hook called after preparing body, but before preparing header fields.
+  "A hook called after preparing body, but before preparing header fields.
 The default hook (`gnus-inews-insert-signature') inserts a signature
 file specified by the variable `gnus-signature-file'.")
 
 (defvar gnus-inews-article-hook (list (function gnus-inews-do-fcc))
-  "*A hook called before finally posting an article.
+  "A hook called before finally posting an article.
 The default hook (`gnus-inews-do-fcc') does FCC processing (save article
 to a file).")
 
 (defvar gnus-exit-group-hook nil
-  "*A hook called when exiting (not quitting) Summary mode.
+  "A hook called when exiting (not quitting) Summary mode.
 If your machine is so slow that exiting from Summary mode takes very
 long time, set the variable `gnus-use-cross-reference' to nil. This
 inhibits marking articles as read using cross-reference information.")
 
 (defvar gnus-suspend-gnus-hook nil
-  "*A hook called when suspending (not exiting) Gnus.")
+  "A hook called when suspending (not exiting) Gnus.")
 
 (defvar gnus-exit-gnus-hook (list 'nntp-request-close)
-  "*A hook called when exiting Gnus.")
+  "A hook called when exiting Gnus.")
 
 (defvar gnus-save-newsrc-hook nil
-  "*A hook called when saving the newsrc file.
+  "A hook called when saving the newsrc file.
 This hook is called before saving the `.newsrc' file.")
 
 (defvar gnus-auto-expirable-newsgroups nil
-  "*All newsgroups that match this regexp will have all read articles automatically marked as expirable.")
+  "All newsgroups that match this regexp will have all read articles automatically marked as expirable.")
 
 (defvar gnus-subscribe-hierarchical-interactive nil
-  "*If non-nil, Gnus will offer to subscribe hierarchically.
+  "If non-nil, Gnus will offer to subscribe hierarchically.
 When a new hierarchy appears, Gnus will ask the user:
 
 'alt.binaries': Do you want to subscribe to this hierarchy? ([d]ys):
@@ -684,8 +739,8 @@ If the user pressed `d', Gnus will descend the hierarchy, `y' will
 subscribe to all newsgroups in the hierarchy and `s' will skip this
 hierarchy in its entirety.")
 
-(defvar gnus-group-line-format "%M%S%5N: %G %O %z\n"
-  "*Format of Newsgroups lines.
+(defvar gnus-group-line-format "%M%S%5y: %G %z\n"
+  "Format of Newsgroups lines.
 It works along the same lines as a normal formatting string,
 with some simple extrensions.
 
@@ -693,6 +748,12 @@ with some simple extrensions.
 %S    Whether the group is subscribed (character, \"U\", \"K\", \"Z\" or \" \")
 %L    Level of subscribedness (integer, 1-9)
 %N    Number of unread articles (integer)
+%I    Number of dormant articles (integer)
+%i    Number of ticked and dormant (integer)
+%T    Number of ticked articles (integer)
+%R    Number of read articles (integer)
+%t    Total number of articles (integer)
+%y    Number of unread, unticked articles (integer)
 %G    Group name (string)
 %D    Newsgroup description (string)
 %s    Select method (string)
@@ -713,8 +774,8 @@ Also note that if you change the format specification to include any
 of these specs, you must probably re-start Gnus to see them go into
 effect.") 
 
-(defvar gnus-summary-line-format "%U%R%X %I%[%4L: %-20,20n%] %s\n"
-  "*The format specification of the lines in the Summary buffer.
+(defvar gnus-summary-line-format "%U%R%X%i %I%[%4L: %-20,20n%] %s\n"
+  "The format specification of the lines in the Summary buffer.
 The first specification must always be \"%U%R%X\", at least in this
 version of Gnus.
 
@@ -735,23 +796,26 @@ with some simple extensions.
 %U   Status of this article (character, \"D\", \"K\", \"-\" or \" \") 
 %[   Opening bracket (character, \"[\" or \"=\")
 %]   Closing bracket (character, \"]\" or \"=\")
+%>   Spaces of length thread-level (string)
+%<   Spaces of length (- 20 thread-level) (string)
+%i   Article interest (integer, 0-9)
 ")
 
 (defconst gnus-summary-dummy-line-format "*   :                          : %S\n"
-  "*The format specification for the dummy roots in the Summary buffer.
+  "The format specification for the dummy roots in the Summary buffer.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
 
 %S  The subject")
 
 (defvar gnus-summary-mode-line-format "(ding) %G/%A %Z"
-  "*The format specification for the Summary mode line.")
+  "The format specification for the Summary mode line.")
 
 (defvar gnus-article-mode-line-format "(ding) %G/%A %S"
-  "*The format specification for the Article mode line.")
+  "The format specification for the Article mode line.")
 
 (defconst gnus-group-mode-line-format "(ding) List of Newsgroups   {%M:%S}"
-  "*The format specification for the Newsgroup mode line.")
+  "The format specification for the Newsgroup mode line.")
 
 
 
@@ -759,7 +823,7 @@ with some simple extensions.
 ;;  site-init.el, default.el or your .emacs.
 
 (defvar gnus-local-timezone nil
-  "*Local time zone.
+  "Local time zone.
 This value is used only if `current-time-zone' does not work in your Emacs.
 It specifies the GMT offset, i.e. a decimal integer
 of the form +-HHMM giving the hours and minutes ahead of (i.e. east of) GMT.
@@ -769,26 +833,27 @@ For backwards compatibility, it may also be a string like \"JST\",
 but strings are obsolescent: you should use numeric offsets instead.")
 
 (defvar gnus-local-domain nil
-  "*Local domain name without a host name like: \"stars.flab.Fujitsu.CO.JP\"
+  "Local domain name without a host name like: \"stars.flab.Fujitsu.CO.JP\"
 The `DOMAINNAME' environment variable is used instead if defined.  If
 the function (system-name) returns the full internet name, there is no
 need to define the name.")
 
 (defvar gnus-local-organization nil
-  "*Local organization like: \"Fujitsu Laboratories Ltd., Kawasaki, Japan.\"
+  "Local organization like: \"Fujitsu Laboratories Ltd., Kawasaki, Japan.\"
 The `ORGANIZATION' environment variable is used instead if defined.")
 
 (defvar gnus-use-generic-from nil
-  "*If nil, prepend local host name to the defined domain in the From:
+  "If nil, prepend local host name to the defined domain in the From:
 field; if stringp, use this; if non-nil, strip of the local host name.")
 
 (defvar gnus-use-generic-path nil
-  "*If nil, use the NNTP server name in the Path: field; if stringp,
+  "If nil, use the NNTP server name in the Path: field; if stringp,
 use this; if non-nil, use no host name (user name only)")
 
 (defvar gnus-valid-select-methods
   '(("nntp" post) ("nnspool" post) ("nnvirtual" none) 
-    ("nnmail" mail respool) ("nnml" mail respool))
+    ("nnmail" mail respool) ("nnml" mail respool)
+    ("nnmh" mail respool))
   "A list of valid select methods.
 Each element in this list should be a list. The first element of these
 lists should be a string with the name of the select method. The
@@ -805,14 +870,31 @@ the corresponding symbol is present, Gnus will keep that mode line
 updated with information that may be pertinent. 
 If this variable is nil, screen refresh may be quicker.")
 
+;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
+(defvar gnus-mouse-face 'highlight
+  "Face used for mouse highlighting in Gnus.
+No mouse highlights will be done if `gnus-visual' is nil.")
+
+(defvar gnus-visual-summary-update-hook 
+  (list 'gnus-visual-summary-highlight-line)
+  "A hook called when a summary line is changed.
+The cursor will be positioned at the summary line.
+
+The default hook `gnus-visual-summary-highlight-line' will highlight the line
+according to the `gnus-visual-summary-highlight' variable.")
+
 
-;; Internal variables.
+;; Internal variables
+
+;; Avoid highlighting in kill files.
+(defvar gnus-summary-inhibit-highlight nil)
 
 (defvar caesar-translate-table nil)
 
 (defvar gnus-dribble-buffer nil)
 
 (defvar gnus-article-reply nil)
+(defvar gnus-article-check-size nil)
 
 (defvar gnus-newsgroup-dependencies nil)
 
@@ -832,6 +914,12 @@ If this variable is nil, screen refresh may be quicker.")
 	(list ?S 'subscribed ?c)
 	(list ?L 'level ?d)
 	(list ?N 'number ?s)
+	(list ?I 'number-of-dormant ?d)
+	(list ?T 'number-of-ticked ?d)
+	(list ?R 'number-of-read ?s)
+	(list ?t 'number-total ?d)
+	(list ?y 'number-of-unread-unticked ?s)
+	(list ?i 'number-of-ticked-and-dormant ?d)
 	(list ?G 'group ?s)
 	(list ?D 'newsgroup-description ?s)
 	(list ?o 'moderated ?c)
@@ -853,12 +941,16 @@ If this variable is nil, screen refresh may be quicker.")
 	(list ?r (macroexpand '(header-references header)) ?s)
 	(list ?L 'lines ?d)
 	(list ?I 'indentation ?s)
-	(list ?T 'thread-space ?s)
-	(list ?C 'current ?c)
+	(list ?T '(thread-space (if (< level 1) "" (make-string (frame-width) ? ))) 
+	      ?s)
+	(list ?C '(if current ?+ ? ) ?c)
 	(list ?R 'replied ?c)
 	(list ?X 'expirable ?c)
 	(list ?\[ 'opening-bracket ?c)
 	(list ?\] 'closing-bracket ?c)
+	(list ?\> '(make-string level ? ) ?s)
+	(list ?\< '(make-string (max 0 (- 20 level)) ? ) ?s)
+	(list ?i 'interest ?s)
 	(list ?U 'unread ?c))
   "An alist of format specifications that can appear in summary lines,
 and what variables they correspond with, along with the type of the
@@ -885,7 +977,10 @@ variable (string, integer, character, etc).")
 
 (defconst gnus-foreign-group-prefix "foreign.")
 
-(defconst gnus-version "(ding) Gnus v0.5"
+(defconst gnus-maintainer "Lars Magne Ingebrigtsen <larsi@ifi.uio.no>"
+  "The mail address of the Gnus maintainer.")
+
+(defconst gnus-version "(ding) Gnus v0.10"
   "Version numbers of this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -982,6 +1077,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 (defvar gnus-newsgroup-auto-expire nil
   "If non-nil, all read articles will be marked as expirable.")
 
+(defvar gnus-newsgroup-selected-overlay nil)
+
 (defvar gnus-newsgroup-unreads nil
   "List of unread articles in the current newsgroup.")
 
@@ -1006,8 +1103,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 (defvar gnus-newsgroup-bookmarks nil
   "List of articles in the current newsgroup that have bookmarks.")
 
-(defvar gnus-newsgroup-interesting nil
-  "List of interesting articles in the current newsgroup.")
+(defvar gnus-newsgroup-dormant nil
+  "List of dormant articles in the current newsgroup.")
 
 (defvar gnus-newsgroup-headers nil
   "List of article headers in the current newsgroup.")
@@ -1019,7 +1116,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 (defvar gnus-have-all-headers nil "Must be either T or NIL.")
 (defvar gnus-last-article nil)
 (defvar gnus-current-kill-article nil)
-(defvar gnus-newsgroup-interesting-subjects nil)
+(defvar gnus-newsgroup-dormant-subjects nil)
+(defvar gnus-newsgroup-expunged-lines nil)
 
 ;; Save window configuration.
 (defvar gnus-winconf-kill-file nil)
@@ -1042,27 +1140,29 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 (defvar rmail-default-file (expand-file-name "~/XMBOX"))
 (defvar rmail-default-rmail-file (expand-file-name "~/XNEWS"))
 
-(defvar gnus-summary-local-variables 
-  '(gnus-newsgroup-name
-    gnus-newsgroup-begin gnus-newsgroup-end gnus-newsgroup-last-rmail
-    gnus-newsgroup-last-mail gnus-newsgroup-last-folder
-    gnus-newsgroup-last-file gnus-newsgroup-auto-expire
-    gnus-newsgroup-unreads gnus-newsgroup-unselected gnus-newsgroup-marked
+(defconst gnus-summary-local-variables 
+  '(gnus-newsgroup-name gnus-newsgroup-begin gnus-newsgroup-end 
+    gnus-newsgroup-last-rmail gnus-newsgroup-last-mail 
+    gnus-newsgroup-last-folder gnus-newsgroup-last-file 
+    gnus-newsgroup-auto-expire gnus-newsgroup-unreads 
+    gnus-newsgroup-unselected gnus-newsgroup-marked
     gnus-newsgroup-replied gnus-newsgroup-expirable
     gnus-newsgroup-processable gnus-newsgroup-killed
-    gnus-newsgroup-bookmarks gnus-newsgroup-interesting
-    gnus-newsgroup-interesting-subjects
+    gnus-newsgroup-bookmarks gnus-newsgroup-dormant
+    gnus-newsgroup-dormant-subjects gnus-newsgroup-expunged-lines
     gnus-newsgroup-headers gnus-newsgroup-headers-hashtb-by-number
     gnus-current-article gnus-current-headers gnus-have-all-headers
-    gnus-last-article gnus-article-internal-prepare-hook))
+    gnus-last-article gnus-article-internal-prepare-hook
+    gnus-newsgroup-selected-overlay)
+  "Variables that are buffer-local to the Summary buffers.")
 
 (defvar gnus-mark-article-hook
   (list
    (lambda ()
      (or (memq gnus-current-article gnus-newsgroup-marked)
-	 (memq gnus-current-article gnus-newsgroup-interesting)
+	 (memq gnus-current-article gnus-newsgroup-dormant)
 	 (gnus-summary-mark-as-read gnus-current-article))))
-  "*A hook called when an article is selected at the first time.
+  "A hook called when an article is selected at the first time.
 The hook is intended to mark an article as read (or unread)
 automatically when it is selected.
 
@@ -1071,8 +1171,7 @@ If you'd like to tick articles instead, use the following hook:
 \(setq gnus-mark-article-hook
       (list
         (lambda ()
-	  (gnus-summary-tick-article gnus-current-article)
-	  (gnus-summary-set-current-mark \"+\"))))")
+	  (gnus-summary-tick-article gnus-current-article))))")
 
 ;; Define some autoload functions Gnus may use.
 (eval-and-compile
@@ -1087,13 +1186,20 @@ If you'd like to tick articles instead, use the following hook:
   (autoload 'rmail-output "rmailout"
     "Append this message to Unix mail file named FILE-NAME." t)
   (autoload 'mail-position-on-field "sendmail")
+  (autoload 'mail-setup "sendmail")
 
   (autoload 'gnus-mail-reply-using-mhe "gnus-mh")
   (autoload 'gnus-mail-forward-using-mhe "gnus-mh")
   (autoload 'gnus-mail-other-window-using-mhe "gnus-mh")
   (autoload 'gnus-summary-save-in-folder "gnus-mh")
   (autoload 'gnus-Folder-save-name "gnus-mh")
-  (autoload 'gnus-folder-save-name "gnus-mh"))
+  (autoload 'gnus-folder-save-name "gnus-mh")
+  
+  (autoload 'gnus-group-make-menu-bar "gnus-visual")
+  (autoload 'gnus-summary-make-menu-bar "gnus-visual")
+  (autoload 'gnus-visual-highlight-selected-summary "gnus-visual")
+  (autoload 'gnus-visual-summary-highlight-line "gnus-visual")
+  )
 
 (put 'gnus-group-mode 'mode-class 'special)
 (put 'gnus-summary-mode 'mode-class 'special)
@@ -1141,16 +1247,17 @@ Optional argument HASHSIZE specifies the table size."
 
 (defsubst gnus-simplify-subject-re (subject)
   "Remove \"Re:\" from subject lines."
-  (if (string-match "^[Rr][Ee]:[ \t]*" subject)
-      (substring subject (match-end 0))
-    subject))
+  (let ((case-fold-search t))
+    (if (string-match "^re: *" subject)
+	(substring subject (match-end 0))
+      subject)))
 
 
 ;;;
 ;;; Gnus Utility Functions
 ;;;
 
-(defsubst gnus-extract-address-components (from)
+(defun gnus-extract-address-components (from)
   (let (name address)
     (if (string-match "([^)]+)" from)
 	(setq name (substring from (1+ (match-beginning 0)) 
@@ -1160,7 +1267,7 @@ Optional argument HASHSIZE specifies the table size."
     (if (and (not name) address)
 	(if (string-match (concat "<" address ">") from)
 	    (setq name (substring from 0 (1- (match-beginning 0))))))
-    (cons (or name from) (or address from))))
+    (list (or name from) (or address from))))
 
 (defun gnus-fetch-field (field)
   "Return the value of the header FIELD of current article."
@@ -1172,22 +1279,6 @@ Optional argument HASHSIZE specifies the table size."
 (defun gnus-goto-colon ()
   (beginning-of-line)
   (search-forward ":" (save-excursion (end-of-line) (point)) t))
-
-(defun gnus-prefs-p (&rest values)
-  (< 0 
-     (apply '+ (mapcar 
-		(lambda (v)
-		  (if (consp v)
-		      (* (cdr v)
-			 (or (car v)
-			     (cdr (assq (car v) gnus-user-preferences))
-			     ;; Check if the user said (novice)
-			     ;; instead of (novice . 100)
-			     (if (memq (car v) gnus-user-preferences) 100)
-			     (cdr (assq (car v) gnus-default-preferences))
-			     0))
-		    v))
-		values))))
 
 (defun gnus-narrow-to-headers ()
   (widen)
@@ -1588,7 +1679,6 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
 	gnus-killed-hashtb nil
 	gnus-active-hashtb nil
 	gnus-moderated-list nil
-	gnus-use-moderated nil
 	gnus-description-hashtb nil
 	gnus-newsgroup-headers nil
 	gnus-newsgroup-headers-hashtb-by-number nil
@@ -1737,6 +1827,18 @@ or not."
 	 (pop-to-buffer gnus-summary-buffer)))
   (Info-goto-node (car (cdr (assq major-mode gnus-info-nodes)))))
 
+(defun gnus-bug ()
+  "Send a bug report to the Gnus maintainers."
+  (interactive)
+  (pop-to-buffer "*Gnus Bug*")
+  (erase-buffer)
+  (mail-setup gnus-maintainer "[Gnus Bug Report] " nil nil nil nil)
+  (goto-char (point-min))
+  (search-forward mail-header-separator)
+  (forward-line 1)
+  (insert (format "%s\n%s\n\n" (gnus-version) (emacs-version)))
+  (message ""))
+
 (defun gnus-overload-functions (&optional overloads)
   "Overload functions specified by optional argument OVERLOADS.
 If nothing is specified, use the variable gnus-overload-functions."
@@ -1783,43 +1885,46 @@ If nothing is specified, use the variable gnus-overload-functions."
   "Convert list of numbers to a list of ranges or a single range.
 If ALWAYS-LIST is non-nil, this function will always release a list of
 ranges."
-  (let* ((numbers (sort numbers (function <)))
-	 (first (car numbers))
+  (let* ((first (car numbers))
 	 (last (car numbers))
 	 result)
-    (while numbers
-      (cond ((= last (car numbers)) nil) ;Omit duplicated number
-	    ((= (1+ last) (car numbers)) ;Still in sequence
-	     (setq last (car numbers)))
-	    (t				;End of one sequence
-	     (setq result (cons (cons first last) result))
-	     (setq first (car numbers))
-	     (setq last  (car numbers))))
-      (setq numbers (cdr numbers)))
-    (if (and (not always-list) (null result))
-	(cons first last)
-      (nreverse (cons (cons first last) result)))))
+    (if (null numbers)
+	nil
+      (while numbers
+	(cond ((= last (car numbers)) nil) ;Omit duplicated number
+	      ((= (1+ last) (car numbers)) ;Still in sequence
+	       (setq last (car numbers)))
+	      (t				;End of one sequence
+	       (setq result (cons (cons first last) result))
+	       (setq first (car numbers))
+	       (setq last  (car numbers))))
+	(setq numbers (cdr numbers)))
+      (if (and (not always-list) (null result))
+	  (cons first last)
+	(nreverse (cons (cons first last) result))))))
 
 (defun gnus-uncompress-sequence (ranges)
   "Expand a list of ranges into a list of numbers.
 RANGES is either a single range on the form `(num . num)' or a list of
 these ranges."
   (let (first last result)
-    (if (atom (car ranges))
-	(progn
-	  (setq first (car ranges))
-	  (setq last (cdr ranges))
+    (if (null ranges)
+	nil
+      (if (atom (car ranges))
+	  (progn
+	    (setq first (car ranges))
+	    (setq last (cdr ranges))
+	    (while (<= first last)
+	      (setq result (cons first result))
+	      (setq first (1+ first))))
+	(while ranges
+	  (setq first (car (car ranges)))
+	  (setq last  (cdr (car ranges)))
 	  (while (<= first last)
 	    (setq result (cons first result))
-	    (setq first (1+ first))))
-      (while ranges
-	(setq first (car (car ranges)))
-	(setq last  (cdr (car ranges)))
-	(while (<= first last)
-	  (setq result (cons first result))
-	  (setq first (1+ first)))
-	(setq ranges (cdr ranges))))
-    (nreverse result)))
+	    (setq first (1+ first)))
+	  (setq ranges (cdr ranges))))
+      (nreverse result))))
 
 (defun gnus-add-to-range (ranges list)
   "Return a list of ranges that has all articles from both RANGES and LIST.
@@ -1853,6 +1958,14 @@ Note: LIST has to be sorted over `<'."
       (if (not (cdr inrange))
 	  (car inrange)
 	inrange))))
+
+(defun gnus-remove-from-range (ranges list)
+  "Return a list of ranges that has all articles from LIST removed from RANGES.
+Note: LIST has to be sorted over `<'."
+  ;; !!! This function shouldn't look like this, but I've got a headache.
+  (gnus-compress-sequence 
+   (gnus-set-difference 
+    (gnus-uncompress-sequence ranges) list)))
 
 (defun gnus-member-of-range (number ranges)
   (let ((not-stop t))
@@ -1897,16 +2010,16 @@ Note: LIST has to be sorted over `<'."
   (define-key gnus-group-mode-map "B" 'gnus-group-browse-foreign-server)
   (define-key gnus-group-mode-map "b" 'gnus-group-check-bogus-groups)
   (define-key gnus-group-mode-map "F" 'gnus-find-new-newsgroups)
-  (define-key gnus-group-mode-map "D" 'gnus-group-describe-group)
+  (define-key gnus-group-mode-map "\C-c\C-d" 'gnus-group-describe-group)
   (define-key gnus-group-mode-map "\M-d" 'gnus-group-describe-all-groups)
+  (define-key gnus-group-mode-map "\C-c\C-a" 'gnus-group-apropos)
+  (define-key gnus-group-mode-map "\C-c\M-C-a" 'gnus-group-description-apropos)
   (define-key gnus-group-mode-map "a" 'gnus-group-post-news)
   (define-key gnus-group-mode-map "\M-a" 'gnus-group-add-newsgroup)
   (define-key gnus-group-mode-map "\M-e" 'gnus-group-edit-newsgroup)
   (define-key gnus-group-mode-map "\ek" 'gnus-group-edit-local-kill)
   (define-key gnus-group-mode-map "\eK" 'gnus-group-edit-global-kill)
-  (define-key gnus-group-mode-map "k" 'gnus-group-kill-group)
   (define-key gnus-group-mode-map "\C-k" 'gnus-group-kill-group)
-  (define-key gnus-group-mode-map "y" 'gnus-group-yank-group)
   (define-key gnus-group-mode-map "\C-y" 'gnus-group-yank-group)
   (define-key gnus-group-mode-map "\C-w" 'gnus-group-kill-region)
   (define-key gnus-group-mode-map "\M-z" 'gnus-group-kill-all-zombies)
@@ -1926,53 +2039,7 @@ Note: LIST has to be sorted over `<'."
   (define-key gnus-group-mode-map "?" 'gnus-group-describe-briefly)
   (define-key gnus-group-mode-map "\C-c\C-i" 'gnus-info-find-node)
   (define-key gnus-group-mode-map [mouse-2] 'gnus-mouse-pick-group)
-
-  ;; Make a menu bar item.
-  (define-key gnus-group-mode-map [menu-bar Gnus]
-	(cons "Gnus" (make-sparse-keymap "Gnus")))
-
-  (define-key gnus-group-mode-map [menu-bar Gnus force-update]
-	'("Force Update" . gnus-group-force-update))
-  (define-key gnus-group-mode-map [menu-bar Gnus quit]
-	'("Quit" . gnus-group-quit))
-  (define-key gnus-group-mode-map [menu-bar Gnus exit]
-	'("Exit" . gnus-group-exit))
-  (define-key gnus-group-mode-map [menu-bar Gnus restart]
-	'("Restart" . gnus-group-restart))
-  (define-key gnus-group-mode-map [menu-bar Gnus suspend]
-	'("Suspend" . gnus-group-suspend))
-  (define-key gnus-group-mode-map [menu-bar Gnus get-new-news]
-	'("Get New News" . gnus-group-get-new-news))
-
-  ;; Make a menu bar item.
-  (define-key gnus-group-mode-map [menu-bar groups]
-	(cons "Groups" (make-sparse-keymap "Groups")))
-
-  (define-key gnus-group-mode-map [menu-bar groups catchup]
-	'("Catchup" . gnus-group-catchup))
-  (define-key gnus-group-mode-map [menu-bar groups edit-global-kill]
-	'("Edit Kill File" . gnus-group-edit-global-kill))
-
-  (define-key gnus-group-mode-map [menu-bar groups separator-2]
-	'("--"))
-
-  (define-key gnus-group-mode-map [menu-bar groups yank-group]
-	'("Yank Group" . gnus-group-yank-group))
-  (define-key gnus-group-mode-map [menu-bar groups kill-group]
-	'("Kill Group" . gnus-group-kill-group))
-
-  (define-key gnus-group-mode-map [menu-bar groups separator-1]
-	'("--"))
-
-  (define-key gnus-group-mode-map [menu-bar groups jump-to-group]
-	'("Jump to Group..." . gnus-group-jump-to-group))
-  (define-key gnus-group-mode-map [menu-bar groups list-all-groups]
-	'("List All Groups" . gnus-group-list-all-groups))
-  (define-key gnus-group-mode-map [menu-bar groups list-groups]
-	'("List Groups" . gnus-group-list-groups))
-  (define-key gnus-group-mode-map [menu-bar groups unsub-current-group]
-	'("Unsubscribe Group" . gnus-group-unsubscribe-current-group))
-  )
+  (gnus-group-make-menu-bar))
 
 (defun gnus-group-mode ()
   "Major mode for reading news.
@@ -2046,10 +2113,20 @@ The following commands are available:
   (mouse-set-point e)
   (gnus-group-read-group nil))
 
+;;;###autoload
+(defun gnus-no-server (&optional arg)
+  "Read network news.
+If ARG is non-nil and a positive number, Gnus will use that as the
+startup level. If ARG is non-nil and not a positive number, Gnus will
+prompt the user for the name of an NNTP server to use.
+As opposed to `gnus', this command will not connect to the local server."
+  (interactive "P")
+  (gnus arg t))
+
 (defalias '\(ding\) 'gnus)
 
 ;;;###autoload
-(defun gnus (&optional arg)
+(defun gnus (&optional arg dont-connect)
   "Read network news.
 If ARG is non-nil and a positive number, Gnus will use that as the
 startup level. If ARG is non-nil and not a positive number, Gnus will
@@ -2065,8 +2142,9 @@ prompt the user for the name of an NNTP server to use."
 	  (switch-to-buffer (get-buffer-create gnus-group-buffer))
 	  (gnus-add-current-to-buffer-list)
 	  (gnus-group-mode)
-	  (gnus-start-news-server (and arg (not level))))
-      (if (not (gnus-server-opened gnus-select-method))
+	  (or dont-connect (gnus-start-news-server (and arg (not level)))))
+      (if (and (not dont-connect) 
+	       (not (gnus-server-opened gnus-select-method)))
 	  (gnus-group-quit)
 	;; NNTP server is successfully open. 
 	(gnus-update-format-specifications)
@@ -2077,7 +2155,7 @@ prompt the user for the name of an NNTP server to use."
 		(gnus-group-startup-message)
 		(sit-for 0))))
 	(run-hooks 'gnus-startup-hook)
-	(gnus-setup-news nil (or level 7))
+	(gnus-setup-news nil level)
 	(gnus-dribble-open)
 	(or (not gnus-novice-user)
 	    gnus-expert-user
@@ -2162,7 +2240,10 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 		newsrc (cdr newsrc)
 		unread (car (gnus-gethash group gnus-newsrc-hashtb)))
 	  (if (and unread ; This group might be bogus
-		   (or all (eq unread t) (> unread 0))
+		   (or all (eq unread t) 
+		       (and (> unread 0)
+			    (> unread 
+			       (length (cdr (assq 'dormant (nth 3 info)))))))
 		   (and (<= (setq clevel (car (cdr info))) level))
 		   (>= clevel lowest))
 	      (gnus-group-insert-group-line 
@@ -2248,9 +2329,19 @@ moves the point to the colon."
 
 (defun gnus-group-insert-group-line (gformat group level marked number method)
   (let* ((gformat (or gformat gnus-group-line-format-spec))
-	 (marked (if (and (assq 'tick marked) (numberp number) 
-			  (>= (1- (length (assq 'tick marked))) number))
-		     ?* ? ))
+	 (active (gnus-gethash group gnus-active-hashtb))
+	 (number-total (if active (1+ (- (cdr active) (car active)))))
+	 (number-of-dormant (length (cdr (assq 'dormant marked))))
+	 (number-of-ticked (length (cdr (assq 'tick marked))))
+	 (number-of-ticked-and-dormant
+	  (+ number-of-ticked number-of-dormant))
+	 (number-of-unread-unticked 
+	  (if (numberp number) (- number number-of-ticked number-of-dormant)
+	    "*"))
+	 (number-of-read
+	  (if (numberp number)
+	      (- number-total number)
+	    "*"))
 	 (subscribed (cond ((< level 6) ? )
 			   ((< level 8) ?U)
 			   ((= level 8) ?Z)
@@ -2267,20 +2358,31 @@ moves the point to the colon."
 	 (news-method-string 
 	  (if method (format "(%s:%s)" (car method) (car (cdr method))) ""))
 	 (number (if (eq number t) "*" number))
-	 flist b)
+	 (marked (if (and 
+		      (numberp number) 
+		      (not (zerop number))
+		      (>= (+ (length (cdr (assq 'tick marked)))
+			     (length (cdr (assq 'dormant marked)))) number)
+		      (> (length (cdr (assq 'tick marked))) 0))
+		     ?* ? ))
+	 b)
     (beginning-of-line)
+    (setq b (point))
     (let ((group (if method (gnus-group-real-name group) group)))
       ;; Insert the visible text.
-      (insert (eval gformat)))
+      (insert-before-markers (eval gformat)))
     (forward-char -1)
+    (if (and gnus-visual gnus-mouse-face)
+ 	(overlay-put (make-overlay b (point)) 'mouse-face gnus-mouse-face))
     ;; Insert the invisible info on the end of the line.
-    (setq b (point))
-    ;; The info is GROUP UNREAD MARKED LEVEL.
-    (insert 
-     (format " %s%c%c%d"
-	     group (if (or (stringp number) (> number 0)) ?+ ? )
-	     marked level))
-    (set-text-properties b (point) '(invisible t))
+    (set-text-properties 
+     (prog1 
+	 (point)
+       ;; The info is GROUP UNREAD MARKED LEVEL.
+       (insert (format 
+		" %s%c%c%d" group (if (or (stringp number) (> number 0)) ?+ ? )
+		marked level)))
+     (point) '(invisible t))
     (forward-char 1)))
 
 (defun gnus-group-update-group (group &optional visible-only)
@@ -2320,14 +2422,16 @@ If VISIBLE-ONLY is non-nil, the group won't be displayed if it isn't already."
 	    (delete-region (point) (progn (forward-line 1) (point))))
 	;; No such line in the buffer, find out where it's supposed to
 	;; go, and insert it there (or at the end of the buffer).
-	(let ((entry (cdr (gnus-gethash group gnus-newsrc-hashtb))))
-	  (goto-char (point-min))
-	  (while (and entry
-		      (not (re-search-forward (gnus-group-make-regexp
-					       (car (car entry))) nil t)))
-	    (setq entry (cdr entry)))
-	  (if (not entry)
-	      (goto-char (point-max)))))
+	;; Fix by Per Abrahamsen <amanda@iesd.auc.dk>.
+ 	(or visible-only
+ 	    (let ((entry (cdr (gnus-gethash group gnus-newsrc-hashtb))))
+ 	      (goto-char (point-min))
+ 	      (while (and entry
+ 			  (not (re-search-forward (gnus-group-make-regexp
+ 						   (car (car entry))) nil t)))
+ 		(setq entry (cdr entry)))
+ 	      (if (not entry)
+ 		  (goto-char (point-max))))))
       (if (or visible (not visible-only))
 	  (progn
 	    (gnus-group-insert-group-line-info group)
@@ -2625,11 +2729,10 @@ or nil if no action could be taken."
   (let ((expirable 
 	 (assq 'expire (nth 3 (nth 2 (gnus-gethash newsgroup 
 						   gnus-newsrc-hashtb))))))
-    (if (and expirable 
-	     (gnus-check-backend-function 
-	      'gnus-request-expire-articles newsgroup))
-	(setcdr expirable
-		(gnus-request-expire-articles (cdr expirable) newsgroup)))))
+ (and expirable 
+      (gnus-check-backend-function 'request-expire-articles newsgroup)
+      (setcdr expirable
+	      (gnus-request-expire-articles (cdr expirable) newsgroup)))))
 
 (defun gnus-group-expire-all-groups ()
   "Expire all expirable articles in all newsgroups."
@@ -2642,6 +2745,11 @@ or nil if no action could be taken."
 (defun gnus-group-set-current-level (n)
   "Set the level of the current group to the numeric prefix."
   (interactive "P")
+  (setq n (or n (string-to-int 
+		 (completing-read 
+		  "Level: " 
+		  '(("1") ("2") ("3") ("4") ("5") ("6") ("7") ("8") ("9"))
+		  nil t))))
   (let ((group (gnus-group-group-name)))
     (if (not group) (error "No newsgroup on current line.")
     (if (and (numberp n) (>= n 1) (<= n 9))
@@ -2835,24 +2943,29 @@ specify which levels you are interested in re-scanning."
 The difference between N and the number of newsgroup checked is returned.
 If N is negative, this group and the N-1 previous groups will be checked."
   (interactive "p")
-  (let ((backward (< n 0))
+  (let ((way (if (< n 0) -1 1))
 	(n (abs n))
+	(w-p (window-start))
 	group)
-  (while (and (> n 0)
-	      (progn
-		(and (setq group (gnus-group-group-name))
-		     (gnus-activate-newsgroup 
-		      group (gnus-group-real-name group))
-		     (progn
-		       (gnus-get-unread-articles-in-group 
-			(nth 2 (gnus-gethash group gnus-newsrc-hashtb))
-			(gnus-gethash group gnus-active-hashtb))
-		       (gnus-group-update-group-line)))
-		t)
-	      (= 0 (gnus-group-next-group 1)))
-    (setq n (1- n)))
-  (if (/= 0 n) (message "No more newsgroups"))
-  n))
+    (while (and (> n 0)
+		(progn
+		  (and (setq group (gnus-group-group-name))
+		       (gnus-activate-newsgroup 
+			group (gnus-group-real-name group))
+		       (progn
+			 (gnus-get-unread-articles-in-group 
+			  (nth 2 (gnus-gethash group gnus-newsrc-hashtb))
+			  (gnus-gethash group gnus-active-hashtb))
+			 (gnus-group-update-group-line)))
+		  t)
+		(= 0 (gnus-group-next-group way)))
+      (setq n (1- n)))
+    (if (/= 0 n) (message "No more newsgroups"))
+    ;; !!! I don't know why the buffer scrolls forward when updating
+    ;; the first line in the Group buffer, but it does. So we set the
+    ;; window start forcibly.
+    (set-window-start (get-buffer-window (current-buffer)) w-p)
+    n))
   
 (defun gnus-group-describe-group (&optional group)
   "Display a description of the current newsgroup."
@@ -2886,6 +2999,56 @@ If N is negative, this group and the N-1 previous groups will be checked."
      gnus-description-hashtb)
     (goto-char (point-min))
     (gnus-group-position-cursor)))
+
+;; Suggested by by Daniel Quinlan <quinlan@best.com>.
+(defun gnus-group-apropos (regexp &optional search-description)
+  "List all newsgroups that have names that match a regexp."
+  (interactive "sGnus apropos (regexp): ")
+  (let ((prev "")
+	(obuf (current-buffer))
+	groups des prev)
+    ;; Go through all newsgroups that are known to Gnus.
+    (mapatoms 
+     (lambda (group)
+       (and (string-match regexp (symbol-name group))
+	    (setq groups (cons (symbol-name group) groups))))
+     gnus-active-hashtb)
+    ;; Go through all descriptions that are known to Gnus. 
+    (if search-description
+	(mapatoms 
+	 (lambda (group)
+	   (and (string-match regexp (symbol-value group))
+		(gnus-gethash (symbol-name group) gnus-active-hashtb)
+		(setq groups (cons (symbol-name group) groups))))
+	 gnus-description-hashtb))
+    (if (not groups)
+	(message "No groups matched \"%s\"." regexp)
+      ;; Print out all the groups.
+      (save-excursion
+	(pop-to-buffer (get-buffer-create "*Gnus Help*"))
+	(buffer-disable-undo (current-buffer))
+	(erase-buffer)
+	(setq groups (sort groups 'string<))
+	(while groups
+	  ;; Groups may be entered twice into the list of groups.
+	  (if (not (string= (car groups) prev))
+	      (progn
+		(insert (setq prev (car groups)) "\n")
+		(if (and gnus-description-hashtb
+			 (setq des (gnus-gethash (car groups) 
+						 gnus-description-hashtb)))
+		    (insert "  " des "\n"))))
+	  (setq groups (cdr groups)))
+	(goto-char 1)))
+    (pop-to-buffer obuf)))
+
+(defun gnus-group-description-apropos (regexp)
+  "List all newsgroups that have names or desccriptions that match a regexp."
+  (interactive "sGnus description apropos (regexp): ")
+  (if (not (or gnus-description-hashtb
+	       (gnus-read-descriptions-file)))
+      (error "Couldn't request descriptions file"))
+  (gnus-group-apropos regexp t))
 
 ;; Suggested by Jack Vinson <vinson@unagi.cis.upenn.edu>.
 (defun gnus-group-save-newsrc ()
@@ -3011,7 +3174,11 @@ and the second element is the address."
    (list (list (completing-read "Select method: "
 				gnus-valid-select-methods
 				nil t "nntp")
-	       (read-string "Server name: "))))
+	       ;; Suggested by mapjph@bath.ac.uk.
+	       (completing-read 
+		"Server name: " 
+		(mapcar (lambda (server) (list server))
+			gnus-secondary-servers)))))
   (gnus-browse-foreign-server method))
 
 
@@ -3163,232 +3330,148 @@ and the second element is the address."
 ;;; Gnus Summary Mode
 ;;;
 
-(defvar gnus-summary-kill-map nil)
-(define-prefix-command 'gnus-summary-kill-map)
+(defmacro gnus-summary-add (key func)
+  (` (define-key gnus-summary-mode-map (, key) (, func))))
+
+(defvar gnus-summary-raise-map nil)
+(define-prefix-command 'gnus-summary-raise-map)
+
+(defvar gnus-summary-lower-map nil)
+(define-prefix-command 'gnus-summary-lower-map)
 
 (if gnus-summary-mode-map
     nil
   (setq gnus-summary-mode-map (make-keymap))
   (suppress-keymap gnus-summary-mode-map)
-  (define-key gnus-summary-mode-map "\C-c\C-k" gnus-summary-kill-map)
-  (define-key gnus-summary-mode-map "\C-c\C-v" 'gnus-uu-ctl-map)
-  (define-key gnus-summary-mode-map "#" 'gnus-summary-mark-as-processable)
-  (define-key gnus-summary-mode-map "\M-#" 'gnus-summary-unmark-as-processable)
-  (define-key gnus-summary-mode-map "\C-c\M-#" 'gnus-summary-unmark-all-processable)
-  (define-key gnus-summary-mode-map " " 'gnus-summary-next-page)
-  (define-key gnus-summary-mode-map "\177" 'gnus-summary-prev-page)
-  (define-key gnus-summary-mode-map "\r" 'gnus-summary-scroll-up)
-  (define-key gnus-summary-mode-map "n" 'gnus-summary-next-unread-article)
-  (define-key gnus-summary-mode-map "p" 'gnus-summary-prev-unread-article)
-  (define-key gnus-summary-mode-map "N" 'gnus-summary-next-article)
-  (define-key gnus-summary-mode-map "P" 'gnus-summary-prev-article)
-  (define-key gnus-summary-mode-map "\M-\C-n" 'gnus-summary-next-same-subject)
-  (define-key gnus-summary-mode-map "\M-\C-p" 'gnus-summary-prev-same-subject)
-  (define-key gnus-summary-mode-map "\C-c\C-n" 'gnus-summary-next-digest)
-  (define-key gnus-summary-mode-map "\C-c\C-p" 'gnus-summary-prev-digest)
-  (define-key gnus-summary-mode-map "\M-n" 'gnus-summary-next-unread-subject)
-  (define-key gnus-summary-mode-map "\M-p" 'gnus-summary-prev-unread-subject)
-  (define-key gnus-summary-mode-map "." 'gnus-summary-first-unread-article)
-  (define-key gnus-summary-mode-map "s" 'gnus-summary-isearch-article)
-  (define-key gnus-summary-mode-map "\M-s" 'gnus-summary-search-article-forward)
-  (define-key gnus-summary-mode-map "\M-r" 'gnus-summary-search-article-backward)
-  (define-key gnus-summary-mode-map "<" 'gnus-summary-beginning-of-article)
-  (define-key gnus-summary-mode-map ">" 'gnus-summary-end-of-article)
-  (define-key gnus-summary-mode-map "j" 'gnus-summary-goto-subject)
-  (define-key gnus-summary-mode-map "l" 'gnus-summary-goto-last-article)
-  (define-key gnus-summary-mode-map "^" 'gnus-summary-refer-parent-article)
-  (define-key gnus-summary-mode-map "\M-^" 'gnus-summary-refer-article)
-  (define-key gnus-summary-mode-map "'" 'gnus-summary-tick-article-forward)
-  (define-key gnus-summary-mode-map "u" 'gnus-summary-tick-article-forward)
-  (define-key gnus-summary-mode-map "U" 'gnus-summary-tick-article-backward)
-  (define-key gnus-summary-mode-map "d" 'gnus-summary-mark-as-read-forward)
-  (define-key gnus-summary-mode-map "D" 'gnus-summary-mark-as-read-backward)
-  (define-key gnus-summary-mode-map "\M-u" 'gnus-summary-clear-mark-forward)
-  (define-key gnus-summary-mode-map "\M-U" 'gnus-summary-clear-mark-backward)
-  (define-key gnus-summary-mode-map "k" 'gnus-summary-kill-same-subject-and-select)
-  (define-key gnus-summary-mode-map "\C-k" 'gnus-summary-kill-same-subject)
-  (define-key gnus-summary-mode-map "\M-\C-t" 'gnus-summary-toggle-threads)
-  (define-key gnus-summary-mode-map "\M-\C-s" 'gnus-summary-show-thread)
-  (define-key gnus-summary-mode-map "\M-\C-h" 'gnus-summary-hide-thread)
-  (define-key gnus-summary-mode-map "\M-\C-f" 'gnus-summary-next-thread)
-  (define-key gnus-summary-mode-map "\M-\C-b" 'gnus-summary-prev-thread)
-  (define-key gnus-summary-mode-map "\M-\C-u" 'gnus-summary-up-thread)
-  (define-key gnus-summary-mode-map "\M-\C-d" 'gnus-summary-down-thread)
-  (define-key gnus-summary-mode-map "\M-\C-k" 'gnus-summary-kill-thread)
-  (define-key gnus-summary-mode-map "&" 'gnus-summary-execute-command)
-  (define-key gnus-summary-mode-map "c" 'gnus-summary-catchup-and-exit)
-  (define-key gnus-summary-mode-map "\C-t" 'gnus-summary-toggle-truncation)
-  (define-key gnus-summary-mode-map "\M-d" 'gnus-summary-delete-marked-as-read)
-  (define-key gnus-summary-mode-map "\C-c\M-\C-d" 'gnus-summary-delete-marked-with)
-  (define-key gnus-summary-mode-map "x" 'gnus-summary-mark-as-expirable)
-  (define-key gnus-summary-mode-map "X" 'gnus-summary-unmark-as-expirable)
-  (define-key gnus-summary-mode-map "b" 'gnus-summary-set-bookmark)
-  (define-key gnus-summary-mode-map "B" 'gnus-summary-remove-bookmark)
-  (define-key gnus-summary-mode-map "i" 'gnus-summary-mark-as-interesting)
-  (define-key gnus-summary-mode-map "\M-i" 'gnus-summary-show-all-interesting)
-  (define-key gnus-summary-mode-map "\C-c\C-sn" 'gnus-summary-sort-by-number)
-  (define-key gnus-summary-mode-map "\C-c\C-sa" 'gnus-summary-sort-by-author)
-  (define-key gnus-summary-mode-map "\C-c\C-ss" 'gnus-summary-sort-by-subject)
-  (define-key gnus-summary-mode-map "\C-c\C-sd" 'gnus-summary-sort-by-date)
-  (define-key gnus-summary-mode-map "\C-c\C-s\C-n" 'gnus-summary-sort-by-number)
-  (define-key gnus-summary-mode-map "\C-c\C-s\C-a" 'gnus-summary-sort-by-author)
-  (define-key gnus-summary-mode-map "\C-c\C-s\C-s" 'gnus-summary-sort-by-subject)
-  (define-key gnus-summary-mode-map "\C-c\C-s\C-d" 'gnus-summary-sort-by-date)
-  (define-key gnus-summary-mode-map "=" 'gnus-summary-expand-window)
-  (define-key gnus-summary-mode-map "\C-x\C-s" 'gnus-summary-reselect-current-group)
-  (define-key gnus-summary-mode-map "\M-g" 'gnus-summary-rescan-group)
-  (define-key gnus-summary-mode-map "w" 'gnus-summary-stop-page-breaking)
-  (define-key gnus-summary-mode-map "\C-c\C-r" 'gnus-summary-caesar-message)
-  (define-key gnus-summary-mode-map "g" 'gnus-summary-show-article)
-  (define-key gnus-summary-mode-map "t" 'gnus-summary-toggle-header)
-  (define-key gnus-summary-mode-map "\M-t" 'gnus-summary-toggle-mime)
-  (define-key gnus-summary-mode-map "\C-d" 'gnus-summary-rmail-digest)
-  (define-key gnus-summary-mode-map "a" 'gnus-summary-post-news)
-  (define-key gnus-summary-mode-map "f" 'gnus-summary-followup)
-  (define-key gnus-summary-mode-map "F" 'gnus-summary-followup-with-original)
-  (define-key gnus-summary-mode-map "C" 'gnus-summary-cancel-article)
-  (define-key gnus-summary-mode-map "S" 'gnus-summary-supersede-article)
-  (define-key gnus-summary-mode-map "r" 'gnus-summary-reply)
-  (define-key gnus-summary-mode-map "R" 'gnus-summary-reply-with-original)
-  (define-key gnus-summary-mode-map "\C-c\C-f" 'gnus-summary-mail-forward)
-  (define-key gnus-summary-mode-map "m" 'gnus-summary-mail-other-window)
-  (define-key gnus-summary-mode-map "o" 'gnus-summary-save-article)
-  (define-key gnus-summary-mode-map "\C-o" 'gnus-summary-save-article-rmail)
-  (define-key gnus-summary-mode-map "|" 'gnus-summary-pipe-output)
-  (define-key gnus-summary-mode-map "\M-m" 'gnus-summary-move-article)
-  (define-key gnus-summary-mode-map "\M-\C-m" 'gnus-summary-respool-article)
-  (define-key gnus-summary-mode-map "\M-k" 'gnus-summary-edit-local-kill)
-  (define-key gnus-summary-mode-map "\M-K" 'gnus-summary-edit-global-kill)
-  (define-key gnus-summary-mode-map "V" 'gnus-version)
-  (define-key gnus-summary-mode-map "\C-c\C-d" 'gnus-summary-describe-group)
-  (define-key gnus-summary-mode-map "q" 'gnus-summary-exit)
-  (define-key gnus-summary-mode-map "Q" 'gnus-summary-quit)
-  (define-key gnus-summary-mode-map "?" 'gnus-summary-describe-briefly)
-  (define-key gnus-summary-mode-map "\C-c\C-i" 'gnus-info-find-node)
-  (define-key gnus-summary-mode-map [mouse-2] 'gnus-mouse-pick-article)
-  (define-key gnus-summary-kill-map "\C-s" 'gnus-kill-file-kill-by-subject)
-  (define-key gnus-summary-kill-map "\C-a" 'gnus-kill-file-kill-by-author)
-  (define-key gnus-summary-kill-map "\C-t" 'gnus-kill-file-kill-by-thread)
-  (define-key gnus-summary-kill-map "\C-x" 'gnus-kill-file-kill-by-xref)
-
-  (define-key gnus-summary-mode-map [menu-bar misc]
-	(cons "Misc" (make-sparse-keymap "misc")))
-
-  (define-key gnus-summary-mode-map [menu-bar misc caesar-message]
-	'("Caesar Message" . gnus-summary-caesar-message))
-  (define-key gnus-summary-mode-map [menu-bar misc cancel-article]
-	'("Cancel Article" . gnus-summary-cancel-article))
-  (define-key gnus-summary-mode-map [menu-bar misc edit-local-kill]
-	'("Edit Kill File" . gnus-summary-edit-local-kill))
-
-  (define-key gnus-summary-mode-map [menu-bar misc tick]
-	'("Tick" . gnus-summary-tick-article-forward))
-  (define-key gnus-summary-mode-map [menu-bar misc mark-as-read]
-	'("Mark as Read" . gnus-summary-mark-as-read))
-
-  (define-key gnus-summary-mode-map [menu-bar misc quit]
-	'("Quit Group" . gnus-summary-quit))
-  (define-key gnus-summary-mode-map [menu-bar misc exit]
-	'("Exit Group" . gnus-summary-exit))
-
-  (define-key gnus-summary-mode-map [menu-bar sort]
-	(cons "Sort" (make-sparse-keymap "sort")))
-
-  (define-key gnus-summary-mode-map [menu-bar sort sort-by-author]
-	'("Sort by Author" . gnus-summary-sort-by-author))
-  (define-key gnus-summary-mode-map [menu-bar sort sort-by-date]
-	'("Sort by Date" . gnus-summary-sort-by-date))
-  (define-key gnus-summary-mode-map [menu-bar sort sort-by-number]
-	'("Sort by Number" . gnus-summary-sort-by-number))
-  (define-key gnus-summary-mode-map [menu-bar sort sort-by-subject]
-	'("Sort by Subject" . gnus-summary-sort-by-subject))
-
-  (define-key gnus-summary-mode-map [menu-bar show/hide]
-	(cons "Show/Hide" (make-sparse-keymap "show/hide")))
-
-  (define-key gnus-summary-mode-map [menu-bar show/hide hide-all-threads]
-	'("Hide All Threads" . gnus-summary-hide-all-threads))
-  (define-key gnus-summary-mode-map [menu-bar show/hide hide-thread]
-	'("Hide Thread" . gnus-summary-hide-thread))
-  (define-key gnus-summary-mode-map [menu-bar show/hide show-all-threads]
-	'("Show All Threads" . gnus-summary-show-all-threads))
-  (define-key gnus-summary-mode-map [menu-bar show/hide show-all-headers]
-	'("Show All Headers" . gnus-summary-show-all-headers))
-  (define-key gnus-summary-mode-map [menu-bar show/hide show-thread]
-	'("Show Thread" . gnus-summary-show-thread))
-  (define-key gnus-summary-mode-map [menu-bar show/hide show-article]
-	'("Show Article" . gnus-summary-show-article))
-  (define-key gnus-summary-mode-map [menu-bar show/hide toggle-truncation]
-	'("Toggle Truncation" . gnus-summary-toggle-truncation))
-  (define-key gnus-summary-mode-map [menu-bar show/hide toggle-mime]
-	'("Toggle Mime" . gnus-summary-toggle-mime))
-  (define-key gnus-summary-mode-map [menu-bar show/hide toggle-header]
-	'("Toggle Header" . gnus-summary-toggle-header))
-
-  (define-key gnus-summary-mode-map [menu-bar action]
-	(cons "Action" (make-sparse-keymap "action")))
-
-  (define-key gnus-summary-mode-map [menu-bar action kill-same-subject]
-	'("Kill Same Subject" . gnus-summary-kill-same-subject))
-  (define-key gnus-summary-mode-map [menu-bar action kill-thread]
-	'("Kill Thread" . gnus-summary-kill-thread))
-  (define-key gnus-summary-mode-map [menu-bar action delete-marked-with]
-	'("Delete Marked With" . gnus-summary-delete-marked-with))
-  (define-key gnus-summary-mode-map [menu-bar action delete-marked-as-read]
-	'("Delete Marked As Read" . gnus-summary-delete-marked-as-read))
-  (define-key gnus-summary-mode-map [menu-bar action catchup-and-exit]
-	'("Catchup And Exit" . gnus-summary-catchup-and-exit))
-  (define-key gnus-summary-mode-map [menu-bar action catchup-to-here]
-	'("Catchup to Here" . gnus-summary-catchup-to-here))
-
-  (define-key gnus-summary-mode-map [menu-bar action ignore]
-    '("---"))
-
-  (define-key gnus-summary-mode-map [menu-bar action save-in-file]
-	'("Save in File" . gnus-summary-save-in-file))
-  (define-key gnus-summary-mode-map [menu-bar action save-article]
-	'("Save Article" . gnus-summary-save-article))
-
-  (define-key gnus-summary-mode-map [menu-bar action lambda]
-    '("---"))
-
-  (define-key gnus-summary-mode-map [menu-bar action forward]
-	'("Forward" . gnus-summary-mail-forward))
-  (define-key gnus-summary-mode-map [menu-bar action followup-with-original]
-	'("Followup with Original" . gnus-summary-followup-with-original))
-  (define-key gnus-summary-mode-map [menu-bar action followup]
-	'("Followup" . gnus-summary-followup))
-  (define-key gnus-summary-mode-map [menu-bar action reply-with-original]
-	'("Reply with Original" . gnus-summary-reply-with-original))
-  (define-key gnus-summary-mode-map [menu-bar action reply]
-	'("Reply" . gnus-summary-reply))
-  (define-key gnus-summary-mode-map [menu-bar action post]
-	'("Post News" . gnus-summary-post-news))
-
-  (define-key gnus-summary-mode-map [menu-bar move]
-	(cons "Move" (make-sparse-keymap "move")))
-
-  (define-key gnus-summary-mode-map [menu-bar move isearch-article]
-	'("Search in Article" . gnus-summary-isearch-article))
-  (define-key gnus-summary-mode-map [menu-bar move search-through-articles]
-	'("Search through Articles" . gnus-summary-search-article-forward))
-  (define-key gnus-summary-mode-map [menu-bar move down-thread]
-	'("Down Thread" . gnus-summary-down-thread))
-  (define-key gnus-summary-mode-map [menu-bar move prev-same-subject]
-	'("Prev Same Subject" . gnus-summary-prev-same-subject))
-  (define-key gnus-summary-mode-map [menu-bar move prev-group]
-	'("Prev Group" . gnus-summary-prev-group))
-  (define-key gnus-summary-mode-map [menu-bar move next-unread-same-subject]
-	'("Next Unread Same Subject" . gnus-summary-next-unread-same-subject))
-  (define-key gnus-summary-mode-map [menu-bar move next-unread-article]
-	'("Next Unread Article" . gnus-summary-next-unread-article))
-  (define-key gnus-summary-mode-map [menu-bar move next-thread]
-	'("Next Thread" . gnus-summary-next-thread))
-  (define-key gnus-summary-mode-map [menu-bar move next-group]
-	'("Next Group" . gnus-summary-next-group))
-  (define-key gnus-summary-mode-map [menu-bar move first-unread-article]
-	'("First Unread Article" . gnus-summary-first-unread-article))
-  )
+  (gnus-summary-add "\C-c\C-i" gnus-summary-raise-map)
+  (gnus-summary-add "\C-c\C-k" gnus-summary-lower-map)
+  (gnus-summary-add "\C-c\C-v" 'gnus-uu-ctl-map)
+  (gnus-summary-add "@" 'gnus-summary-kill-below)
+  (gnus-summary-add "\C-c " 'gnus-summary-clear-above)
+  (gnus-summary-add "\C-c-" 'gnus-summary-tick-above)
+  (gnus-summary-add "#" 'gnus-summary-mark-as-processable)
+  (gnus-summary-add "\M-#" 'gnus-summary-unmark-as-processable)
+  (gnus-summary-add "\C-c\M-#" 'gnus-summary-unmark-all-processable)
+  (gnus-summary-add " " 'gnus-summary-next-page)
+  (gnus-summary-add "\177" 'gnus-summary-prev-page)
+  (gnus-summary-add "\r" 'gnus-summary-scroll-up)
+  (gnus-summary-add "n" 'gnus-summary-next-unread-article)
+  (gnus-summary-add "p" 'gnus-summary-prev-unread-article)
+  (gnus-summary-add "N" 'gnus-summary-next-article)
+  (gnus-summary-add "P" 'gnus-summary-prev-article)
+  (gnus-summary-add "\M-\C-n" 'gnus-summary-next-same-subject)
+  (gnus-summary-add "\M-\C-p" 'gnus-summary-prev-same-subject)
+  (gnus-summary-add "\C-c\C-n" 'gnus-summary-next-digest)
+  (gnus-summary-add "\C-c\C-p" 'gnus-summary-prev-digest)
+  (gnus-summary-add "\M-n" 'gnus-summary-next-unread-subject)
+  (gnus-summary-add "\M-p" 'gnus-summary-prev-unread-subject)
+  (gnus-summary-add "." 'gnus-summary-first-unread-article)
+  (gnus-summary-add "s" 'gnus-summary-isearch-article)
+  (gnus-summary-add "\M-s" 'gnus-summary-search-article-forward)
+  (gnus-summary-add "\M-r" 'gnus-summary-search-article-backward)
+  (gnus-summary-add "<" 'gnus-summary-beginning-of-article)
+  (gnus-summary-add ">" 'gnus-summary-end-of-article)
+  (gnus-summary-add "j" 'gnus-summary-goto-subject)
+  (gnus-summary-add "l" 'gnus-summary-goto-last-article)
+  (gnus-summary-add "^" 'gnus-summary-refer-parent-article)
+  (gnus-summary-add "\M-^" 'gnus-summary-refer-article)
+  (gnus-summary-add "u" 'gnus-summary-tick-article-forward)
+  (gnus-summary-add "-" 'gnus-summary-tick-article-forward)
+  (gnus-summary-add "U" 'gnus-summary-tick-article-backward)
+  (gnus-summary-add "d" 'gnus-summary-mark-as-read-forward)
+  (gnus-summary-add "D" 'gnus-summary-mark-as-read-backward)
+  (gnus-summary-add "\M-u" 'gnus-summary-clear-mark-forward)
+  (gnus-summary-add "\M-U" 'gnus-summary-clear-mark-backward)
+  (gnus-summary-add "k" 'gnus-summary-kill-same-subject-and-select)
+  (gnus-summary-add "\C-k" 'gnus-summary-kill-same-subject)
+  (gnus-summary-add "\M-\C-t" 'gnus-summary-toggle-threads)
+  (gnus-summary-add "\M-\C-s" 'gnus-summary-show-thread)
+  (gnus-summary-add "\M-\C-h" 'gnus-summary-hide-thread)
+  (gnus-summary-add "\M-\C-f" 'gnus-summary-next-thread)
+  (gnus-summary-add "\M-\C-b" 'gnus-summary-prev-thread)
+  (gnus-summary-add "\M-\C-u" 'gnus-summary-up-thread)
+  (gnus-summary-add "\M-\C-d" 'gnus-summary-down-thread)
+  (gnus-summary-add "\M-\C-k" 'gnus-summary-kill-thread)
+  (gnus-summary-add "&" 'gnus-summary-execute-command)
+  (gnus-summary-add "c" 'gnus-summary-catchup-and-exit)
+  (gnus-summary-add "\C-t" 'gnus-summary-toggle-truncation)
+  (gnus-summary-add "\M-d" 'gnus-summary-delete-marked-as-read)
+  (gnus-summary-add "\C-c\M-\C-d" 'gnus-summary-delete-marked-with)
+  (gnus-summary-add "x" 'gnus-summary-mark-as-expirable)
+  (gnus-summary-add "X" 'gnus-summary-unmark-as-expirable)
+  (gnus-summary-add "\M-\C-x" 'gnus-summary-expire-articles)
+  (gnus-summary-add [M-DEL] 'gnus-summary-delete-article)
+  (gnus-summary-add "b" 'gnus-summary-set-bookmark)
+  (gnus-summary-add "B" 'gnus-summary-remove-bookmark)
+  (gnus-summary-add "+" 'gnus-summary-mark-as-dormant)
+  (gnus-summary-add "\M-+" 'gnus-summary-show-all-dormant)
+  (gnus-summary-add "\C-c\M-\C-s" 'gnus-summary-show-all-expunged)
+  (gnus-summary-add "\C-c\C-sn" 'gnus-summary-sort-by-number)
+  (gnus-summary-add "\C-c\C-sa" 'gnus-summary-sort-by-author)
+  (gnus-summary-add "\C-c\C-ss" 'gnus-summary-sort-by-subject)
+  (gnus-summary-add "\C-c\C-sd" 'gnus-summary-sort-by-date)
+  (gnus-summary-add "\C-c\C-s\C-n" 'gnus-summary-sort-by-number)
+  (gnus-summary-add "\C-c\C-s\C-a" 'gnus-summary-sort-by-author)
+  (gnus-summary-add "\C-c\C-s\C-s" 'gnus-summary-sort-by-subject)
+  (gnus-summary-add "\C-c\C-s\C-d" 'gnus-summary-sort-by-date)
+  (gnus-summary-add "=" 'gnus-summary-expand-window)
+  (gnus-summary-add "\C-x\C-s" 'gnus-summary-reselect-current-group)
+  (gnus-summary-add "\M-g" 'gnus-summary-rescan-group)
+  (gnus-summary-add "w" 'gnus-summary-stop-page-breaking)
+  (gnus-summary-add "\C-c\C-r" 'gnus-summary-caesar-message)
+  (gnus-summary-add "g" 'gnus-summary-show-article)
+  (gnus-summary-add "t" 'gnus-summary-toggle-header)
+  (gnus-summary-add "\M-t" 'gnus-summary-toggle-mime)
+  (gnus-summary-add "\C-d" 'gnus-summary-rmail-digest)
+  (gnus-summary-add "a" 'gnus-summary-post-news)
+  (gnus-summary-add "f" 'gnus-summary-followup)
+  (gnus-summary-add "F" 'gnus-summary-followup-with-original)
+  (gnus-summary-add "C" 'gnus-summary-cancel-article)
+  (gnus-summary-add "S" 'gnus-summary-supersede-article)
+  (gnus-summary-add "r" 'gnus-summary-reply)
+  (gnus-summary-add "R" 'gnus-summary-reply-with-original)
+  (gnus-summary-add "\C-c\C-f" 'gnus-summary-mail-forward)
+  (gnus-summary-add "m" 'gnus-summary-mail-other-window)
+  (gnus-summary-add "o" 'gnus-summary-save-article)
+  (gnus-summary-add "\C-o" 'gnus-summary-save-article-rmail)
+  (gnus-summary-add "|" 'gnus-summary-pipe-output)
+  (gnus-summary-add "\M-m" 'gnus-summary-move-article)
+  (gnus-summary-add "\M-\C-m" 'gnus-summary-respool-article)
+  (gnus-summary-add "\M-k" 'gnus-summary-edit-local-kill)
+  (gnus-summary-add "\M-K" 'gnus-summary-edit-global-kill)
+  (gnus-summary-add "V" 'gnus-version)
+  (gnus-summary-add "\C-c\C-d" 'gnus-summary-describe-group)
+  (gnus-summary-add "q" 'gnus-summary-exit)
+  (gnus-summary-add "Q" 'gnus-summary-quit)
+  (gnus-summary-add "?" 'gnus-summary-describe-briefly)
+  ;;(gnus-summary-add "\C-c\C-i" 'gnus-info-find-node)
+  (gnus-summary-add [mouse-2] 'gnus-mouse-pick-article)
+  (gnus-summary-add "\C-c\C-x" 'gnus-kill-file-set-expunge-below)
+  (gnus-summary-add "\C-c\C-m" 'gnus-kill-file-set-mark-below)
+  (define-key gnus-summary-raise-map "\C-s" 
+    'gnus-summary-temporarily-raise-by-subject)
+  (define-key gnus-summary-raise-map "\C-a" 
+    'gnus-summary-temporarily-raise-by-author)
+  (define-key gnus-summary-raise-map "\C-t" 
+    'gnus-summary-temporarily-raise-by-thread)
+  (define-key gnus-summary-raise-map "\C-x" 
+    'gnus-summary-temporarily-raise-by-xref)
+  (define-key gnus-summary-raise-map "s" 'gnus-summary-raise-by-subject)
+  (define-key gnus-summary-raise-map "a" 'gnus-summary-raise-by-author)
+  (define-key gnus-summary-raise-map "x" 'gnus-summary-raise-by-xref)
+  (define-key gnus-summary-raise-map "f" 'gnus-summary-raise-followups-to-author)
+  (define-key gnus-summary-lower-map "\C-s" 'gnus-summary-temporarily-lower-by-subject)
+  (define-key gnus-summary-lower-map "\C-a" 'gnus-summary-temporarily-lower-by-author)
+  (define-key gnus-summary-lower-map "\C-t" 'gnus-summary-temporarily-lower-by-thread)
+  (define-key gnus-summary-lower-map "\C-x" 'gnus-summary-temporarily-lower-by-xref)
+  (define-key gnus-summary-lower-map "s" 'gnus-summary-lower-by-subject)
+  (define-key gnus-summary-lower-map "a" 'gnus-summary-lower-by-author)
+  (define-key gnus-summary-lower-map "x" 'gnus-summary-lower-by-xref)
+  (define-key gnus-summary-lower-map "f" 'gnus-summary-lower-followups-to-author)
+  (gnus-summary-add "(" 'gnus-summary-lower-interest)
+  (gnus-summary-add ")" 'gnus-summary-raise-interest)
+  (gnus-summary-add "I" 'gnus-summary-set-interest)
+  (gnus-summary-make-menu-bar))
 
 
 (defun gnus-summary-mode ()
@@ -3492,10 +3575,25 @@ The following commands are available:
 \\[gnus-summary-describe-group]\t Describe the current newsgroup
 \\[gnus-summary-describe-briefly]\t Give a brief key overview
 \\[gnus-info-find-node]\t Go to the Gnus info node
-\\[gnus-kill-file-kill-by-subject]\t Kill articles with the current subject
-\\[gnus-kill-file-kill-by-author]\t Kill articles from the current author
-\\[gnus-kill-file-kill-by-thread]\t Kill articles in the current thread
-\\[gnus-kill-file-kill-by-xref]\t Kill articles with the current cross-posting
+
+\\[gnus-kill-file-set-expunge-below]	Automatically expunge articles below LEVEL.
+
+\\[gnus-kill-file-set-mark-below]	Automatically mark articles below LEVEL.
+\\[gnus-summary-temporarily-raise-by-subject]\t Temporarily raise score for articles with the current subject
+\\[gnus-summary-temporarily-raise-by-author]\t Temporarily raise score for articles from the current author
+\\[gnus-summary-temporarily-raise-by-xref]\t Temporarily raise score for articles with the current cross-posting
+\\[gnus-summary-raise-by-subject]\t Permanently raise score for articles with the current subject
+\\[gnus-summary-raise-by-author]\t Permanently raise score for articles from the current author
+\\[gnus-summary-raise-followups-to-author]\t Permanently raise score for followups to the current author
+\\[gnus-summary-raise-by-xref]\t Permanently raise score for articles with the current cross-posting
+\\[gnus-summary-temporarily-lower-by-subject]\t Temporarily lower score for articles with the current subject
+\\[gnus-summary-temporarily-lower-by-author]\t Temporarily lower score for articles from the current author
+\\[gnus-summary-temporarily-lower-by-xref]\t Temporarily lower score for articles with the current cross-posting
+\\[gnus-summary-lower-by-subject]\t Permanently lower score for articles with the current subject
+\\[gnus-summary-lower-by-author]\t Permanently lower score for articles from the current author
+\\[gnus-summary-lower-followups-to-author]\t Permanently lower score for followups to the current author
+\\[gnus-summary-lower-by-thread]\t Permanently lower score for articles in the current thread
+\\[gnus-summary-lower-by-xref]\t Permanently lower score for articles with the current cross-posting
 "
   (interactive)
   (kill-all-local-variables)
@@ -3524,7 +3622,7 @@ The following commands are available:
 (defun gnus-mouse-pick-article (e)
   (interactive "e")
   (mouse-set-point e)
-  (gnus-summary-next-page nil))
+  (gnus-summary-next-page nil t))
 
 (defun gnus-summary-setup-buffer (group)
   "Initialize Summary buffer."
@@ -3547,39 +3645,56 @@ The following commands are available:
     (forward-char 1)))
 
 (defun gnus-summary-insert-line 
-  (sformat header level current unread replied expirable print-subject
+  (sformat header level current unread replied expirable subject-or-nil
 	   &optional dummy)
   (if (not sformat) 
       (setq sformat gnus-summary-line-format-spec))
-  (let* ((thread-space (if (< level 1) "" (make-string (frame-width) ? )))
-	 (indentation 
+  (let* ((indentation 
 	  (make-string (* level gnus-thread-indent-level) ? ))
 	 (lines (or (header-lines header) 0))
-	 (current (if current ?+ ? ))
+	 (interest (or gnus-summary-default-interest " "))
 	 (replied (if replied ?R ? ))
 	 (expirable (if expirable ?X ? ))
 	 (from (header-from header))
 	 (name-address (gnus-extract-address-components from))
-	 (address (cdr name-address))
-	 (name (car name-address))
+	 (address (car (cdr name-address)))
+	 (name (or (car name-address) (car (cdr name-address))))
 	 (number (header-number header))
 	 (subject (header-subject header))
-	 (subject-or-nil (if print-subject subject ""))
 	 (buffer-read-only nil)
-	 (closing-bracket (if dummy ?= ?\]))
-	 (opening-bracket (if dummy ?= ?\[))
+	 (opening-bracket (if dummy ?\< ?\[))
+	 (closing-bracket (if dummy ?\> ?\]))
 	 b)
     ;; Suggested by Brian Edmonds <bedmonds@prodigy.bc.ca>.
     (if (not (numberp lines)) (setq lines 0))
     (beginning-of-line)
-    (insert (eval sformat))
-    (forward-char -1)
     (setq b (point))
-    ;; Info format SUBJECT UNREAD NUMBER LEVEL
-    (insert (format "%s %c %d %d" (gnus-simplify-subject-re subject)
-		     unread number level))
-    (set-text-properties b (point) '(invisible t))
+    (insert-before-markers (eval sformat))
+    (forward-char -1)
+    (if (and gnus-visual gnus-mouse-face)
+ 	(overlay-put (make-overlay b (point)) 'mouse-face gnus-mouse-face))
+    ;; Info format SUBJECT INTEREST UNREAD NUMBER LEVEL
+    (set-text-properties
+     (prog1
+	 (point)
+       (insert (format "%s %d %c %d %d" (gnus-simplify-subject-re subject)
+		       (or gnus-summary-default-interest 5)
+		       unread number level)))
+     (point) '(invisible t))
     (forward-char 1)))
+
+(defun gnus-summary-update-lines ()
+  ;; Rehighlight summary buffer according to `gnus-summary-highlight'.
+  (if (and gnus-visual gnus-visual-summary-update-hook)
+      (save-excursion
+	(set-buffer gnus-summary-buffer)
+	(goto-char (point-min))
+	(while (not (eobp))
+	  (run-hooks 'gnus-summary-update-hook)
+	  (forward-line 1)))))
+
+;; Suggested by Daniel Quinlan <quinlan@best.com>.  
+  
 
 (defun gnus-summary-read-group (group &optional show-all no-article kill-buffer)
   "Start reading news in newsgroup GROUP.
@@ -3592,6 +3707,9 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 	;; You can change the order of subjects in this hook.
 	(run-hooks 'gnus-select-group-hook)
 	(gnus-summary-prepare)
+	(if (and (zerop (buffer-size))
+		 gnus-newsgroup-dormant)
+	    (gnus-summary-show-all-dormant))
 	(let ((killed 
 	       (gnus-add-to-range 
 		gnus-newsgroup-killed 
@@ -3604,8 +3722,8 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 	  (run-hooks 'gnus-apply-kill-hook)
 	  (setq gnus-newsgroup-killed killed))
 	(if (zerop (buffer-size))
-	    ;; This newsgroup is empty.
 	    (progn
+	      ;; This newsgroup is empty.
 	      (gnus-summary-catchup-and-exit nil t) ;Without confirmations.
 	      (message "No unread news"))
 	  ;; Hide conversation thread subtrees.  We cannot do this in
@@ -3631,12 +3749,11 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 	    (gnus-summary-position-cursor))
 	  (if (and kill-buffer
 		   (get-buffer kill-buffer)
-		   ;; Bug by Sudish Joseph <joseph@cis.ohio-state.edu>
 		   (buffer-name (get-buffer kill-buffer)))
-	      (progn
-		(kill-buffer (get-buffer kill-buffer))))))
+	      (kill-buffer kill-buffer))))
     ;; Cannot select newsgroup GROUP.
     (message "Couldn't select newsgroup")
+    (set-buffer gnus-group-buffer)
     (gnus-summary-position-cursor)))
 
 (defun gnus-summary-prepare ()
@@ -3648,7 +3765,7 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 	      (gnus-gather-threads (gnus-make-threads))
 	    gnus-newsgroup-headers)
 	  0)
-    (gnus-summary-delete-interesting)
+    (gnus-summary-delete-dormant)
     ;; Erase header retrieval message.
     (message "")
     ;; Call hooks for modifying Summary buffer.
@@ -3656,8 +3773,8 @@ If NO-ARTICLE is non-nil, no article is selected initially."
     (goto-char (point-min))
     (run-hooks 'gnus-summary-prepare-hook)))
 
-(defun gnus-summary-delete-interesting ()
-  (let ((int gnus-newsgroup-interesting)
+(defun gnus-summary-delete-dormant ()
+  (let ((int gnus-newsgroup-dormant)
 	(buffer-read-only nil)
 	beg cur-level)
     (while int
@@ -3672,9 +3789,9 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 		;; level of this article, then it has to be the child of this
 		;; article, so we do not delete this article.
 		(progn
-		  (setq gnus-newsgroup-interesting-subjects
+		  (setq gnus-newsgroup-dormant-subjects
 			(cons (cons (car int) (buffer-substring beg (point)))
-			      gnus-newsgroup-interesting-subjects))
+			      gnus-newsgroup-dormant-subjects))
 		  (delete-region beg (point))))))
       (setq int (cdr int)))))
 
@@ -3685,10 +3802,13 @@ If NO-ARTICLE is non-nil, no article is selected initially."
     (let ((hashtb (gnus-make-hashtable 1023))
 	  (prev threads)
 	  (result threads)
-	  thread subject hthread)
+	  thread subject hthread unre-subject)
       (while threads
 	(setq subject (header-subject (car (car threads))))
-	(if (setq hthread (gnus-gethash subject hashtb))
+	(if (setq hthread (gnus-gethash 
+			   (setq unre-subject 
+				 (gnus-simplify-subject-re subject))
+			   hashtb))
 	    (progn
 	      (if (not (stringp (car (car hthread))))
 		  (setcar hthread (list subject (car hthread))))
@@ -3696,7 +3816,7 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 		      (append (car hthread) (cons (car threads) nil)))
 	      (setcdr prev (cdr threads))
 	      (setq threads prev))
-	  (gnus-sethash subject threads hashtb))
+	  (gnus-sethash unre-subject threads hashtb))
 	(setq prev threads)
 	(setq threads (cdr threads)))
       result)))
@@ -3710,11 +3830,11 @@ If NO-ARTICLE is non-nil, no article is selected initially."
     (mapatoms
      (lambda (refs)
        (if (not (car (symbol-value refs)))
-	   (setq mroots (nconc (cdr (symbol-value refs)) mroots))
+	   (setq mroots (append (cdr (symbol-value refs)) mroots))
 	 ;; Ok, these refer back to valid articles, but if
 	 ;; `gnus-thread-ignore-subject' is nil, we have to check that
-	 ;; the root has the same subject as its children. The clidren
-	 ;; that do not are made into roots and remove from the list
+	 ;; the root has the same subject as its children. The children
+	 ;; that do not are made into roots and removed from the list
 	 ;; of children. 
 	 (or gnus-thread-ignore-subject
 	     (let* ((prev (symbol-value refs))
@@ -3727,9 +3847,9 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 				    (header-subject (car headers)))))
 		     (progn
 		       (setq mroots (cons (car headers) mroots))
-		       (setcdr prev (cdr headers))))
-		 (setq prev headers
-		       headers (cdr headers)))))))
+		       (setcdr prev (cdr headers)))
+		   (setq prev headers))
+		 (setq headers (cdr headers)))))))
      gnus-newsgroup-dependencies)
 
     ;; We sort the roots according to article number. (This has to be
@@ -3746,24 +3866,27 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 
 (defun gnus-make-sub-thread (root)
   ;; This function makes a sub-tree for a node in the tree.
-  (let ((children (nreverse (cdr (gnus-gethash (header-id root) 
-					       gnus-newsgroup-dependencies)))))
+  (let ((children (reverse (cdr (gnus-gethash (downcase (header-id root))
+					      gnus-newsgroup-dependencies)))))
     (if (not children)
 	(list root)
       (cons root (mapcar 
 		  (lambda (top) (gnus-make-sub-thread top)) children)))))
 
+;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
+(defvar gnus-tmp-prev-subject "")
+
 ;; Basic ideas by Paul Dworkin <paul@media-lab.media.mit.edu>
 ;; Subject bug fix by jbw@bigbird.bu.edu (Joe Wells)
-(defun gnus-summary-prepare-threads (threads level &optional not-child)
+(defun gnus-summary-prepare-threads 
+  (threads level &optional not-child no-subject)
   "Prepare Summary buffer from THREADS and indentation LEVEL.  
 THREADS is either a list of `(PARENT [(CHILD1 [(GRANDCHILD ...]...) ...])'  
 or a straight list of headers."
-  (let ((old-subject "")
-	thread header number subject clevel)
+  (let (thread header number subject clevel)
     (while threads
-      (setq thread (car threads))
-      (setq threads (cdr threads))
+      (setq thread (car threads)
+	    threads (cdr threads))
       ;; If `thread' is a cons, hierarchical threads are used.  If not,
       ;; `thread' is the header.
       (if (consp thread)
@@ -3772,49 +3895,56 @@ or a straight list of headers."
       (if (stringp header)
 	  ;; The header is a dummy root.
 	  (progn
-	    (cond ((eq gnus-summary-make-false-root 'dummy)
-		   ;; We output a dummy root.
-		   (gnus-summary-insert-dummy-line 
-		    nil header (header-number (car (car (cdr thread)))))
-		   (setq clevel 1))
-		  ((eq gnus-summary-make-false-root 'adopt)
+	    (cond ((eq gnus-summary-make-false-root 'adopt)
 		   ;; We let the first article adopt the rest.
 		   (gnus-summary-prepare-threads (list (car (cdr thread))) 0)
 		   (setq thread (cdr (cdr thread)))
 		   (while thread
 		     (gnus-summary-prepare-threads (list (car thread)) 1 t)
 		     (setq thread (cdr thread))))
+		  ((eq gnus-summary-make-false-root 'dummy)
+		   ;; We output a dummy root.
+		   (gnus-summary-insert-dummy-line 
+		    nil header (header-number (car (car (cdr thread)))))
+		   (setq clevel 1))
+		  ((eq gnus-summary-make-false-root 'empty)
+		   ;; We print the articles with empty subject fields. 
+		   (gnus-summary-prepare-threads (list (car (cdr thread))) 0)
+		   (setq thread (cdr (cdr thread)))
+		   (while thread
+		     (gnus-summary-prepare-threads (list (car thread)) 0 nil t)
+		     (setq thread (cdr thread))))
 		  (t
 		   ;; We do not make a root for the gathered
 		   ;; sub-threads at all.  
 		   (setq clevel 0)))
 	    ;; Print the sub-threads.
-	    (and (consp thread)
-		 (cdr thread)
-		 (gnus-summary-prepare-threads
-		  (cdr thread) clevel)))
+	    (and (consp thread) (cdr thread)
+		 (gnus-summary-prepare-threads (cdr thread) clevel)))
 	;; The header is a real article.
-	(setq number (header-number header))
-	(setq subject (header-subject header))
+	(setq number (header-number header)
+	      subject (header-subject header)
+	      gnus-tmp-prev-subject subject)
 	(gnus-summary-insert-line
 	 nil header level nil 
 	 (cond ((memq number gnus-newsgroup-marked) ?-)
-	       ((memq number gnus-newsgroup-interesting) ?I)
+	       ((memq number gnus-newsgroup-dormant) ?+)
 	       ((memq number gnus-newsgroup-unreads) ? )
 	       (t ?D))
 	 (memq number gnus-newsgroup-replied)
 	 (memq number gnus-newsgroup-expirable)
-	 (or (= level 0)
-	     (and gnus-thread-ignore-subject
-		  (not (string= (gnus-simplify-subject-re old-subject)
-				(gnus-simplify-subject-re subject)))))
+	 (if no-subject gnus-summary-same-subject
+	   (if (or (zerop level)
+		   (and gnus-thread-ignore-subject
+			(not (string= 
+			      (gnus-simplify-subject-re gnus-tmp-prev-subject)
+			      (gnus-simplify-subject-re subject)))))
+	       subject
+	     gnus-summary-same-subject))
 	 not-child)
-	(setq old-subject subject)
 	;; Recursively print subthreads.
-	(and (consp thread)
-	     (cdr thread)
-	     (gnus-summary-prepare-threads
-	      (cdr thread) (1+ level)))))))
+	(and (consp thread) (cdr thread)
+	     (gnus-summary-prepare-threads (cdr thread) (1+ level)))))))
 
 (defun gnus-select-newsgroup (group &optional show-all)
   "Select newsgroup GROUP.
@@ -3823,6 +3953,7 @@ If SHOW-ALL is non-nil, all articles in the group are selected."
 	 (real-group (gnus-group-real-name group))
 	 (info (nth 2 entry))
 	 articles header-marks)
+
     (if (eq (car entry) t)
 	(or (if (nth 4 info) 
 		(gnus-activate-foreign-newsgroup info)
@@ -3833,16 +3964,21 @@ If SHOW-ALL is non-nil, all articles in the group are selected."
     (gnus-check-news-server (nth 4 info))
     (if (not (gnus-request-group group t))
 	(error "Couldn't request newsgroup %s" group))
+
     (setq gnus-newsgroup-name group)
     (setq gnus-newsgroup-unselected nil)
     (setq gnus-newsgroup-unreads (gnus-list-of-unread-articles group))
-    (cond (show-all
-	   ;; Select all active articles.
-	   (setq articles (gnus-uncompress-sequence 
-			   (gnus-gethash group gnus-active-hashtb))))
-	  (t
-	   ;; Select unread articles only.
-	   (setq articles gnus-newsgroup-unreads)))
+    (cond 
+     ((or show-all
+	  ;; Check whether there are only dormant articles in this newsgroup. 
+	  (= (length gnus-newsgroup-unreads)
+	     (length (cdr (assq 'dormant (nth 3 info))))))
+      ;; Select all active articles.
+      (setq articles (gnus-uncompress-sequence 
+		      (gnus-gethash group gnus-active-hashtb))))
+     (t
+      ;; Select unread articles only.
+      (setq articles gnus-newsgroup-unreads)))
     ;; Require confirmation if selecting large newsgroup.
     (if (not (numberp gnus-large-newsgroup))
 	nil
@@ -3915,7 +4051,7 @@ If SHOW-ALL is non-nil, all articles in the group are selected."
 	    (setq gnus-newsgroup-expirable (cdr (assq 'expire (nth 3 info))))
 	    (setq gnus-newsgroup-killed (cdr (assq 'killed (nth 3 info))))
 	    (setq gnus-newsgroup-bookmarks (cdr (assq 'bookmark (nth 3 info))))
-	    (setq gnus-newsgroup-interesting (cdr (assq 'interesting (nth 3 info))))
+	    (setq gnus-newsgroup-dormant (cdr (assq 'dormant (nth 3 info))))
 	    (setq gnus-newsgroup-processable nil)))
       ;; Check whether auto-expire is to be done in this group.
       (setq gnus-newsgroup-auto-expire
@@ -3954,10 +4090,10 @@ If SHOW-ALL is non-nil, all articles in the group are selected."
 	(active (gnus-gethash (car info) gnus-active-hashtb))
 	marked m prev)
     ;; There are four types of marked articles - ticked, replied,
-    ;; expirable and interesting.  
+    ;; expirable and dormant.  
     (while marked-lists
       (setq m (cdr (setq prev (car marked-lists))))
-      (cond ((or (eq 'tick (car prev)) (eq 'interesting (car prev)))
+      (cond ((or (eq 'tick (car prev)) (eq 'dormant (car prev)))
 	     ;; Make sure that all ticked articles are a subset of the
 	     ;; unread/unselected articles.
 	     (while m
@@ -4010,7 +4146,7 @@ If SHOW-ALL is non-nil, all articles in the group are selected."
   info)
 
 (defun gnus-set-marked-articles 
-  (info ticked replied expirable killed interesting bookmark) 
+  (info ticked replied expirable killed dormant bookmark) 
   "Enter the various lists of marked articles into the newsgroup info list."
   (let (newmarked)
     (if ticked
@@ -4021,8 +4157,8 @@ If SHOW-ALL is non-nil, all articles in the group are selected."
 	(setq newmarked (cons (cons 'expire expirable) newmarked)))
     (if killed
 	(setq newmarked (cons (cons 'killed killed) newmarked)))
-    (if interesting
-	(setq newmarked (cons (cons 'interesting interesting) newmarked)))
+    (if dormant
+	(setq newmarked (cons (cons 'dormant dormant) newmarked)))
     (if bookmark
 	(setq newmarked (cons (cons 'bookmark bookmark) newmarked)))
     (if (nthcdr 3 info)
@@ -4046,7 +4182,8 @@ If WHERE is `summary', the summary mode line format will be used."
 			    gnus-summary-mode-line-format-spec))
 		 (group-name gnus-newsgroup-name)
 		 (article-number (or gnus-current-article 0))
-		 (unread (length gnus-newsgroup-unreads))
+		 (unread (- (length gnus-newsgroup-unreads)
+			    (length gnus-newsgroup-dormant)))
 		 (unselected (length gnus-newsgroup-unselected))
 		 (unread-and-unselected
 		  (cond ((and (zerop unread) (zerop unselected)) "")
@@ -4116,6 +4253,15 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 		 (progn
 		   (setq num 0)
 		   ;; Set the new list of read articles in this group.
+		   (setq active (gnus-gethash name gnus-active-hashtb))
+		   ;; First peel off all illegal article numbers.
+		   (if active
+		       (let ((id idlist))
+			 (while id
+			   (if (or (> (car id) (cdr active))
+				   (< (car id) (car active)))
+			       (setq idlist (delq (car id) idlist)))
+			   (setq id (cdr id)))))
 		   (setcar (nthcdr 2 info)
 			   (setq range
 				 (gnus-add-to-range 
@@ -4123,20 +4269,20 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 				  (setq idlist (sort idlist '<)))))
 		   ;; Then we have to re-compute how many unread
 		   ;; articles there are in this group.
-		   (if (setq active (gnus-gethash name gnus-active-hashtb))
+		   (if active
 		       (progn
 			 (if (atom (car range))
-			     (progn
+			     (if (not range)
+				 (setq num (- (1+ (cdr active)) (car active)))
 			       (setq num (- (cdr active) (- (1+ (cdr range)) 
-							    (car range))))
-			       (if (< num 0) (setq num 0)))
+							    (car range)))))
 			   (while range
 			     (setq num (+ num (- (1+ (cdr (car range))) 
 						 (car (car range)))))
 			     (setq range (cdr range)))
 			   (setq num (- (cdr active) num)))
 			 ;; Update the number of unread articles.
-			 (setcar entry num)
+			 (setcar entry (max 0 num))
 			 ;; Update the Newsgroup buffer.
 			 (gnus-group-update-group name t)))))))
 	 xref-hashtb))))
@@ -4151,6 +4297,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
   (save-excursion
     (let ((cur nntp-server-buffer)
 	  (dependencies (gnus-make-hashtable (length gnus-newsgroup-unreads)))
+	  (none-id 0)
 	  headers header subject from char c article unreads in-reply-to
 	  references end-header id dep ref end)
       (set-buffer nntp-server-buffer)
@@ -4191,14 +4338,15 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (setq end (match-end 0))
 	    (save-excursion
 	      (setq ref 
-		    (buffer-substring
-		     (progn 
-		       (end-of-line)
-		       (search-backward ">" end t)
-		       (1+ (point)))
-		     (progn
-		       (search-backward "<" end t)
-		       (point))))))
+		    (downcase
+		     (buffer-substring
+		      (progn 
+			(end-of-line)
+			(search-backward ">" end t)
+			(1+ (point)))
+		      (progn
+			(search-backward "<" end t)
+			(point)))))))
 	   ((eq char ?i)
 	    (setq in-reply-to (gnus-header-value))))
 	  (forward-line 1))
@@ -4208,12 +4356,19 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	       (string-match "<[^>]+>" in-reply-to)
 	       (header-set-references 
 		header
-		(substring in-reply-to (match-beginning 0)
-			   (match-end 0)))))
+		(setq ref (downcase (substring in-reply-to (match-beginning 0)
+					       (match-end 0)))))))
 	(or subject (header-set-subject header "(none)"))
 	(or from (header-set-from header "(nobody)"))
 	;; We build the thread tree.
-	(if (boundp (setq dep (intern id dependencies)))
+	(if (boundp 
+	     (setq dep 
+		   (intern 
+		    (downcase
+		     (or id
+			 (concat "none+" (int-to-string 
+					  (setq none-id (1+ none-id))))))
+		    dependencies)))
 	    (setcar (symbol-value dep) header)
 	  (set dep (list header)))
 	(if (boundp (setq dep (intern (or ref "none") dependencies)))
@@ -4258,6 +4413,7 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
     (set-buffer nntp-server-buffer)
     (let ((cur (current-buffer))
 	  (dependencies (gnus-make-hashtable (length gnus-newsgroup-unreads)))
+	  (none 0)
 	  number header headers eol header id ref dep)
       (goto-char (point-min))
       (while (and sequence (not (eobp)))
@@ -4285,11 +4441,13 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
 			  (let ((beg (point)))
 			  (search-forward "\t" eol)
 			  (if (search-backward ">" beg t)
-			      (setq ref (buffer-substring 
-					 (1+ (point))
-					 (progn
-					   (search-backward "<" beg t)
-					   (point))))
+			      (setq ref 
+				    (downcase 
+				     (buffer-substring 
+				      (1+ (point))
+				      (progn
+					(search-backward "<" beg t)
+					(point)))))
 			    (setq ref nil))))
 			(gnus-nov-field)) ; refs
 		      (read cur)       ; chars
@@ -4300,7 +4458,14 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
 			(gnus-nov-field)) ; misc
 		      ))
 	       ;; We build the thread tree.
-	       (if (boundp (setq dep (intern id dependencies)))
+	       (if (boundp 
+		    (setq dep 
+			  (intern 
+			   (downcase 
+			    (or id (concat "none+"
+					   (int-to-string 
+					    (setq none (1+ none))))))
+			   dependencies)))
 		   (setcar (symbol-value dep) header)
 		 (set dep (list header)))
 	       (if (boundp (setq dep (intern (or ref "none") dependencies)))
@@ -4418,11 +4583,10 @@ searched for."
 	;; We have to take care of hidden lines.
 	(regexp 
 	 (if subject 
-	     (format "%s %s \\([-0-9 ]+\\) [0-9]+[\n\r]"
+	     (format "%s [-0-9]+ %s \\([-0-9 ]+\\) [0-9]+[\n\r]"
 		     (regexp-quote (gnus-simplify-subject-re subject))
-		     (if unread " " "."))
-	   ;; Bug by Daniel Quinlan <quinlan@best.com>.
-	   (if unread "^[- ]" "^."))))
+		     (if unread gnus-unread-mark "."))
+	   (if unread (concat "^[" gnus-unread-mark "]") "^."))))
     (if backward
 	(beginning-of-line)
       (end-of-line))
@@ -4450,7 +4614,7 @@ If 2nd optional argument SUBJECT is non-nil, the article which has
 the same subject will be searched for."
   (gnus-summary-search-forward unread subject t))
 
-(defun gnus-summary-article-number ()
+(defun gnus-summary-article-number (&optional number-or-nil)
   "The article number of the article on the current line.
 If there isn's an article number here, then we return the current
 article number."
@@ -4462,7 +4626,7 @@ article number."
 	  (goto-char (match-beginning 0))
 	  (read (current-buffer)))
 	;; We return the current if we couldn't find anything.
-	gnus-current-article)))
+	(if number-or-nil nil gnus-current-article))))
 
 (defun gnus-summary-thread-level ()
   "The thread level of the article on the current line."
@@ -4486,15 +4650,26 @@ article number."
   "Return current subject string or nil if nothing."
   (save-excursion
     (beginning-of-line)
-    (if (re-search-forward ". [-0-9]+ [0-9]+[\n\r]" nil t)
+    (if (re-search-forward " [-0-9]+ . [-0-9]+ [0-9]+[\n\r]" nil t)
 	(let ((beg (previous-property-change (match-beginning 0)))
-	      (end (1- (match-beginning 0)))
+	      (end (match-beginning 0))
 	      (buffer-read-only nil))
 	  (set-text-properties beg end nil)
 	  (prog1
 	      (buffer-substring beg end)
 	    (set-text-properties beg end '(invisible t))))
       nil)))
+
+(defun gnus-summary-interest ()
+  "Return current article interest."
+  (save-excursion
+    (beginning-of-line)
+    (if (re-search-forward " [-0-9]+ . [-0-9]+ [0-9]+[\n\r]" nil t)
+	(progn
+	  (goto-char (match-beginning 0))
+	  (read (current-buffer)))
+      ;; We return zero if we couldn't find anything.
+      0)))
 
 (defun gnus-summary-recenter ()
   "Center point in Summary window."
@@ -4563,37 +4738,6 @@ article number."
 
 ;; Various summary commands
 
-(defun gnus-summary-catchup-and-exit (all &optional quietly)
-  "Mark all articles not marked as unread in this newsgroup as read, then exit.
-If prefix argument ALL is non-nil, all articles are marked as read."
-  (interactive "P")
-  (if (or quietly
-	  (not gnus-interactive-catchup) ;Without confirmation?
-	  gnus-expert-user
-	  (y-or-n-p
-	   (if all
-	       "Do you really want to mark everything as read? "
-	     "Delete all articles not marked as unread? ")))
-      (let ((unmarked
-             (gnus-set-difference gnus-newsgroup-unreads
-                                  (if (not all) gnus-newsgroup-marked))))
-        (message "")			;Erase "Yes or No" question.
-	(while unmarked
-          (gnus-mark-article-as-read (car unmarked))
-	  (setq unmarked (cdr unmarked)))
-	;; Select next newsgroup or exit.
-	(cond ((eq gnus-auto-select-next 'quietly)
-	       ;; Select next newsgroup quietly.
-	       (gnus-summary-next-group nil))
-	      (t
-	       (gnus-summary-exit)))
-	)))
-
-(defun gnus-summary-catchup-all-and-exit (&optional quietly)
-  "Mark all articles in this newsgroup as read, and then exit."
-  (interactive)
-  (gnus-summary-catchup-and-exit t quietly))
-
 (defun gnus-summary-toggle-truncation (arg)
   "Toggle truncation of summary lines.
 With arg, turn line truncation on iff arg is positive."
@@ -4620,18 +4764,21 @@ Prefix argument SHOW-ALL means to select all articles."
 (defun gnus-summary-rescan-group (all)
   "Exit the newsgroup, ask for new articles, and select the newsgroup."
   (interactive "P")
-  (gnus-summary-exit t)
-  (gnus-summary-jump-to-group gnus-newsgroup-name)
-  (save-excursion
-    (set-buffer gnus-group-buffer)
-    (gnus-group-get-new-news-this-group 1))
-  (gnus-summary-jump-to-group gnus-newsgroup-name)
-  (gnus-group-read-group all))
+  ;; Fix by Ilja Weis <kult@uni-paderborn.de>.
+  (let ((group gnus-newsgroup-name))
+    (gnus-summary-exit t)
+    (gnus-summary-jump-to-group group)
+    (save-excursion
+      (set-buffer gnus-group-buffer)
+      (gnus-group-get-new-news-this-group 1))
+    (gnus-summary-jump-to-group group)
+    (gnus-group-read-group all)))
 
 (defun gnus-summary-exit (&optional temporary)
   "Exit reading current newsgroup, and then return to group selection mode.
 gnus-exit-group-hook is called with no arguments if that value is non-nil."
   (interactive)
+  (gnus-kill-save-kill-buffer)
   (let ((group gnus-newsgroup-name)
 	(mode major-mode)
 	(buf (current-buffer)))
@@ -4648,19 +4795,17 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 				 t gnus-newsgroup-replied
 				 gnus-newsgroup-expirable
 				 gnus-newsgroup-killed
-				 gnus-newsgroup-interesting
+				 gnus-newsgroup-dormant
 				 gnus-newsgroup-bookmarks)
-      ;; T means ignore unsubscribed newsgroups.
+      ;; t means ignore unsubscribed newsgroups.
       (if gnus-use-cross-reference
 	  (gnus-mark-xrefs-as-read group headers unreads))
-      ;; Save the kill buffer (if it exists)
-      (gnus-kill-save-kill-buffer)
       ;; Do not switch windows but change the buffer to work.
       (set-buffer gnus-group-buffer)
       (gnus-group-update-group group))
     ;; Make sure where I was, and go to next newsgroup.
     (gnus-group-jump-to-group group)
-    (gnus-group-next-unread-group 1)
+;    (gnus-group-next-unread-group 1)
     (if temporary
 	;; If exiting temporary, caller should adjust Group mode
 	;; buffer point by itself.
@@ -4705,36 +4850,22 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 
 ;; Walking around Group mode buffer from Summary mode.
 
-(defun gnus-summary-next-group (no-article &optional group)
+(defun gnus-summary-next-group (&optional no-article group)
   "Exit current newsgroup and then select next unread newsgroup.
 If prefix argument NO-ARTICLE is non-nil, no article is selected initially."
   (interactive "P")
-  ;; Make sure Group mode buffer point is on current newsgroup.
-  (gnus-summary-jump-to-group gnus-newsgroup-name)
-  (let ((group (or group (gnus-summary-search-group)))
-	(buf gnus-summary-buffer))
-    (if (null group)
-	(progn
-	  (message "Exiting %s..." gnus-newsgroup-name)  
-	  (gnus-summary-exit)
-	  (message ""))
-      (message "Selecting %s..." group)
-      (gnus-summary-exit t)		;Exit Summary mode temporary.
-      ;; We are now in Group mode buffer.
-      ;; Make sure Group mode buffer point is on GROUP.
-      (gnus-summary-jump-to-group group)
-      (gnus-summary-read-group group nil no-article buf)
-      (or (eq (current-buffer)
-	      (get-buffer gnus-summary-buffer))
-	  (eq gnus-auto-select-next t)
-	  ;; Expected newsgroup has nothing to read since the articles
-	  ;; are marked as read by cross-referencing. So, try next
-	  ;; newsgroup. (Make sure we are in Group mode buffer now.)
-	  (and (eq (current-buffer)
-		   (get-buffer gnus-group-buffer))
-	       (gnus-group-group-name)
-	       (gnus-summary-read-group
-		(gnus-group-group-name) nil no-article buf))))))
+  (let ((ingroup gnus-newsgroup-name))
+    (gnus-summary-exit t)		;Update all information.
+    (gnus-group-jump-to-group ingroup)
+    (let ((group (or group (gnus-summary-search-group)))
+	  (buf gnus-summary-buffer))
+      (if (null group)
+	  (gnus-summary-quit)
+	(message "Selecting %s..." group)
+	;; We are now in Group mode buffer.
+	;; Make sure Group mode buffer point is on GROUP.
+	(gnus-group-jump-to-group group)
+	(gnus-summary-read-group group nil no-article buf)))))
 
 (defun gnus-summary-prev-group (no-article)
   "Exit current newsgroup and then select previous unread newsgroup.
@@ -4770,6 +4901,24 @@ If prefix argument NO-ARTICLE is non-nil, no article is selected initially."
       )))
 
 ;; Walking around summary lines.
+
+(defun gnus-summary-first-subject (unread)
+  "Go to the first unread subject.
+If UNREAD is non-nil, go to the first unread article.
+Returns nil if there are no unread articles."
+  (let ((begin (point)))
+    (goto-char 1)
+    (if (re-search-forward 
+	 (concat (if unread " " ".") " [-0-9]+ [0-9]+[\n\r]") nil t)
+	(progn
+	  (forward-char -1)
+	  ;; Fix by Per Abrahamsen <amanda@iesd.auc.dk>.
+	  (gnus-summary-position-cursor)
+	  t)
+      ;; If there is no unread articles, stay where you are.
+      (goto-char begin)
+      (message "No more unread articles")
+      nil)))
 
 (defun gnus-summary-next-subject (n &optional unread)
   "Go to next N'th summary line.
@@ -4816,17 +4965,19 @@ If optional argument UNREAD is non-nil, only unread article is selected."
 			  (int-to-string (header-number headers))))
 		       gnus-newsgroup-headers)
 		      nil 'require-match))))
-    (if (or (eq article (gnus-summary-article-number))
-	    (let ((org (point)))
-	      (goto-char 1)
-	      (if (re-search-forward (format "[^Z] %d [0-9]+[\n\r]" article)
-				     nil t)
-		  (goto-char (match-beginning 0))
-		(goto-char org)
-		nil)))
-	(progn
-	  (gnus-summary-position-cursor)
-	  article)))
+  (if (not article)
+      (error "No article number"))
+  (if (or (eq article (gnus-summary-article-number t))
+	  (let ((org (point)))
+	    (goto-char 1)
+	    (if (re-search-forward 
+		 (format "[^Z] %d [0-9]+[\n\r]" article) nil t)
+		(goto-char (match-beginning 0))
+	      (goto-char org)
+	      nil)))
+      (progn
+	(gnus-summary-position-cursor)
+	article)))
 
 ;; Walking around summary lines with displaying articles.
 
@@ -4878,8 +5029,8 @@ again when current header does not match with ALL-HEADERS option."
   nil)
 
 (defun gnus-summary-next-article (unread &optional subject)
-  "Select article after current one.
-If argument UNREAD is non-nil, only unread article is selected."
+  "Select the article after the current one.
+If UNREAD is non-nil, only unread articles are selected."
   (interactive "P")
   (let ((header nil))
     (cond ((gnus-summary-display-article
@@ -4888,7 +5039,7 @@ If argument UNREAD is non-nil, only unread article is selected."
 		gnus-auto-select-same
 		(gnus-set-difference gnus-newsgroup-unreads
 				     (append gnus-newsgroup-marked
-					     gnus-newsgroup-interesting))
+					     gnus-newsgroup-dormant))
 		(memq this-command
 		      '(gnus-summary-next-unread-article
 			gnus-summary-next-page
@@ -4927,6 +5078,7 @@ If argument UNREAD is non-nil, only unread article is selected."
 	   (gnus-summary-goto-article gnus-newsgroup-end))
 	  (t
 	   ;; Select next newsgroup automatically if requested.
+	   (gnus-summary-jump-to-group gnus-newsgroup-name)
 	   (let ((cmd (aref (this-command-keys) 0))
 		 (group (gnus-summary-search-group nil gnus-keep-same-level))
 		 (auto-select
@@ -4966,7 +5118,7 @@ If argument UNREAD is non-nil, only unread article is selected."
 	     (cond ((and auto-select
 			 (eq gnus-auto-select-next 'quietly))
 		    ;; Select quietly.
-		    (gnus-summary-next-group nil group))
+		    (gnus-summary-next-group))
 		   (auto-select
 		    ;; Confirm auto selection.
 		    (let* ((event (read-event))
@@ -4975,7 +5127,7 @@ If argument UNREAD is non-nil, only unread article is selected."
 				(car event)
 			      event)))
 		      (if (and (eq event type) (eq event cmd))
-			  (gnus-summary-next-group nil group)
+			  (gnus-summary-next-group)
 			(setq unread-command-events (list event)))))
 		   )
 	     ))
@@ -4999,7 +5151,7 @@ If argument UNREAD is non-nil, only unread article is selected."
 		gnus-auto-select-same
 		(gnus-set-difference gnus-newsgroup-unreads
 				     (append gnus-newsgroup-marked
-					     gnus-newsgroup-interesting))
+					     gnus-newsgroup-dormant))
 		(memq this-command
 		      '(gnus-summary-prev-unread-article
 			;;gnus-summary-prev-page
@@ -5032,10 +5184,13 @@ If argument UNREAD is non-nil, only unread article is selected."
   (gnus-summary-prev-article t (and gnus-auto-select-same
 				    (gnus-summary-subject-string))))
 
-(defun gnus-summary-next-page (lines)
+(defun gnus-summary-next-page (lines &optional circular)
   "Show next page of selected article.
 If end of article, select next article.
-Argument LINES specifies lines to be scrolled up."
+Argument LINES specifies lines to be scrolled up.
+If CIRCULAR is non-nil, go to the start of the article instead of 
+instead of selecting the next article when reaching the end of the
+current article." 
   (interactive "P")
   (setq gnus-summary-buffer (current-buffer))
   (let ((article (gnus-summary-article-number))
@@ -5050,10 +5205,13 @@ Argument LINES specifies lines to be scrolled up."
       (pop-to-buffer gnus-summary-buffer)
       (gnus-eval-in-buffer-window gnus-article-buffer
 	(setq endp (gnus-article-next-page lines)))
-      (cond ((and endp lines)
-	     (message "End of message"))
-	    ((and endp (null lines))
-	     (gnus-summary-next-unread-article)))
+      (if endp
+ 	  (cond (circular
+ 		 (gnus-summary-beginning-of-article))
+ 		(lines
+ 		 (message "End of message"))
+ 		((null lines)
+ 		 (gnus-summary-next-unread-article))))
       (gnus-summary-position-cursor))))
 
 (defun gnus-summary-prev-page (lines)
@@ -5110,18 +5268,8 @@ Argument LINES specifies lines to be scrolled up (or down if negative)."
   "Select the first unread article. 
 Return nil if there are no unread articles."
   (interactive)
-  (let ((begin (point)))
-    (goto-char 1)
-    (if (re-search-forward "  [-0-9]+ [0-9]+[\n\r]" nil t)
-	(progn
-	  (forward-char -1)
-	  ;; Fix by Per Abrahamsen <amanda@iesd.auc.dk>.
-	  (gnus-summary-position-cursor)
-	  (gnus-summary-display-article (gnus-summary-article-number)))
-      ;; If there is no unread articles, stay where you are.
-      (goto-char begin)
-      (message "No more unread articles")
-      nil)))
+  (if (gnus-summary-first-subject t)
+      (gnus-summary-display-article (gnus-summary-article-number))))
 
 (defun gnus-summary-goto-article (article &optional all-headers)
   "Fetch ARTICLE and display it if it exists.
@@ -5151,7 +5299,8 @@ If ALL-HEADERS is non-nil, no header lines are hidden."
 (defun gnus-summary-refer-parent-article ()
   "Refer parent article of current article."
   (interactive)
-  (let ((ref (header-references gnus-current-headers))
+  (let ((ref (header-references (gnus-get-header-by-number
+				 (gnus-summary-article-number))))
 	parent)
     (if (or (not ref) (equal ref ""))
 	(error "No references in this article"))
@@ -5185,9 +5334,11 @@ NOTE: This command only works with newsgroup that use NNTP."
 	   (gnus-article-prepare message-id nil (gnus-read-header message-id)))
       (progn
 	(gnus-summary-insert-line 
-	 nil gnus-current-headers 0 nil ?D nil nil t)
+	 nil gnus-current-headers 0 nil ?D nil nil 
+	 (header-subject gnus-current-headers))
 	(forward-line -1)
 	(gnus-summary-position-cursor)
+	(run-hooks 'gnus-summary-update-hook)
 	message-id)
     (error "No such references")))
 
@@ -5581,7 +5732,51 @@ and `request-accept' functions. (Ie. mail newsgroups at present.)"
 	     "What method do you want to use when respooling? "
 	     (gnus-methods-using 'respool) nil t)))
   (gnus-summary-move-article n nil respool-method))
-	     
+
+;; Summary interest commands.
+
+;; Suggested by boubaker@cenatls.cena.dgac.fr.
+
+(defun gnus-summary-raise-interest (n)
+  "Raise the interest of the current article by N."
+  (interactive "p")
+  (gnus-summary-set-interest (+ (gnus-summary-interest) n)))
+
+(defun gnus-summary-lower-interest (n)
+  "Lower the interest of the current article by N."
+  (interactive "p")
+  (gnus-summary-raise-interest (- n)))
+
+(defun gnus-summary-set-interest (n)
+  "Set the interest of the current article to N."
+  (interactive "p")
+  ;; Skip dummy header line.
+  (save-excursion
+    (if (= (gnus-summary-article-mark) ?Z) (forward-line 1))
+    (let ((buffer-read-only nil)
+	  beg)
+      ;; Set visible interest.
+      (beginning-of-line)
+      (forward-char 3)
+      (delete-char 1)
+      (insert (int-to-string (max 1 (min 9 n))))
+      ;; Set invisible interest.
+      (re-search-forward " [-0-9]+ . [-0-9]+ [0-9]+[\n\r]")
+      (goto-char (1+ (match-beginning 0)))
+      (delete-region (setq beg (point)) (progn (search-forward " ") 
+					       (forward-char -1)
+					       (point)))
+      (insert (int-to-string n))
+      (set-text-properties beg (point) '(invisible t)))
+    (run-hooks 'gnus-summary-update-hook)))
+
+(defmacro gnus-raise (field expression level)
+  (` (gnus-kill (, field) (, expression)
+		(function (gnus-summary-raise-interest (, level))) t)))
+
+(defmacro gnus-lower (field expression level)
+  (` (gnus-kill (, field) (, expression)
+	     (function (gnus-summary-raise-interest (- (, level)))) t)))
 
 ;; Summary marking commands.
 
@@ -5628,7 +5823,7 @@ If optional argument UNMARK is negative, mark articles as unread instead."
   (let ((count 1))
     (save-excursion
       (cond ((null unmark)
-	     (gnus-summary-mark-as-read nil "K"))
+	     (gnus-summary-mark-as-read nil gnus-killed-mark))
 	    ((> unmark 0)
 	     (gnus-summary-tick-article nil t))
 	    (t
@@ -5636,7 +5831,7 @@ If optional argument UNMARK is negative, mark articles as unread instead."
       (while (and subject
 		  (gnus-summary-search-forward nil subject))
 	(cond ((null unmark)
-	       (gnus-summary-mark-as-read nil "K"))
+	       (gnus-summary-mark-as-read nil gnus-killed-mark))
 	      ((> unmark 0)
 	       (gnus-summary-tick-article nil t))
 	      (t
@@ -5722,6 +5917,7 @@ the actual number of articles marked is returned."
 	  (forward-char 2)
 	  (delete-char 1)
 	  (insert "X")
+	  (run-hooks 'gnus-summary-update-hook)
 	  t))))
 
 (defun gnus-summary-remove-expirable-mark (article)
@@ -5736,6 +5932,7 @@ the actual number of articles marked is returned."
 	  (delete-char 1)
 	  (insert 
 	   (if (memq article gnus-newsgroup-processable) ?# ? ))
+	  (run-hooks 'gnus-summary-update-hook)	  
 	  t))))
 
 (defun gnus-summary-expire-articles ()
@@ -5747,6 +5944,45 @@ the actual number of articles marked is returned."
       (setq gnus-newsgroup-expirable 
 	    (gnus-request-expire-articles gnus-newsgroup-expirable
 					  gnus-newsgroup-name))))
+
+;; Suggested by Jack Vinson <vinson@unagi.cis.upenn.edu>.
+(defun gnus-summary-delete-article (n)
+  "Delete the N next (mail) articles.
+This command actually deletes articles. This is not a marking
+command. The article will disappear forever from you life, never to
+return. 
+If N is negative, delete backwards.
+If N is nil and articles have been marked with the process mark,
+delete these instead."
+  (interactive "P")
+  (or (gnus-check-backend-function 'request-expire-articles 
+				   gnus-newsgroup-name)
+      (error "The current newsgroup does not support article deletion."))
+  ;; Compute the list of articles to delete.
+  (let (articles)
+    (if (and n (numberp n))
+	(let ((backward (< n 0))
+	      (n (abs n)))
+	  (save-excursion
+	    (while (and (> n 0)
+			(setq articles (cons (gnus-summary-article-number) 
+					     articles))
+			(gnus-summary-search-forward nil nil backward))
+	      (setq n (1- n))))
+	  (setq articles (sort articles (function <))))
+      (setq articles (or (setq gnus-newsgroup-processable
+			       (sort gnus-newsgroup-processable (function <)))
+			 (list (gnus-summary-article-number)))))
+    (if (and gnus-novice-user
+	     (not (y-or-n-p 
+		   (format "Do you really want to delete %s forever?"
+			   (if (> (length articles) 1) "these articles"
+			     "this article")))))
+	()
+      ;; Delete the articles.
+      (setq gnus-newsgroup-expirable 
+	    (gnus-request-expire-articles 
+	     articles gnus-newsgroup-name 'force)))))
 
 (defun gnus-summary-mark-article-as-replied (article)
   "Mark ARTICLE replied and update the Summary line."
@@ -5802,12 +6038,12 @@ the actual number of articles marked is returned."
       (message "No bookmark in current article."))))
 
 ;; Suggested by Daniel Quinlan <quinlan@best.com>.
-(defun gnus-summary-mark-as-interesting (n)
-  "Mark N articles forward as interesting.
+(defun gnus-summary-mark-as-dormant (n)
+  "Mark N articles forward as dormant.
 If N is negative, mark backward instead.  The difference between N and
 the actual number of articles marked is returned."
   (interactive "p")
-  (gnus-summary-mark-forward n "I"))
+  (gnus-summary-mark-forward n gnus-dormant-mark))
 
 (defun gnus-summary-set-process-mark (article)
   "Set the process mark on ARTICLE and update the Summary line."
@@ -5820,6 +6056,7 @@ the actual number of articles marked is returned."
 	  (forward-char 2)
 	  (delete-char 1)
 	  (insert "#")
+	  (run-hooks 'gnus-summary-update-hook)
 	  t))))
 
 (defun gnus-summary-remove-process-mark (article)
@@ -5834,6 +6071,7 @@ the actual number of articles marked is returned."
 	  (delete-char 1)
 	  (insert 
 	   (if (memq article gnus-newsgroup-expirable) ?X ? ))
+	  (run-hooks 'gnus-summary-update-hook)
 	  t))))
 
 (defun gnus-summary-mark-forward (n &optional unread)
@@ -5848,8 +6086,7 @@ returned."
 	(n (abs n)))
   (while (and (> n 0)
 	      (gnus-summary-mark-article nil unread)
-	      (= 0 (gnus-summary-next-subject (if backward -1 1) 
-					      (not unread))))
+	      (= 0 (gnus-summary-next-subject (if backward -1 1))))
     (setq n (1- n)))
   (if (/= 0 n) (message "No more %sarticles" (if unread "" "unread ")))
   (gnus-set-mode-line 'summary)
@@ -5859,7 +6096,7 @@ returned."
   "Mark ARTICLE with MARK.
 MARK can be any string (but it should just be one character long). 
 Four MARK strings are reserved: \" \" (unread), 
-\"-\" (ticked), \"I\" (interesting), \"D\" (read).
+\"-\" (ticked), \"I\" (dormant), \"D\" (read).
 If MARK is nil, then the default string \"D\" is used.
 If ARTICLE is nil, then the article on the current line will be
 marked." 
@@ -5883,9 +6120,11 @@ marked."
 	      (beginning-of-line)
 	      (delete-char 1)
 	      (insert mark)
+	      (run-hooks 'gnus-summary-update-hook)
 	      t))
-      ;; Bug by Brian Edmonds <bedmonds@prodigy.bc.ca>
-      (if (or (string= mark " ") (string= mark "-") (string= mark "I"))
+      (if (or (string= mark gnus-unread-mark) 
+	      (string= mark gnus-ticked-mark) 
+	      (string= mark gnus-dormant-mark))
 	  (gnus-mark-article-as-unread article mark)
 	(gnus-mark-article-as-read article)))))
 
@@ -5899,8 +6138,8 @@ marked."
 	(delq article gnus-newsgroup-unreads))
   (setq gnus-newsgroup-marked
 	(delq article gnus-newsgroup-marked))
-  (setq gnus-newsgroup-interesting
-	(delq article gnus-newsgroup-interesting)))
+  (setq gnus-newsgroup-dormant
+	(delq article gnus-newsgroup-dormant)))
 
 (defun gnus-mark-article-as-unread (article &optional mark)
   "Remember that ARTICLE is marked as unread.
@@ -5915,14 +6154,14 @@ MARK is the mark type: \" \", \"-\" or \"I\"."
   ;; list.  Otherwise, it must be added to the list.
   (setq gnus-newsgroup-marked
 	(delq article gnus-newsgroup-marked))
-  (setq gnus-newsgroup-interesting
-	(delq article gnus-newsgroup-interesting))
-  (if (equal mark "-")
+  (setq gnus-newsgroup-dormant
+	(delq article gnus-newsgroup-dormant))
+  (if (equal mark gnus-ticked-mark)
       (setq gnus-newsgroup-marked 
 	    (cons article gnus-newsgroup-marked)))
-  (if (equal mark "I")
-      (setq gnus-newsgroup-interesting 
-	    (cons article gnus-newsgroup-interesting))))
+  (if (equal mark gnus-dormant-mark)
+      (setq gnus-newsgroup-dormant 
+	    (cons article gnus-newsgroup-dormant))))
 
 (defalias 'gnus-summary-mark-as-unread-forward 
   'gnus-summary-tick-article-forward)
@@ -5933,7 +6172,7 @@ MARK is the mark type: \" \", \"-\" or \"I\"."
 If N is negative, tick backwards instead.
 The difference between N and the number of articles ticked is returned."
   (interactive "p")
-  (gnus-summary-mark-forward n "-"))
+  (gnus-summary-mark-forward n gnus-ticked-mark))
 
 (defalias 'gnus-summary-mark-as-unread-backward 'gnus-summary-tick-article-backward)
 (make-obsolete 'gnus-summary-mark-as-unread-backward 'gnus-summary-tick-article-backward)
@@ -5941,7 +6180,7 @@ The difference between N and the number of articles ticked is returned."
   "Tick N articles backwards.
 The difference between N and the number of articles ticked is returned."
   (interactive "p")
-  (gnus-summary-mark-forward (- n) "-"))
+  (gnus-summary-mark-forward (- n) gnus-ticked-mark))
 
 (defalias 'gnus-summary-mark-as-unread 'gnus-summary-tick-article)
 (make-obsolete 'gnus-summary-mark-as-unread 'gnus-summary-tick-article)
@@ -5949,7 +6188,8 @@ The difference between N and the number of articles ticked is returned."
   "Mark current article as unread.
 Optional 1st argument ARTICLE specifies article number to be marked as unread.
 Optional 2nd argument CLEAR-MARK remove any kinds of mark."
-  (gnus-summary-mark-article article (if clear-mark " " "-")))
+  (gnus-summary-mark-article article (if clear-mark gnus-unread-mark
+				       gnus-ticked-mark)))
 
 (defun gnus-summary-mark-as-read-forward (n)
   "Mark N articles as read forwards.
@@ -5978,61 +6218,156 @@ Any kind of string (length 1) except for a space and `-' is ok."
 If N is negative, clear backward instead.
 The difference between N and the number of marks cleared is returned."
   (interactive "p")
-  (gnus-summary-mark-forward n " "))
+  (gnus-summary-mark-forward n gnus-unread-mark))
 
 (defun gnus-summary-clear-mark-backward (n)
   "Clear marks from N articles backward.
 The difference between N and the number of marks cleared is returned."
   (interactive "p")
-  (gnus-summary-mark-forward (- n) " "))
+  (gnus-summary-mark-forward (- n) gnus-unread-mark))
 
+;; Fix by Per Abrahamsen <amanda@iesd.auc.dk>.
 (defun gnus-summary-delete-marked-as-read ()
   "Delete lines that are marked as read."
   (interactive)
-  (if gnus-newsgroup-unreads
-      (let ((buffer-read-only nil))
-	(save-excursion
-	  (goto-char (point-min))
-	  ;; Fix by Jim Sisolak <sisolak@trans4.neep.wisc.edu>.
-	  (delete-matching-lines "^[DK]"))
-	;; Adjust point.
-	(if (eobp)
-	    (gnus-summary-prev-subject 1)
-	  (gnus-summary-position-cursor)))
-    ;; It is not so good idea to make the buffer empty.
-    (message "All articles are marked as read")))
+  (gnus-summary-delete-marked-with 
+   (concat gnus-read-mark gnus-killed-mark gnus-kill-file-mark)))
 
 (defun gnus-summary-delete-marked-with (marks)
   "Delete lines that are marked with MARKS (e.g. \"DK\")."
   (interactive "sMarks: ")
-  (let ((buffer-read-only nil))
-    (save-excursion
+  ;; Fix by Sudish Joseph <joseph@cis.ohio-state.edu>.
+  (save-excursion
+    (set-buffer gnus-summary-buffer)
+    (let ((buffer-read-only nil)
+	  (marks (concat "[" marks "]"))
+	  beg)
       (goto-char (point-min))
-      (delete-matching-lines (concat "^[" marks "]")))
+      (while (not (eobp))
+	(if (looking-at marks)
+	    (progn
+	      (setq beg (point))
+	      (forward-line 1)
+	      ;; Fix by Per Abrahamsen <amanda@iesd.auc.dk>.
+              (setq gnus-newsgroup-expunged-lines
+		    (concat (or gnus-newsgroup-expunged-lines "")
+                            (buffer-substring beg (point))))
+	      (delete-region beg (point)))
+	  (forward-line 1))))
     ;; Adjust point.
     (or (zerop (buffer-size))
 	(if (eobp)
 	    (gnus-summary-prev-subject 1)
 	  (gnus-summary-position-cursor)))))
 
-(defun gnus-summary-show-all-interesting ()
-  "Display all the hidden articles that are marked as interesting."
+(defun gnus-summary-expunge-below (score)
+  "Delete articles with score less than SCORE."
+  (interactive "P")
+  (setq score (if score
+		  (prefix-numeric-value score)
+		gnus-summary-default-interest))
+  (save-excursion
+    (set-buffer gnus-summary-buffer)
+    (goto-char (point-min))
+    (let ((buffer-read-only nil)
+	  beg)
+      (while (not (eobp))
+	(if (< (gnus-summary-interest) score)
+	    (progn
+	      (setq beg (point))
+	      (forward-line 1)
+	      (setq gnus-newsgroup-expunged-lines 
+		    (buffer-substring beg (point)))
+	      (delete-region beg (point)))
+	  (forward-line 1)))
+      ;; Adjust point.
+      (or (zerop (buffer-size))
+	  (if (eobp)
+	      (gnus-summary-prev-subject 1)
+	    (gnus-summary-position-cursor))))))
+
+(defun gnus-summary-mark-below (score mark)
+  "Mark articles with score less than SCORE with MARK."
+  (interactive "P\ncMark: ")
+  (setq score (if score
+		  (prefix-numeric-value score)
+		gnus-summary-default-interest))
+  (save-excursion
+    (set-buffer gnus-summary-buffer)
+    (goto-char (point-min))
+    (while (not (eobp))
+      (if (< (gnus-summary-interest) score)
+	  (progn
+	    (gnus-summary-mark-article nil (char-to-string mark))
+	    (forward-line 1))
+	(forward-line 1)))))
+
+;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
+(defun gnus-summary-kill-below (score)
+  "Kill articles with score below SCORE."
+  (interactive "P")
+  (gnus-summary-mark-below score ?K))
+
+(defun gnus-summary-clear-above (score)
+  "Clear all marks from articles with score above SCORE."
+  (interactive "P")
+  (gnus-summary-mark-above score ? ))
+
+(defun gnus-summary-tick-above (score)
+  "Tick all articles with score above SCORE."
+  (interactive "P")
+  (gnus-summary-mark-above score ?-))
+
+(defun gnus-summary-mark-above (score mark)
+  "Mark articles with score less than SCORE with MARK."
+  (interactive "P\ncMark: ")
+  (setq score (if score
+		  (prefix-numeric-value score)
+		gnus-summary-default-interest))
+  (save-excursion
+    (set-buffer gnus-summary-buffer)
+    (goto-char (point-min))
+    (while (not (eobp))
+      (if (> (gnus-summary-interest) score)
+	  (progn
+	    (gnus-summary-mark-article nil (char-to-string mark))
+	    (forward-line 1))
+	(forward-line 1)))))
+
+;; Suggested by Daniel Quinlan <quinlan@best.com>.  
+(defun gnus-summary-show-all-expunged ()
+  "Show all previously expunge articles."
   (interactive)
-  (let ((int gnus-newsgroup-interesting-subjects)
+  (if (not gnus-newsgroup-expunged-lines)
+      (error "No lines expunged."))
+  (let ((buffer-read-only nil))
+    (goto-char (point-min))
+    (save-excursion
+      (insert gnus-newsgroup-expunged-lines))
+    (setq gnus-newsgroup-expunged-lines nil)))
+
+(defun gnus-summary-show-all-dormant ()
+  "Display all the hidden articles that are marked as dormant."
+  (interactive)
+  (let ((int gnus-newsgroup-dormant-subjects)
 	(buffer-read-only nil))
     (if (not int)
-	(error "No interesting articles hidden."))
+	(error "No dormant articles hidden."))
     (goto-char (point-min))
     (save-excursion
       (while int
 	(insert (cdr (car int)))
 	(setq int (cdr int))))
     (gnus-summary-position-cursor)
-    (setq gnus-newsgroup-interesting-subjects nil)))
+    (setq gnus-newsgroup-dormant-subjects nil)))
 
-(defun gnus-summary-catchup (all &optional quietly)
+(defun gnus-summary-catchup (all &optional quietly to-here)
   "Mark all articles not marked as unread in this newsgroup as read.
-If prefix argument ALL is non-nil, all articles are marked as read."
+If prefix argument ALL is non-nil, all articles are marked as read.
+If QUIETLY is non-nil, no questions will be asked.
+If TO-HERE is non-nil, it should be a point in the buffer. All
+articles before this point will be marked as read.
+The number of articles marked as read is returned."
   (interactive "P")
   (if (or quietly
 	  (not gnus-interactive-catchup) ;Without confirmation?
@@ -6041,34 +6376,40 @@ If prefix argument ALL is non-nil, all articles are marked as read."
 	   (if all
 	       "Do you really want to mark everything as read? "
 	     "Delete all articles not marked as unread? ")))
-      (let ((unmarked
-	     (gnus-set-difference gnus-newsgroup-unreads
-				  (if (not all) gnus-newsgroup-marked))))
-        (message "")			;Erase "Yes or No" question.
-	;; Hidden thread subtrees must be searched for, too.
-	(gnus-summary-show-all-threads)
-	(while unmarked
-          (gnus-summary-mark-as-read (car unmarked) "C")
-	  (setq unmarked (cdr unmarked))
-	  ))
-    ))
+      (let ((unreads (length gnus-newsgroup-unreads)))
+	(if (gnus-summary-first-subject (not all))
+	    (while (and (gnus-summary-mark-as-read nil gnus-catchup-mark)
+			(if to-here (< (point) to-here) t)
+			(gnus-summary-search-subject nil (not all)))))
+	(- unreads (length gnus-newsgroup-unreads)))))
 
-(defun gnus-summary-catchup-to-here ()
-  "Mark all unticked articles before the current one as read."
+(defun gnus-summary-catchup-to-here (&optional all)
+  "Mark all unticked articles before the current one as read.
+If ALL is non-nil, also mark ticked and dormant articles as read."
   (interactive)
   (beginning-of-line)
-  (let ((current (gnus-summary-article-number)))
-    (goto-char (point-min))
-    (while (not (= (gnus-summary-article-number) current))
-      (beginning-of-line)
-      (if (/= ?- (following-char))
-	  (gnus-summary-mark-as-read))
-      (gnus-summary-next-subject 1))))
+  (gnus-summary-catchup all nil (point))
+  (gnus-summary-position-cursor))
 
 (defun gnus-summary-catchup-all (&optional quietly)
   "Mark all articles in this newsgroup as read."
   (interactive)
   (gnus-summary-catchup t quietly))
+
+(defun gnus-summary-catchup-and-exit (all &optional quietly)
+  "Mark all articles not marked as unread in this newsgroup as read, then exit.
+If prefix argument ALL is non-nil, all articles are marked as read."
+  (interactive "P")
+  (gnus-summary-catchup all quietly)
+  ;; Select next newsgroup or exit.
+  (if (eq gnus-auto-select-next 'quietly)
+      (gnus-summary-next-group nil)
+    (gnus-summary-exit)))
+
+(defun gnus-summary-catchup-all-and-exit (&optional quietly)
+  "Mark all articles in this newsgroup as read, and then exit."
+  (interactive)
+  (gnus-summary-catchup-and-exit t quietly))
 
 ;; Thread-based commands.
 
@@ -6129,26 +6470,17 @@ If ARG is positive number, turn showing conversation threads on."
 
 (defun gnus-summary-go-to-next-thread (&optional previous)
   "Go to the same level (or less) next thread.
-If PREVIOUS is non-nil, go to previous thread instead."
+If PREVIOUS is non-nil, go to previous thread instead.
+Return the article number moved to, or nil if moving was impossible."
   (let ((level (gnus-summary-thread-level))
-	(start (point))
-	beg end)
+	(article (gnus-summary-article-number)))
     (if previous 
-	(progn
-	  (re-search-backward " 0[\n\r]" nil t)
-	  (setq end (point))
-	  (if (not 
-	       (and (re-search-backward " 0[\n\r]" nil t)
-		    (re-search-forward (format " %s[\n\r]" level) end t)))
-	      (goto-char start)))
-      (if (not (and (re-search-forward " 0[\n\r]" nil t)
-		    (setq beg (point))
-		    (re-search-forward " 0[\n\r]" nil t)
-		    (setq end (point))
-		    (goto-char beg)
-		    (re-search-forward (format " %s[\n\r]" level) nil t)))
-	  (goto-char start)))
-    (/= (point) start)))
+	(while (and (zerop (gnus-summary-prev-subject 1))
+		    (> (gnus-summary-thread-level) level)))
+      (while (and (zerop (gnus-summary-next-subject 1))
+		  (> (gnus-summary-thread-level) level))))
+    (let ((oart (gnus-summary-article-number)))
+      (and (/= oart article) oart))))
 
 (defun gnus-summary-next-thread (n)
   "Go to the same level next N'th thread.
@@ -6222,7 +6554,7 @@ If the prefix argument is negative, tick articles instead."
     (save-excursion
       (while killing
 	;; Mark the article...
-	(cond ((null unmark) (gnus-summary-mark-as-read nil "K"))
+	(cond ((null unmark) (gnus-summary-mark-as-read nil gnus-killed-mark))
 	      ((> unmark 0) (gnus-summary-tick-article nil t))
 	      (t (gnus-summary-tick-article)))
 	;; ...and go forward until either the buffer ends or the subtree
@@ -6525,6 +6857,152 @@ is initialized from the SAVEDIR environment variable."
 
 ;; Summary killfile commands
 
+;; Much modification of the kill code and some of the functions are
+;; written by Per Abrahamsen <amanda@iesd.auc.dk>.
+
+(defun gnus-summary-temporarily-lower-by-subject (level)
+  "Temporarily lower score by LEVEL for current subject.
+See `gnus-kill-expiry-days'."
+  (interactive "p")
+  (gnus-kill-file-temporarily-lower-by-subject
+   level
+   (let ((article (gnus-summary-article-number)))
+     (if article (gnus-get-header-by-number article)
+       (error "No article on current line")))))
+
+(defun gnus-summary-temporarily-lower-by-author (level)
+  "Temporarily lower score by LEVEL for current author.
+See `gnus-kill-expiry-days'."
+  (interactive "p")
+  (gnus-kill-file-temporarily-lower-by-author
+   level
+   (let ((article (gnus-summary-article-number)))
+     (if article (gnus-get-header-by-number article)
+       (error "No article on current line")))))
+
+(defun gnus-summary-temporarily-lower-by-xref (level)
+  "Temporarily lower score by LEVEL for current xref.
+See `gnus-kill-expiry-days'."
+  (interactive "p")
+  (gnus-kill-file-temporarily-lower-by-xref
+   level
+   (let ((article (gnus-summary-article-number)))
+     (if article (gnus-get-header-by-number article)
+       (error "No article on current line")))))
+
+(defun gnus-summary-temporarily-lower-by-thread (level)
+  "Temporarily lower score by LEVEL for current thread.
+See `gnus-kill-expiry-days'."
+  (interactive "p")
+  (gnus-kill-file-temporarily-lower-by-thread
+   level
+   (let ((article (gnus-summary-article-number)))
+     (if article (gnus-get-header-by-number article)
+       (error "No article on current line")))))
+
+(defun gnus-summary-lower-by-subject (level)
+  "Lower score by LEVEL for current subject."
+  (interactive "p")
+  (gnus-kill-file-lower-by-subject
+   level
+   (let ((article (gnus-summary-article-number)))
+     (if article (gnus-get-header-by-number article)
+       (error "No article on current line")))))
+
+(defun gnus-summary-lower-by-author (level)
+  "Lower score by LEVEL for current author."
+  (interactive "p")
+  (gnus-kill-file-lower-by-author
+   level
+   (let ((article (gnus-summary-article-number)))
+     (if article (gnus-get-header-by-number article)
+       (error "No article on current line")))))
+
+(defun gnus-summary-lower-by-xref (level)
+  "Lower score by LEVEL for current xref."
+  (interactive "p")
+  (gnus-kill-file-lower-by-xref
+   level
+   (let ((article (gnus-summary-article-number)))
+     (if article (gnus-get-header-by-number article)
+       (error "No article on current line")))))
+
+(defun gnus-summary-lower-followups-to-author (level)
+  "Lower score by LEVEL for all followups to the current author."
+  (interactive "p")
+  (gnus-kill-file-lower-followups-to-author
+   level
+   (let ((article (gnus-summary-article-number)))
+     (if article (gnus-get-header-by-number article)
+       (error "No article on current line")))))
+
+(defun gnus-summary-temporarily-raise-by-subject (level)
+  "Temporarily raise score by LEVEL for current subject.
+See `gnus-kill-expiry-days'."
+  (interactive "p")
+  (gnus-kill-file-temporarily-raise-by-subject
+   level
+   (let ((article (gnus-summary-article-number)))
+     (if article (gnus-get-header-by-number article)
+       (error "No article on current line")))))
+
+(defun gnus-summary-temporarily-raise-by-author (level)
+  "Temporarily raise score by LEVEL for current author.
+See `gnus-kill-expiry-days'."
+  (interactive "p")
+  (gnus-kill-file-temporarily-raise-by-author
+   level
+   (let ((article (gnus-summary-article-number)))
+     (if article (gnus-get-header-by-number article)
+       (error "No article on current line")))))
+
+(defun gnus-summary-temporarily-raise-by-xref (level)
+  "Temporarily raise score by LEVEL for current xref.
+See `gnus-kill-expiry-days'."
+  (interactive "p")
+  (gnus-kill-file-temporarily-raise-by-xref
+   level
+   (let ((article (gnus-summary-article-number)))
+     (if article (gnus-get-header-by-number article)
+       (error "No article on current line")))))
+
+(defun gnus-summary-temporarily-raise-by-thread (level)
+  "Temporarily raise score by LEVEL for current thread.
+See `gnus-kill-expiry-days'."
+  (interactive "p")
+  (gnus-kill-file-temporarily-raise-by-thread
+   level
+   (let ((article (gnus-summary-article-number)))
+     (if article (gnus-get-header-by-number article)
+       (error "No article on current line")))))
+
+(defun gnus-summary-raise-by-subject (level)
+  "Raise score by LEVEL for current subject."
+  (interactive "p")
+  (gnus-kill-file-raise-by-subject
+   level
+   (let ((article (gnus-summary-article-number)))
+     (if article (gnus-get-header-by-number article)
+       (error "No article on current line")))))
+
+(defun gnus-summary-raise-by-author (level)
+  "Raise score by LEVEL for current author."
+  (interactive "p")
+  (gnus-kill-file-raise-by-author
+   level
+   (let ((article (gnus-summary-article-number)))
+     (if article (gnus-get-header-by-number article)
+       (error "No article on current line")))))
+
+(defun gnus-summary-raise-by-xref (level)
+  "Raise score by LEVEL for current xref."
+  (interactive "p")
+  (gnus-kill-file-raise-by-xref
+   level
+   (let ((article (gnus-summary-article-number)))
+     (if article (gnus-get-header-by-number article)
+       (error "No article on current line")))))
+
 (defun gnus-summary-edit-global-kill ()
   "Edit a global KILL file."
   (interactive)
@@ -6533,6 +7011,15 @@ is initialized from the SAVEDIR environment variable."
   (message
    (substitute-command-keys
     "Editing a global KILL file (Type \\[gnus-kill-file-exit] to exit)")))
+
+(defun gnus-summary-raise-followups-to-author (level)
+  "Raise score by LEVEL for all followups to the current author."
+  (interactive "p")
+  (gnus-kill-file-raise-followups-to-author
+   level
+   (let ((article (gnus-summary-article-number)))
+     (if article (gnus-get-header-by-number article)
+       (error "No article on current line")))))
 
 (defun gnus-summary-edit-local-kill ()
   "Edit a local KILL file applied to the current newsgroup."
@@ -6684,23 +7171,24 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		    (if (and (numberp article)
 			     (not (eq article gnus-current-article)))
 			;; Seems like a new article has been selected.
-			(progn
-			  ;; `gnus-current-article' must be an article number.
-			  (save-excursion
-			    (set-buffer summary-buffer)
-			    (setq gnus-last-article gnus-current-article)
-			    (setq gnus-current-article article)
-			    (setq gnus-current-headers
-				  (gnus-get-header-by-number 
-				   gnus-current-article))
-			    (setq gnus-article-current 
-				  (cons gnus-newsgroup-name 
-					(header-number gnus-current-headers)))
-			    (run-hooks 'gnus-mark-article-hook)
-			    ;; Set the global newsgroup variables here.
-			    ;; Suggested by Jim Sisolak
-			    ;; <sisolak@trans4.neep.wisc.edu>.
-			    (gnus-set-global-variables))))
+			;; `gnus-current-article' must be an article number.
+			(save-excursion
+			  (set-buffer summary-buffer)
+			  (setq gnus-last-article gnus-current-article)
+			  (setq gnus-current-article article)
+			  (setq gnus-current-headers
+				(gnus-get-header-by-number 
+				 gnus-current-article))
+			  (setq gnus-article-current 
+				(cons gnus-newsgroup-name 
+				      (header-number gnus-current-headers)))
+			  (run-hooks 'gnus-mark-article-hook)
+			  (and gnus-visual
+			       (run-hooks 'gnus-visual-mark-article-hook))
+			  ;; Set the global newsgroup variables here.
+			  ;; Suggested by Jim Sisolak
+			  ;; <sisolak@trans4.neep.wisc.edu>.
+			  (gnus-set-global-variables)))
 		    ;; Hooks for getting information from the article.
 		    ;; This hook must be called before being narrowed.
 		    (run-hooks 'internal-hook)
@@ -6773,8 +7261,15 @@ Provided for backwards compatability."
 	;; First we narrow to just the headers.
 	(widen)
 	(goto-char 1)
+	;; Hide any "From " lines at the beginning of (mail) articles. 
+	(while (looking-at rmail-unix-mail-delimiter)
+	  (forward-line 1))
+	(if (/= (point) 1) 
+	    (add-text-properties 1 (point) '(invisible t)))
+	;; Then treat the rest of the header lines.
 	(narrow-to-region 
-	 1 (progn (search-forward "\n\n" nil t) (forward-line -1) (point)))
+	 (point) 
+	 (progn (search-forward "\n\n" nil t) (forward-line -1) (point)))
 	;; Then we use the two regular expressions
 	;; `gnus-ignored-headers' and `gnus-visible-headers' to
 	;; select which header lines is to remain visible in the
@@ -6821,7 +7316,8 @@ Provided for backwards compatability."
 	;; And finally we make the unwanted headers invisible.
 	(if delete
 	    (delete-region (point) (point-max))
-	  (set-text-properties (point) (point-max) '(invisible t)))))))
+	  ;; Suggested by Sudish Joseph <joseph@cis.ohio-state.edu>.
+	  (add-text-properties (point) (point-max) '(invisible t)))))))
 
 (defun gnus-article-hide-signature ()
   "Hides the signature in an article.
@@ -6850,6 +7346,28 @@ please do mail it to me."
 	   (point) (save-excursion (forward-line 1) (point))
 	   '(invisible t)))
       (forward-line 1))))
+
+;; Written by Per Abrahamsen <amanda@iesd.auc.dk>.
+(defun gnus-article-treat-overstrike ()
+  ;; Prepare article for overstrike commands.
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (let ((buffer-read-only nil))
+      (while (search-forward "\b" nil t)
+	(let ((next (following-char))
+	      (previous (char-after (- (point) 2))))
+	  (cond ((eq next previous)
+		 (delete-region (- (point) 2) (point))
+		 (put-text-property (point) (1+ (point))
+				    'face 'bold))
+		((eq next ?_)
+		 (delete-region (1- (point)) (1+ (point)))
+		 (put-text-property (1- (point)) (point)
+				    'face 'underline))
+		((eq previous ?_)
+		 (delete-region (- (point) 2) (point))
+		 (put-text-property (point) (1+ (point))
+				    'face 'underline))))))))
 
 ;; Article savers.
 
@@ -7099,16 +7617,13 @@ Set mark at end of digested message."
 (defun gnus-article-refer-article ()
   "Read article specified by message-id around point."
   (interactive)
-  (save-window-excursion
-    (save-excursion
-      (re-search-forward ">" nil t)	;Move point to end of "<....>".
-      (if (re-search-backward "\\(<[^<> \t\n]+>\\)" nil t)
-	  (let ((message-id
-		 (buffer-substring (match-beginning 1) (match-end 1))))
-	    (set-buffer gnus-summary-buffer)
-	    (gnus-summary-refer-article message-id))
-	(error "No references around point"))
-      )))
+  (search-forward ">" nil t)	;Move point to end of "<....>".
+  (if (re-search-backward "\\(<[^<> \t\n]+>\\)" nil t)
+      (let ((message-id
+	     (buffer-substring (match-beginning 1) (match-end 1))))
+	(set-buffer gnus-summary-buffer)
+	(gnus-summary-refer-article message-id))
+    (error "No references around point")))
 
 (defun gnus-article-mail (yank)
   "Send a reply to the address near point.
@@ -7202,8 +7717,42 @@ ROT47 will be performed for Japanese text in any case."
 (if gnus-kill-file-mode-map
     nil
   (setq gnus-kill-file-mode-map (copy-keymap emacs-lisp-mode-map))
-  (define-key gnus-kill-file-mode-map "\C-c\C-k\C-s" 'gnus-kill-file-kill-by-subject)
-  (define-key gnus-kill-file-mode-map "\C-c\C-k\C-a" 'gnus-kill-file-kill-by-author)
+  (define-key gnus-kill-file-mode-map "\C-c\C-x"
+    'gnus-kill-file-set-expunge-below)
+  (define-key gnus-kill-file-mode-map "\C-c\C-m"
+    'gnus-kill-file-set-mark-below)
+  (define-key gnus-kill-file-mode-map "\C-c\C-k\C-s"
+    'gnus-kill-file-temporarily-lower-by-subject)
+  (define-key gnus-kill-file-mode-map "\C-c\C-k\C-a"
+    'gnus-kill-file-temporarily-lower-by-author)
+  (define-key gnus-kill-file-mode-map "\C-c\C-k\C-x"
+    'gnus-kill-file-temporarily-lower-by-xref)
+  (define-key gnus-kill-file-mode-map "\C-c\C-ks"
+    'gnus-kill-file-lower-by-subject)
+  (define-key gnus-kill-file-mode-map "\C-c\C-ka"
+    'gnus-kill-file-lower-by-author)
+  (define-key gnus-kill-file-mode-map "\C-c\C-kt"
+    'gnus-kill-file-lower-by-thread)
+  (define-key gnus-kill-file-mode-map "\C-c\C-kx"
+    'gnus-kill-file-lower-by-xref)
+  (define-key gnus-kill-file-mode-map "\C-c\C-kf"
+    'gnus-kill-file-lower-followups-to-author)
+  (define-key gnus-kill-file-mode-map "\C-c\C-i\C-s"
+    'gnus-kill-file-temporarily-raise-by-subject)
+  (define-key gnus-kill-file-mode-map "\C-c\C-i\C-a"
+    'gnus-kill-file-temporarily-raise-by-author)
+  (define-key gnus-kill-file-mode-map "\C-c\C-i\C-t"
+    'gnus-kill-file-temporarily-raise-by-thread)
+  (define-key gnus-kill-file-mode-map "\C-c\C-i\C-x"
+    'gnus-kill-file-temporarily-raise-by-xref)
+  (define-key gnus-kill-file-mode-map "\C-c\C-is"
+    'gnus-kill-file-raise-by-subject)
+  (define-key gnus-kill-file-mode-map "\C-c\C-ia"
+    'gnus-kill-file-raise-by-author)
+  (define-key gnus-kill-file-mode-map "\C-c\C-ix"
+    'gnus-kill-file-raise-by-xref)
+  (define-key gnus-kill-file-mode-map "\C-c\C-if"
+    'gnus-kill-file-raise-followups-to-author)
   (define-key gnus-kill-file-mode-map "\C-c\C-a" 'gnus-kill-file-apply-buffer)
   (define-key gnus-kill-file-mode-map "\C-c\C-e" 'gnus-kill-file-apply-last-sexp)
   (define-key gnus-kill-file-mode-map "\C-c\C-c" 'gnus-kill-file-exit)
@@ -7214,8 +7763,23 @@ ROT47 will be performed for Japanese text in any case."
 
 In addition to Emacs-Lisp Mode, the following commands are available:
 
-\\[gnus-kill-file-kill-by-subject]	Insert KILL command for current subject.
-\\[gnus-kill-file-kill-by-author]	Insert KILL command for current author.
+\\[gnus-kill-file-set-expunge-below]	Automatically expunge articles below LEVEL.
+\\[gnus-kill-file-set-mark-below]	Automatically mark articles below LEVEL.
+\\[gnus-kill-file-temporarily-lower-by-author]	Insert temporary lower command for current author.
+\\[gnus-kill-file-temporarily-lower-by-thread]	Insert temporary lower command for current thread.
+\\[gnus-kill-file-temporarily-lower-by-xref]		Insert temporary lower command for current cross-posting.
+\\[gnus-kill-file-lower-by-subject]	Insert permanent lower command for current subject.
+\\[gnus-kill-file-lower-by-author]	Insert permanent lower command for current author.
+\\[gnus-kill-file-lower-followups-to-author]	Insert permanent lower command for followups to the current author.
+\\[gnus-kill-file-lower-by-xref]		Insert permanent lower command for current cross-posting.
+\\[gnus-kill-file-temporarily-raise-by-subject]	Insert temporary raise command for current subject.
+\\[gnus-kill-file-temporarily-raise-by-author]	Insert temporary raise command for current author.
+\\[gnus-kill-file-temporarily-raise-by-thread]	Insert temporary raise command for current thread.
+\\[gnus-kill-file-temporarily-raise-by-xref]		Insert temporary raise command for current cross-posting.
+\\[gnus-kill-file-raise-by-subject]	Insert permanent raise command for current subject.
+\\[gnus-kill-file-raise-by-author]	Insert permanent raise command for current author.
+\\[gnus-kill-file-raise-followups-to-author]	Insert permanent raise command for followups to the current author.
+\\[gnus-kill-file-raise-by-xref]		Insert permanent raise command for current cross-posting.
 \\[gnus-kill-file-apply-buffer]	Apply current buffer to selected newsgroup.
 \\[gnus-kill-file-apply-last-sexp]	Apply sexp before point to selected newsgroup.
 \\[gnus-kill-file-exit]	Save file and exit editing KILL file.
@@ -7315,17 +7879,20 @@ If NEWSGROUP is nil, the global KILL file is selected."
 
 (defun gnus-kill-set-kill-buffer ()
   (let ((file (gnus-newsgroup-kill-file gnus-newsgroup-name)))
-    (if (get-buffer file)
-	(set-buffer (get-buffer file))
-      (set-buffer (find-file-noselect file)))))
+    (if (get-file-buffer file)
+	(set-buffer (get-file-buffer file))
+      (set-buffer (find-file-noselect file))
+      (bury-buffer))))
 
 (defun gnus-kill-save-kill-buffer ()
-  (let ((file (gnus-newsgroup-kill-file gnus-newsgroup-name)))
-    (if (get-buffer file)
-	(save-excursion
-	  (set-buffer (get-buffer file))
-	  (save-buffer)
-	  (kill-buffer (current-buffer))))))
+  (save-excursion
+    (let ((file (gnus-newsgroup-kill-file gnus-newsgroup-name)))
+      (if (get-file-buffer file)
+	  (progn
+	    (set-buffer (get-file-buffer file))
+	    (if (buffer-modified-p)
+		(save-buffer))
+	    (kill-buffer (current-buffer)))))))
 
 (defun gnus-article-fetch-field (field)
   (save-excursion
@@ -7340,48 +7907,228 @@ If NEWSGROUP is nil, the global KILL file is selected."
 	  (mail-fetch-field field)
 	(widen)))))
 
-(defun gnus-kill-file-enter-kill (field regexp)
-  (save-excursion
-    (gnus-kill-set-kill-buffer)
-    (insert (format "(gnus-kill \"%s\" \"%s\") ; ttl=5\n" 
-		    field regexp))))
+ (defun gnus-kill-file-enter-kill (field regexp level date edit)
+   ;; Enter kill file entry.
+   ;; FIELD: String containing the name of the header field to kill.
+   ;; REGEXP: The string to kill.
+   ;; LEVEL: How much to raise the score by.
+   ;; DATE: A date string for expire kill or nil for permanent kills.
+   ;; EDIT: Allow the user to edit REGEXP iff non-nil.
+    (save-excursion
+      (gnus-kill-set-kill-buffer)
+      (goto-char (point-min))
+     (let ((regexp (if edit
+ 		      (read-string (concat "Add " level " to articles with "
+ 					   (downcase field) " matching: ")
+ 				   (cons regexp 1))
+ 		    regexp)) 
+ 	  entry string kill beg)
+       (setq entry (if date (cons regexp date) regexp)
+ 	    string (format "(gnus-raise %S (quote %S) %S)\n"
+ 			   field entry level))
+       (while (and (setq beg (point))
+ 		  (condition-case nil
+ 		      (setq kill (read (current-buffer)))
+ 		    (error nil))
+ 		  (or (not (eq (nth 0 kill) 'gnus-raise))
+ 		      (not (string= (downcase (nth 1 kill)) (downcase field)))
+ 		      (not (eq (nth 3 kill) level))))
+ 	 (setq kill nil))
+        (if (not kill)
+  	  (progn
+  	    (goto-char (point-min))
+ 	    (insert string))
+  	(let ((list (nth 2 kill)))
+ 	  (if (and (listp list) (eq 'quote (car list)))
+ 	      (setq list (car (cdr list))))
+  	  (setcar 
+  	   (nthcdr 2 kill) 
+  	   (if (and (listp list) (listp (cdr list)))
+ 	       (list 'quote (cons entry list))
+ 	     (list 'quote (list entry list)))))
+  	(delete-region beg (point))
+ 	(insert (gnus-pp-gnus-kill kill)))
+       (gnus-kill-file-apply-string string))
+      ;; Added by by Sudish Joseph <joseph@cis.ohio-state.edu>.
+     (or edit 
+ 	(message "Added kill file entry %s: %s" (downcase field) regexp))))
+    
+ (defun gnus-kill-file-set-variable (symbol value)
+   ;; Set SYMBOL to VALUE in the kill file.
+    (save-excursion
+      (gnus-kill-set-kill-buffer)
+      (goto-char (point-min))
+     (let ((string (format "(setq %S %S)\n" symbol value))
+ 	  kill beg)
+       (while (and (setq beg (point))
+ 		  (condition-case nil
+ 		      (setq kill (read (current-buffer)))
+ 		    (error nil))
+ 		  (or (not (eq (nth 0 kill) 'setq))
+ 		      (not (eq (nth 1 kill) symbol))))
+ 	(setq kill nil))
+        (if (not kill)
+  	  (progn
+  	    (goto-char (point-min))
+ 	    (insert string))
+  	(delete-region beg (point))
+ 	(insert string)))))
+    
+ (defun gnus-kill-file-set-expunge-below (level)
+   "Automatically expunge articles with score below LEVEL."
+   (interactive "P")
+   (setq level (if level
+ 		  (prefix-numeric-value level)
+ 		gnus-summary-default-interest))
+   (gnus-kill-file-set-variable 'expunge-below level)
+   (message "Set expunge below level to %d." level))
   
-(defun gnus-kill-file-kill-by-subject ()
-  "Insert KILL command for current subject."
-  (interactive)
-  (gnus-kill-file-enter-kill 
-   "Subject" (regexp-quote (header-subject gnus-current-headers))))
-
-(defun gnus-kill-file-kill-by-author ()
-  "Insert KILL command for current author."
-  (interactive)
-  (gnus-kill-file-enter-kill 
-   "From" (regexp-quote (header-from gnus-current-headers))))
-
-(defun gnus-kill-file-kill-by-thread ()
-  "Insert KILL command for current thread."
-  (interactive)
-  (gnus-kill-file-enter-kill 
-   "References" (concat ".*" (regexp-quote 
-			      (header-id gnus-current-headers)))))
-
-(defun gnus-kill-file-kill-by-xref ()
-  "Insert KILL command for current xref."
-  (interactive)
-  (let ((xref (header-xref gnus-current-headers))
-	(start 0)
-	(string "")
-	group)
+ (defun gnus-kill-file-set-mark-below (level)
+   "Automatically mark articles with score below LEVEL as killed."
+   (interactive "P")
+   (setq level (if level
+ 		  (prefix-numeric-value level)
+ 		gnus-summary-default-interest))
+   (gnus-kill-file-set-variable 'mark-below level)
+   (message "Set mark below level to %d." level))
+ 
+ (defun gnus-kill-file-temporarily-raise-by-subject (level &optional header)
+     "Temporarily raise score by LEVEL for current subject.
+ See `gnus-kill-expiry-days'."
+   (interactive "p")
+   (gnus-kill-file-raise-by-subject level header (current-time-string)))
+  
+ (defun gnus-kill-file-temporarily-raise-by-author (level &optional header)
+   "Temporarily raise score by LEVEL for current author.
+ See `gnus-kill-expiry-days'."
+   (interactive "p")
+   (gnus-kill-file-raise-by-author level header (current-time-string)))
+  
+ (defun gnus-kill-file-temporarily-raise-by-thread (level &optional header)
+   "Temporarily raise score by LEVEL for current thread.
+ See `gnus-kill-expiry-days'."
+   (interactive "p")
+   (gnus-kill-file-enter-kill 
+    "References"
+    (regexp-quote (header-id (or header gnus-current-headers)))
+    level
+    (current-time-string)
+    nil))
+  
+ (defun gnus-kill-file-temporarily-raise-by-xref (level &optional header)
+   "Insert temporary KILL commands for articles that have been crossposted.
+ By default use the current crossposted groups.
+ See `gnus-kill-expiry-days'."
+   (interactive "p")
+   (gnus-kill-file-raise-by-xref level header (current-time-string)))
+  
+ (defun gnus-kill-file-raise-by-subject (level &optional header date)
+     "Raise score by LEVEL for current subject."
+   (interactive "p")
+   (gnus-kill-file-enter-kill
+    "Subject"
+    (regexp-quote 
+     (gnus-simplify-subject 
+      (header-subject (or header gnus-current-headers))))
+    level
+    date
+    t))
+  
+ (defun gnus-kill-file-raise-by-author (level &optional header date)
+   "Raise score by LEVEL for current author."
+   (interactive "p")
+   (gnus-kill-file-enter-kill
+    "From"
+    (regexp-quote (header-from (or header gnus-current-headers)))
+    level
+    date
+    t))
+ 
+ (defun gnus-kill-file-raise-by-xref (level &optional header date)
+   "Raise score by LEVEL for articles that have been crossposted.
+ By default use the current crossposted groups."
+   (interactive "p")
+    (let ((xref (header-xref (or header gnus-current-headers)))
+  	(start 0)
+  	group)
     (if xref
-	(progn
-	  (while (string-match " \\([a-zA-Z\.]\\):" xref start)
-	    (if (not (string= (setq group (substring (match-beginning 1) 
-						     (match-end 1)))
-			      gnus-newsgroup-name))
-		(setq string (concat string ".*" (regexp-quote group))))
-	    (setq start (match-end 0)))
-	  (gnus-kill-file-enter-kill 
-	   "Xref" string)))))
+	(while (string-match " \\([^ \t]+\\):" xref start)
+	  (setq start (match-end 0))
+	  (if (not (string= 
+		    (setq group 
+			  (substring xref (match-beginning 1) (match-end 1)))
+		    gnus-newsgroup-name))
+	      (gnus-kill-file-enter-kill 
+	       "Xref"
+	       (concat " " (regexp-quote group) ":")
+	       level
+	       date
+	       t))))))
+
+(defun gnus-kill-file-raise-followups-to-author
+  (level &optional header)
+  "Raise score for all followups to the current author."
+  (interactive)
+  (let ((name (header-from (or header gnus-current-headers)))
+	(string))
+    (save-excursion
+      (gnus-kill-set-kill-buffer)
+      (goto-char (point-min))
+      (setq name (read-string (concat "Add " level
+				      " to followup articles to: ")
+			      (regexp-quote name)))
+      (setq string
+ 	    (format "(gnus-kill %S %S '(gnus-summary-temporarily-raise-by-thread %S))\n"
+		    "From" name level))
+      (insert string)
+      (gnus-kill-file-apply-string string))
+    (message "Added permanent kill file entry for followups to %s." name)))
+
+(defun gnus-kill-file-temporarily-lower-by-subject (level &optional header)
+    "Temporarily lower score by LEVEL for current subject.
+See `gnus-kill-expiry-days'."
+  (interactive "p")
+  (gnus-kill-file-lower-by-subject level header (current-time-string)))
+
+(defun gnus-kill-file-temporarily-lower-by-author (level &optional header)
+  "Temporarily lower score by LEVEL for current author.
+See `gnus-kill-expiry-days'."
+  (interactive "p")
+  (gnus-kill-file-lower-by-author level header (current-time-string)))
+
+(defun gnus-kill-file-temporarily-lower-by-thread (level &optional header)
+  "Temporarily lower score by LEVEL for current thread.
+See `gnus-kill-expiry-days'."
+  (interactive "p")
+  (gnus-kill-file-temporarily-raise-by-thread (- level) header))
+
+(defun gnus-kill-file-temporarily-lower-by-xref (level &optional header)
+  "Insert temporary KILL commands for articles that have been crossposted.
+By default use the current crossposted groups.
+See `gnus-kill-expiry-days'."
+  (interactive "p")
+  (gnus-kill-file-lower-by-xref level header (current-time-string)))
+
+(defun gnus-kill-file-lower-by-subject (level &optional header date)
+    "Lower score by LEVEL for current subject."
+  (interactive "p")
+  (gnus-kill-file-raise-by-subject (- level) header date))
+
+(defun gnus-kill-file-lower-by-author (level &optional header date)
+  "Lower score by LEVEL for current author."
+  (interactive "p")
+  (gnus-kill-file-raise-by-author (- level) header date))
+
+(defun gnus-kill-file-lower-by-xref (level &optional header date)
+  "Lower score by LEVEL for articles that have been crossposted.
+By default use the current crossposted groups."
+  (gnus-kill-file-raise-by-xref (- level) header date))
+
+(defun gnus-kill-file-lower-followups-to-author
+  (level &optional header)
+  "Lower score for all followups to the current author."
+  (interactive "p")
+  (gnus-kill-file-raise-followups-to-author (- level) header))
 
 (defun gnus-kill-file-apply-buffer ()
   "Apply current buffer to current newsgroup."
@@ -7389,12 +8136,17 @@ If NEWSGROUP is nil, the global KILL file is selected."
   (if (and gnus-current-kill-article
 	   (get-buffer gnus-summary-buffer))
       ;; Assume newsgroup is selected.
-      (let ((string (concat "(progn \n" (buffer-string) "\n)" )))
-	(save-excursion
-	  (save-window-excursion
-	    (pop-to-buffer gnus-summary-buffer)
-	    (eval (car (read-from-string string))))))
+      (gnus-kill-file-apply-string (buffer-string))
     (ding) (message "No newsgroup is selected.")))
+
+(defun gnus-kill-file-apply-string (string)
+  "Apply STRING to current newsgroup."
+  (interactive)
+  (let ((string (concat "(progn \n" string "\n)" )))
+    (save-excursion
+      (save-window-excursion
+	(pop-to-buffer gnus-summary-buffer)
+	(eval (car (read-from-string string)))))))
 
 (defun gnus-kill-file-apply-last-sexp ()
   "Apply sexp before point in current buffer to current newsgroup."
@@ -7418,7 +8170,7 @@ If NEWSGROUP is nil, the global KILL file is selected."
   (let ((killbuf (current-buffer)))
     ;; We don't want to return to Article buffer.
     (and (get-buffer gnus-article-buffer)
-	 (bury-buffer (get-buffer gnus-article-buffer)))
+	 (bury-buffer gnus-article-buffer))
     ;; Delete the KILL file windows.
     (delete-windows-on killbuf)
     ;; Restore last window configuration if available.
@@ -7477,13 +8229,6 @@ Usage: emacs -batch -l gnus -f gnus-batch-kill NEWSGROUP ..."
 
 ;; For KILL files
 
-(defun gnus-apply-kill-file ()
-  "Apply KILL file to the current newsgroup."
-  ;; Apply the global KILL file.
-  (load (gnus-newsgroup-kill-file nil) t nil t)
-  ;; And then apply the local KILL file.
-  (load (gnus-newsgroup-kill-file gnus-newsgroup-name) t nil t))
-
 (defun gnus-Newsgroup-kill-file (newsgroup)
   "Return the name of a KILL file of NEWSGROUP.
 If NEWSGROUP is nil, return the global KILL file instead."
@@ -7526,7 +8271,47 @@ If NEWSGROUP is nil, return the global KILL file instead."
 
 (defalias 'gnus-expunge 'gnus-summary-delete-marked-with)
 
-(defun gnus-kill (field regexp &optional command all)
+(defun gnus-apply-kill-file ()
+  "Apply KILL file to the current newsgroup.
+Returns the number of articles killed."
+  (let ((kill-files (list (gnus-newsgroup-kill-file nil)
+			  (gnus-newsgroup-kill-file gnus-newsgroup-name)))
+	(unreads (length gnus-newsgroup-unreads))
+	(mark-below gnus-summary-default-interest)
+	(gnus-summary-inhibit-highlight t)
+	(expunge-below nil)
+	form beg)
+    (save-excursion
+      (while kill-files
+	(if (file-exists-p (car kill-files))
+	    (progn
+	      (find-file (car kill-files))
+	      (goto-char (point-min))
+	      (while (progn
+		       (setq beg (point))
+		       (setq form (condition-case nil 
+				      (read (current-buffer)) (error nil))))
+		(if (eq (car form) 'gnus-kill)
+		    (progn
+		      (delete-region beg (point))
+		      (insert (or (eval form) "")))
+		  (eval form)))
+	      (save-buffer)))
+	(setq kill-files (cdr kill-files))))
+    (if expunge-below (gnus-summary-expunge-below expunge-below))
+    (if mark-below (gnus-summary-mark-below mark-below ?X) )
+    (let (gnus-summary-inhibit-highlight)
+      (gnus-summary-update-lines))
+    (if beg
+	(let ((nunreads (- unreads (length gnus-newsgroup-unreads))))
+	  (or (eq nunreads 0)
+	      (message "Killed %d articles" nunreads))
+	  nunreads)
+      0)))
+
+;; Kill changes and new format by suggested by JWZ and Sudish Joseph
+;; <joseph@cis.ohio-state.edu>.  
+(defun gnus-kill (field regexp &optional exe-command all)
   "If FIELD of an article matches REGEXP, execute COMMAND.
 Optional 1st argument COMMAND is default to
 	(gnus-summary-mark-as-read nil \"X\").
@@ -7540,10 +8325,87 @@ COMMAND must be a lisp expression or a string representing a key sequence."
       ;; macros correctly. See command_loop_1.
       (switch-to-buffer gnus-summary-buffer 'norecord)
       (goto-char (point-min))		;From the beginning.
-      (if (null command)
-	  (setq command '(gnus-summary-mark-as-read nil "X")))
-      (gnus-execute field regexp command nil (not all))
-      )))
+      (let ((kill-list regexp)
+	    (date (current-time-string))
+	    (command (or exe-command '(gnus-summary-mark-as-read 
+				       nil gnus-kill-file-mark)))
+	    kill kdate prev)
+	(if (listp kill-list)
+	    ;; It is a list.
+	    (if (not (consp (cdr kill-list)))
+		;; It's on the form (regexp . date).
+		(if (= 0 (gnus-execute field (car kill-list) 
+				       command nil (not all)))
+		    (if (> (gnus-days-between (cdr kill-list) date)
+			   gnus-kill-expiry-days)
+			(setq regexp nil))
+		  (setcdr kill-list date))
+	      (while (setq kill (car kill-list))
+		(if (consp kill)
+		    ;; It's a temporary kill.
+		    (progn
+		      (setq kdate (cdr kill))
+		      (if (= 0 (gnus-execute field (car kill) command 
+					     nil (not all)))
+			  (if (> (gnus-days-between kdate date)
+				 gnus-kill-expiry-days)
+			      ;; Time limit has been exceeded, so we
+			      ;; remove the match.
+			      (if prev
+				  (setcdr prev (cdr kill-list))
+				(setq regexp (cdr regexp))))
+			;; Successful kill. Set the date to today.
+			(setcdr kill date)))
+		  ;; It's a permanent kill.
+		  (gnus-execute field kill command nil (not all)))
+		(setq prev kill-list)
+		(setq kill-list (cdr kill-list))))
+	  (gnus-execute field kill-list command nil (not all)))
+	)))
+  (if regexp
+      (gnus-pp-gnus-kill
+       (nconc (list 'gnus-kill field 
+		    (if (consp regexp) (list 'quote regexp) regexp))
+	      (if (or exe-command all) (list (list 'quote exe-command)))
+	      (if all (list t) nil)))))
+
+(defun gnus-pp-gnus-kill (object)
+  (if (or (not (consp (nth 2 object)))
+	  (not (consp (cdr (nth 2 object))))
+	  (and (eq 'quote (car (nth 2 object)))
+	       (not (consp (cdr (car (cdr (nth 2 object))))))))
+      (concat "\n" (prin1-to-string object))
+    (save-excursion
+      (set-buffer (get-buffer-create "*Gnus PP*"))
+      (buffer-disable-undo (current-buffer))
+      (erase-buffer)
+      (insert (format "\n(gnus-kill %S\n  '(" (nth 1 object)))
+      (let ((klist (car (cdr (nth 2 object))))
+	    (first t))
+	(while klist
+	  (insert (if first (progn (setq first nil) "")  "\n   ")
+		  (prin1-to-string (car klist)))
+	  (setq klist (cdr klist))))
+      (insert ")")
+      (if (nth 3 object)
+	  (insert "\n  '" (prin1-to-string (nth 3 object))))
+      (if (nth 4 object)
+	  (insert "\n  t"))
+      (insert ")")
+      (prog1
+	  (buffer-substring (point-min) (point-max))
+	(kill-buffer (current-buffer))))))
+
+(defun gnus-days-between (date1 date2)
+  ;; Return the number of days between date1 and date2.
+  (let ((d1 (mapcar (lambda (s) (and s (string-to-int s)) )
+		    (timezone-parse-date date1)))
+	(d2 (mapcar (lambda (s) (and s (string-to-int s)) )
+		    (timezone-parse-date date2))))
+    (- (timezone-absolute-from-gregorian 
+	(nth 1 d1) (nth 2 d1) (car d1))
+       (timezone-absolute-from-gregorian 
+	(nth 1 d2) (nth 2 d2) (car d2)))))
 
 (defun gnus-execute (field regexp form &optional backward ignore-marked)
   "If FIELD of article header matches REGEXP, execute lisp FORM (or a string).
@@ -7551,52 +8413,56 @@ If FIELD is an empty string (or nil), entire article body is searched for.
 If optional 1st argument BACKWARD is non-nil, do backward instead.
 If optional 2nd argument IGNORE-MARKED is non-nil, articles which are
 marked as read or ticked are ignored."
-  (let ((function nil)
-	(header nil)
-	(article nil))
-    (if (string-equal field "")
-	(setq field nil))
-    (if (null field)
-	nil
-      (or (stringp field)
-	  (setq field (symbol-name field)))
-      ;; Get access function of header filed.
-      (setq function (intern-soft (concat "gnus-header-" (downcase field))))
-      (if (and function (fboundp function))
-	  (setq function (symbol-function function))
-	(error "Unknown header field: \"%s\"" field)))
-    ;; Make FORM funcallable.
-    (if (and (listp form) (not (eq (car form) 'lambda)))
-	(setq form (list 'lambda nil form)))
-    ;; Starting from the current article.
-    (while (gnus-summary-search-subject backward ignore-marked nil)
-      (setq article (gnus-summary-article-number))
-      (or (gnus-member-of-range article gnus-newsgroup-killed)
-	  (and ignore-marked
-	       ;; Articles marked as read, ticked and interesting
-	       ;; should be ignored. 
-	       (or (not (memq article gnus-newsgroup-unreads))
-		   (memq article gnus-newsgroup-marked)
-		   (memq article gnus-newsgroup-interesting)))
-	  (gnus-execute-1 function regexp form)))))
-
-(defun gnus-execute-1 (function regexp form)
   (save-excursion
-    ;; The point of Summary buffer must be saved during execution.
-    (let ((article (gnus-summary-article-number)))
+    (let ((killed-no 0)
+	  function header article)
+      (if (or (null field) (string-equal field ""))
+	  (setq field nil)
+	;; Get access function of header filed.
+	(setq function (intern-soft (concat "gnus-header-" (downcase field))))
+	(if (and function (fboundp function))
+	    (setq function (symbol-function function))
+	  (error "Unknown header field: \"%s\"" field))
+	;; The function is a macro, so we have to check whether is has
+	;; been compiled or not, and make a real function out of it. 
+	;;      (if (consp (cdr function))
+	;;	  (setq function (nth 3 function))
+	;;	(setq function (list 'byte-code (aref function 1) (aref function 2)
+	;;			     (aref function 3)))))
+	;; Make FORM funcallable.
+	(if (and (listp form) (not (eq (car form) 'lambda)))
+	    (setq form (list 'lambda nil form)))
+	;; Starting from the current article.
+	(while (or (not article) ; Do the first line.
+		   (gnus-summary-search-subject backward ignore-marked))
+	  (setq article (gnus-summary-article-number))
+	  (or (gnus-member-of-range article gnus-newsgroup-killed)
+	      (and ignore-marked
+		   ;; Articles marked as read, ticked and dormant
+		   ;; should be ignored. 
+		   (or (not (memq article gnus-newsgroup-unreads))
+		       (memq article gnus-newsgroup-marked)
+		       (memq article gnus-newsgroup-dormant)))
+	      (gnus-execute-1 function regexp form article) 
+	      (setq killed-no (1+ killed-no)))))
+      killed-no)))
+
+(defun gnus-execute-1 (function regexp form article)
+  (save-excursion
+    (let (did-kill)
       (if (null article)
 	  nil				;Nothing to do.
 	(if function
 	    ;; Compare with header field.
 	    (let ((header (gnus-get-header-by-number article))
-		  (value nil))
+		  value)
 	      (and header
 		   (progn
 		     (setq value (funcall function header))
 		     ;; Number (Lines:) or symbol must be converted to string.
 		     (or (stringp value)
 			 (setq value (prin1-to-string value)))
-		     (string-match regexp value))
+		     (setq did-kill (string-match regexp value)))
 		   (if (stringp form)	;Keyboard macro.
 		       (execute-kbd-macro form)
 		     (funcall form))))
@@ -7611,13 +8477,11 @@ marked as read or ticked are ignored."
 	    (if (save-excursion
 		  (set-buffer gnus-article-buffer)
 		  (goto-char (point-min))
-		  (re-search-forward regexp nil t))
+		  (setq did-kill (re-search-forward regexp nil t)))
 		(if (stringp form)	;Keyboard macro.
 		    (execute-kbd-macro form)
-		  (funcall form))))
-	  ))
-      )))
-
+		  (funcall form))))))
+      did-kill)))
 
 
 ;;; 
@@ -7773,7 +8637,10 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 	(setq mail-reply-buffer article-buffer)
 	(setq gnus-post-news-buffer 
 	      (setq post-buf
-		    (gnus-request-post-buffer method header article-buffer)))
+		    (gnus-request-post-buffer 
+		     method (if (stringp header) 
+				(gnus-group-real-name header) header)
+		     article-buffer)))
 	(if (eq method 'post)
 	    (progn
 	      (delete-other-windows)
@@ -7786,6 +8653,7 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 	    (switch-to-buffer post-buf)))
 	(gnus-overload-functions)
 	(make-local-variable 'gnus-article-reply)
+	(make-local-variable 'gnus-article-check-size)
 	(setq gnus-article-reply sumart)
 	;; Handle author copy using FCC field.
 	(if gnus-author-copy
@@ -7797,92 +8665,128 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 	    (end-of-line)
 	  (search-forward (concat "\n" mail-header-separator "\n"))
 	  (if yank 
-	      (progn
+	      (save-excursion
 		(run-hooks 'news-reply-header-hook)
 		(mail-yank-original nil)))
 	  (if gnus-post-prepare-function
 	      (funcall gnus-post-prepare-function 
 		       (if (stringp header) header gnus-newsgroup-name))))))
+  (setq gnus-article-check-size (cons (buffer-size) (gnus-article-checksum)))
   (message "")
   t)
 
 (defun gnus-inews-news ()
   "Send a news message."
   (interactive)
-  (let* ((case-fold-search nil)
-	 (server-running (gnus-server-opened gnus-select-method))
-	 (reply gnus-article-reply))
+  ;; Check whether the article is a Good Net Citizen.
+  (if (not (gnus-inews-check-post))
+      ;; Aber nein!
+      ()
+    ;; Looks ok, so we do the nasty.
+    (let* ((case-fold-search nil)
+	   (server-running (gnus-server-opened gnus-select-method))
+	   (reply gnus-article-reply))
+      (save-excursion
+	;; Connect to default NNTP server if necessary.
+	;; Suggested by yuki@flab.fujitsu.junet.
+	(gnus-start-news-server)	;Use default server.
+	;; NNTP server must be opened before current buffer is modified.
+	(widen)
+	(goto-char (point-min))
+	(run-hooks 'news-inews-hook)
+	(save-restriction
+	  (narrow-to-region
+	   (point-min)
+	   (progn
+	     (goto-char (point-min))
+	     (search-forward (concat "\n" mail-header-separator "\n"))
+	     (point)))
+
+	  ;; Correct newsgroups field: change sequence of spaces to comma and 
+	  ;; eliminate spaces around commas.  Eliminate imbedded line breaks.
+	  (goto-char (point-min))
+	  (if (search-forward-regexp "^Newsgroups: +" nil t)
+	      (save-restriction
+		(narrow-to-region
+		 (point)
+		 (if (re-search-forward "^[^ \t]" nil 'end)
+		     (match-beginning 0)
+		   (point-max)))
+		(goto-char (point-min))
+		(replace-regexp "\n[ \t]+" " ") ;No line breaks (too confusing)
+		(goto-char (point-min))
+		(replace-regexp "[ \t\n]*,[ \t\n]*\\|[ \t]+" ",")
+		))
+
+	  ;; Mail the message too if To: or Cc: exists.
+	  (if (or (mail-fetch-field "to" nil t)
+		  (mail-fetch-field "cc" nil t))
+	      (if gnus-mail-send-method
+		  (progn
+		    (message "Sending via mail...")
+		    (widen)
+		    (funcall gnus-mail-send-method)
+		    (message "Sending via mail... done"))
+		(ding)
+		(message "No mailer defined.  To: and/or Cc: fields ignored.")
+		(sit-for 1))))
+
+	;; Send to NNTP server. 
+	(message "Posting to USENET...")
+	(if (gnus-inews-article)
+	    (progn
+	      (message "Posting to USENET... done")
+	      (if (and reply
+		       (get-buffer (car reply))
+		       (buffer-name (car reply)))
+		  (progn
+		    (save-excursion
+		      (set-buffer gnus-summary-buffer)
+		      (gnus-summary-mark-article-as-replied 
+		       (cdr reply))))))
+	  ;; We cannot signal an error.
+	  (ding) (message "Article rejected: %s" 
+			  (gnus-status-message gnus-select-method)))
+	(set-buffer-modified-p nil))
+      ;; If NNTP server is opened by gnus-inews-news, close it by myself.
+      (or server-running
+	  (gnus-close-server gnus-current-select-method))
+      (and (fboundp 'bury-buffer) (bury-buffer))
+      ;; Restore last window configuration.
+      (and gnus-winconf-post-news
+	   (set-window-configuration gnus-winconf-post-news))
+      (setq gnus-winconf-post-news nil))))
+
+(defun gnus-inews-check-post ()
+  "Check whether the post looks ok."
+  (and 
+   ;; First check for an empty Subject line. 
+   (save-excursion
+     (save-restriction
+       (narrow-to-region 
+	(goto-char (point-min))
+	(progn (search-forward (concat "\n" mail-header-separator "\n")) 
+	       (point)))
+       (goto-char (point-min))
+       (if (or (not (re-search-forward "^Subject: +" nil t))
+	       (eolp))
+	   (yes-or-no-p
+	    "The Subject field is empty. Do you really want to post this article? ")
+	 t)))
+   ;; Then use the (size . checksum) variable to see whether the
+   ;; article is empty or has only quoted text.
+   (if (and (= (buffer-size) (car gnus-article-check-size))
+	    (= (gnus-article-checksum) (cdr gnus-article-check-size)))
+       (yes-or-no-p "It looks like there's no new text in your article. Really post it? ")
+     t)))
+
+(defun gnus-article-checksum ()
+  (let ((sum 0))
     (save-excursion
-      ;; Connect to default NNTP server if necessary.
-      ;; Suggested by yuki@flab.fujitsu.junet.
-      (gnus-start-news-server)		;Use default server.
-      ;; NNTP server must be opened before current buffer is modified.
-      (widen)
-      (goto-char (point-min))
-      (run-hooks 'news-inews-hook)
-      (save-restriction
-	(narrow-to-region
-	 (point-min)
-	 (progn
-	   (goto-char (point-min))
-	   (search-forward (concat "\n" mail-header-separator "\n"))
-	   (point)))
-
-	 ;; Correct newsgroups field: change sequence of spaces to comma and 
-	 ;; eliminate spaces around commas.  Eliminate imbedded line breaks.
-	 (goto-char (point-min))
-	 (if (search-forward-regexp "^Newsgroups: +" nil t)
-	     (save-restriction
-	       (narrow-to-region
-		(point)
-		(if (re-search-forward "^[^ \t]" nil 'end)
-		    (match-beginning 0)
-		  (point-max)))
-	       (goto-char (point-min))
-	       (replace-regexp "\n[ \t]+" " ") ;No line breaks (too confusing)
-	       (goto-char (point-min))
-	       (replace-regexp "[ \t\n]*,[ \t\n]*\\|[ \t]+" ",")
-	     ))
-
-	 ;; Mail the message too if To: or Cc: exists.
-	 (if (or (mail-fetch-field "to" nil t)
-		 (mail-fetch-field "cc" nil t))
-	     (if gnus-mail-send-method
-		 (progn
-		   (message "Sending via mail...")
-		   (widen)
-		   (funcall gnus-mail-send-method)
-		   (message "Sending via mail... done"))
-	       (ding)
-	       (message "No mailer defined.  To: and/or Cc: fields ignored.")
-	       (sit-for 1))))
-
-      ;; Send to NNTP server. 
-      (message "Posting to USENET...")
-      (if (gnus-inews-article)
-	  (progn
-	    (message "Posting to USENET... done")
-	    (if (and reply
-		     (get-buffer (car reply))
-		     (buffer-name (car reply)))
-		(progn
-		  (save-excursion
-		    (set-buffer gnus-summary-buffer)
-		    (gnus-summary-mark-article-as-replied 
-		     (cdr reply))))))
-	;; We cannot signal an error.
-	(ding) (message "Article rejected: %s" 
-			(gnus-status-message gnus-select-method)))
-      (set-buffer-modified-p nil))
-    ;; If NNTP server is opened by gnus-inews-news, close it by myself.
-    (or server-running
-	(gnus-close-server gnus-current-select-method))
-    (and (fboundp 'bury-buffer) (bury-buffer))
-    ;; Restore last window configuration.
-    (and gnus-winconf-post-news
-	 (set-window-configuration gnus-winconf-post-news))
-    (setq gnus-winconf-post-news nil)
-    ))
+      (while (not (eobp))
+	(setq sum (logxor sum (following-char)))
+	(forward-char 1)))
+    sum))
 
 (defun gnus-cancel-news ()
   "Cancel an article you posted."
@@ -8346,23 +9250,18 @@ Customize the variable gnus-mail-reply-method to use another mailer."
   "Forward the current message to another user.
 Customize the variable gnus-mail-forward-method to use another mailer."
   (interactive)
-  (gnus-summary-select-article)
-  (switch-to-buffer gnus-article-buffer)
-  (widen)
-  (delete-other-windows)
-  (bury-buffer gnus-article-buffer)
-  (funcall gnus-mail-forward-method))
+  (gnus-summary-select-article t)
+  (set-buffer gnus-article-buffer)
+  (let ((gnus-newsgroup-name gnus-newsgroup-name))
+    (funcall gnus-mail-forward-method)))
 
 (defun gnus-summary-mail-other-window ()
   "Compose mail in other window.
-Customize the variable gnus-mail-other-window-method to use another mailer."
+Customize the variable `gnus-mail-other-window-method' to use another
+mailer."
   (interactive)
-  (gnus-summary-select-article)
-  (switch-to-buffer gnus-article-buffer)
-  (widen)
-  (delete-other-windows)
-  (bury-buffer gnus-article-buffer)
-  (funcall gnus-mail-other-window-method))
+  (let ((gnus-newsgroup-name gnus-newsgroup-name))
+    (funcall gnus-mail-other-window-method)))
 
 (defun gnus-mail-reply-using-mail (&optional yank to-address)
   (save-excursion
@@ -8467,8 +9366,8 @@ Customize the variable gnus-mail-other-window-method to use another mailer."
   (let ((forward-buffer (current-buffer))
 	(subject
 	 (concat "[" gnus-newsgroup-name "] "
-		 ;;(mail-strip-quoted-names (gnus-fetch-field "From")) ": "
-		 (or (gnus-fetch-field "Subject") ""))))
+		 (or (gnus-fetch-field "Subject") "")))
+	beg)
     ;; If only one window, use it for the mail buffer.
     ;; Otherwise, use another window for the mail buffer
     ;; so that the Rmail buffer remains visible
@@ -8477,14 +9376,20 @@ Customize the variable gnus-mail-other-window-method to use another mailer."
 	    (mail nil nil subject)
 	  (mail-other-window nil nil subject))
 	(save-excursion
-	  (goto-char (point-max))
+	  (setq beg (goto-char (point-max)))
 	  (insert "------- Start of forwarded message -------\n")
 	  (insert-buffer forward-buffer)
 	  (goto-char (point-max))
 	  (insert "------- End of forwarded message -------\n")
+	  ;; Suggested by Sudish Joseph <joseph@cis.ohio-state.edu>. 
+	  (goto-char beg)
+	  (while (setq beg (next-single-property-change (point) 'invisible))
+	    (goto-char beg)
+	    (delete-region beg (or (next-single-property-change 
+				    (point) 'invisible)
+				   (point-max))))
 	  ;; You have a chance to arrange the message.
-	  (run-hooks 'gnus-mail-forward-hook)
-	  ))))
+	  (run-hooks 'gnus-mail-forward-hook)))))
 
 (defun gnus-mail-other-window-using-mail ()
   "Compose mail other window using mail."
@@ -8557,7 +9462,6 @@ Customize the variable gnus-mail-other-window-method to use another mailer."
       (set-buffer-modified-p nil))))
 
 (defun gnus-dribble-save ()
-  ;; Bug by Evan Welsh <welsh@epcc.ed.ac.uk>.
   (if (and gnus-dribble-buffer
 	   (buffer-name gnus-dribble-buffer))
       (save-excursion
@@ -8567,7 +9471,6 @@ Customize the variable gnus-mail-other-window-method to use another mailer."
 (defun gnus-dribble-clear ()
   (save-excursion
     (if (and gnus-dribble-buffer
-	     (get-buffer gnus-dribble-buffer)
 	     (buffer-name (get-buffer gnus-dribble-buffer)))
 	(progn
 	  (set-buffer gnus-dribble-buffer)
@@ -8599,7 +9502,6 @@ If CONFIRM is non-nil, the user will be asked for an NNTP server."
 	    (setq gnus-select-method
 		  (list 'nntp gnus-nntp-server)))
 
-;	(debug)
 	(if (and gnus-nntp-server 
 		 (stringp gnus-nntp-server)
 		 (not (string= gnus-nntp-server "")))
@@ -8608,7 +9510,7 @@ If CONFIRM is non-nil, the user will be asked for an NNTP server."
 			     (string= gnus-nntp-server "::"))
 			 (list 'nnspool (system-name)))
 			((string-match ":" gnus-nntp-server)
-			 (list 'mhspool gnus-nntp-server))
+			 (list 'nnmh gnus-nntp-server))
 			(t
 			 (list 'nntp gnus-nntp-server))))))
 
@@ -8617,9 +9519,9 @@ If CONFIRM is non-nil, the user will be asked for an NNTP server."
       (cond ((eq how 'nnspool)
 	     (require 'nnspool)
 	     (message "Looking up local news spool..."))
-	    ((eq how 'mhspool)
-	     (require 'mhspool)
-	     (message "Looking up private directory..."))
+	    ((eq how 'nnmh)
+	     (require 'nnmh)
+	     (message "Looking up mh spool..."))
 	    (t
 	     (require 'nntp)))
       (setq gnus-current-select-method gnus-select-method)
@@ -8709,7 +9611,9 @@ is returned insted of the status string."
 	  (info (nth 2 (gnus-gethash group gnus-newsrc-hashtb)))
 	  (method
 	   (if (and gnus-post-method
-		    (memq 'post (member (car gnus-current-select-method) 
+		    ;; Fix by Sudish Joseph <joseph@cis.ohio-state.edu>.
+ 		    (memq 'post (assoc
+ 				 (format "%s" (car gnus-current-select-method))
 					gnus-valid-select-methods)))
 	       gnus-post-method
 	     gnus-current-select-method)))
@@ -8718,15 +9622,17 @@ is returned insted of the status string."
 
 (defun gnus-request-post (method)
   (and gnus-post-method
-       (memq 'post (member (car method) gnus-valid-select-methods))
+       (memq 'post (assoc (format "%s" (car method))
+ 			  gnus-valid-select-methods))
        (setq method gnus-post-method))
   (funcall (gnus-get-function method 'request-post) 
 	   (nth 1 method)))
 
-(defun gnus-request-expire-articles (articles group)
+(defun gnus-request-expire-articles (articles group &optional force)
   (let ((method (gnus-find-method-for-group group)))
     (funcall (gnus-get-function method 'request-expire-articles) 
-	     articles (gnus-group-real-name group) (nth 1 method))))
+	     articles (gnus-group-real-name group) (nth 1 method)
+	     force)))
 
 (defun gnus-request-move-article (article group server accept-function)
   (let ((method (gnus-find-method-for-group group)))
@@ -8811,18 +9717,19 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
     ;; If `gnus-read-active-file' is nil, then we just create an empty
     ;; hash table. The partial filling out of the hash table will be
     ;; done in `gnus-get-unread-articles'.
-    (if gnus-read-active-file
+    (if (and gnus-read-active-file (not level))
 	(gnus-read-active-file)
       (setq gnus-active-hashtb (make-vector 4095 0)))
 
     ;; Read the newsrc file and create `gnus-newsrc-hashtb'.
     (if init (gnus-read-newsrc-file rawfile))
     ;; Find the number of unread articles in each non-dead group.
-    (gnus-get-unread-articles level)
+    (gnus-get-unread-articles (or level 7))
     ;; Find new newsgroups and treat them.
-    (if (and init gnus-check-new-newsgroups gnus-read-active-file)
+    (if (and init gnus-check-new-newsgroups gnus-read-active-file (not level))
 	(gnus-find-new-newsgroups))
-    (if (and init gnus-check-bogus-newsgroups gnus-read-active-file)
+    (if (and init gnus-check-bogus-newsgroups 
+	     gnus-read-active-file (not level))
 	(gnus-check-bogus-newsgroups))))
 
 (defun gnus-find-new-newsgroups ()
@@ -9074,7 +9981,6 @@ newsgroup."
       (setq newsrc (cdr newsrc)))
     (message "Checking new news... done")))
 
-
 ;; Create a hash table out of the newsrc alist. The `car's of the
 ;; alist elements are used as keys.
 (defun gnus-make-hashtable-from-newsrc-alist ()
@@ -9104,7 +10010,7 @@ newsgroup."
 	(setq list (cdr list))))))
 
 (defun gnus-get-unread-articles-in-group (info active)
-  (let (num srange lowest range group)
+  (let* (num srange lowest range group)
     ;; Modify the list of read articles according to what articles 
     ;; are available; then tally the unread articles and add the
     ;; number to the group hash table entry.
@@ -9117,8 +10023,8 @@ newsgroup."
 	   ;; active hash table.
 	   (if (< (cdr range) (car active)) (setcdr range (car active)))
 	   ;; Compute number of unread articles.
-	   (setq num (- (cdr active) (- (1+ (cdr range)) (car range))))
-	   (if (< num 0) (setq num 0)))
+	   (setq num (max 0 (- (cdr active) 
+			       (- (1+ (cdr range)) (car range))))))
 	  (t
 	   ;; The read list is a list of ranges. Fix them according to
 	   ;; the active hash table.
@@ -9136,12 +10042,9 @@ newsgroup."
 	     (setq num (+ num (- (1+ (cdr (car range))) 
 				 (car (car range)))))
 	     (setq range (cdr range)))
-	   (setq num (- (cdr active) num))))
+	   (setq num (max 0 (- (cdr active) num)))))
     (setcar (gnus-gethash (car info) gnus-newsrc-hashtb) num)
-    ;; Suggested by Sudish Joseph <joseph@cis.ohio-state.edu>.
-    ;; Active will be (n . n-1) for groups that have no articles
-    ;; whatsoever, which makes the number of unread articles wrong, so:
-    (if (< num 0) 0 num)))
+    num))
 
 (defun gnus-activate-foreign-newsgroup (info)
   (and (gnus-check-news-server (nth 4 info))
@@ -9166,7 +10069,7 @@ newsgroup."
 
 (defun gnus-update-read-articles 
   (group unread unselected ticked &optional domarks replied expirable killed
-	 interesting bookmark)
+	 dormant bookmark)
   "Update the list of read and ticked articles in GROUP using the
 UNREAD and TICKED lists.
 Note: UNSELECTED has to be sorted over `<'."
@@ -9191,7 +10094,7 @@ Note: UNSELECTED has to be sorted over `<'."
       (if (not (and (numberp number) (= 0 number)))
 	  (setq unread (nconc unselected unread)))
       ;; Set the number of unread articles in gnus-newsrc-hashtb.
-      (if (not (eq 'nnvirtual (car gnus-current-select-method)))
+      (or (eq 'nnvirtual (car gnus-current-select-method))
 	  (setcar entry (length unread)))
       ;; Compute the ranges of read articles by looking at the list of
       ;; unread articles.  
@@ -9208,11 +10111,21 @@ Note: UNSELECTED has to be sorted over `<'."
       ;; Enter the list of ticked articles.
       (gnus-set-marked-articles 
        info ticked
-       (or (and domarks replied) (cdr (assq 'reply marked)))
-       (or (and domarks expirable) (cdr (assq 'expire marked)))
-       (or (and domarks killed) (cdr (assq 'killed marked)))
-       (or (and domarks interesting) (cdr (assq 'interesting marked)))
-       (or (and domarks bookmark) (cdr (assq 'bookmark marked)))))))
+       (if domarks replied (cdr (assq 'reply marked)))
+       (if domarks expirable (cdr (assq 'expire marked)))
+       (if domarks killed (cdr (assq 'killed marked)))
+       (if domarks dormant (cdr (assq 'dormant marked)))
+       (if domarks bookmark (cdr (assq 'bookmark marked)))))))
+
+(defun gnus-make-articles-unread (group articles)
+  "Mark ARTICLES in GROUP as unread."
+  (let ((info (nth 2 (or (gnus-gethash group gnus-newsrc-hashtb)
+			 (gnus-gethash (concat gnus-foreign-group-prefix
+					       group)
+				       gnus-newsrc-hashtb)))))
+    (setcar (nthcdr 2 info)
+	    (gnus-remove-from-range (nth 2 info) articles))
+    (gnus-group-update-group group t)))
 
 (defun gnus-read-active-file ()
   "Get active file from NNTP server."
@@ -9354,7 +10267,6 @@ If FORCE is non-nil, the .newsrc file is read."
 	(let ((info (nth 2 (gnus-gethash (car group) gnus-newsrc-hashtb))))
 	  (if info
 	      (progn
-		;; Bug by Kimball Collins <kpc@ptolemy.arc.nasa.gov>. 
 		(setcar (nthcdr 2 info) (cdr (cdr group)))
 		(setcar (cdr info) (if (nth 1 group) 3 6))
 		(setq gnus-newsrc-assoc (cons info gnus-newsrc-assoc)))
@@ -9542,13 +10454,12 @@ If FORCE is non-nil, the .newsrc file is read."
 		(if info
 		    (progn
 		      (setcar (nthcdr 2 info) (nreverse read-list))
-		      (setcar (cdr info) (if subscribe 2 6))
+		      (setcar (cdr info) (if subscribe 3 6))
 		      (setq gnus-newsrc-assoc (cons info gnus-newsrc-assoc)))
 		  (setq gnus-newsrc-assoc
-			(cons 
-			 (cons newsgroup 
-			       (cons (if subscribe 2 6) (nreverse read-list)))
-			 gnus-newsrc-assoc))))
+			(cons (list newsgroup (if subscribe 3 6) 
+				    (nreverse read-list))
+			      gnus-newsrc-assoc))))
 	    (setq gnus-killed-list (cons newsgroup gnus-killed-list)))))
 	(setq line (1+ line))
 	(forward-line 1))))
@@ -9677,7 +10588,6 @@ If FORCE is non-nil, the .newsrc file is read."
       (set-buffer (create-file-buffer gnus-startup-file))
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
-      ;; Bug by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>.
       (if gnus-newsrc-options (insert "options " gnus-newsrc-options "\n"))
       (while newsrc
 	(setq group (car newsrc))
@@ -9689,7 +10599,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	       (if (atom (car ranges)) (list ranges) ranges))))
 	(insert "\n")
 	(setq newsrc (cdr newsrc)))
-      (write-region 1 (point-max) gnus-startup-file nil 'nomesg)
+      (write-region 1 (point-max) gnus-current-startup-file nil 'nomesg)
       (kill-buffer (current-buffer)))))
 
 (defun gnus-ranges-to-newsrc-format (ranges)

@@ -1,7 +1,225 @@
+Sun Jan 15 07:44:09 1995  Lars Magne Ingebrigtsen  <larsi@hnoss.ifi.uio.no>
+
+	* gnus.el (gnus-article-refer-article): Would not scroll to the
+	beginning of the article.
+	(gnus-summary-go-to-next-thread): Would go to wrong article.
+
+Sat Jan 14 12:55:31 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-exit): Do not advance in the Group buffer
+	when quitting from a Summary buffer.
+
+	* nnvirtual.el (nnvirtual-retrieve-headers): Articles that appear
+	twice because of crossposting are deleted.
+
+	* gnus.el (gnus-visual-mark-article-hook): New hook.
+	(gnus-group-prepare): Don't display groups with only dormant
+	articles when listing doing a `gnus-group-list-groups'.
+
+	* gnus-visual.el: New file.
+	(gnus-visual-highlight-selected-summary): Function moved out of
+	gnus.el.
+	(gnus-selected-summary-face): Variable name change.
+
+	* gnus.el (gnus-visual): New variable.
+
+	* nnmail.el (nnmail-crosspost): New variable to toggle
+	crossposting in mail groups.
+
+	* nnml.el (nnml-article-group): Fold continuation lines before
+	splitting mail.
+
+Sat Jan 14 04:34:59 1995  Lars Magne Ingebrigtsen  <larsi@dyggve.ifi.uio.no>
+
+	* gnus.el (gnus-group-browse-foreign-server): Completing-read over
+	`gnus-secondary-servers'. 
+	(gnus-summary-refer-article): Would print Subject in the inserter
+	Summary line to "t".
+	(gnus-summary-mail-forward, gnus-summary-mail-other-window):
+	Messed up the window configuration.
+	(gnus-group-insert-group-line): When dormant articles were
+	present, an incorrect number of unread articles would be reported.
+	(gnus-summary-goto-subject): Would bug when the point was at the
+	end of the buffer.
+
+Fri Jan 13 09:40:11 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnml.el (nnml-generate-nov-databases): Didn't update the active
+	file. 
+
+	* gnus.el (gnus-summary-next-group): Would behave spuriously when
+	the next group had all its articles marked as read via the xref
+	mechanism. Would also go to the Newsgroup buffer when C-g was
+	pressed. 
+	(gnus-inews-check-post): Reject outgoing mail that has empty
+	Subject lines, no text at all and just quoted text.
+	(gnus-summary-catchup-and-exit): Do not mark dormant articles as
+	read when catching up.
+	(gnus-summary-catchup): New implementation of all catchup
+	functions. 
+
+Fri Jan 13 07:27:27 1995  Lars Magne Ingebrigtsen  <larsi@dyggve.ifi.uio.no>
+
+	* nntp.el (nntp-request-article): Inserted contents into wrong
+	buffer. 
+
+Mon Jan  9 02:16:12 1995    <larsi@redleaf>
+
+	* gnus.el (gnus-make-threads): Threading bug when
+	`gnus-thread-ignore-subject' is nil fix.
+	(gnus-post-news): When posting in foreign newsgroups, the name of
+	the group would be wrong.
+
+	* nnmail.el (nnmail-choose-mail): Insert the X-Gnus-Newsgroup line
+	at the right place.
+
+	* gnus.el (gnus-group-get-new-news-this-group): Would scroll
+	forwards when updating the first newsgroup(s) in the Newsgroup
+	buffer. 
+	(gnus-get-unread-articles-in-group): Compute number of unreads
+	more correctly. Dormant counts as "read" while ticked counts as
+	"unread". 
+
+	* nnml.el (nnml-choose-mail): Handle continuation lines and tabs
+	correctly when generating nov databases.
+
+	* gnus.el (gnus-summary-read-group): Applying a kill file to a
+	group that contains only dormant articles would lead to an
+	infinite loop.
+	(gnus-kill-save-kill-buffer): Really kill kill buffers upon exit. 
+	(gnus-select-newsgroup): Treat newsgroups with only dormant
+	articles as having no unread articles.
+	(gnus-get-newsgroup-headers-xover, gnus-get-newsgroup-headers):
+	Downcase message-id and references for better threading.
+
+Sun Jan  8 01:11:04 1995    <larsi@redleaf>
+
+	* gnus.el (gnus-summary-subject-string): Wrong regexp made the
+	function return nil always.
+	(gnus-summary-insert-line): Use mail-extr to extract address and
+	name. 
+	(gnus-pp-gnus-kill): Would never actually prettify anything.
+	(gnus-kill): Did not update date of last successful kill.
+	(gnus-group-insert-group-line): Do not print a "*" if the group
+	contains only dormant articles.
+	(gnus-update-read-articles): When removing all marks from a mark
+	list (dormant, ticked, bookmarks), Gnus wouldn't properly update
+	the list of marked articles when exiting from the group.
+
+Sat Jan  7 03:05:01 1995    <larsi@redleaf>
+
+	* gnus.el (gnus-mark-xrefs-as-read): Computed strange number of
+	unread articles when given illegal xref numbers.
+	(gnus-group-apropos, gnus-group-description-apropos): Two new
+	commands and keystrokes.
+	(gnus-no-server): New command to start Gnus without connecting to
+	your local newsserver.
+	(gnus): Gnus would read the active file even when started at a low
+	level. 
+	(gnus-summary-exit): Kill kill file buffer upon newsgroup exit.
+	(gnus-gnus-to-newsrc-format): Would write .newsrc instead of
+	.newsrc-HOST. 
+
+Fri Jan  6 16:45:45 1995    <larsi@redleaf>
+
+	* gnus.el (gnus-summary-search-subject): UNREAD now really goes to
+	unread only.
+	(gnus-kill-file-permanent-kill-by-xref): Kill all cross-posted
+	groups mentioned.
+	(gnus-kill-file-kill-by-xref): Improper newsgroup matching.
+
+Thu Jan  5 20:45:56 1995    <larsi@redleaf>
+
+	* gnus.el (gnus-bug): New command.
+	(gnus-get-newsgroup-headers): Fix when article does not contain
+	message-id. 
+	(gnus-summary-show-all-expunged): Not (interactive).
+	(gnus-summary-delete-marked-with): Infinite loop.
+	(gnus-summary-search-subject): Next always goes to the next
+	article. 
+
+Thu Jan  5 14:23:56 1995    <larsi@redleaf>
+
+	* gnus.el (gnus-summary-delete-article): New function and
+	keystroke to delete (mail) articles right away.
+	(gnus-summary-next-group): When selecting next group that have had
+	all its articles marked as read by xref, this would yield
+	unexpected results.
+	(gnus-summary-search-subject): `n' on first article selects the
+	first article.
+	(gnus-mouse-face): New variable.
+
+	* nnmh.el: New mail backend for mh folders (ie. spool).
+
+Wed Jan  4 02:45:08 1995    <larsi@redleaf>
+
+	* nnmail.el (nnmail-read-mbox): If an mbox file didn't exist, this
+	function would fail.
+	(nnmail-split-region): Lines numbers were inserted in wrong
+	headers with wrong numbers.
+
+	* gnus.el (gnus-summary-show-all-expunged): New function and
+	keystroke to display previously expunged lines.
+
+	* nnmail.el (nnmail-prepare-incoming-hook): New variable.
+
+	* gnus.el (gnus-mail-forward-using-mail): Delete invisible headers
+	when forwarding.
+
+Tue Jan  3 15:23:00 1995    <larsi@redleaf>
+
+	* gnus.el (gnus-post-news): Move point to beginning of quoted text
+	on followups.
+	(gnus-group-set-current-level): Prompt for a level if called with
+	nil. 
+	(gnus-summary-raise-interest, gnus-summary-lower-interest,
+	gnus-summary-set-interest): New commands and keystrokes.
+	(gnus-summary-default-interest): New variable.
+	(gnus-raise, gnus-lower): New functions to use in kill-files for
+	raising or lowering interest.
+
+Mon Jan  2 11:51:32 1995    <larsi@redleaf>
+
+	* gnus.el (gnus-group-line-format): Modified spec to show number
+	of really unread unread articles instead of unread + ticked +
+	interesting. 
+	(gnus-group-line-format): New codes to show number of interesting
+	articles; number of ticked and interesting; number of ticked,
+	number of read; total number of articles; number of unread,
+	unticked, uninteresting articles. 
+	(gnus-newsgroup-dormant): `gnus-newsgroup-interesting' (and all
+	derivatives thereof) renamed from "interesting" to "dormant".
+	(NOTE: everybody that have marked articles as "interesting" earlier
+	might experience slightly peculiar effects. The joys of alpha
+	testing.)
+	(gnus-summary-mode-map): `+' to set dormant mark, `-' to set tick. 
+	(gnus-group-expire-articles): Fixed bug that resulted in no
+	articles being expired.
+	(gnus-unread-mark, gnus-read-mark, gnus-ticked-mark,
+	gnus-dormant-mark): New variables for the mark characters. 
+	(gnus-summary-insert-line): Loose threads can now also be printed
+	with the `empty' method.
+	(gnus-make-threads): When threading twice (for instance, when
+	toggling threading), information was mangled which ended in in
+	infinite loop.
+
+Sun Jan  1 14:35:01 1995    <larsi@redleaf>
+
+	* gnus.el (gnus-summary-refer-parent-article): Bug when no article
+	has been selected.
+	(gnus-kill, gnus-apply-kill-file, gnus-execute): Changed to
+	support expiring kills and multple patterns in one `gnus-kill'
+	call. 
+
+	* nnml.el (nnml-split-incoming): Did not properly split mail that
+	contained multiple "From " lines.
+
 Sat Dec 31 00:55:24 1994    <larsi@redleaf>
 
 	* gnus.el (gnus-newsgroup-marked): This variable had been re-named
 	`gnus-newsgroup-ticked'. It has been re-named back again.
+	(gnus-kill-file-kill-by-subject): Made all kill-by-* functions
+	operate on the current article in the Summary buffer.
 
 Fri Dec 30 11:45:27 1994    <larsi@redleaf>
 

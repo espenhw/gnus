@@ -1,5 +1,6 @@
 ;;; nntp.el --- NNTP (RFC977) Interface for GNU Emacs
-;; Copyright (C) 1987, 1988, 1989, 1990, 1992, 1993, 1994 Free Software Foundation, Inc.
+
+;; Copyright (C) 1987,88,89,90,92,93,94,95 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; 	Lars Ingebrigtsen <larsi@ifi.uio.no>
@@ -257,7 +258,7 @@ If the stream is opened, return non-nil, otherwise return nil."
 (defun nntp-request-article (id &optional newsgroup server buffer)
   "Select article by message ID (or number)."
   (nntp-possibly-change-server newsgroup server)
-  (if buffer (set-process-buffer nntp-server-process (current-buffer)))
+  (if buffer (set-process-buffer nntp-server-process buffer))
   (prog1
       (let ((nntp-server-buffer (or buffer nntp-server-buffer)))
 	;; If NEmacs, end of message may look like: "\256\215" (".^M")

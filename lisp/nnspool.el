@@ -1,6 +1,6 @@
-;;; nnspool.el --- spool access using NNTP for GNU Emacs
+;;; nnspool.el --- spool access for GNU Emacs
 
-;; Copyright (C) 1988, 1989, 1990, 1993, 1994 Free Software Foundation, Inc.
+;; Copyright (C) 1988, 89, 90, 93, 94, 95 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; 	Lars Ingebrigtsen <larsi@ifi.uio.no>
@@ -312,8 +312,6 @@ If the stream is opened, return T, otherwise return NIL."
 (defun nnspool-open-server-internal (host &optional service)
   "Open connection to news server on HOST by SERVICE (default is nntp)."
   (save-excursion
-    (if (not (string-equal host (system-name)))
-	(error "NNSPOOL: cannot talk to %s." host))
     ;; Initialize communication buffer.
     (setq nntp-server-buffer (get-buffer-create " *nntpd*"))
     (set-buffer nntp-server-buffer)

@@ -1,6 +1,5 @@
-;;; gnus-uu.el --- extract, view or save (uu)encoded files from gnus
-
-;; Copyright (C) 1985, 1986, 1987, 1993, 1994 Free Software Foundation, Inc.
+;;; gnus-uu.el --- extract, view or save (uu)encoded files from Gnus
+;; Copyright (C) 1985,86,87,93,94,95 Free Software Foundation, Inc.
 
 ;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
 ;; Created: 2 Oct 1993
@@ -187,344 +186,8 @@
 ;; Dummy function gnus-uu
 
 (defun gnus-uu ()
-  "gnus-uu is a package for uudecoding and viewing articles.
-
-
-Keymap overview:
-
-By default, all gnus-uu keystrokes begin with `C-c C-v'. 
-
-There four decoding commands categories:
-All commands for viewing are `C-c C-v C-LETTER'.
-All commands for saving are `C-c C-v LETTER'.
-All commands for marked viewing are `C-c C-v C-M-LETTER'.
-All commands for marked saving are `C-c C-v M-LETTER'.
-
-\\<gnus-summary-mode-map>\\[gnus-uu-decode-and-view]\tDecode and view articles
-\\[gnus-uu-decode-and-save]\tDecode and save articles
-\\[gnus-uu-shar-and-view]\tUnshar and view articles
-\\[gnus-uu-shar-and-save]\tUnshar and save articles
-\\[gnus-uu-multi-decode-and-view]\tChoose a decoding method, decode and view articles
-\\[gnus-uu-multi-decode-and-save]\tChoose a decoding method, decode and save articles
-
-\\[gnus-uu-threaded-multi-decode-and-view]\tDecode a thread and view
-\\[gnus-uu-threaded-multi-decode-and-save]\tDecode a thread and save
-
-\\[gnus-uu-decode-and-show-in-buffer]\tDecode the current article and view the result in a buffer
-\\[gnus-uu-edit-begin-line]\tEdit the 'begin' line of an uuencoded article
-
-\\[gnus-uu-decode-and-save-all-unread-articles]\tDecode and save all unread articles
-\\[gnus-uu-decode-and-save-all-articles]\tDecode and save all articles
-\\[gnus-uu-decode-and-view-all-unread-articles]\tDecode and view all unread articles
-\\[gnus-uu-decode-and-view-all-articles]\tDecode and view all articles
-\\[gnus-uu-decode-and-view-all-marked-files]\tDecode and view all files that have had some articles marked
-\\[gnus-uu-decode-and-save-all-marked-files]\tDecode and save all files that have had some articles marked
-
-\\[gnus-uu-digest-and-forward]\tDigest and forward a series of articles
-\\[gnus-uu-marked-digest-and-forward]\tDigest and forward all marked articles
-
-\\[gnus-uu-mark-by-regexp]\tMark articles for decoding by regexp
-\\[gnus-uu-mark-thread]\tMark articles in this thread
-\\[gnus-uu-mark-region]\tMark articles all articles between point and mark
-\\[gnus-uu-marked-decode-and-view]\tDecode and view marked articles
-\\[gnus-uu-marked-decode-and-save]\tDecode and save marked articles
-\\[gnus-uu-marked-shar-and-view]\tUnshar and view marked articles
-\\[gnus-uu-marked-shar-and-save]\tUnshar and save marked articles
-\\[gnus-uu-marked-multi-decode-and-view]\tChoose decoding method, decode and view marked articles
-\\[gnus-uu-marked-multi-decode-and-save]\tChoose decoding method, decode and save marked articles
-
-\\[gnus-uu-marked-universal-argument]\tPerform any opration on all marked articles
-
-\\[gnus-uu-toggle-asynchronous]\tToggle asynchronous viewing mode
-\\[gnus-uu-toggle-query]\tToggle whether to ask before viewing a file
-\\[gnus-uu-toggle-always-ask]\tToggle whether to ask to save a file after viewing
-\\[gnus-uu-toggle-kill-carriage-return]\tToggle whether to strip trailing carriage returns
-\\[gnus-uu-toggle-interactive-view]\tToggle whether to use interactive viewing mode
-\\[gnus-uu-toggle-correct-stripped-articles]\tToggle whether to 'correct' articles
-\\[gnus-uu-toggle-view-with-metamail]\tToggle whether to use metamail for viewing 
-\\[gnus-uu-toggle-any-variable]\tToggle any of the things above
-
-\\[gnus-uu-post-news]\tPost an uuencoded article
-
-Function description:
-
-`gnus-uu-decode-and-view' will try to find all articles in the same
-series, uudecode them and view the resulting file(s).
-
-gnus-uu guesses what articles are in the series according to the
-following simplish rule: The subjects must be (nearly) identical,
-except for the last two numbers of the line. (Spaces are largely
-ignored, however.)
-
-For example: If you choose a subject called 
-  \"cat.gif (2/3)\"
-gnus-uu will find all the articles that matches
-  \"^cat.gif ([0-9]+/[0-9]+).*$\".  
-
-Subjects that are nonstandard, like 
-  \"cat.gif (2/3) Part 6 of a series\", 
-will not be properly recognized by any of the automatic viewing
-commands, and you have to mark the articles manually with '#'.
-
-`gnus-uu-decode-and-save' will do the same as
-`gnus-uu-decode-and-view', except that it will not display the
-resulting file, but save it instead.
-
-`gnus-uu-shar-and-view' and `gnus-uu-shar-and-save' are the \"shar\"
-equivalents to the uudecode functions. Instead of feeding the articles
-to uudecode, they are run through /bin/sh. Most shar files can be
-viewed and/or saved with the normal uudecode commands, which is much
-safer, as no foreign code is run.
-
-Instead of having windows popping up automatically, it can be handy to
-view files interactivly, especially when viewing archives. Use
-`gnus-uu-toggle-interactive-mode' to toggle interactive mode.
-
-`gnus-uu-mark-article' marks an article for later
-decoding/unsharing/saving/viewing. The files will be decoded in the
-sequence they were marked. To decode the files after you've marked the
-articles you are interested in, type the corresponding key strokes as
-the normal decoding commands, but put a `M-' in the last
-keystroke. For instance, to perform a standard uudecode and view, you
-would type `C-c C-v C-v'. To perform a marked uudecode and view, say
-`C-v C-v M-C-v'. All the other view and save commands are handled the
-same way; marked uudecode and save is then `C-c C-v M-v'.
-
-`gnus-uu-unmark-article' will remove the mark from a previosly marked
-article.
-
-`gnus-uu-unmark-all-articles' will remove the mark from all marked
-articles.
-
-`gnus-uu-mark-by-regexp' will prompt for a regular expression and mark
-all articles matching that regular expression.
-
-`gnus-uu-mark-thread' will mark all articles downward in the current
-thread.
-
-`gnus-uu-marked-universal-argument' will perform any operation on all
-marked articles. 
-
-There's an additional way to reach the decoding functions to make
-future expansions easier: `gnus-uu-multi-decode-and-view' and the
-corresponding save, marked view and marked save functions. You will be
-prompted for a decoding method, like uudecode, shar, binhex or plain
-save. Note that methods like binhex and save doesn't have view modes;
-even if you issue a view command (`C-c C-v C-m' and \"binhex\"),
-gnus-uu will just save the resulting binhex file.
-
-`gnus-uu-decode-and-show-in-buffer' will decode the current article
-and display the results in an emacs buffer. This might be useful if
-there's jsut some text in the current article that has been uuencoded
-by some perverse poster.
-
-`gnus-uu-decode-and-save-all-articles' looks at all the articles in
-the current newsgroup and tries to uudecode everything it can
-find. The user will be prompted for a directory where the resulting
-files (if any) will be
-saved. `gnus-uu-decode-and-save-unread-articles' does only checks
-unread articles. 
-
-`gnus-uu-decode-and-view-all-articles' does the same as the function
-above, only viewing files instead of saving them. 
-
-`gnus-uu-edit-begin-line' lets you edit the begin line of an uuencoded
-file in the current article. Useful to change a corrupted begin line.
-
-
-When using the view commands, `gnus-uu-decode-and-view' for instance,
-gnus-uu will (normally, see below) try to view the file according to
-the rules given in `gnus-uu-default-view-rules' and
-`gnus-uu-user-view-rules'. If it recognizes the file, it will display
-it immediately. If the file is some sort of archive, gnus-uu will
-attempt to unpack the archive and see if any of the files in the
-archive can be viewed. For instance, if you have a gzipped tar file
-\"pics.tar.gz\" containing the files \"pic1.jpg\" and \"pic2.gif\",
-gnus-uu will uncompress and detar the main file, and then view the two
-pictures. This unpacking process is recursive, so if the archive
-contains archives of archives, it'll all be unpacked.
-
-If the view command doesn't recognise the file type, or can't view it
-because you don't have the viewer, or can't view *any* of the files in
-the archive, the user will be asked if she wishes to have the file
-saved somewhere. Note that if the decoded file is an archive, and
-gnus-uu manages to view some of the files in the archive, it won't
-tell the user that there were some files that were unviewable. Try
-interactive view for a different approach.
-
-
-Note that gnus-uu adds a function to `gnus-exit-group-hook' to clear
-the list of marked articles and check for any generated files that
-might have escaped deletion if the user typed `C-g' during viewing.
-
-
-`gnus-uu-toggle-asynchronous' toggles the `gnus-uu-asynchronous'
-variable.
-
-`gnus-uu-toggle-query' toggles the `gnus-uu-ask-before-view'
-variable.
-
-`gnus-uu-toggle-always-ask' toggles the `gnus-uu-view-and-save'
-variable.
-
-`gnus-uu-toggle-kill-carriage-return' toggles the
-`gnus-uu-kill-carriage-return' variable.
-
-`gnus-uu-toggle-interactive-view' toggles interactive mode. If it is
-turned on, gnus-uu won't view files immediately, but will give you a
-buffer with the default commands and files and let you edit the
-commands and execute them at leisure.
-
-`gnus-uu-toggle-correct-stripped-articles' toggles whether to check
-and correct uuencoded articles that may have had trailing spaces
-stripped by mailers.
-
-`gnus-uu-toggle-view-with-metamail' toggles whether to skip the
-gnus-uu viewing methods and just guess at an content-type based on the
-file name suffix and feed it to metamail.
-
-`gnus-uu-toggle-any-variable' is an interface to the toggle commands
-listed above.
-
-
-Customization
-
-   Rule Variables
-
-   gnus-uu uses \"rule\" variables to decide how to view a file. All
-   these variables are of the form
-  
-      (list '(regexp1 command2)
-            '(regexp2 command2)
-            ...)
-
-   `gnus-uu-user-view-rules'
-     This variable is consulted first when viewing files. If you wish
-     to use, for instance, sox to convert an .au sound file, you could
-     say something like:
-
-       (setq gnus-uu-user-view-rules
-         (list '(\"\\\\.au$\" \"sox %s -t .aiff > /dev/audio\")))
-
-   `gnus-uu-user-view-rules-end'
-     This variable is consulted if gnus-uu couldn't make any matches
-     from the user and default view rules.
-
-   `gnus-uu-user-interactive-view-rules'
-     This is the variable used instead of `gnus-uu-user-view-rules'
-     when in interactive mode.
-
-   `gnus-uu-user-interactive-view-rules-end'
-     This variable is used instead of `gnus-uu-user-view-rules-end'
-     when in interactive mode.
-
-   `gnus-uu-user-archive-rules`
-     This variable can be used to say what comamnds should be used to
-     unpack archives.
-
-   
-   Other Variables
-
-   `gnus-uu-ignore-files-by-name'
-     Files with name matching this regular expression won't be viewed.
-
-   `gnus-uu-ignore-files-by-type'
-     Files with a MIME type matching this variable won't be viewed.
-     Note that gnus-uu tries to guess what type the file is based on
-     the name. gnus-uu is not a MIME package, so this is slightly
-     kludgy.
-
-   `gnus-uu-tmp-dir'
-     Where gnus-uu does its work.
-
-   `gnus-uu-do-not-unpack-archives'
-     Non-nil means that gnus-uu won't peek inside archives looking for
-     files to dispay.
-
-   `gnus-uu-view-and-save'
-     Non-nil means that the user will always be asked to save a file
-     after viewing it.
-
-   `gnus-uu-asynchronous' 
-     Non-nil means that files will be viewed asynchronously.  This can
-     be useful if you're viewing long .mod files, for instance, which
-     often takes several minutes. Note, however, that since gnus-uu
-     doesn't ask, and if you are viewing an archive with lots of
-     viewable files, you'll get them all up more or less at once,
-     which can be confusing, to say the least. To get gnus-uu to ask
-     you before viewing a file, set the `gnus-uu-ask-before-view' 
-     variable.
-
-   `gnus-uu-ask-before-view'
-     Non-nil means that gnus-uu will ask you before viewing each file
-
-   `gnus-uu-ignore-default-view-rules'
-     Non-nil means that gnus-uu will ignore the default viewing rules.
-
-   `gnus-uu-ignore-default-archive-rules'
-     Non-nil means that gnus-uu will ignore the default archive
-     unpacking commands.
-
-   `gnus-uu-kill-carriage-return'
-     Non-nil means that gnus-uu will strip all carriage returns from
-     articles.
-
-   `gnus-uu-unmark-articles-not-decoded'
-     Non-nil means that gnus-uu will mark articles that were
-     unsuccessfully decoded as unread.
-
-   `gnus-uu-output-window-height'
-     This variable says how tall the output buffer window is to be
-     when using interactive view mode.
-
-   `gnus-uu-correct-stripped-uucode'
-     Non-nil means that gnus-uu will *try* to fix uuencoded files that
-     have had traling spaces deleted.
-
-   `gnus-uu-use-interactive-view'
-     Non-nil means that gnus-uu will use interactive viewing mode.
-
-   `gnus-uu-view-with-metamail'
-     Non-nil means that gnus-uu will ignore the viewing commands
-     defined by the rule variables and just fudge a MIME content type
-     based on the file name. The result will be fed to metamail for
-     viewing.
-
-   `gnus-uu-save-in-digest'
-     Non-nil means that gnus-uu, when asked to save without decoding,
-     will save in digests.  If this variable is nil, gnus-uu will just
-     save everything in a file without any embellishments. The
-     digesting almost conforms to RFC1153 - no easy way to specify any
-     meaningful volume and issue numbers were found, so I simply
-     dropped them.
-
-   `gnus-uu-post-include-before-composing'
-     Non-nil means that gnus-uu will ask for a file to encode before
-     you compose the article.  If this variable is t, you can either
-     include an encoded file with \\<gnus-uu-post-reply-mode-map>\\[gnus-uu-post-insert-binary-in-article] or have one included for you when you 
-     post the article.
-
-   `gnus-uu-post-length'
-     Maximum length of an article.  The encoded file will be split
-     into how many articles it takes to post the entire file.
-
-   `gnus-uu-post-threaded'
-     Non-nil means that gnus-uu will post the encoded file in a
-     thread.  This may not be smart, as no other decoder I have seen
-     are able to follow threads when collecting uuencoded
-     articles. (Well, I have seen one package that does that -
-     gnus-uu, but somehow, I don't think that counts...) Default is
-     nil.
-
-   `gnus-uu-post-separate-description'
-     Non-nil means that the description will be posted in a separate
-     article.  The first article will typically be numbered (0/x). If
-     this variable is nil, the description the user enters will be
-     included at the beginning of the first article, which will be
-     numbered (1/x). Default is t.
-"
-  (interactive)
-  )
+  "gnus-uu is a package for uudecoding and viewing articles."
+  (interactive))
 
 ;; Default viewing action rules
 
@@ -1705,7 +1368,7 @@ what files."
       (if subject
 	  (setq reg-subject subject)
 	(setq reg-subject 
-	      (format "%s %s [0-9]+ [0-9]+[\n\r]"
+	      (format "%s [-0-9]+ %s [-0-9]+ [-0-9]+[\n\r]"
 	       (gnus-uu-reginize-string (gnus-summary-subject-string))
 	       (if only-unread "[- ]" "."))))
 
@@ -1718,7 +1381,7 @@ what files."
 	      (goto-char 1)
 	      (while (re-search-forward reg-subject nil t)
 		(progn
-		  (forward-line -1)
+		  (goto-char (match-beginning 0))
 		  (setq list-of-subjects 
 			(cons (cons (gnus-summary-subject-string)
 				    (gnus-summary-article-number))
@@ -1870,7 +1533,8 @@ what files."
 
       (if (not (= (or gnus-current-article 0) article))
 	  (progn
-	    (gnus-request-article article gnus-newsgroup-name)
+	    (gnus-request-article article gnus-newsgroup-name
+				  nntp-server-buffer)
 	    (setq gnus-last-article gnus-current-article)
 	    (setq gnus-current-article article)
 	    (if (stringp nntp-server-buffer)

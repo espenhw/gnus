@@ -1,8 +1,8 @@
 ;;;; nnvirtual.el --- Virtual newsgroups access for (ding) Gnus
-
-;; Copyright (C) 1994 Free Software Foundation, Inc.
+;; Copyright (C) 1994,95 Free Software Foundation, Inc.
 
 ;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
+;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: news
 
 ;; This file is part of GNU Emacs.
@@ -23,11 +23,9 @@
 
 ;;; Commentary:
 
-;; Based on nnspool.el by Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>.
-;;
-;; The other access methods (nntp.el and nnspool.el) are general news
+;; The other access methods (nntp, nnspool, etc) are general news
 ;; access methods. This module relies on Gnus and can not be used
-;; separately. 
+;; separately.
 
 ;;; Code:
 
@@ -69,6 +67,7 @@ messages will be shown to indicate the current status.")
     (erase-buffer)
     (let ((number (length sequence))
 	  (count 0)
+	  (nntp-xover-is-evil t)
 	  (i 0)
 	  prev articles group-articles beg art-info article group)
       (if sequence (setq prev (car (aref nnvirtual-mapping (car sequence)))))
@@ -109,12 +108,34 @@ messages will be shown to indicate the current status.")
 	      (if (not (re-search-backward "^Xref: " beg t))
 		  (progn
 		    (forward-char -2)
-		    (insert (format "Xref: ding %s:%d\n" group article))
+		    (insert (format "Xref: %s %s:%d\n" (system-name) 
+				    group article))
 		    (forward-char -1)))
 	      )))
 	(goto-char (point-max))
 	(insert-buffer-substring nntp-server-buffer 4)
 	(setq group-articles (cdr group-articles)))
+      ;; Weed out articles that appear twice because of cross-posting.
+      ;; Suggested by Stephane Laveau <laveau@corse.inria.fr>.
+      (let ((id-hashtb (make-vector number 0))
+	    id)
+	(goto-char (point-min))
+	;; We look at the message-ids...
+	(while (search-forward "\nMessage-ID: " nil t)
+	  ;; ... and check if they are entered into the hash table.
+	  (if (boundp (setq id (intern (buffer-substring 
+					(point) (progn (end-of-line) (point)))
+				       id-hashtb)))
+	      ;; Yup, so we delete this header.
+	      (delete-region
+	       (if (search-backward "\n.\n" nil t) (1+ (point)) (point-min))
+	       (if (search-forward "\n.\n" nil t) (1+ (match-beginning 0))
+		 (point-max))))
+	  ;; Nope, so we just enter it into the hash table.
+	  (set id t)))
+      ;; The headers are ready for reading, so they are inserted into
+      ;; the nntp-server-buffer, which is where Gnus expects to find
+      ;; them.
       (prog1
 	  (save-excursion
 	    (if (not nntp-server-buffer)

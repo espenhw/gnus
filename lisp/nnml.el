@@ -1,10 +1,9 @@
 ;;; nnml.el --- mail spool access for Gnus
-
-;; Copyright (C) 1994 Free Software Foundation, Inc.
+;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
-;; Keywords: news
+;; Keywords: news, mail
 
 ;; This file is part of GNU Emacs.
 
@@ -204,10 +203,11 @@ If the stream is opened, return T, otherwise return NIL."
 
 (fset 'nnml-request-post-buffer 'nnmail-request-post-buffer)
 
-(defun nnml-request-expire-articles (articles newsgroup &optional server)
+(defun nnml-request-expire-articles (articles newsgroup &optional server force)
   "Expire all articles in the ARTICLES list in group GROUP.
 The list of unexpired articles will be returned (ie. all articles that
-were too fresh to be expired)."
+were too fresh to be expired).
+If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
   (nnml-possibly-change-directory newsgroup)
   (let* ((days (or (and nnmail-expiry-wait-function
 			(funcall nnmail-expiry-wait-function newsgroup))
@@ -229,7 +229,8 @@ were too fresh to be expired)."
       (setq article (concat nnml-current-directory (int-to-string
 						      (car articles))))
       (if (setq mod-time (nth 5 (file-attributes article)))
-	  (if (or (< (car mod-time) (car day-time))
+	  (if (or force
+		  (< (car mod-time) (car day-time))
 		  (and (= (car mod-time) (car day-time))
 		       (< (car (cdr mod-time)) (car (cdr day-time)))))
 	      (progn
@@ -308,8 +309,6 @@ were too fresh to be expired)."
 (defun nnml-open-server-internal (host &optional service)
   "Open connection to news server on HOST by SERVICE."
   (save-excursion
-    (if (not (string-equal host (system-name)))
-	(error "nnml: cannot talk to %s." host))
     ;; Initialize communication buffer.
     (setq nntp-server-buffer (get-buffer-create " *nntpd*"))
     (set-buffer nntp-server-buffer)
@@ -456,13 +455,17 @@ were too fresh to be expired)."
       (erase-buffer)
       (insert-file-contents incoming)
       (goto-char 1)
+      (save-excursion
+	(run-hooks 'nnmail-prepare-incoming-hook))
       ;; Go to the beginning of the first mail...
       (if (and (re-search-forward (concat "^" rmail-unix-mail-delimiter) nil t)
 	       (goto-char (match-beginning 0)))
 	  ;; and then carry on until the bitter end.
 	  (while (not (eobp))
 	    (setq start (point))
-	    (forward-line 1)
+	    ;; Skip all the headers in case there are mode "From "s...
+	    (if (not (search-forward "\n\n" nil t))
+		(forward-line 1))
 	    (if (re-search-forward 
 		 (concat "^" rmail-unix-mail-delimiter) nil t)
 		(goto-char (match-beginning 0))
@@ -473,31 +476,45 @@ were too fresh to be expired)."
 ;; Mail crossposts syggested by Brian Edmonds <edmonds@cs.ubc.ca>. 
 (defun nnml-article-group (beg end)
   (let ((methods nnmail-split-methods)
+	(obuf (current-buffer))
 	found group-art)
-    (save-excursion
-      (save-restriction
-	(narrow-to-region beg end)
-	(while methods
-	  (goto-char (point-max))
-	  (if (or (cdr methods)
-		  (not (string= "" (nth 1 (car methods)))))
-	      (if (re-search-backward (car (cdr (car methods))) nil t)
-		  (setq group-art
-			(cons 
-			 (cons (car (car methods))
-			       (nnml-active-number (car (car methods))))
-			 group-art)))
-	    (or group-art
-		(setq group-art 
-		      (list (cons (car (car methods)) 
-				  (nnml-active-number (car (car methods))))))))
-	  (setq methods (cdr methods)))
-	group-art))))
+  (save-excursion
+    ;; Find headers.
+    (goto-char beg)
+    (setq end (if (search-forward "\n\n" end t) (point) end))
+    (set-buffer (get-buffer-create " *nnml work*"))
+    (buffer-disable-undo (current-buffer))
+    (erase-buffer)
+    ;; Copy the headers into the work buffer.
+    (insert-buffer-substring obuf beg end)
+    ;; Fold continuation lines.
+    (goto-char (point-min))
+    (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+      (replace-match " " t t))
+    ;; Go throught the split methods to find a match.
+    (while (and methods (or nnmail-crosspost (not group-art)))
+      (goto-char (point-max))
+      (if (or (cdr methods)
+	      (not (string= "" (nth 1 (car methods)))))
+	  (if (and (re-search-backward (car (cdr (car methods))) nil t)
+		   ;; Don't enter the article into the same group twice.
+		   (not (memq (car (car methods)) group-art)))
+	      (setq group-art
+		    (cons 
+		     (cons (car (car methods))
+			   (nnml-active-number (car (car methods))))
+		     group-art)))
+	(or group-art
+	    (setq group-art 
+		  (list (cons (car (car methods)) 
+			      (nnml-active-number (car (car methods))))))))
+      (setq methods (cdr methods)))
+    group-art)))
 
 (defun nnml-choose-mail (beg end)
   "Find out what mail group the mail between BEG and END belongs in."
   (let ((group-art (nreverse (nnml-article-group beg end)))
-	chars nov-line lines)
+	chars nov-line lines hbeg hend)
     (save-excursion
       (save-restriction
 	(narrow-to-region beg end)
@@ -526,13 +543,12 @@ were too fresh to be expired)."
 		(insert (format " %s:%d" (car (car ga)) (cdr (car ga))))
 		(setq ga (cdr ga))))
 	    (insert "\n")
-	    ;; Generate a nov line for this article.
-	    (setq nov-line (nnml-make-nov-line chars))))
-	;; Then we actually save the article.
+	    (setq hbeg (point-min))
+	    (setq hend (point-max))))
+	;; We save the article in all the newsgroups it belongs in.
 	(let ((ga group-art)
 	      first)
 	  (while ga
-	    (nnml-add-nov (car (car ga)) (cdr (car ga)) nov-line)
 	    (let ((file (concat (nnml-article-pathname 
 				 (car (car ga)))
 				(int-to-string (cdr (car ga))))))
@@ -542,6 +558,18 @@ were too fresh to be expired)."
 		;; Save the article.
 		(write-region (point-min) (point-max) file nil nil)
 		(setq first file)))
+	    (setq ga (cdr ga))))
+	;; Generate a nov line for this article. We generate the nov
+	;; line after saving, because nov generation destroys the
+	;; header. 
+	(save-excursion
+	  (save-restriction
+	    (narrow-to-region hbeg hend)
+	    (setq nov-line (nnml-make-nov-line chars))))
+	;; Output the nov line to all nov databases that should have it.
+	(let ((ga group-art))
+	  (while ga
+	    (nnml-add-nov (car (car ga)) (cdr (car ga)) nov-line)
 	    (setq ga (cdr ga))))
 	group-art))))
 
@@ -568,6 +596,7 @@ were too fresh to be expired)."
 	  (nnml-split-incoming incoming)
 	  (nnml-save-active)
 	  (nnml-save-nov)
+	  (run-hooks 'nnmail-read-incoming-hook)
 ;;         (delete-file incoming)
 	  (message "nnml: Reading incoming mail...done")))))
 
@@ -584,7 +613,13 @@ were too fresh to be expired)."
 
 (defun nnml-make-nov-line (chars)
   "Create a nov from the current headers."
-  (let (subject from date id references lines xref in-reply-to char)
+  (let ((case-fold-search t)
+	subject from date id references lines xref in-reply-to char)
+    ;; Fold continuation lines.
+    (goto-char (point-min))
+    (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+      (replace-match " " t t))
+    (subst-char-in-region (point-min) (point-max) ?\t ? )
     ;; [number subject from date id references chars lines xref]
     (save-excursion
       (goto-char (point-min))
@@ -647,7 +682,12 @@ were too fresh to be expired)."
       (setq nnml-nov-buffer-alist (cdr nnml-nov-buffer-alist)))))
 
 (defun nnml-generate-nov-databases (dir)
-  (interactive (list nnml-directory))
+  "Generate nov databases in all nnml mail newsgroups."
+  (interactive 
+   (progn   
+     (setq nnml-newsgroups nil)
+     (list nnml-directory)))
+  (nnml-open-server (system-name))
   (let ((dirs (directory-files dir t nil t)))
     (while dirs 
       (if (and (not (string-match "/\\.\\.$" (car dirs)))
@@ -665,6 +705,18 @@ were too fresh to be expired)."
 	(nov (concat dir "/.nov"))
 	(nov-buffer (get-buffer-create "*nov*"))
 	nov-line chars)
+    (if files
+	(setq nnml-newsgroups 
+	      (cons (list (nnml-replace-chars-in-string 
+			   (substring (expand-file-name dir)
+				      (length (expand-file-name 
+					       nnml-directory)))
+			   ?/ ?.)
+			  (cons (car files)
+				(let ((f files))
+				  (while (cdr f) (setq f (cdr f)))
+				  (car f))))
+		    nnml-newsgroups)))
     (if files
 	(save-excursion
 	  (set-buffer nntp-server-buffer)
@@ -693,7 +745,8 @@ were too fresh to be expired)."
 	    (set-buffer nov-buffer)
 	    (write-region 1 (point-max) (expand-file-name nov) nil
 			  'nomesg)
-	    (kill-buffer (current-buffer)))))))
+	    (kill-buffer (current-buffer)))))
+    (nnml-save-active)))
 
 (defun nnml-nov-delete-article (group article)
   (save-excursion

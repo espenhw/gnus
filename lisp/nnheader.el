@@ -1,6 +1,5 @@
 ;;; nnheader: Header access macros for Gnus and its backends
-
-;; Copyright (C) 1987,88,89,90,93,94 Free Software Foundation, Inc.
+;; Copyright (C) 1987,88,89,90,93,94,95 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; 	Lars Ingebrigtsen <larsi@ifi.uio.no>

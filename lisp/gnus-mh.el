@@ -1,5 +1,5 @@
 ;;; gnus-mh: mh-e interface for Gnus
-;; Copyright (C) 1994 Free Software Foundation, Inc.
+;; Copyright (C) 1994,95 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;;	Lars Ingebrigtsen <larsi@ifi.uio.no>
@@ -112,7 +112,7 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
   (let ((to (read-string "To: "))
  	(cc (read-string "Cc: "))
  	(buffer (current-buffer))
- 	subject)
+ 	subject beg)
     ;;(gnus-article-show-all-headers)
     (setq subject
 	  (concat "[" gnus-newsgroup-name "] "
@@ -123,10 +123,17 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
     (mh-send to (or cc "") subject)
     (save-excursion
       (goto-char (point-max))
+      (setq beg (point))
       (insert "\n------- Forwarded Message\n\n")
       (insert-buffer buffer)
       (goto-char (point-max))
       (insert "\n------- End of Forwarded Message\n")
+      (goto-char beg)
+      (while (setq beg (next-single-property-change (point) 'invisible))
+	(goto-char beg)
+	(delete-region beg (or (next-single-property-change 
+				(point) 'invisible)
+			       (point-max))))
       (setq mh-sent-from-folder buffer)
       (setq mh-sent-from-msg 1))))
 
