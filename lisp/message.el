@@ -5079,12 +5079,15 @@ than 988 characters long, and if they are not, trim them until they are."
    (sit-for 0)))
 
 (defcustom message-beginning-of-line t
-  "Whether C-a goes to beginning of header values."
+  "Whether \\<message-mode-map>\\[message-beginning-of-line]\
+ goes to beginning of header values."
   :group 'message-buffers
   :type 'boolean)
 
 (defun message-beginning-of-line (&optional n)
-  "Move point to beginning of header value or to beginning of line."
+  "Move point to beginning of header value.
+If the option `message-beginning-of-line' is non-nil move to
+beginning of line."
   (interactive "p")
   (let ((zrs 'zmacs-region-stays))
     (when (and (interactive-p) (boundp zrs))
