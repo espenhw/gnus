@@ -1039,6 +1039,7 @@ articles in the topic and its subtopics."
     "a" gnus-topic-sort-groups-by-alphabet
     "u" gnus-topic-sort-groups-by-unread
     "l" gnus-topic-sort-groups-by-level
+    "e" gnus-topic-sort-groups-by-server
     "v" gnus-topic-sort-groups-by-score
     "r" gnus-topic-sort-groups-by-rank
     "m" gnus-topic-sort-groups-by-method))
@@ -1620,6 +1621,12 @@ If REVERSE, sort in reverse order."
 If REVERSE, sort in reverse order."
   (interactive "P")
   (gnus-topic-sort-groups 'gnus-group-sort-by-method reverse))
+
+(defun gnus-topic-sort-groups-by-server (&optional reverse)
+  "Sort the current topic alphabetically by server name.
+If REVERSE, sort in reverse order."
+  (interactive "P")
+  (gnus-topic-sort-groups 'gnus-group-sort-by-server reverse))
 
 (defun gnus-topic-sort-topics-1 (top reverse)
   (if (cdr top)

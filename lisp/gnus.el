@@ -2702,6 +2702,9 @@ that that variable is buffer-local to the summary buffers."
 	  (not (string= (nth 1 method) "")))
      (concat "+" (nth 1 method)))))
 
+(defsubst gnus-method-to-full-server-name (method)
+  (format "%s+%s" (car method) (nth 1 method)))
+
 (defun gnus-group-prefixed-name (group method)
   "Return the whole name from GROUP and METHOD."
   (and (stringp method) (setq method (gnus-server-to-method method)))

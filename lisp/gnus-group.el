@@ -2800,10 +2800,10 @@ sort in reverse order."
 
 (defun gnus-group-sort-by-server (info1 info2)
   "Sort alphabetically by server name."
-  (string< (gnus-method-to-server-name
+  (string< (gnus-method-to-full-server-name
 	    (gnus-find-method-for-group
 	     (gnus-info-group info1) info1))
-	   (gnus-method-to-server-name
+	   (gnus-method-to-full-server-name
 	    (gnus-find-method-for-group
 	     (gnus-info-group info2) info2))))
 

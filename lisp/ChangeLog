@@ -1,3 +1,12 @@
+2001-09-04 21:42:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-sort-by-server): Use it.
+
+	* gnus.el (gnus-method-to-full-server-name): New, bogus function.
+
+	* gnus-topic.el (gnus-topic-sort-groups-by-server): New command
+	and keystroke.
+
 2001-10-14  Simon Josefsson  <jas@extundo.com>
 
 	* dig.el: Doc fix.
