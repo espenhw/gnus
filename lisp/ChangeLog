@@ -1,7 +1,7 @@
 2000-10-21 09:38:27  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mailcap.el (mailcap-parse-mailcaps): Don't use parse-colon-path,
-	because they are files, not paths.
+	because they are files, not directories.
 	(mailcap-parse-mimetypes): Ditto.
 
 2000-10-20 19:55:59  ShengHuo ZHU  <zsh@cs.rochester.edu>
