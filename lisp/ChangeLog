@@ -5,6 +5,10 @@
 
 2003-04-27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-summary-catchup): Don't mark ticked messages. 
+	(gnus-summary-mark-read-and-unread-as-read): Take an optional
+	mark.
+
 	* gnus.el (gnus-version-number): Bump.
 
 2003-04-27 06:47:31 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>

@@ -10009,12 +10009,13 @@ The difference between N and the number of marks cleared is returned."
   (when (memq gnus-current-article gnus-newsgroup-unreads)
     (gnus-summary-mark-article gnus-current-article gnus-read-mark)))
 
-(defun gnus-summary-mark-read-and-unread-as-read ()
+(defun gnus-summary-mark-read-and-unread-as-read (&optional new-mark)
   "Intended to be used by `gnus-summary-mark-article-hook'."
   (let ((mark (gnus-summary-article-mark)))
     (when (or (gnus-unread-mark-p mark)
 	      (gnus-read-mark-p mark))
-      (gnus-summary-mark-article gnus-current-article gnus-read-mark))))
+      (gnus-summary-mark-article gnus-current-article
+				 (or new-mark gnus-read-mark)))))
 
 (defun gnus-summary-mark-unread-as-ticked ()
   "Intended to be used by `gnus-summary-mark-article-hook'."
@@ -10155,9 +10156,9 @@ The number of articles marked as read is returned."
 	    (if (and to-here reverse)
 		(progn
 		  (goto-char to-here)
-		  (while (and
-			  (gnus-summary-mark-article-as-read gnus-catchup-mark)
-			  (gnus-summary-find-next (not all)))))
+		  (gnus-summary-mark-read-and-unread-as-read gnus-catchup-mark)
+		  (while (gnus-summary-find-next (not all))
+		    (gnus-summary-mark-article-as-read gnus-catchup-mark)))
 	      (when (gnus-summary-first-subject (not all))
 		(while (and
 			(if to-here (< (point) to-here) t)
