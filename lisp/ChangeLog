@@ -1,5 +1,14 @@
 2004-01-04 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
 
+	* gnus.el: No Gnus v0.0 is released.
+
+2004-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-version-number): Bump.
+	(gnus-version): No.
+
+2004-01-04 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+
 	* gnus.el: Gnus v5.10.6 is released.
 
 2004-01-04  Kai Grossjohann  <kai@emptydomain.de>
