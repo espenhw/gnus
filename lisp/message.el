@@ -1737,7 +1737,6 @@ to find out how to use this."
     (let ((headers message-deletable-headers))
       (while headers
 	(goto-char (point-min)) 
-	;;(message "Deleting header %s" (car headers)) (sit-for 5)
 	(and (re-search-forward 
 	      (concat "^" (symbol-name (car headers)) ": *") nil t)
 	     (message-delete-line))

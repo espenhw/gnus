@@ -461,6 +461,8 @@ of a member of the group, that prefix will be ignored when creating a
 tag for that member.
 @end table
 
+@end defun
+
 @node  Declaring Variables, Declaring Faces, Declaring Groups, Declarations
 @comment  node-name,  next,  previous,  up
 @subsection Declaring Variables

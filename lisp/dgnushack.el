@@ -29,7 +29,9 @@
 (fset 'facep 'ignore)
 
 (require 'cl)
+(require 'bytecomp)
 (push "." load-path)
+(require 'lpath)
 
 (defalias 'device-sound-enabled-p 'ignore)
 (defalias 'play-sound-file 'ignore)

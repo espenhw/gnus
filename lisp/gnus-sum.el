@@ -4803,7 +4803,7 @@ The prefix argument ALL means to select all articles."
   (interactive "P")
   (gnus-summary-reselect-current-group all t))
 
-(defun gnus-summary-update-info ()
+(defun gnus-summary-update-info (&optional non-destructive)
   (save-excursion
     (let ((group gnus-newsgroup-name))
       (when gnus-newsgroup-kill-headers
@@ -4820,7 +4820,8 @@ The prefix argument ALL means to select all articles."
       (unless (listp (cdr gnus-newsgroup-killed))
 	(setq gnus-newsgroup-killed (list gnus-newsgroup-killed)))
       (let ((headers gnus-newsgroup-headers))
-	(unless gnus-save-score
+	(when (and (not gnus-save-score)
+		   (not non-destructive))
 	  (setq gnus-newsgroup-scored nil))
 	;; Set the new ranges of read articles.
 	(gnus-update-read-articles
@@ -4844,7 +4845,7 @@ The prefix argument ALL means to select all articles."
   "Save the current number of read/marked articles in the dribble buffer.
 If FORCE (the prefix), also save the .newsrc file(s)."
   (interactive "P")
-  (gnus-summary-update-info)
+  (gnus-summary-update-info t)
   (when force
     (gnus-save-newsrc-file)))
 
@@ -4928,7 +4929,7 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	 (quit-config (gnus-group-quit-config group)))
     (when (or no-questions
 	      gnus-expert-user
-	      (gnus-y-or-n-p "Do you really wanna quit reading this group? "))
+	      (gnus-y-or-n-p "Discard changes to this group and exit? "))
       ;; If we have several article buffers, we kill them at exit.
       (unless gnus-single-article-buffer
 	(gnus-kill-buffer gnus-article-buffer)
@@ -5675,7 +5676,7 @@ If given a prefix, remove all limits."
 
 (defun gnus-summary-limit-to-subject (subject &optional header)
   "Limit the summary buffer to articles that have subjects that match a regexp."
-  (interactive "sRegexp: ")
+  (interactive "sLimit to subject (regexp): ")
   (unless header
     (setq header "subject"))
   (when (not (equal "" subject))
@@ -5689,7 +5690,7 @@ If given a prefix, remove all limits."
 
 (defun gnus-summary-limit-to-author (from)
   "Limit the summary buffer to articles that have authors that match a regexp."
-  (interactive "sRegexp: ")
+  (interactive "sLimit to author (regexp): ")
   (gnus-summary-limit-to-subject from "from"))
 
 (defun gnus-summary-limit-to-age (age &optional younger-p)

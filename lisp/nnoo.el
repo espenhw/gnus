@@ -190,6 +190,14 @@
 	(defs (nnoo-variables backend)))
     ;; Remove the old definition.
     (setcdr (cdr bstate) (delq (assoc current (cddr bstate)) (cddr bstate)))
+    ;; If this is the first time we push the server (i. e., this is 
+    ;; the nil server), then we update the default values of
+    ;; all the variables to reflect the current values.
+    (unless current
+      (let ((defaults (nnoo-variables backend))
+	    def)
+	(while (setq def (pop defaults))
+	  (setcdr def (symbol-value (car def))))))
     (let (state)
       (while defs
 	(push (cons (caar defs) (symbol-value (caar defs)))

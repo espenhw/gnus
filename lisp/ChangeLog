@@ -1,3 +1,39 @@
+Sun Jan  5 09:39:14 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-exit-no-update): Prompt change.
+	(gnus-summary-limit-to-author): Ditto.
+	(gnus-summary-limit-to-subject): Ditto.
+
+	* gnus-cite.el (gnus-dissect-cited-text): Recognize articles that
+	end with cited text.
+
+	* gnus-topic.el (gnus-group-sort-topic): Remove nil elements.
+
+	* nnoo.el (nnoo-push-server): When switching from the nil server,
+	update all the default values of the variables.
+
+	* nnkiboze.el (nnkiboze-generate-group): Protect against nil
+	infos. 
+
+	* lpath.el: Included.
+
+Sun Jan  5 09:36:57 1997  Martin Buchholz  <mrb@eng.sun.com>
+
+	* dgnushack.el (bytecomp): Required.
+
+Sat Jan  4 11:45:45 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el: Rename some functions back.
+
+	* gnus-sum.el (gnus-summary-save-newsrc): Don't nix out scores.
+
+	* gnus-async.el (gnus-async-prefetched-article-entry): Would
+	hang Emacs.
+
+Sat Jan  4 11:28:24 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.77 is released.
+
 Sat Jan  4 08:35:06 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-cache.el (gnus-start): Don't require gnus-sum.

@@ -263,7 +263,11 @@ It should return non-nil if the article is to be prefetched."
     (if (and entry
 	     (= (cadr entry) (caddr entry)))
 	(progn
-	  (gnus-async-delete-prefected-entry entry)
+	  (ignore-errors
+	    (set-marker (cadr entry) nil)
+	    (set-marker (caddr entry) nil))
+	  (setq gnus-async-article-alist 
+		(delq entry gnus-async-article-alist))
 	  nil)
       entry)))
 

@@ -295,7 +295,8 @@ Finds out what articles are to be part of the nnkiboze groups."
 		;; That's it.  We exit this group.
 		(gnus-summary-exit-no-update)))
 	  ;; Restore the proper info.
-	  (setcdr ginfo (cdr orig-info))))
+	  (when ginfo
+	    (setcdr ginfo (cdr orig-info)))))
       (setcdr (car newsrc) (car active))
       (setq newsrc (cdr newsrc)))
     ;; We save the nov file.

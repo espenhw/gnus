@@ -519,7 +519,7 @@ Initialized from `text-mode-syntax-table.")
   (text-property-any (point-min) (point-max) 'article-type type))
 
 (defsubst gnus-article-header-rank ()
-  "Give the rank of the string HEADER as given by `article-sorted-header-list'."
+  "Give the rank of the string HEADER as given by `gnus-sorted-header-list'."
   (let ((list gnus-sorted-header-list)
 	(i 0))
     (while list
@@ -529,7 +529,7 @@ Initialized from `text-mode-syntax-table.")
       (incf i))
     i))
 
-(defun gnus-article-hide-headers (&optional arg delete)
+(defun article-hide-headers (&optional arg delete)
   "Toggle whether to hide unwanted headers and possibly sort them as well.
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
@@ -602,7 +602,7 @@ always hide."
 	      ;; Work around XEmacs lossage.
 	      (put-text-property (point-min) beg 'invisible nil))))))))
 
-(defun gnus-article-hide-boring-headers (&optional arg)
+(defun article-hide-boring-headers (&optional arg)
   "Toggle hiding of headers that aren't very interesting.
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
@@ -674,7 +674,7 @@ always hide."
        'boring-headers))))
 
 ;; Written by Per Abrahamsen <amanda@iesd.auc.dk>.
-(defun gnus-article-treat-overstrike ()
+(defun article-treat-overstrike ()
   "Translate overstrikes into bold text."
   (interactive)
   (save-excursion
@@ -698,7 +698,7 @@ always hide."
 	    (put-text-property
 	     (point) (1+ (point)) 'face 'underline))))))))
 
-(defun gnus-article-fill ()
+(defun article-fill ()
   "Format too long lines."
   (interactive)
   (save-excursion
@@ -716,7 +716,7 @@ always hide."
 	       (fill-paragraph nil))
 	  (end-of-line 2))))))
 
-(defun gnus-article-remove-cr ()
+(defun article-remove-cr ()
   "Remove carriage returns from an article."
   (interactive)
   (save-excursion
@@ -725,7 +725,7 @@ always hide."
       (while (search-forward "\r" nil t)
 	(replace-match "" t t)))))
 
-(defun gnus-article-remove-trailing-blank-lines ()
+(defun article-remove-trailing-blank-lines ()
   "Remove all trailing blank lines from the article."
   (interactive)
   (save-excursion
@@ -740,7 +740,7 @@ always hide."
 	 (forward-line 1)
 	 (point))))))
 
-(defun gnus-article-display-x-face (&optional force)
+(defun article-display-x-face (&optional force)
   "Look for an X-Face header and display it if present."
   (interactive (list 'force))
   (save-excursion
@@ -782,8 +782,9 @@ always hide."
 		(process-send-region "article-x-face" beg end)
 		(process-send-eof "article-x-face")))))))))
 
-(defalias 'gnus-decode-rfc1522 'gnus-article-decode-rfc1522)
-(defun gnus-article-decode-rfc1522 ()
+(defalias 'gnus-decode-rfc1522 'article-decode-rfc1522)
+(defalias 'gnus-article-decode-rfc1522 'article-decode-rfc1522)
+(defun article-decode-rfc1522 ()
   "Hack to remove QP encoding from headers."
   (let ((case-fold-search t)
 	(inhibit-point-motion-hooks t)
@@ -801,13 +802,13 @@ always hide."
 	  (narrow-to-region (match-beginning 0) (match-end 0))
 	  (delete-region (point-min) (point-max))
 	  (insert string)
-	  (gnus-article-mime-decode-quoted-printable 
+	  (article-mime-decode-quoted-printable 
 	   (goto-char (point-min)) (point-max))
 	  (subst-char-in-region (point-min) (point-max) ?_ ? )
 	  (goto-char (point-max)))
 	(goto-char (point-min))))))
 
-(defun gnus-article-de-quoted-unreadable (&optional force)
+(defun article-de-quoted-unreadable (&optional force)
   "Do a naive translation of a quoted-printable-encoded article.
 This is in no way, shape or form meant as a replacement for real MIME
 processing, but is simply a stop-gap measure until MIME support is
@@ -824,13 +825,13 @@ or not."
 		(and type (string-match "quoted-printable" (downcase type))))
 	(goto-char (point-min))
 	(search-forward "\n\n" nil 'move)
-	(gnus-article-mime-decode-quoted-printable (point) (point-max))))))
+	(article-mime-decode-quoted-printable (point) (point-max))))))
 
-(defun gnus-article-mime-decode-quoted-printable-buffer ()
+(defun article-mime-decode-quoted-printable-buffer ()
   "Decode Quoted-Printable in the current buffer."
-  (gnus-article-mime-decode-quoted-printable (point-min) (point-max)))
+  (article-mime-decode-quoted-printable (point-min) (point-max)))
   
-(defun gnus-article-mime-decode-quoted-printable (from to)
+(defun article-mime-decode-quoted-printable (from to)
   "Decode Quoted-Printable in the region between FROM and TO."
   (interactive "r")
   (goto-char from)
@@ -848,7 +849,7 @@ or not."
 	   (delete-char 1))
 	  ((gnus-message 3 "Malformed MIME quoted-printable message")))))
 
-(defun gnus-article-hide-pgp (&optional arg)
+(defun article-hide-pgp (&optional arg)
   "Toggle hiding of any PGP headers and signatures in the current article.
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
@@ -881,7 +882,7 @@ always hide."
 	    (gnus-article-hide-text-type (match-beginning 0) (match-end 0) 'pgp))
 	  (widen))))))
 
-(defun gnus-article-hide-pem (&optional arg)
+(defun article-hide-pem (&optional arg)
   "Toggle hiding of any PEM headers and signatures in the current article.
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
@@ -909,7 +910,7 @@ always hide."
 	     (gnus-article-hide-text-type
 	      (match-beginning 0) (match-end 0) 'pem))))))
 
-(defun gnus-article-hide-signature (&optional arg)
+(defun article-hide-signature (&optional arg)
   "Hide the signature in the current article.
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
@@ -921,7 +922,7 @@ always hide."
 	  (when (gnus-article-narrow-to-signature)
 	    (gnus-article-hide-text-type (point-min) (point-max) 'signature)))))))
 
-(defun gnus-article-strip-leading-blank-lines ()
+(defun article-strip-leading-blank-lines ()
   "Remove all blank lines from the beginning of the article."
   (interactive)
   (save-excursion
@@ -933,7 +934,7 @@ always hide."
 		    (looking-at "[ \t]*$"))
 	  (gnus-delete-line))))))
 
-(defun gnus-article-strip-multiple-blank-lines ()
+(defun article-strip-multiple-blank-lines ()
   "Replace consecutive blank lines with one empty line."
   (interactive)
   (save-excursion
@@ -947,12 +948,12 @@ always hide."
       (while (re-search-forward "\n\n\n+" nil t)
 	(replace-match "\n\n" t t)))))
 
-(defun gnus-article-strip-blank-lines ()
+(defun article-strip-blank-lines ()
   "Strip leading, trailing and multiple blank lines."
   (interactive)
-  (gnus-article-strip-leading-blank-lines)
-  (gnus-article-remove-trailing-blank-lines)
-  (gnus-article-strip-multiple-blank-lines))
+  (article-strip-leading-blank-lines)
+  (article-remove-trailing-blank-lines)
+  (article-strip-multiple-blank-lines))
 
 (defvar mime::preview/content-list)
 (defvar mime::preview-content-info/point-min)
@@ -1064,7 +1065,7 @@ If HIDE, hide the text instead."
     (second . 1))
   "Mapping from time units to seconds.")
 
-(defun gnus-article-date-ut (&optional type highlight header)
+(defun article-date-ut (&optional type highlight header)
   "Convert DATE date to universal time in the current article.
 If TYPE is `local', convert to local time; if it is `lapsed', output
 how much time has lapsed since DATE."
@@ -1092,7 +1093,7 @@ how much time has lapsed since DATE."
 		  (message-remove-header date-regexp t)
 		  (beginning-of-line))
 	      (goto-char (point-max)))
-	    (insert (gnus-article-make-date-line date type))
+	    (insert (article-make-date-line date type))
 	    ;; Do highlighting.
 	    (forward-line -1)
 	    (when (looking-at "\\([^:]+\\): *\\(.*\\)$")
@@ -1101,7 +1102,7 @@ how much time has lapsed since DATE."
 	      (put-text-property (match-beginning 2) (match-end 2)
 				 'face eface))))))))
 
-(defun gnus-article-make-date-line (date type)
+(defun article-make-date-line (date type)
   "Return a DATE line of TYPE."
   (cond
    ;; Convert to the local timezone.  We have to slap a
@@ -1178,31 +1179,31 @@ how much time has lapsed since DATE."
    (t
     (error "Unknown conversion type: %s" type))))
 
-(defun gnus-article-date-local (&optional highlight)
+(defun article-date-local (&optional highlight)
   "Convert the current article date to the local timezone."
   (interactive (list t))
-  (gnus-article-date-ut 'local highlight))
+  (article-date-ut 'local highlight))
 
-(defun gnus-article-date-original (&optional highlight)
+(defun article-date-original (&optional highlight)
   "Convert the current article date to what it was originally.
 This is only useful if you have used some other date conversion
 function and want to see what the date was before converting."
   (interactive (list t))
-  (gnus-article-date-ut 'original highlight))
+  (article-date-ut 'original highlight))
 
-(defun gnus-article-date-lapsed (&optional highlight)
+(defun article-date-lapsed (&optional highlight)
   "Convert the current article date to time lapsed since it was sent."
   (interactive (list t))
-  (gnus-article-date-ut 'lapsed highlight))
+  (article-date-ut 'lapsed highlight))
 
-(defun gnus-article-show-all ()
+(defun article-show-all ()
   "Show all hidden text in the article buffer."
   (interactive)
   (save-excursion
     (let ((buffer-read-only nil))
       (gnus-article-unhide-text (point-min) (point-max)))))
 
-(defun gnus-article-emphasize (&optional arg)
+(defun article-emphasize (&optional arg)
   "Emphasize text according to `gnus-emphasis-alist'."
   (interactive (gnus-article-hidden-arg))
   (unless (gnus-article-check-hidden-text 'emphasis arg)
@@ -1516,6 +1517,46 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 	 (concat (gnus-newsgroup-directory-form newsgroup) "/news"))
        gnus-article-save-directory)))
 
+(eval-and-compile
+  (mapcar
+   (lambda (func)
+     (let (afunc gfunc)
+       (if (consp func)
+	   (setq afunc (car func)
+		 gfunc (cdr func))
+	 (setq afunc func
+	       gfunc (intern (format "gnus-%s" func))))
+       (fset gfunc 
+	     (if (not (fboundp afunc))
+		 nil
+	       `(lambda (&optional interactive &rest args)
+		  ,(documentation afunc t)
+		  (interactive (list t))
+		  (save-excursion
+		    (set-buffer gnus-article-buffer)
+		    (if interactive
+			(call-interactively ',afunc)
+		      (apply ',afunc args))))))))
+   '(article-hide-headers
+     article-hide-boring-headers
+     article-treat-overstrike
+     (article-fill . gnus-article-word-wrap)
+     article-remove-cr
+     article-display-x-face
+     article-de-quoted-unreadable
+     article-mime-decode-quoted-printable
+     article-hide-pgp
+     article-hide-pem
+     article-hide-signature
+     article-remove-trailing-blank-lines
+     article-strip-leading-blank-lines
+     article-strip-multiple-blank-lines
+     article-strip-blank-lines
+     article-date-local
+     article-date-original
+     article-date-lapsed
+     article-emphasize
+     (article-show-all . gnus-article-show-all-headers))))
 
 ;;;
 ;;; Gnus article mode

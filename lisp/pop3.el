@@ -37,6 +37,9 @@
 (require 'mail-utils)
 (provide 'pop3)
 
+(eval-and-compile
+  (if (not (fboundp 'md5)) (autoload 'md5 "md5")))
+
 (defvar pop3-maildrop (or user-login-name (getenv "LOGNAME") (getenv "USER") nil)
   "*POP3 maildrop.")
 (defvar pop3-mailhost (or (getenv "MAILHOST") nil)

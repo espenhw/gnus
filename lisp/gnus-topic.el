@@ -1267,6 +1267,9 @@ If performed on a topic, edit the topic parameters instead."
   "Sort groups in the topics according to FUNC and REVERSE."
   (let ((alist gnus-topic-alist))
     (while alist
+      ;; !!!Sometimes nil elements sneak into the alist,
+      ;; for some reason or other.
+      (setcar alist (delq nil (car alist)))
       (gnus-topic-sort-topic (pop alist) func reverse))))
 
 (defun gnus-topic-sort-topic (topic func reverse)
