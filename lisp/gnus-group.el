@@ -420,7 +420,7 @@ For example:
 
 (defcustom gnus-group-name-charset-group-alist
   (if (or (and (fboundp 'find-coding-system) (find-coding-system 'utf-8))
-	  (and (fboundp 'coding-system-p) (coding-system-p 'utf-8)))
+	  (mm-coding-system-p 'utf-8))
       '((".*" . utf-8))
     nil)
   "Alist of group regexp and the charset for group names.
@@ -1091,6 +1091,7 @@ The following commands are available:
       result)))
 
 (defun gnus-group-name-decode (string charset)
+  ;; Fixme: Don't decode in unibyte mode.
   (if (and string charset (featurep 'mule))
       (mm-decode-coding-string string charset)
     string))
@@ -2244,6 +2245,8 @@ ADDRESS."
 	(lambda (group)
 	  (gnus-group-delete-group group nil t))))))
 
+(eval-when-compile (defvar gnus-cache-active-altered))
+
 (defun gnus-group-delete-group (group &optional force no-prompt)
   "Delete the current group.  Only meaningful with editable groups.
 If FORCE (the prefix) is non-nil, all the articles in the group will
@@ -2271,10 +2274,10 @@ doing the deletion."
 	  (gnus-group-goto-group group)
 	  (gnus-group-kill-group 1 t)
 	  (gnus-sethash group nil gnus-active-hashtb)
-	  (when (and (boundp 'gnus-cache-active-hashtb)
-		     gnus-cache-active-hashtb)
-	    (gnus-sethash group nil gnus-cache-active-hashtb)
-	    (setq gnus-cache-active-altered t))
+	  (if (boundp 'gnus-cache-active-hashtb)
+	      (when gnus-cache-active-hashtb
+		(gnus-sethash group nil gnus-cache-active-hashtb)
+		(setq gnus-cache-active-altered t)))
 	  t))
     (gnus-group-position-point)))
 
