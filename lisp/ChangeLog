@@ -5,6 +5,8 @@
 
 2003-04-27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-summary-catchup-from-here): Doc fix.
+
 	* nnrss.el (nnrss-node-text): Use only one
 	gnus-replace-in-string. 
 

@@ -10180,7 +10180,7 @@ If ALL is non-nil, also mark ticked and dormant articles as read."
   (gnus-summary-position-point))
 
 (defun gnus-summary-catchup-from-here (&optional all)
-  "Mark all unticked articles after the current one as read.
+  "Mark all unticked articles after (and including) the current one as read.
 If ALL is non-nil, also mark ticked and dormant articles as read."
   (interactive "P")
   (save-excursion
