@@ -685,6 +685,7 @@ Gnus Unplugged
 * Agent Categories::       How to tell the Gnus Agent what to download.
 * Agent Commands::         New commands for all the buffers.
 * Agent Expiry::           How to make old articles go away.
+* Agent and IMAP::         How to use the Agent with IMAP.
 * Outgoing Messages::      What happens when you post/mail something?
 * Agent Variables::        Customizing is fun.
 * Example Setup::          An example @file{.gnus.el} file for offline people.
@@ -13793,7 +13794,8 @@ mailboxes to split from.  Defaults to nil, which means that splitting is
 disabled!
 
 @lisp
-(setq nnimap-split-inbox '("INBOX" ("~/friend/Mail" . "lists/*") "lists.imap"))
+(setq nnimap-split-inbox
+      '("INBOX" ("~/friend/Mail" . "lists/*") "lists.imap"))
 @end lisp
 
 No nnmail equivalent.
@@ -13812,9 +13814,9 @@ Neither did I, we need examples.
 
 @lisp
 (setq nnimap-split-rule
-        '(("INBOX.nnimap"        "^Sender: owner-nnimap@@vic20.globalcom.se")
-          ("INBOX.junk"          "^Subject:.*MAKE MONEY")
-          ("INBOX.private"       "")))
+      '(("INBOX.nnimap"  "^Sender: owner-nnimap@@vic20.globalcom.se")
+        ("INBOX.junk"    "^Subject:.*MAKE MONEY")
+        ("INBOX.private" "")))
 @end lisp
 
 This will put all articles from the nnimap mailing list into mailbox
@@ -14153,6 +14155,7 @@ Of course, to use it as such, you have to learn a few new commands.
 * Agent Categories::       How to tell the Gnus Agent what to download.
 * Agent Commands::         New commands for all the buffers.
 * Agent Expiry::           How to make old articles go away.
+* Agent and IMAP::         How to use the Agent with IMAP.
 * Outgoing Messages::      What happens when you post/mail something?
 * Agent Variables::        Customizing is fun.
 * Example Setup::          An example @file{.gnus.el} file for offline people.
@@ -14691,6 +14694,12 @@ Remove the current group from its category, if any
 (@code{gnus-agent-remove-group}).  This command understands the
 process/prefix convention (@pxref{Process/Prefix}).
 
+@item J Y
+@kindex J Y (Agent Group)
+@findex gnus-agent-synchronize-flags
+Synchronize flags changed while unplugged with remote server, if any.
+
+
 @end table
 
 
@@ -14763,6 +14772,61 @@ if @code{gnus-agent-expire-all} is non-@code{nil}, this command will
 expire all articles---unread, read, ticked and dormant.  If @code{nil}
 (which is the default), only read articles are eligible for expiry, and
 unread, ticked and dormant articles will be kept indefinitely.
+
+
+@node Agent and IMAP
+@subsection Agent and IMAP
+
+The Agent work with any Gnus backend, including nnimap.  However, since
+there are some conceptual differences between NNTP and IMAP, this
+section (should) provide you with some information to make Gnus Agent
+work smoother as a IMAP Disconnected Mode client.
+
+The first thing to keep in mind is that all flags (read, ticked, etc)
+are kept on the IMAP server, rather than in @code{.newsrc} as is the
+case for nntp.  Thus Gnus need to remember flag changes when
+disconnected, and synchronize these flags when you plug back in.
+
+Gnus keep track of flag changes when reading nnimap groups under the
+Agent by default.  When you plug back in, by default Gnus will check if
+you have any changed any flags and ask if you wish to synchronize theese
+with the server.  This behaviour is customizable with
+@code{gnus-agent-synchronize-flags}.
+
+@vindex gnus-agent-synchronize-flags
+If @code{gnus-agent-synchronize-flags} is @code{nil}, the Agent will
+never automatically synchronize flags.  If it is @code{ask}, the
+default, the Agent will check if you made any changes and if so ask if
+you wish to synchronize these when you re-connect.  If it has any other
+value, all flags will be synchronized automatically.
+
+If you do not wish to automatically synchronize flags when you
+re-connect, this can be done manually with the
+@code{gnus-agent-synchronize-flags} command that is bound to @kbd{J Y}
+in the group buffer by default.
+
+Some things are currently not implemented in the Agent that you'd might
+expect from a disconnected IMAP client, including:
+
+@itemize @bullet
+
+@item
+Copying/moving articles into nnimap groups when unplugged. (This
+currently include GCC into a nnimap group when unplugged.)
+
+@item
+Creating/deleting nnimap groups when unplugged.
+
+@end itemize
+
+Technical note: the synchronization algorithm does not work by "pushing"
+all local flags to the server, but rather incrementally update the
+server view of flags by changing only those flags that were changed by
+the user.  Thus, if you set one flag on a article, quit the group and
+re-select the group and remove the flag; the flag will be set and
+removed from the server when you "synchronize".  The queued flag
+operations can be found in the per-server @code{flags} file in the Agent
+directory.  It's emptied when you synchronize flags.
 
 
 @node Outgoing Messages

@@ -1,3 +1,8 @@
+2000-09-30  Simon Josefsson  <simon@josefsson.org>
+
+	* gnus.texi (Agent and IMAP): Add.
+	(Splitting in IMAP): Fix.
+
 2000-09-29  Simon Josefsson  <simon@josefsson.org>
 
 	* gnus.texi (Converting Kill Files): Fix URL.
