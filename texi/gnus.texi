@@ -5302,9 +5302,11 @@ is called with the name of the group as the argument.
 
 Predefined functions available are:
 @table @code
+
 @item gnus-score-find-single
 @findex gnus-score-find-single
 Only apply the group's own score file.
+
 @item gnus-score-find-bnews
 @findex gnus-score-find-bnews
 Apply all score files that match, using bnews syntax.  For instance, if
@@ -5312,6 +5314,11 @@ the current group is @samp{gnu.emacs.gnus}, @samp{all.emacs.all.SCORE},
 @samp{not.alt.all.SCORE} and @samp{gnu.all.SCORE} would all apply.  In
 short, the instances of @samp{all} in the score file names are
 translated into @samp{.*}, and then a regexp match is done.
+
+If @code{gnus-use-long-file-name} is non-@code{nil}, this won't work
+very will. It will find stuff like @file{gnu/all/SCORE}, but will not
+find files like @file{not/gnu/all/SCORE}. 
+
 @item gnus-score-find-hierarchical
 @findex gnus-score-find-hierarchical
 Apply all score files from all the parent groups.

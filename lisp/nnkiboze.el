@@ -1,4 +1,4 @@
-;;; nnkiboze.el --- select virtual news access for (ding) Gnus
+;;; nnkiboze.el --- select virtual news access for Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>

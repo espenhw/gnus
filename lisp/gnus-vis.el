@@ -32,9 +32,6 @@
   
 ;;; Summary highlights.
 
-(defvar gnus-summary-selected-face 'underline
-  "*Face used for highlighting the current article in the summary buffer.")
- 
 (defvar gnus-summary-highlight-properties
   '((unread "ForestGreen" "green")
     (ticked "Firebrick" "pink")
@@ -58,7 +55,9 @@
 	map)
     (while props)))
       
-
+(defvar gnus-summary-selected-face 'underline
+  "*Face used for highlighting the current article in the summary buffer.")
+ 
 (defvar gnus-summary-highlight
   (cond ((not (eq gnus-display-type 'color))
 	 '(((> score default) . bold)
@@ -217,8 +216,8 @@ variable it the real callback function.")
 
 (defvar gnus-button-url
   (cond ((boundp 'browse-url-browser-function) browse-url-browser-function)
-	((eq window-system 'x) 'gnus-netscape-open-url)
-	((fboundp 'w3-fetch) 'w3-fetch))
+	((fboundp 'w3-fetch) 'w3-fetch)
+	((eq window-system 'x) 'gnus-netscape-open-url))
   "*Function to fetch URL.
 The function will be called with one argument, the URL to fetch.
 Useful values of this function are:
@@ -311,20 +310,13 @@ gnus-netscape-start-url:
 	))
 
      (easy-menu-define
-      gnus-group-post-menu
-      gnus-group-mode-map
-      ""
-      '("Post"
-	["Send a mail" gnus-group-mail t]
-	["Post an article" gnus-group-post-news t]
-	))
-  
-     (easy-menu-define
       gnus-group-misc-menu
       gnus-group-mode-map
       ""
       '("Misc"
 	["Send a bug report" gnus-bug t]
+	["Send a mail" gnus-group-mail t]
+	["Post an article" gnus-group-post-news t]
 	["Customize score file" gnus-score-customize t]
 	["Check for new news" gnus-group-get-new-news t]     
 	["Delete bogus groups" gnus-group-check-bogus-groups t]
@@ -579,8 +571,182 @@ gnus-netscape-start-url:
 	  ["Edit current score file" gnus-score-edit-alist t]
 	  ["Edit score file" gnus-score-edit-file t]
 	  ["Trace score" gnus-score-find-trace t]
+	  ["Increase score" gnus-summary-increase-score t]
+	  ["Lower score" gnus-summary-lower-score t]
+	  ("Default header"
+	   ["Ask" (gnus-score-set-default 'gnus-score-default-header nil)
+	    :style radio 
+	    :selected (null gnus-score-default-header)]
+	   ["From" (gnus-score-set-default 'gnus-score-default-header 'a)
+	    :style radio 
+	    :selected (eq gnus-score-default-header 'a )]
+	   ["Subject" (gnus-score-set-default 'gnus-score-default-header 's)
+	    :style radio 
+	    :selected (eq gnus-score-default-header 's )]
+	   ["Article body"
+	    (gnus-score-set-default 'gnus-score-default-header 'b)
+	    :style radio 
+	    :selected (eq gnus-score-default-header 'b )]
+	   ["All headers"
+	    (gnus-score-set-default 'gnus-score-default-header 'h)
+	    :style radio 
+	    :selected (eq gnus-score-default-header 'h )]
+	   ["Message-Id" (gnus-score-set-default 'gnus-score-default-header 'i)
+	    :style radio 
+	    :selected (eq gnus-score-default-header 'i )]
+	   ["Thread" (gnus-score-set-default 'gnus-score-default-header 't)
+	    :style radio 
+	    :selected (eq gnus-score-default-header 't )]
+	   ["Crossposting"
+	    (gnus-score-set-default 'gnus-score-default-header 'x)
+	    :style radio 
+	    :selected (eq gnus-score-default-header 'x )]
+	   ["Lines" (gnus-score-set-default 'gnus-score-default-header 'l)
+	    :style radio 
+	    :selected (eq gnus-score-default-header 'l )]
+	   ["Date" (gnus-score-set-default 'gnus-score-default-header 'd)
+	    :style radio 
+	    :selected (eq gnus-score-default-header 'd )]
+	   ["Followups to author"
+	    (gnus-score-set-default 'gnus-score-default-header 'f)
+	    :style radio 
+	    :selected (eq gnus-score-default-header 'f )])
+	  ("Default type"
+	   ["Ask" (gnus-score-set-default 'gnus-score-default-type nil)
+	    :style radio 
+	    :selected (null gnus-score-default-type)]
+	   ;; The `:active' key is commented out in the following,
+	   ;; because the GNU Emacs hack to support radio buttons use
+	   ;; active to indicate which button is selected.  
+	   ["Substring" (gnus-score-set-default 'gnus-score-default-type 's)
+	    :style radio 
+	    ;; :active (not (memq gnus-score-default-header '(l d)))
+	    :selected (eq gnus-score-default-type 's)]
+	   ["Regexp" (gnus-score-set-default 'gnus-score-default-type 'r)
+	    :style radio
+	    ;; :active (not (memq gnus-score-default-header '(l d)))
+	    :selected (eq gnus-score-default-type 'r)]
+	   ["Exact" (gnus-score-set-default 'gnus-score-default-type 'e)
+	    :style radio
+	    ;; :active (not (memq gnus-score-default-header '(l d)))
+	    :selected (eq gnus-score-default-type 'e)]
+	   ["Fuzzy" (gnus-score-set-default 'gnus-score-default-type 'f)
+	    :style radio 
+	    ;; :active (not (memq gnus-score-default-header '(l d)))
+	    :selected (eq gnus-score-default-type 'f)]
+	   ["Before date" (gnus-score-set-default 'gnus-score-default-type 'b)
+	    :style radio 
+	    ;; :active (eq (gnus-score-default-header 'd))
+	    :selected (eq gnus-score-default-type 'b)]
+	   ["At date" (gnus-score-set-default 'gnus-score-default-type 'n)
+	    :style radio 
+	    ;; :active (eq (gnus-score-default-header 'd))
+	    :selected (eq gnus-score-default-type 'n)]
+	   ["After date" (gnus-score-set-default 'gnus-score-default-type 'a)
+	    :style radio 
+	    ;; :active (eq (gnus-score-default-header 'd))
+	    :selected (eq gnus-score-default-type 'a)]
+	   ["Less than number"
+	    (gnus-score-set-default 'gnus-score-default-type '<)
+	    :style radio 
+	    ;; :active (eq (gnus-score-default-header 'l))
+	    :selected (eq gnus-score-default-type '<)]
+	   ["Equal to number"
+	    (gnus-score-set-default 'gnus-score-default-type '=)
+	    :style radio 
+	    ;; :active (eq (gnus-score-default-header 'l))
+	    :selected (eq gnus-score-default-type '=)]
+	   ["Greater than number" 
+	    (gnus-score-set-default 'gnus-score-default-type '>)
+	    :style radio 
+	    ;; :active (eq (gnus-score-default-header 'l))
+	    :selected (eq gnus-score-default-type '>)])
+	  ["Default fold" gnus-score-default-fold-toggle
+	   :style toggle
+	   :selected gnus-score-default-fold]
+	  ("Default duration"
+	   ["Ask" (gnus-score-set-default 'gnus-score-default-duration nil)
+	    :style radio
+	    :selected (null gnus-score-default-duration)]
+	   ["Permanent"
+	    (gnus-score-set-default 'gnus-score-default-duration 'p)
+	    :style radio
+	    :selected (eq gnus-score-default-duration 'p)]
+	   ["Temporary"
+	    (gnus-score-set-default 'gnus-score-default-duration 't)
+	    :style radio
+	    :selected (eq gnus-score-default-duration 't)]
+	   ["Immediate" 
+	    (gnus-score-set-default 'gnus-score-default-duration 'i)
+	    :style radio
+	    :selected (eq gnus-score-default-duration 'i)])
 	  ))))
      )))
+
+(defun gnus-score-set-default (var value)
+  ;; A version of set that updates the GNU Emacs menu-bar.
+  (set var value)
+  ;; It is the message that forces the active status to be updated.
+  (message ""))
+
+(defvar gnus-score-default-header nil
+  "Default header when entering new scores.
+
+Should be one of the following symbols.
+
+ a: from
+ s: subject
+ b: body
+ h: head
+ i: message-id
+ t: references
+ x: xref
+ l: lines
+ d: date
+ f: followup
+
+If nil, the user will be asked for a header.")
+
+(defvar gnus-score-default-type nil
+  "Default match type when entering new scores.
+
+Should be one of the following symbols.
+
+ s: substring
+ e: exact string
+ f: fuzzy string
+ r: regexp string
+ b: before date
+ a: at date
+ n: this date
+ <: less than number
+ >: greater than number
+ =: equal to number
+
+If nil, the user will be asked for a match type.")
+
+(defvar gnus-score-default-fold nil
+  "Use case folding for new score file entries iff not nil.")
+
+
+(defun gnus-score-default-fold-toggle ()
+  "Toggle folding for new score file entries."
+  (interactive)
+  (setq gnus-score-default-fold (not gnus-score-default-fold))
+  (if gnus-score-default-fold
+      (message "New score file entries will be case insensitive.")
+    (message "New score file entries will be case sensitive.")))
+
+(defvar gnus-score-default-duration nil
+  "Default duration of effect when entering new scores.
+
+Should be one of the following symbols.
+
+ t: temporary
+ p: permanent
+ i: immediate
+
+If nil, the user will be asked for a duration.")
 
 (defun gnus-visual-score-map (type)
   (if t
@@ -1215,8 +1381,8 @@ The value is actually the element of LIST whose cdr is ELT."
 		  list (cdr list))))
 	result)))
 
+(require 'gnus-cus)
 (gnus-ems-redefine)
-
 (provide 'gnus-vis)
 
 ;;; gnus-vis.el ends here

@@ -624,7 +624,10 @@ such things as moving mail.  All buffers always get killed upon server close.")
       (while (not (= end (point-max)))
 	(setq start (marker-position end))
 	(goto-char end)
-	(end-of-line)
+	;; There may be more than one "From " line, so we skip past
+	;; them.  
+	(while (looking-at delim) 
+	  (forward-line 1))
 	(set-marker end (or (and (re-search-forward delim nil t)
 				 (match-beginning 0))
 			    (point-max)))

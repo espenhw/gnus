@@ -248,7 +248,8 @@ If called interactively, prompts for a face and face attributes."
   "The value currently displayed for NAME in the customization buffer."
   (let* ((field (custom-name-field name))
 	 (custom (custom-field-custom field)))
-    (funcall (custom-property custom 'export)
+    (custom-field-parse field)
+    (funcall (custom-property custom 'export) custom
 	     (car (custom-field-extract custom field)))))
 
 ;;; Custom Functions:
@@ -308,6 +309,9 @@ hierarchy the new entry should be added.  CUSTOM is the entry to add."
 
 (defconst custom-type-properties
   '((repeat (type . default)
+	    (import . custom-repeat-import)
+	    (eval . custom-repeat-eval)
+	    (quote . custom-repeat-quote)
 	    (accept . custom-repeat-accept)
 	    (extract . custom-repeat-extract)
 	    (validate . custom-repeat-validate)
@@ -318,14 +322,20 @@ hierarchy the new entry should be added.  CUSTOM is the entry to add."
 	    (del-tag . "[DEL]")
 	    (add-tag . "[INS]"))
     (pair (type . group)
+	  (accept . custom-pair-accept)
+	  (eval . custom-pair-eval)
+	  (import . custom-pair-import)
+	  (quote . custom-pair-quote)
 	  (valid . (lambda (c d) (consp d)))
 	  (extract . custom-pair-extract))
     (list (type . group)
-	  (valid . (lambda (c d) (listp d)))
 	  (quote . custom-list-quote)
+	  (valid . (lambda (c d) (listp d)))
 	  (extract . custom-list-extract))
     (group (type . default)
 	   (face-tag . nil)
+	   (eval . custom-group-eval)
+	   (import . custom-group-import)
 	   (initialize . custom-group-initialize)
 	   (apply . custom-group-apply)
 	   (reset . custom-group-reset)
@@ -380,8 +390,7 @@ so just ignore it.  The three remaining fields are toggles, which will
 make the text `bold', `italic', or `underline' respectively.  For some
 fonts `bold' or `italic' will not make any visible change."))
     (face (type . choice)
-	  (quote . custom-face-quote)
-	  (export . custom-face-export)
+	  (eval . custom-face-eval)
 	  (import . custom-face-import)
 	  (data ((tag . "None")
 		 (default . nil)
@@ -425,7 +434,7 @@ fonts `bold' or `italic' will not make any visible change."))
 		((tag . "Customized")
 		 (compact . t)
 		 (face-tag . custom-face-hack)
-		 (export . custom-face-export)
+		 (eval . custom-face-eval)
 		 (data ((hidden . t)
 			(tag . "")
 			(doc . "\
@@ -472,22 +481,14 @@ Select the properties you want this face to have.")
     (sexp (type . default)
 	  (width . 40)
 	  (default . (__uninitialized__ . "Uninitialized"))
-	  (valid . custom-sexp-valid)
-	  (quote . custom-sexp-quote)
 	  (read . custom-sexp-read)
 	  (write . custom-sexp-write))
-    (symbol (type . default)
+    (symbol (type . sexp)
 	    (width . 40)
-	    (valid . (lambda (c d) (symbolp d)))
-	    (quote . custom-symbol-quote)
-	    (read . custom-symbol-read)
-	    (write . custom-symbol-write))
-    (integer (type . default)
+	    (valid . (lambda (c d) (symbolp d))))
+    (integer (type . sexp)
 	     (width . 10)
-	     (valid . (lambda (c d) (integerp d)))
-	     (allow-padding . nil)
-	     (read . custom-integer-read)
-	     (write . custom-integer-write))
+	     (valid . (lambda (c d) (integerp d))))
     (string (type . default)
 	    (width . 40) 
 	    (valid . (lambda (c d) (stringp d)))
@@ -514,10 +515,10 @@ Select the properties you want this face to have.")
 	     (doc . nil)
 	     (header . t)
 	     (padding . ? )
-	     (allow-padding . t)
-	     (quote . identity)
-	     (export . identity)
-	     (import . identity)
+	     (quote . custom-default-quote)
+	     (eval . (lambda (c v) nil))
+	     (export . custom-default-export)
+	     (import . (lambda (c v) (list v)))
 	     (synchronize . ignore)
 	     (initialize . custom-default-initialize)
 	     (extract . custom-default-extract)
@@ -543,9 +544,24 @@ The format is `((SYMBOL (PROPERTY . VALUE)... )... )'.")
 (defconst custom-nil '__uninitialized__
   "Special value representing an uninitialized field.")
 
+(defconst custom-invalid '__invalid__
+  "Special value representing an invalid field.")
+
 (defun custom-property (custom property)
   "Extract from CUSTOM property PROPERTY."
   (let ((entry (assq property custom)))
+    (while (null entry)
+      ;; Look in superclass.
+      (let ((type (custom-type custom)))
+	(setq custom (cdr (or (assq type custom-local-type-properties)
+			      (assq type custom-type-properties)))
+	      entry (assq property custom))
+	(custom-assert 'custom)))
+    (cdr entry)))
+
+(defun custom-super (custom property)
+  "Extract from CUSTOM property PROPERTY.  Start with CUSTOM's superclass."
+  (let ((entry nil))
     (while (null entry)
       ;; Look in superclass.
       (let ((type (custom-type custom)))
@@ -606,31 +622,39 @@ If none exist, default to `tag' or, failing that, `type'."
   "Extract `padding' from CUSTOM."
   (custom-property custom 'padding))
 
-(defun custom-allow-padding (custom)
-  "Extract `allow-padding' from CUSTOM."
-  (custom-property custom 'allow-padding))
-
 (defun custom-valid (custom value)
   "Non-nil if CUSTOM may legally be set to VALUE."
-  (funcall (custom-property custom 'valid) custom value))
+  (and (not (and (listp value) (eq custom-invalid (car value))))
+       (funcall (custom-property custom 'valid) custom value)))
 
 (defun custom-import (custom value)
   "Import CUSTOM VALUE from external variable."
-  (funcall (custom-property custom 'import) value))
+  (if (eq custom-nil value)
+      (list custom-nil)
+    (funcall (custom-property custom 'import) custom value)))
+
+(defun custom-eval (custom value)
+  "Return non-nil if CUSTOM's VALUE needs to be evaluated."
+  (funcall (custom-property custom 'eval) custom value))
 
 (defun custom-quote (custom value)
   "Quote CUSTOM's VALUE if necessary."
-  (funcall (custom-property custom 'quote) value))
+  (funcall (custom-property custom 'quote) custom value))
 
 (defun custom-write (custom value)
   "Convert CUSTOM VALUE to a string."
-  (if (eq value custom-nil) 
-      ""
-    (funcall (custom-property custom 'write) custom value)))
+  (cond ((eq value custom-nil) 
+	 "")
+	((and (listp value) (eq (car value) custom-invalid))
+	 (cdr value))
+	(t
+	 (funcall (custom-property custom 'write) custom value))))
 
 (defun custom-read (custom string)
   "Convert CUSTOM field content STRING into external form."
-  (funcall (custom-property custom 'read) custom string))
+  (condition-case nil
+      (funcall (custom-property custom 'read) custom string)
+    (error (cons custom-invalid string))))
 
 (defun custom-match (custom values)
   "Match CUSTOM with a list of VALUES.
@@ -748,6 +772,28 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
 ;;; Types:
 ;;
 ;; The following functions defines type specific actions.
+
+(defun custom-repeat-eval (custom value)
+  "Non-nil if CUSTOM's VALUE needs to be evaluated."
+  (if (eq value custom-nil)
+      nil
+    (let ((child (custom-data custom))
+	  (found nil))
+      (mapcar (lambda (v) (if (custom-eval child v) (setq found t)))
+	      value))))
+
+(defun custom-repeat-quote (custom value)
+  "A list of CUSTOM's VALUEs quoted."
+  (let ((child (custom-data custom)))
+    (apply 'append (mapcar (lambda (v) (custom-quote child v))
+			   value))))
+
+  
+(defun custom-repeat-import (custom value)
+  "Modify CUSTOM's VALUE to match internal expectations."
+  (let ((child (custom-data custom)))
+    (apply 'append (mapcar (lambda (v) (custom-import child v))
+			   value))))
 
 (defun custom-repeat-accept (field value &optional original)
   "Enter content of editing FIELD."
@@ -890,13 +936,35 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
 	    values (cdr values)))
     result))
 
+(defun custom-pair-accept (field value &optional original)
+  "Enter content of editing FIELD with VALUE."
+  (custom-group-accept field (list (car value) (cdr value)) original))
+
+(defun custom-pair-eval (custom value)
+  "Non-nil if CUSTOM's VALUE needs to be evaluated."
+  (custom-group-eval custom (list (car value) (cdr value))))
+
+(defun custom-pair-import (custom value)
+  "Modify CUSTOM's VALUE to match internal expectations."
+  (let ((result (car (custom-group-import custom 
+					  (list (car value) (cdr value))))))
+    (custom-assert '(eq (length result) 2))
+    (list (cons (nth 0 result) (nth 1 result)))))
+
+(defun custom-pair-quote (custom value)
+  "Quote CUSTOM's VALUE if necessary."
+  (if (custom-eval custom value)
+      (let ((v (car (custom-group-quote custom 
+					(list (car value) (cdr value))))))
+	(list (list 'cons (nth 0 v) (nth 1 v))))
+    (custom-default-quote custom value)))
+
 (defun custom-pair-extract (custom field)
   "Extract cons of childrens values."
   (let ((values (custom-field-value field))
 	(data (custom-data custom))
 	result)
     (custom-assert '(eq (length values) (length data)))
-    (custom-assert '(eq (length values) 2))
     (while values
       (setq result (append result
 			   (custom-field-extract (car data) (car values)))
@@ -905,10 +973,12 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
     (custom-assert '(null data))
     (list (cons (nth 0 result) (nth 1 result)))))
 
-(defun custom-list-quote (value)
-  "Quote VALUE if necessary."
-  (and value
-       (list 'quote value)))
+(defun custom-list-quote (custom value)
+  "Quote CUSTOM's VALUE if necessary."
+  (if (custom-eval custom value)
+      (let ((v (car (custom-group-quote custom value))))
+	(list (cons 'list v)))
+    (custom-default-quote custom value)))
 
 (defun custom-list-extract (custom field)
   "Extract list of childrens values."
@@ -937,6 +1007,40 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
 	    data (cdr data)
 	    values (cdr values)))
     result))
+
+(defun custom-group-eval (custom value)
+  "Non-nil if CUSTOM's VALUE needs to be evaluated."
+  (let ((found nil))
+    (mapcar (lambda (c)
+	      (or (stringp c)
+		  (let ((match (custom-match c value)))
+		    (if (custom-eval c (car match))
+			(setq found t))
+		    (setq value (cdr match)))))
+	    (custom-data custom))
+    found))
+
+(defun custom-group-quote (custom value)
+  "A list of CUSTOM's VALUE members, quoted."
+  (list (apply 'append 
+	       (mapcar (lambda (c)
+			 (if (stringp c)
+			     ()
+			   (let ((match (custom-match c value)))
+			     (prog1 (custom-quote c (car match))
+			       (setq value (cdr match))))))
+		       (custom-data custom)))))
+
+(defun custom-group-import (custom value)
+  "Modify CUSTOM's VALUE to match internal expectations."
+  (list (apply 'append 
+	       (mapcar (lambda (c)
+			 (if (stringp c)
+			     ()
+			   (let ((match (custom-match c value)))
+			     (prog1 (custom-import c (car match))
+			       (setq value (cdr match))))))
+		       (custom-data custom)))))
 
 (defun custom-group-initialize (custom)
   "Initialize `doc' and `default' entries in CUSTOM."
@@ -1147,32 +1251,24 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
 					     default nil value)
 			   (read-file-name prompt directory default)))))
 
-(defun custom-face-quote (value)
-  "Quote VALUE if necessary."
-  (if (symbolp value)
-      (custom-symbol-quote value)
-    value))
+(defun custom-face-eval (custom value)
+  "Return non-nil if CUSTOM's VALUE needs to be evaluated."
+  (not (symbolp value)))
 
-(defun custom-face-export (value)
-  "Modify VALUE to match external expectations."
-  (if (symbolp value)
-      value
-    (eval value)))
-
-(defun custom-face-import (value)
-  "Modify VALUE to match internal expectations."
+(defun custom-face-import (custom value)
+  "Modify CUSTOM's VALUE to match internal expectations."
   (let ((name (symbol-name value)))
-    (if (string-match "\
+    (list (if (string-match "\
 custom-face-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)"
-		      name)
-	(list 'custom-face-lookup 
-	      (match-string 1 name)
-	      (match-string 2 name)
-	      (match-string 3 name)
-	      (intern (match-string 4 name))
-	      (intern (match-string 5 name))
-	      (intern (match-string 6 name)))
-      value)))
+			    name)
+	      (list 'custom-face-lookup 
+		    (match-string 1 name)
+		    (match-string 2 name)
+		    (match-string 3 name)
+		    (intern (match-string 4 name))
+		    (intern (match-string 5 name))
+		    (intern (match-string 6 name)))
+	    value))))
 
 (defun custom-face-lookup (fg bg stipple bold italic underline)
   "Lookup or create a face with specified attributes.
@@ -1194,7 +1290,7 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
 
 (defun custom-face-hack (field value)
   "Face that should be used for highlighting FIELD containing VALUE."
-  (funcall (custom-property (custom-field-custom field) 'export) value))
+  (eval (funcall (custom-property (custom-field-custom field) 'export) custom value)))
 
 (defun custom-const-insert (custom level)
   "Insert field for CUSTOM at nesting LEVEL in customization buffer."
@@ -1224,21 +1320,6 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
   "Face used for a FIELD."
   (custom-default (custom-field-custom field)))
 
-(defun custom-sexp-valid (custom value)
-  "Non-nil if CUSTOM can legally have the value VALUE."
-  (not (and (listp value) (eq custom-nil (car value)))))
-
-(defun custom-sexp-quote (value)
-  "Quote VALUE if necessary."
-  (if (or (and (symbolp value)
-	       value 
-	       (not (eq t value)))
-	  (and (listp value)
-	       value
-	       (not (memq (car value) '(quote function lambda)))))
-      (list 'quote value)
-    value))
-
 (defun custom-sexp-read (custom string)
   "Read from CUSTOM an STRING."
   (save-match-data
@@ -1247,44 +1328,23 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
       (erase-buffer)
       (insert string)
       (goto-char (point-min))
-      (condition-case signal
-	  (prog1 (read (current-buffer))
-	    (or (looking-at
-		 (concat (regexp-quote (char-to-string
-					(custom-padding custom)))
-			 "*\\'"))
-		(error "Junk at end of expression")))
-	(error (cons custom-nil string))))))
+      (prog1 (read (current-buffer))
+	(or (looking-at
+	     (concat (regexp-quote (char-to-string
+				    (custom-padding custom)))
+		     "*\\'"))
+	    (error "Junk at end of expression"))))))
+
+(autoload 'pp-to-string "pp")
 
 (defun custom-sexp-write (custom sexp)
   "Write CUSTOM SEXP as string."
-  (if (and (listp sexp) (eq (car sexp) custom-nil))
-      (cdr sexp)
-    (prin1-to-string sexp)))
-
-(defun custom-symbol-quote (value)
-  "Quote VALUE if necessary."
-  (if (or (null value) (eq t value))
-      value
-    (list 'quote value)))
-
-(defun custom-symbol-read (custom symbol)
-  "Read from CUSTOM an SYMBOL."
-  (intern (save-match-data
-	    (custom-strip-padding symbol (custom-padding custom)))))
-
-(defun custom-symbol-write (custom symbol)
-  "Write CUSTOM SYMBOL as string."
-  (symbol-name symbol))
-
-(defun custom-integer-read (custom integer)
-  "Read from CUSTOM an INTEGER."
-  (string-to-int (save-match-data
-		   (custom-strip-padding integer (custom-padding custom)))))
-
-(defun custom-integer-write (custom integer)
-  "Write CUSTOM INTEGER as string."
-  (int-to-string integer))
+  (let ((string (prin1-to-string sexp)))
+    (if (<= (length string) (custom-width custom))
+	string
+      (setq string (pp-to-string sexp))
+      (string-match "[ \t\n]*\\'" string)
+      (concat "\n" (substring string 0 (match-beginning 0))))))
 
 (defun custom-string-read (custom string)
   "Read string by ignoring trailing padding characters."
@@ -1305,6 +1365,24 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
 		     (custom-property custom 'query))
   (custom-documentation-insert custom)
   nil)
+
+(defun custom-default-export (custom value)
+  ;; Convert CUSTOM's VALUE to external representation.
+  (if (custom-eval custom value)
+      (eval (car (custom-quote custom value)))
+    value))
+
+(defun custom-default-quote (custom value)
+  "Quote CUSTOM's VALUE if necessary."
+  (list (if (and (not (custom-eval custom value))
+		 (or (and (symbolp value)
+			  value 
+			  (not (eq t value)))
+		     (and (listp value)
+			  value
+			  (not (memq (car value) '(quote function lambda))))))
+	    (list 'quote value)
+	  value)))
 
 (defun custom-default-initialize (custom)
   "Initialize `doc' and `default' entries in CUSTOM."
@@ -1386,11 +1464,13 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
   (let ((value (custom-field-value field))
 	(start (custom-field-start field)))
     (cond ((eq value custom-nil)
-	   (cons (custom-field-start field) "Uninitialized field"))
+	   (cons start "Uninitialized field"))
+	  ((and (consp value) (eq (car value) custom-invalid))
+	   (cons start "Unparseable field content"))
 	  ((custom-valid custom value)
 	   nil)
 	  (t
-	   (cons start "Wrong type")))))
+	   (cons start "Wrong type of field content")))))
 
 (defun custom-default-face (field)
   "Face used for a FIELD."
@@ -1677,7 +1757,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
 	(save-excursion
 	  (if name
 	      (custom-field-original-set 
-	       field (custom-import custom (custom-external name))))
+	       field (car (custom-import custom (custom-external name)))))
 	  (if (not (custom-valid custom (custom-field-original field)))
 	      (error "This field cannot be reset alone")
 	    (funcall (custom-property custom 'reset) field)
@@ -1712,6 +1792,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
   (interactive (if custom-modified-list
 		   nil
 		 (error "No changes to apply.")))
+  (custom-field-parse custom-field-last)
   (let ((all custom-name-fields)
 	name field)
     (while all
@@ -1733,6 +1814,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
   "Apply any changes in FIELD since the last apply."
   (interactive (list (or (get-text-property (point) 'custom-field)
 			 (get-text-property (point) 'custom-tag))))
+  (custom-field-parse custom-field-last)
   (if (arrayp field)
       (let* ((custom (custom-field-custom field))
 	     (error (custom-field-validate custom field)))
@@ -1770,7 +1852,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
 	    (if (equal default value)
 		(setcdr old (custom-plist-delq name (cdr old)))
 	      (setcdr old (plist-put (cdr old) name 
-				     (custom-quote custom value))))))
+				     (car (custom-quote custom value)))))))
 	(erase-buffer)
 	(insert ";; " custom-file "\
  --- Automatically generated customization information.
@@ -1858,11 +1940,9 @@ If the optional argument is non-nil, show text iff the argument is positive."
 	 (end (custom-field-end field))
 	 (custom (custom-field-custom field))
 	 (padding (custom-padding custom))
-	 (allow (custom-allow-padding custom))
 	 (before-change-functions nil)
 	 (after-change-functions nil))
-    (or (and (eq this-command 'self-insert-command)
-	     allow)
+    (or (eq this-command 'self-insert-command)
 	(let ((pos end))
 	  (while (and (< start pos)
 		      (eq (char-after (1- pos)) padding))
@@ -1871,24 +1951,62 @@ If the optional argument is non-nil, show text iff the argument is positive."
 	      (goto-char pos))))
     (put-text-property start end 'face custom-field-active-face)))
 
+(defun custom-field-resize (field)
+  ;; Resize FIELD after change.
+  (let* ((custom (custom-field-custom field))
+	 (begin (custom-field-start field))
+	 (end (custom-field-end field))
+	 (pos (point))
+	 (padding (custom-padding custom))
+	 (width (custom-width custom))
+	 (size (- end begin)))
+    (cond ((< size width)
+	   (goto-char end)
+	   (insert-before-markers-and-inherit
+	    (make-string (- width size) padding))
+	   (goto-char pos))
+	  ((> size width)
+	   (let ((start (if (and (< (+ begin width) pos) (<= pos end))
+			    pos
+			  (+ begin width))))
+	     (goto-char end)
+	     (while (and (< start (point)) (= (preceding-char) padding))
+	       (backward-delete-char 1))
+	     (goto-char pos))))))
+
+(defvar custom-field-changed nil)
+;; List of fields changed on the screen.
+(make-variable-buffer-local 'custom-field-changed)
+
+(defun custom-field-parse (field)
+  ;; Parse FIELD content iff changed.
+  (if (memq field custom-field-changed)
+      (progn 
+	(setq custom-field-changed (delq field custom-field-changed))
+	(custom-field-value-set field (custom-field-read field))
+	(custom-field-update field))))
+
 (defvar custom-field-last nil)
 ;; Last field containing point.
 (make-variable-buffer-local 'custom-field-last)
 
+
 (defun custom-post-command ()
   ;; Keep track of their active field.
   (if (not (eq major-mode 'custom-mode))
-      ;; BUG: Should have been local!
+      (message "Aargh! Why is custom-post-command called here?")
       ()
     (let ((field (custom-field-property (point))))
       (if (eq field custom-field-last)
-	  ()
+	  (if (memq field custom-field-changed)
+	      (custom-field-resize field))
+	(custom-field-parse custom-field-last)
 	(if custom-field-last
 	    (custom-field-leave custom-field-last))
 	(if field
 	    (custom-field-enter field))
 	(setq custom-field-last field)))
-    (set-buffer-modified-p custom-modified-list)))
+    (set-buffer-modified-p (or custom-modified-list custom-field-changed))))
 
 (defvar custom-field-was nil)
 ;; The custom data before the change.
@@ -1920,8 +2038,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
 	  (let ((field-end (custom-field-end field)))
 	    (if (> end field-end)
 		(set-marker field-end end))
-	    (custom-field-value-set field (custom-field-read field))
-	    (custom-field-update field))
+	    (add-to-list 'custom-field-changed field))
 	;; We deleted the entire field, reinsert it.
 	(custom-assert '(eq begin end))
 	(save-excursion

@@ -222,7 +222,7 @@ action is taken."
 	  (or (gnus-server-opened (gnus-find-method-for-group
 				   gnus-newsgroup-name))
 	      (progn
-		(gnus-check-news-server 
+		(gnus-check-server 
 		 (gnus-find-method-for-group gnus-newsgroup-name))
 		(gnus-request-group gnus-newsgroup-name t)))
 	  (and (stringp article) 

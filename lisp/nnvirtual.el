@@ -1,4 +1,4 @@
-;;; nnvirtual.el --- virtual newsgroups access for (ding) Gnus
+;;; nnvirtual.el --- virtual newsgroups access for Gnus
 ;; Copyright (C) 1994,95 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -325,7 +325,7 @@ If the stream is opened, return T, otherwise return NIL."
 	;; See if the group has had its active list read this session
 	;; if not, we do it now.
 	(if (null active)
-	    (if (gnus-activate-newsgroup igroup)
+	    (if (gnus-activate-group igroup)
 		(progn
 		  (gnus-get-unread-articles-in-group
 		   info (gnus-gethash igroup gnus-active-hashtb))

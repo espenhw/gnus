@@ -486,14 +486,11 @@
 	(set-buffer-modified-p nil)
 
 	(goto-char (point-min))
+	(re-search-forward delim nil t)
+	(setq start (match-beginning 0))
 	(while (re-search-forward delim nil t)
-	  (setq start (match-beginning 0))
-	  (if (not (search-forward 
-		    "\nX-Gnus-Newsgroup: " 
-		    (save-excursion 
-		      (setq end (or (and (re-search-forward delim nil t)
-					 (match-beginning 0))
-				    (point-max)))) t))
+	  (setq end (match-end 0))
+	  (or (search-backward "\nX-Gnus-Newsgroup: " start t)
 	      (progn
 		(goto-char end)
 		(save-excursion
@@ -501,8 +498,8 @@
 		    (goto-char start)
 		    (narrow-to-region start end)
 		    (nnbabyl-save-mail)
-		    (setq end (point-max))))
-		(goto-char end))))
+		    (setq end (point-max))))))
+	  (goto-char (setq start end)))
 	(and (buffer-modified-p (current-buffer)) (save-buffer))
 	(nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)))))
 

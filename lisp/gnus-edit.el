@@ -1,4 +1,4 @@
-;;; gnus-edit.el --- Gnus SCORE file editing.
+;;; gnus-edit.el --- Gnus SCORE file editing
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 ;;
 ;; Author: Per Abrahamsen <abraham@iesd.auc.dk>

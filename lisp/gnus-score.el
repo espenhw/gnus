@@ -70,7 +70,7 @@ The keys can be symbols or strings.  The following symbols are defined.
 touched: If this alist has been modified.
 mark:    Automatically mark articles below this.
 expunge: Automatically expunge articles below this.
-files:   List of other SCORE files to load when loading this one.
+files:   List of other score files to load when loading this one.
 eval:    Sexp to be evaluated when the score file is loaded.
 
 String entries have the form (HEADER (MATCH TYPE SCORE DATE) ...) 
@@ -342,7 +342,7 @@ If optional argument `SILENT' is nil, show effect of score entry."
 	 (if (y-or-n-p "Use regexp match? ") 'r 's)
 	 (and current-prefix-arg
 	     (prefix-numeric-value current-prefix-arg))
-	 (cond ((not (y-or-n-p "Add to SCORE file? "))
+	 (cond ((not (y-or-n-p "Add to score file? "))
 		'now)
 	       ((y-or-n-p "Expire kill? ")
 		(current-time-string))
@@ -519,7 +519,8 @@ SCORE is the score to add."
 
 (defun gnus-score-change-score-file (file)
   "Change current score alist."
-  (interactive (list (completing-read "Score file: " gnus-score-cache)))
+  (interactive 
+   (list (read-file-name "Edit score file: " gnus-kill-files-directory)))
   (gnus-score-load-file file)
   (gnus-set-mode-line 'summary))
 
@@ -730,7 +731,7 @@ SCORE is the score to add."
     (cons (list 'touched t) (nreverse out))))
   
 (defun gnus-score-save ()
-  ;; Save all SCORE information.
+  ;; Save all score information.
   (let ((cache gnus-score-cache))
     (save-excursion
       (setq gnus-score-alist nil)
@@ -758,12 +759,13 @@ SCORE is the score to add."
 		;; This is a normal score file, so we print it very
 		;; prettily. 
 		(pp score (current-buffer))))
-	    (gnus-make-directory (file-name-directory file))
-	    ;; If the score file is empty, we delete it.
-	    (if (zerop (buffer-size))
-		(delete-file file)
-	      ;; There are scores, so we write the file. 
-	      (write-region (point-min) (point-max) file nil 'silent)))))
+	    (if (not (gnus-make-directory (file-name-directory file)))
+		()
+	      ;; If the score file is empty, we delete it.
+	      (if (zerop (buffer-size))
+		  (delete-file file)
+		;; There are scores, so we write the file. 
+		(write-region (point-min) (point-max) file nil 'silent))))))
       (kill-buffer (current-buffer)))))
   
 (defun gnus-score-headers (score-files &optional trace)
@@ -771,7 +773,7 @@ SCORE is the score to add."
   (let (scores)
     ;; PLM: probably this is not the best place to clear orphan-score
     (setq gnus-orphan-score nil)
-    ;; Load the SCORE files.
+    ;; Load the score files.
     (while score-files
       (if (stringp (car score-files))
 	  ;; It is a string, which means that it's a score file name,

@@ -106,6 +106,7 @@ Possible values:
       (if (stringp (car sequence))
 	  'headers
 	(set-buffer nndoc-current-buffer)
+	(widen)
 	(goto-char (point-min))
 	(re-search-forward (or nndoc-first-article 
 			       nndoc-article-begin) nil t)

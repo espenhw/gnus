@@ -1089,8 +1089,6 @@ If SERVICE, this this as the port number."
 	    (run-hooks 'nntp-server-hook)
 	    nntp-server-process)))))
 
-(defvar nntp-dum-num 5)
-
 (defun nntp-open-network-stream (server)
   (open-network-stream 
    "nntpd" nntp-server-buffer server nntp-port-number))

@@ -1,4 +1,89 @@
+Sat Aug 19 16:37:58 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* nnbabyl.el (nnbabyl-read-mbox): Would create ghost articles. 
+
+	* gnus.el (gnus-summary-move-article): Would barf on respooling to
+	(as-yet) non-existant groups.
+	(gnus-summary-best-unread-article): Really go to the best article.
+	(gnus-activate-group): Continue on non-available groups.
+
+	* gnus-score.el (gnus-score-change-score-file): Prompt from dir,
+	not cache.
+
+	* nnfolder.el (nnfolder-read-folder): Ghost articles would be
+	produced when there were more than 1 consecutive "From " line. 
+
+	* gnus.el (gnus-update-read-articles): Would display the wrong
+	number of unread articles in the group buffer when updates have
+	been done while the summary buffer was active.
+	(gnus-summary-read-group): `O' old-fetched articles would be
+	improperly inited.
+	(gnus-ignored-newsgroups): Removed again.
+	(gnus-active-to-gnus-format): Understand groups that have strange
+	chars in the names.
+	(gnus-select-newsgroup): Would ignore the first article from all
+	backends that did not support NOV when using
+	`gnus-fetch-old-headers'. 
+	(gnus-article-mode-map): Disabled all summary commands in the
+	article buffer.
+	(gnus-get-unread-articles): Make sure that the server connection
+	is up.
+
+Sat Aug 19 16:07:59 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci7.cern.ch>
+
+	* gnus.el (gnus-group-catchup): Would bug out on `all' sometimes. 
+
+Thu Aug 17 20:19:07 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-cus.el: Added `gnus-summary-highlight'.
+
+Wed Aug 16 16:07:35 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el: Added support for including values that needs to be
+	evaluated in lists.
+
+Fri Aug 18 15:27:20 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-ignored-newsgroups): Start ignoring stuff again.
+	(gnus-summary-show-article): Removed interpretation of prefix arg.
+
+Wed Aug 16 08:22:05 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-summary-mark-same-subject): Update number mode
+	line. 
+
+Tue Aug 15 19:21:55 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el: Allow all field to contain invalid data.  Only parse
+	field when point leaves it or when the value is needed,  not
+	after each change as previously. 
+
+Wed Aug 16 08:11:24 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus-ems.el: Don't destroy the hidden props in 19.28.
+
+Tue Aug 15 09:03:11 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-offer-save-summaries): Allow ! and q as answers.
+	(gnus-summary-mode-map): Defined date keys in the wrong map.
+
+	* gnus-vis.el (gnus-button-url): Use w3 if it exists.
+
+Mon Aug 14 15:51:08 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus-vis.el (gnus-group-make-menu-bar): Removed "post" menu.
+
+Mon Aug 14 11:37:39 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci7.cern.ch>
+
+	* gnus.el (gnus-summary-edit-article-done): Do the visual hook
+	after returning to the summary buffer.
+
+	* gnus-score.el (gnus-score-save): Ignore score files that can't
+	be saved. 
+
 Sun Aug 13 17:15:22 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.99.11 is released.
 
 	* gnus.el (gnus-groups-to-gnus-format): Don't skip everything if a
 	simple error occurs; just ignore the buggy line.
