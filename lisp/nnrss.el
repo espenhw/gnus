@@ -675,7 +675,8 @@ Careful with this on large documents!"
 	    (when (car-safe bit)
 	      (when (equal tag (car bit))
 		;; Old xml.el may return a list of string.
-		(when (consp (caddr bit))
+		(when (and (consp (caddr bit))
+			   (stringp (caaddr bit)))
 		  (setcar (cddr bit) (caaddr bit)))
 		(setq found-list
 		      (append found-list
