@@ -20087,6 +20087,12 @@ Be able to forward groups of messages as MIME digests.
 nnweb should include the "get whole article" article when getting articles. 
 
 @item
+When I type W W c (gnus-article-hide-citation) in the summary
+buffer, the citations are revealed, but the [+] buttons don't turn
+into [-] buttons.  (If I click on one of the [+] buttons, it does
+turn into a [-] button.)
+
+@item
 Solve the halting problem.
 
 @c TODO
