@@ -785,12 +785,10 @@ Uses the process-prefix convention.  If given the symbolic
 prefix `a', cancel using the standard posting method; if not
 post using the current select method."
   (interactive (gnus-interactive "P\ny"))
-  (let ((articles (gnus-summary-work-articles n))
-	(message-post-method
+  (let ((message-post-method
 	 `(lambda (arg)
-	    (gnus-post-method (eq ',symp 'a) ,gnus-newsgroup-name)))
-	article)
-    (while (setq article (pop articles))
+	    (gnus-post-method (eq ',symp 'a) ,gnus-newsgroup-name))))
+    (dolist (article (gnus-summary-work-articles n))
       (when (gnus-summary-select-article t nil nil article)
 	(when (gnus-eval-in-buffer-window gnus-original-article-buffer
 		(message-cancel-news))
@@ -1249,14 +1247,12 @@ For the `inline' alternatives, also see the variable
 	    (with-current-buffer gnus-original-article-buffer
 	      (nnmail-fetch-field "to"))))
 	 current-prefix-arg))
-  (let ((articles (gnus-summary-work-articles n))
-	article)
-    (while (setq article (pop articles))
-      (gnus-summary-select-article nil nil nil article)
-      (save-excursion
-	(set-buffer gnus-original-article-buffer)
-	(message-resend address))
-      (gnus-summary-mark-article-as-forwarded article))))
+  (dolist (article (gnus-summary-work-articles n))
+    (gnus-summary-select-article nil nil nil article)
+    (save-excursion
+      (set-buffer gnus-original-article-buffer)
+      (message-resend address))
+    (gnus-summary-mark-article-as-forwarded article)))
 
 ;; From: Matthieu Moy <Matthieu.Moy@imag.fr>
 (defun gnus-summary-resend-message-edit ()
@@ -1314,37 +1310,35 @@ The current group name will be inserted at \"%s\".")
 (defun gnus-summary-mail-crosspost-complaint (n)
   "Send a complaint about crossposting to the current article(s)."
   (interactive "P")
-  (let ((articles (gnus-summary-work-articles n))
-	article)
-    (while (setq article (pop articles))
-      (set-buffer gnus-summary-buffer)
-      (gnus-summary-goto-subject article)
-      (let ((group (gnus-group-real-name gnus-newsgroup-name))
-	    newsgroups followup-to)
-	(gnus-summary-select-article)
-	(set-buffer gnus-original-article-buffer)
-	(if (and (<= (length (message-tokenize-header
-			      (setq newsgroups
-				    (mail-fetch-field "newsgroups"))
-			      ", "))
-		     1)
-		 (or (not (setq followup-to (mail-fetch-field "followup-to")))
-		     (not (member group (message-tokenize-header
-					 followup-to ", ")))))
-	    (if followup-to
-		(gnus-message 1 "Followup-to restricted")
-	      (gnus-message 1 "Not a crossposted article"))
-	  (set-buffer gnus-summary-buffer)
-	  (gnus-summary-reply-with-original 1)
-	  (set-buffer gnus-message-buffer)
-	  (message-goto-body)
-	  (insert (format gnus-crosspost-complaint newsgroups group))
-	  (message-goto-subject)
-	  (re-search-forward " *$")
-	  (replace-match " (crosspost notification)" t t)
-	  (gnus-deactivate-mark)
-	  (when (gnus-y-or-n-p "Send this complaint? ")
-	    (message-send-and-exit)))))))
+  (dolist (article (gnus-summary-work-articles n))
+    (set-buffer gnus-summary-buffer)
+    (gnus-summary-goto-subject article)
+    (let ((group (gnus-group-real-name gnus-newsgroup-name))
+	  newsgroups followup-to)
+      (gnus-summary-select-article)
+      (set-buffer gnus-original-article-buffer)
+      (if (and (<= (length (message-tokenize-header
+			    (setq newsgroups
+				  (mail-fetch-field "newsgroups"))
+			    ", "))
+		   1)
+	       (or (not (setq followup-to (mail-fetch-field "followup-to")))
+		   (not (member group (message-tokenize-header
+				       followup-to ", ")))))
+	  (if followup-to
+	      (gnus-message 1 "Followup-to restricted")
+	    (gnus-message 1 "Not a crossposted article"))
+	(set-buffer gnus-summary-buffer)
+	(gnus-summary-reply-with-original 1)
+	(set-buffer gnus-message-buffer)
+	(message-goto-body)
+	(insert (format gnus-crosspost-complaint newsgroups group))
+	(message-goto-subject)
+	(re-search-forward " *$")
+	(replace-match " (crosspost notification)" t t)
+	(gnus-deactivate-mark)
+	(when (gnus-y-or-n-p "Send this complaint? ")
+	  (message-send-and-exit))))))
 
 (defun gnus-mail-parse-comma-list ()
   (let (accumulated

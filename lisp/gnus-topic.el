@@ -394,10 +394,9 @@ If RECURSIVE is t, return groups in its subtopics too."
 
 (defun gnus-topic-hierarchical-parameters (topic)
   "Return a topic list computed for TOPIC."
-  (let ((topics (gnus-current-topics topic))
-	params-list param out params)
-    (while topics
-      (push (gnus-topic-parameters (pop topics)) params-list))
+  (let ((params-list (nreverse (mapcar 'gnus-topic-parameters
+				       (gnus-current-topic topic))))
+	param out params)
     ;; We probably have lots of nil elements here, so
     ;; we remove them.  Probably faster than doing this "properly".
     (setq params-list (delq nil params-list))
@@ -1731,9 +1730,7 @@ If REVERSE, reverse the sorting order."
     (if (gnus-topic-find-topology to current-top 0);; Don't care the level
 	(error "Can't move `%s' to its sub-level" current))
     (gnus-topic-find-topology current nil nil 'delete)
-    (while (cdr to-top)
-      (setq to-top (cdr to-top)))
-    (setcdr to-top (list current-top))
+    (setcdr (last to-top) (list current-top))
     (gnus-topic-enter-dribble)
     (gnus-group-list-groups)
     (gnus-topic-goto-topic current)))

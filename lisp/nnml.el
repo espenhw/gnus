@@ -796,9 +796,7 @@ marks file will be regenerated properly by Gnus.")
     (push (list group
 		(cons (or (caar files) (1+ last))
 		      (max last
-			   (or (let ((f files))
-				 (while (cdr f) (setq f (cdr f)))
-				 (caar f))
+			   (or (caar (last files))
 			       0))))
 	  nnml-group-alist)))
 

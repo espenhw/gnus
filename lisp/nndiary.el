@@ -1213,9 +1213,7 @@ all.  This may very well take some time.")
     (push (list group
 		(cons (or (caar files) (1+ last))
 		      (max last
-			   (or (let ((f files))
-				 (while (cdr f) (setq f (cdr f)))
-				 (caar f))
+			   (or (caar (last files))
 			       0))))
 	  nndiary-group-alist)))
 

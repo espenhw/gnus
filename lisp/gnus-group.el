@@ -1741,10 +1741,8 @@ If FIRST-TOO, the current line is also eligible as a target."
 (defun gnus-group-unmark-all-groups ()
   "Unmark all groups."
   (interactive)
-  (let ((groups gnus-group-marked))
-    (save-excursion
-      (while groups
-	(gnus-group-remove-mark (pop groups)))))
+  (save-excursion
+    (mapc 'gnus-group-remove-mark gnus-group-marked))
   (gnus-group-position-point))
 
 (defun gnus-group-mark-region (unmark beg end)
@@ -3276,16 +3274,14 @@ Uses the process/prefix convention."
 	   s))))))
   (unless (and (>= level 1) (<= level gnus-level-killed))
     (error "Invalid level: %d" level))
-  (let ((groups (gnus-group-process-prefix n))
-	group)
-    (while (setq group (pop groups))
-      (gnus-group-remove-mark group)
-      (gnus-message 6 "Changed level of %s from %d to %d"
-		    group (or (gnus-group-group-level) gnus-level-killed)
-		    level)
-      (gnus-group-change-level
-       group level (or (gnus-group-group-level) gnus-level-killed))
-      (gnus-group-update-group-line)))
+  (dolist (group (gnus-group-process-prefix n))
+    (gnus-group-remove-mark group)
+    (gnus-message 6 "Changed level of %s from %d to %d"
+		  group (or (gnus-group-group-level) gnus-level-killed)
+		  level)
+    (gnus-group-change-level
+     group level (or (gnus-group-group-level) gnus-level-killed))
+    (gnus-group-update-group-line))
   (gnus-group-position-point))
 
 (defun gnus-group-unsubscribe (&optional n)

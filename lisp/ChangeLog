@@ -1,3 +1,30 @@
+2004-10-05  Jesper Harder  <harder@ifa.au.dk>
+
+	* nnsoup.el (nnsoup-read-active-file): Use dolist, mapc or last
+	where approriate.
+
+	* nnml.el (nnml-generate-active-info): do.
+
+	* nndiary.el (nndiary-generate-active-info): do.
+
+	* gnus-topic.el (gnus-topic-hierarchical-parameters): do.
+	(gnus-topic-move): do.
+
+	* gnus-sum.el (gnus-data-enter-list, gnus-summary-process-mark-set)
+	(gnus-summary-set-local-parameters, gnus-summary-read-document): do.
+
+	* gnus-srvr.el (gnus-server-prepare)
+	(gnus-server-open-all-servers): do.
+
+	* gnus-msg.el (gnus-summary-cancel-article)
+	(gnus-summary-resend-message)
+	(gnus-summary-mail-crosspost-complaint): do.
+
+	* gnus-move.el (gnus-change-server): do.
+
+	* gnus-group.el (gnus-group-unmark-all-groups)
+	(gnus-group-set-current-level): do.
+
 2004-10-04  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-generate-hashcash): Doc fix.

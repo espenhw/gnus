@@ -315,7 +315,6 @@ The following commands are available:
   (gnus-set-format 'server t)
   (let ((alist gnus-server-alist)
 	(buffer-read-only nil)
-	(opened gnus-opened-servers)
 	done server op-ser)
     (erase-buffer)
     (setq gnus-inserted-opened-servers nil)
@@ -330,16 +329,15 @@ The following commands are available:
 	(pop alist)))
     ;; Then we insert the list of servers that have been opened in
     ;; this session.
-    (while opened
-      (when (and (not (member (caar opened) done))
+    (dolist (open gnus-opened-servers)
+      (when (and (not (member (car open) done))
 		 ;; Just ignore ephemeral servers.
-		 (not (member (caar opened) gnus-ephemeral-servers)))
-	(push (caar opened) done)
+		 (not (member (car open) gnus-ephemeral-servers)))
+	(push (car open) done)
 	(gnus-server-insert-server-line
-	 (setq op-ser (format "%s:%s" (caaar opened) (nth 1 (caar opened))))
-	 (caar opened))
-	(push (list op-ser (caar opened)) gnus-inserted-opened-servers))
-      (setq opened (cdr opened))))
+	 (setq op-ser (format "%s:%s" (caar open) (nth 1 (car open))))
+	 (car open))
+	(push (list op-ser (car open)) gnus-inserted-opened-servers))))
   (goto-char (point-min))
   (gnus-server-position-point))
 
@@ -501,9 +499,8 @@ The following commands are available:
 (defun gnus-server-open-all-servers ()
   "Open all servers."
   (interactive)
-  (let ((servers gnus-inserted-opened-servers))
-    (while servers
-      (gnus-server-open-server (car (pop servers))))))
+  (dolist (server gnus-inserted-opened-servers)
+    (gnus-server-open-server (car server))))
 
 (defun gnus-server-close-server (server)
   "Close SERVER."
