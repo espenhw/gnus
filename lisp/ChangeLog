@@ -1,3 +1,8 @@
+2003-04-23  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-sieve.el (gnus-sieve-generate): Rewrite regexp search so it
+	doesn't exceed the regexp stack space.
+
 2003-04-23  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-msg.el (gnus-inews-mark-gcc-as-read): Don't defvar it.

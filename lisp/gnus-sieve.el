@@ -105,10 +105,11 @@ See the documentation for these variables and functions for details."
   (require 'sieve)
   (find-file gnus-sieve-file)
   (goto-char (point-min))
-  (if (re-search-forward
-       (concat (regexp-quote gnus-sieve-region-start) "\\(.\\|\n\\)*"
-	       (regexp-quote gnus-sieve-region-end)) nil t)
-      (delete-region (match-beginning 0) (match-end 0))
+  (if (re-search-forward (regexp-quote gnus-sieve-region-start) nil t)
+      (delete-region (match-end 0)
+		     (or (re-search-forward (regexp-quote
+					     gnus-sieve-region-end) nil t)
+			 (point)))
     (insert sieve-template))
   (insert gnus-sieve-region-start
 	  (gnus-sieve-script gnus-sieve-select-method gnus-sieve-crosspost)
