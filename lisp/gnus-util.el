@@ -925,7 +925,7 @@ ARG is passed to the first function."
 
 (defun gnus-alive-p ()
   "Say whether Gnus is running or not."
-  (and gnus-group-buffer
+  (and (boundp 'gnus-group-buffer)
        (get-buffer gnus-group-buffer)
        (save-excursion
 	 (set-buffer gnus-group-buffer)

@@ -1328,7 +1328,7 @@ SCORE is the score to add."
 		(gnus-prin1 score)
 	      ;; This is a normal score file, so we print it very
 	      ;; prettily.
-	      (let ((emacs-lisp-mode-syntax-table score-mode-syntax-table))
+	      (let ((lisp-mode-syntax-table score-mode-syntax-table))
 		(pp score (current-buffer)))))
 	  (gnus-make-directory (file-name-directory file))
 	  ;; If the score file is empty, we delete it.

@@ -49,6 +49,7 @@ methods. If that is the case, the user will be queried for what select
 method to use when posting."
   :group 'gnus-group-foreign
   :type `(choice (const nil)
+                 (const current)
 		 (const native)
 		 (sexp :tag "Methods" ,gnus-select-method)))
 

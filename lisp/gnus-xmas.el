@@ -366,6 +366,10 @@ call it with the value of the `gnus-data' text property."
   (gnus-xmas-menu-add tree
     gnus-tree-menu))
 
+(defun gnus-xmas-draft-menu-add ()
+  (gnus-xmas-menu-add draft
+    gnus-draft-menu))
+
 (defun gnus-xmas-server-menu-add ()
   (gnus-xmas-menu-add menu
     gnus-server-server-menu gnus-server-connections-menu))
@@ -517,7 +521,8 @@ call it with the value of the `gnus-data' text property."
   (add-hook 'gnus-agent-summary-mode-hook 'gnus-xmas-agent-summary-menu-add)
   (add-hook 'gnus-agent-group-mode-hook 'gnus-xmas-agent-group-menu-add)
   (add-hook 'gnus-agent-server-mode-hook 'gnus-xmas-agent-server-menu-add)
-  
+
+  (add-hook 'gnus-draft-mode-hook 'gnus-xmas-draft-menu-add)
   (add-hook 'gnus-summary-mode-hook
 	    'gnus-xmas-switch-horizontal-scrollbar-off)
   (add-hook 'gnus-tree-mode-hook 'gnus-xmas-switch-horizontal-scrollbar-off))

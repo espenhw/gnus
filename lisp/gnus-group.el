@@ -1234,7 +1234,8 @@ already."
 (defun gnus-group-group-name ()
   "Get the name of the newsgroup on the current line."
   (let ((group (get-text-property (gnus-point-at-bol) 'gnus-group)))
-    (and group (symbol-name group))))
+    (when group
+      (symbol-name group))))
 
 (defun gnus-group-group-level ()
   "Get the level of the newsgroup on the current line."
@@ -3354,7 +3355,7 @@ or `gnus-group-catchup-group-hook'."
 
 (defsubst gnus-group-timestamp (group)
   "Return the timestamp for GROUP."
-  (gnus-group-get-parameter group 'timestamp))
+  (gnus-group-get-parameter group 'timestamp t))
 
 (defun gnus-group-timestamp-delta (group)
   "Return the offset in seconds from the timestamp for GROUP to the current time, as a floating point number."

@@ -1450,13 +1450,14 @@ function and want to see what the date was before converting."
 
 (defun article-update-date-lapsed ()
   "Function to be run from a timer to update the lapsed time line."
-  (save-excursion
-    (ignore-errors
-      (when (gnus-buffer-live-p gnus-article-buffer)
-	(set-buffer gnus-article-buffer)
-	(goto-char (point-min))
-	(when (re-search-forward "^X-Sent:" nil t)
-	  (article-date-lapsed t))))))
+  (let (deactivate-mark)
+    (save-excursion
+      (ignore-errors
+        (when (gnus-buffer-live-p gnus-article-buffer)
+          (set-buffer gnus-article-buffer)
+          (goto-char (point-min))
+          (when (re-search-forward "^X-Sent:" nil t)
+            (article-date-lapsed t)))))))
 
 (defun gnus-start-date-timer (&optional n)
   "Start a timer to update the X-Sent header in the article buffers.
@@ -1914,10 +1915,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
        ["Remove carriage return" gnus-article-remove-cr t]
        ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]))
 
-    (when nil
-      (when (boundp 'gnus-summary-article-menu)
-	(define-key gnus-article-mode-map [menu-bar commands]
-	  (cons "Commands" gnus-summary-article-menu))))
+    ;; Note "Commands" menu is defined in gnus-sum.el for consistency
 
     (when (boundp 'gnus-summary-post-menu)
       (define-key gnus-article-mode-map [menu-bar post]
@@ -1943,7 +1941,6 @@ commands:
   (interactive)
   (when (gnus-visual-p 'article-menu 'menu)
     (gnus-article-make-menu-bar))
-  (kill-all-local-variables)
   (gnus-simplify-mode-line)
   (setq mode-name "Article")
   (setq major-mode 'gnus-article-mode)
@@ -2330,67 +2327,68 @@ Argument LINES specifies lines to be scrolled down."
   "Read a summary buffer key sequence and execute it from the article buffer."
   (interactive "P")
   (let ((nosaves
-	 '("q" "Q"  "c" "r" "R" "\C-c\C-f" "m"	"a" "f" "F"
-	   "Zc" "ZC" "ZE" "ZQ" "ZZ" "Zn" "ZR" "ZG" "ZN" "ZP"
-	   "=" "^" "\M-^" "|"))
-	(nosave-but-article
-	 '("A\r"))
-	(nosave-in-article
-	 '("\C-d"))
+         '("q" "Q"  "c" "r" "R" "\C-c\C-f" "m"  "a" "f" "F"
+           "Zc" "ZC" "ZE" "ZQ" "ZZ" "Zn" "ZR" "ZG" "ZN" "ZP"
+           "=" "^" "\M-^" "|"))
+        (nosave-but-article
+         '("A\r"))
+        (nosave-in-article
+         '("\C-d"))
         (up-to-top
          '("n" "Gn" "p" "Gp"))
-	keys new-sum-point)
+        keys new-sum-point)
     (save-excursion
       (set-buffer gnus-article-current-summary)
       (let (gnus-pick-mode)
-	(push (or key last-command-event) unread-command-events)
-	(setq keys (read-key-sequence nil))))
+        (push (or key last-command-event) unread-command-events)
+        (setq keys (read-key-sequence nil))))
     (message "")
 
     (if (or (member keys nosaves)
-	    (member keys nosave-but-article)
-	    (member keys nosave-in-article))
-	(let (func)
-	  (save-window-excursion
-	    (pop-to-buffer gnus-article-current-summary 'norecord)
-	    ;; We disable the pick minor mode commands.
-	    (let (gnus-pick-mode)
-	      (setq func (lookup-key (current-local-map) keys))))
-	  (if (not func)
-	      (ding)
-	    (unless (member keys nosave-in-article)
-	      (set-buffer gnus-article-current-summary))
-	    (call-interactively func)
-	    (setq new-sum-point (point)))
-	  (when (member keys nosave-but-article)
-	    (pop-to-buffer gnus-article-buffer 'norecord)))
+            (member keys nosave-but-article)
+            (member keys nosave-in-article))
+        (let (func)
+          (save-window-excursion
+            (pop-to-buffer gnus-article-current-summary 'norecord)
+            ;; We disable the pick minor mode commands.
+            (let (gnus-pick-mode)
+              (setq func (lookup-key (current-local-map) keys))))
+          (if (not func)
+              (ding)
+            (unless (member keys nosave-in-article)
+              (set-buffer gnus-article-current-summary))
+            (call-interactively func)
+            (setq new-sum-point (point)))
+          (when (member keys nosave-but-article)
+            (pop-to-buffer gnus-article-buffer 'norecord)))
       ;; These commands should restore window configuration.
       (let ((obuf (current-buffer))
-	    (owin (current-window-configuration))
-	    (opoint (point))
-	    (summary gnus-article-current-summary)
-	    func in-buffer)
-	(if not-restore-window
-	    (pop-to-buffer summary 'norecord)
-	  (switch-to-buffer summary 'norecord))
-	(setq in-buffer (current-buffer))
-	;; We disable the pick minor mode commands.
-	(if (setq func (let (gnus-pick-mode)
-			 (lookup-key (current-local-map) keys)))
-	    (progn
-	      (call-interactively func)
-	      (setq new-sum-point (point)))
-	  (ding))
-	(when (eq in-buffer (current-buffer))
-	  (set-buffer obuf)
-	  (unless not-restore-window
-	    (set-window-configuration owin))
-          (unless (member keys up-to-top)
+            (owin (current-window-configuration))
+            (opoint (point))
+            (summary gnus-article-current-summary)
+            func in-buffer selected)
+        (if not-restore-window
+            (pop-to-buffer summary 'norecord)
+          (switch-to-buffer summary 'norecord))
+        (setq in-buffer (current-buffer))
+        ;; We disable the pick minor mode commands.
+        (if (setq func (let (gnus-pick-mode)
+                         (lookup-key (current-local-map) keys)))
+            (progn
+              (call-interactively func)
+              (setq new-sum-point (point)))
+          (ding))
+        (when (eq in-buffer (current-buffer))
+          (setq selected (gnus-summary-select-article))
+          (set-buffer obuf)
+          (unless not-restore-window
+            (set-window-configuration owin))
+          (unless (or (not (eq selected 'old)) (member keys up-to-top))
             (set-window-point (get-buffer-window (current-buffer))
                               opoint))
-	  (let ((win (get-buffer-window gnus-article-current-summary)))
-	    (when win
-	      (set-window-point win new-sum-point))))))))
+          (let ((win (get-buffer-window gnus-article-current-summary)))
+            (when win
+              (set-window-point win new-sum-point))))))))
 
 (defun gnus-article-hide (&optional arg force)
   "Hide all the gruft in the current article.
@@ -2583,7 +2581,6 @@ This is an extended text-mode.
 
 \\{gnus-article-edit-mode-map}"
   (interactive)
-  (kill-all-local-variables)
   (setq major-mode 'gnus-article-edit-mode)
   (setq mode-name "Article Edit")
   (use-local-map gnus-article-edit-mode-map)
@@ -2713,10 +2710,11 @@ groups."
   :type 'regexp)
 
 (defcustom gnus-button-alist
-  `(("<\\(url: ?\\)?news:\\([^>\n\t ]*@[^>\n\t ]*\\)>" 0 t
+  `(("<\\(url:[>\n\t ]*?\\)?news:[>\n\t ]*\\([^>\n\t ]*@[^>\n\t ]*\\)>" 0 t
      gnus-button-message-id 2)
     ("\\bnews:\\([^>\n\t ]*@[^>\n\t ]*\\)" 0 t gnus-button-message-id 1)
-    ("\\(\\b<\\(url: ?\\)?news:\\(//\\)?\\([^>\n\t ]*\\)>\\)" 1 t
+    ("\\(\\b<\\(url:[>\n\t ]*\\)?news:[>\n\t ]*\\(//\\)?\\([^>\n\t ]*\\)>\\)"
+     1 t
      gnus-button-fetch-group 4)
     ("\\bnews:\\(//\\)?\\([^'\">\n\t ]+\\)" 0 t gnus-button-fetch-group 2)
     ("\\bin\\( +article\\| +message\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2

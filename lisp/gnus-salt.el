@@ -72,23 +72,24 @@ It accepts the same format specs that `gnus-summary-line-format' does."
   (setq gnus-pick-mode-map (make-sparse-keymap))
 
   (gnus-define-keys gnus-pick-mode-map
-    "t" gnus-uu-mark-thread
-    "T" gnus-uu-unmark-thread
     " " gnus-pick-next-page
     "u" gnus-summary-unmark-as-processable
-    "U" gnus-summary-unmark-all-processable
-    "v" gnus-uu-mark-over
-    "r" gnus-uu-mark-region
-    "R" gnus-uu-unmark-region
-    "e" gnus-uu-mark-by-regexp
-    "E" gnus-uu-mark-by-regexp
-    "b" gnus-uu-mark-buffer
-    "B" gnus-uu-unmark-buffer
     "." gnus-pick-article
     gnus-down-mouse-2 gnus-pick-mouse-pick-region
+    "\r" gnus-pick-start-reading
+    ;; "t" gnus-uu-mark-thread
+    ;; "T" gnus-uu-unmark-thread
+    ;; "U" gnus-summary-unmark-all-processable
+    ;; "v" gnus-uu-mark-over
+    ;; "r" gnus-uu-mark-region
+    ;; "R" gnus-uu-unmark-region
+    ;; "e" gnus-uu-mark-by-regexp
+    ;; "E" gnus-uu-mark-by-regexp
+    ;; "b" gnus-uu-mark-buffer
+    ;; "B" gnus-uu-unmark-buffer
     ;;gnus-mouse-2 gnus-pick-mouse-pick
-    "X" gnus-pick-start-reading
-    "\r" gnus-pick-start-reading))
+    ;; "X" gnus-pick-start-reading
+    ))
 
 (defun gnus-pick-make-menu-bar ()
   (unless (boundp 'gnus-pick-menu)
@@ -99,14 +100,14 @@ It accepts the same format specs that `gnus-summary-line-format' does."
 	["Article" gnus-summary-mark-as-processable t]
 	["Thread" gnus-uu-mark-thread t]
 	["Region" gnus-uu-mark-region t]
-	["Regexp" gnus-uu-mark-regexp t]
+	["Regexp" gnus-uu-mark-by-regexp t]
 	["Buffer" gnus-uu-mark-buffer t])
        ("Unpick"
 	["Article" gnus-summary-unmark-as-processable t]
 	["Thread" gnus-uu-unmark-thread t]
 	["Region" gnus-uu-unmark-region t]
-	["Regexp" gnus-uu-unmark-regexp t]
-	["Buffer" gnus-uu-unmark-buffer t])
+	["Regexp" gnus-uu-unmark-by-regexp t]
+	["Buffer" gnus-summary-unmark-all-processable t])
        ["Start reading" gnus-pick-start-reading t]
        ["Switch pick mode off" gnus-pick-mode gnus-pick-mode]))))
 

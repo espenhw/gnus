@@ -46,7 +46,7 @@
   (define-key gnus-score-mode-map "\C-c\C-p" 'gnus-score-pretty-print))
 
 (defvar score-mode-syntax-table
-  (let ((table (copy-syntax-table emacs-lisp-mode-syntax-table)))
+  (let ((table (copy-syntax-table lisp-mode-syntax-table)))
     (modify-syntax-entry ?| "w" table)
     table)
   "Syntax table used in score-mode buffers.")

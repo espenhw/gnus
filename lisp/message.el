@@ -397,7 +397,9 @@ might set this variable to '(\"-f\" \"you@some.where\")."
 	((boundp 'gnus-select-method)
 	 gnus-select-method)
 	(t '(nnspool "")))
-  "*Method used to post news."
+  "*Method used to post news.
+Note that when posting from inside Gnus, for instance, this
+variable isn't used."
   :group 'message-news
   :group 'message-sending
   ;; This should be the `gnus-select-method' widget, but that might

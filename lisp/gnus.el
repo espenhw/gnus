@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.6.6"
+(defconst gnus-version-number "5.6.7"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -706,7 +706,12 @@ All other Gnus path variables are initialized from this variable."
 
 (defcustom gnus-directory (or (getenv "SAVEDIR")
 			      (nnheader-concat gnus-home-directory "News/"))
-  "*Directory variable from which all other Gnus file variables are derived."
+  "*Directory variable from which all other Gnus file variables are derived.
+
+Note that Gnus is mostly loaded when the `.gnus.el' file is read.
+This means that other directory variables that are initialized from
+this variable won't be set properly if you set this variable in `.gnus.el'.
+Set this variable in `.emacs' instead."
   :group 'gnus-files
   :type 'directory)
 
@@ -2411,10 +2416,19 @@ also examines the topic parameters."
 
 (defun gnus-group-parameter-value (params symbol &optional allow-list)
   "Return the value of SYMBOL in group PARAMS."
-  (or (car (memq symbol params))	; It's either a simple symbol, 
-      (and (or allow-list
-	       (atom (cdr (assq symbol params)))) ; and it's not a local variable
-	   (cdr (assq symbol params))))) ; but a cons.
+  ;; We only wish to return group parameters (dotted lists) and
+  ;; not local variables, which may have the same names.
+  ;; But first we handle single elements...
+  (or (car (memq symbol params))
+      ;; Handle alist.
+      (let (elem)
+	(catch 'found
+	  (while (setq elem (pop params))
+	    (when (and (consp elem)
+		       (eq (car elem) symbol)
+		       (or allow-list
+			   (atom (cdr elem))))
+	      (throw 'found (cdr elem))))))))
 
 (defun gnus-group-add-parameter (group param)
   "Add parameter PARAM to GROUP."

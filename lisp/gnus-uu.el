@@ -353,7 +353,9 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
   "v" gnus-uu-mark-over
   "s" gnus-uu-mark-series
   "r" gnus-uu-mark-region
+  "g" gnus-uu-unmark-region
   "R" gnus-uu-mark-by-regexp
+  "G" gnus-uu-unmark-by-regexp
   "t" gnus-uu-mark-thread
   "T" gnus-uu-unmark-thread
   "a" gnus-uu-mark-all

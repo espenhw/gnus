@@ -144,10 +144,6 @@ by one.")
 If the gap between two consecutive articles is bigger than this
 variable, split the XOVER request into two requests.")
 
-(defvoo nntp-connection-timeout nil
-  "*Number of seconds to wait before an nntp connection times out.
-If this variable is nil, which is the default, no timers are set.")
-
 (defvoo nntp-prepare-server-hook nil
   "*Hook run before a server is opened.
 If can be used to set up a server remotely, for instance.  Say you
@@ -676,15 +672,16 @@ server there that you can connect to.  See also
 
 (deffoo nntp-close-server (&optional server)
   (nntp-possibly-change-group nil server t)
-  (let (process)
-    (while (setq process (car (pop nntp-connection-alist)))
+  (let ((process (nntp-find-connection nntp-server-buffer)))
+    (while process
       (when (memq (process-status process) '(open run))
 	(ignore-errors
 	  (nntp-send-string process "QUIT")
 	  (unless (eq nntp-open-connection-function 'nntp-open-network-stream)
 	    (sleep-for 1))))
       (when (buffer-name (process-buffer process))
-	(kill-buffer (process-buffer process))))
+	(kill-buffer (process-buffer process)))
+      (setq process (car (pop nntp-connection-alist))))
     (nnoo-close-server 'nntp)))
 
 (deffoo nntp-request-close ()

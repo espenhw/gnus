@@ -1,3 +1,71 @@
+Wed Apr 29 22:48:33 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.7 is released.
+
+Wed Apr 29 20:54:35 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-update-info): Bind
+	gnuis-newsgroup-scored later.
+	(gnus-summary-prepare-threads): Check some more before inserting
+	dummy roots.
+
+	* gnus-cache.el (gnus-cache-enter-article): Update marks
+	properly. 
+
+	* gnus-xmas.el (gnus-xmas-draft-menu-add): New function.
+
+	* nntp.el (nntp-connection-timeout): Removed.
+
+	* gnus-move.el (gnus-move-group-to-server): Delete nils.
+
+	* nntp.el (nntp-close-server): Close more connections.
+
+	* gnus-art.el (gnus-button-alist): Accept white space after colons
+	in <URL:news:> things.
+
+Wed Apr 29 20:18:45 1998  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-art.el (article-update-date-lapsed): Bind
+	`deactivate-mark'. 
+
+	* gnus-salt.el (gnus-pick-mode-map): Moved keys around to avoid
+	shadowing. 
+
+	* gnus-art.el (gnus-article-read-summary-keys): New version.
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): New for article mode. 
+
+	* gnus-msg.el (gnus-post-method): `current' custom.
+
+Wed Apr 29 19:04:27 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-set-local-parameters): Ignore
+	quit-config. 
+	(gnus-select-newsgroup): Use the value of gnus-fetch-old-headers. 
+
+	* message.el (message-post-method): Doc fix.
+
+	* gnus.el (gnus-directory): dox fix.
+
+Tue Apr 28 03:32:17 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-group-timestamp): Really get timestamp.
+
+	* gnus.el (gnus-group-parameter-value): Use explicit iteration.
+
+Tue Apr 28 03:15:50 1998  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
+
+	* gnus-util.el (gnus-alive-p): Check for binding.
+
+Tue Apr 28 03:00:16 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-parent-headers): Don't infloop on nil
+	References. 
+
+	* gnus-art.el (gnus-article-mode): Don't kill local vars.
+
+	* score-mode.el (score-mode-syntax-table): Change syntax.
+
 Mon Apr 27 00:26:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.6 is released.

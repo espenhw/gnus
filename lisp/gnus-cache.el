@@ -309,6 +309,7 @@ Returns the list of articles entered."
   (let ((articles (gnus-summary-work-articles n))
 	article out)
     (while (setq article (pop articles))
+      (gnus-summary-remove-process-mark article)
       (if (natnump article)
 	  (when (gnus-cache-possibly-enter-article
 		 gnus-newsgroup-name article
@@ -316,7 +317,6 @@ Returns the list of articles entered."
 		 nil nil nil t)
 	    (push article out))
 	(gnus-message 2 "Can't cache article %d" article))
-      (gnus-summary-remove-process-mark article)
       (gnus-summary-update-secondary-mark article))
     (gnus-summary-next-subject 1)
     (gnus-summary-position-point)
@@ -332,9 +332,9 @@ Returns the list of articles removed."
 	article out)
     (while articles
       (setq article (pop articles))
+      (gnus-summary-remove-process-mark article)
       (when (gnus-cache-possibly-remove-article article nil nil nil t)
 	(push article out))
-      (gnus-summary-remove-process-mark article)
       (gnus-summary-update-secondary-mark article))
     (gnus-summary-next-subject 1)
     (gnus-summary-position-point)
