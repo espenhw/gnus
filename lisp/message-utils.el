@@ -29,7 +29,7 @@
 ;;      as something somebody else has created,
 ;;    * change Subject: header and add (was: <old subject>)
 ;;    * strip (was: <old subject>) from Subject: headers
-;;    * add a X-No-Archieve: Yes header and a note in the body
+;;    * add a X-No-Archive: Yes header and a note in the body
 ;;    * a function for cross-post and followup-to messages
 ;;    * replace To: header with contents of Cc: or Bcc: header.
 ;;
@@ -211,7 +211,7 @@ When called with a prefix argument, ask for a text to insert."
 (make-variable-buffer-local 'message-xpost-old-target)
 
 (defcustom message-xpost-default t
-  "When non-nil `mesage-xpost-fup2' will normally perform a crosspost.
+  "When non-nil `message-xpost-fup2' will normally perform a crosspost.
 If nil, `message-xpost-fup2' will only do a followup. Note that you
 can explicitly override this setting by calling `message-xpost-fup2'
 with a prefix."
@@ -223,7 +223,7 @@ with a prefix."
 With prefix-argument just set Follow-Up, don't cross-post."
   (interactive
    (list ; Completion based on Gnus
-    (completing-read "Follwup To: "
+    (completing-read "Followup To: "
 		     (if (boundp 'gnus-newsrc-alist)
 			 gnus-newsrc-alist)
 		     nil nil '("poster" . 0)
@@ -318,7 +318,7 @@ documentation for `message-xpost-insert-note'. "
 With prefix-argument just set Follow-Up, don't cross-post."
   (interactive
    (list ; Completion based on Gnus
-    (completing-read "Follwup To: "
+    (completing-read "Followup To: "
 		     (if (boundp 'gnus-newsrc-alist)
 			 gnus-newsrc-alist)
 		     nil nil '("poster" . 0)
