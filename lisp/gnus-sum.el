@@ -2649,7 +2649,7 @@ and backwards while displaying articles, type `\\[gnus-summary-next-unread-artic
 respectively.
 
 You can also post articles and send mail from this buffer.  To
-follow up an article, type `\\[gnus-summary-followup]'.	 To mail a reply to the author
+follow up an article, type `\\[gnus-summary-followup]'.  To mail a reply to the author
 of an article, type `\\[gnus-summary-reply]'.
 
 There are approx. one gazillion commands you can execute in this
@@ -7441,7 +7441,7 @@ is a number, it is the line the article is to be displayed on."
     t))
   (prog1
       (if (and (stringp article)
-	       (string-match "@" article))
+	       (string-match "@\\|%40" article))
 	  (gnus-summary-refer-article article)
 	(when (stringp article)
 	  (setq article (string-to-number article)))
@@ -8113,6 +8113,9 @@ of what's specified by the `gnus-refer-thread-limit' variable."
       (setq message-id (concat "<" message-id)))
     (unless (string-match ">$" message-id)
       (setq message-id (concat message-id ">")))
+    ;; People often post MIDs from URLs, so unhex it:
+    (unless (string-match "@" message-id)
+      (setq message-id (gnus-url-unhex-string message-id)))
     (let* ((header (gnus-id-to-header message-id))
 	   (sparse (and header
 			(gnus-summary-article-sparse-p
