@@ -187,7 +187,10 @@ To disable dissecting shar codes, for instance, add
 Return that buffer."
   (save-excursion
     (let ((obuf (current-buffer))
-	  (coding-system buffer-file-coding-system))
+	  (coding-system
+	   ;; Might not exist in non-MULE XEmacs
+	   (when (boundp 'buffer-file-coding-system)
+	     buffer-file-coding-system)))
       (set-buffer (generate-new-buffer " *mm-uu*"))
       (setq buffer-file-coding-system coding-system)
       (insert-buffer-substring obuf from to)

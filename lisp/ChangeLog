@@ -1,3 +1,8 @@
+2003-04-09  Jesper Harder  <harder@ifa.au.dk>
+
+	* mm-uu.el (mm-uu-copy-to-buffer): buffer-file-coding-system
+	might be unbound in non-MULE XEmacsen.
+
 2003-04-08  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-uu.el (mm-uu-diff-groups-regexp, mm-uu-type-alist)
