@@ -1,4 +1,17 @@
+Sun Apr  7 20:14:50 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-get-new-news-this-group): Would update
+	groups twice.
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Use real
+	group name.
+
+	* nnvirtual.el (nnvirtual-possibly-change-group): Faulty logic.
+	(nnvirtual-retrieve-headers): Don't force re-check.
+
 Sun Apr  7 01:11:57 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: September Gnus v0.66 is released.
 
 	* nnvirtual.el (nnvirtual-close-group): Don't nix out
 	group-relevant variables.

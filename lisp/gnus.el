@@ -1695,7 +1695,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.66"
+(defconst gnus-version "September Gnus v0.67"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -15486,7 +15486,7 @@ newsgroup."
     (when (and update 
 	       (gnus-request-update-info
 		info (gnus-find-method-for-group (gnus-info-group info))))
-      (gnus-activate-group (gnus-info-group info)))
+      (gnus-activate-group (gnus-info-group info) nil t))
     (let* ((range (gnus-info-read info))
 	   (num 0))
       ;; If a cache is present, we may have to alter the active info.
@@ -15652,7 +15652,7 @@ newsgroup."
       (while list
 	(gnus-sethash (car list) (pop list) gnus-killed-hashtb)))))
 
-(defun gnus-activate-group (group &optional scan)
+(defun gnus-activate-group (group &optional scan dont-check)
   ;; Check whether a group has been activated or not.
   ;; If SCAN, request a scan of that group as well.
   (let ((method (gnus-find-method-for-group group))
@@ -15667,7 +15667,7 @@ newsgroup."
 		(gnus-request-scan group method))
 	   t)
 	 (condition-case ()
-	     (gnus-request-group group)
+	     (gnus-request-group group dont-check)
 	;   (error nil)
 	   (quit nil))
 	 (save-excursion

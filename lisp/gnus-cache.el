@@ -116,7 +116,8 @@ variable to \"^nnml\".")
 	     (vectorp headers))	; This might be a dummy article.
     ;; If this is a virtual group, we find the real group.
     (when (gnus-virtual-group-p group)
-      (let ((result (nnvirtual-find-group-art group article)))
+      (let ((result (nnvirtual-find-group-art 
+		     (gnus-group-real-name group) article)))
 	(setq group (car result)
 	      article (cdr result)
 	      headers (copy-sequence headers))
@@ -195,7 +196,7 @@ variable to \"^nnml\".")
 	  ga)
       (while arts
 	(when (setq ga (nnvirtual-find-group-art
-			gnus-newsgroup-name (pop arts)))
+			(gnus-group-real-name gnus-newsgroup-name) (pop arts)))
 	  (let ((gnus-cache-removable-articles (list (cdr ga)))
 		(gnus-newsgroup-name (car ga)))
 	    (gnus-cache-possibly-remove-articles-1)))))
