@@ -965,11 +965,12 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
   (save-excursion
     (set-buffer
      (find-file-noselect file))
-    (goto-char (point-max))
-    (unless (bobp)
-      (insert "\n"))
-    (insert address "\n")
-    (save-buffer)))
+    (unless (search-forward (regexp-quote address))
+      (goto-char (point-max))
+      (unless (bobp)
+	(insert "\n"))
+      (insert address "\n")
+      (save-buffer))))
 
 ;;; returns t if the sender is in the whitelist, nil or spam-split-group otherwise
 (defun spam-check-whitelist ()
