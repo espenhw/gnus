@@ -143,7 +143,7 @@ Useful functions to put in this list include:
   :type '(repeat function))
 
 (defcustom gnus-simplify-ignored-prefixes nil
-  "*Regexp, matches for which are removed from subject lines when simplifying fuzzily."
+  "*Remove matches for this regexp from subject lines when simplifying fuzzily."
   :group 'gnus-thread
   :type '(choice (const :tag "off" nil)
 		 regexp))
@@ -9463,7 +9463,8 @@ Iff NO-EXPIRE, auto-expiry will be inhibited."
 	    (gnus-error 1 "Can't mark negative article numbers")
 	    nil)
 	(setq gnus-newsgroup-marked (delq article gnus-newsgroup-marked))
-	(setq gnus-newsgroup-spam-marked (delq article gnus-newsgroup-spam-marked))
+	(setq gnus-newsgroup-spam-marked
+	      (delq article gnus-newsgroup-spam-marked))
 	(setq gnus-newsgroup-dormant (delq article gnus-newsgroup-dormant))
 	(setq gnus-newsgroup-expirable (delq article gnus-newsgroup-expirable))
 	(setq gnus-newsgroup-reads (delq article gnus-newsgroup-reads))
@@ -9630,7 +9631,8 @@ Iff NO-EXPIRE, auto-expiry will be inhibited."
 		   (gnus-add-to-sorted-list gnus-newsgroup-marked article)))
 	    ((= mark gnus-spam-mark)
 	     (setq gnus-newsgroup-spam-marked
-		   (gnus-add-to-sorted-list gnus-newsgroup-spam-marked article)))
+		   (gnus-add-to-sorted-list gnus-newsgroup-spam-marked
+					    article)))
 	    ((= mark gnus-dormant-mark)
 	     (setq gnus-newsgroup-dormant
 		   (gnus-add-to-sorted-list gnus-newsgroup-dormant article)))
@@ -10880,32 +10882,42 @@ If REVERSE, save parts that do not match TYPE."
 ;; New implementation by Christian Limpach <Christian.Limpach@nice.ch>.
 (defun gnus-summary-highlight-line ()
   "Highlight current line according to `gnus-summary-highlight'."
-  (let* ((list gnus-summary-highlight)
-	 (beg (gnus-point-at-bol))
-	 (article (gnus-summary-article-number))
-	 (score (or (cdr (assq (or article gnus-current-article)
-			       gnus-newsgroup-scored))
-		    gnus-summary-default-score 0))
-	 (mark (or (gnus-summary-article-mark) gnus-unread-mark))
-	 (inhibit-read-only t)
-	 (default gnus-summary-default-score)
-	 (default-high gnus-summary-default-high-score)
-	 (default-low gnus-summary-default-low-score)
-         (downloaded (and (boundp 'gnus-agent-article-alist)
-                          gnus-agent-article-alist
-                          ;; Optimized for when gnus-summary-highlight-line is called multiple times for articles in ascending order (i.e. initial generation of summary buffer).
-                          (progn 
-                            (if (and (eq gnus-summary-highlight-line-downloaded-alist gnus-agent-article-alist)
-                                     (<= (caar gnus-summary-highlight-line-downloaded-cached) article))
-                                nil
-                              (setq gnus-summary-highlight-line-downloaded-alist  gnus-agent-article-alist
-                                    gnus-summary-highlight-line-downloaded-cached gnus-agent-article-alist))
-                            (let (n)
-                              (while (and (< (caar gnus-summary-highlight-line-downloaded-cached) article)
-                                          (setq n (cdr gnus-summary-highlight-line-downloaded-cached)))
-                                (setq gnus-summary-highlight-line-downloaded-cached n)))
-                            (and (eq (caar gnus-summary-highlight-line-downloaded-cached) article)
-                                 (cdar gnus-summary-highlight-line-downloaded-cached))))))
+  (let*
+      ((list gnus-summary-highlight)
+       (beg (gnus-point-at-bol))
+       (article (gnus-summary-article-number))
+       (score (or (cdr (assq (or article gnus-current-article)
+			     gnus-newsgroup-scored))
+		  gnus-summary-default-score 0))
+       (mark (or (gnus-summary-article-mark) gnus-unread-mark))
+       (inhibit-read-only t)
+       (default gnus-summary-default-score)
+       (default-high gnus-summary-default-high-score)
+       (default-low gnus-summary-default-low-score)
+       (downloaded
+	(and
+	 (boundp 'gnus-agent-article-alist)
+	 gnus-agent-article-alist
+	 ;; Optimized for when gnus-summary-highlight-line is
+	 ;; called multiple times for articles in ascending
+	 ;; order (i.e. initial generation of summary buffer).
+	 (progn 
+	   (unless (and
+		    (eq gnus-summary-highlight-line-downloaded-alist
+			gnus-agent-article-alist)
+		    (<= (caar gnus-summary-highlight-line-downloaded-cached)
+			article))
+	     (setq gnus-summary-highlight-line-downloaded-alist
+		   gnus-agent-article-alist)
+	     (setq gnus-summary-highlight-line-downloaded-cached
+		   gnus-agent-article-alist))
+	   (let (n)
+	     (while (and (< (caar gnus-summary-highlight-line-downloaded-cached)
+			    article)
+			 (setq n (cdr gnus-summary-highlight-line-downloaded-cached)))
+	       (setq gnus-summary-highlight-line-downloaded-cached n)))
+	   (and (eq (caar gnus-summary-highlight-line-downloaded-cached) article)
+		(cdar gnus-summary-highlight-line-downloaded-cached))))))
     (let ((face (funcall (gnus-summary-highlight-line-0))))
       (unless (eq face (get-text-property beg 'face))
 	(gnus-put-text-property-excluding-characters-with-faces
