@@ -1,3 +1,8 @@
+2005-02-19  Mark Plaksin  <happy@usg.edu>  (tiny change)
+
+	* nnrss.el (nnrss-verbose): New variable.
+	(nnrss-request-group): Make it say nnrss is requesting a group.
+
 2005-02-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-msg.el (gnus-copy-article-buffer): Quote decoded words
