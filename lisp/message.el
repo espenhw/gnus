@@ -3892,8 +3892,8 @@ to find out how to use this."
   "Send the prepared message buffer with `smtpmail-send-it'.
 This only differs from `smtpmail-send-it' that this command evaluates
 `message-send-mail-hook' just before sending a message.  It is useful
-if your ISP requires the POP-before-SMTP authentication.  See the
-documentation for the function `mail-source-touch-pop'."
+if your ISP requires the POP-before-SMTP authentication.  See the Gnus
+manual for details."
   (run-hooks 'message-send-mail-hook)
   (smtpmail-send-it))
 
