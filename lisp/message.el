@@ -1585,6 +1585,24 @@ With the prefix argument FORCE, insert the header anyway."
   (insert (or (message-fetch-reply-field "reply-to")
 	      (message-fetch-reply-field "from") "")))
 
+(defun message-widen-reply ()
+  "Widen the reply to include maximum recipients."
+  (interactive)
+  (let ((follow-to
+	 (and message-reply-buffer
+	      (buffer-name message-reply-buffer)
+	      (save-excursion
+		(set-buffer message-reply-buffer)
+		(message-get-reply-headers t)))))
+    (save-excursion
+      (save-restriction
+	(message-narrow-to-headers)
+	(dolist (elem follow-to)
+	  (message-remove-header (symbol-name (car elem)))
+	  (goto-char (point-min))
+	  (insert (symbol-name (car elem)) ": "
+		  (cdr elem) "\n"))))))
+
 (defun message-insert-newsgroups ()
   "Insert the Newsgroups header from the article being replied to."
   (interactive)
@@ -3479,6 +3497,59 @@ OTHER-HEADERS is an alist of header/value pairs."
     (message-setup `((Newsgroups . ,(or newsgroups ""))
 		     (Subject . ,(or subject ""))))))
 
+(defun message-get-reply-headers (wide &optional to-address)
+  (let (follow-to mct never-mct from to cc reply-to)
+    ;; Find all relevant headers we need.
+    (setq from (message-fetch-field "from")
+	  to (message-fetch-field "to")
+	  cc (message-fetch-field "cc")
+	  mct (message-fetch-field "mail-copies-to")
+	  reply-to (message-fetch-field "reply-to"))
+
+    ;; Handle special values of Mail-Copies-To.
+    (when mct
+      (cond ((or (equal (downcase mct) "never")
+		 (equal (downcase mct) "nobody"))
+	     (setq never-mct t)
+	     (setq mct nil))
+	    ((or (equal (downcase mct) "always")
+		 (equal (downcase mct) "poster"))
+	     (setq mct (or reply-to from)))))
+
+    (message-set-work-buffer)
+    (unless never-mct
+      (insert (or reply-to from "")))
+    (insert (if to (concat (if (bolp) "" ", ") to "") ""))
+    (insert (if mct (concat (if (bolp) "" ", ") mct) ""))
+    (insert (if cc (concat (if (bolp) "" ", ") cc) ""))
+    (goto-char (point-min))
+    (while (re-search-forward "[ \t]+" nil t)
+      (replace-match " " t t))
+    ;; Remove addresses that match `rmail-dont-reply-to-names'.
+    (let ((rmail-dont-reply-to-names message-dont-reply-to-names))
+      (insert (prog1 (rmail-dont-reply-to (buffer-string))
+		(erase-buffer))))
+    (goto-char (point-min))
+    ;; Perhaps "Mail-Copies-To: never" removed the only address?
+    (when (eobp)
+      (insert (or reply-to from "")))
+    (setq ccalist
+	  (mapcar
+	   (lambda (addr)
+	     (cons (mail-strip-quoted-names addr) addr))
+	   (message-tokenize-header (buffer-string))))
+    (let ((s ccalist))
+      (while s
+	(setq ccalist (delq (assoc (car (pop s)) s) ccalist))))
+    (setq follow-to (list (cons 'To (cdr (pop ccalist)))))
+    (when ccalist
+      (let ((ccs (cons 'Cc (mapconcat
+			    (lambda (addr) (cdr addr)) ccalist ", "))))
+	(when (string-match "^ +" (cdr ccs))
+	  (setcdr ccs (substring (cdr ccs) (match-end 0))))
+	(push ccs follow-to)))))
+
+
 ;;;###autoload
 (defun message-reply (&optional to-address wide)
   "Start editing a reply to the article in the current buffer."
@@ -3488,7 +3559,7 @@ OTHER-HEADERS is an alist of header/value pairs."
 	references message-id follow-to
 	(inhibit-point-motion-hooks t)
 	(message-this-is-mail t)
-	mct never-mct gnus-warning)
+	gnus-warning)
     (save-restriction
       (message-narrow-to-head)
       ;; Allow customizations to have their say.
@@ -3501,82 +3572,28 @@ OTHER-HEADERS is an alist of header/value pairs."
 	    (save-excursion
 	      (setq follow-to
 		    (funcall message-wide-reply-to-function)))))
-      ;; Find all relevant headers we need.
-      (setq from (message-fetch-field "from")
-	    date (message-fetch-field "date")
-	    subject (or (message-fetch-field "subject") "none")
-	    to (message-fetch-field "to")
-	    cc (message-fetch-field "cc")
-	    mct (message-fetch-field "mail-copies-to")
-	    reply-to (message-fetch-field "reply-to")
+      (setq message-id (message-fetch-field "message-id" t)
 	    references (message-fetch-field "references")
-	    message-id (message-fetch-field "message-id" t))
-      ;; Remove any (buggy) Re:'s that are present and make a
-      ;; proper one.
-      (when (string-match message-subject-re-regexp subject)
-	(setq subject (substring subject (match-end 0))))
-      (setq subject (concat "Re: " subject))
+	    date (message-fetch-field "date")
+	    from (message-fetch-field "from")
+	    subject (or (message-fetch-field "subject") "none"))
+    ;; Remove any (buggy) Re:'s that are present and make a
+    ;; proper one.
+    (when (string-match message-subject-re-regexp subject)
+      (setq subject (substring subject (match-end 0))))
+    (setq subject (concat "Re: " subject))
 
-      (when (and (setq gnus-warning (message-fetch-field "gnus-warning"))
-		 (string-match "<[^>]+>" gnus-warning))
-	(setq message-id (match-string 0 gnus-warning)))
+    (when (and (setq gnus-warning (message-fetch-field "gnus-warning"))
+	       (string-match "<[^>]+>" gnus-warning))
+      (setq message-id (match-string 0 gnus-warning)))
 
-      ;; Handle special values of Mail-Copies-To.
-      (when mct
-	(cond ((or (equal (downcase mct) "never")
-		   (equal (downcase mct) "nobody"))
-	       (setq never-mct t)
-	       (setq mct nil))
-	      ((or (equal (downcase mct) "always")
-		   (equal (downcase mct) "poster"))
-	       (setq mct (or reply-to from)))))
+    (unless follow-to
+      (setq follow-to (message-get-reply-headers wide to-address))))
 
-      (unless follow-to
-	(if (or (not wide)
-		to-address)
-	    (progn
-	      (setq follow-to (list (cons 'To (or to-address reply-to from))))
-	      (when (and wide mct)
-		(push (cons 'Cc mct) follow-to)))
-	  (let (ccalist)
-	    (save-excursion
-	      (message-set-work-buffer)
-	      (unless never-mct
-		(insert (or reply-to from "")))
-	      (insert (if to (concat (if (bolp) "" ", ") to "") ""))
-	      (insert (if mct (concat (if (bolp) "" ", ") mct) ""))
-	      (insert (if cc (concat (if (bolp) "" ", ") cc) ""))
-	      (goto-char (point-min))
-	      (while (re-search-forward "[ \t]+" nil t)
-		(replace-match " " t t))
-	      ;; Remove addresses that match `rmail-dont-reply-to-names'.
-	      (let ((rmail-dont-reply-to-names message-dont-reply-to-names))
-		(insert (prog1 (rmail-dont-reply-to (buffer-string))
-			  (erase-buffer))))
-	      (goto-char (point-min))
-	      ;; Perhaps Mail-Copies-To: never removed the only address?
-	      (when (eobp)
-		(insert (or reply-to from "")))
-	      (setq ccalist
-		    (mapcar
-		     (lambda (addr)
-		       (cons (mail-strip-quoted-names addr) addr))
-		     (message-tokenize-header (buffer-string))))
-	      (let ((s ccalist))
-		(while s
-		  (setq ccalist (delq (assoc (car (pop s)) s) ccalist)))))
-	    (setq follow-to (list (cons 'To (cdr (pop ccalist)))))
-	    (when ccalist
-	      (let ((ccs (cons 'Cc (mapconcat
-				    (lambda (addr) (cdr addr)) ccalist ", "))))
-		(when (string-match "^ +" (cdr ccs))
-		  (setcdr ccs (substring (cdr ccs) (match-end 0))))
-		(push ccs follow-to))))))
-      (widen))
-
-    (message-pop-to-buffer (message-buffer-name
-			    (if wide "wide reply" "reply") from
-			    (if wide to-address nil)))
+    (message-pop-to-buffer
+     (message-buffer-name
+      (if wide "wide reply" "reply") from
+      (if wide to-address nil)))
 
     (setq message-reply-headers
 	  (vector 0 subject from date message-id references 0 0 ""))

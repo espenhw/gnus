@@ -1,3 +1,10 @@
+2000-04-22 01:23:59  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-get-headers): Made into own function.
+	(message-reply): Use it.
+	(message-get-reply-headers): Renamed.
+	(message-widen-reply): New command.
+
 2000-04-21 20:52:09  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nntp.el (nntp-retrieve-data): Report the error and return nil.
@@ -1102,6 +1109,11 @@ Wed Jan  5 17:06:41 2000  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* mm-bodies.el (mm-8bit-char-regexps): Removed.
 	(mm-7bit-chars): New variable.
 	(mm-body-7-or-8): Use it in both cases.
+
+1999-12-04  Michael Welsh Duggan  <md5i@cs.cmu.edu>
+
+	* gnus-start.el (gnus-site-init-file): Don't use cl macros in
+	  defcustom definitions.
 
 1999-12-04  Simon Josefsson  <jas@pdc.kth.se>
 
