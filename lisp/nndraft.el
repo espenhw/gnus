@@ -32,8 +32,7 @@
 (require 'nnmh)
 (require 'nnoo)
 (require 'mm-util)
-(eval-when-compile
-  (require 'cl))
+(eval-when-compile (require 'cl))
 
 (nnoo-declare nndraft
   nnmh)

@@ -25,8 +25,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
+(eval-when-compile (require 'cl))
 
 (require 'mm-util)
 (require 'mm-decode)
@@ -164,4 +163,4 @@ If NO-DISPLAY is nil, display it. Otherwise, do nothing after replacing."
 		  (error nil))
 		(delete-region ,(point-min-marker) ,(point-max-marker))))))))))
 
-;; mm-extern.el ends here
+;;; mm-extern.el ends here

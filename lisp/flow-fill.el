@@ -38,7 +38,7 @@
 ;; Todo: encoding, implement basic `fill-region' (Emacs and XEmacs
 ;;       implementations differ..)
 
-;; History:
+;;; History:
 
 ;; 2000-02-17  posted on ding mailing list
 ;; 2000-02-19  use `point-at-{b,e}ol' in XEmacs

@@ -283,4 +283,4 @@ The characters in CHARSET should then be decoded."
 
 (provide 'mm-bodies)
 
-;; mm-bodies.el ends here
+;;; mm-bodies.el ends here

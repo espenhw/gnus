@@ -1,3 +1,9 @@
+2001-07-13 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	
+	* gnus-setup.el (gnus-use-installed-gnus): Typo.
+	* Cleanup files.
+	From Pavel@Janik.cz (Pavel Jan,Bm(Bk).
+
 2001-07-13 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el (gnus-summary-line-format): Add %o.

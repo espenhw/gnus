@@ -36,6 +36,8 @@
 
 ;; The smilies were drawn by Joe Reiss <jreiss@vt.edu>.
 
+;;; Code:
+
 (require 'cl)
 (require 'custom)
 

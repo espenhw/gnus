@@ -321,4 +321,4 @@
 
 (provide 'mm-view)
 
-;; mm-view.el ends here
+;;; mm-view.el ends here
