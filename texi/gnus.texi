@@ -3014,7 +3014,7 @@ tag can be removed from the article subjects in the summary buffer for
 the group by putting @code{(gnus-list-identifiers "DOCBOOK-APPS:")}
 into the group parameters for the group.
 
-This can also be used as a group-specific hook function. If you want to
+This can also be used as a group-specific hook function.  If you want to
 hear a beep when you enter a group, you could put something like
 @code{(dummy-variable (ding))} in the parameters of that group.
 @code{dummy-variable} will be set to the (meaningless) result of the

@@ -43,6 +43,9 @@
 
 2004-09-23  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-msg.el (gnus-configure-posting-styles): Narrow to headers
+	in `header' match.  Reported by Svend Tollak Munkejord.
+
 	* message.el (message-cite-original): Fix use of
 	`message-cite-articles-with-x-no-archive'.
 

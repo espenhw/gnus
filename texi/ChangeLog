@@ -1,3 +1,7 @@
+2004-09-23  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-faq.texi ([5.12]): Use 5.10 instead of 5.10.0.
+
 2004-09-14  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi: Markup fixes.
