@@ -1,3 +1,56 @@
+Fri Jan 24 20:31:25 1997  Paul Franklin  <paul@cs.washington.edu>
+
+	* gnus-sum.el (gnus-summary-next-article): There's no
+	reason not to select the current article if it's what should
+	be selected.
+
+Sat Jan 25 01:03:59 1997  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+        * gnus-art.el: Organized customization options.
+        * gnus-sum.el: Adjusted.
+        * gnus-cite.el: Ditto.
+        * gnus.el: Ditto.
+
+Sat Jan 25 09:49:40 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-demon.el (gnus-demon): Disable demons when the minibuffer
+	window is active.
+
+	* gnus-art.el (gnus-article-read-summary-keys): Disable pick mode
+	commands. 
+
+Sat Jan 25 09:42:41 1997  Kurt Swanson  <kurt@dna.lth.se>
+
+	* message.el (message-pipe-buffer-body): New function.
+
+	* gnus-sum.el (gnus-summary-pipe-message): New command and
+	keystroke. 
+
+Fri Jan 24 11:01:06 1997  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-uu.el: Cleaned up customization groups.
+
+Fri Jan 24 15:45:48 1997  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Moved cache menu.
+
+Fri Jan 24 10:05:49 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-msg.el (gnus-summary-resend-message): Accept
+	process/prefix. 
+
+	* gnus-cite.el (gnus-article-fill-cited-article): Accept a width
+	prefix. 
+
+	* gnus-art.el (gnus-article-read-summary-keys): Disable pick mode
+	map. 
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Duplication removed.
+
+Fri Jan 24 08:33:42 1997  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.83 is released.
+
 Fri Jan 24 05:05:38 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.el (gnus-article-display-hook): Removed emphasize.

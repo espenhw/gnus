@@ -529,8 +529,7 @@ time saver for large mailboxes.")
 
 (defun nnfolder-save-mail (group-art-list)
   "Called narrowed to an article."
-  (let* ((delim (concat "^" message-unix-mail-delimiter))
-	 save-list group-art)
+  (let* (save-list group-art)
     (goto-char (point-min))
     ;; The From line may have been quoted by movemail.
     (when (looking-at (concat ">" message-unix-mail-delimiter))

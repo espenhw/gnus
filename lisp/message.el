@@ -1306,6 +1306,18 @@ Mail and USENET news headers are not rotated."
 	(narrow-to-region (point) (point-max)))
       (message-caesar-region (point-min) (point-max) rotnum))))
 
+(defun message-pipe-buffer-body (program)
+  "Pipe the message body in the current buffer through PROGRAM."
+  (save-excursion
+    (save-restriction
+      (when (message-goto-body)
+        (narrow-to-region (point) (point-max)))
+      (let ((body (buffer-substring (point-min) (point-max))))
+        (unless (equal 0 (call-process-region
+                           (point-min) (point-max) program t t))
+            (insert body)
+            (gnus-message 1 "%s failed." program))))))
+
 (defun message-rename-buffer (&optional enter-string)
   "Rename the *message* buffer to \"*message* RECIPIENT\".  
 If the function is run with a prefix, it will ask for a new buffer

@@ -32,9 +32,61 @@
 (require 'gnus-int)
 (require 'browse-url)
 
-(defgroup article nil
+(defgroup gnus-article nil
   "Article display."
+  :link '(custom-manual "(gnus)The Article Buffer")
   :group 'gnus)
+
+(defgroup gnus-article-hiding nil
+  "Hiding article parts."
+  :link '(custom-manual "(gnus)Article Hiding")
+  :group 'gnus-article)
+
+(defgroup gnus-article-highlight nil
+  "Article highlighting."
+  :link '(custom-manual "(gnus)Article Highlighting")
+  :group 'gnus-article
+  :group 'gnus-visual)
+
+(defgroup gnus-article-signature nil
+  "Article signatures."
+  :link '(custom-manual "(gnus)Article Signature")
+  :group 'gnus-article)
+
+(defgroup gnus-article-headers nil
+  "Article headers."
+  :link '(custom-manual "(gnus)Hiding Headers")
+  :group 'gnus-article)
+
+(defgroup gnus-article-washing nil
+  "Special commands on articles."
+  :link '(custom-manual "(gnus)Article Washing")
+  :group 'gnus-article)
+
+(defgroup gnus-article-emphasis nil
+  "Fontisizing articles."
+  :link '(custom-manual "(gnus)Article Fontisizing")
+  :group 'gnus-article)
+
+(defgroup gnus-article-saving nil
+  "Saving articles."
+  :link '(custom-manual "(gnus)Saving Articles")
+  :group 'gnus-article)
+
+(defgroup gnus-article-mime nil
+  "Worshiping the MIME wonder."
+  :link '(custom-manual "(gnus)Using MIME")
+  :group 'gnus-article)
+
+(defgroup gnus-article-buttons nil
+  "Pushable buttons in the article buffer."
+  :link '(custom-manual "(gnus)Article Buttons")
+  :group 'gnus-article)
+
+(defgroup gnus-article-various nil
+  "Other article options."
+  :link '(custom-manual "(gnus)Misc Article")
+  :group 'gnus-article)
 
 (defcustom gnus-ignored-headers
   '("^Path:" "^Posting-Version:" "^Article-I.D.:" "^Expires:"
@@ -47,7 +99,7 @@ If `gnus-visible-headers' is non-nil, this variable will be ignored."
   :type '(choice :custom-show nil
 		 regexp
 		 (repeat regexp))
-  :group 'article)
+  :group 'gnus-article-hiding)
 
 (defcustom gnus-visible-headers 
   "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-"
@@ -60,7 +112,7 @@ If this variable is non-nil, `gnus-ignored-headers' will be ignored."
 			  (or (stringp value)
 			      (widget-editable-list-match widget value)))
 		 regexp)
-  :group 'article)
+  :group 'gnus-article-hiding)
 
 (defcustom gnus-sorted-header-list
   '("^From:" "^Subject:" "^Summary:" "^Keywords:" "^Newsgroups:" "^To:"
@@ -70,7 +122,7 @@ If it is non-nil, headers that match the regular expressions will
 be placed first in the article buffer in the sequence specified by
 this list."
   :type '(repeat regexp)
-  :group 'article)
+  :group 'gnus-article-hiding)
 
 (defcustom gnus-boring-article-headers '(empty followup-to reply-to)
   "Headers that are only to be displayed if they have interesting data.
@@ -81,7 +133,7 @@ Possible values in this list are `empty', `newsgroups', `followup-to',
 	      (const :tag "Followup-to identical to newsgroups." followup-to)
 	      (const :tag "Reply-to identical to from." reply-to)
 	      (const :tag "Date less than four days old." date))
-  :group 'article)
+  :group 'gnus-article-hiding)
 
 (defcustom gnus-signature-separator '("^-- $" "^-- *$")
   "Regexp matching signature separator.
@@ -89,7 +141,7 @@ This can also be a list of regexps.  In that case, it will be checked
 from head to tail looking for a separator.  Searches will be done from
 the end of the buffer."
   :type '(repeat string)
-  :group 'article)
+  :group 'gnus-article-signature)
 
 (defcustom gnus-signature-limit nil
    "Provide a limit to what is considered a signature.
@@ -100,12 +152,12 @@ will be called without any parameters, and if it returns nil, there is
 no signature in the buffer.  If it is a string, it will be used as a
 regexp.  If it matches, the text in question is not a signature."
   :type '(choice integer number function regexp)
-  :group 'article)
+  :group 'gnus-article-signature)
 
 (defcustom gnus-hidden-properties '(invisible t intangible t)
   "Property list to use for hiding text."
   :type 'sexp 
-  :group 'article)
+  :group 'gnus-article-hiding)
 
 (defcustom gnus-article-x-face-command
   "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -"
@@ -113,12 +165,12 @@ regexp.  If it matches, the text in question is not a signature."
 If it is a string, the command will be executed in a sub-shell
 asynchronously.	 The compressed face will be piped to this command."
   :type 'string				;Leave function case to Lisp.
-  :group 'article)
+  :group 'gnus-article-washing)
 
 (defcustom gnus-article-x-face-too-ugly nil
   "Regexp matching posters whose face shouldn't be shown automatically."
   :type 'regexp
-  :group 'article)
+  :group 'gnus-article-washing)
 
 (defcustom gnus-emphasis-alist
   (let ((format
@@ -154,42 +206,44 @@ is the face used for highlighting."
 		       (integer :tag "Match group")
 		       (integer :tag "Emphasize group")
 		       face))
-  :group 'article)
+  :group 'gnus-article-emphasis)
 
 (defface gnus-emphasis-bold '((t (:bold t)))
   "Face used for displaying strong emphasized text (*word*)."
-  :group 'article)
+  :group 'gnus-article-emphasis)
 
 (defface gnus-emphasis-italic '((t (:italic t)))
   "Face used for displaying italic emphasized text (/word/)."
-  :group 'article)
+  :group 'gnus-article-emphasis)
 
 (defface gnus-emphasis-underline '((t (:underline t)))
   "Face used for displaying underlined emphasized text (_word_)."
-  :group 'article)
+  :group 'gnus-article-emphasis)
 
 (defface gnus-emphasis-underline-bold '((t (:bold t :underline t)))
   "Face used for displaying underlined bold emphasized text (_*word*_)."
-  :group 'article)
+  :group 'gnus-article-emphasis)
 
 (defface gnus-emphasis-underline-italic '((t (:italic t :underline t)))
   "Face used for displaying underlined italic emphasized text (_*word*_)."
-  :group 'article)
+  :group 'gnus-article-emphasis)
 
 (defface gnus-emphasis-bold-italic '((t (:bold t :italic t)))
   "Face used for displaying bold italic emphasized text (/*word*/)."
-  :group 'article)
+  :group 'gnus-article-emphasis)
 
 (defface gnus-emphasis-underline-bold-italic 
   '((t (:bold t :italic t :underline t)))
-  "Face used for displaying underlined bold italic emphasized text (_/*word*/_)."
-  :group 'article)
+  "Face used for displaying underlined bold italic emphasized text.
+Esample: (_/*word*/_)."
+  :group 'gnus-article-emphasis)
 
 (defcustom gnus-article-time-format "%a, %b %d %Y %T %Z"
   "Format for display of Date headers in article bodies.
 See `format-time-zone' for the possible values."
   :type 'string
-  :group 'article)
+  :link '(custom-manual "(gnus)Article Date")
+  :group 'gnus-article-washing)
 
 (eval-and-compile
   (autoload 'hexl-hex-string-to-integer "hexl")
@@ -198,12 +252,12 @@ See `format-time-zone' for the possible values."
 
 (defcustom gnus-article-save-directory gnus-directory
   "*Name of the directory articles will be saved in (default \"~/News\")."
-  :group 'article
+  :group 'gnus-article-saving
   :type 'directory)
 
 (defcustom gnus-save-all-headers t
   "*If non-nil, don't remove any headers before saving."
-  :group 'article
+  :group 'gnus-article-saving
   :type 'boolean)
 
 (defcustom gnus-prompt-before-saving 'always
@@ -214,7 +268,7 @@ every article that is saved will be preceded by a prompt, even when
 saving large batches of articles.  If this variable is neither nil not
 `always', there the user will be prompted once for a file name for
 each invocation of the saving commands."
-  :group 'article
+  :group 'gnus-article-saving
   :type '(choice (item always)
 		 (item :tag "never" nil)
 		 (sexp :tag "once" :format "%t")))
@@ -224,7 +278,7 @@ each invocation of the saving commands."
 If `gnus-save-all-headers' is non-nil, this variable will be ignored.
 If that variable is nil, however, all headers that match this regexp
 will be kept while the rest will be deleted before saving."
-  :group 'article
+  :group 'gnus-article-saving
   :type '(repeat string))
 
 (defcustom gnus-default-article-saver 'gnus-summary-save-in-rmail
@@ -240,7 +294,7 @@ Gnus provides the following functions:
 * gnus-summary-save-in-file (article format)
 * gnus-summary-save-in-vm (use VM's folder format)
 * gnus-summary-write-to-file (article format -- overwrite)."
-  :group 'article
+  :group 'gnus-article-saving
   :type '(radio (function-item gnus-summary-save-in-rmail)
 		(function-item gnus-summary-save-in-mail)
 		(function-item gnus-summary-save-in-folder)
@@ -251,26 +305,26 @@ Gnus provides the following functions:
 (defcustom gnus-rmail-save-name 'gnus-plain-save-name
   "A function generating a file name to save articles in Rmail format.
 The function is called with NEWSGROUP, HEADERS, and optional LAST-FILE."
-  :group 'article
+  :group 'gnus-article-saving
   :type 'function)
 
 (defcustom gnus-mail-save-name 'gnus-plain-save-name
   "A function generating a file name to save articles in Unix mail format.
 The function is called with NEWSGROUP, HEADERS, and optional LAST-FILE."
-  :group 'article
+  :group 'gnus-article-saving
   :type 'function)
 
 (defcustom gnus-folder-save-name 'gnus-folder-save-name
   "A function generating a file name to save articles in MH folder.
 The function is called with NEWSGROUP, HEADERS, and optional LAST-FOLDER."
-  :group 'article
+  :group 'gnus-article-saving
   :type 'function)
 
 (defcustom gnus-file-save-name 'gnus-numeric-save-name
   "A function generating a file name to save articles in article format.
 The function is called with NEWSGROUP, HEADERS, and optional
 LAST-FILE."
-  :group 'article
+  :group 'gnus-article-saving
   :type 'function)
 
 (defcustom gnus-split-methods
@@ -294,26 +348,26 @@ parameter.  If it is a list, it will be evaled in the same buffer.
 If this form or function returns a string, this string will be used as
 a possible file name; and if it returns a non-nil list, that list will
 be used as possible file names."
-  :group 'article
+  :group 'gnus-article-saving
   :type '(repeat (choice (list function)
 			 (cons regexp (repeat string))
 			 sexp)))
 
 (defcustom gnus-strict-mime t
   "*If nil, MIME-decode even if there is no Mime-Version header."
-  :group 'article
+  :group 'gnus-article-mime
   :type 'boolean)
 
 (defcustom gnus-show-mime-method 'metamail-buffer
   "Function to process a MIME message.
 The function is called from the article buffer."
-  :group 'article
+  :group 'gnus-article-mime
   :type 'function)
 
 (defcustom gnus-decode-encoded-word-method 'gnus-article-de-quoted-unreadable
   "*Function to decode MIME encoded words.
 The function is called from the article buffer."
-  :group 'article
+  :group 'gnus-article-mime
   :type 'function)
 
 (defcustom gnus-page-delimiter "^\^L"
@@ -321,29 +375,29 @@ The function is called from the article buffer."
 The default value is \"^\^L\", which is a form linefeed at the
 beginning of a line."
   :type 'regexp
-  :group 'article)
+  :group 'gnus-article-various)
 
 (defcustom gnus-article-mode-line-format "Gnus: %%b %S"
   "*The format specification for the article mode line.
 See `gnus-summary-mode-line-format' for a closer description."
   :type 'string
-  :group 'article)
+  :group 'gnus-article-various)
 
 (defcustom gnus-article-mode-hook nil
   "*A hook for Gnus article mode."
   :type 'hook
-  :group 'article)
+  :group 'gnus-article-various)
 
 (defcustom gnus-article-menu-hook nil
   "*Hook run after the creation of the article mode menu."
   :type 'hook
-  :group 'article)
+  :group 'gnus-article-various)
 
 (defcustom gnus-article-prepare-hook nil
   "*A hook called after an article has been prepared in the article buffer.
 If you want to run a special decoding program like nkf, use this hook."
   :type 'hook
-  :group 'article)
+  :group 'gnus-article-various)
 
 (defcustom gnus-article-button-face 'bold
   "Face used for highlighting buttons in the article buffer.
@@ -351,7 +405,7 @@ If you want to run a special decoding program like nkf, use this hook."
 An article button is a piece of text that you can activate by pressing
 `RET' or `mouse-2' above it."
   :type 'face
-  :group 'article)
+  :group 'gnus-article-buttons)
 
 (defcustom gnus-article-mouse-face 'highlight
   "Face used for mouse highlighting in the article buffer.
@@ -359,12 +413,13 @@ An article button is a piece of text that you can activate by pressing
 Article buttons will be displayed in this face when the cursor is
 above them."
   :type 'face
-  :group 'article)
+  :group 'gnus-article-buttons)
 
 (defcustom gnus-signature-face 'italic
   "Face used for highlighting a signature in the article buffer."
   :type 'face
-  :group 'article)
+  :group 'gnus-article-highlight
+  :group 'gnus-article-signature)
 
 (defface gnus-header-from-face 
   '((((class color)
@@ -376,7 +431,8 @@ above them."
     (t 
      (:bold t :italic t)))
   "Face used for displaying from headers."
-  :group 'article)
+  :group 'gnus-article-headers
+  :group 'gnus-article-highlight)
 
 (defface gnus-header-subject-face 
   '((((class color)
@@ -388,7 +444,8 @@ above them."
     (t 
      (:bold t :italic t)))
   "Face used for displaying subject headers."
-  :group 'article)
+  :group 'gnus-article-headers
+  :group 'gnus-article-highlight)
 
 (defface gnus-header-newsgroups-face 
   '((((class color)
@@ -400,7 +457,8 @@ above them."
     (t 
      (:bold t :italic t)))
   "Face used for displaying newsgroups headers."
-  :group 'article)
+  :group 'gnus-article-headers
+  :group 'gnus-article-highlight)
 
 (defface gnus-header-name-face 
   '((((class color)
@@ -412,7 +470,8 @@ above them."
     (t 
      (:bold t)))
   "Face used for displaying header names."
-  :group 'article)
+  :group 'gnus-article-headers
+  :group 'gnus-article-highlight)
 
 (defface gnus-header-content-face
   '((((class color)
@@ -423,7 +482,8 @@ above them."
      (:foreground "DarkGreen" :italic t))
     (t 
      (:italic t)))  "Face used for displaying header content."
-  :group 'article)
+  :group 'gnus-article-headers
+  :group 'gnus-article-highlight)
 
 (defcustom gnus-header-face-alist
   '(("From" nil gnus-header-from-face)
@@ -441,7 +501,8 @@ The name of each header field will be displayed using the face
 specified by the first element in the list where HEADER match the
 header name and NAME is non-nil.  Similarly, the content will be
 displayed by the first non-nil matching CONTENT face."
-  :group 'article
+  :group 'gnus-article-headers
+  :group 'gnus-article-highlight
   :type '(repeat (list (regexp :tag "Header")
 		       (choice :tag "Name"
 			       (item :tag "skip" nil)
@@ -863,12 +924,13 @@ always hide."
   (interactive (gnus-article-hidden-arg))
   (unless (gnus-article-check-hidden-text 'pgp arg)
     (save-excursion
-      (let (buffer-read-only beg end)
+      (let ((inhibit-point-motion-hooks t)
+	    buffer-read-only beg end)
 	(widen)
 	(goto-char (point-min))
 	;; Hide the "header".
-	(and (search-forward "\n-----BEGIN PGP SIGNED MESSAGE-----\n" nil t)
-	     (gnus-article-hide-text-type (match-beginning 0) (match-end 0) 'pgp))
+	(when (search-forward "\n-----BEGIN PGP SIGNED MESSAGE-----\n" nil t)
+	  (gnus-article-hide-text-type (match-beginning 0) (match-end 0) 'pgp))
 	(setq beg (point))
 	;; Hide the actual signature.
 	(and (search-forward "\n-----BEGIN PGP SIGNATURE-----\n" nil t)
@@ -2115,8 +2177,9 @@ Argument LINES specifies lines to be scrolled down."
 	keys)
     (save-excursion
       (set-buffer gnus-summary-buffer)
-      (push (or key last-command-event) unread-command-events)
-      (setq keys (read-key-sequence nil)))
+      (let (gnus-pick-mode)
+	(push (or key last-command-event) unread-command-events)
+	(setq keys (read-key-sequence nil))))
     (message "")
 
     (if (or (member keys nosaves)
@@ -2125,7 +2188,9 @@ Argument LINES specifies lines to be scrolled down."
 	(let (func)
 	  (save-window-excursion
 	    (pop-to-buffer gnus-summary-buffer 'norecord)
-	    (setq func (lookup-key (current-local-map) keys)))
+	    ;; We disable the pick minor mode commands.
+	    (let (gnus-pick-mode)
+	      (setq func (lookup-key (current-local-map) keys))))
 	  (if (not func)
 	      (ding)
 	    (unless (member keys nosave-in-article)
@@ -2142,9 +2207,11 @@ Argument LINES specifies lines to be scrolled down."
 	    (pop-to-buffer gnus-summary-buffer 'norecord)
 	  (switch-to-buffer gnus-summary-buffer 'norecord))
 	(setq in-buffer (current-buffer))
-	(if (setq func (lookup-key (current-local-map) keys))
-	    (call-interactively func)
-	  (ding))
+	;; We disable the pick minor mode commands.
+	(let (gnus-pick-mode)
+	  (if (setq func (lookup-key (current-local-map) keys))
+	      (call-interactively func)
+	    (ding)))
 	(when (eq in-buffer (current-buffer))
 	  (set-buffer obuf)
 	  (unless not-restore-window
@@ -2314,7 +2381,7 @@ If given a prefix, show the hidden text instead."
 
 (defcustom gnus-article-edit-mode-hook nil
   "Hook run in article edit mode buffers."
-  :group 'article
+  :group 'gnus-article-various
   :type 'hook)
 
 (defvar gnus-article-edit-done-function nil)
@@ -2441,7 +2508,7 @@ groups."
 
 (defcustom gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?\\([-a-zA-Z0-9_=!?#$@~`%&*+|\\/:;.,]\\|\\w\\)+\\([-a-zA-Z0-9_=#$@~`%&*+|\\/]\\|\\w\\)"
   "Regular expression that matches URLs."
-  :group 'article
+  :group 'gnus-article-buttons
   :type 'regexp)
 
 (defcustom gnus-button-alist 
@@ -2468,7 +2535,7 @@ PAR: is a number of a regexp grouping whose text will be passed to CALLBACK.
 
 CALLBACK can also be a variable, in that case the value of that
 variable it the real callback function."
-  :group 'article
+  :group 'gnus-article-buttons
   :type '(repeat (list regexp 
 		       (integer :tag "Button")
 		       (sexp :tag "Form")
@@ -2496,7 +2563,8 @@ alist has an additional HEADER element first in each entry:
 
 HEADER is a regexp to match a header.  For a fuller explanation, see
 `gnus-button-alist'."
-  :group 'article
+  :group 'gnus-article-buttons
+  :group 'gnus-article-headers
   :type '(repeat (list (regexp :tag "Header")
 		       regexp 
 		       (integer :tag "Button")

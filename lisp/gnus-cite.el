@@ -33,8 +33,9 @@
 
 (defgroup gnus-cite nil
   "Citation."
-  :group 'article)
-  
+  :prefix "gnus-cite-"
+  :link '(custom-manual "(gnus)Article Highlighting")
+  :group 'gnus-article)
 
 (defcustom gnus-cite-reply-regexp
   "^\\(Subject: Re\\|In-Reply-To\\|References\\):"
@@ -408,15 +409,17 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 	    (setq m (cdr m))))
 	marks))))
 
-(defun gnus-article-fill-cited-article (&optional force)
-  "Do word wrapping in the current article."
-  (interactive (list t))
+(defun gnus-article-fill-cited-article (&optional force width)
+  "Do word wrapping in the current article.
+If WIDTH (the numerical prefix), use that text width when filling."
+  (interactive (list t current-prefix-arg))
   (save-excursion
     (set-buffer gnus-article-buffer)
     (let ((buffer-read-only nil)
 	  (inhibit-point-motion-hooks t)
 	  (marks (gnus-dissect-cited-text))
-	  (adaptive-fill-mode nil))
+	  (adaptive-fill-mode nil)
+	  (fill-column (if width (prefix-numeric-value width) fill-column)))
       (save-restriction
 	(while (cdr marks)
 	  (widen)

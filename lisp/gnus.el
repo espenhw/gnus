@@ -43,7 +43,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.83"
+(defconst gnus-version-number "0.84"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -1152,7 +1152,7 @@ If you leave the list empty, the article will appear exactly as it is
 stored on the disk.  The list entries will hide or highlight various
 parts of the article, making it easier to find the information you
 want."
-  :group 'article
+  :group 'gnus-article-highlight
   :group 'gnus-visual
   :type 'hook
   :options '(gnus-article-add-buttons

@@ -171,52 +171,54 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
       (incf gnus-demon-idle-time)
     (setq gnus-demon-idle-time 0)
     (setq gnus-demon-idle-has-been-called nil))
-  ;; Then we go through all the handler and call those that are
-  ;; sufficiently ripe.
-  (let ((handlers gnus-demon-handler-state)
-	handler time idle)
-    (while handlers
-      (setq handler (pop handlers))
-      (cond 
-       ((numberp (setq time (nth 1 handler)))
-	;; These handlers use a regular timeout mechanism.  We decrease
-	;; the timer if it hasn't reached zero yet.
-	(unless (zerop time)
-	  (setcar (nthcdr 1 handler) (decf time)))
-	(and (zerop time)		; If the timer now is zero...
-	     ;; Test for appropriate idleness
-	     (progn
-	       (setq idle (nth 2 handler))
-	       (cond
-		((null idle) t)		; Don't care about idle.
-		((numberp idle)		; Numerical idle...
-		 (< idle gnus-demon-idle-time)) ; Idle timed out.
-		(t (< 0 gnus-demon-idle-time)))) ; Or just need to be idle.
-	     ;; So we call the handler.
-	     (progn
-	       (funcall (car handler))
-	       ;; And reset the timer.
-	       (setcar (nthcdr 1 handler)
-		       (gnus-demon-time-to-step
-			(nth 1 (assq (car handler) gnus-demon-handlers)))))))
-       ;; These are only supposed to be called when Emacs is idle. 
-       ((null (setq idle (nth 2 handler)))
-	;; We do nothing.
-	)
-       ((not (numberp idle))
-	;; We want to call this handler each and every time that
-	;; Emacs is idle. 
-	(funcall (car handler)))
-       (t
-	;; We want to call this handler only if Emacs has been idle
-	;; for a specified number of timesteps.
-	(and (not (memq (car handler) gnus-demon-idle-has-been-called))
-	     (< idle gnus-demon-idle-time)
-	     (progn
-	       (funcall (car handler))
-	       ;; Make sure the handler won't be called once more in
-	       ;; this idle-cycle.
-	       (push (car handler) gnus-demon-idle-has-been-called))))))))
+  ;; Disable all daemonic stuff if we're in the minibuffer
+  (unless (window-minibuffer-p (selected-window))
+    ;; Then we go through all the handler and call those that are
+    ;; sufficiently ripe.
+    (let ((handlers gnus-demon-handler-state)
+	  handler time idle)
+      (while handlers
+	(setq handler (pop handlers))
+	(cond 
+	 ((numberp (setq time (nth 1 handler)))
+	  ;; These handlers use a regular timeout mechanism.  We decrease
+	  ;; the timer if it hasn't reached zero yet.
+	  (unless (zerop time)
+	    (setcar (nthcdr 1 handler) (decf time)))
+	  (and (zerop time)		; If the timer now is zero...
+	       ;; Test for appropriate idleness
+	       (progn
+		 (setq idle (nth 2 handler))
+		 (cond
+		  ((null idle) t)	; Don't care about idle.
+		  ((numberp idle)	; Numerical idle...
+		   (< idle gnus-demon-idle-time)) ; Idle timed out.
+		  (t (< 0 gnus-demon-idle-time)))) ; Or just need to be idle.
+	       ;; So we call the handler.
+	       (progn
+		 (funcall (car handler))
+		 ;; And reset the timer.
+		 (setcar (nthcdr 1 handler)
+			 (gnus-demon-time-to-step
+			  (nth 1 (assq (car handler) gnus-demon-handlers)))))))
+	 ;; These are only supposed to be called when Emacs is idle. 
+	 ((null (setq idle (nth 2 handler)))
+	  ;; We do nothing.
+	  )
+	 ((not (numberp idle))
+	  ;; We want to call this handler each and every time that
+	  ;; Emacs is idle. 
+	  (funcall (car handler)))
+	 (t
+	  ;; We want to call this handler only if Emacs has been idle
+	  ;; for a specified number of timesteps.
+	  (and (not (memq (car handler) gnus-demon-idle-has-been-called))
+	       (< idle gnus-demon-idle-time)
+	       (progn
+		 (funcall (car handler))
+		 ;; Make sure the handler won't be called once more in
+		 ;; this idle-cycle.
+		 (push (car handler) gnus-demon-idle-has-been-called)))))))))
 
 (defun gnus-demon-add-nocem ()
   "Add daemonic NoCeM handling to Gnus."

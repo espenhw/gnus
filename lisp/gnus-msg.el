@@ -86,6 +86,9 @@ Thank you.
 The first %s will be replaced by the Newsgroups header;
 the second with the current group name.")
 
+(defvar gnus-message-setup-hook nil
+  "Hook run after setting up a message buffer.")
+
 ;;; Internal variables.
 
 (defvar gnus-message-buffer "*Mail Gnus*")
@@ -167,7 +170,8 @@ Thank you for your help in stamping out bugs.
 	   ,@forms
 	 (gnus-inews-add-send-actions ,winconf ,buffer ,article)
 	 (setq gnus-message-buffer (current-buffer))
-	 (make-local-variable 'gnus-newsgroup-name))
+	 (make-local-variable 'gnus-newsgroup-name)
+	 (run-hooks 'gnus-message-setup-hook))
        (gnus-configure-windows ,config t))))
     
 (defun gnus-inews-add-send-actions (winconf buffer article)
@@ -612,13 +616,16 @@ If FULL-HEADERS (the prefix), include full headers when forwarding."
 	   (if full-headers "" message-included-forward-headers)))
       (message-forward post))))
 
-(defun gnus-summary-resend-message (address)
+(defun gnus-summary-resend-message (address n)
   "Resend the current article to ADDRESS."
-  (interactive "sResend message to: ")
-  (gnus-summary-select-article)
-  (save-excursion
-    (set-buffer gnus-original-article-buffer)
-    (message-resend address)))
+  (interactive "sResend message(s) to: \nP")
+  (let ((articles (gnus-summary-work-articles n))
+	article)
+    (while (setq article (pop articles))
+      (gnus-summary-select-article nil nil nil article)
+      (save-excursion
+	(set-buffer gnus-original-article-buffer)
+	(message-resend address)))))
 
 (defun gnus-summary-post-forward (&optional full-headers)
   "Forward the current article to a newsgroup.

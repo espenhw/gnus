@@ -50,22 +50,6 @@
   :link '(custom-manual "(gnus)Viewing Files")
   :group 'gnus-extract)
 
-;; Belongs to article.el
-(defgroup article-hiding-headers nil
-  "Hiding headers in the article buffer."
-  :link '(custom-manual "(gnus)Hiding Headers")
-  :group 'article)
-
-(defgroup article-various nil
-  "Miscellaneous article options."
-  :link '(custom-manual "(gnus)Misc Article")
-  :group 'article)
-
-(defgroup article-mime nil
-  "Encoding articles and including attachments."
-  :link '(custom-manual "(gnus)Using MIME")
-  :group 'article)
-
 ;; These belong here.
 (defgroup gnus-summary nil
   "Summary buffers."
@@ -373,27 +357,28 @@ and non-`vertical', do both horizontal and vertical recentering."
 
 (defcustom gnus-show-all-headers nil
   "*If non-nil, don't hide any headers."
-  :group 'article-hiding-headers
+  :group 'gnus-article-hiding
+  :group 'gnus-article-headers
   :type 'boolean)
 
 (defcustom gnus-single-article-buffer t
   "*If non-nil, display all articles in the same buffer.
 If nil, each group will get its own article buffer."
-  :group 'article-various
+  :group 'gnus-article-various
   :type 'boolean)
 
 (defcustom gnus-break-pages t
   "*If non-nil, do page breaking on articles.
 The page delimiter is specified by the `gnus-page-delimiter'
 variable."
-  :group 'article-various
+  :group 'gnus-article-various
   :type 'boolean)
 
 (defcustom gnus-show-mime nil
   "*If non-nil, do mime processing of articles.
 The articles will simply be fed to the function given by
 `gnus-show-mime-method'."
-  :group 'article-mime
+  :group 'gnus-article-mime
   :type 'boolean)
 
 (defcustom gnus-move-split-methods nil
@@ -1629,6 +1614,7 @@ increase the score of each group you read."
 	["Show X-Face" gnus-article-display-x-face t]
 	["Quoted-Printable" gnus-article-de-quoted-unreadable t]
 	["Rot 13" gnus-summary-caesar-message t]
+	["Unix pipe" gnus-summary-pipe-message t]
 	["Add buttons" gnus-article-add-buttons t]
 	["Add buttons to head" gnus-article-add-buttons-to-head t]
 	["Stop page breaking" gnus-summary-stop-page-breaking t]
@@ -1675,6 +1661,9 @@ increase the score of each group you read."
 	["Save" gnus-uu-decode-save t]
 	["Binhex" gnus-uu-decode-binhex t]
 	["Postscript" gnus-uu-decode-postscript t])
+       ("Cache"
+	["Enter article" gnus-cache-enter-article t]
+	["Remove article" gnus-cache-remove-article t])
        ["Enter digest buffer" gnus-summary-enter-digest-group t]
        ["Isearch article..." gnus-summary-isearch-article t]
        ["Search articles forward..." gnus-summary-search-article-forward t]
@@ -1816,9 +1805,6 @@ increase the score of each group you read."
 	["Fetch group FAQ" gnus-summary-fetch-faq t]
 	["Describe group" gnus-summary-describe-group t]
 	["Read manual" gnus-info-find-node t])
-       ("Cache"
-	["Enter article" gnus-cache-enter-article t]
-	["Remove article" gnus-cache-remove-article t])
        ("Modes"
 	["Pick and read" gnus-pick-mode t]
 	["Binary" gnus-binary-mode t])
@@ -1833,7 +1819,6 @@ increase the score of each group you read."
        ["Expire expirable articles" gnus-summary-expire-articles
 	(gnus-check-backend-function
 	 'request-expire-articles gnus-newsgroup-name)]
-       ["Regenerate buffer" gnus-summary-prepare t]
        ["Edit local kill file" gnus-summary-edit-local-kill t]
        ["Edit main kill file" gnus-summary-edit-global-kill t]
        ("Exit"
@@ -5345,11 +5330,6 @@ If BACKWARD, the previous article is selected instead of the next."
    ;; If not, we try the first unread, if that is wanted.
    ((and subject
 	 gnus-auto-select-same
-	 ;; Make sure that we don't select the current article.
-	 (not (eq (gnus-summary-article-number)
-		  (save-excursion
-		    (gnus-summary-first-subject t)
-		    (gnus-summary-article-number))))
 	 (gnus-summary-first-unread-article))
     (gnus-summary-position-point)
     (gnus-message 6 "Wrapped"))
@@ -8187,6 +8167,21 @@ save those articles instead."
   (gnus-set-global-variables)
   (let ((gnus-default-article-saver 'gnus-summary-save-body-in-file))
     (gnus-summary-save-article arg)))
+
+(defun gnus-summary-pipe-message (program)
+  "Pipe the current article through PROGRAM."
+  (interactive "sProgram: ")
+  (gnus-set-global-variables)
+  (gnus-summary-select-article)
+  (let ((mail-header-separator "")
+        (art-buf (get-buffer gnus-article-buffer)))
+    (gnus-eval-in-buffer-window gnus-article-buffer
+      (save-restriction
+        (widen)
+        (let ((start (window-start))
+              buffer-read-only)
+          (message-pipe-buffer-body program)
+          (set-window-start (get-buffer-window (current-buffer)) start))))))
 
 (defun gnus-get-split-value (methods)
   "Return a value based on the split METHODS."

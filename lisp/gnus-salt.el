@@ -104,9 +104,10 @@ It accepts the same format specs that `gnus-summary-line-format' does.")
 \\{gnus-pick-mode-map}"
   (interactive "P")
   (when (eq major-mode 'gnus-summary-mode)
-    (when (set (make-local-variable 'gnus-pick-mode)
-	       (if (null arg) (not gnus-pick-mode)
-		 (> (prefix-numeric-value arg) 0)))
+    (if (not (set (make-local-variable 'gnus-pick-mode)
+		  (if (null arg) (not gnus-pick-mode)
+		    (> (prefix-numeric-value arg) 0))))
+	(remove-hook 'gnus-message-setup-hook 'gnus-pick-setup-message)
       ;; Make sure that we don't select any articles upon group entry.
       (set (make-local-variable 'gnus-auto-select-first) nil)
       ;; Change line format.
@@ -114,6 +115,7 @@ It accepts the same format specs that `gnus-summary-line-format' does.")
       (setq gnus-summary-line-format-spec nil)
       (gnus-update-format-specifications nil 'summary)
       (gnus-update-summary-mark-positions)
+      (add-hook 'gnus-message-setup-hook 'gnus-pick-setup-message)
       (set (make-local-variable 'gnus-summary-goto-unread) 'never)
       ;; Set up the menu.
       (when (gnus-visual-p 'pick-menu 'menu)
@@ -124,6 +126,15 @@ It accepts the same format specs that `gnus-summary-line-format' does.")
 	(push (cons 'gnus-pick-mode gnus-pick-mode-map)
 	      minor-mode-map-alist))
       (run-hooks 'gnus-pick-mode-hook))))
+
+(defun gnus-pick-setup-message ()
+  "Make Message do the right thing on exit."
+  (when (and (gnus-buffer-live-p gnus-summary-buffer)
+	     (save-excursion
+	       (set-buffer gnus-summary-buffer)
+	       gnus-pick-mode))
+    (message-add-action 
+     '(gnus-configure-windows 'pick t) 'exit 'postpone 'kill)))
 
 (defvar gnus-pick-line-number 1)
 (defun gnus-pick-line-number ()

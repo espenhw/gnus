@@ -1,7 +1,13 @@
+Sat Jan 25 08:09:30 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (The Active File): Addition.
+
 Fri Jan 24 05:07:28 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Summary Mail Commands): Addition.
 	(Required Backend Functions): Deletia.
+	(Article Washing): Addition.
+	(Summary Mail Commands): Addition.
 
 Mon Jan 20 22:19:40 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 

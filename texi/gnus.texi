@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.83 Manual
+@settitle Red Gnus 0.84 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.83 Manual
+@title Red Gnus 0.84 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Red Gnus 0.83
+This manual corresponds to Red Gnus 0.84
 
 @end ifinfo
 
@@ -939,6 +939,9 @@ performance, but if the server does not support the aforementioned
 
 In any case, if you use @code{some} or @code{nil}, you should definitely
 kill all groups that you aren't interested in to speed things up.
+
+Note that this variable also affects active file retrieval from
+secondary select methods.
 
 
 @node Startup Variables
@@ -3615,6 +3618,9 @@ ship a mail to a different account of yours.  (If you're both
 to the @code{root} account, you may want to resend it to
 @code{postmaster}.  Ordnung muﬂ sein!
 
+This command understands the process/prefix convention
+(@pxref{Process/Prefix}). 
+
 @item S O m
 @kindex S O m (Summary)
 @findex gnus-uu-digest-mail-forward
@@ -5928,6 +5934,9 @@ Treat overstrike (@code{gnus-article-treat-overstrike}).
 Do word wrap (@code{gnus-article-fill-cited-article}).  If you use this
 function in @code{gnus-article-display-hook}, it should be run fairly
 late and certainly after any highlighting.
+
+You can give the command a numerical prefix to specify the width to use
+when filling.
 
 @item W c
 @kindex W c (Summary)
@@ -8764,9 +8773,9 @@ default for reasons of security.
 Since Red Gnus is an alpha release, it is to be expected to lose mail.
 (No Gnus release since (ding) Gnus 0.10 (or something like that) have
 lost mail, I think, but that's not the point.  (Except certain versions
-of Red Gnus.))  By not deleting the
-Incoming* files, one can be sure to not lose mail -- if Gnus totally
-whacks out, one can always recover what was lost.
+of Red Gnus.))  By not deleting the Incoming* files, one can be sure to
+not lose mail -- if Gnus totally whacks out, one can always recover what
+was lost.
 
 Delete the @file{Incoming*} files at will.
 

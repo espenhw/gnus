@@ -33,7 +33,21 @@
 
 (defgroup gnus-extract nil
   "Extracting encoded files."
+  :prefix "gnus-uu-"
   :group 'gnus)
+
+(defgroup gnus-extract-view nil
+  "Viewwing extracted files."
+  :group 'gnus-extract)
+
+(defgroup gnus-extract-archive nil
+  "Extracting encoded archives."
+  :group 'gnus-extract)
+
+(defgroup gnus-extract-post nil
+  "Extracting encoded archives."
+  :prefix "gnus-uu-post"
+  :group 'gnus-extract)
 
 ;; Default viewing action rules
 
@@ -83,14 +97,14 @@ file.  If this variable contains no matches, gnus-uu examines the
 default rule variable provided in this package.  If gnus-uu finds no
 match here, it uses `gnus-uu-user-view-rules-end' to try to make a
 match."
-  :group 'gnus-extract
+  :group 'gnus-extract-view
   :type '(repeat (group regexp (string :tag "Command"))))
 
 (defcustom gnus-uu-user-view-rules nil 
   "What actions are to be taken to view a file.
 See the documentation on the `gnus-uu-default-view-rules' variable for 
 details."
-  :group 'gnus-extract
+  :group 'gnus-extract-view
   :type '(repeat (group regexp (string :tag "Command"))))
 
 (defcustom gnus-uu-user-view-rules-end 
@@ -98,7 +112,7 @@ details."
   "What actions are to be taken if no rule matched the file name.
 See the documentation on the `gnus-uu-default-view-rules' variable for 
 details."
-  :group 'gnus-extract
+  :group 'gnus-extract-view
   :type '(repeat (group regexp (string :tag "Command"))))
 
 ;; Default unpacking commands
@@ -114,7 +128,7 @@ details."
     ("\\.gz$" "gunzip")
     ("\\.arc$" "arc -x"))
   "See `gnus-uu-user-archive-rules'."
-  :group 'gnus-extract
+  :group 'gnus-extract-archive
   :type '(repeat (group regexp (string :tag "Command"))))
 
 (defvar gnus-uu-destructive-archivers 
@@ -127,7 +141,7 @@ unpack zip files, say the following:
   (setq gnus-uu-user-archive-rules 
     '((\"\\\\.tar$\" \"untar\")
       (\"\\\\.zip$\" \"zip -x\")))"
-  :group 'gnus-extract
+  :group 'gnus-extract-archive
   :type '(repeat (group regexp (string :tag "Command"))))
 
 (defcustom gnus-uu-ignore-files-by-name nil
@@ -208,13 +222,13 @@ Default is \"/tmp/\"."
 (defcustom gnus-uu-do-not-unpack-archives nil 
   "*Non-nil means that gnus-uu won't peek inside archives looking for files to display. 
 Default is nil."
-  :group 'gnus-extract
+  :group 'gnus-extract-archive
   :type 'boolean)
 
 (defcustom gnus-uu-ignore-default-view-rules nil
   "*Non-nil means that gnus-uu will ignore the default viewing rules.
 Only the user viewing rules will be consulted.  Default is nil."
-  :group 'gnus-extract
+  :group 'gnus-extract-view
   :type 'boolean)
 
 (defcustom gnus-uu-grabbed-file-functions nil
@@ -229,7 +243,7 @@ and `gnus-uu-grab-move'."
 (defcustom gnus-uu-ignore-default-archive-rules nil 
   "*Non-nil means that gnus-uu will ignore the default archive unpacking commands.  
 Only the user unpacking commands will be consulted.  Default is nil."
-  :group 'gnus-extract
+  :group 'gnus-extract-archive
   :type 'boolean)
 
 (defcustom gnus-uu-kill-carriage-return t
@@ -1739,7 +1753,7 @@ There are three functions supplied with gnus-uu for encoding files:
 `gnus-uu-post-encode-mime', which encodes with base64 and adds MIME 
 headers; and `gnus-uu-post-encode-mime-uuencode', which encodes with 
 uuencode and adds MIME headers."
-  :group 'gnus-extract
+  :group 'gnus-extract-post
   :type '(radio (function-item gnus-uu-post-encode-uuencode)
 		(function-item gnus-uu-post-encode-mime)
 		(function-item gnus-uu-post-encode-mime-uuencode)
@@ -1749,14 +1763,14 @@ uuencode and adds MIME headers."
   "Non-nil means that gnus-uu will ask for a file to encode before you compose the article.
 If this variable is t, you can either include an encoded file with
 \\[gnus-uu-post-insert-binary-in-article] or have one included for you when you post the article."
-  :group 'gnus-extract
+  :group 'gnus-extract-post
   :type 'boolean)
 
 (defcustom gnus-uu-post-length 990
   "Maximum length of an article.
 The encoded file will be split into how many articles it takes to
 post the entire file."
-  :group 'gnus-extract
+  :group 'gnus-extract-post
   :type 'integer)
 
 (defcustom gnus-uu-post-threaded nil
@@ -1765,7 +1779,7 @@ This may not be smart, as no other decoder I have seen are able to
 follow threads when collecting uuencoded articles.  (Well, I have seen
 one package that does that - gnus-uu, but somehow, I don't think that 
 counts...) Default is nil."
-  :group 'gnus-extract
+  :group 'gnus-extract-post
   :type 'boolean)
 
 (defcustom gnus-uu-post-separate-description t
@@ -1774,7 +1788,7 @@ The first article will typically be numbered (0/x).  If this variable
 is nil, the description the user enters will be included at the 
 beginning of the first article, which will be numbered (1/x).  Default 
 is t."
-  :group 'gnus-extract
+  :group 'gnus-extract-post
   :type 'boolean)
 
 (defvar gnus-uu-post-binary-separator "--binary follows this line--")
