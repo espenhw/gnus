@@ -219,9 +219,27 @@
 	     (variable (cadr elem))
 	     (type (assistant-get-variable node variable 'type)))
 	(cond
-	 ((and (consp type)
-	       (eq (car type) :radio))
-	  (push 
+	 ((eq (car-safe type) :set)
+	  (push
+	   (apply
+	    #'widget-create
+	    'checklist
+	    :assistant-variable variable
+	    :assistant-node node
+	    :value (assistant-get-variable node variable)
+	    :notify (lambda (widget &rest ignore)
+		      (assistant-set-variable
+		       (widget-get widget :assistant-node)
+		       (widget-get widget :assistant-variable)
+		       (widget-value widget))
+		      (assistant-render-node
+		       (assistant-get
+			(widget-get widget :assistant-node)
+			"node")))
+	    (cadr type))
+	   assistant-widgets))
+	 ((eq (car-safe type) :radio)
+	  (push
 	   (apply
 	    #'widget-create
 	    'radio-button-choice

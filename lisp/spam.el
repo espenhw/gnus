@@ -38,6 +38,7 @@
 ;;; Code:
 
 (eval-when-compile (require 'cl))
+(eval-when-compile (require 'spam-report))
 
 (require 'gnus-sum)
 
@@ -704,7 +705,7 @@ finds ham or spam.")
 
 (defun spam-group-spam-contents-p (group)
   "Is GROUP a spam group?"
-  (if (stringp group)
+  (if (and (stringp group) (< 0 (length group)))
       (or (member group spam-junk-mailgroups)
 	  (memq 'gnus-group-spam-classification-spam
 		(gnus-parameter-spam-contents group)))
@@ -779,9 +780,11 @@ Respects the process/prefix convention."
 Respects the process/prefix convention.  Also see
 `spam-report-resend-to'."
   (interactive "P")
-  (let ((spam-report-resend-to 
-	 (gnus-parameter-spam-resend-to gnus-newsgroup-name))
-	(articles (gnus-summary-work-articles n)))
+  (let* ((gp
+	  (gnus-parameter-spam-resend-to gnus-newsgroup-name))
+         (spam-report-resend-to (or (car-safe gp)
+                                    spam-report-resend-to))
+         (articles (gnus-summary-work-articles n)))
     (spam-report-resend articles)
     (dolist (article articles)
       (gnus-summary-remove-process-mark article))))
@@ -908,15 +911,18 @@ Will not return a nil score."
 	     (num (spam-mark-spam-as-expired-and-move-routine group)))
 	(when (> num 0)
 	  (gnus-message 6
-			"%d spam messages are marked as expired and moved it to %s"
-			num group))))
+			"%d spam messages are marked as expired%s."
+			num
+			(if group 
+			    (format " and moved it to %s" group)
+			  "")))))
 
     ;; now we redo spam-mark-spam-as-expired-and-move-routine to only
     ;; expire spam, in case the above did not expire them
     (let ((num (spam-mark-spam-as-expired-and-move-routine nil)))
       (when (> num 0)
 	(gnus-message 6
-		      "%d spam messages are markd as expired without moving it"
+		      "%d spam messages were marked as expired."
 		      num)))
 
     (when (or (spam-group-ham-contents-p gnus-newsgroup-name)
@@ -937,7 +943,7 @@ Will not return a nil score."
 	     (spam-ham-copy-routine
 	      (gnus-parameter-ham-process-destination gnus-newsgroup-name))))
 	(when (> num 0)
-	  (gnus-message 6 "%d ham messages are copied" num))))
+	  (gnus-message 6 "%d ham messages were copied" num))))
 
     ;; now move all ham articles out of spam groups
     (when (spam-group-spam-contents-p gnus-newsgroup-name)
@@ -945,7 +951,7 @@ Will not return a nil score."
 	     (spam-ham-move-routine
 	      (gnus-parameter-ham-process-destination gnus-newsgroup-name))))
 	(when (> num 0)
-	  (gnus-message 6 "%d ham messages are moved from spam group" num)))))
+	  (gnus-message 6 "%d ham messages were moved from spam group" num)))))
 
   (setq spam-old-ham-articles nil)
   (setq spam-old-spam-articles nil))
@@ -1472,21 +1478,22 @@ functions")
 			    gnus-newsgroup-articles
 			    classification)))
 	;; process them
-	(gnus-message 5 "%s %d %s articles as %s using backend %s"
-		      (if unregister "Unregistering" "Registering")
-		      (length articles)
-		      (if specific-articles "specific" "")
-		      (symbol-name classification)
-		      (symbol-name check))
-	(funcall run-function articles)
-	;; now log all the registrations (or undo them, depending on unregister)
-	(dolist (article articles)
-	  (funcall log-function
-		   (spam-fetch-field-message-id-fast article)
-		   'process
-		   classification
-		   check
-		   gnus-newsgroup-name))))))
+        (when (> (length articles) 0)
+	  (gnus-message 5 "%s %d %s articles as %s using backend %s"
+			(if unregister "Unregistering" "Registering")
+			(length articles)
+			(if specific-articles "specific" "")
+			(symbol-name classification)
+			(symbol-name check))
+	  (funcall run-function articles)
+	  ;; now log all the registrations (or undo them, depending on unregister)
+	  (dolist (article articles)
+	    (funcall log-function
+		     (spam-fetch-field-message-id-fast article)
+		     'process
+		     classification
+		     check
+		     gnus-newsgroup-name)))))))
 
 ;;; log a ham- or spam-processor invocation to the registry
 (defun spam-log-processing-to-registry (id type classification check group)
@@ -2114,8 +2121,10 @@ REMOVE not nil, remove the ADDRESSES."
     (apply 'spam-report-gmane articles)))
 
 (defun spam-report-resend-register-routine (articles)
-  (let ((spam-report-resend-to (gnus-parameter-spam-resend-to gnus-newsgroup-name)))
-	(spam-report-resend articles)))
+  (let* ((resend-to-gp (gnus-parameter-spam-resend-to gnus-newsgroup-name))
+         (spam-report-resend-to (or (car-safe resend-to-gp)
+                                    spam-report-resend-to)))
+    (spam-report-resend articles)))
 
 
 ;;;; Bogofilter
