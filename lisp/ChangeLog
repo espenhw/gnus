@@ -1,5 +1,8 @@
 2002-02-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* message.el (message-mode): Don't enable multibyte on an indirect
+	buffer.
+
 	* nnrss.el (nnrss-content-function): New variable.
 	(nnrss-request-article): Use it.
 

@@ -1780,7 +1780,10 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
 	(mail-abbrevs-setup)
       (mail-aliases-setup)))
   (message-set-auto-save-file-name)
-  (mm-enable-multibyte)
+  (unless (buffer-base-buffer)
+    ;; Don't enable multibyte on an indirect buffer.  Maybe enabling
+    ;; multibyte is not necessary at all. -- zsh
+    (mm-enable-multibyte))
   (set (make-local-variable 'indent-tabs-mode) nil) ;No tabs for indentation.
   (mml-mode))
 
