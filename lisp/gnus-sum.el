@@ -2904,32 +2904,31 @@ buffer that was in action when the last article was fetched."
    (point) (progn (eval gnus-summary-dummy-line-format-spec) (point))
    (list 'gnus-number gnus-tmp-number 'gnus-intangible gnus-tmp-number)))
 
+(defun gnus-summary-extract-address-component (from)
+  (or (car (funcall gnus-extract-address-components from))
+      from))
+
 (defun gnus-summary-from-or-to-or-newsgroups (header)
-  (let ((to (cdr (assq 'To (mail-header-extra header))))
-	(newsgroups (cdr (assq 'Newsgroups (mail-header-extra header))))
-	(mail-parse-charset gnus-newsgroup-charset)
+  (let ((mail-parse-charset gnus-newsgroup-charset)
+	; Is it really necessary to do this next part for each summary line?
+	; Luckily, doesn't seem to slow things down much.
 	(mail-parse-ignored-charsets
 	 (save-excursion (set-buffer gnus-summary-buffer)
 			 gnus-newsgroup-ignored-charsets)))
-    (cond
-     ((and to
-	   gnus-ignored-from-addresses
-	   (string-match gnus-ignored-from-addresses
-			 (mail-header-from header)))
-      (concat "-> "
-	      (or (car (funcall gnus-extract-address-components
-				(funcall
-				 gnus-decode-encoded-word-function to)))
-		  (funcall gnus-decode-encoded-word-function to))))
-     ((and newsgroups
-	   gnus-ignored-from-addresses
-	   (string-match gnus-ignored-from-addresses
-			 (mail-header-from header)))
-      (concat "=> " newsgroups))
-     (t
-      (or (car (funcall gnus-extract-address-components
-			(mail-header-from header)))
-	  (mail-header-from header))))))
+    (or
+     (and gnus-ignored-from-addresses
+	  (string-match gnus-ignored-from-addresses gnus-tmp-from)
+	  (let ((extra-headers (mail-header-extra header))
+		to
+		newsgroups)
+	    (cond
+	     ((setq to (cdr (assq 'To extra-headers)))
+	      (concat "-> "
+		      (gnus-summary-extract-address-component
+		       (funcall gnus-decode-encoded-word-function to))))
+	     ((setq newsgroups (cdr (assq 'Newsgroups extra-headers)))
+	      (concat "=> " newsgroups)))))
+     (gnus-summary-extract-address-component gnus-tmp-from))))
 
 (defun gnus-summary-insert-line (gnus-tmp-header
 				 gnus-tmp-level gnus-tmp-current

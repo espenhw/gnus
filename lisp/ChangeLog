@@ -1,3 +1,8 @@
+2001-09-30  Dan Christensen <jdc+news@uwo.ca>
+
+	* gnus-sum.el (gnus-summary-extract-address-component): New function.
+	(gnus-summary-from-or-to-or-newsgroups): Optimize.
+
 2001-09-29  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* message.el (message-mode-map): Keybinding for `gnus-delay-article'.
