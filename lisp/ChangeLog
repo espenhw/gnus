@@ -18,6 +18,11 @@
 
 2003-04-17  Steve Youngs  <youngs@xemacs.org>
 
+	* dgnushack.el: 'setenv' is in env.el for XEmacsen <= 21.4, but in
+	process.el in XEmacsen >= 21.5.
+
+2003-04-17  Steve Youngs  <youngs@xemacs.org>
+
 	* dgnushack.el: Add a whole swag of autoloads and defaliases to
 	satisfy the byte-compiler when building with XEmacs.
 
