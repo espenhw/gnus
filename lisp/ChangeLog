@@ -1,5 +1,12 @@
 2004-05-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* netrc.el (netrc-services-file): New variable.
+	(netrc-parse-services): New function.
+	(netrc-find-service-name): New function.
+	(netrc-find-service-number): New function.
+	(netrc-port-equal): New function.
+	(netrc-machine): Use it.
+
 	* nnimap.el (nnimap-open-connection): Use netrc.
 
 	* gnus-util.el (gnus-netrc-get): Remove aliases.

@@ -60,6 +60,9 @@ have set netrc-encrypting-method to a non-nil value."
 		 (const :tag "openssl is not installed" nil))
   :group 'netrc)
 
+(defvar netrc-services-file "/etc/services"
+  "The name of the services file.")
+
 (defun netrc-encrypt (plain-file encrypted-file)
   (interactive "fPlain File: \nFEncrypted File: ")
   "Encrypt FILE to ENCRYPTED-FILE with netrc-encrypting-method cipher."
@@ -186,15 +189,58 @@ Entries without port tokens default to DEFAULTPORT."
     (when result
       (setq result (nreverse result))
       (while (and result
-		  (not (equal (or port defaultport "nntp")
-			      (or (netrc-get (car result) "port")
-				  defaultport "nntp"))))
+		  (not (netrc-port-equal
+			(or port defaultport "nntp")
+			(or (netrc-get (car result) "port")
+			    defaultport "nntp"))))
 	(pop result))
       (car result))))
 
 (defun netrc-get (alist type)
   "Return the value of token TYPE from ALIST."
   (cdr (assoc type alist)))
+
+(defun netrc-port-equal (port1 port2)
+  (when (numberp port1)
+    (setq port1 (or (netrc-find-service-name port1) port1)))
+  (when (numberp port2)
+    (setq port2 (or (netrc-find-service-name port2) port2)))
+  (equal port1 port2))
+
+(defun netrc-parse-services ()
+  (when (file-exists-p netrc-services-file)
+    (let ((services nil))
+      (with-temp-buffer
+	(insert-file-contents netrc-services-file)
+	(while (search-forward "#" nil t)
+	  (delete-region (1- (point)) (line-end-position)))
+	(goto-char (point-min))
+	(while (re-search-forward
+		"^ *\\([^ \n\t]+\\)[ \t]+\\([0-9]+\\)/\\([^ \t\n]+\\)" nil t)
+	  (push (list (match-string 1) (string-to-number (match-string 2))
+		      (intern (downcase (match-string 3))))
+		services))
+	(nreverse services)))))
+
+(defun netrc-find-service-name (number &optional type)
+  (let ((services (netrc-parse-services))
+	service)
+    (setq type (or type 'tcp))
+    (while (and (setq service (pop services))
+		(not (and (= number (cadr service))
+			  (eq type (caddr service)))))
+      )
+    (car service)))
+
+(defun netrc-find-service-number (name &optional type)
+  (let ((services (netrc-parse-services))
+	service)
+    (setq type (or type 'tcp))
+    (while (and (setq service (pop services))
+		(not (and (string= name (car service))
+			  (eq type (caddr service)))))
+      )
+    (cadr service)))
 
 (provide 'netrc)
 

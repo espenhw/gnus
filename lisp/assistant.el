@@ -364,6 +364,12 @@
 	  nil)
       error)))
 
+(defun assistant-authinfo-data (server port type)
+  (when (file-exists-p "~/.authinfo")
+    (let ((data
+	   (netrc-machine (netrc-parse "~/.authinfo")
+			  server port)))
+
 (provide 'assistant)
 
 ;;; arch-tag: 0404bfa2-9226-4611-8d3f-335c2416175b
