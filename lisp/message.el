@@ -3495,9 +3495,11 @@ It should typically alter the sending method in some way or other."
 	(when (let ((char (char-after)))
 		(or (< (mm-char-int char) 128)
 		    (and (mm-multibyte-p)
-			 (> (length (mm-find-mime-charset-region
-				     (point) (point-max)))
-			    1))))
+			 (memq (char-charset char)
+			       '(eight-bit-control eight-bit-graphic
+						   control-1))
+			 (not (get-text-property
+			       (point) 'untranslated-utf-8)))))
 	  (message-overlay-put (message-make-overlay (point) (1+ (point)))
 			       'face 'highlight)
 	  (setq found t))
@@ -3524,7 +3526,9 @@ It should typically alter the sending method in some way or other."
 			   ;; use find-coding-systems-region.
 			   (memq (char-charset char)
 				 '(eight-bit-control eight-bit-graphic
-						     control-1)))))
+						     control-1))
+			   (not (get-text-property
+				 (point) 'untranslated-utf-8)))))
 	    (if (eq choice ?i)
 		(message-kill-all-overlays)
 	      (delete-char 1)

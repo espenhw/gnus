@@ -1,3 +1,8 @@
+2003-12-07  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.el (message-fix-before-sending): Fix detection of
+	non-printables.  Don't replace unencodable utf-8.
+
 2003-12-05  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-url.el (mm-url-predefined-programs): Add user-agent for wget.
