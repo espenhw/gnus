@@ -1,4 +1,3 @@
-
 2002-11-20  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-sum.el (gnus-summary-morse-message): Narrow to body.
