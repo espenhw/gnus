@@ -257,12 +257,13 @@ See also the `mml-default-encrypt-method' variable."
   "If non-nil, Gnus requests confirmation when replying to news.
 This is done because new users often reply by mistake when reading
 news.
-This can also be a function which should return non-nil iff a
-confirmation is needed, or a regexp, in which case a confirmation is
-asked if the group name matches the regexp."
+This can also be a function receiving the group name as the only
+parameter which should return non-nil iff a confirmation is needed, or
+a regexp, in which case a confirmation is asked for iff the group name
+matches the regexp."
   :group 'gnus-message
   :type '(choice (const :tag "No" nil)
-		 (const :tag "Yes" nil)
+		 (const :tag "Yes" t)
 		 (regexp :tag "Iff group matches regexp")
 		 (function :tag "Iff function evaluates to non-nil")))
 
@@ -515,15 +516,19 @@ Gcc: header for archiving purposes."
   (setq message-newsreader (setq message-mailer (gnus-extended-version)))
   (message-add-action
    `(set-window-configuration ,winconf) 'exit 'postpone 'kill)
-  (message-add-action
-   `(when (gnus-buffer-exists-p ,buffer)
-      (save-excursion
-	(set-buffer ,buffer)
-	,(when article
-	   (if (eq config 'forward)
-	       `(gnus-summary-mark-article-as-forwarded ',yanked)
-	     `(gnus-summary-mark-article-as-replied ',yanked)))))
-   'send))
+  (let ((to-be-marked (cond
+		       (yanked yanked)
+		       (article (list article))
+		       (t nil))))
+    (message-add-action
+     `(when (gnus-buffer-exists-p ,buffer)
+	(save-excursion
+	  (set-buffer ,buffer)
+	  ,(when to-be-marked
+	     (if (eq config 'forward)
+		 `(gnus-summary-mark-article-as-forwarded ',to-be-marked)
+	       `(gnus-summary-mark-article-as-replied ',to-be-marked)))))
+     'send)))
 
 (put 'gnus-setup-message 'lisp-indent-function 1)
 (put 'gnus-setup-message 'edebug-form-spec '(form body))
@@ -1058,9 +1063,10 @@ If VERY-WIDE, make a very wide reply."
 	    (not (or (gnus-news-group-p gnus-newsgroup-name)
 		     gnus-confirm-treat-mail-like-news))
 	    (not (cond ((stringp gnus-confirm-mail-reply-to-news)
-			(string-match gnus-confirm-mail-reply-to-news gnus-newsgroup-name))
+			(string-match gnus-confirm-mail-reply-to-news
+				      gnus-newsgroup-name))
 		       ((functionp gnus-confirm-mail-reply-to-news)
-			(funcall gnus-confirm-mail-reply-to-news))
+			(funcall gnus-confirm-mail-reply-to-news gnus-newsgroup-name))
 		       (t gnus-confirm-mail-reply-to-news)))
 	    (y-or-n-p "Really reply by mail to article author? "))
     (let* ((article

@@ -954,7 +954,7 @@ external if displayed external."
   "Return the contents of HANDLE as a string."
   (mm-with-unibyte-buffer
     (insert (with-current-buffer (mm-handle-buffer handle)
-	      (mm-with-unibyte-current-buffer-mule4
+	      (mm-with-unibyte-current-buffer
 		(buffer-string))))
     (mm-decode-content-transfer-encoding
      (mm-handle-encoding handle)

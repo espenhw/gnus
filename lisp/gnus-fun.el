@@ -79,6 +79,7 @@ Output to the current buffer, replace text, and don't mingle error."
      (format gnus-convert-image-to-x-face-command
 	     (shell-quote-argument file)))))
 
+;;;###autoload
 (defun gnus-face-from-file (file)
   "Return an Face header based on an image file."
   (interactive "fImage file name:" )

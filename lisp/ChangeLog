@@ -1,7 +1,26 @@
+2003-01-12  Raymond Scholz  <ray-2003@zonix.de>
+
+	* gnus-msg.el (gnus-confirm-mail-reply-to-news):  May be a
+	regexp or a function too.
+	(gnus-confirm-treat-mail-like-news): New variable.  Ask for
+	confirmation even if the original article is mail.
+
 2003-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-inews-add-send-actions): Get the right
+	articles to be marked when not yanking.
+
+2003-01-12  Fran,Ag(Bois-David Collin  <Francois-David.Collin@curie.fr>
+
+	* mm-decode.el (mm-get-part): Use mm-with-unibyte-current-buffer.
+	
+2003-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-fun.el (gnus-face-from-file): Autoload.
 
 	* gnus-cite.el (gnus-cite-delete-overlays): Protect against more
 	errors.
+
 2003-01-12  Simon Josefsson  <jas@extundo.com>
 
 	* sieve.el (sieve-upload-and-bury): New.  Suggested by
