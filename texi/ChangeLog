@@ -1,3 +1,11 @@
+2001-09-28 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* Makefile.in (.texi): Remove $@ first.
+
+	* infohack.el (infohack-remove-unsupported): Remove @iflatex lines.
+	(infohack): Specify a coding-system to save info files.
+	From Katsumi Yamaoka  <yamaoka@jpl.org>
+	
 2001-09-28 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnusconfig.tex.in: Use cmss if pfu is not found.
