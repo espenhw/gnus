@@ -549,7 +549,7 @@ Return whether the unpacking was successful."
 		(sit-for 1)
 		(let ((message-syntax-checks
 		       'dont-check-for-anything-just-trust-me)
-		      (method (if (message-functionp message-post-method)
+		      (method (if (functionp message-post-method)
 				  (funcall message-post-method)
 				message-post-method))
 		      result)
