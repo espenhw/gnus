@@ -154,7 +154,8 @@ seen in the same session."
 
 (defun gnus-dup-unsuppress-article (article)
   "Stop suppression of ARTICLE."
-  (let ((id (mail-header-id (gnus-data-header (gnus-data-find article)))))
+  (let* ((header (gnus-data-header (gnus-data-find article)))
+	 (id     (when header (mail-header-id header))))
     (when id
       (setq gnus-dup-list-dirty t)
       (setq gnus-dup-list (delete id gnus-dup-list))

@@ -1,5 +1,9 @@
 2004-05-14  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* gnus-dup.el (gnus-dup-unsuppress-article): don't assume the mail
+	header is not nil (tiny change).  From Nelson Ferreira
+	<nelson.ferreira@verizon.net>.
+
 	* spam.el (spam-summary-prepare-exit): only produce "marking spam
 	as expired without moving it" message when there are spam
 	messages left
