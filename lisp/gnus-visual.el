@@ -31,13 +31,25 @@
   "Face used for highlighting the selected article in the Summary buffer.")
 
 (defvar gnus-visual-summary-highlight
-  (list (cons (list '> '(gnus-summary-interest) gnus-summary-default-interest)
-	      'bold)
-	(cons (list '< '(gnus-summary-interest) gnus-summary-default-interest)
-	      'italic))
+  '(((> score default) . bold)
+    ((< score default) . italic))
   "Alist of (FORM . FACE).
 Summary lines are highlighted with the FACE for the first FORM which
-evaluate to non-nil.")
+evaluate to non-nil.  
+
+When FORM is evaluated point will be at the beginning of the line, and
+the following free variable can be used for convenience:
+
+score:   (gnus-summary-interest)
+default: gnus-summary-default-interest
+below:   gnus-summary-mark-below
+
+To check for marks, e.g. to underline replied articles, use `looking-at':
+
+   ((looking-at \".R\") . underline)
+
+This will match all lines where the second character is `R'.  
+The `.' will match any character.")
 
 ;; Newsgroup buffer
 
@@ -70,6 +82,7 @@ evaluate to non-nil.")
      ["Jump to group" gnus-group-jump-to-group t]
      ["List subscribed groups" gnus-group-list-groups t]
      ["List all groups" gnus-group-list-all-groups t]
+     ["List groups matching..." gnus-group-list-matching t]
      ["Subscribe to random group" gnus-group-unsubscribe-group t]
      ["Describe all groups" gnus-group-describe-all-groups t]
      ["Group apropos" gnus-group-apropos t]
@@ -80,6 +93,7 @@ evaluate to non-nil.")
      ["Kill all zombie groups" gnus-group-kill-all-zombies t]
      ["List killed groups" gnus-group-list-killed t]
      ["List zombie groups" gnus-group-list-zombies t]
+     ["Edit global KILL file" gnus-group-edit-global-kill t]
      ))
 
   (easy-menu-define
@@ -138,9 +152,9 @@ evaluate to non-nil.")
      ["Remove expirable mark" gnus-summary-unmark-as-expirable t]
      ["Set bookmark" gnus-summary-set-bookmark t]
      ["Remove bookmark" gnus-summary-remove-bookmark t]
-     ["Raise score" gnus-summary-raise-interest t]
-     ["Lower score" gnus-summary-lower-interest t]
-     ["Set score" gnus-summary-set-interest t]
+     ["Raise score" gnus-summary-raise-score t]
+     ["Lower score" gnus-summary-lower-score t]
+     ["Set score" gnus-summary-set-score t]
      ))
 
   (easy-menu-define
@@ -203,28 +217,22 @@ evaluate to non-nil.")
    gnus-summary-mode-map
    ""
    '("Misc"
+     ["Sort by number" gnus-summary-sort-by-number t]
+     ["Sort by author" gnus-summary-sort-by-author t]
+     ["Sort by subject" gnus-summary-sort-by-subject t]
+     ["Sort by date" gnus-summary-sort-by-date t]
      ["Filter articles" gnus-summary-execute-command t]
      ["Mark all articles as read and exit" gnus-summary-catchup-and-exit t]
      ["Toggle line truncation" gnus-summary-toggle-truncation t]
      ["Expire expirable articles" gnus-summary-expire-articles t]
      ["Delete a mail article" gnus-summary-delete-article t]
+     ["Show all dormant articles" gnus-summary-show-all-dormant t]
      ["Show all expunged articles" gnus-summary-show-all-expunged t]
      ["Reselect group" gnus-summary-reselect-current-group t]
      ["Rescan group" gnus-summary-rescan-group t]
      ["Describe group" gnus-summary-describe-group t]
      ["Exit group" gnus-summary-exit t]
      ["Exit group without updating" gnus-summary-quit t]
-     ))
-
-  (easy-menu-define
-   gnus-summary-sort-menu
-   gnus-summary-mode-map
-   ""
-   '("Sort"
-     ["Sort by number" gnus-summary-sort-by-number t]
-     ["Sort by author" gnus-summary-sort-by-author t]
-     ["Sort by subject" gnus-summary-sort-by-subject t]
-     ["Sort by date" gnus-summary-sort-by-date t]
      ))
 
   (easy-menu-define
@@ -259,42 +267,78 @@ evaluate to non-nil.")
       gnus-summary-temporarily-raise-by-author t]
      ["Raise score with current thread" 
       gnus-summary-temporarily-raise-by-thread t]
-     ["Raise score with current xref" 
+     ["Raise score with current crossposting" 
       gnus-summary-temporarily-raise-by-xref t]
      ["Permanently raise score with current subject"
       gnus-summary-raise-by-subject t]
      ["Permanently raise score with current author" 
       gnus-summary-raise-by-author t]
-     ["Permanently raise score with current thread"
-      gnus-summary-raise-by-thread t]
-     ["Permanently raise score with current xref" 
+     ["Permanently raise score with current crossposting" 
       gnus-summary-raise-by-xref t]
+     ["Permanently raise score for followups to current author"
+      gnus-summary-raise-followups-to-author t]
      ["Lower score with current subject" 
       gnus-summary-temporarily-lower-by-subject t]
      ["Lower score with current author" 
       gnus-summary-temporarily-lower-by-author t]
      ["Lower score with current thread" 
       gnus-summary-temporarily-lower-by-thread t]
-     ["Lower score with current xref" 
+     ["Lower score with current crossposting" 
       gnus-summary-temporarily-lower-by-xref t]
      ["Permanently lower score with current subject"
       gnus-summary-lower-by-subject t]
      ["Permanently lower score with current author" 
       gnus-summary-lower-by-author t]
-     ["Permanently lower score with current thread"
-      gnus-summary-lower-by-thread t]
-     ["Permanently lower score with current xref" 
+     ["Permanently lower score with current crossposting" 
       gnus-summary-lower-by-xref t]
+     ["Permanently lower score for followups to current author"
+      gnus-summary-lower-followups-to-author t]
      ))
   )
+ 
+;; Article buffer
+(defun gnus-article-make-menu-bar ()
+
+ (easy-menu-define
+   gnus-article-mode-menu
+   gnus-article-mode-map
+   ""
+   '("Article"
+     ["Scroll forwards" gnus-article-next-page t]
+     ["Scroll backwards" gnus-article-prev-page t]
+     ["Show summary" gnus-article-show-summary t]
+     ["Fetch Message-ID at point" gnus-article-refer-article t]
+     ["Mail to address at point" gnus-article-mail t]
+     ["Mail to address at point and include original"
+      gnus-article-mail-with-original t]
+     ))
+
+ (easy-menu-define
+   gnus-article-mode-menu
+   gnus-article-mode-map
+   ""
+   '("Treatment"
+     ["Hide headers" gnus-article-hide-headers t]
+     ["Hide signature" gnus-article-hide-signature t]
+     ["Hide citation" gnus-article-hide-citation t]
+     ["Treat overstrike" gnus-article-treat-overstrike t]
+     ["Remove carriage return" gnus-article-remove-cr t]
+     ["Remove quoted-unreadble" gnus-article-de-quoted-unreadable t]
+     ))
+ )
 
 (defun gnus-visual-highlight-selected-summary ()
   ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
   ;; Highlight selected article in summary buffer
   (if gnus-summary-selected-face
       (save-excursion
-	(let ((from (progn (beginning-of-line 1) (point)))
-	      (to (progn (end-of-line 1) (point))))
+	(let* ((beg (progn (beginning-of-line) (point)))
+	       (end (progn (end-of-line) (point)))
+	       (from (or
+		      (next-single-property-change beg 'mouse-face nil end)
+		      beg))
+	       (to (or (next-single-property-change from 'mouse-face nil end)
+		       end)))
 	  (if gnus-newsgroup-selected-overlay
 	      (move-overlay gnus-newsgroup-selected-overlay 
 			    from to (current-buffer))
@@ -304,20 +348,20 @@ evaluate to non-nil.")
 
 (defun gnus-visual-summary-highlight-line ()
   "Highlight current line according to `gnus-visual-summary-highlight'."
-  (if (not gnus-visual)
-      ()
-    (let ((list gnus-visual-summary-highlight)
-	  (inhibit-read-only t))
-      (while (and list (not (eval (car (car list)))))
-	(setq list (cdr list)))
-      (let ((face (and list (cdr (car list)))))
-	(save-excursion
-	  (beginning-of-line 1)
-	  (if (eq face (get-text-property (point) 'face))
-	      ()
-	    (put-text-property (point) (save-excursion (end-of-line 1) (point))
-			       'face face)))))))
-
+  (let ((list gnus-visual-summary-highlight)
+	(inhibit-read-only t))
+    (while (and list (not (eval (car (car list)))))
+      (setq list (cdr list)))
+    (let ((face (and list (cdr (car list)))))
+      (save-excursion
+	;; BUG! For some reason the text properties of the first
+	;; characters get mangled. 
+	(forward-char 10)
+	(if (eq face (get-text-property (point) 'face))
+	    ()
+	  (put-text-property (save-excursion (beginning-of-line 1) (point))
+			     (save-excursion (end-of-line 1) (point))
+			     'face face))))))
 
 (provide 'gnus-visual)
 

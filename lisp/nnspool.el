@@ -43,6 +43,11 @@
 ;; Switch to GROUP. If DISCARD is nil, active information on the group
 ;; must be returned.
 ;;
+;; `choke-close-group GROUP &optional SERVER'
+;; Close group. Most backends won't have to do anything with this
+;; call, but it is an opportunity to clean up, if that is needed. It
+;; is called when Gnus exits a group.
+;;
 ;; `choke-request-article ARTICLE &optional GROUP SERVER'
 ;; Return ARTICLE, which is either an article number or id.
 ;;
@@ -91,30 +96,39 @@
 (require 'nntp)
 
 (defvar nnspool-inews-program news-inews-program
-  "*Program to post news.")
+  "Program to post news.")
 
 (defvar nnspool-inews-switches '("-h")
-  "*Switches for nnspool-request-post to pass to `inews' for posting news.")
+  "Switches for nnspool-request-post to pass to `inews' for posting news.")
 
 (defvar nnspool-spool-directory news-path
-  "*Local news spool directory.")
+  "Local news spool directory.")
 
-(defvar nnspool-active-file "/usr/lib/news/active"
-  "*Local news active file.")
+(defvar nnspool-lib-dir "/usr/lib/news/"
+  "Where the local news library files are stored.")
 
-(defvar nnspool-newsgroups-file "/usr/lib/news/newsgroups"
-  "*Local news newsgroups file.")
+(defvar nnspool-active-file (concat nnspool-lib-dir "active")
+  "Local news active file.")
 
-(defvar nnspool-distributions-file "/usr/lib/news/distributions"
-  "*Local news distributions file.")
+(defvar nnspool-newsgroups-file (concat nnspool-lib-dir "newsgroups")
+  "Local news newsgroups file.")
 
-(defvar nnspool-history-file "/usr/lib/news/history"
-  "*Local news history file.")
+(defvar nnspool-distributions-file (concat nnspool-lib-dir "distributions")
+  "Local news distributions file.")
+
+(defvar nnspool-history-file (concat nnspool-lib-dir "history")
+  "Local news history file.")
+
+(defvar nnspool-active-times-file (concat nnspool-lib-dir "active.times")
+  "Local news active date file.")
 
 (defvar nnspool-large-newsgroup 50
-  "*The number of the articles which indicates a large newsgroup.
+  "The number of the articles which indicates a large newsgroup.
 If the number of the articles is greater than the value, verbose
 messages will be shown to indicate the current status.")
+
+(defvar nnspool-nov-is-evil nil
+  "Non-nil means that nnspool will never return NOV lines instead of headers.")
 
 
 
@@ -142,34 +156,36 @@ Newsgroup must be selected before calling this function."
 			    (> number nnspool-large-newsgroup)))
 	   file beg article)
       (nnspool-possibly-change-directory newsgroup)
-      (while sequence
-	(setq article (car sequence))
-	(setq file
-	      (concat nnspool-current-directory (prin1-to-string article)))
-	(if (file-exists-p file)
-	    (progn
-	      (insert (format "221 %d Article retrieved.\n" article))
-	      (setq beg (point))
-	      (insert-file-contents file)
-	      (goto-char beg)
-	      (search-forward "\n\n" nil t)
-	      (forward-char -1)
-	      (insert ".\n")
-	      (delete-region (point) (point-max))))
-	(setq sequence (cdr sequence))
+      (if (nnspool-retrieve-headers-with-nov sequence)
+	  'nov
+	(while sequence
+	  (setq article (car sequence))
+	  (setq file (concat nnspool-current-directory 
+			     (int-to-string article)))
+	  (and (file-exists-p file)
+	       (progn
+		 (insert (format "221 %d Article retrieved.\n" article))
+		 (setq beg (point))
+		 (insert-file-contents file)
+		 (goto-char beg)
+		 (search-forward "\n\n" nil t)
+		 (forward-char -1)
+		 (insert ".\n")
+		 (delete-region (point) (point-max))))
+	  (setq sequence (cdr sequence))
 
-	(and do-message
-	     (zerop (% (setq count (1+ count)) 20))
-	     (message "NNSPOOL: Receiving headers... %d%%"
-		      (/ (* count 100) number))))
+	  (and do-message
+	       (zerop (% (setq count (1+ count)) 20))
+	       (message "NNSPOOL: Receiving headers... %d%%"
+			(/ (* count 100) number))))
 
-      (if do-message (message "NNSPOOL: Receiving headers... done"))
+	(and do-message (message "NNSPOOL: Receiving headers... done"))
 
-      ;; Fold continuation lines.
-      (goto-char 1)
-      (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	(replace-match " " t t))
-      'headers)))
+	;; Fold continuation lines.
+	(goto-char 1)
+	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+	  (replace-match " " t t))
+	'headers))))
 
 (defun nnspool-open-server (host &optional service)
   "Open local spool."
@@ -267,6 +283,9 @@ If the stream is opened, return T, otherwise return NIL."
  		    (insert (format "211 0 0 0 %s\n" group))))))
 	  t))))
 
+(defun nnspool-close-group (group &optional server)
+  t)
+
 (defun nnspool-request-list (&optional server)
   "List active newsgoups."
   (save-excursion
@@ -281,6 +300,13 @@ If the stream is opened, return T, otherwise return NIL."
   "List distributions (defined in NNTP2)."
   (save-excursion
     (nnspool-find-file nnspool-distributions-file)))
+
+(defun nnspool-request-newgroups (date &optional server)
+  "List groups created after DATE."
+  (save-excursion
+    (nnspool-find-file nnspool-active-times-file)
+    (setq nnspool-status-string "NEWGROUPS is not supported.")
+    nil))
 
 (defun nnspool-request-post (&optional server)
   "Post a new news in current buffer."
@@ -307,10 +333,55 @@ If the stream is opened, return T, otherwise return NIL."
 (fset 'nnspool-request-post-buffer 'nntp-request-post-buffer)
 
 
-;;; Low-Level Interface.
+;;; Internal functions.
+
+(defun nnspool-retrieve-headers-with-nov (articles)
+  (if (or gnus-nov-is-evil nnspool-nov-is-evil)
+      nil
+    (let ((nov (concat nnspool-current-directory ".nov"))
+	  article)
+      (if (file-exists-p nov)
+	  (save-excursion
+	    (set-buffer nntp-server-buffer)
+	    (erase-buffer)
+	    (insert-file-contents nov)
+	    ;; First we find the first wanted line. We issue a number
+	    ;; of search-forwards - the first article we are lookign
+	    ;; for may be expired, so we have to go on searching until
+	    ;; we find one of the articles we want.
+	    (while (and articles
+			(setq article (concat (int-to-string 
+					       (car articles) "\t")))
+			(not (or (looking-at article)
+				 (search-forward (concat "\n" article) 
+						 nil t))))
+	      (setq articles (cdr articles)))
+	    (if (not articles)
+		()
+	      (beginning-of-line)
+	      (delete-region (point-min) (point))
+	      ;; Then we find the last wanted line. We go to the end
+	      ;; of the buffer and search backward much the same way
+	      ;; we did to find the first article.
+	      ;; !!! Perhaps it would be better just to do a (last articles), 
+	      ;; and go forward successively over each line and
+	      ;; compare to avoid this (reverse), like this:
+	      ;; (while (and (>= last (read nntp-server-buffer)))
+	      ;;             (zerop (forward-line 1))))
+	      (setq articles (reverse articles))
+	      (goto-char (point-max))
+	      (while (and articles
+			  (not (search-backward 
+				(concat "\n" (int-to-string (car articles))
+					"\t") nil t)))
+		(setq articles (cdr articles)))
+	      (if articles
+		  (progn
+		    (forward-line 2)
+		    (delete-region (point) (point-max)))))
+	    (or articles (progn (erase-buffer) nil)))))))
 
 (defun nnspool-open-server-internal (host &optional service)
-  "Open connection to news server on HOST by SERVICE (default is nntp)."
   (save-excursion
     ;; Initialize communication buffer.
     (setq nntp-server-buffer (get-buffer-create " *nntpd*"))
@@ -323,30 +394,20 @@ If the stream is opened, return T, otherwise return NIL."
 
 (defun nnspool-close-server-internal ()
   "Close connection to news server."
-  (if (get-file-buffer nnspool-history-file)
-      (kill-buffer (get-file-buffer nnspool-history-file))))
+  )
 
 (defun nnspool-find-article-by-message-id (id)
   "Return full pathname of an article identified by message-ID."
   (save-excursion
-    (let ((buffer (get-file-buffer nnspool-history-file)))
-      (if buffer
-	  (set-buffer buffer)
-	;; Finding history file may take lots of time.
-	(message "Reading history file...")
-	(set-buffer (find-file-noselect nnspool-history-file))
-	(message "Reading history file... done")))
-    ;; Search from end of the file. I think this is much faster than
-    ;; do from the beginning of the file.
-    (goto-char (point-max))
-    (if (re-search-backward
-	 (concat "^" (regexp-quote id)
-		 "[ \t].*[ \t]\\([^ \t/]+\\)/\\([0-9]+\\)[ \t]*$") nil t)
-	(let ((group (buffer-substring (match-beginning 1) (match-end 1)))
-	      (number (buffer-substring (match-beginning 2) (match-end 2))))
-	  (concat (nnspool-article-pathname
-		   (nnspool-replace-chars-in-string group ?. ?/))
-		  number)))))
+    (set-buffer nntp-server-buffer)
+    (erase-buffer)
+    (call-process "grep" nil t nil id nnspool-history-file)
+    (goto-char (point-min))
+    (if (looking-at "<[^>]+>[ \t]+[-0-9~]+[ \t]+\\(.*\\)$")
+	(concat nnspool-spool-directory
+		(nnspool-replace-chars-in-string 
+		 (buffer-substring (match-beginning 1) (match-end 1)) 
+		 ?. ?/)))))
 
 (defun nnspool-find-file (file)
   "Insert FILE in server buffer safely."

@@ -129,8 +129,10 @@
 ;; Various cruft the backends and Gnus need to communicate.
 
 (defvar nntp-server-buffer nil)
-(defvar gnus-backends-are-talkative t
+(defvar gnus-verbose-backends t
   "*If non-nil, Gnus backends will generate lots of comments.")
+(defvar gnus-nov-is-evil nil
+  "If non-nil, Gnus backends will never output headers in the NOV format.")
 (defvar news-reply-yank-from nil)
 (defvar news-reply-yank-message-id nil)
 

@@ -141,7 +141,7 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
   "Compose mail other window using mh-e."
   (let ((to (read-string "To: "))
 	(cc (read-string "Cc: "))
-	(subject (read-string "Subject: " (gnus-fetch-field "subject"))))
+	(subject (read-string "Subject: ")))
     (gnus-article-show-all-headers)	;I don't think this is really needed.
     (setq mh-show-buffer (current-buffer))
     (mh-find-path)
@@ -169,3 +169,4 @@ Otherwise, it is like +news/group."
 		  newsgroup
 		(gnus-newsgroup-directory-form newsgroup)))))
 
+;;; gnus-mh.el ends here

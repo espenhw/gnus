@@ -3,7 +3,8 @@ EMACS=emacs
 all: elc info
 
 elc:
-	cd lisp; $(EMACS) -batch -l ./dgnushack.el -f dgnushack -f batch-byte-compile *.el
+	cd lisp; make DEMACS=$(EMACS) elc
 
 info:
 	cd texi; makeinfo gnus.texi
+

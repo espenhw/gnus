@@ -1,3 +1,552 @@
+Fri Feb 17 05:06:28 1995  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* gnus.el (gnus-mail-reply-using-mail): Don't remove all text
+	properties from headers, just invisible.
+
+Thu Feb 16 04:21:19 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
+
+	* gnus.el (gnus-group-browse-foreign-server): Did not intern the
+	select method.
+	(gnus-summary-search-subject): Don't ignore hidden articles.
+	(gnus-make-directory): Would not properly create new directories. 
+	(gnus-mail-reply-using-mail): Include Cc's when replying.
+	(gnus-adjust-marked-articles): Infinite loop.
+
+	* nnvirtual.el (nnvirtual-retrieve-headers): Would not allow
+	people to enter groups.
+
+	* gnus-mh.el (gnus-mail-other-window-using-mhe): Tried to fetch
+	subject where none was to be fetched.
+
+	* gnus.el (gnus-browse-read-group): Movement commands did not
+	work. 
+	(gnus-score-interactive-default-score): New variable, default
+	1000. 
+
+Mon Feb  6 15:44:42 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-configure-windows): Bury the group buffer
+	somewhat. 
+	(gnus-mail-reply-using-mail): Don't bind `C-c C-y' to anything in
+	the mail buffer.
+
+	* nndir.el (nndir-retrieve-headers): Retrieve with NOV, if that is
+	posssible. 
+
+Sun Feb  5 21:15:45 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: Introduction of pseudo-articles. Changes throughout
+	Gnus.
+
+	* gnus-uu.el: Rewrite. New keymap and new interface.
+
+	* gnus.el (gnus-get-newsgroup-headers): Would barf on In-Reply-To
+	headers. 
+
+Sat Feb  4 18:16:21 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-uu.el (gnus-uu-get-list-of-articles): Would not get list of
+	articles. 
+
+Sat Feb  4 13:47:14 1995  Lars Magne Ingebrigtsen  <larsi@hnoss.ifi.uio.no>
+
+	* gnus.el (gnus-summary-quit): Did not the kill summary buffer.
+
+	* gnus-visual.el (gnus-visual-highlight-selected-summary): Limit
+	the highligting to the same area highligted by mouse-face.
+
+Sat Feb  4 09:49:31 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-build-get-header): Faster searching.
+
+Fri Feb  3 18:25:42 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-newsgroup-ancient): New variable.
+	(gnus-summary-local-variables): Initialize it.
+	(gnus-build-get-header): Build it.
+	(gnus-trim-thread): New function.
+	(gnus-make-threads): Call it.
+	(gnus-ancient-mark): New variable.
+	(gnus-summary-prepare-threads): Use it.
+	(gnus-fetch-old-headers): Updated documentation.
+
+Mon Jan 30 05:11:47 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-articles-to-read): Don't inform the user if the
+	only scored articles are tiched or dormant.
+
+Sat Feb  4 09:39:21 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-read-init-file): Also load .gnus.el and .gnus.elc. 
+
+	* gnus.el: Removed the last vestiges of the invisible text in the
+	group and summary buffers.
+
+Fri Feb  3 19:27:29 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-make-directory-group): New command and
+	keystroke. 
+	(gnus-subscribe-hierarchical-interactive): Would not let you
+	subscribe to anything.
+	(gnus-get-newsgroup-headers): Would barf when presented with
+	message-id-less articles.
+
+	* nndir.el: New backend for reading directories.
+
+Thu Feb  2 17:42:51 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-prepare): Zombie and killed groups could not
+	be chosen.
+	(gnus-group-search-forward): Didn't return nil when no group was
+	found. 
+	(gnus-summary-prepare): Sorting was done after gathering loose
+	threads, so the losse threads were not sorted properly.
+
+Thu Feb  2 15:31:11 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el: Implemented support for SCORE files.
+
+Thu Feb  2 17:23:17 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-list-groups): Don't go to the first group
+	after listing.
+	(gnus-group-list-groups): Go to the first unread group at startup,
+	not the second.
+
+Tue Jan 31 15:13:10 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-inews-full-address): Use the full machine name in
+	the message-ids.
+	(gnus-get-unread-articles-in-group): Groups that have no articles
+	are marked as such.
+
+	* nnmail.el (nnmail-article-group): Catch regexp overflow errors. 
+
+	* gnus.el (gnus-update-read-articles): Would not update virtual
+	groups. 
+	(gnus-mail-send-and-exit): Don't return to the Gnus window
+	configuration from the mail buffer if Gnus isn't active.
+	(gnus-summary-next-group): Go to the group buffer if the user
+	answers "0" after selecting a new group from a different group. 
+	(gnus-select-newsgroup): Catch up properly if the only articles in
+	a group have expired.
+
+Tue Jan 31 08:01:19 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-kill): Arguments to `gnus-days-between' was
+	swapped. 
+
+Tue Jan 31 07:09:36 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-pp-gnus-kill): Don't quote quoted objects.
+
+Tue Jan 31 05:51:52 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus): Check whether Gnus has been started already. If
+	so, don't re-start, just switch to the buffer and get new news.
+	(gnus-batch-score): Didn't work.
+
+	* nnspool.el (nnspool-nov-is-evil): New variable.
+	(nnspool-lib-dir): New variable.
+	(nnspool-retrieve-headers-with-nov): nnspool can now return NOV
+	lines instead of plain article headers.
+
+	* nntp.el (nntp-nov-is-evil): Changed name of `nntp-xover-is-evil'
+	to `nntp-nov-is-evil'.
+
+Mon Jan 30 12:27:30 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-search-subject): Would go to the first
+	article when searching backward.
+	(gnus-gather-threads): When gathering loose threads, they would be
+	gathered in reverse order.
+	(gnus-summary-prev-article): Did retrieve old articles when
+	executed on the first article in the buffer.
+	(gnus-read-header): Would not read old headers when requested one
+	by one.
+
+	* gnus.el: Converted all mark variables from strings to characters.
+
+Sun Jan 29 05:56:51 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-select-group-hook): Remove description of how to
+	sort, since it doesn't work.
+	(gnus-make-sub-thread): Removed silly lambda expression.
+	(gnus-thread-sort-functions): New variable.
+	(gnus-make-threads): Do not sort here.
+	(gnus-thread-sort-by-number): New function.
+	(gnus-thread-sort-by-author): New function.
+	(gnus-thread-sort-by-subject): New function.
+	(gnus-thread-sort-by-date): New function.
+	(gnus-thread-sort-by-score): New function.
+	(gnus-thread-sort-by-total-score): New function.
+	(gnus-thread-total-score): New function.
+	(gnus-thread-header): New function.
+	(gnus-sort-threads): New function.
+	(gnus-summary-prepare): Sort here.
+
+Sat Jan 28 18:44:09 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-articles-to-read): Provide default values instead
+	of initial input.
+
+Mon Jan 30 01:41:43 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus.el (gnus-mark-article-hook): Don't mark expirable articles
+	as read when selecting them.
+	(gnus-summary-mode): Removed " Thread" from the summary mode line.
+	(gnus-inews-message-id): Use domain name instead of host name in
+	message-ids.
+
+Sun Jan 29 09:37:31 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-apply-kill-file): Update dates when expiring
+	kills. 
+	(gnus-article-mode): Changed all the mode lines to really use a
+	buffer-local spec.
+	(gnus-group-search-forward): gnus-keep-same-level now works. 
+
+	* gnus.el: Got rid of all the invisible text and changed all the
+	functions to use text properties.
+
+Sat Jan 28 03:13:13 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus.el (gnus-inews-insert-headers): Remove any old
+	NNTP-Posting-Host headers.
+	(gnus-group-catchup): Mark dormant as read.
+
+Fri Jan 27 20:50:07 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-inews-news): Make followups default to all groups.
+
+Fri Jan 27 20:07:31 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-summary-prepare-threads): Move assignment to
+	`gnus-tmp-prev-subject' to after the check for equality with
+	`subject'. 
+
+Thu Jan 26 15:47:35 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-set-mouse-face): New function.
+	(gnus-parse-format): New function.
+	(gnus-parse-simple-format): Renamed from `gnus-parse-format'.
+	(gnus-group-insert-group-line): Do not set mouse face here.
+	(gnus-summary-insert-line): Do not set mouse face here.
+	(gnus-group-line-format): Add mouse face delimiters.
+	(gnus-summary-line-format): Add mouse face delimiters.
+	(gnus-update-format-specifications): Don't depend on
+	`gnus-group-line-format-spec' being a simple list.
+
+Tue Jan 24 20:18:42 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-clear-system): Kill global KILL file.
+
+Tue Jan 24 14:43:33 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-inews-insert-headers): Only check if first
+	`gnus-summary-gather-subject-limit' characters are the same.
+
+Mon Jan 23 22:18:56 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-summary-update-line): Protect call to
+	`gnus-summary-mark-article' with `save-excursion'.
+
+Sat Jan 28 00:55:19 1995  Lars Magne Ingebrigtsen  <larsi@mimir.ifi.uio.no>
+
+	* gnus.el (gnus-extract-address-components): Would fail if the
+	address contained special characters.
+
+Fri Jan 27 04:45:09 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-active-to-gnus-format): Condition-cased the active
+	file reading to be a bit more lenient with active files.
+	(gnus-group-get-new-news): Would always request info on each
+	individual group, even when the active file has been read.
+
+Thu Jan 26 00:16:45 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-inews-unique-id): Check for illegal characters in
+	the user name.
+	(gnus-summary-set-score): Removed the invisible score from the
+	summary lines. (assq article-number gnus-newsgroup-scored) can be
+	used instead.
+	(gnus-add-to-range): Would not give the right result if the ranges
+	did not start at 1.
+
+Wed Jan 25 02:49:39 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-move-article): Would not properly respool
+	articles. 
+	(gnus-pp-gnus-kill): Removed (quote) from where it wasn't needed. 
+
+	* nnml.el (nnml-request-accept-article): Wouldn't do anything
+	much. 
+	(nnml-request-move-article): Would not properly move an article.
+
+	* gnus.el (gnus-apply-kill-file): Don't score already scored
+	articles. 
+	(gnus-newsgroup-scored): New list of articles.
+	(gnus-select-newsgroup, gnus-articles-to-read): Changed to take
+	into account previously scored articles, if any.
+
+Tue Jan 24 00:19:11 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-inews-organization): If organization is wanted,
+	and no organization is found, the user will be prompted for one. 
+	(gnus-inews-check-post): Bug in checking for multuple headers.
+	(gnus-inews-check-post): Check for version and sendsys.
+	(gnus-inews-insert-signature): Don't insert stuff that looks like
+	file names in signatures.
+
+	* nntp.el (nntp-request-article): unwind-protect the article
+	fetching. Might have caused bugs elsewhere.
+
+	* gnus.el (gnus-inews-organization): New implementation. The
+	`gnus-local-organization' variable can now also be a function.
+	(gnus-inews-check-post): Check for multiple headers.
+	(gnus-check-bogus-newsgroups): Would not remove bogus dead groups. 
+
+Mon Jan 23 23:49:15 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-inews-user-name): Use `user-mail-address' only as
+	a last resort.
+
+Mon Jan 23 19:40:02 1995  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* gnus.el (gnus-build-get-header): Did not work with multiple
+	articles with the same message-id.
+	(gnus-inews-organization): Remove trailing newlines.
+
+	* nnspool.el (nnspool-find-article-by-message-id): Grep for
+	message-ids instead of loading the entire history file.
+
+Mon Jan 23 18:59:27 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus-visual.el (gnus-visual-summary-highlight): Use and document
+	free variables. 
+	(gnus-visual-summary-highlight-line): Remove unnecessary test for
+	`gnus-visual' and add workaround face changes in start of line.
+
+Mon Jan 23 18:48:31 1995  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* nnmbox.el (nnmbox-read-mbox): Fix for no newsgroups.
+
+	* gnus.el (gnus-ask-server-for-new-groups): Did not work. :-)
+	(gnus-summary-make-false-root): This variable has now swallowed
+	the functionality of `gnus-gather-loose-threads'.
+
+Mon Jan 23 18:03:21 1994  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* gnus.el (gnus-group-unsubscribe-current-group): Would go two
+	steps forward.
+
+Mon Jan 23 17:09:10 1995  Lars Magne Ingebrigtsen  <larsi@mimir.ifi.uio.no>
+
+	* nnmail.el (nnmail-insert-lines): Compute a new Lines header and
+	remove any old ones.
+
+	* nnvirtual.el (nnvirtual-retrieve-headers): Removed checking for
+	multiple articles with the same ID.
+
+	* gnus.el (gnus-get-newsgroup-headers): Ignore multiple articles
+	with the same Message-ID.
+	(gnus-get-newsgroup-headers-xover): The same.
+
+Mon Jan 23 00:42:33 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-inews-insert-headers): Ask when empty headers
+	are detected.
+	(gnus-cancel-news): Avoid sending an empty cancel message.
+	(gnus-signature-function): New variable to return a signature file
+	name. 
+	(gnus-inews-insert-signature): Now warns the user if the signature
+	is more than 4 lines long. Also uses `gnus-signature-function'.
+	Also, if the string isn't a file name, the string itself is
+	inserted as a signature.
+	(gnus-inews-insert-signature): If mail-signature has already
+	inserted a .sig, delete this and insert Gnus' own.
+	(gnus-inews-check-post): Warn the user if the article to be posted
+	is more than 60k long.
+	(gnus-inews-insert-headers): Insert Sender header if the From
+	header doesn't seem to be the name of the user that posts.
+	(gnus-inews-check-post): Check for control characters.
+	(gnus-inews-insert-headers): Added "_-_" to message-id if the
+	thread has changed name.
+
+Sun Jan 22 02:37:06 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-article-prepare): Mark cancelled articles as
+	cancelled. 
+	(gnus-summary-expire-articles): Mark expired articles as
+	cancelled. 
+	(gnus-inews-insert-signature): Changed .sig predix from "--" to
+	"-- ".
+	(gnus-article-display-hook): Added "treat overstrike" to the
+	default display hook.
+	(gnus-inews-date): Changed to generate a valid date.
+
+	* nnmbox.el (nnmbox-request-article): Don't include the "From "
+	line when returning an article.
+
+	* nnmh.el (nnmh-save-mail): Rename "From " lines.
+
+	* nnml.el (nnml-save-mail): Rename "From " lines. 
+
+	* gnus.el (gnus-gnus-to-newsrc-format): Don't write foreign groups
+	to .newsrc.
+	(gnus-summary-remove-lines-marked-as-read,
+	gnus-summary-remove-lines-marked-with): Renamed functions 
+	from *-delete-marked-*.
+	(gnus-check-new-newsgroups): New possible value: `ask-server'.
+	(gnus-ask-server-for-new-groups): Ask the server for new groups
+	instead of comparing the killed list and the active hashtb. 
+	(gnus-parse-newsrc-body): Parse ! and : in the way they are
+	supposed to be parsed.
+	(gnus-get-unread-articles): Now works with any combination of
+	startup level, gnus-read-active-file status and
+	gnus-activate-foreign-newsgroup level.
+
+Sat Jan 21 21:27:23 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnvirtual.el: Big rewrite.
+	(nnvirtual-update-marked): Now updates marks in source groups.
+	(nnvirtual-create-mapping): Use marks from source groups.
+	(nnvirtual-possibly-change-newsgroups): Several nnvirtual groups
+	may be active at the same time. nnvirtual groups can also include
+	other nnvirtual groups.
+
+	* gnus.el (gnus-add-marked-articles): New function,
+
+Sat Jan 21 15:22:51 1995  Lars Magne Ingebrigtsen  <larsi@hnoss.ifi.uio.no>
+
+	* gnus.el (gnus-mark-xrefs-as-read): Would mark xreffed articles
+	that were ticked (or dormant) as read.
+	(gnus-summary-refer-parent-article): Now understands the numeric
+	prefix. 
+	(gnus-build-get-header): Would make it impossible to select old
+	fetched articles.
+
+	* gnus-visual.el (gnus-article-make-menu-bar): Added all treatment
+	functions to a menu.
+
+	* gnus.el (gnus-close-group): New backend call to perform
+	cleanups. 
+	(gnus-article-de-quoted-unreadable): New article treatment
+	function. 
+
+Sat Jan 21 01:15:26 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmail.el (nnmail-article-group): Don't enter a mail into the
+	same mail group twice,
+
+	* gnus.el (gnus-build-old-threads): Don't build old threads
+	backwards from dormant articles.
+
+Fri Jan 20 23:31:16 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-mark-article): Changed the expiry mark. It
+	is now a "read" mark, and occupies the same position as the other
+	read marks ("DX+- "). 
+
+Fri Jan 20 19:19:01 1995  Lars Magne Ingebrigtsen  <larsi@drott.ifi.uio.no>
+
+	* gnus.el (gnus-get-unread-articles): Did not properly activate
+	foreign newsgroups.
+
+Fri Jan 20 18:49:58 1995  Lars Magne Ingebrigtsen  <larsi@drott.ifi.uio.no>
+
+	* gnus.el (gnus-group-list-matching): New function and keystroke.
+
+Tue Jan 17 19:19:30 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-summary-keysort-summary,
+	gnus-summary-sort-summary, gnus-keysort-headers, gnus-keysort,
+	gnus-sort-headers, gnus-string-lessp, gnus-date-lessp): Deleted.
+	(gnus-sortable-date): New function.
+	(gnus-summary-sort-by-date, gnus-summary-sort-by-subject,
+	gnus-summary-sort-by-author, gnus-summary-sort-by-number): Use it.
+	(gnus-summary-sort-by-score): New function.
+	(gnus-summary-mode-map): Bind it.
+	(gnus-select-group-hook): Updated documentation.
+
+	* gnus.el (gnus-summary-best-unread-article): New function.
+	(gnus-summary-mode-map): Add binding.
+	(gnus-summary-mode): Document it.
+
+Mon Jan 16 15:49:37 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-summary-gather-subject-limit): New variable.
+	(gnus-gather-threads): Use it.
+
+	* nntp.el (nntp-request-post-buffer): Support
+	`gnus-auto-mail-to-author'.
+
+	* gnus.el (gnus-mail-self-blind): New variable.
+	(gnus-post-news): Use it.
+	(gnus-inews-news): Recognize "BCC" field.
+
+Thu Jan 19 21:37:33 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-build-old-threads): Fetch old headers and build
+	complete threads.
+
+Wed Jan 18 08:36:26 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmh.el: Rewrite.
+
+	* gnus.el (gnus-get-newsgroup-headers): New implementation. Twice
+	as fast.
+
+	* nnmbox.el: Rewrite. Now supports crossposting.
+
+	* nnml.el: Rewrite.
+
+	* nnmail.el: Gathered all mail support functions in this file. 
+
+	* nnmbox.el: Renamed nnmail to nnmbox.
+
+	* gnus.el (gnus-summary-exit): Kill expunged buffer on exit.
+
+	* nntp.el (nntp-server-opened-hook): Send "MODE READER" to the
+	server at startup.
+
+Mon Jan 16 11:56:39 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus.el (gnus-summary-read-group): Update the specs after the
+	select-group-hook has bene run.
+
+Sun Jan 15 11:01:20 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el: Add autoload for `gnus-article-make-menu-bar'.
+	 (gnus-article-mode-map): Call `gnus-article-make-menu-bar'.
+
+	* gnus-visual.el (gnus-group-make-menu-bar): Added entry for
+	`gnus-group-edit-global-kill',
+	(gnus-summary-make-menu-bar): Added entry for
+	`gnus-summary-raise-followups-to-author', and
+	`gnus-summary-lower-followups-to-author'.  Removed entries for
+	`gnus-summary-raise-by-thread', and
+	`gnus-summary-lower-by-thread'.
+	Renamed `xref' to `crossposting' since more people know that term.
+	Merged `Sort' menu with `Misc' since the menu-bar had not space
+	enough for all entries.
+	(gnus-article-make-menu-bar): New function.  Add menu bar for
+	article mode.
+
+Sun Jan 15 18:08:53 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el (gnus-pp-gnus-kill): Don't assume (nth 0 object) is
+	`gnus-kill'. 
+
+Sun Jan 15 14:11:29 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-refer-article): Don't fetch an article if
+	it is fetched already.
+	(gnus-gnus-to-newsrc-format): Write killed groups to the .newsrc
+	file as unsubscribed without numbers.
+	(gnus-summary-exit): Go to next group in the Group buffer when
+	quitting. 
+
 Sun Jan 15 07:44:09 1995  Lars Magne Ingebrigtsen  <larsi@hnoss.ifi.uio.no>
 
 	* gnus.el (gnus-article-refer-article): Would not scroll to the

@@ -34,7 +34,7 @@
   (autoload 'news-reply-mode "rnewspost"))
 
 (defvar nntp-server-hook nil
-  "*Hooks for the NNTP server.
+  "Hooks for the NNTP server.
 If the kanji code of the NNTP server is different from the local kanji
 code, the correct kanji code of the buffer associated with the NNTP
 server must be specified as follows:
@@ -49,41 +49,38 @@ server must be specified as follows:
 If you'd like to change something depending on the server in this
 hook, use the variable `nntp-server-name'.")
 
-(defvar nntp-server-opened-hook nil
-  "You can send commands at startup like AUTHINFO with this hook.")
+(defvar nntp-server-opened-hook 
+  (list
+   (lambda ()
+     (nntp-send-command "MODE" "READER")))
+  "Hook used for sending commands to the server at startup.
+It is used by default to send the \"MODE READER\" command to the
+server. This makes innd servers spawn an nnrpd server.
+Other useful commands might be \"AUTHINFO\".")
 
 (defvar nntp-large-newsgroup 50
-  "*The number of the articles which indicates a large newsgroup.
+  "The number of the articles which indicates a large newsgroup.
 If the number of the articles is greater than the value, verbose
 messages will be shown to indicate the current status.")
 
 (defvar nntp-buggy-select (memq system-type '(usg-unix-v fujitsu-uts))
-  "*T if your select routine is buggy.
+  "t if your select routine is buggy.
 If the select routine signals error or fall into infinite loop while
 waiting for the server response, the variable must be set to t.  In
 case of Fujitsu UTS, it is set to T since `accept-process-output'
 doesn't work properly.")
 
 (defvar nntp-maximum-request 1
-  "*The maximum number of the requests sent to the NNTP server at one time.
+  "The maximum number of the requests sent to the NNTP server at one time.
 If Emacs hangs up while retrieving headers, set the variable to a
 lower value.")
 
 (defvar nntp-debug-read 10000
-  "*Display '...' every 10Kbytes of a message being received if it is non-nil.
+  "Display '...' every 10Kbytes of a message being received if it is non-nil.
 If it is a number, dots are displayed per the number.")
 
-(defvar nntp-xover-is-evil nil
-  "*If non-nil, nntp will never attempt to use XOVER when talking to the server.")
-
-(defvar nntp-build-old-threads nil
-  "*Non-nil means that Gnus will try to build threads by grabbing old headers.
-If an unread article in the group refers to an older, already read (or
-just marked as read) article, the old article will not normally be
-displayed in the Summary buffer. If this variable is non-nil, Gnus
-will attempt to grab the headers to the old articles, and thereby
-build complete threads. `nntp-xover-is-evil' has to be nil if this is
-to work.")
+(defvar nntp-nov-is-evil nil
+  "If non-nil, nntp will never attempt to use XOVER when talking to the server.")
 
 (defvar nntp-xover-commands '("XOVER" "XOVERVIEW")
   "List of strings that are used as commands to fetch NOV lines from a server.
@@ -127,7 +124,8 @@ instead call function `nntp-status-message' to get status message.")
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
-    (if (and (not nntp-xover-is-evil)
+    (if (and (not gnus-nov-is-evil) 
+	     (not nntp-nov-is-evil)
 	     (nntp-retrieve-headers-with-xover sequence))
         'nov
       (let ((number (length sequence))
@@ -258,13 +256,14 @@ If the stream is opened, return non-nil, otherwise return nil."
 (defun nntp-request-article (id &optional newsgroup server buffer)
   "Select article by message ID (or number)."
   (nntp-possibly-change-server newsgroup server)
-  (if buffer (set-process-buffer nntp-server-process buffer))
-  (prog1
-      (let ((nntp-server-buffer (or buffer nntp-server-buffer)))
-	;; If NEmacs, end of message may look like: "\256\215" (".^M")
-	(prog1
-	    (nntp-send-command "^\\.\r$" "ARTICLE" id)
-	  (nntp-decode-text)))
+  (unwind-protect
+      (progn
+	(if buffer (set-process-buffer nntp-server-process buffer))
+	(let ((nntp-server-buffer (or buffer nntp-server-buffer)))
+	  ;; If NEmacs, end of message may look like: "\256\215" (".^M")
+	  (prog1
+	      (nntp-send-command "^\\.\r$" "ARTICLE" id)
+	    (nntp-decode-text))))
     (if buffer (set-process-buffer nntp-server-process nntp-server-buffer))))
 
 (defun nntp-request-body (id &optional newsgroup server)
@@ -296,6 +295,9 @@ If the stream is opened, return non-nil, otherwise return nil."
 	(nntp-send-command "^.*\r$" "GROUP" group)
 	)))
 
+(defun nntp-close-group (group &optional server)
+  t)
+
 (defun nntp-request-list (&optional server)
   "List active newsgroups."
   (nntp-possibly-change-server nil server)
@@ -311,6 +313,13 @@ If the stream is opened, return non-nil, otherwise return nil."
       (nntp-send-command "^\\.\r$" "LIST NEWSGROUPS")
     (nntp-decode-text)
     ))
+
+(defun nntp-request-newgroups (date &optional server)
+  "List new groups (defined in NNTP2)."
+  (nntp-possibly-change-server nil server)
+  (prog1
+      (nntp-send-command "^\\.\r$" "NEWGROUPS" date)
+    (nntp-decode-text)))
 
 (defun nntp-request-list-distributions (&optional server)
   "List distributions (defined in NNTP2)."
@@ -390,7 +399,14 @@ in the current news group."
 	    (widen))
 	  (setq news-reply-yank-from from)
 	  (setq news-reply-yank-message-id message-id)
-	  (news-setup nil subject message-of newsgroups article-buffer)
+	  ;; Prevent getting BCC or FCC fields inserted for both mail
+	  ;; and news.  
+	  (let ((mail-self-blind
+		 (and (not gnus-mail-self-blind) mail-self-blind))
+		(mail-archive-file-name
+		 (and (not gnus-author-copy) mail-archive-file-name)))
+	    (news-setup (and gnus-auto-mail-to-author from)
+			subject message-of newsgroups article-buffer))
 	  ;; Fold long references line to follow RFC1036.
 	  (mail-position-on-field "References")
 	  (let ((begin (- (point) (length "References: ")))
@@ -416,8 +432,9 @@ in the current news group."
     (while (and servers 
 		(not (equal proc (nth 1 (car servers)))))
       (setq servers (cdr servers)))
-    (error "nntp: Connection closed to server %s." 
-	   (or (car (car servers)) "(none)"))))
+    (message "nntp: Connection closed to server %s." 
+	     (or (car (car servers)) "(none)"))
+    (ding)))
 
 ;; Encoding and decoding of NNTP text.
 
@@ -560,8 +577,7 @@ in the current news group."
 (defun nntp-retrieve-headers-with-xover (sequence)
   (if (not nntp-server-xover)
       ()
-    (let ((range (format "%d-%d" 
-			 (if nntp-build-old-threads 1 (car sequence))
+    (let ((range (format "%d-%d" (car sequence)
 			 (nntp-last-element sequence))))
       (prog1
 	  (if (stringp nntp-server-xover)

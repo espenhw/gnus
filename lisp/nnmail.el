@@ -1,8 +1,7 @@
-;;; nnmail.el --- mail mbox access for Gnus
+;;; nnmail.el --- mail support functions for the Gnus mail backends
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
-;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: news, mail
 
 ;; This file is part of GNU Emacs.
@@ -27,6 +26,7 @@
 
 (require 'nnheader)
 (require 'rmail)
+(require 'timezone)
 
 (defvar nnmail-split-methods
   '(("mail.misc" ""))
@@ -37,16 +37,9 @@
   "If non-nil, do crossposting if several split methods match the mail.
 If nil, the first match found will be used.")
 
-(defvar nnmail-mbox-file (expand-file-name "~/mbox")
-  "The name of the mail box file in the users home directory.")
-
-(defvar nnmail-active-file (expand-file-name "~/.mbox-active")
-  "The name of the active file for the mail box.")
-
 (defvar nnmail-expiry-wait 7
   "Articles that are older than `nnmail-expiry-wait' days will be expired.")
 
-;; Quote fix by Sudish Joseph <joseph@cis.ohio-state.edu>.
 (defvar nnmail-expiry-wait-function nil
   "Variable that holds funtion to specify how old articles should be before they are expired.
   The function will be called with the name of the group that the
@@ -65,7 +58,9 @@ Eg.:
 
 (defvar nnmail-spool-file 
   (or (getenv "MAIL")
-      (concat "/usr/spool/mail/" (user-login-name))))
+      (concat "/usr/spool/mail/" (user-login-name)))
+  "Where the mail backends will look for incoming mail.
+If this variable is nil, no mail backends will read incoming mail.")
 
 (defvar nnmail-read-incoming-hook nil
   "Hook that will be run after the incoming mail has been transferred.
@@ -89,156 +84,21 @@ Eg.
 The hook is run in a buffer with all the new, incoming mail.")
 
 (defvar nnmail-large-newsgroup 50
-  "*The number of the articles which indicates a large newsgroup.
+  "The number of the articles which indicates a large newsgroup.
 If the number of the articles is greater than the value, verbose
 messages will be shown to indicate the current status.")
 
 
 
-(defconst nnmail-version "nnmail 0.1"
+(defconst nnmail-version "nnml 0.0"
   "nnmail version.")
 
-(defvar nnmail-current-group nil
-  "Current nnmail news group directory.")
-
-(defconst nnmail-mbox-buffer "*nnmail mbox buffer*")
-
-(defvar nnmail-active-alist nil)
-
-(defvar nnmail-status-string "")
-
-;;; Interface functions
-
-(defun nnmail-retrieve-headers (sequence &optional newsgroup server)
-  "Retrieve the headers for the articles in SEQUENCE.
-Newsgroup must be selected before calling this function."
-  (save-excursion
-    (set-buffer nntp-server-buffer)
-    (erase-buffer)
-    (let ((file nil)
-	  (number (length sequence))
-	  (count 0)
-	  beg article art-string start stop)
-      (nnmail-possibly-change-newsgroup newsgroup)
-      (while sequence
-	(setq article (car sequence))
-	(setq art-string (nnmail-article-string article))
-	(set-buffer nnmail-mbox-buffer)
-	(if (or (search-forward art-string nil t)
-		(progn (goto-char 1)
-		       (search-forward art-string nil t)))
-	    (progn
-	      (setq start 
-		    (save-excursion
-		      (re-search-backward 
-		       (concat "^" rmail-unix-mail-delimiter) nil t)
-		      (point)))
-	      (search-forward "\n\n" nil t)
-	      (setq stop (1- (point)))
-	      (set-buffer nntp-server-buffer)
-	      (insert (format "221 %d Article retrieved.\n" article))
-	      (setq beg (point))
-	      (insert-buffer-substring nnmail-mbox-buffer start stop)
-	      (goto-char (point-max))
-	      (insert ".\n")))
-	(setq sequence (cdr sequence))
-	(setq count (1+ count))
-	(and (numberp nnmail-large-newsgroup)
-	     (> number nnmail-large-newsgroup)
-	     (zerop (% count 20))
-	     (message "NNMAIL: Receiving headers... %d%%"
-		      (/ (* count 100) number))))
-
-      (and (numberp nnmail-large-newsgroup)
-	   (> number nnmail-large-newsgroup)
-	   (message "NNMAIL: Receiving headers... done"))
-
-      ;; Fold continuation lines.
-      (goto-char 1)
-      (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	(replace-match " " t t))
-      'headers)))
-
-(defun nnmail-open-server (host &optional service)
-  "Open mbox backend."
-  (setq nnmail-status-string "")
-  (nnmail-open-server-internal host service))
-
-(defun nnmail-close-server (&optional server)
-  "Close news server."
-  (nnmail-close-server-internal))
-
-(fset 'nnmail-request-quit (symbol-function 'nnmail-close-server))
-
-(defun nnmail-server-opened (&optional server)
-  "Return server process status, T or NIL.
-If the stream is opened, return T, otherwise return NIL."
-  (and nntp-server-buffer
-       (get-buffer nntp-server-buffer)))
-
-(defun nnmail-status-message ()
-  "Return server status response as string."
-  nnmail-status-string)
-
-(defun nnmail-request-article (article &optional newsgroup server buffer)
-  "Select ARTICLE by number."
-  (nnmail-possibly-change-newsgroup newsgroup)
-  (if (stringp article)
-      nil
-    (save-excursion
-      (set-buffer nnmail-mbox-buffer)
-      (goto-char 1)
-      (if (search-forward (nnmail-article-string article) nil t)
-	  (let (start stop)
-	    (re-search-backward (concat "^" rmail-unix-mail-delimiter) nil t)
-	    (setq start (point))
-	    (forward-line 1)
-	    (or (and (re-search-forward 
-		      (concat "^" rmail-unix-mail-delimiter) nil t)
-		     (forward-line -1))
-		(goto-char (point-max)))
-	    (setq stop (point))
-	    (let ((nntp-server-buffer (or buffer nntp-server-buffer)))
-	      (set-buffer nntp-server-buffer)
-	      (erase-buffer)
-	      (insert-buffer-substring nnmail-mbox-buffer start stop)
-	      t))))))
-
-(defun nnmail-request-group (group &optional server dont-check)
-  "Select news GROUP."
-  (if (nnmail-possibly-change-newsgroup group)
-      (if dont-check
-	  t
-	(nnmail-get-new-mail)
-	(save-excursion
-	  (set-buffer nntp-server-buffer)
-	  (erase-buffer)
-	  (let ((active (assoc group nnmail-active-alist)))
-	    (insert (format "211 %d %d %d %s\n" 
-			    (1+ (- (cdr (car (cdr active)))
-				   (car (car (cdr active)))))
-			    (car (car (cdr active)))
-			    (cdr (car (cdr active)))
-			    (car active))))
-	  t))))
-
-(defun nnmail-request-list (&optional server)
-  "List active newsgoups."
-  (nnmail-find-file nnmail-active-file))
-
-(defun nnmail-request-list-newsgroups (&optional server)
-  "List newsgroups (defined in NNTP2)."
-  (setq nnmail-status-string "NNMAIL: LIST NEWSGROUPS is not implemented.")
-  nil)
-
-(defun nnmail-request-post (&optional server)
-  "Post a new news in current buffer."
-  (mail-send-and-exit nil))
+
 
 (defun nnmail-request-post-buffer (method header article-buffer group info)
-  (let ((method-address (nth 1 (nth 4 info)))
+  (let ((method-address (cdr (assq 'to-address (nth 4 info))))
 	from subject date to reply-to message-of
-	references message-id sender follow-to)
+	references message-id sender follow-to cc)
     (setq method-address
 	  (if (and (stringp method-address) 
 		   (string= method-address ""))
@@ -247,7 +107,6 @@ If the stream is opened, return T, otherwise return NIL."
       (set-buffer (get-buffer-create "*mail*"))
       (mail-mode)
       (local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
-      (local-set-key "\C-c\C-y" 'gnus-mail-yank-original)
       (if (and (buffer-modified-p)
 	       (> (buffer-size) 0)
 	       (not (y-or-n-p "Unsent mail being composed; erase it? ")))
@@ -273,6 +132,8 @@ If the stream is opened, return T, otherwise return NIL."
 			 (concat (if stop-pos (substring from 0 stop-pos) from)
 				 "'s message of " date))))
 	    (setq sender (mail-fetch-field "sender"))
+	    (setq cc (mail-fetch-field "cc"))
+	    (setq to (mail-fetch-field "to"))
 	    (setq subject (header-subject header))
 	    (or (string-match "^[Rr][Ee]:" subject)
 		(setq subject (concat "Re: " subject)))
@@ -282,7 +143,10 @@ If the stream is opened, return T, otherwise return NIL."
 	    (widen))
 	  (setq news-reply-yank-from from)
 	  (setq news-reply-yank-message-id message-id)
-	  (mail-setup (or follow-to method-address sender reply-to from)
+	  (mail-setup (or follow-to method-address 
+			  (concat (or sender reply-to from "")
+				  (if to (concat ", " to) "")
+				  (if cc (concat ", " cc) "")))
 		      subject message-of nil article-buffer nil)
 	  ;; Fold long references line to follow RFC1036.
 	  (mail-position-on-field "References")
@@ -298,160 +162,121 @@ If the stream is opened, return T, otherwise return NIL."
 	  ))
       (current-buffer))))
 
-(defun nnmail-request-expire-articles (articles newsgroup &optional server force)
-  "Expire all articles in the ARTICLES list in group GROUP.
-The list of unexpired articles will be returned (ie. all articles that
-were too fresh to be expired).
-If FORCE is non-nil, the ARTICLES will be deleted without looking at
-the date."
-  (nnmail-possibly-change-newsgroup newsgroup)
-  (let* ((days (or (and nnmail-expiry-wait-function
-			(funcall nnmail-expiry-wait-function newsgroup))
-		   nnmail-expiry-wait))
-	 (cur-time (current-time))
-	 (day-sec (* 24 60 60 days))
-	 (day-time (list nil nil))
-	 mod-time article rest)
-    (setcar day-time (/ day-sec 65536))
-    (setcar (cdr day-time) (- day-sec (* (car day-time) 65536)))
-    (if (< (car (cdr cur-time)) (car (cdr day-time)))
-	(progn
-	  (setcar day-time (+ 1 (- (car cur-time) (car day-time))))
-	  (setcar (cdr day-time) (- (+ 65536 (car (cdr cur-time)))
-				    (car (cdr day-time)))))
-      (setcar day-time (- (car cur-time) (car day-time)))
-      (setcar (cdr day-time) (- (car (cdr cur-time)) (car (cdr day-time)))))
-    (save-excursion 
-      (set-buffer nnmail-mbox-buffer)
-      (while articles
-	(goto-char 1)
-	(if (and (search-forward (nnmail-article-string (car articles)) nil t)
-		 (or force
-		     (setq mod-time (read (current-buffer)))
-		     (or (< (car mod-time) (car day-time))
-			 (and (= (car mod-time) (car day-time))
-			      (< (car (cdr mod-time)) (car (cdr day-time)))))))
-	    (progn
-	      (message "Deleting: %s" article)
-	      (nnmail-delete-mail))
-	  (setq rest (cons (car articles) rest)))
-	(setq articles (cdr articles)))
-      (save-buffer)
-      rest)))
-
-(defun nnmail-request-move-article (article group server accept-form)
-  (let ((buf (get-buffer-create " *nnmail move*"))
-	result)
-    (and 
-     (nnmail-request-article article group server)
-     (save-excursion
-       (set-buffer buf)
-       (insert-buffer-substring nntp-server-buffer)
-       (goto-char (point-min))
-       (if (re-search-forward 
-	    "^X-Gnus-Newsgroup:" 
-	    (save-excursion (search-forward "\n\n" nil t) (point)) t)
-	   (delete-region (progn (beginning-of-line) (point))
-			  (progn (forward-line 1) (point))))
-       (setq result (eval accept-form))
-       (kill-buffer (current-buffer))
-       result)
-     (save-excursion
-       (set-buffer nnmail-mbox-buffer)
-       (goto-char 1)
-       (if (search-forward (nnmail-article-string article) nil t)
-	   (nnmail-delete-mail))
-       (save-buffer)))
-    result))
-
-(defun nnmail-request-accept-article (group)
-  (let ((buf (current-buffer))
-	result beg)
-    (and 
-     (nnmail-get-active)
-     (save-excursion
-       (set-buffer nnmail-mbox-buffer)
-       (setq beg (goto-char (point-max)))
-       (insert-buffer-substring buf)
-       (goto-char beg)
-       (if (stringp group)
-	   (progn
-	     (search-forward "\n\n" nil t)
-	     (forward-line -1)
-	     (save-excursion
-	       (while (re-search-backward "^X-Gnus-Newsgroup: " beg t)
-		 (delete-region
-		  (point)
-		  (progn
-		    (forward-line 1)
-		    (point)))))
-	     (setq result (nnmail-insert-newsgroup-line group beg (point))))
-	 (setq result (nnmail-choose-mail beg (point-max))))
-       (save-buffer)
-       result)
-     (nnmail-save-active))
-    result))
-
-
-;;; Low-Level Interface
-
-(defun nnmail-delete-mail ()
-  (re-search-backward (concat "^" rmail-unix-mail-delimiter) nil t)
-  (delete-region 
-   (point)
-   (progn
-     (forward-line 1)
-     (or (and (re-search-forward 
-	       (concat "^" rmail-unix-mail-delimiter) nil t)
-	      (forward-line -1)
-	      (point))
-	 (point-max)))))
-
-(defun nnmail-open-server-internal (host &optional service)
-  "Open connection to news server on HOST by SERVICE (default is nntp)."
-  (save-excursion
-    (if (not (string-equal host (system-name)))
-	(error "NNMAIL: cannot talk to %s." host))
-    ;; Initialize communication buffer.
-    (setq nntp-server-buffer (get-buffer-create " *nntpd*"))
-    (set-buffer nntp-server-buffer)
-    (buffer-disable-undo (current-buffer))
-    (erase-buffer)
-    (kill-all-local-variables)
-    (setq case-fold-search t)		;Should ignore case.
-    t))
-
-(defun nnmail-close-server-internal ()
-  "Close connection to news server."
-  nil)
-
 (defun nnmail-find-file (file)
   "Insert FILE in server buffer safely."
-  (save-excursion
-    (set-buffer nntp-server-buffer)
-    (erase-buffer)
-    (condition-case ()
-	(progn (insert-file-contents file) t)
-      (file-error nil))))
+  (set-buffer nntp-server-buffer)
+  (erase-buffer)
+  (condition-case ()
+      (progn (insert-file-contents file) t)
+    (file-error nil)))
 
-(defun nnmail-possibly-change-newsgroup (newsgroup)
-  (if (not (get-buffer nnmail-mbox-buffer))
-      (save-excursion
-	(set-buffer (setq nnmail-mbox-buffer 
-			  (find-file-noselect nnmail-mbox-file)))
-	(buffer-disable-undo (current-buffer))))
-  (if (not nnmail-active-alist)
-      (nnmail-get-active))
-  (if newsgroup
-      (if (assoc newsgroup nnmail-active-alist)
-	  (setq nnmail-current-group newsgroup))))
+(defun nnmail-article-pathname (group mail-dir)
+  "Make pathname for GROUP."
+  (concat (file-name-as-directory (expand-file-name mail-dir))
+	  (nnmail-replace-chars-in-string group ?. ?/) "/"))
 
-;; Most of this function was taken from rmail.el
-(defun nnmail-move-inbox ()
-  (let ((inbox (expand-file-name nnmail-spool-file))
-	tofile errors)
-    (setq tofile (make-temp-name
-		  (expand-file-name (concat nnmail-mbox-file "-Incoming"))))
+(defun nnmail-replace-chars-in-string (string from to)
+  "Replace characters in STRING from FROM to TO."
+  (let ((string (substring string 0))	;Copy string.
+	(len (length string))
+	(idx 0))
+    ;; Replace all occurrences of FROM with TO.
+    (while (< idx len)
+      (if (= (aref string idx) from)
+	  (aset string idx to))
+      (setq idx (1+ idx)))
+    string))
+
+(defun nnmail-days-between (date1 date2)
+  ;; Return the number of days between date1 and date2.
+  (let ((d1 (mapcar (lambda (s) (and s (string-to-int s)) )
+		    (timezone-parse-date date1)))
+	(d2 (mapcar (lambda (s) (and s (string-to-int s)) )
+		    (timezone-parse-date date2))))
+    (- (timezone-absolute-from-gregorian 
+	(nth 1 d1) (nth 2 d1) (car d1))
+       (timezone-absolute-from-gregorian 
+	(nth 1 d2) (nth 2 d2) (car d2)))))
+
+;; Function taken from rmail.el.
+(defun nnmail-move-inbox (inbox tofile)
+  (let ((inbox (file-truename
+		(expand-file-name (substitute-in-file-name inbox))))
+	(tofile (make-temp-name (expand-file-name tofile)))
+	movemail popmail errors)
+    ;; If getting from mail spool directory,
+    ;; use movemail to move rather than just renaming,
+    ;; so as to interlock with the mailer.
+    (setq movemail (string= (file-name-directory inbox)
+			    (file-truename rmail-spool-directory))
+	  popmail (string-match "^po:" (file-name-nondirectory inbox)))
+    (if popmail (setq inbox (file-name-nondirectory inbox)))
+    (if movemail
+	;; On some systems, /usr/spool/mail/foo is a directory
+	;; and the actual inbox is /usr/spool/mail/foo/foo.
+	(if (file-directory-p inbox)
+	    (setq inbox (expand-file-name (user-login-name) inbox))))
+    (if popmail
+	(message "Getting mail from post office ...")
+      (if (or (and (file-exists-p tofile)
+		   (/= 0 (nth 7 (file-attributes tofile))))
+	      (and (file-exists-p inbox)
+		   (/= 0 (nth 7 (file-attributes inbox)))))
+	  (message "Getting mail from %s..." inbox)))
+    ;; Set TOFILE if have not already done so, and
+    ;; rename or copy the file INBOX to TOFILE if and as appropriate.
+    (cond ((or (file-exists-p tofile) (and (not popmail)
+					   (not (file-exists-p inbox))))
+	   nil)
+	  ((and (not movemail) (not popmail))
+	   ;; Try copying.  If that fails (perhaps no space),
+	   ;; rename instead.
+	   (condition-case nil
+	       (copy-file inbox tofile nil)
+	     (error
+	      ;; Third arg is t so we can replace existing file TOFILE.
+	      (rename-file inbox tofile t)))
+	   ;; Make the real inbox file empty.
+	   ;; Leaving it deleted could cause lossage
+	   ;; because mailers often won't create the file.
+	   (condition-case ()
+	       (write-region (point) (point) inbox)
+	     (file-error nil)))
+	  (t
+	   (unwind-protect
+	       (save-excursion
+		 (setq errors (generate-new-buffer " *nnmail loss*"))
+		 (buffer-disable-undo errors)
+		 (call-process
+		  (expand-file-name "movemail" exec-directory)
+		  nil errors nil inbox tofile)
+		 (if (not (buffer-modified-p errors))
+		     ;; No output => movemail won
+		     nil
+		   (set-buffer errors)
+		   (subst-char-in-region (point-min) (point-max)
+					 ?\n ?\  )
+		   (goto-char (point-max))
+		   (skip-chars-backward " \t")
+		   (delete-region (point) (point-max))
+		   (goto-char (point-min))
+		   (if (looking-at "movemail: ")
+		       (delete-region (point-min) (match-end 0)))
+		   (beep t)
+		   (message (concat "movemail: "
+				    (buffer-substring (point-min)
+						      (point-max))))
+		   (sit-for 3)
+		   nil)))))
+    (if (buffer-name errors)
+	(kill-buffer errors))
+    tofile))
+
+
+(defun nnmail-move-inbox-old (inbox tofile)
+  (let ((inbox (expand-file-name inbox))
+	(tofile (make-temp-name (expand-file-name tofile)))
+	errors)
     (unwind-protect
 	(save-excursion
 	  (setq errors (generate-new-buffer " *nnmail loss*"))
@@ -473,162 +298,163 @@ the date."
 	    (error (concat "movemail: "
 			   (buffer-substring (point-min)
 					     (point-max)))))))
+    (if (buffer-name errors)
+	(kill-buffer errors))
     tofile))
 
-(defun nnmail-article-string (article)
-  (concat "\nX-Gnus-Newsgroup: " nnmail-current-group ":" 
-	  (int-to-string article) " ("))
-
-(defun nnmail-choose-mail (beg end)
-  (let (result)
-    (save-excursion
-      (goto-char end)
-      (let ((methods nnmail-split-methods)
-	    found)
-	(while (and (not found) methods)
-	  (if (re-search-backward (car (cdr (car methods))) beg t)
-	      (progn
-		(goto-char end)
-		(setq result (nnmail-insert-newsgroup-line 
-			      (car (car methods)) beg end))
-		(setq found t))
-	    (setq methods (cdr methods))))
-	(if (not found)
-	    (progn
-	      (goto-char end)
-	      (setq result (nnmail-insert-newsgroup-line 
-			    (car (car nnmail-split-methods)) beg end))))))
-    result))
-
-(defun nnmail-insert-newsgroup-line (group beg end)
-  (let ((active (car (cdr (assoc group nnmail-active-alist))))
-	(time (current-time)))
-    (if (not active)
-	(progn
-	  (setq nnmail-active-alist 
-		(cons (list group (cons 1 0)) nnmail-active-alist))
-	  (setq active (car (cdr (car nnmail-active-alist))))))
-    (setcdr active (1+ (cdr active)))
-    (insert (format "X-Gnus-Newsgroup: %s:%d (%d %d)\n" group (cdr active)
-		    (car time) (car (cdr time))))
-    (cons group (cdr active))))
-
-(defun nnmail-split-region (beg end)
-  (save-excursion
-    (save-restriction
-      (goto-char beg)
-      (narrow-to-region beg end)
-      (let ((delim (concat "^" rmail-unix-mail-delimiter))
-	    start)
-	(while (re-search-forward delim nil t)
-	  (setq start (match-beginning 0))
-	  (search-forward "\n\n" nil t)
-	  (forward-char -1)
-	  (save-excursion
-	    (if (not (save-excursion (re-search-backward "^Lines:" start t)))
-		(insert 
-		 (format "Lines: %d\n" 
-			 (- (count-lines 
-			     (point) 
-			     (or (save-excursion
-				   (and (re-search-forward
-					 rmail-unix-mail-delimiter nil t)
-					(match-beginning 0)))
-				 (point-max)))
-			    2)))))
-	  (if (not (search-backward "\nX-Gnus-Newsgroup: " start t))
-	      (nnmail-choose-mail start (point))))))))
-
-(defun nnmail-read-mbox ()
-  (if (not (file-exists-p nnmail-mbox-file))
-      (write-region 1 1 nnmail-mbox-file t 'nomesg))
-  (if (and nnmail-mbox-buffer
-	   (get-buffer nnmail-mbox-buffer)
-	   (buffer-name nnmail-mbox-buffer)
-	   (save-excursion
-	     (set-buffer nnmail-mbox-buffer)
-	     (= (buffer-size) (nth 7 (file-attributes nnmail-mbox-file)))))
-      ()
-    (save-excursion
-      (set-buffer (setq nnmail-mbox-buffer 
-			(find-file-noselect nnmail-mbox-file)))
-      (buffer-disable-undo (current-buffer))
-      (nnmail-split-region (point-min) (point-max)))))
-
-(defun nnmail-split-incoming (incoming)
-  (save-excursion
-    (set-buffer nnmail-mbox-buffer)
-    (goto-char (point-max))
-    (let ((start (point)))
-      (insert-file-contents incoming)
-      (save-excursion
-	(save-restriction
-	  (narrow-to-region start (point-max))
-	  (run-hooks 'nnmail-prepare-incoming-hook)))
-      (nnmail-split-region start (point-max)))))
-
 (defun nnmail-get-active ()
-  (let ((methods nnmail-split-methods))
-    (setq nnmail-active-alist nil)
-    (if (nnmail-request-list)
-	(save-excursion
-	  (set-buffer (get-buffer-create " *nntpd*"))
-	  (goto-char 1)
-	  (while (re-search-forward 
-		  "^\\([^ \t]+\\)[ \t]+\\([0-9]+\\)[ \t]+\\([0-9]+\\)" nil t)
-	    (setq nnmail-active-alist 
-		  (cons (list (buffer-substring (match-beginning 1) 
-						(match-end 1))
-			      (cons (string-to-int 
-				     (buffer-substring (match-beginning 3)
-						       (match-end 3)))
-				    (string-to-int 
-				     (buffer-substring (match-beginning 2)
-						       (match-end 2)))))
-			nnmail-active-alist)))))
-    (while methods
-      (if (not (assoc (car (car methods)) nnmail-active-alist))
-	  (setq nnmail-active-alist
-		(cons (list (car (car methods)) (cons 1 0)) 
-		      nnmail-active-alist)))
-      (setq methods (cdr methods)))
-    t))
-
-(defun nnmail-save-active ()
-  (let ((groups nnmail-active-alist)
-	group)
+  "Returns an assoc of group names and active ranges.
+nn*-request-list should have been called before calling this function."
+  (let (group-assoc)
+    ;; Go through all groups from the active list.
     (save-excursion
-      (set-buffer (get-buffer-create " *nnmail*"))
+      (set-buffer nntp-server-buffer)
+      (goto-char 1)
+      (while (re-search-forward 
+	      "^\\([^ \t]+\\)[ \t]+\\([0-9]+\\)[ \t]+\\([0-9]+\\)" nil t)
+	(setq group-assoc
+	      (cons (list (buffer-substring (match-beginning 1) 
+					    (match-end 1))
+			  (cons (string-to-int 
+				 (buffer-substring (match-beginning 3)
+						   (match-end 3)))
+				(string-to-int 
+				 (buffer-substring (match-beginning 2)
+						   (match-end 2)))))
+		    group-assoc))))
+    ;; In addition, add all groups mentioned in `nnmail-split-methods'.
+    (let ((methods nnmail-split-methods))
+      (while methods
+	(if (not (assoc (car (car methods)) group-assoc))
+	    (setq group-assoc
+		  (cons (list (car (car methods)) (cons 1 0)) 
+			group-assoc)))
+	(setq methods (cdr methods))))
+    group-assoc))
+
+(defun nnmail-save-active (group-assoc file-name)
+  (let (group)
+    (save-excursion
+      (set-buffer (get-buffer-create " *nnmail active*"))
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
-      (while groups
-	(setq group (car groups))
+      (while group-assoc
+	(setq group (car group-assoc))
 	(insert (format "%s %d %d y\n" (car group) (cdr (car (cdr group)) )
 			(car (car (cdr group)))))
-	(setq groups (cdr groups)))
-      (write-region 1 (point-max) (expand-file-name nnmail-active-file) nil 
-		    'nomesg)
+	(setq group-assoc (cdr group-assoc)))
+      (write-region 1 (point-max) (expand-file-name file-name) nil 'nomesg)
       (kill-buffer (current-buffer)))))
 
-(defun nnmail-get-new-mail ()
-  (let (incoming)
-    (nnmail-get-active)
-    (nnmail-read-mbox)
-    (if (and (file-exists-p nnmail-spool-file)
-	     (> (nth 7 (file-attributes nnmail-spool-file)) 0))
+(defun nnmail-split-incoming (incoming func &optional dont-kill)
+  "Go through the entire INCOMING file and pick out each individual mail.
+FUNC will be called with the buffer narrowed to each mail."
+  (let ((delim (concat "^" rmail-unix-mail-delimiter))
+	start)
+    (save-excursion
+      (set-buffer (get-buffer-create " *nnmail incoming*"))
+      (buffer-disable-undo (current-buffer))
+      (erase-buffer)
+      (insert-file-contents incoming)
+      (goto-char 1)
+      (save-excursion (run-hooks 'nnmail-prepare-incoming-hook))
+      ;; Go to the beginning of the first mail...
+      (if (and (re-search-forward delim nil t)
+	       (goto-char (match-beginning 0)))
+	  ;; and then carry on until the bitter end.
+	  (while (not (eobp))
+	    (setq start (point))
+	    ;; Skip all the headers in case there are mode "From "s...
+	    (if (not (search-forward "\n\n" nil t))
+		(forward-line 1))
+	    (if (re-search-forward delim nil t)
+		(goto-char (match-beginning 0))
+	      (goto-char (point-max)))
+	    (save-excursion
+	      (save-restriction
+		(narrow-to-region start (point))
+		(goto-char (point-min))
+		(funcall func)))))
+      (if dont-kill
+	  (current-buffer)
+	(kill-buffer (current-buffer))))))
+
+;; Mail crossposts syggested by Brian Edmonds <edmonds@cs.ubc.ca>. 
+(defun nnmail-article-group (func)
+  "Look at the headers and return an alist of groups that match.
+FUNC will be called with the group name to determine the article number."
+  (let ((methods nnmail-split-methods)
+	(obuf (current-buffer))
+	(beg (point-min))
+	end found group-art)
+    (save-excursion
+      ;; Find headers.
+      (goto-char beg)
+      (setq end (if (search-forward "\n\n" nil t) (point) (point-max)))
+      (set-buffer (get-buffer-create " *nnmail work*"))
+      (buffer-disable-undo (current-buffer))
+      (erase-buffer)
+      ;; Copy the headers into the work buffer.
+      (insert-buffer-substring obuf beg end)
+      ;; Fold continuation lines.
+      (goto-char (point-min))
+      (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+	(replace-match " " t t))
+      ;; Go throught the split methods to find a match.
+      (while (and methods (or nnmail-crosspost (not group-art)))
+	(goto-char (point-max))
+	(if (or (cdr methods)
+		(not (string= "" (nth 1 (car methods)))))
+	    (if (and (condition-case () 
+			 (re-search-backward (car (cdr (car methods))) nil t)
+		       (error nil))
+		     ;; Don't enter the article into the same group twice.
+		     (not (assoc (car (car methods)) group-art)))
+		(setq group-art
+		      (cons (cons (car (car methods))
+				  (funcall func (car (car methods)))) 
+			    group-art)))
+	  (or group-art
+	      (setq group-art 
+		    (list (cons (car (car methods)) 
+				(funcall func (car (car methods))))))))
+	(setq methods (cdr methods)))
+      (kill-buffer (current-buffer))
+      group-art)))
+
+(defun nnmail-insert-lines ()
+  "Insert how many lines and chars there are in the body of the mail."
+  (let (lines chars)
+    (save-excursion
+      (goto-char (point-min))
+      (if (search-forward "\n\n" nil t) 
+	  (progn
+	    (setq chars (- (point-max) (point)))
+	    (setq lines (- (count-lines (point) (point-max)) 1))
+	    (forward-char -1)
+	    (save-excursion
+	      (if (re-search-backward "^Lines: " nil t)
+		  (delete-region (point) (progn (forward-line 1) (point)))))
+	    (insert (format "Lines: %d\n" lines))
+	    chars)))))
+
+(defun nnmail-insert-xref (group-alist)
+  "Insert an Xref line based on the (group . article) alist."
+  (save-excursion
+    (goto-char (point-min))
+    (if (search-forward "\n\n" nil t) 
 	(progn
-	  (setq incoming (nnmail-move-inbox))
-	  (nnmail-split-incoming incoming)
-	  (run-hooks 'nnmail-read-incoming-hook)))
-    (and (buffer-modified-p nnmail-mbox-buffer) 
-	 (save-excursion
-	   (nnmail-save-active)
-	   (set-buffer nnmail-mbox-buffer)
-	   (save-buffer)))
-;    (if incoming
-;	(delete-file incoming))
-    ))
+	  (forward-char -1)
+	  (if (re-search-backward "^Xref: " nil t)
+	      (delete-region (match-beginning 0) 
+			     (progn (forward-line 1) (point))))
+	  (insert (format "Xref: %s" (system-name)))
+	  (while group-alist
+	    (insert (format " %s:%d" (car (car group-alist)) 
+			    (cdr (car group-alist))))
+	    (setq group-alist (cdr group-alist)))
+	  (insert "\n")))))
 
 (provide 'nnmail)
 
-;;; nnmail.el ends here
+;;; nnml.el ends here
