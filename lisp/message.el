@@ -3493,12 +3493,11 @@ not have PROP."
     (setq end (point-max)))
   (let (next regions)
     (if reverse
-	(progn
-	  (while (and start
-		      (setq start (text-property-any start end prop nil)))
-	    (setq next (next-single-property-change start prop nil end))
-	    (push (cons start (or next end)) regions)
-	    (setq start next)))
+	(while (and start
+		    (setq start (text-property-any start end prop nil)))
+	  (setq next (next-single-property-change start prop nil end))
+	  (push (cons start (or next end)) regions)
+	  (setq start next))
       (while (and start
 		  (or (get-text-property start prop)
 		      (and (setq start (next-single-property-change
