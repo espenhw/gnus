@@ -140,7 +140,7 @@
       (nnheader-insert-nov-file file (car articles))
       (goto-char (point-min))
       (gnus-parse-without-error
-	(while arts
+	(while (and arts (not (eobp)))
 	  (setq n (read (current-buffer)))
 	  (when (> n (car arts))
 	    (beginning-of-line))

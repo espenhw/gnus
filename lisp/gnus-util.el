@@ -1261,6 +1261,7 @@ SPEC is a predicate specifier that contains stuff like `or', `and',
 	   t)))
 
 (put 'gnus-parse-without-error 'lisp-indent-function 0)
+(put 'gnus-parse-without-error 'edebug-form-spec '(body))
 
 (defmacro gnus-parse-without-error (&rest body)
   "Allow continuing onto the next line even if an error occurs."
