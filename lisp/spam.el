@@ -559,41 +559,43 @@ spamoracle database."
 	(gnus-summary-mark-article article gnus-spam-mark)))))
 
 (defun spam-mark-spam-as-expired-and-move-routine (&rest groups)
-  (gnus-summary-kill-process-mark)
-  (let ((articles gnus-newsgroup-articles)
-	(backend-supports-deletions
-	 (gnus-check-backend-function
-	  'request-move-article gnus-newsgroup-name))
-	article tomove deletep)
-    (dolist (article articles)
-      (when (eq (gnus-summary-article-mark article) gnus-spam-mark)
-	(gnus-summary-mark-article article gnus-expirable-mark)
-	(push article tomove)))
+  (if (and groups (listp (car groups)))
+      (apply 'spam-mark-spam-as-expired-and-move-routine (car groups))
+    (gnus-summary-kill-process-mark)
+    (let ((articles gnus-newsgroup-articles)
+	  (backend-supports-deletions
+	   (gnus-check-backend-function
+	    'request-move-article gnus-newsgroup-name))
+	  article tomove deletep)
+      (dolist (article articles)
+	(when (eq (gnus-summary-article-mark article) gnus-spam-mark)
+	  (gnus-summary-mark-article article gnus-expirable-mark)
+	  (push article tomove)))
     
-    ;; now do the actual copies
-    (dolist (group groups)
-      (when (and tomove
-		 (stringp group))
+      ;; now do the actual copies
+      (dolist (group groups)
+	(when (and tomove
+		   (stringp group))
+	  (dolist (article tomove)
+	    (gnus-summary-set-process-mark article))
+	  (when tomove
+	    (if (or (not backend-supports-deletions)
+		    (> (length groups) 1))
+		(progn 
+		  (gnus-summary-copy-article nil group)
+		  (setq deletep t))
+	      (gnus-summary-move-article nil group)))))
+    
+      ;; now delete the articles, if there was a copy done, and the
+      ;; backend allows it
+      (when (and deletep backend-supports-deletions)
 	(dolist (article tomove)
 	  (gnus-summary-set-process-mark article))
 	(when tomove
-	  (if (or (not backend-supports-deletions)
-		(> (length groups) 1))
-	      (progn 
-		(gnus-summary-copy-article nil group)
-		(setq deletep t))
-	    (gnus-summary-move-article nil group)))))
+	  (let ((gnus-novice-user nil))	; don't ask me if I'm sure
+	    (gnus-summary-delete-article nil))))
     
-    ;; now delete the articles, if there was a copy done, and the
-    ;; backend allows it
-    (when (and deletep backend-supports-deletions)
-      (dolist (article tomove)
-	(gnus-summary-set-process-mark article))
-      (when tomove
-	(let ((gnus-novice-user nil))	; don't ask me if I'm sure
-	  (gnus-summary-delete-article nil))))
-    
-    (gnus-summary-yank-process-mark)))
+      (gnus-summary-yank-process-mark))))
  
 (defun spam-ham-copy-or-move-routine (copy groups)
   (gnus-summary-kill-process-mark)
@@ -636,10 +638,14 @@ spamoracle database."
   (gnus-summary-yank-process-mark))
  
 (defun spam-ham-copy-routine (&rest groups)
-  (spam-ham-copy-or-move-routine t groups))
+  (if (and groups (listp (car groups)))
+      (apply 'spam-ham-copy-routine (car groups))
+    (spam-ham-copy-or-move-routine t groups)))
  
 (defun spam-ham-move-routine (&rest groups)
-  (spam-ham-copy-or-move-routine nil groups))
+  (if (and groups (listp (car groups)))
+      (apply 'spam-ham-move-routine (car groups))
+    (spam-ham-copy-or-move-routine nil groups)))
  
 (defun spam-generic-register-routine (spam-func ham-func)
   (let ((articles gnus-newsgroup-articles)

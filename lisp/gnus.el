@@ -1938,6 +1938,7 @@ spam processing, associated with the appropriate processor."
 
   (gnus-define-group-parameter
    spam-process-destination
+   :type list
    :parameter-type 
    '(choice :tag "Destination for spam-processed articles at summary exit"
 	    (string :tag "Move to a group")
@@ -1972,6 +1973,7 @@ mail groups."
   
   (gnus-define-group-parameter
    ham-process-destination
+   :type list
    :parameter-type 
    '(choice
      :tag "Destination for ham articles at summary exit from a spam group"
