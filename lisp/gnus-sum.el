@@ -7496,9 +7496,11 @@ article.  If BACKWARD (the prefix) is non-nil, search backward instead."
    (list (let ((completion-ignore-case t))
 	   (completing-read
 	    "Header name: "
-	    (mapcar (lambda (string) (list string))
-		    '("Number" "Subject" "From" "Lines" "Date"
-		      "Message-ID" "Xref" "References" "Body"))
+	    (mapcar (lambda (header) (list (format "%s" header)))
+		    (append
+		     '("Number" "Subject" "From" "Lines" "Date"
+		       "Message-ID" "Xref" "References" "Body")
+		     gnus-extra-headers))
 	    nil 'require-match))
 	 (read-string "Regexp: ")
 	 (read-key-sequence "Command: ")

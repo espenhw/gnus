@@ -641,18 +641,30 @@ If optional 2nd argument UNREAD is non-nil, articles which are
 marked as read or ticked are ignored."
   (save-excursion
     (let ((killed-no 0)
-	  function article header)
+	  function article header extras)
       (cond
        ;; Search body.
        ((or (null field)
 	    (string-equal field ""))
 	(setq function nil))
        ;; Get access function of header field.
-       ((fboundp
-	 (setq function
-	       (intern-soft
-		(concat "mail-header-" (downcase field)))))
-	(setq function `(lambda (h) (,function h))))
+       ((cond ((fboundp
+		(setq function
+		      (intern-soft
+		       (concat "mail-header-" (downcase field)))))
+	       (setq function `(lambda (h) (,function h))))
+	      ((when (setq extras
+			   (member (downcase field)
+				   (mapcar (lambda (header)
+					     (downcase (symbol-name header)))
+					   gnus-extra-headers)))
+		 (setq function
+		       `(lambda (h)
+			  (gnus-extra-header
+			   (quote ,(nth (- (length gnus-extra-headers)
+					   (length extras))
+					gnus-extra-headers))
+			   h)))))))
        ;; Signal error.
        (t
 	(error "Unknown header field: \"%s\"" field)))

@@ -1,3 +1,8 @@
+2001-03-19 05:28:00  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* gnus-kill.el (gnus-execute): Work with the extra headers.
+	* gnus-sum.el (gnus-summary-execute-command): Ditto.
+	
 2001-07-09 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-view.el (mm-inline-text): w3-coding-system-for-mime-charset
@@ -116,7 +121,6 @@
 	* nntp.el (nntp-send-command-nodelete): ditto.
 	* nntp.el (nntp-send-command-and-decode): ditto.
 
->>>>>>> 6.485
 2001-06-30  YAGI Tatsuya  <yagi@is.titech.ac.jp>
 
 	* gnus-start.el (gnus-check-first-time-used): Use `if' instead of
