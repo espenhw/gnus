@@ -3845,11 +3845,12 @@ Enter the server buffer (@code{gnus-group-enter-server-mode}).
 @findex gnus-group-post-news
 Post an article to a group (@code{gnus-group-post-news}).  If given a
 prefix, the current group name will be used as the default.
+@xref{Composing Messages}.
 
 @item m
 @kindex m (Group)
 @findex gnus-group-mail
-Mail a message somewhere (@code{gnus-group-mail}).
+Mail a message somewhere (@code{gnus-group-mail}).  @xref{Composing Messages}.
 
 @end table
 

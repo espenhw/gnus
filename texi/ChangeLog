@@ -1,3 +1,8 @@
+2001-11-07  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Misc Group Stuff): Add cross reference to Composing
+	Messages.  Suggested by "Golubev I. N." <gin@mo.msk.ru>.
+
 2001-11-04 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi: Use C-M- instead of M-C-.
