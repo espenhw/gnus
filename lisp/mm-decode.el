@@ -1300,7 +1300,8 @@ If RECURSIVE, search recursively."
 
 (defun mm-readable-p (handle)
   "Say whether the content of HANDLE is readable."
-  (and (< (buffer-size (mm-handle-buffer handle)) 10000)
+  (and (< (with-current-buffer (mm-handle-buffer handle)
+	    (buffer-size)) 10000)
        (mm-with-unibyte-buffer
 	 (mm-insert-part handle)
 	 (and (eq (mm-body-7-or-8) '7bit)

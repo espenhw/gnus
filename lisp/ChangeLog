@@ -1,3 +1,7 @@
+2001-08-03 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-readable-p): Emacs 20 takes one argument.
+
 2001-08-04  Simon Josefsson  <jas@extundo.com>
 
 	* smime.el (smime-sign-region, smime-encrypt-region): Fix details
