@@ -1,3 +1,10 @@
+2000-10-08  Simon Josefsson  <simon@josefsson.org>
+
+	* nnimap.el (nnimap-verify-uidvalidity): Delete overview file when
+	uid validity changes.
+	(nnimap-group-overview-filename): Store uidvalidity in filenames.
+	Rename old files into new format.
+
 2000-10-07 15:49:39  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-enable-multibyte-mule4): New.
@@ -380,7 +387,6 @@
 	(mm-inline-message): Test for `remove-specifier'; don't use
 	condition-case.
 
->>>>>>> 5.672
 2000-09-24  Simon Josefsson  <simon@josefsson.org>
 
 	* nnimap.el (nnimap-request-accept-article): Remove From[^:] lines.
