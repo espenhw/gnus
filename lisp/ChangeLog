@@ -1,3 +1,7 @@
+2003-02-07  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-util.el (gnus-run-hooks): Use save-current-buffer.
+
 2003-02-07  John Paul Wallington  <jpw@gnu.org>
 
 	* mm-util.el (mm-delete-duplicates, mm-append-to-file)

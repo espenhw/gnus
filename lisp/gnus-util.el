@@ -913,11 +913,9 @@ ARG is passed to the first function."
     arg))
 
 (defun gnus-run-hooks (&rest funcs)
-  "Does the same as `run-hooks', but saves excursion."
-  (let ((buf (current-buffer)))
-    (unwind-protect
-	(apply 'run-hooks funcs)
-      (set-buffer buf))))
+  "Does the same as `run-hooks', but saves the current buffer."
+  (save-current-buffer
+    (apply 'run-hooks funcs)))
 
 ;;; Various
 
