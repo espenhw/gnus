@@ -10809,8 +10809,8 @@ of names).
 This variable can be used instead of @code{gnus-message-archive-group},
 but the latter is the preferred method.
 
-@item gnus-inews-mark-gcc-as-read
-@vindex gnus-inews-mark-gcc-as-read
+@item gnus-gcc-mark-as-read
+@vindex gnus-gcc-mark-as-read
 If non-@code{nil}, automatically mark @code{Gcc} articles as read.
 
 @end table
