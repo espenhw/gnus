@@ -1,3 +1,7 @@
+2004-01-07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Summary Mail Commands): S D e.
+
 2004-01-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Limiting): Add gnus-summary-limit-to-replied.

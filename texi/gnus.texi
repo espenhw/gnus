@@ -5407,6 +5407,13 @@ to the @code{root} account, you may want to resend it to
 This command understands the process/prefix convention
 (@pxref{Process/Prefix}).
 
+@item S D e
+@kindex S D e (Summary)
+@findex gnus-summary-resend-message-edit
+
+Like the previous command, but will allow you to edit the message as
+if it were a new message before resending.
+
 @item S O m
 @kindex S O m (Summary)
 @findex gnus-uu-digest-mail-forward
