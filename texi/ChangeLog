@@ -1,3 +1,9 @@
+2001-10-13 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* refcard.tex: Set version to Oort.
+
+	* gnusref.tex: New key bindings in Oort Gnus.
+
 2001-10-12 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* Makefile.in (.dvi.ps): Use TEXPICTS.

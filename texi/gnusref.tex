@@ -29,8 +29,10 @@
 \newcommand{\Copyright}{%
   \begin{center}
     Copyright \copyright\ 1995 Free Software Foundation, Inc.\\*
-    Copyright \copyright\ 1995 \author.\\*
+    Copyright \copyright\ 1995 Vladimir Alexiev
+    $<$vladimir@cs.ualberta.ca$>$.\\*
     Copyright \copyright\ 2000 Felix Natter $<$fnatter@gmx.net$>$.\\*
+    Copyright \copyright\ 2001 \author.\\*
     Created from the Gnus manual Copyright \copyright\ 1994 Lars Magne
     Ingebrigtsen.\\*
     and the Emacs Help Bindings feature (C-h b).\\*
@@ -78,7 +80,7 @@
     \quad [score] An article score. If no prefix is given,
     `gnus-summary-default-score' is used. \\*[\baselineskip]
                                 % some keys
-    \begin{keys}{C-c C-i}
+    \begin{keys}{M-x gnus-unplugged} 
       M-x gnus           & start Gnus. \\
       M-x gnus-no-server & start Gnus without trying to connect to server
       (i.e. to read mail). \\
@@ -293,7 +295,7 @@
     \end{keys}}
 
   \newcommand{\MarkGroups}{%
-    \begin{keys}{M m}
+    \begin{keys}{M u}
       M m     & (\#) Set the process {\bf mark} on this group. [scope]\\
       M r     & Mark all groups matching regular expression.\\
       M u     & (M-\#) Remove the process mark from this group ({\bf unmark}).
@@ -711,7 +713,8 @@
       /v   & Limit to score. [score]\\
       /E   & (M S) Include all expunged articles in the limit.\\
       /D   & Include all dormant articles in the limit.\\
-      /*   & Include all cached articles in the limit.\\
+      /*   & Limit to cached articles.\\
+      Y C  & Include all cached articles in the limit.\\
       /d   & Exclude all dormant articles from the limit.\\
       /M   & Exclude all marked articles.\\
       /T   & Include all articles from the current thread in the limit.\\
@@ -955,15 +958,15 @@
 
 \newcommand{\MsgCompositionMML}{%
   {\esamepage
-    \begin{keys}{M-m P}
-      M-m f   & (C-c C-a) Attach \textbf{file}.\\
-      M-m b   & Attach contents of \textbf{buffer}.\\
-      M-m e   & Attach \textbf{external} file (ftp..).\\
-      M-m P   & Create MIME-\textbf{preview} (new buffer).\\
-      M-m v   & \textbf{Validate} article.\\
-      M-m p   & Insert \textbf{part}.\\
-      M-m m   & Insert \textbf{multi}-part.\\
-      M-m q   & \textbf{Quote} region.\\
+    \begin{keys}{C-c C-m P}
+      C-c C-m f   & (C-c C-a) Attach \textbf{file}.\\
+      C-c C-m b   & Attach contents of \textbf{buffer}.\\
+      C-c C-m e   & Attach \textbf{external} file (ftp..).\\
+      C-c C-m P   & Create MIME-\textbf{preview} (new buffer).\\
+      C-c C-m v   & \textbf{Validate} article.\\
+      C-c C-m p   & Insert \textbf{part}.\\
+      C-c C-m m   & Insert \textbf{multi}-part.\\
+      C-c C-m q   & \textbf{Quote} region.\\
                                 % TODO: narrow headers (M-m n) ?
     \end{keys}
     }
