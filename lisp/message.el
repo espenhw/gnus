@@ -4136,7 +4136,7 @@ responses here are directed to other addresses.")))
 	;; Allow the user to be asked whether or not to reply to all
 	;; recipients in a wide reply.
 	(if (and ccalist wide message-wide-reply-confirm-recipients
-		 (not (y-or-n-p "Reply to all recipients?")))
+		 (not (y-or-n-p "Reply to all recipients? ")))
 	    (setq follow-to (delq (assoc 'Cc follow-to) follow-to)))))
     follow-to))
 

@@ -1,3 +1,8 @@
+2001-08-09  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-get-reply-headers): Fix string. Suggested by
+	Christoph Conrad <cc@cli.de>.
+
 2001-08-08 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-tab): Use the current value of
