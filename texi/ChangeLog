@@ -1,3 +1,7 @@
+2001-11-13  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Article Washing): Add `W s'.
+
 2001-11-12  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Security, Using GPG):

@@ -8059,6 +8059,12 @@ public key of the maintainer to your keyring to verify the
 message.@footnote{PGP keys for many hierarchies are available at
 @uref{ftp://ftp.isc.org/pub/pgpcontrol/README.html}}
 
+@item W s
+@kindex W s (Summary)
+@findex gnus-summary-force-verify-and-decrypt
+Verify a signed (PGP, PGP/MIME or S/MIME) message
+(@code{gnus-summary-force-verify-and-decrypt}).
+
 @item W W H
 @kindex W W H (Summary)
 @findex gnus-article-strip-headers-from-body
