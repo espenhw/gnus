@@ -52,7 +52,8 @@
 
 ;;; Code:
 
-(autoload 'run-at-time "timer")
+(unless (featurep 'xemacs)
+  (autoload 'run-at-time "timer"))
 
 (eval-when-compile
   (require 'cl))
@@ -83,15 +84,16 @@ The variable `password-cache' control whether the cache is used."
       (read-passwd prompt)))
 
 (eval-when-compile
-  (defvar itimer-process)
-  (defvar itimer-timer)
-  (autoload 'delete-itimer "itimer")
-  (autoload 'itimer-driver-start "itimer")
-  (autoload 'itimer-value "itimer")
-  (autoload 'set-itimer-function "itimer")
-  (autoload 'set-itimer-function-arguments "itimer")
-  (autoload 'set-itimer-restart "itimer")
-  (autoload 'start-itimer "itimer"))
+  (when (featurep 'xemacs)
+    (defvar itimer-process)
+    (defvar itimer-timer)
+    (autoload 'delete-itimer "itimer")
+    (autoload 'itimer-driver-start "itimer")
+    (autoload 'itimer-value "itimer")
+    (autoload 'set-itimer-function "itimer")
+    (autoload 'set-itimer-function-arguments "itimer")
+    (autoload 'set-itimer-restart "itimer")
+    (autoload 'start-itimer "itimer")))
 
 (eval-and-compile
   (defalias
