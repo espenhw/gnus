@@ -262,16 +262,14 @@ articles before they get registered by Bogofilter."
 
 (defun spam-summary-prepare-exit ()
   ;; The spam processors are invoked for any group, spam or ham or neither
-  (when (or (and spam-use-bogofilter spam-bogofilter-path)
-	    (spam-group-processor-bogofilter-p gnus-newsgroup-name))
+  (when (and spam-bogofilter-path
+	     (spam-group-processor-bogofilter-p gnus-newsgroup-name))
     (spam-bogofilter-register-routine))
   
-  (when (or spam-use-ifile
-	    (spam-group-processor-ifile-p gnus-newsgroup-name))
+  (when (spam-group-processor-ifile-p gnus-newsgroup-name)
     (spam-ifile-register-routine))
   
-  (when (or spam-use-blacklist
-	    (spam-group-processor-bogofilter-p gnus-newsgroup-name))
+  (when (spam-group-processor-bogofilter-p gnus-newsgroup-name)
     (spam-blacklist-register-routine))
 
   ;; Only for spam groups, we expire and maybe move articles
@@ -279,11 +277,9 @@ articles before they get registered by Bogofilter."
     (spam-mark-spam-as-expired-and-move-routine (gnus-parameter-spam-process-destination gnus-newsgroup-name)))
 
   (when (spam-group-ham-contents-p gnus-newsgroup-name)
-    (when (or spam-use-whitelist
-	      (spam-group-processor-whitelist-p gnus-newsgroup-name))
+    (when (spam-group-processor-whitelist-p gnus-newsgroup-name)
       (spam-whitelist-register-routine))
-    (when (or spam-use-BBDB
-	      (spam-group-processor-BBDB-p gnus-newsgroup-name))
+    (when (spam-group-processor-BBDB-p gnus-newsgroup-name)
       (spam-BBDB-register-routine))))
 
 (add-hook 'gnus-summary-prepare-hook 'spam-summary-prepare)

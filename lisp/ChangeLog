@@ -25,6 +25,10 @@
 	from (gnus-data-list)
 	(spam-summary-prepare-exit): works completely now
 	(spam-use-blacklist): oops, should be nil by default
+	(spam-summary-prepare-exit): spam-use-PROCESSOR is only for
+	split processing now; before it was for summary exit as
+	well but that's done with the spam-contents and spam-process
+	parameters now
 
 2003-01-03  Jesper Harder  <harder@ifa.au.dk>
 
