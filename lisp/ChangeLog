@@ -1,3 +1,8 @@
+2003-03-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-agent.el (gnus-agent-fetch-articles): Fix nil message.
+	(gnus-agent-fetch-session): Allow debugging to take place.
+
 2003-03-03  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-highlight-selected-summary)

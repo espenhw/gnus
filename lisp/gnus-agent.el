@@ -1268,7 +1268,7 @@ This can be added to `gnus-select-article-hook' or
                     (pop pos))))
 
             (gnus-agent-save-alist group (cdr fetched-articles) date)
-            (gnus-message 7 nil))
+            (gnus-message 7 ""))
           (cdr fetched-articles))))))
 
 (defun gnus-agent-crosspost (crosses article &optional date)
@@ -1719,31 +1719,33 @@ FILE and places the combined headers into `nntp-server-buffer'."
 	groups group gnus-command-method)
     (save-excursion
       (while methods
-	(condition-case err
-            (progn
-              (setq gnus-command-method (car methods))
-              (when (and (or (gnus-server-opened gnus-command-method)
-                             (gnus-open-server gnus-command-method))
-                         (gnus-online gnus-command-method))
-                (setq groups (gnus-groups-from-server (car methods)))
-                (gnus-agent-with-fetch
-                 (while (setq group (pop groups))
-                   (when (<= (gnus-group-level group)
-                             gnus-agent-handle-level)
-                     (gnus-agent-fetch-group-1
-                      group gnus-command-method))))))
-          (error
-           (unless (funcall gnus-agent-confirmation-function
-                            (format "Error %s.  Continue? "
-                                    (error-message-string err)))
-             (error "Cannot fetch articles into the Gnus agent")))
-          (quit
-           (unless (funcall gnus-agent-confirmation-function
-                            (format
-                             "Quit fetching session %s.  Continue? "
-                             (error-message-string err)))
-             (signal 'quit
-                     "Cannot fetch articles into the Gnus agent"))))
+	(setq gnus-command-method (car methods))
+	(when (and (or (gnus-server-opened gnus-command-method)
+		       (gnus-open-server gnus-command-method))
+		   (gnus-online gnus-command-method))
+	  (setq groups (gnus-groups-from-server (car methods)))
+	  (gnus-agent-with-fetch
+	    (while (setq group (pop groups))
+	      (when (<= (gnus-group-level group)
+			gnus-agent-handle-level)
+		(if (or debug-on-error debug-on-quit)
+		    (gnus-agent-fetch-group-1
+		     group gnus-command-method)
+		  (condition-case err
+		      (gnus-agent-fetch-group-1
+		       group gnus-command-method)
+		    (error
+		     (unless (funcall gnus-agent-confirmation-function
+				      (format "Error %s.  Continue? "
+					      (error-message-string err)))
+		       (error "Cannot fetch articles into the Gnus agent")))
+		    (quit
+		     (unless (funcall gnus-agent-confirmation-function
+				      (format
+				       "Quit fetching session %s.  Continue? "
+				       (error-message-string err)))
+		       (signal 'quit
+			       "Cannot fetch articles into the Gnus agent")))))))))
 	(pop methods))
       (run-hooks 'gnus-agent-fetch-hook)
       (gnus-message 6 "Finished fetching articles into the Gnus agent"))))
