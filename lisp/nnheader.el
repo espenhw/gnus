@@ -40,7 +40,8 @@
 (eval-and-compile
   (autoload 'gnus-sorted-intersection "gnus-range")
   (autoload 'gnus-intersection "gnus-range")
-  (autoload 'gnus-sorted-complement "gnus-range"))
+  (autoload 'gnus-sorted-complement "gnus-range")
+  (autoload 'gnus-sorted-difference "gnus-range"))
 
 (defcustom gnus-verbose-backends 7
   "Integer that says how verbose the Gnus backends should be.

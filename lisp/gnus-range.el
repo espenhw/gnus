@@ -61,6 +61,43 @@ If RANGE is a single range, return (RANGE). Otherwise, return RANGE."
       (setq list2 (cdr list2)))
     list1))
 
+;;;###autoload
+(defun gnus-sorted-difference (list1 list2)
+  "Return a list of elements of LIST1 that do not appear in LIST2.
+Both lists have to be sorted over <.
+The tail of LIST1 is not copied."
+  (let (out)
+    (while (and list1 list2)
+      (cond ((= (car list1) (car list2))
+	     (setq list1 (cdr list1)
+		   list2 (cdr list2)))
+	    ((< (car list1) (car list2))
+	     (setq out (cons (car list1) out))
+	     (setq list1 (cdr list1)))
+	    (t
+	     (setq list2 (cdr list2)))))
+    (nconc (nreverse out) list1)))
+
+;;;###autoload
+(defun gnus-sorted-ndifference (list1 list2)
+  "Return a list of elements of LIST1 that do not appear in LIST2.
+Both lists have to be sorted over <.
+LIST1 is modified."
+  (let* ((top (cons nil list1))
+	 (prev top))
+    (while (and list1 list2)
+      (cond ((= (car list1) (car list2))
+	     (setcdr prev (cdr list1))
+	     (setq list1 (cdr list1)
+		   list2 (cdr list2)))
+	    ((< (car list1) (car list2))
+	     (setq prev list1
+		   list1 (cdr list1)))
+	    (t
+	     (setq list2 (cdr list2)))))
+    (cdr top)))
+
+;;;###autoload
 (defun gnus-sorted-complement (list1 list2)
   "Return a list of elements that are in LIST1 or LIST2 but not both.
 Both lists have to be sorted over <."
@@ -79,6 +116,7 @@ Both lists have to be sorted over <."
 	       (setq list2 (cdr list2)))))
       (nconc (nreverse out) (or list1 list2)))))
 
+;;;###autoload
 (defun gnus-intersection (list1 list2)
   (let ((result nil))
     (while list2
@@ -87,6 +125,7 @@ Both lists have to be sorted over <."
       (setq list2 (cdr list2)))
     result))
 
+;;;###autoload
 (defun gnus-sorted-intersection (list1 list2)
   "Return intersection of LIST1 and LIST2.
 LIST1 and LIST2 have to be sorted over <."
@@ -102,7 +141,11 @@ LIST1 and LIST2 have to be sorted over <."
 	     (setq list2 (cdr list2)))))
     (nreverse out)))
 
-(defun gnus-set-sorted-intersection (list1 list2)
+;;;###autoload
+(defalias 'gnus-set-sorted-intersection 'gnus-sorted-nintersection)
+
+;;;###autoload
+(defun gnus-sorted-nintersection (list1 list2)
   "Return intersection of LIST1 and LIST2 by modifying cdr pointers of LIST1.
 LIST1 and LIST2 have to be sorted over <."
   (let* ((top (cons nil list1))
@@ -120,6 +163,7 @@ LIST1 and LIST2 have to be sorted over <."
     (setcdr prev nil)
     (cdr top)))
 
+;;;###autoload
 (defun gnus-sorted-union (list1 list2)
   "Return union of LIST1 and LIST2.
 LIST1 and LIST2 have to be sorted over <."
@@ -143,7 +187,8 @@ LIST1 and LIST2 have to be sorted over <."
 	    list2 (cdr list2)))
     (nreverse out)))
 
-(defun gnus-set-sorted-union (list1 list2)
+;;;###autoload
+(defun gnus-sorted-nunion (list1 list2)
   "Return union of LIST1 and LIST2 by modifying cdr pointers of LIST1.
 LIST1 and LIST2 have to be sorted over <."
   (let* ((top (cons nil list1))
@@ -392,7 +437,9 @@ LIST is a sorted list."
 	(push number result)))
     (nreverse result)))
 
-(defun gnus-inverse-list-range-intersection (list ranges)
+(defalias 'gnus-inverse-list-range-intersection 'gnus-list-range-difference)
+
+(defun gnus-list-range-difference (list ranges)
   "Return a list of numbers in LIST that are not members of RANGES.
 LIST is a sorted list."
   (setq ranges (gnus-range-normalize ranges))

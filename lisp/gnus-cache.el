@@ -279,9 +279,7 @@ it's not cached."
 	;; the normal way.
 	(let ((gnus-use-cache nil))
 	  (gnus-retrieve-headers articles group fetch-old))
-      (let ((uncached-articles (gnus-sorted-intersection
-				(gnus-sorted-complement articles cached)
-				articles))
+      (let ((uncached-articles (gnus-sorted-difference articles cached))
 	    (cache-file (gnus-cache-file-name group ".overview"))
 	    type)
 	;; We first retrieve all the headers that we don't have in

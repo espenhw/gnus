@@ -1848,7 +1848,7 @@ The following commands are available:
 	    (forward-line 1))
 	  (setq cached-articles (nreverse cached-articles))))
       (if (setq uncached-articles 
-		(gnus-set-difference articles cached-articles))
+		(gnus-sorted-difference articles cached-articles))
 	  (progn
 	    (set-buffer nntp-server-buffer)
 	    (erase-buffer)

@@ -1,7 +1,41 @@
 2002-01-30  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* nnagent.el (nnagent-retrieve-headers): Use gnus-sorted-difference.
+
+	* gnus-agent.el (gnus-agent-retrieve-headers): Use
+	gnus-sorted-difference.
+
+	* nnsoup.el (nnsoup-request-expire-articles): Use
+	gnus-sorted-difference.
+
+	* nnheader.el: Autoload gnus-sorted-difference.
+
+	* nnfolder.el (nnfolder-request-expire-articles): Use
+	gnus-sorted-difference.
+
+	* gnus-cache.el (gnus-cache-retrieve-headers): Use
+	gnus-sorted-difference.
+
+	* gnus-range.el: Autoload cookies.
+	(gnus-sorted-difference): New function.
+	(gnus-sorted-ndifference): New function.
+	(gnus-sorted-nintersection): Rename from
+	gnus-set-sorted-intersection.
+	(gnus-sorted-nunion): Rename from gnus-sorted-nunion.
+	(gnus-list-range-difference): Rename from
+	gnus-inverse-list-range-intersection.
+	(gnus-inverse-list-range-intersection): Use defalias.
+
+	* gnus-sum.el (gnus-select-newsgroup): Use gnus-sorted-difference,
+	gnus-sorted-ndifference, and gnus-sorted-nintersection.
+	(gnus-articles-to-read): Use gnus-sorted-difference.
+	(gnus-summary-limit-mark-excluded-as-read): Use
+	gnus-sorted-intersection and gnus-sorted-ndifference.
+	(gnus-list-of-read-articles): Use gnus-list-range-difference.
+	(gnus-summary-insert-articles): Use gnus-sorted-difference.
+
 	* gnus-sum.el (gnus-summary-update-info): Use gnus-sorted-union.
-	
+
 2002-01-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-wash-html-with-w3m): Add keymap

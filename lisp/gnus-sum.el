@@ -4699,8 +4699,9 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       (setq cached gnus-newsgroup-cached))
 
     (setq gnus-newsgroup-unreads
-	  (gnus-set-difference
-	   (gnus-set-difference gnus-newsgroup-unreads gnus-newsgroup-marked)
+	  (gnus-sorted-ndifference
+	   (gnus-sorted-ndifference gnus-newsgroup-unreads
+				    gnus-newsgroup-marked)
 	   gnus-newsgroup-dormant))
 
     (setq gnus-newsgroup-processable nil)
@@ -4713,9 +4714,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 
     (if (setq articles select-articles)
 	(setq gnus-newsgroup-unselected
-	      (gnus-sorted-intersection
-	       gnus-newsgroup-unreads
-	       (gnus-sorted-complement gnus-newsgroup-unreads articles)))
+	      (gnus-sorted-difference gnus-newsgroup-unreads articles))
       (setq articles (gnus-articles-to-read group read-all)))
 
     (cond
@@ -4747,13 +4746,13 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 		    gnus-newsgroup-headers))
       (setq gnus-newsgroup-articles fetched-articles)
       (setq gnus-newsgroup-unreads
-	    (gnus-set-sorted-intersection
+	    (gnus-sorted-nintersection
 	     gnus-newsgroup-unreads fetched-articles))
       (gnus-compute-unseen-list)
 
       ;; Removed marked articles that do not exist.
       (gnus-update-missing-marks
-       (gnus-sorted-complement fetched-articles articles))
+       (gnus-sorted-difference articles fetched-articles))
       ;; We might want to build some more threads first.
       (when (and gnus-fetch-old-headers
 		 (eq gnus-headers-retrieved-by 'nov))
@@ -4920,9 +4919,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	  ;; Select the N most recent articles.
 	  (setq articles (nthcdr (- number select) articles))))
       (setq gnus-newsgroup-unselected
-	    (gnus-sorted-intersection
-	     gnus-newsgroup-unreads
-	     (gnus-sorted-complement gnus-newsgroup-unreads articles)))
+	    (gnus-sorted-difference gnus-newsgroup-unreads articles))
       (when gnus-alter-articles-to-read-function
 	(setq gnus-newsgroup-unreads
 	      (sort
@@ -5904,13 +5901,13 @@ displayed, no centering will be performed."
 	 (marked (gnus-info-marks info))
 	 (active (gnus-active group)))
     (and info active
-	 (gnus-set-difference
-	  (gnus-sorted-complement
-	   (gnus-uncompress-range active)
-	   (gnus-list-of-unread-articles group))
-	  (append
-	   (gnus-uncompress-range (cdr (assq 'dormant marked)))
-	   (gnus-uncompress-range (cdr (assq 'tick marked))))))))
+	 (gnus-list-range-difference
+	  (gnus-list-range-difference
+	   (gnus-sorted-complement
+	    (gnus-uncompress-range active)
+	    (gnus-list-of-unread-articles group))
+	   (cdr (assq 'dormant marked)))
+	  (cdr (assq 'tick marked))))))
 
 ;; Various summary commands
 
@@ -7265,15 +7262,17 @@ fetched for this group."
   "Mark all unread excluded articles as read.
 If ALL, mark even excluded ticked and dormants as read."
   (interactive "P")
-  (let ((articles (gnus-sorted-complement
+  (setq gnus-newsgroup-limit (sort gnus-newsgroup-limit '<))
+  (let ((articles (gnus-sorted-ndifference
 		   (sort
 		    (mapcar (lambda (h) (mail-header-number h))
 			    gnus-newsgroup-headers)
 		    '<)
-		   (sort gnus-newsgroup-limit '<)))
+		   gnus-newsgroup-limit))
 	article)
     (setq gnus-newsgroup-unreads
-	  (gnus-intersection gnus-newsgroup-unreads gnus-newsgroup-limit))
+	  (gnus-sorted-intersection gnus-newsgroup-unreads
+				    gnus-newsgroup-limit))
     (if all
 	(setq gnus-newsgroup-dormant nil
 	      gnus-newsgroup-marked nil
@@ -10802,9 +10801,10 @@ returned."
 
 (defun gnus-summary-insert-articles (articles)
   (when (setq articles
-	      (gnus-set-difference articles
-				   (mapcar (lambda (h) (mail-header-number h))
-					   gnus-newsgroup-headers)))
+	      (gnus-sorted-difference articles
+				      (mapcar (lambda (h) 
+						(mail-header-number h))
+					      gnus-newsgroup-headers)))
     (setq gnus-newsgroup-headers
 	  (merge 'list
 		 gnus-newsgroup-headers
@@ -10843,17 +10843,17 @@ If ALL is a number, fetch this number of articles."
   (interactive "P")
   (prog1
       (let ((old (mapcar 'car gnus-newsgroup-data))
-	    (i (car gnus-newsgroup-active))
 	    older len)
-	(while (<= i (cdr gnus-newsgroup-active))
-	  (or (memq i old) (push i older))
-	  (incf i))
+	(setq older
+	      (gnus-sorted-difference
+	       (gnus-uncompress-range (list gnus-newsgroup-active))
+	       old))
 	(setq len (length older))
 	(cond
 	 ((null older) nil)
 	 ((numberp all)
 	  (if (< all len)
-	      (setq older (subseq older 0 all))))
+	      (setq older (last older all))))
 	 (all nil)
 	 (t
 	  (if (and (numberp gnus-large-newsgroup)
@@ -10868,12 +10868,11 @@ If ALL is a number, fetch this number of articles."
 		(unless (string-match "^[ \t]*$" input)
 		  (setq all (string-to-number input))
 		  (if (< all len)
-		      (setq older (subseq older 0 all))))))))
+		      (setq older (last older all))))))))
 	(if (not older)
 	    (message "No old news.")
-	  (let ((gnus-fetch-old-headers t))
-	    (gnus-summary-insert-articles older))
-	  (gnus-summary-limit (gnus-union older old))))
+	  (gnus-summary-insert-articles older)
+	  (gnus-summary-limit (gnus-sorted-union older old))))
     (gnus-summary-position-point)))
 
 (defun gnus-summary-insert-new-articles ()

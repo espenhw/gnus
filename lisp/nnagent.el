@@ -133,8 +133,8 @@
 	arts n)
     (save-excursion
       (gnus-agent-load-alist group)
-      (setq arts (gnus-set-difference articles 
-				      (mapcar 'car gnus-agent-article-alist)))
+      (setq arts (gnus-sorted-difference 
+		  articles (mapcar 'car gnus-agent-article-alist)))
       (set-buffer nntp-server-buffer)
       (erase-buffer)
       (nnheader-insert-nov-file file (car articles))
