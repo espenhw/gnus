@@ -1,3 +1,8 @@
+2004-04-06  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-cache.el (gnus-cache-save-buffers): Check if buffer is
+	alive.  Reported by Laurent Martelli <laurent@aopsys.com>.
+
 2004-04-03  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.el (gnus-getenv-nntpserver): Strip whitespace.
