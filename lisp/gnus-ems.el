@@ -68,12 +68,11 @@
 (eval-and-compile
   (cond
    ((not window-system)
-    (defun gnus-dummy-func (&rest args))
     (let ((funcs '(mouse-set-point set-face-foreground
 				   set-face-background x-popup-menu)))
       (while funcs
 	(unless (fboundp (car funcs))
-	  (defalias (car funcs) 'gnus-dummy-func))
+	  (defalias (car funcs) 'ignore))
 	(setq funcs (cdr funcs)))))))
 
 (eval-and-compile
@@ -124,7 +123,7 @@
     (defvar gnus-summary-display-table nil
       "Display table used in summary mode buffers.")
     (defalias 'gnus-max-width-function 'gnus-mule-max-width-function)
-    (defalias 'gnus-summary-set-display-table (lambda ()))
+    (defalias 'gnus-summary-set-display-table 'ignore)
 
     (when (boundp 'gnus-check-before-posting)
       (setq gnus-check-before-posting
@@ -175,15 +174,15 @@
       (let ((buffer-read-only nil))
 	(erase-buffer)
 	(when (and dir
-		   (file-exists-p (setq file (concat dir "x-splash"))))
+		   (file-exists-p (setq file
+					(expand-file-name "x-splash" dir))))
 	  (with-temp-buffer
 	    (insert-file-contents file)
 	    (goto-char (point-min))
 	    (ignore-errors
 	      (setq pixmap (read (current-buffer))))))
 	(when pixmap
-	  (unless (facep 'gnus-splash)
-	    (make-face 'gnus-splash))
+	  (make-face 'gnus-splash)
 	  (setq height (/ (car pixmap) (frame-char-height))
 		width (/ (cadr pixmap) (frame-char-width)))
 	  (set-face-foreground 'gnus-splash "Brown")
@@ -191,11 +190,11 @@
 	  (insert-char ?\n (* (/ (window-height) 2 height) height))
 	  (setq i height)
 	  (while (> i 0)
-	    (insert-char ?  (* (/ (window-width) 2 width) width))
+	    (insert-char ?\  (* (/ (window-width) 2 width) width))
 	    (setq beg (point))
-	    (insert-char ?  width)
+	    (insert-char ?\  width)
 	    (set-text-properties beg (point) '(face gnus-splash))
-	    (insert "\n")
+	    (insert ?\n)
 	    (decf i))
 	  (goto-char (point-min))
 	  (sit-for 0))))))
@@ -209,7 +208,7 @@
 
 (defun gnus-article-display-xface (beg end)
   "Display an XFace header from between BEG and END in the current article.
-This requires support images in your Emacs and the external programs
+Requires support for images in your Emacs and the external programs
 `uncompface', `icontopbm' and `ppmtoxbm'.  On a GNU/Linux system these
 might be in packages with names like `compface' or `faces-xface' and
 `netpbm' or `libgr-progs', for instance.
@@ -244,7 +243,16 @@ for XEmacs."
 		   (eq 0 (call-process-region (point-min) (point-max)
 					      "pbmtoxbm"
 					      'delete '(t nil)))
-		   (setq image (create-image (buffer-string) 'xbm t)))))
+		   ;; Miles Bader says that faces don't look right as
+		   ;; light on dark.
+		   (if (eq 'dark (cdr-safe (assq 'background-mode
+						 (frame-parameters))))
+		       (setq image (create-image (buffer-string) 'xbm t
+						 :ascent 'center
+						 :foreground "black"
+						 :background "white"))
+		     (setq image (create-image (buffer-string) 'xbm t
+					       :ascent 'center))))))
 	  (ring-insert gnus-article-xface-ring-internal (cons data image))))
       (when image
 	(goto-char (point-min))
