@@ -23,26 +23,26 @@ install:
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/gnus
 	cd $(srcdir) \
 	&& for p in images/gnus/*.xpm images/gnus/*.pbm images/gnus/*.xbm images/gnus/x-splash; do \
-	  echo " $(INSTALL_DATA) $$p $(etcdir)/images/$$p"; \
-	  $(INSTALL_DATA) $$p $(etcdir)/images/$$p; \
+	  echo " $(INSTALL_DATA) $$p $(etcdir)/$$p"; \
+	  $(INSTALL_DATA) $$p $(etcdir)/$$p; \
 	done
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/images/smilies
 	cd $(srcdir) \
 	&& for p in images/smilies/*.pbm images/smilies/*.xpm; do \
-	  echo " $(INSTALL_DATA) $$p $(etcdir)/images/$$p"; \
-	  $(INSTALL_DATA) $$p $(etcdir)/images/$$p; \
+	  echo " $(INSTALL_DATA) $$p $(etcdir)/$$p"; \
+	  $(INSTALL_DATA) $$p $(etcdir)/$$p; \
 	done
 
 uninstall: 
 	rm -f $(etcdir)/gnus-tut.txt
 	cd $(srcdir) \
 	&& for p in images/gnus/*.xpm images/gnus/*.pbm images/gnus/*.xbm images/gnus/x-splash; do \
-	  rm -f "$(etcdir)/images/$$p"; \
+	  rm -f "$(etcdir)/$$p"; \
 	done
 	rmdir $(etcdir)/images/gnus 2> /dev/null || true
 	cd $(srcdir) \
-	&& for p in smilies/*.pbm smilies/*.xpm; do \
-	  rm -f "$(etcdir)/images/$$p"; \
+	&& for p in images/smilies/*.pbm images/smilies/*.xpm; do \
+	  rm -f "$(etcdir)/$$p"; \
 	done
 	rmdir $(etcdir)/images/smilies 2> /dev/null || true
 	rmdir $(etcdir)/images 2> /dev/null || true
