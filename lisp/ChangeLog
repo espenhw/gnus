@@ -8,8 +8,10 @@
 2003-03-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-use-hashcash): new variable
-	(spam-list-of-checks): added spam-use-hashcash with associated spam-check-hashcash
-	(spam-check-hashcash): new function, installed iff hashcash.el is loaded
+	(spam-list-of-checks): added spam-use-hashcash with associated
+	spam-check-hashcash
+	(spam-check-hashcash): new function, installed iff hashcash.el is
+	loaded
 	(spam-setup-widening): don't use (return)
 
 2003-03-06  Kevin Greiner  <kgreiner@xpediantsolutions.com>
