@@ -396,7 +396,9 @@ and the latter avoids underlining any whitespace at all."
 Example: (_/*word*/_)."
   :group 'gnus-article-emphasis)
 
-(defface gnus-emphasis-strikethru '((t (:strikethru t)))
+(defface gnus-emphasis-strikethru (if (featurep 'xemacs)
+				      '((t (:strikethru t)))
+				    '((t (:strike-through t))))
   "Face used for displaying strike-through text (-word-)."
   :group 'gnus-article-emphasis)
 
