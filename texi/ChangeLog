@@ -1,6 +1,11 @@
+2001-10-04 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* Makefile.in (dvi): Don't depend on tmps.
+
 2001-10-03 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* emacs-mime.texi (mailcap): rvplayer -> wavplayer.
+	* emacs-mime.texi (mailcap): rvplayer -> wavplayer.  Thanks to
+	Martin Kretzschmar <Martin.Kretzschmar@inf.tu-dresden.de>.
 
 2001-09-29  Simon Josefsson  <jas@extundo.com>
 
