@@ -1,3 +1,7 @@
+2003-06-20  Jesper Harder  <harder@ifa.au.dk>
+
+	* spam.el (spam-spamoracle-learn): insert-string is obsolete.
+
 2003-06-19  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-enter-list): do not enter duplicate addresses into

@@ -1144,7 +1144,7 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
     (let ((temp-buffer-name (buffer-name)))
       (save-excursion
 	(goto-char (point-min))
-	(insert-string (spam-get-article-as-string article))
+	(insert (spam-get-article-as-string article))
 	(let* ((arg (if article-is-spam-p "-spam" "-good"))
 	       (status 
 		(apply 'call-process-region
