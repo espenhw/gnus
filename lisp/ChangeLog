@@ -1,3 +1,7 @@
+2003-09-13  Jesper Harder  <harder@ifa.au.dk>
+
+	* nnweb.el (nnweb-google-parse-1): Fix parsing.
+
 2003-09-12  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-group.el (gnus-group-fetch-control): ISC changed
