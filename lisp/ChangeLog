@@ -1,3 +1,11 @@
+2002-04-11  Simon Josefsson  <jas@extundo.com>
+
+	* smime.el (smime-CA-directory): Fix doc.  Thanks to Arne
+	J,Ax(Brgensen <arne+usenet@daimi.au.dk>.
+	(smime-sign-buffer): Work in XEmacs.  Thansk to Nicolas Kowalski
+	<Nicolas.Kowalski@imag.fr>.
+	(smime-decrypt-buffer): Ditto.
+
 2002-04-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-article-prepare): Place point on the emtpy

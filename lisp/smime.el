@@ -140,7 +140,7 @@ certificates to be sent with every message to each address."
 Directory should contain files (in PEM format) named to the X.509
 hash of the certificate.  This can be done using OpenSSL such as:
 
-$ ln -s ca.pem `openssl x509 -noout -hash -in ca.pem`
+$ ln -s ca.pem `openssl x509 -noout -hash -in ca.pem`.0
 
 where `ca.pem' is the file containing a PEM encoded X.509 CA
 certificate."
@@ -314,10 +314,10 @@ KEYFILE should contain a PEM encoded key and certificate."
 	 keyfile
        (smime-get-key-by-email
 	(completing-read
-	 (concat "Sign using which signature? "
+	 (concat "Sign using which key? "
 		 (if smime-keys (concat "(default " (caar smime-keys) ") ")
 		   ""))
-	 smime-keys nil nil nil nil (car-safe (car-safe smime-keys))))))))
+	 smime-keys nil nil (car-safe (car-safe smime-keys))))))))
 
 (defun smime-encrypt-buffer (&optional certfiles buffer)
   "S/MIME encrypt BUFFER for recipients specified in CERTFILES.
@@ -438,7 +438,7 @@ in the buffer specified by `smime-details-buffer'."
 	    (concat "Decipher using which key? "
 		    (if smime-keys (concat "(default " (caar smime-keys) ") ")
 		      ""))
-	    smime-keys nil nil nil nil (car-safe (car-safe smime-keys)))))))))
+	    smime-keys nil nil (car-safe (car-safe smime-keys)))))))))
 
 ;; Various operations
 
