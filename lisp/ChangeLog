@@ -1,5 +1,12 @@
 2000-04-27  Dave Love  <fx@gnu.org>
 
+	* gnus-art.el: Don't bother to require custom, browse-url.
+	(gnus-article-x-face-command): Include gnus-article-display-xface.
+
+	* gnus-ems.el: Assume only (X)Emacs 20+.  Simplify XEmacs checks.
+	Use defalias, not fset.
+	(gnus-article-display-xface): New function.
+
 	* mm-view.el (mm-inline-image-emacs): Use put-image, remove-images.
 
 	* mm-decode.el: Small doc fixes.  Require cl when compiling.

@@ -1,3 +1,7 @@
+2000-04-27  Dave Love  <fx@gnu.org>
+
+	* gnus.texi (Article Washing): Update x-face bit.
+
 2000-04-26  Florian Weimer  <fw@deneb.cygnus.argh.org>
 
 	* message.texi (Various Message Variables): Document
