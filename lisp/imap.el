@@ -852,7 +852,7 @@ Returns t if login was successful, nil otherwise."
   t)
 
 (defun imap-anonymous-auth (buffer)
-  (message "imap: Loging in anonymously...")
+  (message "imap: Logging in anonymously...")
   (with-current-buffer buffer
     (imap-ok-p (imap-send-command-wait
 		(concat "LOGIN anonymous \"" (concat (user-login-name) "@"

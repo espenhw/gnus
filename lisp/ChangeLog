@@ -1,4 +1,11 @@
 2002-02-03  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	
+	* imap.el (imap-anonymous-auth): Fix typo. 
+	From: Steinar Bang <sb@dod.no>
+
+	* gnus-cache.el (gnus-cache-braid-nov): Use set-buffer instead of
+	save-excursion.
+	(gnus-cache-braid-heads): Ditto.
 
 	* gnus-agent.el (gnus-agent-copy-nov-line): Move to the correct
 	line, because there are extra articles in the overview buffer.
