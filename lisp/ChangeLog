@@ -1,3 +1,8 @@
+2002-10-28  Josh  <huber@alum.wpi.edu>
+
+	* mml.el (mml-mode-map): Fixed keybindings for mml-secure-*
+	functions.
+	
 2002-10-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 	From mah@everybody.org (Mark A. Hershberger).
 

@@ -819,8 +819,8 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
     (define-key map "v" 'mml-validate)
     (define-key map "P" 'mml-preview)
     (define-key map "s" sign)
-    (define-key map "S" sign)
-    (define-key map "c" encryptpart)
+    (define-key map "S" signpart)
+    (define-key map "c" encrypt)
     (define-key map "C" encryptpart)
     ;;(define-key map "n" 'mml-narrow-to-part)
     ;; `M-m' conflicts with `back-to-indentation'.
