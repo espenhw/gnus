@@ -137,10 +137,10 @@ gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi sieve.latexi pgg.la
 	TEXINPUTS=$(srcdir):$$TEXINPUTS $(PDFLATEX) gnus.tmplatexi
 	mv gnus.pdf $@
 
-latexps: latex gnus.dvi-x
+latexps: gnus.dvi-x
 	TEXPICTS=$(srcdir) $(DVIPS) -t a4 -f $< > gnus.ps
 
-latexpdf: latex gnus.pdf-x
+latexpdf: gnus.pdf-x
 	mv gnus.pdf-x gnus.pdf
 
 gnus-manual-a4.latexi: gnus.latexi
@@ -168,8 +168,7 @@ psout: latexboth out
 latexboth: gnus-manual-a4.ps.gz gnus-manual-standard.ps.gz
 
 out:
-	scp gnus-manual-*.ps.gz gnus-manual-*.pdf 
-	www@quimby:html/gnus/documents
+	scp gnus-manual-*.ps.gz gnus-manual-*.pdf www@quimby:html/gnus/documents
 
 veryclean: clean
 	rm -f gnus.dvi gnus.ps texi2latex.elc
