@@ -1,3 +1,8 @@
+2002-10-26  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* nnimap.el (nnimap-request-article-part): Try harder to show
+	group name in debugging message.
+
 2002-10-25  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-agent.el (gnus-agent-save-fetched-headers): Create

@@ -808,7 +808,8 @@ function is generally only called when Gnus is shutting down."
 		     article)))
       (when article
 	(gnus-message 10 "nnimap: Fetching (part of) article %d from %s..."
-		      article (or group imap-current-mailbox))
+		      article (or group imap-current-mailbox
+				  gnus-newsgroup-name))
 	(if (not nnheader-callback-function)
 	    (with-current-buffer (or to-buffer nntp-server-buffer)
 	      (erase-buffer)
@@ -820,10 +821,11 @@ function is generally only called when Gnus is shutting down."
 	      (nnheader-ms-strip-cr)
 	      (gnus-message
 	       10 "nnimap: Fetching (part of) article %d from %s...done"
-	       article (or group imap-current-mailbox))
+	       article (or group imap-current-mailbox gnus-newsgroup-name))
 	      (if (bobp)
 		  (nnheader-report 'nnimap "No such article %d in %s: %s"
-				   article (or group imap-current-mailbox)
+				   article (or group imap-current-mailbox
+					       gnus-newsgroup-name)
 				   (imap-error-text nnimap-server-buffer))
 		(cons group article)))
 	  (add-hook 'imap-fetch-data-hook 'nnimap-callback)
