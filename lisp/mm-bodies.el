@@ -25,8 +25,8 @@
 ;;; Code:
 
 (eval-and-compile
-  (if (not (fboundp 'base64-encode-string))
-      (require 'base64)))
+  (or (fboundp  'base64-encode-region)
+      (autoload 'base64-decode-region "base64" nil t)))
 (require 'mm-util)
 (require 'rfc2047)
 (require 'qp)
@@ -62,7 +62,10 @@ If no encoding was done, nil is returned."
 	    (while (not (eobp))
 	      (if (eq (char-charset (following-char)) 'ascii)
 		  (when start
-		    (mm-encode-coding-region start (point) mime-charset)
+		    (save-restriction
+		      (narrow-to-region start (point))
+		      (mm-encode-coding-region start (point) mime-charset)
+		      (goto-char (point-max)))
 		    (setq start nil))
 		(unless start
 		  (setq start (point))))

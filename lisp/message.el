@@ -2637,7 +2637,8 @@ If NOW, use that time instead."
     (when (< zone 0)
       (setq sign ""))
     ;; We do all of this because XEmacs doesn't have the %z spec.
-    (concat (format-time-string "%d %b %Y %H:%M:%S " (or now (current-time)))
+    (concat (format-time-string
+	     "%d %b %Y %H:%M:%S " (or now (current-time)))
 	    (format "%s%02d%02d"
 		    sign (/ zone 3600)
 		    (% zone 3600)))))

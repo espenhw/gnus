@@ -79,16 +79,30 @@
 	  (save-window-excursion
 	    (w3-region (point-min) (point-max))
 	    (setq text (buffer-string))))
-	(let ((b (point)))
-	  (insert text)
-	  (mm-handle-set-undisplayer
-	   handle
-	   `(lambda ()
-	      (let (buffer-read-only)
-		(delete-region ,(set-marker (make-marker) b)
-			       ,(set-marker (make-marker) (point)))))))))
+	(mm-insert-inline handle text)))
+     ((or (equal type "enriched")
+	  (equal type "richtext"))
+      (save-excursion
+	(mm-with-unibyte-buffer
+	  (insert-buffer-substring (mm-handle-buffer handle))
+	  (mm-decode-content-transfer-encoding (mm-handle-encoding handle))
+	  (save-window-excursion
+	    (enriched-decode (point-min) (point-max))
+	    (setq text (buffer-string))))
+	(mm-insert-inline handle text)))
      )))
 
+(defun mm-insert-inline (handle text)
+  "Insert TEXT inline from HANDLE."
+  (let ((b (point)))
+    (insert text)
+    (mm-handle-set-undisplayer
+     handle
+     `(lambda ()
+	(let (buffer-read-only)
+	  (delete-region ,(set-marker (make-marker) b)
+			 ,(set-marker (make-marker) (point))))))))
+  
 (defun mm-inline-audio (handle)
   (message "Not implemented"))
 

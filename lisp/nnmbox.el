@@ -513,6 +513,7 @@
 	(set-buffer (setq nnmbox-mbox-buffer
 			  (nnheader-find-file-noselect
 			   nnmbox-mbox-file nil 'raw)))
+	(mm-enable-multibyte)
 	(buffer-disable-undo (current-buffer))
 
 	;; Go through the group alist and compare against

@@ -67,7 +67,7 @@
 		 mule-write-region-no-coding-system char-int
 		 annotationp delete-annotation make-image-specifier
 		 make-annotation base64-decode-string
-		 w3-do-setup w3-region base64-decode)))
+		 w3-do-setup w3-region)))
 
 (setq load-path (cons "." load-path))
 (require 'custom)

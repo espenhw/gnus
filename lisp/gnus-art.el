@@ -97,7 +97,7 @@
 
 (defcustom gnus-ignored-headers
   '("^Path:" "^Expires:" "^Date-Received:" "^References:" "^Xref:" "^Lines:"
-    "^Relay-Version:" "^Message-ID:" "^Approved:" "^Sender:" "^Received:" 
+    "^Relay-Version:" "^Message-ID:" "^Approved:" "^Sender:" "^Received:"
     "^X-UIDL:" "^MIME-Version:" "^Return-Path:" "^In-Reply-To:"
     "^Content-Type:" "^Content-Transfer-Encoding:" "^X-WebTV-Signature:"
     "^X-MimeOLE:" "^X-MSMail-Priority:" "^X-Priority:" "^X-Loop:"
@@ -107,7 +107,7 @@
     "^X-Complaints-To:" "^X-NNTP-Posting-Host:" "^X-Orig.*:"
     "^Abuse-Reports-To:" "^Cache-Post-Path:" "^X-Article-Creation-Date:"
     "^X-Poster:" "^X-Mail2News-Path:" "^X-Server-Date:" "^X-Cache:"
-    "^Originator:" "^X-Problems-To:" "^X-Auth-User:" "^X-Post-Time:" 
+    "^Originator:" "^X-Problems-To:" "^X-Auth-User:" "^X-Post-Time:"
     "^X-Admin:" "^X-UID:" "^Resent-[-A-Za-z]+:" "^X-Mailing-List:"
     "^Precedence:" "^Original-[-A-Za-z]+:" "^X-filename:" "^X-Orcpt:"
     "^Old-Received:" "^X-Pgp-Fingerprint:" "^X-Pgp-Key-Id:"
@@ -1455,7 +1455,8 @@ function and want to see what the date was before converting."
   (let (deactivate-mark)
     (save-excursion
       (ignore-errors
-        (when (gnus-buffer-live-p gnus-article-buffer)
+        (when (and (gnus-buffer-live-p gnus-article-buffer)
+		   (get-buffer-window gnus-article-buffer))
           (set-buffer gnus-article-buffer)
           (goto-char (point-min))
           (when (re-search-forward "^X-Sent:" nil t)
@@ -1876,7 +1877,6 @@ If variable `gnus-use-long-file-name' is non-nil, it is
   " " gnus-article-goto-next-page
   "\177" gnus-article-goto-prev-page
   [delete] gnus-article-goto-prev-page
-  "\r" widget-button-press
   "\C-c^" gnus-article-refer-article
   "h" gnus-article-show-summary
   "s" gnus-article-show-summary
@@ -2109,15 +2109,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		      (or all-headers gnus-show-all-headers))))
 	    (when (or (numberp article)
 		      (stringp article))
-	      ;; Hooks for getting information from the article.
-	      ;; This hook must be called before being narrowed.
-	      (let (buffer-read-only)
-		(gnus-run-hooks 'gnus-tmp-internal-hook)
-		(gnus-run-hooks 'gnus-article-prepare-hook)
-		(when gnus-display-mime-function
-		  (funcall gnus-display-mime-function))
-		;; Perform the article display hooks.
-		(gnus-run-hooks 'gnus-article-display-hook))
+	      (gnus-article-prepare-display)
 	      ;; Do page break.
 	      (goto-char (point-min))
 	      (setq gnus-page-broken
@@ -2131,15 +2123,35 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	    (set-window-point (get-buffer-window (current-buffer)) (point))
 	    t))))))
 
+(defun gnus-article-prepare-display ()
+  "Make the current buffer look like a nice article."
+  ;; Hooks for getting information from the article.
+  ;; This hook must be called before being narrowed.
+  (let ((gnus-article-buffer (current-buffer))
+	buffer-read-only)
+    (gnus-run-hooks 'gnus-tmp-internal-hook)
+    (gnus-run-hooks 'gnus-article-prepare-hook)
+    (when gnus-display-mime-function
+      (funcall gnus-display-mime-function))
+    ;; Perform the article display hooks.
+    (gnus-run-hooks 'gnus-article-display-hook)))
+
 ;;;
 ;;; Gnus MIME viewing functions
 ;;;
 
-(defvar gnus-mime-button-line-format "%{%([%t%d%n]%)%}\n")
+(defvar gnus-mime-button-line-format "%{%([%t%d%n]%)%}\n"
+  "The following specs can be used:
+%t  The MIME type
+%n  The `name' parameter
+%n  The description, if any
+%l  The length of the encoded part")
+
 (defvar gnus-mime-button-line-format-alist
   '((?t gnus-tmp-type ?s)
     (?n gnus-tmp-name ?s)
-    (?d gnus-tmp-description ?s)))
+    (?d gnus-tmp-description ?s)
+    (?l gnus-tmp-length ?d)))
 
 (defvar gnus-mime-button-map nil)
 (unless gnus-mime-button-map
@@ -2150,6 +2162,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (define-key gnus-mime-button-map "v" 'gnus-mime-view-part)
   (define-key gnus-mime-button-map "o" 'gnus-mime-save-part)
   (define-key gnus-mime-button-map "c" 'gnus-mime-copy-part)
+  (define-key gnus-mime-button-map "i" 'gnus-mime-inline-part)
   (define-key gnus-mime-button-map "|" 'gnus-mime-pipe-part))
 
 (defun gnus-mime-save-part ()
@@ -2179,10 +2192,24 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (insert contents)
     (goto-char (point-min))))
 
+(defun gnus-mime-inline-part ()
+  "Insert the MIME part under point into the current buffer."
+  (interactive)
+  (let* ((data (get-text-property (point) 'gnus-data))
+	 (contents (mm-get-part data))
+	 (b (point))
+	 buffer-read-only)
+    (forward-line 2)
+    (mm-insert-inline data contents)
+    (goto-char b)))
+
 (defun gnus-insert-mime-button (handle)
   (let ((gnus-tmp-name (mail-content-type-get (mm-handle-type handle) 'name))
 	(gnus-tmp-type (car (mm-handle-type handle)))
 	(gnus-tmp-description (mm-handle-description handle))
+	(gnus-tmp-length (save-excursion
+			   (set-buffer (mm-handle-buffer handle))
+			   (buffer-size)))
 	b e)
     (setq gnus-tmp-name
       (if gnus-tmp-name
@@ -2200,7 +2227,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		 gnus-callback mm-display-part
 		 gnus-data ,handle))
     (setq e (point))
-    (widget-convert-text 'link b e b e :action 'gnus-widget-press-button)))
+    (widget-convert-button 'link b e :action 'gnus-widget-press-button)))
 
 (defun gnus-widget-press-button (elems el)
   (goto-char (widget-get elems :from))
@@ -2230,7 +2257,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 			     (equal (car (mm-handle-disposition handle))
 				    "inline")))
 		(forward-line -2)
-		(mm-display-part handle)
+		(mm-display-part handle t)
 		(goto-char (point-max))))
 	  ;; Here we have multipart/alternative
 	  (gnus-mime-display-alternative handles))))))
@@ -2681,7 +2708,7 @@ If given a prefix, show the hidden text instead."
 
 	;; Decode charsets.
 	(run-hooks 'gnus-article-decode-hook))
-      
+
       ;; Update sparse articles.
       (when (and do-update-line
 		 (or (numberp article)
@@ -2864,7 +2891,7 @@ groups."
     ("\\bin\\( +article\\| +message\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2
      t gnus-button-message-id 3)
     ("\\(<URL: *\\)mailto: *\\([^> \n\t]+\\)>" 0 t gnus-url-mailto 2)
-    ("mailto:\\([a-zA-Z.-@_+0-9%]+\\)" 0 t gnus-url-mailto 1)
+    ("mailto:\\([-a-zA-Z.@_+0-9%]+\\)" 0 t gnus-url-mailto 1)
     ("\\bmailto:\\([^ \n\t]+\\)" 0 t gnus-url-mailto 1)
     ;; This is how URLs _should_ be embedded in text...
     ("<URL: *\\([^>]*\\)>" 0 t gnus-button-embedded-url 1)
@@ -3137,8 +3164,7 @@ specified by `gnus-button-alist'."
 	       (list gnus-mouse-face-prop gnus-article-mouse-face))
 	  (list 'gnus-callback fun)
 	  (and data (list 'gnus-data data))))
-  (widget-convert-text 'link from to from to
-		       :action 'gnus-widget-press-button))
+  (widget-convert-button 'link from to :action 'gnus-widget-press-button))
 
 ;;; Internal functions:
 

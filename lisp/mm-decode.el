@@ -37,6 +37,8 @@
     ("image/xpm" mm-inline-image (featurep 'xpm))
     ("image/bmp" mm-inline-image (featurep 'bmp))
     ("text/plain" mm-inline-text t)
+    ("text/enriched" mm-inline-text t)
+    ("text/richtext" mm-inline-text t)
     ("text/html" mm-inline-text (featurep 'w3))
     ("audio/wav" mm-inline-audio
      (and (or (featurep 'nas-sound) (featurep 'native-sound))
@@ -51,9 +53,10 @@
     ("text/.*" . inline)))
 
 (defvar mm-user-automatic-display
-  '("text/plain" "text/html" "image/gif"))
+  '("text/plain" "text/enriched" "text/richtext" "text/html" "image/gif"))
 
-(defvar mm-alternative-precedence '("text/plain" "text/html")
+(defvar mm-alternative-precedence
+  '("text/plain" "text/enriched" "text/richtext" "text/html")
   "List that describes the precedence of alternative parts.")
 
 (defvar mm-tmp-directory "/tmp/"
@@ -93,7 +96,8 @@
 	(when (and (or no-strict-mime
 		       (mail-fetch-field "mime-version"))
 		   (setq ct (mail-fetch-field "content-type")))
-	  (setq ctl (mail-header-parse-content-type ct)
+	  (setq ctl (condition-case () (mail-header-parse-content-type ct)
+		      (error nil))
 		cte (mail-fetch-field "content-transfer-encoding")
 		cd (mail-fetch-field "content-disposition")
 		description (mail-fetch-field "content-description")
@@ -114,7 +118,9 @@
 					(mail-header-remove-comments
 					 cte)))))
 	    no-strict-mime
-	    (and cd (mail-header-parse-content-disposition cd))))))
+	    (and cd (condition-case ()
+			(mail-header-parse-content-disposition cd)
+		      (error nil)))))))
 	(when id
 	  (push (cons id result) mm-content-id-alist))
 	result))))
@@ -137,7 +143,7 @@
   (let ((boundary (concat "\n--" (mail-content-type-get ctl 'boundary)))
 	start parts end)
     (while (search-forward boundary nil t)
-      (forward-line -1)
+      (goto-char (match-beginning 0))
       (when start
 	(save-excursion
 	  (save-restriction
@@ -159,7 +165,7 @@
       (insert-buffer-substring obuf beg)
       (current-buffer))))
 
-(defun mm-display-part (handle)
+(defun mm-display-part (handle &optional no-default)
   "Display the MIME part represented by HANDLE."
   (save-excursion
     (mailcap-parse-mailcaps)
@@ -172,8 +178,11 @@
 	    (progn
 	      (forward-line 1)
 	      (mm-display-inline handle))
-	  (mm-display-external
-	   handle (or user-method method 'mailcap-save-binary-file)))))))
+	  (when (or user-method
+		    method
+		    (not no-default))
+	    (mm-display-external
+	     handle (or user-method method 'mailcap-save-binary-file))))))))
 
 (defun mm-display-external (handle method)
   "Display HANDLE using METHOD."
@@ -226,7 +235,7 @@
   (let* ((type (car (mm-handle-type handle)))
 	 (function (cadr (assoc type mm-inline-media-tests))))
     (funcall function handle)))
-	 
+
 (defun mm-inlinable-p (type)
   "Say whether TYPE can be displayed inline."
   (let ((alist mm-inline-media-tests)
@@ -318,7 +327,7 @@ This overrides entries in the mailcap file."
 
 (defun mm-pipe-part (handle)
   "Pipe HANDLE to a process."
-  (let* ((name (mail-content-type-get (car (mm-handle-type handle)) 'name))
+  (let* ((name (mail-content-type-get (mm-handle-type handle) 'name))
 	 (command
 	  (read-string "Shell command on MIME part: " mm-last-shell-command)))
     (mm-with-unibyte-buffer

@@ -36,7 +36,7 @@
 
 ;;; Code:
 
-(require 'drums)
+(require 'ietf-drums)
 (require 'rfc2231)
 (require 'rfc2047)
 
@@ -44,14 +44,14 @@
 (defalias 'mail-header-parse-content-disposition 'rfc2231-parse-string)
 (defalias 'mail-content-type-get 'rfc2231-get-value)
 
-(defalias 'mail-header-remove-comments 'drums-remove-comments)
-(defalias 'mail-header-remove-whitespace 'drums-remove-whitespace)
-(defalias 'mail-header-get-comment 'drums-get-comment)
-(defalias 'mail-header-parse-address 'drums-parse-address)
-(defalias 'mail-header-parse-addresses 'drums-parse-addresses)
-(defalias 'mail-header-parse-date 'drums-parse-date)
-(defalias 'mail-narrow-to-head 'drums-narrow-to-header)
-(defalias 'mail-quote-string 'drums-quote-string)
+(defalias 'mail-header-remove-comments 'ietf-drums-remove-comments)
+(defalias 'mail-header-remove-whitespace 'ietf-drums-remove-whitespace)
+(defalias 'mail-header-get-comment 'ietf-drums-get-comment)
+(defalias 'mail-header-parse-address 'ietf-drums-parse-address)
+(defalias 'mail-header-parse-addresses 'ietf-drums-parse-addresses)
+(defalias 'mail-header-parse-date 'ietf-drums-parse-date)
+(defalias 'mail-narrow-to-head 'ietf-drums-narrow-to-header)
+(defalias 'mail-quote-string 'ietf-drums-quote-string)
 
 (defalias 'mail-header-narrow-to-field 'rfc2047-narrow-to-field)
 (defalias 'mail-encode-encoded-word-region 'rfc2047-encode-region)

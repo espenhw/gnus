@@ -519,12 +519,14 @@ Two predefined functions are available:
 
 (defun gnus-tree-article-region (article)
   "Return a cons with BEG and END of the article region."
-  (let ((pos (text-property-any (point-min) (point-max) 'gnus-number article)))
+  (let ((pos (text-property-any
+	      (point-min) (point-max) 'gnus-number article)))
     (when pos
       (cons pos (next-single-property-change pos 'gnus-number)))))
 
 (defun gnus-tree-goto-article (article)
-  (let ((pos (text-property-any (point-min) (point-max) 'gnus-number article)))
+  (let ((pos (text-property-any
+	      (point-min) (point-max) 'gnus-number article)))
     (when pos
       (goto-char pos))))
 

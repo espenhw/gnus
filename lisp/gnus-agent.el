@@ -341,7 +341,7 @@ agent minor mode in all Gnus buffers."
      (concat "^" (regexp-quote mail-header-separator) "\n"))
     (replace-match "\n")
     (gnus-agent-insert-meta-information 'mail)
-    (gnus-request-accept-article "nndraft:queue")))
+    (gnus-request-accept-article "nndraft:queue" nil t t)))
 
 (defun gnus-agent-insert-meta-information (type &optional method)
   "Insert meta-information into the message that says how it's to be posted.
@@ -1411,7 +1411,7 @@ The following commands are available:
 	       (gnus-agent-save-alist group)
                ;; Mark all articles up to the first article
 	       ;; in `gnus-article-alist' as read.
-	       (when (caar gnus-agent-article-alist)
+	       (when (and info (caar gnus-agent-article-alist))
 		 (setcar (nthcdr 2 info)
 			 (gnus-range-add
 			  (nth 2 info)

@@ -25,8 +25,6 @@
 ;;; Boston, MA 02111-1307, USA.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(require 'mm-util)
-
 ;; For non-MULE
 (if (not (fboundp 'char-int))
     (fset 'char-int 'identity))
@@ -110,7 +108,7 @@ base64-encoder-program.")
      (base64-insert-char char count ignored buffer))))
 
 (defun base64-xemacs-insert-char (char &optional count ignored buffer)
-  (if (and buffer (eq buffer (current-buffer)))
+  (if (or (null buffer) (eq buffer (current-buffer)))
       (insert-char char count)
     (save-excursion
       (set-buffer buffer)
@@ -275,5 +273,7 @@ base64-encoder-program.")
     (prog1
 	(buffer-string)
       (kill-buffer (current-buffer)))))  
+
+(fset 'base64-decode-string 'base64-decode)
 
 (provide 'base64)

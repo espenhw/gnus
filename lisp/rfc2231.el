@@ -23,7 +23,7 @@
 
 ;;; Code:
 
-(require 'drums)
+(require 'ietf-drums)
 
 (defun rfc2231-get-value (ct attribute)
   "Return the value of ATTRIBUTE from CT."
@@ -34,16 +34,16 @@
 The list will be on the form
  `(name (attribute . value) (attribute . value)...)"
   (with-temp-buffer
-    (let ((ttoken (drums-token-to-list drums-text-token))
-	  (stoken (drums-token-to-list drums-tspecials))
-	  (ntoken (drums-token-to-list "0-9"))
+    (let ((ttoken (ietf-drums-token-to-list ietf-drums-text-token))
+	  (stoken (ietf-drums-token-to-list ietf-drums-tspecials))
+	  (ntoken (ietf-drums-token-to-list "0-9"))
 	  (prev-value "")
 	  display-name mailbox c display-string parameters
 	  attribute value type subtype number encoded
 	  prev-attribute)
-      (drums-init (mail-header-remove-whitespace
+      (ietf-drums-init (mail-header-remove-whitespace
 		   (mail-header-remove-comments string)))
-      (let ((table (copy-syntax-table drums-syntax-table)))
+      (let ((table (copy-syntax-table ietf-drums-syntax-table)))
 	(modify-syntax-entry ?\' "w" table)
 	(set-syntax-table table))
       (setq c (following-char))

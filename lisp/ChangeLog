@@ -1,4 +1,113 @@
-Sun Sep 13 09:37:37 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+Mon Sep 14 18:55:38 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.31 is released.
+
+1998-09-14 15:12:59  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-exit): Destroy MIME.
+
+	* mm-decode.el (mm-display-part): Accept no-default.
+
+	* gnus-art.el (gnus-insert-mime-button): buffer-size doesn't take
+	a parameter.
+
+	* gnus-sum.el (gnus-summary-insert-line): Don't exclude faces.
+	(gnus-summary-prepare-threads): Ditto.
+
+	* gnus.el (gnus-article-mode-map): Make sparse keymap.
+
+	* gnus-art.el (gnus-mime-button-line-format-alist): Allow a %d spec.
+	(gnus-mime-button-line-format): Doc fix.
+	(gnus-insert-mime-button): Use it.
+	(gnus-article-add-button): Use widget-convert-button.
+
+	* gnus.el ((featurep 'gnus-xmas)): Defalias gnus-decode-rfc1522 to
+	ignore.
+
+	* mm-decode.el (mm-alternative-precedence): Ditto.
+
+1998-09-14 15:12:49  Conrad Sauerwald  <conrad@stack.nl>
+
+	* mm-decode.el (mm-user-automatic-display): Use enriched.
+
+1998-09-14 15:09:12  Paul Fisher  <rao@gnu.org>
+
+	* mm-decode.el (mm-dissect-multipart): Have the part start on the
+	right place.
+
+1998-09-14 14:33:34  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-inews-add-send-actions): Mark silently.
+
+	* gnus-art.el (article-update-date-lapsed): Only update header if
+	buffer is dispalyed in frame.
+	(gnus-article-prepare-display): New function.
+	(gnus-article-prepare): Use it.
+
+1998-09-14 08:16:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-inline-part): New command and keystroke.
+
+	* mm-view.el (mm-insert-inline): New function.
+
+	* mm-decode.el (mm-pipe-part): Bugged.
+
+	* gnus-agent.el (gnus-agent-send-mail): Don't encode.
+
+	* mm-bodies.el (mm-encode-body): Move over the body.
+
+	* nnmbox.el (nnmbox-read-mbox): Enable multibyte.
+
+	* rfc2047.el (rfc2047-q-encode-region): Would bug out.
+
+1998-09-13  François Pinard  <pinard@iro.umontreal.ca>
+
+	* nndoc.el: Make nndoc-dissection-alist simpler for MIME, adjust all
+          related functions.  Handle message/rfc822 parts.  Display subject on
+          multipart summary lines.  Display name on sub-parts when available.
+
+1998-09-14 07:36:38  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
+
+	* mailcap.el (mailcap-command-p): New version.
+
+1998-09-13  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-agent.el (gnus-agent-expire): Stop expiry barfing on killed
+	groups.
+
+1998-09-13 18:34:06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-make-date): Remove weekday name.
+
+	* mm-decode.el (mm-dissect-buffer): Protect against broken
+	headers.
+
+	* mailcap.el (mailcap-command-in-path-p): New function.
+	(mailcap-command-p): Renamed.
+
+1998-09-13 17:58:47  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
+
+	* rfc2047.el (eval): Autoload.
+
+1998-09-13 12:22:40  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-decode-encoded-word-functions): New variable.
+	(gnus-multi-decode-encoded-word-string): New function.
+	(gnus-encoded-word-method-alist): New variable.
+	(gnus-decode-encoded-word-functions): Removed.
+
+1998-09-13  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-int.el (gnus-request-replace-article): Replace
+	message-narrow-to-headers with message-narrow-to-head
+
+1998-09-13 12:05:41  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* drums.el (drums-quote-string): Reversed match.
+
+	* message.el (message-make-date): Use weekday name.
+
+Sun Sep 11 10:27:15 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.30 is released.
 
@@ -11,7 +120,7 @@ Sun Sep 13 09:37:37 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	(gnus-decode-encoded-word-function): New variable.
 
 	* gnus-msg.el (gnus-copy-article-buffer): Decode the right
-	buffer. 
+	buffer.
 
 	* gnus-art.el (gnus-insert-mime-button): Use widget.
 	(gnus-widget-press-button): New function.
@@ -32,21 +141,21 @@ Sun Sep 13 09:37:37 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-09-13 07:58:59  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-move-article): Don't decode accepting
-	articles. 
+	articles.
 
 1998-09-13 07:23:28  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mm-util.el (mm-mime-charset): Try to use safe-charsets.
 	(mm-default-mime-charset): New variable.
 
-	* rfc2047.el (rfc2047-dissect-region): Dissect using tspecials. 
+	* rfc2047.el (rfc2047-dissect-region): Dissect using tspecials.
 
 	* drums.el (drums-quote-string): Reversed test.
 
 1998-09-12 14:29:21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mm-util.el (mm-insert-rfc822-headers): Possibly not quote
-	string. 
+	string.
 
 	* drums.el (drums-quote-string): New function.
 
@@ -65,7 +174,7 @@ Sat Sep 12 13:27:15 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-09-12 11:30:01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* drums.el (drums-parse-address): Returned a list instead of a
-	string. 
+	string.
 	(drums-remove-whitespace): Skip comments.
 	(drums-parse-addresses): Didn't work.
 
@@ -82,10 +191,10 @@ Sat Sep 12 09:17:30 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* message.el (message-narrow-to-headers-or-head): New function.
 
 	* gnus-int.el (gnus-request-accept-article): Narrow to the right
-	region. 
+	region.
 
 	* message.el (message-send-news): Encode body after checking
-	syntax. 
+	syntax.
 
 	* gnus-art.el (gnus-mime-button-line-format): Allow descriptions.
 
@@ -99,10 +208,10 @@ Sat Sep 12 09:17:30 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	text with annotations.
 
 	* message.el (message-make-date): Fix sign for negative time
-	zones. 
+	zones.
 
 	* mm-view.el (mm-inline-image): Insert a space at the end of the
-	image. 
+	image.
 
 	* mail-parse.el: New file.
 
@@ -111,7 +220,7 @@ Sat Sep 12 09:17:30 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* drums.el (drums-content-type-get): Removed.
 	(drums-parse-content-type): Ditto.
 
-	* mailcap.el (mailcap-mime-data): Use symbols instead of strings. 
+	* mailcap.el (mailcap-mime-data): Use symbols instead of strings.
 
 Fri Sep 11 18:23:34 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
@@ -143,12 +252,12 @@ Fri Sep 11 12:32:50 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* mm-decode.el (mm-last-shell-command): New variable.
 
-	* mailcap.el (mailcap-mime-info): Allow returning all matches. 
+	* mailcap.el (mailcap-mime-info): Allow returning all matches.
 
 	* mm-decode.el (mm-save-part): New function.
 
 	* gnus-art.el (article-decode-charset): Protect against buggy
-	content-types. 
+	content-types.
 	(gnus-mime-pipe-part): New command.
 	(gnus-mime-save-part): New command.
 	(gnus-mime-button-map): New keymap.
@@ -163,10 +272,10 @@ Fri Sep 11 12:32:50 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* gnus-art.el (gnus-article-save): Comment fix.
 
 	* gnus-int.el (gnus-start-news-server): When in batch, don't
-	prompt. 
+	prompt.
 
 	* gnus-cache.el (gnus-cache-possibly-enter-article): Don't
-	decode. 
+	decode.
 
 	* mm-decode.el (mm-inline-media-tests): Add audio.
 	(mm-inline-audio): New function.
@@ -184,7 +293,7 @@ Fri Sep 11 08:09:40 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-09-11 07:38:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (article-remove-trailing-blank-lines): Don't remove
-	annotations. 
+	annotations.
 
 	* gnus.el ((featurep 'gnus-xmas)): New
 	'gnus-annotation-in-region-p alias.
@@ -232,22 +341,22 @@ Thu Sep 10 04:03:29 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-09-10 01:58:24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-show-article): Don't decode chars if
-	PREFIX. 
+	PREFIX.
 
 	* parse-time.el (parse-time-rules): Accept times that look like
-	"h:mm". 
+	"h:mm".
 
 	* message.el (message-make-date): Use zone properly.
 
 	* gnus.el: Autoload gnus-batch.
 
 	* gnus-art.el (article-de-quoted-unreadable): Do not do
-	gnus-article-decode-rfc1522. 
+	gnus-article-decode-rfc1522.
 
 	* gnus-msg.el (gnus-inews-do-gcc): Use it.
 
 	* gnus-int.el (gnus-request-accept-article): Accept a no-encode
-	param. 
+	param.
 
 	* message.el (message-encode-message-body): Check for us-ascii.
 
@@ -304,7 +413,7 @@ Tue Sep  8 21:43:03 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-09-08 11:40:45  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* rfc2047.el (rfc2047-decode-region): Only decode when in
-	multibyte. 
+	multibyte.
 
 	* nnheader.el (nnheader-pathname-coding-system): Changed to binary.
 
@@ -312,10 +421,10 @@ Tue Sep  8 21:43:03 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	(gnus-request-accept-article): Encode.
 
 	* gnus-art.el (gnus-request-article-this-buffer): Decode charsets
-	here. 
+	here.
 
 	* gnus.el (gnus-article-display-hook): Take the charset functions
-	out.  
+	out.
 
 	* time-date.el (safe-date-to-time): New function.
 
@@ -364,7 +473,7 @@ Tue Sep  8 04:29:23 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* time-date.el (time-to-seconds): Renamed.
 
-	* parse-time.el (parse-time-string): Downcase before handling. 
+	* parse-time.el (parse-time-string): Downcase before handling.
 	(parse-time-rules): Times without seconds have 0 seconds.
 
 	* rfc2047.el (rfc2047-encode-region): New version.
@@ -414,10 +523,10 @@ Sun Sep  6 21:19:26 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* date.el (if): Use parse-time.
 
 	* gnus-score.el (gnus-summary-score-entry): Make into a command
-	again. 
+	again.
 
 	* gnus-group.el (gnus-group-get-new-news-this-group): Only call if
-	gnus-agent. 
+	gnus-agent.
 
 	* gnus.el (gnus-agent-meta-information-header): Moved here.
 
@@ -452,7 +561,7 @@ Sun Sep  6 21:19:26 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-09-05 22:23:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-article-decode-charset): Only decode text
-	things. 
+	things.
 
 	* message.el (message-output): Use rmail.
 
@@ -460,7 +569,7 @@ Sun Sep  6 21:19:26 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	word part.
 
 	* mm-util.el (mm-charset-to-coding-system): Use
-	rfc2047-default-charset. 
+	rfc2047-default-charset.
 	(mm-known-charsets): New variable.
 
 	* message.el (message-caesar-region): Bugged out.
@@ -484,7 +593,7 @@ Sat Sep  5 21:55:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	from the headers.
 
 	* rfc2047.el (rfc2047-decode-region): Use the mm decoding
-	functions. 
+	functions.
 
 	* gnus-group.el (gnus-group-sort-selected-flat): Didn't work at
 	all.
@@ -527,7 +636,7 @@ Sat Sep  5 01:45:52 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* gnus-util.el (gnus-output-to-rmail): Removed.
 
 	* gnus-art.el (gnus-summary-save-in-rmail): Use
-	gnus-output-to-rmailrmail-output-to-rmail-file. 
+	gnus-output-to-rmailrmail-output-to-rmail-file.
 
 	* rfc2047.el (rfc2047-decode-region): Fold case.
 	(rfc2047-decode): Use decode-string.
@@ -546,10 +655,10 @@ Thu Sep  3 15:23:22 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-09-02 14:38:18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-msg.el (gnus-post-method): Use opened servers, and remove
-	ducplicates. 
+	ducplicates.
 	(gnus-inews-insert-mime-headers): Removed.
 
-	* message.el (message-caesar-region): Protect against MULE chars. 
+	* message.el (message-caesar-region): Protect against MULE chars.
 
 1998-09-02 00:36:23  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
 
@@ -558,14 +667,14 @@ Thu Sep  3 15:23:22 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-09-02 00:31:53  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-article-decode-charset): Use real
-	read-coding-system. 
+	read-coding-system.
 
 1998-09-01 17:58:40  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mm-bodies.el (mm-decode-body): Protect against malformed
-	base64. 
+	base64.
 	(mm-decode-body): Check that buffer-file-coding-system is
-	non-nil. 
+	non-nil.
 
 Tue Sep  1 10:29:33 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
@@ -574,7 +683,7 @@ Tue Sep  1 10:29:33 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-09-01 09:14:33  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-util.el (gnus-strip-whitespace): Already defined.
-	Removed. 
+	Removed.
 
 	* gnus-art.el (gnus-article-decode-charset): Strip whitespace.
 
@@ -594,7 +703,7 @@ Tue Sep  1 10:29:33 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* gnus-sum.el (gnus-summary-mode-line-format): Ditto.
 
 	* gnus-art.el (gnus-article-mode-line-format): Use short group
-	format. 
+	format.
 
 Mon Aug 31 23:03:13 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
@@ -618,7 +727,7 @@ Mon Aug 31 22:14:50 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* message.el (message-encode-message-body): Ditto.
 
 	* gnus-art.el (gnus-article-decode-mime-words): New command and
-	keystroke. 
+	keystroke.
 	(gnus-article-decode-charset): Ditto.
 	(gnus-article-decode-charset): Only work under MULE.
 
@@ -723,7 +832,7 @@ Sun Aug 30 17:46:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* mm-encode.el (mm-q-encode-region): New function.
 
 	* qp.el (quoted-printable-encode-region): Take an optional CLASS
-	param. 
+	param.
 
 	* mm-encode.el (mm-encode-word-region): Downcase.
 
@@ -748,7 +857,7 @@ Sun Aug 30 15:28:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* message.el (message-narrow-to-header): New function.
 
-	* gnus-art.el (gnus-article-decode-mime-words): Place point in the 
+	* gnus-art.el (gnus-article-decode-mime-words): Place point in the
 	right buffer.
 
 Sun Aug 30 12:15:54 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
@@ -781,7 +890,7 @@ Sun Aug 30 00:59:15 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* nnheader.el (fboundp): Protect code-coding-string.
 
-	* gnus-art.el (gnus-article-mode): Check that set-buffer-multibyte 
+	* gnus-art.el (gnus-article-mode): Check that set-buffer-multibyte
 	is available.
 
 Sat Aug 29 23:24:31 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
@@ -790,7 +899,7 @@ Sat Aug 29 23:24:31 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 1998-08-29 22:38:35  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus-art.el (gnus-article-mode): Make article buffer multibyte. 
+	* gnus-art.el (gnus-article-mode): Make article buffer multibyte.
 	(gnus-hack-decode-rfc1522): Removed.
 
 	* mm-decode.el (mm-charset-coding-system-alist): Check better.
@@ -802,7 +911,7 @@ Sat Aug 29 22:20:39 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-08-29 20:53:29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-article-decode-mime-words): New command and
-	keystroke. 
+	keystroke.
 
 	* qp.el (quoted-printable-decode-region): Don't use hexl.
 
@@ -825,7 +934,7 @@ Sat Aug 29 22:20:39 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* gnus-ems.el (fboundp): Don't bind mail-file-babyl-p.
 
 	* gnus-art.el (article-mime-decode-quoted-printable): Don't use
-	hexl. 
+	hexl.
 
 	* nnheader.el (nnheader-temp-write): Removed.
 
@@ -836,4 +945,3 @@ Sat Aug 29 20:34:17 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 Sat Aug 29 19:32:06 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v0.2 is released.
-

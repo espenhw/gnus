@@ -1,4 +1,4 @@
-;;; drums.el --- Functions for parsing RFC822bis headers
+;;; ietf-drums.el --- Functions for parsing RFC822bis headers
 ;; Copyright (C) 1998 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -31,30 +31,30 @@
 (require 'time-date)
 (require 'mm-util)
 
-(defvar drums-no-ws-ctl-token "\001-\010\013\014\016-\037\177"
+(defvar ietf-drums-no-ws-ctl-token "\001-\010\013\014\016-\037\177"
   "US-ASCII control characters excluding CR, LF and white space.")
-(defvar drums-text-token "\001-\011\013\014\016-\177"
+(defvar ietf-drums-text-token "\001-\011\013\014\016-\177"
   "US-ASCII characters exlcuding CR and LF.")
-(defvar drums-specials-token "()<>[]:;@\\,.\""
+(defvar ietf-drums-specials-token "()<>[]:;@\\,.\""
   "Special characters.")
-(defvar drums-quote-token "\\"
+(defvar ietf-drums-quote-token "\\"
   "Quote character.")
-(defvar drums-wsp-token " \t"
+(defvar ietf-drums-wsp-token " \t"
   "White space.")
-(defvar drums-fws-regexp
-  (concat "[" drums-wsp-token "]*\n[" drums-wsp-token "]+")
+(defvar ietf-drums-fws-regexp
+  (concat "[" ietf-drums-wsp-token "]*\n[" ietf-drums-wsp-token "]+")
   "Folding white space.")
-(defvar drums-atext-token "-^a-zA-Z0-9!#$%&'*+/=?_`{|}~"
+(defvar ietf-drums-atext-token "-^a-zA-Z0-9!#$%&'*+/=?_`{|}~"
   "Textual token.")
-(defvar drums-dot-atext-token "-^a-zA-Z0-9!#$%&'*+/=?_`{|}~."
+(defvar ietf-drums-dot-atext-token "-^a-zA-Z0-9!#$%&'*+/=?_`{|}~."
   "Textual token including full stop.")
-(defvar drums-qtext-token
-  (concat drums-no-ws-ctl-token "\041\043-\133\135-\177")
+(defvar ietf-drums-qtext-token
+  (concat ietf-drums-no-ws-ctl-token "\041\043-\133\135-\177")
   "Non-white-space control characaters, plus the rest of ASCII excluding backslash and doublequote.")
-(defvar drums-tspecials "][()<>@,;:\\\"/?="
+(defvar ietf-drums-tspecials "][()<>@,;:\\\"/?="
   "Tspecials.")
 
-(defvar drums-syntax-table
+(defvar ietf-drums-syntax-table
   (let ((table (copy-syntax-table emacs-lisp-mode-syntax-table)))
     (modify-syntax-entry ?\\ "/" table)
     (modify-syntax-entry ?< "(" table)
@@ -67,7 +67,7 @@
     (modify-syntax-entry ?\' " " table)
     table))
 
-(defun drums-token-to-list (token)
+(defun ietf-drums-token-to-list (token)
   "Translate TOKEN into a list of characters."
   (let ((i 0)
 	b e c out range)
@@ -90,17 +90,17 @@
 	(setq b c))))
     (nreverse out)))
 
-(defsubst drums-init (string)
-  (set-syntax-table drums-syntax-table)
+(defsubst ietf-drums-init (string)
+  (set-syntax-table ietf-drums-syntax-table)
   (insert string)
-  (drums-unfold-fws)
+  (ietf-drums-unfold-fws)
   (goto-char (point-min)))
 
-(defun drums-remove-comments (string)
+(defun ietf-drums-remove-comments (string)
   "Remove comments from STRING."
   (with-temp-buffer
     (let (c)
-      (drums-init string)
+      (ietf-drums-init string)
       (while (not (eobp))
 	(setq c (following-char))
 	(cond
@@ -112,10 +112,10 @@
 	  (forward-char 1))))
       (buffer-string))))
 
-(defun drums-remove-whitespace (string)
+(defun ietf-drums-remove-whitespace (string)
   "Remove comments from STRING."
   (with-temp-buffer
-    (drums-init string)
+    (ietf-drums-init string)
     (let (c)
       (while (not (eobp))
 	(setq c (following-char))
@@ -130,10 +130,10 @@
 	  (forward-char 1))))
       (buffer-string))))
 
-(defun drums-get-comment (string)
+(defun ietf-drums-get-comment (string)
   "Return the first comment in STRING."
   (with-temp-buffer
-    (drums-init string)
+    (ietf-drums-init string)
     (let (result c)
       (while (not (eobp))
 	(setq c (following-char))
@@ -149,11 +149,11 @@
 	  (forward-char 1))))
       result)))
 
-(defun drums-parse-address (string)
+(defun ietf-drums-parse-address (string)
   "Parse STRING and return a MAILBOX / DISPLAY-NAME pair."
   (with-temp-buffer
     (let (display-name mailbox c display-string)
-      (drums-init string)
+      (ietf-drums-init string)
       (while (not (eobp))
 	(setq c (following-char))
 	(cond
@@ -166,13 +166,13 @@
 	  (push (buffer-substring
 		 (1+ (point)) (progn (forward-sexp 1) (1- (point))))
 		display-name))
-	 ((looking-at (concat "[" drums-atext-token "@" "]"))
+	 ((looking-at (concat "[" ietf-drums-atext-token "@" "]"))
 	  (push (buffer-substring (point) (progn (forward-sexp 1) (point)))
 		display-name))
 	 ((eq c ?<)
 	  (setq mailbox
-		(drums-remove-whitespace
-		 (drums-remove-comments
+		(ietf-drums-remove-whitespace
+		 (ietf-drums-remove-comments
 		  (buffer-substring
 		   (1+ (point))
 		   (progn (forward-sexp 1) (1- (point))))))))
@@ -181,18 +181,18 @@
       (if display-name
 	  (setq display-string
 		(mapconcat 'identity (reverse display-name) " "))
-	(setq display-string (drums-get-comment string)))
+	(setq display-string (ietf-drums-get-comment string)))
       (if (not mailbox)
 	  (when (string-match "@" display-string)
 	    (cons
 	     (mapconcat 'identity (nreverse display-name) "")
-	     (drums-get-comment string)))
+	     (ietf-drums-get-comment string)))
 	(cons mailbox display-string)))))
 
-(defun drums-parse-addresses (string)
+(defun ietf-drums-parse-addresses (string)
   "Parse STRING and return a list of MAILBOX / DISPLAY-NAME pairs."
   (with-temp-buffer
-    (drums-init string)
+    (ietf-drums-init string)
     (let ((beg (point))
 	  pairs c)
       (while (not (eobp))
@@ -201,28 +201,28 @@
 	 ((memq c '(?\" ?< ?\())
 	  (forward-sexp 1))
 	 ((eq c ?,)
-	  (push (drums-parse-address (buffer-substring beg (point)))
+	  (push (ietf-drums-parse-address (buffer-substring beg (point)))
 		pairs)
 	  (forward-char 1)
 	  (setq beg (point)))
 	 (t
 	  (forward-char 1))))
-      (push (drums-parse-address (buffer-substring beg (point)))
+      (push (ietf-drums-parse-address (buffer-substring beg (point)))
 	    pairs)
       (nreverse pairs))))
 
-(defun drums-unfold-fws ()
+(defun ietf-drums-unfold-fws ()
   "Unfold folding white space in the current buffer."
   (goto-char (point-min))
-  (while (re-search-forward drums-fws-regexp nil t)
+  (while (re-search-forward ietf-drums-fws-regexp nil t)
     (replace-match " " t t))
   (goto-char (point-min)))
 
-(defun drums-parse-date (string)
+(defun ietf-drums-parse-date (string)
   "Return an Emacs time spec from STRING."
   (apply 'encode-time (parse-time-string string)))
 
-(defun drums-narrow-to-header ()
+(defun ietf-drums-narrow-to-header ()
   "Narrow to the header section in the current buffer."
   (narrow-to-region
    (goto-char (point-min))
@@ -231,12 +231,12 @@
      (point-max)))
   (goto-char (point-min)))
 
-(defun drums-quote-string (string)
+(defun ietf-drums-quote-string (string)
   "Quote string if it needs quoting to be displayed in a header."
-  (if (not (string-match (concat "[^" drums-atext-token "]") string))
+  (if (string-match (concat "[^" ietf-drums-atext-token "]") string)
       (concat "\"" string "\"")
     string))
 
-(provide 'drums)
+(provide 'ietf-drums)
 
-;;; drums.el ends here
+;;; ietf-drums.el ends here

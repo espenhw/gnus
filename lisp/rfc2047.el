@@ -26,11 +26,12 @@
 
 (eval-and-compile
   (eval
-   '(if (not (fboundp 'base64-encode-string))
-	(require 'base64))))
+   '(unless (fboundp 'base64-decode-string)
+      (autoload 'base64-decode-string "base64")
+      (autoload 'base64-encode-region "base64" nil t))))
 (require 'qp)
 (require 'mm-util)
-(require 'drums)
+(require 'ietf-drums)
 
 (defvar rfc2047-default-charset 'iso-8859-1
   "Default MIME charset -- does not need encoding.")
@@ -148,7 +149,8 @@ Should be called narrowed to the head of the message."
     (save-restriction
       (narrow-to-region b e)
       (goto-char (point-min))
-      (while (re-search-forward (concat "[^" drums-tspecials " \t\n]+") nil t)
+      (while (re-search-forward
+	      (concat "[^" ietf-drums-tspecials " \t\n]+") nil t)
 	(push
 	 (list (match-beginning 0) (match-end 0)
 	       (car
@@ -229,7 +231,7 @@ Should be called narrowed to the head of the message."
 	  (pop alist))
 	(goto-char (point-min))
 	(while (not (eobp))
-	  (forward-char 64)
+	  (goto-char (min (point-max) (+ 64 (point))))
 	  (search-backward "=" nil (- (point) 2))
 	  (unless (eobp)
 	    (insert "\n")))))))
@@ -305,9 +307,7 @@ If your Emacs implementation can't decode CHARSET, it returns nil."
       (mm-decode-coding-string
        (cond
 	((equal "B" encoding)
-	 (if (fboundp 'base64-decode-string)
-	     (base64-decode-string string)
-	   (base64-decode string)))
+	 (base64-decode-string string))
 	((equal "Q" encoding)
 	 (quoted-printable-decode-string
 	  (mm-replace-chars-in-string string ?_ ? )))

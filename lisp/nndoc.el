@@ -143,10 +143,13 @@ from the document.")
 (defvoo nndoc-head-begin-function nil)
 (defvoo nndoc-body-end nil)
 ;; nndoc-dissection-alist is a list of sublists.  Each sublist holds the
-;; following items.  ARTICLE is an ordinal starting at 1.  HEAD-BEGIN,
-;; HEAD-END, BODY-BEGIN and BODY-END are positions in the `nndoc' buffer.
-;; LINE-COUNT is a count of lines in the body.  SUBJECT, MESSAGE-ID and
-;; REFERENCES, only present for MIME dissections, are field values.
+;; following items.  ARTICLE act as the association key and is an ordinal
+;; starting at 1.  HEAD-BEGIN [0], HEAD-END [1], BODY-BEGIN [2] and BODY-END
+;; [3] are positions in the `nndoc' buffer.  LINE-COUNT [4] is a count of
+;; lines in the body.  For MIME dissections only, ARTICLE-INSERT [5] and
+;; SUMMARY-INSERT [6] give headers to insert for full article or summary line
+;; generation, respectively.  Other headers usually follow directly from the
+;; buffer.  Value `nil' means no insert.
 (defvoo nndoc-dissection-alist nil)
 (defvoo nndoc-prepare-body-function nil)
 (defvoo nndoc-generate-head-function nil)
@@ -158,8 +161,6 @@ from the document.")
 (defvoo nndoc-current-buffer nil
   "Current nndoc news buffer.")
 (defvoo nndoc-address nil)
-(defvoo nndoc-mime-header nil)
-(defvoo nndoc-mime-subject nil)
 
 (defconst nndoc-version "nndoc 1.0"
   "nndoc version.")
@@ -459,30 +460,19 @@ from the document.")
       t)))
 
 (defun nndoc-transform-mime-parts (article)
-  (unless (= article 1)
-    ;; Ensure some MIME-Version.
+  (let* ((entry (cdr (assq article nndoc-dissection-alist)))
+	 (headers (nth 5 entry)))
+    (when headers
     (goto-char (point-min))
-    (search-forward "\n\n")
-    (let ((case-fold-search nil)
-	  (limit (point)))
-      (goto-char (point-min))
-      (or (save-excursion (re-search-forward "^MIME-Version:" limit t))
-	  (insert "Mime-Version: 1.0\n")))
-    ;; Generate default header before entity fields.
-    (goto-char (point-min))
-    (nndoc-generate-mime-parts-head article t)))
+      (insert headers))))
 
-(defun nndoc-generate-mime-parts-head (article &optional body-present)
-  (let ((entry (cdr (assq (if body-present 1 article) nndoc-dissection-alist))))
-    (let ((subject (if body-present
-		       nndoc-mime-subject
-		     (concat "<" (nth 5 entry) ">")))
-	  (message-id (nth 6 entry))
-	  (references (nth 7 entry)))
-      (insert nndoc-mime-header)
-      (and subject (insert "Subject: " subject "\n"))
-      (and message-id (insert "Message-ID: " message-id "\n"))
-      (and references (insert "References: " references "\n")))))
+(defun nndoc-generate-mime-parts-head (article)
+  (let* ((entry (cdr (assq article nndoc-dissection-alist)))
+	 (headers (nth 6 entry)))
+    (when headers
+      (insert headers))
+    (insert-buffer-substring
+     nndoc-current-buffer (car entry) (nth 1 entry))))
 
 (defun nndoc-clari-briefs-type-p ()
   (when (let ((case-fold-search nil))
@@ -668,92 +658,127 @@ the header of this entity, and one article per sub-entity."
 	nndoc-mime-split-ordinal 0)
   (save-excursion
     (set-buffer nndoc-current-buffer)
-    (message-narrow-to-head)
-    (let ((case-fold-search t)
-	  (message-id (message-fetch-field "Message-ID"))
-	  (references (message-fetch-field "References")))
-      (setq nndoc-mime-header (buffer-substring (point-min) (point-max))
-	    nndoc-mime-subject (message-fetch-field "Subject"))
-      (while (string-match "\
-^\\(Subject\\|Message-ID\\|References\\|Lines\\|\
-MIME-Version\\|Content-Type\\|Content-Transfer-Encoding\\|\
-\\):.*\n\\([ \t].*\n\\)*"
-			   nndoc-mime-header)
-	(setq nndoc-mime-header (replace-match "" t t nndoc-mime-header)))
-      (widen)
-      (nndoc-dissect-mime-parts-sub (point-min) (point-max)
-				    nil message-id references))))
+    (nndoc-dissect-mime-parts-sub (point-min) (point-max) nil nil nil)))
 
-(defun nndoc-dissect-mime-parts-sub (begin end position message-id references)
-  "Dissect an entity within a composite MIME message.
-The article, which corresponds to a MIME entity, extends from BEGIN to END.
+(defun nndoc-dissect-mime-parts-sub (head-begin body-end article-insert
+						position parent)
+  "Dissect an entity, within a composite MIME message.
+The complete message or MIME entity extends from HEAD-BEGIN to BODY-END.
+ARTICLE-INSERT should be added at beginning for generating a full article.
 The string POSITION holds a dotted decimal representation of the article
 position in the hierarchical structure, it is nil for the outer entity.
-The generated article should use MESSAGE-ID and REFERENCES field values."
-  ;; Note: `case-fold-search' is already `t' from the calling function.
-  (let ((head-begin begin)
-	(body-end end)
-	head-end body-begin type subtype composite comment)
-    (save-excursion
+PARENT is the message-ID of the parent summary line, or nil for none."
+  (let ((case-fold-search t)
+	(message-id (nnmail-message-id))
+	head-end body-begin summary-insert message-rfc822 multipart-any
+	subject content-type type subtype boundary-regexp)
       ;; Gracefully handle a missing body.
       (goto-char head-begin)
       (if (search-forward "\n\n" body-end t)
 	  (setq head-end (1- (point))
 		body-begin (point))
-	(setq head-end end
-	      body-begin end))
+      (setq head-end body-end
+	    body-begin body-end))
+    (narrow-to-region head-begin head-end)
       ;; Save MIME attributes.
       (goto-char head-begin)
-      (if (re-search-forward "\
-^Content-Type: *\\([^ \t\n/;]+\\)/\\([^ \t\n/;]+\\)"
-			     head-end t)
-	  (setq type (downcase (match-string 1))
-		subtype (downcase (match-string 2)))
+    (setq content-type (message-fetch-field "Content-Type"))
+    (when content-type
+      (when (string-match "^ *\\([^ \t\n/;]+\\)/\\([^ \t\n/;]+\\)" content-type)
+	(setq type (downcase (match-string 1 content-type))
+	      subtype (downcase (match-string 2 content-type))
+	      message-rfc822 (and (string= type "message")
+				  (string= subtype "rfc822"))
+	      multipart-any (string= type "multipart")))
+      (when (string-match ";[ \t\n]*name=\\([^ \t\n;]+\\)" content-type)
+	(setq subject (match-string 1 content-type)))
+      (when (string-match "boundary=\"?\\([^\"\n]*[^\" \t\n]\\)" content-type)
+	(setq boundary-regexp (concat "\n--"
+				      (regexp-quote
+				       (match-string 1 content-type))
+				      "\\(--\\)?[ \t]*\n"))))
+    (unless subject
+      (when (or multipart-any (not article-insert))
+	(setq subject (message-fetch-field "Subject"))))
+    (unless type
 	(setq type "text"
 	      subtype "plain"))
-      (setq composite (string= type "multipart")
-	    comment (concat position
-			    (when (and position composite) ".")
-			    (when composite "*")
-			    (when (or position composite) " ")
+    ;; Prepare the article and summary inserts.
+    (unless article-insert
+      (setq article-insert (buffer-substring (point-min) (point-max))
+	    head-end head-begin))
+    (setq summary-insert article-insert)
+    ;; - summary Subject.
+    (setq summary-insert
+	  (let ((line (concat "Subject: <" position
+			      (and position multipart-any ".")
+			      (and multipart-any "*")
+			      (and (or position multipart-any) " ")
 			    (cond ((string= subtype "plain") type)
 				  ((string= subtype "basic") type)
-				  (t subtype))))
+				    (t subtype))
+			      ">"
+			      (and subject " ")
+			      subject
+			      "\n")))
+	    (if (string-match "Subject:.*\n\\([ \t].*\n\\)*" summary-insert)
+		(replace-match line t t summary-insert)
+	      (concat summary-insert line))))
+    ;; - summary Message-ID.
+    (setq summary-insert
+	  (let ((line (concat "Message-ID: " message-id "\n")))
+	    (if (string-match "Message-ID:.*\n\\([ \t].*\n\\)*" summary-insert)
+		(replace-match line t t summary-insert)
+	      (concat summary-insert line))))
+    ;; - summary References.
+    (when parent
+      (setq summary-insert
+	    (let ((line (concat "References: " parent "\n")))
+	      (if (string-match "References:.*\n\\([ \t].*\n\\)*"
+				summary-insert)
+		  (replace-match line t t summary-insert)
+		(concat summary-insert line)))))
       ;; Generate dissection information for this entity.
       (push (list (incf nndoc-mime-split-ordinal)
 		  head-begin head-end body-begin body-end
 		  (count-lines body-begin body-end)
-		  comment message-id references)
+		article-insert summary-insert)
 	    nndoc-dissection-alist)
       ;; Recurse for all sub-entities, if any.
-      (goto-char head-begin)
-      (when (re-search-forward
-	     (concat "\
-^Content-Type: *multipart/\\([a-z]+\\);\\(.*;\\)*"
-		     "[ \t\n]*[ \t]boundary=\"?\\([^\"\n]*[^\" \t\n]\\)")
-	   head-end t)
-	(let ((boundary (concat "\n--" (match-string 3) "\\(--\\)?[ \t]*\n"))
-	      (part-counter 0)
-	      begin end eof-flag)
-	  (goto-char head-end)
-	  (setq eof-flag (not (re-search-forward boundary body-end t)))
+    (widen)
+    (cond
+     (message-rfc822
+      (save-excursion
+	(nndoc-dissect-mime-parts-sub body-begin body-end nil
+				      position message-id)))
+     ((and multipart-any boundary-regexp)
+      (let ((part-counter 0)
+	    part-begin part-end eof-flag)
+	(while (string-match "\
+^\\(Lines\\|Content-\\(Type\\|Transfer-Encoding\\)\\):.*\n\\([ \t].*\n\\)*"
+			     article-insert)
+	  (setq article-insert (replace-match "" t t article-insert)))
+	(let ((case-fold-search nil))
+	  (goto-char body-begin)
+	  (setq eof-flag (not (re-search-forward boundary-regexp body-end t)))
 	  (while (not eof-flag)
-	    (setq begin (point))
-	    (cond ((re-search-forward boundary body-end t)
+	    (setq part-begin (point))
+	    (cond ((re-search-forward boundary-regexp body-end t)
 		   (or (not (match-string 1))
 		       (string= (match-string 1) "")
 		       (setq eof-flag t))
 		   (forward-line -1)
-		   (setq end (point))
+		   (setq part-end (point))
 		   (forward-line 1))
-		  (t (setq end body-end
+		  (t (setq part-end body-end
 			   eof-flag t)))
-	    (nndoc-dissect-mime-parts-sub begin end
-					  (concat position (when position ".")
-						  (format "%d"
-							  (incf part-counter)))
-					  (nnmail-message-id)
-					  message-id)))))))
+	    (save-excursion
+	      (nndoc-dissect-mime-parts-sub
+	       part-begin part-end article-insert
+	       (concat position
+		       (and position ".")
+		       (format "%d" (incf part-counter)))
+	       message-id)))))))))
 
 ;;;###autoload
 (defun nndoc-add-type (definition &optional position)

@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.30"
+(defconst gnus-version-number "0.31"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -288,7 +288,8 @@ be set in `.emacs' instead."
   (defalias 'gnus-deactivate-mark 'deactivate-mark)
   (defalias 'gnus-window-edges 'window-edges)
   (defalias 'gnus-key-press-event-p 'numberp)
-  (defalias 'gnus-annotation-in-region-p 'ignore))
+  (defalias 'gnus-annotation-in-region-p 'ignore)
+  (defalias 'gnus-decode-rfc1522 'ignore))
 
 ;; We define these group faces here to avoid the display
 ;; update forced when creating new faces.
@@ -772,7 +773,7 @@ used to 899, you would say something along these lines:
   :group 'gnus-files
   :group 'gnus-server
   :type 'file)
-  
+
 ;; This function is used to check both the environment variable
 ;; NNTPSERVER and the /etc/nntpserver file to see whether one can find
 ;; an nntp server name default.
@@ -1801,7 +1802,7 @@ This restriction may disappear in later versions of Gnus."
       (define-key keymap (pop keys) 'undefined))))
 
 (defvar gnus-article-mode-map
-  (let ((keymap (make-keymap)))
+  (let ((keymap (make-sparse-keymap)))
     (gnus-suppress-keymap keymap)
     keymap))
 (defvar gnus-summary-mode-map

@@ -102,7 +102,7 @@
       (viewer . "open %s")
       (type   . "application/postscript")
       (test   . (eq (mm-device-type) 'ns)))
-     ("postscript" 
+     ("postscript"
       (viewer . "ghostview %s")
       (type . "application/postscript")
       (test   . (eq (mm-device-type) 'x))
@@ -126,6 +126,11 @@
       (type   . "audio/*")))
     ("message"
      ("rfc-*822"
+      (viewer . gnus-article-prepare-display)
+      (test   . (and (featurep 'gnus)
+		     (gnus-alive-p)))
+      (type   . "message/rfc-822"))
+     ("rfc-*822"
       (viewer . vm-mode)
       (test   . (fboundp 'vm-mode))
       (type   . "message/rfc-822"))
@@ -137,7 +142,7 @@
       (viewer . view-mode)
       (test   . (fboundp 'view-mode))
       (type   . "message/rfc-822"))
-     ("rfc-*822" 
+     ("rfc-*822"
       (viewer . fundamental-mode)
       (type   . "message/rfc-822")))
     ("image"
@@ -182,7 +187,7 @@
       (type    . "text/plain"))
      ("enriched"
       (viewer . enriched-decode-region)
-      (test   . (fboundp 'enriched-decode-region))
+      (test   . (fboundp 'enriched-decode))
       (type   . "text/enriched"))
      ("html"
       (viewer . mm-w3-prepare-buffer)
@@ -425,7 +430,7 @@ If FORCE, re-parse even if already parsed."
 		(setq done t))))
 	  (setq	value (buffer-substring val-pos (point))))
 	(setq results (cons (cons name value) results)))
-      results)))  
+      results)))
 
 (defun mailcap-mailcap-entry-passes-test (info)
   ;; Return t iff a mailcap entry passes its test clause or no test
@@ -591,7 +596,7 @@ If FORCE, re-parse even if already parsed."
 
 (defun mailcap-mime-info (string &optional request)
   "Get the MIME viewer command for STRING, return nil if none found.
-Expects a complete content-type header line as its argument. 
+Expects a complete content-type header line as its argument.
 
 Second argument REQUEST specifies what information to return.  If it is
 nil or the empty string, the viewer (second field of the mailcap
@@ -814,6 +819,17 @@ correspond to.")
 	   (not (eq (string-to-char extn) ?.)))
       (setq extn (concat "." extn)))
   (cdr (assoc (downcase extn) mailcap-mime-extensions)))
+
+(defun mailcap-command-p (command)
+  "Say whether COMMAND is in the exec path."
+  (let ((path (if (file-name-absolute-p command) '(nil) exec-path))
+ 	file)
+    (catch 'found
+      (while path
+ 	(when (and (file-executable-p
+		    (setq file (expand-file-name command (pop path))))
+		   (not (file-directory-p file)))
+ 	  (throw 'found file))))))
 
 (provide 'mailcap)
 
