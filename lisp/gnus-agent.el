@@ -64,7 +64,9 @@
   :type 'integer)
 
 (defcustom gnus-agent-expire-days 7
-  "Read articles older than this will be expired."
+  "Read articles older than this will be expired.
+This can also be a list of regexp/day pairs.  The regexps will
+be matched against group names."
   :group 'gnus-agent
   :type 'integer)
 
@@ -1584,10 +1586,13 @@ The following commands are available:
   "Expire all old articles."
   (interactive)
   (let ((methods gnus-agent-covered-methods)
-	(day (- (time-to-days (current-time)) gnus-agent-expire-days))
+	(day (if (numberp gnus-agent-expire-days)
+		 (- (time-to-days (current-time)) gnus-agent-expire-days)
+	       nil))
+	(current-day (time-to-days (current-time)))
 	gnus-command-method sym group articles
 	history overview file histories elem art nov-file low info
-	unreads marked article orig lowest highest)
+	unreads marked article orig lowest highest found days)
     (save-excursion
       (setq overview (gnus-get-buffer-create " *expire overview*"))
       (while (setq gnus-command-method (pop methods))
@@ -1610,7 +1615,19 @@ The following commands are available:
 		(skip-chars-forward "^\t")
 		(if (let ((fetch-date (read (current-buffer))))
 		      (if (numberp fetch-date)
-			  (>  fetch-date day)
+			  ;; We now have the arrival day, so we see
+			  ;; whether it's old enough to be expired.
+			  (if (numberp day)
+			      (> fetch-date day)
+			    (skip-chars-forward "\t")
+			    (setq found nil
+				  days gnus-agent-expire-days)
+			    (while (and (not found)
+					days)
+			      (when (looking-at (caar days))
+				(setq found (cadar days)))
+			      (pop days))
+			    (> fetch-date (- current-day found)))
 			;; History file is corrupted.
 			(gnus-message
 			 5

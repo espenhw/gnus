@@ -661,7 +661,8 @@ was sent, sorting by number means sorting by arrival time.)
 Ready-made functions include `gnus-thread-sort-by-number',
 `gnus-thread-sort-by-author', `gnus-thread-sort-by-subject',
 `gnus-thread-sort-by-date', `gnus-thread-sort-by-score',
-`gnus-thread-sort-by-most-recent-thread' and
+`gnus-thread-sort-by-most-recent-number',
+`gnus-thread-sort-by-most-recent-date', and
 `gnus-thread-sort-by-total-score' (see `gnus-thread-score-function').
 
 When threading is turned off, the variable
@@ -753,15 +754,14 @@ If you'd like to simplify subjects like the
 `gnus-summary-next-same-subject' command does, you can use the
 following hook:
 
- (setq gnus-select-group-hook
-      (list
-	(lambda ()
-	  (mapcar (lambda (header)
-		     (mail-header-set-subject
-		      header
-		      (gnus-simplify-subject
-		       (mail-header-subject header) 're-only)))
-		  gnus-newsgroup-headers))))"
+ (add-hook gnus-select-group-hook
+	   (lambda ()
+	     (mapcar (lambda (header)
+		       (mail-header-set-subject
+			header
+			(gnus-simplify-subject
+			 (mail-header-subject header) 're-only)))
+		     gnus-newsgroup-headers)))
   :group 'gnus-group-select
   :type 'hook)
 
@@ -4166,15 +4166,36 @@ Unscored articles will be counted as having a score of zero."
    (t
     (gnus-thread-total-score-1 (list thread)))))
 
-(defun gnus-thread-sort-by-most-recent-thread (h1 h2)
+(defun gnus-thread-sort-by-most-recent-number (h1 h2)
   "Sort threads such that the thread with the most recently arrived article is comes first."
   (> (gnus-thread-highest-number h1) (gnus-thread-highest-number h2)))
 
 (defun gnus-thread-highest-number (thread)
-  "Return the highest article number from THREAD."
+  "Return the highest article number in THREAD."
   (apply 'max (mapcar (lambda (header)
 			(mail-header-number header))
 		      (message-flatten-list thread))))
+
+(defun gnus-thread-sort-by-most-recent-date (h1 h2)
+  "Sort threads such that the thread with the most recently arrived article is comes first."
+  (> (gnus-thread-highest-number h1) (gnus-thread-highest-number h2)))
+
+(defun gnus-thread-latest-date (thread)
+  "Return the highest article number in THREAD."
+  (let ((previous-time 0))
+    (apply 'max (mapcar
+		 (lambda (header)
+		   (setq previous-time
+			 (time-to-seconds
+			  (mail-header-parse-date
+			   (condition-case ()
+			       (mail-header-date header)
+			     (error previous-time))))))
+		 (sort
+		  (message-flatten-list thread)
+		  (lambda (h1 h2)
+		    (< (mail-header-number h1)
+		       (mail-header-number h2))))))))
 
 (defun gnus-thread-total-score-1 (root)
   ;; This function find the total score of the thread below ROOT.

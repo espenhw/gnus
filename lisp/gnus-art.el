@@ -4669,6 +4669,10 @@ the entire article will be yanked."
   (let ((article (cdr gnus-article-current)))
     (if (not mark-active)
 	(gnus-summary-reply (list (list article)) wide)
+      ;; Deactivate active regions.
+      (when (and (boundp 'transient-mark-mode)
+		 transient-mark-mode)
+	(setq mark-active nil))
       (gnus-summary-reply
        (list (list article (buffer-substring (point) (mark)))) wide))))
 
@@ -4680,6 +4684,10 @@ the entire article will be yanked."
   (let ((article (cdr gnus-article-current)))
     (if (not mark-active)
 	(gnus-summary-followup (list (list article)))
+      ;; Deactivate active regions.
+      (when (and (boundp 'transient-mark-mode)
+		 transient-mark-mode)
+	(setq mark-active nil))
       (gnus-summary-followup
        (list (list article (buffer-substring (point) (mark))))))))
 

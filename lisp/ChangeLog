@@ -1,3 +1,12 @@
+2002-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-logo-color-alist): Added more colors from Luis. 
+
+2002-01-05  Keiichi Suzuki  <keiichi@nanap.org>
+
+	* nntp.el (nntp-possibly-change-group): Erase contents of nntp
+	buffer to get rid of junk line.
+
 2002-01-05  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-mode-map): Bind message-goto-from to C-c C-f
@@ -14,6 +23,21 @@
 	(message-tool-bar-map): Add receipt button.
 
 2002-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-thread-latest-date): New function.
+	(gnus-thread-sort-by-most-recent-number): Renamed.
+	(gnus-thread-sort-functions): Doc fix.
+	(gnus-select-group-hook): Don't use setq on a hook.
+	(gnus-thread-latest-date): Use date, not number
+
+	* gnus-agent.el (gnus-agent-expire-days): Doc fix.
+	(gnus-agent-expire): Allow regexp of expire-days. 
+
+	* gnus-art.el (gnus-article-reply-with-original): Deactivate
+	region. 
+	(gnus-article-followup-with-original): Ditto.
+
+	* gnus-sum.el (gnus-thread-highest-number): Doc fix.
 
 	* gnus-art.el (gnus-mime-display-alternative): Use
 	gnus-local-map-property. 

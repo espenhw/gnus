@@ -574,7 +574,8 @@ noticing asynchronous data.")
 	      (last-point (point-min))
 	      (nntp-inhibit-erase t)
 	      (buf (nntp-find-connection-buffer nntp-server-buffer))
-	      (command (if nntp-server-list-active-group "LIST ACTIVE" "GROUP")))
+	      (command (if nntp-server-list-active-group
+			   "LIST ACTIVE" "GROUP")))
 	  (while groups
 	    ;; Send the command to the server.
 	    (nntp-send-command nil command (pop groups))
@@ -1173,7 +1174,10 @@ password contained in '~/.nntp-authinfo'."
 	  (erase-buffer)
 	  (nntp-send-command "^[245].*\n" "GROUP" group)
 	  (setcar (cddr entry) group)
-	  (erase-buffer))))))
+	  (erase-buffer)
+	  (save-excursion
+	    (set-buffer nntp-server-buffer)
+	    (erase-buffer)))))))
 
 (defun nntp-decode-text (&optional cr-only)
   "Decode the text in the current buffer."
