@@ -22419,6 +22419,7 @@ Below is a slightly shortened version of the @code{nndir} backend.
 @subsubsection Hooking New Backends Into Gnus
 
 @vindex gnus-valid-select-methods
+@findex gnus-declare-backend
 Having Gnus start using your new backend is rather easy---you just
 declare it with the @code{gnus-declare-backend} functions.  This will
 enter the backend into the @code{gnus-valid-select-methods} variable.
