@@ -10358,7 +10358,9 @@ Mark all articles as read and go to the next group
 (@code{gnus-summary-catchup-and-goto-next-group}).
 
 @item Z R
+@itemx C-x C-s
 @kindex Z R (Summary)
+@kindex C-x C-s (Summary)
 @findex gnus-summary-reselect-current-group
 Exit this group, and then enter it again
 (@code{gnus-summary-reselect-current-group}).  If given a prefix, select
