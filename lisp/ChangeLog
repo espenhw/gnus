@@ -1,5 +1,8 @@
 2003-04-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mm-util.el (mm-sort-coding-systems-predicate): Convert elements
+	of `mm-coding-system-priorities' to base coding system.
+
 	* gnus-sum.el: Added coding cookie ("middle dot" in
 	gnus-summary-morse-message).
 

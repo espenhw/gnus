@@ -502,8 +502,14 @@ If the charset is `composition', return the actual one."
 	(not inconvertible))))
 
 (defun mm-sort-coding-systems-predicate (a b)
-  (> (length (memq a mm-coding-system-priorities))
-     (length (memq b mm-coding-system-priorities))))
+  (let ((priorities
+	 (mapcar (lambda (cs)
+		   ;; Note: invalid entries are dropped silently
+		   (and (coding-system-p cs)
+			(coding-system-base cs)))
+		 mm-coding-system-priorities)))
+    (> (length (memq a priorities))
+       (length (memq b priorities)))))
 
 (defun mm-find-mime-charset-region (b e &optional hack-charsets)
   "Return the MIME charsets needed to encode the region between B and E.
