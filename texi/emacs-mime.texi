@@ -1078,8 +1078,9 @@ It is likely to be intended to verify whether you have read the mail.
 You can prevent your personal informations from leaking by setting this
 option to @code{nil} (which is the default).  It is currently ignored by
 Emacs/w3.  For emacs-w3m, you may use the command @kbd{t} on the image
-anchor to show an image (or @kbd{T} for loading all images) even if it
-is @code{nil}.
+anchor to show an image even if it is @code{nil}.@footnote{The command
+@kbd{T} will load all images.  If you have set the option
+@code{w3m-key-binding} to @code{info}, use @kbd{i} or @kbd{I} instead.}
 
 @item mm-inline-text-html-with-w3m-keymap
 You can use emacs-w3m command keys in the inlined text/html part by

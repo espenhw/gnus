@@ -1,8 +1,12 @@
+2002-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* emacs-mime.texi (Customization): Addition.
+
 2002-01-31  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Posting Styles): Addition. Suggested by
 	Michael Cook <michael@waxrat.com>.
-	
+
 2002-01-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* emacs-mime.texi (Customization): Move emacs-w3m stuff backward;
