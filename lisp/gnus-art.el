@@ -1374,6 +1374,13 @@ This requires GNU Libidn, and by default only enabled if it is found."
   '("January" "February" "March" "April" "May" "June" "July" "August"
     "September" "October" "November" "December"))
 
+(defvar gnus-button-regexp nil)
+(defvar gnus-button-marker-list nil)
+;; Regexp matching any of the regexps from `gnus-button-alist'.
+
+(defvar gnus-button-last nil)
+;; The value of `gnus-button-alist' when `gnus-button-regexp' was build.
+
 (defvar article-goto-body-goes-to-point-min-p nil)
 (defvar gnus-article-wash-types nil)
 (defvar gnus-article-emphasis-alist nil)
@@ -6206,13 +6213,6 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 		       (repeat :tag "Par"
 			       :inline t
 			       (integer :tag "Regexp group")))))
-
-(defvar gnus-button-regexp nil)
-(defvar gnus-button-marker-list nil)
-;; Regexp matching any of the regexps from `gnus-button-alist'.
-
-(defvar gnus-button-last nil)
-;; The value of `gnus-button-alist' when `gnus-button-regexp' was build.
 
 ;;; Commands:
 

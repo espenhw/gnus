@@ -97,6 +97,25 @@ quoted-printable and base64 respectively.")
 ;;; Functions for encoding RFC2047 messages
 ;;;
 
+(defun rfc2047-qp-or-base64 ()
+  "Return the type with which to encode the buffer.
+This is either `base64' or `quoted-printable'."
+  (save-excursion
+    (let ((limit (min (point-max) (+ 2000 (point-min))))
+	  (n8bit 0))
+      (goto-char (point-min))
+      (skip-chars-forward "\x20-\x7f\r\n\t" limit)
+      (while (< (point) limit)
+	(incf n8bit)
+	(forward-char 1)
+	(skip-chars-forward "\x20-\x7f\r\n\t" limit))
+      (if (or (< (* 6 n8bit) (- limit (point-min)))
+	      ;; Don't base64, say, a short line with a single
+	      ;; non-ASCII char when splitting parts by charset.
+	      (= n8bit 1))
+	  'quoted-printable
+	'base64))))
+
 (defun rfc2047-narrow-to-field ()
   "Narrow the buffer to the header on the current line."
   (beginning-of-line)
@@ -382,7 +401,7 @@ By default, the region is treated as containing addresses (see
 		       ;; encoding, choose the one that's shorter.
 		       (save-restriction
 			 (narrow-to-region b e)
-			 (if (eq (mm-qp-or-base64) 'base64)
+			 (if (eq (rfc2047-qp-or-base64) 'base64)
 			     'B
 			   'Q))))
 	 (start (concat

@@ -1,5 +1,12 @@
 2004-02-09  Jesper Harder  <harder@ifa.au.dk>
 
+	* rfc2047.el (rfc2047-qp-or-base64): New function to reduce
+	dependencies.
+	(rfc2047-encode): Use it.
+
+	* gnus-art.el (gnus-button-marker-list): Move before first
+	reference.
+
 	* imap.el (imap-parse-flag-list, imap-parse-body-extension)
 	(imap-parse-body): Fix format string mismatch.
 
