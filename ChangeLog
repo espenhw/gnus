@@ -1,5 +1,8 @@
 2004-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* etc/gnus-tut.txt (Gnus FAQ): Remove text version.  Refer to info
+	documentation and online version instead.
+
 	* GNUS-NEWS: Changed "Dired integration"
 
 2004-01-02  Reiner Steib  <Reiner.Steib@gmx.de>
