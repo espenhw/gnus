@@ -437,15 +437,16 @@ Thank you for your help in stamping out bugs.
 (defun gnus-inews-make-draft-meta-information (group articles)
   (when (numberp articles)
     (setq articles (list articles)))
-  (concat "(\"" group "\" "
+  (concat "(\"" group "\""
 	  (if articles
-	      (mapconcat
-	       (lambda (elem)
-		 (number-to-string
-		  (if (consp elem)
-		      (car elem)
-		    elem)))
-	       articles " ")
+	      (concat " "
+		      (mapconcat
+		       (lambda (elem)
+			 (number-to-string
+			  (if (consp elem)
+			      (car elem)
+			    elem)))
+		       articles " "))
 	    "")
 	  ")"))
 
