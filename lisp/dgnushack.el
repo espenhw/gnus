@@ -132,7 +132,7 @@
       (autoload 'custom-declare-face "cus-face" nil t)
       (autoload 'cl-compile-time-init "cl-macs" nil t)
       (autoload 'defadvice "advice" nil nil 'macro))
-    (when (eq emacs-minor-version 4)
+    (unless (fboundp 'defadvice)
       (autoload 'defadvice "advice" nil nil 'macro))
     (autoload 'Info-directory "info" nil t)
     (autoload 'Info-menu "info" nil t)

@@ -1,3 +1,7 @@
+2003-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* dgnushack.el (when): Check whether defadvice is fbound.
+
 2003-05-01  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-unregistered-group-regex): new variable
