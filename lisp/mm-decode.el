@@ -30,7 +30,8 @@
 (eval-when-compile (require 'cl))
 
 (eval-and-compile
-  (autoload 'mm-inline-partial "mm-partial"))
+  (autoload 'mm-inline-partial "mm-partial")
+  (autoload 'mm-inline-external-body "mm-extern"))
 
 (defgroup mime-display ()
   "Display of MIME in mail and news articles."
@@ -131,6 +132,7 @@
     ("message/delivery-status" mm-inline-text identity)
     ("message/rfc822" mm-inline-message identity)
     ("message/partial" mm-inline-partial identity)
+    ("message/external-body" mm-inline-external-body identity)
     ("text/.*" mm-inline-text identity)
     ("audio/wav" mm-inline-audio
      (lambda (handle)
@@ -153,7 +155,7 @@
 
 (defcustom mm-inlined-types
   '("image/.*" "text/.*" "message/delivery-status" "message/rfc822"
-    "message/partial" "application/emacs-lisp"
+    "message/partial" "message/external-body" "application/emacs-lisp"
     "application/pgp-signature")
   "List of media types that are to be displayed inline."
   :type '(repeat string)
@@ -400,13 +402,13 @@ external if displayed external."
 	  (let ((cur (current-buffer)))
 	    (if (eq method 'mailcap-save-binary-file)
 		(progn
-		  (set-buffer (generate-new-buffer "*mm*"))
+		  (set-buffer (generate-new-buffer " *mm*"))
 		  (setq method nil))
 	      (mm-insert-part handle)
 	      (let ((win (get-buffer-window cur t)))
 		(when win
 		  (select-window win)))
-	      (switch-to-buffer (generate-new-buffer "*mm*")))
+	      (switch-to-buffer (generate-new-buffer " *mm*")))
 	    (buffer-disable-undo)
 	    (mm-set-buffer-file-coding-system mm-binary-coding-system)
 	    (insert-buffer-substring cur)
@@ -464,7 +466,7 @@ external if displayed external."
 			(progn
 			  (call-process shell-file-name nil
 					(setq buffer
-					      (generate-new-buffer "*mm*"))
+					      (generate-new-buffer " *mm*"))
 					nil
 					shell-command-switch
 					(mm-mailcap-command
@@ -483,7 +485,7 @@ external if displayed external."
 		 (unwind-protect
 		     (start-process "*display*"
 				    (setq buffer
-					  (generate-new-buffer "*mm*"))
+					  (generate-new-buffer " *mm*"))
 				    shell-file-name
 				    shell-command-switch
 				    (mm-mailcap-command
@@ -518,7 +520,7 @@ external if displayed external."
 	  (push "<" out)
 	  (push (mm-quote-arg file) out)))
     (mapconcat 'identity (nreverse out) "")))
-    
+
 (defun mm-remove-parts (handles)
   "Remove the displayed MIME parts represented by HANDLES."
   (if (and (listp handles)

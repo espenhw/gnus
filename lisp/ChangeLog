@@ -1,3 +1,11 @@
+2000-11-02 16:53:32  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-partial.el (mm-inline-partial): Buffer name with a leading space.
+	* mm-decode.el (mm-display-external): Ditto.
+	* mm-extern.el: New file.
+	* mm-decode.el (mm-inline-media-tests): Hook it up.
+	(mm-inlined-types): Inline message/external-body.
+
 2000-11-02  Simon Josefsson  <sj@extundo.com>
 
 	* gnus-art.el (gnus-visible-headers): Add Mail-Followup-To.

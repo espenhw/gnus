@@ -1,0 +1,114 @@
+;;; mm-extern.el --- showing message/external-body
+;; Copyright (C) 2000 Free Software Foundation, Inc.
+
+;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
+;; Keywords: message external-body
+
+;; This file is part of GNU Emacs.
+
+;; GNU Emacs is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published
+;; by the Free Software Foundation; either version 2, or (at your
+;; option) any later version.
+
+;; GNU Emacs is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;; General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
+
+;;; Commentary:
+
+;;; Code:
+
+(eval-when-compile 
+  (require 'cl))
+
+(require 'mm-util)
+(require 'mm-decode)
+
+(defvar mm-extern-function-alist
+  '((local-file . mm-extern-local-file)
+    (url . mm-extern-url)
+;;;     (ftp . mm-extern-ftp)
+;;;     (anon-ftp . mm-extern-anon-ftp)
+;;;     (tftp . mm-extern-tftp)
+;;;     (mail-server . mm-extern-mail-server))
+    ))
+
+(defun mm-extern-local-file (handle)
+  (let ((name (cdr (assq 'name (cdr (mm-handle-type handle)))))
+	(coding-system-for-read mm-binary-coding-system))
+    (mm-disable-multibyte-mule4)
+    (mm-insert-file-contents name nil nil nil nil t)))
+
+(defun mm-extern-url (handle)
+  (require 'url)
+  (let ((url (cdr (assq 'url (cdr (mm-handle-type handle)))))
+	(name buffer-file-name)
+	(coding-system-for-read mm-binary-coding-system))
+    (unless url
+      (error "URL is not specified"))
+    (mm-with-unibyte-current-buffer-mule4
+      (url-insert-file-contents url))
+    (mm-disable-multibyte-mule4)
+    (setq buffer-file-name name)))
+
+;;;###autoload
+(defun mm-inline-external-body (handle &optional no-display)
+  "Show the external-body part of HANDLE.
+This function replaces the buffer of HANDLE with a buffer contains 
+the entire message.
+If NO-DISPLAY is nil, display it. Otherwise, do nothing after replacing."
+  (let* ((access-type (cdr (assq 'access-type 
+				 (cdr (mm-handle-type handle)))))
+	 (func (cdr (assq (intern access-type) mm-extern-function-alist)))
+	 gnus-displaying-mime buf
+	 handles)
+    (unless (mm-handle-cache handle)
+      (unless func
+	(error (format "Access type (%s) is not supported." access-type)))
+      (with-temp-buffer
+	(mm-insert-part handle)
+	(goto-char (point-max))
+	(insert "\n\n")
+	(setq handles (mm-dissect-buffer t)))
+      (unless (bufferp (car handles))
+	(mm-destroy-parts handles)
+	(error "Multipart external body is not supported."))
+      (save-excursion ;; single part
+	(kill-buffer (mm-handle-buffer handles))
+	(set-buffer (setq buf (generate-new-buffer " *mm*")))
+	(condition-case err
+	    (funcall func handle)
+	  (error 
+	   ;; Don't require gnus-util
+	   (when (gnus-buffer-exists-p buf)
+	     (kill-buffer buf))
+	   (error err)))
+	(setcar handles (current-buffer))
+	(mm-handle-set-cache handle handles))
+      (push handles gnus-article-mime-handles))
+    (unless no-display
+      (save-excursion
+	(save-restriction
+	  (narrow-to-region (point) (point))
+	  (gnus-display-mime (mm-handle-cache handle))
+	  (mm-handle-set-undisplayer
+	   handle
+	   `(lambda ()
+	      (let (buffer-read-only)
+		(condition-case nil
+		    ;; This is only valid on XEmacs.
+		    (mapcar (lambda (prop)
+			    (remove-specifier
+			     (face-property 'default prop) (current-buffer)))
+			    '(background background-pixmap foreground))
+		  (error nil))
+		(delete-region ,(point-min-marker) ,(point-max-marker))))))))))
+
+;; mm-extern.el ends here
