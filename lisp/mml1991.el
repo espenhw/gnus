@@ -255,12 +255,16 @@
     t))
 
 (defun mml1991-pgg-encrypt (cont &optional sign)
-  (let (headers)
+  (let (cte)
     ;; Strip MIME Content[^ ]: headers since it will be ASCII ARMOURED
     (goto-char (point-min))
-    (while (looking-at "^Content[^ ]+:") (forward-line))
+    (while (looking-at "^Content[^ ]+:")
+      (when (looking-at "^Content-Transfer-Encoding: \\(.+\\)")
+	(setq cte (intern (match-string 1))))
+      (forward-line))
     (unless (bobp)
       (delete-region (point-min) (point)))
+    (mm-decode-content-transfer-encoding cte)
     (unless (pgg-encrypt-region
 	     (point-min) (point-max) 
 	     (split-string
