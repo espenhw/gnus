@@ -282,11 +282,13 @@ If TCP-P, the first two bytes of the package with be the length field."
 
 ;;; Interface functions.
 
+(autoload 'gnus-xmacs-open-network-stream "gnus-xmas" nil nil 'macro)
+
 (defmacro dns-make-network-process (server)
   (if (featurep 'xemacs)
       `(let ((coding-system-for-read 'binary)
 	     (coding-system-for-write 'binary))
-	 (open-network-stream "dns" (current-buffer) ,server "domain" 'udp))
+	 (gnus-xmas-open-network-stream "dns" (current-buffer) ,server "domain" 'udp))
     `(let ((server ,server)
 	   (coding-system-for-read 'binary)
 	   (coding-system-for-write 'binary))

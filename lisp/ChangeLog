@@ -1,3 +1,24 @@
+2003-05-01  Steve Youngs  <youngs@xemacs.org>
+
+	* lpath.el: Add a section for non-Mule XEmacsen.
+	fbind `find-charset-string' and `coding-system-base' in that
+	section. 
+
+	* gnus-util.el (gnus-completing-read-maybe-default): New.
+	(gnus-completing-read): Use it.
+
+	* mm-view.el (mm-view-pkcs7-decrypt): Ditto.
+
+	* gnus-art.el (gnus-read-string): New.
+	(gnus-summary-pipe-to-muttprint): Use it.
+
+	* gnus-xmas.el (gnus-xmas-open-network-stream): New.
+
+	* dns.el (dns-make-network-process): Use it.
+
+	Take care of some differences between XEmacs 21.1 and newer
+	versions of XEmacs.
+
 2003-04-30  Teodor Zlatanov  <tzz@bwh.harvard.edu>
 
 	* gnus-registry.el (gnus-registry-split-fancy-with-parent): added
@@ -10,7 +31,7 @@
 	(gnus-register-action): optimized logical flow
 	(gnus-summary-prepare-hook): added gnus-registry-register-message-ids
 
-2003-04-30  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
+2003-04-30  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* gnus-delay.el (gnus-delay-article): Call
 	`gnus-agent-queue-setup' to create the delay group.
@@ -292,7 +313,7 @@
 
 	* smime.el (smime-decrypt-region): Insert From header.
 
-2003-04-21  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
+2003-04-21  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* gnus-fun.el (gnus-face-from-file, gnus-convert-png-to-face):
 	Max length of header is 726, not 740.  From Gaute B Strokkenes
@@ -1419,7 +1440,7 @@
 	(gnus-agent-article-alist, gnus-agent-article-alist)
 	(gnus-agent-cat-defaccessor): Doc fixes.
 
-2003-03-04  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2003-03-04  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-agent.el (gnus-function-implies-unread-1): Grok
 	byte-compiled functions.
@@ -1785,7 +1806,7 @@
 	no spam.
 	* spam.el (spam-ham-move-routine): New `copy' argument.
 
-2003-02-24  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2003-02-24  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 	From Martin Thornquist <martint@ifi.uio.no>
 
 	* gnus-topic.el (gnus-topic-select-group): Select last group if
@@ -1830,7 +1851,7 @@
 	(gnus-agent-regenerate-group): Now clears the message buffer when
 	finished.
 
-2003-02-23  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2003-02-23  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus.el (gnus-agent-target-move-group-header): New variable.
 	* gnus-draft.el (gnus-draft-send): If special header
@@ -1856,7 +1877,7 @@
 
 	* gnus-util.el (gnus-fetch-original-field): New function.
 
-2003-02-23  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2003-02-23  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* message.el (message-mode): \\(...\\) around additional
 	paragraph-separate alternative.
@@ -1903,7 +1924,7 @@
 	* gnus-start.el (gnus-get-unread-articles-in-group): Make sure
 	the entry for the group exists before we alter it.
 
-2003-02-22  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2003-02-22  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* message.el (message-mode): MML tags separate paragraphs.  Small
 	change from David S Goldberg <david.goldberg6@verizon.net>.
@@ -2003,7 +2024,7 @@
 	gnus-summary-kill-process-mark and gnus-summary-yank-process-mark
 	around process-mark manipulation on the group
 
-2003-02-17  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2003-02-17  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Add MIME/Multipart
 	submenu.
@@ -2040,7 +2061,7 @@
 	* gnus-art.el (gnus-article-prepare): Don't set agent mark if
 	online.
 
-2003-02-14  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2003-02-14  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-agent.el (gnus-agent-group-make-menu-bar): Include all
 	commands.
@@ -2060,7 +2081,7 @@
 	(spam-mark-spam-as-expired-and-move-routine): made the article
 	move conditional, so it's not called even if there's nothing to move
 
-2003-02-13  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2003-02-13  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* message.el (message-unix-mail-delimiter): Accept any whitespace
 	after the email address and before the date; do not require the
@@ -2324,7 +2345,7 @@
 	* gnus.el (spam group parameters): change 'other to 'const in
 	the group parameter definitions to soothe XEmacs
 
-2003-02-04  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2003-02-04  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-delay.el (gnus-delay-article): Really create
 	nndraft:delayed group if it doesn't exist.
@@ -2495,7 +2516,7 @@
 	* nnheader.el (nnheader-directory-separator-character): New
 	variable.
 
-2003-01-24  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2003-01-24  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-agent.el (gnus-agent-max-fetch-size)
 	(gnus-agent-article-alist, gnus-agent-get-undownloaded-list)
@@ -2522,7 +2543,7 @@
 
 	* gnus.el: Oort Gnus v0.14 is released.
 
-2003-01-24  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2003-01-24  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-sum.el (gnus-summary-prepare-threads): Reset state for %B
 	before beginning.  Tiny patch from Mark Thomas
@@ -2674,7 +2695,7 @@
 	calculation of net characters added for use in the gnus-data
 	structure.
 
-2003-01-18  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2003-01-18  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* nnmail.el (nnmail-process-unix-mail-format): Improve error
 	message.  Suggested by Jari Aalto.
@@ -2940,10 +2961,10 @@
 2003-01-12  Simon Josefsson  <jas@extundo.com>
 
 	* sieve.el (sieve-upload-and-bury): New.  Suggested by
-	kai.grossjohann@uni-duisburg.de (Kai Gro,A_(Bjohann).
+	kai.grossjohann@uni-duisburg.de (Kai Groﬂjohann).
 
 	* sieve-mode.el (sieve-mode-map): Bind s-u-a-b to C-c C-c.
-	Suggested by kai.grossjohann@uni-duisburg.de (Kai Gro,A_(Bjohann).
+	Suggested by kai.grossjohann@uni-duisburg.de (Kai Groﬂjohann).
 
 2003-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -3586,7 +3607,7 @@
 
 	* dig.el (query-dig): Doc fix.
 
-2003-01-02  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2003-01-02  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-agent.el (gnus-agent-fetch-selected-article): Update whole
 	summary buffer line, not just the download mark.
@@ -3940,7 +3961,7 @@
 
 	* binhex.el (binhex-decoder-program): Fix docstring.
 
-2002-12-21  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-12-21  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* mm-decode.el (mm-mailcap-command): Do not backslash-quote
 	special chars if the mailcap file uses single quotes around %s.
@@ -3980,7 +4001,7 @@
 	* gnus-agent.el (gnus-close-agent): Don't blank out the list of
 	covered methods.
 
-2002-12-12  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-12-12  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* nntp.el (nntp-with-open-group-first-pass): Do not wrap in
 	eval-when-compile.  Suggested by Kevin Greiner.
@@ -4111,12 +4132,12 @@
 	Because of an unknown bug, the group buffer is saved in .overview
 	file.
 
-2002-12-09  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-12-09  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* nntp.el (nntp-send-command): Braino in last commit.  Replace
 	`and' with `or'.
 
-2002-12-08  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-12-08  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* nntp.el (nntp-send-command): Assume that echo does not happen
 	when nntp-open-connection-function is nntp-open-network-stream.
@@ -4141,12 +4162,12 @@
 	* rfc2047.el (rfc2047-decode-region): Remove newlines between
 	decoded words.
 
-2002-12-03  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-12-03  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus.el (fboundp): After loading mm-util, make sure it was the
 	right one.
 
-2002-11-29  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-11-29  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-art.el (gnus-inhibit-mime-unbuttonizing): Moved here from
 	gnus-sum.  Made into a user option.
@@ -4203,7 +4224,7 @@
 
 	* binhex.el (binhex-decode-region): Don't hardcode point-min == 1.
 
-2002-11-29  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-11-29  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-sum.el (gnus-simplify-ignored-prefixes)
 	(gnus-summary-mark-article-as-unread)
@@ -4236,7 +4257,7 @@
 
 	* nnrss.el (nnrss-group-alist): Update the link of Jabber.
 
-2002-11-26  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-11-26  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-sum.el (gnus-summary-insert-old-articles): Remove
 	superfluous function call.
@@ -4248,13 +4269,13 @@
 	* gnus-agent.el: Autoload number-at-point instead.
 	(gnus-agent-check-overview-buffer): No warning for deactivate-mark.
 
-2002-11-26  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-11-26  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-agent.el (gnus-agent-check-overview-buffer): Explicitly
 	require thingatpt (for number-at-point) and protect against
 	deactivate-mark being unbound (on XEmacs).
 
-2002-11-25  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-11-25  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-agent.el (gnus-agent-check-overview-buffer): Make debugger
 	print message on entry.
@@ -4264,13 +4285,13 @@
 	* gnus-range.el (gnus-range-difference): New function.
 	* gnus-sum.el (gnus-summary-insert-old-articles): Use it.
 
-2002-11-24  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-11-24  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-sum.el (gnus-summary-insert-old-articles): Use
 	gnus-remove-from-range instead of gnus-range-difference which
 	doesn't exist.
 
-2002-11-23  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-11-23  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 	From Kevin Greiner <kgreiner@xpediantsolutions.com>.
 
 	* gnus-agent.el (gnus-agent-downloaded-article-face): New face,
@@ -4351,7 +4372,7 @@
 	of article numbers.  The range is not expanded into a list
 	until the optional ALL parameter has been applied.
 
-2002-11-18  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-11-18  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-agent.el (gnus-category-mode): Typo in doc string.
 
@@ -4413,7 +4434,7 @@
 
 	* mml.el (mml-preview): Bind message-this-is-mail if it is mail.
 
-2002-11-13  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-11-13  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus.el (gnus-summary-line-format): Document %C.
 
@@ -4488,12 +4509,12 @@
 	(spam-stat-reduce-size): No longer remove words
 	with values close to 0.5, because the default value is 0.2.
 
-2002-10-31  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-10-31  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-util.el (gnus-user-date-format-alist): Clarify and correct
 	documentation.
 
-2002-10-28  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-10-28  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-agent.el (gnus-agent-fetched-headers)
 	(gnus-agent-load-fetched-headers)
@@ -4553,12 +4574,12 @@
 	type values ("url" size) regardless of the values of
 	mm-url-use-external.
 
-2002-10-26  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-10-26  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* nnimap.el (nnimap-request-article-part): Try harder to show
 	group name in debugging message.
 
-2002-10-25  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-10-25  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-agent.el (gnus-agent-save-fetched-headers): Create
 	directory if it doesn't exist.
@@ -4576,7 +4597,7 @@
 
 	* gnus-agent.el (gnus-agent-load-alist): Fix parenthesis.
 
-2002-10-24  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-10-24  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-agent.el (gnus-agent-save-alist, gnus-agent-load-alist):
 	Remove unused optional arg DIR and corresponding code.
@@ -4588,7 +4609,7 @@
 
 	* gnus-agent.el (gnus-agent-fetch-headers): Add some comments.
 
-2002-10-23  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-10-23  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-agent.el (gnus-agent-fetched-headers): New variable,
 	contains range of headers that have been fetched by the agent
@@ -4637,7 +4658,7 @@
 	* nnslashdot.el: Removed some test lines.
 	More test.
 
-2002-10-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-10-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-agent.el (gnus-agent-fetch-headers): Remove articles that
 	are known to be downloaded already.
@@ -4663,7 +4684,7 @@
 
 	* gnus-srvr.el (gnus-server-prepare): Removed superfluous cdr.
 
-2002-10-20  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-10-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-agent.el (gnus-agent-fetch-group-1): After fetching
 	headers from the group, update variable `articles' to contain
@@ -4691,7 +4712,7 @@
 	* nnimap.el (nnimap-open-server): Check imap-state in IMAP server
 	buffer.
 
-2002-10-18  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-10-18  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-spec.el (gnus-make-format-preserve-properties)
 	(gnus-xmas-format, gnus-parse-simple-format): Preserve text
@@ -4774,9 +4795,9 @@
 
 	* spam-stat.el: Check for the existence of hash functions instead
 	of the Emacs version to decide whether to load cl.  Suggested by
-	Kai Gro,A_(Bjohann.
+	Kai Groﬂjohann.
 
-2002-10-15  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-10-15  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-agent.el (gnus-agent-fetch-selected-article): Open history
 	if it isn't open yet.
@@ -4902,7 +4923,7 @@
 	* pgg.el (pgg-insert-url-with-w3): Ignore errors.
 	(pgg-fetch-key-function): Nil if w3 is not installed.
 
-2002-10-08  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-10-08  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-agent.el (gnus-agent-fetch-selected-article): Bind
 	gnus-agent-current-history.
@@ -4911,7 +4932,7 @@
 
 	* imap.el (imap-parse-status): Don't use read to read token.
 
-2002-10-05  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-10-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-agent.el (gnus-agent-fetch-selected-article): Do nothing
 	for methods not covered by the agent, and when unplugged.
@@ -5010,7 +5031,7 @@
 
 	* message.el (message-required-mail-headers): Remove Lines:.
 
-2002-10-03  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-10-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Jesper Harder.
 
 	* gnus-group.el (gnus-group-fetch-charter,
@@ -5024,7 +5045,7 @@
 	* nnmaildir.el (nnmaildir--group-maxnum-art): fix maximum article
 	number when there are no articles.
 
-2002-10-03  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-10-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-agent.el (gnus-agent-summary-fetch-group): Optional prefix
 	arg ALL means to fetch all articles, not only downloadable ones.
@@ -5349,7 +5370,7 @@
 	when articles are found.  Suggested by Nevin Kapur
 	<nevin@jhu.edu>.
 
-2002-09-17  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-09-17  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Reiner Steib <reiner.steib@gmx.de>.
 
 	* message.el (message-strip-subject-trailing-was)

@@ -71,6 +71,12 @@
 		w3-meta-charset-content-type-regexp
 		w3-meta-content-type-charset-regexp)))
 
+(when (and (featurep 'xemacs)
+	   (not (featurep 'mule)))
+  (progn
+    (maybe-fbind '(coding-system-base find-charset-string))))
+
+
 (defun nnkiboze-score-file (a)
   )
 

@@ -875,6 +875,16 @@ Warning: Don't insert text immediately after the image."
    nil
    history))
 
+;; This macro is because XEmacs versions prior to 21.2 do not have the
+;; PROTOCOL argument to `open-network-stream'.
+(defmacro gnus-xmas-open-network-stream (name buffer host service &optional protocol)
+  "Like `open-network-stream' but take into account older XEmacs versions."
+  (if (and (featurep 'xemacs)
+	   (fboundp 'open-network-stream)
+	   (emacs-version>= 21 2))
+      `(open-network-stream ,name ,buffer ,host ,service ,protocol)
+    `(open-network-stream ,name ,buffer ,host ,service)))
+
 (provide 'gnus-xmas)
 
 ;;; gnus-xmas.el ends here
