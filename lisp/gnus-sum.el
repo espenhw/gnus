@@ -2109,19 +2109,19 @@ increase the score of each group you read."
 	       :active (not (gnus-group-read-only-p))
 	       ,@(if (featurep 'xemacs) nil
 		   '(:help "Encrypt the message body on disk"))]
-	      ["Extract all parts" gnus-summary-save-parts t]
+	      ["Extract all parts..." gnus-summary-save-parts t]
 	      ("Multipart"
 	       ["Repair multipart" gnus-summary-repair-multipart t]
-	       ["Pipe part" gnus-article-pipe-part t]
+	       ["Pipe part..." gnus-article-pipe-part t]
 	       ["Inline part" gnus-article-inline-part t]
 	       ["Encrypt body" gnus-article-encrypt-body
 		:active (not (gnus-group-read-only-p))
 	       ,@(if (featurep 'xemacs) nil
 		   '(:help "Encrypt the message body on disk"))]
 	       ["View part externally" gnus-article-view-part-externally t]
-	       ["View part with charset" gnus-article-view-part-as-charset t]
+	       ["View part with charset..." gnus-article-view-part-as-charset t]
 	       ["Copy part" gnus-article-copy-part t]
-	       ["Save part" gnus-article-save-part t]
+	       ["Save part..." gnus-article-save-part t]
 	       ["View part" gnus-article-view-part t]))
 	     ("Date"
 	      ["Local" gnus-article-date-local t]
@@ -2201,20 +2201,20 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 		gnus-article-outlook-deuglify-article t])
 	      )
 	     ("Output"
-	      ["Save in default format" gnus-summary-save-article
+	      ["Save in default format..." gnus-summary-save-article
 	       ,@(if (featurep 'xemacs) '(t)
 		   '(:help "Save article using default method"))]
-	      ["Save in file" gnus-summary-save-article-file
+	      ["Save in file..." gnus-summary-save-article-file
 	       ,@(if (featurep 'xemacs) '(t)
 		   '(:help "Save article in file"))]
-	      ["Save in Unix mail format" gnus-summary-save-article-mail t]
-	      ["Save in MH folder" gnus-summary-save-article-folder t]
-	      ["Save in VM folder" gnus-summary-save-article-vm t]
-	      ["Save in RMAIL mbox" gnus-summary-save-article-rmail t]
-	      ["Save body in file" gnus-summary-save-article-body-file t]
-	      ["Pipe through a filter" gnus-summary-pipe-output t]
+	      ["Save in Unix mail format..." gnus-summary-save-article-mail t]
+	      ["Save in MH folder..." gnus-summary-save-article-folder t]
+	      ["Save in VM folder..." gnus-summary-save-article-vm t]
+	      ["Save in RMAIL mbox..." gnus-summary-save-article-rmail t]
+	      ["Save body in file..." gnus-summary-save-article-body-file t]
+	      ["Pipe through a filter..." gnus-summary-pipe-output t]
 	      ["Add to SOUP packet" gnus-soup-add-article t]
-	      ["Print with Muttprint" gnus-summary-muttprint t]
+	      ["Print with Muttprint..." gnus-summary-muttprint t]
 	      ["Print" gnus-summary-print-article t])
 	     ("Backend"
 	      ["Respool article..." gnus-summary-respool-article t]

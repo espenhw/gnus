@@ -1,3 +1,7 @@
+2003-12-30  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Add ellipses.
+
 2003-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-version-number): Bump.
