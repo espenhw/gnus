@@ -4054,9 +4054,8 @@ Argument LINES specifies lines to be scrolled down."
 	(let (gnus-pick-mode)
 	  (push (elt key 0) unread-command-events)
 	  (setq key (if (featurep 'xemacs)
-			(events-to-keys (read-key-sequence nil))
-		      (read-key-sequence nil))))
-	(message "")
+			(events-to-keys (read-key-sequence "Describe key: "))
+		      (read-key-sequence "Describe key: "))))
 	(describe-key key))
     (describe-key key)))
 
@@ -4070,9 +4069,8 @@ Argument LINES specifies lines to be scrolled down."
 	(let (gnus-pick-mode)
 	  (push (elt key 0) unread-command-events)
 	  (setq key (if (featurep 'xemacs)
-			(events-to-keys (read-key-sequence nil))
-		      (read-key-sequence nil))))
-	(message "")
+			(events-to-keys (read-key-sequence "Describe key: "))
+		      (read-key-sequence "Describe key: "))))
 	(describe-key-briefly key insert))
     (describe-key-briefly key insert)))
 
