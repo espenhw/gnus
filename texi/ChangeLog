@@ -1,3 +1,20 @@
+2004-11-17  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi: replaced @file{spam.el} with @code{spam.el}
+	everywhere for consistency.
+	(Filtering Spam Using The Spam ELisp Package): admonish again.
+	(Spam ELisp Package Sequence of Events): this is Gnus, say so.
+	Say "regular expression" instead of "regex."  Admonish.  Pick
+	other words to sound better (s/so/thus/).
+	(Spam ELisp Package Filtering of Incoming Mail): mention
+	statistical filters.  Remove old TODO.
+	(Spam ELisp Package Sorting and Score Display in Summary Buffer):
+	new section on sorting and displaying the spam score
+	(BBDB Whitelists): mention spam-use-BBDB-exclusive is not a
+	backend but an alias to spam-use-BBDB
+	(Extending the Spam ELisp package): rewrite the example using the
+	new backend functionality.
+
 2004-11-16  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (NNTP): Mention nntp-marks-is-evil and

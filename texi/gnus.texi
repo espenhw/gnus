@@ -22554,13 +22554,16 @@ Hashcash Payments}).
 @cindex spam filtering
 @cindex spam
 
-The idea behind @file{spam.el} is to have a control center for spam detection
-and filtering in Gnus.  To that end, @file{spam.el} does two things: it
+The idea behind @code{spam.el} is to have a control center for spam detection
+and filtering in Gnus.  To that end, @code{spam.el} does two things: it
 filters new mail, and it analyzes mail known to be spam or ham.
-@dfn{Ham} is the name used throughout @file{spam.el} to indicate
+@dfn{Ham} is the name used throughout @code{spam.el} to indicate
 non-spam messages.
 
-First of all, you @strong{must} run the function
+Make sure you read the section on the @code{spam.el} sequence of
+events.  See @xref{Spam ELisp Package Sequence of Events}.
+
+To use @code{spam.el}, you @strong{must} run the function
 @code{spam-initialize} to autoload @code{spam.el} and to install the
 @code{spam.el} hooks.  There is one exception: if you use the
 @code{spam-use-stat} (@pxref{spam-stat spam filtering}) setting, you
@@ -22571,7 +22574,7 @@ should turn it on before @code{spam-initialize}:
 (spam-initialize)
 @end example
 
-So, what happens when you load @file{spam.el}?
+So, what happens when you load @code{spam.el}?
 
 First, some hooks will get installed by @code{spam-initialize}.  There
 are some hooks for @code{spam-stat} so it can save its databases, and
@@ -22610,7 +22613,7 @@ You must have Bogofilter installed for that command to work properly.
 
 @end table
 
-Also, when you load @file{spam.el}, you will be able to customize its
+Also, when you load @code{spam.el}, you will be able to customize its
 variables.  Try @code{customize-group} on the @samp{spam} variable
 group.
 
@@ -22618,6 +22621,7 @@ group.
 * Spam ELisp Package Sequence of Events::  
 * Spam ELisp Package Filtering of Incoming Mail::  
 * Spam ELisp Package Global Variables::  
+* Spam ELisp Package Sorting and Score Display in Summary Buffer::  
 * Spam ELisp Package Configuration Examples::  
 * Blacklists and Whitelists::   
 * BBDB Whitelists::             
@@ -22638,7 +22642,6 @@ group.
 @cindex spam filtering
 @cindex spam filtering sequence of events
 @cindex spam
-
 You must read this section to understand how @code{spam.el} works.
 Do not skip, speed-read, or glance through this section.
 
@@ -22646,9 +22649,9 @@ There are two @emph{contact points}, if you will, between
 @code{spam.el} and the rest of Gnus: checking new mail for spam, and
 leaving a group.
 
-Getting new mail is done in one of two ways.  You can either split
-your incoming mail or you can classify new articles as ham or spam
-when you enter the group.
+Getting new mail in Gnus is done in one of two ways.  You can either
+split your incoming mail or you can classify new articles as ham or
+spam when you enter the group.
 
 Splitting incoming mail is better suited to mail backends such as
 @code{nnml} or @code{nnimap} where new mail appears in a single file
@@ -22667,12 +22670,14 @@ Gnus does not do further splitting.  The @code{spam-autodetect} and
 (accessible with @kbd{M-x customize-variable} as usual) can help.
 
 When @code{spam-autodetect} is used (you can turn it on for a
-group/topic or wholesale by regex, as needed), it hooks into the
-process of entering a group.  Thus, entering a group with unseen or
-unread articles becomes the substitute for checking incoming mail.
-Whether only unseen articles or all unread articles will be processed
-is determined by the @code{spam-autodetect-recheck-messages}.  When
-set to @code{t}, unread messages will be rechecked.
+group/topic or wholesale by regular expression matches, as needed), it
+hooks into the process of entering a group.  Thus, entering a group
+with unseen or unread articles becomes the substitute for checking
+incoming mail.  Whether only unseen articles or all unread articles
+will be processed is determined by the
+@code{spam-autodetect-recheck-messages}.  When set to @code{t}, unread
+messages will be rechecked.  You should probably stick with the
+default of only checking unseen messages.
 
 @code{spam-autodetect} grants the user at once more and less control
 of spam filtering.  The user will have more control over each group's
@@ -22695,8 +22700,8 @@ articles (depending on the @code{spam-mark-only-unseen-as-spam}
 variable) will be marked as spam.  Thus, mail split into a spam group
 gets automatically marked as spam when you enter the group.
 
-So, when you exit a group, the @code{spam-processors} are applied, if
-any are set, and the processed mail is moved to the
+Thus, when you exit a group, the @code{spam-processors} are applied,
+if any are set, and the processed mail is moved to the
 @code{ham-process-destination} or the @code{spam-process-destination}
 depending on the article's classification.  If the
 @code{ham-process-destination} or the @code{spam-process-destination},
@@ -22744,7 +22749,7 @@ as typing Lisp one-liners on a neural interface@dots{} err, sorry, that's
 @cindex spam filtering incoming mail
 @cindex spam
 
-To use the @file{spam.el} facilities for incoming mail filtering, you
+To use the @code{spam.el} facilities for incoming mail filtering, you
 must add the following to your fancy split list
 @code{nnmail-split-fancy} or @code{nnimap-split-fancy}:
 
@@ -22819,7 +22824,7 @@ spam checks for your nnmail split vs. your nnimap split.  Go crazy.
 You should still have specific checks such as
 @code{spam-use-regex-headers} set to @code{t}, even if you
 specifically invoke @code{spam-split} with the check.  The reason is
-that when loading @file{spam.el}, some conditional loading is done
+that when loading @code{spam.el}, some conditional loading is done
 depending on what @code{spam-use-xyz} variables you have set.  This
 is usually not critical, though.
 
@@ -22828,17 +22833,14 @@ is usually not critical, though.
 The boolean variable @code{nnimap-split-download-body} needs to be
 set, if you want to split based on the whole message instead of just
 the headers.  By default, the nnimap back end will only retrieve the
-message headers.  If you use @code{spam-check-bogofilter},
-@code{spam-check-ifile}, or @code{spam-check-stat} (the splitters that
-can benefit from the full message body), you should set this variable.
-It is not set by default because it will slow @acronym{IMAP} down, and
-that is not an appropriate decision to make on behalf of the user.
+message headers.  If you use a @emph{statistical} filter,
+e.g. @code{spam-check-bogofilter}, @code{spam-check-ifile}, or
+@code{spam-check-stat} (the splitters that can benefit from the full
+message body), this variable will be set automatically.  It is not set
+for non-statistical backends by default because it will slow
+@acronym{IMAP} down.
 
 @xref{Splitting in IMAP}.
-
-@emph{TODO: spam.el needs to provide a uniform way of training all the
-statistical databases.  Some have that functionality built-in, others
-don't.}
 
 @node Spam ELisp Package Global Variables
 @subsubsection Spam ELisp Package Global Variables
@@ -23013,6 +23015,55 @@ When autodetecting spam, this variable tells @code{spam.el} whether
 only unseen articles or all unread articles should be checked for
 spam.  It is recommended that you leave it off.
 
+@node Spam ELisp Package Sorting and Score Display in Summary Buffer
+@subsubsection Spam ELisp Package Sorting and Score Display in Summary Buffer
+@cindex spam scoring
+@cindex spam sorting
+@cindex spam score summary buffer
+@cindex spam sort summary buffer
+@cindex spam
+
+You can display the spam score of articles in your summary buffer, and
+you can sort articles by their spam score.
+
+First you need to decide which backend you will be using.  If you use
+the @code{spam-use-spamassassin},
+@code{spam-use-spamassassin-headers}, or @code{spam-use-regex-headers}
+backend, the @code{X-Spam-Status} header will be used.  If you use
+@code{spam-use-bogofilter}, the @code{X-Bogosity} header will be used.
+If you use @code{spam-use-crm114}, any header that matches the CRM114
+score format will be used.  As long as you set the appropriate backend
+variable to t @emph{before} you load @code{spam.el}, you will be
+fine.  @code{spam.el} will automatically add the right header to the
+internal Gnus list of required headers.
+
+To show the spam score in your summary buffer, add this line to your
+@code{gnus.el} file (note @code{spam.el} does not do that by default
+so it won't override any existing @code{S} formats you may have).
+
+@lisp
+(defalias 'gnus-user-format-function-S 'spam-user-format-function-S)
+@end lisp
+
+Now just set your summary line format to use @code{%uS}.  Here's an
+example that formats the spam score in a 5-character field:
+
+@lisp
+(setq gnus-summary-line-format 
+ "%U%R %10&user-date; $%5uS %6k  %B %(%4L: %*%-25,25a%) %s \n")
+@end lisp
+
+Finally, to sort by spam status, either do it globally:
+
+@lisp
+(setq
+ gnus-show-threads nil
+ gnus-article-sort-functions
+  '(spam-article-sort-by-spam-status))
+@end lisp
+
+or per group (@pxref{Sorting the Summary Buffer}).
+
 @node Spam ELisp Package Configuration Examples
 @subsubsection Spam ELisp Package Configuration Examples
 @cindex spam filtering
@@ -23103,7 +23154,7 @@ From Ted Zlatanov <tzz@@lifelogs.com>.
 
 @end example
 
-@subsubheading Using @file{spam.el} on an IMAP server with a statistical filter on the server
+@subsubheading Using @code{spam.el} on an IMAP server with a statistical filter on the server
 From Reiner Steib <reiner.steib@@gmx.de>.
 
 My provider has set up bogofilter (in combination with @acronym{DCC}) on
@@ -23294,6 +23345,12 @@ unless the sender is in the BBDB.  Use with care.  Only sender
 addresses in the BBDB will be allowed through; all others will be
 classified as spammers.
 
+While @code{spam-use-BBDB-exclusive} @emph{can} be used as an alias
+for @code{spam-use-BBDB} as far as @code{spam.el} is concerned, it is
+@emph{not} a separate backend.  If you set
+@code{spam-use-BBDB-exclusive} to t, @emph{all} your BBDB splitting
+will be exclusive.
+
 @end defvar
 
 @defvar gnus-group-ham-exit-processor-BBDB
@@ -23385,7 +23442,7 @@ list is fairly comprehensive, but make sure to let us know if it
 contains outdated servers.
 
 The blackhole check uses the @code{dig.el} package, but you can tell
-@file{spam.el} to use @code{dns.el} instead for better performance if
+@code{spam.el} to use @code{dns.el} instead for better performance if
 you set @code{spam-use-dig} to @code{nil}.  It is not recommended at
 this time to set @code{spam-use-dig} to @code{nil} despite the
 possible performance improvements, because some users may be unable to
@@ -23679,7 +23736,7 @@ that you use @code{'(ham spam-use-stat)}.  Everything will work
 the same way, we promise.
 @end defvar
 
-This enables @file{spam.el} to cooperate with @file{spam-stat.el}.
+This enables @code{spam.el} to cooperate with @file{spam-stat.el}.
 @file{spam-stat.el} provides an internal (Lisp-only) spam database,
 which unlike ifile or Bogofilter does not require external programs.
 A spam and a ham processor, and the @code{spam-use-stat} variable for
@@ -23704,11 +23761,11 @@ One possibility is to run SpamOracle as a @code{:prescript} from the
 @xref{Mail Source Specifiers}, (@pxref{SpamAssassin}).  This method has
 the advantage that the user can see the @emph{X-Spam} headers.
 
-The easiest method is to make @file{spam.el} (@pxref{Filtering Spam
+The easiest method is to make @code{spam.el} (@pxref{Filtering Spam
 Using The Spam ELisp Package}) call SpamOracle.
 
 @vindex spam-use-spamoracle
-To enable SpamOracle usage by @file{spam.el}, set the variable
+To enable SpamOracle usage by @code{spam.el}, set the variable
 @code{spam-use-spamoracle} to @code{t} and configure the
 @code{nnmail-split-fancy} or @code{nnimap-split-fancy} as described in
 the section @xref{Filtering Spam Using The Spam ELisp Package}.  In
@@ -23751,7 +23808,7 @@ false hits or misses, SpamOracle needs training.  SpamOracle learns the
 characteristics of your spam mails.  Using the @emph{add} mode
 (training mode) one has to feed good (ham) and spam mails to
 SpamOracle.  This can be done by pressing @kbd{|} in the Summary buffer
-and pipe the mail to a SpamOracle process or using @file{spam.el}'s
+and pipe the mail to a SpamOracle process or using @code{spam.el}'s
 spam- and ham-processors, which is much more convenient.  For a
 detailed description of spam- and ham-processors, @xref{Filtering Spam
 Using The Spam ELisp Package}.
@@ -23821,45 +23878,22 @@ Code
   "True if blackbox should be used.")
 @end lisp
 
-Add
-@lisp
-(spam-use-blackbox   . spam-check-blackbox)
-@end lisp
-to @code{spam-list-of-checks}.
+Write @code{spam-check-blackbox} if Blackbox can check incoming mail.
 
-Add
-@lisp
-(gnus-group-ham-exit-processor-blackbox  ham spam-use-blackbox)
-(gnus-group-spam-exit-processor-blackbox spam spam-use-blackbox)
-@end lisp
-
-to @code{spam-list-of-processors}.
-
-Add
-@lisp
-(spam-use-blackbox spam-blackbox-register-routine
-                   nil
-                   spam-blackbox-unregister-routine
-                   nil)
-@end lisp
-
-to @code{spam-registration-functions}.  Write the register/unregister
-routines using the bogofilter register/unregister routines as a
-start, or other restister/unregister routines more appropriate to
-Blackbox.
+Write @code{spam-blackbox-register-routine} and
+@code{spam-blackbox-unregister-routine} using the bogofilter
+register/unregister routines as a start, or other restister/unregister
+routines more appropriate to Blackbox, if Blackbox can
+register/unregister spam and ham.
 
 @item
 Functionality
 
-Write the @code{spam-check-blackbox} function.  It should return
-@samp{nil} or @code{spam-split-group}, observing the other
-conventions.  See the existing @code{spam-check-*} functions for
-examples of what you can do, and stick to the template unless you
-fully understand the reasons why you aren't.
-
-Make sure to add @code{spam-use-blackbox} to
-@code{spam-list-of-statistical-checks} if Blackbox is a statistical
-mail analyzer that needs the full message body to operate.
+The @code{spam-check-blackbox} function should return @samp{nil} or
+@code{spam-split-group}, observing the other conventions.  See the
+existing @code{spam-check-*} functions for examples of what you can
+do, and stick to the template unless you fully understand the reasons
+why you aren't.
 
 @end enumerate
 
@@ -23906,7 +23940,64 @@ Add
 (variable-item spam-use-blackbox)
 @end lisp
 to the @code{spam-autodetect-methods} group parameter in
-@code{gnus.el}.
+@code{gnus.el} if Blackbox can check incoming mail for spam contents.
+
+Finally, use the appropriate @code{spam-install-*-backend} function in
+@code{spam.el}.  Here are the available functions.
+
+
+@enumerate
+
+@item
+@code{spam-install-backend-alias}
+
+This function will simply install an alias for a backend that does
+everything like the original backend.  It is currently only used to
+make @code{spam-use-BBDB-exclusive} act like @code{spam-use-BBDB}.
+
+@item
+@code{spam-install-nocheck-backend}
+
+This function installs a backend that has no check function, but can
+register/unregister ham or spam.  The @code{spam-use-gmane} backend is
+such a backend.
+
+@item
+@code{spam-install-checkonly-backend}
+
+This function will install a backend that can only check incoming mail
+for spam contents.  It can't register or unregister messages.
+@code{spam-use-blackholes} and @code{spam-use-hashcash} are such
+backends.
+
+@item
+@code{spam-install-statistical-checkonly-backend}
+
+This function installs a statistical backend (one which requires the
+full body of a message to check it) that can only check incoming mail
+for contents.  @code{spam-use-regex-body} is such a filter.
+
+@item
+@code{spam-install-statistical-backend}
+
+This function install a statistical backend with incoming checks and
+registration/unregistration routines.  @code{spam-use-bogofilter} is
+set up this way.
+
+@item
+@code{spam-install-backend}
+
+This is the most normal backend installation, where a backend that can
+check and register/unregister messages is set up without statistical
+abilities.  The @code{spam-use-BBDB} is such a backend.
+
+@item
+@code{spam-install-mover-backend}
+
+Mover backends are internal to @code{spam.el} and specifically move
+articles around when the summary is exited.  You will very probably
+never install such a backend.
+@end enumerate
 
 @end enumerate
 
