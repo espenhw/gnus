@@ -74,7 +74,7 @@ texi2latex.elc: texi2latex.el
 latex gnus.latexi gnus-faq.latexi: $(srcdir)/gnus.texi $(srcdir)/gnus-faq.texi texi2latex.elc
 	srcdir=$(srcdir) $(EMACSCOMP) -l ./texi2latex.elc -f latexi-translate
 
-latexps: gnus.latexi
+latexps: gnus.latexi tmps
 	make texi2latex.elc
 	rm -f gnus.aux
 	egrep -v "label.*Index|chapter.*Index" gnus.latexi > gnus.tmplatexi1
@@ -85,7 +85,7 @@ latexps: gnus.latexi
 	makeindex -o gnus.gind gnus.gidx
 	sed 's/\\char 5E\\relax {}/\\symbol{"5E}/' < gnus.kind > gnus.tmpkind
 	mv gnus.tmpkind gnus.kind
-	egrep -v "end{document}" gnus.tmplatexi1 > gnus.tmplatexi
+	egrep -v "end\{document\}" gnus.tmplatexi1 > gnus.tmplatexi
 	cat postamble.tex >> gnus.tmplatexi
 	$(LATEX) gnus.tmplatexi
 	$(LATEX) gnus.tmplatexi
@@ -95,7 +95,7 @@ pss:
 	make latex
 	make latexps
 
-psout:
+psout: tmps
 	make latex
 	make latexboth
 	make out
