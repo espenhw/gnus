@@ -2,6 +2,7 @@
 
 	* gnus-msg.el (gnus-inews-make-draft-meta-information): Really
 	get it right.
+	(gnus-inews-make-draft): Really.
 
 2004-05-19  Ben Menasha  <bmenasha@benmenasha.net>
 
