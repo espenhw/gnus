@@ -1,3 +1,31 @@
+Sun Aug 30 17:46:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.9 is released.
+
+1998-08-30 16:13:08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-util.el: Shadow encode-coding-string.
+
+	* base64.el (base64-encode-region): Don't add newline.
+
+	* rfc1522.el (rfc1522-narrow-to-field): Copied here.
+
+	* mm-util.el: New file.
+
+	* mm-decode.el: Somewhat depleted.
+	* mm-encode.el: Ditto.
+
+	* rfc1522.el: New file.
+
+	* mm-util.el (mm-replace-chars-in-string): Copied here.
+
+	* mm-encode.el (mm-q-encode-region): New function.
+
+	* qp.el (quoted-printable-encode-region): Take an optional CLASS
+	param. 
+
+	* mm-encode.el (mm-encode-word-region): Downcase.
+
 Sun Aug 30 15:28:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.8 is released.

@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.8"
+(defconst gnus-version-number "0.9"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -1571,7 +1571,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("info" Info-goto-node)
      ("pp" pp pp-to-string pp-eval-expression)
      ("qp" quoted-printable-decode-region quoted-printable-decode-string)
-     ("mm-decode" mm-decode-words-region mm-decode-words-string)
+     ("rfc1522" rfc1522-decode-region rfc1522-decode-string)
      ("ps-print" ps-print-preprint)
      ("mail-extr" mail-extract-address-components)
      ("browse-url" browse-url)

@@ -962,7 +962,7 @@ characters to translate to."
 	(buffer-read-only nil))
     (save-restriction
       (message-narrow-to-head)
-      (mm-decode-words-region (point-min) (point-max)))))
+      (rfc1522-decode-region (point-min) (point-max)))))
 
 (defun article-de-quoted-unreadable (&optional force)
   "Translate a quoted-printable-encoded article.

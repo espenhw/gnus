@@ -3,7 +3,7 @@
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;;	MORIOKA Tomohiko <morioka@jaist.ac.jp>
-;; This file is not yet part of GNU Emacs.
+;; This file is part of GNU Emacs.
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -24,126 +24,6 @@
 
 ;;; Code:
 
-(require 'base64)
-(require 'qp)
-(require 'nnheader)
-
-(defvar mm-charset-regexp (concat "[^" "][\000-\040()<>@,\;:\\\"/?.=" "]+"))
-
-(defvar mm-encoded-word-regexp
-  (concat "=\\?\\(" mm-charset-regexp "\\)\\?\\(B\\|Q\\)\\?"
-	  "\\([!->@-~]+\\)\\?="))
-
-(defun mm-decode-words-region (start end)
-  "Decode MIME-encoded words in region between START and END."
-  (interactive "r")
-  (save-excursion
-    (save-restriction
-      (narrow-to-region start end)
-      (goto-char (point-min))
-      ;; Remove whitespace between encoded words.
-      (while (re-search-forward
-	      (concat "\\(" mm-encoded-word-regexp "\\)"
-		      "\\(\n?[ \t]\\)+"
-		      "\\(" mm-encoded-word-regexp "\\)")
-	      nil t)
-	(delete-region (goto-char (match-end 1)) (match-beginning 6)))
-      ;; Decode the encoded words.
-      (goto-char (point-min))
-      (while (re-search-forward mm-encoded-word-regexp nil t)
-	(insert (mm-decode-word
-		 (prog1
-		     (match-string 0)
-		   (delete-region (match-beginning 0) (match-end 0)))))))))
-
-(defun mm-decode-words-string (string)
- "Decode the quoted-printable-encoded STRING and return the results."
- (with-temp-buffer
-   (insert string)
-   (inline
-     (mm-decode-words-region (point-min) (point-max)))
-   (buffer-string)))
-
-(defun mm-decode-word (word)
-  "Decode WORD and return it if it is an encoded word.
-Return WORD if not."
-  (if (not (string-match mm-encoded-word-regexp word))
-      word
-    (or
-     (condition-case nil
-	 (mm-decode-text
-	  (match-string 1 word)
-	  (upcase (match-string 2 word))
-	  (match-string 3 word))
-       (error word))
-     word)))
-
-(eval-and-compile
-  (if (fboundp 'decode-coding-string)
-      (fset 'mm-decode-coding-string 'decode-coding-string)
-    (fset 'mm-decode-coding-string (lambda (s a) s))))
-
-(eval-and-compile
-  (if (fboundp 'coding-system-list)
-      (fset 'mm-coding-system-list 'coding-system-list)
-    (fset 'mm-coding-system-list 'ignore)))
-
-(defun mm-decode-text (charset encoding string)
-  "Decode STRING as an encoded text.
-Valid ENCODINGs are \"B\" and \"Q\".
-If your Emacs implementation can't decode CHARSET, it returns nil."
-  (let ((cs (mm-charset-to-coding-system charset)))
-    (when cs
-      (mm-decode-coding-string
-       (cond
-	((equal "B" encoding)
-	 (base64-decode string))
-	((equal "Q" encoding)
-	 (quoted-printable-decode-string
-	  (nnheader-replace-chars-in-string string ?_ ? )))
-	(t (error "Invalid encoding: %s" encoding)))
-       cs))))
-
-(defvar mm-charset-coding-system-alist
-  (let ((rest
-	 '((us-ascii . iso-8859-1)
-	   (gb2312 . cn-gb-2312)
-	   (iso-2022-jp-2 . iso-2022-7bit-ss2)
-	   (x-ctext . ctext)))
-	(systems (mm-coding-system-list))
-	dest)
-    (while rest
-      (let ((pair (car rest)))
-	(unless (memq (car pair) systems)
-	  (setq dest (cons pair dest))))
-      (setq rest (cdr rest)))
-    dest)
-  "Charset/coding system alist.")
-
-(defun mm-charset-to-coding-system (charset &optional lbt)
-  "Return coding-system corresponding to CHARSET.
-CHARSET is a symbol naming a MIME charset.
-If optional argument LBT (`unix', `dos' or `mac') is specified, it is
-used as the line break code type of the coding system."
-  (when (stringp charset)
-    (setq charset (intern (downcase charset))))
-  (setq charset
-	(or (cdr (assq charset mm-charset-coding-system-alist))
-	    charset))
-  (when lbt
-    (setq charset (intern (format "%s-%s" charset lbt))))
-  (cond
-   ;; Running in a non-MULE environment.
-   ((and (null (mm-coding-system-list))
-	 (eq charset 'iso-8859-1))
-    charset)
-   ;; Check to see whether we can handle this charset.
-   ((memq charset (mm-coding-system-list))
-    charset)
-   ;; Nope.
-   (t
-    nil)))
-
 (provide 'mm-decode)
 
-;; qp.el ends here
+;; mm-decode.el ends here

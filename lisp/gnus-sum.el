@@ -3057,8 +3057,8 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 	  (setq header
 		(make-full-mail-header
 		 number			; number
-		 (mm-decode-words-string (gnus-nov-field)) ; subject
-		 (mm-decode-words-string (gnus-nov-field)) ; from
+		 (rfc1522-decode-string (gnus-nov-field)) ; subject
+		 (rfc1522-decode-string (gnus-nov-field)) ; from
 		 (gnus-nov-field)	; date
 		 (or (gnus-nov-field)
 		     (nnheader-generate-fake-message-id)) ; id
@@ -4400,13 +4400,13 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (progn
 	      (goto-char p)
 	      (if (search-forward "\nsubject: " nil t)
-		  (mm-decode-words-string (nnheader-header-value))
+		  (rfc1522-decode-string (nnheader-header-value))
 		"(none)"))
 	    ;; From.
 	    (progn
 	      (goto-char p)
 	      (if (search-forward "\nfrom: " nil t)
-		  (mm-decode-words-string (nnheader-header-value))
+		  (rfc1522-decode-string (nnheader-header-value))
 		"(nobody)"))
 	    ;; Date.
 	    (progn
