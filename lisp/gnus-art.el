@@ -2124,27 +2124,29 @@ If PROMPT (the prefix), prompt for a coding system to use."
 	       (gnus-buffer-live-p gnus-original-article-buffer))
       (save-restriction
 	(article-narrow-to-head)
+	(with-current-buffer gnus-original-article-buffer
+	  (goto-char (point-min)))
 	(while (re-search-forward "^Newsgroups:\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]"
 				  nil t)
 	  (replace-match (save-match-data
-			   (gnus-decode-newsgroups
-			    ;; XXX how to use data in article buffer?
-			    (with-current-buffer gnus-original-article-buffer
-			      (goto-char (point-min))
-			      (re-search-forward
-			       "^Newsgroups:\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]"
-			       nil t)
-			      (match-string 1))
-			    gnus-newsgroup-name method))
+			     (gnus-decode-newsgroups
+			      ;; XXX how to use data in article buffer?
+			      (with-current-buffer gnus-original-article-buffer
+				(re-search-forward
+				 "^Newsgroups:\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]"
+				 nil t)
+				(match-string 1))
+			      gnus-newsgroup-name method))
 			 t t nil 1))
 	(goto-char (point-min))
+	(with-current-buffer gnus-original-article-buffer
+	  (goto-char (point-min)))
 	(while (re-search-forward "^Followup-To:\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]"
 				  nil t)
 	  (replace-match (save-match-data
 			   (gnus-decode-newsgroups
 			    ;; XXX how to use data in article buffer?
 			    (with-current-buffer gnus-original-article-buffer
-			      (goto-char (point-min))
 			      (re-search-forward
 			       "^Followup-To:\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]"
 			       nil t)
