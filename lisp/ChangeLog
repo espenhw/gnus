@@ -1,3 +1,44 @@
+2001-03-14 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From Christoph Conrad <christoph.conrad@gmx.de>
+
+	* gnus-score.el (gnus-summary-lower-thread): Typo.
+
+2001-03-14 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-forward-decoded-p): New variable.
+	(message-forward-subject-author-subject): Use it.
+	(message-make-forward-subject): Use it.
+	(message-forward): Use it.
+	
+	* gnus-uu.el (gnus-uu-digest-mail-forward): Use it.
+
+	* mm-util.el, message.el, rfc2047.el, gnus-sum.el, gnus-score.el:
+	Sync with Emacs 21 (tag EMACS_PRETEST_21_0_100).
+
+;;Has been fixed -- zsh.
+;;2001-03-05  Dave Love  <fx@gnu.org>
+;;
+;;	* mm-util.el (mm-mime-mule-charset-alist): Fix utf-8 case.
+;;	Move it after definition of mm-coding-system-p.
+;;
+2001-03-01  Dave Love  <fx@gnu.org>
+
+	* mm-util.el (mm-inhibit-file-name-handlers): Add
+	image-file-handler.
+
+2001-02-11  Dave Love  <fx@gnu.org>
+
+	* message.el (message-signature-file): Fix doc, :type.
+
+2001-02-08  Dave Love  <fx@gnu.org>
+
+	* rfc2047.el (rfc2047-fold-region): Don't forward-char at EOB.
+	(message-posting-charset): Defvar when compiling again.
+	(rfc2047-encodable-p): Require message.
+
+	* gnus-sum.el (gnus-alter-articles-to-read-function):
+	* gnus-score.el (gnus-score-after-write-file-function): Fix :type.
+
 2001-03-08 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnrss.el: New file.

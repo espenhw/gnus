@@ -384,7 +384,7 @@ If nil, the user will be asked for a duration."
 (defcustom gnus-score-after-write-file-function nil
   "Function called with the name of the score file just written to disk."
   :group 'gnus-score-files
-  :type 'function)
+  :type '(choice (const nil) function))
 
 (defcustom gnus-score-thread-simplify nil
   "If non-nil, subjects will simplified as in threading."
@@ -2460,7 +2460,7 @@ score in GNUS-NEWSGROUP-SCORED by SCORE."
 (defun gnus-summary-lower-thread (&optional score)
   "Lower score of articles in the current thread with SCORE."
   (interactive "P")
-  (gnus-summary-raise-thread (- (1- (gnus-score-delta-default score)))))
+  (gnus-summary-raise-thread (- (gnus-score-delta-default score))))
 
 ;;; Finding score files.
 

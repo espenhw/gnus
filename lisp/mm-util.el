@@ -475,7 +475,7 @@ Mule4 only."
     (nreverse out)))
 
 (defvar mm-inhibit-file-name-handlers
-  '(jka-compr-handler)
+  '(jka-compr-handler image-file-handler)
   "A list of handlers doing (un)compression (etc) thingies.")
 
 (defun mm-insert-file-contents (filename &optional visit beg end replace
