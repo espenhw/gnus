@@ -613,18 +613,25 @@ By default, the region is treated as containing addresses (see
   (let ((m (mm-multibyte-p)))
     (if (string-match "=\\?" string)
 	(with-temp-buffer
+	  ;; Fixme: This logic is wrong, but seems to be required by
+	  ;; Gnus summary buffer generation.  The value of `m' depends
+	  ;; on the current buffer, not global multibyteness or that
+	  ;; of the string.  Also the string returned should always be
+	  ;; multibyte in a multibyte session, i.e. the buffer should
+	  ;; be multibyte before `buffer-string' is called.
 	  (when m
 	    (mm-enable-multibyte))
 	  (insert string)
 	  (inline
 	    (rfc2047-decode-region (point-min) (point-max)))
-	  (mm-enable-multibyte)
-	  (buffer-string)))
-    (if (and mail-parse-charset
-	     (not (eq mail-parse-charset 'us-ascii))
-	     (not (eq mail-parse-charset 'gnus-decoded)))
-	(mm-decode-coding-string string mail-parse-charset)
-      (mm-string-as-multibyte string))))
+	  (buffer-string))
+      ;; Fixme: As above, `m' here is inappropriate.
+      (if (and m
+	       mail-parse-charset
+	       (not (eq mail-parse-charset 'us-ascii))
+	       (not (eq mail-parse-charset 'gnus-decoded)))
+	  (mm-decode-coding-string string mail-parse-charset)
+	(mm-string-as-multibyte string)))))
 
 (defun rfc2047-parse-and-decode (word)
   "Decode WORD and return it if it is an encoded word.
