@@ -1,3 +1,19 @@
+2001-01-09  Didier Verna  <didier@xemacs.org>
+
+	* dgnushack.el (dgnushack-compile): give a dummy value to
+	`gnus-xmas-glyph-directory' for the time of compilation.
+	* gnus-agent.el: moved some XEmacs specific hook add-ons from
+	`gnus-xmas-[re]define' to avoid loosing user custom settings.
+	* gnus-art.el: ditto.
+	* gnus-group.el: ditto.
+	* gnus-salt.el: ditto.
+	* gnus-sum.el: ditto.
+	* gnus-topic.el: ditto.
+	* gnus-xmas.el (gnus-xmas-define): see above.
+	* gnus-xmas.el (gnus-xmas-redefine): see above.
+	* gnus-xmas.el (gnus-xmas-glyph-directory): generate a
+	non-continuable error when the directory can't be found.
+
 2001-01-09 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-interactively-view-part): Don't copy-sequence
@@ -16,8 +32,8 @@
 
 2001-01-08 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-xmas.el (gnus-xmas-modeline-glyph): 
-	(gnus-xmas-group-startup-message): 
+	* gnus-xmas.el (gnus-xmas-modeline-glyph):
+	(gnus-xmas-group-startup-message):
 	Detect gnus-xmas-glyph-directory when it is nil.
 
 2001-01-08 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -34,7 +50,7 @@
 2001-01-04 11:06:14  Gregory Chernov  <greg@visiontech-dml.com>
 
 	* nnslashdot.el (nnslashdot-request-list): Always get the right
-	sid. 
+	sid.
 
 2001-01-05 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
@@ -54,7 +70,7 @@
 2001-01-02 06:28:28  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-expire-articles): Don't save
-	excursion. 
+	excursion.
 
 	* nnslashdot.el (nnslashdot-request-list): Get the right year.
 
@@ -78,7 +94,7 @@
 	(gnus-summary-setup-buffer): Use it.
 
 	* gnus-draft.el: Set things up with the right post method and
-	stuff. 
+	stuff.
 
 	* message.el (message-ignored-news-headers): Remove X-Draft-From.
 
@@ -93,7 +109,7 @@
 
 	* mm-uu.el (mm-uu-pgp-signed-extract-1): Unquote "- " quotes.
 
-	* dgnushack.el (dgnushack-compile): Message whether there is w3. 
+	* dgnushack.el (dgnushack-compile): Message whether there is w3.
 	Don't (push "/usr/share/emacs/site-lisp" load-path).
 
 	* gnus-cite.el (gnus-article-fill-cited-article): Don't add space
@@ -123,7 +139,7 @@
 	* nnmail.el (nnmail-expiry-wait): Not an integer.
 
 	* message.el (message-goto-body): Only expand abbrev when called
-	interactively. 
+	interactively.
 	(message-make-lines): Use it.
 
 2000-12-29 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -154,7 +170,7 @@
 	after the fill prefix.
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Removed "Enter
-	score...". 
+	score...".
 
 	* gnus-art.el (gnus-ignored-headers): Hide more headers.
 
@@ -166,7 +182,7 @@
 	* mm-bodies.el (mm-long-lines-p): New function.
 	(mm-body-encoding): Use it.
 	(mm-body-encoding): Encode articles with lines longer than 1000
-	characters. 
+	characters.
 
 2000-12-29 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
@@ -184,7 +200,7 @@
 
 	* nnheader.el (nnheader-string-as-multibyte): New alias.
 
-	* mm-view.el (mm-inline-text): Warn when bugging out in w3. 
+	* mm-view.el (mm-inline-text): Warn when bugging out in w3.
 
 	* gnus-uu.el (gnus-message-process-mark): New function.
 	(gnus-uu-mark-by-regexp): Use it.
@@ -197,7 +213,7 @@
 2000-11-01 01:12:29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnwfm.el (nnwfm-create-mapping): Remove quote marks and
-	backslashes. 
+	backslashes.
 
 2000-12-26  Katsumi Yamaoka <yamaoka@jpl.org>
 
@@ -260,19 +276,19 @@
 	* gnus-vm.el (gnus-summary-save-article-vm): Require gnus-art
 	before binding gnus-default-article-saver.
 
-	* gnus-sum.el (gnus-summary-save-article): 
-	(gnus-summary-pipe-output): 
-	(gnus-summary-save-article-mail): 
-	(gnus-summary-save-article-rmail): 
-	(gnus-summary-save-article-file): 
-	(gnus-summary-write-article-file): 
+	* gnus-sum.el (gnus-summary-save-article):
+	(gnus-summary-pipe-output):
+	(gnus-summary-save-article-mail):
+	(gnus-summary-save-article-rmail):
+	(gnus-summary-save-article-file):
+	(gnus-summary-write-article-file):
 	(gnus-summary-save-article-body-file): Ditto.
 
 	* gnus-mh.el (gnus-summary-save-article-folder): Ditto.
 
 2000-12-22 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-art.el (gnus-mime-security-button-map): 
+	* gnus-art.el (gnus-mime-security-button-map):
 	(gnus-mime-button-map): Add parent.
 
 2000-12-22 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -295,9 +311,9 @@
 	* mm-util.el (mm-image-load-path): New function.
 
 	* gnus-group.el (gnus-group-make-tool-bar): Use it.
-	
+
 	* gnus-sum.el (gnus-summary-make-tool-bar): Use it.
-	
+
 	* message.el (message-tool-bar-map): Use it.
 
 	* Makefile.in (install-el): New.
@@ -413,7 +429,7 @@
 	* mml.el (gnus-ems): Require it.
 
 	* gnus-msg.el (gnus-summary-mail-forward):
-	
+
 	* message.el (message-forward):  Move mime-to-mml here.
 
 2000-12-20 02:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -495,7 +511,7 @@
 	* smiley-ems.el (smiley-regexp-alist): Make regexps match
 	at the end of the buffer.
 	(smiley-region): In the loop, move to the end of the submatch
-	matching the smiley instead of using the end of the match 
+	matching the smiley instead of using the end of the match
 	of the whole regexp.
 
 2000-12-12  Eli Zaretskii  <eliz@is.elta.co.il>
@@ -505,7 +521,7 @@
 2000-12-12  Gerd Moellmann  <gerd@gnu.org>
 
 	* smiley-ems.el (smiley-region): Doc fix.
-	
+
 2000-12-11  Miles Bader  <miles@gnu.org>
 
 	* gnus-sum.el (gnus-summary-recenter): When trying to keep the
@@ -580,7 +596,7 @@
 	* gnus-art.el (gnus-mime-button-map): Don't inherit from
 	gnus-article-mode-map.
 ;	(gnus-mime-button-menu): Use mouse-set-point.
-	(gnus-insert-mime-button, gnus-mime-display-alternative) 
+	(gnus-insert-mime-button, gnus-mime-display-alternative)
 	(gnus-mime-display-alternative): Don't use local-map property.
 
 2000-11-17  Dave Love  <fx@gnu.org>
@@ -610,25 +626,25 @@
 
 	* gnus-start.el (gnus-read-newsrc-file): Add :version.
 
-	* gnus-art.el (gnus-article-banner-alist) 
-	(gnus-emphasize-whitespace-regexp, gnus-ignored-mime-types) 
-	(gnus-article-date-lapsed-new-header) 
-	(gnus-article-mime-match-handle-function, gnus-mime-action-alist) 
-	(gnus-treat-strip-list-identifiers, gnus-treat-date-iso8601) 
-	(gnus-treat-strip-headers-in-body) 
-	(gnus-treat-capitalize-sentences, gnus-treat-play-sounds) 
+	* gnus-art.el (gnus-article-banner-alist)
+	(gnus-emphasize-whitespace-regexp, gnus-ignored-mime-types)
+	(gnus-article-date-lapsed-new-header)
+	(gnus-article-mime-match-handle-function, gnus-mime-action-alist)
+	(gnus-treat-strip-list-identifiers, gnus-treat-date-iso8601)
+	(gnus-treat-strip-headers-in-body)
+	(gnus-treat-capitalize-sentences, gnus-treat-play-sounds)
 	(gnus-treat-translate): Add :version.
 	(gnus-article-mime-part-function): Fix defcustom.
 
-	* nnmail.el (nnmail-expiry-target) 
-	(nnmail-scan-directory-mail-source-once, nnmail-extra-headers) 
+	* nnmail.el (nnmail-expiry-target)
+	(nnmail-scan-directory-mail-source-once, nnmail-extra-headers)
 	(nnmail-split-header-length-limit): Add :version.
 
-	* gnus-sum.el (gnus-auto-expirable-marks) 
-	(gnus-inhibit-user-auto-expire, gnus-list-identifiers) 
-	(gnus-extra-headers, gnus-ignored-from-addresses) 
-	(gnus-newsgroup-ignored-charsets) 
-	(gnus-group-highlight-words-alist) 
+	* gnus-sum.el (gnus-auto-expirable-marks)
+	(gnus-inhibit-user-auto-expire, gnus-list-identifiers)
+	(gnus-extra-headers, gnus-ignored-from-addresses)
+	(gnus-newsgroup-ignored-charsets)
+	(gnus-group-highlight-words-alist)
 	(gnus-summary-show-article-charset-alist): Add :version.
 
 	* catchup.pbm, describe-group.pbm, exit-gnus.pbm, get-news.pbm:
@@ -646,8 +662,8 @@
 ;	* message.el (message-mode) <adaptive-fill-regexp>:
 ;	<adaptive-fill-first-line-regexp>: Use [:alnum:] in regexp range.
 ;	(message-newline-and-reformat): Likewise.
-	(message-forward-as-mime, message-forward-ignored-headers) 
-	(message-buffer-naming-style, message-default-charset) 
+	(message-forward-as-mime, message-forward-ignored-headers)
+	(message-buffer-naming-style, message-default-charset)
 	(message-dont-reply-to-names, message-send-mail-partially-limit):
 	Add :version.
 
@@ -666,7 +682,7 @@
 
 2000-11-09  Dave Love  <fx@gnu.org>
 
-	* gnus-group.el (gnus-group-make-directory-group) 
+	* gnus-group.el (gnus-group-make-directory-group)
 	(gnus-group-fetch-faq): Use expand-file-name.
 	(gnus-group-fetch-faq): Simplify completing-read form.
 
@@ -679,7 +695,7 @@
 	(gnus-tm-lisp-directory): Deleted.
 	(gnus-use-installed-mailcrypt, gnus-emacs-lisp-directory): Use
 	(featurep 'xemacs).
-	(gnus-gnus-lisp-directory, gnus-mailcrypt-lisp-directory) 
+	(gnus-gnus-lisp-directory, gnus-mailcrypt-lisp-directory)
 	(gnus-mailcrypt-lisp-directory, gnus-bbdb-lisp-directory): Remove
 	version numbers from file names.
 
@@ -836,7 +852,7 @@
 	of the `gnus-xemacs' variable, as the latter has been removed.
 	* gnus-start.el (gnus-1, gnus-read-descriptions-file): Likewise.
 	* gnus-art.el (gnus-treat-display-xface)
-	(gnus-treat-display-smileys, gnus-treat-display-picons) 
+	(gnus-treat-display-smileys, gnus-treat-display-picons)
 	(gnus-article-read-summary-keys): Likewise.
 
 2000-10-26  Dave Love  <fx@gnu.org>
@@ -970,7 +986,7 @@
 
 2000-09-14  Dave Love  <fx@gnu.org>
 
-	* gnus.el (gnus-charset): 
+	* gnus.el (gnus-charset):
 	* mm-decode.el (mime-display):
 	* imap.el (imap) <defgroup>: Add :version.
 
@@ -1001,7 +1017,7 @@
 
 	* mml.el (mml-mode-map): Change mml prefix from `M-m' to `C-c C-m'
 	to avoid conflict with the standard `back-to-indentation'
-	binding. 
+	binding.
 
 2000-12-17 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
@@ -1071,7 +1087,7 @@
 	Also do some repair work, if we find articles that are missing the
 	appropriate X-Gnus-Newsgroup lines in the header.  We can usually
 	reconstruct these from Xref info.
-	
+
 2000-12-04 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mail-source.el (mail-source-report-new-mail): Use
@@ -1084,7 +1100,7 @@
 	(mail-source-check-pop): Ditto.
 	(mail-source-start-idle-timer): Prevent multiple pop checks
 	running if the check takes a long time.
-	
+
 2000-12-04 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-msg-mail): COMPOSEFUNC should return t if
@@ -1147,7 +1163,7 @@
 
 	* gnus-cite.el (gnus-article-hide-citation): Use them.
 	(gnus-article-toggle-cited-text): Use them.
-	
+
 	* gnus-art.el (gnus-signature-toggle): Use them.
 	(gnus-article-show-hidden-text): Ditto.
 	(gnus-article-hide-text): Ditto.
@@ -1168,9 +1184,9 @@
 2000-11-29 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnfolder.el (nnfolder-request-expire-articles): expiry-target.
-	
+
 	* nnbabyl.el (nnbabyl-request-expire-articles): Ditto.
-	
+
 	* nnmbox.el (nnmbox-request-expire-articles): Ditto.
 
 2000-11-22  Jan Nieuwenhuizen  <janneke@gnu.org>
@@ -1350,10 +1366,10 @@
 	(mml-smime-encrypt-buffer): Use mml-smime-encrypt.
 
 	* mml-smime.el (mml-smime-sign): New function.
-	(mml-smime-encrypt): 
-	(mml-smime-sign-query): 
-	(mml-smime-get-file-cert): 
-	(mml-smime-get-dns-cert): 
+	(mml-smime-encrypt):
+	(mml-smime-sign-query):
+	(mml-smime-get-file-cert):
+	(mml-smime-get-dns-cert):
 	(mml-smime-encrypt-query): Moved from mml-sec.el.
 
 2000-11-16  Simon Josefsson  <sj@extundo.com>
@@ -1486,7 +1502,7 @@
 
 	* rfc2231.el (rfc2231-encode-string): Insert semi-colon and
 	leading space.
-	* mm-extern.el (mm-inline-external-body): Report error when no 
+	* mm-extern.el (mm-inline-external-body): Report error when no
 	access-type.
 
 2000-11-12 19:48:30  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -1503,7 +1519,7 @@
 	as multipart/mixed.
 
 2000-11-12  David Edmondson  <dme@dme.org>
-	
+
 	* message.el (message-cite-prefix-regexp): moved from gnus-cite.el
 	and replace `.' with `\w' to allow for different syntax tables
 	(from Vladimir Volovich).
@@ -1529,9 +1545,9 @@
 	* mml2015.el (mml2015-gpg-verify): Set "OK" security status.
 
 	* smime.el (smime-details-buffer): New variable.
-	(smime-sign-region): 
-	(smime-encrypt-region): 
-	(smime-verify-region): 
+	(smime-sign-region):
+	(smime-encrypt-region):
+	(smime-verify-region):
 	(smime-decrypt-region): Copy OpenSSL output to the buffer.
 
 	* mml-smime.el (mml-smime-verify): Support security info.
@@ -1554,7 +1570,7 @@
 	names.  (Report from Nevin Kapur)
 
 2000-11-10 01:23:20  ShengHuo ZHU  <zsh@cs.rochester.edu>
-  
+
 	* mm-partial.el (mm-inline-partial): Insert MIME-Version.
 
 2000-11-09 17:02:50  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -1575,7 +1591,7 @@
 
 2000-11-08 19:58:58  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* mml2015.el (mml2015-gpg-decrypt-1): 
+	* mml2015.el (mml2015-gpg-decrypt-1):
 	(mml2015-gpg-verify): buffer-string has no argument in Emacs.
 
 2000-11-08 16:37:02  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -1586,7 +1602,7 @@
 
 	* pop3.el (pop3-munge-message-separator): A message may have an
 	empty body.
-  
+
 2000-11-07 18:02:26  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-uu.el (mm-uu-type-alist): Don't test pgp stuff.
@@ -1610,10 +1626,10 @@
 2000-02-02 Alexandre Oliva <oliva@lsd.ic.unicamp.br>
 
 	* gnus-mlspl.el: Documentation tweaks.
-	
+
 2000-11-06 22:06:44  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* mm-decode.el (mm-possibly-verify-or-decrypt): Fix.  
+	* mm-decode.el (mm-possibly-verify-or-decrypt): Fix.
 	* gnus-art.el (gnus-article-encrypt-body): Rename and support prefix
 	argument.
 
@@ -1688,7 +1704,7 @@
 	* mm-decode.el (mml-smime-verify): Autoload mml-smime.
 
 	Verify S/MIME signature support.
-	
+
 	* mm-decode.el (mm-inline-media-tests): Add
 	application/{x-,}pkcs7-signature.
 	(mm-inlined-types): Ditto.
@@ -1749,7 +1765,7 @@
 
 	* message.el (message-font-lock-keywords): Match a final newline
 	to help font-lock's multiline support.
-	
+
 2000-11-04 09:11:44  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnoo.el (nnoo-set): New function.
@@ -1815,19 +1831,19 @@
 
 	* message.el (message-get-reply-headers): Better handling when
 	Mail-Followup-To is very large.
-	
+
 2000-11-02 13:27:56  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-uu.el (gnus-uu-post-news): Comment out the redundancy.  
-	* gnus-art.el (gnus-article-edit-done): 
-	* gnus-sum.el (gnus-summary-edit-article-done): Move line 
+	* gnus-uu.el (gnus-uu-post-news): Comment out the redundancy.
+	* gnus-art.el (gnus-article-edit-done):
+	* gnus-sum.el (gnus-summary-edit-article-done): Move line
 	counting code here.
 	* gnus-msg.el (gnus-setup-message): Remove a hack.
 
 2000-11-02 09:33:01  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-newsgroup-variables): New variable.
-	(gnus-summary-mode): Make them local variables. 
+	(gnus-summary-mode): Make them local variables.
 	(gnus-set-global-variables): Globalize them.
 	(gnus-summary-exit): Kill them.
 
@@ -1864,7 +1880,7 @@
 
 2000-11-01 01:12:29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* nnultimate.el (nnultimate-create-mapping): Use nreverse. 
+	* nnultimate.el (nnultimate-create-mapping): Use nreverse.
 
 2000-10-31 23:45:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -1917,7 +1933,7 @@
 2000-10-16 11:36:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnultimate.el (nnultimate-forum-table-p): Be a bit more
-	restrictive. 
+	restrictive.
 	(nnultimate-table-regexp): New variable.
 	(nnultimate-forum-table-p): Use it.
 
@@ -2039,7 +2055,7 @@
 	(gnus-request-accept-article): Ditto.
 	* mml.el (mml-preview): Use them.
 	* gnus-sum.el (gnus-summary-edit-article): Use them.
-	
+
 	* message.el (message-options-get): New function.
 	(message-options-get): New function.
 	* rfc2047.el (rfc2047-encode-message-header): Use them.
@@ -2047,7 +2063,7 @@
 
 2000-10-28  Simon Josefsson  <sj@extundo.com>
 
-	* nnimap.el (nnimap-retrieve-which-headers): 
+	* nnimap.el (nnimap-retrieve-which-headers):
 	(nnimap-request-article-part): Quote message-id.
 
 	* smime.el (smime-CA-directory): Rename from `smime-CAs'.

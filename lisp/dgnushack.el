@@ -33,11 +33,11 @@
 
 (defvar srcdir (or (getenv "srcdir") "."))
 
-(push (or (getenv "lispdir") 
+(push (or (getenv "lispdir")
 	  "/usr/share/emacs/site-lisp")
       load-path)
 
-(push (or (getenv "W3DIR") (expand-file-name "../../w3/lisp/" srcdir)) 
+(push (or (getenv "W3DIR") (expand-file-name "../../w3/lisp/" srcdir))
       load-path)
 
 (push "/usr/share/emacs/site-lisp" load-path)
@@ -119,6 +119,10 @@ Modify to suit your needs."))
   (let ((files (directory-files srcdir nil "^[^=].*\\.el$"))
 	;;(byte-compile-generate-call-tree t)
 	file elc)
+    ;; Avoid barfing (from gnus-xmas) because the etc directory is not yet
+    ;; installed.
+    (when (featurep 'xemacs)
+      (setq gnus-xmas-glyph-directory "dummy"))
     (dolist (file '("dgnushack.el" "lpath.el"))
       (setq files (delete file files)))
     (when (featurep 'base64)
@@ -131,23 +135,23 @@ Modify to suit your needs."))
 		       "nnslashdot.el" "nnwarchive.el" "webmail.el"
 		       "nnwfm.el"))
 	 (setq files (delete file files)))))
-    (dolist (file 
+    (dolist (file
 	     (if (featurep 'xemacs)
 		 '("md5.el" "smiley-ems.el")
-	       '("gnus-xmas.el" "gnus-picon.el" "messagexmas.el" 
+	       '("gnus-xmas.el" "gnus-picon.el" "messagexmas.el"
 		 "nnheaderxm.el" "smiley.el")))
       (setq files (delete file files)))
 
     (dolist (file files)
       (setq file (expand-file-name file srcdir))
-      (when (and (file-exists-p 
+      (when (and (file-exists-p
 		  (setq elc (concat (file-name-nondirectory file) "c")))
 		 (file-newer-than-file-p file elc))
 	(delete-file elc)))
-    
+
     (while (setq file (pop files))
       (setq file (expand-file-name file srcdir))
-      (when (or (not (file-exists-p 
+      (when (or (not (file-exists-p
 		      (setq elc (concat (file-name-nondirectory file) "c"))))
 		(file-newer-than-file-p file elc))
 	(ignore-errors
@@ -158,4 +162,3 @@ Modify to suit your needs."))
   (byte-recompile-directory "." 0))
 
 ;;; dgnushack.el ends here
-

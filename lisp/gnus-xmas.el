@@ -45,9 +45,10 @@ automatically."
   :group 'gnus-xmas)
 
 (unless gnus-xmas-glyph-directory
-  (unless (setq gnus-xmas-glyph-directory 
+  (unless (setq gnus-xmas-glyph-directory
 		(message-xmas-find-glyph-directory "gnus"))
-    (gnus-error 1 "Can't find glyph directory. Possibly the `etc' directory is not installed.")))
+    (error "Can't find glyph directory. \
+Possibly the `etc' directory has not been installed.")))
 
 ;;(format "%02x%02x%02x" 114 66 20) "724214"
 
@@ -93,10 +94,6 @@ asynchronously.	 The compressed face will be piped to this command."
 ;;; Internal variables.
 
 ;; Don't warn about these undefined variables.
-
-(defvar gnus-group-mode-hook)
-(defvar gnus-summary-mode-hook)
-(defvar gnus-article-mode-hook)
 
 ;;defined in gnus.el
 (defvar gnus-active-hashtb)
@@ -202,7 +199,7 @@ displayed, no centering will be performed."
 	;; whichever is the least.
 	;; NOFORCE parameter suggested by Daniel Pittman <daniel@danann.net>.
 	(set-window-start
-	 window (min bottom (save-excursion (forward-line (- top)) (point))) 
+	 window (min bottom (save-excursion (forward-line (- top)) (point)))
 	 t))
       ;; Do horizontal recentering while we're at it.
       (when (and (get-buffer-window (current-buffer) t)
@@ -436,9 +433,6 @@ call it with the value of the `gnus-data' text property."
  	   (< emacs-minor-version 14))
       (defalias 'gnus-set-text-properties 'gnus-xmas-set-text-properties))
 
-  (when (fboundp 'turn-off-scroll-in-place)
-    (add-hook 'gnus-article-mode-hook 'turn-off-scroll-in-place))
-
   (unless (boundp 'standard-display-table)
     (setq standard-display-table nil))
 
@@ -483,30 +477,17 @@ call it with the value of the `gnus-data' text property."
   (defalias 'gnus-annotation-in-region-p 'gnus-xmas-annotation-in-region-p)
   (defalias 'gnus-mime-button-menu 'gnus-xmas-mime-button-menu)
 
-  (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)
-  (add-hook 'gnus-summary-mode-hook 'gnus-xmas-summary-menu-add)
-  (add-hook 'gnus-article-mode-hook 'gnus-xmas-article-menu-add)
+  ;; These ones are not defcutom'ed, sometimes not even defvar'ed. They
+  ;; probably should. If that is done, the code below should then be moved
+  ;; where each variable is defined, in order not to mess with user settings.
+  ;; -- didier
   (add-hook 'gnus-score-mode-hook 'gnus-xmas-score-menu-add)
-
-  (add-hook 'gnus-pick-mode-hook 'gnus-xmas-pick-menu-add)
-  (add-hook 'gnus-topic-mode-hook 'gnus-xmas-topic-menu-add)
-  (add-hook 'gnus-tree-mode-hook 'gnus-xmas-tree-menu-add)
   (add-hook 'gnus-binary-mode-hook 'gnus-xmas-binary-menu-add)
   (add-hook 'gnus-grouplens-mode-hook 'gnus-xmas-grouplens-menu-add)
   (add-hook 'gnus-server-mode-hook 'gnus-xmas-server-menu-add)
   (add-hook 'gnus-browse-mode-hook 'gnus-xmas-browse-menu-add)
-
-  (add-hook 'gnus-group-mode-hook 'gnus-xmas-setup-group-toolbar)
-  (add-hook 'gnus-summary-mode-hook 'gnus-xmas-setup-summary-toolbar)
-
-  (add-hook 'gnus-agent-summary-mode-hook 'gnus-xmas-agent-summary-menu-add)
-  (add-hook 'gnus-agent-group-mode-hook 'gnus-xmas-agent-group-menu-add)
-  (add-hook 'gnus-agent-server-mode-hook 'gnus-xmas-agent-server-menu-add)
-
   (add-hook 'gnus-draft-mode-hook 'gnus-xmas-draft-menu-add)
-  (add-hook 'gnus-summary-mode-hook
-	    'gnus-xmas-switch-horizontal-scrollbar-off)
-  (add-hook 'gnus-tree-mode-hook 'gnus-xmas-switch-horizontal-scrollbar-off))
+  (add-hook 'gnus-mailing-list-mode-hook 'gnus-xmas-mailing-list-menu-add))
 
 
 ;;; XEmacs logo and toolbar.
@@ -874,8 +855,6 @@ XEmacs compatibility workaround."
 (defun gnus-xmas-mailing-list-menu-add ()
   (gnus-xmas-menu-add mailing-list
 		      gnus-mailing-list-menu))
-
-(add-hook 'gnus-mailing-list-mode-hook 'gnus-xmas-mailing-list-menu-add)
 
 (provide 'gnus-xmas)
 

@@ -36,7 +36,8 @@
 ;;;
 
 (defvar gnus-pick-mode nil
-  "Minor mode for providing a pick-and-read interface in Gnus summary buffers.")
+  "Minor mode for providing a pick-and-read interface in Gnus
+summary buffers.")
 
 (defcustom gnus-pick-display-summary nil
   "*Display summary while reading."
@@ -48,13 +49,17 @@
   :type 'hook
   :group 'gnus-summary-pick)
 
+(when (featurep 'xemacs)
+  (add-hook 'gnus-pick-mode-hook 'gnus-xmas-pick-menu-add))
+
 (defcustom gnus-mark-unpicked-articles-as-read nil
   "*If non-nil, mark all unpicked articles as read."
   :type 'boolean
   :group 'gnus-summary-pick)
 
 (defcustom gnus-pick-elegant-flow t
-  "If non-nil, `gnus-pick-start-reading' runs `gnus-summary-next-group' when no articles have been picked."
+  "If non-nil, `gnus-pick-start-reading' runs
+ `gnus-summary-next-group' when no articles have been picked."
   :type 'boolean
   :group 'gnus-summary-pick)
 
@@ -417,6 +422,11 @@ Two predefined functions are available:
   "*Hook run in tree mode buffers."
   :type 'hook
   :group 'gnus-summary-tree)
+
+(when (featurep 'xemacs)
+  (add-hook 'gnus-tree-mode-hook 'gnus-xmas-tree-menu-add)
+  (add-hook 'gnus-tree-mode-hook 'gnus-xmas-switch-horizontal-scrollbar-off))
+
 
 ;;; Internal variables.
 

@@ -46,6 +46,9 @@
   :type 'hook
   :group 'gnus-topic)
 
+(when (featurep 'xemacs)
+  (add-hook 'gnus-topic-mode-hook 'gnus-xmas-topic-menu-add))
+
 (defcustom gnus-topic-line-format "%i[ %(%{%n%}%) -- %A ]%v\n"
   "Format of topic lines.
 It works along the same lines as a normal formatting string,
@@ -163,7 +166,7 @@ with some simple extensions.
   (dolist (topic (gnus-current-topics topic))
     (gnus-topic-fold t))
   (gnus-topic-goto-topic topic))
-  
+
 (defun gnus-current-topic ()
   "Return the name of the current topic."
   (let ((result
@@ -233,14 +236,14 @@ If RECURSIVE is t, return groups in its subtopics too."
        ;; Add this group to the list of visible groups.
        (push (or entry group) visible-groups)))
     (setq visible-groups (nreverse visible-groups))
-    (when recursive 
+    (when recursive
       (if (eq recursive t)
 	  (setq recursive (cdr (gnus-topic-find-topology topic))))
       (mapcar (lambda (topic-topology)
-		(setq visible-groups 
-		      (nconc visible-groups 
+		(setq visible-groups
+		      (nconc visible-groups
 			     (gnus-topic-find-groups
-			      (caar topic-topology) 
+			      (caar topic-topology)
 			      level all lowest topic-topology))))
 	      (cdr recursive)))
     visible-groups))
@@ -394,7 +397,7 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
   (set-buffer gnus-group-buffer)
   (let ((buffer-read-only nil)
         (lowest (or lowest 1))
-	(not-in-list 
+	(not-in-list
 	 (and gnus-group-listed-groups
 	      (copy-sequence gnus-group-listed-groups))))
 
@@ -415,11 +418,11 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
        regexp))
 
     (when (or gnus-group-listed-groups
-	       (and (>= level gnus-level-killed) 
+	       (and (>= level gnus-level-killed)
 		    (<= lowest gnus-level-killed)))
       (gnus-group-prepare-flat-list-dead
        (gnus-union
-	(and not-in-list 
+	(and not-in-list
 	     (gnus-delete-if (lambda (group)
 			       (< (gnus-group-level group) gnus-level-killed))
 			     not-in-list))
@@ -443,7 +446,7 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
       (setq gnus-group-list-mode (cons level predicate))
       (gnus-run-hooks 'gnus-group-prepare-hook))))
 
-(defun gnus-topic-prepare-topic (topicl level &optional list-level 
+(defun gnus-topic-prepare-topic (topicl level &optional list-level
 					predicate silent
 					lowest regexp)
   "Insert TOPIC into the group buffer.
@@ -451,8 +454,8 @@ If SILENT, don't insert anything.  Return the number of unread
 articles in the topic and its subtopics."
   (let* ((type (pop topicl))
 	 (entries (gnus-topic-find-groups
-		   (car type) 
-		   (if gnus-group-listed-groups 
+		   (car type)
+		   (if gnus-group-listed-groups
 		       gnus-level-killed
 		     list-level)
 		   (or predicate gnus-group-listed-groups
@@ -481,7 +484,7 @@ articles in the topic and its subtopics."
     ;; Insert all the groups that belong in this topic.
     (while (setq entry (pop entries))
       (when (if (stringp entry)
-		(gnus-group-prepare-logic 
+		(gnus-group-prepare-logic
 		 entry
 		 (and
 		  (or (not gnus-group-listed-groups)
@@ -491,7 +494,7 @@ articles in the topic and its subtopics."
 				   gnus-level-zombie gnus-level-killed)))
 			  (and (<= entry-level list-level)
 			       (>= entry-level lowest)))))
-		  (cond 
+		  (cond
 		   ((stringp regexp)
 		    (string-match regexp entry))
 		   ((functionp regexp)
@@ -499,7 +502,7 @@ articles in the topic and its subtopics."
 		   ((null regexp) t)
 		   (t nil))))
 	      (setq info (nth 2 entry))
-	      (gnus-group-prepare-logic 
+	      (gnus-group-prepare-logic
 	       (gnus-info-group info)
 	       (and (or (not gnus-group-listed-groups)
 			(let ((entry-level (gnus-info-level info)))
@@ -1191,10 +1194,10 @@ When used interactively, PARENT will be the topic under point."
   (gnus-group-list-groups)
   (gnus-topic-goto-topic topic))
 
-;; FIXME: 
-;;  1. When the marked groups are overlapped with the process 
+;; FIXME:
+;;  1. When the marked groups are overlapped with the process
 ;;     region, the behavior of move or remove is not right.
-;;  2. Can't process on several marked groups with a same name, 
+;;  2. Can't process on several marked groups with a same name,
 ;;     because gnus-group-marked only keeps one copy.
 
 (defun gnus-topic-move-group (n topic &optional copyp)
@@ -1203,7 +1206,7 @@ If COPYP, copy the groups instead."
   (interactive
    (list current-prefix-arg
 	 (completing-read "Move to topic: " gnus-topic-alist nil t)))
-  (let ((use-marked (and (not n) (not (gnus-region-active-p)) 
+  (let ((use-marked (and (not n) (not (gnus-region-active-p))
 			 gnus-group-marked t))
 	(groups (gnus-group-process-prefix n))
 	(topicl (assoc topic gnus-topic-alist))
@@ -1230,7 +1233,7 @@ If COPYP, copy the groups instead."
 (defun gnus-topic-remove-group (&optional n)
   "Remove the current group from the topic."
   (interactive "P")
-  (let ((use-marked (and (not n) (not (gnus-region-active-p)) 
+  (let ((use-marked (and (not n) (not (gnus-region-active-p))
 			 gnus-group-marked t))
 	(groups (gnus-group-process-prefix n)))
     (mapcar
@@ -1328,7 +1331,7 @@ If PERMANENT, make it stay hidden in subsequent sessions as well."
   (when (gnus-current-topic)
     (gnus-topic-goto-topic (gnus-current-topic))
     (if permanent
-	(setcar (cddr 
+	(setcar (cddr
 		 (cadr
 		  (gnus-topic-find-topology (gnus-current-topic))))
 		'hidden))
@@ -1341,8 +1344,8 @@ If PERMANENT, make it stay shown in subsequent sessions as well."
   (when (gnus-group-topic-p)
     (if (not permanent)
 	(gnus-topic-remove-topic t nil)
-      (let ((topic 
-	     (gnus-topic-find-topology 
+      (let ((topic
+	     (gnus-topic-find-topology
 	      (completing-read "Show topic: " gnus-topic-alist nil t))))
 	(setcar (cddr (cadr topic)) nil)
 	(setcar (cdr (cadr topic)) 'visible)
@@ -1357,7 +1360,7 @@ If RECURSIVE is t, mark its subtopics too."
   (if (not topic)
       (call-interactively 'gnus-group-mark-group)
     (save-excursion
-      (let ((groups (gnus-topic-find-groups topic gnus-level-killed t nil 
+      (let ((groups (gnus-topic-find-groups topic gnus-level-killed t nil
 					    recursive)))
 	(while groups
 	  (funcall (if unmark 'gnus-group-remove-mark 'gnus-group-set-mark)
@@ -1603,7 +1606,7 @@ If REVERSE, sort in reverse order."
 	     (mapcar `(lambda (top)
 			(gnus-topic-sort-topics-1 top ,reverse))
 		     (sort (cdr top)
-			   '(lambda (t1 t2) 
+			   '(lambda (t1 t2)
 			      (string-lessp (caar t1) (caar t2)))))))
 	(setcdr top (if reverse (reverse subtop) subtop))))
   top)
@@ -1611,8 +1614,8 @@ If REVERSE, sort in reverse order."
 (defun gnus-topic-sort-topics (&optional topic reverse)
   "Sort topics in TOPIC alphabeticaly by topic name.
 If REVERSE, reverse the sorting order."
-  (interactive 
-   (list (completing-read "Sort topics in : " gnus-topic-alist nil t 
+  (interactive
+   (list (completing-read "Sort topics in : " gnus-topic-alist nil t
 			  (gnus-current-topic))
 	 current-prefix-arg))
   (let ((topic-topology (or (and topic (cdr (gnus-topic-find-topology topic)))
@@ -1624,8 +1627,8 @@ If REVERSE, reverse the sorting order."
 
 (defun gnus-topic-move (current to)
   "Move the CURRENT topic to TO."
-  (interactive 
-   (list 
+  (interactive
+   (list
     (gnus-group-topic-name)
     (completing-read "Move to topic: " gnus-topic-alist nil t)))
   (unless (and current to)
@@ -1658,7 +1661,7 @@ If REVERSE, reverse the sorting order."
 	  ;; Add the group to the topic.
 	  (nconc (assoc topic gnus-topic-alist) (list newsgroup))
 	  (throw 'end t))))))
-	  
+
 (provide 'gnus-topic)
 
 ;;; gnus-topic.el ends here

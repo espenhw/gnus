@@ -70,15 +70,27 @@ If nil, only read articles will be expired."
   :group 'gnus-agent
   :type 'hook)
 
+;; Extracted from gnus-xmas-redefine in order to preserve user settings
+(when (featurep 'xemacs)
+  (add-hook 'gnus-agent-group-mode-hook 'gnus-xmas-agent-group-menu-add))
+
 (defcustom gnus-agent-summary-mode-hook nil
   "Hook run in Agent summary minor modes."
   :group 'gnus-agent
   :type 'hook)
 
+;; Extracted from gnus-xmas-redefine in order to preserve user settings
+(when (featurep 'xemacs)
+  (add-hook 'gnus-agent-summary-mode-hook 'gnus-xmas-agent-summary-menu-add))
+
 (defcustom gnus-agent-server-mode-hook nil
   "Hook run in Agent summary minor modes."
   :group 'gnus-agent
   :type 'hook)
+
+;; Extracted from gnus-xmas-redefine in order to preserve user settings
+(when (featurep 'xemacs)
+  (add-hook 'gnus-agent-server-mode-hook 'gnus-xmas-agent-server-menu-add))
 
 (defcustom gnus-agent-confirmation-function 'y-or-n-p
   "Function to confirm when error happens."
@@ -393,10 +405,10 @@ be a select method."
   (save-restriction
     (message-narrow-to-headers)
     (let* ((gcc (mail-fetch-field "gcc" nil t))
-	   (methods (and gcc 
+	   (methods (and gcc
 			 (mapcar 'gnus-inews-group-method
 				 (message-unquote-tokens
-				  (message-tokenize-header 
+				  (message-tokenize-header
 				   gcc " ,")))))
 	   covered)
       (while (and (not covered) methods)
@@ -513,7 +525,7 @@ be a select method."
   (when (or (and gnus-agent-synchronize-flags
 		 (not (eq gnus-agent-synchronize-flags 'ask)))
 	    (and (eq gnus-agent-synchronize-flags 'ask)
-		 (gnus-y-or-n-p (format "Synchronize flags on server `%s'? " 
+		 (gnus-y-or-n-p (format "Synchronize flags on server `%s'? "
 					(cadr method)))))
     (gnus-agent-synchronize-flags-server method)))
 
@@ -702,7 +714,7 @@ the actual number of articles toggled is returned."
       (gnus-make-directory (file-name-directory file))
       (with-temp-file file
 	;; Emacs got problem to match non-ASCII group in multibyte buffer.
-	(mm-disable-multibyte) 
+	(mm-disable-multibyte)
 	(when (file-exists-p file)
 	  (nnheader-insert-file-contents file))
 	(goto-char (point-min))
@@ -730,7 +742,7 @@ the actual number of articles toggled is returned."
     (nnheader-translate-file-chars
      (nnheader-replace-chars-in-string
       (nnheader-replace-duplicate-chars-in-string
-       (nnheader-replace-chars-in-string 
+       (nnheader-replace-chars-in-string
 	(gnus-group-real-name group)
 	?/ ?_)
        ?. ?_)
@@ -847,8 +859,8 @@ the actual number of articles toggled is returned."
 	  (with-temp-buffer
 	    (let (article)
 	      (while (setq article (pop articles))
-		(when (or 
-		       (gnus-backlog-request-article group article 
+		(when (or
+		       (gnus-backlog-request-article group article
 						     nntp-server-buffer)
 		       (gnus-request-article article group))
 		  (goto-char (point-max))
@@ -1087,11 +1099,11 @@ the actual number of articles toggled is returned."
 		  (while (setq group (pop groups))
 		    (when (<= (gnus-group-level group) gnus-agent-handle-level)
 		      (gnus-agent-fetch-group-1 group gnus-command-method))))))
-	  (error 
+	  (error
 	   (unless (funcall gnus-agent-confirmation-function
 			    (format "Error (%s).  Continue? " err))
 	     (error "Cannot fetch articles into the Gnus agent.")))
-	  (quit 
+	  (quit
 	   (unless (funcall gnus-agent-confirmation-function
 			    (format "Quit fetching session (%s).  Continue? "
 				    err))
@@ -1123,7 +1135,7 @@ the actual number of articles toggled is returned."
 		 (setq gnus-newsgroup-dependencies
 		       (make-vector (length articles) 0))
 		 (setq gnus-newsgroup-headers
-		       (gnus-get-newsgroup-headers-xover articles nil nil 
+		       (gnus-get-newsgroup-headers-xover articles nil nil
 							 group))
 		 ;; `gnus-agent-overview-buffer' may be killed for
 		 ;; timeout reason.  If so, recreate it.
@@ -1517,7 +1529,7 @@ The following commands are available:
 	(when (file-exists-p (gnus-agent-lib-file "active"))
 	  (with-temp-buffer
 	    (nnheader-insert-file-contents (gnus-agent-lib-file "active"))
-	    (gnus-active-to-gnus-format 
+	    (gnus-active-to-gnus-format
 	     gnus-command-method
 	     (setq orig (gnus-make-hashtable
 			 (count-lines (point-min) (point-max))))))
@@ -1535,8 +1547,8 @@ The following commands are available:
 		      (if (numberp fetch-date)
 			  (>  fetch-date day)
 			;; History file is corrupted.
-			(gnus-message 
-			 5 
+			(gnus-message
+			 5
 			 (format "File %s is corrupted!"
 				 (gnus-agent-lib-file "history")))
 			(sit-for 1)
@@ -1593,7 +1605,7 @@ The following commands are available:
 				 (or (not (numberp
 					   (setq art (read (current-buffer)))))
 				     (< art article)))
-		       (if (and (numberp art) 
+		       (if (and (numberp art)
 				(file-exists-p
 				 (gnus-agent-article-name
 				  (number-to-string art) group)))
