@@ -25,31 +25,29 @@
 ;;; Code:
 
 (require 'gnus)
-(require 'easymenu)
+(require (if gnus-xemacs 'auc-menu 'easymenu))
 
 (defvar gnus-summary-selected-face 'underline
-  "Face used for highlighting the selected article in the Summary buffer.")
+  "Face used for highlighting the current article in the summary buffer.")
 
 (defvar gnus-visual-summary-highlight
   '(((> score default) . bold)
     ((< score default) . italic))
-  "Alist of (FORM . FACE).
+  "Alist of `(FORM . FACE)'.
 Summary lines are highlighted with the FACE for the first FORM which
-evaluate to non-nil.  
+evaluate to a non-nil value.  
 
-When FORM is evaluated point will be at the beginning of the line, and
-the following free variable can be used for convenience:
+Point will be at the beginning of the line when FORM is evaluated.
+The following can be used for convenience:
 
-score:   (gnus-summary-interest)
-default: gnus-summary-default-interest
+score:   (gnus-summary-article-score)
+default: gnus-summary-default-score
 below:   gnus-summary-mark-below
 
-To check for marks, e.g. to underline replied articles, use `looking-at':
+To check for marks, e.g. to underline replied articles, use
+`gnus-summary-article-mark': 
 
-   ((looking-at \".R\") . underline)
-
-This will match all lines where the second character is `R'.  
-The `.' will match any character.")
+   ((= (gnus-summary-article-mark) gnus-replied-mark) . underline)")
 
 (eval-and-compile
   (autoload 'nnkiboze-generate-groups "nnkiboze"))
@@ -83,27 +81,29 @@ The `.' will match any character.")
    gnus-group-mode-map
    ""
    '("Groups"
+     ("Listing"
+      ["List subscribed groups" gnus-group-list-groups t]
+      ["List all groups" gnus-group-list-all-groups t]
+      ["List groups matching..." gnus-group-list-matching t]
+      ["List killed groups" gnus-group-list-killed t]
+      ["List zombie groups" gnus-group-list-zombies t]
+      ["Describe all groups" gnus-group-describe-all-groups t]
+      ["Group apropos" gnus-group-apropos t]
+      ["Group and description apropos" gnus-group-description-apropos t]
+      ["List groups matching..." gnus-group-list-matching t])
+     ("Subscribe"
+      ["Subscribe to random group" gnus-group-unsubscribe-group t]
+      ["Kill all newsgroups in region" gnus-group-kill-region t]
+      ["Kill all zombie groups" gnus-group-kill-all-zombies t])
+     ("Foreign groups"
+      ["Make a foreign group" gnus-group-make-group t]
+      ["Edit a group entry" gnus-group-edit-group t]
+      ["Add a directory group" gnus-group-make-directory-group t]
+      ["Add the help group" gnus-group-make-help-group t]
+      ["Add the archive group" gnus-group-make-archive-group t]
+      ["Make a kiboze group" gnus-group-make-kiboze-group t])
      ["Jump to group" gnus-group-jump-to-group t]
      ["Best unread group" gnus-group-best-unread-group t]
-     ["List subscribed groups" gnus-group-list-groups t]
-     ["List all groups" gnus-group-list-all-groups t]
-     ["List groups matching..." gnus-group-list-matching t]
-     ["Sort group buffer" gnus-group-sort-groups t]
-     ["Subscribe to random group" gnus-group-unsubscribe-group t]
-     ["Describe all groups" gnus-group-describe-all-groups t]
-     ["Group apropos" gnus-group-apropos t]
-     ["Group and description apropos" gnus-group-description-apropos t]
-     ["List groups matching..." gnus-group-list-matching t]
-     ["Add a foreign group" gnus-group-add-group t]
-     ["Edit a group entry" gnus-group-edit-group t]
-     ["Add a directory group" gnus-group-make-directory-group t]
-     ["Add the help group" gnus-group-make-help-group t]
-     ["Make a kiboze group" gnus-group-make-kiboze-group t]
-     ["Kill all newsgroups in region" gnus-group-kill-region t]
-     ["Kill all zombie groups" gnus-group-kill-all-zombies t]
-     ["List killed groups" gnus-group-list-killed t]
-     ["List zombie groups" gnus-group-list-zombies t]
-     ["Edit global KILL file" gnus-group-edit-global-kill t]
      ))
 
   (easy-menu-define
@@ -135,6 +135,8 @@ The `.' will match any character.")
      ["Clear dribble buffer" gnus-group-clear-dribble t]
      ["Exit from Gnus" gnus-group-exit t]
      ["Exit without saving" gnus-group-quit t]
+     ["Sort group buffer" gnus-group-sort-groups t]
+     ["Edit global KILL file" gnus-group-edit-global-kill t]
      ))
 
   )
@@ -265,7 +267,8 @@ The `.' will match any character.")
       ["Sort by date" gnus-summary-sort-by-date t])
      ["Fetch group FAQ" gnus-summary-fetch-faq t]
      ["Filter articles" gnus-summary-execute-command t]
-     ["Mark all read and exit" gnus-summary-catchup-and-exit t]
+     ["Catchup and exit" gnus-summary-catchup-and-exit t]
+     ["Catchup and goto next" gnus-summary-catchup-and-goto-next-group t]
      ["Toggle line truncation" gnus-summary-toggle-truncation t]
      ["Expire expirable articles" gnus-summary-expire-articles t]
      ["Show dormant articles" gnus-summary-show-all-dormant t]
@@ -350,7 +353,7 @@ The `.' will match any character.")
 (defun gnus-article-make-menu-bar ()
 
  (easy-menu-define
-   gnus-article-mode-menu
+   gnus-article-article-menu
    gnus-article-mode-map
    ""
    '("Article"
@@ -364,7 +367,7 @@ The `.' will match any character.")
      ))
 
  (easy-menu-define
-   gnus-article-mode-menu
+   gnus-article-treatment-menu
    gnus-article-mode-map
    ""
    '("Treatment"
@@ -377,45 +380,93 @@ The `.' will match any character.")
      ))
  )
 
-(defun gnus-visual-highlight-selected-summary ()
-  ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
-  ;; Highlight selected article in summary buffer
-  (if gnus-summary-selected-face
-      (save-excursion
-	(let* ((beg (progn (beginning-of-line) (point)))
-	       (end (progn (end-of-line) (point)))
-	       (from (or
-		      (next-single-property-change beg 'mouse-face nil end)
-		      beg))
-	       (to (or (next-single-property-change from 'mouse-face nil end)
-		       end)))
-	  (if gnus-newsgroup-selected-overlay
-	      (move-overlay gnus-newsgroup-selected-overlay 
-			    from to (current-buffer))
-	    (setq gnus-newsgroup-selected-overlay (make-overlay from to))
-	    (overlay-put gnus-newsgroup-selected-overlay 'face 
-			 gnus-summary-selected-face))))))
+(if gnus-xemacs
+    (defun gnus-visual-highlight-selected-summary ()
+      (if gnus-summary-selected-face
+	  (save-excursion
+	    (let* ((beg (progn (beginning-of-line) (point)))
+		   (end (progn (end-of-line) (point)))
+		   (from (or
+			  (next-single-property-change beg 'mouse-face nil end)
+			  beg))
+		   (to (or (next-single-property-change from 'mouse-face nil end)
+			   end)))
+	      (if gnus-newsgroup-selected-overlay
+		  (move-overlay gnus-newsgroup-selected-overlay 
+				from to (current-buffer))
+		(setq gnus-newsgroup-selected-overlay (make-overlay from to))
+		(overlay-put gnus-newsgroup-selected-overlay 'face 
+			     gnus-summary-selected-face))))))
 
+  (defun gnus-visual-highlight-selected-summary ()
+    ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
+    ;; Highlight selected article in summary buffer
+    (if gnus-summary-selected-face
+	(save-excursion
+	  (let* ((beg (progn (beginning-of-line) (point)))
+		 (end (progn (end-of-line) (point)))
+		 (to (max 1 (1- (previous-single-property-change
+				 end 'mouse-face nil beg))))
+		 (from (1+ (previous-single-property-change 
+			    to 'mouse-face nil beg))))
+	    (if gnus-newsgroup-selected-overlay
+		(move-overlay gnus-newsgroup-selected-overlay 
+			      from to (current-buffer))
+	      (setq gnus-newsgroup-selected-overlay (make-overlay from to))
+	      (overlay-put gnus-newsgroup-selected-overlay 'face 
+			   gnus-summary-selected-face)))))))
+
+;; New implementation by Christian Limpach <Christian.Limpach@nice.ch>.
 (defun gnus-visual-summary-highlight-line ()
   "Highlight current line according to `gnus-visual-summary-highlight'."
-  (let ((list gnus-visual-summary-highlight)
-	(score (gnus-summary-article-score))
-	(default gnus-summary-default-score)
-	(inhibit-read-only t))
-    (save-excursion
-      (beginning-of-line)
-      (while (and list (not (eval (car (car list)))))
-	(setq list (cdr list)))
-      (let ((face (and list (cdr (car list)))))
-	(save-excursion
-	  ;; BUG! For some reason the text properties of the first
-	  ;; characters get mangled. 
-	  (forward-char 10)
-	  (if (eq face (get-text-property (point) 'face))
-	      ()
-	    (put-text-property (save-excursion (beginning-of-line 1) (point))
-			       (save-excursion (end-of-line 1) (point))
-			       'face face)))))))
+  (let* ((list gnus-visual-summary-highlight)
+	 (p (point))
+	 (end (progn (end-of-line) (point)))
+	 ;; now find out where the line starts and leave point there.
+	 (beg (progn (beginning-of-line) (point)))
+	 (score (or (cdr (assq (or (get-text-property beg 'gnus-number)
+				   gnus-current-article)
+			       gnus-newsgroup-scored))
+		    gnus-summary-default-score 0))
+	 (default gnus-summary-default-score)
+	 (mark (get-text-property beg 'gnus-mark))
+	 (inhibit-read-only t))
+    (while (and list (not (eval (car (car list)))))
+      (setq list (cdr list)))
+    (let ((face (and list (cdr (car list)))))
+      ;; BUG! For some reason the text properties of the first
+      ;; characters get mangled.
+      (or (eq face (get-text-property (+ beg 10) 'face))
+	  (put-text-property beg end 'face face)))
+    (goto-char p)))
+
+(if (not gnus-xemacs)
+    ()
+  (setq gnus-group-mode-hook
+	(cons
+	 (lambda ()
+	   (easy-menu-add gnus-group-reading-menu)
+	   (easy-menu-add gnus-group-group-menu)
+	   (easy-menu-add gnus-group-post-menu)
+	   (easy-menu-add gnus-group-misc-menu)) 
+	 gnus-group-mode-hook))
+  (setq gnus-summary-mode-hook
+	(cons
+	 (lambda ()
+	   (easy-menu-add gnus-summary-mark-menu)
+	   (easy-menu-add gnus-summary-move-menu)
+	   (easy-menu-add gnus-summary-article-menu)
+	   (easy-menu-add gnus-summary-thread-menu)
+	   (easy-menu-add gnus-summary-misc-menu)
+	   (easy-menu-add gnus-summary-post-menu)
+	   (easy-menu-add gnus-summary-kill-menu))
+	 gnus-summary-mode-hook))
+  (setq gnus-article-mode-hook
+	(cons
+	 (lambda ()
+	   (easy-menu-add gnus-article-article-menu)
+	   (easy-menu-add gnus-article-treatment-menu)) 
+	 gnus-article-mode-hook)))
 
 (provide 'gnus-visual)
 

@@ -26,6 +26,8 @@
 ;; For an overview of what the interface functions do, please see the
 ;; Gnus sources.  
 
+;; Various enhancements by byer@mv.us.adobe.com (Scott Byer).
+
 ;;; Code:
 
 (require 'nnheader)
@@ -49,11 +51,17 @@
 (defconst nnfolder-version "nnfolder 0.1"
   "nnfolder version.")
 
+(defconst nnfolder-article-marker "X-Gnus-Article-Number: "
+  "String used to demarcate what the article number for a message is.")
+
 (defvar nnfolder-current-group nil)
 (defvar nnfolder-current-buffer nil)
 (defvar nnfolder-status-string "")
 (defvar nnfolder-group-alist nil)
 (defvar nnfolder-buffer-alist nil)
+
+(defmacro nnfolder-article-string (article)
+  (` (concat "\n" nnfolder-article-marker (int-to-string (, article)) "")))
 
 ;;; Interface functions
 
@@ -63,6 +71,7 @@
     (erase-buffer)
     (let ((file nil)
 	  (number (length sequence))
+	  (delim-string (concat "^" rmail-unix-mail-delimiter))
 	  beg article art-string start stop)
       (nnfolder-possibly-change-group newsgroup)
       (while sequence
@@ -70,14 +79,14 @@
 	(setq art-string (nnfolder-article-string article))
 	(set-buffer nnfolder-current-buffer)
 	(if (or (search-forward art-string nil t)
-		(progn (goto-char 1)
-		       (search-forward art-string nil t)))
+		;; Don't search the whole file twice!  Also, articles
+		;; probably have some locality by number, so searching
+		;; backwards will be faster.  Especially if we're at the
+		;; beginning of the buffer :-). -SLB
+		(search-backward art-string nil t))
 	    (progn
-	      (setq start 
-		    (save-excursion
-		      (re-search-backward 
-		       (concat "^" rmail-unix-mail-delimiter) nil t)
-		      (point)))
+	      (setq start (or (re-search-backward delim-string nil t)
+			      (point)))
 	      (search-forward "\n\n" nil t)
 	      (setq stop (1- (point)))
 	      (set-buffer nntp-server-buffer)
@@ -89,6 +98,7 @@
 	(setq sequence (cdr sequence)))
 
       ;; Fold continuation lines.
+      (set-buffer nntp-server-buffer)
       (goto-char 1)
       (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
 	(replace-match " " t t))
@@ -101,6 +111,14 @@
 
 (defun nnfolder-close-server (&optional server)
   t)
+
+(defun nnfolder-request-close ()
+  (let ((alist nnfolder-buffer-alist))
+    (while alist
+      (nnfolder-close-group (car (car alist)))
+      (setq alist (cdr alist))))
+  (setq nnfolder-buffer-alist nil
+	nnfolder-group-alist nil))
 
 (defun nnfolder-server-opened (&optional server)
   (and nntp-server-buffer
@@ -148,6 +166,9 @@
 	       t
 	     (nnfolder-get-new-mail)
 	     (let ((active (assoc group nnfolder-group-alist)))
+	       ;; I've been getting stray 211 lines in my nnfolder active
+	       ;; file.  So, let's make sure that doesn't happen. -SLB
+	       (set-buffer nntp-server-buffer)
 	       (insert (format "211 %d %d %d %s\n" 
 			       (1+ (- (cdr (car (cdr active)))
 				      (car (car (cdr active)))))
@@ -157,11 +178,21 @@
 	     t)))))
 
 (defun nnfolder-close-group (group &optional server)
+  (nnfolder-possibly-change-group group)
+  (save-excursion
+    (set-buffer nnfolder-current-buffer)
+    (or (buffer-modified-p)
+	(kill-buffer (current-buffer))))
+  (setq nnfolder-buffer-alist (delq (assoc group nnfolder-buffer-alist)
+				    nnfolder-buffer-alist))
+  (setq nnfolder-current-group nil
+	nnfolder-current-buffer nil)
   t)
 
 (defun nnfolder-request-list (&optional server)
   (if server (nnfolder-get-new-mail))
-  (or (nnmail-find-file nnfolder-active-file)
+  (or nnfolder-group-alist
+      (nnmail-find-file nnfolder-active-file)
       (progn
 	(setq nnfolder-group-alist (nnmail-get-active))
 	(nnmail-save-active nnfolder-group-alist nnfolder-active-file)
@@ -207,7 +238,7 @@
 	(goto-char (point-min))
 	(while (not (search-forward
 		     (nnfolder-article-string (car active)) nil t))
-	  (setcar (car active) (1+ (car active)))
+	  (setcar active (1+ (car active)))
 	  (goto-char (point-min))))
       (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
       rest)))
@@ -338,9 +369,6 @@
 					    nnfolder-buffer-alist))))))
   (setq nnfolder-current-group group))
 
-(defun nnfolder-article-string (article)
-  (concat "\nX-Gnus-Article-Number: " (int-to-string article) " "))
-
 (defun nnfolder-save-mail (&optional group)
   "Called narrowed to an article."
   (let* ((nnmail-split-methods 
@@ -363,7 +391,7 @@
 	  (goto-char (point-max))
 	  (insert-buffer-substring obuf beg end)))
       (goto-char (point-min))
-      (search-forward "\nX-Gnus-Article-Number: ")
+      (search-forward (concat "\n" nnfolder-article-marker))
       (delete-region (progn (beginning-of-line) (point))
 		     (progn (forward-line 1) (point))))))
 
@@ -373,45 +401,92 @@
     (if (search-forward "\n\n" nil t)
 	(progn
 	  (forward-char -1)
-	  (insert (format "X-Gnus-Article-Number: %d   %s\n" 
+	  (insert (format (concat nnfolder-article-marker "%d   %s\n")
 			  (cdr group-art) (current-time-string)))))))
 
 (defun nnfolder-active-number (group)
+  (if (not nnfolder-group-alist)
+      (save-excursion
+	(nnfolder-request-list)
+	(setq nnfolder-group-alist (nnmail-get-active))))
   (let ((active (car (cdr (assoc group nnfolder-group-alist)))))
     (setcdr active (1+ (cdr active)))
     (cdr active)))
 
+
+;; This method has a problem if you've accidentally let the active list get
+;; out of sync with the files.  This could happen, say, if you've
+;; accidentally gotten new mail with something other than (ding) (but why
+;; would _that_ ever happen? :-).  In that case, we will be in the middle of
+;; processing the file, ready to add new X-Gnus article number markers, and
+;; we'll run accross a message with no ID yet - the active list _may_not_ be
+;; ready for us yet.
+
+;; To handle this, I'm modifying this routine to maintain the maximum ID seen
+;; so far, and when we hit a message with no ID, we will _manually_ scan the
+;; rest of the message looking for any more, possibly higher IDs.  We'll
+;; assume the maximum that we find is the highest active.  Note that this
+;; shouldn't cost us much extra time at all, but will be a lot less
+;; vulnerable to glitches between the mbox and the active file.
+
 (defun nnfolder-read-folder (file)
-  (nnfolder-request-list)
-  (setq nnfolder-group-alist (nnmail-get-active))
   (save-excursion
-    (set-buffer
-     (setq nnfolder-current-buffer 
-	   (find-file-noselect file)))
+    (if (not nnfolder-group-alist)
+	(progn
+	  (nnfolder-request-list)
+	  (setq nnfolder-group-alist (nnmail-get-active))))
+    ;; We should be paranoid here and make sure the group is in the alist,
+    ;; and add it if it isn't.
+    ;;(if (not (assoc nnfoler-current-group nnfolder-group-alist)
+    (set-buffer (setq nnfolder-current-buffer (find-file-noselect file)))
     (buffer-disable-undo (current-buffer))
     (let ((delim (concat "^" rmail-unix-mail-delimiter))
-	  start end)
+	  (marker (concat "\n" nnfolder-article-marker))
+	  (number "[0-9]+")
+	  (active (car (cdr (assoc nnfolder-current-group 
+				   nnfolder-group-alist))))
+	  activenumber start end)
       (goto-char (point-min))
-      (while (re-search-forward delim nil t)
-	(setq start (match-beginning 0))
-	(if (not (search-forward "\nX-Gnus-Article-Number: " 
-				 (save-excursion 
-				   (setq end
-					 (or
-					  (and
-					   (re-search-forward delim nil t)
-					   (match-beginning 0))
-					  (point-max))))
-				 t))
-	    (save-excursion
-	      (save-restriction
-		(narrow-to-region start end)
-		(nnmail-insert-lines)
-		(nnfolder-insert-newsgroup-line 
-		 (cons nil (nnfolder-active-number nnfolder-current-group))))))
-	(goto-char end)))
-    (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
-    (current-buffer)))
+      ;;
+      ;; Anytime the active number is 1 or 0, it is supect.  In that case,
+      ;; search the file manually to find the active number.
+      (setq activenumber (cdr active))
+      (if (< activenumber 2)
+	  (progn
+	    (while (and (search-forward marker nil t)
+			(re-search-forward number nil t))
+	      (setq activenumber (max activenumber
+				      (string-to-number (buffer-substring
+							 (match-beginning 0)
+							 (match-end 0))))))
+	    (goto-char (point-min))))
+
+      ;; Keep track of the active number on our own, and insert it back into
+      ;; the active list when we're done. Also, prime the pump to cut down on
+      ;; the number of searches we do.
+      (setq end (or (and (re-search-forward delim nil t)
+			 (match-beginning 0))
+		    (point-max)))
+      (while (not (= end (point-max)))
+	(setq start end)
+	(goto-char end)
+	(end-of-line)
+	(setq end (or (and (re-search-forward delim nil t)
+			   (match-beginning 0))
+		      (point-max)))
+	(goto-char start)
+	(if (not (search-forward marker end t))
+	    (progn
+	      (narrow-to-region start end)
+	      (nnmail-insert-lines)
+	      (setq activenumber (1+ activenumber))
+	      (nnfolder-insert-newsgroup-line (cons nil activenumber))
+	      (widen))))
+
+      ;; Make absolutely sure that the active list reflects reality!
+      (setcdr active activenumber)
+      (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
+      (current-buffer))))
 
 (defun nnfolder-get-new-mail ()
   (let (incoming)
@@ -437,7 +512,8 @@
 	      (setq nnfolder-buffer-alist 
 		    (delq (car bufs) nnfolder-buffer-alist))
 	    (set-buffer (nth 1 (car bufs)))
-	    (save-buffer))
+	    (and (buffer-modified-p)
+		 (save-buffer)))
 	  (setq bufs (cdr bufs)))))
     ;; (if incoming (delete-file incoming))
     ))

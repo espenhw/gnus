@@ -1,3 +1,56 @@
-Ting som ligger under denne katalogen burde du ikke se så veldig mye
-på. Den nyeste (pre-)releasen av (ding) Gnus finner du under
-«~larsi/pub/dgnus».
+This package contains a pre-release of (ding) Gnus, version 0.x. The
+lisp directory contains the source lisp files, and the texi directory
+contains an early draft of the Gnus info pages.
+
+Gnus is meant to be totally compatible with GNUS. But, alas, it
+probably isn't, which is one of the reasons for this pre-release. 
+
+To use (ding) Gnus you first have to unpack the files, which you've
+obviously done, because you are reading this. 
+
+You should definitely byte-compile the source files. To do that, you
+can simply say "make" in this directory.
+
+Then you have to tell Emacs where Gnus is. You might put something
+like
+
+   (setq load-path (cons (expand-file-name "~/dgnus/lisp") load-path))
+
+in your .emacs file, or wherever you keep such things.
+
+Note that (ding) Gnus and GNUS can not coexist in a single Emacs. They
+both use the same function and variable names. If you have been
+running GNUS in your Emacs, you should probably exit that Emacs and
+start a new one to fire up Gnus.
+
+(ding) Gnus does absolutely not work with Emacs 18, and only shakily
+with Emacs 19s before 19.26. So you definitely need a newish Emacs. 
+
+Then you do a `M-x gnus', and everything should... uhm... it should
+work, but it might not. Set `debug-on-error' to t, and mail me the
+backtraces, or, better yet, find out why Gnus does something wrong,
+fix it, and send me the diffs. :-)
+
+There are three main things I want your help and input on:
+
+1) Startup. Does eveything go smoothly, and why not?
+
+2) Any errors while you read news normally?
+
+3) Any errors if you do anything abnormal?
+
+4) Features you do not like, or do like, but would like to tweak a
+   bit, and features you would like to see.
+
+You do not have to send me typo corrections for the info pages. They
+are a very rough first draft - I haven't even read through it,
+although they should document all of Gnus, I think.
+
+I think I have implemented most of the deep-going changes that I'm
+going to. Things that will probably come in the future, but I haven't
+gotten around to yet is asynchronous posting/pre-fetch of headers and
+articles, better digest handling, a hierarchal Newsgroup buffer, and a
+few other things that I can't think of at the moment.
+
+Send any comments and all your bug fixes/complaints to
+`larsi@ifi.uio.no'. 

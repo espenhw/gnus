@@ -64,7 +64,7 @@ on servers that use strict access control.")
 If the number of the articles is greater than the value, verbose
 messages will be shown to indicate the current status.")
 
-(defvar nntp-buggy-select (memq system-type '(usg-unix-v fujitsu-uts))
+(defvar nntp-buggy-select (memq system-type '(fujitsu-uts))
   "t if your select routine is buggy.
 If the select routine signals error or fall into infinite loop while
 waiting for the server response, the variable must be set to t.  In
@@ -116,6 +116,7 @@ instead call function `nntp-status-message' to get status message.")
 (defvar nntp-current-server "")
 (defvar nntp-server-alist nil)
 (defvar nntp-server-xover t)
+(defvar nntp-server-list-active-group t)
 (defvar nntp-current-group "")
 
 ;;; Interface funtions.
@@ -198,9 +199,12 @@ If SERVICE, this this as the port number."
     (message "nntp: Connecting to server on %s..." server)
     (cond ((and server (nntp-open-server-internal server service))
 	   (setq nntp-current-server server)
-	   (condition-case nil
-	       (setq status (nntp-wait-for-response "^[23].*\r$"))
-	     (error (nntp-close-server-internal server)))
+	   (setq status
+		 (condition-case nil
+		     (nntp-wait-for-response "^[23].*\r$")
+		   (error nil)
+		   (quit nil)))
+	   (or status (nntp-close-server-internal server))
 	   (and nntp-server-process
 		(progn
 		  (set-process-sentinel 
@@ -231,6 +235,14 @@ If SERVICE, this this as the port number."
 
 (fset 'nntp-request-quit (symbol-function 'nntp-close-server))
 
+(defun nntp-request-close ()
+  "Close all server connections."
+  (while nntp-server-alist
+    (delete-process (car (cdr (car nntp-server-alist))))
+    (setq nntp-server-alist (cdr nntp-server-alist)))
+  (setq nntp-current-server "")
+  (setq nntp-server-process nil))
+
 (defun nntp-server-opened (&optional server)
   "Say whether a connection to SERVER has been opened."
   (if (or server nntp-current-server)
@@ -255,7 +267,8 @@ If SERVICE, this this as the port number."
   (unwind-protect
       (progn
 	(if buffer (set-process-buffer nntp-server-process buffer))
-	(let ((nntp-server-buffer (or buffer nntp-server-buffer)))
+	(let ((nntp-server-buffer (or buffer nntp-server-buffer))
+	      (id (or (and (numberp id) (int-to-string id)) id)))
 	  ;; If NEmacs, end of message may look like: "\256\215" (".^M")
 	  (prog1
 	      (nntp-send-command "^\\.\r$" "ARTICLE" id)
@@ -267,25 +280,67 @@ If SERVICE, this this as the port number."
   (nntp-possibly-change-server newsgroup server)
   (prog1
       ;; If NEmacs, end of message may look like: "\256\215" (".^M")
-      (nntp-send-command "^\\.\r$" "BODY" id)
+      (nntp-send-command
+       "^\\.\r$" "BODY" (or (and (numberp id) (int-to-string id)) id))
     (nntp-decode-text)))
 
 (defun nntp-request-head (id &optional newsgroup server)
   "Request head of article ID (message-id or number)."
   (nntp-possibly-change-server newsgroup server)
   (prog1
-      (nntp-send-command "^\\.\r$" "HEAD" id)
+      (nntp-send-command 
+       "^\\.\r$" "HEAD" (or (and (numberp id) (int-to-string id)) id))
     (nntp-decode-text)))
 
 (defun nntp-request-stat (id &optional newsgroup server)
   "Request STAT of article ID (message-id or number)."
   (nntp-possibly-change-server newsgroup server)
-  (nntp-send-command "^[23].*\r$" "STAT" id))
+  (nntp-send-command 
+   "^[23].*\r$" "STAT" (or (and (numberp id) (int-to-string id)) id)))
 
 (defun nntp-request-group (group &optional server dont-check)
   "Select GROUP."
-  (if (nntp-possibly-change-server nil server)
-      (nntp-send-command "^.*\r$" "GROUP" group)))
+  (if (not (nntp-possibly-change-server nil server))
+      ()
+    (if dont-check
+	(nntp-send-command "^.*\r$" "GROUP" group)
+      (if nntp-server-list-active-group
+	  (save-excursion
+	    (nntp-list-active-group group server)
+	    (set-buffer nntp-server-buffer)
+	    (goto-char (point-min))
+	    ;; We look at the output from `nntp-list-active-group' to
+	    ;; see whether the server supports this command.  If it
+	    ;; does, we transform the output.  
+	    (cond ((looking-at "2[0-9]+")
+		   (forward-line 1)
+		   (if (looking-at "[^ ] +\\([0-9]\\) +\\([0-9]\\)")
+		       (let ((end (progn (goto-char (match-beginning 1))
+					 (read (current-buffer))))
+			     (beg (read (current-buffer))))
+			 (and (> beg end)
+			      (setq end 0
+				    beg 0))
+			 (erase-buffer)
+			 (insert (format "211 %s %d %d %d\n"
+					 group (max (- (1+ end) beg) 0)
+					 beg end)))))
+		  ;; The server does not support the command.
+		  ((looking-at "5[0-9]+")
+		   (setq nntp-server-list-active-group nil)
+		   (setcar (nthcdr 
+			    3 (assoc nntp-current-server nntp-server-alist))
+			   nntp-server-xover)
+		   (nntp-send-command "^.*\r$" "GROUP" group))
+		  ;; The server supports it, but the group doesn't
+		  ;; exist. 
+		  ((looking-at "4[0-9]+")
+		   (erase-buffer)
+		   nil)))
+	(nntp-send-command "^.*\r$" "GROUP" group)))))
+
+(defun nntp-list-active-group (group &optional server)
+  (nntp-send-command "^.*\r$" "LIST ACTIVE" group))
 
 (defun nntp-request-group-description (group &optional server)
   "Get description of GROUP."
@@ -411,7 +466,16 @@ post to this group instead.  If RESPECT-POSTER, heed the special
 	      (widen))
 	    (setq news-reply-yank-from from)
 	    (setq news-reply-yank-message-id message-id)
-	    (news-setup to subject message-of newsgroups article-buffer)
+	    (news-setup to subject message-of 
+			(if (stringp newsgroups) newsgroups "") 
+			article-buffer)
+	    (if (and newsgroups (listp newsgroups))
+		(progn
+		  (goto-char (point-min))
+		  (while newsgroups
+		    (insert (car (car newsgroups)) ": " 
+			    (cdr (car newsgroups)) "\n")
+		    (setq newsgroups (cdr newsgroups)))))
 	    ;; Fold long references line to follow RFC1036.
 	    (mail-position-on-field "References")
 	    (let ((begin (- (point) (length "References: ")))
@@ -688,8 +752,9 @@ It will prompt for a password."
 	    ;; Suggested by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>.
 	    (process-kill-without-query proc)
 	    (setq nntp-server-xover t)
+	    (setq nntp-server-list-active-group t)
 	    (setq nntp-server-name server)
-	    (setq nntp-server-alist (cons (list server nntp-server-process t)
+	    (setq nntp-server-alist (cons (list server nntp-server-process t t)
 					  nntp-server-alist))
 	    ;; It is possible to change kanji-fileio-code in this hook.
 	    (run-hooks 'nntp-server-hook)
@@ -705,14 +770,6 @@ It will prompt for a password."
 				nntp-server-alist))
   (setq nntp-current-server ""))
 
-(defun nntp-request-close ()
-  "Close all server connections."
-  (while nntp-server-alist
-    (delete-process (car (cdr (car nntp-server-alist))))
-    (setq nntp-server-alist (cdr nntp-server-alist)))
-  (setq nntp-current-server "")
-  (setq nntp-server-process nil))
-
 (defun nntp-accept-response ()
   "Read response of server.
 It is well-known that the communication speed will be much improved by
@@ -723,7 +780,7 @@ defining this function as macro."
   ;; This is a copy of `nntp-default-sentinel'.
   (if (or (not nntp-server-process)
 	  (not (memq (process-status nntp-server-process) '(open run))))
-      (error (format "nntp: Process connection closed"))
+      (error "nntp: Process connection closed; %s" (nntp-status-message))
     (if nntp-buggy-select
 	(progn
 	  ;; We cannot use `accept-process-output'.
@@ -764,6 +821,7 @@ defining this function as macro."
 		(setq nntp-server-name server)
 		(setq nntp-server-process (nth 1 info))
 		(setq nntp-server-xover (nth 2 info))
+		(setq nntp-server-list-active-group (nth 3 info))
 		(setq changed-server t)
 		(setq result t))))
       (setq result t))

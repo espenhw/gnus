@@ -252,19 +252,20 @@ If the stream is opened, return T, otherwise return NIL."
 	(while (and (not (looking-at 
 			  "\\([^ ]+\\) +\\([0-9]+\\)[0-9][0-9][0-9] "))
 		    (zerop (forward-line -1))))
-	(let ((seconds (nnspool-date-to-seconds date))
+	(let ((seconds (nnspool-seconds-since-epoch))
 	      groups)
-	  ;; Go through lines and add groups that are recent to a list.
-	  (while (and (looking-at "\\([^ ]+\\) +\\([0-9]+\\)[0-9][0-9][0-9] ")
-		      ;; We ignore the last three digits in the number
-		      ;; of seconds. This is quite naughty, but large
-		      ;; numbers are so tiresome to deal with. Perhaps
-		      ;; one could switch to floats instead? 
-		      (> (save-restriction 
-			   (goto-char (match-beginning 2))
-			   (narrow-to-region (point) (match-end 2))
-			   (read (current-buffer)))
-			 seconds)
+	  ;; Go through lines and add the latest groups to a list.
+	  (while (and (looking-at "\\([^ ]+\\) +[0-9]+ ")
+		      (progn
+			;; We insert a .0 to make the list reader
+			;; interpret the number as a float. It is far
+			;; too big to be stored in a lisp integer. 
+			(goto-char (1- (match-end 0)))
+			(insert ".0")
+			(> (progn
+			     (goto-char (match-end 1))
+			     (read (current-buffer)))
+			   seconds))
 		      (setq groups (cons (buffer-substring
 					  (match-beginning 1) (match-end 1))
 					 groups))
@@ -416,20 +417,10 @@ If the stream is opened, return T, otherwise return NIL."
 	 (setcar num (/ (car num) 10))
 	 (nnspool-number-base-10 num (1- pos))))))))
 
-(defun nnspool-days-between (date1 date2)
-  ;; Return the number of days between date1 and date2.
-  (let ((d1 (mapcar (lambda (s) (and s (string-to-int s)))
-		    (timezone-parse-date date1)))
-	(d2 (mapcar (lambda (s) (and s (string-to-int s)))
-		    (timezone-parse-date date2))))
-    (- (timezone-absolute-from-gregorian 
-	(nth 1 d1) (nth 2 d1) (car d1))
-       (timezone-absolute-from-gregorian 
-	(nth 1 d2) (nth 2 d2) (car d2)))))
-
-(defun nnspool-date-to-seconds (string)
-  (let ((days (nnspool-days-between string "Jan 1 00:00:00 1970")))
-    (* days 86)))
+(defun nnspool-seconds-since-epoch ()
+  (let ((time (current-time)))
+    (+ (* 1.0 (car time) 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+       (nth 1 time))))
 
 (provide 'nnspool)
 

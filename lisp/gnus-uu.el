@@ -424,13 +424,10 @@ so I simply dropped them.")
     (setq gnus-newsgroup-processable nil)
     (save-excursion
       (while marked
-	(setq subject (header-subject 
-		       (gnus-gethash 
-			(int-to-string (car marked))
-			gnus-newsgroup-headers-hashtb-by-number)))
-	(setq articles (gnus-uu-find-articles-matching 
-			(gnus-uu-reginize-string subject)))
-	(setq total (nconc total articles))
+	(setq subject (header-subject (gnus-get-header-by-number (car marked)))
+	      articles (gnus-uu-find-articles-matching 
+			(gnus-uu-reginize-string subject))
+	      total (nconc total articles))
 	(while articles
 	  (gnus-summary-set-process-mark (car articles))
 	  (setcdr marked (delq (car articles) (cdr marked)))
@@ -472,10 +469,10 @@ so I simply dropped them.")
 	file)
     (while files
       (setq file (cdr (assq 'name (car files))))
-      (copy-file file (if (file-directory-p dir)
-			  (concat dir (file-name-nondirectory file))
-			dir)
-		 t)
+      (and (file-exists-p file)
+	   (copy-file file (if (file-directory-p dir)
+			       (concat dir (file-name-nondirectory file)) dir)
+		      1 t))
       (setq files (cdr files)))
     (message "Saved %d file%s" len (if (> len 1) "s" ""))))
 
@@ -1510,10 +1507,10 @@ to post the entire encoded files.
   (setq mode-name "Gnus UU News")
   (make-local-variable 'paragraph-separate)
   (make-local-variable 'paragraph-start)
-  (setq paragraph-start (concat "^" mail-header-separator "$\\|"
-				paragraph-start))
-  (setq paragraph-separate (concat "^" mail-header-separator "$\\|"
-				   paragraph-separate))
+  (setq paragraph-start (concat "^" (regexp-quote mail-header-separator)
+				"$\\|" paragraph-start))
+  (setq paragraph-separate (concat "^" (regexp-quote mail-header-separator)
+				   "$\\|" paragraph-separate))
   (run-hooks 'text-mode-hook 'gnus-uu-post-reply-mode-hook))
 
 (defun gnus-uu-post-news ()
@@ -1571,7 +1568,7 @@ The user will be asked for a file name."
   (save-restriction
     (set-buffer gnus-post-news-buffer)
     (goto-char 1)
-    (re-search-forward mail-header-separator)
+    (re-search-forward (regexp-quote mail-header-separator))
     (beginning-of-line)
     (forward-line -1)
     (narrow-to-region 1 (point))
@@ -1673,7 +1670,7 @@ If no file has been included, the user will be asked for a file."
     (if (not (re-search-forward 
 	      (if gnus-uu-post-separate-description 
 		  gnus-uu-post-binary-separator 
-		mail-header-separator) nil t))
+		(concat "^" (regexp-quote mail-header-separator) "$")) nil t))
 	(error "Internal error: No binary/header separator"))
     (beginning-of-line)
     (forward-line 1)
@@ -1695,7 +1692,8 @@ If no file has been included, the user will be asked for a file."
     (kill-region (point) (point-max))
 
     (goto-char 1)
-    (search-forward mail-header-separator nil t)
+    (re-search-forward 
+     (concat "^" (regexp-quote mail-header-separator) "$") nil t)
     (beginning-of-line)
     (setq header (buffer-substring 1 (point)))
 
@@ -1757,7 +1755,8 @@ If no file has been included, the user will be asked for a file."
 	(setq beg end)
 	(setq i (1+ i))
 	(goto-char 1)
-	(re-search-forward mail-header-separator nil t)
+	(re-search-forward
+	 (concat "^" (regexp-quote mail-header-separator) "$") nil t)
 	(beginning-of-line)
 	(forward-line 2)
 	(if (re-search-forward gnus-uu-post-binary-separator nil t)

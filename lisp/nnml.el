@@ -176,6 +176,27 @@ all. This may very well take some time.")
 (defun nnml-close-group (group &optional server)
   t)
 
+(defun nnml-request-create-group (group &optional server) 
+  (nnml-request-list)
+  (setq nnml-group-alist (nnmail-get-active))
+  (or (assoc group nnml-group-alist)
+      (let (active)
+	(setq nnml-group-alist (cons (list group (setq active (cons 0 0)))
+				     nnml-group-alist))
+	(nnml-possibly-create-directory group)
+	(nnml-possibly-change-directory group)
+	(let ((articles (mapcar
+			 (lambda (file)
+			   (int-to-string file))
+			 (directory-files 
+			  nnml-current-directory nil "^[0-9]+$"))))
+	  (and articles
+	       (progn
+		 (setcar active (apply 'min articles))
+		 (setcdr active (apply 'max articles)))))
+	(nnmail-save-active nnml-group-alist nnml-active-file)))
+  t)
+
 (defun nnml-request-list (&optional server)
   (if server (nnml-get-new-mail))
   (save-excursion
@@ -204,13 +225,14 @@ all. This may very well take some time.")
 	    (lambda (name)
 	      (string-to-int name)))
 	   (directory-files nnml-current-directory nil "^[0-9]+$" t)))
-	 (max-article (max active-articles))
+	 (max-article (and active-articles (apply 'max active-articles)))
 	 article rest mod-time)
     (while articles
       (setq article (concat nnml-current-directory (int-to-string
 						      (car articles))))
       (if (setq mod-time (nth 5 (file-attributes article)))
 	  (if (and (or (not nnmail-keep-last-article)
+		       (not max-article)
 		       (not (= (car articles) max-article)))
 		   (or force
 		       (> (nnmail-days-between
@@ -227,7 +249,8 @@ all. This may very well take some time.")
 	    (setq rest (cons (car articles) rest))))
       (setq articles (cdr articles)))
     (let ((active (nth 1 (assoc newsgroup nnml-group-alist))))
-      (setcar active (min active-articles))
+      (setcar active (or (and active-articles (apply 'min active-articles))
+			 0))
       (nnmail-save-active nnml-group-alist nnml-active-file))
     (nnml-save-nov)
     rest))
@@ -279,6 +302,7 @@ all. This may very well take some time.")
   (nnml-possibly-change-directory group)
   (save-excursion
     (set-buffer buffer)
+    (nnml-possibly-create-directory group)
     (if (not (condition-case ()
 		 (progn
 		   (write-region (point-min) (point-max)
@@ -332,29 +356,26 @@ all. This may very well take some time.")
 	    (if (not (eobp)) (delete-region (point) (point-max)))
 	    t)))))
 
-(defun nnml-possibly-change-directory (newsgroup)
+(defun nnml-possibly-change-directory (newsgroup &optional force)
   (if newsgroup
       (let ((pathname (nnmail-article-pathname newsgroup nnml-directory)))
-	(and (file-directory-p pathname)
+	(and (or force (file-directory-p pathname))
 	     (setq nnml-current-directory pathname)))
     t))
-	     
-(defun nnml-create-directories ()
-  (let ((methods nnmail-split-methods)
-	dir dirs)
-    (while methods
-      (setq dir (nnmail-article-pathname (car (car methods)) nnml-directory))
-      (while (not (file-directory-p dir))
-	(setq dirs (cons dir dirs))
-	(setq dir (file-name-directory (directory-file-name dir))))
-      (while dirs
-	(if (make-directory (directory-file-name (car dirs)))
-	    (error "Could not create directory %s" (car dirs)))
-	(and gnus-verbose-backends 
-	     (message "Creating mail directory %s" (car dirs)))
-	(setq dirs (cdr dirs)))
-      (setq methods (cdr methods)))))
 
+(defun nnml-possibly-create-directory (group)
+  (let (dir dirs)
+    (setq dir (nnmail-article-pathname group nnml-directory))
+    (while (not (file-directory-p dir))
+      (setq dirs (cons dir dirs))
+      (setq dir (file-name-directory (directory-file-name dir))))
+    (while dirs
+      (if (make-directory (directory-file-name (car dirs)))
+	  (error "Could not create directory %s" (car dirs)))
+      (and gnus-verbose-backends 
+	   (message "Creating mail directory %s" (car dirs)))
+      (setq dirs (cdr dirs)))))
+	     
 (defun nnml-save-mail ()
   "Called narrowed to an article."
   (let ((group-art (nreverse (nnmail-article-group 'nnml-active-number)))
@@ -369,6 +390,7 @@ all. This may very well take some time.")
     (let ((ga group-art)
 	  first)
       (while ga
+	(nnml-possibly-create-directory (car (car ga)))
 	(let ((file (concat (nnmail-article-pathname 
 			     (car (car ga)) nnml-directory)
 			    (int-to-string (cdr (car ga))))))
@@ -394,6 +416,10 @@ all. This may very well take some time.")
 (defun nnml-active-number (group)
   "Compute the next article number in GROUP."
   (let ((active (car (cdr (assoc group nnml-group-alist)))))
+    (or active
+	(progn
+	  (setq active (cons 1 0))
+	  (setq nnml-group-alist (cons (list group active) nnml-group-alist))))
     (setcdr active (1+ (cdr active)))
     (let (file)
       (while (file-exists-p
@@ -406,7 +432,6 @@ all. This may very well take some time.")
 (defun nnml-get-new-mail ()
   "Read new incoming mail."
   (let (incoming)
-    (nnml-create-directories)
     (if (and nnml-get-new-mail nnmail-spool-file
 	     (file-exists-p nnmail-spool-file)
 	     (> (nth 7 (file-attributes nnmail-spool-file)) 0))
@@ -493,7 +518,11 @@ all. This may very well take some time.")
 	(format "\t%s\t%s\t%s\t%s\t%s\t%d\t%s\t%s\t\n"
 		(or subject "(none)")
 		(or from "(nobody)") (or date "")
-		(or id "") (or references "")
+		(or id (concat "nnml-dummy-id-" 
+			       (mapconcat 
+				(lambda (time) (int-to-string time))
+				(current-time) "-")))
+		(or references "")
 		(or chars 0) (or lines "0") (or xref ""))))))
 
 (defun nnml-open-nov (group)
@@ -575,11 +604,13 @@ all. This may very well take some time.")
 						(setq chars (- (point-max) 
 							       (point)))
 						(point)))
-	    (setq nov-line (nnml-make-nov-line chars))
-	    (save-excursion
-	      (set-buffer nov-buffer)
-	      (goto-char (point-max))
-	      (insert (int-to-string (car files)) nov-line))
+ 	    (if (not (= 0 chars)) ; none of them empty files...
+ 		(progn
+		  (setq nov-line (nnml-make-nov-line chars))
+		  (save-excursion
+		    (set-buffer nov-buffer)
+		    (goto-char (point-max))
+		    (insert (int-to-string (car files)) nov-line))))
 	    (widen)
 	    (setq files (cdr files)))
 	  (save-excursion

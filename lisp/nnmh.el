@@ -129,7 +129,7 @@
 
 (defun nnmh-request-group (group &optional server dont-check)
   (and nnmh-get-new-mail (or dont-check (nnmh-get-new-mail)))
-  (let ((pathname (nnmail-article-pathname group nnmh-directory))
+  (let ((pathname (nnmh-article-pathname group nnmh-directory))
 	dir)
     (if (file-directory-p pathname)
 	(progn
@@ -268,6 +268,7 @@
   (nnmh-possibly-change-directory group)
   (save-excursion
     (set-buffer buffer)
+    (nnmh-possibly-create-directory group)
     (condition-case ()
 	(progn
 	  (write-region (point-min) (point-max)
@@ -281,26 +282,24 @@
 
 (defun nnmh-possibly-change-directory (newsgroup)
   (if newsgroup
-      (let ((pathname (nnmail-article-pathname newsgroup nnmh-directory)))
+      (let ((pathname (nnmh-article-pathname newsgroup nnmh-directory)))
 	(if (file-directory-p pathname)
 	    (setq nnmh-current-directory pathname)
 	  (error "No such newsgroup: %s" newsgroup)))))
 
-(defun nnmh-create-directories ()
-  (let ((methods nnmail-split-methods)
-	dir dirs)
-    (while methods
-      (setq dir (nnmail-article-pathname (car (car methods)) nnmh-directory))
-      (while (not (file-directory-p dir))
-	(setq dirs (cons dir dirs))
-	(setq dir (file-name-directory (directory-file-name dir))))
-      (while dirs
-	(if (make-directory (directory-file-name (car dirs)))
-	    (error "Could not create directory %s" (car dirs)))
-	(message "Creating mail directory %s" (car dirs))
-	(setq dirs (cdr dirs)))
-      (setq methods (cdr methods)))))
-
+(defun nnmh-possibly-create-directory (group)
+  (let (dir dirs)
+    (setq dir (nnmail-article-pathname group nnmh-directory))
+    (while (not (file-directory-p dir))
+      (setq dirs (cons dir dirs))
+      (setq dir (file-name-directory (directory-file-name dir))))
+    (while dirs
+      (if (make-directory (directory-file-name (car dirs)))
+	  (error "Could not create directory %s" (car dirs)))
+      (and gnus-verbose-backends 
+	   (message "Creating mail directory %s" (car dirs)))
+      (setq dirs (cdr dirs)))))
+	     
 (defun nnmh-save-mail ()
   "Called narrowed to an article."
   (let ((group-art (nreverse (nnmail-article-group 'nnmh-active-number)))
@@ -315,7 +314,8 @@
     (let ((ga group-art)
 	  first)
       (while ga
-	(let ((file (concat (nnmail-article-pathname 
+	(nnmh-possibly-create-directory (car (car ga)))
+	(let ((file (concat (nnmh-article-pathname 
 			     (car (car ga)) nnmh-directory) 
 			    (int-to-string (cdr (car ga))))))
 	  (if first
@@ -333,11 +333,18 @@
     (setcdr active (1+ (cdr active)))
     (let (file)
       (while (file-exists-p
-	      (setq file (concat (nnmail-article-pathname 
+	      (setq file (concat (nnmh-article-pathname 
 				  group nnmh-directory)
 				 (int-to-string (cdr active)))))
 	(setcdr active (1+ (cdr active)))))
     (cdr active)))
+
+(defun nnmh-article-pathname (group mail-dir)
+  "Make pathname for GROUP."
+  (let ((mail-dir (file-name-as-directory (expand-file-name mail-dir))))
+    (if (file-directory-p (concat mail-dir group))
+	(concat mail-dir group "/")
+      (concat mail-dir (nnmail-replace-chars-in-string group ?. ?/) "/"))))
 
 (defun nnmh-get-new-mail ()
   "Read new incoming mail."
@@ -347,7 +354,6 @@
 	     (> (nth 7 (file-attributes nnmail-spool-file)) 0))
 	(progn
 	  (message "nnmh: Reading incoming mail...")
-	  (nnmh-create-directories)
 	  (setq incoming 
 		(nnmail-move-inbox nnmail-spool-file
 				   (concat nnmh-directory "Incoming")))

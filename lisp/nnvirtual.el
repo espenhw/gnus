@@ -351,7 +351,8 @@ If the stream is opened, return T, otherwise return NIL."
 		      (nconc (mapcar 
 			      (lambda (art) 
 				(if (numberp art)
-				    (+ (- art active) offset)
+				    (if (< art active)
+					0 (+ (- art active) offset))
 				  (cons (+ (- (car art) active) offset)
 					(cdr art))))
 			      (cdr (assq (car m) marked)))

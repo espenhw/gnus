@@ -151,7 +151,8 @@ messages will be shown to indicate the current status.")
 	    (goto-char (point-min))
 	    (narrow-to-region (point-min)
 			      (progn (search-forward "\n\n") (point)))
-	    (set-text-properties (point-min) (point-max) nil)
+	    (let ((buffer-read-only nil))
+	      (set-text-properties (point-min) (point-max) nil))
 	    (setq from (header-from header))
 	    (setq date (header-date header))
 	    (and from
@@ -172,11 +173,19 @@ messages will be shown to indicate the current status.")
 	    (widen))
 	  (setq news-reply-yank-from from)
 	  (setq news-reply-yank-message-id message-id)
-	  (mail-setup (or follow-to method-address 
-			  (concat (or sender reply-to from "")
-				  (if to (concat ", " to) "")
-				  (if cc (concat ", " cc) "")))
+	  (mail-setup (if (and follow-to (listp follow-to)) ""
+			(or method-address 
+			    (concat (or sender reply-to from "")
+				    (if to (concat ", " to) "")
+				    (if cc (concat ", " cc) ""))))
 		      subject message-of nil article-buffer nil)
+	  (if (and follow-to (listp follow-to))
+	      (progn
+		(goto-char (point-min))
+		(while follow-to
+		  (insert 
+		   (car (car follow-to)) ": " (cdr (car follow-to)) "\n")
+		  (setq follow-to (cdr follow-to)))))
 	  ;; Fold long references line to follow RFC1036.
 	  (mail-position-on-field "References")
 	  (let ((begin (- (point) (length "References: ")))
@@ -327,7 +336,8 @@ nn*-request-list should have been called before calling this function."
 						   (match-end 2)))))
 		    group-assoc))))
     ;; In addition, add all groups mentioned in `nnmail-split-methods'.
-    (let ((methods nnmail-split-methods))
+    (let ((methods (and (not (symbolp nnmail-split-methods))
+			nnmail-split-methods)))
       (while methods
 	(if (not (assoc (car (car methods)) group-assoc))
 	    (setq group-assoc
@@ -404,29 +414,36 @@ FUNC will be called with the group name to determine the article number."
       (goto-char (point-min))
       (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
 	(replace-match " " t t))
-      ;; Go throught the split methods to find a match.
-      (while (and methods (or nnmail-crosspost (not group-art)))
-	(goto-char (point-max))
-	(if (or (cdr methods)
-		(not (equal "" (nth 1 (car methods)))))
-	    (if (and (condition-case () 
-			 (if (stringp (nth 1 (car methods)))
-			     (re-search-backward
-			      (car (cdr (car methods))) nil t)
-			   ;; Suggested by Brian Edmonds <edmonds@cs.ubc.ca>.
-			   (funcall (nth 1 (car methods)) (car (car methods))))
-		       (error nil))
-		     ;; Don't enter the article into the same group twice.
-		     (not (assoc (car (car methods)) group-art)))
-		(setq group-art
-		      (cons (cons (car (car methods))
-				  (funcall func (car (car methods)))) 
-			    group-art)))
-	  (or group-art
-	      (setq group-art 
-		    (list (cons (car (car methods)) 
-				(funcall func (car (car methods))))))))
-	(setq methods (cdr methods)))
+      (if (and (symbolp nnmail-split-methods)
+	       (fboundp nnmail-split-methods))
+	  (setq group-art
+		(mapcar
+		 (lambda (group) (cons group (funcall func group)))
+		 (funcall nnmail-split-methods)))
+	;; Go throught the split methods to find a match.
+	(while (and methods (or nnmail-crosspost (not group-art)))
+	  (goto-char (point-max))
+	  (if (or (cdr methods)
+		  (not (equal "" (nth 1 (car methods)))))
+	      (if (and (condition-case () 
+			   (if (stringp (nth 1 (car methods)))
+			       (re-search-backward
+				(car (cdr (car methods))) nil t)
+			     ;; Suggested by Brian Edmonds <edmonds@cs.ubc.ca>.
+			     (funcall (nth 1 (car methods)) 
+				      (car (car methods))))
+			 (error nil))
+		       ;; Don't enter the article into the same group twice.
+		       (not (assoc (car (car methods)) group-art)))
+		  (setq group-art
+			(cons (cons (car (car methods))
+				    (funcall func (car (car methods)))) 
+			      group-art)))
+	    (or group-art
+		(setq group-art 
+		      (list (cons (car (car methods)) 
+				  (funcall func (car (car methods))))))))
+	  (setq methods (cdr methods))))
       (kill-buffer (current-buffer))
       group-art)))
 
