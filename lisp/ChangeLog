@@ -1,3 +1,9 @@
+2002-05-28  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-msg.el (gnus-inews-yank-articles): Unfold headers of
+	original article before yanking.  From Jesper Harder
+	<harder@ifa.au.dk>.
+
 2002-05-26  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-sum.el (gnus-summary-menu-split): New function.
