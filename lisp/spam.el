@@ -781,7 +781,7 @@ spam-use-* variable.")
     nil))
 
 (defun spam-fetch-field-message-id-fast (article)
-  "Fetch the `subject' field quickly, using the internal
+  "Fetch the `Message-ID' field quickly, using the internal
   gnus-data-list function"
   (if (and (numberp article)
 	   (assoc article (gnus-data-list nil)))
