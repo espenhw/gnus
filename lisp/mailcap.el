@@ -314,19 +314,17 @@ If FORCE, re-parse even if already parsed."
      (path nil)
      ((getenv "MAILCAPS") (setq path (getenv "MAILCAPS")))
      ((memq system-type '(ms-dos ms-windows windows-nt))
-      (setq path (mapconcat 'expand-file-name
-			    '("~/mail.cap" "~/etc/mail.cap" "~/.mailcap")
-			    ";")))
-     (t (setq path (mapconcat 'expand-file-name
-			      '("~/.mailcap"
-				"/etc/mailcap:/usr/etc/mailcap"
-				"/usr/local/etc/mailcap") ":"))))
+      (setq path '("~/.mailcap" "~/mail.cap" "~/etc/mail.cap")))
+     (t (setq path '("~/.mailcap" "/usr/etc/mailcap" "/etc/mailcap" 
+		     "/usr/local/etc/mailcap"))))
     (let ((fnames (reverse
-		   (split-string
-		    path (if (memq system-type
-				   '(ms-dos ms-windows windows-nt))
-			     ";"
-			   ":"))))
+		   (if (stringp path)
+		       (split-string
+			path (if (memq system-type
+				       '(ms-dos ms-windows windows-nt))
+				 ";"
+			       ":"))
+		     path)))
 	  fname)
       (while fnames
 	(setq fname (car fnames))
@@ -334,7 +332,7 @@ If FORCE, re-parse even if already parsed."
 		 (file-regular-p fname))
 	    (mailcap-parse-mailcap (car fnames)))
 	(setq fnames (cdr fnames))))
-    (setq mailcap-parsed-p t)))
+      (setq mailcap-parsed-p t)))
 
 (defun mailcap-parse-mailcap (fname)
   ;; Parse out the mailcap file specified by FNAME
@@ -348,25 +346,24 @@ If FORCE, re-parse even if already parsed."
       (insert-file-contents fname)
       (set-syntax-table mailcap-parse-args-syntax-table)
       (mailcap-replace-regexp "#.*" "")	; Remove all comments
+      (mailcap-replace-regexp "\\\\[ \t]*\n" " ") ; And collapse spaces
       (mailcap-replace-regexp "\n+" "\n") ; And blank lines
-      (mailcap-replace-regexp "\\\\[ \t\n]+" " ") ; And collapse spaces
-      (mailcap-replace-regexp (concat (regexp-quote "\\") "[ \t]*\n") "")
       (goto-char (point-max))
       (skip-chars-backward " \t\n")
       (delete-region (point) (point-max))
-      (goto-char (point-min))
-      (while (not (eobp))
-	(skip-chars-forward " \t\n")
+      (while (not (bobp))
+	(skip-chars-backward " \t\n")
+	(beginning-of-line)
 	(setq save-pos (point)
 	      info nil)
 	(skip-chars-forward "^/; \t\n")
 	(downcase-region save-pos (point))
 	(setq major (buffer-substring save-pos (point)))
-	(skip-chars-forward " \t\n")
+	(skip-chars-forward " \t")
 	(setq minor "")
 	(when (eq (char-after) ?/)
 	  (forward-char)
-	  (skip-chars-forward " \t\n")
+	  (skip-chars-forward " \t")
 	  (setq save-pos (point))
 	  (skip-chars-forward "^; \t\n")
 	  (downcase-region save-pos (point))
@@ -375,14 +372,14 @@ If FORCE, re-parse even if already parsed."
 		 ((eq ?* (or (char-after save-pos) 0)) ".*")
 		 ((= (point) save-pos) ".*")
 		 (t (regexp-quote (buffer-substring save-pos (point)))))))
-	(skip-chars-forward " \t\n")
+	(skip-chars-forward " \t")
 	;;; Got the major/minor chunks, now for the viewers/etc
 	;;; The first item _must_ be a viewer, according to the
 	;;; RFC for mailcap files (#1343)
 	(setq viewer "")
 	(when (eq (char-after) ?\;) 
 	  (forward-char)
-	  (skip-chars-forward " \t\n")
+	  (skip-chars-forward " \t")
 	  (setq save-pos (point))
 	  (skip-chars-forward "^;\n")
 	  ;; skip \;
@@ -408,7 +405,8 @@ If FORCE, re-parse even if already parsed."
 							  "*" minor))))
 			    (mailcap-parse-mailcap-extras save-pos (point))))
 	  (mailcap-mailcap-entry-passes-test info)
-	  (mailcap-add-mailcap-entry major minor info))))))
+	  (mailcap-add-mailcap-entry major minor info))
+	(beginning-of-line)))))
 
 (defun mailcap-parse-mailcap-extras (st nd)
   ;; Grab all the extra stuff from a mailcap entry
@@ -497,7 +495,7 @@ If FORCE, re-parse even if already parsed."
        ((and minor (string-match (car (car major)) minor))
 	(setq wildcard (cons (cdr (car major)) wildcard))))
       (setq major (cdr major)))
-    (nconc (nreverse exact) (nreverse wildcard))))
+    (nconc exact wildcard)))
 
 (defun mailcap-unescape-mime-test (test type-info)
   (let (save-pos save-chr subst)
@@ -590,16 +588,19 @@ If FORCE, re-parse even if already parsed."
 	(setq mailcap-mime-data
 	      (cons (cons major (list (cons minor info)))
 		    mailcap-mime-data))
-      (let ((cur-minor (assoc minor old-major)))
-	(cond
-	 ((or (null cur-minor)		; New minor area, or
-	      (assq 'test info))	; Has a test, insert at beginning
-	  (setcdr old-major (cons (cons minor info) (cdr old-major))))
-	 ((and (not (assq 'test info))	; No test info, replace completely
-	       (not (assq 'test cur-minor)))
-	  (setcdr cur-minor info))
-	 (t
-	  (setcdr old-major (cons (cons minor info) (cdr old-major)))))))))
+       (let ((cur-minor (assoc minor old-major)))
+ 	(cond
+ 	 ((or (null cur-minor)		; New minor area, or
+ 	      (assq 'test info))	; Has a test, insert at beginning
+ 	  (setcdr old-major (cons (cons minor info) (cdr old-major))))
+ 	 ((and (not (assq 'test info))	; No test info, replace completely
+ 	       (not (assq 'test cur-minor))
+	       (equal (assq 'viewer info)  ; Keep alternative viewer
+		      (assq 'viewer cur-minor)))
+ 	  (setcdr cur-minor info))
+ 	 (t
+ 	  (setcdr old-major (cons (cons minor info) (cdr old-major))))))
+      )))
 
 (defun mailcap-add (type viewer &optional test)
   "Add VIEWER as a handler for TYPE.
@@ -670,9 +671,8 @@ this type is returned."
 	    (if (mailcap-viewer-passes-test (car viewers) info)
 		(setq passed (cons (car viewers) passed)))
 	    (setq viewers (cdr viewers)))
-	  (setq passed (sort (nreverse passed) 'mailcap-viewer-lessp))
+	  (setq passed (sort passed 'mailcap-viewer-lessp))
 	  (setq viewer (car passed))))
-      (setq passed (nreverse passed))
       (when (and (stringp (cdr (assq 'viewer viewer)))
 		 passed)
 	(setq viewer (car passed)))

@@ -1,3 +1,11 @@
+2000-04-24 15:42:53  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mailcap.el (mailcap-parse-mailcaps): Reorder.
+	(mailcap-parse-mailcap): Backwards parsing.
+	(mailcap-possible-viewers): Remove nreverse.
+	(mailcap-mime-info): Ditto.
+	(mailcap-add-mailcap-entry): Keep alternative viewer.
+
 Mon Apr 24 21:12:06 2000  Lars Magne Ingebrigtsen  <lmi@quimbies.gnus.org>
 
 	* gnus.el: Gnus v5.8.5 is released.
