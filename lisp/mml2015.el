@@ -23,16 +23,6 @@
 
 ;;; Commentary:
 
-;; Installation: put the following statements in ~/.gnus:
-;;    (require 'mml2015)
-;;    (require 'gnus-art)
-;;    (mml2015-setup)
-;; You may have to make sure that the directory where this file lives
-;; is mentioned in `load-path'.
-;; 
-;; Insert an attribute, postprocess=pgp-sign (or pgp-encrypt), into
-;; the mml tag to be signed (or encrypted).
-
 ;;; Code:
 
 (eval-when-compile (require 'cl))
@@ -162,10 +152,6 @@
 ;;;###autoload
 (defun mml2015-sign (cont)
   (funcall mml2015-sign-function cont))
-
-;;;###autoload
-(defun mml2015-setup ()
-  )
 
 (provide 'mml2015)
 

@@ -1,3 +1,7 @@
+2000-10-31 00:04:35  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml2015.el: Fix doc. Remove bogus mml2015-setup.
+
 2000-10-30 23:37:07  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* qp.el (quoted-printable-encode-region): Replace leading - when
