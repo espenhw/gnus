@@ -3,7 +3,6 @@
 rem Modified once more by Frank Schmitt (ich@Frank-Schmitt.net)
 rem Modified by ShengHuo Zhu (zsh@cs.rochester.edu)
 rem Originally from make.bat by David Charlap (shamino@writeme.com)
-rem
 
 rem Clear PWD so emacs doesn't get confused
 set GNUS_PWD_SAVE=%PWD%
@@ -16,6 +15,7 @@ set emacs=xemacs.exe
 cd lisp
 call %1\%emacs% -batch -q -no-site-file -l ./dgnushack.el -f dgnushack-compile
 if not "%2" == "copy" goto info
+if not "%2" == "/copy" goto info
 attrib -r %1\..\..\xemacs-packages\lisp\gnus\*.*
 copy *.el* %1\..\..\xemacs-packages\lisp\gnus
 
@@ -26,6 +26,7 @@ cd ..\texi
 %EMACSINFO% emacs-mime.texi
 %EMACSINFO% gnus.texi
 if not "%2" == "copy" goto done
+if not "%2" == "/copy" goto done
 copy gnus %1\..\..\xemacs-packages\info
 copy gnus-?? %1\..\..\xemacs-packages\info
 copy message %1\..\..\xemacs-packages\info
@@ -40,12 +41,12 @@ cd ..
 goto end
 
 :usage
-echo Usage: make :xemacs-dir: [copy]
+echo Usage: make-x.bat :xemacs-dir: [/copy]
 echo.
 echo where: :xemacs-dir: is the directory you installed xemacs in 
 echo                     (the directory where xemacs.exe is situated)
 echo                    eg. C:\Programme\XEmacs\XEmacs-21.4.3\i586-pc-win32
-echo        copy indicates that the compiled files should be copied to your
+echo        /copy indicates that the compiled files should be copied to your
 echo             emacs lisp, info, and etc directories
 echo.
 echo Note: If you have Emacs/w3 you should set the environment variable 

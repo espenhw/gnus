@@ -1,3 +1,9 @@
+2001-11-26  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* make-x.bat: Use parameter "/copy" rather than "copy" for increased
+	dwimishness for old-time DOS users.  From Frank Schmitt
+	<ich@Frank-Schmitt.net>.
+
 2001-11-15  Simon Josefsson  <jas@extundo.com>
 
 	* etc/gnus/unimportant.xpm, etc/gnus/important.xpm: New files.
