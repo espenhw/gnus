@@ -296,6 +296,9 @@
     (save-excursion
       (set-buffer nnslashdot-buffer)
       (goto-char (point-min))
+      (when (and (stringp article)
+		 (string-match "%\\([0-9]+\\)@" article))
+	(setq article (string-to-number (match-string 1 article))))
       (when (numberp article)
 	(if (= article 1)
 	    (progn
@@ -323,7 +326,7 @@
 	(let ((header (cdr (assq article nnslashdot-headers))))
 	  (nnheader-insert-header header))
 	(nnheader-report 'nnslashdot "Fetched article %s" article)
-	t))))
+	(cons group article)))))
 
 (deffoo nnslashdot-close-server (&optional server)
   (when (and (nnslashdot-server-opened server)
@@ -361,7 +364,8 @@
 
 (deffoo nnslashdot-request-newgroups (date &optional server)
   (nnslashdot-possibly-change-server nil server)
-  (nnslashdot-generate-active))
+  (nnslashdot-generate-active)
+  t)
 
 (deffoo nnslashdot-asynchronous-p ()
   nil)

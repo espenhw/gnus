@@ -2604,11 +2604,12 @@ just the host name."
 	     res)
 	(setq levels (- glen levels))
 	(dolist (g glist)
-	  (if (> (length g) 0)
-	      (push (if (>= (decf levels) 0)
-			(substring g 0 1)
-		      g)
-		    res)))
+	  (push (if (>= (decf levels) 0)
+		    (if (zerop (length g))
+			""
+		      (substring g 0 1))
+		  g)
+		res))
 	(concat foreign (mapconcat 'identity (nreverse res) "."))))))
 
 (defun gnus-narrow-to-body ()
