@@ -1,3 +1,7 @@
+2003-05-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* dgnushack.el (assq-delete-all): New compiler macro for Emacs 20.
+
 2003-05-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Fbind find-coding-system.
