@@ -1,3 +1,10 @@
+2003-05-12  Dave Love  <fx@gnu.org>
+
+	* rfc2047.el (rfc2047-point-at-bol, rfc2047-point-at-bol): Eval
+	and compile.
+	(rfc2047-syntax-table): Fix building table to work in Emacs 22.
+	(rfc2047-unfold-region): Delete unused var `leading'.
+
 2003-05-12  Simon Josefsson  <jas@extundo.com>
 
 	* pgg.el (pgg-temp-buffer-show-function): Reuse existing visible
