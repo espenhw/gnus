@@ -1,3 +1,7 @@
+2001-01-09  Michael Downes <mjd@ams.org>
+
+	* gnus-sum.el (gnus-summary-read-group-1): More useful message.
+
 2001-01-08 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnmail.el (nnmail-get-new-mail): Find group only if file is not
