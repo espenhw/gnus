@@ -1,3 +1,8 @@
+2000-10-03 08:08:29  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mail-source.el (mail-source-fetch-maildir): Don't insert
+	newlines.
+
 2000-10-02 20:14:27  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* dgnushack.el (dgnushack-compile): Don't compile dgnushack.el,

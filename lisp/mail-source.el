@@ -771,10 +771,10 @@ This only works when `display-time' is enabled."
 ;;; 					    (current-time-string) "\n"))
 ;;; 				  (while (re-search-forward "^From " nil t)
 ;;; 				    (replace-match ">From "))
+;;;                               (goto-char (point-max))
+;;;				  (insert "\n\n")
 				  ;; MMDF mail format
-				  (insert "\001\001\001\001\n")
-				  (goto-char (point-max))
-				  (insert "\n\n"))
+				  (insert "\001\001\001\001\n"))
 				(delete-file file)))))
 	      (incf found (mail-source-callback callback file))))))
       found)))
