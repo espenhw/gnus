@@ -1,3 +1,10 @@
+2001-12-14 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* uudecode.el (uudecode-decode-region-internal): Speedup by using
+	temporary list instead of buffer.
+
+	* mm-url.el (executable-find): autoload.
+
 2001-12-12  Pavel Jan,Bm(Bk  <Pavel@Janik.cz>
 
 	* gnus-mlspl.el (gnus-group-split-fancy): Doc fix (add reference

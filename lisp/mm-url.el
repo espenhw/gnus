@@ -29,12 +29,12 @@
 
 ;;; Code:
 
-(require 'mm-util)
-(require 'executable)
-
 (eval-when-compile (require 'cl))
 
+(require 'mm-util)
+
 (eval-and-compile
+  (autoload 'executable-find "executable")
   (autoload 'url-insert-file-contents "url-handlers"))
 
 (defgroup mm-url nil
