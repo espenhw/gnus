@@ -204,8 +204,7 @@ Which articles to display on entering the group.
 An arbitrary comment on the group.")
 
     (visible (const :tag "Permanently visible" t) "\
-Always display this group, even when there are no unread articles
-in it..")
+Always display this group, even when there are no unread articles in it.")
 
     (highlight-words
      (choice :tag "Highlight words"

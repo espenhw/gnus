@@ -1,3 +1,7 @@
+2003-08-04  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-cus.el (gnus-group-parameters): Typo.
+
 2003-07-31  Simon Josefsson  <jas@extundo.com>
 
 	* mml-sec.el (mml-signencrypt-style-alist): Use separate S/MIME
