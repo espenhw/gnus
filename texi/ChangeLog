@@ -1,3 +1,9 @@
+2003-01-09  Alex Schroeder  <alex@emacswiki.org>
+
+	* gnus.texi (Splitting mail using spam-stat): Fix typo.
+	(Creating a spam-stat dictionary, Splitting mail using spam-stat):
+	Fix markup in a few places.
+
 2003-01-08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Positioning Point): %~ => ~*.
