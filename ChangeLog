@@ -1,3 +1,7 @@
+2000-08-24 Jesper Harder <jesper_harder@hotmail.com>
+
+	* make.bat: Use emacs.exe if emacs.bat does not exist.
+
 2000-05-07  Pavel Janik  <Pavel.Janik@inet.cz>
 
 	* gnus.texi: direntry added.

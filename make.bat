@@ -28,17 +28,22 @@ set PWD=
 
 if "%1" == "" goto usage
 
+rem Emacs 20.7 no longer includes emacs.bat. Use emacs.exe if the batch file is
+rem not present -- this also fixes the problem about too many parameters on Win9x.
+set emacs=emacs.exe
+if exist %1\bin\emacs.bat set emacs=emacs.bat
+
 cd lisp
-call %1\bin\emacs.bat -batch -q -no-site-file -l ./dgnushack.el -f dgnushack-compile
+call %1\bin\%emacs% -batch -q -no-site-file -l ./dgnushack.el -f dgnushack-compile
 if not "%2" == "copy" goto info
 attrib -r %1\lisp\gnus\*
 copy *.el* %1\lisp\gnus
 
 :info
 cd ..\texi
-call %1\bin\emacs.bat -batch -q -no-site-file message.texi -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
-call %1\bin\emacs.bat -batch -q -no-site-file emacs-mime.texi -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
-call %1\bin\emacs.bat -batch -q -no-site-file gnus.texi -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
+call %1\bin\%emacs% -batch -q -no-site-file message.texi -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
+call %1\bin\%emacs% -batch -q -no-site-file emacs-mime.texi -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
+call %1\bin\%emacs% -batch -q -no-site-file gnus.texi -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
 if not "%2" == "copy" goto done
 copy gnus %1\info
 copy gnus-?? %1\info
