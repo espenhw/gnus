@@ -719,11 +719,20 @@ and `altavista'.")
 (defun nnweb-decode-entities ()
   "Decode all HTML entities."
   (goto-char (point-min))
-  (while (re-search-forward "&\\([a-z]+\\);" nil t)
-    (replace-match (char-to-string (or (cdr (assq (intern (match-string 1))
-						  w3-html-entities))
-				       ?#))
+  (while (re-search-forward "&\\(#[0-9]+\\|[a-z]+\\);" nil t)
+    (replace-match (char-to-string 
+		    (if (eq (aref (match-string 1) 0) ?\#)
+			(string-to-number (substring (match-string 1) 1))
+		      (or (cdr (assq (intern (match-string 1))
+				     w3-html-entities))
+			  ?#)))
 		   t t)))
+
+(defun nnweb-decode-entities-string (str)
+  (with-temp-buffer
+    (insert str)
+    (nnweb-decode-entities)
+    (buffer-substring (point-min) (point-max))))
 
 (defun nnweb-remove-markup ()
   "Remove all HTML markup, leaving just plain text."

@@ -1,3 +1,20 @@
+1999-12-13 10:39:53  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnweb.el (nnweb-decode-entities): Decode numerical entities.
+	(nnweb-decode-entities-string): New function.
+	
+	* nnwarchive.el (nnwarchive-decode-entities-string): Rename to
+	nnweb-* and move to nnweb.el.
+	* nnwarchive.el: Use nnweb-decode-entities, etc.
+	* webmail.el: Ditto.
+	
+	* nnslashdot.el: Use nnweb-decode-entities-string.
+	(nnslashdot-decode-entities): Remove.
+		
+1999-12-13 10:40:56  Eric Marsden <emarsden@mail.dotcom.fr>
+
+	* nnslashdot.el: Decode entities.
+
 1999-12-12  Dave Love  <fx@gnu.org>
 
 	* gnus-agent.el (gnus-category-edit-groups)

@@ -375,42 +375,6 @@
      (t
       (nnweb-insert (apply 'format (nnwarchive-eval xurl)))))))
 
-(defun nnwarchive-decode-entities ()
-  (goto-char (point-min))
-  (while (re-search-forward "&\\(#[0-9]+\\|[a-z]+\\);" nil t)
-    (replace-match (char-to-string 
-		    (if (eq (aref (match-string 1) 0) ?\#)
-			(string-to-number (substring (match-string 1) 1))
-		      (or (cdr (assq (intern (match-string 1))
-				     w3-html-entities))
-			  ?#)))
-		   t t)))
-
-(defun nnwarchive-decode-entities-string (str)
-  (with-temp-buffer
-    (insert str)
-    (nnwarchive-decode-entities)
-    (buffer-substring (point-min) (point-max))))
-
-(defun nnwarchive-remove-markup ()
-  (goto-char (point-min))
-  (while (search-forward "<!--" nil t)
-    (delete-region (match-beginning 0)
-		   (or (search-forward "-->" nil t)
-		       (point-max))))
-  (goto-char (point-min))
-  (while (re-search-forward "<[^>]+>" nil t)
-    (replace-match "" t t)))
-
-(defun nnwarchive-date-to-date (sdate)
-  (let ((elem (split-string sdate)))
-    (concat (substring (nth 0 elem) 0 3) " "
-	    (substring (nth 1 elem) 0 3) " "
-	    (substring (nth 2 elem) 0 2) " "
-	    (substring (nth 3 elem) 1 6) " "
-	    (format-time-string "%Y") " "
-	    (nth 4 elem))))
-
 (defun nnwarchive-generate-active ()
   (save-excursion
     (set-buffer nntp-server-buffer)
@@ -489,8 +453,8 @@
 	       article
 	       (make-full-mail-header
 		article 
-		(nnwarchive-decode-entities-string subject)
-		(nnwarchive-decode-entities-string from)
+		(nnweb-decode-entities-string subject)
+		(nnweb-decode-entities-string from)
 		date
 		(concat "<" group "%"
 			(number-to-string article) 
@@ -509,7 +473,7 @@
   (goto-char (point-min))
   (while (re-search-forward "<a[^>]+>\\([^<]+\\)</a>" nil t)
     (replace-match "<\\1>"))
-  (nnwarchive-decode-entities)
+  (nnweb-decode-entities)
   (buffer-string))
 
 (defun nnwarchive-egroups-xover-files (group articles)
@@ -578,8 +542,8 @@
 	       article
 	       (make-full-mail-header
 		article 
-		(nnwarchive-decode-entities-string subject)
-		(nnwarchive-decode-entities-string from)
+		(nnweb-decode-entities-string subject)
+		(nnweb-decode-entities-string from)
 		date
 		(format "<%05d%%%s>\n" (1- article) group)
 		""
@@ -642,7 +606,7 @@
       (when (search-forward "X-Head-End" nil t)
 	(beginning-of-line)
 	(narrow-to-region (point-min) (point))
-	(nnwarchive-decode-entities)
+	(nnweb-decode-entities)
 	(goto-char (point-min))
 	(while (search-forward "<!--X-" nil t)
 	  (replace-match ""))
@@ -664,8 +628,8 @@
 	(search-forward "</ul>" nil t)
 	(end-of-line)
 	(narrow-to-region (point-min) (point))
-	(nnwarchive-remove-markup)
-	(nnwarchive-decode-entities)
+	(nnweb-remove-markup)
+	(nnweb-decode-entities)
 	(goto-char (point-min))
 	(delete-blank-lines)
 	(when from
@@ -706,8 +670,8 @@
 		(delete-region (match-beginning 0) (match-end 0))
 		(save-restriction
 		  (narrow-to-region p (point))
-		  (nnwarchive-remove-markup)
-		  (nnwarchive-decode-entities)
+		  (nnweb-remove-markup)
+		  (nnweb-decode-entities)
 		  (goto-char (point-max)))))
 	     ((looking-at "<P><A HREF=\"\\([^\"]+\\)")
 	      (setq url (match-string 1))
