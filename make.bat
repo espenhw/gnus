@@ -28,28 +28,41 @@ set PWD=
 
 if "%1" == "" goto usage
 
+rem Directory where the info files are installed
+set GNUS_INFO_DIR=%1\info
+
 rem Emacs 20.7 no longer includes emacs.bat. Use emacs.exe if the batch file is
 rem not present -- this also fixes the problem about too many parameters on Win9x.
 set emacs=emacs.exe
 if exist %1\bin\emacs.bat set emacs=emacs.bat
+set EMACSBATCH=call %1\bin\%emacs% -no-site-file -batch -q
 
 cd lisp
-call %1\bin\%emacs% -batch -q -no-site-file -l ./dgnushack.el -f dgnushack-compile
+%EMACSBATCH% -l ./dgnushack.el -f dgnushack-compile
 if not "%2" == "/copy" goto info
 attrib -r %1\lisp\gnus\*
 copy *.el* %1\lisp\gnus
 
 :info
-set EMACSINFO=call %1\bin\%emacs% -no-site-file -no-init-file -batch -q -l infohack.el -f batch-makeinfo
+set EMACSINFO=%EMACSBATCH% -l infohack.el -f batch-makeinfo
 cd ..\texi
 %EMACSINFO% message.texi
 %EMACSINFO% emacs-mime.texi
 %EMACSINFO% gnus.texi
 if not "%2" == "/copy" goto done
-copy gnus %1\info
-copy gnus-?? %1\info
-copy message %1\info
-copy emacs-mime %1\info
+copy gnus       %GNUS_INFO_DIR%
+copy gnus-?     %GNUS_INFO_DIR%
+copy gnus-??    %GNUS_INFO_DIR%
+copy message    %GNUS_INFO_DIR%
+copy message-?  %GNUS_INFO_DIR%
+copy emacs-mime %GNUS_INFO_DIR%
+copy sieve      %GNUS_INFO_DIR%
+copy pgg        %GNUS_INFO_DIR%
+echo Maybe you should add the following line to %GNUS_INFO_DIR%\dir:
+echo.
+echo * PGG: (pgg).		Emacs interface to various PGP implementations.
+echo * Sieve: (sieve).	Managing Sieve scripts in Emacs.
+echo.
 
 :etc
 cd ..\etc
@@ -74,4 +87,6 @@ echo                 set W3DIR=d:\lisp\w3-4.0pre46\lisp
 rem Restore PWD so whoever called this batch file doesn't get confused
 set PWD=%GNUS_PWD_SAVE%
 set GNUS_PWD_SAVE=
+set EMACSBATCH=
+set GNUS_INFO_DIR=
 :end

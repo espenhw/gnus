@@ -10,28 +10,42 @@ set PWD=
 
 if "%1" == "" goto usage
 
+rem Directory where the info files are installed
+set GNUS_INFO_DIR=%1\..\..\xemacs-packages\info
+
 set emacs=xemacs.exe
 if "%2" == "" set copy="false"
 if "%2" == "copy" set copy=true
 if "%2" == "/copy" set copy=true
 
+set EMACSBATCH=call %1\%emacs% -batch -q -no-site-file
+
 cd lisp
-call %1\%emacs% -batch -q -no-site-file -l ./dgnushack.el -f dgnushack-compile
+%EMACSBATCH% -l ./dgnushack.el -f dgnushack-compile
 if not %copy%==true goto info
 attrib -r %1\..\..\xemacs-packages\lisp\gnus\*.*
 copy *.el? %1\..\..\xemacs-packages\lisp\gnus
 
 :info
-set EMACSINFO=call %1\%emacs% -no-site-file -no-init-file -batch -q -l infohack.el -f batch-makeinfo
+set EMACSINFO=%EMACSBATCH% -l infohack.el -f batch-makeinfo
 cd ..\texi
 %EMACSINFO% message.texi
 %EMACSINFO% emacs-mime.texi
 %EMACSINFO% gnus.texi
 if not %copy%==true goto done
-copy gnus %1\..\..\xemacs-packages\info
-copy gnus-?? %1\..\..\xemacs-packages\info
-copy message %1\..\..\xemacs-packages\info
-copy emacs-mime %1\..\..\xemacs-packages\info
+copy gnus       %GNUS_INFO_DIR%
+copy gnus-?     %GNUS_INFO_DIR%
+copy gnus-??    %GNUS_INFO_DIR%
+copy message    %GNUS_INFO_DIR%
+copy message-?  %GNUS_INFO_DIR%
+copy emacs-mime %GNUS_INFO_DIR%
+copy sieve      %GNUS_INFO_DIR%
+copy pgg        %GNUS_INFO_DIR%
+echo Maybe you should add the following line to %GNUS_INFO_DIR%\dir:
+echo.
+echo * PGG: (pgg).		Emacs interface to various PGP implementations.
+echo * Sieve: (sieve).	Managing Sieve scripts in Emacs.
+echo.
 
 :etc
 cd ..\etc
@@ -57,4 +71,6 @@ echo                 set W3DIR=C:\Progra~1\XEmacs\xemacs-packages\lisp\w3
 rem Restore PWD so whoever called this batch file doesn't get confused
 set PWD=%GNUS_PWD_SAVE%
 set GNUS_PWD_SAVE=
+set EMACSBATCH=
+set GNUS_INFO_DIR=
 :end

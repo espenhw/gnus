@@ -1,3 +1,11 @@
+2003-01-10  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* make.bat: Removed "-no-init-file" (it's the same as "-q").  Use
+	new variables EMACSBATCH and GNUS_INFO_DIR.  Install gnus-?,
+	message-?, sieve and pgg (in texi).  Added hint for dir entries.
+
+	* make-x.bat: Ditto.
+
 2003-01-13  Simon Josefsson  <jas@extundo.com>
 
 	* GNUS-NEWS: Add smileys, Sender:, message-utils.
