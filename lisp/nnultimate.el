@@ -77,7 +77,7 @@
 	   (sid (nth 2 entry))
 	   (topics (nth 4 entry))
 	   (mapping (nth 5 entry))
-	   (old-total (or (nth 6 entry) 0))
+	   (old-total (or (nth 6 entry) 1))
 	   (furl "forumdisplay.cgi?action=topics&number=%d&DaysPrune=1000")
 	   headers article subject score from date lines parent point
 	   contents tinfo fetchers map elem a href garticles topic old-max
@@ -95,10 +95,10 @@
 	;; and the third with 1.  Then this will translate into 7 Gnus
 	;; article numbers, where 1-4 comes from the first topic, 5-6
 	;; from the second and 7 from the third.  Now, then next time
-	;; the group is entered, there's 2 new articles in topic one and
-	;; 1 in topic three.  Then Gnus article number 8-9 be 5-6 in
-	;; topic one and 10 will be the 2 in topic three.
-	(dolist (row (cdr contents))
+	;; the group is entered, there's 2 new articles in topic one
+	;; and 1 in topic three.  Then Gnus article number 8-9 be 5-6
+	;; in topic one and 10 will be the 2 in topic three.
+	(dolist (row (reverse (cdr contents)))
 	  (setq row (nth 2 row))
 	  (when (setq a (nnweb-parse-find 'a row))
 	    (setq subject (car (last (nnweb-text a)))
@@ -125,7 +125,7 @@
 	      (setq mapping (nconc mapping
 				   (list
 				    (list
-				     (incf old-total inc)
+				     old-total (1- (incf old-total inc))
 				     topic (1+ old-max)))))
 	      (incf old-max inc)
 	      (setcar (nthcdr 5 entry) mapping)
@@ -136,19 +136,22 @@
 	  (while (and map
 		      (> article (caar map)))
 	    (pop map))
-	  (setq farticle -1)
-	  (while (and article
-		      map
-		      (<= article (caar map)))
-	    (if (setq elem (assq (cadar map) fetchers))
-		(nconc elem (list (cons article
-					(+ (caddar map)
-					   (incf farticle)))))
-	      (push (list (cadar map) (cons article
-					    (+ (caddar map)
-					       (incf farticle))))
-		    fetchers))
-	    (setq article (car (setq articles (cdr articles))))))
+	  (when (setq mmap (car map))
+	    (setq farticle -1)
+	    (while (and article
+			(<= article (nth 1 mmap)))
+	      ;; Do we already have a fetcher for this topic?
+	      (if (setq elem (assq (nth 2 mmap) fetchers))
+		  ;; Yes, so we just add the spec to the end.
+		  (nconc elem (list (cons article
+					  (+ (nth 3 mmap) (incf farticle)))))
+		;; No, so we add a new one.
+		(push (list (nth 2 mmap)
+			    (cons article
+				  (+ (nth 3 mmap) (incf farticle))))
+		      fetchers))
+	      (pop articles)
+	      (setq article (car articles)))))
 	;; Now we have the mapping from/to Gnus/nnultimate article numbers,
 	;; so we start fetching the topics that we need to satisfy the
 	;; request.
@@ -181,9 +184,9 @@
 		  (setcdr table nil)
 		  (setq table (nnultimate-find-forum-table contents)))
 		(setq contents (cdr (nth 2 (car (nth 2 table)))))
-		(setq total-contents (nconc total-contents contents))
+		(setq total-contents (nconc contents total-contents))
 		(incf current-page))
-	      ;;(setq total-contents (nreverse total-contents))
+	      ;(setq total-contents (nreverse total-contents))
 	      (dolist (art (cdr elem))
 		(if (not (nth (1- (cdr art)) total-contents))
 		    (debug)
@@ -332,6 +335,7 @@
     (nnoo-change-server 'nnultimate server defs)))
 
 (defun nnultimate-read-groups ()
+  (setq nnultimate-groups-alist nil)
   (let ((file (expand-file-name "groups" nnultimate-directory)))
     (when (file-exists-p file)
       (with-temp-buffer
