@@ -1,3 +1,9 @@
+2004-09-29  Simon Josefsson  <jas@extundo.com>
+
+	* GNUS-NEWS: Generated.
+
+	* Makefile.in (GNUS-NEWS): Add.
+
 2004-09-11  Simon Josefsson  <jas@extundo.com>
 
 	* GNUS-NEWS: Generated.

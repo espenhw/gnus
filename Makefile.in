@@ -22,6 +22,9 @@ uninstall:
 	cd texi && $(MAKE) uninstall
 	cd etc && $(MAKE) uninstall
 
+GNUS-NEWS:
+	cd texi && $(MAKE) GNUS-NEWS
+
 # Rule for Lars and nobody else.
 some:
 	cd lisp && $(MAKE) EMACS="$(EMACS)" some

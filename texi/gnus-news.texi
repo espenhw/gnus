@@ -96,6 +96,9 @@ This changes the default of @code{gnus-article-loose-mime}.
 
 @item Gnus now view DNS master files sent as text/dns using dns-mode.
 
+@item Gnus now support the ``hashcash'' client puzzle anti-spam idea.
+See the Gnus manual, section Hashcash, for more information.
+
 @end itemize
 
 @c gnus-news.texi ends here.

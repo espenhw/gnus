@@ -80,6 +80,9 @@ header.  This changes the default of `gnus-article-loose-mime'.
 
 ** Gnus now view DNS master files sent as text/dns using dns-mode.
 
+** Gnus now support the "hashcash" client puzzle anti-spam idea.  See
+the Gnus manual, section Hashcash, for more information.
+
 
 * For older news, see Gnus info node "New Features".
 
