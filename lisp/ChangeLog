@@ -1,3 +1,7 @@
+2001-04-10  Simon Josefsson  <simon@josefsson.org>
+
+	* message.el (message-options-set-recipient): Look at Cc and Bcc too.
+
 2001-04-10  Colin Marquardt <colin.marquardt@usa.alcatel.com>
 
 	* message.el (message-send-mail): Improve the interaction with the
