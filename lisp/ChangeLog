@@ -1,5 +1,8 @@
 2003-09-05  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* gnus-registry.el (gnus-registry-split-fancy-with-parent): yet
+	another error *sigh*
+
 	* gnus-registry.el (gnus-registry-fetch-extra-entry): don't use
 	puthash unless gnus-registry-entry-caching is on
 	(gnus-registry-split-fancy-with-parent): misplaced parenthesis

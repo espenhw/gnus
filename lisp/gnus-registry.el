@@ -386,12 +386,11 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		    subject
 		    (if res res "nil")))))
 	     gnus-registry-hashtb)))))
-      (debug res)
-      (gnus-message
-       5 
-       "gnus-registry-split-fancy-with-parent traced %s to group %s"
-       refstr (if res res "nil"))
-      res))
+    (gnus-message
+     5 
+     "gnus-registry-split-fancy-with-parent traced %s to group %s"
+     refstr (if res res "nil"))
+    res))
 
 (defun gnus-registry-register-message-ids ()
   "Register the Message-ID of every article in the group"
@@ -446,9 +445,10 @@ Returns the first place where the trail finds a nonstring."
 	(gethash id entry-cache)
       ;; else, if there is no caching possible...
       (let ((trail (gethash id gnus-registry-hashtb)))
-	(dolist (crumb trail)
-	  (unless (stringp crumb)
-	    (return (gnus-registry-fetch-extra-entry crumb entry id))))))))
+	(when (listp trail)
+	  (dolist (crumb trail)
+	    (unless (stringp crumb)
+	      (return (gnus-registry-fetch-extra-entry crumb entry id)))))))))
 
 (defun gnus-registry-fetch-extra-entry (alist &optional entry id)
   "Get the extra data of a message, or a specific entry in it.
