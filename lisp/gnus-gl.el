@@ -810,9 +810,9 @@ recommend using both scores and grouplens predictions together."
 	  (if (null arg) (not gnus-grouplens-mode)
 	    (> (prefix-numeric-value arg) 0)))
     (when gnus-grouplens-mode
-      (gnus-make-local-hook 'gnus-select-article-hook)
+      (make-local-hook 'gnus-select-article-hook)
       (gnus-add-hook 'gnus-select-article-hook 'grouplens-do-time nil 'local)
-      (gnus-make-local-hook 'gnus-exit-group-hook)
+      (make-local-hook 'gnus-exit-group-hook)
       (gnus-add-hook 'gnus-exit-group-hook 'bbb-exit-group nil 'local)
       (make-local-variable 'gnus-score-find-score-files-function)
 

@@ -399,7 +399,7 @@ articles in the topic and its subtopics."
 	 (point-max (point-max))
 	 (unread 0)
 	 (topic (car type))
-	 info entry end active)
+	 info entry end active tick)
     ;; Insert any sub-topics.
     (while topicl
       (incf unread
@@ -429,13 +429,17 @@ articles in the topic and its subtopics."
 		 (not (member (gnus-info-group (setq info (nth 2 entry)))
 			      gnus-topic-tallied-groups)))
 	(push (gnus-info-group info) gnus-topic-tallied-groups)
-	(incf unread (car entry))))
+	(incf unread (car entry)))
+      (when (and (listp entry)
+		 (numberp (car entry)))
+	(setq tick t)))
     (goto-char beg)
     ;; Insert the topic line.
     (when (and (not silent)
-	       (or gnus-topic-display-empty-topics
-		   (not (zerop unread))
-		   (/= point-max (point-max))))
+	       (or gnus-topic-display-empty-topics ;We want empty topics
+		   (not (zerop unread))	;Non-empty
+		   tick			;Ticked articles 
+		   (/= point-max (point-max)))) ;Unactivated groups
       (gnus-extent-start-open (point))
       (gnus-topic-insert-topic-line 
        (car type) visiblep
@@ -929,7 +933,7 @@ articles in the topic and its subtopics."
 	   'gnus-group-sort-topic)
       (setq gnus-group-change-level-function 'gnus-topic-change-level)
       (setq gnus-goto-missing-group-function 'gnus-topic-goto-missing-group)
-      (gnus-make-local-hook 'gnus-check-bogus-groups-hook)
+      (make-local-hook 'gnus-check-bogus-groups-hook)
       (add-hook 'gnus-check-bogus-groups-hook 'gnus-topic-clean-alist)
       (setq gnus-topology-checked-p nil)
       ;; We check the topology.

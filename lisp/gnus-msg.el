@@ -175,7 +175,7 @@ Thank you for your help in stamping out bugs.
        (gnus-configure-windows ,config t))))
     
 (defun gnus-inews-add-send-actions (winconf buffer article)
-  (gnus-make-local-hook 'message-sent-hook)
+  (make-local-hook 'message-sent-hook)
   (gnus-add-hook 'message-sent-hook 'gnus-inews-do-gcc nil t)
   (setq message-post-method
 	`(lambda (arg)
@@ -594,7 +594,7 @@ automatically."
   "Start composing a reply mail to the current message.
 The original article will be yanked."
   (interactive "P")
-  (gnus-summary-reply (gnus-summary-work-articles n)))
+  (gnus-summary-reply (gnus-summary-work-articles n) wide))
 
 (defun gnus-summary-wide-reply (&optional yank)
   "Start composing a wide reply mail to the current message.

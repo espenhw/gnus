@@ -247,6 +247,7 @@ should return the new buffer name."
 (defvar gnus-local-organization)
 (defcustom message-user-organization 
   (or (and (boundp 'gnus-local-organization)
+	   (stringp gnus-local-organization)
 	   gnus-local-organization)
       (getenv "ORGANIZATION")
       t)
@@ -583,7 +584,7 @@ actually occur."
     'message-mail 'message-send-and-exit 
     'message-kill-buffer 'message-send-hook))
 
-(defvar message-delete-mh-headers t
+(defvar message-mh-deletable-headers '(Message-ID Date Lines Sender)
   "If non-nil, delete the deletable headers before feeding to mh.")
 
 ;;; Internal variables.
@@ -794,9 +795,9 @@ The cdr of ech entry is a function for applying the face to a region.")
 		 (setq paren nil))))
 	(nreverse elems)))))
 
-(defun message-fetch-field (header)
+(defun message-fetch-field (header &optional not-all)
   "The same as `mail-fetch-field', only remove all newlines."
-  (let ((value (mail-fetch-field header nil t)))
+  (let ((value (mail-fetch-field header nil (not not-all))))
     (when value
       (nnheader-replace-chars-in-string value ?\n ? ))))
 
@@ -1052,10 +1053,10 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (kill-all-local-variables)
   (make-local-variable 'message-reply-buffer)
   (setq message-reply-buffer nil)
-  (make-local-variable 'message-send-actions)
-  (make-local-variable 'message-exit-actions)
-  (make-local-variable 'message-kill-actions)
-  (make-local-variable 'message-postpone-actions)
+  (set (make-local-variable 'message-send-actions) nil)
+  (set (make-local-variable 'message-exit-actions) nil)
+  (set (make-local-variable 'message-kill-actions) nil)
+  (set (make-local-variable 'message-postpone-actions) nil)
   (set-syntax-table message-mode-syntax-table)
   (use-local-map message-mode-map)
   (setq local-abbrev-table message-mode-abbrev-table)
@@ -1766,8 +1767,8 @@ to find out how to use this."
 		       "msg."))))
     (setq buffer-file-name name)
     ;; MH wants to generate these headers itself.
-    (when message-delete-mh-headers
-      (let ((headers message-deletable-headers))
+    (when message-mh-deletable-headers
+      (let ((headers message-mh-deletable-headers))
 	(while headers
 	  (goto-char (point-min)) 
 	  (and (re-search-forward 
@@ -1945,7 +1946,7 @@ to find out how to use this."
    ;; Check the Message-ID header.
    (message-check 'message-id
      (let* ((case-fold-search t)
-	    (message-id (message-fetch-field "message-id")))
+	    (message-id (message-fetch-field "message-id" t)))
        (or (not message-id)
 	   (and (string-match "@" message-id)
 		(string-match "@[^\\.]*\\." message-id))
@@ -2840,7 +2841,7 @@ Headers already prepared in the buffer are not modified."
 	    mct (message-fetch-field "mail-copies-to")
 	    reply-to (unless ignore-reply-to (message-fetch-field "reply-to"))
 	    references (message-fetch-field "references")
-	    message-id (message-fetch-field "message-id"))
+	    message-id (message-fetch-field "message-id" t))
       ;; Remove any (buggy) Re:'s that are present and make a
       ;; proper one.
       (when (string-match "^[ \t]*[Rr][Ee]:[ \t]*" subject)
@@ -2875,6 +2876,9 @@ Headers already prepared in the buffer are not modified."
 	      (insert (prog1 (rmail-dont-reply-to (buffer-string))
 			(erase-buffer)))
 	      (goto-char (point-min))
+	      ;; Perhaps Mail-Copies-To: never removed the only address?
+	      (when (eobp)
+		(insert (or reply-to from "")))
 	      (setq ccalist
 		    (mapcar
 		     (lambda (addr)
@@ -2938,7 +2942,7 @@ If TO-NEWSGROUPS, use that as the new Newsgroups line."
 	    date (message-fetch-field "date") 
 	    subject (or (message-fetch-field "subject") "none")
 	    references (message-fetch-field "references")
-	    message-id (message-fetch-field "message-id")
+	    message-id (message-fetch-field "message-id" t)
 	    followup-to (message-fetch-field "followup-to")
 	    newsgroups (message-fetch-field "newsgroups")
 	    reply-to (message-fetch-field "reply-to")
@@ -3034,7 +3038,7 @@ responses here are directed to other newsgroups."))
 	  (message-narrow-to-head)
 	  (setq from (message-fetch-field "from")
 		newsgroups (message-fetch-field "newsgroups")
-		message-id (message-fetch-field "message-id")
+		message-id (message-fetch-field "message-id" t)
 		distribution (message-fetch-field "distribution")))
 	;; Make sure that this article was written by the user.
 	(unless (string-equal

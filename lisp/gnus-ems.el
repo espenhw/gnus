@@ -195,6 +195,12 @@ asynchronously.	 The compressed face will be piped to this command."))
       (insert " " gnus-tmp-subject-or-nil "\n"))
     )))
 
+(defun gnus-region-active-p ()
+  "Say whether the region is active."
+  (and (boundp 'transient-mark-mode)
+       transient-mark-mode
+       (boundp 'mark-active)
+       mark-active))
 
 (provide 'gnus-ems)
 

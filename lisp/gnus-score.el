@@ -829,7 +829,8 @@ SCORE is the score to add."
 				       regexp)
 		       (string-match regexp content))
 		 (gnus-summary-raise-score score))))
-	(beginning-of-line 2)))))
+	(beginning-of-line 2))))
+  (gnus-set-mode-line 'summary))
 
 (defun gnus-summary-score-crossposting (score date)
   ;; Enter score file entry for current crossposting.

@@ -762,7 +762,7 @@ The following commands are available:
   (gnus-set-default-directory)
   (gnus-update-format-specifications nil 'group 'group-mode)
   (gnus-update-group-mark-positions)
-  (gnus-make-local-hook 'post-command-hook)
+  (make-local-hook 'post-command-hook)
   (gnus-add-hook 'post-command-hook 'gnus-clear-inboxes-moved nil t)
   (when gnus-use-undo
     (gnus-undo-mode 1))
@@ -1871,7 +1871,8 @@ and NEW-NAME will be prompted for."
       (error "No group on current line"))
     (unless (setq info (gnus-get-info group))
       (error "Killed group; can't be edited"))
-    (gnus-close-group group)
+    (ignore-errors
+      (gnus-close-group group))
     (gnus-edit-form
      ;; Find the proper form to edit.
      (cond ((eq part 'method)

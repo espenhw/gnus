@@ -92,6 +92,13 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 
 (fset 'message-exchange-point-and-mark 'message-xmas-exchange-point-and-mark)
 
+(defun message-xmas-maybe-fontify ()
+  (when (and (featurep 'font-lock)
+	     font-lock-auto-fontify)
+    (turn-on-font-lock)))
+
+(add-hook 'message-mode-hook 'message-xmas-maybe-fontify)
+
 (provide 'messagexmas)
 
 ;;; messagexmas.el ends here

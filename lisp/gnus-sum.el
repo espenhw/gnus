@@ -647,6 +647,11 @@ automatically when it is selected."
   :group 'gnus-group-select
   :type 'hook)
 
+(defcustom gnus-ps-print-hook nil
+  "*A hook run before ps-printing something from Gnus."
+  :group 'gnus-summary
+  :type 'hook)
+
 (defcustom gnus-summary-selected-face 'gnus-summary-selected-face
   "Face used for highlighting the current article in the summary buffer."
   :group 'gnus-summary-visual
@@ -700,6 +705,7 @@ mark:    The articles mark."
   :group 'gnus-summary-visual
   :type '(repeat (cons (sexp :tag "Form" nil)
 		       face)))
+
 
 ;;; Internal variables
 
@@ -1888,7 +1894,7 @@ The following commands are available:
   (make-local-variable 'gnus-summary-line-format)
   (make-local-variable 'gnus-summary-line-format-spec)
   (make-local-variable 'gnus-summary-mark-positions)
-  (gnus-make-local-hook 'post-command-hook)
+  (make-local-hook 'post-command-hook)
   (gnus-add-hook 'post-command-hook 'gnus-clear-inboxes-moved nil t)
   (run-hooks 'gnus-summary-mode-hook)
   (gnus-update-format-specifications nil 'summary 'summary-mode 'summary-dummy)
@@ -3530,6 +3536,8 @@ or a straight list of headers."
   "Generate an unthreaded summary buffer based on HEADERS."
   (let (header number mark)
 
+    (beginning-of-line)
+
     (while headers
       ;; We may have to root out some bad articles...
       (when (memq (setq number (mail-header-number
@@ -3604,6 +3612,10 @@ If READ-ALL is non-nil, all articles in the group are selected."
 
     (setq gnus-newsgroup-processable nil)
 
+    (gnus-update-read-articles group gnus-newsgroup-unreads)
+    (unless (gnus-ephemeral-group-p gnus-newsgroup-name)
+      (gnus-group-update-group group))
+ 
     (setq articles (gnus-articles-to-read group read-all))
 
     (cond
@@ -4407,10 +4419,7 @@ taken into consideration."
 		   (gnus-summary-find-next nil article)))
 	  (decf n)))
       (nreverse articles)))
-   ((and (boundp 'transient-mark-mode)
-	 transient-mark-mode
-	 (boundp 'mark-active)
-	 mark-active)
+   ((gnus-region-active-p)
     ;; Work on the region between point and mark.
     (let ((max (max (point) (mark)))
 	  articles article)
@@ -5421,7 +5430,8 @@ article."
 Argument LINES specifies lines to be scrolled down."
   (interactive "P")
   (gnus-set-global-variables)
-  (let ((article (gnus-summary-article-number)))
+  (let ((article (gnus-summary-article-number))
+	(article-window (get-buffer-window gnus-article-buffer)))
     (gnus-configure-windows 'article)
     (if (or (null gnus-current-article)
 	    (null gnus-article-current)
@@ -5430,8 +5440,9 @@ Argument LINES specifies lines to be scrolled down."
 	;; Selected subject is different from current article's.
 	(gnus-summary-display-article article)
       (gnus-summary-recenter)
-      (gnus-eval-in-buffer-window gnus-article-buffer
-	(gnus-article-prev-page lines))))
+      (when article-window
+	(gnus-eval-in-buffer-window gnus-article-buffer
+	  (gnus-article-prev-page lines)))))
   (gnus-summary-position-point))
 
 (defun gnus-summary-scroll-up (lines)
@@ -6367,6 +6378,7 @@ to save in."
 	    (copy-to-buffer buffer (point-min) (point-max))
 	    (set-buffer buffer)
 	    (gnus-article-delete-invisible-text)
+	    (run-hooks 'gnus-ps-print-hook)
 	    (ps-print-buffer-with-faces filename))
 	(kill-buffer buffer)))))
 
@@ -6622,6 +6634,13 @@ and `request-accept' functions."
 		 (memq article gnus-newsgroup-dormant)
 		 (memq article gnus-newsgroup-unreads)))
 
+	      (when (and (equal to-group gnus-newsgroup-name)
+			 (not (memq article gnus-newsgroup-unreads)))
+		;; Mark this article as read in this group.
+		(push (cons to-article gnus-read-mark) gnus-newsgroup-reads)
+		(setcdr (gnus-active to-group) to-article)
+		(setcdr gnus-newsgroup-active to-article))
+	      
 	      (while marks
 		(when (memq article (symbol-value
 				     (intern (format "gnus-newsgroup-%s"
@@ -6634,7 +6653,7 @@ and `request-accept' functions."
 			       (symbol-value
 				(intern (format "gnus-newsgroup-%s"
 						(caar marks)))))))
-		  ;; Copy mark to other group.
+		  ;; Copy the marks to other group.
 		  (gnus-add-marked-articles
 		   to-group (cdar marks) (list to-article) info))
 		(setq marks (cdr marks)))))
@@ -6942,7 +6961,10 @@ groups."
     ;; Prettify the article buffer again.
     (save-excursion
       (set-buffer gnus-article-buffer)
-      (run-hooks 'gnus-article-display-hook))
+      (run-hooks 'gnus-article-display-hook)
+      (set-buffer gnus-original-article-buffer)
+      (gnus-request-article
+       (cdr gnus-article-current) (car gnus-article-current) (current-buffer)))
     ;; Prettify the summary buffer line.
     (when (gnus-visual-p 'summary-highlight 'highlight)
       (run-hooks 'gnus-visual-mark-article-hook))))
@@ -8367,7 +8389,8 @@ save those articles instead."
 		  (t gnus-reffed-article-number))
 		 (current-buffer))
 	  (insert " Article retrieved.\n"))
-	(if (not (setq header (car (gnus-get-newsgroup-headers nil t))))
+	(if (or (not where)
+		(not (setq header (car (gnus-get-newsgroup-headers nil t)))))
 	    ()				; Malformed head.
 	  (unless (gnus-summary-article-sparse-p (mail-header-number header))
 	    (when (and (stringp id)

@@ -1,3 +1,113 @@
+Mon Feb 10 14:19:55 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.12 is released.
+
+Mon Feb 10 12:47:41 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-fetch-field): Accept an optional param.
+	(message-reply): Only fetch the first Message-ID.
+
+	* gnus-score.el (gnus-summary-score-effect): Update mode line.
+
+Mon Feb 10 12:32:38 1997  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-art.el: Simplify.
+
+Mon Feb 10 12:23:48 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-prev-page): Don't scroll when the
+	article buffer isn't visible.
+
+	* gnus.el ((featurep 'gnus-xmas)): Removed
+	`gnus-make-local-hook'. 
+
+Mon Feb 10 12:08:31 1997  Adrian Aichner  <aichner@ecf.teradyne.com>
+
+	* gnus-util.el (gnus-turn-off-edit-menu): Doc fix.
+
+Mon Feb 10 07:42:37 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-prepare-unthreaded): Make sure point
+	is at bol.
+
+	* gnus-srvr.el (gnus-browse-mode-map): Define gnus-bug.
+	(gnus-server-mode-map): Ditto.
+
+	* gnus-sum.el (gnus-summary-edit-article-done): Update original
+	article buffer.
+
+	* gnus-uu.el (gnus-uu-digest-mail-forward): Restore window
+	config. 
+
+	* nnmail.el (nnmail-move-inbox): Make sure tofile exists before
+	setting modes.
+
+	* gnus-xmas.el (gnus-xmas-region-active-p): New function.
+
+	* gnus-ems.el (gnus-region-active-p): New function.
+
+Mon Feb 10 07:40:45 1997  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-sum.el (gnus-summary-work-articles): Use zmacs-region. 
+
+Mon Feb 10 07:06:44 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-mode): Nix out all local variables.
+
+	* gnus-art.el (gnus-summary-save-in-mail): Don't ask.
+
+	* gnus-sum.el (gnus-ps-print-hook): New hook.
+	(gnus-summary-print-article): Use it.
+
+	* message.el (message-reply): Make sure there is something
+	inserted as a To.
+
+Mon Feb 10 05:54:28 1997  Paul Franklin  <paul@cs.washington.edu>
+
+	* gnus-group.el (gnus-group-edit-group): Ignore errors while
+	closing group.
+
+Mon Feb 10 05:22:09 1997  Steven L. Baur  <steve@miranova.com>
+
+	* messagexmas.el (message-xmas-maybe-fontify): New function.
+	(message-mode-hook): Use it.
+
+Sat Feb  8 21:18:25 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-user-organization): Only use string values
+	of `gnus-local-organization'.
+
+Tue Feb  4 20:26:20 1997  Paul Franklin  <paul@cs.washington.edu>
+
+	* nnmail.el (nnmail-get-spool-files): Don't call file-directory-p
+	on pop spool specifiers.
+
+Wed Feb  5 01:56:07 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-delete-mh-headers): Changed default.
+	(message-send-mail-with-mh): Use it.
+	(message-mh-deletable-headers): Renamed.
+
+	* gnus-sum.el (gnus-read-header): Don't do anything if the article
+	can't be requested.
+
+Wed Feb  5 01:51:07 1997  Joev Dubach  <dubach1@husc.harvard.edu>
+
+	* gnus-sum.el (gnus-select-newsgroup): Update group line.
+
+Tue Feb  4 20:23:30 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-util.el (gnus-output-to-mail): Insert a newline before the
+	"From ".
+
+	* nnml.el (nnml-request-move-article): Update active ranges.
+	(nnml-nov-delete-article): Update active ranges.
+
+Tue Feb  4 17:54:09 1997  HISASHIGE Kenji  <hysa@adtec.ed.fujitsu.co.jp>
+
+	* gnus-msg.el (gnus-summary-reply-with-original): Pass on the
+	`wide' param.
+
 Tue Feb  4 03:49:59 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.11 is released.

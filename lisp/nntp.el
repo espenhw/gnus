@@ -548,8 +548,7 @@ It will prompt for a password."
 
 (defun nntp-send-authinfo-from-file ()
   "Send the AUTHINFO to the nntp server.
-This function is supposed to be called from `nntp-server-opened-hook'.
-It will prompt for a password."
+This function is supposed to be called from `nntp-server-opened-hook'."
   (when (file-exists-p "~/.nntp-authinfo")
     (nnheader-temp-write nil
       (insert-file-contents "~/.nntp-authinfo")

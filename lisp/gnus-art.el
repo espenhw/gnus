@@ -179,10 +179,11 @@ asynchronously.	 The compressed face will be piped to this command."
 	 '(("_" "_" underline)
 	   ("/" "/" italic)
 	   ("\\*" "\\*" bold)
-	   ("_/" "/_" underline-italic)
-	   ("_\\*" "\\*_" underline-bold)
+	   ;;("_/" "/_" underline-italic)
+	   ;;("_\\*" "\\*_" underline-bold)
 	   ("\\*/" "/\\*" bold-italic)
-	   ("_\\*/" "/\\*_" underline-bold-italic))))
+	   ;;("_\\*/" "/\\*_" underline-bold-italic)
+	   )))
     `(("\\(\\s-\\|^\\)\\(_\\(\\(\\w\\|_[^_]\\)+\\)_\\)\\(\\s-\\|[?!.,;]\\)"
        2 3 gnus-emphasis-underline)
       ,@(mapcar
@@ -1458,7 +1459,7 @@ Directory to save to is default to `gnus-article-save-directory'."
 	  (if (and (file-readable-p filename)
 		   (mail-file-babyl-p filename))
 	      (gnus-output-to-rmail filename t)
-	    (gnus-output-to-mail filename t)))))
+	    (gnus-output-to-mail filename)))))
     ;; Remember the directory name to save articles.
     (setq gnus-newsgroup-last-mail filename)))
 

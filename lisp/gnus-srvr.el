@@ -129,7 +129,8 @@ with some simple extensions.")
 
    "g" gnus-server-regenerate-server
 
-    "\C-c\C-i" gnus-info-find-node))
+    "\C-c\C-i" gnus-info-find-node
+    "\C-c\C-b" gnus-bug))
 
 (defun gnus-server-mode ()
   "Major mode for listing and editing servers.
@@ -512,7 +513,8 @@ The following commands are available:
    "\C-c\C-c" gnus-browse-exit
    "?" gnus-browse-describe-briefly
 
-   "\C-c\C-i" gnus-info-find-node))
+   "\C-c\C-i" gnus-info-find-node
+   "\C-c\C-b" gnus-bug))
 
 (defun gnus-browse-make-menu-bar ()
   (gnus-turn-off-edit-menu 'browse)

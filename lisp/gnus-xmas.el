@@ -434,6 +434,9 @@ call it with the value of the `gnus-data' text property."
 	    (color-instance-rgb-components
 	     (make-color-instance color))))))
 
+(defun gnus-xmas-region-active-p ()
+  (and (fboundp 'region-active-p)
+       (region-active-p)))
 
 (defun gnus-xmas-redefine ()
   "Redefine lots of Gnus functions for XEmacs."
@@ -450,13 +453,13 @@ call it with the value of the `gnus-data' text property."
   (fset 'gnus-appt-select-lowest-window 
 	'gnus-xmas-appt-select-lowest-window)
   (fset 'gnus-mail-strip-quoted-names 'gnus-xmas-mail-strip-quoted-names)
-  (fset 'gnus-make-local-hook 'make-local-variable)
   (fset 'gnus-add-hook 'gnus-xmas-add-hook)
   (fset 'gnus-character-to-event 'character-to-event)
   (fset 'gnus-mode-line-buffer-identification
 	'gnus-xmas-mode-line-buffer-identification)
   (fset 'gnus-key-press-event-p 'key-press-event-p)
-
+  (fset 'gnus-region-active-p 'gnus-xmas-region-active-p)
+  
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-summary-menu-add)
   (add-hook 'gnus-article-mode-hook 'gnus-xmas-article-menu-add)

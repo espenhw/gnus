@@ -299,6 +299,7 @@ will be removed before popping up the buffer.  The default is
 * Insertion::           Inserting things into message buffers.
 * Various Commands::    Various things.
 * Sending::             Actually sending the message.
+* Mail Aliases::        How to use mail aliases.
 @end menu
 
 
@@ -555,6 +556,30 @@ Kill the message buffer and exit (@code{message-kill-buffer}).
 @end table
 
 
+
+@node Mail Aliases
+@section Mail Aliases
+@cindex mail aliases
+@cindex aliases
+
+Message uses @code{mailabbrev} to handle mail aliases.  
+@code{mailabbrev} works by parsing the @file{/etc/mailrc} and
+@file{~/.mailrc} files.  These files look like:
+
+@example
+alias lmi "Lars Magne Ingebrigtsen <larsi@@ifi.uio.no>"
+alias ding "ding@@ifi.uio.no (ding mailing list)"
+@end example
+
+After adding lines like this to your @file{~/.mailrc} file, you should
+be able to just write @samp{lmi} in the @code{To} or @code{Cc} (and so
+on) headers and press @kbd{SPC} to expand the alias.
+
+No expansion will be performed upon sending of the message---all
+expansions have to be done explicitly.
+
+
+
 @node Variables
 @chapter Variables
 
@@ -696,8 +721,10 @@ to.  If it isn't present already, it will be prompted for.
 @cindex organization
 This optional header will be filled out depending on the
 @code{message-user-organization} variable.
-@code{message-user-organization-file} will be used if that variable is
-@code{t}.
+@code{message-user-organization-file} will be used if this variable is
+@code{t}.  This variable can also be a string (in which case this string
+will be used), or it can be a function (which will be called with no
+parameters and should return a string to be used).
 
 @item Lines
 @cindex Lines

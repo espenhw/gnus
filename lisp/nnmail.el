@@ -556,7 +556,8 @@ parameter.  It should return nil, `warn' or `delete'."
 		    ;; No output => movemail won
 		    (progn
 		      (unless popmail
-			(set-file-modes tofile nnmail-default-file-modes))
+			(when (file-exists-p tofile)
+			  (set-file-modes tofile nnmail-default-file-modes)))
 		      (push inbox nnmail-moved-inboxes))
 		  (set-buffer errors)
 		  ;; There may be a warning about older revisions.  We
@@ -565,7 +566,8 @@ parameter.  It should return nil, `warn' or `delete'."
 		  (if (search-forward "older revision" nil t)
 		      (progn
 			(unless popmail
-			  (set-file-modes tofile nnmail-default-file-modes))
+			  (when (file-exists-p tofile)
+			    (set-file-modes tofile nnmail-default-file-modes)))
 			(push inbox nnmail-moved-inboxes))
 		    ;; Probably a real error.
 		    (subst-char-in-region (point-min) (point-max) ?\n ?\  )
@@ -1254,19 +1256,19 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 		'nconc
 		(mapcar 
 		 (lambda (file)
-		   (if (file-directory-p file)
+		   (if (and (not (string-match "^po:" file))
+			    (file-directory-p file))
 		       (nnheader-directory-regular-files file)
 		     (list file)))
 		 nnmail-spool-file))
 	       procmails))
-	     ((and (stringp nnmail-spool-file)
-		   (not (file-directory-p nnmail-spool-file)))
-	      (cons nnmail-spool-file procmails))
-	     ((and (stringp nnmail-spool-file)
-		   (file-directory-p nnmail-spool-file))
-	      (nconc
-	       (nnheader-directory-regular-files nnmail-spool-file)
-	       procmails))
+	     ((stringp nnmail-spool-file)
+	      (if (and (not (string-match "^po:" nnmail-spool-file))
+		       (file-directory-p nnmail-spool-file))
+		  (nconc 
+		   (nnheader-directory-regular-files nnmail-spool-file)
+		   procmails)
+		(cons nnmail-spool-file procmails)))
 	     ((eq nnmail-spool-file 'pop)
 	      (cons (format "po:%s" (user-login-name)) procmails))
 	     (t
