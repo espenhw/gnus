@@ -1,3 +1,8 @@
+1999-10-07 17:09:34  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnmail.el (nnmail-insert-xref): Dealing with empty articles.
+	(nnmail-insert-lines): Ditto.
+
 1999-10-07  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnfolder.el (nnfolder-insert-newsgroup-line): Insert a blank

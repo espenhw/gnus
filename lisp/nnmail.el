@@ -999,35 +999,39 @@ Return the number of characters in the body."
   (let (lines chars)
     (save-excursion
       (goto-char (point-min))
-      (when (search-forward "\n\n" nil t)
-	(setq chars (- (point-max) (point)))
-	(setq lines (count-lines (point) (point-max)))
-	(forward-char -1)
-	(save-excursion
-	  (when (re-search-backward "^Lines: " nil t)
-	    (delete-region (point) (progn (forward-line 1) (point)))))
-	(beginning-of-line)
-	(insert (format "Lines: %d\n" (max lines 0)))
-	chars))))
+      (unless (search-forward "\n\n" nil t) 
+	(goto-char (point-max))
+	(insert "\n"))
+      (setq chars (- (point-max) (point)))
+      (setq lines (count-lines (point) (point-max)))
+      (forward-char -1)
+      (save-excursion
+	(when (re-search-backward "^Lines: " nil t)
+	  (delete-region (point) (progn (forward-line 1) (point)))))
+      (beginning-of-line)
+      (insert (format "Lines: %d\n" (max lines 0)))
+      chars)))
 
 (defun nnmail-insert-xref (group-alist)
   "Insert an Xref line based on the (group . article) alist."
   (save-excursion
     (goto-char (point-min))
-    (when (search-forward "\n\n" nil t)
-      (forward-char -1)
-      (when (re-search-backward "^Xref: " nil t)
-	(delete-region (match-beginning 0)
-		       (progn (forward-line 1) (point))))
-      (insert (format "Xref: %s" (system-name)))
-      (while group-alist
-	(insert (format " %s:%d"
-			(mm-encode-coding-string
-			 (caar group-alist)
-			 nnmail-pathname-coding-system)
-			(cdar group-alist)))
-	(setq group-alist (cdr group-alist)))
-      (insert "\n"))))
+    (unless (search-forward "\n\n" nil t)
+      (goto-char (point-max))
+      (insert "\n"))
+    (forward-char -1)
+    (when (re-search-backward "^Xref: " nil t)
+      (delete-region (match-beginning 0)
+		     (progn (forward-line 1) (point))))
+    (insert (format "Xref: %s" (system-name)))
+    (while group-alist
+      (insert (format " %s:%d"
+		      (mm-encode-coding-string
+		       (caar group-alist)
+		       nnmail-pathname-coding-system)
+		      (cdar group-alist)))
+      (setq group-alist (cdr group-alist)))
+    (insert "\n")))
 
 ;;; Message washing functions
 
