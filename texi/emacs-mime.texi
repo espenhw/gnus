@@ -875,7 +875,7 @@ messages.  You can modify this by altering the
 @code{mm-coding-system-priorities} variable though (@pxref{Encoding
 Customization}).
 
-The charset to be used can be overriden by setting the @code{charset}
+The charset to be used can be overridden by setting the @code{charset}
 MML tag (@pxref{MML Definition}) when composing the message.
 
 The encoding of characters (quoted-printable, 8bit etc) is orthogonal

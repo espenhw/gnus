@@ -162,7 +162,7 @@ on a remote server.  It can be invoked with @kbd{M-x sieve-manage
 RET}, which queries the user for a server and if necessary, user
 credentials to use.
 
-When a server has been succesfully contacted, the Manage Sieve buffer
+When a server has been successfully contacted, the Manage Sieve buffer
 looks something like:
 
 @example

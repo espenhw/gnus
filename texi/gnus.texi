@@ -690,7 +690,7 @@ Getting Mail
 * Group Mail Splitting::        Use group customize to drive mail splitting.
 * Incorporating Old Mail::      What about the old mail you have?
 * Expiring Mail::               Getting rid of unwanted mail.
-* Washing Mail::                Removing gruft from the mail you get.
+* Washing Mail::                Removing cruft from the mail you get.
 * Duplicates::                  Dealing with duplicated mail.
 * Not Reading Mail::            Using mail back ends for reading other files.
 * Choosing a Mail Back End::    Gnus can read a variety of mail formats.
@@ -2122,7 +2122,7 @@ manner will have no permanent effects.
 @vindex gnus-large-newsgroup
 The @code{gnus-large-newsgroup} variable says what Gnus should
 consider to be a big group.  If it is @code{nil}, no groups are
-considered big.  The default vaule is 200.  If the group has more
+considered big.  The default value is 200.  If the group has more
 (unread and/or ticked) articles than this, Gnus will query the user
 before entering the group.  The user can then specify how many
 articles should be fetched from the server.  If the user specifies a
@@ -5548,7 +5548,7 @@ A time span.  Consists of an integer and a letter.  For example,
 (months) and @code{Y} (years).
 
 @item
-A specific date.  Looks like @code{YYYYY-MM-DD}.  The message will be
+A specific date.  Looks like @code{YYYY-MM-DD}.  The message will be
 delayed until that day, at a specific time (eight o'clock by default).
 See also @code{gnus-delay-default-hour}.
 
@@ -10757,13 +10757,13 @@ Remove the @code{Newsgroups} header if it only contains the current group
 name.
 @item to-address
 Remove the @code{To} header if it only contains the address identical to
-the current groups's @code{to-address} parameter.
+the current group's @code{to-address} parameter.
 @item to-list
 Remove the @code{To} header if it only contains the address identical to
-the current groups's @code{to-list} parameter.
+the current group's @code{to-list} parameter.
 @item cc-list
 Remove the @code{CC} header if it only contains the address identical to
-the current groups's @code{to-list} parameter.
+the current group's @code{to-list} parameter.
 @item date
 Remove the @code{Date} header if the article is less than three days
 old.
@@ -12930,7 +12930,7 @@ course.
 * Group Mail Splitting::        Use group customize to drive mail splitting.
 * Incorporating Old Mail::      What about the old mail you have?
 * Expiring Mail::               Getting rid of unwanted mail.
-* Washing Mail::                Removing gruft from the mail you get.
+* Washing Mail::                Removing cruft from the mail you get.
 * Duplicates::                  Dealing with duplicated mail.
 * Not Reading Mail::            Using mail back ends for reading other files.
 * Choosing a Mail Back End::    Gnus can read a variety of mail formats.
@@ -15278,7 +15278,7 @@ file system.
 
 Since maildirs don't require locking for delivery, the maildirs you use
 as groups can also be the maildirs your mail is directly delivered to.
-This means you can skip Gnus's mail splitting if your mail is already
+This means you can skip Gnus' mail splitting if your mail is already
 organized into different mailboxes during delivery.  A @code{directory}
 entry in @code{mail-sources} would have a similar effect, but would
 require one set of mailboxes for spooling deliveries (in mbox format,
@@ -15948,8 +15948,8 @@ external library @code{digest-md5.el}.
 @item nnimap-expunge-on-close
 @cindex expunging
 @vindex nnimap-expunge-on-close
-Unlike Parmenides the @acronym{IMAP} designers has decided that things that
-doesn't exist actually does exist.  More specifically, @acronym{IMAP} has
+Unlike Parmenides the @acronym{IMAP} designers have decided things that
+don't exist actually do exist.  More specifically, @acronym{IMAP} has
 this concept of marking articles @code{Deleted} which doesn't actually
 delete them, and this (marking them @code{Deleted}, that is) is what
 nnimap does when you delete an article in Gnus (with @kbd{B DEL} or
@@ -26197,7 +26197,7 @@ There should be no data returned.
 
 If @var{server} is the current virtual server, and the connection to the
 physical server is alive, then this function should return a
-non-@code{nil} vlue.  This function should under no circumstances
+non-@code{nil} value.  This function should under no circumstances
 attempt to reconnect to a server we have lost connection to.
 
 There should be no data returned.

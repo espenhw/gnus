@@ -81,7 +81,7 @@ This document assumes that you have already obtained and installed them
 and that you are familiar with its basic functions.
 
 By default, PGG uses GnuPG, but Pretty Good Privacy version 2 or version
-5 are also supported.  If you are new to such a system, I recomend that
+5 are also supported.  If you are new to such a system, I recommend that
 you should look over the GNU Privacy Handbook (GPH) which is available
 at @uref{http://www.gnupg.org/gph/}.
 
@@ -260,7 +260,7 @@ interchangeably with "scheme" in this document).  This term refers to a
 singleton object wrapped with the luna object system.
 
 Since PGG was designed for accessing and developing PGP functionality,
-the architecture had to be designed not just for interoperablity but
+the architecture had to be designed not just for interoperability but
 also for extensiblity.  In this chapter we explore the architecture
 while finding out how to write the PGG backend.
 
@@ -328,7 +328,7 @@ create a detached signature.  If signing is successful, it returns
 Verify the current region between @var{start} and @var{end}.  If the
 optional third argument @var{signature} is non-@code{nil}, it is treated
 as the detached signature of the current region.  If the signature is
-successflly verified, it returns @code{t}, otherwise @code{nil}.
+successfully verified, it returns @code{t}, otherwise @code{nil}.
 @end deffn
 
 @deffn Method pgg-scheme-insert-key scheme
