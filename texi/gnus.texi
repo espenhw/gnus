@@ -9801,7 +9801,7 @@ This is also the default value for this variable.
 
 
 @node Using MIME
-@section Using @sc{mime}
+@section Using MIME
 @cindex @sc{mime}
 
 Mime is a standard for waving your hands through the air, aimlessly,
