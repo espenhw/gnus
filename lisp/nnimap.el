@@ -788,7 +788,7 @@ If EXAMINE is non-nil the group is selected read-only."
 		    (list port)
 		    (list "imap" "imaps"))))
       (if (imap-authenticate user passwd nnimap-server-buffer)
-	  (prog1
+	  (prog2
 	      (setq nnimap-server-buffer-alist
 		    (nnimap-remove-server-from-buffer-alist 
 		     server

@@ -1,3 +1,7 @@
+2004-10-26  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* nnimap.el (nnimap-open-connection): fixed prog1/prog2 bug
+
 2004-10-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnspool.el (nnspool-spool-directory): Use news-path if the
@@ -16,6 +20,7 @@
 	* hashcash.el: Fix URL in comment, reported by Cheng Gao
 	<chenggao@gmail.com>.
 
+>>>>>>> 7.511
 2004-10-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* html2text.el (html2text-buffer-head): Removed.  Use `goto-char'
