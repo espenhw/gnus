@@ -829,39 +829,46 @@ this type is returned."
     (".jpeg"     . "image/jpeg"))
   "An assoc list of file extensions and corresponding MIME content-types.")
 
-(defun mailcap-parse-mimetypes (&optional path)
+(defvar mailcap-mimetypes-parsed-p nil)
+
+(defun mailcap-parse-mimetypes (&optional path force)
   "Parse out all the mimetypes specified in a unix-style path string PATH.
 Components of PATH are separated by the `path-separator' character
 appropriate for this system.  If PATH is omitted, use the value of
-environment variable MIMETYPES if set; otherwise use a default path."
-  (cond
-   (path nil)
-   ((getenv "MIMETYPES") (setq path (getenv "MIMETYPES")))
-   ((memq system-type '(ms-dos ms-windows windows-nt))
-    (setq path '("~/mime.typ" "~/etc/mime.typ")))
-   (t (setq path
-	    ;; mime.types seems to be the normal name, definitely so
-	    ;; on current GNUish systems.  The search order follows
-	    ;; that for mailcap.
-	    '("~/.mime.types"
-	      "/etc/mime.types"
-	      "/usr/etc/mime.types"
-	      "/usr/local/etc/mime.types"
-	      "/usr/local/www/conf/mime.types"
-	      "~/.mime-types"
-	      "/etc/mime-types"
-	      "/usr/etc/mime-types"
-	      "/usr/local/etc/mime-types"
-	      "/usr/local/www/conf/mime-types"))))
-  (let ((fnames (reverse (if (stringp path)
-			     (parse-colon-path path)
-			   path)))
-	fname)
-    (while fnames
-      (setq fname (car fnames))
-      (if (and (file-readable-p fname))
-	  (mailcap-parse-mimetype-file fname))
-      (setq fnames (cdr fnames)))))
+environment variable MIMETYPES if set; otherwise use a default path.
+If FORCE, re-parse even if already parsed."
+  (interactive (list nil t))
+  (when (or (not mailcap-mimetypes-parsed-p)
+	    force)
+    (cond
+     (path nil)
+     ((getenv "MIMETYPES") (setq path (getenv "MIMETYPES")))
+     ((memq system-type '(ms-dos ms-windows windows-nt))
+      (setq path '("~/mime.typ" "~/etc/mime.typ")))
+     (t (setq path
+	      ;; mime.types seems to be the normal name, definitely so
+	      ;; on current GNUish systems.  The search order follows
+	      ;; that for mailcap.
+	      '("~/.mime.types"
+		"/etc/mime.types"
+		"/usr/etc/mime.types"
+		"/usr/local/etc/mime.types"
+		"/usr/local/www/conf/mime.types"
+		"~/.mime-types"
+		"/etc/mime-types"
+		"/usr/etc/mime-types"
+		"/usr/local/etc/mime-types"
+		"/usr/local/www/conf/mime-types"))))
+    (let ((fnames (reverse (if (stringp path)
+			       (parse-colon-path path)
+			     path)))
+	  fname)
+      (while fnames
+	(setq fname (car fnames))
+	(if (and (file-readable-p fname))
+	    (mailcap-parse-mimetype-file fname))
+	(setq fnames (cdr fnames))))
+    (setq mailcap-mimetypes-parsed-p t)))
 
 (defun mailcap-parse-mimetype-file (fname)
   ;; Parse out a mime-types file
@@ -900,6 +907,7 @@ environment variable MIMETYPES if set; otherwise use a default path."
 
 (defun mailcap-extension-to-mime (extn)
   "Return the MIME content type of the file extensions EXTN."
+  (mailcap-parse-mimetypes)
   (if (and (stringp extn)
 	   (not (eq (string-to-char extn) ?.)))
       (setq extn (concat "." extn)))
@@ -928,6 +936,7 @@ The path of COMMAND will be returned iff COMMAND is a command."
 
 (defun mailcap-mime-types ()
   "Return a list of MIME media types."
+  (mailcap-parse-mimetypes)
   (mm-delete-duplicates (mapcar 'cdr mailcap-mime-extensions)))
 
 (provide 'mailcap)

@@ -1,3 +1,11 @@
+2000-07-17 14:18:16  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mailcap.el (mailcap-mimetypes-parsed-p): New variable.
+	(mailcap-parse-mimetypes): Use it.
+	(mailcap-extension-to-mime): Parse mimetype.
+	(mailcap-mime-types): Ditto.
+	* mml.el (mml-minibuffer-read-type): Ditto.
+
 2000-07-16 18:25:07  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nndoc.el (nndoc-type-alist): Add outlook.

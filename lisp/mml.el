@@ -705,6 +705,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
     file))
 
 (defun mml-minibuffer-read-type (name &optional default)
+  (mailcap-parse-mimetypes)
   (let* ((default (or default
 		      (mm-default-file-encoding name)
 		      ;; Perhaps here we should check what the file
