@@ -1,3 +1,10 @@
+2002-01-15  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnslashdot.el (nnslashdot-retrieve-headers-1): A better error
+	message.
+	(nnslashdot-request-list): Ditto.
+	(nnslashdot-sid-strip): Removed.
+
 2002-01-15  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-close-asynchronous): Enable.

@@ -1,5 +1,5 @@
 ;;; nnslashdot.el --- interfacing with Slashdot
-;; Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+;; Copyright (C) 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -22,9 +22,6 @@
 ;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
-
-;; Note: You need to have `url' and `w3' installed for this
-;; backend to work.
 
 ;;; Code:
 
@@ -101,9 +98,10 @@
       (let ((case-fold-search t))
 	(erase-buffer)
 	(when (= start 1)
-	  (mm-url-insert (format nnslashdot-article-url
-				(nnslashdot-sid-strip sid)) t)
+	  (mm-url-insert (format nnslashdot-article-url sid) t)
 	  (goto-char (point-min))
+	  (if (eobp)
+	      (error "Couldn't open connection to slashdot"))
 	  (re-search-forward "Posted by[ \t\r\n]+")
 	  (when (looking-at "\\(<a[^>]+>\\)?[ \t\r\n]*\\([^<\r\n]+\\)")
 	    (setq from (mm-url-decode-entities-string (match-string 2))))
@@ -118,15 +116,14 @@
 	    1
 	    (make-full-mail-header
 	     1 group from date
-	     (concat "<" (nnslashdot-sid-strip sid) "%1@slashdot>")
+	     (concat "<" sid "%1@slashdot>")
 	     "" 0 lines nil nil))
 	   headers)
 	  (setq start (if nnslashdot-threaded 2 (pop articles))))
 	(while (and start (<= start last))
 	  (setq point (goto-char (point-max)))
 	  (mm-url-insert
-	   (format nnslashdot-comments-url
-		   (nnslashdot-sid-strip sid)
+	   (format nnslashdot-comments-url sid
 		   nnslashdot-threshold 0 (- start 2))
 	   t)
 	  (when (and nnslashdot-threaded first-comments)
@@ -183,10 +180,9 @@
 	       article
 	       (concat subject " (" score ")")
 	       from date
-	       (concat "<" (nnslashdot-sid-strip sid) "%" cid "@slashdot>")
+	       (concat "<" sid "%" cid "@slashdot>")
 	       (if parent
-		   (concat "<" (nnslashdot-sid-strip sid) "%" 
-			   parent "@slashdot>")
+		   (concat "<" sid "%" parent "@slashdot>")
 		 "")
 	       0 lines nil nil))
 	     headers)
@@ -303,6 +299,8 @@
 	  (mm-with-unibyte-buffer
 	    (mm-url-insert nnslashdot-backslash-url t)
 	    (goto-char (point-min))
+	    (if (eobp)
+		(error "Couldn't open connection to slashdot"))
 	    (while (search-forward "<story>" nil t)
 	      (narrow-to-region (point) (search-forward "</story>"))
 	      (goto-char (point-min))
@@ -355,7 +353,7 @@
 
 (deffoo nnslashdot-request-post (&optional server)
   (nnslashdot-possibly-change-server nil server)
-  (let ((sid (nnslashdot-sid-strip (message-fetch-field "newsgroups")))
+  (let ((sid (message-fetch-field "newsgroups"))
 	(subject (message-fetch-field "subject"))
 	(references (car (last (split-string
 				(message-fetch-field "references")))))
@@ -500,8 +498,6 @@
 
 (defun nnslashdot-lose (why)
   (error "Slashdot HTML has changed; please get a new version of nnslashdot"))
-
-(defalias 'nnslashdot-sid-strip 'identity)
 
 (provide 'nnslashdot)
 
