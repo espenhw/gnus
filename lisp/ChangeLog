@@ -1,6 +1,7 @@
 2002-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* gnus-agent.el (gnus-agent-check-overview-buffer): No warning.
+	* gnus-agent.el: Autoload number-at-point instead.
+	(gnus-agent-check-overview-buffer): No warning for deactivate-mark.
 
 2002-11-26  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 

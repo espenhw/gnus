@@ -37,7 +37,8 @@
   (require 'cl))
 
 (eval-and-compile
-  (autoload 'gnus-server-update-server "gnus-srvr"))
+  (autoload 'gnus-server-update-server "gnus-srvr")
+  (autoload 'number-at-point "thingatpt"))
 
 (defface gnus-agent-downloaded-article-face
   '((((class color) (background light)) (:foreground "Orange" :bold t))
@@ -1075,7 +1076,6 @@ This can be added to `gnus-select-article-hook' or
 In particular, checks that the file is sorted by article number
 and that there are no duplicates."
   (let (prev-num)
-    (require 'thingatpt)
     (save-excursion
       (when buffer (set-buffer buffer))
       (save-excursion
