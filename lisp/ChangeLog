@@ -1,5 +1,7 @@
 2003-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-util.el (gnus-emacs-version): Added doc-string.
+
 	* mml.el (mml-minibuffer-read-disposition): New function.
 	(mml-attach-file): Use it.
 	(mml-preview): Added MIME preview to gnus-buffers.

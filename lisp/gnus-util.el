@@ -1453,6 +1453,7 @@ predicate on the elements."
   (defvar xemacs-codename))
 
 (defun gnus-emacs-version ()
+  "Stringified Emacs version."
   (let ((system-v
 	 (cond
 	  ((eq gnus-user-agent 'emacs-gnus-config)
