@@ -460,7 +460,8 @@ nn*-request-list should have been called before calling this function."
     group))
 
 (defun nnmail-process-babyl-mail-format (func)
-  (let (start message-id content-length do-search end)
+  (let ((case-fold-search t)
+	start message-id content-length do-search end)
     (while (not (eobp))
       (goto-char (point-min))
       (re-search-forward
@@ -523,7 +524,8 @@ nn*-request-list should have been called before calling this function."
       (goto-char end))))
 
 (defun nnmail-process-unix-mail-format (func)
-  (let ((delim (concat "^" rmail-unix-mail-delimiter))
+  (let ((case-fold-search t)
+	(delim (concat "^" rmail-unix-mail-delimiter))
 	start message-id content-length end skip head-end)
     (goto-char (point-min))
     (if (not (and (re-search-forward delim nil t)
@@ -598,6 +600,7 @@ nn*-request-list should have been called before calling this function."
 
 (defun nnmail-process-mmdf-mail-format (func)
   (let ((delim "^\^A\^A\^A\^A$")
+	(case-fold-search t)
 	start message-id end)
     (goto-char (point-min))
     (if (not (and (re-search-forward delim nil t)

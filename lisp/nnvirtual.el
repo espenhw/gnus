@@ -377,21 +377,23 @@ virtual group.")
 		(mapcar
 		 (lambda (g)
 		   (let* ((active (or (gnus-active g) (gnus-activate-group g)))
-			  (unreads (gnus-list-of-unread-articles g))
+			  (unreads (and active (gnus-list-of-unread-articles
+						g)))
 			  (marks (gnus-uncompress-marks
 				  (gnus-info-marks (gnus-get-info g)))))
-		     (when gnus-use-cache
-		       (push (cons 'cache (gnus-cache-articles-in-group g))
-			     marks))
 		     (when active
-		       (setq div (/ (float (car active)) 
-				    (if (zerop (cdr active))
-					1 (cdr active))))
-		       (mapcar (lambda (n) 
-				 (list (* div (- n (car active)))
-				       g n (and (memq n unreads) t)
-				       (nnvirtual-marks n marks)))
-			       (gnus-uncompress-range active)))))
+		       (when gnus-use-cache
+			 (push (cons 'cache (gnus-cache-articles-in-group g))
+			       marks))
+		       (when active
+			 (setq div (/ (float (car active)) 
+				      (if (zerop (cdr active))
+					  1 (cdr active))))
+			 (mapcar (lambda (n) 
+				   (list (* div (- n (car active)))
+					 g n (and (memq n unreads) t)
+					 (nnvirtual-marks n marks)))
+				 (gnus-uncompress-range active))))))
 		 nnvirtual-component-groups))
 	       (lambda (m1 m2)
 		 (< (car m1) (car m2)))))

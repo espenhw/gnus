@@ -1495,7 +1495,7 @@ a program specified by the rest of the value."
   "Return the \"real\" user address.
 This function tries to ignore all user modifications, and 
 give as trustworthy answer as possible."
-  (concat (user-login-name) "@" (gnus-inews-full-address)))
+  (concat (user-login-name) "@" (system-name)))
 
 (defun gnus-inews-login-name ()
   "Return login name."
@@ -1692,8 +1692,8 @@ Customize the variable gnus-mail-forward-method to use another mailer."
   (gnus-summary-select-article)
   (gnus-copy-article-buffer)
   (if post
-      (gnus-forward-using-post gnus-article-copy)
-    (gnus-mail-forward gnus-article-copy)))
+      (gnus-forward-using-post gnus-original-article-buffer)
+    (gnus-mail-forward gnus-original-article-buffer)))
 
 (defun gnus-summary-resend-message (address)
   "Resend the current article to ADDRESS."
@@ -2671,9 +2671,15 @@ Headers will be generated before sending."
 	   ((stringp var)
 	    ;; Just a single group.
 	    (list var))
+	   ((null var)
+	    ;; We don't want this.
+	    nil)
 	   ((and (listp var) (stringp (car var)))
 	    ;; A list of groups.
 	    var)
+	   ((gnus-functionp var)
+	    ;; A function.
+	    (funcall var gnus-newsgroup-name))
 	   (t
 	    ;; An alist of regexps/functions/forms.
 	    (while (and var

@@ -358,7 +358,8 @@ though the two last may be nil if they are missing."
 				 (string-to-int (gnus-soup-field))))
 		    areas))
 	(if (eq (preceding-char) ?\t)
-	    (beginning-of-line 2))))
+	    (beginning-of-line 2)))
+      (kill-buffer (current-buffer)))
     areas))
 
 (defun gnus-soup-parse-replies (file)

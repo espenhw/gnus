@@ -211,6 +211,12 @@ used as score."
 (defvar gnus-score-default-duration nil
   "*The default score duration to use on when entering a score rule interactively.")
 
+(defun gnus-score-kill-help-buffer ()
+  (when (get-buffer "*Score Help*")
+    (kill-buffer "*Score Help*")
+    (and gnus-score-help-winconf
+	 (set-window-configuration gnus-score-help-winconf))))
+
 (defun gnus-summary-increase-score (&optional score)
   "Make a score entry based on the current article.
 The user will be prompted for header to score on, match type,
@@ -250,7 +256,10 @@ used as score."
 	  (list (list ?t (current-time-string) "temporary") 
 		'(?p perm "permanent") '(?i now "immediate")))
 	 (mimic gnus-score-mimic-keymap)
-	 hchar entry temporary tchar pchar end type match)
+	 (hchar gnus-score-default-header)
+	 (tchar gnus-score-default-type)
+	 (pchar gnus-score-default-duration)
+	 entry temporary end type match)
 
     ;; First we read the header to score.
     (while (not hchar)
@@ -262,132 +271,92 @@ used as score."
 		 (mapconcat (lambda (s) (char-to-string (car s)))
 			    char-to-header "")))
       (setq hchar (read-char))
-      (if (not (or (= hchar ??) (= hchar ?\C-h)))
-	  ()
+      (when (or (= hchar ??) (= hchar ?\C-h))
 	(setq hchar nil)
 	(gnus-score-insert-help "Match on header" char-to-header 1)))
 
-    (and (get-buffer "*Score Help*")
-	 (progn
-	   (kill-buffer "*Score Help*")
-	   (and gnus-score-help-winconf
-		(set-window-configuration gnus-score-help-winconf))))
+    (gnus-score-kill-help-buffer)
+    (unless (setq entry (assq (downcase hchar) char-to-header))
+      (if mimic (error "%c %c" prefix hchar) (error "")))
 
-    (or (setq entry (assq (downcase hchar) char-to-header))
-	(progn
-	  (ding)
-	  (setq end t)
-	  (if mimic (message "%c %c" prefix hchar) (message ""))))
-    (if (or end (/= (downcase hchar) hchar))
-	(progn
-	  ;; This was a majuscle, so we end reading and set the defaults.
-	  (if mimic (message "%c %c" prefix hchar) (message ""))
-	  (setq type gnus-score-default-type
-		temporary (and gnus-score-default-duration
-			       (assq
-				(aref (symbol-name gnus-score-default-duration)
-				      0)
-				char-to-perm))))
-
-      ;; We continue reading - the type.
-      (while (not tchar)
-	(if mimic
-	    (progn
-	      (sit-for 1)
-	      (message "%c %c-" prefix hchar))
-	  (message "%s header '%s' with match type (%s?): "
-		   (if increase "Increase" "Lower")
-		   (nth 1 entry)
-		   (mapconcat (lambda (s) 
-				(if (eq (nth 4 entry) 
-					(nth 3 s))
-				    (char-to-string (car s))
-				  ""))
-			      char-to-type "")))
-	(setq tchar (read-char))
-	(if (not (or (= tchar ??) (= tchar ?\C-h)))
-	    ()
-	  (setq tchar nil)
-	  (gnus-score-insert-help "Match type" char-to-type 2)))
-
-      (and (get-buffer "*Score Help*")
-	   (progn
-	     (and gnus-score-help-winconf
-		  (set-window-configuration gnus-score-help-winconf))
-	     (kill-buffer "*Score Help*")))
-      
-      (or (setq type (nth 1 (assq (downcase tchar) char-to-type)))
+    (when (/= (downcase hchar) hchar)
+      ;; This was a majuscle, so we end reading and set the defaults.
+      (if mimic (message "%c %c" prefix hchar) (message ""))
+      (setq tchar (or gnus-score-default-type ?s)
+	    pchar (or gnus-score-default-duration ?t)))
+    
+    ;; We continue reading - the type.
+    (while (not tchar)
+      (if mimic
 	  (progn
-	    (ding)
-	    (if mimic (message "%c %c" prefix hchar) (message ""))
-	    (setq end t)))
-      (if (or end (/= (downcase tchar) tchar))
+	    (sit-for 1) (message "%c %c-" prefix hchar))
+	(message "%s header '%s' with match type (%s?): "
+		 (if increase "Increase" "Lower")
+		 (nth 1 entry)
+		 (mapconcat (lambda (s) 
+			      (if (eq (nth 4 entry) 
+				      (nth 3 s))
+				  (char-to-string (car s))
+				""))
+			    char-to-type "")))
+      (setq tchar (read-char))
+      (when (or (= tchar ??) (= tchar ?\C-h))
+	(setq tchar nil)
+	(gnus-score-insert-help "Match type" char-to-type 2)))
+
+    (gnus-score-kill-help-buffer)
+    (unless (setq type (nth 1 (assq (downcase tchar) char-to-type)))
+      (if mimic (error "%c %c" prefix hchar) (error "")))
+
+    (when (/= (downcase tchar) tchar)
+      ;; It was a majuscle, so we end reading and the the default.
+      (if mimic (message "%c %c %c" prefix hchar tchar)
+	(message ""))
+      (setq pchar (or gnus-score-default-duration ?p)))
+
+    ;; We continue reading.
+    (while (not pchar)
+      (if mimic
 	  (progn
-	    ;; It was a majuscle, so we end reading and the the default.
-	    (if mimic (message "%c %c %c" prefix hchar tchar)
-	      (message ""))
-	    (setq temporary 
-		  (and gnus-score-default-duration
-		       (assq
-			(aref (symbol-name gnus-score-default-duration)
-			      0)
-			char-to-perm))))
+	    (sit-for 1) (message "%c %c %c-" prefix hchar tchar))
+	(message "%s permanence (%s?): " (if increase "Increase" "Lower")
+		 (mapconcat (lambda (s) (char-to-string (car s)))
+			    char-to-perm "")))
+      (setq pchar (read-char))
+      (when (or (= pchar ??) (= pchar ?\C-h))
+	(setq pchar nil)
+	(gnus-score-insert-help "Match permanence" char-to-perm 2)))
 
-	;; We continue reading.
-	(while (not pchar)
-	  (if mimic
-	      (progn
-		(sit-for 1)
-		(message "%c %c %c-" prefix hchar tchar))
-	    (message "%s permanence (%s?): " (if increase "Increase" "Lower")
-		     (mapconcat (lambda (s) (char-to-string (car s)))
-				char-to-perm "")))
-	  (setq pchar (read-char))
-	  (if (not (or (= pchar ??) (= pchar ?\C-h)))
-	      ()
-	    (setq pchar nil)
-	    (gnus-score-insert-help "Match permanence" char-to-perm 2)))
-
-	(and (get-buffer "*Score Help*")
-	     (progn
-	       (and gnus-score-help-winconf
-		    (set-window-configuration gnus-score-help-winconf))
-	       (kill-buffer "*Score Help*")))
-
-	(if mimic (message "%c %c %c" prefix hchar tchar pchar)
-	  (message ""))
-	(if (setq temporary (nth 1 (assq pchar char-to-perm)))
-	    ()
-	  (ding)
-	  (setq end t)
-	  (if mimic 
-	      (message "%c %c %c %c" prefix hchar tchar pchar)
-	    (message "")))))
+    (gnus-score-kill-help-buffer)
+    (if mimic (message "%c %c %c" prefix hchar tchar pchar)
+      (message ""))
+    (unless (setq temporary (assq pchar char-to-perm))
+      (if mimic 
+	  (error "%c %c %c %c" prefix hchar tchar pchar)
+	(error "")))
 
     ;; We have all the data, so we enter this score.
-    (if end
-	()
-      (setq match (if (string= (nth 2 entry) "") ""
-		    (gnus-summary-header (or (nth 2 entry) (nth 1 entry)))))
+    (setq match (if (string= (nth 2 entry) "") ""
+		  (gnus-summary-header (or (nth 2 entry) (nth 1 entry)))))
       
-      ;; Modify the match, perhaps.
-      (cond 
-       ((equal (nth 1 entry) "xref")
-	(when (string-match "^Xref: *" match)
-	  (setq match (substring match (match-end 0))))
-	(when (string-match "^[^:]* +" match)
-	  (setq match (substring match (match-end 0))))))
+    ;; Modify the match, perhaps.
+    (cond 
+     ((equal (nth 1 entry) "xref")
+      (when (string-match "^Xref: *" match)
+	(setq match (substring match (match-end 0))))
+      (when (string-match "^[^:]* +" match)
+	(setq match (substring match (match-end 0))))))
 
-      (gnus-summary-score-entry
-       (nth 1 entry)			; Header
-       match				; Match
-       type				; Type
-       (if (eq 's score) nil score)     ; Score
-       (if (eq 'perm temporary)         ; Temp
-           nil
-         temporary)
-       (not (nth 3 entry)))		; Prompt
-      )))
+    (gnus-summary-score-entry
+     (nth 1 entry)			; Header
+     match				; Match
+     type				; Type
+     (if (eq 's score) nil score)	; Score
+     (if (eq 'perm temporary)		; Temp
+	 nil
+       (nth 1 temporary))
+     (not (nth 3 entry)))		; Prompt
+    ))
   
 (defun gnus-score-insert-help (string alist idx)
   (setq gnus-score-help-winconf (current-window-configuration))

@@ -187,6 +187,7 @@ instead.")
 (defvar gnus-group-faq-directory
   '("/ftp@mirrors.aol.com:/pub/rtfm/usenet/"
 ;    "/ftp@ftp.uu.net:/usenet/news.answers/"
+    "/ftp@src.doc.ic.ac.uk:/usenet/news-FAQS/"
     "/ftp@ftp.seas.gwu.edu:/pub/rtfm/"
     "/ftp@rtfm.mit.edu:/pub/usenet/news.answers/"
     "/ftp@ftp.uni-paderborn.de:/pub/FAQ/"
@@ -213,6 +214,7 @@ If the default site is too slow, try one of these:
 		  ftp.seas.gwu.edu		 /pub/rtfm
 		  rtfm.mit.edu			 /pub/usenet/news.answers
    Europe:	  ftp.uni-paderborn.de		 /pub/FAQ
+                  src.doc.ic.ac.uk               /usenet/news-FAQS
 		  ftp.sunet.se			 /pub/usenet
    Asia:	  nctuccca.edu.tw		 /USENET/FAQ
 		  hwarang.postech.ac.kr		 /pub/usenet/news.answers
@@ -480,8 +482,8 @@ comparing subjects.")
 (defvar gnus-build-sparse-threads nil
   "*If non-nil, fill in the gaps in threads.
 If `some', only fill in the gaps that are needed to tie loose threads
-together.  If non-nil and non-`some', fill in all gaps that Gnus
-manages to guess.")
+together.  If `more', fill in all leaf nodes that Gnus can find.  If
+non-nil and non-`some', fill in all gaps that Gnus manages to guess.")
 
 (defvar gnus-summary-thread-gathering-function 'gnus-gather-threads-by-subject
   "Function used for gathering loose threads.
@@ -1320,6 +1322,9 @@ expiring - which means that all read articles will be deleted after
 (say) one week.	 (This only goes for mail groups and the like, of
 course.)")
 
+(defvar gnus-group-uncollapsed-levels 1
+  "Number of group name elements to leave alone when making a short group name.")
+
 (defvar gnus-hidden-properties '(invisible t intangible t)
   "Property list to use for hiding text.")
 
@@ -1653,7 +1658,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.29"
+(defconst gnus-version "September Gnus v0.30"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1991,7 +1996,7 @@ Thank you for your help in stamping out bugs.
      ("gnus-uu" (gnus-uu-extract-map keymap) (gnus-uu-mark-map keymap))
      ("gnus-uu" :interactive t
       gnus-uu-digest-mail-forward gnus-uu-digest-post-forward
-      gnus-uu-mark-series gnus-uu-mark-region
+      gnus-uu-mark-series gnus-uu-mark-region gnus-uu-mark-buffer
       gnus-uu-mark-by-regexp gnus-uu-mark-all
       gnus-uu-mark-sparse gnus-uu-mark-thread gnus-uu-decode-uu
       gnus-uu-decode-uu-and-save gnus-uu-decode-unshar
@@ -2014,7 +2019,8 @@ Thank you for your help in stamping out bugs.
       gnus-summary-reply gnus-summary-reply-with-original
       gnus-summary-mail-forward gnus-summary-mail-other-window
       gnus-bug)
-     ("gnus-picon" gnus-article-display-picons)
+     ("gnus-picon" :interactive t gnus-article-display-picons
+      gnus-group-display-picons)
      ("gnus-vm" gnus-vm-mail-setup)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
       gnus-summary-save-article-vm gnus-yank-article))))
@@ -3260,7 +3266,7 @@ If RE-ONLY is non-nil, strip leading `Re:'s only."
     (cond
      ((null split)
       t)
-     ((not (or (eq type 'horizontal) (eq type 'vertical)))
+     ((not (or (eq type 'horizontal) (eq type 'vertical) (eq type 'frame)))
       (let ((buffer (cond ((stringp type) type)
 			  (t (cdr (assq type gnus-window-to-buffer)))))
 	    win buf)
@@ -3268,7 +3274,7 @@ If RE-ONLY is non-nil, strip leading `Re:'s only."
 	  (error "Illegal buffer type: %s" type))
 	(when (setq buf (get-buffer (if (symbolp buffer) (symbol-value buffer)
 				      buffer)))
-	  (setq win (get-buffer-window buf)))
+	  (setq win (get-buffer-window buf t)))
 	(when win
 	  (if (memq 'point split)
 	      win
@@ -3910,6 +3916,7 @@ Note: LIST has to be sorted over `<'."
    "m" gnus-group-mark-group
    "u" gnus-group-unmark-group
    "w" gnus-group-mark-region
+   "m" gnus-group-mark-buffer
    "r" gnus-group-mark-regexp
    "U" gnus-group-unmark-all-groups)
 
@@ -4130,7 +4137,7 @@ prompt the user for the name of an NNTP server to use."
   (let ((history load-history)
 	feature)
     (while history
-      (and (string-match "^gnus" (car (car history)))
+      (and (string-match "^\\(gnus\\|nn\\)" (caar history))
 	   (setq feature (cdr (assq 'provide (car history))))
 	   (unload-feature feature 'force))
       (setq history (cdr history)))))
@@ -4816,6 +4823,12 @@ If UNMARK, remove the mark instead."
     (save-excursion
       (goto-char beg)
       (- num (gnus-group-mark-group num unmark)))))
+
+(defun gnus-group-mark-buffer (unmark)
+  "Mark all groups in the buffer.
+If UNMARK, remove the mark instead."
+  (interactive "P")
+  (gnus-group-mark-region unmark (point-min) (point-max)))
 
 (defun gnus-group-mark-regexp (regexp)
   "Mark all groups that match some regexp."
@@ -5516,25 +5529,24 @@ If REVERSE, reverse the sorting order."
   (interactive (list gnus-group-sort-function
 		     current-prefix-arg))
   (let ((func (cond 
-	       ((not (listp func))
-		func)
-	       ((= 1 (length func))
-		(car func))
-	       (t
-		`(lambda (t1 t2)
-		   ,(gnus-make-sort-function 
-		     (reverse func)))))))
+	       ((not (listp func)) func)
+	       ((null func) func)
+	       ((= 1 (length func)) (car func))
+	       (t `(lambda (t1 t2)
+		     ,(gnus-make-sort-function 
+		       (reverse func)))))))
     ;; We peel off the dummy group from the alist.
-    (when (equal (car (gnus-info-group gnus-newsrc-alist)) "dummy.group")
-      (pop gnus-newsrc-alist))
-    ;; Do the sorting.
-    (setq gnus-newsrc-alist
-	  (sort gnus-newsrc-alist func))
-    (when reverse
-      (setq gnus-newsrc-alist (nreverse gnus-newsrc-alist)))
-    ;; Regenerate the hash table.
-    (gnus-make-hashtable-from-newsrc-alist)
-    (gnus-group-list-groups)))
+    (when func
+      (when (equal (car (gnus-info-group gnus-newsrc-alist)) "dummy.group")
+	(pop gnus-newsrc-alist))
+      ;; Do the sorting.
+      (setq gnus-newsrc-alist
+	    (sort gnus-newsrc-alist func))
+      (when reverse
+	(setq gnus-newsrc-alist (nreverse gnus-newsrc-alist)))
+      ;; Regenerate the hash table.
+      (gnus-make-hashtable-from-newsrc-alist)
+      (gnus-group-list-groups))))
 
 (defun gnus-group-sort-groups-by-alphabet (&optional reverse)
   "Sort the group buffer alphabetically by group name.
@@ -6584,6 +6596,7 @@ and the second element is the address."
    "i" gnus-summary-raise-thread
    "T" gnus-summary-toggle-threads
    "t" gnus-summary-rethread-current
+   "^" gnus-summary-reparent-thread
    "s" gnus-summary-show-thread
    "S" gnus-summary-show-all-threads
    "h" gnus-summary-hide-thread
@@ -7725,7 +7738,8 @@ If NO-DISPLAY, don't generate a summary buffer."
 
 (defun gnus-sort-threads (threads)
   "Sort THREADS."
-  (when gnus-thread-sort-functions
+  (if (not gnus-thread-sort-functions)
+      threads
     (let ((func (if (= 1 (length gnus-thread-sort-functions))
 		    (car gnus-thread-sort-functions)
 		  `(lambda (t1 t2)
@@ -9111,19 +9125,23 @@ displayed, no centering will be performed."
 	window (min bottom (save-excursion 
 			     (forward-line (- top)) (point)))))
       ;; Do horizontal recentering while we're at it.
-      (gnus-summary-position-point)
-      (gnus-horizontal-recenter))))
+      (let ((selected (selected-window)))
+	(select-window (get-buffer-window (current-buffer) t))
+	(gnus-summary-position-point)
+	(gnus-horizontal-recenter)
+	(select-window selected)))))
 
 (defun gnus-horizontal-recenter ()
   "Recenter the current buffer horizontally."
   (if (< (current-column) (/ (window-width) 2))
-      (set-window-hscroll (get-buffer-window (current-buffer)) 0)
+      (set-window-hscroll (get-buffer-window (current-buffer) t) 0)
     (let* ((orig (point))
-	   (end (window-end))
+	   (end (window-end (get-buffer-window (current-buffer) t)))
 	   (max 0))
       ;; Find the longest line currently displayed in the window.
       (goto-char (window-start))
-      (while (< (point) end)
+      (while (and (not (eobp)) 
+		  (< (point) end))
 	(end-of-line)
 	(setq max (max max (current-column)))
 	(forward-line 1))
@@ -9131,16 +9149,19 @@ displayed, no centering will be performed."
       ;; Scroll horizontally to center (sort of) the point.
       (if (> max (window-width))
 	  (set-window-hscroll 
-	   (get-buffer-window (current-buffer))
+	   (get-buffer-window (current-buffer) t)
 	   (min (- (current-column) (/ (window-width) 3))
 		(+ 2 (- max (window-width)))))
-	(set-window-hscroll (get-buffer-window (current-buffer)) 0))
+	(set-window-hscroll (get-buffer-window (current-buffer) t) 0))
       max)))
-    
+
 ;; Function written by Stainless Steel Rat <ratinox@ccs.neu.edu>.
 (defun gnus-short-group-name (group &optional levels)
   "Collapse GROUP name LEVELS."
-  (let* ((name "") (foreign "") (depth 0) (skip 1)
+  (let* ((name "") 
+	 (foreign "")
+	 (depth 0) 
+	 (skip 1)
 	 (levels (or levels
 		     (progn
 		       (while (string-match "\\." group skip)
@@ -9151,7 +9172,8 @@ displayed, no centering will be performed."
 	(setq foreign (substring group 0 (match-end 0))
 	      group (substring group (match-end 0))))
     (while group
-      (if (and (string-match "\\." group) (> levels 0))
+      (if (and (string-match "\\." group)
+	       (> levels (- gnus-group-uncollapsed-levels 1)))
 	  (setq name (concat name (substring group 0 1))
 		group (substring group (match-end 0))
 		levels (- levels 1)
@@ -10258,7 +10280,8 @@ If ALL, mark even excluded ticked and dormants as read."
 (defun gnus-cut-threads (threads)
   "Cut off all uninteresting articles from the beginning of threads."
   (when (or (eq gnus-fetch-old-headers 'some)
-	    (eq gnus-build-sparse-threads 'some))
+	    (eq gnus-build-sparse-threads 'some)
+	    (eq gnus-build-sparse-threads 'more))
     (let ((th threads))
       (while th
 	(setcar th (gnus-cut-thread (car th)))
@@ -10275,6 +10298,7 @@ fetch-old-headers verbiage, and so on."
 	       (not (eq gnus-fetch-old-headers 'some))
 	       (null gnus-summary-expunge-below)
 	       (not (eq gnus-build-sparse-threads 'some))
+	       (not (eq gnus-build-sparse-threads 'more))
 	       (null gnus-thread-expunge-below)))
       () ; Do nothing.
     (push gnus-newsgroup-limit gnus-newsgroup-limits)
@@ -10291,9 +10315,6 @@ fetch-old-headers verbiage, and so on."
 			 gnus-thread-expunge-below))
 		 (gnus-expunge-thread (pop nodes))
 	       (setq thread (pop nodes))
-	       ;(when (or (eq gnus-fetch-old-headers 'some)
-		;	 (eq gnus-build-sparse-threads 'some))
-		; (setq thread (gnus-cut-thread thread)))
 	       (gnus-summary-limit-children thread))))))
      gnus-newsgroup-dependencies)
     ;; If this limitation resulted in an empty group, we might
@@ -10329,7 +10350,7 @@ fetch-old-headers verbiage, and so on."
 		(zerop children))
 	   ;; If this is a sparsely inserted article with no children,
 	   ;; we don't want it.
-	   (and gnus-build-sparse-threads
+	   (and (eq gnus-build-sparse-threads 'some)
 		(memq number gnus-newsgroup-sparse)
 		(zerop children))
 	   ;; If we use expunging, and this article is really
@@ -10592,7 +10613,8 @@ in the comparisons."
 	(func `(lambda (h) (,(intern (concat "mail-header-" header)) h)))
 	(case-fold-search (not not-case-fold))
 	articles d)
-    (or (fboundp func) (error "%s is not a valid header" header))
+    (or (fboundp (intern (concat "mail-header-" header)))
+	(error "%s is not a valid header" header))
     (while data
       (setq d (car data))
       (and (or (not unread)		; We want all articles...
@@ -10799,6 +10821,8 @@ and `request-accept' functions."
       (set (intern (format "gnus-current-%s-group" action)) to-newsgroup))
     (setq to-method (if select-method (list select-method "")
 		      (gnus-find-method-for-group to-newsgroup)))
+    (when (equal to-newsgroup gnus-newsgroup-name)
+      (error "Can't %s to the same group you're already in" action))
     ;; Check the method we are to move this article to...
     (or (gnus-check-backend-function 'request-accept-article (car to-method))
 	(error "%s does not support article copying" (car to-method)))
@@ -10892,7 +10916,7 @@ and `request-accept' functions."
 				       (intern (format "gnus-newsgroup-%s"
 						       (caar marks)))))
 		    (gnus-add-marked-articles
-		     (gnus-info-group info) (cadr marks)
+		     (gnus-info-group info) (caar marks)
 		     (list to-article) info))
 		  (setq marks (cdr marks)))))
 
@@ -11887,6 +11911,53 @@ with that article."
     (gnus-rebuild-thread id)
     (gnus-summary-goto-subject article)))
 
+(defun gnus-summary-reparent-thread ()
+  "Make current article child of the marked (or previous) article.
+
+Note that the re-threading will only work if `gnus-thread-ignore-subject'
+is non-nil or the Subject: of both articles are the same.
+
+The change will not be visible until the next group retrieval."
+  (interactive)
+  (or (not (gnus-group-read-only-p))
+      (error "The current newsgroup does not support article editing."))
+  (or (<= (length gnus-newsgroup-processable) 1)
+      (error "No more than one article may be marked."))
+  (save-window-excursion
+    (let ((gnus-article-buffer " *reparent*")
+	  (current-article (gnus-summary-article-number))
+	  ; first grab the marked article, otherwise one line up.
+	  (parent-article (if (not (null gnus-newsgroup-processable))
+			      (car gnus-newsgroup-processable)
+			    (save-excursion
+			      (if (eq (forward-line -1) 0)
+				  (gnus-summary-article-number)
+				(error "Beginning of summary buffer."))))))
+      (or (not (eq current-article parent-article))
+	  (error "An article may not be self-referential."))
+      (let ((message-id (mail-header-id 
+			 (gnus-summary-article-header parent-article))))
+	(or (and message-id (not (equal message-id "")))
+	    (error "No message-id in desired parent."))
+	(gnus-summary-select-article t t nil current-article)
+	(set-buffer gnus-article-buffer)
+	(setq buffer-read-only nil)
+	(let ((buf (buffer-substring-no-properties (point-min) (point-max))))
+	  (erase-buffer)
+	  (insert buf))
+	(goto-char (point-min))
+	(if (search-forward-regexp "^References: " nil t)
+	    (insert message-id " " )
+	  (insert "References: " message-id "\n"))
+	(or (gnus-request-replace-article current-article
+					  (car gnus-article-current)
+					  gnus-article-buffer)
+	    (error "Couldn't replace article."))
+	(set-buffer gnus-summary-buffer)
+	(gnus-summary-unmark-all-processable)
+	(message "Article %d is now the child of article %d."
+		 current-article parent-article)))))
+
 (defun gnus-summary-toggle-threads (&optional arg)
   "Toggle showing conversation threads.
 If ARG is positive number, turn showing conversation threads on."
@@ -12564,15 +12635,10 @@ is initialized from the SAVEDIR environment variable."
 	  (add-text-properties
 	   b e (list 'gnus-number gnus-reffed-article-number
 		     gnus-mouse-face-prop gnus-mouse-face))
-	  (gnus-data-enter after-article
-			   gnus-reffed-article-number
-			   gnus-unread-mark
-			   b
-			   (car pslist)
-			   0
-			   (- e b))
-	  (setq gnus-newsgroup-unreads
-		(cons gnus-reffed-article-number gnus-newsgroup-unreads))
+	  (gnus-data-enter
+	   after-article gnus-reffed-article-number
+	   gnus-unread-mark b (car pslist) 0 (- e b))
+	  (push gnus-reffed-article-number gnus-newsgroup-unreads)
 	  (setq gnus-reffed-article-number (1- gnus-reffed-article-number))
 	  (setq pslist (cdr pslist)))))))
 
@@ -13400,14 +13466,37 @@ always hide."
   (unless (gnus-article-check-hidden-text 'signature arg)
     (save-excursion
       (set-buffer gnus-article-buffer)
-      (let ((buffer-read-only nil))
-	(goto-char (point-max))
-	(and (re-search-backward gnus-signature-separator nil t)
-	     gnus-signature-face
-	     (add-text-properties
-	      (match-end 0) (point-max)
-	      (nconc (list 'gnus-type 'signature)
-		     gnus-hidden-properties)))))))
+      (save-restriction
+	(let ((buffer-read-only nil))
+	  (when (gnus-narrow-to-signature)
+	    (add-text-properties
+	     (point-min) (point-max)
+	     (nconc (list 'gnus-type 'signature)
+		    gnus-hidden-properties))))))))
+
+(defvar gnus-signature-limit nil
+  "Provide a limit to what is considered a signature.
+If it is a number, no signature may not be longer (in characters) than
+that number.  If it is a function, the function will be called without
+any parameters, and if it returns nil, there is no signature in the
+buffer.  If it is a string, it will be used as a regexp.  If it
+matches, the text in question is not a signature.")
+
+(defun gnus-narrow-to-signature ()
+  "Narrow to the signature."
+  (widen)
+  (goto-char (point-max))
+  (when (re-search-backward gnus-signature-separator nil t)
+    (forward-line 1)
+    (when (or (null gnus-signature-limit)
+	      (and (numberp gnus-signature-limit)
+		   (< (- (point-max) (point)) gnus-signature-limit))
+	      (and (gnus-functionp gnus-signature-limit)
+		   (funcall gnus-signature-limit))
+	      (and (stringp gnus-signature-limit)
+		   (not (re-search-forward gnus-signature-limit nil t))))
+      (narrow-to-region (point) (point-max))
+      t)))
 
 (defun gnus-article-check-hidden-text (type arg)
   "Return nil if hiding is necessary."
@@ -14242,7 +14331,7 @@ If FETCH-OLD, retrieve all headers (or some subset thereof) in the group."
     (if (not (gnus-check-backend-function 'request-update-mark (car method)))
 	mark
       (funcall (gnus-get-function method 'request-update-mark)
-	       (gnus-group-real-name group) article))))
+	       (gnus-group-real-name group) article mark))))
 
 (defun gnus-request-article (article group &optional buffer)
   "Request the ARTICLE in GROUP.
@@ -14296,6 +14385,10 @@ If GROUP is nil, all groups on METHOD are scanned."
 	     (nth 1 method) accept-function last)))
 
 (defun gnus-request-accept-article (group &optional last method)
+  ;; Make sure there's a newline at the end of the article.
+  (goto-char (point-max))
+  (unless (bolp)
+    (insert "\n"))
   (let ((func (if (symbolp group) group
 		(car (or method (gnus-find-method-for-group group))))))
     (funcall (intern (format "%s-request-accept-article" func))

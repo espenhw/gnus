@@ -88,7 +88,7 @@ Optional argument FOLDER specifies folder name."
       (save-excursion
 	(goto-char (point-min))
 	(insert "In-Reply-To: " in-reply-to "\n")))
-    (setq mh-sent-from-folder gnus-article-copy)
+    (setq mh-sent-from-folder gnus-original-article-buffer)
     (setq mh-sent-from-msg 1)
     (setq gnus-mail-buffer (buffer-name (current-buffer)))
     (use-local-map (copy-keymap (current-local-map)))

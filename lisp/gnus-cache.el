@@ -269,7 +269,7 @@ variable to \"^nnml\".")
 	(gnus-cache-braid-heads group cached)
 	type)))))
 
-(defun gnus-cache-enter-article (n)
+(defun gnus-cache-enter-article (&optional n)
   "Enter the next N articles into the cache.
 If not given a prefix, use the process marked articles instead.
 Returns the list of articles entered."
@@ -447,20 +447,25 @@ Returns the list of articles removed."
 (defun gnus-jog-cache ()
   "Go through all groups and put the articles into the cache."
   (interactive)
-  (let ((newsrc (cdr gnus-newsrc-alist))
-	(gnus-cache-enter-articles '(unread))
-	(gnus-mark-article-hook nil)
+  (let ((gnus-mark-article-hook nil)
 	(gnus-expert-user t)
 	(nnmail-spool-file nil)
 	(gnus-use-dribble-file nil)
 	(gnus-novice-user nil)
 	(gnus-large-newsgroup nil))
-    (while newsrc
-      (gnus-summary-read-group (car (pop newsrc)) nil t)
-      (when (eq major-mode 'gnus-summary-mode)
-	(while gnus-newsgroup-unreads
-	  (gnus-summary-select-article t t nil (pop gnus-newsgroup-unreads)))
-	(kill-buffer (current-buffer))))))
+    ;; Start Gnus.
+    (gnus)
+    ;; Go through all groups...
+    (gnus-group-mark-buffer)
+    (gnus-group-universal-argument 
+     nil nil 
+     (lambda ()
+       (gnus-summary-read-group nil nil t)
+       ;; ... and enter the articles into the cache.
+       (when (eq major-mode 'gnus-summary-mode)
+	 (gnus-uu-mark-buffer)
+	 (gnus-cache-enter-article)
+	 (kill-buffer (current-buffer)))))))
 
 (defun gnus-cache-read-active (&optional force)
   "Read the cache active file."

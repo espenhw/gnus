@@ -1,3 +1,130 @@
+Sun Jan 21 01:59:13 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el (gnus-summary-recenter): Recenter horizontally.
+
+Sun Jan 21 01:08:58 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-horizontal-recenter): Would infloop.
+	(gnus-cut-threads): Cut off `more' threads.
+
+	* gnus-xmas.el (gnus-xmas-move-overlay): Handle detached extents. 
+	(gnus-xmas-make-overlay): New function.
+
+	* gnus-salt.el (gnus-tree-recenter): Search all frames.
+
+	* gnus.el (gnus-all-windows-visible-p): Be `frame' aware.
+
+	* gnus-salt.el (gnus-salt): Provide.
+
+	* gnus-xmas.el (gnus-xmas-tree-minimize): New function.
+
+	* gnus-salt.el (gnus-tree-read-summary-keys): Don't use
+	`overlay-end'. 
+
+	* gnus-xmas.el (gnus-xmas-define): Redefine overlay-end.
+
+	* gnus-ems.el (gnus-overlay-end): New alias.
+
+	* gnus-salt.el (gnus-tree-minimize): Don't use
+	`save-selected-window'. 
+
+Sat Jan 20 08:40:46 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-uu.el (gnus-uu-grab-articles): Give a better message.
+
+Sat Jan 20 08:19:29 1996  Colin Rafferty  <craffert@sps.ml.com>
+
+	* gnus.el (gnus-summary-reparent-thread): New command and
+	keystroke. 
+
+Sat Jan 20 04:12:17 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-score-kill-help-buffer): New function.
+	(gnus-summary-increase-score): Use the default values.
+
+	* gnus-cache.el (gnus-jog-cache): Make sure Gnus is started.
+	(gnus-jog-cache): New implementation.
+
+	* gnus.el (gnus-unload): Also unload nn*.
+	(gnus-group-mark-region): New command and keystroke.
+
+	* nnmail.el (nnmail-process-babyl-mail-format): Fold case.
+	(nnmail-process-unix-mail-format): Ditto.
+	(nnmail-process-mmdf-mail-format): Ditto.
+
+	* gnus.el (gnus-group-faq-directory): New default.
+
+	* gnus-mh.el (gnus-mh-mail-setup): Use original article buffer.
+
+	* gnus-salt.el (gnus-tree-highlight-article): Move point.
+
+Sat Jan 20 03:32:17 1996  Kai Grossjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+
+	* gnus.el (gnus-summary-find-matching): Typo.
+
+Sat Jan 20 00:54:13 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-build-sparse-threads): Allow `more' as a value.
+	(gnus-request-update-mark): Wrong number of parameters.
+
+	* gnus-vis.el (gnus-article-highlight-signature): Use new function.
+
+	* gnus.el (gnus-group-uncollapsed-levels): New variable.
+	(gnus-short-group-name): Use it.
+	(gnus-narrow-to-signature): New function.
+	(gnus-article-hide-signature): Use it.
+
+	* gnus-msg.el (gnus-inews-insert-archive-gcc): Allow disabling
+	archiving. 
+	(gnus-inews-insert-archive-gcc): Allow var to be a function.
+	(gnus-inews-real-user-address): Always use `system-name'.
+
+	* gnus.el (gnus-sort-threads): Would choke when no sorting
+	functions were specified.
+	(gnus-group-sort-groups): Ditto.
+
+	* gnus-cite.el (gnus-dissect-cited-text): New function.
+	(gnus-article-toggle-cited-text): New function.
+	(gnus-cited-text-button-line-format): New variable.
+	(gnus-article-hide-citation): Add buttons.
+	(gnus-cited-lines-visible): New variable.
+
+	* gnus.el (gnus-summary-move-article): Don't allow moving to the
+	current group.
+
+Sat Jan 20 00:50:36 1996  Kai Grossjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+
+	* gnus.el (gnus-summary-move-article): Didn't update marks.
+
+Sat Jan 20 00:16:44 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-request-accept-article): Make sure there's a
+	newline at the end of the article.
+
+	* gnus-soup.el (gnus-soup-parse-areas): Kill buffer after
+	parsing. 
+
+Thu Jan 18 11:50:06 1996  Wes Hardaker  <hardaker@ece.ucdavis.edu>
+ 
+       * gnus.el (auto-load): Added gnus-group-display-picons to the
+         gnus-picon auto-load list.  Also made the refernce(s) interactive.
+ 
+Fri Jan 19 04:20:16 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-xmas.el (gnus-xmas-read-event-char): Don't force event keys
+	to be numbers.
+
+Fri Jan 19 04:11:39 1996  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus-srvr.el (gnus-server-position-point): Define.
+
+	* gnus-salt.el (gnus-tree-recenter): Don't use
+	`save-selected-window'. 
+
+Thu Jan 18 03:08:40 1996  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el: 0.29 is released.
+
 Wed Jan 17 17:00:55 1996  Steven L. Baur  <steve@miranova.com>
  
 	* gnus-msg.el (gnus-inews-domain-name): mail-host-address may not

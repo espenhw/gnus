@@ -1142,7 +1142,9 @@ The headers will be included in the sequence they are matched.")
 	    (setq state 'first-and-last)
 	  (setq state 'last)))
 
-      (message "Getting article %d, %s" article (gnus-uu-part-number article))
+      (let ((part (gnus-uu-part-number article)))
+	(message "Getting article %d%s..." 
+		 article (if (string= part "") "" (concat ", " part))))
       (gnus-summary-display-article article)
       
       ;; Push the article to the processing function.

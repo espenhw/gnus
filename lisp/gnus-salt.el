@@ -24,6 +24,7 @@
 ;;; Code:
 
 (require 'gnus)
+(eval-when-compile (require 'cl))
 
 ;;;
 ;;; gnus-pick-mode
@@ -287,7 +288,7 @@ Two predefined functions are available:
     (when (setq win (get-buffer-window buf))
       (select-window win)
       (when gnus-selected-tree-overlay
-	(goto-char (overlay-end gnus-selected-tree-overlay)))
+	(goto-char (or (gnus-overlay-end gnus-selected-tree-overlay) 1)))
       (gnus-tree-minimize))))
 
 (defun gnus-tree-select-article (article)
@@ -322,23 +323,26 @@ Two predefined functions are available:
 
 (defun gnus-tree-recenter ()
   "Center point in the tree window."
-  (when (get-buffer-window (current-buffer))
-    (save-selected-window
-      (select-window (get-buffer-window (current-buffer)))
+  (let ((selected (selected-window))
+	(cur-window (get-buffer-window (current-buffer) t)))
+    (when cur-window
+      (select-window cur-window)
+      (when gnus-selected-tree-overlay
+	(goto-char (or (gnus-overlay-end gnus-selected-tree-overlay) 1)))
       (let* ((top (cond ((< (window-height) 4) 0)
 			((< (window-height) 7) 1)
-			(t 2)))
+			(t 2))) 
 	     (height (1- (window-height)))
 	     (bottom (save-excursion (goto-char (point-max))
 				     (forward-line (- height))
-				     (point)))
-	     (window (get-buffer-window (current-buffer))))
+				     (point))))
 	;; Set the window start to either `bottom', which is the biggest
 	;; possible valid number, or the second line from the top,
 	;; whichever is the least.
 	(set-window-start
-	 window (min bottom (save-excursion 
-			      (forward-line (- top)) (point))))))))
+	 cur-window (min bottom (save-excursion 
+			      (forward-line (- top)) (point)))))
+      (select-window selected))))
 
 (defun gnus-get-tree-buffer ()
   "Return the tree buffer properly initialized."
@@ -362,9 +366,10 @@ Two predefined functions are available:
 	   (wh (and win (1- (window-height win)))))
       (when (and win
 		 (not (eq tot wh)))
-	(save-selected-window
+	(let ((selected (selected-window)))
 	  (select-window win)
-	  (enlarge-window (- tot wh)))))))
+	  (enlarge-window (- tot wh))
+	  (select-window selected))))))
 
 ;;; Generating the tree.
 
@@ -452,7 +457,10 @@ Two predefined functions are available:
       (goto-char (point-min))
       (gnus-tree-minimize)
       (gnus-tree-recenter)
-      (gnus-horizontal-recenter))))
+      (let ((selected (selected-window)))
+	(select-window (get-buffer-window (set-buffer gnus-tree-buffer) t))
+	(gnus-horizontal-recenter)
+	(select-window selected)))))
 
 (defun gnus-generate-horizontal-tree (thread level &optional dummyp)
   "Generate a horizontal tree."
@@ -582,17 +590,22 @@ Two predefined functions are available:
 	region)
     (set-buffer gnus-tree-buffer)
     (when (setq region (gnus-tree-article-region article))
-      (unless gnus-selected-tree-overlay
+      (when (or (not gnus-selected-tree-overlay)
+		(and (fboundp 'extent-detached-p)
+		     (extent-detached-p gnus-selected-tree-overlay)))
 	;; Create a new overlay.
 	(gnus-overlay-put
-	 (setq gnus-selected-tree-overlay (gnus-make-overlay 1 1))
+	 (setq gnus-selected-tree-overlay (gnus-make-overlay 1 2))
 	 'face gnus-selected-tree-face))
       ;; Move the overlay to the article.
       (gnus-move-overlay 
        gnus-selected-tree-overlay (goto-char (car region)) (cdr region))
       (gnus-tree-minimize)
       (gnus-tree-recenter)
-      (gnus-horizontal-recenter))
+      (let ((selected (selected-window)))
+	(select-window (get-buffer-window (set-buffer gnus-tree-buffer) t))
+	(gnus-horizontal-recenter)
+	(select-window selected)))
     ;; If we remove this save-excursion, it updates the wrong mode lines?!?
     (save-excursion
       (set-buffer gnus-tree-buffer)
@@ -604,6 +617,14 @@ Two predefined functions are available:
     (set-buffer (gnus-get-tree-buffer))
     (let (region)
       (when (setq region (gnus-tree-article-region article))
-	(put-text-property (car region) (cdr region) 'face face)))))
+	(put-text-property (car region) (cdr region) 'face face)
+	(set-window-point 
+	 (get-buffer-window (current-buffer) t) (cdr region))))))
+
+
+;;; Allow redefinition of functions.
+(gnus-ems-redefine)
+
+(provide 'gnus-salt)
 
 ;;; gnus-salt.el ends here

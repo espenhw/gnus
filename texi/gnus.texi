@@ -1251,7 +1251,10 @@ A string that looks like @samp{<%s:%n>} if a foreign select method is
 used.
 
 @item c
-Short (collapsed) group name.
+@vindex gnus-group-uncollapsed-levels
+Short (collapsed) group name.  The @code{gnus-group-uncollapsed-levels}
+variable says how many levels to leave at the end of the group name.
+The default is @samp{1}.
 
 @item u
 User defined specifier.  The next character in the format string should
@@ -1740,6 +1743,11 @@ Remove the mark from all groups (@code{gnus-group-unmark-all-groups}).
 @kindex M w (Group)
 @findex gnus-group-mark-region
 Mark all groups between point and mark (@code{gnus-group-mark-region}). 
+
+@item M b
+@kindex M b (Group)
+@findex gnus-group-mark-buffer
+Mark all groups in the buffer (@code{gnus-group-mark-buffer}). 
 
 @item M r
 @kindex M r (Group)
@@ -6155,7 +6163,9 @@ is missing from the thread.  (These gaps appear like normal summary
 lines.  If you select a gap, Gnus will try to fetch the article in
 question.)  If this variable is @code{t}, Gnus will display all these
 "gaps" without regard for whether they are useful for completing the
-thread or not.  This variable is @code{nil} by default.
+thread or not.  Finally, if this variable is @code{more}, Gnus won't cut
+off sparse leaf nodes that don't lead anywhere.  This variable is
+@code{nil} by default.
 
 @item gnus-summary-gather-subject-limit
 @vindex gnus-summary-gather-subject-limit
@@ -6370,12 +6380,19 @@ Expose all hidden threads (@code{gnus-summary-show-all-threads}).
 @findex gnus-summary-hide-all-threads
 Hide all threads (@code{gnus-summary-hide-all-threads}).
 
-@item T R
-@kindex T R (Summary)
+@item T t
+@kindex T t (Summary)
 @findex gnus-summary-rethread-current
 Re-thread the thread the current article is part of
 (@code{gnus-summary-rethread-current}).  This works even when the
 summary buffer is otherwise unthreaded.
+
+@item T ^
+@kindex T ^ (Summary)
+@findex gnus-summary-reparent-thread
+Make the current article the child of the marked (or previous) article
+(@code{gnus-summary-reparent-thread}.  The change will not be visible
+until the next group retrieval.
 
 @end table
 
@@ -7512,7 +7529,7 @@ Hide @sc{pgp} signatures (@code{gnus-article-hide-pgp}).
 @item W W c
 @kindex W W c (Summary)
 @findex gnus-article-hide-citation
-Hide citation (@code{gnus-article-hide-citation}).  Two variables for
+Hide citation (@code{gnus-article-hide-citation}).  Some variables for
 customizing the hiding:
 
 @table @code
@@ -7526,6 +7543,25 @@ If the cited text is of a bigger percentage than this variable (default
 @vindex gnus-cite-hide-absolute
 The cited text must be have at least this length (default 10) before it
 is hidden.
+
+@item gnus-cited-text-button-line-format
+@vindex gnus-cited-text-button-line-format
+Gnus adds buttons show where the cited text has been hidden, and to
+allow toggle hiding the text.  The format of the variable is specified
+by this format-like variable.  These specs are legal:
+
+@table @samp
+@item b
+Start point of the hidden text.
+@item e
+End point of the hidden text.
+@item l
+Length of the hidden text.
+@end table
+
+@item gnus-cited-lines-visible
+@vindex gnus-cited-lines-visible
+The number of lines at the beginning of the cited text to leave shown. 
 
 @end table
 
@@ -7545,6 +7581,14 @@ hidden.  If you give a positive prefix, they will always hide.
 
 Also see @xref{Article Highlighting} for further variables for
 citation customization.
+
+@vindex gnus-signature-limit
+@code{gnus-signature-limit} provides a limit to what is considered a
+signature.  If it is a number, no signature may not be longer (in
+characters) than that number.  If it is a function, the function will be
+called without any parameters, and if it returns @code{nil}, there is no
+signature in the buffer.  If it is a string, it will be used as a
+regexp.  If it matches, the text in question is not a signature.
 
 
 @node Article Washing

@@ -175,6 +175,8 @@ The following commands are available:
       (when gnus-carpal 
 	(gnus-carpal-setup-buffer 'server)))))
 
+(fset 'gnus-server-position-point 'gnus-goto-colon)
+
 (defun gnus-server-prepare ()
   (setq gnus-server-mode-line-format-spec 
 	(gnus-parse-format gnus-server-mode-line-format 

@@ -370,7 +370,7 @@ servers."
 	      (cons (list nntp-current-server
 			  (nnheader-save-variables nntp-server-variables))
 		    nntp-server-alist)))
-    (let ((state (assoc server nntp-server-alist)))
+	    (let ((state (assoc server nntp-server-alist)))
       (if state 
 	  (progn
 	    (nnheader-restore-variables (nth 1 state))

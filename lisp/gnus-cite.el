@@ -33,6 +33,12 @@
 
 ;;; Customization:
 
+(defvar gnus-cited-text-button-line-format "%(%{[...]%}%)"
+  "Format of cited text buttons.")
+
+(defvar gnus-cited-lines-visible nil
+  "The number of lines of hidden cited text to remain visible.")
+
 (defvar gnus-cite-parse-max-size 25000
   "Maximum article size (in bytes) where parsing citations is allowed.
 Set it to nil to parse all articles.")
@@ -134,6 +140,12 @@ The text matching the first grouping will be used as a button.")
 ;; PREFIX: Is the citation prefix of the attribution line(s), and
 ;; TAG: Is a SuperCite tag, if any.
 
+(defvar gnus-cited-text-button-line-format-alist 
+  `((?b beg ?d)
+    (?e end ?d)
+    (?l (- end beg) ?d)))
+(defvar gnus-cited-text-button-line-format-spec nil)
+
 ;;; Commands:
 
 (defun gnus-article-highlight-citation (&optional force)
@@ -207,17 +219,13 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 	      skip (gnus-cite-find-prefix number))
 	(gnus-cite-add-face number skip gnus-cite-attribution-face)))))
 
-(defun gnus-article-fill-cited-article (&optional force)
-  "Do word wrapping in the current article."
-  (interactive (list t))
+(defun gnus-dissect-cited-text ()
+  "Dissect the article buffer looking for cited text."
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (gnus-cite-parse-maybe force)
-    (let ((buffer-read-only nil)
-	  (alist gnus-cite-prefix-alist)
-	  (inhibit-point-motion-hooks t)
-	  prefix numbers number marks
-	  (adaptive-fill-mode nil))
+    (gnus-cite-parse-maybe)
+    (let ((alist gnus-cite-prefix-alist)
+	  prefix numbers number marks)
       ;; Loop through citation prefixes.
       (while alist
 	(setq numbers (pop alist)
@@ -253,7 +261,17 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 	    (push (car omarks) marks))
 	  (setq omarks (cdr omarks)))
 	(push (car omarks) marks)
-	(setq marks (nreverse marks)))
+	(nreverse marks)))))
+
+(defun gnus-article-fill-cited-article (&optional force)
+  "Do word wrapping in the current article."
+  (interactive (list t))
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (let ((buffer-read-only nil)
+	  (inhibit-point-motion-hooks t)
+	  (marks (gnus-dissect-cited-text))
+	  (adaptive-fill-mode nil))
       (save-restriction
 	(while (cdr marks)
 	  (widen)
@@ -261,8 +279,7 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 	  (let ((adaptive-fill-regexp (concat "^" (regexp-quote
 						   (cdr (car marks)))
 					      " *"))
-		(fill-prefix (cdr (car marks)))
-		)
+		(fill-prefix (cdr (car marks))))
 	    (fill-region (point-min) (point-max)))
 	  (set-marker (caar marks) nil)
 	  (setq marks (cdr marks)))
@@ -274,26 +291,53 @@ See the documentation for `gnus-article-highlight-citation'.
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
   (interactive (list current-prefix-arg 'force))
+  (setq gnus-cited-text-button-line-format-spec 
+	(gnus-parse-format gnus-cited-text-button-line-format 
+			   gnus-cited-text-button-line-format-alist t))
   (unless (gnus-article-check-hidden-text 'cite arg)
     (save-excursion
       (set-buffer gnus-article-buffer)
-      (gnus-cite-parse-maybe force)
       (let ((buffer-read-only nil)
-	    (alist gnus-cite-prefix-alist)
+	    (marks (gnus-dissect-cited-text))
 	    (inhibit-point-motion-hooks t)
 	    (props (nconc (list 'gnus-type 'cite)
 			  gnus-hidden-properties))
-	    numbers number)
-	(while alist
-	  (setq numbers (cdr (car alist))
-		alist (cdr alist))
-	  (while numbers
-	    (setq number (car numbers)
-		  numbers (cdr numbers))
-	    (goto-line number)
-	    (or (assq number gnus-cite-attribution-alist)
-		(add-text-properties 
-		 (point) (progn (forward-line 1) (point)) props))))))))
+	    beg end)
+	(while marks
+	  (setq beg nil
+		end nil)
+	  (while (and marks (string= (cdar marks) ""))
+	    (setq marks (cdr marks)))
+	  (when marks 
+	    (setq beg (caar marks)))
+	  (while (and marks (not (string= (cdar marks) "")))
+	    (setq marks (cdr marks)))
+	  (when marks
+	    (setq end (caar marks)))
+	  ;; Skip past lines we want to leave visible.
+	  (when (and beg gnus-cited-lines-visible)
+	    (goto-char beg)
+	    (forward-line gnus-cited-lines-visible)
+	    (if (> (point) end)
+		(setq beg nil)
+	      (setq beg (point))))
+	  (when (and beg end)
+	    (add-text-properties beg end props)
+	    (goto-char beg)
+	    (put-text-property beg end 'gnus-type 'cite)
+	    (gnus-article-add-button
+	     (point)
+	     (progn (eval gnus-cited-text-button-line-format-spec) (point))
+	     `gnus-article-toggle-cited-text (cons beg end))))))))
+
+(defun gnus-article-toggle-cited-text (region)
+  "Toggle hiding the text in REGION."
+  (funcall
+   (if (text-property-any
+	(car region) (cdr region) 
+	(car gnus-hidden-properties) (cadr gnus-hidden-properties))
+       'remove-text-properties 'add-text-properties)
+   (car region) (cdr region) gnus-hidden-properties))
 
 (defun gnus-article-hide-citation-maybe (&optional arg force)
   "Toggle hiding of cited text that has an attribution line.

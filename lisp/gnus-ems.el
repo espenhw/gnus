@@ -29,6 +29,7 @@
 (defalias 'gnus-make-overlay 'make-overlay)
 (defalias 'gnus-overlay-put 'overlay-put)
 (defalias 'gnus-move-overlay 'move-overlay)
+(defalias 'gnus-overlay-end 'overlay-end)
 
 (eval-and-compile 
   (autoload 'gnus-xmas-define "gnus-xmas")
@@ -175,6 +176,16 @@ pounce directly on the real variables themselves."))
 	    (append nnheader-file-name-translation-alist
 		    '((?: . ?_)
 		      (?+ . ?-))))))))
+
+(defvar gnus-tmp-unread)
+(defvar gnus-tmp-replied)
+(defvar gnus-tmp-score-char)
+(defvar gnus-tmp-indentation)
+(defvar gnus-tmp-opening-bracket)
+(defvar gnus-tmp-lines)
+(defvar gnus-tmp-name)
+(defvar gnus-tmp-closing-bracket)
+(defvar gnus-tmp-subject-or-nil)
 
 (defun gnus-ems-redefine ()
   (cond 

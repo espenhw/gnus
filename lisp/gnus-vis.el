@@ -329,6 +329,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 	 ["Unmark all" gnus-group-unmark-all-groups t]
 	 ["Mark regexp" gnus-group-mark-regexp t]
 	 ["Mark region" gnus-group-mark-region t]
+	 ["Mark buffer" gnus-group-mark-buffer t]
 	 ["Execute command" gnus-group-universal-argument t])
 	("Subscribe"
 	 ["Subscribe to random group" gnus-group-unsubscribe-group t]
@@ -1300,14 +1301,17 @@ It does this by highlighting everything after
     (set-buffer gnus-article-buffer)
     (let ((buffer-read-only nil)
 	  (inhibit-point-motion-hooks t))
-      (goto-char (point-max))
-      (and (re-search-backward gnus-signature-separator nil t)
-	   gnus-signature-face
-	   (let ((start (match-beginning 0))
-		 (end (match-end 0)))
-	     (gnus-article-add-button start end 'gnus-signature-toggle end)
-	     (gnus-overlay-put (gnus-make-overlay end (point-max))
-			       'face gnus-signature-face))))))
+      (save-restriction
+	(when (and gnus-signature-face
+		   (gnus-narrow-to-signature))
+	  (gnus-overlay-put (gnus-make-overlay (point-min) (point-max))
+			    'face gnus-signature-face)
+	  (widen)
+	  (re-search-backward gnus-signature-separator nil t)
+	  (let ((start (match-beginning 0))
+		(end (match-end 0)))
+	    (gnus-article-add-button start end 'gnus-signature-toggle
+				     end)))))))
 
 (defun gnus-article-add-buttons (&optional force)
   "Find external references in the article and make buttons of them.

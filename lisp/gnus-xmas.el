@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'text-props)
+(eval-when-compile (require 'cl))
 (defvar menu-bar-mode t)
 
 (defvar gnus-xmas-glyph-directory nil
@@ -168,6 +169,11 @@ call it with the value of the `gnus-data' text property."
 (defun gnus-xmas-move-overlay (extent start end &optional buffer)
   (set-extent-endpoints extent start end))
 
+(defun gnus-xmas-make-overlay (from to &optional buf)
+  (let ((extent (make-extent from to buf)))
+    (set-extent-property extent 'detachable nil)
+    extent))
+
 ;; Fixed by Christopher Davis <ckd@loiosh.kei.com>.
 (defun gnus-xmas-article-add-button (from to fun &optional data)
   "Create a button between FROM and TO with callback FUN and data DATA."
@@ -185,6 +191,24 @@ call it with the value of the `gnus-data' text property."
 
 (defun gnus-xmas-window-top-edge (&optional window)
   (nth 1 (window-pixel-edges window)))
+
+(defun gnus-xmas-tree-minimize ()
+  (when (and gnus-tree-minimize-window
+	     (not (one-window-p)))
+    (let* ((window-min-height 2)
+	   (height (1+ (count-lines (point-min) (point-max))))
+	   (min (max (1- window-min-height) height))
+	   (tot (if (numberp gnus-tree-minimize-window)
+		    (min gnus-tree-minimize-window min)
+		  min))
+	   (win (get-buffer-window (current-buffer)))
+	   (wh (and win (1- (window-height win)))))
+      (when (and win
+		 (not (eq tot wh)))
+	(let ((selected (selected-window)))
+	  (select-window win)
+	  (enlarge-window (- tot wh))
+	  (select-window selected))))))
 
 ;; Select the lowest window on the frame.
 (defun gnus-xmas-appt-select-lowest-window ()
@@ -231,7 +255,7 @@ call it with the value of the `gnus-data' text property."
     (while (not (key-press-event-p event))
       (setq event (next-event)))
     (cons (and (key-press-event-p event) 
-	       (numberp (event-key event))
+	      ; (numberp (event-key event))
 	       (event-to-character event)) 
 	  event)))
 
@@ -265,9 +289,10 @@ call it with the value of the `gnus-data' text property."
   (or (face-differs-from-default-p 'underline)
       (funcall (intern "set-face-underline-p") 'underline t))
 
-  (fset 'gnus-make-overlay 'make-extent)
+  (fset 'gnus-make-overlay 'gnus-xmas-make-overlay)
   (fset 'gnus-overlay-put 'set-extent-property)
   (fset 'gnus-move-overlay 'gnus-xmas-move-overlay)
+  (fset 'gnus-overlay-end 'extent-end-position)
       
   (fset 'set-text-properties 'gnus-xmas-set-text-properties)
 
@@ -356,6 +381,7 @@ pounce directly on the real variables themselves.")
   (fset 'set-text-properties 'gnus-xmas-set-text-properties)
   (fset 'gnus-read-event-char 'gnus-xmas-read-event-char)
   (fset 'gnus-group-startup-message 'gnus-xmas-group-startup-message)
+  (fset 'gnus-tree-minimize 'gnus-xmas-tree-minimize)
 
   (or (fboundp 'appt-select-lowest-window)
       (fset 'appt-select-lowest-window 

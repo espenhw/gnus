@@ -142,6 +142,8 @@ on your system, you could say something like:
 (defvar news-reply-yank-from nil)
 (defvar news-reply-yank-message-id nil)
 
+(defvar nnheader-callback-function nil)
+
 (defun nnheader-init-server-buffer ()
   "Initialize the Gnus-backend communication buffer."
   (save-excursion
@@ -191,6 +193,24 @@ on your system, you could say something like:
   (while state
     (set (car (car state)) (nth 1 (car state)))
     (setq state (cdr state))))
+
+(defun nnheader-change-server (backend server defs)
+  (let ((current-server (intern (format "%s-current-server" backend)))
+	(alist (intern (format "%s-server-alist" backend)))
+	(variables (intern (format "%s-server-variables" backend))))
+
+    (when (and (symbol-value current-server)
+	       (not (equal server (symbol-value current-server))))
+      (set alist
+	   (cons (list (symbol-value current-server)
+		       (nnheader-save-variables (symbol-value variables)))
+		 (symbol-value alist))))
+    (let ((state (assoc server (symbol-value alist))))
+      (if (not state)
+	  (nnheader-set-init-variables (symbol-value variables) defs)
+	(nnheader-restore-variables (nth 1 state))
+	(set alist (delq state (symbol-value alist)))))
+    (set current-server server)))
 
 ;;; Various functions the backends use.
 
