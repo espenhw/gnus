@@ -10538,6 +10538,12 @@ name.
 @item to-address
 Remove the @code{To} header if it only contains the address identical to
 the current groups's @code{to-address} parameter.
+@item to-list
+Remove the @code{To} header if it only contains the address identical to
+the current groups's @code{to-list} parameter.
+@item cc-list
+Remove the @code{CC} header if it only contains the address identical to
+the current groups's @code{to-list} parameter.
 @item date
 Remove the @code{Date} header if the article is less than three days
 old.

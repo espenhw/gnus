@@ -1,3 +1,8 @@
+2003-02-28  Vasily Korytov <deskpot@myrealbox.com>
+
+	* gnus.texi: New values, 'to-list and 'cc-list, for
+	gnus-boring-article-headers.
+	
 2003-02-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Extending the spam elisp package): added mention of
