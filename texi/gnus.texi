@@ -9064,8 +9064,8 @@ protocols. Otherwise, ask user.
 
 @item mm-decrypt-option
 @vindex mm-decrypt-option
-Option of decrypting encrypted parts.  @code{never}, not verify;
-@code{always}, always verify; @code{known}, only verify known
+Option of decrypting encrypted parts.  @code{never}, no decryption;
+@code{always}, always decrypt @code{known}, only decrypt known
 protocols. Otherwise, ask user.
 
 @end table
