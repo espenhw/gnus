@@ -9108,6 +9108,11 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 	((eq action 'move)
 	 ;; Remove this article from future suppression.
 	 (gnus-dup-unsuppress-article article)
+	 (let* ((from-method (gnus-find-method-for-group
+			      gnus-newsgroup-name))
+		(to-method (gnus-find-method-for-group
+			    to-newsgroup))
+		(gnus-sum-hint-move-is-internal (gnus-method-equal from-method to-method)))
 	 (gnus-request-move-article
 	  article			; Article to move
 	  gnus-newsgroup-name		; From newsgroup
@@ -9116,7 +9121,7 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 	  (list 'gnus-request-accept-article
 		to-newsgroup (list 'quote select-method)
 		(not articles) t)	; Accept form
-	  (not articles)))		; Only save nov last time
+	  (not articles))))		; Only save nov last time
 	;; Copy the article.
 	((eq action 'copy)
 	 (save-excursion

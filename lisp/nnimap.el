@@ -1513,7 +1513,13 @@ function is generally only called when Gnus is shutting down."
 	    (nnimap-current-move-group group)
 	    (nnimap-current-move-server nnimap-current-server)
 	    result)
-	(and (nnimap-request-article article group server)
+	(gnus-message 9 "nnimap-request-move-article: this is an %s move"
+		      (if gnus-sum-hint-move-is-internal
+			  "internal"
+			"external"))
+	;; request the article only when the move is NOT internal
+	(and (or gnus-sum-hint-move-is-internal
+		 (nnimap-request-article article group server))
 	     (save-excursion
 	       (set-buffer buf)
 	       (buffer-disable-undo (current-buffer))

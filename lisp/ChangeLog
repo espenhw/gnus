@@ -1,3 +1,14 @@
+2005-02-25  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-sum.el (gnus-summary-move-article): set
+	gnus-sum-hint-move-is-internal for gnus-request-move-article and
+	whatever it calls (right now, only nnimap-request-move article
+	respects it)
+
+	* nnimap.el (nnimap-request-move-article): when
+	gnus-sum-hint-move-is-internal is set, don't do the extra
+	nnimap-request-article
+
 2005-02-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnheader.el (nnheader-find-file-noselect): Added doc string.
