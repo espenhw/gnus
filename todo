@@ -1,6 +1,32 @@
 ;; Also know as the "wish list".  Some are done. For the others, no
 ;; promise when to be implemented.
 
+* Parsing of the common list confirmation requests so that Gnus can
+   prepare the response with a single command.  Including LISTSERV
+   periodic ping messages and the like.
+
+* Parsing of the various List-* headers to enable automatic commands
+   like "send help message," "send unsubscribe message," and the like.
+
+   [done, see gnus-ml.el]
+
+* Parsing of the subscription notice to stash away details like what
+   address you're subscribed to the list under (and automatically send
+   mail to the list using that address, when you send mail inside the list
+   group), what address to mail to unsubscribe, and the list info message
+   if available.  Hitting the "get FAQ" command inside a mailing list
+   group should display that stashed copy of the info message.
+
+* Some help in coming up with good split rules for mailing lists, as
+   automated as possible.  Splitting on To and Cc is almost always not
+   what I want, since it can misfile messages and since if I'm cc'd on
+   list mail I want to get both copies, one in my personal mailbox and one
+   in the list mailbox.  I know other people handle it other ways, but I
+   prefer it that way.  Accordingly, some way to semi-automatically
+   generate split rules based on Sender, Mailing-List, Return-Path,
+   X-Loop, and all of the other random headers that often work would be
+   very cool.
+
 * Support for zipped folders for all backends this makes sense for.
   Most likely using jka-compr. (It has been suggested that this do
   work but I think it should be verified for all backends.)
@@ -1232,6 +1258,8 @@ exceeding lisp nesting on huge groups.
  (long) articles.
 
 *  (nnoo-set SERVER VARIABLE VALUE)
+
+   [done]
 
 *  nn*-spool-methods
 
