@@ -1,3 +1,17 @@
+2002-01-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	Display picons in XEmacs without showing text.
+
+	* gnus-xmas.el (gnus-xmas-create-image): Don't use
+	mm-create-image-xemacs to create xbm glyph, because it deletes
+	temporary files.
+	(gnus-xmas-put-image): Use end-glyph. Make text invisible.
+	(gnus-xmas-remove-image): Make text visible, remove glyph.
+	
+	* gnus-picon.el (gnus-picon-transform-newsgroups)
+	(gnus-picon-transform-address): Insert spec backward, due to the
+	incompatibility of gnus-xmas-put-image.
+
 2002-01-02  Pavel Jan,Bm(Bk  <Pavel@Janik.cz>
 
 	* gnus-fun.el (gnus-convert-pbm-to-x-face-command): Doc fix. 

@@ -823,24 +823,31 @@ XEmacs compatibility workaround."
   (featurep type))
 
 (defun gnus-xmas-create-image (file)
-  (with-temp-buffer
-    (insert-file-contents file)
-    (mm-create-image-xemacs (car (last (split-string file "[.]"))))))
+  (let ((type (car (last (split-string file "[.]")))))
+    (if (equal type "xbm")
+	(make-glyph (list (cons 'x file)))
+      (with-temp-buffer
+	(insert-file-contents file)
+	(mm-create-image-xemacs type)))))
 
 (defun gnus-xmas-put-image (glyph &optional string)
+  "Insert STRING, but display GLYPH.
+Warning: Don't insert text immediately after the image."
   (let ((begin (point))
 	extent)
     (insert string)
     (setq extent (make-extent begin (point)))
     (set-extent-property extent 'gnus-image t)
     (set-extent-property extent 'duplicable t)
-    (set-extent-property extent 'begin-glyph glyph)))
+    (set-extent-property extent 'invisible t)
+    (set-extent-property extent 'end-glyph glyph)))
 
 (defun gnus-xmas-remove-image (image)
   (map-extents
    (lambda (ext unused)
-     (when (equal (extent-begin-glyph ext) image)
-       (set-extent-property ext 'begin-glyph nil))
+     (when (equal (extent-end-glyph ext) image)
+       (set-extent-property ext 'invisible nil)
+       (set-extent-property ext 'end-glyph nil))
      nil)
    nil nil nil nil nil 'gnus-image))
 

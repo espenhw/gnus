@@ -162,10 +162,9 @@ GLYPH can be either a glyph or a string."
   (gnus-with-article-headers
     (let ((addresses
 	   (mail-header-parse-addresses (mail-fetch-field header)))
-	  first spec file)
+	  spec file point)
       (dolist (address addresses)
-	(setq address (car address)
-	      first t)
+	(setq address (car address))
 	(when (and (stringp address)
 		   (setq spec (gnus-picon-split-address address)))
 	  (when (setq file (or (gnus-picon-find-face
@@ -192,13 +191,15 @@ GLYPH can be either a glyph or a string."
 	  (mail-header-narrow-to-field)
 	  (when (search-forward address nil t)
 	    (delete-region (match-beginning 0) (match-end 0))
+	    (setq spec (nreverse spec))
+	    (setq point (point))
 	    (while spec
-	      (gnus-picon-insert-glyph (pop spec) category)
-	      (when spec
-		(if (not first)
-		    (insert ".")
-		  (insert "@")
-		  (setq first nil))))))))))
+	      (goto-char point)
+	      (if (> (length spec) 2)
+		  (insert ".")
+		(if (= (length spec) 2)
+		  (insert "@")))
+	      (gnus-picon-insert-glyph (pop spec) category))))))))
 
 (defun gnus-picon-transform-newsgroups (header)
   (interactive)
@@ -207,7 +208,7 @@ GLYPH can be either a glyph or a string."
 	   (sort
 	    (message-tokenize-header (mail-fetch-field header))
 	    (lambda (g1 g2) (> (length g1) (length g2)))))
-	  spec file)
+	  spec file point)
       (dolist (group groups)
 	(setq spec (nreverse (split-string group "[.]")))
 	(dotimes (i (length spec))
@@ -224,11 +225,12 @@ GLYPH can be either a glyph or a string."
 	(mail-header-narrow-to-field)
 	(when (search-forward group nil t)
 	  (delete-region (match-beginning 0) (match-end 0))
-	  (setq spec (nreverse spec))
+	  (setq point (point))
 	  (while spec
-	    (gnus-picon-insert-glyph (pop spec) 'newsgroups-picon)
-	    (when spec
-	      (insert "."))))))))
+	    (goto-char point)
+	    (if (> (length spec) 1)
+		(insert "."))
+	    (gnus-picon-insert-glyph (pop spec) 'newsgroups-picon)))))))
 
 ;;; Commands:
 
