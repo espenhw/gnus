@@ -803,6 +803,8 @@ with potentially long computations."
 ;;; Functions for saving to babyl/mail files.
 
 (eval-when-compile
+  (require 'rmail)
+  (autoload 'rmail-update-summary "rmailsum")
   (defvar rmail-default-rmail-file)
   (defvar mm-text-coding-system))
 

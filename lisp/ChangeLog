@@ -1,3 +1,16 @@
+2003-12-03  Steve Youngs  <sryoungs@bigpond.net.au>
+
+	* gnus-xmas.el: Add autoloads for macros defined in gnus.el.
+	From Jerry James <james@xemacs.org>.
+
+	* gnus-util.el: Get rmail definitions when compiling.
+	From Jerry James <james@xemacs.org>.
+
+	* dns.el: Require gnus-xmas at compile time instead of trying to
+	autoload `gnus-xmas-open-network-stream' because it wasn't picking
+	up the macro.
+	From Jerry James <james@xemacs.org>.
+
 2003-12-01  Kevin Greiner <kgreiner@xpediantsolutions.com>
 	* gnus-agent.el (gnus-agent-consider-all-articles): Updated
 	docstring.

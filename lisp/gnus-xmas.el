@@ -27,6 +27,14 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (autoload 'gnus-active "gnus" nil nil 'macro)
+  (autoload 'gnus-group-entry "gnus" nil nil 'macro)
+  (autoload 'gnus-info-level "gnus" nil nil 'macro)
+  (autoload 'gnus-info-marks "gnus" nil nil 'macro)
+  (autoload 'gnus-info-method "gnus" nil nil 'macro)
+  (autoload 'gnus-info-score "gnus" nil nil 'macro))
+
 (require 'text-props)
 (defvar menu-bar-mode (featurep 'menubar))
 (require 'messagexmas)
