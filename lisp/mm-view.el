@@ -153,19 +153,76 @@
 	      (delete-region ,(point-min-marker)
 			     ,(point-max-marker)))))))))
 
-(defvar mm-w3m-minor-mode nil)
-(make-variable-buffer-local 'mm-w3m-minor-mode)
-(defvar mm-w3m-setup nil)
+(defvar mm-w3m-mode-map nil
+  "Local keymap for inlined text/html part rendered by emacs-w3m.  It will
+be slightly different from `w3m-mode-map' to use in the article buffer.")
+
+(defvar mm-w3m-mode-command-alist
+  '((backward-char)
+    (describe-mode)
+    (forward-char)
+    (goto-line)
+    (next-line)
+    (previous-line)
+    (w3m-antenna)
+    (w3m-antenna-add-current-url)
+    (w3m-bookmark-add-current-url)
+    (w3m-bookmark-add-this-url)
+    (w3m-bookmark-view)
+    (w3m-close-window)
+    (w3m-copy-buffer)
+    (w3m-delete-buffer)
+    (w3m-dtree)
+    (w3m-edit-current-url)
+    (w3m-edit-this-url)
+    (w3m-gohome)
+    (w3m-goto-url)
+    (w3m-goto-url-new-session)
+    (w3m-history)
+    (w3m-history-restore-position)
+    (w3m-history-store-position)
+    (w3m-namazu)
+    (w3m-next-buffer)
+    (w3m-previous-buffer)
+    (w3m-quit)
+    (w3m-redisplay-with-charset)
+    (w3m-reload-this-page)
+    (w3m-scroll-down-or-previous-url)
+    (w3m-scroll-up-or-next-url)
+    (w3m-search)
+    (w3m-select-buffer)
+    (w3m-switch-buffer)
+    (w3m-view-header)
+    (w3m-view-parent-page)
+    (w3m-view-previous-page)
+    (w3m-view-source)
+    (w3m-weather))
+  "Alist of commands to use for emacs-w3m in the article buffer.  Each
+element looks like (FROM-COMMAND . TO-COMMAND); FROM-COMMAND should be
+registered in `w3m-mode-map' which will be substituted by TO-COMMAND
+in `mm-w3m-mode-map'.  If TO-COMMAND is nil, an article command key
+will not be substituted.")
+
+(defvar mm-w3m-setup nil
+  "Whether gnus-article-mode has been setup to use emacs-w3m.")
+
 (defun mm-setup-w3m ()
+  "Setup gnus-article-mode to use emacs-w3m."
   (unless mm-w3m-setup
     (require 'w3m)
+    (unless mm-w3m-mode-map
+      (setq mm-w3m-mode-map (copy-keymap w3m-mode-map))
+      (dolist (def mm-w3m-mode-command-alist)
+	(condition-case nil
+	    (substitute-key-definition (car def) (cdr def) mm-w3m-mode-map)
+	  (error))))
     (unless (assq 'gnus-article-mode w3m-cid-retrieve-function-alist)
       (push (cons 'gnus-article-mode 'mm-w3m-cid-retrieve)
 	    w3m-cid-retrieve-function-alist))
-    (gnus-add-minor-mode 'mm-w3m-minor-mode " w3m" w3m-mode-map)
     (setq mm-w3m-setup t)))
 
 (defun mm-w3m-cid-retrieve (url &rest args)
+  "Insert a content pointed by URL if it has the cid: scheme."
   (when (string-match "\\`cid:" url)
     (setq url (concat "<" (substring url (match-end 0)) ">"))
     (catch 'found-handle
@@ -177,6 +234,7 @@
 	  (throw 'found-handle (mm-handle-media-type handle)))))))
 
 (defun mm-inline-text-html-render-with-w3m (handle)
+  "Render a text/html part using emacs-w3m."
   (mm-setup-w3m)
   (let ((text (mm-get-part handle))
 	(b (point))
@@ -195,12 +253,15 @@
 	(let ((w3m-safe-url-regexp "\\`cid:")
 	      (w3m-display-inline-images mm-inline-text-html-with-images))
 	  (w3m-region (point-min) (point-max)))
-	(setq mm-w3m-minor-mode t))
+	(when mm-inline-text-html-with-w3m-keymap
+	  (add-text-properties
+	   (point-min) (point-max)
+	   (append '(mm-inline-text-html-with-w3m t)
+		   (gnus-local-map-property mm-w3m-mode-map)))))
       (mm-handle-set-undisplayer
        handle
        `(lambda ()
 	  (let (buffer-read-only)
-	    (setq mm-w3m-minor-mode nil)
 	    (if (functionp 'remove-specifier)
 		(mapcar (lambda (prop)
 			  (remove-specifier

@@ -1,3 +1,18 @@
+2002-01-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-wash-html-with-w3m): Add keymap
+	property to the buffer for using emacs-w3m command keys.
+
+	* mm-decode.el (mm-inline-text-html-with-w3m-keymap): New user
+	option.
+
+	* mm-view.el (mm-w3m-mode-map): New variable.
+	(mm-w3m-mode-command-alist): New variable.
+	(mm-w3m-minor-mode): Removed.
+	(mm-setup-w3m): Setup `mm-w3m-mode-map'; don't add minor mode.
+	(mm-inline-text-html-render-with-w3m): Add keymap property to the
+	buffer for using emacs-w3m command keys.
+
 2002-01-29  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-mode-syntax-table): Move forward.

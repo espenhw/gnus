@@ -117,6 +117,11 @@ this value."
   :type 'boolean
   :group 'mime-display)
 
+(defcustom mm-inline-text-html-with-w3m-keymap t
+  "If non-nil, use emacs-w3m command keys in the article buffer."
+  :type 'boolean
+  :group 'mime-display)
+
 (defcustom mm-inline-media-tests
   '(("image/jpeg"
      mm-inline-image
