@@ -626,8 +626,12 @@ This only works when `display-time' is enabled."
 				  (goto-char (point-min))
 				  (unless (looking-at "\n*From ")
 				    (insert "From maildir " 
-					    (current-time-string) "\n"))))
-			      (delete-file file))))
+					    (current-time-string) "\n"))
+				  (while (re-search-forward "^From " nil t)
+				    (replace-match ">From "))
+				  (goto-char (point-max))
+				  (insert "\n\n"))
+				(delete-file file)))))
 	      (incf found (mail-source-callback callback file))))))
       found)))
 
