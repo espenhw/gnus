@@ -23585,7 +23585,7 @@ D. Hall,
 Magnus Hammerin,
 Kenichi Handa, @c Handa
 Raja R. Harinath,
-Yoshiki Hayashi, @c ?
+Yoshiki Hayashi, @c Hayashi
 P. E. Jareth Hein,
 Hisashige Kenji, @c Hisashige
 Scott Hofmann,
@@ -23595,7 +23595,7 @@ Richard Hoskins,
 Brad Howes,
 Miguel de Icaza,
 François Felix Ingrand,
-Tatsuya Ichikawa, @c ?
+Tatsuya Ichikawa, @c Ichikawa
 Ishikawa Ichiro, @c Ishikawa
 Lee Iverson,
 Iwamuro Motonori, @c Iwamuro
