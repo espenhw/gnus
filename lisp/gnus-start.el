@@ -42,6 +42,16 @@
 If a file with the .el or .elc suffixes exist, it will be read
 instead.")
 
+(defvar gnus-site-init-file
+  (condition-case ()
+      (concat (file-name-directory 
+	       (directory-file-name installation-directory))
+	      "site-lisp/gnus-init")
+    (error nil))
+  "*The site-wide Gnus elisp startup file.
+If a file with the .el or .elc suffixes exist, it will be read
+instead.")
+
 (defvar gnus-default-subscribed-newsgroups nil
   "*This variable lists what newsgroups should be subscribed the first time Gnus is used.
 It should be a list of strings.
@@ -291,16 +301,19 @@ Can be used to turn version control on or off.")
   (if gnus-init-inhibit
       (setq gnus-init-inhibit nil)
     (setq gnus-init-inhibit inhibit-next)
-    (and gnus-init-file
-	 (or (and (file-exists-p gnus-init-file)
-		  ;; Don't try to load a directory.
-		  (not (file-directory-p gnus-init-file)))
-	     (file-exists-p (concat gnus-init-file ".el"))
-	     (file-exists-p (concat gnus-init-file ".elc")))
-	 (condition-case var
-	     (load gnus-init-file nil t)
-	   (error
-	    (error "Error in %s: %s" gnus-init-file var))))))
+    (let ((files (list gnus-site-init-file gnus-init-file))
+	  file)
+      (while files
+	(and (setq file (pop files))
+	     (or (and (file-exists-p file)
+		      ;; Don't try to load a directory.
+		      (not (file-directory-p file)))
+		 (file-exists-p (concat file ".el"))
+		 (file-exists-p (concat file ".elc")))
+	     (condition-case var
+		 (load file nil t)
+	       (error
+		(error "Error in %s: %s" file var))))))))
 
 ;; For subscribing new newsgroup
 

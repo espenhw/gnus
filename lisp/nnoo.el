@@ -256,15 +256,16 @@ All functions will return nil and report an error."
 
 (defun nnoo-define-skeleton-1 (backend)
   (let ((functions '(retrieve-headers
-		     request-close server-opened request-article
+		     request-close request-article
 		     open-group request-group close-group
 		     request-list request-post))
-	function)
+	function fun)
     (while (setq function (pop functions))
-      (eval `(deffoo ,(nnoo-symbol backend function) 
-		 (&optional server)
-	       (nnheader-report ',backend ,(format "%s-%s not implemented"
-						   backend function)))))))
+      (when (not (fboundp (setq fun (nnoo-symbol backend function))))
+	(eval `(deffoo ,fun
+		   (&rest args)
+		 (nnheader-report ',backend ,(format "%s-%s not implemented"
+						     backend function))))))))
 (provide 'nnoo)
 
 ;;; nnoo.el ends here.

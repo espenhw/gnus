@@ -41,14 +41,13 @@ parameter -- the gateway address.")
 ;;; Interface functions
 
 (nnoo-define-basics nngateway)
-(nnoo-define-skeleton nngateway)
 
 (deffoo nngateway-open-server (server &optional defs)
   (if (nngateway-server-opened server)
       t
     (unless (assq 'nngateway-address defs)
-      (setq defs (append defs (list (list 'nntp-address server)))))
-    (nnoo-change-server 'nntp server defs)))
+      (setq defs (append defs (list (list 'nngateway-address server)))))
+    (nnoo-change-server 'nngateway server defs)))
 
 (deffoo nngateway-request-post (&optional server)
   (when (or (nngateway-server-opened server)
@@ -73,6 +72,8 @@ parameter -- the gateway address.")
     (goto-char (point-min))
     (insert "To: " (nnheader-replace-chars-in-string newsgroups ?. ?-)
 	    "@" gateway "\n")))
+
+(nnoo-define-skeleton nngateway)
     
 (provide 'nngateway)
 

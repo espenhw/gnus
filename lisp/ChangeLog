@@ -1,3 +1,25 @@
+Sun Aug 18 12:46:12 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnoo.el (nnoo-define-skeleton-1): Defined too many functions.
+
+Sat Aug 17 18:43:22 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-group.el (gnus-group-make-dejanews-group): New command and
+	keystroke. 
+
+	* gnus-start.el (gnus-site-init-file): New variable.
+	(gnus-read-init-file): Use it.
+
+	* nndejanews.el: New file.
+
+	* nnheader.el (make-full-mail-header): New function.
+
+	* nngateway.el (nngateway-open-server): Used nntp vars.
+
+Sat Aug 17 15:35:28 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.12 is released.
+
 Sat Aug 17 12:58:28 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-win.el (gnus-window-configuration-element): New function. 

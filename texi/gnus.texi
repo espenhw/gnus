@@ -758,9 +758,11 @@ control on or off.  Version control is off by default when saving the
 startup files.
 
 @vindex gnus-init-file
-When Gnus starts, it will read the @code{gnus-init-file} file, which is
-@file{~/.gnus.el} by default.  This is a normal Emacs Lisp file and can
-be used to avoid cluttering your @file{.emacs} file with Gnus stuff.
+When Gnus starts, it will read the @code{gnus-site-init-file} (default
+@file{.../site-lisp/gnus.el}) and @code{gnus-init-file} (default
+@file{~/.gnus.el}) files.  These are normal Emacs Lisp files and can be
+used to avoid cluttering your @file{.emacs} and @file{site-init} files
+with Gnus stuff.
 
 
 @node Auto Save
@@ -1645,6 +1647,15 @@ Currently supported types are @code{babyl}, @code{mbox}, @code{digest},
 @code{mmdf}, @code{news}, @code{rnews}, @code{clari-briefs}, and
 @code{forward}.  If you run this command without a prefix, Gnus will
 guess at the file type.  @xref{Document Groups}.
+
+@item G n
+@kindex G n (Group)
+@findex gnus-group-make-dejagnus-group
+@cindex DejaNews
+Make an ephemeral group based on a DejaNews search
+(@code{gnus-group-make-dejagnus-group}).  If you give a prefix to this
+command, make a solid group instead.  You will be prompted for the
+search.  @xref{DejaNews Searches}.
 
 @item G DEL
 @kindex G DEL (Group)
@@ -8651,6 +8662,7 @@ newsgroups.
 * Anything Groups::       Dired?  Who needs dired?
 * Document Groups::       Single files can be the basis of a group.
 * SOUP::                  Reading @sc{SOUP} packets ``offline''.
+* DejaNews Searches::     Creating groups from articles that match a string.
 * Mail-To-News Gateways:: Posting articles via mail-to-news gateways.
 @end menu
 
@@ -9196,6 +9208,59 @@ In specific, this is what it does:
 And that's it, really.  If you only want news to go into the @sc{soup}
 system you just use the first line.  If you only want mail to be
 @sc{soup}ed you use the second.
+
+
+@node DejaNews Searches
+@subsection DejaNews Searches
+@cindex nndejagnus
+@cindex DejaNews
+@cindex Usenet searches
+@cindex searching the Usenet
+
+It's, like, too neat to search the Usenet for articles that match a
+string, but it, like, totally @emph{sucks}, like, totally, to use one of
+those, like, Web browsers, and you, like, have to, rilly, like, look at
+the commercials, so, like, with Gnus you can do @emph{rad}, rilly,
+searches without having to use a browser.
+
+The @code{nndejagnus} (hey, I wonder if they're going to sue me over
+copyright infringement?) backend allows an easy interface to the mighty
+search engine.  You create an @code{nndejagnus} group, enter a search
+pattern, and then enter the group and read the articles like you would
+any normal group.  The @kbd{G n} command in the group buffer
+(@pxref{Foreign Groups}) will do this in an easy-to-use fashion.
+
+@code{nndejagnus} groups don't really lend themselves to being solid
+groups---they have a very fleeting idea of article numbers.  In fact,
+each time you enter an @code{nndejagnus} group (not changing the search
+pattern), you are likely to get the articles ordered in a different
+manner.  Not even using duplicate suppression (@code{Duplicate
+Suppression}) will help, since @code{nndejagnus} doesn't even know the
+@code{Message-ID} of the articles before reading them.  The only
+possible way to keep track of which articles you've read is by scoring
+on the @code{Date} header---mark all articles that were posted before
+the last date you read the group as read.
+
+You must have the @code{url} and @code{w3} package installed to be able
+to use @code{nndejagnus}.
+
+Virtual server variables:
+
+@table @code
+@item nndejagnus-address
+@vindex nndejagnus-address
+The address of the DejaNews search engine.  The default is
+@samp{http://www.dejagnus.com}. 
+
+@item nndejagnus-search
+@vindex nndejagnus-search
+The search string to feed to DejaNews.
+
+@item nndejagnus-max-hits
+@vindex nndejagnus-max-hits
+Maximum number of hits per search to display.  The default is 100.
+@end table
+
 
 
 @node Mail-To-News Gateways

@@ -346,6 +346,7 @@ variable.")
     "V" gnus-group-make-empty-virtual
     "D" gnus-group-enter-directory
     "f" gnus-group-make-doc-group
+    "n" gnus-group-make-dejagnus-group
     "r" gnus-group-rename-group
     "\177" gnus-group-delete-group
     [delete] gnus-group-delete-group)
@@ -1752,6 +1753,23 @@ and NEW-NAME will be prompted for."
      (list 'nndoc file
 	   (list 'nndoc-address file)
 	   (list 'nndoc-article-type (or type 'guess))))))
+
+(defun gnus-group-make-dejagnus-group (&optional solid)
+  "Create an ephemeral nndejagnus group.
+If SOLID (the prefix), create a solid group."
+  (interactive "P")
+  (let* ((group
+	  (if solid (read-string "Group name: ") (message-unique-id)))
+	 (search
+	  (read-string "Search string: "))
+	 (method
+	  `(nndejagnus ,group (nndejagnus-search ,search))))
+    (if solid
+	(gnus-group-make-group group method)
+      (gnus-group-read-ephemeral-group
+       group method t
+       (cons (current-buffer)
+	     (if (eq major-mode 'gnus-summary-mode) 'summary 'group))))))
 
 (defun gnus-group-make-archive-group (&optional all)
   "Create the (ding) Gnus archive group of the most recent articles.

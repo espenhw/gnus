@@ -33,7 +33,6 @@
 (require 'gnus-undo)
 (require 'gnus)
 
-
 (defvar gnus-kill-summary-on-exit t
   "*If non-nil, kill the summary buffer when you exit from it.
 If nil, the summary will become a \"*Dead Summary*\" buffer, and

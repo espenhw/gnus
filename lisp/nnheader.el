@@ -134,6 +134,11 @@ on your system, you could say something like:
   "Create a new mail header structure initialized with INIT."
   (make-vector 9 init))
 
+(defun make-full-mail-header (&optional number subject from date id
+					references chars lines xref)
+  "Create a new mail header structure initialized with the parameters given."
+  (vector number subject from date id references chars lines xref))
+  
 ;; Parsing headers and NOV lines.
 
 (defsubst nnheader-header-value ()

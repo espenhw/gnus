@@ -166,12 +166,6 @@ from that group.")
 	  ;; Remove the read article from the prefetch buffer.
 	  (when (memq 'read gnus-prefetched-article-deletion-strategy)
 	    (gnus-async-delete-prefected-entry entry))
-	  ;; Decode the article.  Perhaps this shouldn't be done
-	  ;; here?
-	  (set-buffer buffer)
-	  (nntp-decode-text)
-	  (goto-char (point-min))
-	  (gnus-delete-line)
 	  t)))))
 
 (defun gnus-async-delete-prefected-entry (entry)
