@@ -3,6 +3,7 @@
 	* gnus.texi (nnimap-authinfo-file):
 	(gnus-invalid-group-regexp): Add.
 	(Mail Source Specifiers): Fix.
+	(IMAP): Fix.
 
 2000-07-12 19:37:19  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
