@@ -25173,7 +25173,7 @@ out other articles.
 @item Some limiting commands accept a @kbd{C-u} prefix to negate the match.
 
 If @kbd{C-u} is used on subject, author or extra headers, i.e., @kbd{/
-s'}, @kbd{/ a}, and @kbd{/ x}
+s}, @kbd{/ a}, and @kbd{/ x}
 (@code{gnus-summary-limit-to-@{subject,author,extra@}}) respectively, the
 result will be to display all articles that do not match the expression.
 
