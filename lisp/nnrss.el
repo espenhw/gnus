@@ -66,9 +66,6 @@
 
 (defvar nnrss-use-local nil)
 
-(defvar nnrss-verbose t
-  "Write messages when requesting group.")
-
 (defvar nnrss-description-field 'X-Gnus-Description
   "Field name used for DESCRIPTION.
 To use the description in headers, put this name into `nnmail-extra-headers'.")
@@ -148,8 +145,7 @@ ARTICLE is the article number of the current headline.")
   'nov)
 
 (deffoo nnrss-request-group (group &optional server dont-check)
-  (if nnrss-verbose
-      (message (concat "nnrss requesting " group "...")))
+  (nnheader-message 6 (concat "nnrss: Requesting " group "..."))
   (setq group (nnrss-decode-group-name group))
   (nnrss-possibly-change-group group server)
   (prog1
@@ -161,8 +157,7 @@ ARTICLE is the article number of the current headline.")
 	 "211 %d %d %d %s\n" nnrss-group-max nnrss-group-min nnrss-group-max
 	 (prin1-to-string group)
 	 t))
-    (when nnrss-verbose
-      (message (concat "nnrss done with " group ".")))))
+    (nnheader-message 6 (concat "nnrss: Requesting " group "...done"))))
 
 (deffoo nnrss-close-group (group &optional server)
   t)
