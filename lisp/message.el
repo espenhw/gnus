@@ -33,6 +33,7 @@
 (eval-when-compile
   (require 'cl)
   (defvar gnus-list-identifiers))	; gnus-sum is required where necessary
+
 (require 'mailheader)
 (require 'nnheader)
 ;; This is apparently necessary even though things are autoloaded:
@@ -4474,21 +4475,8 @@ regexp varstr."
 
 ;;; Miscellaneous functions
 
-;; stolen (and renamed) from nnheader.el
-(if (fboundp 'subst-char-in-string)
-    (defsubst message-replace-chars-in-string (string from to)
-      (subst-char-in-string from to string))
-  (defun message-replace-chars-in-string (string from to)
-    "Replace characters in STRING from FROM to TO."
-    (let ((string (substring string 0))	;Copy string.
-	  (len (length string))
-	  (idx 0))
-      ;; Replace all occurrences of FROM with TO.
-      (while (< idx len)
-	(when (= (aref string idx) from)
-	  (aset string idx to))
-	(setq idx (1+ idx)))
-      string)))
+(defsubst message-replace-chars-in-string (string from to)
+  (mm-subst-char-in-string from to string))
 
 ;;;
 ;;; MIME functions

@@ -692,20 +692,8 @@ without formatting."
       (apply 'insert format args))
     t))
 
-(if (fboundp 'subst-char-in-string)
-    (defsubst nnheader-replace-chars-in-string (string from to)
-      (subst-char-in-string from to string))
-  (defun nnheader-replace-chars-in-string (string from to)
-    "Replace characters in STRING from FROM to TO."
-    (let ((string (substring string 0))	;Copy string.
-	  (len (length string))
-	  (idx 0))
-      ;; Replace all occurrences of FROM with TO.
-      (while (< idx len)
-	(when (= (aref string idx) from)
-	  (aset string idx to))
-	(setq idx (1+ idx)))
-      string)))
+(defsubst nnheader-replace-chars-in-string (string from to)
+  (mm-subst-char-in-string from to string))
 
 (defun nnheader-replace-duplicate-chars-in-string (string from to)
   "Replace characters in STRING from FROM to TO."

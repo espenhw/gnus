@@ -106,7 +106,20 @@
 	    prompt
 	    (mapcar (lambda (e) (list (symbol-name (car e))))
 		    mm-mime-mule-charset-alist)
-	    nil t)))))))
+	    nil t))))
+     (subst-char-in-string
+      . (lambda (from to string) ;; stolen (and renamed) from nnheader.el
+	  "Replace characters in STRING from FROM to TO."
+	  (let ((string (substring string 0))	;Copy string.
+		(len (length string))
+		(idx 0))
+	    ;; Replace all occurrences of FROM with TO.
+	    (while (< idx len)
+	      (when (= (aref string idx) from)
+		(aset string idx to))
+	      (setq idx (1+ idx)))
+	    string)))
+      )))
 
 (eval-and-compile
   (defalias 'mm-char-or-char-int-p
@@ -201,20 +214,8 @@ used as the line break code type of the coding system."
    (t
     nil)))
 
-(if (fboundp 'subst-char-in-string)
-    (defsubst mm-replace-chars-in-string (string from to)
-      (subst-char-in-string from to string))
-  (defun mm-replace-chars-in-string (string from to)
-    "Replace characters in STRING from FROM to TO."
-    (let ((string (substring string 0))	;Copy string.
-	  (len (length string))
-	  (idx 0))
-      ;; Replace all occurrences of FROM with TO.
-      (while (< idx len)
-	(when (= (aref string idx) from)
-	  (aset string idx to))
-	(setq idx (1+ idx)))
-      string)))
+(defsubst mm-replace-chars-in-string (string from to)
+  (mm-subst-char-in-string from to string))
 
 (defsubst mm-enable-multibyte ()
   "Enable multibyte in the current buffer."

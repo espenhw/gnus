@@ -1,3 +1,11 @@
+2000-11-04 13:08:02  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-subst-char-in-string): New function.
+	(mm-replace-chars-in-string): Use it.
+	* message.el (message-replace-chars-in-string): Use it.
+	* nnheader.el (nnheader-replace-chars-in-string): Use it.
+	* gnus-mh.el (mh-lib-progs): Shut up.
+
 2000-11-04  ShengHuo Zhu  <zsh@cs.rochester.edu>
 
 	* base64.el, md5.el: Moved to contrib directory.
