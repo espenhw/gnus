@@ -1,3 +1,8 @@
+2003-02-04  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.texi (Mail Variables): Added index entry for
+	`message-send-mail-partially-limit'
+
 2003-01-30  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Batching Agents): Index.

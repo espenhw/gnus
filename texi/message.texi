@@ -1413,6 +1413,7 @@ the problem will actually occur.
 
 @item message-send-mail-partially-limit
 @vindex message-send-mail-partially-limit
+@cindex split large message
 The limitation of messages sent as message/partial.  The lower bound
 of message size in characters, beyond which the message should be sent
 in several parts.  If it is @code{nil}, the size is unlimited.
