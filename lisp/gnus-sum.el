@@ -2106,7 +2106,6 @@ increase the score of each group you read."
 	      ["Extract all parts" gnus-summary-save-parts t]
 	      ("Multipart"
 	       ["Repair multipart" gnus-summary-repair-multipart t]
-	       ["Add buttons" gnus-summary-display-buttonized t]
 	       ["Pipe part" gnus-article-pipe-part t]
 	       ["Inline part" gnus-article-inline-part t]
 	       ["Encrypt body" gnus-article-encrypt-body

@@ -1,3 +1,8 @@
+2003-06-07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Removed ["Add buttons"
+	gnus-summary-display-buttonized t]
+
 2003-06-07  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
 
 	* nnmail.el (nnmail-split-fancy-match-partial-words): Doc string
