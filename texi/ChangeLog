@@ -1,3 +1,7 @@
+2003-01-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Summary Agent Commands): Addition.
+
 2003-01-16  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Filtering Spam Using The Spam ELisp Package):
@@ -5,7 +9,8 @@
 	gnus-ham-process-destinations variables
 	(Extending the spam elisp package): fixed typo in node name
 	(Bogofilter): new functionality and variables noted
-	(Filtering Spam Using The Spam ELisp Package): added mention of nnimap-split-download-body
+	(Filtering Spam Using The Spam ELisp Package): added mention of
+	nnimap-split-download-body
 
 2003-01-15  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

@@ -17118,10 +17118,13 @@ Mark the article for downloading (@code{gnus-agent-mark-article}).
 Remove the downloading mark from the article
 (@code{gnus-agent-unmark-article}).
 
+@cindex %
 @item @@
 @kindex @@ (Agent Summary)
 @findex gnus-agent-toggle-mark
-Toggle whether to download the article (@code{gnus-agent-toggle-mark}).
+Toggle whether to download the article
+(@code{gnus-agent-toggle-mark}).  The dowload mark is @samp{%} by
+default. 
 
 @item J c
 @kindex J c (Agent Summary)
