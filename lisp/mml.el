@@ -704,25 +704,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 		      "application/octet-stream"))
 	 (string (completing-read
 		  (format "Content type (default %s): " default)
-		  (mapcar
-		   'list
-		   (mm-delete-duplicates
-		    (nconc
-		     (mapcar 'cdr mailcap-mime-extensions)
-		     (apply
-		      'nconc
-		      (mapcar
-		       (lambda (l)
-			 (delq nil
-			       (mapcar
-				(lambda (m)
-				  (let ((type (cdr (assq 'type (cdr m)))))
-				    (if (equal (cadr (split-string type "/"))
-					       "*")
-					nil
-				      type)))
-				(cdr l))))
-		       mailcap-mime-data))))))))
+		  (mapcar 'list (mailcap-mime-types)))))
     (if (not (equal string ""))
 	string
       default)))

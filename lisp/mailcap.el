@@ -937,7 +937,23 @@ The path of COMMAND will be returned iff COMMAND is a command."
 (defun mailcap-mime-types ()
   "Return a list of MIME media types."
   (mailcap-parse-mimetypes)
-  (mm-delete-duplicates (mapcar 'cdr mailcap-mime-extensions)))
+  (mm-delete-duplicates
+   (nconc
+    (mapcar 'cdr mailcap-mime-extensions)
+    (apply
+     'nconc
+     (mapcar
+      (lambda (l)
+	(delq nil
+	      (mapcar
+	       (lambda (m)
+		 (let ((type (cdr (assq 'type (cdr m)))))
+		   (if (equal (cadr (split-string type "/"))
+			      "*")
+		       nil
+		     type)))
+	       (cdr l))))
+      mailcap-mime-data)))))
 
 (provide 'mailcap)
 
