@@ -1,7 +1,31 @@
+2003-05-03  Dave Love  <fx@gnu.org>
+
+	* rfc2047.el (rfc2047-point-at-bol, rfc2047-point-at-eol): New.
+	Callers of gnus- versions changed to use them.
+	(rfc2047-header-encoding-alist): Add `address-mime' part.  Doc
+	fixes.
+	(rfc2047-encoding-type): New.
+	(rfc2047-encode-message-header): Use mm-charset-to-coding-system.
+	Don't include header name field in encoding.  Add `address-mime'
+	case and bind rfc2047-encoding-type for `mime' case.
+	(rfc2047-encodable-p): Deleted.
+	(rfc2047-syntax-table): New.
+	(rfc2047-encode-region, rfc2047-encode): Rewritten to take account
+	of rfc2047 rules with respect to rfc2822 tokens and to do encoding
+	in place rather than by passing strings.
+	(rfc2047-encode-string): Doc fix.
+	(rfc2047-q-encode-region): Don't use
+	mm-with-unibyte-current-buffer.
+	(rfc2047-encoded-word-regexp): eval-and-compile.
+	(rfc2047-decode-region): Avoid concatenation in loop.
+	(rfc2047-parse-and-decode): Remove useless disjunction.
+
+
 2003-05-02  Dave Love  <fx@gnu.org>
 
 	* rfc2047.el (rfc2047-q-encode-region, rfc2047-decode): Use
 	mm-with-unibyte-current-buffer.
+	(ietf-drums, gnus-util): don't require.
 
 	* sieve.el (sieve-manage-mode-menu): Define before use.
 
@@ -13,6 +37,7 @@
 	(mm-with-unibyte-current-buffer-mule4): Deleted.
 	(mm-multibyte-p): Use defun, not defalias.
 	(mm-make-temp-file): Moved to group at top of file.
+	(mm-point-at-eol, mm-point-at-bol): New.
 
 	* gnus-cite.el (gnus-art): Require.
 
