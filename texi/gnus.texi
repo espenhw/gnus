@@ -14985,11 +14985,12 @@ articles or not.
 @item nnimap-importantize-dormant
 @vindex nnimap-importantize-dormant
 
-If non-nil, marks dormant articles as ticked (as well), for other
-@sc{imap} clients. Within Gnus, dormant articles will naturally still
-(only) be marked as ticked.  This is to make dormant articles stand
-out, just like ticked articles, in other @sc{imap} clients. (In other
-words, Gnus has two ``Tick'' marks and @sc{imap} has only one.)
+If non-nil (the default), marks dormant articles as ticked (as well),
+for other @sc{imap} clients. Within Gnus, dormant articles will
+naturally still (only) be marked as dormant.  This is to make dormant
+articles stand out, just like ticked articles, in other @sc{imap}
+clients. (In other words, Gnus has two ``Tick'' marks and @sc{imap}
+has only one.)
 
 Probably the only reason for frobing this would be if you're trying
 enable per-user persistant dormant flags, using something like:
