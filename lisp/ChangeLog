@@ -1,3 +1,7 @@
+1999-12-28 12:20:18  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* webmail.el (webmail-hotmail-article): Don't insert message id.
+
 1999-12-28  Kai.Grossjohann@CS.Uni-Dortmund.DE (Kai Groﬂjohann)
 
 	* nnimap.el (nnimap-split-fancy): New variable.

@@ -401,17 +401,10 @@
   (goto-char (point-min))
   (while (re-search-forward "\r\n?" nil t)
     (replace-match "\n"))
-  (save-restriction
-    (goto-char (point-min))
-    (mail-narrow-to-head)
-    (if (mail-fetch-field "message-id")
-	(setq id nil)))
   (goto-char (point-min))
   (insert "\n\n")
   (if (not (looking-at "\n*From "))
       (insert "From nobody " (current-time-string) "\n"))
-  (if id
-      (insert (format "Message-ID: <%s@hotmail.com>\n" id)))
   (mm-append-to-file (point-min) (point-max) file))
 
 (defun webmail-hotmail-article-old (file id)
