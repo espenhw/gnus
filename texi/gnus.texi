@@ -10374,6 +10374,62 @@ An example maildir mail source:
 (maildir :path "/home/user-name/Maildir/cur")
 @end lisp
 
+@item imap
+Get mail from a IMAP server. If you don't want to use IMAP as intended,
+as a network mail reading protocol, for some reason or other Gnus let
+you treat it similar to a POP server and fetches articles from a given
+IMAP mailbox.
+
+Keywords:
+
+@table @code
+@item :server
+The name of the IMAP server.  The default is taken from the
+@code{MAILHOST} environment variable.
+
+@item :port
+The port number of the IMAP server.  The default is @samp{143}, or
+@samp{993} for SSL connections.
+
+@item :user
+The user name to give to the IMAP server.  The default is the login
+name.
+
+@item :password
+The password to give to the IMAP server.  If not specified, the user is
+prompted.
+
+@item :stream
+What stream to use for connecting to the server, this is one of the
+symbols in @code{imap-stream-alist}. Right now, this means
+@samp{kerberos4}, @samp{ssl} or the default @samp{network}.
+
+@item :authenticator
+Which authenticator to use for authenticating to the server, this is one
+of the symbols in @code{imap-authenticator-alist}. Right now, this means
+@samp{kerberos4}, @samp{cram-md5}, @samp{anonymous} or the default
+@samp{login}.
+
+@item :mailbox
+The name of the mailbox to get mail from. The default is @samp{INBOX}
+which normally is the mailbox which receive incoming mail.
+
+@item :predicate
+The predicate used to find articles to fetch. The default, 
+@samp{UNSEEN UNDELETED}, is probably the best choice for most people,
+but if you sometimes peek in your mailbox with a IMAP client and mark
+some articles as read (or; SEEN) you might want to set this to
+@samp{nil}. Then all articles in the mailbox is fetched, no matter
+what. For a complete list of predicates, see RFC2060 §6.4.4.
+
+@end table
+
+An example IMAP mail source:
+
+@lisp
+(imap :server "mail.mycorp.com" :stream kerberos4)
+@end lisp
+
 @end table
 
 
@@ -11511,6 +11567,7 @@ newsgroups.
 * SOUP::                  Reading @sc{SOUP} packets ``offline''.
 * Web Searches::          Creating groups from articles that match a string.
 * Mail-To-News Gateways:: Posting articles via mail-to-news gateways.
+* IMAP::                  Using Gnus as a IMAP client.
 @end menu
 
 
@@ -11833,7 +11890,7 @@ Of course, us Unix Weenie types of human beans use things like
 transport things like Ghod intended.  And then we just use normal
 newsreaders.
 
-However, it can sometimes be convenient to do something a that's a bit
+However, it can sometimes be convenient to do something that's a bit
 easier on the brain if you have a very slow modem, and you're not really
 that interested in doing things properly.
 
@@ -12268,6 +12325,267 @@ So, to use this, simply say something like:
 @lisp
 (setq gnus-post-method '(nngateway "GATEWAY.ADDRESS"))
 @end lisp
+
+
+
+@node IMAP
+@subsection IMAP
+@cindex nnimap
+@cindex IMAP
+
+IMAP is a network protocol for reading mail (or news, or ...), think of
+it as a modernized NNTP. Connecting to a IMAP server is much similar to
+connecting to a news server, you just specify the network address of the
+server.
+
+The following variables can be used to create a virtual @code{nnimap}
+server:
+
+@table @code
+
+@item nnimap-address
+@vindex nnimap-address
+
+The address of the remote IMAP server. Defaults to the virtual server
+name if not specified.
+
+@item nnimap-server-port
+@vindex nnimap-server-port
+Port on server to contact. Defaults to port 143, or 993 for SSL.
+
+@item nnimap-list-pattern
+@vindex nnimap-list-pattern
+String or list of strings of mailboxes to limit available groups
+to. This is used when the server has very many mailboxes and you're only
+interested in a few -- some servers export your home directory via IMAP,
+you'll probably want to limit the mailboxes to those in @file{~/Mail/*}
+then.
+
+The string can also be a cons of REFERENCE and the string as above, what
+REFERENCE is used for is server specific, but on the University of
+Washington server it's a directory that will be concatenated with the
+mailbox.
+
+Example:
+
+@lisp
+("INBOX" "Mail/*" "alt.sex.*" ("~friend/Mail/" . "list/*"))
+@end lisp
+
+@item nnimap-stream
+@vindex nnimap-stream
+The type of stream used to connect to your server. By default, nnimap
+will use the most secure stream your server is capable of.
+
+@itemize @bullet
+@item
+@dfn{kerberos4:} Uses the `imtest' program.
+@item
+@dfn{ssl:} Uses OpenSSL or SSLeay.
+@item
+@dfn{network:} Plain, TCP/IP network connection.
+@end itemize
+
+@item nnimap-authenticator
+@vindex nnimap-authenticator
+
+The authenticator used to connect to the server. By default, nnimap will
+use the most secure authenticator your server is capable of.
+
+@itemize @bullet
+@item
+@dfn{kerberos4:} Kerberos authentication.
+@item
+@dfn{cram-md5:} Encrypted username/password via CRAM-MD5.
+@item
+@dfn{login:} Plain-text username/password via LOGIN.
+@item
+@dfn{anonymous:} Login as `anonymous', supplying your emailadress as password.
+@end itemize
+
+@item nnimap-expunge-on-close
+@cindex Expunging
+@vindex nnimap-expunge-on-close
+Unlike Parmenides the IMAP designers has decided that things that
+doesn't exist actually does exist. More specifically, IMAP has this
+concept of marking articles @code{Deleted} which doesn't actually delete
+them, and this (marking them @code{Deleted}, that is) is what nnimap
+does when you delete a article in Gnus (with @kbd{G DEL} or similair).
+
+Since the articles aren't really removed when we mark them with the
+@code{Deleted} flag we'll need a way to actually delete them. Feel like
+running in circles yet?
+
+Traditionally, nnimap has removed all articles marked as @code{Deleted}
+when closing a mailbox but this is now configurable by this server
+variable.
+
+The possible options are:
+
+@table @code
+
+@item always
+The default behaviour, delete all articles marked as "Deleted" when
+closing a mailbox.
+@item never
+Never actually delete articles. Currently there is no way of showing the
+articles marked for deletion in nnimap, but other IMAP clients may allow
+you to do this. If you ever want to run the EXPUNGE command manually,
+@xref{Expunging mailboxes}.
+@item ask
+When closing mailboxes, nnimap will ask if you wish to expunge deleted
+articles or not.
+@end table
+
+@end table
+
+@menu
+* Splitting in IMAP::     Splitting mail with nnimap.
+* Editing IMAP ACLs::     Limiting/enabling other users access to a mailbox.
+* Expunging mailboxes::   Equivalent of a "compress mailbox" button.
+@end menu
+
+
+
+@node Splitting in IMAP
+@subsubsection Splitting in IMAP
+@cindex splitting imap mail
+
+Splitting is something Gnus users has loved and used for years, and now
+the rest of the world is catching up. Yeah, dream on, not many IMAP
+server has server side splitting and those that have splitting seem to
+use some non-standard protocol. This means that IMAP support for Gnus
+has to do it's own splitting.
+
+And it does.
+
+There are three variables of interest:
+
+@table @code
+
+@item nnimap-split-crosspost
+@cindex splitting, crosspost
+@cindex crosspost
+@vindex nnimap-split-crosspost
+
+If non-nil, do crossposting if several split methods match the mail. If
+nil, the first match in @code{nnimap-split-rule} found will be used.
+
+Nnmail equivalent: @code{nnmail-crosspost}.
+
+@item nnimap-split-inbox
+@cindex splitting, inbox
+@cindex inbox
+@vindex nnimap-split-inbox
+
+A string or a list of strings that gives the name(s) of IMAP mailboxes
+to split from. Defaults to nil, which means that splitting is disabled!
+
+@lisp
+(setq nnimap-split-inbox '("INBOX" ("~/friend/Mail" . "lists/*") "lists.imap"))
+@end lisp
+
+No nnmail equivalent.
+
+@item nnimap-split-rule
+@cindex Splitting, rules
+@vindex nnimap-split-rule
+
+New mail found in @code{nnimap-split-inbox} will be split according to
+this variable.
+
+This variable contains a list of lists, where the first element in the
+sublist gives the name of the IMAP mailbox to move articles matching the
+regexp in the second element in the sublist. Got that? Neither did I, we
+need examples.
+
+@lisp
+(setq nnimap-split-rule
+        '(("INBOX.nnimap"        "^Sender: owner-nnimap@@vic20.globalcom.se")
+          ("INBOX.junk"          "^Subject:.*MAKE MONEY")
+          ("INBOX.private"       "")))
+@end lisp
+
+This will put all articles from the nnimap mailing list into mailbox
+INBOX.nnimap, all articles containing MAKE MONEY in the Subject: line
+into INBOX.spam and everything else in INBOX.private.
+
+The first string may contain `\\1' forms, like the ones used by
+replace-match to insert sub-expressions from the matched text. For
+instance:
+
+@lisp
+          ("INBOX.lists.\\1"     "^Sender: owner-\\([a-z-]+\\)@")
+@end lisp
+
+The second element can also be a function. In that case, it will be
+called with the first element of the rule as the argument, in a buffer
+containing the headers of the article. It should return a non-nil value
+if it thinks that the mail belongs in that group.
+
+Nnmail users might recollect that the last regexp had to be empty to
+match all articles (like in the example above). This is not required in
+nnimap. Articles not matching any of the regexps will not be moved out
+of your inbox. (This might might affect performance if you keep lots of
+unread articles in your inbox, since the splitting code would go over
+them every time you fetch new mail.)
+
+These rules are processed from the beginning of the alist toward the
+end. The first rule to make a match will "win", unless you have
+crossposting enabled. In that case, all matching rules will "win".
+
+The splitting code tries to create mailboxes if it need too.
+
+Nnmail equivalent: @code{nnmail-split-methods}.
+
+@end table
+
+@node Editing IMAP ACLs
+@subsubsection Editing IMAP ACLs
+@cindex editing imap acls
+@cindex Access Control Lists
+@cindex Editing IMAP ACLs
+@kindex G l
+@findex gnus-group-nnimap-edit-acl
+
+ACL stands for Access Control List.  ACLs are used in IMAP for limiting
+(or enabling) other users access to your mail boxes. Not all IMAP
+servers support this, this function will give an error if it doesn't.
+
+To edit a ACL for a mailbox, type @kbd{G l}
+(@code{gnus-group-edit-nnimap-acl}) and you'll be presented with a ACL
+editing window with detailed instructions.
+
+Some possible uses:
+
+@itemize @bullet
+@item
+Giving "anyone" the "lrs" rights (lookup, read, keep seen/unseen flags)
+on your mailing list mailboxes enables other users on the same server to
+follow the list without subscribing to it.
+@item
+At least with the Cyrus server, you are required to give the user
+"anyone" posting ("p") capabilities to have "plussing" work (that is,
+mail sent to user+mailbox@@domain ending up in the IMAP mailbox
+INBOX.mailbox).
+@end itemize
+
+@node Expunging mailboxes
+@subsubsection Expunging mailboxes
+@cindex expunging
+
+@cindex Expunge
+@cindex Manual expunging
+@kindex G x
+@findex gnus-group-nnimap-expunge
+
+If you're using the @code{never} setting of @code{nnimap-expunge-close},
+you may want the option of expunging all deleted articles in a mailbox
+manually. This is exactly what @kbd{G x} does.
+
+Currently there is no way of showing deleted articles, you can just
+delete them.
+
 
 
 @node Combined Groups
