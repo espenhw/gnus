@@ -1570,7 +1570,7 @@ be permanent."
 (defun gnus-fetch-group (group)
   "Start Gnus if necessary and enter GROUP.
 Returns whether the fetching was successful or not."
-  (interactive "sGroup name: ")
+  (interactive (list (completing-read "Group name: " gnus-active-hashtb)))
   (unless (get-buffer gnus-group-buffer)
     (gnus-no-server))
   (gnus-group-read-group nil nil group))

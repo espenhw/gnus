@@ -5826,7 +5826,8 @@ be displayed."
 	    'old))
       (when did
 	(gnus-article-set-window-start
-	 (cdr (assq article gnus-newsgroup-bookmarks)))))))
+	 (cdr (assq article gnus-newsgroup-bookmarks)))))
+    did))
 
 (defun gnus-summary-set-current-mark (&optional current-mark)
   "Obsolete function."
@@ -6986,6 +6987,7 @@ Optional argument BACKWARD means do search for backward.
     (gnus-save-hidden-threads
       (gnus-summary-select-article)
       (set-buffer gnus-article-buffer)
+      (goto-char (window-point (get-buffer-window (current-buffer))))
       (when backward
 	(forward-line -1))
       (while (not found)

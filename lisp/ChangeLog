@@ -1,3 +1,13 @@
+2000-01-05 17:31:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-select-article): Return whether we
+	selected something new.
+	(gnus-summary-search-article): Start searching at the window
+	point.
+
+	* gnus-group.el (gnus-fetch-group): Complete over
+	gnus-active-hashtb. 
+
 Wed Jan  5 17:06:41 2000  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v5.8.3 is released.
