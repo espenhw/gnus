@@ -368,14 +368,14 @@ and `altavista'.")
 	  (dolist (row (nth 2 (car (nth 2 table))))
 	    (setq a (nnweb-parse-find 'a row)
 		  url (cdr (assq 'href (nth 1 a)))
-		  text (nnweb-text row))
+		  text (nreverse (nnweb-text row)))
 	    (when a
-	      (setq subject (nth 2 text)
-		    group (nth 4 text)
-		    date (nth 5 text)
-		    from (nth 6 text))
+	      (setq subject (nth 4 text)
+		    group (nth 2 text)
+		    date (nth 1 text)
+		    from (nth 0 text))
 	      (string-match "\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)" date)
-	      (setq date (format "%s %s %s"
+	      (setq date (format "%s %s 00:00:00 %s"
 				 (car (rassq (string-to-number
 					      (match-string 2 date))
 					     parse-time-months))

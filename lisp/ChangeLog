@@ -1,3 +1,11 @@
+1999-12-01 21:59:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-configure-posting-styles): Ignore nil
+	signatures. 
+
+	* nnweb.el (nnweb-dejanews-create-mapping): Get the data.
+	(nnweb-dejanews-create-mapping): Do the properish date.
+
 1999-12-01 17:41:21  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mail-source.el (mail-source-common-keyword-map): New variable.

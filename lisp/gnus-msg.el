@@ -1198,11 +1198,13 @@ this is a reply."
 		     ((eq 'signature (car result))
 		      (set (make-local-variable 'message-signature) nil)
 		      (set (make-local-variable 'message-signature-file) nil)
-		      `(lambda ()
-			 (save-excursion
-			   (let ((message-signature ,(cdr result)))
-			     (when message-signature
-			       (message-insert-signature))))))
+		      (if (not (cdr result))
+			  'ignore
+			`(lambda ()
+			   (save-excursion
+			     (let ((message-signature ,(cdr result)))
+			       (when message-signature
+				 (message-insert-signature)))))))
 		     (t
 		      (let ((header
 			     (if (symbolp (car result))
