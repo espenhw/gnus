@@ -1,5 +1,11 @@
 2000-08-11  Simon Josefsson  <simon@josefsson.org>
 
+	* imap.el (imap-authenticator-alist): Fix typo.
+	(imap-gssapi-open): Copy krb4 fixes for modern imtest's, thanks to
+	Jonas Oberg for debugging.
+
+2000-08-11  Simon Josefsson  <simon@josefsson.org>
+
 	* gnus-async.el (gnus-asynchronous): Disable by default.
 
 2000-08-10 20:22:09  Lars Magne Ingebrigtsen  <larsi@gnus.org>

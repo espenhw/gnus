@@ -246,7 +246,7 @@ stream.")
   "Priority of authenticators to consider when authenticating to server.")
 
 (defvar imap-authenticator-alist 
-  '((gssapi     imap-gssapi-auth-p    imap-gssapia-auth)
+  '((gssapi     imap-gssapi-auth-p    imap-gssapi-auth)
     (kerberos4  imap-kerberos4-auth-p imap-kerberos4-auth)
     (cram-md5   imap-cram-md5-p       imap-cram-md5-auth)
     (login      imap-login-p          imap-login-auth)
@@ -513,6 +513,10 @@ If ARGS, PROMPT is used as an argument to `format'."
 	    (setq imap-client-eol "\n")
 	    (while (and (memq (process-status process) '(open run))
 			(goto-char (point-min))
+                        ;; cyrus 1.6.x (13? < x <= 22) queries capabilities
+		        (or (while (looking-at "^C:")
+			      (forward-line))
+			    t)
 			;; cyrus 1.6 imtest print "S: " before server greeting
 			(or (not (looking-at "S: "))
 			    (forward-char 3)
