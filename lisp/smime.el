@@ -203,7 +203,7 @@ If nil, use system defaults."
 	 (make-temp-name prefix)
 	 (if (fboundp 'temp-directory)
 	     (temp-directory)
-	   'temporary-file-directory))))))
+	   temporary-file-directory))))))
 
 ;; Password dialog function
 
