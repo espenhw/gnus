@@ -1,5 +1,9 @@
 2002-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-picon.el (gnus-picon-find-face): Search through all
+	databases. 
+	(gnus-picon-find-face): New implementation.
+
 	* gnus-topic.el (gnus-topic-goto-previous-topic): New command and
 	keystroke. 
 	(gnus-topic-goto-next-topic): Ditto.

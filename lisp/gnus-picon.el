@@ -107,29 +107,28 @@ List of pairs (KEY . GLYPH) where KEY is either a filename or an URL.")
 	(split-string (car address) "\\."))))
 
 (defun gnus-picon-find-face (address directories &optional exact)
-  (let* ((databases gnus-picon-databases)
-	 (address (gnus-picon-split-address address))
+  (let* ((address (gnus-picon-split-address address))
 	 (user (pop address))
-	 database directory found instance base)
-    (while (and (not found)
-		(setq database (pop databases)))
-      (while (and (not found)
-		  (setq directory (pop directories)))
-	(setq base (expand-file-name directory database))
-	;; Kludge to search misc/MISC for users.
-	(when (string= directory "misc")
-	  (setq address '("MISC")))
-	(while (and (not found)
-		    address)
-	  (setq found (gnus-picon-find-image
-		       (concat base "/" (mapconcat 'identity
-						   (reverse address)
-						   "/")
-			       "/" user "/")))
-	  (if exact
-	      (setq address nil)
-	    (pop address)))))
-    found))
+	 (faddress address)
+	 database directory result instance base)
+    (catch 'found
+      (dolist (database gnus-picon-databases)
+	(dolist (directory directories)
+	  (setq address faddress
+		base (expand-file-name directory database))
+	  ;; Kludge to search misc/MISC for users.
+	  (when (string= directory "misc")
+	    (setq address '("MISC")))
+	  (while address
+	    (when (setq result (gnus-picon-find-image
+				(concat base "/" (mapconcat 'identity
+							    (reverse address)
+							    "/")
+					"/" user "/")))
+	      (throw 'found result))
+	    (if exact
+		(setq address nil)
+	      (pop address))))))))
 
 (defun gnus-picon-find-image (directory)
   (let ((types gnus-picon-file-types)
