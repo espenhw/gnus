@@ -20,7 +20,8 @@
 	       spam-enter-ham-BBDB string-to-multibyte tool-bar-add-item
 	       tool-bar-add-item-from-menu tool-bar-local-item-from-menu
 	       url-http-file-exists-p vcard-pretty-print w32-focus-frame
-	       w3m-charset-to-coding-system x-focus-frame))
+	       w3m-charset-to-coding-system x-focus-frame put-char-table
+	       get-char-table))
 (maybe-bind '(filladapt-mode
 	      mc-pgp-always-sign mm-w3m-mode-map rmail-enable-mime-composing
 	      rmail-insert-mime-forwarded-message-function
