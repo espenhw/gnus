@@ -793,9 +793,10 @@ If RAW, don't highlight the article."
 	(replace-match "\n"))
     (mml-to-mime)
     (unless raw
-      (run-hooks 'gnus-article-decode-hook)
-      (let ((gnus-newsgroup-name "dummy"))
-	(gnus-article-prepare-display)))
+      (let ((gnus-newsgroup-charset (car message-posting-charset)))
+	(run-hooks 'gnus-article-decode-hook)
+	(let ((gnus-newsgroup-name "dummy"))
+	  (gnus-article-prepare-display))))
     (fundamental-mode)
     (setq buffer-read-only t)
     (goto-char (point-min))))
