@@ -34,9 +34,16 @@
 (require 'rfc2047)
 (require 'mm-encode)
 
-;; 8bit treatment gets any char except: 0x32 - 0x7f, CR, LF, TAB, BEL,
+;; 8bit treatment gets any char except: 0x32 - 0x7f, LF, TAB, BEL,
 ;; BS, vertical TAB, form feed, and ^_
-(defvar mm-7bit-chars "\x20-\x7f\r\n\t\x7\x8\xb\xc\x1f")
+;;
+;; Note that CR is *not* included, as that would allow a non-paired CR
+;; in the body contrary to RFC 2822:
+;;
+;;   - CR and LF MUST only occur together as CRLF; they MUST NOT
+;;     appear independently in the body.
+
+(defvar mm-7bit-chars "\x20-\x7f\n\t\x7\x8\xb\xc\x1f")
 
 (defcustom mm-body-charset-encoding-alist
   '((iso-2022-jp . 7bit)
@@ -45,6 +52,8 @@
     ;; known to break servers.
     ;; Note: UTF-16 variants are invalid for text parts [RFC 2781],
     ;; so this can't happen :-/.
+    ;; PPS: Yes, it can happen if the user specifies UTF-16 in the MML
+    ;; markup. - jh.
     (utf-16 . base64)
     (utf-16be . base64)
     (utf-16le . base64))

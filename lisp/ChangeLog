@@ -1,3 +1,7 @@
+2004-02-03  Jesper Harder  <harder@ifa.au.dk>
+
+	* mm-bodies.el (mm-7bit-chars): Don't include \r.
+
 2004-02-02  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-list-of-checks): added spam-use-BBDB-eclusive to
@@ -85,7 +89,7 @@
 
 	* gnus-group.el (gnus-group-line-format-alist): do.
 
-	* gnus.el: (gnus-use-grouplens, gnus-visual): do.
+	* gnus.el (gnus-use-grouplens, gnus-visual): do.
 
 	* gnus-gl.el: Remove.
 
