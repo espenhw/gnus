@@ -2442,7 +2442,7 @@ If FORCE is non-nil, the .newsrc file is read."
 		       (point-at-bol)
 		       ;; Options may continue on the next line.
 		       (or (and (re-search-forward "^[^ \t]" nil 'move)
-				(progn (beginning-of-line) (point)))
+				(point-at-bol))
 			   (point)))))
 	(forward-line -1))
        (symbol

@@ -2789,19 +2789,18 @@ should replace the \"Date:\" one, or should be added below it."
 	    ;; Delete any old Date headers.
 	    (while (re-search-forward date-regexp nil t)
 	      (if pos
-		  (delete-region (progn (beginning-of-line) (point))
+		  (delete-region (point-at-bol)
 				 (progn (gnus-article-forward-header)
 					(point)))
-		(delete-region (progn (beginning-of-line) (point))
-				 (progn (gnus-article-forward-header)
-					(forward-char -1)
-					(point)))
+		(delete-region (point-at-bol)
+			       (progn (gnus-article-forward-header)
+				      (forward-char -1)
+				      (point)))
 		(setq pos (point))))
 	    (when (and (not pos)
 		       (re-search-forward tdate-regexp nil t))
 	      (forward-line 1))
-	    (when pos
-	      (goto-char pos))
+	    (gnus-goto-char pos)
 	    (insert (article-make-date-line date (or type 'ut)))
 	    (unless pos
 	      (insert "\n")

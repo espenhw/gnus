@@ -1,5 +1,16 @@
 2004-02-04  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus-uu.el (gnus-uu-check-correct-stripped-uucode): Simplify.
+	(gnus-uu-post-encoded): Use point-at-bol.
+
+	* gnus-topic.el (gnus-group-active-topic-p): do.
+
+	* gnus-start.el (gnus-newsrc-to-gnus-format): do.
+
+	* gnus-group.el (gnus-group-kill-region): do.
+
+	* gnus-art.el (article-date-ut): do.
+
 	* message.el (message-fetch-field): Remove redundant
 	case-fold-search binding.
 	(message-narrow-to-field): Simplify.

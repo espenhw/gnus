@@ -195,9 +195,7 @@ If TOPIC, start with that topic."
 
 (defun gnus-group-active-topic-p ()
   "Say whether the current topic comes from the active topics."
-  (save-excursion
-    (beginning-of-line)
-    (get-text-property (point) 'gnus-active)))
+  (get-text-property (point-at-bol) 'gnus-active))
 
 (defun gnus-topic-find-groups (topic &optional level all lowest recursive)
   "Return entries for all visible groups in TOPIC.

@@ -3340,12 +3340,10 @@ The killed newsgroups can be yanked by using \\[gnus-group-yank-group]."
 	   (count-lines
 	    (progn
 	      (goto-char begin)
-	      (beginning-of-line)
-	      (point))
+	      (point-at-bol))
 	    (progn
 	      (goto-char end)
-	      (beginning-of-line)
-	      (point))))))
+	      (point-at-bol))))))
     (goto-char begin)
     (beginning-of-line)			;Important when LINES < 1
     (gnus-group-kill-group lines)))

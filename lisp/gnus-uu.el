@@ -1705,8 +1705,7 @@ Gnus might fail to display all of it.")
 (defun gnus-uu-check-correct-stripped-uucode (start end)
   (save-excursion
     (let (found beg length)
-      (if (not gnus-uu-correct-stripped-uucode)
-	  ()
+      (unless gnus-uu-correct-stripped-uucode
 	(goto-char start)
 
 	(if (re-search-forward " \\|`" end t)
@@ -1719,19 +1718,15 @@ Gnus might fail to display all of it.")
 		  (forward-line 1))))
 
 	  (while (not (eobp))
-	    (if (looking-at (concat gnus-uu-begin-string "\\|"
-				    gnus-uu-end-string))
-		()
+	    (unless (looking-at (concat gnus-uu-begin-string "\\|"
+					gnus-uu-end-string))
 	      (when (not found)
-		(beginning-of-line)
-		(setq beg (point))
-		(end-of-line)
-		(setq length (- (point) beg)))
+		(setq length (- (point-at-eol) (point-at-bol))))
 	      (setq found t)
 	      (beginning-of-line)
 	      (setq beg (point))
 	      (end-of-line)
-	      (when (not (= length (- (point) beg)))
+	      (unless (= length (- (point) beg))
 		(insert (make-string (- length (- (point) beg)) ? ))))
 	    (forward-line 1)))))))
 
@@ -2031,8 +2026,7 @@ If no file has been included, the user will be asked for a file."
     (goto-char (point-min))
     (re-search-forward
      (concat "^" (regexp-quote mail-header-separator) "$") nil t)
-    (beginning-of-line)
-    (setq header (buffer-substring (point-min) (point)))
+    (setq header (buffer-substring (point-min) (point-at-bol)))
 
     (goto-char (point-min))
     (when gnus-uu-post-separate-description
