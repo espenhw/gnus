@@ -1,5 +1,8 @@
 2002-10-04  Simon Josefsson  <jas@extundo.com>
 
+	* pgg-pgp.el (pgg-pgp-verify-region): Inline
+	binary-write-decoded-region from MEL.
+
 	* pgg.el (pgg-encrypt-region): Support sign.
 
 	* pgg-gpg.el (pgg-gpg-encrypt-region): Ditto.
