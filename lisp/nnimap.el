@@ -196,11 +196,19 @@ RFC2060 section 6.4.4."
   :group 'nnimap
   :type 'sexp)
 
-(defcustom nnimap-split-download-body nil
+(defvar nnimap-split-download-body-default nil
+  "Internal variable with default value for `nnimap-split-download-body'.")
+
+(defcustom nnimap-split-download-body 'default
   "Whether to download entire articles during splitting.
 This is generally not required, and will slow things down considerably.
 You may need it if you want to use an advanced splitting function that
-analyses the body before splitting the article."
+analyses the body before splitting the article.
+If this variable is nil, bodies will not be downloaded; if this
+variable is the symbol `default' the default behaviour is
+used (which currently is nil, unless you use a statistical
+spam.el test); if this variable is another non-nil value bodies
+will be downloaded."
   :group 'nnimap
   :type 'boolean)
 

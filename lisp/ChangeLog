@@ -1,3 +1,10 @@
+2003-03-07  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-split-download-body-default): New, holds
+	default for n-s-d-b.
+	(nnimap-split-download-body): Add new setting (symbol default),
+	which uses contents of n-s-d-b-d, and made it the default.
+
 2003-03-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-use-hashcash): new variable
