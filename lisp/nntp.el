@@ -335,17 +335,23 @@ noticing asynchronous data.")
 	(save-excursion
 	  (set-buffer (process-buffer process))
 	  (erase-buffer)))
-      (when command
-	(nntp-send-string process command))
-      (cond
-       ((eq callback 'ignore)
-	t)
-       ((and callback wait-for)
-	(nntp-async-wait process wait-for buffer decode callback)
-	t)
-       (wait-for
-	(nntp-wait-for process wait-for buffer decode))
-       (t t)))))
+      (condition-case err
+	  (progn
+	    (when command
+	      (nntp-send-string process command))
+	    (cond
+	     ((eq callback 'ignore)
+	      t)
+	     ((and callback wait-for)
+	      (nntp-async-wait process wait-for buffer decode callback)
+	      t)
+	     (wait-for
+	      (nntp-wait-for process wait-for buffer decode))
+	     (t t)))
+	(error 
+	 (nnheader-report 'nntp "Couldn't open connection to %s: %s" 
+			  address err))
+	(quit nil)))))
 
 (defsubst nntp-send-command (wait-for &rest strings)
   "Send STRINGS to server and wait until WAIT-FOR returns."

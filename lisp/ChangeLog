@@ -1,3 +1,7 @@
+2000-04-21 20:52:09  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nntp.el (nntp-retrieve-data): Report the error and return nil.
+
 2000-04-21 19:38:43  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-bodies.el (mm-decode-content-transfer-encoding): Don't remove
