@@ -321,24 +321,30 @@ your main source of newsgroup names."
 
 (defun spam-summary-prepare-exit ()
   ;; The spam processors are invoked for any group, spam or ham or neither
+  (gnus-message 6 "Exiting summary buffer and applying spam rules")
   (when (and spam-bogofilter-path
 	     (spam-group-spam-processor-bogofilter-p gnus-newsgroup-name))
+    (gnus-message 5 "Registering spam with bogofilter")
     (spam-bogofilter-register-spam-routine))
   
   (when (and spam-ifile-path
 	     (spam-group-spam-processor-ifile-p gnus-newsgroup-name))
+    (gnus-message 5 "Registering spam with ifile")
     (spam-ifile-register-spam-routine))
   
   (when (spam-group-spam-processor-stat-p gnus-newsgroup-name)
+    (gnus-message 5 "Registering spam with spam-stat")
     (spam-stat-register-spam-routine))
 
   (when (spam-group-spam-processor-blacklist-p gnus-newsgroup-name)
+    (gnus-message 5 "Registering spam with the blacklist")
     (spam-blacklist-register-routine))
 
   (if spam-move-spam-nonspam-groups-only      
       (when (not (spam-group-spam-contents-p gnus-newsgroup-name))
 	(spam-mark-spam-as-expired-and-move-routine
 	 (gnus-parameter-spam-process-destination gnus-newsgroup-name)))
+    (gnus-message 5 "Marking spam as expired and moving it")
     (spam-mark-spam-as-expired-and-move-routine 
      (gnus-parameter-spam-process-destination gnus-newsgroup-name)))
 
@@ -348,18 +354,24 @@ your main source of newsgroup names."
 
   (when (spam-group-ham-contents-p gnus-newsgroup-name)
     (when (spam-group-ham-processor-whitelist-p gnus-newsgroup-name)
+      (gnus-message 5 "Registering ham with the whitelist")
       (spam-whitelist-register-routine))
     (when (spam-group-ham-processor-ifile-p gnus-newsgroup-name)
+      (gnus-message 5 "Registering ham with ifile")
       (spam-ifile-register-ham-routine))
     (when (spam-group-ham-processor-bogofilter-p gnus-newsgroup-name)
+      (gnus-message 5 "Registering ham with Bogofilter")
       (spam-bogofilter-register-ham-routine))
     (when (spam-group-ham-processor-stat-p gnus-newsgroup-name)
+      (gnus-message 5 "Registering ham with spam-stat")
       (spam-stat-register-ham-routine))
     (when (spam-group-ham-processor-BBDB-p gnus-newsgroup-name)
+      (gnus-message 5 "Registering ham with the BBDB")
       (spam-BBDB-register-routine)))
 
   ;; now move all ham articles out of spam groups
   (when (spam-group-spam-contents-p gnus-newsgroup-name)
+    (gnus-message 5 "Moving ham messages from spam group")
     (spam-ham-move-routine
      (gnus-parameter-ham-process-destination gnus-newsgroup-name))))
 
@@ -369,6 +381,7 @@ your main source of newsgroup names."
   ;; check the global list of group names spam-junk-mailgroups and the
   ;; group parameters
   (when (spam-group-spam-contents-p gnus-newsgroup-name)
+    (gnus-message 5 "Marking unread articles as spam")
     (let ((articles gnus-newsgroup-articles)
 	  article)
       (while articles
@@ -516,6 +529,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
     (while (and list-of-checks (not decision))
       (let ((pair (pop list-of-checks)))
 	(when (symbol-value (car pair))
+	  (gnus-message 5 "spam-split: calling the %s function" (symbol-name (cdr pair)))
 	  (setq decision (funcall (cdr pair))))))
     (if (eq decision t)
 	nil
@@ -551,9 +565,10 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
       (with-temp-buffer
 	(insert headers)
 	(goto-char (point-min))
+	(gnus-message 5 "Checking headers for relay addresses")
 	(while (re-search-forward
 		"\\[\\([0-9]+.[0-9]+.[0-9]+.[0-9]+\\)\\]" nil t)
-	  (message "Blackhole search found host IP %s." (match-string 1))
+	  (gnus-message 9 "Blackhole search found host IP %s." (match-string 1))
 	  (push (mapconcat 'identity
 			   (nreverse (split-string (match-string 1) "\\."))
 			   ".")
@@ -564,11 +579,12 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	    (if spam-use-dig
 		(let ((query-result (query-dig query-string)))
 		  (when query-result
-		    (message "spam: positive blackhole check '%s'" query-result)
+		    (gnus-message 5 "spam (DIG): positive blackhole check '%s'" query-result)
 		    (push (list ip server query-result)
 			  matches)))
 	      ;; else, if not using dig.el
 	      (when (query-dns query-string)
+		(gnus-message 5 "spam: positive blackhole check '%s'" query-result)
 		(push (list ip server (query-dns query-string 'TXT))
 		      matches)))))))
     (when matches
@@ -592,7 +608,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
       (let* ((parsed-address (gnus-extract-address-components from))
 	     (name (or (car parsed-address) "Ham Sender"))
 	     (net-address (car (cdr parsed-address))))
-	(message "Adding address %s to BBDB" from)
+	(gnus-message 5 "Adding address %s to BBDB" from)
 	(when (and net-address
 		   (not (bbdb-search-simple nil net-address)))
 	  (bbdb-create-internal name nil net-address nil nil 

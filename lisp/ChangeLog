@@ -1,3 +1,9 @@
+2003-01-24  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-check-blackholes, spam-split) 
+	(spam-mark-junk-as-spam-routine, spam-summary-prepare-exit): added
+	gnus-message calls to show to users what spam.el is doing
+
 2003-01-24  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-msg.el (gnus-message-replysign)
