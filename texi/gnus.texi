@@ -566,15 +566,9 @@ Marking Articles
 * Unread Articles::             Marks for unread articles.
 * Read Articles::               Marks for read articles.
 * Other Marks::                 Marks that do not affect readedness.
-* Setting Marks::
-* Generic Marking Commands::
-* Setting Process Marks::
-
-Marking Articles
-
-* Setting Marks::             How to set and remove marks.
-* Generic Marking Commands::  How to customize the marking.
-* Setting Process Marks::     How to mark articles for later processing.
+* Setting Marks::               How to set and remove marks.
+* Generic Marking Commands::    How to customize the marking.
+* Setting Process Marks::       How to mark articles for later processing.
 
 Threading
 
@@ -849,9 +843,10 @@ Formatting Variables
 
 Image Enhancements
 
-* Picons::                      How to display pictures of what you're reading.
-* Smileys::                     Show all those happy faces the way they were meant to be shown.
 * X-Face::                      Display a funky, teensy black-and-white image.
+* Face::                        Display a funkier, teensier colored image.
+* Smileys::                     Show all those happy faces the way they were meant to be shown.
+* Picons::                      How to display pictures of what you're reading.
 * XVarious::                    Other XEmacsy Gnusey variables.
 
 Thwarting Email Spam
@@ -862,6 +857,26 @@ Thwarting Email Spam
 * Hashcash::                    Reduce spam by burning CPU time.
 * Filtering Spam Using The Spam ELisp Package::
 * Filtering Spam Using Statistics with spam-stat::
+
+Filtering Spam Using The Spam ELisp Package
+
+* Blacklists and Whitelists::
+* BBDB Whitelists::
+* Gmane Spam Reporting::
+* Anti-spam Hashcash Payments::
+* Blackholes::
+* Regular Expressions Header Matching::
+* Bogofilter::
+* ifile spam filtering::
+* spam-stat spam filtering::
+* SpamOracle::
+* Extending the spam elisp package::
+
+Filtering Spam Using Statistics with spam-stat
+
+* Creating a spam-stat dictionary::
+* Splitting mail using spam-stat::
+* Low-level interface to the spam-stat dictionary::
 
 Appendices
 
