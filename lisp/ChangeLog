@@ -1,3 +1,8 @@
+2003-11-14  Simon Josefsson  <jas@extundo.com>
+
+	* mm-util.el (mm-charset-synonym-alist): Map BIG5-HKSCS to BIG5
+	when it isn't available.
+
 2003-11-13  Alex Schroeder  <alex@gnu.org>
 
 	* nnrss.el (nnrss-check-group): Use dc:contributor if neither

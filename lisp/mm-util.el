@@ -145,6 +145,9 @@ In XEmacs, also return non-nil if CS is a coding system object."
     ;; ISO-8859-15 is very similar to ISO-8859-1.  But it's _different_!
     ,@(unless (mm-coding-system-p 'iso-8859-15)
        '((iso-8859-15 . iso-8859-1)))
+    ;; BIG-5HKSCS is similar to, but different than, BIG-5.
+    ,@(unless (mm-coding-system-p 'big5-hkscs)
+	'((big5-hkscs . big5)))
     ;; Windows-1252 is actually a superset of Latin-1.  See also
     ;; `gnus-article-dumbquotes-map'.
     ,@(unless (mm-coding-system-p 'windows-1252)
