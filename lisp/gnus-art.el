@@ -546,7 +546,7 @@ The following additional specs are available:
 
 (defvar gnus-article-hide-pgp-hook nil)
 (make-obsolete-variable 'gnus-article-hide-pgp-hook 
-			"This variable is obsolote in Gnus 5.10.")
+			"This variable is obsolete in Gnus 5.10.")
 
 (defcustom gnus-article-button-face 'bold
   "Face used for highlighting buttons in the article buffer.
