@@ -1,5 +1,7 @@
 2002-05-22  Simon Josefsson  <jas@extundo.com>
 
+	* sieve.el (sieve-change-region): Define it before it is used.
+
 	* gnus-msg.el (gnus-confirm-mail-reply-to-news)
 	(gnus-summary-reply): Ask for confirmation when replying to news.
 	Defaults to not ask.  From Benjamin Rutt

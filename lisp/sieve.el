@@ -34,7 +34,7 @@
 ;;
 ;; 2001-10-31 Committed to Oort Gnus.
 ;;
-;; $Id: sieve.el,v 6.2 2001/11/01 09:45:57 jas Exp $
+;; $Id: sieve.el,v 6.3 2002/02/20 00:15:33 yamaoka Exp $
 ;;
 ;; Todo:
 ;;
@@ -178,6 +178,15 @@ require \"fileinto\";
     (sieve-mode)
     (message "Press C-c C-l to upload script to server.")))
 
+(defmacro sieve-change-region (&rest body)
+  "Turns off sieve-region before executing BODY, then re-enables it after.
+Used to bracket operations which move point in the sieve-buffer."
+  `(progn
+     (sieve-highlight nil)
+     ,@body
+     (sieve-highlight t)))
+(put 'sieve-change-region 'lisp-indent-function 0)
+
 (defun sieve-next-line (&optional arg)
   (interactive)
   (unless arg
@@ -249,15 +258,6 @@ Server  : " server ":" (or port "2000") "
   "Return name of sieve script at point POS, or nil."
   (interactive "d")
   (get-char-property (or pos (point)) 'script-name))
-
-(defmacro sieve-change-region (&rest body)
-  "Turns off sieve-region before executing BODY, then re-enables it after.
-Used to bracket operations which move point in the sieve-buffer."
-  `(progn
-     (sieve-highlight nil)
-     ,@body
-     (sieve-highlight t)))
-(put 'sieve-change-region 'lisp-indent-function 0)
 
 (eval-and-compile
   (defalias 'sieve-make-overlay (if (fboundp 'make-overlay)
