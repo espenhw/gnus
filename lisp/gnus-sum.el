@@ -6555,7 +6555,9 @@ previous group instead."
 		     ;; in case the user is prompted for info, and we
 		     ;; don't want the window conf to change before
 		     ;; that...
-		     (gnus-summary-exit t)
+		     (when (gnus-buffer-live-p current-buffer)
+		       (set-buffer current-buffer)
+		       (gnus-summary-exit t))
 		     (gnus-summary-read-group
 		      target-group nil no-article
 		      (and (buffer-name current-buffer) current-buffer)
