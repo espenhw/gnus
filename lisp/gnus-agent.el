@@ -1818,14 +1818,16 @@ FILE and places the combined headers into `nntp-server-buffer'."
           ;; Figure out how to select articles in this group
           (setq category (gnus-group-category group))
 
+          (debug)
           (setq predicate
                 (gnus-get-predicate
-                 (gnus-agent-find-parameter group 'agent-predicate)))
+                 (or (gnus-agent-find-parameter group 'agent-predicate)
+                     'false)))
 
           ;; If the selection predicate requires scoring, score each header
           (unless (memq predicate '(gnus-agent-true gnus-agent-false))
             (let ((score-param
-                   (gnus-agent-find-parameter group 'agent-score)))
+                   (gnus-agent-find-parameter group 'agent-score-file)))
               ;; Translate score-param into real one
               (cond
                ((not score-param))
