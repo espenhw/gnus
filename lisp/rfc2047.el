@@ -471,7 +471,7 @@ The buffer may be narrowed."
 		   (gnus-point-at-bol))))
 	(while alist
 	  (when (looking-at (caar alist))
-	    (mm-with-unibyte-current-buffer-mule4
+	    (mm-with-unibyte-current-buffer
 	      (quoted-printable-encode-region
 	       (point-min) (point-max) nil (cdar alist)))
 	    (subst-char-in-region (point-min) (point-max) ?  ?_)
@@ -609,7 +609,7 @@ If your Emacs implementation can't decode CHARSET, return nil."
       (when (and (eq cs 'ascii)
 		 mail-parse-charset)
 	(setq cs mail-parse-charset))
-      (mm-with-unibyte-current-buffer-mule4
+      (mm-with-unibyte-current-buffer
 	;; In Emacs Mule 4, decoding UTF-8 should be in unibyte mode.
 	(mm-decode-coding-string
 	 (cond
