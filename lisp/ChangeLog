@@ -1,3 +1,7 @@
+2003-11-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-agent.el (gnus-agent-covered-methods): Remove nil methods. 
+
 2003-11-29  Kevin Greiner <kgreiner@xpediantsolutions.com>
 	* gnus-start.el (gnus-activate-group): The active range of the
 	group must include the articles known to the agent.

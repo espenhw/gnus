@@ -1210,7 +1210,7 @@ This can be added to `gnus-select-article-hook' or
 
 (defun gnus-agent-covered-methods ()
   "Return the subset of methods that are covered by the agent."
-  (mapcar #'gnus-server-to-method gnus-agent-covered-methods))
+  (delq nil (mapcar #'gnus-server-to-method gnus-agent-covered-methods)))
 
 ;;; History functions
 
