@@ -1,3 +1,10 @@
+2002-03-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-view.el (mm-view-pkcs7-verify): New function. A bogus
+	implementation of PKCS#7, which just allows users read the
+	message.
+	(mm-view-pkcs7): Use it.
+
 2002-02-27  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el (large-newsgroup-initial): New parameter.
