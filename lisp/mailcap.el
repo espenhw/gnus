@@ -147,7 +147,7 @@
 			  mailcap-print-command))
       (test . window-system))
      ("pdf"
-      (viewer . ,(concat "pdftotext %s - | "))
+      (viewer . ,(concat "pdftotext %s -"))
       (type   . "application/pdf")
       ("print" . ,(concat "pdftops %s - | " mailcap-print-command))
       ("copiousoutput"))
