@@ -1,3 +1,8 @@
+2004-06-08  Kai Grossjohann  <kgrossjo@eu.uu.net>
+
+	* message.el (message-expand-name-databases): New user option.
+	(message-expand-name): Use it.
+
 2004-06-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-report-articles-resend)

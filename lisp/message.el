@@ -6581,6 +6581,13 @@ which specify the range to operate on."
   :group 'message
   :type '(alist :key-type regexp :value-type function))
 
+(defcustom message-expand-name-databases
+  (list 'bbdb 'eudc)
+  "List of databases to try for name completion (`message-expand-name').
+Each element is a symbol and can be `bbdb' or `eudc'."
+  :group 'message
+  :type '(set (const bbdb) (const eudc)))
+
 (defcustom message-tab-body-function nil
   "*Function to execute when `message-tab' (TAB) is executed in the body.
 If nil, the function bound in `text-mode-map' or `global-map' is executed."
@@ -6646,9 +6653,12 @@ those headers."
 	    (delete-region (point) (progn (forward-line 3) (point))))))))))
 
 (defun message-expand-name ()
-  (cond ((when (boundp 'eudc-protocol) eudc-protocol)
+  (cond ((and (memq 'eudc message-expand-name-databases)
+		    (boundp 'eudc-protocol)
+		    eudc-protocol)
 	 (eudc-expand-inline))
-	((fboundp 'bbdb-complete-name)
+	((and (memq 'bbdb message-expand-name-databases)
+	      (fboundp 'bbdb-complete-name))
 	 (bbdb-complete-name))
 	(t
 	 (expand-abbrev))))
