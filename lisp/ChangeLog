@@ -1,5 +1,11 @@
 2004-01-05  Jesper Harder  <harder@ifa.au.dk>
 
+	* spam-stat.el (with-syntax-table): Remove with-syntax-table
+	definition.
+
+	* rfc2047.el (with-syntax-table): Remove with-syntax-table Emacs
+	20 compatibility code.
+
 	* spam.el (spam-point-at-eol): Replace with point-at-eol.
 
 	* smime.el (smime-point-at-eol): Replace with point-at-eol.
