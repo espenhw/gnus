@@ -1,3 +1,8 @@
+2002-09-30  Ted Zlatanov <tzz@lifelogs.com>
+
+	* spam.el: merged changes from pinard@iro.umontreal.ca (François Pinard).
+        Major revamp of the code, documentation is in comments in the file for now.
+
 2002-09-30  Simon Josefsson  <jas@extundo.com>
 
 	* mml2015.el (mml2015-pgg-clear-verify): Verifying in a unibyte
