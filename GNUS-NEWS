@@ -8,6 +8,29 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Smileys (":-)", ";-)" etc) are now iconized for Emacs too.
+
+Put (setq gnus-treat-display-smileys nil) in ~/.emacs to disable it.
+
+** Gnus no longer generate the Sender: header automatically.
+
+Earlier it was generated iff the user configurable email address was
+different from the Gnus guessed default user address.  As the guessing
+algorithm is rarely correct these days, and (more controversally) the
+only use of the Sender: header was to check if you are entitled to
+cancel/supersede news (which is now solved by Cancel Locks instead,
+see another entry), generation of the header has been disabled by
+default.  See the variables `message-required-headers',
+`message-required-news-headers', and `message-required-mail-headers'.
+
+** Features from third party message-utils.el added to message.el.
+
+Message now asks if you wish to remove "(was: <old subject>)" from
+subject lines (see `message-subject-trailing-was-query').  C-c M-m and
+C-c M-f inserts markers indicating included text.  C-c C-f a adds a
+X-No-Archive: header.  Improved crosspost follow behaviour with
+`message-cross-post-*'.
+
 ** References and X-Draft-Headers are no longer generated when you
    start composing messages.
 
