@@ -1,3 +1,7 @@
+2004-01-23  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (GroupLens): Remove.
+
 2004-01-22  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Spam ELisp Package Sequence of Events): fix typo

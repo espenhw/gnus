@@ -803,16 +803,8 @@ Scoring
 * Global Score Files::          Earth-spanning, ear-splitting score files.
 * Kill Files::                  They are still here, but they can be ignored.
 * Converting Kill Files::       Translating kill files to score files.
-* GroupLens::                   Getting predictions on what you like to read.
 * Advanced Scoring::            Using logical expressions to build score rules.
 * Score Decays::                It can be useful to let scores wither away.
-
-GroupLens
-
-* Using GroupLens::             How to make Gnus use GroupLens.
-* Rating Articles::             Letting GroupLens know how you rate articles.
-* Displaying Predictions::      Displaying predictions given by GroupLens.
-* GroupLens Variables::         Customizing GroupLens.
 
 Advanced Scoring
 
@@ -18679,7 +18671,6 @@ silently to help keep the sizes of the score files down.
 * Global Score Files::          Earth-spanning, ear-splitting score files.
 * Kill Files::                  They are still here, but they can be ignored.
 * Converting Kill Files::       Translating kill files to score files.
-* GroupLens::                   Getting predictions on what you like to read.
 * Advanced Scoring::            Using logical expressions to build score rules.
 * Score Decays::                It can be useful to let scores wither away.
 @end menu
@@ -20071,205 +20062,6 @@ If your old kill files are very complex---if they contain more
 non-@code{gnus-kill} forms than not, you'll have to convert them by
 hand.  Or just let them be as they are.  Gnus will still use them as
 before.
-
-
-@node GroupLens
-@section GroupLens
-@cindex GroupLens
-
-@sc{Note:} Unfortunately the GroupLens system seems to have shut down,
-so this section is mostly of historical interest.
-
-@uref{http://www.cs.umn.edu/Research/GroupLens/, GroupLens} is a
-collaborative filtering system that helps you work together with other
-people to find the quality news articles out of the huge volume of
-news articles generated every day.
-
-To accomplish this the GroupLens system combines your opinions about
-articles you have already read with the opinions of others who have done
-likewise and gives you a personalized prediction for each unread news
-article.  Think of GroupLens as a matchmaker.  GroupLens watches how you
-rate articles, and finds other people that rate articles the same way.
-Once it has found some people you agree with it tells you, in the form
-of a prediction, what they thought of the article.  You can use this
-prediction to help you decide whether or not you want to read the
-article.
-
-@menu
-* Using GroupLens::             How to make Gnus use GroupLens.
-* Rating Articles::             Letting GroupLens know how you rate articles.
-* Displaying Predictions::      Displaying predictions given by GroupLens.
-* GroupLens Variables::         Customizing GroupLens.
-@end menu
-
-
-@node Using GroupLens
-@subsection Using GroupLens
-
-To use GroupLens you must register a pseudonym with your local
-@uref{http://www.cs.umn.edu/Research/GroupLens/bbb.html, Better Bit
-Bureau (BBB)} is the only better bit in town at the moment.
-
-Once you have registered you'll need to set a couple of variables.
-
-@table @code
-
-@item gnus-use-grouplens
-@vindex gnus-use-grouplens
-Setting this variable to a non-@code{nil} value will make Gnus hook into
-all the relevant GroupLens functions.
-
-@item grouplens-pseudonym
-@vindex grouplens-pseudonym
-This variable should be set to the pseudonym you got when registering
-with the Better Bit Bureau.
-
-@item grouplens-newsgroups
-@vindex grouplens-newsgroups
-A list of groups that you want to get GroupLens predictions for.
-
-@end table
-
-That's the minimum of what you need to get up and running with GroupLens.
-Once you've registered, GroupLens will start giving you scores for
-articles based on the average of what other people think.  But, to get
-the real benefit of GroupLens you need to start rating articles
-yourself.  Then the scores GroupLens gives you will be personalized for
-you, based on how the people you usually agree with have already rated.
-
-
-@node Rating Articles
-@subsection Rating Articles
-
-In GroupLens, an article is rated on a scale from 1 to 5, inclusive.
-Where 1 means something like this article is a waste of bandwidth and 5
-means that the article was really good.  The basic question to ask
-yourself is, ``on a scale from 1 to 5 would I like to see more articles
-like this one?''
-
-There are four ways to enter a rating for an article in GroupLens.
-
-@table @kbd
-
-@item r
-@kindex r (GroupLens)
-@findex bbb-summary-rate-article
-This function will prompt you for a rating on a scale of one to five.
-
-@item k
-@kindex k (GroupLens)
-@findex grouplens-score-thread
-This function will prompt you for a rating, and rate all the articles in
-the thread.  This is really useful for some of those long running giant
-threads in rec.humor.
-
-@end table
-
-The next two commands, @kbd{n} and @kbd{,} take a numerical prefix to be
-the score of the article you're reading.
-
-@table @kbd
-
-@item 1-5 n
-@kindex n (GroupLens)
-@findex grouplens-next-unread-article
-Rate the article and go to the next unread article.
-
-@item 1-5 ,
-@kindex , (GroupLens)
-@findex grouplens-best-unread-article
-Rate the article and go to the next unread article with the highest score.
-
-@end table
-
-If you want to give the current article a score of 4 and then go to the
-next article, just type @kbd{4 n}.
-
-
-@node Displaying Predictions
-@subsection Displaying Predictions
-
-GroupLens makes a prediction for you about how much you will like a
-news article.  The predictions from GroupLens are on a scale from 1 to
-5, where 1 is the worst and 5 is the best.  You can use the predictions
-from GroupLens in one of three ways controlled by the variable
-@code{gnus-grouplens-override-scoring}.
-
-@vindex gnus-grouplens-override-scoring
-There are three ways to display predictions in grouplens.  You may
-choose to have the GroupLens scores contribute to, or override the
-regular Gnus scoring mechanism.  override is the default; however, some
-people prefer to see the Gnus scores plus the grouplens scores.  To get
-the separate scoring behavior you need to set
-@code{gnus-grouplens-override-scoring} to @code{'separate}.  To have the
-GroupLens predictions combined with the grouplens scores set it to
-@code{'override} and to combine the scores set
-@code{gnus-grouplens-override-scoring} to @code{'combine}.  When you use
-the combine option you will also want to set the values for
-@code{grouplens-prediction-offset} and
-@code{grouplens-score-scale-factor}.
-
-@vindex grouplens-prediction-display
-In either case, GroupLens gives you a few choices for how you would like
-to see your predictions displayed.  The display of predictions is
-controlled by the @code{grouplens-prediction-display} variable.
-
-The following are valid values for that variable.
-
-@table @code
-@item prediction-spot
-The higher the prediction, the further to the right an @samp{*} is
-displayed.
-
-@item confidence-interval
-A numeric confidence interval.
-
-@item prediction-bar
-The higher the prediction, the longer the bar.
-
-@item confidence-bar
-Numerical confidence.
-
-@item confidence-spot
-The spot gets bigger with more confidence.
-
-@item prediction-num
-Plain-old numeric value.
-
-@item confidence-plus-minus
-Prediction +/- confidence.
-
-@end table
-
-
-@node GroupLens Variables
-@subsection GroupLens Variables
-
-@table @code
-
-@item gnus-summary-grouplens-line-format
-The summary line format used in GroupLens-enhanced summary buffers.  It
-accepts the same specs as the normal summary line format (@pxref{Summary
-Buffer Lines}).  The default is @samp{%U%R%z%l%I%(%[%4L: %-23,23n%]%)
-%s\n}.
-
-@item grouplens-bbb-host
-Host running the bbbd server.  @samp{grouplens.cs.umn.edu} is the
-default.
-
-@item grouplens-bbb-port
-Port of the host running the bbbd server.  The default is 9000.
-
-@item grouplens-score-offset
-Offset the prediction by this value.  In other words, subtract the
-prediction value by this number to arrive at the effective score.  The
-default is 0.
-
-@item grouplens-score-scale-factor
-This variable allows the user to magnify the effect of GroupLens scores.
-The scale factor is applied after the offset.  The default is 1.
-
-@end table
 
 
 @node Advanced Scoring
@@ -24696,8 +24488,7 @@ Wes Hardaker---@file{gnus-picon.el} and the manual section on
 Kim-Minh Kaplan---further work on the picon code.
 
 @item
-Brad Miller---@file{gnus-gl.el} and the GroupLens manual section
-(@pxref{GroupLens}).
+Brad Miller---@file{gnus-gl.el} and the GroupLens manual section.
 
 @item
 Sudish Joseph---innumerable bug fixes.
@@ -25145,7 +24936,7 @@ Partial thread regeneration now happens when articles are
 referred.
 
 @item
-Gnus can make use of GroupLens predictions (@pxref{GroupLens}).
+Gnus can make use of GroupLens predictions.
 
 @item
 Picons (personal icons) can be displayed under XEmacs (@pxref{Picons}).
