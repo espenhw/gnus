@@ -806,7 +806,9 @@
 
 (defun mml2015-pgg-sign (cont)
   (let ((pgg-errors-buffer mml2015-result-buffer)
-	(boundary (funcall mml-boundary-function (incf mml-multipart-number))))
+	(boundary (funcall mml-boundary-function (incf mml-multipart-number)))
+	(pgg-default-user-id (or (message-options-get 'message-sender)
+				 pgg-default-user-id)))
     (unless (pgg-sign-region (point-min) (point-max))
       (pop-to-buffer mml2015-result-buffer)
       (error "Sign error"))

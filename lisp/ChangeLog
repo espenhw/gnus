@@ -1,3 +1,8 @@
+2003-04-16  Simon Josefsson  <jas@extundo.com>
+
+	* mml2015.el (mml2015-pgg-sign): Bind pgg-default-user-id to MML
+	sender tag, if available.
+
 2003-04-16  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam-report.el (Module): new module for spam reporting
@@ -52,7 +57,7 @@
 	specify a predicate other than false.
 	(gnus-category-read): Use the new feature to create a 'default'
 	category with a 'short' predicate.
-	
+
 2003-04-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-unique-id): Comment change.
