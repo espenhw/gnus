@@ -3774,14 +3774,19 @@ commands:
       (mm-enable-multibyte)
       (setq major-mode 'gnus-original-article-mode)
       (make-local-variable 'gnus-original-article))
-    (if (get-buffer name)
+    (if (and (get-buffer name)
+	     (with-current-buffer name
+	       (if gnus-article-edit-mode
+		   (if (y-or-n-p "Article mode edit in progress; discard? ")
+		       (progn
+			 (set-buffer-modified-p nil)
+			 (gnus-kill-buffer name)
+			 (message "")
+			 nil)
+		     (error "Action aborted"))
+		 t)))
 	(save-excursion
 	  (set-buffer name)
-	  (when (and gnus-article-edit-mode
-		     (buffer-modified-p)
-		     (not
-		      (y-or-n-p "Article mode edit in progress; discard? ")))
-	    (error "Action aborted"))
 	  (set (make-local-variable 'gnus-article-edit-mode) nil)
 	  (when gnus-article-mime-handles
 	    (mm-destroy-parts gnus-article-mime-handles)
@@ -3839,11 +3844,6 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	(when (and (boundp 'transient-mark-mode)
 		   transient-mark-mode)
 	  (setq mark-active nil))
-	;; Editing of the article might not have been finished.
-	(when (local-variable-p 'after-change-functions (current-buffer))
-	  (remove-hook 'after-change-functions
-		       'message-strip-forbidden-properties
-		       'local))
 	(if (not (setq result (let ((inhibit-read-only t))
 				(gnus-request-article-this-buffer
 				 article group))))
