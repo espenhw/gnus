@@ -528,207 +528,207 @@ simple manner.")
 
 (put 'gnus-group-mode 'mode-class 'special)
 
-(when t
-  (gnus-define-keys gnus-group-mode-map
-    " " gnus-group-read-group
-    "=" gnus-group-select-group
-    "\r" gnus-group-select-group
-    "\M-\r" gnus-group-quick-select-group
-    "\M- " gnus-group-visible-select-group
-    [(meta control return)] gnus-group-select-group-ephemerally
-    "j" gnus-group-jump-to-group
-    "n" gnus-group-next-unread-group
-    "p" gnus-group-prev-unread-group
-    "\177" gnus-group-prev-unread-group
-    [delete] gnus-group-prev-unread-group
-    [backspace] gnus-group-prev-unread-group
-    "N" gnus-group-next-group
-    "P" gnus-group-prev-group
-    "\M-n" gnus-group-next-unread-group-same-level
-    "\M-p" gnus-group-prev-unread-group-same-level
-    "," gnus-group-best-unread-group
-    "." gnus-group-first-unread-group
-    "u" gnus-group-unsubscribe-current-group
-    "U" gnus-group-unsubscribe-group
-    "c" gnus-group-catchup-current
-    "C" gnus-group-catchup-current-all
-    "\M-c" gnus-group-clear-data
-    "l" gnus-group-list-groups
-    "L" gnus-group-list-all-groups
-    "m" gnus-group-mail
-    "i" gnus-group-news
-    "g" gnus-group-get-new-news
-    "\M-g" gnus-group-get-new-news-this-group
-    "R" gnus-group-restart
-    "r" gnus-group-read-init-file
-    "B" gnus-group-browse-foreign-server
-    "b" gnus-group-check-bogus-groups
-    "F" gnus-group-find-new-groups
-    "\C-c\C-d" gnus-group-describe-group
-    "\M-d" gnus-group-describe-all-groups
-    "\C-c\C-a" gnus-group-apropos
-    "\C-c\M-\C-a" gnus-group-description-apropos
-    "a" gnus-group-post-news
-    "\ek" gnus-group-edit-local-kill
-    "\eK" gnus-group-edit-global-kill
-    "\C-k" gnus-group-kill-group
-    "\C-y" gnus-group-yank-group
-    "\C-w" gnus-group-kill-region
-    "\C-x\C-t" gnus-group-transpose-groups
-    "\C-c\C-l" gnus-group-list-killed
-    "\C-c\C-x" gnus-group-expire-articles
-    "\C-c\M-\C-x" gnus-group-expire-all-groups
-    "V" gnus-version
-    "s" gnus-group-save-newsrc
-    "z" gnus-group-suspend
-    "q" gnus-group-exit
-    "Q" gnus-group-quit
-    "?" gnus-group-describe-briefly
-    "\C-c\C-i" gnus-info-find-node
-    "\M-e" gnus-group-edit-group-method
-    "^" gnus-group-enter-server-mode
-    gnus-mouse-2 gnus-mouse-pick-group
-    "<" beginning-of-buffer
-    ">" end-of-buffer
-    "\C-c\C-b" gnus-bug
-    "\C-c\C-s" gnus-group-sort-groups
-    "t" gnus-topic-mode
-    "\C-c\M-g" gnus-activate-all-groups
-    "\M-&" gnus-group-universal-argument
-    "#" gnus-group-mark-group
-    "\M-#" gnus-group-unmark-group)
+(gnus-define-keys gnus-group-mode-map
+  " " gnus-group-read-group
+  "=" gnus-group-select-group
+  "\r" gnus-group-select-group
+  "\M-\r" gnus-group-quick-select-group
+  "\M- " gnus-group-visible-select-group
+  [(meta control return)] gnus-group-select-group-ephemerally
+  "j" gnus-group-jump-to-group
+  "n" gnus-group-next-unread-group
+  "p" gnus-group-prev-unread-group
+  "\177" gnus-group-prev-unread-group
+  [delete] gnus-group-prev-unread-group
+  [backspace] gnus-group-prev-unread-group
+  "N" gnus-group-next-group
+  "P" gnus-group-prev-group
+  "\M-n" gnus-group-next-unread-group-same-level
+  "\M-p" gnus-group-prev-unread-group-same-level
+  "," gnus-group-best-unread-group
+  "." gnus-group-first-unread-group
+  "u" gnus-group-unsubscribe-current-group
+  "U" gnus-group-unsubscribe-group
+  "c" gnus-group-catchup-current
+  "C" gnus-group-catchup-current-all
+  "\M-c" gnus-group-clear-data
+  "l" gnus-group-list-groups
+  "L" gnus-group-list-all-groups
+  "m" gnus-group-mail
+  "i" gnus-group-news
+  "g" gnus-group-get-new-news
+  "\M-g" gnus-group-get-new-news-this-group
+  "R" gnus-group-restart
+  "r" gnus-group-read-init-file
+  "B" gnus-group-browse-foreign-server
+  "b" gnus-group-check-bogus-groups
+  "F" gnus-group-find-new-groups
+  "\C-c\C-d" gnus-group-describe-group
+  "\M-d" gnus-group-describe-all-groups
+  "\C-c\C-a" gnus-group-apropos
+  "\C-c\M-\C-a" gnus-group-description-apropos
+  "a" gnus-group-post-news
+  "\ek" gnus-group-edit-local-kill
+  "\eK" gnus-group-edit-global-kill
+  "\C-k" gnus-group-kill-group
+  "\C-y" gnus-group-yank-group
+  "\C-w" gnus-group-kill-region
+  "\C-x\C-t" gnus-group-transpose-groups
+  "\C-c\C-l" gnus-group-list-killed
+  "\C-c\C-x" gnus-group-expire-articles
+  "\C-c\M-\C-x" gnus-group-expire-all-groups
+  "V" gnus-version
+  "s" gnus-group-save-newsrc
+  "z" gnus-group-suspend
+  "q" gnus-group-exit
+  "Q" gnus-group-quit
+  "?" gnus-group-describe-briefly
+  "\C-c\C-i" gnus-info-find-node
+  "\M-e" gnus-group-edit-group-method
+  "^" gnus-group-enter-server-mode
+  gnus-mouse-2 gnus-mouse-pick-group
+  "<" beginning-of-buffer
+  ">" end-of-buffer
+  "\C-c\C-b" gnus-bug
+  "\C-c\C-s" gnus-group-sort-groups
+  "t" gnus-topic-mode
+  "\C-c\M-g" gnus-activate-all-groups
+  "\M-&" gnus-group-universal-argument
+  "#" gnus-group-mark-group
+  "\M-#" gnus-group-unmark-group)
 
-  (gnus-define-keys (gnus-group-mark-map "M" gnus-group-mode-map)
-    "m" gnus-group-mark-group
-    "u" gnus-group-unmark-group
-    "w" gnus-group-mark-region
-    "b" gnus-group-mark-buffer
-    "r" gnus-group-mark-regexp
-    "U" gnus-group-unmark-all-groups)
+(gnus-define-keys (gnus-group-mark-map "M" gnus-group-mode-map)
+  "m" gnus-group-mark-group
+  "u" gnus-group-unmark-group
+  "w" gnus-group-mark-region
+  "b" gnus-group-mark-buffer
+  "r" gnus-group-mark-regexp
+  "U" gnus-group-unmark-all-groups)
 
-  (gnus-define-keys (gnus-group-sieve-map "D" gnus-group-mode-map)
-    "u" gnus-sieve-update
-    "g" gnus-sieve-generate)
+(gnus-define-keys (gnus-group-sieve-map "D" gnus-group-mode-map)
+  "u" gnus-sieve-update
+  "g" gnus-sieve-generate)
 
-  (gnus-define-keys (gnus-group-group-map "G" gnus-group-mode-map)
-    "d" gnus-group-make-directory-group
-    "h" gnus-group-make-help-group
-    "u" gnus-group-make-useful-group
-    "a" gnus-group-make-archive-group
-    "k" gnus-group-make-kiboze-group
-    "l" gnus-group-nnimap-edit-acl
-    "m" gnus-group-make-group
-    "E" gnus-group-edit-group
-    "e" gnus-group-edit-group-method
-    "p" gnus-group-edit-group-parameters
-    "v" gnus-group-add-to-virtual
-    "V" gnus-group-make-empty-virtual
-    "D" gnus-group-enter-directory
-    "f" gnus-group-make-doc-group
-    "w" gnus-group-make-web-group
-    "r" gnus-group-rename-group
-    "R" gnus-group-make-rss-group
-    "c" gnus-group-customize
-    "x" gnus-group-nnimap-expunge
-    "\177" gnus-group-delete-group
-    [delete] gnus-group-delete-group)
+(gnus-define-keys (gnus-group-group-map "G" gnus-group-mode-map)
+  "d" gnus-group-make-directory-group
+  "h" gnus-group-make-help-group
+  "u" gnus-group-make-useful-group
+  "a" gnus-group-make-archive-group
+  "k" gnus-group-make-kiboze-group
+  "l" gnus-group-nnimap-edit-acl
+  "m" gnus-group-make-group
+  "E" gnus-group-edit-group
+  "e" gnus-group-edit-group-method
+  "p" gnus-group-edit-group-parameters
+  "v" gnus-group-add-to-virtual
+  "V" gnus-group-make-empty-virtual
+  "D" gnus-group-enter-directory
+  "f" gnus-group-make-doc-group
+  "w" gnus-group-make-web-group
+  "M" gnus-group-read-ephemeral-group
+  "r" gnus-group-rename-group
+  "R" gnus-group-make-rss-group
+  "c" gnus-group-customize
+  "x" gnus-group-nnimap-expunge
+  "\177" gnus-group-delete-group
+  [delete] gnus-group-delete-group)
 
-  (gnus-define-keys (gnus-group-soup-map "s" gnus-group-group-map)
-    "b" gnus-group-brew-soup
-    "w" gnus-soup-save-areas
-    "s" gnus-soup-send-replies
-    "p" gnus-soup-pack-packet
-    "r" nnsoup-pack-replies)
+(gnus-define-keys (gnus-group-soup-map "s" gnus-group-group-map)
+  "b" gnus-group-brew-soup
+  "w" gnus-soup-save-areas
+  "s" gnus-soup-send-replies
+  "p" gnus-soup-pack-packet
+  "r" nnsoup-pack-replies)
 
-  (gnus-define-keys (gnus-group-sort-map "S" gnus-group-group-map)
-    "s" gnus-group-sort-groups
-    "a" gnus-group-sort-groups-by-alphabet
-    "u" gnus-group-sort-groups-by-unread
-    "l" gnus-group-sort-groups-by-level
-    "v" gnus-group-sort-groups-by-score
-    "r" gnus-group-sort-groups-by-rank
-    "m" gnus-group-sort-groups-by-method
-    "n" gnus-group-sort-groups-by-real-name)
+(gnus-define-keys (gnus-group-sort-map "S" gnus-group-group-map)
+  "s" gnus-group-sort-groups
+  "a" gnus-group-sort-groups-by-alphabet
+  "u" gnus-group-sort-groups-by-unread
+  "l" gnus-group-sort-groups-by-level
+  "v" gnus-group-sort-groups-by-score
+  "r" gnus-group-sort-groups-by-rank
+  "m" gnus-group-sort-groups-by-method
+  "n" gnus-group-sort-groups-by-real-name)
 
-  (gnus-define-keys (gnus-group-sort-selected-map "P" gnus-group-group-map)
-    "s" gnus-group-sort-selected-groups
-    "a" gnus-group-sort-selected-groups-by-alphabet
-    "u" gnus-group-sort-selected-groups-by-unread
-    "l" gnus-group-sort-selected-groups-by-level
-    "v" gnus-group-sort-selected-groups-by-score
-    "r" gnus-group-sort-selected-groups-by-rank
-    "m" gnus-group-sort-selected-groups-by-method
-    "n" gnus-group-sort-selected-groups-by-real-name)
+(gnus-define-keys (gnus-group-sort-selected-map "P" gnus-group-group-map)
+  "s" gnus-group-sort-selected-groups
+  "a" gnus-group-sort-selected-groups-by-alphabet
+  "u" gnus-group-sort-selected-groups-by-unread
+  "l" gnus-group-sort-selected-groups-by-level
+  "v" gnus-group-sort-selected-groups-by-score
+  "r" gnus-group-sort-selected-groups-by-rank
+  "m" gnus-group-sort-selected-groups-by-method
+  "n" gnus-group-sort-selected-groups-by-real-name)
 
-  (gnus-define-keys (gnus-group-list-map "A" gnus-group-mode-map)
-    "k" gnus-group-list-killed
-    "z" gnus-group-list-zombies
-    "s" gnus-group-list-groups
-    "u" gnus-group-list-all-groups
-    "A" gnus-group-list-active
-    "a" gnus-group-apropos
-    "d" gnus-group-description-apropos
-    "m" gnus-group-list-matching
-    "M" gnus-group-list-all-matching
-    "l" gnus-group-list-level
-    "c" gnus-group-list-cached
-    "?" gnus-group-list-dormant)
+(gnus-define-keys (gnus-group-list-map "A" gnus-group-mode-map)
+  "k" gnus-group-list-killed
+  "z" gnus-group-list-zombies
+  "s" gnus-group-list-groups
+  "u" gnus-group-list-all-groups
+  "A" gnus-group-list-active
+  "a" gnus-group-apropos
+  "d" gnus-group-description-apropos
+  "m" gnus-group-list-matching
+  "M" gnus-group-list-all-matching
+  "l" gnus-group-list-level
+  "c" gnus-group-list-cached
+  "?" gnus-group-list-dormant)
 
-  (gnus-define-keys (gnus-group-list-limit-map "/" gnus-group-list-map)
-    "k"  gnus-group-list-limit
-    "z"  gnus-group-list-limit
-    "s"  gnus-group-list-limit
-    "u"  gnus-group-list-limit
-    "A"  gnus-group-list-limit
-    "m"  gnus-group-list-limit
-    "M"  gnus-group-list-limit
-    "l"  gnus-group-list-limit
-    "c"  gnus-group-list-limit
-    "?"  gnus-group-list-limit)
+(gnus-define-keys (gnus-group-list-limit-map "/" gnus-group-list-map)
+  "k"  gnus-group-list-limit
+  "z"  gnus-group-list-limit
+  "s"  gnus-group-list-limit
+  "u"  gnus-group-list-limit
+  "A"  gnus-group-list-limit
+  "m"  gnus-group-list-limit
+  "M"  gnus-group-list-limit
+  "l"  gnus-group-list-limit
+  "c"  gnus-group-list-limit
+  "?"  gnus-group-list-limit)
 
-  (gnus-define-keys (gnus-group-list-flush-map "f" gnus-group-list-map)
-    "k"  gnus-group-list-flush
-    "z"  gnus-group-list-flush
-    "s"  gnus-group-list-flush
-    "u"  gnus-group-list-flush
-    "A"  gnus-group-list-flush
-    "m"  gnus-group-list-flush
-    "M"  gnus-group-list-flush
-    "l"  gnus-group-list-flush
-    "c"  gnus-group-list-flush
-    "?"  gnus-group-list-flush)
+(gnus-define-keys (gnus-group-list-flush-map "f" gnus-group-list-map)
+  "k"  gnus-group-list-flush
+  "z"  gnus-group-list-flush
+  "s"  gnus-group-list-flush
+  "u"  gnus-group-list-flush
+  "A"  gnus-group-list-flush
+  "m"  gnus-group-list-flush
+  "M"  gnus-group-list-flush
+  "l"  gnus-group-list-flush
+  "c"  gnus-group-list-flush
+  "?"  gnus-group-list-flush)
 
-  (gnus-define-keys (gnus-group-list-plus-map "p" gnus-group-list-map)
-    "k"  gnus-group-list-plus
-    "z"  gnus-group-list-plus
-    "s"  gnus-group-list-plus
-    "u"  gnus-group-list-plus
-    "A"  gnus-group-list-plus
-    "m"  gnus-group-list-plus
-    "M"  gnus-group-list-plus
-    "l"  gnus-group-list-plus
-    "c"  gnus-group-list-plus
-    "?"  gnus-group-list-plus)
+(gnus-define-keys (gnus-group-list-plus-map "p" gnus-group-list-map)
+  "k"  gnus-group-list-plus
+  "z"  gnus-group-list-plus
+  "s"  gnus-group-list-plus
+  "u"  gnus-group-list-plus
+  "A"  gnus-group-list-plus
+  "m"  gnus-group-list-plus
+  "M"  gnus-group-list-plus
+  "l"  gnus-group-list-plus
+  "c"  gnus-group-list-plus
+  "?"  gnus-group-list-plus)
 
-  (gnus-define-keys (gnus-group-score-map "W" gnus-group-mode-map)
-    "f" gnus-score-flush-cache)
+(gnus-define-keys (gnus-group-score-map "W" gnus-group-mode-map)
+  "f" gnus-score-flush-cache)
 
-  (gnus-define-keys (gnus-group-help-map "H" gnus-group-mode-map)
-    "c" gnus-group-fetch-charter
-    "C" gnus-group-fetch-control
-    "d" gnus-group-describe-group
-    "f" gnus-group-fetch-faq
-    "v" gnus-version)
+(gnus-define-keys (gnus-group-help-map "H" gnus-group-mode-map)
+  "c" gnus-group-fetch-charter
+  "C" gnus-group-fetch-control
+  "d" gnus-group-describe-group
+  "f" gnus-group-fetch-faq
+  "v" gnus-version)
 
-  (gnus-define-keys (gnus-group-sub-map "S" gnus-group-mode-map)
-    "l" gnus-group-set-current-level
-    "t" gnus-group-unsubscribe-current-group
-    "s" gnus-group-unsubscribe-group
-    "k" gnus-group-kill-group
-    "y" gnus-group-yank-group
-    "w" gnus-group-kill-region
-    "\C-k" gnus-group-kill-level
-    "z" gnus-group-kill-all-zombies))
+(gnus-define-keys (gnus-group-sub-map "S" gnus-group-mode-map)
+  "l" gnus-group-set-current-level
+  "t" gnus-group-unsubscribe-current-group
+  "s" gnus-group-unsubscribe-group
+  "k" gnus-group-kill-group
+  "y" gnus-group-yank-group
+  "w" gnus-group-kill-region
+  "\C-k" gnus-group-kill-level
+  "z" gnus-group-kill-all-zombies)
 
 (defun gnus-topic-mode-p ()
   "Return non-nil in `gnus-topic-mode'."

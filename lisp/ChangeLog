@@ -1,5 +1,7 @@
 2003-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-group.el: Removed `(when t ...)' around `gnus-define-keys'.
+
 	* gnus-score.el (gnus-score-find-trace): Added comment on sync
 	with `gnus-score-edit-file-at-point'.
 
