@@ -534,16 +534,21 @@ The buffer may be narrowed."
 
 (defun rfc2047-decode-string (string)
   "Decode the quoted-printable-encoded STRING and return the results."
-  (if (string-match "=\\?" string)
-      (let ((m (mm-multibyte-p)))
+  (let ((m (mm-multibyte-p)))
+    (if (string-match "=\\?" string)
 	(with-temp-buffer
 	  (when m
 	    (mm-enable-multibyte))
 	  (insert string)
 	  (inline
 	    (rfc2047-decode-region (point-min) (point-max)))
-	  (buffer-string)))
-    (mm-string-as-unibyte string)))
+	  (buffer-string))
+      (if (and m 
+	       mail-parse-charset
+	       (not (eq mail-parse-charset 'us-ascii))
+	       (not (eq mail-parse-charset 'gnus-decoded)))
+	  (mm-decode-coding-string string mail-parse-charset)
+	string))))
 
 (defun rfc2047-parse-and-decode (word)
   "Decode WORD and return it if it is an encoded word.

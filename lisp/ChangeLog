@@ -6,7 +6,7 @@
 	is no quoted-printable-encoded STRING.
 	From: Jesper Harder <harder@ifa.au.dk>
 	
-	(rfc2047-decode-string): Return unibyte string.
+	(rfc2047-decode-string): Decode it.
 
 2002-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
