@@ -772,7 +772,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	(goto-char (point-min))
 	(gnus-message 5 "Checking headers for relay addresses")
 	(while (re-search-forward
-		"\\([0-9]+.[0-9]+.[0-9]+.[0-9]+\\)" nil t)
+		"\\([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+\\)" nil t)
 	  (gnus-message 9 "Blackhole search found host IP %s." (match-string 1))
 	  (push (spam-reverse-ip-string (match-string 1))
 		ips)))

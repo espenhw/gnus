@@ -3,6 +3,7 @@
 	* spam.el (spam-check-blackholes): remove "[IP address]"
 	requirement, now just "IP address" is enough for detection for
 	blackhole checking
+	(spam-check-blackholes): oops, the dots were not escaped
 
 2003-10-23  Simon Josefsson  <jas@extundo.com>
 
