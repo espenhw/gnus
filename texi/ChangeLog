@@ -1,3 +1,8 @@
+2002-12-30  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Blackholes): added information on query-dig and
+	dig.el; users are told that using blackhole checks is OK now
+
 2002-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Loose Threads): add

@@ -21475,10 +21475,14 @@ will be allowed through; all others will be classified as spam.
 You can let Gnus consult the blackhole-type distributed spam
 processing systems (DCC, for instance) when you set this option.  The
 variable @code{spam-blackhole-servers} holds the list of blackhole servers
-Gnus will consult.
+Gnus will consult.  The current list is fairly comprehensive.
 
-This variable is disabled by default.  It is not recommended at this
-time because of bugs in the @code{dns.el} code.
+This variable is enabled by default.  It uses the @code{dig.el}
+package to look up hosts in the blackhole list, but you can tell
+@code{spam.el} to use @code{dns.el} instead if you set
+@code{spam-use-dig} to nil.  It is not recommended at this time to set
+@code{spam-use-dig} to nil because of some issues with the
+@code{dns.el} code, but you can try it and see if it works for you.
 
 @end defvar
 
