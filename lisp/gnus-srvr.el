@@ -797,18 +797,26 @@ gnus-method-to-server."
 	     (prog1 (1+ (point))
 	       (insert
 		(format "%c%7d: %s\n"
-			(let ((level (gnus-group-level
-				      (concat prefix (setq name (car group))))))
-			      (cond
-			       ((<= level gnus-level-subscribed) ? )
-			       ((<= level gnus-level-unsubscribed) ?U)
-			       ((= level gnus-level-zombie) ?Z)
-			       (t ?K)))
+			(let ((level
+			       (if (string= prefix "")
+				   (gnus-group-level (setq name (car group)))
+				 (gnus-group-level
+				  (concat prefix (setq name (car group)))))))
+			  (cond
+			   ((<= level gnus-level-subscribed) ? )
+			   ((<= level gnus-level-unsubscribed) ?U)
+			   ((= level gnus-level-zombie) ?Z)
+			   (t ?K)))
 			(max 0 (- (1+ (cddr group)) (cadr group)))
-			(mm-decode-coding-string
-			 name
-			 (inline (gnus-group-name-charset method name))))))
-	     (list 'gnus-group name))))
+			;; Don't decode if name is ASCII
+			(if (and (fboundp 'detect-coding-string)
+				 (eq (detect-coding-string name t) 'undecided))
+			    name
+			  (mm-decode-coding-string
+			   name
+			   (inline (gnus-group-name-charset method name)))))))
+	     (list 'gnus-group name)
+	     )))
 	(switch-to-buffer (current-buffer)))
       (goto-char (point-min))
       (gnus-group-position-point)

@@ -1,3 +1,7 @@
+2004-01-12  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-srvr.el (gnus-browse-foreign-server): Reduce consing.
+
 2004-01-12  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-get-article-as-string): updated to use
