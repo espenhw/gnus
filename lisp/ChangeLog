@@ -1,3 +1,7 @@
+2000-10-31 11:44:29  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-show-article): Fix the summary line.
+
 2000-10-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-summary-insert-line): Work with quoted

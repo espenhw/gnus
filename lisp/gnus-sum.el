@@ -7255,7 +7255,26 @@ without any article massaging functions being run."
 	   (or (cdr (assq arg gnus-summary-show-article-charset-alist))
 	       (read-coding-system "Charset: ")))
 	  (gnus-newsgroup-ignored-charsets 'gnus-all))
-      (gnus-summary-select-article nil 'force)))
+      (gnus-summary-select-article nil 'force)
+      (let ((deps gnus-newsgroup-dependencies)
+	    head header)
+	(save-excursion
+	  (set-buffer gnus-original-article-buffer)
+	  (save-restriction
+	    (message-narrow-to-head)
+	    (setq head (buffer-string)))
+	  (with-temp-buffer
+	    (insert (format "211 %d Article retrieved.\n"
+			    (cdr gnus-article-current)))
+	    (insert head)
+	    (insert ".\n")
+	    (let ((nntp-server-buffer (current-buffer)))
+	      (setq header (car (gnus-get-newsgroup-headers deps t))))))
+	(gnus-data-set-header
+	 (gnus-data-find (cdr gnus-article-current))
+	 header)
+	(gnus-summary-update-article-line
+	 (cdr gnus-article-current) header))))
    ((not arg)
     ;; Select the article the normal way.
     (gnus-summary-select-article nil 'force))
