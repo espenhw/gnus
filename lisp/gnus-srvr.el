@@ -713,7 +713,7 @@ The following commands are available:
 			  groups)))
 	    (gnus-configure-windows 'group)
 	    (funcall gnus-group-prepare-function
-		     gnus-level-killed 'ignore 1 'ingore))
+		     gnus-level-killed 'ignore 1 'ignore))
 	(gnus-get-buffer-create gnus-browse-buffer)
 	(when gnus-carpal
 	  (gnus-carpal-setup-buffer 'browse))
