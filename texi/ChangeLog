@@ -1,3 +1,7 @@
+2002-05-16  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Loose Threads): Add gnus-simplify-all-whitespace.
+
 2002-05-08  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Mail-To-News Gateways): The default
