@@ -1,3 +1,10 @@
+2000-04-28 09:52:21  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (mml-parse-1): Don't create blank parts.
+	(mml-read-part): Fix mml tag.
+	(mml-insert-mime): Convert message/rfc822.
+	(mml-insert-mml-markup): Add mmlp parameter.
+
 2000-04-28 01:16:10  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-send-mail-partially): Remove CTE.

@@ -84,7 +84,7 @@ one charsets.")
 
 (defun mml-parse-1 ()
   "Parse the current buffer as an MML document."
-  (let (struct tag point contents charsets warn use-ascii)
+  (let (struct tag point contents charsets warn use-ascii no-markup-p)
     (while (and (not (eobp))
 		(not (looking-at "<#/multipart")))
       (cond
@@ -97,6 +97,7 @@ one charsets.")
 	(if (or (looking-at "<#part") (looking-at "<#mml"))
 	    (setq tag (mml-read-tag))
 	  (setq tag (list 'part '(type . "text/plain"))
+		no-markup-p t
 		warn t))
 	(setq point (point)
 	      contents (mml-read-part (eq 'mml (car tag)))
@@ -112,8 +113,11 @@ one charsets.")
 		(setq warn nil))
 	    (error "Edit your message to remove those characters")))
 	(if (< (length charsets) 2)
-	    (push (nconc tag (list (cons 'contents contents)))
-		  struct)
+	    (if (or (not no-markup-p)
+		    (string-match "[^ \t\r\n]" contents))
+		;; Don't create blank parts.
+		(push (nconc tag (list (cons 'contents contents)))
+		      struct))
 	  (let ((nstruct (mml-parse-singlepart-with-multiple-charsets
 			  tag point (point) use-ascii)))
 	    (when (and warn
@@ -206,23 +210,30 @@ one charsets.")
 
 (defun mml-read-part (&optional mml)
   "Return the buffer up till the next part, multipart or closing part or multipart.
-If MML is non-nil, return the buffer up till the colsing message."
-  (let ((beg (point)))
+If MML is non-nil, return the buffer up till the correspondent mml tag."
+  (let ((beg (point)) (count 1))
     ;; If the tag ended at the end of the line, we go to the next line.
     (when (looking-at "[ \t]*\n")
       (forward-line 1))
-    (if (re-search-forward
-	 (if mml
-	     "<#\\(/\\)\\(mml\\)."
-	   "<#\\(/\\)?\\(multipart\\|part\\|external\\|mml\\).") nil t)
-	(prog1
-	    (buffer-substring-no-properties beg (match-beginning 0))
-	  (if (or (not (match-beginning 1))
-		  (equal (match-string 2) "multipart"))
-	      (goto-char (match-beginning 0))
-	    (when (looking-at "[ \t]*\n")
-	      (forward-line 1))))
-      (buffer-substring-no-properties beg (goto-char (point-max))))))
+    (if mml
+	(progn
+	  (while (and (> count 0) (not (eobp)))
+	    (if (re-search-forward "<#\\(/\\)?mml." nil t)
+		(setq count (+ count (if (match-beginning 1) -1 1)))
+	      (goto-char (point-max))))
+	  (buffer-substring-no-properties beg (if (> count 0) 
+						  (point)
+						(match-beginning 0))))
+      (if (re-search-forward
+	   "<#\\(/\\)?\\(multipart\\|part\\|external\\|mml\\)." nil t)
+	  (prog1
+	      (buffer-substring-no-properties beg (match-beginning 0))
+	    (if (or (not (match-beginning 1))
+		    (equal (match-string 2) "multipart"))
+		(goto-char (match-beginning 0))
+	      (when (looking-at "[ \t]*\n")
+		(forward-line 1))))
+	(buffer-substring-no-properties beg (goto-char (point-max)))))))
 
 (defvar mml-boundary nil)
 (defvar mml-base-boundary "-=-=")
@@ -497,17 +508,25 @@ If MML is non-nil, return the buffer up till the colsing message."
     (mail-encode-encoded-word-buffer)))
 
 (defun mml-insert-mime (handle &optional no-markup)
-  (let (textp buffer)
+  (let (textp buffer mmlp)
     ;; Determine type and stuff.
     (unless (stringp (car handle))
-      (unless (setq textp (equal (mm-handle-media-supertype handle)
-				 "text"))
+      (unless (setq textp (equal (mm-handle-media-supertype handle) "text"))
 	(save-excursion
 	  (set-buffer (setq buffer (generate-new-buffer " *mml*")))
-	  (mm-insert-part handle))))
-    (unless no-markup
-      (mml-insert-mml-markup handle buffer textp))
+	  (mm-insert-part handle)
+	  (if (setq mmlp (equal (mm-handle-media-type handle) 
+				"message/rfc822"))
+	      (mime-to-mml)))))
+    (if mmlp
+	(mml-insert-mml-markup handle nil t t)
+      (unless no-markup
+	(mml-insert-mml-markup handle buffer textp)))
     (cond
+     (mmlp 
+      (insert-buffer buffer)
+      (goto-char (point-max))
+      (insert "<#/mml>\n"))
      ((stringp (car handle))
       (mapcar 'mml-insert-mime (cdr handle))
       (insert "<#/multipart>\n"))
@@ -520,12 +539,14 @@ If MML is non-nil, return the buffer up till the colsing message."
      (t
       (insert "<#/part>\n")))))
 
-(defun mml-insert-mml-markup (handle &optional buffer nofile)
+(defun mml-insert-mml-markup (handle &optional buffer nofile mmlp)
   "Take a MIME handle and insert an MML tag."
   (if (stringp (car handle))
       (insert "<#multipart type=" (mm-handle-media-subtype handle)
 	      ">\n")
-    (insert "<#part type=" (mm-handle-media-type handle))
+    (if mmlp
+	(insert "<#mml type=" (mm-handle-media-type handle))
+      (insert "<#part type=" (mm-handle-media-type handle)))
     (dolist (elem (append (cdr (mm-handle-type handle))
 			  (cdr (mm-handle-disposition handle))))
       (insert " " (symbol-name (car elem)) "=\"" (cdr elem) "\""))
