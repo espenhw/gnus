@@ -12341,7 +12341,8 @@ where re-spooling messages would put the messages, you can use
 Group Commands}).
 
 @vindex nnmail-split-header-length-limit
-Header lines longer than this limit are excluded from the split
+Header lines longer than the value of
+@code{nnmail-split-header-length-limit} are excluded from the split
 function.
 
 Gnus gives you all the opportunity you could possibly want for shooting
