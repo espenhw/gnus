@@ -1,3 +1,8 @@
+1999-12-04 03:01:55  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mail-source.el (mail-source-fetch-webmail): Bind
+ 	mail-source-string.
+
 1999-12-04 07:18:23  Matt Swift  <swift@alum.mit.edu>
 
 	* gnus-uu.el (gnus-uu-mark-by-regexp): Doc fix.

@@ -670,13 +670,14 @@ This only works when `display-time' is enabled."
 (defun mail-source-fetch-webmail (source callback)
   "Fetch for webmail source."
   (mail-source-bind (webmail source)
-    (when (eq authentication 'password)
-      (setq password
-	    (or password
-		(mail-source-read-passwd
-		 (format "Password for %s at %s: " user subtype)))))
-    (webmail-fetch mail-source-crash-box subtype user password)
-    (mail-source-callback callback (symbol-name subtype))))
+    (let ((mail-source-string (format "webmail:%s:%s" subtype user)))
+      (when (eq authentication 'password)
+	(setq password
+	      (or password
+		  (mail-source-read-passwd
+		   (format "Password for %s at %s: " user subtype)))))
+      (webmail-fetch mail-source-crash-box subtype user password)
+      (mail-source-callback callback (symbol-name subtype)))))
 
 (provide 'mail-source)
 
