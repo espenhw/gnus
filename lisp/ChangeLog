@@ -1,3 +1,10 @@
+2003-12-01  Kevin Greiner <kgreiner@xpediantsolutions.com>
+	* gnus-agent.el (gnus-agent-consider-all-articles): Updated
+	docstring.
+	(gnus-predicate-implies-unread, gnus-predicate-implies-unread-1):
+	Fixed implementation such that the predicate `true' no longer
+	evaluates to t.
+
 2003-12-01  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-check-bogofilter): check the bogofilter headers

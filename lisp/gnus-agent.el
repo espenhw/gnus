@@ -144,7 +144,13 @@ If this is `ask' the hook will query the user."
   :group 'gnus-agent)
 
 (defcustom gnus-agent-consider-all-articles nil
-  "If non-nil, consider also the read articles for downloading."
+  "When non-`nil', the agent will let the agent predicate decide
+whether articles need to be downloaded or not, for all articles.  When
+`nil', the default, the agent will only let the predicate decide
+whether unread articles are downloaded or not.  If you enable this,
+groups with large active ranges may open slower and you may also want
+to look into the agent expiry settings to block the expiration of
+read articles as they would just be downloaded again."
   :version "21.4"
   :type 'boolean
   :group 'gnus-agent)
@@ -2445,22 +2451,58 @@ The following commands are available:
 (defun gnus-predicate-implies-unread (predicate)
   "Say whether PREDICATE implies unread articles only.
 It is okay to miss some cases, but there must be no false positives.
-That is, if this function returns true, then indeed the predicate must
+That is, if this predicate returns true, then indeed the predicate must
 return only unread articles."
-  (gnus-function-implies-unread-1 (gnus-category-make-function predicate)))
+  (eq t (gnus-function-implies-unread-1 
+         (gnus-category-make-function-1 predicate))))
 
 (defun gnus-function-implies-unread-1 (function)
-  (cond ((eq function (symbol-function 'gnus-agent-read-p))
-         nil)
-        ((not function)
-         nil)
-        ((functionp function)
-         'ignore)
-        ((memq (car function) '(or and not))
-         (apply (car function)
-                (mapcar 'gnus-function-implies-unread-1 (cdr function))))
-        (t
-         (error "Unknown function: %s" function))))
+  "Recursively evaluate a predicate function to determine whether it can select
+any read articles.  Returns t if the function is known to never
+return read articles, nil when it is known to always return read
+articles, and t_nil when the function may return both read and unread
+articles."
+  (let ((func (car function))
+        (args (mapcar 'gnus-function-implies-unread-1 (cdr function))))
+    (cond ((eq func 'and)
+           (cond ((memq t args) ; if any argument returns only unread articles
+                  ;; then that argument constrains the result to only unread articles.
+                  t)
+                 ((memq 't_nil args) ; if any argument is indeterminate
+                  ;; then the result is indeterminate
+                  't_nil)))
+          ((eq func 'or)
+           (cond ((memq nil args) ; if any argument returns read articles
+                  ;; then that argument ensures that the results includes read articles.
+                  nil)
+                 ((memq 't_nil args) ; if any argument is indeterminate
+                  ;; then that argument ensures that the results are indeterminate
+                  't_nil)
+                 (t ; if all arguments return only unread articles
+                  ;; then the result returns only unread articles
+                  t)))
+          ((eq func 'not)
+           (cond ((eq (car args) 't_nil) ; if the argument is indeterminate
+                  ; then the result is indeterminate
+                  (car args))
+                 (t ; otherwise
+                  ; toggle the result to be the opposite of the argument
+                  (not (car args)))))
+          ((eq func 'gnus-agent-read-p)
+           nil) ; The read predicate NEVER returns unread articles
+          ((eq func 'gnus-agent-false)
+           t) ; The false predicate returns t as the empty set excludes all read articles
+          ((eq func 'gnus-agent-true)
+           nil) ; The true predicate ALWAYS returns read articles
+          ((catch 'found-match
+             (let ((alist gnus-category-predicate-alist))
+               (while alist
+                 (if (eq func (cdar alist))
+                     (throw 'found-match t)
+                   (setq alist (cdr alist))))))
+           't_nil) ; All other predicates return read and unread articles
+          (t
+           (error "Unknown predicate function: %s" function)))))
 
 (defun gnus-group-category (group)
   "Return the category GROUP belongs to."
