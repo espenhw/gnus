@@ -541,20 +541,22 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 ;;; Transforming MIME to MML
 ;;;
 
-(defun mime-to-mml ()
-  "Translate the current buffer (which should be a message) into MML."
+(defun mime-to-mml (&optional handles)
+  "Translate the current buffer (which should be a message) into MML.
+If HANDLES is non-nil, use it instead reparsing the buffer."
   ;; First decode the head.
   (save-restriction
     (message-narrow-to-head)
     (mail-decode-encoded-word-region (point-min) (point-max)))
-  (let ((handles (mm-dissect-buffer t)))
-    (goto-char (point-min))
-    (search-forward "\n\n" nil t)
-    (delete-region (point) (point-max))
-    (if (stringp (car handles))
-	(mml-insert-mime handles)
-      (mml-insert-mime handles t))
-    (mm-destroy-parts handles))
+  (unless handles
+    (setq handles (mm-dissect-buffer t)))
+  (goto-char (point-min))
+  (search-forward "\n\n" nil t)
+  (delete-region (point) (point-max))
+  (if (stringp (car handles))
+      (mml-insert-mime handles)
+    (mml-insert-mime handles t))
+  (mm-destroy-parts handles)
   (save-restriction
     (message-narrow-to-head)
     ;; Remove them, they are confusing.
@@ -595,10 +597,11 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
       (mapcar 'mml-insert-mime (cdr handle))
       (insert "<#/multipart>\n"))
      (textp
-      (let ((text (mm-get-part handle))
-	    (charset (mail-content-type-get
+      (let ((charset (mail-content-type-get
 		      (mm-handle-type handle) 'charset)))
-	(insert (mm-decode-string text charset)))
+	(if (eq charset 'gnus-decoded)
+	    (mm-insert-part handle)
+	  (insert (mm-decode-string (mm-get-part handle) charset))))
       (goto-char (point-max)))
      (t
       (insert "<#/part>\n")))))
@@ -613,7 +616,8 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
       (insert "<#part type=" (mm-handle-media-type handle)))
     (dolist (elem (append (cdr (mm-handle-type handle))
 			  (cdr (mm-handle-disposition handle))))
-      (insert " " (symbol-name (car elem)) "=\"" (cdr elem) "\""))
+      (unless (symbolp (cdr elem))
+	(insert " " (symbol-name (car elem)) "=\"" (cdr elem) "\"")))
     (when (mm-handle-disposition handle)
       (insert " disposition=" (car (mm-handle-disposition handle))))
     (when buffer

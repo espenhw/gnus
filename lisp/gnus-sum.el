@@ -7876,15 +7876,22 @@ This will have permanent effect only in mail groups.
 If ARG is nil, edit the decoded articles.
 If ARG is 1, edit the raw articles. 
 If ARG is 2, edit the raw articles even in read-only groups.
+If ARG is 3, edit the articles with the current handles.
 Otherwise, allow editing of articles even in read-only
 groups."
   (interactive "P")
-  (let (force raw)
+  (let (force raw current-handles)
     (cond 
      ((null arg))
      ((eq arg 1) (setq raw t))
      ((eq arg 2) (setq raw t
 		       force t))
+     ((eq arg 3) (setq current-handles 
+		       (and (gnus-buffer-live-p gnus-article-buffer)
+			    (with-current-buffer gnus-article-buffer
+			      (prog1
+				  gnus-article-mime-handles
+				  (setq gnus-article-mime-handles nil))))))
      (t (setq force t)))
     (if (and raw (not force) (equal gnus-newsgroup-name "nndraft:drafts"))
 	(error "Can't edit the raw article in group nndraft:drafts."))
@@ -7904,15 +7911,15 @@ groups."
 	    (setq raw t))
 	(gnus-article-edit-article
 	 (if raw 'ignore 
-	   #'(lambda () 
-	       (let ((mbl mml-buffer-list))
-		 (setq mml-buffer-list nil)
-		 (mime-to-mml)
-		 (make-local-hook 'kill-buffer-hook)
-		 (let ((mbl1 mml-buffer-list))
-		   (setq mml-buffer-list mbl)
-		   (set (make-local-variable 'mml-buffer-list) mbl1))
-		 (add-hook 'kill-buffer-hook 'mml-destroy-buffers t t))))
+	   `(lambda () 
+	      (let ((mbl mml-buffer-list))
+		(setq mml-buffer-list nil)
+		(mime-to-mml ,'current-handles)
+		(make-local-hook 'kill-buffer-hook)
+		(let ((mbl1 mml-buffer-list))
+		  (setq mml-buffer-list mbl)
+		  (set (make-local-variable 'mml-buffer-list) mbl1))
+		(add-hook 'kill-buffer-hook 'mml-destroy-buffers t t))))
 	 `(lambda (no-highlight)
 	    (let ((mail-parse-charset ',gnus-newsgroup-charset)
 		  (message-options message-options)
