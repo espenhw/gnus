@@ -300,14 +300,10 @@ and `altavista'.")
   (unless (gnus-buffer-live-p nnweb-buffer)
     (setq nnweb-buffer
 	  (save-excursion
-	    (let ((multibyte (default-value 'enable-multibyte-characters)))
-	      (unwind-protect
-		  (progn
-		    (setq-default enable-multibyte-characters nil)
-		    (nnheader-set-temp-buffer
-		     (format " *nnweb %s %s %s*"
-			     nnweb-type nnweb-search server)))
-		(setq-default enable-multibyte-characters multibyte))
+	    (mm-with-unibyte
+	      (nnheader-set-temp-buffer
+	       (format " *nnweb %s %s %s*"
+		       nnweb-type nnweb-search server))
 	      (current-buffer))))))
 
 (defun nnweb-fetch-url (url)

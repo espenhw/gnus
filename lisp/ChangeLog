@@ -1,3 +1,8 @@
+1999-12-10 12:14:04  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-with-unibyte): New macro.
+	* nnweb.el (nnweb-init): Use it.
+
 1999-12-09 20:39:49  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-charset-after): New function.
