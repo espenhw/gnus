@@ -1,3 +1,10 @@
+2003-01-16  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-get-article-as-filename): new function (unused for now)
+	(spam-get-article-as-buffer): new function
+	(spam-get-article-as-string): use spam-get-article-as-buffer
+	(spam-summary-prepare-exit): fixed bug, noticed by Malcolm Purvis
+
 2003-01-15  ShengHuo ZHU  <zsh@cs.rochester.edu>
  
 	* gnus-agent.el: Don't use `path'.

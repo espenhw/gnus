@@ -309,7 +309,7 @@ your main source of newsgroup names."
   (when (spam-group-spam-processor-stat-p gnus-newsgroup-name)
     (spam-stat-register-spam-routine))
 
-  (when (spam-group-spam-processor-bogofilter-p gnus-newsgroup-name)
+  (when (spam-group-spam-processor-blacklist-p gnus-newsgroup-name)
     (spam-blacklist-register-routine))
 
   (if spam-move-spam-nonspam-groups-only      
@@ -412,14 +412,31 @@ your main source of newsgroup names."
 				 'line-end-position)))
 
 (defun spam-get-article-as-string (article)
-  (let ((article-string))
+  (let ((article-buffer (spam-get-article-as-buffer article))
+			article-string)
+    (when article-buffer
+      (save-window-excursion
+	(set-buffer article-buffer)
+	(setq article-string (buffer-string))))
+  article-string))
+
+(defun spam-get-article-as-buffer (article)
+  (let ((article-buffer))
     (when (numberp article)
       (save-window-excursion
 	(gnus-summary-goto-subject article)
 	(gnus-summary-show-article t)
-	(set-buffer gnus-article-buffer)
-	(setq article-string (buffer-string))))
-    article-string))
+	(setq article-buffer (get-buffer gnus-article-buffer))))
+    article-buffer))
+
+(defun spam-get-article-as-filename (article)
+  (let ((article-filename))
+    (when (numberp article)
+      (nnml-possibly-change-directory (gnus-group-real-name gnus-newsgroup-name))
+      (setq article-filename (expand-file-name (int-to-string article) nnml-current-directory)))
+    (if (file-exists-p article-filename)
+	article-filename
+      nil)))
 
 (defun spam-fetch-field-from-fast (article)
   "Fetch the `from' field quickly, using the internal gnus-data-list function"
