@@ -156,8 +156,11 @@ GLYPH can be either a glyph or a string."
 	   (mail-header-parse-addresses
 	    ;; mail-header-parse-addresses does not work (reliably) on
 	    ;; decoded headers.
-	    (mail-encode-encoded-word-string
-	     (or (mail-fetch-field header) ""))))
+	    (or
+	     (ignore-errors
+	       (mail-encode-encoded-word-string
+		(or (mail-fetch-field header) "")))
+	     (mail-fetch-field header))))
 	  spec file point cache)
       (dolist (address addresses)
 	(setq address (car address))

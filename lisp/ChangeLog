@@ -1,3 +1,8 @@
+2003-10-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-picon.el (gnus-picon-transform-address): Protect against
+	errors. 
+
 2003-10-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-msg.el (nnspool-rejected-article-hook): Remove defvar.
