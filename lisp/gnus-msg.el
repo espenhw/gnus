@@ -812,12 +812,14 @@ header line with the old Message-ID."
 	    (goto-char (point-min))
 	    (while (looking-at message-unix-mail-delimiter)
 	      (forward-line 1))
-	    (setq beg (point)
-		  end (or (message-goto-body) beg))
+	    (let ((mail-header-separator ""))
+	      (setq beg (point)
+		    end (or (message-goto-body) beg)))
 	    ;; Delete the headers from the displayed articles.
 	    (set-buffer gnus-article-copy)
-	    (delete-region (goto-char (point-min))
-			   (or (message-goto-body) (point-max)))
+	    (let ((mail-header-separator ""))
+	      (delete-region (goto-char (point-min))
+			     (or (message-goto-body) (point-max))))
 	    ;; Insert the original article headers.
 	    (insert-buffer-substring gnus-original-article-buffer beg end)
 	    ;; Decode charsets.
