@@ -28,12 +28,12 @@
 (require (if gnus-xemacs 'auc-menu 'easymenu))
 
 (defvar gnus-summary-selected-face 'underline
-  "Face used for highlighting the current article in the summary buffer.")
+  "*Face used for highlighting the current article in the summary buffer.")
 
 (defvar gnus-visual-summary-highlight
   '(((> score default) . bold)
     ((< score default) . italic))
-  "Alist of `(FORM . FACE)'.
+  "*Alist of `(FORM . FACE)'.
 Summary lines are highlighted with the FACE for the first FORM which
 evaluate to a non-nil value.  
 
@@ -149,22 +149,31 @@ To check for marks, e.g. to underline replied articles, use
    gnus-summary-mode-map
    ""
    '("Mark"
-     ["Tick" gnus-summary-tick-article-forward t]
-     ["Mark as read" gnus-summary-mark-as-read-forward t]
-     ["Mark as unread" gnus-summary-clear-mark-forward t]
-     ["Mark same subject and select" gnus-summary-kill-same-subject-and-select t]
-     ["Mark same subject" gnus-summary-kill-same-subject t]
-     ["Remove lines marked as read" gnus-summary-remove-lines-marked-as-read t]
-     ["Remove lines marked with..." gnus-summary-remove-lines-marked-with t]
-     ["Set expirable mark" gnus-summary-mark-as-expirable t]
-     ["Set bookmark" gnus-summary-set-bookmark t]
-     ["Remove bookmark" gnus-summary-remove-bookmark t]
-     ["Catchup" gnus-summary-catchup t]
-     ["Catchup all" gnus-summary-catchup-all t]
-     ["Catchup to here" gnus-summary-catchup-to-here t]
-     ["Raise score" gnus-summary-raise-score t]
-     ["Lower score" gnus-summary-lower-score t]
-     ["Set score" gnus-summary-set-score t]
+     ("Read"
+      ["Mark as read" gnus-summary-mark-as-read-forward t]
+      ["Mark same subject and select" gnus-summary-kill-same-subject-and-select t]
+      ["Mark same subject" gnus-summary-kill-same-subject t]
+      ["Catchup" gnus-summary-catchup t]
+      ["Catchup all" gnus-summary-catchup-all t]
+      ["Catchup to here" gnus-summary-catchup-to-here t]
+      ["Catchup region" gnus-summary-mark-region-as-read t])
+     ("Various"
+      ["Tick" gnus-summary-tick-article-forward t]
+      ["Mark as dormant" gnus-summary-mark-as-dormant t]
+      ["Remove marks" gnus-summary-clear-mark-forward t]
+      ["Set expirable mark" gnus-summary-mark-as-expirable t]
+      ["Set bookmark" gnus-summary-set-bookmark t]
+      ["Remove bookmark" gnus-summary-remove-bookmark t])
+     ("Score"
+      ["Raise score" gnus-summary-raise-score t]
+      ["Lower score" gnus-summary-lower-score t]
+      ["Set score" gnus-summary-set-score t])
+     ("Display"
+      ["Remove lines marked as read" gnus-summary-remove-lines-marked-as-read t]
+      ["Remove lines marked with..." gnus-summary-remove-lines-marked-with t]
+      ["Show dormant articles" gnus-summary-show-all-dormant t]
+      ["Hide dormant articles" gnus-summary-hide-all-dormant t]
+      ["Show expunged articles" gnus-summary-show-all-expunged t])
      ("Process mark"
       ["Set mark" gnus-summary-mark-as-processable t]
       ["Remove mark" gnus-summary-unmark-as-processable t]
@@ -208,6 +217,7 @@ To check for marks, e.g. to underline replied articles, use
       ["Overstrike" gnus-article-treat-overstrike t]
       ["Word wrap" gnus-article-word-wrap t]
       ["CR" gnus-article-remove-cr t]
+      ["Show X-Face" gnus-article-display-x-face t]
       ["Quoted-Printable" gnus-article-de-quoted-unreadable t])
      ("Extract"
       ["Uudecode" gnus-uu-decode-uu t]
@@ -265,20 +275,18 @@ To check for marks, e.g. to underline replied articles, use
       ["Sort by author" gnus-summary-sort-by-author t]
       ["Sort by subject" gnus-summary-sort-by-subject t]
       ["Sort by date" gnus-summary-sort-by-date t])
+     ("Exit"
+      ["Catchup and exit" gnus-summary-catchup-and-exit t]
+      ["Catchup and goto next" gnus-summary-catchup-and-goto-next-group t]
+      ["Exit group" gnus-summary-exit t]
+      ["Exit group without updating" gnus-summary-quit t]
+      ["Reselect group" gnus-summary-reselect-current-group t]
+      ["Rescan group" gnus-summary-rescan-group t])
      ["Fetch group FAQ" gnus-summary-fetch-faq t]
      ["Filter articles" gnus-summary-execute-command t]
-     ["Catchup and exit" gnus-summary-catchup-and-exit t]
-     ["Catchup and goto next" gnus-summary-catchup-and-goto-next-group t]
      ["Toggle line truncation" gnus-summary-toggle-truncation t]
      ["Expire expirable articles" gnus-summary-expire-articles t]
-     ["Show dormant articles" gnus-summary-show-all-dormant t]
-     ["Hide dormant articles" gnus-summary-hide-all-dormant t]
-     ["Show expunged articles" gnus-summary-show-all-expunged t]
-     ["Reselect group" gnus-summary-reselect-current-group t]
-     ["Rescan group" gnus-summary-rescan-group t]
      ["Describe group" gnus-summary-describe-group t]
-     ["Exit group" gnus-summary-exit t]
-     ["Exit group without updating" gnus-summary-quit t]
      ["Edit local kill file" gnus-summary-edit-local-kill t]
      ["Edit global kill file" gnus-summary-edit-global-kill t]
      ))

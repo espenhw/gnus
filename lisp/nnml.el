@@ -70,6 +70,25 @@ all. This may very well take some time.")
 
 
 
+;; Server variables.
+
+(defvar nnml-current-server nil)
+(defvar nnml-server-alist nil)
+(defvar nnml-server-variables 
+  (list 
+   (list 'nnml-directory nnml-directory)
+   (list 'nnml-active-file nnml-active-file)
+   (list 'nnml-newsgroups-file nnml-newsgroups-file)
+   (list 'nnml-get-new-mail nnml-get-new-mail)
+   (list 'nnml-nov-is-evil nnml-nov-is-evil)
+   '(nnml-current-directory nil)
+   '(nnml-status-string "")
+   '(nnml-nov-buffer-alist nil)
+   '(nnml-group-alist nil)
+   '(nnml-active-timestamp nil)))
+
+
+
 ;;; Interface functions.
 
 (defun nnml-retrieve-headers (sequence &optional newsgroup server)
@@ -120,16 +139,28 @@ all. This may very well take some time.")
 	  (replace-match " " t t))
 	'headers))))
 
-(defun nnml-open-server (host &optional service)
-  (setq nnml-status-string "")
-  (nnheader-init-server-buffer))
+(defun nnml-open-server (server &optional defs)
+  (nnheader-init-server-buffer)
+  (if (equal server nnml-current-server)
+      t
+    (if nnml-current-server
+	(setq nnml-server-alist 
+	      (cons (list nnml-current-server
+			  (nnheader-save-variables nnml-server-variables))
+		    nnml-server-alist)))
+    (let ((state (assoc server nnml-server-alist)))
+      (if state 
+	  (progn
+	    (nnheader-restore-variables (nth 1 state))
+	    (setq nnml-server-alist (delq state nnml-server-alist)))
+	(nnheader-set-init-variables nnml-server-variables defs)))
+    (setq nnml-current-server server)))
 
 (defun nnml-close-server (&optional server)
   t)
 
 (defun nnml-server-opened (&optional server)
-  (and nntp-server-buffer
-       (get-buffer nntp-server-buffer)))
+  (equal server nnml-current-server))
 
 (defun nnml-status-message (&optional server)
   nnml-status-string)

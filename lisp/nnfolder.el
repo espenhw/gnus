@@ -63,6 +63,24 @@
 (defmacro nnfolder-article-string (article)
   (` (concat "\n" nnfolder-article-marker (int-to-string (, article)) "")))
 
+
+
+(defvar nnfolder-current-server nil)
+(defvar nnfolder-server-alist nil)
+(defvar nnfolder-server-variables 
+  (list 
+   (list 'nnfolder-directory nnfolder-directory)
+   (list 'nnfolder-active-file nnfolder-active-file)
+   (list 'nnfolder-newsgroups-file nnfolder-newsgroups-file)
+   (list 'nnfolder-get-new-mail nnfolder-get-new-mail)
+   '(nnfolder-current-group nil)
+   '(nnfolder-current-buffer nil)
+   '(nnfolder-status-string "")
+   '(nnfolder-group-alist nil)
+   '(nnfolder-buffer-alist nil)))
+
+
+
 ;;; Interface functions
 
 (defun nnfolder-retrieve-headers (sequence &optional newsgroup server)
@@ -104,13 +122,28 @@
 	(replace-match " " t t))
       'headers)))
 
-(defun nnfolder-open-server (host &optional service)
-  (setq nnfolder-status-string "")
-  (setq nnfolder-group-alist nil)
-  (nnheader-init-server-buffer))
+(defun nnfolder-open-server (server &optional defs)
+  (nnheader-init-server-buffer)
+  (if (equal server nnfolder-current-server)
+      t
+    (if nnfolder-current-server
+	(setq nnfolder-server-alist 
+	      (cons (list nnfolder-current-server
+			  (nnheader-save-variables nnfolder-server-variables))
+		    nnfolder-server-alist)))
+    (let ((state (assoc server nnfolder-server-alist)))
+      (if state 
+	  (progn
+	    (nnheader-restore-variables (nth 1 state))
+	    (setq nnfolder-server-alist (delq state nnfolder-server-alist)))
+	(nnheader-set-init-variables nnfolder-server-variables defs)))
+    (setq nnfolder-current-server server)))
 
 (defun nnfolder-close-server (&optional server)
   t)
+
+(defun nnfolder-server-opened (&optional server)
+  (equal server nnfolder-current-server))
 
 (defun nnfolder-request-close ()
   (let ((alist nnfolder-buffer-alist))
@@ -119,10 +152,6 @@
       (setq alist (cdr alist))))
   (setq nnfolder-buffer-alist nil
 	nnfolder-group-alist nil))
-
-(defun nnfolder-server-opened (&optional server)
-  (and nntp-server-buffer
-       (buffer-name nntp-server-buffer)))
 
 (defun nnfolder-status-message (&optional server)
   nnfolder-status-string)

@@ -80,6 +80,27 @@ messages will be shown to indicate the current status.")
 
 
 
+(defvar nnspool-current-server nil)
+(defvar nnspool-server-alist nil)
+(defvar nnspool-server-variables 
+  (list
+   (list 'nnspool-inews-program nnspool-inews-program)
+   (list 'nnspool-inews-switches nnspool-inews-switches)
+   (list 'nnspool-spool-directory nnspool-spool-directory)
+   (list 'nnspool-nov-directory nnspool-nov-directory)
+   (list 'nnspool-lib-dir nnspool-lib-dir)
+   (list 'nnspool-active-file nnspool-active-file)
+   (list 'nnspool-newsgroups-file nnspool-newsgroups-file)
+   (list 'nnspool-distributions-file nnspool-distributions-file)
+   (list 'nnspool-history-file nnspool-history-file)
+   (list 'nnspool-active-times-file nnspool-active-times-file)
+   (list 'nnspool-large-newsgroup nnspool-large-newsgroup)
+   (list 'nnspool-nov-is-evil nnspool-nov-is-evil)
+   '(nnspool-current-directory nil)
+   '(nnspool-current-group nil)
+   '(nnspool-status-string "")))
+
+
 ;;; Interface functions.
 
 (defun nnspool-retrieve-headers (sequence &optional newsgroup server)
@@ -126,26 +147,28 @@ Newsgroup must be selected before calling this function."
 	    (replace-match " " t t))
 	  'headers)))))
 
-(defun nnspool-open-server (host &optional service)
-  "Open local spool."
-  (setq nnspool-status-string "")
-  (cond ((and (file-directory-p nnspool-spool-directory)
-	      (file-exists-p nnspool-active-file))
-	 (nnheader-init-server-buffer))
-	(t
-	 (setq nnspool-status-string
-	       (format "NNSPOOL: cannot talk to %s." host))
-	 nil)))
+(defun nnspool-open-server (server &optional defs)
+  (nnheader-init-server-buffer)
+  (if (equal server nnspool-current-server)
+      t
+    (if nnspool-current-server
+	(setq nnspool-server-alist 
+	      (cons (list nnspool-current-server
+			  (nnheader-save-variables nnspool-server-variables))
+		    nnspool-server-alist)))
+    (let ((state (assoc server nnspool-server-alist)))
+      (if state 
+	  (progn
+	    (nnheader-restore-variables (nth 1 state))
+	    (setq nnspool-server-alist (delq state nnspool-server-alist)))
+	(nnheader-set-init-variables nnspool-server-variables defs)))
+    (setq nnspool-current-server server)))
 
 (defun nnspool-close-server (&optional server)
-  "Close news server."
   t)
 
 (defun nnspool-server-opened (&optional server)
-  "Return server process status, T or NIL.
-If the stream is opened, return T, otherwise return NIL."
-  (and nntp-server-buffer
-       (buffer-name nntp-server-buffer)))
+  (equal server nnspool-current-server))
 
 (defun nnspool-status-message (&optional server)
   "Return server status response as string."

@@ -148,6 +148,39 @@
     (setq case-fold-search t)		;Should ignore case.
     t))
 
+(defun nnheader-set-init-variables (server defs)
+  (let ((s server)
+	val)
+    ;; First we set the server variables in the sequence required.  We
+    ;; use the definitions from the `defs' list where that is
+    ;; possible. 
+    (while s
+      (set (car (car s)) 
+	   (if (setq val (assq (car (car s)) defs))
+	       (nth 1 val)
+	     (nth 1 (car s))))
+      (setq s (cdr s)))
+    ;; The we go through the defs list and set any variables that were
+    ;; not set in the first sweep.
+    (while defs
+      (if (not (assq (car (car defs)) server))
+	  (set (car (car defs)) (eval (nth 1 (car defs)))))
+      (setq defs (cdr defs)))))
+
+(defun nnheader-save-variables (server)
+  (let (out)
+    (while server
+      (setq out (cons (list (car (car server)) 
+			    (symbol-value (car (car server))))
+		      out))
+      (setq server (cdr server)))
+    (nreverse out)))
+
+(defun nnheader-restore-variables (state)
+  (while state
+    (set (car (car state)) (nth 1 (car state)))
+    (setq state (cdr state))))
+
 (provide 'nnheader)
 
 ;;; nnheader.el ends here

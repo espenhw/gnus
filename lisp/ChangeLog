@@ -1,8 +1,73 @@
+Wed Apr 19 03:28:37 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Major changes in server handling; new mode; and lots of
+	stuff all over in all files. 
+
+	* gnus.el: 0.51 is released.
+
+Mon Apr 17 08:38:57 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-clear-system): Kill nntp-server-buffer upon exit. 
+	
+	* gnus.el: Added "*" to the beginning of the docs strings of all
+	user variables.
+
+Sun Apr 16 03:18:15 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-post-news): Yank before running
+	news-reply-header-hook. 
+	(gnus-group-list-groups): Go to the right group after listing. 
+	(gnus-summary-respool-article): Allow respooling from newsgroups. 
+	(gnus-split-methods): New variable.
+	(gnus-read-save-file-name): New function.
+	(gnus-summary-save-in-rmail): Have all the saving functions use
+	this new function.
+
+	* gnus-visual.el (gnus-summary-make-menu-bar): Menu change.
+
+	* gnus.el (gnus-cancel-news): Don't ask experts.
+	(gnus-summary-mark-region-as-read): New command and keystroke. 
+
+Sun Apr 16 20:45:38 1995  Lars Magne Ingebrigtsen  <larsi@maud.ifi.uio.no>
+
+	* gnus.el (gnus-save-newsrc-file): Run save-newsrc-hook even if
+	the file is not saved.
+	(gnus-summary-insert-pseudos): Would interleave pseudos and real
+	articles. 
+	(gnus-cancel-news): Generate a better error message.
+
+	* nnmh.el (nnmh-request-list): Do not try to read unreadable
+	directories. 
+
+	* gnus.el (gnus-copy-sequence): Would choke on just a single cons
+	cell. 
+	(gnus-inews-article): Would insert two \n's too many.
+
+Sat Apr 15 04:29:22 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-use-long-file-name): One quote symbol too many. 
+	(gnus-article-x-face-command): New variable.
+	(gnus-article-display-x-face): New command and keystroke.
+	(gnus-newsgroup-active): New internal variable.
+	(gnus-update-read-articles): Use this variable to ensure that new
+	articles that have arrived while the summary buffer existed are
+	not inadvertantly marked as read.
+	(gnus-score-headers): Remove exluded score files from the list of
+	score file alists. Probably.
+
+	* nntp.el (nntp-news-default-headers): New variable.
+	(nntp-request-post-buffer): Use it.
+
+	* gnus.el (gnus-inews-insert-headers): Extended syntax of
+	gnus-required-headers. 
+
 Sun Apr 16 00:02:02 1995  Lars Magne Ingebrigtsen  <larsi@holmenkollen.ifi.uio.no>
 
 	* gnus.el (gnus-summary-update-line): Don't mark ancient and read
 	articles as low-scored.
 	(gnus-inews-article): Would insert headers one line too early. 
+
+	* gnus.el: 0.50 is released.
 
 Sat Apr 15 22:16:26 1995  Lars Magne Ingebrigtsen  <larsi@holmenkollen.ifi.uio.no>
 

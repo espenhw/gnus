@@ -49,8 +49,19 @@
   "Current news group directory.")
 
 (defvar nnmh-status-string "")
-
 (defvar nnmh-group-alist nil)
+
+
+
+(defvar nnmh-current-server nil)
+(defvar nnmh-server-alist nil)
+(defvar nnmh-server-variables 
+  (list
+   (list 'nnmh-directory nnmh-directory)
+   (list 'nnmh-get-new-mail nnmh-get-new-mail)
+   '(nnmh-current-directory nil)
+   '(nnmh-status-string "")
+   '(nnmh-group-alist)))
 
 
 
@@ -101,16 +112,28 @@
 	(replace-match " " t t))
       'headers)))
 
-(defun nnmh-open-server (host &optional service)
-  (setq nnmh-status-string "")
-  (nnheader-init-server-buffer))
+(defun nnmh-open-server (server &optional defs)
+  (nnheader-init-server-buffer)
+  (if (equal server nnmh-current-server)
+      t
+    (if nnmh-current-server
+	(setq nnmh-server-alist 
+	      (cons (list nnmh-current-server
+			  (nnheader-save-variables nnmh-server-variables))
+		    nnmh-server-alist)))
+    (let ((state (assoc server nnmh-server-alist)))
+      (if state 
+	  (progn
+	    (nnheader-restore-variables (nth 1 state))
+	    (setq nnmh-server-alist (delq state nnmh-server-alist)))
+	(nnheader-set-init-variables nnmh-server-variables defs)))
+    (setq nnmh-current-server server)))
 
 (defun nnmh-close-server (&optional server)
   t)
 
 (defun nnmh-server-opened (&optional server)
-  (and nntp-server-buffer
-       (get-buffer nntp-server-buffer)))
+  (equal server nnmh-current-server))
 
 (defun nnmh-status-message (&optional server)
   nnmh-status-string)
@@ -167,11 +190,13 @@
 	(setq dir nnmh-directory)))
   (setq dir (expand-file-name dir))
   ;; Recurse down all directories.
-  (let ((dirs (directory-files dir t nil t)))
+  (let ((dirs (and (file-readable-p dir)
+		   (directory-files dir t nil t))))
     (while dirs 
       (if (and (not (string-match "/\\.\\.$" (car dirs)))
 	       (not (string-match "/\\.$" (car dirs)))
-	       (file-directory-p (car dirs)))
+	       (file-directory-p (car dirs))
+	       (file-readable-p (car dirs)))
 	  (nnmh-request-list server (car dirs)))
       (setq dirs (cdr dirs))))
   ;; For each directory, generate an active file line.

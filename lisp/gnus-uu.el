@@ -47,8 +47,7 @@
     ("\\.\\(flc\\|fli\\|rle\\|iff\\|pfx\\|avi\\|sme\\|rpza\\|dl\\|qt\\|rsrc\\|mov\\)$" "xanim")
     ("\\.\\(tar\\|arj\\|zip\\|zoo\\|arc\\|gz\\|Z\\|lzh\\|ar\\|lha\\)$" 
      "gnus-uu-archive"))
-
-  "Default actions to be taken when the user asks to view a file.  
+  "*Default actions to be taken when the user asks to view a file.  
 To change the behaviour, you can either edit this variable or set
 `gnus-uu-user-view-rules' to something useful.
 
@@ -78,13 +77,13 @@ match here, it uses `gnus-uu-user-view-rules-end' to try to make a
 match.")
 
 (defvar gnus-uu-user-view-rules nil 
-  "Variable detailing what actions are to be taken to view a file.
+  "*Variable detailing what actions are to be taken to view a file.
 See the documentation on the `gnus-uu-default-view-rules' variable for 
 details.")
 
 (defvar gnus-uu-user-view-rules-end 
   '(("" "file"))
-  "Variable saying what actions are to be taken if no rule matched the file name.
+  "*Variable saying what actions are to be taken if no rule matched the file name.
 See the documentation on the `gnus-uu-default-view-rules' variable for 
 details.")
 
@@ -105,7 +104,7 @@ details.")
   (list "uncompress" "gunzip"))
 
 (defvar gnus-uu-user-archive-rules nil
-  "A list that can be set to override the default archive unpacking commands.
+  "*A list that can be set to override the default archive unpacking commands.
 To use, for instance, 'untar' to unpack tar files and 'zip -x' to
 unpack zip files, say the following:
   (setq gnus-uu-user-archive-rules 
@@ -113,7 +112,7 @@ unpack zip files, say the following:
       (\"\\\\.zip$\" \"zip -x\")))")
 
 (defvar gnus-uu-ignore-files-by-name nil
-  "A regular expression saying what files should not be viewed based on name.
+  "*A regular expression saying what files should not be viewed based on name.
 If, for instance, you want gnus-uu to ignore all .au and .wav files, 
 you could say something like
 
@@ -123,7 +122,7 @@ Note that this variable can be used in conjunction with the
 `gnus-uu-ignore-files-by-type' variable.")
 
 (defvar gnus-uu-ignore-files-by-type nil
-  "A regular expression saying what files that shouldn't be viewed, based on MIME file type.
+  "*A regular expression saying what files that shouldn't be viewed, based on MIME file type.
 If, for instance, you want gnus-uu to ignore all audio files and all mpegs, 
 you could say something like
 
@@ -176,53 +175,53 @@ Note that this variable can be used in conjunction with the
 ;; Various variables users may set 
 
 (defvar gnus-uu-tmp-dir "/tmp/" 
-  "Variable saying where gnus-uu is to do its work.
+  "*Variable saying where gnus-uu is to do its work.
 Default is \"/tmp/\".")
 
 (defvar gnus-uu-do-not-unpack-archives nil 
-  "Non-nil means that gnus-uu won't peek inside archives looking for files to dispay. 
+  "*Non-nil means that gnus-uu won't peek inside archives looking for files to dispay. 
 Default is nil.")
 
 (defvar gnus-uu-view-and-save nil 
-  "Non-nil means that the user will always be asked to save a file after viewing it.
+  "*Non-nil means that the user will always be asked to save a file after viewing it.
 If the variable is nil, the suer will only be asked to save if the
 viewing is unsuccessful. Default is nil.")
 
 (defvar gnus-uu-ignore-default-view-rules nil
-  "Non-nil means that gnus-uu will ignore the default viewing rules.
+  "*Non-nil means that gnus-uu will ignore the default viewing rules.
 Only the user viewing rules will be consulted. Default is nil.")
 
 (defvar gnus-uu-ignore-default-archive-rules nil 
-  "Non-nil means that gnus-uu will ignore the default archive unpacking commands.  
+  "*Non-nil means that gnus-uu will ignore the default archive unpacking commands.  
 Only the user unpacking commands will be consulted. Default is nil.")
 
 (defvar gnus-uu-kill-carriage-return t
-  "Non-nil means that gnus-uu will strip all carriage returns from articles.
+  "*Non-nil means that gnus-uu will strip all carriage returns from articles.
 Default is t.")
 
 (defvar gnus-uu-view-with-metamail nil
-  "Non-nil means that files will be viewed with metamail.
+  "*Non-nil means that files will be viewed with metamail.
 The gnus-uu viewing functions will be ignored and gnus-uu will try
 to guess at a content-type based on file name suffixes. Default
 it nil.")
 
 (defvar gnus-uu-unmark-articles-not-decoded nil
-  "Non-nil means that gnus-uu will mark articles that were unsuccessfully decoded as unread. 
+  "*Non-nil means that gnus-uu will mark articles that were unsuccessfully decoded as unread. 
 Default is nil.")
 
 (defvar gnus-uu-correct-stripped-uucode nil
-  "Non-nil means that gnus-uu will *try* to fix uuencoded files that have had traling spaces deleted. 
+  "*Non-nil means that gnus-uu will *try* to fix uuencoded files that have had traling spaces deleted. 
 Default is nil.")
 
 (defvar gnus-uu-save-in-digest nil
-  "Non-nil means that gnus-uu, when asked to save without decoding, will save in digests.
+  "*Non-nil means that gnus-uu, when asked to save without decoding, will save in digests.
 If this variable is nil, gnus-uu will just save everything in a 
 file without any embellishments. The digesting almost conforms to RFC1153 -
 no easy way to specify any meaningful volume and issue numbers were found, 
 so I simply dropped them.")
 
 (defvar gnus-uu-save-separate-articles nil
-  "Non-nil means that gnus-uu will save articles in separate files.")
+  "*Non-nil means that gnus-uu will save articles in separate files.")
 
 ;; Internal variables
 

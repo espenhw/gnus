@@ -39,7 +39,7 @@
   "The name of the active file for the mail box.")
 
 (defvar nnbabyl-get-new-mail t
-  "If non-nil, nnml will check the incoming mail file and split the mail.")
+  "If non-nil, nnbabyl will check the incoming mail file and split the mail.")
 
 
 
@@ -48,14 +48,26 @@
 (defconst nnbabyl-version "nnbabyl 0.1"
   "nnbabyl version.")
 
-(defvar nnbabyl-current-group nil
-  "Current nnbabyl news group directory.")
-
 (defconst nnbabyl-mbox-buffer " *nnbabyl mbox buffer*")
 
+(defvar nnbabyl-current-group nil)
 (defvar nnbabyl-status-string "")
-
 (defvar nnbabyl-group-alist nil)
+
+
+
+(defvar nnbabyl-current-server nil)
+(defvar nnbabyl-server-alist nil)
+(defvar nnbabyl-server-variables 
+  (list
+   (list 'nnbabyl-mbox-file nnbabyl-mbox-file)
+   (list 'nnbabyl-active-file nnbabyl-active-file)
+   (list 'nnbabyl-get-new-mail nnbabyl-get-new-mail)
+   '(nnbabyl-current-group nil)
+   '(nnbabyl-status-string "")
+   '(nnbabyl-group-alist nil)))
+
+
 
 ;;; Interface functions
 
@@ -111,17 +123,28 @@
 	(replace-match " " t t))
       'headers)))
 
-(defun nnbabyl-open-server (host &optional service)
-  (setq nnbabyl-status-string "")
-  (setq nnbabyl-group-alist nil)
-  (nnheader-init-server-buffer))
+(defun nnbabyl-open-server (server &optional defs)
+  (nnheader-init-server-buffer)
+  (if (equal server nnbabyl-current-server)
+      t
+    (if nnbabyl-current-server
+	(setq nnbabyl-server-alist 
+	      (cons (list nnbabyl-current-server
+			  (nnheader-save-variables nnbabyl-server-variables))
+		    nnbabyl-server-alist)))
+    (let ((state (assoc server nnbabyl-server-alist)))
+      (if state 
+	  (progn
+	    (nnheader-restore-variables (nth 1 state))
+	    (setq nnbabyl-server-alist (delq state nnbabyl-server-alist)))
+	(nnheader-set-init-variables nnbabyl-server-variables defs)))
+    (setq nnbabyl-current-server server)))
 
 (defun nnbabyl-close-server (&optional server)
   t)
 
 (defun nnbabyl-server-opened (&optional server)
-  (and nntp-server-buffer
-       (get-buffer nntp-server-buffer)))
+  (equal server nnbabyl-current-server))
 
 (defun nnbabyl-status-message (&optional server)
   nnbabyl-status-string)

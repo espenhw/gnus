@@ -48,7 +48,7 @@ server must be specified as follows:
 	 (setq kanji-fileio-code 0))))
 
 If you'd like to change something depending on the server in this
-hook, use the variable `nntp-server-name'.")
+hook, use the variable `nntp-address'.")
 
 (defvar nntp-server-opened-hook nil
   "Hook used for sending commands to the server at startup.  The
@@ -58,6 +58,12 @@ might be `nntp-send-authinfo', which will prompt for a password to
 allow posting from the server.  Note that this is only necessary to do
 on servers that use strict access control.")
 (add-hook 'nntp-server-opened-hook 'nntp-send-mode-reader)
+
+(defvar nntp-address nil
+  "The name of the NNTP server.")
+
+(defvar nntp-port-number "nntp"
+  "Port number to connect to.")
 
 (defvar nntp-large-newsgroup 50
   "The number of the articles which indicates a large newsgroup.
@@ -93,12 +99,13 @@ by one.")
   "Number of seconds to wait before an nntp connection times out.
 If this variable is nil, which is the default, no timers are set.")
 
+(defvar nntp-news-default-headers nil
+  "If non-nil, override `mail-default-headers' when posting news.")
+
 
+
 (defconst nntp-version "nntp 4.0"
   "Version numbers of this version of NNTP.")
-
-(defvar nntp-server-name nil
-  "The name of the NNTP server.")
 
 (defvar nntp-server-buffer nil
   "Buffer associated with the NNTP server process.")
@@ -113,12 +120,34 @@ instead use `nntp-server-buffer'.")
 You'd better not use this variable in NNTP front-end program but
 instead call function `nntp-status-message' to get status message.")
 
-(defvar nntp-current-server "")
-(defvar nntp-server-alist nil)
 (defvar nntp-server-xover t)
 (defvar nntp-server-list-active-group t)
 (defvar nntp-current-group "")
 
+
+(defvar nntp-current-server nil)
+(defvar nntp-server-alist nil)
+(defvar nntp-server-variables 
+  (list
+   (list 'nntp-server-hook nntp-server-hook)
+   (list 'nntp-server-opened-hook nntp-server-opened-hook)
+   (list 'nntp-port-number nntp-port-number)
+   (list 'nntp-address nntp-address)
+   (list 'nntp-large-newsgroup nntp-large-newsgroup)
+   (list 'nntp-buggy-select nntp-buggy-select)
+   (list 'nntp-maximum-request nntp-maximum-request)
+   (list 'nntp-debug-read nntp-debug-read)
+   (list 'nntp-nov-is-evil nntp-nov-is-evil)
+   (list 'nntp-xover-commands nntp-xover-commands)
+   (list 'nntp-connection-timeout nntp-connection-timeout)
+   (list 'nntp-news-default-headers nntp-news-default-headers)
+   '(nntp-server-process nil)
+   '(nntp-status-string nil)
+   '(nntp-server-xover t)
+   '(nntp-server-list-active-group t)
+   '(nntp-current-group "")))
+
+
 ;;; Interface funtions.
 
 (defun nntp-retrieve-headers (sequence &optional newsgroup server)
@@ -185,38 +214,26 @@ instead call function `nntp-status-message' to get status message.")
 	  (replace-match "" t t))
 	'headers))))
 
-(defun nntp-open-server (server &optional service)
-  "Open SERVER.
-If SERVER is nil, use value of environment variable `NNTPSERVER'.
-If SERVICE, this this as the port number."
-  (let ((server (or server (getenv "NNTPSERVER")))
-	(status nil)
-	(timer 
-	 (and nntp-connection-timeout 
-	      (run-at-time nntp-connection-timeout
-			   nil 'nntp-kill-connection server))))
-    (setq nntp-status-string "")
-    (message "nntp: Connecting to server on %s..." server)
-    (cond ((and server (nntp-open-server-internal server service))
-	   (setq nntp-current-server server)
-	   (setq status
-		 (condition-case nil
-		     (nntp-wait-for-response "^[23].*\r$")
-		   (error nil)
-		   (quit nil)))
-	   (or status (nntp-close-server-internal server))
-	   (and nntp-server-process
-		(progn
-		  (set-process-sentinel 
-		   nntp-server-process 'nntp-default-sentinel)
-		  ;; You can send commands at startup like AUTHINFO here.
-		  ;; Added by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>
-		  (run-hooks 'nntp-server-opened-hook))))
-	  ((null server)
-	   (setq nntp-status-string "NNTP server is not specified.")))
-    (and timer (cancel-timer timer))
-    (message "")
-    status))
+(defun nntp-open-server (server &optional defs)
+  (nnheader-init-server-buffer)
+  (if (nntp-server-opened server)
+      t
+    (or (assq 'nntp-address defs)
+	(setq defs (append defs (list (list 'nntp-address server)))))
+    (if (and nntp-current-server
+	     (not (equal server nntp-current-server)))
+	(setq nntp-server-alist 
+	      (cons (list nntp-current-server
+			  (nnheader-save-variables nntp-server-variables))
+		    nntp-server-alist)))
+    (let ((state (assoc server nntp-server-alist)))
+      (if state 
+	  (progn
+	    (nnheader-restore-variables (nth 1 state))
+	    (setq nntp-server-alist (delq state nntp-server-alist)))
+	(nnheader-set-init-variables nntp-server-variables defs)))
+    (setq nntp-current-server server)
+    (nntp-open-server-semi-internal nntp-address)))
 
 (defun nntp-close-server (&optional server)
   "Close connection to SERVER."
@@ -237,19 +254,18 @@ If SERVICE, this this as the port number."
 
 (defun nntp-request-close ()
   "Close all server connections."
-  (while nntp-server-alist
-    (delete-process (car (cdr (car nntp-server-alist))))
-    (setq nntp-server-alist (cdr nntp-server-alist)))
-  (setq nntp-current-server "")
-  (setq nntp-server-process nil))
+  (let (proc)
+    (while nntp-server-alist
+      (setq proc (nth 1 (assq 'nntp-server-process (car nntp-server-alist))))
+      (and proc (delete-process proc))
+      (setq nntp-server-alist (cdr nntp-server-alist)))
+    (setq nntp-current-server nil)))
 
 (defun nntp-server-opened (&optional server)
   "Say whether a connection to SERVER has been opened."
-  (if (or server nntp-current-server)
-      (let ((process (nth 1 (assoc (or server nntp-current-server)
-				   nntp-server-alist))))
-	(and process 
-	     (memq (process-status process) '(open run))))))
+  (and (equal server nntp-current-server)
+       nntp-server-process
+       (memq (process-status nntp-server-process) '(open run))))
 
 (defun nntp-status-message (&optional server)
   "Return server status as a string."
@@ -300,44 +316,39 @@ If SERVICE, this this as the port number."
 
 (defun nntp-request-group (group &optional server dont-check)
   "Select GROUP."
-  (if (not (nntp-possibly-change-server nil server))
-      ()
-    (if dont-check
-	(nntp-send-command "^.*\r$" "GROUP" group)
-      (if nntp-server-list-active-group
-	  (save-excursion
-	    (nntp-list-active-group group server)
-	    (set-buffer nntp-server-buffer)
-	    (goto-char (point-min))
-	    ;; We look at the output from `nntp-list-active-group' to
-	    ;; see whether the server supports this command.  If it
-	    ;; does, we transform the output.  
-	    (cond ((looking-at "2[0-9]+")
-		   (forward-line 1)
-		   (if (looking-at "[^ ] +\\([0-9]\\) +\\([0-9]\\)")
-		       (let ((end (progn (goto-char (match-beginning 1))
-					 (read (current-buffer))))
-			     (beg (read (current-buffer))))
-			 (and (> beg end)
-			      (setq end 0
-				    beg 0))
-			 (erase-buffer)
-			 (insert (format "211 %s %d %d %d\n"
-					 group (max (- (1+ end) beg) 0)
-					 beg end)))))
-		  ;; The server does not support the command.
-		  ((looking-at "5[0-9]+")
-		   (setq nntp-server-list-active-group nil)
-		   (setcar (nthcdr 
-			    3 (assoc nntp-current-server nntp-server-alist))
-			   nntp-server-xover)
-		   (nntp-send-command "^.*\r$" "GROUP" group))
-		  ;; The server supports it, but the group doesn't
-		  ;; exist. 
-		  ((looking-at "4[0-9]+")
-		   (erase-buffer)
-		   nil)))
-	(nntp-send-command "^.*\r$" "GROUP" group)))))
+  (if dont-check
+      (nntp-send-command "^.*\r$" "GROUP" group)
+    (if nntp-server-list-active-group
+	(save-excursion
+	  (nntp-list-active-group group server)
+	  (set-buffer nntp-server-buffer)
+	  (goto-char (point-min))
+	  ;; We look at the output from `nntp-list-active-group' to
+	  ;; see whether the server supports this command.  If it
+	  ;; does, we transform the output.  
+	  (cond ((looking-at "2[0-9]+")
+		 (forward-line 1)
+		 (if (looking-at "[^ ] +\\([0-9]\\) +\\([0-9]\\)")
+		     (let ((end (progn (goto-char (match-beginning 1))
+				       (read (current-buffer))))
+			   (beg (read (current-buffer))))
+		       (and (> beg end)
+			    (setq end 0
+				  beg 0))
+		       (erase-buffer)
+		       (insert (format "211 %s %d %d %d\n"
+				       group (max (- (1+ end) beg) 0)
+				       beg end)))))
+		;; The server does not support the command.
+		((looking-at "5[0-9]+")
+		 (setq nntp-server-list-active-group nil)
+		 (nntp-send-command "^.*\r$" "GROUP" group))
+		;; The server supports it, but the group doesn't
+		;; exist. 
+		((looking-at "4[0-9]+")
+		 (erase-buffer)
+		 nil)))
+      (nntp-send-command "^.*\r$" "GROUP" group))))
 
 (defun nntp-list-active-group (group &optional server)
   (nntp-send-command "^.*\r$" "LIST ACTIVE" group))
@@ -420,8 +431,10 @@ post to this group instead.  If RESPECT-POSTER, heed the special
   (if (assq 'to-address (nth 4 info))
       (nnmail-request-post-buffer 
        post group subject header article-buffer info follow-to respect-poster)
-    (let (from date to followup-to newsgroups message-of
-	       references distribution message-id)
+    (let ((mail-default-headers 
+	   (or nntp-news-default-headers mail-default-headers))
+	  from date to followup-to newsgroups message-of
+	  references distribution message-id)
       (save-excursion
 	(set-buffer (get-buffer-create "*post-news*"))
 	(news-reply-mode)
@@ -516,15 +529,17 @@ It will prompt for a password."
     ;; server that the process that sent the signal is connected to.
     ;; If you get my drift.
     (while (and servers 
-		(not (equal proc (nth 1 (car servers)))))
+		(not (equal proc (nth 1 (assq 'nntp-server-process
+					      (car servers))))))
       (setq servers (cdr servers)))
     (message "nntp: Connection closed to server %s." 
 	     (or (car (car servers)) "(none)"))
     (ding)))
 
 (defun nntp-kill-connection (server)
-  (let ((proc (nth 1 (assoc server nntp-server-alist))))
-    (if proc (delete-process (process-name proc)))
+  (let ((proc (nth 1 (assq 'nntp-server-process 
+			   (assoc server nntp-server-alist)))))
+    (and proc (delete-process (process-name proc)))
     (nntp-close-server server)
     (setq nntp-status-string 
 	  (message "Connection timed out to server %s." server))
@@ -676,8 +691,6 @@ It will prompt for a password."
 		(setq commands (cdr commands)))
 	      (if (eq t nntp-server-xover)
 		  (setq nntp-server-xover nil))
-	      (setcar (nthcdr 2 (assoc nntp-current-server nntp-server-alist))
-		      nntp-server-xover)
 	      nntp-server-xover))
 	(if nntp-server-xover (nntp-decode-text) (erase-buffer))))))
 
@@ -692,8 +705,8 @@ It will prompt for a password."
     ;; Command line must be terminated by a CR-LF.
     (if (not (nntp-server-opened nntp-current-server))
 	(progn
-	  (nntp-close-server nntp-current-server)
-	  (if (not (nntp-open-server nntp-current-server))
+	  (nntp-close-server nntp-address)
+	  (if (not (nntp-open-server nntp-address))
 	      (error (nntp-status-message)))
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
@@ -732,6 +745,41 @@ It will prompt for a password."
     ;; We cannot erase buffer, because reply may be received.
     (delete-region begin end)))
 
+(defun nntp-open-server-semi-internal (server &optional service)
+  "Open SERVER.
+If SERVER is nil, use value of environment variable `NNTPSERVER'.
+If SERVICE, this this as the port number."
+  (let ((server (or server (getenv "NNTPSERVER")))
+	(status nil)
+	(timer 
+	 (and nntp-connection-timeout 
+	      (run-at-time nntp-connection-timeout
+			   nil 'nntp-kill-connection server))))
+    (setq nntp-status-string "")
+    (message "nntp: Connecting to server on %s..." server)
+    (cond ((and server (nntp-open-server-internal server service))
+	   (setq nntp-address server)
+	   (setq status
+		 (condition-case nil
+		     (nntp-wait-for-response "^[23].*\r$")
+		   (error nil)
+		   (quit nil)))
+	   (or status (nntp-close-server-internal server))
+	   (and nntp-server-process
+		(progn
+		  (set-process-sentinel 
+		   nntp-server-process 'nntp-default-sentinel)
+		  ;; You can send commands at startup like AUTHINFO here.
+		  ;; Added by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>
+		  (run-hooks 'nntp-server-opened-hook))))
+	  ((null server)
+	   (setq nntp-status-string "NNTP server is not specified.")))
+    (and timer (cancel-timer timer))
+    (message "")
+    (or status
+	(setq nntp-current-server nil))
+    status))
+
 (defun nntp-open-server-internal (server &optional service)
   "Open connection to news server on SERVER by SERVICE (default is nntp)."
   (let (proc)
@@ -745,7 +793,7 @@ It will prompt for a password."
       (if (setq proc
 		(condition-case nil
 		    (open-network-stream 
-		     "nntpd" (current-buffer) server (or service "nntp"))
+		     "nntpd" (current-buffer) server nntp-port-number)
 		  (error nil)))
 	  (progn
 	    (setq nntp-server-process proc)
@@ -753,9 +801,7 @@ It will prompt for a password."
 	    (process-kill-without-query proc)
 	    (setq nntp-server-xover t)
 	    (setq nntp-server-list-active-group t)
-	    (setq nntp-server-name server)
-	    (setq nntp-server-alist (cons (list server nntp-server-process t t)
-					  nntp-server-alist))
+	    (setq nntp-address server)
 	    ;; It is possible to change kanji-fileio-code in this hook.
 	    (run-hooks 'nntp-server-hook)
 	    nntp-server-process)))))
@@ -766,9 +812,7 @@ It will prompt for a password."
   (if nntp-server-process
       (delete-process nntp-server-process))
   (setq nntp-server-process nil)
-  (setq nntp-server-alist (delq (assoc nntp-current-server nntp-server-alist)
-				nntp-server-alist))
-  (setq nntp-current-server ""))
+  (setq nntp-address ""))
 
 (defun nntp-accept-response ()
   "Read response of server.
@@ -805,30 +849,10 @@ defining this function as macro."
   (car list))
 
 (defun nntp-possibly-change-server (newsgroup server)
-  (let (result changed-server)
-    ;; First see if we need to change the server - or even open a new 
-    ;; server.  
-    (if (and server (not (string= server nntp-current-server)))
-	(progn	
-	  ;; Fix by Sudish Joseph <joseph@cis.ohio-state.edu>.
-	  (if (or (assoc server nntp-server-alist)
-		  (nntp-open-server server))
-	      ;; `nntp-open-server' may change `nntp-server-alist', so
-	      ;; we assoc again.
-	      (let ((info (assoc server nntp-server-alist)))
-		(setq nntp-current-server server)
-		;; Variable for backwards compatability.
-		(setq nntp-server-name server)
-		(setq nntp-server-process (nth 1 info))
-		(setq nntp-server-xover (nth 2 info))
-		(setq nntp-server-list-active-group (nth 3 info))
-		(setq changed-server t)
-		(setq result t))))
-      (setq result t))
-    ;; The we see whether it is necessary to change newsgroup.
-    (and newsgroup result 
-	 (or (not (string= newsgroup nntp-current-group))
-	     changed-server)
+  (let ((result t))
+    ;; We see whether it is necessary to change newsgroup.
+    (and newsgroup 
+	 (or (not (string= newsgroup nntp-current-group)))
 	 (progn
 	   (setq result (nntp-request-group newsgroup server))
 	   (setq nntp-current-group newsgroup)))

@@ -55,6 +55,21 @@
 
 (defvar nnmbox-group-alist nil)
 
+
+
+(defvar nnmbox-current-server nil)
+(defvar nnmbox-server-alist nil)
+(defvar nnmbox-server-variables 
+  (list
+   (list 'nnmbox-mbox-file nnmbox-mbox-file)
+   (list 'nnmbox-active-file nnmbox-active-file)
+   (list 'nnmbox-get-new-mail nnmbox-get-new-mail)
+   '(nnmbox-current-group nil)
+   '(nnmbox-status-string "")
+   '(nnmbox-group-alist nil)))
+
+
+
 ;;; Interface functions
 
 (defun nnmbox-retrieve-headers (sequence &optional newsgroup server)
@@ -107,17 +122,28 @@
 	(replace-match " " t t))
       'headers)))
 
-(defun nnmbox-open-server (host &optional service)
-  (setq nnmbox-status-string "")
-  (setq nnmbox-group-alist nil)
-  (nnheader-init-server-buffer))
+(defun nnmbox-open-server (server &optional defs)
+  (nnheader-init-server-buffer)
+  (if (equal server nnmbox-current-server)
+      t
+    (if nnmbox-current-server
+	(setq nnmbox-server-alist 
+	      (cons (list nnmbox-current-server
+			  (nnheader-save-variables nnmbox-server-variables))
+		    nnmbox-server-alist)))
+    (let ((state (assoc server nnmbox-server-alist)))
+      (if state 
+	  (progn
+	    (nnheader-restore-variables (nth 1 state))
+	    (setq nnmbox-server-alist (delq state nnmbox-server-alist)))
+	(nnheader-set-init-variables nnmbox-server-variables defs)))
+    (setq nnmbox-current-server server)))
 
 (defun nnmbox-close-server (&optional server)
   t)
 
 (defun nnmbox-server-opened (&optional server)
-  (and nntp-server-buffer
-       (get-buffer nntp-server-buffer)))
+  (equal server nnmbox-current-server))
 
 (defun nnmbox-status-message (&optional server)
   nnmbox-status-string)
