@@ -1,3 +1,9 @@
+2003-09-20  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Fancy Mail Splitting): Make split-on-body work for
+	respooling.  Suggested by Harald Maier <maierh@myself.com>.
+	(Fancy Mail Splitting): Reformat.
+
 2003-09-15  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Posting Styles): Fix typo.  @itemize attribute names.

@@ -13870,46 +13870,42 @@ Let's look at an example value of this variable first:
    "misc.misc")
 @end lisp
 
-This variable has the format of a @dfn{split}.  A split is a (possibly)
-recursive structure where each split may contain other splits.  Here are
-the five possible split syntaxes:
+This variable has the format of a @dfn{split}.  A split is a
+(possibly) recursive structure where each split may contain other
+splits.  Here are the possible split syntaxes:
 
-@enumerate
+@table @code
 
-@item
-@samp{group}: If the split is a string, that will be taken as a group
-name.  Normal regexp match expansion will be done.  See below for
-examples.
+@item group 
+If the split is a string, that will be taken as a group name.  Normal
+regexp match expansion will be done.  See below for examples.
 
-@item
-@code{(@var{field} @var{value} @code{[-} @var{restrict}
-@code{[@dots{}]}@code{]} @var{split})}: If the split is a list, the
-first element of which is a string, then store the message as
-specified by @var{split}, if header @var{field} (a regexp) contains
-@var{value} (also a regexp).  If @var{restrict} (yet another regexp)
-matches some string after @var{field} and before the end of the
-matched @var{value}, the @var{split} is ignored.  If none of the
-@var{restrict} clauses match, @var{split} is processed.
+@item (@var{field} @var{value} [- @var{restrict} [@dots{}] ] @var{split})
+If the split is a list, the first element of which is a string, then
+store the message as specified by @var{split}, if header @var{field}
+(a regexp) contains @var{value} (also a regexp).  If @var{restrict}
+(yet another regexp) matches some string after @var{field} and before
+the end of the matched @var{value}, the @var{split} is ignored.  If
+none of the @var{restrict} clauses match, @var{split} is processed.
 
-@item
-@code{(| @var{split}@dots{})}: If the split is a list, and the first
-element is @code{|} (vertical bar), then process each @var{split} until
-one of them matches.  A @var{split} is said to match if it will cause
-the mail message to be stored in one or more groups.
+@item (| @var{split} @dots{})
+If the split is a list, and the first element is @code{|} (vertical
+bar), then process each @var{split} until one of them matches.  A
+@var{split} is said to match if it will cause the mail message to be
+stored in one or more groups.
 
-@item
-@code{(& @var{split}@dots{})}: If the split is a list, and the first
-element is @code{&}, then process all @var{split}s in the list.
+@item (& @var{split} @dots{})
+If the split is a list, and the first element is @code{&}, then
+process all @var{split}s in the list.
 
-@item
-@code{junk}: If the split is the symbol @code{junk}, then don't save
-(i.e., delete) this message.  Use with extreme caution.
+@item junk
+If the split is the symbol @code{junk}, then don't save (i.e., delete)
+this message.  Use with extreme caution.
 
-@item
-@code{(: @var{function} @var{arg1} @var{arg2} @dots{})}:  If the split is
-a list, and the first element is @code{:}, then the second element will
-be called as a function with @var{args} given as arguments.  The
-function should return a @var{split}.
+@item (: @var{function} @var{arg1} @var{arg2} @dots{})
+If the split is a list, and the first element is @samp{:}, then the
+second element will be called as a function with @var{args} given as
+arguments.  The function should return a @var{split}.
 
 @cindex body split
 For instance, the following function could be used to split based on the
@@ -13918,25 +13914,27 @@ body of the messages:
 @lisp
 (defun split-on-body ()
   (save-excursion
-    (set-buffer " *nnmail incoming*")
+    (set-buffer
+     (or (get-buffer " *nnmail incoming*")
+         (get-buffer " *nnml move*")))
     (goto-char (point-min))
     (when (re-search-forward "Some.*string" nil t)
       "string.group")))
 @end lisp
 
-The @samp{" *nnmail incoming*"} is narrowed to the message in question
-when the @code{:} function is run.
+The buffer is narrowed to the message in question when @var{function}
+is run.
 
-@item
-@code{(! @var{func} @var{split})}: If the split is a list, and the
-first element is @code{!}, then @var{split} will be processed, and
-@var{func} will be called as a function with the result of @var{split}
-as argument.  @var{func} should return a split.
+@item (! @var{func} @var{split})
+If the split is a list, and the first element is @code{!}, then
+@var{split} will be processed, and @var{func} will be called as a
+function with the result of @var{split} as argument.  @var{func}
+should return a split.
 
-@item
-@code{nil}: If the split is @code{nil}, it is ignored.
+@item nil
+If the split is @code{nil}, it is ignored.
 
-@end enumerate
+@end table
 
 In these splits, @var{field} must match a complete field name.
 @var{value} must match a complete word according to the fundamental mode
@@ -13948,7 +13946,7 @@ field names or words.  In other words, all @var{value}'s are wrapped in
 @var{field} and @var{value} can also be Lisp symbols, in that case
 they are expanded as specified by the variable
 @code{nnmail-split-abbrev-alist}.  This is an alist of cons cells,
-where the @code{car} of a cell contains the key, and the @code{cdr}
+where the @sc{car} of a cell contains the key, and the @sc{cdr}
 contains the associated value.  Predefined entries in
 @code{nnmail-split-abbrev-alist} include:
 
