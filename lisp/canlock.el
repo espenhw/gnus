@@ -155,12 +155,13 @@ If ARGS, PROMPT is used as an argument to `format'."
 			   (char-to-string (logxor 92 char)))
 			 password "")))
     (base64-encode-string
-     (funcall canlock-sha1-function
-	      (concat
-	       opad
-	       (funcall canlock-sha1-function
-			(concat ipad
-				(canlock-string-as-unibyte message-id))))))))
+     (canlock-string-as-unibyte
+      (funcall canlock-sha1-function
+	       (concat
+		opad
+		(funcall canlock-sha1-function
+			 (concat ipad
+				 (canlock-string-as-unibyte message-id)))))))))
 
 (defun canlock-narrow-to-header ()
   "Narrow the buffer to the head of the message."
