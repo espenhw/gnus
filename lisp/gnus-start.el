@@ -643,8 +643,8 @@ prompt the user for the name of an NNTP server to use."
     (gnus-splash)
     (gnus-clear-system)
     (nnheader-init-server-buffer)
-    (gnus-read-init-file)
     (setq gnus-slave slave)
+    (gnus-read-init-file)
 
     (when (and (string-match "XEmacs" (emacs-version))
 	       gnus-simple-splash)
@@ -2211,7 +2211,8 @@ If FORCE is non-nil, the .newsrc file is read."
 
 (defun gnus-gnus-to-quick-newsrc-format ()
   "Insert Gnus variables such as gnus-newsrc-alist in lisp format."
-  (let ((print-quoted t))
+  (let ((print-quoted t)
+	(print-escape-newlines t))
     (insert ";; -*- emacs-lisp -*-\n")
     (insert ";; Gnus startup file.\n")
     (insert

@@ -38,7 +38,7 @@
 (nnoo-declare nnml)
 
 (defvoo nnml-directory message-directory
-  "Mail spool directory.")
+  "Spool directory for the nnml mail backend.")
 
 (defvoo nnml-active-file
   (concat (file-name-as-directory nnml-directory) "active")

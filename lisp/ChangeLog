@@ -1,3 +1,100 @@
+Sat Aug 16 20:36:31 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.65 is released.
+
+Sat Aug 16 20:10:09 1997  Sigbjorn Finne  <sof@dcs.gla.ac.uk>
+
+	* gnus-srvr.el (gnus-browse-foreign-server): Message fix.
+
+Sat Aug 16 17:44:31 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-1): Don't read the dribble file
+	unconditionally in slaves.
+
+	* gnus-sum.el (gnus-summary-edit-article): Restore original date
+	header. 
+
+	* gnus-start.el (gnus-1): Set gnus-slave earlier.
+
+	* gnus-sum.el (gnus-parent-headers): Would infloop.
+
+	* message.el (message-make-message-id): Make better Message-ID
+	when superseding.
+
+Sat Aug 16 17:36:25 1997  Jason Rumney  <jasonr@pec.co.nz>
+
+	* nnkiboze.el (nnkiboze-request-delete-group): Transliate file
+	chars. 
+
+Sat Aug 16 17:26:59 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnml.el (nnml-directory): Dox fox.
+
+	* gnus-topic.el (gnus-topic-make-menu-bar): Added
+	gnus-topic-edit-parameters. 
+
+Sat Aug 16 17:21:21 1997  Jay Sachs  <sachs@interactive.net>
+
+	* gnus-win.el (gnus-buffer-configuration): New entry:
+	score-trace. 
+
+Sat Aug 16 16:51:24 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-delete): Mark as changed.
+	(gnus-topic-change-level): Make last param optional.
+
+	* gnus-group.el (gnus-group-iterate): Make sure window is
+	selected. 
+
+Sat Aug 16 16:56:23 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-check-topology): Add new groups to the
+	end of the first topic.
+
+	* gnus-cache.el (gnus-jog-cache): Use gnus-group-iterate.
+
+Wed Aug 13 22:00:07 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-gnus-to-quick-newsrc-format): Escape
+	newlines. 
+
+Thu Aug  7 20:51:12 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* smiley.el (smiley-deformed-regexp-alist): Fix.
+
+Wed Jul 30 13:46:30 1997  Danny Siu  <dsiu@adobe.com>
+
+	* smiley.el (smiley-buffer): make smiley case sensitive
+	(smiley-deformed-regexp-alist): added more regexp for happy smiley
+	(smiley-nosey-regexp-alist): same as above
+
+Sat Aug  2 01:48:26 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-nocem.el (gnus-nocem-close): Nix out
+	gnus-real-group-hashtb. 
+
+Sat Aug  2 01:46:49 1997  roth@klondike.cse.ucsc.edu (Carl D. Roth)
+
+	* gnus-nocem.el (gnus-fill-real-hashtb): New function.
+
+Sat Aug  2 01:26:17 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-group-read-init-file): Message.
+
+Fri Jul 25 20:48:31 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-nov-gap): Changed default.
+
+	* gnus-nocem.el (gnus-nocem-issuers): Fixed names.
+
+Wed Jul 23 20:11:24 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-catchup): Also removed cached
+	articles. 
+
+	* nnvirtual.el (nnvirtual-update-xref-header): Don't double
+	Xrefs. 
+
 Sat Jul 19 23:32:28 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.64 is released.

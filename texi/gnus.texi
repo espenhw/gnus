@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.64 Manual
+@settitle Gnus 5.4.65 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -309,7 +309,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.64 Manual
+@title Gnus 5.4.65 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -345,7 +345,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.64.
+This manual corresponds to Gnus 5.4.65.
 
 @end ifinfo
 
@@ -8706,7 +8706,7 @@ big a gap between two consecutive articles is allowed to be before the
 @code{XOVER} request is split into several request.  Note that if your
 network is fast, setting this variable to a really small number means
 that fetching will probably be slower.  If this variable is @code{nil},
-@code{nntp} will never split requests.
+@code{nntp} will never split requests.  The default is 5.
 
 @item nntp-prepare-server-hook
 @vindex nntp-prepare-server-hook
@@ -9852,7 +9852,7 @@ it, you might treat it as a newsgroup.  The files have to have numerical
 names, of course.
 
 This might be an opportune moment to mention @code{ange-ftp} (and its
-successor @code{ecf}), that most wonderful of all wonderful Emacs
+successor @code{efs}), that most wonderful of all wonderful Emacs
 packages.  When I wrote @code{nndir}, I didn't think much about it---a
 backend to read directories.  Big deal.
 
@@ -12851,7 +12851,7 @@ Here's a list of all possible keys for
 @code{summary-faq}, @code{edit-group}, @code{edit-server},
 @code{edit-score}, @code{post}, @code{reply}, @code{forward},
 @code{reply-yank}, @code{mail-bounce}, @code{draft}, @code{pipe},
-@code{bug}, @code{compose-bounce}.
+@code{bug}, @code{compose-bounce}, and @code{score-trace}.
 
 Note that the @code{message} key is used for both
 @code{gnus-group-mail} and @code{gnus-summary-mail-other-window}.  If

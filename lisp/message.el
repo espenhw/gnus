@@ -2407,16 +2407,21 @@ to find out how to use this."
 (defun message-make-message-id ()
   "Make a unique Message-ID."
   (concat "<" (message-unique-id)
-	  (let ((psubject (save-excursion (message-fetch-field "subject"))))
-	    (if (and message-reply-headers
-		     (mail-header-references message-reply-headers)
-		     (mail-header-subject message-reply-headers)
-		     psubject
-		     (mail-header-subject message-reply-headers)
-		     (not (string=
-			   (message-strip-subject-re
-			    (mail-header-subject message-reply-headers))
-			   (message-strip-subject-re psubject))))
+	  (let ((psubject (save-excursion (message-fetch-field "subject")))
+		(psupersedes
+		 (save-excursion (message-fetch-field "supersedes"))))
+	    (if (or
+		 (and message-reply-headers
+		      (mail-header-references message-reply-headers)
+		      (mail-header-subject message-reply-headers)
+		      psubject
+		      (mail-header-subject message-reply-headers)
+		      (not (string=
+			    (message-strip-subject-re
+			     (mail-header-subject message-reply-headers))
+			    (message-strip-subject-re psubject))))
+		 (and psupersedes
+		      (string-match "_-_@" psupersedes)))
 		"_-_" ""))
 	  "@" (message-make-fqdn) ">"))
 

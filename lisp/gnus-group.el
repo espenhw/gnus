@@ -1448,11 +1448,13 @@ Take into consideration N (the prefix) and the list of marked groups."
 FUNCTION will be called with the group name as the paremeter
 and with point over the group in question."
   (let ((groups (gnus-group-process-prefix arg))
+	(window (selected-window))
 	group)
     (while (setq group (pop groups))
+      (select-window window)
       (gnus-group-remove-mark group)
-      (save-excursion
-	(save-selected-window
+      (save-selected-window
+	(save-excursion
 	  (funcall function group))))))
 
 (put 'gnus-group-iterate 'lisp-indent-function 1)
@@ -3084,7 +3086,8 @@ If FORCE, force saving whether it is necessary or not."
 (defun gnus-group-read-init-file ()
   "Read the Gnus elisp init file."
   (interactive)
-  (gnus-read-init-file))
+  (gnus-read-init-file)
+  (gnus-message 5 "Read %s" gnus-init-file))
 
 (defun gnus-group-check-bogus-groups (&optional silent)
   "Check bogus newsgroups.

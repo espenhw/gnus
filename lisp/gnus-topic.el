@@ -673,12 +673,13 @@ articles in the topic and its subtopics."
   ;; they belong to some topic.
   (let* ((tgroups (apply 'append (mapcar (lambda (entry) (cdr entry))
 					 gnus-topic-alist)))
-	 (entry (assoc (caar gnus-topic-topology) gnus-topic-alist))
+	 (entry (last (assoc (caar gnus-topic-topology) gnus-topic-alist)))
 	 (newsrc (cdr gnus-newsrc-alist))
 	 group)
     (while newsrc
       (unless (member (setq group (gnus-info-group (pop newsrc))) tgroups)
-	(setcdr entry (cons group (cdr entry))))))
+	(setcdr entry (list group))
+	(setq entry (cdr entry)))))
   ;; Go through all topics and make sure they contain only living groups.
   (let ((alist gnus-topic-alist)
 	topic)
@@ -721,7 +722,7 @@ articles in the topic and its subtopics."
 	(push (cons topic-name (nreverse filtered-topic)) result)))
     (setq gnus-topic-alist (nreverse result))))
 
-(defun gnus-topic-change-level (group level oldlevel previous)
+(defun gnus-topic-change-level (group level oldlevel &optional previous)
   "Run when changing levels to enter/remove groups from topics."
   (save-excursion
     (set-buffer gnus-group-buffer)
@@ -926,7 +927,8 @@ articles in the topic and its subtopics."
 	["Create" gnus-topic-create-topic t]
 	["Mark" gnus-topic-mark-topic t]
 	["Indent" gnus-topic-indent t]
-	["Toggle hide empty" gnus-topic-toggle-display-empty-topics t])
+	["Toggle hide empty" gnus-topic-toggle-display-empty-topics t]
+	["Edit parameters" gnus-topic-edit-parameters t])
        ["List active" gnus-topic-list-active t]))))
 
 (defun gnus-topic-mode (&optional arg redisplay)
@@ -1229,7 +1231,8 @@ If COPYP, copy the groups instead."
     ;; Remove from alist.
     (setq gnus-topic-alist (delq entry gnus-topic-alist))
     ;; Remove from topology.
-    (gnus-topic-find-topology topic nil nil 'delete)))
+    (gnus-topic-find-topology topic nil nil 'delete)
+    (gnus-dribble-touch)))
 
 (defun gnus-topic-rename (old-name new-name)
   "Rename a topic."

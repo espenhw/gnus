@@ -551,7 +551,8 @@ The following commands are available:
     (cond
      ((not (gnus-check-server method))
       (gnus-message
-       1 "Unable to contact server: %s" (gnus-status-message method))
+       1 "Unable to contact server %s: %s" (nth 1 method)
+       (gnus-status-message method))
       nil)
      ((not
        (prog2
@@ -746,6 +747,8 @@ buffer.
 	      'request-regenerate (car (gnus-server-to-method server))))
 	(error "This backend doesn't support regeneration")
       (gnus-message 5 "Requesting regeneration of %s..." server)
+      (unless (gnus-open-server server)
+	(error "Couldn't open server"))
       (if (gnus-request-regenerate server)
 	  (gnus-message 5 "Requesting regeneration of %s...done" server)
 	(gnus-message 5 "Couldn't regenerate %s" server)))))

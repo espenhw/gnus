@@ -3048,8 +3048,9 @@ If NO-DISPLAY, don't generate a summary buffer."
   "Return the headers of the GENERATIONeth parent of HEADERS."
   (unless generation
     (setq generation 1))
-  (let (references parent)
-    (while (and headers (not (zerop generation)))
+  (let ((parent t)
+	references)
+    (while (and parent headers (not (zerop generation)))
       (setq references (mail-header-references headers))
       (when (and references
 		 (setq parent (gnus-parent-id references))
@@ -7045,6 +7046,7 @@ groups."
     (unless (eq (gnus-summary-article-number)
 		gnus-current-article)
       (gnus-summary-select-article t))
+    (gnus-article-date-original)
     (gnus-article-edit-article
      `(lambda ()
 	(gnus-summary-edit-article-done
@@ -7740,7 +7742,9 @@ The number of articles marked as read is returned."
 	  (if (and not-mark
 		   (not gnus-newsgroup-adaptive)
 		   (not gnus-newsgroup-auto-expire)
-		   (not gnus-suppress-duplicates))
+		   (not gnus-suppress-duplicates)
+		   (or (not gnus-use-cache)
+		       (not (eq gnus-use-cache 'passive))))
 	      (progn
 		(when all
 		  (setq gnus-newsgroup-marked nil

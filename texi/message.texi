@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Message 5.4.64 Manual
+@settitle Message 5.4.65 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -39,7 +39,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Message 5.4.64 Manual
+@title Message 5.4.65 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -79,7 +79,7 @@ buffers.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Message 5.4.64.  Message is distributed with
+This manual corresponds to Message 5.4.65.  Message is distributed with
 the Gnus distribution bearing the same version number as this manual
 has. 
 
@@ -931,7 +931,8 @@ headers have been inserted but before the signature has been inserted.
 
 @item message-setup-hook
 @vindex message-setup-hook
-Hook run as the last thing when the message buffer has been initialized.
+Hook run as the last thing when the message buffer has been initialized,
+but before yanked text is inserted.
 
 @item message-header-setup-hook
 @vindex message-header-setup-hook

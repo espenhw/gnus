@@ -544,18 +544,15 @@ $ emacs -batch -l ~/.emacs -l gnus -f gnus-jog-cache"
     (gnus)
     ;; Go through all groups...
     (gnus-group-mark-buffer)
-    (gnus-group-universal-argument
-     nil nil
-     (lambda ()
-       (interactive)
-       (when (gnus-group-group-name)
-	 (let (gnus-auto-select-next)
-	   (gnus-summary-read-group (gnus-group-group-name) nil t)
-	   ;; ... and enter the articles into the cache.
-	   (when (eq major-mode 'gnus-summary-mode)
-	     (gnus-uu-mark-buffer)
-	     (gnus-cache-enter-article)
-	     (kill-buffer (current-buffer)))))))))
+    (gnus-group-iterate nil
+      (lambda (group)
+	(let (gnus-auto-select-next)
+	  (gnus-summary-read-group group nil t)
+	  ;; ... and enter the articles into the cache.
+	  (when (eq major-mode 'gnus-summary-mode)
+	    (gnus-uu-mark-buffer)
+	    (gnus-cache-enter-article)
+	    (kill-buffer (current-buffer))))))))
 
 (defun gnus-cache-read-active (&optional force)
   "Read the cache active file."

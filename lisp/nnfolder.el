@@ -448,6 +448,11 @@ time saver for large mailboxes.")
 	   (kill-buffer (current-buffer))
 	   t))))
 
+(defun nnfolder-request-regenerate (server)
+  (nnfolder-possibly-change-directory nil server)
+  (nnfolder-generate-active-file)
+  t)
+
 
 ;;; Internal functions.
 

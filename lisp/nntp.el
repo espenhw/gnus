@@ -129,7 +129,7 @@ The strings are tried in turn until a positive response is gotten.  If
 none of the commands are successful, nntp will just grab headers one
 by one.")
 
-(defvoo nntp-nov-gap 20
+(defvoo nntp-nov-gap 5
   "*Maximum allowed gap between two articles.
 If the gap between two consecutive articles is bigger than this
 variable, split the XOVER request into two requests.")
