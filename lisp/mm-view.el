@@ -369,7 +369,8 @@ map.")))
       (set-text-properties (point-min) (point-max) nil)
       (when (or (equal type "enriched")
 		(equal type "richtext"))
-	(enriched-decode (point-min) (point-max)))
+	(ignore-errors
+	  (enriched-decode (point-min) (point-max))))
       (mm-handle-set-undisplayer
        handle
        `(lambda ()

@@ -1,3 +1,7 @@
+2003-03-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-view.el (mm-inline-text): Ignore errors from enriched-decode.
+
 2003-03-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-make-fqdn): Protect against nil user-mail. 
