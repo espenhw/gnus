@@ -416,6 +416,10 @@ If ARGS, PROMPT is used as an argument to `format'."
 	    (setq imap-client-eol "\n")
 	    (while (and (memq (process-status process) '(open run))
 			(goto-char (point-min))
+                        ;; cyrus 1.6.x (13? < x <= 22) queries capabilities
+		        (or (while (looking-at "^C:")
+			      (forward-line))
+			    t)
 			;; cyrus 1.6 imtest print "S: " before server greeting
 			(or (not (looking-at "S: "))
 			    (forward-char 3)

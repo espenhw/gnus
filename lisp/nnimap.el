@@ -614,8 +614,8 @@ function is generally only called when Gnus is shutting down."
     (nnheader-ms-strip-cr)
     (funcall nnimap-callback-callback-function t)))
 
-(defun nnimap-request-article-part (article part prop
-					    &optional group server to-buffer)
+(defun nnimap-request-article-part (article part prop &optional
+                                            group server to-buffer detail)
   (when (nnimap-possibly-change-group group server)
     (let ((article (if (stringp article)
 		       (car-safe (imap-search
@@ -627,9 +627,12 @@ function is generally only called when Gnus is shutting down."
 	(if (not nnheader-callback-function)
 	    (with-current-buffer (or to-buffer nntp-server-buffer)
 	      (erase-buffer)
-	      (insert (nnimap-demule (imap-fetch article part prop nil
-						 nnimap-server-buffer)))
-	      (nnheader-ms-strip-cr)
+              (let ((data (imap-fetch article part prop nil
+                                      nnimap-server-buffer)))
+                (insert (nnimap-demule (if detail
+                                           (nth 2 (car data))
+                                         data))))
+              (nnheader-ms-strip-cr)
 	      (gnus-message 9 "nnimap: Fetching (part of) article %d...done"
 			    article)
 	      (if (bobp)
@@ -646,16 +649,25 @@ function is generally only called when Gnus is shutting down."
   t)
 
 (deffoo nnimap-request-article (article &optional group server to-buffer)
-  (nnimap-request-article-part
-   article "RFC822.PEEK" 'RFC822 group server to-buffer))
+  (if (imap-capability 'IMAP4rev1 nnimap-server-buffer)
+      (nnimap-request-article-part
+       article "BODY.PEEK[]" 'BODYDETAIL group server to-buffer 'detail)
+    (nnimap-request-article-part
+     article "RFC822.PEEK" 'RFC822 group server to-buffer)))
 
 (deffoo nnimap-request-head (article &optional group server to-buffer)
-  (nnimap-request-article-part
-   article "RFC822.HEADER" 'RFC822.HEADER group server to-buffer))
+  (if (imap-capability 'IMAP4rev1 nnimap-server-buffer)
+      (nnimap-request-article-part
+       article "BODY.PEEK[HEADER]" 'BODYDETAIL group server to-buffer 'detail)
+    (nnimap-request-article-part
+     article "RFC822.HEADER" 'RFC822.HEADER group server to-buffer)))
 
 (deffoo nnimap-request-body (article &optional group server to-buffer)
-  (nnimap-request-article-part
-   article "RFC822.TEXT.PEEK" 'RFC822.TEXT group server to-buffer))
+  (if (imap-capability 'IMAP4rev1 nnimap-server-buffer)
+      (nnimap-request-article-part
+       article "BODY.PEEK[TEXT]" 'BODYDETAIL group server to-buffer 'detail)
+    (nnimap-request-article-part
+     article "RFC822.TEXT.PEEK" 'RFC822.TEXT group server to-buffer)))
 
 (deffoo nnimap-request-group (group &optional server fast)
   (nnimap-request-update-info-internal

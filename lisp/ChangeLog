@@ -1,3 +1,18 @@
+2000-04-08  Simon Josefsson  <jas@pdc.kth.se>
+
+	* imap.el (imap-kerberos4-open): Work with recent `imtest's.
+
+2000-04-02  Simon Josefsson  <jas@pdc.kth.se>
+
+	* nnimap.el (nnimap-request-article): Use BODY.PEEK[] instead of
+	RFC822.PEEK if server support IMAP4rev1.
+	(nnimap-request-body): Use BODY.PEEK[TEXT] instead of
+	RFC822.TEXT.PEEK if server support IMAP4rev1.
+	(nnimap-request-head): Use BODY.PEEK[HEADER] instead of
+	RFC822.HEADER if server support IMAP4rev1.
+	(nnimap-request-article-part): Support bodydetail in response
+	data.
+
 2000-03-11  Simon Josefsson  <jas@pdc.kth.se>
 
 	* fill-flowed.el: New file.
