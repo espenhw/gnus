@@ -1,7 +1,6 @@
 2001-07-20 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-score.el (gnus-home-score-file): nnheader-translate-file-chars.
-	(gnus-all-score-files): Ditto.
 
 2001-07-18  Per Abrahamsen  <abraham@dina.kvl.dk>
 

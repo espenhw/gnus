@@ -2745,8 +2745,7 @@ The list is determined from the variable gnus-score-file-alist."
 	(when (gnus-functionp (car funcs))
 	  (setq score-files
 		(nconc score-files 
-                       (mapcar 'nnheader-translate-file-chars
-                               (nreverse (funcall (car funcs) group))))))
+                       (nreverse (funcall (car funcs) group)))))
 	(setq funcs (cdr funcs)))
       (when gnus-score-use-all-scores
 	;; Add any home score files.
@@ -2841,19 +2840,19 @@ If ADAPT, return the home adaptive file instead."
     (while (and (not found)
 		(setq elem (pop list)))
       (setq found
-            (nnheader-translate-file-chars
-             (cond
-              ;; Simple string.
-              ((stringp elem)
-               elem)
-              ;; Function.
-              ((gnus-functionp elem)
-               (funcall elem group))
-              ;; Regexp-file cons.
-              ((consp elem)
-               (when (string-match (gnus-globalify-regexp (car elem)) group)
-                 (replace-match (cadr elem) t nil group)))))))
+            (cond
+             ;; Simple string.
+             ((stringp elem)
+              elem)
+             ;; Function.
+             ((gnus-functionp elem)
+              (funcall elem group))
+             ;; Regexp-file cons.
+             ((consp elem)
+              (when (string-match (gnus-globalify-regexp (car elem)) group)
+                (replace-match (cadr elem) t nil group))))))
     (when found
+      (setq found (nnheader-translate-file-chars found))
       (if (file-name-absolute-p found)
           found
         (nnheader-concat gnus-kill-files-directory found)))))
