@@ -860,8 +860,8 @@ Thwarting Email Spam
 * Anti-Spam Basics::            Simple steps to reduce the amount of spam.
 * SpamAssassin::                How to use external anti-spam tools.
 * Hashcash::                    Reduce spam by burning CPU time.
-* Filtering Spam Using spam.el::  
-* Filtering Spam Using Statistics (spam-stat.el)::  
+* Filtering Spam Using The Spam ELisp Package::  
+* Filtering Spam Using Statistics with spam-stat::  
 
 Appendices
 
@@ -21112,8 +21112,8 @@ This is annoying.  Here's what you can do about it.
 * Anti-Spam Basics::            Simple steps to reduce the amount of spam.
 * SpamAssassin::                How to use external anti-spam tools.
 * Hashcash::                    Reduce spam by burning CPU time.
-* Filtering Spam Using spam.el::  
-* Filtering Spam Using Statistics (spam-stat.el)::  
+* Filtering Spam Using The Spam ELisp Package::  
+* Filtering Spam Using Statistics with spam-stat::  
 @end menu
 
 @node The problem of spam
@@ -21407,10 +21407,10 @@ hashcash cookies, it is expected that this is performed by your hand
 customized mail filtering scripts.  Improvements in this area would be
 a useful contribution, however.
 
-@node Filtering Spam Using spam.el
-@subsection Filtering Spam Using spam.el
+@node Filtering Spam Using The Spam ELisp Package
+@subsection Filtering Spam Using The Spam ELisp Package
 @cindex spam filtering
-@cindex spam.el
+@cindex spam
 
 The idea behind @code{spam.el} is to have a control center for spam detection
 and filtering in Gnus.  To that end, @code{spam.el} does two things: it
@@ -21570,7 +21570,7 @@ The following are the methods you can use to control the behavior of
 * Bogofilter::                  
 * ifile spam filtering::        
 * spam-stat spam filtering::    
-* Extending spam.el::           
+* Extending the spam elist package::  
 @end menu
 
 @node Blacklists and Whitelists
@@ -21578,7 +21578,7 @@ The following are the methods you can use to control the behavior of
 @cindex spam filtering
 @cindex whitelists, spam filtering
 @cindex blacklists, spam filtering
-@cindex spam.el
+@cindex spam
 
 @defvar spam-use-blacklist
 Set this variable to t if you want to use blacklists when splitting
@@ -21639,7 +21639,7 @@ directly.  The whitelist and blacklist files will by default be in the
 @cindex spam filtering
 @cindex BBDB whitelists, spam filtering
 @cindex BBDB, spam filtering
-@cindex spam.el
+@cindex spam
 
 @defvar spam-use-BBDB
 
@@ -21665,7 +21665,7 @@ or @emph{unclassified} groups.
 @subsubsection Blackholes
 @cindex spam filtering
 @cindex blackholes, spam filtering
-@cindex spam.el
+@cindex spam
 
 @defvar spam-use-blackholes
 
@@ -21705,7 +21705,7 @@ ham processor for blackholes.
 @subsubsection Bogofilter
 @cindex spam filtering
 @cindex bogofilter, spam filtering
-@cindex spam.el
+@cindex spam
 
 @defvar spam-use-bogofilter
 
@@ -21745,7 +21745,7 @@ processing.}
 @subsubsection ifile spam filtering
 @cindex spam filtering
 @cindex ifile, spam filtering
-@cindex spam.el
+@cindex spam
 
 @defvar spam-use-ifile
 
@@ -21786,10 +21786,10 @@ functionality.
 @subsubsection spam-stat spam filtering
 @cindex spam filtering
 @cindex spam-stat, spam filtering
-@cindex spam-stat.el
-@cindex spam.el
+@cindex spam-stat
+@cindex spam
 
-@xref{Filtering Spam Using Statistics (spam-stat.el)}.
+@xref{Filtering Spam Using Statistics with spam-stat}.
 
 @defvar spam-use-stat
 
@@ -21822,11 +21822,11 @@ Bogofilter does not require external programs.  A spam and a ham
 processor, and the @code{spam-use-stat} variable for @code{spam-split}
 are provided.
 
-@node Extending spam.el
-@subsubsection Extending spam.el
+@node Extending the spam elist package
+@subsubsection Extending the spam elisp package
 @cindex spam filtering
-@cindex spam.el, extending
-@cindex extending spam.el
+@cindex spam elisp package, extending
+@cindex extending the spam elisp package
 
 Say you want to add a new back end called blackbox.  For filtering
 incoming mail, provide the following:
@@ -21911,8 +21911,8 @@ senders are kept in memory by Gnus.
 @end enumerate
 
 
-@node Filtering Spam Using Statistics (spam-stat.el)
-@subsection Filtering Spam Using Statistics (spam-stat.el)
+@node Filtering Spam Using Statistics with spam-stat
+@subsection Filtering Spam Using Statistics with spam-stat
 @cindex Paul Graham
 @cindex Graham, Paul
 @cindex naive Bayesian spam filtering

@@ -1,3 +1,9 @@
+2003-01-12  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Filtering Spam Using The Spam ELisp Package): removed
+	spam.el and spam-stat.el from the node and section names wherever
+	possible, since info indexing doesn't like `.' in the name
+
 2003-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Article Display): Addition.
