@@ -1,3 +1,16 @@
+2000-12-22 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el (gnus-group-parameters-more): New variable.
+	* gnus-cus.el (gnus-group-customize): Use it.
+
+	* gnus.el (gnus-define-group-parameter): New macro.
+	(auto-expire): Use it
+	(total-expire): Use it.
+	* gnus-art.el (banner): Use it.
+
+	* mml.el (mml-parse): save-excursion. Suggested by Lloyd Zusman
+	<ljz@asfast.com>.
+
 2000-12-22 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-topic.el (gnus-topic-create-topic): Use list.

@@ -848,6 +848,76 @@ be set in `.emacs' instead."
 (require 'gnus-util)
 (require 'nnheader)
 
+(defvar gnus-group-parameters-more nil)
+
+(defmacro gnus-define-group-parameter (param &rest rest)
+  "Define a group parameter PARAM.
+REST is a plist of following:
+:type               One of `bool', `list' or `nil'.
+:function           The name of the function.
+:function-document  The document of the function.
+:parameter-type     The type for customizing the parameter.
+:parameter-document The document for the parameter.
+:variable           The name of the variable.
+:variable-document  The document for the variable.
+:variable-group     The group for customizing the variable.
+:variable-type      The type for customizing the variable.
+:variable-default   The default value of the variable."
+  (let* ((type (plist-get rest :type))
+	 (parameter-type (plist-get rest :parameter-type))
+	 (parameter-document (plist-get rest :parameter-document))
+	 (function (or (plist-get rest :function)
+		       (intern (format "gnus-parameter-%s" param))))
+	 (function-document (or (plist-get rest :function-document) ""))
+	 (variable (or (plist-get rest :variable)
+		       (intern (format "gnus-parameter-%s-alist" param))))
+	 (variable-document (or (plist-get rest :variable-document) ""))
+	 (variable-group (plist-get rest :variable-group))
+	 (variable-type (or (plist-get rest :variable-type)
+			    `(quote (repeat (list (regexp :tag "Group")
+						  ,parameter-type)))))
+	 (variable-default (plist-get rest :variable-default)))
+    (list 
+     'progn
+     `(defcustom ,variable ,variable-default
+	,variable-document
+	:group 'gnus-group-parameter
+	:group ',variable-group
+	:type ,variable-type)
+     `(setq gnus-group-parameters-more
+	    (delq (assq ',param gnus-group-parameters-more)
+		  gnus-group-parameters-more))
+     `(add-to-list 'gnus-group-parameters-more
+		   (list ',param
+			 ,parameter-type
+			 ,parameter-document))
+     (if (eq type 'bool)
+	 `(defun ,function (group)
+	    ,function-document
+	    (let ((params (gnus-group-find-parameter group))
+		  val)
+	      (cond
+	       ((memq ',param params)
+		t)
+	       ((setq val (assq ',param params))
+		(cdr val))
+	       (,variable
+		(string-match ,variable group)))))
+       `(defun ,function (name)
+	  ,function-document
+	  (and name
+	       (or (gnus-group-find-parameter name ',param)
+		   (let ((alist ,variable)
+			 elem value)
+		     (while (setq elem (pop alist))
+		       (when (and name
+				  (string-match (car elem) name))
+			 (setq alist nil
+			       value (cdr elem))))
+		     ,(if type
+			  'value
+			'(if (consp value) (car value) value))))))))))
+
 (defcustom gnus-home-directory "~/"
   "Directory variable that specifies the \"home\" directory.
 All other Gnus path variables are initialized from this variable."
@@ -1364,23 +1434,48 @@ to be desirable; see the manual for further details."
   :type '(choice (const nil)
 		 integer))
 
-(defcustom gnus-auto-expirable-newsgroups nil
+(gnus-define-group-parameter 
+ auto-expire
+ :type bool
+ :function gnus-group-auto-expirable-p
+ :function-document
+ "Check whether GROUP is auto-expirable or not."
+ :variable gnus-auto-expirable-newsgroups
+ :variable-default nil
+ :variable-document
   "*Groups in which to automatically mark read articles as expirable.
 If non-nil, this should be a regexp that should match all groups in
 which to perform auto-expiry.  This only makes sense for mail groups."
-  :group 'nnmail-expire
-  :type '(choice (const nil)
-		 regexp))
+  :variable-group nnmail-expire
+  :variable-type '(choice (const nil)
+			  regexp)
+  :parameter-type '(const :tag "Automatic Expire" t) 
+  :parameter-document 
+  "All articles that are read will be marked as expirable.")
 
-(defcustom gnus-total-expirable-newsgroups nil
-  "*Groups in which to perform expiry of all read articles.
+(gnus-define-group-parameter 
+ total-expire
+ :type bool
+ :function gnus-group-total-expirable-p
+ :function-document
+ "Check whether GROUP is total-expirable or not."
+ :variable gnus-total-expirable-newsgroups 
+ :variable-default nil
+ :variable-document
+ "*Groups in which to perform expiry of all read articles.
 Use with extreme caution.  All groups that match this regexp will be
 expiring - which means that all read articles will be deleted after
 \(say) one week.	 (This only goes for mail groups and the like, of
 course.)"
-  :group 'nnmail-expire
-  :type '(choice (const nil)
-		 regexp))
+  :variable-group nnmail-expire
+  :variable-type '(choice (const nil)
+			  regexp)
+  :parameter-type '(const :tag "Total Expire" t) 
+  :parameter-document 
+  "All read articles will be put through the expiry process
+
+This happens even if they are not marked as expirable.
+Use with caution.")
 
 (defcustom gnus-group-uncollapsed-levels 1
   "Number of group name elements to leave alone when making a short group name."
@@ -2281,30 +2376,6 @@ If GROUP is nil, `gnus-newsgroup-name' will be checked instead.	 Note
 that that variable is buffer-local to the summary buffers."
   (let ((group (or group gnus-newsgroup-name)))
     (not (gnus-check-backend-function 'request-replace-article group))))
-
-(defun gnus-group-total-expirable-p (group)
-  "Check whether GROUP is total-expirable or not."
-  (let ((params (gnus-group-find-parameter group))
-	val)
-    (cond
-     ((memq 'total-expire params)
-      t)
-     ((setq val (assq 'total-expire params)) ; (auto-expire . t)
-      (cdr val))
-     (gnus-total-expirable-newsgroups	; Check var.
-      (string-match gnus-total-expirable-newsgroups group)))))
-
-(defun gnus-group-auto-expirable-p (group)
-  "Check whether GROUP is auto-expirable or not."
-  (let ((params (gnus-group-find-parameter group))
-	val)
-    (cond
-     ((memq 'auto-expire params)
-      t)
-     ((setq val (assq 'auto-expire params)) ; (auto-expire . t)
-      (cdr val))
-     (gnus-auto-expirable-newsgroups	; Check var.
-      (string-match gnus-auto-expirable-newsgroups group)))))
 
 (defun gnus-virtual-group-p (group)
   "Say whether GROUP is virtual or not."

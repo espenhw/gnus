@@ -90,13 +90,14 @@ one charsets.")
 
 (defun mml-parse ()
   "Parse the current buffer as an MML document."
-  (goto-char (point-min))
-  (let ((table (syntax-table)))
-    (unwind-protect
-	(progn
-	  (set-syntax-table mml-syntax-table)
-	  (mml-parse-1))
-      (set-syntax-table table))))
+  (save-excursion
+    (goto-char (point-min))
+    (let ((table (syntax-table)))
+      (unwind-protect
+	  (progn
+	    (set-syntax-table mml-syntax-table)
+	    (mml-parse-1))
+	(set-syntax-table table)))))
 
 (defun mml-parse-1 ()
   "Parse the current buffer as an MML document."

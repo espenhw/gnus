@@ -27,8 +27,10 @@
 ;;; Code:
 
 (require 'wid-edit)
+(require 'gnus)
 (require 'gnus-score)
 (require 'gnus-topic)
+(require 'gnus-art)
 
 ;;; Widgets:
 
@@ -168,29 +170,6 @@ is present and a string, this string will be inserted literally as a
 `gcc' header (this symbol takes precedence over any default `Gcc'
 rules as described later).")
 
-    (banner (choice :tag "Banner"
-		    :value nil
-		    (const :tag "Remove signature" signature)
-		    (symbol :tag "Item in `gnus-article-banner-alist'" none)
-		    regexp
-		    (const :tag "None" nil)) "\
-If non-nil, specify how to remove `banners' from articles.
-
-Symbol `signature' means to remove signatures delimited by
-`gnus-signature-separator'.  Any other symbol is used to look up a
-regular expression to match the banner in `gnus-article-banner-alist'.
-A string is used as a regular expression to match the banner
-directly.")
-
-    (auto-expire (const :tag "Automatic Expire" t) "\
-All articles that are read will be marked as expirable.")
-
-    (total-expire (const :tag "Total Expire" t) "\
-All read articles will be put through the expiry process
-
-This happens even if they are not marked as expirable.
-Use with caution.")
-
     (expiry-wait (choice :tag  "Expire Wait"
 			 :value never
 			 (const never)
@@ -327,6 +306,7 @@ DOC is a documentation string for the parameter.")
 				(const :format "" ,(nth 0 entry))
 				,(nth 1 entry)))
 		       (append gnus-group-parameters 
+			       (reverse gnus-group-parameters-more)
 			       (if group
 				   gnus-extra-group-parameters
 				 gnus-extra-topic-parameters)))))

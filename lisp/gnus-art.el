@@ -238,6 +238,27 @@ For example,
   :type '(repeat (cons symbol regexp))
   :group 'gnus-article-washing)
 
+(gnus-define-group-parameter 
+ banner
+ :variable-document
+ "Alist of regexps (to match group names) and banner."
+ :variable-group gnus-article-washing
+ :parameter-type 
+ '(choice :tag "Banner"
+	  :value nil
+	  (const :tag "Remove signature" signature)
+	  (symbol :tag "Item in `gnus-article-banner-alist'" none)
+	  regexp
+	  (const :tag "None" nil))
+ :parameter-document 
+ "If non-nil, specify how to remove `banners' from articles.
+
+Symbol `signature' means to remove signatures delimited by
+`gnus-signature-separator'.  Any other symbol is used to look up a
+regular expression to match the banner in `gnus-article-banner-alist'.
+A string is used as a regular expression to match the banner
+directly.")
+
 (defcustom gnus-emphasis-alist
   (let ((format
 	 "\\(\\s-\\|^\\|[-\"]\\|\\s(\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*[.,]?\\)%s\\)\\(\\s-\\|[-,;:\"]\\s-\\|[?!.]+\\s-\\|\\s)\\)")
@@ -1813,7 +1834,7 @@ always hide."
   (save-excursion
     (save-restriction
       (let ((inhibit-point-motion-hooks t)
-	    (banner (gnus-group-find-parameter gnus-newsgroup-name 'banner))
+	    (banner (gnus-parameter-banner gnus-newsgroup-name))
 	    (gnus-signature-limit nil)
 	    buffer-read-only beg end)
 	(when banner
