@@ -1,3 +1,13 @@
+2000-12-01  Simon Josefsson  <sj@extundo.com>
+
+	* mml-smime.el (mml-smime-verify): Don't modify MM buffer.  Handle
+	more than one certificate inside PKCS#7 blob.  Better security
+	information (clamed / actual sender, openssl output, certificates
+	inside message).
+
+	* smime.el (smime-verify-region): Output to /dev/null.
+	(smime-buffer-as-string-region): Don't parse empty lines.
+
 2000-11-30 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-mime-security-button-line-format-alist): Add

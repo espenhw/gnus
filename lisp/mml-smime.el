@@ -117,8 +117,8 @@
     certs))
 
 (defun mml-smime-verify (handle ctl)
-  (with-current-buffer (mm-handle-multipart-original-buffer ctl)
-    ;; xxx modifies buffer -- noone else uses the buffer, so what the heck
+  (with-temp-buffer
+    (insert-buffer (mm-handle-multipart-original-buffer ctl))
     (goto-char (point-min))
     (insert (format "Content-Type: %s; " (mm-handle-media-type ctl)))
     (insert (format "protocol=\"%s\"; " 
@@ -129,35 +129,53 @@
 		    (mm-handle-multipart-ctl-parameter ctl 'boundary)))
     (when (get-buffer smime-details-buffer)
       (kill-buffer smime-details-buffer))
-    (if (smime-verify-buffer)
+    (let ((buf (current-buffer))
+	  (good-signature (smime-verify-buffer))
+	  addresses openssl-output)
+      (setq openssl-output (with-current-buffer smime-details-buffer
+			     (buffer-string)))
+      (if (not good-signature)
+	  (progn
+	    ;; we couldn't verify message, fail with openssl output as message
+	    (mm-set-handle-multipart-parameter 
+	     mm-security-handle 'gnus-info "Failed")
+	    (mm-set-handle-multipart-parameter
+	     mm-security-handle 'gnus-details 
+	     (concat "OpenSSL failed to verify message:\n" 
+		     "---------------------------------\n" 
+		     openssl-output)))
 	;; verify mail addresses in mail against those in certificate
 	(when (and (smime-pkcs7-region (point-min) (point-max))
 		   (smime-pkcs7-certificates-region (point-min) (point-max)))
 	  (with-temp-buffer
-	    (insert-buffer-substring (mm-handle-multipart-original-buffer ctl))
-	    (if (not (member mm-security-from
-			     (and (smime-pkcs7-email-region
-				   (point-min) (point-max))
-				  (smime-buffer-as-string-region
-				   (point-min) (point-max)))))
-		(progn
-		  (mm-set-handle-multipart-parameter 
-		   mm-security-handle 'gnus-info "Sender forged")
-		  (mm-set-handle-multipart-parameter
-		   mm-security-handle 'gnus-details 
-		   (with-current-buffer
-		       (mm-handle-multipart-original-buffer ctl)
-		     (buffer-string))))
-	      (mm-set-handle-multipart-parameter 
-	       mm-security-handle 'gnus-info "OK")
-	      (kill-buffer smime-details-buffer))))
-      (mm-set-handle-multipart-parameter 
-       mm-security-handle 'gnus-info "Failed")
-      (mm-set-handle-multipart-parameter
-       mm-security-handle 'gnus-details 
-       (with-current-buffer smime-details-buffer 
-	 (buffer-string))))
-    handle))
+	    (insert-buffer-substring buf)
+	    (goto-char (point-min))
+	    (while (re-search-forward "-----BEGIN CERTIFICATE-----" nil t)
+	      (forward-line 0)
+	      (if (re-search-forward "-----END CERTIFICATE-----" nil t)
+		  (smime-pkcs7-email-region (point-min) (point))
+		(delete-region (point-min) (point))))
+	    (setq addresses (smime-buffer-as-string-region (point-min)
+							   (point-max)))))
+	(if (not (member mm-security-from addresses))
+	    (mm-set-handle-multipart-parameter 
+	     mm-security-handle 'gnus-info "Sender forged")
+	  (mm-set-handle-multipart-parameter 
+	   mm-security-handle 'gnus-info "OK"))
+	(mm-set-handle-multipart-parameter
+	 mm-security-handle 'gnus-details 
+	 (concat "Sender clamed to be: " mm-security-from "\n"
+		 (if addresses
+		     (concat "Addresses in certificate: " 
+			     (mapconcat 'identity addresses ", "))
+		   "No addresses found in certificate.")
+		 "\n" "\n" 
+		 "OpenSSL output:\n" 
+		 "---------------\n" openssl-output "\n"
+		 "Certificate(s) inside S/MIME signature:\n"
+		 "---------------------------------------\n"
+		 (buffer-string) "\n")))))
+  handle)
 
 (defun mml-smime-verify-test (handle ctl)
   smime-openssl-program)

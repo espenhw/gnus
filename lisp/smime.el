@@ -254,7 +254,8 @@ nil."
 		    (error "No CA configured.")))))
     (with-current-buffer buffer
       (erase-buffer))
-    (if (apply 'smime-call-openssl-region b e buffer "smime" "-verify" CAs)
+    (if (apply 'smime-call-openssl-region b e buffer "smime" "-verify" 
+	       "-out" "/dev/null" CAs)
 	(message "S/MIME message verified succesfully.")
       (message "S/MIME message NOT verified successfully.")
       nil)))
@@ -338,7 +339,9 @@ A string or a list of strings is returned."
     (goto-char b)
     (let (res)
       (while (< (point) e)
-	(push (buffer-substring (point) (smime-point-at-eol)) res)
+	(let ((str (buffer-substring (point) (smime-point-at-eol))))
+	  (unless (string= "" str)
+	    (push str res)))
 	(forward-line))
       res)))
 
