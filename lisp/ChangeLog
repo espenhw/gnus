@@ -1,5 +1,8 @@
 2002-02-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-fun.el (gnus-convert-gray-x-face-to-xpm): Remove unused
+	local varriable.
+
 	* gnus-art.el (article-display-x-face): Don't sort multiple
 	X-Faces.
 

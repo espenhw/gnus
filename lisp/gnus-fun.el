@@ -43,14 +43,14 @@
 (defun gnus-shell-command-to-string (command)
   "Like `shell-command-to-string' except not mingling ERROR."
   (with-output-to-string
-    (call-process shell-file-name nil (list standard-output nil) 
+    (call-process shell-file-name nil (list standard-output nil)
 		  nil shell-command-switch command)))
 
 (defun gnus-shell-command-on-region (start end command)
   "A simplified `shell-command-on-region'.
 Output to the current buffer, replace text, and don't mingle error."
-  (call-process-region start end shell-file-name t 
-		       (list (current-buffer) nil) 
+  (call-process-region start end shell-file-name t
+		       (list (current-buffer) nil)
 		       nil shell-command-switch command))
 
 ;;;###autoload
@@ -122,7 +122,7 @@ Output to the current buffer, replace text, and don't mingle error."
 	 (coding-system-for-read 'binary)
 	 (coding-system-for-write 'binary)
 	 default-enable-multibyte-characters
-	 start bit-array bit-arrays pixels pixel)
+	 start bit-array bit-arrays pixel)
     (with-temp-buffer
       (dolist (face faces)
 	(erase-buffer)
@@ -189,7 +189,7 @@ colors of the displayed X-Faces."
 	(save-restriction
 	  (article-narrow-to-head)
 	  (gnus-article-goto-header "from")
-	  (when (bobp) 
+	  (when (bobp)
 	    (insert "From: [no `from' set]\n")
 	    (forward-char -17))
 	  (gnus-add-image
