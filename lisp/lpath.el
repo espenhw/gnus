@@ -21,9 +21,10 @@
 	       url-generic-parse-url url-http-file-exists-p
 	       url-insert-file-contents vcard-pretty-print w32-focus-frame
 	       w3m-charset-to-coding-system w3m-region x-focus-frame))
-(maybe-bind '(filladapt-mode
-	      mc-pgp-always-sign rmail-insert-mime-forwarded-message-function
-	      url-current-object url-package-name url-package-version
+(maybe-bind '(eudc-protocol
+	      filladapt-mode mc-pgp-always-sign
+	      rmail-insert-mime-forwarded-message-function url-current-object
+	      url-package-name url-package-version
 	      w3-meta-charset-content-type-regexp
 	      w3-meta-content-type-charset-regexp
 	      w3m-cid-retrieve-function-alist w3m-current-buffer
@@ -32,9 +33,9 @@
 
 (if (featurep 'xemacs)
     (progn
-      (maybe-fbind '(delete-overlay detect-coding-string
-		     event-click-count event-end event-start
-		     find-coding-systems-for-charsets
+      (maybe-fbind '(delete-overlay
+		     detect-coding-string eudc-expand-inline event-click-count
+		     event-end event-start find-coding-systems-for-charsets
 		     find-coding-systems-region find-coding-systems-string
 		     mail-abbrevs-setup mouse-minibuffer-check
 		     mouse-movement-p mouse-scroll-subr overlay-lists

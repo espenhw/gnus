@@ -1,3 +1,13 @@
+2004-01-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* canlock.el: Always require sha1-el.
+	(canlock-sha1): Bind sha1-maximum-internal-length to nil.
+
+	* message.el: Autoload sha1 only when compiling.
+
+	* lpath.el: Bind eudc-protocol for both Emacs and XEmacs; fbind
+	eudc-expand-inline for XEmacs.
+
 2004-01-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-canlock-generate): Require sha1-el.
