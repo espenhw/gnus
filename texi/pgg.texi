@@ -188,10 +188,10 @@ considerably.  For example, if you are using GnuPG, you know you can
 select cipher algorithm from 3DES, CAST5, BLOWFISH, and so on, but on
 the other hand the version 2 of PGP only supports IDEA.
 
-By default, if the variable @var{pgg-scheme} is not set, PGG searches the
+By default, if the variable @code{pgg-scheme} is not set, PGG searches the
 registered scheme for an implementation of the requested service
 associated with the named algorithm.  If there are no match, PGG uses
-@var{pgg-default-scheme}.  In other words, there are two options to
+@code{pgg-default-scheme}.  In other words, there are two options to
 control which command is used to process the incoming PGP armors.  One
 is for encrypting and signing, the other is for decrypting and
 verifying.
@@ -210,7 +210,7 @@ The value can be @code{gpg}, @code{pgp}, and @code{pgp5}.
 @section Caching passphrase
 
 PGG provides a simple passphrase caching mechanism.  If you want to
-arrange the interaction, set the variable @var{pgg-read-passphrase}.
+arrange the interaction, set the variable @code{pgg-read-passphrase}.
 
 @defvar pgg-cache-passphrase
 If non-@code{nil}, store passphrases.  The default value of this
@@ -278,7 +278,7 @@ It had better guarantee to keep only one instance of a scheme.
 
 The following code is snipped out of @file{pgg-gpg.el}.  Once an
 instance of @code{pgg-gpg} scheme is initialized, it's stored to the
-variable @var{pgg-scheme-gpg-instance} and will be reused from now on.
+variable @code{pgg-scheme-gpg-instance} and will be reused from now on.
 
 @lisp
 (defvar pgg-scheme-gpg-instance nil)
