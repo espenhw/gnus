@@ -1,3 +1,7 @@
+2003-12-01  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi: Add missing mode to some @kindex'es.
+
 2003-11-30  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (RSS): Add nnrss-use-local.

@@ -3891,7 +3891,7 @@ Sort the current topic alphabetically by server name
 (@code{gnus-topic-sort-groups-by-server}).
 
 @item T S s
-@kindex T S s
+@kindex T S s (Topic)
 @findex gnus-topic-sort-groups
 Sort the current topic according to the function(s) given by the
 @code{gnus-group-sort-function} variable
@@ -6160,7 +6160,7 @@ expression (@code{gnus-uu-unmark-by-regexp}).
 Mark articles in region (@code{gnus-uu-mark-region}).
 
 @item M P g
-@kindex M P g
+@kindex M P g (Summary)
 @findex gnus-uu-unmark-region
 Unmark articles in region (@code{gnus-uu-unmark-region}).
 
@@ -8689,7 +8689,7 @@ Fold all the message headers
 (@code{gnus-article-treat-fold-headers}).
 
 @item W E w
-@kindex W E w
+@kindex W E w (Summary)
 @findex gnus-article-remove-leading-whitespace
 Remove excessive whitespace from all headers
 (@code{gnus-article-remove-leading-whitespace}).
@@ -11950,43 +11950,43 @@ signing and the @kbd{C-c C-m c} key map for encryption, as follows.
 @table @kbd
 
 @item C-c C-m s s
-@kindex C-c C-m s s
+@kindex C-c C-m s s (Message)
 @findex mml-secure-message-sign-smime
 
 Digitally sign current message using @acronym{S/MIME}.
 
 @item C-c C-m s o
-@kindex C-c C-m s o
+@kindex C-c C-m s o (Message)
 @findex mml-secure-message-sign-pgp
 
 Digitally sign current message using @acronym{PGP}.
 
 @item C-c C-m s p
-@kindex C-c C-m s p
+@kindex C-c C-m s p (Message)
 @findex mml-secure-message-sign-pgp
 
 Digitally sign current message using @acronym{PGP/MIME}.
 
 @item C-c C-m c s
-@kindex C-c C-m c s
+@kindex C-c C-m c s (Message)
 @findex mml-secure-message-encrypt-smime
 
 Digitally encrypt current message using @acronym{S/MIME}.
 
 @item C-c C-m c o
-@kindex C-c C-m c o
+@kindex C-c C-m c o (Message)
 @findex mml-secure-message-encrypt-pgp
 
 Digitally encrypt current message using @acronym{PGP}.
 
 @item C-c C-m c p
-@kindex C-c C-m c p
+@kindex C-c C-m c p (Message)
 @findex mml-secure-message-encrypt-pgpmime
 
 Digitally encrypt current message using @acronym{PGP/MIME}.
 
 @item C-c C-m C-n
-@kindex C-c C-m C-n
+@kindex C-c C-m C-n (Message)
 @findex mml-unsecure-message
 Remove security related @acronym{MML} tags from message.
 
@@ -16368,7 +16368,7 @@ article is copied instead of appended (that is, uploaded again).
 @cindex editing imap acls
 @cindex Access Control Lists
 @cindex Editing @acronym{IMAP} ACLs
-@kindex G l
+@kindex G l (Group)
 @findex gnus-group-nnimap-edit-acl
 
 ACL stands for Access Control List.  ACLs are used in @acronym{IMAP} for
@@ -16400,7 +16400,7 @@ INBOX.mailbox).
 
 @cindex expunge
 @cindex manual expunging
-@kindex G x
+@kindex G x (Group)
 @findex gnus-group-nnimap-expunge
 
 If you're using the @code{never} setting of @code{nnimap-expunge-on-close},
