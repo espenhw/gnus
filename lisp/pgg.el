@@ -96,13 +96,58 @@
 	   (symbol-value (intern-soft key pgg-passphrase-cache)))
       (read-passwd prompt)))
 
+(eval-when-compile
+  (autoload 'delete-itimer "itimer")
+  (autoload 'set-itimer-function "itimer")
+  (autoload 'set-itimer-function-arguments "itimer")
+  (autoload 'set-itimer-restart "itimer"))
+
+(eval-and-compile
+  (defalias
+    'pgg-run-at-time
+    (if (featurep 'xemacs)
+	(lambda (time repeat function &rest args)
+	  "Emulating function run as `run-at-time' in the right way.
+TIME should be nil meaning now or a number of seconds from now.
+Return an itimer object which can be used in either `delete-itimer'
+or `cancel-timer'."
+	  (let ((itimers (list nil)))
+	    (setcar
+	     itimers
+	     (apply #'start-itimer "pgg-run-at-time"
+		    (lambda (itimers repeat function &rest args)
+		      (let ((itimer (car itimers)))
+			(if repeat
+			    (progn
+			      (set-itimer-function
+			       itimer
+			       (lambda (itimer repeat function &rest args)
+				 (set-itimer-restart itimer repeat)
+				 (set-itimer-function itimer function)
+				 (set-itimer-function-arguments itimer args)
+				 (apply function args)))
+			      (set-itimer-function-arguments
+			       itimer
+			       (append (list itimer repeat function) args)))
+			  (set-itimer-function
+			   itimer
+			   (lambda (itimer function &rest args)
+			     (delete-itimer itimer)
+			     (apply function args)))
+			  (set-itimer-function-arguments
+			   itimer
+			   (append (list itimer function) args)))))
+		    1e-9 (if time (max time 1e-9) 1e-9)
+		    nil t itimers repeat function args))))
+      'run-at-time)))
+
 (defun pgg-add-passphrase-cache (key passphrase)
   (setq key (pgg-truncate-key-identifier key))
   (set (intern key pgg-passphrase-cache)
        passphrase)
-  (run-at-time pgg-passphrase-cache-expiry nil
-	       #'pgg-remove-passphrase-cache
-	       key))
+  (pgg-run-at-time pgg-passphrase-cache-expiry nil
+		   #'pgg-remove-passphrase-cache
+		   key))
 
 (defun pgg-remove-passphrase-cache (key)
   (let ((passphrase (symbol-value (intern-soft key pgg-passphrase-cache))))

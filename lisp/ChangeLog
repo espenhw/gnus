@@ -1,3 +1,11 @@
+2003-12-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnheaderxm.el (nnheader-xmas-run-at-time): Make it work
+	correctly for the first argument.
+
+	* pgg.el (pgg-run-at-time): New function.
+	(pgg-add-passphrase-cache): Use it.
+
 2003-12-10  Simon Josefsson  <jas@extundo.com>
 
 	* pgg-parse.el (pgg-decode-packets): Rewrite to handle corrupt
