@@ -1,3 +1,9 @@
+2001-11-15  Simon Josefsson  <jas@extundo.com>
+
+	* nnml.el (nnml-save-marks):
+	* nnfolder.el (nnfolder-save-marks): Use `gnus-prin1'.
+	Suggested by Istvan Marko <mi-gnus@imarko.dhs.org>.
+
 2001-11-15  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus-art.el (gnus-article-wash-status-strings): Use

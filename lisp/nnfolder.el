@@ -1215,7 +1215,7 @@ This command does not work if you use short group names."
 	(progn
 	  (with-temp-file file
 	    (erase-buffer)
-	    (princ nnfolder-marks (current-buffer))
+	    (gnus-prin1 nnfolder-marks (current-buffer))
 	    (insert "\n"))
 	  (gnus-sethash file
 			(nth 5 (file-attributes file))
