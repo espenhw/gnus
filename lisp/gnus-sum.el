@@ -429,7 +429,7 @@ this variable specifies group names."
   :group 'gnus-summary-marks
   :type 'character)
 
-(defcustom gnus-spam-mark ?H
+(defcustom gnus-spam-mark ?$
   "*Mark used for spam articles."
   :group 'gnus-summary-marks
   :type 'character)
