@@ -386,7 +386,6 @@ the program.
 
 @end iftex
 
-
 @menu
 * Starting Up::           Finding news can be a pain.
 * The Group Buffer::      Selecting, subscribing and killing groups.
@@ -400,6 +399,465 @@ the program.
 * Appendices::            Terminology, Emacs intro, FAQ, History, Internals.
 * Index::                 Variable, function and concept index.
 * Key Index::             Key Index.
+
+@detailmenu
+ --- The Detailed Node Listing ---
+
+Starting Gnus
+
+* Finding the News::    Choosing a method for getting news.
+* The First Time::      What does Gnus do the first time you start it?
+* The Server is Down::  How can I read my mail then?
+* Slave Gnusae::        You can have more than one Gnus active at a time.
+* Fetching a Group::    Starting Gnus just to read a group.
+* New Groups::          What is Gnus supposed to do with new groups?
+* Startup Files::       Those pesky startup files---@file{.newsrc}.
+* Auto Save::           Recovering from a crash.
+* The Active File::     Reading the active file over a slow line Takes Time.
+* Changing Servers::    You may want to move from one server to another.
+* Startup Variables::   Other variables you might change.
+
+New Groups
+
+* Checking New Groups::      Determining what groups are new.
+* Subscription Methods::     What Gnus should do with new groups.
+* Filtering New Groups::     Making Gnus ignore certain new groups.
+
+The Group Buffer
+
+* Group Buffer Format::    Information listed and how you can change it.
+* Group Maneuvering::      Commands for moving in the group buffer.
+* Selecting a Group::      Actually reading news.
+* Group Data::             Changing the info for a group.
+* Subscription Commands::  Unsubscribing, killing, subscribing.
+* Group Levels::           Levels? What are those, then?
+* Group Score::            A mechanism for finding out what groups you like.
+* Marking Groups::         You can mark groups for later processing.
+* Foreign Groups::         Creating and editing groups.
+* Group Parameters::       Each group may have different parameters set.
+* Listing Groups::         Gnus can list various subsets of the groups.
+* Sorting Groups::         Re-arrange the group order.
+* Group Maintenance::      Maintaining a tidy @file{.newsrc} file.
+* Browse Foreign Server::  You can browse a server.  See what it has to offer.
+* Exiting Gnus::           Stop reading news and get some work done.
+* Group Topics::           A folding group mode divided into topics.
+* Misc Group Stuff::       Other stuff that you can to do.
+
+Group Buffer Format
+
+* Group Line Specification::       Deciding how the group buffer is to look.
+* Group Modeline Specification::   The group buffer modeline.
+* Group Highlighting::             Having nice colors in the group buffer.
+
+Group Topics
+
+* Topic Variables::    How to customize the topics the Lisp Way.
+* Topic Commands::     Interactive E-Z commands.
+* Topic Sorting::      Sorting each topic individually.
+* Topic Topology::     A map of the world.
+* Topic Parameters::   Parameters that apply to all groups in a topic.
+
+Misc Group Stuff
+
+* Scanning New Messages:: Asking Gnus to see whether new messages have arrived.
+* Group Information::     Information and help on groups and Gnus.
+* Group Timestamp::       Making Gnus keep track of when you last read a group.
+* File Commands::         Reading and writing the Gnus files.
+
+The Summary Buffer
+
+* Summary Buffer Format::       Deciding how the summary buffer is to look.
+* Summary Maneuvering::         Moving around the summary buffer.
+* Choosing Articles::           Reading articles.
+* Paging the Article::          Scrolling the current article.
+* Reply Followup and Post::     Posting articles.
+* Marking Articles::            Marking articles as read, expirable, etc.
+* Limiting::                    You can limit the summary buffer.
+* Threading::                   How threads are made.
+* Sorting::                     How articles and threads are sorted.
+* Asynchronous Fetching::       Gnus might be able to pre-fetch articles.
+* Article Caching::             You may store articles in a cache.
+* Persistent Articles::         Making articles expiry-resistant.
+* Article Backlog::             Having already read articles hang around.
+* Saving Articles::             Ways of customizing article saving.
+* Decoding Articles::           Gnus can treat series of (uu)encoded articles.
+* Article Treatment::           The article buffer can be mangled at will.
+* MIME Commands::               Doing MIMEy things with the articles.
+* Charsets::                    Character set issues.
+* Article Commands::            Doing various things with the article buffer.
+* Summary Sorting::             Sorting the summary buffer in various ways.
+* Finding the Parent::          No child support? Get the parent.
+* Alternative Approaches::      Reading using non-default summaries.
+* Tree Display::                A more visual display of threads.
+* Mail Group Commands::         Some commands can only be used in mail groups.
+* Various Summary Stuff::       What didn't fit anywhere else.
+* Exiting the Summary Buffer::  Returning to the Group buffer.
+* Crosspost Handling::          How crossposted articles are dealt with.
+* Duplicate Suppression::       An alternative when crosspost handling fails.
+
+Summary Buffer Format
+
+* Summary Buffer Lines::     You can specify how summary lines should look.
+* To From Newsgroups::       How to not display your own name.
+* Summary Buffer Mode Line:: You can say how the mode line should look.
+* Summary Highlighting::     Making the summary buffer all pretty and nice.
+
+Choosing Articles
+
+* Choosing Commands::        Commands for choosing articles.
+* Choosing Variables::       Variables that influence these commands.
+
+Reply, Followup and Post
+
+* Summary Mail Commands::       Sending mail.
+* Summary Post Commands::       Sending news.
+* Summary Message Commands::    Other Message-related commands.
+* Canceling and Superseding::   ``Whoops, I shouldn't have called him that.''
+
+Marking Articles
+
+* Unread Articles::      Marks for unread articles.
+* Read Articles::        Marks for read articles.
+* Other Marks::          Marks that do not affect readedness.
+
+Marking Articles
+
+* Setting Marks::             How to set and remove marks.
+* Generic Marking Commands::  How to customize the marking.
+* Setting Process Marks::     How to mark articles for later processing.
+
+Threading
+
+* Customizing Threading::     Variables you can change to affect the threading.
+* Thread Commands::           Thread based commands in the summary buffer.
+
+Customizing Threading
+
+* Loose Threads::        How Gnus gathers loose threads into bigger threads.
+* Filling In Threads::   Making the threads displayed look fuller.
+* More Threading::       Even more variables for fiddling with threads.
+* Low-Level Threading::  You thought it was over... but you were wrong!
+
+Decoding Articles
+
+* Uuencoded Articles::    Uudecode articles.
+* Shell Archives::        Unshar articles.
+* PostScript Files::      Split PostScript.
+* Other Files::           Plain save and binhex.
+* Decoding Variables::    Variables for a happy decoding.
+* Viewing Files::         You want to look at the result of the decoding?
+
+Decoding Variables
+
+* Rule Variables::          Variables that say how a file is to be viewed.
+* Other Decode Variables::  Other decode variables.
+* Uuencoding and Posting::  Variables for customizing uuencoding.
+
+Article Treatment
+
+* Article Highlighting::    You want to make the article look like fruit salad.
+* Article Fontisizing::     Making emphasized text look nice.
+* Article Hiding::          You also want to make certain info go away.
+* Article Washing::         Lots of way-neat functions to make life better.
+* Article Buttons::         Click on URLs, Message-IDs, addresses and the like.
+* Article Date::            Grumble, UT!
+* Article Signature::       What is a signature?
+* Article Miscellania::     Various other stuff.
+
+Alternative Approaches
+
+* Pick and Read::               First mark articles and then read them.
+* Binary Groups::               Auto-decode all articles.
+
+Various Summary Stuff
+
+* Summary Group Information::         Information oriented commands.
+* Searching for Articles::            Multiple article commands.
+* Summary Generation Commands::       (Re)generating the summary buffer.
+* Really Various Summary Commands::   Those pesky non-conformant commands.
+
+The Article Buffer
+
+* Hiding Headers::        Deciding what headers should be displayed.
+* Using MIME::            Pushing articles through @sc{mime} before reading them.
+* Customizing Articles::  Tailoring the look of the articles.
+* Article Keymap::        Keystrokes available in the article buffer.
+* Misc Article::          Other stuff.
+
+Composing Messages
+
+* Mail::                 Mailing and replying.
+* Post::                 Posting and following up.
+* Posting Server::       What server should you post via?
+* Mail and Post::        Mailing and posting at the same time.
+* Archived Messages::    Where Gnus stores the messages you've sent.
+* Posting Styles::       An easier way to specify who you are.
+* Drafts::               Postponing messages and rejected messages.
+* Rejected Articles::    What happens if the server doesn't like your article?
+
+Select Methods
+
+* The Server Buffer::     Making and editing virtual servers.
+* Getting News::          Reading USENET news with Gnus.
+* Getting Mail::          Reading your personal mail with Gnus.
+* Browsing the Web::      Getting messages from a plethora of Web sources.
+* Other Sources::         Reading directories, files, SOUP packets.
+* Combined Groups::       Combining groups into one group.
+* Gnus Unplugged::        Reading news and mail offline.
+
+The Server Buffer
+
+* Server Buffer Format::      You can customize the look of this buffer.
+* Server Commands::           Commands to manipulate servers.
+* Example Methods::           Examples server specifications.
+* Creating a Virtual Server:: An example session.
+* Server Variables::          Which variables to set.
+* Servers and Methods::       You can use server names as select methods.
+* Unavailable Servers::       Some servers you try to contact may be down.
+
+Getting News
+
+* NNTP::               Reading news from an @sc{nntp} server.
+* News Spool::         Reading news from the local spool.
+
+Getting Mail
+
+* Mail in a Newsreader::         Important introductory notes.  
+* Getting Started Reading Mail:: A simple cookbook example.
+* Splitting Mail::               How to create mail groups.
+* Mail Sources::                 How to tell Gnus where to get mail from.
+* Mail Backend Variables::       Variables for customizing mail handling.
+* Fancy Mail Splitting::         Gnus can do hairy splitting of incoming mail.
+* Group Mail Splitting::         Use group customize to drive mail splitting.
+* Incorporating Old Mail::       What about the old mail you have?
+* Expiring Mail::                Getting rid of unwanted mail.
+* Washing Mail::                 Removing gruft from the mail you get.
+* Duplicates::                   Dealing with duplicated mail.
+* Not Reading Mail::             Using mail backends for reading other files.
+* Choosing a Mail Backend::      Gnus can read a variety of mail formats.
+
+Mail Sources
+
+* Mail Source Specifiers::       How to specify what a mail source is.
+* Mail Source Customization::    Some variables that influence things.
+* Fetching Mail::                Using the mail source specifiers.
+
+Choosing a Mail Backend
+
+* Unix Mail Box::               Using the (quite) standard Un*x mbox.
+* Rmail Babyl::                 Emacs programs use the rmail babyl format.
+* Mail Spool::                  Store your mail in a private spool?
+* MH Spool::                    An mhspool-like backend.
+* Mail Folders::                Having one file for each group.
+* Comparing Mail Backends::     An in-depth looks at pros and cons.
+
+Browsing the Web
+
+* Web Searches::          Creating groups from articles that match a string.
+* Slashdot::              Reading the Slashdot comments.
+* Ultimate::              The Ultimate Bulletin Board systems.
+* Web Archive::           Reading mailing list archived on web.
+
+Other Sources
+
+* Directory Groups::      You can read a directory as if it was a newsgroup.
+* Anything Groups::       Dired?  Who needs dired?
+* Document Groups::       Single files can be the basis of a group.
+* SOUP::                  Reading @sc{soup} packets ``offline''.
+* Mail-To-News Gateways:: Posting articles via mail-to-news gateways.
+* IMAP::                  Using Gnus as a @sc{imap} client.
+
+Document Groups
+
+* Document Server Internals::   How to add your own document types.
+
+SOUP
+
+* SOUP Commands::     Commands for creating and sending @sc{soup} packets
+* SOUP Groups::       A backend for reading @sc{soup} packets.
+* SOUP Replies::      How to enable @code{nnsoup} to take over mail and news.
+
+@sc{imap}
+
+* Splitting in IMAP::     Splitting mail with nnimap.
+* Editing IMAP ACLs::     Limiting/enabling other users access to a mailbox.
+* Expunging mailboxes::   Equivalent of a "compress mailbox" button.
+
+Combined Groups
+
+* Virtual Groups::     Combining articles from many groups.
+* Kibozed Groups::     Looking through parts of the newsfeed for articles.
+
+Gnus Unplugged
+
+* Agent Basics::           How it all is supposed to work.
+* Agent Categories::       How to tell the Gnus Agent what to download.
+* Agent Commands::         New commands for all the buffers.
+* Agent Expiry::           How to make old articles go away.
+* Outgoing Messages::      What happens when you post/mail something?
+* Agent Variables::        Customizing is fun.
+* Example Setup::          An example @file{.gnus.el} file for offline people.
+* Batching Agents::        How to fetch news from a @code{cron} job.
+* Agent Caveats::          What you think it'll do and what it does.
+
+Agent Categories
+
+* Category Syntax::       What a category looks like.
+* The Category Buffer::   A buffer for maintaining categories.
+* Category Variables::    Customize'r'Us.
+
+Agent Commands
+
+* Group Agent Commands::
+* Summary Agent Commands::
+* Server Agent Commands::
+
+Scoring
+
+* Summary Score Commands::   Adding score entries for the current group.
+* Group Score Commands::     General score commands.
+* Score Variables::          Customize your scoring.  (My, what terminology).
+* Score File Format::        What a score file may contain.
+* Score File Editing::       You can edit score files by hand as well.
+* Adaptive Scoring::         Big Sister Gnus knows what you read.
+* Home Score File::          How to say where new score entries are to go.
+* Followups To Yourself::    Having Gnus notice when people answer you.
+* Scoring Tips::             How to score effectively.
+* Reverse Scoring::          That problem child of old is not problem.
+* Global Score Files::       Earth-spanning, ear-splitting score files.
+* Kill Files::               They are still here, but they can be ignored.
+* Converting Kill Files::    Translating kill files to score files.
+* GroupLens::                Getting predictions on what you like to read.
+* Advanced Scoring::         Using logical expressions to build score rules.
+* Score Decays::             It can be useful to let scores wither away.
+
+GroupLens
+
+* Using GroupLens::          How to make Gnus use GroupLens.
+* Rating Articles::          Letting GroupLens know how you rate articles.
+* Displaying Predictions::   Displaying predictions given by GroupLens.
+* GroupLens Variables::      Customizing GroupLens.
+
+Advanced Scoring
+
+* Advanced Scoring Syntax::     A definition.
+* Advanced Scoring Examples::   What they look like.
+* Advanced Scoring Tips::       Getting the most out of it.
+
+Various
+
+* Process/Prefix::             A convention used by many treatment commands.
+* Interactive::                Making Gnus ask you many questions.
+* Symbolic Prefixes::          How to supply some Gnus functions with options.
+* Formatting Variables::       You can specify what buffers should look like.
+* Windows Configuration::      Configuring the Gnus buffer windows.
+* Faces and Fonts::            How to change how faces look.
+* Compilation::                How to speed Gnus up.
+* Mode Lines::                 Displaying information in the mode lines.
+* Highlighting and Menus::     Making buffers look all nice and cozy.
+* Buttons::                    Get tendonitis in ten easy steps!
+* Daemons::                    Gnus can do things behind your back.
+* NoCeM::                      How to avoid spam and other fatty foods.
+* Undo::                       Some actions can be undone.
+* Moderation::                 What to do if you're a moderator.
+* XEmacs Enhancements::        There are more pictures and stuff under XEmacs.
+* Fuzzy Matching::             What's the big fuzz?
+* Thwarting Email Spam::       A how-to on avoiding unsolicited commercial email.
+* Various Various::            Things that are really various.
+
+Formatting Variables
+
+* Formatting Basics::     A formatting variable is basically a format string.
+* Mode Line Formatting::  Some rules about mode line formatting variables.
+* Advanced Formatting::   Modifying output in various ways.
+* User-Defined Specs::    Having Gnus call your own functions.
+* Formatting Fonts::      Making the formatting look colorful and nice.
+
+XEmacs Enhancements
+
+* Picons::    How to display pictures of what your reading.
+* Smileys::   Show all those happy faces the way they were meant to be shown.
+* Toolbar::   Click'n'drool.
+* XVarious::  Other XEmacsy Gnusey variables.
+
+Picons
+
+* Picon Basics::           What are picons and How do I get them.
+* Picon Requirements::     Don't go further if you aren't using XEmacs.
+* Easy Picons::            Displaying Picons---the easy way.
+* Hard Picons::            The way you should do it.  You'll learn something.
+* Picon Useless Configuration:: Other variables you can trash/tweak/munge/play with.
+
+Appendices
+
+* History::                        How Gnus got where it is today.
+* On Writing Manuals::             Why this is not a beginner's guide.
+* Terminology::                    We use really difficult, like, words here.
+* Customization::                  Tailoring Gnus to your needs.
+* Troubleshooting::                What you might try if things do not work.
+* Gnus Reference Guide::           Rilly, rilly technical stuff.
+* Emacs for Heathens::             A short introduction to Emacsian terms.
+* Frequently Asked Questions::     A question-and-answer session.
+
+History
+
+* Gnus Versions::       What Gnus versions have been released.
+* Other Gnus Versions:: Other Gnus versions that also have been released.
+* Why?::                What's the point of Gnus?
+* Compatibility::       Just how compatible is Gnus with @sc{gnus}?
+* Conformity::          Gnus tries to conform to all standards.
+* Emacsen::             Gnus can be run on a few modern Emacsen.
+* Gnus Development::    How Gnus is developed.
+* Contributors::        Oodles of people.
+* New Features::        Pointers to some of the new stuff in Gnus.
+* Newest Features::     Features so new that they haven't been written yet.
+
+New Features
+
+* ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
+* September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
+* Red Gnus::           Third time best---Gnus 5.4/5.5.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6/5.7.
+
+Customization
+
+* Slow/Expensive Connection:: You run a local Emacs and get the news elsewhere.
+* Slow Terminal Connection::  You run a remote Emacs.
+* Little Disk Space::         You feel that having large setup files is icky.
+* Slow Machine::              You feel like buying a faster machine.
+
+Gnus Reference Guide
+
+* Gnus Utility Functions::   Common functions and variable to use.
+* Backend Interface::        How Gnus communicates with the servers.
+* Score File Syntax::        A BNF definition of the score file standard.
+* Headers::                  How Gnus stores headers internally.
+* Ranges::                   A handy format for storing mucho numbers.
+* Group Info::               The group info format.
+* Extended Interactive::     Symbolic prefixes and stuff.
+* Emacs/XEmacs Code::        Gnus can be run under all modern Emacsen.
+* Various File Formats::     Formats of files that Gnus use.
+
+Backend Interface
+
+* Required Backend Functions::        Functions that must be implemented.
+* Optional Backend Functions::        Functions that need not be implemented.
+* Error Messaging::                   How to get messages and report errors.
+* Writing New Backends::              Extending old backends.
+* Hooking New Backends Into Gnus::    What has to be done on the Gnus end.
+* Mail-like Backends::                Some tips on mail backends.
+
+Various File Formats
+
+* Active File Format::      Information on articles and groups available.
+* Newsgroups File Format::  Group descriptions.
+
+Emacs for Heathens
+
+* Keystrokes::      Entering text and executing commands.
+* Emacs Lisp::      The built-in Emacs programming language.
+
+@end detailmenu
 @end menu
 
 @node Starting Up
