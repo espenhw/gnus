@@ -1010,7 +1010,7 @@ FUNC will be called with the group name to determine the article number."
 	;; Copy the article into the work buffer.
 	(set-buffer nntp-server-buffer)
 	(erase-buffer)
-	(insert-buffer obuf)
+	(insert-buffer-substring obuf)
 	;; Narrow to headers.
 	(mail-narrow-to-head)
 	;; Decode MIME headers and charsets.
