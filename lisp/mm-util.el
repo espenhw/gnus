@@ -493,8 +493,8 @@ If the charset is `composition', return the actual one."
 	      (forward-char))
 	     (t
 	      (insert-before-markers (prog1 (+ c (car (cdr item)))
-				       (delete-char 1))))
-	    (skip-chars-forward "\0-\177"))))
+				       (delete-char 1)))))
+	    (skip-chars-forward "\0-\177")))
 	(not inconvertible))))
 
 (defun mm-sort-coding-systems-predicate (a b)
@@ -532,7 +532,8 @@ charset, and a longer list means no appropriate charset."
 	       (mapcar 'mm-mime-charset
 		       (delq 'ascii
 			     (mm-find-charset-region b e))))))
-    (if (and (memq 'iso-8859-15 charsets)
+    (if (and (> (length charsets) 1)
+	     (memq 'iso-8859-15 charsets)
 	     (memq 'iso-8859-15 hack-charsets)
 	     (save-excursion (mm-iso-8859-x-to-15-region b e)))
 	(mapcar (lambda (x) (setq charsets (delq (car x) charsets)))

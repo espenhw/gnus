@@ -1,3 +1,9 @@
+2003-01-06  Jesper Harder  <harder@ifa.au.dk>
+
+	* mm-util.el (mm-find-mime-charset-region): Don't do Latin-9 hack
+	if we don't need to.
+	(mm-iso-8859-x-to-15-region): Fix misplaced parenthesis.
+
 2003-01-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-group.el (gnus-group-make-web-group): Pass the select
