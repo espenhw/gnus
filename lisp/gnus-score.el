@@ -1299,7 +1299,7 @@ SCORE is the score to add."
 	 (progn
 	   (insert last ?\n)			
 	   (put-text-property (1- (point)) (point) 'articles alike)))
-  
+
     ;; Find ordinary matches.
     (setq scores score-list) 
     (while scores
@@ -1325,8 +1325,10 @@ SCORE is the score to add."
 	       arts art)
 	  (if (= dmt ?f)
 	      (setq fuzzy t)
+	    ;; Do non-fuzzy matching.
 	    (goto-char (point-min))
 	    (if (= dmt ?e)
+		;; Do exact matching.
 		(while (and (not (eobp)) 
 			    (funcall search-func match nil t))
 		  (and (= (progn (beginning-of-line) (point))
@@ -1354,6 +1356,7 @@ SCORE is the score to add."
 				   arts (cdr arts))
 			     (setcdr art (+ score (cdr art)))))))
 		  (forward-line 1))
+	      ;; Do regexp and substring matching.
 	      (and (string= match "") (setq match "\n"))
 	      (while (and (not (eobp))
 			  (funcall search-func match nil t))

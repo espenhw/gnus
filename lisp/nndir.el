@@ -116,7 +116,7 @@
 (defun nndir-request-expire-articles 
   (articles group &optional server force)
   (nndir-execute-nnmh-command
-   (` (nnmh-request-expire-articles (, articles) group
+   (` (nnmh-request-expire-articles (quote (, articles)) group
 				    (, server) (, force)))))
 
 (defun nndir-request-accept-article (group &optional last)

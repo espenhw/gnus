@@ -128,10 +128,22 @@ running (\"xwatch\", etc.)
 
 Eg.
 
-(add-hook 'nnmail-read-incoming-hook 
+\(add-hook 'nnmail-read-incoming-hook 
 	   (lambda () 
 	     (start-process \"mailsend\" nil 
-			    \"/local/bin/mailsend\" \"read\" \"mbox\")))")
+			    \"/local/bin/mailsend\" \"read\" \"mbox\")))
+
+If you have xwatch running, this will alert it that mail has been
+read.  
+
+If you use `display-time', you could use something like this:
+
+\(add-hook 'nnmail-read-incoming-hook
+	  (lambda ()
+	    ;; Update the displayed time, since that will clear out
+	    ;; the flag that says you have mail.
+	    (if (eq (process-status \"display-time\") 'run)
+		(display-time-filter display-time-process \"\"))))") 
 
 ;; Suggested by Erik Selberg <speed@cs.washington.edu>.
 (defvar nnmail-prepare-incoming-hook nil

@@ -164,7 +164,6 @@ instead call function `nntp-status-message' to get status message.")
 (defvar nntp-server-xover 'try)
 (defvar nntp-server-list-active-group 'try)
 (defvar nntp-current-group "")
-(defvar nntp-timeout-servers nil)
 
 (defvar nntp-async-process nil)
 (defvar nntp-async-buffer nil)
@@ -355,10 +354,8 @@ instead call function `nntp-status-message' to get status message.")
     (setq nntp-current-server server)
     (or (nntp-server-opened server)
 	(progn
-	  (if (member nntp-address nntp-timeout-servers)
-	      nil
-	    (run-hooks 'nntp-prepare-server-hook)
-	    (nntp-open-server-semi-internal nntp-address nntp-port-number))))))
+	  (run-hooks 'nntp-prepare-server-hook)
+	  (nntp-open-server-semi-internal nntp-address nntp-port-number)))))
 
 (defun nntp-close-server (&optional server)
   "Close connection to SERVER."
@@ -373,8 +370,7 @@ instead call function `nntp-status-message' to get status message.")
 	;; We cannot send QUIT command unless the process is running.
 	(if (nntp-server-opened)
 	    (nntp-send-command nil "QUIT")))
-    (nntp-close-server-internal server)
-    (setq nntp-timeout-servers (delete server nntp-timeout-servers))))
+    (nntp-close-server-internal server)))
 
 (defalias 'nntp-request-quit (symbol-function 'nntp-close-server))
 
@@ -418,7 +414,6 @@ instead call function `nntp-status-message' to get status message.")
 	   (kill-buffer proc))
       (setq nntp-server-alist (cdr nntp-server-alist)))
     (setq nntp-current-server nil
-	  nntp-timeout-servers nil
 	  nntp-async-group-alist nil)))
 
 (defun nntp-server-opened (&optional server)
@@ -674,7 +669,6 @@ It will prompt for a password."
 			   (assoc server nntp-server-alist)))))
     (and proc (delete-process (process-name proc)))
     (nntp-close-server server)
-    (setq nntp-timeout-servers (cons server nntp-timeout-servers))
     (setq nntp-status-string 
 	  (message "Connection timed out to server %s." server))
     (ding)
@@ -1068,8 +1062,7 @@ If SERVICE, this this as the port number."
 	     (setq nntp-status-string "NNTP server is not specified."))
 	    (t				; We couldn't open the server.
 	     (setq nntp-status-string 
-		   (buffer-substring (point-min) (point-max)))
-	     (setq nntp-timeout-servers (cons server nntp-timeout-servers))))
+		   (buffer-substring (point-min) (point-max)))))
       (and timer (cancel-timer timer))
       (message "")
       (or status

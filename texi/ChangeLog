@@ -1,3 +1,10 @@
+Mon Oct  2 10:01:19 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Unavailable Servers): New.
+	(Article Backlog): New.
+	(Mail & Post): Addition.
+	(Saving Articles): Addition.
+
 Mon Sep 25 00:28:32 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Group Maintenance): Change.

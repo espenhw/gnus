@@ -548,7 +548,9 @@ groups matched by the current score file.")
       (if entry 
 	  (mapcar 'gnus-score-custom-sanify (cdr entry))
 	(setq entry (assoc name gnus-score-alist))
-	(if (memq name '(files exclude-files local adapt))
+	(if  (or (memq name '(files exclude-files local))
+		 (and (eq name 'adapt)
+		      (not (symbolp (car (cdr entry))))))
 	    (cdr entry)
 	  (car (cdr entry)))))))
 

@@ -30,7 +30,7 @@
 (defvar gnus-group-topic-face 'bold
   "*Face used to highlight topic headers.")
 
-(defvar gnus-group-topics '(("misc" "." nil))
+(defvar gnus-group-topics '(("no" "^no" nil) ("misc" "." nil))
   "*Alist of newsgroup topics.
 This alist has entries of the form
 
@@ -47,6 +47,9 @@ number.")
 (defvar gnus-group-topic-topics-only nil
   "*If non-nil, only the topics will be shown when typing `l' or `L'.")
 
+(defvar gnus-topic-unique t
+  "*If non-nil, each group will only belong to one topic.")
+
 ;; Internal variables.
 
 (defvar gnus-topics-not-listed nil)
@@ -54,6 +57,7 @@ number.")
 ;; Functions.
 
 (defun gnus-group-topic-name ()
+  "The name of the topic on the current line."
   (get-text-property (gnus-point-at-bol) 'gnus-topic))
 
 (defun gnus-group-prepare-topics (level &optional all lowest regexp)
@@ -63,7 +67,8 @@ If ALL is non-nil, list groups that have no unread articles.
 If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
   (set-buffer gnus-group-buffer)
   (let ((buffer-read-only nil)
-        (lowest (or lowest 1)))
+        (lowest (or lowest 1))
+	tlist info)
     
     (erase-buffer)
     
@@ -80,14 +85,16 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
     
     ;; Use topics
     (if (< lowest 8)
-        (let ((topics gnus-group-topics)
+        (let ((topics (gnus-topic-find-groups))
               topic how)
           (erase-buffer)
           (while topics
             (setq topic (car (car topics))
-                  how (nth 2 (car topics))
+		  tlist (cdr (car topics))
+                  how (nth 2 (assoc topic gnus-group-topics))
                   topics (cdr topics))
 
+	    ;; Insert the topic.
             (add-text-properties 
 	     (point)
 	     (progn
@@ -97,10 +104,21 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 		   'face gnus-group-topic-face
 		   'gnus-topic topic))
 
+	    ;; We insert the groups for the topics we want to have. 
             (if (and (or (and (not how) (not gnus-group-topic-topics-only))
 			 (and how (not (numberp how))))
 		     (not (member topic gnus-topics-not-listed)))
-		(gnus-topic-insert-topic topic level all lowest t)
+		(progn
+		  (setq gnus-topics-not-listed
+			(delete topic gnus-topics-not-listed))
+		  (setq tlist (nreverse tlist))
+		  (while tlist
+		    (setq info (car tlist))
+		    (gnus-group-insert-group-line 
+		     nil (car info) (car (cdr info)) (nth 3 info) 
+		     (car (gnus-gethash (car info) gnus-newsrc-hashtb))
+		     (nth 4 info))
+		    (setq tlist (cdr tlist))))
 	      (setq gnus-topics-not-listed
 		    (cons topic gnus-topics-not-listed)))))))
 
@@ -108,36 +126,47 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
   (setq gnus-group-list-mode (cons level all))
   (run-hooks 'gnus-group-prepare-hook))
 
-(defun gnus-topic-insert-topic (topic level &optional all lowest m)
-  "Insert all groups matching TOPIC with unread articles of level LEVEL or lower.
-If ALL is non-nil, list groups that have no unread articles.  If
-LOWEST is non-nil, list all newsgroups of level LOWEST or higher.  If
-M is non-nil, nothing will be inserted, but only
-`gnus-group-listed-topics' will be changed."
-  (let ((buffer-read-only nil)
-        (regexp (car (cdr (assoc topic gnus-group-topics))))
-        (newsrc (cdr gnus-newsrc-alist))
-        info clevel unread group w)
+(defun gnus-topic-find-groups ()
+  (let ((newsrc (cdr gnus-newsrc-alist))
+	(topics (mapcar (lambda (e) (list (car e)))
+			gnus-group-topics))
+        info clevel unread group w lowest level all gtopic)
     (setq lowest (or lowest 1))
+    ;; We go through the newsrc to look for matches.
     (while newsrc
       (setq info (car newsrc)
             group (car info)
             newsrc (cdr newsrc)
             unread (car (gnus-gethash group gnus-newsrc-hashtb)))
-      (and unread
-           (string-match regexp group)
-           (<= (setq clevel (car (cdr info))) level)
-           (>= clevel lowest)
-           (or all
-               (eq unread t)
-               (> unread 0)
-               (cdr (assq 'tick (nth 3 info))))
-           (progn
-	     (gnus-group-insert-group-line 
-	      nil group (car (cdr info)) (nth 3 info) unread 
-	      (nth 4 info))
-	     (setq gnus-topics-not-listed
-		   (delete topic gnus-topics-not-listed)))))))
+      (and 
+       unread				; nil means that the group is dead.
+       (<= (setq clevel (car (cdr info))) level) 
+       (>= clevel lowest)		; Is inside the level we want.
+       (or all
+	   (eq unread t)
+	   (> unread 0)
+	   (cdr (assq 'tick (nth 3 info)))) ; Has right readedness.
+       (progn
+	 ;; So we find out what topic this group belongs to.  First we
+	 ;; check the group parameters.
+	 (setq gtopic (cdr (assq 'topic (nth 5 info))))
+	 ;; On match, we add it.
+	 (and (stringp gtopic) 
+	      (if (setq e (assoc gtopic topics))
+		  (setcdr e (cons info (cdr e)))
+		(setq topics (cons (list gtopic info) topics))))
+	 ;; We look through the topic alist for further matches, if
+	 ;; needed.  
+	 (if (or (not gnus-topic-unique) (not (stringp gtopic)))
+	     (let ((ts gnus-group-topics))
+	       (while ts
+		 (if (string-match (nth 1 (car ts)) group)
+		     (progn
+		       (setcdr (setq e (assoc (car (car ts)) topics))
+			       (cons info (cdr e)))
+		       (and gnus-topic-unique (setq ts nil))))
+		 (setq ts (cdr ts))))))))
+    topics))
 
 (defun gnus-topic-remove-topic ()
   (let ((topic (gnus-group-topic-name))

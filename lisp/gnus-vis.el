@@ -290,9 +290,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
    (boundp 'gnus-group-reading-menu)
    (progn
      (easy-menu-define
-      gnus-group-reading-menu
-      gnus-group-mode-map
-      ""
+      gnus-group-reading-menu gnus-group-mode-map ""
       '("Group"
 	["Read" gnus-group-read-group t]
 	["Select" gnus-group-select-group t]
@@ -312,9 +310,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 	))
   
      (easy-menu-define
-      gnus-group-group-menu
-      gnus-group-mode-map
-      ""
+      gnus-group-group-menu gnus-group-mode-map ""
       '("Groups"
 	("Listing"
 	 ["List subscribed groups" gnus-group-list-groups t]
@@ -358,9 +354,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 	))
 
      (easy-menu-define
-      gnus-group-misc-menu
-      gnus-group-mode-map
-      ""
+      gnus-group-misc-menu gnus-group-mode-map ""
       '("Misc"
 	["Send a bug report" gnus-bug t]
 	["Send a mail" gnus-group-mail t]
@@ -395,9 +389,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
    (boundp 'gnus-server-menu)
    (progn
      (easy-menu-define
-      gnus-server-menu
-      gnus-server-mode-map
-      ""
+      gnus-server-menu gnus-server-mode-map ""
       '("Server"
 	["Add" gnus-server-add-server t]
 	["Browse" gnus-server-read-server t]
@@ -408,8 +400,17 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 	["Edit" gnus-server-edit-server t]
 	["Exit" gnus-server-exit t]
 	))
-     (run-hooks 'gnus-server-menu-hook)
-     )))
+
+     (easy-menu-define
+      gnus-server-menu gnus-server-mode-map ""
+      '("Connections"
+	["Open" gnus-server-open-server t]
+	["Close" gnus-server-close-server t]
+	["Deny" gnus-server-deny-servers t]
+	["Reset" gnus-server-remove-denials t]
+	))
+
+     (run-hooks 'gnus-server-menu-hook))))
 
 ;; Browse mode
 (defun gnus-browse-make-menu-bar ()
@@ -418,16 +419,13 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
    (boundp 'gnus-browse-menu)
    (progn
      (easy-menu-define
-      gnus-browse-menu
-      gnus-browse-mode-map
-      ""
+      gnus-browse-menu gnus-browse-mode-map ""
       '("Browse"
 	["Subscribe" gnus-browse-unsubscribe-current-group t]
 	["Read" gnus-group-read-group t]
 	["Exit" gnus-browse-exit t]
 	))
-      (run-hooks 'gnus-browse-menu-hook)
-      )))
+      (run-hooks 'gnus-browse-menu-hook))))
 
 
 ;; Summary buffer
@@ -439,9 +437,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
    (progn
 
      (easy-menu-define
-      gnus-summary-misc-menu
-      gnus-summary-mode-map
-      ""
+      gnus-summary-misc-menu gnus-summary-mode-map ""
       '("Misc"
 	("Mark"
 	 ("Read"
@@ -515,9 +511,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 	))
 
      (easy-menu-define
-      gnus-summary-kill-menu
-      gnus-summary-mode-map
-      ""
+      gnus-summary-kill-menu gnus-summary-mode-map ""
       (cons
        "Score"
        (nconc
@@ -648,9 +642,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 	    ))
 
      (easy-menu-define
-      gnus-summary-article-menu
-      gnus-summary-mode-map
-      ""
+      gnus-summary-article-menu gnus-summary-mode-map ""
       '("Article"
 	("Hide"
 	 ["All" gnus-article-hide t]
@@ -716,9 +708,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 
 	 
      (easy-menu-define
-      gnus-summary-thread-menu
-      gnus-summary-mode-map
-      ""
+      gnus-summary-thread-menu gnus-summary-mode-map ""
       '("Threads"
 	["Toggle threading" gnus-summary-toggle-threads t]
 	["Display hidden thread" gnus-summary-show-thread t]
@@ -731,10 +721,9 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 	["Lower thread score" gnus-summary-lower-thread t]
 	["Raise thread score" gnus-summary-raise-thread t]
 	))
+
      (easy-menu-define
-      gnus-summary-post-menu
-      gnus-summary-mode-map
-      ""
+      gnus-summary-post-menu gnus-summary-mode-map ""
       '("Post"
 	["Post an article" gnus-summary-post-news t]
 	["Followup" gnus-summary-followup t]
@@ -906,9 +895,7 @@ If nil, the user will be asked for a duration.")
    (boundp 'gnus-article-article-menu)
    (progn
      (easy-menu-define
-      gnus-article-article-menu
-      gnus-article-mode-map
-      ""
+      gnus-article-article-menu gnus-article-mode-map ""
       '("Article"
 	["Scroll forwards" gnus-article-next-page t]
 	["Scroll backwards" gnus-article-prev-page t]
@@ -918,9 +905,7 @@ If nil, the user will be asked for a duration.")
 	))
 
      (easy-menu-define
-      gnus-article-treatment-menu
-      gnus-article-mode-map
-      ""
+      gnus-article-treatment-menu gnus-article-mode-map ""
       '("Treatment"
 	["Hide headers" gnus-article-hide-headers t]
 	["Hide signature" gnus-article-hide-signature t]
@@ -929,8 +914,7 @@ If nil, the user will be asked for a duration.")
 	["Remove carriage return" gnus-article-remove-cr t]
 	["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]
 	))
-     (run-hooks 'gnus-article-menu-hook)
-     )))
+     (run-hooks 'gnus-article-menu-hook))))
 
 ;;;
 ;;; summary highlights

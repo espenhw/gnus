@@ -106,11 +106,10 @@ face.")
 		 ((tag . "Article Display")
 		  (doc . "Controls how the article buffer will look.
 
-The list below contains various filters you can use to change the look
-of the article.  If you leave the list empty, the article will appear
-exactly as it is stored on the disk.  The list entries will hide or
-highlight various parts of the article, making it easier to find the
-information you want.")
+If you leave the list empty, the article will appear exactly as it is
+stored on the disk.  The list entries will hide or highlight various
+parts of the article, making it easier to find the information you
+want.")
 		  (name . gnus-article-display-hook)
 		  (type . list)
 		  (default . (gnus-article-hide-headers-if-wanted

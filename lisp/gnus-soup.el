@@ -299,16 +299,19 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
 	  (set-buffer buf)
 	  (and (buffer-modified-p) (save-buffer))
 	  (kill-buffer (current-buffer)))))
-    (let ((prefix gnus-soup-last-prefix))
-      (while prefix
-	(gnus-set-work-buffer)
-	(insert (format "(setq gnus-soup-prev-prefix %d)\n" 
-			(cdr (car prefix))))
-	(write-region (point-min) (point-max)
-		      (concat (car (car prefix)) 
-			      gnus-soup-prefix-file) 
-		      nil 'nomesg)
-	(setq prefix (cdr prefix))))))
+    (gnus-soup-write-prefixes)))
+
+(defun gnus-soup-write-prefixes ()
+  (let ((prefix gnus-soup-last-prefix))
+    (while prefix
+      (gnus-set-work-buffer)
+      (insert (format "(setq gnus-soup-prev-prefix %d)\n" 
+		      (cdr (car prefix))))
+      (write-region (point-min) (point-max)
+		    (concat (car (car prefix)) 
+			    gnus-soup-prefix-file) 
+		    nil 'nomesg)
+      (setq prefix (cdr prefix)))))
 
 (defun gnus-soup-pack (dir packer)
   (let* ((files (mapconcat 'identity
@@ -472,6 +475,7 @@ file. The vector contain three strings, [prefix name encoding]."
 	    (cons (setq entry (cons dir (or gnus-soup-prev-prefix 0)))
 		  gnus-soup-last-prefix)))
     (setcdr entry (1+ (cdr entry)))
+    (gnus-soup-write-prefixes)
     (int-to-string (cdr entry))))
 
 (defun gnus-soup-unpack-packet (dir unpacker packet)

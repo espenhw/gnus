@@ -1,9 +1,95 @@
+Wed Oct  4 12:28:04 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* x-easymenu.el: Included twice.
+
+Mon Oct  2 08:23:30 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-soup.el (gnus-soup-write-prefixes): New function.
+
+	* gnus.el (gnus-group-make-directory-group): Create better group
+	names. 
+	(gnus-summary-toggle-header): More correct implementation.
+
+	* nneething.el (nneething-map-file): Would bug out if the map dir
+	exists. 
+
+	* gnus.el (gnus-saved-headers): New variable.
+
+	* gnus-msg.el (gnus-news-followup): Do X-Mail-Copy handling.
+
+	* gnus-topic.el (gnus-topic-insert-topic): Use `topic' local
+	params. 
+
+	* gnus.el (gnus-group-update-group): New implementation.
+
+	* gnus-msg.el (gnus-mailing-list-groups): New variable.
+
+	* gnus.el (gnus-open-server): Deny or allow opening based on
+	previous successes.
+	(gnus-server-open-server): New command and keystroke.
+	(gnus-server-close-server): Ditto.
+	(gnus-server-deny-server): Ditto.
+	(gnus-backlog-enter-article): New function.
+	(gnus-backlog-remove-oldest-article): New function.
+	(gnus-backlog-request-article): New function.
+	(gnus-request-article-this-buffer): Use the backlog.
+	(gnus-keep-backlog): New variable.
+
+	* nntp.el: Removed all `nntp-timeout-servers' code. 
+
+Sun Oct  1 11:40:58 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-score-find-bnews): Would sometimes add the local
+	score file twice.
+
+Thu Sep 28 21:10:44 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el (gnus-article-treat-overstrike): Fixed range error for
+	the letter backspace underscore case. 
+
+Wed Sep 27 17:28:31 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-msg.el (gnus-inews-insert-mime-headers): Allow it to be
+	called in the compose buffer.
+
+Sun Oct  1 10:26:26 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-copy-article): Would bug out on
+	respooling. 
+
+	* nndir.el (nndir-request-expire-articles): Couldn't expire
+	articles. 
+
+	* gnus.el (gnus-group-make-group): Returned nil.
+
+	* gnus-msg.el (gnus-post-news): Couldn't post from the group
+	buffer. 
+
+Wed Sep 27 14:53:36 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-edit.el (gnus-score-custom-get): Setting adapt to an atom
+	didn't work.  Reported by kchrist@lochness.ncrmicro.ncr.com (Kevin
+	Christian). 
+
+Sun Oct  1 09:34:18 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-message-of): New function.
+
+	* gnus.el (gnus-get-newsgroup-headers): Don't set references to
+	"none". 
+	(gnus-summary-prepare-threads): Would output the subject several
+	times when dummying.
+	(gnus-get-newsgroup-headers): Would never find the first header in
+	each head.
+
 Sat Sep 30 05:05:57 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
 
 	* gnus-msg.el (gnus-news-followup): Insert signature before
 	composing. 
 
 Fri Sep 29 05:33:01 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus.el: 0.5 is released.
 
 	* gnus.el (gnus-article-mode-map): Took out boogaboo.
 

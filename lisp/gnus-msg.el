@@ -122,6 +122,12 @@ message in, you can set this variable to a function that checks the
 current newsgroup name and then returns a suitable group name (or list
 of names).")
 
+(defvar gnus-mailing-list-groups nil
+  "*Regexp matching groups that are really mailing lists.
+This is useful when you're reading a mailing list that has been
+gatewayed to a newsgroup, and you want to followup to an article in
+the group.")
+
 (defvar gnus-draft-group-directory 
   (expand-file-name
    (concat (file-name-as-directory gnus-article-save-directory)
@@ -344,6 +350,7 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
 		       "Do you want to ignore `Followup-To: poster'? "))))
 	;; Mail to the poster. 
 	(gnus-summary-reply yank)
+      ;; Send a followup.
       (gnus-post-news nil gnus-newsgroup-name
 		      headers gnus-article-buffer 
 		      (or yank-articles (not (not yank)))))))
@@ -358,7 +365,7 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
   "Compose a followup and do an auto mail to author."
   (interactive "P")
   (gnus-set-global-variables)
-  (let ((gnus-auto-mail-to-author t))
+  (let ((gnus-auto-mail-to-author 'force))
     (gnus-summary-followup yank yank-articles)))
 
 (defun gnus-summary-followup-and-reply-with-original (n)
@@ -451,14 +458,22 @@ Type \\[describe-mode] in the buffer to get a list of commands."
   (interactive (list t))
   (let* ((group (or group gnus-newsgroup-name))
 	 (to-address 
-	  (cdr (assq 
-		'to-address 
-		(nth 5 (nth 2 (gnus-gethash group gnus-newsrc-hashtb)))))))
+	  (and group
+	       (cdr (assq 
+		     'to-address 
+		     (nth 5 (nth 2 (gnus-gethash 
+				    group gnus-newsrc-hashtb)))))))
+	 (mailing-list
+	  (and group gnus-mailing-list-groups
+	       (string-match gnus-mailing-list-groups group))))
     (if (and (gnus-member-of-valid 'post (or group gnus-newsgroup-name))
+	     (not mailing-list)
 	     (not to-address))
+	;; This is news.
 	(if post
 	    (gnus-new-news group)
 	  (gnus-news-followup yank group))
+      ;; The is mail.
       (if post
 	  (progn
 	    (gnus-new-mail to-address)
@@ -553,8 +568,16 @@ will attempt to use the foreign server to post the article."
 	  (gnus-inews-narrow-to-headers)
 	  (nnheader-remove-header "fcc")
 
+	  ;; Insert the X-Courtesy-Message header.
+	  (and (or (member "to" types)
+		   (member "cc" types))
+	       (progn
+		(goto-char (point-max))
+		(insert "X-Courtesy-Message: " 
+			(mail-fetch-field "newsgroups"))))
+
 	  (widen)
-	    
+	  
 	  (if (and gnus-mail-courtesy-message
 		   (or (member "to" types)
 		       (member "cc" types)))
@@ -1132,11 +1155,19 @@ nil."
 
 ;; Written by "Mr. Per Persson" <pp@solace.mh.se>.
 (defun gnus-inews-insert-mime-headers ()
-  (let ((mail-header-separator ""))
+  (goto-char (point-min))
+  (let ((mail-header-separator 
+	 (progn 
+	   (goto-char (point-min))
+	   (if (and (search-forward (concat "\n" mail-header-separator "\n")
+				    nil t)
+		    (not (search-backward "\n\n" nil t)))
+	       mail-header-separator
+	     ""))))
     (or (mail-position-on-field "Mime-Version")
 	(insert "1.0")
-	(cond ((save-excursion
-		 (beginning-of-buffer)
+	(cond ((progn
+		 (goto-char (point-min))
 		 (re-search-forward "[\200-\377]" nil t))
 	       (or (mail-position-on-field "Content-Type")
 		   (insert "text/plain; charset=ISO-8859-1"))
@@ -1442,7 +1473,8 @@ mailer."
 (defun gnus-new-mail (&optional to)
   (pop-to-buffer gnus-mail-buffer)
   (erase-buffer)
-  (gnus-mail-setup to nil nil nil nil nil))
+  (gnus-mail-setup to nil nil nil nil nil)
+  (gnus-inews-modify-mail-mode-map))
 
 (defun gnus-mail-reply (&optional yank to-address followup)
   (save-excursion
@@ -1479,12 +1511,7 @@ mailer."
 	    (setq from (mail-fetch-field "from"))
 	    (setq date (or (mail-fetch-field "date") 
 			   (mail-header-date gnus-current-headers)))
-	    (and from
-		 (let ((stop-pos 
-			(string-match "  *at \\|  *@ \\| *(\\| *<" from)))
-		   (setq message-of
-			 (concat (if stop-pos (substring from 0 stop-pos) from)
-				 "'s message of " date))))
+	    (setq message-of (gnus-message-of from date))
 	    (setq sender (mail-fetch-field "sender"))
 	    (setq subject (or (mail-fetch-field "subject") "none"))
 	    ;; Remove any (buggy) Re:'s that are present and make a
@@ -1640,13 +1667,7 @@ mailer."
 	      (setq from (mail-fetch-field "from"))
 	      (setq date (or (mail-fetch-field "date") 
 			     (mail-header-date gnus-current-headers)))
-	      (and from
-		   (let ((stop-pos 
-			  (string-match "  *at \\|  *@ \\| *(\\| *<" from)))
-		     (setq message-of
-			   (concat 
-			    (if stop-pos (substring from 0 stop-pos) from)
-			    "'s message of " date))))
+	      (setq message-of (gnus-message-of from date))
 	      (setq subject (or (mail-fetch-field "subject") "none"))
 	      ;; Remove any (buggy) Re:'s that are present and make a
 	      ;; proper one.
@@ -1727,7 +1748,18 @@ mailer."
 			(or (save-excursion
 			      (set-buffer gnus-article-copy)
 			      (gnus-fetch-field "reply-to"))
-			    from))))
+			    from)))
+		(x-mail (save-excursion
+			  (set-buffer gnus-article-copy)
+			  (gnus-fetch-field "x-mail-copy-to"))))
+	    ;; Deny sending copy if there's a negative X-Mail-Copy-To
+	    ;; header. 
+	    (if x-mail
+		(if (and (string= xmail "never")
+			 (not (eq gnus-auto-mail-to-author 'force)))
+		    (setq to nil)
+		  (setq to x-mail)))
+	    ;; Insert a To or Cc header.
 	    (if to
 		(if (mail-fetch-field "To")
 		    (progn
@@ -1784,6 +1816,19 @@ mailer."
 	  (make-local-variable 'gnus-article-check-size)
 	  (setq gnus-article-check-size
 		(cons (buffer-size) (gnus-article-checksum))))))))
+
+(defun gnus-message-of (from date)
+  "Take a FROM and a DATE and create an IN-REPLY-TO."
+  (cond 
+   ((not from)
+    nil)
+   (t
+    (let ((stop-pos 
+	   (string-match "  *at \\|  *@ \\| *(\\| *<" from)))
+      (concat (if stop-pos (substring from 0 stop-pos) from)
+	      "'s message of " 
+	      (if (or (not date) (string= date ""))
+		  "(unknown date)" date))))))
 
 (defun gnus-mail-yank-original ()
   (interactive)
@@ -2271,7 +2316,7 @@ Headers will be generated before sending."
 	   (`
 	    (lambda ()
 	      (gnus-request-expire-articles 
-	       (, (list (cdr gnus-article-current)))
+	       (quote (, (list (cdr gnus-article-current))))
 	       (, gnus-newsgroup-name) t)))))
     ;; Insert the draft.
     (insert-buffer-substring gnus-article-buffer)

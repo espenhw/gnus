@@ -284,19 +284,6 @@ The SOUP packet file name will be inserted at the %s.")
   (nnsoup-store-reply "mail")
   t)
 
-(defun nnsoup-request-post-buffer (post group &rest args)
-  (nnsoup-possibly-change-group group)
-  (apply
-   ;; Find out whether the source for this group is a mail or a news
-   ;; group and call the right function for getting a buffer.
-   (let ((enc (nth 1 (car (cdr (assoc nnsoup-current-group
-				      nnsoup-group-alist))))))
-     (if (and enc
-	      (= (gnus-soup-encoding-kind (gnus-soup-area-encoding enc)) ?m))
-	 'nnmail-request-post-buffer 
-       'nntp-request-post-buffer))
-   post group args))
-
 
 ;;; Internal functions
 
