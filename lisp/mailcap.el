@@ -286,11 +286,42 @@ not.")
 	(write-region (point-min) (point-max) file))
     (kill-buffer (current-buffer))))
 
+(defvar mailcap-maybe-eval-warning
+  "*** WARNING ***
+
+This MIME part contains untrusted and possibly harmful content.  
+If you evaluate the Emacs Lisp code contained in it, a lot of nasty
+things can happen.  Please examine the code very carefully before you
+instruct Emacs to evaluate it.  You can browse the buffer containing
+the code using \\[scroll-other-window].
+
+If you are unsure what to do, please answer \"no\"."
+  "Text of warning message displayed by `mailcap-maybe-eval'.
+Make sure that this text consists only of few text lines.  Otherwise,
+Gnus might fail to display all of it.")
+  
 (defun mailcap-maybe-eval ()
   "Maybe evaluate a buffer of emacs lisp code."
-  (if (yes-or-no-p "This is emacs-lisp code, evaluate it? ")
-      (eval-buffer (current-buffer))
-    (emacs-lisp-mode)))
+  (let ((lisp-buffer (current-buffer)))
+    (when
+ 	(goto-char (point-min))
+	(save-window-excursion
+	  (delete-other-windows)
+	  (let ((buffer (get-buffer-create (generate-new-buffer-name
+					    "*Warning*"))))
+	    (unwind-protect
+		(with-current-buffer buffer
+		  (insert (substitute-command-keys 
+			   mailcap-maybe-eval-warning))
+		  (goto-char (point-min))
+		  (display-buffer buffer)
+		  (yes-or-no-p "This is emacs-lisp code, evaluate it? "))
+	      (kill-buffer buffer))))
+      (eval-buffer (current-buffer)))
+    (when (buffer-live-p lisp-buffer)
+      (with-current-buffer lisp-buffer
+	(emacs-lisp-mode)))))
+
 
 ;;;
 ;;; The mailcap parser

@@ -1,3 +1,16 @@
+2000-05-06  Florian Weimer  <fw@deneb.cygnus.argh.org>
+
+	* gnus-uu.el (gnus-uu-unshar-warning): New variable.
+	(gnus-uu-unshar-article): Use it.
+
+	* mailcap.el (mailcap-maybe-eval-warning): New variable.
+	(mailcap-maybe-eval): Use it.
+
+	* gnus-msg.el (gnus-group-posting-charset-alist): Speling mistake
+	in docstring.
+
+	* mml.el (mml-generate-mime-1): Small comment.
+
 2000-05-05 12:27:53  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (article-de-base64-unreadable): New function.

@@ -1481,6 +1481,21 @@ When called interactively, prompt for REGEXP."
 	  (cons (if (= (length files) 1) (car files) files) state)
 	state))))
 
+(defvar gnus-uu-unshar-warning
+  "*** WARNING ***
+
+Shell archives are an archaic method of bundling files for distribution
+across computer networks.  During the unpacking process, arbitrary commands
+are executed on your system, and all kinds of nasty things can happen.
+Please examine the archive very carefully before you instruct Emacs to
+unpack it.  You can browse the archive buffer using \\[scroll-other-window].
+
+If you are unsure what to do, please answer \"no\"."
+  "Text of warning message displayed by `gnus-uu-unshar-article'.
+Make sure that this text consists only of few text lines.  Otherwise,
+Gnus might fail to display all of it.")
+
+
 ;; This function is used by `gnus-uu-grab-articles' to treat
 ;; a shared article.
 (defun gnus-uu-unshar-article (process-buffer in-state)
@@ -1491,14 +1506,31 @@ When called interactively, prompt for REGEXP."
       (goto-char (point-min))
       (if (not (re-search-forward gnus-uu-shar-begin-string nil t))
 	  (setq state (list 'wrong-type))
-	(beginning-of-line)
-	(setq start-char (point))
-	(call-process-region
-	 start-char (point-max) shell-file-name nil
-	 (gnus-get-buffer-create gnus-uu-output-buffer-name) nil
-	 shell-command-switch
-	 (concat "cd " gnus-uu-work-dir " "
-		 gnus-shell-command-separator  " sh"))))
+	(save-window-excursion
+	  (save-excursion
+	    (switch-to-buffer (current-buffer))
+	    (delete-other-windows)
+	    (let ((buffer (get-buffer-create (generate-new-buffer-name
+					      "*Warning*"))))
+	      (unless
+		  (unwind-protect
+		      (with-current-buffer buffer
+			(insert (substitute-command-keys 
+				 gnus-uu-unshar-warning))
+			(goto-char (point-min))
+			(display-buffer buffer)
+			(yes-or-no-p "This is a shell archive, unshar it? "))
+		    (kill-buffer buffer))
+		(setq state (list 'error))))))
+	(unless (memq 'error state)
+	  (beginning-of-line)
+	  (setq start-char (point))
+	  (call-process-region
+	   start-char (point-max) shell-file-name nil
+	   (gnus-get-buffer-create gnus-uu-output-buffer-name) nil
+	   shell-command-switch
+	   (concat "cd " gnus-uu-work-dir " "
+		   gnus-shell-command-separator  " sh")))))
     state))
 
 ;; Returns the name of what the shar file is going to unpack.

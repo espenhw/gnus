@@ -355,6 +355,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
         (let ((mml-boundary (mml-compute-boundary cont)))
           (insert (format "Content-Type: multipart/%s; boundary=\"%s\"\n"
                           type mml-boundary))
+	  ;; Skip `multipart' and `type' elements.
           (setq cont (cddr cont))
           (while cont
             (insert "\n--" mml-boundary "\n")

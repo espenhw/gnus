@@ -116,7 +116,7 @@ BODY-LIST is a list of charsets which may be encoded using 8bit
 content-transfer encoding in the body, or one of the special values
 nil (always encode using quoted-printable) or t (always use 8bit).
 
-Note that any value other tha nil for HEADER infringes some RFCs, so
+Note that any value other than nil for HEADER infringes some RFCs, so
 use this option with care."
   :type '(repeat (list :tag "Permitted unencoded charsets"
 		  (choice :tag "Where"
