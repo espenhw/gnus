@@ -40,23 +40,13 @@
 ;;; Functions for displaying various formats inline
 ;;;
 (defun mm-inline-image-emacs (handle)
-  (let ((b (point))
-	(overlay nil)
-	(string (copy-sequence "[MM-INLINED-IMAGE]"))
+  (let ((b (point-marker))
 	buffer-read-only)
     (insert "\n")
-    (buffer-name)
-    (setq overlay (make-overlay (point) (point) (current-buffer)))
-    (put-text-property 0 (length string) 'display (mm-get-image handle) string)
-    (overlay-put overlay 'before-string string)
-
+    (put-image (mm-get-image handle) b "x")
     (mm-handle-set-undisplayer
      handle
-     `(lambda ()
-	(let (buffer-read-only)
-	  (delete-overlay ,overlay)
-	  (delete-region ,(set-marker (make-marker) b)
-			 ,(set-marker (make-marker) (point))))))))
+     `(lambda () (remove-images ,b (1+ ,b))))))
 
 (defun mm-inline-image-xemacs (handle)
   (let ((b (point))
