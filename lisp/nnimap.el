@@ -997,10 +997,12 @@ function is generally only called when Gnus is shutting down."
 			nnimap-list-pattern))
 	(dolist (mbx (imap-mailbox-lsub "*" (car pattern) nil 
 					nnimap-server-buffer))
-	  (or (member-if (lambda (mailbox)
-			   (string= (downcase mailbox) "\\noselect"))
-			 (imap-mailbox-get 'list-flags mbx
-					   nnimap-server-buffer))
+	  (or (catch 'found
+		(dolist (mailbox (imap-mailbox-get 'list-flags mbx
+						   nnimap-server-buffer))
+		  (if (string= (downcase mailbox) "\\noselect")
+		      (throw 'found t)))
+		nil)
 	      (let ((info (nnimap-find-minmax-uid mbx 'examine)))
 		(when info
                  (insert (format "\"%s\" %d %d y\n"
