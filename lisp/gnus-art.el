@@ -3160,21 +3160,30 @@ In no internal viewer is available, use an external viewer."
 		 article-type annotation
 		 gnus-data ,handle))
     (setq e (point))
-    (widget-convert-button 'link b e
-			   :mime-handle handle
-			   :action 'gnus-widget-press-button
-			   :button-keymap gnus-mime-button-map
-			   :help-echo
-			   (lambda (widget)
-			     ;; Needed to properly clear the message
-			     ;; due to a bug in wid-edit
-			     (setq help-echo-owns-message t)
-			     (format
-			      "Click to %s the MIME part; %s for more options"
-			      (if (mm-handle-displayed-p
-				   (widget-get widget :mime-handle))
-				  "hide" "show")
-			      (if gnus-xemacs "button3" "mouse-3"))))))
+    (widget-convert-button
+     'link b e
+     :mime-handle handle
+     :action 'gnus-widget-press-button
+     :button-keymap gnus-mime-button-map
+     :help-echo
+     (lambda (widget/window &optional overlay pos)
+       ;; Needed to properly clear the message due to a bug in
+       ;; wid-edit (XEmacs only).
+       (if (boundp 'help-echo-owns-message)
+	   (setq help-echo-owns-message t))
+       (format
+	"%S: %s the MIME part; %S: more options"
+	(aref gnus-mouse-2 0)
+	;; XEmacs will get a single widget arg; Emacs 21 will get
+	;; window, overlay, position.
+	(if (mm-handle-displayed-p
+	     (if overlay
+		 (with-current-buffer (overlay-buffer overlay)
+		   (widget-get (widget-at (overlay-start overlay))
+			       :mime-handle))
+	       (widget-get widget/window :mime-handle)))
+	    "hide" "show")
+	(aref gnus-down-mouse-3 0))))))
 
 (defun gnus-widget-press-button (elems el)
   (goto-char (widget-get elems :from))
