@@ -317,7 +317,7 @@ on your system, you could say something like:
 	(delete-char 1)))))
 
 (defmacro nnheader-nov-skip-field ()
-  '(search-forward "\t" eol 'move))
+  '(skip-chars-forward "^\t" eol))
 
 (defmacro nnheader-nov-field ()
   '(buffer-substring (point) (if (nnheader-nov-skip-field) (1- (point)) eol)))
