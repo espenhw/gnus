@@ -1,7 +1,18 @@
 ;; Also know as the "wish list".  Some are done. For the others, no
 ;; promise when to be implemented.
 
+* Google group digest
+  
+  The result of Google group search return a thread. Is it a digest
+  format?
+
+* NOV caching.
+  
+  Implement NOV caching with Gnus Agent.
+
 * Multiple charsets for topic names.
+  
+  [Done]
 
 * Allow specification of server in Newsgroups header
   
@@ -1475,6 +1486,8 @@ exceeding lisp nesting on huge groups.
 	(body "whatever.text")
 
 * Be able to run `J u' from summary buffers.
+
+  [Done]
 
 * Solve the halting problem.
 
