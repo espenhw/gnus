@@ -8,6 +8,17 @@ For older news, see Gnus info node "New Features".
 
 * Changes in No Gnus
 
+** Gnus includes an Emacs Lisp SASL library.
+
+This provide a clean API to SASL mechanisms from within Emacs.  The
+user visible aspects of this, compared to the earlier situation,
+include support for DIGEST-MD5.
+
+** ManageSieve connections uses the SASL library by default.
+
+The primary change this brings is support for DIGEST-MD5, when the
+server support it.
+
 ** IMAP identity (RFC 2971) is supported.
 
 By default, Gnus do not send any information about itself, but you can

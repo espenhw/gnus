@@ -1,3 +1,7 @@
+2004-01-05  Simon Josefsson  <jas@extundo.com>
+
+	* GNUS-NEWS: Mention SASL, and that sieve-manage uses it.
+
 2004-01-04  Simon Josefsson  <jas@extundo.com>
 
 	* GNUS-NEWS: Add IMAP ID (RFC 2971) support.
