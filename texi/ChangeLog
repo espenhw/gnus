@@ -1,3 +1,9 @@
+2001-11-12  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Security, Using GPG):
+	* message.texi (Security): 
+	* emacs-mime.texi (MML Definition): Add PGP.
+
 2001-11-09  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* message.texi (Movement): message-beginning-of-line.

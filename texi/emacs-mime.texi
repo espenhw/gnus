@@ -1203,12 +1203,12 @@ RFC822 date when the part was read (@code{Content-Disposition}).
 The size (in octets) of the part (@code{Content-Disposition}).
 
 @item sign
-What technology to sign this MML part with (@code{smime} or
-@code{pgpmime})
+What technology to sign this MML part with (@code{smime}, @code{pgp}
+or @code{pgpmime})
 
 @item encrypt
-What technology to encrypt this MML part with (@code{smime} or
-@code{pgpmime})
+What technology to encrypt this MML part with (@code{smime},
+@code{pgp} or @code{pgpmime})
 
 @end table
 

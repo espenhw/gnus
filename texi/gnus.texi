@@ -9680,8 +9680,9 @@ to you to figure out, I think.
 @section Security
 
 Gnus is able to verify signed messages or decrypt encrypted messages.
-The formats that are supported are PGP and S/MIME, however you need
-some external programs to get things to work:
+The formats that are supported are PGP (plain text, RFC 1991 format),
+PGP/MIME (RFC 2015/3156) and S/MIME, however you need some external
+programs to get things to work:
 
 @enumerate
 @item
@@ -10783,6 +10784,7 @@ To use this correctly with GPG, you'll need the following lisp code in your
 @lisp
 (require 'gpg)
 (setq mml2015-use 'gpg)
+(setq mml1991-use 'gpg)
 (setq gpg-temp-directory (expand-file-name "~/.gnupg/tmp"))
 @end lisp
 
@@ -10806,7 +10808,7 @@ your @file{~/.emacs} or @file{~/.gnus}:
 
 To sign or encrypt your message you may choose to use the MML Security
 menu or @kbd{C-c C-m s p} to sign your message using PGP/MIME,
-@kbd{C-c C-m s s} to sign your message using S/MIME. There's also
+@kbd{C-c C-m s s} to sign your message using S/MIME.  There's also
 @kbd{C-c C-m c p} to encrypt your message with PGP/MIME and @kbd{C-c
 C-m c s} to encrypt using S/MIME. @xref{Security, ,Security, message,
 The Message Manual}.

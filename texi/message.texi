@@ -610,15 +610,17 @@ Manual}).
 @section Security
 @cindex Security
 @cindex S/MIME
+@cindex PGP
 @cindex PGP/MIME
 @cindex sign
 @cindex encrypt
 
 Using the MML language, Message is able to create digitally signed and
-digitally encrypted messages.  Message (or rather MML) currently support
-PGP/MIME and S/MIME.  Instructing MML to perform security operations on
-a MIME part is done using the @code{C-c C-m s} key map for signing and the
-@code{C-c C-m c} key map for encryption, as follows.
+digitally encrypted messages.  Message (or rather MML) currently
+support PGP (RFC 1991), PGP/MIME (RFC 2015/3156) and S/MIME.
+Instructing MML to perform security operations on a MIME part is done
+using the @code{C-c C-m s} key map for signing and the @code{C-c C-m
+c} key map for encryption, as follows.
 
 @table @kbd
 
@@ -627,6 +629,12 @@ a MIME part is done using the @code{C-c C-m s} key map for signing and the
 @findex mml-secure-sign-smime
 
 Digitally sign current MIME part using S/MIME.
+
+@item C-c C-m s o
+@kindex C-c C-m s o
+@findex mml-secure-sign-pgp
+
+Digitally sign current MIME part using PGP.
 
 @item C-c C-m s p
 @kindex C-c C-m s p
@@ -639,6 +647,12 @@ Digitally sign current MIME part using PGP/MIME.
 @findex mml-secure-encrypt-smime
 
 Digitally encrypt current MIME part using S/MIME.
+
+@item C-c C-m c o
+@kindex C-c C-m c o
+@findex mml-secure-encrypt-pgp
+
+Digitally encrypt current MIME part using PGP.
 
 @item C-c C-m c p
 @kindex C-c C-m c p
