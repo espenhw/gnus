@@ -119,10 +119,10 @@ asynchronously.	 The compressed face will be piped to this command."
   :group 'article)
 
 (defcustom gnus-emphasis-alist
-  '(("_\\(\\w+\\)_" 0 1 underline)
-    ("\\W\\(/\\(\\w+\\)/\\)\\W" 1 2 italic)
-    ("\\(_\\*\\|\\*_\\)\\(\\w+\\)\\(_\\*\\|\\*_\\)" 0 2 bold-underline)
-    ("\\*\\(\\w+\\)\\*" 0 1 bold))
+  '(("\\(\\s-\\|^\\)\\(_\\(\\w+\\(\\s-+\\w+\\)*\\)_\\)\\(\\s-\\|[?!.,;]\\)" 2 3 underline)
+    ("\\(\\s-\\|^\\)\\(\\*\\(\\w+\\(\\s-+\\w+\\)*\\)\\*\\)\\(\\s-\\|[?!.,;]\\)" 2 3 bold)
+    ("\\(\\s-\\|^\\)\\(\\(\\*_\\|_\\*\\)\\(\\w+\\(\\s-+\\w+\\)*\\)\\(\\*_\\|_\\*\\)\\)\\(\\s-\\|[?!.,;]\\)" 2 4 bold-underline)
+    ("\\(\\s-\\|^\\)\\(/\\(\\w+\\)/\\)\\s-" 2 3 italic))
   "Alist that says how to fontify certain phrases.
 Each item looks like this:
 
@@ -478,8 +478,8 @@ always hide."
 	  (narrow-to-region (match-beginning 0) (match-end 0))
 	  (delete-region (point-min) (point-max))
 	  (insert string)
-	  (article-mime-decode-quoted-printable (goto-char (point-min))
-						(point-max))
+	  (article-mime-decode-quoted-printable 
+	   (goto-char (point-min)) (point-max))
 	  (subst-char-in-region (point-min) (point-max) ?_ ? )
 	  (goto-char (point-max)))
 	(when (looking-at "\\([ \t\n]+\\)=\\?")
@@ -607,7 +607,7 @@ always hide."
     (let (buffer-read-only)
       (goto-char (point-min))
       (when (search-forward "\n\n" nil t)
-	(while (looking-at "[ \t]$")
+	(while (looking-at "[ \t]*$")
 	  (gnus-delete-line))))))
 
 (defun article-strip-multiple-blank-lines ()

@@ -42,7 +42,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.54"
+(defconst gnus-version-number "0.55"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -697,6 +697,7 @@ want.")
 
 ;; Variable holding the user answers to all method prompts.
 (defvar gnus-method-history nil)
+(defvar gnus-group-history nil)
 
 ;; Variable holding the user answers to all mail method prompts.
 (defvar gnus-mail-method-history nil)
@@ -1718,11 +1719,14 @@ If NEWSGROUP is nil, return the global kill file name instead."
 
 (defun gnus-check-backend-function (func group)
   "Check whether GROUP supports function FUNC."
-  (let ((method (if (stringp group) (car (gnus-find-method-for-group group))
-		  group)))
-    (unless (featurep method)
-      (require method))
-    (fboundp (intern (format "%s-%s" method func)))))
+  (condition-case ()
+      (let ((method (if (stringp group)
+			(car (gnus-find-method-for-group group))
+		      group)))
+	(unless (featurep method)
+	  (require method))
+	(fboundp (intern (format "%s-%s" method func))))
+    (error nil)))
 
 (defun gnus-methods-using (feature)
   "Find all methods that have FEATURE."
@@ -1733,6 +1737,20 @@ If NEWSGROUP is nil, return the global kill file name instead."
 	(push (car valids) outs))
       (setq valids (cdr valids)))
     outs))
+
+(defun gnus-read-group (prompt)
+  "Prompt the user for a group name.
+Disallow illegal group names."
+  (let ((prefix "")
+	group)
+    (while (not group)
+      (when (string-match
+	     "[ `'\"/]"
+	     (setq group (read-string (concat prefix prompt)
+				      "" 'gnus-group-history)))
+	(setq prefix (format "Illegal group name: \"%s\".  " group)
+	      group nil)))
+    group))
 
 (defun gnus-read-method (prompt)
   "Prompt the user for a method.

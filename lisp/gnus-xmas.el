@@ -143,6 +143,8 @@ If `gnus-auto-center-summary' is nil, or the article buffer isn't
 displayed, no centering will be performed."
   ;; Suggested by earle@mahendo.JPL.NASA.GOV (Greg Earle).
   ;; Recenter only when requested.  Suggested by popovich@park.cs.columbia.edu.
+  ;; Force redisplay to get properly computed window height.
+  (sit-for 0)
   (when gnus-auto-center-summary
     (let* ((height (if (fboundp 'window-displayed-height)
 		       (window-displayed-height)

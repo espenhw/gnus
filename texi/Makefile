@@ -28,6 +28,8 @@ dvi: gnus.dvi message.dvi
 .texi.dvi :
 	$(PERL) -n -e 'print unless (/\@iflatex/ .. /\@end iflatex/)' $< > gnustmp.texi
 	$(TEXI2DVI) gnustmp.texi
+	cp gnustmp.dvi $*.dvi
+	rm gnustmp.*
 
 refcard.dvi: refcard.tex gnuslogo.refcard gnusref.tex
 	$(LATEX) refcard.tex

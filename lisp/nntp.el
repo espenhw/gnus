@@ -587,7 +587,7 @@ It will prompt for a password."
 	      (set-buffer nntp-server-buffer)
 	      (nntp-read-server-type)
 	      (run-hooks 'nntp-server-opened-hook)
-	      (set-buffer pbuffer)
+	      (set-buffer buffer)
 	      (erase-buffer)))
 	(when (buffer-name (process-buffer process))
 	  (kill-buffer (process-buffer process)))
@@ -744,7 +744,9 @@ It will prompt for a password."
     (let ((entry (nntp-find-connection-entry nntp-server-buffer)))
       (when (not (equal group (caddr entry)))
 	(nntp-request-group group)
-	(erase-buffer)))))
+	(save-excursion
+	  (set-buffer nntp-server-buffer)
+	  (erase-buffer))))))
 
 (defun nntp-decode-text (&optional cr-only)
   "Decode the text in the current buffer."

@@ -1206,7 +1206,9 @@ If REGEXP, only list groups matching REGEXP."
 	      (or (gnus-gethash gnus-tmp-group gnus-description-hashtb) "")
 	    ""))
 	 (gnus-tmp-moderated
-	  (if (gnus-gethash gnus-tmp-group gnus-moderated-hashtb) ?m ? ))
+	  (if (and gnus-moderated-hashtb
+		   (gnus-gethash gnus-tmp-group gnus-moderated-hashtb))
+	      ?m ? ))
 	 (gnus-tmp-moderated-string
 	  (if (eq gnus-tmp-moderated ?m) "(m)" ""))
 	 (gnus-tmp-method
@@ -1538,16 +1540,15 @@ Return nil if the group isn't displayed."
 (defun gnus-group-universal-argument (arg &optional groups func)
   "Perform any command on all groups according to the process/prefix convention."
   (interactive "P")
-  (let ((groups (or groups (gnus-group-process-prefix arg))))
-    (if (eq (setq func (or func
-			   (key-binding
-			    (read-key-sequence
-			     (substitute-command-keys
-			      "\\<gnus-group-mode-map>\\[gnus-group-universal-argument]")))))
-	    'undefined)
-	(gnus-error 1 "Undefined key")
-      (while groups
-	(gnus-group-remove-mark (pop groups))
+  (if (eq (setq func (or func
+			 (key-binding
+			  (read-key-sequence
+			   (substitute-command-keys
+			    "\\<gnus-group-mode-map>\\[gnus-group-universal-argument]")))))
+	  'undefined)
+      (gnus-error 1 "Undefined key")
+    (gnus-group-iterate arg
+      (lambda (group)
 	(command-execute func))))
   (gnus-group-position-point))
 
@@ -1592,6 +1593,18 @@ Take into consideration N (the prefix) and the list of marked groups."
     ;; current group.
     (let ((group (gnus-group-group-name)))
       (and group (list group))))))
+
+(defun gnus-group-iterate (arg function)
+  "Iterate FUNCTION over all process/prefixed groups.
+FUNCTION will be called with the group name as the paremeter
+and with point over the group in question."
+  (let ((groups (gnus-group-process-prefix arg))
+	group)
+    (while (setq group (pop groups))
+      (gnus-group-remove-mark group)
+      (funcall function group))))
+
+(put 'gnus-group-iterate 'lisp-indent-function 1)
 
 ;; Selecting groups.
 
@@ -1869,7 +1882,7 @@ The user will be prompted for a NAME, for a select METHOD, and an
 ADDRESS."
   (interactive
    (list
-    (read-string "Group name: ")
+    (gnus-read-group "Group name: ")
     (gnus-read-method "From method: ")))
 
   (let* ((meth (when (and method
@@ -2127,7 +2140,8 @@ If SOLID (the prefix), create a solid group."
   (interactive "P")
   (require 'nnweb)
   (let* ((group
-	  (if solid (read-string "Group name: ") (message-unique-id)))
+	  (if solid (gnus-read-group "Group name: ")
+	    (message-unique-id)))
 	 (type
 	  (completing-read
 	   "Search engine type: "
@@ -2442,17 +2456,16 @@ If REVERSE, sort in reverse order."
 
 ;;; Clearing data
 
-(defun gnus-group-clear-data (n)
+(defun gnus-group-clear-data (&optional arg)
   "Clear all marks and read ranges from the current group."
   (interactive "P")
-  (let ((groups (gnus-group-process-prefix n))
-	group info)
-    (while (setq group (pop groups))
-      (gnus-info-clear-data (setq info (gnus-get-info group)))
-      (gnus-get-unread-articles-in-group info (gnus-active group) t)
-      (when (gnus-group-goto-group group)
-	(gnus-group-remove-mark group)
-	(gnus-group-update-group-line)))))
+  (gnus-group-iterate arg
+    (lambda (group)
+      (let (info)
+	(gnus-info-clear-data (setq info (gnus-get-info group)))
+	(gnus-get-unread-articles-in-group info (gnus-active group) t)
+	(when (gnus-group-goto-group group)
+	  (gnus-group-update-group-line))))))
 
 (defun gnus-group-clear-data-on-native-groups ()
   "Clear all marks and read ranges from all native groups."

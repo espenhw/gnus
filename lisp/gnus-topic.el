@@ -1012,17 +1012,18 @@ If COPYP, copy the groups instead."
       (gnus-topic-goto-topic start-topic))
     (gnus-group-list-groups)))
 
-(defun gnus-topic-remove-group ()
+(defun gnus-topic-remove-group (&optional arg)
   "Remove the current group from the topic."
-  (interactive)
-  (let ((topicl (assoc (gnus-current-topic) gnus-topic-alist))
-	(group (gnus-group-group-name))
-	(buffer-read-only nil))
-    (when (and topicl group)
-      (gnus-delete-line)
-      (gnus-delete-first group topicl))
-    (gnus-topic-update-topic)
-    (gnus-group-position-point)))
+  (interactive "P")
+  (gnus-group-iterate arg 
+    (lambda (group)
+      (let ((topicl (assoc (gnus-current-topic) gnus-topic-alist))
+	    (buffer-read-only nil))
+	(when (and topicl group)
+	  (gnus-delete-line)
+	  (gnus-delete-first group topicl))
+	(gnus-topic-update-topic)
+	(gnus-group-position-point)))))
 
 (defun gnus-topic-copy-group (n topic)
   "Copy the current group to a topic."

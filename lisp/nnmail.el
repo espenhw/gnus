@@ -349,15 +349,18 @@ parameter.  It should return nil, `warn' or `delete'.")
   
 (defun nnmail-date-to-time (date)
   "Convert DATE into time."
-  (let* ((d1 (timezone-parse-date date))
-	 (t1 (timezone-parse-time (aref d1 3))))
-    (apply 'encode-time
-	   (mapcar (lambda (el)
-		     (and el (string-to-number el)))
-		   (list
-		    (aref t1 2) (aref t1 1) (aref t1 0)
-		    (aref d1 2) (aref d1 1) (aref d1 0)
-		    (aref d1 4))))))
+  (condition-case ()
+      (let* ((d1 (timezone-parse-date date))
+	     (t1 (timezone-parse-time (aref d1 3))))
+	(apply 'encode-time
+	       (mapcar (lambda (el)
+			 (and el (string-to-number el)))
+		       (list
+			(aref t1 2) (aref t1 1) (aref t1 0)
+			(aref d1 2) (aref d1 1) (aref d1 0)
+			(aref d1 4)))))
+    ;; If we get an error, then we just return a 0 time.
+    (error (list 0 0))))
 
 (defun nnmail-time-less (t1 t2)
   "Say whether time T1 is less than time T2."
@@ -625,33 +628,35 @@ is a spool.  If not using procmail, return GROUP."
       (goto-char end))))
 
 (defun nnmail-search-unix-mail-delim ()
-  "Put point at the beginning of the next message."
-  (let ((case-fold-search t)
-	(delim (concat "^" message-unix-mail-delimiter))
-	found search )
+  "Put point at the beginning of the next Unix mbox message."
+  ;; Algorithm used to find the the next article in the
+  ;; brain-dead Unix mbox format:
+  ;;
+  ;; 1) Search for "^From ".
+  ;; 2) If we find it, then see whether the previous
+  ;;    line is blank and the next line looks like a header.
+  ;; Then it's possible that this is a mail delim, and we use it.
+  (let ((case-fold-search nil)
+	found)
     (while (not found)
-      (setq search (condition-case ()
-		       (re-search-forward delim nil t)
-		     (error 'error)))
-      (cond 
-       ((eq search 'error)
-	(setq found 'yes))
-       (search
-	(when (or (looking-at "[^\n :]+ *:")
-		  (looking-at delim)
-		  (looking-at (concat ">" message-unix-mail-delimiter)))
-	  (forward-line -1)
-	  (setq found 'yes)))
-       (t
-	(setq found 'no))))
+      (if (not (re-search-forward "^From " nil t))
+	  (setq found 'no)
+	(beginning-of-line)
+	(when (and (or (bobp)
+		       (save-excursion
+			 (forward-line -1)
+			 (= (following-char) ?\n)))
+		   (save-excursion
+		     (forward-line 1)
+		     (looking-at "[^ \t:]+[ \t]*:")))
+	  (setq found 'yes))))
     (eq found 'yes)))
 
 (defun nnmail-process-unix-mail-format (func artnum-func)
-  (let ((case-fold-search t)
-	(delim (concat "^" message-unix-mail-delimiter))
+  (let ((case-fold-search nil)
 	start message-id content-length end skip head-end)
     (goto-char (point-min))
-    (if (not (and (re-search-forward delim nil t)
+    (if (not (and (re-search-forward "^From " nil t)
 		  (goto-char (match-beginning 0))))
 	;; Possibly wrong format?
 	(error "Error, unknown mail format! (Possibly corrupted.)")
@@ -710,10 +715,9 @@ is a spool.  If not using procmail, return GROUP."
 	  (cond ((or (= skip (point-max))
 		     (= (1+ skip) (point-max)))
 		 (setq end (point-max)))
-		((looking-at delim)
+		((looking-at "From ")
 		 (setq end skip))
-		((looking-at
-		  (concat "[ \t]*\n\\(" delim "\\)"))
+		((looking-at "[ \t]*\n\\(From \\)")
 		 (setq end (match-beginning 1)))
 		(t (setq end nil))))
 	(if end

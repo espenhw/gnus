@@ -28,6 +28,7 @@
 (require 'gnus)
 (require 'nnmail)
 (require 'gnus-art)
+(require 'gnus-sum)
 (require 'gnus-range)
 
 (defgroup gnus-nocem nil

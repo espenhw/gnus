@@ -421,14 +421,7 @@ buffer configuration.")
 		    (delete-other-windows)
 		  ;; This is a `frame' split, so we delete all windows
 		  ;; on all frames.
-		  (mapcar 
-		   (lambda (frame)
-		     (unless (eq (cdr (assq 'minibuffer
-					    (frame-parameters frame)))
-				 'only)
-		       (select-frame frame)
-		       (delete-other-windows)))
-		   (frame-list)))
+		  (gnus-delete-windows-in-gnusey-frames))
 	      ;; Just remove some windows.
 	      (gnus-remove-some-windows)
 	      (switch-to-buffer nntp-server-buffer))
@@ -436,6 +429,30 @@ buffer configuration.")
 
       (switch-to-buffer nntp-server-buffer)
       (gnus-configure-frame split (get-buffer-window (current-buffer))))))
+
+(defun gnus-delete-windows-in-gnusey-frames ()
+  "Do a `delete-other-windows' in all frames that have Gnus windows."
+  (let ((buffers
+	 (mapcar
+	  (lambda (elem)
+	    (if (symbolp (cdr elem))
+		(get-buffer (symbol-value (cdr elem)))
+	      (get-buffer (cdr elem))))
+	  gnus-window-to-buffer)))
+    (mapcar 
+     (lambda (frame)
+       (unless (eq (cdr (assq 'minibuffer
+			      (frame-parameters frame)))
+		   'only)
+	 (select-frame frame)
+	 (let (do-delete)
+	   (walk-windows
+	    (lambda (window)
+	      (when (memq (window-buffer window) buffers)
+		(setq do-delete t))))
+	   (when do-delete
+	     (delete-other-windows)))))
+     (frame-list))))
 
 (defun gnus-all-windows-visible-p (split)
   "Say whether all buffers in SPLIT are currently visible.

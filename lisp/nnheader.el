@@ -146,11 +146,7 @@ on your system, you could say something like:
 ;; Parsing headers and NOV lines.
 
 (defsubst nnheader-header-value ()
-  (buffer-substring 
-   (match-end 0) 
-   (if (re-search-forward "^[^ \t]" nil 'move)
-       (- (point) 2)
-     (1- (point)))))
+  (buffer-substring (match-end 0) (gnus-point-at-eol)))
 
 (defvar nnheader-newsgroup-none-id 1)
 

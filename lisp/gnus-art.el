@@ -286,6 +286,11 @@ displayed by the first non-nil matching CONTENT face."
 			       (item :tag "skip" nil)
 			       (face :value default)))))
 
+(defvar gnus-article-mode-syntax-table
+  (copy-syntax-table text-mode-syntax-table)
+  "Syntax table used in article mode buffers.
+Initialized from `text-mode-syntax-table.")
+
 ;;; Internal variables
 
 (defvar gnus-article-mode-line-format-alist
@@ -704,6 +709,7 @@ commands:
   (gnus-set-default-directory)
   (buffer-disable-undo (current-buffer))
   (setq buffer-read-only t)
+  (set-syntax-table gnus-article-mode-syntax-table)
   (run-hooks 'gnus-article-mode-hook))
 
 (defun gnus-article-setup-buffer ()
@@ -2006,5 +2012,7 @@ forbidden in URL encoding."
     (select-window win))) 
 
 (provide 'gnus-art)
+
+(run-hooks 'gnus-art-load-hook)
 
 ;;; gnus-art.el ends here

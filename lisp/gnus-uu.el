@@ -983,15 +983,10 @@ didn't work, and overwrite existing files.  Otherwise, ask each time.")
 	    (replace-match "[0-9]+ of [0-9]+")
 
 	  (end-of-line)
-	  (while (and (re-search-backward "[0-9]" nil t) (> count 0))
-            (while (and 
-		    (looking-at "[0-9]")
-		    (< 1 (goto-char (1- (point))))))
-            (re-search-forward "[0-9]+" nil t)
-	    (replace-match "[0-9]+")
-	    (backward-char 5)
-	    (setq count (1- count)))))
-
+          (if (re-search-backward "\\([^0-9]\\)[0-9]+\\([^0-9]+\\)[0-9]+"
+                                  nil t)
+              (replace-match "\\1[0-9]+\\2[0-9]+" t nil nil nil))))
+      
       (goto-char beg)
       (while (re-search-forward "[ \t]+" nil t)
 	(replace-match "[ \t]*" t t))
@@ -1334,6 +1329,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time.")
 		(let ((nnheader-file-name-translation-alist
 		       '((?/ . ?,) (? . ?_) (?* . ?_) (?$ . ?_))))
 		  (nnheader-translate-file-chars (match-string 1))))
+          (replace-match (concat "begin 644 " gnus-uu-file-name) t t)
 
 	  ;; Remove any non gnus-uu-body-line right after start.
 	  (forward-line 1)

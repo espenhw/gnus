@@ -37,6 +37,13 @@
 (defalias 'efs-re-read-dir 'ignore)
 (defalias 'ange-ftp-re-read-dir 'ignore)
 
+(eval-and-compile
+  (unless (string-match "XEmacs" emacs-version)
+    (fset 'get-popup-menu-response 'ignore)
+    (fset 'event-object 'ignore)
+    (fset 'x-defined-colors 'ignore)
+    (fset 'read-color 'ignore)))
+
 (defun dgnushack-compile ()
   ;;(setq byte-compile-dynamic t)
   (let ((files (directory-files "." nil ".el$"))

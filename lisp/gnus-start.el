@@ -1092,7 +1092,10 @@ the server for new groups."
 	    (gnus-sethash group (cons num previous)
 			  gnus-newsrc-hashtb))
 	  (when (cdr entry)
-	    (setcdr (gnus-gethash (caadr entry) gnus-newsrc-hashtb) entry)))))
+	    (setcdr (gnus-gethash (caadr entry) gnus-newsrc-hashtb) entry))
+	  (gnus-dribble-enter
+	   (format
+	    "(gnus-group-set-info '%s)" info)))))
       (when gnus-group-change-level-function
 	(funcall gnus-group-change-level-function group level oldlevel)))))
 

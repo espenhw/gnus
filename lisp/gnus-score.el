@@ -132,6 +132,8 @@ It can be:
 
  * A function
    The result of this function will be used as the home score file.
+   The function will be passed the name of the group as its
+   parameter.
 
  * A list
    The elements in this list can be:
@@ -144,10 +146,10 @@ It can be:
 
    * A function.
      If the function returns non-nil, the result will be used
-     as the home score file.
+     as the home score file.  The function will be passed the 
+     name of the group as its parameter.
 
-   * A string.
-     Use the string as the home score file.
+   * A string.  Use the string as the home score file.
 
    The list will be traversed from the beginning towards the end looking
    for matches.")
@@ -2352,8 +2354,8 @@ GROUP using BNews sys file syntax."
 	  (if (looking-at "not.")
 	      (progn
 		(setq not-match t)
-		(setq regexp (buffer-substring 5 (point-max))))
-	    (setq regexp (buffer-substring 1 (point-max)))
+		(setq regexp (concat "^" (buffer-substring 5 (point-max)))))
+	    (setq regexp (concat "^" (buffer-substring 1 (point-max))))
 	    (setq not-match nil))
 	  ;; Finally - if this resulting regexp matches the group name,
 	  ;; we add this score file to the list of score files

@@ -2387,10 +2387,16 @@ This is all marks except unread, ticked, dormant, and expirable."
 	  (set-buffer gnus-article-buffer)
 	  (setq gnus-summary-buffer summary))))))
 
+(defun gnus-summary-first-article-p (&optional article)
+  "Return whether ARTICLE is the first article in the buffer."
+  (if (not (setq article (or article (gnus-summary-article-number))))
+      nil
+    (eq article (caar gnus-newsgroup-data))))
+
 (defun gnus-summary-last-article-p (&optional article)
   "Return whether ARTICLE is the last article in the buffer."
   (if (not (setq article (or article (gnus-summary-article-number))))
-      t					; All non-existent numbers are the last article.  :-)
+      t		; All non-existent numbers are the last article.  :-)
     (not (cdr (gnus-data-find-list article)))))
 
 (defun gnus-make-thread-indent-array ()
@@ -5370,8 +5376,11 @@ If BACKWARD, the previous article is selected instead of the next."
 (defun gnus-summary-next-unread-article ()
   "Select unread article after current one."
   (interactive)
-  (gnus-summary-next-article t (and gnus-auto-select-same
-				    (gnus-summary-article-subject))))
+  (gnus-summary-next-article 
+   (or (not (eq gnus-summary-goto-unread 'never))
+       (gnus-summary-last-article-p (gnus-summary-article-number)))
+   (and gnus-auto-select-same
+	(gnus-summary-article-subject))))
 
 (defun gnus-summary-prev-article (&optional unread subject)
   "Select the article after the current one.
@@ -5382,8 +5391,11 @@ If UNREAD is non-nil, only unread articles are selected."
 (defun gnus-summary-prev-unread-article ()
   "Select unread article before current one."
   (interactive)
-  (gnus-summary-prev-article t (and gnus-auto-select-same
-				    (gnus-summary-article-subject))))
+  (gnus-summary-prev-article
+   (or (not (eq gnus-summary-goto-unread 'never))
+       (gnus-summary-first-article-p (gnus-summary-article-number)))
+   (and gnus-auto-select-same
+	(gnus-summary-article-subject))))
 
 (defun gnus-summary-next-page (&optional lines circular)
   "Show next page of the selected article.
@@ -6633,14 +6645,15 @@ latter case, they will be copied into the relevant groups."
 		  methods nil t nil 'gnus-mail-method-history))
 		ms)
 	   (cond
-	    ((zerop (length (setq ms (gnus-servers-using-backend method))))
+	    ((zerop (length (setq ms (gnus-servers-using-backend 
+				      (intern method)))))
 	     (list (intern method) ""))
 	    ((= 1 (length ms))
 	     (car ms))
 	    (t
-	     (cdr (completing-read 
-		   "Server name: "
-		   (mapcar (lambda (m) (cons (cadr m) m)) ms) nil t)))))))
+	     (let ((ms-alist (mapcar (lambda (m) (cons (cadr m) m)) ms)))
+	       (cdr (assoc (completing-read "Server name: " ms-alist nil t)
+			   ms-alist))))))))
   (gnus-set-global-variables)
   (unless method
     (error "No method given for respooling"))
@@ -8391,5 +8404,7 @@ save those articles instead."
       t)))
 
 (provide 'gnus-sum)
+
+(run-hooks 'gnus-sum-load-hook)
 
 ;;; gnus-sum.el ends here

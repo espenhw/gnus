@@ -145,8 +145,25 @@ asynchronously.	 The compressed face will be piped to this command."))
    ((string-match "XEmacs\\|Lucid" emacs-version)
     (gnus-xmas-redefine))
 
-   ((boundp 'MULE)
-    ;; Mule definitions
+   ((featurep 'mule)
+    ;; Mule and new Emacs definitions
+  
+    ;; [Note] Now there are three kinds of mule implementations,
+    ;; original MULE, XEmacs/mule and beta version of Emacs including
+    ;; some mule features. Unfortunately these API are different. In
+    ;; particular, Emacs (including original MULE) and XEmacs are
+    ;; quite different.
+    ;; Predicates to check are following:
+    ;; (boundp 'MULE) is t only if MULE (original; anything older than
+    ;;                     Mule 2.3) is running.
+    ;; (featurep 'mule) is t when every mule variants are running.
+    
+    ;; These implementations may be able to share between original
+    ;; MULE and beta version of new Emacs. In addition, it is able to
+    ;; detect XEmacs/mule by (featurep 'mule) and to check variable
+    ;; `emacs-version'. In this case, implementation for XEmacs/mule
+    ;; may be able to share between XEmacs and XEmacs/mule.
+    
     (defalias 'gnus-truncate-string 'truncate-string)
 
     (defvar gnus-summary-display-table nil

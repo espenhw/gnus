@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.54 Manual
+@settitle Red Gnus 0.55 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.54 Manual
+@title Red Gnus 0.55 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -1189,17 +1189,16 @@ background is dark:
 
 @lisp
 (setq gnus-group-highlight
-    `(((> unread 200) . 
-       ,(custom-face-lookup "Red" nil nil t nil nil))
-      ((and (< level 3) (zerop unread)) . 
-       ,(custom-face-lookup "SeaGreen" nil nil t nil nil))
-      ((< level 3) . 
-       ,(custom-face-lookup "SpringGreen" nil nil t nil nil))
-      ((zerop unread) . 
-       ,(custom-face-lookup "SteelBlue" nil nil t nil nil))
-      (t . 
-       ,(custom-face-lookup "SkyBlue" nil nil t nil nil))
-      ))
+      `(((> unread 200) . 
+         ,(custom-face-lookup "Red" nil nil t nil nil))
+        ((and (< level 3) (zerop unread)) . 
+         ,(custom-face-lookup "SeaGreen" nil nil t nil nil))
+        ((< level 3) . 
+         ,(custom-face-lookup "SpringGreen" nil nil t nil nil))
+        ((zerop unread) . 
+         ,(custom-face-lookup "SteelBlue" nil nil t nil nil))
+        (t . 
+         ,(custom-face-lookup "SkyBlue" nil nil t nil nil))))
 @end lisp
 
 Variables that are dynamically bound when the forms are evaluated
@@ -1945,7 +1944,10 @@ ticked articles.
 @end table
 
 @item comment
-This parameter allows you to enter an arbitrary comment on the group.
+Elements that look like @code{(comment . "This is a comment")}
+are arbitrary comments on the group.  They are currently ignored by
+Gnus, but provide a place for you to store information on particular
+groups. 
 
 @item @var{(variable form)}
 You can use the group parameters to set variables local to the group you
@@ -4735,7 +4737,7 @@ shorter than 100 lines, you could say something like:
   "Return non-nil for short, unread articles."
   (and (gnus-data-unread-p data)
        (< (mail-header-lines (gnus-data-header data))
-	  100)))
+          100)))
 
 (setq gnus-async-prefetch-article-p 'my-async-short-unread-p)
 @end lisp
@@ -7211,6 +7213,11 @@ hiding headers, and the like.
 @item gnus-article-mode-hook
 @vindex gnus-article-mode-hook
 Hook called in article mode buffers.
+
+@item gnus-article-mode-syntax-table
+@vindex gnus-article-mode-syntax-table
+Syntax table used in article buffers.  It is initialized from
+@code{text-mode-syntax-table}. 
 
 @vindex gnus-article-mode-line-format
 @item gnus-article-mode-line-format
@@ -13397,43 +13404,23 @@ Gnus should work on :
 @itemize @bullet 
 
 @item
-Emacs 19.30 and up.
+Emacs 19.32 and up.
 
 @item
-XEmacs 19.13 and up.
+XEmacs 19.14 and up.
 
 @item 
-Mule versions based on Emacs 19.30 and up.
+Mule versions based on Emacs 19.32 and up.
 
 @end itemize
 
 Gnus will absolutely not work on any Emacsen older than that.  Not
 reliably, at least. 
 
-There are some vague differences between Gnus on the various platforms: 
-
-@itemize @bullet
-
-@item
-The mouse-face on Gnus lines under Emacs and Mule is delimited to
-certain parts of the lines while they cover the entire line under
-XEmacs. 
-
-@item 
-The same with current-article marking---XEmacs puts an underline under
-the entire summary line while Emacs and Mule are nicer and kinder.
-
-@item
-XEmacs features more graphics---a logo and a toolbar.
-
-@item
-Citation highlighting us better under Emacs and Mule than under XEmacs.
-
-@item
-Emacs 19.26-19.28 have tangible hidden headers, which can be a bit
-confusing. 
-
-@end itemize
+There are some vague differences between Gnus on the various
+platforms---XEmacs features more graphics (a logo and a toolbar)---but
+other than that, things should look pretty much the same under all
+Emacsen. 
 
 
 @node Contributors
@@ -13581,6 +13568,7 @@ Lantz Moore,
 Morioka Tomohiko, @c Morioka
 Hrvoje Niksic,
 Andy Norman,
+C. R. Oldham,
 Alexandre Oliva,
 Ken Olstad,
 Masaharu Onishi, @c Onishi
@@ -13591,6 +13579,7 @@ Ulrich Pfeifer,
 Colin Rafferty,
 Bart Robinson,
 Ralph Schleicher,
+Randal L. Schwartz,
 Danny Siu, 
 Paul D. Smith,
 Jeff Sparkes,
@@ -13608,6 +13597,7 @@ Christoph Wedler,
 Joe Wells,
 and
 Katsumi Yamaoka. @c Yamaoka
+
 
 Apologies to everybody that I've forgotten, of which there are many, I'm
 sure.  
