@@ -1,3 +1,8 @@
+2001-12-12  Pavel Jan,Bm(Bk  <Pavel@Janik.cz>
+
+	* gnus-mlspl.el (gnus-group-split-fancy): Doc fix (add reference
+	to variable, follow doc-string conventions).
+
 2001-12-13  Josh Huber  <huber@alum.wpi.edu>
 
 	* gnus-cus.el (gnus-extra-topic-parameters): added topic parameter
