@@ -1,4 +1,4 @@
-;;; gnus-sound.el --- Sound effects for Gnus
+;;; gnus-audio.el --- Sound effects for Gnus
 ;; Copyright (C) 1996 Free Software Foundation
 
 ;; Author: Steven L. Baur <steve@miranova.com>
@@ -33,90 +33,98 @@
 (require 'nnheader)
 (eval-when-compile (require 'cl))
 
-(defvar gnus-sound-inline-sound
+(defvar gnus-audio-inline-sound
   (and (fboundp 'device-sound-enabled-p)
        (device-sound-enabled-p))
   "When t, we will not spawn a subprocess to play sounds.")
 
-(defvar gnus-sound-directory (nnheader-find-etc-directory "sounds")
+(defvar gnus-audio-directory (nnheader-find-etc-directory "sounds")
   "The directory containing the Sound Files.")
 
-(defvar gnus-sound-au-player "/usr/bin/showaudio"
+(defvar gnus-audio-au-player "/usr/bin/showaudio"
   "Executable program for playing sun AU format sound files")
-(defvar gnus-sound-wav-player "/usr/local/bin/play"
+(defvar gnus-audio-wav-player "/usr/local/bin/play"
   "Executable program for playing WAV files")
 
 
 ;;; The following isn't implemented yet.  Wait for Red Gnus.
-;(defvar gnus-sound-effects-enabled t
+;(defvar gnus-audio-effects-enabled t
 ;  "When t, Gnus will use sound effects.")
-;(defvar gnus-sound-enable-hooks nil
+;(defvar gnus-audio-enable-hooks nil
 ;  "Functions run when enabling sound effects.")
-;(defvar gnus-sound-disable-hooks nil
+;(defvar gnus-audio-disable-hooks nil
 ;  "Functions run when disabling sound effects.")
-;(defvar gnus-sound-theme-song nil
+;(defvar gnus-audio-theme-song nil
 ;  "Theme song for Gnus.")
-;(defvar gnus-sound-enter-group nil
+;(defvar gnus-audio-enter-group nil
 ;  "Sound effect played when selecting a group.")
-;(defvar gnus-sound-exit-group nil
+;(defvar gnus-audio-exit-group nil
 ;  "Sound effect played when exiting a group.")
-;(defvar gnus-sound-score-group nil
+;(defvar gnus-audio-score-group nil
 ;  "Sound effect played when scoring a group.")
-;(defvar gnus-sound-busy-sound nil
+;(defvar gnus-audio-busy-sound nil
 ;  "Sound effect played when going into a ... sequence.")
 
 
 ;;;###autoload
-;(defun gnus-sound-enable-sound ()
+;(defun gnus-audio-enable-sound ()
 ;  "Enable Sound Effects for Gnus."
 ;  (interactive)
-;  (setq gnus-sound-effects-enabled t)
-;  (run-hooks gnus-sound-enable-hooks))
+;  (setq gnus-audio-effects-enabled t)
+;  (run-hooks gnus-audio-enable-hooks))
 
 ;;;###autoload
-;(defun gnus-sound-disable-sound ()
+;(defun gnus-audio-disable-sound ()
 ;  "Disable Sound Effects for Gnus."
 ;  (interactive)
-;  (setq gnus-sound-effects-enabled nil)
-;  (run-hooks gnus-sound-disable-hooks))
+;  (setq gnus-audio-effects-enabled nil)
+;  (run-hooks gnus-audio-disable-hooks))
 
 ;;;###autoload
-(defun gnus-sound-play (file)
+(defun gnus-audio-play (file)
   "Play a sound through the speaker."
   (interactive)
   (let ((sound-file (if (file-exists-p file)
 			file
-		      (concat gnus-sound-directory file))))
+		      (concat gnus-audio-directory file))))
     (when (file-exists-p sound-file)
-      (if gnus-sound-inline-sound
-	  (play-sound-file (concat gnus-sound-directory sound-file))
+      (if gnus-audio-inline-sound
+	  (play-sound-file (concat gnus-audio-directory sound-file))
 	(cond ((string-match "\\.wav$" sound-file)
-	       (call-process gnus-sound-wav-player
-			     (concat gnus-sound-directory sound-file)
+	       (call-process gnus-audio-wav-player
+			     (concat gnus-audio-directory sound-file)
 			     0
 			     nil))
 	      ((string-match "\\.au$" sound-file)
-	       (call-process gnus-sound-au-player
-			     (concat gnus-sound-directory sound-file)
+	       (call-process gnus-audio-au-player
+			     (concat gnus-audio-directory sound-file)
 			     0
 			     nil)))))))
 
 
 ;;; The following isn't implemented yet, wait for Red Gnus
-;(defun gnus-sound-startrek-sounds ()
+;(defun gnus-audio-startrek-sounds ()
 ;  "Enable sounds from Star Trek the original series."
 ;  (interactive)
-;  (setq gnus-sound-busy-sound "working.au")
-;  (setq gnus-sound-enter-group "bulkhead_door.au")
-;  (setq gnus-sound-exit-group "bulkhead_door.au")
-;  (setq gnus-sound-score-group "ST_laser.au")
-;  (setq gnus-sound-theme-song "startrek.au")
-;  (add-hook 'gnus-select-group-hook 'gnus-sound-startrek-select-group)
-;  (add-hook 'gnus-exit-group-hook 'gnus-sound-startrek-exit-group))
+;  (setq gnus-audio-busy-sound "working.au")
+;  (setq gnus-audio-enter-group "bulkhead_door.au")
+;  (setq gnus-audio-exit-group "bulkhead_door.au")
+;  (setq gnus-audio-score-group "ST_laser.au")
+;  (setq gnus-audio-theme-song "startrek.au")
+;  (add-hook 'gnus-select-group-hook 'gnus-audio-startrek-select-group)
+;  (add-hook 'gnus-exit-group-hook 'gnus-audio-startrek-exit-group))
 ;;;***
 
-(provide 'gnus-sound)
+(defvar gnus-startup-jingle "Tuxedomoon.Jingle4.au"
+  "Name of the Gnus startup jingle file.")
 
-(run-hooks 'gnus-sound-load-hook)
+(defun gnus-play-jingle ()
+  "Play the Gnus startup jingle, unless that's inhibited."
+  (interactive)
+  (gnus-audio-play gnus-startup-jingle))
 
-;;; gnus-sound.el ends here
+(provide 'gnus-audio)
+
+(run-hooks 'gnus-audio-load-hook)
+
+;;; gnus-audio.el ends here

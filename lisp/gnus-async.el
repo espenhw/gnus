@@ -91,9 +91,15 @@ from that group.")
 
 (defun gnus-async-prefetch-next (group article summary)
   "Possibly prefetch several articles starting with the article after ARTICLE."
-  (let ((next (caadr (gnus-data-find-list article))))
-    (when next
-      (gnus-async-prefetch-article group next summary))))
+  (when (gnus-buffer-live-p summary)
+    (save-excursion
+      (set-buffer gnus-summary-buffer)
+      (let ((next (caadr (gnus-data-find-list article))))
+	(when next
+	  (if gnus-xemacs
+	      (gnus-async-prefetch-article group next summary)
+	    (run-with-idle-timer 
+	     0.1 nil 'gnus-async-prefetch-article group next summary)))))))
 
 (defun gnus-async-prefetch-article (group article summary &optional next)
   "Possibly prefetch several articles starting with ARTICLE."

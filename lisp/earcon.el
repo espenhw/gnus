@@ -30,7 +30,7 @@
     (defvar running-xemacs (string-match "XEmacs\\|Lucid" emacs-version)))
 
 (require 'gnus)
-(require 'gnus-sound)
+(require 'gnus-audio)
 (eval-when-compile (require 'cl))
 
 (defvar earcon-auto-play nil
@@ -154,7 +154,7 @@ If N is negative, move backward instead."
     (goto-char marker)
     (let* ((entry (earcon-button-entry))
 	   (inhibit-point-motion-hooks t)
-	   (fun 'gnus-sound-play)
+	   (fun 'gnus-audio-play)
 	   (args (list (nth 2 entry))))
       (cond
        ((fboundp fun)
@@ -206,7 +206,7 @@ If N is negative, move backward instead."
 	     start end 'earcon-button-push
 	     (car (push (set-marker (make-marker) from)
 			earcon-button-marker-list)))
-	    (gnus-sound-play (caddr entry))))))))
+	    (gnus-audio-play (caddr entry))))))))
 
 ;;;###autoload
 (defun gnus-earcon-display ()

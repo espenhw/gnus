@@ -28,7 +28,7 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
-(defconst gnus-version-number "0.22"
+(defconst gnus-version-number "0.23"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -37,9 +37,15 @@
 (defvar gnus-inhibit-startup-message nil
   "*If non-nil, the startup message will not be displayed.")
 
+(defvar gnus-play-startup-jingle nil
+  "If non-nil, play the Gnus jingle at startup.")
+
 ;;; Internal variables
 
 (defvar gnus-group-buffer "*Group*")
+
+(eval-and-compile
+  (autoload 'gnus-play-jingle "gnus-audio"))
 
 ;;; Splash screen.
 
@@ -50,7 +56,9 @@
       (erase-buffer)
       (unless gnus-inhibit-startup-message
 	(gnus-group-startup-message)
-	(sit-for 0)))))
+	(sit-for 0)
+	(when gnus-play-startup-jingle
+	  (gnus-play-jingle))))))
 
 (defun gnus-indent-rigidly (start end arg)
   "Indent rigidly using only spaces and no tabs."

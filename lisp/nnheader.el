@@ -590,8 +590,9 @@ without formatting."
   "Return the file size of FILE or 0."
   (or (nth 7 (file-attributes file)) 0))
 
-(defun nnheader-find-etc-directory (package)
-  "Go through the path and find the \".../etc/PACKAGE\" directory."
+(defun nnheader-find-etc-directory (package &optional file)
+  "Go through the path and find the \".../etc/PACKAGE\" directory.
+If FILE, find the \".../etc/PACKAGE\" file instead."
   (let ((path load-path)
 	dir result)
     ;; We try to find the dir by looking at the load path,
@@ -602,8 +603,9 @@ without formatting."
 		(setq dir (concat
 			   (file-name-directory
 			    (directory-file-name (car path)))
-			   "etc/" package "/")))
-	       (file-directory-p dir))
+			   "etc/" package 
+			   (if file "" "/"))))
+	       (or file (file-directory-p dir)))
 	  (setq result dir
 		path nil)
 	(setq path (cdr path))))

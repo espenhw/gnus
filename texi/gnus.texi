@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.22 Manual
+@settitle Red Gnus 0.23 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -230,7 +230,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.22 Manual
+@title Red Gnus 0.23 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -334,7 +334,7 @@ variables.
 * Finding the News::    Choosing a method for getting news.
 * The First Time::      What does Gnus do the first time you start it?
 * The Server is Down::  How can I read my mail then?
-* Slave Gnusii::        You can have more than one Gnus active at a time.
+* Slave Gnusae::        You can have more than one Gnus active at a time.
 * Fetching a Group::    Starting Gnus just to read a group.
 * New Groups::          What is Gnus supposed to do with new groups?
 * Startup Files::       Those pesky startup files---@file{.newsrc}.
@@ -474,16 +474,16 @@ your primary server---instead, it will just activate all groups on level
 levels.) 
 
 
-@node Slave Gnusii
-@section Slave Gnusiï
+@node Slave Gnusae
+@section Slave Gnusae
 @cindex slave
 
 You might want to run more than one Emacs with more than one Gnus at the
 same time.  If you are using different @file{.newsrc} files (eg., if you
-are using the two different Gnusiï to read from two different servers),
+are using the two different Gnusae to read from two different servers),
 that is no problem whatsoever.  You just do it.
 
-The problem appears when you want to run two Gnusiï that use the same
+The problem appears when you want to run two Gnusae that use the same
 @code{.newsrc} file.
 
 To work around that problem some, we here at the Think-Tank at the Gnus
@@ -495,7 +495,7 @@ me.  Usage of the patent (@dfn{Master/Slave Relationships In Computer
 Applications}) will be much more expensive, of course.)
 
 Anyways, you start one Gnus up the normal way with @kbd{M-x gnus} (or
-however you do it).  Each subsequent slave Gnusiï should be started with
+however you do it).  Each subsequent slave Gnusae should be started with
 @kbd{M-x gnus-slave}.  These slaves won't save normal @file{.newsrc}
 files, but instead save @dfn{slave files} that contains information only
 on what groups have been read in the slave session.  When a master Gnus
@@ -11353,6 +11353,7 @@ four days, Gnus will decay the scores four times, for instance.
 * NoCeM::                      How to avoid spam and other fatty foods.
 * Picons::                     How to display pictures of what your reading.
 * Moderation::                 What to do if you're a moderator.
+* XEmacs Enhancements::        There are more pictures and stuff under XEmacs.
 * Various Various::            Things that are really various.
 @end menu
 
@@ -12464,6 +12465,58 @@ To use moderation mode in these two groups, say:
 (setq gnus-moderatated-groups 
       "^nnml:rec.zoofle$\\|^rec.zoofle$")
 @end lisp
+
+
+@node XEmacs Enhancements
+@section XEmacs Enhancements
+@cindex XEmacs
+
+XEmacs is able to display pictures and stuff, so Gnus has taken
+advantage of that.  Relevant variables include:
+
+@table @code
+@item gnus-xmas-glyph-directory
+@vindex gnus-xmas-glyph-directory
+This is where Gnus will look for pictures.  Gnus will normally
+auto-detect this directory, but you may set it manually if you have an
+unusual directory structure.
+
+@item gnus-xmas-logo-color-alist
+@vindex gnus-xmas-logo-color-alist
+This is an alist where the key is a type symbol and the values are the
+foreground and background color of the splash page glyph.
+
+@item gnus-xmas-logo-color-style
+@vindex gnus-xmas-logo-color-style
+This is the key used to look up the color in the alist described above.
+Legal values include @code{flame}, @code{pine}, @code{moss},
+@code{irish}, @code{sky}, @code{tin}, @code{velvet}, @code{grape},
+@code{labia}, @code{berry}, @code{neutral}, and @code{september}.
+
+@item gnus-use-toolbar
+@vindex gnus-use-toolbar
+If @code{nil}, don't display toolbars.  If non-@code{nil}, it should be
+one of @code{default-toolbar}, @code{top-toolbar}, @code{bottom-toolbar},
+@code{right-toolbar}, or @code{left-toolbar}.
+
+@item gnus-group-toolbar
+@vindex gnus-group-toolbar
+The toolbar in the group buffer.
+
+@item gnus-summary-toolbar
+@vindex gnus-summary-toolbar
+The toolbar in the summary buffer.
+
+@item gnus-summary-mail-toolbar
+@vindex gnus-summary-mail-toolbar
+The toolbar in the summary buffer of mail groups.
+
+@item gnus-xmas-modeline-glyph
+@vindex gnus-xmas-modeline-glyph
+A glyph dislayed in all Gnus mode lines.  It is a tiny gnu head by
+default. 
+
+@end table
 
 
 @node Various Various

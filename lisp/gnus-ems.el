@@ -27,6 +27,9 @@
 
 (eval-when-compile (require 'cl))
 
+(defvar gnus-xemacs (string-match "XEmacs\\|Lucid" emacs-version)
+  "Non-nil if running under XEmacs.")
+
 (defvar gnus-mouse-2 [mouse-2])
 
 (eval-and-compile 
@@ -65,8 +68,8 @@
 	 valstr))))
 
 (eval-and-compile
-  (if (string-match "XEmacs\\|Lucid" emacs-version)
-      ()
+  (if gnus-xemacs
+      nil
 
     (defvar gnus-mouse-face-prop 'mouse-face
       "Property used for highlighting mouse regions.")

@@ -1954,7 +1954,11 @@ This is all marks except unread, ticked, dormant, and expirable."
 	(setq gnus-article-buffer article-buffer)
 	(setq gnus-original-article-buffer original)
 	(setq gnus-reffed-article-number reffed)
-	(setq gnus-current-score-file score-file)))))
+	(setq gnus-current-score-file score-file)
+	;; The article buffer also has local variables.
+	(when (gnus-buffer-live-p gnus-article-buffer)
+	  (set-buffer gnus-article-buffer)
+	  (setq gnus-summary-buffer summary))))))
 
 (defun gnus-summary-last-article-p (&optional article)
   "Return whether ARTICLE is the last article in the buffer."

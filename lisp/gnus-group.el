@@ -1718,20 +1718,11 @@ and NEW-NAME will be prompted for."
 (defun gnus-group-make-help-group ()
   "Create the Gnus documentation group."
   (interactive)
-  (let ((path load-path)
-	(name (gnus-group-prefixed-name "gnus-help" '(nndoc "gnus-help")))
-	file dir)
-    (and (gnus-gethash name gnus-newsrc-hashtb)
-	 (error "Documentation group already exists"))
-    (while path
-      (setq dir (file-name-as-directory (expand-file-name (pop path)))
-	    file nil)
-      (when (or (file-exists-p (setq file (concat dir "gnus-tut.txt")))
-		(file-exists-p
-		 (setq file (concat (file-name-directory
-				     (directory-file-name dir))
-				    "etc/gnus-tut.txt"))))
-	(setq path nil)))
+  (let ((name (gnus-group-prefixed-name "gnus-help" '(nndoc "gnus-help")))
+	(file (nnheader-find-etc-directory "gnus-tut.txt" t))
+	dir)
+    (when (gnus-gethash name gnus-newsrc-hashtb)
+      (error "Documentation group already exists"))
     (if (not file)
 	(gnus-message 1 "Couldn't find doc group")
       (gnus-group-make-group

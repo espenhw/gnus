@@ -29,7 +29,10 @@
 (require 'gnus-int)
 (require 'nnheader)
 (require 'gnus)
-(require 'timer)
+(eval-and-compile
+  (if (string-match "XEmacs" (emacs-version))
+      (require 'itimer)
+    (require 'timer)))
 
 (defvar gnus-demon-handlers nil
   "Alist of daemonic handlers to be run at intervals.
