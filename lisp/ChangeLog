@@ -1,3 +1,22 @@
+2003-04-16  Dave Love  <fx@gnu.org>
+
+	* nnmail.el (gnus): Require.
+
+	* gnus-util.el: Move provide to end.
+	(gnus-string-equal): Maybe use compare-strings.
+	(gnus-merge): New.
+
+	* gnus-sum.el (gnus-summary-prepare-threads): Don't use copy-list.
+	(gnus-summary-insert-articles): Use gnus-merge.
+
+	* gnus-fun.el: Require cl and mm-util when compiling.
+
+	* gnus-diary.el (gnus-diary-delay-format-french)
+	(gnus-diary-delay-format-english): Don't use setf with nthcdr.
+
+	* nndiary.el (nndiary-compute-reminders): Don't use setf with
+	nthcdr.
+
 2003-04-16  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-make-cat): Added optional parameter to
@@ -452,13 +471,14 @@
 
 2003-03-28  Paul Jarc  <prj@po.cwru.edu>
 
-	* nnmaildir.el (nnmaildir-request-set-mark,
-	nnmaildir-close-group): Allow each mark directory in a group to
+	* nnmaildir.el (nnmaildir-request-set-mark)
+	(nnmaildir-close-group): Allow each mark directory in a group to
 	have its own inode for mark files, to accommodate AFS.
 
 2003-03-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-start.el (gnus-read-newsrc-el-hook): new hook called by gnus-read-newsrc-el-file
+	* gnus-start.el (gnus-read-newsrc-el-hook): new hook called by
+	gnus-read-newsrc-el-file
 	(gnus-read-newsrc-el-file): call the gnus-read-newsrc-el-hook
 
 	* gnus-registry.el (gnus-registry-translate-to-alist)
@@ -477,7 +497,7 @@
 
 2003-03-27  Katsumi Yamaoka <yamaoka@jpl.org>
 
-	* lpath.el: Bind url-current-object for FSF Emacs; bind
+	* lpath.el: Bind url-current-object for Emacs; bind
 	gnus-agent-expire-current-dirs for XEmacs; fbind open-ssl-stream
 	for both Emacsen.
 
@@ -712,11 +732,9 @@
 
 2003-03-18  Paul Jarc  <prj@po.cwru.edu>
 
-	* nnmaildir.el (nnmaildir-open-server,
-	nnmaildir-request-scan,
-	nnmaildir-request-create-group,
-	nnmaildir-request-delete-group): Replace create-directory with
-	target-prefix.
+	* nnmaildir.el (nnmaildir-open-server, nnmaildir-request-scan)
+	(nnmaildir-request-create-group, nnmaildir-request-delete-group):
+	Replace create-directory with target-prefix.
 
 2003-03-18  Jesper Harder  <harder@ifa.au.dk>
 
