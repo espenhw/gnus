@@ -1,3 +1,7 @@
+2000-08-14 19:12:22  Rod Whitby  <list.ding@rwhitby.net>
+
+	* nnmail.el (nnmail-expiry-target-group): Fixed.
+
 2000-08-14  Rod Whitby <list.ding@rwhitby.net>
 
 	* nnmail.el (nnmail-expiry-target-group): Fix the call to
