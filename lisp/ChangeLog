@@ -1,5 +1,7 @@
 2005-01-16  Simon Josefsson  <jas@extundo.com>
 
+	* hashcash.el: Remove non-FSF copyright header.
+
 	* hashcash.el (hashcash-extra-generate-parameters): New variable.
 	(hashcash-generate-payment): Use it.
 	(hashcash-generate-payment-async): Use it.
