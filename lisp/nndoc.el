@@ -142,6 +142,8 @@ from the document.")
      (article-begin . "^-+ \\(Start of \\)?forwarded message.*\n+")
      (body-end . "^-+ End \\(of \\)?forwarded message.*$")
      (prepare-body-function . nndoc-unquote-dashes))
+    (mail-in-mail ;; Wild guess on mailer daemon's messages or others
+     (article-begin-function . nndoc-mail-in-mail-article-begin))
     (guess
      (guess . t)
      (subtype nil))
@@ -702,6 +704,16 @@ from the document.")
 
 (defun nndoc-oe-dbx-generate-head (article)
   (nndoc-oe-dbx-generate-article article 'head))
+
+(defun nndoc-mail-in-mail-type-p ()
+  (save-excursion
+    (and (search-forward "\n\n" nil t)
+	 (re-search-forward "^[-A-Za-z0-9]+: .*\n\\([ \t]?.*\n\\)*\\(^[-A-Za-z0-9]+: .*\n\\([ \t]?.*\n\\)*\\)+\n" nil t)
+	 t)))
+
+(defun nndoc-mail-in-mail-article-begin ()
+  (when (re-search-forward "^[-A-Za-z0-9]+: .*\n\\([ \t]?.*\n\\)*\\(^[-A-Za-z0-9]+: .*\n\\([ \t]?.*\n\\)*\\)+\n" nil t)
+    (goto-char (match-beginning 0))))
 
 (deffoo nndoc-request-accept-article (group &optional server last)
   nil)

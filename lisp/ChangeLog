@@ -1,3 +1,9 @@
+2002-02-13  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nndoc.el (nndoc-type-alist): Add mail-in-mail type.
+	(nndoc-mail-in-mail-type-p): New function.
+	(nndoc-mail-in-mail-article-begin): New function.
+
 2002-02-12  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mailcap.el (mailcap-mime-data): Use enriched-decode.
