@@ -1,6 +1,6 @@
 @c -*-texinfo-*-
 
-@c Copyright (C) 2004 Free Software Foundation, Inc.
+@c Copyright (C) 2004, 2005 Free Software Foundation, Inc.
 
 @c    Permission is granted to anyone to make or distribute verbatim copies
 @c    of this document as received, in any medium, provided that the
@@ -110,6 +110,9 @@ See the Gnus manual, section Hashcash, for more information.  Use
 @item The @code{nnrss} back end now supports multilingual text.
 Non-@acronym{ASCII} group names for the @code{nnrss} groups are also
 supported.  @xref{RSS}.
+
+@item URLs inside OpenPGP: headers are retrieved and imported to your
+PGP key ring when you click on them.
 
 @end itemize
 
