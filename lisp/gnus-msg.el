@@ -748,7 +748,8 @@ If SILENT, don't prompt the user."
    " "
    (cond
     ((string-match "^\\(\\([.0-9]+\\)*\\)\\.[0-9]+$" emacs-version)
-     (concat "Emacs/" (match-string 1 emacs-version)))
+     (concat "Emacs/" (match-string 1 emacs-version)
+	     " (" system-configuration ")"))
     ((string-match "\\([A-Z]*[Mm][Aa][Cc][Ss]\\)[^(]*\\(\\((beta.*)\\|'\\)\\)?"
 		   emacs-version)
      (concat (match-string 1 emacs-version)
@@ -757,7 +758,7 @@ If SILENT, don't prompt the user."
 		 (match-string 3 emacs-version)
 	       "")
 	     (if (boundp 'xemacs-codename)
-		 (concat " (" xemacs-codename ")")
+		 (concat " (" xemacs-codename ", " system-configuration ")")
 	       "")))
     (t emacs-version))))
 
