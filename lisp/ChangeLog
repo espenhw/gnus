@@ -1,3 +1,8 @@
+2003-12-09  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* nnmail.el (nnmail-lazy, nnmail-split-fancy): New widgets.
+	(nnmail-split-fancy): Use it.
+
 2003-12-08  Joel Ray Holveck <joelh@piquan.org>  (tiny change)
 
 	* gnus-sum.el (gnus-summary-save-parts-1): Consider the "name"

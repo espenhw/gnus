@@ -363,6 +363,64 @@ messages will be shown to indicate the current status."
   :type '(choice (const :tag "infinite" nil)
                  (number :tag "count")))
 
+(define-widget 'nnmail-lazy 'default
+  "Base widget for recursive datastructures.
+
+This is copy of the `lazy' widget in Emacs 21.4 provided for compatibility."
+  :format "%{%t%}: %v"
+  :convert-widget 'widget-value-convert-widget
+  :value-create (lambda (widget)
+                  (let ((value (widget-get widget :value))
+                        (type (widget-get widget :type)))
+                    (widget-put widget :children 
+                                (list (widget-create-child-value 
+                                       widget (widget-convert type) value)))))
+  :value-delete 'widget-children-value-delete
+  :value-get (lambda (widget)
+               (widget-value (car (widget-get widget :children))))
+  :value-inline (lambda (widget)
+                  (widget-apply (car (widget-get widget :children))
+                                :value-inline))
+  :default-get (lambda (widget)
+                 (widget-default-get
+                  (widget-convert (widget-get widget :type))))
+  :match (lambda (widget value)
+           (widget-apply (widget-convert (widget-get widget :type))
+                         :match value))
+  :validate (lambda (widget)
+              (widget-apply (car (widget-get widget :children)) :validate)))
+
+(define-widget 'nnmail-split-fancy 'nnmail-lazy
+  "Widget for customizing splits in the variable of the same name."
+  :tag "Split"
+  :type '(menu-choice :value (any ".*value.*" "misc")
+                      :tag "Type"
+                      (string :tag "Destination")
+                      (list :tag "Or" :value (|)
+                            (const :format "" |)
+                            (editable-list :inline t nnmail-split-fancy))
+                      (list :tag "And" :value (&)
+                            (const :format "" &)
+                            (editable-list :inline t nnmail-split-fancy))
+                      (list :tag "Function with fixed arguments"
+                            :value (:)
+                            (const :format "" :value :)
+                            function 
+                            (editable-list :inline t (sexp :tag "Arg"))
+                            )
+                      (list :tag "Function with split arguments" :value (!)
+                            (const :format "" !)
+                            function
+                            (editable-list :inline t nnmail-split-fancy))
+                      (list :tag "Field match" 
+                            (choice :tag "Field" 
+                                    regexp symbol)
+                            (choice :tag "Match"
+                                    regexp 
+                                    (symbol :value mail))
+                            nnmail-split-fancy)
+                      (const :tag "Junk" junk)))
+
 (defcustom nnmail-split-fancy "mail.misc"
   "Incoming mail can be split according to this fancy variable.
 To enable this, set `nnmail-split-methods' to `nnmail-split-fancy'.
@@ -438,8 +496,7 @@ Example:
 	  ;; Unmatched mail goes to the catch all group.
 	  \"misc.misc\"))"
   :group 'nnmail-split
-  ;; Sigh!
-  :type 'sexp)
+  :type 'nnmail-split-fancy)
 
 (defcustom nnmail-split-abbrev-alist
   '((any . "from\\|to\\|cc\\|sender\\|apparently-to\\|resent-from\\|resent-to\\|resent-cc")
