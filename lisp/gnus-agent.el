@@ -3894,6 +3894,16 @@ If CLEAN, obsolete (ignore)."
 (defun gnus-agent-group-covered-p (group)
   (gnus-agent-method-p (gnus-group-method group)))
 
+;; Added to support XEmacs
+(eval-and-compile
+  (unless (fboundp 'directory-files-and-attributes)
+    (defun directory-files-and-attributes (directory
+					   &optional full match nosort)
+      (let (result)
+	(dolist (file (directory-files directory full match nosort))
+	  (push (cons file (file-attributes file)) result))
+	(nreverse result)))))
+
 (defun gnus-agent-update-files-total-fetched-for 
   (group delta &optional method path)
   "Update, or set, the total disk space used by the articles that the
@@ -3968,16 +3978,6 @@ modified."
 	 (gnus-agent-update-view-total-fetched-for  group nil method path)
 	 (gnus-agent-update-view-total-fetched-for  group t   method path)
 	 (gnus-agent-update-files-total-fetched-for group nil method path))))))
-
-;; Added to support XEmacs
-(eval-and-compile
-  (unless (fboundp 'directory-files-and-attributes)
-    (defun directory-files-and-attributes (directory
-					   &optional full match nosort)
-      (let (result)
-	(dolist (file (directory-files directory full match nosort))
-	  (push (cons file (file-attributes file)) result))
-	(nreverse result)))))
 
 (provide 'gnus-agent)
 
