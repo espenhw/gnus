@@ -1351,14 +1351,14 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (unless (= beg pos)
 	(push (substring newtext beg pos) expanded))
       (when (< pos len)
-	;; we hit a \, expand it.
-	(setq did-expand t)
-	(setq pos (1+ pos))
-	(setq c (aref newtext pos))
+	;; We hit a \; expand it.
+	(setq did-expand t
+	      pos (1+ pos)
+	      c (aref newtext pos))
 	(if (not (or (= c ?\&)
 		     (and (>= c ?1)
 			  (<= c ?9))))
-	    ;; \ followed by some character we don't expand
+	    ;; \ followed by some character we don't expand.
 	    (push (char-to-string c) expanded)
 	  ;; \& or \N
 	  (if (= c ?\&)

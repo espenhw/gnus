@@ -429,7 +429,8 @@ Can be used to turn version control on or off."
 		   (file-exists-p (concat file ".el"))
 		   (file-exists-p (concat file ".elc")))
 	       (condition-case var
-		   (let ((coding-system-for-read 'binary))
+		   (let ((coding-system-for-read
+			  gnus-startup-file-coding-system))
 		     (load file nil t))
 		 (error
 		  (error "Error in %s: %s" file var)))))))))
@@ -1490,7 +1491,7 @@ newsgroup."
 	  (when (<= (gnus-info-level info) foreign-level)
 	    (setq active (gnus-activate-group group 'scan))
 	    ;; Let the Gnus agent save the active file.
-	    (when (and gnus-agent gnus-plugged)
+	    (when (and gnus-agent gnus-plugged active)
 	      (gnus-agent-save-group-info
 	       method (gnus-group-real-name group) active))
 	    (unless (inline (gnus-virtual-group-p group))

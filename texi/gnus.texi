@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.6.28 Manual
+@settitle Gnus 5.6.29 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.6.28 Manual
+@title Gnus 5.6.29 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.6.28.
+This manual corresponds to Gnus 5.6.29.
 
 @end ifinfo
 
@@ -3499,8 +3499,10 @@ without confirmation.  Also @pxref{Group Levels}.
 If non-@code{nil}, all the movement commands will try to go to the next
 article with the same subject as the current.  (@dfn{Same} here might
 mean @dfn{roughly equal}.  See @code{gnus-summary-gather-subject-limit}
-for details (@pxref{Customizing Threading}).)  This variable is not
-particularly useful if you use a threaded display.
+for details (@pxref{Customizing Threading}).)  If there are no more
+articles with the same subject, go to the first unread article.
+
+This variable is not particularly useful if you use a threaded display.
 
 @item gnus-summary-check-current
 @vindex gnus-summary-check-current
@@ -8358,6 +8360,7 @@ So here's a new example:
          (signature-file "~/.mail-signature"))))
 @end lisp
 
+
 @node Drafts
 @section Drafts
 @cindex drafts
@@ -11535,7 +11538,7 @@ Hook run in category buffers.
 @item gnus-category-line-format
 @vindex gnus-category-line-format
 Format of the lines in the category buffer (@pxref{Formatting
-Variables}).  Legal elements are:
+Variables}).  Valid elements are:
 
 @table @samp
 @item c
@@ -15077,7 +15080,7 @@ foreground and background color of the splash page glyph.
 @item gnus-xmas-logo-color-style
 @vindex gnus-xmas-logo-color-style
 This is the key used to look up the color in the alist described above.
-Legal values include @code{flame}, @code{pine}, @code{moss},
+Valid values include @code{flame}, @code{pine}, @code{moss},
 @code{irish}, @code{sky}, @code{tin}, @code{velvet}, @code{grape},
 @code{labia}, @code{berry}, @code{neutral}, and @code{september}.
 
@@ -15384,7 +15387,7 @@ On July 28th 1996 work on Red Gnus was begun, and it was released on
 January 25th 1997 (after 84 releases) as ``Gnus 5.4'' (67 releases).
 
 On September 13th 1997, Quassia Gnus was started and lasted 37
-releases.  If was released as ``Gnus 5.6.28' on March 8th 1998.
+releases.  If was released as ``Gnus 5.6.29' on March 8th 1998.
 
 If you happen upon a version of Gnus that has a prefixed name --
 ``(ding) Gnus'', ``September Gnus'', ``Red Gnus'', ``Quassia Gnus'' --
@@ -15861,7 +15864,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
-* Quassia Gnus::       Two times two is four, or Gnus 5.6.28.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6.29.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -16396,7 +16399,7 @@ Emphasized text can be properly fontisized:
 @node Quassia Gnus
 @subsubsection Quassia Gnus
 
-New features in Gnus 5.6.28:
+New features in Gnus 5.6.29:
 
 @itemize @bullet
 

@@ -1,3 +1,65 @@
+Thu Aug  6 07:58:17 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.29 is released.
+
+1998-08-06 07:10:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-agent.el (gnus-agent-expire): Check whether (caar
+	gnus-agent-article-alist) is nil.
+
+	* gnus.el (gnus-read-method): Allow selecting predefined servers. 
+
+	* gnus-topic.el (gnus-topic-update-topic-line): Compute right
+	number when inserting missing topic lines.
+
+	* gnus-start.el (gnus-get-unread-articles): Check that the group
+	is alive.
+
+	* gnus-score.el (gnus-score-load-score-alist): Better error
+	messaging. 
+
+Tue Aug  4 09:42:31 1998  Kurt Swanson  <ksw@dna.lth.se>
+
+	* gnus-salt.el (gnus-pick-mouse-pick-region): Fix picking bug due
+	to use of gnus-read-event-char.
+
+1998-07-28  Dave Love  <d.love@dl.ac.uk>
+
+	* gnus-group.el (gnus-group-fetch-faq): Don't mung dots in group
+	name.
+
+1998-07-27  Dave Love  <d.love@dl.ac.uk>
+
+	* gnus-topic.el (gnus-topic-mode-map): Provide Emacs tty
+	alternatives to [tab], [(meta tab)].
+
+1998-08-06 04:41:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-start.el (gnus-startup-file-coding-system): New variable.
+	(gnus-read-init-file): Use it.
+	(gnus-read-newsrc-el-file): Ditto.
+
+	* gnus-sum.el (gnus-thread-ignore-subject): Changed default.
+
+1998-08-06 04:38:02  Richard Stallman  <rms@gnu.org>
+
+	* message.el (sendmail): Required.
+
+1998-08-06 02:11:37  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-auto-select-same): Dix fix.
+
+1998-08-04  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-sum.el (gnus-select-newsgroup): Set
+	`gnus-newsgroup-unselected' when selecting specific articles via
+	SELECT-ARTICLE - there may be more headers to fetch if
+	`gnus-fetch-old-headers' is non-nil. 
+	(gnus-summary-read-group): pass SELECT-ARTICLE to
+	`gnus-summary-read-group-1' and reset to nil when going to next group.
+	(gnus-summary-read-group): Change `select-article' to
+	`select-articles' for consistency.
+
 Tue Aug  4 05:25:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.28 is released.

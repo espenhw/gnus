@@ -647,7 +647,8 @@ articles in the topic and its subtopics."
     (when parent
       (forward-line -1)
       (gnus-topic-update-topic-line
-       parent (- (or old-unread 0) (or (gnus-group-topic-unread) 0))))
+       parent
+       (max 0 (- (or old-unread 0) (or (gnus-group-topic-unread) 0)))))
     unread))
 
 (defun gnus-topic-group-indentation ()
@@ -912,6 +913,8 @@ articles in the topic and its subtopics."
     "\M-#" gnus-topic-unmark-topic
     [tab] gnus-topic-indent
     [(meta tab)] gnus-topic-unindent
+    "\C-i" gnus-topic-indent
+    "\M-\C-i" gnus-topic-unindent
     gnus-mouse-2 gnus-mouse-pick-topic)
 
   ;; Define a new submap.

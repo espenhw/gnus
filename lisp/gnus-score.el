@@ -1213,10 +1213,16 @@ SCORE is the score to add."
 		    (read (current-buffer))
 		  (error
 		   (gnus-error 3.2 "Problem with score file %s" file))))))
-      (if (eq (car alist) 'setq)
-	  ;; This is an old-style score file.
-	  (setq gnus-score-alist (gnus-score-transform-old-to-new alist))
-	(setq gnus-score-alist alist))
+      (cond
+       ((and alist
+	     (atom alist))
+	;; Bogus score file.
+	(error "Invalid syntax with score file %s" file))
+       ((eq (car alist) 'setq)
+	;; This is an old-style score file.
+	(setq gnus-score-alist (gnus-score-transform-old-to-new alist)))
+       (t
+	(setq gnus-score-alist alist)))
       ;; Check the syntax of the score file.
       (setq gnus-score-alist
 	    (gnus-score-check-syntax gnus-score-alist file)))))

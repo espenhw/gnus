@@ -218,10 +218,10 @@ to expose hidden threads."
   :group 'gnus-thread
   :type 'boolean)
 
-(defcustom gnus-thread-ignore-subject nil
-  "*If non-nil, ignore subjects and do all threading based on the Reference header.
-If nil, which is the default, articles that have different subjects
-from their parents will start separate threads."
+(defcustom gnus-thread-ignore-subject t
+  "*If non-nil, which is the default, ignore subjects and do all threading based on the Reference header.
+If nil, articles that have different subjects from their parents will
+start separate threads."
   :group 'gnus-thread
   :type 'boolean)
 
@@ -282,7 +282,9 @@ will go to the next group without confirmation."
 		 (sexp :menu-tag "on" t)))
 
 (defcustom gnus-auto-select-same nil
-  "*If non-nil, select the next article with the same subject."
+  "*If non-nil, select the next article with the same subject.
+If there are no more articles with the same subject, go to
+the first unread article."
   :group 'gnus-summary-maneuvering
   :type 'boolean)
 
@@ -2508,7 +2510,7 @@ the thread are to be displayed."
 
 (defun gnus-summary-read-group (group &optional show-all no-article
 				      kill-buffer no-display backward
-				      select-article)
+				      select-articles)
   "Start reading news in newsgroup GROUP.
 If SHOW-ALL is non-nil, already read articles are also listed.
 If NO-ARTICLE is non-nil, no article is selected initially.
@@ -2519,9 +2521,10 @@ If NO-DISPLAY, don't generate a summary buffer."
 			    (let ((gnus-auto-select-next nil))
 			      (or (gnus-summary-read-group-1
 				   group show-all no-article
-				   kill-buffer no-display)
-				  (setq show-all nil)
-				  select-article))))
+				   kill-buffer no-display
+				   select-articles)
+				  (setq show-all nil
+				   select-articles nil)))))
 		(eq gnus-auto-select-next 'quietly))
       (set-buffer gnus-group-buffer)
       ;; The entry function called above goes to the next
@@ -3872,7 +3875,12 @@ If SELECT-ARTICLES, only select those articles from GROUP."
     (unless (gnus-ephemeral-group-p gnus-newsgroup-name)
       (gnus-group-update-group group))
 
-    (setq articles (or select-articles (gnus-articles-to-read group read-all)))
+    (if (setq articles select-articles)
+	(setq gnus-newsgroup-unselected
+	      (gnus-sorted-intersection
+	       gnus-newsgroup-unreads
+	       (gnus-sorted-complement gnus-newsgroup-unreads articles)))
+      (setq articles (gnus-articles-to-read group read-all)))
 
     (cond
      ((null articles)

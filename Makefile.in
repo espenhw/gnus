@@ -37,7 +37,7 @@ x:
 
 distclean:
 	make clean
-	rm -r *~
+	rm -rf *~
 	for i in lisp texi; do (cd $$i; make distclean); done
 	rm -f config.log config.status Makefile
 

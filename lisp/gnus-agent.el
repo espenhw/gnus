@@ -1358,9 +1358,11 @@ The following commands are available:
 	       (setq gnus-agent-article-alist (cdr first))
 	       ;;; Mark all articles up to the first article
 	       ;;; in `gnus-article-alist' as read.
-	       (setcar (nthcdr 2 info)
-		       (gnus-range-add
-			(nth 2 info) (cons 1 (- (caar gnus-agent-article-alist) 1))))
+	       (when (caar gnus-agent-article-alist)
+		 (setcar (nthcdr 2 info)
+			 (gnus-range-add
+			  (nth 2 info)
+			  (cons 1 (- (caar gnus-agent-article-alist) 1)))))
 	       (gnus-dribble-enter
 		(concat "(gnus-group-set-info '"
 			(gnus-prin1-to-string info)

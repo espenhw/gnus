@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Message 5.6.28 Manual
+@settitle Message 5.6.29 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -42,7 +42,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Message 5.6.28 Manual
+@title Message 5.6.29 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -83,7 +83,7 @@ Message mode buffers.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Message 5.6.28.  Message is distributed with
+This manual corresponds to Message 5.6.29.  Message is distributed with
 the Gnus distribution bearing the same version number as this manual
 has. 
 
@@ -680,7 +680,7 @@ message.
 
 @item message-from-style
 @vindex message-from-style
-Specifies how @code{From} headers should look.  There are four legal
+Specifies how @code{From} headers should look.  There are four valid
 values:
 
 @table @code
@@ -782,7 +782,7 @@ headers.
 @vindex message-required-news-headers
 @code{message-required-news-headers} a list of header symbols.  These
 headers will either be automatically generated, or, if that's
-impossible, they will be prompted for.  The following symbols are legal:
+impossible, they will be prompted for.  The following symbols are valid:
 
 @table @code
 
@@ -888,10 +888,16 @@ Other variables for customizing outgoing news articles:
 
 @item message-syntax-checks
 @vindex message-syntax-checks
-If non-@code{nil}, Message will attempt to check the legality of the
-headers, as well as some other stuff, before posting.  You can control
-the granularity of the check by adding or removing elements from this
-list.  Legal elements are:
+Controls what syntax checks should not be performed on outgoing posts.
+To disable checking of long signatures, for instance, add
+
+@lisp
+(signature . disabled)
+@end lisp
+
+to this list.
+
+Valid checks are:
 
 @table @code
 @item subject-cmsg 
@@ -912,7 +918,7 @@ Check whether the @code{From} header seems nice.
 @cindex long lines
 Check for too long lines.
 @item control-chars
-Check for illegal characters.
+Check for invalid characters.
 @item size
 Check for excessive size.
 @item new-text

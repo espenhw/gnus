@@ -2954,8 +2954,6 @@ to use."
     (while (and (not found)
 		(setq dir (pop dirs)))
       (let ((name (gnus-group-real-name group)))
-	(while (string-match "\\." name)
-	  (setq name (replace-match "/" t t name)))
 	(setq file (concat (file-name-as-directory dir) name)))
       (if (not (file-exists-p file))
 	  (gnus-message 1 "No such file: %s" file)

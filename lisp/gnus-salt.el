@@ -241,48 +241,48 @@ This must be bound to a button-down mouse event."
     ;; (but not outside the window where the drag started).
     (let (event end end-point last-end-point (end-of-range (point)))
       (track-mouse
-       (while (progn
-		(setq event (gnus-read-event-char))
-		(or (mouse-movement-p event)
-		    (eq (car-safe event) 'switch-frame)))
-	 (if (eq (car-safe event) 'switch-frame)
-	     nil
-	   (setq end (event-end event)
-		 end-point (posn-point end))
-	   (when end-point
-	     (setq last-end-point end-point))
+	(while (progn
+		 (setq event (cdr (gnus-read-event-char)))
+		 (or (mouse-movement-p event)
+		     (eq (car-safe event) 'switch-frame)))
+	  (if (eq (car-safe event) 'switch-frame)
+	      nil
+	    (setq end (event-end event)
+		  end-point (posn-point end))
+	    (when end-point
+	      (setq last-end-point end-point))
 
-	   (cond
-	    ;; Are we moving within the original window?
-	    ((and (eq (posn-window end) start-window)
-		  (integer-or-marker-p end-point))
-	     ;; Go to START-POINT first, so that when we move to END-POINT,
-	     ;; if it's in the middle of intangible text,
-	     ;; point jumps in the direction away from START-POINT.
-	     (goto-char start-point)
-	     (goto-char end-point)
-	     (gnus-pick-article)
-	     ;; In case the user moved his mouse really fast, pick
-	     ;; articles on the line between this one and the last one.
-	     (let* ((this-line (1+ (count-lines 1 end-point)))
-		    (min-line (min this-line start-line))
-		    (max-line (max this-line start-line)))
-	       (while (< min-line max-line)
-		 (goto-line min-line)
-		 (gnus-pick-article)
-		 (setq min-line (1+ min-line)))
-	       (setq start-line this-line))
-	     (when (zerop (% click-count 3))
-	       (setq end-of-range (point))))
-	    (t
-	     (let ((mouse-row (cdr (cdr (mouse-position)))))
-	       (cond
-		((null mouse-row))
-		((< mouse-row top)
-		 (mouse-scroll-subr start-window (- mouse-row top)))
-		((>= mouse-row bottom)
-		 (mouse-scroll-subr start-window
-				    (1+ (- mouse-row bottom)))))))))))
+	    (cond
+	     ;; Are we moving within the original window?
+	     ((and (eq (posn-window end) start-window)
+		   (integer-or-marker-p end-point))
+	      ;; Go to START-POINT first, so that when we move to END-POINT,
+	      ;; if it's in the middle of intangible text,
+	      ;; point jumps in the direction away from START-POINT.
+	      (goto-char start-point)
+	      (goto-char end-point)
+	      (gnus-pick-article)
+	      ;; In case the user moved his mouse really fast, pick
+	      ;; articles on the line between this one and the last one.
+	      (let* ((this-line (1+ (count-lines 1 end-point)))
+		     (min-line (min this-line start-line))
+		     (max-line (max this-line start-line)))
+		(while (< min-line max-line)
+		  (goto-line min-line)
+		  (gnus-pick-article)
+		  (setq min-line (1+ min-line)))
+		(setq start-line this-line))
+	      (when (zerop (% click-count 3))
+		(setq end-of-range (point))))
+	     (t
+	      (let ((mouse-row (cdr (cdr (mouse-position)))))
+		(cond
+		 ((null mouse-row))
+		 ((< mouse-row top)
+		  (mouse-scroll-subr start-window (- mouse-row top)))
+		 ((>= mouse-row bottom)
+		  (mouse-scroll-subr start-window
+				     (1+ (- mouse-row bottom)))))))))))
       (when (consp event)
 	(let ((fun (key-binding (vector (car event)))))
 	  ;; Run the binding of the terminating up-event, if possible.

@@ -1,3 +1,11 @@
+1998-08-06 02:12:04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi: De-legalize.
+
+	* message.texi: De-legalize.
+
+	* gnus.texi (Summary Maneuvering): Fix.
+
 1998-07-21 17:51  Simon Josefsson  <jas@pdc.kth.se>
 
 	* gnus.texi (Splitting Mail): junk is fancy splitting only
