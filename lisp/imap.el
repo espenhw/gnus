@@ -497,11 +497,11 @@ If ARGS, PROMPT is used as an argument to `format'."
 	    (while (and (memq (process-status process) '(open run))
 			(set-buffer buffer) ;; XXX "blue moon" nntp.el bug
 			(goto-char (point-min))
-		   ;; cyrus 1.6.x (13? < x <= 22) queries capabilities
+			;; cyrus 1.6.x (13? < x <= 22) queries capabilities
 		        (or (while (looking-at "^C:")
 			      (forward-line))
 			    t)
-		;; cyrus 1.6 imtest print "S: " before server greeting
+			;; cyrus 1.6 imtest print "S: " before server greeting
 			(or (not (looking-at "S: "))
 			    (forward-char 3)
 			    t)
@@ -561,11 +561,11 @@ If ARGS, PROMPT is used as an argument to `format'."
 	    (while (and (memq (process-status process) '(open run))
 			(set-buffer buffer) ;; XXX "blue moon" nntp.el bug
 			(goto-char (point-min))
-		   ;; cyrus 1.6.x (13? < x <= 22) queries capabilities
+			;; cyrus 1.6.x (13? < x <= 22) queries capabilities
 		        (or (while (looking-at "^C:")
 			      (forward-line))
 			    t)
-		;; cyrus 1.6 imtest print "S: " before server greeting
+			;; cyrus 1.6 imtest print "S: " before server greeting
 			(or (not (looking-at "S: "))
 			    (forward-char 3)
 			    t)

@@ -44,26 +44,18 @@
 (nnoo-declare nnml)
 
 (defvoo nnml-directory message-directory
-  "Spool directory for the nnml mail backend.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+  "Spool directory for the nnml mail backend.")
 
 (defvoo nnml-active-file
     (expand-file-name "active" nnml-directory)
-  "Mail active file.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+  "Mail active file.")
 
 (defvoo nnml-newsgroups-file
     (expand-file-name "newsgroups" nnml-directory)
-  "Mail newsgroups description file.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+  "Mail newsgroups description file.")
 
 (defvoo nnml-get-new-mail t
-  "If non-nil, nnml will check the incoming mail file and split the mail.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+  "If non-nil, nnml will check the incoming mail file and split the mail.")
 
 (defvoo nnml-nov-is-evil nil
   "If non-nil, Gnus will never generate and use nov databases for mail spools.
@@ -72,9 +64,7 @@ This variable shouldn't be flipped much.  If you have, for some reason,
 set this to t, and want to set it to nil again, you should always run
 the `nnml-generate-nov-databases' command.  The function will go
 through all nnml directories and generate nov databases for them
-all.  This may very well take some time.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+all.  This may very well take some time.")
 
 (defvoo nnml-marks-is-evil nil
   "If non-nil, Gnus will never generate and use marks file for mail spools.
@@ -83,26 +73,18 @@ separately from `.newsrc.eld'.  If you have, for some reason, set this
 to t, and want to set it to nil again, you should always remove the
 corresponding marks file (usually named `.marks' in the nnml group
 directory, but see `nnml-marks-file-name') for the group.  Then the
-marks file will be regenerated properly by Gnus.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+marks file will be regenerated properly by Gnus.")
 
 (defvoo nnml-filenames-are-evil t
   "If non-nil, Gnus will not assume that the articles file name 
 is the same as the article number listed in the nov database.  This 
-variable should be set if any of the files are compressed.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+variable should be set if any of the files are compressed.")
 
 (defvoo nnml-prepare-save-mail-hook nil
-  "Hook run narrowed to an article before saving.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+  "Hook run narrowed to an article before saving.")
 
 (defvoo nnml-inhibit-expiry nil
-  "If non-nil, inhibit expiry.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+  "If non-nil, inhibit expiry.")
 
 
 

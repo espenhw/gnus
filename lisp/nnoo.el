@@ -38,7 +38,7 @@
   "The same as `defvar', only takes list of variables to MAP to."
   `(prog1
        ,(if doc
-	    `(defvar ,var ,init ,doc)
+	    `(defvar ,var ,init ,(concat doc "\n\nThis is a Gnus server variable.  See Info node `(gnus)Select Methods'."))
 	  `(defvar ,var ,init))
      (nnoo-define ',var ',map)))
 (put 'defvoo 'lisp-indent-function 2)

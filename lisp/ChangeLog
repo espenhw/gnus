@@ -1,3 +1,35 @@
+2001-12-12  Simon Josefsson  <jas@extundo.com>
+
+	* nnvirtual.el (nnvirtual-always-rescan) 
+	(nnvirtual-component-regexp): Fix doc.
+
+	* nnoo.el (defvoo): Add doc to defvoo variables.
+
+	* nnml.el (nnml-directory, nnml-active-file) 
+	(nnml-newsgroups-file, nnml-get-new-mail, nnml-nov-is-evil) 
+	(nnml-marks-is-evil, nnml-filenames-are-evil) 
+	(nnml-prepare-save-mail-hook, nnml-inhibit-expiry): Fix doc.
+
+	* nnmh.el (nnmh-directory, nnmh-get-new-mail)
+	(nnmh-prepare-save-mail-hook, nnmh-be-safe): Fix doc.
+	(nnmh-possibly-change-directory): Use `nnheader-report' instead of
+	`error'.
+
+	* nnmbox.el (nnmbox-mbox-file, nnmbox-active-file) 
+	(nnmbox-get-new-mail, nnmbox-prepare-save-mail-hook): 
+
+	* nnfolder.el (nnfolder-directory, nnfolder-active-file) 
+	(nnfolder-newsgroups-file, nnfolder-get-new-mail) 
+	(nnfolder-save-buffer-hook, nnfolder-inhibit-expiry) 
+	(nnfolder-nov-is-evil, nnfolder-marks-is-evil): Fix doc.
+
+	* nnbabyl.el (nnbabyl-mbox-file, nnbabyl-active-file) 
+	(nnbabyl-get-new-mail, nnbabyl-prepare-save-mail-hook): Fix doc.
+
+	* imap.el, nnimap.el: Fix indentation.
+
+	* gnus-sieve.el (gnus-sieve-article-add-rule): Autoload it.
+
 2001-12-12  Didier Verna  <didier@xemacs.org>
 
 	* gnus-msg.el (gnus-group-news): New function.

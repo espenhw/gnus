@@ -45,13 +45,13 @@
 (nnoo-declare nnvirtual)
 
 (defvoo nnvirtual-always-rescan t
-  "*If non-nil, always scan groups for unread articles when entering a group.
+  "If non-nil, always scan groups for unread articles when entering a group.
 If this variable is nil and you read articles in a component group
 after the virtual group has been activated, the read articles from the
 component group will show up when you enter the virtual group.")
 
 (defvoo nnvirtual-component-regexp nil
-  "*Regexp to match component groups.")
+  "Regexp to match component groups.")
 
 (defvoo nnvirtual-component-groups nil
   "Component group in this nnvirtual group.")

@@ -488,7 +488,7 @@ If EXAMINE is non-nil the group is selected read-only."
 	      mbx imap-current-mailbox
 	      headers (nnimap-demule
 		       (if (imap-capability 'IMAP4rev1)
-		      ;; xxx don't just use car? alist doesn't contain
+			   ;; xxx don't just use car? alist doesn't contain
 			   ;; anything else now, but it might...
 			   (nth 2 (car (imap-message-get uid 'BODYDETAIL)))
 			 (imap-message-get uid 'RFC822.HEADER)))

@@ -120,6 +120,7 @@ Return NIL if no rule could be guessed."
   (when (message-fetch-field "sender")
     `(sieve address "sender" ,(regexp-quote (message-fetch-field "sender")))))
 
+;;;###autoload
 (defun gnus-sieve-article-add-rule ()
   (interactive)
   (gnus-summary-select-article nil 'force)

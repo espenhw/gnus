@@ -41,27 +41,19 @@
 (nnoo-declare nnmh)
 
 (defvoo nnmh-directory message-directory
-  "*Mail spool directory.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+  "Mail spool directory.")
 
 (defvoo nnmh-get-new-mail t
-  "*If non-nil, nnmh will check the incoming mail file and split the mail.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+  "If non-nil, nnmh will check the incoming mail file and split the mail.")
 
 (defvoo nnmh-prepare-save-mail-hook nil
-  "*Hook run narrowed to an article before saving.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+  "Hook run narrowed to an article before saving.")
 
 (defvoo nnmh-be-safe nil
-  "*If non-nil, nnmh will check all articles to make sure whether they are new or not.
+  "If non-nil, nnmh will check all articles to make sure whether they are new or not.
 Go through the .nnmh-articles file and compare with the actual
 articles in this folder.  The articles that are \"new\" will be marked
-as unread by Gnus.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+as unread by Gnus.")
 
 
 
@@ -432,7 +424,7 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
 	  (file-name-coding-system nnmail-pathname-coding-system))
       (if (file-directory-p pathname)
 	  (setq nnmh-current-directory pathname)
-	(error "No such newsgroup: %s" newsgroup)))))
+	(nnheader-report 'nnmh "Not a directory: %s" nnmh-directory)))))
 
 (defun nnmh-possibly-create-directory (group)
   (let (dir dirs)

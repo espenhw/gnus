@@ -43,25 +43,17 @@
 (nnoo-declare nnbabyl)
 
 (defvoo nnbabyl-mbox-file (expand-file-name "~/RMAIL")
-  "The name of the rmail box file in the users home directory.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+  "The name of the rmail box file in the users home directory.")
 
 (defvoo nnbabyl-active-file (expand-file-name "~/.rmail-active")
-  "The name of the active file for the rmail box.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+  "The name of the active file for the rmail box.")
 
 (defvoo nnbabyl-get-new-mail t
-  "If non-nil, nnbabyl will check the incoming mail file and split the mail.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+  "If non-nil, nnbabyl will check the incoming mail file and split the mail.")
 
 
 (defvoo nnbabyl-prepare-save-mail-hook nil
-  "Hook run narrowed to an article before saving.
-
-This variable is a virtual server slot.  See the Gnus manual for details.")
+  "Hook run narrowed to an article before saving.")
 
 
 
