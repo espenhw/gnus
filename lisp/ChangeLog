@@ -1,3 +1,8 @@
+2002-10-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-view.el (mm-text-html-renderer-alist): Add w3m-standalone. 
+	(mm-text-html-washer-alist): Ditto.
+
 2002-10-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* nnheader.el (nnheader-remove-body): Fix an error of detecting
