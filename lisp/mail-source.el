@@ -630,11 +630,14 @@ This only works when `display-time' is enabled."
 				(with-temp-file mail-source-crash-box
 				  (insert-file-contents file)
 				  (goto-char (point-min))
-				  (unless (looking-at "\n*From ")
-				    (insert "From maildir " 
-					    (current-time-string) "\n"))
-				  (while (re-search-forward "^From " nil t)
-				    (replace-match ">From "))
+;;;                               ;; Unix mail format
+;;; 				  (unless (looking-at "\n*From ")
+;;; 				    (insert "From maildir " 
+;;; 					    (current-time-string) "\n"))
+;;; 				  (while (re-search-forward "^From " nil t)
+;;; 				    (replace-match ">From "))
+				  ;; MMDF mail format
+				  (insert "\001\001\001\001\n")
 				  (goto-char (point-max))
 				  (insert "\n\n"))
 				(delete-file file)))))
