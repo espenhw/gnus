@@ -119,7 +119,7 @@ Output to the current buffer, replace text, and don't mingle error."
 	(if (> (length attempt) 726)
 	    (progn
 	      (setq quant (- quant 2))
-	      (gnus-message 4 "Length %d; trying quant %d"
+	      (gnus-message 9 "Length %d; trying quant %d"
 			    (length attempt) quant))
 	  (setq done t)))
       (if done

@@ -1,3 +1,7 @@
+2004-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-fun.el (gnus-face-from-file): Message 9.
+
 2004-01-03  Romain FRANCOISE  <romain@orebokech.com>
 
 	* gnus-fun.el (gnus-face-from-file): Use gnus-message.
