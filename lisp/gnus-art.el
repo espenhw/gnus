@@ -1060,11 +1060,12 @@ Initialized from `text-mode-syntax-table.")
 
 (defsubst gnus-article-hide-text (b e props)
   "Set text PROPS on the B to E region, extending `intangible' 1 past B."
-  (add-text-properties b e props)
+  (gnus-add-text-properties-when 'article-type nil b e props)
   (when (memq 'intangible props)
     (put-text-property
      (max (1- b) (point-min))
      b 'intangible (cddr (memq 'intangible props)))))
+
 (defsubst gnus-article-unhide-text (b e)
   "Remove hidden text properties from region between B and E."
   (remove-text-properties b e gnus-hidden-properties)
@@ -1983,24 +1984,16 @@ means show, 0 means toggle."
 	'hidden
       nil)))
 
-(defun gnus-article-show-hidden-text (type &optional hide)
+(defun gnus-article-show-hidden-text (type &optional dummy)
   "Show all hidden text of type TYPE.
-If HIDE, hide the text instead."
-  (save-excursion
-    (let ((buffer-read-only nil)
-	  (inhibit-point-motion-hooks t)
-	  (end (point-min))
-	  beg)
-      (while (setq beg (text-property-any end (point-max) 'article-type type))
-	(goto-char beg)
-	(setq end (or
-		   (text-property-not-all beg (point-max) 'article-type type)
-		   (point-max)))
-	(if hide
-	    (gnus-article-hide-text beg end gnus-hidden-properties)
-	  (gnus-article-unhide-text beg end))
-	(goto-char end))
-      t)))
+Originally it is hide instead of DUMMY."
+  (let ((buffer-read-only nil)
+	(inhibit-point-motion-hooks t))
+    (gnus-remove-text-properties-when 
+     'article-type type
+     (point-min) (point-max) 
+     (cons 'article-type (cons type
+			       gnus-hidden-properties)))))
 
 (defconst article-time-units
   `((year . ,(* 365.25 24 60 60))
@@ -4713,9 +4706,15 @@ specified by `gnus-button-alist'."
     (set-buffer gnus-article-buffer)
     (let ((buffer-read-only nil)
 	  (inhibit-point-motion-hooks t))
-      (if (get-text-property end 'invisible)
-	  (gnus-article-unhide-text end (point-max))
-	(gnus-article-hide-text end (point-max) gnus-hidden-properties)))))
+      (if (text-property-any end (point-max) 'article-type 'signature)
+	  (gnus-remove-text-properties-when
+	   'article-type 'signature end (point-max)
+	   (cons 'article-type (cons 'signature
+				     gnus-hidden-properties)))
+	(gnus-add-text-properties-when
+	 'article-type nil end (point-max)
+	 (cons 'article-type (cons 'signature
+				   gnus-hidden-properties)))))))
 
 (defun gnus-button-entry ()
   ;; Return the first entry in `gnus-button-alist' matching this place.

@@ -1,3 +1,15 @@
+2000-11-30 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-util.el (gnus-add-text-properties-when): New function.
+	(gnus-remove-text-properties-when): Ditto.
+
+	* gnus-cite.el (gnus-article-hide-citation): Use them.
+	(gnus-article-toggle-cited-text): Use them.
+	
+	* gnus-art.el (gnus-signature-toggle): Use them.
+	(gnus-article-show-hidden-text): Ditto.
+	(gnus-article-hide-text): Ditto.
+
 2000-11-30 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-find-charset-region): Remove eight-bit-*.

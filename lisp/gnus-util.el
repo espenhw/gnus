@@ -990,6 +990,28 @@ Entries without port tokens default to DEFAULTPORT."
 	     (pop l2))
 	   l1))))
 
+(defun gnus-add-text-properties-when
+  (property value start end properties &optional object)
+  "Like `gnus-add-text-properties', only applied on where PROPERTY is VALUE."
+  (let (point)
+    (while (and start 
+		(setq point (text-property-not-all start end property value)))
+      (gnus-add-text-properties start point properties object)
+      (setq start (text-property-any point end property value)))
+    (if start
+	(gnus-add-text-properties start end properties object))))
+
+(defun gnus-remove-text-properties-when
+  (property value start end properties &optional object)
+  "Like `remove-text-properties', only applied on where PROPERTY is VALUE."
+  (let (point)
+    (while (and start 
+		(setq point (text-property-not-all start end property value)))
+      (remove-text-properties start point properties object)
+      (setq start (text-property-any point end property value)))
+    (if start
+	(remove-text-properties start end properties object))))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here
