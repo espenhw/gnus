@@ -106,6 +106,8 @@ commands in your @code{~/.emacs}:
 
 @lisp
 (autoload 'sieve-mode "sieve-mode")
+@end lisp
+@lisp
 (setq auto-mode-alist (cons '("\\.si\\(v\\|eve\\)\\'" . sieve-mode)
                             auto-mode-alist))
 @end lisp

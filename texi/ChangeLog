@@ -1,3 +1,10 @@
+2001-11-01  Simon Josefsson  <jas@extundo.com>
+
+	* sieve.texi (Installation): Workaround texi2latex bug (replacing
+	inside verbatim needs a \end{verbatim} earlier in the file).
+
+	* texi2latex.el (latexi-translate): Add sieve.
+
 2001-11-01 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Article Washing): Add a note.

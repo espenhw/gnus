@@ -37,7 +37,8 @@
   (latexi-translate-file "gnus")
   (latexi-translate-file "gnus-faq")
   (latexi-translate-file "message" t)
-  (latexi-translate-file "emacs-mime" t))
+  (latexi-translate-file "emacs-mime" t)
+  (latexi-translate-file "sieve-mime" t))
 
 (defun latexi-translate-file (file &optional as-a-chapter)
   "Translate file a LaTeX file."
