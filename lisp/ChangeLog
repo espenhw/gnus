@@ -1,3 +1,8 @@
+2001-11-25  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* message.el (message-wash-subject): Use `insert' rather than
+	`insert-string', which is deprecated.
+
 2001-11-24  Simon Josefsson  <jas@extundo.com>
 
 	* mm-encode.el (mm-encode-content-transfer-encoding): Fix error
