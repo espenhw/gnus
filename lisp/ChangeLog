@@ -1,4 +1,12 @@
+Wed Aug  2 14:13:16 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.99.2 is released.
+
+	* nnfolder.el (nnfolder-active-number): Did not work.
+
 Sun Jul 30 22:02:46 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* 0.99.1 is released.
 
 	* gnus-msg.el (gnus-debug): Remove null chars.
 

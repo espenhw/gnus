@@ -562,8 +562,8 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	    (setq nnfolder-group-alist 
 		  (cons (list group (setq active (cons 1 1)))
 			nnfolder-group-alist)))
-	  (cdr active)))
-    (nnfolder-possibly-activate-groups group)))
+	  (cdr active))
+      (nnfolder-possibly-activate-groups group))))
 
 
 ;; This method has a problem if you've accidentally let the active list get
