@@ -21825,32 +21825,7 @@ readers.
 @end iftex
 @c @anchor{X-Face}
 
-Gnus now uses the internal ELisp-based @code{uncompface} program for
-decoding an @code{X-Face} header normally in Emacs.  While it doesn't
-require any other external program, you may feel it is slow if you are
-using a slow machine.  In such a case, you can modify the following
-variables:
-
-@table @code
-@item uncompface-use-external
-@vindex uncompface-use-external
-Specify which of the internal or the external decoder should be used.
-@code{nil} means to use the internal ELisp-based @code{uncompface}
-program.  @code{t} means to use the external decoder.  The default value
-is normally @code{undecided} which means to determine it by checking
-whether the host machine is slow, being controlled by
-@code{uncompface-use-external-threshold} (which see).
-
-@item uncompface-use-external-threshold
-@vindex uncompface-use-external-threshold
-A number of seconds to check whether the host machine is slow.  If the
-host takes time larger than this value for decoding an @code{X-Face}
-using the internal ELisp-based @code{uncompface} program, it will be
-changed to using the external decoder.  The default is 0.1 seconds.
-@end table
-
-If the internal decoder is invalidated or if you are using XEmacs,
-decoding an @code{X-Face} header either requires an Emacs that has
+Decoding an @code{X-Face} header either requires an Emacs that has
 @samp{compface} support (which most XEmacs versions has), or that you
 have @samp{compface} installed on your system.  If either is true,
 Gnus will default to displaying @code{X-Face} headers.
@@ -26801,10 +26776,6 @@ Set @code{gnus-check-new-newsgroups} and
 Set @code{gnus-show-threads}, @code{gnus-use-cross-reference} and
 @code{gnus-nov-is-evil} to @code{nil} to make entering and exiting the
 summary buffer faster.
-
-Gnus uses the internal ELisp-based @code{uncompface} program for
-decoding an @code{X-Face} header normally in Emacs.  If you feel it is
-slow, set @code{uncompface-use-external} to @code{t}.  @xref{X-Face}.
 
 
 @page
