@@ -1,3 +1,7 @@
+2004-10-25  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-encrypt.el: removed in favor of encrypt.el
+
 2004-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-view.el (mm-display-inline-fontify): Inhibit font-lock when
