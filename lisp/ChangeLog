@@ -1,5 +1,10 @@
 2000-10-05  Dave Love  <fx@gnu.org>
 
+	* rfc2047.el (rfc2047-fold-region): Use gnus-point-at-bol.
+	(rfc2047-charset-encoding-alist): Add iso-8859-1[45].
+
+	* binhex.el: Use defalias, not fset.
+
 	* rfc1843.el: Require cl when compiling.
 
 2000-10-05 12:25:08  ShengHuo ZHU  <zsh@cs.rochester.edu>
