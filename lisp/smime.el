@@ -194,6 +194,7 @@ If nil, use system defaults."
 
 (defvar smime-details-buffer "*OpenSSL output*")
 
+;; Use mm-util?
 (eval-and-compile
   (defalias 'smime-make-temp-file
     (if (fboundp 'make-temp-file)
@@ -489,6 +490,7 @@ A string or a list of strings is returned."
 	    (caddr curkey)
 	  (smime-get-certfiles keyfile otherkeys)))))
 
+;; Use mm-util?
 (eval-and-compile
   (defalias 'smime-point-at-eol
     (if (fboundp 'point-at-eol)
