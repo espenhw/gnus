@@ -1,3 +1,8 @@
+2004-02-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Batching Agents): Fixed typo in example.  Reported
+	by Hiroshi Fujishima <pooh@nature.tsukuba.ac.jp>.
+
 2004-01-30  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi: Set documentencoding.
