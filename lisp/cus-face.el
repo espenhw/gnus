@@ -46,10 +46,10 @@ on the system; white is (65280 65280 65280) or (65535 65535 65535).
 If FRAME is omitted or nil, use the selected frame."
     (color-instance-rgb-components (make-color-instance color))))
 
-;; XEmacs and Emacs have different definitions of `facep'.  
-;; The Emacs definition is the useful one, so emulate that. 
+;; XEmacs and Emacs have different definitions of `facep'.
+;; The Emacs definition is the useful one, so emulate that.
 (cond ((not (fboundp 'facep))
-       (defun custom-facep (face) 
+       (defun custom-facep (face)
 	 "No faces"
 	 nil))
       ((string-match "XEmacs" emacs-version)
@@ -104,7 +104,7 @@ This might overwrite existing face properties.
 Does nothing when the variable initialize-face-resources is nil."
 	 (when initialize-face-resources
 	   (make-face-x-resource-internal face frame t))))
-      (t 
+      (t
        ;; Too hard to do right on XEmacs.
        (defalias 'initialize-face-resources 'ignore)))
 
@@ -144,7 +144,7 @@ Set this to the symbol dark if your background color is dark, light if
 your background is light, or nil (default) if you want Emacs to
 examine the brightness for you."
   :group 'customize
-  :type '(choice (choice-item dark) 
+  :type '(choice (choice-item dark)
 		 (choice-item light)
 		 (choice-item :tag "default" nil)))
 
@@ -166,7 +166,7 @@ examine the brightness for you."
 	    'class (frame-property frame 'display-type)
 	    'background (or custom-background-mode
 			    (frame-property frame 'background-mode)
-			    (custom-background-mode frame))))))  
+			    (custom-background-mode frame))))))
 
 (defconst custom-face-attributes
   '((:bold (toggle :format "Bold: %[%v%]\n") custom-set-face-bold)
@@ -175,12 +175,12 @@ examine the brightness for you."
      (toggle :format "Underline: %[%v%]\n") set-face-underline-p)
     (:foreground (color :tag "Foreground") set-face-foreground)
     (:background (color :tag "Background") set-face-background)
-    (:reverse (const :format "Reverse Video\n" t) 
+    (:reverse (const :format "Reverse Video\n" t)
 	      (lambda (face value &optional frame)
 		;; We don't use VALUE.
 		(reverse-face face frame)))
     (:stipple (editable-field :format "Stipple: %v") set-face-stipple))
-  "Alist of face attributes. 
+  "Alist of face attributes.
 
 The elements are of the form (KEY TYPE SET) where KEY is a symbol
 identifying the attribute, TYPE is a widget type for editing the
@@ -229,7 +229,7 @@ be changed.")
 Each keyword should be listed in `custom-face-attributes'.
 
 If FRAME is nil, set the default face."
-  (while atts 
+  (while atts
     (let* ((name (nth 0 atts))
 	   (value (nth 1 atts))
 	   (fun (nth 2 (assq name custom-face-attributes))))
@@ -273,7 +273,7 @@ If FRAME is nil, set the default face."
       (apply 'set-face-font face fontobj args)))
 
   (nconc custom-face-attributes
-	 '((:family (editable-field :format "Family: %v") 
+	 '((:family (editable-field :format "Family: %v")
 		    custom-set-face-font-family)
 	   (:size (editable-field :format "Size: %v")
 		  custom-set-face-font-size))))
@@ -285,7 +285,7 @@ If FRAME is nil, set the default face."
 Iff optional FRAME is non-nil, set it for that frame only.
 See `defface' for information about SPEC."
   (when (fboundp 'make-face)
-    (while spec 
+    (while spec
       (let* ((entry (car spec))
 	     (display (nth 0 entry))
 	     (atts (nth 1 entry)))
@@ -300,7 +300,7 @@ See `defface' for information about SPEC."
 
 (defun custom-background-mode (frame)
   "Kludge to detect background mode for FRAME."
-  (let* ((bg-resource 
+  (let* ((bg-resource
 	  (condition-case ()
 	      (x-get-resource ".backgroundMode" "BackgroundMode" 'string)
 	    (error nil)))
@@ -328,7 +328,7 @@ See `defface' for information about SPEC."
 (defvar custom-default-frame-properties nil
   "The frame properties used for the global faces.
 Frames who doesn't match these propertiess should have frame local faces.
-The value should be nil, if uninitialized, or a plist otherwise.  
+The value should be nil, if uninitialized, or a plist otherwise.
 See `defface' for a list of valid keys and values for the plist.")
 
 (defun custom-get-frame-properties (&optional frame)
@@ -341,7 +341,7 @@ If FRAME is nil, return the default frame properties."
 	     ;; Oh well, get it then.
 	     (setq cache (custom-extract-frame-properties frame))
 	     ;; and cache it...
-	     (modify-frame-parameters frame 
+	     (modify-frame-parameters frame
 				      (list (cons 'custom-properties cache))))
 	   cache))
 	(custom-default-frame-properties)
@@ -374,7 +374,7 @@ If FRAME is nil, the current FRAME is used."
 			  ((eq req 'background)
 			   (memq background options))
 			  (t
-			   (error "Unknown req `%S' with options `%S'" 
+			   (error "Unknown req `%S' with options `%S'"
 				  req options)))))
       match)))
 
@@ -397,7 +397,7 @@ If FRAME is nil or omitted, initialize them for all frames."
   (mapcar (lambda (symbol)
 	    (let ((spec (or (get symbol 'saved-face)
 			    (get symbol 'factory-face))))
-	      (when spec 
+	      (when spec
 		(custom-face-display-set symbol spec frame)
 		(initialize-face-resources symbol frame))))
 	  (face-list)))
@@ -407,7 +407,7 @@ If FRAME is nil or omitted, initialize them for all frames."
 If FRAME is missing or nil, the first member (frame-list) is used."
   (unless frame
     (setq frame (car (frame-list))))
-  (unless (equal (custom-get-frame-properties) 
+  (unless (equal (custom-get-frame-properties)
 		 (custom-get-frame-properties frame))
     (custom-initialize-faces frame)))
 

@@ -83,7 +83,7 @@ seen in the same session."
   ;; Enter all Message-IDs into the hash table.
   (let ((list gnus-dup-list)
 	(obarray gnus-dup-hashtb))
-    (while list 
+    (while list
       (intern (pop list)))))
 
 (defun gnus-dup-read ()
@@ -125,7 +125,7 @@ seen in the same session."
  	(intern msgid gnus-dup-hashtb))))
   ;; Chop off excess Message-IDs from the list.
   (let ((end (nthcdr gnus-duplicate-list-length gnus-dup-list)))
-    (when end 
+    (when end
       (setcdr end nil))))
 
 (defun gnus-dup-suppress-articles ()
@@ -138,7 +138,7 @@ seen in the same session."
     (while (setq header (pop headers))
       (when (and (intern-soft (mail-header-id header) gnus-dup-hashtb)
 		 (gnus-summary-article-unread-p (mail-header-number header)))
-	(setq gnus-newsgroup-unreads 
+	(setq gnus-newsgroup-unreads
 	      (delq (setq number (mail-header-number header))
 		    gnus-newsgroup-unreads))
 	(push (cons number gnus-duplicate-mark)

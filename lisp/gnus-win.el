@@ -64,8 +64,8 @@
 	       (summary 1.0 point)
 	       (if gnus-carpal '(summary-carpal 4))))
     (article
-     (cond 
-      ((and gnus-use-picons 
+     (cond
+      ((and gnus-use-picons
 	    (eq gnus-picons-display-where 'picons))
        '(frame 1.0
 	       (vertical 1.0
@@ -198,7 +198,7 @@ See the Gnus manual for an explanation of the syntax used.")
   "Kill all frames Gnus has created."
   (while gnus-created-frames
     (when (frame-live-p (car gnus-created-frames))
-      ;; We slap a condition-case around this `delete-frame' to ensure 
+      ;; We slap a condition-case around this `delete-frame' to ensure
       ;; against errors if we try do delete the single frame that's left.
       (ignore-errors
 	(delete-frame (car gnus-created-frames))))
@@ -225,7 +225,7 @@ See the Gnus manual for an explanation of the syntax used.")
 		    (memq setting '(group summary article)))))
       setting
     (let* ((elem
-	    (cond 
+	    (cond
 	     ((eq setting 'group)
 	      (gnus-window-configuration-element
 	       '(group newsgroups ExitNewsgroup)))
@@ -417,7 +417,7 @@ See the Gnus manual for an explanation of the syntax used.")
 		;; We want to remove all other windows.
 		(if (not gnus-frame-split-p)
 		    ;; This is not a `frame' split, so we ignore the
-		    ;; other frames.  
+		    ;; other frames.
 		    (delete-other-windows)
 		  ;; This is a `frame' split, so we delete all windows
 		  ;; on all frames.
@@ -439,10 +439,10 @@ See the Gnus manual for an explanation of the syntax used.")
 		(when (and (boundp (cdr elem))
 			   (symbol-value (cdr elem)))
 		  (get-buffer (symbol-value (cdr elem))))
-	      (when (cdr elem) 
+	      (when (cdr elem)
 		(get-buffer (cdr elem)))))
 	  gnus-window-to-buffer)))
-    (mapcar 
+    (mapcar
      (lambda (frame)
        (unless (eq (cdr (assq 'minibuffer
 			      (frame-parameters frame)))

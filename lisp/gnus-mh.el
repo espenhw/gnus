@@ -59,7 +59,7 @@ Optional argument FOLDER specifies folder name."
 		     gnus-newsgroup-last-folder)
 		gnus-newsgroup-last-folder)
 	       (folder folder)
-	       (t (mh-prompt-for-folder 
+	       (t (mh-prompt-for-folder
 		   "Save article in"
 		   (funcall gnus-folder-save-name gnus-newsgroup-name
 			    gnus-current-headers gnus-newsgroup-last-folder)
@@ -71,7 +71,7 @@ Optional argument FOLDER specifies folder name."
       (save-restriction
 	(widen)
 	(unwind-protect
-	    (call-process-region 
+	    (call-process-region
 	     (point-min) (point-max) "rcvstore" nil errbuf nil folder)
 	  (set-buffer errbuf)
 	  (if (zerop (buffer-size))

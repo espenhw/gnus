@@ -26,7 +26,7 @@
 
 ;; Based on nnspool.el by Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>.
 ;; For an overview of what the interface functions do, please see the
-;; Gnus sources.  
+;; Gnus sources.
 
 ;;; Code:
 
@@ -40,11 +40,11 @@
 (defvoo nnml-directory message-directory
   "Mail spool directory.")
 
-(defvoo nnml-active-file 
+(defvoo nnml-active-file
   (concat (file-name-as-directory nnml-directory) "active")
   "Mail active file.")
 
-(defvoo nnml-newsgroups-file 
+(defvoo nnml-newsgroups-file
   (concat (file-name-as-directory nnml-directory) "newsgroups")
   "Mail newsgroups description file.")
 
@@ -140,7 +140,7 @@ all.  This may very well take some time.")
     (condition-case ()
 	(make-directory nnml-directory t)
       (error)))
-  (cond 
+  (cond
    ((not (file-exists-p nnml-directory))
     (nnml-close-server)
     (nnheader-report 'nnml "Couldn't create directory: %s" nnml-directory))
@@ -172,7 +172,7 @@ all.  This may very well take some time.")
 				  nnml-directory))))))
 	  (setq path (concat gpath (int-to-string (cdr group-num)))))
       (setq path (nnml-article-to-file id)))
-    (cond 
+    (cond
      ((not path)
       (nnheader-report 'nnml "No such article: %s" id))
      ((not (file-exists-p path))
@@ -188,7 +188,7 @@ all.  This may very well take some time.")
 	    (string-to-int (file-name-nondirectory path)))))))
 
 (deffoo nnml-request-group (group &optional server dont-check)
-  (cond 
+  (cond
    ((not (nnml-possibly-change-directory group server))
     (nnheader-report 'nnml "Invalid group (no such directory)"))
    ((not (file-exists-p nnml-current-directory))
@@ -196,7 +196,7 @@ all.  This may very well take some time.")
 		     nnml-current-directory))
    ((not (file-directory-p nnml-current-directory))
     (nnheader-report 'nnml "%s is not a directory" nnml-current-directory))
-   (dont-check 
+   (dont-check
     (nnheader-report 'nnml "Group %s selected" group)
     t)
    (t
@@ -206,7 +206,7 @@ all.  This may very well take some time.")
       (if (not active)
 	  (nnheader-report 'nnml "No such group: %s" group)
 	(nnheader-report 'nnml "Selected group %s" group)
-	(nnheader-insert "211 %d %d %d %s\n" 
+	(nnheader-insert "211 %d %d %d %s\n"
 			 (max (1+ (- (cdr active) (car active))) 0)
 			 (car active) (cdr active) group))))))
 
@@ -250,7 +250,7 @@ all.  This may very well take some time.")
 (deffoo nnml-request-expire-articles (articles group
 					       &optional server force)
   (nnml-possibly-change-directory group server)
-  (let* ((active-articles 
+  (let* ((active-articles
 	  (nnheader-directory-articles nnml-current-directory))
 	 (is-old t)
 	 article rest mod-time number)
@@ -260,7 +260,7 @@ all.  This may very well take some time.")
       (when (setq article (nnml-article-to-file (setq number (pop articles))))
 	(when (setq mod-time (nth 5 (file-attributes article)))
 	  (if (and (nnml-deletable-article-p group number)
-		   (setq is-old 
+		   (setq is-old
 			 (nnmail-expired-article-p group mod-time force
 						   nnml-inhibit-expiry)))
 	      (progn
@@ -282,13 +282,13 @@ all.  This may very well take some time.")
     (nnml-save-nov)
     (nconc rest articles)))
 
-(deffoo nnml-request-move-article 
+(deffoo nnml-request-move-article
   (article group server accept-form &optional last)
   (let ((buf (get-buffer-create " *nnml move*"))
 	result)
     (nnml-possibly-change-directory group server)
     (nnml-update-file-alist)
-    (and 
+    (and
      (nnml-deletable-article-p group article)
      (nnml-request-article article group server)
      (save-excursion
@@ -313,12 +313,11 @@ all.  This may very well take some time.")
   (nnml-possibly-change-directory group server)
   (nnmail-check-syntax)
   (let (result)
-    (when nnmail-cache-message-id-when-accepting
-      (nnmail-cache-insert (nnmail-fetch-field "message-id")))
+    (nnmail-cache-insert (nnmail-fetch-field "message-id"))
     (if (stringp group)
-	(and 
+	(and
 	 (nnmail-activate 'nnml)
-	 (setq result (car (nnml-save-mail 
+	 (setq result (car (nnml-save-mail
 			    (list (cons group (nnml-active-number group))))))
 	 (progn
 	   (nnmail-save-active nnml-group-alist nnml-active-file)
@@ -343,7 +342,7 @@ all.  This may very well take some time.")
 	  headers)
       (when (condition-case ()
 		(progn
-		  (nnmail-write-region 
+		  (nnmail-write-region
 		   (point-min) (point-max)
 		   (or (nnml-article-to-file article)
 		       (concat nnml-current-directory
@@ -353,7 +352,7 @@ all.  This may very well take some time.")
 	      (error nil))
 	(setq headers (nnml-parse-head chars article))
 	;; Replace the NOV line in the NOV file.
-	(save-excursion 
+	(save-excursion
 	  (set-buffer (nnml-open-nov group))
 	  (goto-char (point-min))
 	  (if (or (looking-at art)
@@ -365,8 +364,8 @@ all.  This may very well take some time.")
 	    ;; we should insert it.  (This situation should never
 	    ;; occur, but one likes to make sure...)
 	    (while (and (looking-at "[0-9]+\t")
-			(< (string-to-int 
-			    (buffer-substring 
+			(< (string-to-int
+			    (buffer-substring
 			     (match-beginning 0) (match-end 0)))
 			   article)
 			(zerop (forward-line 1)))))
@@ -379,13 +378,13 @@ all.  This may very well take some time.")
   (nnml-possibly-change-directory group server)
   (when force
     ;; Delete all articles in GROUP.
-    (let ((articles 
-	   (directory-files 
+    (let ((articles
+	   (directory-files
 	    nnml-current-directory t
 	    (concat nnheader-numerical-short-files
 		    "\\|" (regexp-quote nnml-nov-file-name) "$")))
 	  article)
-      (while articles 
+      (while articles
 	(setq article (pop articles))
 	(when (file-writable-p article)
 	  (nnheader-message 5 "Deleting article %s in %s..." article group)
@@ -395,7 +394,7 @@ all.  This may very well take some time.")
 	(delete-directory nnml-current-directory)
       (error nil)))
   ;; Remove the group from all structures.
-  (setq nnml-group-alist 
+  (setq nnml-group-alist
 	(delq (assoc group nnml-group-alist) nnml-group-alist)
 	nnml-current-group nil
 	nnml-current-directory nil)
@@ -417,7 +416,7 @@ all.  This may very well take some time.")
       ;; One might be more clever, I guess.
       (let ((files (nnheader-article-to-file-alist old-dir)))
 	(while files
-	  (rename-file 
+	  (rename-file
 	   (concat old-dir (cdar files))
 	   (concat new-dir (cdar files)))
 	  (pop files)))
@@ -469,7 +468,7 @@ all.  This may very well take some time.")
 	    (not (eq (cdr (nth 1 (assoc group nnml-group-alist)))
 		     article)))))))
 
-;; Find an article number in the current group given the Message-ID. 
+;; Find an article number in the current group given the Message-ID.
 (defun nnml-find-group-number (id)
   (save-excursion
     (set-buffer (get-buffer-create " *nnml id*"))
@@ -478,7 +477,7 @@ all.  This may very well take some time.")
 	  number)
       ;; We want to look through all .overview files, but we want to
       ;; start with the one in the current directory.  It seems most
-      ;; likely that the article we are looking for is in that group. 
+      ;; likely that the article we are looking for is in that group.
       (if (setq number (nnml-find-id nnml-current-group id))
 	  (cons nnml-current-group number)
 	;; It wasn't there, so we look through the other groups as well.
@@ -554,7 +553,7 @@ all.  This may very well take some time.")
       (make-directory (directory-file-name (car dirs)))
       (nnheader-message 5 "Creating mail directory %s" (car dirs))
       (setq dirs (cdr dirs)))))
-	     
+
 (defun nnml-save-mail (group-art)
   "Called narrowed to an article."
   (let (chars headers)
@@ -571,20 +570,20 @@ all.  This may very well take some time.")
 	  first)
       (while ga
 	(nnml-possibly-create-directory (caar ga))
-	(let ((file (concat (nnmail-group-pathname 
+	(let ((file (concat (nnmail-group-pathname
 			     (caar ga) nnml-directory)
 			    (int-to-string (cdar ga)))))
 	  (if first
 	      ;; It was already saved, so we just make a hard link.
 	      (funcall nnmail-crosspost-link-function first file t)
 	    ;; Save the article.
-	    (nnmail-write-region (point-min) (point-max) file nil 
+	    (nnmail-write-region (point-min) (point-max) file nil
 				 (if (nnheader-be-verbose 5) nil 'nomesg))
 	    (setq first file)))
 	(setq ga (cdr ga))))
     ;; Generate a nov line for this article.  We generate the nov
     ;; line after saving, because nov generation destroys the
-    ;; header. 
+    ;; header.
     (setq headers (nnml-parse-head chars))
     ;; Output the nov line to all nov databases that should have it.
     (let ((ga group-art))
@@ -597,7 +596,7 @@ all.  This may very well take some time.")
   "Compute the next article number in GROUP."
   (let ((active (cadr (assoc group nnml-group-alist))))
     ;; The group wasn't known to nnml, so we just create an active
-    ;; entry for it.   
+    ;; entry for it.
     (unless active
       ;; Perhaps the active file was corrupt?  See whether
       ;; there are any articles in this group.
@@ -623,7 +622,7 @@ all.  This may very well take some time.")
 
 (defun nnml-add-nov (group article headers)
   "Add a nov line for the GROUP base."
-  (save-excursion 
+  (save-excursion
     (set-buffer (nnml-open-nov group))
     (goto-char (point-max))
     (mail-header-set-number headers article)
@@ -637,7 +636,7 @@ all.  This may very well take some time.")
   (save-excursion
     (save-restriction
       (goto-char (point-min))
-      (narrow-to-region 
+      (narrow-to-region
        (point)
        (1- (or (search-forward "\n\n" nil t) (point-max))))
       ;; Fold continuation lines.
@@ -653,7 +652,7 @@ all.  This may very well take some time.")
 
 (defun nnml-open-nov (group)
   (or (cdr (assoc group nnml-nov-buffer-alist))
-      (let ((buffer (nnheader-find-file-noselect 
+      (let ((buffer (nnheader-find-file-noselect
 		     (concat (nnmail-group-pathname group nnml-directory)
 			     nnml-nov-file-name))))
 	(save-excursion
@@ -677,7 +676,7 @@ all.  This may very well take some time.")
 (defun nnml-generate-nov-databases ()
   "Generate nov databases in all nnml directories."
   (interactive)
-  ;; Read the active file to make sure we don't re-use articles 
+  ;; Read the active file to make sure we don't re-use articles
   ;; numbers in empty groups.
   (nnmail-activate 'nnml)
   (nnml-open-server (or (nnoo-current-server 'nnml) ""))
@@ -710,7 +709,7 @@ all.  This may very well take some time.")
 (defvar files)
 (defun nnml-generate-active-info (dir)
   ;; Update the active info for this group.
-  (let ((group (nnheader-file-to-group 
+  (let ((group (nnheader-file-to-group
 		(directory-file-name dir) nnml-directory)))
     (setq nnml-group-alist
 	  (delq (assoc group nnml-group-alist) nnml-group-alist))
@@ -739,7 +738,7 @@ all.  This may very well take some time.")
 	(unless (file-directory-p (setq file (concat dir (cdar files))))
 	  (erase-buffer)
 	  (nnheader-insert-file-contents file)
-	  (narrow-to-region 
+	  (narrow-to-region
 	   (goto-char (point-min))
 	   (progn
 	     (search-forward "\n\n" nil t)

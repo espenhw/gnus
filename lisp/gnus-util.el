@@ -320,7 +320,7 @@
 
 (defun gnus-completing-read (default prompt &rest args)
   ;; Like `completing-read', except that DEFAULT is the default argument.
-  (let* ((prompt (if default 
+  (let* ((prompt (if default
 		     (concat prompt " (default " default ") ")
 		   (concat prompt " ")))
 	 (answer (apply 'completing-read prompt args)))
@@ -375,7 +375,7 @@ Cache the result as a text property stored in DATE."
 (defsubst gnus-time-iso8601 (time)
   "Return a string of TIME in YYMMDDTHHMMSS format."
   (format-time-string "%Y%m%dT%H%M%S" time))
-  
+
 (defun gnus-date-iso8601 (header)
   "Convert the date field in HEADER to YYMMDDTHHMMSS"
   (condition-case ()
@@ -481,7 +481,7 @@ If N, return the Nth ancestor instead."
       (goto-char orig)
       ;; Scroll horizontally to center (sort of) the point.
       (if (> max (window-width))
-	  (set-window-hscroll 
+	  (set-window-hscroll
 	   (get-buffer-window (current-buffer) t)
 	   (min (- (current-column) (/ (window-width) 3))
 		(+ 2 (- max (window-width)))))
@@ -499,8 +499,8 @@ If N, return the Nth ancestor instead."
 Timezone package is used."
   (condition-case ()
       (progn
-	(setq date (inline (timezone-fix-time 
-			    date nil 
+	(setq date (inline (timezone-fix-time
+			    date nil
 			    (aref (inline (timezone-parse-date date)) 4))))
 	(inline
 	  (timezone-make-sortable-date
@@ -509,7 +509,7 @@ Timezone package is used."
 	     (timezone-make-time-string
 	      (aref date 3) (aref date 4) (aref date 5))))))
     (error "")))
-  
+
 (defun gnus-copy-file (file &optional to)
   "Copy FILE to TO."
   (interactive
@@ -552,7 +552,7 @@ Timezone package is used."
 
 (defun gnus-make-sort-function (funs)
   "Return a composite sort condition based on the functions in FUNC."
-  (cond 
+  (cond
    ((not (listp funs)) funs)
    ((null funs) funs)
    ((cdr funs)

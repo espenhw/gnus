@@ -193,7 +193,7 @@ Finds out what articles are to be part of the nnkiboze groups."
     (while (setq info (pop newsrc))
       (when (string-match "nnkiboze" (gnus-info-group info))
 	;; For each kiboze group, we call this function to generate
-	;; it.  
+	;; it.
 	(nnkiboze-generate-group (gnus-info-group info))))))
 
 (defun nnkiboze-score-file (group)
@@ -214,8 +214,8 @@ Finds out what articles are to be part of the nnkiboze groups."
 	 (gnus-large-newsgroup nil)
 	 (gnus-score-find-score-files-function 'nnkiboze-score-file)
 	 (gnus-verbose (min gnus-verbose 3))
- 	 gnus-select-group-hook gnus-summary-prepare-hook 
-	 gnus-thread-sort-functions gnus-show-threads 
+ 	 gnus-select-group-hook gnus-summary-prepare-hook
+	 gnus-thread-sort-functions gnus-show-threads
 	 gnus-visual gnus-suppress-duplicates)
     (unless info
       (error "No such group: %s" group))
@@ -226,7 +226,7 @@ Finds out what articles are to be part of the nnkiboze groups."
       (when (file-exists-p nov-file)
 	(insert-file-contents nov-file))
       (setq nov-buffer (current-buffer))
-      ;; Go through the active hashtb and add new all groups that match the 
+      ;; Go through the active hashtb and add new all groups that match the
       ;; kiboze regexp.
       (mapatoms
        (lambda (group)
@@ -248,13 +248,13 @@ Finds out what articles are to be part of the nnkiboze groups."
       ;; number that has been kibozed in GROUP in this kiboze group.
       (setq newsrc nnkiboze-newsrc)
       (while newsrc
-	(if (not (setq active (gnus-gethash 
+	(if (not (setq active (gnus-gethash
 			       (caar newsrc) gnus-active-hashtb)))
 	    ;; This group isn't active after all, so we remove it from
 	    ;; the list of component groups.
 	    (setq nnkiboze-newsrc (delq (car newsrc) nnkiboze-newsrc))
 	  (setq lowest (cdar newsrc))
-	  ;; Ok, we have a valid component group, so we jump to it. 
+	  ;; Ok, we have a valid component group, so we jump to it.
 	  (switch-to-buffer gnus-group-buffer)
 	  (gnus-group-jump-to-group (caar newsrc))
 	  (gnus-message 3 "nnkiboze: Checking %s..." (caar newsrc))
@@ -268,19 +268,19 @@ Finds out what articles are to be part of the nnkiboze groups."
 		(when (nth 3 ginfo)
 		  (setcar (nthcdr 3 ginfo) nil))
 		;; We set the list of read articles to be what we expect for
-		;; this kiboze group -- either nil or `(1 . LOWEST)'. 
+		;; this kiboze group -- either nil or `(1 . LOWEST)'.
 		(when ginfo
 		  (setcar (nthcdr 2 ginfo)
 			  (and (not (= lowest 1)) (cons 1 lowest))))
 		(when (and (or (not ginfo)
-			       (> (length (gnus-list-of-unread-articles 
+			       (> (length (gnus-list-of-unread-articles
 					   (car ginfo)))
 				  0))
 			   (progn
 			     (gnus-group-select-group nil)
 			     (eq major-mode 'gnus-summary-mode)))
 		  ;; We are now in the group where we want to be.
-		  (setq method (gnus-find-method-for-group 
+		  (setq method (gnus-find-method-for-group
 				gnus-newsgroup-name))
 		  (when (eq method gnus-select-method)
 		    (setq method nil))
@@ -289,9 +289,9 @@ Finds out what articles are to be part of the nnkiboze groups."
 		    (when (> (caar gnus-newsgroup-scored) lowest)
 		      ;; If it has a good score, then we enter this article
 		      ;; into the kiboze group.
-		      (nnkiboze-enter-nov 
+		      (nnkiboze-enter-nov
 		       nov-buffer
-		       (gnus-summary-article-header 
+		       (gnus-summary-article-header
 			(caar gnus-newsgroup-scored))
 		       gnus-newsgroup-name))
 		    (setq gnus-newsgroup-scored (cdr gnus-newsgroup-scored)))
@@ -309,7 +309,7 @@ Finds out what articles are to be part of the nnkiboze groups."
       (gnus-prin1 nnkiboze-newsrc)
       (insert ")\n"))
     t))
-    
+
 (defun nnkiboze-enter-nov (buffer header group)
   (save-excursion
     (set-buffer buffer)
@@ -333,7 +333,7 @@ Finds out what articles are to be part of the nnkiboze groups."
       ;; The first Xref has to be the group this article
       ;; really came for - this is the article nnkiboze
       ;; will request when it is asked for the article.
-      (insert group ":" 
+      (insert group ":"
 	      (int-to-string (mail-header-number header)) " ")
       (while (re-search-forward " [^ ]+:[0-9]+" nil t)
 	(goto-char (1+ (match-beginning 0)))

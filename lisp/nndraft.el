@@ -63,7 +63,7 @@
 	  'headers
 	(while articles
 	  (set-buffer buf)
-	  (when (nndraft-request-article 
+	  (when (nndraft-request-article
 		 (setq article (pop articles)) group server (current-buffer))
 	    (goto-char (point-min))
 	    (if (search-forward "\n\n" nil t)
@@ -83,7 +83,7 @@
   (nnoo-change-server 'nndraft server defs)
   (unless (assq 'nndraft-directory defs)
     (setq nndraft-directory server))
-  (cond 
+  (cond
    ((not (file-exists-p nndraft-directory))
     (nndraft-close-server)
     (nnheader-report 'nndraft "No such file or directory: %s"
@@ -98,7 +98,7 @@
 
 (deffoo nndraft-request-article (id &optional group server buffer)
   (when (numberp id)
-    ;; We get the newest file of the auto-saved file and the 
+    ;; We get the newest file of the auto-saved file and the
     ;; "real" file.
     (let* ((file (nndraft-article-filename id))
 	   (auto (nndraft-auto-save-file-name file))
@@ -106,10 +106,10 @@
 	   (nntp-server-buffer (or buffer nntp-server-buffer)))
       (when (and (file-exists-p newest)
 		 (nnmail-find-file newest))
-	(save-excursion 
+	(save-excursion
 	  (set-buffer nntp-server-buffer)
 	  (goto-char (point-min))
-	  ;; If there's a mail header separator in this file, 
+	  ;; If there's a mail header separator in this file,
 	  ;; we remove it.
 	  (when (re-search-forward
 		 (concat "^" mail-header-separator "$") nil t)
@@ -163,7 +163,7 @@
   (nndraft-execute-nnmh-command
    `(nnmh-request-newgroups ,date ,server)))
 
-(deffoo nndraft-request-expire-articles 
+(deffoo nndraft-request-expire-articles
   (articles group &optional server force)
   (let ((res (nndraft-execute-nnmh-command
 	      `(nnmh-request-expire-articles

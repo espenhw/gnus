@@ -13,7 +13,7 @@
 ;;
 ;; This file only contain the code needed to declare and initialize
 ;; user options.  The code to customize options is autoloaded from
-;; `cus-edit.el'. 
+;; `cus-edit.el'.
 
 ;; The code implementing face declarations is in `cus-face.el'
 
@@ -51,7 +51,7 @@
   (put symbol 'factory-value (list value))
   (when doc
     (put symbol 'variable-documentation doc))
-  (while args 
+  (while args
     (let ((arg (car args)))
       (setq args (cdr args))
       (unless (symbolp arg)
@@ -85,13 +85,13 @@ Neither SYMBOL nor VALUE needs to be quoted.
 If SYMBOL is not already bound, initialize it to VALUE.
 The remaining arguments should have the form
 
-   [KEYWORD VALUE]... 
+   [KEYWORD VALUE]...
 
 The following KEYWORD's are defined:
 
 :type	VALUE should be a widget type.
 :options VALUE should be a list of valid members of the widget type.
-:group  VALUE should be a customization group.  
+:group  VALUE should be a customization group.
         Add SYMBOL to that group.
 
 Read the section about customization in the emacs lisp manual for more
@@ -155,7 +155,7 @@ information."
   (put symbol 'custom-group (nconc members (get symbol 'custom-group)))
   (when doc
     (put symbol 'group-documentation doc))
-  (while args 
+  (while args
     (let ((arg (car args)))
       (setq args (cdr args))
       (unless (symbolp arg)
@@ -186,7 +186,7 @@ symbol.  Useful widgets are `custom-variable' for editing variables,
 
 The remaining arguments should have the form
 
-   [KEYWORD VALUE]... 
+   [KEYWORD VALUE]...
 
 The following KEYWORD's are defined:
 
@@ -211,7 +211,7 @@ If there already is an entry for that option, overwrite it."
 (defun custom-handle-all-keywords (symbol args type)
   "For customization option SYMBOL, handle keyword arguments ARGS.
 Third argument TYPE is the custom option type."
-  (while args 
+  (while args
     (let ((arg (car args)))
       (setq args (cdr args))
       (unless (symbolp arg)
@@ -221,7 +221,7 @@ Third argument TYPE is the custom option type."
 	(unless args
 	  (error "Keyword %s is missing an argument" keyword))
 	(setq args (cdr args))
-	(custom-handle-keyword symbol keyword value type)))))  
+	(custom-handle-keyword symbol keyword value type)))))
 
 (defun custom-handle-keyword (symbol keyword value type)
   "For customization option SYMBOL, handle KEYWORD with VALUE.
@@ -235,7 +235,7 @@ Fourth argument TYPE is the custom option type."
 	((eq keyword :tag)
 	 (put symbol 'custom-tag value))
 	(t
-	 (error "Unknown keyword %s" symbol))))  
+	 (error "Unknown keyword %s" symbol))))
 
 (defun custom-add-option (symbol option)
   "To the variable SYMBOL add OPTION.
@@ -262,7 +262,7 @@ LOAD should be either a library file name, or a feature name."
 ;;; Initializing.
 
 (defun custom-set-variables (&rest args)
-  "Initialize variables according to user preferences.  
+  "Initialize variables according to user preferences.
 
 The arguments should be a list where each entry has the form:
 
@@ -271,14 +271,14 @@ The arguments should be a list where each entry has the form:
 The unevaluated VALUE is stored as the saved value for SYMBOL.
 If NOW is present and non-nil, VALUE is also evaluated and bound as
 the default value for the SYMBOL."
-  (while args 
+  (while args
     (let ((entry (car args)))
       (if (listp entry)
 	  (let ((symbol (nth 0 entry))
 		(value (nth 1 entry))
 		(now (nth 2 entry)))
 	    (put symbol 'saved-value (list value))
-	    (when now 
+	    (when now
 	      (put symbol 'force-value t)
 	      (set-default symbol (eval value)))
 	    (setq args (cdr args)))

@@ -144,7 +144,7 @@ on your system, you could say something like:
 					references chars lines xref)
   "Create a new mail header structure initialized with the parameters given."
   (vector number subject from date id references chars lines xref))
-  
+
 ;; fake message-ids: generation and detection
 
 (defvar nnheader-fake-message-id 1)
@@ -283,7 +283,7 @@ on your system, you could say something like:
 
 (defun nnheader-insert-nov (header)
   (princ (mail-header-number header) (current-buffer))
-  (insert 
+  (insert
    "\t"
    (or (mail-header-subject header) "(none)") "\t"
    (or (mail-header-from header) "(nobody)") "\t"
@@ -315,7 +315,7 @@ on your system, you could say something like:
   ;; First we find the first wanted line.
   (nnheader-find-nov-line beg)
   (delete-region (point-min) (point))
-  ;; Then we find the last wanted line. 
+  ;; Then we find the last wanted line.
   (when (nnheader-find-nov-line end)
     (forward-line 1))
   (delete-region (point) (point-max)))
@@ -531,7 +531,7 @@ If FILE is t, return the buffer contents as a string."
 (defvar jka-compr-compression-info-list)
 (defvar nnheader-numerical-files
   (if (boundp 'jka-compr-compression-info-list)
-      (concat "\\([0-9]+\\)\\(" 
+      (concat "\\([0-9]+\\)\\("
 	      (mapconcat (lambda (i) (aref i 0))
 			 jka-compr-compression-info-list "\\|")
 	      "\\)?")
@@ -554,7 +554,7 @@ If FILE is t, return the buffer contents as a string."
 (defun nnheader-directory-files-safe (&rest args)
   ;; It has been reported numerous times that `directory-files'
   ;; fails with an alarming frequency on NFS mounted file systems.
-  ;; This function executes that function twice and returns 
+  ;; This function executes that function twice and returns
   ;; the longest result.
   (let ((first (apply 'directory-files args))
 	(second (apply 'directory-files args)))
@@ -581,7 +581,7 @@ If FILE is t, return the buffer contents as a string."
 (defun nnheader-translate-file-chars (file)
   (if (null nnheader-file-name-translation-alist)
       ;; No translation is necessary.
-      file 
+      file
     ;; We translate -- but only the file name.  We leave the directory
     ;; alone.
     (let* ((i 0)
@@ -643,12 +643,12 @@ without formatting."
 
 (defun nnheader-file-to-group (file &optional top)
   "Return a group name based on FILE and TOP."
-  (nnheader-replace-chars-in-string 
+  (nnheader-replace-chars-in-string
    (if (not top)
        file
      (condition-case ()
 	 (substring (expand-file-name file)
-		    (length 
+		    (length
 		     (expand-file-name
 		      (file-name-as-directory top))))
        (error "")))
@@ -712,7 +712,7 @@ If FILE, find the \".../etc/PACKAGE\" file instead."
 		(setq dir (concat
 			   (file-name-directory
 			    (directory-file-name (car path)))
-			   "etc/" package 
+			   "etc/" package
 			   (if file "" "/"))))
 	       (or file (file-directory-p dir)))
 	  (setq result dir
@@ -781,13 +781,13 @@ find-file-hooks, etc.
      (goto-char (point-min))
      (while (,(if regexp 're-search-forward 'search-forward)
 	     ,from nil t)
-       (insert-buffer-substring 
+       (insert-buffer-substring
 	cur start (prog1 (match-beginning 0) (set-buffer new)))
        (goto-char (point-max))
        ,(when to `(insert ,to))
        (set-buffer cur)
        (setq start (point)))
-     (insert-buffer-substring 
+     (insert-buffer-substring
       cur start (prog1 (point-max) (set-buffer new)))
      (copy-to-buffer cur (point-min) (point-max))
      (kill-buffer (current-buffer))

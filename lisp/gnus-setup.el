@@ -176,7 +176,7 @@ Read network news as a slave without connecting to local server." t nil)
   (autoload 'gnus-no-server "gnus" "\
 Read network news.
 If ARG is a positive number, Gnus will use that as the
-startup level.  If ARG is nil, Gnus will be started at level 2. 
+startup level.  If ARG is nil, Gnus will be started at level 2.
 If ARG is non-nil and not a positive number, Gnus will
 prompt the user for the name of an NNTP server to use.
 As opposed to `gnus', this command will not connect to the local server." t nil)

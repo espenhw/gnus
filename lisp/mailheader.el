@@ -62,7 +62,7 @@ that name."
 		(> (skip-chars-forward "^\0- :") 0)
 		(= (following-char) ?:)
 		(setq end (point))
-		(progn (forward-char) 
+		(progn (forward-char)
 		       (> (skip-chars-forward " \t") 0)))
       (let ((header (intern (downcase (buffer-substring start end))))
 	    (value (list (buffer-substring

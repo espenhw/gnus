@@ -43,7 +43,7 @@
   "Port number on the physical nntp server.")
 
 (defvoo nntp-server-opened-hook '(nntp-send-mode-reader)
-  "*Hook used for sending commands to the server at startup.  
+  "*Hook used for sending commands to the server at startup.
 The default value is `nntp-send-mode-reader', which makes an innd
 server spawn an nnrpd server.  Another useful function to put in this
 hook might be `nntp-send-authinfo', which will prompt for a password
@@ -53,10 +53,10 @@ do on servers that use strict access control.")
 (defvoo nntp-authinfo-function 'nntp-send-authinfo
   "Function used to send AUTHINFO to the server.")
 
-(defvoo nntp-server-action-alist 
-  '(("nntpd 1\\.5\\.11t" 
+(defvoo nntp-server-action-alist
+  '(("nntpd 1\\.5\\.11t"
      (remove-hook 'nntp-server-opened-hook 'nntp-send-mode-reader))
-    ("NNRP server Netscape" 
+    ("NNRP server Netscape"
      (setq nntp-server-list-active-group nil)))
   "Alist of regexps to match on server types and actions to be taken.
 For instance, if you want Gnus to beep every time you connect
@@ -188,7 +188,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	;; We successfully retrieved the headers via XOVER.
         'nov
       ;; XOVER didn't work, so we do it the hard, slow and inefficient
-      ;; way.  
+      ;; way.
       (let ((number (length articles))
 	    (count 0)
 	    (received 0)
@@ -197,7 +197,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	    (nntp-inhibit-erase t))
 	;; Send HEAD command.
 	(while articles
-	  (nntp-send-command 
+	  (nntp-send-command
 	   nil
 	   "HEAD" (if (numberp (car articles))
 		      (int-to-string (car articles))
@@ -254,7 +254,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
   (save-excursion
     (set-buffer (nntp-find-connection-buffer nntp-server-buffer))
     ;; The first time this is run, this variable is `try'.  So we
-    ;; try.   
+    ;; try.
     (when (eq nntp-server-list-active-group 'try)
       (nntp-try-list-active (car groups)))
     (erase-buffer)
@@ -326,7 +326,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
       (erase-buffer)
       ;; Send HEAD command.
       (while (setq article (pop articles))
-	(nntp-send-command 
+	(nntp-send-command
 	 nil
 	 "ARTICLE" (if (numberp article)
 		       (int-to-string article)
@@ -379,7 +379,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 
 (defun nntp-next-result-arrived-p ()
   (let ((point (point)))
-    (cond 
+    (cond
      ((looking-at "2")
       (if (re-search-forward "\n.\r?\n" nil t)
 	  t
@@ -501,7 +501,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	    (format "%s%02d%02d %s%s%s"
 		    (substring (aref date 0) 2) (string-to-int (aref date 1))
 		    (string-to-int (aref date 2)) (substring (aref date 3) 0 2)
-		    (substring 
+		    (substring
 		     (aref date 3) 3 5) (substring (aref date 3) 6 8))))
       (prog1
 	  (nntp-send-command "^\\.\r?\n" "NEWGROUPS" time-string)
@@ -514,7 +514,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 
 (deffoo nntp-request-type (group article)
   'news)
-  
+
 (deffoo nntp-asynchronous-p ()
   t)
 
@@ -531,11 +531,11 @@ reading."
   "Send the AUTHINFO to the nntp server.
 This function is supposed to be called from `nntp-server-opened-hook'.
 It will prompt for a password."
-  (nntp-send-command 
+  (nntp-send-command
    "^.*\r?\n" "AUTHINFO USER"
    (read-string (format "NNTP (%s) user name: " nntp-address)))
-  (nntp-send-command 
-   "^.*\r?\n" "AUTHINFO PASS" 
+  (nntp-send-command
+   "^.*\r?\n" "AUTHINFO PASS"
    (nnmail-read-passwd "NNTP (%s) password: " nntp-address)))
 
 (defun nntp-send-authinfo ()
@@ -544,7 +544,7 @@ This function is supposed to be called from `nntp-server-opened-hook'.
 It will prompt for a password."
   (nntp-send-command "^.*\r?\n" "AUTHINFO USER" (user-login-name))
   (nntp-send-command
-   "^.*\r?\n" "AUTHINFO PASS" 
+   "^.*\r?\n" "AUTHINFO PASS"
    (nnmail-read-passwd (format "NNTP (%s) password: " nntp-address))))
 
 (defun nntp-send-authinfo-from-file ()
@@ -555,8 +555,8 @@ This function is supposed to be called from `nntp-server-opened-hook'."
       (insert-file-contents "~/.nntp-authinfo")
       (goto-char (point-min))
       (nntp-send-command "^.*\r?\n" "AUTHINFO USER" (user-login-name))
-      (nntp-send-command 
-       "^.*\r?\n" "AUTHINFO PASS" 
+      (nntp-send-command
+       "^.*\r?\n" "AUTHINFO PASS"
        (buffer-substring (point) (progn (end-of-line) (point)))))))
 
 ;;; Internal functions.
@@ -636,7 +636,7 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 (defun nntp-make-process-buffer (buffer)
   "Create a new, fresh buffer usable for nntp process connections."
   (save-excursion
-    (set-buffer 
+    (set-buffer
      (generate-new-buffer
       (format " *server %s %s %s*"
 	      nntp-address nntp-port-number
@@ -744,23 +744,23 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 	  (erase-buffer)))
       (when command
 	(nntp-send-string process command))
-      (cond 
+      (cond
        ((eq callback 'ignore)
 	t)
        ((and callback wait-for)
 	(save-excursion
 	  (set-buffer (process-buffer process))
-	  (unless nntp-inside-change-function 
+	  (unless nntp-inside-change-function
 	    (erase-buffer))
 	  (setq nntp-process-decode decode
 		nntp-process-to-buffer buffer
 		nntp-process-wait-for wait-for
 		nntp-process-callback callback
 		nntp-process-start-point (point-max)
-		after-change-functions 
+		after-change-functions
 		(list 'nntp-after-change-function-callback)))
 	t)
-       (wait-for 
+       (wait-for
 	(nntp-wait-for process wait-for buffer decode))
        (t t)))))
 
@@ -788,7 +788,7 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 	  (goto-char (point-max))
 	  (let ((limit (point-min)))
 	    (while (not (re-search-backward wait-for limit t))
-	      ;; We assume that whatever we wait for is less than 1000 
+	      ;; We assume that whatever we wait for is less than 1000
 	      ;; characters long.
 	      (setq limit (max (- (point-max) 1000) (point-min)))
 	      (nntp-accept-process-output process)
@@ -888,7 +888,7 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 (defun nntp-retrieve-headers-with-xover (articles &optional fetch-old)
   (set-buffer nntp-server-buffer)
   (erase-buffer)
-  (cond 
+  (cond
 
    ;; This server does not talk NOV.
    ((not nntp-server-xover)
@@ -897,7 +897,7 @@ This function is supposed to be called from `nntp-server-opened-hook'."
    ;; We don't care about gaps.
    ((or (not nntp-nov-gap)
 	fetch-old)
-    (nntp-send-xover-command 
+    (nntp-send-xover-command
      (if fetch-old
 	 (if (numberp fetch-old)
 	     (max 1 (- (car articles) fetch-old))
@@ -933,7 +933,7 @@ This function is supposed to be called from `nntp-server-opened-hook'."
       (while (and nntp-server-xover articles)
 	(setq first (car articles))
 	;; Search forward until we find a gap, or until we run out of
-	;; articles. 
+	;; articles.
 	(while (and (cdr articles)
 		    (< (- (nth 1 articles) (car articles)) nntp-nov-gap))
 	  (setq articles (cdr articles)))
@@ -950,7 +950,7 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 	    ;; On some Emacs versions the preceding function has
 	    ;; a tendency to change the buffer.  Perhaps.  It's
 	    ;; quite difficult to reproduce, because it only
-	    ;; seems to happen once in a blue moon. 
+	    ;; seems to happen once in a blue moon.
 	    (set-buffer buf)
 	    (while (progn
 		     (goto-char last-point)
@@ -972,7 +972,7 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 		   (forward-line -1)
 		   (not (looking-at "^\\.\r?\n")))
 	    (nntp-accept-response)))
-	
+
 	;; We remove any "." lines and status lines.
 	(goto-char (point-min))
 	(while (search-forward "\r" nil t)
@@ -992,13 +992,13 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 	;; If `nntp-server-xover' is a string, then we just send this
 	;; command.
 	(if wait-for-reply
-	    (nntp-send-command-nodelete 
+	    (nntp-send-command-nodelete
 	     "\r?\n\\.\r?\n" nntp-server-xover range)
 	  ;; We do not wait for the reply.
 	  (nntp-send-command-nodelete "\r?\n\\.\r?\n" nntp-server-xover range))
       (let ((commands nntp-xover-commands))
 	;; `nntp-xover-commands' is a list of possible XOVER commands.
-	;; We try them all until we get at positive response. 
+	;; We try them all until we get at positive response.
 	(while (and commands (eq nntp-server-xover 'try))
 	  (nntp-send-command-nodelete "\r?\n\\.\r?\n" (car commands) range)
 	  (save-excursion
@@ -1106,7 +1106,7 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 	(and number (zerop number) (setq number nil))
 	;; Then we find the group name.
 	(setq group
-	      (cond 
+	      (cond
 	       ;; If there is only one group in the Newsgroups header,
 	       ;; then it seems quite likely that this article comes
 	       ;; from that group, I'd say.
@@ -1119,7 +1119,7 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 	       ;; article number in the Xref header is the one we are
 	       ;; looking for.  This might very well be wrong if this
 	       ;; article happens to have the same number in several
-	       ;; groups, but that's life. 
+	       ;; groups, but that's life.
 	       ((and (setq xref (mail-fetch-field "xref"))
 		     number
 		     (string-match (format "\\([^ :]+\\):%d" number) xref))

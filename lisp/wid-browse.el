@@ -26,12 +26,12 @@
 
 (defvar widget-browse-mode-map nil
   "Keymap for `widget-browse-mode'.")
-  
+
 (unless widget-browse-mode-map
   (setq widget-browse-mode-map (make-sparse-keymap))
   (set-keymap-parent widget-browse-mode-map widget-keymap))
 
-(easy-menu-define widget-browse-mode-menu 
+(easy-menu-define widget-browse-mode-menu
     widget-browse-mode-map
   "Menu used in widget browser buffers."
   '("Widget"
@@ -84,7 +84,7 @@ if that value is non-nil."
 
 (defun widget-browse (widget)
   "Create a widget browser for WIDGET."
-  (interactive (list (completing-read "Widget: " 
+  (interactive (list (completing-read "Widget: "
 				      obarray
 				      (lambda (symbol)
 					(get symbol 'widget-type))
@@ -104,7 +104,7 @@ if that value is non-nil."
     (kill-buffer (get-buffer-create "*Browse Widget*"))
     (switch-to-buffer (get-buffer-create "*Browse Widget*")))
   (widget-browse-mode)
-  
+
   ;; Quick way to get out.
   (widget-create 'push-button
 		 :action (lambda (widget &optional event)
@@ -155,7 +155,7 @@ The :value of the widget shuld be the widget to be browsed."
   :action 'widget-browse-action)
 
 (defun widget-browse-action (widget &optional event)
-  ;; Create widget browser for WIDGET's :value. 
+  ;; Create widget browser for WIDGET's :value.
   (widget-browse (widget-get widget :value)))
 
 (defun widget-browse-value-create (widget)

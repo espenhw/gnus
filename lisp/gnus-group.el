@@ -265,7 +265,7 @@ variable."
      "gnus-help"
      (nndoc "gnus-help"
 	    (nndoc-article-type mbox)
-	    (eval `(nndoc-address 
+	    (eval `(nndoc-address
 		    ,(let ((file (nnheader-find-etc-directory
 				  "gnus-tut.txt" t)))
 		       (unless file
@@ -312,13 +312,13 @@ variable."
      gnus-group-mail-low-empty-face)
     (t .
      gnus-group-mail-low-face))
-  "Controls the highlighting of group buffer lines. 
+  "Controls the highlighting of group buffer lines.
 
 Below is a list of `Form'/`Face' pairs.  When deciding how a a
 particular group line should be displayed, each form is
 evaluated.  The content of the face field after the first true form is
 used.  You can change how those group lines are displayed by
-editing the face field.  
+editing the face field.
 
 It is also possible to change and add form fields, but currently that
 requires an understanding of Lisp expressions.  Hopefully this will
@@ -603,7 +603,7 @@ ticked: The number of ticked articles."
 	["Local kill file" gnus-group-edit-local-kill (gnus-group-group-name)]
 	["Global kill file" gnus-group-edit-global-kill t])
        ))
-  
+
     (easy-menu-define
      gnus-group-group-menu gnus-group-mode-map ""
      '("Groups"
@@ -708,7 +708,7 @@ ticked: The number of ticked articles."
        ["Send a bug report" gnus-bug t]
        ["Send a mail" gnus-group-mail t]
        ["Post an article..." gnus-group-post-news t]
-       ["Check for new news" gnus-group-get-new-news t]     
+       ["Check for new news" gnus-group-get-new-news t]
        ["Activate all groups" gnus-activate-all-groups t]
        ["Restart Gnus" gnus-group-restart t]
        ["Read init file" gnus-group-read-init-file t]
@@ -850,7 +850,7 @@ listed."
     ;; We have some groups displayed.
     (goto-char (point-max))
     (when (or (not gnus-group-goto-next-group-function)
-	      (not (funcall gnus-group-goto-next-group-function 
+	      (not (funcall gnus-group-goto-next-group-function
 			    group props)))
       (cond
        (empty
@@ -914,7 +914,7 @@ If REGEXP, only list groups matching REGEXP."
 	     (>= clevel lowest)
 	     (or all			; We list all groups?
 		 (if (eq unread t)	; Unactivated?
-		     gnus-group-list-inactive-groups ; We list unactivated 
+		     gnus-group-list-inactive-groups ; We list unactivated
 		   (> unread 0))	; We list groups with unread articles
 		 (and gnus-list-groups-with-ticked-articles
 		      (cdr (assq 'tick (gnus-info-marks info))))
@@ -1015,7 +1015,7 @@ If REGEXP, only list groups matching REGEXP."
 	 nil)
        nil))))
 
-(defun gnus-group-insert-group-line (gnus-tmp-group gnus-tmp-level 
+(defun gnus-group-insert-group-line (gnus-tmp-group gnus-tmp-level
 						    gnus-tmp-marked number
 						    gnus-tmp-method)
   "Insert a group line in the group buffer."
@@ -1118,8 +1118,8 @@ If REGEXP, only list groups matching REGEXP."
       (setq list (cdr list)))
     (let ((face (cdar list)))
       (unless (eq face (get-text-property beg 'face))
-	(gnus-put-text-property 
-	 beg end 'face 
+	(gnus-put-text-property
+	 beg end 'face
 	 (setq face (if (boundp face) (symbol-value face) face)))
 	(gnus-extent-start-open beg)))
     (goto-char p)))
@@ -1143,7 +1143,7 @@ already."
 	(let ((entry (gnus-gethash group gnus-newsrc-hashtb)))
 	  (when (and entry (not (gnus-ephemeral-group-p group)))
 	    (gnus-dribble-enter
-	     (concat "(gnus-group-set-info '" 
+	     (concat "(gnus-group-set-info '"
 		     (gnus-prin1-to-string (nth 2 entry))
 		     ")"))))
 	;; Find all group instances.  If topics are in use, each group
@@ -1204,7 +1204,7 @@ already."
 	     (max-len 60)
 	     gnus-tmp-header		;Dummy binding for user-defined formats
 	     ;; Get the resulting string.
-	     (modified 
+	     (modified
 	      (and gnus-dribble-buffer
 		   (buffer-name gnus-dribble-buffer)
 		   (buffer-modified-p gnus-dribble-buffer)
@@ -1219,7 +1219,7 @@ already."
 	(when (> (length mode-string) max-len)
 	  (setq mode-string (substring mode-string 0 (- max-len 4))))
 	(prog1
-	    (setq mode-line-buffer-identification 
+	    (setq mode-line-buffer-identification
 		  (gnus-mode-line-buffer-identification
 		   (list mode-string)))
 	  (set-buffer-modified-p modified))))))
@@ -1481,7 +1481,7 @@ group."
 		 (- (1+ (cdr active)) (car active)))))
     (gnus-summary-read-group
      group (or all (and (numberp number)
-			(zerop (+ number (gnus-range-length 
+			(zerop (+ number (gnus-range-length
 					  (cdr (assq 'tick marked)))
 				  (gnus-range-length
 				   (cdr (assq 'dormant marked)))))))
@@ -1518,7 +1518,7 @@ buffer."
 (defun gnus-group-select-group-ephemerally ()
   "Select the current group without doing any processing whatsoever.
 You will actually be entered into a group that's a copy of
-the current group; no changes you make while in this group will 
+the current group; no changes you make while in this group will
 be permanent."
   (interactive)
   (require 'gnus-score)
@@ -1532,7 +1532,7 @@ be permanent."
 	  `(,(car method) ,(concat (cadr method) "-ephemeral")
 	    (,(intern (format "%s-address" (car method))) ,(cadr method))
 	    ,@(cddr method)))
-    (gnus-group-read-ephemeral-group 
+    (gnus-group-read-ephemeral-group
      (gnus-group-prefixed-name group method) method)))
 
 ;;;###autoload
@@ -1548,7 +1548,7 @@ Returns whether the fetching was successful or not."
 
 ;; Enter a group that is not in the group buffer.  Non-nil is returned
 ;; if selection was successful.
-(defun gnus-group-read-ephemeral-group (group method &optional activate 
+(defun gnus-group-read-ephemeral-group (group method &optional activate
 					      quit-config request-only)
   "Read GROUP from METHOD as an ephemeral group.
 If ACTIVATE, request the group first.
@@ -1568,7 +1568,7 @@ Return the name of the group is selection was successful."
 		 (gnus-group-prefixed-name group method))))
     (gnus-sethash
      group
-     `(-1 nil (,group 
+     `(-1 nil (,group
 	       ,gnus-level-default-subscribed nil nil ,method
 	       ((quit-config .
 			     ,(if quit-config quit-config
@@ -1581,7 +1581,7 @@ Return the name of the group is selection was successful."
     (when activate
       (gnus-activate-group group 'scan)
       (unless (gnus-request-group group)
-	(error "Couldn't request group: %s" 
+	(error "Couldn't request group: %s"
 	       (nnheader-get-report (car method)))))
     (if request-only
 	group
@@ -1618,7 +1618,7 @@ If FAR, it is likely that the group is not on the current line."
   (when group
     (if far
 	(gnus-goto-char
-	 (text-property-any 
+	 (text-property-any
 	  (point-min) (point-max)
 	  'gnus-group (gnus-intern-safe group gnus-active-hashtb)))
       (beginning-of-line)
@@ -1644,7 +1644,7 @@ If FAR, it is likely that the group is not on the current line."
        (t
 	;; Search through the entire buffer.
 	(gnus-goto-char
-	 (text-property-any 
+	 (text-property-any
 	  (point-min) (point-max)
 	  'gnus-group (gnus-intern-safe group gnus-active-hashtb))))))))
 
@@ -1781,7 +1781,7 @@ ADDRESS."
     (gnus-set-active nname (cons 1 0))
     (unless (gnus-ephemeral-group-p name)
       (gnus-dribble-enter
-       (concat "(gnus-group-set-info '" 
+       (concat "(gnus-group-set-info '"
 	       (gnus-prin1-to-string (cdr info)) ")")))
     ;; Insert the line.
     (gnus-group-insert-group-line-info nname)
@@ -1844,7 +1844,7 @@ and NEW-NAME will be prompted for."
 
   (unless (gnus-check-backend-function 'request-rename-group group)
     (error "This backend does not support renaming groups"))
-  (unless group 
+  (unless group
     (error "No group to rename"))
   (when (equal (gnus-group-real-name group) new-name)
     (error "Can't rename to the same name"))
@@ -2030,8 +2030,8 @@ If SOLID (the prefix), create a solid group."
 		       0)
 	   'gnus-group-web-type-history))
 	 (search
-	  (read-string 
-	   "Search string: " 
+	  (read-string
+	   "Search string: "
 	   (cons (or (car gnus-group-web-search-history) "") 0)
 	   'gnus-group-web-search-history))
 	 (method
@@ -2359,7 +2359,7 @@ If REVERSE, sort in reverse order."
 	  (gnus-info-clear-data info)))
       (gnus-get-unread-articles)
       (gnus-dribble-enter "")
-      (when (gnus-y-or-n-p 
+      (when (gnus-y-or-n-p
 	     "Move the cache away to avoid problems in the future? ")
 	(call-interactively 'gnus-cache-move-cache)))))
 
@@ -2478,7 +2478,7 @@ or nil if no action could be taken."
 	     (gnus-compress-sequence
 	      (if expiry-wait
 		  ;; We set the expiry variables to the group
-		  ;; parameter. 
+		  ;; parameter.
 		  (let ((nnmail-expiry-wait-function nil)
 			(nnmail-expiry-wait expiry-wait))
 		    (gnus-request-expire-articles
@@ -2550,7 +2550,7 @@ If given numerical prefix, toggle the N next groups."
 	    groups (cdr groups))
       (gnus-group-remove-mark group)
       (gnus-group-unsubscribe-group
-       group 
+       group
        (cond
 	((eq do-sub 'unsubscribe)
 	 gnus-level-default-unsubscribed)
@@ -2572,7 +2572,7 @@ group line."
    (list (completing-read
 	  "Group: " gnus-active-hashtb nil
 	  (gnus-read-active-file-p)
-	  nil 
+	  nil
 	  'gnus-group-history)))
   (let ((newsrc (gnus-gethash group gnus-newsrc-hashtb)))
     (cond
@@ -2844,7 +2844,7 @@ re-scanning.  If ARG is non-nil and not a number, this will force
     (gnus-master-read-slave-newsrc))
 
   ;; We might read in new NoCeM messages here.
-  (when (and gnus-use-nocem 
+  (when (and gnus-use-nocem
 	     (null arg))
     (gnus-nocem-scan-groups))
   ;; If ARG is not a number, then we read the active file.
@@ -2856,7 +2856,7 @@ re-scanning.  If ARG is non-nil and not a number, this will force
     ;; If the user wants it, we scan for new groups.
     (when (eq gnus-check-new-newsgroups 'always)
       (gnus-find-new-newsgroups)))
-  
+
   (setq arg (gnus-group-default-level arg t))
   (if (and gnus-read-active-file (not arg))
       (progn
@@ -3038,7 +3038,7 @@ This command may read the active file."
   (when (and level
 	     (> (prefix-numeric-value level) gnus-level-killed))
     (gnus-get-killed-groups))
-  (gnus-group-prepare-flat 
+  (gnus-group-prepare-flat
    (or level gnus-level-subscribed) all (or lowest 1) regexp)
   (goto-char (point-min))
   (gnus-group-position-point))
@@ -3134,7 +3134,7 @@ The hook gnus-suspend-gnus-hook is called before actually suspending."
   "Quit reading news after updating .newsrc.eld and .newsrc.
 The hook `gnus-exit-gnus-hook' is called before actually exiting."
   (interactive)
-  (when 
+  (when
       (or noninteractive		;For gnus-batch-kill
 	  (not gnus-interactive-exit)	;Without confirmation
 	  gnus-expert-user

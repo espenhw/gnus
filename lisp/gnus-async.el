@@ -50,7 +50,7 @@ if t, prefetch as many articles as possible."
 
 (defcustom gnus-prefetched-article-deletion-strategy '(read exit)
   "List of symbols that say when to remove articles from the prefetch buffer.
-Possible values in this list are `read', which means that 
+Possible values in this list are `read', which means that
 articles are removed as they are read, and `exit', which means
 that all articles belonging to a group are removed on exit
 from that group."
@@ -105,7 +105,7 @@ It should return non-nil if the article is to be prefetched."
 
 (put 'gnus-asynch-with-semaphore 'lisp-indent-function 0)
 (put 'gnus-asynch-with-semaphore 'edebug-form-spec '(body))
-	
+
 ;;;
 ;;; Article prefetch
 ;;;
@@ -138,7 +138,7 @@ It should return non-nil if the article is to be prefetched."
 	      ;; do this, which leads to slightly slower article
 	      ;; buffer display.
 	      (gnus-async-prefetch-article group next summary)
-	    (run-with-idle-timer 
+	    (run-with-idle-timer
 	     0.1 nil 'gnus-async-prefetch-article group next summary)))))))
 
 (defun gnus-async-prefetch-article (group article summary &optional next)
@@ -181,7 +181,7 @@ It should return non-nil if the article is to be prefetched."
 
 	   (when do-fetch
 	     (setq article (car gnus-async-fetch-list))))
-    
+
 	  (when (and do-fetch article)
 	    ;; We want to fetch some more articles.
 	    (save-excursion
@@ -191,9 +191,9 @@ It should return non-nil if the article is to be prefetched."
 		(goto-char (point-max))
 		(setq mark (point-marker))
 		(let ((nnheader-callback-function
-		       (gnus-make-async-article-function 
+		       (gnus-make-async-article-function
 			group article mark summary next))
-		      (nntp-server-buffer 
+		      (nntp-server-buffer
 		       (get-buffer gnus-async-prefetch-article-buffer)))
 		  (when do-message
 		    (gnus-message 7 "Prefetching article %d in group %s"
@@ -240,7 +240,7 @@ It should return non-nil if the article is to be prefetched."
     (set-marker (cadr entry) nil)
     (set-marker (caddr entry) nil))
   (gnus-async-with-semaphore
-   (setq gnus-async-article-alist 
+   (setq gnus-async-article-alist
 	 (delq entry gnus-async-article-alist))))
 
 (defun gnus-async-prefetch-remove-group (group)
@@ -254,7 +254,7 @@ It should return non-nil if the article is to be prefetched."
 	  (when (equal group (nth 3 (car alist)))
 	    (gnus-async-delete-prefected-entry (car alist)))
 	  (pop alist))))))
-	  
+
 (defun gnus-async-prefetched-article-entry (group article)
   "Return the entry for ARTICLE in GROUP iff it has been prefetched."
   (let ((entry (assq (intern (format "%s-%d" group article))
@@ -266,7 +266,7 @@ It should return non-nil if the article is to be prefetched."
 	  (ignore-errors
 	    (set-marker (cadr entry) nil)
 	    (set-marker (caddr entry) nil))
-	  (setq gnus-async-article-alist 
+	  (setq gnus-async-article-alist
 		(delq entry gnus-async-article-alist))
 	  nil)
       entry)))
@@ -309,7 +309,7 @@ It should return non-nil if the article is to be prefetched."
       (erase-buffer)
       (setq gnus-async-header-prefetched nil)
       t)))
-  
+
 (provide 'gnus-async)
 
 ;;; gnus-async.el ends here

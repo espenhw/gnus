@@ -109,7 +109,7 @@
 
 (deffoo nnweb-request-group (group &optional server dont-check)
   (nnweb-possibly-change-server nil server)
-  (when (and group 
+  (when (and group
 	     (not (equal group nnweb-group))
 	     (not nnweb-ephemeral-p))
     (let ((info (assoc group nnweb-group-alist)))
@@ -200,7 +200,7 @@
   (gnus-delete-assoc group nnweb-group-alist)
   (gnus-delete-file (nnweb-overview-file group))
   t)
-  
+
 (nnoo-define-skeleton nnweb)
 
 ;;; Internal functions
@@ -251,7 +251,7 @@
 (defun nnweb-read-active ()
   "Read the active file."
   (load (nnheader-concat nnweb-directory "active") t t t))
-	   
+
 (defun nnweb-definition (type &optional noerror)
   "Return the definition of TYPE."
   (let ((def (cdr (assq type (assq nnweb-type nnweb-type-definition)))))
@@ -323,7 +323,7 @@
 
 (defun nnweb-encode-www-form-urlencoded (pairs)
   "Return PAIRS encoded for forms."
-  (mapconcat 
+  (mapconcat
    (function
     (lambda (data)
       (concat (w3-form-encode-xwfu (car data)) "="
@@ -333,7 +333,7 @@
 (defun nnweb-fetch-form (url pairs)
   (let ((url-request-data (nnweb-encode-www-form-urlencoded pairs))
 	(url-request-method "POST")
-	(url-request-extra-headers 
+	(url-request-extra-headers
 	 '(("Content-type" . "application/x-www-form-urlencoded"))))
     (url-insert-file-contents url)
     (setq buffer-file-name nil))
@@ -380,7 +380,7 @@
 	  (nnweb-decode-entities)
 	  (goto-char (point-min))
 	  (while (re-search-forward "^ +[0-9]+\\." nil t)
-	    (narrow-to-region 
+	    (narrow-to-region
 	     (point)
 	     (cond ((re-search-forward "^ +[0-9]+\\." nil t)
 		    (match-beginning 0))
@@ -445,7 +445,7 @@
       (replace-match "\n" t t))))
 
 (defun nnweb-dejanews-search (search)
-  (nnweb-fetch-form 
+  (nnweb-fetch-form
    (nnweb-definition 'address)
    `(("query" . ,search)
      ("defaultOp" . "AND")
@@ -489,7 +489,7 @@
 					;(nnweb-decode-entities)
 	  (goto-char (point-min))
 	  (while (re-search-forward "^ +[0-9]+\\." nil t)
-	    (narrow-to-region 
+	    (narrow-to-region
 	     (point)
 	     (if (re-search-forward "^$" nil t)
 		 (match-beginning 0)
@@ -565,10 +565,10 @@
 (defun nnweb-reference-search (search)
   (prog1
       (url-insert-file-contents
-       (concat 
+       (concat
 	(nnweb-definition 'address)
 	"?"
-	(nnweb-encode-www-form-urlencoded 
+	(nnweb-encode-www-form-urlencoded
 	 `(("search" . "advanced")
 	   ("querytext" . ,search)
 	   ("subj" . "")
@@ -671,10 +671,10 @@
 (defun nnweb-altavista-search (search &optional part)
   (prog1
       (url-insert-file-contents
-       (concat 
+       (concat
 	(nnweb-definition 'address)
 	"?"
-	(nnweb-encode-www-form-urlencoded 
+	(nnweb-encode-www-form-urlencoded
 	 `(("pg" . "aq")
 	   ("what" . "news")
 	   ,@(when part `(("stq" . ,(int-to-string (* part 30)))))

@@ -226,7 +226,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.21"
+(defconst gnus-version-number "5.4.22"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -308,7 +308,7 @@ be set in `.emacs' instead."
 ;; We define these group faces here to avoid the display
 ;; update forced when creating new faces.
 
-(defface gnus-group-news-1-face 
+(defface gnus-group-news-1-face
   '((((class color)
       (background dark))
      (:foreground "PaleTurquoise" :bold t))
@@ -330,7 +330,7 @@ be set in `.emacs' instead."
      ()))
   "Level 1 empty newsgroup face.")
 
-(defface gnus-group-news-2-face 
+(defface gnus-group-news-2-face
   '((((class color)
       (background dark))
      (:foreground "turquoise" :bold t))
@@ -352,7 +352,7 @@ be set in `.emacs' instead."
      ()))
   "Level 2 empty newsgroup face.")
 
-(defface gnus-group-news-3-face 
+(defface gnus-group-news-3-face
   '((((class color)
       (background dark))
      (:bold t))
@@ -374,7 +374,7 @@ be set in `.emacs' instead."
      ()))
   "Level 3 empty newsgroup face.")
 
-(defface gnus-group-news-low-face 
+(defface gnus-group-news-low-face
   '((((class color)
       (background dark))
      (:foreground "DarkTurquoise" :bold t))
@@ -396,7 +396,7 @@ be set in `.emacs' instead."
      ()))
   "Low level empty newsgroup face.")
 
-(defface gnus-group-mail-1-face 
+(defface gnus-group-mail-1-face
   '((((class color)
       (background dark))
      (:foreground "aquamarine1" :bold t))
@@ -418,7 +418,7 @@ be set in `.emacs' instead."
      (:italic t :bold t)))
   "Level 1 empty mailgroup face.")
 
-(defface gnus-group-mail-2-face 
+(defface gnus-group-mail-2-face
   '((((class color)
       (background dark))
      (:foreground "aquamarine2" :bold t))
@@ -440,7 +440,7 @@ be set in `.emacs' instead."
      (:bold t)))
   "Level 2 empty mailgroup face.")
 
-(defface gnus-group-mail-3-face 
+(defface gnus-group-mail-3-face
   '((((class color)
       (background dark))
      (:foreground "aquamarine3" :bold t))
@@ -462,7 +462,7 @@ be set in `.emacs' instead."
      ()))
   "Level 3 empty mailgroup face.")
 
-(defface gnus-group-mail-low-face 
+(defface gnus-group-mail-low-face
   '((((class color)
       (background dark))
      (:foreground "aquamarine4" :bold t))
@@ -486,11 +486,11 @@ be set in `.emacs' instead."
 
 ;; Summary mode faces.
 
-(defface gnus-summary-selected-face '((t 
+(defface gnus-summary-selected-face '((t
 				       (:underline t)))
   "Face used for selected articles.")
 
-(defface gnus-summary-cancelled-face 
+(defface gnus-summary-cancelled-face
   '((((class color))
      (:foreground "yellow" :background "black")))
   "Face used for cancelled articles.")
@@ -502,7 +502,7 @@ be set in `.emacs' instead."
     (((class color)
       (background light))
      (:foreground "firebrick" :bold t))
-    (t 
+    (t
      (:bold t)))
   "Face used for high interest ticked articles.")
 
@@ -513,7 +513,7 @@ be set in `.emacs' instead."
     (((class color)
       (background light))
      (:foreground "firebrick" :italic t))
-    (t 
+    (t
      (:italic t)))
   "Face used for low interest ticked articles.")
 
@@ -524,10 +524,10 @@ be set in `.emacs' instead."
     (((class color)
       (background light))
      (:foreground "firebrick"))
-    (t 
+    (t
      ()))
   "Face used for normal interest ticked articles.")
-  
+
 (defface gnus-summary-high-ancient-face
   '((((class color)
       (background dark))
@@ -535,7 +535,7 @@ be set in `.emacs' instead."
     (((class color)
       (background light))
      (:foreground "RoyalBlue" :bold t))
-    (t 
+    (t
      (:bold t)))
   "Face used for high interest ancient articles.")
 
@@ -546,7 +546,7 @@ be set in `.emacs' instead."
     (((class color)
       (background light))
      (:foreground "RoyalBlue" :italic t))
-    (t 
+    (t
      (:italic t)))
   "Face used for low interest ancient articles.")
 
@@ -557,25 +557,25 @@ be set in `.emacs' instead."
     (((class color)
       (background light))
      (:foreground "RoyalBlue"))
-    (t 
+    (t
      ()))
   "Face used for normal interest ancient articles.")
-  
+
 (defface gnus-summary-high-unread-face
-  '((t 
+  '((t
      (:bold t)))
   "Face used for high interest unread articles.")
 
 (defface gnus-summary-low-unread-face
-  '((t 
+  '((t
      (:italic t)))
   "Face used for low interest unread articles.")
 
 (defface gnus-summary-normal-unread-face
-  '((t 
+  '((t
      ()))
   "Face used for normal interest unread articles.")
-  
+
 (defface gnus-summary-high-read-face
   '((((class color)
       (background dark))
@@ -585,7 +585,7 @@ be set in `.emacs' instead."
       (background light))
      (:foreground "DarkGreen"
 		  :bold t))
-    (t 
+    (t
      (:bold t)))
   "Face used for high interest read articles.")
 
@@ -598,7 +598,7 @@ be set in `.emacs' instead."
       (background light))
      (:foreground "DarkGreen"
 		  :italic t))
-    (t 
+    (t
      (:italic t)))
   "Face used for low interest read articles.")
 
@@ -609,7 +609,7 @@ be set in `.emacs' instead."
     (((class color)
       (background light))
      (:foreground "DarkGreen"))
-    (t 
+    (t
      ()))
   "Face used for normal interest read articles.")
 
@@ -621,7 +621,7 @@ be set in `.emacs' instead."
 (eval-and-compile
   (autoload 'gnus-play-jingle "gnus-audio"))
 
-(defface gnus-splash-face 
+(defface gnus-splash-face
   '((((class color)
       (background dark))
      (:foreground "red"))
@@ -797,11 +797,11 @@ see the manual for details."
   :group 'gnus-server
   :type 'gnus-select-method)
 
-(defcustom gnus-message-archive-method 
+(defcustom gnus-message-archive-method
   `(nnfolder
     "archive"
     (nnfolder-directory ,(nnheader-concat message-directory "archive"))
-    (nnfolder-active-file 
+    (nnfolder-active-file
      ,(nnheader-concat message-directory "archive/active"))
     (nnfolder-get-new-mail nil)
     (nnfolder-inhibit-expiry t))
@@ -825,9 +825,9 @@ group (or nil) as a parameter.
 If you want to save your mail in one group and the news articles you
 write in another group, you could say something like:
 
- \(setq gnus-message-archive-group 
+ \(setq gnus-message-archive-group
         '((if (message-news-p)
-              \"misc-news\" 
+              \"misc-news\"
             \"misc-mail\")))
 
 Normally the group names returned by this variable should be
@@ -1048,7 +1048,7 @@ articles.  This is not a good idea."
   :group 'gnus-meta
   :type '(choice (const :tag "off" nil)
 		 integer
-		 (sexp :format "all" 
+		 (sexp :format "all"
 		       :value t)))
 
 (defcustom gnus-use-nocem nil
@@ -1076,7 +1076,7 @@ articles.  This is not a good idea."
   :group 'gnus-meta
   :type 'boolean)
 
-(defcustom gnus-summary-prepare-exit-hook 
+(defcustom gnus-summary-prepare-exit-hook
   '(gnus-summary-expire-articles)
   "A hook called when preparing to exit from the summary buffer.
 It calls `gnus-summary-expire-articles' by default."
@@ -1173,7 +1173,7 @@ this variable.	I think."
 	  (string :tag "Address")
 	  (editable-list  :inline t
 			  (list :format "%v"
-				variable 
+				variable
 				(sexp :tag "Value")))))
 
 (defcustom gnus-updated-mode-lines '(group article summary tree)
@@ -1262,8 +1262,8 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL."
 
 ;;; Face thingies.
 
-(defcustom gnus-visual 
-  '(summary-highlight group-highlight article-highlight 
+(defcustom gnus-visual
+  '(summary-highlight group-highlight article-highlight
 		      mouse-face
 		      summary-menu group-menu article-menu
 		      tree-highlight menu highlight
@@ -1623,7 +1623,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-picon" :interactive t gnus-article-display-picons
       gnus-group-display-picons gnus-picons-article-display-x-face
       gnus-picons-display-x-face)
-     ("gnus-gl" bbb-login bbb-logout bbb-grouplens-group-p 
+     ("gnus-gl" bbb-login bbb-logout bbb-grouplens-group-p
       gnus-grouplens-mode)
      ("smiley" :interactive t gnus-smiley-display)
      ("gnus-win" gnus-configure-windows gnus-add-configuration)
@@ -1653,7 +1653,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-article-hide-pem gnus-article-hide-signature
       gnus-article-strip-leading-blank-lines gnus-article-date-local
       gnus-article-date-original gnus-article-date-lapsed
-      gnus-article-show-all-headers 
+      gnus-article-show-all-headers
       gnus-article-edit-mode gnus-article-edit-article
       gnus-article-edit-done gnus-decode-rfc1522 article-decode-rfc1522)
      ("gnus-int" gnus-request-type)
@@ -1743,7 +1743,7 @@ This restriction may disappear in later versions of Gnus."
 
 (defun gnus-suppress-keymap (keymap)
   (suppress-keymap keymap)
-  (let ((keys `([delete] "\177" "\M-u"))) ;gnus-mouse-2 
+  (let ((keys `([delete] "\177" "\M-u"))) ;gnus-mouse-2
     (while keys
       (define-key keymap (pop keys) 'undefined))))
 
@@ -1751,7 +1751,7 @@ This restriction may disappear in later versions of Gnus."
   (let ((keymap (make-keymap)))
     (gnus-suppress-keymap keymap)
     keymap))
-(defvar gnus-summary-mode-map 
+(defvar gnus-summary-mode-map
   (let ((keymap (make-keymap)))
     (gnus-suppress-keymap keymap)
     keymap))
@@ -1952,7 +1952,7 @@ If ARG, insert string at point."
       (string-to-number
        (if (zerop major)
 	   (format "%s00%02d%02d"
-		   (cond 
+		   (cond
 		    ((member alpha '("(ding)" "d")) "4.99")
 		    ((member alpha '("September" "s")) "5.01")
 		    ((member alpha '("Red" "r")) "5.03"))
@@ -2066,7 +2066,7 @@ that that variable is buffer-local to the summary buffers."
   (let ((method-name (symbol-name (car method))))
     (if (and (memq 'address (assoc method-name gnus-valid-select-methods))
 	     (not (assq (intern (concat method-name "-address")) method))
-	     (memq 'physical-address (assq (car method) 
+	     (memq 'physical-address (assq (car method)
 					   gnus-valid-select-methods)))
 	(append method (list (list (intern (concat method-name "-address"))
 				   (nth 1 method))))
@@ -2089,7 +2089,7 @@ that that variable is buffer-local to the summary buffers."
 
 (defun gnus-server-to-method (server)
   "Map virtual server names to select methods."
-  (or 
+  (or
    ;; Is this a method, perhaps?
    (and server (listp server) server)
    ;; Perhaps this is the native server?
@@ -2140,7 +2140,7 @@ that that variable is buffer-local to the summary buffers."
 
 (defun gnus-archive-server-wanted-p ()
   "Say whether the user wants to use the archive server."
-  (cond 
+  (cond
    ((or (not gnus-message-archive-method)
 	(not gnus-message-archive-group))
     nil)
@@ -2356,7 +2356,7 @@ Returns the number of articles marked as read."
 (defun gnus-newsgroup-kill-file (newsgroup)
   "Return the name of a kill file name for NEWSGROUP.
 If NEWSGROUP is nil, return the global kill file name instead."
-  (cond 
+  (cond
    ;; The global KILL file is placed at top of the directory.
    ((or (null newsgroup)
 	(string-equal newsgroup ""))
@@ -2492,7 +2492,7 @@ Allow completion over sensible values."
 	  prompt (append gnus-valid-select-methods gnus-predefined-server-alist
 			 gnus-server-alist)
 	  nil t nil 'gnus-method-history)))
-    (cond 
+    (cond
      ((equal method "")
       (setq method gnus-select-method))
      ((assoc method gnus-valid-select-methods)

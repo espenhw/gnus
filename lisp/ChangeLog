@@ -1,3 +1,29 @@
+Fri Mar  7 23:33:34 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.22 is released.
+
+Fri Mar  7 08:25:20 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-msg.el (gnus-inews-do-gcc): Made interactive.
+
+	* gnus-sum.el (gnus-read-move-group-name): Beep on empty names.
+
+	* nnmail.el (nnmail-check-duplication): Don't rename Message-ID.
+	(nnmail-cache-message-id-when-accepting): Removed.
+
+	* gnus-sum.el (gnus-nov-parse-line): Allow showing of multiple
+	articles with the same Message-ID.
+	(gnus-get-newsgroup-headers): Ditto.
+
+	* gnus.el: Removed trailing spaces throughout.
+
+	* gnus-art.el (gnus-header-name-face): Made easier on the eyes.
+	(gnus-article-add-buttons): Make buffer read/write before doing
+	anything. 
+
+	* message.el (message-font-lock-keywords): Changed expression and
+	faces. 
+
 Fri Mar  7 07:36:14 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.21 is released.

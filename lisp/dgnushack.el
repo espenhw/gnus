@@ -47,7 +47,7 @@
     (fset 'x-defined-colors 'ignore)
     (fset 'read-color 'ignore)))
 
-(setq byte-compile-warnings 
+(setq byte-compile-warnings
       '(free-vars unresolved callargs redefine))
 
 (defun dgnushack-compile ()
@@ -60,7 +60,7 @@
 	(require 'w3-forms)
       (error (setq files (delete "nnweb.el" files))))
     (while (setq file (pop files))
-      (when (or (not (member file '("gnus-xmas.el" "gnus-picon.el" 
+      (when (or (not (member file '("gnus-xmas.el" "gnus-picon.el"
 				    "messagexmas.el" "nnheaderxm.el"
 				    "smiley.el")))
 		xemacs)
@@ -73,5 +73,5 @@
   (require 'gnus)
   (byte-recompile-directory "." 0))
 
-;;; dgnushack.el ends here  
+;;; dgnushack.el ends here
 

@@ -31,7 +31,7 @@
 
 ;;; Widgets:
 
-;; There should be special validation for this.  
+;; There should be special validation for this.
 (define-widget 'gnus-email-address 'string
   "An email address")
 
@@ -59,7 +59,7 @@ if that value is non-nil."
   '((to-address (gnus-email-address :tag "To Address") "\
 This will be used when doing followups and posts.
 
-This is primarily useful in mail groups that represent closed 
+This is primarily useful in mail groups that represent closed
 mailing lists--mailing lists where it's expected that everybody that
 writes to the mailing list is subscribed to it.  Since using this
 parameter ensures that the mail only goes to the mailing list itself,
@@ -73,7 +73,7 @@ is therefore impossible--you have to send mail to the mailing list
 address instead.")
 
     (to-list (gnus-email-address :tag "To List") "\
-This address will be used when doing a `a' in the group. 
+This address will be used when doing a `a' in the group.
 
 It is totally ignored when doing a followup--except that if it is
 present in a news group, you'll get mail group semantics when doing
@@ -88,7 +88,7 @@ listserv itself.  This is broken behavior.  So there!")
 
     (to-group (string :tag "To Group") "\
 All posts will be send to the specified group.")
-    
+
     (gcc-self (choice :tag  "GCC"
 		      :value t
 		      (const t)
@@ -105,11 +105,11 @@ rules as described later).")
 
     (auto-expire (const :tag "Automatic Expire" t) "\
 All articles that are read will be marked as expirable.")
-    
+
     (total-expire (const :tag "Total Expire" t) "\
 All read articles will be put through the expiry process
 
-This happens even if they are not marked as expirable.  
+This happens even if they are not marked as expirable.
 Use with caution.")
 
     (expiry-wait (choice :tag  "Expire Wait"
@@ -118,7 +118,7 @@ Use with caution.")
 			 (const immediate)
 			 (number :hide-front-space t
 				 :format "%v")) "\
-When to expire.  
+When to expire.
 
 Overrides any `nnmail-expiry-wait' and `nnmail-expiry-wait-function'
 when expiring expirable messages. The value can either be a number of
@@ -128,9 +128,9 @@ days (not necessarily an integer) or the symbols `never' or
     (score-file (file :tag "Score File") "\
 Make the specified file into the current score file.
 This means that all score commands you issue will end up in this file.")
-    
+
     (adapt-file (file :tag "Adapt File") "\
-Make the specified file into the current adaptive file.  
+Make the specified file into the current adaptive file.
 All adaptive score entries will be put into this file.")
 
     (admin-address (gnus-email-address :tag "Admin Address") "\
@@ -145,7 +145,7 @@ you to put the admin address somewhere convenient.")
 		     :value default
 		     (const all)
 		     (const default)) "\
-Which articles to display on entering the group.  
+Which articles to display on entering the group.
 
 `all'
      Display all articles, both read and unread.
@@ -156,7 +156,7 @@ Which articles to display on entering the group.
 
     (comment (string :tag  "Comment") "\
 An arbitrary comment on the group."))
-  "Alist of valid group parameters.  
+  "Alist of valid group parameters.
 
 Each entry has the form (NAME TYPE DOC), where NAME is the parameter
 itself (a symbol), TYPE is the parameters type (a sexp widget), and
@@ -217,7 +217,7 @@ edit the value to suit your taste."
 				  :tag "Variables"
 				  :format "%t:\n%h%v%i\n\n"
 				  :doc "\
-Set variables local to the group you are entering.  
+Set variables local to the group you are entering.
 
 If you want to turn threading off in `news.answers', you could put
 `(gnus-show-threads nil)' in the group parameters of that group.
@@ -233,18 +233,18 @@ form, but who cares?"
 					 (symbol :tag "Variable")
 					 (sexp :tag
 					       "Value")))
-			 
+
 			 '(repeat :inline t
 				  :tag "Unknown entries"
 				  sexp)))
     (widget-insert "\n\nYou can also edit the ")
-    (widget-create 'info-link 
+    (widget-create 'info-link
 		   :tag "select method"
 		   :help-echo "Push me to learn more about select methods."
 		   "(gnus)Select Methods")
     (widget-insert " for the group.\n")
-    (setq gnus-custom-method 
-	  (widget-create 'sexp 
+    (setq gnus-custom-method
+	  (widget-create 'sexp
 			 :tag "Method"
 			 :value (gnus-info-method info)))
     (use-local-map widget-keymap)
@@ -253,9 +253,9 @@ form, but who cares?"
 (defun gnus-group-customize-done (&rest ignore)
   "Apply changes and bury the buffer."
   (interactive)
-  (gnus-group-edit-group-done 'params gnus-custom-group 
+  (gnus-group-edit-group-done 'params gnus-custom-group
 			      (widget-value gnus-custom-params))
-  (gnus-group-edit-group-done 'method gnus-custom-group 
+  (gnus-group-edit-group-done 'method gnus-custom-group
 			      (widget-value gnus-custom-method))
   (bury-buffer))
 
@@ -263,46 +263,46 @@ form, but who cares?"
 
 (defconst gnus-score-parameters
   '((mark (number :tag "Mark") "\
-The value of this entry should be a number. 
+The value of this entry should be a number.
 Any articles with a score lower than this number will be marked as read.")
 
     (expunge (number :tag "Expunge") "\
-The value of this entry should be a number.  
+The value of this entry should be a number.
 Any articles with a score lower than this number will be removed from
 the summary buffer.")
 
     (mark-and-expunge (number :tag "Mark-and-expunge") "\
-The value of this entry should be a number.  
+The value of this entry should be a number.
 Any articles with a score lower than this number will be marked as
 read and removed from the summary buffer.")
 
     (thread-mark-and-expunge (number :tag "Thread-mark-and-expunge") "\
-The value of this entry should be a number.  
+The value of this entry should be a number.
 All articles that belong to a thread that has a total score below this
 number will be marked as read and removed from the summary buffer.
 `gnus-thread-score-function' says how to compute the total score
 for a thread.")
 
     (files (repeat :tag "Files" file) "\
-The value of this entry should be any number of file names.  
+The value of this entry should be any number of file names.
 These files are assumed to be score files as well, and will be loaded
 the same way this one was.")
 
     (exclude-files (repeat :tag "Exclude-files" file) "\
-The clue of this entry should be any number of files.  
+The clue of this entry should be any number of files.
 These files will not be loaded, even though they would normally be so,
 for some reason or other.")
 
     (eval (sexp :tag "Eval" :value nil) "\
-The value of this entry will be `eval'el.  
+The value of this entry will be `eval'el.
 This element will be ignored when handling global score files.")
 
     (read-only (boolean :tag "Read-only" :value t) "\
-Read-only score files will not be updated or saved.  
+Read-only score files will not be updated or saved.
 Global score files should feature this atom.")
 
     (orphan (number :tag "Orphan") "\
-The value of this entry should be a number.  
+The value of this entry should be a number.
 Articles that do not have parents will get this number added to their
 scores.  Imagine you follow some high-volume newsgroup, like
 `comp.lang.c'.  Most likely you will only follow a few of the threads,
@@ -323,12 +323,12 @@ I.e.---the orphan score atom is for high-volume groups where there
 exist a few interesting threads which can't be found automatically
 by ordinary scoring rules.")
 
-    (adapt (choice :tag "Adapt" 
+    (adapt (choice :tag "Adapt"
 		   (const t)
 		   (const ignore)
 		   (sexp :format "%v"
 			 :hide-front-space t)) "\
-This entry controls the adaptive scoring.  
+This entry controls the adaptive scoring.
 If it is `t', the default adaptive scoring rules will be used.  If it
 is `ignore', no adaptive scoring will be performed on this group.  If
 it is a list, this list will be used as the adaptive scoring rules.
@@ -356,7 +356,7 @@ and set to the value specified.  This is a convenient, if somewhat
 strange, way of setting variables in some groups if you don't like
 hooks much.")
     (touched (sexp :format "Touched\n") "Internal variable."))
-  "Alist of valid symbolic score parameters.  
+  "Alist of valid symbolic score parameters.
 
 Each entry has the form (NAME TYPE DOC), where NAME is the parameter
 itself (a symbol), TYPE is the parameters type (a sexp widget), and DOC is a
@@ -395,14 +395,14 @@ documentation string for the parameter.")
 			(const :tag "default" nil)))
 	 (group `(group ,match ,score ,expire ,type))
 	 (doc (concat (or (widget-get widget :doc)
-			  (concat "Change score based on the " tag 
+			  (concat "Change score based on the " tag
 				  " header.\n"))
 		      "
-You can have an arbitrary number of score entries for this header, 
+You can have an arbitrary number of score entries for this header,
 each score entry has four elements:
 
 1. The \"match element\".  This should be the string to look for in the
-   header. 
+   header.
 
 2. The \"score element\".  This number should be an integer in the
    neginf to posinf interval.  This number is added to the score
@@ -461,7 +461,7 @@ each score entry has four elements:
 			(const <=)))
 	 (group `(group ,match ,score ,expire ,type))
 	 (doc (concat (or (widget-get widget :doc)
-			  (concat "Change score based on the " tag 
+			  (concat "Change score based on the " tag
 				  " header.")))))
     (widget-put widget :args `(,item
 			       (repeat :inline t
@@ -497,7 +497,7 @@ each score entry has four elements:
 			(const after)))
 	 (group `(group ,match ,score ,expire ,type))
 	 (doc (concat (or (widget-get widget :doc)
-			  (concat "Change score based on the " tag 
+			  (concat "Change score based on the " tag
 				  " header."))
 		      "
 For the Date header we have three kinda silly match types: `before',
@@ -643,7 +643,7 @@ articles in the thread.
   (bury-buffer))
 
 ;;; The End:
-	  
+
 (provide 'gnus-cus)
 
 ;;; gnus-cus.el ends here

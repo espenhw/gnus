@@ -43,7 +43,7 @@
 ;; The copyright holders request that they be notified of
 ;; modifications of this code.  Please send electronic mail to
 ;; grouplens@cs.umn.edu for more information or to announce derived
-;; works.  
+;; works.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Author: Brad Miller
 ;;
@@ -56,7 +56,7 @@
 ;;
 ;;    ---------------- For your .emacs or .gnus file ----------------
 ;;
-;; As of version 2.5, grouplens now works as a minor mode of 
+;; As of version 2.5, grouplens now works as a minor mode of
 ;; gnus-summary-mode.  To get make that work you just need a couple of
 ;; hooks.
 ;; (setq gnus-use-grouplens t)
@@ -76,14 +76,14 @@
 ;; Please type M-x gnus-gl-submit-bug-report.  This will set up a
 ;; mail buffer with the  state of variables and buffers that will help
 ;; me debug the problem.  A short description up front would help too!
-;; 
+;;
 ;; How do I display the prediction for an article:
 ;;  If you set the gnus-summary-line-format as shown above, the score
 ;;  (prediction) will be shown automatically.
 ;;
-;; 
+;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Programmer  Notes 
+;; Programmer  Notes
 ;; 10/9/95
 ;; gnus-scores-articles contains the articles
 ;; When scoring is done, the call tree looks something like:
@@ -115,7 +115,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; bugs
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
+;;
 
 ;;; Code:
 
@@ -132,7 +132,7 @@
   "*The line format spec in summary GroupLens mode buffers.")
 
 (defvar grouplens-pseudonym ""
-  "User's pseudonym.  
+  "User's pseudonym.
 This pseudonym is obtained during the registration process")
 
 (defvar grouplens-bbb-host "grouplens.cs.umn.edu"
@@ -141,7 +141,7 @@ This pseudonym is obtained during the registration process")
 (defvar grouplens-bbb-port 9000
   "Port where the bbbd is listening" )
 
-(defvar grouplens-newsgroups 
+(defvar grouplens-newsgroups
   '("comp.groupware" "comp.human-factors" "comp.lang.c++"
     "comp.lang.java" "comp.os.linux.admin" "comp.os.linux.advocacy"
     "comp.os.linux.announce" "comp.os.linux.answers"
@@ -154,8 +154,8 @@ This pseudonym is obtained during the registration process")
   "*Groups that are part of the GroupLens experiment.")
 
 (defvar grouplens-prediction-display 'prediction-spot
-  "valid values are: 
-      prediction-spot -- an * corresponding to the prediction between 1 and 5, 
+  "valid values are:
+      prediction-spot -- an * corresponding to the prediction between 1 and 5,
       confidence-interval -- a numeric confidence interval
       prediction-bar --  |#####     | the longer the bar, the better the article,
       confidence-bar --  |  -----   } the prediction is in the middle of the bar,
@@ -164,7 +164,7 @@ This pseudonym is obtained during the registration process")
       confidence-plus-minus  -- prediction +/i confidence")
 
 (defvar grouplens-score-offset 0
-  "Offset the prediction by this value.  
+  "Offset the prediction by this value.
 Setting this variable to -2 would have the following effect on
 GroupLens scores:
 
@@ -173,16 +173,16 @@ GroupLens scores:
    3   -->    0
    4   -->    1
    5   -->    2
-   
+
 The reason is that a user might want to do this is to combine
 GroupLens predictions with scores calculated by other score methods.")
 
 (defvar grouplens-score-scale-factor 1
-  "This variable allows the user to magnify the effect of GroupLens scores. 
+  "This variable allows the user to magnify the effect of GroupLens scores.
 The scale factor is applied after the offset.")
 
 (defvar gnus-grouplens-override-scoring 'override
-  "Tell GroupLens to override the normal Gnus scoring mechanism.  
+  "Tell GroupLens to override the normal Gnus scoring mechanism.
 GroupLens scores can be combined with gnus scores in one of three ways.
 'override -- just use grouplens predictions for grouplens groups
 'combine  -- combine grouplens scores with gnus scores
@@ -255,11 +255,11 @@ If this times out we give up and assume that something has died..." )
   ;; open the connection to the server
   (catch 'done
     (condition-case error
-	(setq grouplens-bbb-process 
+	(setq grouplens-bbb-process
 	      (open-network-stream "BBBD" grouplens-bbb-buffer host port))
       (error (gnus-message 3 "Error: Failed to connect to BBB")
 	     nil))
-    (and (null grouplens-bbb-process) 
+    (and (null grouplens-bbb-process)
 	 (throw 'done nil))
     (save-excursion
       (set-buffer grouplens-bbb-buffer)
@@ -338,12 +338,12 @@ If this times out we give up and assume that something has died..." )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun bbb-build-mid-scores-alist (groupname)
-  "this function can be called as part of the function to return the 
+  "this function can be called as part of the function to return the
 list of score files to use.  See the gnus variable
-gnus-score-find-score-files-function.  
+gnus-score-find-score-files-function.
 
 *Note:*  If you want to use grouplens scores along with calculated scores,
-you should see the offset and scale variables.  At this point, I don't 
+you should see the offset and scale variables.  At this point, I don't
 recommend using both scores and grouplens predictions together."
   (setq grouplens-current-group groupname)
   (when (member groupname grouplens-newsgroups)
@@ -423,14 +423,14 @@ recommend using both scores and grouplens predictions together."
 ;; around.  Where the first parenthesized expression is the
 ;; message-id, and the second is the prediction, the third and fourth
 ;; are the confidence interval
-;; 
+;;
 ;; Since gnus assumes that scores are integer values?? we round the
 ;; prediction.
 (defun bbb-get-mid ()
   (buffer-substring (match-beginning 1) (match-end 1)))
 
 (defun bbb-get-pred ()
-  (let ((tpred (string-to-number (buffer-substring (match-beginning 2) 
+  (let ((tpred (string-to-number (buffer-substring (match-beginning 2)
 						   (match-end 2)))))
     (if (> tpred 0)
 	(round (* grouplens-score-scale-factor
@@ -473,7 +473,7 @@ recommend using both scores and grouplens predictions together."
 	(setq high 0))
       (if (and (bbb-valid-score iscore)
 	       (not (null mid)))
-	  (cond 
+	  (cond
 	   ;; prediction-spot
 	   ((equal grouplens-prediction-display 'prediction-spot)
 	    (setq rate-string (bbb-fmt-prediction-spot rate-string iscore)))
@@ -522,7 +522,7 @@ recommend using both scores and grouplens predictions together."
 	      ((> pred 5)
 	       (setq pred 5))))
       ;; If no entry in BBB hash mark rate string as NA and return
-      (cond 
+      (cond
        ((null hashent)
 	(aset rate-string 5 ?N)
 	(aset rate-string 6 ?A)
@@ -530,10 +530,10 @@ recommend using both scores and grouplens predictions together."
 
        ((equal grouplens-prediction-display 'prediction-spot)
 	(bbb-fmt-prediction-spot rate-string pred))
-       
+
        ((equal grouplens-prediction-display 'confidence-interval)
 	(bbb-fmt-confidence-interval pred low high))
-       
+
        ((equal grouplens-prediction-display 'prediction-bar)
 	(bbb-fmt-prediction-bar rate-string pred))
 
@@ -542,14 +542,14 @@ recommend using both scores and grouplens predictions together."
 
        ((equal grouplens-prediction-display 'confidence-spot)
 	(format "|   %4.2f   |" pred))
-       
+
        ((equal grouplens-prediction-display 'prediction-num)
 	(bbb-fmt-prediction-num pred))
-       
+
        ((equal grouplens-prediction-display 'confidence-plus-minus)
 	(bbb-fmt-confidence-plus-minus pred low high))
-       
-       (t 
+
+       (t
 	(gnus-message 3 "Invalid prediction display type")
 	(aset rate-string 0 ?|)
 	(aset rate-string 11 ?|)
@@ -609,19 +609,19 @@ recommend using both scores and grouplens predictions together."
 
 (defun bbb-put-ratings ()
   (if (and grouplens-bbb-token
-	   grouplens-rating-alist 
+	   grouplens-rating-alist
 	   (member gnus-newsgroup-name grouplens-newsgroups))
-      (let ((bbb-process (bbb-connect-to-bbbd grouplens-bbb-host 
+      (let ((bbb-process (bbb-connect-to-bbbd grouplens-bbb-host
 					      grouplens-bbb-port))
 	    (rate-command (bbb-build-rate-command grouplens-rating-alist)))
 	(if bbb-process
-	    (save-excursion 
+	    (save-excursion
 	      (set-buffer (process-buffer bbb-process))
 	      (gnus-message 5 "Sending Ratings...")
 	      (bbb-send-command bbb-process rate-command)
 	      (if (bbb-read-response bbb-process)
 		  (setq grouplens-rating-alist nil)
-		(gnus-message 1 
+		(gnus-message 1
 			      "Token timed out: call bbb-login and quit again")
 		(ding))
 	      (gnus-message 5 "Sending Ratings...Done"))
@@ -642,7 +642,7 @@ recommend using both scores and grouplens predictions together."
   (interactive "nRating: ")
   (when (member gnus-newsgroup-name grouplens-newsgroups)
     (let ((mid (or midin (bbb-get-current-id))))
-      (if (and rating 
+      (if (and rating
 	       (>= rating grplens-minrating)
 	       (<= rating grplens-maxrating)
 	       mid)
@@ -668,8 +668,8 @@ recommend using both scores and grouplens predictions together."
   (gnus-summary-best-unread-article))
 
 (defun grouplens-summary-catchup-and-exit (rating)
-  "Mark all articles not marked as unread in this newsgroup as read, 
-    then exit.   If prefix argument ALL is non-nil, all articles are 
+  "Mark all articles not marked as unread in this newsgroup as read,
+    then exit.   If prefix argument ALL is non-nil, all articles are
     marked as read."
   (interactive "P")
   (when rating
@@ -689,7 +689,7 @@ recommend using both scores and grouplens predictions together."
 	  (gnus-summary-goto-subject article)
 	  (gnus-set-global-variables)
 	  (bbb-summary-rate-article score
-				    (mail-header-id 
+				    (mail-header-id
 				     (gnus-summary-article-header article)))))
       (setq e (point)))
     (let ((gnus-summary-check-current t))
@@ -705,7 +705,7 @@ recommend using both scores and grouplens predictions together."
 
 (defun bbb-get-current-id ()
   (if gnus-current-headers
-      (mail-header-id gnus-current-headers) 
+      (mail-header-id gnus-current-headers)
     (gnus-message 3 "You must select an article before you rate it")))
 
 (defun bbb-grouplens-group-p (group)
@@ -732,7 +732,7 @@ recommend using both scores and grouplens predictions together."
   (when (member gnus-newsgroup-name grouplens-newsgroups)
     (when grouplens-previous-article
       (let ((elapsed-time (grouplens-elapsed-time))
-	    (oldrating (assoc grouplens-previous-article 
+	    (oldrating (assoc grouplens-previous-article
 			      grouplens-rating-alist)))
 	(if (not oldrating)
 	    (push `(,grouplens-previous-article . (0 . ,elapsed-time))
@@ -806,7 +806,7 @@ recommend using both scores and grouplens predictions together."
   (when (and (eq major-mode 'gnus-summary-mode)
 	     (member gnus-newsgroup-name grouplens-newsgroups))
     (make-local-variable 'gnus-grouplens-mode)
-    (setq gnus-grouplens-mode 
+    (setq gnus-grouplens-mode
 	  (if (null arg) (not gnus-grouplens-mode)
 	    (> (prefix-numeric-value arg) 0)))
     (when gnus-grouplens-mode
@@ -816,28 +816,28 @@ recommend using both scores and grouplens predictions together."
       (gnus-add-hook 'gnus-exit-group-hook 'bbb-exit-group nil 'local)
       (make-local-variable 'gnus-score-find-score-files-function)
 
-      (cond 
+      (cond
        ((eq gnus-grouplens-override-scoring 'combine)
 	;; either add bbb-buld-mid-scores-alist to a list
 	;; or make a list
 	(if (listp gnus-score-find-score-files-function)
-	    (setq gnus-score-find-score-files-function 
-		  (append 'bbb-build-mid-scores-alist 
+	    (setq gnus-score-find-score-files-function
+		  (append 'bbb-build-mid-scores-alist
 			  gnus-score-find-score-files-function))
-	  (setq gnus-score-find-score-files-function 
-		(list gnus-score-find-score-files-function 
+	  (setq gnus-score-find-score-files-function
+		(list gnus-score-find-score-files-function
 		      'bbb-build-mid-scores-alist))))
        ;; leave the gnus-score-find-score-files variable alone
        ((eq gnus-grouplens-override-scoring 'separate)
-	(add-hook 'gnus-select-group-hook 
+	(add-hook 'gnus-select-group-hook
 		  (lambda ()
 		    (bbb-get-predictions (bbb-get-all-mids)
 					 gnus-newsgroup-name))))
        ;; default is to override
-       (t 
-	(setq gnus-score-find-score-files-function 
+       (t
+	(setq gnus-score-find-score-files-function
 	      'bbb-build-mid-scores-alist)))
-      
+
       ;; Change how summary lines look
       (make-local-variable 'gnus-summary-line-format)
       (make-local-variable 'gnus-summary-line-format-spec)

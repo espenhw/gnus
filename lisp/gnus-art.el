@@ -92,7 +92,7 @@
   '("^Path:" "^Posting-Version:" "^Article-I.D.:" "^Expires:"
     "^Date-Received:" "^References:" "^Control:" "^Xref:" "^Lines:"
     "^Posted:" "^Relay-Version:" "^Message-ID:" "^Nf-ID:" "^Nf-From:"
-    "^Approved:" "^Sender:" "^Received:" "^Mail-from:") 
+    "^Approved:" "^Sender:" "^Received:" "^Mail-from:")
   "All headers that match this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."
@@ -101,7 +101,7 @@ If `gnus-visible-headers' is non-nil, this variable will be ignored."
 		 (repeat regexp))
   :group 'gnus-article-hiding)
 
-(defcustom gnus-visible-headers 
+(defcustom gnus-visible-headers
   "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-From"
   "All headers that do not match this regexp will be hidden.
 This variable can also be a list of regexp of headers to remain visible.
@@ -156,7 +156,7 @@ regexp.  If it matches, the text in question is not a signature."
 
 (defcustom gnus-hidden-properties '(invisible t intangible t)
   "Property list to use for hiding text."
-  :type 'sexp 
+  :type 'sexp
   :group 'gnus-article-hiding)
 
 (defcustom gnus-article-x-face-command
@@ -232,7 +232,7 @@ is the face used for highlighting."
   "Face used for displaying bold italic emphasized text (/*word*/)."
   :group 'gnus-article-emphasis)
 
-(defface gnus-emphasis-underline-bold-italic 
+(defface gnus-emphasis-underline-bold-italic
   '((t (:bold t :italic t :underline t)))
   "Face used for displaying underlined bold italic emphasized text.
 Esample: (_/*word*/_)."
@@ -416,53 +416,53 @@ above them."
   :group 'gnus-article-highlight
   :group 'gnus-article-signature)
 
-(defface gnus-header-from-face 
+(defface gnus-header-from-face
   '((((class color)
       (background dark))
-     (:foreground "light blue" :bold t :italic t))
+     (:foreground "green1" :bold t :italic t))
     (((class color)
       (background light))
      (:foreground "MidnightBlue" :bold t :italic t))
-    (t 
+    (t
      (:bold t :italic t)))
   "Face used for displaying from headers."
   :group 'gnus-article-headers
   :group 'gnus-article-highlight)
 
-(defface gnus-header-subject-face 
+(defface gnus-header-subject-face
   '((((class color)
       (background dark))
-     (:foreground "pink" :bold t :italic t))
+     (:foreground "green3" :bold t :italic t))
     (((class color)
       (background light))
      (:foreground "firebrick" :bold t :italic t))
-    (t 
+    (t
      (:bold t :italic t)))
   "Face used for displaying subject headers."
   :group 'gnus-article-headers
   :group 'gnus-article-highlight)
 
-(defface gnus-header-newsgroups-face 
+(defface gnus-header-newsgroups-face
   '((((class color)
       (background dark))
      (:foreground "yellow" :bold t :italic t))
     (((class color)
       (background light))
      (:foreground "indianred" :bold t :italic t))
-    (t 
+    (t
      (:bold t :italic t)))
   "Face used for displaying newsgroups headers."
   :group 'gnus-article-headers
   :group 'gnus-article-highlight)
 
-(defface gnus-header-name-face 
+(defface gnus-header-name-face
   '((((class color)
       (background dark))
-     (:foreground "cyan" :bold t))
+     (:foreground "green4" :bold t))
     (((class color)
       (background light))
      (:foreground "DarkGreen" :bold t))
-    (t 
+    (t
      (:bold t)))
   "Face used for displaying header names."
   :group 'gnus-article-headers
@@ -475,7 +475,7 @@ above them."
     (((class color)
       (background light))
      (:foreground "DarkGreen" :italic t))
-    (t 
+    (t
      (:italic t)))  "Face used for displaying header content."
   :group 'gnus-article-headers
   :group 'gnus-article-highlight)
@@ -487,7 +487,7 @@ above them."
     ("" gnus-header-name-face gnus-header-content-face))
   "Controls highlighting of article header.
 
-An alist of the form (HEADER NAME CONTENT). 
+An alist of the form (HEADER NAME CONTENT).
 
 HEADER is a regular expression which should match the name of an
 header header and NAME and CONTENT are either face names or nil.
@@ -530,7 +530,7 @@ Initialized from `text-mode-syntax-table.")
   "Set text PROPS on the B to E region, extending `intangible' 1 past B."
   (add-text-properties b e props)
   (when (memq 'intangible props)
-    (put-text-property 
+    (put-text-property
      (max (1- b) (point-min))
      b 'intangible (cddr (memq 'intangible props)))))
 
@@ -645,16 +645,16 @@ always hide."
 	    (while (re-search-forward "^[^ \t]*:" nil t)
 	      (beginning-of-line)
 	      ;; Mark the rank of the header.
-	      (put-text-property 
+	      (put-text-property
 	       (point) (1+ (point)) 'message-rank
 	       (if (or (and visible (looking-at visible))
 		       (and ignored
 			    (not (looking-at ignored))))
-		   (gnus-article-header-rank) 
+		   (gnus-article-header-rank)
 		 (+ 2 max)))
 	      (forward-line 1))
 	    (message-sort-headers-1)
-	    (when (setq beg (text-property-any 
+	    (when (setq beg (text-property-any
 			     (point-min) (point-max) 'message-rank (+ 2 max)))
 	      ;; We make the unwanted headers invisible.
 	      (if delete
@@ -688,7 +688,7 @@ always hide."
 		(forward-line -1)
 		(gnus-article-hide-text-type
 		 (progn (beginning-of-line) (point))
-		 (progn 
+		 (progn
 		   (end-of-line)
 		   (if (re-search-forward "^[^ \t]" nil t)
 		       (match-beginning 0)
@@ -712,7 +712,7 @@ always hide."
 		(when (and
 		       from reply-to
 		       (ignore-errors
-			 (equal 
+			 (equal
 			  (nth 1 (mail-extract-address-components from))
 			  (nth 1 (mail-extract-address-components reply-to)))))
 		  (gnus-article-hide-header "reply-to"))))
@@ -729,7 +729,7 @@ always hide."
     (when (re-search-forward (concat "^" header ":") nil t)
       (gnus-article-hide-text-type
        (progn (beginning-of-line) (point))
-       (progn 
+       (progn
 	 (end-of-line)
 	 (if (re-search-forward "^[^ \t]" nil t)
 	     (match-beginning 0)
@@ -748,7 +748,7 @@ always hide."
 	  ;; We do the boldification/underlining by hiding the
 	  ;; overstrikes and putting the proper text property
 	  ;; on the letters.
-	  (cond 
+	  (cond
 	   ((eq next previous)
 	    (gnus-article-hide-text-type (- (point) 2) (point) 'overstrike)
 	    (put-text-property (point) (1+ (point)) 'face 'bold))
@@ -858,14 +858,14 @@ always hide."
        (goto-char (point-min))
        (or (search-forward "\n\n" nil t) (point-max)))
       (goto-char (point-min))
-      (while (re-search-forward 
+      (while (re-search-forward
 	      "=\\?iso-8859-1\\?q\\?\\([^?\t\n]*\\)\\?=" nil t)
 	(setq string (match-string 1))
 	(save-restriction
 	  (narrow-to-region (match-beginning 0) (match-end 0))
 	  (delete-region (point-min) (point-max))
 	  (insert string)
-	  (article-mime-decode-quoted-printable 
+	  (article-mime-decode-quoted-printable
 	   (goto-char (point-min)) (point-max))
 	  (subst-char-in-region (point-min) (point-max) ?_ ? )
 	  (goto-char (point-max)))
@@ -893,7 +893,7 @@ or not."
 (defun article-mime-decode-quoted-printable-buffer ()
   "Decode Quoted-Printable in the current buffer."
   (article-mime-decode-quoted-printable (point-min) (point-max)))
-  
+
 (defun article-mime-decode-quoted-printable (from to)
   "Decode Quoted-Printable in the region between FROM and TO."
   (interactive "r")
@@ -944,7 +944,7 @@ always hide."
 	  (narrow-to-region beg end)
 	  (goto-char (point-min))
 	  (while (re-search-forward "^- " nil t)
-	    (gnus-article-hide-text-type 
+	    (gnus-article-hide-text-type
 	     (match-beginning 0) (match-end 0) 'pgp))
 	  (widen))))))
 
@@ -986,7 +986,7 @@ always hide."
       (save-restriction
 	(let ((buffer-read-only nil))
 	  (when (gnus-article-narrow-to-signature)
-	    (gnus-article-hide-text-type 
+	    (gnus-article-hide-text-type
 	     (point-min) (point-max) 'signature)))))))
 
 (defun article-strip-leading-blank-lines ()
@@ -1038,7 +1038,7 @@ always hide."
 	(narrow-to-region
 	 (funcall (intern "mime::preview-content-info/point-min") pcinfo)
 	 (point-max)))))
-  
+
   (when (gnus-article-search-signature)
     (forward-line 1)
     ;; Check whether we have some limits to what we consider
@@ -1172,7 +1172,7 @@ If HIDE, hide the text instead."
 If TYPE is `local', convert to local time; if it is `lapsed', output
 how much time has lapsed since DATE."
   (interactive (list 'ut t))
-  (let* ((header (or header 
+  (let* ((header (or header
 		     (mail-header-date gnus-current-headers)
 		     (message-fetch-field "date")
 		     ""))
@@ -1279,7 +1279,7 @@ how much time has lapsed since DATE."
 	      (prog1
 		  (concat (if prev ", " "") (int-to-string
 					     (floor num))
-			  " " (symbol-name (car unit)) 
+			  " " (symbol-name (car unit))
 			  (if (> num 1) "s" ""))
 		(setq prev t))))
 	  article-time-units "")
@@ -1380,7 +1380,7 @@ This format is defined by the `gnus-article-time-format' variable."
 	      (when (eq gnus-prompt-before-saving t)
 		num)))			; Magic
 	(set-buffer gnus-summary-buffer)
-	(funcall gnus-default-article-saver filename))))) 
+	(funcall gnus-default-article-saver filename)))))
 
 (defun gnus-read-save-file-name (prompt default-name &optional filename)
   (cond
@@ -1552,7 +1552,7 @@ The directory to save in defaults to `gnus-article-save-directory'."
 	(cond ((eq command 'default)
 	       gnus-last-shell-command)
 	      (command command)
-	      (t (read-string 
+	      (t (read-string
 		  (format
 		   "Shell command on %s: "
 		   (if (and gnus-number-of-articles-to-be-saved
@@ -1644,7 +1644,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 		 gfunc (cdr func))
 	 (setq afunc func
 	       gfunc (intern (format "gnus-%s" func))))
-       (fset gfunc 
+       (fset gfunc
 	     (if (not (fboundp afunc))
 		 nil
 	       `(lambda (&optional interactive &rest args)
@@ -2243,7 +2243,7 @@ If given a prefix, show the hidden text instead."
 	      (set-buffer gnus-summary-buffer)
 	      (let ((header (gnus-summary-article-header article)))
 		(when (< article 0)
-		  (cond 
+		  (cond
 		   ((memq article gnus-newsgroup-sparse)
 		    ;; This is a sparse gap article.
 		    (setq do-update-line article)
@@ -2259,8 +2259,8 @@ If given a prefix, show the hidden text instead."
 		    ;; It is an extracted pseudo-article.
 		    (setq article 'pseudo)
 		    (gnus-request-pseudo-article header))))
-		
-		(let ((method (gnus-find-method-for-group 
+
+		(let ((method (gnus-find-method-for-group
 			       gnus-newsgroup-name)))
 		  (if (not (eq (car method) 'nneething))
 		      ()
@@ -2314,7 +2314,7 @@ If given a prefix, show the hidden text instead."
 		(when (numberp article)
 		  (gnus-async-prefetch-next group article gnus-summary-buffer)
 		  (when gnus-keep-backlog
-		    (gnus-backlog-enter-article 
+		    (gnus-backlog-enter-article
 		     group article (current-buffer))))
 		'article)))
 	   ;; It was a pseudo.
@@ -2338,7 +2338,7 @@ If given a prefix, show the hidden text instead."
 	    (erase-buffer)
 	    (insert-buffer-substring gnus-article-buffer))
 	  (setq gnus-original-article (cons group article))))
-    
+
       ;; Update sparse articles.
       (when (and do-update-line
 		 (or (numberp article)
@@ -2364,7 +2364,7 @@ If given a prefix, show the hidden text instead."
 
 (defvar gnus-article-edit-mode-map nil)
 
-(unless gnus-article-edit-mode-map 
+(unless gnus-article-edit-mode-map
   (setq gnus-article-edit-mode-map (copy-keymap text-mode-map))
 
   (gnus-define-keys gnus-article-edit-mode-map
@@ -2447,10 +2447,10 @@ groups."
       (gnus-article-mode)
       ;; The cache and backlog have to be flushed somewhat.
       (when gnus-use-cache
-	(gnus-cache-update-article 	
+	(gnus-cache-update-article
 	 (car gnus-article-current) (cdr gnus-article-current)))
       (when gnus-keep-backlog
-	(gnus-backlog-remove-article 
+	(gnus-backlog-remove-article
 	 (car gnus-article-current) (cdr gnus-article-current)))
       ;; Flush original article as well.
       (save-excursion
@@ -2464,7 +2464,7 @@ groups."
 	(set-window-start (get-buffer-window (current-buffer)) window-start)
 	(goto-char p)
 	(set-buffer buf)))))
-      
+
 (defun gnus-article-edit-full-stops ()
   "Interactively repair spacing at end of sentences."
   (interactive)
@@ -2474,7 +2474,7 @@ groups."
     (let ((case-fold-search nil))
       (query-replace-regexp "\\([.!?][])}]* \\)\\([[({A-Z]\\)" "\\1 \\2"))))
 
-;;; 
+;;;
 ;;; Article highlights
 ;;;
 
@@ -2487,14 +2487,14 @@ groups."
   :group 'gnus-article-buttons
   :type 'regexp)
 
-(defcustom gnus-button-alist 
+(defcustom gnus-button-alist
   `(("<\\(url: ?\\)?news:\\([^>\n\t ]*@[^>\n\t ]*\\)>" 0 t
      gnus-button-message-id 2)
     ("\\bnews:\\([^>\n\t ]*@[^>\n\t ]*+\\)" 0 t gnus-button-message-id 1)
     ("\\(\\b<\\(url: ?\\)?news:\\(//\\)?\\([^>\n\t ]*\\)>\\)" 1 t
      gnus-button-fetch-group 4)
     ("\\bnews:\\(//\\)?\\([^>\n\t ]+\\)" 0 t gnus-button-fetch-group 2)
-    ("\\bin\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2 
+    ("\\bin\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2
      t gnus-button-message-id 3)
     ("\\(<URL: *\\)mailto: *\\([^> \n\t]+\\)>" 0 t gnus-url-mailto 1)
     ("\\bmailto:\\([^ \n\t]+\\)" 0 t gnus-url-mailto 2)
@@ -2508,14 +2508,14 @@ Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
 REGEXP: is the string matching text around the button,
 BUTTON: is the number of the regexp grouping actually matching the button,
 FORM: is a lisp expression which must eval to true for the button to
-be added, 
+be added,
 CALLBACK: is the function to call when the user push this button, and each
 PAR: is a number of a regexp grouping whose text will be passed to CALLBACK.
 
 CALLBACK can also be a variable, in that case the value of that
 variable it the real callback function."
   :group 'gnus-article-buttons
-  :type '(repeat (list regexp 
+  :type '(repeat (list regexp
 		       (integer :tag "Button")
 		       (sexp :tag "Form")
 		       (function :tag "Callback")
@@ -2523,11 +2523,11 @@ variable it the real callback function."
 			       :inline t
 			       (integer :tag "Regexp group")))))
 
-(defcustom gnus-header-button-alist 
+(defcustom gnus-header-button-alist
   `(("^\\(References\\|Message-I[Dd]\\):" "<[^>]+>"
      0 t gnus-button-message-id 0)
     ("^\\(From\\|Reply-To\\):" ": *\\(.+\\)$" 1 t gnus-button-reply 1)
-    ("^\\(Cc\\|To\\):" "[^ \t\n<>,()\"]+@[^ \t\n<>,()\"]+" 
+    ("^\\(Cc\\|To\\):" "[^ \t\n<>,()\"]+@[^ \t\n<>,()\"]+"
      0 t gnus-button-mailto 0)
     ("^X-[Uu][Rr][Ll]:" ,gnus-button-url-regexp 0 t gnus-button-url 0)
     ("^[^:]+:" ,gnus-button-url-regexp 0 t gnus-button-url 0)
@@ -2545,7 +2545,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
   :group 'gnus-article-buttons
   :group 'gnus-article-headers
   :type '(repeat (list (regexp :tag "Header")
-		       regexp 
+		       regexp
 		       (integer :tag "Button")
 		       (sexp :tag "Form")
 		       (function :tag "Callback")
@@ -2621,7 +2621,7 @@ If N is negative, move backward instead."
 (defun gnus-article-highlight (&optional force)
   "Highlight current article.
 This function calls `gnus-article-highlight-headers',
-`gnus-article-highlight-citation', 
+`gnus-article-highlight-citation',
 `gnus-article-highlight-signature', and `gnus-article-add-buttons' to
 do the highlighting.  See the documentation for those functions."
   (interactive (list 'force))
@@ -2685,7 +2685,7 @@ do the highlighting.  See the documentation for those functions."
 (defun gnus-article-highlight-signature ()
   "Highlight the signature in an article.
 It does this by highlighting everything after
-`gnus-signature-separator' using `gnus-signature-face'." 
+`gnus-signature-separator' using `gnus-signature-face'."
   (interactive)
   (save-excursion
     (set-buffer gnus-article-buffer)
@@ -2714,22 +2714,22 @@ specified by `gnus-button-alist'."
   (interactive (list 'force))
   (save-excursion
     (set-buffer gnus-article-buffer)
-    ;; Remove all old markers.
-    (let (marker entry)
-      (while (setq marker (pop gnus-button-marker-list))
-	(goto-char marker)
-	(when (setq entry (gnus-button-entry))
-	  (put-text-property (match-beginning (nth 1 entry))
-			     (match-end (nth 1 entry))
-			     'gnus-callback nil))
-	(set-marker marker nil)))
     (let ((buffer-read-only nil)
 	  (inhibit-point-motion-hooks t)
 	  (case-fold-search t)
 	  (alist gnus-button-alist)
 	  beg entry regexp)
-      (goto-char (point-min))
+      ;; Remove all old markers.
+      (let (marker entry)
+	(while (setq marker (pop gnus-button-marker-list))
+	  (goto-char marker)
+	  (when (setq entry (gnus-button-entry))
+	    (put-text-property (match-beginning (nth 1 entry))
+			       (match-end (nth 1 entry))
+			       'gnus-callback nil))
+	  (set-marker marker nil)))
       ;; We skip the headers.
+      (goto-char (point-min))
       (unless (search-forward "\n\n" nil t)
 	(goto-char (point-max)))
       (setq beg (point))
@@ -2746,8 +2746,8 @@ specified by `gnus-button-alist'."
 			     start end 'gnus-callback)))
 	      ;; That optional form returned non-nil, so we add the
 	      ;; button.
-	      (gnus-article-add-button 
-	       start end 'gnus-button-push 
+	      (gnus-article-add-button
+	       start end 'gnus-button-push
 	       (car (push (set-marker (make-marker) from)
 			  gnus-button-marker-list))))))))))
 
@@ -2783,7 +2783,7 @@ specified by `gnus-button-alist'."
 		   (form (nth 2 entry)))
 	      (goto-char (match-end 0))
 	      (when (eval form)
-		(gnus-article-add-button 
+		(gnus-article-add-button
 		 start end (nth 3 entry)
 		 (buffer-substring (match-beginning (nth 4 entry))
 				   (match-end (nth 4 entry)))))))
@@ -2797,7 +2797,7 @@ specified by `gnus-button-alist'."
   (when gnus-article-button-face
     (gnus-overlay-put (gnus-make-overlay from to)
 		      'face gnus-article-button-face))
-  (gnus-add-text-properties 
+  (gnus-add-text-properties
    from to
    (nconc (and gnus-article-mouse-face
 	       (list gnus-mouse-face-prop gnus-article-mouse-face))
@@ -2879,7 +2879,7 @@ specified by `gnus-button-alist'."
       (setq parts (cons (substring string start (match-beginning 0)) parts)
 	    start (match-end 0)))
     (nreverse (cons (substring string start) parts))))
- 
+
 (defun gnus-url-parse-query-string (query &optional downcase)
   (let (retval pairs cur key val)
     (setq pairs (gnus-split-string query "&"))
@@ -2897,14 +2897,14 @@ specified by `gnus-button-alist'."
             (setcdr cur (cons val (cdr cur)))
           (setq retval (cons (list key val) retval)))))
     retval))
- 
+
 (defun gnus-url-unhex (x)
   (if (> x ?9)
       (if (>= x ?a)
           (+ 10 (- x ?a))
         (+ 10 (- x ?A)))
     (- x ?0)))
- 
+
 (defun gnus-url-unhex-string (str &optional allow-newlines)
   "Remove %XXX embedded spaces, etc in a url.
 If optional second argument ALLOW-NEWLINES is non-nil, then allow the
@@ -2918,7 +2918,7 @@ forbidden in URL encoding."
              (ch1 (gnus-url-unhex (elt str (+ start 1))))
              (code (+ (* 16 ch1)
                       (gnus-url-unhex (elt str (+ start 2))))))
-        (setq tmp (concat 
+        (setq tmp (concat
                    tmp (substring str 0 start)
                    (cond
                     (allow-newlines
@@ -2929,7 +2929,7 @@ forbidden in URL encoding."
               str (substring str (match-end 0)))))
     (setq tmp (concat tmp str))
     tmp))
- 
+
 (defun gnus-url-mailto (url)
   ;; Send mail to someone
   (when (string-match "mailto:/*\\(.*\\)" url)
@@ -2984,7 +2984,7 @@ forbidden in URL encoding."
 
 (defun gnus-insert-prev-page-button ()
   (let ((buffer-read-only nil))
-    (gnus-eval-format 
+    (gnus-eval-format
      gnus-prev-page-line-format nil
      `(gnus-prev t local-map ,gnus-prev-page-map
 		 gnus-callback gnus-article-button-prev-page))))
@@ -3016,7 +3016,7 @@ forbidden in URL encoding."
   (let ((buffer-read-only nil))
     (gnus-eval-format gnus-next-page-line-format nil
 		      `(gnus-next t local-map ,gnus-next-page-map
-				  gnus-callback 
+				  gnus-callback
 				  gnus-article-button-next-page))))
 
 (defun gnus-article-button-next-page (arg)
@@ -3033,7 +3033,7 @@ forbidden in URL encoding."
   (let ((win (selected-window)))
     (select-window (get-buffer-window gnus-article-buffer t))
     (gnus-article-prev-page)
-    (select-window win))) 
+    (select-window win)))
 
 (gnus-ems-redefine)
 

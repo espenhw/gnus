@@ -133,7 +133,7 @@ It accepts the same format specs that `gnus-summary-line-format' does.")
 	     (save-excursion
 	       (set-buffer gnus-summary-buffer)
 	       gnus-pick-mode))
-    (message-add-action 
+    (message-add-action
      '(gnus-configure-windows 'pick t) 'send 'exit 'postpone 'kill)))
 
 (defvar gnus-pick-line-number 1)
@@ -153,7 +153,7 @@ If given a prefix, mark all unpicked articles as read."
         (when (or catch-up gnus-mark-unpicked-articles-as-read)
 	  (gnus-summary-limit-mark-excluded-as-read))
         (gnus-summary-first-article)
-        (gnus-configure-windows 
+        (gnus-configure-windows
 	 (if gnus-pick-display-summary 'article 'pick) t))
     (if gnus-pick-elegant-flow
 	(progn
@@ -315,7 +315,7 @@ This must be bound to a button-down mouse event."
   (interactive "P")
   (when (eq major-mode 'gnus-summary-mode)
     (make-local-variable 'gnus-binary-mode)
-    (setq gnus-binary-mode 
+    (setq gnus-binary-mode
 	  (if (null arg) (not gnus-binary-mode)
 	    (> (prefix-numeric-value arg) 0)))
     (when gnus-binary-mode
@@ -381,7 +381,7 @@ Two predefined functions are available:
 
 ;;; Internal variables.
 
-(defvar gnus-tree-line-format-alist 
+(defvar gnus-tree-line-format-alist
   `((?n gnus-tmp-name ?s)
     (?f gnus-tmp-from ?s)
     (?N gnus-tmp-number ?d)
@@ -426,11 +426,11 @@ Two predefined functions are available:
 (defun gnus-tree-mode ()
   "Major mode for displaying thread trees."
   (interactive)
-  (setq gnus-tree-mode-line-format-spec 
-	(gnus-parse-format gnus-tree-mode-line-format 
+  (setq gnus-tree-mode-line-format-spec
+	(gnus-parse-format gnus-tree-mode-line-format
 			   gnus-summary-mode-line-format-alist))
-  (setq gnus-tree-line-format-spec 
-	(gnus-parse-format gnus-tree-line-format 
+  (setq gnus-tree-line-format-spec
+	(gnus-parse-format gnus-tree-line-format
 			   gnus-tree-line-format-alist t))
   (when (gnus-visual-p 'tree-menu 'menu)
     (gnus-tree-make-menu-bar))
@@ -509,7 +509,7 @@ Two predefined functions are available:
 	;; possible valid number, or the second line from the top,
 	;; whichever is the least.
 	(set-window-start
-	 tree-window (min bottom (save-excursion 
+	 tree-window (min bottom (save-excursion
 				   (forward-line (- top)) (point)))))
       (select-window selected))))
 
@@ -528,7 +528,7 @@ Two predefined functions are available:
     (let ((windows 0)
 	  tot-win-height)
       (walk-windows (lambda (window) (incf windows)))
-      (setq tot-win-height 
+      (setq tot-win-height
 	    (- (frame-height)
 	       (* window-min-height (1- windows))
 	       2))
@@ -613,8 +613,8 @@ Two predefined functions are available:
 		    (not (eval (caar list))))
 	  (setq list (cdr list)))))
     (unless (eq (setq face (cdar list)) (get-text-property beg 'face))
-      (gnus-put-text-property 
-       beg end 'face 
+      (gnus-put-text-property
+       beg end 'face
        (if (boundp face) (symbol-value face) face)))))
 
 (defun gnus-tree-indent (level)
@@ -757,8 +757,8 @@ Two predefined functions are available:
       (let ((top (save-excursion
 		   (set-buffer gnus-summary-buffer)
 		   (gnus-cut-thread
-		    (gnus-remove-thread 
-		     (mail-header-id 
+		    (gnus-remove-thread
+		     (mail-header-id
 		      (gnus-summary-article-header article))
 		     t))))
 	    (gnus-tmp-limit gnus-newsgroup-limit)
@@ -788,7 +788,7 @@ Two predefined functions are available:
 	 (setq gnus-selected-tree-overlay (gnus-make-overlay 1 2))
 	 'face gnus-selected-tree-face))
       ;; Move the overlay to the article.
-      (gnus-move-overlay 
+      (gnus-move-overlay
        gnus-selected-tree-overlay (goto-char (car region)) (cdr region))
       (gnus-tree-minimize)
       (gnus-tree-recenter)
@@ -809,7 +809,7 @@ Two predefined functions are available:
     (let (region)
       (when (setq region (gnus-tree-article-region article))
 	(gnus-put-text-property (car region) (cdr region) 'face face)
-	(set-window-point 
+	(set-window-point
 	 (get-buffer-window (current-buffer) t) (cdr region))))))
 
 ;;;
@@ -841,7 +841,7 @@ Two predefined functions are available:
     ("exit" . gnus-group-exit)))
 
 (defvar gnus-carpal-summary-buffer-buttons
-  '("mark" 
+  '("mark"
     ("read" . gnus-summary-mark-as-read-forward)
     ("tick" . gnus-summary-tick-article-forward)
     ("clear" . gnus-summary-clear-mark-forward)
@@ -874,7 +874,7 @@ Two predefined functions are available:
     ("exit" . gnus-summary-exit)
     ("fed-up" . gnus-summary-catchup-and-goto-next-group)))
 
-(defvar gnus-carpal-server-buffer-buttons 
+(defvar gnus-carpal-server-buffer-buttons
   '(("add" . gnus-server-add-server)
     ("browse" . gnus-server-browse-server)
     ("list" . gnus-server-list-servers)
@@ -941,10 +941,10 @@ The following commands are available:
       (save-excursion
 	(set-buffer (get-buffer-create buffer))
 	(gnus-carpal-mode)
-	(setq gnus-carpal-attached-buffer 
+	(setq gnus-carpal-attached-buffer
 	      (intern (format "gnus-%s-buffer" type)))
 	(gnus-add-current-to-buffer-list)
-	(let ((buttons (symbol-value 
+	(let ((buttons (symbol-value
 			(intern (format "gnus-carpal-%s-buffer-buttons"
 					type))))
 	      (buffer-read-only nil)

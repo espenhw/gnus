@@ -3,7 +3,7 @@
 (defvar byte-compile-default-warnings)
 
 (defun maybe-fbind (args)
-  (while args 
+  (while args
     (or (fboundp (car args))
 	(fset (car args) 'ignore))
     (setq args (cdr args))))
@@ -12,7 +12,7 @@
   (mapcar (lambda (var) (unless (boundp var) (set var nil))) args))
 
 (if (string-match "XEmacs" emacs-version)
-    (progn 
+    (progn
       (defvar track-mouse nil)
       (maybe-fbind '(posn-point
 		     event-start x-popup-menu
@@ -29,16 +29,12 @@
 		     make-char-table set-char-table-range font-create-object
 		     x-color-values widget-make-intangible error-message-string
 		     w3-form-encode-xwfu
-		     )) 
+		     ))
       (maybe-bind '(global-face-data
 		    mark-active transient-mark-mode mouse-selection-click-count
 		    mouse-selection-click-count-buffer buffer-display-table
 		    font-lock-defaults user-full-name user-login-name
-		    gnus-newsgroup-name gnus-article-x-face-too-ugly))
-      ;; XEmacs thinks writting compatible code is obsolete.
-      (require 'bytecomp)
-      (setq byte-compile-default-warnings
-	    (delq 'obsolete byte-compile-default-warnings)))
+		    gnus-newsgroup-name gnus-article-x-face-too-ugly)))
   (defvar browse-url-browser-function nil)
   (maybe-fbind '(color-instance-rgb-components
 		 make-color-instance color-instance-name specifier-instance

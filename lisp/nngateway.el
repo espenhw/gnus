@@ -74,7 +74,7 @@ parameter -- the gateway address.")
 	    "@" gateway "\n")))
 
 (nnoo-define-skeleton nngateway)
-    
+
 (provide 'nngateway)
 
 ;;; nngateway.el ends here

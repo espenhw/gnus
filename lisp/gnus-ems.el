@@ -35,7 +35,7 @@
 (defvar gnus-mouse-2 [mouse-2])
 (defvar gnus-down-mouse-2 [down-mouse-2])
 
-(eval-and-compile 
+(eval-and-compile
   (autoload 'gnus-xmas-define "gnus-xmas")
   (autoload 'gnus-xmas-redefine "gnus-xmas")
   (autoload 'appt-select-lowest-window "appt.el"))
@@ -83,7 +83,7 @@
 If it is a string, the command will be executed in a sub-shell
 asynchronously.	 The compressed face will be piped to this command."))
 
-  (cond 
+  (cond
    ((string-match "XEmacs\\|Lucid" emacs-version)
     (gnus-xmas-define))
 
@@ -99,7 +99,7 @@ asynchronously.	 The compressed face will be piped to this command."))
     (unless (fboundp 'buffer-substring-no-properties)
       (defun buffer-substring-no-properties (beg end)
 	(format "%s" (buffer-substring beg end)))))
-   
+
    ((boundp 'MULE)
     (provide 'gnusutil))))
 
@@ -141,13 +141,13 @@ asynchronously.	 The compressed face will be piped to this command."))
 (defvar gnus-tmp-subject-or-nil)
 
 (defun gnus-ems-redefine ()
-  (cond 
+  (cond
    ((string-match "XEmacs\\|Lucid" emacs-version)
     (gnus-xmas-redefine))
 
    ((featurep 'mule)
     ;; Mule and new Emacs definitions
-  
+
     ;; [Note] Now there are three kinds of mule implementations,
     ;; original MULE, XEmacs/mule and beta version of Emacs including
     ;; some mule features. Unfortunately these API are different. In
@@ -157,35 +157,35 @@ asynchronously.	 The compressed face will be piped to this command."))
     ;; (boundp 'MULE) is t only if MULE (original; anything older than
     ;;                     Mule 2.3) is running.
     ;; (featurep 'mule) is t when every mule variants are running.
-    
+
     ;; These implementations may be able to share between original
     ;; MULE and beta version of new Emacs. In addition, it is able to
     ;; detect XEmacs/mule by (featurep 'mule) and to check variable
     ;; `emacs-version'. In this case, implementation for XEmacs/mule
     ;; may be able to share between XEmacs and XEmacs/mule.
-    
+
     (defalias 'gnus-truncate-string 'truncate-string)
 
     (defvar gnus-summary-display-table nil
       "Display table used in summary mode buffers.")
     (fset 'gnus-cite-add-face 'gnus-mule-cite-add-face)
     (fset 'gnus-max-width-function 'gnus-mule-max-width-function)
-    
+
     (when (boundp 'gnus-check-before-posting)
       (setq gnus-check-before-posting
 	    (delq 'long-lines
 		  (delq 'control-chars gnus-check-before-posting))))
 
     (defun gnus-summary-line-format-spec ()
-      (insert gnus-tmp-unread gnus-tmp-replied 
+      (insert gnus-tmp-unread gnus-tmp-replied
 	      gnus-tmp-score-char gnus-tmp-indentation)
       (put-text-property
        (point)
        (progn
-	 (insert 
-	  gnus-tmp-opening-bracket 
-	  (format "%4d: %-20s" 
-		  gnus-tmp-lines 
+	 (insert
+	  gnus-tmp-opening-bracket
+	  (format "%4d: %-20s"
+		  gnus-tmp-lines
 		  (if (> (length gnus-tmp-name) 20)
 		      (truncate-string gnus-tmp-name 20)
 		    gnus-tmp-name))

@@ -48,7 +48,7 @@ posting.")
   "*All outgoing messages will be put in this group.
 If you want to store all your outgoing mail and articles in the group
 \"nnml:archive\", you set this variable to that value.  This variable
-can also be a list of group names. 
+can also be a list of group names.
 
 If you want to have greater control over what group to put each
 message in, you can set this variable to a function that checks the
@@ -61,7 +61,7 @@ This is useful when you're reading a mailing list that has been
 gatewayed to a newsgroup, and you want to followup to an article in
 the group.")
 
-(defvar gnus-sent-message-ids-file 
+(defvar gnus-sent-message-ids-file
   (nnheader-concat gnus-directory "Sent-Message-IDs")
   "File where Gnus saves a cache of sent message ids.")
 
@@ -173,7 +173,7 @@ Thank you for your help in stamping out bugs.
 	 (make-local-variable 'gnus-newsgroup-name)
 	 (run-hooks 'gnus-message-setup-hook))
        (gnus-configure-windows ,config t))))
-    
+
 (defun gnus-inews-add-send-actions (winconf buffer article)
   (make-local-hook 'message-sent-hook)
   (gnus-add-hook 'message-sent-hook 'gnus-inews-do-gcc nil t)
@@ -227,8 +227,8 @@ If ARG is 1, prompt for a group name."
 (defun gnus-summary-followup (yank &optional force-news)
   "Compose a followup to an article.
 If prefix argument YANK is non-nil, original article is yanked automatically."
-  (interactive 
-   (list (and current-prefix-arg 
+  (interactive
+   (list (and current-prefix-arg
 	      (gnus-summary-work-articles 1))))
   (gnus-set-global-variables)
   (when yank
@@ -239,7 +239,7 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
 	(gnus-newsgroup-name gnus-newsgroup-name))
     ;; Send a followup.
     (gnus-post-news nil gnus-newsgroup-name
-		    headers gnus-article-buffer 
+		    headers gnus-article-buffer
 		    yank nil force-news)))
 
 (defun gnus-summary-followup-with-original (n &optional force-news)
@@ -249,8 +249,8 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
 
 (defun gnus-summary-followup-to-mail (&optional arg)
   "Followup to the current mail message via news."
-  (interactive 
-   (list (and current-prefix-arg 
+  (interactive
+   (list (and current-prefix-arg
 	      (gnus-summary-work-articles 1))))
   (gnus-summary-followup arg t))
 
@@ -375,7 +375,7 @@ header line with the old Message-ID."
 			      (t 'message))
       (let* ((group (or group gnus-newsgroup-name))
 	     (pgroup group)
-	     to-address to-group mailing-list to-list 
+	     to-address to-group mailing-list to-list
 	     newsgroup-p)
 	(when group
 	  (setq to-address (gnus-group-find-parameter group 'to-address)
@@ -389,7 +389,7 @@ header line with the old Message-ID."
 		     (gnus-news-group-p to-group))
 		newsgroup-p
 		force-news
-		(and (gnus-news-group-p 
+		(and (gnus-news-group-p
 		      (or pgroup gnus-newsgroup-name)
 		      (if header (mail-header-number header)
 			gnus-current-article))
@@ -418,8 +418,8 @@ header line with the old Message-ID."
   "Return the posting method based on GROUP and ARG.
 If SILENT, don't prompt the user."
   (let ((group-method (gnus-find-method-for-group group)))
-    (cond 
-     ;; If the group-method is nil (which shouldn't happen) we use 
+    (cond
+     ;; If the group-method is nil (which shouldn't happen) we use
      ;; the default method.
      ((null group-method)
       (or gnus-post-method gnus-select-method message-post-method))
@@ -449,7 +449,7 @@ If SILENT, don't prompt the user."
 	    (push method post-methods)))
 	;; Create a name-method alist.
 	(setq method-alist
-	      (mapcar 
+	      (mapcar
 	       (lambda (m)
 		 (list (concat (cadr m) " (" (symbol-name (car m)) ")") m))
 	       post-methods))
@@ -475,7 +475,7 @@ If SILENT, don't prompt the user."
   (widen)
   (narrow-to-region
    (goto-char (point-min))
-   (or (and (re-search-forward 
+   (or (and (re-search-forward
 	     (concat "^" (regexp-quote mail-header-separator) "$") nil t)
 	    (match-beginning 0))
        (point-max)))
@@ -499,12 +499,12 @@ If SILENT, don't prompt the user."
 	    (load t t t)))
 	(if (member message-id gnus-inews-sent-ids)
 	    ;; Reject this message.
-	    (not (gnus-yes-or-no-p 
+	    (not (gnus-yes-or-no-p
 		  (format "Message %s already sent.  Send anyway? "
 			  message-id)))
 	  (push message-id gnus-inews-sent-ids)
 	  ;; Chop off the last Message-IDs.
-	  (when (setq end (nthcdr gnus-sent-message-ids-length 
+	  (when (setq end (nthcdr gnus-sent-message-ids-length
 				  gnus-inews-sent-ids))
 	    (setcdr end nil))
 	  (nnheader-temp-write gnus-sent-message-ids-file
@@ -540,8 +540,8 @@ If SILENT, don't prompt the user."
 ;; Written by "Mr. Per Persson" <pp@gnu.ai.mit.edu>.
 (defun gnus-inews-insert-mime-headers ()
   (goto-char (point-min))
-  (let ((mail-header-separator 
-	 (progn 
+  (let ((mail-header-separator
+	 (progn
 	   (goto-char (point-min))
 	   (if (and (search-forward (concat "\n" mail-header-separator "\n")
 				    nil t)
@@ -565,21 +565,21 @@ If SILENT, don't prompt the user."
 
 
 ;;;
-;;; Gnus Mail Functions 
+;;; Gnus Mail Functions
 ;;;
 
 ;;; Mail reply commands of Gnus summary mode
 
 (defun gnus-summary-reply (&optional yank wide)
   "Start composing a reply mail to the current message.
-If prefix argument YANK is non-nil, the original article is yanked 
+If prefix argument YANK is non-nil, the original article is yanked
 automatically."
-  (interactive 
-   (list (and current-prefix-arg 
+  (interactive
+   (list (and current-prefix-arg
 	      (gnus-summary-work-articles 1))))
   ;; Stripping headers should be specified with mail-yank-ignored-headers.
   (gnus-set-global-variables)
-  (when yank 
+  (when yank
     (gnus-summary-goto-subject (car yank)))
   (let ((gnus-article-reply t))
     (gnus-setup-message (if yank 'reply-yank 'reply)
@@ -598,10 +598,10 @@ The original article will be yanked."
 
 (defun gnus-summary-wide-reply (&optional yank)
   "Start composing a wide reply mail to the current message.
-If prefix argument YANK is non-nil, the original article is yanked 
+If prefix argument YANK is non-nil, the original article is yanked
 automatically."
-  (interactive 
-   (list (and current-prefix-arg 
+  (interactive
+   (list (and current-prefix-arg
 	      (gnus-summary-work-articles 1))))
   (gnus-summary-reply yank t))
 
@@ -640,7 +640,7 @@ If FULL-HEADERS (the prefix), include full headers when forwarding."
   (interactive "P")
   (gnus-summary-mail-forward full-headers t))
 
-(defvar gnus-nastygram-message 
+(defvar gnus-nastygram-message
   "The following article was inappropriately posted to %s.\n\n"
   "Format string to insert in nastygrams.
 The current group name will be inserted at \"%s\".")
@@ -649,7 +649,7 @@ The current group name will be inserted at \"%s\".")
   "Send a nastygram to the author of the current article."
   (interactive "P")
   (when (or gnus-expert-user
-	    (gnus-y-or-n-p 
+	    (gnus-y-or-n-p
 	     "Really send a nastygram to the author of the current article? "))
     (let ((group gnus-newsgroup-name))
       (gnus-summary-reply-with-original n)
@@ -705,7 +705,7 @@ The current group name will be inserted at \"%s\".")
       (setq beg (point))
       (skip-chars-forward "^,")
       (while (zerop
-	      (save-excursion 
+	      (save-excursion
 		(save-restriction
 		  (let ((i 0))
 		    (narrow-to-region beg (point))
@@ -729,7 +729,7 @@ The current group name will be inserted at \"%s\".")
     (when (and to-address
 	       (gnus-alive-p))
       ;; This mail group doesn't have a `to-list', so we add one
-      ;; here.  Magic!  
+      ;; here.  Magic!
       (gnus-group-add-parameter group (cons 'to-list to-address)))))
 
 (defun gnus-put-message ()
@@ -738,7 +738,7 @@ The current group name will be inserted at \"%s\".")
   (let ((reply gnus-article-reply)
 	(winconf gnus-prev-winconf)
 	(group gnus-newsgroup-name))
-    
+
     (or (and group (not (gnus-group-read-only-p group)))
 	(setq group (read-string "Put in group: " nil
 				 (gnus-writable-groups))))
@@ -763,7 +763,7 @@ The current group name will be inserted at \"%s\".")
       (when (gnus-buffer-exists-p (car-safe reply))
 	(set-buffer (car reply))
 	(and (cdr reply)
-	     (gnus-summary-mark-article-as-replied 
+	     (gnus-summary-mark-article-as-replied
 	      (cdr reply))))
       (when winconf
 	(set-window-configuration winconf)))))
@@ -772,7 +772,7 @@ The current group name will be inserted at \"%s\".")
   "Send a reply to the address near point.
 If YANK is non-nil, include the original article."
   (interactive "P")
-  (let ((address 
+  (let ((address
 	 (buffer-substring
 	  (save-excursion (re-search-backward "[ \t\n]" nil t) (1+ (point)))
 	  (save-excursion (re-search-forward "[ \t\n]" nil t) (1- (point))))))
@@ -890,15 +890,16 @@ this is a reply."
     (let* ((references (mail-fetch-field "references"))
 	   (parent (and references (gnus-parent-id references))))
       (message-bounce)
-      ;; If there are references, we fetch the article we answered to.  
+      ;; If there are references, we fetch the article we answered to.
       (and fetch parent
 	   (gnus-summary-refer-article parent)
 	   (gnus-summary-show-all-headers)))))
 
 ;;; Gcc handling.
 
-;; Do Gcc handling, which copied the message over to some group. 
+;; Do Gcc handling, which copied the message over to some group.
 (defun gnus-inews-do-gcc (&optional gcc)
+  (interactive)
   (when (gnus-alive-p)
     (save-excursion
       (save-restriction
@@ -912,11 +913,11 @@ this is a reply."
 	    (setq groups (message-tokenize-header gcc " ,"))
 	    ;; Copy the article over to some group(s).
 	    (while (setq group (pop groups))
-	      (gnus-check-server 
+	      (gnus-check-server
 	       (setq method
 		     (cond ((and (null (gnus-get-info group))
 				 (eq (car gnus-message-archive-method)
-				     (car 
+				     (car
 				      (gnus-server-to-method
 				       (gnus-group-method group)))))
 			    ;; If the group doesn't exist, we assume
@@ -934,12 +935,12 @@ this is a reply."
 		(nnheader-set-temp-buffer " *acc*")
 		(insert-buffer-substring cur)
 		(goto-char (point-min))
-		(when (re-search-forward 
+		(when (re-search-forward
 		       (concat "^" (regexp-quote mail-header-separator) "$")
 		       nil t)
 		  (replace-match "" t t ))
 		(unless (gnus-request-accept-article group method t)
-		  (gnus-message 1 "Couldn't store article in group %s: %s" 
+		  (gnus-message 1 "Couldn't store article in group %s: %s"
 				group (gnus-status-message method))
 		  (sit-for 2))
 		(kill-buffer (current-buffer))))))))))
@@ -950,7 +951,7 @@ this is a reply."
     (save-restriction
       (gnus-inews-narrow-to-headers)
       (let* ((group gnus-outgoing-message-group)
-	     (gcc (cond 
+	     (gcc (cond
 		   ((gnus-functionp group)
 		    (funcall group))
 		   ((or (stringp group) (list group))
@@ -968,7 +969,7 @@ this is a reply."
 	 result
 	 gcc-self-val
 	 (groups
-	  (cond 
+	  (cond
 	   ((null gnus-message-archive-method)
 	    ;; Ignore.
 	    nil)
@@ -989,7 +990,7 @@ this is a reply."
 	    (while (and var
 			(not
 			 (setq result
-			       (cond 
+			       (cond
 				((stringp (caar var))
 				 ;; Regexp.
 				 (when (string-match (caar var) group)
@@ -1014,7 +1015,7 @@ this is a reply."
 		   (setq gcc-self-val
 			 (gnus-group-find-parameter
 			  gnus-newsgroup-name 'gcc-self)))
-	      (progn 
+	      (progn
 		(insert
 		 (if (stringp gcc-self-val)
 		     gcc-self-val
@@ -1027,7 +1028,7 @@ this is a reply."
 	    (while (setq name (pop groups))
 	      (insert (if (string-match ":" name)
 			  name
-			(gnus-group-prefixed-name 
+			(gnus-group-prefixed-name
 			 name gnus-message-archive-method)))
 	      (when groups
 		(insert " ")))
@@ -1038,7 +1039,7 @@ this is a reply."
   (interactive)
   (gnus-set-global-variables)
   (let (buf)
-    (if (not (setq buf (gnus-request-restore-buffer 
+    (if (not (setq buf (gnus-request-restore-buffer
 			(gnus-summary-article-number) gnus-newsgroup-name)))
 	(error "Couldn't restore the article")
       (switch-to-buffer buf)
@@ -1053,12 +1054,12 @@ this is a reply."
       (let ((gnus-draft-buffer (current-buffer)))
 	(gnus-configure-windows 'draft t)
 	(goto-char (point))))))
-  
+
 (gnus-add-shutdown 'gnus-inews-close 'gnus)
 
 (defun gnus-inews-close ()
   (setq gnus-inews-sent-ids nil))
-  
+
 ;;; Allow redefinition of functions.
 
 (gnus-ems-redefine)

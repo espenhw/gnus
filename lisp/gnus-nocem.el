@@ -35,14 +35,14 @@
   "NoCeM pseudo-cancellation treatment"
   :group 'gnus-score)
 
-(defcustom gnus-nocem-groups 
+(defcustom gnus-nocem-groups
   '("news.lists.filters" "news.admin.net-abuse.bulletins"
     "alt.nocem.misc" "news.admin.net-abuse.announce")
   "List of groups that will be searched for NoCeM messages."
   :group 'gnus-nocem
   :type '(repeat (string :tag "Group")))
 
-(defcustom gnus-nocem-issuers 
+(defcustom gnus-nocem-issuers
  '("AutoMoose-1" "Automoose-1"   ; CancelMoose[tm]
    "rbraver@ohww.norman.ok.us"   ; Robert Braver
    "clewis@ferret.ocunix.on.ca;" ; Chris Lewis
@@ -54,7 +54,7 @@
   :group 'gnus-nocem
   :type '(repeat string))
 
-(defcustom gnus-nocem-directory 
+(defcustom gnus-nocem-directory
   (nnheader-concat gnus-article-save-directory "NoCeM/")
   "*Directory where NoCeM files will be stored."
   :group 'gnus-nocem
@@ -110,7 +110,7 @@ matches an previously scanned and verified nocem message."
 	 (ignore-errors
 	   (load (gnus-nocem-active-file) t t t)))
     ;; Go through all groups and see whether new articles have
-    ;; arrived.  
+    ;; arrived.
     (while (setq group (pop groups))
       (if (not (setq gactive (gnus-activate-group group)))
 	  ()				; This group doesn't exist.
@@ -126,15 +126,15 @@ matches an previously scanned and verified nocem message."
 	      (nnheader-temp-write nil
 		(setq headers
 		      (if (eq 'nov
-			      (gnus-retrieve-headers 
+			      (gnus-retrieve-headers
 			       (setq articles
 				     (gnus-uncompress-range
-				      (cons 
+				      (cons
 				       (if active (1+ (cdr active))
 					 (car gactive))
 				       (cdr gactive))))
 			       group))
-			  (gnus-get-newsgroup-headers-xover 
+			  (gnus-get-newsgroup-headers-xover
 			   articles nil dependencies)
 			(gnus-get-newsgroup-headers dependencies)))
 		(while (setq header (pop headers))
@@ -167,7 +167,7 @@ matches an previously scanned and verified nocem message."
   (let ((date (mail-header-date header))
 	issuer b e)
     (when (or (not date)
-	      (nnmail-time-less 
+	      (nnmail-time-less
 	       (nnmail-time-since (nnmail-date-to-time date))
 	       (nnmail-days-to-time gnus-nocem-expiry-wait)))
       (gnus-request-article-this-buffer (mail-header-number header) group)
@@ -245,11 +245,11 @@ matches an previously scanned and verified nocem message."
   (interactive)
   (unless gnus-nocem-alist
     ;; The buffer doesn't exist, so we create it and load the NoCeM
-    ;; cache.  
+    ;; cache.
     (when (file-exists-p (gnus-nocem-cache-file))
       (load (gnus-nocem-cache-file) t t t)
       (gnus-nocem-alist-to-hashtb))))
-      
+
 (defun gnus-nocem-save-cache ()
   "Save the NoCeM cache."
   (when (and gnus-nocem-alist

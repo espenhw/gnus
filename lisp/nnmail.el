@@ -112,7 +112,7 @@ If nil, the first match found will be used."
 
 ;; Added by gord@enci.ucalgary.ca (Gordon Matzigkeit).
 (defcustom nnmail-keep-last-article nil
-  "If non-nil, nnmail will never delete the last expired article in a directory.  
+  "If non-nil, nnmail will never delete the last expired article in a directory.
 You may need to set this variable if other programs are putting
 new mail into folder numbers that Gnus has marked as expired."
   :group 'nnmail-procmail
@@ -160,7 +160,7 @@ Eg.:
   :type '(choice (const :tag "nnmail-expiry-wait" nil)
 		 (function :format "%v" nnmail-)))
 
-(defcustom nnmail-spool-file 
+(defcustom nnmail-spool-file
   (or (getenv "MAIL")
       (concat "/usr/spool/mail/" (user-login-name)))
   "Where the mail backends will look for incoming mail.
@@ -233,7 +233,7 @@ to be moved to."
   :group 'nnmail-retrieve
   :type 'boolean)
 
-(defcustom nnmail-read-incoming-hook 
+(defcustom nnmail-read-incoming-hook
   (if (eq system-type 'windows-nt)
       '(nnheader-ms-strip-cr)
     nil)
@@ -246,13 +246,13 @@ running (\"xwatch\", etc.)
 
 Eg.
 
-\(add-hook 'nnmail-read-incoming-hook 
+\(add-hook 'nnmail-read-incoming-hook
 	   (lambda ()
-	     (start-process \"mailsend\" nil 
+	     (start-process \"mailsend\" nil
 			    \"/local/bin/mailsend\" \"read\" \"mbox\")))
 
 If you have xwatch running, this will alert it that mail has been
-read.  
+read.
 
 If you use `display-time', you could use something like this:
 
@@ -333,14 +333,14 @@ To enable this, set `nnmail-split-methods' to `nnmail-split-fancy'.
 The format is this variable is SPLIT, where SPLIT can be one of
 the following:
 
-GROUP: Mail will be stored in GROUP (a string).  
+GROUP: Mail will be stored in GROUP (a string).
 
 \(FIELD VALUE SPLIT): If the message field FIELD (a regexp) contains
   VALUE (a regexp), store the messages as specified by SPLIT.
 
 \(| SPLIT...): Process each SPLIT expression until one of them matches.
   A SPLIT expression is said to match if it will cause the mail
-  message to be stored in one or more groups.  
+  message to be stored in one or more groups.
 
 \(& SPLIT...): Process each SPLIT expression.
 
@@ -425,11 +425,6 @@ parameter.  It should return nil, `warn' or `delete'."
 		 (const warn)
 		 (const delete)))
 
-(defvar nnmail-cache-message-id-when-accepting nil
-  "If non-nil put the Message-ID: of incoming messages in the message ID cache.
-Not doing so is dangerous, but it is how Gnus used to work for a long
-time.")
-
 ;;; Internal variables.
 
 (defvar nnmail-split-history nil
@@ -479,7 +474,7 @@ time.")
   (concat
    (let ((dir (file-name-as-directory (expand-file-name dir))))
      ;; If this directory exists, we use it directly.
-     (if (or nnmail-use-long-file-names 
+     (if (or nnmail-use-long-file-names
 	     (file-directory-p (concat dir group)))
 	 (concat dir group "/")
        ;; If not, we translate dots into slashes.
@@ -571,7 +566,7 @@ time.")
 	    (message "Getting mail from %s..." inbox)))
 	;; Set TOFILE if have not already done so, and
 	;; rename or copy the file INBOX to TOFILE if and as appropriate.
-	(cond 
+	(cond
 	 ((file-exists-p tofile)
 	  ;; The crash box exists already.
 	  t)
@@ -599,11 +594,11 @@ time.")
 			   (insert (prin1-to-string err))
 			   (setq result 255))))
 		    (setq result
-			  (apply 
+			  (apply
 			   'call-process
 			   (append
 			    (list
-			     (expand-file-name 
+			     (expand-file-name
 			      nnmail-movemail-program exec-directory)
 			     nil errors nil inbox tofile)
 			    (when nnmail-internal-password
@@ -653,7 +648,7 @@ nn*-request-list should have been called before calling this function."
     (save-excursion
       (set-buffer nntp-server-buffer)
       (goto-char (point-min))
-      (while (re-search-forward 
+      (while (re-search-forward
 	      "^\\([^ \t]+\\)[ \t]+\\([0-9]+\\)[ \t]+\\([0-9]+\\)" nil t)
 	;; We create an alist with `(GROUP (LOW . HIGH))' elements.
 	(push (list (match-string 1)
@@ -692,7 +687,7 @@ is a spool.  If not using procmail, return GROUP."
 	  (let ((procmail-group (substring (expand-file-name file)
 					   (match-beginning 1)
 					   (match-end 1))))
-	    (if group 
+	    (if group
 		(if (string-equal group procmail-group)
 		    group
 		  nil)
@@ -739,10 +734,10 @@ is a spool.  If not using procmail, return GROUP."
 		  "\n")))
       ;; Look for a Content-Length header.
       (if (not (save-excursion
-		 (and (re-search-backward 
+		 (and (re-search-backward
 		       "^Content-Length:[ \t]*\\([0-9]+\\)" start t)
 		      (setq content-length (string-to-int
-					    (buffer-substring 
+					    (buffer-substring
 					     (match-beginning 1)
 					     (match-end 1))))
 		      ;; We destroy the header, since none of
@@ -762,7 +757,7 @@ is a spool.  If not using procmail, return GROUP."
 	  (setq do-search t)))
       (widen)
       ;; Go to the beginning of the next article - or to the end
-      ;; of the buffer.  
+      ;; of the buffer.
       (when do-search
 	(if (re-search-forward "^" nil t)
 	    (goto-char (match-beginning 0))
@@ -848,7 +843,7 @@ is a spool.  If not using procmail, return GROUP."
 	      end nil)
 	;; Find the end of the head.
 	(narrow-to-region
-	 start 
+	 start
 	 (if (search-forward "\n\n" nil t)
 	     (1- (point))
 	   ;; This will never happen, but just to be on the safe side --
@@ -874,7 +869,7 @@ is a spool.  If not using procmail, return GROUP."
 		  "^Content-Length:[ \t]*\\([0-9]+\\)" nil t))
 	    (setq content-length nil)
 	  (setq content-length (string-to-int (match-string 1)))
-	  ;; We destroy the header, since none of the backends ever 
+	  ;; We destroy the header, since none of the backends ever
 	  ;; use it, and we do not want to confuse other mailers by
 	  ;; having a (possibly) faulty header.
 	  (beginning-of-line)
@@ -904,7 +899,7 @@ is a spool.  If not using procmail, return GROUP."
 		(t (setq end nil))))
 	(if end
 	    (goto-char end)
-	  ;; No Content-Length, so we find the beginning of the next 
+	  ;; No Content-Length, so we find the beginning of the next
 	  ;; article or the end of the buffer.
 	  (goto-char head-end)
 	  (or (nnmail-search-unix-mail-delim)
@@ -932,7 +927,7 @@ is a spool.  If not using procmail, return GROUP."
 	(setq start (point))
 	;; Find the end of the head.
 	(narrow-to-region
-	 start 
+	 start
 	 (if (search-forward "\n\n" nil t)
 	     (1- (point))
 	   ;; This will never happen, but just to be on the safe side --
@@ -1004,7 +999,7 @@ FUNC will be called with the buffer narrowed to each mail."
 	(funcall exit-func))
       (kill-buffer (current-buffer)))))
 
-;; Mail crossposts suggested by Brian Edmonds <edmonds@cs.ubc.ca>. 
+;; Mail crossposts suggested by Brian Edmonds <edmonds@cs.ubc.ca>.
 (defun nnmail-article-group (func)
   "Look at the headers and return an alist of groups that match.
 FUNC will be called with the group name to determine the article number."
@@ -1039,12 +1034,12 @@ FUNC will be called with the group name to determine the article number."
 		       (or (funcall nnmail-split-methods)
 			   '("bogus"))
 		     (error
-		      (message 
+		      (message
 		       "Error in `nnmail-split-methods'; using `bogus' mail group")
 		      (sit-for 1)
 		      '("bogus")))))
 	      (unless (equal split '(junk))
-		;; `nnmail-split-methods' is a function, so we just call 
+		;; `nnmail-split-methods' is a function, so we just call
 		;; this function here and use the result.
 		(setq group-art
 		      (mapcar
@@ -1062,15 +1057,15 @@ FUNC will be called with the group name to determine the article number."
 			     (re-search-backward (cadr method) nil t)
 			   ;; Function to say whether this is a match.
 			   (funcall (nth 1 method) (car method))))
-		       ;; Don't enter the article into the same 
+		       ;; Don't enter the article into the same
 		       ;; group twice.
 		       (not (assoc (car method) group-art)))
 		  (push (cons (car method) (funcall func (car method)))
 			group-art))
-	      ;; This is the final group, which is used as a 
+	      ;; This is the final group, which is used as a
 	      ;; catch-all.
 	      (unless group-art
-		(setq group-art 
+		(setq group-art
 		      (list (cons (car method)
 				  (funcall func (car method)))))))))
 	;; See whether the split methods returned `junk'.
@@ -1275,14 +1270,14 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
   (if (null nnmail-spool-file)
       ;; No spool file whatsoever.
       nil
-    (let* ((procmails 
+    (let* ((procmails
 	    ;; If procmail is used to get incoming mail, the files
 	    ;; are stored in this directory.
 	    (and (file-exists-p nnmail-procmail-directory)
 		 (or (eq nnmail-spool-file 'procmail)
 		     nnmail-use-procmail)
-		 (directory-files 
-		  nnmail-procmail-directory 
+		 (directory-files
+		  nnmail-procmail-directory
 		  t (concat (if group (concat "^" group) "")
 			    nnmail-procmail-suffix "$"))))
 	   (p procmails)
@@ -1292,13 +1287,13 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 				0))
 		    (list nnmail-crash-box))))
       ;; Remove any directories that inadvertently match the procmail
-      ;; suffix, which might happen if the suffix is "". 
+      ;; suffix, which might happen if the suffix is "".
       (while p
 	(when (file-directory-p (car p))
 	  (setq procmails (delete (car p) procmails)))
 	(setq p (cdr p)))
       ;; Return the list of spools.
-      (append 
+      (append
        crash
        (cond ((and group
 		   (or (eq nnmail-spool-file 'procmail)
@@ -1310,9 +1305,9 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	      nil)
 	     ((listp nnmail-spool-file)
 	      (nconc
-	       (apply 
+	       (apply
 		'nconc
-		(mapcar 
+		(mapcar
 		 (lambda (file)
 		   (if (and (not (string-match "^po:" file))
 			    (file-directory-p file))
@@ -1323,7 +1318,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	     ((stringp nnmail-spool-file)
 	      (if (and (not (string-match "^po:" nnmail-spool-file))
 		       (file-directory-p nnmail-spool-file))
-		  (nconc 
+		  (nconc
 		   (nnheader-directory-regular-files nnmail-spool-file)
 		   procmails)
 		(cons nnmail-spool-file procmails)))
@@ -1332,22 +1327,22 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	     (t
 	      procmails))))))
 
-;; Activate a backend only if it isn't already activated. 
-;; If FORCE, re-read the active file even if the backend is 
+;; Activate a backend only if it isn't already activated.
+;; If FORCE, re-read the active file even if the backend is
 ;; already activated.
 (defun nnmail-activate (backend &optional force)
   (let (file timestamp file-time)
     (if (or (not (symbol-value (intern (format "%s-group-alist" backend))))
 	    force
 	    (and (setq file (ignore-errors
-			      (symbol-value (intern (format "%s-active-file" 
+			      (symbol-value (intern (format "%s-active-file"
 							    backend)))))
 		 (setq file-time (nth 5 (file-attributes file)))
 		 (or (not
 		      (setq timestamp
 			    (condition-case ()
 				(symbol-value (intern
-					       (format "%s-active-timestamp" 
+					       (format "%s-active-timestamp"
 						       backend)))
 			      (error 'none))))
 		     (not (consp timestamp))
@@ -1357,7 +1352,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 			  (> (nth 1 file-time) (nth 1 timestamp))))))
 	(save-excursion
 	  (or (eq timestamp 'none)
-	      (set (intern (format "%s-active-timestamp" backend)) 
+	      (set (intern (format "%s-active-timestamp" backend))
 		   file-time))
 	  (funcall (intern (format "%s-request-list" backend)))))
     t))
@@ -1377,8 +1372,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	       (buffer-name nnmail-cache-buffer)))
       ()				; The buffer is open.
     (save-excursion
-      (set-buffer 
-       (setq nnmail-cache-buffer 
+      (set-buffer
+       (setq nnmail-cache-buffer
 	     (get-buffer-create " *nnmail message-id cache*")))
       (buffer-disable-undo (current-buffer))
       (when (file-exists-p nnmail-message-id-cache-file)
@@ -1455,18 +1450,12 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (setq group-art nil))
      ((eq action 'warn)
       ;; We insert a warning.
-      (let ((case-fold-search t)
-	    (newid (concat "<" (message-unique-id)
-			   "@duplicate-message-id>")))
+      (let ((case-fold-search t))
 	(goto-char (point-min))
-	(when (re-search-forward "^message-id[ \t]*:" nil t)
-	  (beginning-of-line)
-	  (insert "Original-"))
+	(re-search-forward "^message-id[ \t]*:" nil t)
 	(beginning-of-line)
-	(insert 
-	 "Message-ID: " newid "\n"
+	(insert
 	 "Gnus-Warning: This is a duplicate of message " message-id "\n")
-	(nnmail-cache-insert newid)
 	(funcall func (setq group-art
 			    (nreverse (nnmail-article-group artnum-func))))))
      (t
@@ -1518,24 +1507,24 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	    ;; is supposed to go to some specific group.
 	    (setq group (nnmail-get-split-group spool group-in))
 	    ;; We split the mail
-	    (nnmail-split-incoming 
+	    (nnmail-split-incoming
 	     nnmail-crash-box (intern (format "%s-save-mail" method))
 	     spool-func group (intern (format "%s-active-number" method)))
-	    ;; Check whether the inbox is to be moved to the special tmp dir. 
+	    ;; Check whether the inbox is to be moved to the special tmp dir.
 	    (setq incoming
-		  (nnmail-make-complex-temp-name 
-		   (expand-file-name 
+		  (nnmail-make-complex-temp-name
+		   (expand-file-name
 		    (if nnmail-tmp-directory
-			(concat 
+			(concat
 			 (file-name-as-directory nnmail-tmp-directory)
 			 (file-name-nondirectory
 			  (concat (file-name-as-directory temp) "Incoming")))
 		      (concat (file-name-as-directory temp) "Incoming")))))
 	    (rename-file nnmail-crash-box incoming t)
 	    (push incoming incomings))))
-      ;; If we did indeed read any incoming spools, we save all info. 
+      ;; If we did indeed read any incoming spools, we save all info.
       (when incomings
-	(nnmail-save-active 
+	(nnmail-save-active
 	 (nnmail-get-value "%s-group-alist" method)
 	 (nnmail-get-value "%s-active-file" method))
 	(when exit-func
@@ -1700,7 +1689,7 @@ If ARGS, PROMPT is used as an argument to `format'."
     (pop3-movemail crashbox)))
 
 (run-hooks 'nnmail-load-hook)
-	    
+
 (provide 'nnmail)
 
 ;;; nnmail.el ends here

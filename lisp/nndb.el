@@ -179,7 +179,7 @@ Optional LAST is ignored."
                                    server
                                    t))
     result))
-  
+
 (deffoo nndb-request-accept-article (group server &optional last)
   "The article in the current buffer is put into GROUP."
   (nntp-possibly-change-group group server) ;;-
@@ -198,7 +198,7 @@ Optional LAST is ignored."
       (list art))))
 
 (deffoo nndb-request-replace-article (article group buffer)
-  "ARTICLE is the number of the article in GROUP to be replaced 
+  "ARTICLE is the number of the article in GROUP to be replaced
 with the contents of the BUFFER."
   (set-buffer buffer)
   (let (art statmsg)

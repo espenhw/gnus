@@ -42,7 +42,7 @@
   :group 'gnus-cache
   :type 'directory)
 
-(defcustom gnus-cache-active-file 
+(defcustom gnus-cache-active-file
   (concat (file-name-as-directory gnus-cache-directory) "active")
   "*The cache active file."
   :group 'gnus-cache
@@ -129,7 +129,7 @@ variable to \"^nnml\"."
       (gnus-kill-buffer buffer)
       (setq gnus-cache-buffer nil))))
 
-(defun gnus-cache-possibly-enter-article 
+(defun gnus-cache-possibly-enter-article
   (group article headers ticked dormant unread &optional force)
   (when (and (or force (not (eq gnus-use-cache 'passive)))
 	     (numberp article)
@@ -138,7 +138,7 @@ variable to \"^nnml\"."
 					; This might be a dummy article.
     ;; If this is a virtual group, we find the real group.
     (when (gnus-virtual-group-p group)
-      (let ((result (nnvirtual-find-group-art 
+      (let ((result (nnvirtual-find-group-art
 		     (gnus-group-real-name group) article)))
 	(setq group (car result)
 	      headers (copy-sequence headers))
@@ -258,7 +258,7 @@ variable to \"^nnml\"."
   (when (equal group "no.norsk") (error "hie"))
   (when gnus-cache-active-hashtb
     (let ((cache-active (gnus-gethash group gnus-cache-active-hashtb)))
-      (and cache-active 
+      (and cache-active
 	   (< (car cache-active) (car active))
 	   (setcar active (car cache-active)))
       (and cache-active
@@ -267,7 +267,7 @@ variable to \"^nnml\"."
 
 (defun gnus-cache-retrieve-headers (articles group &optional fetch-old)
   "Retrieve the headers for ARTICLES in GROUP."
-  (let ((cached 
+  (let ((cached
 	 (setq gnus-newsgroup-cached (gnus-cache-articles-in-group group))))
     (if (not cached)
 	;; No cached articles here, so we just retrieve them
@@ -279,12 +279,12 @@ variable to \"^nnml\"."
 				articles))
 	    (cache-file (gnus-cache-file-name group ".overview"))
 	    type)
-	;; We first retrieve all the headers that we don't have in 
+	;; We first retrieve all the headers that we don't have in
 	;; the cache.
 	(let ((gnus-use-cache nil))
 	  (when uncached-articles
-	    (setq type (and articles 
-			    (gnus-retrieve-headers 
+	    (setq type (and articles
+			    (gnus-retrieve-headers
 			     uncached-articles group fetch-old)))))
 	(gnus-cache-save-buffers)
 	;; Then we insert the cached headers.
@@ -294,7 +294,7 @@ variable to \"^nnml\"."
 	    ;; There are no cached headers.
 	    type)
 	   ((null type)
-	    ;; There were no uncached headers (or retrieval was 
+	    ;; There were no uncached headers (or retrieval was
 	    ;; unsuccessful), so we use the cached headers exclusively.
 	    (set-buffer nntp-server-buffer)
 	    (erase-buffer)
@@ -321,8 +321,8 @@ Returns the list of articles entered."
 	article out)
     (while (setq article (pop articles))
       (if (natnump article)
-	  (when (gnus-cache-possibly-enter-article 
-		 gnus-newsgroup-name article 
+	  (when (gnus-cache-possibly-enter-article
+		 gnus-newsgroup-name article
 		 (gnus-summary-article-header article)
 		 nil nil nil t)
 	    (push article out))
@@ -387,7 +387,7 @@ Returns the list of articles removed."
       (let ((file (gnus-cache-file-name group ".overview")))
 	(when (file-exists-p file)
 	  (nnheader-insert-file-contents file)))
-      ;; We have a fresh (empty/just loaded) buffer, 
+      ;; We have a fresh (empty/just loaded) buffer,
       ;; mark it as unmodified to save a redundant write later.
       (set-buffer-modified-p nil))))
 
@@ -415,11 +415,11 @@ Returns the list of articles removed."
   "If ARTICLE is in the cache, remove it and re-enter it."
   (when (gnus-cache-possibly-remove-article article nil nil nil t)
     (let ((gnus-use-cache nil))
-      (gnus-cache-possibly-enter-article 
+      (gnus-cache-possibly-enter-article
        gnus-newsgroup-name article (gnus-summary-article-header article)
        nil nil nil t))))
 
-(defun gnus-cache-possibly-remove-article (article ticked dormant unread 
+(defun gnus-cache-possibly-remove-article (article ticked dormant unread
 						   &optional force)
   "Possibly remove ARTICLE from the cache."
   (let ((group gnus-newsgroup-name)
@@ -427,7 +427,7 @@ Returns the list of articles removed."
 	file)
     ;; If this is a virtual group, we find the real group.
     (when (gnus-virtual-group-p group)
-      (let ((result (nnvirtual-find-group-art 
+      (let ((result (nnvirtual-find-group-art
 		     (gnus-group-real-name group) article)))
 	(setq group (car result)
 	      number (cdr result))))
@@ -539,8 +539,8 @@ $ emacs -batch -l ~/.emacs -l gnus -f gnus-jog-cache"
     (gnus)
     ;; Go through all groups...
     (gnus-group-mark-buffer)
-    (gnus-group-universal-argument 
-     nil nil 
+    (gnus-group-universal-argument
+     nil nil
      (lambda ()
        (interactive)
        (gnus-summary-read-group (gnus-group-group-name) nil t)
@@ -562,11 +562,11 @@ $ emacs -batch -l ~/.emacs -l gnus -f gnus-jog-cache"
       (gnus-set-work-buffer)
       (insert-file-contents gnus-cache-active-file)
       (gnus-active-to-gnus-format
-       nil (setq gnus-cache-active-hashtb 
-		 (gnus-make-hashtable 
+       nil (setq gnus-cache-active-hashtb
+		 (gnus-make-hashtable
 		  (count-lines (point-min) (point-max)))))
       (setq gnus-cache-active-altered nil))))
-       
+
 (defun gnus-cache-write-active (&optional force)
   "Write the active hashtb to the active file."
   (when (or force
@@ -604,14 +604,14 @@ If LOW, update the lower bound instead."
   (let* ((top (null directory))
 	 (directory (expand-file-name (or directory gnus-cache-directory)))
 	 (files (directory-files directory 'full))
-	 (group 
+	 (group
 	  (if top
 	      ""
-	    (string-match 
+	    (string-match
 	     (concat "^" (file-name-as-directory
 			  (expand-file-name gnus-cache-directory)))
 	     (directory-file-name directory))
-	    (nnheader-replace-chars-in-string 
+	    (nnheader-replace-chars-in-string
 	     (substring (directory-file-name directory) (match-end 0))
 	     ?/ ?.)))
 	 nums alphs)
@@ -654,5 +654,5 @@ If LOW, update the lower bound instead."
   (rename-file gnus-cache-directory dir))
 
 (provide 'gnus-cache)
-	      
+
 ;;; gnus-cache.el ends here

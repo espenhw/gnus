@@ -48,7 +48,7 @@ instead."
 
 (defcustom gnus-site-init-file
   (ignore-errors
-    (concat (file-name-directory 
+    (concat (file-name-directory
 	     (directory-file-name installation-directory))
 	    "site-lisp/gnus-init"))
   "The site-wide Gnus elisp startup file.
@@ -320,7 +320,7 @@ does not affect old (already subscribed) newsgroups."
 		 (const :tag "none" nil)))
 
 (defcustom gnus-modtime-botch nil
-  "*Non-nil means .newsrc should be deleted prior to save.  
+  "*Non-nil means .newsrc should be deleted prior to save.
 Its use is due to the bogus appearance that .newsrc was modified on
 disc."
   :group 'gnus-newsrc
@@ -347,7 +347,7 @@ This hook is called after Gnus is connected to the NNTP server."
   :group 'gnus-group-new
   :type 'hook)
 
-(defcustom gnus-after-getting-new-news-hook 
+(defcustom gnus-after-getting-new-news-hook
   (when (gnus-boundp 'display-time-timer)
     '(display-time-event-handler))
   "A hook run after Gnus checks for new news."
@@ -815,7 +815,7 @@ If RAWFILE is non-nil, the .newsrc file will also be read.
 If LEVEL is non-nil, the news will be set up at level LEVEL."
   (let ((init (not (and gnus-newsrc-alist gnus-active-hashtb (not rawfile)))))
 
-    (when init 
+    (when init
       ;; Clear some variables to re-initialize news information.
       (setq gnus-newsrc-alist nil
 	    gnus-active-hashtb nil)
@@ -849,8 +849,8 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
       (gnus-cache-open))
 
     ;; Possibly eval the dribble file.
-    (and init 
-	 (or gnus-use-dribble-file gnus-slave) 
+    (and init
+	 (or gnus-use-dribble-file gnus-slave)
 	 (gnus-dribble-eval-file))
 
     ;; Slave Gnusii should then clear the dribble buffer.
@@ -874,7 +874,7 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
       (gnus-find-new-newsgroups))
 
     ;; We might read in new NoCeM messages here.
-    (when (and gnus-use-nocem 
+    (when (and gnus-use-nocem
 	       (not level)
 	       (not dont-connect))
       (gnus-nocem-scan-groups))
@@ -1156,7 +1156,7 @@ the server for new groups."
       ;; Finally we enter (if needed) the list where it is supposed to
       ;; go, and change the subscription level.  If it is to be killed,
       ;; we enter it into the killed or zombie list.
-      (cond 
+      (cond
        ((>= level gnus-level-zombie)
 	;; Remove from the hash table.
 	(gnus-sethash group nil gnus-newsrc-hashtb)
@@ -1283,7 +1283,7 @@ newsgroup."
     "Alter the ACTIVE info for GROUP to reflect the articles in the cache."
     (when gnus-cache-active-hashtb
       (let ((cache-active (gnus-gethash group gnus-cache-active-hashtb)))
-	(and cache-active 
+	(and cache-active
 	     (< (car cache-active) (car active))
 	     (setcar active (car cache-active)))
 	(and cache-active
@@ -1293,7 +1293,7 @@ newsgroup."
 (defun gnus-get-unread-articles-in-group (info active &optional update)
   (when active
     ;; Allow the backend to update the info in the group.
-    (when (and update 
+    (when (and update
 	       (gnus-request-update-info
 		info (gnus-find-method-for-group (gnus-info-group info))))
       (gnus-activate-group (gnus-info-group info) nil t))
@@ -1301,7 +1301,7 @@ newsgroup."
 	   (num 0))
       ;; If a cache is present, we may have to alter the active info.
       (when (and gnus-use-cache info)
-	(inline (gnus-cache-possibly-alter-active 
+	(inline (gnus-cache-possibly-alter-active
 		 (gnus-info-group info) active)))
       ;; Modify the list of read articles according to what articles
       ;; are available; then tally the unread articles and add the
@@ -1552,7 +1552,7 @@ newsgroup."
 ;; Get the active file(s) from the backend(s).
 (defun gnus-read-active-file (&optional force)
   (gnus-group-set-mode-line)
-  (let ((methods 
+  (let ((methods
 	 (append
 	  (if (gnus-check-server gnus-select-method)
 	      ;; The native server is available.
@@ -1590,7 +1590,7 @@ newsgroup."
 		    groups info)
 		(while (setq info (pop newsrc))
 		  (when (gnus-server-equal
-			 (gnus-find-method-for-group 
+			 (gnus-find-method-for-group
 			  (gnus-info-group info) info)
 			 gmethod)
 		    (push (gnus-group-real-name (gnus-info-group info))
@@ -1628,7 +1628,7 @@ newsgroup."
   ;; (concat (regexp-quote "^to\\.") "\\($\\|" (regexp-quote "\\|") "\\)")
   (string-match "\\^to\\\\\\.\\($\\|\\\\|\\)"
 		gnus-ignored-newsgroups))
-  
+
 ;; Read an active file and place the results in `gnus-active-hashtb'.
 (defun gnus-active-to-gnus-format (&optional method hashtb ignore-errors)
   (unless method
@@ -1790,7 +1790,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	  (gnus-newsrc-to-gnus-format)
 	  (kill-buffer (current-buffer))
 	  (gnus-message 5 "Reading %s...done" newsrc-file)))
-      
+
       ;; Convert old to new.
       (gnus-convert-old-newsrc))))
 
@@ -1874,7 +1874,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	  (unless (nthcdr 3 info)
 	    (nconc info (list nil)))
 	  (gnus-info-set-marks
-	   info (list (cons 'tick (gnus-compress-sequence 
+	   info (list (cons 'tick (gnus-compress-sequence
 				   (sort (cdr m) '<) t))))))
       (setq newsrc killed)
       (while newsrc
@@ -1954,7 +1954,7 @@ If FORCE is non-nil, the .newsrc file is read."
 			   (point)))))
 	(forward-line -1))
        (symbol
-	;; Group names can be just numbers.  
+	;; Group names can be just numbers.
 	(when (numberp symbol)
 	  (setq symbol (intern (int-to-string symbol) gnus-active-hashtb)))
 	(unless (boundp symbol)
@@ -2350,7 +2350,7 @@ If FORCE is non-nil, the .newsrc file is read."
 ;;;
 
 (defun gnus-read-all-descriptions-files ()
-  (let ((methods (cons gnus-select-method 
+  (let ((methods (cons gnus-select-method
 		       (nconc
 			(when (gnus-archive-server-wanted-p)
 			  (list "archive"))
@@ -2440,7 +2440,7 @@ If FORCE is non-nil, the .newsrc file is read."
 (defun gnus-set-default-directory ()
   "Set the default directory in the current buffer to `gnus-default-directory'.
 If this variable is nil, don't do anything."
-  (setq default-directory 
+  (setq default-directory
 	(if (and gnus-default-directory
 		 (file-exists-p gnus-default-directory))
 	    (file-name-as-directory (expand-file-name gnus-default-directory))

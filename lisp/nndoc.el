@@ -43,8 +43,8 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 (defvoo nndoc-post-type 'mail
   "*Whether the nndoc group is `mail' or `post'.")
 
-(defvar nndoc-type-alist 
-  `((mmdf 
+(defvar nndoc-type-alist
+  `((mmdf
      (article-begin .  "^\^A\^A\^A\^A\n")
      (body-end .  "^\^A\^A\^A\^A\n"))
     (news
@@ -52,10 +52,10 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
     (rnews
      (article-begin . "^#! *rnews +\\([0-9]+\\) *\n")
      (body-end-function . nndoc-rnews-body-end))
-    (mbox 
+    (mbox
      (article-begin-function . nndoc-mbox-article-begin)
      (body-end-function . nndoc-mbox-body-end))
-    (babyl 
+    (babyl
      (article-begin . "\^_\^L *\n")
      (body-end . "\^_")
      (body-begin-function . nndoc-babyl-body-begin)
@@ -108,7 +108,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
       (generate-head-function . nndoc-generate-lanl-gov-head)
       (article-transform-function . nndoc-transform-lanl-gov-announce)
       (subtype preprints guess))
-    (guess 
+    (guess
      (guess . t)
      (subtype nil))
     (digest
@@ -190,11 +190,11 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
       (when entry
 	(if (stringp article)
 	    nil
-	  (insert-buffer-substring 
+	  (insert-buffer-substring
 	   nndoc-current-buffer (car entry) (nth 1 entry))
 	  (insert "\n")
 	  (setq beg (point))
-	  (insert-buffer-substring 
+	  (insert-buffer-substring
 	   nndoc-current-buffer (nth 2 entry) (nth 3 entry))
 	  (goto-char beg)
 	  (when nndoc-prepare-body-function
@@ -206,7 +206,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 (deffoo nndoc-request-group (group &optional server dont-check)
   "Select news GROUP."
   (let (number)
-    (cond 
+    (cond
      ((not (nndoc-possibly-change-buffer group server))
       (nnheader-report 'nndoc "No such file or buffer: %s"
 		       nndoc-address))
@@ -250,24 +250,24 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 
 (defun nndoc-possibly-change-buffer (group source)
   (let (buf)
-    (cond 
+    (cond
      ;; The current buffer is this group's buffer.
      ((and nndoc-current-buffer
 	   (buffer-name nndoc-current-buffer)
-	   (eq nndoc-current-buffer 
+	   (eq nndoc-current-buffer
 	       (setq buf (cdr (assoc group nndoc-group-alist))))))
      ;; We change buffers by taking an old from the group alist.
-     ;; `source' is either a string (a file name) or a buffer object. 
+     ;; `source' is either a string (a file name) or a buffer object.
      (buf
       (setq nndoc-current-buffer buf))
-     ;; It's a totally new group.    
+     ;; It's a totally new group.
      ((or (and (bufferp nndoc-address)
 	       (buffer-name nndoc-address))
 	  (and (stringp nndoc-address)
 	       (file-exists-p nndoc-address)
 	       (not (file-directory-p nndoc-address))))
-      (push (cons group (setq nndoc-current-buffer 
-			      (get-buffer-create 
+      (push (cons group (setq nndoc-current-buffer
+			      (get-buffer-create
 			       (concat " *nndoc " group "*"))))
 	    nndoc-group-alist)
       (setq nndoc-dissection-alist nil)
@@ -296,8 +296,8 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 
 (defun nndoc-set-delims ()
   "Set the nndoc delimiter variables according to the type of the document."
-  (let ((vars '(nndoc-file-begin 
-		nndoc-first-article 
+  (let ((vars '(nndoc-file-begin
+		nndoc-first-article
 		nndoc-article-end nndoc-head-begin nndoc-head-end
 		nndoc-file-end nndoc-article-begin
 		nndoc-body-begin nndoc-body-end-function nndoc-body-end
@@ -308,7 +308,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
       (set (pop vars) nil)))
   (let (defs)
     ;; Guess away until we find the real file type.
-    (while (assq 'guess (setq defs (cdr (assq nndoc-article-type 
+    (while (assq 'guess (setq defs (cdr (assq nndoc-article-type
 					      nndoc-type-alist))))
       (setq nndoc-article-type (nndoc-guess-type nndoc-article-type)))
     ;; Set the nndoc variables.
@@ -324,7 +324,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
       (when (memq subtype (or (cdr (assq 'subtype entry)) '(guess)))
 	(goto-char (point-min))
 	(when (numberp (setq result (funcall (intern
-					      (format "nndoc-%s-type-p" 
+					      (format "nndoc-%s-type-p"
 						      (car entry))))))
 	  (push (cons result entry) results)
 	  (setq result nil))))
@@ -334,7 +334,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	(car entry)
       (cadar (sort results (lambda (r1 r2) (< (car r1) (car r2))))))))
 
-;;; 
+;;;
 ;;; Built-in type predicates and functions
 ;;;
 
@@ -351,7 +351,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	len end)
     (when
 	(save-excursion
-	  (and (re-search-backward 
+	  (and (re-search-backward
 		(concat "^" message-unix-mail-delimiter) nil t)
 	       (setq end (point))
 	       (search-forward "\n\n" beg t)
@@ -472,7 +472,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 
 (defun nndoc-standard-digest-type-p ()
   (when (and (re-search-forward (concat "^" (make-string 70 ?-) "\n\n") nil t)
-	     (re-search-forward 
+	     (re-search-forward
 	      (concat "\n\n" (make-string 30 ?-) "\n\n") nil t))
     t))
 
@@ -495,7 +495,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
   ;;  (when (re-search-backward "^\\\\\\\\$" nil t)
   ;;    (replace-match "" t t))
   )
- 
+
 (defun nndoc-generate-lanl-gov-head (article)
   (let ((entry (cdr (assq article nndoc-dissection-alist)))
  	(e-mail "no address given")
@@ -518,7 +518,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
       (setq from (replace-match "" t t from)))
     (insert "From: "  (or from "unknown")
  	    "\nSubject: " (or subject "(no subject)") "\n")))
- 
+
 
 
 ;;;
@@ -549,7 +549,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	(setq first nil)
 	(cond (nndoc-head-begin-function
 	       (funcall nndoc-head-begin-function))
-	      (nndoc-head-begin 
+	      (nndoc-head-begin
 	       (nndoc-search nndoc-head-begin)))
  	(if (or (>= (point) (point-max))
 		(and nndoc-file-end

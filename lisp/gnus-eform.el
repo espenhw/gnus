@@ -117,7 +117,7 @@ of the buffer."
 	(func gnus-edit-form-done-function))
     (gnus-edit-form-exit)
     (funcall func form)))
-  
+
 (defun gnus-edit-form-exit ()
   "Kill the current buffer."
   (interactive)

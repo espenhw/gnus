@@ -142,7 +142,7 @@
      ,#'(lambda () (car val))
      ,#'(lambda () (cadr val)))
     ((8)
-     ,#'(lambda () 
+     ,#'(lambda ()
 	  (and (stringp elt)
 	       (= 5 (length elt))
 	       (or (= (aref elt 0) ?+) (= (aref elt 0) ?-))))

@@ -52,7 +52,7 @@ Legal values are `article' and `picons'."
   :group 'picons)
 
 (defcustom gnus-picons-database "/usr/local/faces"
-  "Defines the location of the faces database.  
+  "Defines the location of the faces database.
 For information on obtaining this database of pretty pictures, please
 see http://www.cs.indiana.edu/picons/ftp/index.html"
   :type 'directory
@@ -69,7 +69,7 @@ see http://www.cs.indiana.edu/picons/ftp/index.html"
   :group 'picons)
 
 (defcustom gnus-picons-domain-directories '("domains")
-  "List of directories to search for domain faces.  
+  "List of directories to search for domain faces.
 Some people may want to add \"unknown\" to this list."
   :type '(repeat string)
   :group 'picons)
@@ -79,7 +79,7 @@ Some people may want to add \"unknown\" to this list."
   :type 'boolean
   :group 'picons)
 
-(defcustom gnus-picons-x-face-file-name 
+(defcustom gnus-picons-x-face-file-name
   (format "/tmp/picon-xface.%s.xbm" (user-login-name))
   "The name of the file in which to store the converted X-face header."
   :type 'string
@@ -119,7 +119,7 @@ This has only an effect if `gnus-picons-display-where' hs value article."
 (define-key gnus-picons-map [(button2)] 'gnus-picons-toggle-extent)
 
 ;;; Internal variables.
-       
+
 (defvar gnus-group-annotations nil)
 (defvar gnus-article-annotations nil)
 (defvar gnus-x-face-annotations nil)
@@ -180,7 +180,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
       (sleep-for .1)))
   ;; display it
   (save-excursion
-    (set-buffer (get-buffer-create (gnus-get-buffer-name 
+    (set-buffer (get-buffer-create (gnus-get-buffer-name
 				    gnus-picons-display-where)))
     (gnus-add-current-to-buffer-list)
     (goto-char (point-min))
@@ -189,7 +189,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	(push (make-annotation "\n" (point) 'text)
 	      gnus-x-face-annotations))
       ;; append the annotation to gnus-article-annotations for deletion.
-      (setq gnus-x-face-annotations 
+      (setq gnus-x-face-annotations
 	    (append
 	     (gnus-picons-try-to-find-face gnus-picons-x-face-file-name t)
 	     gnus-x-face-annotations)))
@@ -207,7 +207,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
     (when (and (featurep 'xpm)
 	       (or (not (fboundp 'device-type)) (equal (device-type) 'x))
 	       (setq from (mail-fetch-field "from"))
-	       (setq from (downcase 
+	       (setq from (downcase
 			   (or (cadr (mail-extract-address-components from))
 			       "")))
 	       (or (setq at-idx (string-match "@" from))
@@ -219,7 +219,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 			     (nreverse (message-tokenize-header
 					gnus-local-domain "."))
 			   '(""))
-		       (nreverse (message-tokenize-header 
+		       (nreverse (message-tokenize-header
 				  (substring from (1+ at-idx)) ".")))))
 	  (set-buffer (get-buffer-create
 		       (gnus-get-buffer-name gnus-picons-display-where)))
@@ -232,7 +232,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	    (unless (eolp)
 	      (push (make-annotation "\n" (point) 'text)
 		    gnus-article-annotations)))
-	    
+
 	  (gnus-picons-remove gnus-article-annotations)
 	  (setq gnus-article-annotations nil)
 
@@ -243,7 +243,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 		  (nconc (gnus-picons-insert-face-if-exists
 			  (car databases)
 			  addrs
-			  "unknown" (or gnus-picons-display-as-address 
+			  "unknown" (or gnus-picons-display-as-address
 					gnus-article-annotations) t t)
 			 gnus-article-annotations))
 	    (setq databases (cdr databases)))
@@ -252,7 +252,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	  (when gnus-picons-display-as-address
 	    (setq gnus-article-annotations
 		  (nconc gnus-article-annotations
-			 (list 
+			 (list
 			  (make-annotation "@" (point) 'text nil nil nil t)))))
 
 	  ;; then do user directories,
@@ -262,23 +262,23 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	    (while databases
 	      (setq found
 		    (nconc (gnus-picons-insert-face-if-exists
-			    (car databases) addrs username 
-			    (or gnus-picons-display-as-address 
+			    (car databases) addrs username
+			    (or gnus-picons-display-as-address
 				gnus-article-annotations) nil t)
 			   found))
 	      (setq databases (cdr databases)))
 	    ;; add their name if no face exists
 	    (when (and gnus-picons-display-as-address (not found))
 	      (setq found
-		    (list 
+		    (list
 		     (make-annotation username (point) 'text nil nil nil t))))
-	    (setq gnus-article-annotations 
+	    (setq gnus-article-annotations
 		  (nconc found gnus-article-annotations)))
 
 	  (add-hook 'gnus-summary-exit-hook 'gnus-picons-remove-all))))))
 
 (defun gnus-group-display-picons ()
-  "Display icons for the group in the gnus-picons-display-where buffer." 
+  "Display icons for the group in the gnus-picons-display-where buffer."
   (interactive)
   ;; let display catch up so far
   (when gnus-picons-refresh-before-display
@@ -328,8 +328,8 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
   ;; '(gnus-picons-insert-face-if-exists
   ;;    "Database" '("edu" "indiana" "cs") "Name")
   ;; looks for:
-  ;;  1. edu/indiana/cs/Name 
-  ;;  2. edu/indiana/Name 
+  ;;  1. edu/indiana/cs/Name
+  ;;  2. edu/indiana/Name
   ;;  3. edu/Name
   ;; '(gnus-picons-insert-face-if-exists
   ;;     "Database/MISC" '("edu" "indiana" "cs") "Name")
@@ -339,7 +339,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
   ;; picon databases, but otherwise we would always see the MISC/unknown face.
   (let ((bar (and (not nobar-p)
 		  (or gnus-picons-display-as-address
-		      (annotations-in-region 
+		      (annotations-in-region
 		       (point) (min (point-max) (1+ (point)))
 		       (current-buffer)))))
 	(path (concat (file-name-as-directory gnus-picons-database)
@@ -352,32 +352,32 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 		(file-accessible-directory-p path))
       (setq cur (pop addrs)
 	    path (concat path cur "/"))
-      (if (setq found 
+      (if (setq found
 		(gnus-picons-try-suffixes (concat path filename "/face.")))
-	  (progn 
+	  (progn
 	    (setq picons (nconc (when (and domainp first rightp)
 				  (list (make-annotation
-					 "." (point) 'text 
+					 "." (point) 'text
 					 nil nil nil rightp)
 					picons))
-				(gnus-picons-try-to-find-face 
+				(gnus-picons-try-to-find-face
 				 found nil (if domainp cur filename) rightp)
 				(when (and domainp first (not rightp))
 				  (list (make-annotation
-					 "." (point) 'text 
+					 "." (point) 'text
 					 nil nil nil rightp)
 					picons))
 				picons)))
 	(when domainp
-	  (setq picons 
-		(nconc (list (make-annotation 
-			      (if first (concat (if (not rightp) ".") cur 
+	  (setq picons
+		(nconc (list (make-annotation
+			      (if first (concat (if (not rightp) ".") cur
 						(if rightp ".")) cur)
 					      (point) 'text nil nil nil rightp))
 		       picons))))
       (when (and bar (or domainp found))
-	(setq bar-ann (gnus-picons-try-to-find-face 
-		       (concat gnus-xmas-glyph-directory "bar.xbm") 
+	(setq bar-ann (gnus-picons-try-to-find-face
+		       (concat gnus-xmas-glyph-directory "bar.xbm")
 		       nil nil t))
 	(when bar-ann
 	  (setq picons (nconc picons bar-ann))
@@ -385,13 +385,13 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
       (setq first t))
     (when (and addrs domainp)
       (let ((it (mapconcat 'downcase (nreverse addrs) ".")))
-	(make-annotation 
-	 (if first (concat (if (not rightp) ".") it (if rightp ".")) it) 
+	(make-annotation
+	 (if first (concat (if (not rightp) ".") it (if rightp ".")) it)
 	 (point) 'text nil nil nil rightp)))
     picons))
 
 (defvar gnus-picons-glyph-alist nil)
-      
+
 (defun gnus-picons-try-to-find-face (path &optional xface-p part rightp)
   "If PATH exists, display it as a bitmap.  Returns t if succeeded."
   (let ((glyph (and (not xface-p)

@@ -40,7 +40,7 @@
 Update the .newsrc.eld file to reflect the change of nntp server."
   (interactive
    (list gnus-select-method (gnus-read-method "Move to method: ")))
-  
+
   ;; First start Gnus.
   (let ((gnus-activate-level 0)
 	(nnmail-spool-file nil))
@@ -77,7 +77,7 @@ Update the .newsrc.eld file to reflect the change of nntp server."
 	(goto-char (point-min))
 	(while (looking-at
 		"^[0-9]+\t[^\t]*\t[^\t]*\t[^\t]*\t\\([^\t]*\\)\t")
-	  (gnus-sethash 
+	  (gnus-sethash
 	   (buffer-substring (match-beginning 1) (match-end 1))
 	   (read (current-buffer))
 	   hashtb)
@@ -86,7 +86,7 @@ Update the .newsrc.eld file to reflect the change of nntp server."
 	(when (and (gnus-request-group group nil from-server)
 		   (gnus-active group)
 		   (setq type (gnus-retrieve-headers
-			       (gnus-uncompress-range 
+			       (gnus-uncompress-range
 				(gnus-active group))
 			       group from-server)))
 	  ;; Make it easier to map marks.
@@ -108,8 +108,8 @@ Update the .newsrc.eld file to reflect the change of nntp server."
 	  (goto-char (point-min))
 	  (while (looking-at
 		  "^[0-9]+\t[^\t]*\t[^\t]*\t[^\t]*\t\\([^\t]*\\)\t")
-	    (setq to-article 
-		  (gnus-gethash 
+	    (setq to-article
+		  (gnus-gethash
 		   (buffer-substring (match-beginning 1) (match-end 1))
 		   hashtb))
 	    ;; Add this article to the list of read articles.
@@ -123,8 +123,8 @@ Update the .newsrc.eld file to reflect the change of nntp server."
 	  ;; Now we know what the read articles are and what the
 	  ;; article marks are.  We transform the information
 	  ;; into the Gnus info format.
-	  (setq to-reads 
-		(gnus-range-add 
+	  (setq to-reads
+		(gnus-range-add
 		 (gnus-compress-sequence (sort to-reads '<) t)
 		 (cons 1 (1- (car to-active)))))
 	  (gnus-info-set-read info to-reads)
@@ -152,7 +152,7 @@ Update the .newsrc.eld file to reflect the change of nntp server."
   (interactive
    (let ((info (gnus-get-info (gnus-group-group-name))))
      (list info (gnus-find-method-for-group (gnus-info-group info))
-	   (gnus-read-method (format "Move group %s to method: " 
+	   (gnus-read-method (format "Move group %s to method: "
 				     (gnus-info-group info))))))
   (save-excursion
     (gnus-move-group-to-server info from-server to-server)
@@ -160,7 +160,7 @@ Update the .newsrc.eld file to reflect the change of nntp server."
     (gnus-info-set-method info to-server t)
     ;; We also have to change the name of the group and stuff.
     (let* ((group (gnus-info-group info))
-	   (new-name (gnus-group-prefixed-name 
+	   (new-name (gnus-group-prefixed-name
 		      (gnus-group-real-name group) to-server)))
       (gnus-info-set-group info new-name)
       (gnus-sethash new-name (gnus-gethash group gnus-newsrc-hashtb)

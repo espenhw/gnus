@@ -55,7 +55,7 @@ with some simple extensions.")
     (?w where ?s)
     (?s status ?s)))
 
-(defvar gnus-server-mode-line-format-alist 
+(defvar gnus-server-mode-line-format-alist
   `((?S news-server ?s)
     (?M news-method ?s)
     (?u user-defined ?s)))
@@ -137,8 +137,8 @@ with some simple extensions.")
 
 All normal editing commands are switched off.
 \\<gnus-server-mode-map>
-For more in-depth information on this mode, read the manual 
-(`\\[gnus-info-find-node]'). 
+For more in-depth information on this mode, read the manual
+(`\\[gnus-info-find-node]').
 
 The following commands are available:
 
@@ -189,15 +189,15 @@ The following commands are available:
     (save-excursion
       (set-buffer (get-buffer-create gnus-server-buffer))
       (gnus-server-mode)
-      (when gnus-carpal 
+      (when gnus-carpal
 	(gnus-carpal-setup-buffer 'server)))))
 
 (defun gnus-server-prepare ()
-  (setq gnus-server-mode-line-format-spec 
-	(gnus-parse-format gnus-server-mode-line-format 
+  (setq gnus-server-mode-line-format-spec
+	(gnus-parse-format gnus-server-mode-line-format
 			   gnus-server-mode-line-format-alist))
-  (setq gnus-server-line-format-spec 
-	(gnus-parse-format gnus-server-line-format 
+  (setq gnus-server-line-format-spec
+	(gnus-parse-format gnus-server-line-format
 			   gnus-server-line-format-alist t))
   (let ((alist gnus-server-alist)
 	(buffer-read-only nil)
@@ -209,15 +209,15 @@ The following commands are available:
     (while alist
       (unless (member (cdar alist) done)
 	(push (cdar alist) done)
-	(cdr (setq server (pop alist))) 
+	(cdr (setq server (pop alist)))
 	(when (and server (car server) (cdr server))
 	  (gnus-server-insert-server-line (car server) (cdr server)))))
     ;; Then we insert the list of servers that have been opened in
     ;; this session.
-    (while opened 
+    (while opened
       (unless (member (caar opened) done)
 	(push (caar opened) done)
-	(gnus-server-insert-server-line 
+	(gnus-server-insert-server-line
 	 (setq op-ser (format "%s:%s" (caaar opened) (nth 1 (caar opened))))
 	 (caar opened))
 	(push (list op-ser (caar opened)) gnus-inserted-opened-servers))
@@ -241,7 +241,7 @@ The following commands are available:
 	   (oentry (assoc (gnus-server-to-method server)
 			  gnus-opened-servers)))
       (when entry
-	(gnus-dribble-enter 
+	(gnus-dribble-enter
 	 (concat "(gnus-server-set-info \"" server "\" '"
 		 (prin1-to-string (cdr entry)) ")\n")))
       (when (or entry oentry)
@@ -252,7 +252,7 @@ The following commands are available:
 	    (gnus-delete-line))
 	  (if entry
 	      (gnus-server-insert-server-line (car entry) (cdr entry))
-	    (gnus-server-insert-server-line 
+	    (gnus-server-insert-server-line
 	     (format "%s:%s" (caar oentry) (nth 1 (car oentry)))
 	     (car oentry)))
 	  (gnus-server-position-point))))))
@@ -260,7 +260,7 @@ The following commands are available:
 (defun gnus-server-set-info (server info)
   ;; Enter a select method into the virtual server alist.
   (when (and server info)
-    (gnus-dribble-enter 
+    (gnus-dribble-enter
      (concat "(gnus-server-set-info \"" server "\" '"
 	     (prin1-to-string info) ")"))
     (let* ((server (nth 1 info))
@@ -420,7 +420,7 @@ The following commands are available:
     (gnus-server-yank-server)))
 
 (defun gnus-server-add-server (how where)
-  (interactive 
+  (interactive
    (list (intern (completing-read "Server method: "
 				  gnus-valid-select-methods nil t))
 	 (read-string "Server name: ")))
@@ -472,7 +472,7 @@ The following commands are available:
 	(set-buffer buf)
 	(gnus-server-update-server (gnus-server-server-name))
 	(gnus-server-position-point)))))
-    
+
 (defun gnus-server-pick-server (e)
   (interactive "e")
   (mouse-set-point e)
@@ -731,16 +731,16 @@ buffer.
   "Issue a command to the server to regenerate all its data structures."
   (interactive)
   (let ((server (gnus-server-server-name)))
-    (unless server 
+    (unless server
       (error "No server on the current line"))
-    (if (not (gnus-check-backend-function 
+    (if (not (gnus-check-backend-function
 	      'request-regenerate (car (gnus-server-to-method server))))
 	(error "This backend doesn't support regeneration")
       (gnus-message 5 "Requesting regeneration of %s..." server)
       (if (gnus-request-regenerate server)
 	  (gnus-message 5 "Requesting regeneration of %s...done" server)
 	(gnus-message 5 "Couldn't regenerate %s" server)))))
-					  
+
 (provide 'gnus-srvr)
 
 ;;; gnus-srvr.el ends here.

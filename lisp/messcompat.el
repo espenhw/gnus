@@ -24,7 +24,7 @@
 ;;; Commentary:
 
 ;; This file tries to provide backward compatability with sendmail.el
-;; for Message mode.  It should be used by simply adding 
+;; for Message mode.  It should be used by simply adding
 ;;
 ;; (require 'messcompat)
 ;;
@@ -59,7 +59,7 @@ The function `message-setup' runs this hook.")
 (defvar message-mode-hook mail-mode-hook
   "Hook run in message mode buffers.")
 
-(defvar message-indentation-spaces mail-indentation-spaces 
+(defvar message-indentation-spaces mail-indentation-spaces
   "*Number of spaces to insert at the beginning of each cited line.
 Used by `message-yank-original' via `message-yank-cite'.")
 

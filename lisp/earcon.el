@@ -142,7 +142,7 @@ If N is negative, move backward instead."
        gnus-article-button-face
        (gnus-overlay-put (gnus-make-overlay from to)
 			 'face gnus-article-button-face))
-  (gnus-add-text-properties 
+  (gnus-add-text-properties
    from to
    (nconc (and gnus-article-mouse-face
 	       (list gnus-mouse-face-prop gnus-article-mouse-face))

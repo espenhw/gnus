@@ -263,7 +263,7 @@ Note: LIST has to be sorted over `<'."
 
 (defun gnus-range-add (range1 range2)
   "Add RANGE2 to RANGE1 destructively."
-  (cond 
+  (cond
    ;; If either are nil, then the job is quite easy.
    ((or (null range1) (null range2))
     (or range1 range2))

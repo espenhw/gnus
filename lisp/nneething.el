@@ -26,7 +26,7 @@
 
 ;; Based on nnspool.el by Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>.
 ;; For an overview of what the interface functions do, please see the
-;; Gnus sources.  
+;; Gnus sources.
 
 ;;; Code:
 
@@ -50,7 +50,7 @@ If this variable is nil, no files will be excluded.")
 
 
 
-;;; Internal variables. 
+;;; Internal variables.
 
 (defconst nneething-version "nneething 1.0"
   "nneething version.")
@@ -137,7 +137,7 @@ If this variable is nil, no files will be excluded.")
     (if (> (car nneething-active) (cdr nneething-active))
 	(nnheader-insert "211 0 1 0 %s\n" group)
       (nnheader-insert
-       "211 %d %d %d %s\n" 
+       "211 %d %d %d %s\n"
        (- (1+ (cdr nneething-active)) (car nneething-active))
        (car nneething-active) (cdr nneething-active)
        group)))
@@ -180,7 +180,7 @@ If this variable is nil, no files will be excluded.")
 		nneething-group-alist))))))
 
 (defun nneething-map-file ()
-  ;; We make sure that the .nneething directory exists. 
+  ;; We make sure that the .nneething directory exists.
   (gnus-make-directory nneething-map-file-directory)
   ;; We store it in a special directory under the user's home dir.
   (concat (file-name-as-directory nneething-map-file-directory)
@@ -202,7 +202,7 @@ If this variable is nil, no files will be excluded.")
       (setq nneething-map
 	    (mapcar (lambda (n)
 		      (list (cdr n) (car n)
-			    (nth 5 (file-attributes 
+			    (nth 5 (file-attributes
 				    (nneething-file-name (car n))))))
 		    nneething-map)))
     ;; Remove files matching the exclusion regexp.
@@ -243,7 +243,7 @@ If this variable is nil, no files will be excluded.")
 			    (nneething-file-name (car files)))))
 	      nneething-map))
       (setq files (cdr files)))
-    (when (and touched 
+    (when (and touched
 	       (not nneething-read-only))
       (nnheader-temp-write map-file
 	(insert "(setq nneething-map '")
@@ -261,15 +261,15 @@ If this variable is nil, no files will be excluded.")
 (defun nneething-make-head (file &optional buffer)
   "Create a head by looking at the file attributes of FILE."
   (let ((atts (file-attributes file)))
-    (insert 
+    (insert
      "Subject: " (file-name-nondirectory file) "\n"
-     "Message-ID: <nneething-" 
+     "Message-ID: <nneething-"
      (int-to-string (incf nneething-message-id-number))
      "@" (system-name) ">\n"
      (if (equal '(0 0) (nth 5 atts)) ""
        (concat "Date: " (current-time-string (nth 5 atts)) "\n"))
      (or (when buffer
-	   (save-excursion 
+	   (save-excursion
 	     (set-buffer buffer)
 	     (when (re-search-forward "<[a-zA-Z0-9_]@[-a-zA-Z0-9_]>" 1000 t)
 	       (concat "From: " (match-string 0) "\n"))))
@@ -277,10 +277,10 @@ If this variable is nil, no files will be excluded.")
      (if (> (string-to-int (int-to-string (nth 7 atts))) 0)
 	 (concat "Chars: " (int-to-string (nth 7 atts)) "\n")
        "")
-     (if buffer 
+     (if buffer
 	 (save-excursion
 	   (set-buffer buffer)
-	   (concat "Lines: " (int-to-string 
+	   (concat "Lines: " (int-to-string
 			      (count-lines (point-min) (point-max)))
 		   "\n"))
        "")
@@ -288,20 +288,20 @@ If this variable is nil, no files will be excluded.")
 
 (defun nneething-from-line (uid &optional file)
   "Return a From header based of UID."
-  (let* ((login (condition-case nil 
+  (let* ((login (condition-case nil
 		    (user-login-name uid)
-		  (error 
+		  (error
 		   (cond ((= uid (user-uid)) (user-login-name))
 			 ((zerop uid) "root")
 			 (t (int-to-string uid))))))
-	 (name (condition-case nil 
+	 (name (condition-case nil
 		   (user-full-name uid)
-		 (error 
+		 (error
 		  (cond ((= uid (user-uid)) (user-full-name))
 			((zerop uid) "Ms. Root")))))
 	 (host (if  (string-match "\\`/[^/@]*@\\([^:/]+\\):" file)
 		   (prog1
-		       (substring file 
+		       (substring file
 				  (match-beginning 1)
 				  (match-end 1))
 		     (when (string-match "/\\(users\\|home\\)/\\([^/]+\\)/" file)
@@ -310,7 +310,7 @@ If this variable is nil, no files will be excluded.")
 					      (match-end 2))
 			     name nil)))
 		 (system-name))))
-    (concat "From: " login "@" host 
+    (concat "From: " login "@" host
 	    (if name (concat " (" name ")") "") "\n")))
 
 (defun nneething-get-head (file)
@@ -320,19 +320,19 @@ If this variable is nil, no files will be excluded.")
     (setq case-fold-search nil)
     (buffer-disable-undo (current-buffer))
     (erase-buffer)
-    (cond 
+    (cond
      ((not (file-exists-p file))
-      ;; The file do not exist. 
+      ;; The file do not exist.
       nil)
      ((or (file-directory-p file)
 	  (file-symlink-p file))
       ;; It's a dir, so we fudge a head.
       (nneething-make-head file) t)
-     (t 
+     (t
       ;; We examine the file.
       (nnheader-insert-head file)
       (if (nnheader-article-p)
-	  (delete-region 
+	  (delete-region
 	   (progn
 	     (goto-char (point-min))
 	     (or (and (search-forward "\n\n" nil t)

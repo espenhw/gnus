@@ -29,7 +29,7 @@
 (require 'gnus-score)
 (require 'gnus-util)
 
-;;; Internal variables. 
+;;; Internal variables.
 
 (defvar gnus-advanced-headers nil)
 
@@ -53,7 +53,7 @@
 
 (eval-and-compile
   (autoload 'parse-time-string "parse-time"))
-     
+
 (defun gnus-score-advanced (rule &optional trace)
   "Apply advanced scoring RULE to all the articles in the current group."
   (let ((headers gnus-newsgroup-headers)
@@ -79,7 +79,7 @@
 (defun gnus-advanced-score-rule (rule)
   "Apply RULE to `gnus-advanced-headers'."
   (let ((type (car rule)))
-    (cond 
+    (cond
      ;; "And" rule.
      ((or (eq type '&) (eq type 'and))
       (pop rule)
@@ -106,7 +106,7 @@
      ;; This is a `1-'-type redirection rule.
      ((and (symbolp type)
 	   (string-match "^[0-9]+-$\\|^\\^+$" (symbol-name type)))
-      (let ((gnus-advanced-headers 
+      (let ((gnus-advanced-headers
 	     (gnus-parent-headers
 	      gnus-advanced-headers
 	      (if (string-match "^\\([0-9]+\\)-$" (symbol-name type))
@@ -165,7 +165,7 @@
   (let ((date (encode-time (parse-time-string
 			    (aref gnus-advanced-headers index))))
 	(match (encode-time (parse-time-string match))))
-    (cond 
+    (cond
      ((eq type 'at)
       (equal date match))
      ((eq type 'before)
@@ -188,7 +188,7 @@
 	   ofunc article)
       ;; Not all backends support partial fetching.  In that case,
       ;; we just fetch the entire article.
-      (unless (gnus-check-backend-function 
+      (unless (gnus-check-backend-function
 	       (intern (concat "request-" header))
 	       gnus-newsgroup-name)
 	(setq ofunc request-func)
@@ -210,7 +210,7 @@
 	     (point-max))))
 	(let* ((case-fold-search (not (eq (downcase (symbol-name type))
 					  (symbol-name type))))
-	       (search-func 
+	       (search-func
 		(cond ((memq type '(r R regexp Regexp))
 		       're-search-forward)
 		      ((memq type '(s S string String))

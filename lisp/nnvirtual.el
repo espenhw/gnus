@@ -100,7 +100,7 @@ to virtual article number.")
       (erase-buffer)
       (if (stringp (car articles))
 	  'headers
-	(let ((vbuf (nnheader-set-temp-buffer 
+	(let ((vbuf (nnheader-set-temp-buffer
 		     (get-buffer-create " *virtual headers*")))
 	      (carticles (nnvirtual-partition-sequence articles))
 	      (system-name (system-name))
@@ -143,7 +143,7 @@ to virtual article number.")
 	      ;; component group below.  They should be coming up
 	      ;; generally in order, so this shouldn't be slow.
 	      (setq articles (delq carticle articles))
-	      
+
 	      (setq article (nnvirtual-reverse-map-article cgroup carticle))
 	      (if (null article)
 		  ;; This line has no reverse mapping, that means it
@@ -158,7 +158,7 @@ to virtual article number.")
 					      prefix system-name)
 		(forward-line 1))
 	      )
-	    
+
 	    (set-buffer vbuf)
 	    (goto-char (point-max))
 	    (insert-buffer-substring nntp-server-buffer))
@@ -196,7 +196,7 @@ to virtual article number.")
 	   'nnvirtual "Don't know what server to request from"))
 	 (t
 	  (save-excursion
-	    (when buffer 
+	    (when buffer
 	      (set-buffer buffer))
 	    (let ((method (gnus-find-method-for-group
 			   nnvirtual-last-accessed-component-group)))
@@ -215,7 +215,7 @@ to virtual article number.")
 	  (nnheader-report 'nnvirtual "Can't open component group %s" cgroup))
 	 (t
 	  (setq nnvirtual-last-accessed-component-group cgroup)
-	  (if buffer 
+	  (if buffer
 	      (save-excursion
 		(set-buffer buffer)
 		(gnus-request-article-this-buffer (cdr amap) cgroup))
@@ -262,7 +262,7 @@ to virtual article number.")
 	      nnvirtual-always-rescan)
       (nnvirtual-create-mapping))
     (setq nnvirtual-current-group group)
-    (nnheader-insert "211 %d 1 %d %s\n" 
+    (nnheader-insert "211 %d 1 %d %s\n"
 		     nnvirtual-mapping-len nnvirtual-mapping-len group))))
 
 
@@ -284,13 +284,13 @@ to virtual article number.")
       (setq mark gnus-expirable-mark)))
   mark)
 
-    
+
 (deffoo nnvirtual-close-group (group &optional server)
   (when (and (nnvirtual-possibly-change-server server)
 	     (not (gnus-ephemeral-group-p (nnvirtual-current-group))))
     (nnvirtual-update-read-and-marked t t))
   t)
-    
+
 
 (deffoo nnvirtual-request-list (&optional server)
   (nnheader-report 'nnvirtual "LIST is not implemented."))
@@ -317,7 +317,7 @@ to virtual article number.")
 	  (setcdr (nthcdr 2 info) (list nnvirtual-mapping-marks))))
       (setq nnvirtual-info-installed t))
     t))
-      
+
 
 (deffoo nnvirtual-catchup-group (group &optional server all)
   (when (and (nnvirtual-possibly-change-server server)
@@ -409,8 +409,8 @@ If READ-P is not nil, update the (un)read status of the components.
 If UPDATE-P is not nil, call gnus-group-update-group on the components."
   (when nnvirtual-current-group
     (let ((unreads (and read-p
-			(nnvirtual-partition-sequence 
-			 (gnus-list-of-unread-articles 
+			(nnvirtual-partition-sequence
+			 (gnus-list-of-unread-articles
 			  (nnvirtual-current-group)))))
 	  (type-marks (mapcar (lambda (ml)
 				(cons (car ml)
@@ -434,7 +434,7 @@ If UPDATE-P is not nil, call gnus-group-update-group on the components."
 	  (when (and (setq info (gnus-get-info (pop groups)))
 		     (gnus-info-marks info))
 	    (gnus-info-set-marks info nil)))
-      
+
 	;; Ok, currently type-marks is an assq list with keys of a mark type,
 	;; with data of an assq list with keys of component group names
 	;; and the articles which correspond to that key/group pair.
@@ -442,9 +442,9 @@ If UPDATE-P is not nil, call gnus-group-update-group on the components."
 	  (setq type (car mark))
 	  (setq groups (cdr mark))
 	  (while (setq carticles (pop groups))
-	    (gnus-add-marked-articles (car carticles) type (cdr carticles) 
+	    (gnus-add-marked-articles (car carticles) type (cdr carticles)
 				      nil t))))
-      
+
       ;; possibly update the display, it is really slow
       (when update-p
 	(setq groups nnvirtual-component-groups)
@@ -632,7 +632,7 @@ the result."
 
 
 (defun nnvirtual-create-mapping ()
-  "Build the tables necessary to map between component (group, article) to virtual article.  
+  "Build the tables necessary to map between component (group, article) to virtual article.
 Generate the set of read messages and marks for the virtual group
 based on the marks on the component groups."
   (let ((cnt 0)
@@ -678,7 +678,7 @@ based on the marks on the component groups."
 
     ;; We want the actives list sorted by size, to build the tables.
     (setq actives (sort actives (lambda (g1 g2) (< (nth 1 g1) (nth 1 g2)))))
-    
+
     ;; Build the offset table.  Largest sized groups are at the front.
     (setq nnvirtual-mapping-offsets
 	  (vconcat
@@ -687,7 +687,7 @@ based on the marks on the component groups."
 		      (cons (nth 0 entry)
 			    (- (nth 2 entry) M)))
 		    actives))))
-    
+
     ;; Build the mapping table.
     (setq nnvirtual-mapping-table nil)
     (setq actives (mapcar (lambda (entry) (nth 1 entry)) actives))

@@ -33,7 +33,7 @@
 ;; (require 'smiley)
 ;; (add-hook 'gnus-article-display-hook 'gnus-smiley-display t)
 
-;; The smilies were drawn by Joe Reiss <jreiss@vt.edu>. 
+;; The smilies were drawn by Joe Reiss <jreiss@vt.edu>.
 
 (require 'annotations)
 (require 'messagexmas)
@@ -56,7 +56,7 @@
   '(("\\(:-*[<«]+\\)\\W" 1 "FaceAngry.xpm")
     ("\\(:-+\\]+\\)\\W" 1 "FaceGoofy.xpm")
     ("\\(:-*D\\)\\W" 1 "FaceGrinning.xpm")
-    ("\\(:-*[)>}»]+\\)\\W" 1 "FaceHappy.xpm") 
+    ("\\(:-*[)>}»]+\\)\\W" 1 "FaceHappy.xpm")
     ("\\(:-*[/\\\"]\\)[^/]\\W" 1 "FaceIronic.xpm")
     ("\\([8|]-*[|Oo%]\\)\\W" 1 "FaceKOed.xpm")
     ("\\([:|]-*#+\\)\\W" 1 "FaceNyah.xpm")
@@ -66,10 +66,10 @@
     ("\\(:-*p\\)\\W" 1 "FaceTalking.xpm")
     ("\\(:-*d\\)\\W" 1 "FaceTasty.xpm")
     ("\\(;-*[>)}»]+\\)\\W" 1 "FaceWinking.xpm")
-    ("\\(:-*[Vvµ]\\)\\W" 1 "FaceWry.xpm")  
+    ("\\(:-*[Vvµ]\\)\\W" 1 "FaceWry.xpm")
     ("\\([:|]-*P\\)\\W" 1 "FaceYukky.xpm"))
   "Normal and deformed faces for smilies."
-  :type '(repeat (list regexp 
+  :type '(repeat (list regexp
 		       (integer :tag "Match")
 		       (string :tag "Image")))
   :group 'smiley)
@@ -93,7 +93,7 @@
     ("\\(][:8B]-[)>]\\)\\W" 1 "FaceDevilish.xpm")
     ("\\([:|]-+P\\)\\W" 1 "FaceYukky.xpm"))
   "Smileys with noses.  These get less false matches."
-  :type '(repeat (list regexp 
+  :type '(repeat (list regexp
 		       (integer :tag "Match")
 		       (string :tag "Image")))
   :group 'smiley)
@@ -106,8 +106,8 @@ aggressively.
 If this is a symbol, take its value."
   :type '(radio (variable-item smiley-deformed-regexp-alist)
 		(variable-item smiley-nosey-regexp-alist)
-		symbol 
-		(repeat (list regexp 
+		symbol
+		(repeat (list regexp
 			      (integer :tag "Match")
 			      (string :tag "Image"))))
   :group 'smiley)
@@ -154,7 +154,7 @@ above them."
    smiley-running-xemacs
    (or
     (cdr-safe (assoc pixmap smiley-glyph-cache))
-    (let* ((xpm-color-symbols 
+    (let* ((xpm-color-symbols
 	    (and (featurep 'xpm)
 		 (append `(("flesh" ,smiley-flesh-color)
 			   ("features" ,smiley-features-color)
@@ -186,7 +186,7 @@ above them."
 	  (hide-annotation ant))
       (when pt
 	(while (setq ext (extent-at pt (event-buffer event) nil ext 'at))
-	  (when (annotationp (setq ant 
+	  (when (annotationp (setq ant
 				   (extent-property ext 'smiley-annotation)))
 	    (reveal-annotation ant)
 	    (set-extent-property ext 'invisible t)))))))
@@ -249,7 +249,7 @@ above them."
       t)))
 
 (defvar gnus-article-buffer)
-;;;###autoload    
+;;;###autoload
 (defun gnus-smiley-display ()
   (interactive)
   (save-excursion

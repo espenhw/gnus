@@ -1,3 +1,7 @@
+Fri Mar  7 10:49:43 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* Makefile: New "install" target.
+
 Thu Mar  6 08:01:37 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Mail and Procmail): Fix.

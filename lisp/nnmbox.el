@@ -25,7 +25,7 @@
 ;;; Commentary:
 
 ;; For an overview of what the interface functions do, please see the
-;; Gnus sources.  
+;; Gnus sources.
 
 ;;; Code:
 
@@ -85,9 +85,9 @@
 	(when (or (search-forward art-string nil t)
 		  (progn (goto-char (point-min))
 			 (search-forward art-string nil t)))
-	  (setq start 
+	  (setq start
 		(save-excursion
-		  (re-search-backward 
+		  (re-search-backward
 		   (concat "^" message-unix-mail-delimiter) nil t)
 		  (point)))
 	  (search-forward "\n\n" nil t)
@@ -116,7 +116,7 @@
 (deffoo nnmbox-open-server (server &optional defs)
   (nnoo-change-server 'nnmbox server defs)
   (nnmbox-create-mbox)
-  (cond 
+  (cond
    ((not (file-exists-p nnmbox-mbox-file))
     (nnmbox-close-server)
     (nnheader-report 'nnmbox "No such file: %s" nnmbox-mbox-file))
@@ -152,7 +152,7 @@
 	(re-search-backward (concat "^" message-unix-mail-delimiter) nil t)
 	(setq start (point))
 	(forward-line 1)
-	(or (and (re-search-forward 
+	(or (and (re-search-forward
 		  (concat "^" message-unix-mail-delimiter) nil t)
 		 (forward-line -1))
 	    (goto-char (point-max)))
@@ -172,7 +172,7 @@
 
 (deffoo nnmbox-request-group (group &optional server dont-check)
   (let ((active (cadr (assoc group nnmbox-group-alist))))
-    (cond 
+    (cond
      ((or (null active)
 	  (null (nnmbox-possibly-change-newsgroup group server)))
       (nnheader-report 'nnmbox "No such group: %s" group))
@@ -181,15 +181,15 @@
       (nnheader-insert ""))
      (t
       (nnheader-report 'nnmbox "Selected group %s" group)
-      (nnheader-insert "211 %d %d %d %s\n" 
+      (nnheader-insert "211 %d %d %d %s\n"
 		       (1+ (- (cdr active) (car active)))
 		       (car active) (cdr active) group)))))
 
 (deffoo nnmbox-request-scan (&optional group server)
   (nnmbox-possibly-change-newsgroup group server)
   (nnmbox-read-mbox)
-  (nnmail-get-new-mail 
-   'nnmbox 
+  (nnmail-get-new-mail
+   'nnmbox
    (lambda ()
      (save-excursion
        (set-buffer nnmbox-mbox-buffer)
@@ -219,14 +219,14 @@
 (deffoo nnmbox-request-list-newsgroups (&optional server)
   (nnheader-report 'nnmbox "LIST NEWSGROUPS is not implemented."))
 
-(deffoo nnmbox-request-expire-articles 
+(deffoo nnmbox-request-expire-articles
   (articles newsgroup &optional server force)
   (nnmbox-possibly-change-newsgroup newsgroup server)
   (let* ((is-old t)
 	 rest)
     (nnmail-activate 'nnmbox)
 
-    (save-excursion 
+    (save-excursion
       (set-buffer nnmbox-mbox-buffer)
       (while (and articles is-old)
 	(goto-char (point-min))
@@ -234,7 +234,7 @@
 	  (if (setq is-old
 		    (nnmail-expired-article-p
 		     newsgroup
-		     (buffer-substring 
+		     (buffer-substring
 		      (point) (progn (end-of-line) (point))) force))
 	      (progn
 		(nnheader-message 5 "Deleting article %d in %s..."
@@ -258,7 +258,7 @@
   (article group server accept-form &optional last)
   (let ((buf (get-buffer-create " *nnmbox move*"))
 	result)
-    (and 
+    (and
      (nnmbox-request-article article group server)
      (save-excursion
        (set-buffer buf)
@@ -266,8 +266,8 @@
        (erase-buffer)
        (insert-buffer-substring nntp-server-buffer)
        (goto-char (point-min))
-       (while (re-search-forward 
-	       "^X-Gnus-Newsgroup:" 
+       (while (re-search-forward
+	       "^X-Gnus-Newsgroup:"
 	       (save-excursion (search-forward "\n\n" nil t) (point)) t)
 	 (delete-region (progn (beginning-of-line) (point))
 			(progn (forward-line 1) (point))))
@@ -295,7 +295,7 @@
     (if (looking-at "X-From-Line: ")
 	(replace-match "From ")
       (insert "From nobody " (current-time-string) "\n"))
-    (and 
+    (and
      (nnmail-activate 'nnmbox)
      (progn
        (set-buffer buf)
@@ -304,8 +304,7 @@
        (forward-line -1)
        (while (re-search-backward "^X-Gnus-Newsgroup: " nil t)
 	 (delete-region (point) (progn (forward-line 1) (point))))
-       (when nnmail-cache-message-id-when-accepting
-	 (nnmail-cache-insert (nnmail-fetch-field "message-id")))
+       (nnmail-cache-insert (nnmail-fetch-field "message-id"))
        (setq result (nnmbox-save-mail
 		     (if (stringp group)
 			 (list (cons group (nnmbox-active-number group)))
@@ -349,7 +348,7 @@
 	(when found
 	  (save-buffer)))))
   ;; Remove the group from all structures.
-  (setq nnmbox-group-alist 
+  (setq nnmbox-group-alist
 	(delq (assoc group nnmbox-group-alist) nnmbox-group-alist)
 	nnmbox-current-group nil)
   ;; Save the active file.
@@ -411,13 +410,13 @@
 	(delete-region (point-min) (point-max))))))
 
 (defun nnmbox-possibly-change-newsgroup (newsgroup &optional server)
-  (when (and server 
+  (when (and server
 	     (not (nnmbox-server-opened server)))
     (nnmbox-open-server server))
   (when (or (not nnmbox-mbox-buffer)
 	    (not (buffer-name nnmbox-mbox-buffer)))
     (save-excursion
-      (set-buffer (setq nnmbox-mbox-buffer 
+      (set-buffer (setq nnmbox-mbox-buffer
 			(nnheader-find-file-noselect
 			 nnmbox-mbox-file nil 'raw)))
       (buffer-disable-undo (current-buffer))))
@@ -430,7 +429,7 @@
 
 (defun nnmbox-article-string (article)
   (if (numberp article)
-      (concat "\nX-Gnus-Newsgroup: " nnmbox-current-group ":" 
+      (concat "\nX-Gnus-Newsgroup: " nnmbox-current-group ":"
 	      (int-to-string article) " ")
     (concat "\nMessage-ID: " article)))
 
@@ -469,7 +468,7 @@
     (when (search-forward "\n\n" nil t)
       (forward-char -1)
       (while group-art
-	(insert (format "X-Gnus-Newsgroup: %s:%d   %s\n" 
+	(insert (format "X-Gnus-Newsgroup: %s:%d   %s\n"
 			(caar group-art) (cdar group-art)
 			(current-time-string)))
 	(setq group-art (cdr group-art))))
@@ -504,7 +503,7 @@
       (let ((delim (concat "^" message-unix-mail-delimiter))
 	    (alist nnmbox-group-alist)
 	    start end number)
-	(set-buffer (setq nnmbox-mbox-buffer 
+	(set-buffer (setq nnmbox-mbox-buffer
 			  (nnheader-find-file-noselect
 			   nnmbox-mbox-file nil 'raw)))
 	(buffer-disable-undo (current-buffer))
@@ -517,18 +516,18 @@
 		      (format "^X-Gnus-Newsgroup: %s:\\([0-9]+\\) "
 			      (caar alist)) nil t)
 		     (>= (setq number
-			       (string-to-number 
+			       (string-to-number
 				(buffer-substring
 				 (match-beginning 1) (match-end 1))))
 			 (cdadar alist)))
 	    (setcdr (cadar alist) (1+ number)))
 	  (setq alist (cdr alist)))
-	
+
 	(goto-char (point-min))
 	(while (re-search-forward delim nil t)
 	  (setq start (match-beginning 0))
-	  (when (not (search-forward "\nX-Gnus-Newsgroup: " 
-				     (save-excursion 
+	  (when (not (search-forward "\nX-Gnus-Newsgroup: "
+				     (save-excursion
 				       (setq end
 					     (or
 					      (and
@@ -539,7 +538,7 @@
 	    (save-excursion
 	      (save-restriction
 		(narrow-to-region start end)
-		(nnmbox-save-mail 
+		(nnmbox-save-mail
 		 (nnmail-article-group 'nnmbox-active-number)))))
 	  (goto-char end))))))
 

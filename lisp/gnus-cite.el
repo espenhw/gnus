@@ -68,7 +68,7 @@ Set it to nil to parse all articles."
   :type '(choice (const :tag "all" nil)
 		 integer))
 
-(defcustom gnus-cite-prefix-regexp 
+(defcustom gnus-cite-prefix-regexp
     "^[]>|:}+ ]*[]>|:}+]\\(.*>\\)?\\|^.*>"
   "Regexp matching the longest possible citation prefix on a line."
   :group 'gnus-cite
@@ -79,7 +79,7 @@ Set it to nil to parse all articles."
   :group 'gnus-cite
   :type 'integer)
 
-(defcustom gnus-supercite-regexp 
+(defcustom gnus-supercite-regexp
   (concat "^\\(" gnus-cite-prefix-regexp "\\)? *"
 	  ">>>>> +\"\\([^\"\n]+\\)\" +==")
   "Regexp matching normal Supercite attribution lines.
@@ -110,7 +110,7 @@ The text matching the first grouping will be used as a button."
   :group 'gnus-cite
   :type 'regexp)
 
-(defface gnus-cite-attribution-face '((t 
+(defface gnus-cite-attribution-face '((t
 				       (:underline t)))
   "Face used for attribution lines.")
 
@@ -126,7 +126,7 @@ It is merged with the face for the cited text belonging to the attribution."
 			    (((class color)
 			      (background light))
 			     (:foreground "MidnightBlue"))
-			    (t 
+			    (t
 			     (:italic t)))
   "Citation face.")
 
@@ -136,7 +136,7 @@ It is merged with the face for the cited text belonging to the attribution."
 			    (((class color)
 			      (background light))
 			     (:foreground "firebrick"))
-			    (t 
+			    (t
 			     (:italic t)))
   "Citation face.")
 
@@ -146,7 +146,7 @@ It is merged with the face for the cited text belonging to the attribution."
 			    (((class color)
 			      (background light))
 			     (:foreground "dark green"))
-			    (t 
+			    (t
 			     (:italic t)))
   "Citation face.")
 
@@ -156,7 +156,7 @@ It is merged with the face for the cited text belonging to the attribution."
 			    (((class color)
 			      (background light))
 			     (:foreground "OrangeRed"))
-			    (t 
+			    (t
 			     (:italic t)))
   "Citation face.")
 
@@ -166,7 +166,7 @@ It is merged with the face for the cited text belonging to the attribution."
 			    (((class color)
 			      (background light))
 			     (:foreground "dark khaki"))
-			    (t 
+			    (t
 			     (:italic t)))
   "Citation face.")
 
@@ -176,7 +176,7 @@ It is merged with the face for the cited text belonging to the attribution."
 			    (((class color)
 			      (background light))
 			     (:foreground "dark violet"))
-			    (t 
+			    (t
 			     (:italic t)))
   "Citation face.")
 
@@ -186,7 +186,7 @@ It is merged with the face for the cited text belonging to the attribution."
 			    (((class color)
 			      (background light))
 			     (:foreground "SteelBlue4"))
-			    (t 
+			    (t
 			     (:italic t)))
   "Citation face.")
 
@@ -196,7 +196,7 @@ It is merged with the face for the cited text belonging to the attribution."
 			    (((class color)
 			      (background light))
 			     (:foreground "magenta"))
-			    (t 
+			    (t
 			     (:italic t)))
   "Citation face.")
 
@@ -206,7 +206,7 @@ It is merged with the face for the cited text belonging to the attribution."
 			    (((class color)
 			      (background light))
 			     (:foreground "violet"))
-			    (t 
+			    (t
 			     (:italic t)))
   "Citation face.")
 
@@ -216,7 +216,7 @@ It is merged with the face for the cited text belonging to the attribution."
 			     (((class color)
 			       (background light))
 			      (:foreground "medium purple"))
-			     (t 
+			     (t
 			      (:italic t)))
   "Citation face.")
 
@@ -226,15 +226,15 @@ It is merged with the face for the cited text belonging to the attribution."
 			     (((class color)
 			       (background light))
 			      (:foreground "turquoise"))
-			     (t 
+			     (t
 			      (:italic t)))
   "Citation face.")
 
-(defcustom gnus-cite-face-list 
-  '(gnus-cite-face-1 gnus-cite-face-2 gnus-cite-face-3 gnus-cite-face-4 
-    gnus-cite-face-5 gnus-cite-face-6 gnus-cite-face-7 gnus-cite-face-8 
+(defcustom gnus-cite-face-list
+  '(gnus-cite-face-1 gnus-cite-face-2 gnus-cite-face-3 gnus-cite-face-4
+    gnus-cite-face-5 gnus-cite-face-6 gnus-cite-face-7 gnus-cite-face-8
     gnus-cite-face-9 gnus-cite-face-10 gnus-cite-face-11)
-  "List of faces used for highlighting citations. 
+  "List of faces used for highlighting citations.
 
 When there are citations from multiple articles in the same message,
 Gnus will try to give each citation from each article its own face.
@@ -257,7 +257,7 @@ This should make it easier to see who wrote what."
 (defvar gnus-cite-article nil)
 
 (defvar gnus-cite-prefix-alist nil)
-;; Alist of citation prefixes.  
+;; Alist of citation prefixes.
 ;; The cdr is a list of lines with that prefix.
 
 (defvar gnus-cite-attribution-alist nil)
@@ -277,7 +277,7 @@ This should make it easier to see who wrote what."
 ;; PREFIX: Is the citation prefix of the attribution line(s), and
 ;; TAG: Is a Supercite tag, if any.
 
-(defvar gnus-cited-text-button-line-format-alist 
+(defvar gnus-cited-text-button-line-format-alist
   `((?b (marker-position beg) ?d)
     (?e (marker-position end) ?d)
     (?l (- end beg) ?d)))
@@ -293,7 +293,7 @@ Attribution lines are highlighted with the same face as the
 corresponding citation merged with `gnus-cite-attribution-face'.
 
 Text is considered cited if at least `gnus-cite-minimum-match-count'
-lines matches `gnus-cite-prefix-regexp' with the same prefix.  
+lines matches `gnus-cite-prefix-regexp' with the same prefix.
 
 Lines matching `gnus-cite-attribution-suffix' and perhaps
 `gnus-cite-attribution-prefix' are considered attribution lines."
@@ -332,7 +332,7 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 	      face (cdr (assoc prefix face-alist)))
 	;; Add attribution button.
 	(goto-line number)
-	(when (re-search-forward gnus-cite-attribution-suffix 
+	(when (re-search-forward gnus-cite-attribution-suffix
 				 (save-excursion (end-of-line 1) (point))
 				 t)
 	  (gnus-article-add-button (match-beginning 1) (match-end 1)
@@ -445,8 +445,8 @@ See the documentation for `gnus-article-highlight-citation'.
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
   (interactive (append (gnus-article-hidden-arg) (list 'force)))
-  (setq gnus-cited-text-button-line-format-spec 
-	(gnus-parse-format gnus-cited-text-button-line-format 
+  (setq gnus-cited-text-button-line-format-spec
+	(gnus-parse-format gnus-cited-text-button-line-format
 			   gnus-cited-text-button-line-format-alist t))
   (save-excursion
     (set-buffer gnus-article-buffer)
@@ -468,7 +468,7 @@ always hide."
 		end nil)
 	  (while (and marks (string= (cdar marks) ""))
 	    (setq marks (cdr marks)))
-	  (when marks 
+	  (when marks
 	    (setq beg (caar marks)))
 	  (while (and marks (not (string= (cdar marks) "")))
 	    (setq marks (cdr marks)))
@@ -548,7 +548,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 		    total (cdr total))
 	      (goto-line hiden)
 	      (unless (assq hiden gnus-cite-attribution-alist)
-		(gnus-add-text-properties 
+		(gnus-add-text-properties
 		 (point) (progn (forward-line 1) (point))
 		 (nconc (list 'article-type 'cite)
 			gnus-hidden-properties))))))))))
@@ -589,7 +589,7 @@ See also the documentation for `gnus-article-highlight-citation'."
   (goto-char (point-min))
   (unless (search-forward "\n\n" nil t)
     (goto-char (point-max)))
-  (save-excursion 
+  (save-excursion
     (gnus-cite-parse-attributions))
   ;; Try to avoid check citation if there is no reason to believe
   ;; that article has citations
@@ -604,7 +604,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 
 (defun gnus-cite-parse ()
   ;; Parse and connect citation prefixes and attribution lines.
-  
+
   ;; Parse current buffer searching for citation prefixes.
   (let ((line (1+ (count-lines (point-min) (point))))
 	(case-fold-search t)
@@ -634,7 +634,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	      prefix (buffer-substring begin end))
 	(gnus-set-text-properties 0 (length prefix) nil prefix)
 	(setq entry (assoc prefix alist))
-	(if entry 
+	(if entry
 	    (setcdr entry (cons line (cdr entry)))
 	  (push (list prefix line) alist))
 	(goto-char begin))
@@ -659,7 +659,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	     ;; Too few lines with this prefix.  We keep it a bit
 	     ;; longer in case it is an exact match for an attribution
 	     ;; line, but we don't remove the line from other
-	     ;; prefixes. 
+	     ;; prefixes.
 	     (push entry gnus-cite-prefix-alist))
 	    (t
 	     (push entry
@@ -670,7 +670,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	       (while loop
 		 (setq current (car loop)
 		       loop (cdr loop))
-		 (setcdr current 
+		 (setcdr current
 			 (gnus-set-difference (cdr current) numbers)))))))))
 
 (defun gnus-cite-parse-attributions ()
@@ -706,7 +706,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 				    end)))
 	  (if (not (assoc al al-alist))
 	      (progn
-		(push (list wrote in prefix tag) 
+		(push (list wrote in prefix tag)
 		      gnus-cite-loose-attribution-alist)
 		(push (cons al t) al-alist))))))))
 
@@ -721,8 +721,8 @@ See also the documentation for `gnus-article-highlight-citation'."
   (gnus-cite-match-attributions 'small nil
 				(lambda (prefix tag)
 				  (when tag
-				    (concat "\\`" 
-					    (regexp-quote prefix) "[ \t]*" 
+				    (concat "\\`"
+					    (regexp-quote prefix) "[ \t]*"
 					    (regexp-quote tag) ">"))))
   ;; Find loose supercite citations after attributions.
   (gnus-cite-match-attributions 'small t
@@ -777,8 +777,8 @@ See also the documentation for `gnus-article-highlight-citation'."
   ;; If FUN is non-nil, it will be called with the arguments (WROTE
   ;; PREFIX TAG) and expected to return a regular expression.  Only
   ;; citations whose prefix matches the regular expression will be
-  ;; considered. 
-  ;; 
+  ;; considered.
+  ;;
   ;; WROTE is the attribution line number.
   ;; PREFIX is the attribution line prefix.
   ;; TAG is the Supercite tag on the attribution line.
@@ -797,7 +797,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 		       ((eq sort 'first) nil)
 		       (t (< (length (gnus-cite-find-loose prefix)) 2)))
 	    limit (if after wrote -1)
-	    smallest 1000000		       
+	    smallest 1000000
 	    best nil)
       (let ((cites gnus-cite-loose-prefix-alist)
 	    cite candidate numbers first compare)
@@ -882,7 +882,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 				       gnus-hidden-properties))
 	      ((assq number gnus-cite-attribution-alist))
 	      (t
-	       (gnus-add-text-properties 
+	       (gnus-add-text-properties
 		(point) (progn (forward-line 1) (point))
 		(nconc (list 'article-type 'cite)
 		       gnus-hidden-properties))))))))

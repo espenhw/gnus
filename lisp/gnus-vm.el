@@ -23,9 +23,9 @@
 
 ;;; Commentary:
 
-;; Major contributors: 
+;; Major contributors:
 ;;	Christian Limpach <Christian.Limpach@nice.ch>
-;; Some code stolen from: 
+;; Some code stolen from:
 ;;	Rick Sladkey <jrs@world.std.com>
 
 ;;; Code:
@@ -74,7 +74,7 @@ Has to be set before gnus-vm is loaded.")
     (insert "\n")
     (vm-mode)
     tmp-folder))
-  
+
 (defun gnus-summary-save-article-vm (&optional arg)
   "Append the current article to a vm folder.
 If N is a positive number, save the N next articles.
@@ -93,7 +93,7 @@ save those articles instead."
     (setq folder
 	  (cond ((eq folder 'default) default-name)
 		(folder folder)
-		(t (gnus-read-save-file-name 
+		(t (gnus-read-save-file-name
 		    "Save %s in VM folder:" default-name))))
     (gnus-make-directory (file-name-directory folder))
     (set-buffer gnus-original-article-buffer)

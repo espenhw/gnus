@@ -6,6 +6,7 @@ XINFOSWI=-l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f sa
 LATEX=latex
 DVIPS=dvips
 PERL=perl
+INFODIR=/usr/local/info
 
 all: gnus message custom widget
 
@@ -104,3 +105,9 @@ distclean:
 	make clean
 	rm -f *.orig *.rej *.elc *~ gnus gnus-[0-9] gnus-[0-9][0-9]
 	rm -f message message-[0-9] widget custom
+
+install:
+	cp gnus gnus-[0-9] gnus-[0-9][0-9] $(INFODIR)
+	cp message message-[0-9] $(INFODIR)
+	cp widget widget-[0-9] $(INFODIR)
+	cp custom custom-[0-9] $(INFODIR)

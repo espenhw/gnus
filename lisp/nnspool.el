@@ -119,7 +119,7 @@ there.")
 	    (if (stringp article)
 		;; This is a Message-ID.
 		(setq ag (nnspool-find-id article)
-		      file (and ag (nnspool-article-pathname 
+		      file (and ag (nnspool-article-pathname
 				    (car ag) (cdr ag)))
 		      article (cdr ag))
 	      ;; This is an article in the current group.
@@ -137,22 +137,22 @@ there.")
 	      (forward-char -1)
 	      (insert ".\n")
 	      (delete-region (point) (point-max)))
-	    
+
 	    (and do-message
 		 (zerop (% (incf count) 20))
 		 (message "nnspool: Receiving headers... %d%%"
 			  (/ (* count 100) number))))
-	  
+
 	  (when do-message
 	    (message "nnspool: Receiving headers...done"))
-	  
+
 	  ;; Fold continuation lines.
 	  (nnheader-fold-continuation-lines)
 	  'headers)))))
 
 (deffoo nnspool-open-server (server &optional defs)
   (nnoo-change-server 'nnspool server defs)
-  (cond 
+  (cond
    ((not (file-exists-p nnspool-spool-directory))
     (nnspool-close-server)
     (nnheader-report 'nnspool "Spool directory doesn't exist: %s"
@@ -163,7 +163,7 @@ there.")
     (nnspool-close-server)
     (nnheader-report 'nnspool "Not a directory: %s" nnspool-spool-directory))
    ((not (file-exists-p nnspool-active-file))
-    (nnheader-report 'nnspool "The active file doesn't exist: %s" 
+    (nnheader-report 'nnspool "The active file doesn't exist: %s"
 		     nnspool-active-file))
    (t
     (nnheader-report 'nnspool "Opened server %s using directory %s"
@@ -176,7 +176,7 @@ there.")
   (let ((nntp-server-buffer (or buffer nntp-server-buffer))
 	file ag)
     (if (stringp id)
-	;; This is a Message-ID.	
+	;; This is a Message-ID.
 	(when (setq ag (nnspool-find-id id))
 	  (setq file (nnspool-article-pathname (car ag) (cdr ag))))
       (setq file (nnspool-article-pathname nnspool-current-group id)))
@@ -188,7 +188,7 @@ there.")
 	 (if (numberp id)
 	     (cons nnspool-current-group id)
 	   ag))))
-	    
+
 (deffoo nnspool-request-body (id &optional group server)
   "Select article body by message ID (or number)."
   (nnspool-possibly-change-directory group)
@@ -219,7 +219,7 @@ there.")
   (let ((pathname (nnspool-article-pathname group))
 	dir)
     (if (not (file-directory-p pathname))
-	(nnheader-report 
+	(nnheader-report
 	 'nnspool "Invalid group name (no such directory): %s" group)
       (setq nnspool-current-directory pathname)
       (nnheader-report 'nnspool "Selected group %s" group)
@@ -230,7 +230,7 @@ there.")
 	;; Yes, completely empty spool directories *are* possible.
 	;; Fix by Sudish Joseph <joseph@cis.ohio-state.edu>
 	(when (setq dir (directory-files pathname nil "^[0-9]+$" t))
-	  (setq dir 
+	  (setq dir
 		(sort (mapcar (lambda (name) (string-to-int name)) dir) '<)))
 	(if dir
 	    (nnheader-insert
@@ -256,14 +256,14 @@ there.")
   "List newsgroups (defined in NNTP2)."
   (save-excursion
     (or (nnspool-find-file nnspool-newsgroups-file)
-	(nnheader-report 'nnspool (nnheader-file-error 
+	(nnheader-report 'nnspool (nnheader-file-error
 				   nnspool-newsgroups-file)))))
 
 (deffoo nnspool-request-list-distributions (&optional server)
   "List distributions (defined in NNTP2)."
   (save-excursion
     (or (nnspool-find-file nnspool-distributions-file)
-	(nnheader-report 'nnspool (nnheader-file-error 
+	(nnheader-report 'nnspool (nnheader-file-error
 				   nnspool-distributions-file)))))
 
 ;; Suggested by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>.
@@ -273,7 +273,7 @@ there.")
       (save-excursion
 	;; Find the last valid line.
 	(goto-char (point-max))
-	(while (and (not (looking-at 
+	(while (and (not (looking-at
 			  "\\([^ ]+\\) +\\([0-9]+\\)[0-9][0-9][0-9] "))
 		    (zerop (forward-line -1))))
 	(let ((seconds (nnspool-seconds-since-epoch date))
@@ -283,7 +283,7 @@ there.")
 		      (progn
 			;; We insert a .0 to make the list reader
 			;; interpret the number as a float.  It is far
-			;; too big to be stored in a lisp integer. 
+			;; too big to be stored in a lisp integer.
 			(goto-char (1- (match-end 0)))
 			(insert ".0")
 			(> (progn
@@ -306,7 +306,7 @@ there.")
   (save-excursion
     (let* ((process-connection-type nil) ; t bugs out on Solaris
 	   (inews-buffer (generate-new-buffer " *nnspool post*"))
-	   (proc 
+	   (proc
 	    (condition-case err
 		(apply 'start-process "*nnspool inews*" inews-buffer
 		       nnspool-inews-program nnspool-inews-switches)
@@ -346,7 +346,7 @@ there.")
 (defun nnspool-retrieve-headers-with-nov (articles &optional fetch-old)
   (if (or gnus-nov-is-evil nnspool-nov-is-evil)
       nil
-    (let ((nov (nnheader-group-pathname 
+    (let ((nov (nnheader-group-pathname
 		nnspool-current-group nnspool-nov-directory ".overview"))
 	  (arts articles)
 	  last)
@@ -369,7 +369,7 @@ there.")
 		 (car (last articles)))
 		;; If the buffer is empty, this wasn't very successful.
 		(unless (zerop (buffer-size))
-		  ;; We check what the last article number was.  
+		  ;; We check what the last article number was.
 		  ;; The NOV file may be out of sync with the articles
 		  ;; in the group.
 		  (forward-line -1)
@@ -405,12 +405,12 @@ there.")
   (let ((first (car articles))
 	(last (progn (while (cdr articles) (setq articles (cdr articles)))
 		     (car articles))))
-    (call-process "awk" nil t nil 
+    (call-process "awk" nil t nil
 		  (format "BEGIN {firstmsg=%d; lastmsg=%d;}\n $1 >= firstmsg && $1 <= lastmsg {print;}"
 			  (1- first) (1+ last))
 		  file)))
 
-;; Fixed by fdc@cliwe.ping.de (Frank D. Cringle). 
+;; Fixed by fdc@cliwe.ping.de (Frank D. Cringle).
 ;; Find out what group an article identified by a Message-ID is in.
 (defun nnspool-find-id (id)
   (save-excursion

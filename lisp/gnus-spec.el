@@ -115,12 +115,12 @@
 (defvar gnus-group-line-format-spec
   (gnus-byte-code 'gnus-group-line-format-spec))
 
-(defvar gnus-format-specs 
+(defvar gnus-format-specs
   `((version . ,emacs-version)
     (group "%M\%S\%p\%P\%5y: %(%g%)%l\n" ,gnus-group-line-format-spec)
     (summary-dummy "*  %(:                          :%) %S\n"
 		   ,gnus-summary-dummy-line-format-spec)
-    (summary "%U\%R\%z\%I\%(%[%4L: %-20,20n%]%) %s\n" 
+    (summary "%U\%R\%z\%I\%(%[%4L: %-20,20n%]%) %s\n"
 	     ,gnus-summary-line-format-spec))
   "Alist of format specs.")
 
@@ -351,7 +351,7 @@
 
 	;; Parse this spec fully.
 	(while
-	    (cond 
+	    (cond
 	     ((looking-at "\\([-.0-9]+\\)\\(,[-0-9]+\\)?")
 	      (setq pad-width (string-to-number (match-string 1)))
 	      (when (match-beginning 2)
@@ -439,7 +439,7 @@
 	    (insert elem-type)
 	    (push (car elem) flist))))
       (setq fstring (buffer-string)))
-    
+
     ;; Do some postprocessing to increase efficiency.
     (setq
      result

@@ -43,8 +43,8 @@ Each handler is a list on the form
 
 \(FUNCTION TIME IDLE)
 
-FUNCTION is the function to be called. 
-TIME is the number of `gnus-demon-timestep's between each call.  
+FUNCTION is the function to be called.
+TIME is the number of `gnus-demon-timestep's between each call.
 If nil, never call.  If t, call each `gnus-demon-timestep'.
 If IDLE is t, only call if Emacs has been idle for a while.  If IDLE
 is a number, only call when Emacs has been idle more than this number
@@ -52,8 +52,8 @@ of `gnus-demon-timestep's.  If IDLE is nil, don't care about
 idleness.  If IDLE is a number and TIME is nil, then call once each
 time Emacs has been idle for IDLE `gnus-demon-timestep's."
   :group 'gnus-demon
-  :type '(repeat (list function 
-		       (choice :tag "Time" 
+  :type '(repeat (list function
+		       (choice :tag "Time"
 			       (const :tag "never" nil)
 			       (const :tag "one" t)
 			       (integer :tag "steps" 1))
@@ -91,7 +91,7 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
 
 (defun gnus-demon-remove-handler (function &optional no-init)
   "Remove the handler FUNCTION from the list of handlers."
-  (setq gnus-demon-handlers 
+  (setq gnus-demon-handlers
 	(delq (assq function gnus-demon-handlers)
 	      gnus-demon-handlers))
   (unless no-init
@@ -104,12 +104,12 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
   (if (null gnus-demon-handlers)
       ()				; Nothing to do.
     ;; Set up timer.
-    (setq gnus-demon-timer 
-	  (nnheader-run-at-time 
+    (setq gnus-demon-timer
+	  (nnheader-run-at-time
 	   gnus-demon-timestep gnus-demon-timestep 'gnus-demon))
     ;; Reset control variables.
     (setq gnus-demon-handler-state
-	  (mapcar 
+	  (mapcar
 	   (lambda (handler)
 	     (list (car handler) (gnus-demon-time-to-step (nth 1 handler))
 		   (nth 2 handler)))
@@ -150,7 +150,7 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
       time
     (let* ((date (current-time-string))
 	   (dv (timezone-parse-date date))
-	   (tdate (timezone-make-arpa-date 
+	   (tdate (timezone-make-arpa-date
 		   (string-to-number (aref dv 0))
 		   (string-to-number (aref dv 1))
 		   (string-to-number (aref dv 2)) time
@@ -179,7 +179,7 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
 	  handler time idle)
       (while handlers
 	(setq handler (pop handlers))
-	(cond 
+	(cond
 	 ((numberp (setq time (nth 1 handler)))
 	  ;; These handlers use a regular timeout mechanism.  We decrease
 	  ;; the timer if it hasn't reached zero yet.
@@ -201,13 +201,13 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
 		 (setcar (nthcdr 1 handler)
 			 (gnus-demon-time-to-step
 			  (nth 1 (assq (car handler) gnus-demon-handlers)))))))
-	 ;; These are only supposed to be called when Emacs is idle. 
+	 ;; These are only supposed to be called when Emacs is idle.
 	 ((null (setq idle (nth 2 handler)))
 	  ;; We do nothing.
 	  )
 	 ((not (numberp idle))
 	  ;; We want to call this handler each and every time that
-	  ;; Emacs is idle. 
+	  ;; Emacs is idle.
 	  (funcall (car handler)))
 	 (t
 	  ;; We want to call this handler only if Emacs has been idle

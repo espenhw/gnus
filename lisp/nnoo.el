@@ -58,7 +58,7 @@
 
 (defmacro nnoo-declare (backend &rest parents)
   `(eval-and-compile
-     (push (list ',backend 
+     (push (list ',backend
 		 (mapcar (lambda (p) (list p)) ',parents)
 		 nil nil)
 	   nnoo-definition-alist)
@@ -126,7 +126,7 @@
 		 (&rest args)
 	       (nnoo-parent-function ',backend ',(car m)
 				     ,(cons 'list (nreverse margs))))))))
-  
+
 (defun nnoo-backend (symbol)
   (string-match "^[^-]+-" (symbol-name symbol))
   (intern (substring (symbol-name symbol) 0 (1- (match-end 0)))))
@@ -180,8 +180,8 @@
  					      (symbol-value (car def)))))))
 	  (set (car def) (cadr def))))
       (while parents
-	(nnoo-change-server 
-	 (caar parents) server 
+	(nnoo-change-server
+	 (caar parents) server
 	 (mapcar (lambda (def) (list (car def) (symbol-value (cadr def))))
 		 (cdar parents)))
 	(pop parents))))
@@ -192,7 +192,7 @@
 	(defs (nnoo-variables backend)))
     ;; Remove the old definition.
     (setcdr (cdr bstate) (delq (assoc current (cddr bstate)) (cddr bstate)))
-    ;; If this is the first time we push the server (i. e., this is 
+    ;; If this is the first time we push the server (i. e., this is
     ;; the nil server), then we update the default values of
     ;; all the variables to reflect the current values.
     (when (equal current "*internal-non-initialized-backend*")

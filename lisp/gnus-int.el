@@ -427,7 +427,7 @@ If GROUP is nil, all groups on METHOD are scanned."
   (let* ((elem (assoc method gnus-opened-servers))
 	 (status (cadr elem)))
     ;; If this hasn't been opened before, we add it to the list.
-    (when (eq status 'denied) 
+    (when (eq status 'denied)
       ;; Set the status of this server.
       (setcar (cdr elem) 'closed))))
 

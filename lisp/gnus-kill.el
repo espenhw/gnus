@@ -205,36 +205,36 @@ If NEWSGROUP is nil, the global kill file is selected."
 	(goto-char (point-max)))
       (insert (setq string (format "(gnus-kill %S %S)\n" field regexp)))
       (gnus-kill-file-apply-string string))))
-    
+
 (defun gnus-kill-file-kill-by-subject ()
   "Kill by subject."
   (interactive)
   (gnus-kill-file-enter-kill
-   "Subject" 
+   "Subject"
    (if (vectorp gnus-current-headers)
-       (regexp-quote 
+       (regexp-quote
 	(gnus-simplify-subject (mail-header-subject gnus-current-headers)))
      "")
    t))
-  
+
 (defun gnus-kill-file-kill-by-author ()
   "Kill by author."
   (interactive)
   (gnus-kill-file-enter-kill
-   "From" 
+   "From"
    (if (vectorp gnus-current-headers)
        (regexp-quote (mail-header-from gnus-current-headers))
      "") t))
- 
+
 (defun gnus-kill-file-kill-by-thread ()
   "Kill by author."
   (interactive)
   (gnus-kill-file-enter-kill
-   "References" 
+   "References"
    (if (vectorp gnus-current-headers)
        (regexp-quote (mail-header-id gnus-current-headers))
      "")))
- 
+
 (defun gnus-kill-file-kill-by-xref ()
   "Kill by Xref."
   (interactive)
@@ -245,11 +245,11 @@ If NEWSGROUP is nil, the global kill file is selected."
     (if xref
 	(while (string-match " \\([^ \t]+\\):" xref start)
 	  (setq start (match-end 0))
-	  (when (not (string= 
-		      (setq group 
+	  (when (not (string=
+		      (setq group
 			    (substring xref (match-beginning 1) (match-end 1)))
 		      gnus-newsgroup-name))
-	    (gnus-kill-file-enter-kill 
+	    (gnus-kill-file-enter-kill
 	     "Xref" (concat " " (regexp-quote group) ":") t)))
       (gnus-kill-file-enter-kill "Xref" "" t))))
 
@@ -264,14 +264,14 @@ If NEWSGROUP is nil, the global kill file is selected."
       (setq name (read-string (concat "Add " level
 				      " to followup articles to: ")
 			      (regexp-quote name)))
-      (setq 
+      (setq
        string
        (format
 	"(gnus-kill %S %S '(gnus-summary-temporarily-raise-by-thread %S))\n"
 	"From" name level))
       (insert string)
       (gnus-kill-file-apply-string string))
-    (gnus-message 
+    (gnus-message
      6 "Added temporary score file entry for followups to %s." name)))
 
 (defun gnus-kill-file-apply-buffer ()
@@ -387,7 +387,7 @@ Returns the number of articles marked as read."
 			(mapcar (lambda (header) (mail-header-number header))
 				headers))
 		(while headers
-		  (unless (gnus-member-of-range 
+		  (unless (gnus-member-of-range
 			   (mail-header-number (car headers))
 			   gnus-newsgroup-killed)
 		    (push (mail-header-number (car headers))
@@ -410,8 +410,8 @@ Returns the number of articles marked as read."
 	      (if (consp (ignore-errors (read (current-buffer))))
 		  (gnus-kill-parse-gnus-kill-file)
 		(gnus-kill-parse-rn-kill-file))
-	    
-	      (gnus-message 
+
+	      (gnus-message
 	       6 "Processing kill file %s...done" (car kill-files)))
 	    (setq kill-files (cdr kill-files)))))
 
@@ -439,7 +439,7 @@ Returns the number of articles marked as read."
   (goto-char (point-min))
   (gnus-kill-file-mode)
   (let (beg form)
-    (while (progn 
+    (while (progn
 	     (setq beg (point))
 	     (setq form (ignore-errors (read (current-buffer)))))
       (unless (listp form)
@@ -481,14 +481,14 @@ Returns the number of articles marked as read."
 
 	;; The "f:+" command marks everything *but* the matches as read,
 	;; so we simply first match everything as read, and then unmark
-	;; PATTERN later. 
+	;; PATTERN later.
 	(when (string-match "\\+" commands)
 	  (gnus-kill "from" ".")
 	  (setq commands "m"))
 
-	(gnus-kill 
+	(gnus-kill
 	 (or (cdr (assq modifier mod-to-header)) "subject")
-	 pattern 
+	 pattern
 	 (if (string-match "m" commands)
 	     '(gnus-summary-mark-as-unread nil " ")
 	   '(gnus-summary-mark-as-read nil "X"))
@@ -496,7 +496,7 @@ Returns the number of articles marked as read."
       (forward-line 1))))
 
 ;; Kill changes and new format by suggested by JWZ and Sudish Joseph
-;; <joseph@cis.ohio-state.edu>.  
+;; <joseph@cis.ohio-state.edu>.
 (defun gnus-kill (field regexp &optional exe-command all silent)
   "If FIELD of an article matches REGEXP, execute COMMAND.
 Optional 1st argument COMMAND is default to
@@ -514,7 +514,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 	(goto-char (point-min))		;From the beginning.
 	(let ((kill-list regexp)
 	      (date (current-time-string))
-	      (command (or exe-command '(gnus-summary-mark-as-read 
+	      (command (or exe-command '(gnus-summary-mark-as-read
 					 nil gnus-kill-file-mark)))
 	      kill kdate prev)
 	  (if (listp kill-list)
@@ -532,7 +532,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 		      ;; It's a temporary kill.
 		      (progn
 			(setq kdate (cdr kill))
-			(if (zerop (gnus-execute 
+			(if (zerop (gnus-execute
 				    field (car kill) command nil (not all)))
 			    (when (> (gnus-days-between date kdate)
 				     gnus-kill-expiry-days)
@@ -551,7 +551,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
     (switch-to-buffer old-buffer)
     (when (and (eq major-mode 'gnus-kill-file-mode) regexp (not silent))
       (gnus-pp-gnus-kill
-       (nconc (list 'gnus-kill field 
+       (nconc (list 'gnus-kill field
 		    (if (consp regexp) (list 'quote regexp) regexp))
 	      (when (or exe-command all)
 		(list (list 'quote exe-command)))
@@ -576,7 +576,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 	  (setq klist (cdr klist))))
       (insert ")")
       (and (nth 3 object)
-	   (insert "\n  " 
+	   (insert "\n  "
 		   (if (and (consp (nth 3 object))
 			    (not (eq 'quote (car (nth 3 object)))))
 		       "'" "")
@@ -614,7 +614,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 		(gnus-last-article nil)
 		(gnus-break-pages nil)	;No need to break pages.
 		(gnus-mark-article-hook nil)) ;Inhibit marking as read.
-	    (gnus-message 
+	    (gnus-message
 	     6 "Searching for article: %d..." (mail-header-number header))
 	    (gnus-article-setup-buffer)
 	    (gnus-article-prepare (mail-header-number header) t)
@@ -639,15 +639,15 @@ marked as read or ticked are ignored."
   (save-excursion
     (let ((killed-no 0)
 	  function article header)
-      (cond 
+      (cond
        ;; Search body.
        ((or (null field)
 	    (string-equal field ""))
 	(setq function nil))
        ;; Get access function of header field.
        ((fboundp
-	 (setq function 
-	       (intern-soft 
+	 (setq function
+	       (intern-soft
 		(concat "mail-header-" (downcase field)))))
 	(setq function `(lambda (h) (,function h))))
        ;; Signal error.
@@ -659,7 +659,7 @@ marked as read or ticked are ignored."
 	      (and (not article)
 		   (setq article (gnus-summary-article-number)))
 	      ;; Find later articles.
-	      (setq article 
+	      (setq article
 		    (gnus-summary-search-forward unread nil backward)))
 	(and (or (null gnus-newsgroup-kill-headers)
 		 (memq article gnus-newsgroup-kill-headers))
@@ -679,7 +679,7 @@ Newsgroups is a list of strings in Bnews format.  If you want to score
 the comp hierarchy, you'd say \"comp.all\".  If you would not like to
 score the alt hierarchy, you'd say \"!alt.all\"."
   (interactive)
-  (let* ((gnus-newsrc-options-n    
+  (let* ((gnus-newsrc-options-n
 	  (gnus-newsrc-parse-options
 	   (concat "options -n "
 		   (mapconcat 'identity command-line-args-left " "))))

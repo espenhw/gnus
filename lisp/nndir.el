@@ -73,12 +73,12 @@
 	defs)
   (nnoo-change-server 'nndir server defs)
   (let (err)
-    (cond 
+    (cond
      ((not (condition-case arg
 	       (file-exists-p nndir-directory)
 	     (ftp-error (setq err (format "%s" arg)))))
       (nndir-close-server)
-      (nnheader-report 
+      (nnheader-report
        'nndir (or err "No such file or directory: %s" nndir-directory)))
      ((not (file-directory-p (file-truename nndir-directory)))
       (nndir-close-server)
