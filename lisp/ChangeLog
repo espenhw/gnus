@@ -1,3 +1,10 @@
+2002-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+	From TSUCHIYA Masatoshi <tsuchiya@namazu.org>.
+
+	* gnus-art.el (gnus-article-address-banner-alist): New option.
+	(article-strip-banner): Refer the above option to split banners of
+	free mail servers, when no group parameter is specified.
+
 2002-09-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nntp.el (nntp-wait-for-string): Check for a process in the

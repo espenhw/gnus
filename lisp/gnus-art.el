@@ -279,6 +279,26 @@ regular expression to match the banner in `gnus-article-banner-alist'.
 A string is used as a regular expression to match the banner
 directly.")
 
+(defcustom gnus-article-address-banner-alist nil
+  "Banner alist for free mail addresses.
+Each element has the form (ADDRESS . BANNER), where ADDRESS is a regexp
+to match a mail address in the From: header, BANNER is one of a symbol
+`signature', an item in `gnus-article-banner-alist', a regexp and nil.
+If ADDRESS matches author's mail address, it will remove things like
+advertisements.  For example:
+
+\((\"@yahoo\\.co\\.jp\\\\'\" . \"\\n_+\\nDo You Yahoo!\\\\?\\n.*\\n.*\\n\"))
+"
+  :type '(repeat
+	  (cons
+	   (regexp :tag "Address")
+	   (choice :tag "Banner" :value nil
+		   (const :tag "Remove signature" signature)
+		   (symbol :tag "Item in `gnus-article-banner-alist'" none)
+		   regexp
+		   (const :tag "None" nil))))
+  :group 'gnus-article-washing)
+
 (defcustom gnus-emphasis-alist
   (let ((format
 	 "\\(\\s-\\|^\\|\\=\\|[-\"]\\|\\s(\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*[.,]?\\)%s\\)\\(\\([-,.;:!?\"]\\|\\s)\\)+\\s-\\|[?!.]\\s-\\|\\s)\\|\\s-\\)")
@@ -2252,6 +2272,18 @@ always hide."
 	    (banner (gnus-parameter-banner gnus-newsgroup-name))
 	    (gnus-signature-limit nil)
 	    buffer-read-only beg end)
+	(when (and gnus-article-address-banner-alist
+		   (not banner))
+	  (setq banner
+		(let ((from (save-restriction
+			      (widen)
+			      (article-narrow-to-head)
+			      (caar (mail-header-parse-addresses
+				     (mail-fetch-field "from"))))))
+		  (catch 'found
+		    (dolist (pair gnus-article-address-banner-alist)
+		      (when (string-match (car pair) from)
+			(throw 'found (cdr pair))))))))
 	(when banner
 	  (article-goto-body)
 	  (cond
