@@ -1,6 +1,6 @@
 ;;; gnus-picon.el --- displaying pretty icons in Gnus
 
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
 ;;      Free Software Foundation, Inc.
 
 ;; Author: Wes Hardaker <hardaker@ece.ucdavis.edu>
@@ -151,7 +151,11 @@ GLYPH can be either a glyph or a string."
 (defun gnus-picon-transform-address (header category)
   (gnus-with-article-headers
     (let ((addresses
-	   (mail-header-parse-addresses (mail-fetch-field header)))
+	   (mail-header-parse-addresses
+	    ;; mail-header-parse-addresses does not work (reliably) on
+	    ;; decoded headers.
+	    (mail-encode-encoded-word-string
+	     (or (mail-fetch-field header) ""))))
 	  spec file point cache)
       (dolist (address addresses)
 	(setq address (car address))
