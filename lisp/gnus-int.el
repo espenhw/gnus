@@ -33,6 +33,7 @@
 (require 'gnus-range)
 
 (autoload 'gnus-agent-expire "gnus-agent")
+(autoload 'gnus-agent-read-servers-validate-native "gnus-agent")
 
 (defcustom gnus-open-server-hook nil
   "Hook called just before opening connection to the news server."
@@ -105,6 +106,18 @@ If CONFIRM is non-nil, the user will be asked for an NNTP server."
 	(require 'nntp)))
       (setq gnus-current-select-method gnus-select-method)
       (gnus-run-hooks 'gnus-open-server-hook)
+
+      ;; Partially validate agent covered methods now that the
+      ;; gnus-select-method is known.
+
+      (if gnus-agent
+          ;; NOTE: This is here for one purpose only.  By validating
+          ;; the current select method, it converts the old 5.10.3,
+          ;; and earlier, format to the current format.  That enables
+          ;; the agent code within gnus-open-server to function
+          ;; correctly.
+          (gnus-agent-read-servers-validate-native gnus-select-method))
+
       (or
        ;; gnus-open-server-hook might have opened it
        (gnus-server-opened gnus-select-method)
