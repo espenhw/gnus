@@ -1678,64 +1678,74 @@ newsgroup."
 	   ;; Also read from the archive server.
 	   (when (gnus-archive-server-wanted-p)
 	     (list "archive")))))
-	method where mesg list-type)
+	method)
     (setq gnus-have-read-active-file nil)
     (save-excursion
       (set-buffer nntp-server-buffer)
       (while (setq method (pop methods))
+	;; Only do each method once, in case the methods appear more
+	;; than once in this list.
 	(unless (member method methods)
-	  (setq where (nth 1 method)
-		mesg (format "Reading active file%s via %s..."
-			     (if (and where (not (zerop (length where))))
-				 (concat " from " where) "")
-			     (car method)))
-	  (gnus-message 5 mesg)
-	  (when (gnus-check-server method)
-	    ;; Request that the backend scan its incoming messages.
-	    (when (gnus-check-backend-function 'request-scan (car method))
-	      (gnus-request-scan nil method))
+	  (condition-case ()
+	      (gnus-read-active-file-1 method)
+	    ;; We catch C-g so that we can continue past servers
+	    ;; that do not respond.
+	    (quit nil)))))))
+
+(defun gnus-read-active-file-1 (method)
+  (let (where mesg list-type)
+    (setq where (nth 1 method)
+	  mesg (format "Reading active file%s via %s..."
+		       (if (and where (not (zerop (length where))))
+			   (concat " from " where) "")
+		       (car method)))
+    (gnus-message 5 mesg)
+    (when (gnus-check-server method)
+      ;; Request that the backend scan its incoming messages.
+      (when (gnus-check-backend-function 'request-scan (car method))
+	(gnus-request-scan nil method))
+      (cond
+       ((and (eq gnus-read-active-file 'some)
+	     (gnus-check-backend-function 'retrieve-groups (car method))
+	     (not force))
+	(let ((newsrc (cdr gnus-newsrc-alist))
+	      (gmethod (gnus-server-get-method nil method))
+	      groups info)
+	  (while (setq info (pop newsrc))
+	    (when (inline
+		    (gnus-server-equal
+		     (inline
+		       (gnus-find-method-for-group
+			(gnus-info-group info) info))
+		     gmethod))
+	      (push (gnus-group-real-name (gnus-info-group info))
+		    groups)))
+	  (when groups
+	    (gnus-check-server method)
+	    (setq list-type (gnus-retrieve-groups groups method))
 	    (cond
-	     ((and (eq gnus-read-active-file 'some)
-		   (gnus-check-backend-function 'retrieve-groups (car method))
-		   (not force))
-	      (let ((newsrc (cdr gnus-newsrc-alist))
-		    (gmethod (gnus-server-get-method nil method))
-		    groups info)
-		(while (setq info (pop newsrc))
-		  (when (inline
-			  (gnus-server-equal
-			   (inline
-			     (gnus-find-method-for-group
-			      (gnus-info-group info) info))
-			   gmethod))
-		    (push (gnus-group-real-name (gnus-info-group info))
-			  groups)))
-		(when groups
-		  (gnus-check-server method)
-		  (setq list-type (gnus-retrieve-groups groups method))
-		  (cond
-		   ((not list-type)
-		    (gnus-error
-		     1.2 "Cannot read partial active file from %s server."
-		     (car method)))
-		   ((eq list-type 'active)
-		    (gnus-active-to-gnus-format
-		     method gnus-active-hashtb nil t))
-		   (t
-		    (gnus-groups-to-gnus-format
-		     method gnus-active-hashtb t))))))
-	     ((null method)
-	      t)
+	     ((not list-type)
+	      (gnus-error
+	       1.2 "Cannot read partial active file from %s server."
+	       (car method)))
+	     ((eq list-type 'active)
+	      (gnus-active-to-gnus-format
+	       method gnus-active-hashtb nil t))
 	     (t
-	      (if (not (gnus-request-list method))
-		  (unless (equal method gnus-message-archive-method)
-		    (gnus-error 1 "Cannot read active file from %s server"
-				(car method)))
-		(gnus-message 5 mesg)
-		(gnus-active-to-gnus-format method gnus-active-hashtb nil t)
-		;; We mark this active file as read.
-		(push method gnus-have-read-active-file)
-		(gnus-message 5 "%sdone" mesg))))))))))
+	      (gnus-groups-to-gnus-format
+	       method gnus-active-hashtb t))))))
+       ((null method)
+	t)
+       (t
+	(if (not (gnus-request-list method))
+	    (unless (equal method gnus-message-archive-method)
+	      (gnus-error 1 "Cannot read active file from %s server"
+			  (car method)))
+	  (gnus-message 5 mesg)
+	  (gnus-active-to-gnus-format method gnus-active-hashtb nil t)
+	  ;; We mark this active file as read.
+	  (push method gnus-have-read-active-file)
+	  (gnus-message 5 "%sdone" mesg)))))))
 
 ;; Read an active file and place the results in `gnus-active-hashtb'.
 (defun gnus-active-to-gnus-format (&optional method hashtb ignore-errors
@@ -1816,7 +1826,7 @@ newsgroup."
 		      (gnus-sethash (symbol-name group) t
 				    gnus-moderated-hashtb)))
 		(set group nil)))
-	  (quit
+	  (error
 	   (and group
 		(symbolp group)
 		(set group nil))

@@ -1,5 +1,9 @@
 1999-11-09 00:13:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-start.el (gnus-active-to-gnus-format): Catch errors.
+	(gnus-read-active-file-1): Separated into own function.
+	(gnus-read-active-file): Catch quits.
+
 	* nnslashdot.el (nnslashdot-request-article): Search better on
 	first article.
 	(nnslashdot-request-list): Fold case.
