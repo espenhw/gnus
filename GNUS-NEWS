@@ -9,6 +9,17 @@ For older news, see Gnus info node "New Features".
 
 * Changes in No Gnus
 
+** Upgrading from previous (stable) version if you have used No Gnus.
+
+If you have tried No Gnus (the unstable Gnus branch leading to this
+release) but went back to a stable version, be careful when upgrading
+to this version.  In particular, you will probably want to remove the
+`~/News/marks' directory (perhaps selectively), so that flags are
+read from your `~/.newsrc.eld' instead of from the stale marks file,
+where this release will store flags for nntp.  See a later entry for
+more information about nntp marks.  Note that downgrading isn't safe
+in general.
+
 ** The nntp back end store article marks in `~/News/marks'.
 
 The directory can be changed using the (customizable) variable
@@ -17,10 +28,7 @@ variable `nntp-marks-is-evil'.  The advantage of this is that you can
 copy `~/News/marks' (using rsync, scp or whatever) to another Gnus
 installation, and it will realize what articles you have read and
 marked.  The data in `~/News/marks' has priority over the same data
-in `~/.newsrc.eld'.  This means that if you downgrade to, say, Gnus
-5.10 and read mail and later come back to this Gnus version, your
-marks will be stale.  You can remove the `~/News/marks' content (even
-selectively) to remedy this.
+in `~/.newsrc.eld'.
 
 ** You can import and export your RSS subscriptions from OPML files.
 
