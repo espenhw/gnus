@@ -552,6 +552,8 @@ See also the documentation for `gnus-article-highlight-citation'."
 	  (setq prefix (car entry))))
     prefix))
 
+(gnus-ems-redefine)
+
 (provide 'gnus-cite)
 
 ;;; gnus-cite.el ends here

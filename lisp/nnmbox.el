@@ -234,6 +234,9 @@
 		   nnmail-expiry-wait))
 	 (is-old t)
 	 rest)
+    (nnmbox-request-list)
+    (setq nnmbox-group-alist (nnmail-get-active))
+
     (save-excursion 
       (set-buffer nnmbox-mbox-buffer)
       (while articles

@@ -254,6 +254,9 @@
 	 (max-article (and active-articles (apply 'max active-articles)))
 	 (is-old t)
 	 article rest mod-time)
+    (nnmh-request-list)
+    (setq nnmh-group-alist (nnmail-get-active))
+
     (while (and articles is-old)
       (setq article (concat nnmh-current-directory 
 			    (int-to-string (car articles))))

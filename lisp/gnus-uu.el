@@ -1520,10 +1520,10 @@ The headers will be included in the sequence they are matched.")
 	  (append file gnus-uu-generated-file-list))))
 
 ;; Inputs an action and a file and returns a full command, putting
-;; ticks round the file name and escaping any ticks in the file name.
+;; quotes round the file name and escaping any quotes in the file name.
 (defun gnus-uu-command (action file)
   (let ((ofile ""))
-    (while (string-match "`\\|\"\\|\\$\\|\\\\" file)
+    (while (string-match "!\\|`\\|\"\\|\\$\\|\\\\" file)
       (progn
 	(setq ofile
 	      (concat ofile (substring file 0 (match-beginning 0)) "\\"

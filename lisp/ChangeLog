@@ -1,4 +1,33 @@
-Mon Jul 10 10:44:46 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+Tue Jul 11 09:36:28 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus-msg.el (gnus-debug): A `sit-for' may sometimes change
+	active buffer.
+
+	* gnus-ems.el (gnus-ems-redefine): Mule redefinition.
+
+	* gnus.el (gnus-summary-respool-article): Didn't allow respooling.
+	
+
+	* gnus-uu.el (gnus-uu-command): Also escape !s.
+
+	* gnus-cache.el (gnus-cache-change-buffer): Reset
+	gnus-cache-removeable-articles. 
+	(gnus-cache-possibly-remove-articles): Don't stat everything
+	between heaven and earth.
+
+	* gnus.el (gnus-summary-expire-articles-now): Use -1 as the expiry
+	wait period. 
+	(gnus-summary-caesar-message): Changed somewhat. Removed all
+	caesar code from gnus - use the functions in rnews.el instead. 
+
+Mon Jul 10 20:42:14 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-summary-catchup-to-here): Don't mark current
+	article as read. 
+
+Mon Jul 10 10:44:46 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.93 is released.
 
 	* gnus-ems.el (gnus-ems-redefine): Redefine for XEmacs.
 

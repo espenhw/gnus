@@ -303,6 +303,9 @@ such things as moving mail.  All buffers always get killed upon server close.")
 		   nnmail-expiry-wait))
 	 (is-old t)
 	 rest)
+    (nnfolder-request-list)
+    (setq nnfolder-group-alist (nnmail-get-active))
+
     (save-excursion 
       (set-buffer nnfolder-current-buffer)
       (while articles

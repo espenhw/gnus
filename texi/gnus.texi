@@ -119,7 +119,6 @@ which makes it a more appropriate name, don't you think?)
 * Why?::                What's the point of Gnus?
 * Compatibility::       Just how compatible is (ding) Gnus with @sc{gnus}?
 * Contributors::        Oodles of people.  
-* Gnus & hilit::        Old hilit19 code will not work with (ding) Gnus.
 * New Features::        A short description of all the new stuff in Gnus.
 * Newest Features::     Features so new that they haven't been written yet.
 @end menu
@@ -193,7 +192,9 @@ remove all hilit code from all Gnus hooks
 (@code{gnus-group-prepare-hook}, @code{gnus-summary-prepare-hook} and
 @code{gnus-summary-article-hook}).  (Well, at the very least the first
 two.)  Gnus provides various integrated functions for highlighting.
-These are faster and more accurate.
+These are faster and more accurate.  To make life easier for everybody,
+Gnus will by default remove all hilit calls from all hilit hooks.
+Uncleanliness!  Away!
 
 Packages like @code{expire-kill} will no longer work.  As a matter of
 fact, you should probably remove all old @sc{gnus} packages (and other
@@ -267,46 +268,6 @@ Stainless Steel Rat, Jack Vinson, Daniel Quinlan, Ilja Weis, Frank D.
 Cringle, Geoffrey T. Dairiki and Andrew Eskilsson have all contributed
 code and suggestions.
 @end itemize
-
-
-@node Gnus & hilit
-@section Gnus & hilit
-@cindex hilit
-
-@c Written by Sudish Joseph
-
-@code{gnus-vis} can be used to highlight the summary buffer.  It
-offers far more flexibility than hilit (since it has access to more
-data; eg. the article score) in deciding how to highlight a given
-article.  Also, hilit gets confused by the way Gnus manipulates the
-summary buffer, leading to errors.  Such errors may be detected by
-looking for any hilit-specific functions in the @code{*Backtrace*}
-buffer.  If such a reference exists, you should be using the code below.
-
-You can also get @code{gnus-vis} to highlight the article buffer, so
-you should get rid of all hilit-specific Gnus calls.
-
-Add the code below to your @file{.gnus} file to remove all the hilit
-crud:
-
-@lisp
-(add-hook 'gnus-startup-hook
-          '(lambda ()
-             ;; gnus-vis is far better for summary highlighting
-             ;; also, hilit cannot handle a (ding) summary and will
-             ;; crash on you
-             (remove-hook 'gnus-summary-prepare-hook
-                          'hilit-rehighlight-buffer-quietly)
-             (remove-hook 'gnus-summary-prepare-hook 'hilit-install-line-hooks)
-             (setq gnus-mark-article-hook '(gnus-summary-mark-unread-as-read))
-             ;; this is too early for the purpose of highlighting
-             (remove-hook 'gnus-article-prepare-hook
-                          'hilit-rehighlight-buffer-quietly)
-             ;; use this instead.  note that the final t is *essential*,
-             ;; this must be the last thing done
-             (add-hook 'gnus-article-display-hook
-                       'gnus-article-maybe-highlight t)))
-@end lisp
 
 
 @node New Features

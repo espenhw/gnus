@@ -271,6 +271,9 @@ all. This may very well take some time.")
 	 (max-article (and active-articles (apply 'max active-articles)))
 	 (is-old t)
 	 article rest mod-time)
+    (nnml-request-list)
+    (setq nnml-group-alist (nnmail-get-active))
+
     (while (and articles is-old)
       (setq article (concat nnml-current-directory 
 			    (int-to-string (car articles))))

@@ -1229,7 +1229,6 @@ automatically when it is selected.")
 (defvar gnus-newsgroup-selected-overlay nil)
 
 (defvar gnus-article-mode-map nil)
-(defvar caesar-translate-table nil)
 (defvar gnus-dribble-buffer nil)
 (defvar gnus-headers-retrieved-by nil)
 (defvar gnus-article-reply nil)
@@ -1341,7 +1340,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.93"
+(defconst gnus-version "(ding) Gnus v0.94"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1374,8 +1373,7 @@ variable (string, integer, character, etc).")
   "Gnus variables saved in the quick startup file.")
 
 (defvar gnus-overload-functions
-  '((news-inews gnus-inews-news "rnewspost")
-    (caesar-region gnus-caesar-region "rnews"))
+  '((news-inews gnus-inews-news "rnewspost"))
   "Functions overloaded by gnus.
 It is a list of `(original overload &optional file)'.")
 
@@ -8254,24 +8252,20 @@ If ARG is a positive number, turn MIME processing on."
 	  (> (prefix-numeric-value arg) 0)))
   (gnus-summary-select-article t 'force))
 
-(defun gnus-summary-caesar-message (rotnum)
-  "Caesar rotates all letters of current message by 13/47 places.
-With prefix arg, specifies the number of places to rotate each letter forward.
-Caesar rotates Japanese letters by 47 places in any case."
+(defun gnus-summary-caesar-message (arg)
+  "Caesar rotate the current article by 13.
+The numerical prefix specifies how manu places to rotate each letter
+forward."
   (interactive "P")
   (gnus-set-global-variables)
   (gnus-summary-select-article)
-  (let ((mail-header-separator "")) ; !!! Is this necessary?
-    (gnus-overload-functions)
+  (let ((mail-header-separator ""))
     (gnus-eval-in-buffer-window 
      gnus-article-buffer
      (save-restriction
        (widen)
-       ;; We don't want to jump to the beginning of the message.
-       ;; `save-excursion' does not do its job.
-       (move-to-window-line 0)
        (let ((last (point)))
-	 (news-caesar-buffer-body rotnum)
+	 (news-caesar-buffer-body arg)
 	 (goto-char last)
 	 (recenter 0))))))
 
@@ -8302,7 +8296,7 @@ and `request-accept' functions. (Ie. mail newsgroups at present.)"
       (error "The current newsgroup does not support article moving"))
   (let ((articles (gnus-summary-work-articles n))
 	(prefix (gnus-group-real-prefix gnus-newsgroup-name))
-	art-group to-method)
+	art-group to-method sel-met)
     (if (and (not to-newsgroup) (not select-method))
 	(setq to-newsgroup
 	      (completing-read 
@@ -8322,8 +8316,8 @@ and `request-accept' functions. (Ie. mail newsgroups at present.)"
 	      (gnus-activate-newsgroup to-newsgroup)
               (error "No such group: %s" to-newsgroup))
           (setq gnus-current-move-group to-newsgroup)))
-    (setq to-method (or select-method (gnus-find-method-for-group
-				       to-newsgroup)))
+    (setq to-method (if select-method (list select-method "")
+		      (gnus-find-method-for-group to-newsgroup)))
     (or (gnus-check-backend-function 'request-accept-article (car to-method))
 	(error "%s does not support article copying" (car to-method)))
     (or (gnus-server-opened to-method)
@@ -8455,8 +8449,8 @@ functions. (Ie. mail newsgroups at present.)"
 	      (gnus-activate-newsgroup to-newsgroup)
               (error "No such group: %s" to-newsgroup))
           (setq gnus-current-move-group to-newsgroup)))
-    (setq to-method (or select-method (gnus-find-method-for-group
-				       to-newsgroup)))
+    (setq to-method (if select-method (list select-method "")
+		      (gnus-find-method-for-group to-newsgroup)))
     (or (gnus-check-backend-function 'request-accept-article (car to-method))
 	(error "%s does not support article copying" (car to-method)))
     (or (gnus-server-opened to-method)
@@ -8559,7 +8553,7 @@ deleted forever, right now."
       (gnus-y-or-n-p
        "Are you really, really, really sure you want to expunge? ")
       (error "Phew!"))
-  (let ((nnmail-expiry-wait 0)
+  (let ((nnmail-expiry-wait -1)
 	(nnmail-expiry-wait-function nil))
     (gnus-summary-expire-articles)))
 
@@ -9356,9 +9350,11 @@ The number of articles marked as read is returned."
 If ALL is non-nil, also mark ticked and dormant articles as read."
   (interactive)
   (save-excursion
-    (end-of-line)
-    (gnus-summary-catchup all t (point))
-    (gnus-set-mode-line 'summary))
+    (and (zerop (forward-line -1))
+	 (progn
+	   (end-of-line)
+	   (gnus-summary-catchup all t (point))
+	   (gnus-set-mode-line 'summary))))
   (gnus-summary-position-cursor))
 
 (defun gnus-summary-catchup-all (&optional quietly)
@@ -10835,63 +10831,6 @@ Argument LINES specifies lines to be scrolled down."
     (switch-to-buffer gnus-summary-buffer 'norecord)
     (setq func (lookup-key (current-local-map) (this-command-keys)))
     (call-interactively func)))
-
-;; caesar-region written by phr@prep.ai.mit.edu  Nov 86
-;; Modified by tower@prep Nov 86
-;; Modified by umerin@flab.flab.Fujitsu.JUNET for ROT47.
-
-(defun gnus-caesar-region (&optional n)
-  "Caesar rotation of region by N, default 13, for decrypting netnews.
-ROT47 will be performed for Japanese text in any case."
-  (interactive (if current-prefix-arg	; Was there a prefix arg?
-		   (list (prefix-numeric-value current-prefix-arg))
-		 (list nil)))
-  (cond ((not (numberp n)) (setq n 13))
-	(t (setq n (mod n 26))))	;canonicalize N
-  (if (not (zerop n))		; no action needed for a rot of 0
-      (progn
-	(if (or (not (boundp 'caesar-translate-table))
-		(not caesar-translate-table)
-		(/= (aref caesar-translate-table ?a) (+ ?a n)))
-	    (let ((i 0) 
-		  (lower "abcdefghijklmnopqrstuvwxyz")
-		  upper)
-	      (gnus-message 9 "Building caesar-translate-table...")
-	      (setq caesar-translate-table (make-vector 256 0))
-	      (while (< i 256)
-		(aset caesar-translate-table i i)
-		(setq i (1+ i)))
-	      (setq lower (concat lower lower)
-		    upper (upcase lower)
-		    i 0)
-	      (while (< i 26)
-		(aset caesar-translate-table (+ ?a i) (aref lower (+ i n)))
-		(aset caesar-translate-table (+ ?A i) (aref upper (+ i n)))
-		(setq i (1+ i)))
-	      ;; ROT47 for Japanese text.
-	      ;; Thanks to ichikawa@flab.fujitsu.junet.
-	      (setq i 161)
-	      (let ((t1 (logior ?O 128))
-		    (t2 (logior ?! 128))
-		    (t3 (logior ?~ 128)))
-		(while (< i 256)
-		  (aset caesar-translate-table i
-			(let ((v (aref caesar-translate-table i)))
-			  (if (<= v t1) (if (< v t2) v (+ v 47))
-			    (if (<= v t3) (- v 47) v))))
-		  (setq i (1+ i))))
-	      (gnus-message 9 "Building caesar-translate-table...done")))
-	(let ((from (region-beginning))
-	      (to (region-end))
-	      (i 0) str len)
-	  (setq str (buffer-substring from to))
-	  (setq len (length str))
-	  (while (< i len)
-	    (aset str i (aref caesar-translate-table (aref str i)))
-	    (setq i (1+ i)))
-	  (goto-char from)
-	  (delete-region from to)
-	  (insert str)))))
 
 
 ;; Basic ideas by emv@math.lsa.umich.edu (Edward Vielmetti)

@@ -242,6 +242,9 @@
 		   nnmail-expiry-wait))
 	 (is-old t)
 	 rest)
+    (nnbabyl-request-list)
+    (setq nnbabyl-group-alist (nnmail-get-active))
+
     (save-excursion 
       (set-buffer nnbabyl-mbox-buffer)
       (while articles

@@ -1657,11 +1657,11 @@ The source file has to be in the Emacs load path."
   (interactive)
   (let ((files '("gnus.el" "gnus-msg.el" "gnus-score.el"))
 	file dirs expr olist)
+    (message "Please wait while we snoop your variables...")
+    (sit-for 0)
     (save-excursion
       (set-buffer (get-buffer-create " *gnus bug info*"))
       (buffer-disable-undo (current-buffer))
-      (message "Please wait while we snoop your variables...")
-      (sit-for 0)
       (while files
 	(erase-buffer)
 	(setq dirs load-path)
@@ -1675,7 +1675,7 @@ The source file has to be in the Emacs load path."
 	    (setq dirs nil)
 	    (insert-file-contents file)
 	    (goto-char (point-min))
-	    (or (re-search-forward "^;;* Internal variables" nil t)
+	    (or (re-search-forward "^;;* *Internal variables" nil t)
 		(error "Malformed sources in file %s" file))
 	    (narrow-to-region (point-min) (point))
 	    (goto-char (point-min))

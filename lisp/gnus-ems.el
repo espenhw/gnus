@@ -413,6 +413,23 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
       )
     (defalias 'gnus-truncate-string 'truncate-string)
 
+    (defun gnus-cite-add-face (number prefix face)
+      ;; At line NUMBER, ignore PREFIX and add FACE to the rest of the line.
+      (if face
+	  (let ((inhibit-point-motion-hooks t)
+		from to)
+	    (goto-line number)
+	    (if (boundp 'MULE)
+		(forward-char (chars-in-string prefix))
+	      (forward-char (length prefix)))
+	    (skip-chars-forward " \t")
+	    (setq from (point))
+	    (end-of-line 1)
+	    (skip-chars-backward " \t")
+	    (setq to (point))
+	    (if (< from to)
+		(overlay-put (make-overlay from to) 'face face)))))
+
     (fset 
      'gnus-format-max-width 
      (lambda (form length)

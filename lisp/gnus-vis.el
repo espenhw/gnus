@@ -442,7 +442,7 @@ highlight-headers-follow-url-netscape:
      ["Fetch parent of article" gnus-summary-refer-parent-article t]
      ["Fetch article with id..." gnus-summary-refer-article t]
      ["Stop page breaking" gnus-summary-stop-page-breaking t]
-     ["Caesar rotate" gnus-summary-caesar-message t]
+     ["Rot 13" gnus-summary-caesar-message t]
      ["Redisplay" gnus-summary-show-article t]
      ["Toggle header" gnus-summary-toggle-header t]
      ["Toggle MIME" gnus-summary-toggle-mime t]
