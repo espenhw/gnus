@@ -466,7 +466,7 @@ The cdr of ech entry is a function for applying the face to a region.")
   "Alist used for formatting headers.")
 
 (eval-and-compile
-  (autoload 'message-setup-toolbar "message-xms")
+  (autoload 'message-setup-toolbar "messagexmas")
   (autoload 'mh-send-letter "mh-comp"))
 
 
@@ -2475,7 +2475,7 @@ responses here are directed to other newsgroups."))
 		distribution (message-fetch-field "distribution")))
 	;; Make sure that this article was written by the user.
 	(unless (string-equal
-		 (downcase (mail-strip-quoted-names from))
+		 (downcase (cadr (mail-extract-address-components from)))
 		 (downcase (message-make-address)))
 	  (error "This article is not yours"))
 	;; Make control message.
@@ -2506,8 +2506,9 @@ header line with the old Message-ID."
   (let ((cur (current-buffer)))
     ;; Check whether the user owns the article that is to be superseded. 
     (unless (string-equal
-	     (downcase (mail-strip-quoted-names (message-fetch-field "from")))
-	     (downcase (mail-strip-quoted-names (message-make-address))))
+	     (downcase (cadr (mail-extract-address-components
+			      (message-fetch-field "from"))))
+	     (downcase (message-make-address)))
       (error "This article is not yours"))
     ;; Get a normal message buffer.
     (message-pop-to-buffer "*supersede message*")
@@ -2759,7 +2760,7 @@ which specify the range to operate on."
 
 ;; Support for toolbar
 (when (string-match "XEmacs\\|Lucid" emacs-version)
-  (require 'message-xms))
+  (require 'messagexmas))
 
 ;;; Group name completion.
 

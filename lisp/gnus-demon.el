@@ -57,7 +57,6 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's.")
 (defvar gnus-demon-last-keys nil) 
 
 (eval-and-compile
-  (autoload 'cancel-timer "timer")
   (autoload 'timezone-parse-date "timezone")
   (autoload 'timezone-make-arpa-date "timezone"))
 
@@ -86,7 +85,7 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's.")
       () ; Nothing to do.
     ;; Set up timer.
     (setq gnus-demon-timer 
-	  (run-at-time 
+	  (nnheader-run-at-time 
 	   gnus-demon-timestep gnus-demon-timestep 'gnus-demon))
     ;; Reset control variables.
     (setq gnus-demon-handler-state
@@ -105,7 +104,7 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's.")
   "Cancel any Gnus daemons."
   (interactive)
   (and gnus-demon-timer
-       (cancel-timer gnus-demon-timer))
+       (nnheader-cancel-timer gnus-demon-timer))
   (setq gnus-demon-timer nil
 	gnus-use-demon nil))
 

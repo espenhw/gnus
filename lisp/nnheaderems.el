@@ -1,4 +1,4 @@
-;;; nnheader-es.el --- making Gnus backends work under different Emacsen
+;;; nnheaderems.el --- making Gnus backends work under different Emacsen
 ;; Copyright (C) 1996 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -187,6 +187,6 @@ The buffer is not selected, just returned to the caller."
 	  'insert-file-contents-literally)
     )))
 
-(provide 'nnheader-es)
+(provide 'nnheaderems)
 
-;;; nnheader-es.el ends here.
+;;; nnheaderems.el ends here.

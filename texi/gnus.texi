@@ -2981,7 +2981,6 @@ Perform an isearch in the article buffer
 @menu
 * Summary Mail Commands::            Sending mail.
 * Summary Post Commands::            Sending news.
-* Summary Mail and Post Commands::   Sending both news and mail.
 @end menu
 
 
@@ -3121,29 +3120,6 @@ process/prefix convention.
 @findex gnus-uu-post-news
 Uuencode a file, split it into parts, and post it as a series
 (@code{gnus-uu-post-news}). (@pxref{Uuencoding and Posting}). 
-@end table
-
-
-@node Summary Mail and Post Commands
-@subsection Summary Mail and Post Commands
-@cindex mail and post
-@cindex post and mail
-
-Commands for sending mail and post at the same time:
-
-@table @kbd
-@item S b
-@kindex S b (Summary)
-@findex gnus-summary-followup-and-reply
-Post a followup and send a reply to the current article
-(@code{gnus-summary-followup-and-reply}).
-
-@item S B
-@kindex S B (Summary)
-@findex gnus-summary-followup-and-reply-with-original
-Post a followup and send a reply to the current article and include the
-original message (@code{gnus-summary-followup-and-reply-with-original}).
-This command uses the process/prefix convention.
 @end table
 
 
@@ -6630,6 +6606,10 @@ That's the default method of archiving sent mail.  Gnus also offers two
 other variables for the people who don't like the default method.  In
 that case you should set @code{gnus-message-archive-group} to
 @code{nil}; this will disable archiving.
+
+XEmacs 19.13 doesn't have @code{format-time-string}, so you'll have to
+use a different value for @code{gnus-message-archive-group} there.
+
 
 @table @code
 @item gnus-author-copy

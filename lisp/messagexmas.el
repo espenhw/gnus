@@ -1,4 +1,4 @@
-;;; message-xms.el --- XEmacs extensions to message
+;;; messagexmas.el --- XEmacs extensions to message
 ;; Copyright (C) 1996 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -89,6 +89,6 @@ If it is non-nil, it must be a toolbar.  The five legal values are
        (set-specifier (symbol-value message-use-toolbar)
 		      (cons (current-buffer) message-toolbar))))
 
-(provide 'message-xms)
+(provide 'messagexmas)
 
-;;; message-xms.el ends here
+;;; messagexmas.el ends here

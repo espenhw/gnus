@@ -1362,6 +1362,9 @@ It calls `gnus-summary-expire-articles' by default.")
 (defvar gnus-group-catchup-group-hook nil
   "*A hook run when catching up a group from the group buffer.")
 
+(defvar gnus-group-update-group-hook nil
+  "*A hook called when updating group lines.")
+
 (defvar gnus-open-server-hook nil
   "*A hook called just before opening connection to the news server.")
 
@@ -1723,7 +1726,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.4"
+(defconst gnus-version-number "5.2.5"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -2083,8 +2086,6 @@ Thank you for your help in stamping out bugs.
      ("gnus-msg" :interactive t
       gnus-group-post-news gnus-group-mail gnus-summary-post-news
       gnus-summary-followup gnus-summary-followup-with-original
-      gnus-summary-followup-and-reply
-      gnus-summary-followup-and-reply-with-original
       gnus-summary-cancel-article gnus-summary-supersede-article
       gnus-post-news gnus-inews-news gnus-cancel-news
       gnus-summary-reply gnus-summary-reply-with-original
@@ -2217,6 +2218,18 @@ Thank you for your help in stamping out bugs.
   "Say whether Gnus is running or not."
   (and gnus-group-buffer
        (get-buffer gnus-group-buffer)))
+
+(defun gnus-delete-first (elt list)
+  "Delete by side effect the first occurrence of ELT as a member of LIST."
+  (if (equal (car list) elt)
+      (cdr list)
+    (let ((total list))
+      (while (and (cdr list)
+		  (not (equal (cadr list) elt)))
+	(setq list (cdr list)))
+      (when (cdr list)
+	(setcdr list (cddr list)))
+      total)))
 
 ;; Delete the current line (and the next N lines.);
 (defmacro gnus-delete-line (&optional n)
@@ -3507,9 +3520,10 @@ should have point."
 	     (delete-windows-on (car bufs)))
 	(setq bufs (cdr bufs))))))
 
-(defun gnus-version ()
-  "Version numbers of this version of Gnus."
-  (interactive)
+(defun gnus-version (&optional arg)
+  "Version number of this version of Gnus.
+If ARG, insert string at point."
+  (interactive "P")
   (let ((methods gnus-valid-select-methods)
 	(mess gnus-version)
 	meth)
@@ -3523,7 +3537,9 @@ should have point."
 	   (stringp (symbol-value meth))
 	   (setq mess (concat mess "; " (symbol-value meth))))
       (setq methods (cdr methods)))
-    (gnus-message 2 mess)))
+    (if arg
+	(insert (message mess))
+      (message mess))))
 
 (defun gnus-info-find-node ()
   "Find Info documentation of Gnus."
@@ -5025,7 +5041,10 @@ already."
 	  (goto-char loc)
 	  (let ((gnus-group-indentation (gnus-group-group-indentation)))
 	    (gnus-delete-line)
-	    (gnus-group-insert-group-line-info group))
+	    (gnus-group-insert-group-line-info group)
+	    (save-excursion
+	      (forward-line -1)
+	      (run-hooks 'gnus-group-update-group-hook)))
 	  (setq loc (1+ loc)))
 	(unless (or found visible-only)
 	  ;; No such line in the buffer, find out where it's supposed to
@@ -5044,7 +5063,10 @@ already."
 	      (or entry (goto-char (point-max)))))
 	  ;; Finally insert the line.
 	  (let ((gnus-group-indentation (gnus-group-group-indentation)))
-	    (gnus-group-insert-group-line-info group)))
+	    (gnus-group-insert-group-line-info group)
+	    (save-excursion
+	      (forward-line -1)
+	      (run-hooks 'gnus-group-update-group-hook))))
 	(gnus-group-set-mode-line)))))
 
 (defun gnus-group-set-mode-line ()
@@ -6029,6 +6051,8 @@ read.  Cross references (Xref: header) of articles are ignored.
 The difference between N and actual number of newsgroups that were
 caught up is returned."
   (interactive "P")
+  (unless (gnus-group-group-name)
+    (error "No group on the current line"))
   (if (not (or (not gnus-interactive-catchup) ;Without confirmation?
 	       gnus-expert-user
 	       (gnus-y-or-n-p
@@ -6603,7 +6627,7 @@ This command may read the active file."
   (interactive "P\nsList newsgroups matching: ")
   ;; First make sure active file has been read.
   (when (and level
-	     (>= (prefix-numeric-value level) gnus-level-killed))
+	     (> (prefix-numeric-value level) gnus-level-killed))
     (gnus-get-killed-groups))
   (gnus-group-prepare-flat (or level gnus-level-subscribed)
 			   all (or lowest 1) regexp)
@@ -8042,10 +8066,10 @@ If NO-DISPLAY, don't generate a summary buffer."
 		      (delq number gnus-newsgroup-unselected)))
 	    (push number gnus-newsgroup-ancient)))))))
 
-(defun gnus-summary-update-article (article &optional header)
+(defun gnus-summary-update-article (article &optional iheader)
   "Update ARTICLE in the summary buffer."
   (set-buffer gnus-summary-buffer)
-  (let* ((header (or header (gnus-summary-article-header article)))
+  (let* ((header (or iheader (gnus-summary-article-header article)))
 	 (id (mail-header-id header))
 	 (data (gnus-data-find article))
 	 (thread (gnus-id-to-thread id))
@@ -8059,10 +8083,11 @@ If NO-DISPLAY, don't generate a summary buffer."
 	 pos)
     (when thread
       ;; !!! Should this be in or not?
-      ;(setcar thread nil)
+      (unless iheader
+	(setcar thread nil))
       (when parent
 	(delq thread parent))
-      (if (gnus-summary-insert-subject id header)
+      (if (gnus-summary-insert-subject id header iheader)
 	  ;; Set the (possibly) new article number in the data structure.
 	  (gnus-data-set-number data (gnus-id-to-article id))
 	(setcar thread old)
@@ -9418,15 +9443,16 @@ This is meant to be called in `gnus-article-internal-prepare-hook'."
 					       (progn (end-of-line) (point))))
 		  (mail-header-set-xref headers xref))))))))
 
-(defun gnus-summary-insert-subject (id &optional old-header)
+(defun gnus-summary-insert-subject (id &optional old-header use-old-header)
   "Find article ID and insert the summary line for that article."
-  (let ((header (or old-header (gnus-read-header id)))
+  (let ((header (if (and old-header use-old-header)
+		    old-header (gnus-read-header id)))
 	(number (and (numberp id) id))
 	pos)
     (when header
       ;; Rebuild the thread that this article is part of and go to the
       ;; article we have fetched.
-      (when old-header
+      (when (and nil old-header)
 	(when (setq pos (text-property-any
 			 (point-min) (point-max) 'gnus-number 
 			 (mail-header-number old-header)))
@@ -10201,7 +10227,7 @@ If FORCE, also allow jumping to articles not currently shown."
     ;; We read in the article if we have to.
     (and (not data)
 	 force
-	 (gnus-summary-insert-subject article (and (vectorp force) force))
+	 (gnus-summary-insert-subject article (and (vectorp force) force) t)
 	 (setq data (gnus-data-find article)))
     (goto-char b)
     (if (not data)

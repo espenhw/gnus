@@ -470,7 +470,7 @@ mark:    The article's mark.")
 			  (or (= mark gnus-dormant-mark)
 			      (= mark gnus-ticked-mark)))
 		    (custom-face-lookup 
-		     "pink" nil nil t nil nil nil))
+		     "pink" nil nil t nil nil))
 	      (cons '(and (< score default) 
 			  (or (= mark gnus-dormant-mark)
 			      (= mark gnus-ticked-mark)))
@@ -483,7 +483,7 @@ mark:    The article's mark.")
 
 	      (cons
 	       '(and (> score default) (= mark gnus-ancient-mark))
-	       (custom-face-lookup "dark blue" nil nil t
+	       (custom-face-lookup "medium blue" nil nil t
 				   nil nil))
 	      (cons 
 	       '(and (< score default) (= mark gnus-ancient-mark))

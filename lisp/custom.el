@@ -68,6 +68,9 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'cl))
+
 ;;; Compatibility:
 
 (defun custom-xmas-add-text-properties (start end props &optional object)
@@ -1487,10 +1490,14 @@ custom-face-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)"
       (copy-face 'default name)
       (when (and fg
 		 (not (string-equal fg "default")))
-	(set-face-foreground name fg))
+	(condition-case ()
+	    (set-face-foreground name fg)
+	  (error nil)))
       (when (and bg
 		 (not (string-equal bg "default")))
-	(set-face-background name bg))
+	(condition-case ()
+	    (set-face-background name bg)
+	  (error nil)))
       (when (and stipple
 		 (not (string-equal stipple "default"))
 		 (not (eq stipple 'custom:asis))
@@ -2454,9 +2461,8 @@ Face used for customization fields while they are being edited.")
 		     (not (string-match "XEmacs" emacs-version)))
 (custom-category-put 'custom-hidden-properties intangible t)
 
-(eval-when 'load
-  (if (file-readable-p custom-file)
-      (load-file custom-file)))
+(if (file-readable-p custom-file)
+    (load-file custom-file))
 
 (provide 'custom)
 

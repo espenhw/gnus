@@ -57,7 +57,7 @@ If you are using Cnews, you probably should set this variable to nil.")
 (defvoo nnspool-newsgroups-file (concat nnspool-lib-dir "newsgroups")
   "Local news newsgroups file.")
 
-(defvoo nnspool-distributions-file (concat nnspool-lib-dir "distributions")
+(defvoo nnspool-distributions-file (concat nnspool-lib-dir "distribs.pat")
   "Local news distributions file.")
 
 (defvoo nnspool-history-file (concat nnspool-lib-dir "history")

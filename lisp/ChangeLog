@@ -1,4 +1,67 @@
+Sun Jun  2 07:41:20 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-remove-group): Only delete first
+	instance. 
+	(gnus-topic-move-group): Ditto.
+	(gnus-topic-change-level): Ditto.
+
+	* gnus.el (gnus-summary-insert-subject): Do rebuilding of sparse
+	articles right.
+	(gnus-summary-update-article): Do updating of referred articles
+	right. 
+	(gnus-delete-first): New function.
+
+	* gnus-cus.el (()): Color change.
+
+	* gnus.el (gnus-version): Accept a prefix to insert.
+
+Sat Jun  1 02:03:42 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* custom.el: Require cl.
+
+	* gnus.el (gnus-group-list-matching): `10 A m' to read the active
+	file. 
+
+	* message.el (message-supersede): Don't use
+	`mail-strip-quoted-names'. 
+	(message-cancel-news): Ditto.
+
+	* nnfolder.el (nnfolder-retrieve-headers): Don't allow selecting
+	empty groups.
+	(nnfolder-request-group): Ditto.
+
+Sat Jun  1 01:26:45 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* dgnushack.el (custom-file): Nix out.
+
+Sat Jun  1 01:24:28 1996  Massimo Campostrini  <campo@sunthpi3.difi.unipi.it>
+
+	* gnus-cus.el (()): Wrong number of arguments.
+
+Fri May 31 08:32:38 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: Removed obsolete autoloads.
+
+	* gnus-demon.el (gnus-demon-init): Use `nnheader-run-at-time'. 
+
+	* gnus.el (gnus-group-catchup-current): Warn.
+
+	* gnus-srvr.el (gnus-browse-foreign-server): Message better.
+
+	* gnus-topic.el (gnus-topic-change-level): Make sure we're in the
+	group buffer.
+
+	* gnus-srvr.el (gnus-server-exit-hook): New hook.
+	(gnus-server-exit): Use it.
+
+	* gnus-topic.el (gnus-topic-mode): Update more.
+
+	* gnus.el (gnus-group-update-group-hook): New hook.
+	(gnus-group-update-group): Use it.
+
 Fri May 31 04:33:16 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.4 is released.
 
 	* custom.el (custom-face-lookup): Escape errors.
 

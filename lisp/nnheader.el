@@ -544,7 +544,7 @@ without formatting."
   "Concat DIR as directory to FILE."
   (concat (file-name-as-directory dir) file))
 
-(require 'nnheader-es)
+(require 'nnheaderems)
 
 (run-hooks 'nnheader-load-hook)
 

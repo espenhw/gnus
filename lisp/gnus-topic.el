@@ -659,6 +659,7 @@ articles in the topic and its subtopics."
 	      minor-mode-map-alist))
       (add-hook 'gnus-summary-exit-hook 'gnus-topic-update-topic)
       (add-hook 'gnus-group-catchup-group-hook 'gnus-topic-update-topic)
+      (add-hook 'gnus-group-update-group-hook 'gnus-topic-update-topic)
       (make-local-variable 'gnus-group-prepare-function)
       (setq gnus-group-prepare-function 'gnus-group-prepare-topics)
       (make-local-variable 'gnus-group-goto-next-group-function)
@@ -757,7 +758,7 @@ If COPYP, copy the groups instead."
 		     (setq entry (assoc (gnus-group-parent-topic)
 					gnus-topic-alist))
 		     (not copyp))
-		(setcdr entry (delete g (cdr entry))))
+		(setcdr entry (gnus-delete-first g (cdr entry))))
 	      (nconc topicl (list g)))
 	    groups)
     (gnus-group-position-point))
@@ -772,7 +773,7 @@ If COPYP, copy the groups instead."
 	(buffer-read-only nil))
     (when (and topicl group)
       (gnus-delete-line)
-      (delete group topicl))
+      (gnus-delete-first group topicl))
     (gnus-group-position-point)))
 
 (defun gnus-topic-copy-group (n topic)
@@ -791,51 +792,54 @@ If COPYP, copy the groups instead."
 
 (defun gnus-topic-change-level (group level oldlevel)
   "Run when changing levels to enter/remove groups from topics."
-  (when (and gnus-topic-mode 
-	     gnus-topic-alist
-	     (not gnus-topic-inhibit-change-level))
-    ;; Remove the group from the topics.
-    (when (and (< oldlevel gnus-level-zombie)
-	       (>= level gnus-level-zombie))
-      (let (alist)
-	(when (setq alist (assoc (gnus-group-parent-topic) gnus-topic-alist))
-	  (setcdr alist (delete group (cdr alist))))))
-    ;; If the group is subscribed. then we enter it into the topics.
-    (when (and (< level gnus-level-zombie)
-	       (>= oldlevel gnus-level-zombie))
-      (let* ((prev (gnus-group-group-name))
-	     (gnus-topic-inhibit-change-level t)
-	     (gnus-group-indentation
-	      (make-string 
-	       (* gnus-topic-indent-level
-		  (or (save-excursion
-			(gnus-topic-goto-topic (gnus-group-parent-topic))
-			(gnus-group-topic-level)) 0)) ? ))
-	     (yanked (list group))
-	     alist talist end)
-	;; Then we enter the yanked groups into the topics they belong
-	;; to. 
-	(when (setq alist (assoc (save-excursion
-				   (forward-line -1)
-				   (or
-				    (gnus-group-parent-topic)
-				    (caar gnus-topic-topology)))
-				 gnus-topic-alist))
-	  (setq talist alist)
-	  (when (stringp yanked)
-	    (setq yanked (list yanked)))
-	  (if (not prev)
-	      (nconc alist yanked)
-	    (if (not (cdr alist))
-		(setcdr alist (nconc yanked (cdr alist)))
-	      (while (and (not end) (cdr alist))
-		(when (equal (cadr alist) prev)
+  (save-excursion
+    (set-buffer gnus-group-buffer)
+    (when (and gnus-topic-mode 
+	       gnus-topic-alist
+	       (not gnus-topic-inhibit-change-level))
+      ;; Remove the group from the topics.
+      (when (and (< oldlevel gnus-level-zombie)
+		 (>= level gnus-level-zombie))
+	(let (alist)
+	  (forward-line -1)
+	  (when (setq alist (assoc (gnus-group-parent-topic) gnus-topic-alist))
+	    (setcdr alist (gnus-delete-first group (cdr alist))))))
+      ;; If the group is subscribed. then we enter it into the topics.
+      (when (and (< level gnus-level-zombie)
+		 (>= oldlevel gnus-level-zombie))
+	(let* ((prev (gnus-group-group-name))
+	       (gnus-topic-inhibit-change-level t)
+	       (gnus-group-indentation
+		(make-string 
+		 (* gnus-topic-indent-level
+		    (or (save-excursion
+			  (gnus-topic-goto-topic (gnus-group-parent-topic))
+			  (gnus-group-topic-level)) 0)) ? ))
+	       (yanked (list group))
+	       alist talist end)
+	  ;; Then we enter the yanked groups into the topics they belong
+	  ;; to. 
+	  (when (setq alist (assoc (save-excursion
+				     (forward-line -1)
+				     (or
+				      (gnus-group-parent-topic)
+				      (caar gnus-topic-topology)))
+				   gnus-topic-alist))
+	    (setq talist alist)
+	    (when (stringp yanked)
+	      (setq yanked (list yanked)))
+	    (if (not prev)
+		(nconc alist yanked)
+	      (if (not (cdr alist))
 		  (setcdr alist (nconc yanked (cdr alist)))
-		  (setq end t))
-		(setq alist (cdr alist)))
-	      (unless end
-		(nconc talist yanked))))))
-      (gnus-topic-update-topic))))
+		(while (and (not end) (cdr alist))
+		  (when (equal (cadr alist) prev)
+		    (setcdr alist (nconc yanked (cdr alist)))
+		    (setq end t))
+		  (setq alist (cdr alist)))
+		(unless end
+		  (nconc talist yanked))))))
+	(gnus-topic-update-topic)))))
 
 (defun gnus-topic-goto-next-group (group props)
   "Go to group or the next group after group."

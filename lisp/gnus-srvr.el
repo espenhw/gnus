@@ -39,6 +39,9 @@ with some simple extensions.")
 (defvar gnus-server-mode-line-format "Gnus  List of servers"
   "The format specification for the server mode line.")
 
+(defvar gnus-server-exit-hook nil
+  "*Hook run when exiting the server buffer.")
+
 ;;; Internal variables.
 
 (defvar gnus-inserted-opened-servers nil)
@@ -290,7 +293,8 @@ The following commands are available:
   "Return to the group buffer."
   (interactive)
   (kill-buffer (current-buffer))
-  (switch-to-buffer gnus-group-buffer))
+  (switch-to-buffer gnus-group-buffer)
+  (run-hooks 'gnus-server-exit-hook))
 
 (defun gnus-server-list-servers ()
   "List all available servers."
@@ -558,6 +562,7 @@ The following commands are available:
       (switch-to-buffer (current-buffer))
       (goto-char (point-min))
       (gnus-group-position-point)
+      (gnus-message 5 "Connecting to %s...done" (nth 1 method))
       t))))
 
 (defun gnus-browse-mode ()

@@ -29,6 +29,8 @@
 (require 'cl)
 (setq load-path (cons "." load-path))
 
+(setq custom-file "/dev/null")
+
 (defun dgnushack-compile ()
   ;(setq byte-compile-dynamic t)
   (let ((files (directory-files "." nil ".el$"))
@@ -47,7 +49,7 @@
 	(setq byte-compile-warnings 
 	      '(free-vars unresolved callargs redefine obsolete))))
       (when (or (not (member file '("gnus-xmas.el" "gnus-picon.el" 
-				    "message-xmas.el")))
+				    "messagexmas.el")))
 		xemacs)
 	(condition-case ()
 	    (byte-compile-file file)

@@ -28,7 +28,7 @@
 (require 'text-props)
 (eval-when-compile (require 'cl))
 (defvar menu-bar-mode t)
-(require 'message-xms)
+(require 'messagexmas)
 
 (defvar gnus-xmas-glyph-directory nil
   "*Directory where Gnus logos and icons are located.
