@@ -5085,8 +5085,17 @@ than 988 characters long, and if they are not, trim them until they are."
   :type 'boolean)
 
 (defun message-beginning-of-line (&optional n)
-  "Move point to beginning of header value.
-If the option `message-beginning-of-line' is non-nil move to
+  "Move point to beginning of header value or to beginning of line.
+The prefix argument N is passed directly to `beginning-of-line'.
+
+This command is identical to `beginning-of-line' if point is
+outside the message header or if the option `message-beginning-of-line'
+is nil.
+
+If point is in the message header and on a (non-continued) header
+line, move point to the beginning of the header value.  If point
+is already there, move point to beginning of line.  Therefore,
+repeated calls will toggle point between beginning of field and
 beginning of line."
   (interactive "p")
   (let ((zrs 'zmacs-region-stays))
