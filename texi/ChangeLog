@@ -1,3 +1,13 @@
+2002-07-07  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Top): Move hashcash down into spam chapter.
+	(Top): New spam menu.
+	(Various): Remove hashcash.
+	(Thwarting Email Spam): Split into introduction and "Anti-Spam
+	Basics" node.
+	(SpamAssassin): Add.
+	(Hashcash): Add.
+
 2002-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (NNTP): Doc fix.

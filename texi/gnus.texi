@@ -812,7 +812,6 @@ Various
 * Image Enhancements::          Modern versions of Emacs/XEmacs can display images.
 * Fuzzy Matching::              What's the big fuzz?
 * Thwarting Email Spam::        A how-to on avoiding unsolicited commercial email.
-* Pay Hashcash::                Reduce spam by burning CPU time.
 * Various Various::             Things that are really various.
 
 Formatting Variables
@@ -841,6 +840,12 @@ Picons
 * Easy Picons::                 Displaying Picons---the easy way.
 * Hard Picons::                 The way you should do it.  You'll learn something.
 * Picon Useless Configuration::  Other variables you can trash/tweak/munge/play with.
+
+Thwarting Email Spam
+
+* Anti-Spam Basics::            Simple steps to reduce the amount of spam.
+* SpamAssassin::                How to use external anti-spam tools.
+* Hashcash::                    Reduce spam by burning CPU time.
 
 Appendices
 
@@ -18883,7 +18888,6 @@ four days, Gnus will decay the scores four times, for instance.
 * Image Enhancements::          Modern versions of Emacs/XEmacs can display images.
 * Fuzzy Matching::              What's the big fuzz?
 * Thwarting Email Spam::        A how-to on avoiding unsolicited commercial email.
-* Pay Hashcash::                Reduce spam by burning CPU time.
 * Various Various::             Things that are really various.
 @end menu
 
@@ -20693,7 +20697,20 @@ and one mail asking me to repent and find some god.
 
 This is annoying.
 
-The way to deal with this is having Gnus split out all spam into a
+@menu
+* Anti-Spam Basics::            Simple steps to reduce the amount of spam.
+* SpamAssassin::                How to use external anti-spam tools.
+* Hashcash::                    Reduce spam by burning CPU time.
+@end menu
+
+@node Anti-Spam Basics
+@subsection Anti-Spam Basics
+@cindex email spam
+@cindex spam
+@cindex UCE
+@cindex unsolicited commercial email
+
+One way of dealing with spam is having Gnus split out all spam into a
 @samp{spam} mail group (@pxref{Splitting Mail}).
 
 First, pick one (1) valid mail address that you can be reached at, and
@@ -20760,15 +20777,103 @@ to non-existent domains is yucky, in my opinion.
 
 
 
-@node Pay Hashcash
-@section Pay Hashcash
+@node SpamAssassin
+@subsection SpamAssassin, Vipul's Razor, DCC, etc
+@cindex SpamAssassin
+@cindex Vipul's Razor
+@cindex DCC
+
+The days where the hints in the previous section was sufficient in
+avoiding spam is coming to an end.  There are many tools out there
+that claim to reduce the amount of spam you get.  This section could
+easily become outdated fast, as new products replace old, but
+fortunately most of these tools seem to have similar interfaces.  Even
+though this section will use SpamAssassin as an example, it should be
+easy to adapt it to most other tools.
+
+If the tool you are using is not installed on the mail server, you
+need to invoke it yourself.  Ideas on how to use the
+@code{:postscript} mail source parameter (@pxref{Mail Source
+Specifiers}) follows.
+
+@lisp
+(setq mail-sources
+      '((file :prescript "formail -bs spamassassin < /var/mail/%u")
+        (pop :user "jrl"
+             :server "pophost" 
+             :postscript "mv %t /tmp/foo; formail -bs spamc < /tmp/foo > %t")))
+@end lisp
+
+Once you managed to process your incoming spool somehow, thus making
+the mail contain e.g. a header indicating it is spam, you are ready to
+filter it out.  Using normal split methods (@pxref{Splitting Mail}):
+
+@lisp
+(setq nnmail-split-methods '(("spam"  "^X-Spam-Flag: YES")
+                             ...))
+@end lisp
+
+Or using fancy split methods (@pxref{Fancy Mail Splitting}):
+
+@lisp
+(setq nnmail-split-methods 'nnmail-split-fancy
+      nnmail-split-fancy '(| ("X-Spam-Flag" "YES" "spam")
+                             ...))
+@end lisp
+
+Some people might not like the idea of piping the mail through various
+programs using a @code{:prescript} (if some program is buggy, you
+might lose all mail).  If you are one of them, another solution is to
+call the external tools during splitting.  Example fancy split method:
+
+@lisp
+(setq nnmail-split-fancy '(| (: kevin-spamassassin)
+                             ...))
+(defun kevin-spamassassin ()
+  (save-excursion
+    (let ((buf (or (get-buffer " *nnmail incoming*")
+		   (get-buffer " *nnml move*"))))
+      (if (not buf)
+	  (progn (message "Oops, cannot find message buffer") nil)
+	(set-buffer buf)
+	(if (eq 1 (call-process-region (point-min) (point-max)
+				       "spamc" nil nil nil "-c"))
+	    "spam")))))
+@end lisp
+
+That is about it.  As some spam is likely to get through anyway, you
+might want to have a nifty function to call when you happen to read
+spam.  And here is the nifty function:
+
+@lisp
+ (defun my-gnus-raze-spam ()
+  "Submit SPAM to Vipul's Razor, then mark it as expirable."
+  (interactive)
+  (gnus-summary-show-raw-article)
+  (gnus-summary-save-in-pipe "razor-report -f -d")
+  (gnus-summary-mark-as-expirable 1))
+@end lisp
+
+@node Hashcash
+@subsection Hashcash
 @cindex hashcash
-@cindex spam
 
 A novel technique to fight spam is to require senders to do something
 costly for each message they send.  This has the obvious drawback that
-you cannot rely on that everyone uses this technique, since it is
-optional, but it may be useful in smaller communities.
+you cannot rely on that everyone in the world uses this technique,
+since it is not part of the internet standards, but it may be useful
+in smaller communities.
+
+While the tools in the previous section work well in practice, they
+work only because the tools are constantly maintained and updated as
+new form of spam appears.  This means that a small percentage of spam
+will always get through.  It also means that somewhere, someone needs
+to read lots of spam to update these tools.  Hashcash avoids that, but
+instead requires that everyone you communicate with supports the
+scheme.  You can view the two approaches as pragmatic vs dogmatic.
+The approaches have their own advantages and disadvantages, but as
+often in the real world, a combination of them is stronger than either
+one of them separately.
 
 @cindex X-Hashcash
 The ``something costly'' is to burn CPU time, more specifically to
