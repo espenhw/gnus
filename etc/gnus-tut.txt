@@ -195,7 +195,7 @@ which are both faster and more accurated.
 
 There is absolutely no chance, whatsoever, of getting Gnus to work
 with Emacs 18.  It won't even work on Emacsen older than Emacs
-19.30/XEmacs 19.13.  Upgrade your Emacs or die.
+20.3/XEmacs 20.4.  Upgrade your Emacs or die.
 
 	
 From lars Thu Feb 23 23:20:38 1995
@@ -223,7 +223,7 @@ want this is beyond me, but here goes:
 
 Create the group by saying
 
-`M-a my.virtual.newsgroup<RET>nnvirtual<RET>^rec\.aquaria\.*<RET>'
+`G V my.virtual.newsgroup<RET>nnvirtual<RET>^rec\.aquaria\.*<RET>'
 
 This will create the group "nnvirtual:my.virtual.newsgroup", which
 will collect all articles from all the groups in the "rec.aquaria"
