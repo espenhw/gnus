@@ -12299,7 +12299,9 @@ INN versions 2.3.0 and later, for instance.
 @vindex nntp-read-timeout
 How long nntp should wait between checking for the end of output.
 Shorter values mean quicker response, but is more CPU intensive.  The
-default is 0.1 seconds.
+default is 0.1 seconds.  If you have a slow line to the server (and
+don't like to see Emacs eat your available CPU power), you might set
+this to, say, 1.
 
 @end table
 
