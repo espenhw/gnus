@@ -31,11 +31,13 @@
 
 (eval-and-compile
   (autoload 'mm-inline-partial "mm-partial")
-  (autoload 'mm-inline-external-body "mm-extern"))
+  (autoload 'mm-inline-external-body "mm-extern")
+  (autoload 'mm-inline-external-body "mm-view"))
 
 (defgroup mime-display ()
   "Display of MIME in mail and news articles."
   :link '(custom-manual "(emacs-mime)Customization")
+  :version "21.1"
   :group 'mail
   :group 'news
   :group 'multimedia)
@@ -277,6 +279,15 @@ to:
 		 (item :tag "only known protocols" known)
 		 (item :tag "ask" nil))
   :group 'mime-security)
+
+(defvar mm-viewer-completion-map
+  (let ((map (make-sparse-keymap 'mm-viewer-completion-map)))
+    (set-keymap-parent map minibuffer-local-completion-map)
+    map)
+  "Keymap for input viewer with completion.")
+
+;; Should we bind other key to minibuffer-complete-word?
+(define-key mm-viewer-completion-map " " 'self-insert-command) 
 
 (defvar mm-viewer-completion-map
   (let ((map (make-sparse-keymap 'mm-viewer-completion-map)))

@@ -1,5 +1,6 @@
 ;;; uudecode.el -- elisp native uudecode
-;; Copyright (c) 1998,99 Free Software Foundation, Inc.
+
+;; Copyright (c) 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Keywords: uudecode news
@@ -26,11 +27,32 @@
 ;;     Lots of codes are stolen from mm-decode.el, gnus-uu.el and
 ;;     base64.el
 
+;; This looks as though it could be made rather more efficient for
+;; internal working.  Encoding could use a lookup table and decoding
+;; should presumably use a vector or list buffer for partial results
+;; rather than with-current-buffer.  -- fx
+
+;; Only `uudecode-decode-region' should be advertised, and whether or
+;; not that uses a program should be customizable, but I guess it's
+;; too late now.  -- fx
+
 ;;; Code:
 
 (eval-when-compile (require 'cl))
-(if (not (fboundp 'char-int))
-    (defalias 'char-int 'identity))
+
+(eval-and-compile
+  (defalias 'uudecode-char-int
+    (if (fboundp 'char-int)
+	'char-int
+      'identity))
+
+  (if (featurep 'xemacs)
+      (defalias 'uudecode-insert-char 'insert-char)
+    (defun uudecode-insert-char (char &optional count ignored buffer)
+      (if (or (null buffer) (eq buffer (current-buffer)))
+	  (insert-char char count)
+	(with-current-buffer buffer
+	  (insert-char char count))))))
 
 (defcustom uudecode-decoder-program "uudecode"
   "*Non-nil value should be a string that names a uu decoder.
@@ -62,11 +84,11 @@ input and write the converted data to its standard output."
 
 ;;;###autoload
 (defun uudecode-decode-region-external (start end &optional file-name)
-  "Uudecode region between START and END with external decoder.
-
-If FILE-NAME is non-nil, save the result to FILE-NAME."
+  "Uudecode region between START and END using external program.
+If FILE-NAME is non-nil, save the result to FILE-NAME.  The program
+used is specified by `uudecode-decoder-program'."
   (interactive "r\nP")
-  (let ((cbuf (current-buffer)) tempfile firstline work-buffer status)
+  (let ((cbuf (current-buffer)) tempfile firstline status)
     (save-excursion
       (goto-char start)
       (when (re-search-forward uudecode-begin-line nil t)
@@ -80,16 +102,13 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 					       (match-string 1)))))
 	(setq tempfile (if file-name
 			   (expand-file-name file-name)
-			 (make-temp-name
-			  ;; /tmp/uu...
-			  (expand-file-name
-			   "uu" uudecode-temporary-file-directory))))
-	(let ((cdir default-directory) default-process-coding-system)
+			 (let ((temporary-file-directory
+				uudecode-temporary-file-directory))
+			   (make-temp-file "uu"))))
+	(let ((cdir default-directory)
+	      default-process-coding-system)
 	  (unwind-protect
-	      (progn
-		(set-buffer (setq work-buffer
-				  (generate-new-buffer " *uudecode-work*")))
-		(buffer-disable-undo work-buffer)
+	      (with-temp-buffer
 		(insert "begin 600 " (file-name-nondirectory tempfile) "\n")
 		(insert-buffer-substring cbuf firstline end)
 		(cd (file-name-directory tempfile))
@@ -109,21 +128,11 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 	      (let (format-alist)
 		(insert-file-contents-literally tempfile)))
 	  (message "Can not uudecode")))
-      (and work-buffer (kill-buffer work-buffer))
       (ignore-errors (or file-name (delete-file tempfile))))))
 
-(if (featurep 'xemacs)
-    (defalias 'uudecode-insert-char 'insert-char)
-  (defun uudecode-insert-char (char &optional count ignored buffer)
-    (if (or (null buffer) (eq buffer (current-buffer)))
-	(insert-char char count)
-      (with-current-buffer buffer
-	(insert-char char count)))))
-
 ;;;###autoload
-
 (defun uudecode-decode-region (start end &optional file-name)
-  "Uudecode region between START and END.
+  "Uudecode region between START and END without using an external program.
 If FILE-NAME is non-nil, save the result to FILE-NAME."
   (interactive "r\nP")
   (let ((work-buffer nil)
@@ -145,7 +154,6 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 						    nil nil nil
 						    (match-string 1))))))
 	    (setq work-buffer (generate-new-buffer " *uudecode-work*"))
-	    (buffer-disable-undo work-buffer)
 	    (forward-line 1)
 	    (skip-chars-forward non-data-chars end)
 	    (while (not done)
@@ -155,14 +163,16 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 	       ((> (skip-chars-forward uudecode-alphabet end) 0)
 		(setq lim (point))
 		(setq remain
-		      (logand (- (char-int (char-after inputpos)) 32) 63))
+		      (logand (- (uudecode-char-int (char-after inputpos)) 32)
+			      63))
 		(setq inputpos (1+ inputpos))
 		(if (= remain 0) (setq done t))
 		(while (and (< inputpos lim) (> remain 0))
 		  (setq bits (+ bits
 				(logand
 				 (-
-				  (char-int (char-after inputpos)) 32) 63)))
+				  (uudecode-char-int (char-after inputpos)) 32)
+				 63)))
 		  (if (/= counter 0) (setq remain (1- remain)))
 		  (setq counter (1+ counter)
 			inputpos (1+ inputpos))

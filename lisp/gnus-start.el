@@ -197,6 +197,7 @@ Gnus always reads its own startup file, which is called
 be readily understood by other newsreaders.  If you don't plan on
 using other newsreaders, set this variable to nil to save some time on
 entry."
+  :version "21.1"
   :group 'gnus-newsrc
   :type 'boolean)
 
@@ -681,7 +682,7 @@ prompt the user for the name of an NNTP server to use."
       (cond
        ((featurep 'xemacs)
 	(gnus-xmas-splash))
-       ((and (eq window-system 'x)
+       ((and window-system
 	     (= (frame-height) (1+ (window-height))))
 	(gnus-x-splash))))
 

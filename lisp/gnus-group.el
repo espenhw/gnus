@@ -400,6 +400,7 @@ ticked: The number of ticked articles."
 For example:
     (((nntp \"news.com.cn\") . cn-gb-2312))
 "
+  :version "21.1"
   :group 'gnus-charset
   :type '(repeat (cons (sexp :tag "Method") (symbol :tag "Charset"))))
 
@@ -703,16 +704,20 @@ in the minibuffer prompt."
        ["Select" gnus-group-select-group (gnus-group-group-name)]
        ["See old articles" (gnus-group-select-group 'all)
 	:keys "C-u SPC" :active (gnus-group-group-name)]
-       ["Catch up" gnus-group-catchup-current (gnus-group-group-name)]
+       ["Catch up" gnus-group-catchup-current :active (gnus-group-group-name)
+	:help "Mark unread articles in the current group as read"]
        ["Catch up all articles" gnus-group-catchup-current-all
 	(gnus-group-group-name)]
        ["Check for new articles" gnus-group-get-new-news-this-group
-	(gnus-group-group-name)]
+	:active (gnus-group-group-name)
+	:help "Check for new messages in current group"]
        ["Toggle subscription" gnus-group-unsubscribe-current-group
 	(gnus-group-group-name)]
-       ["Kill" gnus-group-kill-group (gnus-group-group-name)]
+       ["Kill" gnus-group-kill-group :active (gnus-group-group-name)
+	:help "Kill (remove) current group"]
        ["Yank" gnus-group-yank-group gnus-list-of-killed-groups]
-       ["Describe" gnus-group-describe-group (gnus-group-group-name)]
+       ["Describe" gnus-group-describe-group :active (gnus-group-group-name)
+	:help "Display description of the current group"]
        ["Fetch FAQ" gnus-group-fetch-faq (gnus-group-group-name)]
        ;; Actually one should check, if any of the marked groups gives t for
        ;; (gnus-check-backend-function 'request-expire-articles ...)
@@ -838,7 +843,8 @@ in the minibuffer prompt."
 	["Brew SOUP" gnus-group-brew-soup (fboundp 'gnus-soup-pack-packet)])
        ["Send a mail" gnus-group-mail t]
        ["Post an article..." gnus-group-post-news t]
-       ["Check for new news" gnus-group-get-new-news t]
+       ["Check for new news" gnus-group-get-new-news
+	:help "Get newly arrived articles"]
        ["Activate all groups" gnus-activate-all-groups t]
        ["Restart Gnus" gnus-group-restart t]
        ["Read init file" gnus-group-read-init-file t]
@@ -854,10 +860,39 @@ in the minibuffer prompt."
        ["Flush score cache" gnus-score-flush-cache t]
        ["Toggle topics" gnus-topic-mode t]
        ["Send a bug report" gnus-bug t]
-       ["Exit from Gnus" gnus-group-exit t]
+       ["Exit from Gnus" gnus-group-exit
+	:help "Quit reading news"]
        ["Exit without saving" gnus-group-quit t]))
 
     (gnus-run-hooks 'gnus-group-menu-hook)))
+
+(defvar gnus-group-toolbar-map nil)
+
+;; Emacs 21 tool bar.  Should be no-op otherwise.
+(defun gnus-group-make-tool-bar ()
+  (if (and (fboundp 'tool-bar-add-item-from-menu)
+	   (default-value 'tool-bar-mode)
+	   (not gnus-group-toolbar-map))
+      (setq gnus-group-toolbar-map
+	    (let ((tool-bar-map (make-sparse-keymap)))
+	      (tool-bar-add-item-from-menu
+	       'gnus-group-get-new-news "get-news" gnus-group-mode-map)
+	      (tool-bar-add-item-from-menu
+	       'gnus-group-get-new-news-this-group "gnntg" gnus-group-mode-map)
+	      (tool-bar-add-item-from-menu
+	       'gnus-group-catchup-current "catchup" gnus-group-mode-map)
+	      (tool-bar-add-item-from-menu
+	       'gnus-group-describe-group "describe-group" gnus-group-mode-map)
+	      (tool-bar-add-item "subscribe" 'gnus-group-subscribe 'subscribe
+				 :help "Subscribe to the current group")
+	      (tool-bar-add-item "unsubscribe" 'gnus-group-unsubscribe
+				 'unsubscribe
+				 :help "Unsubscribe from the current group")
+	      (tool-bar-add-item-from-menu
+	       'gnus-group-exit "exit-gnus" gnus-group-mode-map)
+	      tool-bar-map)))
+  (if gnus-group-toolbar-map
+      (set (make-local-variable 'tool-bar-map) gnus-group-toolbar-map)))
 
 (defun gnus-group-mode ()
   "Major mode for reading news.
@@ -877,9 +912,10 @@ The following commands are available:
 
 \\{gnus-group-mode-map}"
   (interactive)
-  (when (gnus-visual-p 'group-menu 'menu)
-    (gnus-group-make-menu-bar))
   (kill-all-local-variables)
+  (when (gnus-visual-p 'group-menu 'menu)
+    (gnus-group-make-menu-bar)
+    (gnus-group-make-tool-bar))
   (gnus-simplify-mode-line)
   (setq major-mode 'gnus-group-mode)
   (setq mode-name "Group")
@@ -2389,14 +2425,14 @@ mail messages or news articles in files that have numeric names."
     (while (or (not group) (gnus-gethash group gnus-newsrc-hashtb))
       (setq group
 	    (gnus-group-prefixed-name
-	     (concat (file-name-as-directory (directory-file-name dir))
-		     ext)
+	     (expand-file-name ext dir)
 	     '(nndir "")))
       (setq ext (format "<%d>" (setq i (1+ i)))))
     (gnus-group-make-group
      (gnus-group-real-name group)
      (list 'nndir (gnus-group-real-name group) (list 'nndir-directory dir)))))
 
+(eval-when-compile (defvar nnkiboze-score-file))
 (defun gnus-group-make-kiboze-group (group address scores)
   "Create an nnkiboze group.
 The user will be prompted for a name, a regexp to match groups, and
@@ -3326,7 +3362,7 @@ to use."
     (when current-prefix-arg
       (completing-read
        "Faq dir: " (and (listp gnus-group-faq-directory)
-			(mapcar (lambda (file) (list file))
+			(mapcar #'list
 				gnus-group-faq-directory))))))
   (unless group
     (error "No group name given"))
@@ -3337,7 +3373,7 @@ to use."
     (while (and (not found)
 		(setq dir (pop dirs)))
       (let ((name (gnus-group-real-name group)))
-	(setq file (concat (file-name-as-directory dir) name)))
+	(setq file (expand-file-name name dir)))
       (if (not (file-exists-p file))
 	  (gnus-message 1 "No such file: %s" file)
 	(let ((enable-local-variables nil))

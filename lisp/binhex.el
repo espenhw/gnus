@@ -28,8 +28,11 @@
 
 (eval-when-compile (require 'cl))
 
-(if (not (fboundp 'char-int))
-    (defalias 'char-int 'identity))
+(eval-when-compile
+  (defalias 'binhex-char-int
+    (if (fboundp 'char-int)
+	'char-int
+      'identity)))
 
 (defvar binhex-decoder-program "hexbin"
   "*Non-nil value should be a string that names a uu decoder.
@@ -132,14 +135,14 @@ input and write the converted data to its standard output.")
 (defun binhex-string-big-endian (string)
   (let ((ret 0) (i 0) (len (length string)))
     (while (< i len)
-      (setq ret (+ (lsh ret 8) (char-int (aref string i)))
+      (setq ret (+ (lsh ret 8) (binhex-char-int (aref string i)))
 	    i (1+ i)))
     ret))
 
 (defun binhex-string-little-endian (string)
   (let ((ret 0) (i 0) (shift 0) (len (length string)))
     (while (< i len)
-      (setq ret (+ ret (lsh (char-int (aref string i)) shift))
+      (setq ret (+ ret (lsh (binhex-char-int (aref string i)) shift))
 	    i (1+ i)
 	    shift (+ shift 8)))
     ret))
@@ -149,11 +152,11 @@ input and write the converted data to its standard output.")
     (let ((pos (point-min)) len)
       (vector
        (prog1
-	   (setq len (char-int (char-after pos)))
+	   (setq len (binhex-char-int (char-after pos)))
 	 (setq pos (1+ pos)))
        (buffer-substring pos (setq pos (+ pos len)))
        (prog1
-	   (setq len (char-int (char-after pos)))
+	   (setq len (binhex-char-int (char-after pos)))
 	 (setq pos (1+ pos)))
        (buffer-substring pos (setq pos (+ pos 4)))
        (buffer-substring pos (setq pos (+ pos 4)))
@@ -260,9 +263,9 @@ If HEADER-ONLY is non-nil only decode header and return filename."
   "Binhex decode region between START and END using external decoder."
   (interactive "r")
   (let ((cbuf (current-buffer)) firstline work-buffer status
-	(file-name (concat binhex-temporary-file-directory
-			   (binhex-decode-region start end t)
-			   ".data")))
+	(file-name (expand-file-name
+		    (concat (binhex-decode-region start end t) ".data")
+		    binhex-temporary-file-directory)))
     (save-excursion
       (goto-char start)
       (when (re-search-forward binhex-begin-line nil t)

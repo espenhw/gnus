@@ -1,4 +1,4 @@
-;;; mm-uu.el -- Return uu stuffs as mm handles
+;;; mm-uu.el -- Return uu stuff as mm handles
 ;; Copyright (c) 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
@@ -39,14 +39,19 @@
   (autoload 'uudecode-decode-region "uudecode")
   (autoload 'uudecode-decode-region-external "uudecode"))
 
+;; This is not the right place for this.  uudecode.el should decide
+;; whether or not to use a program with a single interface, but I
+;; guess it's too late now.  Also the default should depend on a test
+;; for the program.  -- fx
 (defcustom mm-uu-decode-function 'uudecode-decode-region
   "*Function to uudecode.
-Internal function is done in elisp by default, therefore decoding may
-appear to be horribly slow . You can make Gnus use the external Unix
+Internal function is done in Lisp by default, therefore decoding may
+appear to be horribly slow.  You can make Gnus use an external
 decoder, such as uudecode."
-  :type '(choice (item :tag "internal" uudecode-decode-region)
-		 (item :tag "external" uudecode-decode-region-external))
-  :group 'gnus-article-mime) 
+  :type '(choice
+	  (function-item :tag "Internal" uudecode-decode-region)
+	  (function-item :tag "External" uudecode-decode-region-external))
+  :group 'gnus-article-mime)
 
 (defcustom mm-uu-binhex-decode-function 'binhex-decode-region
   "*Function to binhex decode.
@@ -152,7 +157,8 @@ To disable dissecting shar codes, for instance, add
   (nth 5 entry))
 
 (defun mm-uu-copy-to-buffer (&optional from to)
-  "Copy the contents of the current buffer to a fresh buffer."
+  "Copy the contents of the current buffer to a fresh buffer.
+Return that buffer."
   (save-excursion
     (let ((obuf (current-buffer)))
       (set-buffer (generate-new-buffer " *mm-uu*"))

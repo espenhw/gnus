@@ -86,9 +86,10 @@ matches an previously scanned and verified nocem message."
   :group 'gnus-nocem
   :type 'boolean)
 
-(defcustom gnus-nocem-check-article-limit nil
+(defcustom gnus-nocem-check-article-limit 500
   "*If non-nil, the maximum number of articles to check in any NoCeM group."
   :group 'gnus-nocem
+  :version "21.1"
   :type '(choice (const :tag "unlimited" nil)
 		 (integer 1000)))
 
@@ -97,6 +98,7 @@ matches an previously scanned and verified nocem message."
 Otherwise don't bother fetching articles unless their author matches a
 valid issuer, which is much faster if you are selective about the issuers."
   :group 'gnus-nocem
+  :version "21.1"
   :type 'boolean)
 
 ;;; Internal variables

@@ -82,12 +82,14 @@ If nil, only read articles will be expired."
 
 (defcustom gnus-agent-confirmation-function 'y-or-n-p
   "Function to confirm when error happens."
+  :version "21.1"
   :group 'gnus-agent
   :type 'function)
 
 (defcustom gnus-agent-synchronize-flags 'ask
   "Indicate if flags are synchronized when you plug in.
 If this is `ask' the hook will query the user."
+  :version "21.1"
   :type '(choice (const :tag "Always" t)
 		 (const :tag "Never" nil)
 		 (const :tag "Ask" ask))
@@ -170,7 +172,9 @@ If this is `ask' the hook will query the user."
 
 (defun gnus-agent-lib-file (file)
   "The full path of the Gnus agent library FILE."
-  (concat (gnus-agent-directory) "agent.lib/" file))
+  (expand-file-name file
+		    (file-name-as-directory
+		     (expand-file-name "agent.lib" (gnus-agent-directory)))))
 
 ;;; Fetching setup functions.
 
@@ -1026,14 +1030,14 @@ the actual number of articles toggled is returned."
   (setq gnus-agent-article-alist
 	(gnus-agent-read-file
 	 (if dir
-	     (concat dir ".agentview")
+	     (expand-file-name ".agentview" dir)
 	   (gnus-agent-article-name ".agentview" group)))))
 
 (defun gnus-agent-save-alist (group &optional articles state dir)
   "Save the article-state alist for GROUP."
   (let ((file-name-coding-system nnmail-pathname-coding-system))
       (with-temp-file (if dir
-			  (concat dir ".agentview")
+			  (expand-file-name ".agentview" dir)
 			(gnus-agent-article-name ".agentview" group))
 	(princ (setq gnus-agent-article-alist
 		     (nconc gnus-agent-article-alist
@@ -1043,8 +1047,10 @@ the actual number of articles toggled is returned."
 	(insert "\n"))))
 
 (defun gnus-agent-article-name (article group)
-  (concat (gnus-agent-directory) (gnus-agent-group-path group) "/"
-	  (if (stringp article) article (string-to-number article))))
+  (expand-file-name (if (stringp article) article (string-to-number article))
+		    (file-name-as-directory
+		     (expand-file-name (gnus-agent-group-path group)
+				       (gnus-agent-directory)))))
 
 (defun gnus-agent-batch-confirmation (msg)
   "Show error message and return t."

@@ -1,8 +1,13 @@
-;;; gnus-cite.el --- parse citations in articles for Gnus
+;;; gnus-cite.el --- parse citations in articles for Gnus  -*- coding: iso-latin-1 -*-
+
 ;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000
 ;;        Free Software Foundation, Inc.
 
-;; Author: Per Abhiddenware; you can redistribute it and/or modify
+;; Author: Per Abhiddenware
+
+;; This file is part of GNU Emacs.
+
+;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 2, or (at your option)
 ;; any later version.

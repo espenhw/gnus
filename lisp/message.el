@@ -1,4 +1,4 @@
-;;; message.el --- composing mail and news messages
+;;; message.el --- composing mail and news messages  -*- coding: iso-latin-1 -*-
 ;; Copyright (C) 1996, 1997, 1998, 1999, 2000
 ;;        Free Software Foundation, Inc.
 
@@ -33,7 +33,6 @@
 (eval-when-compile
   (require 'cl)
   (defvar gnus-list-identifiers))	; gnus-sum is required where necessary
-
 (require 'mailheader)
 (require 'nnheader)
 ;; This is apparently necessary even though things are autoloaded:
@@ -260,7 +259,8 @@ should return the new buffer name."
   :group 'message-buffers
   :type 'boolean)
 
-(defvar gnus-local-organization)
+(eval-when-compile
+  (defvar gnus-local-organization))
 (defcustom message-user-organization
   (or (and (boundp 'gnus-local-organization)
 	   (stringp gnus-local-organization)
@@ -297,6 +297,7 @@ The provided functions are:
 
 (defcustom message-forward-as-mime t
   "*If non-nil, forward messages as an inline/rfc822 MIME section.  Otherwise, directly inline the old message in the forwarded message."
+  :version "21.1"
   :group 'message-forwarding
   :type 'boolean)
 
@@ -322,6 +323,7 @@ The provided functions are:
 
 (defcustom message-forward-ignored-headers "^Content-Transfer-Encoding:\\|^X-Gnus"
   "*All headers that match this regexp will be deleted when forwarding a message."
+  :version "21.1"
   :group 'message-forwarding
   :type '(choice (const :tag "None" nil)
 		 regexp))
@@ -428,8 +430,9 @@ might set this variable to '(\"-f\" \"you@some.where\")."
 Folding `References' makes ancient versions of INN create incorrect
 NOV lines.")
 
-(defvar gnus-post-method)
-(defvar gnus-select-method)
+(eval-when-compile
+  (defvar gnus-post-method)
+  (defvar gnus-select-method))
 (defcustom message-post-method
   (cond ((and (boundp 'gnus-post-method)
 	      (listp gnus-post-method)
@@ -582,7 +585,7 @@ If stringp, use this; if non-nil, use no host name (user name only)."
 
 (define-widget 'message-header-lines 'text
   "All header lines must be LFD terminated."
-  :format "%t:%n%v"
+  :format "%{%t%}:%n%v"
   :valid-regexp "^\\'"
   :error "All header lines must be newline terminated")
 
@@ -654,13 +657,17 @@ a message of type TYPE; and FUNCTION is a function to be called if
 PREDICATE returns non-nil.  FUNCTION is called with one parameter --
 the prefix.")
 
-(defvar message-mail-alias-type 'abbrev
+(defcustom message-mail-alias-type 'abbrev
   "*What alias expansion type to use in Message buffers.
 The default is `abbrev', which uses mailabbrev.  nil switches
-mail aliases off.")
+mail aliases off."
+  :group 'message
+  :link '(custom-manual "(message)Mail Aliases")
+  :type '(choice (const :tag "Use Mailabbrev" abbrev)
+		 (const :tag "No expansion" nil)))
 
 (defcustom message-auto-save-directory
-  (nnheader-concat message-directory "drafts/")
+  (file-name-as-directory (nnheader-concat message-directory "drafts"))
   "*Directory where Message auto-saves buffers if Gnus isn't running.
 If nil, Message won't auto-save."
   :group 'message-buffers
@@ -669,6 +676,7 @@ If nil, Message won't auto-save."
 (defcustom message-buffer-naming-style 'unique
   "*The way new message buffers are named.
 Valid valued are `unique' and `unsent'."
+  :version "21.1"
   :group 'message-buffers
   :type '(choice (const :tag "unique" unique)
 		 (const :tag "unsent" unsent)))
@@ -677,6 +685,7 @@ Valid valued are `unique' and `unsent'."
   (and (not (mm-multibyte-p)) 'iso-8859-1)
   "Default charset used in non-MULE Emacsen.
 If nil, you might be asked to input the charset."
+  :version "21.1"
   :group 'message
   :type 'symbol)
 
@@ -684,6 +693,7 @@ If nil, you might be asked to input the charset."
   (and (boundp 'rmail-dont-reply-to-names) rmail-dont-reply-to-names)
   "*A regexp specifying names to prune when doing wide replies.
 A value of nil means exclude your own name only."
+  :version "21.1"
   :group 'message
   :type '(choice (const :tag "Yourself" nil)
 		 regexp))
@@ -716,10 +726,6 @@ candidates:
 (defvar message-mode-abbrev-table text-mode-abbrev-table
   "Abbrev table used in Message mode buffers.
 Defaults to `text-mode-abbrev-table'.")
-(defgroup message-headers nil
-  "Message headers."
-  :link '(custom-manual "(message)Variables")
-  :group 'message)
 
 (defface message-header-to-face
   '((((class color)
@@ -917,6 +923,7 @@ The cdr of ech entry is a function for applying the face to a region.")
   "The limitation of messages sent as message/partial.
 The lower bound of message size in characters, beyond which the message 
 should be sent in several parts. If it is nil, the size is unlimited."
+  :version "21.1"
   :group 'message-buffers
   :type '(choice (const :tag "unlimited" nil)
 		 (integer 1000000)))
@@ -939,8 +946,9 @@ The first matched address (not primary one) is used in the From field."
 (defvar message-posting-charset nil)
 
 ;; Byte-compiler warning
-(defvar gnus-active-hashtb)
-(defvar gnus-read-active-file)
+(eval-when-compile
+  (defvar gnus-active-hashtb)
+  (defvar gnus-read-active-file))
 
 ;;; Regexp matching the delimiter of messages in UNIX mail format
 ;;; (UNIX From lines), minus the initial ^.  It should be a copy
@@ -1415,12 +1423,17 @@ Point is left at the beginning of the narrowed-to region."
    ["Kill To Signature" message-kill-to-signature t]
    ["Newline and Reformat" message-newline-and-reformat t]
    ["Rename buffer" message-rename-buffer t]
-   ["Spellcheck" ispell-message t]
-   ["Attach file as MIME" mml-attach-file t]
+   ["Spellcheck" ispell-message
+    :help "Spellcheck this message"]
+   ["Attach file as MIME" mml-attach-file
+    :help "Attach a file at point"]
    "----"
-   ["Send Message" message-send-and-exit t]
-   ["Abort Message" message-dont-send t]
-   ["Kill Message" message-kill-buffer t]))
+   ["Send Message" message-send-and-exit
+    :help "Send this message"]
+   ["Abort Message" message-dont-send
+    :help "File this draft message and exit"]
+   ["Kill Message" message-kill-buffer
+    :help "Delete this message without sending"]))
 
 (easy-menu-define
  message-mode-field-menu message-mode-map ""
@@ -1440,15 +1453,17 @@ Point is left at the beginning of the narrowed-to region."
    ["Body" message-goto-body t]
    ["Signature" message-goto-signature t]))
 
-(defvar facemenu-add-face-function)
-(defvar facemenu-remove-face-function)
+(eval-when-compile
+  (defvar facemenu-add-face-function)
+  (defvar facemenu-remove-face-function)
+  (defvar message-tool-bar-map))
 
 ;;;###autoload
 (defun message-mode ()
   "Major mode for editing mail and news to be sent.
 Like Text Mode but with these additional commands:
 C-c C-s  message-send (send the message)    C-c C-c  message-send-and-exit
-C-c C-d  Pospone sending the message        C-c C-k  Kill the message
+C-c C-d  Postpone sending the message        C-c C-k  Kill the message
 C-c C-f  move to a header field (and create it if there isn't):
 	 C-c C-f C-t  move to To	C-c C-f C-s  move to Subject
 	 C-c C-f C-c  move to Cc	C-c C-f C-b  move to Bcc
@@ -1510,7 +1525,9 @@ M-RET    message-newline-and-reformat (break the line and reformat)."
   (if (featurep 'xemacs)
       (message-setup-toolbar)
     (set (make-local-variable 'font-lock-defaults)
-	 '(message-font-lock-keywords t)))
+	 '(message-font-lock-keywords t))
+    (if (boundp 'tool-bar-map)
+	(set (make-local-variable 'tool-bar-map) message-tool-bar-map)))
   (easy-menu-add message-mode-menu message-mode-map)
   (easy-menu-add message-mode-field-menu message-mode-map)
   ;; Allow mail alias things.
@@ -2060,7 +2077,7 @@ prefix, and don't delete any headers."
 	(insert "\n"))
       (funcall message-citation-line-function))))
 
-(defvar mail-citation-hook)		;Compiler directive
+(eval-when-compile (defvar mail-citation-hook))		;Compiler directive
 (defun message-cite-original ()
   "Cite function in the standard Message manner."
   (if (and (boundp 'mail-citation-hook)
@@ -3699,6 +3716,9 @@ than 988 characters long, and if they are not, trim them until they are."
 (defun message-set-auto-save-file-name ()
   "Associate the message buffer with a file in the drafts directory."
   (when message-auto-save-directory
+    (unless (file-directory-p
+	     (directory-file-name message-auto-save-directory))
+      (gnus-make-directory message-auto-save-directory))
     (if (gnus-alive-p)
 	(setq message-draft-article
 	      (nndraft-request-associate-buffer "drafts"))
@@ -3844,6 +3864,7 @@ responses here are directed to other addresses.")))
 	      (setcdr ccs (substring (cdr ccs) (match-end 0))))
 	    (push ccs follow-to)))))
     follow-to))
+
 
 ;;;###autoload
 (defun message-reply (&optional to-address wide)
@@ -4442,8 +4463,33 @@ which specify the range to operate on."
 (defalias 'message-exchange-point-and-mark 'exchange-point-and-mark)
 
 ;; Support for toolbar
-(when (featurep 'xemacs)
-  (require 'messagexmas))
+(eval-when-compile 
+  (defvar tool-bar-map)
+  (defvar tool-bar-mode))
+(if (featurep 'xemacs)
+    (require 'messagexmas)
+  (when (and (>= (string-to-int emacs-version) 21)
+	     ;; I hate warnings --zsh.
+	     (fboundp 'tool-bar-add-item-from-menu)
+	     tool-bar-mode)
+    (defvar message-tool-bar-map
+      (let ((tool-bar-map (copy-keymap tool-bar-map)))
+	;; Zap some items which aren't so relevant and take up space.
+	(dolist (key '(print-buffer kill-buffer save-buffer write-file
+				    dired open-file))
+	  (define-key tool-bar-map (vector key) nil))
+	
+	(tool-bar-add-item-from-menu
+	 'message-send-and-exit "mail_send" message-mode-map)
+	(tool-bar-add-item-from-menu
+	 'message-kill-buffer "close" message-mode-map)
+	(tool-bar-add-item-from-menu
+	 'message-dont-send "cancel" message-mode-map)
+	(tool-bar-add-item-from-menu
+	 'mml-attach-file "attach" message-mode-map)
+	(tool-bar-add-item-from-menu
+	 'ispell-message "spell" message-mode-map)
+	tool-bar-map))))
 
 ;;; Group name completion.
 
@@ -4460,7 +4506,6 @@ Do a `tab-to-tab-stop' if not in those headers."
       (message-expand-group)
     (tab-to-tab-stop)))
 
-(defvar gnus-active-hashtb)
 (defun message-expand-group ()
   "Expand the group name under point."
   (let* ((b (save-excursion

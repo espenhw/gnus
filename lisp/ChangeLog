@@ -1,3 +1,529 @@
+2000-12-19 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el: Merged. Emacs21 CVS tag is zsh-merge-ognus-1.
+
+2000-12-19  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-charset-synonym-alist): Fix a typo.
+
+2000-12-18  Gerd Moellmann  <gerd@gnu.org>
+
+	* *.xpm, *.pbm: Convert icons icons to size 24x24.
+
+2000-12-18  Dave Love  <fx@gnu.org>
+
+	* gnus-msg.el (news-setup, news-reply-mode): Don't autoload
+	(unused).
+
+2000-12-13  Miles Bader  <miles@gnu.org>
+
+	* smiley-ems.el (smiley-region): Bind `inhibit-point-motion-hooks'
+	to t, so that we don't get stuck while trying to smilefy
+	intangible text.
+
+2000-12-12  Gerd Moellmann  <gerd@gnu.org>
+
+	* smiley-ems.el (smiley-regexp-alist): Make regexps match
+	at the end of the buffer.
+	(smiley-region): In the loop, move to the end of the submatch
+	matching the smiley instead of using the end of the match 
+	of the whole regexp.
+
+2000-12-12  Eli Zaretskii  <eliz@is.elta.co.il>
+
+	* message.el (message-mode): Doc fix.
+
+2000-12-12  Gerd Moellmann  <gerd@gnu.org>
+
+	* smiley-ems.el (smiley-region): Doc fix.
+	
+2000-12-11  Miles Bader  <miles@gnu.org>
+
+	* gnus-sum.el (gnus-summary-recenter): When trying to keep the
+	bottom line visible, check to see if it's partially obscured, and
+	if so, either scroll one more line to make it fully visible, or
+	revert to showing the second line from the top.
+
+2000-12-07  Dave Love  <fx@gnu.org>
+
+	* mailcap.el (mailcap-download-directory)
+	* gnus-audio.el (gnus-audio-directory)
+	* smiley-ems.el (smiley-data-directory): Fix :type.
+
+2000-11-30  Dave Love  <fx@gnu.org>
+
+	* message.el (message-auto-save-directory): Use
+	file-name-as-directory.
+	(message-set-auto-save-file-name): Create
+	message-auto-save-directory if necessary.
+	(message-replace-chars-in-string): Removed -- unused.
+	(message-mail-alias-type): Customize.
+	(message-headers): Remove duplicate defgroup.
+
+2000-11-29  Dave Love  <fx@gnu.org>
+
+	* qp.el (quoted-printable-decode-region): Use error, not message
+	to report malformed text (like base64).  Amend message.
+
+2000-11-29  Miles Bader  <miles@gnu.org>
+
+	* message.el (message-header-lines): Fontify tag.
+
+2000-11-27  Dave Love  <fx@gnu.org>
+
+	* nnlistserv.el: Ignore errors when requiring nnweb and avoid a
+	compiler warning.
+
+;2000-11-26  Dave Love  <fx@gnu.org>
+;
+;	* mm-uu.el (mm-uu-configure-list): Fix typo in :type.
+;
+2000-11-23  Dave Love  <fx@gnu.org>
+
+	* uu-post.pbm, uu-decode.pbm: new files from XPMs.
+
+;	* mm-uu.el (uudecode): Require.
+;	(uudecode-decode-region, uudecode-decode-region-external): Don't
+;	autoload.
+	(mm-uu-copy-to-buffer): Doc fix.
+	(mm-uu-decode-function, mm-uu-binhex-decode-function): Doc, custom
+	type fix.
+
+	* mailcap.el: Doc fixes.
+	(mailcap-mime-data): Various adjustments.
+	(mailcap): New group.
+	(mailcap-download-directory): Customize.
+	(mailcap-generate-unique-filename, mailcap-binary-suffixes)
+	(mailcap-temporary-directory): Deleted (unused).
+	(mailcap-unescape-mime-test): Simplify slightly.
+	(mailcap-viewer-passes-test): Use functionp.
+	(mailcap-command-p): Aliased to executable-find.
+
+	* rfc2047.el (rfc2047-encode-message-header): Don't encode if
+	default-enable-multibyte-characters is nil.
+
+2000-11-22  Gerd Moellmann  <gerd@gnu.org>
+
+	* gnus-group.el (gnus-group-make-tool-bar): Fix a paren typo.
+
+2000-11-21  Dave Love  <fx@gnu.org>
+
+	* gnus-art.el (gnus-mime-button-map): Don't inherit from
+	gnus-article-mode-map.
+;	(gnus-mime-button-menu): Use mouse-set-point.
+	(gnus-insert-mime-button, gnus-mime-display-alternative) 
+	(gnus-mime-display-alternative): Don't use local-map property.
+
+2000-11-17  Dave Love  <fx@gnu.org>
+
+	* uudecode.el (uudecode-insert-char): Fix bogus feature test.
+	(uudecode-decode-region-external): Doc fix.  Use with-temp-buffer
+	and make-temp-file.
+	(uudecode-decode-region): Doc fix.
+
+2000-11-14  Dave Love  <fx@gnu.org>
+
+	* cu-exit.pbm, exit-summ.pbm, followup.pbm, fuwo.pbm:
+	* mail-reply.pbm, next-ur.pbm, post.pbm, prev-ur.pbm:
+	* reply-wo.pbm, reply.pbm, rot13.pbm, save-aif.pbm, save-art.pbm:
+	New files, derived from the XPMs.
+
+2000-11-10  Dave Love  <fx@gnu.org>
+
+	* gnus-agent.el (gnus-agent-confirmation-function): Add :version.
+	(gnus-agent-lib-file, gnus-agent-load-alist)
+	(gnus-agent-save-alist, gnus-agent-article-name): Use
+	expand-file-name.
+
+	* gnus-group.el (gnus-group-name-charset-method-alist): Add
+	:version.
+	(nnkiboze-score-file): Defvar when compiling.
+
+	* gnus-start.el (gnus-read-newsrc-file): Add :version.
+
+	* gnus-art.el (gnus-article-banner-alist) 
+	(gnus-emphasize-whitespace-regexp, gnus-ignored-mime-types) 
+	(gnus-article-date-lapsed-new-header) 
+	(gnus-article-mime-match-handle-function, gnus-mime-action-alist) 
+	(gnus-treat-strip-list-identifiers, gnus-treat-date-iso8601) 
+	(gnus-treat-strip-headers-in-body) 
+	(gnus-treat-capitalize-sentences, gnus-treat-play-sounds) 
+	(gnus-treat-translate): Add :version.
+	(gnus-article-mime-part-function): Fix defcustom.
+
+	* nnmail.el (nnmail-expiry-target) 
+	(nnmail-scan-directory-mail-source-once, nnmail-extra-headers) 
+	(nnmail-split-header-length-limit): Add :version.
+
+	* gnus-sum.el (gnus-auto-expirable-marks) 
+	(gnus-inhibit-user-auto-expire, gnus-list-identifiers) 
+	(gnus-extra-headers, gnus-ignored-from-addresses) 
+	(gnus-newsgroup-ignored-charsets) 
+	(gnus-group-highlight-words-alist) 
+	(gnus-summary-show-article-charset-alist): Add :version.
+
+	* catchup.pbm, describe-group.pbm, exit-gnus.pbm, get-news.pbm:
+	gnntg.pbm, kill-group.pbm, subscribe.pbm, unsubscribe.pbm: New
+	files, converted from the XPMs.
+
+	* gnus-cache.el (gnus-cache-active-file): Don't use
+	file-name-as-directory on directory.
+	(gnus-cache-file-name): Use expand-file-name, not concat.  Don't
+	use file-name-as-directory on directory.
+
+	* time-date.el (timezone-make-date-arpa-standard): Autoload.
+	(date-to-time): Use it.
+
+;	* message.el (message-mode) <adaptive-fill-regexp>:
+;	<adaptive-fill-first-line-regexp>: Use [:alnum:] in regexp range.
+;	(message-newline-and-reformat): Likewise.
+	(message-forward-as-mime, message-forward-ignored-headers) 
+	(message-buffer-naming-style, message-default-charset) 
+	(message-dont-reply-to-names, message-send-mail-partially-limit):
+	Add :version.
+
+	* mm-util.el: Doc fixes.
+	(mm-mime-charset): Don't use the raw result of
+	mm-preferred-coding-system.
+	(mm-with-unibyte-buffer, mm-with-unibyte-current-buffer)
+	(mm-with-unibyte): Simplify.
+
+	* gnus-int.el (gnus-start-news-server): Use expand-file-name, not
+	concat.
+
+	* pop3.el (pop3-version): Deleted.
+	(pop3-make-date): New function, avoiding message-make-date.
+	(pop3-munge-message-separator): Use it.
+
+2000-11-09  Dave Love  <fx@gnu.org>
+
+	* gnus-group.el (gnus-group-make-directory-group) 
+	(gnus-group-fetch-faq): Use expand-file-name.
+	(gnus-group-fetch-faq): Simplify completing-read form.
+
+	* mm-bodies.el (mm-encode-body): Use mm-multibyte-p, don't just
+	test for Mule.
+
+	* message.el (tool-bar-map): Defvar when compiling.
+
+	* gnus-setup.el (running-xemacs, gnus-use-installed-tm)
+	(gnus-tm-lisp-directory): Deleted.
+	(gnus-use-installed-mailcrypt, gnus-emacs-lisp-directory): Use
+	(featurep 'xemacs).
+	(gnus-gnus-lisp-directory, gnus-mailcrypt-lisp-directory) 
+	(gnus-mailcrypt-lisp-directory, gnus-bbdb-lisp-directory): Remove
+	version numbers from file names.
+
+2000-11-08  Dave Love  <fx@gnu.org>
+
+	* mm-view.el: Use featurep for XEmacs test.
+	(mm-inline-message): Test for `remove-specifier'; don't use
+	condition-case.
+
+	* mm-bodies.el (mm-encode-body): Use mm-multibyte-p.
+
+	* gnus-score.el (gnus-score-load-file): Use expand-file-name.
+	(gnus-score-find-bnews): Don't concat "".
+
+	* cu-exit.xpm, prev-ur.xpm, next-ur.xpm, post.xpm, fuwo.xpm:
+	* followup.xpm, uu-post.xpm, uu-decode.xpm, mail-reply.xpm:
+	* reply.xpm, reply-wo.xpm, rot13.xpm, save-aif.xpm, save-art.xpm:
+	* exit-summ.xpm: New files, renamed from icons by Luis Fernandes.
+
+	* gnus-sum.el: Put some defvars in eval-when-compile.
+	(gnus-summary-mode-hook): Add :options.
+	(gnus-summary-make-menu-bar): Add some :help, used by tool bar.
+	(gnus-summary-tool-bar-map): New variable.
+	(gnus-summary-make-tool-bar): New function.
+	(gnus-summary-mode): Put kill-all-local-variables first.
+
+	* gnus-group.el (gnus-group-toolbar-map): New variable.
+	(gnus-group-make-tool-bar): Rewritten.
+	(gnus-group-mode): Put kill-all-local-variables first.
+
+	* rfc2047.el: Require gnus-util.
+
+	* nnml.el (gnus-sorted-intersection): Autoload.
+
+	* nnheader.el: Wrap subst-char-in-string def in eval-and-compile.
+	Put some defvars in eval-when-compile.
+	(gnus-intersection, gnus-sorted-complement):  Autoload.
+
+	* imap.el (imap-point-at-eol): New, replacing gnus-point-at-eol.
+
+	* mm-encode.el (mm-body-7-or-8): Autoload.
+
+	* mm-decode.el (mm-insert-inline): Autoload.
+
+	* mml.el:
+	* message.el: Put some defvars in eval-when-compile.
+
+	* gnus-msg.el: Put some defvars in eval-when-compile.
+	(gnus-msg-mail): Move after gnus-setup-message.
+
+	* smiley-ems.el (smiley-data-directory, smiley-regexp-alist): Doc fix.
+
+2000-11-07  Dave Love  <fx@gnu.org>
+
+	* gnus-util.el (nnheader): Don't require message (recursive
+	autoload).
+
+	* uudecode.el: Avoid compiler warnings.
+
+	* rfc2047.el: (rfc2047-fold-region): Use gnus-point-at-bol.
+	(rfc2047-charset-encoding-alist): Add iso-8859-1[45].
+
+2000-11-06  Dave Love  <fx@gnu.org>
+
+	* gnus-salt.el (gnus-binary-mode): Fix call to gnus-add-minor-mode.
+
+	* uudecode.el: Use (featurep 'xemacs).  Require cl when compiling.
+	(uudecode-char-int): New alias, replacing char-int.
+	(uudecode-decode-region): Don't call buffer-disable-undo.
+
+;	* mm-uu.el (mm-uu-configure): Unquote lambda.
+;	(mm-uu-configure-list): Doc fix.
+;
+;	* earcon.el (running-xemacs): Don't define.
+;
+;2000-11-03  Stefan Monnier  <monnier@cs.yale.edu>
+;
+;	* message.el (message-font-lock-keywords): Match a final newline
+;	to help font-lock's multiline support.
+;
+2000-11-03  Dave Love  <fx@gnu.org>
+
+	* gnus-nocem.el (gnus-nocem-check-article-limit): Default to 500.
+
+	* mm-partial.el (mm-inline-partial): Space-prefix temp buffer
+	name.
+
+	* gnus-cus.el (gnus-group-parameters) <gcc-self>: Fix custom type.
+	<banner>: Fix custom type, doc.
+
+	* mm-decode.el (mm-display-external): Space-prefix temp buffer
+	name.  Don't disable undo explicitly.
+
+;2000-11-02  Dave Love  <fx@gnu.org>
+;
+;	* message.el (message-font-lock-keywords): Use [:alpha:] for
+;	cite-prefix.
+
+2000-11-01  Dave Love  <fx@gnu.org>
+
+	* rfc2047.el (base64): Require unconditionally.
+	(message-posting-charset): Defvar when compiling.
+	(rfc2047-encode-message-header, rfc2047-encodable-p): Require
+	message.
+
+	* gnus-sum.el (nnoo): Require.
+	(mm-uu-dissect): Autoload.
+
+	* mml.el (mml-parse-1): Clarify message.
+	(mml-minibuffer-read-type): Use mailcap-mime-types.
+
+2000-11-01  Stefan Monnier  <monnier@cs.yale.edu>
+
+	* mml.el: Fix a typo in the requiring of CL.
+
+2000-11-01  Dave Love  <fx@gnu.org>
+
+	* utf7.el: Require cl when compiling.
+
+	* binhex.el: Use (featurep 'xemacs).
+	(binhex-char-int): New alias, replacing char-int.  Change callers.
+	(binhex-decode-region): Simplify work buffer code.
+	(binhex-decode-region-external): Use expand-file-name, not concat.
+
+2000-10-30  Dave Love  <fx@gnu.org>
+
+	* gnus-art.el: Fix 2000-10-27 change properly.
+
+2000-10-28  Miles Bader  <miles@gnu.org>
+
+	* gnus-art.el (gnus-read-save-file-name): Remove extraneous paren.
+
+2000-10-27  Dave Love  <fx@gnu.org>
+
+	* gnus-group.el (gnus-group-make-menu-bar): Add some :help
+	strings.
+	(gnus-group-make-tool-bar): New function.
+	(gnus-group-mode): Use it.
+
+	* message.el (message-mode-menu): Add some :help strings.
+	(message-mode) [message-tool-bar-map]: Define tool-bar-map.
+	(featurep): Use (featurep 'xemacs).  Install tool bar for Emacs.
+
+	* catchup.xpm, exit-gnus.xpm, gnntg.xpm, subscribe.xpm:
+	* describe-group.xpm, get-news.xpm, kill-group.xpm:
+	* unsubscribe.xpm: New files.  Renamed icons from Luis Fernandes.
+
+	* mm-decode.el (mm-valid-and-fit-image-p): Don't test
+	display-graphic-p here.
+
+2000-10-27  Miles Bader  <miles@lsi.nec.co.jp>
+
+	* gnus-ems.el (gnus-ems-redefine): Use (featurep 'xemacs) instead
+	of the `gnus-xemacs' variable, as the latter has been removed.
+	* gnus-start.el (gnus-1, gnus-read-descriptions-file): Likewise.
+	* gnus-art.el (gnus-treat-display-xface)
+	(gnus-treat-display-smileys, gnus-treat-display-picons) 
+	(gnus-article-read-summary-keys): Likewise.
+
+2000-10-26  Dave Love  <fx@gnu.org>
+
+	(defvar): Use rmail-spool-directory unconditionally.
+
+2000-10-18  Dave Love  <fx@gnu.org>
+
+	* mm-bodies.el (mm-uu-decode-function)
+	(mm-uu-binhex-decode-function): Defvar when compiling.
+
+	* gnus-nocem.el (gnus-nocem-issuers): Update.
+	(gnus-nocem-check-from): New option.
+	(gnus-nocem-scan-groups): Use it.
+	(gnus-nocem-check-article): Bind gnus-newsgroup-name.
+	(gnus-nocem-check-article-limit): Add :version.
+
+2000-10-16  Stefan Monnier  <monnier@cs.yale.edu>
+
+	* ietf-drums.el (mm-util): Require CL when compiling.
+
+2000-10-15  Dave Love  <fx@gnu.org>
+
+	* qp.el: Require mm-util.
+
+2000-10-13  Dave Love  <fx@gnu.org>
+
+	* qp.el (quoted-printable-decode-region): Avoid invalid
+	coding-systems.
+
+2000-10-12  Gerd Moellmann  <gerd@gnu.org>
+
+	* mm-bodies.el: Don't require `mm-uu' at compile-time; it leads
+	to a recursive load.
+
+2000-10-12  Dave Love  <fx@gnu.org>
+
+	* mm-util.el (mm-charset-synonym-alist): Add windows-1252.
+
+	* gnus.el (gnus-group-startup-message): Check for PBM image.
+
+2000-10-09  Dave Love  <fx@gnu.org>
+
+	* mail-source.el (mail-source-fetch-imap): Bind
+	default-enable-multibyte-characters rather than using
+	mm-disable-multibyte.
+
+2000-10-05  Dave Love  <fx@gnu.org>
+
+	* qp.el (mm-decode-coding-region, mm-encode-coding-region):
+	Autoload.
+	(quoted-printable-decode-region):  Rename arg which confused
+	charset with coding-system.  Don't use nonascii-insert-offset.
+	Coding-system encode the region initially.  Don't recognize `=='
+	as valid QP.  Coding-system decode the region finally.
+	(quoted-printable-decode-string): Rename arg which confused
+	charset with coding-system.
+
+	* mm-bodies.el: Require mm-uu, Don't require qp, uudecode.
+	(mm-encode-body): Apply mm-charset-to-coding-system to arg of
+	mm-encode-coding-region.
+	(mm-decode-body, mm-decode-string): Rename variables which
+	confused charset with coding-system.
+	(binhex-decode-region): Don't autoload.
+	(mm-body-encoding): Require message.
+	(mm-decode-content-transfer-encoding): Require mm-uu in relevant
+	cond branches.
+
+	* gnus-art.el (article-de-quoted-unreadable)
+	(article-de-base64-unreadable): Fold search case
+	rather than downcasing string.  Apply mm-charset-to-coding-system
+	to arg of quoted-printable-decode-region.
+
+2000-10-04  Dave Love  <fx@gnu.org>
+
+	* gnus-ems.el: Don't turn off compiler warnings in local vars.
+	Require ring when compiling.
+	(gnus-article-compface-xbm): New variable.
+
+2000-10-04  Dave Love  <fx@gnu.org>
+
+	* smiley-ems.el (smiley-regexp-alist, smiley-update-cache): Use
+	pbm images.
+
+	* frown.pbm, smile.pbm, wry.pbm: New files.
+
+	* frown.xbm, smile.xbm, wry.xbm: Deleted.
+
+2000-10-03  Dave Love  <fx@gnu.org>
+
+	* mail-source.el (mail-sources): Revert to nil.
+
+	* nnmail (nnmail-spool-file): Revert to `((file))'.
+
+	* qp.el: Don't require mm-util.
+	(quoted-printable-decode-region): Rewritten.
+	(quoted-printable-decode-string, quoted-printable-encode-region):
+	Doc fix.
+	(quoted-printable-encode-region): Barf on multibyte characters.
+	Maybe make the class multibyte.  Upcase chars, not formatted
+	strings.  Allow mm-use-ultra-safe-encoding to be unbound.
+	(quoted-printable-encode-string): Don't use
+	mm-with-unibyte-buffer.
+
+2000-09-29  Gerd Moellmann  <gerd@gnu.org>
+
+	* smiley-ems.el (smiley-update-cache):  Use `:ascent center'.
+
+2000-09-21  Dave Love  <fx@gnu.org>
+
+	* smiley-ems.el (smiley-region): Test if display-graphic-p bound
+	(for Emacs 20).  Tidy somewhat.
+
+2000-09-21  Dave Love  <fx@gnu.org>
+
+	* gnus-ems.el (gnus-article-display-xface): Use unibyte for the
+	image processing.  Rationalize logic somewhat.
+
+2000-09-20  Dave Love  <fx@gnu.org>
+
+	* gnus-start.el (gnus-1) <gnus-simple-splash>: Don't test for X
+	specifically.
+
+	* gnus.el (gnus-version-number): Avoid some redundant
+	autoloads.
+
+2000-09-20  Gerd Moellmann  <gerd@gnu.org>
+
+	* gnus-ems.el (gnus-article-display-xface): Don't convert PBM
+	to XBM; we always have PBM support.
+
+2000-09-14  Dave Love  <fx@gnu.org>
+
+	* gnus.el (gnus-charset): 
+	* mm-decode.el (mime-display):
+	* imap.el (imap) <defgroup>: Add :version.
+
+2000-09-13  Gerd Moellmann  <gerd@gnu.org>
+
+	* parse-time.el: Fix author's mail address.
+
+	* earcon.el, flow-fill.el, gnus-cite.el, gnus-gl.el, gnus-ml.el:
+	* gnus-mlspl.el, gnus-nocem.el, gnus-range.el, gnus-salt.el:
+	* gnus-setup.el, gnus-soup.el, gnus-undo.el, gnus-vm.el:
+	* messcompat.el, nnbabyl.el, nndir.el, nneething.el:
+	* nngateway.el, nnheaderxm.el, nnkiboze.el, nnlistserv.el:
+	* nnmbox.el, nnmh.el, nnoo.el, nnsoup.el, nnspool.el, rfc2045.el:
+	* rfc2231.el, uudecode.el: Fix copyright notice.
+
+	* nnweb.el (toplevel): To make the file bootstrap in Emacs,
+	require `w3' at load-time only if not running in batch mode.
+
+2000-12-19 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el: Before merge with Emacs21.
+
 2000-12-19  Raymond Scholz <ray-2000@zonix.de>
 
 	* gnus-art.el (gnus-article-dumbquotes-map): Add EUR symbol.

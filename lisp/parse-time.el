@@ -1,8 +1,8 @@
 ;;; parse-time.el --- Parsing time strings
 
-;; Copyright (C) 1996,2000 by Free Software Foundation, Inc.
+;; Copyright (C) 1996, 2000 by Free Software Foundation, Inc.
 
-;; Author: Erik Naggum <erik@arcana.naggum.no>
+;; Author: Erik Naggum <erik@naggum.no>
 ;; Keywords: util
 
 ;; This file is part of GNU Emacs.

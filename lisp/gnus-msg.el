@@ -143,6 +143,7 @@ use this option with care."
 
 (defvar gnus-message-buffer "*Mail Gnus*")
 (defvar gnus-article-copy nil)
+(defvar gnus-check-before-posting nil)
 (defvar gnus-last-posting-server nil)
 (defvar gnus-message-group-art nil)
 
@@ -630,8 +631,9 @@ If SILENT, don't prompt the user."
 
 
 ;; Dummies to avoid byte-compile warning.
-(defvar nnspool-rejected-article-hook)
-(defvar xemacs-codename)
+(eval-when-compile
+  (defvar nnspool-rejected-article-hook)
+  (defvar xemacs-codename))
 
 (defun gnus-extended-version ()
   "Stringified Gnus version and Emacs version."

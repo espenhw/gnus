@@ -19,8 +19,10 @@
 	       make-temp-file
 	       mail-aliases-setup mm-copy-tree
 	       mule-write-region-no-coding-system put-image
+	       ring-elements
 	       rmail-select-summary rmail-summary-exists rmail-update-summary
 	       sc-cite-regexp set-font-family set-font-size temp-directory
+	       tool-bar-add-item tool-bar-add-item-from-menu
 	       url-view-url vcard-pretty-print
 	       url-insert-file-contents
 	       w3-coding-system-for-mime-charset w3-prepare-buffer w3-region

@@ -42,11 +42,13 @@
     (require 'w3)
     (require 'url)
     (require 'w3-forms)))
+
 ;; Report failure to find w3 at load time if appropriate.
-(eval '(progn
-	 (require 'w3)
-	 (require 'url)
-	 (require 'w3-forms)))
+(unless noninteractive
+  (eval '(progn
+	   (require 'w3)
+	   (require 'url)
+	   (require 'w3-forms))))
 
 (nnoo-declare nnweb)
 

@@ -1,5 +1,6 @@
 ;;; rfc2045.el --- Functions for decoding rfc2045 headers
-;; Copyright (C) 1998,99 Free Software Foundation, Inc.
+
+;; Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; This file is part of GNU Emacs.
@@ -18,6 +19,9 @@
 ;; along with GNU Emacs; see the file COPYING.  If not, write to the
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
+  
+;; RFC 2045 is: "Multipurpose Internet Mail Extensions (MIME) Part
+;; One:  Format of Internet Message Bodies".
 
 ;;; Commentary:
 

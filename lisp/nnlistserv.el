@@ -1,5 +1,6 @@
 ;;; nnlistserv.el --- retrieving articles via web mailing list archives
-;; Copyright (C) 1997,98,99 Free Software Foundation, Inc.
+
+;; Copyright (C) 1997, 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news, mail
@@ -31,7 +32,10 @@
 (eval-when-compile (require 'cl))
 
 (require 'nnoo)
-(require 'nnweb)
+(eval-when-compile
+  (ignore-errors
+   (require 'nnweb))			; requires W3
+  (autoload 'url-insert-file-contents "nnweb"))
 
 (nnoo-declare nnlistserv
   nnweb)

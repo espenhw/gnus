@@ -1,4 +1,4 @@
-;;; gnus.el --- a newsreader for GNU Emacs
+:;;; gnus.el --- a newsreader for GNU Emacs
 ;; Copyright (C) 1987, 1988, 1989, 1990, 1993, 1994, 1995, 1996,
 ;;        1997, 1998, 2000 Free Software Foundation, Inc.
 
@@ -40,6 +40,7 @@
 (defgroup gnus-charset nil
   "Group character set issues."
   :link '(custom-manual "(gnus)Charsets")
+  :version "21.1"
   :group 'gnus)
 
 (defgroup gnus-cache nil
@@ -303,9 +304,9 @@ be set in `.emacs' instead."
 				(setq gnus-mode-line-image-cache
 				      (find-image
 				       '((:type xpm :file "gnus-pointer.xpm"
-						:ascent 80)
+						:ascent center)
 					 (:type xbm :file "gnus-pointer.xbm"
-						:ascent 80))))
+						:ascent center))))
 			      gnus-mode-line-image-cache)
 			    'help-echo "This is Gnus")
 		      str)
@@ -774,6 +775,10 @@ be set in `.emacs' instead."
      (display-graphic-p)
      (let ((image (find-image
 		   `((:type xpm :file "gnus.xpm")
+		     (:type pbm :file "gnus.pbm"
+			    ;; Account for the pbm's blackground.
+			    :background ,(face-foreground 'gnus-splash-face)
+			    :foreground ,(face-background 'default))
 		     (:type xbm :file "gnus.xbm"
 			    ;; Account for the xbm's blackground.
 			    :background ,(face-foreground 'gnus-splash-face)
@@ -1516,6 +1521,9 @@ If nil, no default charset is assumed when posting."
 (defvar gnus-agent-fetching nil
   "Whether Gnus agent is in fetching mode.")
 
+(defvar gnus-agent-fetching nil
+  "Whether Gnus agent is in fetching mode.")
+
 (defvar gnus-command-method nil
   "Dynamically bound variable that says what the current backend is.")
 
@@ -1671,10 +1679,9 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 	    (nthcdr 3 package)
 	  (cdr package)))))
    '(("info" :interactive t Info-goto-node)
-     ("pp" pp pp-to-string pp-eval-expression)
+     ("pp" pp-to-string)
      ("qp" quoted-printable-decode-region quoted-printable-decode-string)
      ("ps-print" ps-print-preprint)
-     ("browse-url" :interactive t browse-url)
      ("message" :interactive t
       message-send-and-exit message-yank-original)
      ("babel" babel-as-string)

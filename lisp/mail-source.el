@@ -39,6 +39,7 @@
 
 (defgroup mail-source nil
   "The mail-fetching library."
+  :version "21.1"
   :group 'gnus)
 
 ;; Define these at compile time to avoid dragging in imap always.

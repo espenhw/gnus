@@ -181,7 +181,7 @@ server there that you can connect to.  See also
 (defvoo nntp-connection-timeout nil
   "*Number of seconds to wait before an nntp connection times out.
 If this variable is nil, which is the default, no timers are set.
-NOTE: This variable is never seen to work in FSF Emacs 20 and XEmacs 21.")
+NOTE: This variable is never seen to work in Emacs 20 and XEmacs 21.")
 
 ;;; Internal variables.
 
@@ -1083,7 +1083,7 @@ password contained in '~/.nntp-authinfo'."
     ;; Delete status line.
     (goto-char (point-min))
     (while (looking-at "[1-5][0-9][0-9] .*\n")
-      ;; For some unknown reason, there are more than one status lines.
+      ;; For some unknown reason, there is more than one status line.
       (delete-region (point) (progn (forward-line 1) (point))))
     ;; Remove "." -> ".." encoding.
     (while (search-forward "\n.." nil t)
