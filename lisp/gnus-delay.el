@@ -49,12 +49,15 @@ DELAY is a string, giving the length of the time.  Possible values are:
   weeks (`w'), months (`M'), or years (`Y');
 
 * YYYY-MM-DD for a specific date.  The time of day is given by the
-  variable `gnus-delay-default-hour', minute and second are zero."
+  variable `gnus-delay-default-hour', minute and second are zero.
+
+* hh:mm for a specific time.  Use 24h format.  If it is later than this
+  time, then the deadline is tomorrow, else today."
   (interactive
    (list (read-string
 	  "Target date (YYYY-MM-DD) or length of delay (units in [mhdwMY]): "
 	  gnus-delay-default-delay)))
-  (let (num unit days year month day deadline)
+  (let (num unit days year month day hour minute deadline)
     (cond ((string-match
 	    "\\([0-9][0-9][0-9]?[0-9]?\\)-\\([0-9]+\\)-\\([0-9]+\\)"
 	    delay)
@@ -66,6 +69,23 @@ DELAY is a string, giving the length of the time.  Possible values are:
 		  (encode-time 0 0      ; second and minute
 			       gnus-delay-default-hour
 			       day month year))))
+	  ((string-match "\\([0-9]+\\):\\([0-9]+\\)" delay)
+	   (setq hour   (string-to-number (match-string 1 delay))
+		 minute (string-to-number (match-string 2 delay)))
+	   ;; Use current time, except...
+	   (setq deadline (apply 'vector (decode-time (current-time))))
+	   ;; ... for minute and hour.
+	   (aset deadline 1 minute)
+	   (aset deadline 2 hour)
+	   ;; Convert to seconds.
+	   (setq deadline (time-to-seconds (apply 'encode-time
+						  (append deadline nil))))
+	   ;; If this time has passed already, add a day.
+	   (when (< deadline (time-to-seconds (current-time)))
+	     (setq deadline (+ 3600 deadline))) ;3600 secs/day
+	   ;; Convert seconds to date header.
+	   (setq deadline (message-make-date
+			   (seconds-to-time deadline))))
 	  ((string-match "\\([0-9]+\\)\\s-*\\([mhdwMY]\\)" delay)
 	   (setq num (match-string 1 delay))
 	   (setq unit (match-string 2 delay))

@@ -1,3 +1,8 @@
+2001-08-15  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-delay.el (gnus-delay-article): Allow "01:23" time spec,
+	which specifies a time today or tomorrow.
+
 2001-08-15  Simon Josefsson  <jas@extundo.com>
 	From Pavel@Janik.cz (Pavel Jan,Bm(Bk)
 
