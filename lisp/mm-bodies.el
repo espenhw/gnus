@@ -266,18 +266,12 @@ use the supplied charset unconditionally."
 			 (setq coding-system mail-parse-charset))
 		     (not (eq coding-system 'gnus-decoded)))
 	    (if (or force
-		    ;; If a charset was supplied and `code-pages'
-		    ;; hasn't been loaded, then use the supplied
-		    ;; charset unconditionally.
-		    (and (not (featurep 'code-pages))
-			 charset-supplied))
+		    ;; If a charset was supplied, then use the
+		    ;; supplied charset unconditionally.
+		    charset-supplied)
 		(mm-decode-coding-region (point-min) (point-max)
 					 coding-system)
 	      ;; Otherwise allow Emacs to auto-detect the charset.
-	      ;; Messages in windows-125x are frequently incorrectly
-	      ;; advertised as iso-8859-x -- if `code-pages' has been
-	      ;; loaded and configured, we're able to deal with them
-	      ;; properly.
 	      (mm-decode-coding-region-safely (point-min) (point-max)
 					      coding-system)))
 	  (setq buffer-file-coding-system
