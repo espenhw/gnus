@@ -417,7 +417,7 @@ comparing subjects.")
 This variable will only be used if the value of
 `gnus-summary-make-false-root' is `empty'.")
 
-(defvar gnus-summary-goto-unread nil
+(defvar gnus-summary-goto-unread t
   "*If non-nil, marking commands will go to the next unread article.")
 
 (defvar gnus-group-goto-unread t
@@ -884,7 +884,8 @@ with some simple extensions.
 %S   Subject (string)
 %s   Subject if it is at the root of a thread, and \"\" otherwise (string)
 %n   Name of the poster (string)
-%A   Address of the poster (string)
+%a   Extracted name of the poster (string)
+%A   Extracted address of the poster (string)
 %F   Contents of the From: header (string)
 %x   Contents of the Xref: header (string)
 %D   Date of the article (string)
@@ -1279,7 +1280,8 @@ automatically when it is selected.")
 	(list ?S 'subject ?s)
 	(list ?s 'subject-or-nil ?s)
 	(list ?n 'name ?s)
-	(list ?A 'address ?s)
+	(list ?A '(car (cdr (funcall gnus-extract-address-components from))) ?s)
+	(list ?a '(or (car (funcall gnus-extract-address-components from)) from) ?s)
 	(list ?F 'from ?s)
 	(list ?x (macroexpand '(header-xref header)) ?s)
 	(list ?D (macroexpand '(header-date header)) ?s)
@@ -1341,7 +1343,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.97"
+(defconst gnus-version "(ding) Gnus v0.97.1"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1943,8 +1945,12 @@ Thank you for your help in stamping out bugs.
 		(post (substring format (match-beginning 3) (match-end 3))))
 	    (list 'concat
 		  (gnus-parse-simple-format pre spec-alist)
-		  (list 'gnus-set-mouse-face
-			(gnus-parse-simple-format button spec-alist))
+		  (` (let ((string (, (gnus-parse-simple-format 
+				       button spec-alist))))
+		       (put-text-property 0 (length string) 
+					  'mouse-face gnus-mouse-face string)
+		       string))
+;			(gnus-parse-simple-format button spec-alist))
 		  (gnus-parse-simple-format post spec-alist)))
 	(gnus-parse-simple-format
 	 (concat (substring format (match-beginning 1) (match-end 1))
@@ -1997,8 +2003,15 @@ Thank you for your help in stamping out bugs.
 		     (setq el (list 'char-to-string el)))
 		    ((= (car (cdr elem)) ?d)
 		     (numberp el) (setq el (list 'int-to-string el))))
-	      (setq flist (cons (list 'gnus-format-max-width el max-width) 
-				flist))
+	      (setq flist (cons 
+			   (` (let* ((val (eval (, el)))
+				     (valstr (if (numberp val)
+						 (int-to-string val) val)))
+				(if (> (length valstr) (, max-width))
+				    (substring valstr 0 (, max-width))
+				  valstr)))
+			    ;(list 'gnus-format-max-width el max-width) 
+			   flist))
 	      (setq newspec ?s))
 	  (setq flist (cons (car elem) flist))
 	  (setq newspec (car (cdr elem))))
@@ -2550,7 +2563,7 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
 	      (setq jump-buffer (and (> (length val) 2)
 				     (eq 'point (aref val 2))
 				     buffer))
-	      (setq invisible (not (get-buffer-window buffer)))))
+	      (setq invisible (not (and buffer (get-buffer-window buffer))))))
 	(setq hor (cdr hor))))
     (and (not invisible) jump-buffer)))
 
@@ -5292,7 +5305,7 @@ buffer.
   (define-key gnus-summary-wash-map "h" 'gnus-article-hide-headers)
   (define-key gnus-summary-wash-map "s" 'gnus-article-hide-signature)
   (define-key gnus-summary-wash-map "c" 'gnus-article-hide-citation)
-  (define-key gnus-summary-wash-map "C" 'gnus-article-hide-citation-maybe)
+  (define-key gnus-summary-wash-map "\C-c" 'gnus-article-hide-citation-maybe)
   (define-key gnus-summary-wash-map "o" 'gnus-article-treat-overstrike)
   (define-key gnus-summary-wash-map "w" 'gnus-article-word-wrap)
   (define-key gnus-summary-wash-map "d" 'gnus-article-remove-cr)
@@ -5544,9 +5557,15 @@ The following commands are available:
 		gnus-score-below-mark gnus-score-over-mark)))
 	 (replied (if replied gnus-replied-mark ? ))
 	 (from (header-from header))
-	 (name-address (funcall gnus-extract-address-components from))
-	 (address (car (cdr name-address)))
-	 (name (or (car name-address) (car (cdr name-address))))
+	 (name (cond 
+		((string-match "(.+)" from)
+		 (substring from (1+ (match-beginning 0)) (1- (match-end 0))))
+		((string-match "<[^>]+> *$" from)
+		 (let ((beg (match-beginning 0)))
+		   (or (and (string-match "^\"[^\"]\"" from)
+			    (substring from (1+ (match-beginning 0)) (1- (match-end 0))))
+		       (substring from 0 beg))))
+		(t from)))
 	 (subject (header-subject header))
 	 (number (header-number header))
 	 (opening-bracket (if dummy ?\< ?\[))
@@ -6137,7 +6156,8 @@ Unscored articles will be counted as having a score of zero."
   "Prepare summary buffer from THREADS and indentation LEVEL.  
 THREADS is either a list of `(PARENT [(CHILD1 [(GRANDCHILD ...]...) ...])'  
 or a straight list of headers."
-  (let (thread header number subject stack state gathered level)
+  (let ((level 0)
+	thread header number subject stack state gathered)
     (if (vectorp (car threads))
 	;; If this is a straight (sic) list of headers, then a
 	;; threaded summary display isn't required, so we just create
@@ -6145,14 +6165,21 @@ or a straight list of headers."
 	(gnus-summary-prepare-unthreaded threads)
 
       ;; Do the threaded display.
-      (setq stack (cons (cons 0 threads) stack))
 
-      (while stack
-	(setq state (car stack)
-	      level (car state)
-	      thread (cdr state)
-	      stack (cdr stack)
-	      header (car (car thread)))
+      (while (or threads stack)
+	
+	(if threads
+	    ;; If there are some threads, we do them before the
+	    ;; threads on the stack.
+	    (setq thread threads
+		  header (car (car thread)))
+	  ;; There were no current threads, so we pop something off
+	  ;; the stack. 
+	  (setq state (car stack)
+		level (car state)
+		thread (cdr state)
+		stack (cdr stack)
+		header (car (car thread))))
 
 	(if (stringp header)
 	    (progn
@@ -6211,37 +6238,41 @@ or a straight list of headers."
 		      (setq gnus-newsgroup-unreads 
 			    (delq number gnus-newsgroup-unreads)))))
 
-	  (gnus-summary-insert-line
-	   nil header level nil 
-	   (cond ((memq number gnus-newsgroup-marked) gnus-ticked-mark)
-		 ((memq number gnus-newsgroup-dormant) gnus-dormant-mark)
-		 ((memq number gnus-newsgroup-unreads) gnus-unread-mark)
-		 ((memq number gnus-newsgroup-expirable) gnus-expirable-mark)
-		 (t gnus-ancient-mark))
-	   (memq number gnus-newsgroup-replied)
-	   (memq number gnus-newsgroup-expirable)
-	   (if (and (eq gnus-summary-make-false-root 'empty)
-		    (memq number gathered))
-	       gnus-summary-same-subject
-	     (if (or (zerop level)
-		     (and gnus-thread-ignore-subject
-			  (not (string= 
-				(gnus-simplify-subject-re
-				 gnus-tmp-prev-subject)
-				(gnus-simplify-subject-re
-				 subject)))))
-		 subject
-	       gnus-summary-same-subject))
-	   (and (eq gnus-summary-make-false-root 'adopt)
-		(memq number gathered))
-	   (cdr (assq number gnus-newsgroup-scored))))
+	  (and
+	   header
+	   (progn
+	     (gnus-summary-insert-line
+	      nil header level nil 
+	      (cond 
+	       ((memq number gnus-newsgroup-marked) gnus-ticked-mark)
+	       ((memq number gnus-newsgroup-dormant) gnus-dormant-mark)
+	       ((memq number gnus-newsgroup-unreads) gnus-unread-mark)
+	       ((memq number gnus-newsgroup-expirable) gnus-expirable-mark)
+	       (t gnus-ancient-mark))
+	      (memq number gnus-newsgroup-replied)
+	      (memq number gnus-newsgroup-expirable)
+	      (if (and (eq gnus-summary-make-false-root 'empty)
+		       (memq number gathered))
+		  gnus-summary-same-subject
+		(if (or (zerop level)
+			(and gnus-thread-ignore-subject
+			     (not (string= 
+				   (gnus-simplify-subject-re
+				    gnus-tmp-prev-subject)
+				   (gnus-simplify-subject-re
+				    subject)))))
+		    subject
+		  gnus-summary-same-subject))
+	      (and (eq gnus-summary-make-false-root 'adopt)
+		   (memq number gathered))
+	      (cdr (assq number gnus-newsgroup-scored)))
 
-	(setq gnus-tmp-prev-subject subject)
+	     (setq gnus-tmp-prev-subject subject))))
 
 	(if (nth 1 thread) 
 	    (setq stack (cons (cons (max 0 level) (nthcdr 1 thread)) stack)))
-	(if (cdr (car thread))
-	    (setq stack (cons (cons (1+ level) (cdr (car thread))) stack)))))))
+	(setq level (1+ level))
+	(setq threads (cdr (car thread)))))))
 
 
 (defun gnus-summary-prepare-unthreaded (headers)
@@ -7725,7 +7756,7 @@ Given a prefix, will force an `article' buffer configuration."
   (gnus-set-global-variables)
   (if arg
       (gnus-configure-windows 'article 'force)
-    (gnus-configure-windows 'summary)))
+    (gnus-configure-windows 'summary 'force)))
 
 (defun gnus-summary-display-article (article &optional all-header)
   "Display ARTICLE in article buffer."

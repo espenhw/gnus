@@ -1,5 +1,22 @@
-Mon Jul 17 12:28:36 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+Tue Jul 18 11:04:02 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
 
+	* gnus.el (gnus-parse-format): Use macros instead of defuns.
+
+	* gnus-msg.el (gnus-debug): Slap more condition-cases around
+	everything. 
+
+	* gnus.el (gnus-summary-prepare-threads): Slight rewrite.
+	(gnus-summary-prepare-threads): Would bug out on culling.
+	(gnus-summary-expand-window): Didn't.
+
+Mon Jul 17 16:31:22 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-summary-goto-unread): New default.
+
+Mon Jul 17 12:28:36 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.97 is released.
+	
 	* gnus.el (gnus-summary-prepare-threads): New implementation.
 
 	* gnus-vis.el (gnus-netscape-open-url): Used 10.29isms. 

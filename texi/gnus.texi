@@ -2692,8 +2692,13 @@ otherwise.
 Full @code{From} line.
 @item n
 The name (from the @code{From} header).
+@item a
+The name (from the @code{From} header). This differs from the @code{n}
+spec in that it uses @code{gnus-extract-address-components}, which is
+slower, but may be more thorough.
 @item A
-The address (from the @code{From} header).
+The address (from the @code{From} header). This works the same way as
+the @code{a} spec.
 @item L
 Number of lines in the article.
 @item c
