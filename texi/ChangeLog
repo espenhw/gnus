@@ -1,3 +1,7 @@
+2005-01-15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Topic Commands): Fix next/previous.
+
 2005-01-15  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Article Washing): Mention `W i'.

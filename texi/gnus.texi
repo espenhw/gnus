@@ -3800,7 +3800,7 @@ Go to the next topic (@code{gnus-topic-goto-next-topic}).
 @item T M-p
 @kindex T M-p (Topic)
 @findex gnus-topic-goto-previous-topic
-Go to the next topic (@code{gnus-topic-goto-previous-topic}).
+Go to the previous topic (@code{gnus-topic-goto-previous-topic}).
 
 @item G p
 @kindex G p (Topic)
