@@ -1,3 +1,10 @@
+2001-07-11 04:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nndraft.el (nndraft-request-restore-buffer): Don't remove Date.
+
+	* gnus-draft.el (gnus-draft-edit-message): Remove Date here.
+	(gnus-draft-setup): Remove backlog.
+
 2001-07-10  Pavel Jan,Bm(Bk <Pavel@Janik.cz>
 
 	* gnus-logic.el, gnus-srvr.el, gnus-vm.el, nnheaderxm.el, nnoo.el:

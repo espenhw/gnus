@@ -98,6 +98,10 @@
     (gnus-summary-mark-as-read article gnus-canceled-mark)
     (gnus-draft-setup article gnus-newsgroup-name t)
     (set-buffer-modified-p t)
+    (save-excursion
+      (save-restriction
+        (message-narrow-to-headers)
+        (message-remove-header "date")))
     (save-buffer)
     (let ((gnus-verbose-backends nil))
       (gnus-request-expire-articles (list article) gnus-newsgroup-name t))
@@ -231,6 +235,7 @@
 	    (forward-line 1)
 	    (setq ga (message-fetch-field gnus-draft-meta-information-header))
 	    (message-set-auto-save-file-name))))
+      (gnus-backlog-remove-article group narticle)
       (when (and ga
 		 (ignore-errors (setq ga (car (read-from-string ga)))))
 	(setq message-post-method

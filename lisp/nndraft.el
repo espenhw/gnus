@@ -132,7 +132,9 @@
   (when (nndraft-request-article article group server (current-buffer))
     (message-remove-header "xref")
     (message-remove-header "lines")
-    (message-remove-header "date")
+    ;; Articles in nndraft:queue are considered as sent messages.  The
+    ;; Date field should be the time when they are sent.
+    ;;(message-remove-header "date")
     t))
 
 (deffoo nndraft-request-update-info (group info &optional server)
