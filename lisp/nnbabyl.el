@@ -424,11 +424,11 @@
 (defun nnbabyl-insert-newsgroup-line (group-art)
   (save-excursion
     (goto-char (point-min))
-    ;; If there is a C-l at the beginning of the narrowed region, this
-    ;; isn't really a "save", but rather a "scan".
     (while (looking-at "From ")
       (replace-match "Mail-from: From " t t)
       (forward-line 1))
+    ;; If there is a C-l at the beginning of the narrowed region, this
+    ;; isn't really a "save", but rather a "scan".
     (goto-char (point-min))
     (or (looking-at "\^L")
 	(save-excursion
@@ -488,21 +488,21 @@
 	(goto-char (point-min))
 	(while (re-search-forward delim nil t)
 	  (setq start (match-beginning 0))
-	  (if (and
-	       (save-excursion (re-search-forward delim nil t))
-	       (not (search-forward 
-		     "\nX-Gnus-Newsgroup: " 
-		     (save-excursion 
-		       (setq end (or (and (re-search-forward delim nil t)
-					  (match-beginning 0))
-				     (point-max)))) t)))
+	  (if (not (search-forward 
+		    "\nX-Gnus-Newsgroup: " 
+		    (save-excursion 
+		      (setq end (or (and (re-search-forward delim nil t)
+					 (match-beginning 0))
+				    (point-max)))) t))
 	      (progn
 		(goto-char end)
 		(save-excursion
 		  (save-restriction
 		    (goto-char start)
-		    (narrow-to-region (1+ start) end)
-		    (nnbabyl-save-mail))))))
+		    (narrow-to-region start end)
+		    (nnbabyl-save-mail)
+		    (setq end (point-max))))
+		(goto-char end))))
 	(and (buffer-modified-p (current-buffer)) (save-buffer))
 	(nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)))))
 

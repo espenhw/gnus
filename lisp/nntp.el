@@ -419,7 +419,7 @@ instead call function `nntp-status-message' to get status message.")
 			 nntp-status-string))
       (substring nntp-status-string (match-beginning 1) (match-end 1))
     ;; Empty message if nothing.
-    nntp-status-string))
+    (or nntp-status-string "")))
 
 (defun nntp-request-article (id &optional newsgroup server buffer)
   "Request article ID (message-id or number)."

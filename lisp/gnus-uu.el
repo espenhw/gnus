@@ -262,7 +262,6 @@ The headers will be included in the sequence they are matched.")
 
 (defconst gnus-uu-output-buffer-name " *Gnus UU Output*")
 
-(defconst gnus-uu-highest-article-number 1)
 (defvar gnus-uu-default-dir default-directory)
 
 ;; Keymaps
@@ -584,7 +583,7 @@ The headers will be included in the sequence they are matched.")
 ;; Internal functions.
 
 (defun gnus-uu-decode-with-method (method n &optional save not-insert scan)
-  (gnus-uu-initialize)
+  (gnus-uu-initialize scan)
   (if save (setq gnus-uu-default-dir save))
   (let ((articles (gnus-uu-get-list-of-articles n))
 	files)
@@ -616,16 +615,17 @@ The headers will be included in the sequence they are matched.")
   (let ((len (length files))
 	to-file file)
     (while files
-      (setq file (cdr (assq 'name (car files))))
-      (and (file-exists-p file)
-	   (progn
-	     (setq to-file (if (file-directory-p dir)
-			       (concat dir (file-name-nondirectory file))
-			     dir))
-	     (and (or (not (file-exists-p to-file))
-		      (gnus-y-or-n-p (format "%s exists; overwrite? "
-					     to-file)))
-		  (copy-file file to-file t t))))
+      (and 
+       (setq file (cdr (assq 'name (car files))))
+       (file-exists-p file)
+       (progn
+	 (setq to-file (if (file-directory-p dir)
+			   (concat dir (file-name-nondirectory file))
+			 dir))
+	 (and (or (not (file-exists-p to-file))
+		  (gnus-y-or-n-p (format "%s exists; overwrite? "
+					 to-file)))
+	      (copy-file file to-file t t))))
       (setq files (cdr files)))
     (message "Saved %d file%s" len (if (> len 1) "s" ""))))
 
@@ -1052,9 +1052,6 @@ The headers will be included in the sequence they are matched.")
       (setq articles (cdr articles))
       (setq gnus-uu-has-been-grabbed (cons article gnus-uu-has-been-grabbed))
 
-      (if (> article gnus-uu-highest-article-number) 
-	  (setq gnus-uu-highest-article-number article))
-
       (if (eq articles ()) 
 	  (if (eq state 'first)
 	      (setq state 'first-and-last)
@@ -1308,6 +1305,7 @@ The headers will be included in the sequence they are matched.")
 ;; found, or the name of the command to run if such a rule is found.
 (defun gnus-uu-choose-action (file-name file-action-list &optional no-ignore)
   (let ((action-list (copy-sequence file-action-list))
+	(case-fold-search t)
 	rule action)
     (and 
      (or no-ignore 
@@ -1463,15 +1461,15 @@ The headers will be included in the sequence they are matched.")
 
 (defvar gnus-uu-tmp-alist nil)
 
-(defun gnus-uu-initialize ()
+(defun gnus-uu-initialize (&optional scan)
   (let (entry)
-    (if (if (setq entry (assoc gnus-newsgroup-name gnus-uu-tmp-alist))
-	    (if (file-exists-p (cdr entry))
-		(setq gnus-uu-work-dir (cdr entry))
-	      (setq gnus-uu-tmp-alist (delq entry gnus-uu-tmp-alist))
-	      nil))
+    (if (and (not scan)
+	     (if (setq entry (assoc gnus-newsgroup-name gnus-uu-tmp-alist))
+		 (if (file-exists-p (cdr entry))
+		     (setq gnus-uu-work-dir (cdr entry))
+		   (setq gnus-uu-tmp-alist (delq entry gnus-uu-tmp-alist))
+		   nil)))
 	t
-      (setq gnus-uu-highest-article-number 1)
       (setq gnus-uu-tmp-dir (file-name-as-directory 
 			     (expand-file-name gnus-uu-tmp-dir)))
       (if (not (file-directory-p gnus-uu-tmp-dir))

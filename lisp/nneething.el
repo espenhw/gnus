@@ -302,7 +302,8 @@
      ((not (file-exists-p file))
       ;; The file do not exist. 
       nil)
-     ((not (file-regular-p file))
+     ((or (file-directory-p file)
+	  (file-symlink-p file))
       ;; It's a dir, so we fudge a head.
       (nneething-make-head file) t)
      (t 

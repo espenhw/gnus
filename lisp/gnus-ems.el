@@ -34,6 +34,38 @@
 (defalias 'gnus-overlay-put 'overlay-put)
 (defalias 'gnus-move-overlay 'move-overlay)
 
+;; Don't warn about these undefined variables.
+					;defined in gnus.el
+(defvar gnus-active-hashtb)
+(defvar gnus-article-buffer)
+(defvar gnus-auto-center-summary)
+(defvar gnus-buffer-list)
+(defvar gnus-current-headers)
+(defvar gnus-level-killed)
+(defvar gnus-level-zombie)
+(defvar gnus-newsgroup-bookmarks)
+(defvar gnus-newsgroup-dependencies)
+(defvar gnus-newsgroup-headers-hashtb-by-number)
+(defvar gnus-newsgroup-selected-overlay)
+(defvar gnus-newsrc-hashtb)
+(defvar gnus-read-mark)
+(defvar gnus-refer-article-method)
+(defvar gnus-reffed-article-number)
+(defvar gnus-unread-mark)
+(defvar gnus-version)
+(defvar gnus-view-pseudos)
+(defvar gnus-view-pseudos-separately)
+(defvar gnus-visual)
+(defvar gnus-zombie-list)
+					;defined in gnus-msg.el
+(defvar gnus-article-copy)
+(defvar gnus-check-before-posting)
+					;defined in gnus-vis.el
+(defvar gnus-article-button-face)
+(defvar gnus-article-mouse-face)
+(defvar gnus-summary-selected-face)
+
+
 ;; We do not byte-compile this file, because error messages are such a
 ;; bore.  
 
@@ -625,7 +657,7 @@ call it with the value of the `gnus-data' text property."
 (provide 'gnus-ems)
 
 ;; Local Variables:
-;; byte-compile-warnings: nil
+;; byte-compile-warnings: '(redefine callargs)
 ;; End:
 
 ;;; gnus-ems.el ends here

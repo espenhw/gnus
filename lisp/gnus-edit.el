@@ -535,7 +535,7 @@ groups matched by the current score file.")
 			  'gnus-score-custom-set
 			  'gnus-score-custom-get))
   (make-local-variable 'gnus-score-custom-file)
-  (setq gnus-score-custom-file "SCORE")
+  (setq gnus-score-custom-file (expand-file-name  "SCORE" "~/News"))
   (make-local-variable 'gnus-score-alist)
   (setq gnus-score-alist nil)
   (custom-reset-all))

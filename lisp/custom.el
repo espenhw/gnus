@@ -123,17 +123,18 @@ STRING should be given if the last search was by `string-match' on STRING."
 	   (and (symbolp x) (assq x global-face-data)))
        t)))
       
-(defvar x-colors nil)
-(defvar custom-button-face nil)
-(defvar custom-modified-list nil)
-(defvar custom-field-uninitialized-face nil)
-(defvar custom-field-invalid-face nil)
-(defvar custom-field-modified-face nil)
-(defvar custom-field-face nil)
-(defvar custom-button-properties nil)
-(defvar custom-documentation-properties nil)
-(defvar custom-mouse-face nil)
-(defvar custom-field-active-face nil)
+(eval-when-compile
+  (defvar x-colors nil)
+  (defvar custom-button-face nil)
+  (defvar custom-modified-list nil)
+  (defvar custom-field-uninitialized-face nil)
+  (defvar custom-field-invalid-face nil)
+  (defvar custom-field-modified-face nil)
+  (defvar custom-field-face nil)
+  (defvar custom-button-properties nil)
+  (defvar custom-documentation-properties nil)
+  (defvar custom-mouse-face nil)
+  (defvar custom-field-active-face nil))
 
 (or (and (fboundp 'modify-face) (not (featurep 'face-lock)))
     ;; Introduced in Emacs 19.29.  Incompatible definition also introduced
@@ -204,7 +205,8 @@ If called interactively, prompts for a face and face attributes."
 ;; Put it in the Help menu, if possible.
 (condition-case nil
     ;; This will not work under XEmacs.
-    (global-set-key [ menu-bar help customize ] '("Customize..." . customize))
+    (global-set-key [ menu-bar help-menu customize ]
+		    '("Customize..." . customize))
   (error nil))
 
 ;;; External Data:
@@ -725,8 +727,9 @@ START and END are markers to the start and end of the field."
 (defun custom-field-accept (field value &optional original)
   "Accept FIELD VALUE.  
 If optional ORIGINAL is non-nil, concider VALUE for the original value."
-  (funcall (custom-property (custom-field-custom field) 'accept) 
-	   field value original))
+  (let ((inhibit-point-motion-hooks t))
+    (funcall (custom-property (custom-field-custom field) 'accept) 
+	     field value original)))
 
 (defun custom-field-face (field)
   "The face used for highlighting FIELD."

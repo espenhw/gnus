@@ -1043,7 +1043,11 @@ SCORE is the score to add."
 	     entries alist ofunc article)
 	;; Not all backends support partial fetching.  In that case,
 	;; we just fetch the entire article.
-	(or (gnus-check-backend-function request-func gnus-newsgroup-name)
+	(or (gnus-check-backend-function 
+	     (and (string-match "^gnus-" (symbol-name request-func))
+		  (intern (substring (symbol-name request-func)
+				     (match-end 0))))
+	     gnus-newsgroup-name)
 	    (progn
 	      (setq ofunc request-func)
 	      (setq request-func 'gnus-request-article)))
@@ -1323,7 +1327,8 @@ SCORE is the score to add."
 			     (setcdr art (+ score (cdr art)))))))
 		  (forward-line 1))
 	      (and (string= match "") (setq match "\n"))
-	      (while (funcall search-func match nil t)
+	      (while (and (not (eobp))
+			  (funcall search-func match nil t))
 		(goto-char (match-beginning 0))
 		(end-of-line)
 		(setq found (setq arts (get-text-property (point) 'articles)))

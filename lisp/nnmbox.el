@@ -475,6 +475,7 @@
 	   (setq incoming 
 		 (nnmail-move-inbox 
 		  (car spools) (concat nnmbox-mbox-file "-Incoming")))
+	   (setq incomings (cons incoming incomings))
 	   (save-excursion
 	     (setq group (nnmail-get-split-group (car spools) group-in))
 	     (let ((in-buf (nnmail-split-incoming 

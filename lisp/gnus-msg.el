@@ -954,7 +954,7 @@ will attempt to use the foreign server to post the article."
 	 (match-beginning 0)))
       (gnus-inews-remove-headers)
       (gnus-inews-insert-headers)
-      (run-hooks gnus-inews-article-header-hook)
+      (run-hooks 'gnus-inews-article-header-hook)
       (widen))
     ;; Check whether the article is a good Net Citizen.
     (if (and gnus-article-check-size
@@ -1096,8 +1096,10 @@ Headers in `gnus-required-headers' will be generated."
 	  (progn
 	    (goto-char (point-min))    
 	    (and (re-search-forward "^Sender:" nil t)
-		 (delete-region (progn (beginning-of-line) (point))
-				(progn (forward-line 1) (point))))
+		 (progn
+		   (beginning-of-line)
+		   (insert "Original-")
+		   (beginning-of-line)))
 	    (insert "Sender: " (gnus-inews-real-user-address) "\n"))))))
 
 
@@ -1700,7 +1702,7 @@ If YANK is non-nil, include the original article."
 The source file has to be in the Emacs load path."
   (interactive)
   (let ((files '("gnus.el" "gnus-msg.el" "gnus-score.el"))
-	file dirs expr olist)
+	file dirs expr olist sym)
     (message "Please wait while we snoop your variables...")
     (sit-for 0)
     (save-excursion
@@ -1739,8 +1741,10 @@ The source file has to be in the Emacs load path."
     (while olist
       (if (boundp (car olist))
 	  (insert "(setq " (symbol-name (car olist)) 
-		  (if (or (consp (symbol-value (car olist)))
-			  (symbolp (symbol-value (car olist))))
+		  (if (or (consp (setq sym (symbol-value (car olist))))
+			  (and (symbolp sym)
+			       (not (or (eq sym nil)
+					(eq sym t)))))
 		      " '" " ")
 		  (prin1-to-string (symbol-value (car olist))) ")\n")
 	(insert ";; (makeunbound '" (symbol-name (car olist)) ")\n"))

@@ -188,7 +188,9 @@ PAR: is a number of a regexp grouping whose text will be passed to CALLBACK.
 CALLBACK can also be a variable, in that case the value of that
 variable it the real callback function.")
 
-(defvar gnus-button-url 'gnus-netscape-open-url
+(defvar gnus-button-url 
+  (if window-system 'gnus-netscape-open-url
+    (and (fboundp 'w3-fetch) 'w3-fetch))
   "Function to fetch URL.  
 The function will be called with one argument, the URL to fetch.
 Useful values of this function are:
@@ -294,6 +296,7 @@ gnus-netscape-start-url:
       ""
       '("Misc"
 	["Send a bug report" gnus-bug t]
+	["Customize score file" gnus-score-customize t]
 	["Check for new news" gnus-group-get-new-news t]     
 	["Delete bogus groups" gnus-group-check-bogus-groups t]
 	["Find new newsgroups" gnus-find-new-newsgroups t]
@@ -540,14 +543,13 @@ gnus-netscape-start-url:
 	(gnus-visual-score-map 'lower)
 	'(["Current score" gnus-summary-current-score t]
 	  ["Set score" gnus-summary-set-score t]
-	  ("Score file"
-	   ["Customize score file" gnus-score-customize t]
-	   ["Switch current score file" gnus-score-change-score-file t]
-	   ["Set mark below" gnus-score-set-mark-below t]
-	   ["Set expunge below" gnus-score-set-expunge-below t]
-	   ["Edit current score file" gnus-score-edit-alist t]
-	   ["Edit score file" gnus-score-edit-file t]
-	   ["Trace score" gnus-score-find-trace t])
+	  ["Customize score file" gnus-score-customize t]
+	  ["Switch current score file" gnus-score-change-score-file t]
+	  ["Set mark below" gnus-score-set-mark-below t]
+	  ["Set expunge below" gnus-score-set-expunge-below t]
+	  ["Edit current score file" gnus-score-edit-alist t]
+	  ["Edit score file" gnus-score-edit-file t]
+	  ["Trace score" gnus-score-find-trace t]
 	  ))))
      )))
 

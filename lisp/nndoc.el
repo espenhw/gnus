@@ -48,7 +48,7 @@ Possible values:
 	      "\\*\\*\\* EOOH \\*\\*\\*\n\\(^.+\n\\)*")
 	(list 'digest
 	      "^------------------------------*[\n \t]+"
-	      "^------------------------------[\n \t]+"
+	      "^------------------------------*[\n \t]+"
 	      nil "^ ?$"   
 	      "^------------------------------*[\n \t]+"
 	      "^End of" nil))
@@ -243,6 +243,7 @@ Possible values:
   (setq nndoc-group-alist (delq (assoc group nndoc-group-alist)
 				nndoc-group-alist))
   (setq nndoc-current-buffer nil)
+  (setq nndoc-current-server nil)
   t)
 
 (defun nndoc-request-list (&optional server)
@@ -310,8 +311,9 @@ Possible values:
 	      nil t)
 	     (match-beginning 1))
 	    (setq nndoc-digest-type 'rfc1341
-		  boundary-id (buffer-substring-no-properties
-			       (match-beginning 1) (match-end 1))
+		  boundary-id (format "%s"
+				      (buffer-substring
+				       (match-beginning 1) (match-end 1)))
 		  b-delimiter       (concat "\n--" boundary-id "[\n \t]+")
 		  nndoc-article-begin b-delimiter ; Too strict: "[ \t]*$"
 		  nndoc-article-end (concat "\n--" boundary-id

@@ -52,7 +52,7 @@
 
 (defun nnkiboze-retrieve-headers (articles &optional group server)
   (nnkiboze-possibly-change-newsgroups group)
-  (if (or gnus-nov-is-evil)
+  (if gnus-nov-is-evil
       nil
     (if (stringp (car articles))
 	'headers
@@ -314,7 +314,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 	      (int-to-string (or (header-chars header) 0)) "\t"
 	      (int-to-string (or (header-lines header) 0)) "\t")
       (if (or (not xref) (equal "" xref))
-	  (insert "Xref " (system-name) " " group ":" 
+	  (insert "Xref: " (system-name) " " group ":" 
 		  (int-to-string (header-number header))
 		  "\t\n")
 	(insert (header-xref header) "\t\n")

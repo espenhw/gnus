@@ -2142,9 +2142,9 @@ into groups.
 
 @vindex nnbabyl-active-file
 @vindex nnbabyl-mbox-file
-The @dfn{nnbabyl} backend will use a babyl mail box to store mail.
-@code{nnbabyl} will add extra headers to each mail article to say which
-group it belongs in.
+The @dfn{nnbabyl} backend will use a babyl mail box (aka. @dfn{rmail
+mbox}) to store mail. @code{nnbabyl} will add extra headers to each mail
+article to say which group it belongs in.
 
 Virtual server settings:
 
@@ -4870,8 +4870,8 @@ Why isn't anything real anymore? How did we get here?
 @section Various Article Stuff 
 
 @table @kbd
-@item W l
-@kindex W l (Summary)
+@item W L
+@kindex W L (Summary)
 @findex gnus-summary-stop-page-breaking
 Remove page breaks from the current article
 (@code{gnus-summary-stop-page-breaking}).

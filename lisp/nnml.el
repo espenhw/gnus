@@ -215,7 +215,7 @@ all. This may very well take some time.")
   (nnmail-activate 'nnml)
   (or (assoc group nnml-group-alist)
       (let (active)
-	(setq nnml-group-alist (cons (list group (setq active (cons 0 0)))
+	(setq nnml-group-alist (cons (list group (setq active (cons 1 0)))
 				     nnml-group-alist))
 	(nnml-possibly-create-directory group)
 	(nnml-possibly-change-directory group)
@@ -272,13 +272,13 @@ all. This may very well take some time.")
 	  (if (and (or (not nnmail-keep-last-article)
 		       (not max-article)
 		       (not (= (car articles) max-article)))
-		   (not (equal mod-time '(0 0)))
 		   (or force
-		       (setq is-old
-			     (> (nnmail-days-between
-				 (current-time-string)
-				 (current-time-string mod-time))
-				days))))
+		       (and (not (equal mod-time '(0 0)))
+			    (setq is-old
+				  (> (nnmail-days-between
+				      (current-time-string)
+				      (current-time-string mod-time))
+				     days)))))
 	      (progn
 		(and gnus-verbose-backends 
 		     (message "Deleting article %s..." article))
@@ -423,8 +423,7 @@ all. This may very well take some time.")
       (setq dirs (cons dir dirs))
       (setq dir (file-name-directory (directory-file-name dir))))
     (while dirs
-      (if (make-directory (directory-file-name (car dirs)))
-	  (error "Could not create directory %s" (car dirs)))
+      (make-directory (directory-file-name (car dirs)))
       (and gnus-verbose-backends 
 	   (message "Creating mail directory %s" (car dirs)))
       (setq dirs (cdr dirs)))))

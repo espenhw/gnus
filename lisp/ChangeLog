@@ -1,4 +1,111 @@
-Tue Aug  8 12:39:28 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+Sat Aug 12 15:09:20 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* nnml.el (nnml-request-create-group): Would create new groups
+	with 0 0 instead of 1 0.
+
+	* gnus.el (gnus-newsgroup-saveable-name): New function.
+	(gnus-score-file-name): Use it.
+	(gnus-remove-some-windows): Would leave more space for the windows
+	above.
+
+	* gnus-msg.el (gnus-debug): Don't quote nil and t.
+
+	* gnus.el (gnus-groups-to-gnus-format): Might lead to possible
+	bugouts. 
+	(gnus-activate-foreign-newsgroups): Changed default to 5 from nil.
+
+	* gnus-score.el (gnus-score-body): "all" didn't work.
+
+	* gnus-uu.el (gnus-uu-save-files): Would bug out on non-existing
+	files. 
+
+	* gnus.el (gnus-active-to-gnus-format): Didn't always set
+	group-sym to nil.
+
+	* gnus-vis.el (gnus-summary-make-menu-bar): Merge the two score
+	menus. 
+
+	* nndoc.el (nndoc-type-to-regexp): Be more lenient in article end
+	markers for digests. *Sigh*.
+
+	* gnus.el (gnus-group-first-unread-group): Don't move if there is
+	no urnead groups. 
+
+Sat Aug 12 12:20:22 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci7.cern.ch>
+
+	* gnus.el (gnus-group-list-all-groups): Ignored the prefix arg.
+
+	* gnus-score.el (gnus-score-string): Would loop forever on
+	possibly-empty regexps.
+
+	* gnus-uu.el (gnus-uu-choose-action): Bind case-fold-search to t. 
+
+	* gnus.el (gnus-summary-first-unread-article): Would not work with
+	hidden threads.
+	(gnus-setup-news): Update format specs here.
+	(gnus-find-new-newsgroups): Really do ignore illegal groups. 
+	(gnus-group-kill-all-zombies): List groups at the right level.
+
+	* nnbabyl.el (nnbabyl-read-mbox): Ensure forward progress.
+
+	* gnus.el (gnus-summary-sort-by-author): Preserve subject order.
+	(gnus-summary-sort-by-subject): Preserve author order.
+
+Sat Aug 12 11:38:32 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* nneething.el (nneething-get-head): Don't use file-regular-p.
+
+	* nndoc.el (nndoc-set-header-dependent-regexps): Don't use
+	buffer-substring-no-props. 
+
+	* gnus-msg.el (gnus-inews-article): Unquoted hook.
+
+Fri Aug 11 11:11:26 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-summary-remove-lines-marked-as-read): Remove
+	canceled articles as well.
+	(gnus-group-first-unread-group): Would bug out on un-activated
+	groups.
+
+	* nnmbox.el (nnmbox-get-new-mail): Did not delete incomings.
+
+Thu Aug 10 12:15:34 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* nnkiboze.el (nnkiboze-enter-nov): Insert Xref: instead of Xref. 
+
+Wed Aug  9 11:56:18 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el (custom-field-accept): Protect call with a 
+	`inhibit-point-motion-hooks' around it.  
+
+Wed Aug  9 13:57:55 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-read-active-file): Did not like virtual servers in
+	secondary select methods.
+	(gnus-secondary-method-p): More correct implementation.
+
+Tue Aug  8 16:44:41 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el: Put initial defvars in an `eval-when-compile'.
+	The `help' menu was renamed to `help-menu'.  Adjust code.
+
+Tue Aug  8 14:49:30 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-summary-mark-unread-as-read): Mark read-marked
+	articles as read. Yup.
+
+	* gnus-vis.el (gnus-button-url): Change default to use w3-fetch
+	when no window system.
+
+	* gnus.el (gnus-gnus-to-quick-newsrc-format): Add the gnus version
+	to the .newsrc.eld file.
+
+	* gnus-msg.el (gnus-inews-insert-headers): Don't delete original
+	sender, just change it to "Original-Sender".
+
+Tue Aug  8 12:39:28 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.99.9 is released.
 
 	* gnus.el (gnus-group-unsubscribe-group): Wouldn't let you sub to
 	groups not in active. 
