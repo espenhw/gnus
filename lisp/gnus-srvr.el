@@ -726,7 +726,8 @@ buffer.
 		   nil nil (if (gnus-server-equal
 				gnus-browse-current-method "native")
 			       nil
-			     gnus-browse-current-method))
+			     (gnus-method-simplify 
+			      gnus-browse-current-method)))
 	     gnus-level-default-subscribed gnus-level-killed
 	     (and (car (nth 1 gnus-newsrc-alist))
 		  (gnus-gethash (car (nth 1 gnus-newsrc-alist))
