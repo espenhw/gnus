@@ -46,7 +46,8 @@
 (defalias 'mail-header-parse-content-type 'rfc2231-parse-string)
 (defalias 'mail-header-parse-content-disposition 'rfc2231-parse-string)
 (defalias 'mail-content-type-get 'rfc2231-get-value)
-(defalias 'mail-header-encode-parameter 'rfc2045-encode-string)
+;(defalias 'mail-header-encode-parameter 'rfc2045-encode-string)
+(defalias 'mail-header-encode-parameter 'rfc2231-encode-string)
 
 (defalias 'mail-header-remove-comments 'ietf-drums-remove-comments)
 (defalias 'mail-header-remove-whitespace 'ietf-drums-remove-whitespace)
