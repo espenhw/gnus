@@ -2,6 +2,8 @@
 
 	* gnus-spec.el (gnus-parse-simple-format): Support extended spec
 	%&foo;.
+	(gnus-parse-simple-format): Support user extended spec too. 
+	%u&foo; invokes gnus-user-format-function-foo.
 
 2001-10-17 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

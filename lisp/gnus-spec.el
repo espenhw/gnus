@@ -506,7 +506,10 @@ characters when given a pad value."
 	 ;; User-defined spec -- find the spec name.
 	 ((eq (setq spec (char-after)) ?u)
 	  (forward-char 1)
-	  (setq user-defined (char-after)))
+	  (when (and (eq (setq user-defined (char-after)) ?&)
+		     (looking-at "&\\([^;]+\\);"))
+	    (setq user-defined (match-string 1))
+	    (goto-char (match-end 1))))
 	 ;; extended spec
 	 ((and (eq spec ?&) (looking-at "&\\([^;]+\\);"))
 	  (setq extended-spec (intern (match-string 1)))
@@ -528,8 +531,11 @@ characters when given a pad value."
 	   (user-defined
 	    (setq elem
 		  (list
-		   (list (intern (format "gnus-user-format-function-%c"
-					 user-defined))
+		   (list (intern (format 
+				  (if (stringp user-defined)
+				      "gnus-user-format-function-%s"
+				    "gnus-user-format-function-%c")
+				  user-defined))
 			 'gnus-tmp-header)
 		   ?s)))
 	   ;; Find the specification from `spec-alist'.
