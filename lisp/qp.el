@@ -67,8 +67,12 @@
 
 (defun quoted-printable-encode-region (from to &optional fold class)
   "QP-encode the region between FROM and TO.
-If FOLD, fold long lines.  If CLASS, translate the characters
-matched by that regexp."
+
+If FOLD fold long lines.  If CLASS, translate the characters 
+matched by that regexp.
+
+If `mm-use-ultra-safe-encoding' is set, fold unconditionally and
+encode lines starting with \"From\"."
   (interactive "r")
   (save-excursion
     (save-restriction
@@ -92,10 +96,16 @@ matched by that regexp."
 	   (prog1
 	       (upcase (format "=%02x" (char-after)))
 	     (delete-char 1)))))
-      (when fold
+      (when (or fold mm-use-ultra-safe-encoding)
 	;; Fold long lines.
 	(goto-char (point-min))
 	(while (not (eobp))
+	  ;; In ultra-safe mode, encode "From " at the beginning of a
+	  ;; line.
+	  (when mm-use-ultra-safe-encoding
+	    (beginning-of-line)
+	    (when (looking-at "From ")
+	      (replace-match "From=20" nil t)))
 	  (end-of-line)
 	  (while (> (current-column) 72)
 	    (beginning-of-line)
