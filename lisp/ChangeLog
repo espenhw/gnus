@@ -1,3 +1,8 @@
+2002-09-25  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-forward-make-body): Revert an early change
+	because 8-bit utf-8 emails.
+
 2002-09-25  Bj,Av(Brn Torkelsson  <torkel@acc.umu.se>
 
 	* gnus-agent.el (gnus-category-line-format): Doc fixes (mostly added
