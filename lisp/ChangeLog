@@ -1,3 +1,8 @@
+2001-11-16  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* message.el (message-strip-special-text-properties): New option.
+	(message-strip-forbidden-properties): Obey it.
+
 2001-11-14  Sam Steingold  <sds@gnu.org>
 
 	* gnus-score.el: Fixed some doc strings to properly quote symbols.

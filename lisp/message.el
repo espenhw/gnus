@@ -1606,6 +1606,18 @@ Point is left at the beginning of the narrowed-to region."
 ;; that interfer with the normal function of message mode out of the
 ;; buffer. 
 
+(defcustom message-strip-special-text-properties t
+  "Strip special properties from the message buffer.
+
+Emacs has a number of special text properties which can break message
+composing in various ways.  If this option is set, message will strip
+these properties from the message composition buffer.  However, some
+packages like Tamago requires these properties to be present in order
+to work.  If you use one of these packages, turn this option off, and
+hope the message composition doesn't break too bad."
+  :group 'message-various
+  :type 'boolean)
+
 (defconst message-forbidden-properties 
   ;; No reason this should be clutter up customize.  We make it a
   ;; property list (rather than a list of property symbols), to be
@@ -1625,7 +1637,8 @@ The values of the properties are ignored, only the property names are used.")
   "Strip forbidden properties between BEGIN and END, ignoring the third arg.
 This function is intended to be called from `after-change-functions'.
 See also `message-forbidden-properties'."
-  (remove-text-properties begin end message-forbidden-properties))
+  (when message-strip-special-text-properties
+    (remove-text-properties begin end message-forbidden-properties)))
 
 ;;;###autoload
 (define-derived-mode message-mode text-mode "Message"
