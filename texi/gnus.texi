@@ -398,9 +398,9 @@ the program.
 
 @menu
 * Starting Up::           Finding news can be a pain.
-* The Group Buffer::      Selecting, subscribing and killing groups.
-* The Summary Buffer::    Reading, saving and posting articles.
-* The Article Buffer::    Displaying and handling articles.
+* Group Buffer::          Selecting, subscribing and killing groups.
+* Summary Buffer::        Reading, saving and posting articles.
+* Article Buffer::        Displaying and handling articles.
 * Composing Messages::    Information on sending mail and news.
 * Select Methods::        Gnus reads all messages from various select methods.
 * Scoring::               Assigning values to articles.
@@ -605,7 +605,7 @@ Composing Messages
 
 Select Methods
 
-* The Server Buffer::     Making and editing virtual servers.
+* Server Buffer::         Making and editing virtual servers.
 * Getting News::          Reading USENET news with Gnus.
 * Getting Mail::          Reading your personal mail with Gnus.
 * Browsing the Web::      Getting messages from a plethora of Web sources.
@@ -712,7 +712,7 @@ Gnus Unplugged
 Agent Categories
 
 * Category Syntax::       What a category looks like.
-* The Category Buffer::   A buffer for maintaining categories.
+* Category Buffer::       A buffer for maintaining categories.
 * Category Variables::    Customize'r'Us.
 
 Agent Commands
@@ -1559,8 +1559,8 @@ default is @samp{Tuxedomoon.Jingle4.au}.
 @end table
 
 
-@node The Group Buffer
-@chapter The Group Buffer
+@node Group Buffer
+@chapter Group Buffer
 @cindex group buffer
 
 The @dfn{group buffer} lists all (or parts) of the available groups.  It
@@ -3864,8 +3864,8 @@ file(s) whether Gnus thinks it is necessary or not.
 @end table
 
 
-@node The Summary Buffer
-@chapter The Summary Buffer
+@node Summary Buffer
+@chapter Summary Buffer
 @cindex summary buffer
 
 A line for each article is displayed in the summary buffer.  You can
@@ -5042,6 +5042,10 @@ encounters the article.  @xref{Setting Marks}.
 All articles that you have replied to or made a followup to (i.e., have
 answered) will be marked with an @samp{A} in the second column
 (@code{gnus-replied-mark}).
+
+@vindex gnus-forwarded-mark
+All articles that you have forwarded will be marked with an @samp{O} in
+the second column (@code{gnus-forwarded-mark}).
 
 @item
 @vindex gnus-cached-mark
@@ -9163,8 +9167,8 @@ protocols. Otherwise, ask user.
 
 @end table
 
-@node The Article Buffer
-@chapter The Article Buffer
+@node Article Buffer
+@chapter Article Buffer
 @cindex article buffer
 
 The articles are displayed in the article buffer, of which there is only
@@ -10191,7 +10195,7 @@ backend just knows this group as @samp{soc.motss}.
 The different methods all have their peculiarities, of course.
 
 @menu
-* The Server Buffer::     Making and editing virtual servers.
+* Server Buffer::         Making and editing virtual servers.
 * Getting News::          Reading USENET news with Gnus.
 * Getting Mail::          Reading your personal mail with Gnus.
 * Browsing the Web::      Getting messages from a plethora of Web sources.
@@ -10201,8 +10205,8 @@ The different methods all have their peculiarities, of course.
 @end menu
 
 
-@node The Server Buffer
-@section The Server Buffer
+@node Server Buffer
+@section Server Buffer
 
 Traditionally, a @dfn{server} is a machine or a piece of software that
 one connects to, and then requests information from.  Gnus does not
@@ -14599,7 +14603,7 @@ managing categories.
 
 @menu
 * Category Syntax::       What a category looks like.
-* The Category Buffer::   A buffer for maintaining categories.
+* Category Buffer::       A buffer for maintaining categories.
 * Category Variables::    Customize'r'Us.
 @end menu
 
@@ -14875,8 +14879,8 @@ Group Parameter specification
 @end itemize
 @end enumerate
 
-@node The Category Buffer
-@subsubsection The Category Buffer
+@node Category Buffer
+@subsubsection Category Buffer
 
 You'd normally do all category maintenance from the category buffer.
 When you enter it for the first time (with the @kbd{J c} command from
