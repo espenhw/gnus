@@ -1,5 +1,5 @@
 ;;; gnus-srvr.el --- virtual server support for Gnus
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -391,7 +391,14 @@ The following commands are available:
       (if cached
 	  (setq gnus-server-method-cache
 		(delq cached gnus-server-method-cache)))
-      (if entry (setcdr entry info)
+      (if entry
+	  (progn
+	    ;; Remove the server from `gnus-opened-servers' since
+	    ;; it has never been opened with the new `info' yet.
+	    (setq gnus-opened-servers
+		  (delq (assoc (cdr entry) gnus-opened-servers)
+			gnus-opened-servers))
+	    (setcdr entry info))
 	(setq gnus-server-alist
 	      (nconc gnus-server-alist (list (cons server info))))))))
 

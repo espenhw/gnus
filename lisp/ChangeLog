@@ -1,3 +1,9 @@
+2004-06-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-srvr.el (gnus-server-set-info): Remove the server from
+	gnus-opened-servers since it has never been opened with the new
+	configuration yet.
+
 2004-06-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnheader.el (nnheader-nov-read-message-id): Pass the optional
