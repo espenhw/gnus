@@ -1,3 +1,9 @@
+2000-09-29  David Edmondson  <dme@thus.net>
+
+	One-line patch.
+	
+	* message.el (message-newline-and-reformat): Typo.
+
 2000-11-04 10:11:05  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2231.el (rfc2231-decode-encoded-string): Test mm-multibyte-p.

@@ -1716,7 +1716,7 @@ With the prefix argument FORCE, insert the header anyway."
     (unless (bolp)
       (save-excursion
 	(beginning-of-line)
-	(when (looking-at (concat prefix
+	(when (looking-at (concat prefix "\\|"
 				  supercite-thing))
 	  (setq quoted (match-string 0))))
       (insert "\n"))
