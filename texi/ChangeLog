@@ -1,3 +1,8 @@
+2002-01-20  Simon Josefsson  <jas@extundo.com>
+
+	* message.texi (Mailing Lists): Fix.  From Love
+	<lha@stacken.kth.se>.
+
 2002-01-20  Patric Mueller  <bhaak@gmx.net>
 
 	* gnus.texi (Group Timestamp): Typo fix.

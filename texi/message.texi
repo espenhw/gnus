@@ -325,7 +325,7 @@ followups to the post to specific places.  The Mail-Followup-To (MFT)
 was created to enable just this.  Two example scenarios where this is
 useful:
 
-@itemize
+@itemize @bullet
 @item
 A mailing list poster can use MFT to express that responses should be
 sent to just the list, and not the poster as well.  This will happen
