@@ -1,3 +1,9 @@
+2003-12-12  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-draft.el (gnus-draft-mode-map): Bind `e' to
+	`gnus-draft-edit-message'.  We still have `B w' for
+	`gnus-summary-edit-article'.
+
 2003-12-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnheaderxm.el (nnheader-xmas-run-at-time): Use a simple function
