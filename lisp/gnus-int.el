@@ -29,6 +29,11 @@
 (eval-when-compile (require 'cl))
 
 (require 'gnus)
+(require 'message)
+(require 'gnus-range)
+
+(eval-when-compile
+  (defun gnus-agent-expire (a b c)))
 
 (defcustom gnus-open-server-hook nil
   "Hook called just before opening connection to the news server."
@@ -219,12 +224,21 @@ If it is down, start it up (again)."
 			       (format "Unable to open %s:%s, go offline? "
 				       (car gnus-command-method)
 				       (cadr gnus-command-method)))
-			      'offline
+                              'offline
 			    'denied))
 		    'denied)))
 	;; Return the result from the "open" call.
-	(or (eq (cadr elem) 'offline)
-	    result)))))
+        (cond ((eq (cadr elem) 'offline)
+               ;; I'm avoiding infinite recursion by binding unopen
+               ;; status to denied (The logic of this routine
+               ;; guarantees that I can't get to this point with
+               ;; unopen status already bound to denied).
+               (unless (eq gnus-server-unopen-status 'denied)
+                 (let ((gnus-server-unopen-status 'denied))
+                   (gnus-open-server gnus-command-method)))
+               t)
+              (t
+               result))))))
 
 (defun gnus-close-server (gnus-command-method)
   "Close the connection to GNUS-COMMAND-METHOD."
