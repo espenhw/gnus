@@ -1,3 +1,18 @@
+2003-10-27  Simon Josefsson  <jas@extundo.com>
+
+	* mm-bodies.el (mm-body-encoding): Don't use QP when message body
+	only consists of short lines and ASCII, when
+	mm-use-ultra-safe-encoding.  Refer to 'About foo' thread in
+	gnus-bug, e.g. <ilullrg4k7p.fsf@extundo.com>, for more discussion.
+	This make it possible to pipe the raw RFC 822 message into 'gpg'
+	and have the signature work.  Potential problem: what if message
+	contain data that would be dash-escaped by OpenPGP
+	implementations? Then PGP 2.x might not be able to parse the raw
+	RFC 822 message correctly.  If that problem is worth fixing, it
+	should be fixed by detecting the situation, instead of applying QP
+	to everything.  Based on discussion with "John A. Martin"
+	<jam@jamux.com>.
+
 2003-10-27  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-mark-spam-as-expired-and-move-routine)

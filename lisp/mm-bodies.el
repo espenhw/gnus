@@ -130,8 +130,7 @@ If no encoding was done, nil is returned."
 	(longp (mm-long-lines-p 1000)))
     (require 'message)
     (cond
-     ((and (not mm-use-ultra-safe-encoding)
-	   (not longp)
+     ((and (not longp)
 	   (eq bits '7bit))
       bits)
      ((and (not mm-use-ultra-safe-encoding)
