@@ -712,7 +712,6 @@ VALUE should have the form `(FOO nil)' or `(FOO t)', where FOO is an atom.
   :match 'gnus-widget-reversible-match
   :value-to-internal 'gnus-widget-reversible-to-internal
   :value-to-external 'gnus-widget-reversible-to-external)
-                        
 
 (defcustom gnus-article-sort-functions '(gnus-article-sort-by-number)
   "*List of functions used for sorting articles in the summary buffer.
@@ -2282,8 +2281,12 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	      ["Pipe through a filter..." gnus-summary-pipe-output t]
 	      ["Add to SOUP packet" gnus-soup-add-article t]
 	      ["Print with Muttprint..." gnus-summary-muttprint t]
-	      ["Print" gnus-summary-print-article t])
-	     ("Backend"
+	      ["Print" gnus-summary-print-article
+	       ,@(if (featurep 'xemacs) '(t)
+		   '(:help "Generate and print a PostScript image"))])
+	     ("Copy, move,... (Backend)"
+	      ,@(if (featurep 'xemacs) '(t)
+		  '(:help "Copying, moving, expiring articles..."))
 	      ["Respool article..." gnus-summary-respool-article t]
 	      ["Move article..." gnus-summary-move-article
 	       (gnus-check-backend-function
@@ -2374,7 +2377,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
       `("Post"
 	["Send a message (mail or news)" gnus-summary-post-news
 	 ,@(if (featurep 'xemacs) '(t)
-	     '(:help "Post an article"))]
+	     '(:help "Compose a new message (mail or news)"))]
 	["Followup" gnus-summary-followup
 	 ,@(if (featurep 'xemacs) '(t)
 	     '(:help "Post followup to this article"))]

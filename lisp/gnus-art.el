@@ -6106,8 +6106,9 @@ positives are possible."
     ("M-x[ \t\n]+apropos-documentation[ \t\n]+RET[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-apropos-documentation 1)
     ;; The following entries may lead to many false positives so don't enable
-    ;; them by default (use a high button level):
-    ("/\\([a-z][-a-z0-9]+\\.el\\)\\>"
+    ;; them by default (use a high button level).
+    ("/\\([a-z][-a-z0-9]+\\.el\\)\\>[^.?]"
+     ;; Exclude [.?] for URLs in gmane.emacs.cvs
      1 (>= gnus-button-emacs-level 8) gnus-button-handle-library 1)
     ("`\\([a-z][-a-z0-9]+\\.el\\)'"
      1 (>= gnus-button-emacs-level 8) gnus-button-handle-library 1)

@@ -192,7 +192,7 @@ server there that you can connect to.  See also
 
 ;; Marks
 (defvoo nntp-marks-is-evil nil
-  "*If non-nil, GNus will never generate and use marks file for nntp groups.
+  "*If non-nil, Gnus will never generate and use marks file for nntp groups.
 See `nnml-marks-is-evil' for more information.")
 
 (defvoo nntp-marks-file-name ".marks")

@@ -2496,7 +2496,6 @@ such as a mark that says whether an article is stored in the cache
 (defvar gnus-headers-retrieved-by nil)
 (defvar gnus-article-reply nil)
 (defvar gnus-override-method nil)
-(defvar gnus-article-check-size nil)
 (defvar gnus-opened-servers nil)
 
 (defvar gnus-current-kill-article nil)

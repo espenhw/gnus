@@ -1,3 +1,19 @@
+2004-08-21  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nntp.el (nntp-marks-is-evil): Fix typo in docstring.
+
+	* mml.el (mml-preview): Use `pop-to-buffer'.
+
+	* message.el (message-goto-mail-followup-to): Insert after "To".
+	(message-carefully-insert-headers): Add comment.
+
+	* gnus.el: Remove unused variable `gnus-article-check-size'.
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Add help texts.
+
+	* gnus-art.el (gnus-button-alist): Improve
+	`gnus-button-handle-library' entry.
+
 2004-08-19  Paul Jarc  <prj@po.cwru.edu>
 
 	* nnmaildir.el (nnmaildir--emlink-p, nnmaildir--enoent-p): Use

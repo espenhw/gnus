@@ -946,7 +946,7 @@ See Info node `(emacs-mime)Composing'.
 		      (if (string-match "^text/.*" type)
 			  "inline"
 			"attachment")))
-        (disposition (completing-read 
+        (disposition (completing-read
                       (format "Disposition: (default %s): " default)
                       '(("attachment") ("inline") (""))
                       nil
@@ -1090,9 +1090,9 @@ If RAW, don't highlight the article."
 					   (message-fetch-field "Newsgroups")))
 					message-posting-charset)))
       (message-options-set-recipient)
-      (switch-to-buffer (generate-new-buffer
-			 (concat (if raw "*Raw MIME preview of "
-				   "*MIME preview of ") (buffer-name))))
+      (pop-to-buffer (generate-new-buffer
+		      (concat (if raw "*Raw MIME preview of "
+				"*MIME preview of ") (buffer-name))))
       (when (boundp 'gnus-buffers)
 	(push (current-buffer) gnus-buffers))
       (erase-buffer)
