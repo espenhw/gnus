@@ -13301,7 +13301,7 @@ may use it for only some of them, by using @code{nnmail-split-fancy}
 splits like this:
 
 @lisp
-(: gnus-mlsplt-fancy GROUPS NO-CROSSPOST CATCH-ALL)
+(: gnus-group-split-fancy GROUPS NO-CROSSPOST CATCH-ALL)
 @end lisp
 
 @var{groups} may be a regular expression or a list of group names whose

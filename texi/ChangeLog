@@ -1,5 +1,7 @@
 2002-05-01  Simon Josefsson  <jas@extundo.com>
 
+	* gnus.texi (Group Mail Splitting): Fix example.
+
 	* message.texi (Message Headers): Fix example.
 
 2002-04-26  Steve Youngs  <youngs@xemacs.org>
