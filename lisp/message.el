@@ -3747,11 +3747,14 @@ than 988 characters long, and if they are not, trim them until they are."
   ;; Rename the buffer.
   (if message-send-rename-function
       (funcall message-send-rename-function)
-    (when (string-match "\\`\\*\\(sent \\|unsent \\)?\\(.+\\)\\*[^\\*]*" 
-			(buffer-name))
+    ;; Note: mail-abbrevs of XEmacs renames buffer name behind Gnus.
+    (when (string-match 
+	   "\\`\\*\\(sent \\|unsent \\)?\\(.+\\)\\*[^\\*]*\\|\\`mail to " 
+	   (buffer-name))
       (let ((name (match-string 2 (buffer-name)))
 	    to group)
-	(if (not (or (string-equal name "mail")
+	(if (not (or (null name)
+		     (string-equal name "mail")
 		     (string-equal name "news")))
 	    (setq name (concat "*sent " name "*"))
 	  (setq to (message-fetch-field "to"))

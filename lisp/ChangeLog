@@ -1,3 +1,8 @@
+2001-05-05 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-do-send-housekeeping): mail-abbrevs may
+	rename buffer behind Gnus.
+
 2001-05-04 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnrss.el (nnrss-check-group): Use nnheader-translate-file-chars.
