@@ -5128,6 +5128,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	     (gnus-info-set-marks ',info ',(gnus-info-marks info) t)
 	     (gnus-info-set-read ',info ',(gnus-info-read info))
 	     (gnus-get-unread-articles-in-group ',info (gnus-active ,group))
+	     (gnus-request-set-mark group (list (list ',range 'del '(read))))
 	     (gnus-group-update-group ,group t))))
       ;; Add the read articles to the range.
       (gnus-info-set-read info range)
@@ -6894,7 +6895,7 @@ articles that are younger than AGE days."
   "Limit the summary buffer to the predicated in the `display' group parameter."
   (interactive)
   (unless gnus-newsgroup-display
-    (error "There is no `diplay' group parameter"))
+    (error "There is no `display' group parameter"))
   (let (articles)
     (dolist (number gnus-newsgroup-articles)
       (when (funcall gnus-newsgroup-display)

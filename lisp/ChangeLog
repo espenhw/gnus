@@ -1,3 +1,18 @@
+2001-10-18  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-sum.el (gnus-group-make-articles-read): Call g-r-set-mark
+	when undoing.
+
+2001-10-18  Simon Josefsson  <jas@extundo.com>
+	From Frank Schmitt <usereplyto@Frank-Schmitt.net>
+
+	* gnus-sum.el (gnus-summary-limit-to-display-predicate): Fix typo.
+
+2001-10-17  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-expiry-target): Make sure it is back to the
+	server. Suggested by ShengHuo ZHU <zsh@cs.rochester.edu>.
+
 2001-10-17 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-line-format-alist): user-date entry.

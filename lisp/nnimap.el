@@ -896,8 +896,8 @@ function is generally only called when Gnus is shutting down."
 		  ;; remove dupes
 		  seen (sort seen '<)
 		  seen (gnus-compress-sequence seen t)
-	  ;; we can't return '(1) since this isn't a "list of ranges",
-	 ;; and we can't return '((1)) since g-list-of-unread-articles
+		  ;; we can't return '(1) since this isn't a "list of ranges",
+		  ;; and we can't return '((1)) since g-list-of-unread-articles
 		  ;; is buggy so we return '((1 . 1)).
 		  seen (if (and (integerp (car seen))
 				(null (cdr seen)))
@@ -1071,17 +1071,17 @@ function is generally only called when Gnus is shutting down."
 			 (message "IMAP split moved %s:%s:%d to %s" server
 				  inbox article to-group)
 			 (setq removeorig t)
-			;; Add the group-art list to the history list.
+			 ;; Add the group-art list to the history list.
 			 (push (list (cons to-group 0)) nnmail-split-history))
 			(t
 			 (message "IMAP split failed to move %s:%s:%d to %s"
 				  server inbox article to-group))))
-	     ;; remove article if it was successfully copied somewhere
+		;; remove article if it was successfully copied somewhere
 		(and removeorig
 		     (imap-message-flags-add (format "%d" article)
 					     "\\Seen \\Deleted")))))
 	  (when (imap-mailbox-select inbox) ;; just in case
-       ;; todo: UID EXPUNGE (if available) to remove splitted articles
+	    ;; todo: UID EXPUNGE (if available) to remove splitted articles
 	    (imap-mailbox-expunge)
 	    (imap-mailbox-close)))
 	t))))
@@ -1154,7 +1154,10 @@ function is generally only called when Gnus is shutting down."
 	(let ((nnimap-current-move-article art)
 	      (nnimap-current-move-group group)
 	      (nnimap-current-move-server server))
-	  (nnmail-expiry-target-group nnmail-expiry-target group))))))
+	  (nnmail-expiry-target-group nnmail-expiry-target group))))
+    ;; It is not clear if `nnmail-expiry-target' somehow cause the
+    ;; current group to be changed or not, so we make sure here.
+    (nnimap-possibly-change-group group server)))
 
 ;; Notice that we don't actually delete anything, we just mark them deleted.
 (deffoo nnimap-request-expire-articles (articles group &optional server force)
