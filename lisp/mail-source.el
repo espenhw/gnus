@@ -30,6 +30,7 @@
   (autoload 'pop3-movemail "pop3")
   (autoload 'pop3-get-message-count "pop3"))
 (require 'format-spec)
+(require 'mm-util)
 
 (defgroup mail-source nil
   "The mail-fetching library."
@@ -233,10 +234,7 @@ Common keywords should be listed here.")
        (:prescript-delay)
        (:postscript)
        (:path (or (getenv "MAIL")
-                  (and (boundp 'rmail-spool-directory)
-                       (expand-file-name (user-login-name)
-                                         rmail-spool-directory))
-		  (expand-file-name (user-login-name) "/usr/spool/mail/"))))
+		  (expand-file-name (user-login-name) rmail-spool-directory))))
       (directory
        (:path)
        (:suffix ".spool")
@@ -813,11 +811,11 @@ This only works when `display-time' is enabled."
 		user (or (cdr (assoc from mail-source-password-cache))
 			 password) buf)
 	       (imap-mailbox-select mailbox nil buf))
-	  (let (str (coding-system-for-write mail-source-imap-file-coding-system))
+	  (let ((coding-system-for-write mail-source-imap-file-coding-system)
+		str)
 	    (with-temp-file mail-source-crash-box
-	      ;; In some versions of FSF Emacs, inserting unibyte
-	      ;; string into multibyte buffer may convert 8-bit chars
-	      ;; into latin-iso8859-1 chars, which results \201's.
+	      ;; Avoid converting 8-bit chars from inserted strings to
+	      ;; multibyte.
 	      (mm-disable-multibyte)
 	      ;; remember password
 	      (with-current-buffer buf
