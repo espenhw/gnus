@@ -1300,12 +1300,11 @@ If the default site is too slow, try one of these:
     ("europa" . (concat "http://www.europa.usenet.eu.org/chartas/charta-en-"
 			(gnus-replace-in-string name "europa\\." "") ".html"))
     ("nl" . (concat "http://www.xs4all.nl/~sister/usenet/charters/" name))
-    ("aus" . (concat "http://aus.news-admin.org/groupinfo.php/" name))
+    ("aus" . (concat "http://aus.news-admin.org/groupinfo.cgi/" name))
     ("pl" . (concat "http://www.usenet.pl/opisy/" name))
     ("ch" . (concat "http://www.use-net.ch/Usenet/charter.html#" name))
     ("at" . (concat "http://www.usenet.at/chartas/" name "/charta"))
     ("uk" . (concat "http://www.usenet.org.uk/" name ".html"))
-    ("wales" . (concat "http://www.wales-usenet.org/english/groups/" name ".html"))
     ("dfw" . (concat "http://www.cirr.com/dfw/charters/" name ".html"))
     ("se" . (concat "http://www.usenet-se.net/Reglementen/"
 		    (gnus-replace-in-string name "\\." "_") ".html"))
