@@ -332,7 +332,7 @@ The provided functions are:
   :type 'regexp)
 
 (defcustom message-cite-prefix-regexp
-  "^[]>»|:}+ ]*[]>»|:}+]\\(\\w*>»\\)?\\|^\\w*>"
+  "[ \t]*\\(\\(\\w\\|[_-\\.]\\)+>+[ \t]*\\|[]>»|:}+ ]*[]>»|:}+][ \t]*\\)+"
   "*Regexp matching the longest possible citation prefix on a line."
   :group 'message-insertion
   :type 'regexp)
@@ -826,9 +826,7 @@ Defaults to `text-mode-abbrev-table'.")
   :group 'message-faces)
 
 (defvar message-font-lock-keywords
-  (let* ((cite-prefix "A-Za-z")
-	 (cite-suffix (concat cite-prefix "0-9_.@-"))
-	 (content "[ \t]*\\(.+\\(\n[ \t].*\\)*\\)\n?"))
+  (let ((content "[ \t]*\\(.+\\(\n[ \t].*\\)*\\)\n?"))
     `((,(concat "^\\([Tt]o:\\)" content)
        (1 'message-header-name-face)
        (2 'message-header-to-face nil t))
@@ -852,9 +850,7 @@ Defaults to `text-mode-abbrev-table'.")
 	    `((,(concat "^\\(" (regexp-quote mail-header-separator) "\\)$")
 	       1 'message-separator-face))
 	  nil)
-      (,(concat "^[ \t]*"
-		"\\([" cite-prefix "]+[" cite-suffix "]*\\)?"
-		"[:>|}].*")
+      (,(concat "^\\(" message-cite-prefix-regexp "\\).*")
        (0 'message-cited-text-face))
       ("<#/?\\(multipart\\|part\\|external\\|mml\\).*>"
        (0 'message-mml-face))))

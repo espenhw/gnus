@@ -1,3 +1,8 @@
+2000-11-12  David Edmondson  <dme@dme.org>
+
+	* message.el (message-font-lock-keywords): use
+	message-cite-prefix-regexp.
+
 2000-11-15  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-group.el (gnus-group-jump-to-group-prompt): New variable by
