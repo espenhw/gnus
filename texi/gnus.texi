@@ -3354,6 +3354,13 @@ When the topic minor mode is turned on, a new @kbd{T} submap will be
 available.  In addition, a few of the standard keys change their
 definitions slightly.
 
+In general, the following kinds of operations are possible on topics.
+First of all, you want to create topics.  Secondly, you want to put
+groups in topics and to move them around until you have an order you
+like.  The third kind of operation is to show/hide parts of the whole
+shebang.  You might want to hide a topic including its subtopics and
+groups, to get a better overview of the other groups.
+
 Here is a list of the basic keys that you might need to set up topics
 the way you like.
 
@@ -3380,6 +3387,15 @@ previous topic (@code{gnus-topic-indent}).  If given a prefix,
 ``Un-indent'' the current topic so that it becomes a sub-topic of the
 parent of its current parent (@code{gnus-topic-unindent}).
 
+@end table
+
+The following two keys can be used to move groups and topics around.
+They work like the well-known cut and paste.  @kbd{C-k} is like cut and
+@kbd{C-y} is like paste.  Of course, this being Emacs, we use the terms
+kill and yank rather than cut and paste.
+
+@table @kbd
+
 @item C-k
 @kindex C-k (Topic)
 @findex gnus-topic-kill-group
@@ -3398,6 +3414,9 @@ So, to move a topic to the beginning of the list of topics, just hit
 move the cursor to the beginning of the buffer (just below the `Gnus'
 topic) and hit @kbd{C-y}.  This is like the `paste' part of cut and
 paste.  Like I said -- E-Z.
+
+You can use @kbd{C-k} and @kbd{C-y} on groups as well as on topics.  So
+you can move topics around as well as groups.
 
 @end table
 
