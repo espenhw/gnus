@@ -1,0 +1,26 @@
+2002-09-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* luna.el (luna-define-method): Clear method cache of child
+	classes.
+
+2002-09-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* luna.el (luna-define-method): Fix the bug that method cache is
+	not cleard.
+
+2002-07-13  Daiki Ueno  <daiki@xemacs.org>
+
+	* mcs-xm.el (encode-mime-charset-string): Use `defun' instead of
+	`defsubst'
+
+2002-06-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mcs-e20.el (charsets-mime-charset-alist): Remove nil's from the
+	default value.
+	* mcs-xm.el (charsets-mime-charset-alist): Ditto.
+
+2002-06-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mcs-e20.el (charsets-mime-charset-alist): Add Latin8 and Latin9
+	charsets.  Suggested by Tatsuya Kinoshita <tats@iris.ne.jp>.
+	* mcs-xm.el (charsets-mime-charset-alist): Ditto.
