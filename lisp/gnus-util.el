@@ -868,13 +868,12 @@ ARG is passed to the first function."
 	(when (assoc "default" (car rest))
 	  (push (car rest) result))
 	(pop rest)))
-    (setq result (nreverse result))
-    (if (null result)
-	nil
+    (when result
+      (setq result (nreverse result))
       (while (and result
-		  (not (equalp port (or (gnus-netrc-get result) "nntp"))))
+		  (not (equal port (gnus-netrc-get (car result) "port"))))
 	(pop result))
-      result)))
+      (car result))))
 
 (defun gnus-netrc-get (alist type)
   "Return the value of token TYPE from ALIST."

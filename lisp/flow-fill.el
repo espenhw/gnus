@@ -1,4 +1,4 @@
-;;; fill-flowed.el --- interprete RFC2646 "flowed" text
+;;; flow-fill.el --- interprete RFC2646 "flowed" text
 ;; Copyright (C) 2000 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <jas@pdc.kth.se>
@@ -89,6 +89,6 @@
 			 (fill-flowed-point-at-eol)
 			 'left 'nosqueeze)))))))
 
-(provide 'fill-flowed)
+(provide 'flow-fill)
 
-;;; fill-flowed.el ends here
+;;; flow-fill.el ends here

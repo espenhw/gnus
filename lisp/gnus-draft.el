@@ -129,6 +129,7 @@
 					   message-inhibit-body-encoding))
 	(message-send-hook (and group (not (equal group "nndraft:queue"))
 				message-send-hook))
+	(message-setup-hook nil)
 	type method)
     ;; We read the meta-information that says how and where
     ;; this message is to be sent.
