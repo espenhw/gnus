@@ -1,7 +1,9 @@
-2003-03-07  Teodor Zlatanov  <tzz@lifelogs.com>
+2003-03-07  Teodor Zlatanov  <tzz@bwh.harvard.edu>
 
 	* hashcash.el: New version from Paul Foley with better variable
 	names, executable-find support, and no errors in GNU Emacs
+	(hashcash-version): return nil when invoked with a
+	nil token
 
 2003-02-21  Simon Josefsson  <jas@extundo.com>
 

@@ -126,9 +126,11 @@ is used instead.")
   ;;
   ;; Version 1.0 looked like nnnnnrrrrrxxxxxxxxxxxxxxxx
   ;;   This is no longer supported.
-  (cond ((equal (aref token 1) ?:) 1.2)
-	((equal (aref token 6) ?:) 1.1)
-	(t (error "Unknown hashcash format version"))))
+  (if token
+      (cond ((equal (aref token 1) ?:) 1.2)
+	    ((equal (aref token 6) ?:) 1.1)
+	    (t (error "Unknown hashcash format version")))
+    nil))
 
 ;;;###autoload
 (defun hashcash-insert-payment (arg)
