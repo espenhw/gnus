@@ -1,3 +1,8 @@
+2003-11-28  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el: Added custom-manual links to all variables that have
+	an index entry in the message manual.
+
 2003-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-msg.el (gnus-summary-yank-message): Don't bind
@@ -26,7 +31,7 @@
 	exits processors
 	(spam-group-processor-p): support old-style and new-style spam/ham
 	exit processors
-	(spam-group-processor-multiple-p): handle new-style spam/hamn exit
+	(spam-group-processor-multiple-p): handle new-style spam/ham exit
 	processors
 	(spam-summary-prepare): use spam-old-{ham,spam}-articles; change
 	logic to iterate over list of processors instead of manual
