@@ -1,3 +1,7 @@
+2002-03-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-fun.el (gnus-subscribe-to-mailing-list): New function.
+
 2002-03-10  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnslashdot.el (nnslashdot-request-article): Remove javascript
