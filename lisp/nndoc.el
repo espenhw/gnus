@@ -693,7 +693,7 @@ PARENT is the message-ID of the parent summary line, or nil for none."
       (when (string-match ";[ \t\n]*name=\\([^ \t\n;]+\\)" content-type)
 	(setq subject (match-string 1 content-type)))
       (when (string-match "boundary=\"?\\([^\"\n]*[^\" \t\n]\\)" content-type)
-	(setq boundary-regexp (concat "\n--"
+	(setq boundary-regexp (concat "^--"
 				      (regexp-quote
 				       (match-string 1 content-type))
 				      "\\(--\\)?[ \t]*\n"))))

@@ -444,7 +444,8 @@ articles in the topic and its subtopics."
 	(if (stringp entry)
 	    ;; Dead groups.
 	    (gnus-group-insert-group-line
-	     entry (if (member entry gnus-zombie-list) gnus-level-zombie gnus-level-killed)
+	     entry (if (member entry gnus-zombie-list)
+		       gnus-level-zombie gnus-level-killed)
 	     nil (- (1+ (cdr (setq active (gnus-active entry))))
 		    (car active))
 	     nil)

@@ -342,10 +342,13 @@ If this variable is nil, no files will be excluded.")
 
 (defun nneething-file-name (article)
   "Return the file name of ARTICLE."
-  (concat (file-name-as-directory nneething-address)
-	  (if (numberp article)
-	      (cadr (assq article nneething-map))
-	    article)))
+  (let ((dir (file-name-as-directory nneething-address))
+        fname)
+    (if (numberp article)
+	(if (setq fname (cadr (assq article nneething-map)))
+	    (concat dir fname)
+	  (make-temp-name (concat dir "nneething")))
+      (concat dir article))))
 
 (provide 'nneething)
 

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.39 Manual
+@settitle Pterodactyl Gnus 0.40 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.39 Manual
+@title Pterodactyl Gnus 0.40 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.39.
+This manual corresponds to Pterodactyl Gnus 0.40.
 
 @end ifinfo
 
@@ -18293,6 +18293,14 @@ groups it has been crossposted to, or something.  (Agent.)
 
 @item
 `S D r' should allow expansion of aliases.
+
+@item
+If point is on a group that appears multiple times in topics, and
+you press `l', point will move to the first instance of the group.
+
+@item
+The documentation should mention pop3.el, fetchmail, smtpmail and why
+po:username often fails.
 
 @item
 Solve the halting problem.

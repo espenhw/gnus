@@ -1103,8 +1103,7 @@ for new groups, and subscribe the new groups as zombies."
     got-new))
 
 (defun gnus-check-first-time-used ()
-  (if (or (> (length gnus-newsrc-alist) 1)
-	  (file-exists-p gnus-startup-file)
+  (if (or (file-exists-p gnus-startup-file)
 	  (file-exists-p (concat gnus-startup-file ".el"))
 	  (file-exists-p (concat gnus-startup-file ".eld")))
       nil

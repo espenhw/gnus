@@ -582,7 +582,7 @@ displayed by the first non-nil matching CONTENT face."
 
 ;;; Internal variables
 
-(defvar gnus-treatment-function-alist ()
+(defvar gnus-treatment-function-alist 
   '((gnus-treat-body-highlight-signature gnus-article-highlight-signature nil)
     ))
 
@@ -1710,7 +1710,7 @@ Directory to save to is default to `gnus-article-save-directory'."
     (save-excursion
       (save-restriction
 	(widen)
-	(rmail-output-to-rmail-file filename))))
+	(gnus-output-to-rmail filename))))
   filename)
 
 (defun gnus-summary-save-in-mail (&optional filename)

@@ -337,7 +337,8 @@ on your system, you could say something like:
     (let ((extra (mail-header-extra header)))
       (while extra
 	(insert (symbol-name (caar extra))
-		": " (cdar extra) "\t"))))
+		": " (cdar extra) "\t")
+        (pop extra))))
   (insert "\n"))
 
 (defun nnheader-insert-article-line (article)

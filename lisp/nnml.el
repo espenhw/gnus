@@ -576,8 +576,9 @@ all.  This may very well take some time.")
 
 (defun nnml-possibly-create-directory (group)
   (let ((dir (nnmail-group-pathname group nnml-directory)))
-    (make-directory (directory-file-name dir) t)
-    (nnheader-message 5 "Creating mail directory %s" dir)))
+    (unless (file-exists-p dir)
+      (make-directory (directory-file-name dir) t)
+      (nnheader-message 5 "Creating mail directory %s" dir))))
 
 (defun nnml-save-mail (group-art)
   "Called narrowed to an article."

@@ -903,6 +903,7 @@ the actual number of articles toggled is returned."
 (defun gnus-agent-fetch-group-1 (group method)
   "Fetch GROUP."
   (let ((gnus-command-method method)
+	(gnus-newsgroup-name group)
 	gnus-newsgroup-dependencies gnus-newsgroup-headers
 	gnus-newsgroup-scored gnus-headers gnus-score
 	gnus-use-cache articles arts

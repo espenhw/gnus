@@ -4255,7 +4255,9 @@ If SELECT-ARTICLES, only select those articles from GROUP."
   "This function sets the mode line of the article or summary buffers.
 If WHERE is `summary', the summary mode line format will be used."
   ;; Is this mode line one we keep updated?
-  (when (memq where gnus-updated-mode-lines)
+  (when (and (memq where gnus-updated-mode-lines)
+	     (symbol-value
+	      (intern (format "gnus-%s-mode-line-format-spec" where))))
     (let (mode-string)
       (save-excursion
 	;; We evaluate this in the summary buffer since these
@@ -7724,6 +7726,7 @@ If N is negative, mark backwards instead.  Mark with MARK, ?r by default.
 The difference between N and the actual number of articles marked is
 returned."
   (interactive "p")
+  (gnus-summary-show-thread)
   (let ((backward (< n 0))
 	(gnus-summary-goto-unread
 	 (and gnus-summary-goto-unread
