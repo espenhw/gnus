@@ -130,9 +130,9 @@ Competition."
   :group 'spam)
 
 (defcustom spam-disable-spam-split-during-ham-respool nil
-  "Whether `spam-split' should be ignored while resplitting ham in a process
-destination.  This is useful to prevent ham from ending up in the same spam
-group after the resplit.  Don't set this to t if you have spam-split as the
+  "Whether `spam-split' should be ignored while resplitting ham.
+This is useful to prevent ham from ending up in the same spam
+group after the resplit.  Don't set this to t if you have `spam-split' as the
 last rule in your split configuration."
   :type 'boolean
   :group 'spam)
@@ -405,8 +405,8 @@ your main source of newsgroup names."
   :group 'spam)
 
 (defcustom spam-spamoracle-database nil
-  "Location of spamoracle database file. When nil, use the default
-spamoracle database."
+  "Location of spamoracle database file.
+When nil, use the default spamoracle database."
   :type '(choice (directory :tag "Location of spamoracle database file.")
 		 (const :tag "Use the default"))
   :group 'spam-spamoracle)
@@ -427,7 +427,7 @@ spamoracle database."
   "\M-d" gnus-summary-mark-as-spam)
 
 (defvar spam-cache-lookups t
-  "Whether spam.el will try to cache lookups using spam-caches.")
+  "Whether spam.el will try to cache lookups using `spam-caches'.")
 
 (defvar spam-caches (make-hash-table
 		     :size 10
@@ -444,18 +444,21 @@ spamoracle database."
   "If non-nil, `spam-split' is disabled, and always returns nil.")
 
 (defvar spam-split-last-successful-check nil
-  "`spam-split' will set this to nil or a spam-use-XYZ check if it
-  finds ham or spam.")
+  "Internal variable.
+`spam-split' will set this to nil or a spam-use-XYZ check if it
+finds ham or spam.")
 
 ;; convenience functions
 (defun spam-clear-cache (symbol)
+  "Clear the spam-caches entry for a check."
   (remhash symbol spam-caches))
 
 (defun spam-xor (a b)
-  "Logical exclusive `or'."
+  "Logical A xor B."
   (and (or a b) (not (and a b))))
 
 (defun spam-group-ham-mark-p (group mark &optional spam)
+  "Checks if MARK is considered a ham mark in GROUP."
   (when (stringp group)
     (let* ((marks (spam-group-ham-marks group spam))
 	   (marks (if (symbolp mark)
@@ -464,9 +467,11 @@ spamoracle database."
       (memq mark marks))))
 
 (defun spam-group-spam-mark-p (group mark)
+  "Checks if MARK is considered a spam mark in GROUP."
   (spam-group-ham-mark-p group mark t))
 
 (defun spam-group-ham-marks (group &optional spam)
+  "In GROUP, get all the ham marks."
   (when (stringp group)
     (let* ((marks (if spam
 		      (gnus-parameter-spam-marks group)
@@ -476,9 +481,11 @@ spamoracle database."
       marks)))
 
 (defun spam-group-spam-marks (group)
+  "In GROUP, get all the spam marks."
   (spam-group-ham-marks group t))
 
 (defun spam-group-spam-contents-p (group)
+  "Is GROUP a spam group?"
   (if (stringp group)
       (or (member group spam-junk-mailgroups)
 	  (memq 'gnus-group-spam-classification-spam
@@ -486,6 +493,7 @@ spamoracle database."
     nil))
 
 (defun spam-group-ham-contents-p (group)
+  "Is GROUP a ham group?"
   (if (stringp group)
       (memq 'gnus-group-spam-classification-ham
 	    (gnus-parameter-spam-contents group))
@@ -505,9 +513,9 @@ spamoracle database."
     (gnus-group-ham-exit-processor-BBDB          ham spam-use-BBDB)
     (gnus-group-ham-exit-processor-copy          ham spam-use-ham-copy)
     (gnus-group-ham-exit-processor-spamoracle    ham spam-use-spamoracle))
-  "The spam-list-of-processors list contains pairs associating a
-ham/spam exit processor variable with a classification and a
-spam-use-* variable.")
+  "The `spam-list-of-processors' list.
+This list contains pairs associating a ham/spam exit processor
+variable with a classification and a spam-use-* variable.")
 
 (defun spam-group-processor-p (group processor)
   (if (and (stringp group)
@@ -807,31 +815,47 @@ Respects the process/prefix convention."
 ;; 	article-filename
 ;;       nil)))
 
+(defun spam-fetch-field-fast (article field)
+  "Fetch a field quickly, using the internal gnus-data-list function"
+  (when (numberp article)
+    (let* ((header (assoc article (gnus-data-list nil)))
+	   (data-header (if header (gnus-data-header header) nil)))
+      (cond
+       ((equal field 'from)
+	(mail-header-from data-header))
+       ((equal field 'message-id)
+	(mail-header-message-id data-header))
+       ((equal field 'subject)
+	(mail-header-subject data-header))
+       ((equal field 'references)
+	(mail-header-references data-header))
+       ((equal field 'date)
+	(mail-header-date data-header))
+       ((equal field 'xref)
+	(mail-header-xref data-header))
+       ((equal field 'extra)
+	(mail-header-extra data-header))
+       (t
+	nil)))))
+
 (defun spam-fetch-field-from-fast (article)
-  "Fetch the `from' field quickly, using the internal gnus-data-list function"
-  (if (and (numberp article)
-	   (assoc article (gnus-data-list nil)))
-      (mail-header-from
-       (gnus-data-header (assoc article (gnus-data-list nil))))
-    nil))
+  (spam-fetch-field-fast 'from))
 
 (defun spam-fetch-field-subject-fast (article)
-  "Fetch the `subject' field quickly, using the internal
-  gnus-data-list function"
-  (if (and (numberp article)
-	   (assoc article (gnus-data-list nil)))
-      (mail-header-subject
-       (gnus-data-header (assoc article (gnus-data-list nil))))
-    nil))
+  (spam-fetch-field-fast 'subject))
 
 (defun spam-fetch-field-message-id-fast (article)
-  "Fetch the `Message-ID' field quickly, using the internal
-  gnus-data-list function"
-  (if (and (numberp article)
-	   (assoc article (gnus-data-list nil)))
-      (mail-header-message-id
-       (gnus-data-header (assoc article (gnus-data-list nil))))
-    nil))
+  (spam-fetch-field-fast 'message-id))
+
+(defun spam-insert-fake-headers (article)
+  (insert (format "From: %s\n" (spam-fetch-field-fast article 'from)))
+  (insert (format "Subject: %s\n" (spam-fetch-field-fast article 'subject)))
+  (insert (format "Message-ID: %s\n" (spam-fetch-field-fast article 'message-id)))
+  (insert (format "Date: %s\n" (spam-fetch-field-fast article 'date)))
+  (insert (format "References: %s\n" (spam-fetch-field-fast article 'references)))
+  (insert (format "Xref: %s\n" (spam-fetch-field-fast article 'xref)))
+  (when (spam-fetch-field-fast article 'extra)
+    (insert (format "%s\n" (spam-fetch-field-fast article 'extra)))))
 
 
 ;;;; Spam determination.
@@ -868,11 +892,13 @@ definitely a spam.")
     spam-use-regex-body
     spam-use-stat
     spam-use-bogofilter
+    spam-use-blackholes
     spam-use-spamoracle)
   "The spam-list-of-statistical-checks list contains all the mail
-splitters that need to have the full message body available.")
+splitters that need to have the full message body available.
+Note that you should fetch extra headers if you don't like this,
+e.g. fetch the 'Received' header for spam-use-blackholes.")
 
-;;;TODO: modify to invoke self with each check if invoked without specifics
 (defun spam-split (&rest specific-checks)
   "Split this message into the `spam' group if it is spam.
 This function can be used as an entry in the variable `nnmail-split-fancy',
@@ -894,7 +920,9 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	(save-excursion
 	  (save-restriction
 	    (dolist (check spam-list-of-statistical-checks)
-	      (when (and (symbolp check) (symbol-value check))
+	      (when (and (symbolp check)
+			 (or (symbol-value check)
+			     (memq check specific-checks)))
 		(widen)
 		(gnus-message 8 "spam-split: widening the buffer (%s requires it)"
 			      (symbol-name check))
@@ -937,7 +965,17 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	 (first-method (nth 0 methods))
 	 (articles (if spam-autodetect-recheck-messages
 		       gnus-newsgroup-articles
-		     gnus-newsgroup-unseen)))
+		     gnus-newsgroup-unseen))
+	 article-cannot-be-faked)
+
+    (dolist (check spam-list-of-statistical-checks)
+      (when (and (symbolp check)
+		 (memq check methods))
+	(setq article-cannot-be-faked t)
+	(return)))
+
+    (when (memq 'default methods)
+      (setq article-cannot-be-faked t))
 
     (when (and autodetect
 	       (not (equal first-method 'none)))
@@ -954,19 +992,21 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	 (when (and id spam-log-to-registry)
 	   (setq registry-lookup (spam-log-registration-type id 'incoming))
 	   (when registry-lookup
-	     (gnus-message 
-	      9 
+	     (gnus-message
+	      9
 	      "spam-find-spam: message %s was already registered incoming"
 	      id)))
 
 	 (let* ((spam-split-symbolic-return t)
 		(spam-split-symbolic-return-positive t)
-		(split-return 
+		(split-return
 		 (or registry-lookup
 		     (with-temp-buffer
-		       (gnus-request-article-this-buffer
-			article
-			group)
+		       (if article-cannot-be-faked
+			   (gnus-request-article-this-buffer
+			    article
+			    group)
+			 (spam-insert-fake-headers article))
 		       (if (or (null first-method)
 			       (equal first-method 'default))
 			   (spam-split)
@@ -1256,7 +1296,7 @@ functions")
 
 (defun spam-check-blackholes ()
   "Check the Received headers for blackholed relays."
-  (let ((headers (nnmail-fetch-field "received"))
+  (let ((headers (message-fetch-field "received"))
 	(spam-split-group (if spam-split-symbolic-return
 			      'spam
 			    spam-split-group))
@@ -1362,12 +1402,11 @@ functions")
 
       (defun spam-check-BBDB ()
 	"Mail from people in the BBDB is classified as ham or non-spam"
-	(let ((who (nnmail-fetch-field "from"))
+	(let ((who (message-fetch-field "from"))
 	      (spam-split-group (if spam-split-symbolic-return
 				    'spam
 				  spam-split-group))
 	      bbdb-cache bbdb-hashtable)
-	  
 	  (when spam-cache-lookups
 	    (setq bbdb-cache (gethash 'spam-use-BBDB spam-caches))
 	    (unless bbdb-cache
@@ -1384,7 +1423,7 @@ functions")
 	    (setq who (nth 1 (gnus-extract-address-components who)))
 	    (if
 		(if spam-cache-lookups
-		    (symbol-value 
+		    (symbol-value
 		     (intern-soft who bbdb-cache))
 		  (bbdb-search-simple nil who))
 		t
@@ -1660,7 +1699,7 @@ REMOVE not nil, remove the ADDRESSES."
       (nreverse contents))))
 
 (defun spam-from-listed-p (type)
-  (let ((from (nnmail-fetch-field "from"))
+  (let ((from (message-fetch-field "from"))
 	found)
     (spam-filelist-check-cache type from)))
 
@@ -1724,7 +1763,7 @@ REMOVE not nil, remove the ADDRESSES."
 
 ;;;; Bogofilter
 (defun spam-check-bogofilter-headers (&optional score)
-  (let ((header (nnmail-fetch-field spam-bogofilter-header))
+  (let ((header (message-fetch-field spam-bogofilter-header))
 	(spam-split-group (if spam-split-symbolic-return
 			      'spam
 			    spam-split-group)))
@@ -1904,4 +1943,4 @@ REMOVE not nil, remove the ADDRESSES."
 
 (provide 'spam)
 
-;;; spam.el ends here.
+;;; spam.el ends here
