@@ -3472,6 +3472,7 @@ It should typically alter the sending method in some way or other."
 		(message-narrow-to-headers)
 		(and news
 		     (or (message-fetch-field "cc")
+			 (message-fetch-field "bcc")
 			 (message-fetch-field "to"))
 		     (let ((content-type (message-fetch-field "content-type")))
 		       (or
