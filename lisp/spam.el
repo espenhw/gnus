@@ -48,10 +48,13 @@
     (file-error (defalias 'bbdb-search 'ignore))))
 
 ;; autoload executable-find
-(autoload 'executable-find "executable")
+(eval-and-compile
+  ;; executable-find is not autoloaded in Emacs 20
+  (autoload 'executable-find "executable"))
 
 ;; autoload ifile-spam-filter
-(autoload 'ifile-spam-filter "ifile-gnus")
+(eval-and-compile
+  (autoload 'ifile-spam-filter "ifile-gnus"))
 
 ;;; Main parameters.
 
@@ -343,19 +346,6 @@ The regular expression is matched against the address.")
 	      cache nil)))
     found))
 
-(defun spam-display-buffer-contents ()
-  "Display contents of the current buffer in the echo area if possible,
-otherwise pop-up the buffer itself."
-  (unless (zerop (buffer-size))
-    (if (<= (count-lines (point-min) (point-max)) 1)
-	(progn
-	  (goto-char (point-max))
-	  (when (bolp)
-	    (backward-char 1))
-	  (message "%s" (buffer-substring (point-min) (point))))
-      (goto-char (point-min))
-      (display-buffer (current-buffer)))))
-
 
 ;;;; Training via Bogofilter.   Last updated 2002-09-02.
 
@@ -481,9 +471,16 @@ spamicity coefficient of each, and the overall article spamicity."
   (interactive)
   (when (and spam-use-bogofilter spam-bogofilter-path)
     (spam-bogofilter-articles nil "-v" (list (gnus-summary-article-number)))
-    (save-excursion
-      (set-buffer spam-output-buffer-name)
-      (spam-display-buffer-contents))))
+    (with-current-buffer spam-output-buffer-name
+      (unless (zerop (buffer-size))
+	(if (<= (count-lines (point-min) (point-max)) 1)
+	    (progn
+	      (goto-char (point-max))
+	      (when (bolp)
+		(backward-char 1))
+	      (message "%s" (buffer-substring (point-min) (point))))
+	  (goto-char (point-min))
+	  (display-buffer (current-buffer)))))))
 
 (defun spam-bogofilter-register-routine ()
   (when (and spam-use-bogofilter spam-bogofilter-path)
