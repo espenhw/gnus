@@ -929,11 +929,11 @@ articles in the thread.
 
        (if deflt
            (let ((tag (cdr (memq :tag type))))
-             (if (string-match "\n" deflt)
-                 (progn (while (progn (setq deflt (replace-match "\n " t t
-                                                                 deflt))
-                                      (string-match "\n" deflt (match-end 0))))
-                        (setq deflt (concat "\n" deflt))))
+             (when (string-match "\n" deflt)
+	       (while (progn (setq deflt (replace-match "\n " t t
+							deflt))
+			     (string-match "\n" deflt (match-end 0))))
+	       (setq deflt (concat "\n" deflt)))
 
              (setcar tag (concat (car tag) deflt))))
 

@@ -961,11 +961,9 @@ article's mark is toggled."
              (setq gnus-newsgroup-downloadable
                    (delq article gnus-newsgroup-downloadable))
              (gnus-article-mark article))
-         (progn
-           (setq gnus-newsgroup-downloadable
-                 (gnus-add-to-sorted-list gnus-newsgroup-downloadable article))
-           gnus-downloadable-mark)
-         )
+	 (setq gnus-newsgroup-downloadable
+	       (gnus-add-to-sorted-list gnus-newsgroup-downloadable article))
+	 gnus-downloadable-mark)
        'unread))))
 
 (defun gnus-agent-get-undownloaded-list ()
@@ -3514,12 +3512,11 @@ If REREAD is not nil, downloaded articles are marked as unread."
  entries contained line that did not begin with an article number.  Deleted\
  line.")
                        (gnus-delete-line))))
-              (if load
-                  (progn
-                    (gnus-message 5 "gnus-agent-regenerate-group: Sorting NOV\
+              (when load
+		(gnus-message 5 "gnus-agent-regenerate-group: Sorting NOV\
  entries into ascending order.")
-                    (sort-numeric-fields 1 (point-min) (point-max))
-                    (setq nov-arts nil)))))
+		(sort-numeric-fields 1 (point-min) (point-max))
+		(setq nov-arts nil))))
           (gnus-agent-check-overview-buffer)
 
           ;; Construct a new article alist whose nodes match every header

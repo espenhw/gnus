@@ -1,3 +1,27 @@
+2004-02-14  Jesper Harder  <harder@ifa.au.dk>
+
+	* nnrss.el (nnrss-request-article, nnrss-find-el): Cleanup.
+
+	* html2text.el (html2text-get-attr, html2text-fix-paragraph): do
+
+	* gnus-sum.el (gnus-summary-limit-to-age)
+	(gnus-summary-limit-children): do.
+
+	* gnus-int.el (gnus-request-scan): do.
+
+	* gnus-group.el (gnus-group-suspend): do.
+
+	* gnus-cus.el (gnus-agent-cat-prepare-category-field): do.
+
+	* gnus-cite.el (gnus-cite-parse-attributions): do.
+
+	* gnus-agent.el (gnus-summary-set-agent-mark)
+	(gnus-agent-regenerate-group): do.
+
+	* deuglify.el (gnus-article-outlook-unwrap-lines): do.
+
+	* binhex.el (binhex-decode-region-internal): do.
+
 2004-02-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-fun.el (gnus-face-properties-alist): New user option.

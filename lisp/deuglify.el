@@ -322,11 +322,10 @@ NODISPLAY is non-nil, don't redisplay the article buffer."
               nil t)
 	(let ((len12 (- (match-end 2) (match-beginning 1)))
 	      (len3 (- (match-end 3) (match-beginning 3))))
-	  (if (and (> len12 gnus-outlook-deuglify-unwrap-min)
-		   (< (+ len12 len3) gnus-outlook-deuglify-unwrap-max))
-	      (progn
-		(replace-match "\\1\\2 \\3")
-		(goto-char (match-beginning 0))))))))
+	  (when (and (> len12 gnus-outlook-deuglify-unwrap-min)
+		     (< (+ len12 len3) gnus-outlook-deuglify-unwrap-max))
+	    (replace-match "\\1\\2 \\3")
+	    (goto-char (match-beginning 0)))))))
   (unless nodisplay (gnus-outlook-display-article-buffer)))
 
 (defun gnus-outlook-rearrange-article (attr-start)

@@ -825,11 +825,10 @@ See also the documentation for `gnus-article-highlight-citation'."
 	(let ((al (buffer-substring (save-excursion (beginning-of-line 0)
 						    (1+ (point)))
 				    end)))
-	  (if (not (assoc al al-alist))
-	      (progn
-		(push (list wrote in prefix tag)
-		      gnus-cite-loose-attribution-alist)
-		(push (cons al t) al-alist))))))))
+	  (when (not (assoc al al-alist))
+	    (push (list wrote in prefix tag)
+		  gnus-cite-loose-attribution-alist)
+	    (push (cons al t) al-alist)))))))
 
 (defun gnus-cite-connect-attributions ()
   ;; Connect attributions to citations

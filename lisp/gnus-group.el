@@ -3912,10 +3912,8 @@ The hook `gnus-suspend-gnus-hook' is called before actually suspending."
   (let ((group-buf (get-buffer gnus-group-buffer)))
     (mapcar (lambda (buf)
 	      (unless (or (member buf (list group-buf gnus-dribble-buffer))
-			  (progn
-			    (save-excursion
-			      (set-buffer buf)
-			      (eq major-mode 'message-mode))))
+			  (with-current-buffer buf
+			    (eq major-mode 'message-mode)))
 		(gnus-kill-buffer buf)))
 	    (gnus-buffers))
     (setq gnus-backlog-articles nil)

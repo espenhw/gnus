@@ -7589,10 +7589,9 @@ articles that are younger than AGE days."
        (if (numberp days)
 	   (progn
 	     (setq days-got t)
-	     (if (< days 0)
-		 (progn
-		   (setq younger (not younger))
-		   (setq days (* days -1)))))
+	     (when (< days 0)
+	       (setq younger (not younger))
+	       (setq days (* days -1))))
 	 (message "Please enter a number.")
 	 (sleep-for 1)))
      (list days younger)))
@@ -8033,13 +8032,12 @@ fetch-old-headers verbiage, and so on."
 	    (and gnus-newsgroup-display
 		 (not (funcall gnus-newsgroup-display)))
 	    ;; Check NoCeM things.
-	    (if (and gnus-use-nocem
-		     (gnus-nocem-unwanted-article-p
-		      (mail-header-id (car thread))))
-		(progn
-		  (setq gnus-newsgroup-unreads
-			(delq number gnus-newsgroup-unreads))
-		  t))))
+	    (when (and gnus-use-nocem
+		       (gnus-nocem-unwanted-article-p
+			(mail-header-id (car thread))))
+	      (setq gnus-newsgroup-unreads
+		    (delq number gnus-newsgroup-unreads))
+	      t)))
 	  ;; Nope, invisible article.
 	  0
 	;; Ok, this article is to be visible, so we add it to the limit

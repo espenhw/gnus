@@ -167,28 +167,28 @@ ARTICLE is the article number of the current headline.")
 			  (nth 2 e))))
 	    (insert "\n\n--" boundary "\nContent-Type: text/plain\n\n")
 	    (let ((point (point)))
-	      (if text
-		  (progn (insert text)
-			 (goto-char point)
-			 (while (re-search-forward "\n" nil t)
-			   (replace-match " "))
-			 (goto-char (point-max))
-			 (insert "\n\n")))
-	      (if link
-		  (insert link)))
+	      (when text
+		(insert text)
+		(goto-char point)
+		(while (re-search-forward "\n" nil t)
+		  (replace-match " "))
+		(goto-char (point-max))
+		(insert "\n\n"))
+	      (when link
+		(insert link)))
 	    (insert "\n\n--" boundary "\nContent-Type: text/html\n\n")
 	    (let ((point (point)))
-	      (if text
-		  (progn (insert "<html><head></head><body>\n" text "\n</body></html>")
-			 (goto-char point)
-			 (while (re-search-forward "\n" nil t)
-			   (replace-match " "))
-			 (goto-char (point-max))
-			 (insert "\n\n")))
-	      (if link
-		  (insert "<p><a href=\"" link "\">link</a></p>\n"))))
-	  (if nnrss-content-function
-	      (funcall nnrss-content-function e group article)))))
+	      (when text
+		(insert "<html><head></head><body>\n" text "\n</body></html>")
+		(goto-char point)
+		(while (re-search-forward "\n" nil t)
+		  (replace-match " "))
+		(goto-char (point-max))
+		(insert "\n\n"))
+	      (when link
+		(insert "<p><a href=\"" link "\">link</a></p>\n"))))
+	  (when nnrss-content-function
+	    (funcall nnrss-content-function e group article)))))
     (cond
      (err
       (nnheader-report 'nnrss err))
@@ -524,22 +524,22 @@ It is useful when `(setq nnrss-use-local t)'."
 large documents!"
   (if (listp data)
       (mapcar (lambda (bit)
-		(if (car-safe bit)
-		    (progn (if (equal tag (car bit))
-			       (setq found-list
-				     (append found-list
-					     (list bit))))
-			   (if (and (listp (car-safe (caddr bit)))
-				    (not (stringp (caddr bit))))
-			       (setq found-list
-				     (append found-list
-					     (nnrss-find-el
-					      tag (caddr bit))))
-			     (setq found-list
-				   (append found-list
-					   (nnrss-find-el
-					    tag (cddr bit))))))))
-		data))
+		(when (car-safe bit)
+		  (when (equal tag (car bit))
+		    (setq found-list
+			  (append found-list
+				  (list bit))))
+		  (if (and (listp (car-safe (caddr bit)))
+			   (not (stringp (caddr bit))))
+		      (setq found-list
+			    (append found-list
+				    (nnrss-find-el
+				     tag (caddr bit))))
+		    (setq found-list
+			  (append found-list
+				  (nnrss-find-el
+				   tag (cddr bit)))))))
+	      data))
   found-list)
 
 (defun nnrss-rsslink-p (el)

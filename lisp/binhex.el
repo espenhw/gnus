@@ -243,14 +243,13 @@ If HEADER-ONLY is non-nil only decode header and return filename."
 		    (setq file-name-length (char-after (point-min))
 			  data-fork-start (+ (point-min)
 					     file-name-length 22))))
-	      (if (and (null header)
-		       (with-current-buffer work-buffer
-			 (>= (buffer-size) data-fork-start)))
-		  (progn
-		    (binhex-verify-crc work-buffer
-				       (point-min) data-fork-start)
-		    (setq header (binhex-header work-buffer))
-		    (if header-only (setq tmp nil counter 0))))
+	      (when (and (null header)
+			 (with-current-buffer work-buffer
+			   (>= (buffer-size) data-fork-start)))
+		(binhex-verify-crc work-buffer
+				   (point-min) data-fork-start)
+		(setq header (binhex-header work-buffer))
+		(when header-only (setq tmp nil counter 0)))
 	      (setq tmp (and tmp (not (eq inputpos end)))))
 	    (cond
 	     ((= counter 3)
