@@ -1,3 +1,9 @@
+2005-03-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* Makefile.in (gnus-booklet.dvi, gnus-booklet.pdf): Simplify.
+	(gnus-faq-texi): Renamed from gnus-faq.texi to avoid unsolicited
+	download.
+
 2005-03-29  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* Makefile.in (gnus-booklet.dvi, gnus-booklet.pdf)

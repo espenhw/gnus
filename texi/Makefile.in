@@ -75,26 +75,24 @@ $(REFCARD).pdf: $(REFCARD).tex $(LOGO).pdf
 gnus-booklet.dvi: $(REFCARD).tex $(LOGO).eps
 	if [ "$(PAPERTYPE)" == a4 ]; then \
 	  TEXINPUTS=$(srcdir):$$TEXINPUTS:: \
-          $(LATEX) '\def\booklettrue{}\input{$(REFCARD)}' && \
-	  mv $(REFCARD).dvi $@ ;\
+          $(LATEX) '\def\booklettrue{}\input{$(REFCARD)}' ;\
 	else \
 	  TEXINPUTS=$(srcdir):$$TEXINPUTS:: \
-          $(LATEX) '\def\booklettrue{}\def\letterpapertrue{}\input{$(REFCARD)}' && \
-	  mv $(REFCARD).dvi $@ ;\
+          $(LATEX) '\def\booklettrue{}\def\letterpapertrue{}\input{$(REFCARD)}' ;\
 	fi
+	mv $(REFCARD).dvi $@
 
 gnus-booklet.pdf: $(REFCARD).tex  $(LOGO).pdf
 	if [ "$(PAPERTYPE)" == a4 ]; then \
 	  TEXINPUTS=$(srcdir):$$TEXINPUTS:: \
-          $(PDFLATEX) '\def\booklettrue{}\input{$(REFCARD)}' && \
-	  mv -v $(REFCARD).pdf $@ ;\
+          $(PDFLATEX) '\def\booklettrue{}\input{$(REFCARD)}' ;\
 	else \
 	  TEXINPUTS=$(srcdir):$$TEXINPUTS:: \
-          $(PDFLATEX) '\def\booklettrue{}\def\letterpapertrue{}\input{$(REFCARD)}' && \
-	  mv -v $(REFCARD).pdf $@ ;\
+          $(PDFLATEX) '\def\booklettrue{}\def\letterpapertrue{}\input{$(REFCARD)}' ;\
 	fi
+	mv $(REFCARD).pdf $@ 
 
-gnus-faq-full-update:  gnus-faq-clean gnus-faq.texi
+gnus-faq-full-update:  gnus-faq-clean gnus-faq-texi
 
 gnus-faq.xml:
 	cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/gnus \
@@ -103,7 +101,7 @@ gnus-faq.xml:
 	  { echo "Update of $@ failed."; : rm $@.tmp; exit 1; }
 	mv $@.tmp $@
 
-gnus-faq.texi: gnus-faq.xml xml2texi.sh xml2texi.scm
+gnus-faq-texi: gnus-faq.xml xml2texi.sh xml2texi.scm
 	./xml2texi.sh $< $@.tmp
 	@echo
 # FIXME: This should be done in xml2texi.scm or gnus-faq.xml should be
