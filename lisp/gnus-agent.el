@@ -31,8 +31,7 @@
   (if (featurep 'xemacs)
       (require 'itimer)
     (require 'timer))
-  (require 'cl)
-  (require 'gnus-score))
+  (require 'cl))
 
 (defcustom gnus-agent-directory (nnheader-concat gnus-directory "agent/")
   "Where the Gnus agent will store its files."
@@ -101,10 +100,6 @@ If nil, only read articles will be expired."
 (defvar gnus-agent-file-name nil)
 (defvar gnus-agent-send-mail-function nil)
 (defvar gnus-agent-file-coding-system 'raw-text)
-
-(defconst gnus-agent-scoreable-headers
-  '("subject" "from" "date" "message-id" "references" "chars" "lines" "xref")
-  "Headers that are considered when scoring articles for download via the Agent.")
 
 ;; Dynamic variables
 (defvar gnus-headers)
@@ -1063,13 +1058,9 @@ the actual number of articles toggled is returned."
 		 ;; Parse them and see which articles we want to fetch.
 		 (setq gnus-newsgroup-dependencies
 		       (make-vector (length articles) 0))
-		 ;; No need to call `gnus-get-newsgroup-headers-xover' with
-		 ;; the entire .overview for group as we still have the just
-		 ;; downloaded headers in `gnus-agent-overview-buffer'.
-		 (let ((nntp-server-buffer gnus-agent-overview-buffer))
-		   (setq gnus-newsgroup-headers
-			 (gnus-get-newsgroup-headers-xover articles nil nil 
-							   group)))
+		 (setq gnus-newsgroup-headers
+		       (gnus-get-newsgroup-headers-xover articles nil nil 
+							 group))
 		 ;; `gnus-agent-overview-buffer' may be killed for
 		 ;; timeout reason.  If so, recreate it.
 		 (gnus-agent-create-buffer)))
@@ -1078,53 +1069,20 @@ the actual number of articles toggled is returned."
 	    (gnus-get-predicate
 	     (or (gnus-group-find-parameter group 'agent-predicate t)
 		 (cadr category))))
-      ;; Do we want to download everything, or nothing?
-      (if (or (eq (caaddr predicate) 'gnus-agent-true)
-	      (eq (caaddr predicate) 'gnus-agent-false))
-	  ;; Yes.
-	  (setq arts (symbol-value
-		      (cadr (assoc (caaddr predicate)
-				   '((gnus-agent-true articles)
-				     (gnus-agent-false nil))))))
-	;; No, we need to decide what we want.
-	(setq score-param
-	      (let ((score-method
-		     (or
-		      (gnus-group-find-parameter group 'agent-score t)
-		      (caddr category))))
-		(when score-method
-		  (require 'gnus-score)
-		  (if (eq score-method 'file)
-		      (let ((entries
-			     (gnus-score-load-files
-			      (gnus-all-score-files group)))
-			    list score-file)
-			(while (setq list (car entries))
-			  (push (car list) score-file)
-			  (setq list (cdr list))
-			  (while list
-			    (when (member (caar list)
-					  gnus-agent-scoreable-headers)
-			      (push (car list) score-file))
-			    (setq list (cdr list)))
-			  (setq score-param
-				(append score-param (list (nreverse score-file)))
-				score-file nil entries (cdr entries)))
-			(list score-param))
-		    (if (stringp (car score-method))
-			score-method
-		      (list (list score-method)))))))
-	(when score-param
-	  (gnus-score-headers score-param))
-	(setq arts nil)
-	(while (setq gnus-headers (pop gnus-newsgroup-headers))
-	  (setq gnus-score
-		(or (cdr (assq (mail-header-number gnus-headers)
-			       gnus-newsgroup-scored))
-		    gnus-summary-default-score))
-	  (when (funcall predicate)
-	    (push (mail-header-number gnus-headers)
-		  arts))))
+      (setq score-param
+	    (or (gnus-group-get-parameter group 'agent-score)
+		(caddr category)))
+      (when score-param
+	(gnus-score-headers (list (list score-param))))
+      (setq arts nil)
+      (while (setq gnus-headers (pop gnus-newsgroup-headers))
+	(setq gnus-score
+	      (or (cdr (assq (mail-header-number gnus-headers)
+			     gnus-newsgroup-scored))
+		  gnus-summary-default-score))
+	(when (funcall predicate)
+	  (push (mail-header-number gnus-headers)
+		arts)))
       ;; Fetch the articles.
       (when arts
 	(gnus-agent-fetch-articles group arts)))

@@ -1,3 +1,8 @@
+2000-09-29 12:06:40  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el: Revoke Mike McEwan's 1998-09-05 patch due to
+	the GNU assignment issue.
+
 2000-09-29 09:56:34  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nndoc.el (nndoc-dissect-mime-parts-sub): Correctly mark body-begin.
