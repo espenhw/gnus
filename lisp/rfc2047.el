@@ -136,14 +136,17 @@ Should be called narrowed to the head of the message."
 		    ;; Is message-posting-charset a coding system?
 		    (mm-encode-coding-region
 		     (point-min) (point-max)
-		     (car message-posting-charset)))
+		     (car message-posting-charset))
+		  nil)
 		;; No encoding necessary, but folding is nice
-		(rfc2047-fold-region (save-excursion
-				       (goto-char (point-min))
-				       (skip-chars-forward "^:")
-				       (and (looking-at ": ")
-					    (forward-char 2))
-				       (point)) (point-max)))
+		(rfc2047-fold-region
+		 (save-excursion
+		   (goto-char (point-min))
+		   (skip-chars-forward "^:")
+		   (when (looking-at ": ")
+		     (forward-char 2))
+		   (point))
+		 (point-max)))
 	    ;; We found something that may perhaps be encoded.
 	    (setq method nil
 		  alist rfc2047-header-encoding-alist)
