@@ -1,5 +1,10 @@
 2002-10-10  Simon Josefsson  <jas@extundo.com>
 
+	* mml.el (mml-parse-1): Support sender in #secure tags.
+
+	* mml1991.el (mml1991-pgg-sign): Only use message-sender if it is
+	defined.
+
 	* mml-sec.el (mml-smime-encrypt-buffer): Warn about combined signing.
 	(mml-pgp-encrypt-buffer): Support combined signing.
 

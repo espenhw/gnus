@@ -151,6 +151,7 @@ one charsets.")
 	(let* (secure-mode
 	       (taginfo (mml-read-tag))
 	       (recipients (cdr (assq 'recipients taginfo)))
+	       (sender (cdr (assq 'sender taginfo)))
 	       (location (cdr (assq 'tag-location taginfo)))
 	       (mode (cdr (assq 'mode taginfo)))
 	       (method (cdr (assq 'method taginfo)))
@@ -174,7 +175,9 @@ one charsets.")
 	  (eval `(mml-insert-tag ,secure-mode
 				 ,@tags
 				 ,(if recipients "recipients")
-				 ,recipients))
+				 ,recipients
+				 ,(if sender "sender")
+				 ,sender))
 	  ;; restart the parse
 	  (goto-char location)))
        ((looking-at "<#multipart")

@@ -24,7 +24,7 @@
 
 ;;; Commentary:
 
-;; RCS: $Id: mml1991.el,v 6.12 2002/10/09 22:43:59 jas Exp $
+;; RCS: $Id: mml1991.el,v 6.13 2002/10/09 23:27:32 jas Exp $
 
 ;;; Code:
 
@@ -232,7 +232,9 @@
       (forward-line) ;; skip header/body separator
       (kill-region (point-min) (point)))
     (quoted-printable-decode-region (point-min) (point-max))
-    (unless (let ((pgg-default-user-id (message-options-get 'message-sender)))
+    (unless (let ((pgg-default-user-id
+		   (or (message-options-get 'message-sender)
+		       pgg-default-user-id)))
 	      (pgg-sign-region (point-min) (point-max) t))
       (pop-to-buffer pgg-errors-buffer)
       (error "Encrypt error"))
