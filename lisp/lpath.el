@@ -33,7 +33,7 @@
       (maybe-fbind '(Info-directory
 		     Info-menu ccl-execute-on-string char-charset charsetp
 		     coding-system-get coding-system-list coding-system-p
-		     compare-strings decode-coding-region decode-coding-string
+		     decode-coding-region decode-coding-string
 		     define-ccl-program delete-overlay detect-coding-region
 		     encode-coding-region encode-coding-string
 		     event-click-count event-end event-start

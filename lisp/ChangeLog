@@ -1,7 +1,3 @@
-2003-04-17  Katsumi Yamaoka  <yamaoka@jpl.org>
-
-	* lpath.el: Fbind compare-strings for XEmacs.
-
 2003-04-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-srvr.el (gnus-browse-make-menu-bar): Fix typo.
