@@ -431,8 +431,7 @@ ticked: The number of ticked articles in the group.
 	["Send a bug report" gnus-bug t]
 	["Send a mail" gnus-group-mail t]
 	["Post an article..." gnus-group-post-news t]
-	["Customize score file" gnus-score-customize 
-	 (not (string-match "XEmacs" emacs-version))]
+	["Customize score file" gnus-score-customize t]
 	["Check for new news" gnus-group-get-new-news t]     
 	["Activate all groups" gnus-activate-all-groups t]
 	["Delete bogus groups" gnus-group-check-bogus-groups t]

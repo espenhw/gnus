@@ -1,4 +1,33 @@
+Fri Jun  7 19:59:45 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el (gnus-summary-save-article): Would set
+	`gnus-original-article-buffer' to a bogus value.
+	(gnus-header-value): Didn't understand continuation headers!
+	(gnus-get-newsgroup-headers): Use new value and pick out
+	references when `^'.
+	(gnus-number-to-header): New function.
+	(gnus-summary-refer-article): Didn't work when sparse articles
+	were in action.
+
+Fri Jun  7 17:19:21 1996  Christoph Wedler  <wedler@fmi.uni-passau.de>
+
+	* nnheader.el (nnheader-insert-head): Use
+	`nnheader-insert-file-contents-literally'.
+	(nnheader-mail-file-mbox-p): Ditto.
+
+Fri Jun  7 14:05:28 1996  Jens Lautenbacher  <jens@lemcbed.lem.uni-karlsruhe.de>
+
+	* custom.el ((string-match "XEmacs" emacs-version)): dito
+
+	* gnus-vis.el (gnus-group-make-menu-bar): enable customize for XEmacs
+
+Fri Jun  7 19:20:22 1996  Richard Pieri  <ratinox@unilab.dfci.harvard.edu>
+
+	* nnheaderems.el (nnheader-ms-strip-cr): New function.
+
 Thu Jun  6 18:22:04 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.10 is released.
 
 	* message.el (message-header-format-alist): Use
 	`message-fill-address' for To and Cc.

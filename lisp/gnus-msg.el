@@ -154,6 +154,7 @@ the group.")
 
 (put 'gnus-setup-message 'lisp-indent-function 1)
 (put 'gnus-setup-message 'lisp-indent-hook 1)
+(put 'gnus-setup-message 'edebug-form-spec '(form body))
 
 ;;; Post news commands of Gnus group mode and summary mode
 

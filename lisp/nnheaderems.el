@@ -167,6 +167,13 @@ The buffer is not selected, just returned to the caller."
 	    (after-find-file error (not nowarn)))))
       buf)))
 
+(defun nnheader-ms-strip-cr ()
+  "Strip ^M from the end of all lines."
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "\r$" nil t)
+      (delete-backward-char 1))))
+
 (eval-and-compile
   (cond 
    ;; Do XEmacs function bindings.
@@ -185,7 +192,9 @@ The buffer is not selected, just returned to the caller."
     (fset 'nnheader-find-file-noselect 'find-file-noselect)
     (fset 'nnheader-insert-file-contents-literally
 	  'insert-file-contents-literally)
-    )))
+    ))
+  (when (memq system-type '())
+    (add-hook 'nnmail-prepare-incoming-hook 'nnheader-ms-strip-cr)))
 
 (provide 'nnheaderems)
 

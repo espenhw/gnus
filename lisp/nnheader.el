@@ -296,7 +296,7 @@ on your system, you could say something like:
   (when (file-exists-p file)
     (if (eq nnheader-max-head-length t)
 	;; Just read the entire file.
-	(insert-file-contents-literally file)
+	(nnheader-insert-file-contents-literally file)
       ;; Read 1K blocks until we find a separator.
       (let ((beg 0)
 	    format-alist 
@@ -478,7 +478,7 @@ without formatting."
 	     (file-regular-p file))
     (save-excursion
       (nnheader-set-temp-buffer " *mail-file-mbox-p*")
-      (insert-file-contents-literally file)
+      (nnheader-insert-file-contents-literally file)
       (goto-char (point-min))
       (prog1
 	  (looking-at message-unix-mail-delimiter)

@@ -262,7 +262,7 @@ into the buffer visible in the event's window."
 (if (string-match "XEmacs" emacs-version)
     ;; XEmacs (disabled because it doesn't work)
     (and current-menubar
-	 (add-menu-item '("Help") "Customize..." 'customize nil))
+	 (add-menu-item '("Help") "Customize..." 'customize t))
   ;; Emacs 19.28 and earlier
   (global-set-key [ menu-bar help customize ]
 		  '("Customize..." . customize))

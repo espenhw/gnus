@@ -1728,7 +1728,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.10"
+(defconst gnus-version-number "5.2.11"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -8150,6 +8150,15 @@ If NO-DISPLAY, don't generate a summary buffer."
       (gnus-data-compute-positions)
       (setq gnus-newsgroup-threads (nconc threads gnus-newsgroup-threads)))))
 
+(defun gnus-number-to-header (number)
+  "Return the header for article NUMBER."
+  (let ((headers gnus-newsgroup-headers))
+    (while (and headers
+		(not (= number (mail-header-number (car headers)))))
+      (pop headers))
+    (when headers
+      (car headers))))
+
 (defun gnus-id-to-thread (id)
   "Return the (sub-)thread where ID appears."
   (gnus-gethash id gnus-newsgroup-dependencies))
@@ -9180,7 +9189,13 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 		 (equal (nth 1 m1) (nth 1 m2)))))))
 
 (defsubst gnus-header-value ()
-  (buffer-substring (match-end 0) (gnus-point-at-eol)))
+  (buffer-substring 
+   (match-end 0) 
+   (if (re-search-forward "^[^ \t]" nil t)
+       (progn
+	 (backward-char 2)
+	 (point))
+     (gnus-point-at-eol))))
 
 (defvar gnus-newsgroup-none-id 0)
 
@@ -9250,10 +9265,10 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (progn
 	      (goto-char p)
 	      (if (search-forward "\nreferences: " nil t)
-		  (prog1
-		      (gnus-header-value)
-		    (setq end (match-end 0))
-		    (save-excursion
+		  (progn
+		    (setq end (point))
+		    (prog1
+			(gnus-header-value)
 		      (setq ref
 			    (buffer-substring
 			     (progn
@@ -11068,10 +11083,15 @@ Return how many articles were fetched."
       (setq message-id (concat "<" message-id)))
     (unless (string-match ">$" message-id)
       (setq message-id (concat message-id ">")))
-    (let ((header (gnus-id-to-header message-id)))
+    (let* ((header (gnus-id-to-header message-id))
+	   (sparse (memq (mail-header-number header) gnus-newsgroup-sparse)))
       (if header
-	  ;; The article is present in the buffer, to we just go to it.
-	  (gnus-summary-goto-article (mail-header-number header) nil header)
+	  (prog1
+	      ;; The article is present in the buffer, to we just go to it.
+	      (gnus-summary-goto-article 
+	       (mail-header-number header) nil header)
+	    (when sparse
+	      (gnus-summary-update-article (mail-header-number header))))
 	;; We fetch the article
 	(let ((gnus-override-method 
 	       (and (gnus-news-group-p gnus-newsgroup-name)
@@ -12943,6 +12963,7 @@ The variable `gnus-default-article-saver' specifies the saver function."
 	    ;; !!! Magic!  The saving functions all save
 	    ;; `gnus-original-article-buffer' (or so they think),
 	    ;; but we bind that variable to out save-buffer.
+	    (set-buffer gnus-article-buffer)
 	    (let ((gnus-original-article-buffer save-buffer))
 	      (setq file (funcall
 			  gnus-default-article-saver
