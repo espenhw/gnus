@@ -1,3 +1,21 @@
+2002-10-31  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus-util.el (gnus-user-date-format-alist): Clarify and correct
+	documentation.
+
+2002-10-28  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus-agent.el (gnus-agent-fetched-headers) 
+	(gnus-agent-load-fetched-headers) 
+	(gnus-agent-save-fetched-headers): Remove variable and two
+	functions.  Kevin Greiner's version of gnus-agent-fetch-headers
+	works better.
+	(gnus-agent-fetch-headers): New implementation from Kevin
+	Greiner.  Uses gnus-agent-article-alist to store information
+	about fetched messages which aren't on the server anymore.  The
+	trick is to return a list of considered messages to the caller,
+	but to only fetch those which haven't been fetched yet.
+
 2002-10-30  Simon Josefsson  <jas@extundo.com>
 
 	* pgg-def.el (pgg-passphrase-cache-expiry): New, defcustom.

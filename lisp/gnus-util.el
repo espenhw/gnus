@@ -351,15 +351,22 @@
     ((gnus-seconds-year) . "%b %d")
     (t . "%b %d '%y"))                      ;;this one is used when no
 					    ;;other does match
-  "Alist of time in seconds and format specification used to display dates not older.
-The first element must be a number or a function returning a
-number. The second element is a format-specification as described in
-the documentation for format-time-string.  The list must be ordered
-smallest number up. When there is an element, which is not a number,
-the corresponding format-specification will be used, disregarding any
-following elements.  You can use the functions gnus-seconds-today,
-gnus-seconds-month, gnus-seconds-year which will return the number of
-seconds which passed today/this month/this year.")
+  "Specifies date format depending on age of article.
+This is an alist of items (AGE . FORMAT).  AGE can be a number (of
+seconds) or a Lisp expression evaluating to a number.  When the age of
+the article is less than this number, then use `format-time-string'
+with the corresponding FORMAT for displaying the date of the article.
+If AGE is not a number or a Lisp expression evaluating to a
+non-number, then the corresponding FORMAT is used as a default value.
+
+Note that the list is processed from the beginning, so it should be
+sorted by ascending AGE.  Also note that items following the first
+non-number AGE will be ignored.
+
+You can use the functions `gnus-seconds-today', `gnus-seconds-month'
+and `gnus-seconds-year' in the AGE spec.  They return the number of
+seconds passed since the start of today, of this month, of this year,
+respectively.")
 
 (defun gnus-user-date (messy-date)
   "Format the messy-date acording to gnus-user-date-format-alist.
