@@ -6934,6 +6934,13 @@ Append the article straight to an ordinary file.  Uses the function in
 the @code{gnus-file-save-name} variable to get a file name to save the
 article in.  The default is @code{gnus-numeric-save-name}.
 
+@item gnus-summary-write-to-file
+@findex gnus-summary-write-to-file
+Write the article straight to an ordinary file.  The file is
+overwritten if it exists.  Uses the function in the
+@code{gnus-file-save-name} variable to get a file name to save the
+article in.  The default is @code{gnus-numeric-save-name}.
+
 @item gnus-summary-save-body-in-file
 @findex gnus-summary-save-body-in-file
 Append the article body to an ordinary file.  Uses the function in the

@@ -1,5 +1,9 @@
 2001-11-07  Simon Josefsson  <jas@extundo.com>
 
+	* gnus.texi (Saving Articles): Add gnus-summary-write-to-file.
+
+2001-11-07  Simon Josefsson  <jas@extundo.com>
+
 	* gnus.texi (Misc Group Stuff): Add cross reference to Composing
 	Messages.  Suggested by "Golubev I. N." <gin@mo.msk.ru>.
 
