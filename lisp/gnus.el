@@ -848,6 +848,20 @@ be set in `.emacs' instead."
 (require 'gnus-util)
 (require 'nnheader)
 
+(defvar gnus-parameters nil
+  "Alist of group parameters.
+
+For example:
+   ((\"mail\\\\..*\"  (gnus-show-threads nil)
+                  (gnus-use-scoring nil)
+                  (gnus-summary-line-format
+                        \"%U%R%z%I%(%[%d:%ub%-20,20f%]%) %s\\n\")
+                  (gcc-self . t)
+                  (dispaly . all))
+     (\"mail\\\\.me\" (gnus-use-scoring  t))
+     (\"list\\\\..*\" (total-expire . t)
+                  (broken-reply-to . t)))")
+
 (defvar gnus-group-parameters-more nil)
 
 (defmacro gnus-define-group-parameter (param &rest rest)
@@ -2692,12 +2706,28 @@ You should probably use `gnus-find-method-for-group' instead."
   "Say whether the group is secondary or not."
   (gnus-secondary-method-p (gnus-find-method-for-group group)))
 
+(defun gnus-parameters-get-parameter (group)
+  "Return the group parameters for GROUP from `gnus-parameters'."
+  (let ((alist gnus-parameters)
+	params-list)
+    (while alist
+      (when (string-match (caar alist) group)
+	(setq params-list 
+	      (nconc (copy-sequence (cdar alist))
+		     params-list)))
+      (pop alist))
+    params-list))
+
 (defun gnus-group-find-parameter (group &optional symbol allow-list)
   "Return the group parameters for GROUP.
 If SYMBOL, return the value of that symbol in the group parameters."
   (save-excursion
     (set-buffer gnus-group-buffer)
-    (let ((parameters (funcall gnus-group-get-parameter-function group)))
+    (let ((parameters 
+	   (nconc
+	    (copy-sequence
+	     (funcall gnus-group-get-parameter-function group))
+	    (gnus-parameters-get-parameter group))))
       (if symbol
 	  (gnus-group-parameter-value parameters symbol allow-list)
 	parameters))))
