@@ -1,3 +1,9 @@
+2004-01-14  Kai Grossjohann  <kai@emptydomain.de>
+
+	* message.el (message-kill-to-signature): Allow prefix arg to
+	specify number of lines to keep before signature.  From Vasily
+	Korytov.
+
 2004-01-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* canlock.el: Always require sha1-el.
