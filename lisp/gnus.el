@@ -2124,7 +2124,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 ;;; gnus-sum.el thingies
 
 
-(defcustom gnus-summary-line-format "%U%R%z%I%(%[%4L: %-23,23n%]%) %s\n"
+(defcustom gnus-summary-line-format "%U%R%z%I%(%[%4L: %-23,23f%]%) %s\n"
   "*The format specification of the lines in the summary buffer.
 
 It works along the same lines as a normal formatting string,

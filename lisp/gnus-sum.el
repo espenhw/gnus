@@ -895,7 +895,7 @@ which it may alter in any way.")
 (defvar gnus-decode-encoded-word-function 'mail-decode-encoded-word-string
   "Variable that says which function should be used to decode a string with encoded words.")
 
-(defcustom gnus-extra-headers nil
+(defcustom gnus-extra-headers '(To Newsgroups)
   "*Extra headers to parse."
   :version "21.1"
   :group 'gnus-summary
