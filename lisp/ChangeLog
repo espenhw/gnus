@@ -1,3 +1,8 @@
+2002-06-11  Simon Josefsson  <jas@extundo.com>
+
+	* nnweb.el (nnweb-google-create-mapping): Honors the value of
+	nnweb-max-hits.  From Niklas Morberg <niklas.morberg@axis.com>.
+
 2002-06-10  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-int.el (gnus-request-expire-articles): Fix last change?

@@ -792,12 +792,23 @@ Valid types include `google', `dejanews', `reference', and `altavista'.")
     (set-buffer nnweb-buffer)
     (erase-buffer)
     (when (funcall (nnweb-definition 'search) nnweb-search)
-	(let ((more t))
+	(let ((more t)
+	      (i 0))
 	  (while more
 	    (setq nnweb-articles
 		  (nconc nnweb-articles (nnweb-google-parse-1)))
-	    ;; FIXME: There is more.
-	    (setq more nil))
+	    ;; Check if there are more articles to fetch
+	    (goto-char (point-min))
+	    (incf i 100)
+	    (if (or (not (re-search-forward
+			  "<td nowrap><a href=\\([^>]+\\).*<span class=b>Next</span>" nil t))
+		    (>= i nnweb-max-hits))
+		(setq more nil)
+	      ;; Yup, there are more articles
+	      (setq more (concat "http://groups.google.com" (match-string 1)))
+	    (when more
+	      (erase-buffer)
+	      (mm-url-insert more))))
 	  ;; Return the articles in the right order.
 	  (setq nnweb-articles
 		(sort nnweb-articles 'car-less-than-car))))))
