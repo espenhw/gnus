@@ -126,6 +126,13 @@ This variable can also have a function as its value, the function will
 be called with the headers narrowed and should return a group where it
 thinks the article should be splitted to.")
 
+(defvar nnimap-split-predicate "UNSEEN UNDELETED"
+  "The predicate used to find articles to split.
+If you use another IMAP client to peek on articles but always would
+like nnimap to split them once it's started, you could change this to
+\"UNDELETED\". Other available predicates are available in
+RFC2060 section 6.4.4.")
+
 (defvar nnimap-split-fancy nil
   "Like `nnmail-split-fancy', which see.")
 
@@ -493,8 +500,8 @@ If EXAMINE is non-nil the group is selected read-only."
 		     (cons (1+ (cdr cached)) high) group server))
 		  (when nnimap-prune-cache
 		    ;; remove nov's for articles which has expired on server
-                    (goto-char (point-min))
-                    (dolist (uid (gnus-set-difference articles uids))
+		    (goto-char (point-min))
+		    (dolist (uid (gnus-set-difference articles uids))
                       (when (re-search-forward (format "^%d\t" uid) nil t)
                         (gnus-delete-line)))))
 	      ;; nothing cached, fetch whole range from server
@@ -892,7 +899,7 @@ function is generally only called when Gnus is shutting down."
 	  ;; find split rule for this server / inbox
 	  (when (setq rule (nnimap-split-find-rule server inbox))
 	    ;; iterate over articles
-	    (dolist (article (imap-search "UNSEEN UNDELETED"))
+	    (dolist (article (imap-search nnimap-split-predicate)
 	      (when (nnimap-request-head article)
 		;; copy article to right group(s)
 		(setq removeorig nil)

@@ -1,3 +1,8 @@
+2000-01-21  Simon Josefsson  <jas@pdc.kth.se>
+
+	* nnimap.el (nnimap-split-predicate): New variable.
+	(nnimap-split-articles): Use it.
+
 2000-01-20  Simon Josefsson  <jas@pdc.kth.se>
 
 	* utf7.el: Change email address.
