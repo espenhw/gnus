@@ -1,3 +1,7 @@
+2003-01-10  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-srvr.el (gnus-browse-foreign-server): Optimize inner loop.
+
 2003-01-09  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-check-ifile): fixed call-process-region to use the

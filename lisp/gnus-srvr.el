@@ -1,5 +1,5 @@
 ;;; gnus-srvr.el --- virtual server support for Gnus
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -767,27 +767,27 @@ The following commands are available:
 	       (format
 		"Gnus: %%b {%s:%s}" (car method) (cadr method))))
 	(let ((buffer-read-only nil)
-	      charset
+	      name
 	      (prefix (let ((gnus-select-method orig-select-method))
 			(gnus-group-prefixed-name "" method))))
-	  (dolist (group groups)
-	    (setq charset (gnus-group-name-charset method (car group)))
+	  (while (setq group (pop groups))
 	    (gnus-add-text-properties
 	     (point)
 	     (prog1 (1+ (point))
 	       (insert
 		(format "%c%7d: %s\n"
 			(let ((level (gnus-group-level
-				      (concat prefix (car group)))))
+				      (concat prefix (setq name (car group))))))
 			      (cond
 			       ((<= level gnus-level-subscribed) ? )
 			       ((<= level gnus-level-unsubscribed) ?U)
 			       ((= level gnus-level-zombie) ?Z)
 			       (t ?K)))
 			(max 0 (- (1+ (cddr group)) (cadr group)))
-			(gnus-group-name-decode (car group) charset))))
-	     (list 'gnus-group (car group)))
-	    (setq groups (cdr groups))))
+			(mm-decode-coding-string
+			 name
+			 (inline (gnus-group-name-charset method name))))))
+	     (list 'gnus-group name))))
 	(switch-to-buffer (current-buffer)))
       (goto-char (point-min))
       (gnus-group-position-point)
