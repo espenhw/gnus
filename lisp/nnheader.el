@@ -591,11 +591,14 @@ the line could be found."
     (string-match nnheader-numerical-short-files file)
     (string-to-int (match-string 0 file))))
 
+(defvar nnheader-directory-files-is-safe nil
+  "If non-nil, Gnus believes `directory-files' is safe.
+It has been reported numerous times that `directory-files' fails with
+an alarming frequency on NFS mounted file systems. If it is nil,
+`nnheader-directory-files-safe' is used.")
+
 (defun nnheader-directory-files-safe (&rest args)
-  ;; It has been reported numerous times that `directory-files'
-  ;; fails with an alarming frequency on NFS mounted file systems.
-  ;; This function executes that function twice and returns
-  ;; the longest result.
+  "Execute `directory-files' twice and returns the longer result."
   (let ((first (apply 'directory-files args))
 	(second (apply 'directory-files args)))
     (if (> (length first) (length second))
@@ -605,14 +608,20 @@ the line could be found."
 (defun nnheader-directory-articles (dir)
   "Return a list of all article files in directory DIR."
   (mapcar 'nnheader-file-to-number
-	  (nnheader-directory-files-safe
-	   dir nil nnheader-numerical-short-files t)))
+	  (if nnheader-directory-files-is-safe 
+	      (directory-files
+	       dir nil nnheader-numerical-short-files t)
+	    (nnheader-directory-files-safe
+	     dir nil nnheader-numerical-short-files t))))
 
 (defun nnheader-article-to-file-alist (dir)
   "Return an alist of article/file pairs in DIR."
   (mapcar (lambda (file) (cons (nnheader-file-to-number file) file))
-	  (nnheader-directory-files-safe
-	   dir nil nnheader-numerical-short-files t)))
+	  (if nnheader-directory-files-is-safe 
+	      (directory-files
+	       dir nil nnheader-numerical-short-files t)
+	    (nnheader-directory-files-safe
+	     dir nil nnheader-numerical-short-files t))))
 
 (defun nnheader-fold-continuation-lines ()
   "Fold continuation lines in the current buffer."

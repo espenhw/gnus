@@ -1,3 +1,9 @@
+2000-11-09 17:02:50  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnheader.el (nnheader-directory-files-is-safe): New variable.
+	(nnheader-directory-articles): Use it.
+	(nnheader-article-to-file-alist): Ditto.
+
 2000-11-09 16:20:37  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2047.el (rfc2047-pad-base64): New function.
