@@ -682,8 +682,7 @@ by nnmaildir-request-article.")
 	      group (make-nnmaildir--grp :name gname :index 0))
 	(nnmaildir--mkdir nndir)
 	(nnmaildir--mkdir (nnmaildir--nov-dir   nndir))
-	(nnmaildir--mkdir (nnmaildir--marks-dir nndir))
-	(write-region "" nil (concat nndir "markfile") nil 'no-message))
+	(nnmaildir--mkdir (nnmaildir--marks-dir nndir)))
       (setq read-only (nnmaildir--param pgname 'read-only)
 	    ls (or (nnmaildir--param pgname 'directory-files) srv-ls))
       (unless read-only
@@ -1483,8 +1482,8 @@ by nnmaildir-request-article.")
 	(coding-system-for-write nnheader-file-coding-system)
 	(buffer-file-coding-system nil)
 	(file-coding-system-alist nil)
-	del-mark del-action add-action set-action marksdir markfile nlist
-	ranges begin end article all-marks todo-marks did-marks mdir mfile
+	del-mark del-action add-action set-action marksdir nlist
+	ranges begin end article all-marks todo-marks mdir mfile
 	pgname ls permarkfile deactivate-mark)
     (setq del-mark
 	  (lambda (mark)
@@ -1499,17 +1498,23 @@ by nnmaildir-request-article.")
 	       (setq mdir (nnmaildir--subdir marksdir (symbol-name mark))
 		     permarkfile (concat mdir ":")
 		     mfile (concat mdir (nnmaildir--art-prefix article)))
-	       (unless (memq mark did-marks)
-		 (setq did-marks (cons mark did-marks))
-		 (nnmaildir--mkdir mdir)
-		 (unless (file-attributes permarkfile)
-		   (condition-case nil
-		       (add-name-to-file markfile permarkfile)
-		     (file-error
-		      ;; AFS can't make hard links in separate directories
-		      (write-region "" nil permarkfile nil 'no-message)))))
-	       (unless (file-exists-p mfile)
-		 (add-name-to-file permarkfile mfile)))
+	       (condition-case err
+		   (add-name-to-file permarkfile mfile)
+		 (error
+		  (cond
+		   ((eq (car err) 'file-already-exists))
+		   ((and (eq (car err) 'file-error)
+			 (string= (caddr err) "no such file or directory"))
+		    (nnmaildir--mkdir mdir)
+		    (write-region "" nil permarkfile nil 'no-message)
+		    (add-name-to-file permarkfile mfile))
+		   ((and (eq (car err) 'file-error)
+			 (string= (caddr err) "too many links"))
+		    (let ((permarkfilenew (concat permarkfile "{new}")))
+		      (write-region "" nil permarkfilenew nil 'no-message)
+		      (rename-file permarkfilenew permarkfile 'replace)
+		      (add-name-to-file permarkfile mfile)))
+		   (t (signal (car err) (cdr err)))))))
 	     todo-marks))
 	  set-action (lambda (article)
 		       (funcall add-action)
@@ -1529,7 +1534,6 @@ by nnmaildir-request-article.")
 	    marksdir (nnmaildir--srv-dir nnmaildir--cur-server)
 	    marksdir (nnmaildir--srvgrp-dir marksdir gname)
 	    marksdir (nnmaildir--nndir marksdir)
-	    markfile (concat marksdir "markfile")
 	    marksdir (nnmaildir--marks-dir marksdir)
 	    gname (nnmaildir--grp-name group)
             pgname (nnmaildir--pgname nnmaildir--cur-server gname)

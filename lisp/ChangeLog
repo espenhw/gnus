@@ -1,3 +1,8 @@
+2004-01-23  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir-request-set-mark): Handle the "too many
+	links" error.
+
 2004-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dgnushack.el: Advise byte-optimize-form-code-walker to optimize
