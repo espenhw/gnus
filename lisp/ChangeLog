@@ -1,3 +1,7 @@
+2003-03-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-cite.el (gnus-cited-line-p): New function.
+
 2003-03-15  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-bodies.el (mm-decode-body): Add new optional parameter,

@@ -1035,6 +1035,17 @@ See also the documentation for `gnus-article-highlight-citation'."
     (while vars
       (make-local-variable (pop vars)))))
 
+(defun gnus-cited-line-p ()
+  "Say whether the current line is a cited line."
+  (save-excursion
+    (beginning-of-line)
+    (let ((found nil))
+      (dolist (prefix (mapcar 'car gnus-cite-prefix-alist))
+	(when (string= (buffer-substring (point) (+ (length prefix) (point)))
+		       prefix)
+	  (setq found t)))
+      found)))
+
 (gnus-ems-redefine)
 
 (provide 'gnus-cite)
