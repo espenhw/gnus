@@ -1820,6 +1820,14 @@ Putting (gnus-agentize) in ~/.gnus is obsolete by (setq gnus-agent t)."
   :group 'gnus-agent
   :type 'boolean)
 
+(defcustom gnus-other-frame-function 'gnus
+  "Function called by the command `gnus-other-frame'."
+  :group 'gnus-start
+  :type '(choice (function-item gnus)
+		 (function-item gnus-no-server)
+		 (function-item gnus-slave)
+		 (function-item gnus-slave-no-server)))
+
 (defcustom gnus-other-frame-parameters nil
   "Frame parameters used by `gnus-other-frame' to create a Gnus frame.
 This should be an alist for FSF Emacs, or a plist for XEmacs."
@@ -3375,17 +3383,32 @@ server."
   (gnus arg nil 'slave))
 
 ;;;###autoload
-(defun gnus-other-frame (&optional arg)
-  "Pop up a frame to read news."
+(defun gnus-other-frame (&optional arg display)
+  "Pop up a frame to read news.
+This will call one of the Gnus commands which is specified by the user
+option `gnus-other-frame-function' (default `gnus') with the argument
+ARG if Gnus is not running, otherwise just pop up a Gnus frame.  The
+optional second argument DISPLAY should be a standard display string
+such as \"unix:0\" to specify where to pop up a frame.  If DISPLAY is
+omitted or the function `make-frame-on-display' is not available, the
+current display is used."
   (interactive "P")
+  (if (fboundp 'make-frame-on-display)
+      (unless display
+	(setq display (gnus-frame-or-window-display-name (selected-frame))))
+    (setq display nil))
   (let ((alive (gnus-alive-p)))
     (unless (and alive
 		 (catch 'found
 		   (walk-windows
 		    (lambda (window)
-		      (when (with-current-buffer (window-buffer window)
-			      (string-match "\\`gnus-.+-mode\\'"
-					    (symbol-name major-mode)))
+		      (when (and (or (not display)
+				     (equal display
+					    (gnus-frame-or-window-display-name
+					     window)))
+				 (with-current-buffer (window-buffer window)
+				   (string-match "\\`gnus-"
+						 (symbol-name major-mode))))
 			(gnus-select-frame-set-input-focus
 			 (setq gnus-other-frame-object (window-frame window)))
 			(select-window window)
@@ -3393,10 +3416,12 @@ server."
 		    'ignore t)))
       (gnus-select-frame-set-input-focus
        (setq gnus-other-frame-object
-	     (make-frame gnus-other-frame-parameters)))
+	     (if display
+		 (make-frame-on-display display gnus-other-frame-parameters)
+	       (make-frame gnus-other-frame-parameters))))
       (if alive
 	  (switch-to-buffer gnus-group-buffer)
-	(gnus arg)
+	(funcall gnus-other-frame-function arg)
 	(add-hook 'gnus-exit-gnus-hook
 		  (lambda nil
 		    (when (and (frame-live-p gnus-other-frame-object)

@@ -1287,6 +1287,16 @@ CHOICE is a list of the choice char and help message at IDX."
 	 (when focus-follows-mouse
 	   (set-mouse-position frame (1- (frame-width frame)) 0)))))
 
+(defun gnus-frame-or-window-display-name (object)
+  "Given a frame or window, return the associated display name.
+Return nil otherwise."
+  (if (featurep 'xemacs)
+      (device-connection (dfw-device object))
+    (if (or (framep object)
+	    (and (windowp object)
+		 (setq object (window-frame object))))
+	(frame-parameter object 'display))))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

@@ -92,7 +92,8 @@
 		     window-edges x-color-values x-popup-menu browse-url
 		     frame-char-height frame-char-width
 		     url-generic-parse-url xml-parse-region
-		     make-network-process))
+		     make-network-process
+		     frame-parameter make-frame-on-display))
       (maybe-bind '(buffer-display-table
 		    buffer-file-coding-system font-lock-defaults
 		    global-face-data gnus-article-x-face-too-ugly
@@ -123,7 +124,8 @@
 		 specifier-instance url-generic-parse-url
 		 valid-image-instantiator-format-p w3-do-setup
 		 window-pixel-height window-pixel-width
-		 xml-parse-region make-network-process)))
+		 xml-parse-region make-network-process
+		 device-connection dfw-device)))
 
 (require 'custom)
 
