@@ -963,6 +963,24 @@ candidates:
   "Face used for displaying MML."
   :group 'message-faces)
 
+(defun message-font-lock-make-header-matcher (regexp)
+  (let ((form
+	 `(lambda (limit)
+	    (let ((start (point)))
+	      (save-restriction
+		(widen)
+		(goto-char (point-min))
+		(if (re-search-forward
+		     (concat "^" (regexp-quote mail-header-separator) "$")
+		     nil t)
+		    (setq limit (min limit (match-beginning 0))))
+		(goto-char start))
+	      (and (< start limit)
+		   (re-search-forward ,regexp limit t))))))
+    (if (featurep 'bytecomp)
+	(byte-compile form)
+      form)))
+
 (defvar message-font-lock-keywords
   (let ((content "[ \t]*\\(.+\\(\n[ \t].*\\)*\\)\n?"))
     `((,(message-font-lock-make-header-matcher
@@ -1534,24 +1552,6 @@ Point is left at the beginning of the narrowed-to region."
 	       (- max rank)
 	     (1+ max)))))
       (message-sort-headers-1))))
-
-(defun message-font-lock-make-header-matcher (regexp)
-  (let ((form
-	 `(lambda (limit)
-	    (let ((start (point)))
-	      (save-restriction
-		(widen)
-		(goto-char (point-min))
-		(if (re-search-forward
-		     (concat "^" (regexp-quote mail-header-separator) "$")
-		     nil t)
-		    (setq limit (min limit (match-beginning 0))))
-		(goto-char start))
-	      (and (< start limit)
-		   (re-search-forward ,regexp limit t))))))
-    (if (featurep 'bytecomp)
-	(byte-compile form)
-      form)))
 
 
 
