@@ -150,13 +150,11 @@
 	  (with-temp-buffer
 	    (insert-buffer-substring buf)
 	    (goto-char (point-min))
-	    (while (re-search-forward "-----BEGIN CERTIFICATE-----" nil t)
-	      (forward-line 0)
-	      (if (re-search-forward "-----END CERTIFICATE-----" nil t)
-		  (smime-pkcs7-email-region (point-min) (point))
-		(delete-region (point-min) (point))))
-	    (setq addresses (smime-buffer-as-string-region (point-min)
-							   (point-max)))))
+	    (while (re-search-forward "-----END CERTIFICATE-----" nil t)
+	      (smime-pkcs7-email-region (point-min) (point))
+	      (setq addresses (append (smime-buffer-as-string-region
+				       (point-min) (point)) addresses))
+	      (delete-region (point-min) (point)))))
 	(if (not (member mm-security-from addresses))
 	    (mm-set-handle-multipart-parameter 
 	     mm-security-handle 'gnus-info "Sender forged")

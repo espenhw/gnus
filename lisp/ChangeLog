@@ -1,5 +1,9 @@
 2000-12-01  Simon Josefsson  <sj@extundo.com>
 
+	* mml-smime.el (mml-smime-verify): Fix address parsing.
+
+2000-12-01  Simon Josefsson  <sj@extundo.com>
+
 	* mml-smime.el (mml-smime-verify): Don't modify MM buffer.  Handle
 	more than one certificate inside PKCS#7 blob.  Better security
 	information (clamed / actual sender, openssl output, certificates
