@@ -1,3 +1,9 @@
+2001-08-12  Kai Grossjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+
+	* gnus.texi (Window Layout): Renamed from `Windows
+	Configuration'.  After all, we're not talking about Microsoft.
+	Suggested by Barry Fishman.
+
 2001-08-11  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Summary Mail Commands): Remove duplicate explanation
