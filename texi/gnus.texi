@@ -7312,6 +7312,42 @@ on a group-by-group basis using the group parameters (@pxref{Group
 Parameters}).  The default value is @code{(unknown-8bit)}, which is
 something some agents insist on having in there.
 
+@cindex Russina
+@cindex koi8-r
+@cindex koi8-u
+@cindex iso-8859-5
+@cindex coding system aliases
+@cindex preferred charset
+
+Other charset tricks that may be useful, although not Gnus-specific:
+
+If there are several @sc{mime} charsets that encode the same Emacs
+charset, you can choose what charset to use by saying the following:
+
+@lisp
+(put-charset-property 'cyrillic-iso8859-5
+                      'preferred-coding-system 'koi8-r)
+@end lisp
+
+This means that Russian will be encoded using @code{koi8-r} instead of
+the default @code{iso-8859-5} @sc{mime} charset.
+
+If you want to read messages in @code{koi8-u}, you can cheat and say
+
+@lisp
+(define-coding-system-alias 'koi8-u 'koi8-r)
+@end lisp
+
+This will almost do the right thing.
+
+And finally, to read charsets like @code{windows-1251}, you can say
+something like
+
+@lisp
+(codepage-setup 1251)
+(define-coding-system-alias 'windows-1251 'cp1251)
+@end lisp
+
 
 @node Article Commands
 @section Article Commands
@@ -10275,7 +10311,8 @@ month's rent money.
 @subsection Mail Sources
 
 Mail can be gotten from many different sources---the mail spool, from a
-POP mail server, or from a procmail directory, for instance.
+POP mail server, from a procmail directory, or from a maildir, for
+instance.
 
 @menu
 * Mail Source Specifiers::       How to specify what a mail source is.
@@ -10489,9 +10526,9 @@ Use @samp{movemail} to move the mail:
 @end lisp
 
 @item maildir
-Get mail from a maildir. This is a type of mailbox currently only
-supported by qmail, where each file in a special directory contains
-exactly one mail.
+Get mail from a maildir. This is a type of mailbox that is supported by
+at least qmail and postfix, where each file in a special directory
+contains exactly one mail.
 
 Keywords:
 
@@ -10502,14 +10539,22 @@ The path of the directory where the mails are stored.  The default is
 
 If you sometimes look at your mail through a pop3 daemon before fetching
 them with Gnus, you may also have to fetch your mails from the
-@code{cur} directory inside the maildir, like in the following example.
+@code{cur} directory inside the maildir, like in the first example
+below.
+
+You can also get mails from remote hosts (because maildirs don't suffer
+from locking problems).
 
 @end table
 
-An example maildir mail source:
+Two example maildir mail sources:
 
 @lisp
 (maildir :path "/home/user-name/Maildir/cur")
+@end lisp
+
+@lisp
+(maildir :path "/user@@remotehost.org:~/Maildir/new")
 @end lisp
 
 @item imap
