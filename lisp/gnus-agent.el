@@ -818,7 +818,8 @@ be a select method."
   (interactive)
   (save-excursion
     (dolist (gnus-command-method (gnus-agent-covered-methods))
-      (when (file-exists-p (gnus-agent-lib-file "flags"))
+      (when (and (file-exists-p (gnus-agent-lib-file "flags"))
+		 (not (eq (gnus-server-status gnus-command-method) 'offline)))
 	(gnus-agent-possibly-synchronize-flags-server gnus-command-method)))))
 
 (defun gnus-agent-synchronize-flags-server (method)
@@ -837,13 +838,18 @@ be a select method."
 	     (gnus-message 
 	      1 "Couldn't open server %s" (nth 1 gnus-command-method)))
 	    (t
-	     (while (not (eobp))
-	       (if (null (eval (read (current-buffer))))
-		   (gnus-delete-line)
-		 (write-file (gnus-agent-lib-file "flags"))
-		 (error "Couldn't set flags from file %s"
-			(gnus-agent-lib-file "flags"))))
-	     (delete-file (gnus-agent-lib-file "flags"))))
+	     (condition-case err
+		 (while t
+		   (let ((bgn (point)))
+		     (eval (read (current-buffer)))
+		     (delete-region bgn (point))))
+	       (end-of-file
+		(delete-file (gnus-agent-lib-file "flags")))
+	       (error
+		(let ((file (gnus-agent-lib-file "flags")))
+		  (write-file file)
+		  (error "Couldn't set flags from file %s due to %s"
+			 file (error-message-string err)))))))
       (kill-buffer nil))))
 
 (defun gnus-agent-possibly-synchronize-flags-server (method)
@@ -1198,6 +1204,16 @@ This can be added to `gnus-select-article-hook' or
 ;;;
 ;;; Internal functions
 ;;;
+
+(defun gnus-agent-synchronize-group-flags (group action server)
+"Update a plugged group by performing the indicated action."
+  (let* ((gnus-command-method (gnus-server-to-method server))
+	 (info (gnus-get-info group)))
+    (gnus-request-set-mark group action)
+
+    (when info
+      (gnus-request-update-info info gnus-command-method))
+    nil))
 
 (defun gnus-agent-save-active (method)
   (when (gnus-agent-method-p method)
