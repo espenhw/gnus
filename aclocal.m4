@@ -84,6 +84,7 @@ AC_DEFUN(AC_PATH_LISPDIR, [
 	theprefix=$ac_default_prefix
     fi
     if test "$EMACS_FLAVOR" = "xemacs"; then
+        datadir="\$(prefix)/lib"
         lispdir="\$(datadir)/${EMACS_FLAVOR}/site-packages/lisp/gnus"
     else
     lispdir="\$(datadir)/${EMACS_FLAVOR}/site-lisp"
@@ -138,6 +139,26 @@ AC_DEFUN(AC_PATH_INFO_DIR, [
   fi
   AC_MSG_RESULT($info_dir)
   AC_SUBST(info_dir)
+])
+
+dnl
+dnl This will set the XEmacs command line options to be slightly different
+dnl from the Emacs ones.  If building with XEmacs the options will be
+dnl "-batch -no-autoloads..." to give a much cleaner build environment.
+dnl
+AC_DEFUN(AC_SET_BUILD_FLAGS, [
+  AC_MSG_CHECKING([which options to pass on to (X)Emacs])
+  if test "x$FLAGS" = "x"; then
+    if test "$EMACS_FLAVOR" = "xemacs"; then
+      FLAGS="-batch -no-autoloads -l \$(srcdir)/dgnushack.el"
+    else
+      FLAGS="-batch -q -no-site-file -l \$(srcdir)/dgnushack.el"
+    fi
+  else
+    FLAGS=$FLAGS
+  fi
+  AC_MSG_RESULT($FLAGS)
+  AC_SUBST(FLAGS)
 ])
 
 dnl

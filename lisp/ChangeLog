@@ -1,3 +1,14 @@
+2003-04-17  Steve Youngs  <youngs@xemacs.org>
+
+	* dgnushack.el: Add a whole swag of autoloads and defaliases to
+	satisfy the byte-compiler when building with XEmacs.
+
+	* lpath.el (maybe-bind): Add 'w3-meta-content-type-charset-regexp'
+	and 'w3-meta-charset-content-type-regexp' in XEmacs.  The upstream
+	W3 doesn't have these.
+
+	* mailcap.el: Maybe require 'lpr in XEmacs.
+
 2003-04-16  Simon Josefsson  <jas@extundo.com>
 
 	* mml2015.el (mml2015-pgg-sign): Bind pgg-default-user-id to MML

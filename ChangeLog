@@ -1,3 +1,18 @@
+2003-04-17  Steve Youngs  <youngs@xemacs.org>
+
+	* Makefile.in (XEMACS): Use @EMACS@.
+
+	* aclocal.m4 (AC_PATH_LISPDIR): Set $datadir to $prefix/lib if
+	building with XEmacs.
+
+	* aclocal.m4 (AC_SET_BUILD_FLAGS): New.  So we can set XEmacs
+	command line options to '-batch -no-autoloads...' for a cleaner
+	build environment.
+
+	* configure.in: Use it.
+
+	* configure: Regenerate.
+
 2003-04-16  Reiner Steib  <Reiner.Steib@gmx.de>
 	From Frank Schmitt  <ich@frank-schmitt.net>
 
@@ -31,7 +46,7 @@
 
 	* GNUS-NEWS: Talk about canlock more.
 
-2003-02-13  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2003-02-13  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* GNUS-NEWS: Add user visible changes from Michael Shields from
 	the past couple of days.  Actual text from Michael.
@@ -74,11 +89,11 @@
 
 	* etc/gnus/gnus.xpm (oort): Make the color replaceable.
 
-2002-12-05  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-12-05  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* etc/smilies/*.pbm: Made them binary.
 
-2002-11-13  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+2002-11-13  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* etc/smilies/blink.xpm: Changed smileys and some new ones from
 	Alex Schroeder <alex@emacswiki.org>.
@@ -118,7 +133,7 @@
 	* ChangeLog, todo: (oops) changed buffer-file-coding-system back
 	to coding.
 
-2001-12-18  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-12-18  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* make-x.bat: Ensure nonempty variable value.  Reported by Frank
 	Haun <pille3000@gmx.net>.
@@ -132,12 +147,12 @@
 	* ChangeLog: changed coding to buffer-file-coding-system
 	* todo: same
 
-2001-12-10  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-12-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* make-x.bat: Code cleanup.  Fix a bug with "/copy".  From Frank
 	Schmitt <ich@Frank-Schmitt.net>.
 
-2001-11-26  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-11-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* make-x.bat: Use parameter "/copy" rather than "copy" for increased
 	dwimishness for old-time DOS users.  From Frank Schmitt
@@ -163,7 +178,7 @@
 	* etc/smilies/blink.pbm: Ditto.
 	Contributed by Kim F. Storm <storm@cua.dk>.
 
-2001-10-19  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-10-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Frank Schmitt <ich@Frank-Schmitt.net>. 
 	
 	* make-x.bat: Use correct directory structure for XEmacs on Windows.
@@ -186,7 +201,7 @@
 
 	* configure.in: Generate texi/ps/Makefile.
 
-2001-09-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-09-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* make.bat: Use parameter "/copy" rather than "copy" for increased
 	dwimishness for old-time DOS users.
@@ -199,7 +214,7 @@
 
 	* make.bat: Use infohack.el to create info files.
 
-2001-05-17  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-05-17  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* etc/Makefile.in (datadir): Set this variable, like in the other
 	Makefile.in's.  Patch from Gaute B Strokkenes <gs234@cam.ac.uk>.

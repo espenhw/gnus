@@ -52,7 +52,9 @@
 		    enable-multibyte-characters gnus-agent-expire-current-dirs
 		    language-info-alist mark-active mouse-selection-click-count
 		    mouse-selection-click-count-buffer pgg-parse-crc24
-		    temporary-file-directory transient-mark-mode)))
+		    temporary-file-directory transient-mark-mode
+		    w3-meta-content-type-charset-regexp
+		    w3-meta-charset-content-type-regexp)))
   (maybe-fbind '(bbdb-complete-name
 		 delete-annotation device-connection dfw-device
 		 events-to-keys font-lock-set-defaults frame-device

@@ -1,3 +1,9 @@
+2003-04-17  Steve Youngs  <youngs@xemacs.org>
+
+	* hashcash.el (hashcash-point-at-bol): Move the fbound test
+	outside of the defalias.
+	(hashcash-point-at-eol): Ditto.
+
 2003-03-19  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-idna.el: Update.
@@ -49,7 +55,7 @@
 
 	* gnus-mdrtn.el (gnus-moderated-groups): Removed (require 'gnus-load).
 
-2002-04-24  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-04-24  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* ucs-tables.el (featurep): Barf on XEmacs.
 
@@ -186,7 +192,7 @@
 	(gpg-with-temp-files): Ditto.
 	(gpg-show-result): Ditto.
 
-2000-11-08  Bj,Av(Brn Torkelsson  <torkel@hpc2n.umu.se>
+2000-11-08  Björn Torkelsson  <torkel@hpc2n.umu.se>
 
 	* gpg.el: In Xemacs it is called point-at-eol, not
 	line-end-position

@@ -23,6 +23,7 @@ AC_PATH_ETCDIR
 AC_PATH_INFO_DIR
 AC_CHECK_URL
 AC_CHECK_W3
+AC_SET_BUILD_FLAGS
 GNUS_CHECK_FONTS
 
 AC_OUTPUT(Makefile etc/Makefile lisp/Makefile texi/Makefile texi/gnusconfig.tex texi/ps/Makefile)
