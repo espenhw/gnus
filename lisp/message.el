@@ -2218,6 +2218,11 @@ Headers already prepared in the buffer are not modified."
 	  (nconc message-buffer-list (list (current-buffer))))))
 
 (defun message-setup (headers &optional replybuffer actions)
+  (when (and (boundp 'mc-modes-alist)
+	     (not (assq 'message-mode mc-modes-alist)))
+    (push '(message-mode (encrypt . mc-encrypt-message)
+			 (sign . mc-sign-message))
+	  mc-modes-alist))
   (when actions
     (setq message-send-actions actions))
   (setq message-reply-buffer replybuffer)

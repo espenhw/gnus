@@ -554,6 +554,7 @@ Kill the message buffer and exit (@code{message-kill-buffer}).
 * News Variables::              Other news variables.
 * Various Message Variables::   Other message variables.
 * Sending Variables::           Variables for sending.
+* Message Buffers::             How Message names its buffers.
 * Message Actions::             Actions to be performed when exiting.
 @end menu
 

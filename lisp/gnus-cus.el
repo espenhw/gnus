@@ -596,15 +596,23 @@ ticked: The number of ticked articles.")
 	     '((mailp . bold)
 	       ((= unread 0) . italic)))
 	    ((eq gnus-background-mode 'dark)
-	     `(((> unread 200) .
-		,(custom-face-lookup "Red" nil nil t))
-	       ((and (< level 3) (zerop unread)) . 
-		,(custom-face-lookup "SeaGreen" nil nil t))
-	       ((< level 3) .
-		,(custom-face-lookup "SpringGreen" nil nil t))
-	       ((zerop unread) . 
-		,(custom-face-lookup "SteelBlue" nil nil t))
-	       (t . ,(custom-face-lookup "SkyBlue" nil nil t))))
+	     `(((and (not mailp) (eq level 1)) .
+		,(custom-face-lookup "LemonChiffon1" nil nil t))
+	       ((and (not mailp) (eq level 2)) .
+		,(custom-face-lookup "LemonChiffon2" nil nil t))
+	       ((and (not mailp) (eq level 3)) .
+		,(custom-face-lookup "LemonChiffon3" nil nil t))
+	       ((and (not mailp) (>= level 4)) .
+		,(custom-face-lookup "LemonChiffon4" nil nil t))
+	       ((and mailp (eq level 1)) .
+		,(custom-face-lookup "aquamarine1" nil nil t))
+	       ((and mailp (eq level 2)) .
+		,(custom-face-lookup "aquamarine2" nil nil t))
+	       ((and mailp (eq level 3)) .
+		,(custom-face-lookup "aquamarine3" nil nil t))
+	       ((and mailp (>= level 4)) .
+		,(custom-face-lookup "aquamarine4" nil nil t))
+	       ))
 	    (t
 	     `(((and (not mailp) (<= level 3)) .
 		,(custom-face-lookup "ForestGreen" nil nil t))

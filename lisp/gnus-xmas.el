@@ -510,9 +510,10 @@ pounce directly on the real variables themselves.")
 		    (file-name-as-directory gnus-xmas-glyph-directory)
 		    "gnus.xpm")))
 	(xpm-color-symbols 
-	 (append `(("thing" ,(car gnus-xmas-logo-colors))
-		   ("shadow" ,(cadr gnus-xmas-logo-colors)))
-		 xpm-color-symbols)))
+	 (and (featurep 'xpm)
+	      (append `(("thing" ,(car gnus-xmas-logo-colors))
+			("shadow" ,(cadr gnus-xmas-logo-colors)))
+		      xpm-color-symbols))))
     (if (and (featurep 'xpm)
 	     (not (equal (device-type) 'tty))
 	     logo

@@ -1,3 +1,7 @@
+Wed Jun  5 20:25:17 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.texi (Message Buffers): Add menu entry.
+
 Wed Jun  5 09:38:28 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* message.texi (News Headers): Addition.
