@@ -1,3 +1,8 @@
+2001-02-06 02:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-start.el (gnus-read-descriptions-file): Use
+	gnus-group-name-charset and gnus-group-charset-alist.
+
 2001-02-04 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-mark-as-processable): Understand
