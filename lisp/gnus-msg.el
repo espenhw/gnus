@@ -1144,48 +1144,47 @@ this is a reply."
 ;; Do Gcc handling, which copied the message over to some group.
 (defun gnus-inews-do-gcc (&optional gcc)
   (interactive)
-  (when (gnus-alive-p)
-    (save-excursion
-      (save-restriction
-	(message-narrow-to-headers)
-	(let ((gcc (or gcc (mail-fetch-field "gcc" nil t)))
-	      (cur (current-buffer))
-	      groups group method group-art)
-	  (when gcc
-	    (message-remove-header "gcc")
-	    (widen)
-	    (setq groups (message-unquote-tokens
-                          (message-tokenize-header gcc " ,")))
-	    ;; Copy the article over to some group(s).
-	    (while (setq group (pop groups))
-	      (gnus-check-server
-	       (setq method (gnus-inews-group-method group)))
-	      (unless (gnus-request-group group nil method)
-		(gnus-request-create-group group method))
-	      (save-excursion
-		(nnheader-set-temp-buffer " *acc*")
-		(insert-buffer-substring cur)
-		(message-encode-message-body)
-		(save-restriction
-		  (message-narrow-to-headers)
-		  (let ((mail-parse-charset message-default-charset)
-			(rfc2047-header-encoding-alist
-			 (cons '("Newsgroups" . default)
-			       rfc2047-header-encoding-alist)))
-		    (mail-encode-encoded-word-buffer)))
-		(goto-char (point-min))
-		(when (re-search-forward
-		       (concat "^" (regexp-quote mail-header-separator) "$")
-		       nil t)
-		  (replace-match "" t t ))
-		(unless (setq group-art
-			      (gnus-request-accept-article group method t t))
-		  (gnus-message 1 "Couldn't store article in group %s: %s"
-				group (gnus-status-message method))
-		  (sit-for 2))
-		(when (and group-art gnus-inews-mark-gcc-as-read)
-		  (gnus-group-mark-article-read group (cdr group-art)))
-		(kill-buffer (current-buffer))))))))))
+  (save-excursion
+    (save-restriction
+      (message-narrow-to-headers)
+      (let ((gcc (or gcc (mail-fetch-field "gcc" nil t)))
+            (cur (current-buffer))
+            groups group method group-art)
+        (when gcc
+          (message-remove-header "gcc")
+          (widen)
+          (setq groups (message-unquote-tokens
+                        (message-tokenize-header gcc " ,")))
+          ;; Copy the article over to some group(s).
+          (while (setq group (pop groups))
+            (gnus-check-server
+             (setq method (gnus-inews-group-method group)))
+            (unless (gnus-request-group group nil method)
+              (gnus-request-create-group group method))
+            (save-excursion
+              (nnheader-set-temp-buffer " *acc*")
+              (insert-buffer-substring cur)
+              (message-encode-message-body)
+              (save-restriction
+                (message-narrow-to-headers)
+                (let ((mail-parse-charset message-default-charset)
+                      (rfc2047-header-encoding-alist
+                       (cons '("Newsgroups" . default)
+                             rfc2047-header-encoding-alist)))
+                  (mail-encode-encoded-word-buffer)))
+              (goto-char (point-min))
+              (when (re-search-forward
+                     (concat "^" (regexp-quote mail-header-separator) "$")
+                     nil t)
+                (replace-match "" t t ))
+              (unless (setq group-art
+                            (gnus-request-accept-article group method t t))
+                (gnus-message 1 "Couldn't store article in group %s: %s"
+                              group (gnus-status-message method))
+                (sit-for 2))
+              (when (and group-art gnus-inews-mark-gcc-as-read)
+                (gnus-group-mark-article-read group (cdr group-art)))
+              (kill-buffer (current-buffer)))))))))
 
 (defun gnus-inews-insert-gcc ()
   "Insert Gcc headers based on `gnus-outgoing-message-group'."

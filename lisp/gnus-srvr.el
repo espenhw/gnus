@@ -568,7 +568,7 @@ The following commands are available:
        ["Read" gnus-browse-read-group t]
        ["Select" gnus-browse-select-group t]
        ["Next" gnus-browse-next-group t]
-       ["Prev" gnus-browse-next-group t]
+       ["Prev" gnus-browse-prev-group t]
        ["Exit" gnus-browse-exit t]))
     (gnus-run-hooks 'gnus-browse-menu-hook)))
 
