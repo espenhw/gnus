@@ -152,6 +152,7 @@ than subr.el."
     (autoload 'delete-annotation "annotations")
     (autoload 'dolist "cl-macs" nil nil 'macro)
     (autoload 'enriched-decode "enriched")
+    (autoload 'executable-find "executable")
     (autoload 'info "info" nil t)
     (autoload 'make-annotation "annotations")
     (autoload 'make-display-table "disp-table")
