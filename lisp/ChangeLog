@@ -1,3 +1,7 @@
+2003-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-check-news-header-syntax): Allow posting. 
+
 2003-01-02  Matthieu Moy  <Matthieu.Moy@imag.fr>
 
 	* message.el (message-check-news-header-syntax): Check syntax of
