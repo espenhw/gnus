@@ -442,19 +442,14 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 		      ;; ignore 0x1b, it is part of iso-2022-jp
 		      (setq encoding (mm-body-7-or-8))))
 		   (t
-		    ;; Only perform format=flowed filling on text/plain
-		    ;; parts where there either isn't a format parameter
-		    ;; in the mml tag or it says "flowed" and there
-		    ;; actually are hard newlines in the text.
-		    (when (and use-hard-newlines
-			       (string= type "text/plain")
-			       (or (null (assq 'format cont))
-				   (string= (cdr (assq 'format cont)) "flowed")))
-			(fill-flowed-encode)
-			;; Indicate that `mml-insert-mime-headers' should
-			;; insert a "; format=flowed" string unless the
-			;; user has already specified it.
-			(setq flowed (null (assq 'format cont))))
+		    ;; Perform format=flowed filling on text/plain
+		    ;; parts when use-hard-newlines is enabled.
+		    (when (and use-hard-newlines (string= type "text/plain"))
+		      (fill-flowed-encode)
+		      ;; Indicate that `mml-insert-mime-headers' should
+		      ;; insert a "; format=flowed" string unless the
+		      ;; user has already specified it.
+		      (setq flowed (null (assq 'format cont))))
 		    (setq charset (mm-encode-body charset))
 		    (setq encoding (mm-body-encoding
 				    charset (cdr (assq 'encoding cont))))))
