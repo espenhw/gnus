@@ -577,16 +577,21 @@ If it is non-nil, it must be a toolbar.  The five legal values are
   "The summary buffer toolbar.")
 
 (defun gnus-xmas-setup-group-toolbar ()
-  (and gnus-use-toolbar
-       (message-xmas-setup-toolbar gnus-group-toolbar nil "gnus")
-       (set-specifier (symbol-value gnus-use-toolbar)
-		      (cons (current-buffer) gnus-group-toolbar))))
+  (let (dir)
+    (and gnus-use-toolbar
+	 (setq dir (message-xmas-setup-toolbar gnus-group-toolbar nil "gnus"))
+	 (file-exists-p (concat dir "gnus-group-catchup-current-icon-up.xpm"))
+	 (set-specifier (symbol-value gnus-use-toolbar)
+			(cons (current-buffer) gnus-group-toolbar)))))
 
 (defun gnus-xmas-setup-summary-toolbar ()
-  (and gnus-use-toolbar
-       (message-xmas-setup-toolbar gnus-summary-toolbar nil "gnus")
-       (set-specifier (symbol-value gnus-use-toolbar)
-		      (cons (current-buffer) gnus-summary-toolbar))))
+  (let (dir)
+    (and gnus-use-toolbar
+	 (setq dir (message-xmas-setup-toolbar gnus-summary-toolbar 
+					       nil "gnus"))
+	 (file-exists-p (concat dir "gnus-group-catchup-current-icon-up.xpm"))
+	 (set-specifier (symbol-value gnus-use-toolbar)
+			(cons (current-buffer) gnus-summary-toolbar)))))
 
 ;; Written by Erik Naggum <erik@naggum.no>.
 ;; Saved by Steve Baur <steve@miranova.com>.

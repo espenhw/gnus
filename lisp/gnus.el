@@ -1715,7 +1715,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.82"
+(defconst gnus-version "September Gnus v0.83"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -9330,8 +9330,13 @@ This is meant to be called in `gnus-article-internal-prepare-hook'."
 	  (goto-char pos)
 	  (gnus-delete-line)
 	  (gnus-data-remove (mail-header-number old-header))))
+      (when old-header
+	(mail-header-set-number header (mail-header-number old-header)))
+      (setq gnus-newsgroup-sparse
+	    (delq (mail-header-number header) gnus-newsgroup-sparse))
       (gnus-rebuild-thread (mail-header-id header))
-      (gnus-summary-goto-subject (setq number (mail-header-number header))))
+      (gnus-summary-goto-subject (setq number (mail-header-number header))
+				 nil t))
     (when (and (numberp number)
 	       (> number 0))
       ;; We have to update the boundaries even if we can't fetch the
@@ -9747,7 +9752,6 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
     (run-hooks 'gnus-summary-prepare-exit-hook)
     ;; If we have several article buffers, we kill them at exit.
     (unless gnus-single-article-buffer
-      (gnus-kill-buffer gnus-article-buffer)
       (gnus-kill-buffer gnus-original-article-buffer)
       (setq gnus-article-current nil))
     (when gnus-use-cache
@@ -9765,8 +9769,6 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
       (gnus-group-jump-to-group group)
       (gnus-group-next-unread-group 1))
     (run-hooks 'gnus-summary-exit-hook)
-    (unless gnus-single-article-buffer
-      (setq gnus-article-current nil))
     (if temporary
 	nil				;Nothing to do.
       ;; If we have several article buffers, we kill them at exit.
@@ -9904,6 +9906,12 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 
 (defun gnus-kill-or-deaden-summary (buffer)
   "Kill or deaden the summary BUFFER."
+  (when (and (buffer-name buffer)
+	     (not gnus-single-article-buffer))
+    (save-excursion
+      (set-buffer buffer)
+      (gnus-kill-buffer gnus-article-buffer)
+      (gnus-kill-buffer gnus-original-article-buffer)))
   (cond (gnus-kill-summary-on-exit
 	 (when (and gnus-use-trees
 		    (and (get-buffer buffer)
@@ -10118,8 +10126,8 @@ Given a prefix, will force an `article' buffer configuration."
 	    (funcall gnus-summary-display-article-function article all-header)
 	  (gnus-article-prepare article all-header))
       (run-hooks 'gnus-select-article-hook)
-      (gnus-summary-recenter)
-      (gnus-summary-goto-subject article)
+      (gnus-summary-recenter) gnus-current-article
+      (gnus-summary-goto-subject gnus-current-article)
       (when gnus-use-trees
 	(gnus-possibly-generate-tree article)
 	(gnus-highlight-selected-tree article))
@@ -11130,6 +11138,7 @@ article massaging functions being run."
 	  gnus-break-pages
 	  gnus-visual)
       (gnus-summary-select-article nil 'force)))
+  (gnus-summary-goto-subject gnus-current-article)
 ;  (gnus-configure-windows 'article)
   (gnus-summary-position-point))
 
@@ -13396,7 +13405,9 @@ The following commands are available:
 		      (setq do-update-line article)
 		      (setq article (mail-header-id header))
 		      (let ((gnus-override-method gnus-refer-article-method))
-			(gnus-read-header article)))
+			(gnus-read-header article))
+		      (setq gnus-newsgroup-sparse
+			    (delq article gnus-newsgroup-sparse)))
 		     ((vectorp header)
 		      ;; It's a real article.
 		      (setq article (mail-header-id header)))
@@ -13471,12 +13482,13 @@ The following commands are available:
     
       ;; Update sparse articles.
       (when do-update-line
-	(save-excursion
+	(let ((buf (current-buffer)))
 	  (set-buffer gnus-summary-buffer)
 	  (gnus-summary-update-article do-update-line)
-	  (gnus-summary-goto-subject do-update-line)
+	  (gnus-summary-goto-subject do-update-line nil t)
 	  (set-window-point (get-buffer-window (current-buffer) t)
-			    (point)))))))
+			    (point))
+	  (set-buffer buf))))))
 
 (defun gnus-read-header (id &optional header)
   "Read the headers of article ID and enter them into the Gnus system."

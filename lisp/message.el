@@ -34,6 +34,7 @@
 (require 'mail-header)
 (require 'nnheader)
 (require 'timezone)
+(require 'easymenu)
 
 ;;;###autoload
 (defvar message-fcc-handler-function 'rmail-output
@@ -376,34 +377,6 @@ The cdr of ech entry is a function for applying the face to a region.")
 (defvar message-sent-hook nil
   "Hook run after sending messages.")
 
-(if (string-match "XEmacs\\|Lucid" emacs-version)
-    (defvar message-mode-menu
-      '("Send Message"
-	"Go to Field:"
-	"----"
-	["To:" message-goto-to t]
-	["Subject:" message-goto-subject t]
-	["Summary:" message-goto-summary t]
-	["Keywords:" message-goto-keywords t]
-	["Newsgroups:" message-goto-newsgroups t]
-	["Followup-To:" message-goto-followup-to t]
-	["Distribution:" message-goto-distribution t]
-	["Body" message-goto-body t]
-	["Signature" message-goto-signature t]
-	"----"
-	"Miscellaneous Commands:"
-	"----"
-	["Sort Headers" message-sort-headers t]
-	["Yank Original" message-yank-original t]
-	["Fill Yanked Message" message-fill-yanked-message t]
-;;  ["Insert Signature"         news-reply-signature     t]
-	["Caesar (rot13) Message" message-caesar-buffer-body t]
-	"----"
-	["Post Message" message-send-and-exit t]
-	["Abort Message" message-dont-send t]
-	)
-      "Buffer Menu for XEmacs."))
-
 ;;; Internal variables.
 
 ;;; Regexp matching the delimiter of messages in UNIX mail format
@@ -699,16 +672,33 @@ Return the number of headers removed."
 
   (define-key message-mode-map "\C-c\C-c" 'message-send-and-exit)
   (define-key message-mode-map "\C-c\C-s" 'message-send)
-  (define-key message-mode-map "\C-c\C-k" 'message-dont-send)
-  (if (string-match "XEmacs\\|Lucid" emacs-version)
-      (define-key message-mode-map 'button3 'message-mode-menu)))
+  (define-key message-mode-map "\C-c\C-k" 'message-dont-send))
 
-(defun message-make-menu-bar ()
-  (unless (boundp 'message-menu)
-    (easy-menu-define
-     message-menu message-mode-map ""
-     '("Message"
-       ["Fill Citation" message-fill-yanked-message t]))))
+(easy-menu-define message-mode-menu message-mode-map
+  "Message Menu."
+  '("Message"
+    "Go to Field:"
+    "----"
+    ["To:" message-goto-to t]
+    ["Subject:" message-goto-subject t]
+    ["Summary:" message-goto-summary t]
+    ["Keywords:" message-goto-keywords t]
+    ["Newsgroups:" message-goto-newsgroups t]
+    ["Followup-To:" message-goto-followup-to t]
+    ["Distribution:" message-goto-distribution t]
+    ["Body" message-goto-body t]
+    ["Signature" message-goto-signature t]
+    "----"
+    "Miscellaneous Commands:"
+    "----"
+    ["Sort Headers" message-sort-headers t]
+    ["Yank Original" message-yank-original t]
+    ["Fill Yanked Message" message-fill-yanked-message t]
+    ;;  ["Insert Signature"         news-reply-signature     t]
+    ["Caesar (rot13) Message" message-caesar-buffer-body t]
+    "----"
+    ["Post Message" message-send-and-exit t]
+    ["Abort Message" message-dont-send t]))
 
 ;;;###autoload
 (defun message-mode ()
@@ -774,6 +764,7 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
     (mail-hist-define-keys))
   (when (string-match "XEmacs\\|Lucid" emacs-version)
     (message-setup-toolbar))
+  (easy-menu-add message-mode-menu message-mode-map)
   (run-hooks 'text-mode-hook 'message-mode-hook))
 
 
@@ -2567,7 +2558,7 @@ which specify the range to operate on."
        (if (eq (following-char) (char-after (- (point) 2)))
 	   (delete-char -2))))))
 
-;; Support for Mouse menus
+;; Support for toolbar
 (when (string-match "XEmacs\\|Lucid" emacs-version)
   (require 'message-xmas))
 

@@ -1,4 +1,43 @@
+Tue May  7 21:49:30 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el (gnus-summary-insert-subject): Would change article
+	number. 
+	(gnus-summary-display-article): Go to the right article when
+	fetching sparse articles.
+
+Sun Apr 28 21:53:44 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* nnml.el (nnml-active-number):  Create and change the directory
+	before using any of the variables that requires the directory to
+	be created and change.
+
+Tue May  7 22:06:04 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-xmas.el (gnus-xmas-setup-group-toolbar): Would bug out on
+	missing etc.
+
+Tue May  7 18:21:59 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el (gnus-kill-or-deaden-summary): Kill multiple buffers
+	here.
+
+Tue May  7 16:52:08 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-cite.el (gnus-cite-add-face): Would bug out in obscure
+	cases. 
+
+Mon May  6 09:16:02 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* message.el (message-mode-map): Do not bind button3.
+	(message-mode-menu): Use easymenu.
+	(message-mode): Call `easy-menu-add'.
+	(message-make-menu-bar): Deleted.
+
+	* message-xmas.el (message-mode-menu): Deleted.
+
 Mon May  6 20:51:43 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.82 is released.
 
 	* gnus-cite.el (gnus-dissect-cited-text): Sift single empty
 	lines. 

@@ -585,6 +585,7 @@ all. This may very well take some time.")
     (unless active
       ;; Perhaps the active file was corrupt?  See whether
       ;; there are any articles in this group.
+      (nnml-possibly-create-directory group)
       (nnml-possibly-change-directory group)
       (unless nnml-article-file-alist
 	(setq nnml-article-file-alist

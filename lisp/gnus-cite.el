@@ -227,7 +227,7 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
     (set-buffer gnus-article-buffer)
     (gnus-cite-parse-maybe)
     (let ((alist gnus-cite-prefix-alist)
-	  prefix numbers number marks)
+	  prefix numbers number marks m)
       ;; Loop through citation prefixes.
       (while alist
 	(setq numbers (pop alist)
@@ -673,18 +673,19 @@ See also the documentation for `gnus-article-highlight-citation'."
 
 (defun gnus-cite-add-face (number prefix face)
   ;; At line NUMBER, ignore PREFIX and add FACE to the rest of the line.
-  (if face
-      (let ((inhibit-point-motion-hooks t)
-	    from to)
-	(goto-line number)
+  (when face
+    (let ((inhibit-point-motion-hooks t)
+	  from to)
+      (goto-line number)
+      (unless (eobp) ;; Sometimes things become confused.
 	(forward-char (length prefix))
 	(skip-chars-forward " \t")
 	(setq from (point))
 	(end-of-line 1)
 	(skip-chars-backward " \t")
 	(setq to (point))
-	(if (< from to)
-	    (gnus-overlay-put (gnus-make-overlay from to) 'face face)))))
+	(when (< from to)
+	  (gnus-overlay-put (gnus-make-overlay from to) 'face face))))))
 
 (defun gnus-cite-toggle (prefix)
   (save-excursion

@@ -96,12 +96,6 @@ If it is non-nil, it must be a toolbar.  The five legal values are
        (set-specifier (symbol-value message-use-toolbar)
 		      (cons (current-buffer) message-toolbar))))
 
-(defun message-mode-menu (event)
-  (interactive "e")
-  (select-window (event-window event))
-  (let ((popup-menu-titles nil))
-    (popup-menu 'message-mode-menu)))
-
 (provide 'message-xmas)
 
 ;;; message-xmas.el ends here
