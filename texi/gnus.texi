@@ -13647,20 +13647,45 @@ Gnus will not delete your old, read mail.  Unless you ask it to, of
 course.
 
 To make Gnus get rid of your unwanted mail, you have to mark the
-articles as @dfn{expirable}.  This does not mean that the articles will
-disappear right away, however.  In general, a mail article will be
+articles as @dfn{expirable}.  (With the default keybindings, this means
+that you have to type @kbd{E}.)  This does not mean that the articles
+will disappear right away, however.  In general, a mail article will be
 deleted from your system if, 1) it is marked as expirable, AND 2) it is
 more than one week old.  If you do not mark an article as expirable, it
 will remain on your system until hell freezes over.  This bears
 repeating one more time, with some spurious capitalizations: IF you do
 NOT mark articles as EXPIRABLE, Gnus will NEVER delete those ARTICLES.
 
+You do not have to mark articles as expirable by hand.  Gnus provides
+two features, called `auto-expire' and `total-expire', that can help you
+with this.  In a nutshell, `auto-expire' means that Gnus hits @kbd{E}
+for you when you select an article.  And `total-expire' means that Gnus
+considers all articles as expirable that are read.  So, in addition to
+the articles marked @samp{E}, also the articles marked @samp{r},
+@samp{R}, @samp{O}, @samp{K}, @samp{Y} and so on are considered
+expirable.
+
+When should either auto-expire or total-expire be used?  Most people
+who are subscribed to mailing lists split each list into its own group
+and then turn on auto-expire or total-expire for those groups.
+(@xref{Splitting Mail}, for more information on splitting each list
+into its own group.)
+
+Which one is better, auto-expire or total-expire?  It's not easy to
+answer.  Generally speaking, auto-expire is probably faster.  Another
+advantage of auto-expire is that you get more marks to work with: for
+the articles that are supposed to stick around, you can still choose
+between tick and dormant and read marks.  But with total-expire, you
+only have dormant and ticked to choose from.  The advantage of
+total-expire is that it works well with adaptive scoring @pxref{Adaptive
+Scoring}.  Auto-expire works with normal scoring but not with adaptive
+scoring.
+
 @vindex gnus-auto-expirable-newsgroups
-You do not have to mark articles as expirable by hand.  Groups that
-match the regular expression @code{gnus-auto-expirable-newsgroups} will
-have all articles that you read marked as expirable automatically.  All
-articles marked as expirable have an @samp{E} in the first
-column in the summary buffer.
+Groups that match the regular expression
+@code{gnus-auto-expirable-newsgroups} will have all articles that you
+read marked as expirable automatically.  All articles marked as
+expirable have an @samp{E} in the first column in the summary buffer.
 
 By default, if you have auto expiry switched on, Gnus will mark all the
 articles you read as expirable, no matter if they were read or unread
