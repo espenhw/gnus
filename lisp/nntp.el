@@ -1970,8 +1970,12 @@ Please refer to the following variables to customize the connection:
 
 ;; Marks handling
 
-(defun nntp-possibly-create-directory (group)
-  (let ((dir (nnmail-group-pathname group nntp-marks-directory)))
+(defun nntp-marks-directory (server)
+  (expand-file-name server nntp-marks-directory))
+
+(defun nntp-possibly-create-directory (group server)
+  (let ((dir (nnmail-group-pathname
+	      group (nntp-marks-directory server))))
     (unless (file-exists-p dir)
       (make-directory (directory-file-name dir) t)
       (nnheader-message 5 "Creating nntp marks directory %s" dir))))
@@ -1979,7 +1983,8 @@ Please refer to the following variables to customize the connection:
 (defun nntp-marks-changed-p (group)
   (let ((file (expand-file-name
 	       nntp-marks-file-name 
-	       (nnmail-group-pathname group nntp-marks-directory))))
+	       (nnmail-group-pathname
+		group (nntp-marks-directory server)))))
     (if (null (gnus-gethash file nntp-marks-modtime))
 	t ;; never looked at marks file, assume it has changed
       (not (equal (gnus-gethash file nntp-marks-modtime)
@@ -1989,7 +1994,8 @@ Please refer to the following variables to customize the connection:
   (let ((file-name-coding-system nnmail-pathname-coding-system)
 	(file (expand-file-name
 	       nntp-marks-file-name 
-	       (nnmail-group-pathname group nntp-marks-directory))))
+	       (nnmail-group-pathname
+		group (nntp-marks-directory server)))))
     (condition-case err
 	(progn
 	  (nntp-possibly-create-directory group)
@@ -2007,7 +2013,8 @@ Please refer to the following variables to customize the connection:
 (defun nntp-open-marks (group server)
   (let ((file (expand-file-name
 	       nntp-marks-file-name
-	       (nnmail-group-pathname group nntp-marks-directory))))
+	       (nnmail-group-pathname
+		group (nntp-marks-directory server)))))
     (if (file-exists-p file)
 	(condition-case err
 	    (with-temp-buffer

@@ -5,7 +5,8 @@
 	(nntp-marks-modtime, nntp-marks-directory): New variables.
 	(nntp-request-set-mark, nntp-request-update-info)
 	(nntp-possibly-create-directory, nntp-marks-changed-p)
-	(nntp-save-marks, nntp-open-marks): New functions.
+	(nntp-save-marks, nntp-open-marks, nntp-marks-directory): New
+	functions.
 
 2004-05-12  Jesper Harder  <harder@ifa.au.dk>
 
