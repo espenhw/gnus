@@ -849,7 +849,7 @@ When called interactively, prompt for REGEXP."
 	  (save-restriction
 	    (set-buffer buffer)
 	    (let (buffer-read-only)
-	      (gnus-set-text-properties (point-min) (point-max) nil)
+	      (set-text-properties (point-min) (point-max) nil)
 	      ;; These two are necessary for XEmacs 19.12 fascism.
 	      (put-text-property (point-min) (point-max) 'invisible nil)
 	      (put-text-property (point-min) (point-max) 'intangible nil))

@@ -303,9 +303,6 @@ be set in `.emacs' instead."
 (unless (fboundp 'gnus-group-remove-excess-properties)
   (defalias 'gnus-group-remove-excess-properties 'ignore))
 
-(unless (fboundp 'gnus-set-text-properties)
-  (defalias 'gnus-set-text-properties 'set-text-properties))
-
 (unless (featurep 'gnus-xmas)
   (defalias 'gnus-make-overlay 'make-overlay)
   (defalias 'gnus-delete-overlay 'delete-overlay)

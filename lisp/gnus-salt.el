@@ -1027,11 +1027,11 @@ The following commands are available:
 	    (setq button (car buttons)
 		  buttons (cdr buttons))
 	    (if (stringp button)
-		(gnus-set-text-properties
+		(set-text-properties
 		 (point)
 		 (prog2 (insert button) (point) (insert " "))
 		 (list 'face gnus-carpal-header-face))
-	      (gnus-set-text-properties
+	      (set-text-properties
 	       (point)
 	       (prog2 (insert (car button)) (point) (insert " "))
 	       (list 'gnus-callback (cdr button)

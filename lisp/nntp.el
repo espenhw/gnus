@@ -572,7 +572,7 @@ command whose response triggered the error."
 
 	      (let ((timer
 		     (and nntp-connection-timeout
-			  (nnheader-run-at-time
+			  (run-at-time
 			   nntp-connection-timeout nil
 			   '(lambda ()
 			      (let ((process (nntp-find-connection
@@ -1101,7 +1101,7 @@ password contained in '~/.nntp-authinfo'."
   (let* ((pbuffer (nntp-make-process-buffer buffer))
 	 (timer
 	  (and nntp-connection-timeout
-	       (nnheader-run-at-time
+	       (run-at-time
 		nntp-connection-timeout nil
 		`(lambda ()
 		   (nntp-kill-buffer ,pbuffer)))))
@@ -1210,7 +1210,7 @@ password contained in '~/.nntp-authinfo'."
   ;; doesn't trigger after-change-functions.
   (unless nntp-async-timer
     (setq nntp-async-timer
-	  (nnheader-run-at-time 1 1 'nntp-async-timer-handler)))
+	  (run-at-time 1 1 'nntp-async-timer-handler)))
   (add-to-list 'nntp-async-process-list process))
 
 (defun nntp-async-timer-handler ()

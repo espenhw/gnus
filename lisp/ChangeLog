@@ -1,3 +1,29 @@
+2004-01-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* dgnushack.el (dgnushack-compile): Don't compile run-at-time
+	under Emacs.
+
+	* gnus.el ((fboundp 'gnus-set-text-properties)): Remove definition
+	of gnus-set-text-properties.
+
+	* gnus-uu.el (gnus-uu-save-article): Ditto.
+
+	* gnus-salt.el (gnus-carpal-setup-buffer): Ditto.
+
+	* gnus-cite.el (gnus-cite-parse): Ditto.
+
+	* gnus-art.el (gnus-button-push): Use set-text-properties instead
+	of gnus-.
+
+	* gnus-xmas.el (run-at-time): Require run-at-time.
+
+	* gnus.el: Changed calls to nnheader-run-at-time and
+	password-run-at-time throughout to use run-at-time directly.
+
+	* password.el: Removed definition of run-at-time.
+
+	* nnheaderxm.el: Remove definition of run-at-time.
+
 2004-01-05  Karl Pfl,Ad(Bsterer  <sigurd@12move.de>
 
 	* mml.el (mml-minibuffer-read-disposition): Show attachment type

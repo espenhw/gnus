@@ -743,7 +743,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	;; Each prefix.
 	(setq end (match-end 0)
 	      prefix (buffer-substring begin end))
-	(gnus-set-text-properties 0 (length prefix) nil prefix)
+	(set-text-properties 0 (length prefix) nil prefix)
 	(setq entry (assoc prefix alist))
 	(if entry
 	    (setcdr entry (cons line (cdr entry)))

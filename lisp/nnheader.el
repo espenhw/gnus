@@ -1004,7 +1004,6 @@ find-file-hooks, etc.
   "Strip all \r's from the current buffer."
   (nnheader-skeleton-replace "\r"))
 
-(defalias 'nnheader-run-at-time 'run-at-time)
 (defalias 'nnheader-cancel-timer 'cancel-timer)
 (defalias 'nnheader-cancel-function-timers 'cancel-function-timers)
 (defalias 'nnheader-string-as-multibyte 'string-as-multibyte)

@@ -232,7 +232,8 @@ Modify to suit your needs."))
     (dolist (file
 	     (if (featurep 'xemacs)
 		 '("md5.el")
-	       '("gnus-xmas.el" "messagexmas.el" "nnheaderxm.el")))
+	       '("gnus-xmas.el" "messagexmas.el" "nnheaderxm.el"
+		 "run-at-time.el")))
       (setq files (delete file files)))
 
     (dolist (file files)

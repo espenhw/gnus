@@ -2982,7 +2982,7 @@ is to run."
     (setq n 1))
   (gnus-stop-date-timer)
   (setq article-lapsed-timer
-	(nnheader-run-at-time 1 n 'article-update-date-lapsed)))
+	(run-at-time 1 n 'article-update-date-lapsed)))
 
 (defun gnus-stop-date-timer ()
   "Stop the X-Sent timer."
@@ -5630,7 +5630,7 @@ groups."
        (car gnus-article-current) (cdr gnus-article-current)))
     ;; We remove all text props from the article buffer.
     (kill-all-local-variables)
-    (gnus-set-text-properties (point-min) (point-max) nil)
+    (set-text-properties (point-min) (point-max) nil)
     (gnus-article-mode)
     (set-window-configuration winconf)
     (set-buffer buf)
@@ -6485,7 +6485,7 @@ specified by `gnus-button-alist'."
 	   (fun (nth 3 entry))
 	   (args (mapcar (lambda (group)
 			   (let ((string (match-string group)))
-			     (gnus-set-text-properties
+			     (set-text-properties
 			      0 (length string) nil string)
 			     string))
 			 (nthcdr 4 entry))))
