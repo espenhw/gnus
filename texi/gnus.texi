@@ -18005,6 +18005,10 @@ simple scoring, and the match types are also the same.
 @node Advanced Scoring Examples
 @subsection Advanced Scoring Examples
 
+Please note that the following examples are score file rules.  To
+make a complete score file from them, surround them with another pair
+of parentheses.
+
 Let's say you want to increase the score of articles written by Lars
 when he's talking about Gnus:
 

@@ -1,3 +1,8 @@
+2001-12-10  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Advanced Scoring Examples): Clarify that the
+	examples are rules, not complete score files.
+
 2001-12-09  Nevin Kapur  <nevin@jhu.edu>
 
 	* gnus.texi (Expiring Mail): Add.
