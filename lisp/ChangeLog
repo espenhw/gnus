@@ -1,3 +1,23 @@
+2001-11-12  Simon Josefsson  <jas@extundo.com>
+
+	* mml1991.el (mml1991-use, mml1991-function-alist): New variables.
+	(mml1991-gpg-sign, mml1991-gpg-encrypt): Renamed, from
+	`mml1991-sign' and `mml1991-encrypt'.
+	(mml1991-encrypt, mml1991-sign): New glue functions.
+	(mml1991-mailcrypt-sign, mml1991-mailcrypt-encrypt): New functions.
+
+	* mml.el (mml-mode-map): `C-c RET o' map for PGP.
+	(mml-menu): Add PGP to menu.
+
+	* mml-sec.el (top-level): Require mml1991.  Don't require smime.
+	(mml-sign-alist, mml-encrypt-alist): Add "pgp".
+	(mml-pgp-sign-buffer, mml-pgp-encrypt-buffer)
+	(mml-secure-sign-pgp, mml-secure-encrypt-pgp): New glue functions.
+
+	* mml2015.el: Mention RFC 3156.
+
+	* mml1991.el: New file.  From Sascha L,A|(Bdecke <sascha@meta-x.de>.
+
 2001-11-12 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-start.el (gnus-auto-subscribed-groups): Use ^nnml.

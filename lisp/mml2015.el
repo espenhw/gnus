@@ -23,6 +23,9 @@
 
 ;;; Commentary:
 
+;; RFC 2015 is updated by RFC 3156, this file should be compatible
+;; with both.
+
 ;;; Code:
 
 (eval-when-compile (require 'cl))

@@ -705,8 +705,10 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
 	(map (make-sparse-keymap))
 	(main (make-sparse-keymap)))
     (define-key sign "p" 'mml-secure-sign-pgpmime)
+    (define-key sign "o" 'mml-secure-sign-pgp)
     (define-key sign "s" 'mml-secure-sign-smime)
     (define-key encrypt "p" 'mml-secure-encrypt-pgpmime)
+    (define-key encrypt "o" 'mml-secure-encrypt-pgp)
     (define-key encrypt "s" 'mml-secure-encrypt-smime)
     (define-key map "f" 'mml-attach-file)
     (define-key map "b" 'mml-attach-buffer)
@@ -734,6 +736,8 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
     ["Insert Multipart" mml-insert-multipart t]
     ["PGP/MIME Sign" mml-secure-sign-pgpmime t]
     ["PGP/MIME Encrypt" mml-secure-encrypt-pgpmime t]
+    ["PGP Sign" mml-secure-sign-pgp t]
+    ["PGP Encrypt" mml-secure-encrypt-pgp t]
     ["S/MIME Sign" mml-secure-sign-smime t]
     ["S/MIME Encrypt" mml-secure-encrypt-smime t]
     ;;["Narrow" mml-narrow-to-part t]

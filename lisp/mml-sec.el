@@ -23,13 +23,14 @@
 
 ;;; Code:
 
-(require 'smime)
 (require 'mml2015)
+(require 'mml1991)
 (require 'mml-smime)
 (eval-when-compile (require 'cl))
 
 (defvar mml-sign-alist
   '(("smime"     mml-smime-sign-buffer     mml-smime-sign-query)
+    ("pgp"       mml-pgp-sign-buffer       list)
     ("pgpmime"   mml-pgpmime-sign-buffer   list))
   "Alist of MIME signer functions.")
 
@@ -38,6 +39,7 @@
 
 (defvar mml-encrypt-alist
   '(("smime"     mml-smime-encrypt-buffer     mml-smime-encrypt-query)
+    ("pgp"       mml-pgp-encrypt-buffer       list)
     ("pgpmime"   mml-pgpmime-encrypt-buffer   list))
   "Alist of MIME encryption functions.")
 
@@ -52,6 +54,14 @@
 
 (defun mml-smime-encrypt-buffer (cont)
   (or (mml-smime-encrypt cont)
+      (error "Encryption failed... inspect message logs for errors")))
+
+(defun mml-pgp-sign-buffer (cont)
+  (or (mml1991-sign cont)
+      (error "Signing failed... inspect message logs for errors")))
+
+(defun mml-pgp-encrypt-buffer (cont)
+  (or (mml1991-encrypt cont)
       (error "Encryption failed... inspect message logs for errors")))
 
 (defun mml-pgpmime-sign-buffer (cont)
@@ -87,6 +97,11 @@
 						(cons method tags))))
 	    (t (error "The message is corrupted. No mail header separator"))))))
 
+(defun mml-secure-sign-pgp ()
+  "Add MML tags to PGP sign this MML part."
+  (interactive)
+  (mml-secure-part "pgp" 'sign))
+
 (defun mml-secure-sign-pgpmime ()
   "Add MML tags to PGP/MIME sign this MML part."
   (interactive)
@@ -96,6 +111,11 @@
   "Add MML tags to S/MIME sign this MML part."
   (interactive)
   (mml-secure-part "smime" 'sign))
+
+(defun mml-secure-encrypt-pgp ()
+  "Add MML tags to PGP encrypt this MML part."
+  (interactive)
+  (mml-secure-part "pgp"))
 
 (defun mml-secure-encrypt-pgpmime ()
   "Add MML tags to PGP/MIME encrypt this MML part."
