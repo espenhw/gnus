@@ -1,3 +1,10 @@
+2003-04-04  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-start.el (gnus-gnus-to-quick-newsrc-format): Bound
+	print-quoted, print-readably, print-escape-multibyte, and
+	print-level to match original behavior of gnus-prin1.  This should
+	repair the format of .newsrc.eld when using compiled format specs.
+
 2003-04-04  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-group.el (tool-bar-map): defvar it.
