@@ -1456,7 +1456,9 @@ If PROMPT (the prefix), prompt for a coding system to use."
   (let ((inhibit-point-motion-hooks t)
 	(mail-parse-charset gnus-newsgroup-charset)
 	(mail-parse-ignored-charsets 
-	 (save-excursion (set-buffer gnus-summary-buffer)
+	 (save-excursion (condition-case nil
+			     (set-buffer gnus-summary-buffer)
+			   (error))
 			 gnus-newsgroup-ignored-charsets))
 	buffer-read-only)
     (save-restriction
@@ -3204,7 +3206,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	      (setq beg (point)))
 	    (let ((mail-parse-charset gnus-newsgroup-charset)
 		  (mail-parse-ignored-charsets 
-		   (save-excursion (set-buffer gnus-summary-buffer)
+		   (save-excursion (condition-case ()
+				       (set-buffer gnus-summary-buffer)
+				     (error))
 				   gnus-newsgroup-ignored-charsets)))
 	      (mm-display-part handle t))
 	    (goto-char (point-max)))
