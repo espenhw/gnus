@@ -1,5 +1,14 @@
 2002-10-18  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* gnus-spec.el (gnus-make-format-preserve-properties) 
+	(gnus-xmas-format, gnus-parse-simple-format): Preserve text
+	properties also on XEmacs.  `gnus-xmas-format' is like format but
+	preserves text properties on XEmacs (though it only understands
+	simple format specs).  The variable
+	`gnus-make-format-preserve-properties' controls whether the
+	function is used, and is checked in `gnus-parse-simple-format'.
+	Patch by Paul Moore <gustav@morpheus.demon.co.uk>.
+
 	* gnus-agent.el (gnus-agent-fetch-articles): More debugging
 	output.
 	(gnus-agent-consider-all-articles): New variable.

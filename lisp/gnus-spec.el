@@ -35,6 +35,12 @@
   :group 'gnus-format
   :type 'boolean)
 
+(defcustom gnus-make-format-preserve-properties (featurep 'xemacs)
+  "*If non-nil, use a replacement `format' function which preserves
+text properties. This is only needed on XEmacs, as FSF Emacs does this anyway."
+  :group 'gnus-format
+  :type 'boolean)
+
 ;;; Internal variables.
 
 (defvar gnus-summary-mark-positions nil)
@@ -475,6 +481,41 @@ characters when given a pad value."
 		      (nth 1 sform)))))
 	 form)))
 
+
+(defun gnus-xmas-format (fstring &rest args)
+  "A version of `format' which preserves text properties.
+
+Required for XEmacs, where the built in `format' function strips all text
+properties from both the format string and any inserted strings.
+
+Only supports the format sequence %s, and %% for inserting
+literal % characters. A pad width and an optional - (to right pad)
+are supported for %s."
+  (let ((re "%%\\|%\\(-\\)?\\([1-9][0-9]*\\)?s")
+	(n (length args)))
+    (with-temp-buffer
+      (insert-string fstring)
+      (goto-char (point-min))
+      (while (re-search-forward re nil t)
+	(goto-char (match-end 0))
+	(cond
+	 ((string= (match-string 0) "%%")
+	  (delete-char -1))
+	 (t
+	  (if (null args)
+	      (error 'wrong-number-of-arguments #'my-format n fstring))
+	  (let* ((minlen (string-to-int (or (match-string 2) "")))
+		 (arg (car args))
+		 (str (if (stringp arg) arg (format "%s" arg)))
+		 (lpad (null (match-string 1)))
+		 (padlen (max 0 (- minlen (length str)))))
+	    (replace-match "")
+	    (if lpad (insert-char ?\  padlen))
+	    (insert str)
+	    (unless lpad (insert-char ?\  padlen))
+	    (setq args (cdr args))))))
+      (buffer-string))))
+
 (defun gnus-parse-simple-format (format spec-alist &optional insert)
   ;; This function parses the FORMAT string with the help of the
   ;; SPEC-ALIST and returns a list that can be eval'ed to return a
@@ -640,6 +681,13 @@ characters when given a pad value."
       ;; A single string spec in the end of the spec.
       ((string-match "\\`\\([^%]+\\)%[sc]\\'" fstring)
        (list (match-string 1 fstring) (car flist)))
+      ;; Only string (and %) specs (XEmacs only!)
+      ((and (featurep 'xemacs)
+	    gnus-make-format-preserve-properties
+	    (string-match
+	     "\\`\\([^%]*\\(%%\\|%-?\\([1-9][0-9]*\\)?s\\)\\)*[^%]*\\'"
+	     fstring))
+       (list (cons 'gnus-xmas-format (cons fstring (nreverse flist)))))
       ;; A more complex spec.
       (t
        (list (cons 'format (cons fstring (nreverse flist)))))))
