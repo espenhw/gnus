@@ -1,5 +1,5 @@
 ;;; gnus-start.el --- startup functions for Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -1648,7 +1648,7 @@ newsgroup."
 
     (while newsrc
       (setq active (gnus-active (setq group (gnus-info-group
-						  (setq info (pop newsrc))))))
+					     (setq info (pop newsrc))))))
 
       ;; Check newsgroups.  If the user doesn't want to check them, or
       ;; they can't be checked (for instance, if the news server can't
@@ -1671,13 +1671,13 @@ newsgroup."
       (when (and method
 		 (not (setq method-type (cdr (assoc method type-cache)))))
 	(setq method-type
-		   (cond
-		    ((gnus-secondary-method-p method)
-		     'secondary)
-		    ((inline (gnus-server-equal gnus-select-method method))
-		     'primary)
-		    (t
-		     'foreign)))
+	      (cond
+	       ((gnus-secondary-method-p method)
+		'secondary)
+	       ((inline (gnus-server-equal gnus-select-method method))
+		'primary)
+	       (t
+		'foreign)))
 	(push (cons method method-type) type-cache))
 
       (setq ignore nil)
@@ -1734,9 +1734,12 @@ newsgroup."
        ((eq active 'ignore)
 	;; Don't do anything.
 	)
+       ((and active ignore)
+	;; The level of the foreign group is higher than the specified
+	;; value.
+	)
        (active
-	(unless ignore
-	  (inline (gnus-get-unread-articles-in-group info active t))))
+	(inline (gnus-get-unread-articles-in-group info active t)))
        (t
 	;; The group couldn't be reached, so we nix out the number of
 	;; unread articles and stuff.
@@ -1755,8 +1758,8 @@ newsgroup."
 	  (when (gnus-check-backend-function 'request-scan (car method))
 	    (gnus-request-scan nil method))
 	  (gnus-read-active-file-2
-		(mapcar (lambda (group) (gnus-group-real-name group)) groups)
-		method)
+	   (mapcar (lambda (group) (gnus-group-real-name group)) groups)
+	   method)
 	  (dolist (group groups)
 	    (cond
 	     ((setq active (gnus-active (gnus-info-group
