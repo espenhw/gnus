@@ -1,3 +1,10 @@
+2000-11-12  David Edmondson  <dme@dme.org>
+
+	* gnus.texi: remove `gnus-cite-prefix-regexp'.
+
+	* message.texi (Insertion): move `gnus-cite-prefix-regexp' from
+	gnus.texi to here and rename to `message-cite-prefix-regexp'.
+
 2000-11-11  Simon Josefsson  <sj@extundo.com>
 
 	* message.texi (Security): Add.

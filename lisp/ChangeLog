@@ -1,3 +1,15 @@
+2000-11-12  David Edmondson  <dme@dme.org>
+	
+	* message.el (message-cite-prefix-regexp): moved from gnus-cite.el
+	and replace `.' with `\w' to allow for different syntax tables
+	(from Vladimir Volovich).
+	* message.el (message-newline-and-reformat): use
+	`message-cite-prefix-regexp'.
+	* gnus-cite.el (gnus-supercite-regexp): use
+	`message-cite-prefix-regexp'.
+	* gnus-cite.el (gnus-cite-parse): use
+	`message-cite-prefix-regexp'.
+
 2000-11-12 08:52:46  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml2015.el (mml2015-mailcrypt-verify): Replace armors with

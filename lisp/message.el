@@ -331,6 +331,12 @@ The provided functions are:
   :group 'message-insertion
   :type 'regexp)
 
+(defcustom message-cite-prefix-regexp
+  "^[]>»|:}+ ]*[]>»|:}+]\\(\\w*>»\\)?\\|^\\w*>"
+  "*Regexp matching the longest possible citation prefix on a line."
+  :group 'message-insertion
+  :type 'regexp)
+
 (defcustom message-cancel-message "I am canceling my own article.\n"
   "Message to be inserted in the cancel message."
   :group 'message-interface
@@ -1711,21 +1717,18 @@ With the prefix argument FORCE, insert the header anyway."
 (defun message-newline-and-reformat ()
   "Insert four newlines, and then reformat if inside quoted text."
   (interactive)
-  (let ((prefix "[]>»|:}+ \t]*")
-	(supercite-thing "[-._a-zA-Z0-9]*[>]+[ \t]*")
-	quoted point)
+  (let (quoted point)
     (unless (bolp)
       (save-excursion
 	(beginning-of-line)
-	(when (looking-at (concat prefix "\\|"
-				  supercite-thing))
+	(when (looking-at message-cite-prefix-regexp)
 	  (setq quoted (match-string 0))))
       (insert "\n"))
     (setq point (point))
     (insert "\n\n\n")
     (delete-region (point) (re-search-forward "[ \t]*"))
     (when quoted
-      (insert quoted))
+      (insert quoted " "))
     (fill-paragraph nil)
     (goto-char point)
     (forward-line 1)))

@@ -26,6 +26,7 @@
 (require 'gnus)
 (require 'gnus-art)
 (require 'gnus-range)
+(require 'message)	; for message-cite-prefix-regexp
 
 ;;; Customization:
 
@@ -74,19 +75,13 @@ Set it to nil to parse all articles."
   :type '(choice (const :tag "all" nil)
 		 integer))
 
-(defcustom gnus-cite-prefix-regexp
-  "^[]>»|:}+ ]*[]>»|:}+]\\(.*>»\\)?\\|^.*>"
-  "*Regexp matching the longest possible citation prefix on a line."
-  :group 'gnus-cite
-  :type 'regexp)
-
 (defcustom gnus-cite-max-prefix 20
   "Maximum possible length for a citation prefix."
   :group 'gnus-cite
   :type 'integer)
 
 (defcustom gnus-supercite-regexp
-  (concat "^\\(" gnus-cite-prefix-regexp "\\)? *"
+  (concat "^\\(" message-cite-prefix-regexp "\\)? *"
 	  ">>>>> +\"\\([^\"\n]+\\)\" +==")
   "*Regexp matching normal Supercite attribution lines.
 The first grouping must match prefixes added by other packages."
@@ -306,7 +301,7 @@ Attribution lines are highlighted with the same face as the
 corresponding citation merged with `gnus-cite-attribution-face'.
 
 Text is considered cited if at least `gnus-cite-minimum-match-count'
-lines matches `gnus-cite-prefix-regexp' with the same prefix.
+lines matches `message-cite-prefix-regexp' with the same prefix.
 
 Lines matching `gnus-cite-attribution-suffix' and perhaps
 `gnus-cite-attribution-prefix' are considered attribution lines."
@@ -679,7 +674,7 @@ See also the documentation for `gnus-article-highlight-citation'."
       ;; Ignore very long prefixes.
       (when (> end (+ (point) gnus-cite-max-prefix))
 	(setq end (+ (point) gnus-cite-max-prefix)))
-      (while (re-search-forward gnus-cite-prefix-regexp (1- end) t)
+      (while (re-search-forward message-cite-prefix-regexp (1- end) t)
 	;; Each prefix.
 	(setq end (match-end 0)
 	      prefix (buffer-substring begin end))

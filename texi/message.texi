@@ -465,6 +465,10 @@ All headers that match this regexp will be removed from yanked
 messages.  The default is @samp{.}, which means that all headers will be
 removed.
 
+@item message-cite-prefix-regexp
+@vindex message-cite-prefix-regexp
+Regexp matching the longest possible citation prefix on a line.
+
 @item message-citation-line-function
 @vindex message-citation-line-function
 Function called to insert the citation line.  The default is

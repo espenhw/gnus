@@ -6995,10 +6995,6 @@ Some variables to customize the citation highlights:
 If the article size if bigger than this variable (which is 25000 by
 default), no citation highlighting will be performed.
 
-@item gnus-cite-prefix-regexp
-@vindex gnus-cite-prefix-regexp
-Regexp matching the longest possible citation prefix on a line.
-
 @item gnus-cite-max-prefix
 @vindex gnus-cite-max-prefix
 Maximum possible length for a citation prefix (default 20).
