@@ -1767,9 +1767,7 @@ FILE and places the combined headers into `nntp-server-buffer'."
 			   (setq uncomp (cons (cons article-id state) uncomp)))
 			 sequence)))
 	     alist)
-	    (setq alist (sort uncomp
-			      (lambda (first second)
-				(< (car first) (car second))))))))
+	    (setq alist (sort uncomp 'car-less-than-car)))))
         (when changed-version
           (let ((gnus-agent-article-alist alist))
             (gnus-agent-save-alist gnus-agent-read-agentview)))

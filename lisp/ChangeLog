@@ -1,3 +1,8 @@
+2003-12-21  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-agent.el (gnus-agent-read-agentview): Use
+	car-less-than-car.
+
 2003-12-20  Artem Chuprina <ran@ran.pp.ru>  (tiny change)
 
 	* message.el (message-yank-buffer): Bind message-reply-buffer to
