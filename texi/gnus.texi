@@ -17098,6 +17098,16 @@ offline servers into online status when you re-connect.  If it has any
 other value, all offline servers will be automatically switched into
 online status.
 
+@item gnus-server-unopen-status
+@vindex gnus-server-unopen-status
+Perhaps not a Agent variable, but closely related to the Agent, this
+variable says what will happen if Gnus cannot open a server.  If the
+Agent is enabled, the default, @code{nil}, makes Gnus ask the user
+whether to deny the server or whether to unplug the agent.  If the
+Agent is disabled, Gnus always simply deny the server.  Other choices
+for this variable include @code{denied} and @code{offline} the latter
+is only valid if the Agent is used.
+
 @end table
 
 
