@@ -1,3 +1,9 @@
+2000-09-28  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-art.el (article-strip-banner): elkin@tverd.astro.spbu.ru:
+	use gnus-group-find-parameter rather than
+	gnus-group-get-parameter, to allow inheritance on the banner.
+
 2000-09-26  Richard M. Alderson III <alderson@netcom2.netcom.com> 
 
 	* gnus-art.el (gnus-read-save-file-name): expand-file-name.

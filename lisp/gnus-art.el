@@ -1694,7 +1694,7 @@ always hide."
   (save-excursion
     (save-restriction
       (let ((inhibit-point-motion-hooks t)
-	    (banner (gnus-group-get-parameter gnus-newsgroup-name 'banner))
+	    (banner (gnus-group-find-parameter gnus-newsgroup-name 'banner))
 	    (gnus-signature-limit nil)
 	    buffer-read-only beg end)
 	(when banner
