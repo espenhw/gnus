@@ -48,7 +48,8 @@
 	 (concat 
 	    "@\\([^{} \t\n]+\\)"
 	    "\\(\\( +\\(.*$\\)\\|[ \t]*$\\)\\|{\\([^}]*\\)}\\)"))
-	(cur (find-file-noselect (concat file ".texi")))
+	(cur (find-file-noselect (concat (or (getenv "srcdir") ".") 
+					 "/" file ".texi")))
 	(times 3)
 	(chapter 0)
 	command arg)
@@ -88,9 +89,11 @@
 				  "synindex" "setchapternewpage"
 				  "summarycontents" "bye"
 				  "top" "iftex" "cartouche" 
-				  "iflatex" "finalout" "vskip"))
+				  "iflatex" "finalout" "vskip"
+				  "dircategory"))
 		(latexi-strip-line))
-	       ((member command '("menu" "tex" "ifinfo" "ignore"))
+	       ((member command '("menu" "tex" "ifinfo" "ignore" 
+				  "ifnottex" "direntry"))
 		(latexi-discard-until command))
 	       ((member command '("subsection" "subsubsection"))
 		(latexi-switch-line command arg))
@@ -224,7 +227,7 @@
 	    (goto-char (match-beginning 0))
 	    (delete-char 1)
 	    (insert "\\gnus"))
-	   ((member command '("copyright"))
+	   ((member command '("copyright" "footnote"))
 	    (goto-char (match-beginning 0))
 	    (delete-char 1)
 	    (insert "\\"))
@@ -271,7 +274,8 @@
       (goto-char (match-beginning 0))
       (delete-char 1))
     (latexi-contributors)
-    (write-region (point-min) (point-max) (concat file ".latexi"))))
+    (let ((coding-system-for-write 'iso-8859-1))
+      (write-region (point-min) (point-max) (concat file ".latexi")))))
 
 (defun latexi-translate-string (in out)
   (let (yes)

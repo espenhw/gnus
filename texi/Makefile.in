@@ -41,23 +41,23 @@ pdf: gnus.pdf message.pdf refcard.pdf emacs-mime.pdf
 
 .texi.dvi :
 	sed -e '/@iflatex/,/@end iflatex/d' $< > gnustmp.texi 
-	$(TEXI2DVI) gnustmp.texi
+	$(TEXI2DVI) -I $(srcdir) gnustmp.texi
 	cp gnustmp.dvi $*.dvi
 	rm gnustmp.*
 
 .texi.pdf :
 	sed -e '/@iflatex/,/@end iflatex/d' $< > gnustmp.texi 
-	$(TEXI2PDF) gnustmp.texi
+	$(TEXI2PDF) -I $(srcdir) gnustmp.texi
 	cp gnustmp.pdf $*.pdf
 	rm gnustmp.*
 
 refcard.dvi: refcard.tex gnuslogo.refcard gnusref.tex
-	$(LATEX) refcard.tex
+	TEXINPUTS=$(srcdir):$$TEXINPUTS $(LATEX) refcard.tex
 
 
 refcard.pdf: refcard.tex gnuslogo.refcard gnusref.tex
-	epstopdf gnuslogo.refcard --outfile=gnuslogo.refcard.pdf
-	$(PDFLATEX) refcard.tex
+	epstopdf $(srcdir)/gnuslogo.refcard --outfile=gnuslogo.refcard.pdf
+	TEXINPUTS=$(srcdir):$$TEXINPUTS $(PDFLATEX) refcard.tex
 
 clean:
 	rm -f gnus.*.bak *.ky *.cp *.fn *.cps *.kys *.log *.aux *.dvi *.vr \
@@ -71,16 +71,16 @@ makeinfo:
 	makeinfo -o message message.texi
 
 texi2latex.elc: texi2latex.el
-	$(EMACSINFO) -batch -l bytecomp --eval '(byte-compile-file "texi2latex.el")'
+	srcdir=$(srcdir)/../lisp $(EMACSINFO) -l $(srcdir)/../lisp/dgnushack.el --eval '(byte-compile-file "$(srcdir)/texi2latex.el")'
 
-latex: gnus.texi texi2latex.elc
-	$(EMACSINFO) -batch -q -no-site-file gnus.texi -l ./texi2latex.elc -f latexi-translate
+latex gnus.latexi gnus-faq.latexi: $(srcdir)/gnus.texi $(srcdir)/gnus-faq.texi texi2latex.elc
+	srcdir=$(srcdir) $(EMACSINFO) -l ./texi2latex.elc -f latexi-translate
 
-latexps:
+latexps: gnus.latexi
 	make texi2latex.elc
 	rm -f gnus.aux
 	egrep -v "label.*Index|chapter.*Index" gnus.latexi > gnus.tmplatexi1
-	$(LATEX) gnus.tmplatexi1
+	TEXINPUTS=$(srcdir):$$TEXINPUTS $(LATEX) gnus.tmplatexi1
 	./splitindex
 	makeindex -o gnus.kind gnus.kidx
 	makeindex -o gnus.cind gnus.cidx

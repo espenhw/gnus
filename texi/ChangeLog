@@ -1,3 +1,15 @@
+2000-12-29 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* texi2latex.el (latexi-translate-file): Support srcdir.
+	(latexi-translate-file): Understand ifnottex, dircategory, and
+	direntry. Set coding-system-for-write to iso-8859-1.
+
+	* Makefile.in: Fix for srcdir.
+
+	* gnus.texi (NoCeM): Use file instead of uref.
+	(Mail Source Specifiers): Use subsubsection instead of
+	subsubheading.
+
 2000-12-29 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Top): Set version to Oort Gnus v0.01.
