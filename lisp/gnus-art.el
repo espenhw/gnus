@@ -2554,6 +2554,8 @@ commands:
     (if (get-buffer name)
 	(save-excursion
 	  (set-buffer name)
+	  (if gnus-article-mime-handles
+	      (mm-destroy-parts gnus-article-mime-handles))
 	  (kill-all-local-variables)
 	  (buffer-disable-undo)
 	  (setq buffer-read-only t)
