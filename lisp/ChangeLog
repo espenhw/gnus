@@ -1,3 +1,11 @@
+2004-01-04  Mario Lang  <lang@zid.tugraz.at>
+
+	* dns.el: Add support for AAAA records (see RFC 3596)
+
+	* Fix typo PRT -> PTR
+
+	* Parse MX, PTR and SOA replies (see RFC 1035)
+
 2004-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-logo-color-style): Changed colors to `no'.
