@@ -219,16 +219,19 @@
       (setq props (plist-put props :background (face-background face))))
     (apply 'create-image file type data-p props)))
 
-(defun gnus-put-image (glyph &optional string)
+(defun gnus-put-image (glyph &optional string category)
   (insert-image glyph (or string " "))
+  (put-text-property (1- (point)) (point) 'gnus-image-category category)
   (unless string
     (put-text-property (1- (point)) (point)
 		       'gnus-image-text-deletable t))
   glyph)
 
-(defun gnus-remove-image (image)
+(defun gnus-remove-image (image &optional category)
   (dolist (position (message-text-with-property 'display))
-    (when (equal (get-text-property position 'display) image)
+    (when (and (equal (get-text-property position 'display) image)
+	       (equal (get-text-property position 'gnus-image-category)
+		      category))
       (put-text-property position (1+ position) 'display nil)
       (when (get-text-property position 'gnus-image-text-deletable)
 	(delete-region position (1+ position))))))

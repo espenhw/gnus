@@ -243,8 +243,8 @@ regexp.  If it matches, the text in question is not a signature."
   :type 'sexp
   :group 'gnus-article-hiding)
 
-;; Fixme: This isn't the right thing for mixed graphical and and
-;; non-graphical frames in a session.
+;; Fixme: This isn't the right thing for mixed graphical and non-graphical
+;; frames in a session.
 (defcustom gnus-article-x-face-command
   (if (featurep 'xemacs)
       (if (or (gnus-image-type-available-p 'xface)
@@ -1976,30 +1976,40 @@ unfolded."
 (defun article-display-face ()
   "Display any Face headers in the header."
   (interactive)
-  (gnus-with-article-headers
-    (if (memq 'face gnus-article-wash-types)
-	(gnus-delete-images 'face)
-      (let (face faces)
-	(save-excursion
-	  (and (gnus-buffer-live-p gnus-original-article-buffer)
-	       (set-buffer gnus-original-article-buffer))
-	  (save-restriction
-	    (mail-narrow-to-head)
-	    (while (gnus-article-goto-header "Face")
-	      (push (mail-header-field-value) faces))))
-	(while (setq face (pop faces))
-	  (let ((png (gnus-convert-face-to-png face))
-		image)
-	    (when png
-	      (setq image (gnus-create-image png 'png t))
-	      (gnus-article-goto-header "from")
-	      (when (bobp)
-		(insert "From: [no `from' set]\n")
-		(forward-char -17))
-	      (gnus-add-wash-type 'face)
-	      (gnus-add-image 'face image)
-	      (gnus-put-image image))))))
-    ))
+  (let ((wash-face-p buffer-read-only))
+    (gnus-with-article-headers
+      ;; When displaying parts, this function can be called several times on
+      ;; the same article, without any intended toggle semantic (as typing `W
+      ;; D d' would have). So face deletion must occur only when we come from
+      ;; an interactive command, that is when the *Article* buffer is
+      ;; read-only.
+      (if (and wash-face-p (memq 'face gnus-article-wash-types))
+	  (gnus-delete-images 'face)
+	(let (face faces)
+	  (save-excursion
+	    (when (and wash-face-p
+		       (progn
+			 (goto-char (point-min))
+			 (not (re-search-forward "^Face:[\t ]*" nil t)))
+		       (gnus-buffer-live-p gnus-original-article-buffer))
+	      (set-buffer gnus-original-article-buffer))
+	    (save-restriction
+	      (mail-narrow-to-head)
+	      (while (gnus-article-goto-header "Face")
+		(push (mail-header-field-value) faces))))
+	  (while (setq face (pop faces))
+	    (let ((png (gnus-convert-face-to-png face))
+		  image)
+	      (when png
+		(setq image (gnus-create-image png 'png t))
+		(gnus-article-goto-header "from")
+		(when (bobp)
+		  (insert "From: [no `from' set]\n")
+		  (forward-char -17))
+		(gnus-add-wash-type 'face)
+		(gnus-add-image 'face image)
+		(gnus-put-image image nil 'face))))))
+      )))
 
 (defun article-display-x-face (&optional force)
   "Look for an X-Face header and display it if present."
@@ -2009,7 +2019,8 @@ unfolded."
       ;; Delete the old process, if any.
       (when (process-status "article-x-face")
 	(delete-process "article-x-face"))
-      (if (memq 'xface gnus-article-wash-types)
+      ;; See the comment in `article-display-face'.
+      (if (and wash-face-p (memq 'xface gnus-article-wash-types))
 	  ;; We have already displayed X-Faces, so we remove them
 	  ;; instead.
 	  (gnus-delete-images 'xface)
@@ -4851,7 +4862,7 @@ is the string to use when it is inactive.")
   "Delete all images in CATEGORY."
   (let ((entry (assq category gnus-article-image-alist)))
     (dolist (image (cdr entry))
-      (gnus-remove-image image))
+      (gnus-remove-image image category))
     (setq gnus-article-image-alist (delq entry gnus-article-image-alist))
     (gnus-delete-wash-type category)))
 

@@ -132,7 +132,7 @@ A list of images is returned."
 	      (push image images)
 	      (gnus-add-wash-type 'smiley)
 	      (gnus-add-image 'smiley image)
-	      (gnus-put-image image string))))
+	      (gnus-put-image image string 'smiley))))
 	images))))
 
 ;;;###autoload

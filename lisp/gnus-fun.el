@@ -192,7 +192,7 @@ colors of the displayed X-Faces."
 		 (concat "X-Face: " data)
 		 'xface t :face 'gnus-x-face)
 	      (gnus-create-image
-	       pbm 'pbm t :face 'gnus-x-face))))
+	       pbm 'pbm t :face 'gnus-x-face)) nil 'xface))
 	  (gnus-add-wash-type 'xface))))))
 
 (defun gnus-grab-cam-x-face ()

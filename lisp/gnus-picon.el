@@ -139,7 +139,7 @@ GLYPH can be either a glyph or a string."
       (insert glyph)
     (gnus-add-wash-type category)
     (gnus-add-image category (car glyph))
-    (gnus-put-image (car glyph) (cdr glyph))))
+    (gnus-put-image (car glyph) (cdr glyph) category)))
 
 (defun gnus-picon-create-glyph (file)
   (or (cdr (assoc file gnus-picon-glyph-alist))
@@ -231,37 +231,46 @@ GLYPH can be either a glyph or a string."
 
 ;;; Commands:
 
+;; #### NOTE: the test for buffer-read-only is the same as in
+;; article-display-[x-]face. See the comment up there.
+
 ;;;###autoload
 (defun gnus-treat-from-picon ()
   "Display picons in the From header.
 If picons are already displayed, remove them."
   (interactive)
-  (gnus-with-article-buffer
-    (if (memq 'from-picon gnus-article-wash-types)
-	(gnus-delete-images 'from-picon)
-      (gnus-picon-transform-address "from" 'from-picon))))
+  (let ((wash-picon-p buffer-read-only))
+    (gnus-with-article-buffer
+      (if (and wash-picon-p (memq 'from-picon gnus-article-wash-types))
+	  (gnus-delete-images 'from-picon)
+	(gnus-picon-transform-address "from" 'from-picon)))
+    ))
 
 ;;;###autoload
 (defun gnus-treat-mail-picon ()
   "Display picons in the Cc and To headers.
 If picons are already displayed, remove them."
   (interactive)
-  (gnus-with-article-buffer
-    (if (memq 'mail-picon gnus-article-wash-types)
-	(gnus-delete-images 'mail-picon)
-      (gnus-picon-transform-address "cc" 'mail-picon)
-      (gnus-picon-transform-address "to" 'mail-picon))))
+  (let ((wash-picon-p buffer-read-only))
+    (gnus-with-article-buffer
+      (if (and wash-picon-p (memq 'mail-picon gnus-article-wash-types))
+	  (gnus-delete-images 'mail-picon)
+	(gnus-picon-transform-address "cc" 'mail-picon)
+	(gnus-picon-transform-address "to" 'mail-picon)))
+    ))
 
 ;;;###autoload
 (defun gnus-treat-newsgroups-picon ()
   "Display picons in the Newsgroups and Followup-To headers.
 If picons are already displayed, remove them."
   (interactive)
-  (gnus-with-article-buffer
-    (if (memq 'newsgroups-picon gnus-article-wash-types)
-	(gnus-delete-images 'newsgroups-picon)
-      (gnus-picon-transform-newsgroups "newsgroups")
-      (gnus-picon-transform-newsgroups "followup-to"))))
+  (let ((wash-picon-p buffer-read-only))
+    (gnus-with-article-buffer
+      (if (and wash-picon-p (memq 'newsgroups-picon gnus-article-wash-types))
+	  (gnus-delete-images 'newsgroups-picon)
+	(gnus-picon-transform-newsgroups "newsgroups")
+	(gnus-picon-transform-newsgroups "followup-to")))
+    ))
 
 (provide 'gnus-picon)
 

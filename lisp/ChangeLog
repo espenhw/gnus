@@ -1,5 +1,25 @@
 2003-06-23  Didier Verna  <didier@xemacs.org>
 
+	* gnus-ems.el (gnus-put-image): New argument CATEGORY. Add it as a
+	text property.
+	(gnus-remove-image): New argument CATEGORY. Only remove if
+	category matches.
+	* gnus-xmas.el (gnus-xmas-put-image):
+	(gnus-xmas-remove-image): Ditto, with extents.
+	* gnus-art.el (gnus-delete-images): Pass CATEGORY argument to
+	gnus-[xmas-]remove-image.
+	(article-display-face): Don't always act as a toggle. Call
+	`gnus-put-image' with CATEGORY argument.
+	(article-display-x-face): Call `gnus-put-image' with CATEGORY
+	argument.
+	* smiley.el (smiley-region): Ditto.
+	* gnus-fun.el (gnus-display-x-face-in-from): Ditto.
+	* gnus-picon.el (gnus-picon-insert-glyph): Ditto.
+	(gnus-treat-mail-picon): Don't always act as a toggle.
+	* gnus-picon.el (gnus-treat-newsgroups-picon): Ditto.
+
+2003-06-23  Didier Verna  <didier@xemacs.org>
+
 	* gnus-art.el (article-display-face): Check for existence of the
 	original article buffer before switching to it.
 
