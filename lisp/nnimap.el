@@ -120,7 +120,14 @@ the matching article will be stored.
 The second element can also be a function.  In that case, it will be
 called narrowed to the headers with the first element of the rule as
 the argument.  It should return a non-nil value if it thinks that the
-mail belongs in that group.")
+mail belongs in that group.
+
+This variable can also have a function as its value, the function will
+be called with the headers narrowed and should return a group where it
+thinks the article should be splitted to.")
+
+(defvar nnimap-split-fancy nil
+  "Like `nnmail-split-fancy', which see.")
 
 ;; Authorization / Privacy variables
 
@@ -828,6 +835,11 @@ function is generally only called when Gnus is shutting down."
 		      (nnimap-mark-to-flag marks nil t)))))))
 	(gnus-message 7 "nnimap: Setting marks in %s...done" group))))
   nil)
+
+(defun nnimap-split-fancy ()
+  "Like nnmail-split-fancy, but uses nnimap-split-fancy."
+  (let ((nnmail-split-fancy nnimap-split-fancy))
+    (nnmail-split-fancy)))
 
 (defun nnimap-split-to-groups (rules)
   ;; tries to match all rules in nnimap-split-rule against content of
