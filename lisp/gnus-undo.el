@@ -71,15 +71,15 @@
    "\M-\C-_"     gnus-undo
    "\C-_"        gnus-undo
    "\C-xu"       gnus-undo
-   [(control /)] gnus-undo    ; many people are used to type `C-/' on
-			      ; X terminals and get `C-_'.
-   ))
+   ;; many people are used to type `C-/' on X terminals and get `C-_'.
+   [(control /)] gnus-undo))
 
 (defun gnus-undo-make-menu-bar ()
+  ;; This is disabled for the time being.
   (when nil
-  (define-key-after (current-local-map) [menu-bar file gnus-undo]
-    (cons "Undo" 'gnus-undo-actions)
-    [menu-bar file whatever])))
+    (define-key-after (current-local-map) [menu-bar file gnus-undo]
+      (cons "Undo" 'gnus-undo-actions)
+      [menu-bar file whatever])))
 
 (defun gnus-undo-mode (&optional arg)
   "Minor mode for providing `undo' in Gnus buffers.
@@ -120,6 +120,11 @@
   (if gnus-undo-boundary-inhibit
       (setq gnus-undo-boundary-inhibit nil)
     (setq gnus-undo-boundary t)))
+
+(defun gnus-undo-force-boundary ()
+  "Set Gnus undo boundary."
+  (setq gnus-undo-boundary-inhibit nil
+	gnus-undo-boundary t))
 
 (defun gnus-undo-register (form)
   "Register FORMS as something to be performed to undo a change.

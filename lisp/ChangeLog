@@ -1,3 +1,26 @@
+Sat May  3 00:59:39 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.50 is released.
+
+Sat May  3 00:30:12 1997  Kim-Minh Kaplan  <kimminh.kaplan@utopia.eunet.fr>
+
+	* gnus-picon.el (gnus-picons-prepare-for-annotations): New
+	function, and many changes.
+
+Sat May  3 00:03:51 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnfolder.el (nnfolder-possibly-change-group): Wouldn't always
+	switch buffers.
+
+	* gnus-sum.el (gnus-update-read-articles): Force boundary.
+
+	* gnus-undo.el (gnus-force-undo-boundary): New function.
+
+Fri May  2 23:44:54 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-article-treat-html): w3-parse-buffer
+	incompatibility. 
+
 Thu May  1 17:56:05 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.49 is released.

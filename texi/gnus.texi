@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.49 Manual
+@settitle Gnus 5.4.50 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.49 Manual
+@title Gnus 5.4.50 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.49.
+This manual corresponds to Gnus 5.4.50.
 
 @end ifinfo
 
@@ -13152,6 +13152,11 @@ The default is 15.  If you make it shorter Gnus will be faster, but you
 might then see old spam.
 
 @end table
+
+Using NoCeM could potentially be a memory hog.  If you have many living
+(i. e., subscribed or unsubscribed groups), your Emacs process will grow
+big.  If this is a problem, you should kill off all (or most) of your
+unsubscribed groups (@pxref{Subscription Commands}).
 
 
 @node Picons

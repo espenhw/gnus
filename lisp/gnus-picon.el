@@ -63,7 +63,7 @@ see http://www.cs.indiana.edu/picons/ftp/index.html"
   :type 'string
   :group 'picons)
 
-(defcustom gnus-picons-user-directories '("local" "users" "usenix" "misc/MISC")
+(defcustom gnus-picons-user-directories '("local" "users" "usenix" "misc")
   "List of directories to search for user faces."
   :type '(repeat string)
   :group 'picons)
@@ -109,7 +109,7 @@ Some people may want to add \"unknown\" to this list."
 
 (defcustom gnus-picons-display-article-move-p t
   "*Whether to move point to first empty line when displaying picons.
-This has only an effect if `gnus-picons-display-where' hs value article."
+This has only an effect if `gnus-picons-display-where' has value `article'."
   :type 'boolean
   :group 'picons)
 
@@ -120,26 +120,34 @@ This has only an effect if `gnus-picons-display-where' hs value article."
 
 ;;; Internal variables.
 
-(defvar gnus-group-annotations nil)
-(defvar gnus-article-annotations nil)
-(defvar gnus-x-face-annotations nil)
+(defvar gnus-group-annotations nil
+  "List of annotations added/removed when selecting/exiting a group")
+(defvar gnus-article-annotations nil
+  "List of annotations added/removed when selecting an article")
+(defvar gnus-x-face-annotations nil
+  "List of annotations added/removed when selecting an article with an X-Face.")
 
-(defun gnus-picons-remove (plist)
-  (let ((listitem (car plist)))
-    (while (setq listitem (car plist))
-      (when (annotationp listitem)
-	(delete-annotation listitem))
-      (setq plist (cdr plist)))))
+(defun gnus-picons-remove (symbol)
+  "Remove all annotations/processes in variable named SYMBOL.
+This function is careful to set it to nil before removing anything so that
+asynchronous process don't get crazy."
+  (let ((listitems (symbol-value symbol)))
+    (set symbol nil)
+    (while listitems
+      (let ((item (pop listitems)))
+	(cond ((annotationp item)
+	       (delete-annotation item))
+	      ((processp item)
+	       ;; kill the process, ignore any output.
+	       (set-process-sentinel item (function (lambda (p e))))
+	       (delete-process item)))))))
 
 (defun gnus-picons-remove-all ()
   "Removes all picons from the Gnus display(s)."
   (interactive)
-  (gnus-picons-remove gnus-article-annotations)
-  (gnus-picons-remove gnus-group-annotations)
-  (gnus-picons-remove gnus-x-face-annotations)
-  (setq gnus-article-annotations nil
-        gnus-group-annotations nil
-	gnus-x-face-annotations nil)
+  (gnus-picons-remove 'gnus-article-annotations)
+  (gnus-picons-remove 'gnus-group-annotations)
+  (gnus-picons-remove 'gnus-x-face-annotations)
   (when (bufferp gnus-picons-buffer)
     (kill-buffer gnus-picons-buffer)))
 
@@ -153,57 +161,80 @@ This has only an effect if `gnus-picons-display-where' hs value article."
         ((stringp variable)
          variable)))
 
+(defun gnus-picons-prepare-for-annotations (annotations)
+  "Prepare picons buffer for puting annotations memorized in ANNOTATIONS.
+ANNOTATIONS should be a symbol naming a variable wich contains a list of
+annotations.  Sets buffer to `gnus-picons-display-where'."
+  ;; let drawing catch up
+  (when gnus-picons-refresh-before-display
+    (sit-for 0))
+  (set-buffer (get-buffer-create
+	       (gnus-get-buffer-name gnus-picons-display-where)))
+  (gnus-add-current-to-buffer-list)
+  (goto-char (point-min))
+  (if (and (eq gnus-picons-display-where 'article)
+	   gnus-picons-display-article-move-p)
+      (when (search-forward "\n\n" nil t)
+	(forward-line -1)))
+  (gnus-picons-remove annotations))
+
 (defun gnus-picons-article-display-x-face ()
   "Display the x-face header bitmap in the 'gnus-picons-display-where buffer."
   ;; delete any old ones.
-  (gnus-picons-remove gnus-x-face-annotations)
-  (setq gnus-x-face-annotations nil)
+  ;; This is needed here because gnus-picons-display-x-face will not
+  ;; be called if there is no X-Face header
+  (gnus-picons-remove 'gnus-x-face-annotations)
   ;; display the new one.
   (let ((gnus-article-x-face-command 'gnus-picons-display-x-face))
     (gnus-article-display-x-face)))
+
+(defun gnus-picons-x-face-sentinel (process event)
+  ;; don't call gnus-picons-prepare-for-annotations, it would reset
+  ;; gnus-x-face-annotations.
+  (set-buffer (get-buffer-create
+	       (gnus-get-buffer-name gnus-picons-display-where)))
+  (gnus-add-current-to-buffer-list)
+  (goto-char (point-min))
+  (if (and (eq gnus-picons-display-where 'article)
+	   gnus-picons-display-article-move-p)
+      (when (search-forward "\n\n" nil t)
+	(forward-line -1)))
+  ;; If the process is still in the list, insert this icon
+  (let ((myself (member process gnus-x-face-annotations)))
+    (when myself
+      (setcar myself
+	      (make-annotation gnus-picons-x-face-file-name nil 'text))
+      (delete-file gnus-picons-x-face-file-name))))
 
 (defun gnus-picons-display-x-face (beg end)
   "Function to display the x-face header in the picons window.
 To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
   (interactive)
-  ;; convert the x-face header to a .xbm file
-  (let ((process-connection-type nil)
-	(process nil))
-    (process-kill-without-query
-     (setq process (start-process
-		    "gnus-x-face" nil shell-file-name shell-command-switch
-		    gnus-picons-convert-x-face)))
-    (process-send-region "gnus-x-face" beg end)
-    (process-send-eof "gnus-x-face")
-    ;; wait for it.
-    (while (not (equal (process-status process) 'exit))
-      (sleep-for .1)))
-  ;; display it
-  (save-excursion
-    (set-buffer (get-buffer-create (gnus-get-buffer-name
-				    gnus-picons-display-where)))
-    (gnus-add-current-to-buffer-list)
-    (goto-char (point-min))
-    (let (buffer-read-only)
-      (unless (eolp)
-	(push (make-annotation "\n" (point) 'text)
-	      gnus-x-face-annotations))
-      ;; append the annotation to gnus-article-annotations for deletion.
-      (setq gnus-x-face-annotations
-	    (append
-	     (gnus-picons-try-to-find-face gnus-picons-x-face-file-name t)
-	     gnus-x-face-annotations)))
-    ;; delete the tmp file
-    (delete-file gnus-picons-x-face-file-name)))
+  (if (featurep 'xface)
+      ;; Use builtin support
+      (let ((buf (current-buffer)))
+	(save-excursion
+	  (gnus-picons-prepare-for-annotations 'gnus-x-face-annotations)
+	  (setq gnus-x-face-annotations
+		(cons (make-annotation (concat "X-Face: "
+					       (buffer-substring beg end buf))
+				       nil 'text)
+		      gnus-x-face-annotations))))
+    ;; convert the x-face header to a .xbm file
+    (let* ((process-connection-type nil)
+	   (process (start-process "gnus-x-face" nil
+				   shell-file-name shell-command-switch
+				   gnus-picons-convert-x-face)))
+      (process-kill-without-query process)
+      (setq gnus-x-face-annotations (list process))
+      (set-process-sentinel process 'gnus-picons-x-face-sentinel)
+      (process-send-region process beg end)
+      (process-send-eof process))))
 
 (defun gnus-article-display-picons ()
   "Display faces for an author and his/her domain in gnus-picons-display-where."
   (interactive)
-  ;; let drawing catch up
-  (when gnus-picons-refresh-before-display
-    (sit-for 0))
-  (let ((first t)
-	from at-idx databases)
+  (let (from at-idx)
     (when (and (featurep 'xpm)
 	       (or (not (fboundp 'device-type)) (equal (device-type) 'x))
 	       (setq from (mail-fetch-field "from"))
@@ -216,103 +247,52 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	(let ((username (substring from 0 at-idx))
 	      (addrs (if (eq at-idx (length from))
 			 (if gnus-local-domain
-			     (nreverse (message-tokenize-header
-					gnus-local-domain "."))
-			   '("."))
-		       (nreverse (message-tokenize-header
-				  (substring from (1+ at-idx)) ".")))))
-	  (set-buffer (get-buffer-create
-		       (gnus-get-buffer-name gnus-picons-display-where)))
-	  (gnus-add-current-to-buffer-list)
-	  (goto-char (point-min))
-	  (if (and (eq gnus-picons-display-where 'article)
-		   gnus-picons-display-article-move-p)
-	      (when (search-forward "\n\n" nil t)
-		(forward-line -1))
-	    (unless (eolp)
-	      (push (make-annotation "\n" (point) 'text)
-		    gnus-article-annotations)))
-
-	  (gnus-picons-remove gnus-article-annotations)
-	  (setq gnus-article-annotations nil)
-
-	  ;; look for domain paths.
-	  (setq databases gnus-picons-domain-directories)
-	  (while databases
-	    (setq gnus-article-annotations
-		  (nconc (gnus-picons-insert-face-if-exists
-			  (car databases)
-			  addrs
-			  "unknown" (or gnus-picons-display-as-address
-					gnus-article-annotations) t t)
-			 gnus-article-annotations))
-	    (setq databases (cdr databases)))
-
-	  ;; add an '@' if displaying as address
-	  (when gnus-picons-display-as-address
-	    (setq gnus-article-annotations
-		  (nconc gnus-article-annotations
-			 (list
-			  (make-annotation "@" (point) 'text nil nil nil t)))))
-
-	  ;; then do user directories,
-	  (let (found)
-	    (setq databases gnus-picons-user-directories)
-	    (setq username (downcase username))
-	    (while databases
-	      (setq found
-		    (nconc (gnus-picons-insert-face-if-exists
-			    (car databases) addrs username
-			    (or gnus-picons-display-as-address
-				gnus-article-annotations) nil t)
-			   found))
-	      (setq databases (cdr databases)))
-	    ;; add their name if no face exists
-	    (when (and gnus-picons-display-as-address (not found))
-	      (setq found
-		    (list
-		     (make-annotation username (point) 'text nil nil nil t))))
-	    (setq gnus-article-annotations
-		  (nconc found gnus-article-annotations)))
+			     (message-tokenize-header gnus-local-domain ".")
+			   nil)
+		       (message-tokenize-header (substring from (1+ at-idx))
+						"."))))
+	  (gnus-picons-prepare-for-annotations 'gnus-article-annotations)
+	  (setq gnus-article-annotations
+		(nconc gnus-article-annotations
+		       ;; look for domain paths.
+		       (gnus-picons-display-pairs
+			(gnus-picons-lookup-pairs addrs
+					       gnus-picons-domain-directories)
+			(not (or gnus-picons-display-as-address
+				 gnus-article-annotations))
+			nil "." t)
+		       ;; add an '@' if displaying as address
+		       (if  (and gnus-picons-display-as-address addrs)
+			 (list (make-annotation "@" nil 'text nil nil nil t)))
+		       ;; then do user directories,
+		       (gnus-picons-display-picon-or-name
+			(gnus-picons-lookup-user (downcase username) addrs)
+			username nil t)))
 
 	  (add-hook 'gnus-summary-exit-hook 'gnus-picons-remove-all))))))
 
 (defun gnus-group-display-picons ()
   "Display icons for the group in the gnus-picons-display-where buffer."
   (interactive)
-  ;; let display catch up so far
-  (when gnus-picons-refresh-before-display
-    (sit-for 0))
   (when (and (featurep 'xpm)
 	     (or (not (fboundp 'device-type)) (equal (device-type) 'x)))
     (save-excursion
-      (set-buffer (get-buffer-create
-		   (gnus-get-buffer-name gnus-picons-display-where)))
-      (gnus-add-current-to-buffer-list)
-      (goto-char (point-min))
-      (if (and (eq gnus-picons-display-where 'article)
-	       gnus-picons-display-article-move-p)
-	  (when (search-forward "\n\n" nil t)
-	    (forward-line -1))
-	(unless (eolp)
-	  (push (make-annotation "\n" (point) 'text)
-		gnus-group-annotations)))
-      (cond
-       ((listp gnus-group-annotations)
-	(mapc #'(lambda (ext) (when (extent-live-p ext)
-				(delete-annotation ext)))
-	      gnus-group-annotations)
-	(setq gnus-group-annotations nil))
-       ((annotationp gnus-group-annotations)
-	(delete-annotation gnus-group-annotations)
-	(setq gnus-group-annotations nil)))
-      (gnus-picons-remove gnus-group-annotations)
+      (gnus-picons-prepare-for-annotations 'gnus-group-annotations)
       (setq gnus-group-annotations
-	    (gnus-picons-insert-face-if-exists
-	     gnus-picons-news-directory
-	     (message-tokenize-header gnus-newsgroup-name ".")
-	     "unknown" nil t))
+	    (gnus-picons-display-pairs
+	     (gnus-picons-lookup-pairs (reverse (message-tokenize-header
+					      gnus-newsgroup-name "."))
+				    gnus-picons-news-directory)
+	     t nil "."))
       (add-hook 'gnus-summary-exit-hook 'gnus-picons-remove-all))))
+
+(defun gnus-picons-make-path (dir subdirs)
+  "Make a directory name from a base DIR and a list of SUBDIRS.
+Returns a directory name build by concatenating DIR and all elements of
+SUBDIRS with \"/\" between elements."
+  (while subdirs
+    (setq dir (file-name-as-directory (concat dir (pop subdirs)))))
+  dir)
 
 (defsubst gnus-picons-try-suffixes (file)
   (let ((suffixes gnus-picons-file-suffixes)
@@ -322,78 +302,90 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
       (setq f nil))
     f))
 
-(defun gnus-picons-insert-face-if-exists (database addrs filename &optional
-						   nobar-p dots rightp)
-  "Inserts a face at point if I can find one"
-  ;; '(gnus-picons-insert-face-if-exists
-  ;;    "Database" '("edu" "indiana" "cs") "Name")
-  ;; looks for:
-  ;;  1. edu/indiana/cs/Name
-  ;;  2. edu/indiana/Name
-  ;;  3. edu/Name
-  ;; '(gnus-picons-insert-face-if-exists
-  ;;     "Database/MISC" '("edu" "indiana" "cs") "Name")
-  ;; looks for:
-  ;;  1. MISC/Name
-  ;; The special treatment of MISC doesn't conform with the conventions for
-  ;; picon databases, but otherwise we would always see the MISC/unknown face.
-  (let ((bar (and (not nobar-p)
-		  (or gnus-picons-display-as-address
-		      (annotations-in-region
-		       (point) (min (point-max) (1+ (point)))
-		       (current-buffer)))))
-	(path (concat (file-name-as-directory gnus-picons-database)
-		      database "/"))
-	(domainp (and gnus-picons-display-as-address dots))
-	picons found bar-ann cur first)
-    (when (string-match "/MISC" database)
-      (setq addrs '(".")))
-    (while (and addrs
-		(file-accessible-directory-p path))
-      (setq cur (pop addrs)
-	    path (concat path cur "/"))
-      (if (setq found
-		(gnus-picons-try-suffixes (concat path filename "/face.")))
-	  (progn
-	    (setq picons (nconc (when (and domainp first rightp)
-				  (list (make-annotation
-					 "." (point) 'text
-					 nil nil nil rightp)
-					picons))
-				(gnus-picons-try-to-find-face
-				 found nil (if domainp cur filename) rightp)
-				(when (and domainp first (not rightp))
-				  (list (make-annotation
-					 "." (point) 'text
-					 nil nil nil rightp)
-					picons))
-				picons)))
-	(when domainp
-	  (setq picons
-		(nconc
-		 (list (make-annotation
-			(if first (concat (if (not rightp) ".") cur
-					  (if rightp ".")) cur)
-			(point) 'text nil nil nil rightp))
-		 picons))))
-      (when (and bar (or domainp found))
-	(setq bar-ann (gnus-picons-try-to-find-face
-		       (concat gnus-xmas-glyph-directory "bar.xbm")
-		       nil nil t))
-	(when bar-ann
-	  (setq picons (nconc picons bar-ann))
-	  (setq bar nil)))
-      (setq first t))
-    (when (and addrs domainp)
-      (let ((it (mapconcat 'downcase (nreverse addrs) ".")))
-	(setq picons
-	      (nconc picons (list (make-annotation
-				   (if first
-				       (concat (if (not rightp) ".")
-					       it (if rightp "."))
-				     it)
-				   (point) 'text
-				   nil nil nil rightp))))))
+(defun gnus-picons-lookup (addrs dirs)
+  "Lookup the picon for ADDRS in databases DIRS.
+Returns the picon filename or NIL if none found."
+  (let (result)
+    (while (and dirs (null result))
+      (setq result
+	    (gnus-picons-try-suffixes
+	     (expand-file-name "face."
+			       (gnus-picons-make-path
+				(file-name-as-directory
+				 (concat
+				  (file-name-as-directory gnus-picons-database)
+				  (pop dirs)))
+				(reverse addrs))))))
+    result))
+
+(defun gnus-picons-lookup-user-internal (user domains)
+  (let ((dirs gnus-picons-user-directories)
+	picon)
+    (while (and dirs (null picon))
+      (let ((dir (list (pop dirs)))
+	    (domains domains))
+	(while (and domains (null picon))
+	  (setq picon (gnus-picons-lookup (cons user domains) dir))
+	  (pop domains))
+	;; Also make a try MISC subdir
+	(unless picon
+	  (setq picon (gnus-picons-lookup (list user "MISC") dir)))))
+
+    picon))
+
+(defun gnus-picons-lookup-user (user domains)
+  "Lookup the picon for USER at DOMAINS.
+USER is a string containing a name.
+DOMAINS is a list of strings from the fully qualified domain name."
+  (or (gnus-picons-lookup-user-internal user domains)
+      (gnus-picons-lookup-user-internal "unknown" domains)))
+
+(defun gnus-picons-lookup-pairs (domains directories)
+  "Lookup picons for DOMAINS and all its parents in DIRECTORIES.
+Returns a list of PAIRS whose CAR is the picon filename or NIL if
+none, and whose CDR is the corresponding element of DOMAINS."
+  (let (picons)
+    (while domains
+      (push (list (gnus-picons-lookup (cons "unknown" domains)
+				      (if (listp directories)
+					  directories
+					(list directories)))
+		  (pop domains))
+	    picons))
+    picons))
+
+(defun gnus-picons-display-picon-or-name (picon name &optional xface-p right-p)
+  (if picon
+      (gnus-picons-try-to-find-face picon xface-p name right-p)
+    (list (make-annotation name nil 'text nil nil nil right-p))))
+
+(defun gnus-picons-display-pairs (pairs &optional bar-p xface-p dot-p right-p)
+  "Display picons in list PAIRS."
+  (let ((bar (and bar-p (or gnus-picons-display-as-address
+			  (annotations-in-region (point)
+						 (min (point-max) (1+ (point)))
+						 (current-buffer)))))
+	(domain-p (and gnus-picons-display-as-address dot-p))
+	picons)
+    (while pairs
+      (let ((pair (pop pairs)))
+	(setq picons (nconc (if (and domain-p picons (not right-p))
+				(list (make-annotation
+				       dot-p nil 'text nil nil nil right-p)))
+			    (gnus-picons-display-picon-or-name (car pair)
+							       (cadr pair)
+							       xface-p
+							       right-p)
+			    (if (and domain-p pairs right-p)
+				(list (make-annotation
+				       dot-p nil 'text nil nil nil right-p)))
+			    (when (and bar domain-p)
+			      (setq bar nil)
+			      (gnus-picons-try-to-find-face
+			       (expand-file-name "bar.xbm"
+						 gnus-xmas-glyph-directory)
+			       nil nil t))
+			    picons))))
     picons))
 
 (defvar gnus-picons-glyph-alist nil)
@@ -422,11 +414,8 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	     (set-extent-property txt 'keymap gnus-picons-map)
 	     (set-extent-property txt 'mouse-face gnus-article-mouse-face)
 	     (set-extent-property new 'its-partner txt)
-	     (set-extent-property new 'keymap gnus-picons-map))))))))
-
-(defun gnus-picons-reverse-domain-path (str)
-  "a/b/c/d -> d/c/b/a"
-  (mapconcat 'downcase (nreverse (message-tokenize-header str "/")) "/"))
+	     (set-extent-property new 'keymap gnus-picons-map)
+	     (list txt))))))))
 
 (defun gnus-picons-toggle-extent (event)
   "Toggle picon glyph at given point"

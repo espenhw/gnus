@@ -8641,7 +8641,7 @@ save those articles instead."
 	(push (cons prev (cdr active)) read))
       (save-excursion
 	(set-buffer gnus-group-buffer)
-	(gnus-undo-boundary)
+	(gnus-undo-force-boundary)
 	(gnus-undo-register
 	  `(progn
 	     (gnus-info-set-marks ',info ',(gnus-info-marks info) t)

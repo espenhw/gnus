@@ -513,8 +513,8 @@ time saver for large mailboxes.")
 	;; If we have to change groups, see if we don't already have the
 	;; folder in memory.  If we do, verify the modtime and destroy
 	;; the folder if needed so we can rescan it.
-	(when (setq inf (assoc group nnfolder-buffer-alist))
-	  (setq nnfolder-current-buffer (nth 1 inf)))
+	(setq nnfolder-current-buffer
+	      (nth 1 (assoc group nnfolder-buffer-alist)))
 
 	;; If the buffer is not live, make sure it isn't in the alist.  If it
 	;; is live, verify that nobody else has touched the file since last
