@@ -3322,11 +3322,14 @@ It should typically alter the sending method in some way or other."
 	(add-text-properties point (1+ point)
 			     '(invisible nil intangible nil)))))
   ;; Make invisible text visible.
+  ;; It doesn't seem as if this is useful, since the invisible property
+  ;; is clobbered by an after-change hook anyhow.
   (message-check 'invisible-text
     (let ((points (message-text-with-property 'invisible)))
       (when points
 	(goto-char (car points))
 	(dolist (point points)
+	  (put-text-property point (1+ point) 'invisible nil)
 	  (message-overlay-put (message-make-overlay point (1+ point))
 			       'face 'highlight))
 	(unless (yes-or-no-p
@@ -5702,7 +5705,11 @@ responses here are directed to other newsgroups."))
 
      cur)))
 
-;;;###autoload
+(eval-when-compile
+  ;; Must be dynamically bound for message-is-yours-p.
+  (defvar sender)
+  (defvar from))
+
 (defun message-is-yours-p ()
   "Non-nil means current article is yours.
 If you have added 'cancel-messages to 'message-shoot-gnksa-feet', all articles
