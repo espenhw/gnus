@@ -965,7 +965,7 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
   (save-excursion
     (set-buffer
      (find-file-noselect file))
-    (unless (search-forward (regexp-quote address) nil t)
+    (unless (search-forward address nil t)
       (goto-char (point-max))
       (unless (bobp)
 	(insert "\n"))
