@@ -20,6 +20,15 @@
 
 2003-04-16  Dave Love  <fx@gnu.org>
 
+	* gnus-agent.el: Wrap defsetf in eval-when-compile.
+	(gnus-agent-cat-defaccessor): Don't use gensym.
+
+	* mml1991.el: Require cl, mm-util when compiling.
+	(quoted-printable-decode-region, quoted-printable-encode-region):
+	Autoload.
+
+	* pgg.el: Require cl when compiling.
+
 	* nnmail.el (gnus): Require.
 
 	* gnus-util.el: Move provide to end.
