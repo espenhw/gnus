@@ -1,3 +1,7 @@
+2000-12-19 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el: Require binhex.
+
 2000-12-19 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el: Merged. Emacs21 CVS tag is zsh-merge-ognus-1.
@@ -82,9 +86,9 @@
 
 	* uu-post.pbm, uu-decode.pbm: new files from XPMs.
 
-;	* mm-uu.el (uudecode): Require.
-;	(uudecode-decode-region, uudecode-decode-region-external): Don't
-;	autoload.
+	* mm-uu.el (uudecode): Require.
+	(uudecode-decode-region, uudecode-decode-region-external): Don't
+	autoload.
 	(mm-uu-copy-to-buffer): Doc fix.
 	(mm-uu-decode-function, mm-uu-binhex-decode-function): Doc, custom
 	type fix.

@@ -32,12 +32,8 @@
 (require 'mm-decode)
 (require 'mailcap)
 (require 'mml2015)
-
-(eval-and-compile
-  (autoload 'binhex-decode-region "binhex")
-  (autoload 'binhex-decode-region-external "binhex")
-  (autoload 'uudecode-decode-region "uudecode")
-  (autoload 'uudecode-decode-region-external "uudecode"))
+(require 'uudecode)
+(require 'binhex)
 
 ;; This is not the right place for this.  uudecode.el should decide
 ;; whether or not to use a program with a single interface, but I
