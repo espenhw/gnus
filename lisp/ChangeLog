@@ -1,5 +1,13 @@
 2004-04-15  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 		
+	* gnus-agent.el (gnus-agentize):
+	gnus-agent-send-mail-real-function no longer set to current value
+	of message-send-mail-function but rather a lambda that calls
+	message-send-mail-function.  The change makes the agent real-time
+	responsive to user changes to message-send-mail-function.
+
+2004-04-15  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+		
 	* legacy-gnus-agent.el
 	(gnus-agent-convert-to-compressed-agentview): Fixed typos with
 	help from Florian Weimer <fw@deneb.enyo.de>

@@ -635,7 +635,7 @@ minor mode in all Gnus buffers."
   (unless gnus-agent-send-mail-function
     (setq gnus-agent-send-mail-function
 	  (or message-send-mail-real-function
-	      message-send-mail-function)
+	      (function (lambda () (funcall message-send-mail-function))))
 	  message-send-mail-real-function 'gnus-agent-send-mail))
 
   ;; If the servers file doesn't exist, auto-agentize some servers and
