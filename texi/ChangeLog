@@ -8,6 +8,7 @@
 	* gnus.texi (Slashdot, SpamAssassin, Score File Format): Fix
 	overfull hbox.
 	(Topic Parameters): @group.
+	(Slashdot): Fix.
 
 2003-10-27  Teodor Zlatanov  <tzz@lifelogs.com>
 

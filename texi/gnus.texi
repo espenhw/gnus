@@ -15638,9 +15638,7 @@ news articles and comments.  The default is@*
 
 @item nnslashdot-comments-url
 @vindex nnslashdot-comments-url
-The @sc{url} format string that will be used to fetch comments.  The
-default is
-@samp{http://slashdot.org/comments.pl?sid=%s&threshold=%d&commentsort=@/%d&mode=flat&startat=%d}.
+The @sc{url} format string that will be used to fetch comments.
 
 @item nnslashdot-article-url
 @vindex nnslashdot-article-url
