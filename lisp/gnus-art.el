@@ -280,14 +280,14 @@ A string is used as a regular expression to match the banner
 directly.")
 
 (defcustom gnus-article-address-banner-alist nil
-  "Banner alist for free mail addresses.
+  "Alist of mail addresses and banners.
 Each element has the form (ADDRESS . BANNER), where ADDRESS is a regexp
 to match a mail address in the From: header, BANNER is one of a symbol
 `signature', an item in `gnus-article-banner-alist', a regexp and nil.
 If ADDRESS matches author's mail address, it will remove things like
 advertisements.  For example:
 
-\((\"@yahoo\\.co\\.jp\\\\'\" . \"\\n_+\\nDo You Yahoo!\\\\?\\n.*\\n.*\\n\"))
+\((\"@yoo-hoo\\.co\\.jp\\\\'\" . \"\\n_+\\nDo You Yoo-hoo!\\\\?\\n.*\\n.*\\n\"))
 "
   :type '(repeat
 	  (cons
