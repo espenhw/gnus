@@ -1,3 +1,8 @@
+2002-11-17  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-set-auto-save-file-name): Use
+	make-directory, to avoid the dependence on gnus-util.
+
 2002-11-16  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-callback-callback-function):
