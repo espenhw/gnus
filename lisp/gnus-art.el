@@ -142,7 +142,7 @@
      "^X-Request-PGP:" "^X-Fingerprint:" "^X-WRIEnvto:" "^X-WRIEnvfrom:"
      "^X-Virus-Scanned:" "^X-Delivery-Agent:" "^Posted-Date:" "^X-Gateway:"
      "^X-Local-Origin:" "^X-Local-Destination:" "^X-UserInfo1:"
-     "^X-Received-Date:" "^X-Hashcash:")
+     "^X-Received-Date:" "^X-Hashcash:" "^Face:")
   "*All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."

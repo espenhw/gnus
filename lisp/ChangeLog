@@ -1,3 +1,7 @@
+2003-01-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-ignored-headers): Added Face.
+
 2003-01-10  Simon Josefsson  <jas@extundo.com>
 
 	* nndraft.el (nndraft-request-group): Avoid crash in
