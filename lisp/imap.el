@@ -767,7 +767,14 @@ Returns t if login was successful, nil otherwise."
       ret)))
 
 (defun imap-gssapi-auth-p (buffer)
-  (imap-capability 'AUTH=GSSAPI buffer))
+  (and (imap-capability 'AUTH=GSSAPI buffer)
+       (catch 'imtest-found
+	 (let (prg (prgs imap-gssapi-program))
+	   (while (setq prg (pop prgs))
+	     (condition-case ()
+		 (and (call-process (substring prg 0 (string-match " " prg)))
+		      (throw 'imtest-found t))
+	       (error nil)))))))
 
 (defun imap-gssapi-auth (buffer)
   (message "imap: Authenticating using GSSAPI...%s"
@@ -775,7 +782,14 @@ Returns t if login was successful, nil otherwise."
   (eq imap-stream 'gssapi))
 
 (defun imap-kerberos4-auth-p (buffer)
-  (imap-capability 'AUTH=KERBEROS_V4 buffer))
+  (and (imap-capability 'AUTH=KERBEROS_V4 buffer)
+       (catch 'imtest-found
+	 (let (prg (prgs imap-kerberos4-program))
+	   (while (setq prg (pop prgs))
+	     (condition-case ()
+		 (and (call-process (substring prg 0 (string-match " " prg)))
+		      (throw 'imtest-found t))
+	       (error nil)))))))
 
 (defun imap-kerberos4-auth (buffer)
   (message "imap: Authenticating using Kerberos 4...%s"

@@ -1,3 +1,8 @@
+2001-08-08  Simon Josefsson  <jas@extundo.com>
+
+	* imap.el (imap-gssapi-auth-p, imap-kerberos4-auth-p): Also check
+	whether `imtest' is installed.
+
 2001-08-04  Nuutti Kotivuori  <nuutti.kotivuori@smarttrust.com>
 	Committed by ShengHuo ZHU  <zsh@cs.rochester.edu>
 
