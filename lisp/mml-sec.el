@@ -60,13 +60,13 @@ Also note that you should access this with mml-signencrypt-style")
 (defun mml-signencrypt-style (method &optional style)
   "Function for setting/getting the signencrypt-style used.  Takes two
 arguments, the method (e.g. \"pgp\") and optionally the mode
-(e.g. combined).  If the mode is omitted, the current value is returned.
+\(e.g. combined).  If the mode is omitted, the current value is returned.
 
 For example, if you prefer to use combined sign & encrypt with
 smime, putting the following in your Gnus startup file will
 enable that behavior:
 
- (mml-set-signencrypt-style \"smime\" combined)"
+\(mml-set-signencrypt-style \"smime\" combined)"
   (let ((style-item (assoc method mml-signencrypt-style-alist)))
     (if style-item
 	(if (or (eq style 'separate)
