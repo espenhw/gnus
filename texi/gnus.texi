@@ -17705,9 +17705,9 @@ an integer that overrides the value of @code{gnus-agent-long-article}.
 
 @item agent-enable-undownloaded-faces
 a symbol indicating whether the summary buffer should display
-undownloaded articles using the gnus-summary-*-undownloaded-face
-faces. Any symbol other than nil will enable the use of undownloaded
-faces.
+undownloaded articles using the @code{gnus-summary-*-undownloaded-face}
+faces.  Any symbol other than @code{nil} will enable the use of
+undownloaded faces.
 @end table
 
 The name of a category can not be changed once the category has been
