@@ -478,7 +478,7 @@ The buffer may be narrowed."
 	  (pop alist))
 	;; The size of QP encapsulation is about 20, so set limit to
 	;; 56=76-20.
-	(unless (< (- (point-max) (point-min)) 56)
+	(unless (< (buffer-size) 56)
 	  ;; Don't break if it could fit in one line.
 	  ;; Let rfc2047-encode-region break it later.
 	  (goto-char (1+ (point-min)))

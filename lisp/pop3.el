@@ -271,7 +271,7 @@ If NOW, use that time instead."
 	      (goto-char (point-max))
 	      (insert "\n"))
 	    (narrow-to-region (point) (point-max))
-	    (let ((size (- (point-max) (point-min))))
+	    (let ((size (buffer-size)))
 	      (goto-char (point-min))
 	      (widen)
 	      (forward-line -1)

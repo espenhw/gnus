@@ -1826,7 +1826,7 @@ unfolded."
 	      (goto-char (point-min))
 	      (while (re-search-forward "\n[\t ]" nil t)
 		(replace-match " " t t)))
-	    (setq length (- (point-max) (point-min) 1)))
+	    (setq length (- (buffer-size) 1)))
 	  (when (< length (window-width))
 	    (while (re-search-forward "\n[\t ]" nil t)
 	      (replace-match " " t t)))
@@ -6406,7 +6406,7 @@ For example:
 ;;;
 
 (defun gnus-treat-article (condition &optional part-number total-parts type)
-  (let ((length (- (point-max) (point-min)))
+  (let ((length (buffer-size))
 	(alist gnus-treatment-function-alist)
 	(article-goto-body-goes-to-point-min-p t)
 	(treated-type
