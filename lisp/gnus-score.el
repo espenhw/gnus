@@ -784,6 +784,7 @@ SCORE is the score to add."
   (let (scores)
     ;; PLM: probably this is not the best place to clear orphan-score
     (setq gnus-orphan-score nil)
+    (setq gnus-scores-articles nil)
     ;; Load the score files.
     (while score-files
       (if (stringp (car score-files))

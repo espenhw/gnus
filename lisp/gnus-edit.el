@@ -584,9 +584,12 @@ groups matched by the current score file.")
   (list (nth 0 entry)
 	(or (nth 1 entry) gnus-score-interactive-default-score)
 	(nth 2 entry)
-	(if (null (nth 3 entry)) 
-	    's
-	  (intern (substring (symbol-name (nth 3 entry)) 0 1)))))
+	(cond ((null (nth 3 entry))
+	       's)
+	      ((memq (nth 3 entry) '(before after at >= <=))
+	       (nth 3 entry))
+	      (t
+	       (intern (substring (symbol-name (nth 3 entry)) 0 1))))))
 
 (defvar gnus-score-cache nil)
 

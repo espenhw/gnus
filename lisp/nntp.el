@@ -29,6 +29,8 @@
 (require 'sendmail)
 (require 'nnheader)
 
+(eval-when-compile (require 'cl))
+
 (eval-and-compile
   (autoload 'news-setup "rnewspost")
   (autoload 'news-reply-mode "rnewspost")
@@ -158,6 +160,9 @@ instead use `nntp-server-buffer'.")
   "Save the server response message.
 You'd better not use this variable in NNTP front-end program but
 instead call function `nntp-status-message' to get status message.")
+
+(defvar nntp-opened-connections nil
+  "All (possibly) opened connections.")
 
 (defvar nntp-server-xover 'try)
 (defvar nntp-server-list-active-group 'try)
@@ -379,22 +384,13 @@ instead call function `nntp-status-message' to get status message.")
 (defun nntp-request-close ()
   "Close all server connections."
   (let (proc)
-    (and nntp-async-process
-	 (progn
-	   (delete-process nntp-async-process)
-	   (and (get-buffer nntp-async-buffer)
-		(kill-buffer nntp-async-buffer))))
-    (while nntp-async-group-alist
-      (and (nth 3 (car nntp-async-group-alist))
-	   (delete-process (nth 3 (car nntp-async-group-alist))))
-      (setq nntp-async-group-alist (cdr nntp-async-group-alist)))
+    (while nntp-opened-connections
+      (setq proc (pop nntp-opened-connections))
+      (and proc (delete-process proc)))
+    (and nntp-async-buffer
+	 (get-buffer nntp-async-buffer)
+	 (kill-buffer nntp-async-buffer))
     (while nntp-server-alist
-      (and 
-       (setq proc (nth 1 (assq 'nntp-server-process (car nntp-server-alist))))
-       (delete-process proc))
-      (and 
-       (setq proc (nth 1 (assq 'nntp-async-process (car nntp-server-alist))))
-       (delete-process proc))
       (and (setq proc (nth 1 (assq 'nntp-async-buffer
 				   (car nntp-server-alist))))
 	   (buffer-name proc)
@@ -1110,6 +1106,7 @@ If SERVICE, this this as the port number."
 	    (setq nntp-address server)
 	    ;; It is possible to change kanji-fileio-code in this hook.
 	    (run-hooks 'nntp-server-hook)
+	    (push proc nntp-opened-connections)
 	    nntp-server-process)))))
 
 (defun nntp-open-network-stream (server)

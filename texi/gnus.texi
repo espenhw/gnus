@@ -5866,7 +5866,7 @@ the @code{Xref} header.
 If you want to lower the score of articles that have been crossposted to
 more than, say, 3 groups:
 @lisp
-("xref" (" +[^ ]+:[0-9]+ +[^ ]+:[0-9]+ +[^ ]+:[0-9]+" -1000 nil r))
+("xref" ("[^:\n]+:[0-9]+ +[^:\n]+:[0-9]+ +[^:\n]+:[0-9]+" -1000 nil r))
 @end lisp
 @item Matching on the body
 This is generally not a very good idea - it takes a very long time.

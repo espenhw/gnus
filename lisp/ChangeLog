@@ -1,3 +1,34 @@
+Fri Oct 13 01:27:15 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmh.el (nnmh-request-list): Wouldn't recurse down symlinks. 
+
+	* nntp.el (nntp-request-close): Really kill all connections.
+
+Mon Oct  2 15:05:03 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-edit.el (gnus-score-custom-sanify): Don't cut of number and
+	date match types to the first char, like we do for string match
+	types.  Reported by Kevin Christian
+	<kchrist@lochness.ncrmicro.ncr.com>.
+
+Thu Oct 12 09:28:32 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el: Don't require rmail.
+
+	* gnus.el (gnus-nov-parse-line): Might bug out on bogus NOV lines.
+
+Tue Sep 26 03:39:43 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
+
+	* gnus.el (gnus-thread-sort-by-subject): Only strip Re:'s.
+
+Tue Sep 26 01:20:41 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el (gnus-group-mode-map): gnus-group-description-apropos on
+		wrong key.
+
+	* nnheader.el (nnheader-insert-references): Would produce errant
+		References headers on articles without Message-IDs.
+
 Tue Sep 26 00:42:54 1995  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.el: 5.0.5 & 5.0.6 are released.

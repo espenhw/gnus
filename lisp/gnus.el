@@ -1349,7 +1349,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "Gnus v5.0.6"
+(defconst gnus-version "Gnus v5.0.7"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -3104,7 +3104,7 @@ Note: LIST has to be sorted over `<'."
   (define-key gnus-group-mode-map "\C-c\C-d" 'gnus-group-describe-group)
   (define-key gnus-group-mode-map "\M-d" 'gnus-group-describe-all-groups)
   (define-key gnus-group-mode-map "\C-c\C-a" 'gnus-group-apropos)
-  (define-key gnus-group-mode-map "\C-c\M-C-a" 'gnus-group-description-apropos)
+  (define-key gnus-group-mode-map "\C-c\M-\C-a" 'gnus-group-description-apropos)
   (define-key gnus-group-mode-map "a" 'gnus-group-post-news)
   (define-key gnus-group-mode-map "\ek" 'gnus-group-edit-local-kill)
   (define-key gnus-group-mode-map "\eK" 'gnus-group-edit-global-kill)
@@ -6418,9 +6418,9 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 (defun gnus-thread-sort-by-subject (h1 h2)
   "Sort threads by root subject."
   (string-lessp
-   (downcase (gnus-simplify-subject 
+   (downcase (gnus-simplify-subject-re
 	      (mail-header-subject (gnus-thread-header h1))))
-   (downcase (gnus-simplify-subject 
+   (downcase (gnus-simplify-subject-re 
 	      (mail-header-subject (gnus-thread-header h2))))))
 
 (defun gnus-thread-sort-by-date (h1 h2)
@@ -7323,7 +7323,7 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
 
     ;; overview: [num subject from date id refs chars lines misc]
     (narrow-to-region (point) eol)
-    (forward-char)
+    (or (eobp) (forward-char))
 
     (condition-case nil
 	(setq header
@@ -11141,7 +11141,7 @@ Provided for backwards compatability."
 				   "-c" gnus-article-x-face-command))))))))
 
 (defun gnus-article-de-quoted-unreadable (&optional force)
-  "Do a naïve translation of a quoted-printable-encoded article.
+  "Do a naive translation of a quoted-printable-encoded article.
 This is in no way, shape or form meant as a replacement for real MIME
 processing, but is simply a stop-gap measure until MIME support is
 written.

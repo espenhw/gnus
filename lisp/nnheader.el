@@ -339,17 +339,19 @@ The buffer is not selected, just returned to the caller."
       buf)))
 
 (defun nnheader-insert-references (references message-id)
-  ;; Fold long references line to follow RFC1036.
-  (mail-position-on-field "References")
-  (let ((begin (gnus-point-at-bol))
-	(fill-column 78)
-	(fill-prefix "\t"))
-    (if references (insert references))
-    (if (and references message-id) (insert " "))
-    (if message-id (insert message-id))
-    ;; The region must end with a newline to fill the region
-    ;; without inserting extra newline.
-    (fill-region-as-paragraph begin (1+ (point)))))
+  (if (and (not references) (not message-id)) 
+      () ; This is illegal, but not all articles have Message-IDs.
+    (mail-position-on-field "References")
+    ;; Fold long references line to follow RFC1036.
+    (let ((begin (gnus-point-at-bol))
+	  (fill-column 78)
+	  (fill-prefix "\t"))
+      (if references (insert references))
+      (if (and references message-id) (insert " "))
+      (if message-id (insert message-id))
+      ;; The region must end with a newline to fill the region
+      ;; without inserting extra newline.
+      (fill-region-as-paragraph begin (1+ (point))))))
 
 (provide 'nnheader)
 

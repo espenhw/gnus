@@ -28,7 +28,6 @@
 (require 'gnus)
 (require 'sendmail)
 (require 'gnus-ems)
-(require 'rmail)
 
 (defvar gnus-organization-file "/usr/lib/news/organization"
   "*Local news organization file.")
@@ -172,7 +171,7 @@ list, then those elements in that list will be checked.")
 (defvar gnus-delete-supersedes-headers
   "^Path:\\|^Date\\|^NNTP-Posting-Host:\\|^Supersedes:"
   "*Header lines matching this regexp will be deleted before posting.
-It's best to delete old Path and Date headers before psoting to avoid
+It's best to delete old Path and Date headers before posting to avoid
 any confusion.")
 
 (defvar gnus-auto-mail-to-author nil
@@ -236,7 +235,8 @@ headers.")
 (defvar gnus-reply-subject nil)
 
 (eval-and-compile
-  (autoload 'gnus-uu-post-news "gnus-uu" nil t))
+  (autoload 'gnus-uu-post-news "gnus-uu" nil t)
+  (autoload 'rmail-output "rmailout"))
 
 
 ;;;
