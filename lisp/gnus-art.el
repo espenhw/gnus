@@ -633,7 +633,7 @@ The following additional specs are available:
 (defcustom gnus-copy-article-ignored-headers nil
   "List of headers to be removed when copying an article.
 Each element is a regular expression."
-  :version "22.0" ;; No Gnus
+  :version "23.0" ;; No Gnus
   :type '(repeat regexp)
   :group 'gnus-article-various)
 

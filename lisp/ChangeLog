@@ -1,3 +1,11 @@
+2005-03-31  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-copy-article-ignored-headers): Update :version.
+
+	* gnus-score.el (gnus-adaptive-pretty-print): Ditto.
+
+	* smime.el (smime-ldap-host-list): Add :version.
+
 2005-03-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-srvr.el (gnus-browse-select-group): Add NUMBER argument and
@@ -291,7 +299,7 @@
 
 	* smime.el: Require smime-ldap.
 	(smime-ldap-host-list): New variable.
-	(smime-cert-by-ldap, smime-cert-by-ldap-1): Likewise.
+	(smime-cert-by-ldap, smime-cert-by-ldap-1): New functions.
 
 	* mml-smime.el (mml-smime-encrypt-query): New function.
 	(mml-smime-encrypt-query): Use it.

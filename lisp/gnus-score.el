@@ -316,7 +316,7 @@ If this variable is nil, exact matching will always be used."
   "If non-nil, adaptive score files fill are pretty printed."
   :group 'gnus-score-files
   :group 'gnus-score-adapt
-  :version "22.0" ;; No Gnus
+  :version "23.0" ;; No Gnus
   :type 'boolean)
 
 (defcustom gnus-score-default-header nil
