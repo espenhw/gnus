@@ -1,3 +1,7 @@
+2003-01-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-mode-map): Move wide-reply command.
+
 2003-01-10  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* deuglify.el (gnus-outlook-deuglify-attrib-verb-regexp): Added
