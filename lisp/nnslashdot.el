@@ -508,6 +508,6 @@
 
 (provide 'nnslashdot)
 
+;; Another test.
+
 ;;; nnslashdot.el ends here
-
-
