@@ -1382,9 +1382,18 @@ buffers. For example:
 ")
 
 ;; Byte-compiler warning.
-;(eval-when-compile (defvar gnus-article-mode-map))
 (eval-when-compile
+  ;; Bind features so that require will believe that gnus-sum has
+  ;; already been loaded (avoids infinite recursion)
   (let ((features (cons 'gnus-sum features)))
+    ;; Several of the declarations in gnus-sum are needed to load the
+    ;; following files. Right now, these definitions have been
+    ;; compiled but not defined (evaluated).  We could either do a
+    ;; eval-and-compile about all of the declarations or evaluate the
+    ;; source file.
+    (if (boundp 'gnus-newsgroup-variables)
+        nil
+      (load "gnus-sum.el" t t t t))
     (require 'gnus)
     (require 'gnus-agent)
     (require 'gnus-art)))
