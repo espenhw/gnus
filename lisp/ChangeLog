@@ -1,5 +1,9 @@
 2003-03-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* pop3.el (pop3-read-response): Use
+	nnheader-accept-process-output.
+	(pop3-retr): Ditto.
+
 	* mm-view.el (mm-text-html-renderer-alist): Add -nolist to Lynx. 
 	(mm-text-html-washer-alist): Ditto.
 
