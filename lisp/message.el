@@ -6082,7 +6082,7 @@ Optional DIGEST will use digest to forward."
 	    message-setup-hook)
 	(message-setup `((To . ,address))))
       ;; Insert our usual headers.
-      (message-generate-headers '(From Date To))
+      (message-generate-headers '(From Date To Message-ID))
       (message-narrow-to-headers)
       ;; Remove X-Draft-From header etc.
       (message-remove-header message-ignored-mail-headers t)
