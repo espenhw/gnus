@@ -7997,19 +7997,19 @@ sub-shell.  If it is a function, this function will be called with the
 face as the argument.  If the @code{gnus-article-x-face-too-ugly} (which
 is a regexp) matches the @code{From} header, the face will not be shown.
 The default action under Emacs is to fork off the @code{display}
-program@footnote{@code{display} is from the ImageMagick package.  For the
-@code{uncompface} and @code{icontopbm} programs look for a package
-like `compface' or `faces-xface' on a GNU/Linux system.}
-to view the face.  Under XEmacs or Emacs 21+ with suitable image
-support, the default action is to display the face before the
-@code{From} header.  (It's nicer if XEmacs has been compiled with X-Face
-support---that will make display somewhat faster.  If there's no native
-X-Face support, Gnus will try to convert the @code{X-Face} header using
-external programs from the @code{pbmplus} package and
-friends.@footnote{On a GNU/Linux system look for packages with names
-like @code{netpbm} or @code{libgr-progs}.})  If you
-want to have this function in the display hook, it should probably come
-last.
+program@footnote{@code{display} is from the ImageMagick package.  For
+the @code{uncompface} and @code{icontopbm} programs look for a package
+like `compface' or `faces-xface' on a GNU/Linux system.}  to view the
+face.  Under XEmacs or Emacs 21+ with suitable image support, the
+default action is to display the face before the @code{From} header.
+(It's nicer if XEmacs has been compiled with X-Face support---that will
+make display somewhat faster.  If there's no native X-Face support, Gnus
+will try to convert the @code{X-Face} header using external programs
+from the @code{pbmplus} package and friends.@footnote{On a GNU/Linux
+system look for packages with names like @code{netpbm} or
+@code{libgr-progs}.})  If you want to have this function in the display
+hook, it should probably come last.  
+(NOTE: @code{x-face} is used in the variable/function names, not @code{xface}).
 
 @item W b
 @kindex W b (Summary)
@@ -19421,7 +19421,7 @@ If you want to display faces from @code{X-Face} headers, you should have
 the @code{xface} support compiled into XEmacs.  Otherwise you must have
 the @code{netpbm} utilities installed, or munge the
 @code{gnus-picons-convert-x-face} variable to use something else.
-
+(NOTE: @code{x-face} is used in the variable name, not @code{xface})
 
 @node Easy Picons
 @subsubsection Easy Picons
@@ -19510,8 +19510,9 @@ Looks up and displays the picons for the author and the author's domain
 in the @code{gnus-picons-display-where} buffer.
 
 @item gnus-picons-article-display-x-face
-@findex gnus-article-display-picons
+@findex gnus-picons-article-display-x-face
 Decodes and displays the X-Face header if present.
+(NOTE: @code{x-face} is used in the function name, not @code{xface})
 
 @end table
 
@@ -19555,11 +19556,13 @@ command to use to convert the @code{X-Face} header to an X bitmap
 (@code{xbm}).  Defaults to @code{(format "@{ echo '/* Width=48,
 Height=48 */'; uncompface; @} | icontopbm | pbmtoxbm > %s"
 gnus-picons-x-face-file-name)}
+(NOTE: @code{x-face} is used in the variable name, not @code{xface})
 
 @item gnus-picons-x-face-file-name
 @vindex gnus-picons-x-face-file-name
 Names a temporary file to store the @code{X-Face} bitmap in.  Defaults
 to @code{(format "/tmp/picon-xface.%s.xbm" (user-login-name))}.
+(NOTE: @code{x-face} is used in the variable name, not @code{xface})
 
 @item gnus-picons-has-modeline-p
 @vindex gnus-picons-has-modeline-p
