@@ -1,3 +1,7 @@
+2000-03-13 17:44:59  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Process/Prefix): Addition.
+
 2000-02-04  Simon Josefsson  <jas@pdc.kth.se>
 
 	* gnus.texi (IMAP): Fix.

@@ -7807,8 +7807,8 @@ encodings.  For instance, some hierarchies discourage using
 quoted-printable header encoding.
 
 This variable is an alist of regexps and permitted unencoded charsets
-for posting.  Each element of the alist has the form @var{(test header
-body-list)}, where:
+for posting.  Each element of the alist has the form @code{(}@var{test
+header body-list}@code{)}, where:
 
 @table @var
 @item 
@@ -9701,7 +9701,7 @@ So here's a new example:
          (signature my-quote-randomizer))
         ((message-news-p)
          (signature my-news-signature))
-        ((header "From.*To" "larsi.*org")
+        (header "From.*To" "larsi.*org"
          (Organization "Somewhere, Inc."))
         ((posting-from-work-p)
          (signature-file "~/.work-signature")
@@ -16405,6 +16405,12 @@ goes to the next unread article after marking, this means that @kbd{3 d}
 will mark the next three unread articles as read, no matter what the
 summary buffer looks like.  Set @code{gnus-summary-goto-unread} to
 @code{nil} for a more straightforward action.
+
+Many commands do not use the process/prefix convention.  All commands
+that do explicitly say so in this manual.  To apply the process/prefix
+convention to commands that do not use it, you can use the @kbd{M-&}
+command.  For instance, to mark all the articles in the group as
+expirable, you could say `M P b M-& E'.
 
 
 @node Interactive
