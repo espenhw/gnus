@@ -1,5 +1,6 @@
 ;;; nnfolder.el --- mail folder access for Gnus
-;; Copyright (C) 1995-2000 Free Software Foundation, Inc.
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000
+;;        Free Software Foundation, Inc.
 
 ;; Author: Scott Byer <byer@mv.us.adobe.com>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>

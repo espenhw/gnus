@@ -1,5 +1,5 @@
 ;;; mailcap.el --- Functions for displaying MIME parts
-;; Copyright (C) 1998-2000 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: William M. Perry <wmperry@aventail.com>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>

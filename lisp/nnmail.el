@@ -1,5 +1,6 @@
 ;;; nnmail.el --- mail support functions for the Gnus mail backends
-;; Copyright (C) 1995-2000 Free Software Foundation, Inc.
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000
+;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news, mail

@@ -1,5 +1,7 @@
 2000-04-23 00:32:32  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus.el: Fix copyright statements.
+
 	* gnus-sum.el (gnus-alter-articles-to-read-function): New
 	variable. 
 	(gnus-articles-to-read): Use it.

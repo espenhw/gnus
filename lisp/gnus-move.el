@@ -1,5 +1,6 @@
 ;;; gnus-move.el --- commands for moving Gnus from one server to another
-;; Copyright (C) 1996-2000 Free Software Foundation, Inc.
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000
+;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news

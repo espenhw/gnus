@@ -1,5 +1,5 @@
 ;;; mm-uu.el -- Return uu stuffs as mm handles
-;; Copyright (c) 1998-2000 Free Software Foundation, Inc.
+;; Copyright (c) 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Keywords: postscript uudecode binhex shar forward news
