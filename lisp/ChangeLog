@@ -1,3 +1,8 @@
+2000-10-27  Dave Love  <fx@gnu.org>
+
+	* nnheader.el (nnheader-translate-file-chars): Only kludge things
+	under Doze with XEmacs.
+
 2000-10-26  Simon Josefsson  <sj@extundo.com>
 
 	* mail-source.el (mail-sources): IMAP predicate is a string.
