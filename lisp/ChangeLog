@@ -1,3 +1,9 @@
+2004-12-01  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-summary-prepare-exit): remove the
+	gnus-summary-limit pop for now, it has problems with ham marks for
+	me
+
 2004-11-29  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-summary-prepare-exit): use gnus-summary-limit
