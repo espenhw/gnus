@@ -397,6 +397,8 @@ If EXAMINE is non-nil the group is selected read-only."
 	    (if (or (nnimap-verify-uidvalidity
 		     group (or server nnimap-current-server))
 		    (zerop (imap-mailbox-get 'exists group))
+		    t ;; for OGnus to see if ignoring uidvalidity
+		      ;; changes has any bad effects.
 		    (yes-or-no-p
 		     (format
 		      "nnimap: Group %s is not uidvalid.  Continue? " group)))

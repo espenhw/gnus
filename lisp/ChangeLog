@@ -1,3 +1,11 @@
+2001-07-06  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-possibly-change-group): Ignore uidvalidity
+	changes. (From nnimaps' point of view, `nnimap-verify-uidvalidity'
+	and `nnimap-group-overview-filename', should handle all
+	change-of-uidvalidity related issues.  But there may be other
+	problems.)
+
 2001-07-05  Colin Walters  <walters@cis.ohio-state.edu>
 
 	* rfc2047.el (rfc2047-encode-message-header): Don't include the
