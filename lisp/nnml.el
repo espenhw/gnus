@@ -157,7 +157,7 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
 		(setq beg (point))
 		(nnheader-insert-head file)
 		(goto-char beg)
-		(if (search-forward "\n\n" nil t)
+		(if (re-search-forward "\n\r?\n" nil t)
 		    (forward-char -1)
 		  (goto-char (point-max))
 		  (insert "\n\n"))
@@ -713,13 +713,15 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
       (unless (zerop (buffer-size))
 	(narrow-to-region
 	 (goto-char (point-min))
-	 (if (search-forward "\n\n" nil t) (1- (point)) (point-max))))
+	 (if (re-search-forward "\n\r?\n" nil t) (1- (point)) (point-max))))
       ;; Fold continuation lines.
       (goto-char (point-min))
       (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
 	(replace-match " " t t))
       ;; Remove any tabs; they are too confusing.
       (subst-char-in-region (point-min) (point-max) ?\t ? )
+      ;; Remove any ^M's; they are too confusing.
+      (subst-char-in-region (point-min) (point-max) ?\r ? )
       (let ((headers (nnheader-parse-head t)))
 	(mail-header-set-chars headers chars)
 	(mail-header-set-number headers number)
@@ -838,7 +840,7 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
 	  (narrow-to-region
 	   (goto-char (point-min))
 	   (progn
-	     (search-forward "\n\n" nil t)
+	     (re-search-forward "\n\r?\n" nil t)
 	     (setq chars (- (point-max) (point)))
 	     (max 1 (1- (point)))))
 	  (unless (zerop (buffer-size))
@@ -973,7 +975,7 @@ Use the nov database for the current group if available."
     (if (null (gnus-gethash file nnml-marks-modtime))
 	t ;; never looked at marks file, assume it has changed
       (not (eq (gnus-gethash file nnml-marks-modtime)
-	     (nth 5 (file-attributes file)))))))
+	       (nth 5 (file-attributes file)))))))
 
 (defun nnml-save-marks (group server)
   (let ((file-name-coding-system nnmail-pathname-coding-system)
