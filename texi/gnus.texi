@@ -26063,9 +26063,8 @@ Gnus will work.
 
 @item
 Try doing an @kbd{M-x gnus-version}.  If you get something that looks
-like @samp{Gnus v5.46; nntp 4.0} you have the right files loaded.  If,
-on the other hand, you get something like @samp{NNTP 3.x} or @samp{nntp
-flee}, you have some old @file{.el} files lying around.  Delete these.
+like @samp{Gnus v5.10.3} you have the right files loaded.  Otherwise
+you have some old @file{.el} files lying around.  Delete these.
 
 @item
 Read the help group (@kbd{G h} in the group buffer) for a

@@ -1,3 +1,7 @@
+2003-11-17  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Troubleshooting): Update.
+
 2003-11-03  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Filtering Spam Using The Spam ELisp Package): added
