@@ -1,4 +1,4 @@
-;;; rfc1522.el --- Functions for encoding and decoding rfc1522 messages
+;;; rfc2047.el --- Functions for encoding and decoding rfc2047 messages
 ;; Copyright (C) 1998 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -28,7 +28,10 @@
 (require 'qp)
 (require 'mm-util)
 
-(defvar rfc1522-header-encoding-alist
+(defvar rfc2047-unencoded-charsets '(ascii latin-iso8859-1)
+  "List of MULE charsets not to encode.")
+
+(defvar rfc2047-header-encoding-alist
   '(("Newsgroups" . nil)
     ("Message-ID" . nil)
     (t . mime))
@@ -39,12 +42,12 @@ header regexps or `t'.
 The values can be:
 
 1) nil, in which case no encoding is done;
-2) `mime', in which case the header will be encoded according to RFC1522;
+2) `mime', in which case the header will be encoded according to RFC2047;
 3) a charset, in which case it will be encoded as that charse;
 4) `default', in which case the field will be encoded as the rest
    of the article.")
 
-(defvar rfc1522-charset-encoding-alist
+(defvar rfc2047-charset-encoding-alist
   '((us-ascii . nil)
     (iso-8859-1 . Q)
     (iso-8859-2 . Q)
@@ -63,25 +66,25 @@ The values can be:
     (euc-kr . B)
     (iso-2022-jp-2 . B)
     (iso-2022-int-1 . B))
-  "Alist of MIME charsets to RFC1522 encodings.
+  "Alist of MIME charsets to RFC2047 encodings.
 Valid encodings are nil, `Q' and `B'.")
 
-(defvar rfc1522-encoding-function-alist
-  '((Q . rfc1522-q-encode-region)
+(defvar rfc2047-encoding-function-alist
+  '((Q . rfc2047-q-encode-region)
     (B . base64-encode-region)
     (nil . ignore))
-  "Alist of RFC1522 encodings to encoding functions.")
+  "Alist of RFC2047 encodings to encoding functions.")
 
-(defvar rfc1522-q-encoding-alist
+(defvar rfc2047-q-encoding-alist
   '(("\\(From\\|Cc\\|To\\|Bcc\||Reply-To\\):" . "[^-A-Za-z0-9!*+/=_]")
     ("." . "[\000-\007\013\015-\037\200-\377=_?]"))
   "Alist of header regexps and valid Q characters.")
 
 ;;;
-;;; Functions for encoding RFC1522 messages
+;;; Functions for encoding RFC2047 messages
 ;;;
 
-(defun rfc1522-narrow-to-field ()
+(defun rfc2047-narrow-to-field ()
   "Narrow the buffer to the header on the current line."
   (beginning-of-line)
   (narrow-to-region
@@ -96,18 +99,18 @@ Valid encodings are nil, `Q' and `B'.")
   (goto-char (point-min)))
 
 ;;;###autoload
-(defun rfc1522-encode-message-header ()
-  "Encode the message header according to `rfc1522-header-encoding-alist'.
+(defun rfc2047-encode-message-header ()
+  "Encode the message header according to `rfc2047-header-encoding-alist'.
 Should be called narrowed to the head of the message."
   (interactive "*")
   (when (featurep 'mule)
     (save-excursion
-      (let ((alist rfc1522-header-encoding-alist)
+      (let ((alist rfc2047-header-encoding-alist)
 	    elem method)
 	(while (not (eobp))
 	  (save-restriction
-	    (rfc1522-narrow-to-field)
-	    (when (find-non-ascii-charset-region (point-min) (point-max))
+	    (rfc2047-narrow-to-field)
+	    (when (rfc2047-encodable-p)
 	      ;; We found something that may perhaps be encoded.
 	      (while (setq elem (pop alist))
 		(when (or (and (stringp (car elem))
@@ -118,12 +121,22 @@ Should be called narrowed to the head of the message."
 	      (when method
 		(cond
 		 ((eq method 'mime)
-		  (rfc1522-encode-region (point-min) (point-max)))
+		  (rfc2047-encode-region (point-min) (point-max)))
 		 ;; Hm.
 		 (t))))
 	    (goto-char (point-max))))))))
 
-(defun rfc1522-encode-region (b e)
+(defun rfc2047-encodable-p ()
+  "Say whether the current (narrowed) buffer contains characters that need encoding."
+  (let ((charsets (find-charset-region (point-min) (point-max)))
+	(cs rfc2047-unencoded-charsets)
+	found)
+    (while charsets
+      (unless (memq (pop charsets) cs)
+	(setq found t)))
+    found))
+
+(defun rfc2047-encode-region (b e)
   "Encode all encodable words in REGION."
   (let (prev c start qstart qprev qend)
     (save-excursion
@@ -144,28 +157,28 @@ Should be called narrowed to the head of the message."
 		      qprev c)
 		(setq prev c))
 	       (t
-		;(rfc1522-encode start (setq start (point)) prev)
+		;(rfc2047-encode start (setq start (point)) prev)
 		(setq prev c))))
 	    (forward-char 1)))
 	(when (and (not prev) qstart)
-	  (rfc1522-encode qstart qend qprev)
+	  (rfc2047-encode qstart qend qprev)
 	  (setq qstart nil)))
       (when qstart
-	(rfc1522-encode qstart qend qprev)
+	(rfc2047-encode qstart qend qprev)
 	(setq qstart nil)))))
 
-(defun rfc1522-encode-string (string)
+(defun rfc2047-encode-string (string)
   "Encode words in STRING."
   (with-temp-buffer
     (insert string)
-    (rfc1522-encode-region (point-min) (point-max))
+    (rfc2047-encode-region (point-min) (point-max))
     (buffer-string)))
 
-(defun rfc1522-encode (b e charset)
+(defun rfc2047-encode (b e charset)
   "Encode the word in the region with CHARSET."
   (let* ((mime-charset (mm-mule-charset-to-mime-charset charset))
 	 (encoding (cdr (assq mime-charset
-			      rfc1522-charset-encoding-alist)))
+			      rfc2047-charset-encoding-alist)))
 	 (start (concat
 		 "=?" (downcase (symbol-name mime-charset)) "?"
 		 (downcase (symbol-name encoding)) "?")))
@@ -175,7 +188,7 @@ Should be called narrowed to the head of the message."
        (prog1
 	   (mm-encode-coding-string (buffer-string) mime-charset)
 	 (delete-region (point-min) (point-max))))
-      (funcall (cdr (assq encoding rfc1522-encoding-function-alist))
+      (funcall (cdr (assq encoding rfc2047-encoding-function-alist))
 	       (point-min) (point-max))
       (goto-char (point-min))
       (insert start)
@@ -190,12 +203,12 @@ Should be called narrowed to the head of the message."
 	(insert "?=\n " start)
 	(end-of-line)))))
 
-(defun rfc1522-q-encode-region (b e)
+(defun rfc2047-q-encode-region (b e)
   "Encode the header contained in REGION with the Q encoding."
   (save-excursion
     (save-restriction
       (narrow-to-region (goto-char b) e)
-      (let ((alist rfc1522-q-encoding-alist))
+      (let ((alist rfc2047-q-encoding-alist))
 	(while alist
 	  (when (looking-at (caar alist))
 	    (quoted-printable-encode-region b e nil (cdar alist))
@@ -203,14 +216,14 @@ Should be called narrowed to the head of the message."
 	  (pop alist))))))
 
 ;;;
-;;; Functions for decoding RFC1522 messages
+;;; Functions for decoding RFC2047 messages
 ;;;
 
-(defvar rfc1522-encoded-word-regexp
+(defvar rfc2047-encoded-word-regexp
   "=\\?\\([^][\000-\040()<>@,\;:\\\"/?.=]+\\)\\?\\(B\\|Q\\)\\?\\([!->@-~]+\\)\\?=")
 
 ;;;###autoload
-(defun rfc1522-decode-region (start end)
+(defun rfc2047-decode-region (start end)
   "Decode MIME-encoded words in region between START and END."
   (interactive "r")
   (save-excursion
@@ -219,43 +232,43 @@ Should be called narrowed to the head of the message."
       (goto-char (point-min))
       ;; Remove whitespace between encoded words.
       (while (re-search-forward
-	      (concat "\\(" rfc1522-encoded-word-regexp "\\)"
+	      (concat "\\(" rfc2047-encoded-word-regexp "\\)"
 		      "\\(\n?[ \t]\\)+"
-		      "\\(" rfc1522-encoded-word-regexp "\\)")
+		      "\\(" rfc2047-encoded-word-regexp "\\)")
 	      nil t)
 	(delete-region (goto-char (match-end 1)) (match-beginning 6)))
       ;; Decode the encoded words.
       (goto-char (point-min))
-      (while (re-search-forward rfc1522-encoded-word-regexp nil t)
-	(insert (rfc1522-parse-and-decode
+      (while (re-search-forward rfc2047-encoded-word-regexp nil t)
+	(insert (rfc2047-parse-and-decode
 		 (prog1
 		     (match-string 0)
 		   (delete-region (match-beginning 0) (match-end 0)))))))))
 
 ;;;###autoload
-(defun rfc1522-decode-string (string)
+(defun rfc2047-decode-string (string)
  "Decode the quoted-printable-encoded STRING and return the results."
  (with-temp-buffer
    (insert string)
    (inline
-     (rfc1522-decode-region (point-min) (point-max)))
+     (rfc2047-decode-region (point-min) (point-max)))
    (buffer-string)))
 
-(defun rfc1522-parse-and-decode (word)
+(defun rfc2047-parse-and-decode (word)
   "Decode WORD and return it if it is an encoded word.
 Return WORD if not."
-  (if (not (string-match rfc1522-encoded-word-regexp word))
+  (if (not (string-match rfc2047-encoded-word-regexp word))
       word
     (or
      (condition-case nil
-	 (rfc1522-decode
+	 (rfc2047-decode
 	  (match-string 1 word)
 	  (upcase (match-string 2 word))
 	  (match-string 3 word))
        (error word))
      word)))
 
-(defun rfc1522-decode (charset encoding string)
+(defun rfc2047-decode (charset encoding string)
   "Decode STRING as an encoded text.
 Valid ENCODINGs are \"B\" and \"Q\".
 If your Emacs implementation can't decode CHARSET, it returns nil."
@@ -271,6 +284,6 @@ If your Emacs implementation can't decode CHARSET, it returns nil."
 	(t (error "Invalid encoding: %s" encoding)))
        cs))))
 
-(provide 'rfc1522)
+(provide 'rfc2047)
 
-;;; rfc1522.el ends here
+;;; rfc2047.el ends here

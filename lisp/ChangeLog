@@ -1,3 +1,34 @@
+Mon Aug 31 12:43:46 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.10 is released.
+
+1998-08-31 11:45:13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnfolder.el (nnfolder-delete-mail): Narrow to mail and allow
+	hook to be run.
+
+1998-08-30 17:59:07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* rfc2047.el (rfc2047-encodable-p): Use find-charset-region.
+
+	* mm-util.el (mm-charsets-in-region): Removed.
+
+	* rfc2047.el: Renamed file.
+
+	* gnus-msg.el (gnus-copy-article-buffer): Multibyte.
+
+	* message.el (message-mode): Set multibyte.
+
+	* mm-util.el (mm-charsets-in-region): Copied here.
+
+	* gnus-util.el: Removed gnus-truncate-string.
+
+	* gnus-art.el (gnus-article-decode-mime-words): Use 1522.
+
+	* rfc1522.el (rfc1522-unencoded-charsets): New variable.
+	(rfc1522-encodable-p): New function.
+	(rfc1522-encode-message-header): Use it.
+
 Sun Aug 30 17:46:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.9 is released.

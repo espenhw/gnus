@@ -75,9 +75,6 @@
 	 (set symbol nil))
      symbol))
 
-(defun gnus-truncate-string (str width)
-  (substring str 0 width))
-
 ;; Added by Geoffrey T. Dairiki <dairiki@u.washington.edu>.  A safe way
 ;; to limit the length of a string.  This function is necessary since
 ;; `(substr "abc" 0 30)' pukes with "Args out of range".

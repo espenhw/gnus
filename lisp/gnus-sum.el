@@ -3057,8 +3057,8 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 	  (setq header
 		(make-full-mail-header
 		 number			; number
-		 (rfc1522-decode-string (gnus-nov-field)) ; subject
-		 (rfc1522-decode-string (gnus-nov-field)) ; from
+		 (rfc2047-decode-string (gnus-nov-field)) ; subject
+		 (rfc2047-decode-string (gnus-nov-field)) ; from
 		 (gnus-nov-field)	; date
 		 (or (gnus-nov-field)
 		     (nnheader-generate-fake-message-id)) ; id
@@ -4200,7 +4200,7 @@ If WHERE is `summary', the summary mode line format will be used."
 	  ;; We might have to chop a bit of the string off...
 	  (when (> (length mode-string) max-len)
 	    (setq mode-string
-		  (concat (gnus-truncate-string mode-string (- max-len 3))
+		  (concat (truncate-string mode-string (- max-len 3))
 			  "...")))
 	  ;; Pad the mode string a bit.
 	  (setq mode-string (format (format "%%-%ds" max-len) mode-string))))
@@ -4400,13 +4400,13 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (progn
 	      (goto-char p)
 	      (if (search-forward "\nsubject: " nil t)
-		  (rfc1522-decode-string (nnheader-header-value))
+		  (rfc2047-decode-string (nnheader-header-value))
 		"(none)"))
 	    ;; From.
 	    (progn
 	      (goto-char p)
 	      (if (search-forward "\nfrom: " nil t)
-		  (rfc1522-decode-string (nnheader-header-value))
+		  (rfc2047-decode-string (nnheader-header-value))
 		"(nobody)"))
 	    ;; Date.
 	    (progn

@@ -31,7 +31,8 @@
 		     w3-form-encode-xwfu gnus-mule-get-coding-system
 		     decode-coding-string mail-aliases-setup
 		     mm-copy-tree url-view-url w3-prepare-buffer
-		     set-buffer-multibyte))
+		     set-buffer-multibyte
+		     find-non-ascii-charset-region char-charset))
       (maybe-bind '(global-face-data
 		    mark-active transient-mark-mode mouse-selection-click-count
 		    mouse-selection-click-count-buffer buffer-display-table

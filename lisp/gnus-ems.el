@@ -150,8 +150,6 @@
     ;; `emacs-version'. In this case, implementation for XEmacs/mule
     ;; may be able to share between XEmacs and XEmacs/mule.
 
-    (defalias 'gnus-truncate-string 'truncate-string)
-
     (defvar gnus-summary-display-table nil
       "Display table used in summary mode buffers.")
     (fset 'gnus-cite-add-face 'gnus-mule-cite-add-face)

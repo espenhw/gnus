@@ -952,7 +952,7 @@ characters to translate to."
     (set-buffer gnus-article-buffer)
     (let ((inhibit-point-motion-hooks t)
 	  buffer-read-only)
-      (mm-decode-words-region (point-min) (point-max)))))
+      (rfc2047-decode-region (point-min) (point-max)))))
 
 (defalias 'gnus-decode-rfc1522 'article-decode-rfc1522)
 (defalias 'gnus-article-decode-rfc1522 'article-decode-rfc1522)
@@ -962,7 +962,7 @@ characters to translate to."
 	(buffer-read-only nil))
     (save-restriction
       (message-narrow-to-head)
-      (rfc1522-decode-region (point-min) (point-max)))))
+      (rfc2047-decode-region (point-min) (point-max)))))
 
 (defun article-de-quoted-unreadable (&optional force)
   "Translate a quoted-printable-encoded article.

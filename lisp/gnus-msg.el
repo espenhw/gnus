@@ -354,6 +354,10 @@ header line with the old Message-ID."
   ;; this buffer should be passed to all mail/news reply/post routines.
   (setq gnus-article-copy (gnus-get-buffer-create " *gnus article copy*"))
   (buffer-disable-undo gnus-article-copy)
+  (save-excursion
+    (set-buffer gnus-article-copy)
+    (when (fboundp 'set-buffer-multibyte)
+      (set-buffer-multibyte t)))
   (let ((article-buffer (or article-buffer gnus-article-buffer))
 	end beg)
     (if (not (and (get-buffer article-buffer)
