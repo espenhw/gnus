@@ -8107,7 +8107,7 @@ of what's specified by the `gnus-refer-thread-limit' variable."
   (interactive "sMessage-ID: ")
   (when (and (stringp message-id)
 	     (not (zerop (length message-id))))
-    (setq message-id (replace-regexp-in-string " " "" message-id))
+    (setq message-id (gnus-replace-in-string message-id " " ""))
     ;; Construct the correct Message-ID if necessary.
     ;; Suggested by tale@pawl.rpi.edu.
     (unless (string-match "^<" message-id)
