@@ -1,3 +1,8 @@
+2003-07-28  Vasily Korytov  <deskpot@myrealbox.com>
+
+	* mail-source.el (mail-source-keyword-map): List "cur" before
+	"new" for maildirs.
+
 2003-10-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-enter-digest-group): ogroup, nor
