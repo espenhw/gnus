@@ -22172,6 +22172,11 @@ To enable displaying picons, simply make sure that
 @code{gnus-picon-databases} points to the directory containing the
 Picons databases.
 
+@vindex gnus-picon-style
+The variable @code{gnus-picon-style} controls how picons are displayed.
+If @code{inline}, the textual representation is replaced.  If
+@code{right}, picons are added right to the textual representation.
+
 The following variables offer control over where things are located.
 
 @table @code

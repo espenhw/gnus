@@ -1,7 +1,11 @@
 2005-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-news.texi: Mention change new behavior of
+	`gnus-decay-scores'.  Added some references.
+
 	* gnus.texi (Score Decays): `gnus-decay-scores' can be a regexp
 	matching score files as well.
+	(Picons): Describe `gnus-picon-style'.
 
 2005-01-02  Romain Francoise  <romain@orebokech.com>
 
