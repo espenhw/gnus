@@ -462,7 +462,7 @@ by nnmaildir-request-article.")
 	  (setq nlist (cons (cons num article) nlist))
 	(setq insert-nlist t
 	      nlist-cdr (cdr nlist))
-	(while (< num (caar nlist-cdr))
+	(while (and nlist-cdr (< num (caar nlist-cdr)))
 	  (setq nlist nlist-cdr
 		nlist-cdr (cdr nlist))))
       (let ((inhibit-quit t))

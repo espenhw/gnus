@@ -1,3 +1,9 @@
+2003-01-08  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir--grp-add-art): Fix wrong-type-argument
+	bug when the (n+1)th article to be added to a group has a smaller
+	number than the n articles already added.
+
 2003-01-08  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.el (message-mode-field-menu): Use backquote.
@@ -30,7 +36,7 @@
 	* gnus-spec.el (gnus-parse-complex-format): %~ => ~*.
 
 	* gnus-agent.el (gnus-agent-fetch-selected-article): Use
-	gnus-summary-update-article-line. 
+	gnus-summary-update-article-line.
 
 2003-01-08  Simon Josefsson  <jas@extundo.com>
 
@@ -95,11 +101,11 @@
 	* gnus-msg.el (gnus-debug): Use ignore-errors.
 
 	* gnus-agent.el (gnus-agent-fetch-selected-article): Use
-	`gnus-summary-update-line'. 
+	`gnus-summary-update-line'.
 
 2003-01-08  Simon Josefsson  <jas@extundo.com>
 
-	* gnus-art.el (gnus-unbuttonized-mime-types) 
+	* gnus-art.el (gnus-unbuttonized-mime-types)
 	(gnus-buttonized-mime-types): Doc fix.
 
 2003-01-08  Jesper Harder  <harder@ifa.au.dk>
@@ -137,16 +143,16 @@
 	* nntp.el (nntp-with-open-group): The quit signal handler must
 	propagate the quit signal to the next outer handler so that the
 	caller knows that the request aborted abnormally.
-	
+
 2003-01-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-check-ifile, spam-ifile-register-with-ifile) 
-	(spam-ifile-register-spam-routine) 
+	* spam.el (spam-check-ifile, spam-ifile-register-with-ifile)
+	(spam-ifile-register-spam-routine)
 	(spam-ifile-register-ham-routine): added ifile functionality that
 	does not use ifile-gnus.el to classify and register articles
 	(spam-get-article-as-string): convenience function
 	(spam-summary-prepare-exit): added ifile spam and ham registration
-	(spam-ifile-all-categories, spam-ifile-spam-category) 
+	(spam-ifile-all-categories, spam-ifile-spam-category)
 	(spam-ifile-path, spam-ifile): added customization options
 
 	* gnus.el (gnus-group-ham-exit-processor-ifile): added ifile ham
@@ -157,7 +163,7 @@
 2003-01-07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-score.el (gnus-score-followup): Also score immediate
-	followups. 
+	followups.
 
 2003-01-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -190,7 +196,7 @@
 2002-01-06  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-fetch-group): Modified to permit execution
-	in either the group or summary buffer.  
+	in either the group or summary buffer.
 	New command "JS", in summary buffer, will fetch articles per the
 	group's category, predicate, and processable flags.
 	(gnus-agent-summary-fetch-series): Rewritten to call
@@ -242,7 +248,7 @@
 	nntp-with-open-group forms in all, but one, occurrance.
 	(nntp-accept-process-output): Bug fix. Detect when called with
 	null process.
-	
+
 2003-01-06  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-util.el (mm-find-mime-charset-region): Don't do Latin-9 hack
@@ -281,7 +287,7 @@
 
 2003-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus-msg.el (gnus-inews-make-draft): Quote article-reply. 
+	* gnus-msg.el (gnus-inews-make-draft): Quote article-reply.
 
 	* gnus-group.el (gnus-number-of-unseen-articles-in-group):
 	Protect against unactive groups.
@@ -295,7 +301,7 @@
 	(gnus-group-line-format-alist): ?U.
 	(gnus-number-of-unseen-articles-in-group): New function.
 
-	* nntp.el (nntp-accept-process-output): Use a 0.1 second timeout. 
+	* nntp.el (nntp-accept-process-output): Use a 0.1 second timeout.
 
 	* gnus.el (gnus-version-number): Bump version number.
 
@@ -320,18 +326,18 @@
 
 2003-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus.el (gnus-variable-list): Write gnus-format-specs last. 
+	* gnus.el (gnus-variable-list): Write gnus-format-specs last.
 
 	* gnus-sum.el (gnus-summary-goto-subjects): Fix typo.
 
 2003-01-04  Kevin Ryde  <user42@zip.com.au>
 
 	* gnus-art.el (gnus-mime-jka-compr-maybe-uncompress): New
-	function. 
+	function.
 
 2003-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus-sum.el (gnus-summary-exit): Bind gnus-group-is-exiting-p. 
+	* gnus-sum.el (gnus-summary-exit): Bind gnus-group-is-exiting-p.
 	(gnus-summary-read-group-1): Update group line.
 	(gnus-summary-exit-no-update): Update group on exit.
 
@@ -364,12 +370,12 @@
 2003-01-02  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-group-spam-contents-p, spam-group-ham-contents-p)
-	(spam-group-processor-p, spam-group-processor-bogofilter-p) 
-	(spam-group-processor-ifile-p, spam-group-processor-blacklist-p) 
-	(spam-group-processor-whitelist-p, spam-group-processor-BBDB-p) 
-	(spam-mark-spam-as-expired-and-move-routine) 
-	(spam-generic-register-routine, spam-BBDB-register-routine) 
-	(spam-ifile-register-routine, spam-blacklist-register-routine) 
+	(spam-group-processor-p, spam-group-processor-bogofilter-p)
+	(spam-group-processor-ifile-p, spam-group-processor-blacklist-p)
+	(spam-group-processor-whitelist-p, spam-group-processor-BBDB-p)
+	(spam-mark-spam-as-expired-and-move-routine)
+	(spam-generic-register-routine, spam-BBDB-register-routine)
+	(spam-ifile-register-routine, spam-blacklist-register-routine)
 	(spam-whitelist-register-routine): new functions
 	(spam-summary-prepare-exit): added summary exit processing (expire
 	or move) of spam-marked articles for spam groups; added slots for
@@ -381,7 +387,7 @@
 	(pop3-read-response): Ditto.
 
 	* gnus-msg.el (gnus-setup-message): Get the evaliation order
-	right. 
+	right.
 	(gnus-inews-make-draft): New function.
 	(gnus-setup-message): Use it.
 
