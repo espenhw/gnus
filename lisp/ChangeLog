@@ -1,3 +1,9 @@
+2001-05-27  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-salt.el (gnus-tree-highlight-node): Bind `default-high' and
+	`default-low' when evaluating `gnus-summary-highlight'.
+	From Raja R Harinath <harinath@cs.umn.edu>.
+
 2001-05-27  Simon Josefsson  <simon@josefsson.org>
 
 	* message.el (message-yank-cited-prefix): New variable.

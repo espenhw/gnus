@@ -666,6 +666,8 @@ Two predefined functions are available:
       (let* ((score (or (cdr (assq article gnus-newsgroup-scored))
 			gnus-summary-default-score 0))
 	     (default gnus-summary-default-score)
+	     (default-high gnus-summary-default-high-score)
+	     (default-low gnus-summary-default-low-score)
 	     (mark (or (gnus-summary-article-mark article) gnus-unread-mark)))
 	;; Eval the cars of the lists until we find a match.
 	(while (and list
