@@ -10897,6 +10897,7 @@ If REVERSE, save parts that do not match TYPE."
 	(and
 	 (boundp 'gnus-agent-article-alist)
 	 gnus-agent-article-alist
+	 (gnus-agent-group-covered-p gnus-newsgroup-name)
 	 ;; Optimized for when gnus-summary-highlight-line is
 	 ;; called multiple times for articles in ascending
 	 ;; order (i.e. initial generation of summary buffer).
@@ -10915,7 +10916,8 @@ If REVERSE, save parts that do not match TYPE."
 			    article)
 			 (setq n (cdr gnus-summary-highlight-line-downloaded-cached)))
 	       (setq gnus-summary-highlight-line-downloaded-cached n)))
-	   (and (eq (caar gnus-summary-highlight-line-downloaded-cached) article)
+	   (and (eq (caar gnus-summary-highlight-line-downloaded-cached)
+		    article)
 		(cdar gnus-summary-highlight-line-downloaded-cached))))))
     (let ((face (funcall (gnus-summary-highlight-line-0))))
       (unless (eq face (get-text-property beg 'face))

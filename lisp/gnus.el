@@ -2006,7 +2006,7 @@ such as a mark that says whether an article is stored in the cache
 			gnus-newsrc-alist gnus-server-alist
 			gnus-killed-list gnus-zombie-list
 			gnus-topic-topology gnus-topic-alist
-			gnus-format-specs)
+			gnus-format-specs gnus-agent-covered-methods)
   "Gnus variables saved in the quick startup file.")
 
 (defvar gnus-newsrc-alist nil

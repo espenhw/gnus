@@ -41,9 +41,12 @@
   (autoload 'number-at-point "thingatpt"))
 
 (defface gnus-agent-downloaded-article-face
-  '((((class color) (background light)) (:foreground "Orange" :bold t))
-    (((class color) (background dark)) (:foreground "Yellow" :bold t))
-    (t (:inverse-video t :bold t)))
+  '((((class color)
+      (background light))
+     (:foreground "darkslategray" :bold nil))
+    (((class color) (background dark))
+     (:foreground "LightGray" :bold nil))
+    (t (:inverse-video t :bold nil)))
   "Face used for displaying downloaded articles"
   :group 'gnus-agent)
 
@@ -1089,14 +1092,12 @@ and that there are no duplicates."
             (while (and (zerop (forward-line 1))
                         (not (eobp)))
               (let ((cur (number-at-point)))
-                (cond ((= cur prev-num)
-                       (gnus-message 10
-                                     "Duplicate overview line for %d" cur)
-                       (debug nil (format "Duplicate overview line for %d" cur))
-                       (delete-region (point) (progn (forward-line 1) (point))))
-                      ((< cur prev-num)
-                       (gnus-message 10 "Overview buffer not sorted!")
-                       (debug nil "Overview buffer not sorted!"))))
+                (cond
+		 ((= cur prev-num)
+		  (gnus-message 10 "Duplicate overview line for %d" cur)
+		  (delete-region (point) (progn (forward-line 1) (point))))
+		 ((< cur prev-num)
+		  (gnus-message 10 "Overview buffer not sorted!"))))
               (setq prev-num (number-at-point)))))))))
 
 
@@ -2462,6 +2463,10 @@ If CLEAN, don't read existing active files."
     (message "Turn %s:%s from %s to %s." (car method) (cadr method)
 	     (if (eq status 'offline) 'offline 'online)
 	     (if (eq status 'offline) 'online 'offline))))
+
+(defun gnus-agent-group-covered-p (group)
+  (member (gnus-group-method group)
+	  gnus-agent-covered-methods))
 
 (provide 'gnus-agent)
 

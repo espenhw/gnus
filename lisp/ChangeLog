@@ -1,3 +1,17 @@
+2002-12-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-variable-list): Add gnus-agent-covered-methods.
+
+	* gnus-agent.el (gnus-agent-check-overview-buffer): Remove debug
+	calls. 
+
+	* gnus-sum.el (gnus-summary-highlight-line): Don't set the
+	downloaded variable if we're in an uncovered group.
+
+	* gnus-agent.el (gnus-agent-downloaded-article-face): Change the
+	font to soemthing less noticeable.
+	(gnus-agent-group-covered-p): New function.
+
 2002-12-09  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-braid-nov): Remove corrupted lines.
