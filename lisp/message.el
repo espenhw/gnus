@@ -5022,6 +5022,8 @@ Optional DIGEST will use digest to forward."
 (defun message-forward-rmail-make-body (forward-buffer)
   (save-window-excursion
     (set-buffer forward-buffer)
+    ;; Rmail doesn't have rmail-msg-restore-non-pruned-header in Emacs
+    ;; 20.  FIXIT, or we drop support for rmail in Emacs 20.
     (if (rmail-msg-is-pruned)
 	(rmail-msg-restore-non-pruned-header)))
   (message-forward-make-body forward-buffer))

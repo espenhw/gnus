@@ -577,6 +577,10 @@ noticing asynchronous data.")
 	      (command (if nntp-server-list-active-group
 			   "LIST ACTIVE" "GROUP")))
 	  (while groups
+	    ;; Timeout may have killed the buffer.
+	    (unless (gnus-buffer-live-p buf)
+	      (nnheader-report 'nntp "Connection to %s is closed." server)
+	      (throw 'done nil))
 	    ;; Send the command to the server.
 	    (nntp-send-command nil command (pop groups))
 	    (incf count)
