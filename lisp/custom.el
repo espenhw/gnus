@@ -1477,7 +1477,7 @@ custom-face-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)"
 		    (intern (match-string 6 name)))
 	    value))))
 
-(defun custom-face-lookup (fg bg stipple bold italic underline)
+(defun custom-face-lookup (&optional fg bg stipple bold italic underline)
   "Lookup or create a face with specified attributes."
   (let ((name (intern (format "custom-face-%s-%s-%s-%S-%S-%S"
 			      (or fg "default")

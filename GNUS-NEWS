@@ -141,7 +141,7 @@ buffer to allow easier treatment.
 *** gnus-uu can view decoded files asynchronously while fetching
 articles. 
 
-    (setq gnus-uu-grabbed-file-functions '`gnus-uu-grab-view)
+    (setq gnus-uu-grabbed-file-functions 'gnus-uu-grab-view)
 
 *** Filling in the article buffer now works properly on cited text. 
 

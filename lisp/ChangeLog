@@ -1,4 +1,30 @@
+Tue Jun  4 18:26:24 1996  Christoph Wedler  <wedler@fmi.uni-passau.de>
+
+	* message-xms.el (message-xmas-find-glyph-directory): Wouldn't use
+	PACKAGE-xmas-glyph-directory even if it is non-nil and a
+	directory.
+	(message-toolbar): Use special ispell function for messages.  Jump
+	to info pages for message composition.
+
+Tue Jun  4 17:12:06 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* message.el (rmail): Require.
+
+Tue Jun  4 18:11:46 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-cus.el (()): Bold group faces.
+
+Tue Jun  4 15:10:20 1996  Lars Magne Ingebrigtsen  <larsi@trym.ifi.uio.no>
+
+	* gnus-cus.el (()): Unbold group faces.
+
+	* custom.el (custom-face-lookup): Make all parameters optional.
+
+	* gnus.el (gnus-thread-total-score): Protect against nil input.
+
 Tue Jun  4 11:11:13 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.6 is released.
 
 	* gnus.el (gnus-summary-make-local-variables): Set local variables
 	correctly.

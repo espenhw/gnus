@@ -1728,7 +1728,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.6"
+(defconst gnus-version-number "5.2.7"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -2096,7 +2096,7 @@ Thank you for your help in stamping out bugs.
       gnus-grouplens-mode)
      ("gnus-vm" gnus-vm-mail-setup)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
-      gnus-summary-save-article-vm gnus-yank-article))))
+      gnus-summary-save-article-vm))))
 
 
 
@@ -8372,12 +8372,15 @@ Unscored articles will be counted as having a score of zero."
 
 (defun gnus-thread-total-score (thread)
   ;;  This function find the total score of THREAD.
-  (if (consp thread)
-      (if (stringp (car thread))
-	  (apply gnus-thread-score-function 0
-		 (mapcar 'gnus-thread-total-score-1 (cdr thread)))
-	(gnus-thread-total-score-1 thread))
-    (gnus-thread-total-score-1 (list thread))))
+  (cond ((null thread)
+	 0)
+	((consp thread)
+	 (if (stringp (car thread))
+	     (apply gnus-thread-score-function 0
+		    (mapcar 'gnus-thread-total-score-1 (cdr thread)))
+	   (gnus-thread-total-score-1 thread)))
+	(t
+	 (gnus-thread-total-score-1 (list thread)))))
 
 (defun gnus-thread-total-score-1 (root)
   ;; This function find the total score of the thread below ROOT.
@@ -14414,7 +14417,7 @@ how much time has lapsed since DATE."
 	      (prog1
 		  (concat (if prev ", " "") (int-to-string
 					     (floor num))
-			  " " (symbol-name (car unit))
+			  " " (symbol-name (car unit)) 
 			  (if (> num 1) "s" ""))
 		(setq prev t))))
 	  gnus-article-time-units "")

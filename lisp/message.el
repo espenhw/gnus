@@ -32,6 +32,7 @@
 (eval-when-compile 
   (require 'cl))
 (require 'mailheader)
+(require 'rmail)
 (require 'nnheader)
 (require 'timezone)
 (require 'easymenu)
@@ -2170,12 +2171,12 @@ Headers already prepared in the buffer are not modified."
   (if message-generate-new-buffers
       (generate-new-buffer-name
        (concat "*" type
-	       (if (or to group)
+	       (if to
 		   (concat " to "
 			   (or (car (mail-extract-address-components to))
-			       to)
-			   (if group (concat " on " group) ""))
+			       to) "")
 		 "")
+	       (if group (concat " on " group) "")
 	       "*"))
     (format "*%s message*" type)))
 

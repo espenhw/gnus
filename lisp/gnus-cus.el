@@ -594,31 +594,31 @@ ticked: The number of ticked articles.")
 	       ((= unread 0) . italic)))
 	    ((eq gnus-background-mode 'dark)
 	     `(((> unread 200) .
-		,(custom-face-lookup "Red" nil nil t nil nil))
+		,(custom-face-lookup "Red" nil nil t))
 	       ((and (< level 3) (zerop unread)) . 
-		,(custom-face-lookup "SeaGreen" nil nil t nil nil))
+		,(custom-face-lookup "SeaGreen" nil nil t))
 	       ((< level 3) .
-		,(custom-face-lookup "SpringGreen" nil nil t nil nil))
+		,(custom-face-lookup "SpringGreen" nil nil t))
 	       ((zerop unread) . 
-		,(custom-face-lookup "SteelBlue" nil nil t nil nil))
-	       (t . ,(custom-face-lookup "SkyBlue" nil nil t nil nil))))
+		,(custom-face-lookup "SteelBlue" nil nil t))
+	       (t . ,(custom-face-lookup "SkyBlue" nil nil t))))
 	    (t
 	     `(((and (not mailp) (<= level 3)) .
-		,(custom-face-lookup "ForestGreen" nil nil t nil nil))
+		,(custom-face-lookup "ForestGreen" nil nil t))
 	       ((and (not mailp) (eq level 4)) .
-		,(custom-face-lookup "DarkGreen" nil nil t nil nil))
+		,(custom-face-lookup "DarkGreen" nil nil t))
 	       ((and (not mailp) (eq level 5)) .
-		,(custom-face-lookup "Red" nil nil t nil nil))
+		,(custom-face-lookup "Red" nil nil t))
 	       ((and mailp (eq level 1)) .
-		,(custom-face-lookup "DeepPink3" nil nil t nil nil))
+		,(custom-face-lookup "DeepPink3" nil nil t))
 	       ((and mailp (eq level 2)) .
-		,(custom-face-lookup "HotPink3" nil nil t nil nil))
+		,(custom-face-lookup "HotPink3" nil nil t))
 	       ((and mailp (eq level 3)) .
-		,(custom-face-lookup "dark magenta" nil nil t nil nil))
+		,(custom-face-lookup "dark magenta" nil nil t))
 	       ((and mailp (eq level 4)) .
-		,(custom-face-lookup "DeepPink4" nil nil t nil nil))
+		,(custom-face-lookup "DeepPink4" nil nil t))
 	       ((and mailp (> level 4)) .
-		,(custom-face-lookup "DarkOrchid4" nil nil t nil nil))
+		,(custom-face-lookup "DarkOrchid4" nil nil t))
 	       ))))
 	(data
 	 ((type . repeat)

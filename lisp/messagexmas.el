@@ -37,28 +37,32 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 `right-toolbar', and `left-toolbar'.")
 
 (defvar message-toolbar 
-  '([message-spell toolbar-ispell t "Spell"]
-    [message-help toolbar-info t "Message help"])
+  '([message-spell ispell-message t "Spell"]
+    [message-help (toolbar-info "message") t "Message help"])
   "The message buffer toolbar.")
 
 (defun message-xmas-find-glyph-directory (&optional package)
   (setq package (or package "message"))
   (let ((path load-path)
-	dir result)
-    ;; We try to find the dir by looking at the load path,
-    ;; stripping away the last component and adding "etc/".
-    (while path
-      (if (and (car path)
-	       (file-exists-p
-		(setq dir (concat
-			   (file-name-directory
-			    (directory-file-name (car path)))
-			   "etc/" (or package "message") "/")))
-	       (file-directory-p dir))
-	  (setq result dir
-		path nil)
-	(setq path (cdr path))))
-    result))
+	(dir (symbol-value
+	      (intern-soft (concat package "-xmas-glyph-directory"))))
+	result)
+    (if (and (stringp dir) (file-directory-p dir))
+	dir
+      ;; We try to find the dir by looking at the load path,
+      ;; stripping away the last component and adding "etc/".
+      (while path
+	(if (and (car path)
+		 (file-exists-p
+		  (setq dir (concat
+			     (file-name-directory
+			      (directory-file-name (car path)))
+			     "etc/" (or package "message") "/")))
+		 (file-directory-p dir))
+	    (setq result dir
+		  path nil)
+	  (setq path (cdr path))))
+      result)))
 
 (defun message-xmas-setup-toolbar (bar &optional force package)
   (let ((dir (message-xmas-find-glyph-directory package))
