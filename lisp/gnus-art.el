@@ -2701,6 +2701,8 @@ commands:
   (make-local-variable 'gnus-article-decoded-p)
   (make-local-variable 'gnus-article-mime-handle-alist)
   (make-local-variable 'gnus-article-wash-types)
+  (make-local-variable 'gnus-article-charset)
+  (make-local-variable 'gnus-article-ignored-charsets)
   (gnus-set-default-directory)
   (buffer-disable-undo)
   (setq buffer-read-only t)

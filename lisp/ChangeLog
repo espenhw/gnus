@@ -1,3 +1,10 @@
+2000-10-31 22:06:13  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-article-charset): New variable.
+	(gnus-summary-display-article): Set it.
+	* gnus-msg.el (gnus-copy-article-buffer): Use it.
+	* gnus-art.el (gnus-article-mode): Make it local variable.
+
 2000-11-01 01:12:29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnultimate.el (nnultimate-create-mapping): Use nreverse. 

@@ -898,6 +898,8 @@ when prompting the user for which type of files to save."
 
 (defvar gnus-article-mime-handles nil)
 (defvar gnus-article-decoded-p nil)
+(defvar gnus-article-charset nil)
+(defvar gnus-article-ignored-charsets nil)
 (defvar gnus-scores-exclude-files nil)
 (defvar gnus-page-broken nil)
 (defvar gnus-inhibit-mime-unbuttonizing nil)
@@ -5845,10 +5847,12 @@ Given a prefix, will force an `article' buffer configuration."
 
 (defun gnus-summary-display-article (article &optional all-header)
   "Display ARTICLE in article buffer."
+  (gnus-set-global-variables)
   (when (gnus-buffer-live-p gnus-article-buffer)
     (with-current-buffer gnus-article-buffer
+      (setq gnus-article-charset gnus-newsgroup-charset)
+      (setq gnus-article-ignored-charsets gnus-newsgroup-ignored-charsets)
       (mm-enable-multibyte-mule4)))
-  (gnus-set-global-variables)
   (if (null article)
       nil
     (prog1
