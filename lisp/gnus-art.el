@@ -39,6 +39,7 @@
 (require 'mm-view)
 (require 'wid-edit)
 (require 'mm-uu)
+(require 'message)
 
 (autoload 'gnus-msg-mail "gnus-msg" nil t)
 (autoload 'gnus-button-mailto "gnus-msg")
@@ -5562,13 +5563,7 @@ groups."
   :type 'regexp)
 
 (defcustom gnus-button-valid-fqdn-regexp
-  (concat "[a-z0-9][-.a-z0-9]+\\." ;; [hostname.subdomain.]domain.
-	  ;; valid TLDs:
-	  "\\([a-z][a-z]" ;; two letter country TDLs
-	  "\\|biz\\|com\\|edu\\|gov\\|int\\|mil\\|net\\|org"
-	  "\\|aero\\|coop\\|info\\|name\\|museum"
-	  "\\|arpa\\|pro\\|uucp\\|bitnet\\|bofh" ;; old style?
-	  "\\)")
+  message-valid-fqdn-regexp
   "Regular expression that matches a valid FQDN."
   :group 'gnus-article-buttons
   :type 'regexp)
@@ -5638,12 +5633,12 @@ must return `mid', `mail', `invalid' or `ask'."
     (-5.0  . "@[Nn][Ee][Ww][Ss]") ;; /\@news/i
     (-5.0  . "@.*[Dd][Ii][Aa][Ll][Uu][Pp]") ;; /\@.*dialup/i;
     (-1.0  . "^[^a-z]+@")
-   
+    ;;
     (-5.0  . "\\.[0-9][0-9]+.*@") ;; "\.[0-9]{2,}.*\@"
     (-5.0  . "[a-z].*[A-Z].*[a-z].*[A-Z].*@") ;; "([a-z].*[A-Z].*){2,}\@"
     (-3.0  . "[A-Z][A-Z][a-z][a-z].*@")
     (-5.0  . "\\...?.?@") ;; (-5.0 . "\..{1,3}\@")
-   
+    ;;
     (-2.0  . "^[0-9]")
     (-1.0  . "^[0-9][0-9]")
     ;;
@@ -5789,6 +5784,9 @@ address, `ask' if unsure and `invalid' if the string is invalid."
 
 (defvar gnus-button-handle-describe-prefix "^\\(C-h\\|<?[Ff]1>?\\)")
 
+;; FIXME: Maybe we should merge some of the functions that do quite similar
+;; stuff?
+
 (defun gnus-button-handle-describe-function (url)
   "Call `describe-function' when pushing the corresponding URL button."
   (describe-function
@@ -5800,6 +5798,15 @@ address, `ask' if unsure and `invalid' if the string is invalid."
   (describe-variable
    (intern
     (gnus-replace-in-string url gnus-button-handle-describe-prefix ""))))
+
+(defun gnus-button-handle-symbol (url)
+"Display help on variable or function.
+Calls `describe-variable' or `describe-function'."
+  (let ((sym (intern url)))
+    (cond
+     ((fboundp sym) (describe-function sym))
+     ((boundp sym) (describe-variable sym))
+     (t (gnus-message 3 "`%s' is not a known function of variable." url)))))
 
 (defun gnus-button-handle-describe-key (url)
   "Call `describe-key' when pushing the corresponding URL button."
@@ -5830,6 +5837,15 @@ address, `ask' if unsure and `invalid' if the string is invalid."
   (funcall
    (if (fboundp 'apropos-documentation) 'apropos-documentation 'apropos)
    (gnus-replace-in-string url gnus-button-handle-describe-prefix "")))
+
+(defun gnus-button-handle-library (url)
+  "Call `locate-library' when pushing the corresponding URL button."
+  (gnus-message 9 "url=`%s'" url)
+  (let* ((lib (locate-library url))
+	 (file (gnus-replace-in-string (or lib "") "\.elc" ".el")))
+    (if (not lib)
+	(gnus-message 1 "Cannot locale library `%s'." url)
+      (find-file-read-only file))))
 
 (defun gnus-button-handle-ctan (url)
   "Call `browse-url' when pushing a CTAN URL button."
@@ -5872,36 +5888,53 @@ probably a good idea.  See Info node `(gnus)Group Parameters' and the variable
   :link '(custom-manual "(gnus)Group Parameters")
   :type 'integer)
 
-(defcustom gnus-button-mail-level 5
-  "*Integer that says how many buttons for message IDs or mail addresses will appear.
+(defcustom gnus-button-message-level 5
+  "*Integer that says how many buttons for news or mail messages will appear.
 The higher the number, the more buttons will appear and the more false
 positives are possible."
+  ;; mail addresses, MIDs, URLs for news, ...
+  :group 'gnus-article-buttons
+  :type 'integer)
+
+(defcustom gnus-button-browse-level 5
+  "*Integer that says how many buttons for browsing will appear.
+The higher the number, the more buttons will appear and the more false
+positives are possible."
+  ;; stuff handled by `browse-url' or `gnus-button-embedded-url'
   :group 'gnus-article-buttons
   :type 'integer)
 
 (defcustom gnus-button-alist
   '(("<\\(url:[>\n\t ]*?\\)?\\(nntp\\|news\\):[>\n\t ]*\\([^>\n\t ]*@[^>\n\t ]*\\)>"
-     0 t gnus-button-handle-news 3)
+     0 (>= gnus-button-message-level 0) gnus-button-handle-news 3)
     ("\\b\\(nntp\\|news\\):\\([^>\n\t ]*@[^>)!;:,\n\t ]*\\)" 0 t
      gnus-button-handle-news 2)
     ("\\(\\b<\\(url:[>\n\t ]*\\)?news:[>\n\t ]*\\(//\\)?\\([^>\n\t ]*\\)>\\)"
-     1 t
-     gnus-button-fetch-group 4)
-    ("\\bnews:\\(//\\)?\\([^'\">\n\t ]+\\)" 0 t gnus-button-fetch-group 2)
-    ("\\bin\\( +article\\| +message\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2
-     t gnus-button-message-id 3)
-    ("\\(<URL: *\\)mailto: *\\([^> \n\t]+\\)>" 0 t gnus-url-mailto 2)
-    ("mailto:\\([-a-z.@_+0-9%=?]+\\)" 0 t gnus-url-mailto 1)
-    ("\\bmailto:\\([^ \n\t]+\\)" 0 t gnus-url-mailto 1)
+     1 (>= gnus-button-message-level 0) gnus-button-fetch-group 4)
+    ("\\bnews:\\(//\\)?\\([^'\">\n\t ]+\\)"
+     0 (>= gnus-button-message-level 0) gnus-button-fetch-group 2)
+    ("\\bin\\( +article\\| +message\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)"
+     2 (>= gnus-button-message-level 0) gnus-button-message-id 3)
+    ("\\(<URL: *\\)mailto: *\\([^> \n\t]+\\)>"
+     0 (>= gnus-button-message-level 0) gnus-url-mailto 2)
+    ("mailto:\\([-a-z.@_+0-9%=?]+\\)"
+     0 (>= gnus-button-message-level 0) gnus-url-mailto 1)
+    ("\\bmailto:\\([^ \n\t]+\\)"
+     0 (>= gnus-button-message-level 0) gnus-url-mailto 1)
     ;; CTAN
-    ("\\bCTAN:[ \t\n]*\\([^>)!;:,\n\t ]*\\)" 0 (>= gnus-button-tex-level 1)
-     gnus-button-handle-ctan 1)
+    ("\\bCTAN:[ \t\n]*\\([^>)!;:,\n\t ]*\\)"
+     0 (>= gnus-button-tex-level 1) gnus-button-handle-ctan 1)
     ;; This is info
-    ("\\binfo:\\(//\\)?\\([^'\">\n\t ]+\\)" 0
-     (>= gnus-button-emacs-level 1) gnus-button-handle-info 2)
+    ("\\binfo:\\(//\\)?\\([^'\">\n\t ]+\\)"
+     0 (>= gnus-button-emacs-level 1) gnus-button-handle-info-url 2)
+    ("\\((Info-goto-node\\|(info\\)[ \t\n]*\\(\"[^\"]*\"\\))" 0
+     (>= gnus-button-emacs-level 1) gnus-button-handle-info-url 2)
+    ("\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+i[ \t\n]+d?[ \t\n]?m[ \t\n]+\\([^ ]+ ?[^ ]+\\)[ \t\n]+RET"
+     ;; Info links like `C-h i d m CC Mode RET'
+     0 (>= gnus-button-emacs-level 1) gnus-button-handle-info-keystrokes 2)
     ;; This is custom
-    ("\\bcustom:\\(//\\)?\\([^'\">\n\t ]+\\)" 0
-     (>= gnus-button-emacs-level 5) gnus-button-handle-custom 2)
+    ("\\bcustom:\\(//\\)?\\([^'\">\n\t ]+\\)"
+     0 (>= gnus-button-emacs-level 5) gnus-button-handle-custom 2)
     ("M-x[ \t\n]customize-[^ ]+[ \t\n]RET[ \t\n]\\([^ ]+\\)[ \t\n]RET" 0
      (>= gnus-button-emacs-level 1) gnus-button-handle-custom 1)
     ;; Emacs help commands
@@ -5914,37 +5947,51 @@ positives are possible."
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-apropos-variable 1)
     ("M-x[ \t\n]+apropos-documentation[ \t\n]+RET[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-apropos-documentation 1)
+    ;; The following entries may lead to many false positives so don't enable
+    ;; them by default (use a high button level):
+    ("/\\([a-z][-a-z0-9]+\\.el\\)\\>"
+     1 (>= gnus-button-emacs-level 8) gnus-button-handle-library 1)
+    ("`\\([a-z][-a-z0-9]+\\.el\\)'"
+     1 (>= gnus-button-emacs-level 8) gnus-button-handle-library 1)
+    ("`\\([a-z]+-[a-z]+-[-a-z]+\\|\\(gnus\\|message\\)-[-a-z]+\\)'"
+     0 (>= gnus-button-emacs-level 8) gnus-button-handle-symbol 1)
+    ("`\\([a-z]+-[a-z]+\\)'"
+     0 (>= gnus-button-emacs-level 9) gnus-button-handle-symbol 1)
     ("\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+f[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-function 2)
     ("\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+v[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-variable 2)
-    ("`\\(\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+k[ \t\n]+\\([^']+\\)\\)'" 1
+    ("[ \t\n(]setq[ \t\n]+\\([^ \t\n]+\\)[ \t\n)]+"
+     1 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-variable 1)
+    ("`\\(\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+k[ \t\n]+\\([^']+\\)\\)'"
      ;; Unlike the other regexps we really have to require quoting
      ;; here to determine where it ends.
-     (>= gnus-button-emacs-level 1) gnus-button-handle-describe-key 3)
-    ;; This is how URLs _should_ be embedded in text...
-    ("<URL: *\\([^<>]*\\)>" 1 t gnus-button-embedded-url 1)
+     1 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-key 3)
+    ;; This is how URLs _should_ be embedded in text (RFC 1738)...
+    ("<URL: *\\([^<>]*\\)>"
+     1 (>= gnus-button-browse-level 0) gnus-button-embedded-url 1)
     ;; Raw URLs.
-    (gnus-button-url-regexp 0 t browse-url 0)
+    (gnus-button-url-regexp
+     0 (>= gnus-button-browse-level 0) browse-url 0)
     ;; man pages
-    ("\\b\\([a-z][a-z]+\\)([1-9])\\W" 0
-     (and (>= gnus-button-man-level 1) (< gnus-button-man-level 3))
+    ("\\b\\([a-z][a-z]+\\)([1-9])\\W"
+     0 (and (>= gnus-button-man-level 1) (< gnus-button-man-level 3))
      gnus-button-handle-man 1)
     ;; more man pages: resolv.conf(5), iso_8859-1(7), xterm(1x)
-    ("\\b\\([a-z][-_.a-z0-9]+\\)([1-9])\\W" 0
-     (and (>= gnus-button-man-level 3) (< gnus-button-man-level 5))
+    ("\\b\\([a-z][-_.a-z0-9]+\\)([1-9])\\W"
+     0 (and (>= gnus-button-man-level 3) (< gnus-button-man-level 5))
      gnus-button-handle-man 1)
     ;; even more: Apache::PerlRun(3pm), PDL::IO::FastRaw(3pm),
-    ;; SoWWWAnchor(3iv), XSelectInput(3X11)
-    ("\\b\\([a-z][-_.:a-z0-9]+\\)([1-9][X1a-z]*)\\W" 0
-     (>= gnus-button-man-level 5) gnus-button-handle-man 1)
+    ;; SoWWWAnchor(3iv), XSelectInput(3X11), X(1), X(7)
+    ("\\b\\([a-z][-_.:a-z0-9]+\\)([1-9][X1a-z]*)\\W\\|\\b\\(X\\)([1-9])\\W"
+     0 (>= gnus-button-man-level 5) gnus-button-handle-man 1)
     ;; MID or mail: To avoid too many false positives we don't try to catch
     ;; all kind of allowed MIDs or mail addresses.  Domain part must contain
     ;; at least one dot.  TLD must contain two or three chars or be a know TLD
     ;; (info|name|...).  Put this entry near the _end_ of `gnus-button-alist'
     ;; so that non-ambiguous entries (see above) match first.
     (gnus-button-mid-or-mail-regexp
-     0 (>= gnus-button-mail-level 5) gnus-button-handle-mid-or-mail 1))
+     0 (>= gnus-button-message-level 5) gnus-button-handle-mid-or-mail 1))
   "*Alist of regexps matching buttons in article bodies.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
@@ -5969,16 +6016,21 @@ variable it the real callback function."
 
 (defcustom gnus-header-button-alist
   '(("^\\(References\\|Message-I[Dd]\\):" "<[^<>]+>"
-     0 t gnus-button-message-id 0)
-    ("^\\(From\\|Reply-To\\):" ": *\\(.+\\)$" 1 t gnus-button-reply 1)
+     0 (>= gnus-button-message-level 0) gnus-button-message-id 0)
+    ("^\\(From\\|Reply-To\\):" ": *\\(.+\\)$"
+     1 (>= gnus-button-message-level 0) gnus-button-reply 1)
     ("^\\(Cc\\|To\\):" "[^ \t\n<>,()\"]+@[^ \t\n<>,()\"]+"
-     0 t gnus-button-mailto 0)
-    ("^X-[Uu][Rr][Ll]:" gnus-button-url-regexp 0 t browse-url 0)
-    ("^Subject:" gnus-button-url-regexp 0 t browse-url 0)
-    ("^[^:]+:" gnus-button-url-regexp 0 t browse-url 0)
-    ("^[^:]+:" "\\bmailto:\\([-a-z.@_+0-9%=?]+\\)" 0 t gnus-url-mailto 1)
-    ("^[^:]+:" "\\(<\\(url: \\)?news:\\([^>\n ]*\\)>\\)" 1 t
-     gnus-button-message-id 3))
+     0 (>= gnus-button-message-level 0) gnus-button-mailto 0)
+    ("^X-[Uu][Rr][Ll]:" gnus-button-url-regexp
+     0 (>= gnus-button-browse-level 0) browse-url 0)
+    ("^Subject:" gnus-button-url-regexp
+     0 (>= gnus-button-browse-level 0) browse-url 0)
+    ("^[^:]+:" gnus-button-url-regexp
+     0 (>= gnus-button-browse-level 0) browse-url 0)
+    ("^[^:]+:" "\\bmailto:\\([-a-z.@_+0-9%=?]+\\)"
+     0 (>= gnus-button-message-level 0) gnus-url-mailto 1)
+    ("^[^:]+:" "\\(<\\(url: \\)?news:\\([^>\n ]*\\)>\\)"
+     1 (>= gnus-button-message-level 0) gnus-button-message-id 3))
   "*Alist of headers and regexps to match buttons in article heads.
 
 This alist is very similar to `gnus-button-alist', except that each
@@ -6322,17 +6374,27 @@ specified by `gnus-button-alist'."
   "Fetch a man page."
   (funcall gnus-button-man-handler url))
 
-(defun gnus-button-handle-info (url)
+(defun gnus-button-handle-info-url (url)
   "Fetch an info URL."
-  (if (string-match
-       "^\\([^:/]+\\)?/\\(.*\\)"
-       url)
-      (gnus-info-find-node
-       (concat "(" (or (gnus-url-unhex-string (match-string 1 url))
-		       "Gnus")
-	       ")"
-	       (gnus-url-unhex-string (match-string 2 url))))
-    (error "Can't parse %s" url)))
+  (cond
+   ((string-match "^\\([^:/]+\\)?/\\(.*\\)" url)
+    (gnus-info-find-node
+     (concat "(" (or (gnus-url-unhex-string (match-string 1 url))
+		     "Gnus")
+	     ")" (gnus-url-unhex-string (match-string 2 url)))))
+   ((string-match "([^)\"]+)[^\"]+" url)
+    (setq url
+	  (gnus-replace-in-string
+	   (gnus-replace-in-string url "[\n\t ]+" " ") "\"" ""))
+    (gnus-info-find-node url))
+   (t (error "Can't parse %s" url))))
+
+(defun gnus-button-handle-info-keystrokes (url)
+  "Call `info' when pushing the corresponding URL button."
+  ;; For links like `C-h i d m gnus RET', `C-h i d m CC Mode RET'.
+  (info)
+  (Info-directory)
+  (Info-menu url))
 
 (defun gnus-button-message-id (message-id)
   "Fetch MESSAGE-ID."

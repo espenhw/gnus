@@ -1,3 +1,16 @@
+2003-03-31  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-button-valid-fqdn-regexp): Use
+	`message-valid-fqdn-regexp' for initialization.
+	(gnus-button-handle-info-url): Renamed and extended version of
+	`gnus-button-handle-info'.
+	(gnus-button-message-level): Renamed from `gnus-button-mail-level'
+	(gnus-button-handle-symbol, gnus-button-handle-library)
+	(gnus-button-handle-info-keystrokes): New functions.
+	(gnus-button-browse-level): New variable.
+	(gnus-button-alist): Use them.  Added levels.
+	(gnus-header-button-alist): Added levels.
+
 2003-03-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-version-number): Bump.
