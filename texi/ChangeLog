@@ -1,3 +1,17 @@
+2001-05-04 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	Suggested by Dan Christensen <jdc@uwo.ca>
+
+	* gnus.texi (Mail Group Commands): Add pxref.
+	(Group Maintenance): Ditto.
+	(Topic Commands): Ditto.
+	(Expiring Mail): Typo.
+
+2001-05-04 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From Raymond Scholz <ray-2001@zonix.de>
+
+	* gnus.texi (Summary Buffer Lines): Mention the meaning of a
+	colon.
+
 2001-05-03 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Sriram Karra <karra@cs.utah.edu>.
 

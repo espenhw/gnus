@@ -3053,12 +3053,14 @@ zombies.
 @kindex C-c C-x (Group)
 @findex gnus-group-expire-articles
 Run all expirable articles in the current group through the expiry
-process (if any) (@code{gnus-group-expire-articles}).
+process (if any) (@code{gnus-group-expire-articles}).  That is, delete
+all expirable articles in the group that have been around for a while.
+(@pxref{Expiring Mail}).
 
 @item C-c M-C-x
 @kindex C-c M-C-x (Group)
 @findex gnus-group-expire-all-groups
-Run all articles in all groups through the expiry process
+Run all expirable articles in all groups through the expiry process
 (@code{gnus-group-expire-all-groups}).
 
 @end table
@@ -3402,8 +3404,9 @@ prefix, group on that level (and lower) will be displayed.
 @item C-c C-x
 @kindex C-c C-x (Topic)
 @findex gnus-topic-expire-articles
-Run all expirable articles in the current group or topic through the expiry
-process (if any) (@code{gnus-topic-expire-articles}).
+Run all expirable articles in the current group or topic through the
+expiry process (if any)
+(@code{gnus-topic-expire-articles}). (@pxref{Expiring Mail}).
 
 @item C-k
 @kindex C-k (Topic)
@@ -3965,6 +3968,9 @@ You can change the format of the lines in the summary buffer by changing
 the @code{gnus-summary-line-format} variable.  It works along the same
 lines as a normal @code{format} string, with some extensions
 (@pxref{Formatting Variables}).
+
+There should always be a colon on the line; the cursor always moves to
+the colon after performing an operation. 
 
 The default string is @samp{%U%R%z%I%(%[%4L: %-20,20n%]%) %s\n}.
 
@@ -8574,8 +8580,10 @@ process/prefix convention (@pxref{Process/Prefix}).
 @item B e
 @kindex B e (Summary)
 @findex gnus-summary-expire-articles
-Expire all expirable articles in the group
-(@code{gnus-summary-expire-articles}).
+Run all expirable articles in the current group through the expiry
+process (@code{gnus-summary-expire-articles}).  That is, delete all
+expirable articles in the group that have been around for a while.
+(@pxref{Expiring Mail}).
 
 @item B M-C-e
 @kindex B M-C-e (Summary)
@@ -12229,7 +12237,7 @@ automatically, you can put something like the following in your
 Note that making a group auto-expirable doesn't mean that all read
 articles are expired---only the articles marked as expirable
 will be expired.  Also note that using the @kbd{d} command won't make
-groups expirable---only semi-automatic marking of articles as read will
+articles expirable---only semi-automatic marking of articles as read will
 mark the articles as expirable in auto-expirable groups.
 
 Let's say you subscribe to a couple of mailing lists, and you want the
