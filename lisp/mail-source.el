@@ -35,11 +35,142 @@
   "The mail-fetching library."
   :group 'gnus)
 
-(defcustom mail-sources nil
+(defcustom mail-sources '((file))
   "*Where the mail backends will look for incoming mail.
-This variable is a list of mail source specifiers."
+This variable is a list of mail source specifiers.
+See Info node `(gnus)Mail Source Specifiers'."
   :group 'mail-source
-  :type 'sexp)
+  ;; This specification should be tidied up, particularly to avoid
+  ;; constant items appearing.  (Perhaps there's scope for improvment
+  ;; in the widget code.)
+  :type `(repeat
+	  (choice (const :tag "Default spool file" (file))
+		  (list :tag "Specified spool file"
+			(const file)
+			(const :value :path)
+			file)
+		  (cons :tag "Several files in a directory"
+			(const directory)
+			(choice
+			 :tag "Options"
+			 (const :tag "None" nil)
+			 (repeat
+			  (choice
+			   (list :inline t :tag "path"
+				 (const :value :path) directory)
+			   (list :inline t :tag "suffix"
+				 (const :value :suffix) string)
+			   (list :inline t :tag "predicate"
+				 (const :value :predicate) function)
+			   (list :inline t :tag "prescript"
+				 (const :value :prescript) string)
+			   (list :inline t :tag "postscript"
+				 (const :value :postscript) string)
+			   (list :inline t :tag "plugged"
+				 (const :value :plugged) boolean)))))
+		  (cons :tag "POP3 server"
+			(const pop)
+			(choice
+			 :tag "Options"
+			 (const :tag "None" nil)
+			 (repeat
+			  (choice
+			   (list :inline t :tag "server"
+				 (const :value :server) string)
+			   (list :inline t :tag "port"
+				 (const :value :port) (choice number string))
+			   (list :inline t :tag "user"
+				 (const :value :user) string)
+			   (list :inline t :tag "password"
+				 (const :value :password) string)
+			   (list :inline t :tag "program"
+				 (const :value :program) string)
+			   (list :inline t :tag "prescript"
+				 (const :value :prescript) string)
+			   (list :inline t :tag "postscript"
+				 (const :value :postscript) string)
+			   (list :inline t :tag "function"
+				 (const :value :function) function)
+			   (list :inline t :tag "authentication"
+				 (const :value :authentication)
+				 (choice (const password)
+					 (const apop)))
+			   (list :inline t :tag "plugged"
+				 (const :value :plugged) boolean)))))
+		  (cons :tag "Maildir (qmail, postfix...)"
+			(const maildir)
+			(choice
+			 :tag "Options"
+			 (const :tag "None" nil)
+			 (repeat
+			  (choice
+			   (list :inline t :tag "path"
+				 (const :value :path) directory)
+			   (list :inline t :tag "plugged"
+				 (const :value :plugged) boolean)))))
+		  (cons :tag "IMAP server"
+			(const imap)
+			(choice
+			 :tag "Options"
+			 (const :tag "None" nil)
+			 (repeat
+			  (choice
+			   (list :inline t :tag "server"
+				 (const :value :server) string)
+			   (list :inline t :tag "port"
+				 (const :value :port)
+				 (choice number string))
+			   (list :inline t :tag "user"
+				 (const :value :user) string)
+			   (list :inline t :tag "password"
+				 (const :value :password) string)
+			   (list :inline t :tag "stream"
+				 (const :value :stream)
+				 (choice ,@(progn (require 'imap)
+						  (mapcar
+						   (lambda (a)
+						     (list 'const (car a)))
+						   imap-stream-alist))))
+			   (list :inline t :tag "authenticator"
+				 (const :value :authenticator)
+				 (choice ,@(progn (require 'imap)
+						  (mapcar
+						   (lambda (a)
+						     (list 'const (car a)))
+						   imap-authenticator-alist))))
+			   (list :inline t :tag "mailbox"
+				 (const :value :mailbox) string)
+			   (list :inline t :tag "predicate"
+				 (const :value :predicate) function)
+			   (list :inline t :tag "fetchflag"
+				 (const :value :fetchflag) string)
+			   (list :inline t :tag "dontexpunge"
+				 (const :value :dontexpunge) boolean)
+			   (list :inline t :tag "plugged"
+				 (const :value :plugged) )))))
+		  (cons :tag "Webmail server"
+			(const webmail)
+			(choice
+			 :tag "Options"
+			 (const :tag "None" nil)
+			 (repeat
+			  (choice
+			   (list :inline t :tag "subtype"
+				 (const :value :subtype)
+				 ;; Should be generated from
+				 ;; `webmail-type-definition', but we
+				 ;; can't require webmail without W3.
+				 (choice (const hotmail) (const yahoo)
+					 (const netaddress) (const netscape)
+					 (const my-deja)))
+			   (list :inline t :tag "user"
+				 (const :value :user) string)
+			   (list :inline t :tag "password"
+				 (const :value :password) string)
+			   (list :inline t :tag "dontexpunge"
+				 (const :value :dontexpunge) boolean)
+			   (list :inline t :tag "plugged"
+				 (const :value :plugged) boolean))))))))
 
 (defcustom mail-source-primary-source nil
   "*Primary source for incoming mail.
@@ -397,7 +528,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 
 (defun mail-source-fetch-with-program (program)
   (zerop (call-process shell-file-name nil nil nil
-		       shell-command-switch program)))
+ 		       shell-command-switch program)))
 
 (defun mail-source-run-script (script spec &optional delay)
   (when script
@@ -595,6 +726,7 @@ This only works when `display-time' is enabled."
     (if on
 	(progn
 	  (require 'time)
+	  ;; display-time-mail-function is an Emacs 21 feature.
 	  (setq display-time-mail-function #'mail-source-new-mail-p)
 	  ;; Set up the main timer.
 	  (setq mail-source-report-new-mail-timer
