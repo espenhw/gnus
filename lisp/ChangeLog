@@ -1,3 +1,8 @@
+2001-01-26 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-summary-save-in-pipe): Prompt for saving
+	command if there is not last-saver.
+
 2001-01-24 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nntp.el (nntp-open-connection): 201 is possible.
