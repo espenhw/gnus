@@ -1,5 +1,5 @@
 ;;; mml-sec.el --- A package with security functions for MML documents
-;; Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+;; Copyright (C) 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 
@@ -40,8 +40,15 @@
     ("pgpmime"   mml-pgpmime-sign-buffer   list))
   "Alist of MIME signer functions.")
 
-(defvar mml-default-sign-method (caar mml-sign-alist)
-  "Default sign method.")
+(defcustom mml-default-sign-method "pgpmime"
+  "Default sign method.
+The string must have an entry in `mml-sign-alist'."
+  :type '(choice (const "smime")
+		 (const "pgp")
+		 (const "pgpauto")
+		 (const "pgpmime")
+		 string)
+  :group 'message)
 
 (defvar mml-encrypt-alist
   '(("smime"     mml-smime-encrypt-buffer     mml-smime-encrypt-query)
@@ -50,8 +57,15 @@
     ("pgpmime"   mml-pgpmime-encrypt-buffer   list))
   "Alist of MIME encryption functions.")
 
-(defvar mml-default-encrypt-method (caar mml-encrypt-alist)
-  "Default encryption method.")
+(defcustom mml-default-encrypt-method "pgpmime"
+  "Default encryption method.
+The string must have an entry in `mml-encrypt-alist'."
+  :type '(choice (const "smime")
+		 (const "pgp")
+		 (const "pgpauto")
+		 (const "pgpmime")
+		 string)
+  :group 'message)
 
 (defcustom mml-signencrypt-style-alist
   '(("smime"   separate)
@@ -75,7 +89,7 @@ details."
 			       (string :tag "User defined"))
 		       (choice (const :tag "Separate" separate)
 			       (const :tag "Combined" combined)))))
-			      
+
 ;;; Configuration/helper functions
 
 (defun mml-signencrypt-style (method &optional style)

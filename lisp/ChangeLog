@@ -1,3 +1,8 @@
+2004-01-01  Simon Josefsson  <jas@extundo.com>
+
+	* mml-sec.el (mml-default-encrypt-method)
+	(mml-default-sign-method): Defcustom.
+
 2003-12-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mml.el (mml-generate-mime-1): Remove extra ).
