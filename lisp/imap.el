@@ -752,7 +752,7 @@ sure of changing the value of `foo'."
 	 (coding-system-for-read imap-coding-system-for-read)
 	 (coding-system-for-write imap-coding-system-for-write)
 	 (process (starttls-open-stream name buffer server port))
-	 done)
+	 done tls-info)
     (message "imap: Connecting with STARTTLS...")
     (when process
       (while (and (memq (process-status process) '(open run))
@@ -762,8 +762,6 @@ sure of changing the value of `foo'."
 		  (not (imap-parse-greeting)))
 	(accept-process-output process 1)
 	(sit-for 1))
-      (if (symbolp (symbol-function 'starttls-negotiate))
-	  (setq imap-client-eol "\n"))
       (imap-send-command "STARTTLS")
       (while (and (memq (process-status process) '(open run))
 		  (set-buffer buffer) ;; XXX "blue moon" nntp.el bug
@@ -777,9 +775,11 @@ sure of changing the value of `foo'."
 	     (buffer-disable-undo)
 	     (goto-char (point-max))
 	     (insert-buffer-substring buffer)))
-      (message "imap: STARTTLS info: %s" (starttls-negotiate process))
-      (when (memq (process-status process) '(open run))
+      (when (and (setq tls-info (starttls-negotiate process))
+		 (memq (process-status process) '(open run)))
 	(setq done process)))
+    (if (stringp tls-info)
+	(message "imap: STARTTLS info: %s" tls-info))
     (message "imap: Connecting with STARTTLS...%s" (if done "done" "failed"))
     done))
 
