@@ -1537,6 +1537,7 @@ increase the score of each group you read."
     "S" gnus-summary-limit-include-expunged
     "C" gnus-summary-catchup
     "H" gnus-summary-catchup-to-here
+    "h" gnus-summary-catchup-from-here
     "\C-c" gnus-summary-catchup-all
     "k" gnus-summary-kill-same-subject-and-select
     "K" gnus-summary-kill-same-subject
@@ -2017,6 +2018,7 @@ increase the score of each group you read."
 	     '(:help "Mark unread articles in this group as read"))]
 	["Catchup all" gnus-summary-catchup-all t]
 	["Catchup to here" gnus-summary-catchup-to-here t]
+	["Catchup from here" gnus-summary-catchup-from-here t]
 	["Catchup region" gnus-summary-mark-region-as-read t]
 	["Mark excluded" gnus-summary-limit-mark-excluded-as-read t])
        ("Mark Various"
@@ -8997,13 +8999,13 @@ even ticked and dormant ones."
 	(gnus-summary-position-point)
 	t))))
 
-(defun gnus-summary-catchup (&optional all quietly to-here not-mark)
+(defun gnus-summary-catchup (&optional all quietly to-here not-mark reverse)
   "Mark all unread articles in this newsgroup as read.
 If prefix argument ALL is non-nil, ticked and dormant articles will
 also be marked as read.
 If QUIETLY is non-nil, no questions will be asked.
 If TO-HERE is non-nil, it should be a point in the buffer.  All
-articles before this point will be marked as read.
+articles before (after, if REVERSE is set) this point will be marked as read.
 Note that this function will only catch up the unread article
 in the current summary buffer limitation.
 The number of articles marked as read is returned."
@@ -9031,11 +9033,17 @@ The number of articles marked as read is returned."
 	    ;; We actually mark all articles as canceled, which we
 	    ;; have to do when using auto-expiry or adaptive scoring.
 	    (gnus-summary-show-all-threads)
-	    (when (gnus-summary-first-subject (not all) t)
-	      (while (and
-		      (if to-here (< (point) to-here) t)
-		      (gnus-summary-mark-article-as-read gnus-catchup-mark)
-		      (gnus-summary-find-next (not all) nil nil t))))
+	    (if (and to-here reverse)
+		(progn
+		  (goto-char to-here)
+		  (while (and
+			  (gnus-summary-mark-article-as-read gnus-catchup-mark)
+			  (gnus-summary-find-next (not all) nil nil t))))
+	      (when (gnus-summary-first-subject (not all) t)
+		(while (and
+			(if to-here (< (point) to-here) t)
+			(gnus-summary-mark-article-as-read gnus-catchup-mark)
+			(gnus-summary-find-next (not all) nil nil t)))))
 	    (gnus-set-mode-line 'summary))
 	  t))
     (gnus-summary-position-point)))
@@ -9052,6 +9060,18 @@ If ALL is non-nil, also mark ticked and dormant articles as read."
 	  (gnus-summary-catchup all t beg)))))
   (gnus-summary-position-point))
 
+(defun gnus-summary-catchup-from-here (&optional all)
+  "Mark all unticked articles after the current one as read.
+If ALL is non-nil, also mark ticked and dormant articles as read."
+  (interactive "P")
+  (save-excursion
+    (gnus-save-hidden-threads
+      (let ((beg (point)))
+	;; We check that there are unread articles.
+	(when (or all (gnus-summary-find-next))
+	  (gnus-summary-catchup all t beg nil t)))))
+
+  (gnus-summary-position-point))
 (defun gnus-summary-catchup-all (&optional quietly)
   "Mark all articles in this newsgroup as read."
   (interactive "P")
