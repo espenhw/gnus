@@ -729,13 +729,13 @@ If POST, post instead of mail."
 	 (gnus-get-buffer-create
 	  (generate-new-buffer-name " *Gnus forward*")))
 	(erase-buffer)
-	(mm-disable-multibyte)
+	(unless message-forward-show-mml
+	  (mm-disable-multibyte))
 	(insert text)
 	(goto-char (point-min))
 	(when (looking-at "From ")
 	  (replace-match "X-From-Line: ") )
 	(when message-forward-show-mml
-	  (mm-enable-multibyte)
 	  (mime-to-mml))
 	(message-forward post)))))
 
