@@ -4589,6 +4589,7 @@ groups."
     (set-buffer gnus-article-buffer)
     (gnus-article-edit-mode)
     (funcall start-func)
+    (set-buffer-modified-p nil)
     (gnus-configure-windows 'edit-article)
     (setq gnus-article-edit-done-function exit-func)
     (setq gnus-prev-winconf winconf)

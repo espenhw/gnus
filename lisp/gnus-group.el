@@ -3935,6 +3935,30 @@ This command may read the active file."
   (let ((gnus-group-list-option 'limit))
     (gnus-group-list-plus args)))
 
+(defun gnus-group-mark-article-read (group article)
+  "Mark ARTICLE read." 
+  (gnus-activate-group group)
+  (let ((buffer (gnus-summary-buffer-name group))
+	(mark gnus-read-mark))
+    (unless
+	(and
+	 (get-buffer buffer)
+	 (with-current-buffer buffer
+	   (when gnus-newsgroup-prepared
+	     (when (and gnus-newsgroup-auto-expire
+			(memq mark gnus-auto-expirable-marks))
+	       (setq mark gnus-expirable-mark))
+	     (setq mark (gnus-request-update-mark
+			 group article mark))
+	     (gnus-mark-article-as-read article mark)
+	     (setq gnus-newsgroup-active (gnus-active group))
+	     t)))
+      (gnus-group-make-articles-read group
+				     (list article))
+      (when (gnus-group-auto-expirable-p group)
+	(gnus-add-marked-articles
+	 group 'expire (list article))))))
+
 (provide 'gnus-group)
 
 ;;; gnus-group.el ends here

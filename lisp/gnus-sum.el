@@ -1726,6 +1726,7 @@ increase the score of each group you read."
     "q" gnus-summary-respool-query
     "t" gnus-summary-respool-trace
     "i" gnus-summary-import-article
+    "I" gnus-summary-create-article
     "p" gnus-summary-article-posted-p)
 
   (gnus-define-keys (gnus-summary-save-map "O" gnus-summary-mode-map)
@@ -1874,6 +1875,7 @@ increase the score of each group you read."
                (gnus-check-backend-function
                 'request-replace-article gnus-newsgroup-name)]
               ["Import file..." gnus-summary-import-article t]
+              ["Create article..." gnus-summary-create-article t]
               ["Check if posted" gnus-summary-article-posted-p t]
               ["Edit article" gnus-summary-edit-article
                (not (gnus-group-read-only-p))]
@@ -7946,12 +7948,12 @@ latter case, they will be copied into the relevant groups."
       (gnus-summary-move-article n nil method)
     (gnus-summary-copy-article n nil method)))
 
-(defun gnus-summary-import-article (file)
+(defun gnus-summary-import-article (file &optional edit)
   "Import an arbitrary file into a mail newsgroup."
-  (interactive "fImport file: ")
+  (interactive "fImport file: \nP")
   (let ((group gnus-newsgroup-name)
 	(now (current-time))
-	atts lines)
+	atts lines group-art)
     (unless (gnus-check-backend-function 'request-accept-article group)
       (error "%s does not support article importing" group))
     (or (file-readable-p file)
@@ -7968,13 +7970,41 @@ latter case, they will be copied into the relevant groups."
 	      lines (count-lines (point-min) (point-max)))
 	(insert "From: " (read-string "From: ") "\n"
 		"Subject: " (read-string "Subject: ") "\n"
-		"Date: " (message-make-date (nth 5 atts))
-		"\n"
+		"Date: " (message-make-date (nth 5 atts)) "\n"
 		"Message-ID: " (message-make-message-id) "\n"
 		"Lines: " (int-to-string lines) "\n"
 		"Chars: " (int-to-string (nth 7 atts)) "\n\n"))
-      (gnus-request-accept-article group nil t)
-      (kill-buffer (current-buffer)))))
+      (setq group-art (gnus-request-accept-article group nil t))
+      (kill-buffer (current-buffer)))
+    (setq gnus-newsgroup-active (gnus-activate-group group))
+    (forward-line 1)
+    (gnus-summary-goto-article (cdr group-art) nil t)
+    (when edit
+      (gnus-summary-edit-article))))
+
+(defun gnus-summary-create-article ()
+  "Create an article in a mail newsgroup."
+  (interactive)
+  (let ((group gnus-newsgroup-name)
+	(now (current-time))
+	group-art)
+    (unless (gnus-check-backend-function 'request-accept-article group)
+      (error "%s does not support article importing" group))
+    (save-excursion
+      (set-buffer (gnus-get-buffer-create " *import file*"))
+      (erase-buffer)
+      (goto-char (point-min))
+      ;; This doesn't look like an article, so we fudge some headers.
+      (insert "From: " (read-string "From: ") "\n"
+	      "Subject: " (read-string "Subject: ") "\n"
+	      "Date: " (message-make-date now) "\n"
+	      "Message-ID: " (message-make-message-id) "\n")
+      (setq group-art (gnus-request-accept-article group nil t))
+      (kill-buffer (current-buffer)))
+    (setq gnus-newsgroup-active (gnus-activate-group group))
+    (forward-line 1)
+    (gnus-summary-goto-article (cdr group-art) nil t)
+    (gnus-summary-edit-article)))
 
 (defun gnus-summary-article-posted-p ()
   "Say whether the current (mail) article is available from news as well.

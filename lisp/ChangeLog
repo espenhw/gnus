@@ -1,3 +1,14 @@
+2001-02-23 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-import-article): Display it. Enable edit. 
+	(gnus-summary-create-article): New.
+
+	* gnus-group.el (gnus-group-mark-article-read): New.
+
+	* gnus-msg.el (gnus-inews-do-gcc): Use it.
+
+	* gnus-art.el (gnus-article-edit-article): Set modified-p nil.
+
 2001-02-23 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-article-edit-done): Don't use
