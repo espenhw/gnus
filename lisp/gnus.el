@@ -1803,6 +1803,10 @@ Only applicable to spam groups.")
   "The Blacklist summary exit spam processor.
 Only applicable to spam groups.")
 
+(defvar gnus-group-ham-exit-processor-ifile "ifile-ham"
+  "The ifile summary exit ham processor.
+Only applicable to non-spam (unclassified and ham) groups.")
+
 (defvar gnus-group-ham-exit-processor-whitelist "whitelist"
   "The whitelist summary exit ham processor.
 Only applicable to non-spam (unclassified and ham) groups.")
@@ -1821,6 +1825,7 @@ Only applicable to non-spam (unclassified and ham) groups.")
 			    (variable-item gnus-group-spam-exit-processor-ifile)
 			    (variable-item gnus-group-spam-exit-processor-bogofilter)
 			    (variable-item gnus-group-spam-exit-processor-blacklist)
+			    (variable-item gnus-group-ham-exit-processor-ifile)
 			    (variable-item gnus-group-ham-exit-processor-whitelist)
 			    (variable-item gnus-group-ham-exit-processor-BBDB))))
  :function-document
@@ -1841,6 +1846,7 @@ for mail groups."
 			       (variable-item gnus-group-spam-exit-processor-ifile)
 			       (variable-item gnus-group-spam-exit-processor-bogofilter)
 			       (variable-item gnus-group-spam-exit-processor-blacklist)
+			       (variable-item gnus-group-ham-exit-processor-ifile)
 			       (variable-item gnus-group-ham-exit-processor-whitelist)
 			       (variable-item gnus-group-ham-exit-processor-BBDB))))
  :parameter-document

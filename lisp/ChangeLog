@@ -1,3 +1,19 @@
+2003-01-07  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-check-ifile, spam-ifile-register-with-ifile) 
+	(spam-ifile-register-spam-routine) 
+	(spam-ifile-register-ham-routine): added ifile functionality that
+	does not use ifile-gnus.el to classify and register articles
+	(spam-get-article-as-string): convenience function
+	(spam-summary-prepare-exit): added ifile spam and ham registration
+	(spam-ifile-all-categories, spam-ifile-spam-category) 
+	(spam-ifile-path, spam-ifile): added customization options
+
+	* gnus.el (gnus-group-ham-exit-processor-ifile): added ifile ham
+	exit processor
+	(spam-process): added gnus-group-ham-exit-processor-ifile to the
+	list of choices
+
 2003-01-07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-score.el (gnus-score-followup): Also score immediate

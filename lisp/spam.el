@@ -54,10 +54,6 @@
   ;; executable-find is not autoloaded in Emacs 20
   (autoload 'executable-find "executable"))
 
-;; autoload ifile-spam-filter
-(eval-and-compile
-  (autoload 'ifile-spam-filter "ifile-gnus"))
-
 ;; autoload query-dig
 (eval-and-compile
   (autoload 'query-dig "dig"))
@@ -172,6 +168,27 @@ Such articles will be transmitted to `bogofilter -s' on group exit."
   :type 'face
   :group 'spam)
 
+(defgroup spam-ifile nil
+  "Spam ifile configuration."
+  :group 'spam)
+
+(defcustom spam-ifile-path (executable-find "ifile")
+  "File path of the ifile executable program."
+  :type '(choice (file :tag "Location of ifile")
+		 (const :tag "ifile is not installed"))
+  :group 'spam-ifile)
+
+(defcustom spam-ifile-spam-category "spam"
+  "Name of the spam ifile category."  
+  :type 'string
+  :group 'spam-ifile)
+
+(defcustom spam-ifile-all-categories nil
+  "Whether the spam-split invocation of ifile will return all categories, or just spam.
+Set this to t if you want to use the spam-split invocation of ifile as your main source of newsgroup names."  
+  :type 'boolean
+  :group 'spam-ifile)
+
 (defgroup spam-bogofilter nil
   "Spam bogofilter configuration."
   :group 'spam)
@@ -246,19 +263,22 @@ articles before they get registered by Bogofilter."
       (member processor (car (gnus-parameter-spam-process group)))
     nil))
 
-(defun spam-group-processor-bogofilter-p (group)
+(defun spam-group-spam-processor-bogofilter-p (group)
   (spam-group-processor-p group 'gnus-group-spam-exit-processor-bogofilter))
 
-(defun spam-group-processor-ifile-p (group)
-  (spam-group-processor-p group 'gnus-group-spam-exit-processor-ifile))
-
-(defun spam-group-processor-blacklist-p (group)
+(defun spam-group-spam-processor-blacklist-p (group)
   (spam-group-processor-p group 'gnus-group-spam-exit-processor-blacklist))
 
-(defun spam-group-processor-whitelist-p (group)
+(defun spam-group-spam-processor-ifile-p (group)
+  (spam-group-processor-p group 'gnus-group-spam-exit-processor-ifile))
+
+(defun spam-group-ham-processor-ifile-p (group)
+  (spam-group-processor-p group 'gnus-group-ham-exit-processor-ifile))
+
+(defun spam-group-ham-processor-whitelist-p (group)
   (spam-group-processor-p group 'gnus-group-ham-exit-processor-whitelist))
 
-(defun spam-group-processor-BBDB-p (group)
+(defun spam-group-ham-processor-BBDB-p (group)
   (spam-group-processor-p group 'gnus-group-ham-exit-processor-BBDB))
 
 ;;; Hooks dispatching.  A bit raw for now.
@@ -269,13 +289,14 @@ articles before they get registered by Bogofilter."
 (defun spam-summary-prepare-exit ()
   ;; The spam processors are invoked for any group, spam or ham or neither
   (when (and spam-bogofilter-path
-	     (spam-group-processor-bogofilter-p gnus-newsgroup-name))
+	     (spam-group-spam-processor-bogofilter-p gnus-newsgroup-name))
     (spam-bogofilter-register-routine))
   
-  (when (spam-group-processor-ifile-p gnus-newsgroup-name)
-    (spam-ifile-register-routine))
+  (when (and spam-ifile-path
+	     (spam-group-spam-processor-ifile-p gnus-newsgroup-name))
+    (spam-ifile-register-spam-routine))
   
-  (when (spam-group-processor-bogofilter-p gnus-newsgroup-name)
+  (when (spam-group-spam-processor-bogofilter-p gnus-newsgroup-name)
     (spam-blacklist-register-routine))
 
   ;; Only for spam groups, we expire and maybe move articles
@@ -284,9 +305,11 @@ articles before they get registered by Bogofilter."
      (gnus-parameter-spam-process-destination gnus-newsgroup-name)))
 
   (when (spam-group-ham-contents-p gnus-newsgroup-name)
-    (when (spam-group-processor-whitelist-p gnus-newsgroup-name)
+    (when (spam-group-ham-processor-whitelist-p gnus-newsgroup-name)
       (spam-whitelist-register-routine))
-    (when (spam-group-processor-BBDB-p gnus-newsgroup-name)
+    (when (spam-group-ham-processor-ifile-p gnus-newsgroup-name)
+      (spam-ifile-register-ham-routine))
+    (when (spam-group-ham-processor-BBDB-p gnus-newsgroup-name)
       (spam-BBDB-register-routine))))
 
 (add-hook 'gnus-summary-prepare-hook 'spam-summary-prepare)
@@ -343,11 +366,28 @@ articles before they get registered by Bogofilter."
 					; mapcar it discards the
 					; return values
 
+(defun spam-get-article-as-string (article)
+  (let ((article-string))
+    (when (numberp article)
+      (save-window-excursion
+	(gnus-summary-goto-subject article)
+	(gnus-summary-show-article t)
+	(set-buffer gnus-article-buffer)
+	(setq article-string (buffer-string))))
+    article-string))
+
 (defun spam-fetch-field-from-fast (article)
   "Fetch the `from' field quickly, using the internal gnus-data-list function"
   (if (and (numberp article)
 	   (assoc article (gnus-data-list nil)))
       (mail-header-from (gnus-data-header (assoc article (gnus-data-list nil))))
+    nil))
+
+(defun spam-fetch-field-subject-fast (article)
+  "Fetch the `subject' field quickly, using the internal gnus-data-list function"
+  (if (and (numberp article)
+	   (assoc article (gnus-data-list nil)))
+      (mail-header-subject (gnus-data-header (assoc article (gnus-data-list nil))))
     nil))
 
 
@@ -473,23 +513,52 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 
 ;;;; ifile
 
-;;; uses ifile-gnus.el from
-;;; http://www.ai.mit.edu/people/jhbrown/ifile-gnus.html
-
 ;;; check the ifile backend; return nil if the mail was NOT classified
 ;;; as spam
 
-;;; TODO: we can't (require 'ifile-gnus), because it will insinuate
-;;; itself automatically
 (defun spam-check-ifile ()
-  (let ((ifile-primary-spam-group spam-split-group))
-    (ifile-spam-filter nil)))
+  "Check the ifile backend for the classification of this message"
+  (let ((article-buffer-name (buffer-name)) 
+	category return)
+    (with-temp-buffer
+      (let ((temp-buffer-name (buffer-name)))
+	(save-excursion
+	  (set-buffer article-buffer-name)
+	  (call-process-region (point-min) (point-max) spam-ifile-path 
+			       nil temp-buffer-name nil "-q" "-c"))
+	(goto-char (point-min))
+	(if (not (eobp))
+	    (setq category (buffer-substring (point) (spam-point-at-eol))))
+	(when (not (zerop (length category))) ; we need a category here
+	  (if spam-ifile-all-categories
+	      (when (string-equal spam-ifile-spam-category category)
+		(setq return spam-split-group))
+	    (setq return category)))))	; always accept the ifile category
+    return))
 
-;; TODO: add ifile registration 
-;; We need ifile-gnus.el to support nnimap; we could feel the message
-;; directly to ifile like we do with bogofilter but that's ugly.
-(defun spam-ifile-register-routine ()
-  (spam-generic-register-routine nil nil))
+(defun spam-ifile-register-with-ifile (article-string category)
+  "Register an article, given as a string, with a category.
+Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
+  (when (stringp article-string)
+    (let ((category (or category gnus-newsgroup-name)))
+      (with-temp-buffer
+	(insert-string article-string)
+	(call-process-region (point-min) (point-max) spam-ifile-path 
+			     nil nil nil "-h" "-i" category)))))
+
+(defun spam-ifile-register-spam-routine ()
+  (spam-generic-register-routine 
+   (lambda (article)
+     (spam-ifile-register-with-ifile 
+      (spam-get-article-as-string article) spam-ifile-spam-category))
+   nil))
+
+(defun spam-ifile-register-ham-routine ()
+  (spam-generic-register-routine 
+   nil
+   (lambda (article)
+     (spam-ifile-register-with-ifile 
+      (spam-get-article-as-string article) nil))))
 
 
 ;;;; Blacklists and whitelists.
