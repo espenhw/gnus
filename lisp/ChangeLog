@@ -1,3 +1,7 @@
+2003-10-18  Matt Swift  <swift@alum.mit.edu>
+
+	* mm-decode.el (mm-inline-media-tests): Recognize pjpeg as jpeg. 
+
 2003-10-18  Romain FRANCOISE  <romain@orebokech.com>
 
 	* message.el (message-forward-make-body): does both

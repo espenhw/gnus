@@ -155,7 +155,7 @@ set this variable to nil if you consider all urls to be safe."
   :group 'mime-display)
 
 (defcustom mm-inline-media-tests
-  '(("image/jpeg"
+  '(("image/p?jpeg"
      mm-inline-image
      (lambda (handle)
        (mm-valid-and-fit-image-p 'jpeg handle)))
@@ -241,7 +241,7 @@ set this variable to nil if you consider all urls to be safe."
     ;; Default to displaying as text
     (".*" mm-inline-text mm-readable-p))
   "Alist of media types/tests saying whether types can be displayed inline."
-  :type '(repeat (list (string :tag "MIME type")
+  :type '(repeat (list (regexp :tag "MIME type")
 		       (function :tag "Display function")
 		       (function :tag "Display test")))
   :group 'mime-display)
