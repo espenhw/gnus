@@ -1,3 +1,15 @@
+2003-02-07  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-int.el (gnus-internal-registry-spool-current-method): new variable
+	(gnus-request-scan): set
+	gnus-internal-registry-spool-current-method to gnus-command-method
+	before a request-scan operation
+
+	* gnus-registry.el (regtest-nnmail): use
+	gnus-internal-registry-spool-current-method
+
+	
+
 2003-02-07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mail-source.el (mail-source-fetch): Typo fix.

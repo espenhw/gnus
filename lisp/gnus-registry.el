@@ -29,6 +29,7 @@
 (eval-when-compile (require 'cl))
 
 (require 'gnus)
+(require 'gnus-int)
 (require 'gnus-sum)
 (require 'nnmail)
 
@@ -47,11 +48,11 @@
 (defun regtest-nnmail (id group)
   (message "Registry: article %s spooled to %s"
 	   id
-	   (gnus-group-guess-full-name group)))
+	   (gnus-group-prefixed-name group gnus-internal-registry-spool-current-method t)))
 
-(add-hook 'gnus-summary-article-move-hook 'regtest) ; also does copy, respool, and crosspost
-(add-hook 'gnus-summary-article-delete-hook 'regtest)
-(add-hook 'gnus-summary-article-expire-hook 'regtest)
+;;(add-hook 'gnus-summary-article-move-hook 'regtest) ; also does copy, respool, and crosspost
+;;(add-hook 'gnus-summary-article-delete-hook 'regtest)
+;;(add-hook 'gnus-summary-article-expire-hook 'regtest)
 (add-hook 'nnmail-spool-hook 'regtest-nnmail)
 
 ;; TODO:
