@@ -7,6 +7,18 @@
 
 2003-03-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnmail.el (nnmail-process-mmdf-mail-format): Indent.
+
+2003-03-28  Vasily Korytov  <deskpot@myrealbox.com>
+
+	* message.el (message-make-in-reply-to): Use
+	mail-extract-address-components to dentermine sender's
+	name/address.
+
+2003-03-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nndoc.el (nndoc-type-alist): Move mime-parts further ahead. 
+
 	* gnus-registry.el (gnus-registry-translate-to-alist): Make a
 	valid lambda.
 	(gnus-registry-translate-from-alist): Ditto.

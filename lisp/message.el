@@ -4425,12 +4425,10 @@ If NOW, use that time instead."
 	  (date (mail-header-date message-reply-headers))
 	  (msg-id (mail-header-message-id message-reply-headers)))
       (when from
-	(let ((stop-pos
-	       (string-match "  *at \\|  *@ \\| *(\\| *<" from)))
+	(let ((name (mail-extract-address-components from)))
 	  (concat msg-id (if msg-id " (")
-		  (if (and stop-pos
-			   (not (zerop stop-pos)))
-		      (substring from 0 stop-pos) from)
+		  (or (car name)
+		      (nth 1 name))
 		  "'s message of \""
 		  (if (or (not date) (string= date ""))
 		      "(unknown date)" date)

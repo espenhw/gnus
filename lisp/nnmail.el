@@ -889,8 +889,8 @@ If SOURCE is a directory spec, try to return the group name component."
 	 start
 	 (if (search-forward "\n\n" nil t)
 	     (1- (point))
-	 ;; This will never happen, but just to be on the safe side --
-      ;; if there is no head-body delimiter, we search a bit manually.
+	   ;; This will never happen, but just to be on the safe side --
+	   ;; if there is no head-body delimiter, we search a bit manually.
 	   (while (and (looking-at "From \\|[^ \t]+:")
 		       (not (eobp)))
 	     (forward-line 1))
