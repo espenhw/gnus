@@ -1641,6 +1641,23 @@ posting an article."
  :parameter-document
  "Posting method for this group.")
 
+(gnus-define-group-parameter
+ large-newsgroup-initial
+ :type integer
+ :function-document
+ "Return GROUP's initial input of the number of articles."
+ :variable-document
+ "*Alist of group regexps and its initial input of the number of articles."
+ :parameter-type '(choice :tag "Initial Input for Large Newsgroup"
+			  (const :tag "All" nil)
+			  (integer))
+ :parameter-document "\
+
+This number will be prompted as the initial value of the number of
+articles to list when the group is a large newsgroup (see
+`gnus-large-newsgroup').  If it is `nil', the default value is the
+total number of articles in the group.")
+
 (defcustom gnus-group-uncollapsed-levels 1
   "Number of group name elements to leave alone when making a short group name."
   :group 'gnus-group-visual

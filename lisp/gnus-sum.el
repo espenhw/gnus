@@ -4961,16 +4961,20 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 		       (numberp gnus-large-newsgroup)
 		       (> number gnus-large-newsgroup))
 		  (let* ((cursor-in-echo-area nil)
+			 (initial (gnus-parameter-large-newsgroup-initial 
+				   gnus-newsgroup-name))
 			 (input
 			  (read-string
 			   (format
-			    "How many articles from %s (max %d): "
+			    "How many articles from %s (%s %d): "
 			    (gnus-limit-string
 			     (gnus-group-decoded-name gnus-newsgroup-name)
 			     35)
+			    (if initial "max" "default")
 			    number)
-			   (cons (number-to-string gnus-large-newsgroup)
-				 0))))
+			   (if initial
+			       (cons (number-to-string initial)
+				     0)))))
 		    (if (string-match "^[ \t]*$" input) number input)))
 		 ((and (> scored marked) (< scored number)
 		       (> (- scored number) 20))
@@ -10948,13 +10952,20 @@ If ALL is a number, fetch this number of articles."
 	 (t
 	  (if (and (numberp gnus-large-newsgroup)
 		   (> len gnus-large-newsgroup))
-	      (let ((input
-		     (read-string
-		      (format
-		       "How many articles from %s (default %d): "
-		       (gnus-limit-string
-			(gnus-group-decoded-name gnus-newsgroup-name) 35)
-		       len))))
+	      (let* ((cursor-in-echo-area nil)
+		     (initial (gnus-parameter-large-newsgroup-initial 
+			       gnus-newsgroup-name))
+		     (input
+		      (read-string
+		       (format
+			"How many articles from %s (%s %d): "
+			(gnus-limit-string
+			 (gnus-group-decoded-name gnus-newsgroup-name) 35)
+			(if initial "max" "default")
+			len)
+		       (if initial
+			   (cons (number-to-string initial)
+				 0)))))
 		(unless (string-match "^[ \t]*$" input)
 		  (setq all (string-to-number input))
 		  (if (< all len)

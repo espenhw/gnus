@@ -1,3 +1,10 @@
+2002-02-27  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el (large-newsgroup-initial): New parameter.
+
+	* gnus-sum.el (gnus-articles-to-read): Use large-newsgroup-initial.
+	(gnus-summary-insert-old-articles): Ditto.
+
 2002-02-26  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-articles-to-read): `gnus-large-newsgroup' is
