@@ -1,6 +1,17 @@
 ;; Also know as the "wish list".  Some are done. For the others, no
 ;; promise when to be implemented.
 
+* Allow specification of server in Newsgroups header
+
+  WIBNI I could put `Newsgroups: nntp+quimby:bla' into a message and
+  Gnus would know to post this message on my server `nntp:quimby' into
+  the group bla?  I think this would be way cool.
+
+  But Gnus would have to rewrite the Newsgroups header before actually
+  sending the posting.
+
+  Thanks for Micha Wiedenmann for this suggestion.
+
 * Understand mail-user-agent. Maybe gnus-mail-user-agent.
   
   [Done]
