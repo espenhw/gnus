@@ -141,7 +141,10 @@
   (let ((list-archive 
 	 (with-current-buffer gnus-original-article-buffer
 	   (gnus-fetch-field "list-archive"))))
-    (cond (list-archive (browse-url list-archive))
+    (cond (list-archive 
+	   (if (string-match "<\\(http:[^>]*\\)>" list-archive)
+	       (browse-url (match-string 1 list-archive))
+	     (browse-url list-archive)))
 	  (t (gnus-message 1 "no list-archive in this group")))))
 
 ;;; Utility functions
