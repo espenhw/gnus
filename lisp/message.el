@@ -1411,7 +1411,7 @@ Point is left at the beginning of the narrowed-to region."
 
 (easy-menu-define
  message-mode-menu message-mode-map "Message Menu."
- '("Message"
+ `("Message"
    ["Sort Headers" message-sort-headers t]
    ["Yank Original" message-yank-original t]
    ["Fill Yanked Message" message-fill-yanked-message t]
@@ -1424,21 +1424,21 @@ Point is left at the beginning of the narrowed-to region."
    ["Newline and Reformat" message-newline-and-reformat t]
    ["Rename buffer" message-rename-buffer t]
    ["Spellcheck" ispell-message
-    ;;:help "Spellcheck this message"
-    ]
+    ,@(if (featurep 'xemacs) nil
+	'(:help "Spellcheck this message"))]
    ["Attach file as MIME" mml-attach-file
-    ;;:help "Attach a file at point"
-    ]
+    ,@(if (featurep 'xemacs) nil
+	'(:help "Attach a file at point"))]
    "----"
    ["Send Message" message-send-and-exit
-    ;;:help "Send this message"
-    ]
+    ,@(if (featurep 'xemacs) nil
+	'(:help "Send this message"))]
    ["Abort Message" message-dont-send
-    ;;:help "File this draft message and exit"
-    ]
+    ,@(if (featurep 'xemacs) nil
+	'(:help "File this draft message and exit"))]
    ["Kill Message" message-kill-buffer
-    ;;:help "Delete this message without sending"
-    ]))
+    ,@(if (featurep 'xemacs) nil
+	'(:help "Delete this message without sending"))]))
 
 (easy-menu-define
  message-mode-field-menu message-mode-map ""

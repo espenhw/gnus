@@ -1724,7 +1724,7 @@ increase the score of each group you read."
     ;; Define both the Article menu in the summary buffer and the equivalent
     ;; Commands menu in the article buffer here for consistency.
     (let ((innards
-           '(("Hide"
+           `(("Hide"
               ["All" gnus-article-hide t]
               ["Headers" gnus-article-hide-headers t]
               ["Signature" gnus-article-hide-signature t]
@@ -1773,8 +1773,8 @@ increase the score of each group you read."
               ["Quoted-Printable" gnus-article-de-quoted-unreadable t]
               ["Base64" gnus-article-de-base64-unreadable t]
               ["Rot 13" gnus-summary-caesar-message
-	       ;;:help "\"Caesar rotate\" article by 13"
-	       ]
+	       ,@(if (featurep 'xemacs) nil
+		   '(:help "\"Caesar rotate\" article by 13"))]
               ["Unix pipe" gnus-summary-pipe-message t]
               ["Add buttons" gnus-article-add-buttons t]
               ["Add buttons to head" gnus-article-add-buttons-to-head t]
@@ -1786,11 +1786,11 @@ increase the score of each group you read."
 	      ["HZ" gnus-article-decode-HZ t])
              ("Output"
               ["Save in default format" gnus-summary-save-article
-	       ;;:help "Save article using default method"
-	       ]
+	       ,@(if (featurep 'xemacs) nil
+		   '(:help "Save article using default method"))]
               ["Save in file" gnus-summary-save-article-file
-	       ;;:help "Save article in file"
-	       ]
+	       ,@(if (featurep 'xemacs) nil
+		   '(:help "Save article in file"))]
               ["Save in Unix mail format" gnus-summary-save-article-mail t]
               ["Save in MH folder" gnus-summary-save-article-folder t]
               ["Save in VM folder" gnus-summary-save-article-vm t]
@@ -1822,8 +1822,8 @@ increase the score of each group you read."
                 'request-expire-articles gnus-newsgroup-name)])
              ("Extract"
               ["Uudecode" gnus-uu-decode-uu
-	       ;;:help "Decode uuencoded article(s)"
-	       ]
+	       ,@(if (featurep 'xemacs) nil
+		   '(:help "Decode uuencoded article(s)"))]
               ["Uudecode and save" gnus-uu-decode-uu-and-save t]
               ["Unshar" gnus-uu-decode-unshar t]
               ["Unshar and save" gnus-uu-decode-unshar-and-save t]
@@ -1873,26 +1873,26 @@ increase the score of each group you read."
 
     (easy-menu-define
      gnus-summary-post-menu gnus-summary-mode-map ""
-     '("Post"
+     `("Post"
        ["Post an article" gnus-summary-post-news
-	;;:help "Post an article"
-	]
+	,@(if (featurep 'xemacs) nil
+	    '(:help "Post an article"))]
        ["Followup" gnus-summary-followup
-	;;:help "Post followup to this article"
-	]
+	,@(if (featurep 'xemacs) nil
+	    '(:help "Post followup to this article"))]
        ["Followup and yank" gnus-summary-followup-with-original
-	;;:help "Post followup to this article, quoting its contents"
-	]
+	,@(if (featurep 'xemacs) nil
+	    '(:help "Post followup to this article, quoting its contents"))]
        ["Supersede article" gnus-summary-supersede-article t]
        ["Cancel article" gnus-summary-cancel-article
-	;;:help "Cancel an article you posted"
-	]
+	,@(if (featurep 'xemacs) nil
+	    '(:help "Cancel an article you posted"))]
        ["Reply" gnus-summary-reply t]
        ["Reply and yank" gnus-summary-reply-with-original t]
        ["Wide reply" gnus-summary-wide-reply t]
        ["Wide reply and yank" gnus-summary-wide-reply-with-original
-	;;:help "Mail a reply, quoting this article"
-	]
+	,@(if (featurep 'xemacs) nil
+	    '(:help "Mail a reply, quoting this article"))]
        ["Mail forward" gnus-summary-mail-forward t]
        ["Post forward" gnus-summary-post-forward t]
        ["Digest and mail" gnus-uu-digest-mail-forward t]
@@ -1901,8 +1901,8 @@ increase the score of each group you read."
        ["Send bounced mail" gnus-summary-resend-bounced-mail t]
        ["Send a mail" gnus-summary-mail-other-window t]
        ["Uuencode and post" gnus-uu-post-news
-	;;:help "Post a uuencoded article"
-	]
+	,@(if (featurep 'xemacs) nil
+	    '(:help "Post a uuencoded article"))]
        ["Followup via news" gnus-summary-followup-to-mail t]
        ["Followup via news and yank"
 	gnus-summary-followup-to-mail-with-original t]
@@ -1913,15 +1913,15 @@ increase the score of each group you read."
 
     (easy-menu-define
      gnus-summary-misc-menu gnus-summary-mode-map ""
-     '("Misc"
+     `("Misc"
        ("Mark Read"
 	["Mark as read" gnus-summary-mark-as-read-forward t]
 	["Mark same subject and select"
 	 gnus-summary-kill-same-subject-and-select t]
 	["Mark same subject" gnus-summary-kill-same-subject t]
 	["Catchup" gnus-summary-catchup
-	 ;;:help "Mark unread articles in this group as read"
-	 ]
+	 ,@(if (featurep 'xemacs) nil
+	     '(:help "Mark unread articles in this group as read"))]
 	["Catchup all" gnus-summary-catchup-all t]
 	["Catchup to here" gnus-summary-catchup-to-here t]
 	["Catchup region" gnus-summary-mark-region-as-read t]
@@ -1972,11 +1972,11 @@ increase the score of each group you read."
 	 ["Save" gnus-summary-save-process-mark t]))
        ("Scroll article"
 	["Page forward" gnus-summary-next-page
-	 ;;:help "Show next page of article"
-	 ]
+	 ,@(if (featurep 'xemacs) nil
+	     '(:help "Show next page of article"))]
 	["Page backward" gnus-summary-prev-page
-	 ;;:help "Show previous page of article"
-	 ]
+	 ,@(if (featurep 'xemacs) nil
+	     '(:help "Show previous page of article"))]
 	["Line forward" gnus-summary-scroll-up t])
        ("Move"
 	["Next unread article" gnus-summary-next-unread-article t]
@@ -2028,13 +2028,13 @@ increase the score of each group you read."
        ["Send a bug report" gnus-bug t]
        ("Exit"
 	["Catchup and exit" gnus-summary-catchup-and-exit
-	 ;;:help "Mark unread articles in this group as read, then exit"
-	 ]
+	 ,@(if (featurep 'xemacs) nil
+	     '(:help "Mark unread articles in this group as read, then exit"))]
 	["Catchup all and exit" gnus-summary-catchup-all-and-exit t]
 	["Catchup and goto next" gnus-summary-catchup-and-goto-next-group t]
 	["Exit group" gnus-summary-exit
-	 ;;:help "Exit current group, return to group selection mode"
-	 ]
+	 ,@(if (featurep 'xemacs) nil
+	     '(:help "Exit current group, return to group selection mode"))]
 	["Exit group without updating" gnus-summary-exit-no-update t]
 	["Exit and goto next group" gnus-summary-next-group t]
 	["Exit and goto prev group" gnus-summary-prev-group t]
