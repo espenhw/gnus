@@ -230,14 +230,6 @@ For example,
   :type '(repeat (cons symbol regexp))
   :group 'gnus-article-washing)
 
-(defcustom gnus-article-banner-alist nil
-  "Banner alist for stripping.
-For example, 
-     ((egroups . \"^[ \\t\\n]*-------------------+\\\\( eGroups Sponsor -+\\\\)?....\\n\\\\(.+\\n\\\\)+\"))"
-  :version "21.1"
-  :type '(repeat (cons symbol regexp))
-  :group 'gnus-article-washing)
-
 (gnus-define-group-parameter 
  banner
  :variable-document

@@ -1,3 +1,8 @@
+2000-12-26  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-banner-alist): Remove duplicate
+	definition.
+
 2000-12-25 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* dgnushack.el (dgnushack-compile): elc is in the current directory.
