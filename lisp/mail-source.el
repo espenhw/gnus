@@ -522,7 +522,8 @@ Pass INFO on to CALLBACK."
 			 nil errors nil from to)))))
 	      (when (file-exists-p to)
 		(set-file-modes to mail-source-default-file-modes))
-	      (if (and (not (buffer-modified-p errors))
+	      (if (and (or (not (buffer-modified-p errors))
+			   (zerop (buffer-size errors)))
 		       (zerop result))
 		  ;; No output => movemail won.
 		  t

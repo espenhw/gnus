@@ -1,3 +1,17 @@
+2001-08-10 02:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-ml.el (turn-on-gnus-mailing-list-mode): Use
+	gnus-group-find-parameter. Suggested by Janne Rinta-Manty
+	<rintaman@cs.Helsinki.FI>.
+	
+	* mail-source.el (mail-source-movemail): The error buffer is
+	modified, but nothing in it.
+
+2001-08-10 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-bogus-system-names): New.
+	(message-make-fqdn): Use it.
+
 2001-08-09 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nndraft.el (nndraft-request-group): Use
