@@ -1,3 +1,17 @@
+2000-08-09  Simon Josefsson <simon@josefsson.org>
+
+	* imap.el (imap-parse-body):
+	(imap-parse-string-list): Add bug workarounds for Stalker
+	Communigate Pro 3.0 server.
+	(imap-body-lines): Remove bogus comment.
+
+	* imap.el (imap-range-to-message-set): Move from nnimap.el.
+
+	* nnimap.el (nnimap-retrieve-which-headers):
+	(nnimap-retrieve-headers-from-server):
+	(nnimap-request-set-mark):
+	(nnimap-request-expire-articles): Use `i-r-t-m-set' instead.
+
 2000-08-08 00:53:41  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-dont-reply-to-names):
