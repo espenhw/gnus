@@ -1556,7 +1556,8 @@ newsgroup."
 	;; The group couldn't be reached, so we nix out the number of
 	;; unread articles and stuff.
 	(gnus-set-active group nil)
-	(setcar (gnus-gethash group gnus-newsrc-hashtb) t))))
+	(let ((tmp (gnus-gethash group gnus-newsrc-hashtb)))
+	  (if tmp (setcar tmp t))))))
 
     ;; iterate through groups on methods which support gnus-retrieve-groups
     ;; and fetch a partial active file and use it to find new news.

@@ -1,3 +1,8 @@
+1999-11-19 21:37:41  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-start.el (gnus-get-unread-articles): Assert group is in
+ 	hashtb.
+
 1999-11-19 19:53:08  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-display-external): Write region with binary
