@@ -734,59 +734,60 @@ articles in the topic and its subtopics."
   "Run when changing levels to enter/remove groups from topics."
   (save-excursion
     (set-buffer gnus-group-buffer)
-    (unless gnus-topic-inhibit-change-level
-      (gnus-group-goto-group (or (car (nth 2 previous)) group))
-      (when (and gnus-topic-mode
-		 gnus-topic-alist
-		 (not gnus-topic-inhibit-change-level))
-	;; Remove the group from the topics.
-	(if (and (< oldlevel gnus-level-zombie)
-		 (>= level gnus-level-zombie))
-	    (let ((alist gnus-topic-alist))
-	      (while (gnus-group-goto-group group)
-		(gnus-delete-line))
-	      (while alist
-		(when (member group (car alist))
-		  (setcdr (car alist) (delete group (cdar alist))))
-		(pop alist)))
-	  ;; If the group is subscribed we enter it into the topics.
-	  (when (and (< level gnus-level-zombie)
-		     (>= oldlevel gnus-level-zombie))
-	    (let* ((prev (gnus-group-group-name))
-		   (gnus-topic-inhibit-change-level t)
-		   (gnus-group-indentation
-		    (make-string
-		     (* gnus-topic-indent-level
-			(or (save-excursion
-			      (gnus-topic-goto-topic (gnus-current-topic))
-			      (gnus-group-topic-level))
-			    0))
-		     ? ))
-		   (yanked (list group))
-		   alist talist end)
-	      ;; Then we enter the yanked groups into the topics they belong
-	      ;; to.
-	      (when (setq alist (assoc (save-excursion
-					 (forward-line -1)
-					 (or
-					  (gnus-current-topic)
-					  (caar gnus-topic-topology)))
-				       gnus-topic-alist))
-		(setq talist alist)
-		(when (stringp yanked)
-		  (setq yanked (list yanked)))
-		(if (not prev)
-		    (nconc alist yanked)
-		  (if (not (cdr alist))
-		      (setcdr alist (nconc yanked (cdr alist)))
-		    (while (and (not end) (cdr alist))
-		      (when (equal (cadr alist) prev)
+    (let ((buffer-read-only nil))
+      (unless gnus-topic-inhibit-change-level
+	(gnus-group-goto-group (or (car (nth 2 previous)) group))
+	(when (and gnus-topic-mode
+		   gnus-topic-alist
+		   (not gnus-topic-inhibit-change-level))
+	  ;; Remove the group from the topics.
+	  (if (and (< oldlevel gnus-level-zombie)
+		   (>= level gnus-level-zombie))
+	      (let ((alist gnus-topic-alist))
+		(while (gnus-group-goto-group group)
+		  (gnus-delete-line))
+		(while alist
+		  (when (member group (car alist))
+		    (setcdr (car alist) (delete group (cdar alist))))
+		  (pop alist)))
+	    ;; If the group is subscribed we enter it into the topics.
+	    (when (and (< level gnus-level-zombie)
+		       (>= oldlevel gnus-level-zombie))
+	      (let* ((prev (gnus-group-group-name))
+		     (gnus-topic-inhibit-change-level t)
+		     (gnus-group-indentation
+		      (make-string
+		       (* gnus-topic-indent-level
+			  (or (save-excursion
+				(gnus-topic-goto-topic (gnus-current-topic))
+				(gnus-group-topic-level))
+			      0))
+		       ? ))
+		     (yanked (list group))
+		     alist talist end)
+		;; Then we enter the yanked groups into the topics they belong
+		;; to.
+		(when (setq alist (assoc (save-excursion
+					   (forward-line -1)
+					   (or
+					    (gnus-current-topic)
+					    (caar gnus-topic-topology)))
+					 gnus-topic-alist))
+		  (setq talist alist)
+		  (when (stringp yanked)
+		    (setq yanked (list yanked)))
+		  (if (not prev)
+		      (nconc alist yanked)
+		    (if (not (cdr alist))
 			(setcdr alist (nconc yanked (cdr alist)))
-			(setq end t))
-		      (setq alist (cdr alist)))
-		    (unless end
-		      (nconc talist yanked))))))
-	    (gnus-topic-update-topic)))))))
+		      (while (and (not end) (cdr alist))
+			(when (equal (cadr alist) prev)
+			  (setcdr alist (nconc yanked (cdr alist)))
+			  (setq end t))
+			(setq alist (cdr alist)))
+		      (unless end
+			(nconc talist yanked))))))
+	      (gnus-topic-update-topic))))))))
 
 (defun gnus-topic-goto-next-group (group props)
   "Go to group or the next group after group."

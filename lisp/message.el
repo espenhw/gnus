@@ -440,8 +440,7 @@ the signature is inserted."
   :type 'hook)
 
 (defcustom message-header-setup-hook nil
-  "Hook called narrowed to the headers when setting up a message
-buffer."
+  "Hook called narrowed to the headers when setting up a message buffer."
   :group 'message-various
   :type 'hook)
 

@@ -1,10 +1,13 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.31 Manual
+@settitle Quassia Gnus 0.32 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
+@c @direntry
+@c * Gnus: (gnus).         The news reader Gnus.
+@c @end direntry
 @iftex
 @finalout
 @end iftex
@@ -313,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.31 Manual
+@title Quassia Gnus 0.32 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -349,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.31.
+This manual corresponds to Quassia Gnus 0.32.
 
 @end ifinfo
 
@@ -17291,6 +17294,9 @@ in the head or body.
 
 @item
 Allow breaking lengthy NNTP commands.
+
+@item
+gnus-article-highlight-limit, to disable highlighting in big articles. 
 
 @item
 Solve the halting problem.

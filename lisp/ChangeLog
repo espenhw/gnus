@@ -1,3 +1,25 @@
+Mon Feb 23 18:06:47 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.32 is released.
+
+Mon Feb 23 17:48:42 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-cite.el (gnus-article-hide-citation-maybe): Wrong
+	interactive specs.
+	(gnus-cite-toggle): Maybe parse.
+
+Mon Feb 23 05:26:11 1998  Rui-Tao Dong ~{6-HpLN~}  <rdong@internetmci.com>
+
+	* nnweb.el (nnweb-type-definition): Fixed.
+
+Sun Feb 22 18:10:53 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-agent.el (gnus-agent-group-path): Translate right chars.
+	(gnus-agent-toggle-plugged): Allow proper closing.
+
+	* gnus-srvr.el (gnus-browse-read-group): Allow entering
+	non-ephemeral groups.
+
 Sun Feb 22 04:21:15 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.31 is released.

@@ -236,12 +236,13 @@
 (defun gnus-agent-toggle-plugged (plugged)
   "Toggle whether Gnus is unplugged or not."
   (interactive (list (not gnus-plugged)))
-  (setq gnus-plugged plugged)
   (if plugged
       (progn
+	(setq gnus-plugged plugged)
 	(gnus-run-hooks 'gnus-agent-plugged-hook)
 	(setcar (cdr gnus-agent-mode-status) " Plugged"))
     (gnus-agent-close-connections)
+    (setq gnus-plugged plugged)
     (gnus-run-hooks 'gnus-agent-unplugged-hook)
     (setcar (cdr gnus-agent-mode-status) " Unplugged"))
   (set-buffer-modified-p t))
@@ -481,8 +482,9 @@ the actual number of articles toggled is returned."
   "Translate GROUP into a path."
   (if nnmail-use-long-file-names
       group
-    (nnheader-translate-file-chars
-     (nnheader-replace-chars-in-string group ?. ?/))))
+    (nnheader-replace-chars-in-string
+     (nnheader-translate-file-chars group)
+     ?. ?/)))
 
 
 

@@ -507,7 +507,7 @@ always hide."
 (defun gnus-article-toggle-cited-text (region)
   "Toggle hiding the text in REGION."
   (let (buffer-read-only)
-    (funcall
+    (funcall 
      (if (text-property-any
 	  (car region) (1- (cdr region))
 	  (car gnus-hidden-properties) (cadr gnus-hidden-properties))
@@ -523,7 +523,7 @@ percent and at least `gnus-cite-hide-absolute' lines of the body is
 cited text with attributions.  When called interactively, these two
 variables are ignored.
 See also the documentation for `gnus-article-highlight-citation'."
-  (interactive (list (gnus-article-hidden-arg) 'force))
+  (interactive (append (gnus-article-hidden-arg) '(force)))
   (unless (gnus-article-check-hidden-text 'cite arg)
     (save-excursion
       (set-buffer gnus-article-buffer)
@@ -882,6 +882,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 (defun gnus-cite-toggle (prefix)
   (save-excursion
     (set-buffer gnus-article-buffer)
+    (gnus-cite-parse-maybe)
     (let ((buffer-read-only nil)
 	  (numbers (cdr (assoc prefix gnus-cite-prefix-alist)))
 	  (inhibit-point-motion-hooks t)

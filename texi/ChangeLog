@@ -1,3 +1,12 @@
+Mon Feb 23 18:05:09 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi: Direntry not handled by Emacs 19.34.
+
+1998-02-21  SL Baur  <steve@altair.xemacs.org>
+
+	* gnus.texi: Add a direntry field.
+	* message.texi: Ditto.  (Data taken from Emacs 20.2 info/dir).
+
 Sun Feb 22 03:24:43 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Score File Format): Addition.
