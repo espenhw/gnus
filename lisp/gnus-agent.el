@@ -1241,7 +1241,7 @@ This can be added to `gnus-select-article-hook' or
 		  ((memq mark '(tick))
 		   (let ((info-marks (assoc mark (gnus-info-marks info))))
 		     (unless info-marks
-		       (gnus-info-marks info (cons (setq info-marks (list mark)) (gnus-info-marks info))))
+		       (gnus-info-set-marks info (cons (setq info-marks (list mark)) (gnus-info-marks info))))
 		     (setcdr info-marks (funcall (if (eq what 'add)
 				  'gnus-range-add
 				'gnus-remove-from-range)
