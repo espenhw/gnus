@@ -1,3 +1,8 @@
+2000-11-01  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Fancy Mail Splitting): Explain
+	`nnmail-split-fancy-with-parent'.
+
 2000-11-01 09:12:24  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Finding the News): @env is not supported in texinfo 3.12.
