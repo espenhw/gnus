@@ -4316,19 +4316,31 @@ are decompressed."
   "Insert the MIME part under point into the current buffer."
   (interactive (list nil current-prefix-arg))
   (gnus-article-check-buffer)
-  (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
-	 contents charset
-	 (b (point))
-	 (inhibit-read-only t))
-    (when handle
+  (unless handle
+    (setq handle (get-text-property (point) 'gnus-data)))
+  (when handle
+    (let ((b (point))
+	  (inhibit-read-only t)
+	  contents charset coding-system)
       (if (and (not arg) (mm-handle-undisplayer handle))
 	  (mm-remove-part handle)
-	(setq contents (mm-get-part handle))
+	(mm-with-unibyte-buffer
+	  (mm-insert-part handle)
+	  (setq contents
+		(or (mm-decompress-buffer (mail-content-type-get
+					   (mm-handle-disposition handle)
+					   'filename))
+		    (buffer-string))))
 	(cond
 	 ((not arg)
-	  (setq charset (or (mail-content-type-get
-			     (mm-handle-type handle) 'charset)
-			    gnus-newsgroup-charset)))
+	  (unless (setq charset (mail-content-type-get
+				 (mm-handle-type handle) 'charset))
+	    (if (setq coding-system (mm-with-unibyte-buffer
+				      (insert contents)
+				      (mm-find-buffer-file-coding-system)))
+		(setq contents (mm-decode-coding-string contents
+							coding-system))
+	      (setq charset gnus-newsgroup-charset))))
 	 ((numberp arg)
 	  (if (mm-handle-undisplayer handle)
 	      (mm-remove-part handle))
@@ -4339,20 +4351,15 @@ are decompressed."
 	 (t
 	  (if (mm-handle-undisplayer handle)
 	      (mm-remove-part handle))
-	  (setq contents
-		(if (fboundp 'string-to-multibyte)
-		    (string-to-multibyte contents)
-		  (mapconcat
-		   (lambda (ch) (mm-string-as-multibyte (char-to-string ch)))
-		   contents "")))))
+	  (setq contents (mm-string-to-multibyte contents))))
 	(forward-line 2)
-	(mm-insert-inline handle
-			  (if (and charset
-				   (setq charset (mm-charset-to-coding-system
-						  charset))
-				   (not (eq charset 'ascii)))
-			      (mm-decode-coding-string contents charset)
-			    contents))
+	(mm-insert-inline
+	 handle
+	 (if (and charset
+		  (setq coding-system (mm-charset-to-coding-system charset))
+		  (not (eq charset 'ascii)))
+	     (mm-decode-coding-string contents coding-system)
+	   contents))
 	(goto-char b)))))
 
 (defun gnus-mime-view-part-as-charset (&optional handle arg)

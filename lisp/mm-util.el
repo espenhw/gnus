@@ -1,5 +1,5 @@
 ;;; mm-util.el --- Utility functions for Mule and low level things
-;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
 ;;   Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -73,6 +73,12 @@
      (string-as-unibyte . identity)
      (string-make-unibyte . identity)
      (string-as-multibyte . identity)
+     (string-to-multibyte
+      . (lambda (string)
+	  "Return a multibyte string with the same individual chars as string."
+	  (mapconcat
+	   (lambda (ch) (mm-string-as-multibyte (char-to-string ch)))
+	   string "")))
      (multibyte-string-p . ignore)
      ;; It is not a MIME function, but some MIME functions use it.
      (make-temp-file . (lambda (prefix &optional dir-flag)
@@ -918,12 +924,158 @@ If INHIBIT is non-nil, inhibit `mm-inhibit-file-name-handlers'."
     (defun mm-detect-mime-charset-region (start end)
       "Detect MIME charset of the text in the region between START and END."
       (let ((cs (mm-detect-coding-region start end)))
-	(coding-system-get cs 'mime-charset)))
+	(or (coding-system-get cs :mime-charset)
+	    (coding-system-get cs 'mime-charset))))
   (defun mm-detect-mime-charset-region (start end)
     "Detect MIME charset of the text in the region between START and END."
     (let ((cs (mm-detect-coding-region start end)))
       cs)))
 
+(eval-when-compile
+  (unless (fboundp 'coding-system-to-mime-charset)
+    (defalias 'coding-system-to-mime-charset 'ignore)))
+
+(defun mm-coding-system-to-mime-charset (coding-system)
+  "Return the MIME charset corresponding to CODING-SYSTEM.
+To make this function work with XEmacs, the APEL package is required."
+  (when coding-system
+    (or (coding-system-get coding-system :mime-charset)
+	(coding-system-get coding-system 'mime-charset)
+	(and (featurep 'xemacs)
+	     (or (and (fboundp 'coding-system-to-mime-charset)
+		      (not (eq (symbol-function 'coding-system-to-mime-charset)
+			       'ignore)))
+		 (and (condition-case nil
+			  (require 'mcharset)
+			(error nil))
+		      (fboundp 'coding-system-to-mime-charset)))
+	     (coding-system-to-mime-charset coding-system)))))
+
+(defun mm-decompress-buffer (filename &optional inplace)
+  "Decompress buffer's contents according to the extension of FILENAME.
+If INPLACE is nil, return a decompressed string or nil, and the buffer
+will not be modified.  Otherwise, replace the buffer's contents with
+the decompressed one.  Decompression is done only when the extension
+is \".gz\" or \".bz2\" which does not follow \".tar\"."
+  (let ((decomp (cond ((or (not filename)
+			   (string-match "\\.tar\\.[^.]+\\'" filename))
+		       nil)
+		      ((string-match "\\.gz\\'" filename)
+		       '("gzip" "-c" "-d" "-q"))
+		      ((string-match "\\.bz2\\'" filename)
+		       '("bzip2" "-d")))))
+    (when decomp
+      (let ((coding-system-for-read mm-binary-coding-system)
+	    (coding-system-for-write mm-binary-coding-system)
+	    cur mod)
+	(if inplace
+	    (prog1
+		nil
+	      (setq cur (buffer-string)
+		    mod (buffer-modified-p))
+	      (condition-case nil
+		  (apply 'call-process-region (point-min) (point-max)
+			 (car decomp) t t nil (cdr decomp))
+		(error
+		 (erase-buffer)
+		 (insert cur)
+		 (set-buffer-modified-p mod))))
+	  (setq cur (current-buffer))
+	  (mm-with-unibyte-buffer
+	    (insert-buffer-substring cur)
+	    (condition-case nil
+		(progn
+		  (apply 'call-process-region (point-min) (point-max)
+			 (car decomp) t t nil (cdr decomp))
+		  (buffer-string))
+	      (error nil))))))))
+
+(eval-when-compile
+  (unless (fboundp 'coding-system-name)
+    (defalias 'coding-system-name 'ignore))
+  (unless (fboundp 'find-file-coding-system-for-read-from-filename)
+    (defalias 'find-file-coding-system-for-read-from-filename 'ignore))
+  (unless (fboundp 'find-operation-coding-system)
+    (defalias 'find-operation-coding-system 'ignore)))
+
+(defun mm-find-buffer-file-coding-system (&optional filename)
+  "Find coding system used to decode the contents of the current buffer.
+This function looks for the coding system magic cookie or examines the
+coding system specified by `file-coding-system-alist' being associated
+with FILENAME which defaults to `buffer-file-name'."
+  (unless filename
+    (setq filename buffer-file-name))
+  (save-excursion
+    (let ((decomp (mm-decompress-buffer filename)))
+      (when decomp
+	(set-buffer (let (default-enable-multibyte-characters)
+		      (generate-new-buffer " *temp*")))
+	(insert decomp)
+	(setq filename (file-name-sans-extension filename)))
+      (goto-char (point-min))
+      (prog1
+	  (cond
+	   ((boundp 'set-auto-coding-function) ;; Emacs
+	    (if filename
+		(or (funcall (symbol-value 'set-auto-coding-function)
+			     filename (- (point-max) (point-min)))
+		    (car (find-operation-coding-system 'insert-file-contents
+						       filename)))
+	      (let (auto-coding-alist)
+		(condition-case nil
+		    (funcall (symbol-value 'set-auto-coding-function)
+			     nil (- (point-max) (point-min)))
+		  (error nil)))))
+	   ((featurep 'file-coding) ;; XEmacs
+	    (let ((case-fold-search t)
+		  (end (point-at-eol))
+		  codesys start)
+	      (or
+	       (and (re-search-forward "-\\*-+[\t ]*" end t)
+		    (progn
+		      (setq start (match-end 0))
+		      (re-search-forward "[\t ]*-+\\*-" end t))
+		    (progn
+		      (setq end (match-beginning 0))
+		      (goto-char start)
+		      (or (looking-at "coding:[\t ]*\\([^\t ;]+\\)")
+			  (re-search-forward
+			   "[\t ;]+coding:[\t ]*\\([^\t ;]+\\)"
+			   end t)))
+		    (find-coding-system (setq codesys
+					      (intern (match-string 1))))
+		    codesys)
+	       (and (re-search-forward "^[\t ]*;+[\t ]*Local[\t ]+Variables:"
+				       nil t)
+		    (progn
+		      (setq start (match-end 0))
+		      (re-search-forward "^[\t ]*;+[\t ]*End:" nil t))
+		    (progn
+		      (setq end (match-beginning 0))
+		      (goto-char start)
+		      (re-search-forward
+		       "^[\t ]*;+[\t ]*coding:[\t ]*\\([^\t\n\r ]+\\)"
+		       end t))
+		    (find-coding-system (setq codesys
+					      (intern (match-string 1))))
+		    codesys)
+	       (and (progn
+		      (goto-char (point-min))
+		      (setq case-fold-search nil)
+		      (re-search-forward "^;;;coding system: "
+					 ;;(+ (point-min) 3000) t))
+					 nil t))
+		    (looking-at "[^\t\n\r ]+")
+		    (find-coding-system
+		     (setq codesys (intern (match-string 0))))
+		    codesys)
+	       (and filename
+		    (setq codesys
+			  (find-file-coding-system-for-read-from-filename
+			   filename))
+		    (coding-system-name (coding-system-base codesys)))))))
+	(when decomp
+	  (kill-buffer (current-buffer)))))))
 
 (provide 'mm-util)
 

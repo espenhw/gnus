@@ -397,22 +397,25 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
       (cond
        ((or (eq (car cont) 'part) (eq (car cont) 'mml))
 	(let ((raw (cdr (assq 'raw cont)))
-	      coded encoding charset filename type flowed)
-	  (setq type (or (cdr (assq 'type cont)) "text/plain"))
+	      type charset coding filename encoding flowed coded)
+	  (setq type (or (cdr (assq 'type cont)) "text/plain")
+		charset (cdr (assq 'charset cont))
+		coding (mm-charset-to-coding-system charset))
+	  (cond ((eq coding 'ascii)
+		 (setq charset nil
+		       coding nil))
+		(charset
+		 (setq charset (intern (downcase charset)))))
 	  (if (and (not raw)
 		   (member (car (split-string type "/")) '("text" "message")))
 	      (progn
 		(with-temp-buffer
-		  (setq charset (mm-charset-to-coding-system
-				 (cdr (assq 'charset cont))))
-		  (when (eq charset 'ascii)
-		    (setq charset nil))
 		  (cond
 		   ((cdr (assq 'buffer cont))
 		    (insert-buffer-substring (cdr (assq 'buffer cont))))
 		   ((and (setq filename (cdr (assq 'filename cont)))
 			 (not (equal (cdr (assq 'nofile cont)) "yes")))
-		    (let ((coding-system-for-read charset))
+		    (let ((coding-system-for-read coding))
 		      (mm-insert-file-contents filename)))
 		   ((eq 'mml (car cont))
 		    (insert (cdr (assq 'contents cont))))
@@ -474,7 +477,11 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	       ((and (setq filename (cdr (assq 'filename cont)))
 		     (not (equal (cdr (assq 'nofile cont)) "yes")))
 		(let ((coding-system-for-read mm-binary-coding-system))
-		  (mm-insert-file-contents filename nil nil nil nil t)))
+		  (mm-insert-file-contents filename nil nil nil nil t))
+		(unless charset
+		  (setq charset (mm-coding-system-to-mime-charset
+				 (mm-find-buffer-file-coding-system
+				  filename)))))
 	       (t
 		(insert (cdr (assq 'contents cont)))))
 	      (setq encoding (mm-encode-buffer type)

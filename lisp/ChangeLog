@@ -1,3 +1,26 @@
+2005-02-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-mime-inline-part): Decode parts according to
+	the coding cookies; decompress compressed parts.
+
+	* mml.el (mml-generate-mime-1): Add the charaset parameter according
+	to the value which a user specified manually or the coding cookie.
+
+	* mm-util.el (mm-string-to-multibyte): New function.
+	(mm-detect-mime-charset-region): Work with Emacs 22 as well.
+	(mm-coding-system-to-mime-charset): New function.
+	(mm-decompress-buffer): New function.
+	(mm-find-buffer-file-coding-system): New function.
+
+	* mm-view.el (mm-insert-inline): Make sure a part ends with a newline.
+	(mm-display-inline-fontify): Rewrite for decoding and decompressing
+	parts.
+
+2004-10-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* mm-view.el (mm-display-inline-fontify): Decode a part according
+	to the charset parameter.
+
 2005-02-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-mime-inline-part): Show the raw contents if a

@@ -1,5 +1,5 @@
 ;;; mm-view.el --- functions for viewing MIME objects
-;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
 ;; Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -378,6 +378,8 @@
   "Insert TEXT inline from HANDLE."
   (let ((b (point)))
     (insert text)
+    (unless (bolp)
+      (insert "\n"))
     (mm-handle-set-undisplayer
      handle
      `(lambda ()
@@ -459,36 +461,52 @@
 	      (delete-region ,(point-min-marker) ,(point-max-marker)))))))))
 
 (defun mm-display-inline-fontify (handle mode)
-  (let (text)
+  (let ((charset (mail-content-type-get (mm-handle-type handle) 'charset))
+	text coding-system)
+    (unless (eq charset 'gnus-decoded)
+      (mm-with-unibyte-buffer
+	(mm-insert-part handle)
+	(mm-decompress-buffer (mail-content-type-get
+			       (mm-handle-disposition handle)
+			       'filename)
+			      t)
+	(unless charset
+	  (setq coding-system (mm-find-buffer-file-coding-system)))
+	(setq text (buffer-string))))
     ;; XEmacs @#$@ version of font-lock refuses to fully turn itself
     ;; on for buffers whose name begins with " ".  That's why we use
-    ;; save-current-buffer/get-buffer-create rather than
-    ;; with-temp-buffer.
-    (save-current-buffer
-      (set-buffer (generate-new-buffer "*fontification*"))
-      (unwind-protect
-	  (progn
-	    (buffer-disable-undo)
-	    (mm-insert-part handle)
-	    (require 'font-lock)
-	    ;; Inhibit font-lock this time (*-mode-hook might run
-	    ;; `turn-on-font-lock') so that jit-lock may not turn off
-	    ;; font-lock immediately after this.
-	    (let ((font-lock-mode t))
-	      (funcall mode))
-	    (let ((font-lock-verbose nil))
-	      ;; I find font-lock a bit too verbose.
-	      (font-lock-fontify-buffer))
-	    ;; By default, XEmacs font-lock uses non-duplicable text
-	    ;; properties.  This code forces all the text properties
-	    ;; to be copied along with the text.
-	    (when (fboundp 'extent-list)
-	      (map-extents (lambda (ext ignored)
-			     (set-extent-property ext 'duplicable t)
-			     nil)
-			   nil nil nil nil nil 'text-prop))
-	    (setq text (buffer-string)))
-	(kill-buffer (current-buffer))))
+    ;; `with-current-buffer'/`generate-new-buffer' rather than
+    ;; `with-temp-buffer'.
+    (with-current-buffer (generate-new-buffer "*fontification*")
+      (buffer-disable-undo)
+      (mm-enable-multibyte)
+      (insert (cond ((eq charset 'gnus-decoded)
+		     (mm-insert-part handle))
+		    (coding-system
+		     (mm-decode-coding-string text coding-system))
+		    (charset
+		     (mm-decode-string text charset))
+		    (t
+		     text)))
+      (require 'font-lock)
+      ;; Inhibit font-lock this time (*-mode-hook might run
+      ;; `turn-on-font-lock') so that jit-lock may not turn off
+      ;; font-lock immediately after this.
+      (let ((font-lock-mode t))
+	(funcall mode))
+      (let ((font-lock-verbose nil))
+	;; I find font-lock a bit too verbose.
+	(font-lock-fontify-buffer))
+      ;; By default, XEmacs font-lock uses non-duplicable text
+      ;; properties.  This code forces all the text properties
+      ;; to be copied along with the text.
+      (when (fboundp 'extent-list)
+	(map-extents (lambda (ext ignored)
+		       (set-extent-property ext 'duplicable t)
+		       nil)
+		     nil nil nil nil nil 'text-prop))
+      (setq text (buffer-string))
+      (kill-buffer (current-buffer)))
     (mm-insert-inline handle text)))
 
 ;; Shouldn't these functions check whether the user even wants to use
