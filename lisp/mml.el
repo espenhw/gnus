@@ -783,6 +783,7 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
     (define-key encrypt "p" 'mml-secure-message-encrypt-pgpmime)
     (define-key encrypt "o" 'mml-secure-message-encrypt-pgp)
     (define-key encrypt "s" 'mml-secure-message-encrypt-smime)
+    (define-key map "\C-n" 'mml-unsecure-message)
     (define-key map "f" 'mml-attach-file)
     (define-key map "b" 'mml-attach-buffer)
     (define-key map "e" 'mml-attach-external)
@@ -815,6 +816,7 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
     ["PGP Encrypt" mml-secure-message-encrypt-pgp t]
     ["S/MIME Sign" mml-secure-message-sign-smime t]
     ["S/MIME Encrypt" mml-secure-message-encrypt-smime t]
+    ["Encrypt/Sign off" mml-unsecure-message t]
     ;;["Narrow" mml-narrow-to-part t]
     ["Quote MML" mml-quote-region t]
     ["Validate MML" mml-validate t]

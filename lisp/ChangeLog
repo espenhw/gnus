@@ -1,3 +1,9 @@
+2002-03-22  Josh Huber  <huber@alum.wpi.edu>
+
+	* mml.el (mml-mode-map): Added a keybinding for
+	`mml-unsecure-message'.  Also, added a menu entry for said
+	function in the Attachments menu.
+
 2002-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* canlock.el (canlock-version): Remove.
