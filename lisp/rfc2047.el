@@ -272,7 +272,8 @@ The buffer may be narrowed."
     ;; Play safe and don't assume the form of the word syntax entry --
     ;; copy it from ?a.
     (if (fboundp 'set-char-table-range)	; Emacs
-	(set-char-table-range table t (aref (standard-syntax-table) ?a))
+	(funcall (intern "set-char-table-range")
+		 table t (aref (standard-syntax-table) ?a))
       (if (fboundp 'put-char-table)
 	  (if (fboundp 'get-char-table)	; warning avoidance
 	      (put-char-table t (get-char-table ?a (standard-syntax-table))

@@ -1,5 +1,10 @@
 2003-05-14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* rfc2047.el (rfc2047-syntax-table): Funcall.
+
+	* lpath.el ((featurep 'xemacs)): Added set-char-table-range. 
+	((featurep 'xemacs)): No, don't.
+
 	* rfc2047.el (rfc2047-encodable-p): Use the header charset. 
 
 	* gnus-sum.el (gnus-summary-reselect-current-group): Supply
