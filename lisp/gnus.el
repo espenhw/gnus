@@ -1,5 +1,5 @@
 ;;; gnus.el --- a newsreader for GNU Emacs
-;; Copyright (C) 1987,88,89,90,93,94,95,96 Free Software Foundation, Inc.
+;; Copyright (C) 1987,88,89,90,93,94,95,96,97 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;;	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -43,7 +43,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.79"
+(defconst gnus-version-number "0.80"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -122,8 +122,6 @@ be set in `.emacs' instead."
 	(ignore-errors
 	  (set-face-underline-p name t))))
     name))
-
-;;; Internal variables
 
 ;; We define these group faces here to avoid the display
 ;; update forced when creating new faces.

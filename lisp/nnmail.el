@@ -1,5 +1,5 @@
 ;;; nnmail.el --- mail support functions for the Gnus mail backends
-;; Copyright (C) 1995,96 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news, mail
@@ -508,7 +508,7 @@ parameter.  It should return nil, `warn' or `delete'."
 	    (progn
 	      (setq nnmail-internal-password nnmail-pop-password)
 	      (when (and nnmail-pop-password-required
-			 (not nnmail-pop-password))
+			 (not nnmail-internal-password))
 		(setq nnmail-internal-password
 		      (nnmail-read-passwd
 		       (format "Password for %s: "

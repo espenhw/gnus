@@ -1,5 +1,5 @@
 ;;; message.el --- composing mail and news messages
-;; Copyright (C) 1996 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: mail, news
@@ -219,6 +219,9 @@ any confusion."
   :type 'regexp
   :group 'message-various)
 
+(defcustom message-elide-elipsis "\n[...]\n\n"
+  "*The string which is inserted for elided text.")
+
 (defcustom message-interactive nil 
   "Non-nil means when sending a message wait for and display errors.
 nil means let mailer mail back a message to report errors."
@@ -359,6 +362,13 @@ always use the value."
   :type '(choice (const :tag "ignore" nil)
 		 (const use)
 		 (const ask)))
+
+;; stuff relating to broken sendmail in MMDF
+(defcustom message-sendmail-f-is-evil nil
+  "*Non-nil means that \"-f username\" should not be added to the sendmail
+command line, because it is even more evil than leaving it out."
+  :group 'message-sending
+  :type 'boolean)
 
 ;; qmail-related stuff
 (defcustom message-qmail-inject-program "/var/qmail/bin/qmail-inject"
@@ -1234,14 +1244,13 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
       (or (bolp) (insert "\n")))))
 
 (defun message-elide-region (b e)
-  "Elide the text between point and mark.
-An ellipsis (\"[...]\") will be inserted where the text was 
-killed."
+  "Elide the text between point and mark.  An ellipsis (from
+message-elide-elipsis) will be inserted where the text was killed."
   (interactive "r")
   (kill-region b e)
   (unless (bolp)
     (insert "\n"))
-  (insert "\n[...]\n\n"))
+  (insert message-elide-elipsis))
 
 (defvar message-caesar-translation-table nil)
 
@@ -1661,7 +1670,10 @@ the user from the mailer."
 			   nil errbuf nil "-oi")
 		     ;; Always specify who from,
 		     ;; since some systems have broken sendmails.
-		     (list "-f" (user-login-name))
+		     ;; But some systems are more broken with -f, so
+		     ;; we'll let users override this.
+		     (if (null message-sendmail-f-is-evil)
+			 (list "-f" (user-login-name)))
 		     ;; These mean "report errors by mail"
 		     ;; and "deliver in background".
 		     (if (null message-interactive) '("-oem" "-odb"))

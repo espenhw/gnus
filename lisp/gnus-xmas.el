@@ -1,5 +1,5 @@
 ;;; gnus-xmas.el --- Gnus functions for XEmacs
-;; Copyright (C) 1995,96 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -477,8 +477,7 @@ call it with the value of the `gnus-data' text property."
 	  'gnus-xmas-topic-remove-excess-properties)
     (fset 'gnus-mode-line-buffer-identification 'identity)
     (unless (boundp 'shell-command-switch)
-      (setq shell-command-switch "-c"))
-    ))
+      (setq shell-command-switch "-c"))))
 
 
 ;;; XEmacs logo and toolbar.

@@ -1,4 +1,5 @@
-;;; Copyright (C) 1987,88,89,90,92,93,94,95,96 Free Software Foundation, Inc.
+;;; nntp.el --- nntp access for Gnus
+;;; Copyright (C) 1987,88,89,90,92,93,94,95,96,97 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news

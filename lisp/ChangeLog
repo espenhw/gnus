@@ -1,3 +1,57 @@
+Thu Jan  9 12:00:21 1997  Wesley Hardaker  <Wesley.Hardaker@sphys.unil.ch>
+
+	* acronym.el: New package.
+
+Thu Jan  9 11:43:28 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Updated copyrights.
+
+	* nnoo.el (nnoo-push-server): Only push the first server.
+
+Wed Jan  8 11:34:07 1997  David Moore  <dmoore@ucsd.edu>
+
+	* nnoo.el (nnoo-push-server): Revert to 0.77 behaviour.
+
+	* nnvirtual.el (nnvirtual-info-installed): New variable.
+	(nnvirtual-open-server): Use it.
+	(nnvirtual-request-update-info): ditto.
+	(nnvirtual-create-mapping): ditto.
+
+	* gnus-group.el (gnus-group-edit-group): Close the group before
+	editing it.
+	(gnus-group-add-to-virtual): ditto.
+
+Thu Jan  9 11:32:13 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el: Redefine ems.
+
+Wed Jan  8 20:34:09 1997  John  <visigoth@naiad.fac.cs.cmu.edu>
+
+	* message.el (message-sendmail-f-is-evil): New variable.
+	(message-elide-elipsis): Ditto.
+
+Wed Jan  8 17:19:02 1997  Paul Stodghill  <stodghil@cs.cornell.edu>
+
+	* gnus-demon.el (gnus-demon): Don't run when not idle.
+
+Wed Jan  8 12:58:23 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-work-articles): Accept non-numerical
+	prefix values.
+
+Wed Jan  8 12:52:53 1997  Jason Rumney  <jasonr@pec.co.nz>
+
+	* nnmail.el (nnmail-move-inbox): Use `nnmail-internal-password'. 
+
+Tue Jan  7 15:41:35 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-article-show-hidden-text): Would bug out on
+	signatures. 
+
+Mon Jan  6 23:46:53 1997  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.79 is released.
+
 Mon Jan  6 11:23:05 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nnmail.el (nnmail-process-babyl-mail-format): Widen at the right

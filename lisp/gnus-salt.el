@@ -1,5 +1,5 @@
 ;;; gnus-salt.el --- alternate summary mode interfaces for Gnus
-;; Copyright (C) 1996 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 

@@ -1,5 +1,5 @@
 ;;; gnus-uu.el --- extract (uu)encoded files in Gnus
-;; Copyright (C) 1985,86,87,93,94,95,96 Free Software Foundation, Inc.
+;; Copyright (C) 1985,86,87,93,94,95,96,97 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Created: 2 Oct 1993

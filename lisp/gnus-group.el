@@ -1,5 +1,5 @@
 ;;; gnus-group.el --- group mode commands for Gnus
-;; Copyright (C) 1996 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -1861,6 +1861,7 @@ and NEW-NAME will be prompted for."
       (error "No group on current line"))
     (unless (setq info (gnus-get-info group))
       (error "Killed group; can't be edited"))
+    (gnus-close-group group)
     (gnus-edit-form
      ;; Find the proper form to edit.
      (cond ((eq part 'method)
@@ -2095,6 +2096,7 @@ score file entries for articles to include in the group."
 			  "nnvirtual:")))
   (unless (eq (car (gnus-find-method-for-group vgroup)) 'nnvirtual)
     (error "%s is not an nnvirtual group" vgroup))
+  (gnus-close-group vgroup)
   (let* ((groups (gnus-group-process-prefix n))
 	 (method (gnus-info-method (gnus-get-info vgroup))))
     (setcar (cdr method)

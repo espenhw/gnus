@@ -1,5 +1,5 @@
 ;;; nndb.el --- nndb access for Gnus
-;; Copyright (C) 1996 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97 Free Software Foundation, Inc.
 
 ;; Author: Kai Grossjohann <grossjohann@ls6.informatik.uni-dortmund.de>
 ;; Keywords: news

@@ -1,5 +1,5 @@
 ;;; nnoo.el --- OO Gnus Backends
-;; Copyright (C) 1996 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -61,7 +61,9 @@
      (push (list ',backend 
 		 (mapcar (lambda (p) (list p)) ',parents)
 		 nil nil)
-	   nnoo-definition-alist)))
+	   nnoo-definition-alist)
+     (push (list ',backend "*internal-non-initialized-backend*")
+	   nnoo-state-alist)))
 (put 'nnoo-declare 'lisp-indent-function 1)
 
 (defun nnoo-parents (backend)
@@ -193,7 +195,7 @@
     ;; If this is the first time we push the server (i. e., this is 
     ;; the nil server), then we update the default values of
     ;; all the variables to reflect the current values.
-    (unless current
+    (when (equal current "*internal-non-initialized-backend*")
       (let ((defaults (nnoo-variables backend))
 	    def)
 	(while (setq def (pop defaults))

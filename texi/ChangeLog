@@ -1,3 +1,7 @@
+Tue Jan  7 09:36:36 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Summary Buffer Lines): Correction.
+
 Mon Jan  6 22:49:12 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (NoCeM): Addition.

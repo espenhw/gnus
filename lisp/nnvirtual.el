@@ -1,5 +1,5 @@
 ;;; nnvirtual.el --- virtual newsgroups access for Gnus
-;; Copyright (C) 1994,95,96 Free Software Foundation, Inc.
+;; Copyright (C) 1994,95,96,97 Free Software Foundation, Inc.
 
 ;; Author: David Moore <dmoore@ucsd.edu>
 ;;	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -76,6 +76,9 @@ to virtual article number.")
 
 (defvoo nnvirtual-mapping-marks nil
   "Compressed marks alist for the virtual group as computed from the marks of individual component groups.")
+
+(defvoo nnvirtual-info-installed nil
+  "T if we have already installed the group info for this group, and shouldn't blast over it again.")
 
 (defvoo nnvirtual-status-string "")
 
@@ -214,7 +217,8 @@ to virtual article number.")
 	  nnvirtual-mapping-offsets nil
 	  nnvirtual-mapping-len 0
 	  nnvirtual-mapping-reads nil
-	  nnvirtual-mapping-marks nil)
+	  nnvirtual-mapping-marks nil
+	  nnvirtual-info-installed nil)
     (when nnvirtual-component-regexp
       ;; Go through the newsrc alist and find all component groups.
       (let ((newsrc (cdr gnus-newsrc-alist))
@@ -285,7 +289,8 @@ to virtual article number.")
 
 
 (deffoo nnvirtual-request-update-info (group info &optional server)
-  (when (nnvirtual-possibly-change-server server)
+  (when (and (nnvirtual-possibly-change-server server)
+	     (not nnvirtual-info-installed))
     ;; Install the precomputed lists atomically, so the virtual group
     ;; is not left in a half-way state in case of C-g.
     (gnus-atomic-progn
@@ -293,7 +298,8 @@ to virtual article number.")
       (if (nthcdr 3 info)
 	  (setcar (nthcdr 3 info) nnvirtual-mapping-marks)
 	(when nnvirtual-mapping-marks
-	  (setcdr (nthcdr 2 info) (list nnvirtual-mapping-marks)))))
+	  (setcdr (nthcdr 2 info) (list nnvirtual-mapping-marks))))
+      (setq nnvirtual-info-installed t))
     t))
       
 
@@ -734,6 +740,9 @@ based on the marks on the component groups."
 
     ;; Store the reads list for later use.
     (setq nnvirtual-mapping-reads (nreverse reads))
+
+    ;; Throw flag to show we changed the info.
+    (setq nnvirtual-info-installed nil)
     ))
 
 (provide 'nnvirtual)

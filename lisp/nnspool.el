@@ -1,5 +1,5 @@
 ;;; nnspool.el --- spool access for GNU Emacs
-;; Copyright (C) 1988,89,90,93,94,95,96 Free Software Foundation, Inc.
+;; Copyright (C) 1988,89,90,93,94,95,96,97 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; 	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>

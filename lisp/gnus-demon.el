@@ -1,5 +1,5 @@
 ;;; gnus-demon.el --- daemonic Gnus behaviour
-;; Copyright (C) 1995,96 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -184,10 +184,14 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
 	(unless (zerop time)
 	  (setcar (nthcdr 1 handler) (decf time)))
 	(and (zerop time)		; If the timer now is zero...
-	     (or (not (setq idle (nth 2 handler))) ; Don't care about idle.
-		 (and (numberp idle)	; Numerical idle...
-		      (< idle gnus-demon-idle-time)) ; Idle timed out.
-		 idle)			; Or just need to be idle.
+	     ;; Test for appropriate idleness
+	     (progn
+	       (setq idle (nth 2 handler))
+	       (cond
+		((null idle) t)		; Don't care about idle.
+		((numberp idle)		; Numerical idle...
+		 (< idle gnus-demon-idle-time)) ; Idle timed out.
+		(t (< 0 gnus-demon-idle-time)))) ; Or just need to be idle.
 	     ;; So we call the handler.
 	     (progn
 	       (funcall (car handler))

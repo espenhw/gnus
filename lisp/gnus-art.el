@@ -1,5 +1,5 @@
 ;;; gnus-art.el --- article mode commands for Gnus
-;; Copyright (C) 1996 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -920,7 +920,8 @@ always hide."
       (save-restriction
 	(let ((buffer-read-only nil))
 	  (when (gnus-article-narrow-to-signature)
-	    (gnus-article-hide-text-type (point-min) (point-max) 'signature)))))))
+	    (gnus-article-hide-text-type 
+	     (point-min) (point-max) 'signature)))))))
 
 (defun article-strip-leading-blank-lines ()
   "Remove all blank lines from the beginning of the article."
@@ -1049,7 +1050,9 @@ If HIDE, hide the text instead."
 	  beg)
       (while (setq beg (text-property-any end (point-max) 'article-type type))
 	(goto-char beg)
-	(setq end (text-property-not-all beg (point-max) 'article-type type))
+	(setq end (or
+		   (text-property-not-all beg (point-max) 'article-type type)
+		   (point-max)))
 	(if hide
 	    (gnus-article-hide-text beg end gnus-hidden-properties)
 	  (gnus-article-unhide-text beg end))
@@ -2948,6 +2951,8 @@ forbidden in URL encoding."
     (select-window (get-buffer-window gnus-article-buffer t))
     (gnus-article-prev-page)
     (select-window win))) 
+
+(gnus-ems-redefine)
 
 (provide 'gnus-art)
 
