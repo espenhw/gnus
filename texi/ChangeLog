@@ -1,3 +1,11 @@
+Sat Dec  7 21:10:23 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Example Methods): Addition.
+
+Fri Dec  6 12:38:14 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Group Parameters): Update.
+
 1996-11-30  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Terminology): Addition.

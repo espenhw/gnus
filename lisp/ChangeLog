@@ -1,3 +1,24 @@
+Fri Dec  6 12:47:24 1996  Wes Hardaker  <Wesley.Hardaker@sphys.unil.ch>
+
+	* gnus-picon.el (gnus-picons-insert-face-if-exists): Don't reverse
+	domains.
+
+Fri Dec  6 11:33:44 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnfolder.el (nnfolder-request-article): Use it.
+	(nnfolder-retrieve-headers): Wouldn't find the right header.
+
+	* nnmail.el (nnmail-search-unix-mail-delim-backward): New function.
+
+Thu Dec  5 21:51:03 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-server-add-address): Don't add "*-address" to all
+	servers. 
+
+Thu Dec  5 21:01:22 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.73 is released.
+
 Thu Dec  5 19:29:50 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-sum.el (gnus-get-newsgroup-headers-xover): Message the line

@@ -735,6 +735,35 @@ is a spool.  If not using procmail, return GROUP."
     (beginning-of-line)
     (eq found 'yes)))
 
+(defun nnmail-search-unix-mail-delim-backward ()
+  "Put point at the beginning of the current Unix mbox message."
+  ;; Algorithm used to find the the next article in the
+  ;; brain-dead Unix mbox format:
+  ;;
+  ;; 1) Search for "^From ".
+  ;; 2) If we find it, then see whether the previous
+  ;;    line is blank and the next line looks like a header.
+  ;; Then it's possible that this is a mail delim, and we use it.
+  (let ((case-fold-search nil)
+	found)
+    (while (not found)
+      (if (not (re-search-backward "^From " nil t))
+	  (setq found 'no)
+	(save-excursion
+	  (beginning-of-line)
+	  (when (and (or (bobp)
+			 (save-excursion
+			   (forward-line -1)
+			   (= (following-char) ?\n)))
+		     (save-excursion
+		       (forward-line 1)
+		       (while (looking-at ">From ")
+			 (forward-line 1))
+		       (looking-at "[^ \t:]+[ \t]*:")))
+	    (setq found 'yes)))))
+    (beginning-of-line)
+    (eq found 'yes)))
+
 (defun nnmail-process-unix-mail-format (func artnum-func)
   (let ((case-fold-search t)
 	start message-id content-length end skip head-end)

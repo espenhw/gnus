@@ -381,7 +381,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	  (setq bar nil)))
       (setq first t))
     (when (and addrs domainp)
-      (let ((it (mapconcat 'downcase addrs ".")))
+      (let ((it (mapconcat 'downcase (nreverse addrs) ".")))
 	(make-annotation 
 	 (if first (concat (if (not rightp) ".") it (if rightp ".")) it) 
 	 (point) 'text nil nil nil rightp)))

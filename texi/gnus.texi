@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.73 Manual
+@settitle Red Gnus 0.74 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.73 Manual
+@title Red Gnus 0.74 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Red Gnus 0.73
+This manual corresponds to Red Gnus 0.74
 
 @end ifinfo
 
@@ -1915,15 +1915,16 @@ any default @code{Gcc} rules as described later).
 
 @item auto-expire
 @cindex auto-expire
-If this symbol is present in the group parameter list, all articles that
-are read will be marked as expirable.  For an alternative approach,
-@pxref{Expiring Mail}.
+If the group parameter has an element that looks like @code{(auto-expire
+. t)}, , all articles that are read will be marked as expirable.  For an
+alternative approach, @pxref{Expiring Mail}.
 
 @item total-expire
 @cindex total-expire
-If this symbol is present, all read articles will be put through the
+If the group parameter has an element that looks like
+@code{(total-expire . t)}, all read articles will be put through the
 expiry process, even if they are not marked as expirable.  Use with
-caution. 
+caution.
 
 @item expiry-wait
 @cindex expiry-wait
@@ -8023,6 +8024,22 @@ Here's the method for a public spool:
       (nnmh-directory "/usr/information/spool/") 
       (nnmh-get-new-mail nil))
 @end lisp
+
+If you are behind a firewall and only have access to the @sc{nntp}
+server from the firewall machine, you can instruct Gnus to @code{rlogin}
+on the firewall machine and telnet from there to the @sc{nntp} server.
+Doing this can be rather fiddly, but your virtual server definition
+should probably look something like this:
+
+@lisp
+(nntp "firewall"
+      (nntp-address "the.firewall.machine")
+      (nntp-open-server-function nntp-open-rlogin)
+      (nntp-end-of-line "\n")
+      (nntp-rlogin-parameters
+       ("telnet" "the.real.nntp.host" "nntp")))
+@end lisp
+
 
 
 @node Creating a Virtual Server

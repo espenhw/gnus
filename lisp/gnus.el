@@ -42,7 +42,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.73"
+(defconst gnus-version-number "0.74"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -642,21 +642,21 @@ slower."
   :type 'string)
 
 (defcustom gnus-valid-select-methods
-  '(("nntp" post address prompt-address)
+  '(("nntp" post address prompt-address physical-address)
     ("nnspool" post address)
     ("nnvirtual" post-mail virtual prompt-address)
     ("nnmbox" mail respool address)
     ("nnml" mail respool address)
     ("nnmh" mail respool address)
-    ("nndir" post-mail prompt-address)
-    ("nneething" none address prompt-address)
+    ("nndir" post-mail prompt-address physical-address)
+    ("nneething" none address prompt-address physical-address)
     ("nndoc" none address prompt-address)
     ("nnbabyl" mail address respool)
     ("nnkiboze" post virtual)
     ("nnsoup" post-mail address)
     ("nndraft" post-mail)
     ("nnfolder" mail respool address)
-    ("nngateway" none address prompt-address)
+    ("nngateway" none address prompt-address physical-address)
     ("nnweb" none))
   "An alist of valid select methods.
 The first element of each list lists should be a string with the name
@@ -1111,6 +1111,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-uu-decode-uu-and-save-view gnus-uu-decode-unshar-view
       gnus-uu-decode-unshar-and-save-view gnus-uu-decode-save-view
       gnus-uu-decode-binhex-view)
+     ("gnus-uu" gnus-uu-delete-work-dir)
      ("gnus-msg" (gnus-summary-send-map keymap)
       gnus-article-mail gnus-copy-article-buffer gnus-extended-version)
      ("gnus-msg" :interactive t
@@ -1560,7 +1561,9 @@ that that variable is buffer-local to the summary buffers."
 (defsubst gnus-server-add-address (method)
   (let ((method-name (symbol-name (car method))))
     (if (and (memq 'address (assoc method-name gnus-valid-select-methods))
-	     (not (assq (intern (concat method-name "-address")) method)))
+	     (not (assq (intern (concat method-name "-address")) method))
+	     (memq 'physical-address (assq (car method) 
+					   gnus-valid-select-methods)))
 	(append method (list (list (intern (concat method-name "-address"))
 				   (nth 1 method))))
       method)))
