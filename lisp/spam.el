@@ -1248,7 +1248,7 @@ functions")
 			    gnus-newsgroup-articles
 			    classification)))
 	;; process them
-	(gnus-message 5 "%s %d %s articles: classification %s, spam-check %s"
+	(gnus-message 5 "%s %d %s articles as %s using backend %s"
 		      (if unregister "Unregistering" "Registering")
 		      (length articles)
 		      (if specific-articles "specific" "")

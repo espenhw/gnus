@@ -1,3 +1,14 @@
+2004-02-09  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam-report.el (spam-report-unplug-agent)
+	(spam-report-plug-agent, spam-report-deagentize)
+	(spam-report-agentize, spam-report-url-ping-temp-agent-function):
+	support for the Agent in spam-report: when unplugged, report to a
+	file; when plugged, submit all the requests
+
+	* spam.el (spam-register-routine): improved message about
+	registration
+
 2004-02-09  Jesper Harder  <harder@ifa.au.dk>
 
 	* rfc2047.el (rfc2047-qp-or-base64): New function to reduce

@@ -79,6 +79,11 @@ The function must accept the arguments `host' and `report'."
   :type 'file
   :group 'spam-report)
 
+(defvar spam-report-url-ping-temp-agent-function nil
+  "This variable will store the value of
+spam-report-url-ping-function from before spam-report-agentize
+was run, so that spam-report-deagentize can undo that change.")
+
 (defun spam-report-gmane (&rest articles)
   "Report an article as spam through Gmane"
   (dolist (article articles)
@@ -187,6 +192,42 @@ Customize `spam-report-url-ping-function' to use this function."
       (insert url)
       (newline)
       (append-to-file (point-min) (point-max) file))))
+
+(defun spam-report-agentize ()
+  "Add spam-report support to the Agent.
+Spam reports will be queued with \\[spam-report-url-to-file] when
+the Agent is unplugged, and will be submitted in a batch when the
+Agent is plugged.."
+  (interactive)
+  (add-hook 'gnus-agent-plugged-hook 'spam-report-plug-agent)
+  (add-hook 'gnus-agent-unplugged-hook 'spam-report-unplug-agent))
+
+(defun spam-report-deagentize ()
+  "Remove spam-report support from the Agent.
+Spam reports will be queued with the method used when
+\\[spam-report-agentize] was run."
+  (interactive)
+  (remove-hook 'gnus-agent-plugged-hook 'spam-report-plug-agent)
+  (remove-hook 'gnus-agent-unplugged-hook 'spam-report-unplug-agent))
+
+(defun spam-report-plug-agent ()
+  ;; process the queue, unless the user only wanted to report to a file anyway
+  (unless (equal spam-report-url-ping-temp-agent-function 
+		 spam-report-url-to-file)
+    (spam-report-process-queue))
+  ;; set the reporting function, if we have memorized something
+  ;; otherwise, stick with plain URL reporting
+  (setq spam-report-url-ping-function
+	(or spam-report-url-ping-temp-agent-function
+	    spam-report-url-ping-plain)))
+
+(defun spam-report-unplug-agent ()
+  ;; save the old value
+  (setq spam-report-url-ping-temp-agent-function 
+	spam-report-url-ping-function)
+  ;; store all reports to file
+  (setq spam-report-url-ping-function
+	'spam-report-url-to-file))
 
 (provide 'spam-report)
 
