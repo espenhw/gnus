@@ -1,3 +1,9 @@
+2003-10-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nndoc.el (nndoc-guess-type): Reverse the sort order.  Suggested
+	by ARISAWA Akihiro <ari@mbf.ocn.ne.jp>.
+	(nndoc-dissect-buffer): Don't miss odd-numbered articles in digest.
+
 2003-10-24  Steve Youngs  <sryoungs@bigpond.net.au>
 
 	* dgnushack.el (dgnushack-gnus-load-file): Set to

@@ -394,7 +394,7 @@ from the document.")
       (error "Document is not of any recognized type"))
     (if result
 	(car entry)
-      (cadar (sort results 'car-less-than-car)))))
+      (cadar (last (sort results 'car-less-than-car))))))
 
 ;;;
 ;;; Built-in type predicates and functions
@@ -772,7 +772,7 @@ from the document.")
   "Go through the document and partition it into heads/bodies/articles."
   (let ((i 0)
 	(first t)
-	head-begin head-end body-begin body-end)
+	art-begin head-begin head-end body-begin body-end)
     (setq nndoc-dissection-alist nil)
     (save-excursion
       (set-buffer nndoc-current-buffer)
@@ -788,8 +788,11 @@ from the document.")
 	;; Go through the file.
 	(while (if (and first nndoc-first-article)
 		   (nndoc-search nndoc-first-article)
-		 (nndoc-article-begin))
-	  (setq first nil)
+		 (if art-begin
+		     (goto-char art-begin)
+		   (nndoc-article-begin)))
+	  (setq first nil
+		art-begin nil)
 	  (cond (nndoc-head-begin-function
 		 (funcall nndoc-head-begin-function))
 		(nndoc-head-begin
@@ -809,7 +812,8 @@ from the document.")
 		     (funcall nndoc-body-end-function))
 		(and nndoc-body-end
 		     (nndoc-search nndoc-body-end))
-		(nndoc-article-begin)
+		(and (nndoc-article-begin)
+		     (setq art-begin (point)))
 		(progn
 		  (goto-char (point-max))
 		  (when nndoc-file-end
