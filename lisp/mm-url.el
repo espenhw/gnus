@@ -53,7 +53,7 @@
   :group 'mm-url)
 
 (defvar mm-url-predefined-programs
-  '((wget "wget" "-q" "-O" "-")
+  '((wget "wget" "--user-agent=mm-url" "-q" "-O" "-")
     (w3m  "w3m" "-dump_source")
     (lynx "lynx" "-source")
     (curl "curl")))
@@ -311,7 +311,8 @@ This is taken from RFC 2396.")
 		args (append (cdr item) (list url))))
       (setq program mm-url-program
 	    args (append mm-url-arguments (list url))))
-    (apply 'call-process program nil t nil args)))
+    (unless (eq 0 (apply 'call-process program nil t nil args))
+      (error "Couldn't fetch %s" url))))
 
 (defvar mm-url-timeout 30
   "The number of seconds before timing out an URL fetch.")
