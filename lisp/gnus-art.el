@@ -280,23 +280,23 @@ directly.")
 
 (defcustom gnus-emphasis-alist
   (let ((format
-	 "\\(\\s-\\|^\\|[-\"]\\|\\s(\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*[.,]?\\)%s\\)\\(\\s-\\|[-,;:\"]\\s-\\|[?!.]+\\s-\\|\\s)\\)")
+	 "\\(\\s-\\|^\\|\\=\\|[-\"]\\|\\s(\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*[.,]?\\)%s\\)\\(\\([-,.;:\"]\\|\\s)\\)+\\s-\\|[?!.]\\s-\\|\\s)\\|\\s-\\)")
 	(types
-	 '(("_" "_" underline)
+	 '(("\\*" "\\*" bold)
+	   ("_" "_" underline)
 	   ("/" "/" italic)
-	   ("\\*" "\\*" bold)
 	   ("_/" "/_" underline-italic)
 	   ("_\\*" "\\*_" underline-bold)
 	   ("\\*/" "/\\*" bold-italic)
 	   ("_\\*/" "/\\*_" underline-bold-italic))))
-    `(("\\(\\s-\\|^\\)\\(_\\(\\(\\w\\|_[^_]\\)+\\)_\\)\\(\\s-\\|[?!.,;]\\)"
-       2 3 gnus-emphasis-underline)
-      ,@(mapcar
+    `(,@(mapcar
 	 (lambda (spec)
 	   (list
 	    (format format (car spec) (cadr spec))
 	    2 3 (intern (format "gnus-emphasis-%s" (nth 2 spec)))))
-	 types)))
+	 types)
+	("\\(\\s-\\|^\\)\\(_\\(\\(\\w\\|_[^_]\\)+\\)_\\)\\(\\s-\\|[?!.,;]\\)"
+	 2 3 gnus-emphasis-underline)))
   "*Alist that says how to fontify certain phrases.
 Each item looks like this:
 
