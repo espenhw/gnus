@@ -1109,7 +1109,7 @@ are using the two different Gnusae to read from two different servers),
 that is no problem whatsoever.  You just do it.
 
 The problem appears when you want to run two Gnusae that use the same
-@code{.newsrc} file.
+@file{.newsrc} file.
 
 To work around that problem some, we here at the Think-Tank at the Gnus
 Towers have come up with a new concept: @dfn{Masters} and
@@ -1119,6 +1119,7 @@ conjunction with each other, you have to send $1 per usage instance to
 me.  Usage of the patent (@dfn{Master/Slave Relationships In Computer
 Applications}) will be much more expensive, of course.)
 
+@findex gnus-slave
 Anyway, you start one Gnus up the normal way with @kbd{M-x gnus} (or
 however you do it).  Each subsequent slave Gnusae should be started with
 @kbd{M-x gnus-slave}.  These slaves won't save normal @file{.newsrc}
@@ -1129,9 +1130,9 @@ information from them.  (The slave files will be read in the sequence
 they were created, so the latest changes will have precedence.)
 
 Information from the slave files has, of course, precedence over the
-information in the normal (i.e., master) @code{.newsrc} file.
+information in the normal (i.e., master) @file{.newsrc} file.
 
-If the @code{.newsrc*} files have not been saved in the master when the
+If the @file{.newsrc*} files have not been saved in the master when the
 slave starts, you may be prompted as to whether to read an auto-save
 file.  If you answer "yes", the unsaved changes to the master will be
 incorporated into the slave.  If you answer "no", the slave may see some
@@ -1503,7 +1504,7 @@ Gnus will put the dribble file(s) in @code{gnus-dribble-directory}.  If
 this variable is @code{nil}, which it is by default, Gnus will dribble
 into the directory where the @file{.newsrc} file is located.  (This is
 normally the user's home directory.)  The dribble file will get the same
-file permissions as the @code{.newsrc} file.
+file permissions as the @file{.newsrc} file.
 
 @vindex gnus-always-read-dribble-file
 If @code{gnus-always-read-dribble-file} is non-@code{nil}, Gnus will
@@ -3417,6 +3418,7 @@ The dribble file will be saved, though (@pxref{Auto Save}).
 
 @vindex gnus-exit-gnus-hook
 @vindex gnus-suspend-gnus-hook
+@vindex gnus-after-exiting-gnus-hook
 @code{gnus-suspend-gnus-hook} is called when you suspend Gnus and
 @code{gnus-exit-gnus-hook} is called when you quit Gnus, while
 @code{gnus-after-exiting-gnus-hook} is called as the final item when
@@ -5532,6 +5534,7 @@ calculates the deadline of the message and stores it in the
 @code{X-Gnus-Delayed} header and puts the message in the
 @code{nndraft:delayed} group.
 
+@findex gnus-delay-send-queue
 And whenever you get new news, Gnus looks through the group for articles
 which are due and sends them.  It uses the @code{gnus-delay-send-queue}
 function for this.  By default, this function is added to the hook
@@ -8333,12 +8336,14 @@ unwrap lines, repair attribution and rearrange citation.
 @item W Y u
 @kindex W Y u (Summary)
 @findex gnus-article-outlook-unwrap-lines
+@vindex gnus-outlook-deuglify-unwrap-min
+@vindex gnus-outlook-deuglify-unwrap-max
 Unwrap lines that appear to be wrapped citation lines.  You can control
 what lines will be unwrapped by frobbing
 @code{gnus-outlook-deuglify-unwrap-min} and
 @code{gnus-outlook-deuglify-unwrap-max}, indicating the miminum and
 maximum length of an unwrapped citation line.
-(@code{gnus-outlook-deuglify-article}).
+(@code{gnus-article-outlook-unwrap-lines}).
 
 @item W Y a
 @kindex W Y a (Summary)
@@ -8712,6 +8717,7 @@ Say how much time has elapsed between the article was posted and now
 X-Sent: 6 weeks, 4 days, 1 hour, 3 minutes, 8 seconds ago
 @end example
 
+@vindex gnus-article-date-lapsed-new-header
 The value of @code{gnus-article-date-lapsed-new-header} determines
 whether this header will just be added below the old Date one, or will
 replace it.
@@ -9119,6 +9125,7 @@ This knowledge is encoded in the @code{gnus-group-charset-alist}
 variable, which is an alist of regexps (use the first item to match full
 group names) and default charsets to be used when reading these groups.
 
+@vindex gnus-newsgroup-ignored-charsets
 In addition, some people do use soi-disant @sc{mime}-aware agents that
 aren't.  These blithely mark messages as being in @code{iso-8859-1}
 even if they really are in @code{koi-8}.  To help here, the
@@ -9713,6 +9720,7 @@ Create an empty article in the current mail newsgroups
 @item B r
 @kindex B r (Summary)
 @findex gnus-summary-respool-article
+@vindex gnus-summary-respool-default-method
 Respool the mail article (@code{gnus-summary-respool-article}).
 @code{gnus-summary-respool-default-method} will be used as the default
 select method when respooling.  This variable is @code{nil} by default,
@@ -10048,6 +10056,7 @@ group and return you to the group buffer.
 @findex gnus-summary-exit
 @vindex gnus-summary-exit-hook
 @vindex gnus-summary-prepare-exit-hook
+@vindex gnus-group-no-more-groups-hook
 @c @icon{gnus-summary-exit}
 Exit the current group and update all information on the group
 (@code{gnus-summary-exit}).  @code{gnus-summary-prepare-exit-hook} is
@@ -11513,7 +11522,9 @@ Rejected articles will also be put in this draft group (@pxref{Rejected
 Articles}).
 
 @findex gnus-draft-send-all-messages
+@kindex D s (Draft)
 @findex gnus-draft-send-message
+@kindex D S (Draft)
 If you have lots of rejected messages you want to post (or mail) without
 doing further editing, you can use the @kbd{D s} command
 (@code{gnus-draft-send-message}).  This command understands the
@@ -11521,6 +11532,8 @@ process/prefix convention (@pxref{Process/Prefix}).  The @kbd{D S}
 command (@code{gnus-draft-send-all-messages}) will ship off all messages
 in the buffer.
 
+@findex gnus-draft-toggle-sending
+@kindex D t (Draft)
 If you have some messages that you wish not to send, you can use the
 @kbd{D t} (@code{gnus-draft-toggle-sending}) command to mark the message
 as unsendable.  This is a toggling command.
@@ -13373,7 +13386,7 @@ use this hook to notify any mail watch programs, if you want to.
 
 @vindex nnmail-split-hook
 @item nnmail-split-hook
-@findex article-decode-encoded-words
+@findex gnus-article-decode-encoded-words
 @findex RFC 1522 decoding
 @findex RFC 2047 decoding
 Hook run in the buffer where the mail headers of each message is kept
@@ -15007,6 +15020,7 @@ Some mailing lists only have archives on Web servers, such as
 interface, and it's possible to get the information Gnus needs to keep
 groups updated.
 
+@findex gnus-group-make-warchive-group
 The easiest way to get started with @code{nnwarchive} is to say
 something like the following in the group buffer: @kbd{M-x
 gnus-group-make-warchive-group RET an_egroup RET egroups RET
@@ -16641,6 +16655,7 @@ Let's take a typical Gnus session using the Agent.
 @itemize @bullet
 
 @item
+@findex gnus-unplugged
 You start Gnus with @code{gnus-unplugged}.  This brings up the Gnus
 Agent in a disconnected state.  You can read all the news that you have
 already fetched while in this mode.
@@ -17089,6 +17104,8 @@ Articles that have a score higher than this have a high score.  Default
 
 @node Agent Commands
 @subsection Agent Commands
+@findex gnus-agent-toggle-plugged
+@kindex J j (Agent)
 
 All the Gnus Agent commands are on the @kbd{J} submap.  The @kbd{J j}
 (@code{gnus-agent-toggle-plugged}) command works in all modes, and
@@ -17328,7 +17345,7 @@ since there are some conceptual differences between @sc{nntp} and
 make Gnus Agent work smoother as a @sc{imap} Disconnected Mode client.
 
 The first thing to keep in mind is that all flags (read, ticked, etc)
-are kept on the @sc{imap} server, rather than in @code{.newsrc} as is the
+are kept on the @sc{imap} server, rather than in @file{.newsrc} as is the
 case for nntp.  Thus Gnus need to remember flag changes when
 disconnected, and synchronize these flags when you plug back in.
 
@@ -17514,6 +17531,7 @@ find out which of the other gazillion things you want to customize.
 
 @node Batching Agents
 @subsection Batching Agents
+@findex gnus-agent-batch
 
 Having the Gnus Agent fetch articles (and post whatever messages you've
 written) is quite easy once you've gotten things set up properly.  The
@@ -20892,6 +20910,8 @@ Gnus provides a few convenience functions and variables to allow
 easier insertion of X-Face headers in outgoing messages.
 
 @findex gnus-random-x-face
+@vindex gnus-convert-pbm-to-x-face-command
+@vindex gnus-x-face-directory
 @code{gnus-random-x-face} goes through all the @samp{pbm} files in
 @code{gnus-x-face-directory} and picks one at random, and then
 converts it to the X-Face format by using the
@@ -20905,6 +20925,7 @@ header data as a string.
 randomly generated data.
 
 @findex gnus-x-face-from-file
+@vindex gnus-convert-image-to-x-face-command
 @code{gnus-x-face-from-file} takes a GIF file as the parameter, and then
 converts the file to X-Face format by using the
 @code{gnus-convert-image-to-x-face-command} shell command.
@@ -22212,6 +22233,7 @@ Save table: (spam-stat-save)
 @table @code
 
 @item gnus-home-directory
+@vindex gnus-home-directory
 All Gnus file and directory variables will be initialized from this
 variable, which defaults to @file{~/}.
 
@@ -24811,21 +24833,21 @@ There should be no result data from this function.
 
 Set/remove/add marks on articles.  Normally Gnus handles the article
 marks (such as read, ticked, expired etc) internally, and store them in
-@code{~/.newsrc.eld}.  Some back ends (such as @sc{imap}) however carry
+@file{~/.newsrc.eld}.  Some back ends (such as @sc{imap}) however carry
 all information about the articles on the server, so Gnus need to
 propagate the mark information to the server.
 
-ACTION is a list of mark setting requests, having this format:
+@var{action} is a list of mark setting requests, having this format:
 
 @example
 (RANGE ACTION MARK)
 @end example
 
-RANGE is a range of articles you wish to update marks on.  ACTION is
-@code{add} or @code{del}, used to add marks or remove marks
-(preserving all marks not mentioned).  MARK is a list of marks; where
-each mark is a symbol.  Currently used marks are @code{read},
-@code{tick}, @code{reply}, @code{expire}, @code{killed},
+@var{range} is a range of articles you wish to update marks on.
+@var{action} is @code{add} or @code{del}, used to add marks or remove
+marks (preserving all marks not mentioned).  @var{mark} is a list of
+marks; where each mark is a symbol.  Currently used marks are
+@code{read}, @code{tick}, @code{reply}, @code{expire}, @code{killed},
 @code{dormant}, @code{save}, @code{download}, @code{unsend},
 @code{forward} and @code{recent}, but your back end should, if
 possible, not limit itself to these.

@@ -1,3 +1,22 @@
+2003-01-30  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Batching Agents): Index.
+	(Agent Commands): do.
+	(Delayed Articles): do.
+	(Drafts): do.
+	(Web Archive): do.
+	(Article Washing): do.
+	(Slave Gnusae): do.
+	(Agent Basics): do.
+	(Exiting Gnus): do.
+	(Article Date): do.
+	(X-Face): do.
+	(Exiting the Summary Buffer): do.
+	(Charsets): do.
+	(Mail Group Commands): do.
+
+	* gnus.texi: Mark-up fixes.
+	
 2003-01-27  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi: replace `H' mark with `$' mark
