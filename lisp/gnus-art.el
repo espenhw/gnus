@@ -116,7 +116,7 @@
     "^Precedence:" "^Original-[-A-Za-z]+:" "^X-filename:" "^X-Orcpt:"
     "^Old-Received:" "^X-Pgp" "^X-Auth:" "^X-From-Line:"
     "^X-Gnus-Article-Number:" "^X-Majordomo:" "^X-Url:" "^X-Sender:"
-    "^MBOX-Line" "^Priority:" "^X-Pgp" "^X400-[-A-Za-z]+:"
+    "^MBOX-Line" "^Priority:" "^X400-[-A-Za-z]+:"
     "^Status:" "^X-Gnus-Mail-Source:" "^Cancel-Lock:"
     "^X-FTN" "^X-EXP32-SerialNo:" "^Encoding:" "^Importance:"
     "^Autoforwarded:" "^Original-Encoded-Information-Types:" "^X-Ya-Pop3:"
@@ -966,8 +966,9 @@ See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
-(defcustom gnus-treat-x-pgp-sig 'head
+(defcustom gnus-treat-x-pgp-sig nil
   "Verify X-PGP-Sig.
+To automatically treat X-PGP-Sig, set it to head.
 Valid values are nil, t, `head', `last', an integer or a predicate.
 See the manual for details."
   :group 'gnus-article-treat
@@ -2567,7 +2568,9 @@ If variable `gnus-use-long-file-name' is non-nil, it is
       (let ((sig (with-current-buffer gnus-original-article-buffer
 		   (gnus-fetch-field "X-PGP-Sig")))
 	    items info headers)
-	(when (and sig (mm-uu-pgp-signed-test))
+	(when (and sig 
+		   mml2015-use
+		   (mml2015-clear-verify-function))
 	  (with-temp-buffer
 	    (insert-buffer gnus-original-article-buffer)
 	    (setq items (split-string sig))
