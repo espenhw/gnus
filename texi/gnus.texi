@@ -2728,8 +2728,8 @@ Display articles that satisfy a predicate.
 Here are some examples:
 
 @table @code
-@item [unread]
-Display only unread articles.
+@item [read]
+Display only read articles.
 
 @item [not expire]
 Display everything except expirable articles.

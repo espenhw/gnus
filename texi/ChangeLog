@@ -1,3 +1,7 @@
+2001-08-24 16:03:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Group Parameters): Fix.
+
 2001-08-24  Simon Josefsson  <jas@extundo.com>
 
 	* Makefile.in (latexps): Make tmps.
