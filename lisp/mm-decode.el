@@ -891,20 +891,22 @@ external if displayed external."
       (if (member (mm-handle-media-supertype handle) '("text" "message"))
 	  (with-temp-buffer
 	    (insert-buffer-substring (mm-handle-buffer handle))
-	    (mm-decode-content-transfer-encoding
-	     (mm-handle-encoding handle)
-	     (mm-handle-media-type handle))
-	    (let ((temp (current-buffer)))
-	      (set-buffer cur)
-	      (insert-buffer-substring temp)))
+	    (prog1
+		(mm-decode-content-transfer-encoding
+		 (mm-handle-encoding handle)
+		 (mm-handle-media-type handle))
+	      (let ((temp (current-buffer)))
+		(set-buffer cur)
+		(insert-buffer-substring temp))))
 	(mm-with-unibyte-buffer
 	  (insert-buffer-substring (mm-handle-buffer handle))
-	  (mm-decode-content-transfer-encoding
-	   (mm-handle-encoding handle)
-	   (mm-handle-media-type handle))
-	  (let ((temp (current-buffer)))
-	    (set-buffer cur)
-	    (insert-buffer-substring temp)))))))
+	  (prog1
+	      (mm-decode-content-transfer-encoding
+	       (mm-handle-encoding handle)
+	       (mm-handle-media-type handle))
+	    (let ((temp (current-buffer)))
+	      (set-buffer cur)
+	      (insert-buffer-substring temp))))))))
 
 (defun mm-file-name-delete-whitespace (file-name)
   "Remove all whitespace characters from FILE-NAME."
@@ -959,7 +961,8 @@ like underscores."
 
 (defun mm-save-part-to-file (handle file)
   (mm-with-unibyte-buffer
-    (mm-insert-part handle)
+    (or (mm-insert-part handle)
+	(error "Error with message"))
     (let ((coding-system-for-write 'binary)
 	  ;; Don't re-compress .gz & al.  Arguably we should make
 	  ;; `file-name-handler-alist' nil, but that would chop
