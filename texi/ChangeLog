@@ -1,6 +1,7 @@
 2001-01-05 06:53:13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* emacs-mime.texi (time-date): Addition.
+	(time-date): Addition.
 
 2001-01-04 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

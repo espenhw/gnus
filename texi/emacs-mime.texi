@@ -512,8 +512,7 @@ say.)
 These functions convert between five formats: A date string, an Emacs
 time structure, a decoded time list, a second number, and a day number.
 
-The functions have quite self-explanatory names, so the following just
-gives an overview of which functions are available.
+Here's a bunch of time/date/second/day examples:
 
 @example
 (parse-time-string "Sat Sep 12 12:21:54 1998 +0200")
@@ -563,6 +562,81 @@ And finally, we have @code{safe-date-to-time}, which does the same as
 @code{date-to-time}, but returns a zero time if the date is
 syntactically malformed.
 
+The five data representations used are the following:
+
+@table @var
+@item date
+An RFC822 (or similar) date string.  For instance: @code{"Sat Sep 12
+12:21:54 1998 +0200"}.
+
+@item time
+An internal Emacs time.  For instance: @code{(13818 26466)}.
+
+@item seconds
+A floating point representation of the internal Emacs time.  For
+instance: @code{905595714.0}.
+
+@item days
+An integer number representing the number of days since 00000101.  For
+instance: @code{729644}.
+
+@item decoded time
+A list of decoded time.  For instance: @code{(54 21 12 12 9 1998 6 t
+7200)}.
+@end table
+
+All the examples above represent the same moment.
+
+These are the functions available:
+
+@table @code
+@item date-to-time
+Take a date and return a time.
+
+@item time-to-seconds
+Take a time and return seconds.
+
+@item seconds-to-time
+Take seconds and return a time.
+
+@item time-to-days
+Take a time and return days.
+
+@item days-to-time
+Take days and return a time.
+
+@item date-to-day
+Take a date and return days.
+
+@item time-to-number-of-days
+Take a time and return the number of days that represents.
+
+@item safe-date-to-time
+Take a date and return a time.  If the date is not syntactically valid,
+return a "zero" date.
+
+@item time-less-p
+Take two times and say whether the first time is less (i. e., earlier)
+than the second time.
+
+@item time-since
+Take a time and return a time saying how long it was since that time.
+
+@item subtract-time
+Take two times and subtract the second from the first.  I. e., return
+the time between the two times.
+
+@item days-between
+Take two days and return the number of days between those two days.
+
+@item date-leap-year-p
+Take a year number and say whether it's a leap year.
+
+@item time-to-day-in-year
+Take a time and return the day number within the year that the time is
+in. 
+
+@end table
 
 
 @node qp
