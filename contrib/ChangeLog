@@ -1,3 +1,10 @@
+2001-08-07  Andreas Jaeger  <aj@suse.de>
+
+	* gpg.el (gpg-passphrase-forget): Don't cache
+	gpg-passphrase-timer.
+	(gpg-passphrase-store): Check if gpg-passphrase-timer is
+	initialized already.
+	
 2001-07-30 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Andreas Fuchs <asf@void.at>
 
