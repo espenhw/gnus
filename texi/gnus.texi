@@ -13999,8 +13999,8 @@ is run.  That's why @code{(widen)} needs to be called after
 @code{save-excursion} and @code{save-restriction} in the example
 above.  Also note that with the nnimap backend, message bodies will
 not be downloaded by default.  You need to set
-@code{nnimap-split-download-body} to t to do that (@pxref{Splitting in
-IMAP}).
+@code{nnimap-split-download-body} to @code{t} to do that
+(@pxref{Splitting in IMAP}).
 
 @item (! @var{func} @var{split})
 If the split is a list, and the first element is @code{!}, then
@@ -22412,8 +22412,8 @@ call the external tools during splitting.  Example fancy split method:
 
 Note that with the nnimap backend, message bodies will not be
 downloaded by default.  You need to set
-@code{nnimap-split-download-body} to t to do that (@pxref{Splitting in
-IMAP}).
+@code{nnimap-split-download-body} to @code{t} to do that
+(@pxref{Splitting in IMAP}).
 
 That is about it.  As some spam is likely to get through anyway, you
 might want to have a nifty function to call when you happen to read
@@ -22649,8 +22649,8 @@ any are set, and the processed mail is moved to the
 @code{ham-process-destination} or the @code{spam-process-destination}
 depending on the article's classification.  If the
 @code{ham-process-destination} or the @code{spam-process-destination},
-whichever is appropriate, are nil, the article is left in the current
-group.
+whichever is appropriate, are @code{nil}, the article is left in the
+current group.
 
 If a spam is found in any group (this can be changed to only non-spam
 groups with @code{spam-move-spam-nonspam-groups-only}), it is
@@ -22662,7 +22662,7 @@ You have to load the @code{gnus-registry.el} package and enable the
 @code{spam-log-to-registry} variable if you want spam to be processed
 no more than once.  Thus, spam is detected and processed everywhere,
 which is what most people want.  If the
-@code{spam-process-destination} is nil, the spam is marked as
+@code{spam-process-destination} is @code{nil}, the spam is marked as
 expired, which is usually the right thing to do.
 
 If spam can not be moved - because of a read-only backend such as NNTP,
@@ -22948,8 +22948,8 @@ entries, this won't work as well as it does without a limit.
 
 @vindex spam-mark-only-unseen-as-spam
 Set this variable if you want only unseen articles in spam groups to
-be marked as spam.  By default, it is set.  If you set it to nil,
-unread articles will also be marked as spam.
+be marked as spam.  By default, it is set.  If you set it to
+@code{nil}, unread articles will also be marked as spam.
 
 @vindex spam-mark-ham-unread-before-move-from-spam-group
 Set this variable if you want ham to be unmarked before it is moved
@@ -23124,7 +23124,7 @@ groups as spam and reports the to Gmane at group exit:
     (spam-process (gnus-group-spam-exit-processor-report-gmane)))
 @end lisp
 
-Additionally, I use `(setq spam-report-gmane-use-article-number nil)'
+Additionally, I use @code{(setq spam-report-gmane-use-article-number nil)}
 because I don't read the groups directly from news.gmane.org, but
 through my local news server (leafnode).  I.e. the article numbers are
 not the same as on news.gmane.org, thus @code{spam-report.el} has to check

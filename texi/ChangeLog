@@ -1,3 +1,14 @@
+2004-01-07  Jesper Harder  <harder@ifa.au.dk>
+
+	* dir: Add SASL.
+
+	* sasl.texi: Markup fixes.
+
+	* gnus.texi (Fancy Mail Splitting, SpamAssassin)
+	(Spam ELisp Package Sequence of Events)
+	(Spam ELisp Package Global Variables)
+	(Spam ELisp Package Configuration Examples): do.
+
 2004-01-07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Summary Mail Commands): S D e.
