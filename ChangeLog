@@ -1,3 +1,13 @@
+2002-01-03  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir-request-expire-articles): evaluate
+	the expire-group parameter once per article rather than once
+	per group; bind `nnmaildir-article-file-name' and `article'
+	for convenience.  Leave article alone when expire-group
+	specifies the current group.
+	(nnmaildir--update-nov): be more concurrency-friendly with
+	temp file names.
+
 2002-01-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* etc/gnus/describe-group.xpm: Set pixels of first line to
