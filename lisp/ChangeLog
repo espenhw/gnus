@@ -1,3 +1,15 @@
+2003-11-24  Kevin Greiner <kgreiner@xpediantsolutions.com>
+	* gnus-srvr.el (gnus-server-insert-server-line): The server names
+	used in gnus-agent are different (for example, the native server
+	uses the alias "native") from the names in gnus-srvr.
+	Compensating by adding a second text property storing the name
+	expected by gnus-agent.
+	(gnus-server-named-server): New function.
+	* gnus-agent.el (gnus-agent-remove-server, gnus-agent-add-server):
+	No longer expect an argument as it was ignored anyway.  Uses the
+	new gnus-server-named-server function to get gnus-agent compatible
+	names from the server buffer.
+
 2003-11-20  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus.el (gnus-agent-covered-methods): Documented use of
