@@ -38,6 +38,9 @@
 (require 'nnoo)
 (eval-when-compile (require 'cl))
 
+(eval-and-compile
+  (autoload 'gnus-article-unpropagatable-p "gnus-sum"))
+
 (nnoo-declare nnml)
 
 (defvoo nnml-directory message-directory

@@ -40,6 +40,7 @@
 (require 'gnus-range)
 
 (eval-and-compile
+  (autoload 'gnus-article-unpropagatable-p "gnus-sum")
   (autoload 'gnus-intersection "gnus-range"))
 
 (nnoo-declare nnfolder)
