@@ -5038,7 +5038,7 @@ Threading}.
 @item M
 @vindex gnus-duplicate-mark
 Article marked as read by duplicate suppression
-(@code{gnus-duplicated-mark}).  @xref{Duplicate Suppression}.
+(@code{gnus-duplicate-mark}).  @xref{Duplicate Suppression}.
 
 @end table
 
