@@ -1,3 +1,8 @@
+2002-10-10  Simon Josefsson  <jas@extundo.com>
+
+	* mml-sec.el (mml-signencrypt-style-alist): Defcustom.
+	(mml-signencrypt-style): Mention the variable.
+
 2002-10-09  Simon Josefsson  <jas@extundo.com>
 
 	* mml1991.el (mml1991-pgg-sign): Bind pgg-default-user-id, not
