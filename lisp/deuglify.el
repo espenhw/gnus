@@ -47,7 +47,7 @@
 ;; > verb.  This sentence no verb.  This sentence no verb.  This
 ;; > sentence no verb.
 ;;
-;; The function `gnus-outlook-unwrap-lines' tries to recognize those
+;; The function `gnus-article-outlook-unwrap-lines' tries to recognize those
 ;; erroneously wrapped lines and will unwrap them.  I.e. putting the
 ;; wrapped parts ("no" in this example) back where they belong (at the
 ;; end of the cited line above).
@@ -70,7 +70,7 @@
 ;;
 ;; Unwrapping "You forgot in all your sentences." would be illegal as
 ;; this part wasn't intended to be cited text.
-;; `gnus-outlook-unwrap-lines' will only unwrap lines if the resulting
+;; `gnus-article-outlook-unwrap-lines' will only unwrap lines if the resulting
 ;; citation line will be of a certain maximum length.  You can control
 ;; this by adjusting `gnus-outlook-deuglify-unwrap-max'.  Also
 ;; unwrapping will only be done if the line above the (possibly)
@@ -113,7 +113,7 @@
 ;; > Bye, John
 ;;
 ;; Repairing the attribution line will be done by function
-;; `gnus-outlook-repair-attribution' which calls other function that
+;; `gnus-article-outlook-repair-attribution which calls other function that
 ;; try to recognize and repair broken attribution lines.  See variable
 ;; `gnus-outlook-deuglify-attrib-cut-regexp' for stuff that should be
 ;; cut off from the beginning of an attribution line and variable
@@ -123,8 +123,8 @@
 ;;
 ;; Rearranging the article so that the cited text appears above the
 ;; new text will be done by function
-;; `gnus-outlook-rearrange-citation'.  This function calls
-;; `gnus-outlook-repair-attribution' to find and repair an attribution
+;; `gnus-article-outlook-rearrange-citation'.  This function calls
+;; `gnus-article-outlook-repair-attribution to find and repair an attribution
 ;; line.
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -158,15 +158,15 @@
 ;; To automatically invoke deuglification on every article you read,
 ;; put something like that in your .gnus:
 ;;
-;; (add-hook 'gnus-article-decode-hook 'gnus-outlook-unwrap-lines)
+;; (add-hook 'gnus-article-decode-hook 'gnus-article-outlook-unwrap-lines)
 ;;
 ;; or _one_ of the following lines:
 ;;
 ;; ;; repair broken attribution lines
-;; (add-hook 'gnus-article-decode-hook 'gnus-outlook-repair-attribution)
+;; (add-hook 'gnus-article-decode-hook 'gnus-article-outlook-repair-attribution)
 ;;
 ;; ;; repair broken attribution lines and citations
-;; (add-hook 'gnus-article-decode-hook 'gnus-outlook-rearrange-citation)
+;; (add-hook 'gnus-article-decode-hook 'gnus-article-outlook-rearrange-citation)
 ;;
 ;; Note that there always may be some false positives, so I suggest
 ;; using the manual invocation.  After deuglification you may want to
@@ -178,16 +178,16 @@
 ;; -----------
 ;;
 ;; As I said before there may (or will) be a few false positives on
-;; unwrapping cited lines with `gnus-outlook-unwrap-lines'.
+;; unwrapping cited lines with `gnus-article-outlook-unwrap-lines'.
 ;;
-;; `gnus-outlook-repair-attribution' will only fix the first
+;; `gnus-article-outlook-repair-attribution will only fix the first
 ;; attribution line found in the article.  Furthermore it fixed to
 ;; certain kinds of attributions.  And there may be horribly many
 ;; false positives, vanishing lines and so on -- so don't trust your
 ;; eyes.  Again I recommend manual invocation.
 ;;
-;; `gnus-outlook-rearrange-citation' carries all the limitations of
-;; `gnus-outlook-repair-attribution'.
+;; `gnus-article-outlook-rearrange-citation' carries all the limitations of
+;; `gnus-article-outlook-repair-attribution.
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -299,7 +299,7 @@ It is run after `gnus-article-prepare-hook'."
 		    'gnus-outlook-display-hook)))
 
 ;;;###autoload
-(defun gnus-outlook-unwrap-lines (&optional nodisplay)
+(defun gnus-article-outlook-unwrap-lines (&optional nodisplay)
   "Unwrap lines that appear to be wrapped citation lines.  
 You can control what lines will be unwrapped by frobbing
 `gnus-outlook-deuglify-unwrap-min' and `gnus-outlook-deuglify-unwrap-max',
@@ -419,7 +419,7 @@ NODISPLAY is non-nil, don't redisplay the article buffer."
 	      (match-beginning 0)))))))
 
 ;;;###autoload
-(defun gnus-outlook-repair-attribution (&optional nodisplay)
+(defun gnus-article-outlook-repair-attribution (&optional nodisplay)
   "Repair a broken attribution line.
 If NODISPLAY is non-nil, don't redisplay the article buffer."
   (interactive "P")
@@ -431,11 +431,11 @@ If NODISPLAY is non-nil, don't redisplay the article buffer."
     (unless nodisplay (gnus-outlook-display-article-buffer))
     attrib-start))
 
-(defun gnus-outlook-rearrange-citation (&optional nodisplay)
+(defun gnus-article-outlook-rearrange-citation (&optional nodisplay)
   "Repair broken citations.
 If NODISPLAY is non-nil, don't redisplay the article buffer."
   (interactive "P")
-  (let ((attrib-start (gnus-outlook-repair-attribution 'nodisplay)))
+  (let ((attrib-start (gnus-article-outlook-repair-attribution 'nodisplay)))
     ;; rearrange citations if an attribution line has been recognized
     (if attrib-start
 	(gnus-outlook-rearrange-article attrib-start)))
@@ -443,15 +443,16 @@ If NODISPLAY is non-nil, don't redisplay the article buffer."
 
 ;;;###autoload
 (defun gnus-outlook-deuglify-article (&optional nodisplay)
-  "Deuglify broken Outlook (Express) articles.
-If NODISPLAY is non-nil, don't redisplay the article buffer."
+  "Full deuglify of broken Outlook (Express) articles.
+Treat dumbquotes, unwrap lines, repair attribution and rearrange citation.  If
+NODISPLAY is non-nil, don't redisplay the article buffer."
   (interactive "P")
   ;; apply treatment of dumb quotes
   (gnus-article-treat-dumbquotes)
   ;; repair wrapped cited lines
-  (gnus-outlook-unwrap-lines 'nodisplay)
-  ;; repair attribution line
-  (gnus-outlook-rearrange-citation 'nodisplay)
+  (gnus-article-outlook-unwrap-lines 'nodisplay)
+  ;; repair attribution line and rearrange citation.
+  (gnus-article-outlook-rearrange-citation 'nodisplay)
   (unless nodisplay (gnus-outlook-display-article-buffer)))
 
 ;;;###autoload

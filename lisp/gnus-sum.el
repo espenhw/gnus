@@ -46,9 +46,9 @@
 (autoload 'gnus-article-outlook-deuglify-article "deuglify"
   "Deuglify broken Outlook (Express) articles and redisplay."
   t)
-(autoload 'gnus-outlook-unwrap-lines "deuglify" nil t)
-(autoload 'gnus-outlook-repair-attribution "deuglify" nil t)
-(autoload 'gnus-outlook-rearrange-citation "deuglify" nil t)
+(autoload 'gnus-article-outlook-unwrap-lines "deuglify" nil t)
+(autoload 'gnus-article-outlook-repair-attribution "deuglify" nil t)
+(autoload 'gnus-article-outlook-rearrange-citation "deuglify" nil t)
 
 (defcustom gnus-kill-summary-on-exit t
   "*If non-nil, kill the summary buffer when you exit from it.
@@ -1795,14 +1795,13 @@ increase the score of each group you read."
     "v" gnus-summary-verbose-headers
     "a" gnus-article-strip-headers-in-body ;; mnemonic: wash archive
     "p" gnus-article-verify-x-pgp-sig
-    "d" gnus-article-treat-dumbquotes
-    "k" gnus-article-outlook-deuglify-article) ;; mnemonic: outloo*k*
+    "d" gnus-article-treat-dumbquotes)
 
   (gnus-define-keys (gnus-summary-wash-deuglify-map "Y" gnus-summary-wash-map)
     ;; mnemonic: deuglif*Y*
-    "u" gnus-outlook-unwrap-lines
-    "a" gnus-outlook-repair-attribution
-    "c" gnus-outlook-rearrange-citation
+    "u" gnus-article-outlook-unwrap-lines
+    "a" gnus-article-outlook-repair-attribution
+    "c" gnus-article-outlook-rearrange-citation
     "f" gnus-article-outlook-deuglify-article) ;; mnemonic: full deuglify
 
   (gnus-define-keys (gnus-summary-wash-hide-map "W" gnus-summary-wash-map)
@@ -2119,9 +2118,9 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	      ["Verify X-PGP-Sig" gnus-article-verify-x-pgp-sig t]
 	      ["HZ" gnus-article-decode-HZ t]
 	      ("(Outlook) Deuglify"
-	       ["Unwrap lines" gnus-outlook-unwrap-lines t]
-	       ["Repair attribution" gnus-outlook-repair-attribution t]
-	       ["Rearrange citation" gnus-outlook-rearrange-citation t]
+	       ["Unwrap lines" gnus-article-outlook-unwrap-lines t]
+	       ["Repair attribution" gnus-article-outlook-repair-attribution t]
+	       ["Rearrange citation" gnus-article-outlook-rearrange-citation t]
 	       ["Full (Outlook) deuglify"
 		gnus-article-outlook-deuglify-article t])
 	      )
