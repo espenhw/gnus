@@ -1,5 +1,12 @@
 2000-08-29  Dave Love  <fx@gnu.org>
 
+	* gnus-mlspl.el (gnus-group-split-fancy): Eschew mapcon.
+
+	* dgnushack.el (mapcon, union): Remove compiler macros.
+
+	* gnus-agent.el (gnus-agent-union): new function.
+	(gnus-agent-fetch-headers): Use it.
+
 	* gnus.el (gnus-group-startup-message): Specify foreground and
 	background for xpm image.  Centre image vertically.
 	From Katsumi Yamaoka <yamaoka@jpl.org> with mods.
