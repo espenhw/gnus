@@ -1,3 +1,21 @@
+Thu Jun 25 08:48:06 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.14 is released.
+
+Thu Jun 25 05:13:31 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-rebuild-thread): Accept a line argument.
+	(gnus-rebuild-thread): Would skip around a lot when `P'-ing past
+	the beginning.
+
+	* gnus-msg.el (gnus-post-method): Present all known servers if
+	`C-u 0'.
+
+	* gnus-salt.el (gnus-pick-mode-map): Reinstated keymap.
+
+	* gnus-sum.el (gnus-build-sparse-threads): Put the proper date
+	in. 
+
 Wed Jun 24 07:52:30 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.13 is released.

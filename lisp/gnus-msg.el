@@ -459,6 +459,7 @@ If SILENT, don't prompt the user."
 		     gnus-post-method
 		   (list gnus-post-method)))
 	       gnus-secondary-select-methods
+	       (mapcar 'cdr gnus-server-alist)
 	       (list gnus-select-method)
 	       (list group-method)))
 	     method-alist post-methods method)
