@@ -6882,7 +6882,8 @@ of what's specified by the `gnus-refer-thread-limit' variable."
    ((eq 'current gnus-refer-article-method)
     (list gnus-current-select-method))
    ;; List of select methods.
-   ((not (stringp (cadr gnus-refer-article-method)))
+   ((not (and (symbolp (car gnus-refer-article-method))
+	      (assq (car gnus-refer-article-method) nnoo-definition-alist)))
     (let (out)
       (dolist (method gnus-refer-article-method)
 	(push (if (eq 'current method)
