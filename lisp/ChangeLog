@@ -1,3 +1,13 @@
+1999-11-11  Hrvoje Niksic  <hniksic@iskon.hr>
+
+	* mml.el (mml-insert-tag): Don't close the tag.
+	(mml-insert-empty-tag): New function.
+	(mml-attach-file): Use mml-insert-empty-tag instead of
+	mml-insert-tag.
+	(mml-attach-buffer): Ditto.
+	(mml-attach-external): Ditto.
+	(mml-insert-multipart): Ditto.
+
 1999-12-03 08:49:53  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnfolder.el (nnfolder-request-article): Return -1 if not find

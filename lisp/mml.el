@@ -654,7 +654,14 @@ called for this message.")
 	(when (string-match "[\"\\~/* \t\n]" value)
 	  (setq value (prin1-to-string value)))
 	(insert (format " %s=%s" key value)))))
-  (insert ">\n<#/" name ">\n"))
+  (insert ">\n"))
+
+(defun mml-insert-empty-tag (name &rest plist)
+  "Insert an empty MML tag described by NAME and PLIST."
+  (when (symbolp name)
+    (setq name (symbol-name name)))
+  (apply #'mml-insert-tag name plist)
+  (insert "<#/" name ">\n"))
 
 ;;; Attachment functions.
 
@@ -671,8 +678,8 @@ description of the attachment."
 	  (type (mml-minibuffer-read-type file))
 	  (description (mml-minibuffer-read-description)))
      (list file type description)))
-  (mml-insert-tag 'part 'type type 'filename file 'disposition "attachment"
-		  'description description))
+  (mml-insert-empty-tag 'part 'type type 'filename file
+			'disposition "attachment" 'description description))
 
 (defun mml-attach-buffer (buffer &optional type description)
   "Attach a buffer to the outgoing MIME message.
@@ -682,8 +689,8 @@ See `mml-attach-file' for details of operation."
 	  (type (mml-minibuffer-read-type buffer "text/plain"))
 	  (description (mml-minibuffer-read-description)))
      (list buffer type description)))
-  (mml-insert-tag 'part 'type type 'buffer buffer 'disposition "attachment"
-		  'description description))
+  (mml-insert-empty-tag 'part 'type type 'buffer buffer
+			'disposition "attachment" 'description description))
 
 (defun mml-attach-external (file &optional type description)
   "Attach an external file into the buffer.
@@ -694,8 +701,8 @@ TYPE is the MIME type to use."
 	  (type (mml-minibuffer-read-type file))
 	  (description (mml-minibuffer-read-description)))
      (list file type description)))
-  (mml-insert-tag 'external 'type type 'name file 'disposition "attachment"
-		  'description description))
+  (mml-insert-empty-tag 'external 'type type 'name file
+			'disposition "attachment" 'description description))
 
 (defun mml-insert-multipart (&optional type)
   (interactive (list (completing-read "Multipart type (default mixed): "
@@ -704,7 +711,7 @@ TYPE is the MIME type to use."
 		     nil nil "mixed")))
   (or type
       (setq type "mixed"))
-  (mml-insert-tag "multipart" 'type type)
+  (mml-insert-empty-tag "multipart" 'type type)
   (forward-line -1))
 
 (defun mml-preview (&optional raw)
