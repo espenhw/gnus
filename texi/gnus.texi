@@ -7552,6 +7552,7 @@ these articles easier.
 * Article Fontisizing::     Making emphasized text look nice.
 * Article Hiding::          You also want to make certain info go away.
 * Article Washing::         Lots of way-neat functions to make life better.
+* Article Header::          Doing various header transformations.
 * Article Buttons::         Click on URLs, Message-IDs, addresses and the like.
 * Article Date::            Grumble, UT!
 * Article Display::         Display various stuff---X-Face, Picons, Smileys
@@ -8079,17 +8080,6 @@ message.@footnote{PGP keys for many hierarchies are available at
 Verify a signed (PGP, PGP/MIME or S/MIME) message
 (@code{gnus-summary-force-verify-and-decrypt}).
 
-@item W u
-@kindex W u (Summary)
-@findex gnus-article-treat-unfold-headers
-Unfold folded header lines (@code{gnus-article-treat-unfold-headers}).
-
-@item W n
-@kindex W n (Summary)
-@findex gnus-article-treat-fold-newsgroups
-Fold the @code{Newsgroups} and @code{Followup-To} headers
-(@code{gnus-article-treat-fold-newsgroups}).
-
 @item W W H
 @kindex W W H (Summary)
 @findex gnus-article-strip-headers-from-body
@@ -8142,6 +8132,33 @@ body (@code{gnus-article-strip-trailing-space}).
 @end table
 
 @xref{Customizing Articles}, for how to wash articles automatically.
+
+
+@node Article Header
+@subsection Article Header
+
+These commands perform various transformations of article header.
+
+@table @kbd
+
+@item W G u
+@kindex W G u (Summary)
+@findex gnus-article-treat-unfold-headers
+Unfold folded header lines (@code{gnus-article-treat-unfold-headers}).
+
+@item W G n
+@kindex W G n (Summary)
+@findex gnus-article-treat-fold-newsgroups
+Fold the @code{Newsgroups} and @code{Followup-To} headers
+(@code{gnus-article-treat-fold-newsgroups}).
+
+@item W G f
+@kindex W G f (Summary)
+@findex gnus-article-treat-fold-header
+Fold all the message headers
+(@code{gnus-article-treat-fold-headers}).
+
+@end table
 
 
 @node Article Buttons
@@ -10259,6 +10276,7 @@ possible but those listed are probably sufficient for most people.
 @item gnus-treat-mail-picon (head)
 @item gnus-treat-newsgroups-picon (head)
 @item gnus-treat-unfold-headers (head)
+@item gnus-treat-fold-headers (head)
 @item gnus-treat-fold-newsgroups (head)
 @item gnus-treat-body-boundary (head)
 @end table
@@ -14263,6 +14281,7 @@ browser like Netscape).  Here's one way:
 Put that in your @file{.emacs} file, and hitting links in w3-rendered
 @sc{html} in the Gnus article buffers will use @code{browse-url} to
 follow the link.
+
 
 @node IMAP
 @section @sc{imap}
@@ -18293,6 +18312,7 @@ four days, Gnus will decay the scores four times, for instance.
 * Daemons::                 Gnus can do things behind your back.
 * NoCeM::                   How to avoid spam and other fatty foods.
 * Undo::                    Some actions can be undone.
+* Predicate Specifiers::    Specifying predicates.
 * Moderation::              What to do if you're a moderator.
 * Image Enhancements::      Modern versions of Emacs/XEmacs can display images.
 * Fuzzy Matching::          What's the big fuzz?
@@ -18488,6 +18508,7 @@ less than 4 characters wide.
 
 Also Gnus supports some extended format specifications, such as
 @samp{%&user-date;}.
+
 
 @node Mode Line Formatting
 @subsection Mode Line Formatting
@@ -19470,6 +19491,33 @@ is used if @code{gnus-use-undo} is non-@code{nil}, which is the
 default.  The @kbd{C-M-_} key performs the @code{gnus-undo}
 command, which should feel kinda like the normal Emacs @code{undo}
 command.
+
+
+@node Predicate Specifiers
+@section Predicate Specifiers
+@cindex predicate specifiers
+
+Some Gnus variables are @dfn{predicate specifiers}.  This is a special
+form that allows flexible specification of predicates without having
+to type all that much.
+
+These specifiers are lists consisting of functions, symbols and lists.
+
+Here's an example:
+
+@lisp
+(or gnus-article-unseen-p
+    gnus-article-unread-p)
+@end lisp
+
+The available symbols are @code{or}, @code{and} and @code{not}.  The
+functions all take one parameter.
+
+@findex gnus-make-predicate
+Internally, Gnus calls @code{gnus-make-predicate} on these specifiers
+to create a function that can be called.  This input parameter to this
+function will be passed along to all the functions in the predicate
+specifier. 
 
 
 @node Moderation
@@ -21966,6 +22014,22 @@ want to read them anyway.
 @item gnus-thread-hide-subtree
 If this is non-@code{nil}, all threads in the summary buffer will be
 hidden initially.
+
+This can also be a predicate specifier (@pxref{Predicate Specifiers}).
+Avaliable predicates are @code{gnus-article-unread-p} and
+@code{gnus-article-unseen-p}).
+
+Here's an example:
+
+@lisp
+(setq gnus-thread-hide-subtree
+      '(or gnus-article-unread-p
+           gnus-article-unseen-p))
+@end lisp
+
+(It's a pretty nonsensical example, since all unseen articles are also
+unread, but you get my drift.)
+
 
 @item gnus-updated-mode-lines
 If this is @code{nil}, Gnus will not put information in the buffer mode

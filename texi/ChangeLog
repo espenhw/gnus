@@ -3,6 +3,9 @@
 	* gnus.texi (Choosing Commands): Addition.
 	(Article Display): Update.
 	(Article Display): Addition.
+	(Article Header): New.
+	(Slow Terminal Connection): Addition.
+	(Predicate Specifiers): New.
 
 2001-12-31  Rui Zhu  <sprache@iname.com>
 
