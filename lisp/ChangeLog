@@ -1,5 +1,9 @@
 2002-10-10  Simon Josefsson  <jas@extundo.com>
 
+	* mml.el (mml-mode-map): Add security commands that operates on
+	MIME parts.
+	(mml-menu): And menu items for them.
+
 	* mml1991.el (mml1991-pgg-encrypt): Remove headers.
 
 	* mml.el (mml-parse-1): Support sender in #secure tags.

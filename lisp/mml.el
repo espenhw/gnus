@@ -793,14 +793,22 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
 (defvar mml-mode-map
   (let ((sign (make-sparse-keymap))
 	(encrypt (make-sparse-keymap))
+	(signpart (make-sparse-keymap))
+	(encryptpart (make-sparse-keymap))
 	(map (make-sparse-keymap))
 	(main (make-sparse-keymap)))
     (define-key sign "p" 'mml-secure-message-sign-pgpmime)
     (define-key sign "o" 'mml-secure-message-sign-pgp)
     (define-key sign "s" 'mml-secure-message-sign-smime)
+    (define-key signpart "p" 'mml-secure-sign-pgpmime)
+    (define-key signpart "o" 'mml-secure-sign-pgp)
+    (define-key signpart "s" 'mml-secure-sign-smime)
     (define-key encrypt "p" 'mml-secure-message-encrypt-pgpmime)
     (define-key encrypt "o" 'mml-secure-message-encrypt-pgp)
     (define-key encrypt "s" 'mml-secure-message-encrypt-smime)
+    (define-key encryptpart "p" 'mml-secure-encrypt-pgpmime)
+    (define-key encryptpart "o" 'mml-secure-encrypt-pgp)
+    (define-key encryptpart "s" 'mml-secure-encrypt-smime)
     (define-key map "\C-n" 'mml-unsecure-message)
     (define-key map "f" 'mml-attach-file)
     (define-key map "b" 'mml-attach-buffer)
@@ -811,7 +819,9 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
     (define-key map "v" 'mml-validate)
     (define-key map "P" 'mml-preview)
     (define-key map "s" sign)
-    (define-key map "c" encrypt)
+    (define-key map "S" sign)
+    (define-key map "c" encryptpart)
+    (define-key map "C" encryptpart)
     ;;(define-key map "n" 'mml-narrow-to-part)
     ;; `M-m' conflicts with `back-to-indentation'.
     ;; (define-key main "\M-m" map)
@@ -834,6 +844,13 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
     ["PGP Encrypt" mml-secure-message-encrypt-pgp t]
     ["S/MIME Sign" mml-secure-message-sign-smime t]
     ["S/MIME Encrypt" mml-secure-message-encrypt-smime t]
+    ("Secure MIME part"
+     ["PGP/MIME Sign Part" mml-secure-sign-pgpmime t]
+     ["PGP/MIME Encrypt Part" mml-secure-encrypt-pgpmime t]
+     ["PGP Sign Part" mml-secure-sign-pgp t]
+     ["PGP Encrypt Part" mml-secure-encrypt-pgp t]
+     ["S/MIME Sign Part" mml-secure-sign-smime t]
+     ["S/MIME Encrypt Part" mml-secure-encrypt-smime t])
     ["Encrypt/Sign off" mml-unsecure-message t]
     ;;["Narrow" mml-narrow-to-part t]
     ["Quote MML" mml-quote-region t]
