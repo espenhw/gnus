@@ -730,6 +730,7 @@ header line with the old Message-ID."
 	    (gnus-article-delete-text-of-type 'annotation)
 	    (gnus-remove-text-with-property 'gnus-prev)
 	    (gnus-remove-text-with-property 'gnus-next)
+	    (gnus-remove-text-with-property 'gnus-decoration)
 	    (insert
 	     (prog1
 		 (buffer-substring-no-properties (point-min) (point-max))

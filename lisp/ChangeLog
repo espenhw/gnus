@@ -1,11 +1,15 @@
 2002-02-07  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-art.el (gnus-article-treat-body-boundary): Add
+	gnus-decoration property.
+	* gnus-msg.el (gnus-copy-article-buffer): Remove gnus-decoration.
+
 	* message.el (message-mode): Set local-abbrev-table.
 	From Matt Armstrong <matt@lickey.com>.
 
 	* gnus-art.el (gnus-article-treat-unfold-headers): Don't remove
 	too many spaces.
-	
+
 	* rfc2047.el (rfc2047-unfold-region): Ditto.
 	(rfc2047-decode-region): Don't unfold. Let
 	gnus-article-treat-unfold-headers do it.
