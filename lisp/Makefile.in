@@ -37,7 +37,7 @@ install-el:
 	$(INSTALL_DATA) gnus-load.el $(lispdir)/gnus-load.el
 	for p in *.elc; do \
 	  p=`basename $$p c`; \
-	  if [ -e "$(srcdir)/$$p" ]; then \
+	  if [ -f "$(srcdir)/$$p" ]; then \
 	    echo " $(INSTALL_DATA) $$p $(lispdir)/$$p"; \
 	    $(INSTALL_DATA) $(srcdir)/$$p $(lispdir)/$$p; \
 	  fi; \
