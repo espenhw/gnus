@@ -52,7 +52,7 @@
      ("octet-stream"
       (viewer . mailcap-save-binary-file)
       (non-viewer . t)
-      (type ."application/octet-stream"))
+      (type . "application/octet-stream"))
      ("dvi"
       (viewer . "open %s")
       (type   . "application/dvi")
