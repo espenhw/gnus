@@ -361,9 +361,10 @@ If EXAMINE is non-nil the group is selected read-only."
 				 nnimap-progress-how-often)
 			      nnimap-progress-chars)))
   (with-current-buffer nntp-server-buffer
-    (let (headers lines chars uid)
+    (let (headers lines chars uid mbx)
       (with-current-buffer nnimap-server-buffer
 	(setq uid imap-current-message
+	      mbx imap-current-mailbox
 	      headers (if (imap-capability 'IMAP4rev1)
 			  ;; xxx don't just use car? alist doesn't contain
 			  ;; anything else now, but it might...
@@ -380,6 +381,8 @@ If EXAMINE is non-nil the group is selected read-only."
 	   (mail-header-set-number head uid)
 	   (mail-header-set-chars head chars)
 	   (mail-header-set-lines head lines)
+	   (mail-header-set-xref
+	    head (format "%s %s:%d" (system-name) mbx uid))
 	   head))))))
 
 (defun nnimap-retrieve-which-headers (articles fetch-old)
@@ -490,10 +493,10 @@ If EXAMINE is non-nil the group is selected read-only."
 		     (cons (1+ (cdr cached)) high) group server))
 		  (when nnimap-prune-cache
 		    ;; remove nov's for articles which has expired on server
-		    (goto-char (point-min))
-		    (dolist (uid (gnus-set-difference articles uids))
-		      (when (re-search-forward (format "^%d\t" uid) nil t)
-			(gnus-delete-line)))))
+                    (goto-char (point-min))
+                    (dolist (uid (gnus-set-difference articles uids))
+                      (when (re-search-forward (format "^%d\t" uid) nil t)
+                        (gnus-delete-line)))))
 	      ;; nothing cached, fetch whole range from server
 	      (nnimap-retrieve-headers-from-server
 	       (cons low high) group server))
