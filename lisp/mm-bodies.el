@@ -180,11 +180,14 @@ If no encoding was done, nil is returned."
 ;;;
 
 (defun mm-decode-content-transfer-encoding (encoding &optional type)
+  "Decodes buffer encoded with ENCODING, returning success status.
+If TYPE is `text/plain' CRLF->LF translation may occur."
   (prog1
       (condition-case error
 	  (cond
 	   ((eq encoding 'quoted-printable)
-	    (quoted-printable-decode-region (point-min) (point-max)))
+	    (quoted-printable-decode-region (point-min) (point-max))
+	    t)
 	   ((eq encoding 'base64)
 	    (base64-decode-region
 	     (point-min)
@@ -203,18 +206,21 @@ If no encoding was done, nil is returned."
 	       (point))))
 	   ((memq encoding '(7bit 8bit binary))
 	    ;; Do nothing.
-	    )
+	    t)
 	   ((null encoding)
 	    ;; Do nothing.
-	    )
+	    t)
 	   ((memq encoding '(x-uuencode x-uue))
 	    (require 'mm-uu)
-	    (funcall mm-uu-decode-function (point-min) (point-max)))
+	    (funcall mm-uu-decode-function (point-min) (point-max))
+	    t)
 	   ((eq encoding 'x-binhex)
 	    (require 'mm-uu)
-	    (funcall mm-uu-binhex-decode-function (point-min) (point-max)))
+	    (funcall mm-uu-binhex-decode-function (point-min) (point-max))
+	    t)
 	   ((functionp encoding)
-	    (funcall encoding (point-min) (point-max)))
+	    (funcall encoding (point-min) (point-max))
+	    t)
 	   (t
 	    (message "Unknown encoding %s; defaulting to 8bit" encoding)))
 	(error

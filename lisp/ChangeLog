@@ -1,4 +1,9 @@
 2001-08-12  Simon Josefsson  <jas@extundo.com>
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Returns
+	whether successful decoding took place.  Add doc.
+
+2001-08-12  Simon Josefsson  <jas@extundo.com>
 	Suggested by Per Abrahamsen <abraham@dina.kvl.dk>
 
 	* gnus.el (gnus-summary-line-format, gnus-parameters): 
