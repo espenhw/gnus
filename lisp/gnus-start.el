@@ -2163,22 +2163,29 @@ If FORCE is non-nil, the .newsrc file is read."
 	    (nconc (gnus-uncompress-range dormant)
 		   (gnus-uncompress-range ticked)))))))))
 
+(defun gnus-load (file)
+  "Load FILE, but in such a way that read errors can be reported."
+  (with-temp-buffer
+    (insert-file-contents file)
+    (while (not (eobp))
+      (condition-case type
+	  (let ((form (read (current-buffer))))
+	    (eval form))
+	(error
+	 (unless (eq (car type) 'end-of-file)
+	   (let ((error (format "Error in %s line %d" ding-file
+				(count-lines (point-min) (point)))))
+	     (ding)
+	     (unless (gnus-yes-or-no-p (concat error "; continue? "))
+	       (error "%s" error)))))))))
+
 (defun gnus-read-newsrc-el-file (file)
   (let ((ding-file (concat file "d")))
     ;; We always, always read the .eld file.
     (gnus-message 5 "Reading %s..." ding-file)
     (let (gnus-newsrc-assoc)
-      (if (or debug-on-error debug-on-quit)
-	  (let ((coding-system-for-read gnus-ding-file-coding-system))
-	    (load ding-file t t t))
-	(condition-case nil
-	    (let ((coding-system-for-read gnus-ding-file-coding-system))
-	      (load ding-file t t t))
-	  (error
-	   (ding)
-	   (unless (gnus-yes-or-no-p
-		    (format "Error in %s; continue? " ding-file))
-	     (error "Error in %s" ding-file)))))
+      (let ((coding-system-for-read gnus-ding-file-coding-system))
+	(gnus-load ding-file))
       ;; Older versions of `gnus-format-specs' are no longer valid
       ;; in Oort Gnus 0.01.
       (let ((version

@@ -1,3 +1,8 @@
+2002-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-start.el (gnus-load): New function.
+	(gnus-read-newsrc-el-file): Use it.
+
 2002-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-button-valid-fqdn-regexp): New variable.
