@@ -33,6 +33,7 @@
 (eval-and-compile
   (autoload 'message-make-message-id "message")
   (autoload 'gnus-setup-posting-charset "gnus-msg")
+  (autoload 'gnus-add-minor-mode "gnus-ems")
   (autoload 'message-fetch-field "message")
   (autoload 'message-posting-charset "message"))
 

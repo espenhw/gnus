@@ -1,3 +1,9 @@
+2000-12-21 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (gnus-add-minor-mode): Autoload.
+
+	* message.el (message-forward): Save-restriction.
+
 2000-12-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-art.el (article-treat-dumbquotes): More doc, provided by
