@@ -1,3 +1,8 @@
+2003-05-04  Dave Love  <fx@gnu.org>
+
+	* rfc2047.el (with-syntax-table): Define if necessary.
+	(rfc2047-syntax-table): Fix last change for XEmacs.
+
 2003-05-03  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.el: Don't test for `mm-guess-mime-charset'.
@@ -18,6 +23,11 @@
 	* gnus-util.el (gnus-multiple-choice): Add ", ?".
 
 2003-05-03  Dave Love  <fx@gnu.org>
+
+	* rfc2047.el (rfc2047-syntax-table): Don't call make-char-table
+	with 2 args.
+	(rfc2047-decode-string): Don't set the buffer multibyte before
+	calling buffer-string.
 
 	* mm-encode.el (mm-long-lines-p): Autoload.
 	(mm-encode-content-transfer-encoding): Doc fix.  Don't make buffer
