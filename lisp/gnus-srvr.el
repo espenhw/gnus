@@ -729,7 +729,7 @@ The following commands are available:
 	(let ((buffer-read-only nil) charset)
 	  (while groups
 	    (setq group (car groups))
-	    (setq charset (gnus-group-name-charset method group))
+	    (setq charset (gnus-group-name-charset method (car group)))
 	    (gnus-add-text-properties
 	     (point)
 	     (prog1 (1+ (point))

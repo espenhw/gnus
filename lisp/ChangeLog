@@ -1,3 +1,8 @@
+2001-10-06  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-srvr.el (gnus-browse-foreign-server): Fixed bug non-nil
+	'gnus-group-name-charset-group-alist'. 
+
 2001-10-06 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* Makefile.in: Install el in install. Add uninstall.
