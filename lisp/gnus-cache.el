@@ -153,7 +153,8 @@ it's not cached."
   (when (and (or force (not (eq gnus-use-cache 'passive)))
 	     (numberp article)
 	     (> article 0))		; This might be a dummy article.
-    (let ((number article) file headers)
+    (let ((number article)
+	  file headers lines-chars)
       ;; If this is a virtual group, we find the real group.
       (when (gnus-virtual-group-p group)
 	(let ((result (nnvirtual-find-group-art
@@ -183,9 +184,12 @@ it's not cached."
 	      (let ((coding-system-for-write gnus-cache-coding-system))
 		(gnus-write-buffer file)
 		(gnus-cache-update-file-total-fetched-for group file))
+	      (setq lines-chars (nnheader-get-lines-and-char))
 	      (nnheader-remove-body)
 	      (setq headers (nnheader-parse-naked-head))
 	      (mail-header-set-number headers number)
+	      (mail-header-set-lines headers (car lines-chars))
+	      (mail-header-set-chars headers (cadr lines-chars))
 	      (gnus-cache-change-buffer group)
 	      (set-buffer (cdr gnus-cache-buffer))
 	      (goto-char (point-max))
