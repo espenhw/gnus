@@ -25,7 +25,9 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'pgg))
+(eval-when-compile
+  (require 'cl)				; for gpg macros
+  (require 'pgg))
 
 (defgroup pgg-gpg ()
   "GnuPG interface"
