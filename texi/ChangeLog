@@ -1,3 +1,7 @@
+2000-06-28  Simon Josefsson  <simon@josefsson.org>
+
+	* gnus.texi (Splitting in IMAP): Update.
+
 2000-05-19 15:18:32  Dmitry Yaitskov <dimas@home.com>
 
 	* message.texi (Reply): Doc fix.

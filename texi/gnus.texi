@@ -13722,9 +13722,29 @@ crossposting enabled.  In that case, all matching rules will "win".
 
 This variable can also have a function as its value, the function will
 be called with the headers narrowed and should return a group where it
-thinks the article should be splitted to.
+thinks the article should be splitted to.  See @code{nnimap-split-fancy}.
 
 The splitting code tries to create mailboxes if it need too.
+
+To allow for different split rules on different virtual servers, and
+even different split rules in different inboxes on the same server,
+the syntax of this variable have been extended along the lines of:
+
+@lisp
+(setq nnimap-split-rule
+      '(("my1server"    (".*"    (("ding"    "ding@@gnus.org")
+                                  ("junk"    "From:.*Simon")))
+        ("my2server"    ("INBOX" nnimap-split-fancy))
+        ("my[34]server" (".*"    (("private" "To:.*Simon")
+                                  ("junk"    my-junk-func)))))
+@end lisp
+
+The virtual server name is in fact a regexp, so that the same rules
+may apply to several servers.  In the example, the servers
+@code{my3server} and @code{my4server} both use the same rules.
+Similarly, the inbox string is also a regexp.  The actual splitting
+rules are as before, either a function, or a list with group/regexp or
+group/function elements.
 
 Nnmail equivalent: @code{nnmail-split-methods}.
 
